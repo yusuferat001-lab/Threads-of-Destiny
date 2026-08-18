@@ -1,0 +1,174 @@
+import { describe, it, expect } from "vitest";
+import { olaySec } from "../src/game/olaySecici";
+import { createCharacter, mesleğiSec, durumlariUygula } from "../src/game/stateManager";
+import { yeniOyun, mesleğiAta, senaryoUret, secimUygula } from "../src/game/gameEngine";
+
+function olayBul(state: ReturnType<typeof createCharacter>, baslik: string, maxDeneme: number) {
+  for (let i = 0; i < maxDeneme; i++) {
+    const { senaryo } = olaySec(state);
+    if (senaryo.olay_basligi === baslik) return senaryo;
+  }
+  return null;
+}
+
+describe("fiziksel kalıcılık (option-level restricted_tags)", () => {
+  it("kalici:tek_kolu_yok etiketi olan asker için ön safa geçme seçeneği kilitlenir", () => {
+    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    state.yas = 25;
+    mesleğiSec(state, "Asker");
+    state.etiketler.push("kalici:tek_kolu_yok");
+
+    const senaryo = olayBul(state, "Sıra Dövüşü", 500);
+    expect(senaryo).not.toBeNull();
+    const onSaf = senaryo!.secenekler.find((s) => s.metin.includes("Ön safa geç"));
+    expect(onSaf?.kilitli).toBe(true);
+  });
+
+  it("sağlıklı asker için ön safa geçme seçeneği açıktır", () => {
+    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    state.yas = 25;
+    mesleğiSec(state, "Asker");
+
+    const senaryo = olayBul(state, "Sıra Dövüşü", 500);
+    expect(senaryo).not.toBeNull();
+    const onSaf = senaryo!.secenekler.find((s) => s.metin.includes("Ön safa geç"));
+    expect(onSaf?.kilitli).toBe(false);
+  });
+});
+
+describe("kan davası (gecikmeli tetikleyici zincir)", () => {
+  it("kan_davasi_beklemede durumu bitince kandavasi:zamani etiketi eklenir ve suikast olayı erişilebilir olur", () => {
+    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    mesleğiSec(state, "Tüccar");
+    state.durumlar.push({
+      id: "kan_davasi_beklemede",
+      ad: "Kan Davası — Beklemede",
+      tur: "gecici",
+      kalan_tur: 1,
+      bitince_etiket: "kandavasi:zamani",
+    });
+
+    durumlariUygula(state);
+    expect(state.etiketler.includes("kandavasi:zamani")).toBe(true);
+
+    const senaryo = olayBul(state, "Gecenin Karanlığından", 500);
+    expect(senaryo).not.toBeNull();
+  });
+
+  it("kandavasi:zamani etiketi yokken suikast olayı hiç çıkmaz", () => {
+    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    mesleğiSec(state, "Tüccar");
+    for (let i = 0; i < 400; i++) {
+      const { senaryo } = olaySec(state);
+      expect(senaryo.olay_basligi).not.toBe("Gecenin Karanlığından");
+    }
+  });
+});
+
+describe("gizli örgüt (üyeye özel görev)", () => {
+  it("Tapınak Şövalyeleri üyesi olmayan karakter için o görev seçeneği kilitlenir", () => {
+    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    mesleğiSec(state, "Asker");
+
+    // Bu olay (derinlik_orgut_gizli_gorev) tamamen evrensel olduğu için ağırlığı
+    // bilinçli olarak düşük (0.4); diğer maxDeneme=500 çağrılarından daha yüksek
+    // bir üst sınır gerekiyor ki nadiren de olsa flaky olmasın.
+    const senaryo = olayBul(state, "Kardeşlikten Bir Görev", 3000);
+    expect(senaryo).not.toBeNull();
+    const gorev = senaryo!.secenekler.find((s) => s.metin.includes("Tapınak Şövalyeleri görevini"));
+    expect(gorev?.kilitli).toBe(true);
+  });
+
+  it("Tapınak Şövalyeleri üyesi için o görev seçeneği açıktır", () => {
+    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    mesleğiSec(state, "Asker");
+    state.etiketler.push("orgut:Tapınak Şövalyeleri");
+
+    const senaryo = olayBul(state, "Kardeşlikten Bir Görev", 3000);
+    expect(senaryo).not.toBeNull();
+    const gorev = senaryo!.secenekler.find((s) => s.metin.includes("Tapınak Şövalyeleri görevini"));
+    expect(gorev?.kilitli).toBe(false);
+  });
+});
+
+describe("tıbbi bağışıklık (immunity)", () => {
+  it("veba bağışıklığı olmayan din adamı için özgür yardım seçeneği kilitlenir", () => {
+    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    mesleğiSec(state, "Din Adamı");
+    state.ulke.vebada = true;
+
+    const senaryo = olayBul(state, "Salgının İkinci Dalgası", 500);
+    expect(senaryo).not.toBeNull();
+    const secenek = senaryo!.secenekler.find((s) => s.metin.includes("Bağışıklığına güvenerek"));
+    expect(secenek?.kilitli).toBe(true);
+  });
+
+  it("veba bağışıklığı olan din adamı için özgür yardım seçeneği açıktır", () => {
+    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    mesleğiSec(state, "Din Adamı");
+    state.ulke.vebada = true;
+    state.etiketler.push("tibbi:veba_bagisik");
+
+    const senaryo = olayBul(state, "Salgının İkinci Dalgası", 500);
+    expect(senaryo).not.toBeNull();
+    const secenek = senaryo!.secenekler.find((s) => s.metin.includes("Bağışıklığına güvenerek"));
+    expect(secenek?.kilitli).toBe(false);
+  });
+});
+
+describe("ünvan sistemi (uçtan uca)", () => {
+  it("büyük bir başarı unvan_kazan ile state.unvanlar'a ekleniyor", async () => {
+    let bulundu = false;
+    let kalanButce = 10000;
+    while (!bulundu && kalanButce > 0) {
+      const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+      state.yas = 25;
+      state.para = 500;
+      state.saglik = 100;
+      state.tur_sayisi = 10; // seviye 2 terfi eşiğini (tur_sayisi:4, para:150) karşılasın diye
+      await mesleğiAta(state.id, "Tüccar");
+
+      while (!bulundu && kalanButce > 0 && state.aktif) {
+        kalanButce--;
+        if (state.saglik < 60) state.saglik = 90;
+        if (state.para < 200) state.para = 500;
+        if (state.tur_sayisi < 10) state.tur_sayisi = 10;
+        const senaryo = await senaryoUret(state.id);
+        if (senaryo.olay_basligi === "Uzak Diyarların İpeği") {
+          bulundu = true;
+          const sonuc = await secimUygula(state.id, 0); // "Tüm sermayeni ipeğe yatır."
+          if (!("ara_tepki" in sonuc) && sonuc.basarili) {
+            expect(state.unvanlar).toContain("İpek Kralı");
+          }
+          break;
+        }
+        const acikSecenekler = senaryo.secenekler.map((s, i2) => ({ s, i2 })).filter(({ s }) => !s.kilitli);
+        const idx = acikSecenekler.length > 0 ? acikSecenekler[Math.floor(Math.random() * acikSecenekler.length)].i2 : 0;
+        const cevap = await secimUygula(state.id, idx);
+        if ("ara_tepki" in cevap) await secimUygula(state.id, 0);
+      }
+    }
+    expect(bulundu).toBe(true);
+  }, 100000);
+});
+
+describe("bağımlılık ve durum_sil (kurtulma)", () => {
+  it("gerekliEtiketler:bagimlilik:var ile kurtulma olayı erişilebilir olur, durum_sil pasif etkiyi kaldırır", () => {
+    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    mesleğiSec(state, "Tüccar");
+    state.etiketler.push("bagimlilik:kumarbaz", "bagimlilik:var");
+    state.durumlar.push({ id: "kumar_bagimliligi", ad: "Kumar Bağımlılığı", tur: "kalici", tur_basi_para: -3 });
+
+    const senaryo = olayBul(state, "Bir Uyanış Anı", 500);
+    expect(senaryo).not.toBeNull();
+  });
+
+  it("bagimlilik:var etiketi yokken kurtulma olayı hiç çıkmaz", () => {
+    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    mesleğiSec(state, "Tüccar");
+    for (let i = 0; i < 400; i++) {
+      const { senaryo } = olaySec(state);
+      expect(senaryo.olay_basligi).not.toBe("Bir Uyanış Anı");
+    }
+  });
+});

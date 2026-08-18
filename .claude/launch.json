@@ -1,0 +1,25 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "client-dev",
+      "runtimeExecutable": "cmd.exe",
+      "runtimeArgs": [
+        "/c",
+        "set PATH=C:\\Program Files\\nodejs;%PATH% && cd client && npm run dev"
+      ],
+      "port": 5180,
+      "autoPort": true
+    },
+    {
+      "name": "server-dev",
+      "runtimeExecutable": "cmd.exe",
+      "runtimeArgs": [
+        "/c",
+        "set PATH=C:\\Program Files\\nodejs;%PATH% && cd server && npm run dev"
+      ],
+      "port": 3001,
+      "autoPort": false
+    }
+  ]
+}

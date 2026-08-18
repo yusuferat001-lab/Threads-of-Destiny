@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Session {
+  id        String   @id
+  data      String
+  aktif     Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([aktif])
+}
+
+model Score {
+  id          Int      @id @default(autoincrement())
+  isim        String
+  skor        Int
+  meslek      String
+  rutbe       String   @default("")
+  cag         String
+  bolge       String
+  yerlesim    String   @default("")
+  kisilik     String   @default("")
+  olum_nedeni String
+  yas         Int
+  para        Int
+  un          Int
+  /** Kazanılan ünvanlar, virgülle ayrılmış (ör. "İpek Kralı, Cesur Yürek"); liderlik tablosunda rozet olarak gösterilir. */
+  unvanlar    String   @default("")
+  /** Nadir/komik bir ölümse başlığı (ör. "Kendi Kazdığı Kuyuya Düşen"); boşsa sıradan bir ölüm. */
+  efsanevi_olum String @default("")
+  /** Hayat amacı tamamlanmış mı (skor zaten x5 uygulanmış olarak kaydedilir, bu sadece rozet için). */
+  hayat_amaci_tamamlandi Boolean @default(false)
+  createdAt   DateTime @default(now())
+}
