@@ -70,4 +70,24 @@ describe("geri adım mekanizması (onTepki)", () => {
     if (!bulunan) return;
     await expect(secimUygula(bulunan.state.id, 5)).rejects.toThrow();
   }, 60000);
+
+  it("bekleyen tepki varken senaryoUret tekrar çağrılırsa (ör. sayfa yenileme), eski tepki iptal olur ve yeni senaryonun seçenekleri normal işlenir", async () => {
+    const bulunan = await tepkiAra(4000);
+    expect(bulunan).not.toBeNull();
+    if (!bulunan) return;
+
+    // Sayfa yenilenip devam alındığında client bunu çağırır; eski onTepki artık geçersiz olmalı.
+    const yeniSenaryo = await senaryoUret(bulunan.state.id);
+    expect(yeniSenaryo.olay_basligi).not.toBe("Bir An Duraksadın");
+
+    const oncekiYas = bulunan.state.yas;
+    const idx = yeniSenaryo.secenekler.findIndex((s) => !s.kilitli);
+    const sonuc = await secimUygula(bulunan.state.id, idx >= 0 ? idx : 0);
+    // Eski bekleyenTepki hâlâ etkin olsaydı, zaman ilerlemeyip ya yeni bir ara_tepki
+    // ya da eski onTepki'nin (yeni senaryoyla alakasız) sonucu dönerdi.
+    expect("ara_tepki" in sonuc).toBe(false);
+    if (!("ara_tepki" in sonuc)) {
+      expect(sonuc.state.yas).toBeGreaterThan(oncekiYas);
+    }
+  }, 60000);
 });

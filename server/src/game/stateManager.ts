@@ -479,6 +479,7 @@ export function createCharacter(
     hayat_hikayesi: [],
     aktif: true,
     olum_nedeni: null,
+    skoru_kaydedildi: false,
   };
 
   if (aile.maasCarpani) maasCarpaniUygula(state, aile.maasCarpani);

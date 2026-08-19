@@ -1,7 +1,23 @@
 import { describe, it, expect } from "vitest";
-import { yeniOyun, mesleğiAta, senaryoUret, secimUygula } from "../src/game/gameEngine";
+import { yeniOyun, mesleğiAta, senaryoUret, secimUygula, liderlikTablosunaKaydet } from "../src/game/gameEngine";
 import { skorKaydet } from "../src/db/scoreRepository";
 import { secimUygulaVeCoz } from "./testUtils";
+
+async function oyunuOlumeKadarOyna(meslek: string) {
+  const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+  await mesleğiAta(state.id, meslek);
+
+  let aktif = true;
+  let sonState = state;
+  for (let tur = 0; tur < 150 && aktif; tur++) {
+    const senaryo = await senaryoUret(state.id);
+    const idx = senaryo.secenekler.findIndex((s) => !s.kilitli);
+    const sonuc = await secimUygulaVeCoz(state.id, idx >= 0 ? idx : 0);
+    aktif = sonuc.state.aktif;
+    sonState = sonuc.state;
+  }
+  return sonState;
+}
 
 describe("kritik oyun akışı: yeni oyun → meslek → seçim → ölüm → skor", () => {
   it("yeni oyun oluşturur ve geçerli bir başlangıç state'i döner", async () => {
@@ -51,18 +67,7 @@ describe("kritik oyun akışı: yeni oyun → meslek → seçim → ölüm → s
   });
 
   it("bir karakter ölene kadar oynanabilir ve skoru kaydedilebilir", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
-    await mesleğiAta(state.id, "Asker");
-
-    let aktif = true;
-    let sonState = state;
-    for (let tur = 0; tur < 150 && aktif; tur++) {
-      const senaryo = await senaryoUret(state.id);
-      const idx = senaryo.secenekler.findIndex((s) => !s.kilitli);
-      const sonuc = await secimUygulaVeCoz(state.id, idx >= 0 ? idx : 0);
-      aktif = sonuc.state.aktif;
-      sonState = sonuc.state;
-    }
+    const sonState = await oyunuOlumeKadarOyna("Asker");
 
     expect(sonState.aktif).toBe(false);
     expect(sonState.olum_nedeni).toBeTruthy();
@@ -70,6 +75,24 @@ describe("kritik oyun akışı: yeni oyun → meslek → seçim → ölüm → s
     const kayit = await skorKaydet(sonState, "Test Karakteri");
     expect(kayit.id).toBeTruthy();
     expect(kayit.skor).toBeGreaterThanOrEqual(0);
+  });
+
+  it("aktif bir oyun için liderlikTablosunaKaydet reddedilir", async () => {
+    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    await mesleğiAta(state.id, "Tüccar");
+    await expect(liderlikTablosunaKaydet(state.id, "Erken Kayıt")).rejects.toThrow("Oyun henüz bitmedi");
+  });
+
+  it("aynı oyun için liderlikTablosunaKaydet iki kez çağrılırsa ikincisi reddedilir (skor spam engeli)", async () => {
+    const sonState = await oyunuOlumeKadarOyna("Tüccar");
+    expect(sonState.aktif).toBe(false);
+
+    const ilkKayit = await liderlikTablosunaKaydet(sonState.id, "İlk İsim");
+    expect(ilkKayit.id).toBeTruthy();
+
+    await expect(liderlikTablosunaKaydet(sonState.id, "İkinci Sahte İsim")).rejects.toThrow(
+      "skor zaten kaydedildi"
+    );
   });
 
   it("kilitli bir seçenek uygulanmaya çalışıldığında hata fırlatır", async () => {

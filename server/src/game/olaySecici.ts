@@ -37,6 +37,9 @@ function uygunMu(olay: OlayTanimi, state: CharacterState): boolean {
   const hapiste = state.etiketler.includes("hapiste");
   if (hapiste && !olay.hapisOlayi) return false;
   if (!hapiste && olay.hapisOlayi) return false;
+  const yolculukta = state.etiketler.includes("yolculukta");
+  if (yolculukta && !olay.yolculukOlayi) return false;
+  if (!yolculukta && olay.yolculukOlayi) return false;
   if (olay.gerekliUlke) {
     for (const [anahtar, deger] of Object.entries(olay.gerekliUlke)) {
       if (state.ulke[anahtar as keyof typeof state.ulke] !== deger) return false;
@@ -66,6 +69,8 @@ export function doldur(metin: string, state: CharacterState): string {
     .replace(/\{dost\}/g, state.dost_adi)
     .replace(/\{rakip\}/g, state.rakip_adi)
     .replace(/\{es\}/g, state.es_adi ?? "eşin")
+    .replace(/\{anne\}/g, state.anne_adi)
+    .replace(/\{baba\}/g, state.baba_adi)
     .replace(/\{amir\}/g, state.amir_adi ? `${state.amir_rutbe} ${state.amir_adi}` : "amirin")
     .replace(/\{hayvan\}/g, state.evcil_hayvan?.isim ?? "hayvanın")
     .replace(/\{cocuk\}/g, rastgeleYasayanCocukAdi(state))

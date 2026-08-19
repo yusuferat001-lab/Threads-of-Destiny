@@ -439,6 +439,7 @@ function partB(): void {
     "hizip takip olaylarından biri — bir hizbe katılmışsa 45-50 yaşta, 3.'ten az görülmüşse garanti",
     "saray_kral_daveti — ün ve ahlak 70+ olunca garanti",
     "SARAY_OLAY_IDLERI havuzundan biri — saraydaysa 50-58 yaşta, 2.'den az görülmüşse garanti",
+    "yolculuk teklifi (Haçlı Seferi / Kutsal Toprakları Savunma / Hac / Coğrafi Keşif / Mucit Turnesi / Sömürge Seferi) — 22 yaşından itibaren, meslek/çağ/bölge/dine uygun bir yolculuk hiç tamamlanmadıysa garanti; reddedilirse birkaç yıl sonra tekrar sorulur",
   ];
   garantiler.forEach((g) => console.log(`  • ${g}`));
 }

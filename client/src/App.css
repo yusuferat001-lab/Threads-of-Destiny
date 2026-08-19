@@ -1389,6 +1389,37 @@ button.ikincil {
   opacity: 0.65;
 }
 
+.secenek-tahminler {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.secenek-tahmin {
+  font-size: 0.72rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  line-height: 1.5;
+}
+
+.secenek-tahmin.tahmin-pozitif {
+  background: rgba(30, 110, 60, 0.25);
+  border: 1px solid rgba(60, 160, 90, 0.45);
+  color: #a6e0ac;
+}
+
+.secenek-tahmin.tahmin-negatif {
+  background: rgba(139, 44, 44, 0.25);
+  border: 1px solid rgba(180, 70, 70, 0.45);
+  color: #e0a6a6;
+}
+
+.secenek-ipucu {
+  font-size: 0.75rem;
+  opacity: 0.75;
+  font-style: italic;
+}
+
 .durum-ad {
   font-weight: bold;
 }

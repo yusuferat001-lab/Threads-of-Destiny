@@ -1,6 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import { gameRouter } from "./routes/game.routes";
 import { scoreRouter } from "./routes/score.routes";
@@ -8,6 +9,15 @@ import { oturumlariYukle, oturumlariBellektenTemizle } from "./game/gameEngine";
 import { eskiOturumlariTemizle } from "./db/sessionRepository";
 
 const app = express();
+
+// Render/Railway/Fly/Heroku/nginx gibi tek katmanlı bir reverse proxy'nin arkasında
+// çalışırken, X-Forwarded-For'un İLK (proxy'ye en yakın) hopunu güvenilir kabul eder;
+// bu olmadan hem req.ip hem de aşağıdaki rate limiter'lar proxy'nin tek IP'sini görüp
+// ya herkesi tek kullanıcı sanar ya da limiti anlamsız hale getirir. Birden fazla proxy
+// katmanı varsa (ör. CDN + load balancer) bu sayıyı katman sayısına göre artırın.
+app.set("trust proxy", 1);
+
+app.use(helmet());
 
 const izinliOrijinler = process.env.CORS_ORIGIN
   ? process.env.CORS_ORIGIN.split(",").map((o) => o.trim())

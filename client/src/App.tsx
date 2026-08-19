@@ -21,6 +21,7 @@ import {
   yasamSecenekleriGetir,
   yeniOyunBaslat,
   meslekAta,
+  stateGetir,
   senaryoGetir,
   secimYap,
   skorKaydet,
@@ -56,6 +57,7 @@ import { YatirimEkrani } from './components/YatirimEkrani';
 import { IsDetayEkrani } from './components/IsDetayEkrani';
 import { SonucEfekti } from './components/SonucEfekti';
 import { sesKapaliMi, sesTercihiKaydet } from './ses';
+import { aktifOturumIdGetir, aktifOturumIdKaydet, aktifOturumIdSil } from './oturum';
 import { basarimlariKaydet, basarimlariGetir } from './basarimlar';
 import { sonucIkonuGetir, unYildiz, MESLEK_KATEGORI, yatkinlikEtiketi, etkiTahminiGetir } from './bolgeTema';
 import './App.css';
@@ -207,6 +209,41 @@ function App() {
     }
   }, [ekran, karakter]);
 
+  // Sayfa yenilenince (ya da sekme kapatılıp geri açılınca) kaldığı yerden devam etmeyi dener;
+  // sunucudaki oyun kalıcı olduğu için sadece tarayıcıdaki bağlantı (state.id) unutuluyordu.
+  useEffect(() => {
+    const kayitliId = aktifOturumIdGetir();
+    if (!kayitliId) return;
+    let iptal = false;
+    setYukleniyor(true);
+    (async () => {
+      try {
+        const { state } = await stateGetir(kayitliId);
+        if (iptal) return;
+        setKarakter(state);
+        if (!state.aktif) {
+          setEkran('olum');
+        } else if (!state.meslek) {
+          setEkran('meslek');
+        } else {
+          const { senaryo } = await senaryoGetir(state.id);
+          if (iptal) return;
+          setSenaryo(senaryo);
+          setTepkiModu(false);
+          setEkran('oyun');
+        }
+      } catch {
+        // Oturum artık bulunamıyor; sessizce ana menüde kal.
+        aktifOturumIdSil();
+      } finally {
+        if (!iptal) setYukleniyor(false);
+      }
+    })();
+    return () => {
+      iptal = true;
+    };
+  }, []);
+
   function cagSecildi(cag: string) {
     setSecilenCag(cag);
     setEkran('bolge_sec');
@@ -224,6 +261,7 @@ function App() {
     try {
       const { state } = await yeniOyunBaslat(secilenCag, secilenBolge, yerlesimId);
       setKarakter(state);
+      aktifOturumIdKaydet(state.id);
       setEkran('acilis');
     } catch (err) {
       setHata(String(err));
@@ -352,6 +390,7 @@ function App() {
     try {
       const { state } = await soyuSurdur(karakter.id);
       setKarakter(state);
+      aktifOturumIdKaydet(state.id);
       setSonEtki(null);
       setIsim('');
       setKaydedildi(false);
@@ -466,6 +505,7 @@ function App() {
   }
 
   function bastanBasla() {
+    aktifOturumIdSil();
     setKarakter(null);
     setSenaryo(null);
     setSonEtki(null);
@@ -838,9 +878,22 @@ function App() {
                       {!secenek.kilitli && !tepkiModu && (
                         <span className="secenek-sans">
                           %{secenek.belirsiz_aralik.min}-{secenek.belirsiz_aralik.max} şans
-                          {tahminler.length > 0 &&
-                            ` · ${tahminler.map((t) => `${t.simge}${t.pozitif ? '+' : '−'}`).join(' ')}`}
                         </span>
+                      )}
+                      {!secenek.kilitli && !tepkiModu && tahminler.length > 0 && (
+                        <span className="secenek-tahminler">
+                          {tahminler.map((t, ti) => (
+                            <span
+                              key={ti}
+                              className={`secenek-tahmin ${t.pozitif ? 'tahmin-pozitif' : 'tahmin-negatif'}`}
+                            >
+                              {t.simge} {t.metin}
+                            </span>
+                          ))}
+                        </span>
+                      )}
+                      {!secenek.kilitli && !tepkiModu && secenek.ipucu && (
+                        <span className="secenek-ipucu">💡 {secenek.ipucu}</span>
                       )}
                       {secenek.kilitli && <span className="secenek-kilit">{secenek.kilit_nedeni}</span>}
                     </button>

@@ -71,6 +71,10 @@ export function meslekAta(stateId: string, meslek: string) {
   });
 }
 
+export function stateGetir(stateId: string) {
+  return istek<{ state: CharacterState }>(`/api/game/${stateId}/state`);
+}
+
 export function soyuSurdur(stateId: string) {
   return istek<{ state: CharacterState }>(`/api/game/${stateId}/soy-surdur`, {
     method: 'POST',

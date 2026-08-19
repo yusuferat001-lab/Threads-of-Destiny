@@ -123,6 +123,7 @@ export interface CharacterState {
   hayat_hikayesi: HayatOlayi[];
   aktif: boolean;
   olum_nedeni: string | null;
+  skoru_kaydedildi: boolean;
 }
 
 export interface GecmisNoktasi {

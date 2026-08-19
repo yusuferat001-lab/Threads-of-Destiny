@@ -120,14 +120,22 @@ function buyuklukEtiketi(esikler: [number, string][], mutlakDeger: number): stri
   return esikler[esikler.length - 1][1];
 }
 
-/** İki olası sonuçtan (başarılı/başarısız) mutlak değeri büyük olanını seçer — oyuncuya kesin miktar değil, en dikkat çekici ihtimalin kaba büyüklüğünü vermek için. */
-function enBelirginDeger(a?: number, b?: number): number | undefined {
+/**
+ * İki olası sonuçtan (başarılı/başarısız) oyuncuya gösterilecek değerleri seçer —
+ * kesin miktar değil, ihtimallerin kaba büyüklüğünü vermek için. Başarı ve
+ * başarısızlık aynı yönde etkiliyorsa sadece daha dikkat çekici olanı döner;
+ * zıt yönlerdeyse (biri kazanç biri kayıp) ikisini de döner, böylece oyuncu
+ * "başarırsam kazanabilirim, başarısız olursam kaybedebilirim" ihtimalinin
+ * her iki tarafını da görür.
+ */
+function belirginDegerler(a?: number, b?: number): number[] {
   const aVar = a !== undefined && a !== 0;
   const bVar = b !== undefined && b !== 0;
-  if (!aVar && !bVar) return undefined;
-  if (!aVar) return b;
-  if (!bVar) return a;
-  return Math.abs(a as number) >= Math.abs(b as number) ? a : b;
+  if (!aVar && !bVar) return [];
+  if (!aVar) return [b as number];
+  if (!bVar) return [a as number];
+  if (a! > 0 !== b! > 0) return [a as number, b as number];
+  return [Math.abs(a as number) >= Math.abs(b as number) ? (a as number) : (b as number)];
 }
 
 /**
@@ -139,8 +147,7 @@ function enBelirginDeger(a?: number, b?: number): number | undefined {
 export function etkiTahminiGetir(basariliSonuc: SonucEtkisi, basarisizSonuc: SonucEtkisi): EtkiTahmini[] {
   const tahminler: EtkiTahmini[] = [];
 
-  const para = enBelirginDeger(basariliSonuc.para, basarisizSonuc.para);
-  if (para !== undefined) {
+  for (const para of belirginDegerler(basariliSonuc.para, basarisizSonuc.para)) {
     tahminler.push({
       simge: '💰',
       metin: `${buyuklukEtiketi(PARA_BUYUKLUK_ESIKLERI, Math.abs(para))} ${para > 0 ? 'kazanç' : 'kayıp'} ihtimali`,
@@ -148,8 +155,7 @@ export function etkiTahminiGetir(basariliSonuc: SonucEtkisi, basarisizSonuc: Son
     });
   }
 
-  const saglik = enBelirginDeger(basariliSonuc.saglik, basarisizSonuc.saglik);
-  if (saglik !== undefined) {
+  for (const saglik of belirginDegerler(basariliSonuc.saglik, basarisizSonuc.saglik)) {
     tahminler.push({
       simge: '❤️',
       metin: `${buyuklukEtiketi(SAGLIK_BUYUKLUK_ESIKLERI, Math.abs(saglik))} can ${saglik > 0 ? 'kazancı' : 'kaybı'} ihtimali`,
@@ -157,8 +163,7 @@ export function etkiTahminiGetir(basariliSonuc: SonucEtkisi, basarisizSonuc: Son
     });
   }
 
-  const mutluluk = enBelirginDeger(basariliSonuc.mutluluk, basarisizSonuc.mutluluk);
-  if (mutluluk !== undefined) {
+  for (const mutluluk of belirginDegerler(basariliSonuc.mutluluk, basarisizSonuc.mutluluk)) {
     tahminler.push({
       simge: '🙂',
       metin: `${buyuklukEtiketi(MUTLULUK_BUYUKLUK_ESIKLERI, Math.abs(mutluluk))} moral ${mutluluk > 0 ? 'kazancı' : 'kaybı'} ihtimali`,

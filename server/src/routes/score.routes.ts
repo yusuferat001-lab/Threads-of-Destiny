@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { skorKaydet, skorTablosuGetir, SiralamaTuru } from "../db/scoreRepository";
-import { stateGetir } from "../game/gameEngine";
+import { skorTablosuGetir, SiralamaTuru } from "../db/scoreRepository";
+import { liderlikTablosunaKaydet } from "../game/gameEngine";
 import { uygunsuzMu } from "../moderasyon/kufurFiltresi";
 
 export const scoreRouter = Router();
@@ -15,11 +15,7 @@ scoreRouter.post("/", async (req, res) => {
     if (uygunsuzMu(temizIsim)) {
       return res.status(400).json({ hata: "Bu isim uygunsuz kelimeler içeriyor, başka bir isim dene." });
     }
-    const state = await stateGetir(stateId);
-    if (state.aktif) {
-      return res.status(400).json({ hata: "Oyun henüz bitmedi." });
-    }
-    const kayit = await skorKaydet(state, temizIsim);
+    const kayit = await liderlikTablosunaKaydet(stateId, temizIsim);
     res.json({ kayit });
   } catch (err) {
     res.status(400).json({ hata: String(err) });

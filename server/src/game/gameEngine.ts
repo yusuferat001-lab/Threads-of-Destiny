@@ -1,5 +1,6 @@
 import { randomUUID } from "crypto";
 import { CharacterState, Cag, SenaryoResponse, SonucEtkisi, TepkiSonucu } from "../types";
+import { skorKaydet as skoruDbyeYaz } from "../db/scoreRepository";
 import {
   createCharacter,
   mesleğiSec,
@@ -69,6 +70,39 @@ const SARAY_OLAY_IDLERI = [
 
 /** Yeni bir ekip üyesi işe alınırken rastgele atanan, tamamen kozmetik kişilik etiketi. */
 const EKIP_KISILIK_HAVUZU = ["Sadık", "Hırslı", "Korkak", "Kurnaz", "Tembel", "Cesur", "Güvenilmez", "Çalışkan"];
+
+/** Din_kultur değerinden ilgili Hac yolculuğu teklif olayına eşleme. */
+const DIN_HAC_TEKLIF_IDLERI: Record<string, string> = {
+  "Sünni İslam": "hac_sunni_karar",
+  "Katolik": "hac_katolik_karar",
+  "Ortodoks": "hac_ortodoks_karar",
+  "Anglikan": "hac_anglikan_karar",
+};
+
+/**
+ * Karakterin meslek/çağ/bölge/din kombinasyonuna göre uygun olan "büyük yolculuk"
+ * teklif olaylarının id listesini döndürür (birden fazlaysa rastgele biri seçilir,
+ * böylece aynı meslek/çağdaki karakterler farklı yolculuklar yaşayabilir).
+ */
+function uygunYolculukTeklifleri(state: CharacterState): string[] {
+  const teklifler: string[] = [];
+  if (state.meslek === "Asker" && state.cag === "Orta Çağ") {
+    if (["Fransa", "Kutsal Roma", "Bizans"].includes(state.bolge)) teklifler.push("oc_hacli_sefer_karari");
+    if (["Selçuklu", "Eyyubiler"].includes(state.bolge)) teklifler.push("yolculuk_savunma_teklif");
+  }
+  if ((state.meslek === "Asker" || state.meslek === "Tüccar") && state.cag === "Sanayi Devrimi") {
+    teklifler.push("sd_somurge_gitme_karari");
+  }
+  if (state.meslek === "Tüccar") {
+    teklifler.push("yolculuk_kesif_teklif");
+    if (state.cag === "Sanayi Devrimi") teklifler.push("yolculuk_mucit_teklif");
+  }
+  if (state.meslek === "Din Adamı") {
+    const teklifId = DIN_HAC_TEKLIF_IDLERI[state.din_kultur];
+    if (teklifId) teklifler.push(teklifId);
+  }
+  return teklifler;
+}
 
 interface BekleyenTepki {
   onTepki: OnTepki;
@@ -377,12 +411,37 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
       zorlananId = havuz[Math.floor(Math.random() * havuz.length)];
     }
   }
+  // Her karakter hayatında en az bir kez, mesleğine/çağına/bölgesine/dinine uygun
+  // bir "büyük yolculuk"a (Haçlı Seferi, Hac, Coğrafi Keşif, Mucit Turnesi, Sömürge
+  // Seferi, Kutsal Toprakları Savunma Seferi) zorlanır. Reddedilirse teklif olayının
+  // kendisi bir "durum" ekleyip birkaç yıl sonra (bitince_etiket: yolculuk_teklifi_zamani)
+  // tekrar sorulmasını sağlar; bir yolculuk tamamlanınca (yolculuk_tamamlandi etiketi)
+  // garanti kalıcı olarak kapanır — ikinci bir yolculuk asla zorlanmaz.
+  if (
+    !zorlananId &&
+    oturum.state.yas >= 22 &&
+    !oturum.state.etiketler.includes("yolculukta") &&
+    !oturum.state.etiketler.includes("hapiste") &&
+    !oturum.state.etiketler.includes("yolculuk_tamamlandi") &&
+    (!oturum.state.etiketler.includes("yolculuk_teklifi_edildi") ||
+      oturum.state.etiketler.includes("yolculuk_teklifi_zamani"))
+  ) {
+    const uygunlar = uygunYolculukTeklifleri(oturum.state);
+    if (uygunlar.length > 0) {
+      zorlananId = uygunlar[Math.floor(Math.random() * uygunlar.length)];
+    }
+  }
 
   const { olay, senaryo } = olaySec(oturum.state, zorlananId, oturum.sonTon);
   oturum.mevcutSenaryo = senaryo;
   oturum.mevcutOlay = olay;
   oturum.zorlananOlayId = null;
   oturum.sonTon = olay.ton ?? null;
+  // Yeni bir senaryo üretmek, bekleyen bir onTepki (geri çekil/ısrar et) varsa onu
+  // geçersiz kılar — yoksa oyuncu bu YENİ senaryodaki bir seçeneği tıkladığında
+  // secimUygula önce eski bekleyenTepki'yi görüp yanlış (ve eşleşmeyen) sonucu
+  // uygulardı. Bu, sekme yenilenip devam alma gibi durumlarda gerçek bir risk.
+  oturum.bekleyenTepki = null;
   // İstihbarat tek seferlik: bu senaryo net şansla gösterildiyse etiket burada tüketilir.
   if (oturum.state.etiketler.includes("istihbarat_var")) {
     etiketSil(oturum.state, ["istihbarat_var"]);
@@ -689,9 +748,11 @@ async function sonucuUygulaVeIlerlet(
   if (state.aktif) {
     // Olay bazlı süre alanları (sureYilMin/Max) kasıtlı olarak yok sayılıyor: 367 olayın
     // çoğunda sabit "1 yıl" tanımlı olduğundan ortalama turu 2'nin epey altına çekiyordu.
-    // Sabit 1-3 aralığı (ortalama 2 yıl) her olayda tutarlı bir tempo sağlar.
+    // Sabit 1-3 aralığı (ortalama 2 yıl) her olayda tutarlı bir tempo sağlar. Tek istisna:
+    // yolculuk zinciri adımları (yolculukOlayi:true), 4-5 yıllık bir yolculukta 5-10 adımın
+    // sığması için sabit 1 yıl ilerler.
     const eskiHukumdar = state.hukumdar;
-    yasArtisi = ilerletYas(state, 1, 3);
+    yasArtisi = mevcutOlay.yolculukOlayi ? ilerletYas(state, 1, 1) : ilerletYas(state, 1, 3);
     if (eskiHukumdar && state.hukumdar && state.hukumdar !== eskiHukumdar) {
       const haber = hukumdarDegisimHaberiUret(eskiHukumdar, state.hukumdar);
       hukumdarDegisimHaberi = haber;
@@ -853,6 +914,23 @@ export async function ekipCikar(id: string, ekipId: string): Promise<EkipCikarSo
   hayatOlayiEkle(state, "👋", `${cikarilan.isim} (${cikarilan.rol}) ekibinden kovuldu`);
   await oturumKaydet(state);
   return { state, mesaj: `${cikarilan.isim}'i ekibinden çıkardın; artık yıllık maaşını ödemiyorsun.` };
+}
+
+/**
+ * Karakter öldükten sonra liderlik tablosuna skor kaydeder. skoru_kaydedildi
+ * bayrağıyla aynı state.id için ikinci bir kayıt denemesini engeller — yoksa
+ * tek bir bitmiş oyun, farklı isimler denenerek tabloyu onlarca sahte kayıtla
+ * doldurabilir (route katmanı sadece bu fonksiyonu çağırır, kuralı burada tutar).
+ */
+export async function liderlikTablosunaKaydet(id: string, isim: string) {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  if (state.aktif) throw new Error("Oyun henüz bitmedi.");
+  if (state.skoru_kaydedildi) throw new Error("Bu oyun için skor zaten kaydedildi.");
+  const kayit = await skoruDbyeYaz(state, isim);
+  state.skoru_kaydedildi = true;
+  await oturumKaydet(state);
+  return kayit;
 }
 
 export type YatirimTuru = "kendi_isi" | "guvenli" | "riskli";

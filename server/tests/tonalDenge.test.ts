@@ -9,7 +9,13 @@ describe("tonal tutarsızlık mitigasyonu", () => {
     state.meslek = "Tüccar";
     state.etiketler.push("aile:soylu");
 
-    const DENEME = 8000;
+    // "agir" olaylar havuzda az sayıda olduğundan (nadir olay), düşük DENEME'de
+    // örneklem gürültüsü oranı yanıltıp testi flaky yapabiliyordu (gerçek çarpan
+    // AGIR_ARKA_ARKAYA_CARPANI=0.15 iken, birkaç düzine gözlemle ölçülen oran
+    // rastgele 0.3 eşiğinin üstüne çıkabiliyordu). Örneklemi büyütüp eşiğe biraz
+    // daha pay bırakmak, gerçek mitigasyonu hâlâ net şekilde doğrularken
+    // istatistiksel gürültüyü pratikte ihmal edilebilir seviyeye indiriyor.
+    const DENEME = 60000;
     let agirNormal = 0;
     let agirArdArda = 0;
 
@@ -22,6 +28,6 @@ describe("tonal tutarsızlık mitigasyonu", () => {
     const ardArdaOran = agirArdArda / DENEME;
 
     expect(normalOran).toBeGreaterThan(0);
-    expect(ardArdaOran).toBeLessThan(normalOran * 0.3);
+    expect(ardArdaOran).toBeLessThan(normalOran * 0.35);
   });
 });

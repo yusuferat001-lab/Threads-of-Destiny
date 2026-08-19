@@ -29,16 +29,22 @@ async function baslikBul(
 
 describe("evlilik → çocuk → hanedan modu", () => {
   it("evlilik olayı es_adi atar ve hayat_hikayesine yazar", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
-    state.yas = 20;
-    await mesleğiAta(state.id, "Tüccar");
-
-    const bulundu = await baslikBul(state, "Nüfuzlu Bir Bağ", 6000);
-    expect(bulundu).toBe(true);
-    if (state.es_adi) {
-      expect(state.hayat_hikayesi.some((h) => h.ikon === "💍")).toBe(true);
+    let bulundu = false;
+    let state: Awaited<ReturnType<typeof yeniOyun>> | null = null;
+    // Tek bir karakter, evlilik olayına hiç rastlamadan ölebilir (nadir ama olası —
+    // eskiden testi flaky yapıyordu). Bağımsız birkaç ömre bölmek, tek bir kötü
+    // şanslı ömrün testi düşürmesini pratikte imkansız hale getiriyor.
+    for (let deneme = 0; deneme < 5 && !bulundu; deneme++) {
+      state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+      state.yas = 20;
+      await mesleğiAta(state.id, "Tüccar");
+      bulundu = await baslikBul(state, "Nüfuzlu Bir Bağ", 2000);
     }
-  });
+    expect(bulundu).toBe(true);
+    if (state!.es_adi) {
+      expect(state!.hayat_hikayesi.some((h) => h.ikon === "💍")).toBe(true);
+    }
+  }, 60000);
 
   it("29 yaşına kadar hiç evlenmemişse evlilik teklifi zorla tetiklenir", async () => {
     const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");

@@ -33,7 +33,9 @@ describe("Haçlı Seferi (Orta Çağ, dallanan)", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
     mesleğiSec(state, "Tüccar");
     state.yas = 20;
-    etiketEkle(state, ["hacli:katildi", "hacli_karari_verildi"]);
+    // yolculukta etiketi, artık kilitli yolculuk zincirinin parçası olan bu olayların
+    // (yolculukOlayi:true) havuza girebilmesi için de gerekli — bkz. olaySecici.ts uygunMu().
+    etiketEkle(state, ["hacli:katildi", "hacli_karari_verildi", "yolculukta"]);
     let bulundu = false;
     for (let i = 0; i < 500; i++) {
       const { olay } = olaySec(state);
@@ -150,7 +152,9 @@ describe("Sömürgecilik (Sanayi Devrimi, dallanan)", () => {
   it("somurge:gitti etiketiyle sadece o dalın olayları çıkar", () => {
     const state = createCharacter("Sanayi Devrimi", "İngiltere", "sehir_merkezi");
     mesleğiSec(state, "Tüccar");
-    etiketEkle(state, ["somurge:gitti", "somurge_karari_verildi"]);
+    // yolculukta etiketi, artık kilitli yolculuk zincirinin parçası olan bu olayların
+    // (yolculukOlayi:true) havuza girebilmesi için de gerekli — bkz. olaySecici.ts uygunMu().
+    etiketEkle(state, ["somurge:gitti", "somurge_karari_verildi", "yolculukta"]);
     let bulundu = false;
     for (let i = 0; i < 500; i++) {
       const { olay } = olaySec(state);
