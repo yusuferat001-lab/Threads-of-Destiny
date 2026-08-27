@@ -1,0 +1,34 @@
+# Render Blueprint — https://render.com/docs/blueprint-spec
+#
+# Tek "always-on" Node web servisi:
+#   - Express hem /api'yi hem derlenmiş React istemcisini (server/public) servis eder
+#   - SQLite veritabanı kalıcı diskte (/var/data) tutulur
+#
+# ÖNEMLİ: Kalıcı disk (persistent disk) Render'ın ÜCRETSIZ planında ÇALIŞMAZ.
+# En az "starter" (aylık ücretli) instance tipi gerekir. Ücretsiz kalmak istersen
+# SQLite yerine harici bir Postgres'e geçmen gerekir (bkz. README / CLAUDE.md).
+
+services:
+  - type: web
+    name: kader-carki
+    runtime: node
+    plan: starter
+    region: frankfurt
+    branch: main
+    buildCommand: npm run build
+    startCommand: npm start
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: DATABASE_URL
+        value: file:/var/data/prod.db
+      # İstemci sunucuyla aynı origin'den geldiği için CORS zorunlu değil; yine de
+      # farklı bir domain'den erişim istersen buraya virgülle ayrılmış origin listesi gir.
+      - key: CORS_ORIGIN
+        sync: false
+    disk:
+      name: data
+      mountPath: /var/data
+      sizeGB: 1

@@ -1,0 +1,14 @@
+{
+  "name": "kader-carki",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Kader Çarkı (Threads of Destiny) — tek servis (Express + derlenmiş React) deploy kökü",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "install:all": "npm ci --include=dev --prefix server && npm ci --include=dev --prefix client",
+    "build": "npm run install:all && npm run prisma:generate --prefix server && npm run build --prefix client && npm run build --prefix server",
+    "start": "npm run start:prod --prefix server"
+  }
+}

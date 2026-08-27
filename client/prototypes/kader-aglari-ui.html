@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<title>Kader Ağları — UI İskeleti (Prototip)</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/react@18.2.0/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap');
+  html, body { margin: 0; padding: 0; font-family: 'EB Garamond', serif; }
+  .font-baslik { font-family: 'Cinzel', serif; }
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #4a3520; border-radius: 4px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-presets="react">
+
+// ---- Dummy veri ----
+const KARAKTER = {
+  isim: "Mehmet",
+  yas: 34,
+  unvan: "Silahşor",
+  yil: 1247,
+  can: 78,
+  canMax: 100,
+  para: 340,
+  paraBirimi: "Dinar",
+  ahlak: 62,
+  mutluluk: 55,
+  bolge: "Byzantium",
+};
+
+const AILE = [
+  { rol: "Eş", isim: "Ayşe", ikon: "💍" },
+  { rol: "Çocuk", isim: "Can", ikon: "🧒" },
+  { rol: "Çocuk", isim: "Elif", ikon: "👧" },
+];
+
+const GIZLI_ESYALAR = ["🗡️", "🪙", "📜", "💍", "🔮", "🏺"];
+
+const KRAL = { isim: "Zalim III. John", vergi: "Vergiler Artıyor" };
+
+const FACTIONS = [
+  { isim: "Gölgede Kardeşlik", durum: "Müttefik", renk: "text-emerald-700 border-emerald-700/50 bg-emerald-700/10" },
+  { isim: "Tapınak Şövalyeleri", durum: "Düşman", renk: "text-red-700 border-red-700/50 bg-red-700/10" },
+  { isim: "Liman Loncası", durum: "Tarafsız", renk: "text-stone-600 border-stone-600/50 bg-stone-600/10" },
+];
+
+const MEKAN_PINLERI = [
+  { ad: "Pazar Yeri", ikon: "🏪", top: "58%", left: "22%" },
+  { ad: "Kilise", ikon: "⛪", top: "30%", left: "48%" },
+  { ad: "Kışla", ikon: "🛡️", top: "50%", left: "76%" },
+  { ad: "Meyhane", ikon: "🍺", top: "70%", left: "62%" },
+];
+
+const OLAY = {
+  baslik: "Miras Kavgası",
+  aciklama:
+    "Eski bir dostun, mirasını sana bırakacağını söylüyor. Ama bir şartı var... kardeşinle yüzleşmelisin. Kabul edersen ailenin onuru sarsılabilir.",
+  secenekler: [
+    { metin: "Meydan oku!", ipucu: "Onurunu koruyacak, ama bir düşman kazanacaksın." },
+    { metin: "Zorla al.", ipucu: "Vicdanını sızlatacak." },
+  ],
+};
+
+// ---- Küçük yardımcı bileşenler ----
+function StatRozeti({ ikon, etiket, deger }) {
+  return (
+    <div className="flex items-center gap-1.5 text-sm text-[#e8ddc4]">
+      <span className="text-base leading-none">{ikon}</span>
+      <span className="opacity-70">{etiket}</span>
+      <span className="font-semibold tabular-nums">{deger}</span>
+    </div>
+  );
+}
+
+// ---- 1. TopBar ----
+function TopBar() {
+  return (
+    <header className="flex items-center justify-between gap-6 px-6 h-14 bg-[#1c140d]/90 backdrop-blur border-b-2 border-[#c9a227] shadow-[0_2px_10px_rgba(0,0,0,0.5)] z-20">
+      <div className="flex items-center gap-6 overflow-x-auto">
+        <StatRozeti ikon="📅" etiket="Yıl" deger={KARAKTER.yil} />
+        <StatRozeti ikon="🎂" etiket="Yaş" deger={KARAKTER.yas} />
+        <StatRozeti ikon="❤️" etiket="Can" deger={`${KARAKTER.can}/${KARAKTER.canMax}`} />
+        <StatRozeti ikon="💰" etiket="Para" deger={`${KARAKTER.para} ${KARAKTER.paraBirimi}`} />
+        <StatRozeti ikon="⚖️" etiket="Ahlak" deger={KARAKTER.ahlak} />
+        <StatRozeti ikon="🙂" etiket="Mutluluk" deger={KARAKTER.mutluluk} />
+      </div>
+      <div className="font-baslik text-[#e0c789] text-sm tracking-widest whitespace-nowrap">
+        {KARAKTER.bolge.toUpperCase()}
+      </div>
+    </header>
+  );
+}
+
+// ---- 2. LeftPanel ----
+function LeftPanel() {
+  return (
+    <aside className="h-full overflow-y-auto bg-[#ecdfc0] text-[#2b1d12] border-r-4 border-[#4a3520] shadow-[inset_-8px_0_16px_-12px_rgba(0,0,0,0.6)] p-4 flex flex-col gap-5">
+      <h2 className="font-baslik text-xs tracking-[0.2em] text-[#6b4f2a] text-center uppercase">
+        Kişisel Hayat
+      </h2>
+
+      <div className="flex flex-col items-center gap-1">
+        <div className="w-20 h-20 rounded-full bg-[#c9a227]/25 border-2 border-[#4a3520] flex items-center justify-center text-3xl">
+          🧔
+        </div>
+        <div className="font-baslik text-lg leading-tight text-center">{KARAKTER.isim}</div>
+        <div className="text-xs opacity-70">{KARAKTER.unvan} · {KARAKTER.yas} yaşında</div>
+      </div>
+
+      <div className="border-t border-[#4a3520]/30 pt-3">
+        <h3 className="text-xs uppercase tracking-wider text-[#6b4f2a] mb-2">Aile</h3>
+        <ul className="flex flex-col gap-1.5">
+          {AILE.map((kisi, i) => (
+            <li
+              key={i}
+              className="flex items-center gap-2 text-sm bg-[#4a3520]/5 rounded px-2 py-1.5 border border-[#4a3520]/15"
+            >
+              <span className="text-base">{kisi.ikon}</span>
+              <span className="font-semibold">{kisi.isim}</span>
+              <span className="ml-auto text-xs opacity-60">{kisi.rol}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="border-t border-[#4a3520]/30 pt-3 mt-auto">
+        <h3 className="text-xs uppercase tracking-wider text-[#6b4f2a] mb-2">Gizli Eşyalar</h3>
+        <div className="grid grid-cols-3 gap-2">
+          {GIZLI_ESYALAR.map((esya, i) => (
+            <div
+              key={i}
+              className="aspect-square rounded-md bg-[#4a3520]/10 border border-[#4a3520]/30 flex items-center justify-center text-xl hover:bg-[#4a3520]/20 transition cursor-pointer"
+            >
+              {esya}
+            </div>
+          ))}
+        </div>
+      </div>
+    </aside>
+  );
+}
+
+// ---- 3. RightPanel ----
+function RightPanel() {
+  return (
+    <aside className="h-full overflow-y-auto bg-[#ecdfc0] text-[#2b1d12] border-l-4 border-[#4a3520] shadow-[inset_8px_0_16px_-12px_rgba(0,0,0,0.6)] p-4 flex flex-col gap-5">
+      <h2 className="font-baslik text-xs tracking-[0.2em] text-[#6b4f2a] text-center uppercase">
+        Dünya &amp; Siyaset
+      </h2>
+
+      <div className="text-center bg-[#4a3520]/5 border border-[#4a3520]/20 rounded-lg py-3 px-2">
+        <div className="text-xs uppercase tracking-wider text-[#6b4f2a]">Mevcut Kral</div>
+        <div className="font-baslik text-base mt-0.5">{KRAL.isim}</div>
+        <div className="mt-1.5 inline-block text-xs px-2 py-0.5 rounded-full bg-red-700/10 text-red-700 border border-red-700/40">
+          {KRAL.vergi}
+        </div>
+      </div>
+
+      <div className="border-t border-[#4a3520]/30 pt-3">
+        <h3 className="text-xs uppercase tracking-wider text-[#6b4f2a] mb-2">Factions</h3>
+        <ul className="flex flex-col gap-1.5">
+          {FACTIONS.map((f, i) => (
+            <li
+              key={i}
+              className={`flex items-center justify-between text-sm rounded px-2 py-1.5 border ${f.renk}`}
+            >
+              <span className="font-medium">{f.isim}</span>
+              <span className="text-xs">{f.durum}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="border-t border-[#4a3520]/30 pt-3 mt-auto flex items-center justify-center gap-2 text-sm text-[#6b4f2a]">
+        <span className="text-lg">⏳</span>
+        <span className="font-baslik tracking-wide">Dönem: Orta Çağ</span>
+      </div>
+    </aside>
+  );
+}
+
+// ---- 4a. Diorama (arkaplan sahne + mekan pinleri) ----
+function Diorama() {
+  return (
+    <div
+      className="absolute inset-0 bg-cover bg-center"
+      style={{
+        backgroundImage:
+          "linear-gradient(to bottom, #6a86a8 0%, #9fb4c9 35%, #8a7658 36%, #5c4a34 100%)",
+      }}
+    >
+      {/* okunabilirlik için alttan koyulaşan gradyan */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+
+      {MEKAN_PINLERI.map((pin, i) => (
+        <button
+          key={i}
+          style={{ top: pin.top, left: pin.left }}
+          className="group absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1 transition hover:scale-110"
+        >
+          <span className="w-11 h-11 rounded-full bg-[#2b1d12]/80 border-2 border-[#c9a227] flex items-center justify-center text-xl shadow-lg group-hover:border-[#f0d98a] group-hover:shadow-[0_0_14px_rgba(201,162,39,0.6)] transition">
+            {pin.ikon}
+          </span>
+          <span className="text-[11px] font-baslik text-[#f0e6cc] bg-[#2b1d12]/70 px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition">
+            {pin.ad}
+          </span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// ---- 4b. Olay Parşömeni (Event Card) ----
+function EventCard() {
+  return (
+    <div className="absolute z-50 bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-xl">
+      <div className="bg-[#f0e6cc] border-4 border-[#4a3520] rounded-lg shadow-2xl p-6 text-[#2b1d12]">
+        <h3 className="font-baslik text-xl text-center mb-2">{OLAY.baslik}</h3>
+        <p className="text-sm leading-relaxed text-center text-[#4a3520] mb-5">
+          {OLAY.aciklama}
+        </p>
+        <div className="flex gap-4 justify-center">
+          {OLAY.secenekler.map((s, i) => (
+            <button
+              key={i}
+              className="group relative flex-1 max-w-[220px] bg-[#5c3a21] hover:bg-[#6d4527] text-[#f0e6cc] font-baslik text-sm tracking-wide rounded-md px-4 py-2.5 border-2 border-[#2b1d12] shadow-md transition"
+            >
+              {s.metin}
+              <span className="block h-0 group-hover:h-4 overflow-hidden text-[11px] italic font-serif font-normal text-[#e0c789] transition-all duration-200">
+                {s.ipucu}
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ---- 4. MainCenter ----
+function MainCenter() {
+  return (
+    <main className="relative h-full overflow-hidden">
+      <Diorama />
+      <EventCard />
+    </main>
+  );
+}
+
+// ---- Kök uygulama ----
+function App() {
+  return (
+    <div className="h-screen w-screen overflow-hidden grid grid-rows-[3.5rem_1fr] bg-[#0d0906] text-[#e8ddc4]">
+      <TopBar />
+      <div className="grid grid-cols-[260px_1fr_280px] overflow-hidden">
+        <LeftPanel />
+        <MainCenter />
+        <RightPanel />
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+node_modules/
+dist/
+dist-ssr/
+*.local
+.DS_Store
+
+# Claude Code local-only settings
+.claude/settings.local.json
+.claude/scheduled_tasks.lock
+
+# Ortam değişkenleri (prod değerleri Render panelinden gelir; .env.example izlenir)
+.env
+server/.env
+client/.env
+
+# Yerel SQLite veritabanları (prod DB Render'ın kalıcı diskinde)
+*.db
+*.db-journal
+server/prisma/*.db
+server/dev.db
+server/simulation.db
+
+# Derlenmiş istemci (build sırasında üretilir)
+server/public/
+
+# Simülasyon/analiz script çıktıları
+server/scripts/*.sonuc.json
+server/scripts/*.analiz.json
