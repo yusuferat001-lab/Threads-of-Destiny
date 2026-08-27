@@ -78,3 +78,38 @@ npm test
 server/   Node.js + Express + Prisma (SQLite) backend, oyun mantığı ve olay verisi
 client/   React + Vite frontend
 ```
+
+## Web'e deploy (Render — tek servis)
+
+Prodüksiyonda tek bir "always-on" Node servisi çalışır: Express hem `/api`'yi hem
+de derlenmiş React istemcisini (`server/public`) aynı origin'den servis eder.
+SQLite veritabanı kalıcı bir diskte (`/var/data/prod.db`) tutulur.
+
+**Gereksinim:** Kalıcı disk Render'ın ücretsiz planında yoktur; en az `starter`
+(aylık ücretli) instance gerekir. Tamamen ücretsiz istiyorsan SQLite yerine
+harici bir Postgres'e geçmen gerekir.
+
+### Adımlar
+
+1. Bu depoyu bir GitHub reposuna push et (`main` dalı).
+2. [render.com](https://render.com) → **New → Blueprint** → repoyu seç. Render
+   kökteki [`render.yaml`](render.yaml)'i okuyup servisi + diski oluşturur.
+3. İlk deploy'dan sonra servis `https://<ad>.onrender.com` adresinde yayında olur.
+
+### Build / start (render.yaml içinde tanımlı)
+
+| Aşama | Komut | Ne yapar |
+|---|---|---|
+| Build | `npm run build` | `server/` + `client/` bağımlılıklarını kurar, `prisma generate`, istemciyi `server/public`'e derler, sunucuyu `tsc` ile derler |
+| Start | `npm start` | `prisma migrate deploy` (şemayı diske uygular) → `node server/dist/server.js` |
+
+### Ortam değişkenleri
+
+| Değişken | Değer | Not |
+|---|---|---|
+| `DATABASE_URL` | `file:/var/data/prod.db` | Kalıcı disk mount yolu |
+| `NODE_VERSION` | `22` | |
+| `PORT` | *(Render otomatik enjekte eder)* | Kodda `process.env.PORT` okunuyor |
+| `CORS_ORIGIN` | *(opsiyonel)* | Sadece istemci farklı bir domain'den servis edilecekse gerekir |
+
+Yerel geliştirme akışı değişmedi (`server/` + `client/` ayrı `npm run dev`).

@@ -810,3 +810,19 @@ Sosyalleşme/mağaza gibi oyuncu aksiyonuna bağlı değil; bunlar **tamamen ark
 **Etkileşim notu:** Savaşın `gidaCarpani`'si ile küçük krizin ×2 şoku **çarpımsal birleşir** (nadir ama kasıtlı olarak engellenmiyor) — ikisi aynı yıla denk gelirse gıda gideri hem savaş hem kriz çarpanıyla büyür.
 
 Testler: [donemselDunyaOlaylari.test.ts](server/tests/donemselDunyaOlaylari.test.ts).
+
+## 28. Prodüksiyon Deploy (Web — Render, tek servis)
+
+Yerel geliştirme hâlâ iki ayrı process (`server/` + `client/` `npm run dev`). **Prodüksiyonda tek bir "always-on" Node servisi** çalışır:
+
+- **[client/vite.config.ts](client/vite.config.ts):** `build.outDir = "../server/public"`, `emptyOutDir: true` — `vite build` çıktısı doğrudan sunucunun statik klasörüne yazılır. Dev sunucusu (proxy `/api → :3001`) etkilenmez.
+- **[server/src/server.ts](server/src/server.ts):**
+  - `ISTEMCI_DIZINI = path.resolve(__dirname, "..", "public")` (çalışma anında `server/dist/../public`). `index.html` varsa `express.static` + API-dışı tüm GET'ler için `index.html` geri düşüşü; yoksa (sadece-backend geliştirme) bu blok atlanır.
+  - `GET /healthz` → `{ok:true}` (Render `healthCheckPath`).
+  - **helmet CSP** artık elle yapılandırılıyor: `style-src`/`font-src` Google Fonts (`fonts.googleapis.com` / `fonts.gstatic.com`) için gevşetildi + `style-src 'unsafe-inline'` (React inline style attribute'ları). Dev'de istemci ayrı origin'den geldiği için CSP hiç HTML'e uygulanmıyordu; tek servise geçince zorunlu oldu. Yeni bir dış kaynak (CDN, analytics, farklı API) eklenirse bu direktif listesi güncellenmeli.
+  - `app.listen(PORT)` — `PORT` Render tarafından enjekte edilir (`process.env.PORT ?? 3001`). `trust proxy` zaten 1.
+- **Kök [package.json](package.json)** (yeni, deploy kökü — oyun mantığıyla ilgisi yok): `build` = server+client `npm ci --include=dev` → `prisma generate` → client build → server `tsc`; `start` = server'ın `start:prod`'u.
+- **[server/package.json](server/package.json):** yeni scriptler `start:prod` (`prisma migrate deploy && node dist/server.js`) ve `prisma:generate`. Eski `start` (`node dist/server.js`) korundu.
+- **[render.yaml](render.yaml):** tek `web` servisi + kalıcı disk (`/var/data`, `sizeGB:1`). `DATABASE_URL=file:/var/data/prod.db`. **Kalıcı disk Render ücretsiz planında yok → en az `starter` gerekir**; ücretsiz kalınacaksa Prisma şeması Postgres'e taşınmalı. `migrate deploy` build'de değil **start'ta** çalışır (disk yalnızca çalışma anında mount'lu).
+- **[.node-version](.node-version):** `22`. **[.gitignore](.gitignore):** `server/public/` (build çıktısı), `*.db`, `.env` dosyaları eklendi.
+- Deploy sonrası CLAUDE.md/README güncel tutma kuralı (§23 mantığı) burada da geçerli.
