@@ -19,7 +19,7 @@
         "set PATH=C:\\Program Files\\nodejs;%PATH% && cd server && npm run dev"
       ],
       "port": 3001,
-      "autoPort": false
+      "autoPort": true
     }
   ]
 }

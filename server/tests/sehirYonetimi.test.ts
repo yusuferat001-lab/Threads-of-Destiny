@@ -20,7 +20,7 @@ describe("şehir yönetimi (en üst rütbe sonrası sonsuz ilerleme)", () => {
     }
   });
 
-  it("en üst rütbeye (3) ulaşan her meslek için başlangıç olayı uygun hale gelir", () => {
+  it("en üst rütbeye (4) ulaşan her meslek için başlangıç olayı uygun hale gelir", () => {
     const beklenenler: Record<string, string> = {
       Asker: "sehir_yonetim_asker_baslangic",
       Tüccar: "sehir_yonetim_tuccar_baslangic",
@@ -29,7 +29,7 @@ describe("şehir yönetimi (en üst rütbe sonrası sonsuz ilerleme)", () => {
     for (const [meslek, beklenenId] of Object.entries(beklenenler)) {
       const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
       mesleğiSec(state, meslek);
-      state.rutbe_seviye = 3;
+      state.rutbe_seviye = 4;
       let bulundu = false;
       for (let i = 0; i < 500 && !bulundu; i++) {
         const { olay } = olaySec(state);
@@ -51,7 +51,7 @@ describe("şehir yönetimi (en üst rütbe sonrası sonsuz ilerleme)", () => {
       state.hayat_amaci = { id: "x", ad: "x", aciklama: "x", hedefTuru: "para", hedefDeger: 999999, tamamlandi: false };
       state.gecmis_olaylar.push("hayat_amaci_secimi", "iliski_evlilik_teklifi", "iliski_ikinci_teklif");
       state.ulke.savasta = true;
-      state.rutbe_seviye = 3;
+      state.rutbe_seviye = 4;
       const senaryo = await senaryoUret(state.id);
       expect(senaryo.olay_basligi).toBe(
         beklenenId === "sehir_yonetim_asker_baslangic"
@@ -66,7 +66,7 @@ describe("şehir yönetimi (en üst rütbe sonrası sonsuz ilerleme)", () => {
   it("sehir_yonetimi_basladi etiketi yokken tekrar eden rekabet olayları hiç çıkmaz", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
     mesleğiSec(state, "Tüccar");
-    state.rutbe_seviye = 3;
+    state.rutbe_seviye = 4;
     for (let i = 0; i < 500; i++) {
       const { olay } = olaySec(state);
       expect(olay.id).not.toBe("sehir_yonetim_tuccar_ticaret_yollari");
@@ -82,22 +82,23 @@ describe("şehir yönetimi (en üst rütbe sonrası sonsuz ilerleme)", () => {
     expect(sehirYonetimUnvanGetir("Asker", 50)).toBe("Krallığın Kalkanı (Seviye 50)");
   });
 
-  it("şehir yönetim seviyesi arttıkça maaş kalıcı ve sınırsız olarak büyümeye devam eder", () => {
+  it("şehir yönetimine girmek maaşa kalıcı SABİT +%8 katar; seviyeyle ölçeklenmez", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
     mesleğiSec(state, "Tüccar");
-    state.rutbe_seviye = 3;
+    state.rutbe_seviye = 4;
     const taban = hesaplaMaasYillik(state);
-    state.sehir_yonetim_seviyesi = 5;
-    const besSeviye = hesaplaMaasYillik(state);
+    state.sehir_yonetim_seviyesi = 1;
+    const birSeviye = hesaplaMaasYillik(state);
     state.sehir_yonetim_seviyesi = 20;
     const yirmiSeviye = hesaplaMaasYillik(state);
-    expect(besSeviye).toBeGreaterThan(taban);
-    expect(yirmiSeviye).toBeGreaterThan(besSeviye);
+    expect(birSeviye).toBeGreaterThan(taban);
+    expect(yirmiSeviye).toBe(birSeviye); // daha yüksek seviye maaşa ek katkı sağlamaz
   });
 
-  it("sehirYonetimMaasCarpani her kademede %8 kalıcı artış sağlar, üst sınırı yok", () => {
+  it("sehirYonetimMaasCarpani girilmişse 1.08, girilmemişse 1.0 döner", () => {
     expect(sehirYonetimMaasCarpani(0)).toBeCloseTo(1);
-    expect(sehirYonetimMaasCarpani(10)).toBeCloseTo(1.8);
-    expect(sehirYonetimMaasCarpani(100)).toBeCloseTo(9);
+    expect(sehirYonetimMaasCarpani(1)).toBeCloseTo(1.08);
+    expect(sehirYonetimMaasCarpani(10)).toBeCloseTo(1.08);
+    expect(sehirYonetimMaasCarpani(100)).toBeCloseTo(1.08);
   });
 });

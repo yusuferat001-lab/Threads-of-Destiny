@@ -29,7 +29,7 @@ import {
   secimYap,
   skorKaydet,
   skorTablosuGetir,
-  soyuSurdur,
+  isimOnerisiGetir,
   finansGetir,
   yatirimYap,
   yatirimConfigGetir,
@@ -46,6 +46,7 @@ import {
   magazaKatalogGetir,
   magazadanSatinAl,
   envanterEsyasiKullan,
+  geriBildirimGonder,
 } from './api';
 import { Banner } from './components/Banner';
 import { UstSerit } from './components/UstSerit';
@@ -72,9 +73,13 @@ import { SosyallesmePaneli } from './components/SosyallesmePaneli';
 import { MagazaPaneli } from './components/MagazaPaneli';
 import { IsYatirimEkrani } from './components/IsYatirimEkrani';
 import { SonucEfekti } from './components/SonucEfekti';
+import { AyarlarModal } from './components/AyarlarModal';
+import { ayarlariGetir, ayarlariKaydet, type Dil } from './ayarlar';
+import type { GeriBildirimGirdi } from './types';
 import { sesKapaliMi, sesTercihiKaydet } from './ses';
 import { aktifOturumIdGetir, aktifOturumIdKaydet, aktifOturumIdSil } from './oturum';
 import { basarimlariKaydet, basarimlariGetir } from './basarimlar';
+import { gecmisHayatKaydet, gecmisHayatlariGetir, gecmisHayatlariTemizle, type GecmisHayat } from './gecmisHayatlar';
 import { sonucIkonuGetir, unUnvani, MESLEK_KATEGORI, yatkinlikEtiketi, etkiTahminiGetir } from './bolgeTema';
 import { formatPara } from './format';
 import './App.css';
@@ -84,6 +89,7 @@ type Ekran =
   | 'cag_sec'
   | 'bolge_sec'
   | 'yerlesim_sec'
+  | 'isim_sec'
   | 'acilis'
   | 'meslek'
   | 'oyun'
@@ -103,8 +109,6 @@ interface SonEtki {
   kategori: string;
   sonucAnlatimi: string;
   zamanAnlatimi: string | null;
-  oncekiAhlak: number;
-  oncekiUn: number;
   paraBirimi: string;
   terfiOldu: boolean;
 }
@@ -138,6 +142,10 @@ const CAG_SIMGE: Record<string, string> = {
  * gruba dahil DEĞİL, o hâlâ dar/ortalanmış, doğal yükseklikte basit bir liste ekranı. */
 const TAM_EKRAN_GRUBU: Ekran[] = ['oyun', 'sonuc', 'yatirim', 'finans', 'sosyallesme', 'magaza'];
 
+/** Geri bildirim mesajlarına eklenen uygulama sürümü — bir hata raporunun hangi build'e
+ * ait olduğunu ayırt etmek için. Yeni bir sürüm çıkınca elle güncelle. */
+const APP_SURUM = '1.0.0';
+
 function App() {
   const [ekran, setEkran] = useState<Ekran>('giris');
   const [meslekler, setMeslekler] = useState<string[]>([]);
@@ -148,6 +156,8 @@ function App() {
   const [yasamSecenekleri, setYasamSecenekleri] = useState<YasamSecenegiTanimi[]>([]);
   const [secilenCag, setSecilenCag] = useState<string | null>(null);
   const [secilenBolge, setSecilenBolge] = useState<string | null>(null);
+  const [secilenYerlesim, setSecilenYerlesim] = useState<string | null>(null);
+  const [oyuncuIsmi, setOyuncuIsmi] = useState('');
   const [karakter, setKarakter] = useState<CharacterState | null>(null);
   const [senaryo, setSenaryo] = useState<SenaryoResponse | null>(null);
   const [tepkiModu, setTepkiModu] = useState(false);
@@ -171,14 +181,44 @@ function App() {
   const [magazaKatalogu, setMagazaKatalogu] = useState<MagazaEsyaKarti[]>([]);
 
   const [sesKapali, setSesKapali] = useState(() => sesKapaliMi());
+  const [ayarlarAcik, setAyarlarAcik] = useState(false);
+  const [dil, setDil] = useState<Dil>(() => ayarlariGetir().dil);
   const [basarimlar, setBasarimlar] = useState(() => basarimlariGetir());
   const [basarimlarAcik, setBasarimlarAcik] = useState(false);
+  const [gecmisHayatlar, setGecmisHayatlar] = useState<GecmisHayat[]>(() => gecmisHayatlariGetir());
+  const [secilenGecmisHayat, setSecilenGecmisHayat] = useState<GecmisHayat | null>(null);
+  const [liderlikOnizleme, setLiderlikOnizleme] = useState<ScoreKaydi[]>([]);
+  const [bolgeBilgiAcik, setBolgeBilgiAcik] = useState(false);
 
   function sesToggle() {
     setSesKapali((onceki) => {
       const yeni = !onceki;
       sesTercihiKaydet(yeni);
       return yeni;
+    });
+  }
+
+  function dilDegistir(yeni: Dil) {
+    setDil(yeni);
+    ayarlariKaydet({ dil: yeni });
+  }
+
+  async function geriBildirimGonderHandler(girdi: GeriBildirimGirdi) {
+    await geriBildirimGonder({
+      ...girdi,
+      baglam: {
+        stateId: karakter?.id ?? null,
+        ekran,
+        cag: karakter?.cag ?? secilenCag ?? null,
+        bolge: karakter?.bolge ?? secilenBolge ?? null,
+        yerlesim: karakter?.yerlesim ?? null,
+        meslek: karakter?.meslek ?? null,
+        yas: karakter?.yas ?? null,
+        yil: karakter?.yil ?? null,
+        surum: APP_SURUM,
+        dil,
+        userAgent: navigator.userAgent,
+      },
     });
   }
 
@@ -202,7 +242,7 @@ function App() {
             id: 'sehir_merkezi',
             ad: 'Şehir Merkezi',
             simge: '🏙️',
-            artilar: ['Ticaret ve sosyal fırsatlar bol', 'Yıllık kazancın %20 daha yüksek'],
+            artilar: ['Ticaret ve sosyal fırsatlar bol', 'Yıllık kazancın %10 daha yüksek'],
             eksiler: ['Kalabalık ve salgın riski yüksek', 'Başlangıç sağlığın daha düşük'],
           },
           {
@@ -217,7 +257,7 @@ function App() {
             ad: 'Dağ Başı',
             simge: '⛰️',
             artilar: ['Yalnız ve özgürsün, vergi baskısı az', 'Başlangıç sağlığın daha yüksek'],
-            eksiler: ['Vahşi hayvanlar ve zorlu kışlarla karşılaşabilirsin', 'Pazardan uzak, yıllık kazancın %20 daha düşük'],
+            eksiler: ['Vahşi hayvanlar ve zorlu kışlarla karşılaşabilirsin', 'Pazardan uzak, yıllık kazancın %10 daha düşük'],
           },
         ])
       );
@@ -230,6 +270,9 @@ function App() {
     yasamSecenekleriGetir()
       .then(({ yasamSecenekleri }) => setYasamSecenekleri(yasamSecenekleri))
       .catch(() => setYasamSecenekleri([]));
+    skorTablosuGetir('genel')
+      .then(({ tablo }) => setLiderlikOnizleme(tablo.slice(0, 3)))
+      .catch(() => {});
   }, []);
 
   // Sol paneldeki gelir/gider özetini her tur (yaş/yıl ilerleyince) tazeler — daha önce sadece
@@ -252,6 +295,9 @@ function App() {
     if (ekran === 'olum' && karakter) {
       basarimlariKaydet(karakter.unvanlar, karakter.efsanevi_olum);
       setBasarimlar(basarimlariGetir());
+      gecmisHayatKaydet(karakter);
+      setGecmisHayatlar(gecmisHayatlariGetir());
+      setIsim((mevcut) => mevcut || karakter.isim || '');
     }
   }, [ekran, karakter]);
 
@@ -300,12 +346,43 @@ function App() {
     setEkran('yerlesim_sec');
   }
 
-  async function yerlesimSecildi(yerlesimId: string) {
+  function yerlesimSecildi(yerlesimId: string) {
     if (!secilenCag || !secilenBolge) return;
+    setSecilenYerlesim(yerlesimId);
+    setOyuncuIsmi('');
+    setHata(null);
+    setEkran('isim_sec');
+  }
+
+  async function rastgeleIsimGetir() {
+    if (!secilenCag || !secilenBolge) return;
+    try {
+      const { isim } = await isimOnerisiGetir(secilenCag, secilenBolge);
+      setOyuncuIsmi(isim);
+    } catch (err) {
+      setHata(String(err));
+    }
+  }
+
+  async function karakteriOlustur() {
+    if (!secilenCag || !secilenBolge || !secilenYerlesim) return;
     setHata(null);
     setYukleniyor(true);
     try {
-      const { state } = await yeniOyunBaslat(secilenCag, secilenBolge, yerlesimId);
+      let isim = oyuncuIsmi.trim();
+      if (!isim) {
+        try {
+          isim = (await isimOnerisiGetir(secilenCag, secilenBolge)).isim;
+        } catch {
+          isim = '';
+        }
+      }
+      const { state } = await yeniOyunBaslat(
+        secilenCag,
+        secilenBolge,
+        secilenYerlesim,
+        isim || undefined
+      );
       setKarakter(state);
       aktifOturumIdKaydet(state.id);
       setEkran('acilis');
@@ -353,8 +430,6 @@ function App() {
 
   async function secenekSec(index: number) {
     if (!karakter || !senaryo) return;
-    const oncekiAhlak = karakter.ahlak;
-    const oncekiUn = karakter.un;
     const paraBirimi = karakter.para_birimi;
     setHata(null);
     setYukleniyor(true);
@@ -374,8 +449,6 @@ function App() {
         kategori: senaryo.kategori,
         sonucAnlatimi: sonuc.sonucAnlatimi,
         zamanAnlatimi: sonuc.zamanAnlatimi,
-        oncekiAhlak,
-        oncekiUn,
         paraBirimi,
         terfiOldu: sonuc.terfiOldu,
       });
@@ -424,25 +497,6 @@ function App() {
       const { tablo } = await skorTablosuGetir(tur);
       setLiderlik(tablo);
       setEkran('liderlik');
-    } catch (err) {
-      setHata(String(err));
-    } finally {
-      setYukleniyor(false);
-    }
-  }
-
-  async function soyunuSurdur() {
-    if (!karakter) return;
-    setHata(null);
-    setYukleniyor(true);
-    try {
-      const { state } = await soyuSurdur(karakter.id);
-      setKarakter(state);
-      aktifOturumIdKaydet(state.id);
-      setSonEtki(null);
-      setIsim('');
-      setKaydedildi(false);
-      setEkran('acilis');
     } catch (err) {
       setHata(String(err));
     } finally {
@@ -693,6 +747,10 @@ function App() {
     setIsim('');
     setKaydedildi(false);
     setSecilenCag(null);
+    setSecilenBolge(null);
+    setSecilenYerlesim(null);
+    setOyuncuIsmi('');
+    setSecilenGecmisHayat(null);
     setEkran('giris');
   }
 
@@ -700,6 +758,14 @@ function App() {
     <div
       className={TAM_EKRAN_GRUBU.includes(ekran) ? 'oyun-kapsayici oyun-kapsayici-tam' : 'oyun-kapsayici'}
     >
+      <button
+        className="ayar-ac-buton"
+        onClick={() => setAyarlarAcik(true)}
+        aria-label="Ayarlar"
+        title="Ayarlar"
+      >
+        ⚙️
+      </button>
       <button
         className="ses-toggle-buton"
         onClick={sesToggle}
@@ -710,39 +776,169 @@ function App() {
       </button>
       {hata && <div className="hata-kutusu">{hata}</div>}
 
+      {ayarlarAcik && (
+        <AyarlarModal
+          dil={dil}
+          sesKapali={sesKapali}
+          onDilDegistir={dilDegistir}
+          onSesToggle={sesToggle}
+          onGeriBildirimGonder={geriBildirimGonderHandler}
+          onKapat={() => setAyarlarAcik(false)}
+        />
+      )}
+
       {ekran === 'giris' && (
         <div className="ekran ekran-giris">
-          <h1>Kader Çarkı</h1>
-          <p className="giris-aciklama">
-            Çağını, ülkeni ve mesleğini sen seç; ailen ve kişiliğin rastgele belirlensin. Gerisini
-            kaderin ve kararların belirlesin. Ölüm kalıcıdır.
-          </p>
-          <button disabled={yukleniyor} onClick={() => setEkran('cag_sec')}>
-            Yeni Hayata Başla
-          </button>
-          <button className="ikincil" disabled={yukleniyor} onClick={() => liderligiAc('genel')}>
-            Liderlik Tablosu
-          </button>
-
-          {(basarimlar.unvanlar.length > 0 || basarimlar.olumler.length > 0) && (
-            <div className="basarimlar-paneli">
-              <button className="ikincil basarimlar-baslik-buton" onClick={() => setBasarimlarAcik((a) => !a)}>
-                🏆 Başarımların ({basarimlar.unvanlar.length + basarimlar.olumler.length}) {basarimlarAcik ? '▲' : '▼'}
+          <div className="giris-hero">
+            <span className="giris-cark" aria-hidden="true">⚙️</span>
+            <h1>Kader Çarkı</h1>
+            <p className="giris-aciklama">
+              Çağını, ülkeni ve mesleğini sen seç; ailen ve kişiliğin rastgele belirlensin. Gerisini
+              kaderin ve kararların belirlesin. Ölüm kalıcıdır.
+            </p>
+            <div className="giris-hero-butonlar">
+              <button disabled={yukleniyor} onClick={() => setEkran('cag_sec')}>
+                ⚙️ Yeni Hayata Başla
               </button>
-              {basarimlarAcik && (
-                <div className="basarimlar-listesi">
-                  {basarimlar.unvanlar.map((u) => (
-                    <span key={u} className="liderlik-rozet liderlik-rozet-unvan">
-                      🏵️ {u}
-                    </span>
+              <button className="ikincil" disabled={yukleniyor} onClick={() => liderligiAc('genel')}>
+                🏆 Liderlik Tablosu
+              </button>
+              <button className="ikincil" disabled={yukleniyor} onClick={() => setAyarlarAcik(true)}>
+                ⚙️ Ayarlar
+              </button>
+            </div>
+          </div>
+
+          <div className="giris-paneller">
+            <div className="giris-panel">
+              <div className="giris-panel-baslik">
+                <span>📜 Geçmiş Hayatların ({gecmisHayatlar.length})</span>
+                {gecmisHayatlar.length > 0 && (
+                  <button
+                    className="ikincil giris-panel-temizle"
+                    onClick={() => {
+                      gecmisHayatlariTemizle();
+                      setGecmisHayatlar([]);
+                    }}
+                  >
+                    Temizle
+                  </button>
+                )}
+              </div>
+              {gecmisHayatlar.length === 0 ? (
+                <p className="giris-panel-bos">Bu cihazda henüz tamamlanmış bir hayat yok.</p>
+              ) : (
+                <ul className="gecmis-hayat-liste">
+                  {gecmisHayatlar.map((h) => (
+                    <li key={h.id}>
+                      <button className="gecmis-hayat-satiri" onClick={() => setSecilenGecmisHayat(h)}>
+                        <span className="gecmis-hayat-ust">
+                          <strong>💀 {h.isim ?? 'İsimsiz'}</strong>
+                          <span className="gecmis-hayat-skor">{h.skor.toLocaleString('tr-TR')} puan</span>
+                        </span>
+                        <span className="gecmis-hayat-alt">
+                          {h.yas} yaşında · {h.meslek} · {h.bolge} · {h.olumNedeni}
+                        </span>
+                      </button>
+                    </li>
                   ))}
-                  {basarimlar.olumler.map((o) => (
-                    <span key={o} className="liderlik-rozet liderlik-rozet-olum">
-                      💀 {o}
-                    </span>
-                  ))}
-                </div>
+                </ul>
               )}
+            </div>
+
+            <div className="giris-panel">
+              <div className="giris-panel-baslik">
+                <span>🏆 Liderlik</span>
+                <button className="ikincil giris-panel-temizle" onClick={() => liderligiAc('genel')}>
+                  Tümünü Gör
+                </button>
+              </div>
+              {liderlikOnizleme.length === 0 ? (
+                <p className="giris-panel-bos">Henüz skor kaydı yok.</p>
+              ) : (
+                <ol className="giris-liderlik-liste">
+                  {liderlikOnizleme.map((k, i) => (
+                    <li key={k.id}>
+                      <span className="giris-liderlik-sira">{i + 1}.</span>
+                      <strong>{k.isim}</strong>
+                      <span className="giris-liderlik-skor">{k.skor.toLocaleString('tr-TR')}</span>
+                    </li>
+                  ))}
+                </ol>
+              )}
+            </div>
+
+            {(basarimlar.unvanlar.length > 0 || basarimlar.olumler.length > 0) && (
+              <div className="giris-panel">
+                <button
+                  className="ikincil basarimlar-baslik-buton"
+                  onClick={() => setBasarimlarAcik((a) => !a)}
+                >
+                  🏵️ Başarımların ({basarimlar.unvanlar.length + basarimlar.olumler.length}){' '}
+                  {basarimlarAcik ? '▲' : '▼'}
+                </button>
+                {basarimlarAcik && (
+                  <div className="basarimlar-listesi">
+                    {basarimlar.unvanlar.map((u) => (
+                      <span key={u} className="liderlik-rozet liderlik-rozet-unvan">
+                        🏵️ {u}
+                      </span>
+                    ))}
+                    {basarimlar.olumler.map((o) => (
+                      <span key={o} className="liderlik-rozet liderlik-rozet-olum">
+                        💀 {o}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {secilenGecmisHayat && (
+            <div
+              className="gecmis-hayat-detay-katman"
+              onClick={() => setSecilenGecmisHayat(null)}
+            >
+              <div className="gecmis-hayat-detay" onClick={(e) => e.stopPropagation()}>
+                <button
+                  className="ikincil gecmis-hayat-kapat"
+                  onClick={() => setSecilenGecmisHayat(null)}
+                >
+                  ✕ Kapat
+                </button>
+                <h3>{secilenGecmisHayat.isim ?? 'İsimsiz'}</h3>
+                <p className="olum-ozet">
+                  {secilenGecmisHayat.yil} yılı · {secilenGecmisHayat.yas} yaşında ·{' '}
+                  {secilenGecmisHayat.rutbe} ({secilenGecmisHayat.meslek}) · {secilenGecmisHayat.bolge}
+                </p>
+                <p className="olum-ozet">
+                  {formatPara(secilenGecmisHayat.para)} {secilenGecmisHayat.paraBirimi} · Şöhret:{' '}
+                  {unUnvani(secilenGecmisHayat.un)} ·{' '}
+                  {secilenGecmisHayat.skor.toLocaleString('tr-TR')} puan
+                  {secilenGecmisHayat.amacTamamlandi && ' · 🎯 x5'}
+                </p>
+                <p className="sonuc-hikaye">{secilenGecmisHayat.olumNedeni}</p>
+                {(secilenGecmisHayat.unvanlar.length > 0 || secilenGecmisHayat.efsaneviOlum) && (
+                  <div className="basarimlar-listesi">
+                    {secilenGecmisHayat.unvanlar.map((u) => (
+                      <span key={u} className="liderlik-rozet liderlik-rozet-unvan">
+                        🏵️ {u}
+                      </span>
+                    ))}
+                    {secilenGecmisHayat.efsaneviOlum && (
+                      <span className="liderlik-rozet liderlik-rozet-olum">
+                        💀 {secilenGecmisHayat.efsaneviOlum}
+                      </span>
+                    )}
+                  </div>
+                )}
+                <GecmisGrafik
+                  gecmis={secilenGecmisHayat.gecmis}
+                  paraBirimi={secilenGecmisHayat.paraBirimi}
+                />
+                <HayatHikayesi hikaye={secilenGecmisHayat.hayatHikayesi} />
+              </div>
             </div>
           )}
         </div>
@@ -829,6 +1025,36 @@ function App() {
         </div>
       )}
 
+      {ekran === 'isim_sec' && (
+        <div className="ekran ekran-isim">
+          <h2>Adın Ne Olsun?</h2>
+          <p className="giris-aciklama">
+            Bu isim oyun boyunca sol üstte görünecek ve öldüğünde skor tablosuna bu isimle
+            geçebilirsin. İstersen boş bırak; {secilenBolge} topraklarına uygun rastgele bir isim
+            atanır.
+          </p>
+          <div className="isim-sec-form">
+            <input
+              className="isim-sec-input"
+              value={oyuncuIsmi}
+              onChange={(e) => setOyuncuIsmi(e.target.value)}
+              placeholder="İsmini yaz…"
+              maxLength={40}
+              autoFocus
+            />
+            <button className="ikincil" type="button" disabled={yukleniyor} onClick={rastgeleIsimGetir}>
+              🎲 Rastgele İsim
+            </button>
+          </div>
+          <button disabled={yukleniyor} onClick={karakteriOlustur}>
+            {yukleniyor ? 'Yükleniyor...' : oyuncuIsmi.trim() ? 'Bu İsimle Başla' : 'Rastgele İsimle Başla'}
+          </button>
+          <button className="ikincil" disabled={yukleniyor} onClick={() => setEkran('yerlesim_sec')}>
+            Geri
+          </button>
+        </div>
+      )}
+
       {ekran === 'meslek' && (
         <div className="ekran ekran-meslek">
           {karakter && (
@@ -888,7 +1114,10 @@ function App() {
           />
           <BolgeSahnesi cag={karakter.cag} bolge={karakter.bolge} yerlesim={karakter.yerlesim} ulke={karakter.ulke} un={karakter.un} />
           <KarakterAvatari kisilik={karakter.kisilik} />
-          <h2>{karakter.aile_meslegi} Ailesinin Çocuğu</h2>
+          <h2>
+            {karakter.isim ? `${karakter.isim} — ` : ''}
+            {karakter.aile_meslegi} Ailesinin Çocuğu
+          </h2>
           <p className="acilis-metni">{karakter.acilis_anlatimi}</p>
 
           <div className="acilis-ozet">
@@ -934,6 +1163,7 @@ function App() {
             sucSeviyesi={karakter.suc_seviyesi}
             ulke={karakter.ulke}
             hukumdar={karakter.hukumdar}
+            onBolgeTikla={() => setBolgeBilgiAcik(true)}
           />
           <div className="oyun-govde">
             <div className="sol-panel panel-parsomen">
@@ -946,6 +1176,7 @@ function App() {
                   rutbeSeviye={karakter.rutbe_seviye}
                 />
                 <div className="sol-panel-baslik">
+                  {karakter.isim && <span className="sol-panel-isim">{karakter.isim}</span>}
                   <strong>
                     {karakter.rutbe}
                     {karakter.unvanlar.length > 0 && ` "${karakter.unvanlar[karakter.unvanlar.length - 1]}"`}
@@ -962,7 +1193,7 @@ function App() {
                     🏅
                   </span>
                   <div className="un-rozeti-metin">
-                    <span className="un-rozeti-etiket">Ün</span>
+                    <span className="un-rozeti-etiket">Şöhret</span>
                     <strong>{unUnvani(karakter.un)}</strong>
                   </div>
                 </div>
@@ -981,18 +1212,10 @@ function App() {
                 ticaretSermaye={karakter.ticaret_sermaye}
                 nufuz={karakter.nufuz}
                 hapiste={karakter.etiketler.includes('hapiste')}
+                paraBirimi={karakter.para_birimi}
+                yukleniyor={yukleniyor}
+                onEkipCikar={ekipCikarHandler}
               />
-
-              <AileOzetPaneli
-                esAdi={karakter.es_adi}
-                esMeslek={karakter.es_meslek}
-                esRutbe={karakter.es_rutbe}
-                cocuklar={karakter.cocuklar}
-                evcilHayvan={karakter.evcil_hayvan}
-              />
-              <button className="ikincil aile-gor-buton" onClick={() => setEkran('aile')}>
-                Aileni Gör →
-              </button>
 
               <EnvanterPaneli
                 etiketler={karakter.etiketler}
@@ -1067,14 +1290,7 @@ function App() {
 
                 {ekran === 'sonuc' && sonEtki ? (
                   <div className="secenekler sonuc-detay-panel">
-                    <EtkiCipleri
-                      etki={sonEtki.etki}
-                      paraBirimi={sonEtki.paraBirimi}
-                      oncekiAhlak={sonEtki.oncekiAhlak}
-                      sonrakiAhlak={karakter.ahlak}
-                      oncekiUn={sonEtki.oncekiUn}
-                      sonrakiUn={karakter.un}
-                    />
+                    <EtkiCipleri etki={sonEtki.etki} paraBirimi={sonEtki.paraBirimi} />
                     <p className="sonuc-detay">{sonEtki.sonucAnlatimi}</p>
                     {sonEtki.zamanAnlatimi && (
                       <div className="zaman-blogu">
@@ -1137,13 +1353,9 @@ function App() {
 
             <div className="sag-panel panel-parsomen">
               <div className="panel-parsomen-baslik">Dünya &amp; Siyaset</div>
-              <SiyasetPaneli
-                cag={karakter.cag}
-                hizip={karakter.hizip}
-                devletTakibinde={karakter.etiketler.includes('devlet_takibinde')}
-              />
+              <SiyasetPaneli cag={karakter.cag} hizip={karakter.hizip} />
               <HaberlerPaneli haberler={karakter.haberler} />
-              <BolgeBilgisiPaneli bolge={karakter.bolge} bilgi={karakter.bolge_bilgi} />
+
               <IsyeriPaneli
                 meslek={karakter.meslek}
                 rutbeSeviye={karakter.rutbe_seviye}
@@ -1152,6 +1364,20 @@ function App() {
                 nufuz={karakter.nufuz}
                 orduTechizatSeviyesi={karakter.ordu_techizat_seviyesi}
               />
+
+              <div className="aile-blok">
+                <AileOzetPaneli
+                  esAdi={karakter.es_adi}
+                  esMeslek={karakter.es_meslek}
+                  esRutbe={karakter.es_rutbe}
+                  cocuklar={karakter.cocuklar}
+                  evcilHayvan={karakter.evcil_hayvan}
+                />
+                <button className="ikincil aile-gor-buton" onClick={() => setEkran('aile')}>
+                  Aileni Gör →
+                </button>
+              </div>
+
               <IliskilerPaneli
                 dostAdi={karakter.dost_adi}
                 rakipAdi={karakter.rakip_adi}
@@ -1161,6 +1387,23 @@ function App() {
               <DurumPaneli durumlar={karakter.durumlar} />
             </div>
           </div>
+
+          {bolgeBilgiAcik && (
+            <div className="gecmis-hayat-detay-katman" onClick={() => setBolgeBilgiAcik(false)}>
+              <div
+                className="gecmis-hayat-detay bolge-bilgi-modal"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  className="ikincil gecmis-hayat-kapat bolge-bilgi-modal-kapat"
+                  onClick={() => setBolgeBilgiAcik(false)}
+                >
+                  ✕ Kapat
+                </button>
+                <BolgeBilgisiPaneli bolge={karakter.bolge} bilgi={karakter.bolge_bilgi} />
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -1176,13 +1419,10 @@ function App() {
           tasinmaMaliyeti={tasinmaMaliyeti}
           yasamSecenekleri={yasamSecenekleri}
           guncelYasamSecimiId={karakter.yasam_secimi_id}
-          ekip={karakter.ekip}
-          mulkler={mulkler}
           yukleniyor={yukleniyor}
           islemMesaji={islemMesaji}
           onKonutDegistir={konutDegistirHandler}
           onYasamSecimiDegistir={yasamSecimiDegistirHandler}
-          onEkipCikar={ekipCikarHandler}
           onGeriDon={() => {
             setIslemMesaji(null);
             setEkran('oyun');
@@ -1272,7 +1512,7 @@ function App() {
             {karakter.bolge} topraklarında hayatını kaybetti. {karakter.aile_meslegi} ailesinin çocuğuydu.
           </p>
           <p className="olum-ozet">
-            {formatPara(karakter.para)} {karakter.para_birimi} · Ün: {unUnvani(karakter.un)}
+            {formatPara(karakter.para)} {karakter.para_birimi} · Şöhret: {unUnvani(karakter.un)}
           </p>
 
           <GecmisGrafik gecmis={karakter.gecmis} paraBirimi={karakter.para_birimi} />
@@ -1292,16 +1532,6 @@ function App() {
             </div>
           ) : (
             <p>Skorun kaydedildi.</p>
-          )}
-
-          {karakter.cocuklar.some((c) => c.yasiyor) && (
-            <button className="soy-surdur-buton" disabled={yukleniyor} onClick={soyunuSurdur}>
-              🏰 Soyunu {
-                karakter.cocuklar
-                  .filter((c) => c.yasiyor)
-                  .reduce((en, c) => (c.dogum_yili < en.dogum_yili ? c : en)).isim
-              } ile Sürdür
-            </button>
           )}
 
           <div className="olum-butonlari">

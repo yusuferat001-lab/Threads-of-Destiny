@@ -1,14 +1,10 @@
 import type { SonucEtkisi } from '../types';
-import { ahlakEtiketi, unUnvani } from '../bolgeTema';
 import { formatPara } from '../format';
 
 interface EtkiCipleriProps {
+  /** Bu seçimin uygulanan etkisi (jitter + meslek/suç çarpanları sonrası). */
   etki: SonucEtkisi;
   paraBirimi: string;
-  oncekiAhlak: number;
-  sonrakiAhlak: number;
-  oncekiUn: number;
-  sonrakiUn: number;
 }
 
 interface Cip {
@@ -17,80 +13,50 @@ interface Cip {
   pozitif: boolean;
 }
 
-export function EtkiCipleri({ etki, paraBirimi, oncekiAhlak, sonrakiAhlak, oncekiUn, sonrakiUn }: EtkiCipleriProps) {
+/**
+ * Sonuç ekranında, YALNIZCA seçilen olay seçeneğinin doğrudan etkisini küçük
+ * "çip" rozetleri olarak gösterir (maaş/gider/yaşlanma/kriz gibi tur-sonu pasif
+ * etkiler burada YER ALMAZ — onlar zaman anlatımında ve üst şeritteki delta
+ * efektinde görünür).
+ */
+export function EtkiCipleri({ etki, paraBirimi }: EtkiCipleriProps) {
   const cipler: Cip[] = [];
 
-  if (etki.para) {
+  const statCip = (simge: string, ad: string, deger: number | undefined, birim?: string) => {
+    if (!deger || Math.abs(deger) < 0.01) return;
+    const pozitif = deger > 0;
     cipler.push({
-      simge: '💰',
-      metin: `${etki.para > 0 ? '+' : ''}${formatPara(etki.para)} ${paraBirimi}`,
-      pozitif: etki.para > 0,
+      simge,
+      metin: `${ad} ${pozitif ? '+' : '−'}${formatPara(Math.abs(deger))}${birim ? ` ${birim}` : ''}`,
+      pozitif,
     });
-  }
-  if (etki.saglik) {
-    cipler.push({
-      simge: '❤️',
-      metin: `Sağlık ${etki.saglik > 0 ? '+' : ''}${etki.saglik}`,
-      pozitif: etki.saglik > 0,
-    });
-  }
-  if (etki.mutluluk) {
-    cipler.push({
-      simge: '🙂',
-      metin: `Mutluluk ${etki.mutluluk > 0 ? '+' : ''}${etki.mutluluk}`,
-      pozitif: etki.mutluluk > 0,
-    });
-  }
-  if (etki.es_puani) {
-    cipler.push({
-      simge: '💍',
-      metin: `Eş ilişkisi ${etki.es_puani > 0 ? '+' : ''}${etki.es_puani}`,
-      pozitif: etki.es_puani > 0,
-    });
-  }
-  if (etki.es_kaybet) {
-    cipler.push({ simge: '💔', metin: 'Eşini kaybettin', pozitif: false });
-  }
-  if (etki.cocuk_ekle) {
-    cipler.push({ simge: '👶', metin: `+${etki.cocuk_ekle} çocuk`, pozitif: true });
-  }
-  if (etki.un) {
-    const eskiUnvan = unUnvani(oncekiUn);
-    const yeniUnvan = unUnvani(sonrakiUn);
-    const metin =
-      eskiUnvan === yeniUnvan
-        ? etki.un > 0
-          ? 'Ünün biraz arttı'
-          : 'Ünün biraz azaldı'
-        : `${eskiUnvan} → ${yeniUnvan}`;
-    cipler.push({ simge: '🏅', metin, pozitif: etki.un > 0 });
-  }
-  if (etki.ahlak) {
-    const eskiEtiket = ahlakEtiketi(oncekiAhlak);
-    const yeniEtiket = ahlakEtiketi(sonrakiAhlak);
-    const metin =
-      eskiEtiket === yeniEtiket
-        ? etki.ahlak > 0
-          ? 'Ahlakın biraz yükseldi'
-          : 'Ahlakın biraz düştü'
-        : `${eskiEtiket} → ${yeniEtiket}`;
-    cipler.push({ simge: '⚖️', metin, pozitif: etki.ahlak > 0 });
-  }
-  if (etki.yeni_meslek) {
-    cipler.push({ simge: '🧭', metin: `Yeni meslek: ${etki.yeni_meslek}`, pozitif: true });
-  }
+  };
 
-  if (cipler.length === 0) return null;
+  statCip('💰', 'Para', etki.para, paraBirimi);
+  statCip('❤️', 'Sağlık', etki.saglik);
+  statCip('🙂', 'Mutluluk', etki.mutluluk);
+  statCip('⚖️', 'Ahlak', etki.ahlak);
+  statCip('🏅', 'Şöhret', etki.un);
+
+  if (etki.es_ata) cipler.push({ simge: '💍', metin: 'Evlendin', pozitif: true });
+  if (etki.es_kaybet) cipler.push({ simge: '💔', metin: 'Eşini kaybettin', pozitif: false });
+  if (etki.cocuk_ekle) cipler.push({ simge: '👶', metin: `+${etki.cocuk_ekle} çocuk`, pozitif: true });
+  if (etki.cocuk_kaybet) cipler.push({ simge: '🕯️', metin: 'Bir çocuğunu kaybettin', pozitif: false });
+  if (etki.yeni_meslek) cipler.push({ simge: '🧭', metin: `Yeni meslek: ${etki.yeni_meslek}`, pozitif: true });
+
+  if (cipler.length === 0) {
+    return <p className="etki-yok-notu">Bu seçim ölçülebilir bir değişim getirmedi.</p>;
+  }
 
   return (
     <div className="etki-cipleri">
-      {cipler.map((cip, i) => (
+      {cipler.map((c, i) => (
         <span
           key={i}
-          className={`etki-cip ${cip.pozitif ? 'etki-pozitif' : 'etki-negatif'}`}
-          style={{ animationDelay: `${i * 0.12}s` }}
+          className={`etki-cip ${c.pozitif ? 'etki-pozitif' : 'etki-negatif'}`}
+          style={{ animationDelay: `${i * 0.08}s` }}
         >
-          {cip.simge} {cip.metin}
+          {c.simge} {c.metin}
         </span>
       ))}
     </div>

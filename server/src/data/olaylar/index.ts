@@ -16,6 +16,7 @@ import { OLAY_ESYA_VE_GIZEM } from "./esyaVeGizem";
 import { OLAY_AILE } from "./aile";
 import { OLAY_ILISKILER } from "./iliskiler";
 import { OLAY_GENEL } from "./genel";
+import { OLAY_SAGLIK_TOPARLANMA } from "./saglikToparlanma";
 import { OLAY_EVLILIK_AILE } from "./evlilikVeAile";
 import { OLAY_ARANMA_SEVIYESI } from "./aranmaSeviyesi";
 import { OLAY_SOSYALLESME } from "./sosyallesme";
@@ -41,5 +42,6 @@ export const OLAY_BANKASI: OlayTanimi[] = [
   ...OLAY_AILE,
   ...OLAY_ILISKILER,
   ...OLAY_GENEL,
+  ...OLAY_SAGLIK_TOPARLANMA,
   ...OLAY_EVLILIK_AILE,
 ];

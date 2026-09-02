@@ -1,7 +1,14 @@
-import type { EkipUyesi, FinansOzeti, GecmisNoktasi, KonutTanimi, MulkKartBilgisi, YasamSecenegiTanimi } from '../types';
+import type { FinansOzeti, GecmisNoktasi, KonutTanimi, YasamSecenegiTanimi } from '../types';
 import { GecmisGrafik } from './GecmisGrafik';
 import { konutGoruntusuGetir } from '../bolgeTema';
 import { formatPara } from '../format';
+
+/** Çarpan yüzdesini Türkçe biçimde: +40 → "+%40", -15 → "−%15", 0 → "%0". */
+function yuzdeMetni(yuzde: number): string {
+  if (yuzde > 0) return `+%${yuzde}`;
+  if (yuzde < 0) return `−%${Math.abs(yuzde)}`;
+  return '%0';
+}
 
 function etkiSatiriGetir(etkiler: {
   saglikEtkisiYillik?: number;
@@ -16,7 +23,7 @@ function etkiSatiriGetir(etkiler: {
     parcalar.push(`😊 Mutluluk ${etkiler.mutlulukEtkisiYillik > 0 ? '+' : ''}${etkiler.mutlulukEtkisiYillik}/yıl`);
   }
   if (etkiler.unEtkisiYillik) {
-    parcalar.push(`⭐ Ün ${etkiler.unEtkisiYillik > 0 ? '+' : ''}${etkiler.unEtkisiYillik}/yıl`);
+    parcalar.push(`⭐ Şöhret ${etkiler.unEtkisiYillik > 0 ? '+' : ''}${etkiler.unEtkisiYillik}/yıl`);
   }
   return parcalar.length > 0 ? parcalar.join(' · ') : null;
 }
@@ -32,13 +39,10 @@ interface FinansEkraniProps {
   tasinmaMaliyeti: number;
   yasamSecenekleri: YasamSecenegiTanimi[];
   guncelYasamSecimiId: string;
-  ekip: EkipUyesi[];
-  mulkler: MulkKartBilgisi[];
   yukleniyor: boolean;
   islemMesaji: string | null;
   onKonutDegistir: (konutId: string) => void;
   onYasamSecimiDegistir: (secimId: string) => void;
-  onEkipCikar: (ekipId: string) => void;
   onGeriDon: () => void;
 }
 
@@ -53,45 +57,134 @@ export function FinansEkrani({
   tasinmaMaliyeti,
   yasamSecenekleri,
   guncelYasamSecimiId,
-  ekip,
-  mulkler,
   yukleniyor,
   islemMesaji,
   onKonutDegistir,
   onYasamSecimiDegistir,
-  onEkipCikar,
   onGeriDon,
 }: FinansEkraniProps) {
-  const { maasYillik, giderKalemleri, netYillik, enflasyonYuzdesi, gayrimenkulDegeri } = finans;
+  const { maasYillik, giderKalemleri, netYillik, enflasyonYuzdesi, maasKirilim, gayrimenkulYillikGelir, dunyaEtkileri } =
+    finans;
   const toplamGider =
     giderKalemleri.yasam +
     giderKalemleri.konut +
     giderKalemleri.ekip +
     giderKalemleri.evcilHayvan +
-    giderKalemleri.vergi +
     giderKalemleri.savasVergisi;
-  const sahipOlunanMulkler = mulkler.filter((m) => m.sahipMi);
+  // Gerçek net: maaş − gider + mülk geliri (server'ın netYillik'i sadece maaş − gider).
+  const gercekNet = netYillik + gayrimenkulYillikGelir;
+  // Yaşam tarzı + konut listesindeki liste fiyatları enflasyonsuz; gider dökümündeki
+  // gerçek yaşam/kira tutarına (enflasyonla ölçekli) hizalamak için burada da uygularız.
+  const enfCarpan = 1 + enflasyonYuzdesi / 100;
+  const enflasyonluTutar = (taban: number) => Math.round(taban * enfCarpan * 100) / 100;
 
   return (
     <div className="ekran ekran-tam-sayfa">
       <h2>Gelir &amp; Gider</h2>
       {islemMesaji && <p className="yatirim-islem-mesaji">{islemMesaji}</p>}
 
-      <div className="tam-govde-3col">
+      <div className="tam-govde-3col tam-govde-3col-finans">
         <div className="tam-sutun">
           <h3 className="tam-baslik">Bütçen</h3>
 
           <div className="finans-karti">
             <div className="finans-satiri finans-gelir">
-              <span>💰 Yıllık gelir</span>
+              <span>💰 Yıllık maaş</span>
               <span>
                 +{formatPara(maasYillik)} {paraBirimi}
               </span>
             </div>
-            {enflasyonYuzdesi > 0 && (
-              <div className="finans-satiri finans-enflasyon">
-                <span>📈 Enflasyon</span>
-                <span>+%{enflasyonYuzdesi}</span>
+
+            <div className="finans-maas-kirilim">
+              <div className="finans-satiri finans-kirilim-satiri">
+                <span>
+                  🎖️ Rütbeden gelen{' '}
+                  <em className="finans-kirilim-alt">
+                    {maasKirilim.rutbeAd}
+                    {maasKirilim.rutbeSeviye ? ` · Sv.${maasKirilim.rutbeSeviye}` : ''}
+                  </em>
+                </span>
+                <span className="finans-kirilim-kalici">{yuzdeMetni(maasKirilim.rutbeYuzde)} · kalıcı</span>
+              </div>
+
+              {(maasKirilim.kariyerYuzde !== 0 || maasKirilim.kariyerKalemler.length > 0) && (
+                <>
+                  <div className="finans-satiri finans-kirilim-satiri">
+                    <span>📈 Kariyer birikimi</span>
+                    <span className="finans-kirilim-kalici">{yuzdeMetni(maasKirilim.kariyerYuzde)} · kalıcı</span>
+                  </div>
+                  {maasKirilim.kariyerKalemler.length > 0 && (
+                    <div className="finans-kirilim-detay">
+                      {maasKirilim.kariyerKalemler.map((k) => `${k.ad} ${yuzdeMetni(k.yuzde)}`).join(' · ')}
+                    </div>
+                  )}
+                </>
+              )}
+
+              <div className="finans-satiri finans-kirilim-satiri">
+                <span>🤝 İtibarın</span>
+                <span
+                  className={
+                    maasKirilim.itibarYuzde <= -8
+                      ? 'finans-kirilim-degisken finans-net-negatif'
+                      : 'finans-kirilim-degisken'
+                  }
+                >
+                  {yuzdeMetni(maasKirilim.itibarYuzde)} · değişebilir
+                </span>
+              </div>
+              <div className="finans-kirilim-detay">
+                {maasKirilim.itibarKalemler.map((k) => `${k.ad} ${yuzdeMetni(k.yuzde)}`).join(' · ')}
+              </div>
+              {maasKirilim.itibarYuzde <= -8 && (
+                <div className="finans-kirilim-detay finans-net-negatif">İtibarın gelirini ciddi düşürüyor.</div>
+              )}
+
+              <div className="finans-satiri finans-kirilim-satiri">
+                <span>🌍 Dönemsel yüzdelik etkiler</span>
+                <span className="finans-kirilim-degisken">{yuzdeMetni(maasKirilim.donemselYuzde)} · değişebilir</span>
+              </div>
+              {maasKirilim.donemselKalemler.filter((k) => k.ad !== 'Enflasyon').length > 0 && (
+                <div className="finans-kirilim-detay">
+                  {maasKirilim.donemselKalemler
+                    .filter((k) => k.ad !== 'Enflasyon')
+                    .map((k) => `${k.ad} ${yuzdeMetni(k.yuzde)}`)
+                    .join(' · ')}
+                </div>
+              )}
+
+              <p className="finans-kirilim-not">
+                🎖️ Rütbe ve kariyer primleri kalıcıdır — rütbe asla düşmez. Dönemsel etkiler ekonomi, savaş ve salgınla birlikte
+                değişir. 🤝 Mutlu, saygın ve dürüst biri işini daha iyi yapar ve kapıları daha kolay açılır; bu üçünden biri
+                düştükçe gelirin belirgin azalır, üçü de yüksekken maaşına bonus biner. Düşüşün cezası yükselişin iki katıdır.
+              </p>
+            </div>
+
+            <div className="finans-dunya-etkileri">
+              <div className="finans-dunya-baslik">🌍 Şu an bütçeni etkileyen dünya durumları</div>
+              {dunyaEtkileri.length === 0 ? (
+                <p className="finans-kirilim-detay">Şu an bütçeni sarsan olağan dışı bir durum yok.</p>
+              ) : (
+                <ul className="finans-dunya-liste">
+                  {dunyaEtkileri.map((e, i) => (
+                    <li key={i}>
+                      <span aria-hidden="true">{e.ikon}</span> {e.metin}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            {gayrimenkulYillikGelir !== 0 && (
+              <div
+                className={`finans-satiri finans-gelir ${gayrimenkulYillikGelir < 0 ? 'finans-net-negatif' : ''}`}
+                title="Sahip olduğun mülklerin şu anki dünya durumuna göre yıllık tahmini net getirisi; maaşından ayrı bir gelir akışıdır ve kötü zamanlarda zarara dönebilir."
+              >
+                <span>🏠 Gayrimenkul geliri</span>
+                <span>
+                  {gayrimenkulYillikGelir >= 0 ? '+' : '−'}
+                  {formatPara(Math.abs(gayrimenkulYillikGelir))} {paraBirimi}
+                </span>
               </div>
             )}
 
@@ -122,25 +215,6 @@ export function FinansEkrani({
                 </span>
               </div>
             )}
-            {giderKalemleri.vergi > 0 && (
-              <>
-                <div
-                  className="finans-satiri"
-                  title="Nakit + sahip olduğun mülklerin toplam değeri belli bir eşiği aştıkça devletin/kralın gözüne çarpar; aşan kısım için her yıl artan bir bakım/vergi payı öder."
-                >
-                  <span>👑 Zenginlik vergisi</span>
-                  <span>
-                    -{formatPara(giderKalemleri.vergi)} {paraBirimi}
-                  </span>
-                </div>
-                <div className="finans-satiri finans-servet-detay">
-                  <span>↳ Servetin: nakit + mülk</span>
-                  <span>
-                    {formatPara(para)} + {formatPara(gayrimenkulDegeri)} = {formatPara(para + gayrimenkulDegeri)} {paraBirimi}
-                  </span>
-                </div>
-              </>
-            )}
             {giderKalemleri.savasVergisi > 0 && (
               <div className="finans-satiri" title="Aktif bir büyük savaş sürerken hükümdar pasif gelirinden ek bir savaş vergisi kesiyor.">
                 <span>⚔️ Savaş vergisi</span>
@@ -156,13 +230,32 @@ export function FinansEkrani({
               </span>
             </div>
 
-            <div className={`finans-satiri finans-net ${netYillik < 0 ? 'finans-net-negatif' : ''}`}>
-              <span>Net yıllık</span>
-              <span>
-                {netYillik >= 0 ? '+' : ''}
-                {formatPara(netYillik)} {paraBirimi}
-              </span>
-            </div>
+            {gayrimenkulYillikGelir !== 0 ? (
+              <>
+                <div className="finans-satiri finans-servet-detay">
+                  <span>↳ Maaş − gider</span>
+                  <span>
+                    {netYillik >= 0 ? '+' : ''}
+                    {formatPara(netYillik)} {paraBirimi}
+                  </span>
+                </div>
+                <div className={`finans-satiri finans-net ${gercekNet < 0 ? 'finans-net-negatif' : ''}`}>
+                  <span>Net yıllık (gayrimenkul dahil)</span>
+                  <span>
+                    {gercekNet >= 0 ? '+' : ''}
+                    {formatPara(gercekNet)} {paraBirimi}
+                  </span>
+                </div>
+              </>
+            ) : (
+              <div className={`finans-satiri finans-net ${netYillik < 0 ? 'finans-net-negatif' : ''}`}>
+                <span>Net yıllık</span>
+                <span>
+                  {netYillik >= 0 ? '+' : ''}
+                  {formatPara(netYillik)} {paraBirimi}
+                </span>
+              </div>
+            )}
           </div>
 
           <GecmisGrafik gecmis={gecmis} paraBirimi={paraBirimi} />
@@ -171,7 +264,7 @@ export function FinansEkrani({
         <div className="tam-sutun">
           <h3 className="tam-baslik">Yaşam Tarzın</h3>
           <p className="giris-aciklama">İstediğin an değiştirebilirsin, tur harcamaz.</p>
-          <div className="yatirim-kartlari">
+          <div className="yatirim-kartlari finans-secim-izgara">
             {yasamSecenekleri.map((secenek) => {
               const guncel = secenek.id === guncelYasamSecimiId;
               const etkiSatiri = etkiSatiriGetir(secenek);
@@ -188,7 +281,7 @@ export function FinansEkrani({
                     {guncel ? ' (şu an bu)' : ''}
                   </strong>
                   <span className="meslek-aciklama">
-                    Yıllık gider: {secenek.maliyetYillik} {paraBirimi}. {secenek.aciklama}
+                    Yıllık gider: {formatPara(enflasyonluTutar(secenek.maliyetYillik))} {paraBirimi}. {secenek.aciklama}
                   </span>
                   {etkiSatiri && <span className="meslek-aciklama yatirim-etki-satiri">{etkiSatiri}</span>}
                 </button>
@@ -196,12 +289,15 @@ export function FinansEkrani({
             })}
           </div>
 
+        </div>
+
+        <div className="tam-sutun">
           <h3 className="tam-baslik">Evin</h3>
           <p className="giris-aciklama">
-            İstediğin an taşınabilirsin — bir kerelik {tasinmaMaliyeti} {paraBirimi} nakliye ücreti düşer, tur harcamaz.
-            Daha ucuz bir eve geri çekilmek nakliye ücretinden muaftır.
+            İstediğin an taşın, tur harcamaz. Daha pahalı eve geçişte bir kerelik {tasinmaMaliyeti} {paraBirimi} nakliye
+            ücreti; ucuza geri çekilmek bedava.
           </p>
-          <div className="yatirim-kartlari">
+          <div className="yatirim-kartlari finans-secim-izgara">
             {konutlar.map((konut) => {
               const guncel = konut.id === guncelKonutId;
               const guncelKira = konutlar.find((k) => k.id === guncelKonutId)?.kiraYillik ?? 0;
@@ -222,71 +318,20 @@ export function FinansEkrani({
                     {guncel ? ' (şu an burada)' : ''}
                   </strong>
                   <span className="meslek-aciklama">
-                    Yıllık kira: {konut.kiraYillik} {paraBirimi}. {konut.aciklama}
+                    Yıllık kira: {formatPara(enflasyonluTutar(konut.kiraYillik))} {paraBirimi}. {konut.aciklama}
                   </span>
+                  {!guncel && (
+                    <span className="meslek-aciklama yatirim-etki-satiri">
+                      {geriCekilme
+                        ? '↩️ Ucuza geçiş: nakliye ücretsiz'
+                        : `🚚 Bir kerelik ${tasinmaMaliyeti} ${paraBirimi} nakliye ücreti`}
+                    </span>
+                  )}
                   {etkiSatiri && <span className="meslek-aciklama yatirim-etki-satiri">{etkiSatiri}</span>}
                 </button>
               );
             })}
           </div>
-        </div>
-
-        <div className="tam-sutun">
-          <h3 className="tam-baslik">Varlıkların</h3>
-
-          {sahipOlunanMulkler.length > 0 ? (
-            <>
-              <p className="giris-aciklama">
-                Getirileri dünyanın o anki durumuna göre dalgalanır; kötü zamanlarda zarara da dönebilir.
-              </p>
-              <div className="yatirim-kartlari yatirim-mulk-kartlari">
-                {sahipOlunanMulkler.map((mulk) => (
-                  <div
-                    key={mulk.tur}
-                    className={`yatirim-kart mulk-kart mulk-kart-sahip${mulk.tahminiYillikGetiriMiktari < 0 ? ' mulk-kart-zararda' : ''}`}
-                  >
-                    <span className="meslek-simge">{mulk.simge}</span>
-                    <strong>{mulk.ad}</strong>
-                    <span className="meslek-aciklama">{mulk.aciklama}</span>
-                    <span
-                      className={`mulk-getiri ${mulk.tahminiYillikGetiriMiktari < 0 ? 'mulk-getiri-negatif' : 'mulk-getiri-pozitif'}`}
-                    >
-                      Şu an: {mulk.tahminiYillikGetiriMiktari >= 0 ? '+' : ''}
-                      {formatPara(mulk.tahminiYillikGetiriMiktari)} {paraBirimi}/yıl ({mulk.tahminiYillikGetiriYuzdesi >= 0 ? '+' : ''}
-                      {mulk.tahminiYillikGetiriYuzdesi}%)
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </>
-          ) : (
-            <p className="giris-aciklama">Henüz sahip olduğun bir mülk yok — İşin &amp; Yatırımların ekranından edinebilirsin.</p>
-          )}
-
-          <h3 className="tam-baslik">Ekibin</h3>
-
-          {ekip.length > 0 ? (
-            <div className="yatirim-kartlari">
-              {ekip.map((uye) => (
-                <div key={uye.id} className="yatirim-kart ekip-kart">
-                  <strong>
-                    {uye.isim} <span className="komuta-ekip-rol">({uye.rol})</span>
-                  </strong>
-                  <span className="meslek-aciklama">
-                    Yıllık maaş: {formatPara(uye.maas)} {paraBirimi} · Tahmini kalite: %{uye.tahminiMin}-{uye.tahminiMax}
-                  </span>
-                  <span className="meslek-aciklama">
-                    🎭 {uye.kisilik} · 🤝 Sadakat %{uye.sadakat}
-                  </span>
-                  <button className="ikincil ekip-kov-buton" disabled={yukleniyor} onClick={() => onEkipCikar(uye.id)}>
-                    Kov
-                  </button>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="giris-aciklama">Henüz kimseyi işe almadın.</p>
-          )}
         </div>
       </div>
 

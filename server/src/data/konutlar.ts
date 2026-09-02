@@ -29,23 +29,30 @@ export const KONUTLAR: KonutTanimi[] = [
     id: "basit_barinak",
     ad: "Basit Barınak",
     simge: "🛖",
-    aciklama: "Neredeyse bedava ama nemli ve sağlıksız; zamanla sağlığını hafifçe aşındırır.",
+    aciklama:
+      "Neredeyse bedava ama nemli, soğuk ve sağlıksız; burada sürekli yaşamak bedenini, moralini ve itibarını yıpratır. Sadece geçici bir dip.",
     kiraYillik: 1,
-    saglikEtkisiYillik: -1,
+    saglikEtkisiYillik: -4,
+    mutlulukEtkisiYillik: -4,
+    unEtkisiYillik: -4,
   },
   {
     id: "ahsap_ev",
     ad: "Ahşap Ev",
     simge: "🪵",
-    aciklama: "Basit barınaktan daha sağlam bir çatı; en azından sağlığını daha fazla yıpratmaz.",
-    kiraYillik: 4,
+    aciklama:
+      "Sağlam sayılmaz ama bir çatı; yine de bakımsız ve dar — sağlığını, moralini ve adını yavaş yavaş aşındırır. İlk fırsatta gerçek bir eve geçmek gerekir.",
+    kiraYillik: 3,
+    saglikEtkisiYillik: -3,
+    mutlulukEtkisiYillik: -3,
+    unEtkisiYillik: -3,
   },
   {
     id: "normal_ev",
     ad: "Normal Ev",
     simge: "🏠",
-    aciklama: "Sıradan ama gerçek bir yuva; kendi dört duvarının verdiği küçük bir huzur var.",
-    kiraYillik: 8,
+    aciklama: "Sıradan ama gerçek bir yuva; kendi dört duvarının verdiği küçük bir huzur var. Artık ev seni yıpratmıyor.",
+    kiraYillik: 6,
     mutlulukEtkisiYillik: 1,
   },
   {
@@ -54,10 +61,10 @@ export const KONUTLAR: KonutTanimi[] = [
     simge: "🧱",
     aciklama:
       "Sağlam duvarları ve ayrı odalarıyla gerçek bir konfor sunar; komşuların arasında adın biraz daha anılır. Sofranı da bu seviyeye yakın tutmak (Normal ya da İyi Ye) genelde daha tutarlı bir hayat demek.",
-    kiraYillik: 13,
+    kiraYillik: 10,
     saglikEtkisiYillik: 1,
     mutlulukEtkisiYillik: 1,
-    unEtkisiYillik: 1,
+    unEtkisiYillik: 2,
   },
   {
     id: "konak",
@@ -65,10 +72,10 @@ export const KONUTLAR: KonutTanimi[] = [
     simge: "🏛️",
     aciklama:
       "Pahalı ama gösterişli; halk arasındaki tanınırlığını, rahatını ve sağlığını yıllar içinde büyütür. Böyle bir çatının altında çöpten geçinmek konu komşuya tuhaf gelir — sofran da haneni yansıtsın.",
-    kiraYillik: 21,
+    kiraYillik: 19,
     saglikEtkisiYillik: 2,
     mutlulukEtkisiYillik: 2,
-    unEtkisiYillik: 2,
+    unEtkisiYillik: 4,
   },
   {
     id: "sato",
@@ -76,17 +83,22 @@ export const KONUTLAR: KonutTanimi[] = [
     simge: "🏰",
     aciklama:
       "Bölgenin konuştuğu, gerçekten pahalı bir yaşam; duvarları kadar adın da büyür, günlerin çok daha huzurlu ve sağlıklı geçer. Bu kapılardan girip ucuza/çöpten geçinmeye çalışmak inandırıcı olmaz — ancak en iyi sofralarla bir bütün oluşturur.",
-    kiraYillik: 34,
+    kiraYillik: 32,
     saglikEtkisiYillik: 3,
     mutlulukEtkisiYillik: 4,
-    unEtkisiYillik: 5,
+    unEtkisiYillik: 6,
   },
 ];
 
-export const VARSAYILAN_KONUT_ID = "basit_barinak";
+/**
+ * Yeni karakter artık en dipte değil, bir kademe yukarıda (Ahşap Ev) başlar:
+ * en ucuz iki kademe ağır ceza taşıdığı için, henüz geliri olmayan bir
+ * karakteri doğrudan ölüm sarmalına sokmamak adına.
+ */
+export const VARSAYILAN_KONUT_ID = "ahsap_ev";
 
 /** Bir konuttan diğerine taşınmanın bir kerelik nakliye maliyeti. */
-export const TASINMA_MALIYETI = 10;
+export const TASINMA_MALIYETI = 3;
 
 export function konutGetir(id: string): KonutTanimi | undefined {
   return KONUTLAR.find((k) => k.id === id);

@@ -1,9 +1,13 @@
 import { prisma } from "./prismaClient";
 import { CharacterState } from "../types";
-import { hesaplaSkor } from "../game/stateManager";
+import { hesaplaSkor, gayrimenkulDegeriHesapla, paraYuvarla } from "../game/stateManager";
 
 export async function skorKaydet(state: CharacterState, isim: string) {
   const skor = hesaplaSkor(state);
+  // "en_zengin" sıralaması net serveti ödüllendirsin (madde 25): Score.para
+  // artık salt nakit değil, nakit + gayrimenkul değeri — mülke servet bağlamış
+  // bir oyuncu liderlik tablosunda cezalanmasın.
+  const netServet = paraYuvarla(state.para + gayrimenkulDegeriHesapla(state));
   return prisma.score.create({
     data: {
       isim,
@@ -16,7 +20,7 @@ export async function skorKaydet(state: CharacterState, isim: string) {
       kisilik: state.kisilik.join(", "),
       olum_nedeni: state.olum_nedeni ?? "Bilinmiyor",
       yas: state.yas,
-      para: state.para,
+      para: netServet,
       un: state.un,
       unvanlar: state.unvanlar.join(", "),
       efsanevi_olum: state.efsanevi_olum ?? "",

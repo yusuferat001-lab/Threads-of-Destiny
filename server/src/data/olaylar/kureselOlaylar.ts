@@ -1,12 +1,19 @@
 import { OlayTanimi } from "./types";
 
 /**
- * "Dünya olayları": savaş/zorunlu bağış/küçük kriz tamamen arka planda
- * (gameEngine.ts'teki periyodik kontrol fonksiyonlarıyla) tetiklenir, hiç
- * olay ekranı gerektirmez. Veba TEK istisna — "önlem alırsan bulaşma
- * ihtimalin düşer" gerçek bir oyuncu kararı gerektirdiği için burada küçük
- * bir zorlanan olay olarak tanımlanır (bkz. stateManager.ts vebaBaslamaliMi,
- * gameEngine.ts'teki oturum.zorlananOlayId ataması, CLAUDE.md §27).
+ * "Dünya olayları". Savaş / zorunlu bağış / küçük kriz tamamen arka planda
+ * (gameEngine.ts'teki periyodik kontrol fonksiyonlarıyla) tetiklenir, hiç olay
+ * ekranı gerektirmez.
+ *
+ * Veba İSTİSNA: hem başlangıcı ("ne kadar korunacaksın?") hem de aktif dönemi
+ * ("kapını biri çaldı — bulaşma riski") gerçek oyuncu kararı gerektirir.
+ *  - `kuresel_veba_baslangici`: `vebada:false` iken zorlanır (vebaBaslamaliMi).
+ *    3 seçenek = 3 korunma kademesi (`veba_koruma` 0/1/2). Korunma para + mutluluk
+ *    maliyetli ve garantili değil: başarısız seçim korunmayı bir kademe düşürür.
+ *  - "veba dönemi" olayları: `gerekliUlke:{vebada:true}` — sadece aktif salgın
+ *    sürerken normal havuza girer; her biri yardım/temas (ahlak+, büyük bulaşma
+ *    riski) ile kaçınma (ahlak−/mutluluk−, güvenli) arasında seçim sunar.
+ *    Bu riskler vebaYillikKontrol'ün yıllık ölüm zarının ÜSTÜNE biner.
  */
 export const OLAY_KURESEL: OlayTanimi[] = [
   {
@@ -14,37 +21,255 @@ export const OLAY_KURESEL: OlayTanimi[] = [
     kategori: "saglik",
     minYas: 18,
     gerekliUlke: { vebada: false },
+    ton: "agir",
     gorsel: "☠️",
-    baslik: "Salgın Haberleri",
+    baslik: "Salgın Kapıda",
     metin:
-      "{bolge} sokaklarında endişeli fısıltılar dolaşıyor: uzak bir kasabada garip bir hastalık baş göstermiş, hızla yayılıyormuş. Bazı komşuların da benzer belirtiler gösterdiği söyleniyor. Nasıl davranacaksın?",
+      "{bolge} sokaklarında ölüm arabaları dolaşmaya başladı. Uzak kasabalardan gelen haberler tek şeyi söylüyor: hastalık hızla yayılıyor ve kimseyi ayırt etmiyor. Önümüzdeki yıllar boyunca bu salgının gölgesinde yaşayacaksın. Kendini nasıl koruyacaksın?",
     secenekler: [
       {
-        metin: "Önlem al: mesafeni koru, temizliğe dikkat et, kalabalıktan uzak dur",
-        baseBasariSansi: 90,
+        metin: "Servetini kullan: şehri terk et, kırsalda bir yer kirala, çevreni tamamen izole et",
+        baseBasariSansi: 80,
+        maliyet: 15,
+        kilitAciklamasi: "Kırsala çekilip aylarca geçinecek paran yok.",
+        ipucu: "En güçlü korunma; pahalı, morali düşürür, 'kaçtı' dedikodusu",
         basariliSonuc: {
           ulke_etkisi: { vebada: true },
-          etiket_ekle: ["veba_onlem_alindi"],
+          veba_koruma: 2,
+          para: -15,
+          mutluluk: -10,
+          un: -4,
           mesaj:
-            "Aldığın önlemler sayesinde kendini nispeten güvende hissediyorsun, ama salgın yine de {bolge}'yi sarmış durumda.",
+            "Şehrin kapılarından çıkarken arkanda bıraktığın yüzleri unutamayacaksın. Ama uzakta, temiz havada, salgının en ağır yıllarını atlatma şansın çok daha yüksek.",
         },
         basarisizSonuc: {
           ulke_etkisi: { vebada: true },
-          saglik: -5,
-          mesaj: "Ne kadar dikkat etsen de hastalık seni de az da olsa etkilemiş görünüyor.",
+          veba_koruma: 1,
+          para: -15,
+          mutluluk: -12,
+          saglik: -6,
+          mesaj:
+            "Yola çıktın ama hastalık senden hızlıydı; yol boyunca hasta kervanlarına denk geldin. Yine de şehirde kalmaktan iyidir — kısmen korunuyorsun.",
         },
       },
       {
-        metin: "Her zamanki gibi yaşamaya devam et, abartacak bir şey yok",
-        baseBasariSansi: 70,
+        metin: "Evde sıkı karantina: kapını ördür, erzak stokla, kimseyi içeri alma",
+        baseBasariSansi: 85,
+        maliyet: 6,
+        kilitAciklamasi: "Aylarca yetecek erzağı stoklayacak paran yok.",
+        ipucu: "Orta düzey korunma; erzak masrafı, kapalı kalmak morali yer",
         basariliSonuc: {
           ulke_etkisi: { vebada: true },
-          mesaj: "Alışkanlıklarını değiştirmedin; şimdilik şanslısın ama salgın {bolge}'de yayılıyor.",
+          veba_koruma: 1,
+          para: -6,
+          mutluluk: -6,
+          mesaj:
+            "Aylarca dört duvar arasında, dışarıdaki çığlıkları dinleyerek yaşadın. Sıkıcı ve boğucuydu ama işe yaradı.",
         },
         basarisizSonuc: {
           ulke_etkisi: { vebada: true },
+          veba_koruma: 0,
+          para: -6,
+          mutluluk: -8,
+          saglik: -4,
+          mesaj:
+            "Bir noktada karantinan delindi — teslimat, komşu, bir akraba... Fark etmeden içeri girdi. Artık pek bir korunman kalmadı.",
+        },
+      },
+      {
+        metin: "Hayatına normal devam et: kaçacak yer yok, kader ne yazdıysa",
+        baseBasariSansi: 60,
+        ipucu: "Hiç korunma yok; bedava, korkak görünmezsin",
+        basariliSonuc: {
+          ulke_etkisi: { vebada: true },
+          veba_koruma: 0,
+          un: 2,
+          mesaj:
+            "Kimse seni saklandığın için ayıplayamaz. Salgın {bolge}'yi sardı; sen de herkesle aynı kaderi paylaşıyorsun.",
+        },
+        basarisizSonuc: {
+          ulke_etkisi: { vebada: true },
+          veba_koruma: 0,
+          saglik: -10,
+          mesaj:
+            "İlk haftalarda çarşıda geçirdiğin bir gün yetti. Hafif bir ateşle uyandın — bu sefer atlattın, ama salgın daha yeni başlıyor.",
+        },
+      },
+    ],
+  },
+
+  {
+    id: "veba_kapiyi_calan",
+    kategori: "sosyal",
+    minYas: 18,
+    gerekliUlke: { vebada: true },
+    ton: "agir",
+    agirlik: 1.4,
+    gorsel: "🚪",
+    baslik: "Kapını Çalan",
+    metin:
+      "Gece yarısı kapın çalınıyor. Uzaktan bir akraban, titreyerek, ateşler içinde eşikte duruyor. Şehirde gidecek yeri kalmamış. İçeri alırsan hastalığı eve sokabilirsin; almazsan onu ölüme terk edersin.",
+    secenekler: [
+      {
+        metin: "İçeri al, elinden geleni yap",
+        baseBasariSansi: 45,
+        ipucu: "İtibar ve vicdan kazanırsın ama bulaşma riski yüksek",
+        basariliSonuc: {
+          ahlak: 8,
+          mutluluk: 5,
+          un: 3,
+          mesaj: "Günlerce başında bekledin. İyileşti. Komşular bunu konuştu — merhametli biri olduğun bilindi.",
+        },
+        basarisizSonuc: {
+          saglik: -22,
+          olum_sansi: 12,
+          ahlak: 5,
+          mesaj: "Onu kaybettin, üstüne hastalık sana da bulaştı. Haftalarca ateşle boğuştun.",
+        },
+      },
+      {
+        metin: "Kapıyı açma, uzaklaşmasını söyle",
+        baseBasariSansi: 90,
+        ipucu: "Güvenli ama vicdan yükü ağır",
+        basariliSonuc: {
+          ahlak: -6,
+          mutluluk: -5,
+          mesaj: "Kapının ardında kesilen o ses yıllarca aklından çıkmayacak. Ama eve hastalık girmedi.",
+        },
+        basarisizSonuc: {
+          saglik: -4,
+          mutluluk: -4,
+          mesaj: "Kapı aralığından konuşurken bile fazla yaklaştın; birkaç gün tedirgin bekledin.",
+        },
+      },
+    ],
+  },
+
+  {
+    id: "veba_cenaze",
+    kategori: "din",
+    minYas: 18,
+    gerekliUlke: { vebada: true },
+    ton: "agir",
+    agirlik: 1.3,
+    gorsel: "⚰️",
+    baslik: "Salgında Bir Cenaze",
+    metin:
+      "Yakın tanıdığın biri vebadan öldü. Cenazesi bugün. Salgın günlerinde kalabalık bir cenazeye gitmek tehlikeli, ama gitmemek de vefasızlık sayılır.",
+    secenekler: [
+      {
+        metin: "Cenazeye git, son görevini yap",
+        baseBasariSansi: 50,
+        ipucu: "Huzur ve saygınlık; kalabalıkta bulaşma riski",
+        basariliSonuc: {
+          mutluluk: 4,
+          ahlak: 4,
+          un: 2,
+          mesaj: "Toprağa verilişine tanık oldun. İçin biraz olsun rahatladı; insanlar orada olduğunu gördü.",
+        },
+        basarisizSonuc: {
+          saglik: -18,
+          olum_sansi: 8,
+          mesaj: "Cenazede omuz omuza durduğun birinden kaptın. Sonraki günler ağır geçti.",
+        },
+      },
+      {
+        metin: "Uzaktan dua et, kalabalığa karışma",
+        baseBasariSansi: 92,
+        basariliSonuc: {
+          mutluluk: -3,
+          mesaj: "Evinden, alçak sesle dua ettin. Gidememek içini burktu ama sağlığını korudun.",
+        },
+        basarisizSonuc: {
+          saglik: -3,
+          mesaj: "Mezarlığın kenarından izlerken bile fazla yaklaştın sayıldı; günlerce kendini kolladın.",
+        },
+      },
+    ],
+  },
+
+  {
+    id: "veba_pazarda_temas",
+    kategori: "saglik",
+    minYas: 18,
+    gerekliUlke: { vebada: true },
+    agirlik: 1.3,
+    gorsel: "😷",
+    baslik: "Çarşıda Bir Temas",
+    metin:
+      "Erzak alırken öksüren, yüzü kızarmış biri sana çarptı ve kalabalığa karıştı. Belki bir şeyi yoktu. Belki de hastalığı taşıyordu. Ne yapacaksın?",
+    secenekler: [
+      {
+        metin: "Sakin ol, doğruca eve git, iyice yıkan ve bekle",
+        baseBasariSansi: 80,
+        ipucu: "Ucuz ve makul; yine de küçük bir risk kalır",
+        basariliSonuc: {
+          mutluluk: -2,
+          mesaj: "Birkaç gün huzursuz bekledin ama bir belirti çıkmadı. Şanslıydın.",
+        },
+        basarisizSonuc: {
+          saglik: -12,
+          mesaj: "Üçüncü gün ateşin çıktı. Hafif atlattın ama bir süre yatakta kaldın.",
+        },
+      },
+      {
+        metin: "Hemen bir şifacıya koş, tütsü ve merhem yaptır",
+        baseBasariSansi: 66,
+        maliyet: 3,
+        kilitAciklamasi: "Şifacıya verecek paran yok.",
+        ipucu: "Para harcarsın; işe yararsa rahatlarsın",
+        basariliSonuc: {
+          para: -3,
+          saglik: 2,
+          mutluluk: 2,
+          mesaj: "Şifacının işlemleri belki tıbben değil ama ruhen iyi geldi; rahat bir nefes aldın.",
+        },
+        basarisizSonuc: {
+          para: -3,
           saglik: -8,
-          mesaj: "Dikkatsizliğinin bedelini hemen ödedin: hastalık seni de bulmuş.",
+          mesaj: "Şifacının tütsüsü fayda etmedi; birkaç gün sonra yine de hastalandın.",
+        },
+      },
+    ],
+  },
+
+  {
+    id: "veba_hasta_bakiciligi",
+    kategori: "sosyal",
+    minYas: 18,
+    gerekliUlke: { vebada: true },
+    ton: "agir",
+    agirlik: 1.1,
+    gorsel: "🕯️",
+    baslik: "Hasta Bakıcılığı Teklifi",
+    metin:
+      "Zengin bir hane, vebalı yakınlarına bakacak, ölülerini kaldıracak birini arıyor. Ücret yüksek — çünkü bu işe kimse yanaşmıyor. Kabul edersen hem para hem de büyük bir bulaşma riski.",
+    secenekler: [
+      {
+        metin: "İşi kabul et, hastalara bak",
+        baseBasariSansi: 40,
+        ipucu: "İyi para + itibar; ölümcül bulaşma riski",
+        basariliSonuc: {
+          para: 25,
+          ahlak: 6,
+          un: 4,
+          mesaj: "Aylarca ölümün içinde çalıştın ve sağ çıktın. Cebin doldu, adın 'cesur' diye anıldı.",
+        },
+        basarisizSonuc: {
+          saglik: -25,
+          olum_sansi: 15,
+          mesaj: "Baktığın hastalardan biri sana da bulaştırdı. Bu kez hastalık seni de yatağa düşürdü.",
+        },
+      },
+      {
+        metin: "Reddet, bu iş ölüm demek",
+        baseBasariSansi: 95,
+        basariliSonuc: {
+          mesaj: "Parayı geri çevirdin. Aç ama sağ kaldın.",
+        },
+        basarisizSonuc: {
+          para: -2,
+          mesaj: "Reddettin ama teklifi getiren adamla fazla yakın konuştun; birkaç gün tedirgin geçti.",
         },
       },
     ],

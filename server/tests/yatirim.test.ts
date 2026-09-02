@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { yeniOyun, mesleğiAta, yatirimYap, yatirimConfigGetir, finansGetir } from "../src/game/gameEngine";
+import { maasCarpaniUygula, MAAS_CARPANI_TAVAN } from "../src/game/stateManager";
 
 describe("kendi_isi yatırımı", () => {
   it("maliyet her tekrarda artar ve asla 0 veya 5 ile bitmez", async () => {
@@ -37,25 +38,26 @@ describe("kendi_isi yatırımı", () => {
     expect(sonrakiConfig.kendiIsiMaliyeti).toBeGreaterThan(oncekiConfig.kendiIsiMaliyeti);
   });
 
-  it("Asker teçhizatı tavana ulaşınca yatırım ordu mevcuduna yönlenir", async () => {
+  it("yatırım meslek metriğine dokunmaz, yıllık maaşı kalıcı olarak artırır", async () => {
     const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
     await mesleğiAta(state.id, "Asker");
     state.para = 1_000_000;
-    state.ordu_techizat_seviyesi = 100;
+    const eskiTechizat = state.ordu_techizat_seviyesi;
     const eskiMevcut = state.ordu_mevcudu;
+    const eskiMaas = state.maas_yillik;
 
     await yatirimYap(state.id);
 
-    expect(state.ordu_techizat_seviyesi).toBe(100);
-    expect(state.ordu_mevcudu).toBeGreaterThan(eskiMevcut);
+    expect(state.ordu_techizat_seviyesi).toBe(eskiTechizat);
+    expect(state.ordu_mevcudu).toBe(eskiMevcut);
+    expect(state.maas_yillik).toBeGreaterThan(eskiMaas);
   });
 
-  it("Asker hem teçhizat hem ordu mevcudu tavandayken yatırım hata fırlatır ve para düşülmez", async () => {
+  it("maaş çarpanı tavana ulaşınca yatırım hata fırlatır ve para düşülmez", async () => {
     const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
-    await mesleğiAta(state.id, "Asker");
+    await mesleğiAta(state.id, "Tüccar");
     state.para = 1_000_000;
-    state.ordu_techizat_seviyesi = 100;
-    state.ordu_mevcudu = 300;
+    maasCarpaniUygula(state, MAAS_CARPANI_TAVAN + 1, true); // doğrudan tavana sabitle
     const oncekiPara = state.para;
 
     await expect(yatirimYap(state.id)).rejects.toThrow();
@@ -70,10 +72,10 @@ describe("kendi_isi yatırımı", () => {
 });
 
 describe("finans ekranı tutarlılığı", () => {
-  it("netYillik, zenginlik vergisi dahil tüm gider kalemlerini hesaba katar", async () => {
+  it("netYillik, tüm gider kalemlerinin toplamını hesaba katar", async () => {
     const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
     await mesleğiAta(state.id, "Tüccar");
-    state.para = 5000; // zenginlik vergisi eşiğinin (500, nakit+mülk toplamına göre) üstünde, vergi kalemi devreye girsin
+    state.para = 5000;
 
     const finans = await finansGetir(state.id);
     const gercekToplamGider =
@@ -81,10 +83,11 @@ describe("finans ekranı tutarlılığı", () => {
       finans.giderKalemleri.konut +
       finans.giderKalemleri.ekip +
       finans.giderKalemleri.evcilHayvan +
-      finans.giderKalemleri.vergi +
       finans.giderKalemleri.savasVergisi;
 
-    expect(finans.giderKalemleri.vergi).toBeGreaterThan(0);
+    // Zengin bir karakterde bile artık pasif "zenginlik vergisi" kalemi YOK
+    // (yerini 5 yılda bir tetiklenen zorunlu bağış aldı, §27).
+    expect(finans.giderKalemleri).not.toHaveProperty("vergi");
     // Para artık 2 ondalık basamağa yuvarlanıyor (paraYuvarla); toBeCloseTo kayan
     // nokta kalıntılarını (ör. 7.9399999999999995) tolere eder.
     expect(finans.netYillik).toBeCloseTo(finans.maasYillik - gercekToplamGider, 2);

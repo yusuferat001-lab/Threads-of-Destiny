@@ -129,7 +129,7 @@ describe("ünvan sistemi (uçtan uca)", () => {
       state.yas = 25;
       state.para = 500;
       state.saglik = 100;
-      state.tur_sayisi = 10; // seviye 2 terfi eşiğini (tur_sayisi:4, para:150) karşılasın diye
+      state.tur_sayisi = 10; // olgun bir kariyer bağlamı (rütbe reformu sonrası eşikler kariyer_puani'ne bağlı, §14)
       await mesleğiAta(state.id, "Tüccar");
 
       while (!bulundu && kalanButce > 0 && state.aktif) {

@@ -1,59 +1,119 @@
 import { Cag } from "../types";
 
+/**
+ * Bir rütbe kademesine geçmek için gereken eşik. `para` KASITLI olarak yok —
+ * sürekli harcanan nakde bağlı bir koşul, oyuncunun mekanikleri kullandıkça
+ * sessizce rütbe kaybetmesine yol açıyordu. Yerine tek monoton sayaç
+ * `kariyer_puani` (hiç azalmaz) + mesleğe özgü karakter statı geçti.
+ */
 export interface RutbeEsigi {
-  tur_sayisi?: number;
+  /** state.kariyer_puani bu değere ulaşmalı (yıllık kıdem + meslek-kategori başarıları + kendi işine yatırım). */
+  kariyer_puani: number;
+  /** Asker & Tüccar: bu ün gerekir (her kademede). */
   un?: number;
-  para?: number;
+  /** Din Adamı: bu ahlak gerekir (her kademede). */
   ahlak?: number;
 }
 
 export interface RutbeTanimi {
-  /** Seviye 1, 2 ve 3 için sırasıyla unvan. */
-  unvanlar: [string, string, string];
-  seviye2Esik: RutbeEsigi;
-  seviye3Esik: RutbeEsigi;
+  /** Seviye 1..5 için sırasıyla unvan. */
+  unvanlar: [string, string, string, string, string];
+  /** esikler[0] → seviye 2, esikler[1] → 3, esikler[2] → 4, esikler[3] → 5. */
+  esikler: [RutbeEsigi, RutbeEsigi, RutbeEsigi, RutbeEsigi];
 }
 
 /**
- * Her meslek + çağ kombinasyonu için üç kademeli rütbe tanımı. Terfi,
- * kıdem (tur_sayisi) ile birlikte mesleğe özgü bir ikinci koşula bağlıdır:
- * Asker'de ün (savaş şöhreti), Tüccar'da servet, Din Adamı'nda ahlak.
+ * Bir terfiden sonra, HEDEF kademeye çıkabilmek için son terfiden bu kadar oyun
+ * yılı geçmiş olmalı (state.yil - state.son_terfi_yili >= cooldown). Kademe
+ * yükseldikçe bekleme uzar; kariyer_puani fazlasıyla dolsa bile üst üste terfi
+ * edilemez. rutbeGuncelle ayrıca çağrı başına en fazla +1 kademe ilerletir.
+ */
+export const TERFI_COOLDOWN: Record<number, number> = { 2: 0, 3: 2, 4: 2, 5: 8 };
+
+/**
+ * Seviye 1..5 için maaşa çarpımsal, kalıcı rütbe primi (hesaplaMaasYillik içinde
+ * TEK bir çarpan kalemi olarak girer — kıdem/itibar/enflasyonla da çarpılır).
+ * BİLEŞİK: her kademe bir öncekinin ~%20 üstü (1.2^(seviye-1)). Yani S3 primi
+ * "S2 primi × 1.2"dir, baz maaşa göre ayrı bir +%X değil — S1..S5 sırasıyla
+ * ×1.00 / ×1.20 / ×1.44 / ×1.73 / ×2.07.
+ */
+const RUTBE_MAAS_ARTIS_ORANI = 1.2;
+export const RUTBE_MAAS_CARPANI: [number, number, number, number, number] = [0, 1, 2, 3, 4].map(
+  (i) => Math.round(Math.pow(RUTBE_MAAS_ARTIS_ORANI, i) * 100) / 100
+) as [number, number, number, number, number];
+
+/** Hayatta geçen her yıl için pasif kıdem kazancı (kariyer_puani). */
+export const KARIYER_PUANI_YILLIK = 2;
+/** Mesleğine uygun kategoride (savas/ticaret/din) başarılı olunan her olay. */
+export const KARIYER_PUANI_KATEGORI_BASARI = 3;
+/** Kendi işine yapılan her yatırım (yatirimYap). Yatırım artık pahalı ve tavanlı olduğu için bu katkı da düşürüldü (12 → 8). */
+export const KARIYER_PUANI_YATIRIM = 8;
+
+/**
+ * Her meslek + çağ için 5 kademeli rütbe merdiveni. Eşikler çağdan bağımsız
+ * (yalnız unvan metinleri çağa göre değişir). Ortalama başarılı bir kariyerin
+ * seviye 4'te bitmesi, seviye 5'in nadir kalması hedeflenir; sayılar
+ * scripts/simulateKisilikler.ts ile ayarlanır.
  */
 export const RUTBELER: Record<string, Record<Cag, RutbeTanimi>> = {
   Asker: {
     "Orta Çağ": {
-      unvanlar: ["Er", "Silahşor", "Kumandan"],
-      seviye2Esik: { tur_sayisi: 4, un: 30 },
-      seviye3Esik: { tur_sayisi: 9, un: 55 },
+      unvanlar: ["Er", "Onbaşı", "Silahşor", "Kumandan", "Serdar"],
+      esikler: [
+        { kariyer_puani: 10, un: 20 },
+        { kariyer_puani: 24, un: 32 },
+        { kariyer_puani: 44, un: 42 },
+        { kariyer_puani: 160, un: 72 },
+      ],
     },
     "Sanayi Devrimi": {
-      unvanlar: ["Er", "Çavuş", "Yüzbaşı"],
-      seviye2Esik: { tur_sayisi: 4, un: 30 },
-      seviye3Esik: { tur_sayisi: 9, un: 55 },
+      unvanlar: ["Er", "Onbaşı", "Çavuş", "Yüzbaşı", "Binbaşı"],
+      esikler: [
+        { kariyer_puani: 10, un: 20 },
+        { kariyer_puani: 24, un: 32 },
+        { kariyer_puani: 44, un: 42 },
+        { kariyer_puani: 160, un: 72 },
+      ],
     },
   },
   Tüccar: {
     "Orta Çağ": {
-      unvanlar: ["Çırak Tüccar", "Pazarcı", "Lonca Ustası"],
-      seviye2Esik: { tur_sayisi: 4, para: 150 },
-      seviye3Esik: { tur_sayisi: 9, para: 500 },
+      unvanlar: ["Çırak Tüccar", "Seyyar Satıcı", "Pazarcı", "Lonca Ustası", "Lonca Reisi"],
+      esikler: [
+        { kariyer_puani: 10, un: 10 },
+        { kariyer_puani: 24, un: 17 },
+        { kariyer_puani: 44, un: 25 },
+        { kariyer_puani: 160, un: 50 },
+      ],
     },
     "Sanayi Devrimi": {
-      unvanlar: ["Katip Çırak", "Şirket Ortağı", "Fabrika Patronu"],
-      seviye2Esik: { tur_sayisi: 4, para: 200 },
-      seviye3Esik: { tur_sayisi: 9, para: 700 },
+      unvanlar: ["Kâtip Çırak", "Tezgâhtar", "Şirket Ortağı", "Fabrika Patronu", "Sanayi Baronu"],
+      esikler: [
+        { kariyer_puani: 10, un: 10 },
+        { kariyer_puani: 24, un: 17 },
+        { kariyer_puani: 44, un: 25 },
+        { kariyer_puani: 160, un: 50 },
+      ],
     },
   },
   "Din Adamı": {
     "Orta Çağ": {
-      unvanlar: ["Acemi Rahip", "Vaiz", "Başrahip"],
-      seviye2Esik: { tur_sayisi: 4, ahlak: 60 },
-      seviye3Esik: { tur_sayisi: 9, ahlak: 75 },
+      unvanlar: ["Acemi Rahip", "Rahip", "Vaiz", "Başrahip", "Piskopos"],
+      esikler: [
+        { kariyer_puani: 10, ahlak: 50 },
+        { kariyer_puani: 24, ahlak: 58 },
+        { kariyer_puani: 44, ahlak: 66 },
+        { kariyer_puani: 160, ahlak: 86 },
+      ],
     },
     "Sanayi Devrimi": {
-      unvanlar: ["Papaz Yardımcısı", "Vaiz", "Baş Vaiz"],
-      seviye2Esik: { tur_sayisi: 4, ahlak: 60 },
-      seviye3Esik: { tur_sayisi: 9, ahlak: 75 },
+      unvanlar: ["Papaz Yardımcısı", "Papaz", "Vaiz", "Başpapaz", "Piskopos"],
+      esikler: [
+        { kariyer_puani: 10, ahlak: 50 },
+        { kariyer_puani: 24, ahlak: 58 },
+        { kariyer_puani: 44, ahlak: 66 },
+        { kariyer_puani: 160, ahlak: 86 },
+      ],
     },
   },
 };
@@ -63,10 +123,10 @@ export const RUTBELER: Record<string, Record<Cag, RutbeTanimi>> = {
  * "Rahip"/"Papaz" gibi terimler yalnızca Hristiyan cemaatler için doğrudur).
  * Eşikler her din için aynı kalır; sadece unvan metinleri değişir.
  */
-const DIN_ADAMI_UNVANLARI: Record<string, Record<Cag, [string, string, string]>> = {
+const DIN_ADAMI_UNVANLARI: Record<string, Record<Cag, [string, string, string, string, string]>> = {
   "Sünni İslam": {
-    "Orta Çağ": ["Medrese Talebesi", "Vaiz", "Baş İmam"],
-    "Sanayi Devrimi": ["İmam Yardımcısı", "Vaiz", "Baş İmam"],
+    "Orta Çağ": ["Medrese Talebesi", "Müezzin", "Vaiz", "İmam", "Baş İmam"],
+    "Sanayi Devrimi": ["Medrese Talebesi", "Müezzin", "Vaiz", "İmam", "Baş İmam"],
   },
 };
 
@@ -81,4 +141,10 @@ function dinAdamiRutbeTanimiGetir(cag: Cag, dinKultur?: string | null): RutbeTan
 export function rutbeTanimiGetir(meslek: string, cag: Cag, dinKultur?: string | null): RutbeTanimi | undefined {
   if (meslek === "Din Adamı") return dinAdamiRutbeTanimiGetir(cag, dinKultur);
   return RUTBELER[meslek]?.[cag];
+}
+
+/** Seviye (1..5) için maaş primini döner; aralık dışı güvenli. */
+export function rutbeMaasCarpani(seviye: number): number {
+  const i = Math.max(0, Math.min(RUTBE_MAAS_CARPANI.length - 1, Math.round(seviye) - 1));
+  return RUTBE_MAAS_CARPANI[i];
 }

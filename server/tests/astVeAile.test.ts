@@ -50,6 +50,18 @@ const ERKEK_ISIMLERI: Record<string, string[]> = {
   Rusya: ["Ivan", "Nikolai", "Mikhail", "Dmitri", "Pyotr", "Sergei"],
 };
 
+/** Test yardımcısı: eşikleri fazlasıyla doldurup yılı ilerleterek karakteri hedef kademeye çıkarır. */
+function terfiEttir(state: ReturnType<typeof createCharacter>, hedefSeviye: number): void {
+  let guard = 0;
+  while (state.rutbe_seviye < hedefSeviye && guard++ < 20) {
+    state.kariyer_puani = 999;
+    state.un = 100;
+    state.ahlak = 100;
+    state.yil += 10; // her kademe cooldown'unu fazlasıyla aşar
+    rutbeGuncelle(state);
+  }
+}
+
 describe("astlar", () => {
   it("meslek seçildiğinde (rütbe seviye 1) hiç ast yok", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
@@ -61,8 +73,8 @@ describe("astlar", () => {
   it("seviye 2'ye terfi edince tam 1 ast, kendinden düşük (seviye 1) unvanla eklenir", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
     mesleğiSec(state, "Asker");
-    state.tur_sayisi = 4;
-    state.un = 35;
+    state.kariyer_puani = 20;
+    state.un = 40;
     rutbeGuncelle(state);
     expect(state.rutbe_seviye).toBe(2);
     expect(state.astlar).toHaveLength(1);
@@ -77,31 +89,30 @@ describe("astlar", () => {
   it("seviye 3'e terfi edince 2. bir ast (seviye 2 unvanlı) eklenir, ilk astın ismi değişmez", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
     mesleğiSec(state, "Asker");
-    state.tur_sayisi = 4;
-    state.un = 35;
+    state.kariyer_puani = 20;
+    state.un = 40;
     rutbeGuncelle(state);
     const ilkAstIsim = state.astlar[0].isim;
 
-    state.tur_sayisi = 9;
-    state.un = 60;
+    state.kariyer_puani = 60;
+    state.un = 55;
+    state.yil += 5; // seviye 3 cooldown'u (3 yıl) aşılır
     rutbeGuncelle(state);
 
     expect(state.rutbe_seviye).toBe(3);
     expect(state.astlar).toHaveLength(2);
     expect(state.astlar[0].isim).toBe(ilkAstIsim);
     expect(state.astlar[0].rutbe).toBe("Er");
-    expect(state.astlar[1].rutbe).toBe("Silahşor");
+    expect(state.astlar[1].rutbe).toBe("Onbaşı");
     expect(state.astlar[1].isim).not.toBe(state.astlar[0].isim);
   });
 
-  it("amir_adi seviye 3'te null olsa da (üst yok) astlar dolu kalır — en tepede bile ast eksikliği olmaz", () => {
+  it("amir_adi en üst kademede (5) null olsa da astlar dolu kalır — en tepede bile ast eksikliği olmaz", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
     mesleğiSec(state, "Tüccar");
-    state.tur_sayisi = 9;
-    state.para = 500;
-    rutbeGuncelle(state);
-    expect(state.rutbe_seviye).toBe(3);
+    terfiEttir(state, 5);
+    expect(state.rutbe_seviye).toBe(5);
     expect(state.amir_adi).toBeNull();
-    expect(state.astlar).toHaveLength(2);
+    expect(state.astlar).toHaveLength(4);
   });
 });

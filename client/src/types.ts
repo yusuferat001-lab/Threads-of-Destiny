@@ -31,7 +31,7 @@ export interface VebaDurumu {
   etkiBitisYili: number;
   konutKiraCarpani: number;
   gelirCarpani: number;
-  onlemAlindiMi: boolean;
+  korumaSeviyesi: number;
 }
 
 export interface UlkeDurumu {
@@ -87,7 +87,12 @@ export interface CharacterState {
   yas: number;
   meslek: string;
   rutbe: string;
+  /** 1-5. Yalnızca artar; asla düşmez. */
   rutbe_seviye: number;
+  /** Rütbe ilerlemesini besleyen monoton sayaç: yıllık kıdem + meslek-kategori başarıları + kendi işine yatırım. */
+  kariyer_puani: number;
+  /** Son terfinin oyun yılı (bir sonraki terfinin cooldown referansı). */
+  son_terfi_yili: number;
   sehir_yonetim_seviyesi: number;
   sehir_yonetim_unvan: string | null;
   cag: string;
@@ -122,6 +127,8 @@ export interface CharacterState {
 
   suc_seviyesi: number;
   mulkler: MulkTuru[];
+  /** Her mülk için bir sonraki periyodik bakım/vergi masrafına kalan yıl (7-10 yılda bir). */
+  mulk_bakim_kalan: Partial<Record<MulkTuru, number>>;
   magaza_envanteri: SahipOlunanEsya[];
   magaza_temel_kilit_bitis_yili: number | null;
   alkol_ziyaret_sayisi: number;
@@ -161,10 +168,12 @@ export interface CharacterState {
   ulke: UlkeDurumu;
 
   son_zorunlu_bagis_yili: number | null;
+  son_zenginlik_sizinti_yili: number | null;
   buyuk_savas: BuyukSavas | null;
   son_buyuk_savas_bitis_yili: number | null;
   veba: VebaDurumu | null;
   veba_gecirdi: boolean;
+  son_veba_bitis_yili: number | null;
   kucuk_kriz_sonraki_yil: number;
   gida_fiyat_sok_bitis_yili: number | null;
 
@@ -238,7 +247,9 @@ export interface SonucEtkisi {
   etiket_sil?: string[];
   durum_ekle?: Durum;
   ulke_etkisi?: Partial<UlkeDurumu>;
+  veba_koruma?: number;
   maas_carpani?: number;
+  es_ata?: boolean;
   es_puani?: number;
   es_kaybet?: boolean;
   cocuk_ekle?: number;
@@ -318,6 +329,7 @@ export interface YasamSecenegiTanimi {
   maliyetYillik: number;
   saglikEtkisiYillik?: number;
   mutlulukEtkisiYillik?: number;
+  unEtkisiYillik?: number;
 }
 
 export interface GiderKalemleri {
@@ -325,9 +337,37 @@ export interface GiderKalemleri {
   konut: number;
   ekip: number;
   evcilHayvan: number;
-  vergi: number;
   /** Aktif büyük savaş sırasında pasif gelirden ek olarak kesilen "savaş vergisi"; savaş yokken 0. */
   savasVergisi: number;
+}
+
+export interface MaasKirilimKalemi {
+  ad: string;
+  /** Yüzde katkı: +40 → maaşı ×1.40; −15 → ×0.85. */
+  yuzde: number;
+}
+
+export interface MaasKirilim {
+  tabanMaas: number;
+  maasYillik: number;
+  rutbeAd: string;
+  rutbeSeviye: number;
+  /** Rütbe priminin yüzdesi. Rütbe asla düşmediği için kalıcı. */
+  rutbeYuzde: number;
+  /** Kıdem + şehir yönetimi + kalıcı ödüllerin birleşik yüzdesi. Kalıcı. */
+  kariyerYuzde: number;
+  kariyerKalemler: MaasKirilimKalemi[];
+  /** "İtibarın": mutluluk + şöhret + ahlak bant yüzdelerinin toplamı (±). Değişken. */
+  itibarYuzde: number;
+  itibarKalemler: MaasKirilimKalemi[];
+  /** Enflasyon + ekonomi + savaş + salgın + geçici durumların birleşik yüzdesi. Dönemsel — dünya değiştikçe değişir. */
+  donemselYuzde: number;
+  donemselKalemler: MaasKirilimKalemi[];
+}
+
+export interface DunyaFinansEtkisi {
+  ikon: string;
+  metin: string;
 }
 
 export interface FinansOzeti {
@@ -336,6 +376,11 @@ export interface FinansOzeti {
   netYillik: number;
   enflasyonYuzdesi: number;
   gayrimenkulDegeri: number;
+  maasKirilim: MaasKirilim;
+  /** Mülklerden gelen yıllık tahmini net gelir — maaşın dışında ayrı akış. */
+  gayrimenkulYillikGelir: number;
+  /** Şu an bütçeyi/sağlığı etkileyen dünya durumları (ekonomi, savaş, salgın, kıtlık, enflasyon, vergi). */
+  dunyaEtkileri: DunyaFinansEtkisi[];
 }
 
 export interface YatirimSonucu {
@@ -364,6 +409,8 @@ export interface MulkKartBilgisi {
   sahipMi: boolean;
   tahminiYillikGetiriYuzdesi: number;
   tahminiYillikGetiriMiktari: number;
+  /** 7-10 yılda bir çıkan bakım/vergi masrafının yıllığa indirgenmiş yaklaşık tutarı. */
+  yillikBakimTahmini: number;
 }
 
 export interface MulkSatinAlSonucu {
@@ -418,6 +465,16 @@ export interface MagazaSatinAlSonucu {
 export interface EnvanterKullanSonucu {
   state: CharacterState;
   mesaj: string;
+}
+
+export type GeriBildirimKategori = 'hata' | 'oneri' | 'diger';
+
+/** Ayarlar ekranındaki "Görüş & Öneri" formunun kullanıcı tarafından doldurulan kısmı;
+ * oyun bağlamı (state.id, çağ, bölge vb.) App.tsx'te ayrıca eklenir. */
+export interface GeriBildirimGirdi {
+  kategori: GeriBildirimKategori;
+  mesaj: string;
+  iletisim?: string;
 }
 
 export type SiralamaTuru = 'genel' | 'en_zengin' | 'en_unlu';

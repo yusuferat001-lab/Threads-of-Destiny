@@ -31,6 +31,8 @@ export function temelUygunMu(olay: OlayTanimi, state: CharacterState): boolean {
   if (olay.maxUn !== undefined && state.un > olay.maxUn) return false;
   if (olay.minMutluluk !== undefined && state.mutluluk < olay.minMutluluk) return false;
   if (olay.maxMutluluk !== undefined && state.mutluluk > olay.maxMutluluk) return false;
+  if (olay.maxSaglik !== undefined && state.saglik > olay.maxSaglik) return false;
+  if (olay.minSaglik !== undefined && state.saglik < olay.minSaglik) return false;
   if (olay.minRakipPuani !== undefined && state.rakip_puani < olay.minRakipPuani) return false;
   if (olay.maxRakipPuani !== undefined && state.rakip_puani > olay.maxRakipPuani) return false;
   if (olay.minEsPuani !== undefined && state.es_puani < olay.minEsPuani) return false;
@@ -173,7 +175,7 @@ function kilitNedeni(secenek: OlaySecenegi, state: CharacterState): string | nul
   }
   if (secenek.minUn !== undefined && state.un < secenek.minUn) {
     const gerekenYildiz = (secenek.minUn / 20).toFixed(1);
-    return `Ünün yetersiz (${gerekenYildiz} yıldız gerekli)`;
+    return `Şöhretin yetersiz (${gerekenYildiz} yıldız gerekli)`;
   }
   if (secenek.minAhlak !== undefined && state.ahlak < secenek.minAhlak) {
     return "Böyle bir teklif için kimse sana güvenmiyor";

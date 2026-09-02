@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import type { KonutTanimi } from '../types';
 import { konutGoruntusuGetir, meslekBinasiGetir } from '../bolgeTema';
 
@@ -15,11 +16,22 @@ interface SahneHotspotlariProps {
 }
 
 /**
- * Oyun sahnesinin (BolgeSahnesi) üstüne binen, tıklanabilir dört nokta:
- * solda meslek+çağa göre işyeri binası, sağda konut kademesine göre büyüyen ev,
- * altta iki küçük "prop" (mağaza/sosyalleşme). Hiçbiri ayrı bir görsel dosyası
- * gerektirmez — konut simgeleri gibi tek bir emoji, boyut/tema ile ayrışır.
+ * Oyun sahnesinin (BolgeSahnesi) arka plan görselinin ÜSTÜNE binen, tıklanabilir dört nokta.
+ * Soldan sağa sabit sıra: 🛒 Mağaza · işyeri binası · ev · 🍷 Sosyalleş — her biri arka plan
+ * resmindeki bir bölgeye denk gelir (sol bina / meydan / boş arsa / sağ bina).
+ *
+ * Kapsayıcı, arka plan görseliyle AYNI en-boy oranına kilitlenir (`--sahne-orani`) ve
+ * `object-fit: contain` gibi ortalanır — böylece noktalar görselin kendisine "yapışır" ve
+ * ekran küçülüp büyüdükçe resimle birlikte ölçeklenir, kaymaz. Konumlar tamamen yüzde
+ * cinsindendir (vw/px yok), bu yüzden viewport genişliğinden bağımsızdır.
  */
+
+// Arka plan görsellerinin gerçek piksel oranları (bkz. public/assets/sahne/<cag>/arka-plan.*)
+const SAHNE_ORANI: Record<string, number> = {
+  'Sanayi Devrimi': 1376 / 768,
+};
+const VARSAYILAN_ORAN = 1920 / 815; // Orta Çağ
+
 export function SahneHotspotlari({
   cag,
   meslek,
@@ -37,12 +49,26 @@ export function SahneHotspotlari({
     ? konutGoruntusuGetir(konutTanimi.id, konutTanimi.ad, konutTanimi.simge, cag)
     : { ad: 'Ev', simge: '🏠' };
   const tierIndex = Math.max(0, konutlar.findIndex((k) => k.id === konutId));
-  const evBuyuklugu = 1.7 + tierIndex * 0.32;
+  const evBuyuklugu = 1.6 + tierIndex * 0.28;
 
   const bina = meslekBinasiGetir(meslek, cag, dinKultur);
+  const oran = SAHNE_ORANI[cag] ?? VARSAYILAN_ORAN;
 
   return (
-    <div className="sahne-hotspotlar">
+    <div className="sahne-hotspotlar" style={{ '--sahne-orani': oran } as CSSProperties}>
+      <button
+        type="button"
+        className="sahne-hotspot sahne-hotspot-magaza"
+        disabled={devreDisi}
+        onClick={onMagaza}
+        title="Mağaza"
+      >
+        <span className="sahne-hotspot-ikon" aria-hidden="true">
+          🛒
+        </span>
+        <span className="sahne-hotspot-etiket">Mağaza</span>
+      </button>
+
       <button
         type="button"
         className="sahne-hotspot sahne-hotspot-isyeri"
@@ -50,7 +76,7 @@ export function SahneHotspotlari({
         onClick={onIsyeri}
         title={`${bina.ad} — İşin`}
       >
-        <span className="sahne-hotspot-ikon" style={{ fontSize: '2.3rem' }} aria-hidden="true">
+        <span className="sahne-hotspot-ikon" style={{ fontSize: '2.1rem' }} aria-hidden="true">
           {bina.simge}
         </span>
         <span className="sahne-hotspot-etiket">İşin</span>
@@ -61,7 +87,7 @@ export function SahneHotspotlari({
         className="sahne-hotspot sahne-hotspot-ev"
         disabled={devreDisi}
         onClick={onEv}
-        title={`${konutGorunum.ad} — Gelir &amp; Gider`}
+        title={`${konutGorunum.ad} — Gelir & Gider`}
       >
         <span className="sahne-hotspot-ikon" style={{ fontSize: `${evBuyuklugu}rem` }} aria-hidden="true">
           {konutGorunum.simge}
@@ -69,33 +95,18 @@ export function SahneHotspotlari({
         <span className="sahne-hotspot-etiket">Evin</span>
       </button>
 
-      <div className="sahne-hotspot-propgrup">
-        <button
-          type="button"
-          className="sahne-hotspot sahne-hotspot-magaza"
-          disabled={devreDisi}
-          onClick={onMagaza}
-          title="Mağaza"
-        >
-          <span className="sahne-hotspot-ikon" aria-hidden="true">
-            🛒
-          </span>
-          <span className="sahne-hotspot-etiket">Mağaza</span>
-        </button>
-
-        <button
-          type="button"
-          className="sahne-hotspot sahne-hotspot-sosyallesme"
-          disabled={devreDisi}
-          onClick={onSosyallesme}
-          title="Sosyalleş"
-        >
-          <span className="sahne-hotspot-ikon" aria-hidden="true">
-            🍷
-          </span>
-          <span className="sahne-hotspot-etiket">Sosyalleş</span>
-        </button>
-      </div>
+      <button
+        type="button"
+        className="sahne-hotspot sahne-hotspot-sosyallesme"
+        disabled={devreDisi}
+        onClick={onSosyallesme}
+        title="Sosyalleş"
+      >
+        <span className="sahne-hotspot-ikon" aria-hidden="true">
+          🍷
+        </span>
+        <span className="sahne-hotspot-etiket">Sosyalleş</span>
+      </button>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import { bolgeTemasiGetir, aranmaYildiz, ahlakEtiketi } from '../bolgeTema';
 import { formatPara } from '../format';
 
@@ -19,6 +20,41 @@ interface UstSeritProps {
   sucSeviyesi: number;
   ulke?: UlkeDurumu;
   hukumdar?: string | null;
+  /** Verilirse ülke adı kutusu tıklanabilir olur ve bu geri çağrı çalışır (ülke bilgisi modalını açar). */
+  onBolgeTikla?: () => void;
+}
+
+/**
+ * Bir sayısal değer her değiştiğinde, değişimin miktarını (delta) ve her seferinde
+ * artan bir "nonce" döndürür. Nonce, animasyonu tekrar oynatmak için React key
+ * olarak kullanılır. İlk render'da tetiklenmez.
+ */
+function useGecisDeltasi(deger: number): { delta: number; nonce: number } {
+  const oncekiRef = useRef(deger);
+  const [durum, setDurum] = useState({ delta: 0, nonce: 0 });
+  useEffect(() => {
+    const fark = deger - oncekiRef.current;
+    oncekiRef.current = deger;
+    if (Math.abs(fark) >= 0.01) {
+      setDurum((d) => ({ delta: fark, nonce: d.nonce + 1 }));
+    }
+  }, [deger]);
+  return durum;
+}
+
+function DeltaRozeti({ deger, nonce, birim }: { deger: number; nonce: number; birim?: string }) {
+  if (nonce === 0 || Math.abs(deger) < 0.01) return null;
+  const pozitif = deger > 0;
+  const gosterim = `${pozitif ? '+' : '−'}${formatPara(Math.abs(deger))}${birim ? ` ${birim}` : ''}`;
+  return (
+    <span
+      key={nonce}
+      className={`ust-serit-delta ${pozitif ? 'ust-serit-delta-artis' : 'ust-serit-delta-azalis'}`}
+      aria-hidden="true"
+    >
+      {gosterim}
+    </span>
+  );
 }
 
 function StatModulu({
@@ -26,21 +62,30 @@ function StatModulu({
   etiket,
   deger,
   tehlike,
+  takip,
+  takipBirim,
 }: {
   ikon: string;
   etiket: string;
   deger: string | number;
   tehlike?: boolean;
+  /** Verilirse: bu sayı değiştikçe değer kutusu yanıp söner + bir delta rozeti uçar. */
+  takip?: number;
+  takipBirim?: string;
 }) {
+  const { delta, nonce } = useGecisDeltasi(takip ?? 0);
+  const yon = takip === undefined || nonce === 0 ? '' : delta > 0 ? ' ust-serit-modul-deger-artis' : ' ust-serit-modul-deger-azalis';
   return (
     <div className="ust-serit-modul">
+      {takip !== undefined && <DeltaRozeti key={nonce} deger={delta} nonce={nonce} birim={takipBirim} />}
       <span className="ust-serit-modul-ikon" aria-hidden="true">
         {ikon}
       </span>
       <div className="ust-serit-modul-metin">
         <span className="ust-serit-modul-etiket">{etiket}</span>
         <span
-          className={`ust-serit-modul-deger${tehlike ? ' ust-serit-modul-deger-tehlike' : ''}`}
+          key={`${etiket}-${nonce}`}
+          className={`ust-serit-modul-deger${tehlike ? ' ust-serit-modul-deger-tehlike' : ''}${yon}`}
           title={typeof deger === 'string' ? deger : undefined}
         >
           {deger}
@@ -56,8 +101,18 @@ function AranmaModulu({ sucSeviyesi }: { sucSeviyesi: number }) {
   const yildiz = aranmaYildiz(sucSeviyesi);
   const slotlar = Array.from({ length: 5 }, (_, i) => Math.max(0, Math.min(1, yildiz - i)));
   const tehlike = sucSeviyesi >= 45;
+  const { delta, nonce } = useGecisDeltasi(sucSeviyesi);
   return (
     <div className="ust-serit-modul">
+      {nonce > 0 && Math.abs(delta) >= 0.5 && (
+        <span
+          key={nonce}
+          className={`ust-serit-delta ${delta > 0 ? 'ust-serit-delta-azalis' : 'ust-serit-delta-artis'}`}
+          aria-hidden="true"
+        >
+          {delta > 0 ? '▲ aranıyorsun' : '▼ iz soğudu'}
+        </span>
+      )}
       <span className="ust-serit-modul-ikon" aria-hidden="true">
         🚨
       </span>
@@ -94,6 +149,7 @@ export function UstSerit({
   sucSeviyesi,
   ulke,
   hukumdar,
+  onBolgeTikla,
 }: UstSeritProps) {
   const tema = bolgeTemasiGetir(bolge);
   return (
@@ -101,10 +157,17 @@ export function UstSerit({
       <div className="ust-serit-moduller">
         <StatModulu ikon="📅" etiket="Yıl" deger={yil} />
         <StatModulu ikon="🎂" etiket="Yaş" deger={yas} />
-        <StatModulu ikon="❤️" etiket="Can" deger={saglik} tehlike={saglik <= 30} />
-        <StatModulu ikon="💰" etiket="Para" deger={`${formatPara(para)} ${paraBirimi}`} tehlike={para < 0} />
-        <StatModulu ikon="⚖️" etiket="Ahlak" deger={ahlakEtiketi(ahlak)} />
-        <StatModulu ikon="🙂" etiket="Mutluluk" deger={mutluluk} />
+        <StatModulu ikon="❤️" etiket="Can" deger={Math.round(saglik)} tehlike={saglik <= 30} takip={Math.round(saglik)} />
+        <StatModulu
+          ikon="💰"
+          etiket="Para"
+          deger={`${formatPara(para)} ${paraBirimi}`}
+          tehlike={para < 0}
+          takip={para}
+          takipBirim={paraBirimi}
+        />
+        <StatModulu ikon="⚖️" etiket="Ahlak" deger={ahlakEtiketi(ahlak)} takip={Math.round(ahlak)} />
+        <StatModulu ikon="🙂" etiket="Mutluluk" deger={Math.round(mutluluk)} takip={Math.round(mutluluk)} />
         <AranmaModulu sucSeviyesi={sucSeviyesi} />
       </div>
       <div className="ust-serit-bolge">
@@ -112,13 +175,26 @@ export function UstSerit({
         {ulke?.vebada && <span className="ust-serit-rozet ust-serit-rozet-tehlike">☠️ Salgın</span>}
         {ulke?.ekonomi === 'kotu' && <span className="ust-serit-rozet ust-serit-rozet-tehlike">📉 Kriz</span>}
         {ulke?.ekonomi === 'iyi' && <span className="ust-serit-rozet ust-serit-rozet-iyi">📈 Refah</span>}
-        <span className="ust-serit-sembol" aria-hidden="true">
-          {tema.sembol}
-        </span>
-        <div className="ust-serit-bolge-metin">
-          <strong>{bolge}</strong>
-          {hukumdar && <span>👑 {hukumdar}</span>}
-        </div>
+        <button
+          type="button"
+          className="ust-serit-bolge-buton"
+          onClick={onBolgeTikla}
+          disabled={!onBolgeTikla}
+          title="Ülke hakkında bilgi"
+        >
+          <span className="ust-serit-sembol" aria-hidden="true">
+            {tema.sembol}
+          </span>
+          <div className="ust-serit-bolge-metin">
+            <strong>{bolge}</strong>
+            {hukumdar && <span>👑 {hukumdar}</span>}
+          </div>
+          {onBolgeTikla && (
+            <span className="ust-serit-bolge-ipucu" aria-hidden="true">
+              ℹ️
+            </span>
+          )}
+        </button>
       </div>
     </header>
   );

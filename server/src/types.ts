@@ -36,7 +36,8 @@ export interface VebaDurumu {
   konutKiraCarpani: number;
   /** Maaşa uygulanan çarpan (1.20-1.30, işçi kıtlığı yüzünden ücret artar). */
   gelirCarpani: number;
-  onlemAlindiMi: boolean;
+  /** Salgın başında seçilen korunma düzeyi: 0 = hiç, 1 = kısmi (evde tedbir), 2 = tam (kırsala çekil). Yıllık ölüm risklerini kademeli düşürür. */
+  korumaSeviyesi: number;
 }
 
 export interface UlkeDurumu {
@@ -115,8 +116,13 @@ export interface CharacterState {
   yas: number;
   meslek: string;
   rutbe: string;
+  /** 1-5. Yalnızca artar (ratchet) — kariyer_puani/stat düşse bile rütbe düşmez. */
   rutbe_seviye: number;
-  /** En üst rütbeye (3) ulaştıktan sonra açılan, üst sınırı olmayan ikinci bir ilerleme ekseni: şehir ekonomisini yönetmek için rakiplerle rekabet. 0 = henüz başlamadı. */
+  /** Rütbe ilerlemesini besleyen tek monoton sayaç: yıllık kıdem + meslek-kategori başarıları + kendi işine yatırım. Asla azalmaz. */
+  kariyer_puani: number;
+  /** Son terfinin gerçekleştiği oyun yılı; bir sonraki terfinin cooldown'u bunu referans alır. Yaratılışta baslangic_yili. */
+  son_terfi_yili: number;
+  /** En üst rütbeye (4+) ulaştıktan sonra açılan, üst sınırı olmayan ikinci bir ilerleme ekseni: şehir ekonomisini yönetmek için rakiplerle rekabet. 0 = henüz başlamadı. */
   sehir_yonetim_seviyesi: number;
   /** sehir_yonetim_seviyesi'nden türetilen unvan; seviye 0'ken null. */
   sehir_yonetim_unvan: string | null;
@@ -164,6 +170,13 @@ export interface CharacterState {
   suc_seviyesi: number;
   /** Sahip olunan piyasa mülkleri (her türden en fazla bir tane). */
   mulkler: MulkTuru[];
+  /**
+   * Her sahip olunan mülk için, bir sonraki periyodik bakım/vergi masrafına kalan
+   * yıl. Satın alınca 7-10 yıl arası başlar; her turda geçen yıl kadar azalır,
+   * 0'a inince mülkün güncel değerinin ~%12'si masraf olarak çıkar ve sayaç
+   * yenilenir (mülk SİLİNMEZ). Mülk elden çıkınca ilgili anahtar da silinir.
+   */
+  mulk_bakim_kalan: Partial<Record<MulkTuru, number>>;
   /** Mağazadan satın alınan eşyalar (gizemli eşyalardan ayrı, etiket değil dizi tabanlı envanter — bkz. SahipOlunanEsya). */
   magaza_envanteri: SahipOlunanEsya[];
   /** state.yil bu değere ulaşana kadar "sifa" mağaza alışverişi kilitlidir (herhangi bir sifa satın alımından sonra +3 yıl kilitlenir); null = kilit yok. */
@@ -215,14 +228,18 @@ export interface CharacterState {
 
   /** Zorunlu bağış olayının son tetiklendiği yıl (cooldown takibi); hiç tetiklenmediyse null. */
   son_zorunlu_bagis_yili: number | null;
+  /** Zenginlik sızıntısının (hırsız/haraç/dolandırıcı vb. — net servet ≥ 350 & nakit ≥ 50) son tetiklendiği yıl; 6 yıllık cooldown takibi. Hiç olmadıysa null. */
+  son_zenginlik_sizinti_yili: number | null;
   /** Aktif büyük savaşın parametreleri; savaş yokken null. */
   buyuk_savas: BuyukSavas | null;
   /** En son büyük savaşın bittiği yıl (10 yıllık minimum cooldown takibi); hiç savaş olmadıysa null. */
   son_buyuk_savas_bitis_yili: number | null;
-  /** Ömürde bir kez tetiklenebilen veba; hiç yaşanmadıysa ya da izi tamamen bittiyse null. */
+  /** Aktif ya da iz fazındaki veba; yoksa null. Artık ömürde bir kez değil — dalga bitince 20 yıl cooldown ile tekrarlanabilir. */
   veba: VebaDurumu | null;
-  /** Veba bir kez yaşandı mı (bir daha asla tetiklenmez). */
+  /** Karakter hayatında en az bir kez veba geçirdi mi (salt istatistik/flavor; tetiklemeyi artık bloklamaz). */
   veba_gecirdi: boolean;
+  /** En son veba dalgasının (iz fazı dahil) tamamen bittiği yıl; 20 yıllık cooldown buradan sayılır. Hiç veba olmadıysa null. */
+  son_veba_bitis_yili: number | null;
   /** Bir sonraki küçük krizin (kıtlık/haydut baskını) tetikleneceği yıl eşiği. */
   kucuk_kriz_sonraki_yil: number;
   /** Küçük kriz tetiklendiğinde SADECE bu yıla kadar geçerli olan ×2 gıda fiyat şoku; null = şok yok. */
@@ -309,6 +326,8 @@ export interface SonucEtkisi {
   /** Belirtilen id'lere sahip aktif durumları (ör. bağımlılık) kaldırır. */
   durum_sil?: string[];
   ulke_etkisi?: Partial<UlkeDurumu>;
+  /** Bir veba başlatan seçenekte (ulke_etkisi.vebada = true), o seçimin sağladığı korunma düzeyi: 0/1/2. vebaBaslat'a aktarılır. */
+  veba_koruma?: number;
   maas_carpani?: number;
   dost_puani?: number;
   rakip_puani?: number;
@@ -342,7 +361,7 @@ export interface SonucEtkisi {
   suc_seviyesi_ayarla?: number;
   /** true ise para, mevcut değerden bağımsız kesin olarak sıfırlanır (el koyma/müsadere gibi durumlar için; normal para deltası yetmez çünkü paranın alt sınırı yoktur). */
   para_sifirla?: boolean;
-  /** true ise ün, mevcut değerden bağımsız kesin olarak sıfırlanır (itibar kaybı/teşhir cezası gibi durumlar için). */
+  /** true ise şöhret (un), mevcut değerden bağımsız kesin olarak sıfırlanır (itibar kaybı/teşhir cezası gibi durumlar için). */
   un_sifirla?: boolean;
   /** Mevcut (pozitif) paranın belirtilen yüzdesini (0-100) kaybettirir; para negatifse hiçbir etkisi olmaz. Sabit bir rakam yerine servetle orantılı bir kayıp gerektiğinde (büyük rüşvet/kefaret) kullanılır. */
   para_yuzde_kaybet?: number;
@@ -364,6 +383,8 @@ export interface SonucEtkisi {
   efsanevi_olum?: string;
   /** En üst rütbeye ulaşanlar için: sehir_yonetim_seviyesi'ni bu kadar artırır (üst sınır yok). */
   sehir_yonetim_artis?: number;
+  /** Kilit taşı olaylar için: kariyer_puani'ni doğrudan artırır (rütbe ilerlemesini hızlandırır). */
+  kariyer_puani_artis?: number;
 }
 
 /** Oyuncuya gösterilen bulanık şans aralığı; gerçek basari_sansi hep gizli kalır. */

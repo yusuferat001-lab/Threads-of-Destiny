@@ -203,6 +203,223 @@ button.ikincil {
   overflow-y: auto;
 }
 
+/* ---- Giriş ekranı: kahraman + paneller ---- */
+
+.giris-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.giris-cark {
+  font-size: 2.4rem;
+  line-height: 1;
+  animation: giris-cark-don 12s linear infinite;
+  filter: drop-shadow(0 0 6px rgba(201, 162, 39, 0.5));
+}
+
+@keyframes giris-cark-don {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.giris-hero-butonlar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  margin-top: 0.4rem;
+}
+
+.giris-paneller {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.8rem;
+  width: 100%;
+  max-width: 860px;
+  margin-top: 1.4rem;
+  text-align: left;
+}
+
+.giris-panel {
+  background: var(--renk-ahsap-panel);
+  border: 2px solid var(--renk-ahsap-kenar);
+  border-radius: 6px;
+  padding: 0.7rem 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.giris-panel-baslik {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-weight: 700;
+  color: var(--renk-altin-parlak);
+  border-bottom: 1px solid var(--renk-ahsap-kenar);
+  padding-bottom: 0.35rem;
+}
+
+.ekran-giris .giris-panel-temizle {
+  width: auto;
+  max-width: none;
+  margin: 0;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.75rem;
+  flex: 0 0 auto;
+}
+
+.giris-panel-bos {
+  margin: 0;
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+.gecmis-hayat-liste,
+.giris-liderlik-liste {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.ekran-giris .gecmis-hayat-satiri {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  text-align: left;
+  padding: 0.45rem 0.55rem;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--renk-ahsap-kenar);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.ekran-giris .gecmis-hayat-satiri:hover {
+  border-color: var(--renk-altin);
+}
+
+.gecmis-hayat-ust {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.gecmis-hayat-skor {
+  font-size: 0.75rem;
+  color: var(--renk-altin-parlak);
+  white-space: nowrap;
+}
+
+.gecmis-hayat-alt {
+  font-size: 0.78rem;
+  opacity: 0.75;
+}
+
+.giris-liderlik-liste li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-size: 0.88rem;
+}
+
+.giris-liderlik-sira {
+  color: var(--renk-altin);
+  font-weight: 700;
+}
+
+.giris-liderlik-skor {
+  margin-left: auto;
+  color: var(--renk-altin-parlak);
+  font-size: 0.8rem;
+}
+
+.gecmis-hayat-detay-katman {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 1.5rem 1rem;
+  overflow-y: auto;
+  z-index: 60;
+}
+
+.gecmis-hayat-detay {
+  background: var(--renk-ahsap-panel);
+  border: 3px solid var(--renk-ahsap-kenar);
+  border-radius: 8px;
+  padding: 1rem 1.1rem;
+  max-width: 520px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: center;
+}
+
+.gecmis-hayat-detay h3 {
+  margin: 0;
+  color: var(--renk-altin-parlak);
+}
+
+.ekran-giris .gecmis-hayat-kapat {
+  align-self: flex-end;
+  width: auto;
+  max-width: none;
+  margin: 0;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.8rem;
+}
+
+/* ---- İsim seçimi ekranı ---- */
+
+.ekran-isim {
+  align-items: center;
+  text-align: center;
+}
+
+.isim-sec-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  width: 100%;
+  max-width: 420px;
+  margin: 0.6rem 0;
+}
+
+.isim-sec-input {
+  flex: 1 1 200px;
+  padding: 0.55rem 0.7rem;
+  font-size: 1rem;
+  background: var(--renk-parsomen);
+  color: var(--renk-parsomen-metin);
+  border: 2px solid var(--renk-ahsap-kenar);
+  border-radius: 4px;
+}
+
+.ekran-isim .isim-sec-form button.ikincil {
+  width: auto;
+  max-width: none;
+  flex: 0 0 auto;
+}
+
 /* ---- Meslek seçimi ---- */
 
 .ekran-meslek {
@@ -494,6 +711,11 @@ button.ikincil {
   flex: 1 1 0%;
   min-height: 150px;
   overflow: hidden;
+  /* Sahne tıklama noktaları (.sahne-hotspotlar), arka plan görselinin `object-fit: contain`
+     ile bıraktığı gerçek kutuyu cqw/cqh ile birebir taklit edebilsin diye bir boyut
+     konteyneri. İçerik boyutu zaten yalnız flex'ten geliyor (tüm katmanlar mutlak konumlu),
+     bu yüzden `size` containment güvenli. */
+  container-type: size;
 }
 
 .merkez-sahne-arkaplan {
@@ -692,6 +914,7 @@ button.ikincil {
 }
 
 .ust-serit-modul {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -701,6 +924,92 @@ button.ikincil {
   border: 1px solid var(--renk-ahsap-kenar);
   border-radius: 8px;
   padding: clamp(0.22rem, 0.15vw + 0.16rem, 0.42rem) clamp(0.4rem, 0.35vw + 0.25rem, 0.75rem);
+}
+
+/* Bir stat değiştiğinde modülün üstünden uçup kaybolan "+6" / "−12" rozeti. */
+.ust-serit-delta {
+  position: absolute;
+  top: -0.35rem;
+  right: 0.3rem;
+  z-index: 5;
+  font-size: clamp(0.62rem, 0.3vw + 0.5rem, 0.9rem);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  padding: 0.05rem 0.3rem;
+  border-radius: 6px;
+  white-space: nowrap;
+  pointer-events: none;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  /* Süre bilinçli olarak uzun tutuldu: delta rozeti yavaşça uçsun. */
+  animation: ust-serit-delta-ucus 3s cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
+}
+.ust-serit-delta-artis {
+  color: #7bff9c;
+  background: rgba(20, 150, 65, 0.7);
+  border: 1px solid rgba(110, 240, 145, 0.95);
+  box-shadow: 0 0 10px rgba(60, 230, 110, 0.55);
+}
+.ust-serit-delta-azalis {
+  color: #ff6161;
+  background: rgba(205, 30, 30, 0.72);
+  border: 1px solid rgba(255, 95, 95, 0.95);
+  box-shadow: 0 0 10px rgba(255, 60, 60, 0.6);
+}
+@keyframes ust-serit-delta-ucus {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.7);
+  }
+  18% {
+    opacity: 1;
+    transform: translateY(0) scale(1.12);
+  }
+  38% {
+    transform: translateY(-2px) scale(1);
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-16px) scale(0.95);
+  }
+}
+
+/* Değişen değer kutusunun yeşil/kırmızı parlaması (delta rozetiyle uyumlu, biraz kısa). */
+.ust-serit-modul-deger-artis {
+  animation: ust-serit-deger-parla-artis 2.5s ease-out;
+}
+.ust-serit-modul-deger-azalis {
+  animation: ust-serit-deger-parla-azalis 2.5s ease-out;
+}
+@keyframes ust-serit-deger-parla-artis {
+  0% {
+    color: #6bff92;
+    text-shadow: 0 0 16px rgba(70, 245, 120, 1);
+  }
+  100% {
+    color: var(--renk-altin-parlak);
+    text-shadow: none;
+  }
+}
+@keyframes ust-serit-deger-parla-azalis {
+  0% {
+    color: #ff4d4d;
+    text-shadow: 0 0 16px rgba(255, 55, 55, 1);
+  }
+  100% {
+    color: var(--renk-altin-parlak);
+    text-shadow: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ust-serit-delta,
+  .ust-serit-modul-deger-artis,
+  .ust-serit-modul-deger-azalis {
+    animation-duration: 0.01ms;
+  }
 }
 
 .ust-serit-modul-ikon {
@@ -784,6 +1093,58 @@ button.ikincil {
   color: var(--renk-altin-parlak);
 }
 
+.ust-serit-bolge-buton {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0.2rem 0.45rem;
+  width: auto;
+  max-width: none;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.ust-serit-bolge-buton:hover:not(:disabled),
+.ust-serit-bolge-buton:focus-visible {
+  background: rgba(0, 0, 0, 0.3);
+  border-color: var(--renk-altin-parlak);
+}
+
+.ust-serit-bolge-buton:disabled {
+  cursor: default;
+}
+
+.ust-serit-bolge-ipucu {
+  font-size: 0.8rem;
+  opacity: 0.65;
+}
+
+.bolge-bilgi-modal {
+  align-items: stretch;
+  text-align: left;
+  max-width: 460px;
+}
+
+.bolge-bilgi-modal .bolge-bilgisi-paneli {
+  margin-bottom: 0;
+}
+
+.bolge-bilgi-modal-kapat {
+  align-self: flex-end;
+  width: auto;
+  max-width: none;
+  margin: 0 0 0.4rem;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.8rem;
+}
+
 .ust-serit-rozet {
   font-size: clamp(0.7rem, 0.3vw + 0.55rem, 1rem);
   padding: 0.2rem 0.55rem;
@@ -829,6 +1190,14 @@ button.ikincil {
   font-size: clamp(0.66rem, 0.25vw + 0.54rem, 0.9rem);
   opacity: 0.75;
   margin-top: 0.1rem;
+}
+
+.sol-panel-baslik .sol-panel-isim {
+  font-family: var(--font-baslik);
+  font-size: clamp(0.8rem, 0.4vw + 0.62rem, 1.1rem);
+  color: var(--renk-altin-parlak);
+  opacity: 1;
+  margin: 0 0 0.1rem;
 }
 
 .sol-panel-mini-barlar {
@@ -927,11 +1296,78 @@ button.ikincil {
   color: #c67a7a;
 }
 
-/* ---- Aile özet paneli (sol panel) ---- */
+/* Maaşın rütbe / kariyer / dönemsel kırılımı (sol panel özet) */
+.finans-ozet-mini-kirilim {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.35rem;
+  border-top: 1px dashed rgba(74, 53, 32, 0.35);
+  padding-top: 0.3rem;
+  font-size: clamp(0.62rem, 0.22vw + 0.5rem, 0.8rem);
+  opacity: 0.85;
+  cursor: help;
+}
+
+.finans-ozet-mini-kirilim span {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Şu an etkin dünya olayları — kısa çipler, tam metin title'da */
+.finans-ozet-mini-dunya {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  border-top: 1px dashed rgba(74, 53, 32, 0.35);
+  padding-top: 0.3rem;
+  cursor: help;
+}
+
+.finans-ozet-mini-dunya-cip {
+  font-size: clamp(0.58rem, 0.2vw + 0.48rem, 0.74rem);
+  padding: 0.08rem 0.35rem;
+  border-radius: 999px;
+  background: rgba(74, 53, 32, 0.16);
+  border: 1px solid rgba(74, 53, 32, 0.3);
+  white-space: nowrap;
+}
+
+/* "Şu an bütçeni etkileyen dünya durumları" bloğu (Gelir & Gider ekranı) */
+.finans-dunya-etkileri {
+  margin: 0.4rem 0;
+  padding: 0.5rem 0.6rem;
+  background: rgba(61, 46, 31, 0.22);
+  border-radius: 6px;
+}
+
+.finans-dunya-baslik {
+  font-size: 0.82rem;
+  font-weight: 600;
+  opacity: 0.85;
+  margin-bottom: 0.3rem;
+}
+
+.finans-dunya-liste {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  opacity: 0.85;
+}
+
+.finans-dunya-liste li {
+  margin-bottom: 0.15rem;
+}
+
+/* ---- Aile özet paneli (sağ panel — "Birliğin"in altında) ---- */
+
+.aile-blok {
+  margin: 0.5rem 0 1rem;
+}
 
 .aile-ozet-paneli {
   width: 100%;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.6rem;
 }
 
 .aile-ozet-bos {
@@ -1046,6 +1482,33 @@ button.ikincil {
 
 .komuta-satir-hapis .komuta-ad {
   color: var(--renk-tehlike);
+}
+
+/* Ekip üyesi satırı: FinansEkrani'ndan buraya taşındı — isim + rol/maaş + kişilik detayı + Kov. */
+.komuta-satir-ekip {
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.komuta-satir-ekip .komuta-metin {
+  flex: 1;
+}
+
+.komuta-satir-ekip .komuta-ad {
+  white-space: normal;
+}
+
+.komuta-ekip-detay {
+  font-size: clamp(0.62rem, 0.22vw + 0.52rem, 0.82rem);
+  opacity: 0.6;
+  margin-top: 0.1rem;
+}
+
+.komuta-ekip-kov {
+  flex-shrink: 0;
+  align-self: center;
+  padding: 0.2rem 0.6rem;
+  font-size: clamp(0.68rem, 0.2vw + 0.6rem, 0.85rem);
 }
 
 /* ---- Siyaset paneli (sağ panel) ---- */
@@ -1565,14 +2028,24 @@ button.ikincil {
   color: #e07a7a !important;
 }
 
-/* ---- Sahne tıklama noktaları (ev/işyeri/mağaza/sosyalleş) ----
+/* ---- Sahne tıklama noktaları (mağaza/işyeri/ev/sosyalleş) ----
  * Gelir&Gider, İşin, Mağaza ve Sosyalleş artık ayrı bir buton satırından değil,
- * doğrudan sahnenin (BolgeSahnesi) üstündeki bu dört noktadan açılır. Kapsayıcı
- * tüm sahneyi kaplar ama tıklamayı yutmaz (pointer-events:none) — sadece
- * butonların kendisi tıklanabilir, böylece altındaki görsel hiçbir yerde bloklanmaz. */
+ * doğrudan sahnenin (BolgeSahnesi) arka plan görselindeki dört bölgeden açılır:
+ * soldan sağa 🛒 Mağaza (sol bina) · işyeri (meydan) · ev (boş arsa) · 🍷 Sosyalleş (sağ bina).
+ *
+ * Kapsayıcı, arka plan görseliyle AYNI en-boy oranına (`--sahne-orani`, SahneHotspotlari'dan
+ * inline gelir) kilitlenir ve `.merkez-sahne` içinde `object-fit: contain` gibi ortalanır —
+ * böylece noktalar görselin kendisine "yapışır", ekran küçülüp büyüdükçe resimle birlikte
+ * ölçeklenir ve asla kaymaz. Tüm konumlar yüzde cinsindendir (vw/px yok). Kapsayıcı
+ * tıklamayı yutmaz (pointer-events:none) — sadece butonlar tıklanabilir. */
 .sahne-hotspotlar {
   position: absolute;
   inset: 0;
+  margin: auto;
+  /* `object-fit: contain` ile aynı kutu: her iki eksende de sınırlayan kenara göre
+     ölçeklenir, ortalanır. cqw/cqh = .merkez-sahne'nin genişliği/yüksekliği. */
+  width: min(100cqw, 100cqh * var(--sahne-orani, 2.356));
+  height: min(100cqh, 100cqw / var(--sahne-orani, 2.356));
   z-index: 5;
   pointer-events: none;
 }
@@ -1622,41 +2095,37 @@ button.ikincil {
   white-space: nowrap;
 }
 
-/* Dördü de (işyeri/ev/mağaza/sosyalleş) artık AYNI yükseklikte, tek bir sıra halinde durur —
- * eskiden mağaza/sosyalleş çifti çok daha alçakta (bottom:4%) dururdu, ama .merkez-alt artık
- * sahnenin alt kısmına ~%10 taşan yüzen bir kart olduğu için (bkz. .merkez-alt) o alçak
- * konum kartın altında kalıp tıklanamaz hale geliyordu. %16 payı, kartın taşma bölgesinin
- * (~%8-15 arası, ekran yüksekliğine göre değişir) güvenle üstünde kalır. */
+/* Dört nokta, arka plan görselindeki bölgelere denk gelen sabit yüzde konumlarında durur
+ * (soldan sağa: mağaza / işyeri / ev / sosyalleş). `left` değerleri buton genişliği hesaba
+ * katılarak zaten yaklaşık ortalıdır (translateX yok — böylece :hover'daki translateY ve
+ * mobildeki scale transform'larıyla çakışmaz). `bottom` değerleri, .merkez-alt yüzen kartının
+ * sahnenin altına ~%8-15 taşan bölgesinin (bkz. .merkez-alt) güvenle üstünde kalır. */
+.sahne-hotspot-magaza {
+  left: 6%;
+  bottom: 21%;
+}
+
 .sahne-hotspot-isyeri {
-  left: 4%;
-  bottom: 16%;
+  left: 27%;
+  bottom: 17%;
 }
 
 .sahne-hotspot-ev {
-  right: 4%;
-  bottom: 16%;
+  left: 66%;
+  bottom: 17%;
 }
 
-/* Mağaza/Sosyalleş, ev ve işyeri binalarının arasında, ortada bir çift halinde durur —
- * yüzdeyle bağımsız konumlamak yerine tek bir flex kapsayıcıda ortalanıp sabit bir
- * boşlukla ayrılır, böylece dar (mobil) ekranlarda birbirine binmezler. */
-.sahne-hotspot-propgrup {
-  position: absolute;
-  left: 50%;
-  bottom: 16%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: clamp(1.5rem, 6vw, 3.5rem);
-  pointer-events: none;
-}
-
-.sahne-hotspot-propgrup .sahne-hotspot {
-  position: static;
+/* Sağ kenardaki nokta `left` yerine `right` ile sabitlenir — uzun "Sosyalleş" etiketi
+   dar ekranlarda sahnenin `overflow:hidden` kenarına takılıp kırpılmasın diye. */
+.sahne-hotspot-sosyallesme {
+  left: auto;
+  right: 2%;
+  bottom: 21%;
 }
 
 .sahne-hotspot-magaza .sahne-hotspot-ikon,
 .sahne-hotspot-sosyallesme .sahne-hotspot-ikon {
-  font-size: 1.5rem;
+  font-size: 1.9rem;
 }
 
 /* ---- Gelir & Gider ekranı ----
@@ -1724,24 +2193,22 @@ button.ikincil {
 
 .is-karo-izgara {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 175px));
-  justify-content: center;
-  gap: 0.85rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
   width: 100%;
 }
 
 .is-karo {
-  aspect-ratio: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.3rem;
+  gap: 0.2rem;
   text-align: center;
-  padding: 0.9rem;
+  padding: 0.55rem 0.4rem;
   background: #2a1f18;
   border: 1px solid #3d2e1f;
-  border-radius: 12px;
+  border-radius: 10px;
 }
 
 .is-karo-vurgu {
@@ -1825,6 +2292,49 @@ button.ikincil {
   padding-top: 0;
 }
 
+/* Maaş kırılımı: "gelirim neden bir anda arttı, kalıcı mı?" dökümü */
+.finans-maas-kirilim {
+  margin: 0.2rem 0 0.4rem;
+  padding: 0.5rem 0.6rem;
+  background: rgba(61, 46, 31, 0.28);
+  border-radius: 6px;
+}
+
+.finans-kirilim-satiri {
+  font-size: 0.82rem;
+  padding: 0.28rem 0;
+  gap: 0.6rem;
+}
+
+.finans-kirilim-alt {
+  opacity: 0.7;
+  font-style: normal;
+}
+
+.finans-kirilim-kalici {
+  color: #7fbf7f;
+  white-space: nowrap;
+}
+
+.finans-kirilim-degisken {
+  color: #c9a86a;
+  white-space: nowrap;
+}
+
+.finans-kirilim-detay {
+  font-size: 0.74rem;
+  opacity: 0.65;
+  padding: 0 0 0.3rem;
+  line-height: 1.35;
+}
+
+.finans-kirilim-not {
+  margin: 0.35rem 0 0;
+  font-size: 0.74rem;
+  opacity: 0.7;
+  line-height: 1.4;
+}
+
 /* Eskiden tek sütun halinde alt alta dizilip her biri kapsayıcının tam genişliğine gerilen
    (bu yüzden "incecik" görünen) kartlar — artık sabit üst sınırlı bir ızgarada, kareye yakın
    kutular halinde yan yana diziliyor; min-height az içerikli kartların da (ör. zar bahisleri)
@@ -1836,6 +2346,59 @@ button.ikincil {
   justify-content: center;
   gap: 0.85rem;
   width: 100%;
+}
+
+/* Gelir & Gider'in yaşam tarzı / ev seçim ızgaraları: HER ZAMAN tam olarak 2 sütun
+   (`repeat(2, 1fr)`) — kartlar sütunun tüm genişliğini doldurur, sağda solda boşluk kalmaz,
+   geniş ekranda 3'e çıkmaz. Izgara sütunun kalan yüksekliğini kaplar (`flex:1`) ve satırlar
+   boş dikey alanı paylaşır (`grid-auto-rows: minmax(min-content, 1fr)`) — böylece kartlar
+   dikeyde uzayıp sayfanın altını doldurur, kısa pencerede ise içeriğe kadar küçülür. */
+.finans-secim-izgara {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: minmax(min-content, 1fr);
+  gap: 0.6rem;
+  flex: 1 1 auto;
+}
+
+.finans-secim-izgara .yatirim-kart {
+  min-height: 0;
+  padding: 0.9rem 0.8rem;
+  gap: 0.3rem;
+}
+
+.finans-secim-izgara .meslek-simge {
+  font-size: 1.75rem;
+}
+
+.finans-secim-izgara .yatirim-kart strong {
+  font-size: 1.1rem;
+  line-height: 1.25;
+}
+
+.finans-secim-izgara .meslek-aciklama {
+  font-size: 0.84rem;
+  line-height: 1.4;
+}
+
+/* Açıklama metni (yıllık gider/kira + kısa tanım) en fazla 3 satır — asıl önemli sayılar
+   zaten "Yıllık gider:" ile başta ve ayrı efekt satırında; uzun kart tanımları sütunu
+   şişirmesin, 6 kart aşağı kaydırma olmadan sığsın. */
+.finans-secim-izgara .meslek-aciklama:not(.yatirim-etki-satiri) {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
+/* Gelir & Gider'de sütun içi başlık/açıklama/ızgara arası boşluğu da kısarız (dikey bütçe dar). */
+.tam-govde-3col-finans .tam-sutun {
+  gap: 0.45rem;
+}
+
+.tam-govde-3col-finans .tam-sutun > .giris-aciklama {
+  font-size: 0.7rem;
+  margin: 0;
+  opacity: 0.7;
 }
 
 .yatirim-kart {
@@ -1908,6 +2471,40 @@ button.ikincil {
   font-style: italic;
 }
 
+/* Piyasa dedikoduları — mühür mumu kırmızısı / tellal ilanı: dikkat çeksin, döneme uygun dursun. */
+.tam-baslik-dedikodu {
+  opacity: 1;
+  color: #e6b84c;
+  letter-spacing: 0.02em;
+}
+.tam-baslik-dedikodu::before {
+  content: '📜 ';
+}
+
+.dedikodu-panosu-vurgu {
+  background: linear-gradient(180deg, #3a1613 0%, #2a1210 100%);
+  border: 1px solid #a8321f;
+  border-left: 4px solid #e6b84c;
+  border-radius: 5px;
+  box-shadow:
+    0 0 0 1px rgba(230, 184, 76, 0.12),
+    0 2px 10px rgba(0, 0, 0, 0.35);
+}
+
+.dedikodu-panosu-vurgu ul {
+  color: #f0dcc0;
+}
+
+.dedikodu-panosu-vurgu li {
+  margin-bottom: 0.35rem;
+  font-style: italic;
+}
+
+.dedikodu-panosu-vurgu li::marker {
+  content: '❧ ';
+  color: #e6b84c;
+}
+
 /* Mülk/mağaza kartları daha fazla metin taşıdığı için (açıklama + avantaj/dezavantaj +
    getiri/fiyat satırı) biraz daha geniş sütunlarda oturur. */
 .yatirim-mulk-kartlari {
@@ -1976,6 +2573,13 @@ button.ikincil {
   min-height: 0;
 }
 
+/* Gelir & Gider'e özel: sol "Bütçen" sütunu dar kalır, orta "Yaşam Tarzın" ve sağ "Evin"
+   sütunları AYNI genişlikte — böylece her ikisinde de kartlar yan yana ikişerli dizilir
+   ve sağ sütun tek kolon halinde uzayıp aşağı kaydırma gerektirmez. */
+.tam-govde-3col-finans {
+  grid-template-columns: 0.9fr 1.55fr 1.55fr;
+}
+
 /* Sütunların her biri kendi içinde kayar — dış sayfa asla kaymaz (bkz. yukarıdaki not). */
 .tam-sutun {
   display: flex;
@@ -1996,6 +2600,21 @@ button.ikincil {
 .tam-geri-buton {
   align-self: flex-start;
   flex-shrink: 0;
+}
+
+/* Rütbe ilerlemesini kısaca anlatan ipucu kutusu (İşin & Yatırımların, Kendi İşin sütunu). */
+.rutbe-ipucu {
+  margin: 0.1rem 0 0.35rem;
+  padding: 0.55rem 0.7rem;
+  border-left: 3px solid rgba(212, 175, 55, 0.55);
+  background: rgba(212, 175, 55, 0.08);
+  border-radius: 6px;
+  font-size: clamp(0.72rem, 0.3vw + 0.6rem, 0.9rem);
+  line-height: 1.5;
+  opacity: 0.9;
+}
+.rutbe-ipucu strong {
+  opacity: 1;
 }
 
 /* Tek kart-ızgaralı ekranlar (Mağaza/Sosyalleş): başlık/sekme/açıklama sabit kalır, SADECE
@@ -2145,17 +2764,6 @@ button.ikincil {
   color: #d9b97a;
 }
 
-.ekip-kart {
-  align-items: stretch;
-  justify-content: flex-start;
-  text-align: left;
-}
-
-.ekip-kov-buton {
-  align-self: flex-start;
-  margin-top: 0.4rem;
-}
-
 /* ---- Aile ekranı ---- */
 
 .ekran-aile {
@@ -2245,6 +2853,7 @@ button.ikincil {
 
 .aile-gor-buton {
   width: 100%;
+  margin-top: 0.5rem;
 }
 
 /* ---- Yıldız glifi (paylaşılan) ----
@@ -2317,6 +2926,13 @@ button.ikincil {
     opacity: 1;
     transform: translateY(0) scale(1);
   }
+}
+
+.etki-yok-notu {
+  font-size: 0.85rem;
+  opacity: 0.6;
+  text-align: center;
+  font-style: italic;
 }
 
 .sonuc-detay {
@@ -2627,6 +3243,19 @@ button.ikincil {
 .ses-toggle-buton {
   position: fixed;
   top: 0.75rem;
+  right: 3.3rem;
+  z-index: 20;
+  width: auto;
+  padding: 0.35rem 0.5rem;
+  font-size: 1.1rem;
+  background: rgba(20, 15, 10, 0.55);
+  border: 1px solid rgba(224, 199, 137, 0.35);
+  border-radius: 8px;
+}
+
+.ayar-ac-buton {
+  position: fixed;
+  top: 0.75rem;
   right: 0.75rem;
   z-index: 20;
   width: auto;
@@ -2635,6 +3264,10 @@ button.ikincil {
   background: rgba(20, 15, 10, 0.55);
   border: 1px solid rgba(224, 199, 137, 0.35);
   border-radius: 8px;
+}
+
+.ayar-ac-buton:hover:not(:disabled) {
+  background: rgba(40, 30, 18, 0.8);
 }
 
 .sonuc-efekti-kapsayici {
@@ -2736,13 +3369,6 @@ button.ikincil {
 .olum-butonlari button {
   flex: 1;
   text-align: center;
-}
-
-.soy-surdur-buton {
-  width: 100%;
-  max-width: 320px;
-  background: linear-gradient(135deg, #5a4632, #3a2a1c);
-  border: 1px solid rgba(224, 199, 137, 0.5);
 }
 
 .hayat-hikayesi {
@@ -2936,5 +3562,260 @@ button.ikincil {
 
   .sahne-hotspot-etiket {
     font-size: 0.56rem;
+  }
+}
+
+/* ============================================================
+   Ayarlar modalı (dişli düğmesi / ana ekran "⚙️ Ayarlar")
+   ============================================================ */
+
+.ayarlar-katman {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.78);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  z-index: 80;
+  animation: ayarlar-katman-belir 0.16s ease-out;
+}
+
+@keyframes ayarlar-katman-belir {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes ayarlar-modal-belir {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.ayarlar-modal {
+  background: linear-gradient(180deg, var(--renk-ahsap-panel), var(--renk-ahsap));
+  border: 3px solid var(--renk-ahsap-kenar);
+  border-radius: 12px;
+  box-shadow: var(--golge-derin), 0 0 0 1px rgba(224, 199, 137, 0.12) inset,
+    0 0 40px rgba(201, 162, 39, 0.12);
+  width: 100%;
+  max-width: 460px;
+  max-height: min(88dvh, 620px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: ayarlar-modal-belir 0.2s ease-out;
+}
+
+.ayarlar-modal-ust {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid var(--renk-ahsap-kenar);
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.ayarlar-modal-ust h2 {
+  font-size: 1.25rem;
+  color: var(--renk-altin-parlak);
+  letter-spacing: 0.04em;
+}
+
+.ayarlar-kapat {
+  width: auto;
+  max-width: none;
+  margin: 0;
+  padding: 0.3rem 0.65rem;
+  font-size: 0.82rem;
+  flex-shrink: 0;
+}
+
+.ayarlar-sekmeler {
+  display: flex;
+  gap: 0.35rem;
+  padding: 0.6rem 0.75rem 0;
+}
+
+.ayarlar-sekmeler button {
+  flex: 1;
+  text-align: center;
+  padding: 0.55rem 0.6rem;
+  font-size: 0.92rem;
+  border-radius: 8px 8px 0 0;
+  background: linear-gradient(180deg, #3a2c1a, #2a2013);
+  border-bottom: 2px solid transparent;
+}
+
+.ayarlar-sekmeler button.aktif-sekme {
+  background: #b5893a !important;
+  border-bottom-color: var(--renk-altin-parlak);
+}
+
+.ayarlar-govde {
+  padding: 1rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--renk-ahsap-kenar) rgba(0, 0, 0, 0.25);
+}
+
+.ayar-bolum {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.ayar-bolum h3 {
+  font-size: 1.02rem;
+  color: var(--renk-altin);
+  margin: 0;
+}
+
+.ayar-bolum-aciklama {
+  margin: 0;
+  font-size: 0.86rem;
+  color: #cdbb95;
+  line-height: 1.4;
+}
+
+.ayar-secenek-grup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.ayar-secenek {
+  flex: 1 1 auto;
+  min-width: 120px;
+  text-align: center;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.92rem;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #3a2c1a, #2a2013);
+  border: 1px solid rgba(224, 199, 137, 0.2);
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+
+.ayar-secenek.secili {
+  background: linear-gradient(180deg, #c9a227, #9c7519);
+  color: #1c140d;
+  border-color: var(--renk-altin-parlak);
+  box-shadow: 0 0 14px rgba(201, 162, 39, 0.35);
+  font-weight: 700;
+}
+
+.ayar-beta-not {
+  margin: 0;
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--renk-altin-parlak);
+}
+
+.gb-kategori-grup .ayar-secenek {
+  min-width: 90px;
+}
+
+.gb-mesaj,
+.gb-iletisim {
+  width: 100%;
+  font-family: inherit;
+  font-size: 0.95rem;
+  background: var(--renk-parsomen);
+  color: var(--renk-parsomen-metin);
+  border: 2px solid var(--renk-ahsap-kenar);
+  border-radius: 6px;
+  padding: 0.6rem 0.7rem;
+  resize: vertical;
+}
+
+.gb-mesaj:focus,
+.gb-iletisim:focus {
+  outline: none;
+  border-color: var(--renk-altin);
+  box-shadow: 0 0 10px rgba(201, 162, 39, 0.3);
+}
+
+.gb-sayac {
+  margin-top: -0.3rem;
+  align-self: flex-end;
+  font-size: 0.75rem;
+  color: #a58f68;
+}
+
+.gb-uyari {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #e6a5a5;
+}
+
+.gb-gonder {
+  align-self: flex-start;
+  width: auto;
+  max-width: none;
+  padding: 0.65rem 1.4rem;
+  background: linear-gradient(180deg, #c9a227, #9c7519);
+  color: #1c140d;
+  font-weight: 700;
+  text-align: center;
+}
+
+.ayarlar-basari {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  text-align: center;
+  padding: 1rem 0.5rem;
+}
+
+.ayarlar-basari-ikon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 50%;
+  background: var(--renk-basari);
+  color: #fff;
+  font-size: 1.5rem;
+}
+
+.ayarlar-basari p {
+  margin: 0;
+  color: var(--renk-parsomen);
+}
+
+.ayarlar-basari .ikincil {
+  width: auto;
+  max-width: none;
+  margin: 0;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 767px) {
+  .ayarlar-katman {
+    padding: 0;
+  }
+
+  .ayarlar-modal {
+    max-width: none;
+    max-height: none;
+    height: 100dvh;
+    border: none;
+    border-radius: 0;
   }
 }

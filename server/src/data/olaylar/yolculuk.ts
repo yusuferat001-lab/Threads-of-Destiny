@@ -207,9 +207,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         metin: "Tavafı sabırla, gözyaşlarınla tamamla.",
         baseBasariSansi: 95,
         ipucu: "Hayatının en dönüştürücü anı",
-        basariliSonuc: {
-          maas_carpani: 1.2,
-          ahlak: 25,
+        basariliSonuc: {          ahlak: 25,
           un: 15,
           mutluluk: 15,
           unvan_kazan: "Hacı",
@@ -244,9 +242,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         metin: "Kalabalıktan biraz uzakta, sessizce dua et.",
         baseBasariSansi: 100,
         ipucu: "Sakin ve içe dönük bir tercih",
-        basariliSonuc: {
-          maas_carpani: 1.2,
-          ahlak: 18,
+        basariliSonuc: {          ahlak: 18,
           un: 10,
           mutluluk: 10,
           unvan_kazan: "Hacı",
@@ -486,9 +482,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         metin: "Diz çök, gözyaşlarınla uzun bir dua et.",
         baseBasariSansi: 95,
         ipucu: "Hayatının en dönüştürücü anı",
-        basariliSonuc: {
-          maas_carpani: 1.2,
-          ahlak: 25,
+        basariliSonuc: {          ahlak: 25,
           un: 15,
           mutluluk: 15,
           unvan_kazan: "Kudüs Hacısı",
@@ -523,9 +517,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         metin: "Kalabalıktan biraz uzakta, sessizce dua et.",
         baseBasariSansi: 100,
         ipucu: "Sakin ve içe dönük bir tercih",
-        basariliSonuc: {
-          maas_carpani: 1.2,
-          ahlak: 18,
+        basariliSonuc: {          ahlak: 18,
           un: 10,
           mutluluk: 10,
           unvan_kazan: "Kudüs Hacısı",
@@ -765,9 +757,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         metin: "Diz çök, gözyaşlarınla uzun bir dua et.",
         baseBasariSansi: 95,
         ipucu: "Hayatının en dönüştürücü anı",
-        basariliSonuc: {
-          maas_carpani: 1.2,
-          ahlak: 25,
+        basariliSonuc: {          ahlak: 25,
           un: 15,
           mutluluk: 15,
           unvan_kazan: "Kutsal Toprak Hacısı",
@@ -802,9 +792,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         metin: "Kalabalıktan biraz uzakta, sessizce dua et.",
         baseBasariSansi: 100,
         ipucu: "Sakin ve içe dönük bir tercih",
-        basariliSonuc: {
-          maas_carpani: 1.2,
-          ahlak: 18,
+        basariliSonuc: {          ahlak: 18,
           un: 10,
           mutluluk: 10,
           unvan_kazan: "Kutsal Toprak Hacısı",
@@ -1044,9 +1032,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         metin: "Sessizce otur, uzun bir dua ve şükranla anı yaşa.",
         baseBasariSansi: 95,
         ipucu: "Hayatının en dönüştürücü anı",
-        basariliSonuc: {
-          maas_carpani: 1.2,
-          ahlak: 25,
+        basariliSonuc: {          ahlak: 25,
           un: 15,
           mutluluk: 15,
           unvan_kazan: "Kutsal Toprak Gezgini",
@@ -1081,9 +1067,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         metin: "Küçük not defterine gördüklerini sessizce yaz.",
         baseBasariSansi: 100,
         ipucu: "Sakin ve içe dönük bir tercih",
-        basariliSonuc: {
-          maas_carpani: 1.2,
-          ahlak: 18,
+        basariliSonuc: {          ahlak: 18,
           un: 10,
           mutluluk: 10,
           unvan_kazan: "Kutsal Toprak Gezgini",
@@ -1839,9 +1823,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         metin: "Gerçeği anlat, ordunun başına geleni açıkça söyle.",
         baseBasariSansi: 80,
         ipucu: "Dürüst ama utanç verici bir itiraf",
-        basariliSonuc: {
-          maas_carpani: 1.2,
-          un: -10,
+        basariliSonuc: {          un: -10,
           mutluluk: 15,
           etiket_ekle: [
             "yolculuk_tamamlandi",
@@ -1869,9 +1851,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         metin: "Hikayeni süsle, kahramanca bir kaçış gibi anlat.",
         baseBasariSansi: 50,
         ipucu: "Gururunu korur ama yalan ortaya çıkarsa itibarın daha da örselenir",
-        basariliSonuc: {
-          maas_carpani: 1.2,
-          un: 8,
+        basariliSonuc: {          un: 8,
           mutluluk: 12,
           ahlak: -8,
           etiket_ekle: [
@@ -2018,9 +1998,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         metin: "Yaşadıklarını olduğu gibi anlat, geçmişle yüzleş.",
         baseBasariSansi: 85,
         ipucu: "Zor ama iyileştirici bir dürüstlük",
-        basariliSonuc: {
-          maas_carpani: 1.2,
-          ahlak: 15,
+        basariliSonuc: {          ahlak: 15,
           mutluluk: 15,
           etiket_ekle: [
             "yolculuk_tamamlandi",
@@ -2047,9 +2025,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         metin: "Geçmişi geride bırak, hiç konuşma.",
         baseBasariSansi: 90,
         ipucu: "Kolay görünür ama içine atarsın",
-        basariliSonuc: {
-          maas_carpani: 1.2,
-          mutluluk: 5,
+        basariliSonuc: {          mutluluk: 5,
           etiket_ekle: [
             "yolculuk_tamamlandi",
           ],
@@ -2674,9 +2650,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         metin: "Yaşadıklarını olduğu gibi anlat, hem iyiyi hem kötüyü.",
         baseBasariSansi: 85,
         ipucu: "Dürüst ama zor bir hesaplaşma",
-        basariliSonuc: {
-          maas_carpani: 1.2,
-          ahlak: 12,
+        basariliSonuc: {          ahlak: 12,
           mutluluk: 12,
           etiket_ekle: [
             "yolculuk_tamamlandi",
@@ -2703,9 +2677,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         metin: "Sadece başarı hikayelerini anlat, geri kalanını sakla.",
         baseBasariSansi: 90,
         ipucu: "Gururunu korur ama vicdanına dokunur",
-        basariliSonuc: {
-          maas_carpani: 1.2,
-          un: 10,
+        basariliSonuc: {          un: 10,
           ahlak: -6,
           etiket_ekle: [
             "yolculuk_tamamlandi",
@@ -4435,9 +4407,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         metin: "Yaşananları olduğu gibi anlat, kayıpları da say.",
         baseBasariSansi: 85,
         ipucu: "Dürüst ama ağır bir hesaplaşma",
-        basariliSonuc: {
-          maas_carpani: 1.2,
-          ahlak: 15,
+        basariliSonuc: {          ahlak: 15,
           mutluluk: 15,
           etiket_ekle: [
             "yolculuk_tamamlandi",
@@ -4464,9 +4434,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         metin: "Kısaca rapor ver, geri kalanını içinde tut.",
         baseBasariSansi: 90,
         ipucu: "Kolay görünür ama içine atarsın",
-        basariliSonuc: {
-          maas_carpani: 1.2,
-          un: 10,
+        basariliSonuc: {          un: 10,
           etiket_ekle: [
             "yolculuk_tamamlandi",
           ],
@@ -4621,9 +4589,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         metin: "Yaşadıklarını olduğu gibi anlat, geçmişle yüzleş.",
         baseBasariSansi: 85,
         ipucu: "Zor ama iyileştirici bir dürüstlük",
-        basariliSonuc: {
-          maas_carpani: 1.2,
-          ahlak: 15,
+        basariliSonuc: {          ahlak: 15,
           mutluluk: 15,
           etiket_ekle: [
             "yolculuk_tamamlandi",
@@ -4650,9 +4616,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         metin: "Geçmişi geride bırak, hiç konuşma.",
         baseBasariSansi: 90,
         ipucu: "Kolay görünür ama içine atarsın",
-        basariliSonuc: {
-          maas_carpani: 1.2,
-          mutluluk: 5,
+        basariliSonuc: {          mutluluk: 5,
           etiket_ekle: [
             "yolculuk_tamamlandi",
           ],
@@ -5152,9 +5116,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         metin: "Bulduklarını bilim için cömertçe paylaş.",
         baseBasariSansi: 90,
         ipucu: "Kalıcı bir ün ama maddi kazancın azalır",
-        basariliSonuc: {
-          maas_carpani: 1.2,
-          un: 25,
+        basariliSonuc: {          un: 25,
           etiket_ekle: [
             "yolculuk_tamamlandi",
           ],
@@ -5180,9 +5142,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         metin: "Keşfettiklerini kendi ticari sırrın olarak sakla.",
         baseBasariSansi: 85,
         ipucu: "Gelecekte özel bir avantaj ama bilim camiasında itibar kaybı",
-        basariliSonuc: {
-          maas_carpani: 1.2,
-          para: 25,
+        basariliSonuc: {          para: 25,
           un: -8,
           etiket_ekle: [
             "yolculuk_tamamlandi",
@@ -5695,9 +5655,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         metin: "Kazandıklarınla yeni bir icada başla.",
         baseBasariSansi: 85,
         ipucu: "Hırslı ama yorucu bir yeni başlangıç",
-        basariliSonuc: {
-          maas_carpani: 1.2,
-          mutluluk: 10,
+        basariliSonuc: {          mutluluk: 10,
           un: 10,
           etiket_ekle: [
             "yolculuk_tamamlandi",
@@ -5724,9 +5682,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         metin: "Bir süre dinlen, kazandığın itibarın tadını çıkar.",
         baseBasariSansi: 90,
         ipucu: "Huzurlu ama fırsatlar bekler mi bilinmez",
-        basariliSonuc: {
-          maas_carpani: 1.2,
-          mutluluk: 15,
+        basariliSonuc: {          mutluluk: 15,
           saglik: 8,
           etiket_ekle: [
             "yolculuk_tamamlandi",

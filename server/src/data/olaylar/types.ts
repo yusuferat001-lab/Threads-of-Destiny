@@ -64,6 +64,10 @@ export interface OlayTanimi {
   maxUn?: number;
   minMutluluk?: number;
   maxMutluluk?: number;
+  /** Belirtilirse olay sadece sağlığı bu eşiğe (veya altına) inmiş karakterlere çıkar; düşük-can toparlanma olayları için. */
+  maxSaglik?: number;
+  /** Belirtilirse olay sadece sağlığı bu eşiğin (veya üstünde) olan karakterlere çıkar. */
+  minSaglik?: number;
   /** Belirtilirse olay sadece rakip puanı bu eşiğin üstüne/altına çıkmış karakterlere gösterilir. */
   minRakipPuani?: number;
   maxRakipPuani?: number;

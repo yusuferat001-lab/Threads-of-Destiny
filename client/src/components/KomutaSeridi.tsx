@@ -11,6 +11,9 @@ interface KomutaSeridiProps {
   ticaretSermaye: number;
   nufuz: number;
   hapiste: boolean;
+  paraBirimi: string;
+  yukleniyor: boolean;
+  onEkipCikar: (ekipId: string) => void;
 }
 
 const MESLEK_SIMGESI: Record<string, string> = {
@@ -30,6 +33,9 @@ export function KomutaSeridi({
   ticaretSermaye,
   nufuz,
   hapiste,
+  paraBirimi,
+  yukleniyor,
+  onEkipCikar,
 }: KomutaSeridiProps) {
   const meslekOzeti =
     meslek === 'Asker' && orduMevcudu > 0
@@ -94,14 +100,26 @@ export function KomutaSeridi({
       ))}
 
       {ekip.map((uye) => (
-        <div key={uye.id} className="komuta-satir" title={`${uye.kisilik} · Sadakat %${uye.sadakat}`}>
+        <div key={uye.id} className="komuta-satir komuta-satir-ekip">
           <span className="komuta-simge" aria-hidden="true">
             🧑
           </span>
           <div className="komuta-metin">
             <span className="komuta-ad">{uye.isim}</span>
-            <span className="komuta-rol">{uye.rol}</span>
+            <span className="komuta-rol">
+              {uye.rol} · {uye.maas} {paraBirimi}/yıl
+            </span>
+            <span className="komuta-ekip-detay">
+              🎭 {uye.kisilik} · 🤝 %{uye.sadakat} · kalite %{uye.tahminiMin}-{uye.tahminiMax}
+            </span>
           </div>
+          <button
+            className="ikincil komuta-ekip-kov"
+            disabled={yukleniyor}
+            onClick={() => onEkipCikar(uye.id)}
+          >
+            Kov
+          </button>
         </div>
       ))}
     </div>

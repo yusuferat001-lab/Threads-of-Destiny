@@ -16,9 +16,12 @@ import {
   zamanAnlatimiUret,
   sonucAnlatimiUret,
   maasCarpaniUygula,
+  maasCarpaniGetir,
+  MAAS_CARPANI_TAVAN,
   rutbeGuncelle,
   sansOlayiDene,
   aniOlumDene,
+  ecelDenemesi,
   gecmisKaydet,
   yaslanmaUygula,
   hayatOlayiEkle,
@@ -27,6 +30,9 @@ import {
   hukumdarDegisimHaberiUret,
   MESLEKLER,
   hesaplaMaasYillik,
+  maasKirilimHesapla,
+  MaasKirilim,
+  gayrimenkulYillikGelirHesapla,
   giderKalemleriHesapla,
   GiderKalemleri,
   enflasyonYuzdesiHesapla,
@@ -39,10 +45,13 @@ import {
   krizEtkisiUygula,
   sehirYonetimGuncelle,
   enflasyonCarpani,
-  ORDU_MEVCUDU_TAVANI,
   mulkGelirleriUygula,
   mulkGetiriOraniHesapla,
+  rastgeleMulkBakimAraligi,
+  mulkYillikBakimTahmini,
   gayrimenkulDegeriHesapla,
+  dunyaFinansEtkileri,
+  DunyaFinansEtkisi,
   sucSeviyesiUygula,
   piyasaDedikodulariUret,
   magazaFiyatiHesapla,
@@ -52,6 +61,7 @@ import {
   rastgeleLuksBakimAraligi,
   paraYuvarla,
   zorunluBagisKontrolEt,
+  zenginlikSizintiKontrolEt,
   buyukSavasKontrolEt,
   buyukSavasBitisKontrolEt,
   vebaBaslamaliMi,
@@ -59,8 +69,10 @@ import {
   vebaYillikKontrol,
   vebaBitisKontrolEt,
   kucukKrizKontrolEt,
+  MESLEK_KATEGORI,
+  eskiKayitGocu,
 } from "./stateManager";
-import { rutbeTanimiGetir } from "../data/rutbeler";
+import { rutbeTanimiGetir, KARIYER_PUANI_YILLIK, KARIYER_PUANI_KATEGORI_BASARI, KARIYER_PUANI_YATIRIM } from "../data/rutbeler";
 import { rollSuccess } from "./diceRoll";
 import { olaySec, doldur, temelUygunMu, sosyallesmeIcinOlaySec } from "./olaySecici";
 import { OlayTanimi, OnTepki, OLAY_BANKASI } from "../data/olaylar";
@@ -80,8 +92,7 @@ import {
 } from "../data/evcilHayvanlar";
 import { tarihiSavasKontrol } from "../data/tarihiSavaslar";
 import { GIZEMLI_ESYA_TAKIP_HAVUZU } from "../data/gizemliEsyalar";
-import { AILELER } from "../data/aileler";
-import { yerlesimIdByAd, yerlesimGetir } from "../data/yerlesimler";
+import { yerlesimGetir } from "../data/yerlesimler";
 import { oturumKaydet, oturumYukle, aktifOturumlariYukle } from "../db/sessionRepository";
 import { MULK_TANIMLARI, mulkTanimiGetir } from "../data/mulkler";
 import { MAGAZA_ESYALARI, magazaEsyasiTanimiGetir } from "../data/magazaEsyalari";
@@ -122,6 +133,22 @@ const SUC_KAZANC_CIDDI_AHLAK = -15;
 const SUC_KAZANC_CIDDI_PARA = 40;
 /** Ağır suçlarda suc_artis tavanı bu değere yükselir (bir aranma kademesini tek suçta atlatabilir). */
 const SUC_KAZANC_CIDDI_TAVAN = 32;
+
+/**
+ * Yolculuk (Haçlı Seferi / Hac / Keşif / Sömürge Seferi vb.) olaylarında kazanılan
+ * paraya uygulanan sabit zam. Eskiden yolculuğu bitirmek kalıcı bir maaş primi
+ * (maas_carpani ×1.2) veriyordu; artık o kaldırıldı — bunun yerine yalnızca
+ * yolculuk sürerken (yolculukOlayi:true olay) elde edilen para %20 daha değerli.
+ */
+const YOLCULUK_KAZANC_CARPANI = 1.2;
+
+/**
+ * Her olay seçiminden gelen pozitif paraya uygulanan sabit prim (~%5.5). Maaş dışı
+ * gelir kanalını (olay ödülleri) hafifçe güçlendirir — oyuncuya "maaş bekleme"
+ * dışında ekonomik ajans verir. Meslek/yolculuk/suç çarpanlarının hepsinin altında,
+ * ilk sırada uygulanır.
+ */
+const OLAY_PARA_PRIMI = 1.055;
 
 type SucKazanciSonucu = "yok" | "suc" | "ciddi";
 
@@ -212,6 +239,7 @@ const oturumlar = new Map<string, Oturum>();
 export async function oturumlariYukle(): Promise<number> {
   const stateler = await aktifOturumlariYukle();
   for (const state of stateler) {
+    eskiKayitGocu(state);
     oturumlar.set(state.id, {
       state,
       mevcutSenaryo: null,
@@ -233,6 +261,7 @@ async function oturumGetir(id: string): Promise<Oturum> {
   }
   const state = await oturumYukle(id);
   if (!state) throw new Error("Oyun oturumu bulunamadı.");
+  eskiKayitGocu(state);
   const oturum: Oturum = {
     state,
     mevcutSenaryo: null,
@@ -270,9 +299,10 @@ export function aktifOturumSayisi(): number {
 export async function yeniOyun(
   cag: Cag,
   bolge: string,
-  yerlesimId: string
+  yerlesimId: string,
+  oyuncuIsmi?: string
 ): Promise<CharacterState> {
-  const state = createCharacter(cag, bolge, yerlesimId);
+  const state = createCharacter(cag, bolge, yerlesimId, oyuncuIsmi);
   oturumlar.set(state.id, {
     state,
     mevcutSenaryo: null,
@@ -286,51 +316,9 @@ export async function yeniOyun(
   return state;
 }
 
-/**
- * Ölen karakterin en büyük yaşayan çocuğuyla soyu sürdürür: aynı çağ/bölge/
- * yerleşimde, ebeveynin mesleğini (varsa) ya da aile mirasını devralan yeni
- * bir karakter oluşturur ve ebeveynin servetinden/ününden pay bırakır.
- */
-export async function soyuSurdur(id: string): Promise<CharacterState> {
-  const oturum = await oturumGetir(id);
-  const olenState = oturum.state;
-  if (olenState.aktif) throw new Error("Karakter hâlâ hayatta, soy henüz sürdürülemez.");
-
-  const yasayanCocuklar = olenState.cocuklar.filter((c) => c.yasiyor);
-  if (yasayanCocuklar.length === 0) throw new Error("Soyu sürdürecek yaşayan bir çocuk yok.");
-  const enBuyukCocuk = yasayanCocuklar.reduce((en, c) => (c.dogum_yili < en.dogum_yili ? c : en));
-
-  const zorlananAileAdi = AILELER.some((a) => a.ad === olenState.meslek && (!a.cag || a.cag === olenState.cag))
-    ? olenState.meslek
-    : olenState.aile_meslegi;
-  const yerlesimId = yerlesimIdByAd(olenState.yerlesim);
-
-  const yeniState = createCharacter(olenState.cag, olenState.bolge, yerlesimId, {
-    zorlananAileAdi,
-    isim: enBuyukCocuk.isim,
-  });
-
-  const paraMirasi = Math.max(0, Math.min(60, Math.round(olenState.para / 4)));
-  const unMirasi = Math.max(0, Math.min(15, Math.round(olenState.un / 8)));
-  yeniState.para += paraMirasi;
-  yeniState.un += unMirasi;
-  yeniState.etiketler.push("miras:soy_surdu");
-
-  const ebeveynTanimlama = olenState.isim ?? `${olenState.aile_meslegi} ailesinin bir önceki reisi`;
-  yeniState.acilis_anlatimi = `${ebeveynTanimlama} göçüp gittiğinde, soyunu ${yeniState.isim} olarak sürdürmeye karar verdin. ${yeniState.acilis_anlatimi}`;
-  clampStats(yeniState);
-
-  oturumlar.set(yeniState.id, {
-    state: yeniState,
-    mevcutSenaryo: null,
-    mevcutOlay: null,
-    zorlananOlayId: null,
-    sonErisim: Date.now(),
-    sonTon: null,
-    bekleyenTepki: null,
-  });
-  await oturumKaydet(yeniState);
-  return yeniState;
+/** İsim seçim ekranı için: bölge/çağa uygun kültürel bir isim önerir. */
+export function isimOnerisiGetir(cag: Cag, bolge: string): string {
+  return rastgeleBirIsimSec(cag, bolge);
 }
 
 export async function mesleğiAta(id: string, meslek: string): Promise<CharacterState> {
@@ -396,10 +384,10 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
   ) {
     zorlananId = "iliski_evlilik_teklifi";
   }
-  // En üst rütbeye (3) ulaşan bir karaktere, şansa bırakmadan bir kez şehir
-  // yönetimi arenasına giriş teklifi zorla sunulur — yoksa 360+ olayın
-  // arasında yıllarca gizli kalabilir.
-  if (!zorlananId && oturum.state.rutbe_seviye >= 3 && !oturum.state.etiketler.includes("sehir_yonetimi_basladi")) {
+  // Rütbe 4'e (5 kademeli merdivende "başarılı kariyer" eşiği) ulaşan bir
+  // karaktere, şansa bırakmadan bir kez şehir yönetimi arenasına giriş teklifi
+  // zorla sunulur — yoksa 360+ olayın arasında yıllarca gizli kalabilir.
+  if (!zorlananId && oturum.state.rutbe_seviye >= 4 && !oturum.state.etiketler.includes("sehir_yonetimi_basladi")) {
     const baslangicId =
       oturum.state.meslek === "Tüccar"
         ? "sehir_yonetim_tuccar_baslangic"
@@ -563,6 +551,41 @@ interface SecimSonucu {
   zamanAnlatimi: string | null;
   /** Bu turda rütbe atlandıysa true; istemci bunu ayrı bir kutlama (ses+animasyon) için kullanır. */
   terfiOldu: boolean;
+  /**
+   * Bu turda gerçekleşen para hareketinin kaynak/kalem kırılımı. Σ(tüm alanlar) ==
+   * bu turda state.para'daki net değişim (mutabakatlı). Şimdilik yalnız analiz/
+   * simülasyon araçları okur; istemci kullanmıyor (opsiyonel — eski kayıtlarda yok).
+   */
+  nakitAkisi?: TurNakitAkisi;
+}
+
+/** Bir turdaki tüm nakit giriş/çıkışının kalem bazlı dökümü; toplamları o turun net para değişimine eşittir. */
+export interface TurNakitAkisi {
+  /** Olay seçiminin pozitif para etkisi (meslek/yolculuk/suç çarpanları uygulanmış hâli). */
+  olayGeliri: number;
+  /** Olay seçiminin negatif para etkisi (mutlak değer). */
+  olayGideri: number;
+  /** Turdaki tüm yıllar için toplam brüt maaş geliri (yıllık dalgalanma dahil). */
+  maasBrut: number;
+  giderYasam: number;
+  giderKonut: number;
+  giderEkip: number;
+  giderEvcil: number;
+  savasVergisi: number;
+  /** Borç faizi (borç yokken 0). */
+  faiz: number;
+  /** Sahip olunan mülklerin net getirisi; zararda negatif. Bakım/vergi bu tutardan zaten düşülmüştür. */
+  mulkNet: number;
+  /** Lüks mağaza eşyalarının periyodik bakım/vergi masrafı (mutlak değer). */
+  envanterBakim: number;
+  /** Kralın zorunlu bağış tahsilatı (mutlak değer). */
+  zorunluBagis: number;
+  /** Zenginlik sızıntısı (hırsız/haraç/dolandırıcı — net servet ≥ 350 & nakit ≥ 50; mutlak değer). */
+  zenginlikSizinti: number;
+  /** Yukarıdaki kalemlerin dışında kalan her şey (kriz para etkisi, şans olayı, servet_kaybet/para_sifirla vb.) — net. */
+  digerNet: number;
+  /** Bilgi amaçlı: mülk bakım tutarı (mulkNet içinde zaten düşülü — mutabakata AYRICA girmez). */
+  bilgiMulkBakim: number;
 }
 
 const YARIM_YILDIZ_PUAN = 10;
@@ -585,10 +608,11 @@ export function jitterUygula(etki: SonucEtkisi): SonucEtkisi {
   };
 }
 
-// Sağlık düştükçe ölümcül sonuçlanma ihtimali artar: 60 sağlıktan itibaren
-// devreye girer, 0 sağlıkta temel şansın 2.5 katına kadar çıkar.
+// Sağlık düştükçe ölümcül sonuçlanma ihtimali artar: 45 sağlıktan itibaren
+// devreye girer (eski 60'tan düşürüldü — orta oyunun yarısı 60 altındaydı ve
+// her ölüm zarı fiilen 2.5×'ti), 0 sağlıkta temel şansın ~2.1 katına çıkar.
 export function efektifOlumSansi(baseSans: number, saglik: number): number {
-  const carpan = 1 + Math.max(0, 60 - saglik) / 40;
+  const carpan = 1 + Math.max(0, 45 - saglik) / 40;
   return Math.min(95, baseSans * carpan);
 }
 
@@ -666,9 +690,26 @@ async function sonucuUygulaVeIlerlet(
   eskiRutbeSeviye: number
 ): Promise<SecimSonucu> {
   const { state } = oturum;
+  // Nakit akışı defteri: turun sonunda Σ(alanlar) == state.para'daki net değişim olacak
+  // şekilde kalem kalem doldurulur; digerNet artık kalan farkı kapatır.
+  const paraGiris = state.para;
+  const nakitAkisi: TurNakitAkisi = {
+    olayGeliri: 0, olayGideri: 0, maasBrut: 0, giderYasam: 0, giderKonut: 0,
+    giderEkip: 0, giderEvcil: 0, savasVergisi: 0, faiz: 0, mulkNet: 0,
+    envanterBakim: 0, zorunluBagis: 0, zenginlikSizinti: 0, digerNet: 0, bilgiMulkBakim: 0,
+  };
+  // Olay geliri primi: maaş dışı gelir kanalını hafifçe güçlendirir (her olay için ~%5.5).
+  if (etki.para && etki.para > 0) {
+    etki.para = paraYuvarla(etki.para * OLAY_PARA_PRIMI);
+  }
   // Saldırı gücü / ticaret sermayesi / nüfuz, kendi kategorisindeki kazançları büyütür.
   if (etki.para && etki.para > 0) {
     etki.para = Math.round(etki.para * meslekMetrikCarpani(state, mevcutOlay.kategori));
+  }
+  // Yolculuk olaylarında kazanılan para %20 daha değerli (eski kalıcı "yolculuğu
+  // bitirdin" maaş priminin yerini alır — meslek çarpanının üstüne biner).
+  if (etki.para && etki.para > 0 && mevcutOlay.yolculukOlayi) {
+    etki.para = Math.round(etki.para * YOLCULUK_KAZANC_CARPANI);
   }
   // Suç işleyerek para kazanma: para kazancını büyütür + suç/aranma seviyesini
   // hızla yükseltir (meslek çarpanının üstüne biner — suç + kendi mesleğin en hızlı
@@ -680,9 +721,8 @@ async function sonucuUygulaVeIlerlet(
 
   // Alkollü bir sosyalleşme mekânında (meyhane/pub/ordugâh çadırı) yaşanan her olay
   // ziyaret sayacını artırır; eşiğe İLK kez ulaşıldığında (bagimlilik:ayyas henüz
-  // yoksa) kalıcı bir "ayyaşlık" damgası vurulur — bkz. §8 devlet_takibinde ile
-  // aynı rising-edge mantığı, ama burada tersine dönüş yok (kalıcı), tek çıkışı
-  // sosyal_meyhane_ayilma olayıdır.
+  // yoksa) kalıcı bir "ayyaşlık" damgası vurulur (rising-edge). Burada tersine
+  // dönüş yok (kalıcı), tek çıkışı sosyal_meyhane_ayilma olayıdır.
   let ayyasOlduBuTur = false;
   if (mevcutOlay.sosyallesmeYeri) {
     const ziyaretEdilenYer = sosyallesmeYeriGetir(mevcutOlay.sosyallesmeYeri);
@@ -706,6 +746,9 @@ async function sonucuUygulaVeIlerlet(
     }
   }
 
+  const olayPara = etki.para ?? 0;
+  nakitAkisi.olayGeliri = Math.max(0, olayPara);
+  nakitAkisi.olayGideri = Math.max(0, -olayPara);
   state.para += etki.para ?? 0;
   state.un += etki.un ?? 0;
   state.ahlak += etki.ahlak ?? 0;
@@ -727,6 +770,12 @@ async function sonucuUygulaVeIlerlet(
   }
   if (etki.ticaret_sermaye_artis) state.ticaret_sermaye += etki.ticaret_sermaye_artis;
   if (etki.nufuz_artis) state.nufuz += etki.nufuz_artis;
+  // Kariyer puanı: mesleğine uygun kategoride (savas/ticaret/din) başarılı olmak
+  // seni rütbede ilerletir; kilit taşı olaylar ayrıca doğrudan puan verebilir.
+  if (basarili && MESLEK_KATEGORI[state.meslek] === mevcutOlay.kategori) {
+    state.kariyer_puani += KARIYER_PUANI_KATEGORI_BASARI;
+  }
+  if (etki.kariyer_puani_artis) state.kariyer_puani += etki.kariyer_puani_artis;
   if (etki.suc_artis) state.suc_seviyesi += etki.suc_artis;
   if (etki.suc_seviyesi_ayarla !== undefined) state.suc_seviyesi = etki.suc_seviyesi_ayarla;
   if (etki.yeni_meslek) state.meslek = etki.yeni_meslek;
@@ -751,11 +800,11 @@ async function sonucuUygulaVeIlerlet(
   }
 
   // Veba başlangıcı (veba_baslangici olayı) çözüldüğünde parametreleri (süre/kira-maaş
-  // çarpanları) burada rastgele belirlenir; "önlem al" seçeneği veba_onlem_alindi
-  // etiketini bırakır ve ölüm/kayıp risklerini yarıya indirir (bkz. vebaYillikKontrol).
+  // çarpanları) burada rastgele belirlenir; başlatan seçeneğin `veba_koruma`
+  // alanı (0/1/2) yıllık ölüm/kayıp risk kademesini belirler (bkz. vebaYillikKontrol).
   const vebaBasliyorMu = etki.ulke_etkisi?.vebada === true && !state.ulke.vebada;
   if (vebaBasliyorMu) {
-    vebaBaslat(state, etki.etiket_ekle?.includes("veba_onlem_alindi") ?? false);
+    vebaBaslat(state, etki.veba_koruma ?? 0);
     hayatOlayiEkle(state, "☠️", `${state.bolge} vebaya yakalandı`);
   }
 
@@ -831,7 +880,7 @@ async function sonucuUygulaVeIlerlet(
       sadakat,
       kisilik,
     });
-    maasCarpaniUygula(state, 1 + (gercekKalite - 50) / 250);
+    maasCarpaniUygula(state, 1 + (gercekKalite - 50) / 500);
     hayatOlayiEkle(state, "🤝", `${isim} (${etki.ekip_ekle.rol}) ekibine katıldı`);
   }
   if (etki.ekip_kaybi && state.ekip.length > 0) {
@@ -866,6 +915,7 @@ async function sonucuUygulaVeIlerlet(
   if (etki.mulk_kaybet && state.mulkler.includes(etki.mulk_kaybet)) {
     const kaybedilenMulk = mulkTanimiGetir(etki.mulk_kaybet);
     state.mulkler = state.mulkler.filter((m) => m !== etki.mulk_kaybet);
+    if (state.mulk_bakim_kalan) delete state.mulk_bakim_kalan[etki.mulk_kaybet];
     hayatOlayiEkle(state, "🚨", `${kaybedilenMulk.ad} el konuldu`);
   }
   if (etki.unvan_kazan && !state.unvanlar.includes(etki.unvan_kazan)) {
@@ -922,6 +972,9 @@ async function sonucuUygulaVeIlerlet(
     const eskiHukumdar = state.hukumdar;
     const turSuresi = Math.random() < 0.4 ? 1 : 2;
     yasArtisi = mevcutOlay.yolculukOlayi ? ilerletYas(state, 1, 1) : ilerletYas(state, turSuresi, turSuresi);
+    // Pasif kıdem: hayatta geçen her yıl kariyer puanını biraz büyütür (yatırım yapmayan
+    // bir karakter de zamanla rütbe atlar; yatırım sadece bunu hızlandırır).
+    state.kariyer_puani += KARIYER_PUANI_YILLIK * yasArtisi;
     if (eskiHukumdar && state.hukumdar && state.hukumdar !== eskiHukumdar) {
       const haber = hukumdarDegisimHaberiUret(eskiHukumdar, state.hukumdar);
       hukumdarDegisimHaberi = haber;
@@ -933,6 +986,13 @@ async function sonucuUygulaVeIlerlet(
     }
     if (state.aktif) {
       const ekonomi = pasifEkonomiUygula(state, yasArtisi);
+      nakitAkisi.maasBrut = ekonomi.yillikGelirler.reduce((a, b) => a + b, 0);
+      nakitAkisi.giderYasam = ekonomi.giderKalemleri.yasam * yasArtisi;
+      nakitAkisi.giderKonut = ekonomi.giderKalemleri.konut * yasArtisi;
+      nakitAkisi.giderEkip = ekonomi.giderKalemleri.ekip * yasArtisi;
+      nakitAkisi.giderEvcil = ekonomi.giderKalemleri.evcilHayvan * yasArtisi;
+      nakitAkisi.savasVergisi = ekonomi.giderKalemleri.savasVergisi * yasArtisi;
+      nakitAkisi.faiz = ekonomi.faiz;
       checkDeath(state, false); // borç stresiyle sağlık 0'a inmiş olabilir
       if (state.aktif) {
         const yaslanmaKaybi = yaslanmaUygula(state, yasArtisi);
@@ -946,13 +1006,13 @@ async function sonucuUygulaVeIlerlet(
           }
         }
         if (state.aktif) {
+          // İleri yaş "ecel" riski: 70+ her yıl artan doğal ölüm ihtimali,
+          // can/servet ne olursa olsun (pahalı ev + iyi yemek "ölümsüzlüğünü" sınırlar).
+          const ecelMesaji = ecelDenemesi(state, yasArtisi);
+          if (ecelMesaji) checkDeath(state, true, ecelMesaji);
+        }
+        if (state.aktif) {
           zamanAnlatimi = zamanAnlatimiUret(state, yasArtisi, ekonomi);
-          if (ekonomi.vergiBildirimi) {
-            const vergiMesaji =
-              "👑 Servetin dikkat çekti; kraliyet memurları artık senden düzenli vergi istiyor.";
-            zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${vergiMesaji}` : vergiMesaji;
-            hayatOlayiEkle(state, "👑", "Zenginliği devletin dikkatini çekti, düzenli vergiye bağlandı");
-          }
           if (ayyasOlduBuTur) {
             const ayyasMesaji =
               "🍷 Artık mahallede 'ayyaş' diye biliniyorsun; bu sağlığını, itibarını ve işini kalıcı olarak yıpratacak.";
@@ -977,6 +1037,12 @@ async function sonucuUygulaVeIlerlet(
               "🌊 Ticaret kervanın savaşın kaosunda kayboldu; yatırımından geriye bir şey kalmadı.";
             zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${kervanMesaji}` : kervanMesaji;
           }
+          for (const bakim of mulkSonucu.bakimOdemeleri) {
+            const bakimMesaji = `🔧 ${bakim.ad} için ${bakim.miktar} ${state.para_birimi} bakım/vergi gideri ödedin.`;
+            zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${bakimMesaji}` : bakimMesaji;
+          }
+          nakitAkisi.mulkNet = mulkSonucu.toplamNet;
+          nakitAkisi.bilgiMulkBakim = mulkSonucu.bakimOdemeleri.reduce((a, b) => a + b.miktar, 0);
           sucSeviyesiUygula(state, yasArtisi);
           const envanterSonucu = envanterBozulmasiUygula(state, yasArtisi);
           if (envanterSonucu.cozulenler.length > 0) {
@@ -990,16 +1056,26 @@ async function sonucuUygulaVeIlerlet(
             const bakimMesaji = `🔧 ${bakim.ad} için ${bakim.miktar} ${state.para_birimi} bakım gideri ödedin.`;
             zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${bakimMesaji}` : bakimMesaji;
           }
+          nakitAkisi.envanterBakim = envanterSonucu.bakimOdemeleri.reduce((a, b) => a + b.miktar, 0);
           const sansMesaji = sansOlayiDene(state);
 
           // Zorunlu bağış / büyük savaş / veba — arka planda tetiklenen dünya olayları;
-          // sonuçları (varsa) vergiBildirimi/ayyaşlık ile aynı desende koşulsuz olarak
+          // sonuçları (varsa) ayyaşlık bildirimiyle aynı desende koşulsuz olarak
           // zamanAnlatimi'ye eklenir (aşağıdaki tek-slotlu ekCumle önceliğinden bağımsız,
           // çünkü hepsi nadir ve önemli birer haber).
           const bagisSonucu = zorunluBagisKontrolEt(state, yasArtisi);
           if (bagisSonucu) {
             zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${bagisSonucu.mesaj}` : bagisSonucu.mesaj;
             hayatOlayiEkle(state, "👑", `Zorunlu bağış: -${bagisSonucu.miktar} ${state.para_birimi}`);
+            nakitAkisi.zorunluBagis = bagisSonucu.miktar;
+          }
+
+          // Zenginlik sızıntısı (hırsız/haraç/dolandırıcı — net servet ≥ 350 & nakit ≥ 50).
+          const sizintiSonucu = zenginlikSizintiKontrolEt(state, yasArtisi);
+          if (sizintiSonucu) {
+            zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${sizintiSonucu.mesaj}` : sizintiSonucu.mesaj;
+            hayatOlayiEkle(state, "🗡️", `Zenginlik sızıntısı: -${sizintiSonucu.miktar} ${state.para_birimi}`);
+            nakitAkisi.zenginlikSizinti = sizintiSonucu.miktar;
           }
 
           const savasBaslamaMesaji = buyukSavasKontrolEt(state, yasArtisi);
@@ -1087,8 +1163,26 @@ async function sonucuUygulaVeIlerlet(
   oturum.mevcutSenaryo = null;
   oturum.mevcutOlay = null;
 
+  // digerNet, kalem bazlı defterle gerçek para değişimi arasındaki farkı kapatır
+  // (kriz para etkisi, şans olayı, para_sifirla/para_yuzde_kaybet, ani ölüm öncesi vb.).
+  const mutabakatliToplam =
+    nakitAkisi.olayGeliri -
+    nakitAkisi.olayGideri +
+    nakitAkisi.maasBrut -
+    nakitAkisi.giderYasam -
+    nakitAkisi.giderKonut -
+    nakitAkisi.giderEkip -
+    nakitAkisi.giderEvcil -
+    nakitAkisi.savasVergisi -
+    nakitAkisi.faiz +
+    nakitAkisi.mulkNet -
+    nakitAkisi.envanterBakim -
+    nakitAkisi.zorunluBagis -
+    nakitAkisi.zenginlikSizinti;
+  nakitAkisi.digerNet = paraYuvarla(state.para - paraGiris - mutabakatliToplam);
+
   await oturumKaydet(state);
-  return { state, basarili, uygulananEtki: etki, yasArtisi, sonucAnlatimi, zamanAnlatimi, terfiOldu };
+  return { state, basarili, uygulananEtki: etki, yasArtisi, sonucAnlatimi, zamanAnlatimi, terfiOldu, nakitAkisi };
 }
 
 export interface FinansOzeti {
@@ -1096,8 +1190,14 @@ export interface FinansOzeti {
   giderKalemleri: GiderKalemleri;
   netYillik: number;
   enflasyonYuzdesi: number;
-  /** Sahip olunan tüm gayrimenkullerin güncel toplam değeri (zenginlik vergisi eşiği bu + nakit toplamına bakar). */
+  /** Sahip olunan tüm gayrimenkullerin güncel toplam değeri (zorunlu bağış eşiği bu + nakit toplamına bakar). */
   gayrimenkulDegeri: number;
+  /** Yıllık maaşın hangi bileşenlerden oluştuğu + her birinin kalıcı mı dönemsel mi olduğu. */
+  maasKirilim: MaasKirilim;
+  /** Mülklerden gelen yıllık tahmini net gelir — maaşın DIŞINDA, ayrı bir gelir akışı. */
+  gayrimenkulYillikGelir: number;
+  /** Şu an bütçeyi/sağlığı etkileyen dünya durumlarının insan-okunur listesi (ekonomi, savaş, salgın, kıtlık, enflasyon, zorunlu bağış eşiği). */
+  dunyaEtkileri: DunyaFinansEtkisi[];
 }
 
 /** Bir sonraki turu beklemeden, güncel gelir/gider dökümünü salt-okunur olarak hesaplar; para değiştirmez. */
@@ -1111,7 +1211,6 @@ export async function finansGetir(id: string): Promise<FinansOzeti> {
     giderKalemleri.konut +
     giderKalemleri.ekip +
     giderKalemleri.evcilHayvan +
-    giderKalemleri.vergi +
     giderKalemleri.savasVergisi;
   return {
     maasYillik,
@@ -1119,6 +1218,9 @@ export async function finansGetir(id: string): Promise<FinansOzeti> {
     netYillik: paraYuvarla(maasYillik - toplamGider),
     enflasyonYuzdesi: enflasyonYuzdesiHesapla(state),
     gayrimenkulDegeri: gayrimenkulDegeriHesapla(state),
+    maasKirilim: maasKirilimHesapla(state),
+    gayrimenkulYillikGelir: gayrimenkulYillikGelirHesapla(state),
+    dunyaEtkileri: dunyaFinansEtkileri(state),
   };
 }
 
@@ -1195,12 +1297,14 @@ interface YatirimSonucu {
 /**
  * İş yatırımının maliyeti: sabit bir sayı değil, hem enflasyonla hem de bu
  * karakterin şimdiye kadar yaptığı yatırım sayısıyla büyür — her yeni yatırım
- * bir öncekinden %22 daha pahalıya patlar (gerçek bir işletmeyi büyütmenin her
+ * bir öncekinden %17 daha pahalıya patlar (gerçek bir işletmeyi büyütmenin her
  * seferinde biraz daha zorlaşması gibi). Taban değer bilinçli olarak "düz" bir
  * sayı değil; sonucun da 0/5 ile bitmemesi için son bir yuvarlama garantisi var.
  */
-const KENDI_ISI_TEMEL_MALIYET = 37;
-const KENDI_ISI_ESKALASYON = 0.22;
+const KENDI_ISI_TEMEL_MALIYET = 45; // 63 → 45: ilk yatırımın giriş bariyeri 20'li yaşlara indirildi
+const KENDI_ISI_ESKALASYON = 0.3; // her yatırım bir öncekinden %30 daha pahalı (zirve yine maaş çarpanı tavanına takılır)
+/** Kendi işine her yatırımın verdiği kalıcı yıllık maaş primi (ham uygulanır; toplam MAAS_CARPANI_TAVAN'a tabidir). */
+const KENDI_ISI_MAAS_PRIMI = 1.05;
 
 function kendiIsiMaliyetiHesapla(state: CharacterState): number {
   let maliyet = Math.round(
@@ -1243,11 +1347,12 @@ export async function yatirimYap(id: string): Promise<YatirimSonucu> {
     throw new Error("Önce bir meslek seçmelisin.");
   }
 
-  let mesaj: string;
-  const techizatDolu = state.meslek === "Asker" && state.ordu_techizat_seviyesi >= 100;
-  const orduDolu = state.meslek === "Asker" && state.ordu_mevcudu >= ORDU_MEVCUDU_TAVANI;
-  if (techizatDolu && orduDolu) {
-    throw new Error("Ordun zaten doruk noktada; teçhizatın ve mevcudun tam kapasitede, yeni bir yatırımın karşılığı olmaz.");
+  // Kendi işine yatırım artık meslek metriğini (teçhizat/sermaye/nüfuz) BÜYÜTMEZ;
+  // her yatırım yalnızca kalıcı +%5 yıllık maaş primi verir. Bu prim, olay/aile
+  // bonuslarıyla ortak MAAS_CARPANI_TAVAN'a (×1.40) tabidir — tavana ulaşıldığında
+  // yeni yatırımın maaşa katkısı kalmaz.
+  if (maasCarpaniGetir(state) >= MAAS_CARPANI_TAVAN) {
+    throw new Error("İşin zaten zirvede; yeni bir yatırımın yıllık maaşına ek katkı sağlamaz.");
   }
   const maliyet = kendiIsiMaliyetiHesapla(state);
   if (state.para < maliyet) {
@@ -1256,25 +1361,21 @@ export async function yatirimYap(id: string): Promise<YatirimSonucu> {
   state.para -= maliyet;
   const asama = kendiIsiAsamaCumlesi(state.kendi_isi_yatirim_sayisi);
   state.kendi_isi_yatirim_sayisi += 1;
+  // Yatırım rütbe ilerlemesini de bir miktar hızlandırır.
+  state.kariyer_puani += KARIYER_PUANI_YATIRIM;
+  const oncekiMaas = state.maas_yillik;
+  maasCarpaniUygula(state, KENDI_ISI_MAAS_PRIMI, true);
+  state.maas_yillik = hesaplaMaasYillik(state);
 
-  if (state.meslek === "Asker") {
-    if (!techizatDolu) {
-      const eski = state.ordu_techizat_seviyesi;
-      state.ordu_techizat_seviyesi = Math.min(100, state.ordu_techizat_seviyesi + 10);
-      mesaj = `${asama} Birliğinin teçhizatına yatırım yaptın: teçhizat seviyen %${eski} → %${state.ordu_techizat_seviyesi} oldu. Saldırı gücün kalıcı olarak arttı.`;
-    } else {
-      const eski = state.ordu_mevcudu;
-      state.ordu_mevcudu = Math.min(ORDU_MEVCUDU_TAVANI, state.ordu_mevcudu + 15);
-      mesaj = `${asama} Teçhizatın zaten dorukta; bu sermayeyle saflarına yeni askerler kattın: ordu mevcudun ${eski} → ${state.ordu_mevcudu} oldu.`;
-    }
-  } else if (state.meslek === "Tüccar") {
-    const eski = state.ticaret_sermaye;
-    state.ticaret_sermaye += 20;
-    mesaj = `${asama} Ticaretine sermaye kattın: ticaret sermayen ${eski} → ${state.ticaret_sermaye} ${state.para_birimi} oldu. Artık bir tezgah daha işletiyorsun; ticaret kazançların kalıcı olarak büyüdü.`;
-  } else {
-    const eski = state.nufuz;
-    state.nufuz += 20;
-    mesaj = `${asama} Cemaatin arasında nüfuzun büyüdü: nüfuzun ${eski} → ${state.nufuz} oldu. Vaazların artık daha çok insana ulaşıyor; dini kazançların kalıcı olarak arttı.`;
+  const renk =
+    state.meslek === "Asker"
+      ? "Birliğinin ikmaline ve düzenine sermaye ayırdın"
+      : state.meslek === "Tüccar"
+        ? "Ticaretine bir tezgah daha kattın"
+        : "Cemaatin arasındaki işlerine daha çok emek verdin";
+  let mesaj = `${asama} ${renk}. Bu, yıllık maaşını kalıcı olarak yaklaşık %5 artırdı (${oncekiMaas} → ${state.maas_yillik} ${state.para_birimi}). Yatırım kariyerini de biraz ilerletti.`;
+  if (maasCarpaniGetir(state) >= MAAS_CARPANI_TAVAN) {
+    mesaj += " Artık işin zirvede — bundan sonraki yatırımların maaşına daha fazla katkı sağlamaz.";
   }
 
   clampStats(state);
@@ -1299,6 +1400,8 @@ export interface MulkKartBilgisi {
   tahminiYillikGetiriYuzdesi: number;
   /** Aynı oranın, güncel para biriminde karşılığı (mulkGelirleriUygula'nın gerçekte ekleyeceği/düşeceği miktarla birebir aynı formül). */
   tahminiYillikGetiriMiktari: number;
+  /** 7-10 yılda bir çıkan periyodik bakım/vergi masrafının yıllığa indirgenmiş yaklaşık tutarı (getiriden ayrı, her zaman gider). */
+  yillikBakimTahmini: number;
 }
 
 /** Yatırım ekranının "Yatırımlık Gayrimenkuller" bölümü için 5 mülkün güncel fiyat/getiri önizlemesini döner. */
@@ -1320,6 +1423,7 @@ export async function mulkConfigGetir(id: string): Promise<MulkKartBilgisi[]> {
       sahipMi: state.mulkler.includes(tanim.tur),
       tahminiYillikGetiriYuzdesi: Math.round(oran * 100),
       tahminiYillikGetiriMiktari: paraYuvarla(tabanDegeri * oran),
+      yillikBakimTahmini: mulkYillikBakimTahmini(tanim.tur, state),
     };
   });
 }
@@ -1342,6 +1446,8 @@ export async function mulkSatinAl(id: string, tur: MulkTuru): Promise<MulkSatinA
   }
   state.para -= maliyet;
   state.mulkler.push(tur);
+  if (!state.mulk_bakim_kalan) state.mulk_bakim_kalan = {};
+  state.mulk_bakim_kalan[tur] = rastgeleMulkBakimAraligi();
   clampStats(state);
   await oturumKaydet(state);
   return { state, mesaj: `${tanim.ad} satın aldın (${maliyet} ${state.para_birimi}). ${tanim.aciklama}` };
@@ -1554,7 +1660,7 @@ export async function magazadanSatinAl(id: string, katalogId: string): Promise<M
   let mesaj = `${tanim.ad} satın aldın (${fiyat} ${state.para_birimi}).`;
   if (tanim.kategori === "luks" && tanim.unEtkisi) {
     state.un += tanim.unEtkisi;
-    mesaj += ` Şehirdeki itibarın hemen arttı (+${tanim.unEtkisi} ün). Artık bu eşyaya sahipsin.`;
+    mesaj += ` Şehirdeki itibarın hemen arttı (+${tanim.unEtkisi} şöhret). Artık bu eşyaya sahipsin.`;
   } else {
     state.magaza_temel_kilit_bitis_yili = state.yil + TEMEL_MAGAZA_KILIT_SURESI_YIL;
     mesaj += ` Envanterine eklendi — ${tanim.omurYil} yıl içinde kullanmazsan bozulur. Temel ürün alışverişin ${TEMEL_MAGAZA_KILIT_SURESI_YIL} yıl kilitlenecek.`;

@@ -2,7 +2,15 @@ import { randomUUID } from "crypto";
 import { CharacterState, Cag, Kategori, SonucEtkisi, YatkinlikKaynagi, KisilikEksenleri, UlkeKrizi, HayatAmaci, MulkTuru, SahipOlunanEsya } from "../types";
 import { AILELER, AileTanimi } from "../data/aileler";
 import { rastgeleKisilikCifti, kisilikGetir } from "../data/kisilikler";
-import { rutbeTanimiGetir, RutbeEsigi, RutbeTanimi } from "../data/rutbeler";
+import {
+  rutbeTanimiGetir,
+  RutbeEsigi,
+  RutbeTanimi,
+  TERFI_COOLDOWN,
+  rutbeMaasCarpani,
+  KARIYER_PUANI_YILLIK,
+  KARIYER_PUANI_YATIRIM,
+} from "../data/rutbeler";
 import { YerlesimTanimi, yerlesimGetir, yerlesimIdByAd } from "../data/yerlesimler";
 import { konutGetir, VARSAYILAN_KONUT_ID, TASINMA_MALIYETI } from "../data/konutlar";
 import { yasamSecenegiGetir, VARSAYILAN_YASAM_SECIMI_ID } from "../data/yasamSecenekleri";
@@ -196,23 +204,73 @@ function paraBirimiGetir(cag: Cag, bolge: string): string {
   return PARA_BIRIMI[`${cag}|${bolge}`] ?? "Akçe";
 }
 
-// Taban değerler (Asker 9 / Tüccar 10 / Din Adamı 8) üzerine genel bir %10 maaş
-// artışı — tüm meslek ve rütbelerde orantılı olarak yansır (rütbe zaten un/tur_sayisi
-// üzerinden bu formüle giriyor, ayrı bir çarpana gerek yok).
-const TEMEL_MAAS: Record<string, number> = { Asker: 9.9, Tüccar: 11, "Din Adamı": 8.8 };
+// Taban değerler (özgün: Asker 9 / Tüccar 10 / Din Adamı 8) üzerine iki genel zam:
+// 2026-08'de +%10, 2026-09'da (yama #2) ayrıca +%5 → toplam ×1.155. Her meslek ve
+// çağda orantılı yansır (rütbe/enflasyon/itibar zaten ayrı çarpan kalemleri).
+const TEMEL_MAAS: Record<string, number> = { Asker: 10.395, Tüccar: 11.55, "Din Adamı": 9.24 };
+
+/**
+ * "İtibarın" maaş düzenleyicisi: mutluluk + şöhret(un) + ahlak'ı TEK bir kaleme
+ * birleştirir. Her stat 5 banda ayrılır; yüzdeler TOPLANIR ve maaşa
+ * `× (1 + toplam/100)` girer. 2026-09: etkiler yumuşatıldı (−%4/−%2/0/+%2/+%4)
+ * ve bantlar stata göre ayrıştı:
+ *  - Mutluluk & Ahlak: nötr bant 40-60 (altı ceza, üstü bonus).
+ *  - Şöhret: nötr bant çok daha düşükten başlar (taze/mütevazı bir karakter az
+ *    tanınıyor diye maaşça cezalandırılmasın; ün yüksekken küçük bir prim).
+ * Tavan/taban YOK — üçü de dipteyse −%12, üçü de zirvedeyse +%12.
+ */
+function itibarDegerYuzdesi(deger: number): number {
+  if (deger <= 25) return -4;
+  if (deger <= 40) return -2;
+  if (deger <= 60) return 0;
+  if (deger <= 78) return 2;
+  return 4;
+}
+
+function itibarUnYuzdesi(un: number): number {
+  if (un <= 8) return -4;
+  if (un <= 16) return -2;
+  if (un <= 50) return 0;
+  if (un <= 75) return 2;
+  return 4;
+}
+
+export function itibarMaasKirilimi(state: CharacterState): { toplam: number; kalemler: MaasKirilimKalemi[] } {
+  const kalemler: MaasKirilimKalemi[] = [
+    { ad: "Mutluluk", yuzde: itibarDegerYuzdesi(state.mutluluk) },
+    { ad: "Şöhret", yuzde: itibarUnYuzdesi(state.un) },
+    { ad: "Ahlak", yuzde: itibarDegerYuzdesi(state.ahlak) },
+  ];
+  return { toplam: kalemler.reduce((s, k) => s + k.yuzde, 0), kalemler };
+}
 
 /** Kökenden ve olaylardan gelen kalıcı maaş çarpanı; state üzerinde etiket olarak taşınır. */
 const MAAS_CARPANI_ETIKET_ONEKI = "maas_carpani:";
 
-function maasCarpaniGetir(state: CharacterState): number {
+export function maasCarpaniGetir(state: CharacterState): number {
   const etiket = state.etiketler.find((e) => e.startsWith(MAAS_CARPANI_ETIKET_ONEKI));
   if (!etiket) return 1;
   const deger = Number(etiket.slice(MAAS_CARPANI_ETIKET_ONEKI.length));
   return Number.isFinite(deger) && deger > 0 ? deger : 1;
 }
 
-export function maasCarpaniUygula(state: CharacterState, carpan: number): void {
-  const yeni = maasCarpaniGetir(state) * carpan;
+/** Kalıcı maaş çarpanının toplam üst/alt sınırı: olay + aile + ekip + yatırım bonusları hep bu bandın içinde kalır. */
+export const MAAS_CARPANI_TAVAN = 1.4;
+export const MAAS_CARPANI_TABAN = 0.6;
+
+/**
+ * Kalıcı maaş çarpanına bir katkı uygular.
+ *  - `ham` FALSE (varsayılan): pozitif katkı yarıya indirilir (`1 + (carpan-1)*0.5`)
+ *    — dağınık ~80 olay + ekip bonusunu tek noktadan kısmak için. Negatif katkı
+ *    (kötü olay, ayyaşlık) aynen geçer.
+ *  - `ham` TRUE: katkı olduğu gibi uygulanır — doğuşta bir kez verilen kimlik
+ *    ödülleri için (yerleşim farkı, aile mirası, kendi işine yatırımın +%5'i).
+ * Her durumda toplam çarpan [TABAN, TAVAN] bandına kırpılır.
+ */
+export function maasCarpaniUygula(state: CharacterState, carpan: number, ham = false): void {
+  const etkin = !ham && carpan > 1 ? 1 + (carpan - 1) * 0.5 : carpan;
+  const ham_yeni = maasCarpaniGetir(state) * etkin;
+  const yeni = Math.min(MAAS_CARPANI_TAVAN, Math.max(MAAS_CARPANI_TABAN, ham_yeni));
   state.etiketler = state.etiketler.filter((e) => !e.startsWith(MAAS_CARPANI_ETIKET_ONEKI));
   state.etiketler.push(`${MAAS_CARPANI_ETIKET_ONEKI}${yeni.toFixed(3)}`);
 }
@@ -266,11 +324,14 @@ export function sehirYonetimUnvanGetir(meslek: string, seviye: number): string |
   return `${liste[liste.length - 1]} (Seviye ${seviye})`;
 }
 
-/** Şehir yönetimi seviyesindeki her kademe maaşa kalıcı olarak +%8 katar; üst sınır yok. */
+/**
+ * Şehir yönetimine bir kez girmek maaşa kalıcı, SABİT +%8 katar — seviyeyle
+ * ölçeklenmez (seviye/unvan yalnızca prestij içindir, maaşa ek katkısı yoktur).
+ */
 const SEHIR_YONETIM_MAAS_CARPANI_ADIM = 0.08;
 
 export function sehirYonetimMaasCarpani(seviye: number): number {
-  return 1 + Math.max(0, seviye) * SEHIR_YONETIM_MAAS_CARPANI_ADIM;
+  return seviye >= 1 ? 1 + SEHIR_YONETIM_MAAS_CARPANI_ADIM : 1;
 }
 
 /** state.sehir_yonetim_unvan'ı güncel seviye+mesleğe göre yeniden hesaplar. */
@@ -278,28 +339,123 @@ export function sehirYonetimGuncelle(state: CharacterState): void {
   state.sehir_yonetim_unvan = sehirYonetimUnvanGetir(state.meslek, state.sehir_yonetim_seviyesi);
 }
 
-export function hesaplaMaasYillik(state: CharacterState): number {
-  const temel = TEMEL_MAAS[state.meslek] ?? 6;
-  const yildizSeviyesi = state.un / 20; // 0-5
-  const kariyerYili = Math.min(state.tur_sayisi, 20);
+/**
+ * Maaş formülünün taban değeri + sıralı çarpan kalemleri. Hem hesaplaMaasYillik
+ * hem de Finans ekranındaki maaş kırılımı (maasKirilimHesapla) bunu kullanır —
+ * formül tek yerde tanımlı kalsın, ikisi asla birbirinden kaymasın diye.
+ * `grup`: "rutbe" → doğrudan rütbe primi (rütbe asla düşmediği için kalıcı);
+ * "kariyer" → kıdem/şehir yönetimi/kalıcı ödüller (hepsi kalıcı birikim);
+ * "itibar" → mutluluk/şöhret/ahlak birleşik düzenleyicisi (itibarMaasKirilimi, değişken);
+ * "donemsel" → enflasyon/ekonomi/savaş/salgın/geçici durumlar (dünya durumu
+ * değiştikçe değişen, kalıcı olmayan etkiler).
+ */
+type MaasCarpanGrubu = "rutbe" | "kariyer" | "itibar" | "donemsel";
+interface MaasCarpanKalemi {
+  ad: string;
+  carpan: number;
+  grup: MaasCarpanGrubu;
+}
+
+function maasCarpanKalemleri(state: CharacterState): { tabanMaas: number; kalemler: MaasCarpanKalemi[] } {
+  const tabanMaas = TEMEL_MAAS[state.meslek] ?? 6;
+  const itibarToplam = itibarMaasKirilimi(state).toplam; // mutluluk+şöhret+ahlak bantları toplamı, ±%; §13
+  // Kıdem çok yavaş büyür ve en fazla +%10'a ulaşır: 40 tur (≈55-65 oyun yılı,
+  // yani neredeyse tam bir ömür) sonunda tavana gelir. Eskiden +%2/tur ile
+  // 20 turda +%40'a çıkıyordu; artık +%0.25/tur.
+  const kariyerYili = Math.min(state.tur_sayisi + 8, 40); // "ikinci seviyeden" başlar: taze karakter +%2 kıdem alır, tavan yine +%10
   const durumCarpani = state.durumlar.reduce((c, d) => c * (d.gelir_carpani ?? 1), 1);
   // Veba sonrası işçi kıtlığı, salgın hem aktifken hem de izi süren yıllarda maaşı büyütür.
   const vebaCarpani = state.veba && state.yil < state.veba.etkiBitisYili ? state.veba.gelirCarpani : 1;
-  const ulkeCarpani =
-    (state.ulke.ekonomi === "kotu" ? 0.8 : state.ulke.ekonomi === "iyi" ? 1.15 : 1) *
-    (state.ulke.savasta ? 0.85 : 1) *
-    vebaCarpani;
+  const ekonomiCarpani = state.ulke.ekonomi === "kotu" ? 0.8 : state.ulke.ekonomi === "iyi" ? 1.15 : 1;
+  const ekonomiAd =
+    state.ulke.ekonomi === "iyi" ? "Ekonomi iyi" : state.ulke.ekonomi === "kotu" ? "Ekonomi kötü" : "Ekonomi normal";
 
-  const ham =
-    temel *
-    (1 + yildizSeviyesi * 0.25) *
-    (1 + kariyerYili * 0.02) *
-    maasCarpaniGetir(state) *
-    durumCarpani *
-    ulkeCarpani *
-    enflasyonCarpani(state) *
-    sehirYonetimMaasCarpani(state.sehir_yonetim_seviyesi);
+  return {
+    tabanMaas,
+    kalemler: [
+      { ad: "Kıdem", carpan: 1 + kariyerYili * 0.0025, grup: "kariyer" },
+      { ad: "Şehir yönetimi", carpan: sehirYonetimMaasCarpani(state.sehir_yonetim_seviyesi), grup: "kariyer" },
+      { ad: "Kalıcı ödüller (köken + olaylar)", carpan: maasCarpaniGetir(state), grup: "kariyer" },
+      { ad: "İtibarın (mutluluk·şöhret·ahlak)", carpan: 1 + itibarToplam / 100, grup: "itibar" },
+      { ad: "Enflasyon", carpan: enflasyonCarpani(state), grup: "donemsel" },
+      { ad: ekonomiAd, carpan: ekonomiCarpani, grup: "donemsel" },
+      { ad: "Savaş", carpan: state.ulke.savasta ? 0.85 : 1, grup: "donemsel" },
+      { ad: "Salgın (işçi kıtlığı)", carpan: vebaCarpani, grup: "donemsel" },
+      { ad: "Geçici durumlar", carpan: durumCarpani, grup: "donemsel" },
+      { ad: "Rütbe primi", carpan: rutbeMaasCarpani(state.rutbe_seviye), grup: "rutbe" },
+    ],
+  };
+}
+
+export function hesaplaMaasYillik(state: CharacterState): number {
+  const { tabanMaas, kalemler } = maasCarpanKalemleri(state);
+  const ham = kalemler.reduce((acc, k) => acc * k.carpan, tabanMaas);
   return Math.max(1, paraYuvarla(ham));
+}
+
+export interface MaasKirilimKalemi {
+  ad: string;
+  /** Yüzde katkı: +40 → maaşı ×1.40 yapar; −15 → ×0.85. 0 = etkisiz (listede gösterilmez). */
+  yuzde: number;
+}
+
+export interface MaasKirilim {
+  /** Mesleğin çarpansız taban maaşı. */
+  tabanMaas: number;
+  /** hesaplaMaasYillik ile birebir aynı nihai değer — gösterimde "bu yılki maaş". */
+  maasYillik: number;
+  rutbeAd: string;
+  rutbeSeviye: number;
+  /** Rütbe priminin yüzdesi (rutbeMaasCarpani). Rütbe asla düşmediği için KALICI. */
+  rutbeYuzde: number;
+  /** Kıdem + şehir yönetimi + kalıcı ödüllerin birleşik yüzdesi. KALICI birikim. */
+  kariyerYuzde: number;
+  kariyerKalemler: MaasKirilimKalemi[];
+  /** "İtibarın": mutluluk + şöhret + ahlak bant yüzdelerinin TOPLAMI (±). DEĞİŞKEN — statlar oynadıkça oynar. */
+  itibarYuzde: number;
+  itibarKalemler: MaasKirilimKalemi[];
+  /** Ekonomi + savaş + salgın + geçici durumların birleşik yüzdesi (enflasyon HARİÇ — o oyuncuya gizli). DÖNEMSEL — dünya durumu değiştikçe değişir. Gösterilen kalemlerle uyumludur. */
+  donemselYuzde: number;
+  donemselKalemler: MaasKirilimKalemi[];
+}
+
+const carpanYuzdesi = (carpan: number): number => Math.round((carpan - 1) * 100);
+
+/**
+ * Yıllık maaşın hangi bileşenlerden oluştuğunu, "kalıcı mı yoksa dünya değiştikçe
+ * değişecek mi" ayrımıyla döner — Finans ekranı "maaşım neden bir anda arttı"
+ * sorusuna buradan cevap verir. hesaplaMaasYillik ile aynı kalemleri kullanır.
+ */
+export function maasKirilimHesapla(state: CharacterState): MaasKirilim {
+  const { tabanMaas, kalemler } = maasCarpanKalemleri(state);
+  const itibar = itibarMaasKirilimi(state);
+  // Enflasyon kalemi oyuncudan tamamen gizli (2026-09). Gösterilen "dönemsel"
+  // yüzdesine de KATILMAZ — aksi halde görünür kalemler (Savaş −%15, Ekonomi
+  // kötü −%20 ...) grup toplamıyla uyuşmuyordu: gizli +%X enflasyon araya girip
+  // "Savaş −%15" satırını grup başlığında −%7 gibi gösteriyordu. Enflasyon gerçek
+  // maaşa hesaplaMaasYillik içinde uygulanmaya devam ediyor; burada yalnızca
+  // oyuncuya gösterilen kırılım hizalanıyor.
+  const gorunurKalem = (k: MaasCarpanKalemi) => k.ad !== "Enflasyon";
+  const grupCarpani = (grup: MaasCarpanGrubu): number =>
+    kalemler.filter((k) => k.grup === grup && gorunurKalem(k)).reduce((acc, k) => acc * k.carpan, 1);
+  const grupKalemler = (grup: MaasCarpanGrubu): MaasKirilimKalemi[] =>
+    kalemler
+      .filter((k) => k.grup === grup && gorunurKalem(k) && k.carpan !== 1)
+      .map((k) => ({ ad: k.ad, yuzde: carpanYuzdesi(k.carpan) }));
+
+  return {
+    tabanMaas: paraYuvarla(tabanMaas),
+    maasYillik: hesaplaMaasYillik(state),
+    rutbeAd: state.rutbe,
+    rutbeSeviye: state.rutbe_seviye,
+    rutbeYuzde: carpanYuzdesi(rutbeMaasCarpani(state.rutbe_seviye)),
+    kariyerYuzde: carpanYuzdesi(grupCarpani("kariyer")),
+    kariyerKalemler: grupKalemler("kariyer"),
+    itibarYuzde: itibar.toplam,
+    itibarKalemler: itibar.kalemler, // üçü de gösterilir (0 olanlar dahil)
+    donemselYuzde: carpanYuzdesi(grupCarpani("donemsel")),
+    donemselKalemler: grupKalemler("donemsel"),
+  };
 }
 
 /** Asker'in ordusunun saldırı gücü: mevcut asker sayısı × teçhizat seviyesine bağlı çarpan. */
@@ -316,8 +472,8 @@ export function saldiriGucuHesapla(state: CharacterState): number {
 export function meslekMetrikCarpani(state: CharacterState, kategori: Kategori): number {
   if (MESLEK_KATEGORI[state.meslek] !== kategori) return 1;
   if (state.meslek === "Asker") return 1 + saldiriGucuHesapla(state) / 200;
-  if (state.meslek === "Tüccar") return 1 + state.ticaret_sermaye / 300;
-  if (state.meslek === "Din Adamı") return 1 + state.nufuz / 300;
+  if (state.meslek === "Tüccar") return 1 + state.ticaret_sermaye / 180;
+  if (state.meslek === "Din Adamı") return 1 + state.nufuz / 180;
   return 1;
 }
 
@@ -362,13 +518,6 @@ function agirlikliAileSec(cag: Cag): AileTanimi {
   return uygunlar[uygunlar.length - 1];
 }
 
-export interface SoyDevamiSecenekleri {
-  /** Ebeveynin mesleği/aile mirasından devam eden aile tipi zorla seçilir. */
-  zorlananAileAdi?: string;
-  /** Devam eden çocuğun adı, karakterin isim alanına doğrudan atanır. */
-  isim?: string;
-}
-
 /** Hayat amacı seçenekleri: oyuncuya artık sorulmuyor, doğuşta rastgele biri atanıyor (tamamlanırsa skor x5 olur). */
 const HAYAT_AMACI_SECENEKLERI: Omit<HayatAmaci, "tamamlandi">[] = [
   {
@@ -380,8 +529,8 @@ const HAYAT_AMACI_SECENEKLERI: Omit<HayatAmaci, "tamamlandi">[] = [
   },
   {
     id: "efsanevi_un",
-    ad: "Efsanevi Bir Ün Kazanmak",
-    aciklama: "Ününü neredeyse zirveye taşı.",
+    ad: "Efsanevi Bir Şöhret Kazanmak",
+    aciklama: "Şöhretini neredeyse zirveye taşı.",
     hedefTuru: "un",
     hedefDeger: 90,
   },
@@ -405,7 +554,7 @@ export function createCharacter(
   cag: Cag,
   bolge: string,
   yerlesimId: string,
-  soyDevami?: SoyDevamiSecenekleri
+  oyuncuIsmi?: string
 ): CharacterState {
   if (!BOLGELER_BY_CAG[cag]?.includes(bolge)) {
     throw new Error("Geçersiz çağ/bölge kombinasyonu.");
@@ -416,10 +565,7 @@ export function createCharacter(
   }
   const [yilMin, yilMax] = YIL_ARALIGI[cag];
   const yil = yilMin + Math.floor(Math.random() * (yilMax - yilMin + 1));
-  const zorlananAile = soyDevami?.zorlananAileAdi
-    ? AILELER.find((a) => a.ad === soyDevami.zorlananAileAdi && (!a.cag || a.cag === cag))
-    : undefined;
-  const aile = zorlananAile ?? agirlikliAileSec(cag);
+  const aile = agirlikliAileSec(cag);
   const kisilik = rastgeleKisilikCifti();
   const { yatkinliklar, kaynaklar } = yatkinlikHesapla(kisilik, aile, yerlesim);
   const [dostAdi, rakipAdi] = rastgeleIkiIsimSec(cag, bolge);
@@ -429,13 +575,15 @@ export function createCharacter(
 
   const state: CharacterState = {
     id: randomUUID(),
-    isim: soyDevami?.isim ?? null,
+    isim: oyuncuIsmi?.trim() ? oyuncuIsmi.trim().slice(0, 40) : null,
     yil,
     baslangic_yili: yil,
     yas: 15,
     meslek: "",
     rutbe: "",
     rutbe_seviye: 1,
+    kariyer_puani: 0,
+    son_terfi_yili: yil,
     sehir_yonetim_seviyesi: 0,
     sehir_yonetim_unvan: null,
     cag,
@@ -454,11 +602,15 @@ export function createCharacter(
     bolge_bilgi: bolgeIstatistigiGetir(cag, bolge) ?? null,
     haberler: [],
     saglik: 100 + (aile.saglik ?? 0) + (yerlesim.saglik ?? 0),
-    mutluluk: 60,
+    // Başlangıç statları (aile bonusları hariç): mutluluk/ahlak 50 (itibar
+    // bandında tam nötr, 40-60 arası), şöhret 20 (taze bir karakter az tanınır
+    // ama şöhretin nötr bandı düşükten başladığı için ceza yemez, bkz.
+    // itibarUnYuzdesi). İlk olaylar bu değerleri kolayca oynatır.
+    mutluluk: 50,
     para: 20 + (aile.para ?? 0) + (yerlesim.para ?? 0),
     para_birimi: paraBirimiGetir(cag, bolge),
     maas_yillik: 0,
-    un: 10 + (aile.un ?? 0),
+    un: 20 + (aile.un ?? 0),
     ahlak: 50 + (aile.ahlak ?? 0),
     ordu_mevcudu: 0,
     ordu_techizat_seviyesi: 0,
@@ -466,6 +618,7 @@ export function createCharacter(
     nufuz: 0,
     suc_seviyesi: 0,
     mulkler: [],
+    mulk_bakim_kalan: {},
     magaza_envanteri: [],
     magaza_temel_kilit_bitis_yili: null,
     alkol_ziyaret_sayisi: 0,
@@ -497,10 +650,12 @@ export function createCharacter(
     durumlar: (aile.durumlar ?? []).map((d) => ({ ...d })),
     ulke: { savasta: false, vebada: false, ekonomi: "normal", kriz: null, nufusDurumu: "normal" },
     son_zorunlu_bagis_yili: null,
+    son_zenginlik_sizinti_yili: null,
     buyuk_savas: null,
     son_buyuk_savas_bitis_yili: null,
     veba: null,
     veba_gecirdi: false,
+    son_veba_bitis_yili: null,
     kucuk_kriz_sonraki_yil: yil + 5 + Math.floor(Math.random() * 3), // 5-7 yıl sonra ilk eşik
     gida_fiyat_sok_bitis_yili: null,
     tur_sayisi: 0,
@@ -512,8 +667,9 @@ export function createCharacter(
     skoru_kaydedildi: false,
   };
 
-  if (aile.maasCarpani) maasCarpaniUygula(state, aile.maasCarpani);
-  if (yerlesim.maasCarpani) maasCarpaniUygula(state, yerlesim.maasCarpani);
+  // Doğuş kimliği ödülleri: yarıya indirme uygulanmadan (ham) verilir.
+  if (aile.maasCarpani) maasCarpaniUygula(state, aile.maasCarpani, true);
+  if (yerlesim.maasCarpani) maasCarpaniUygula(state, yerlesim.maasCarpani, true);
 
   clampStats(state);
   state.acilis_anlatimi = acilisAnlatimiUret(state, aile, yerlesim);
@@ -524,16 +680,15 @@ export function createCharacter(
 
 function esikKarsilaniyorMu(esik: RutbeEsigi, state: CharacterState): boolean {
   return (
-    (esik.tur_sayisi === undefined || state.tur_sayisi >= esik.tur_sayisi) &&
+    (state.kariyer_puani ?? 0) >= esik.kariyer_puani &&
     (esik.un === undefined || state.un >= esik.un) &&
-    (esik.para === undefined || state.para >= esik.para) &&
     (esik.ahlak === undefined || state.ahlak >= esik.ahlak)
   );
 }
 
-/** Rütbe kademesine göre bir üst kademedeki amiri atar; en üst kademedeyken amir yoktur (hükümdar zaten en tepede). */
+/** Rütbe kademesine göre bir üst kademedeki amiri atar; en üst kademedeyken (5) amir yoktur (hükümdar zaten en tepede). */
 function amirGuncelle(state: CharacterState, tanim: RutbeTanimi, seviye: number): void {
-  const ustUnvan = seviye < 3 ? tanim.unvanlar[seviye] : null;
+  const ustUnvan = seviye < 5 ? tanim.unvanlar[seviye] : null;
   if (ustUnvan === null) {
     state.amir_adi = null;
     state.amir_rutbe = null;
@@ -573,25 +728,89 @@ function astlariGuncelle(state: CharacterState, tanim: RutbeTanimi, seviye: numb
   }
 }
 
-/** Kıdem ve mesleğe özgü koşullara göre güncel rütbeyi hesaplayıp state'e yazar. */
+/**
+ * Güncel rütbeyi hesaplayıp state'e yazar. Kurallar:
+ *  - Kademe HAK ETME: kariyer_puani + mesleğe özgü stat (Asker/Tüccar şöhret, Din ahlak)
+ *    esikler[0..3]'ü (S2..S5) sırayla karşılamalı.
+ *  - RATCHET: rütbe asla düşmez — hak edilen kademe mevcuttan düşükse yok sayılır.
+ *  - COOLDOWN: bir sonraki kademeye çıkmak için son terfiden TERFI_COOLDOWN[hedef]
+ *    yıl geçmiş olmalı; terfi anında son_terfi_yili = state.yil damgalanır.
+ *  - Çağrı başına en fazla +1 kademe.
+ */
 export function rutbeGuncelle(state: CharacterState): void {
   const tanim = rutbeTanimiGetir(state.meslek, state.cag, state.din_kultur);
   if (!tanim) {
-    state.rutbe = state.meslek;
-    state.rutbe_seviye = 1;
+    state.rutbe = state.meslek || "";
+    state.rutbe_seviye = Math.max(1, state.rutbe_seviye || 1);
     state.amir_adi = null;
     state.amir_rutbe = null;
     return;
   }
 
-  let seviye = 1;
-  if (esikKarsilaniyorMu(tanim.seviye2Esik, state)) seviye = 2;
-  if (seviye === 2 && esikKarsilaniyorMu(tanim.seviye3Esik, state)) seviye = 3;
+  const mevcut = Math.max(1, state.rutbe_seviye || 1);
 
-  state.rutbe_seviye = seviye;
-  state.rutbe = tanim.unvanlar[seviye - 1];
-  amirGuncelle(state, tanim, seviye);
-  astlariGuncelle(state, tanim, seviye);
+  // Hak edilen en yüksek kademe (1-5): eşikleri ilk karşılanmayanda dur.
+  let hakEdilen = 1;
+  for (let i = 0; i < tanim.esikler.length; i++) {
+    if (esikKarsilaniyorMu(tanim.esikler[i], state)) hakEdilen = i + 2;
+    else break;
+  }
+
+  let hedef = mevcut;
+  if (hakEdilen > mevcut) {
+    const sonraki = mevcut + 1;
+    const cooldown = TERFI_COOLDOWN[sonraki] ?? 0;
+    const sonTerfi = state.son_terfi_yili ?? state.baslangic_yili ?? state.yil;
+    if (state.yil - sonTerfi >= cooldown) {
+      hedef = sonraki;
+      state.son_terfi_yili = state.yil;
+    }
+  }
+  hedef = Math.max(1, Math.min(5, hedef));
+
+  state.rutbe_seviye = hedef;
+  state.rutbe = tanim.unvanlar[hedef - 1];
+  amirGuncelle(state, tanim, hedef);
+  astlariGuncelle(state, tanim, hedef);
+}
+
+/**
+ * DB'den yüklenen eski oturumlarda 2026-08 rütbe reformundan önce olmayan alanları
+ * (kariyer_puani / son_terfi_yili) geriye dönük doldurur. Session.data düz JSON
+ * olduğu için şema migrasyonu yok; kayıt regresyona uğramasın diye kariyer_puani,
+ * kabaca o ana kadar kazanılmış olması beklenen değere set edilir (mevcut rütbe
+ * ratchet olduğu için zaten korunur).
+ */
+export function eskiKayitGocu(state: CharacterState): void {
+  if (typeof state.kariyer_puani !== "number") {
+    state.kariyer_puani =
+      (state.tur_sayisi ?? 0) * KARIYER_PUANI_YILLIK +
+      (state.kendi_isi_yatirim_sayisi ?? 0) * KARIYER_PUANI_YATIRIM;
+  }
+  if (typeof state.son_terfi_yili !== "number") {
+    state.son_terfi_yili = state.baslangic_yili ?? state.yil;
+  }
+  // "mulkler"/"baslangic_yili" gibi sonradan eklenen alanlar eski kayıtlarda undefined
+  // kalıyor; gayrimenkul değeri/geliri ve enflasyon hesabı bunlara doğrudan .length /
+  // aritmetik uyguladığı için (Finans ekranı) minimum güvenli varsayılana çekiyoruz.
+  if (!Array.isArray(state.mulkler)) state.mulkler = [];
+  if (typeof state.baslangic_yili !== "number") state.baslangic_yili = state.yil;
+  // Periyodik mülk bakımı sonradan eklendi; eski kayıtlarda sayaç yok — sahip olunan
+  // her mülke rastgele bir 7-10 yıl kur (hepsi aynı yıl tetiklenmesin diye ayrı ayrı).
+  if (!state.mulk_bakim_kalan || typeof state.mulk_bakim_kalan !== "object") state.mulk_bakim_kalan = {};
+  for (const tur of state.mulkler) {
+    if (typeof state.mulk_bakim_kalan[tur] !== "number") state.mulk_bakim_kalan[tur] = rastgeleMulkBakimAraligi();
+  }
+  // Veba "ömürde bir kez" → "20 yıl cooldown"a çevrildi; eski kayıtta zaten
+  // veba geçirmiş biri için cooldown'u başından dolmuş say (yeniden yakalanabilsin).
+  if (state.son_veba_bitis_yili === undefined) {
+    state.son_veba_bitis_yili = state.veba_gecirdi && !state.veba ? state.yil - 20 : null;
+  }
+  // Veba korunması binary (onlemAlindiMi) → 3 kademeli (korumaSeviyesi) oldu.
+  if (state.veba && (state.veba as any).korumaSeviyesi === undefined) {
+    state.veba.korumaSeviyesi = (state.veba as any).onlemAlindiMi ? 2 : 0;
+  }
+  if (state.son_zenginlik_sizinti_yili === undefined) state.son_zenginlik_sizinti_yili = null;
 }
 
 /** Oyuncu mesleğini seçtikten sonra çağrılır: miras bonusunu ve maaşı uygular. */
@@ -608,7 +827,7 @@ export function mesleğiSec(state: CharacterState, meslek: string): void {
   if (mirasSurduruldu && !state.etiketler.includes("aile_mirasi_surduruldu")) {
     state.un += 10;
     state.para += 15;
-    maasCarpaniUygula(state, 1.15);
+    maasCarpaniUygula(state, 1.08, true); // aile mirası: azaltılmış (1.15→1.08), ham verilir
     state.etiketler.push("aile_mirasi_surduruldu");
   }
 
@@ -726,14 +945,13 @@ export function ilerletYas(state: CharacterState, minYil = 1, maxYil = 3): numbe
 /**
  * Yaş ilerledikçe bedenin çöküşü kademeli, kesin eşiklerle hızlanır: 48'den
  * sonra yılda -3, 65'ten sonra yılda -7, 80'den sonra ("ecel kapısı") yılda
- * -16 sağlık. Hiçbir konut/servet/rütbe bu eşikleri değiştirmez — ama konut
- * ve yaşam tarzı seçimlerinin sağladığı yıllık sağlık bonusu (üst kademelerde
- * ev+yemek birlikte +6/yıla kadar) bu düşüşü, olaylardan gelen hasarı da göz
- * önünde bulundurduğumuzda anlamlı ölçüde dengeler: iyi yaşayan bir karakter
- * 70'li yaşları, hatta ötesini görebilirken, hiç önlem almayan biri çok daha
- * erken bir noktada hayatını kaybeder. Bir turda birden fazla yıl atlanırsa
- * (yasArtisi > 1) her yıl kendi eşiğine göre ayrı ayrı hesaplanır (ör. 47'den
- * 50'ye sıçrama, 48 eşiğini de sayar).
+ * -16 sağlık. Hiçbir konut/servet/rütbe bu eşikleri değiştirmez. Konut + yaşam
+ * tarzının yıllık sağlık bonusu olay hasarından toparlanmaya yardım eder ama
+ * pasifRegenEtkisi yumuşak tavanı (70) yüzünden karakteri 100 canda sabitleyip
+ * yaşlanmayı yok saymaya yetmez; üstüne 70+ yaşta ecelDenemesi doğal ölüm riski
+ * biner. Sonuç: iyi yaşayan biri dolu ama sonlu bir ömür sürer, hiç önlem almayan
+ * çok daha erken ölür. Bir turda birden fazla yıl atlanırsa (yasArtisi > 1) her
+ * yıl kendi eşiğine göre ayrı ayrı hesaplanır (ör. 47'den 50'ye sıçrama, 48'i de sayar).
  */
 export function yaslanmaUygula(state: CharacterState, yasArtisi: number): number {
   if (yasArtisi <= 0) return 0;
@@ -751,6 +969,68 @@ export function yaslanmaUygula(state: CharacterState, yasArtisi: number): number
 
 const KRONIK_SAGLIK_ESIGI = 30;
 const KRONIK_MUTLULUK_ESIGI = 25;
+
+/**
+ * Konut + yaşam tarzının sağladığı yıllık PASİF sağlık/mutluluk kazancı, ilgili
+ * istatistik bu tavanın ALTINDAYKEN tam oranında işler (olay hasarından toparlanmak
+ * için); tavanın üstüne taşan kısım PASIF_REGEN_TAVAN_USTU_ORAN ile kısılır. Böylece
+ * pahalı ev + iyi yemek seni olaylardan koruyup toparlar ama 100 canda sabitleyip
+ * yaşlanmayı (48+/65+/80+ eşikleri) tamamen yok saymana izin vermez. NEGATİF pasif
+ * etkiler (çöpten topla -4, basit barınak -1 vb.) bu tavandan etkilenmez, tam işler.
+ */
+const PASIF_REGEN_TAVANI = 80;
+const PASIF_REGEN_TAVAN_USTU_ORAN = 0.25;
+/** Bu değerin ALTINDA hiç yumuşak tavan uygulanmaz: dipteki bir karakter iyi ev+sofra ile tam hızda toparlanabilsin. */
+const PASIF_REGEN_LIMITSIZ_ESIK = 45;
+
+/**
+ * İleri yaş "ecel" riski: 70 yaşından itibaren, can/servet ne olursa olsun her yıl
+ * artan bir doğal ölüm ihtimali. sans% = (yas - ECEL_REFERANS_YAS) * ECEL_YILLIK_KATSAYI
+ * (70'te ~%1.7, 76'da ~%5, 88'de ~%12, 95'te ~%16). Turda birden fazla yıl geçerse
+ * her yıl ayrı ayrı denenir.
+ */
+const ECEL_BASLANGIC_YASI = 70;
+const ECEL_REFERANS_YAS = 67;
+const ECEL_YILLIK_KATSAYI = 0.58;
+const ECEL_MESAJLARI = [
+  "Yaşlılığın getirdiği yorgunlukla bir sabah uyanmadın; huzurlu bir ölümdü.",
+  "Yılların yükü bedenini yendi; sevdiklerinin arasında, sakince son nefesini verdin.",
+  "İleri yaşın sessiz eceli bir gece seni de buldu.",
+  "Uzun bir ömrün ardından bedenin artık dayanmadı; yatağında huzurla göçtün.",
+];
+
+/**
+ * Konut/yaşam tarzı gibi pasif bir kaynaktan gelen sağlık/mutluluk değişimini,
+ * yumuşak tavan kuralına göre efektif değere çevirir (bkz. PASIF_REGEN_TAVANI).
+ * delta <= 0 ise (hasar) olduğu gibi döner.
+ */
+export function pasifRegenEtkisi(mevcut: number, delta: number): number {
+  if (delta <= 0) return delta;
+  // Dipteyken (< 45) hiç kısma yok: acil toparlanmanın önünde durmasın.
+  if (mevcut < PASIF_REGEN_LIMITSIZ_ESIK) return delta;
+  const tavanAltiBosluk = Math.max(0, PASIF_REGEN_TAVANI - mevcut);
+  const tamKisim = Math.min(delta, tavanAltiBosluk);
+  const tavanUstuKisim = (delta - tamKisim) * PASIF_REGEN_TAVAN_USTU_ORAN;
+  return tamKisim + tavanUstuKisim;
+}
+
+/**
+ * İleri yaş ecel kontrolü: tetiklenirse checkDeath ile kullanılacak mesajı döner,
+ * aksi halde null. Her yıl ayrı denenir (orduBuyumesiDene/aniOlumDene deseni).
+ */
+export function ecelDenemesi(state: CharacterState, yasArtisi: number): string | null {
+  if (yasArtisi <= 0) return null;
+  let yas = state.yas - yasArtisi;
+  for (let i = 0; i < yasArtisi; i++) {
+    yas += 1;
+    if (yas < ECEL_BASLANGIC_YASI) continue;
+    const sans = (yas - ECEL_REFERANS_YAS) * ECEL_YILLIK_KATSAYI;
+    if (Math.random() * 100 < sans) {
+      return ECEL_MESAJLARI[Math.floor(Math.random() * ECEL_MESAJLARI.length)];
+    }
+  }
+  return null;
+}
 
 /**
  * Sağlık ve mutluluk arasında pasif çapraz etki: uzun süre çok düşük sağlık
@@ -832,7 +1112,6 @@ export interface GiderKalemleri {
   konut: number;
   ekip: number;
   evcilHayvan: number;
-  vergi: number;
   /** Aktif büyük savaş sırasında pasif gelirden ek olarak kesilen "savaş vergisi" (bkz. state.buyuk_savas.vergiOrani); savaş yokken 0. */
   savasVergisi: number;
 }
@@ -843,8 +1122,6 @@ export interface EkonomiSonucu {
   yillikGelirler: number[];
   faiz: number;
   giderKalemleri: GiderKalemleri;
-  /** Bu tur, zenginlik vergisi eşiğine İLK KEZ ulaşıldığı (ya da eşiğin altına inip tekrar aşıldığı) için "devletin dikkatini çekti" bildirimi gösterilmeli mi. */
-  vergiBildirimi: boolean;
 }
 
 const EVCIL_HAYVAN_GIDERI_YILLIK = 1;
@@ -853,20 +1130,6 @@ const EVCIL_HAYVAN_GIDERI_YILLIK = 1;
 function yasamMaliyetCarpaniGetir(state: CharacterState): number {
   const yerlesim = yerlesimGetir(yerlesimIdByAd(state.yerlesim));
   return yerlesim?.yasamMaliyetCarpani ?? 1;
-}
-
-/** Zenginleşmenin "görünmez bakım masrafı": nakit + sahip olunan gayrimenkullerin güncel
- * değeri toplamı bu eşiği aştıkça, aşan kısım için yıllık %4 pasif vergi/bakım gideri
- * işler. Sıradan bir karakteri hiç etkilemez, servet (mülk dahil) biriktikçe fark edilir
- * hale gelir — bkz. pasifEkonomiUygula içindeki "devlet fark etti" bildirimi. */
-const ZENGINLIK_VERGISI_ESIGI = 500;
-const ZENGINLIK_VERGISI_ORANI = 0.04;
-/** pasifEkonomiUygula'nın vergi eşiğine ilk kez ulaşıldığını (bir kereliğine) bildirmek için taktığı/söktüğü sistem etiketi. */
-export const DEVLET_VERGI_TAKIP_ETIKETI = "devlet_takibinde";
-
-function zenginlikVergisiHesapla(toplamServet: number): number {
-  if (toplamServet <= ZENGINLIK_VERGISI_ESIGI) return 0;
-  return paraYuvarla((toplamServet - ZENGINLIK_VERGISI_ESIGI) * ZENGINLIK_VERGISI_ORANI);
 }
 
 /** Bir sonraki turun gider dökümünü, gerçekte uygulamadan hesaplar; Finans ekranı bunu kullanır. */
@@ -886,7 +1149,6 @@ export function giderKalemleriHesapla(state: CharacterState): GiderKalemleri {
     konut: paraYuvarla((konutGetir(state.konut_id)?.kiraYillik ?? 0) * vebaKiraCarpani * enflasyon),
     ekip: state.ekip.reduce((toplam, uye) => toplam + uye.maas, 0),
     evcilHayvan: state.evcil_hayvan ? paraYuvarla(EVCIL_HAYVAN_GIDERI_YILLIK * enflasyon) : 0,
-    vergi: zenginlikVergisiHesapla(state.para + gayrimenkulDegeriHesapla(state)),
     savasVergisi: state.buyuk_savas ? paraYuvarla(hesaplaMaasYillik(state) * state.buyuk_savas.vergiOrani) : 0,
   };
 }
@@ -899,7 +1161,6 @@ export function pasifEkonomiUygula(state: CharacterState, yasArtisi: number): Ek
     giderKalemleri.konut +
     giderKalemleri.ekip +
     giderKalemleri.evcilHayvan +
-    giderKalemleri.vergi +
     giderKalemleri.savasVergisi;
 
   // Gelir her yıl ayrı ayrı dalgalanır: bereketli yıl, kötü hasat, durgun pazar...
@@ -912,23 +1173,21 @@ export function pasifEkonomiUygula(state: CharacterState, yasArtisi: number): Ek
     netGelir += oYilkiGelir - gider;
   }
   state.para = paraYuvarla(state.para + netGelir);
+  // Konut + yaşam tarzının pasif sağlık/mutluluk etkisi yumuşak tavana (70) tabidir:
+  // tavan altında tam, üstünde kısılmış işler; hasar (negatif) her zaman tam. Böylece
+  // pahalı ev + iyi yemek toparlanma sağlar ama karakteri 100 canda "ölümsüz" yapmaz.
   const yasamSecenegi = yasamSecenegiGetir(state.yasam_secimi_id);
-  if (yasamSecenegi?.saglikEtkisiYillik) {
-    state.saglik += yasamSecenegi.saglikEtkisiYillik * yasArtisi;
-  }
-  if (yasamSecenegi?.mutlulukEtkisiYillik) {
-    state.mutluluk += yasamSecenegi.mutlulukEtkisiYillik * yasArtisi;
-  }
   const konut = konutGetir(state.konut_id);
-  if (konut?.saglikEtkisiYillik) {
-    state.saglik += konut.saglikEtkisiYillik * yasArtisi;
-  }
-  if (konut?.mutlulukEtkisiYillik) {
-    state.mutluluk += konut.mutlulukEtkisiYillik * yasArtisi;
-  }
-  if (konut?.unEtkisiYillik) {
-    state.un += konut.unEtkisiYillik * yasArtisi;
-  }
+  const saglikPasif =
+    (yasamSecenegi?.saglikEtkisiYillik ?? 0) * yasArtisi + (konut?.saglikEtkisiYillik ?? 0) * yasArtisi;
+  const mutlulukPasif =
+    (yasamSecenegi?.mutlulukEtkisiYillik ?? 0) * yasArtisi + (konut?.mutlulukEtkisiYillik ?? 0) * yasArtisi;
+  if (saglikPasif) state.saglik += pasifRegenEtkisi(state.saglik, saglikPasif);
+  if (mutlulukPasif) state.mutluluk += pasifRegenEtkisi(state.mutluluk, mutlulukPasif);
+  // Konut + yaşam tarzının ün etkisi (yumuşak tavana tabi değil; hem gösteriş
+  // primi hem de bakımsız/aç bir hayatın itibar aşınması buradan işler).
+  const unPasif = (konut?.unEtkisiYillik ?? 0) * yasArtisi + (yasamSecenegi?.unEtkisiYillik ?? 0) * yasArtisi;
+  if (unPasif) state.un += unPasif;
 
   // Meslek, olay dışı geçen yıllarda da sessizce iz bırakır: din adamının cemaat
   // içindeki saygınlığı yıllar içinde birikir; tüccarınkiyse ticaretin gidişatına
@@ -940,28 +1199,32 @@ export function pasifEkonomiUygula(state: CharacterState, yasArtisi: number): Ek
     state.ahlak += (netGelir >= 0 ? -0.4 : 0.4) * yasArtisi;
   }
 
+  // Borç kapatma mekaniği: borçtayken bütçesini artıya çevirmiş bir karakter
+  // (netGelir > 0) borcunu AKTİF ödüyor sayılır — faiz yarıya iner, borç stresi
+  // sağlık cezası uygulanmaz ve net gelirin bir kısmı kadar ek anapara affı
+  // verilir (alacaklı taksitlendirdi). Hâlâ açık veren (netGelir <= 0) karakter
+  // için tam ceza sürer: eskisi gibi %6 faiz + −2 sağlık/yıl.
   let borcaGirdi = false;
   let faiz = 0;
   if (state.para < 0) {
-    faiz = paraYuvarla(Math.abs(state.para) * 0.06 * yasArtisi);
-    state.para -= faiz;
-    state.saglik -= 2 * yasArtisi;
     borcaGirdi = true;
-  }
-
-  // "Devlet fark etti" bildirimi: eşiğin üstüne SADECE yeni çıkıldığında bir kereliğine
-  // ateşlenir (etiket zaten varken sessizce devam eder), eşiğin altına düşülürse etiket
-  // sökülür — böylece servet tekrar eşiği aşarsa bildirim yeniden tetiklenebilir.
-  const halihazirdaTakipte = state.etiketler.includes(DEVLET_VERGI_TAKIP_ETIKETI);
-  const vergiBildirimi = giderKalemleri.vergi > 0 && !halihazirdaTakipte;
-  if (giderKalemleri.vergi > 0) {
-    etiketEkle(state, [DEVLET_VERGI_TAKIP_ETIKETI]);
-  } else if (halihazirdaTakipte) {
-    etiketSil(state, [DEVLET_VERGI_TAKIP_ETIKETI]);
+    const borcTutari = Math.abs(state.para);
+    // Borç stresi sağlığı HER hâlükârda yıpratır (2026-09'da geri getirildi):
+    // bütçesini toparlamış bir borçlunun bile borçlu olmanın bir bedeli var.
+    state.saglik -= 2 * yasArtisi;
+    if (netGelir > 0) {
+      // Aktif ödüyor: faiz %2/yıl + net gelirin %25'i kadar ek anapara affı.
+      faiz = paraYuvarla(borcTutari * 0.02 * yasArtisi);
+      state.para = paraYuvarla(Math.min(0, state.para - faiz + netGelir * 0.25));
+    } else {
+      // Ödeyemiyor: faiz %4/yıl (tavan yok — borç büyüdükçe faiz de büyür).
+      faiz = paraYuvarla(borcTutari * 0.04 * yasArtisi);
+      state.para -= faiz;
+    }
   }
 
   clampStats(state);
-  return { borcaGirdi, netGelir, yillikGelirler, faiz, giderKalemleri, vergiBildirimi };
+  return { borcaGirdi, netGelir, yillikGelirler, faiz, giderKalemleri };
 }
 
 /**
@@ -1227,9 +1490,36 @@ export function aniOlumDene(state: CharacterState): { mesaj: string; efsane: str
 
 const SANS_OLAYI_IHTIMALI = 0.18;
 
+/**
+ * "Zengin görünmenin gündelik fısıltısı" (Z2): net servet ≥ 350 & nakit ≥ 50
+ * iken şans olayı havuzu bu net-negatif listeye kayar. Z1'in (zenginlikSizinti,
+ * gürültülü hırsız/haraç olayları) aksine burası küçük, sessiz, çeşitli
+ * eksiltmelerdir — cooldown yok, sadece havuz değişir. Birkaç nötr/ufak
+ * kalem de var ki her seferinde kayıp olmasın.
+ */
+const SANS_OLAYLARI_ZENGIN: SansOlayi[] = [
+  { mesaj: "Zengin sanıp her yerde senden bahşiş beklediler; cebin sızdı.", para: -8 },
+  { mesaj: "Kapına gelen bir dilenciye, komşular baksın diye fazladan verdin.", para: -5 },
+  { mesaj: "Hancı seni görünce fiyatı 'senin için özel' diye yükseltti.", para: -6 },
+  { mesaj: "Bir hayır listesi elden ele dolaştı; adının yanına küçük bir rakam yazdın.", para: -7 },
+  { mesaj: "Uzak bir akraba 'sadece bu seferlik' diyerek borç aldı.", para: -10 },
+  { mesaj: "Bir zanaatkâr işini abartıp fazladan ücret kesti, sesini çıkarmadın.", para: -6 },
+  { mesaj: "Pazarda tanınıp etrafını sarınca, birkaç gereksiz şey almak zorunda kaldın.", para: -5 },
+  { mesaj: "Bir tören için 'senin konumunda biri' diye ekstra bağış beklendi.", para: -9 },
+  { mesaj: "Hizmetkârların bahşiş zamanı geldi diye hatırlattı.", para: -6 },
+  { mesaj: "Eski bir tanıdık 'sen zenginsin nasılsa' deyip yemeğin hesabını sana bıraktı.", para: -4 },
+  { mesaj: "Adın bir yerde saygıyla anıldı, ama bu sana bir şey kazandırmadı.", un: 4 },
+  { mesaj: "Yolda küçük bir kese buldun — kısmet.", para: 6 },
+];
+
 export function sansOlayiDene(state: CharacterState): string | null {
   if (Math.random() > SANS_OLAYI_IHTIMALI) return null;
-  const olay = SANS_OLAYLARI[Math.floor(Math.random() * SANS_OLAYLARI.length)];
+  const netServet = state.para + gayrimenkulDegeriHesapla(state);
+  const havuz =
+    netServet >= ZENGINLIK_SIZINTI_SERVET_ESIGI && state.para >= ZENGINLIK_SIZINTI_NAKIT_ESIGI
+      ? SANS_OLAYLARI_ZENGIN
+      : SANS_OLAYLARI;
+  const olay = havuz[Math.floor(Math.random() * havuz.length)];
   if (olay.para) state.para += olay.para;
   if (olay.un) state.un += olay.un;
   if (olay.dost_puani) state.dost_puani += olay.dost_puani;
@@ -1241,9 +1531,22 @@ export function sansOlayiDene(state: CharacterState): string | null {
     .replace(/\{rakip\}/g, state.rakip_adi)}`;
 }
 
+/**
+ * Skor: yaş × şöhret × servet-faktörü × (hayat amacı tamamlandıysa ×5).
+ * - Servet = nakit + gayrimenkul (madde 23): mülke servet bağlayan oyuncu
+ *   cezalanmasın.
+ * - Servet-faktörü LOG-ölçekli (madde 24): eski `max(para,1)` çarpanı tek bir
+ *   zengin ömrü milyonlara fırlatıp liderlik tablosunu domine ediyor, ayrıca
+ *   tüm borçlu bitişleri 1'e ezip ayırt edilemez kılıyordu.
+ *     servet > 0 → 1 + log10(1 + servet)        (100→~3.0, 500→~3.7, 8M→~7.9)
+ *     servet ≤ 0 → 1 + servet/400, taban 0.15   (borç küçük ama gerçek bir ceza)
+ */
 export function hesaplaSkor(state: CharacterState): number {
-  const taban = state.yas * Math.max(state.un, 1) * Math.max(state.para, 1);
-  return state.hayat_amaci?.tamamlandi ? taban * 5 : taban;
+  const servet = state.para + gayrimenkulDegeriHesapla(state);
+  const servetFaktoru =
+    servet > 0 ? 1 + Math.log10(1 + servet) : Math.max(0.15, 1 + servet / 400);
+  const taban = state.yas * Math.max(state.un, 1) * servetFaktoru;
+  return Math.round(state.hayat_amaci?.tamamlandi ? taban * 5 : taban);
 }
 
 /** state.hayat_amaci'nin hedefine ulaşılıp ulaşılmadığını kontrol eder; ulaşıldıysa tamamlandi=true yapıp hayat hikayesine ekler. */
@@ -1264,8 +1567,8 @@ export function hayatAmaciKontrolEt(state: CharacterState): void {
   }
 }
 
-const KUCUK_KRIZ_SURE_MIN_YIL = 2;
-const KUCUK_KRIZ_SURE_ARALIK_YIL = 1; // 2-3 yıl
+const KUCUK_KRIZ_SURE_MIN_YIL = 1;
+const KUCUK_KRIZ_SURE_ARALIK_YIL = 1; // 1-2 yıl (kısaltıldı)
 const KUCUK_KRIZ_SONRAKI_ESIK_MIN_YIL = 5;
 const KUCUK_KRIZ_SONRAKI_ESIK_ARALIK_YIL = 2; // 5-7 yıl
 
@@ -1277,7 +1580,7 @@ const KUCUK_KRIZ_FLAVOR: string[] = [
 /**
  * 5-7 yılda bir düzenli aralıklarla tekrarlayan küçük kriz (kıtlık/haydut
  * baskını flavor'ı). Mekanik olarak mevcut "kitlik" kriz tipini yeniden
- * kullanır (2-3 yıl sürer, aşağıdaki krizEtkisiUygula'nın -2 sağlık/yıl
+ * kullanır (1-2 yıl sürer, aşağıdaki krizEtkisiUygula'nın -1 sağlık/yıl
  * etkisi otomatik uygulanır); ayrıca SADECE tetiklendiği yıl için gıda
  * fiyatını ×2 yapan tek yıllık bir şok bindirir (giderKalemleriHesapla,
  * bir sonraki tur otomatik normale döner).
@@ -1295,7 +1598,7 @@ export function kucukKrizKontrolEt(state: CharacterState, yasArtisi: number): st
 }
 
 const KRIZ_ETKI: Record<UlkeKrizi["tur"], { saglik?: number; para?: number; un?: number; mutluluk?: number }> = {
-  kitlik: { saglik: -2 },
+  kitlik: { saglik: -1 }, // -2 → -1: kıtlık artık ölüm sarmalını tek başına döndürmüyor
   isyan: { para: -3, un: -1 },
   altin_cag: { para: 4, mutluluk: 1 },
 };
@@ -1337,11 +1640,12 @@ export function sucSeviyesiUygula(state: CharacterState, yasArtisi: number): voi
 // edilen periyodik mekanikler (bkz. CLAUDE.md §27).
 // ---------------------------------------------------------------------------
 
-const ZORUNLU_BAGIS_ESIGI = 500;
+// Eşik ve tahsilat NET SERVET üzerinden: nakit (borçta negatif) + gayrimenkul güncel değeri.
+const ZORUNLU_BAGIS_ESIGI = 350;
 const ZORUNLU_BAGIS_COOLDOWN_YIL = 5;
-const ZORUNLU_BAGIS_YILLIK_IHTIMAL = 0.25;
-const ZORUNLU_BAGIS_ORAN_MIN = 0.15;
-const ZORUNLU_BAGIS_ORAN_ARALIK = 0.05;
+const ZORUNLU_BAGIS_YILLIK_IHTIMAL = 0.3;
+const ZORUNLU_BAGIS_ORAN_MIN = 0.2;
+const ZORUNLU_BAGIS_ORAN_ARALIK = 0.05; // %20-25
 
 export interface ZorunluBagisSonucu {
   miktar: number;
@@ -1349,11 +1653,11 @@ export interface ZorunluBagisSonucu {
 }
 
 /**
- * "Gizli zenginlik vergisi" olayı: toplam servet (nakit+mülk) 500'ü aştıkça,
- * en az 5 yıllık cooldown sonrasında yıllık %25 ihtimalle hükümdar servetin
- * %15-20'sini zorunlu bağış olarak alır. Mevcut pasif "zenginlik vergisi"
- * (%4/yıl, zenginlikVergisiHesapla) ile AYNI ŞEY DEĞİL — o ayrıca çalışmaya
- * devam eder; bu tek seferlik, büyük ve kendi cooldown'una sahip bir "olay".
+ * "Kral zenginleştiğini fark etti, bağış istiyor": toplam servet (nakit+mülk)
+ * 500'ü aştıkça, en az 5 yıllık cooldown sonrasında yıllık %25 ihtimalle
+ * hükümdar servetin %15-20'sini zorunlu "bağış" olarak alır. Zenginliğin TEK
+ * bedeli budur — eski pasif %4/yıl zenginlik vergisi kaldırıldı; bu tek seferlik,
+ * büyük ve kendi cooldown'una sahip bir mekanik olarak kaldı.
  */
 export function zorunluBagisKontrolEt(state: CharacterState, yasArtisi: number): ZorunluBagisSonucu | null {
   if (yasArtisi <= 0) return null;
@@ -1372,6 +1676,63 @@ export function zorunluBagisKontrolEt(state: CharacterState, yasArtisi: number):
       miktar,
       mesaj: `👑 Hükümdar zenginleştiğini fark etti; kraliyet hazinesi için zorla ${miktar} ${state.para_birimi} bağış aldı.`,
     };
+  }
+  return null;
+}
+
+// ---------------------------------------------------------------------------
+// Zenginlik sızıntısı: net servet ≥ 350 VE nakit ≥ 50 iken, 6 yıl cooldown
+// sonrası her yıl %20 ihtimalle hırsız/haraç/dolandırıcı vb. bir olay
+// karakterin NAKİT'inden pay alır. Zorunlu bağış (kral, servet üzerinden) ile
+// paralel ama ayrı: bu, "zengin görünmenin" gündelik bedeli — küçük, sık,
+// çeşitli. Olay ekranı yok; sonucu zamanAnlatimi'ye + hayat_hikayesi'ne eklenir.
+// ---------------------------------------------------------------------------
+const ZENGINLIK_SIZINTI_SERVET_ESIGI = 350;
+const ZENGINLIK_SIZINTI_NAKIT_ESIGI = 50;
+const ZENGINLIK_SIZINTI_COOLDOWN_YIL = 6;
+const ZENGINLIK_SIZINTI_YILLIK_IHTIMAL = 0.2;
+const ZENGINLIK_SIZINTI_ORAN_MIN = 0.12;
+const ZENGINLIK_SIZINTI_ORAN_ARALIK = 0.13; // nakitin %12-25'i
+
+const ZENGINLIK_SIZINTI_FLAVOR: ((m: string, b: string) => string)[] = [
+  (m) => `🗡️ Bir hırsız gece kilerine girdi; sabah ${m} eksikti.`,
+  (m, b) => `💰 ${b} kabadayıları "koruma parası" istedi; ${m} vermek zorunda kaldın.`,
+  (m) => `🤝 Güvendiğin bir ortak seni dolandırdı; ${m} buharlaştı.`,
+  (m) => `📜 Vergi tahsildarı defterlerinde "eksik" buldu; ${m} ceza kesti.`,
+  (m) => `👨‍👩‍👧 Bir akraban büyük bir borç için kapına dayandı; ${m} verdin, geri dönmeyecek.`,
+  (m) => `🎭 Bir dilenci kılığındaki dolandırıcı acıklı bir hikâyeyle ${m} kopardı.`,
+  (m, b) => `⚖️ ${b}'de küçük bir dava açıldı üstüne; avukat ve rüşvet ${m} götürdü.`,
+  (m) => `🔥 Deponda çıkan yangını söndürmek ve zararı kapatmak ${m} tuttu.`,
+  (m) => `🃏 Bir bahiste kaptırdın; ${m} masada kaldı.`,
+  (m) => `🐴 Yolda eşkıya kervanını çevirdi; ${m} değerinde mal ve para aldılar.`,
+  (m) => `💍 Değerli bir eşyan "kayboldu"; yerine yenisini almak ${m} tuttu.`,
+  (m, b) => `🏛️ ${b} ileri gelenleri bir bağış listesi dolaştırdı; ${m} yazmak zorunda kaldın.`,
+];
+
+export interface ZenginlikSizintiSonucu {
+  miktar: number;
+  mesaj: string;
+}
+
+/**
+ * Bkz. yukarıdaki blok. Turdaki her yıl ayrı kontrol edilir (bağış/savaş/veba deseni).
+ * Nakitin %12-25'ini alır (min 3), cooldown'u günceller.
+ */
+export function zenginlikSizintiKontrolEt(state: CharacterState, yasArtisi: number): ZenginlikSizintiSonucu | null {
+  if (yasArtisi <= 0) return null;
+  if (state.etiketler.includes("hapiste") || state.etiketler.includes("yolculukta")) return null;
+  for (let i = 0; i < yasArtisi; i++) {
+    const netServet = state.para + gayrimenkulDegeriHesapla(state);
+    if (netServet < ZENGINLIK_SIZINTI_SERVET_ESIGI || state.para < ZENGINLIK_SIZINTI_NAKIT_ESIGI) continue;
+    const taban = state.son_zenginlik_sizinti_yili ?? state.baslangic_yili;
+    if (state.yil - taban < ZENGINLIK_SIZINTI_COOLDOWN_YIL) continue;
+    if (Math.random() >= ZENGINLIK_SIZINTI_YILLIK_IHTIMAL) continue;
+    const oran = ZENGINLIK_SIZINTI_ORAN_MIN + Math.random() * ZENGINLIK_SIZINTI_ORAN_ARALIK;
+    const miktar = Math.max(3, paraYuvarla(state.para * oran));
+    state.para -= miktar;
+    state.son_zenginlik_sizinti_yili = state.yil;
+    const flavor = ZENGINLIK_SIZINTI_FLAVOR[Math.floor(Math.random() * ZENGINLIK_SIZINTI_FLAVOR.length)];
+    return { miktar, mesaj: flavor(`${miktar} ${state.para_birimi}`, state.bolge) };
   }
   return null;
 }
@@ -1424,11 +1785,24 @@ export function buyukSavasBitisKontrolEt(state: CharacterState): string | null {
 }
 
 const VEBA_MIN_YAS = 18;
-const VEBA_YILLIK_IHTIMAL = 0.04;
+const VEBA_YILLIK_IHTIMAL = 0.03;
+/** Bir veba dalgası (iz fazı dahil) bittikten sonra yeni bir dalga için beklenmesi gereken yıl. */
+const VEBA_COOLDOWN_YIL = 20;
 
-/** Ömürde bir kez tetiklenebilecek vebanın zamanı geldi mi (henüz yaşanmadıysa, 18+ yaşındayken yıllık %4 ihtimalle). */
+/**
+ * Vebanın zamanı geldi mi: 18+ yaşındayken yıllık %3 ihtimalle. Artık "ömürde
+ * bir kez" değil — bir dalga (aktif + iz fazı) tam bittikten sonra 20 yıl
+ * cooldown ile tekrar tetiklenebilir. Aktif ya da iz fazındaki bir veba
+ * (`state.veba` dolu) yeni dalgayı bloklar.
+ */
 export function vebaBaslamaliMi(state: CharacterState, yasArtisi: number): boolean {
-  if (yasArtisi <= 0 || state.veba_gecirdi || state.ulke.vebada || state.yas < VEBA_MIN_YAS) return false;
+  if (yasArtisi <= 0 || state.veba || state.ulke.vebada || state.yas < VEBA_MIN_YAS) return false;
+  if (
+    state.son_veba_bitis_yili != null &&
+    state.yil - state.son_veba_bitis_yili < VEBA_COOLDOWN_YIL
+  ) {
+    return false;
+  }
   if (state.etiketler.includes("hapiste") || state.etiketler.includes("yolculukta")) return false;
   for (let i = 0; i < yasArtisi; i++) {
     if (Math.random() < VEBA_YILLIK_IHTIMAL) return true;
@@ -1445,8 +1819,8 @@ const VEBA_KONUT_KIRA_CARPANI_ARALIK = 0.1;
 const VEBA_GELIR_CARPANI_MIN = 1.2;
 const VEBA_GELIR_CARPANI_ARALIK = 0.1;
 
-/** Veba olayı çözüldükten sonra (gameEngine.ts'te ulke_etkisi.vebada true tespit edilince) çağrılır; süre/çarpan parametrelerini rastgele belirler. */
-export function vebaBaslat(state: CharacterState, onlemAlindiMi: boolean): void {
+/** Veba olayı çözüldükten sonra (gameEngine.ts'te ulke_etkisi.vebada true tespit edilince) çağrılır; süre/çarpan parametrelerini rastgele belirler. `korumaSeviyesi`: 0=hiç, 1=kısmi, 2=tam. */
+export function vebaBaslat(state: CharacterState, korumaSeviyesi = 0): void {
   const aktifSureYil = VEBA_AKTIF_SURE_MIN_YIL + Math.floor(Math.random() * (VEBA_AKTIF_SURE_ARALIK_YIL + 1));
   const etkiSureYil = VEBA_ETKI_SURE_MIN_YIL + Math.floor(Math.random() * (VEBA_ETKI_SURE_ARALIK_YIL + 1));
   state.veba = {
@@ -1456,7 +1830,7 @@ export function vebaBaslat(state: CharacterState, onlemAlindiMi: boolean): void 
     etkiBitisYili: state.yil + aktifSureYil + etkiSureYil,
     konutKiraCarpani: VEBA_KONUT_KIRA_CARPANI_MIN + Math.random() * VEBA_KONUT_KIRA_CARPANI_ARALIK,
     gelirCarpani: VEBA_GELIR_CARPANI_MIN + Math.random() * VEBA_GELIR_CARPANI_ARALIK,
-    onlemAlindiMi,
+    korumaSeviyesi: Math.max(0, Math.min(2, Math.round(korumaSeviyesi))),
   };
   state.veba_gecirdi = true;
 }
@@ -1466,27 +1840,32 @@ export interface VebaYillikSonuc {
   mesajlar: string[];
 }
 
-const VEBA_OLUM_IHTIMALI = 0.03;
-const VEBA_OLUM_IHTIMALI_ONLEMLI = 0.015;
-const VEBA_ES_KAYIP_IHTIMALI = 0.02;
-const VEBA_ES_KAYIP_IHTIMALI_ONLEMLI = 0.01;
-const VEBA_COCUK_KAYIP_IHTIMALI = 0.02;
-const VEBA_COCUK_KAYIP_IHTIMALI_ONLEMLI = 0.01;
+/**
+ * Aktif veba sürerken karakter / eş / çocuk için YILLIK ölüm riski, korunma
+ * düzeyine göre 3 kademe (2026-09'da ciddileştirildi — korunmayan bir veba
+ * gerçekten ölümcül olsun, korunma da gerçek bir yatırım olsun). Aktif faz
+ * 2-4 yıl sürdüğü için kümülatif risk: korumasız karakter ~%20-28, tam
+ * korunmalı ~%6-8. (Ayrıca kureselOlaylar.ts'teki "veba dönemi" bulaşma
+ * olayları bunun ÜSTÜNE ek risk getirir.)
+ */
+const VEBA_OLUM_KADEME = [0.09, 0.05, 0.025]; // [hiç, kısmi, tam koruma]
+const VEBA_ES_KAYIP_KADEME = [0.05, 0.03, 0.015];
+const VEBA_COCUK_KAYIP_KADEME = [0.045, 0.028, 0.013];
 
 /**
  * Aktif veba sürerken (sadece state.veba.aktif iken) her yıl için karakterin,
- * eşinin ve bir çocuğunun ölüm riskini kontrol eder. Önlem alınmışsa riskler
- * yarıya iner. Karakterin kendi ölümü burada UYGULANMAZ (saglik/aktif'e
- * dokunmaz) — sadece sinyal döner, gerçek checkDeath çağrısı gameEngine.ts'te
- * mevcut olumTetiklendi deseniyle yapılır.
+ * eşinin ve bir çocuğunun ölüm riskini kontrol eder; risk state.veba.korumaSeviyesi
+ * (0/1/2) kademesinden okunur. Karakterin kendi ölümü burada UYGULANMAZ
+ * (saglik/aktif'e dokunmaz) — sadece sinyal döner, gerçek checkDeath çağrısı
+ * gameEngine.ts'te mevcut olumTetiklendi deseniyle yapılır.
  */
 export function vebaYillikKontrol(state: CharacterState, yasArtisi: number): VebaYillikSonuc {
   const sonuc: VebaYillikSonuc = { karakterOldu: false, mesajlar: [] };
   if (yasArtisi <= 0 || !state.veba?.aktif) return sonuc;
-  const onlemli = state.veba.onlemAlindiMi;
-  const olumSansi = onlemli ? VEBA_OLUM_IHTIMALI_ONLEMLI : VEBA_OLUM_IHTIMALI;
-  const esSansi = onlemli ? VEBA_ES_KAYIP_IHTIMALI_ONLEMLI : VEBA_ES_KAYIP_IHTIMALI;
-  const cocukSansi = onlemli ? VEBA_COCUK_KAYIP_IHTIMALI_ONLEMLI : VEBA_COCUK_KAYIP_IHTIMALI;
+  const k = Math.max(0, Math.min(2, state.veba.korumaSeviyesi ?? 0));
+  const olumSansi = VEBA_OLUM_KADEME[k];
+  const esSansi = VEBA_ES_KAYIP_KADEME[k];
+  const cocukSansi = VEBA_COCUK_KAYIP_KADEME[k];
 
   for (let i = 0; i < yasArtisi && !sonuc.karakterOldu; i++) {
     if (Math.random() < olumSansi) {
@@ -1526,6 +1905,7 @@ export function vebaBitisKontrolEt(state: CharacterState): string | null {
   }
   if (state.veba && !state.veba.aktif && state.yil >= state.veba.etkiBitisYili) {
     state.veba = null;
+    state.son_veba_bitis_yili = state.yil; // 20 yıllık cooldown buradan sayılır
   }
   return null;
 }
@@ -1533,29 +1913,136 @@ export function vebaBitisKontrolEt(state: CharacterState): string | null {
 // Yıllık getiri oranları (taban maliyetin yüzdesi olarak); enflasyonCarpani ile ölçeklenen
 // taban_maliyet üzerine uygulanır. Değerler kasıtlı olarak "güvenli yatırım"dan (yıllık ~%5-6)
 // belirgin şekilde daha oynak: mülkler dünyayı okumanın karşılığı, sabit gelir değil.
-const MULK_GETIRI_NORMAL = 0.09;
-const MULK_GETIRI_AVANTAJLI = 0.28;
+const MULK_GETIRI_NORMAL = 0.08;
+const MULK_GETIRI_AVANTAJLI = 0.2;
 const MULK_GETIRI_DEZAVANTAJLI = -0.15;
-const MULK_DEMIRCI_SAVAS_CARPANI = 3;
+const MULK_DEMIRCI_SAVAS_CARPANI = 2.5;
 const KERVAN_BATMA_IHTIMALI_YILLIK = 0.25;
 const KARABORSA_SUC_ARTISI_YILLIK = 2;
 const KARABORSA_AHLAK_ASINMASI_YILLIK = 0.3;
 
+/** Her mülk 7-10 yılda bir periyodik bir bakım/vergi masrafı çıkarır (tıpkı "luks" mağaza eşyaları gibi). */
+const MULK_BAKIM_ARALIGI_MIN_YIL = 6;
+const MULK_BAKIM_ARALIGI_MAX_YIL = 9;
+/** Bakım masrafı, mülkün GÜNCEL (enflasyona göre ölçeklenmiş) değerinin yaklaşık bu oranı kadardır. */
+const MULK_BAKIM_ORANI = 0.13;
+
+export function rastgeleMulkBakimAraligi(): number {
+  return (
+    MULK_BAKIM_ARALIGI_MIN_YIL +
+    Math.floor(Math.random() * (MULK_BAKIM_ARALIGI_MAX_YIL - MULK_BAKIM_ARALIGI_MIN_YIL + 1))
+  );
+}
+
+/** Bir mülkün, bakım masrafları amorti edilerek yıllığa indirgenmiş yaklaşık maliyeti (önizleme/istemci için). */
+export function mulkYillikBakimTahmini(tur: MulkTuru, state: CharacterState): number {
+  const guncelDeger = mulkTanimiGetir(tur).taban_maliyet * enflasyonCarpani(state);
+  const ortalamaAralik = (MULK_BAKIM_ARALIGI_MIN_YIL + MULK_BAKIM_ARALIGI_MAX_YIL) / 2;
+  return paraYuvarla((guncelDeger * MULK_BAKIM_ORANI) / ortalamaAralik);
+}
+
 interface MulkGelirSonucu {
   toplamNet: number;
   kervanBatti: boolean;
+  /** Bu turda periyodik bakım/vergi masrafı tetiklenen mülkler ve ödenen tutar (mülk SİLİNMEZ). */
+  bakimOdemeleri: { ad: string; miktar: number }[];
 }
 
 /**
  * Sahip olunan tüm piyasa mülklerinin güncel (enflasyona göre ölçeklenmiş) toplam
- * değeri — zenginlik vergisinin nakit+mülk toplamına göre hesaplanmasında
- * (giderKalemleriHesapla) ve Finans ekranındaki servet dökümünde kullanılan tek
+ * değeri — zorunlu bağış eşiğinin (nakit+mülk > 500) hesaplanmasında
+ * (zorunluBagisKontrolEt) ve Finans ekranındaki servet dökümünde kullanılan tek
  * doğruluk kaynağı.
  */
 export function gayrimenkulDegeriHesapla(state: CharacterState): number {
   if (state.mulkler.length === 0) return 0;
   const enflasyon = enflasyonCarpani(state);
   return state.mulkler.reduce((toplam, tur) => toplam + paraYuvarla(mulkTanimiGetir(tur).taban_maliyet * enflasyon), 0);
+}
+
+/**
+ * Sahip olunan tüm mülklerin ŞU ANKİ dünya durumuna göre yıllık tahmini net
+ * gelir/zararı — mulkGelirleriUygula'nın bir yıl için ekleyeceğiyle birebir aynı
+ * formül. Finans ekranı bunu "gayrimenkul geliri" olarak maaşın yanında (maaşın
+ * DIŞINDA ayrı bir akış olarak) gösterir; negatifse mülkler o an zarar ettiriyor.
+ */
+export function gayrimenkulYillikGelirHesapla(state: CharacterState): number {
+  if (state.mulkler.length === 0) return 0;
+  const enflasyon = enflasyonCarpani(state);
+  return paraYuvarla(
+    state.mulkler.reduce((toplam, tur) => {
+      const taban = mulkTanimiGetir(tur).taban_maliyet * enflasyon;
+      return toplam + paraYuvarla(taban * mulkGetiriOraniHesapla(tur, state.ulke));
+    }, 0)
+  );
+}
+
+export interface DunyaFinansEtkisi {
+  ikon: string;
+  metin: string;
+}
+
+/**
+ * Şu an karakterin bütçesini/sağlığını etkileyen dünya durumlarının (ekonomi,
+ * savaş, salgın, kıtlık/isyan/altın çağ, gıda şoku, enflasyon, zorunlu bağış eşiği)
+ * insan-okunur özeti. Finans ekranı + sol paneldeki mini özet "🌍 dünya etkileri"
+ * olarak gösterir — oyuncu maaşının/giderinin neden değiştiğini görebilsin diye.
+ * Buradaki yüzdeler maasCarpanKalemleri/giderKalemleriHesapla'daki sabitlerin
+ * insan diline çevrilmiş hâlidir (formülü tekrar HESAPLAMAZ, açıklar).
+ */
+export function dunyaFinansEtkileri(state: CharacterState): DunyaFinansEtkisi[] {
+  const liste: DunyaFinansEtkisi[] = [];
+
+  if (state.ulke.ekonomi === "kotu") liste.push({ ikon: "📉", metin: "Kötü ekonomi: maaş −%20" });
+  else if (state.ulke.ekonomi === "iyi") liste.push({ ikon: "📈", metin: "İyi ekonomi: maaş +%15" });
+
+  if (state.buyuk_savas) {
+    const gida = Math.round((state.buyuk_savas.gidaCarpani - 1) * 100);
+    const vergi = Math.round(state.buyuk_savas.vergiOrani * 100);
+    liste.push({
+      ikon: "⚔️",
+      metin: `Büyük savaş (${state.buyuk_savas.dusman}): maaş −%15 · yemek +%${gida} · maaşının %${vergi}'i savaş vergisi`,
+    });
+  } else if (state.ulke.savasta) {
+    liste.push({ ikon: "⚔️", metin: "Savaş: maaş −%15" });
+  }
+
+  if (state.veba && state.yil < state.veba.etkiBitisYili) {
+    const maas = Math.round((state.veba.gelirCarpani - 1) * 100);
+    const kira = Math.round((1 - state.veba.konutKiraCarpani) * 100);
+    if (state.veba.aktif) {
+      liste.push({ ikon: "☠️", metin: `Salgın: her yıl ölüm riski · işçi kıtlığı maaş +%${maas} · kira −%${kira}` });
+    } else {
+      const kalanYil = Math.max(0, state.veba.etkiBitisYili - state.yil);
+      liste.push({ ikon: "☠️", metin: `Salgın izi (${kalanYil} yıl): maaş +%${maas} · kira −%${kira}` });
+    }
+  }
+
+  if (state.ulke.kriz?.tur === "kitlik") liste.push({ ikon: "🌾", metin: "Kıtlık: −2 sağlık/yıl" });
+  else if (state.ulke.kriz?.tur === "isyan") liste.push({ ikon: "🔥", metin: "İsyan: −3 para & −1 ün/yıl" });
+  else if (state.ulke.kriz?.tur === "altin_cag")
+    liste.push({ ikon: "✨", metin: "Altın çağ: +4 para & +1 mutluluk/yıl" });
+
+  if (state.gida_fiyat_sok_bitis_yili !== null && state.yil < state.gida_fiyat_sok_bitis_yili) {
+    liste.push({ ikon: "🥖", metin: "Gıda fiyat şoku: yemek gideri bu yıl ×2" });
+  }
+
+  if (state.para + gayrimenkulDegeriHesapla(state) > ZORUNLU_BAGIS_ESIGI) {
+    const taban = state.son_zorunlu_bagis_yili ?? state.baslangic_yili;
+    const kalanCooldown = ZORUNLU_BAGIS_COOLDOWN_YIL - (state.yil - taban);
+    const oranAralik = `%${Math.round(ZORUNLU_BAGIS_ORAN_MIN * 100)}-${Math.round(
+      (ZORUNLU_BAGIS_ORAN_MIN + ZORUNLU_BAGIS_ORAN_ARALIK) * 100
+    )}`;
+    const metin =
+      kalanCooldown > 0
+        ? `Servetin ${ZORUNLU_BAGIS_ESIGI}'ü aştı: hükümdarın gözü üstünde ama ~${kalanCooldown} yıl daha bağış isteyemez (servetinin ${oranAralik}'si)`
+        : `Servetin ${ZORUNLU_BAGIS_ESIGI}'ü aştı: hükümdar zenginleştiğini fark etti — her yıl ~%${Math.round(
+            ZORUNLU_BAGIS_YILLIK_IHTIMAL * 100
+          )} ihtimalle servetinin ${oranAralik}'sini "bağış" olarak alabilir`;
+    liste.push({ ikon: "👑", metin });
+  }
+
+  return liste;
 }
 
 /**
@@ -1591,11 +2078,14 @@ export function mulkGetiriOraniHesapla(tur: MulkTuru, ulke: CharacterState["ulke
  * hesaplanır). Kervan/gemi savaş sürerken her yıl bir ihtimalle tamamen kaybolabilir.
  */
 export function mulkGelirleriUygula(state: CharacterState, yasArtisi: number): MulkGelirSonucu {
-  if (yasArtisi <= 0 || state.mulkler.length === 0) return { toplamNet: 0, kervanBatti: false };
+  if (yasArtisi <= 0 || state.mulkler.length === 0) return { toplamNet: 0, kervanBatti: false, bakimOdemeleri: [] };
   const ulke = state.ulke;
   const enflasyon = enflasyonCarpani(state);
+  if (!state.mulk_bakim_kalan) state.mulk_bakim_kalan = {};
   let toplamNet = 0;
+  let toplamBakim = 0;
   let kervanBatti = false;
+  const bakimOdemeleri: { ad: string; miktar: number }[] = [];
 
   for (const tur of [...state.mulkler]) {
     const taban = mulkTanimiGetir(tur).taban_maliyet * enflasyon;
@@ -1603,6 +2093,7 @@ export function mulkGelirleriUygula(state: CharacterState, yasArtisi: number): M
 
     if (tur === "kervan" && ulke.savasta && Math.random() < KERVAN_BATMA_IHTIMALI_YILLIK * yasArtisi) {
       state.mulkler = state.mulkler.filter((m) => m !== "kervan");
+      delete state.mulk_bakim_kalan.kervan;
       hayatOlayiEkle(state, "🌊", "Ticaret kervanı savaş yüzünden tamamen kayboldu");
       kervanBatti = true;
       continue;
@@ -1613,12 +2104,23 @@ export function mulkGelirleriUygula(state: CharacterState, yasArtisi: number): M
     }
 
     toplamNet += paraYuvarla(taban * oran) * yasArtisi;
+
+    // Periyodik bakım/vergi: 7-10 yılda bir, mülkün güncel değerinin ~%12'si.
+    const kalan = (state.mulk_bakim_kalan[tur] ?? rastgeleMulkBakimAraligi()) - yasArtisi;
+    if (kalan <= 0) {
+      const masraf = sonBasamagiDuzelt(taban * MULK_BAKIM_ORANI);
+      toplamBakim += masraf;
+      bakimOdemeleri.push({ ad: mulkTanimiGetir(tur).ad, miktar: masraf });
+      state.mulk_bakim_kalan[tur] = rastgeleMulkBakimAraligi();
+    } else {
+      state.mulk_bakim_kalan[tur] = kalan;
+    }
   }
-  toplamNet = paraYuvarla(toplamNet);
+  toplamNet = paraYuvarla(toplamNet - toplamBakim);
 
   state.para = paraYuvarla(state.para + toplamNet);
   clampStats(state);
-  return { toplamNet, kervanBatti };
+  return { toplamNet, kervanBatti, bakimOdemeleri };
 }
 
 const DEDIKODU_SAVAS: ((rakip: string) => string)[] = [

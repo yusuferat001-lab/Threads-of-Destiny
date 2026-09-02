@@ -16,24 +16,23 @@ describe("meslek-özel derinlik metrikleri", () => {
     expect(state.ordu_mevcudu).toBe(0);
   });
 
-  it("'kendi_isi' yatırımı Asker'de teçhizatı, Tüccar'da sermayeyi, Din Adamı'nda nüfuzu artırır", async () => {
-    const asker = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
-    await mesleğiAta(asker.id, "Asker");
-    asker.para = 200;
-    await yatirimYap(asker.id, "kendi_isi");
-    expect(asker.ordu_techizat_seviyesi).toBeGreaterThan(0);
+  it("'kendi_isi' yatırımı artık meslek metriğine dokunmaz; yıllık maaşı kalıcı olarak artırır", async () => {
+    for (const meslek of ["Asker", "Tüccar", "Din Adamı"] as const) {
+      const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+      await mesleğiAta(state.id, meslek);
+      state.para = 500;
+      const oncekiTechizat = state.ordu_techizat_seviyesi;
+      const oncekiSermaye = state.ticaret_sermaye;
+      const oncekiNufuz = state.nufuz;
+      const oncekiMaas = state.maas_yillik;
 
-    const tuccar = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
-    await mesleğiAta(tuccar.id, "Tüccar");
-    tuccar.para = 200;
-    await yatirimYap(tuccar.id, "kendi_isi");
-    expect(tuccar.ticaret_sermaye).toBeGreaterThan(0);
+      await yatirimYap(state.id);
 
-    const dinAdami = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
-    await mesleğiAta(dinAdami.id, "Din Adamı");
-    dinAdami.para = 200;
-    await yatirimYap(dinAdami.id, "kendi_isi");
-    expect(dinAdami.nufuz).toBeGreaterThan(0);
+      expect(state.ordu_techizat_seviyesi).toBe(oncekiTechizat);
+      expect(state.ticaret_sermaye).toBe(oncekiSermaye);
+      expect(state.nufuz).toBe(oncekiNufuz);
+      expect(state.maas_yillik).toBeGreaterThan(oncekiMaas);
+    }
   });
 
   it("saldiriGucuHesapla ordu mevcudu ve teçhizat seviyesine göre büyür", () => {

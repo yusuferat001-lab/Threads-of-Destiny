@@ -1,10 +1,9 @@
 interface SiyasetPaneliProps {
   cag: string;
   hizip: string | null;
-  devletTakibinde: boolean;
 }
 
-export function SiyasetPaneli({ cag, hizip, devletTakibinde }: SiyasetPaneliProps) {
+export function SiyasetPaneli({ cag, hizip }: SiyasetPaneliProps) {
   return (
     <div className="siyaset-paneli">
       {hizip && (
@@ -13,7 +12,6 @@ export function SiyasetPaneli({ cag, hizip, devletTakibinde }: SiyasetPaneliProp
           <strong>🏴 {hizip}</strong>
         </div>
       )}
-      {devletTakibinde && <span className="siyaset-vergi-rozet">👑 Devletin vergi takibinde</span>}
       <div className="siyaset-donem">
         <span aria-hidden="true">⏳</span> Dönem: {cag}
       </div>

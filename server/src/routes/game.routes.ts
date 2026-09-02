@@ -5,7 +5,7 @@ import {
   senaryoUret,
   secimUygula,
   stateGetir,
-  soyuSurdur,
+  isimOnerisiGetir,
   finansGetir,
   yatirimYap,
   yatirimConfigGetir,
@@ -28,6 +28,7 @@ import { YERLESIMLER } from "../data/yerlesimler";
 import { KONUTLAR, TASINMA_MALIYETI } from "../data/konutlar";
 import { YASAM_SECENEKLERI } from "../data/yasamSecenekleri";
 import { MULK_TANIMLARI } from "../data/mulkler";
+import { uygunsuzMu } from "../moderasyon/kufurFiltresi";
 import { Cag, MulkTuru } from "../types";
 
 export const gameRouter = Router();
@@ -54,8 +55,20 @@ gameRouter.get("/yasam-secenekleri", (_req, res) => {
   res.json({ yasamSecenekleri: YASAM_SECENEKLERI });
 });
 
+gameRouter.get("/isim-onerisi", (req, res) => {
+  const cag = req.query.cag as Cag;
+  const bolge = req.query.bolge as string;
+  if (!GECERLI_CAGLAR.includes(cag)) {
+    return res.status(400).json({ hata: "Geçersiz çağ." });
+  }
+  if (typeof bolge !== "string" || !BOLGELER_BY_CAG[cag].includes(bolge)) {
+    return res.status(400).json({ hata: "Geçersiz bölge." });
+  }
+  res.json({ isim: isimOnerisiGetir(cag, bolge) });
+});
+
 gameRouter.post("/new", async (req, res) => {
-  const { cag, bolge, yerlesim } = req.body ?? {};
+  const { cag, bolge, yerlesim, isim } = req.body ?? {};
   if (!GECERLI_CAGLAR.includes(cag)) {
     return res.status(400).json({ hata: "Geçersiz çağ." });
   }
@@ -65,17 +78,16 @@ gameRouter.post("/new", async (req, res) => {
   if (typeof yerlesim !== "string" || !YERLESIMLER.some((y) => y.id === yerlesim)) {
     return res.status(400).json({ hata: "Geçersiz yerleşim." });
   }
-  try {
-    const state = await yeniOyun(cag, bolge, yerlesim);
-    res.json({ state });
-  } catch (err) {
-    res.status(400).json({ hata: String(err) });
+  let oyuncuIsmi: string | undefined;
+  if (isim != null && typeof isim === "string" && isim.trim()) {
+    const temiz = isim.trim().slice(0, 40);
+    if (uygunsuzMu(temiz)) {
+      return res.status(400).json({ hata: "Bu isim uygunsuz kelimeler içeriyor, başka bir isim dene." });
+    }
+    oyuncuIsmi = temiz;
   }
-});
-
-gameRouter.post("/:id/soy-surdur", async (req, res) => {
   try {
-    const state = await soyuSurdur(req.params.id);
+    const state = await yeniOyun(cag, bolge, yerlesim, oyuncuIsmi);
     res.json({ state });
   } catch (err) {
     res.status(400).json({ hata: String(err) });

@@ -46,7 +46,7 @@ const BINALAR = [
   { x: 360, w: 26, h: 38 },
 ];
 
-/** Ün arttıkça şehirde daha çok pencere ışığı, kamp ateşi ya da hareket görünür. */
+/** Şöhret arttıkça şehirde daha çok pencere ışığı, kamp ateşi ya da hareket görünür. */
 function isikSayisiHesapla(un: number): number {
   return Math.max(1, Math.min(BINALAR.length, Math.round((un / 100) * BINALAR.length) + 2));
 }
@@ -110,23 +110,15 @@ function DagSiluet({ isikSayisi }: { isikSayisi: number }) {
   );
 }
 
-function SavasDumani() {
-  return (
-    <g opacity={0.5}>
-      {[60, 160, 300].map((x, i) => (
-        <ellipse key={i} cx={x} cy={40 - i * 5} rx={22} ry={14} fill="#3a3a3a">
-          <animate attributeName="cy" values={`${50 - i * 5};${20 - i * 5};${50 - i * 5}`} dur="6s" repeatCount="indefinite" />
-          <animate attributeName="opacity" values="0.2;0.55;0.2" dur="6s" repeatCount="indefinite" />
-        </ellipse>
-      ))}
-    </g>
-  );
-}
-
 /**
- * Sanatın üstüne binen, oyun durumuna göre değişen efekt katmanı (ışıklar/duman/tonlama).
+ * Sanatın üstüne binen, oyun durumuna göre değişen efekt katmanı (ekonomi/veba tonlaması).
  * Görsel katmanlar var olsa da olmasa da aynı SVG kullanılır — böylece resim eklenince
  * bu dinamik efektler otomatik olarak resmin üstünde çalışmaya devam eder.
+ *
+ * Not: Eskiden burada yanıp sönen sarı "şehir ışığı" noktaları ve savaş sırasında yükselen
+ * gri duman elipsleri de vardı; boyalı arka plan görseliyle hizalanmadıkları (koordinatlar
+ * eski prosedürel siluet içindi) için kaldırıldı. Sarı ışık efekti yalnızca resim
+ * yüklenemediğinde devreye giren fallback siluetlerde (SehirSiluet vb.) korunur.
  */
 function DinamikEfektKatmani({
   tip,
@@ -147,16 +139,6 @@ function DinamikEfektKatmani({
       {ciziSiluet && tip === 'sehir' && <SehirSiluet isikSayisi={isikSayisi} />}
       {ciziSiluet && tip === 'sinir' && <SinirSiluet isikSayisi={isikSayisi} />}
       {ciziSiluet && tip === 'dag' && <DagSiluet isikSayisi={isikSayisi} />}
-      {!ciziSiluet && isikSayisi > 0 && (
-        <g fill="#e8c065">
-          {BINALAR.slice(0, isikSayisi).map((b, i) => (
-            <circle key={i} cx={b.x + b.w / 2} cy={128 - (i % 4) * 6} r={2.5}>
-              <animate attributeName="opacity" values="0.4;1;0.4" dur={`${2 + (i % 3)}s`} repeatCount="indefinite" />
-            </circle>
-          ))}
-        </g>
-      )}
-      {ulke?.savasta && <SavasDumani />}
       {ulke?.vebada && <rect width="400" height="140" fill="#6a7a6a" opacity={0.22} />}
     </svg>
   );

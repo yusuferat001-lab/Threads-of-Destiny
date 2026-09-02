@@ -7,6 +7,7 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import { gameRouter } from "./routes/game.routes";
 import { scoreRouter } from "./routes/score.routes";
+import { geriBildirimRouter } from "./routes/geriBildirim.routes";
 import { oturumlariYukle, oturumlariBellektenTemizle } from "./game/gameEngine";
 import { eskiOturumlariTemizle } from "./db/sessionRepository";
 
@@ -66,8 +67,17 @@ const skorLimiti = rateLimit({
   legacyHeaders: false,
 });
 
+// Geri bildirim nadir bir işlem; skordan da sıkı sınırlanır (spam / bot koruması).
+const geriBildirimLimiti = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 app.use("/api/game", oyunLimiti, gameRouter);
 app.use("/api/scores", skorLimiti, scoreRouter);
+app.use("/api/geri-bildirim", geriBildirimLimiti, geriBildirimRouter);
 
 // Render sağlık kontrolü için hafif uç nokta.
 app.get("/healthz", (_req, res) => {

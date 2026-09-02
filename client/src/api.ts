@@ -65,11 +65,17 @@ export function yasamSecenekleriGetir() {
   return istek<{ yasamSecenekleri: YasamSecenegiTanimi[] }>('/api/game/yasam-secenekleri');
 }
 
-export function yeniOyunBaslat(cag: string, bolge: string, yerlesim: string) {
+export function yeniOyunBaslat(cag: string, bolge: string, yerlesim: string, isim?: string) {
   return istek<{ state: CharacterState }>('/api/game/new', {
     method: 'POST',
-    body: JSON.stringify({ cag, bolge, yerlesim }),
+    body: JSON.stringify({ cag, bolge, yerlesim, isim }),
   });
+}
+
+export function isimOnerisiGetir(cag: string, bolge: string) {
+  return istek<{ isim: string }>(
+    `/api/game/isim-onerisi?cag=${encodeURIComponent(cag)}&bolge=${encodeURIComponent(bolge)}`
+  );
 }
 
 export function meslekAta(stateId: string, meslek: string) {
@@ -81,12 +87,6 @@ export function meslekAta(stateId: string, meslek: string) {
 
 export function stateGetir(stateId: string) {
   return istek<{ state: CharacterState }>(`/api/game/${stateId}/state`);
-}
-
-export function soyuSurdur(stateId: string) {
-  return istek<{ state: CharacterState }>(`/api/game/${stateId}/soy-surdur`, {
-    method: 'POST',
-  });
 }
 
 export function senaryoGetir(stateId: string) {
@@ -198,5 +198,17 @@ export function magazadanSatinAl(stateId: string, katalogId: string) {
 export function envanterEsyasiKullan(stateId: string, esyaId: string) {
   return istek<EnvanterKullanSonucu>(`/api/game/${stateId}/envanter/${esyaId}/kullan`, {
     method: 'POST',
+  });
+}
+
+export function geriBildirimGonder(govde: {
+  kategori: string;
+  mesaj: string;
+  iletisim?: string;
+  baglam?: Record<string, unknown>;
+}) {
+  return istek<{ ok: true }>('/api/geri-bildirim', {
+    method: 'POST',
+    body: JSON.stringify(govde),
   });
 }

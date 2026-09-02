@@ -55,11 +55,11 @@ export function ahlakEtiketi(ahlak: number): string {
 }
 
 /**
- * Ün artık oyuncuya çıplak bir sayı/yıldız olarak değil, 8 kademeli bir ünvan
- * olarak gösterilir. İlk kademeler hızlı açılır, son 2 kademe (Tarihi Şahsiyet,
- * Yaşayan Efsane) kasıtlı olarak devasa bir puan sıçraması gerektirir — ün 0-100
- * aralığında clamp'lendiği için bu son iki kademe tavana çok yakın, dar bir
- * bantta sıkışır ve neredeyse ulaşılamaz kalır.
+ * Şöhret (kod alanı `un`) artık oyuncuya çıplak bir sayı/yıldız olarak değil,
+ * 8 kademeli bir ünvan olarak gösterilir. İlk kademeler hızlı açılır, son 2
+ * kademe (Tarihi Şahsiyet, Yaşayan Efsane) kasıtlı olarak devasa bir puan
+ * sıçraması gerektirir — değer 0-100 aralığında clamp'lendiği için bu son iki
+ * kademe tavana çok yakın, dar bir bantta sıkışır ve neredeyse ulaşılamaz kalır.
  */
 const UN_UNVANLARI: [number, string][] = [
   [0, 'Kimliği Belirsiz'],

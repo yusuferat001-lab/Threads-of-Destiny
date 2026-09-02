@@ -36,9 +36,9 @@ const MESLEK_SIMGESI: Record<string, string> = {
 };
 
 const KENDI_ISI_ACIKLAMA: Record<string, string> = {
-  Asker: 'karşılığında birliğinin teçhizatı ve saldırı gücü (ya da teçhizat dolduysa ordu mevcudun) kalıcı olarak artar.',
-  Tüccar: 'karşılığında ticaret sermayen kalıcı olarak büyür — bir tezgah/çalışan daha demektir.',
-  'Din Adamı': 'karşılığında cemaat içindeki nüfuzun kalıcı olarak büyür.',
+  Asker: 'karşılığında yıllık maaşın kalıcı olarak yaklaşık %5 artar (bir tavana kadar).',
+  Tüccar: 'karşılığında yıllık maaşın kalıcı olarak yaklaşık %5 artar (bir tavana kadar).',
+  'Din Adamı': 'karşılığında yıllık maaşın kalıcı olarak yaklaşık %5 artar (bir tavana kadar).',
 };
 
 function kendiIsiAsamaEtiketi(yatirimSayisi: number): string {
@@ -128,8 +128,8 @@ export function IsYatirimEkrani({
               <strong>{rutbe}</strong>
               <span>{meslek}</span>
             </div>
-            <span className="kademe-gostergesi" aria-label={`Kademe ${rutbeSeviye} / 3`}>
-              {[1, 2, 3].map((seviye) => (
+            <span className="kademe-gostergesi" aria-label={`Kademe ${rutbeSeviye} / 5`}>
+              {[1, 2, 3, 4, 5].map((seviye) => (
                 <span key={seviye} className={`kademe-nokta${seviye <= rutbeSeviye ? ' kademe-nokta-dolu' : ''}`} />
               ))}
             </span>
@@ -163,22 +163,23 @@ export function IsYatirimEkrani({
 
             {meslek === 'Din Adamı' && <StatKarosu ikon="🕊️" etiket="Nüfuz" deger={`${nufuz}`} />}
           </div>
+
+          <h3 className="tam-baslik tam-baslik-dedikodu">Piyasa Dedikoduları</h3>
+
+          {dedikodular.length > 0 ? (
+            <div className="dedikodu-panosu dedikodu-panosu-vurgu">
+              <ul>
+                {dedikodular.map((d, i) => (
+                  <li key={i}>{d}</li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <p className="giris-aciklama">Şu an konuşulan bir şey yok.</p>
+          )}
         </div>
 
         <div className="tam-sutun">
-          <h3 className="tam-baslik">Kendi İşin</h3>
-
-          <button className="yatirim-kart isyatirim-kendi-is-kart" disabled={yukleniyor || paraYetersiz} onClick={onYatirimYap}>
-            <span className="meslek-simge">💼</span>
-            <strong>Kendi İşine Yatırım Yap</strong>
-            <span className="meslek-aciklama">
-              {formatPara(config.kendiIsiMaliyeti)} {paraBirimi} {kendiIsiAciklama}
-            </span>
-            <span className="meslek-aciklama">
-              {kendiIsiAsamaEtiketi(config.kendiIsiYatirimSayisi)} Her yeni yatırım bir öncekinden daha pahalıya gelir.
-            </span>
-          </button>
-
           <h3 className="tam-baslik">Yatırımlık Gayrimenkuller</h3>
 
           <div className="yatirim-kartlari yatirim-mulk-kartlari">
@@ -202,6 +203,9 @@ export function IsYatirimEkrani({
                   {formatPara(mulk.tahminiYillikGetiriMiktari)} {paraBirimi}/yıl ({mulk.tahminiYillikGetiriYuzdesi > 0 ? '+' : ''}
                   {mulk.tahminiYillikGetiriYuzdesi}%)
                 </span>
+                <span className="meslek-aciklama" title="7-10 yılda bir çıkan bakım/vergi masrafının yıllığa bölünmüş yaklaşık tutarı; getiriden ayrı, her koşulda gider.">
+                  🔧 Bakım/vergi: ~-{formatPara(mulk.yillikBakimTahmini)} {paraBirimi}/yıl
+                </span>
                 {!mulk.sahipMi && (
                   <span className="meslek-aciklama">
                     {formatPara(mulk.maliyet)} {paraBirimi}
@@ -213,6 +217,25 @@ export function IsYatirimEkrani({
         </div>
 
         <div className="tam-sutun">
+          <h3 className="tam-baslik">Kendi İşin</h3>
+
+          <button className="yatirim-kart isyatirim-kendi-is-kart" disabled={yukleniyor || paraYetersiz} onClick={onYatirimYap}>
+            <span className="meslek-simge">💼</span>
+            <strong>Kendi İşine Yatırım Yap</strong>
+            <span className="meslek-aciklama">
+              {formatPara(config.kendiIsiMaliyeti)} {paraBirimi} {kendiIsiAciklama}
+            </span>
+            <span className="meslek-aciklama">
+              {kendiIsiAsamaEtiketi(config.kendiIsiYatirimSayisi)} Her yeni yatırım bir öncekinden daha pahalıya gelir.
+            </span>
+          </button>
+
+          <p className="rutbe-ipucu">
+            <strong>Rütbe nasıl yükselir?</strong> İşine yatırım yaptıkça ve{' '}
+            {meslek === 'Din Adamı' ? 'ahlakını' : 'şöhretini'} yüksek tuttukça kariyerin ilerler; zamanla kıdem de
+            kazanırsın. Her terfiden sonra bir sonrakine kadar birkaç yıl geçmesi gerekir. Rütben asla düşmez.
+          </p>
+
           <h3 className="tam-baslik">Riskli İşler</h3>
 
           <p className={`suc-seviyesi-gostergesi ${sucSeviyesi >= 45 ? 'suc-seviyesi-riskli' : ''}`}>
@@ -232,20 +255,6 @@ export function IsYatirimEkrani({
               </button>
             ))}
           </div>
-
-          <h3 className="tam-baslik">Piyasa Dedikoduları</h3>
-
-          {dedikodular.length > 0 ? (
-            <div className="dedikodu-panosu">
-              <ul>
-                {dedikodular.map((d, i) => (
-                  <li key={i}>{d}</li>
-                ))}
-              </ul>
-            </div>
-          ) : (
-            <p className="giris-aciklama">Şu an konuşulan bir şey yok.</p>
-          )}
         </div>
       </div>
 

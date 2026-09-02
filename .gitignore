@@ -26,3 +26,6 @@ server/public/
 # Simülasyon/analiz script çıktıları
 server/scripts/*.sonuc.json
 server/scripts/*.analiz.json
+
+# Geri bildirim yerel yedek kaydı (anlık teslimat webhook ile; bu dosya sadece yedek)
+server/data/

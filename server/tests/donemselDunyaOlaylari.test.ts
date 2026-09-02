@@ -201,7 +201,7 @@ describe("vebaBaslamaliMi / vebaBaslat / vebaYillikKontrol / vebaBitisKontrolEt"
 
   it("vebaBaslat parametreleri beklenen aralıkta üretir ve veba_gecirdi'yi kalıcı işaretler", () => {
     const state = taze();
-    vebaBaslat(state, false);
+    vebaBaslat(state, 0);
     expect(state.veba_gecirdi).toBe(true);
     const v = state.veba!;
     expect(v.aktif).toBe(true);
@@ -221,11 +221,11 @@ describe("vebaBaslamaliMi / vebaBaslat / vebaYillikKontrol / vebaBitisKontrolEt"
     const DENEME = 2000;
     for (let i = 0; i < DENEME; i++) {
       const onlemsiz = taze();
-      vebaBaslat(onlemsiz, false);
+      vebaBaslat(onlemsiz, 0);
       if (vebaYillikKontrol(onlemsiz, 1).karakterOldu) olumluOnlemsiz++;
 
       const onlemli = taze();
-      vebaBaslat(onlemli, true);
+      vebaBaslat(onlemli, 2);
       if (vebaYillikKontrol(onlemli, 1).karakterOldu) olumluOnlemli++;
     }
     expect(olumluOnlemsiz).toBeGreaterThan(0);
@@ -234,7 +234,7 @@ describe("vebaBaslamaliMi / vebaBaslat / vebaYillikKontrol / vebaBitisKontrolEt"
 
   it("aktif faz bitince ulke.vebada kapanır ama iz (state.veba) etkiBitisYili'ne kadar sürer", () => {
     const state = taze();
-    vebaBaslat(state, true);
+    vebaBaslat(state, 2);
     state.ulke.vebada = true;
     state.veba!.bitisYili = state.yil; // aktif fazı hemen bitir
 
@@ -257,7 +257,7 @@ describe("vebaBaslamaliMi / vebaBaslat / vebaYillikKontrol / vebaBitisKontrolEt"
     const giderNormal = giderKalemleriHesapla(state);
     const maasNormal = hesaplaMaasYillik(state);
 
-    vebaBaslat(state, true);
+    vebaBaslat(state, 2);
     state.veba!.aktif = false; // aktif faz bitmiş, sadece iz sürüyor
     const giderIzli = giderKalemleriHesapla(state);
     const maasIzli = hesaplaMaasYillik(state);

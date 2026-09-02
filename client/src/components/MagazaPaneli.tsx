@@ -75,7 +75,7 @@ export function MagazaPaneli({ para, paraBirimi, katalog, yukleniyor, islemMesaj
                 <span className="meslek-aciklama magaza-etki-satiri">
                   {esya.saglikEtkisi ? `❤️ +${esya.saglikEtkisi} sağlık ` : ''}
                   {esya.mutlulukEtkisi ? `😊 +${esya.mutlulukEtkisi} mutluluk ` : ''}
-                  {esya.unEtkisi ? `⭐ +${esya.unEtkisi} ün ` : ''}
+                  {esya.unEtkisi ? `⭐ +${esya.unEtkisi} şöhret ` : ''}
                 </span>
                 {esya.omurYil && !esya.sahipMi && (
                   <span className="magaza-omur-uyarisi">⏳ {esya.omurYil} yıl içinde kullanılmazsa çürür</span>
