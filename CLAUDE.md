@@ -4,12 +4,12 @@
 
 ## 0. Oyun Nedir
 
-**Kader Çarkı**, Türkçe, metin tabanlı, tarihi bir hayat simülasyonudur. Oyuncu bir **çağ** (Orta Çağ ya da Sanayi Devrimi), bir **bölge/ülke** ve bir **yerleşim tipi** seçer; ailesi, kişiliği, dini ve ismi (aile hariç) rastgele belirlenir. 15 yaşında bir **meslek** (Asker/Tüccar/Din Adamı) seçilir ve karakter, her turda sunulan bir olay + 2-4 seçenek arasından seçim yaparak yaşar. Zar atılır, sonuç uygulanır, yıllar ilerler; **ölüm kalıcıdır**. Ölünce isim girilip liderlik tablosuna skor kaydedilebilir; yaşayan bir çocuk varsa "soyu sürdür" ile aynı aile hattından yeni bir karakterle devam edilebilir.
+**Kader Çarkı**, Türkçe, metin tabanlı, tarihi bir hayat simülasyonudur. Oyuncu bir **çağ** (Orta Çağ ya da Sanayi Devrimi), bir **bölge/ülke** ve bir **yerleşim tipi** seçer; ailesi, kişiliği ve dini rastgele belirlenir. 15 yaşında bir **meslek** (Asker/Tüccar/Din Adamı) seçilir ve karakter, her turda sunulan bir olay + 2-4 seçenek arasından seçim yaparak yaşar. Zar atılır, sonuç uygulanır, yıllar ilerler; **ölüm kalıcıdır**. Oyun başında (yerleşim seçiminden sonra) oyuncudan bir **isim** istenir — boş bırakılırsa seçilen ülkeye uygun rastgele bir isim atanır; bu isim oyun boyunca sol üstte görünür ve ölümde skor kaydına ön-doldurulur. Ölünce liderlik tablosuna skor kaydedilebilir. **Soy sürdürme ("hanedan modu") 2026-09'da tamamen kaldırıldı** — ölüm kesin sondur, yeniden başlamak yeni bir karakter oluşturur.
 
 ## 1. Depo Yapısı & Komutlar
 
 ```
-server/   Node.js + Express 5 + TypeScript + Prisma (SQLite) — oyun motoru, tüm kurallar burada
+server/   Node.js + Express 5 + TypeScript + Prisma (PostgreSQL) — oyun motoru, tüm kurallar burada
 client/   React 19 + Vite + TypeScript — saf useState tabanlı, Redux/Router YOK
 ```
 
@@ -19,23 +19,23 @@ Git deposu **değildir** (`.git` yok).
 |---|---|---|
 | `npm run dev` | server/ | `tsx watch src/server.ts` — API sunucusu (varsayılan :3001) |
 | `npm run dev` | client/ | Vite dev server (varsayılan :5180, README'de belirtilen) |
-| `npm test` | server/ | `vitest run` — 30 test dosyası (bkz. §23) |
+| `npm test` | server/ | `vitest run` — 31 test dosyası (bkz. §23) |
 | `npm run build` / `start` | server/ | `tsc` derleme / `node dist/server.js` |
 | `npm run simulate` | server/ | `scripts/simulateEconomy.ts` — ekonomiyi bin ömür simüle eder |
 | `npm run analyze-olaylar` | server/ | `scripts/analyzeOlaylar.ts` — olay bankası istatistikleri (bölge/meslek/yaş dağılımı, gerçek `olaySec()` ile simülasyon) |
 | `npm run build` / `lint` | client/ | `tsc -b && vite build` / `oxlint` |
-| `npx prisma migrate deploy` | server/ | SQLite şemasını kurar |
+| `npx prisma migrate deploy` | server/ | PostgreSQL şemasını kurar (önce yerelde bir Postgres + `DATABASE_URL` gerekir) |
 
-`.env` (server/): `DATABASE_URL="file:./dev.db"`, `PORT=3001`. CORS için `CORS_ORIGIN` (virgülle ayrılmış origin listesi, yoksa `http://localhost:5173`).
+`.env` (server/): `DATABASE_URL="postgresql://.../kadercarki"` (yerelde Docker Postgres ya da Neon dev branch — `.env.example`'a bak), `PORT=3001`. CORS için `CORS_ORIGIN` (virgülle ayrılmış origin listesi, yoksa `http://localhost:5173`). Geri bildirim (§29) için opsiyonel: `GERI_BILDIRIM_WEBHOOK_URL` (Discord webhook ya da Telegram sendMessage URL'si), `GERI_BILDIRIM_TELEGRAM_CHAT_ID`, `GERI_BILDIRIM_ANAHTARI` (okuma anahtarı), `GERI_BILDIRIM_DOSYA` (JSONL yolu).
 
 ## 2. Uçtan Uca Mimari
 
 - **Oturum (session) modeli:** Her karakter bir `CharacterState` nesnesidir, `randomUUID()` ile `id` alır. Sunucu bunu iki katmanda tutar:
   1. **In-memory `Map<string, Oturum>`** (`gameEngine.ts` içindeki `oturumlar`) — aktif oyun döngüsü (mevcut senaryo, bekleyen tepki, son ton) burada tutulur, DB'de saklanmaz.
-  2. **SQLite `Session` tablosu** — `CharacterState` tamamen `JSON.stringify` edilip `data` sütununa yazılır (bkz. §21). Her state-mutasyonundan sonra `oturumKaydet()` çağrılır.
+  2. **PostgreSQL `Session` tablosu** — `CharacterState` tamamen `JSON.stringify` edilip `data` sütununa yazılır (bkz. §21). Her state-mutasyonundan sonra `oturumKaydet()` çağrılır.
 - **Kurtarma:** Sunucu açılışında `oturumlariYukle()` DB'deki `aktif:true` tüm oturumları belleğe yükler — sunucu yeniden başlasa bile yarım kalan oyunlar devam eder.
 - **Temizlik:** Saatte bir (`server.ts`): bitmiş (`aktif:false`) ve 30 dk'dır erişilmemiş oturumlar bellekten silinir (DB'den silinmez); DB'de 7 günden eski bitmiş oturumlar tamamen silinir.
-- **İstemci kalıcılığı:** `client/src/oturum.ts` sadece aktif `state.id`'yi `localStorage` içinde tutar (sayfa yenilenince kaldığı yerden devam) — hiçbir hassas veri saklanmaz. `basarimlar.ts` ayrıca, oyundan bağımsız olarak, kazanılan **ünvanları** ve **efsanevi ölümleri** `localStorage`'da kalıcı bir koleksiyon olarak biriktirir (çok-oyunluk meta-ilerleme, sunucuya kaydedilmez).
+- **İstemci kalıcılığı:** `client/src/oturum.ts` sadece aktif `state.id`'yi `localStorage` içinde tutar (sayfa yenilenince kaldığı yerden devam) — hiçbir hassas veri saklanmaz. `basarimlar.ts` ayrıca, oyundan bağımsız olarak, kazanılan **ünvanları** ve **efsanevi ölümleri** `localStorage`'da kalıcı bir koleksiyon olarak biriktirir (çok-oyunluk meta-ilerleme, sunucuya kaydedilmez). `gecmisHayatlar.ts` benzer şekilde, ölen her karakterin bir özetini (isim/meslek/çağ/bölge/yaş/skor + `hayat_hikayesi` + `gecmis` grafiği) `localStorage`'da son 20 kayıtla sınırlı biriktirir — giriş ekranındaki "Geçmiş Hayatların" listesi/detayı bunu okur.
 - **Rate limit:** `/api/game/*` → 60 istek/60sn; `/api/scores/*` → 10 istek/60sn (IP başına, `express-rate-limit`, `trust proxy` açık).
 - **Katman akışı:** `routes/*.routes.ts` (HTTP + doğrulama) → `game/gameEngine.ts` (orkestrasyon: oturum yönetimi + zorlanan-olay kaskadı + tur çözümleme sırası) → `game/stateManager.ts` (saf mekanik fonksiyonlar/formüller) → `game/olaySecici.ts` (olay seçimi/ağırlıklandırma) → `data/olaylar/*.ts` (870 olayın statik verisi) → `db/*Repository.ts` (Prisma persistence).
 
@@ -50,16 +50,16 @@ Taban: `/api/game` (oyun) ve `/api/scores` (liderlik tablosu).
 | GET `/yerlesimler` | – | 3 yerleşim tanımı |
 | GET `/konutlar` | – | 6 konut kademesi + taşınma maliyeti |
 | GET `/yasam-secenekleri` | – | 6 yaşam tarzı kademesi |
-| POST `/new` | `{cag,bolge,yerlesim}` | Yeni karakter oluşturur (`createCharacter`) |
+| POST `/new` | `{cag,bolge,yerlesim,isim?}` | Yeni karakter oluşturur (`createCharacter`); `isim` opsiyonel — verilirse küfür filtresinden geçip 40 karaktere kırpılarak `state.isim`'e yazılır, verilmezse `null` |
 | POST `/:id/meslek` | `{meslek}` | 15 yaşında meslek atar (tek seferlik) |
-| POST `/:id/soy-surdur` | – | Ölü karakterin en büyük yaşayan çocuğuyla yeni oyun başlatır |
+| GET `/isim-onerisi?cag=&bolge=` | – | İsim seçim ekranı için: bölge/çağa uygun kültürel tek bir isim önerir (`{isim}`) |
 | GET `/:id/state` | – | Tam `CharacterState`'i döner |
 | POST `/:id/scenario` | – | Bir sonraki olayı üretir (zorlanan-olay kaskadını çalıştırır, bkz. §11) |
 | POST `/:id/choice` | `{secenekIndex}` | Seçimi uygular; `SecimSonucu` **ya da** `TepkiSonucu` (ara-tepki) döner |
-| GET `/:id/finans` | – | Salt-okunur gelir/gider dökümü (turu tüketmez) |
+| GET `/:id/finans` | – | Salt-okunur gelir/gider dökümü (turu tüketmez) — `maasYillik`, `giderKalemleri`, `netYillik` (= maaş − gider), `enflasyonYuzdesi`, `gayrimenkulDegeri`, `maasKirilim` (maaşın rütbe/kariyer/dönemsel kırılımı, §13), `gayrimenkulYillikGelir` (mülklerden yıllık tahmini net gelir; maaşın DIŞINDA ayrı akış — istemci "eline kalan"a ekler) ve `dunyaEtkileri` (`{ikon,metin}[]` — şu an bütçeyi/sağlığı etkileyen dünya durumlarının insan-okunur listesi: ekonomi ±%, savaş/büyük savaş, salgın aktif/iz, kıtlık/isyan/altın çağ, gıda şoku, enflasyon, zorunlu bağış eşiği (servet > 500 → kral bağış isteyebilir, §27); `dunyaFinansEtkileri(state)`, formülü açıklar HESAPLAMAZ) |
 | GET `/:id/yatirim-config` | – | "Kendi işi" yatırımının güncel maliyeti |
 | POST `/:id/yatirim` | – | "Kendi işi" yatırımı yapar (turu tüketmez) |
-| GET `/:id/mulk-config` | – | 5 piyasa mülkünün güncel fiyat/getiri önizlemesi |
+| GET `/:id/mulk-config` | – | 5 piyasa mülkünün güncel fiyat/getiri önizlemesi (+ `yillikBakimTahmini`: 7-10 yılda bir çıkan bakım/vergi masrafının yıllığa amorti edilmiş hâli, §13) |
 | POST `/:id/mulk` | `{tur}` | Mülk satın alır |
 | GET `/:id/dedikodu` | – | Piyasa dedikodusu satırları |
 | GET `/:id/zar-kademeleri` | – | Enflasyona göre ölçeklenmiş bahis kademeleri |
@@ -74,6 +74,8 @@ Taban: `/api/game` (oyun) ve `/api/scores` (liderlik tablosu).
 | POST `/:id/envanter/:esyaId/kullan` | – | Envanterdeki bir "sifa" eşyasını tüketir (saglik/mutluluk uygular, envanterden düşer; turu tüketmez, §26) |
 | POST `/api/scores` | `{stateId,isim}` | Ölmüş karakter için liderlik tablosuna skor kaydeder (küfür filtresinden geçer) |
 | GET `/api/scores?tur=genel\|en_zengin\|en_unlu` | – | Top 20 skor tablosu |
+| POST `/api/geri-bildirim` | `{kategori,mesaj,iletisim?,baglam?}` | Ayarlar → "Görüş & Öneri" formu (§29). Rate limit 5/60sn. `mesaj` <3 karakterse 400; gizli `sirket` bal küpü doluysa sessizce 200 (kaydetmez). JSONL'ye yazar + `GERI_BILDIRIM_WEBHOOK_URL`'e ateşle-unut POST atar |
+| GET `/api/geri-bildirim?key=…` | – | Kayıtları döner; `key` `GERI_BILDIRIM_ANAHTARI` env'iyle eşleşmezse 403 |
 
 Tüm endpoint'ler `{hata: string}` + uygun HTTP status ile hata döner. `POST /:id/yatirim`, `/mulk`, `/konut`, `/yasam`, `/ekip/.../cikar`, `/zar`, `/sosyallesme`, `/magaza/satin-al`, `/envanter/:esyaId/kullan` **bir tur harcamaz** — oyuncu istediği an tetikleyebilir; sadece `POST /:id/choice` zamanı ilerletir (sosyalleşmede: mekâna "gitmek" turu tüketmez, ama o mekânda kuyruğa alınan olayı bir sonraki `/scenario`+`/choice` ile çözmek normal turu tüketir).
 
@@ -85,7 +87,7 @@ Kaynak: [server/src/types.ts](server/src/types.ts). Tek kaynak — client `types
 | Alan | Tip | Açıklama |
 |---|---|---|
 | `id` | string (UUID) | Oturum kimliği |
-| `isim` | string\|null | Sadece "soyu sürdür" ile atanır; oyuncuya normalde sorulmaz |
+| `isim` | string\|null | Oyun başında `isim_sec` ekranında oyuncudan alınır (boşsa bölgeye uygun rastgele atanır); oyun HUD'unda sol üstte gösterilir, ölüm ekranındaki skor kaydına ön-doldurulur |
 | `cag` | `"Orta Çağ"\|"Sanayi Devrimi"` | Doğuşta seçilir, değişmez |
 | `bolge` | string | Ülke (§16'daki bölge tablosuna bakın) |
 | `yerlesim` | string | Yerleşim **adı** (id değil) |
@@ -99,11 +101,13 @@ Kaynak: [server/src/types.ts](server/src/types.ts). Tek kaynak — client `types
 |---|---|---|
 | `meslek` | string | `"Asker"\|"Tüccar"\|"Din Adamı"`, 15 yaşında seçilir |
 | `rutbe` | string | Güncel unvan (§14) |
-| `rutbe_seviye` | 1\|2\|3 | Eşiklere göre **her turda yeniden hesaplanır** — düşebilir! (§14) |
-| `sehir_yonetim_seviyesi` | number (üst sınırsız) | Seviye 3'e ulaşınca açılan ikinci ilerleme ekseni (§15) |
+| `rutbe_seviye` | 1-5 | **RATCHET — asla düşmez** (2026-08 reformu, §14). `kariyer_puani` + mesleğe özgü stat eşiğiyle + cooldown'la artar |
+| `kariyer_puani` | number (monoton, ≥0) | Rütbeyi belirleyen tek sayaç: yıllık kıdem +2 · meslek-kategori başarısı +3 · kendi işine yatırım +12 (§14) |
+| `son_terfi_yili` | number | Son terfinin oyun yılı; sonraki terfinin cooldown referansı. Yaratılışta `baslangic_yili` |
+| `sehir_yonetim_seviyesi` | number (üst sınırsız) | Seviye **4**'e ulaşınca açılan ikinci ilerleme ekseni (§15) |
 | `sehir_yonetim_unvan` | string\|null | Seviyeden türetilir |
-| `amir_adi` / `amir_rutbe` | string\|null | Bir üst kademe; en tepedeyken `null` |
-| `astlar` | `Ast[]` | Rütbe 2'de 1, rütbe 3'te 2 ast; kalıcı (rütbe düşse de silinmez) |
+| `amir_adi` / `amir_rutbe` | string\|null | Bir üst kademe; seviye 5'te `null` |
+| `astlar` | `Ast[]` | Seviye N'de N-1 ast (S5'te 4); kalıcı, asla küçülmez |
 
 ### Kaynaklar (0-100 aralığında clamp'lenir, para hariç)
 | Alan | Tip | Açıklama |
@@ -112,7 +116,7 @@ Kaynak: [server/src/types.ts](server/src/types.ts). Tek kaynak — client `types
 | `mutluluk` | 0-100 | — |
 | `para` | number (**sınırsız**, borca girebilir) | — |
 | `para_birimi` | string | Çağ+bölgeye göre (§16) |
-| `un` | 0-100 | "Ün"; sayısal değer değişmez ama arayüzde artık yıldız değil, `bolgeTema.unUnvani` ile 8 kademeli bir ünvana çevrilerek gösterilir (Kimliği Belirsiz → ... → Yaşayan Efsane; son 2 kademe tavana çok yakın dar bir bantta, kasıtlı olarak neredeyse ulaşılamaz) |
+| `un` | 0-100 | Kod alanı `un` ama **arayüzde 2026-09'dan beri "Şöhret"** olarak etiketlenir (HUD rozeti, `EtkiCipleri` çipi, konut/yaşam/mağaza kartları, ölüm/geçmiş-hayat özeti). Olay `ipucu`/`mesaj` serbest metinleri hâlâ "ün" diyebilir (kör değiştirme metni bozacağı için elle taranmadı). Sayısal değer `bolgeTema.unUnvani` ile 8 kademeli bir ünvana çevrilerek gösterilir (Kimliği Belirsiz → ... → Yaşayan Efsane). Maaşa etkisi artık ayrı "ün primi" değil, §13 "İtibarın" düzenleyicisinin bir parçası |
 | `ahlak` | 0-100 | — |
 | `dost_puani` / `rakip_puani` | 0-100 (başlangıç 50/50) | — |
 | `es_puani` | 0-100 | Sadece `es_adi` varken clamp'lenir |
@@ -142,7 +146,7 @@ Kaynak: [server/src/types.ts](server/src/types.ts). Tek kaynak — client `types
 | `efsanevi_olum` | string\|null — nadir/komik ölüm başlığı (rozet) |
 
 ### `EkipUyesi` (yardımcı/işe alınan)
-`{id, isim, rol, gercekKalite (0-100, gizli), tahminiMin, tahminiMax (oyuncuya gösterilen bulanık aralık), maas, sadakat (0-100), kisilik (kozmetik etiket)}`. İşe alınırken: `gercekKalite` = 3 zarın ortalaması (`(rnd+rnd+rnd)/3`, uçlar nadir, ortalamaya yakın daha olası); `maas = 2 + round(gercekKalite/14)`; `sadakat = 30 + rnd*60`; işe alım ayrıca `maasCarpaniUygula(state, 1+(gercekKalite-50)/250)` ile küçük kalıcı bir maaş çarpanı uygular (iyi eleman kalıcı olarak da fayda sağlar). `kisilik` şu 8 değerden biri: Sadık, Hırslı, Korkak, Kurnaz, Tembel, Cesur, Güvenilmez, Çalışkan.
+`{id, isim, rol, gercekKalite (0-100, gizli), tahminiMin, tahminiMax (oyuncuya gösterilen bulanık aralık), maas, sadakat (0-100), kisilik (kozmetik etiket)}`. İşe alınırken: `gercekKalite` = 3 zarın ortalaması (`(rnd+rnd+rnd)/3`, uçlar nadir, ortalamaya yakın daha olası); `maas = 2 + round(gercekKalite/14)`; `sadakat = 30 + rnd*60`; işe alım ayrıca `maasCarpaniUygula(state, 1+(gercekKalite-50)/500)` ile küçük kalıcı bir maaş çarpanı uygular (2026-09'da `/250`'den zayıflatıldı; ayrıca `ham=false` olduğu için pozitif kısmı bir kez daha yarıya iner — bkz. §13 `maasCarpaniUygula`). `kisilik` şu 8 değerden biri: Sadık, Hırslı, Korkak, Kurnaz, Tembel, Cesur, Güvenilmez, Çalışkan.
 
 ### `SahipOlunanEsya` (mağazadan satın alınan somut eşya kopyası, §26)
 `{id (instance UUID), katalogId, ad, simge, kategori:"sifa"|"luks", alisYili, kalanYil: number|null}`. `kalanYil`'in anlamı kategoriye göre değişir: "sifa" için kalan çürüme süresi (0'a inince eşya silinir, hiçbir etki uygulanmadan); "luks" için bir sonraki periyodik bakım masrafına kalan süre (0'a inince masraf çıkar, eşya SİLİNMEZ, sayaç sıfırlanır). Her turda geçen gerçek yıl sayısı (`yasArtisi`) kadar azalır — tur sayısından bağımsız. "luks" eşyalardan her türden en fazla 1 sahiplenilebilir.
@@ -154,6 +158,7 @@ Kaynak: [server/src/types.ts](server/src/types.ts). Tek kaynak — client `types
 | `yasam_secimi_id` | Varsayılan `ucuza_ye` (§16) |
 | `kendi_isi_yatirim_sayisi` | "Kendi işi" yatırım sayacı (maliyet eskalasyonu için, §13) |
 | `mulkler: MulkTuru[]` | Sahip olunan piyasa mülkleri (her türden en fazla 1) — `"ciftlik"\|"han"\|"demirci"\|"kervan"\|"karaborsa"` |
+| `mulk_bakim_kalan: Partial<Record<MulkTuru,number>>` | Her mülk için bir sonraki periyodik bakım/vergi masrafına kalan yıl (satın alınca 7-10; 0'a inince güncel değerin ~%12'si masraf, sayaç yenilenir — §13). Mülk elden çıkınca anahtar silinir |
 | `magaza_envanteri: SahipOlunanEsya[]` | Mağazadan satın alınan eşyalar (§26) — gizemli eşyalardan (etiket tabanlı) ayrı, dizi tabanlı bir envanter |
 | `maas_yillik` | Son hesaplanan yıllık maaş (önbellek) |
 
@@ -175,8 +180,9 @@ Kaynak: [server/src/types.ts](server/src/types.ts). Tek kaynak — client `types
 | `son_zorunlu_bagis_yili` | number\|null — arka planda tetiklenen "zorunlu bağış" olayının son tetiklendiği yıl (5 yıllık cooldown takibi, §27) |
 | `buyuk_savas` | `{dusman, baslangicYili, bitisYili, vergiOrani, gidaCarpani}`\|null — aktif tekrarlayan büyük savaşın parametreleri (§27); `null` iken savaş yok |
 | `son_buyuk_savas_bitis_yili` | number\|null — en son büyük savaşın bittiği yıl (10 yıllık minimum cooldown takibi, §27) |
-| `veba` | `{aktif, baslangicYili, bitisYili, etkiBitisYili, konutKiraCarpani, gelirCarpani, onlemAlindiMi}`\|null — ömürde bir kez yaşanabilen veba (§27); aktif faz bitince `aktif:false` olarak `etkiBitisYili`'ye kadar iz bırakmaya devam eder, sonra `null` olur |
-| `veba_gecirdi` | boolean — true olunca veba bir daha asla tetiklenmez |
+| `veba` | `{aktif, baslangicYili, bitisYili, etkiBitisYili, konutKiraCarpani, gelirCarpani, korumaSeviyesi}`\|null — veba (§27); aktif faz bitince `aktif:false` olarak `etkiBitisYili`'ye kadar iz bırakır, sonra `null`. `korumaSeviyesi` (yama #2): 0=hiç / 1=kısmi / 2=tam koruma — yıllık ölüm risk kademesini belirler |
+| `veba_gecirdi` | boolean — hayatta en az bir kez veba geçirildi mi (yama #2'den beri SALT istatistik/flavor; tetiklemeyi artık bloklamaz) |
+| `son_veba_bitis_yili` | number\|null (yama #2) — en son veba dalgasının (iz fazı dahil) tamamen bittiği yıl; 20 yıllık cooldown buradan sayılır. Veba artık "ömürde bir kez" değil, dalga bitince 20 yıl sonra tekrarlanabilir |
 | `kucuk_kriz_sonraki_yil` | number — bir sonraki küçük krizin (kıtlık/haydut baskını) tetikleneceği yıl eşiği (§27) |
 | `gida_fiyat_sok_bitis_yili` | number\|null — küçük kriz tetiklendiğinde SADECE bu yıla kadar geçerli ×2 gıda fiyat şoku (§27) |
 
@@ -199,13 +205,13 @@ Her seçeneğin `basariliSonuc`/`basarisizSonuc`'u bu şekle sahiptir (kaynak: [
 
 **Temel stat delta'ları** (hepsi opsiyonel number, ± olabilir): `para, un, ahlak, saglik, mutluluk`. *Not: `para>0` ise mesleğe uygun kategoride `meslekMetrikCarpani` ile çarpılır (§13); `un` sıfır değilse jitter sonrası en az ±10'a (yarım yıldız) yuvarlanır.*
 
-**Meslek/ilerleme:** `yeni_meslek` (kariyer değişimi), `maas_carpani` (kalıcı çarpan, `maasCarpaniUygula` ile birikir), `sehir_yonetim_artis` (§15), `ordu_techizat_artis`/`ticaret_sermaye_artis`/`nufuz_artis` (0-100 clamp, sadece techizat), `suc_artis` (TEK suç/aranma ekseni `suc_seviyesi`'ni değiştirir, ± olabilir — rüşvet/kefaret şıkları negatif verir, 0-100 clamp), `suc_seviyesi_ayarla` (`suc_seviyesi`'ni mevcut değerden bağımsız doğrudan verilen değere sabitler, 0-100 clamp — büyük baskın "temize çık / kademe 1'e in" sonuçları için).
+**Meslek/ilerleme:** `yeni_meslek` (kariyer değişimi), `maas_carpani` (kalıcı çarpan, `maasCarpaniUygula` ile birikir — 2026-09'dan beri pozitif katkı yarıya iner + toplam `[0.60,1.40]`'a kırpılır, §13), `sehir_yonetim_artis` (§15), `kariyer_puani_artis` (rütbe ilerlemesini hızlandırır, §14 — şu an kullanan olay yok), `ordu_techizat_artis`/`ticaret_sermaye_artis`/`nufuz_artis` (0-100 clamp, sadece techizat), `suc_artis` (TEK suç/aranma ekseni `suc_seviyesi`'ni değiştirir, ± olabilir — rüşvet/kefaret şıkları negatif verir, 0-100 clamp), `suc_seviyesi_ayarla` (`suc_seviyesi`'ni mevcut değerden bağımsız doğrudan verilen değere sabitler, 0-100 clamp — büyük baskın "temize çık / kademe 1'e in" sonuçları için).
 
 **Ölüm:** `olum: true` (kesin), `olum_sansi: number` (0-100 taban şans; `efektifOlumSansi` ile sağlığa göre büyütülür, §13), `efsanevi_olum: string` (nadir ölüm rozet başlığı).
 
 **Etiket/durum:** `etiket_ekle: string[]`, `etiket_sil: string[]`, `durum_ekle: Durum`, `durum_sil: string[]` (id'ye göre kaldırır).
 
-**Dünya:** `ulke_etkisi: Partial<UlkeDurumu>` (doğrudan `Object.assign`), `kriz_baslat: {tur, sureYil}` (`bitisYili = state.yil + sureYil`).
+**Dünya:** `ulke_etkisi: Partial<UlkeDurumu>` (doğrudan `Object.assign`), `kriz_baslat: {tur, sureYil}` (`bitisYili = state.yil + sureYil`), `veba_koruma: number` (yama #2 — veba başlatan bir seçenekte, `ulke_etkisi.vebada=true` ile birlikte; `vebaBaslat`'a aktarılan korunma kademesi 0/1/2, §27).
 
 **İlişkiler:** `dost_puani`, `rakip_puani` (delta), `es_ata: true` (rastgele biriyle evlenir, `es_puani=60`, rastgele meslek/rütbe atanır), `es_puani` (delta, sadece evliyken), `es_kaybet: true` (boşanma/ölüm — `medeni:evli` etiketi silinir), `cocuk_ekle: number`, `cocuk_kaybet: true` (rastgele bir yaşayan çocuk).
 
@@ -227,7 +233,7 @@ id, kategori: Kategori ("savas"|"ticaret"|"din"|"siyaset"|"saglik"|"sosyal"),
 baslik, metin, secenekler: OlaySecenegi[],
 gorsel?  (yoksa kategoriye göre emoji, bkz. olaySecici.ts KATEGORI_GORSEL)
 ```
-**Uygunluk filtreleri** (hepsi opsiyonel; hepsi AND'lenir, bkz. §12 `uygunMu`): `cag, bolgeler[], meslekler[], minYas/maxYas, minAhlak/maxAhlak, minUn/maxUn, minMutluluk/maxMutluluk, minRakipPuani/maxRakipPuani, minEsPuani/maxEsPuani, gerekliEtiketler[], yasakliEtiketler[], gerekliUlke (Partial<UlkeDurumu>), gerekliKisilik, gerekliDin, minRutbeSeviye, minSucSeviyesi/maxSucSeviyesi (aranma kademe bantları, §17), kacakOlayi (bool, §17), gerekliEkip (bool), gerekliEkipRolu, gerekliHizip (bool), hapisOlayi (bool), yolculukOlayi (bool)`.
+**Uygunluk filtreleri** (hepsi opsiyonel; hepsi AND'lenir, bkz. §12 `uygunMu`): `cag, bolgeler[], meslekler[], minYas/maxYas, minAhlak/maxAhlak, minUn/maxUn, minMutluluk/maxMutluluk, minSaglik/maxSaglik (yama #1, düşük-can toparlanma olayları için), minRakipPuani/maxRakipPuani, minEsPuani/maxEsPuani, gerekliEtiketler[], yasakliEtiketler[], gerekliUlke (Partial<UlkeDurumu>), gerekliKisilik, gerekliDin, minRutbeSeviye, minSucSeviyesi/maxSucSeviyesi (aranma kademe bantları, §17), kacakOlayi (bool, §17), gerekliEkip (bool), gerekliEkipRolu, gerekliHizip (bool), hapisOlayi (bool), yolculukOlayi (bool)`.
 **Seçim ağırlığı:** `agirlik?` (varsayılan 1), `ton?: "agir"|"hafif"` (art arda ağır olayı azaltır), `gizemli?` (salt iç kategorizasyon, filtrelemeyi etkilemez).
 
 ### `OlaySecenegi` (bir seçenek)
@@ -251,7 +257,7 @@ Olay/seçenek metninde ve sonuç `mesaj`/`detay`'ında kullanılabilir: `{bolge}
 
 ## 7. Olay Bankası Dosya Haritası
 
-`data/olaylar/index.ts` tüm alt listeleri `OLAY_BANKASI: OlayTanimi[]` içinde birleştirir. **Toplam ~975 olay** (`baslik:` alanı sayımıyla; kod içindeki bir yorumda hâlâ "367 olay" yazıyor — **eski/yanlış**, gerçek sayı çok daha büyük). Belirli bir olayı bulmak için `grep -n "id: \"<olay_id>\"" server/src/data/olaylar/*.ts` kullan — dosyayı baştan sona okuma.
+`data/olaylar/index.ts` tüm alt listeleri `OLAY_BANKASI: OlayTanimi[]` içinde birleştirir. **Toplam ~990 olay** (`baslik:` alanı sayımıyla). Belirli bir olayı bulmak için `grep -n "id: \"<olay_id>\"" server/src/data/olaylar/*.ts` kullan — dosyayı baştan sona okuma.
 
 | Dosya | ~Olay Sayısı | Satır | İçerik |
 |---|---|---|---|
@@ -274,7 +280,8 @@ Olay/seçenek metninde ve sonuç `mesaj`/`detay`'ında kullanılabilir: `{bolge}
 | `sanayiAsker.ts` | 13 | 694 | Sanayi Devrimi Asker'e özel |
 | `sanayiDinAdami.ts` | 9 | 462 | Sanayi Devrimi Din Adamı'na özel |
 | `sanayiTuccar.ts` | 8 | 457 | Sanayi Devrimi Tüccar'a özel |
-| `kureselOlaylar.ts` | 1 | ~50 | "Dünya olayları" — sadece veba başlangıcı (§27); savaş/bağış/kriz tamamen arka planda, olay ekranı gerektirmez |
+| `saglikToparlanma.ts` | 8 | ~330 | **Düşük-can toparlanma olayları (yama #1)** — HEPSİ `maxSaglik:45` ile kilitli; yatak istirahati/hekim/kaplıca/aile bakımı/inziva/nekahet/gezgin doktor(Sanayi)/otacı(Orta Çağ). Bedelli ama "güvenli" seçenekleri yüksek şansla belirgin sağlık verir |
+| `kureselOlaylar.ts` | 5 | ~260 | "Dünya olayları". `kuresel_veba_baslangici` (yama #2'de 3 seçenek = 3 korunma kademesi `veba_koruma` 0/1/2, para+mutluluk maliyetli, başarısızlık kademe düşürür) + 4 "salgın dönemi" bulaşma olayı (`gerekliUlke:{vebada:true}`: kapını çalan / cenaze / çarşıda temas / hasta bakıcılığı) — §27. Savaş/bağış/kriz hâlâ arka planda, olay ekranı yok |
 
 `types.ts` (107 satır, şemalar) ve `index.ts` (39 satır, birleştirme) bu sayıma dahil değil.
 
@@ -299,7 +306,6 @@ Olay/seçenek metninde ve sonuç `mesaj`/`detay`'ında kullanılabilir: `{bolge}
 | `tibbi:` | Tıbbi durum flag'i | `tibbi:veba_bagisik` |
 | `cocuk_saglik_zamani:` | Çocuk sağlığı anlatı dalı | `iyi`, `kotu` |
 | `maas_carpani:<sayi>` | Kalıcı maaş çarpanının kendisi (tek etiket, üzerine yazılır) | `maas_carpani:1.150` |
-| `miras:` | Soy sürdürme kaynaklı | `miras:soy_surdu` |
 | `rakip:` | Rakip'le ilgili özel durum | `rakip:ekibe_katildi` |
 
 **Sistem kontrollü özel etiketler** (motor tarafından okunur/yazılır, olay yazarken bunlara dikkat et):
@@ -307,8 +313,6 @@ Olay/seçenek metninde ve sonuç `mesaj`/`detay`'ında kullanılabilir: `{bolge}
 - `yolculukta` — aynı mantık, `yolculukOlayi:true` ile (§17). Bitişte `yolculuk_tamamlandi` de eklenir (kalıcı, bir daha yolculuk teklifi zorlanmaz).
 - `kacak` — aynı kapatma mantığı, `kacakOlayi:true` ile (§17); `suc_seviyesi` ≥60 (kademe 3-4) iken bir baskın olayının başarılı sonucundan girilir (`etiket_ekle:["kacak"]`), kaçak-havuzundaki başarılı çıkış olaylarından (`etiket_sil:["kacak"]`) çıkılır.
 - `sarayda`, `sehir_yonetimi_basladi`, `hizip_secildi`, `evcil_hayvan_var`, `evcil_hayvan_tur:<tur>`, `cocuk_var`, `aile_mirasi_surduruldu`, `gozlemci_var` (belirsizlik aralığını daraltır, §12), `istihbarat_var` (tek seferlik: bir sonraki senaryoda net şans gösterir, senaryoUret'te tüketilir), `tarihi_savas_gordu:<rakip>`, `yolculuk_teklifi_edildi`, `yolculuk_teklifi_zamani`, `bilgi:yasak_ilim`, `fiziksel:*` (bazı seçenekleri kalıcı kilitler).
-- `devlet_takibinde` — zenginlik vergisi eşiğini (nakit+gayrimenkul ≥ 500) şu an aşıp aşmadığının rising-edge takibi (§13). `pasifEkonomiUygula` her tur takar/söker; eşiğe yeni çıkıldığında (etiket henüz yoksa) bir kereliğine "devletin dikkatini çekti" anlatı cümlesi tetiklenir.
-
 ## 9. Tur Çözümleme Sırası (kritik — sıra önemlidir)
 
 `POST /:id/choice` → `secimUygula()` → `sonucuUygulaVeIlerlet()` ([gameEngine.ts](server/src/game/gameEngine.ts)). Tam sıra:
@@ -316,6 +320,7 @@ Olay/seçenek metninde ve sonuç `mesaj`/`detay`'ında kullanılabilir: `{bolge}
 1. **Zar/tepki:** `onTepki` tanımlıysa zar atılmaz — `TepkiSonucu` (ara-ekran) döner, zaman ilerlemez. Aksi halde `rollSuccess(basari_sansi)` ile başarı belirlenir.
 2. **Jitter:** Seçilen `SonucEtkisi` `jitterUygula()`'dan geçer: `para/ahlak/saglik/mutluluk` × rastgele 0.85-1.15; `un` aynı şekilde ama sıfır değilse `sign*max(|un|,10)` (yarım yıldız garantisi).
 3. **Meslek çarpanı:** `para>0` ise ve olay kategorisi oyuncunun mesleğiyle eşleşiyorsa (`MESLEK_KATEGORI`), `meslekMetrikCarpani` ile çarpılır (§13). **Sadece kazançlara uygulanır, kayıplara değil.**
+3.1. **Yolculuk kazanç zammı:** `para>0` ve `mevcutOlay.yolculukOlayi` ise ayrıca `YOLCULUK_KAZANC_CARPANI` (**×1.2**) ile çarpılır — eski kalıcı "yolculuğu bitirdin" maaş priminin (kaldırıldı) yerini alır, yalnız yolculuk sürerken kazanılan paraya biner (§17).
 3.5. **Suç kazancı motor kuralı** (`sucKazanciUygula`, meslek çarpanının hemen üstüne biner): Uygulanan `etki` hem `para>0` hem `ahlak<=-5` ise ("kazanç için ahlaki taviz" imzası) → `para` ×**1.6** ("daha hızlı zengin"), ve TEK suç/aranma ekseni `suc_artis` += `round(min(tavan, 6 + |ahlak|*0.5 + para*0.15))` — normal suçta tavan **20**, ağır suçta (`ahlak<=-15` **ya da** `para>=40`) tavan **32** (bir aranma kademesini tek suçta atlayabilir). Görünür yıldız göstergesi + hapis eşiği + aranma kademe bantları hep bu tek eksenden beslenir. Olay bankasındaki ~180 böyle seçeneği elle etiketlemek yerine motorda uygulanır; `sonucAnlatimi`'ye kısa bir "iz bıraktın" cümlesi eklenir. Sabitler `gameEngine.ts` başındaki `SUC_KAZANC_*`.
 4. Kategori `"savas"` ise (mesleğe bakılmaksızın çağrılır, ama sadece Asker'i etkiler): `orduKaybiUygula` — ordu mevcudunda yüzdesel kayıp.
 5. Temel stat delta'ları state'e eklenir: `para, un, ahlak, saglik, mutluluk, dost_puani, rakip_puani`.
@@ -326,7 +331,7 @@ Olay/seçenek metninde ve sonuç `mesaj`/`detay`'ında kullanılabilir: `{bolge}
 10. `etiket_ekle` / `etiket_sil` / `ulke_etkisi` (Object.assign) / `durum_ekle` / `durum_sil` uygulanır.
 11. `clampStats()` (ilk tur).
 12. `zorunlu_sonraki` varsa `oturum.zorlananOlayId`'ye yazılır (bir sonraki `scenario` çağrısında zorla gelir).
-13. `sonucAnlatimiUret()` ile kısa (en fazla 2 cümle: `detay` + öncelik sırasına göre seçilen TEK bağlam cümlesi — yeni_meslek > durum_ekle > ağır sağlık > para > hafif sağlık > un > ahlak) bir sonuç metni üretilir; sayısal etkiler zaten client'ta `EtkiCipleri` ile ayrıca gösterildiği için burada hepsi tekrar edilmez.
+13. `sonucAnlatimiUret()` ile kısa (en fazla 2 cümle: `detay` + öncelik sırasına göre seçilen TEK bağlam cümlesi — yeni_meslek > durum_ekle > ağır sağlık > para > hafif sağlık > un > ahlak) bir sonuç metni üretilir; sayısal etkiler zaten client'ta gösterildiği için burada hepsi tekrar edilmez. **Client sonuç ekranı (`EtkiCipleri`) YALNIZCA seçilen seçeneğin kendi `uygulananEtki`'sini küçük "çip" rozetleri olarak gösterir** (ikon + isim + değer: `💰 Para ±N`, `❤️ Sağlık ±N`, `🙂 Mutluluk ±N`, `⚖️ Ahlak ±N`, `🏅 Ün ±N` + `es_ata`/`cocuk_ekle` gibi bayraklar). *(Kısa bir süre "turun tamamının net değişimi" `öncekiStatlar → sonrakiStatlar` tablosu olarak denendi ama geri alındı — o iş üst şeride bırakıldı.)* Maaş/gider/yaşlanma/ev-yemek/kriz gibi tur-sonu pasif etkiler burada DEĞİL: **üst şeritteki (`UstSerit`) Yıl/Yaş/Can/Para/Mutluluk/Ahlak modülleri** değer değiştikçe yanıp söner + uçan bir `+N`/`−N` rozeti gösterir (`useGecisDeltasi` hook'u) — bu efektin süresi bilinçli olarak uzun tutuldu (delta rozeti `3s`, değer parlaması `2.5s`).
 14. **Ölüm kontrolü #1:** `etki.olum===true` VEYA (`olum_sansi` varsa) `efektifOlumSansi(olum_sansi, saglik)` şansıyla zar → `checkDeath`.
 15. **Karakter hâlâ hayattaysa**, yıl ilerletme bloğu çalışır:
     - a. `turSuresi` = %40 ihtimalle 1, %60 ihtimalle 2 yıl — **yolculuk olayında her zaman tam 1 yıl**.
@@ -337,7 +342,7 @@ Olay/seçenek metninde ve sonuç `mesaj`/`detay`'ında kullanılabilir: `{bolge}
     - f. **Hâlâ hayattaysa** `yaslanmaUygula()` → yaşa bağlı sağlık düşüşü (§13) → ölümcülse `checkDeath`.
     - g. **Hâlâ hayattaysa** `capraletkiUygula()` → sağlık↔mutluluk çapraz erozyonu (§13) → ölümcülse `checkDeath`.
     - h. **Hâlâ hayattaysa:** `zamanAnlatimiUret` (zaman geçişi metni) → `orduBuyumesiDene` (barışta ordu büyümesi) → `krizEtkisiUygula` (aktif kriz/altın çağ etkisi, bitmişse temizlenir) → ölümcülse `checkDeath` → `mulkGelirleriUygula` (mülk geliri/kervan batma riski) → `sucSeviyesiUygula` (pasif suç azalması) → `envanterBozulmasiUygula` (mağaza envanterinde `kalanTur` 1 azalır, 0'a inenler çürüyüp silinir — çürüyen olduysa doğrudan `zamanAnlatimi`'ye eklenen ayrı bir cümle, §26) → `sansOlayiDene` (%18 şans küçük olay) → **en fazla bir** ek bağlam cümlesi (öncelik: kriz-bitiş > şans-olayı > sağlık→mutluluk çapraz > mutluluk→sağlık çapraz > yaşlanma (%30 şans)) → **hâlâ hayattaysa** `aniOlumDene` (%0.8 şans, tamamen rastgele "saçma" ölüm) → `checkDeath`.
-16. **Hâlâ hayattaysa:** `gecmisKaydet` (grafik noktası) → `rutbeGuncelle` (terfi/rütbe-düşüşü, §14; sadece **artış** `terfiOldu=true` ve kutlama mesajı üretir) → `hayatAmaciKontrolEt` → `haberleriUret` (hükümdar-değişim haberi varsa başa eklenir).
+16. **Hâlâ hayattaysa:** `gecmisKaydet` (grafik noktası) → `rutbeGuncelle` (yalnız terfi — ratchet, çağrı başına +1 kademe, cooldown'lu; `terfiOldu=true` + kutlama yalnız artışta, §14) → `hayatAmaciKontrolEt` → `haberleriUret` (hükümdar-değişim haberi varsa başa eklenir). *(kariyer_puani'nin pasif yıllık +2'si ise adım 15/b civarında, `ilerletYas`'tan hemen sonra; meslek-kategori başarısı +3 ve `kariyer_puani_artis` adım 6 civarında uygulanır.)*
 17. `clampStats()` (son güvenlik clamp'i).
 18. `state.gecmis_olaylar.push(olay.id)` — bir sonraki seçim önceliği için.
 19. DB'ye kaydedilir, `{state, basarili, uygulananEtki, yasArtisi, sonucAnlatimi, zamanAnlatimi, terfiOldu}` döner.
@@ -355,7 +360,7 @@ Bir seçeneğin `onTepki` alanı varsa: seçilince **zar atılmaz**, zaman ilerl
 1. **Tarihi savaş ilanı** — savaşta değil, yaş≤55, `tarihiSavasKontrol(bolge,yil,cag)` bir rakip döndürüyor ve `tarihi_savas_gordu:<rakip>` etiketi yoksa → `dunya_savas_ilani_asker` (Asker) / `dunya_savas_ilani` (diğer); etiket eklenir.
 2. **Kariyer yolu girişi** (sadece Orta Çağ) — Asker/Din Adamı, yaş≥18, henüz `yol:asker:*`/`yol:din:*` etiketi yok, giriş olayı daha önce görülmemiş → `oc_asker_yol_ilk_emir` / `oc_din_yol_ilk_sinav`.
 3. **Evlilik teklifi garantisi** — yaş≥29, evli değil, ne `iliski_evlilik_teklifi` ne `iliski_ikinci_teklif` hiç görülmemiş → `iliski_evlilik_teklifi`.
-4. **Şehir yönetimi girişi** — `rutbe_seviye>=3`, `sehir_yonetimi_basladi` etiketi yok → mesleğe göre `sehir_yonetim_{tuccar|dinadami|asker}_baslangic`.
+4. **Şehir yönetimi girişi** — `rutbe_seviye>=4` (2026-08 rütbe reformuyla eski `>=3`'ten yükseltildi, §14), `sehir_yonetimi_basladi` etiketi yok → mesleğe göre `sehir_yonetim_{tuccar|dinadami|asker}_baslangic`.
 5. **Evcil hayvan teklifi** — 20≤yaş<25, evcil hayvanı yok, teklif olayı görülmemiş → çağa göre `evcilhayvan_sahiplenme_teklifi_{sanayi|ortacag}`.
 6. **Evcil hayvan takip garantisi** — evcil hayvanı var, 45≤yaş<50, `EVCIL_HAYVAN_TAKIP_OLAY_IDLERI`'den <2 görülmüş → `EVCIL_HAYVAN_GENEL_TAKIP_OLAY_IDLERI` havuzundan (öncelik görülmemişlerde) rastgele.
 7. **Gizemli eşya takip garantisi** — 38≤yaş<46, sahip olunan her `esya:`/`envanter:` etiketi için `GIZEMLI_ESYA_TAKIP_HAVUZU[esyaId]`'den hiç görülmemişse → o havuzdan rastgele (ilk eşleşen eşya kazanır).
@@ -385,9 +390,13 @@ Kaynak: [stateManager.ts](server/src/game/stateManager.ts), [gameEngine.ts](serv
 
 **Yaşlanma (`yaslanmaUygula`, turdaki HER yıl ayrı hesaplanır):** yaş≥80 → -16 sağlık/yıl; yaş≥65 → -7/yıl; yaş≥48 → -3/yıl; altı → 0.
 
+**Pasif regen yumuşak tavanı (`pasifRegenEtkisi`, `PASIF_REGEN_TAVANI=80`, `PASIF_REGEN_TAVAN_USTU_ORAN=0.25`, `PASIF_REGEN_LIMITSIZ_ESIK=45`):** Konut + yaşam tarzının yıllık POZİTİF sağlık/mutluluk etkisi: ilgili stat **45'in altındayken hiç kısıtlanmaz** (dipteki karakter tam hızda toparlansın), 45–80 arası tam işler, 80'in üstüne taşan kısım ×0.25'e kısılır. Negatif pasif etkiler tam işler. (Yama #2: tavan 70→80, dip-limitsiz eşik eklendi.)
+
+**İleri yaş "ecel" riski (`ecelDenemesi`, turdaki HER yıl ayrı):** yaş≥`ECEL_BASLANGIC_YASI=70`'ten itibaren, can/servet ne olursa olsun her yıl `(yas - 67) * 0.58`% doğal ölüm ihtimali (70'te ~%1.7, 76'da ~%5, 88'de ~%12, 95'te ~%16). `sonucuUygulaVeIlerlet`'te `capraletkiUygula`'dan hemen sonra kontrol edilir. Zengin bir karakterin ~100 yaş tavanına dayanmadan, dolu ama sonlu bir ömür yaşayıp ölmesini sağlar.
+
 **Çapraz erozyon (`capraletkiUygula`):** sağlık<30 → mutluluk `-round(yasArtisi*1.5)`; mutluluk<25 → sağlık `-round(yasArtisi*1)`. (Eşikler: `KRONIK_SAGLIK_ESIGI=30`, `KRONIK_MUTLULUK_ESIGI=25`.)
 
-**Ölüm şansı ölçekleme:** `efektifOlumSansi(taban,saglik) = min(95, taban * (1 + max(0,60-saglik)/40))` — sağlık 60 altına inince devreye girer, 0 sağlıkta tabanın 2.5 katı.
+**Ölüm şansı ölçekleme:** `efektifOlumSansi(taban,saglik) = min(95, taban * (1 + max(0,45-saglik)/40))` — sağlık **45** altına inince devreye girer (yama #1'de 60'tı; orta oyunun yarısı 60 altındaydı), 0 sağlıkta tabanın ~2.1 katı.
 
 **Rastgele ölüm olayları:** `ANI_OLUM_IHTIMALI=0.008` (tur başına %0.8, tamamen sağlıktan bağımsız "saçma" ölüm — saksı düşmesi, yıldırım vb., çağa özel havuzlar var). `SANS_OLAYI_IHTIMALI=0.18` (tur başına %18, küçük flavor kazanç/kayıp — bulunan para kesesi, dedikodu vb.).
 
@@ -395,20 +404,23 @@ Kaynak: [stateManager.ts](server/src/game/stateManager.ts), [gameEngine.ts](serv
 
 **Maaş formülü** (`hesaplaMaasYillik`):
 ```
-temel[meslek] (Asker9.9 / Tüccar11 / DinAdamı8.8 — 2026-08 itibarıyla eski 9/10/8 tabanına genel %10 zam uygulandı)
-× (1 + (un/20)*0.25)
-× (1 + min(tur_sayisi,20)*0.02)
-× maasCarpani (kalıcı, birikimli etiket)
+temel[meslek] (Asker10.395 / Tüccar11.55 / DinAdamı9.24 — özgün 9/10/8 tabanına 2026-08'de +%10, 2026-09'da (yama #2) ayrıca +%5 → toplam ×1.155)
+× (1 + itibarToplam/100)   // "İTİBARIN" (2026-09, yama #2'de yumuşatıldı + stata göre ayrıştı): itibarDegerYuzdesi(mutluluk)+itibarUnYuzdesi(un)+itibarDegerYuzdesi(ahlak). Mutluluk/Ahlak bant: ≤25→−4 · ≤40→−2 · ≤60→0 · ≤78→+2 · >78→+4 (nötr bant 40-60). Şöhret bant: ≤8→−4 · ≤16→−2 · ≤50→0 · ≤75→+2 · >75→+4 (nötr bant DÜŞÜKTEN başlar — mütevazı karakter az tanınıyor diye cezalanmasın). TOPLANIR, tavan/taban YOK → üçü dipteyse −%12, üçü zirvedeyse +%12.
+× (1 + min(tur_sayisi,40)*0.0025)   // KIDEM: 2026-09'da +%2/tur (max +%40 @tur20) → +%0.25/tur (max +%10 @tur40 ≈ tam bir ömür). Çok yavaş, gerçekçi büyüme.
+× maasCarpani (kalıcı, birikimli etiket — 2026-09'dan beri TAVANLI: toplam ∈ [0.60, 1.40], bkz. maasCarpaniUygula aşağıda)
 × durumlar[].gelir_carpani (çarpımsal)
 × (ekonomi=kotu?0.8:iyi?1.15:1) × (savasta?0.85:1)
-× enflasyonCarpani(tur_sayisi)
-× (1 + sehir_yonetim_seviyesi*0.08)
+× enflasyonCarpani(state)   // arka planda işler ama 2026-09'dan beri oyuncuya HİÇBİR yerde yüzde olarak gösterilmez (Finans ekranı/özet paneli/dünya etkileri listesinden çıkarıldı)
+× (sehir_yonetim_seviyesi>=1 ? 1.08 : 1)   // ŞEHİR YÖNETİMİ: 2026-09'da seviye×%8 (tavansız) → şehir yönetimine girildiyse SABİT +%8, seviyeyle ölçeklenmez (seviye/unvan yalnız prestij)
+× rutbeMaasCarpani(rutbe_seviye)   // [1.0, 1.2, 1.44, 1.73, 2.07] S1..S5 — yama #2'de açık BİLEŞİK formüle döndü: 1.2^(seviye-1), her kademe bir öncekinin %20 üstü (§14)
 → round, taban 1
 ```
+**`maasCarpaniUygula(state, carpan, ham=false)`** (2026-09): kalıcı `maas_carpani` etiketine katkı ekler. `ham=false` (varsayılan) → pozitif katkı **yarıya indirilir** (`1+(carpan-1)*0.5`; dağınık ~80 olay + ekip bonusunu tek noktadan kısmak için), negatif katkı aynen geçer. `ham=true` → katkı olduğu gibi (doğuş kimlik ödülleri: yerleşim farkı, aile mirası, kendi işine yatırımın +%5'i). Her durumda toplam çarpan **`[MAAS_CARPANI_TABAN=0.60, MAAS_CARPANI_TAVAN=1.40]`** bandına kırpılır. Ekip alımı çarpanı `1+(gercekKalite-50)/500` (eski `/250`), aile mirası `1.08` ham (eski `1.15`), ayyaşlık `0.95`.
+Formül tek yerde: `hesaplaMaasYillik` ile `maasKirilimHesapla` (aynı dosya) ortak bir `maasCarpanKalemleri(state)` listesini kullanır — biri çarpıp yuvarlar, diğeri kalemleri **4 gruba** ayırıp Finans ekranına döner: **"rutbe"** (rütbe primi, ratchet), **"kariyer"** (kıdem + şehir yönetimi + `maasCarpani` kalıcı ödülleri — kalıcı birikim), **"itibar"** (mutluluk+şöhret+ahlak birleşik düzenleyicisi `itibarMaasKirilimi` — değişken; `MaasKirilim.itibarYuzde` + `itibarKalemler` üçünü de 0 olsa bile listeler, Finans ekranında tek başlık + alt satır olarak gösterilir, ≤ −12 iken kırmızı + "İtibarın gelirini ciddi düşürüyor" uyarısı), **"donemsel"** (enflasyon + ekonomi + savaş + salgın/`veba.gelirCarpani` + `durumlar[].gelir_carpani` — dünya durumu değiştikçe değişir; enflasyon kalemi 2026-09'dan beri hem toplama girer hem de kırılım detayından/oyuncudan gizlenir). `maasKirilim`, `finansGetir`'in dönüşüne (`FinansOzeti.maasKirilim`) eklidir.
 
 **Yıllık gelir dalgalanması:** Turdaki her yıl ayrı ayrı `maas_yillik × (0.75-1.25 rastgele)`.
 
-**Meslek metrik çarpanı** (sadece kendi kategorisinde, sadece pozitif para'ya): Asker `1+saldiriGucu/200` (`saldiriGucu=ordu_mevcudu*(1+techizat/100)`); Tüccar `1+ticaret_sermaye/300`; Din Adamı `1+nufuz/300`.
+**Meslek metrik çarpanı** (sadece kendi kategorisinde, sadece pozitif para'ya): Asker `1+saldiriGucu/200` (`saldiriGucu=ordu_mevcudu*(1+techizat/100)`); Tüccar `1+ticaret_sermaye/180`; Din Adamı `1+nufuz/180` (2026-08'de Tüccar/Din `/300`'den `/180`'e sertleştirildi — yatırımın geri dönüşünü hızlandırmak için).
 
 **Ordu kaybı** (savaş kategorisi seçimlerinde, Asker): `yuzde = (basarili?0.03:0.10) × (savasta?1:0.2) × (0.5+rastgele(0-1))`; `mevcut -= round(mevcut*yuzde)`.
 
@@ -416,13 +428,13 @@ temel[meslek] (Asker9.9 / Tüccar11 / DinAdamı8.8 — 2026-08 itibarıyla eski 
 
 **Enflasyon** (`enflasyonCarpani(state)`, 2026 itibarıyla çağa özel): `(1+oran) ^ (yil - baslangic_yili)` — **gerçek geçen yıla** göre bileşik büyür (tur sayısına değil), `oran` Orta Çağ'da **%1/yıl**, Sanayi Devrimi'nde **%3/yıl** (dönemin ekonomik hızlanmasını yansıtır). Maaş, giderler, mülk/yatırım/mağaza maliyetleri hep buna göre ölçeklenir. Para tutarları artık **2 ondalık basamağa** (`paraYuvarla`, `Math.round(x*100)/100`) yuvarlanır — tam sayıya değil — ki düşük Orta Çağ oranının etkisi de görünür kalsın; sağlık/mutluluk/ün/ahlak gibi istatistikler bundan etkilenmez, onlar hep tam sayı kalır. Client'ta `formatPara()` ([format.ts](client/src/format.ts)) bu ondalıkları (varsa) en fazla 2 basamakla gösterir.
 
-**Zenginlik vergisi (pasif):** nakit + sahip olunan gayrimenkullerin güncel toplam değeri (`gayrimenkulDegeriHesapla` — sahip olunan her mülkün `taban_maliyet × enflasyonCarpani` toplamı) **500**'ü aşınca, aşan kısmın **%4/yıl**ı gider olarak işler (`giderKalemleri.vergi`, hem Finans ekranında hem pasif ekonomide kullanılan tek doğruluk kaynağı `zenginlikVergisiHesapla`). Eşiğe İLK KEZ ulaşıldığında (`devlet_takibinde` etiketiyle rising-edge takip edilir — eşiğin altına inilirse etiket sökülür, tekrar aşılırsa bildirim yeniden tetiklenir) `pasifEkonomiUygula` bir kereliğine `EkonomiSonucu.vergiBildirimi=true` döner; `gameEngine.ts` bunu "👑 ... kraliyet memurları artık senden düzenli vergi talep ediyor" anlatı cümlesi + hayat-hikayesi kaydı olarak `zamanAnlatimi`'ye ekler. **Bu, §27'deki "zorunlu bağış" ile AYNI ŞEY DEĞİL** — ikisi paralel, bağımsız çalışır.
+**Zenginlik vergisi (pasif) — KALDIRILDI.** Eskiden nakit+gayrimenkul > 500 iken aşan kısmın %4/yıl'ı bir `giderKalemleri.vergi` kalemi olarak işliyordu (`zenginlikVergisiHesapla`, `devlet_takibinde` etiketi, `EkonomiSonucu.vergiBildirimi`) — hepsi silindi. Zenginliğin TEK bedeli artık **§27'deki "zorunlu bağış"** (servet > 500 → 5 yılda bir, %25 ihtimalle servetin %15-20'si). `gayrimenkulDegeriHesapla` hâlâ var (bağış eşiği + Finans ekranı servet dökümü için).
 
-**Borç faizi:** para<0 iken `faiz = round(|para| × 0.06 × yasArtisi)`; ayrıca sağlık `-2/yıl`.
+**Borç faizi + borç kapatma mekaniği** (yama #2, `pasifEkonomiUygula`): `para<0` iken sağlık **her koşulda `-2/yıl`** (yama #1'de "aktif ödeyene ceza yok"tu, yama #2'de geri getirildi). Faiz ise duruma bağlı: netGelir (maaş−gider) > 0 ise (bütçe artıda, borcu aktif ödüyor) → faiz `|para| × 0.03 × yasArtisi` + net gelirin %25'i kadar ek anapara affı (para 0'ı geçmez); netGelir ≤ 0 ise → faiz `|para| × 0.06 × yasArtisi`.
 
 **Meslek pasif sürüklenme (olaysız yıllarda bile):** Din Adamı `un += 0.4/yıl`; Tüccar `ahlak += (netGelir>=0 ? -0.4 : +0.4)/yıl` (bolluk ahlakı aşındırır, zorluk güçlendirir).
 
-**"Kendi işi" yatırımı** (`kendiIsiMaliyetiHesapla`): `maliyet = round(37 × 1.22^yatirim_sayisi × enflasyonCarpani)`, 5'in katıysa +1. Etki: Asker → techizat+10 (100'e kadar) sonra ordu_mevcudu+15 (tavan 300); Tüccar → ticaret_sermaye+20; Din Adamı → nufuz+20.
+**"Kendi işi" yatırımı** (`kendiIsiMaliyetiHesapla`): `maliyet = round(63 × 1.22^yatirim_sayisi × enflasyonCarpani)`, 5'in katıysa +1 (yama #1'de taban 90→63, −%30; daha eski: `37 × 1.17^n`). Etki artık meslek metriğine (**techizat/sermaye/nüfuz'e**) DOKUNMAZ — sadece: **(a) `maasCarpaniUygula(state, 1.05, ham)`** → kalıcı +%5 yıllık maaş, olay/aile bonuslarıyla ortak `MAAS_CARPANI_TAVAN=1.40`'a tabi (tavana ulaşınca `yatirimYap` "işin zirvede" hatası verir); **(b) `kariyer_puani += KARIYER_PUANI_YATIRIM` (12 → 8)**. `meslekMetrikCarpani` (Asker `1+saldiriGucu/200`, Tüccar `1+ticaret_sermaye/180`, Din `1+nufuz/180`) hâlâ var ama artık yalnız olaylardan (`ordu_techizat_artis`/`ticaret_sermaye_artis`/`nufuz_artis`) + barış-büyümesi beslenir.
 
 **Piyasa mülkleri** (`mulkGetiriOraniHesapla`, taban sabitler `NORMAL=%9, AVANTAJLI=%28, DEZAVANTAJLI=-%15`, taban_maliyet enflasyonla ölçeklenir):
 - **Çiftlik** (80): kıtlıkta DEZAVANTAJLI, iyi ekonomide AVANTAJLI, yoksa NORMAL.
@@ -430,6 +442,8 @@ temel[meslek] (Asker9.9 / Tüccar11 / DinAdamı8.8 — 2026-08 itibarıyla eski 
 - **Demirci** (100): savaş/isyanda `NORMAL×3`, yoksa `NORMAL×0.3`.
 - **Kervan** (150): (savaş yok & ekonomi≠kötü) `AVANTAJLI×1.1`, yoksa `NORMAL×0.5`; **ayrıca** savaşta yıl başına %25 (×yasArtisi) tam kayıp riski (mülk tamamen elden çıkar).
 - **Karaborsa** (200): (kıtlık/veba/savaş) `AVANTAJLI×1.2`, yoksa `DEZAVANTAJLI×0.5`; **ayrıca** sahiplik başına yıllık +2 suç seviyesi, -0.3 ahlak (pasif).
+
+**Mülk periyodik bakımı/vergisi** (`mulkGelirleriUygula` içinde, luks eşya bakımıyla aynı desen): her sahip olunan mülk için `state.mulk_bakim_kalan[tur]` sayacı satın alırken **7-10 yıl** (`rastgeleMulkBakimAraligi`) ile başlar, her turda geçen yıl kadar azalır; 0'a inince mülkün GÜNCEL değerinin **~%12'si** (`MULK_BAKIM_ORANI`, `sonBasamagiDuzelt`'li) `para`'dan düşer, mülk SİLİNMEZ, sayaç yeni bir 7-10 yıla kurulur. `mulkGelirleriUygula` dönüşü artık `bakimOdemeleri: {ad,miktar}[]` da içerir (gameEngine `zamanAnlatimi`'ye "🔧 … bakım/vergi gideri ödedin" cümlesi ekler) ve `toplamNet` = getiri − bakım. Kervan batınca / `mulk_kaybet` olunca ilgili sayaç anahtarı da silinir. `mulkConfigGetir` her mülk için `yillikBakimTahmini` (bu masrafın yıllığa amorti edilmiş hâli, `mulkYillikBakimTahmini`) döner — İş & Yatırım ve Gelir & Gider ekranları "🔧 Bakım/vergi: ~-N/yıl" satırında gösterir. **30 yıllık kâr/ROI ölçümü:** `scripts/simulateGayrimenkul.ts` (§22).
 
 **Mağaza fiyatları** (`magazaFiyatiHesapla`, §26): `fiyat = round(tabanFiyat × durumÇarpanı × enflasyonCarpani(tur_sayisi))`. `durumÇarpanı`, eşyanın kendi `fiyatEtkenleri`'nden aktif olan `ulke` durumlarının (savasta/vebada/kriz/ekonomi) çarpımıdır (tanımsız alan = 1, etkisiz) — `mulkGetiriOraniHesapla` ile aynı desen. Katalogdaki eşyalarda "sifa" krizlerde/savaşta **pahalanır** (kıtlık arzı azaltır), "luks" ise **ucuzlar** (kimse kriz sırasında mücevher almaz) ve altın çağda pahalanır — kasıtlı ters yön. Katalog ayrıca fiyat/etki açısından kademelidir: ucuz "sifa" eşyaları sadece sağlık verir (küçük miktar), pahalı olanlar hem sağlık hem mutluluk verir (büyük miktar, fiyat başına daha da verimli).
 
@@ -443,34 +457,49 @@ temel[meslek] (Asker9.9 / Tüccar11 / DinAdamı8.8 — 2026-08 itibarıyla eski 
 
 **Yeraltı zar masası:** Kademeler enflasyona göre ölçeklenmiş `[10,50,100]`; kazanma şansı **%40 sabit**; kazanınca bahis×2 net, kaybedince tamamı gider.
 
-**Kriz/Altın Çağ** (`kriz_baslat` ile başlar, `bitisYili`'ye kadar her yıl): Kıtlık → sağlık-2/yıl; İsyan → para-3/yıl, un-1/yıl; Altın Çağ → para+4/yıl, mutluluk+1/yıl.
+**Kriz/Altın Çağ** (`kriz_baslat` ile başlar, `bitisYili`'ye kadar her yıl): Kıtlık → sağlık **-1**/yıl (yama #1'de -2→-1); İsyan → para-3/yıl, un-1/yıl; Altın Çağ → para+4/yıl, mutluluk+1/yıl. Küçük kriz süresi de kısaldı: 2-3 → **1-2 yıl** (`KUCUK_KRIZ_SURE_MIN_YIL=1`).
 
-**Konut/yaşam tarzı:** Turu tüketmez. Konutta **daha pahalıya** geçişte `TASINMA_MALIYETI=10` tek seferlik ücret (ucuza geri çekilme ücretsiz); yaşam tarzı değişimi her zaman ücretsiz/anlık.
+**Konut/yaşam tarzı:** Turu tüketmez. Konutta **daha pahalıya** geçişte `TASINMA_MALIYETI=5` (2026-09'da 10'dan indirildi) tek seferlik ücret (ucuza geri çekilme ücretsiz); yaşam tarzı değişimi her zaman ücretsiz/anlık. Yeni karakter varsayılanı 2026-09'da bir kademe yükseltildi: `ahsap_ev` + `normal_ye` (en ucuz 2 kademe artık ağır ceza taşıdığı için, §16). Başlangıç parası `20 → 30`.
 
-**Skor:** `hesaplaSkor = yas × max(un,1) × max(para,1)`; hayat amacı tamamlandıysa **×5**.
+**Skor** (yama #1'de yeniden yazıldı): `servet = para + gayrimenkulDegeriHesapla(state)`; `servetFaktoru = servet>0 ? 1+log10(1+servet) : max(0.15, 1+servet/400)`; `skor = round(yas × max(un,1) × servetFaktoru)`, hayat amacı tamamlandıysa **×5**. Eski `× max(para,1)` çarpanı tek zengin ömrü milyonlara fırlatıp liderlik tablosunu domine ediyordu + borçlu bitişleri 1'e ezip ayırt edilemez kılıyordu; log-ölçek ikisini de çözdü (servet 100→~3.0, 500→~3.7, 8M→~7.9; borç küçük ama gerçek bir ceza).
 
-## 14. Rütbe / Kariyer Sistemi
+## 14. Rütbe / Kariyer Sistemi (2026-08 reformu — 5 kademe)
 
-Kaynak: [rutbeler.ts](server/src/data/rutbeler.ts). Her meslek×çağ için 3 kademeli unvan + 2 eşik:
+Kaynak: [rutbeler.ts](server/src/data/rutbeler.ts). **Eski 3-kademeli, `para` eşikli, her tur sıfırdan hesaplanan (düşebilen) sistem tamamen değişti.** Yeni model:
 
-| Meslek | Çağ | Unvanlar (S1→S2→S3) | Seviye 2 eşiği | Seviye 3 eşiği |
-|---|---|---|---|---|
-| Asker | Orta Çağ | Er → Silahşor → Kumandan | tur≥4, un≥30 | tur≥9, un≥55 |
-| Asker | Sanayi | Er → Çavuş → Yüzbaşı | tur≥4, un≥30 | tur≥9, un≥55 |
-| Tüccar | Orta Çağ | Çırak Tüccar → Pazarcı → Lonca Ustası | tur≥4, para≥150 | tur≥9, para≥500 |
-| Tüccar | Sanayi | Kâtip Çırak → Şirket Ortağı → Fabrika Patronu | tur≥4, para≥200 | tur≥9, para≥700 |
-| Din Adamı | Orta Çağ* | Acemi Rahip → Vaiz → Başrahip | tur≥4, ahlak≥60 | tur≥9, ahlak≥75 |
-| Din Adamı | Sanayi* | Papaz Yrd. → Vaiz → Baş Vaiz | tur≥4, ahlak≥60 | tur≥9, ahlak≥75 |
+**Tek monoton sayaç `kariyer_puani`** (CharacterState, asla azalmaz) rütbeyi belirler. Kaynakları ([rutbeler.ts](server/src/data/rutbeler.ts) sabitleri):
+- `KARIYER_PUANI_YILLIK = 2` → hayatta geçen her yıl (pasif kıdem; `sonucuUygulaVeIlerlet` yıl bloğunda `× yasArtisi`).
+- `KARIYER_PUANI_KATEGORI_BASARI = 3` → mesleğine uygun kategoride (`MESLEK_KATEGORI`: Asker→savas, Tüccar→ticaret, Din Adamı→din) **başarılı** olunan her olay.
+- `KARIYER_PUANI_YATIRIM = 8` (2026-09'da 12'den düşürüldü — yatırım artık pahalı ve tavanlı) → kendi işine yapılan her yatırım (`yatirimYap`).
+- `SonucEtkisi.kariyer_puani_artis` → kilit taşı olaylar doğrudan puan verebilir (şu an kullanan olay yok, altyapı hazır).
 
-*Sünni İslam din_kultur'ünde unvanlar değişir: Orta Çağ `Medrese Talebesi→Vaiz→Baş İmam`, Sanayi `İmam Yardımcısı→Vaiz→Baş İmam` (eşikler aynı kalır).
+**5 kademe, meslek×çağ'a göre unvan** (eşikler çağdan bağımsız, sadece unvan metni değişir):
 
-**⚠️ Önemli/sezgisel-olmayan davranış:** `rutbe_seviye` **her turda eşiklere göre sıfırdan yeniden hesaplanır** (`rutbeGuncelle`, "ratchet" yok). Bir Tüccar servetini kaybederse **rütbesi düşebilir** — bu sessizce olur, `terfiOldu` bayrağı sadece artışta true olur (düşüşte kutlama/uyarı YOKTUR). Ancak `astlar` listesi asla küçülmez (bir kez kazanılan ast kalıcıdır); `amir_adi` her seviye değişiminde (yükseliş ya da düşüş) yeniden atanır.
+| Meslek | Unvanlar (Orta Çağ / Sanayi) | S2 | S3 | S4 | S5 |
+|---|---|---|---|---|---|
+| Asker | Er→Onbaşı→Silahşor→Kumandan→Serdar / Er→Onbaşı→Çavuş→Yüzbaşı→Binbaşı | kp 10, ün 20 | kp 24, ün 32 | kp 44, ün 42 | **kp 160, ün 72** |
+| Tüccar | Çırak Tüccar→Seyyar Satıcı→Pazarcı→Lonca Ustası→Lonca Reisi / Kâtip Çırak→Tezgâhtar→Şirket Ortağı→Fabrika Patronu→Sanayi Baronu | kp 10, ün 10 | kp 24, ün 17 | kp 44, ün 25 | **kp 160, ün 50** |
+| Din Adamı | Acemi Rahip→Rahip→Vaiz→Başrahip→Piskopos / Papaz Yrd.→Papaz→Vaiz→Başpapaz→Piskopos | kp 10, ahlak 50 | kp 24, ahlak 58 | kp 44, ahlak 66 | **kp 160, ahlak 86** |
 
-Seviye 2'de 1, seviye 3'te 2 ast kazanılır (kendinden düşük unvanları taşırlar, isimleri sabit kalır). Seviye 3'e ulaşınca **amir yoktur** (`amir_adi=null`) — hükümdar zaten en tepede sayılır.
+*Sünni İslam din_kultur: `Medrese Talebesi→Müezzin→Vaiz→İmam→Baş İmam` (her iki çağ, eşikler aynı).*
+
+Her kademe **hem** `kariyer_puani` **hem** mesleğe özgü statı ister (`esikKarsilaniyorMu`): Asker & Tüccar **ün** (her kademede), Din Adamı **ahlak**. `para` koşulu KASITLI OLARAK YOK (sürekli harcanan nakde bağlı bir eşik sessiz rütbe kaybına yol açıyordu). S4→S5 sıçraması bilinçli olarak büyük (kp 44→**160**; yama #1'de 210'du, "imkânsız"a yakındı) — **S5 nadir bir zirvedir; simülasyonda Para-odaklı/Tüccar/Orta Çağ botları ~%10-40'ında ulaşır, genel oran ~%1-8** (bkz. §22 `simulateKisilikler`, "8 Kişilik 9.600 Ömür" artifact).
+
+**Terfi cooldown'u** (`TERFI_COOLDOWN = {2:0, 3:2, 4:2, 5:8}`): bir sonraki kademeye çıkmak için son terfiden bu kadar oyun yılı geçmiş olmalı (`state.yil - state.son_terfi_yili >= cooldown`). `rutbeGuncelle` ayrıca **çağrı başına en fazla +1 kademe** ilerletir — üst üste terfi olmaz.
+
+**RATCHET — rütbe ASLA DÜŞMEZ.** `kariyer_puani` (azalmaz zaten) veya ün/ahlak çökse bile `rutbe_seviye` korunur. `rutbeGuncelle` her tur çağrılır ama yalnız yukarı hareket eder. `terfiOldu` bayrağı + `🎖️` kutlama mesajı yalnız artışta üretilir.
+
+**Maaş primi** (`RUTBE_MAAS_CARPANI`, yama #2'de açık BİLEŞİK formüle döndü: `1.2^(seviye-1)` → `[1.0, 1.2, 1.44, 1.73, 2.07]` S1..S5): her kademe bir öncekinin %20 üstü, baz maaşa göre ayrı bir +%X değil. `hesaplaMaasYillik` çarpımına `rutbeMaasCarpani(rutbe_seviye)` olarak girer (ün, kıdem, şehir yönetimi, enflasyon çarpanlarıyla üst üste biner).
+
+**Astlar:** seviye N'de `N-1` ast (S5'te 4), kendinden düşük unvanları taşırlar, isimleri sabit; liste asla küçülmez. **Amir:** bir üst kademeden; **seviye 5'te amir yoktur** (`amir_adi=null`, hükümdar en tepede).
+
+**Client:** İşin & Yatırımların ekranında ([IsYatirimEkrani.tsx](client/src/components/IsYatirimEkrani.tsx)) kademe göstergesi 5 nokta + "Rütbe nasıl yükselir?" ipucu kutusu (`.rutbe-ipucu`): "işine yatırım yap + ününü/ahlakını yüksek tut + zamanla kıdem". Geriye dönük uyum: `eskiKayitGocu` (stateManager) eski DB kayıtlarına `kariyer_puani` (≈ `tur_sayisi*2 + kendi_isi_yatirim_sayisi*12`), `son_terfi_yili` (`baslangic_yili`), `mulkler` (→ `[]`), `baslangic_yili` (→ `yil`) ve `mulk_bakim_kalan` (sahip olunan her mülke rastgele 7-10 yıl) backfill eder — mülk/enflasyon alanları Finans ekranında doğrudan `.length`/aritmetik/anahtar erişimiyle kullanıldığı için; `gameEngine.oturumGetir`/`oturumlariYukle` çağırır.
+
+**Testler:** [rutbe.test.ts](server/tests/rutbe.test.ts) (pür fonksiyon) + [scripts/verifyRutbe.ts](server/scripts/verifyRutbe.ts) (motor entegrasyonu, `npm test` PostgreSQL geçişinde kırık olduğu için bağımsız `npx tsx` doğrulaması).
 
 ## 15. Şehir Yönetimi (Post-Max-Rank İlerleme)
 
-`rutbe_seviye>=3` olunca (§11 kural 4) açılan, **üst sınırı olmayan** ikinci eksen. `sehir_yonetim_seviyesi` sadece `sehir_yonetim_artis` etkisiyle artar (belirli olaylardan). Unvan tablosu (4 isimli kademe, sonrası sayısal):
+`rutbe_seviye>=4` olunca (§11 kural 4, 2026-08 reformuyla eski `>=3`'ten yükseltildi — 5 kademeli merdivende S4 "başarılı kariyer" eşiğidir) açılan, **üst sınırı olmayan** ikinci eksen. `sehir_yonetim_seviyesi` sadece `sehir_yonetim_artis` etkisiyle artar (belirli olaylardan). Unvan tablosu (4 isimli kademe, sonrası sayısal):
 
 | Meslek | Kademe 1 | 2 | 3 | 4 | 5+ |
 |---|---|---|---|---|---|
@@ -478,7 +507,7 @@ Seviye 2'de 1, seviye 3'te 2 ast kazanılır (kendinden düşük unvanları taş
 | Tüccar | Ticaret Baronu | Lonca Reisi | Şehrin Hazine Nazırı | Ticaret İmparatoru | "Ticaret İmparatoru (Seviye N)" |
 | Din Adamı | Piskopos Vekili | Baş Piskopos | Kutsal Meclis Üyesi | Ruhani Önder | "Ruhani Önder (Seviye N)" |
 
-Her kademe maaşa kalıcı **+%8** katar (`1 + seviye*0.08`, §13 maaş formülüne çarpımsal girer), tavan yok.
+**Maaş etkisi (2026-09):** Şehir yönetimine **bir kez girmek** maaşa kalıcı, **SABİT +%8** katar (`sehirYonetimMaasCarpani = seviye>=1 ? 1.08 : 1`). Eskiden `1 + seviye*0.08` (tavansız, seviyeyle büyüyen) idi; artık seviye/unvan **yalnız prestij içindir**, maaşa ek katkısı yoktur.
 
 ## 16. Statik İçerik Katalogları
 
@@ -493,9 +522,11 @@ Hükümdar/lider verisi [liderler.ts](server/src/data/liderler.ts) (yıl aralı�
 ### Yerleşim (3, doğuşta seçilir)
 | id | Sağlık | Para | Maaş × | Yatkınlık | Yaşam maliyeti × |
 |---|---|---|---|---|---|
-| Şehir Merkezi | -10 | 0 | ×1.20 | ticaret+8, sosyal+8, sağlık-5 | ×1.02 |
+| Şehir Merkezi | -10 | 0 | ×1.10 | ticaret+8, sosyal+8, sağlık-5 | ×1.02 |
 | Sınır Bölgesi | 0 | +8 | ×0.95 | savaş+10, ticaret-5 | ×1.00 |
-| Dağ Başı | +5 | -10 | ×0.80 | sağlık+8, sosyal-10 | ×0.98 |
+| Dağ Başı | +5 | -10 | ×0.90 | sağlık+8, sosyal-10 | ×0.98 |
+
+*(2026-09: Maaş farkı ±%20'den ±%10'a çekildi — Sınır −%5 aynı kaldı. Bu doğuş kimliği çarpanı `maasCarpaniUygula`'ya `ham` verilir: yarıya indirme + tavandan muaf.)*
 
 ### Aile Mesleği (18 tip, doğuşta ağırlıklı rastgele seçilir — `agirlik` alanı)
 Her satır: para/sağlık/ün/ahlak başlangıç bonusu + yatkınlık etkisi. `devamMeslegi` varsa, oyuncu o mesleği seçerse "aile mirası sürdürüldü" bonusu (+10un, +15para, ×1.15 kalıcı maaş) alır.
@@ -550,27 +581,30 @@ Ayrıca iki uçlu **kişilik eksenleri** (`kisilik_eksenleri`, seçenek gating i
 ### Yatkınlık (`yatkinliklar`, -30..30, kategori başına başarı şansı bonusu)
 Kaynak: her kategoride taban `rastgele(-5..+5)`, + seçilen 2 kişilik özelliğinin `etkiler`i + aile'nin `yatkinlikEtkisi`'si + yerleşimin `yatkinlikEtkisi`'si, toplanıp -30..30'a clamp'lenir. `yatkinlik_kaynaklari` bu katkıların dökümünü oyuncuya gösterir.
 
-### Konut (6 kademe, `konut_id`, turu tüketmeden değiştirilebilir)
-| id (varsayılan→basit_barinak) | Kira/yıl | Sağlık/yıl | Mutluluk/yıl | Ün/yıl |
+### Konut (6 kademe, `konut_id`, turu tüketmeden değiştirilebilir) — 2026-09 dengesi
+| id (varsayılan→**ahsap_ev**) | Kira/yıl | Sağlık/yıl | Mutluluk/yıl | Ün/yıl |
 |---|---|---|---|---|
-| basit_barinak | 1 | -1 | – | – |
-| ahsap_ev | 4 | – | – | – |
+| basit_barinak | 1 | **-4** | **-4** | **-4** |
+| ahsap_ev | 4 | **-3** | **-3** | **-3** |
 | normal_ev | 8 | – | +1 | – |
-| tas_ev | 13 | +1 | +1 | +1 |
-| konak | 21 | +2 | +2 | +2 |
-| sato | 34 | +3 | +4 | +5 |
+| tas_ev | 13 | +1 | +1 | +2 |
+| konak | 21 | +2 | +2 | +4 |
+| sato | 34 | +3 | +4 | +6 |
 
-Taşınma ücreti (sadece daha pahalıya geçişte): **10**.
+Taşınma ücreti (sadece daha pahalıya geçişte): **5**. En dip kademe (basit_barinak) cezası yama #2'de -6→**-4** yumuşatıldı; varsayılan `ahsap_ev` (-3).
 
-### Yaşam Tarzı (6 kademe, `yasam_secimi_id`, ücretsiz/anlık değiştirilebilir)
-| id (varsayılan→ucuza_ye) | Maliyet/yıl | Sağlık/yıl | Mutluluk/yıl |
-|---|---|---|---|
-| copten_topla | 0 | -4 | -2 |
-| ucuza_ye | 3 | -1 | – |
-| normal_ye | 6 | – | – |
-| iyi_ye | 10 | +1 | +1 |
-| kaliteli_ye | 16 | +2 | +2 |
-| ziyafet_gibi_ye | 26 | +3 | +4 |
+### Yaşam Tarzı (6 kademe, `yasam_secimi_id`, ücretsiz/anlık değiştirilebilir) — 2026-09 dengesi
+`YasamSecenegiTanimi`'ye `unEtkisiYillik` eklendi (`pasifEkonomiUygula`'da konut ünüyle aynı satırda uygulanır).
+| id (varsayılan→**normal_ye**) | Maliyet/yıl | Sağlık/yıl | Mutluluk/yıl | Ün/yıl |
+|---|---|---|---|---|
+| copten_topla | 0 | **-4** | **-4** | **-4** |
+| ucuza_ye | 3 | **-3** | **-3** | **-3** |
+| normal_ye | 6 | – | – | – |
+| iyi_ye | 10 | +2 | +1 | – |
+| kaliteli_ye | 16 | +3 | +2 | – |
+| ziyafet_gibi_ye | 26 | +3 | +4 | +1 |
+
+**Başlangıç statları** (`createCharacter`, aile/yerleşim bonusları ayrıca eklenir; yama #2): mutluluk **50**, ahlak **50**, şöhret(un) **20**, sağlık 100, para **30**. Üçü de itibar maaş bandında nötr başlar (§13).
 
 ### Piyasa Mülkleri (5 tür, her türden en fazla 1, taban maliyet enflasyonla ölçeklenir)
 | tur | Ad | Taban Maliyet | Avantajlı | Dezavantajlı |
@@ -630,7 +664,7 @@ Bu iki dosya devasa dallanan zincirlerdir — belirli bir dalın içeriği gerek
 
 **Hapis:** `suc_seviyesi>=45` gated tutuklama olayları ([hapis.ts](server/src/data/olaylar/hapis.ts) `minSucSeviyesi:45`) VE birçok sıradan olayın başarısız sonucundan (`etiket_ekle:["hapiste"]`, ör. `aile.ts`, `hapis.ts` içindeki riskli seçimler) girilir. İçerideyken sadece `hapisOlayi:true` (43 olay) gösterilir: kaçış girişimleri, rüşvet, af dilekçesi vb. — başarılı seçim `etiket_sil:["hapiste"]` ile çıkarır, başarısız olan içeride tutar (bazıları ek sağlık/ün cezası verir).
 
-**Yolculuk:** §11 kural 11 ile ömürde bir kez teklif edilir (mesleğe göre `uygunYolculukTeklifleri`: Asker Haçlı Seferi/Savunma Seferi/Sömürge Seferi, Tüccar Coğrafi Keşif/Mucit Turnesi/Sömürge Seferi, Din Adamı dinine göre Hac). Kabul edilirse `yolculukta` etiketlenir, sadece `yolculukOlayi:true` (87 olay, [yolculuk.ts](server/src/data/olaylar/yolculuk.ts)) gösterilir, **her adım tam 1 yıl** sürer (4-5 yıllık yolculukta 5-10 adım hedeflenir). Reddedilirse `yolculuk_teklifi_edildi` etiketiyle bir "durum" eklenir, birkaç tur sonra `bitince_etiket:"yolculuk_teklifi_zamani"` ile tekrar sorulur. Tamamlanınca `yolculukta` silinir + `yolculuk_tamamlandi` eklenir (kalıcı — ikinci bir yolculuk asla zorlanmaz, ama tekrar reddedilip kabul de edilemez zaten teklif gelmez). **Başarılı tamamlama ödülü:** `yolculuk_tamamlandi`'yi ekleyen HER kapanış olayının `basariliSonuc`'unda (`basarisizSonuc`'ta değil) `maas_carpani:1.2` bulunur — yolculuğu başarıyla bitiren karakter kalıcı olarak %20 daha fazla maaş kazanır (22 kapanış dalının hepsinde; 2026-08'de eklendi).
+**Yolculuk:** §11 kural 11 ile ömürde bir kez teklif edilir (mesleğe göre `uygunYolculukTeklifleri`: Asker Haçlı Seferi/Savunma Seferi/Sömürge Seferi, Tüccar Coğrafi Keşif/Mucit Turnesi/Sömürge Seferi, Din Adamı dinine göre Hac). Kabul edilirse `yolculukta` etiketlenir, sadece `yolculukOlayi:true` (87 olay, [yolculuk.ts](server/src/data/olaylar/yolculuk.ts)) gösterilir, **her adım tam 1 yıl** sürer (4-5 yıllık yolculukta 5-10 adım hedeflenir). Reddedilirse `yolculuk_teklifi_edildi` etiketiyle bir "durum" eklenir, birkaç tur sonra `bitince_etiket:"yolculuk_teklifi_zamani"` ile tekrar sorulur. Tamamlanınca `yolculukta` silinir + `yolculuk_tamamlandi` eklenir (kalıcı — ikinci bir yolculuk asla zorlanmaz, ama tekrar reddedilip kabul de edilemez zaten teklif gelmez). **Yolculuk kazanç zammı:** Eskiden yolculuğu bitiren karakter kalıcı bir `maas_carpani:1.2` primi alıyordu (22 kapanış dalında); bu **kaldırıldı**. Yerine: `yolculukOlayi:true` bir olayda kazanılan pozitif `para`, `sonucuUygulaVeIlerlet`'te motor kuralı olarak **×1.2** (`YOLCULUK_KAZANC_CARPANI`, `meslekMetrikCarpani`'nin hemen üstüne biner, `sucKazanciUygula`'dan önce) — yani zam yalnız yolculuk sürerken elde edilen paraya, kalıcı bir maaş etkisi bırakmadan uygulanır.
 
 **Aranma Kademesi:** Ayrı bir eksen **değildir** — TEK suç/aranma ekseni olan `suc_seviyesi`'nin (0-100, §4) bantlarıdır (eski `aranma_seviyesi` 0-4 alanı 2026-08'de buna katıldı). Bantlar: **0-19 temiz · 20-39 kademe 1 · 40-59 kademe 2 · 60-79 kademe 3 · 80-100 kademe 4**. Kendi özel havuzu [aranmaSeviyesi.ts](server/src/data/olaylar/aranmaSeviyesi.ts) (32 olay) kademeli bir tırmanış anlatır: temiz bandda rastgele "tetikleyici" olaylar (`maxSucSeviyesi:19` — devriye durdurması, meyhane kavgası vb.) başarısız sonuçla `suc_artis:+25` verip kademe 1'e çıkarabilir; her kademe kendi `minSucSeviyesi`/`maxSucSeviyesi` bandına kilitlenir (rutin çevirme/rüşvet → ihbar/ev araması tehdidi → tutuklama ekibi/muhbir ağı → azami takip/ödül avcıları), her birinin kefaret/rüşvet çıkışı `suc_artis` negatif (-25/-45/-65) verir. `suc_seviyesi` ≥60 iken iki büyük "baskın" olayı (`minSucSeviyesi:60`, max yok, ev ve iş yeri baskını) tetiklenebilir; sonuçları `suc_seviyesi_ayarla` (10 = temize çık, 30 = kademe 1'e in) ile kesin değere sabitler. Başarılı kaçış `etiket_ekle:["kacak"]` ile karakteri dağa kaçırır — bu noktadan sonra `kacakOlayi:true` (10 olay) şehir havuzunu tamamen kapatıp kendi hayatta kalma zincirini açar (diğer kaçaklar, kışı atlatma, yeni kimlik vb.); birkaç başarılı çıkış olayı `etiket_sil:["kacak"]` ile şehre dönüşü sağlar. `suc_seviyesi` yılda -1 pasif azaldığı için, suç işlemeyi bırakan karakter zamanla kademelerden aşağı düşer. Üst şeritteki aranma yıldızları bu tek ekseni gösterir (§4, §19).
 
@@ -647,11 +681,11 @@ Bu iki dosya devasa dallanan zincirlerdir — belirli bir dalın içeriği gerek
 
 Her tur sonu `hayatAmaciKontrolEt` kontrol eder; tamamlanınca `tamamlandi=true` + hayat-hikayesi kaydı. Ölümde skor formülüne **×5** olarak yansır (§13).
 
-**Ölüm** (`checkDeath`): `aktif=false`, `olum_nedeni` yazılır (relik istisnası §9). İstemci ölüm ekranında isim sorup `POST /api/scores` ile kaydeder (`skoru_kaydedildi` bayrağıyla tekilleştirilir, aynı oyunu farklı isimlerle tekrar kaydetmeyi engeller). İsim [kufurFiltresi.ts](server/src/moderasyon/kufurFiltresi.ts)'nden geçer (Türkçe karakter/leetspeak normalize eden basit kök-kelime eşleştirmesi, TR+EN küfür listesi).
+**Ölüm** (`checkDeath`): `aktif=false`, `olum_nedeni` yazılır (relik istisnası §9). İstemci ölüm ekranında isim sorup `POST /api/scores` ile kaydeder (`skoru_kaydedildi` bayrağıyla tekilleştirilir, aynı oyunu farklı isimlerle tekrar kaydetmeyi engeller); isim kutusu `state.isim` ile ön-doldurulur. İsim [kufurFiltresi.ts](server/src/moderasyon/kufurFiltresi.ts)'nden geçer (Türkçe karakter/leetspeak normalize eden basit kök-kelime eşleştirmesi, TR+EN küfür listesi). Ayrıca ölümde istemci, karakterin bir özetini tarayıcıya (`client/src/gecmisHayatlar.ts`, localStorage) kaydeder — giriş ekranındaki "Geçmiş Hayatların" listesi bunu okur.
 
-**Soyu sürdür** (`POST /:id/soy-surdur`): sadece `aktif=false` ve en az bir yaşayan çocuk varken. En büyük (doğum yılı en küçük) yaşayan çocukla, aynı çağ/bölge/yerleşimde, ebeveynin mesleğini (aile listesinde varsa) ya da orijinal aile mirasını devralan **yeni bir `createCharacter`** başlatılır. Miras: `para × 0.25` (tavan 60), `un × 0.125` (tavan 15) devreder; `miras:soy_surdu` etiketi eklenir.
+**Soy sürdürme kaldırıldı (2026-09):** Eski `POST /:id/soy-surdur` endpoint'i, `gameEngine.soyuSurdur`, `SoyDevamiSecenekleri` ve `hanedan.test.ts` tamamen silindi. Ölüm kesin sondur; `createCharacter`'ın dördüncü parametresi artık `soyDevami` nesnesi değil, opsiyonel `oyuncuIsmi: string`'tir.
 
-**Liderlik tablosu sıralamaları:** `genel` (skor), `en_zengin` (para), `en_unlu` (un) — her biri top 20.
+**Liderlik tablosu sıralamaları:** `genel` (skor), `en_zengin`, `en_unlu` (un) — her biri top 20. Yama #1: `skorRepository.skorKaydet` artık `Score.para` alanına salt nakit değil **nakit + gayrimenkul değeri** (`gayrimenkulDegeriHesapla`) yazar → `en_zengin` net serveti sıralar, mülke yatırım yapan cezalanmaz.
 
 ## 19. İstemci (Client) Mimarisi
 
@@ -659,7 +693,7 @@ React 19 + Vite, **state kütüphanesi yok** (saf `useState`, `App.tsx` ~1355 sa
 
 **Ekran akışı** (`type Ekran`, `App.tsx`):
 ```
-giris → cag_sec → bolge_sec → yerlesim_sec → acilis → meslek → oyun
+giris → cag_sec → bolge_sec → yerlesim_sec → isim_sec → acilis → meslek → oyun
                                                               ↓
               (yan ekranlar, tam sayfa navigasyon: aile / finans / yatirim / sosyallesme / magaza)
                                                               ↓
@@ -667,6 +701,10 @@ giris → cag_sec → bolge_sec → yerlesim_sec → acilis → meslek → oyun
                                                               ↓
                                                         olum → liderlik
 ```
+
+Ayrıca kök `.oyun-kapsayici` içinde, `ekran`'dan bağımsız her zaman render edilen iki `position:fixed` sağ-üst düğme var: **⚙️ (`.ayar-ac-buton`)** ve **🔊/🔇 (`.ses-toggle-buton`)**. Dişli, `ayarlarAcik` state'ini açar → `AyarlarModal` (§29). Giriş ekranında ayrıca kahraman buton satırında bir "⚙️ Ayarlar" (`.ikincil`) düğmesi vardır.
+
+**Giriş ekranı (`giris`):** dönen ⚙️ motifli bir kahraman bölümü + iki CTA (Yeni Hayata Başla / Liderlik Tablosu) + "⚙️ Ayarlar" ve altında `.giris-paneller` ızgarası: **Geçmiş Hayatların** (`gecmisHayatlar.ts`'ten okunan cihaz-yerel liste; satıra tıklayınca `secilenGecmisHayat` ile `GecmisGrafik` + `HayatHikayesi`'yi gösteren bir modal açılır, "Temizle" ile silinir), **Liderlik** (ilk 3 önizleme, `skorTablosuGetir` ilk `useEffect`'te çekilir), **Başarımların** (mevcut açılır panel). **`yerlesim_sec` artık karakter oluşturmaz** — seçimi `secilenYerlesim`'e yazıp `isim_sec`'e geçer; `POST /new` (isimle birlikte) `isim_sec`'teki "Başla" ile çağrılır. `isim_sec`: metin kutusu + "🎲 Rastgele İsim" (`GET /api/game/isim-onerisi`); boş bırakılırsa "Başla" anında bir rastgele isim çekip öyle oluşturur.
 
 **Önemli:** `sonuc` (`ekran==='sonuc'`) kendi başına tam ekran bir görünüm **değildir** — `oyun` ile aynı JSX bloğu içinde render edilir (`(ekran === 'oyun' || ekran === 'sonuc') && ...`), `.oyun-govde` grid'i (sol-panel/merkez-panel/sag-panel, üst şerit, komuta şeridi) aynen ekranda kalır; sadece `.merkez-panel` içindeki `.merkez-alt` bölümü seçim sonucunun içeriğiyle değiştirilir (`sonEtki` state'i). Bu sayede bir seçim yapıldığında ekranın tamamı değil, sadece olayın gösterildiği alan değişir. `aile/finans/yatirim/sosyallesme/magaza/olum` ise gerçek tam-ekran geçişlerdir — oyun HUD'u (sahne/üst şerit/komuta şeridi) tamamen unmount olur.
 
@@ -678,11 +716,11 @@ giris → cag_sec → bolge_sec → yerlesim_sec → acilis → meslek → oyun
 
 Mobil (`max-width:767px`) için bu üç sınıfın (`.ekran-tam-sayfa`/`.tam-govde-3col`/`.tam-sutun`/`.tam-kaydirilan`) hepsinde `.oyun-govde`'nin mobil davranışıyla aynı gevşetme uygulanır: `height:auto; overflow:visible`, sütunlar tek sütuna iner, sayfa doğal olarak kayabilir.
 
-**Önemli — bir önceki revizyonda kart metinleri (mülk açıklaması, avantajlı/dezavantajlı durum, kendi-iş açıklaması, zar risk cümlesi) `title` tooltip'ine gizlenip kartlar küçük kare karolara sıkıştırılmıştı; bu geri alındı** çünkü bilgiyi görünmez kılıyor ve ekranı boş/ucuz gösteriyordu — mülk/kendi-iş/zar/yaşam-tarzı/konut/mağaza/sosyalleşme kartlarının HEPSİ aynı paylaşılan `.yatirim-kart`/`.yatirim-kartlari` ailesini kullanır (min-height 200px, tüm metin kart içinde görünür, kısaltma yok). Sadece kompakt/gerçekten kare kalması gereken şey — bir karakterin **sayısal özet değerleri** (İşin&Yatırım'ın Sütun 1'indeki `.is-profil-karti` + `.is-karo-izgara`, `StatKarosu`: Yıllık Kazanç/Amir/Şehir Yönetimi/meslek-metrikleri) — küçük kare karo kalıyor; **metin/açıklama taşıyan hiçbir kart artık zorla kareye sıkıştırılmıyor.**
+**Önemli — bir önceki revizyonda kart metinleri (mülk açıklaması, avantajlı/dezavantajlı durum, kendi-iş açıklaması, zar risk cümlesi) `title` tooltip'ine gizlenip kartlar küçük kare karolara sıkıştırılmıştı; bu geri alındı** çünkü bilgiyi görünmez kılıyor ve ekranı boş/ucuz gösteriyordu — mülk/kendi-iş/zar/yaşam-tarzı/konut/mağaza/sosyalleşme kartlarının HEPSİ aynı paylaşılan `.yatirim-kart`/`.yatirim-kartlari` ailesini kullanır (min-height 200px, tüm metin kart içinde görünür, kısaltma yok). Sadece kompakt kalması gereken şey — bir karakterin **sayısal özet değerleri** (İşin&Yatırım'ın Sütun 1'indeki `.is-profil-karti` + `.is-karo-izgara`, `StatKarosu`: Yıllık Kazanç/Amir/Şehir Yönetimi/meslek-metrikleri) — küçük karo kalıyor (2026-09'da 3 sütunlu kompakt ızgaraya küçültüldü, `aspect-ratio` kaldırıldı); **metin/açıklama taşıyan hiçbir kart artık zorla kareye sıkıştırılmıyor.**
 
-**İşin & Yatırımların (`yatirim`, `IsYatirimEkrani.tsx`):** Sütun 1: kimlik kartı + istatistik karoları. Sütun 2 (en geniş): "Kendi İşine Yatırım Yap" kartı (`.isyatirim-kendi-is-kart`, altın çerçeveyle vurgulanır) + 5 mülk kartı (`.yatirim-kartlari.yatirim-mulk-kartlari`). Sütun 3: suç/aranma göstergesi + zar kartları (`.isyatirim-zar-izgara`, `.zar-karo` — min-height 150px, risk cümlesi görünür) + piyasa dedikoduları.
+**İşin & Yatırımların (`yatirim`, `IsYatirimEkrani.tsx`):** Sütun 1: kimlik kartı + istatistik karoları (`.is-karo-izgara` artık 3 sütunlu kompakt ızgara, `aspect-ratio` yok) + **piyasa dedikoduları** (`.tam-baslik-dedikodu` altın "📜" başlık + `.dedikodu-panosu.dedikodu-panosu-vurgu` — mühür mumu kırmızısı zemin + altın sol kenar, kasıtlı dikkat çekici). Sütun 2 (en geniş): 5 mülk kartı (`.yatirim-kartlari.yatirim-mulk-kartlari`; her kartta tahmini getiri satırının altında "🔧 Bakım/vergi: ~-N/yıl", `yillikBakimTahmini`). Sütun 3: "Kendi İşine Yatırım Yap" kartı (`.isyatirim-kendi-is-kart`, altın çerçeveyle vurgulanır) + "Rütbe nasıl yükselir?" ipucu kutusu, ardından suç/aranma göstergesi + zar kartları (`.isyatirim-zar-izgara`, `.zar-karo` — min-height 150px, risk cümlesi görünür).
 
-**Gelir & Gider (`finans`, `FinansEkrani.tsx`):** Sütun 1 "Bütçen": gelir/gider dökümü (`.finans-karti`) + `GecmisGrafik`. Sütun 2 "Yaşam Tarzın & Evin": iki seçim kart-ızgarası (6 yaşam tarzı + 6 konut kademesi). Sütun 3 "Varlıkların": sahip olunan mülkler (varsa) + ekip (varsa) — ikisi de boşken kısa bir yönlendirme cümlesi gösterir.
+**Gelir & Gider (`finans`, `FinansEkrani.tsx`):** Sütun 1 "Bütçen": "Yıllık maaş" + hemen altında **maaş kırılımı** (`.finans-maas-kirilim`, `maasKirilim`'den) — "🎖️ Rütbeden gelen (<unvan · Sv.N>) · kalıcı", "📈 Kariyer birikimi · kalıcı" (alt satırda kalem kalem ün/kıdem/şehir yönetimi/kalıcı ödüller), "🌍 Dönemsel yüzdelik etkiler · değişebilir" (alt satırda enflasyon/ekonomi/savaş/salgın) + kalıcı-vs-dönemsel'i açıklayan tek satır not; ardından **"🌍 Şu an bütçeni etkileyen dünya durumları"** bloğu (`.finans-dunya-etkileri`, `dunyaEtkileri`'nden — boşsa "olağan dışı bir dünya olayı yok" satırı); sonra (mülk varsa) "🏠 Gayrimenkul geliri" satırı, gider dökümü, ve mülk varsa net iki satır ("↳ Maaş − gider" + "Net yıllık (gayrimenkul dahil)" = `netYillik + gayrimenkulYillikGelir`) yoksa tek "Net yıllık"; + `GecmisGrafik`. Sütun 2 "Yaşam Tarzın": 6 yaşam tarzı kartı. Sütun 3 "Evin": 6 konut kademesi kartı. **Bu ekrana özel:** kapsayıcı `.tam-govde-3col` yerine `.tam-govde-3col-finans` (`grid-template-columns: 0.9fr 1.55fr 1.55fr` — sol "Bütçen" dar, orta + sağ AYNI genişlikte) kullanır; iki seçim ızgarası `.yatirim-kartlari.finans-secim-izgara` (`grid-template-columns: repeat(2, minmax(0,1fr))` → HER ZAMAN satır başına tam 2 kart, sütun genişliğini doldurur; `flex:1` + `grid-auto-rows: minmax(min-content, 1fr)` → kartlar sütunun kalan yüksekliğini paylaşıp dikeyde uzar, sayfa altı boş kalmaz; kart açıklaması `-webkit-line-clamp:3` ile en fazla 3 satır — uzun ev tanımları 6 kartı aşağı kaydırmaya zorlamasın). Kart maliyetleri **enflasyonla ölçekli güncel tutarı** gösterir (`enflasyonluTutar`, `finans.enflasyonYuzdesi`'ten), enflasyon > 0 iken "(liste N, +%E enflasyon)" ekiyle; gider dökümündeki gerçek `yasam`/`konut` tutarıyla hizalı. **Eski "Varlıkların" sütunu (sahip olunan mülkler + ekip) 2026-09'da kaldırıldı** — sahip olunan mülkler artık ayrı listelenmiyor (İşin & Yatırımların ekranındaki mülk kartlarında `mulk-kart-sahip` durumu görünüyor); **ekip yönetimi (Kov butonu dahil) `KomutaSeridi`'ne taşındı** (oyun ekranı sol paneli). `FinansEkrani` artık `ekip`/`mulkler`/`onEkipCikar` prop'u almıyor. `FinansOzetPaneli` (sol panel mini özet) gelir/net'e `gayrimenkulYillikGelir`'i katar; ayrıca 3 rakamın altında maaşın kırılımını çip olarak ("🎖️ +%X · 📈 +%Y · 🌍 ±%Z", `maasKirilim`'den, tam metin `title`'da) ve etkin dünya olaylarını kısa çip satırı olarak (`dunyaEtkileri` boş değilse) gösterir — böylece rütbe/ün/çevre etkileri Gelir & Gider ekranına girmeden ana ekranda da görünür.
 
 **Mağaza (`magaza`, `MagazaPaneli.tsx`) ve Sosyalleş (`sosyallesme`, `SosyallesmePaneli.tsx`):** Tek homojen kart listesi oldukları için 3 sütuna bölünmez — başlık/açıklama/sekmeler (Mağaza'da şifa/lüks) sabit üstte, kart ızgarası `.tam-kaydirilan` içinde kalan alanı doldurur.
 
@@ -698,17 +736,20 @@ Mobil (`max-width:767px`) için bu üç sınıfın (`.ekran-tam-sayfa`/`.tam-gov
 |---|---|
 | `api.ts` | Tüm backend endpoint'leri için `fetch` sarmalayıcıları (§3 tablosuyla bire bir eşleşir) |
 | `oturum.ts` | `localStorage`'da aktif `state.id` (oyuna devam) |
+| `ayarlar.ts` | `localStorage`'da arayüz ayarları (`{dil:'tr'\|'en'}`); `kader-carki-ayarlar` anahtarı (§29). Ses tercihi hâlâ `ses.ts`'te |
+| `i18n.ts` | Minimal arayüz sözlüğü (`metinler(dil)` → tipli metin nesnesi). Şu an SADECE ayarlar modalını kapsar — `EN` nesnesi `typeof TR` olduğu için anahtar kümeleri hep eşit. Menüler/olaylar hâlâ Türkçe (§29) |
 | `basarimlar.ts` | `localStorage`'da kalıcı ünvan/efsanevi-ölüm koleksiyonu (çoklu-oyun meta) |
+| `gecmisHayatlar.ts` | `localStorage`'da ölen karakterlerin özeti (son 20; giriş ekranı "Geçmiş Hayatların" listesi) |
 | `envanter.ts` | Gizemli eşya etiketi → görüntülenecek ad/ikon/açıklama (`magaza_envanteri` için ayrıca §26) |
 | `format.ts` | `formatPara()` — para tutarlarını (enflasyon artık ondalık üretebildiği için) en fazla 2 ondalıkla, gereksiz sıfırlar kırpılarak gösterir (§13/§27) |
 | `bolgeTema.ts` | Bölgeye göre görsel tema; ayrıca `unUnvani` (ün → 8 kademeli ünvan), `aranmaYildiz` (suç seviyesi → 0-5 yıldız), `konutGoruntusuGetir` (konut kademesi+çağ → dönemsel ad/emoji) ve `meslekBinasiGetir` (meslek+çağ(+din_kultur) → sahnedeki işyeri binası ad/emoji) gibi sayı/id→gösterim dönüştürücüleri |
 | `public/assets/sahne/<cag>/<tip>/{arka-plan,on-plan}.webp` | Opsiyonel bölge sahnesi görsel katmanları — `BolgeSahnesi` bunları önce arar, 404'te otomatik eski prosedürel SVG'ye döner (bkz. `public/assets/sahne/README.md`) |
 | `ses.ts` | Ses efektleri |
-| `components/*.tsx` | Her biri tek bir panel/ekran parçası: `Banner` (açılış ekranı çağ/bölge şeridi), `UstSerit` (oyun ekranının üst şeridi — yıl/yaş/can/para/mutluluk/aranma modülleri; Ahlak modülü artık çıplak sayı değil, `bolgeTema.ahlakEtiketi` ile 6 kademeli bir sözel seviye — Zalim...Gurur Abidesi — gösterir), `AileOzetPaneli` (sol panel: eş/çocuk/evcil hayvan özeti), `SiyasetPaneli` (sağ panel: hizip + dönem), `KomutaSeridi` (sol panelde "Görev" bölümü — amir/ast/ekip/meslek-metrik satırları; artık ayrı bir üst şerit DEĞİL, oyun ekranı üstünde tek satır tutulmaya çalışılınca isimler taştığı için sol panele taşındı), `FinansOzetPaneli` (sol panelde, Ün rozetinin altında, KomutaSeridi'nden önce — kompakt üç satırlık yıllık gelir/gider/net özeti; eskiden merkez sahnenin üstünde sadece "Yıllık gelir" gösteren tek satırlık `.merkez-sahne-ustbilgi` overlay'inin yerini aldı. `App.tsx`'teki bir `useEffect` [karakter?.id, karakter?.tur_sayisi, karakter?.meslek] değiştikçe `GET /:id/finans`'ı arka planda çeker ve `finans` state'ini günceller — bu widget'ın her turda taze kalması için; finans henüz çekilmeden ilk render'da gelir `karakter.maas_yillik` önbelleğinden, gider/net ise "…" placeholder'ından gösterilir), `SahneHotspotlari` (`.merkez-sahne` üstündeki 4 tıklama noktası — ev/işyeri/mağaza/sosyalleş, hiçbiri ayrı görsel dosyası kullanmaz), `SonucEfekti` (seçim sonucu animasyonu), `GecmisGrafik` (gecmis[] çizimi), `HayatHikayesi`, `IliskilerPaneli`, `AileEkrani`, `FinansEkrani`, `IsYatirimEkrani` (işyeri hotspotundan doğrudan açılan birleşik "İşin & Yatırımların" ekranı — eski `IsDetayEkrani`+`YatirimEkrani` ikilisinin yerini aldı, bkz. yukarıdaki madde), `IsyeriPaneli` (sağ panelde her zaman görünen küçük özet — `IsYatirimEkrani`'nden ayrı, oraya dokunulmadı), `EnvanterPaneli` (gizemli eşyalar + `magaza_envanteri`, "Kullan" butonuyla, sol panelde), `MagazaPaneli` (şifa/lüks sekmeleri, §26), `SosyallesmePaneli`, `DurumPaneli`, `HaberlerPaneli`, `KisilikPaneli`, `KarakterAvatari`, `BolgeSahnesi`, `BolgeBilgisiPaneli`, `EtkiCipleri` |
+| `components/*.tsx` | Her biri tek bir panel/ekran parçası: `Banner` (açılış ekranı çağ/bölge şeridi), `UstSerit` (oyun ekranının üst şeridi — yıl/yaş/can/para/mutluluk/aranma modülleri; Ahlak modülü artık çıplak sayı değil, `bolgeTema.ahlakEtiketi` ile 6 kademeli bir sözel seviye — Zalim...Gurur Abidesi — gösterir), `AileOzetPaneli` (sol panel: eş/çocuk/evcil hayvan özeti), `SiyasetPaneli` (sağ panel: hizip + dönem), `KomutaSeridi` (sol panelde "Görev" bölümü — amir/ast/ekip/meslek-metrik satırları; artık ayrı bir üst şerit DEĞİL, oyun ekranı üstünde tek satır tutulmaya çalışılınca isimler taştığı için sol panele taşındı; **ekip satırları 2026-09'da FinansEkrani'nden buraya taşındı** — her ekip üyesi rol + yıllık maaş + `🎭 kişilik · 🤝 sadakat · kalite %min-max` detayı + bir **Kov** butonu (`.komuta-satir-ekip`, `onEkipCikar` prop'u) gösterir), `FinansOzetPaneli` (sol panelde, Ün rozetinin altında, KomutaSeridi'nden önce — kompakt üç satırlık yıllık gelir/gider/net özeti; eskiden merkez sahnenin üstünde sadece "Yıllık gelir" gösteren tek satırlık `.merkez-sahne-ustbilgi` overlay'inin yerini aldı. `App.tsx`'teki bir `useEffect` [karakter?.id, karakter?.tur_sayisi, karakter?.meslek] değiştikçe `GET /:id/finans`'ı arka planda çeker ve `finans` state'ini günceller — bu widget'ın her turda taze kalması için; finans henüz çekilmeden ilk render'da gelir `karakter.maas_yillik` önbelleğinden, gider/net ise "…" placeholder'ından gösterilir), `SahneHotspotlari` (`.merkez-sahne` üstündeki 4 tıklama noktası — ev/işyeri/mağaza/sosyalleş, hiçbiri ayrı görsel dosyası kullanmaz), `SonucEfekti` (seçim sonucu animasyonu), `GecmisGrafik` (gecmis[] çizimi), `HayatHikayesi`, `IliskilerPaneli`, `AileEkrani`, `FinansEkrani`, `IsYatirimEkrani` (işyeri hotspotundan doğrudan açılan birleşik "İşin & Yatırımların" ekranı — eski `IsDetayEkrani`+`YatirimEkrani` ikilisinin yerini aldı, bkz. yukarıdaki madde), `IsyeriPaneli` (sağ panelde her zaman görünen küçük özet — `IsYatirimEkrani`'nden ayrı, oraya dokunulmadı), `EnvanterPaneli` (gizemli eşyalar + `magaza_envanteri`, "Kullan" butonuyla, sol panelde), `MagazaPaneli` (şifa/lüks sekmeleri, §26), `SosyallesmePaneli`, `DurumPaneli`, `HaberlerPaneli`, `KisilikPaneli`, `KarakterAvatari`, `BolgeSahnesi`, `BolgeBilgisiPaneli`, `EtkiCipleri`, `AyarlarModal` (dişli düğmesi / ana ekran "⚙️ Ayarlar" ile açılan ortalanmış modal — 2 sekme: Genel [dil + ses] / Görüş & Öneri [geri bildirim formu], §29) |
 
 ## 20. Veritabanı Şeması
 
-SQLite + Prisma ([schema.prisma](server/prisma/schema.prisma)):
+PostgreSQL + Prisma ([schema.prisma](server/prisma/schema.prisma)) — `Score.skor` ve `Score.para` `Float`:
 
 ```prisma
 model Session {
@@ -730,15 +771,21 @@ model Score {
 
 `Session.data` **tam state'in düz JSON'udur** — CharacterState'e yeni bir alan eklemek şema migrasyonu gerektirmez, ama eski kayıtlarda o alan `undefined` olacağından geriye dönük varsayılan/opsiyonel ele alınmalı.
 
+**Geri bildirim (§29) Prisma KULLANMAZ.** Şema Postgres'e taşınma sürecinde olduğu için yeni bir model + migration eklemekten kaçınıldı; geri bildirimler `server/data/geri-bildirim.jsonl`'e satır satır yazılır (`GERI_BILDIRIM_DOSYA` ile taşınabilir) + anlık olarak webhook'a gider. Render "free" planında kalıcı disk olmadığından JSONL deploy/restart'ta sıfırlanır — prod'da güvenilir kanal webhook'tur. Şema oturunca bir `GeriBildirim` modeline yükseltilebilir.
+
 ## 21. Moderasyon
 
 [kufurFiltresi.ts](server/src/moderasyon/kufurFiltresi.ts): sadece liderlik tablosu **isim** girişinde kullanılır. Türkçe karakterleri sadeleştirir (`ı→i, ğ→g, ü→u, ş→s, ö→o, ç→c`), leetspeak normalize eder (`4/@→a, 3→e, 1→i, 0→o`), alfasayısal olmayanı siler, ardından TR+EN küfür kök listesiyle `includes` eşleşmesi yapar. NLP değil, basit ilk savunma hattı.
 
 ## 22. Test & Analiz Araçları
 
-`server/tests/` — Vitest, 30 dosya, sisteme göre bölünmüş: `gameFlow, tepki, konut, yatirim, mulkVeSucSistemi, hapishane, yolculuk, hizipOlaylari, saray, sehirYonetimi, evcilHayvan, gizemliEsyalar, hanedan (soy sürdürme), astVeAile, meslekMetrikleri, moderation, persistence, tagMotoru, tonalDenge (ağır/hafif ton dengesi), donemselOlaylar, dinOlaylari, askerDinAdamiYollari, derinlikMekanikleri, basarimlar, aranmaSeviyesi, sosyallesme, magaza, donemselDunyaOlaylari (enflasyon + savaş/veba/kriz/bağış, §27), sucKazanci (suç işleyerek para kazanma motor kuralı, §9 adım 3.5)`. Bir mekanik değiştirilirken **ilgili test dosyasını çalıştır**, tüm 48K satırlık veriyi elle doğrulamaya çalışma.
+`server/tests/` — Vitest, `gameFlow, tepki, konut, yatirim, mulkVeSucSistemi, hapishane, yolculuk, hizipOlaylari, saray, sehirYonetimi, evcilHayvan, gizemliEsyalar, astVeAile, meslekMetrikleri, moderation, persistence, tagMotoru, tonalDenge (ağır/hafif ton dengesi), donemselOlaylar, dinOlaylari, askerDinAdamiYollari, derinlikMekanikleri, basarimlar, aranmaSeviyesi, sosyallesme, magaza, donemselDunyaOlaylari (enflasyon + savaş/veba/kriz/bağış, §27), sucKazanci (suç işleyerek para kazanma motor kuralı, §9 adım 3.5), yaslanma (pasif regen tavanı + ileri yaş ecel riski, §13), rutbe (5 kademeli rütbe reformu, §14)`. Bir mekanik değiştirilirken **ilgili test dosyasını çalıştır**, tüm 48K satırlık veriyi elle doğrulamaya çalışma.
 
-`server/scripts/`: `simulateEconomy.ts` (bin ömür simüle edip ekonomik dengeyi raporlar), `analyzeOlaylar.ts` (olay bankası dağılım istatistikleri + gerçek `olaySec()` ile olay-görülme sıklığı simülasyonu), `listUniversal.ts` (kısıtsız/evrensel olayları listeler), `simulateFullPlaythroughs.ts` (npm script'e bağlı değil; `DATABASE_URL="file:./simulation.db" npx tsx scripts/simulateFullPlaythroughs.ts` ile çalıştırılır — `simulateEconomy.ts`'ten farklı olarak olay içeriğini örneklemez, gerçek `gameEngine.ts` orkestrasyon fonksiyonlarını (`senaryoUret`/`secimUygula`/`yatirimYap`/`magazadanSatinAl`/`konutDegistir`/`mulkSatinAl`/`sosyallesmeYerineGit`/`zarAt` vb.) doğrudan çağırarak her çağ×meslek kombinasyonu için `SIM_N` adet — varsayılan 100 — tam ömür oynatan bir "bot oyuncu" simülasyonudur; sonuçları `simulateFullPlaythroughs.sonuc.json`'a yazar. `analyzeFullPlaythroughs.ts` o JSON'u çağ×meslek bazında özetler (`simulateFullPlaythroughs.analiz.json`). HTTP/rate-limiter'ı atlar; ayrı bir `simulation.db`'ye yazar, gerçek `dev.db`'ye dokunmaz.
+**⚠️ `npm test` şu an KIRIK:** `tests/globalSetup.ts` her koşuda `prisma migrate deploy`'u `DATABASE_URL="file:./test.db"` ile çalıştırıyor, ama `schema.prisma` PostgreSQL'e taşınmakta (working-tree değişikliği). Geçiş tamamlanana kadar saf-fonksiyon doğrulaması için bağımsız `npx tsx scripts/verify*.ts` script'leri kullanılıyor (bkz. `verifyRutbe.ts`, `verifyGeriBildirim.ts` [§29 form doğrulama/temizleme + bal küpü + kırpma]) ve motor entegrasyonu `scripts/_simPrismaStub.ts` (bellek-içi Prisma taklidi) üzerinden `simulate*.ts` ile doğrulanıyor.
+
+`server/scripts/`: `simulateGayrimenkul.ts` (npm script'e bağlı değil; `npx tsx scripts/simulateGayrimenkul.ts`, env `SIM_N`/`SIM_YIL`) — her piyasa mülkünün **30 yılda ilk yatırıma oranla net kâr/ROI'sini** Monte Carlo ile ölçer. Gerçek `mulkGetiriOraniHesapla` + `mulkGelirleriUygula` (bakım dahil) + gerçek arka plan dünya olaylarını (`buyukSavasKontrolEt`/`vebaBaslamaliMi`/`kucukKrizKontrolEt` vb.) çalıştırır; yalnız `ulke.ekonomi`/`nufusDurumu`/isyan/altın-çağ hafif bir kalıcılıklı örnekleyiciyle taklit edilir (olay `ulke_etkisi`'ne bağlı oldukları için). DB gerektirmez. `simulateEconomy.ts` (bin ömür simüle edip ekonomik dengeyi raporlar), `analyzeOlaylar.ts` (olay bankası dağılım istatistikleri + gerçek `olaySec()` ile olay-görülme sıklığı simülasyonu), `listUniversal.ts` (kısıtsız/evrensel olayları listeler), `simulateFullPlaythroughs.ts` (npm script'e bağlı değil; `DATABASE_URL="file:./simulation.db" npx tsx scripts/simulateFullPlaythroughs.ts` ile çalıştırılır — `simulateEconomy.ts`'ten farklı olarak olay içeriğini örneklemez, gerçek `gameEngine.ts` orkestrasyon fonksiyonlarını (`senaryoUret`/`secimUygula`/`yatirimYap`/`magazadanSatinAl`/`konutDegistir`/`mulkSatinAl`/`sosyallesmeYerineGit`/`zarAt` vb.) doğrudan çağırarak her çağ×meslek kombinasyonu için `SIM_N` adet — varsayılan 100 — tam ömür oynatan bir "bot oyuncu" simülasyonudur; sonuçları `simulateFullPlaythroughs.sonuc.json`'a yazar. `analyzeFullPlaythroughs.ts` o JSON'u çağ×meslek bazında özetler (`simulateFullPlaythroughs.analiz.json`). HTTP/rate-limiter'ı atlar; ayrı bir `simulation.db`'ye yazar, gerçek `dev.db`'ye dokunmaz.
+
+`simulateKisilikler.ts` + `analyzeKisilikler.ts` (npm script'e bağlı değil; `npx tsx scripts/simulateKisilikler.ts`) — `simulateFullPlaythroughs.ts`'in "tek tip bot"unu **7 oyuncu kişiliğine** genişletir: `garantici` (hep en yüksek başarı şansı, ölüm/hapis riskinden kaçar), `cimri` (parayı biriktirir, en ucuz ev+sofra, mekanikleri neredeyse hiç kullanmaz), `suclu` (ahlaki-taviz+para veren seçenekler, karaborsa+zar+meyhane), `luks` (ün/mutluluk, en pahalı ev+sofra+tüm lüks eşyalar), `kaotik` (seçim şansa bakmaz, ev/sofra her tur rastgele kademe), `survival` (sağlığı her şeyin üstünde tutar), `para` (beklenen parayı maksimize eder, agresif kendi-işi+mülk). Her kişilik seçeneğin gerçek `basarili_sonuc`/`basarisiz_sonuc` etkilerini puanlar (bkz. `secenekOzetiCikar`) ve tüm tur-arası eylemleri (ev/sofra kademesi, yatırım, mülk, mağaza şifa/lüks, envanter, zar, sosyalleşme) kendi `YanEylemAyari`'sına göre yönlendirir. Env: `SIM_N` (grup başına ömür, vars. 120), `SIM_KISILIK=suclu,para` (yalnız bu kişilikler). Çıktı: `simulateKisilikler.{sonuc,analiz}.json` (7 kişilik × 2 çağ × 3 meslek kırılımı + yan yana karşılaştırma tablosu). **DB kalıcılığı gerektirmez** — `scripts/_simPrismaStub.ts` `../src/db/prismaClient`'i bellek-içi no-op ile değiştirir; şema PostgreSQL'e taşındığı için eski `DATABASE_URL="file:./simulation.db"` yolu artık çalışmaz (`simulateFullPlaythroughs.ts` de aynı stub'ı `import "./_simPrismaStub"` ile kullanacak şekilde güncellenebilir).
 
 ## 23. Yeni Bir Olay Eklerken Kontrol Listesi
 
@@ -771,7 +818,7 @@ Karakterin çağına/bölgesine/mesleğine göre gidebileceği, oyuncunun **kend
 2. `POST /:id/sosyallesme {yerId}` → `sosyallesmeYerineGit` — `olaySecici.ts`'teki `sosyallesmeIcinOlaySec(state, yerId)` ile (hiç görülmemiş > en uzun süredir görülmemiş önceliğiyle, `agirlik` ağırlıklı) o mekâna ait bir olay seçilip `oturum.zorlananOlayId`'ye yazılır. **Bir tur harcamaz.**
 3. İstemci ardından normal `POST /:id/scenario` çağrısını yapar (App.tsx `sosyallesmeYerineGitHandler`, `devamEt` ile aynı desen) — zorlanan olay gelir, oyuncu normal zar/seçim akışıyla çözer; **zaman burada ilerler**.
 
-**Ayyaşlık mekaniği** (gameEngine.ts `sonucuUygulaVeIlerlet`, `AYYAS_ESIGI=3`): Çözülen olayın `sosyallesmeYeri`'si `alkolluMu:true` bir mekâna aitse `state.alkol_ziyaret_sayisi` her seferinde 1 artar (başarı/başarısızlık fark etmez). Sayaç eşiğe (**3**) ulaştığında ve karakterde henüz `bagimlilik:ayyas` yoksa (rising-edge, `devlet_takibinde`ki gibi tek seferlik): `bagimlilik:ayyas` + `bagimlilik:var` etiketleri eklenir, **ahlak -10, ün -15** anında düşer, kalıcı bir `Durum` (`id:"ayyaslik"`, `tur_basi_saglik:-1`, `tur_basi_mutluluk:-1`) eklenir, `maasCarpaniUygula(state, 0.95)` ile kalıcı %5 gelir cezası uygulanır, ve `zamanAnlatimi`'ne bir uyarı cümlesi eklenir. **Tek çıkış yolu:** `sosyal_meyhane_ayilma` (meyhane havuzunda, `gerekliEtiketler:["bagimlilik:ayyas"]`) — başarılı seçimi etiketi ve durumu kaldırıp telafi eder; bu olay dışında bağımlılığı geri alan hiçbir mekanizma yoktur (mevcut `bagimlilik:kumarbaz`/`bagimlilik:afyon` etiketleriyle aynı "kalıcı flavor" felsefesi).
+**Ayyaşlık mekaniği** (gameEngine.ts `sonucuUygulaVeIlerlet`, `AYYAS_ESIGI=3`): Çözülen olayın `sosyallesmeYeri`'si `alkolluMu:true` bir mekâna aitse `state.alkol_ziyaret_sayisi` her seferinde 1 artar (başarı/başarısızlık fark etmez). Sayaç eşiğe (**3**) ulaştığında ve karakterde henüz `bagimlilik:ayyas` yoksa (rising-edge, tek seferlik): `bagimlilik:ayyas` + `bagimlilik:var` etiketleri eklenir, **ahlak -10, ün -15** anında düşer, kalıcı bir `Durum` (`id:"ayyaslik"`, `tur_basi_saglik:-1`, `tur_basi_mutluluk:-1`) eklenir, `maasCarpaniUygula(state, 0.95)` ile kalıcı %5 gelir cezası uygulanır, ve `zamanAnlatimi`'ne bir uyarı cümlesi eklenir. **Tek çıkış yolu:** `sosyal_meyhane_ayilma` (meyhane havuzunda, `gerekliEtiketler:["bagimlilik:ayyas"]`) — başarılı seçimi etiketi ve durumu kaldırıp telafi eder; bu olay dışında bağımlılığı geri alan hiçbir mekanizma yoktur (mevcut `bagimlilik:kumarbaz`/`bagimlilik:afyon` etiketleriyle aynı "kalıcı flavor" felsefesi).
 
 `client/src/components/SosyallesmePaneli.tsx` mekân kartlarını listeler (alkollü mekânlarda ziyaret sayacı ipucu gösterir); `App.tsx`'te oyun ekranının üst satırında "🍷 Sosyalleş" butonuyla açılır. Testler: [sosyallesme.test.ts](server/tests/sosyallesme.test.ts).
 
@@ -797,15 +844,21 @@ Oyuncunun kendi seçtiği, para karşılığı eşya satın aldığı bir alt si
 
 ## 27. Dünya Olayları: Zorunlu Bağış / Büyük Savaş / Veba / Küçük Kriz
 
-Sosyalleşme/mağaza gibi oyuncu aksiyonuna bağlı değil; bunlar **tamamen arka planda** ([stateManager.ts](server/src/game/stateManager.ts)'teki saf fonksiyonlarla) tetiklenen, hiç olay ekranı gerektirmeyen periyodik mekanikler — **veba tek istisna** (aşağıya bakın). Hepsi `gameEngine.ts`'teki `sonucuUygulaVeIlerlet`'in yıl-ilerletme bloğunda (§9 adım 15), mevcut `krizEtkisiUygula`/`orduBuyumesiDene` ile aynı yerde, **turdaki HER yıl için ayrı ayrı** kontrol edilir (`orduBuyumesiDene`'deki `for (let i=0;i<yasArtisi;i++)` deseniyle aynı — bir tur 1-2+ yıl sürebildiği için "yıllık %X" ifadesinin gerçekten yıllık kalması için gerekli). Tetiklenirse sonuç mesajı, vergiBildirimi/ayyaşlık ile aynı "koşulsuz ekle" desende doğrudan `zamanAnlatimi`'ye + `hayat_hikayesi`'ne eklenir (§9'daki tek-slotlu `ekCumle` önceliğinden bağımsız). Hepsi `hapiste`/`yolculukta` etiketliyken o tur atlanır (kaybolmaz, ertesi turda tekrar denenir).
+Sosyalleşme/mağaza gibi oyuncu aksiyonuna bağlı değil; bunlar **tamamen arka planda** ([stateManager.ts](server/src/game/stateManager.ts)'teki saf fonksiyonlarla) tetiklenen, hiç olay ekranı gerektirmeyen periyodik mekanikler — **veba tek istisna** (aşağıya bakın). Hepsi `gameEngine.ts`'teki `sonucuUygulaVeIlerlet`'in yıl-ilerletme bloğunda (§9 adım 15), mevcut `krizEtkisiUygula`/`orduBuyumesiDene` ile aynı yerde, **turdaki HER yıl için ayrı ayrı** kontrol edilir (`orduBuyumesiDene`'deki `for (let i=0;i<yasArtisi;i++)` deseniyle aynı — bir tur 1-2+ yıl sürebildiği için "yıllık %X" ifadesinin gerçekten yıllık kalması için gerekli). Tetiklenirse sonuç mesajı, ayyaşlık bildirimiyle aynı "koşulsuz ekle" desende doğrudan `zamanAnlatimi`'ye + `hayat_hikayesi`'ne eklenir (§9'daki tek-slotlu `ekCumle` önceliğinden bağımsız). Hepsi `hapiste`/`yolculukta` etiketliyken o tur atlanır (kaybolmaz, ertesi turda tekrar denenir).
 
-**Zorunlu Bağış** (`zorunluBagisKontrolEt`): nakit+mülk toplamı (`gayrimenkulDegeriHesapla`) **500**'ü aşınca ve son tetiklenmeden (ya da `baslangic_yili`'den) beri **en az 5 yıl** geçmişken, her yıl **%25** ihtimalle tetiklenir; tetiklenince servetin **%15-20**'si (`paraYuvarla`) `para`'dan zorla düşer, `son_zorunlu_bagis_yili` güncellenir. **Mevcut pasif "zenginlik vergisi" (%4/yıl, §13) ile AYNI ŞEY DEĞİL** — o ayrıca çalışmaya devam eder; bu tek seferlik, büyük ve kendi cooldown'una sahip ayrı bir mekanizma.
+**Zorunlu Bağış** (`zorunluBagisKontrolEt`) — *"kral zenginleştiğini fark etti, bağış istiyor"*: nakit+mülk toplamı (`gayrimenkulDegeriHesapla`) **500**'ü aşınca ve son tetiklenmeden (ya da `baslangic_yili`'den) beri **en az 5 yıl** geçmişken, her yıl **%25** ihtimalle tetiklenir; tetiklenince servetin **%15-20**'si (`paraYuvarla`) `para`'dan zorla düşer, `son_zorunlu_bagis_yili` güncellenir. **Zenginliğin TEK bedeli budur** — eski pasif %4/yıl "zenginlik vergisi" (§13) kaldırıldı. `dunyaFinansEtkileri` servet 500'ü aşınca bir uyarı satırı ekler (cooldown içindeyse "~N yıl daha bağış isteyemez", değilse "her yıl ~%25 ihtimalle …").
 
 **Büyük Savaş** (`buyukSavasKontrolEt`/`buyukSavasBitisKontrolEt`): SADECE `!state.ulke.savasta` iken kontrol edilir — bu yüzden mevcut "tarihi savaş ilanı" mekanizmasıyla (§11 kural 1, sabit tarihli, tek seferlik) asla üst üste binmez; hangisi önce `ulke.savasta`'yı `true` yaparsa öbürü sessizce beklemeye devam eder. Son savaşın bitişinden (ya da `baslangic_yili`'den) beri **en az 10 yıl** geçmişken, her yıl **%10** ihtimalle başlar. Başlayınca: düşman `tarihiSavasKontrol(bolge,yil,cag) ?? komsuGucSec(bolge)` ile seçilir (aynı iki fonksiyon `{komsu}` placeholder'ının kullandığıyla birebir aynı, §6/§16), süre **3-6 yıl**, `state.buyuk_savas = {dusman, baslangicYili, bitisYili, vergiOrani: 0.15-0.20, gidaCarpani: 1.25-1.35}`, `ulke.savasta=true`. Savaş sırasında `ulke.savasta`'yı zaten okuyan TÜM mevcut formüller (maaş ×0.85, mülk getirileri, mağaza fiyatları, ordu kaybı/büyümesi, kervan batma riski) otomatik devreye girer; ayrıca `giderKalemleriHesapla`'da **iki yeni etki** biner: `yasam` gideri `gidaCarpani` ile çarpılır, ve ayrı bir `savasVergisi` kalemi (`maas_yillik × vergiOrani`) pasif gelirden ek olarak kesilir (Finans ekranında "⚔️ Savaş vergisi" satırı). Süre dolunca `ulke.savasta=false`, `son_buyuk_savas_bitis_yili` yazılır, 10 yıllık cooldown yeniden başlar.
 
-**Veba** (`vebaBaslamaliMi`/`vebaBaslat`/`vebaYillikKontrol`/`vebaBitisKontrolEt`): **TEK istisna** — "önlem alırsan bulaşma ihtimalin düşer" gerçek bir oyuncu kararı gerektirdiği için küçük bir zorlanan olay olarak tanımlıdır: `kuresel_veba_baslangici` ([kureselOlaylar.ts](server/src/data/olaylar/kureselOlaylar.ts), 2 seçenek — "Önlem al" / "Her zamanki gibi yaşa"). Ömürde bir kez (`veba_gecirdi` bayrağı), 18+ yaşındayken her yıl **%4** ihtimalle (`vebaBaslamaliMi`) `oturum.zorlananOlayId`'yi bu olaya zorlar (tıpkı `zorunlu_sonraki` gibi). Olay çözülüp `ulke_etkisi.vebada:true` geldiğinde (`savasBasliyorMu` ile aynı desendeki `vebaBasliyorMu` tespiti) `vebaBaslat` çağrılır: aktif faz **2-4 yıl**, ardından **10-15 yıl** daha süren bir "iz" fazı (`etkiBitisYili`) — bu iz süresince (aktif+iz toplamı) `state.yil < etkiBitisYili` iken konut kirası **×0.60-0.70** (boş evler, `giderKalemleriHesapla`), maaş **×1.20-1.30** (işçi kıtlığı, `hesaplaMaasYillik`). Aktif fazda (sadece `state.veba.aktif` iken) her yıl karakter **%3/yıl** (önlem alındıysa **%1.5/yıl**), eş **%2/yıl** (**%1/yıl**), yaşayan bir çocuk **%2/yıl** (**%1/yıl**) ölüm riski taşır — eş/çocuk kaybı mevcut `es_kaybet`/`cocuk_kaybet` mantığıyla birebir aynı state mutasyonunu kullanır. Aktif faz bitince `ulke.vebada=false` olur ama `state.veba` **silinmez** (`aktif:false`, iz sürer); `etkiBitisYili`'ye ulaşılınca `state.veba=null` olur.
+**Veba** (`vebaBaslamaliMi`/`vebaBaslat`/`vebaYillikKontrol`/`vebaBitisKontrolEt`) — yama #2'de ciddi biçimde elden geçti. **TEK istisna** — gerçek bir oyuncu kararı gerektirdiği için zorlanan olaylar olarak tanımlı ([kureselOlaylar.ts](server/src/data/olaylar/kureselOlaylar.ts)):
+- **Başlangıç:** `kuresel_veba_baslangici` — **18+ yaşında her yıl %3** (`VEBA_YILLIK_IHTIMAL`, yama #2'de %4→%3) ihtimalle `oturum.zorlananOlayId`'ye zorlanır. Artık "ömürde bir kez" DEĞİL — bir dalga (aktif+iz fazı) tamamen bitince `son_veba_bitis_yili` yazılır ve **20 yıl cooldown** (`VEBA_COOLDOWN_YIL`) sonrası tekrar tetiklenebilir (uzun ömürde tipik 1, nadiren 2 kez). Aktif/iz fazındaki bir veba (`state.veba` dolu) yeni dalgayı bloklar.
+- **3 seçenek = 3 korunma kademesi** (her biri `veba_koruma` 0/1/2 verir, `ulke_etkisi:{vebada:true}` ile): "kırsala çekil" (maliyet 15, para −15/mutluluk −10/ün −4, `veba_koruma:2`) / "evde karantina" (maliyet 6, para −6/mutluluk −6, `:1`) / "hayatına devam et" (bedava, `:0`). `baseBasariSansi` < 100 ve **başarısız seçim korunmayı bir kademe düşürür**.
+- `vebaBaslat(state, korumaSeviyesi)`: aktif faz **2-4 yıl** + **10-15 yıl** iz fazı (`etkiBitisYili`); iz süresince konut kirası **×0.60-0.70**, maaş **×1.20-1.30**.
+- **Yıllık ölüm riski `korumaSeviyesi`'ne göre 3 kademe** (`vebaYillikKontrol`, yama #2'de ciddileştirildi): karakter `VEBA_OLUM_KADEME = [0.09, 0.05, 0.025]` ([hiç, kısmi, tam]); eş `[0.05, 0.03, 0.015]`; çocuk `[0.045, 0.028, 0.013]`. 2-4 yıllık aktif fazda korumasız kümülatif ölüm ~%20-28, tam korunmalı ~%6-8.
+- **"Salgın dönemi" bulaşma olayları** (yalnız `gerekliUlke:{vebada:true}` iken normal havuza girer): `veba_kapiyi_calan` (hasta akraba sığınıyor), `veba_cenaze`, `veba_pazarda_temas`, `veba_hasta_bakiciligi` — her biri yardım/temas (ahlak+, büyük `saglik` kaybı + `olum_sansi` başarısızlıkta) ile kaçınma (vicdan/moral bedeli) arasında seçim; bu riskler yıllık ölüm zarının ÜSTÜNE biner.
+- Aktif faz bitince `ulke.vebada=false` ama `state.veba` silinmez (iz sürer); `etkiBitisYili`'ye ulaşınca `state.veba=null` + `son_veba_bitis_yili=yil`.
 
-**Küçük Kriz** (`kucukKrizKontrolEt`): mekanik olarak mevcut **"kitlik" kriz tipini yeniden kullanır** (§13 `KRIZ_ETKI`, -2 sağlık/yıl otomatik uygulanır) — yeni bir `UlkeKrizi.tur` eklenmez, sadece mesaj metninde "Kıtlık" ile "Haydut Baskını" arasında rastgele seçim yapılır (flavor). `state.ulke.kriz` (herhangi bir tür) zaten aktifken atlanır. `kucuk_kriz_sonraki_yil` eşiğine (yaratılışta `baslangic_yili + 5..7`) ulaşılınca tetiklenir: `state.ulke.kriz={tur:"kitlik", bitisYili: yil+2..3}`, **ayrıca** SADECE o yıl için geçerli `gida_fiyat_sok_bitis_yili = yil+1` yazılır (`giderKalemleriHesapla`'daki `yasam` gideri o yıl ×2 olur, bir sonraki tur otomatik normale döner), ve `kucuk_kriz_sonraki_yil` yeniden `yil + 5..7` olarak kurulur.
+**Küçük Kriz** (`kucukKrizKontrolEt`): mekanik olarak mevcut **"kitlik" kriz tipini yeniden kullanır** (§13 `KRIZ_ETKI`, yama #1'de **-1** sağlık/yıl — eskiden -2) — yeni bir `UlkeKrizi.tur` eklenmez, mesaj metninde "Kıtlık"/"Haydut Baskını" arasında rastgele seçim (flavor). `state.ulke.kriz` zaten aktifken atlanır. `kucuk_kriz_sonraki_yil` eşiğine (yaratılışta `baslangic_yili + 5..7`) ulaşınca: `state.ulke.kriz={tur:"kitlik", bitisYili: yil+1..2}` (yama #1'de 2-3→1-2 yıl), **ayrıca** SADECE o yıl için `gida_fiyat_sok_bitis_yili = yil+1` yazılır (`giderKalemleriHesapla`'daki `yasam` gideri o yıl ×2 olur, bir sonraki tur otomatik normale döner), ve `kucuk_kriz_sonraki_yil` yeniden `yil + 5..7` olarak kurulur.
 
 **Etkileşim notu:** Savaşın `gidaCarpani`'si ile küçük krizin ×2 şoku **çarpımsal birleşir** (nadir ama kasıtlı olarak engellenmiyor) — ikisi aynı yıla denk gelirse gıda gideri hem savaş hem kriz çarpanıyla büyür.
 
@@ -823,6 +876,21 @@ Yerel geliştirme hâlâ iki ayrı process (`server/` + `client/` `npm run dev`)
   - `app.listen(PORT)` — `PORT` Render tarafından enjekte edilir (`process.env.PORT ?? 3001`). `trust proxy` zaten 1.
 - **Kök [package.json](package.json)** (yeni, deploy kökü — oyun mantığıyla ilgisi yok): `build` = server+client `npm ci --include=dev` → `prisma generate` → client build → server `tsc`; `start` = server'ın `start:prod`'u.
 - **[server/package.json](server/package.json):** yeni scriptler `start:prod` (`prisma migrate deploy && node dist/server.js`) ve `prisma:generate`. Eski `start` (`node dist/server.js`) korundu.
-- **[render.yaml](render.yaml):** tek `web` servisi + kalıcı disk (`/var/data`, `sizeGB:1`). `DATABASE_URL=file:/var/data/prod.db`. **Kalıcı disk Render ücretsiz planında yok → en az `starter` gerekir**; ücretsiz kalınacaksa Prisma şeması Postgres'e taşınmalı. `migrate deploy` build'de değil **start'ta** çalışır (disk yalnızca çalışma anında mount'lu).
+- **[render.yaml](render.yaml):** tek `web` servisi, `plan: free`, disk YOK. Veritabanı **harici bir PostgreSQL** (Neon/Supabase); `DATABASE_URL` `sync:false` ile Render panelinden elle girilir. `migrate deploy` build'de değil **start'ta** (`start:prod`) çalışır — canlı Neon şemasını günceller. Free plan 15 dk hareketsizlikte uyur (~50 sn cold start); aktif oturumlar DB'de olduğu için kaybolmaz.
+- **Prisma → PostgreSQL:** [schema.prisma](server/prisma/schema.prisma) `provider = "postgresql"` (eski SQLite'tan taşındı — free plan kalıcı disk vermediği için). Eski SQLite migration'ları silinip tek bir Postgres baseline'ı ([server/prisma/migrations/0_init/](server/prisma/migrations/0_init/migration.sql)) ile değiştirildi. `Score.skor` ve `Score.para` artık `Float` (skor formülü ondalık üretebiliyor, §13). Yerel geliştirme de artık bir Postgres ister (Docker ya da Neon dev branch) — `server/.env.example` Docker satırını içeriyor.
 - **[.node-version](.node-version):** `22`. **[.gitignore](.gitignore):** `server/public/` (build çıktısı), `*.db`, `.env` dosyaları eklendi.
 - Deploy sonrası CLAUDE.md/README güncel tutma kuralı (§23 mantığı) burada da geçerli.
+
+## 29. Ayarlar Ekranı & Geri Bildirim
+
+Dişli (`⚙️`) düğmesi kökte `ekran`'dan bağımsız her zaman render edilir (`.ayar-ac-buton`, sağ üst, `.ses-toggle-buton`'un solunda); giriş ekranında ayrıca kahraman buton satırında bir "⚙️ Ayarlar" düğmesi var. İkisi de `App.tsx`'teki `ayarlarAcik` state'ini açar → **[AyarlarModal](client/src/components/AyarlarModal.tsx)** (ortalanmış, `.ayarlar-katman`/`.ayarlar-modal`, Esc + overlay tıklama + ✕ ile kapanır).
+
+**İki sekme:**
+- **Genel:** (a) **Dil** — `tr`/`en` seçimi, `ayarlariKaydet({dil})` ile `localStorage`'a (`kader-carki-ayarlar`) yazılır; `App.tsx`'teki `dil` state'i modalı anında yeniden çevirir. Çeviri altyapısı ([i18n.ts](client/src/i18n.ts) `metinler(dil)`) **şu an SADECE bu modalı** kapsar — menüler, olay metinleri, üretilen anlatı hâlâ Türkçe (kapsam ileride kademeli genişletilebilir; `EN` nesnesi `typeof TR` olduğu için anahtar kümeleri hep eşit kalır). "English (beta)" seçilince altta bir uyarı satırı çıkar. (b) **Ses** — Açık/Kapalı; mevcut `sesToggle`/`ses.ts` tercihini yönetir (ayrı bir ayar alanı değil).
+- **Görüş & Öneri:** kategori (`hata`/`oneri`/`diger`) + mesaj (maks 2000, sayaç) + opsiyonel iletişim (maks 120). `App.tsx.geriBildirimGonderHandler` gönderirken **oyun bağlamını otomatik ekler**: `stateId, ekran, cag, bolge, yerlesim, meslek, yas, yil, surum` (`APP_SURUM`, App.tsx tepesinde elle güncellenen sabit), `dil`, `userAgent`. Başarıda form yerini yeşil onay + "Yeni mesaj gönder" alır.
+
+**Sunucu:** `POST/GET /api/geri-bildirim` ([geriBildirim.routes.ts](server/src/routes/geriBildirim.routes.ts), [server.ts](server/src/server.ts)'te `geriBildirimLimiti` 5/60sn ile mount'lu). Saf `geriBildirimTemizle(govde)` doğrular/temizler (min 3 karakter, gizli `sirket` bal küpü → sessiz 200, mesaj 2000'e / iletişim 120'ye / bağlam alanları 300'e kırpılır) — HTTP dışında test edilebilir (bkz. [verifyGeriBildirim.ts](server/scripts/verifyGeriBildirim.ts), §22). Kayıt [geriBildirimDeposu.ts](server/src/utils/geriBildirimDeposu.ts) ile JSONL'ye yazılır (§20 — Prisma yok) **ve** [webhookBildirim.ts](server/src/utils/webhookBildirim.ts) ile `GERI_BILDIRIM_WEBHOOK_URL`'e ateşle-unut POST atılır (URL `api.telegram.org` içeriyorsa Telegram `{chat_id,text}`, yoksa Discord `{content}`; hata ana isteği etkilemez). `GET`, `GERI_BILDIRIM_ANAHTARI` env'iyle `?key=` eşleşmezse 403.
+
+**Env** (hepsi opsiyonel, §1 + [render.yaml](render.yaml)): `GERI_BILDIRIM_WEBHOOK_URL`, `GERI_BILDIRIM_TELEGRAM_CHAT_ID`, `GERI_BILDIRIM_ANAHTARI`, `GERI_BILDIRIM_DOSYA`. Hiçbiri yoksa: geri bildirim yalnız yerel JSONL'ye yazılır, okuma ucu 403 döner.
+
+**CSP notu (§28):** webhook sunucudan dışarı gittiği için tarayıcı `connect-src` direktifi etkilenmez — CSP'ye dokunulmadı.

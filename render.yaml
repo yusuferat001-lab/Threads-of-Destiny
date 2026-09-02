@@ -1,18 +1,19 @@
 # Render Blueprint — https://render.com/docs/blueprint-spec
 #
-# Tek "always-on" Node web servisi:
+# Tek "free" Node web servisi:
 #   - Express hem /api'yi hem derlenmiş React istemcisini (server/public) servis eder
-#   - SQLite veritabanı kalıcı diskte (/var/data) tutulur
+#   - Veritabanı HARİCİ ücretsiz bir Postgres'tir (Neon / Supabase) — DATABASE_URL
+#     Render panelinden (Environment) elle girilir, bu yüzden burada sync:false.
 #
-# ÖNEMLİ: Kalıcı disk (persistent disk) Render'ın ÜCRETSIZ planında ÇALIŞMAZ.
-# En az "starter" (aylık ücretli) instance tipi gerekir. Ücretsiz kalmak istersen
-# SQLite yerine harici bir Postgres'e geçmen gerekir (bkz. README / CLAUDE.md).
+# NOT: Free plan 15 dk hareketsizlikten sonra uykuya dalar; uykudan sonraki ilk
+# istek ~50 sn sürer. Aktif oyunlar DB'de tutulduğu için uyanışta kaybolmaz
+# (server.ts açılışta aktif oturumları geri yükler).
 
 services:
   - type: web
     name: kader-carki
     runtime: node
-    plan: starter
+    plan: free
     region: frankfurt
     branch: main
     buildCommand: npm run build
@@ -22,13 +23,21 @@ services:
     envVars:
       - key: NODE_VERSION
         value: "22"
+      # Neon/Supabase'den aldığın bağlantı dizesi. Örn:
+      #   postgresql://user:pass@ep-xxx.eu-central-1.aws.neon.tech/neondb?sslmode=require
       - key: DATABASE_URL
-        value: file:/var/data/prod.db
-      # İstemci sunucuyla aynı origin'den geldiği için CORS zorunlu değil; yine de
-      # farklı bir domain'den erişim istersen buraya virgülle ayrılmış origin listesi gir.
+        sync: false
+      # İstemci sunucuyla aynı origin'den geldiği için CORS zorunlu değil; farklı
+      # bir domain'den erişim istersen virgülle ayrılmış origin listesi gir.
       - key: CORS_ORIGIN
         sync: false
-    disk:
-      name: data
-      mountPath: /var/data
-      sizeGB: 1
+      # Geri bildirim (Ayarlar → Görüş & Öneri): yeni mesajlar bu webhook'a düşer
+      # (Discord webhook URL'si ya da Telegram sendMessage URL'si). Boşsa yalnızca
+      # yerel JSONL'ye yazılır (free planda kalıcı disk yok → restart'ta silinir).
+      - key: GERI_BILDIRIM_WEBHOOK_URL
+        sync: false
+      - key: GERI_BILDIRIM_TELEGRAM_CHAT_ID
+        sync: false
+      # GET /api/geri-bildirim?key=<bu değer> ile kayıtları okumak için.
+      - key: GERI_BILDIRIM_ANAHTARI
+        sync: false

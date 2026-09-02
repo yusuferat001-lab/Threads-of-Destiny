@@ -20,7 +20,7 @@ model Session {
 model Score {
   id          Int      @id @default(autoincrement())
   isim        String
-  skor        Int
+  skor        Float
   meslek      String
   rutbe       String   @default("")
   cag         String
@@ -29,7 +29,7 @@ model Score {
   kisilik     String   @default("")
   olum_nedeni String
   yas         Int
-  para        Int
+  para        Float
   un          Int
   /** Kazanılan ünvanlar, virgülle ayrılmış (ör. "İpek Kralı, Cesur Yürek"); liderlik tablosunda rozet olarak gösterilir. */
   unvanlar    String   @default("")

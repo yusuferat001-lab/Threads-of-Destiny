@@ -8,6 +8,7 @@ Metin tabanlı, tarihi bir hayat simülasyonu. Orta Çağ veya Sanayi Devrimi'nd
 
 - [Node.js](https://nodejs.org/) 20 veya üzeri (18+ de çalışır)
 - npm (Node ile birlikte gelir)
+- Bir PostgreSQL veritabanı (yerelde en kolayı Docker; prod'da harici bir Neon/Supabase)
 
 ## Kurulum
 
@@ -36,11 +37,18 @@ cp .env.example .env
 
 ## Veritabanını hazırla
 
-Sunucu, karakter kayıtlarını yerel bir SQLite dosyasında tutar. İlk çalıştırmadan önce şemayı oluşturman gerekiyor:
+Sunucu, karakter kayıtlarını bir **PostgreSQL** veritabanında tutar. Önce bir Postgres çalıştır (en kolayı Docker):
+
+```bash
+docker run --name kc-pg -e POSTGRES_PASSWORD=kader -e POSTGRES_DB=kadercarki -p 5432:5432 -d postgres:16
+```
+
+`server/.env` içindeki `DATABASE_URL`'i bu veritabanına yönlendir (`.env.example`'daki Docker satırı hazır), sonra şemayı oluştur:
 
 ```bash
 cd server
 npx prisma migrate deploy
+npx prisma generate
 ```
 
 ## Çalıştırma
@@ -75,41 +83,54 @@ npm test
 ## Proje yapısı
 
 ```
-server/   Node.js + Express + Prisma (SQLite) backend, oyun mantığı ve olay verisi
+server/   Node.js + Express + Prisma (PostgreSQL) backend, oyun mantığı ve olay verisi
 client/   React + Vite frontend
 ```
 
-## Web'e deploy (Render — tek servis)
+## Web'e deploy (Render — tek servis, ücretsiz)
 
-Prodüksiyonda tek bir "always-on" Node servisi çalışır: Express hem `/api`'yi hem
-de derlenmiş React istemcisini (`server/public`) aynı origin'den servis eder.
-SQLite veritabanı kalıcı bir diskte (`/var/data/prod.db`) tutulur.
+Prodüksiyonda tek bir Node servisi çalışır: Express hem `/api`'yi hem de derlenmiş
+React istemcisini (`server/public`) aynı origin'den servis eder. Veritabanı ayrı,
+**harici ve ücretsiz bir PostgreSQL**'dir ([Neon](https://neon.tech) önerilir).
 
-**Gereksinim:** Kalıcı disk Render'ın ücretsiz planında yoktur; en az `starter`
-(aylık ücretli) instance gerekir. Tamamen ücretsiz istiyorsan SQLite yerine
-harici bir Postgres'e geçmen gerekir.
+> Render ücretsiz planı 15 dk hareketsizlikten sonra uyur; uykudan sonraki ilk
+> istek ~50 sn sürer. Aktif oyunlar DB'de tutulduğu için uyanışta kaybolmaz
+> (`server.ts` açılışta aktif oturumları geri yükler).
 
 ### Adımlar
 
-1. Bu depoyu bir GitHub reposuna push et (`main` dalı).
-2. [render.com](https://render.com) → **New → Blueprint** → repoyu seç. Render
-   kökteki [`render.yaml`](render.yaml)'i okuyup servisi + diski oluşturur.
-3. İlk deploy'dan sonra servis `https://<ad>.onrender.com` adresinde yayında olur.
+1. **Neon'da veritabanı aç:** [neon.tech](https://neon.tech) → ücretsiz hesap →
+   New Project (bölge: Frankfurt) → verdiği bağlantı dizesini kopyala
+   (`postgresql://...@ep-xxx.eu-central-1.aws.neon.tech/neondb?sslmode=require`).
+2. **Depoyu GitHub'a push et** (`main` dalı).
+3. **Render Blueprint:** [render.com](https://render.com) → ücretsiz hesap →
+   **New → Blueprint** → repoyu seç. Render kökteki [`render.yaml`](render.yaml)'i
+   okuyup `web` servisini oluşturur.
+4. `DATABASE_URL` alanına 1. adımdaki Neon dizesini yapıştır; `CORS_ORIGIN`'i boş bırak.
+5. İlk deploy bitince servis `https://<ad>.onrender.com` adresinde yayında olur.
 
 ### Build / start (render.yaml içinde tanımlı)
 
 | Aşama | Komut | Ne yapar |
 |---|---|---|
 | Build | `npm run build` | `server/` + `client/` bağımlılıklarını kurar, `prisma generate`, istemciyi `server/public`'e derler, sunucuyu `tsc` ile derler |
-| Start | `npm start` | `prisma migrate deploy` (şemayı diske uygular) → `node server/dist/server.js` |
+| Start | `npm start` | `prisma migrate deploy` (Neon şemasını günceller) → `node server/dist/server.js` |
 
 ### Ortam değişkenleri
 
 | Değişken | Değer | Not |
 |---|---|---|
-| `DATABASE_URL` | `file:/var/data/prod.db` | Kalıcı disk mount yolu |
-| `NODE_VERSION` | `22` | |
+| `DATABASE_URL` | `postgresql://...?sslmode=require` | Neon'dan alınır, Render panelinden girilir (repoya yazılmaz) |
+| `NODE_VERSION` | `22` | `render.yaml`'da sabit |
 | `PORT` | *(Render otomatik enjekte eder)* | Kodda `process.env.PORT` okunuyor |
 | `CORS_ORIGIN` | *(opsiyonel)* | Sadece istemci farklı bir domain'den servis edilecekse gerekir |
 
-Yerel geliştirme akışı değişmedi (`server/` + `client/` ayrı `npm run dev`).
+### Sonraki güncellemeler
+
+`main` dalına her `git push` → Render otomatik yeniden derleyip yayınlar
+(`autoDeploy: true`). Şema değişirse önce yerelde `npx prisma migrate dev --name <ad>`
+çalıştır, oluşan migration dosyasını da commit et; Render `start` sırasında
+`prisma migrate deploy` ile canlıya uygular.
+
+Yerel geliştirme akışı değişmedi (`server/` + `client/` ayrı `npm run dev`,
+sadece artık yerelde de bir Postgres gerekiyor).
