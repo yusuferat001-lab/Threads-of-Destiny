@@ -167,3 +167,26 @@ export function magazaEsyasiTanimiGetir(id: string): MagazaEsyasiTanimi {
   if (!tanim) throw new Error(`Bilinmeyen mağaza eşyası: ${id}`);
   return tanim;
 }
+
+/**
+ * Bir "sifa" eşyasının KULLANILDIĞINDA tam olumlu etkisini verme ihtimali
+ * (2026-09). Kalanı: %10 sabit "hiç işe yaramadı", geri kalan da "ters tepti"
+ * (-5 can). Oran fiyatla artar — en ucuz sifa ~%60, en pahalısı ~%80 (tavan 0.80,
+ * taban 0.60). Oyuncuya net değil, bulanık bir bant olarak gösterilir (bilgi sisi).
+ */
+const SIFA_SANS_TABAN_FIYAT_MIN = 16;
+const SIFA_SANS_TABAN_FIYAT_MAX = 58;
+export const SIFA_SANS_MIN = 0.6;
+export const SIFA_SANS_MAX = 0.8;
+export const SIFA_HICBIRSEY_SANS = 0.1;
+
+export function sifaBasariSans(tabanFiyat: number): number {
+  const t = (tabanFiyat - SIFA_SANS_TABAN_FIYAT_MIN) / (SIFA_SANS_TABAN_FIYAT_MAX - SIFA_SANS_TABAN_FIYAT_MIN);
+  return Math.max(SIFA_SANS_MIN, Math.min(SIFA_SANS_MAX, SIFA_SANS_MIN + t * (SIFA_SANS_MAX - SIFA_SANS_MIN)));
+}
+
+/** Oyuncuya gösterilecek bulanık fayda bandı (5'in katına yuvarlanmış, ±5 sis). */
+export function sifaFaydaAralik(tabanFiyat: number): { min: number; max: number } {
+  const merkez = Math.round((sifaBasariSans(tabanFiyat) * 100) / 5) * 5;
+  return { min: Math.max(0, merkez - 5), max: Math.min(100, merkez + 5) };
+}

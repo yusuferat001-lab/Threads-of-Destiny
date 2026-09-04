@@ -444,7 +444,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     secenekler: [
       {
         metin: "Kara Kılıcın fısıltılarına cevap ver ve karanlığı kucakla.",
-        baseBasariSansi: 100,
+        baseBasariSansi: 78,
         gerekliEtiketler: [
           "envanter:kara_kilic",
         ],
@@ -603,7 +603,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     secenekler: [
       {
         metin: "Kara Kılıcı kuşanarak cepheye en önde git!",
-        baseBasariSansi: 95,
+        baseBasariSansi: 100,
         gerekliEtiketler: [
           "envanter:kara_kilic",
         ],
@@ -705,7 +705,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     secenekler: [
       {
         metin: "Kara Kılıcı kuşanarak cepheye en önde git!",
-        baseBasariSansi: 95,
+        baseBasariSansi: 100,
         gerekliEtiketler: [
           "envanter:kara_kilic",
         ],
@@ -1054,8 +1054,8 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     secenekler: [
       {
         metin: "Geçmişimdeki mutlu anıları verip sikkeyi al.",
-        baseBasariSansi: 100,
-        ipucu: "Mutluluğunu ve ahlakını tüketir ama efsanevi bir eşya (Gölge Sikke) verir",
+        baseBasariSansi: 90,
+        ipucu: "Mutluluğunu ve ahlakını tüketir; genellikle efsanevi Gölge Sikke'yi verir ama tüccar hile de yapabilir",
         basariliSonuc: {
           mutluluk: -30,
           ahlak: -15,
@@ -1065,7 +1065,10 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           mesaj: "Tüccar alnına dokundu. Çocukluk sevinçlerin, annenin yüzü... hepsi silindi. Elinde ise cehennem gibi soğuk bir 'Gölge Sikke' var.",
         },
         basarisizSonuc: {
-          mesaj: "Kullanılmadı.",
+          mutluluk: -30,
+          ahlak: -10,
+          mesaj: "Tüccar anılarını aldı ama avucuna bıraktığı sikke bir sis gibi dağıldı. Sokak da yok oldu. Bedeli ödedin, elin boş kaldı.",
+          detay: "Bazı pazarlar sadece almak için kurulur.",
         },
       },
       {
@@ -1243,9 +1246,9 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
       },
       {
         metin: "Sevdiğin birinin adını gerçekten fısılda.",
-        baseBasariSansi: 100,
+        baseBasariSansi: 88,
         maxAhlak: 70,
-        ipucu: "Karanlık ama etkili bir bahis — bedeli tam olarak belli değil",
+        ipucu: "Karanlık ama çoğunlukla etkili bir bahis — bedeli tam olarak belli değil, ters de tepebilir",
         basariliSonuc: {
           para: 60,
           un: 25,
@@ -1257,7 +1260,14 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           detay: "Şansın nereden geldiğini asla kimseye anlatamayacaksın.",
         },
         basarisizSonuc: {
-          mesaj: "Kullanılmadı.",
+          ahlak: -20,
+          mutluluk: -25,
+          saglik: -10,
+          etiket_sil: [
+            "esya:fisildayan_tas",
+          ],
+          mesaj: "Taş toza döndü ama karşılığında hiçbir kapı açılmadı. Sadece adını verdiğin kişi haftalar içinde hastalandı. Bedeli buymuş.",
+          detay: "Fısıltı hep bir şey alır; bu sefer sana hiçbir şey vermedi.",
         },
       },
     ],
@@ -1665,11 +1675,11 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     secenekler: [
       {
         metin: "Kara Kılıcı çek ve ayının üzerine yürü!",
-        baseBasariSansi: 100,
+        baseBasariSansi: 80,
         gerekliEtiketler: [
           "envanter:kara_kilic",
         ],
-        ipucu: "Gizli Envanter: Kılıç kana susadı",
+        ipucu: "Gizli Envanter: Kılıç kana susadı — ama ayı da hızlı",
         basariliSonuc: {
           un: 30,
           saglik: 5,
@@ -1678,7 +1688,10 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           detay: "Köyde sana 'Ayı Boğan' diyorlar ama sen kılıcın o an elinde nasıl kendi kendine titreştiğini unutamıyorsun.",
         },
         basarisizSonuc: {
-          mesaj: "Kullanılmadı.",
+          saglik: -35,
+          olum_sansi: 15,
+          mesaj: "Kılıç karanlığını salmadan ayı üstüne çöktü. Pençeler omzunu, çeneni parçaladı; kılıcı kaldırmaya bile fırsatın olmadı.",
+          detay: "Efsanevi çeliğin de bir hız sınırı varmış.",
         },
       },
       {
@@ -2607,8 +2620,8 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     secenekler: [
       {
         metin: "Tılsımı ver ve altınları al.",
-        baseBasariSansi: 100,
-        ipucu: "Ciddi bir servet, ancak efsanevi korumayı kaybedersin",
+        baseBasariSansi: 88,
+        ipucu: "Genellikle ciddi bir servet, ancak efsanevi korumayı kaybedersin; maskeli adama güvenmek risklidir",
         basariliSonuc: {
           para: 80,
           ahlak: -10,
@@ -2619,7 +2632,13 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           detay: "Cebin epey doldu ama o kadim sıcaklık göğsünden gitti. Artık sıradan ve savunmasızsın.",
         },
         basarisizSonuc: {
-          mesaj: "Kullanılmadı.",
+          ahlak: -10,
+          mutluluk: -15,
+          etiket_sil: [
+            "envanter:ejderha_tilsimi",
+          ],
+          mesaj: "Kese ağırdı ama sabah açtığında içi kuru yapraklarla doluydu. Maskeli adam da, tılsımın da gitti — elinde bir avuç çöp kaldı.",
+          detay: "Bazı alışverişlerin bedelini ancak ertesi sabah anlarsın.",
         },
       },
       {
@@ -2788,7 +2807,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
       },
       {
         metin: "Sikkeyi cebinde tut, sadece uğur olarak sakla.",
-        baseBasariSansi: 95,
+        baseBasariSansi: 100,
         ipucu: "Güvenli, gizemi korursun",
         basariliSonuc: {
           mutluluk: 3,

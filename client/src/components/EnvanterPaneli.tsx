@@ -1,5 +1,7 @@
 import { envanterListesiCikar } from '../envanter';
 import type { SahipOlunanEsya } from '../types';
+import { bic } from '../i18n';
+import { useDil } from '../DilContext';
 
 interface EnvanterPaneliProps {
   etiketler: string[];
@@ -9,12 +11,13 @@ interface EnvanterPaneliProps {
 }
 
 export function EnvanterPaneli({ etiketler, magazaEnvanteri, yukleniyor, onKullan }: EnvanterPaneliProps) {
-  const gizemliEsyalar = envanterListesiCikar(etiketler);
+  const { m, kt, dil } = useDil();
+  const gizemliEsyalar = envanterListesiCikar(etiketler, dil);
   if (gizemliEsyalar.length === 0 && magazaEnvanteri.length === 0) return null;
 
   return (
     <div className="envanter-paneli">
-      <h3>Envanter</h3>
+      <h3>{m.enBaslikTam}</h3>
 
       {gizemliEsyalar.map((esya) => (
         <div key={esya.id} className="envanter-esya" title={esya.aciklama}>
@@ -34,13 +37,13 @@ export function EnvanterPaneli({ etiketler, magazaEnvanteri, yukleniyor, onKulla
             {esya.simge}
           </span>
           <div className="envanter-esya-metin">
-            <span className="envanter-esya-ad">{esya.ad}</span>
+            <span className="envanter-esya-ad">{kt(esya.ad)}</span>
             <span className="envanter-esya-aciklama">
               {esya.kategori === 'luks'
-                ? 'Kalıcı bir koleksiyon parçası (arada bir bakım/vergi masrafı çıkarabilir).'
+                ? m.enLuksAciklama
                 : esya.kalanYil !== null
-                  ? `⏳ ${esya.kalanYil} yıl içinde kullanılmazsa çürür.`
-                  : 'Kullanılmayı bekliyor.'}
+                  ? bic(m.enCurumeUyariTam, esya.kalanYil)
+                  : m.enKullanimBekliyor}
             </span>
           </div>
           {esya.kategori === 'sifa' && onKullan && (
@@ -48,8 +51,9 @@ export function EnvanterPaneli({ etiketler, magazaEnvanteri, yukleniyor, onKulla
               className="envanter-kullan-buton"
               disabled={yukleniyor}
               onClick={() => onKullan(esya.id)}
+              title={m.enKullanSansHint}
             >
-              Kullan
+              {m.enKullanTam}
             </button>
           )}
         </div>

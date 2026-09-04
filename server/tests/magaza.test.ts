@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import {
   createCharacter,
   mesleğiSec,
@@ -23,6 +23,10 @@ function taze(): CharacterState {
   state.para = 2000;
   return state;
 }
+
+afterEach(() => {
+  vi.restoreAllMocks(); // sifa zar testlerindeki Math.random mock'u diğer testlere sızmasın
+});
 
 describe("mağaza kataloğu — fiyat/etki dengesi mantıklı olmalı", () => {
   it("her sifa eşyası için: fiyat arttıkça toplam (saglik+mutluluk) etki de artar", () => {
@@ -227,7 +231,8 @@ describe("gameEngine entegrasyonu — mağaza/envanter aksiyonları", () => {
     expect(digerSifa.kilitAciklamasi).toBeTruthy();
   });
 
-  it("envanterEsyasiKullan: sifa eşyasını kullanınca sağlık artar ve eşya envanterden düşer", async () => {
+  it("envanterEsyasiKullan: olumlu zar gelince sağlık artar ve eşya envanterden düşer", async () => {
+    vi.spyOn(Math, "random").mockReturnValue(0); // r=0 < pPozitif → tam olumlu dal
     const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
     await mesleğiAta(state.id, "Tüccar");
     state.para = 500;
@@ -237,6 +242,20 @@ describe("gameEngine entegrasyonu — mağaza/envanter aksiyonları", () => {
 
     const sonuc = await envanterEsyasiKullan(state.id, esyaId);
     expect(sonuc.state.saglik).toBeGreaterThan(50);
+    expect(sonuc.state.magaza_envanteri).toHaveLength(0);
+  });
+
+  it("envanterEsyasiKullan: ters tepen zar gelince sağlık düşer, eşya yine tükenir", async () => {
+    vi.spyOn(Math, "random").mockReturnValue(0.99); // r=0.99 > pPozitif+0.10 → ters tepme dalı
+    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    await mesleğiAta(state.id, "Tüccar");
+    state.para = 500;
+    state.saglik = 50;
+    const satinAlma = await magazadanSatinAl(state.id, "sifali_merhem");
+    const esyaId = satinAlma.state.magaza_envanteri[0].id;
+
+    const sonuc = await envanterEsyasiKullan(state.id, esyaId);
+    expect(sonuc.state.saglik).toBeLessThan(50);
     expect(sonuc.state.magaza_envanteri).toHaveLength(0);
   });
 

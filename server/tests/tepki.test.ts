@@ -83,10 +83,12 @@ describe("geri adım mekanizması (onTepki)", () => {
     const oncekiYas = bulunan.state.yas;
     const idx = yeniSenaryo.secenekler.findIndex((s) => !s.kilitli);
     const sonuc = await secimUygula(bulunan.state.id, idx >= 0 ? idx : 0);
-    // Eski bekleyenTepki hâlâ etkin olsaydı, zaman ilerlemeyip ya yeni bir ara_tepki
-    // ya da eski onTepki'nin (yeni senaryoyla alakasız) sonucu dönerdi.
-    expect("ara_tepki" in sonuc).toBe(false);
-    if (!("ara_tepki" in sonuc)) {
+    // Eski bekleyenTepki iptal olmalı: dönen sonuç ya normal bir SecimSonucu
+    // (zaman ilerler) ya da YENİ senaryoya ait taze bir ara_tepki olmalı —
+    // asla eski/alakasız onTepki'nin sonucu olmamalı.
+    if ("ara_tepki" in sonuc) {
+      expect(sonuc.olay_basligi).toBe(yeniSenaryo.olay_basligi);
+    } else {
       expect(sonuc.state.yas).toBeGreaterThan(oncekiYas);
     }
   }, 60000);

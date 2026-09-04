@@ -240,7 +240,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
       },
       {
         metin: "Kalabalıktan biraz uzakta, sessizce dua et.",
-        baseBasariSansi: 100,
+        baseBasariSansi: 90,
         ipucu: "Sakin ve içe dönük bir tercih",
         basariliSonuc: {          ahlak: 18,
           un: 10,
@@ -515,7 +515,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
       },
       {
         metin: "Kalabalıktan biraz uzakta, sessizce dua et.",
-        baseBasariSansi: 100,
+        baseBasariSansi: 90,
         ipucu: "Sakin ve içe dönük bir tercih",
         basariliSonuc: {          ahlak: 18,
           un: 10,
@@ -790,7 +790,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
       },
       {
         metin: "Kalabalıktan biraz uzakta, sessizce dua et.",
-        baseBasariSansi: 100,
+        baseBasariSansi: 90,
         ipucu: "Sakin ve içe dönük bir tercih",
         basariliSonuc: {          ahlak: 18,
           un: 10,
@@ -1065,7 +1065,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
       },
       {
         metin: "Küçük not defterine gördüklerini sessizce yaz.",
-        baseBasariSansi: 100,
+        baseBasariSansi: 90,
         ipucu: "Sakin ve içe dönük bir tercih",
         basariliSonuc: {          ahlak: 18,
           un: 10,
@@ -3561,7 +3561,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
       },
       {
         metin: "Nazikçe reddet, sessizce dua etmeyi tercih et.",
-        baseBasariSansi: 95,
+        baseBasariSansi: 90,
         ipucu: "Sakin, içe dönük",
         basariliSonuc: {
           zorunlu_sonraki: "hac_ortodoks_varis",
@@ -3569,8 +3569,11 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
           detay: "Her ibadet sözle olmak zorunda değil.",
         },
         basarisizSonuc: {
-          mesaj: "Kullanılmadı.",
+          un: -4,
+          mutluluk: -3,
           zorunlu_sonraki: "hac_ortodoks_varis",
+          mesaj: "Kenara çekilip suskun kalman kimileri tarafından kibir sanıldı; kaptan kaşlarını çattı.",
+          detay: "Sessizlik her zaman doğru anlaşılmıyor.",
         },
       },
     ],

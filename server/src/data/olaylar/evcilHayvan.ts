@@ -110,11 +110,11 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
     secenekler: [
       {
         metin: "Gökyüzüne bak ve Şahinini bekle.",
-        baseBasariSansi: 100,
+        baseBasariSansi: 85,
         gerekliEtiketler: [
           "evcil_hayvan_tur:Şahin",
         ],
-        ipucu: "Gizli Şık: Yırtıcılar boş dönmez",
+        ipucu: "Gizli Şık: Yırtıcılar genellikle boş dönmez",
         basariliSonuc: {
           mutluluk: 20,
           para: 35,
@@ -122,7 +122,10 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
           detay: "Özgürlüğe değil, sana dönmeyi seçti. Ve eli boş da dönmedi.",
         },
         basarisizSonuc: {
-          mesaj: "Kullanılmadı.",
+          mutluluk: -8,
+          saglik: -4,
+          mesaj: "Şahin bir hafta sonra bitkin ve pençeleri boş döndü. Sağ salim, ama günlerce onun için endişelenmek seni yıprattı.",
+          detay: "Bu sefer gökyüzü ona hiçbir şey vermedi.",
         },
       },
       {
@@ -791,11 +794,13 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
         maliyet: 8,
         ipucu: "Ucuz bir barış, komşuluk ilişkin bozulmaz",
         basariliSonuc: {
+          para: -8,
           dost_puani: 3,
           mesaj: "Özrün ve küçük ödemen komşunu yatıştırdı.",
           detay: "İyi komşuluk bazen birkaç sikkeyle korunuyor.",
         },
         basarisizSonuc: {
+          para: -8,
           mesaj: "Özrün kabul edildi ama komşun bir süre soğuk davrandı.",
           detay: "Bazı kırgınlıklar yavaş geçiyor.",
         },
@@ -918,6 +923,7 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
     ton: "agir",
     agirlik: 0.25,
     gorsel: "🐺",
+    yasakliEtiketler: ["evcil_hayvan_var"],
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Ormanın Derinliklerinde",

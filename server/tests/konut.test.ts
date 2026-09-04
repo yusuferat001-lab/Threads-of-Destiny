@@ -12,10 +12,10 @@ import { VARSAYILAN_KONUT_ID, TASINMA_MALIYETI } from "../src/data/konutlar";
 import { VARSAYILAN_YASAM_SECIMI_ID } from "../src/data/yasamSecenekleri";
 
 describe("konut sistemi (stateManager)", () => {
-  it("yeni karakter varsayılan konutta (Ahşap Ev) başlar", () => {
+  it("yeni karakter varsayılan konutta (Normal Ev) başlar", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
     expect(state.konut_id).toBe(VARSAYILAN_KONUT_ID);
-    expect(VARSAYILAN_KONUT_ID).toBe("ahsap_ev");
+    expect(VARSAYILAN_KONUT_ID).toBe("normal_ev"); // 2026-09: sağlık/ün açısından nötr varsayılan
   });
 
   it("giderKalemleriHesapla konut kirasını döker", () => {
@@ -24,17 +24,17 @@ describe("konut sistemi (stateManager)", () => {
     state.para = 1000;
     konutDegistir(state, "konak");
     const gider = giderKalemleriHesapla(state);
-    expect(gider.konut).toBe(21);
+    expect(gider.konut).toBe(19); // konak kirası 19; başlangıçta enflasyon 1 → çarpansız
   });
 
-  it("basit barınakta sağlık zamanla ciddi şekilde azalır", () => {
+  it("basit barınakta sağlık zamanla azalır", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
     mesleğiSec(state, "Tüccar");
     state.para = 1000;
-    konutDegistir(state, "basit_barinak"); // varsayılan artık ahsap_ev; en dibi açıkça seç
+    konutDegistir(state, "basit_barinak"); // en dibi açıkça seç
     state.saglik = 80;
     pasifEkonomiUygula(state, 5);
-    expect(state.saglik).toBeLessThan(80 - 20); // -6/yıl × 5 ≈ -30
+    expect(state.saglik).toBe(80 - 2 * 5); // 2026-09: dip kademe cezası -2/yıl
   });
 
   it("konakta ün zamanla artar", () => {
@@ -52,7 +52,7 @@ describe("konut sistemi (stateManager)", () => {
     mesleğiSec(state, "Tüccar");
     state.para = 1000;
     state.yasam_secimi_id = "normal_ye"; // sağlık/mutluluk etkisi olmayan yaşam tarzı; sadece konut etkisini izole eder
-    konutDegistir(state, "normal_ev");
+    // normal_ev artık varsayılan — ekstra konutDegistir gerekmez
     const oncekiUn = state.un;
     const oncekiSaglik = state.saglik;
     pasifEkonomiUygula(state, 5);
@@ -80,9 +80,9 @@ describe("konut sistemi (stateManager)", () => {
   it("taşınma nakliye maliyetini düşer", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
     state.para = 100;
-    konutDegistir(state, "normal_ev");
+    konutDegistir(state, "tas_ev"); // normal_ev'den (varsayılan) daha pahalı kademe → nakliye ücreti biner
     expect(state.para).toBe(100 - TASINMA_MALIYETI);
-    expect(state.konut_id).toBe("normal_ev");
+    expect(state.konut_id).toBe("tas_ev");
   });
 });
 
@@ -104,15 +104,16 @@ describe("yaşam tarzı seçimi sistemi", () => {
     expect(state.yasam_secimi_id).toBe(VARSAYILAN_YASAM_SECIMI_ID);
   });
 
-  it("çöpten toplamak bedavadır ama sağlığı ciddi şekilde aşındırır", () => {
+  it("çöpten toplamak bedavadır ama sağlığı aşındırır", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
     mesleğiSec(state, "Tüccar");
+    state.para = 1000; // borç cezası devreye girmesin
     state.saglik = 90;
     yasamSecimiDegistir(state, "copten_topla");
     const gider = giderKalemleriHesapla(state);
     expect(gider.yasam).toBe(0);
     pasifEkonomiUygula(state, 3);
-    expect(state.saglik).toBeLessThan(90 - 10);
+    expect(state.saglik).toBe(90 - 2 * 3); // 2026-09: dip sofra cezası -2/yıl
   });
 
   it("kaliteli yemek pahalıdır ama sağlık ve mutluluk katar", () => {
@@ -128,7 +129,7 @@ describe("yaşam tarzı seçimi sistemi", () => {
     expect(state.mutluluk).toBeGreaterThan(40);
   });
 
-  it("pasif regen yumuşak tavanı: 70 canın üstünde ev+yemek kazancı ciddi şekilde kısılır", () => {
+  it("pasif regen yumuşak tavanı: 80 canın üstünde ev+yemek kazancı ciddi şekilde kısılır", () => {
     // Tavan altı: 55 candan başlayınca şato(+3)+ziyafet(+3) = +6/yıl tam işler.
     const altta = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
     mesleğiSec(altta, "Tüccar");
@@ -149,8 +150,9 @@ describe("yaşam tarzı seçimi sistemi", () => {
     pasifEkonomiUygula(ustte, 1);
     const usttteKazanc = ustte.saglik - 90;
 
-    expect(alttaKazanc).toBeGreaterThan(4); // ~+6
-    expect(usttteKazanc).toBeLessThan(2); // ~+1.5 — 100'de sabitlenemez
+    expect(alttaKazanc).toBeGreaterThanOrEqual(5); // ~+6
+    expect(usttteKazanc).toBeLessThanOrEqual(2); // ~+1.5 (clampStats yuvarlaması ile ≤2) — 100'de sabitlenemez
+    expect(alttaKazanc).toBeGreaterThan(usttteKazanc); // tavan üstü belirgin daha az
   });
 
   it("aynı yaşam tarzına geçmeye çalışmak hata fırlatır", () => {

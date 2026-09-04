@@ -4,12 +4,16 @@ import { maasCarpaniUygula, MAAS_CARPANI_TAVAN } from "../src/game/stateManager"
 
 describe("kendi_isi yatırımı", () => {
   it("maliyet her tekrarda artar ve asla 0 veya 5 ile bitmez", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
-    await mesleğiAta(state.id, "Tüccar");
+    // dag_basi (maasCarpani 0.9) → MAAS_CARPANI_TAVAN'a takılmadan daha çok yatırım sığar.
+    const state = await yeniOyun("Orta Çağ", "Fransa", "dag_basi");
+    await mesleğiAta(state.id, "Asker"); // miras maaş çarpanı binmesin diye Tüccar dışı
     state.para = 1_000_000;
+    state.etiketler = state.etiketler.filter((e) => !e.startsWith("maas_carpani:"));
 
+    // KENDI_ISI_MAAS_PRIMI 1.05^n · MAAS_CARPANI_TAVAN 1.40 → 0.9 tabandan ~9 yatırım
+    // sığar; eskalasyon/yuvarlama testi için 6 tekrar yeter.
     const maliyetler: number[] = [];
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < 6; i++) {
       const config = await yatirimConfigGetir(state.id);
       maliyetler.push(config.kendiIsiMaliyeti);
       await yatirimYap(state.id);

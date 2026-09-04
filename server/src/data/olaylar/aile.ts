@@ -289,8 +289,8 @@ export const OLAY_AILE: OlayTanimi[] = [
       },
       {
         metin: "Suçu sen üstlen! 'O çaldıysa benim emrimle çaldı' de.",
-        baseBasariSansi: 100,
-        ipucu: "Çocuğunu kurtarırsın ama doğrudan zindana atılırsın",
+        baseBasariSansi: 85,
+        ipucu: "Genellikle çocuğunu kurtarır ama doğrudan zindana atılırsın; muhafızlar yutmayabilir",
         basariliSonuc: {
           un: -15,
           ahlak: 20,
@@ -300,7 +300,13 @@ export const OLAY_AILE: OlayTanimi[] = [
           mesaj: "Çocuğunu kenara ittin ve ellerini uzattın. Muhafızlar seni zincire vurup zindana sürüklerken çocuğun arkandan ağlıyordu.",
         },
         basarisizSonuc: {
-          mesaj: "Kullanılmadı.",
+          un: -20,
+          ahlak: 10,
+          etiket_ekle: [
+            "hapiste",
+            "sorunlu_cocuk",
+          ],
+          mesaj: "Muhafızlar sırıttı: 'İkinizi de içeri atarız.' Çocuğun da sen de zincire vuruldunuz; onun sicili artık lekeli.",
         },
       },
       {

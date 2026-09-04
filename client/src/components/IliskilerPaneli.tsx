@@ -1,3 +1,6 @@
+import { useDil } from '../DilContext';
+import type { Metinler } from '../i18n';
+
 interface IliskilerPaneliProps {
   dostAdi: string;
   rakipAdi: string;
@@ -5,21 +8,25 @@ interface IliskilerPaneliProps {
   rakipPuani: number;
 }
 
-const DOST_ETIKETLERI: [number, string][] = [
-  [20, 'Küskün'],
-  [40, 'Mesafeli'],
-  [60, 'Tanıdık'],
-  [80, 'Dost'],
-  [100, 'Yakın Dost'],
-];
+function dostEtiketleri(m: Metinler): [number, string][] {
+  return [
+    [20, m.ilDostKusgun],
+    [40, m.ilDostMesafeli],
+    [60, m.ilDostTanidik],
+    [80, m.ilDostDost],
+    [100, m.ilDostYakin],
+  ];
+}
 
-const RAKIP_ETIKETLERI: [number, string][] = [
-  [20, 'Amansız Düşman'],
-  [40, 'Düşman'],
-  [60, 'Gergin'],
-  [80, 'Nötr Rakip'],
-  [100, 'Yumuşamış Rakip'],
-];
+function rakipEtiketleri(m: Metinler): [number, string][] {
+  return [
+    [20, m.ilRakipAmansiz],
+    [40, m.ilRakipDusman],
+    [60, m.ilRakipGergin],
+    [80, m.ilRakipNotr],
+    [100, m.ilRakipYumusak],
+  ];
+}
 
 function etiketBul(deger: number, tablo: [number, string][]): string {
   for (const [esik, etiket] of tablo) {
@@ -29,16 +36,17 @@ function etiketBul(deger: number, tablo: [number, string][]): string {
 }
 
 export function IliskilerPaneli({ dostAdi, rakipAdi, dostPuani, rakipPuani }: IliskilerPaneliProps) {
+  const { m } = useDil();
   return (
     <div className="iliskiler-paneli">
-      <h3>İlişkilerin</h3>
+      <h3>{m.ilBaslik}</h3>
       <div className="iliski-rozet iliski-dost">
         <span className="iliski-ad">🤝 {dostAdi}</span>
-        <span className="iliski-etiket">{etiketBul(dostPuani, DOST_ETIKETLERI)}</span>
+        <span className="iliski-etiket">{etiketBul(dostPuani, dostEtiketleri(m))}</span>
       </div>
       <div className="iliski-rozet iliski-rakip">
         <span className="iliski-ad">⚔️ {rakipAdi}</span>
-        <span className="iliski-etiket">{etiketBul(rakipPuani, RAKIP_ETIKETLERI)}</span>
+        <span className="iliski-etiket">{etiketBul(rakipPuani, rakipEtiketleri(m))}</span>
       </div>
     </div>
   );

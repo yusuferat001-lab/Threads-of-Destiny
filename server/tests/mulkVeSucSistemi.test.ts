@@ -23,7 +23,7 @@ describe("mülk getiri hesabı — dünya durumuna göre", () => {
     const iyi = taze();
     iyi.ulke.ekonomi = "iyi";
     const oranIyi = mulkGetiriOraniHesapla("ciftlik", iyi.ulke);
-    expect(oranIyi).toBeGreaterThan(0.2);
+    expect(oranIyi).toBeGreaterThanOrEqual(0.2); // MULK_GETIRI_AVANTAJLI = 0.20 (avantajlı taban)
 
     const kitlik = taze();
     kitlik.ulke.kriz = { tur: "kitlik", bitisYili: 9999 };
@@ -35,7 +35,7 @@ describe("mülk getiri hesabı — dünya durumuna göre", () => {
     const avantajli = taze();
     avantajli.ulke.nufusDurumu = "artiyor";
     const oranAvantajli = mulkGetiriOraniHesapla("han", avantajli.ulke);
-    expect(oranAvantajli).toBeGreaterThan(0.2);
+    expect(oranAvantajli).toBeGreaterThanOrEqual(0.2); // MULK_GETIRI_AVANTAJLI = 0.20
 
     const veba = taze();
     veba.ulke.vebada = true;

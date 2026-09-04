@@ -1,5 +1,7 @@
 import type { YatirimConfig, MulkKartBilgisi, MulkTuru } from '../types';
 import { formatPara } from '../format';
+import { bic, type Metinler } from '../i18n';
+import { useDil } from '../DilContext';
 
 interface IsYatirimEkraniProps {
   meslek: string;
@@ -35,24 +37,18 @@ const MESLEK_SIMGESI: Record<string, string> = {
   'Din Adamı': '🕊️',
 };
 
-const KENDI_ISI_ACIKLAMA: Record<string, string> = {
-  Asker: 'karşılığında yıllık maaşın kalıcı olarak yaklaşık %5 artar (bir tavana kadar).',
-  Tüccar: 'karşılığında yıllık maaşın kalıcı olarak yaklaşık %5 artar (bir tavana kadar).',
-  'Din Adamı': 'karşılığında yıllık maaşın kalıcı olarak yaklaşık %5 artar (bir tavana kadar).',
-};
-
-function kendiIsiAsamaEtiketi(yatirimSayisi: number): string {
-  if (yatirimSayisi === 0) return 'Henüz hiç yatırım yapmadın.';
-  if (yatirimSayisi <= 2) return `Şimdiye kadar ${yatirimSayisi} kez yatırım yaptın; işin büyümeye başladı.`;
-  if (yatirimSayisi <= 5) return `${yatirimSayisi} yatırımla artık köklü, tanınan bir isimsin.`;
-  return `${yatirimSayisi} yatırımla küçük bir imparatorluk kurdun.`;
+function kendiIsiAsamaEtiketi(m: Metinler, yatirimSayisi: number): string {
+  if (yatirimSayisi === 0) return m.iyKendiIsiAsama0;
+  if (yatirimSayisi <= 2) return bic(m.iyKendiIsiAsama1, yatirimSayisi);
+  if (yatirimSayisi <= 5) return bic(m.iyKendiIsiAsama2, yatirimSayisi);
+  return bic(m.iyKendiIsiAsama3, yatirimSayisi);
 }
 
-function sucSeviyesiEtiketi(seviye: number): string {
-  if (seviye < 20) return 'Sicilin temiz sayılır.';
-  if (seviye < 45) return 'Muhafızların dikkatini biraz çekiyorsun.';
-  if (seviye < 70) return 'Aranan biri haline geliyorsun; dikkatli ol.';
-  return 'Peşindeler — her an baskın yiyebilirsin.';
+function sucSeviyesiEtiketi(m: Metinler, seviye: number): string {
+  if (seviye < 20) return m.iySicilTemiz;
+  if (seviye < 45) return m.iySicilDikkat;
+  if (seviye < 70) return m.iySicilCiddi;
+  return m.iySicilPesinde;
 }
 
 function StatKarosu({
@@ -107,28 +103,29 @@ export function IsYatirimEkrani({
   onZarAt,
   onGeriDon,
 }: IsYatirimEkraniProps) {
+  const { m, kt } = useDil();
   const saldiriGucu = Math.round(orduMevcudu * (1 + orduTechizatSeviyesi / 100));
   const paraYetersiz = para < config.kendiIsiMaliyeti;
-  const kendiIsiAciklama = KENDI_ISI_ACIKLAMA[meslek] ?? 'karşılığında kazancın kalıcı olarak artar.';
+  const kendiIsiAciklama = m.iyKendiIsiKarsilik;
 
   return (
     <div className="ekran ekran-tam-sayfa">
-      <h2>İşin &amp; Yatırımların</h2>
+      <h2>{m.iyBaslik}</h2>
       {islemMesaji && <p className="yatirim-islem-mesaji">{islemMesaji}</p>}
 
       <div className="tam-govde-3col">
         <div className="tam-sutun">
-          <h3 className="tam-baslik">Görevin</h3>
+          <h3 className="tam-baslik">{m.iyGorevin}</h3>
 
           <div className="is-profil-karti">
             <span className="is-profil-simge" aria-hidden="true">
               {MESLEK_SIMGESI[meslek] ?? '🎯'}
             </span>
             <div className="is-profil-metin">
-              <strong>{rutbe}</strong>
-              <span>{meslek}</span>
+              <strong>{kt(rutbe)}</strong>
+              <span>{kt(meslek)}</span>
             </div>
-            <span className="kademe-gostergesi" aria-label={`Kademe ${rutbeSeviye} / 5`}>
+            <span className="kademe-gostergesi" aria-label={bic(m.iyKademeAria, rutbeSeviye)}>
               {[1, 2, 3, 4, 5].map((seviye) => (
                 <span key={seviye} className={`kademe-nokta${seviye <= rutbeSeviye ? ' kademe-nokta-dolu' : ''}`} />
               ))}
@@ -136,35 +133,35 @@ export function IsYatirimEkrani({
           </div>
 
           <div className="is-karo-izgara">
-            <StatKarosu ikon="💰" etiket="Yıllık Kazanç" deger={`~${formatPara(maasYillik)} ${paraBirimi}`} vurgu />
+            <StatKarosu ikon="💰" etiket={m.iyYillikKazanc} deger={`~${formatPara(maasYillik)} ${paraBirimi}`} vurgu />
 
-            {amirAdi && <StatKarosu ikon="🎖️" etiket="Amirin" deger={amirAdi} alt={amirRutbe ?? undefined} />}
+            {amirAdi && <StatKarosu ikon="🎖️" etiket={m.iyAmirin} deger={amirAdi} alt={amirRutbe ? kt(amirRutbe) : undefined} />}
 
             {sehirYonetimSeviyesi > 0 && (
               <StatKarosu
                 ikon="🏛️"
-                etiket="Şehir Yönetimi"
-                deger={sehirYonetimUnvan ?? ''}
-                alt={`Seviye ${sehirYonetimSeviyesi}`}
+                etiket={m.iySehirYonetimi}
+                deger={kt(sehirYonetimUnvan ?? '')}
+                alt={bic(m.iySeviyeEk, sehirYonetimSeviyesi)}
               />
             )}
 
             {meslek === 'Asker' && (
               <>
-                <StatKarosu ikon="⚔️" etiket="Ordu Mevcudu" deger={`${orduMevcudu} asker`} />
-                <StatKarosu ikon="🛡️" etiket="Teçhizat" deger={`%${orduTechizatSeviyesi}`} />
-                <StatKarosu ikon="💥" etiket="Saldırı Gücü" deger={`${saldiriGucu}`} />
+                <StatKarosu ikon="⚔️" etiket={m.iyOrduMevcudu} deger={`${orduMevcudu} ${m.ksAsker}`} />
+                <StatKarosu ikon="🛡️" etiket={m.iyTechizat} deger={`%${orduTechizatSeviyesi}`} />
+                <StatKarosu ikon="💥" etiket={m.iySaldiriGucu} deger={`${saldiriGucu}`} />
               </>
             )}
 
             {meslek === 'Tüccar' && (
-              <StatKarosu ikon="📈" etiket="Ticaret Sermayesi" deger={`${formatPara(ticaretSermaye)} ${paraBirimi}`} />
+              <StatKarosu ikon="📈" etiket={m.iyTicaretSermayesi} deger={`${formatPara(ticaretSermaye)} ${paraBirimi}`} />
             )}
 
-            {meslek === 'Din Adamı' && <StatKarosu ikon="🕊️" etiket="Nüfuz" deger={`${nufuz}`} />}
+            {meslek === 'Din Adamı' && <StatKarosu ikon="🕊️" etiket={m.iyNufuz} deger={`${nufuz}`} />}
           </div>
 
-          <h3 className="tam-baslik tam-baslik-dedikodu">Piyasa Dedikoduları</h3>
+          <h3 className="tam-baslik tam-baslik-dedikodu">{m.iyPiyasaDedikodulari}</h3>
 
           {dedikodular.length > 0 ? (
             <div className="dedikodu-panosu dedikodu-panosu-vurgu">
@@ -175,12 +172,12 @@ export function IsYatirimEkrani({
               </ul>
             </div>
           ) : (
-            <p className="giris-aciklama">Şu an konuşulan bir şey yok.</p>
+            <p className="giris-aciklama">{m.iyDedikoduYok}</p>
           )}
         </div>
 
         <div className="tam-sutun">
-          <h3 className="tam-baslik">Yatırımlık Gayrimenkuller</h3>
+          <h3 className="tam-baslik">{m.iyYatirimlikGayrimenkuller}</h3>
 
           <div className="yatirim-kartlari yatirim-mulk-kartlari">
             {mulkler.map((mulk) => (
@@ -192,19 +189,19 @@ export function IsYatirimEkrani({
               >
                 <span className="meslek-simge">{mulk.simge}</span>
                 <strong>
-                  {mulk.ad} {mulk.sahipMi && '· Sahipsin'}
+                  {kt(mulk.ad)} {mulk.sahipMi && m.iySahipsin}
                 </strong>
-                <span className="meslek-aciklama">{mulk.aciklama}</span>
+                <span className="meslek-aciklama">{kt(mulk.aciklama)}</span>
                 <span className="meslek-aciklama">
-                  Avantajlı: {mulk.avantajliDurum} · Dezavantajlı: {mulk.dezavantajliDurum}
+                  {m.iyAvantajli}: {kt(mulk.avantajliDurum)} · {m.iyDezavantajli}: {kt(mulk.dezavantajliDurum)}
                 </span>
                 <span className={`mulk-getiri ${mulk.tahminiYillikGetiriYuzdesi < 0 ? 'mulk-getiri-negatif' : 'mulk-getiri-pozitif'}`}>
-                  Şu an tahmini getiri: {mulk.tahminiYillikGetiriMiktari >= 0 ? '+' : ''}
-                  {formatPara(mulk.tahminiYillikGetiriMiktari)} {paraBirimi}/yıl ({mulk.tahminiYillikGetiriYuzdesi > 0 ? '+' : ''}
+                  {m.iySuAnTahminiGetiri}: {mulk.tahminiYillikGetiriMiktari >= 0 ? '+' : ''}
+                  {formatPara(mulk.tahminiYillikGetiriMiktari)} {paraBirimi}{m.iyGetiriYilBasi} ({mulk.tahminiYillikGetiriYuzdesi > 0 ? '+' : ''}
                   {mulk.tahminiYillikGetiriYuzdesi}%)
                 </span>
-                <span className="meslek-aciklama" title="7-10 yılda bir çıkan bakım/vergi masrafının yıllığa bölünmüş yaklaşık tutarı; getiriden ayrı, her koşulda gider.">
-                  🔧 Bakım/vergi: ~-{formatPara(mulk.yillikBakimTahmini)} {paraBirimi}/yıl
+                <span className="meslek-aciklama" title={m.iyBakimTitle}>
+                  {bic(m.iyBakimVergi, formatPara(mulk.yillikBakimTahmini), paraBirimi)}
                 </span>
                 {!mulk.sahipMi && (
                   <span className="meslek-aciklama">
@@ -217,29 +214,28 @@ export function IsYatirimEkrani({
         </div>
 
         <div className="tam-sutun">
-          <h3 className="tam-baslik">Kendi İşin</h3>
+          <h3 className="tam-baslik">{m.iyKendiIsin}</h3>
 
           <button className="yatirim-kart isyatirim-kendi-is-kart" disabled={yukleniyor || paraYetersiz} onClick={onYatirimYap}>
             <span className="meslek-simge">💼</span>
-            <strong>Kendi İşine Yatırım Yap</strong>
+            <strong>{m.iyKendiIsineYatirim}</strong>
             <span className="meslek-aciklama">
               {formatPara(config.kendiIsiMaliyeti)} {paraBirimi} {kendiIsiAciklama}
             </span>
             <span className="meslek-aciklama">
-              {kendiIsiAsamaEtiketi(config.kendiIsiYatirimSayisi)} Her yeni yatırım bir öncekinden daha pahalıya gelir.
+              {kendiIsiAsamaEtiketi(m, config.kendiIsiYatirimSayisi)} {m.iyKendiIsiEskalasyon}
             </span>
           </button>
 
           <p className="rutbe-ipucu">
-            <strong>Rütbe nasıl yükselir?</strong> İşine yatırım yaptıkça ve{' '}
-            {meslek === 'Din Adamı' ? 'ahlakını' : 'şöhretini'} yüksek tuttukça kariyerin ilerler; zamanla kıdem de
-            kazanırsın. Her terfiden sonra bir sonrakine kadar birkaç yıl geçmesi gerekir. Rütben asla düşmez.
+            <strong>{m.iyRutbeNasil}</strong>{' '}
+            {bic(m.iyRutbeNasilMetin, meslek === 'Din Adamı' ? m.iyRutbeAhlakini : m.iyRutbeSohretini)}
           </p>
 
-          <h3 className="tam-baslik">Riskli İşler</h3>
+          <h3 className="tam-baslik">{m.iyRiskliIsler}</h3>
 
           <p className={`suc-seviyesi-gostergesi ${sucSeviyesi >= 45 ? 'suc-seviyesi-riskli' : ''}`}>
-            Suç/Aranma seviyen: {Math.round(sucSeviyesi)}/100 — {sucSeviyesiEtiketi(sucSeviyesi)}
+            {bic(m.iySucSeviyen, Math.round(sucSeviyesi), sucSeviyesiEtiketi(m, sucSeviyesi))}
           </p>
 
           <div className="isyatirim-zar-izgara">
@@ -250,7 +246,7 @@ export function IsYatirimEkrani({
                   {formatPara(tutar)} {paraBirimi}
                 </strong>
                 <span className="meslek-aciklama">
-                  Kazanırsan {formatPara(tutar * 2)} {paraBirimi}, kaybedersen hepsi gider.
+                  {bic(m.iyZarKazanirsan, formatPara(tutar * 2), paraBirimi)}
                 </span>
               </button>
             ))}
@@ -259,7 +255,7 @@ export function IsYatirimEkrani({
       </div>
 
       <button className="ikincil tam-geri-buton" onClick={onGeriDon}>
-        Geri Dön
+        {m.geriDon}
       </button>
     </div>
   );

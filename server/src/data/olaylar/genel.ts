@@ -198,9 +198,9 @@ export const OLAY_GENEL: OlayTanimi[] = [
     secenekler: [
       {
         metin: "Ahlakı boş ver, yüksek faizle borcu ver.",
-        baseBasariSansi: 100,
+        baseBasariSansi: 90,
         maliyet: 35,
-        ipucu: "Garantili yatırım başlangıcı ama ahlakı düşürür",
+        ipucu: "Kârlı bir yatırım başlangıcı ama ahlakı düşürür; dostluk da yara alabilir",
         basariliSonuc: {
           para: -35,
           ahlak: -15,
@@ -287,7 +287,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
       },
       {
         metin: "Eski günlerin hatırına borcu sil, onu affet.",
-        baseBasariSansi: 100,
+        baseBasariSansi: 88,
         ipucu: "Muazzam bir ahlak artışı ama yatırdığın tüm para uçar",
         basariliSonuc: {
           ahlak: 35,
@@ -1272,12 +1272,15 @@ export const OLAY_GENEL: OlayTanimi[] = [
           detay: "Umarım matematiği dürüstlüğü kadar kuvvetlidir.",
         },
         basarisizSonuc: {
-          mesaj: "Kullanılmadı.",
+          para: -10,
+          un: -5,
+          mesaj: "Genç, ilk haftanın ücretini alır almaz ortadan kayboldu. Defterlerden birkaç sayfa da onunla gitti.",
+          detay: "Zekiydi, evet — ama yanlış işlerde.",
         },
       },
       {
         metin: "İşi kendin yapmaya devam et.",
-        baseBasariSansi: 100,
+        baseBasariSansi: 90,
         ipucu: "Güvenli ama yorucu",
         basariliSonuc: {
           saglik: -5,
@@ -1285,7 +1288,10 @@ export const OLAY_GENEL: OlayTanimi[] = [
           detay: "Güven pahalı bir lükstür.",
         },
         basarisizSonuc: {
-          mesaj: "Kullanılmadı.",
+          saglik: -12,
+          mutluluk: -8,
+          mesaj: "Defterlere gömülü geçen bir kış seni iyice yıprattı; gözlerin bulanık, sırtın tutuk.",
+          detay: "Her şeyi tek başına taşımanın da bir bedeli var.",
         },
       },
     ],
@@ -1635,7 +1641,17 @@ export const OLAY_GENEL: OlayTanimi[] = [
           detay: "Artık yeni devletin gizli bir köpeğisin.",
         },
         basarisizSonuc: {
-          mesaj: "Kullanılmadı.",
+          para: -10,
+          un: -25,
+          ahlak: -20,
+          ulke_etkisi: {
+            savasta: false,
+          },
+          etiket_ekle: [
+            "sir:yoldas_satan",
+          ],
+          mesaj: "Liste yeni hükümete ulaşmadan sızdı. Eski yoldaşların kimin ihbar ettiğini öğrendi; artık her gölgeden korkuyorsun ve devletten beş kuruş alamadın.",
+          detay: "İhanet açığa çıkınca hem parayı hem güvenliği kaybettin.",
         },
       },
     ],
@@ -8504,12 +8520,14 @@ export const OLAY_GENEL: OlayTanimi[] = [
         maliyet: 12,
         ipucu: "Cebine dokunur ama huzur ve saygı getirir",
         basariliSonuc: {
+          para: -12,
           ahlak: 12,
           un: 6,
           mesaj: "Verdiğin, tam da bir ailenin kışı geçirmesine yetti.",
           detay: "Kimsenin bilmediği bir iyilik bile içini ısıtıyor.",
         },
         basarisizSonuc: {
+          para: -12,
           ahlak: 8,
           mesaj: "Verdin ama parayı kimin aldığını hiç öğrenemedin.",
           detay: "Bazı iyilikler karşılıksız kalıyor, olsun.",
@@ -10144,7 +10162,11 @@ export const OLAY_GENEL: OlayTanimi[] = [
           detay: "Fatih unvanın çizildi ama en azından kemiklerin sağlam.",
         },
         basarisizSonuc: {
-          mesaj: "Kullanılmadı",
+          un: -20,
+          saglik: -8,
+          mutluluk: -10,
+          mesaj: "Kapıya iki adım kala keçi seni arkadan toslayıp yüzüstü çamura yatırdı. Kalabalık kahkahadan yıkıldı.",
+          detay: "Kaçmak bile beceri istiyormuş.",
         },
       },
     ],

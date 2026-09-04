@@ -21,12 +21,14 @@ import { OLAY_EVLILIK_AILE } from "./evlilikVeAile";
 import { OLAY_ARANMA_SEVIYESI } from "./aranmaSeviyesi";
 import { OLAY_SOSYALLESME } from "./sosyallesme";
 import { OLAY_KURESEL } from "./kureselOlaylar";
+import { OLAY_KOMIK_OLUM } from "./komikOlumler";
 
 export const OLAY_BANKASI: OlayTanimi[] = [
   ...OLAY_HAPIS,
   ...OLAY_ARANMA_SEVIYESI,
   ...OLAY_SOSYALLESME,
   ...OLAY_KURESEL,
+  ...OLAY_KOMIK_OLUM,
   ...OLAY_YOLCULUK,
   ...OLAY_HIZIP,
   ...OLAY_ORTACAG_ASKER,

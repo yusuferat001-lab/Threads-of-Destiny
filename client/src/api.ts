@@ -65,10 +65,16 @@ export function yasamSecenekleriGetir() {
   return istek<{ yasamSecenekleri: YasamSecenegiTanimi[] }>('/api/game/yasam-secenekleri');
 }
 
-export function yeniOyunBaslat(cag: string, bolge: string, yerlesim: string, isim?: string) {
+export function yeniOyunBaslat(
+  cag: string,
+  bolge: string,
+  yerlesim: string,
+  isim?: string,
+  dil?: string
+) {
   return istek<{ state: CharacterState }>('/api/game/new', {
     method: 'POST',
-    body: JSON.stringify({ cag, bolge, yerlesim, isim }),
+    body: JSON.stringify({ cag, bolge, yerlesim, isim, dil }),
   });
 }
 

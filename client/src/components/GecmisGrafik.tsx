@@ -1,5 +1,7 @@
 import type { GecmisNoktasi } from '../types';
 import { formatPara } from '../format';
+import { bic } from '../i18n';
+import { useDil } from '../DilContext';
 
 interface GecmisGrafikProps {
   gecmis: GecmisNoktasi[];
@@ -23,11 +25,12 @@ function noktalariHesapla(degerler: number[]): string {
 }
 
 export function GecmisGrafik({ gecmis, paraBirimi }: GecmisGrafikProps) {
+  const { m } = useDil();
   if (gecmis.length < 2) {
     return (
       <div className="gecmis-grafik">
-        <h3>Geçmiş Yıllar</h3>
-        <p className="gecmis-grafik-bos">Henüz yeterli geçmiş birikmedi.</p>
+        <h3>{m.ggGecmisYillar}</h3>
+        <p className="gecmis-grafik-bos">{m.ggYetersiz}</p>
       </div>
     );
   }
@@ -39,7 +42,7 @@ export function GecmisGrafik({ gecmis, paraBirimi }: GecmisGrafikProps) {
 
   return (
     <div className="gecmis-grafik">
-      <h3>Geçmiş Yıllar</h3>
+      <h3>{m.ggGecmisYillar}</h3>
       <svg
         viewBox={`0 0 ${GENISLIK} ${YUKSEKLIK}`}
         className="gecmis-grafik-svg"
@@ -48,7 +51,7 @@ export function GecmisGrafik({ gecmis, paraBirimi }: GecmisGrafikProps) {
       >
         <polyline points={puanlar} fill="none" stroke="#e0c789" strokeWidth="2" />
       </svg>
-      <div className="gecmis-grafik-etiketler" aria-label={`Para geçmişi: ${ilkYil} yılından ${sonNokta.yil} yılına, şu anki değer ${formatPara(sonNokta.para)} ${paraBirimi}`}>
+      <div className="gecmis-grafik-etiketler" aria-label={bic(m.ggParaGecmisiAria, ilkYil, sonNokta.yil, formatPara(sonNokta.para), paraBirimi)}>
         <span>{ilkYil}</span>
         <span>
           💰 {formatPara(sonNokta.para)} {paraBirimi}

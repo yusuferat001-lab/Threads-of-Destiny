@@ -163,11 +163,11 @@ export const OLAY_HAPIS: OlayTanimi[] = [
     secenekler: [
       {
         metin: "Karanlık Kılıcı çek ve tüm koğuşa boyun eğdir!",
-        baseBasariSansi: 100,
+        baseBasariSansi: 82,
         gerekliEtiketler: [
           "envanter:kara_kilic",
         ],
-        ipucu: "Gizli Envanter: Hapishane lideri ol",
+        ipucu: "Gizli Envanter: Genellikle hapishane lideri olursun ama kaos kılıçtan büyük olabilir",
         basariliSonuc: {
           un: 35,
           ahlak: -25,
@@ -175,7 +175,11 @@ export const OLAY_HAPIS: OlayTanimi[] = [
           detay: "Kılıç seni özgürleştirmedi, ama kafesi sana altın bir taht yaptı.",
         },
         basarisizSonuc: {
-          mesaj: "Kullanılmadı.",
+          saglik: -25,
+          un: -10,
+          olum_sansi: 10,
+          mesaj: "Kılıcı savurdun ama isyan bir sel gibiydi — üç yönden birden üstüne çöktüler. Kılıç elinden düştü, seni tekmeler altında bıraktılar.",
+          detay: "Kaos, en keskin çeliğe bile boyun eğmedi.",
         },
       },
       {

@@ -1,4 +1,5 @@
 import type { SonucEtkisi } from './types';
+import type { Dil } from './ayarlar';
 
 export interface BolgeTema {
   renk1: string;
@@ -38,20 +39,21 @@ export function sonucIkonuGetir(basarili: boolean, olduMu: boolean, kategori?: s
   return '⚠️';
 }
 
-const AHLAK_ETIKETLERI: [number, string][] = [
-  [15, 'Zalim'],
-  [30, 'Onursuz'],
-  [50, 'Sıradan'],
-  [70, 'Onurlu'],
-  [85, 'Yüksek Onurlu'],
-  [100, 'Gurur Abidesi'],
+const AHLAK_ETIKETLERI: [number, string, string][] = [
+  [15, 'Zalim', 'Ruthless'],
+  [30, 'Onursuz', 'Dishonorable'],
+  [50, 'Sıradan', 'Unremarkable'],
+  [70, 'Onurlu', 'Honorable'],
+  [85, 'Yüksek Onurlu', 'Highly Honorable'],
+  [100, 'Gurur Abidesi', 'Paragon of Pride'],
 ];
 
-export function ahlakEtiketi(ahlak: number): string {
-  for (const [esik, etiket] of AHLAK_ETIKETLERI) {
-    if (ahlak <= esik) return etiket;
+export function ahlakEtiketi(ahlak: number, dil: Dil = 'tr'): string {
+  const i = dil === 'en' ? 2 : 1;
+  for (const satir of AHLAK_ETIKETLERI) {
+    if (ahlak <= satir[0]) return satir[i] as string;
   }
-  return AHLAK_ETIKETLERI[AHLAK_ETIKETLERI.length - 1][1];
+  return AHLAK_ETIKETLERI[AHLAK_ETIKETLERI.length - 1][i] as string;
 }
 
 /**
@@ -61,21 +63,22 @@ export function ahlakEtiketi(ahlak: number): string {
  * sıçraması gerektirir — değer 0-100 aralığında clamp'lendiği için bu son iki
  * kademe tavana çok yakın, dar bir bantta sıkışır ve neredeyse ulaşılamaz kalır.
  */
-const UN_UNVANLARI: [number, string][] = [
-  [0, 'Kimliği Belirsiz'],
-  [5, 'Aşina Yüz'],
-  [15, 'Bilindik İsim'],
-  [30, 'Saygın Birey'],
-  [50, 'Bölgenin Gururu'],
-  [70, 'Şöhretli'],
-  [88, 'Tarihi Şahsiyet'],
-  [99, 'Yaşayan Efsane'],
+const UN_UNVANLARI: [number, string, string][] = [
+  [0, 'Kimliği Belirsiz', 'Unknown Face'],
+  [5, 'Aşina Yüz', 'Familiar Face'],
+  [15, 'Bilindik İsim', 'Known Name'],
+  [30, 'Saygın Birey', 'Respected Figure'],
+  [50, 'Bölgenin Gururu', "Pride of the Region"],
+  [70, 'Şöhretli', 'Renowned'],
+  [88, 'Tarihi Şahsiyet', 'Historic Figure'],
+  [99, 'Yaşayan Efsane', 'Living Legend'],
 ];
 
-export function unUnvani(un: number): string {
-  let sonuc = UN_UNVANLARI[0][1];
-  for (const [esik, unvan] of UN_UNVANLARI) {
-    if (un >= esik) sonuc = unvan;
+export function unUnvani(un: number, dil: Dil = 'tr'): string {
+  const i = dil === 'en' ? 2 : 1;
+  let sonuc = UN_UNVANLARI[0][i] as string;
+  for (const satir of UN_UNVANLARI) {
+    if (un >= satir[0]) sonuc = satir[i] as string;
     else break;
   }
   return sonuc;
@@ -110,19 +113,33 @@ export const KATEGORI_ADI: Record<string, string> = {
   sosyal: 'Sosyal',
 };
 
-const YATKINLIK_ETIKETLERI: [number, string, string][] = [
-  [-18, 'Hiç Yatkın Değil', '❌'],
-  [-8, 'Az Yatkın', '👎'],
-  [7, 'Nötr', '➖'],
-  [17, 'Yatkın', '👍'],
-  [Infinity, 'Çok Yatkın', '🔥'],
+const KATEGORI_ADI_EN: Record<string, string> = {
+  savas: 'Soldiering',
+  ticaret: 'Trade',
+  din: 'Faith',
+  siyaset: 'Politics',
+  saglik: 'Health',
+  sosyal: 'Social',
+};
+
+export function kategoriAdi(kategori: string, dil: Dil = 'tr'): string {
+  return (dil === 'en' ? KATEGORI_ADI_EN : KATEGORI_ADI)[kategori] ?? kategori;
+}
+
+const YATKINLIK_ETIKETLERI: [number, string, string, string][] = [
+  [-18, 'Hiç Yatkın Değil', 'No Aptitude', '❌'],
+  [-8, 'Az Yatkın', 'Low Aptitude', '👎'],
+  [7, 'Nötr', 'Neutral', '➖'],
+  [17, 'Yatkın', 'Apt', '👍'],
+  [Infinity, 'Çok Yatkın', 'Very Apt', '🔥'],
 ];
 
-export function yatkinlikEtiketi(deger: number): { etiket: string; simge: string } {
-  for (const [esik, etiket, simge] of YATKINLIK_ETIKETLERI) {
-    if (deger <= esik) return { etiket, simge };
+export function yatkinlikEtiketi(deger: number, dil: Dil = 'tr'): { etiket: string; simge: string } {
+  const i = dil === 'en' ? 2 : 1;
+  for (const satir of YATKINLIK_ETIKETLERI) {
+    if (deger <= satir[0]) return { etiket: satir[i] as string, simge: satir[3] as string };
   }
-  return { etiket: 'Çok Yatkın', simge: '🔥' };
+  return { etiket: dil === 'en' ? 'Very Apt' : 'Çok Yatkın', simge: '🔥' };
 }
 
 export interface EtkiTahmini {
@@ -131,29 +148,30 @@ export interface EtkiTahmini {
   pozitif: boolean;
 }
 
-const PARA_BUYUKLUK_ESIKLERI: [number, string][] = [
-  [10, 'küçük'],
-  [30, 'orta'],
-  [Infinity, 'büyük'],
+const PARA_BUYUKLUK_ESIKLERI: [number, string, string][] = [
+  [10, 'küçük', 'small'],
+  [30, 'orta', 'moderate'],
+  [Infinity, 'büyük', 'large'],
 ];
 
-const SAGLIK_BUYUKLUK_ESIKLERI: [number, string][] = [
-  [6, 'küçük'],
-  [15, 'orta'],
-  [Infinity, 'büyük'],
+const SAGLIK_BUYUKLUK_ESIKLERI: [number, string, string][] = [
+  [6, 'küçük', 'small'],
+  [15, 'orta', 'moderate'],
+  [Infinity, 'büyük', 'large'],
 ];
 
-const MUTLULUK_BUYUKLUK_ESIKLERI: [number, string][] = [
-  [6, 'küçük'],
-  [15, 'orta'],
-  [Infinity, 'büyük'],
+const MUTLULUK_BUYUKLUK_ESIKLERI: [number, string, string][] = [
+  [6, 'küçük', 'small'],
+  [15, 'orta', 'moderate'],
+  [Infinity, 'büyük', 'large'],
 ];
 
-function buyuklukEtiketi(esikler: [number, string][], mutlakDeger: number): string {
-  for (const [esik, etiket] of esikler) {
-    if (mutlakDeger <= esik) return etiket;
+function buyuklukEtiketi(esikler: [number, string, string][], mutlakDeger: number, dil: Dil): string {
+  const i = dil === 'en' ? 2 : 1;
+  for (const satir of esikler) {
+    if (mutlakDeger <= satir[0]) return satir[i] as string;
   }
-  return esikler[esikler.length - 1][1];
+  return esikler[esikler.length - 1][i] as string;
 }
 
 /**
@@ -180,29 +198,43 @@ function belirginDegerler(a?: number, b?: number): number[] {
  * önce oyuncuya gösterilir; gerçek miktar sadece seçim sonrasında (EtkiCipleri
  * bileşeninde) görünür.
  */
-export function etkiTahminiGetir(basariliSonuc: SonucEtkisi, basarisizSonuc: SonucEtkisi): EtkiTahmini[] {
+export function etkiTahminiGetir(
+  basariliSonuc: SonucEtkisi,
+  basarisizSonuc: SonucEtkisi,
+  dil: Dil = 'tr'
+): EtkiTahmini[] {
   const tahminler: EtkiTahmini[] = [];
+  const en = dil === 'en';
 
   for (const para of belirginDegerler(basariliSonuc.para, basarisizSonuc.para)) {
+    const b = buyuklukEtiketi(PARA_BUYUKLUK_ESIKLERI, Math.abs(para), dil);
     tahminler.push({
       simge: '💰',
-      metin: `${buyuklukEtiketi(PARA_BUYUKLUK_ESIKLERI, Math.abs(para))} ${para > 0 ? 'kazanç' : 'kayıp'} ihtimali`,
+      metin: en
+        ? `chance of a ${b} ${para > 0 ? 'gain' : 'loss'}`
+        : `${b} ${para > 0 ? 'kazanç' : 'kayıp'} ihtimali`,
       pozitif: para > 0,
     });
   }
 
   for (const saglik of belirginDegerler(basariliSonuc.saglik, basarisizSonuc.saglik)) {
+    const b = buyuklukEtiketi(SAGLIK_BUYUKLUK_ESIKLERI, Math.abs(saglik), dil);
     tahminler.push({
       simge: '❤️',
-      metin: `${buyuklukEtiketi(SAGLIK_BUYUKLUK_ESIKLERI, Math.abs(saglik))} can ${saglik > 0 ? 'kazancı' : 'kaybı'} ihtimali`,
+      metin: en
+        ? `chance of a ${b} health ${saglik > 0 ? 'gain' : 'loss'}`
+        : `${b} can ${saglik > 0 ? 'kazancı' : 'kaybı'} ihtimali`,
       pozitif: saglik > 0,
     });
   }
 
   for (const mutluluk of belirginDegerler(basariliSonuc.mutluluk, basarisizSonuc.mutluluk)) {
+    const b = buyuklukEtiketi(MUTLULUK_BUYUKLUK_ESIKLERI, Math.abs(mutluluk), dil);
     tahminler.push({
       simge: '🙂',
-      metin: `${buyuklukEtiketi(MUTLULUK_BUYUKLUK_ESIKLERI, Math.abs(mutluluk))} moral ${mutluluk > 0 ? 'kazancı' : 'kaybı'} ihtimali`,
+      metin: en
+        ? `chance of a ${b} morale ${mutluluk > 0 ? 'gain' : 'loss'}`
+        : `${b} moral ${mutluluk > 0 ? 'kazancı' : 'kaybı'} ihtimali`,
       pozitif: mutluluk > 0,
     });
   }
@@ -215,30 +247,30 @@ export function etkiTahminiGetir(basariliSonuc: SonucEtkisi, basarisizSonuc: Son
  * göre dönemsel görünen adı ve simgesi. Sunucudaki kira/etki değerleri
  * değişmez, sadece oyuncuya gösterilen isim/simge döneme uygun hale gelir.
  */
-const KONUT_TEMALARI: Record<string, Partial<Record<string, { ad: string; simge: string }>>> = {
+const KONUT_TEMALARI: Record<string, Partial<Record<string, { ad: string; adEn: string; simge: string }>>> = {
   basit_barinak: {
-    'Orta Çağ': { ad: 'Saz Kulübe', simge: '🛖' },
-    'Sanayi Devrimi': { ad: 'İşçi Barakası', simge: '🏚️' },
+    'Orta Çağ': { ad: 'Saz Kulübe', adEn: 'Thatched Hut', simge: '🛖' },
+    'Sanayi Devrimi': { ad: 'İşçi Barakası', adEn: 'Worker Barracks', simge: '🏚️' },
   },
   ahsap_ev: {
-    'Orta Çağ': { ad: 'Ahşap Ev', simge: '🪵' },
-    'Sanayi Devrimi': { ad: 'Kiralık Daire', simge: '🏘️' },
+    'Orta Çağ': { ad: 'Ahşap Ev', adEn: 'Wooden House', simge: '🪵' },
+    'Sanayi Devrimi': { ad: 'Kiralık Daire', adEn: 'Rented Flat', simge: '🏘️' },
   },
   normal_ev: {
-    'Orta Çağ': { ad: 'Taş Şehir Evi', simge: '🏠' },
-    'Sanayi Devrimi': { ad: 'Apartman Dairesi', simge: '🏢' },
+    'Orta Çağ': { ad: 'Taş Şehir Evi', adEn: 'Stone Townhouse', simge: '🏠' },
+    'Sanayi Devrimi': { ad: 'Apartman Dairesi', adEn: 'Apartment', simge: '🏢' },
   },
   tas_ev: {
-    'Orta Çağ': { ad: 'Zanaatkâr Evi', simge: '🧱' },
-    'Sanayi Devrimi': { ad: 'Burjuva Dairesi', simge: '🧱' },
+    'Orta Çağ': { ad: 'Zanaatkâr Evi', adEn: "Craftsman's House", simge: '🧱' },
+    'Sanayi Devrimi': { ad: 'Burjuva Dairesi', adEn: 'Bourgeois Flat', simge: '🧱' },
   },
   konak: {
-    'Orta Çağ': { ad: 'Malikane', simge: '🏛️' },
-    'Sanayi Devrimi': { ad: 'Villa', simge: '🏛️' },
+    'Orta Çağ': { ad: 'Malikane', adEn: 'Manor House', simge: '🏛️' },
+    'Sanayi Devrimi': { ad: 'Villa', adEn: 'Villa', simge: '🏛️' },
   },
   sato: {
-    'Orta Çağ': { ad: 'Şato', simge: '🏰' },
-    'Sanayi Devrimi': { ad: 'Köşk', simge: '🏰' },
+    'Orta Çağ': { ad: 'Şato', adEn: 'Castle', simge: '🏰' },
+    'Sanayi Devrimi': { ad: 'Köşk', adEn: 'Mansion', simge: '🏰' },
   },
 };
 
@@ -246,10 +278,12 @@ export function konutGoruntusuGetir(
   konutId: string,
   varsayilanAd: string,
   varsayilanSimge: string,
-  cag: string
+  cag: string,
+  dil: Dil = 'tr'
 ): { ad: string; simge: string } {
   const tema = KONUT_TEMALARI[konutId]?.[cag];
-  return tema ?? { ad: varsayilanAd, simge: varsayilanSimge };
+  if (!tema) return { ad: varsayilanAd, simge: varsayilanSimge };
+  return { ad: dil === 'en' ? tema.adEn : tema.ad, simge: tema.simge };
 }
 
 /**
@@ -257,24 +291,33 @@ export function konutGoruntusuGetir(
  * din_kultur'e göre) seçilir. Konut simgeleri gibi tek bir emoji kullanır, ayrı bir
  * sanat varlığı gerektirmez.
  */
-const MESLEK_BINA_TEMALARI: Record<string, Partial<Record<string, { ad: string; simge: string }>>> = {
+const MESLEK_BINA_TEMALARI: Record<string, Partial<Record<string, { ad: string; adEn: string; simge: string }>>> = {
   Asker: {
-    'Orta Çağ': { ad: 'Garnizon', simge: '🏯' },
-    'Sanayi Devrimi': { ad: 'Kışla', simge: '🪖' },
+    'Orta Çağ': { ad: 'Garnizon', adEn: 'Garrison', simge: '🏯' },
+    'Sanayi Devrimi': { ad: 'Kışla', adEn: 'Barracks', simge: '🪖' },
   },
   Tüccar: {
-    'Orta Çağ': { ad: 'Çarşı Dükkânı', simge: '🏪' },
-    'Sanayi Devrimi': { ad: 'Fabrika', simge: '🏭' },
+    'Orta Çağ': { ad: 'Çarşı Dükkânı', adEn: 'Bazaar Shop', simge: '🏪' },
+    'Sanayi Devrimi': { ad: 'Fabrika', adEn: 'Factory', simge: '🏭' },
   },
   'Din Adamı': {
-    'Orta Çağ': { ad: 'İbadethane', simge: '⛪' },
-    'Sanayi Devrimi': { ad: 'İbadethane', simge: '⛪' },
+    'Orta Çağ': { ad: 'İbadethane', adEn: 'Place of Worship', simge: '⛪' },
+    'Sanayi Devrimi': { ad: 'İbadethane', adEn: 'Place of Worship', simge: '⛪' },
   },
 };
 
-const CAMI_TEMASI = { ad: 'Cami', simge: '🕌' };
+const CAMI_TEMASI = { ad: 'Cami', adEn: 'Mosque', simge: '🕌' };
 
-export function meslekBinasiGetir(meslek: string, cag: string, dinKultur?: string): { ad: string; simge: string } {
-  if (meslek === 'Din Adamı' && dinKultur === 'Sünni İslam') return CAMI_TEMASI;
-  return MESLEK_BINA_TEMALARI[meslek]?.[cag] ?? { ad: meslek, simge: '🏛️' };
+export function meslekBinasiGetir(
+  meslek: string,
+  cag: string,
+  dinKultur?: string,
+  dil: Dil = 'tr'
+): { ad: string; simge: string } {
+  const en = dil === 'en';
+  if (meslek === 'Din Adamı' && dinKultur === 'Sünni İslam')
+    return { ad: en ? CAMI_TEMASI.adEn : CAMI_TEMASI.ad, simge: CAMI_TEMASI.simge };
+  const t = MESLEK_BINA_TEMALARI[meslek]?.[cag];
+  if (!t) return { ad: meslek, simge: '🏛️' };
+  return { ad: en ? t.adEn : t.ad, simge: t.simge };
 }

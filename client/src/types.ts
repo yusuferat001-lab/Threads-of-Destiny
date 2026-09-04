@@ -5,6 +5,7 @@ export interface Durum {
   kalan_tur?: number;
   tur_basi_saglik?: number;
   tur_basi_para?: number;
+  tur_basi_mutluluk?: number;
   gelir_carpani?: number;
   bitince_etiket?: string;
 }
@@ -81,6 +82,7 @@ export interface YatkinlikKaynagi {
 export interface CharacterState {
   id: string;
   isim: string | null;
+  dil: "tr" | "en";
 
   yil: number;
   baslangic_yili: number;
@@ -176,6 +178,8 @@ export interface CharacterState {
   son_veba_bitis_yili: number | null;
   kucuk_kriz_sonraki_yil: number;
   gida_fiyat_sok_bitis_yili: number | null;
+  /** Ömürde bir kez borçtayken alınan kilise/eş dost yardımı kullanıldı mı. */
+  borc_yardimi_alindi: boolean;
 
   tur_sayisi: number;
   gecmis_olaylar: string[];
@@ -258,6 +262,29 @@ export interface SonucEtkisi {
   ekip_kaybi?: boolean;
   ekip_sil?: string;
   hizip_ata?: string;
+  // --- server/src/types.ts ile senkron (istemci EtkiCipleri yalnız ilk grubu gösterir; gerisi tam senkron için) ---
+  durum_sil?: string[];
+  ordu_techizat_artis?: number;
+  ticaret_sermaye_artis?: number;
+  nufuz_artis?: number;
+  suc_artis?: number;
+  suc_seviyesi_ayarla?: number;
+  para_sifirla?: boolean;
+  un_sifirla?: boolean;
+  para_yuzde_kaybet?: number;
+  yerlesim_zorla?: string;
+  dost_puani?: number;
+  rakip_puani?: number;
+  zorunlu_sonraki?: string;
+  mulk_kaybet?: MulkTuru;
+  evcil_hayvan_edin?: { tur?: string };
+  evcil_hayvan_kaybet?: boolean;
+  unvan_kazan?: string;
+  hayat_amaci_ata?: { id: string; ad: string; aciklama: string; hedefTuru: HayatAmaci['hedefTuru']; hedefDeger: number };
+  kriz_baslat?: { tur: UlkeKrizi['tur']; sureYil: number };
+  efsanevi_olum?: string;
+  sehir_yonetim_artis?: number;
+  kariyer_puani_artis?: number;
 }
 
 export interface BelirsizAralik {
@@ -448,6 +475,8 @@ export interface MagazaEsyaKarti {
   mutlulukEtkisi?: number;
   unEtkisi?: number;
   omurYil?: number;
+  /** Sadece sifa: kullanınca tam olumlu etkiyi verme ihtimalinin bulanık bandı (%). */
+  sifaFaydaAralik?: { min: number; max: number };
   /** Dünya durumuna ve enflasyona göre o anki güncel fiyat; sabit değildir. */
   fiyat: number;
   /** Sadece luks: bu eşyaya zaten sahip mi (bir daha satın alınamaz). */

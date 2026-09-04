@@ -4027,12 +4027,14 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         ipucu: "Can kurtarır ama sırrını bir yabancıya emanet edersin",
         maliyet: 25,
         basariliSonuc: {
+          para: -25,
           saglik: 15,
           ahlak: 8,
           mesaj: "Hekim sessiz kaldı, hastalar iyileşti; sırrınız bir kişi daha bilse de güvende kaldı.",
           detay: "Bazı güvenler, altınla değil vicdanla satın alınır.",
         },
         basarisizSonuc: {
+          para: -25,
           un: -20,
           ahlak: -5,
           mesaj: "Hekim gördüklerini meraklı bir komşuya anlattı, söylenti hızla yayıldı.",
@@ -4334,12 +4336,14 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         ipucu: "Riskli bir rüşvet ama iş görebilir",
         maliyet: 30,
         basariliSonuc: {
+          para: -30,
           ahlak: -15,
           un: -5,
           mesaj: "Elçi teklifini kabul etti, raporunu 'önemsiz' diye kapattı.",
           detay: "Kurumun kendi adamları bile satın alınabiliyor.",
         },
         basarisizSonuc: {
+          para: -30,
           un: -30,
           ahlak: -15,
           mesaj: "Elçi teklifini bir hakaret sayıp doğrudan üst makamlara bildirdi.",

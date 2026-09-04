@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { bolgeTemasiGetir, aranmaYildiz, ahlakEtiketi } from '../bolgeTema';
 import { formatPara } from '../format';
+import { bic } from '../i18n';
+import { useDil } from '../DilContext';
 
 interface UlkeDurumu {
   savasta: boolean;
@@ -98,6 +100,7 @@ function StatModulu({
 /** Aranma seviyesini (suç puanı) 5 yıldızlık bir ölçekte gösterir — hapis olaylarının
  *  tetiklendiği eşiğe (suc_seviyesi>=45, bkz. CLAUDE.md §17) ulaşınca yıldızlar kırmızıya döner. */
 function AranmaModulu({ sucSeviyesi }: { sucSeviyesi: number }) {
+  const { m } = useDil();
   const yildiz = aranmaYildiz(sucSeviyesi);
   const slotlar = Array.from({ length: 5 }, (_, i) => Math.max(0, Math.min(1, yildiz - i)));
   const tehlike = sucSeviyesi >= 45;
@@ -110,18 +113,18 @@ function AranmaModulu({ sucSeviyesi }: { sucSeviyesi: number }) {
           className={`ust-serit-delta ${delta > 0 ? 'ust-serit-delta-azalis' : 'ust-serit-delta-artis'}`}
           aria-hidden="true"
         >
-          {delta > 0 ? '▲ aranıyorsun' : '▼ iz soğudu'}
+          {delta > 0 ? m.usAraniyorsun : m.usIzSogudu}
         </span>
       )}
       <span className="ust-serit-modul-ikon" aria-hidden="true">
         🚨
       </span>
       <div className="ust-serit-modul-metin">
-        <span className="ust-serit-modul-etiket">Aranma</span>
+        <span className="ust-serit-modul-etiket">{m.usAranma}</span>
         <span
           className={`ust-serit-aranma-yildizlari${tehlike ? ' ust-serit-aranma-yildizlari-tehlike' : ''}`}
           role="img"
-          aria-label={`${yildiz.toFixed(1)} yıldız aranma seviyesi`}
+          aria-label={bic(m.usAranmaYildizAria, yildiz.toFixed(1))}
         >
           {slotlar.map((d, i) => (
             <span key={i} className="yildiz-slotu" aria-hidden="true">
@@ -151,43 +154,44 @@ export function UstSerit({
   hukumdar,
   onBolgeTikla,
 }: UstSeritProps) {
+  const { m, kt, ktHukumdar, dil } = useDil();
   const tema = bolgeTemasiGetir(bolge);
   return (
     <header className="ust-serit">
       <div className="ust-serit-moduller">
-        <StatModulu ikon="📅" etiket="Yıl" deger={yil} />
-        <StatModulu ikon="🎂" etiket="Yaş" deger={yas} />
-        <StatModulu ikon="❤️" etiket="Can" deger={Math.round(saglik)} tehlike={saglik <= 30} takip={Math.round(saglik)} />
+        <StatModulu ikon="📅" etiket={m.usYil} deger={yil} />
+        <StatModulu ikon="🎂" etiket={m.usYas} deger={yas} />
+        <StatModulu ikon="❤️" etiket={m.usCan} deger={Math.round(saglik)} tehlike={saglik <= 30} takip={Math.round(saglik)} />
         <StatModulu
           ikon="💰"
-          etiket="Para"
+          etiket={m.usPara}
           deger={`${formatPara(para)} ${paraBirimi}`}
           tehlike={para < 0}
           takip={para}
           takipBirim={paraBirimi}
         />
-        <StatModulu ikon="⚖️" etiket="Ahlak" deger={ahlakEtiketi(ahlak)} takip={Math.round(ahlak)} />
-        <StatModulu ikon="🙂" etiket="Mutluluk" deger={Math.round(mutluluk)} takip={Math.round(mutluluk)} />
+        <StatModulu ikon="⚖️" etiket={m.usAhlak} deger={ahlakEtiketi(ahlak, dil)} takip={Math.round(ahlak)} />
+        <StatModulu ikon="🙂" etiket={m.usMutluluk} deger={Math.round(mutluluk)} takip={Math.round(mutluluk)} />
         <AranmaModulu sucSeviyesi={sucSeviyesi} />
       </div>
       <div className="ust-serit-bolge">
-        {ulke?.savasta && <span className="ust-serit-rozet ust-serit-rozet-tehlike">⚔️ Savaşta</span>}
-        {ulke?.vebada && <span className="ust-serit-rozet ust-serit-rozet-tehlike">☠️ Salgın</span>}
-        {ulke?.ekonomi === 'kotu' && <span className="ust-serit-rozet ust-serit-rozet-tehlike">📉 Kriz</span>}
-        {ulke?.ekonomi === 'iyi' && <span className="ust-serit-rozet ust-serit-rozet-iyi">📈 Refah</span>}
+        {ulke?.savasta && <span className="ust-serit-rozet ust-serit-rozet-tehlike">{m.usSavasta}</span>}
+        {ulke?.vebada && <span className="ust-serit-rozet ust-serit-rozet-tehlike">{m.usSalgin}</span>}
+        {ulke?.ekonomi === 'kotu' && <span className="ust-serit-rozet ust-serit-rozet-tehlike">{m.usKriz}</span>}
+        {ulke?.ekonomi === 'iyi' && <span className="ust-serit-rozet ust-serit-rozet-iyi">{m.usRefah}</span>}
         <button
           type="button"
           className="ust-serit-bolge-buton"
           onClick={onBolgeTikla}
           disabled={!onBolgeTikla}
-          title="Ülke hakkında bilgi"
+          title={m.usUlkeBilgi}
         >
           <span className="ust-serit-sembol" aria-hidden="true">
             {tema.sembol}
           </span>
           <div className="ust-serit-bolge-metin">
-            <strong>{bolge}</strong>
-            {hukumdar && <span>👑 {hukumdar}</span>}
+            <strong>{kt(bolge)}</strong>
+            {hukumdar && <span>👑 {ktHukumdar(hukumdar)}</span>}
           </div>
           {onBolgeTikla && (
             <span className="ust-serit-bolge-ipucu" aria-hidden="true">

@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import type { MagazaEsyaKarti, MagazaEsyaKategori } from '../types';
 import { formatPara } from '../format';
+import { bic } from '../i18n';
+import { useDil } from '../DilContext';
 
 interface MagazaPaneliProps {
   para: number;
@@ -12,28 +14,19 @@ interface MagazaPaneliProps {
   onGeriDon: () => void;
 }
 
-const SEKME_BASLIK: Record<MagazaEsyaKategori, string> = {
-  sifa: 'Temel Tüketim & Şifa',
-  luks: 'Lüks Tüketim',
-};
-
-const SEKME_ACIKLAMA: Record<MagazaEsyaKategori, string> = {
-  sifa: 'Sağlık ve mutluluk verir; kullanılmazsa bir süre sonra çürüyüp envanterden silinir. Bir sifa ürünü almak, kategorinin tamamını bir süreliğine kilitler.',
-  luks: 'Satın alınca hemen ün/statü kazandırır; çürümez ama her türden en fazla bir tane sahiplenilir, ve arada bir bakım/vergi masrafı çıkarır.',
-};
-
 export function MagazaPaneli({ para, paraBirimi, katalog, yukleniyor, islemMesaji, onSatinAl, onGeriDon }: MagazaPaneliProps) {
+  const { m, kt } = useDil();
   const [sekme, setSekme] = useState<MagazaEsyaKategori>('sifa');
   const gosterilenler = katalog.filter((esya) => esya.kategori === sekme);
   const kilitAciklamasi = gosterilenler.find((e) => e.kilitli)?.kilitAciklamasi;
 
+  const sekmeBaslik = (kat: MagazaEsyaKategori) => (kat === 'sifa' ? m.mpSekmeSifa : m.mpSekmeLuks);
+  const sekmeAciklama = sekme === 'sifa' ? m.mpSifaAciklama : m.mpLuksAciklama;
+
   return (
     <div className="ekran ekran-tam-sayfa ekran-magaza">
-      <h2>Mağaza</h2>
-      <p className="giris-aciklama">
-        Elindeki {formatPara(para)} {paraBirimi} ile alışveriş yapabilirsin. Fiyatlar sabit değil — savaş, kıtlık, veba ve
-        bolluk gibi durumlara göre anlık değişir.
-      </p>
+      <h2>{m.mpBaslikTam}</h2>
+      <p className="giris-aciklama">{bic(m.mpAciklama, formatPara(para), paraBirimi)}</p>
 
       <div className="magaza-sekmeleri">
         {(['sifa', 'luks'] as MagazaEsyaKategori[]).map((kategori) => (
@@ -43,17 +36,17 @@ export function MagazaPaneli({ para, paraBirimi, katalog, yukleniyor, islemMesaj
             disabled={yukleniyor}
             onClick={() => setSekme(kategori)}
           >
-            {kategori === 'sifa' ? '🌿' : '💎'} {SEKME_BASLIK[kategori]}
+            {kategori === 'sifa' ? '🌿' : '💎'} {sekmeBaslik(kategori)}
           </button>
         ))}
       </div>
-      <p className="giris-aciklama magaza-sekme-aciklama">{SEKME_ACIKLAMA[sekme]}</p>
+      <p className="giris-aciklama magaza-sekme-aciklama">{sekmeAciklama}</p>
 
       {islemMesaji && <p className="yatirim-islem-mesaji">{islemMesaji}</p>}
-      {kilitAciklamasi && <p className="yatirim-islem-mesaji magaza-kilit-mesaji">🔒 {kilitAciklamasi}</p>}
+      {kilitAciklamasi && <p className="yatirim-islem-mesaji magaza-kilit-mesaji">{bic(m.mpKilitli, kilitAciklamasi)}</p>}
 
       {gosterilenler.length === 0 && (
-        <p className="yatirim-islem-mesaji">Bu kategoride şu an çağına uygun bir eşya yok.</p>
+        <p className="yatirim-islem-mesaji">{m.mpKategoriBos}</p>
       )}
 
       <div className="tam-kaydirilan">
@@ -69,16 +62,21 @@ export function MagazaPaneli({ para, paraBirimi, katalog, yukleniyor, islemMesaj
               >
                 <span className="meslek-simge">{esya.simge}</span>
                 <strong>
-                  {esya.ad} {esya.sahipMi && '· Sahipsin'}
+                  {kt(esya.ad)} {esya.sahipMi && m.mpSahipsinTam}
                 </strong>
-                <span className="meslek-aciklama">{esya.aciklama}</span>
+                <span className="meslek-aciklama">{kt(esya.aciklama)}</span>
                 <span className="meslek-aciklama magaza-etki-satiri">
-                  {esya.saglikEtkisi ? `❤️ +${esya.saglikEtkisi} sağlık ` : ''}
-                  {esya.mutlulukEtkisi ? `😊 +${esya.mutlulukEtkisi} mutluluk ` : ''}
-                  {esya.unEtkisi ? `⭐ +${esya.unEtkisi} şöhret ` : ''}
+                  {esya.saglikEtkisi ? `❤️ +${esya.saglikEtkisi} ${m.mpSaglik} ` : ''}
+                  {esya.mutlulukEtkisi ? `😊 +${esya.mutlulukEtkisi} ${m.mpMutluluk} ` : ''}
+                  {esya.unEtkisi ? `⭐ +${esya.unEtkisi} ${m.mpSohret} ` : ''}
                 </span>
+                {esya.sifaFaydaAralik && (
+                  <span className="meslek-aciklama magaza-sifa-sans">
+                    {bic(m.mpSifaSans, esya.sifaFaydaAralik.min, esya.sifaFaydaAralik.max)}
+                  </span>
+                )}
                 {esya.omurYil && !esya.sahipMi && (
-                  <span className="magaza-omur-uyarisi">⏳ {esya.omurYil} yıl içinde kullanılmazsa çürür</span>
+                  <span className="magaza-omur-uyarisi">{bic(m.mpCurukUyari, esya.omurYil)}</span>
                 )}
                 {!esya.sahipMi && (
                   <span className="magaza-fiyat">
@@ -92,7 +90,7 @@ export function MagazaPaneli({ para, paraBirimi, katalog, yukleniyor, islemMesaj
       </div>
 
       <button className="ikincil tam-geri-buton" disabled={yukleniyor} onClick={onGeriDon}>
-        Geri Dön
+        {m.geriDon}
       </button>
     </div>
   );

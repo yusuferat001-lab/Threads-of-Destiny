@@ -32,9 +32,9 @@ export const KONUTLAR: KonutTanimi[] = [
     aciklama:
       "Neredeyse bedava ama nemli, soğuk ve sağlıksız; burada sürekli yaşamak bedenini, moralini ve itibarını yıpratır. Sadece geçici bir dip.",
     kiraYillik: 1,
-    saglikEtkisiYillik: -4,
-    mutlulukEtkisiYillik: -4,
-    unEtkisiYillik: -4,
+    saglikEtkisiYillik: -2,
+    mutlulukEtkisiYillik: -2,
+    unEtkisiYillik: -2,
   },
   {
     id: "ahsap_ev",
@@ -43,16 +43,16 @@ export const KONUTLAR: KonutTanimi[] = [
     aciklama:
       "Sağlam sayılmaz ama bir çatı; yine de bakımsız ve dar — sağlığını, moralini ve adını yavaş yavaş aşındırır. İlk fırsatta gerçek bir eve geçmek gerekir.",
     kiraYillik: 3,
-    saglikEtkisiYillik: -3,
-    mutlulukEtkisiYillik: -3,
-    unEtkisiYillik: -3,
+    saglikEtkisiYillik: -2,
+    mutlulukEtkisiYillik: -2,
+    unEtkisiYillik: -2,
   },
   {
     id: "normal_ev",
     ad: "Normal Ev",
     simge: "🏠",
     aciklama: "Sıradan ama gerçek bir yuva; kendi dört duvarının verdiği küçük bir huzur var. Artık ev seni yıpratmıyor.",
-    kiraYillik: 6,
+    kiraYillik: 5,
     mutlulukEtkisiYillik: 1,
   },
   {
@@ -91,11 +91,12 @@ export const KONUTLAR: KonutTanimi[] = [
 ];
 
 /**
- * Yeni karakter artık en dipte değil, bir kademe yukarıda (Ahşap Ev) başlar:
- * en ucuz iki kademe ağır ceza taşıdığı için, henüz geliri olmayan bir
- * karakteri doğrudan ölüm sarmalına sokmamak adına.
+ * Yeni karakter, sağlık/mutluluk/ün açısından TAMAMEN NÖTR olan "Normal Ev"de
+ * başlar (2026-09 ekonomi dengesi): ev ekranını hiç açmayan sıradan bir oyuncu,
+ * ilk 15-20 yıl boyunca sessizce sağlık/itibar kaybetmesin diye. Ucuz kademeler
+ * (Basit Barınak / Ahşap Ev) hâlâ ceza taşır ama artık daha hafif (-2/yıl).
  */
-export const VARSAYILAN_KONUT_ID = "ahsap_ev";
+export const VARSAYILAN_KONUT_ID = "normal_ev";
 
 /** Bir konuttan diğerine taşınmanın bir kerelik nakliye maliyeti. */
 export const TASINMA_MALIYETI = 3;

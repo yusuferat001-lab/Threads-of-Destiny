@@ -11,6 +11,11 @@ function olayBul(state: ReturnType<typeof createCharacter>, baslik: string, maxD
   return null;
 }
 
+/** Belirli bir olay id'sini zorla üretir — RNG'ye bağlı olayBul(...,N) yerine deterministik. */
+function olayZorla(state: ReturnType<typeof createCharacter>, id: string) {
+  return olaySec(state, id).senaryo;
+}
+
 describe("fiziksel kalıcılık (option-level restricted_tags)", () => {
   it("kalici:tek_kolu_yok etiketi olan asker için ön safa geçme seçeneği kilitlenir", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
@@ -101,9 +106,8 @@ describe("tıbbi bağışıklık (immunity)", () => {
     mesleğiSec(state, "Din Adamı");
     state.ulke.vebada = true;
 
-    const senaryo = olayBul(state, "Salgının İkinci Dalgası", 500);
-    expect(senaryo).not.toBeNull();
-    const secenek = senaryo!.secenekler.find((s) => s.metin.includes("Bağışıklığına güvenerek"));
+    const senaryo = olayZorla(state, "derinlik_veba_salgini_ikinci_dalga");
+    const secenek = senaryo.secenekler.find((s) => s.metin.includes("Bağışıklığına güvenerek"));
     expect(secenek?.kilitli).toBe(true);
   });
 
@@ -113,9 +117,8 @@ describe("tıbbi bağışıklık (immunity)", () => {
     state.ulke.vebada = true;
     state.etiketler.push("tibbi:veba_bagisik");
 
-    const senaryo = olayBul(state, "Salgının İkinci Dalgası", 500);
-    expect(senaryo).not.toBeNull();
-    const secenek = senaryo!.secenekler.find((s) => s.metin.includes("Bağışıklığına güvenerek"));
+    const senaryo = olayZorla(state, "derinlik_veba_salgini_ikinci_dalga");
+    const secenek = senaryo.secenekler.find((s) => s.metin.includes("Bağışıklığına güvenerek"));
     expect(secenek?.kilitli).toBe(false);
   });
 });

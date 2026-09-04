@@ -1,5 +1,6 @@
 import type { Cocuk, EvcilHayvan } from '../types';
 import { HAYVAN_SIMGESI } from '../bolgeTema';
+import { useDil } from '../DilContext';
 
 interface AileOzetPaneliProps {
   esAdi: string | null;
@@ -10,13 +11,14 @@ interface AileOzetPaneliProps {
 }
 
 export function AileOzetPaneli({ esAdi, esMeslek, esRutbe, cocuklar, evcilHayvan }: AileOzetPaneliProps) {
+  const { m, kt } = useDil();
   const yasayanCocuklar = cocuklar.filter((c) => c.yasiyor);
   const hicKimseYok = !esAdi && yasayanCocuklar.length === 0 && !evcilHayvan;
 
   return (
     <div className="aile-ozet-paneli">
-      <h3>Aile</h3>
-      {hicKimseYok && <p className="aile-ozet-bos">Henüz yalnızsın.</p>}
+      <h3>{m.aoBaslik}</h3>
+      {hicKimseYok && <p className="aile-ozet-bos">{m.aoYalniz}</p>}
       {esAdi && (
         <div className="aile-ozet-satir">
           <span className="aile-ozet-simge" aria-hidden="true">
@@ -25,7 +27,7 @@ export function AileOzetPaneli({ esAdi, esMeslek, esRutbe, cocuklar, evcilHayvan
           <div className="aile-ozet-metin">
             <span className="aile-ozet-ad">{esAdi}</span>
             <span className="aile-ozet-rol">
-              Eş{esRutbe && esMeslek ? ` · ${esRutbe} (${esMeslek})` : ''}
+              {m.aoEsTek}{esRutbe && esMeslek ? ` · ${kt(esRutbe)} (${kt(esMeslek)})` : ''}
             </span>
           </div>
         </div>
@@ -37,7 +39,7 @@ export function AileOzetPaneli({ esAdi, esMeslek, esRutbe, cocuklar, evcilHayvan
           </span>
           <div className="aile-ozet-metin">
             <span className="aile-ozet-ad">{yasayanCocuklar.map((c) => c.isim).join(' & ')}</span>
-            <span className="aile-ozet-rol">{yasayanCocuklar.length > 1 ? 'Çocuklar' : 'Çocuk'}</span>
+            <span className="aile-ozet-rol">{yasayanCocuklar.length > 1 ? m.aoCocukCogul : m.aoCocukTek}</span>
           </div>
         </div>
       )}
@@ -48,7 +50,7 @@ export function AileOzetPaneli({ esAdi, esMeslek, esRutbe, cocuklar, evcilHayvan
           </span>
           <div className="aile-ozet-metin">
             <span className="aile-ozet-ad">{evcilHayvan.isim}</span>
-            <span className="aile-ozet-rol">Evcil Hayvan</span>
+            <span className="aile-ozet-rol">{m.aoEvcilHayvanTek}</span>
           </div>
         </div>
       )}

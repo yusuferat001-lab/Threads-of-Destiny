@@ -64,7 +64,7 @@ import { HayatHikayesi } from './components/HayatHikayesi';
 import { HaberlerPaneli } from './components/HaberlerPaneli';
 import { BolgeBilgisiPaneli } from './components/BolgeBilgisiPaneli';
 import { AileEkrani } from './components/AileEkrani';
-import { KomutaSeridi } from './components/KomutaSeridi';
+import { GorevEkrani } from './components/GorevEkrani';
 import { FinansOzetPaneli } from './components/FinansOzetPaneli';
 import { SahneHotspotlari } from './components/SahneHotspotlari';
 import { EnvanterPaneli } from './components/EnvanterPaneli';
@@ -82,6 +82,8 @@ import { basarimlariKaydet, basarimlariGetir } from './basarimlar';
 import { gecmisHayatKaydet, gecmisHayatlariGetir, gecmisHayatlariTemizle, type GecmisHayat } from './gecmisHayatlar';
 import { sonucIkonuGetir, unUnvani, MESLEK_KATEGORI, yatkinlikEtiketi, etkiTahminiGetir } from './bolgeTema';
 import { formatPara } from './format';
+import { bic } from './i18n';
+import { DilContext, dilCtxYap } from './DilContext';
 import './App.css';
 
 type Ekran =
@@ -97,6 +99,7 @@ type Ekran =
   | 'olum'
   | 'liderlik'
   | 'aile'
+  | 'gorev'
   | 'finans'
   | 'yatirim'
   | 'sosyallesme'
@@ -113,27 +116,29 @@ interface SonEtki {
   terfiOldu: boolean;
 }
 
-const MESLEK_ACIKLAMA: Record<string, string> = {
-  Asker: 'Savaş, sadakat ve rütbe. Yüksek risk, hızlı ün.',
-  Tüccar: 'Kâr, pazarlık ve ağ kurma. Yüksek kazanç potansiyeli.',
-  'Din Adamı': 'Cemaat, vicdan ve nüfuz. İstikrarlı saygınlık.',
-};
-
 const MESLEK_SIMGE: Record<string, string> = {
   Asker: '⚔️',
   Tüccar: '💰',
   'Din Adamı': '🙏',
 };
 
-const CAG_ACIKLAMA: Record<string, string> = {
-  'Orta Çağ': 'Haçlı seferleri, veba, şövalyeler, kervanlar. 11.-13. yüzyıl.',
-  'Sanayi Devrimi': 'Fabrikalaşma, sömürgecilik, yeni icatlar. 19. yüzyıl.',
-};
-
 const CAG_SIMGE: Record<string, string> = {
   'Orta Çağ': '🏰',
   'Sanayi Devrimi': '🏭',
 };
+
+/** Meslek/çağ kısa açıklamaları — dile göre i18n sözlüğünden. */
+function meslekAciklama(m: ReturnType<typeof dilCtxYap>['m'], meslek: string): string {
+  if (meslek === 'Asker') return m.meslekAciklamaAsker;
+  if (meslek === 'Tüccar') return m.meslekAciklamaTuccar;
+  if (meslek === 'Din Adamı') return m.meslekAciklamaDinAdami;
+  return '';
+}
+function cagAciklama(m: ReturnType<typeof dilCtxYap>['m'], cag: string): string {
+  if (cag === 'Orta Çağ') return m.cagAciklamaOrtacag;
+  if (cag === 'Sanayi Devrimi') return m.cagAciklamaSanayi;
+  return '';
+}
 
 /** Gelir/Sosyalleş/Mağaza artık sahne üzerindeki tıklama noktalarından açılır ama tam
  * sayfa olarak (oyun HUD'unun yerini alarak) açılır — hepsi ana oyun ekranıyla aynı "sayfa
@@ -189,6 +194,9 @@ function App() {
   const [secilenGecmisHayat, setSecilenGecmisHayat] = useState<GecmisHayat | null>(null);
   const [liderlikOnizleme, setLiderlikOnizleme] = useState<ScoreKaydi[]>([]);
   const [bolgeBilgiAcik, setBolgeBilgiAcik] = useState(false);
+
+  const dilCtx = dilCtxYap(dil);
+  const { m, kt } = dilCtx;
 
   function sesToggle() {
     setSesKapali((onceki) => {
@@ -381,7 +389,8 @@ function App() {
         secilenCag,
         secilenBolge,
         secilenYerlesim,
-        isim || undefined
+        isim || undefined,
+        dil
       );
       setKarakter(state);
       aktifOturumIdKaydet(state.id);
@@ -755,25 +764,19 @@ function App() {
   }
 
   return (
+    <DilContext.Provider value={dilCtx}>
     <div
       className={TAM_EKRAN_GRUBU.includes(ekran) ? 'oyun-kapsayici oyun-kapsayici-tam' : 'oyun-kapsayici'}
     >
       <button
         className="ayar-ac-buton"
         onClick={() => setAyarlarAcik(true)}
-        aria-label="Ayarlar"
-        title="Ayarlar"
+        aria-label={m.ayarlarBaslik}
+        title={m.ayarlarBaslik}
       >
         ⚙️
       </button>
-      <button
-        className="ses-toggle-buton"
-        onClick={sesToggle}
-        aria-label={sesKapali ? 'Sesi aç' : 'Sesi kapat'}
-        title={sesKapali ? 'Sesi aç' : 'Sesi kapat'}
-      >
-        {sesKapali ? '🔇' : '🔊'}
-      </button>
+      {/* Ses aç/kapa artık yalnızca Ayarlar modalında (sağ üstteki ayrı buton kaldırıldı). */}
       {hata && <div className="hata-kutusu">{hata}</div>}
 
       {ayarlarAcik && (
@@ -791,20 +794,17 @@ function App() {
         <div className="ekran ekran-giris">
           <div className="giris-hero">
             <span className="giris-cark" aria-hidden="true">⚙️</span>
-            <h1>Kader Çarkı</h1>
-            <p className="giris-aciklama">
-              Çağını, ülkeni ve mesleğini sen seç; ailen ve kişiliğin rastgele belirlensin. Gerisini
-              kaderin ve kararların belirlesin. Ölüm kalıcıdır.
-            </p>
+            <h1>{m.oyunAdi}</h1>
+            <p className="giris-aciklama">{m.girisAciklama}</p>
             <div className="giris-hero-butonlar">
               <button disabled={yukleniyor} onClick={() => setEkran('cag_sec')}>
-                ⚙️ Yeni Hayata Başla
+                {m.btnYeniHayat}
               </button>
               <button className="ikincil" disabled={yukleniyor} onClick={() => liderligiAc('genel')}>
-                🏆 Liderlik Tablosu
+                {m.btnLiderlik}
               </button>
               <button className="ikincil" disabled={yukleniyor} onClick={() => setAyarlarAcik(true)}>
-                ⚙️ Ayarlar
+                {m.btnAyarlar}
               </button>
             </div>
           </div>
@@ -812,7 +812,7 @@ function App() {
           <div className="giris-paneller">
             <div className="giris-panel">
               <div className="giris-panel-baslik">
-                <span>📜 Geçmiş Hayatların ({gecmisHayatlar.length})</span>
+                <span>{m.panelGecmisHayatlar} ({gecmisHayatlar.length})</span>
                 {gecmisHayatlar.length > 0 && (
                   <button
                     className="ikincil giris-panel-temizle"
@@ -821,23 +821,23 @@ function App() {
                       setGecmisHayatlar([]);
                     }}
                   >
-                    Temizle
+                    {m.temizle}
                   </button>
                 )}
               </div>
               {gecmisHayatlar.length === 0 ? (
-                <p className="giris-panel-bos">Bu cihazda henüz tamamlanmış bir hayat yok.</p>
+                <p className="giris-panel-bos">{m.gecmisHayatBos}</p>
               ) : (
                 <ul className="gecmis-hayat-liste">
                   {gecmisHayatlar.map((h) => (
                     <li key={h.id}>
                       <button className="gecmis-hayat-satiri" onClick={() => setSecilenGecmisHayat(h)}>
                         <span className="gecmis-hayat-ust">
-                          <strong>💀 {h.isim ?? 'İsimsiz'}</strong>
-                          <span className="gecmis-hayat-skor">{h.skor.toLocaleString('tr-TR')} puan</span>
+                          <strong>💀 {h.isim ?? m.isimsiz}</strong>
+                          <span className="gecmis-hayat-skor">{h.skor.toLocaleString(dil === 'en' ? 'en-US' : 'tr-TR')} {m.puan}</span>
                         </span>
                         <span className="gecmis-hayat-alt">
-                          {h.yas} yaşında · {h.meslek} · {h.bolge} · {h.olumNedeni}
+                          {h.yas} {m.yasinda} · {kt(h.meslek)} · {kt(h.bolge)} · {h.olumNedeni}
                         </span>
                       </button>
                     </li>
@@ -848,20 +848,20 @@ function App() {
 
             <div className="giris-panel">
               <div className="giris-panel-baslik">
-                <span>🏆 Liderlik</span>
+                <span>{m.panelLiderlik}</span>
                 <button className="ikincil giris-panel-temizle" onClick={() => liderligiAc('genel')}>
-                  Tümünü Gör
+                  {m.tumunuGor}
                 </button>
               </div>
               {liderlikOnizleme.length === 0 ? (
-                <p className="giris-panel-bos">Henüz skor kaydı yok.</p>
+                <p className="giris-panel-bos">{m.skorKaydiYok}</p>
               ) : (
                 <ol className="giris-liderlik-liste">
                   {liderlikOnizleme.map((k, i) => (
                     <li key={k.id}>
                       <span className="giris-liderlik-sira">{i + 1}.</span>
                       <strong>{k.isim}</strong>
-                      <span className="giris-liderlik-skor">{k.skor.toLocaleString('tr-TR')}</span>
+                      <span className="giris-liderlik-skor">{k.skor.toLocaleString(dil === 'en' ? 'en-US' : 'tr-TR')}</span>
                     </li>
                   ))}
                 </ol>
@@ -874,7 +874,7 @@ function App() {
                   className="ikincil basarimlar-baslik-buton"
                   onClick={() => setBasarimlarAcik((a) => !a)}
                 >
-                  🏵️ Başarımların ({basarimlar.unvanlar.length + basarimlar.olumler.length}){' '}
+                  {m.panelBasarimlar} ({basarimlar.unvanlar.length + basarimlar.olumler.length}){' '}
                   {basarimlarAcik ? '▲' : '▼'}
                 </button>
                 {basarimlarAcik && (
@@ -905,17 +905,17 @@ function App() {
                   className="ikincil gecmis-hayat-kapat"
                   onClick={() => setSecilenGecmisHayat(null)}
                 >
-                  ✕ Kapat
+                  {m.kapatX}
                 </button>
-                <h3>{secilenGecmisHayat.isim ?? 'İsimsiz'}</h3>
+                <h3>{secilenGecmisHayat.isim ?? m.isimsiz}</h3>
                 <p className="olum-ozet">
-                  {secilenGecmisHayat.yil} yılı · {secilenGecmisHayat.yas} yaşında ·{' '}
-                  {secilenGecmisHayat.rutbe} ({secilenGecmisHayat.meslek}) · {secilenGecmisHayat.bolge}
+                  {bic(m.yilSonek ? '{0} {1}' : '{0}', secilenGecmisHayat.yil, m.yilSonek)} · {secilenGecmisHayat.yas} {m.yasinda} ·{' '}
+                  {kt(secilenGecmisHayat.rutbe)} ({kt(secilenGecmisHayat.meslek)}) · {kt(secilenGecmisHayat.bolge)}
                 </p>
                 <p className="olum-ozet">
-                  {formatPara(secilenGecmisHayat.para)} {secilenGecmisHayat.paraBirimi} · Şöhret:{' '}
-                  {unUnvani(secilenGecmisHayat.un)} ·{' '}
-                  {secilenGecmisHayat.skor.toLocaleString('tr-TR')} puan
+                  {formatPara(secilenGecmisHayat.para)} {secilenGecmisHayat.paraBirimi} · {m.sohret}:{' '}
+                  {unUnvani(secilenGecmisHayat.un, dil)} ·{' '}
+                  {secilenGecmisHayat.skor.toLocaleString(dil === 'en' ? 'en-US' : 'tr-TR')} {m.puan}
                   {secilenGecmisHayat.amacTamamlandi && ' · 🎯 x5'}
                 </p>
                 <p className="sonuc-hikaye">{secilenGecmisHayat.olumNedeni}</p>
@@ -946,27 +946,27 @@ function App() {
 
       {ekran === 'cag_sec' && (
         <div className="ekran ekran-meslek">
-          <h2>Çağını Seç</h2>
-          <p className="giris-aciklama">Hangi tarihi dönemde yaşamak istersin?</p>
+          <h2>{m.cagSecBaslik}</h2>
+          <p className="giris-aciklama">{m.cagSecAlt}</p>
           <div className="meslek-kartlari">
             {Object.keys(bolgeler).map((cag) => (
               <button key={cag} className="meslek-kart" disabled={yukleniyor} onClick={() => cagSecildi(cag)}>
                 <span className="meslek-simge">{CAG_SIMGE[cag] ?? '📜'}</span>
-                <strong>{cag}</strong>
-                <span className="meslek-aciklama">{CAG_ACIKLAMA[cag] ?? ''}</span>
+                <strong>{kt(cag)}</strong>
+                <span className="meslek-aciklama">{cagAciklama(m, cag)}</span>
               </button>
             ))}
           </div>
           <button className="ikincil" onClick={() => setEkran('giris')}>
-            Geri
+            {m.geri}
           </button>
         </div>
       )}
 
       {ekran === 'bolge_sec' && secilenCag && (
         <div className="ekran ekran-meslek">
-          <h2>Ülkeni Seç</h2>
-          <p className="giris-aciklama">{secilenCag} döneminde hangi topraklarda doğmak istersin?</p>
+          <h2>{m.bolgeSecBaslik}</h2>
+          <p className="giris-aciklama">{bic(m.bolgeSecAlt, kt(secilenCag))}</p>
           <div className="meslek-kartlari">
             {(bolgeler[secilenCag] ?? []).map((bolge) => (
               <button
@@ -975,23 +975,20 @@ function App() {
                 disabled={yukleniyor}
                 onClick={() => bolgeSecildi(bolge)}
               >
-                <strong>{bolge}</strong>
+                <strong>{kt(bolge)}</strong>
               </button>
             ))}
           </div>
           <button className="ikincil" onClick={() => setEkran('cag_sec')}>
-            Geri
+            {m.geri}
           </button>
         </div>
       )}
 
       {ekran === 'yerlesim_sec' && secilenBolge && (
         <div className="ekran ekran-meslek">
-          <h2>Nerede Yaşayacaksın?</h2>
-          <p className="giris-aciklama">
-            {secilenBolge} toprakları geniş; şehir merkezi, sınır bölgesi ve dağ başı çok farklı bir hayat
-            sunar. Artı ve eksileri iyi tart.
-          </p>
+          <h2>{m.yerlesimSecBaslik}</h2>
+          <p className="giris-aciklama">{bic(m.yerlesimSecAlt, kt(secilenBolge))}</p>
           <div className="yerlesim-kartlari">
             {yerlesimler.map((yerlesim) => (
               <button
@@ -1001,18 +998,18 @@ function App() {
                 onClick={() => yerlesimSecildi(yerlesim.id)}
               >
                 <span className="meslek-simge">{yerlesim.simge}</span>
-                <strong>{yerlesim.ad}</strong>
+                <strong>{kt(yerlesim.ad)}</strong>
                 <div className="yerlesim-artilar">
                   {yerlesim.artilar.map((artı) => (
                     <span key={artı} className="yerlesim-arti">
-                      ✓ {artı}
+                      ✓ {kt(artı)}
                     </span>
                   ))}
                 </div>
                 <div className="yerlesim-eksiler">
                   {yerlesim.eksiler.map((eksi) => (
                     <span key={eksi} className="yerlesim-eksi">
-                      ✕ {eksi}
+                      ✕ {kt(eksi)}
                     </span>
                   ))}
                 </div>
@@ -1020,37 +1017,33 @@ function App() {
             ))}
           </div>
           <button className="ikincil" onClick={() => setEkran('bolge_sec')}>
-            Geri
+            {m.geri}
           </button>
         </div>
       )}
 
       {ekran === 'isim_sec' && (
         <div className="ekran ekran-isim">
-          <h2>Adın Ne Olsun?</h2>
-          <p className="giris-aciklama">
-            Bu isim oyun boyunca sol üstte görünecek ve öldüğünde skor tablosuna bu isimle
-            geçebilirsin. İstersen boş bırak; {secilenBolge} topraklarına uygun rastgele bir isim
-            atanır.
-          </p>
+          <h2>{m.isimSecBaslik}</h2>
+          <p className="giris-aciklama">{bic(m.isimSecAlt, kt(secilenBolge))}</p>
           <div className="isim-sec-form">
             <input
               className="isim-sec-input"
               value={oyuncuIsmi}
               onChange={(e) => setOyuncuIsmi(e.target.value)}
-              placeholder="İsmini yaz…"
+              placeholder={m.isimYer}
               maxLength={40}
               autoFocus
             />
             <button className="ikincil" type="button" disabled={yukleniyor} onClick={rastgeleIsimGetir}>
-              🎲 Rastgele İsim
+              {m.btnRastgeleIsim}
             </button>
           </div>
           <button disabled={yukleniyor} onClick={karakteriOlustur}>
-            {yukleniyor ? 'Yükleniyor...' : oyuncuIsmi.trim() ? 'Bu İsimle Başla' : 'Rastgele İsimle Başla'}
+            {yukleniyor ? m.yukleniyor : oyuncuIsmi.trim() ? m.btnBuIsimleBasla : m.btnRastgeleIsimleBasla}
           </button>
           <button className="ikincil" disabled={yukleniyor} onClick={() => setEkran('yerlesim_sec')}>
-            Geri
+            {m.geri}
           </button>
         </div>
       )}
@@ -1060,15 +1053,13 @@ function App() {
           {karakter && (
             <BolgeSahnesi cag={karakter.cag} bolge={karakter.bolge} yerlesim={karakter.yerlesim} ulke={karakter.ulke} un={karakter.un} />
           )}
-          <h2>Mesleğini Seç</h2>
-          <p className="giris-aciklama">
-            Ailenin mesleğini sürdürürsen hazır bir müşteri ve tanıdık ağı devralırsın.
-          </p>
+          <h2>{m.meslekSecBaslik}</h2>
+          <p className="giris-aciklama">{m.meslekSecAlt}</p>
           <div className="meslek-kartlari">
             {meslekler.map((meslek) => {
               const kategori = MESLEK_KATEGORI[meslek];
               const puan = kategori ? karakter?.yatkinliklar[kategori] ?? 0 : 0;
-              const { etiket, simge } = yatkinlikEtiketi(puan);
+              const { etiket, simge } = yatkinlikEtiketi(puan, dil);
               return (
                 <button
                   key={meslek}
@@ -1077,8 +1068,8 @@ function App() {
                   onClick={() => meslekSecildi(meslek)}
                 >
                   <span className="meslek-simge">{MESLEK_SIMGE[meslek] ?? '📜'}</span>
-                  <strong>{meslek}</strong>
-                  <span className="meslek-aciklama">{MESLEK_ACIKLAMA[meslek] ?? ''}</span>
+                  <strong>{kt(meslek)}</strong>
+                  <span className="meslek-aciklama">{meslekAciklama(m, meslek)}</span>
                   {karakter && (
                     <span className="meslek-yatkinlik">
                       {simge} {etiket} ({puan > 0 ? '+' : ''}
@@ -1086,7 +1077,7 @@ function App() {
                     </span>
                   )}
                   {karakter?.aile_meslegi === meslek && (
-                    <span className="meslek-miras-ipucu">✓ Aile mesleğin — bonus kazanırsın</span>
+                    <span className="meslek-miras-ipucu">{m.meslekMirasIpucu}</span>
                   )}
                 </button>
               );
@@ -1116,7 +1107,7 @@ function App() {
           <KarakterAvatari kisilik={karakter.kisilik} />
           <h2>
             {karakter.isim ? `${karakter.isim} — ` : ''}
-            {karakter.aile_meslegi} Ailesinin Çocuğu
+            {bic(m.acilisAileCocugu, kt(karakter.aile_meslegi))}
           </h2>
           <p className="acilis-metni">{karakter.acilis_anlatimi}</p>
 
@@ -1124,15 +1115,15 @@ function App() {
             <span>
               💰 {formatPara(karakter.para)} {karakter.para_birimi}
             </span>
-            <span>❤️ Sağlık {karakter.saglik}</span>
-            <span>🙂 Mutluluk {karakter.mutluluk}</span>
-            <span>🏅 {unUnvani(karakter.un)}</span>
-            <span>🎭 {karakter.kisilik.join(' · ')}</span>
+            <span>❤️ {m.statSaglik} {karakter.saglik}</span>
+            <span>🙂 {m.statMutluluk} {karakter.mutluluk}</span>
+            <span>🏅 {unUnvani(karakter.un, dil)}</span>
+            <span>🎭 {karakter.kisilik.map((k) => kt(k)).join(' · ')}</span>
           </div>
 
           {karakter.durumlar.length > 0 && (
             <p className="acilis-durum">
-              Doğuştan gelen durumun: {karakter.durumlar.map((d) => d.ad).join(', ')}
+              {bic(m.acilisDurum, karakter.durumlar.map((d) => kt(d.ad)).join(', '))}
             </p>
           )}
 
@@ -1144,7 +1135,7 @@ function App() {
           />
 
           <button disabled={yukleniyor} onClick={() => setEkran('meslek')}>
-            {yukleniyor ? 'Yükleniyor...' : 'Devam Et'}
+            {yukleniyor ? m.yukleniyor : m.devamEt}
           </button>
         </div>
       )}
@@ -1167,7 +1158,7 @@ function App() {
           />
           <div className="oyun-govde">
             <div className="sol-panel panel-parsomen">
-              <div className="panel-parsomen-baslik">Kişisel Hayat</div>
+              <div className="panel-parsomen-baslik">{m.panelKisiselHayat}</div>
 
               <div className="sol-panel-kimlik">
                 <KarakterAvatari
@@ -1178,11 +1169,11 @@ function App() {
                 <div className="sol-panel-baslik">
                   {karakter.isim && <span className="sol-panel-isim">{karakter.isim}</span>}
                   <strong>
-                    {karakter.rutbe}
-                    {karakter.unvanlar.length > 0 && ` "${karakter.unvanlar[karakter.unvanlar.length - 1]}"`}
+                    {kt(karakter.rutbe)}
+                    {karakter.unvanlar.length > 0 && ` "${kt(karakter.unvanlar[karakter.unvanlar.length - 1])}"`}
                   </strong>
                   <span>
-                    {karakter.meslek} · {karakter.yas} yaşında
+                    {kt(karakter.meslek)} · {bic(m.yasSonek, karakter.yas)}
                   </span>
                 </div>
               </div>
@@ -1193,29 +1184,19 @@ function App() {
                     🏅
                   </span>
                   <div className="un-rozeti-metin">
-                    <span className="un-rozeti-etiket">Şöhret</span>
-                    <strong>{unUnvani(karakter.un)}</strong>
+                    <span className="un-rozeti-etiket">{m.sohret}</span>
+                    <strong>{unUnvani(karakter.un, dil)}</strong>
                   </div>
                 </div>
               </div>
 
               <FinansOzetPaneli finans={finans} maasYillikYedek={karakter.maas_yillik} paraBirimi={karakter.para_birimi} />
 
-              <KomutaSeridi
-                meslek={karakter.meslek}
-                amirAdi={karakter.amir_adi}
-                amirRutbe={karakter.amir_rutbe}
-                astlar={karakter.astlar}
-                ekip={karakter.ekip}
-                orduMevcudu={karakter.ordu_mevcudu}
-                orduTechizatSeviyesi={karakter.ordu_techizat_seviyesi}
-                ticaretSermaye={karakter.ticaret_sermaye}
-                nufuz={karakter.nufuz}
-                hapiste={karakter.etiketler.includes('hapiste')}
-                paraBirimi={karakter.para_birimi}
-                yukleniyor={yukleniyor}
-                onEkipCikar={ekipCikarHandler}
-              />
+              <div className="gorev-blok">
+                <button className="ikincil gorev-gor-buton" onClick={() => setEkran('gorev')}>
+                  {m.geGorevGor}
+                </button>
+              </div>
 
               <EnvanterPaneli
                 etiketler={karakter.etiketler}
@@ -1272,7 +1253,6 @@ function App() {
                         {sonEtki.terfiOldu ? '🎖️' : sonucIkonuGetir(sonEtki.basarili, false, sonEtki.kategori)}
                       </span>
                     </div>
-                    <p className="sonuc-hikaye">{sonEtki.etki.mesaj}</p>
                   </div>
                 ) : (
                   <div className="olay-karti">
@@ -1283,7 +1263,7 @@ function App() {
                       {senaryo.gorsel}
                     </span>
                     <h2>{senaryo.olay_basligi}</h2>
-                    {tepkiModu && <p className="tepki-notu">⏳ Tarih henüz ilerlemedi — bu senin son sözün.</p>}
+                    {tepkiModu && <p className="tepki-notu">{m.tepkiNotu}</p>}
                     <p className="olay-metni">{senaryo.olay_metni}</p>
                   </div>
                 )}
@@ -1291,28 +1271,33 @@ function App() {
                 {ekran === 'sonuc' && sonEtki ? (
                   <div className="secenekler sonuc-detay-panel">
                     <EtkiCipleri etki={sonEtki.etki} paraBirimi={sonEtki.paraBirimi} />
-                    <p className="sonuc-detay">{sonEtki.sonucAnlatimi}</p>
-                    {sonEtki.zamanAnlatimi && (
-                      <div className="zaman-blogu">
-                        <span className="zaman-basligi">— {sonEtki.yasArtisi} yıl sonra —</span>
-                        <p className="zaman-anlatimi">{sonEtki.zamanAnlatimi}</p>
-                      </div>
-                    )}
+                    {(() => {
+                      // Tek metin: olay sonucu + turun pasif özeti (kazanç/dünya olayları/terfi).
+                      // sonucAnlatimi (çoğunlukla mesaj'ın tekrarı) yalnız zamanAnlatimi yoksa yedek.
+                      const ozet = [sonEtki.etki.mesaj, sonEtki.zamanAnlatimi ?? sonEtki.sonucAnlatimi]
+                        .filter((s): s is string => !!s && s.trim() !== '')
+                        .join(' ');
+                      return ozet ? (
+                        <p className="tur-ozeti" title={ozet}>
+                          {ozet}
+                        </p>
+                      ) : null;
+                    })()}
                     <button disabled={yukleniyor} onClick={devamEt}>
-                      {yukleniyor ? 'Yükleniyor...' : 'Devam Et'}
+                      {yukleniyor ? m.yukleniyor : m.devamEt}
                     </button>
                   </div>
                 ) : (
                   <div className="secenekler">
                     {yukleniyor && (
                       <p className="secenek-yukleniyor-metni" aria-live="polite">
-                        Kaderin şekilleniyor…
+                        {m.kaderSekilleniyor}
                       </p>
                     )}
                     {senaryo.secenekler.map((secenek, i) => {
                       const tahminler =
                         !secenek.kilitli && !tepkiModu
-                          ? etkiTahminiGetir(secenek.basarili_sonuc, secenek.basarisiz_sonuc)
+                          ? etkiTahminiGetir(secenek.basarili_sonuc, secenek.basarisiz_sonuc, dil)
                           : [];
                       return (
                         <button
@@ -1327,7 +1312,7 @@ function App() {
                           </span>
                           {!secenek.kilitli && !tepkiModu && (
                             <span className="secenek-sans">
-                              %{secenek.belirsiz_aralik.min}-{secenek.belirsiz_aralik.max} şans
+                              {bic(m.sansEki, secenek.belirsiz_aralik.min, secenek.belirsiz_aralik.max)}
                             </span>
                           )}
                           {!secenek.kilitli && !tepkiModu && tahminler.length > 0 && (
@@ -1352,7 +1337,7 @@ function App() {
             </div>
 
             <div className="sag-panel panel-parsomen">
-              <div className="panel-parsomen-baslik">Dünya &amp; Siyaset</div>
+              <div className="panel-parsomen-baslik">{m.panelDunyaSiyaset}</div>
               <SiyasetPaneli cag={karakter.cag} hizip={karakter.hizip} />
               <HaberlerPaneli haberler={karakter.haberler} />
 
@@ -1374,7 +1359,7 @@ function App() {
                   evcilHayvan={karakter.evcil_hayvan}
                 />
                 <button className="ikincil aile-gor-buton" onClick={() => setEkran('aile')}>
-                  Aileni Gör →
+                  {m.btnAileniGor}
                 </button>
               </div>
 
@@ -1398,7 +1383,7 @@ function App() {
                   className="ikincil gecmis-hayat-kapat bolge-bilgi-modal-kapat"
                   onClick={() => setBolgeBilgiAcik(false)}
                 >
-                  ✕ Kapat
+                  {m.kapatX}
                 </button>
                 <BolgeBilgisiPaneli bolge={karakter.bolge} bilgi={karakter.bolge_bilgi} />
               </div>
@@ -1501,18 +1486,44 @@ function App() {
         />
       )}
 
+      {ekran === 'gorev' && karakter && (
+        <GorevEkrani
+          meslek={karakter.meslek}
+          amirAdi={karakter.amir_adi}
+          amirRutbe={karakter.amir_rutbe}
+          astlar={karakter.astlar}
+          ekip={karakter.ekip}
+          orduMevcudu={karakter.ordu_mevcudu}
+          orduTechizatSeviyesi={karakter.ordu_techizat_seviyesi}
+          ticaretSermaye={karakter.ticaret_sermaye}
+          nufuz={karakter.nufuz}
+          hapiste={karakter.etiketler.includes('hapiste')}
+          paraBirimi={karakter.para_birimi}
+          yukleniyor={yukleniyor}
+          onEkipCikar={ekipCikarHandler}
+          onGeriDon={() => setEkran('oyun')}
+        />
+      )}
+
       {ekran === 'olum' && karakter && (
         <div className="ekran ekran-olum buyuk-an-olum">
           <BolgeSahnesi cag={karakter.cag} bolge={karakter.bolge} yerlesim={karakter.yerlesim} ulke={karakter.ulke} un={karakter.un} />
           <span className="sonuc-ikon">💀</span>
-          <h2>Öldün.</h2>
+          <h2>{m.oldun}</h2>
           <p className="sonuc-hikaye">{karakter.olum_nedeni}</p>
           <p className="olum-ozet">
-            {karakter.yil} yılı. {karakter.yas} yaşında, {karakter.rutbe} ({karakter.meslek}) olarak,{' '}
-            {karakter.bolge} topraklarında hayatını kaybetti. {karakter.aile_meslegi} ailesinin çocuğuydu.
+            {bic(
+              m.olumOzet,
+              karakter.yil,
+              karakter.yas,
+              kt(karakter.rutbe),
+              kt(karakter.meslek),
+              kt(karakter.bolge),
+              kt(karakter.aile_meslegi)
+            )}
           </p>
           <p className="olum-ozet">
-            {formatPara(karakter.para)} {karakter.para_birimi} · Şöhret: {unUnvani(karakter.un)}
+            {formatPara(karakter.para)} {karakter.para_birimi} · {m.sohret}: {unUnvani(karakter.un, dil)}
           </p>
 
           <GecmisGrafik gecmis={karakter.gecmis} paraBirimi={karakter.para_birimi} />
@@ -1523,21 +1534,21 @@ function App() {
               <input
                 value={isim}
                 onChange={(e) => setIsim(e.target.value)}
-                placeholder="İsmini gir"
+                placeholder={m.isimGir}
                 maxLength={40}
               />
               <button disabled={yukleniyor || !isim.trim()} onClick={skorunuKaydet}>
-                Skoru Kaydet
+                {m.btnSkoruKaydet}
               </button>
             </div>
           ) : (
-            <p>Skorun kaydedildi.</p>
+            <p>{m.skorKaydedildi}</p>
           )}
 
           <div className="olum-butonlari">
-            <button onClick={() => liderligiAc('genel')}>Liderlik Tablosu</button>
+            <button onClick={() => liderligiAc('genel')}>{m.btnLiderlikTablosu}</button>
             <button className="ikincil" onClick={bastanBasla}>
-              Yeniden Başla
+              {m.yenidenBasla}
             </button>
           </div>
         </div>
@@ -1545,25 +1556,25 @@ function App() {
 
       {ekran === 'liderlik' && (
         <div className="ekran ekran-liderlik">
-          <h2>Liderlik Tablosu</h2>
+          <h2>{m.liderlikBaslik}</h2>
           <div className="liderlik-sekmeler">
             <button
               className={liderlikTuru === 'genel' ? 'aktif-sekme' : ''}
               onClick={() => liderligiAc('genel')}
             >
-              Genel
+              {m.sekmeGenelLb}
             </button>
             <button
               className={liderlikTuru === 'en_zengin' ? 'aktif-sekme' : ''}
               onClick={() => liderligiAc('en_zengin')}
             >
-              En Zenginler
+              {m.sekmeEnZengin}
             </button>
             <button
               className={liderlikTuru === 'en_unlu' ? 'aktif-sekme' : ''}
               onClick={() => liderligiAc('en_unlu')}
             >
-              En Çok Tanınanlar
+              {m.sekmeEnUnlu}
             </button>
           </div>
           <ol className="liderlik-liste">
@@ -1572,21 +1583,21 @@ function App() {
                 <div>
                   <strong>{kayit.isim}</strong>
                   {kayit.hayat_amaci_tamamlandi && (
-                    <span className="liderlik-rozet liderlik-rozet-amac" title="Hayat amacını tamamladı (x5 skor)">
+                    <span className="liderlik-rozet liderlik-rozet-amac" title={m.amacTamamladiTitle}>
                       🎯 x5
                     </span>
                   )}
-                  {' '}— {kayit.skor} puan ({kayit.rutbe ? `${kayit.rutbe}, ` : ''}
-                  {kayit.meslek}, {kayit.cag}, {kayit.yas} yaşında, {kayit.olum_nedeni})
+                  {' '}— {kayit.skor} {m.puan} ({kayit.rutbe ? `${kt(kayit.rutbe)}, ` : ''}
+                  {kt(kayit.meslek)}, {kt(kayit.cag)}, {bic(m.yasSonek, kayit.yas)}, {kayit.olum_nedeni})
                 </div>
                 {(kayit.yerlesim || kayit.kisilik || kayit.unvanlar || kayit.efsanevi_olum) && (
                   <div className="liderlik-detay">
-                    {kayit.yerlesim && <span>📍 {kayit.yerlesim}</span>}
-                    {kayit.kisilik && <span>🎭 {kayit.kisilik}</span>}
+                    {kayit.yerlesim && <span>📍 {kt(kayit.yerlesim)}</span>}
+                    {kayit.kisilik && <span>🎭 {kayit.kisilik.split(', ').map((k) => kt(k.trim())).join(' · ')}</span>}
                     {kayit.unvanlar &&
                       kayit.unvanlar.split(', ').map((unvan) => (
                         <span key={unvan} className="liderlik-rozet liderlik-rozet-unvan">
-                          🏵️ {unvan}
+                          🏵️ {kt(unvan)}
                         </span>
                       ))}
                     {kayit.efsanevi_olum && (
@@ -1596,14 +1607,15 @@ function App() {
                 )}
               </li>
             ))}
-            {liderlik.length === 0 && <li>Henüz kayıt yok.</li>}
+            {liderlik.length === 0 && <li>{m.kayitYok}</li>}
           </ol>
           <button className="ikincil" onClick={bastanBasla}>
-            Ana Menü
+            {m.anaMenu}
           </button>
         </div>
       )}
     </div>
+    </DilContext.Provider>
   );
 }
 

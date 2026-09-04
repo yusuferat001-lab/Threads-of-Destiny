@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { bolgeTemasiGetir } from '../bolgeTema';
+import { useDil } from '../DilContext';
 
 interface UlkeDurumu {
   savasta: boolean;
@@ -145,6 +146,7 @@ function DinamikEfektKatmani({
 }
 
 export function BolgeSahnesi({ cag, bolge, yerlesim, ulke, un = 0, tamYukseklik = false }: BolgeSahnesiProps) {
+  const { m, kt } = useDil();
   const tema = bolgeTemasiGetir(bolge);
   const tip = yerlesimTipiCikar(yerlesim);
   const isikSayisi = Math.max(0, isikSayisiHesapla(un) - (ulke?.vebada ? 2 : 0));
@@ -203,9 +205,9 @@ export function BolgeSahnesi({ cag, bolge, yerlesim, ulke, un = 0, tamYukseklik 
       )}
 
       <div className="bolge-sahnesi-etiketler">
-        {yerlesim && <span className="bolge-sahnesi-etiket">{yerlesim}</span>}
-        {ulke?.savasta && <span className="bolge-sahnesi-etiket bolge-sahnesi-tehlike">⚔️ Savaşta</span>}
-        {ulke?.vebada && <span className="bolge-sahnesi-etiket bolge-sahnesi-tehlike">☠️ Salgın</span>}
+        {yerlesim && <span className="bolge-sahnesi-etiket">{kt(yerlesim)}</span>}
+        {ulke?.savasta && <span className="bolge-sahnesi-etiket bolge-sahnesi-tehlike">{m.usSavasta}</span>}
+        {ulke?.vebada && <span className="bolge-sahnesi-etiket bolge-sahnesi-tehlike">{m.usSalgin}</span>}
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
 import { bolgeTemasiGetir } from '../bolgeTema';
+import { useDil } from '../DilContext';
 
 interface BannerProps {
   cag: string;
@@ -9,6 +10,7 @@ interface BannerProps {
 }
 
 export function Banner({ cag, bolge, yil, ulke, hukumdar }: BannerProps) {
+  const { m, kt, ktHukumdar } = useDil();
   const tema = bolgeTemasiGetir(bolge);
   return (
     <div
@@ -19,18 +21,18 @@ export function Banner({ cag, bolge, yil, ulke, hukumdar }: BannerProps) {
         {tema.sembol}
       </span>
       <div className="banner-metin">
-        <strong>{bolge}</strong>
+        <strong>{kt(bolge)}</strong>
         <span>
-          {yil} · {cag}
+          {yil} · {kt(cag)}
         </span>
-        {hukumdar && <span className="banner-hukumdar">👑 {hukumdar}</span>}
+        {hukumdar && <span className="banner-hukumdar">👑 {ktHukumdar(hukumdar)}</span>}
       </div>
       {ulke && (ulke.savasta || ulke.vebada || ulke.ekonomi !== 'normal') && (
         <div className="banner-rozetler">
-          {ulke.savasta && <span className="banner-rozet banner-rozet-tehlike">⚔️ Savaşta</span>}
-          {ulke.vebada && <span className="banner-rozet banner-rozet-tehlike">☠️ Salgın</span>}
-          {ulke.ekonomi === 'kotu' && <span className="banner-rozet banner-rozet-tehlike">📉 Kriz</span>}
-          {ulke.ekonomi === 'iyi' && <span className="banner-rozet banner-rozet-iyi">📈 Refah</span>}
+          {ulke.savasta && <span className="banner-rozet banner-rozet-tehlike">{m.bnSavasta}</span>}
+          {ulke.vebada && <span className="banner-rozet banner-rozet-tehlike">{m.bnSalgin}</span>}
+          {ulke.ekonomi === 'kotu' && <span className="banner-rozet banner-rozet-tehlike">{m.bnKriz}</span>}
+          {ulke.ekonomi === 'iyi' && <span className="banner-rozet banner-rozet-iyi">{m.bnRefah}</span>}
         </div>
       )}
     </div>

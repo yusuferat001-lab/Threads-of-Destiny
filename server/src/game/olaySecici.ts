@@ -3,6 +3,8 @@ import { OLAY_BANKASI, OlayTanimi, OlaySecenegi } from "../data/olaylar";
 import { OLAY_SOSYALLESME } from "../data/olaylar/sosyallesme";
 import { komsuGucSec } from "../data/liderler";
 import { tarihiSavasKontrol } from "../data/tarihiSavaslar";
+import { K, T } from "../i18n";
+import { olayCevirisiUygula } from "../i18n/olaylar";
 
 const KATEGORI_GORSEL: Record<Kategori, string> = {
   savas: "⚔️",
@@ -71,34 +73,35 @@ function uygunMu(olay: OlayTanimi, state: CharacterState): boolean {
 
 function rastgeleYasayanCocukAdi(state: CharacterState): string {
   const yasayanlar = state.cocuklar.filter((c) => c.yasiyor);
-  if (yasayanlar.length === 0) return "çocuğun";
+  if (yasayanlar.length === 0) return T(state.dil, "çocuğun");
   return yasayanlar[Math.floor(Math.random() * yasayanlar.length)].isim;
 }
 
 function rastgeleEkipAdi(state: CharacterState): string {
-  if (state.ekip.length === 0) return "ekibinden biri";
+  if (state.ekip.length === 0) return T(state.dil, "ekibinden biri");
   return state.ekip[Math.floor(Math.random() * state.ekip.length)].isim;
 }
 
 export function doldur(metin: string, state: CharacterState): string {
+  const dil = state.dil;
   return metin
-    .replace(/\{bolge\}/g, state.bolge)
-    .replace(/\{meslek\}/g, state.meslek)
-    .replace(/\{aile\}/g, state.aile_meslegi)
+    .replace(/\{bolge\}/g, K(dil, state.bolge))
+    .replace(/\{meslek\}/g, K(dil, state.meslek))
+    .replace(/\{aile\}/g, K(dil, state.aile_meslegi))
     .replace(/\{yil\}/g, String(state.yil))
     .replace(/\{birim\}/g, state.para_birimi)
     .replace(/\{dost\}/g, state.dost_adi)
     .replace(/\{rakip\}/g, state.rakip_adi)
-    .replace(/\{es\}/g, state.es_adi ?? "eşin")
+    .replace(/\{es\}/g, state.es_adi ?? T(dil, "eşin"))
     .replace(/\{anne\}/g, state.anne_adi)
     .replace(/\{baba\}/g, state.baba_adi)
-    .replace(/\{amir\}/g, state.amir_adi ? `${state.amir_rutbe} ${state.amir_adi}` : "amirin")
-    .replace(/\{hayvan\}/g, state.evcil_hayvan?.isim ?? "hayvanın")
+    .replace(/\{amir\}/g, state.amir_adi ? `${K(dil, state.amir_rutbe)} ${state.amir_adi}` : T(dil, "amirin"))
+    .replace(/\{hayvan\}/g, state.evcil_hayvan?.isim ?? T(dil, "hayvanın"))
     .replace(/\{cocuk\}/g, rastgeleYasayanCocukAdi(state))
     .replace(/\{ekip\}/g, rastgeleEkipAdi(state))
     .replace(
       /\{komsu\}/g,
-      tarihiSavasKontrol(state.bolge, state.yil, state.cag) ?? komsuGucSec(state.bolge)
+      K(dil, tarihiSavasKontrol(state.bolge, state.yil, state.cag) ?? komsuGucSec(state.bolge))
     );
 }
 
@@ -217,6 +220,7 @@ export function olaySec(
     if (uygunlar.length === 0) {
       throw new Error("Bu karakter için uygun olay bulunamadı.");
     }
+    // (İngilizce çeviri seçimden SONRA, aşağıda uygulanır — filtre/ağırlık mantığı hep Türkçe tanımı kullanır.)
     // Öncelik: hiç görülmemiş olaylar > en uzun süredir görülmemiş olaylar.
     // gecmis_olaylar kronolojik sırayla tutuluyor (push ile ekleniyor); bir
     // olayın son görülme index'i ne kadar küçükse (ya da hiç yoksa, -1) o
@@ -227,6 +231,11 @@ export function olaySec(
     const havuz = uygunlar.filter((o) => sonGorulmeSirasi(o.id) === enOncelikliSira);
     olay = agirlikliSec(havuz, state, sonTon);
   }
+
+  // Olay artık seçildi; oyuncunun dili İngilizceyse gösterim metinlerini (başlık/
+  // metin/seçenek/mesaj/detay/ipucu) çevrilmiş bir kopyayla değiştir. Tüm mantık
+  // alanları (id, filtreler, etkiler, baseBasariSansi) aynen korunur.
+  olay = olayCevirisiUygula(olay, state.dil);
 
   const secenekEksenUygunMu = (secenek: OlaySecenegi): boolean => {
     if (!secenek.gerekliEksen) return true;

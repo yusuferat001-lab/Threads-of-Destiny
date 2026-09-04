@@ -1,5 +1,7 @@
 import type { SonucEtkisi } from '../types';
 import { formatPara } from '../format';
+import { bic } from '../i18n';
+import { useDil } from '../DilContext';
 
 interface EtkiCipleriProps {
   /** Bu seçimin uygulanan etkisi (jitter + meslek/suç çarpanları sonrası). */
@@ -20,6 +22,7 @@ interface Cip {
  * efektinde görünür).
  */
 export function EtkiCipleri({ etki, paraBirimi }: EtkiCipleriProps) {
+  const { m, kt } = useDil();
   const cipler: Cip[] = [];
 
   const statCip = (simge: string, ad: string, deger: number | undefined, birim?: string) => {
@@ -32,20 +35,20 @@ export function EtkiCipleri({ etki, paraBirimi }: EtkiCipleriProps) {
     });
   };
 
-  statCip('💰', 'Para', etki.para, paraBirimi);
-  statCip('❤️', 'Sağlık', etki.saglik);
-  statCip('🙂', 'Mutluluk', etki.mutluluk);
-  statCip('⚖️', 'Ahlak', etki.ahlak);
-  statCip('🏅', 'Şöhret', etki.un);
+  statCip('💰', m.ecPara, etki.para, paraBirimi);
+  statCip('❤️', m.ecSaglik, etki.saglik);
+  statCip('🙂', m.ecMutluluk, etki.mutluluk);
+  statCip('⚖️', m.ecAhlak, etki.ahlak);
+  statCip('🏅', m.ecSohret, etki.un);
 
-  if (etki.es_ata) cipler.push({ simge: '💍', metin: 'Evlendin', pozitif: true });
-  if (etki.es_kaybet) cipler.push({ simge: '💔', metin: 'Eşini kaybettin', pozitif: false });
-  if (etki.cocuk_ekle) cipler.push({ simge: '👶', metin: `+${etki.cocuk_ekle} çocuk`, pozitif: true });
-  if (etki.cocuk_kaybet) cipler.push({ simge: '🕯️', metin: 'Bir çocuğunu kaybettin', pozitif: false });
-  if (etki.yeni_meslek) cipler.push({ simge: '🧭', metin: `Yeni meslek: ${etki.yeni_meslek}`, pozitif: true });
+  if (etki.es_ata) cipler.push({ simge: '💍', metin: m.ecEvlendin, pozitif: true });
+  if (etki.es_kaybet) cipler.push({ simge: '💔', metin: m.ecEsKaybi, pozitif: false });
+  if (etki.cocuk_ekle) cipler.push({ simge: '👶', metin: bic(m.ecCocukEkle, etki.cocuk_ekle), pozitif: true });
+  if (etki.cocuk_kaybet) cipler.push({ simge: '🕯️', metin: m.ecCocukKaybi, pozitif: false });
+  if (etki.yeni_meslek) cipler.push({ simge: '🧭', metin: bic(m.ecYeniMeslek, kt(etki.yeni_meslek)), pozitif: true });
 
   if (cipler.length === 0) {
-    return <p className="etki-yok-notu">Bu seçim ölçülebilir bir değişim getirmedi.</p>;
+    return <p className="etki-yok-notu">{m.ecEtkiYok}</p>;
   }
 
   return (

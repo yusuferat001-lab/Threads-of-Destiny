@@ -26,9 +26,9 @@ export const YASAM_SECENEKLERI: YasamSecenegiTanimi[] = [
     aciklama:
       "Bedava ama sağlığını, moralini ve itibarını hızla aşındırır; kimsenin gözünde saygın kalamazsın. Sadece çaresizlikten seçilecek bir dip.",
     maliyetYillik: 0,
-    saglikEtkisiYillik: -4,
-    mutlulukEtkisiYillik: -4,
-    unEtkisiYillik: -4,
+    saglikEtkisiYillik: -2,
+    mutlulukEtkisiYillik: -2,
+    unEtkisiYillik: -2,
   },
   {
     id: "ucuza_ye",
@@ -37,9 +37,9 @@ export const YASAM_SECENEKLERI: YasamSecenegiTanimi[] = [
     aciklama:
       "Ucuz ve doyurucu ama kalitesiz; sağlığını, moralini ve adını yavaş yavaş aşındırır. İlk fırsatta normal bir sofraya geçmek gerekir.",
     maliyetYillik: 2.5,
-    saglikEtkisiYillik: -3,
-    mutlulukEtkisiYillik: -3,
-    unEtkisiYillik: -3,
+    saglikEtkisiYillik: -2,
+    mutlulukEtkisiYillik: -2,
+    unEtkisiYillik: -2,
   },
   {
     id: "normal_ye",

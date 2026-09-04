@@ -1684,10 +1684,12 @@ export const OLAY_ORTACAG_ASKER_YOLLARI: OlayTanimi[] = [
         maliyet: 30,
         ipucu: "Kansız bir çözüm, parayı ve güveni riske atar",
         basariliSonuc: {
+          para: -30,
           dost_puani: 15,
           mesaj: "Nöbetçi altını cebine attı, gözlerini kapadı; yoldaşın koridordan sıvışıp kaçtı.",
         },
         basarisizSonuc: {
+          para: -30,
           saglik: -10,
           dost_puani: -10,
           mesaj: "Nöbetçi altını aldı ama sözünü tutmadı, üstüne bir de üstlerine haber verdi.",
@@ -1877,12 +1879,14 @@ export const OLAY_ORTACAG_ASKER_YOLLARI: OlayTanimi[] = [
         maliyet: 40,
         ipucu: "Örgütü silahlandırırsın, büyük harcama iz bırakabilir",
         basariliSonuc: {
+          para: -40,
           ordu_techizat_artis: 10,
           dost_puani: 10,
           ahlak: 5,
           mesaj: "Silahlar gece yarısı gizlice teslim edildi; örgüt artık kendini savunacak araçlara sahip.",
         },
         basarisizSonuc: {
+          para: -40,
           dost_puani: -10,
           ahlak: -5,
           mesaj: "Teslimat sırasında bir nöbetçi neredeyse sizi gördü; silahların yarısını terk etmek zorunda kaldınız.",
@@ -1894,10 +1898,12 @@ export const OLAY_ORTACAG_ASKER_YOLLARI: OlayTanimi[] = [
         maliyet: 15,
         ipucu: "Güvenli ama yetersiz bir silahlanma",
         basariliSonuc: {
+          para: -15,
           ordu_techizat_artis: 5,
           mesaj: "Küçük parti sorunsuz geldi; yetersiz ama en azından bir başlangıç.",
         },
         basarisizSonuc: {
+          para: -15,
           mutluluk: -3,
           mesaj: "Tüccar parayı aldı ama malın çoğu kalitesizdi; kandırıldığını anladın.",
         },
@@ -2185,11 +2191,13 @@ export const OLAY_ORTACAG_ASKER_YOLLARI: OlayTanimi[] = [
         maliyet: 35,
         ipucu: "Daha güvenli bir yol, bilgi eksik ya da yanlış olabilir",
         basariliSonuc: {
+          para: -35,
           dost_puani: 15,
           ahlak: 5,
           mesaj: "Yazıcı birkaç ismi fısıldadı; en azından en tehlikede olanları uyarabildin.",
         },
         basarisizSonuc: {
+          para: -35,
           dost_puani: -10,
           mesaj: "Yazıcı parayı aldı ama söyledikleri yalan çıktı; yanlış isimleri uyarıp vakit kaybettiniz.",
         },

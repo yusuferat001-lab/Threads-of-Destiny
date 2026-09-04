@@ -1,4 +1,6 @@
 import type { Cocuk } from '../types';
+import { bic, type Metinler } from '../i18n';
+import { useDil } from '../DilContext';
 
 interface AileEkraniProps {
   anneAdi: string;
@@ -12,13 +14,15 @@ interface AileEkraniProps {
   onGeriDon: () => void;
 }
 
-const ES_ETIKETLERI: [number, string][] = [
-  [20, 'Çatırdıyor'],
-  [40, 'Gergin'],
-  [60, 'İstikrarlı'],
-  [80, 'Sıcak'],
-  [100, 'Çok Bağlı'],
-];
+function esEtiketleri(m: Metinler): [number, string][] {
+  return [
+    [20, m.aeEsCatirdiyor],
+    [40, m.aeEsGergin],
+    [60, m.aeEsIstikrarli],
+    [80, m.aeEsSicak],
+    [100, m.aeEsCokBagli],
+  ];
+}
 
 function etiketBul(deger: number, tablo: [number, string][]): string {
   for (const [esik, etiket] of tablo) {
@@ -38,12 +42,13 @@ export function AileEkrani({
   guncelYil,
   onGeriDon,
 }: AileEkraniProps) {
+  const { m, kt } = useDil();
   return (
     <div className="ekran ekran-aile">
-      <h2>Ailen</h2>
+      <h2>{m.aeBaslikTam}</h2>
 
       <div className="aile-koken-karti">
-        <h3>Ailenin Kökeni</h3>
+        <h3>{m.aeKoken}</h3>
         <div className="aile-koken-listesi">
           <span className="iliski-rozet iliski-anne">👩 {anneAdi}</span>
           <span className="iliski-rozet iliski-baba">👨 {babaAdi}</span>
@@ -52,33 +57,33 @@ export function AileEkrani({
 
       {esAdi ? (
         <div className="aile-es-karti">
-          <h3>Eşin</h3>
+          <h3>{m.aeEsin}</h3>
           <div className="iliski-rozet iliski-es">
             <span className="iliski-ad">💍 {esAdi}</span>
-            <span className="iliski-etiket">{etiketBul(esPuani, ES_ETIKETLERI)}</span>
+            <span className="iliski-etiket">{etiketBul(esPuani, esEtiketleri(m))}</span>
           </div>
           {esRutbe && esMeslek && (
             <p className="aile-es-meslek">
-              {esRutbe} ({esMeslek})
+              {kt(esRutbe)} ({kt(esMeslek)})
             </p>
           )}
         </div>
       ) : (
-        <p className="aile-bos-metin">Henüz bir eşin yok.</p>
+        <p className="aile-bos-metin">{m.aeEsYokMetin}</p>
       )}
 
       <div className="aile-cocuklar-karti">
-        <h3>Çocukların</h3>
+        <h3>{m.aeCocuklarin}</h3>
         {cocuklar.length === 0 ? (
-          <p className="aile-bos-metin">Henüz bir çocuğun yok.</p>
+          <p className="aile-bos-metin">{m.aeCocukYokMetin}</p>
         ) : (
           <ul className="aile-cocuk-listesi">
             {cocuklar.map((cocuk) => (
               <li key={cocuk.isim + cocuk.dogum_yili} className="aile-cocuk-satiri">
                 <span className="aile-cocuk-ad">{cocuk.yasiyor ? '👶' : '🕊️'} {cocuk.isim}</span>
                 <span className="aile-cocuk-detay">
-                  {cocuk.dogum_yili} doğumlu ·{' '}
-                  {cocuk.yasiyor ? `${guncelYil - cocuk.dogum_yili} yaşında` : 'kaybedildi'}
+                  {bic(m.aeDogumlu, cocuk.dogum_yili)} ·{' '}
+                  {cocuk.yasiyor ? bic(m.aeYasindaTam, guncelYil - cocuk.dogum_yili) : m.aeKaybedildi}
                 </span>
               </li>
             ))}
@@ -86,7 +91,7 @@ export function AileEkrani({
         )}
       </div>
 
-      <button onClick={onGeriDon}>Devam Et</button>
+      <button onClick={onGeriDon}>{m.devamEt}</button>
     </div>
   );
 }

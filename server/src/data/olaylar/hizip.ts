@@ -3017,7 +3017,7 @@ export const OLAY_HIZIP: OlayTanimi[] = [
     secenekler: [
       {
         metin: "Mesajı {hayvan}'ın bacağına bağlayıp gönder.",
-        baseBasariSansi: 95,
+        baseBasariSansi: 100,
         gerekliEtiketler: [
           "evcil_hayvan_tur:Şahin",
         ],
@@ -3085,7 +3085,7 @@ export const OLAY_HIZIP: OlayTanimi[] = [
     secenekler: [
       {
         metin: "Kara Kılıç'ını kuşan, düelloyu ustaca kazan.",
-        baseBasariSansi: 92,
+        baseBasariSansi: 100,
         gerekliEtiketler: [
           "envanter:kara_kilic",
         ],
@@ -3153,7 +3153,7 @@ export const OLAY_HIZIP: OlayTanimi[] = [
     secenekler: [
       {
         metin: "{hayvan}'ı ambara sal, işini doğaya bırak.",
-        baseBasariSansi: 95,
+        baseBasariSansi: 100,
         gerekliEtiketler: [
           "evcil_hayvan_tur:Kedi",
         ],
@@ -3223,7 +3223,7 @@ export const OLAY_HIZIP: OlayTanimi[] = [
     secenekler: [
       {
         metin: "Gölge Sikke'yi gizlice kullan, kaderi kendi lehine çevir.",
-        baseBasariSansi: 90,
+        baseBasariSansi: 100,
         gerekliEtiketler: [
           "envanter:golge_sikke",
         ],
@@ -3293,7 +3293,7 @@ export const OLAY_HIZIP: OlayTanimi[] = [
     secenekler: [
       {
         metin: "Kutsal Kalıntı'yı cemaate göster.",
-        baseBasariSansi: 95,
+        baseBasariSansi: 100,
         gerekliEtiketler: [
           "esya:kutsal_kalinti",
         ],

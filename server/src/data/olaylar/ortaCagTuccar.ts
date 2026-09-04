@@ -423,7 +423,7 @@ export const OLAY_ORTACAG_TUCCAR: OlayTanimi[] = [
     secenekler: [
       {
         metin: "Evcil papağanının taklit yeteneğini kullanarak buzları kır.",
-        baseBasariSansi: 90,
+        baseBasariSansi: 100,
         gerekliEtiketler: [
           "evcil_hayvan_tur:Papağan",
         ],

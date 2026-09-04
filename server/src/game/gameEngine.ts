@@ -1,5 +1,7 @@
 import { randomUUID } from "crypto";
 import { CharacterState, Cag, SenaryoResponse, SonucEtkisi, TepkiSonucu, MulkTuru } from "../types";
+import { T, K, Khukumdar } from "../i18n";
+import { olayCevirisiUygula } from "../i18n/olaylar";
 import { skorKaydet as skoruDbyeYaz } from "../db/scoreRepository";
 import {
   createCharacter,
@@ -95,7 +97,13 @@ import { GIZEMLI_ESYA_TAKIP_HAVUZU } from "../data/gizemliEsyalar";
 import { yerlesimGetir } from "../data/yerlesimler";
 import { oturumKaydet, oturumYukle, aktifOturumlariYukle } from "../db/sessionRepository";
 import { MULK_TANIMLARI, mulkTanimiGetir } from "../data/mulkler";
-import { MAGAZA_ESYALARI, magazaEsyasiTanimiGetir } from "../data/magazaEsyalari";
+import {
+  MAGAZA_ESYALARI,
+  magazaEsyasiTanimiGetir,
+  sifaBasariSans,
+  sifaFaydaAralik,
+  SIFA_HICBIRSEY_SANS,
+} from "../data/magazaEsyalari";
 import { SahipOlunanEsya, MagazaEsyaKategori } from "../types";
 
 /** Saray-içi ("sarayda" etiketiyle açılan) takip olayları; "ölmeden önce en az iki kez" garantisi bu listeye göre sayılır. */
@@ -300,9 +308,10 @@ export async function yeniOyun(
   cag: Cag,
   bolge: string,
   yerlesimId: string,
-  oyuncuIsmi?: string
+  oyuncuIsmi?: string,
+  dil?: string
 ): Promise<CharacterState> {
-  const state = createCharacter(cag, bolge, yerlesimId, oyuncuIsmi);
+  const state = createCharacter(cag, bolge, yerlesimId, oyuncuIsmi, dil);
   oturumlar.set(state.id, {
     state,
     mevcutSenaryo: null,
@@ -608,11 +617,11 @@ export function jitterUygula(etki: SonucEtkisi): SonucEtkisi {
   };
 }
 
-// Sağlık düştükçe ölümcül sonuçlanma ihtimali artar: 45 sağlıktan itibaren
-// devreye girer (eski 60'tan düşürüldü — orta oyunun yarısı 60 altındaydı ve
-// her ölüm zarı fiilen 2.5×'ti), 0 sağlıkta temel şansın ~2.1 katına çıkar.
+// Sağlık düştükçe ölümcül sonuçlanma ihtimali artar: yalnızca 30 sağlığın
+// ALTINDA devreye girer (2026-09 ekonomi dengesi: eşik 45→30'a çekildi — 30-45
+// bandı "riskli ama ölümcül değil" olsun), 0 sağlıkta temel şansın ~1.75 katına çıkar.
 export function efektifOlumSansi(baseSans: number, saglik: number): number {
-  const carpan = 1 + Math.max(0, 45 - saglik) / 40;
+  const carpan = 1 + Math.max(0, 30 - saglik) / 40;
   return Math.min(95, baseSans * carpan);
 }
 
@@ -783,20 +792,22 @@ async function sonucuUygulaVeIlerlet(
   if (etki.sehir_yonetim_artis) {
     state.sehir_yonetim_seviyesi += etki.sehir_yonetim_artis;
     sehirYonetimGuncelle(state);
-    hayatOlayiEkle(state, "🏛️", `${state.sehir_yonetim_unvan} unvanına ulaştı`);
+    hayatOlayiEkle(state, "🏛️", T(state.dil, "{0} unvanına ulaştı", [K(state.dil, state.sehir_yonetim_unvan)]));
   }
 
   if (etki.para && Math.abs(etki.para) >= 50) {
     hayatOlayiEkle(
       state,
       etki.para > 0 ? "💰" : "📉",
-      `${etki.para > 0 ? "Büyük kazanç" : "Büyük kayıp"}: ${etki.para > 0 ? "+" : ""}${etki.para} ${state.para_birimi}`
+      T(state.dil, etki.para > 0 ? "Büyük kazanç: {0} {birim}" : "Büyük kayıp: {0} {birim}", [
+        (etki.para > 0 ? "+" : "") + etki.para,
+      ]).replace(/\{birim\}/g, state.para_birimi)
     );
   }
 
   const savasBasliyorMu = etki.ulke_etkisi?.savasta === true && !state.ulke.savasta;
   if (savasBasliyorMu) {
-    hayatOlayiEkle(state, "⚔️", `${state.bolge} savaşa sürüklendi`);
+    hayatOlayiEkle(state, "⚔️", T(state.dil, "{0} savaşa sürüklendi", [K(state.dil, state.bolge)]));
   }
 
   // Veba başlangıcı (veba_baslangici olayı) çözüldüğünde parametreleri (süre/kira-maaş
@@ -805,7 +816,7 @@ async function sonucuUygulaVeIlerlet(
   const vebaBasliyorMu = etki.ulke_etkisi?.vebada === true && !state.ulke.vebada;
   if (vebaBasliyorMu) {
     vebaBaslat(state, etki.veba_koruma ?? 0);
-    hayatOlayiEkle(state, "☠️", `${state.bolge} vebaya yakalandı`);
+    hayatOlayiEkle(state, "☠️", T(state.dil, "{0} vebaya yakalandı", [K(state.dil, state.bolge)]));
   }
 
   if (etki.es_ata) {
@@ -816,7 +827,7 @@ async function sonucuUygulaVeIlerlet(
     state.es_rutbe = esRutbeTanimi
       ? esRutbeTanimi.unvanlar[Math.floor(Math.random() * esRutbeTanimi.unvanlar.length)]
       : state.es_meslek;
-    hayatOlayiEkle(state, "💍", `${state.es_adi} ile evlendi`);
+    hayatOlayiEkle(state, "💍", T(state.dil, "{0} ile evlendi", [state.es_adi]));
   }
   if (etki.es_kaybet) {
     const kaybedilenEs = state.es_adi;
@@ -825,7 +836,7 @@ async function sonucuUygulaVeIlerlet(
     state.es_meslek = null;
     state.es_rutbe = null;
     etiketSil(state, ["medeni:evli"]);
-    if (kaybedilenEs) hayatOlayiEkle(state, "💔", `${kaybedilenEs} ile yolları ayrıldı`);
+    if (kaybedilenEs) hayatOlayiEkle(state, "💔", T(state.dil, "{0} ile yolları ayrıldı", [kaybedilenEs]));
   }
   if (state.es_adi) state.es_puani += etki.es_puani ?? 0;
 
@@ -838,7 +849,7 @@ async function sonucuUygulaVeIlerlet(
         ...state.cocuklar.map((c) => c.isim),
       ]);
       state.cocuklar.push({ isim, dogum_yili: state.yil, yasiyor: true });
-      hayatOlayiEkle(state, "👶", `${isim} doğdu`);
+      hayatOlayiEkle(state, "👶", T(state.dil, "{0} doğdu", [isim]));
     }
     state.cocuk_sayisi = state.cocuklar.filter((c) => c.yasiyor).length;
     etiketEkle(state, ["cocuk_var"]);
@@ -849,7 +860,7 @@ async function sonucuUygulaVeIlerlet(
       const secilen = yasayanlar[Math.floor(Math.random() * yasayanlar.length)];
       secilen.yasiyor = false;
       state.cocuk_sayisi = state.cocuklar.filter((c) => c.yasiyor).length;
-      hayatOlayiEkle(state, "💔", `${secilen.isim} kaybedildi`);
+      hayatOlayiEkle(state, "💔", T(state.dil, "{0} kaybedildi", [secilen.isim]));
       if (state.cocuk_sayisi === 0) etiketSil(state, ["cocuk_var"]);
     }
   }
@@ -881,18 +892,18 @@ async function sonucuUygulaVeIlerlet(
       kisilik,
     });
     maasCarpaniUygula(state, 1 + (gercekKalite - 50) / 500);
-    hayatOlayiEkle(state, "🤝", `${isim} (${etki.ekip_ekle.rol}) ekibine katıldı`);
+    hayatOlayiEkle(state, "🤝", T(state.dil, "{0} ({1}) ekibine katıldı", [isim, K(state.dil, etki.ekip_ekle.rol)]));
   }
   if (etki.ekip_kaybi && state.ekip.length > 0) {
     const idx = Math.floor(Math.random() * state.ekip.length);
     const kaybedilen = state.ekip.splice(idx, 1)[0];
-    hayatOlayiEkle(state, "👋", `${kaybedilen.isim} ekipten ayrıldı`);
+    hayatOlayiEkle(state, "👋", T(state.dil, "{0} ekipten ayrıldı", [kaybedilen.isim]));
   }
   if (etki.ekip_sil) {
     const idx = state.ekip.findIndex((uye) => uye.rol === etki.ekip_sil);
     if (idx !== -1) {
       const kaybedilen = state.ekip.splice(idx, 1)[0];
-      hayatOlayiEkle(state, "👋", `${kaybedilen.isim} ekipten ayrıldı`);
+      hayatOlayiEkle(state, "👋", T(state.dil, "{0} ekipten ayrıldı", [kaybedilen.isim]));
     }
   }
   if (etki.hizip_ata) {
@@ -904,35 +915,37 @@ async function sonucuUygulaVeIlerlet(
     const isim = rastgeleHayvanIsmiSec();
     state.evcil_hayvan = { tur, isim };
     etiketEkle(state, ["evcil_hayvan_var", `evcil_hayvan_tur:${tur}`]);
-    hayatOlayiEkle(state, "🐾", `${isim} adlı bir ${tur.toLocaleLowerCase("tr")} edindi`);
+    hayatOlayiEkle(state, "🐾", T(state.dil, "{0} adlı bir {1} edindi", [
+      isim,
+      K(state.dil, tur).toLocaleLowerCase(state.dil === "en" ? "en" : "tr"),
+    ]));
   }
   if (etki.evcil_hayvan_kaybet && state.evcil_hayvan) {
     const kaybedilen = state.evcil_hayvan;
     state.evcil_hayvan = null;
     etiketSil(state, ["evcil_hayvan_var", `evcil_hayvan_tur:${kaybedilen.tur}`]);
-    hayatOlayiEkle(state, "💔", `${kaybedilen.isim} adlı ${kaybedilen.tur.toLocaleLowerCase("tr")}sini kaybetti`);
+    hayatOlayiEkle(state, "💔", T(state.dil, "{0} adlı {1}sini kaybetti", [
+      kaybedilen.isim,
+      K(state.dil, kaybedilen.tur).toLocaleLowerCase(state.dil === "en" ? "en" : "tr"),
+    ]));
   }
   if (etki.mulk_kaybet && state.mulkler.includes(etki.mulk_kaybet)) {
     const kaybedilenMulk = mulkTanimiGetir(etki.mulk_kaybet);
     state.mulkler = state.mulkler.filter((m) => m !== etki.mulk_kaybet);
     if (state.mulk_bakim_kalan) delete state.mulk_bakim_kalan[etki.mulk_kaybet];
-    hayatOlayiEkle(state, "🚨", `${kaybedilenMulk.ad} el konuldu`);
+    hayatOlayiEkle(state, "🚨", T(state.dil, "{0} el konuldu", [K(state.dil, kaybedilenMulk.ad)]));
   }
   if (etki.unvan_kazan && !state.unvanlar.includes(etki.unvan_kazan)) {
     state.unvanlar.push(etki.unvan_kazan);
-    hayatOlayiEkle(state, "🏵️", `"${etki.unvan_kazan}" ünvanını kazandı`);
+    hayatOlayiEkle(state, "🏵️", T(state.dil, '"{0}" ünvanını kazandı', [K(state.dil, etki.unvan_kazan)]));
   }
   if (etki.hayat_amaci_ata && !state.hayat_amaci) {
     state.hayat_amaci = { ...etki.hayat_amaci_ata, tamamlandi: false };
-    hayatOlayiEkle(state, "🎯", `Hayat amacını belirledi: ${etki.hayat_amaci_ata.ad}`);
+    hayatOlayiEkle(state, "🎯", T(state.dil, "Hayat amacını belirledi: {0}", [K(state.dil, etki.hayat_amaci_ata.ad)]));
   }
   if (etki.kriz_baslat) {
     state.ulke.kriz = { tur: etki.kriz_baslat.tur, bitisYili: state.yil + etki.kriz_baslat.sureYil };
   }
-  if (etki.efsanevi_olum) {
-    state.efsanevi_olum = etki.efsanevi_olum;
-  }
-
   etiketEkle(state, etki.etiket_ekle);
   etiketSil(state, etki.etiket_sil);
   ulkeGuncelle(state, etki.ulke_etkisi);
@@ -946,9 +959,11 @@ async function sonucuUygulaVeIlerlet(
 
   let sonucAnlatimi = sonucAnlatimiUret(state, etki, basarili);
   if (sucKazanci === "ciddi") {
-    sonucAnlatimi = `${sonucAnlatimi} Bu iş kirliydi; ${state.bolge} kolluğu artık adını bir listede tutuyor.`;
+    sonucAnlatimi = `${sonucAnlatimi} ${T(state.dil, "Bu iş kirliydi; {0} kolluğu artık adını bir listede tutuyor.", [
+      K(state.dil, state.bolge),
+    ])}`;
   } else if (sucKazanci === "suc") {
-    sonucAnlatimi = `${sonucAnlatimi} Kolay para hep bir iz bırakır.`;
+    sonucAnlatimi = `${sonucAnlatimi} ${T(state.dil, "Kolay para hep bir iz bırakır.")}`;
   }
 
   let olumTetiklendi = etki.olum === true;
@@ -957,6 +972,12 @@ async function sonucuUygulaVeIlerlet(
     if (Math.random() * 100 < sans) olumTetiklendi = true;
   }
   checkDeath(state, olumTetiklendi, etki.mesaj);
+  // efsanevi_olum rozeti YALNIZCA ölüm gerçekten gerçekleştiyse atanır: Kutsal
+  // Emanet relik'i ölümü iptal ederse (checkDeath) hayatta kalan karakter,
+  // yaşamadığı bir "efsanevi ölüm" damgasını taşımasın.
+  if (etki.efsanevi_olum && !state.aktif) {
+    state.efsanevi_olum = etki.efsanevi_olum;
+  }
 
   let yasArtisi = 0;
   let zamanAnlatimi: string | null = null;
@@ -976,9 +997,13 @@ async function sonucuUygulaVeIlerlet(
     // bir karakter de zamanla rütbe atlar; yatırım sadece bunu hızlandırır).
     state.kariyer_puani += KARIYER_PUANI_YILLIK * yasArtisi;
     if (eskiHukumdar && state.hukumdar && state.hukumdar !== eskiHukumdar) {
-      const haber = hukumdarDegisimHaberiUret(eskiHukumdar, state.hukumdar);
+      const haber = hukumdarDegisimHaberiUret(
+        Khukumdar(state.dil, eskiHukumdar),
+        Khukumdar(state.dil, state.hukumdar),
+        state.dil
+      );
       hukumdarDegisimHaberi = haber;
-      hayatOlayiEkle(state, "👑", `Hükümdar değişti: ${state.hukumdar}`);
+      hayatOlayiEkle(state, "👑", T(state.dil, "Hükümdar değişti: {0}", [Khukumdar(state.dil, state.hukumdar)]));
     }
     const durumOlumMesaji = durumlariUygula(state);
     if (durumOlumMesaji) {
@@ -1018,6 +1043,15 @@ async function sonucuUygulaVeIlerlet(
               "🍷 Artık mahallede 'ayyaş' diye biliniyorsun; bu sağlığını, itibarını ve işini kalıcı olarak yıpratacak.";
             zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${ayyasMesaji}` : ayyasMesaji;
           }
+          if (ekonomi.borcYardimi > 0) {
+            const yardimMesaji = T(
+              state.dil,
+              "🙏 Zor günlerinde kilise ve birkaç eş dost devreye girdi; borcunun {0} {1}'ini kapattılar. Bu bir daha olmayacak.",
+              [ekonomi.borcYardimi, state.para_birimi]
+            );
+            zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${yardimMesaji}` : yardimMesaji;
+            hayatOlayiEkle(state, "🙏", T(state.dil, "Borç yardımı aldı: +{0} {1}", [ekonomi.borcYardimi, state.para_birimi]));
+          }
           // Küçük kriz (5-7 yılda bir kıtlık/haydut baskını + o yıla mahsus ×2 gıda
           // şoku) krizEtkisiUygula'dan HEMEN önce çağrılır ki bu turda tetiklenirse
           // -2 sağlık/yıl etkisini de bu turda görsün.
@@ -1029,16 +1063,18 @@ async function sonucuUygulaVeIlerlet(
           orduBuyumesiDene(state, yasArtisi);
           const krizBitisMesaji = krizEtkisiUygula(state, yasArtisi);
           if (state.saglik <= 0) {
-            checkDeath(state, true, "Kıtlığın getirdiği yoksunlukla tükendi.");
+            checkDeath(state, true, T(state.dil, "Kıtlığın getirdiği yoksunlukla tükendi."));
           }
           const mulkSonucu = mulkGelirleriUygula(state, yasArtisi);
           if (mulkSonucu.kervanBatti) {
-            const kervanMesaji =
-              "🌊 Ticaret kervanın savaşın kaosunda kayboldu; yatırımından geriye bir şey kalmadı.";
+            const kervanMesaji = T(state.dil, "🌊 Ticaret kervanın savaşın kaosunda kayboldu; yatırımından geriye bir şey kalmadı.");
             zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${kervanMesaji}` : kervanMesaji;
           }
           for (const bakim of mulkSonucu.bakimOdemeleri) {
-            const bakimMesaji = `🔧 ${bakim.ad} için ${bakim.miktar} ${state.para_birimi} bakım/vergi gideri ödedin.`;
+            const bakimMesaji = T(state.dil, "🔧 {0} için {1} {birim} bakım/vergi gideri ödedin.", [
+              K(state.dil, bakim.ad),
+              bakim.miktar,
+            ]).replace(/\{birim\}/g, state.para_birimi);
             zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${bakimMesaji}` : bakimMesaji;
           }
           nakitAkisi.mulkNet = mulkSonucu.toplamNet;
@@ -1048,12 +1084,18 @@ async function sonucuUygulaVeIlerlet(
           if (envanterSonucu.cozulenler.length > 0) {
             const cozulmeMesaji =
               envanterSonucu.cozulenler.length === 1
-                ? `🗑️ ${envanterSonucu.cozulenler[0]} çürüdü, atmak zorunda kaldın.`
-                : `🗑️ Envanterinden ${envanterSonucu.cozulenler.length} eşya (${envanterSonucu.cozulenler.join(", ")}) çürüdü.`;
+                ? T(state.dil, "🗑️ {0} çürüdü, atmak zorunda kaldın.", [K(state.dil, envanterSonucu.cozulenler[0])])
+                : T(state.dil, "🗑️ Envanterinden {0} eşya ({1}) çürüdü.", [
+                    envanterSonucu.cozulenler.length,
+                    envanterSonucu.cozulenler.map((c) => K(state.dil, c)).join(", "),
+                  ]);
             zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${cozulmeMesaji}` : cozulmeMesaji;
           }
           for (const bakim of envanterSonucu.bakimOdemeleri) {
-            const bakimMesaji = `🔧 ${bakim.ad} için ${bakim.miktar} ${state.para_birimi} bakım gideri ödedin.`;
+            const bakimMesaji = T(state.dil, "🔧 {0} için {1} {birim} bakım gideri ödedin.", [
+              K(state.dil, bakim.ad),
+              bakim.miktar,
+            ]).replace(/\{birim\}/g, state.para_birimi);
             zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${bakimMesaji}` : bakimMesaji;
           }
           nakitAkisi.envanterBakim = envanterSonucu.bakimOdemeleri.reduce((a, b) => a + b.miktar, 0);
@@ -1066,7 +1108,7 @@ async function sonucuUygulaVeIlerlet(
           const bagisSonucu = zorunluBagisKontrolEt(state, yasArtisi);
           if (bagisSonucu) {
             zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${bagisSonucu.mesaj}` : bagisSonucu.mesaj;
-            hayatOlayiEkle(state, "👑", `Zorunlu bağış: -${bagisSonucu.miktar} ${state.para_birimi}`);
+            hayatOlayiEkle(state, "👑", T(state.dil, "Zorunlu bağış: -{0} {birim}", [bagisSonucu.miktar]).replace(/\{birim\}/g, state.para_birimi));
             nakitAkisi.zorunluBagis = bagisSonucu.miktar;
           }
 
@@ -1074,7 +1116,7 @@ async function sonucuUygulaVeIlerlet(
           const sizintiSonucu = zenginlikSizintiKontrolEt(state, yasArtisi);
           if (sizintiSonucu) {
             zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${sizintiSonucu.mesaj}` : sizintiSonucu.mesaj;
-            hayatOlayiEkle(state, "🗡️", `Zenginlik sızıntısı: -${sizintiSonucu.miktar} ${state.para_birimi}`);
+            hayatOlayiEkle(state, "🗡️", T(state.dil, "Zenginlik sızıntısı: -{0} {birim}", [sizintiSonucu.miktar]).replace(/\{birim\}/g, state.para_birimi));
             nakitAkisi.zenginlikSizinti = sizintiSonucu.miktar;
           }
 
@@ -1103,7 +1145,7 @@ async function sonucuUygulaVeIlerlet(
             const vebaBitisMesaji = vebaBitisKontrolEt(state);
             if (vebaBitisMesaji) {
               zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${vebaBitisMesaji}` : vebaBitisMesaji;
-              hayatOlayiEkle(state, "🕊️", "Veba sona erdi");
+              hayatOlayiEkle(state, "🕊️", T(state.dil, "Veba sona erdi"));
             }
           }
 
@@ -1114,10 +1156,10 @@ async function sonucuUygulaVeIlerlet(
           const ekCumle =
             krizBitisMesaji ??
             sansMesaji ??
-            (capraz.saglikKaybi > 0 ? "İçindeki karanlık bedenini de yormaya başladı." : null) ??
-            (capraz.mutlulukKaybi > 0 ? "Sağlığındaki bu düşüş moralini de eziyor." : null) ??
+            (capraz.saglikKaybi > 0 ? T(state.dil, "İçindeki karanlık bedenini de yormaya başladı.") : null) ??
+            (capraz.mutlulukKaybi > 0 ? T(state.dil, "Sağlığındaki bu düşüş moralini de eziyor.") : null) ??
             (yaslanmaKaybi > 0 && Math.random() < 0.3
-              ? "Yaşın ilerledikçe bedenin eskisi kadar dayanmıyor."
+              ? T(state.dil, "Yaşın ilerledikçe bedenin eskisi kadar dayanmıyor.")
               : null);
           if (ekCumle) {
             zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${ekCumle}` : ekCumle;
@@ -1126,13 +1168,14 @@ async function sonucuUygulaVeIlerlet(
           if (state.aktif) {
             const aniOlum = aniOlumDene(state);
             if (aniOlum) {
-              state.efsanevi_olum = aniOlum.efsane;
               checkDeath(state, true, aniOlum.mesaj);
+              // Relik ölümü iptal edebilir; rozet yalnız gerçekten öldüyse.
+              if (!state.aktif) state.efsanevi_olum = aniOlum.efsane;
             }
           }
         }
       } else {
-        state.olum_nedeni = "Borç ve yoksulluk içinde tükendi.";
+        state.olum_nedeni = T(state.dil, "Borç ve yoksulluk içinde tükendi.");
       }
     }
   }
@@ -1144,9 +1187,12 @@ async function sonucuUygulaVeIlerlet(
     if (state.rutbe_seviye > eskiRutbeSeviye) {
       terfiOldu = true;
       const yeniMaas = hesaplaMaasYillik(state);
-      const terfiMesaji = `🎖️ Artık ${state.rutbe}'sin! Yıllık kazancın: ${yeniMaas} ${state.para_birimi}.`;
+      const terfiMesaji = T(state.dil, "🎖️ Artık {0}'sin! Yıllık kazancın: {1} {birim}.", [
+        K(state.dil, state.rutbe),
+        yeniMaas,
+      ]).replace(/\{birim\}/g, state.para_birimi);
       zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${terfiMesaji}` : terfiMesaji;
-      hayatOlayiEkle(state, "🎖️", `${state.rutbe} rütbesine terfi etti`);
+      hayatOlayiEkle(state, "🎖️", T(state.dil, "{0} rütbesine terfi etti", [K(state.dil, state.rutbe)]));
     }
     hayatAmaciKontrolEt(state);
     state.haberler = haberleriUret(state);
@@ -1269,7 +1315,7 @@ export async function ekipCikar(id: string, ekipId: string): Promise<EkipCikarSo
   const [cikarilan] = state.ekip.splice(index, 1);
   hayatOlayiEkle(state, "👋", `${cikarilan.isim} (${cikarilan.rol}) ekibinden kovuldu`);
   await oturumKaydet(state);
-  return { state, mesaj: `${cikarilan.isim}'i ekibinden çıkardın; artık yıllık maaşını ödemiyorsun.` };
+  return { state, mesaj: T(state.dil, "{0}'i ekibinden çıkardın; artık yıllık maaşını ödemiyorsun.", [cikarilan.isim]) };
 }
 
 /**
@@ -1316,11 +1362,11 @@ function kendiIsiMaliyetiHesapla(state: CharacterState): number {
   return maliyet;
 }
 
-function kendiIsiAsamaCumlesi(yatirimSayisi: number): string {
-  if (yatirimSayisi === 0) return "İlk kez cebindeki parayı kendi işine yatırdın.";
-  if (yatirimSayisi <= 2) return "İşin yavaş yavaş büyüyor; bu artık bir tesadüf değil, bir yön çiziyor.";
-  if (yatirimSayisi <= 5) return "Artık bölgede kendi alanında tanınan, köklü bir isim oldun.";
-  return "Küçük bir işletme değil, adeta küçük bir imparatorluk kuruyorsun artık.";
+function kendiIsiAsamaCumlesi(yatirimSayisi: number, dil: import("../types").Dil): string {
+  if (yatirimSayisi === 0) return T(dil, "İlk kez cebindeki parayı kendi işine yatırdın.");
+  if (yatirimSayisi <= 2) return T(dil, "İşin yavaş yavaş büyüyor; bu artık bir tesadüf değil, bir yön çiziyor.");
+  if (yatirimSayisi <= 5) return T(dil, "Artık bölgede kendi alanında tanınan, köklü bir isim oldun.");
+  return T(dil, "Küçük bir işletme değil, adeta küçük bir imparatorluk kuruyorsun artık.");
 }
 
 export interface YatirimConfig {
@@ -1352,14 +1398,14 @@ export async function yatirimYap(id: string): Promise<YatirimSonucu> {
   // bonuslarıyla ortak MAAS_CARPANI_TAVAN'a (×1.40) tabidir — tavana ulaşıldığında
   // yeni yatırımın maaşa katkısı kalmaz.
   if (maasCarpaniGetir(state) >= MAAS_CARPANI_TAVAN) {
-    throw new Error("İşin zaten zirvede; yeni bir yatırımın yıllık maaşına ek katkı sağlamaz.");
+    throw new Error(T(state.dil, "İşin zaten zirvede; yeni bir yatırımın yıllık maaşına ek katkı sağlamaz."));
   }
   const maliyet = kendiIsiMaliyetiHesapla(state);
   if (state.para < maliyet) {
-    throw new Error(`Yeterli paran yok (${maliyet} ${state.para_birimi} gerekli).`);
+    throw new Error(T(state.dil, "Yeterli paran yok ({0} {birim} gerekli).", [maliyet]).replace(/\{birim\}/g, state.para_birimi));
   }
   state.para -= maliyet;
-  const asama = kendiIsiAsamaCumlesi(state.kendi_isi_yatirim_sayisi);
+  const asama = kendiIsiAsamaCumlesi(state.kendi_isi_yatirim_sayisi, state.dil);
   state.kendi_isi_yatirim_sayisi += 1;
   // Yatırım rütbe ilerlemesini de bir miktar hızlandırır.
   state.kariyer_puani += KARIYER_PUANI_YATIRIM;
@@ -1369,13 +1415,18 @@ export async function yatirimYap(id: string): Promise<YatirimSonucu> {
 
   const renk =
     state.meslek === "Asker"
-      ? "Birliğinin ikmaline ve düzenine sermaye ayırdın"
+      ? T(state.dil, "Birliğinin ikmaline ve düzenine sermaye ayırdın")
       : state.meslek === "Tüccar"
-        ? "Ticaretine bir tezgah daha kattın"
-        : "Cemaatin arasındaki işlerine daha çok emek verdin";
-  let mesaj = `${asama} ${renk}. Bu, yıllık maaşını kalıcı olarak yaklaşık %5 artırdı (${oncekiMaas} → ${state.maas_yillik} ${state.para_birimi}). Yatırım kariyerini de biraz ilerletti.`;
+        ? T(state.dil, "Ticaretine bir tezgah daha kattın")
+        : T(state.dil, "Cemaatin arasındaki işlerine daha çok emek verdin");
+  let mesaj = T(state.dil, "{0} {1}. Bu, yıllık maaşını kalıcı olarak yaklaşık %5 artırdı ({2} → {3} {birim}). Yatırım kariyerini de biraz ilerletti.", [
+    asama,
+    renk,
+    oncekiMaas,
+    state.maas_yillik,
+  ]).replace(/\{birim\}/g, state.para_birimi);
   if (maasCarpaniGetir(state) >= MAAS_CARPANI_TAVAN) {
-    mesaj += " Artık işin zirvede — bundan sonraki yatırımların maaşına daha fazla katkı sağlamaz.";
+    mesaj += " " + T(state.dil, "Artık işin zirvede — bundan sonraki yatırımların maaşına daha fazla katkı sağlamaz.");
   }
 
   clampStats(state);
@@ -1450,7 +1501,14 @@ export async function mulkSatinAl(id: string, tur: MulkTuru): Promise<MulkSatinA
   state.mulk_bakim_kalan[tur] = rastgeleMulkBakimAraligi();
   clampStats(state);
   await oturumKaydet(state);
-  return { state, mesaj: `${tanim.ad} satın aldın (${maliyet} ${state.para_birimi}). ${tanim.aciklama}` };
+  return {
+    state,
+    mesaj: T(state.dil, "{0} satın aldın ({1} {birim}). {2}", [
+      K(state.dil, tanim.ad),
+      maliyet,
+      K(state.dil, tanim.aciklama),
+    ]).replace(/\{birim\}/g, state.para_birimi),
+  };
 }
 
 /** Yatırım ekranının üstündeki "Piyasa Dedikoduları" şeridi için güncel dedikodu satırlarını döner. */
@@ -1492,14 +1550,15 @@ export async function zarAt(id: string, tutar: number): Promise<ZarSonucu> {
   state.para -= tutar;
   state.suc_seviyesi += ZAR_SUC_ARTISI;
   const kazandi = Math.random() < ZAR_KAZANMA_SANSI;
+  const birim = state.para_birimi;
   let mesaj: string;
   if (kazandi) {
     const kazanc = tutar * 2;
     state.para += kazanc;
-    hayatOlayiEkle(state, "🎲", `Zar masasında büyük kazandı: +${kazanc - tutar} ${state.para_birimi}`);
-    mesaj = `Zar senden yana döndü! ${tutar} ${state.para_birimi} yatırdın, ${kazanc} ${state.para_birimi} olarak geri aldın.`;
+    hayatOlayiEkle(state, "🎲", T(state.dil, "Zar masasında büyük kazandı: +{0} {birim}", [kazanc - tutar]).replace(/\{birim\}/g, birim));
+    mesaj = T(state.dil, "Zar senden yana döndü! {0} {birim} yatırdın, {1} {birim} olarak geri aldın.", [tutar, kazanc]).replace(/\{birim\}/g, birim);
   } else {
-    mesaj = `Zar seni yüzüstü bıraktı; ${tutar} ${state.para_birimi} masada kaldı.`;
+    mesaj = T(state.dil, "Zar seni yüzüstü bıraktı; {0} {birim} masada kaldı.", [tutar]).replace(/\{birim\}/g, birim);
   }
   clampStats(state);
   await oturumKaydet(state);
@@ -1575,6 +1634,8 @@ export interface MagazaEsyaKarti {
   mutlulukEtkisi?: number;
   unEtkisi?: number;
   omurYil?: number;
+  /** Sadece "sifa": kullanınca tam olumlu etkiyi verme ihtimalinin BULANIK bandı (%). Geri kalanı %10 "hiçbir şey" + "ters teper" (-5 can). */
+  sifaFaydaAralik?: { min: number; max: number };
   /** Şu anki dünya durumuna (savaş/kriz/ekonomi) ve enflasyona göre GÜNCEL fiyat; sabit değildir. */
   fiyat: number;
   /** Sadece "luks": bu eşyaya zaten sahip mi (her türden en fazla 1 sahiplenilir, bir daha satın alınamaz). */
@@ -1600,12 +1661,13 @@ export async function magazaConfigGetir(id: string): Promise<MagazaEsyaKarti[]> 
     mutlulukEtkisi: tanim.mutlulukEtkisi,
     unEtkisi: tanim.unEtkisi,
     omurYil: tanim.omurYil,
+    sifaFaydaAralik: tanim.kategori === "sifa" ? sifaFaydaAralik(tanim.tabanFiyat) : undefined,
     fiyat: magazaFiyatiHesapla(tanim, state),
     sahipMi: tanim.kategori === "luks" && state.magaza_envanteri.some((e) => e.katalogId === tanim.id),
     kilitli: tanim.kategori === "sifa" && kilitliMi,
     kilitAciklamasi:
       tanim.kategori === "sifa" && kilitliMi
-        ? `Yakın zamanda temel ürün aldın — ${kalanKilitYili} yıl sonra tekrar alışveriş yapabilirsin.`
+        ? T(state.dil, "Yakın zamanda temel ürün aldın — {0} yıl sonra tekrar alışveriş yapabilirsin.", [kalanKilitYili])
         : undefined,
   }));
 }
@@ -1636,14 +1698,15 @@ export async function magazadanSatinAl(id: string, katalogId: string): Promise<M
 
   if (tanim.kategori === "sifa" && temelMagazaKilitliMi(state)) {
     const kalanYil = state.magaza_temel_kilit_bitis_yili! - state.yil;
-    throw new Error(`Yakın zamanda temel ürün aldın; ${kalanYil} yıl sonra tekrar alışveriş yapabilirsin.`);
+    throw new Error(T(state.dil, "Yakın zamanda temel ürün aldın; {0} yıl sonra tekrar alışveriş yapabilirsin.", [kalanYil]));
   }
   if (tanim.kategori === "luks" && state.magaza_envanteri.some((e) => e.katalogId === tanim.id)) {
-    throw new Error("Bu eşyaya zaten sahipsin.");
+    throw new Error(T(state.dil, "Bu eşyaya zaten sahipsin."));
   }
 
   const fiyat = magazaFiyatiHesapla(tanim, state);
-  if (state.para < fiyat) throw new Error(`Yeterli paran yok (${fiyat} ${state.para_birimi} gerekli).`);
+  if (state.para < fiyat)
+    throw new Error(T(state.dil, "Yeterli paran yok ({0} {birim} gerekli).", [fiyat]).replace(/\{birim\}/g, state.para_birimi));
 
   state.para -= fiyat;
   const esya: SahipOlunanEsya = {
@@ -1657,13 +1720,16 @@ export async function magazadanSatinAl(id: string, katalogId: string): Promise<M
   };
   state.magaza_envanteri.push(esya);
 
-  let mesaj = `${tanim.ad} satın aldın (${fiyat} ${state.para_birimi}).`;
+  let mesaj = T(state.dil, "{0} satın aldın ({1} {birim}).", [K(state.dil, tanim.ad), fiyat]).replace(/\{birim\}/g, state.para_birimi);
   if (tanim.kategori === "luks" && tanim.unEtkisi) {
     state.un += tanim.unEtkisi;
-    mesaj += ` Şehirdeki itibarın hemen arttı (+${tanim.unEtkisi} şöhret). Artık bu eşyaya sahipsin.`;
+    mesaj += " " + T(state.dil, "Şehirdeki itibarın hemen arttı (+{0} şöhret). Artık bu eşyaya sahipsin.", [tanim.unEtkisi]);
   } else {
     state.magaza_temel_kilit_bitis_yili = state.yil + TEMEL_MAGAZA_KILIT_SURESI_YIL;
-    mesaj += ` Envanterine eklendi — ${tanim.omurYil} yıl içinde kullanmazsan bozulur. Temel ürün alışverişin ${TEMEL_MAGAZA_KILIT_SURESI_YIL} yıl kilitlenecek.`;
+    mesaj += " " + T(state.dil, "Envanterine eklendi — {0} yıl içinde kullanmazsan bozulur. Temel ürün alışverişin {1} yıl kilitlenecek.", [
+      tanim.omurYil ?? 0,
+      TEMEL_MAGAZA_KILIT_SURESI_YIL,
+    ]);
   }
   clampStats(state);
   await oturumKaydet(state);
@@ -1693,16 +1759,31 @@ export async function envanterEsyasiKullan(id: string, esyaId: string): Promise<
     throw new Error("Bu eşya kullanılamaz, sadece envanterinde sergilenir.");
   }
 
-  const etki = jitterUygula({ saglik: tanim.saglikEtkisi, mutluluk: tanim.mutlulukEtkisi, mesaj: "" });
-  if (etki.saglik) state.saglik += etki.saglik;
-  if (etki.mutluluk) state.mutluluk += etki.mutluluk;
+  // 2026-09: "sifa" kullanımı artık zarlı. Fiyata göre ~%60-80 tam olumlu etki,
+  // %10 sabit hiçbir şey, geri kalan ters teper (-5 can). Oyuncuya bulanık gösterilir.
+  const pPozitif = sifaBasariSans(tanim.tabanFiyat);
+  const r = Math.random();
+  let mesaj: string;
+  if (r < pPozitif) {
+    const etki = jitterUygula({ saglik: tanim.saglikEtkisi, mutluluk: tanim.mutlulukEtkisi, mesaj: "" });
+    if (etki.saglik) state.saglik += etki.saglik;
+    if (etki.mutluluk) state.mutluluk += etki.mutluluk;
+    const parcalar = [
+      etki.saglik ? `+${etki.saglik} ${T(state.dil, "sağlık")}` : null,
+      etki.mutluluk ? `+${etki.mutluluk} ${T(state.dil, "mutluluk")}` : null,
+    ].filter((p): p is string => p !== null);
+    mesaj = T(state.dil, "{0} kullandın{1}.", [
+      K(state.dil, esya.ad),
+      parcalar.length ? ` (${parcalar.join(", ")})` : "",
+    ]);
+  } else if (r < pPozitif + SIFA_HICBIRSEY_SANS) {
+    mesaj = T(state.dil, "{0} kullandın ama hiç işe yaramadı, boşa gitti.", [K(state.dil, esya.ad)]);
+  } else {
+    const etki = jitterUygula({ saglik: -5, mesaj: "" });
+    if (etki.saglik) state.saglik += etki.saglik;
+    mesaj = T(state.dil, "{0} ters tepti; biraz fenalaştın ({1} sağlık).", [K(state.dil, esya.ad), etki.saglik ?? -5]);
+  }
   clampStats(state);
-
-  const parcalar = [
-    etki.saglik ? `+${etki.saglik} sağlık` : null,
-    etki.mutluluk ? `+${etki.mutluluk} mutluluk` : null,
-  ].filter((p): p is string => p !== null);
-  const mesaj = `${esya.ad} kullandın${parcalar.length ? ` (${parcalar.join(", ")})` : ""}.`;
   await oturumKaydet(state);
   return { state, mesaj };
 }

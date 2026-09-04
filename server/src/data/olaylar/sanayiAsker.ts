@@ -397,7 +397,7 @@ export const OLAY_SANAYI_ASKER: OlayTanimi[] = [
     secenekler: [
       {
         metin: "Evlatlıklarından birini izci olarak kullanarak hattı güvenle tamir et.",
-        baseBasariSansi: 95,
+        baseBasariSansi: 100,
         gerekliEtiketler: [
           "evlatliklari_var",
         ],

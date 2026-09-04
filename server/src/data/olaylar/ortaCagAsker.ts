@@ -16,7 +16,7 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
     secenekler: [
       {
         metin: "Kara Kılıcı kuşanarak öncü birliğe liderlik et!",
-        baseBasariSansi: 95,
+        baseBasariSansi: 100,
         gerekliEtiketler: [
           "envanter:kara_kilic",
         ],
@@ -343,7 +343,7 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
     secenekler: [
       {
         metin: "Evcil Kurdunu hırsızın kokusuyla peşine sal!",
-        baseBasariSansi: 95,
+        baseBasariSansi: 100,
         gerekliEtiketler: [
           "evcil_hayvan_tur:Kurt",
         ],

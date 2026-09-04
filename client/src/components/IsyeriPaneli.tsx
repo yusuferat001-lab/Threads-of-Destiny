@@ -1,3 +1,6 @@
+import { useDil } from '../DilContext';
+import type { Metinler } from '../i18n';
+
 interface IsyeriPaneliProps {
   meslek?: string;
   rutbeSeviye: number;
@@ -26,35 +29,27 @@ function dinBinasiGetir(dinKultur?: string): string {
 
 const KISI_SAYISI: [number, number, number] = [1, 4, 9];
 
-const BASLIK: Record<string, string> = {
-  Asker: 'Birliğin',
-  Tüccar: 'İşletmen',
-  'Din Adamı': 'Cemaatin',
-};
-
 const KISI_IKON: Record<string, string> = {
   Asker: '🧍',
   Tüccar: '📦',
   'Din Adamı': '🧎',
 };
 
-const ACIKLAMALAR: Record<string, [string, string, string]> = {
-  Asker: [
-    'Yalnız savaşan bir erdersin.',
-    'Küçük bir müfreze seni takip ediyor.',
-    'Koca bir birlik senin emrinde.',
-  ],
-  Tüccar: [
-    'Küçük bir pazar tezgahın var.',
-    'Bir dükkanın ve müşteri ağın var.',
-    'Koca bir ticarethanenin sahibisin.',
-  ],
-  'Din Adamı': [
-    'Küçük bir cemaate vaaz veriyorsun.',
-    'Cemaatin büyüdü, sözün dinleniyor.',
-    'Koca bir cemaatin ruhani lideri oldun.',
-  ],
-};
+function baslikGetir(m: Metinler, meslek: string): string {
+  if (meslek === 'Asker') return m.ipBirligin;
+  if (meslek === 'Tüccar') return m.ipIsletmen;
+  if (meslek === 'Din Adamı') return m.ipCemaatin;
+  return m.ipIsyerin;
+}
+
+function aciklamaGetir(m: Metinler, meslek: string, i: number): string {
+  const tablo: Record<string, [string, string, string]> = {
+    Asker: [m.ipAsker1, m.ipAsker2, m.ipAsker3],
+    Tüccar: [m.ipTuccar1, m.ipTuccar2, m.ipTuccar3],
+    'Din Adamı': [m.ipDin1, m.ipDin2, m.ipDin3],
+  };
+  return tablo[meslek]?.[i] ?? '';
+}
 
 export function IsyeriPaneli({
   meslek,
@@ -64,6 +59,7 @@ export function IsyeriPaneli({
   nufuz,
   orduTechizatSeviyesi,
 }: IsyeriPaneliProps) {
+  const { m } = useDil();
   if (!meslek) return null;
 
   const yatirimBonusu = yatirimKademeBonusuHesapla(meslek, ticaretSermaye, nufuz, orduTechizatSeviyesi);
@@ -72,8 +68,8 @@ export function IsyeriPaneli({
     meslek === 'Din Adamı' ? dinBinasiGetir(dinKultur) : BINA_IKONLARI[meslek]?.[seviyeIndex] ?? '🏠';
   const kisiIkon = KISI_IKON[meslek] ?? '🧍';
   const sayi = KISI_SAYISI[seviyeIndex];
-  const baslik = BASLIK[meslek] ?? 'İşyerin';
-  const aciklama = ACIKLAMALAR[meslek]?.[seviyeIndex] ?? '';
+  const baslik = baslikGetir(m, meslek);
+  const aciklama = aciklamaGetir(m, meslek, seviyeIndex);
 
   return (
     <div className="isyeri-paneli">

@@ -1,5 +1,6 @@
 import type { YatkinlikKaynagi, KisilikEksenleri } from '../types';
-import { KATEGORI_ADI } from '../bolgeTema';
+import { kategoriAdi } from '../bolgeTema';
+import { useDil } from '../DilContext';
 
 function grupla(kaynaklar: YatkinlikKaynagi[]): Map<string, YatkinlikKaynagi[]> {
   const grup = new Map<string, YatkinlikKaynagi[]>();
@@ -29,7 +30,7 @@ function EksenGostergesi({
       <div
         className="eksen-gostergesi-govde"
         role="progressbar"
-        aria-label={`${solEtiket} ile ${sagEtiket} arası eksen`}
+        aria-label={solEtiket + ' – ' + sagEtiket}
         aria-valuenow={deger}
         aria-valuemin={0}
         aria-valuemax={100}
@@ -51,13 +52,14 @@ export function KisilikPaneli({
   kaynaklar: YatkinlikKaynagi[];
   eksenler: KisilikEksenleri;
 }) {
+  const { m, kt, dil } = useDil();
   const grup = grupla(kaynaklar);
 
   return (
     <div className="kisilik-paneli">
-      <h3>Kişilik &amp; Miras</h3>
-      <EksenGostergesi solEtiket="Planlayıcı" sagEtiket="Fevri" deger={eksenler.fevrilik} />
-      <EksenGostergesi solEtiket="Zalim" sagEtiket="Barışçıl" deger={eksenler.merhamet} />
+      <h3>{m.kpBaslikTam}</h3>
+      <EksenGostergesi solEtiket={m.kpPlanlayici} sagEtiket={m.kpFevri} deger={eksenler.fevrilik} />
+      <EksenGostergesi solEtiket={m.kpZalim} sagEtiket={m.kpBarisci} deger={eksenler.merhamet} />
       {[...kisilik, aileMeslegi].map((kaynakAdi) => {
         const etkiler = grup.get(kaynakAdi) ?? [];
         const aileMi = kaynakAdi === aileMeslegi;
@@ -65,13 +67,13 @@ export function KisilikPaneli({
           <div key={kaynakAdi} className="kisilik-rozet">
             <span className="kisilik-rozet-ad">
               {aileMi ? '🏠 ' : '🎭 '}
-              {kaynakAdi}
-              {aileMi ? ' Ailesi' : ''}
+              {kt(kaynakAdi)}
+              {aileMi ? m.kpAilesi : ''}
             </span>
             {etkiler.length > 0 && (
               <span className="kisilik-rozet-etki">
                 {etkiler
-                  .map((e) => `${KATEGORI_ADI[e.kategori] ?? e.kategori} ${e.deger > 0 ? '+' : ''}${e.deger}`)
+                  .map((e) => `${kategoriAdi(e.kategori, dil)} ${e.deger > 0 ? '+' : ''}${e.deger}`)
                   .join(' · ')}
               </span>
             )}

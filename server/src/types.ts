@@ -1,5 +1,8 @@
 export type Cag = "Orta Çağ" | "Sanayi Devrimi";
 
+/** Oyuncunun arayüz/anlatı dili. Karakterle birlikte kaydedilir; eski kayıtlarda eskiKayitGocu "tr" atar. */
+export type Dil = "tr" | "en";
+
 export type Kategori = "savas" | "ticaret" | "din" | "siyaset" | "saglik" | "sosyal";
 
 /** Bölge + çağa göre yaklaşık nüfus ve kısa "bilgin miydi" notları. */
@@ -109,6 +112,8 @@ export interface YatkinlikKaynagi {
 export interface CharacterState {
   id: string;
   isim: string | null;
+  /** Oyuncunun seçtiği dil; olay/anlatı metinleri ve arayüz bu dile göre sunulur. Eski kayıtlarda eskiKayitGocu "tr" atar. */
+  dil: Dil;
 
   yil: number;
   /** Karakter yaratıldığındaki başlangıç yılı; enflasyonun gerçek geçen yıla göre (çağa özel oranla) hesaplanması için sabit referans. */
@@ -244,6 +249,8 @@ export interface CharacterState {
   kucuk_kriz_sonraki_yil: number;
   /** Küçük kriz tetiklendiğinde SADECE bu yıla kadar geçerli olan ×2 gıda fiyat şoku; null = şok yok. */
   gida_fiyat_sok_bitis_yili: number | null;
+  /** Ömürde bir kez: borçtayken (para < 0, bütçe açığı sürerken) kilise/eş dost bir kereliğine borcun bir kısmını kapatır. true olunca bir daha tetiklenmez. */
+  borc_yardimi_alindi: boolean;
 
   tur_sayisi: number;
   gecmis_olaylar: string[];

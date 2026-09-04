@@ -4,14 +4,14 @@ import { yeniOyun, mesleğiAta, senaryoUret, secimUygula } from "../src/game/gam
 import type { SecimSonucu } from "../src/types";
 
 describe("pasifRegenEtkisi — yumuşak tavan", () => {
-  it("tavanın (70) altında tam işler", () => {
+  it("tavanın (80) altında tam işler", () => {
     expect(pasifRegenEtkisi(50, 6)).toBe(6);
-    expect(pasifRegenEtkisi(64, 6)).toBe(6);
+    expect(pasifRegenEtkisi(74, 6)).toBe(6);
   });
 
   it("tavanın üstünde taşan kısım kısılır", () => {
-    // 68'den +6: 2 birim tavana kadar tam, kalan 4 birim ×0.25 = 1 → toplam 3
-    expect(pasifRegenEtkisi(68, 6)).toBeCloseTo(3, 5);
+    // 78'den +6: 2 birim tavana (80) kadar tam, kalan 4 birim ×0.25 = 1 → toplam 3
+    expect(pasifRegenEtkisi(78, 6)).toBeCloseTo(3, 5);
     // 90'dan +6: tamamı tavan üstü → 6 ×0.25 = 1.5
     expect(pasifRegenEtkisi(90, 6)).toBeCloseTo(1.5, 5);
   });

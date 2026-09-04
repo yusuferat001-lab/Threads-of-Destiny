@@ -78,7 +78,7 @@ describe("zorunluBagisKontrolEt", () => {
     }
   });
 
-  it("eşik aşılmış + cooldown dolmuşken makul sürede tetiklenir ve servetin %15-20'sini alır", () => {
+  it("eşik aşılmış + cooldown dolmuşken makul sürede tetiklenir ve servetin %20-25'ini alır", () => {
     const state = taze();
     state.para = 5000;
     state.yil = state.baslangic_yili + 10; // 5 yıllık cooldown zaten dolmuş olsun
@@ -89,9 +89,9 @@ describe("zorunluBagisKontrolEt", () => {
     expect(sonuc).not.toBeNull();
     expect(sonuc!.miktar).toBeGreaterThan(0);
     expect(state.son_zorunlu_bagis_yili).toBe(state.yil);
-    // %15-20 aralığı yaklaşık toplam servetin üstünden kontrol edilir (jitter/yuvarlama payı ile).
-    expect(sonuc!.miktar).toBeGreaterThan(5000 * 0.14);
-    expect(sonuc!.miktar).toBeLessThan(5000 * 0.21);
+    // ZORUNLU_BAGIS_ORAN_MIN 0.20 + ARALIK 0.05 → toplam servetin %20-25'i (jitter/yuvarlama payıyla).
+    expect(sonuc!.miktar).toBeGreaterThan(5000 * 0.19);
+    expect(sonuc!.miktar).toBeLessThan(5000 * 0.26);
   });
 });
 
@@ -180,13 +180,20 @@ describe("vebaBaslamaliMi / vebaBaslat / vebaYillikKontrol / vebaBitisKontrolEt"
     }
   });
 
-  it("bir kez geçirdikten sonra asla tekrar tetiklenmez", () => {
+  it("dalga bittikten sonra 20 yıl cooldown boyunca tetiklenmez, sonra tekrar tetiklenebilir", () => {
     const state = taze();
-    state.yas = 30;
+    state.yas = 40;
     state.veba_gecirdi = true;
+    // Cooldown içinde (dalga 5 yıl önce bitti): asla tetiklenmez.
+    state.son_veba_bitis_yili = state.yil - 5;
     for (let i = 0; i < 500; i++) {
       expect(vebaBaslamaliMi(state, 2)).toBe(false);
     }
+    // Cooldown dolmuş (25 yıl önce): artık yeniden tetiklenebilir.
+    state.son_veba_bitis_yili = state.yil - 25;
+    let tekrar = false;
+    for (let i = 0; i < 400 && !tekrar; i++) tekrar = vebaBaslamaliMi(state, 2);
+    expect(tekrar).toBe(true);
   });
 
   it("uygun yaşta makul sürede tetiklenir", () => {
@@ -288,22 +295,26 @@ describe("kucukKrizKontrolEt", () => {
     expect(mesaj).not.toBeNull();
     expect(state.ulke.kriz).not.toBeNull();
     expect(state.ulke.kriz!.tur).toBe("kitlik");
-    expect(state.gida_fiyat_sok_bitis_yili).toBe(state.yil + 1);
+    // Şok +2 yıl geçerli (kucukKriz pasifEkonomi'den SONRA çağrıldığı için +1
+    // hiç tahsil edilemiyordu — eski hata).
+    expect(state.gida_fiyat_sok_bitis_yili).toBe(state.yil + 2);
     expect(state.kucuk_kriz_sonraki_yil).toBeGreaterThanOrEqual(state.yil + 5);
     expect(state.kucuk_kriz_sonraki_yil).toBeLessThanOrEqual(state.yil + 7);
   });
 
-  it("tetiklendiği yıl gıda gideri 2 katına çıkar, sonraki yıl normale döner", () => {
+  it("gıda şoku tetik turunda ve bir sonraki turda ×2, iki tur sonra normale döner", () => {
     const state = taze();
-    const giderOncesi = giderKalemleriHesapla(state);
+    const giderOncesi = giderKalemleriHesapla(state).yasam;
 
     state.kucuk_kriz_sonraki_yil = state.yil;
-    kucukKrizKontrolEt(state, 1);
-    const giderSokYili = giderKalemleriHesapla(state);
-    expect(giderSokYili.yasam).toBeCloseTo(giderOncesi.yasam * 2, 1);
+    kucukKrizKontrolEt(state, 1); // gida_fiyat_sok_bitis_yili = state.yil + 2
 
-    state.yil += 1; // bir sonraki tur
-    const giderSonraki = giderKalemleriHesapla(state);
-    expect(giderSonraki.yasam).toBeCloseTo(giderOncesi.yasam, 1);
+    expect(giderKalemleriHesapla(state).yasam).toBeGreaterThan(giderOncesi * 1.8); // tetik turu ×2
+
+    state.yil += 1; // bir sonraki tur — şok HÂLÂ geçerli (asıl tahsilat burada)
+    expect(giderKalemleriHesapla(state).yasam).toBeGreaterThan(giderOncesi * 1.8);
+
+    state.yil += 1; // iki tur sonra — normale döner
+    expect(giderKalemleriHesapla(state).yasam).toBeLessThan(giderOncesi * 1.2);
   });
 });

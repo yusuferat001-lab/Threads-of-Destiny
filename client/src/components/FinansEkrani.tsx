@@ -2,28 +2,33 @@ import type { FinansOzeti, GecmisNoktasi, KonutTanimi, YasamSecenegiTanimi } fro
 import { GecmisGrafik } from './GecmisGrafik';
 import { konutGoruntusuGetir } from '../bolgeTema';
 import { formatPara } from '../format';
+import { bic, type Metinler } from '../i18n';
+import { useDil } from '../DilContext';
 
-/** Çarpan yüzdesini Türkçe biçimde: +40 → "+%40", -15 → "−%15", 0 → "%0". */
-function yuzdeMetni(yuzde: number): string {
-  if (yuzde > 0) return `+%${yuzde}`;
-  if (yuzde < 0) return `−%${Math.abs(yuzde)}`;
-  return '%0';
+/** Çarpan yüzdesini biçimlendirir: +40 → "+%40" / "+40%", -15 → "−%15" / "−15%", 0 → "%0" / "0%". */
+function yuzdeMetni(yuzde: number, dil: 'tr' | 'en'): string {
+  const isaret = yuzde > 0 ? '+' : yuzde < 0 ? '−' : '';
+  const mut = Math.abs(yuzde);
+  return dil === 'en' ? `${isaret}${mut}%` : `${isaret}%${mut}`;
 }
 
-function etkiSatiriGetir(etkiler: {
-  saglikEtkisiYillik?: number;
-  mutlulukEtkisiYillik?: number;
-  unEtkisiYillik?: number;
-}): string | null {
+function etkiSatiriGetir(
+  m: Metinler,
+  etkiler: {
+    saglikEtkisiYillik?: number;
+    mutlulukEtkisiYillik?: number;
+    unEtkisiYillik?: number;
+  }
+): string | null {
   const parcalar: string[] = [];
   if (etkiler.saglikEtkisiYillik) {
-    parcalar.push(`🩺 Sağlık ${etkiler.saglikEtkisiYillik > 0 ? '+' : ''}${etkiler.saglikEtkisiYillik}/yıl`);
+    parcalar.push(bic(m.feSaglikYil, (etkiler.saglikEtkisiYillik > 0 ? '+' : '') + etkiler.saglikEtkisiYillik));
   }
   if (etkiler.mutlulukEtkisiYillik) {
-    parcalar.push(`😊 Mutluluk ${etkiler.mutlulukEtkisiYillik > 0 ? '+' : ''}${etkiler.mutlulukEtkisiYillik}/yıl`);
+    parcalar.push(bic(m.feMutlulukYil, (etkiler.mutlulukEtkisiYillik > 0 ? '+' : '') + etkiler.mutlulukEtkisiYillik));
   }
   if (etkiler.unEtkisiYillik) {
-    parcalar.push(`⭐ Şöhret ${etkiler.unEtkisiYillik > 0 ? '+' : ''}${etkiler.unEtkisiYillik}/yıl`);
+    parcalar.push(bic(m.feSohretYil, (etkiler.unEtkisiYillik > 0 ? '+' : '') + etkiler.unEtkisiYillik));
   }
   return parcalar.length > 0 ? parcalar.join(' · ') : null;
 }
@@ -63,6 +68,7 @@ export function FinansEkrani({
   onYasamSecimiDegistir,
   onGeriDon,
 }: FinansEkraniProps) {
+  const { m, kt, dil } = useDil();
   const { maasYillik, giderKalemleri, netYillik, enflasyonYuzdesi, maasKirilim, gayrimenkulYillikGelir, dunyaEtkileri } =
     finans;
   const toplamGider =
@@ -80,16 +86,16 @@ export function FinansEkrani({
 
   return (
     <div className="ekran ekran-tam-sayfa">
-      <h2>Gelir &amp; Gider</h2>
+      <h2>{m.shEv}</h2>
       {islemMesaji && <p className="yatirim-islem-mesaji">{islemMesaji}</p>}
 
       <div className="tam-govde-3col tam-govde-3col-finans">
         <div className="tam-sutun">
-          <h3 className="tam-baslik">Bütçen</h3>
+          <h3 className="tam-baslik">{m.feButcen}</h3>
 
           <div className="finans-karti">
             <div className="finans-satiri finans-gelir">
-              <span>💰 Yıllık maaş</span>
+              <span>{m.feYillikMaas}</span>
               <span>
                 +{formatPara(maasYillik)} {paraBirimi}
               </span>
@@ -98,31 +104,31 @@ export function FinansEkrani({
             <div className="finans-maas-kirilim">
               <div className="finans-satiri finans-kirilim-satiri">
                 <span>
-                  🎖️ Rütbeden gelen{' '}
+                  {m.feRutbedenGelen}{' '}
                   <em className="finans-kirilim-alt">
-                    {maasKirilim.rutbeAd}
+                    {kt(maasKirilim.rutbeAd)}
                     {maasKirilim.rutbeSeviye ? ` · Sv.${maasKirilim.rutbeSeviye}` : ''}
                   </em>
                 </span>
-                <span className="finans-kirilim-kalici">{yuzdeMetni(maasKirilim.rutbeYuzde)} · kalıcı</span>
+                <span className="finans-kirilim-kalici">{yuzdeMetni(maasKirilim.rutbeYuzde, dil)} · {m.feKalici}</span>
               </div>
 
               {(maasKirilim.kariyerYuzde !== 0 || maasKirilim.kariyerKalemler.length > 0) && (
                 <>
                   <div className="finans-satiri finans-kirilim-satiri">
-                    <span>📈 Kariyer birikimi</span>
-                    <span className="finans-kirilim-kalici">{yuzdeMetni(maasKirilim.kariyerYuzde)} · kalıcı</span>
+                    <span>{m.feKariyerBirikimi}</span>
+                    <span className="finans-kirilim-kalici">{yuzdeMetni(maasKirilim.kariyerYuzde, dil)} · {m.feKalici}</span>
                   </div>
                   {maasKirilim.kariyerKalemler.length > 0 && (
                     <div className="finans-kirilim-detay">
-                      {maasKirilim.kariyerKalemler.map((k) => `${k.ad} ${yuzdeMetni(k.yuzde)}`).join(' · ')}
+                      {maasKirilim.kariyerKalemler.map((k) => `${kt(k.ad)} ${yuzdeMetni(k.yuzde, dil)}`).join(' · ')}
                     </div>
                   )}
                 </>
               )}
 
               <div className="finans-satiri finans-kirilim-satiri">
-                <span>🤝 İtibarın</span>
+                <span>{m.feItibarin}</span>
                 <span
                   className={
                     maasKirilim.itibarYuzde <= -8
@@ -130,40 +136,36 @@ export function FinansEkrani({
                       : 'finans-kirilim-degisken'
                   }
                 >
-                  {yuzdeMetni(maasKirilim.itibarYuzde)} · değişebilir
+                  {yuzdeMetni(maasKirilim.itibarYuzde, dil)} · {m.feDegisebilir}
                 </span>
               </div>
               <div className="finans-kirilim-detay">
-                {maasKirilim.itibarKalemler.map((k) => `${k.ad} ${yuzdeMetni(k.yuzde)}`).join(' · ')}
+                {maasKirilim.itibarKalemler.map((k) => `${kt(k.ad)} ${yuzdeMetni(k.yuzde, dil)}`).join(' · ')}
               </div>
               {maasKirilim.itibarYuzde <= -8 && (
-                <div className="finans-kirilim-detay finans-net-negatif">İtibarın gelirini ciddi düşürüyor.</div>
+                <div className="finans-kirilim-detay finans-net-negatif">{m.feItibarUyari}</div>
               )}
 
               <div className="finans-satiri finans-kirilim-satiri">
-                <span>🌍 Dönemsel yüzdelik etkiler</span>
-                <span className="finans-kirilim-degisken">{yuzdeMetni(maasKirilim.donemselYuzde)} · değişebilir</span>
+                <span>{m.feDonemselEtkiler}</span>
+                <span className="finans-kirilim-degisken">{yuzdeMetni(maasKirilim.donemselYuzde, dil)} · {m.feDegisebilir}</span>
               </div>
               {maasKirilim.donemselKalemler.filter((k) => k.ad !== 'Enflasyon').length > 0 && (
                 <div className="finans-kirilim-detay">
                   {maasKirilim.donemselKalemler
                     .filter((k) => k.ad !== 'Enflasyon')
-                    .map((k) => `${k.ad} ${yuzdeMetni(k.yuzde)}`)
+                    .map((k) => `${kt(k.ad)} ${yuzdeMetni(k.yuzde, dil)}`)
                     .join(' · ')}
                 </div>
               )}
 
-              <p className="finans-kirilim-not">
-                🎖️ Rütbe ve kariyer primleri kalıcıdır — rütbe asla düşmez. Dönemsel etkiler ekonomi, savaş ve salgınla birlikte
-                değişir. 🤝 Mutlu, saygın ve dürüst biri işini daha iyi yapar ve kapıları daha kolay açılır; bu üçünden biri
-                düştükçe gelirin belirgin azalır, üçü de yüksekken maaşına bonus biner. Düşüşün cezası yükselişin iki katıdır.
-              </p>
+              <p className="finans-kirilim-not">{m.feMaasNot}</p>
             </div>
 
             <div className="finans-dunya-etkileri">
-              <div className="finans-dunya-baslik">🌍 Şu an bütçeni etkileyen dünya durumları</div>
+              <div className="finans-dunya-baslik">{m.feDunyaBaslik}</div>
               {dunyaEtkileri.length === 0 ? (
-                <p className="finans-kirilim-detay">Şu an bütçeni sarsan olağan dışı bir durum yok.</p>
+                <p className="finans-kirilim-detay">{m.feDunyaYok}</p>
               ) : (
                 <ul className="finans-dunya-liste">
                   {dunyaEtkileri.map((e, i) => (
@@ -178,9 +180,9 @@ export function FinansEkrani({
             {gayrimenkulYillikGelir !== 0 && (
               <div
                 className={`finans-satiri finans-gelir ${gayrimenkulYillikGelir < 0 ? 'finans-net-negatif' : ''}`}
-                title="Sahip olduğun mülklerin şu anki dünya durumuna göre yıllık tahmini net getirisi; maaşından ayrı bir gelir akışıdır ve kötü zamanlarda zarara dönebilir."
+                title={m.feGayrimenkulTitle}
               >
-                <span>🏠 Gayrimenkul geliri</span>
+                <span>{m.feGayrimenkulGeliri}</span>
                 <span>
                   {gayrimenkulYillikGelir >= 0 ? '+' : '−'}
                   {formatPara(Math.abs(gayrimenkulYillikGelir))} {paraBirimi}
@@ -188,43 +190,43 @@ export function FinansEkrani({
               </div>
             )}
 
-            <h3>Yıllık giderler</h3>
+            <h3>{m.feYillikGiderler}</h3>
             <div className="finans-satiri">
-              <span>🍞 Yaşam</span>
+              <span>{m.feYasam}</span>
               <span>
                 -{formatPara(giderKalemleri.yasam)} {paraBirimi}
               </span>
             </div>
             <div className="finans-satiri">
-              <span>🏠 Ev kirası</span>
+              <span>{m.feEvKirasi}</span>
               <span>
                 -{formatPara(giderKalemleri.konut)} {paraBirimi}
               </span>
             </div>
             <div className="finans-satiri">
-              <span>🧑 Ekip maaşları</span>
+              <span>{m.feEkipMaaslari}</span>
               <span>
                 -{formatPara(giderKalemleri.ekip)} {paraBirimi}
               </span>
             </div>
             {giderKalemleri.evcilHayvan > 0 && (
               <div className="finans-satiri">
-                <span>🐾 Evcil hayvan bakımı</span>
+                <span>{m.feEvcilHayvanBakimi}</span>
                 <span>
                   -{formatPara(giderKalemleri.evcilHayvan)} {paraBirimi}
                 </span>
               </div>
             )}
             {giderKalemleri.savasVergisi > 0 && (
-              <div className="finans-satiri" title="Aktif bir büyük savaş sürerken hükümdar pasif gelirinden ek bir savaş vergisi kesiyor.">
-                <span>⚔️ Savaş vergisi</span>
+              <div className="finans-satiri" title={m.feSavasVergisiTitle}>
+                <span>{m.feSavasVergisi}</span>
                 <span>
                   -{formatPara(giderKalemleri.savasVergisi)} {paraBirimi}
                 </span>
               </div>
             )}
             <div className="finans-satiri finans-toplam-gider">
-              <span>Toplam gider</span>
+              <span>{m.feToplamGider}</span>
               <span>
                 -{formatPara(toplamGider)} {paraBirimi}
               </span>
@@ -233,14 +235,14 @@ export function FinansEkrani({
             {gayrimenkulYillikGelir !== 0 ? (
               <>
                 <div className="finans-satiri finans-servet-detay">
-                  <span>↳ Maaş − gider</span>
+                  <span>{m.feMaasEksiGider}</span>
                   <span>
                     {netYillik >= 0 ? '+' : ''}
                     {formatPara(netYillik)} {paraBirimi}
                   </span>
                 </div>
                 <div className={`finans-satiri finans-net ${gercekNet < 0 ? 'finans-net-negatif' : ''}`}>
-                  <span>Net yıllık (gayrimenkul dahil)</span>
+                  <span>{m.feNetYillikDahil}</span>
                   <span>
                     {gercekNet >= 0 ? '+' : ''}
                     {formatPara(gercekNet)} {paraBirimi}
@@ -249,7 +251,7 @@ export function FinansEkrani({
               </>
             ) : (
               <div className={`finans-satiri finans-net ${netYillik < 0 ? 'finans-net-negatif' : ''}`}>
-                <span>Net yıllık</span>
+                <span>{m.feNetYillik}</span>
                 <span>
                   {netYillik >= 0 ? '+' : ''}
                   {formatPara(netYillik)} {paraBirimi}
@@ -262,12 +264,12 @@ export function FinansEkrani({
         </div>
 
         <div className="tam-sutun">
-          <h3 className="tam-baslik">Yaşam Tarzın</h3>
-          <p className="giris-aciklama">İstediğin an değiştirebilirsin, tur harcamaz.</p>
+          <h3 className="tam-baslik">{m.feYasamTarzin}</h3>
+          <p className="giris-aciklama">{m.feDegistirNot}</p>
           <div className="yatirim-kartlari finans-secim-izgara">
             {yasamSecenekleri.map((secenek) => {
               const guncel = secenek.id === guncelYasamSecimiId;
-              const etkiSatiri = etkiSatiriGetir(secenek);
+              const etkiSatiri = etkiSatiriGetir(m, secenek);
               return (
                 <button
                   key={secenek.id}
@@ -277,11 +279,11 @@ export function FinansEkrani({
                 >
                   <span className="meslek-simge">{secenek.simge}</span>
                   <strong>
-                    {secenek.ad}
-                    {guncel ? ' (şu an bu)' : ''}
+                    {kt(secenek.ad)}
+                    {guncel ? m.feSuAnBu : ''}
                   </strong>
                   <span className="meslek-aciklama">
-                    Yıllık gider: {formatPara(enflasyonluTutar(secenek.maliyetYillik))} {paraBirimi}. {secenek.aciklama}
+                    {m.feYillikGider}: {formatPara(enflasyonluTutar(secenek.maliyetYillik))} {paraBirimi}. {kt(secenek.aciklama)}
                   </span>
                   {etkiSatiri && <span className="meslek-aciklama yatirim-etki-satiri">{etkiSatiri}</span>}
                 </button>
@@ -292,19 +294,16 @@ export function FinansEkrani({
         </div>
 
         <div className="tam-sutun">
-          <h3 className="tam-baslik">Evin</h3>
-          <p className="giris-aciklama">
-            İstediğin an taşın, tur harcamaz. Daha pahalı eve geçişte bir kerelik {tasinmaMaliyeti} {paraBirimi} nakliye
-            ücreti; ucuza geri çekilmek bedava.
-          </p>
+          <h3 className="tam-baslik">{m.feEvin}</h3>
+          <p className="giris-aciklama">{bic(m.feTasinNot, tasinmaMaliyeti, paraBirimi)}</p>
           <div className="yatirim-kartlari finans-secim-izgara">
             {konutlar.map((konut) => {
               const guncel = konut.id === guncelKonutId;
               const guncelKira = konutlar.find((k) => k.id === guncelKonutId)?.kiraYillik ?? 0;
               const geriCekilme = guncelKira > konut.kiraYillik;
               const tasinamaz = !guncel && !geriCekilme && para < tasinmaMaliyeti;
-              const gorunum = konutGoruntusuGetir(konut.id, konut.ad, konut.simge, cag);
-              const etkiSatiri = etkiSatiriGetir(konut);
+              const gorunum = konutGoruntusuGetir(konut.id, konut.ad, konut.simge, cag, dil);
+              const etkiSatiri = etkiSatiriGetir(m, konut);
               return (
                 <button
                   key={konut.id}
@@ -315,16 +314,14 @@ export function FinansEkrani({
                   <span className="meslek-simge">{gorunum.simge}</span>
                   <strong>
                     {gorunum.ad}
-                    {guncel ? ' (şu an burada)' : ''}
+                    {guncel ? m.feSuAnBurada : ''}
                   </strong>
                   <span className="meslek-aciklama">
-                    Yıllık kira: {formatPara(enflasyonluTutar(konut.kiraYillik))} {paraBirimi}. {konut.aciklama}
+                    {m.feYillikKira}: {formatPara(enflasyonluTutar(konut.kiraYillik))} {paraBirimi}. {kt(konut.aciklama)}
                   </span>
                   {!guncel && (
                     <span className="meslek-aciklama yatirim-etki-satiri">
-                      {geriCekilme
-                        ? '↩️ Ucuza geçiş: nakliye ücretsiz'
-                        : `🚚 Bir kerelik ${tasinmaMaliyeti} ${paraBirimi} nakliye ücreti`}
+                      {geriCekilme ? m.feUcuzaGecis : bic(m.feNakliyeUcreti, tasinmaMaliyeti, paraBirimi)}
                     </span>
                   )}
                   {etkiSatiri && <span className="meslek-aciklama yatirim-etki-satiri">{etkiSatiri}</span>}
@@ -336,7 +333,7 @@ export function FinansEkrani({
       </div>
 
       <button className="tam-geri-buton" onClick={onGeriDon}>
-        Geri Dön
+        {m.geriDon}
       </button>
     </div>
   );

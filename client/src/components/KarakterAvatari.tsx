@@ -1,3 +1,5 @@
+import { useDil } from '../DilContext';
+
 interface KarakterAvatariProps {
   meslek?: string;
   kisilik: [string, string];
@@ -28,12 +30,13 @@ function ifadeCikar(kisilik: [string, string]): 'mutlu' | 'uzgun' | 'notr' {
 }
 
 export function KarakterAvatari({ meslek, kisilik, rutbeSeviye = 1 }: KarakterAvatariProps) {
+  const { m, kt } = useDil();
   const govdeRengi = (meslek && MESLEK_RENK[meslek]) || '#5a4632';
   const aksesuar = (meslek && MESLEK_AKSESUAR[meslek]) || '👤';
   const ifade = ifadeCikar(kisilik);
 
   return (
-    <div className="karakter-avatari" role="img" aria-label={`Karakter avatarı${meslek ? `, ${meslek}` : ''}`}>
+    <div className="karakter-avatari" role="img" aria-label={`${m.kaAria}${meslek ? `, ${kt(meslek)}` : ''}`}>
       {/* viewBox kare (120x120) — çevresindeki .karakter-avatari çemberiyle tam örtüşsün diye;
           eskiden kare olmayan bir viewBox (120x130) `overflow:visible` bir kutuya oturuyordu ve
           köşeleri altın çerçevenin dışına taşıp arkasındaki paneli çirkin bir şekilde açığa çıkarıyordu. */}

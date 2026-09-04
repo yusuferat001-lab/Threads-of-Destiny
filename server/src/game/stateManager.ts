@@ -1,5 +1,6 @@
 import { randomUUID } from "crypto";
-import { CharacterState, Cag, Kategori, SonucEtkisi, YatkinlikKaynagi, KisilikEksenleri, UlkeKrizi, HayatAmaci, MulkTuru, SahipOlunanEsya } from "../types";
+import { CharacterState, Cag, Dil, Kategori, SonucEtkisi, YatkinlikKaynagi, KisilikEksenleri, UlkeKrizi, HayatAmaci, MulkTuru, SahipOlunanEsya } from "../types";
+import { T, K } from "../i18n";
 import { AILELER, AileTanimi } from "../data/aileler";
 import { rastgeleKisilikCifti, kisilikGetir } from "../data/kisilikler";
 import {
@@ -18,16 +19,16 @@ import { rastgeleIkiIsimSec, rastgeleBirIsimSec, rastgeleCinsiyetliIsimSec } fro
 import { liderGetir, komsuGucSec } from "../data/liderler";
 import { bolgeIstatistigiGetir } from "../data/bolgeIstatistikleri";
 import {
-  SAVAS_HABERLERI,
-  VEBA_HABERLERI,
-  IYI_EKONOMI_HABERLERI,
-  KOTU_EKONOMI_HABERLERI,
-  KITLIK_HABERLERI,
-  ISYAN_HABERLERI,
-  ALTIN_CAG_HABERLERI,
-  HIZIP_HABERLERI,
-  SAKIN_HABERLERI,
-  YEREL_HABERLER,
+  savasHaberi,
+  vebaHaberi,
+  iyiEkonomiHaberi,
+  kotuEkonomiHaberi,
+  kitlikHaberi,
+  isyanHaberi,
+  altinCagHaberi,
+  hizipHaberi,
+  sakinHaberi,
+  yerelHaber,
   YEREL_HABER_SANSI,
 } from "../data/yerelHaberler";
 import { tarihiSavasKontrol, gelecekSavasKontrol } from "../data/tarihiSavaslar";
@@ -131,38 +132,40 @@ function kisilikEksenleriUret(kisilik: [string, string]): KisilikEksenleri {
   };
 }
 
-const HUKUMDAR_DEGISIM_HABERLERI: ((eski: string, yeni: string) => string)[] = [
-  (eski, yeni) => `${eski} artık hayatta değil; yerine ${yeni} geçti. Halk yeni döneme alışmaya çalışıyor.`,
-  (eski, yeni) => `${eski}'in dönemi kapandı, ${yeni} başa geçti. Vergilerin artacağı konuşuluyor.`,
-  (eski, yeni) => `Uzun süredir başta olan ${eski} artık yok; ${yeni} yönetimi devraldı. Sarayda el değişimleri bekleniyor.`,
-  (eski, yeni) => `${eski} sona erdi, ${yeni} yeni hükümdar oldu. Şehirde tedirgin bir bekleyiş var.`,
+const HUKUMDAR_DEGISIM_HABERLERI: string[] = [
+  "{0} artık hayatta değil; yerine {1} geçti. Halk yeni döneme alışmaya çalışıyor.",
+  "{0}'in dönemi kapandı, {1} başa geçti. Vergilerin artacağı konuşuluyor.",
+  "Uzun süredir başta olan {0} artık yok; {1} yönetimi devraldı. Sarayda el değişimleri bekleniyor.",
+  "{0} sona erdi, {1} yeni hükümdar oldu. Şehirde tedirgin bir bekleyiş var.",
 ];
 
 /** Bir turda hükümdar değiştiyse (ilerletYas sırasında) bunu duyuran bir haber cümlesi üretir. */
-export function hukumdarDegisimHaberiUret(eskiHukumdar: string, yeniHukumdar: string): string {
+export function hukumdarDegisimHaberiUret(eskiHukumdar: string, yeniHukumdar: string, dil: Dil = "tr"): string {
   const sablon = HUKUMDAR_DEGISIM_HABERLERI[Math.floor(Math.random() * HUKUMDAR_DEGISIM_HABERLERI.length)];
-  return sablon(eskiHukumdar, yeniHukumdar);
+  return T(dil, sablon, [eskiHukumdar, yeniHukumdar]);
 }
 
 /** Şehir/ülke ile ilgili kısa, güncel haber cümleleri üretir; hükümdar zaten Banner'da gösterildiği için burada tekrarlanmaz. */
 export function haberleriUret(state: CharacterState): string[] {
+  const dil = state.dil;
+  const bolge = K(dil, state.bolge);
   const haberler: string[] = [];
   if (state.ulke.savasta) {
     const rakip = tarihiSavasKontrol(state.bolge, state.yil, state.cag);
-    haberler.push(sec(SAVAS_HABERLERI)(state.bolge, rakip));
+    haberler.push(savasHaberi(dil, bolge, rakip ? K(dil, rakip) : null));
   }
-  if (state.ulke.vebada) haberler.push(sec(VEBA_HABERLERI));
-  if (state.ulke.ekonomi === "iyi") haberler.push(sec(IYI_EKONOMI_HABERLERI));
-  if (state.ulke.ekonomi === "kotu") haberler.push(sec(KOTU_EKONOMI_HABERLERI));
-  if (state.ulke.kriz?.tur === "kitlik") haberler.push(sec(KITLIK_HABERLERI));
-  if (state.ulke.kriz?.tur === "isyan") haberler.push(sec(ISYAN_HABERLERI));
-  if (state.ulke.kriz?.tur === "altin_cag") haberler.push(sec(ALTIN_CAG_HABERLERI));
-  if (state.hizip) haberler.push(sec(HIZIP_HABERLERI)(state.hizip));
-  if (haberler.length === 0) haberler.push(sec(SAKIN_HABERLERI)(state.bolge));
+  if (state.ulke.vebada) haberler.push(vebaHaberi(dil));
+  if (state.ulke.ekonomi === "iyi") haberler.push(iyiEkonomiHaberi(dil));
+  if (state.ulke.ekonomi === "kotu") haberler.push(kotuEkonomiHaberi(dil));
+  if (state.ulke.kriz?.tur === "kitlik") haberler.push(kitlikHaberi(dil));
+  if (state.ulke.kriz?.tur === "isyan") haberler.push(isyanHaberi(dil));
+  if (state.ulke.kriz?.tur === "altin_cag") haberler.push(altinCagHaberi(dil));
+  if (state.hizip) haberler.push(hizipHaberi(dil, K(dil, state.hizip)));
+  if (haberler.length === 0) haberler.push(sakinHaberi(dil, bolge));
 
-  const yerelHavuz = YEREL_HABERLER[`${state.cag}|${state.bolge}`];
-  if (yerelHavuz && yerelHavuz.length > 0 && Math.random() < YEREL_HABER_SANSI) {
-    haberler.push(sec(yerelHavuz));
+  if (Math.random() < YEREL_HABER_SANSI) {
+    const yh = yerelHaber(dil, state.cag, state.bolge);
+    if (yh) haberler.push(yh);
   }
   return haberler;
 }
@@ -204,10 +207,11 @@ function paraBirimiGetir(cag: Cag, bolge: string): string {
   return PARA_BIRIMI[`${cag}|${bolge}`] ?? "Akçe";
 }
 
-// Taban değerler (özgün: Asker 9 / Tüccar 10 / Din Adamı 8) üzerine iki genel zam:
-// 2026-08'de +%10, 2026-09'da (yama #2) ayrıca +%5 → toplam ×1.155. Her meslek ve
-// çağda orantılı yansır (rütbe/enflasyon/itibar zaten ayrı çarpan kalemleri).
-const TEMEL_MAAS: Record<string, number> = { Asker: 10.395, Tüccar: 11.55, "Din Adamı": 9.24 };
+// Taban değerler (özgün: Asker 9 / Tüccar 10 / Din Adamı 8) üzerine üç genel zam:
+// 2026-08'de +%10, 2026-09'da (yama #2) +%5, 2026-09 ekonomi dengesinde ayrıca +%10
+// → toplam ×1.2705. Her meslek ve çağda orantılı yansır (rütbe/enflasyon/itibar
+// zaten ayrı çarpan kalemleri).
+const TEMEL_MAAS: Record<string, number> = { Asker: 11.434, Tüccar: 12.705, "Din Adamı": 10.164 };
 
 /**
  * "İtibarın" maaş düzenleyicisi: mutluluk + şöhret(un) + ahlak'ı TEK bir kaleme
@@ -236,10 +240,11 @@ function itibarUnYuzdesi(un: number): number {
 }
 
 export function itibarMaasKirilimi(state: CharacterState): { toplam: number; kalemler: MaasKirilimKalemi[] } {
+  const dil = state.dil;
   const kalemler: MaasKirilimKalemi[] = [
-    { ad: "Mutluluk", yuzde: itibarDegerYuzdesi(state.mutluluk) },
-    { ad: "Şöhret", yuzde: itibarUnYuzdesi(state.un) },
-    { ad: "Ahlak", yuzde: itibarDegerYuzdesi(state.ahlak) },
+    { ad: T(dil, "Mutluluk"), yuzde: itibarDegerYuzdesi(state.mutluluk) },
+    { ad: T(dil, "Şöhret"), yuzde: itibarUnYuzdesi(state.un) },
+    { ad: T(dil, "Ahlak"), yuzde: itibarDegerYuzdesi(state.ahlak) },
   ];
   return { toplam: kalemler.reduce((s, k) => s + k.yuzde, 0), kalemler };
 }
@@ -359,30 +364,34 @@ interface MaasCarpanKalemi {
 function maasCarpanKalemleri(state: CharacterState): { tabanMaas: number; kalemler: MaasCarpanKalemi[] } {
   const tabanMaas = TEMEL_MAAS[state.meslek] ?? 6;
   const itibarToplam = itibarMaasKirilimi(state).toplam; // mutluluk+şöhret+ahlak bantları toplamı, ±%; §13
-  // Kıdem çok yavaş büyür ve en fazla +%10'a ulaşır: 40 tur (≈55-65 oyun yılı,
+  // Kıdem çok yavaş büyür ve en fazla +%15'e ulaşır: 40 tur (≈55-65 oyun yılı,
   // yani neredeyse tam bir ömür) sonunda tavana gelir. Eskiden +%2/tur ile
-  // 20 turda +%40'a çıkıyordu; artık +%0.25/tur.
-  const kariyerYili = Math.min(state.tur_sayisi + 8, 40); // "ikinci seviyeden" başlar: taze karakter +%2 kıdem alır, tavan yine +%10
+  // 20 turda +%40'a çıkıyordu; artık +%0.375/tur (2026-09 ekonomi dengesinde
+  // tavan +%10'dan +%15'e çıkarıldı).
+  const kariyerYili = Math.min(state.tur_sayisi + 8, 40); // "ikinci seviyeden" başlar: taze karakter +%3 kıdem alır, tavan +%15
   const durumCarpani = state.durumlar.reduce((c, d) => c * (d.gelir_carpani ?? 1), 1);
   // Veba sonrası işçi kıtlığı, salgın hem aktifken hem de izi süren yıllarda maaşı büyütür.
   const vebaCarpani = state.veba && state.yil < state.veba.etkiBitisYili ? state.veba.gelirCarpani : 1;
   const ekonomiCarpani = state.ulke.ekonomi === "kotu" ? 0.8 : state.ulke.ekonomi === "iyi" ? 1.15 : 1;
-  const ekonomiAd =
-    state.ulke.ekonomi === "iyi" ? "Ekonomi iyi" : state.ulke.ekonomi === "kotu" ? "Ekonomi kötü" : "Ekonomi normal";
+  const dil = state.dil;
+  const ekonomiAd = T(
+    dil,
+    state.ulke.ekonomi === "iyi" ? "Ekonomi iyi" : state.ulke.ekonomi === "kotu" ? "Ekonomi kötü" : "Ekonomi normal"
+  );
 
   return {
     tabanMaas,
     kalemler: [
-      { ad: "Kıdem", carpan: 1 + kariyerYili * 0.0025, grup: "kariyer" },
-      { ad: "Şehir yönetimi", carpan: sehirYonetimMaasCarpani(state.sehir_yonetim_seviyesi), grup: "kariyer" },
-      { ad: "Kalıcı ödüller (köken + olaylar)", carpan: maasCarpaniGetir(state), grup: "kariyer" },
-      { ad: "İtibarın (mutluluk·şöhret·ahlak)", carpan: 1 + itibarToplam / 100, grup: "itibar" },
-      { ad: "Enflasyon", carpan: enflasyonCarpani(state), grup: "donemsel" },
+      { ad: T(dil, "Kıdem"), carpan: 1 + kariyerYili * 0.00375, grup: "kariyer" },
+      { ad: T(dil, "Şehir yönetimi"), carpan: sehirYonetimMaasCarpani(state.sehir_yonetim_seviyesi), grup: "kariyer" },
+      { ad: T(dil, "Kalıcı ödüller (köken + olaylar)"), carpan: maasCarpaniGetir(state), grup: "kariyer" },
+      { ad: T(dil, "İtibarın (mutluluk·şöhret·ahlak)"), carpan: 1 + itibarToplam / 100, grup: "itibar" },
+      { ad: T(dil, "Enflasyon"), carpan: enflasyonCarpani(state), grup: "donemsel" },
       { ad: ekonomiAd, carpan: ekonomiCarpani, grup: "donemsel" },
-      { ad: "Savaş", carpan: state.ulke.savasta ? 0.85 : 1, grup: "donemsel" },
-      { ad: "Salgın (işçi kıtlığı)", carpan: vebaCarpani, grup: "donemsel" },
-      { ad: "Geçici durumlar", carpan: durumCarpani, grup: "donemsel" },
-      { ad: "Rütbe primi", carpan: rutbeMaasCarpani(state.rutbe_seviye), grup: "rutbe" },
+      { ad: T(dil, "Savaş"), carpan: state.ulke.savasta ? 0.85 : 1, grup: "donemsel" },
+      { ad: T(dil, "Salgın (işçi kıtlığı)"), carpan: vebaCarpani, grup: "donemsel" },
+      { ad: T(dil, "Geçici durumlar"), carpan: durumCarpani, grup: "donemsel" },
+      { ad: T(dil, "Rütbe primi"), carpan: rutbeMaasCarpani(state.rutbe_seviye), grup: "rutbe" },
     ],
   };
 }
@@ -554,7 +563,8 @@ export function createCharacter(
   cag: Cag,
   bolge: string,
   yerlesimId: string,
-  oyuncuIsmi?: string
+  oyuncuIsmi?: string,
+  dil?: string
 ): CharacterState {
   if (!BOLGELER_BY_CAG[cag]?.includes(bolge)) {
     throw new Error("Geçersiz çağ/bölge kombinasyonu.");
@@ -576,6 +586,7 @@ export function createCharacter(
   const state: CharacterState = {
     id: randomUUID(),
     isim: oyuncuIsmi?.trim() ? oyuncuIsmi.trim().slice(0, 40) : null,
+    dil: dil === "en" ? "en" : "tr",
     yil,
     baslangic_yili: yil,
     yas: 15,
@@ -658,6 +669,7 @@ export function createCharacter(
     son_veba_bitis_yili: null,
     kucuk_kriz_sonraki_yil: yil + 5 + Math.floor(Math.random() * 3), // 5-7 yıl sonra ilk eşik
     gida_fiyat_sok_bitis_yili: null,
+    borc_yardimi_alindi: false,
     tur_sayisi: 0,
     gecmis_olaylar: [],
     gecmis: [],
@@ -674,7 +686,7 @@ export function createCharacter(
   clampStats(state);
   state.acilis_anlatimi = acilisAnlatimiUret(state, aile, yerlesim);
   state.haberler = haberleriUret(state);
-  hayatOlayiEkle(state, "🎯", `Hayat amacını belirledi: ${hayatAmaci.ad}`);
+  hayatOlayiEkle(state, "🎯", T(state.dil, "Hayat amacını belirledi: {0}", [K(state.dil, hayatAmaci.ad)]));
   return state;
 }
 
@@ -811,6 +823,10 @@ export function eskiKayitGocu(state: CharacterState): void {
     state.veba.korumaSeviyesi = (state.veba as any).onlemAlindiMi ? 2 : 0;
   }
   if (state.son_zenginlik_sizinti_yili === undefined) state.son_zenginlik_sizinti_yili = null;
+  // Ömürde bir kez borç yardımı sonradan eklendi; eski kayıtlar bunu hiç almadı sayılır (yeniden alınabilsin).
+  if (typeof state.borc_yardimi_alindi !== "boolean") state.borc_yardimi_alindi = false;
+  // Dil alanı sonradan eklendi; eski kayıtlar her zaman Türkçe oynanmıştı.
+  if (state.dil !== "en") state.dil = "tr";
 }
 
 /** Oyuncu mesleğini seçtikten sonra çağrılır: miras bonusunu ve maaşı uygular. */
@@ -835,18 +851,19 @@ export function mesleğiSec(state: CharacterState, meslek: string): void {
   state.maas_yillik = hesaplaMaasYillik(state);
   rutbeGuncelle(state);
 
+  const dil = state.dil;
   const meslekCumlesi: Record<string, string> = {
-    Asker: `On beş yaşındasın ve eline verilen kılıçla ${state.bolge} ordusuna yazıldın.`,
-    Tüccar: `On beş yaşındasın ve ilk mal denkini sırtlanıp ${state.bolge} pazarlarına adım attın.`,
-    "Din Adamı": `On beş yaşındasın ve ${state.din_kultur} cemaatinin hizmetine girmek üzere yola çıktın.`,
+    Asker: T(dil, "On beş yaşındasın ve eline verilen kılıçla {0} ordusuna yazıldın.", [K(dil, state.bolge)]),
+    Tüccar: T(dil, "On beş yaşındasın ve ilk mal denkini sırtlanıp {0} pazarlarına adım attın.", [K(dil, state.bolge)]),
+    "Din Adamı": T(dil, "On beş yaşındasın ve {0} cemaatinin hizmetine girmek üzere yola çıktın.", [K(dil, state.din_kultur)]),
   };
   const mirasCumlesi = mirasSurduruldu
-    ? "Ailenin mesleğini sürdürmeyi seçtin; ailenin adı bazı kapıları senin için şimdiden araladı."
-    : "Ailenin yolundan farklı bir yol seçtin; kimse sana bu işi öğretmeyecek, her şeyi kendin öğreneceksin.";
+    ? T(dil, "Ailenin mesleğini sürdürmeyi seçtin; ailenin adı bazı kapıları senin için şimdiden araladı.")
+    : T(dil, "Ailenin yolundan farklı bir yol seçtin; kimse sana bu işi öğretmeyecek, her şeyi kendin öğreneceksin.");
 
   state.acilis_anlatimi = [
     state.acilis_anlatimi,
-    meslekCumlesi[meslek] ?? `On beş yaşındasın ve ${meslek} olarak hayata atılıyorsun.`,
+    meslekCumlesi[meslek] ?? T(dil, "On beş yaşındasın ve {0} olarak hayata atılıyorsun.", [K(dil, meslek)]),
     mirasCumlesi,
   ].join(" ");
 }
@@ -856,16 +873,24 @@ function acilisAnlatimiUret(
   aile: AileTanimi,
   yerlesim: YerlesimTanimi
 ): string {
-  const aileMetni = aile.anlati
-    .replace(/\{bolge\}/g, state.bolge)
+  const dil = state.dil;
+  const bolgeAd = K(dil, state.bolge);
+  // Aile anlatısı önce çevrilir (anahtar {bolge} içerir), sonra yer tutucular değişir.
+  const aileMetni = K(dil, aile.anlati)
+    .replace(/\{bolge\}/g, bolgeAd)
     .replace(/\{yil\}/g, String(state.yil));
 
   const [ozellik1, ozellik2] = state.kisilik;
-  const kisilikCumlesi = `Çocukluğundan beri etrafındakiler seni ${ozellik1.toLocaleLowerCase("tr")} ve ${ozellik2.toLocaleLowerCase("tr")} biri olarak tanır.`;
-  const yerlesimCumlesi = `Ailen ${state.bolge} topraklarının ${yerlesim.ad.toLocaleLowerCase("tr")} kısmına yerleşmiş; sen de hayata burada gözlerini açtın.`;
+  const o1 = K(dil, ozellik1).toLocaleLowerCase(dil === "en" ? "en" : "tr");
+  const o2 = K(dil, ozellik2).toLocaleLowerCase(dil === "en" ? "en" : "tr");
+  const kisilikCumlesi = T(dil, "Çocukluğundan beri etrafındakiler seni {0} ve {1} biri olarak tanır.", [o1, o2]);
+  const yerlesimCumlesi = T(dil, "Ailen {0} topraklarının {1} kısmına yerleşmiş; sen de hayata burada gözlerini açtın.", [
+    bolgeAd,
+    K(dil, yerlesim.ad).toLocaleLowerCase(dil === "en" ? "en" : "tr"),
+  ]);
 
   return [
-    `${state.yil} yılı, ${state.bolge} toprakları.`,
+    T(dil, "{0} yılı, {1} toprakları.", [state.yil, bolgeAd]),
     aileMetni,
     yerlesimCumlesi,
     kisilikCumlesi,
@@ -879,10 +904,14 @@ function clamp(value: number, min: number, max: number): number {
 }
 
 export function clampStats(state: CharacterState): void {
-  state.saglik = clamp(state.saglik, 0, 100);
-  state.mutluluk = clamp(state.mutluluk, 0, 100);
-  state.un = clamp(state.un, 0, 100);
-  state.ahlak = clamp(state.ahlak, 0, 100);
+  // Sağlık/mutluluk/ün/ahlak DAİMA tam sayı: pasif sürüklenmeler (Din Adamı ün +0.4,
+  // Tüccar ahlak ±0.4, karaborsa ahlak -0.3) ve pasifRegenEtkisi'nin kesirli çıktısı
+  // yüzden bunlar 43.6 gibi değerler alabiliyordu; Prisma Score.un Int alanı bu yüzden
+  // patlıyordu (skor kaydı çökmesi). Her tur sonu clamp'te yuvarlanarak değişmez korunur.
+  state.saglik = Math.round(clamp(state.saglik, 0, 100));
+  state.mutluluk = Math.round(clamp(state.mutluluk, 0, 100));
+  state.un = Math.round(clamp(state.un, 0, 100));
+  state.ahlak = Math.round(clamp(state.ahlak, 0, 100));
   state.dost_puani = clamp(state.dost_puani, 0, 100);
   state.rakip_puani = clamp(state.rakip_puani, 0, 100);
   state.suc_seviyesi = clamp(state.suc_seviyesi, 0, 100);
@@ -899,11 +928,12 @@ export function checkDeath(state: CharacterState, zorunluOlum: boolean, mesaj?: 
     if (state.etiketler.includes(KORUYUCU_MUSKA_ETIKETI)) {
       etiketSil(state, [KORUYUCU_MUSKA_ETIKETI]);
       state.saglik = Math.max(state.saglik, 15);
-      hayatOlayiEkle(state, "✨", "Kutsal bir emanet sayesinde ölümden döndü");
+      hayatOlayiEkle(state, "✨", T(state.dil, "Kutsal bir emanet sayesinde ölümden döndü"));
       return;
     }
     state.aktif = false;
-    state.olum_nedeni = mesaj ?? (state.saglik <= 0 ? "Sağlık kaybı" : "Bilinmeyen sebep");
+    state.olum_nedeni =
+      mesaj ?? (state.saglik <= 0 ? T(state.dil, "Sağlık kaybı") : T(state.dil, "Bilinmeyen sebep"));
   }
 }
 
@@ -937,21 +967,21 @@ export function ilerletYas(state: CharacterState, minYil = 1, maxYil = 3): numbe
   state.tur_sayisi += 1;
   state.hukumdar = liderGetir(state.bolge, state.yil, state.cag);
   if (state.yas >= MAKS_YAS) {
-    checkDeath(state, true, "Yüz yaşını doldurdun; huzurlu bir ihtiyar olarak, uykunda son nefesini verdin.");
+    checkDeath(state, true, T(state.dil, "Yüz yaşını doldurdun; huzurlu bir ihtiyar olarak, uykunda son nefesini verdin."));
   }
   return artis;
 }
 
 /**
- * Yaş ilerledikçe bedenin çöküşü kademeli, kesin eşiklerle hızlanır: 48'den
- * sonra yılda -3, 65'ten sonra yılda -7, 80'den sonra ("ecel kapısı") yılda
- * -16 sağlık. Hiçbir konut/servet/rütbe bu eşikleri değiştirmez. Konut + yaşam
- * tarzının yıllık sağlık bonusu olay hasarından toparlanmaya yardım eder ama
- * pasifRegenEtkisi yumuşak tavanı (70) yüzünden karakteri 100 canda sabitleyip
- * yaşlanmayı yok saymaya yetmez; üstüne 70+ yaşta ecelDenemesi doğal ölüm riski
- * biner. Sonuç: iyi yaşayan biri dolu ama sonlu bir ömür sürer, hiç önlem almayan
- * çok daha erken ölür. Bir turda birden fazla yıl atlanırsa (yasArtisi > 1) her
- * yıl kendi eşiğine göre ayrı ayrı hesaplanır (ör. 47'den 50'ye sıçrama, 48'i de sayar).
+ * Yaş ilerledikçe bedenin çöküşü kademeli, kesin eşiklerle hızlanır: 55'ten
+ * sonra yılda -4, 65'ten sonra yılda -7, 75'ten sonra ("ecel kapısı") yılda
+ * -10 sağlık (2026-09 ekonomi dengesi: başlangıç eşiği 48→55'e çekildi, ileri
+ * yaş -16→-10'a yumuşatıldı; orta oyun nefes alsın). Hiçbir konut/servet/rütbe
+ * bu eşikleri değiştirmez. Konut + yaşam tarzının yıllık sağlık bonusu olay
+ * hasarından toparlanmaya yardım eder ama pasifRegenEtkisi yumuşak tavanı (80)
+ * yüzünden karakteri 100 canda sabitleyip yaşlanmayı yok saymaya yetmez; üstüne
+ * 70+ yaşta ecelDenemesi doğal ölüm riski biner. Bir turda birden fazla yıl
+ * atlanırsa (yasArtisi > 1) her yıl kendi eşiğine göre ayrı ayrı hesaplanır.
  */
 export function yaslanmaUygula(state: CharacterState, yasArtisi: number): number {
   if (yasArtisi <= 0) return 0;
@@ -959,9 +989,9 @@ export function yaslanmaUygula(state: CharacterState, yasArtisi: number): number
   let yas = state.yas - yasArtisi;
   for (let i = 0; i < yasArtisi; i++) {
     yas += 1;
-    if (yas >= 80) toplamKayip += 16;
+    if (yas >= 75) toplamKayip += 10;
     else if (yas >= 65) toplamKayip += 7;
-    else if (yas >= 48) toplamKayip += 3;
+    else if (yas >= 55) toplamKayip += 4;
   }
   state.saglik -= toplamKayip;
   return toplamKayip;
@@ -1026,7 +1056,7 @@ export function ecelDenemesi(state: CharacterState, yasArtisi: number): string |
     if (yas < ECEL_BASLANGIC_YASI) continue;
     const sans = (yas - ECEL_REFERANS_YAS) * ECEL_YILLIK_KATSAYI;
     if (Math.random() * 100 < sans) {
-      return ECEL_MESAJLARI[Math.floor(Math.random() * ECEL_MESAJLARI.length)];
+      return T(state.dil, ECEL_MESAJLARI[Math.floor(Math.random() * ECEL_MESAJLARI.length)]);
     }
   }
   return null;
@@ -1085,7 +1115,7 @@ export function durumlariUygula(state: CharacterState): string | null {
     if (durum.tur_basi_saglik) {
       state.saglik += durum.tur_basi_saglik;
       if (state.saglik <= 0 && !olumculDurum) {
-        olumculDurum = `${durum.ad} yüzünden hayatını kaybetti.`;
+        olumculDurum = T(state.dil, "{0} yüzünden hayatını kaybetti.", [K(state.dil, durum.ad)]);
       }
     }
     if (durum.tur_basi_para) {
@@ -1122,6 +1152,8 @@ export interface EkonomiSonucu {
   yillikGelirler: number[];
   faiz: number;
   giderKalemleri: GiderKalemleri;
+  /** Bu turda ömürde bir kez tetiklenen kilise/eş dost borç yardımıyla kapatılan tutar (yoksa 0). */
+  borcYardimi: number;
 }
 
 const EVCIL_HAYVAN_GIDERI_YILLIK = 1;
@@ -1135,6 +1167,11 @@ function yasamMaliyetCarpaniGetir(state: CharacterState): number {
 /** Bir sonraki turun gider dökümünü, gerçekte uygulamadan hesaplar; Finans ekranı bunu kullanır. */
 export function giderKalemleriHesapla(state: CharacterState): GiderKalemleri {
   const enflasyon = enflasyonCarpani(state);
+  // Yaşam + kira giderlerine enflasyonun yalnızca %70'i uygulanır (2026-09 ekonomi
+  // dengesi): maaş çarpanları enflasyondan yavaş büyüdüğü için, tam enflasyonla şişen
+  // giderler uzun oyunda reel geliri eritiyordu. Evcil hayvan / savaş vergisi (maaşa
+  // endeksli) tam enflasyonda kalır.
+  const giderEnflasyon = 1 + (enflasyon - 1) * 0.7;
   const yasamSecenegi = yasamSecenegiGetir(state.yasam_secimi_id);
   // Büyük savaş sırasında gıda pahalanır (gidaCarpani); küçük kriz tetiklendiği yıl için
   // ayrıca ×2 tek yıllık bir şok biner — ikisi çarpımsal birleşir (nadir ama kasıtlı).
@@ -1144,9 +1181,9 @@ export function giderKalemleriHesapla(state: CharacterState): GiderKalemleri {
   const vebaKiraCarpani = state.veba && state.yil < state.veba.etkiBitisYili ? state.veba.konutKiraCarpani : 1;
   return {
     yasam: paraYuvarla(
-      (yasamSecenegi?.maliyetYillik ?? 0) * yasamMaliyetCarpaniGetir(state) * savasGidaCarpani * krizSokCarpani * enflasyon
+      (yasamSecenegi?.maliyetYillik ?? 0) * yasamMaliyetCarpaniGetir(state) * savasGidaCarpani * krizSokCarpani * giderEnflasyon
     ),
-    konut: paraYuvarla((konutGetir(state.konut_id)?.kiraYillik ?? 0) * vebaKiraCarpani * enflasyon),
+    konut: paraYuvarla((konutGetir(state.konut_id)?.kiraYillik ?? 0) * vebaKiraCarpani * giderEnflasyon),
     ekip: state.ekip.reduce((toplam, uye) => toplam + uye.maas, 0),
     evcilHayvan: state.evcil_hayvan ? paraYuvarla(EVCIL_HAYVAN_GIDERI_YILLIK * enflasyon) : 0,
     savasVergisi: state.buyuk_savas ? paraYuvarla(hesaplaMaasYillik(state) * state.buyuk_savas.vergiOrani) : 0,
@@ -1167,7 +1204,7 @@ export function pasifEkonomiUygula(state: CharacterState, yasArtisi: number): Ek
   const yillikGelirler: number[] = [];
   let netGelir = 0;
   for (let i = 0; i < yasArtisi; i++) {
-    const dalga = 0.75 + Math.random() * 0.5; // 0.75x - 1.25x
+    const dalga = 0.88 + Math.random() * 0.27; // 0.88x - 1.15x (2026-09: bant daraltıldı, üst üste kötü yıl batırmasın)
     const oYilkiGelir = Math.max(0, paraYuvarla(state.maas_yillik * dalga));
     yillikGelirler.push(oYilkiGelir);
     netGelir += oYilkiGelir - gider;
@@ -1200,18 +1237,18 @@ export function pasifEkonomiUygula(state: CharacterState, yasArtisi: number): Ek
   }
 
   // Borç kapatma mekaniği: borçtayken bütçesini artıya çevirmiş bir karakter
-  // (netGelir > 0) borcunu AKTİF ödüyor sayılır — faiz yarıya iner, borç stresi
-  // sağlık cezası uygulanmaz ve net gelirin bir kısmı kadar ek anapara affı
-  // verilir (alacaklı taksitlendirdi). Hâlâ açık veren (netGelir <= 0) karakter
-  // için tam ceza sürer: eskisi gibi %6 faiz + −2 sağlık/yıl.
+  // (netGelir > 0) borcunu AKTİF ödüyor sayılır — faiz yarıya iner ve net gelirin
+  // bir kısmı kadar ek anapara affı verilir (alacaklı taksitlendirdi). Borç stresi
+  // sağlık/mutluluk cezası (2026-09 dengesi: sağlık −1, mutluluk −2 yıllık — eskiden
+  // sağlık −2, mutluluk cezası yoktu) her durumda uygulanır.
   let borcaGirdi = false;
   let faiz = 0;
+  let borcYardimi = 0;
   if (state.para < 0) {
     borcaGirdi = true;
     const borcTutari = Math.abs(state.para);
-    // Borç stresi sağlığı HER hâlükârda yıpratır (2026-09'da geri getirildi):
-    // bütçesini toparlamış bir borçlunun bile borçlu olmanın bir bedeli var.
-    state.saglik -= 2 * yasArtisi;
+    state.saglik -= 1 * yasArtisi;
+    state.mutluluk -= 2 * yasArtisi;
     if (netGelir > 0) {
       // Aktif ödüyor: faiz %2/yıl + net gelirin %25'i kadar ek anapara affı.
       faiz = paraYuvarla(borcTutari * 0.02 * yasArtisi);
@@ -1221,10 +1258,18 @@ export function pasifEkonomiUygula(state: CharacterState, yasArtisi: number): Ek
       faiz = paraYuvarla(borcTutari * 0.04 * yasArtisi);
       state.para -= faiz;
     }
+    // Ömürde BİR KEZ: borç sürerken ve bütçe hâlâ açık verirken (netGelir <= 0)
+    // kilise/eş dost bir kereliğine borcun bir kısmını (en fazla 50, borç daha
+    // azsa tamamını) kapatır. Spiral yerine kurtulabilir bir çukur olsun diye.
+    if (!state.borc_yardimi_alindi && netGelir <= 0 && state.para < 0) {
+      borcYardimi = Math.min(Math.abs(state.para), 50);
+      state.para = paraYuvarla(state.para + borcYardimi);
+      state.borc_yardimi_alindi = true;
+    }
   }
 
   clampStats(state);
-  return { borcaGirdi, netGelir, yillikGelirler, faiz, giderKalemleri };
+  return { borcaGirdi, netGelir, yillikGelirler, faiz, giderKalemleri, borcYardimi };
 }
 
 /**
@@ -1245,7 +1290,7 @@ export function konutDegistir(state: CharacterState, konutId: string): string {
   if (!geriCekilme) state.para -= TASINMA_MALIYETI;
   state.konut_id = konutId;
   clampStats(state);
-  return `${yeniKonut.ad}'e taşındın.`;
+  return T(state.dil, "{0}'e taşındın.", [K(state.dil, yeniKonut.ad)]);
 }
 
 /** Oyuncunun istediği an tetikleyebileceği yaşam tarzı değişimi; bir tur/maliyet gerektirmez. */
@@ -1255,7 +1300,7 @@ export function yasamSecimiDegistir(state: CharacterState, secimId: string): str
   if (secimId === state.yasam_secimi_id) throw new Error("Zaten bu şekilde yaşıyorsun.");
   state.yasam_secimi_id = secimId;
   clampStats(state);
-  return `Artık "${yeniSecenek.ad}" tarzında yaşıyorsun.`;
+  return T(state.dil, 'Artık "{0}" tarzında yaşıyorsun.', [K(state.dil, yeniSecenek.ad)]);
 }
 
 function sec<T>(secenekler: T[]): T {
@@ -1273,70 +1318,71 @@ export function sonucAnlatimiUret(
   etki: SonucEtkisi,
   basarili: boolean
 ): string {
+  const dil = state.dil;
+  const b = (tr: string, args?: (string | number)[]) => T(dil, tr, args); // kısa yardımcı
+  const birim = state.para_birimi;
   const cumleler: string[] = [];
 
   if (etki.detay) cumleler.push(etki.detay);
 
   const ekCumle =
     (etki.yeni_meslek
-      ? `Artık ${etki.yeni_meslek.toLocaleLowerCase("tr")} olarak anılıyorsun.`
+      ? b("Artık {0} olarak anılıyorsun.", [K(dil, etki.yeni_meslek).toLocaleLowerCase(dil === "en" ? "en" : "tr")])
       : null) ??
     (etki.durum_ekle
       ? etki.durum_ekle.tur === "kalici"
-        ? `${etki.durum_ekle.ad} artık hayatının kalıcı bir parçası.`
-        : `${etki.durum_ekle.ad} bir süre daha peşini bırakmayacak.`
+        ? b("{0} artık hayatının kalıcı bir parçası.", [K(dil, etki.durum_ekle.ad)])
+        : b("{0} bir süre daha peşini bırakmayacak.", [K(dil, etki.durum_ekle.ad)])
       : null) ??
     (etki.saglik && Math.abs(etki.saglik) >= 25
-      ? sec(
-          etki.saglik > 0
-            ? ["Kendini uzun zamandır olmadığı kadar dinç hissediyorsun."]
-            : [
-                "Aldığın hasar ağırdı; günlerce yatakta kaldın.",
-                "Yaraların derindi, bir daha eskisi gibi olmayacaksın.",
-              ]
-        )
+      ? etki.saglik > 0
+        ? b("Kendini uzun zamandır olmadığı kadar dinç hissediyorsun.")
+        : b(
+            sec([
+              "Aldığın hasar ağırdı; günlerce yatakta kaldın.",
+              "Yaraların derindi, bir daha eskisi gibi olmayacaksın.",
+            ])
+          )
       : null) ??
     (etki.para
-      ? sec(
-          etki.para > 0
-            ? [
-                `Kesene giren ${Math.abs(etki.para)} ${state.para_birimi} güzel bir rahatlıktı.`,
-                `${Math.abs(etki.para)} ${state.para_birimi} kazandın.`,
-              ]
-            : [
-                `${Math.abs(etki.para)} ${state.para_birimi} kaybettin.`,
-                `Cebinden ${Math.abs(etki.para)} ${state.para_birimi} gitti.`,
-              ]
-        )
+      ? etki.para > 0
+        ? sec([
+            b("Kesene giren {0} {birim} güzel bir rahatlıktı.", [Math.abs(etki.para)]).replace(/\{birim\}/g, birim),
+            b("{0} {birim} kazandın.", [Math.abs(etki.para)]).replace(/\{birim\}/g, birim),
+          ])
+        : sec([
+            b("{0} {birim} kaybettin.", [Math.abs(etki.para)]).replace(/\{birim\}/g, birim),
+            b("Cebinden {0} {birim} gitti.", [Math.abs(etki.para)]).replace(/\{birim\}/g, birim),
+          ])
       : null) ??
     (etki.saglik
-      ? sec([
-          "Bedeninde kalan sızı bir süre bu günü hatırlattı.",
-          "Ufak yaralarını kendin sardın, kimseye çaktırmadın.",
-        ])
+      ? b(
+          sec([
+            "Bedeninde kalan sızı bir süre bu günü hatırlattı.",
+            "Ufak yaralarını kendin sardın, kimseye çaktırmadın.",
+          ])
+        )
       : null) ??
     (etki.un
-      ? sec(
-          etki.un > 0
-            ? [
-                `${state.bolge} sokaklarında adın anılmaya başladı.`,
-                "Hikaye ağızdan ağıza dolaştı, itibarın arttı.",
-              ]
-            : [
-                "Dedikodu hızla yayıldı, itibarın zedelendi.",
-                `${state.bolge} çevrende adın eskisi kadar güvenle anılmıyor.`,
-              ]
-        )
+      ? etki.un > 0
+        ? sec([
+            b("{bolge} sokaklarında adın anılmaya başladı.").replace(/\{bolge\}/g, K(dil, state.bolge)),
+            b("Hikaye ağızdan ağıza dolaştı, itibarın arttı."),
+          ])
+        : sec([
+            b("Dedikodu hızla yayıldı, itibarın zedelendi."),
+            b("{bolge} çevrende adın eskisi kadar güvenle anılmıyor.").replace(/\{bolge\}/g, K(dil, state.bolge)),
+          ])
       : null) ??
     (etki.ahlak
-      ? sec(
-          etki.ahlak > 0
-            ? ["Doğru olanı yaptığını biliyorsun, bu seni ayakta tutuyor."]
-            : [
-                "Kendine bunun mecburiyetten olduğunu söyledin, tam inanamadın.",
-                "O geceden sonra aynaya bakmak biraz zorlaştı.",
-              ]
-        )
+      ? etki.ahlak > 0
+        ? b("Doğru olanı yaptığını biliyorsun, bu seni ayakta tutuyor.")
+        : b(
+            sec([
+              "Kendine bunun mecburiyetten olduğunu söyledin, tam inanamadın.",
+              "O geceden sonra aynaya bakmak biraz zorlaştı.",
+            ])
+          )
       : null) ??
     null;
 
@@ -1345,8 +1391,8 @@ export function sonucAnlatimiUret(
   if (cumleler.length === 0) {
     cumleler.push(
       basarili
-        ? "Olay sessizce kapandı, hayatında somut bir şey değişmedi."
-        : "İşler istediğin gibi gitmedi, yine de büyük bir kayıp yaşamadın."
+        ? b("Olay sessizce kapandı, hayatında somut bir şey değişmedi.")
+        : b("İşler istediğin gibi gitmedi, yine de büyük bir kayıp yaşamadın.")
     );
   }
 
@@ -1398,13 +1444,14 @@ export function zamanAnlatimiUret(
   if (yasArtisi <= 0) return null;
 
   const cumleler: string[] = [];
+  const dil = state.dil;
 
   if (ekonomi.yillikGelirler.length > 0) {
     const dokum = ekonomi.yillikGelirler.join(", ");
     cumleler.push(
       ekonomi.yillikGelirler.length === 1
-        ? `${dokum} ${state.para_birimi} kazandın.`
-        : `${yasArtisi} yılda ${dokum} ${state.para_birimi} kazandın.`
+        ? T(dil, "{0} {birim} kazandın.", [dokum]).replace(/\{birim\}/g, state.para_birimi)
+        : T(dil, "{1} yılda {0} {birim} kazandın.", [dokum, yasArtisi]).replace(/\{birim\}/g, state.para_birimi)
     );
   }
 
@@ -1413,19 +1460,19 @@ export function zamanAnlatimiUret(
   if (ekonomi.borcaGirdi) {
     cumleler.push(
       ekonomi.faiz > 0
-        ? `Borcun kapanmadı, üstüne ${ekonomi.faiz} ${state.para_birimi} faiz bindi.`
-        : "Borcun hâlâ kapanmadı, tefeciler peşini bırakmıyor."
+        ? T(dil, "Borcun kapanmadı, üstüne {0} {birim} faiz bindi.", [ekonomi.faiz]).replace(/\{birim\}/g, state.para_birimi)
+        : T(dil, "Borcun hâlâ kapanmadı, tefeciler peşini bırakmıyor.")
     );
   } else if (surenHastalik) {
-    cumleler.push(`${surenHastalik.ad} bu süre boyunca da seni yatağa düşürdü.`);
+    cumleler.push(T(dil, "{0} bu süre boyunca da seni yatağa düşürdü.", [K(dil, surenHastalik.ad)]));
   } else if (state.ulke.vebada) {
-    cumleler.push("Salgın sürüyordu, cenaze alayları artık gündelikti.");
+    cumleler.push(T(dil, "Salgın sürüyordu, cenaze alayları artık gündelikti."));
   } else if (state.ulke.savasta) {
-    cumleler.push("Savaş sürüyordu; pazarlar durgun, insanlar tedirgindi.");
+    cumleler.push(T(dil, "Savaş sürüyordu; pazarlar durgun, insanlar tedirgindi."));
   } else if (state.ulke.ekonomi === "kotu") {
-    cumleler.push("Ekonomik darlık herkesi vurmuştu, ekmek her ay biraz daha pahalandı.");
+    cumleler.push(T(dil, "Ekonomik darlık herkesi vurmuştu, ekmek her ay biraz daha pahalandı."));
   } else {
-    cumleler.push(gunlukFlavorSec());
+    cumleler.push(T(dil, gunlukFlavorSec()));
   }
 
   return cumleler.join(" ");
@@ -1485,7 +1532,7 @@ export function aniOlumDene(state: CharacterState): { mesaj: string; efsane: str
   if (Math.random() > ANI_OLUM_IHTIMALI) return null;
   const havuz = ANI_OLUM_OLAYLARI.filter((o) => !o.cag || o.cag === state.cag);
   const olay = havuz[Math.floor(Math.random() * havuz.length)];
-  return { mesaj: olay.mesaj, efsane: olay.efsane };
+  return { mesaj: T(state.dil, olay.mesaj), efsane: T(state.dil, olay.efsane) };
 }
 
 const SANS_OLAYI_IHTIMALI = 0.18;
@@ -1525,8 +1572,8 @@ export function sansOlayiDene(state: CharacterState): string | null {
   if (olay.dost_puani) state.dost_puani += olay.dost_puani;
   if (olay.rakip_puani) state.rakip_puani += olay.rakip_puani;
   clampStats(state);
-  return `🎲 ${olay.mesaj
-    .replace(/\{bolge\}/g, state.bolge)
+  return `🎲 ${T(state.dil, olay.mesaj)
+    .replace(/\{bolge\}/g, K(state.dil, state.bolge))
     .replace(/\{dost\}/g, state.dost_adi)
     .replace(/\{rakip\}/g, state.rakip_adi)}`;
 }
@@ -1563,7 +1610,7 @@ export function hayatAmaciKontrolEt(state: CharacterState): void {
           : state.cocuk_sayisi;
   if (deger >= amac.hedefDeger) {
     amac.tamamlandi = true;
-    hayatOlayiEkle(state, "🎯", `Hayat amacını tamamladı: ${amac.ad}`);
+    hayatOlayiEkle(state, "🎯", T(state.dil, "Hayat amacını tamamladı: {0}", [K(state.dil, amac.ad)]));
   }
 }
 
@@ -1581,9 +1628,10 @@ const KUCUK_KRIZ_FLAVOR: string[] = [
  * 5-7 yılda bir düzenli aralıklarla tekrarlayan küçük kriz (kıtlık/haydut
  * baskını flavor'ı). Mekanik olarak mevcut "kitlik" kriz tipini yeniden
  * kullanır (1-2 yıl sürer, aşağıdaki krizEtkisiUygula'nın -1 sağlık/yıl
- * etkisi otomatik uygulanır); ayrıca SADECE tetiklendiği yıl için gıda
- * fiyatını ×2 yapan tek yıllık bir şok bindirir (giderKalemleriHesapla,
- * bir sonraki tur otomatik normale döner).
+ * etkisi otomatik uygulanır); ayrıca gıda fiyatını ×2 yapan bir şok bindirir.
+ * Şok +2 yıl geçerli (bu fonksiyon her turda pasifEkonomiUygula'dan SONRA
+ * çağrıldığı için, +1 yaparsak bir sonraki tur yıl zaten eşiği geçmiş oluyor ve
+ * ×2 hiç tahsil edilmiyordu — eski hata).
  */
 export function kucukKrizKontrolEt(state: CharacterState, yasArtisi: number): string | null {
   if (yasArtisi <= 0 || state.ulke.kriz) return null;
@@ -1591,10 +1639,10 @@ export function kucukKrizKontrolEt(state: CharacterState, yasArtisi: number): st
   if (state.yil < state.kucuk_kriz_sonraki_yil) return null;
   const sureYil = KUCUK_KRIZ_SURE_MIN_YIL + Math.floor(Math.random() * (KUCUK_KRIZ_SURE_ARALIK_YIL + 1));
   state.ulke.kriz = { tur: "kitlik", bitisYili: state.yil + sureYil };
-  state.gida_fiyat_sok_bitis_yili = state.yil + 1;
+  state.gida_fiyat_sok_bitis_yili = state.yil + 2;
   state.kucuk_kriz_sonraki_yil =
     state.yil + KUCUK_KRIZ_SONRAKI_ESIK_MIN_YIL + Math.floor(Math.random() * (KUCUK_KRIZ_SONRAKI_ESIK_ARALIK_YIL + 1));
-  return KUCUK_KRIZ_FLAVOR[Math.floor(Math.random() * KUCUK_KRIZ_FLAVOR.length)];
+  return T(state.dil, KUCUK_KRIZ_FLAVOR[Math.floor(Math.random() * KUCUK_KRIZ_FLAVOR.length)]);
 }
 
 const KRIZ_ETKI: Record<UlkeKrizi["tur"], { saglik?: number; para?: number; un?: number; mutluluk?: number }> = {
@@ -1619,7 +1667,7 @@ export function krizEtkisiUygula(state: CharacterState, yasArtisi: number): stri
   if (etki.un) state.un += etki.un * yasArtisi;
   if (etki.mutluluk) state.mutluluk += etki.mutluluk * yasArtisi;
   if (state.yil >= kriz.bitisYili) {
-    const mesaj = KRIZ_BITIS_MESAJI[kriz.tur];
+    const mesaj = T(state.dil, KRIZ_BITIS_MESAJI[kriz.tur]);
     state.ulke.kriz = null;
     return mesaj;
   }
@@ -1674,7 +1722,9 @@ export function zorunluBagisKontrolEt(state: CharacterState, yasArtisi: number):
     state.son_zorunlu_bagis_yili = state.yil;
     return {
       miktar,
-      mesaj: `👑 Hükümdar zenginleştiğini fark etti; kraliyet hazinesi için zorla ${miktar} ${state.para_birimi} bağış aldı.`,
+      mesaj: T(state.dil, "👑 Hükümdar zenginleştiğini fark etti; kraliyet hazinesi için zorla {0} {birim} bağış aldı.", [
+        miktar,
+      ]).replace(/\{birim\}/g, state.para_birimi),
     };
   }
   return null;
@@ -1694,19 +1744,19 @@ const ZENGINLIK_SIZINTI_YILLIK_IHTIMAL = 0.2;
 const ZENGINLIK_SIZINTI_ORAN_MIN = 0.12;
 const ZENGINLIK_SIZINTI_ORAN_ARALIK = 0.13; // nakitin %12-25'i
 
-const ZENGINLIK_SIZINTI_FLAVOR: ((m: string, b: string) => string)[] = [
-  (m) => `🗡️ Bir hırsız gece kilerine girdi; sabah ${m} eksikti.`,
-  (m, b) => `💰 ${b} kabadayıları "koruma parası" istedi; ${m} vermek zorunda kaldın.`,
-  (m) => `🤝 Güvendiğin bir ortak seni dolandırdı; ${m} buharlaştı.`,
-  (m) => `📜 Vergi tahsildarı defterlerinde "eksik" buldu; ${m} ceza kesti.`,
-  (m) => `👨‍👩‍👧 Bir akraban büyük bir borç için kapına dayandı; ${m} verdin, geri dönmeyecek.`,
-  (m) => `🎭 Bir dilenci kılığındaki dolandırıcı acıklı bir hikâyeyle ${m} kopardı.`,
-  (m, b) => `⚖️ ${b}'de küçük bir dava açıldı üstüne; avukat ve rüşvet ${m} götürdü.`,
-  (m) => `🔥 Deponda çıkan yangını söndürmek ve zararı kapatmak ${m} tuttu.`,
-  (m) => `🃏 Bir bahiste kaptırdın; ${m} masada kaldı.`,
-  (m) => `🐴 Yolda eşkıya kervanını çevirdi; ${m} değerinde mal ve para aldılar.`,
-  (m) => `💍 Değerli bir eşyan "kayboldu"; yerine yenisini almak ${m} tuttu.`,
-  (m, b) => `🏛️ ${b} ileri gelenleri bir bağış listesi dolaştırdı; ${m} yazmak zorunda kaldın.`,
+const ZENGINLIK_SIZINTI_FLAVOR: string[] = [
+  "🗡️ Bir hırsız gece kilerine girdi; sabah {0} eksikti.",
+  "💰 {1} kabadayıları \"koruma parası\" istedi; {0} vermek zorunda kaldın.",
+  "🤝 Güvendiğin bir ortak seni dolandırdı; {0} buharlaştı.",
+  "📜 Vergi tahsildarı defterlerinde \"eksik\" buldu; {0} ceza kesti.",
+  "👨‍👩‍👧 Bir akraban büyük bir borç için kapına dayandı; {0} verdin, geri dönmeyecek.",
+  "🎭 Bir dilenci kılığındaki dolandırıcı acıklı bir hikâyeyle {0} kopardı.",
+  "⚖️ {1}'de küçük bir dava açıldı üstüne; avukat ve rüşvet {0} götürdü.",
+  "🔥 Deponda çıkan yangını söndürmek ve zararı kapatmak {0} tuttu.",
+  "🃏 Bir bahiste kaptırdın; {0} masada kaldı.",
+  "🐴 Yolda eşkıya kervanını çevirdi; {0} değerinde mal ve para aldılar.",
+  "💍 Değerli bir eşyan \"kayboldu\"; yerine yenisini almak {0} tuttu.",
+  "🏛️ {1} ileri gelenleri bir bağış listesi dolaştırdı; {0} yazmak zorunda kaldın.",
 ];
 
 export interface ZenginlikSizintiSonucu {
@@ -1732,7 +1782,10 @@ export function zenginlikSizintiKontrolEt(state: CharacterState, yasArtisi: numb
     state.para -= miktar;
     state.son_zenginlik_sizinti_yili = state.yil;
     const flavor = ZENGINLIK_SIZINTI_FLAVOR[Math.floor(Math.random() * ZENGINLIK_SIZINTI_FLAVOR.length)];
-    return { miktar, mesaj: flavor(`${miktar} ${state.para_birimi}`, state.bolge) };
+    return {
+      miktar,
+      mesaj: T(state.dil, flavor, [`${miktar} ${state.para_birimi}`, K(state.dil, state.bolge)]),
+    };
   }
   return null;
 }
@@ -1769,7 +1822,7 @@ export function buyukSavasKontrolEt(state: CharacterState, yasArtisi: number): s
       gidaCarpani: BUYUK_SAVAS_GIDA_CARPANI_MIN + Math.random() * BUYUK_SAVAS_GIDA_CARPANI_ARALIK,
     };
     state.ulke.savasta = true;
-    return `⚔️ ${dusman} ile aranızdaki gerginlik büyük bir savaşa dönüştü.`;
+    return T(state.dil, "⚔️ {0} ile aranızdaki gerginlik büyük bir savaşa dönüştü.", [K(state.dil, dusman)]);
   }
   return null;
 }
@@ -1781,7 +1834,7 @@ export function buyukSavasBitisKontrolEt(state: CharacterState): string | null {
   state.ulke.savasta = false;
   state.son_buyuk_savas_bitis_yili = state.yil;
   state.buyuk_savas = null;
-  return `🕊️ ${dusman} ile sürdürülen savaş sona erdi, barış geri döndü.`;
+  return T(state.dil, "🕊️ {0} ile sürdürülen savaş sona erdi, barış geri döndü.", [K(state.dil, dusman)]);
 }
 
 const VEBA_MIN_YAS = 18;
@@ -1870,7 +1923,7 @@ export function vebaYillikKontrol(state: CharacterState, yasArtisi: number): Veb
   for (let i = 0; i < yasArtisi && !sonuc.karakterOldu; i++) {
     if (Math.random() < olumSansi) {
       sonuc.karakterOldu = true;
-      sonuc.mesajlar.push("Veba seni de bulmuştu.");
+      sonuc.mesajlar.push(T(state.dil, "Veba seni de bulmuştu."));
       break;
     }
     if (state.es_adi && Math.random() < esSansi) {
@@ -1880,8 +1933,8 @@ export function vebaYillikKontrol(state: CharacterState, yasArtisi: number): Veb
       state.es_meslek = null;
       state.es_rutbe = null;
       etiketSil(state, ["medeni:evli"]);
-      hayatOlayiEkle(state, "💔", `${kaybedilenEs} vebaya yenik düştü`);
-      sonuc.mesajlar.push(`💔 ${kaybedilenEs} vebaya yenik düştü.`);
+      hayatOlayiEkle(state, "💔", T(state.dil, "{0} vebaya yenik düştü", [kaybedilenEs]));
+      sonuc.mesajlar.push(T(state.dil, "💔 {0} vebaya yenik düştü.", [kaybedilenEs]));
     }
     const yasayanCocuklar = state.cocuklar.filter((c) => c.yasiyor);
     if (yasayanCocuklar.length > 0 && Math.random() < cocukSansi) {
@@ -1889,8 +1942,8 @@ export function vebaYillikKontrol(state: CharacterState, yasArtisi: number): Veb
       secilen.yasiyor = false;
       state.cocuk_sayisi = state.cocuklar.filter((c) => c.yasiyor).length;
       if (state.cocuk_sayisi === 0) etiketSil(state, ["cocuk_var"]);
-      hayatOlayiEkle(state, "💔", `${secilen.isim} vebaya yenik düştü`);
-      sonuc.mesajlar.push(`💔 ${secilen.isim} vebaya yenik düştü.`);
+      hayatOlayiEkle(state, "💔", T(state.dil, "{0} vebaya yenik düştü", [secilen.isim]));
+      sonuc.mesajlar.push(T(state.dil, "💔 {0} vebaya yenik düştü.", [secilen.isim]));
     }
   }
   return sonuc;
@@ -1901,7 +1954,7 @@ export function vebaBitisKontrolEt(state: CharacterState): string | null {
   if (state.veba?.aktif && state.yil >= state.veba.bitisYili) {
     state.veba.aktif = false;
     state.ulke.vebada = false;
-    return "🕊️ Salgın nihayet sona erdi, ama şehir yıllarca izlerini taşıyacak.";
+    return T(state.dil, "🕊️ Salgın nihayet sona erdi, ama şehir yıllarca izlerini taşıyacak.");
   }
   if (state.veba && !state.veba.aktif && state.yil >= state.veba.etkiBitisYili) {
     state.veba = null;
@@ -1992,39 +2045,44 @@ export interface DunyaFinansEtkisi {
  */
 export function dunyaFinansEtkileri(state: CharacterState): DunyaFinansEtkisi[] {
   const liste: DunyaFinansEtkisi[] = [];
+  const dil = state.dil;
 
-  if (state.ulke.ekonomi === "kotu") liste.push({ ikon: "📉", metin: "Kötü ekonomi: maaş −%20" });
-  else if (state.ulke.ekonomi === "iyi") liste.push({ ikon: "📈", metin: "İyi ekonomi: maaş +%15" });
+  if (state.ulke.ekonomi === "kotu") liste.push({ ikon: "📉", metin: T(dil, "Kötü ekonomi: maaş −%20") });
+  else if (state.ulke.ekonomi === "iyi") liste.push({ ikon: "📈", metin: T(dil, "İyi ekonomi: maaş +%15") });
 
   if (state.buyuk_savas) {
     const gida = Math.round((state.buyuk_savas.gidaCarpani - 1) * 100);
     const vergi = Math.round(state.buyuk_savas.vergiOrani * 100);
     liste.push({
       ikon: "⚔️",
-      metin: `Büyük savaş (${state.buyuk_savas.dusman}): maaş −%15 · yemek +%${gida} · maaşının %${vergi}'i savaş vergisi`,
+      metin: T(dil, "Büyük savaş ({0}): maaş −%15 · yemek +%{1} · maaşının %{2}'i savaş vergisi", [
+        K(dil, state.buyuk_savas.dusman),
+        gida,
+        vergi,
+      ]),
     });
   } else if (state.ulke.savasta) {
-    liste.push({ ikon: "⚔️", metin: "Savaş: maaş −%15" });
+    liste.push({ ikon: "⚔️", metin: T(dil, "Savaş: maaş −%15") });
   }
 
   if (state.veba && state.yil < state.veba.etkiBitisYili) {
     const maas = Math.round((state.veba.gelirCarpani - 1) * 100);
     const kira = Math.round((1 - state.veba.konutKiraCarpani) * 100);
     if (state.veba.aktif) {
-      liste.push({ ikon: "☠️", metin: `Salgın: her yıl ölüm riski · işçi kıtlığı maaş +%${maas} · kira −%${kira}` });
+      liste.push({ ikon: "☠️", metin: T(dil, "Salgın: her yıl ölüm riski · işçi kıtlığı maaş +%{0} · kira −%{1}", [maas, kira]) });
     } else {
       const kalanYil = Math.max(0, state.veba.etkiBitisYili - state.yil);
-      liste.push({ ikon: "☠️", metin: `Salgın izi (${kalanYil} yıl): maaş +%${maas} · kira −%${kira}` });
+      liste.push({ ikon: "☠️", metin: T(dil, "Salgın izi ({0} yıl): maaş +%{1} · kira −%{2}", [kalanYil, maas, kira]) });
     }
   }
 
-  if (state.ulke.kriz?.tur === "kitlik") liste.push({ ikon: "🌾", metin: "Kıtlık: −2 sağlık/yıl" });
-  else if (state.ulke.kriz?.tur === "isyan") liste.push({ ikon: "🔥", metin: "İsyan: −3 para & −1 ün/yıl" });
+  if (state.ulke.kriz?.tur === "kitlik") liste.push({ ikon: "🌾", metin: T(dil, "Kıtlık: −1 sağlık/yıl") });
+  else if (state.ulke.kriz?.tur === "isyan") liste.push({ ikon: "🔥", metin: T(dil, "İsyan: −3 para & −1 ün/yıl") });
   else if (state.ulke.kriz?.tur === "altin_cag")
-    liste.push({ ikon: "✨", metin: "Altın çağ: +4 para & +1 mutluluk/yıl" });
+    liste.push({ ikon: "✨", metin: T(dil, "Altın çağ: +4 para & +1 mutluluk/yıl") });
 
   if (state.gida_fiyat_sok_bitis_yili !== null && state.yil < state.gida_fiyat_sok_bitis_yili) {
-    liste.push({ ikon: "🥖", metin: "Gıda fiyat şoku: yemek gideri bu yıl ×2" });
+    liste.push({ ikon: "🥖", metin: T(dil, "Gıda fiyat şoku: yemek gideri bu yıl ×2") });
   }
 
   if (state.para + gayrimenkulDegeriHesapla(state) > ZORUNLU_BAGIS_ESIGI) {
@@ -2035,10 +2093,16 @@ export function dunyaFinansEtkileri(state: CharacterState): DunyaFinansEtkisi[] 
     )}`;
     const metin =
       kalanCooldown > 0
-        ? `Servetin ${ZORUNLU_BAGIS_ESIGI}'ü aştı: hükümdarın gözü üstünde ama ~${kalanCooldown} yıl daha bağış isteyemez (servetinin ${oranAralik}'si)`
-        : `Servetin ${ZORUNLU_BAGIS_ESIGI}'ü aştı: hükümdar zenginleştiğini fark etti — her yıl ~%${Math.round(
-            ZORUNLU_BAGIS_YILLIK_IHTIMAL * 100
-          )} ihtimalle servetinin ${oranAralik}'sini "bağış" olarak alabilir`;
+        ? T(dil, "Servetin {0}'ü aştı: hükümdarın gözü üstünde ama ~{1} yıl daha bağış isteyemez (servetinin {2}'si)", [
+            ZORUNLU_BAGIS_ESIGI,
+            kalanCooldown,
+            oranAralik,
+          ])
+        : T(
+            dil,
+            'Servetin {0}\'ü aştı: hükümdar zenginleştiğini fark etti — her yıl ~%{1} ihtimalle servetinin {2}\'sini "bağış" olarak alabilir',
+            [ZORUNLU_BAGIS_ESIGI, Math.round(ZORUNLU_BAGIS_YILLIK_IHTIMAL * 100), oranAralik]
+          );
     liste.push({ ikon: "👑", metin });
   }
 
@@ -2094,7 +2158,7 @@ export function mulkGelirleriUygula(state: CharacterState, yasArtisi: number): M
     if (tur === "kervan" && ulke.savasta && Math.random() < KERVAN_BATMA_IHTIMALI_YILLIK * yasArtisi) {
       state.mulkler = state.mulkler.filter((m) => m !== "kervan");
       delete state.mulk_bakim_kalan.kervan;
-      hayatOlayiEkle(state, "🌊", "Ticaret kervanı savaş yüzünden tamamen kayboldu");
+      hayatOlayiEkle(state, "🌊", T(state.dil, "Ticaret kervanı savaş yüzünden tamamen kayboldu"));
       kervanBatti = true;
       continue;
     }
@@ -2123,10 +2187,10 @@ export function mulkGelirleriUygula(state: CharacterState, yasArtisi: number): M
   return { toplamNet, kervanBatti, bakimOdemeleri };
 }
 
-const DEDIKODU_SAVAS: ((rakip: string) => string)[] = [
-  (rakip) => `Sınır boylarında komutanlar asker topluyor... (${rakip} ile yakında savaş çıkabilir)`,
-  (rakip) => `Tüccarlar ${rakip} sınırından artık mal geçirmek istemiyor, bir şeyler seziyorlar...`,
-  (rakip) => `Kalelerde nöbetler sıklaştırıldı; ${rakip} ile gerginliğin büyüdüğü konuşuluyor...`,
+const DEDIKODU_SAVAS: string[] = [
+  "Sınır boylarında komutanlar asker topluyor... ({0} ile yakında savaş çıkabilir)",
+  "Tüccarlar {0} sınırından artık mal geçirmek istemiyor, bir şeyler seziyorlar...",
+  "Kalelerde nöbetler sıklaştırıldı; {0} ile gerginliğin büyüdüğü konuşuluyor...",
 ];
 const DEDIKODU_KITLIK: string[] = [
   "Gökler aylardır damla düşürmedi, köylüler endişeli... (Kuraklık/Kıtlık kapıda)",
@@ -2156,14 +2220,15 @@ const DEDIKODU_SAKIN: string[] = [
  * gelecek-olay takvimi kurulmadı, bkz. plan notu).
  */
 export function piyasaDedikodulariUret(state: CharacterState): string[] {
+  const dil = state.dil;
   const dedikodular: string[] = [];
   const gelecekRakip = !state.ulke.savasta ? gelecekSavasKontrol(state.bolge, state.yil, state.cag) : null;
-  if (gelecekRakip) dedikodular.push(sec(DEDIKODU_SAVAS)(gelecekRakip));
-  if (state.ulke.kriz?.tur === "kitlik") dedikodular.push(sec(DEDIKODU_KITLIK));
-  if (state.ulke.kriz?.tur === "isyan") dedikodular.push(sec(DEDIKODU_ISYAN));
-  if (state.ulke.nufusDurumu === "artiyor") dedikodular.push(sec(DEDIKODU_NUFUS));
-  if (!state.ulke.savasta && state.ulke.ekonomi === "iyi") dedikodular.push(sec(DEDIKODU_BOLLUK));
-  if (dedikodular.length === 0) dedikodular.push(sec(DEDIKODU_SAKIN));
+  if (gelecekRakip) dedikodular.push(T(dil, sec(DEDIKODU_SAVAS), [K(dil, gelecekRakip)]));
+  if (state.ulke.kriz?.tur === "kitlik") dedikodular.push(T(dil, sec(DEDIKODU_KITLIK)));
+  if (state.ulke.kriz?.tur === "isyan") dedikodular.push(T(dil, sec(DEDIKODU_ISYAN)));
+  if (state.ulke.nufusDurumu === "artiyor") dedikodular.push(T(dil, sec(DEDIKODU_NUFUS)));
+  if (!state.ulke.savasta && state.ulke.ekonomi === "iyi") dedikodular.push(T(dil, sec(DEDIKODU_BOLLUK)));
+  if (dedikodular.length === 0) dedikodular.push(T(dil, sec(DEDIKODU_SAKIN)));
   return dedikodular;
 }
 
