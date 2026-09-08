@@ -941,3 +941,84 @@ a.giris-imza-isim:hover {
 .nasil-bolum li::marker {
   color: var(--renk-altin-koyu);
 }
+
+/* ---------- Açılış + meslek ekranı: mobil kompaktlaştırma ---------- */
+/* Masaüstünde .acilis-ust normal blok akışıdır (Banner üstte, prosedürel sahne altında,
+   ikisi de merkezdeki 940px sütunda) — ekstra kural gerekmez. */
+
+@media (max-width: 767px) {
+  .ekran-acilis {
+    gap: 0.55rem;
+  }
+
+  /* Banner + sahne yan yana: sahne solda küçük kare, "Fransa" başlığı sağında. */
+  .acilis-ust {
+    display: flex;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  .acilis-ust > .banner {
+    order: 2;
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    padding: 0.55rem 0.7rem;
+    gap: 0.5rem;
+  }
+  .acilis-ust > .banner .banner-sembol {
+    font-size: 1.5rem;
+  }
+  .acilis-ust > .bolge-sahnesi {
+    order: 1;
+    flex: 0 0 38%;
+    max-width: 132px;
+    margin: 0;
+    align-self: stretch;
+  }
+  .acilis-ust > .bolge-sahnesi .bolge-sahnesi-svg,
+  .acilis-ust > .bolge-sahnesi .bolge-sahnesi-katman,
+  .acilis-ust > .bolge-sahnesi .bolge-sahnesi-bolge-tonu {
+    height: 100%;
+    min-height: 78px;
+  }
+
+  /* Meslek ekranındaki prosedürel sahne de küçük ve üstte kalsın. */
+  .ekran-meslek > .bolge-sahnesi {
+    max-width: 200px;
+    margin: 0 auto 0.3rem;
+  }
+  .ekran-meslek > .bolge-sahnesi .bolge-sahnesi-svg,
+  .ekran-meslek > .bolge-sahnesi .bolge-sahnesi-katman,
+  .ekran-meslek > .bolge-sahnesi .bolge-sahnesi-bolge-tonu {
+    height: 70px;
+  }
+
+  /* Açılış metni + özet: daha az dikey yer, aynı yazı boyu. */
+  .ekran-acilis h2 {
+    margin: 0.15rem 0;
+    font-size: 1.15rem;
+  }
+  .acilis-metni {
+    padding: 0.7rem 0.85rem;
+    line-height: 1.5;
+  }
+  .acilis-ozet {
+    gap: 0.35rem;
+  }
+
+  /* Kişilik & miras paneli: çerçeveleri incelt, yazı boyutlarına dokunma. */
+  .kisilik-paneli {
+    margin-top: 0.55rem;
+  }
+  .kisilik-paneli h3 {
+    margin-bottom: 0.4rem;
+  }
+  .kisilik-paneli .eksen-gostergesi {
+    margin-bottom: 0.4rem;
+  }
+  .kisilik-rozet {
+    padding: 0.3rem 0.45rem;
+    margin-bottom: 0.3rem;
+    gap: 0.05rem;
+  }
+}

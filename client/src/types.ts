@@ -117,7 +117,8 @@ export interface CharacterState {
   din_kultur: string;
   konut_id: string;
   yasam_secimi_id: string;
-  kendi_isi_yatirim_sayisi: number;
+  hazard_el_sayisi: number;
+  uc_kagitci_oyun_sayisi: number;
 
   aile_meslegi: string;
   aile_mirasi_surduruldu: boolean;
@@ -440,9 +441,21 @@ export interface YatirimSonucu {
   mesaj: string;
 }
 
-export interface YatirimConfig {
-  kendiIsiMaliyeti: number;
-  kendiIsiYatirimSayisi: number;
+/** İşin & Yatırımların ekranındaki "Karanlık İşler" listesinin bir kartı. */
+export interface KotuIsKarti {
+  id: string;
+  simge: string;
+  /** Yatkınlık eklendikten sonraki başarı şansı (5-95). */
+  basariSansi: number;
+  /** Başarılı dalın verebileceği yaklaşık para (enflasyonlu); 0 ise para getirisi yok. */
+  tahminiKazanc: number;
+  rakibeYonelik: boolean;
+}
+
+export interface KotuIsSonucu {
+  state: CharacterState;
+  kazandi: boolean;
+  mesaj: string;
 }
 
 export interface KonutSonucu {
@@ -473,9 +486,27 @@ export interface MulkSatinAlSonucu {
   mesaj: string;
 }
 
+/** Hazard (zar) mini-oyununun sonucu. */
 export interface ZarSonucu {
   state: CharacterState;
   kazandi: boolean;
+  senZar: [number, number];
+  rakipZar: [number, number];
+  cift: boolean;
+  bicakCekildi: boolean;
+  mesaj: string;
+}
+
+export interface UcKagitciSonucu {
+  state: CharacterState;
+  kazandi: boolean;
+  /** Paranın gerçekte altında olduğu bardak (0-2) — istemci animasyonu buna göre biter. */
+  dogruBardak: number;
+  mesaj: string;
+}
+
+export interface BilekGuresiSonucu {
+  state: CharacterState;
   mesaj: string;
 }
 

@@ -9,7 +9,7 @@ import type {
   KonutTanimi,
   YasamSecenegiTanimi,
   FinansOzeti,
-  YatirimConfig,
+  KotuIsKarti,
   MulkKartBilgisi,
   MulkTuru,
   TepkiSonucu,
@@ -32,13 +32,15 @@ import {
   skorTablosuGetir,
   isimOnerisiGetir,
   finansGetir,
-  yatirimYap,
-  yatirimConfigGetir,
+  kotuIsYap,
+  kotuIsConfigGetir,
   mulkConfigGetir,
   mulkSatinAl,
   dedikoduGetir,
   zarKademeleriGetir,
   zarAt,
+  ucKagitciOyna,
+  bilekGuresiSonuc,
   konutDegistir,
   yasamSecimiDegistir,
   ekipCikar,
@@ -249,7 +251,7 @@ function App() {
   const [liderlik, setLiderlik] = useState<ScoreKaydi[]>([]);
 
   const [finans, setFinans] = useState<FinansOzeti | null>(null);
-  const [yatirimConfig, setYatirimConfig] = useState<YatirimConfig | null>(null);
+  const [kotuIsler, setKotuIsler] = useState<KotuIsKarti[]>([]);
   const [dedikodular, setDedikodular] = useState<string[]>([]);
   const [mulkler, setMulkler] = useState<MulkKartBilgisi[]>([]);
   const [zarKademeleri, setZarKademeleri] = useState<number[]>([]);
@@ -721,12 +723,12 @@ function App() {
     setYukleniyor(true);
     try {
       const [{ config }, { dedikodular }, { config: mulkConfig }, { kademeler }] = await Promise.all([
-        yatirimConfigGetir(karakter.id),
+        kotuIsConfigGetir(karakter.id),
         dedikoduGetir(karakter.id),
         mulkConfigGetir(karakter.id),
         zarKademeleriGetir(karakter.id),
       ]);
-      setYatirimConfig(config);
+      setKotuIsler(config);
       setDedikodular(dedikodular);
       setMulkler(mulkConfig);
       setZarKademeleri(kademeler);
@@ -741,19 +743,20 @@ function App() {
 
   async function yatirimEkraniniYenile(stateId: string) {
     const [{ config }, { config: mulkConfig }] = await Promise.all([
-      yatirimConfigGetir(stateId),
+      kotuIsConfigGetir(stateId),
       mulkConfigGetir(stateId),
     ]);
-    setYatirimConfig(config);
+    setKotuIsler(config);
     setMulkler(mulkConfig);
   }
 
-  async function yatirimYapHandler() {
+  async function kotuIsHandler(tur: string) {
     if (!karakter) return;
+    if (!window.confirm(m.iyKaranlikOnay)) return;
     setHata(null);
     setYukleniyor(true);
     try {
-      const sonuc = await yatirimYap(karakter.id);
+      const sonuc = await kotuIsYap(karakter.id, tur);
       setKarakter(sonuc.state);
       setIslemMesaji(sonuc.mesaj);
       const { finans } = await finansGetir(sonuc.state.id);
@@ -783,15 +786,51 @@ function App() {
   }
 
   async function zarAtHandler(tutar: number) {
-    if (!karakter) return;
+    if (!karakter) return null;
     setHata(null);
     setYukleniyor(true);
     try {
       const sonuc = await zarAt(karakter.id, tutar);
       setKarakter(sonuc.state);
       setIslemMesaji(sonuc.mesaj);
+      return sonuc;
     } catch (err) {
       setHata(String(err));
+      return null;
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
+  async function ucKagitciHandler(tutar: number, secim: number) {
+    if (!karakter) return null;
+    setHata(null);
+    setYukleniyor(true);
+    try {
+      const sonuc = await ucKagitciOyna(karakter.id, tutar, secim);
+      setKarakter(sonuc.state);
+      setIslemMesaji(sonuc.mesaj);
+      return sonuc;
+    } catch (err) {
+      setHata(String(err));
+      return null;
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
+  async function bilekGuresiHandler(basarili: boolean) {
+    if (!karakter) return null;
+    setHata(null);
+    setYukleniyor(true);
+    try {
+      const sonuc = await bilekGuresiSonuc(karakter.id, basarili);
+      setKarakter(sonuc.state);
+      setIslemMesaji(sonuc.mesaj);
+      return sonuc;
+    } catch (err) {
+      setHata(String(err));
+      return null;
     } finally {
       setYukleniyor(false);
     }
@@ -802,8 +841,12 @@ function App() {
     setHata(null);
     setYukleniyor(true);
     try {
-      const { yerler } = await sosyallesmeYerleriGetir(karakter.id);
+      const [{ yerler }, { kademeler }] = await Promise.all([
+        sosyallesmeYerleriGetir(karakter.id),
+        zarKademeleriGetir(karakter.id),
+      ]);
       setSosyallesmeYerleri(yerler);
+      setZarKademeleri(kademeler);
       setEkran('sosyallesme');
     } catch (err) {
       setHata(String(err));
@@ -1445,14 +1488,18 @@ function App() {
       {ekran === 'acilis' && karakter && (
         <div className="ekran ekran-acilis">
           <KoseTezhibi />
-          <Banner
-            cag={karakter.cag}
-            bolge={karakter.bolge}
-            yil={karakter.yil}
-            ulke={karakter.ulke}
-            hukumdar={karakter.hukumdar}
-          />
-          <BolgeSahnesi cag={karakter.cag} bolge={karakter.bolge} yerlesim={karakter.yerlesim} ulke={karakter.ulke} un={karakter.un} />
+          {/* Mobilde tek kompakt satır: prosedürel sahne solda küçük, "Fransa" başlığı sağında.
+             Masaüstünde .acilis-ust normal blok akışında kalır (Banner üstte, sahne altında). */}
+          <div className="acilis-ust">
+            <Banner
+              cag={karakter.cag}
+              bolge={karakter.bolge}
+              yil={karakter.yil}
+              ulke={karakter.ulke}
+              hukumdar={karakter.hukumdar}
+            />
+            <BolgeSahnesi cag={karakter.cag} bolge={karakter.bolge} yerlesim={karakter.yerlesim} ulke={karakter.ulke} un={karakter.un} />
+          </div>
           <KarakterAvatari kisilik={karakter.kisilik} />
           <h2>
             {karakter.isim ? `${karakter.isim} — ` : ''}
@@ -1779,7 +1826,7 @@ function App() {
         />
       )}
 
-      {ekran === 'yatirim' && karakter && yatirimConfig && (
+      {ekran === 'yatirim' && karakter && (
         <IsYatirimEkrani
           meslek={karakter.meslek}
           rutbe={karakter.rutbe}
@@ -1795,16 +1842,14 @@ function App() {
           sehirYonetimSeviyesi={karakter.sehir_yonetim_seviyesi}
           sehirYonetimUnvan={karakter.sehir_yonetim_unvan}
           para={karakter.para}
-          config={yatirimConfig}
+          kotuIsler={kotuIsler}
           dedikodular={dedikodular}
           mulkler={mulkler}
-          zarKademeleri={zarKademeleri}
           sucSeviyesi={karakter.suc_seviyesi}
           yukleniyor={yukleniyor}
           islemMesaji={islemMesaji}
-          onYatirimYap={yatirimYapHandler}
+          onKotuIs={kotuIsHandler}
           onMulkSatinAl={mulkSatinAlHandler}
-          onZarAt={zarAtHandler}
           onGeriDon={() => {
             setIslemMesaji(null);
             setEkran('oyun');
@@ -1812,12 +1857,21 @@ function App() {
         />
       )}
 
-      {ekran === 'sosyallesme' && (
+      {ekran === 'sosyallesme' && karakter && (
         <SosyallesmePaneli
           yerler={sosyallesmeYerleri}
           yukleniyor={yukleniyor}
+          para={karakter.para}
+          paraBirimi={karakter.para_birimi}
+          zarKademeleri={zarKademeleri}
           onGit={sosyallesmeYerineGitHandler}
-          onGeriDon={() => setEkran('oyun')}
+          onZarAt={zarAtHandler}
+          onUcKagitci={ucKagitciHandler}
+          onBilekGuresi={bilekGuresiHandler}
+          onGeriDon={() => {
+            setIslemMesaji(null);
+            setEkran('oyun');
+          }}
         />
       )}
 

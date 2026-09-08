@@ -47,12 +47,15 @@ export const RUTBE_MAAS_CARPANI: [number, number, number, number, number] = (() 
   return carpanlar.map((c) => Math.round(c * 100) / 100) as [number, number, number, number, number];
 })();
 
-/** Hayatta geçen her yıl için pasif kıdem kazancı (kariyer_puani). */
-export const KARIYER_PUANI_YILLIK = 2;
+/**
+ * Hayatta geçen her yıl için pasif kıdem kazancı (kariyer_puani). "Kendi işine
+ * yatırım" özelliği tamamen kaldırıldığında (bir kariyer_puani kaynağıydı, +8/yatırım)
+ * bu kaynağın telafisi için 2 → 3'e çıkarıldı — playstyle'dan bağımsız, geniş tabanlı
+ * bir telafi (S5 yine nadir kalır; simulateKisilikler ile doğrulanmalı).
+ */
+export const KARIYER_PUANI_YILLIK = 3;
 /** Mesleğine uygun kategoride (savas/ticaret/din) başarılı olunan her olay. */
 export const KARIYER_PUANI_KATEGORI_BASARI = 3;
-/** Kendi işine yapılan her yatırım (yatirimYap). Yatırım artık pahalı ve tavanlı olduğu için bu katkı da düşürüldü (12 → 8). */
-export const KARIYER_PUANI_YATIRIM = 8;
 
 /**
  * Her meslek + çağ için 5 kademeli rütbe merdiveni. Eşikler çağdan bağımsız

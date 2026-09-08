@@ -9,13 +9,16 @@ import type {
   YasamSecenegiTanimi,
   FinansOzeti,
   YatirimSonucu,
-  YatirimConfig,
+  KotuIsKarti,
+  KotuIsSonucu,
   KonutSonucu,
   TepkiSonucu,
   MulkTuru,
   MulkKartBilgisi,
   MulkSatinAlSonucu,
   ZarSonucu,
+  UcKagitciSonucu,
+  BilekGuresiSonucu,
   SosyallesmeYeri,
   SosyallesmeSonucu,
   MagazaEsyaKarti,
@@ -134,14 +137,15 @@ export function finansGetir(stateId: string) {
   return istek<{ finans: FinansOzeti }>(`/api/game/${stateId}/finans`);
 }
 
-export function yatirimYap(stateId: string) {
-  return istek<YatirimSonucu>(`/api/game/${stateId}/yatirim`, {
-    method: 'POST',
-  });
+export function kotuIsConfigGetir(stateId: string) {
+  return istek<{ config: KotuIsKarti[] }>(`/api/game/${stateId}/kotu-is-config`);
 }
 
-export function yatirimConfigGetir(stateId: string) {
-  return istek<{ config: YatirimConfig }>(`/api/game/${stateId}/yatirim-config`);
+export function kotuIsYap(stateId: string, tur: string) {
+  return istek<KotuIsSonucu>(`/api/game/${stateId}/kotu-is`, {
+    method: 'POST',
+    body: JSON.stringify({ tur }),
+  });
 }
 
 export function mulkConfigGetir(stateId: string) {
@@ -167,6 +171,20 @@ export function zarAt(stateId: string, tutar: number) {
   return istek<ZarSonucu>(`/api/game/${stateId}/zar`, {
     method: 'POST',
     body: JSON.stringify({ tutar }),
+  });
+}
+
+export function ucKagitciOyna(stateId: string, tutar: number, secim: number) {
+  return istek<UcKagitciSonucu>(`/api/game/${stateId}/uc-kagitci`, {
+    method: 'POST',
+    body: JSON.stringify({ tutar, secim }),
+  });
+}
+
+export function bilekGuresiSonuc(stateId: string, basarili: boolean) {
+  return istek<BilekGuresiSonucu>(`/api/game/${stateId}/bilek-guresi`, {
+    method: 'POST',
+    body: JSON.stringify({ basarili }),
   });
 }
 

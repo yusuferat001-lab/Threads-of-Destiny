@@ -150,10 +150,10 @@ export const BASARIMLAR: BasarimTanimi[] = [
     ikon: '🌾',
     ad: { tr: 'Mütevazı Son', en: 'A Humble End' },
     aciklama: {
-      tr: 'Hiç mülk almadan, kendi işine hiç yatırım yapmadan en az 70 yaşında öl.',
-      en: 'Die at 70+ without ever buying property or investing in your own business.',
+      tr: 'Hiç mülk almadan, hiç karanlık işe bulaşmadan (sicil temiz) en az 70 yaşında öl.',
+      en: 'Die at 70+ without ever buying property or dabbling in crime (clean record).',
     },
-    kosul: (o) => o.state.yas >= 70 && o.state.mulkler.length === 0 && o.state.kendi_isi_yatirim_sayisi === 0,
+    kosul: (o) => o.state.yas >= 70 && o.state.mulkler.length === 0 && o.state.suc_seviyesi < 20,
   },
   {
     id: 'kisa_parlak',

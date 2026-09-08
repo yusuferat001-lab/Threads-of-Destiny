@@ -1,14 +1,32 @@
-import type { SosyallesmeYeri } from '../types';
+import type { SosyallesmeYeri, ZarSonucu, UcKagitciSonucu, BilekGuresiSonucu } from '../types';
 import { useDil } from '../DilContext';
+import { HazardWidget, UcKagitciWidget, BilekGuresiWidget } from './MiniOyunlar';
 
 interface SosyallesmePaneliProps {
   yerler: SosyallesmeYeri[];
   yukleniyor: boolean;
+  para: number;
+  paraBirimi: string;
+  zarKademeleri: number[];
   onGit: (yerId: string) => void;
+  onZarAt: (tutar: number) => Promise<ZarSonucu | null>;
+  onUcKagitci: (tutar: number, secim: number) => Promise<UcKagitciSonucu | null>;
+  onBilekGuresi: (basarili: boolean) => Promise<BilekGuresiSonucu | null>;
   onGeriDon: () => void;
 }
 
-export function SosyallesmePaneli({ yerler, yukleniyor, onGit, onGeriDon }: SosyallesmePaneliProps) {
+export function SosyallesmePaneli({
+  yerler,
+  yukleniyor,
+  para,
+  paraBirimi,
+  zarKademeleri,
+  onGit,
+  onZarAt,
+  onUcKagitci,
+  onBilekGuresi,
+  onGeriDon,
+}: SosyallesmePaneliProps) {
   const { m, kt } = useDil();
 
   return (
@@ -19,6 +37,29 @@ export function SosyallesmePaneli({ yerler, yukleniyor, onGit, onGeriDon }: Sosy
       {yerler.length === 0 && <p className="yatirim-islem-mesaji">{m.spMekanYok}</p>}
 
       <div className="tam-kaydirilan">
+        <section className="sosyallesme-kumar">
+          <h3 className="tam-baslik">{m.spKumarBaslik}</h3>
+          <p className="giris-aciklama">{m.spKumarNot}</p>
+          <div className="sosyallesme-kumar-oyunlar">
+            <HazardWidget
+              para={para}
+              paraBirimi={paraBirimi}
+              kademeler={zarKademeleri}
+              yukleniyor={yukleniyor}
+              onZarAt={onZarAt}
+            />
+            <UcKagitciWidget
+              para={para}
+              paraBirimi={paraBirimi}
+              kademeler={zarKademeleri}
+              yukleniyor={yukleniyor}
+              onUcKagitci={onUcKagitci}
+            />
+            <BilekGuresiWidget yukleniyor={yukleniyor} onBilekGuresi={onBilekGuresi} />
+          </div>
+        </section>
+
+        <h3 className="tam-baslik">{m.spMekanlarBaslik}</h3>
         <div className="yatirim-kartlari sosyallesme-kartlari">
           {yerler.map((yer) => (
             <button

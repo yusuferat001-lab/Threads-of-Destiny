@@ -1,7 +1,8 @@
-import type { YatirimConfig, MulkKartBilgisi, MulkTuru } from '../types';
+import type { MulkKartBilgisi, MulkTuru, KotuIsKarti } from '../types';
 import { formatPara } from '../format';
 import { bic, type Metinler } from '../i18n';
 import { useDil } from '../DilContext';
+import type { Dil } from '../ayarlar';
 
 interface IsYatirimEkraniProps {
   meslek: string;
@@ -18,16 +19,14 @@ interface IsYatirimEkraniProps {
   sehirYonetimSeviyesi: number;
   sehirYonetimUnvan: string | null;
   para: number;
-  config: YatirimConfig;
+  kotuIsler: KotuIsKarti[];
   dedikodular: string[];
   mulkler: MulkKartBilgisi[];
-  zarKademeleri: number[];
   sucSeviyesi: number;
   yukleniyor: boolean;
   islemMesaji: string | null;
-  onYatirimYap: () => void;
+  onKotuIs: (id: string) => void;
   onMulkSatinAl: (tur: MulkTuru) => void;
-  onZarAt: (tutar: number) => void;
   onGeriDon: () => void;
 }
 
@@ -37,11 +36,34 @@ const MESLEK_SIMGESI: Record<string, string> = {
   'Din Adamı': '🕊️',
 };
 
-function kendiIsiAsamaEtiketi(m: Metinler, yatirimSayisi: number): string {
-  if (yatirimSayisi === 0) return m.iyKendiIsiAsama0;
-  if (yatirimSayisi <= 2) return bic(m.iyKendiIsiAsama1, yatirimSayisi);
-  if (yatirimSayisi <= 5) return bic(m.iyKendiIsiAsama2, yatirimSayisi);
-  return bic(m.iyKendiIsiAsama3, yatirimSayisi);
+/** Karanlık iş adları/açıklamaları — i18n.ts yerine bileşene gömülü (NasilOynanir deseni). */
+const KARANLIK_ISLER: Record<string, { tr: { ad: string; aciklama: string }; en: { ad: string; aciklama: string } }> = {
+  rakibi_korkut: {
+    tr: { ad: '🗡️ Rakibini Korkut', aciklama: 'Rakibinin gücünü kır, biraz da haraç al. Düşük risk.' },
+    en: { ad: '🗡️ Intimidate Your Rival', aciklama: "Cut your rival down a notch and squeeze a little coin. Low risk." },
+  },
+  adam_dov: {
+    tr: { ad: '👊 Zevkine Adam Döv', aciklama: 'Sırf içini rahatlatmak için birini benzet. Getirisi yok, ahlakın çöker.' },
+    en: { ad: '👊 Beat Someone for Sport', aciklama: 'Rough someone up just to blow off steam. No payoff, morality tanks.' },
+  },
+  rakibi_dov: {
+    tr: { ad: '🩸 Rakibini Dövdür', aciklama: 'Rakibini ciddi biçimde hırpala — pazar payın ve terfi şansın artar.' },
+    en: { ad: '🩸 Have Your Rival Beaten', aciklama: 'Hurt your rival badly — your market share and promotion odds rise.' },
+  },
+  birini_soy: {
+    tr: { ad: '💰 Birini Soy', aciklama: 'Doğrudan para. Yakalanırsan kodesi boylarsın.' },
+    en: { ad: '💰 Rob Someone', aciklama: 'Straight cash. Get caught and you land in a cell.' },
+  },
+  isyeri_yak: {
+    tr: { ad: '🔥 Rakibin İş Yerini Yak', aciklama: 'En büyük darbe, en büyük risk: ölüm ve hapis ihtimali var.' },
+    en: { ad: "🔥 Burn Down Your Rival's Business", aciklama: 'The biggest blow, the biggest risk: death and prison are on the table.' },
+  },
+};
+
+function karanlikIsMetni(dil: Dil, id: string): { ad: string; aciklama: string } {
+  const kayit = KARANLIK_ISLER[id];
+  if (!kayit) return { ad: id, aciklama: '' };
+  return dil === 'en' ? kayit.en : kayit.tr;
 }
 
 function sucSeviyesiEtiketi(m: Metinler, seviye: number): string {
@@ -91,22 +113,18 @@ export function IsYatirimEkrani({
   sehirYonetimSeviyesi,
   sehirYonetimUnvan,
   para,
-  config,
+  kotuIsler,
   dedikodular,
   mulkler,
-  zarKademeleri,
   sucSeviyesi,
   yukleniyor,
   islemMesaji,
-  onYatirimYap,
+  onKotuIs,
   onMulkSatinAl,
-  onZarAt,
   onGeriDon,
 }: IsYatirimEkraniProps) {
-  const { m, kt } = useDil();
+  const { m, kt, dil } = useDil();
   const saldiriGucu = Math.round(orduMevcudu * (1 + orduTechizatSeviyesi / 100));
-  const paraYetersiz = para < config.kendiIsiMaliyeti;
-  const kendiIsiAciklama = m.iyKendiIsiKarsilik;
 
   return (
     <div className="ekran ekran-tam-sayfa">
@@ -224,38 +242,35 @@ export function IsYatirimEkrani({
         </div>
 
         <div className="tam-sutun">
-          <h3 className="tam-baslik">{m.iyKendiIsin}</h3>
+          <h3 className="tam-baslik">{m.iyKaranlikIsler}</h3>
+          <p className="giris-aciklama">{m.iyKaranlikIsAcikla}</p>
 
-          <button className="yatirim-kart isyatirim-kendi-is-kart" disabled={yukleniyor || paraYetersiz} onClick={onYatirimYap}>
-            <span className="meslek-simge">💼</span>
-            <strong>{m.iyKendiIsineYatirim}</strong>
-            <span className="meslek-aciklama">
-              {formatPara(config.kendiIsiMaliyeti)} {paraBirimi} — {kendiIsiAciklama}
-            </span>
-            <span className="meslek-aciklama">{kendiIsiAsamaEtiketi(m, config.kendiIsiYatirimSayisi)}</span>
-          </button>
-
-          <p className="rutbe-ipucu">
-            <strong>{m.iyRutbeNasil}</strong>{' '}
-            {bic(m.iyRutbeNasilKisa, meslek === 'Din Adamı' ? m.iyRutbeAhlakini : m.iyRutbeSohretini)}
-          </p>
-
-          <h3 className="tam-baslik">{m.iyRiskliIsler}</h3>
+          <div className="yatirim-kartlari">
+            {kotuIsler.map((is) => {
+              const metin = karanlikIsMetni(dil, is.id);
+              return (
+                <button
+                  key={is.id}
+                  className="yatirim-kart isyatirim-kendi-is-kart"
+                  disabled={yukleniyor}
+                  onClick={() => onKotuIs(is.id)}
+                  title={metin.aciklama}
+                >
+                  <span className="meslek-simge">{is.simge}</span>
+                  <strong>{metin.ad}</strong>
+                  <span className="meslek-aciklama">
+                    {bic(m.iyKaranlikSans, is.basariSansi)}
+                    {is.tahminiKazanc > 0 && ` · ${bic(m.iyKaranlikKazanc, formatPara(is.tahminiKazanc), paraBirimi)}`}
+                  </span>
+                  <span className="meslek-aciklama">{m.iyKaranlikBedel}</span>
+                </button>
+              );
+            })}
+          </div>
 
           <p className={`suc-seviyesi-gostergesi ${sucSeviyesi >= 45 ? 'suc-seviyesi-riskli' : ''}`}>
             {bic(m.iySucSeviyen, Math.round(sucSeviyesi), sucSeviyesiEtiketi(m, sucSeviyesi))}
           </p>
-
-          <div className="isyatirim-zar-izgara">
-            {zarKademeleri.map((tutar) => (
-              <button key={tutar} className="zar-karo" disabled={yukleniyor || para < tutar} onClick={() => onZarAt(tutar)}>
-                <span className="meslek-simge">🎲</span>
-                <strong>
-                  {formatPara(tutar)} {paraBirimi}
-                </strong>
-              </button>
-            ))}
-          </div>
         </div>
       </div>
 

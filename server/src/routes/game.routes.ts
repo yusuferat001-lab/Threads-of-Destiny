@@ -7,8 +7,8 @@ import {
   stateGetir,
   isimOnerisiGetir,
   finansGetir,
-  yatirimYap,
-  yatirimConfigGetir,
+  kotuIsYap,
+  kotuIsConfigGetir,
   konutDegistir,
   yasamSecimiDegistir,
   ekipCikar,
@@ -17,6 +17,8 @@ import {
   dedikoduGetir,
   zarKademeleriGetir,
   zarAt,
+  ucKagitciOyna,
+  bilekGuresiSonuc,
   sosyallesmeYerleriGetir,
   sosyallesmeYerineGit,
   magazaConfigGetir,
@@ -169,18 +171,22 @@ gameRouter.get("/:id/finans", async (req, res) => {
   }
 });
 
-gameRouter.get("/:id/yatirim-config", async (req, res) => {
+gameRouter.get("/:id/kotu-is-config", async (req, res) => {
   try {
-    const config = await yatirimConfigGetir(req.params.id);
+    const config = await kotuIsConfigGetir(req.params.id);
     res.json({ config });
   } catch (err) {
     res.status(404).json({ hata: String(err) });
   }
 });
 
-gameRouter.post("/:id/yatirim", async (req, res) => {
+gameRouter.post("/:id/kotu-is", async (req, res) => {
+  const { tur } = req.body ?? {};
+  if (typeof tur !== "string") {
+    return res.status(400).json({ hata: "Geçersiz iş." });
+  }
   try {
-    const sonuc = await yatirimYap(req.params.id);
+    const sonuc = await kotuIsYap(req.params.id, tur);
     res.json(sonuc);
   } catch (err) {
     res.status(400).json({ hata: String(err) });
@@ -236,6 +242,32 @@ gameRouter.post("/:id/zar", async (req, res) => {
   }
   try {
     const sonuc = await zarAt(req.params.id, tutar);
+    res.json(sonuc);
+  } catch (err) {
+    res.status(400).json({ hata: String(err) });
+  }
+});
+
+gameRouter.post("/:id/uc-kagitci", async (req, res) => {
+  const { tutar, secim } = req.body ?? {};
+  if (typeof tutar !== "number" || typeof secim !== "number") {
+    return res.status(400).json({ hata: "Geçersiz bahis ya da bardak." });
+  }
+  try {
+    const sonuc = await ucKagitciOyna(req.params.id, tutar, secim);
+    res.json(sonuc);
+  } catch (err) {
+    res.status(400).json({ hata: String(err) });
+  }
+});
+
+gameRouter.post("/:id/bilek-guresi", async (req, res) => {
+  const { basarili } = req.body ?? {};
+  if (typeof basarili !== "boolean") {
+    return res.status(400).json({ hata: "Geçersiz sonuç." });
+  }
+  try {
+    const sonuc = await bilekGuresiSonuc(req.params.id, basarili);
     res.json(sonuc);
   } catch (err) {
     res.status(400).json({ hata: String(err) });

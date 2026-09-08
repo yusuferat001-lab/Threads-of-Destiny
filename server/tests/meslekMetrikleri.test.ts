@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { yeniOyun, mesleğiAta, yatirimYap, finansGetir } from "../src/game/gameEngine";
+import { yeniOyun, mesleğiAta, finansGetir } from "../src/game/gameEngine";
 import { createCharacter, saldiriGucuHesapla, meslekMetrikCarpani, orduKaybiUygula } from "../src/game/stateManager";
 
 describe("meslek-özel derinlik metrikleri", () => {
@@ -14,25 +14,6 @@ describe("meslek-özel derinlik metrikleri", () => {
     const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
     await mesleğiAta(state.id, "Tüccar");
     expect(state.ordu_mevcudu).toBe(0);
-  });
-
-  it("'kendi_isi' yatırımı artık meslek metriğine dokunmaz; yıllık maaşı kalıcı olarak artırır", async () => {
-    for (const meslek of ["Asker", "Tüccar", "Din Adamı"] as const) {
-      const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
-      await mesleğiAta(state.id, meslek);
-      state.para = 500;
-      const oncekiTechizat = state.ordu_techizat_seviyesi;
-      const oncekiSermaye = state.ticaret_sermaye;
-      const oncekiNufuz = state.nufuz;
-      const oncekiMaas = state.maas_yillik;
-
-      await yatirimYap(state.id);
-
-      expect(state.ordu_techizat_seviyesi).toBe(oncekiTechizat);
-      expect(state.ticaret_sermaye).toBe(oncekiSermaye);
-      expect(state.nufuz).toBe(oncekiNufuz);
-      expect(state.maas_yillik).toBeGreaterThan(oncekiMaas);
-    }
   });
 
   it("saldiriGucuHesapla ordu mevcudu ve teçhizat seviyesine göre büyür", () => {

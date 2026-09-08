@@ -78,7 +78,8 @@ import {
   MESLEK_KATEGORI,
   eskiKayitGocu,
 } from "./stateManager";
-import { rutbeTanimiGetir, KARIYER_PUANI_YILLIK, KARIYER_PUANI_KATEGORI_BASARI, KARIYER_PUANI_YATIRIM } from "../data/rutbeler";
+import { rutbeTanimiGetir, KARIYER_PUANI_YILLIK, KARIYER_PUANI_KATEGORI_BASARI } from "../data/rutbeler";
+import { KOTU_ISLER, kotuIsTanimiGetir, KotuIsEtki } from "../data/kotuIsler";
 import { rollSuccess } from "./diceRoll";
 import { olaySec, doldur, temelUygunMu, sosyallesmeIcinOlaySec } from "./olaySecici";
 import { OlayTanimi, OnTepki, OLAY_BANKASI } from "../data/olaylar";
@@ -1657,99 +1658,116 @@ interface YatirimSonucu {
   mesaj: string;
 }
 
-/**
- * İş yatırımının maliyeti: sabit bir sayı değil, hem enflasyonla hem de bu
- * karakterin şimdiye kadar yaptığı yatırım sayısıyla büyür — her yeni yatırım
- * bir öncekinden %17 daha pahalıya patlar (gerçek bir işletmeyi büyütmenin her
- * seferinde biraz daha zorlaşması gibi). Taban değer bilinçli olarak "düz" bir
- * sayı değil; sonucun da 0/5 ile bitmemesi için son bir yuvarlama garantisi var.
- */
-const KENDI_ISI_TEMEL_MALIYET = 45; // 63 → 45: ilk yatırımın giriş bariyeri 20'li yaşlara indirildi
-const KENDI_ISI_ESKALASYON = 0.3; // her yatırım bir öncekinden %30 daha pahalı (zirve yine maaş çarpanı tavanına takılır)
-/** Kendi işine her yatırımın verdiği kalıcı yıllık maaş primi (ham uygulanır; toplam MAAS_CARPANI_TAVAN'a tabidir). */
-const KENDI_ISI_MAAS_PRIMI = 1.05;
+// ---------------------------------------------------------------------------
+// Karanlık / illegal işler (eski "Kendi İşine Yatırım Yap" kartının yerini aldı)
+// ---------------------------------------------------------------------------
 
-function kendiIsiMaliyetiHesapla(state: CharacterState): number {
-  let maliyet = Math.round(
-    KENDI_ISI_TEMEL_MALIYET *
-      Math.pow(1 + KENDI_ISI_ESKALASYON, state.kendi_isi_yatirim_sayisi) *
-      enflasyonCarpani(state)
-  );
-  if (maliyet % 5 === 0) maliyet += 1;
-  return maliyet;
+export interface KotuIsKarti {
+  id: string;
+  simge: string;
+  /** Yatkınlık eklendikten sonra oyuncuya gösterilen başarı şansı (5-95). */
+  basariSansi: number;
+  /** Bu aksiyonun başarılı dalının verebileceği yaklaşık para (enflasyonlu, taban); 0 ise para getirisi yok. */
+  tahminiKazanc: number;
+  /** Rakip hedefliyor mu (etiket/anlatı için). */
+  rakibeYonelik: boolean;
 }
 
-function kendiIsiAsamaCumlesi(yatirimSayisi: number, dil: import("../types").Dil): string {
-  if (yatirimSayisi === 0) return T(dil, "İlk kez cebindeki parayı kendi işine yatırdın.");
-  if (yatirimSayisi <= 2) return T(dil, "İşin yavaş yavaş büyüyor; bu artık bir tesadüf değil, bir yön çiziyor.");
-  if (yatirimSayisi <= 5) return T(dil, "Artık bölgede kendi alanında tanınan, köklü bir isim oldun.");
-  return T(dil, "Küçük bir işletme değil, adeta küçük bir imparatorluk kuruyorsun artık.");
+function kotuIsBasariSansi(state: CharacterState, tanim: (typeof KOTU_ISLER)[number]): number {
+  const yatkinlik = state.yatkinliklar[tanim.yatkinlik] ?? 0;
+  return Math.round(Math.min(95, Math.max(5, tanim.basariSansi + yatkinlik)));
 }
 
-export interface YatirimConfig {
-  kendiIsiMaliyeti: number;
-  kendiIsiYatirimSayisi: number;
-}
-
-/** Yatırım ekranının canlı fiyat bilgisini döner; istemci sabitleri hardcode etmek yerine bunu kullanır. */
-export async function yatirimConfigGetir(id: string): Promise<YatirimConfig> {
+/** İşin & Yatırımların ekranındaki "Karanlık İşler" listesi için canlı şans/kazanç önizlemesi. */
+export async function kotuIsConfigGetir(id: string): Promise<KotuIsKarti[]> {
   const oturum = await oturumGetir(id);
   const { state } = oturum;
-  return {
-    kendiIsiMaliyeti: kendiIsiMaliyetiHesapla(state),
-    kendiIsiYatirimSayisi: state.kendi_isi_yatirim_sayisi,
-  };
+  const enflasyon = enflasyonCarpani(state);
+  return KOTU_ISLER.map((tanim) => ({
+    id: tanim.id,
+    simge: tanim.simge,
+    basariSansi: kotuIsBasariSansi(state, tanim),
+    tahminiKazanc: tanim.basarili.para ? Math.max(1, paraYuvarla(tanim.basarili.para * enflasyon)) : 0,
+    rakibeYonelik: (tanim.basarili.rakip_puani ?? 0) < 0,
+  }));
 }
 
-/** Olay beklemeden, oyuncunun istediği an tetikleyebileceği finansal aksiyon: kendi işine yatırım. */
-export async function yatirimYap(id: string): Promise<YatirimSonucu> {
+interface KotuIsSonucu {
+  state: CharacterState;
+  kazandi: boolean;
+  mesaj: string;
+}
+
+/** Bir KotuIsEtki dalını doğrudan state'e uygular (jitter yok, olay hattından geçmez). */
+function kotuIsEtkiUygula(state: CharacterState, etki: KotuIsEtki, enflasyon: number): void {
+  if (etki.para) state.para = paraYuvarla(state.para + etki.para * enflasyon);
+  if (etki.un) state.un += etki.un;
+  if (etki.ahlak) state.ahlak += etki.ahlak;
+  if (etki.saglik) state.saglik += etki.saglik;
+  if (etki.mutluluk) state.mutluluk += etki.mutluluk;
+  if (etki.rakip_puani) state.rakip_puani += etki.rakip_puani;
+  if (etki.suc_artis) state.suc_seviyesi = Math.min(100, Math.max(0, state.suc_seviyesi + etki.suc_artis));
+  if (etki.kariyer_puani) state.kariyer_puani += etki.kariyer_puani;
+}
+
+/**
+ * Olay beklemeden tetiklenen karanlık iş aksiyonu (turu TÜKETMEZ). Zar atılır,
+ * başarı/başarısız dalın etkileri doğrudan uygulanır. Başarısız dalda hapis
+ * ("ortaya çıktın") ve nadiren ölüm riski vardır.
+ */
+export async function kotuIsYap(id: string, tur: string): Promise<KotuIsSonucu> {
   const oturum = await oturumGetir(id);
   const { state } = oturum;
   if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
-  if (!MESLEKLER.includes(state.meslek)) {
-    throw new Error("Önce bir meslek seçmelisin.");
+  if (!MESLEKLER.includes(state.meslek)) throw new Error("Önce bir meslek seçmelisin.");
+  if (state.etiketler.includes("hapiste")) throw new Error("Hapisteyken bu işi çeviremezsin.");
+  if (state.etiketler.includes("yolculukta")) throw new Error("Yolculuktayken bu işi çeviremezsin.");
+  const tanim = kotuIsTanimiGetir(tur);
+  if (!tanim) throw new Error("Geçersiz iş.");
+
+  const enflasyon = enflasyonCarpani(state);
+  const sans = kotuIsBasariSansi(state, tanim);
+  const kazandi = rollSuccess(sans);
+  const dal = kazandi ? tanim.basarili : tanim.basarisiz;
+  kotuIsEtkiUygula(state, dal, enflasyon);
+
+  const dil = state.dil;
+  const birim = state.para_birimi;
+  const adi = K(dil, KOTU_IS_ADLARI[tur] ?? tur);
+  let mesaj = kazandi
+    ? T(dil, "{0}: işini gördün.", [adi])
+    : T(dil, "{0}: işler ters gitti.", [adi]);
+
+  // Başarısız dalda "ortaya çıkma": hapis + (bazı işlerde) ölüm riski.
+  if (!kazandi && dal.hapis_sansi && Math.random() < dal.hapis_sansi) {
+    etiketEkle(state, ["hapiste"]);
+    if (state.hapis_ceza_kalan <= 0) {
+      state.hapis_ceza_kalan = 3 + Math.floor(Math.random() * 4) + Math.min(3, Math.floor(state.suc_seviyesi / 30));
+    }
+    hayatOlayiEkle(state, "⛓️", T(dil, "Karanlık bir iş sırasında enselendi"));
+    mesaj += " " + T(dil, "Enselendin — kodesi boyladın.");
+  }
+  if (!kazandi && dal.olum_sansi && Math.random() * 100 < efektifOlumSansi(dal.olum_sansi, state.saglik)) {
+    clampStats(state);
+    checkDeath(state, true, T(dil, "Çevirdiği karanlık bir iş sırasında öldü."));
   }
 
-  // Kendi işine yatırım artık meslek metriğini (teçhizat/sermaye/nüfuz) BÜYÜTMEZ;
-  // her yatırım yalnızca kalıcı +%5 yıllık maaş primi verir. Bu prim, olay/aile
-  // bonuslarıyla ortak MAAS_CARPANI_TAVAN'a (×1.40) tabidir — tavana ulaşıldığında
-  // yeni yatırımın maaşa katkısı kalmaz.
-  if (maasCarpaniGetir(state) >= MAAS_CARPANI_TAVAN) {
-    throw new Error(T(state.dil, "İşin zaten zirvede; yeni bir yatırımın yıllık maaşına ek katkı sağlamaz."));
-  }
-  const maliyet = kendiIsiMaliyetiHesapla(state);
-  if (state.para < maliyet) {
-    throw new Error(T(state.dil, "Yeterli paran yok ({0} {birim} gerekli).", [maliyet]).replace(/\{birim\}/g, state.para_birimi));
-  }
-  state.para -= maliyet;
-  const asama = kendiIsiAsamaCumlesi(state.kendi_isi_yatirim_sayisi, state.dil);
-  state.kendi_isi_yatirim_sayisi += 1;
-  // Yatırım rütbe ilerlemesini de bir miktar hızlandırır.
-  state.kariyer_puani += KARIYER_PUANI_YATIRIM;
-  const oncekiMaas = state.maas_yillik;
-  maasCarpaniUygula(state, KENDI_ISI_MAAS_PRIMI, true);
-  state.maas_yillik = hesaplaMaasYillik(state);
-
-  const renk =
-    state.meslek === "Asker"
-      ? T(state.dil, "Birliğinin ikmaline ve düzenine sermaye ayırdın")
-      : state.meslek === "Tüccar"
-        ? T(state.dil, "Ticaretine bir tezgah daha kattın")
-        : T(state.dil, "Cemaatin arasındaki işlerine daha çok emek verdin");
-  let mesaj = T(state.dil, "{0} {1}. Bu, yıllık maaşını kalıcı olarak yaklaşık %5 artırdı ({2} → {3} {birim}). Yatırım kariyerini de biraz ilerletti.", [
-    asama,
-    renk,
-    oncekiMaas,
-    state.maas_yillik,
-  ]).replace(/\{birim\}/g, state.para_birimi);
-  if (maasCarpaniGetir(state) >= MAAS_CARPANI_TAVAN) {
-    mesaj += " " + T(state.dil, "Artık işin zirvede — bundan sonraki yatırımların maaşına daha fazla katkı sağlamaz.");
+  if (kazandi && dal.para) {
+    mesaj += " " + T(dil, "Kazanç: +{0} {birim}", [Math.max(1, paraYuvarla(dal.para * enflasyon))]).replace(/\{birim\}/g, birim);
   }
 
   clampStats(state);
   await oturumKaydet(state);
-  return { state, mesaj };
+  return { state, kazandi, mesaj };
 }
+
+const KOTU_IS_ADLARI: Record<string, string> = {
+  rakibi_korkut: "Rakibini Korkut",
+  adam_dov: "Zevkine Adam Döv",
+  rakibi_dov: "Rakibini Dövdür",
+  birini_soy: "Birini Soy",
+  isyeri_yak: "Rakibin İş Yerini Yak",
+};
 
 // ---------------------------------------------------------------------------
 // Piyasa mülkleri + dedikodular + yeraltı zar masası
@@ -1838,9 +1856,18 @@ export async function dedikoduGetir(id: string): Promise<string[]> {
 }
 
 const ZAR_KADEMELERI = [10, 50, 100] as const;
-const ZAR_KAZANMA_SANSI = 0.4;
 // Büyük denge turunda 4→7: aranma seviyesi genelde daha hızlı artsın (kullanıcı isteği).
 const ZAR_SUC_ARTISI = 7;
+// Hazard: her kaç elde bir "rakip bıçak çekti" tetiklenmeyi denesin ve ihtimali.
+const HAZARD_BICAK_HER_KAC_EL = 4;
+const HAZARD_BICAK_IHTIMAL = 0.45;
+const UC_KAGITCI_KAZANMA_SANSI = 0.34;
+const UC_KAGITCI_SUC_ARTISI = 4;
+const BILEK_GURESI_ODUL_TABAN = 4;
+
+function zarAtBir(): number {
+  return 1 + Math.floor(Math.random() * 6);
+}
 
 /** Zar masası ekranının canlı bahis kademelerini döner (enflasyona göre ölçeklenir). */
 export async function zarKademeleriGetir(id: string): Promise<number[]> {
@@ -1849,18 +1876,26 @@ export async function zarKademeleriGetir(id: string): Promise<number[]> {
   return ZAR_KADEMELERI.map((k) => Math.max(1, paraYuvarla(k * enflasyon)));
 }
 
-interface ZarSonucu {
+interface HazardSonucu {
   state: CharacterState;
   kazandi: boolean;
+  senZar: [number, number];
+  rakipZar: [number, number];
+  cift: boolean;
+  bicakCekildi: boolean;
   mesaj: string;
 }
 
 /**
- * Yeraltı zar masası: kazanma şansı sabit %40, kazanınca bahis ×2, kaybedince tamamı gider.
- * Her el, oynadığın için suç/aranma seviyeni artırır (kalıcı bir yatırımdan farklı olarak
- * tekrar tekrar oynanabilir — asıl fren, yükselen suç seviyesinin getirdiği hapis riski).
+ * Hazard (Orta Çağ'ın en ünlü zar oyunu, modern barbutun atası): oyuncu 2 zar,
+ * rakip 2 zar atar. Çift atan YA DA toplamı büyük olan kazanır; kazanınca bahis
+ * ×2, kaybedince tamamı gider. Her el suç/aranma +7 (kalıcı bir yatırım değil,
+ * tekrar tekrar oynanır — asıl fren yükselen hapis riski). Her
+ * HAZARD_BICAK_HER_KAC_EL elde bir, %45 ihtimalle "rakip bıçak çekti": ayrı bir
+ * seçim ekranı değil, oyunun içinde çözülen sert bir sonuç (sağlık/aranma cezası,
+ * küçük ölüm riski).
  */
-export async function zarAt(id: string, tutar: number): Promise<ZarSonucu> {
+export async function zarAt(id: string, tutar: number): Promise<HazardSonucu> {
   const oturum = await oturumGetir(id);
   const { state } = oturum;
   if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
@@ -1868,22 +1903,130 @@ export async function zarAt(id: string, tutar: number): Promise<ZarSonucu> {
   if (!kademeler.includes(tutar)) throw new Error("Geçersiz bahis tutarı.");
   if (state.para < tutar) throw new Error(`Yeterli paran yok (${tutar} ${state.para_birimi} gerekli).`);
 
-  state.para -= tutar;
-  state.suc_seviyesi += ZAR_SUC_ARTISI;
-  const kazandi = Math.random() < ZAR_KAZANMA_SANSI;
   const birim = state.para_birimi;
+  state.para = paraYuvarla(state.para - tutar);
+  state.suc_seviyesi = Math.min(100, state.suc_seviyesi + ZAR_SUC_ARTISI);
+  state.hazard_el_sayisi = (state.hazard_el_sayisi ?? 0) + 1;
+
+  const senZar: [number, number] = [zarAtBir(), zarAtBir()];
+  const rakipZar: [number, number] = [zarAtBir(), zarAtBir()];
+  const cift = senZar[0] === senZar[1];
+  const senT = senZar[0] + senZar[1];
+  const rakipT = rakipZar[0] + rakipZar[1];
+  const kazandi = cift || senT > rakipT;
+
   let mesaj: string;
   if (kazandi) {
     const kazanc = tutar * 2;
-    state.para += kazanc;
-    hayatOlayiEkle(state, "🎲", T(state.dil, "Zar masasında büyük kazandı: +{0} {birim}", [kazanc - tutar]).replace(/\{birim\}/g, birim));
-    mesaj = T(state.dil, "Zar senden yana döndü! {0} {birim} yatırdın, {1} {birim} olarak geri aldın.", [tutar, kazanc]).replace(/\{birim\}/g, birim);
+    state.para = paraYuvarla(state.para + kazanc);
+    hayatOlayiEkle(state, "🎲", T(state.dil, "Zar masasında kazandı: +{0} {birim}", [kazanc - tutar]).replace(/\{birim\}/g, birim));
+    mesaj = cift
+      ? T(state.dil, "Çift attın! ({0}-{1}) Masayı süpürdün: {2} {birim}.", [senZar[0], senZar[1], kazanc]).replace(/\{birim\}/g, birim)
+      : T(state.dil, "{0}'e {1} — zar senden yana. {2} {birim} aldın.", [rakipT, senT, kazanc]).replace(/\{birim\}/g, birim);
   } else {
-    mesaj = T(state.dil, "Zar seni yüzüstü bıraktı; {0} {birim} masada kaldı.", [tutar]).replace(/\{birim\}/g, birim);
+    mesaj = T(state.dil, "{0}'e {1} — zar rakipten yana. {2} {birim} masada kaldı.", [senT, rakipT, tutar]).replace(/\{birim\}/g, birim);
+  }
+
+  let bicakCekildi = false;
+  if (state.hazard_el_sayisi % HAZARD_BICAK_HER_KAC_EL === 0 && Math.random() < HAZARD_BICAK_IHTIMAL) {
+    bicakCekildi = true;
+    state.saglik -= 8 + Math.floor(Math.random() * 11); // 8-18
+    state.suc_seviyesi = Math.min(100, state.suc_seviyesi + 10);
+    state.mutluluk -= 5;
+    hayatOlayiEkle(state, "🔪", T(state.dil, "Zar masasında bıçaklı bir kavgaya karıştı"));
+    mesaj += " " + T(state.dil, "Sonra masa karıştı — biri bıçak çekti; sıyrık ve morlukla zar zor kaçtın.");
+    clampStats(state);
+    if (state.saglik <= 0 || Math.random() * 100 < efektifOlumSansi(6, state.saglik)) {
+      checkDeath(state, true, T(state.dil, "Zar masasındaki bıçaklı bir kavgada öldü."));
+    }
+  }
+
+  clampStats(state);
+  await oturumKaydet(state);
+  return { state, kazandi, senZar, rakipZar, cift, bicakCekildi, mesaj };
+}
+
+interface UcKagitciSonucu {
+  state: CharacterState;
+  kazandi: boolean;
+  dogruBardak: number;
+  mesaj: string;
+}
+
+/**
+ * Üç Kağıtçı (bul karayı al parayı): 3 bardak, birinin altında para. Kazanma
+ * şansı SABİT ~%34 — bardak seçimi kozmetiktir: sunucu önce kazanıp kazanmadığını
+ * belirler, sonra "doğru bardağı" (kazandıysa seçilen, kaybettiyse başka bir)
+ * bardağa koyar; istemci animasyonu bu sonuca göre biter. Kaybedince bahis gider,
+ * kazanınca ×2. Sokak dolandırıcılığı → küçük suç/aranma artışı. Turu tüketmez.
+ */
+export async function ucKagitciOyna(id: string, tutar: number, secim: number): Promise<UcKagitciSonucu> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  const kademeler = ZAR_KADEMELERI.map((k) => Math.max(1, paraYuvarla(k * enflasyonCarpani(state))));
+  if (!kademeler.includes(tutar)) throw new Error("Geçersiz bahis tutarı.");
+  if (secim !== 0 && secim !== 1 && secim !== 2) throw new Error("Geçersiz bardak.");
+  if (state.para < tutar) throw new Error(`Yeterli paran yok (${tutar} ${state.para_birimi} gerekli).`);
+
+  const birim = state.para_birimi;
+  state.para = paraYuvarla(state.para - tutar);
+  state.suc_seviyesi = Math.min(100, state.suc_seviyesi + UC_KAGITCI_SUC_ARTISI);
+  state.uc_kagitci_oyun_sayisi = (state.uc_kagitci_oyun_sayisi ?? 0) + 1;
+
+  const kazandi = Math.random() < UC_KAGITCI_KAZANMA_SANSI;
+  const dogruBardak = kazandi ? secim : (secim + 1 + Math.floor(Math.random() * 2)) % 3;
+
+  let mesaj: string;
+  if (kazandi) {
+    const kazanc = tutar * 2;
+    state.para = paraYuvarla(state.para + kazanc);
+    hayatOlayiEkle(state, "🥃", T(state.dil, "Üç kağıtçıyı bir kez olsun yendi: +{0} {birim}", [kazanc - tutar]).replace(/\{birim\}/g, birim));
+    mesaj = T(state.dil, "Doğru bardağı buldun! {0} {birim} kazandın.", [kazanc]).replace(/\{birim\}/g, birim);
+  } else {
+    mesaj = T(state.dil, "Para o bardağın altında değildi; {0} {birim} gitti. (Zaten hiç olmadı.)", [tutar]).replace(/\{birim\}/g, birim);
   }
   clampStats(state);
   await oturumKaydet(state);
-  return { state, kazandi, mesaj };
+  return { state, kazandi, dogruBardak, mesaj };
+}
+
+interface BilekGuresiSonucu {
+  state: CharacterState;
+  mesaj: string;
+}
+
+/**
+ * Bilek güreşi: istemci 5 saniyede 30 dokunuş hedefli bir beceri oyunu oynatır,
+ * yalnızca başarılı/başarısız sonucunu gönderir (tek oyunculu, düşük stake —
+ * sunucu istemciye güvenir). Kazanç: ün +, mutluluk +, küçük para. Kayıp: sağlık
+ * -, ün -. Turu tüketmez.
+ */
+export async function bilekGuresiSonuc(id: string, basarili: boolean): Promise<BilekGuresiSonucu> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  if (state.etiketler.includes("hapiste") || state.etiketler.includes("yolculukta")) {
+    throw new Error("Şu an bilek güreşi yapamazsın.");
+  }
+  const birim = state.para_birimi;
+  let mesaj: string;
+  if (basarili) {
+    const odul = Math.max(1, paraYuvarla(BILEK_GURESI_ODUL_TABAN * enflasyonCarpani(state)));
+    state.para = paraYuvarla(state.para + odul);
+    state.un += 6;
+    state.mutluluk += 5;
+    hayatOlayiEkle(state, "💪", T(state.dil, "Bir bilek güreşini kazandı"));
+    mesaj = T(state.dil, "Rakibin bileğini masaya yapıştırdın! Meydanın gözü sende — ün ve {0} {birim}.", [odul]).replace(/\{birim\}/g, birim);
+  } else {
+    state.saglik -= 6;
+    state.un -= 4;
+    state.mutluluk -= 3;
+    mesaj = T(state.dil, "Bileğin bükülene kadar direndin ama masaya sen yapıştın. Herkes güldü.");
+  }
+  clampStats(state);
+  await oturumKaydet(state);
+  return { state, mesaj };
 }
 
 // ---------------------------------------------------------------------------

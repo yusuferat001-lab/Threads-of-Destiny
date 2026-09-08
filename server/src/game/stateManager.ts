@@ -10,7 +10,6 @@ import {
   TERFI_COOLDOWN,
   rutbeMaasCarpani,
   KARIYER_PUANI_YILLIK,
-  KARIYER_PUANI_YATIRIM,
 } from "../data/rutbeler";
 import { YerlesimTanimi, yerlesimGetir, yerlesimIdByAd } from "../data/yerlesimler";
 import { konutGetir, VARSAYILAN_KONUT_ID, TASINMA_MALIYETI } from "../data/konutlar";
@@ -288,10 +287,11 @@ export function maasCarpaniUygula(state: CharacterState, carpan: number, ham = f
  * çarpanı: karakterin yaratıldığı yıldan bu yana geçen GERÇEK yıl sayısına
  * göre, çağa özel bir oranla bileşik büyür. Büyük denge turunda GELİR ve GİDER
  * enflasyonu ayrıştırıldı (kullanıcı: "Orta Çağ'da gelire %1, giderlere %2;
- * Sanayi Devrimi'nde gelire %2, gidere %3"). GELİR (maaş, mülk/yatırım/mağaza
- * maliyetleri) `enflasyonCarpani`'yı; yaşam + konut GİDERLERİ ise ayrı,
- * her zaman biraz daha yüksek `giderEnflasyonCarpani`'yı kullanır — böylece
- * uzun oyunlarda giderler gelirden hafifçe hızlı artıp reel dengeyi sıkılaştırır.
+ * Sanayi Devrimi'nde gelire %2, gidere %3"). GELİR (maaş) + mülk/yatırım
+ * maliyetleri `enflasyonCarpani`'yı; yaşam + konut + MAĞAZA GİDERLERİ (şifa +
+ * lüks satın alma fiyatı ve lüks bakım masrafı) ise ayrı, her zaman biraz daha
+ * yüksek `giderEnflasyonCarpani`'yı kullanır — böylece uzun oyunlarda giderler
+ * gelirden hafifçe hızlı artıp reel dengeyi sıkılaştırır.
  */
 const ENFLASYON_ORANI_YILLIK: Record<Cag, number> = {
   "Orta Çağ": 0.01,
@@ -634,7 +634,8 @@ export function createCharacter(
     din_kultur: DIN_KULTUR_BY_BOLGE[bolge] ?? "Bilinmiyor",
     konut_id: VARSAYILAN_KONUT_ID,
     yasam_secimi_id: VARSAYILAN_YASAM_SECIMI_ID,
-    kendi_isi_yatirim_sayisi: 0,
+    hazard_el_sayisi: 0,
+    uc_kagitci_oyun_sayisi: 0,
     aile_meslegi: aile.ad,
     aile_mirasi_surduruldu: false,
     acilis_anlatimi: "",
@@ -832,9 +833,13 @@ export function rutbeGuncelle(state: CharacterState): void {
  */
 export function eskiKayitGocu(state: CharacterState): void {
   if (typeof state.kariyer_puani !== "number") {
+    // "Kendi işine yatırım" kaldırıldı; eski kayıtlarda o sayaç (varsa) hâlâ kabaca
+    // kariyer ilerlemesine sayılsın diye ×8 katkısı korunuyor (alan artık tipte yok,
+    // ama eski JSON blob'unda bulunabilir).
+    const eskiYatirim = (state as unknown as Record<string, unknown>).kendi_isi_yatirim_sayisi;
     state.kariyer_puani =
       (state.tur_sayisi ?? 0) * KARIYER_PUANI_YILLIK +
-      (state.kendi_isi_yatirim_sayisi ?? 0) * KARIYER_PUANI_YATIRIM;
+      (typeof eskiYatirim === "number" ? eskiYatirim * 8 : 0);
   }
   if (typeof state.son_terfi_yili !== "number") {
     state.son_terfi_yili = state.baslangic_yili ?? state.yil;
@@ -870,6 +875,9 @@ export function eskiKayitGocu(state: CharacterState): void {
   if (typeof state.veba_olum_riski !== "number") {
     state.veba_olum_riski = state.etiketler.includes("veba_hastasi") ? 55 : 0;
   }
+  // Mini-oyun sayaçları sonradan eklendi.
+  if (typeof state.hazard_el_sayisi !== "number") state.hazard_el_sayisi = 0;
+  if (typeof state.uc_kagitci_oyun_sayisi !== "number") state.uc_kagitci_oyun_sayisi = 0;
   // Dil alanı sonradan eklendi; eski kayıtlar her zaman Türkçe oynanmıştı.
   if (state.dil !== "en") state.dil = "tr";
 }
@@ -1047,6 +1055,18 @@ export function yaslanmaUygula(state: CharacterState, yasArtisi: number): number
 
 const KRONIK_SAGLIK_ESIGI = 30;
 const KRONIK_MUTLULUK_ESIGI = 25;
+
+// Evlilik ↔ mutluluk pasif sürüklenmesi (kullanıcı isteği: "evli olmamak mutluluk
+// düşürsün, eşle kavga etmek de düşürsün"). pasifEkonomiUygula'da yıllık işler,
+// yalnız EVLILIK_MORAL_YAS ve üstünde. Yalnızlık ile kötü evlilik moral aşındırır,
+// iyi evlilik moral verir — böylece evlilik gerçek bir moral ekseni olur.
+const EVLILIK_MORAL_YAS = 26;
+const YALNIZLIK_MUTLULUK_YILLIK = 0.7; // bekar/dul, 26+ → -0.7/yıl
+const KOTU_EVLILIK_ESIGI = 35; // es_puani bunun altındaysa "sürekli kavga"
+const KOTU_EVLILIK_MUTLULUK_YILLIK_MIN = 0.8; // es_puani ~35'te ceza
+const KOTU_EVLILIK_MUTLULUK_YILLIK_EK = 1.2; // es_puani 0'da toplam -2.0/yıl
+const IYI_EVLILIK_ESIGI = 70; // es_puani bunun üstündeyse mutlu evlilik
+const IYI_EVLILIK_MUTLULUK_YILLIK = 0.5; // +0.5/yıl
 
 /**
  * Konut + yaşam tarzının sağladığı yıllık PASİF sağlık/mutluluk kazancı, ilgili
@@ -1288,6 +1308,22 @@ export function pasifEkonomiUygula(state: CharacterState, yasArtisi: number): Ek
     state.nufuz += 0.3 * yasArtisi;
   } else if (state.meslek === "Tüccar") {
     state.ahlak += (netGelir >= 0 ? -0.4 : 0.4) * yasArtisi;
+  }
+
+  // Evlilik ↔ mutluluk: yalnızlık ve kötü evlilik morali aşındırır, mutlu evlilik
+  // moral verir. Yalnız 26 yaş ve üstünde; olayların etkisini domine etmeyen küçük
+  // bir yıllık sürüklenme (meslek sürüklenmesiyle aynı felsefe).
+  if (state.yas >= EVLILIK_MORAL_YAS) {
+    if (!state.es_adi) {
+      state.mutluluk -= YALNIZLIK_MUTLULUK_YILLIK * yasArtisi;
+    } else if (state.es_puani < KOTU_EVLILIK_ESIGI) {
+      // Eşle sürekli kavga: es_puani ne kadar düşükse ceza o kadar ağır.
+      const siddet = (KOTU_EVLILIK_ESIGI - state.es_puani) / KOTU_EVLILIK_ESIGI; // 0..1
+      state.mutluluk -=
+        (KOTU_EVLILIK_MUTLULUK_YILLIK_MIN + siddet * KOTU_EVLILIK_MUTLULUK_YILLIK_EK) * yasArtisi;
+    } else if (state.es_puani >= IYI_EVLILIK_ESIGI) {
+      state.mutluluk += IYI_EVLILIK_MUTLULUK_YILLIK * yasArtisi;
+    }
   }
 
   // Borç kapatma mekaniği: borçtayken bütçesini artıya çevirmiş bir karakter
@@ -2315,7 +2351,8 @@ export function piyasaDedikodulariUret(state: CharacterState): string[] {
 
 /**
  * Bir mağaza eşyasının ŞU ANKİ dünya durumuna (savaş/veba/kriz/ekonomi) ve
- * enflasyona göre satış fiyatını hesaplar — mulkGetiriOraniHesapla ile aynı
+ * GİDER enflasyonuna (yaşam/konut giderleriyle aynı, gelir enflasyonundan biraz
+ * yüksek) göre satış fiyatını hesaplar — mulkGetiriOraniHesapla ile aynı
  * felsefe: eşyanın kendi fiyatEtkenleri'nden sadece aktif olan durumlar
  * çarpımsal olarak devreye girer, tanımlanmayanlar 1 (etkisiz) sayılır.
  * Hem satın alma anında (magazadanSatinAl) hem de mağaza ekranının canlı
@@ -2333,7 +2370,7 @@ export function magazaFiyatiHesapla(esya: MagazaEsyasiTanimi, state: CharacterSt
   if (ulke.kriz?.tur === "altin_cag") carpan *= e.altin_cag ?? 1;
   if (ulke.ekonomi === "iyi") carpan *= e.ekonomiIyi ?? 1;
   if (ulke.ekonomi === "kotu") carpan *= e.ekonomiKotu ?? 1;
-  return Math.max(1, paraYuvarla(esya.tabanFiyat * carpan * enflasyonCarpani(state)));
+  return Math.max(1, paraYuvarla(esya.tabanFiyat * carpan * giderEnflasyonCarpani(state)));
 }
 
 /** "sifa" satın alımından sonra TÜM sifa kategorisinin kaç yıl kilitleneceği — oyuncu ilaç/erzak stoklayıp sürekli sürekli alışveriş yapamasın diye (bkz. §26). */
@@ -2408,7 +2445,7 @@ export function envanterBozulmasiUygula(state: CharacterState, yasArtisi: number
     // luks: periyodik bakım — kalıcı, sadece masraf çıkar ve sayaç sıfırlanır
     if (yeniKalanYil <= 0) {
       const tanim = magazaEsyasiTanimiGetir(esya.katalogId);
-      const guncelDeger = Math.round(tanim.tabanFiyat * enflasyonCarpani(state));
+      const guncelDeger = Math.round(tanim.tabanFiyat * giderEnflasyonCarpani(state));
       const masraf = sonBasamagiDuzelt(guncelDeger * LUKS_BAKIM_ORANI);
       state.para -= masraf;
       bakimOdemeleri.push({ ad: esya.ad, miktar: masraf });

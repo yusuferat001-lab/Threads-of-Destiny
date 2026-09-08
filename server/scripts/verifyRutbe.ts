@@ -8,7 +8,7 @@
 import "./_simPrismaStub";
 
 import { createCharacter, mesleğiSec, rutbeGuncelle, hesaplaMaasYillik } from "../src/game/stateManager";
-import { yeniOyun, mesleğiAta, yatirimYap, stateGetir } from "../src/game/gameEngine";
+import { yeniOyun, mesleğiAta, kotuIsYap, stateGetir } from "../src/game/gameEngine";
 
 let gecti = 0;
 let kaldi = 0;
@@ -77,14 +77,19 @@ async function main(): Promise<void> {
   kontrol(`S1 (${maasS1}) < S3 (${maasS3})`, maasS3 > maasS1);
   kontrol(`S3 (${maasS3}) < S5 (${maasS5})`, maasS5 > maasS3);
 
-  console.log("\n7) Kendi işine yatırım kariyer puanını artırır (motor entegrasyonu)");
+  console.log("\n7) Rakip hedefleyen karanlık iş kariyer puanını artırır (motor entegrasyonu)");
   const g = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
   await mesleğiAta(g.id, "Tüccar");
   g.para = 5000;
-  const oncePuan = g.kariyer_puani;
-  await yatirimYap(g.id);
-  const sonra = await stateGetir(g.id);
-  kontrol(`yatırım sonrası kariyer_puani arttı (${oncePuan} → ${sonra.kariyer_puani})`, sonra.kariyer_puani > oncePuan);
+  let oncePuan = g.kariyer_puani;
+  let denemeArtti = false;
+  for (let i = 0; i < 40 && !denemeArtti; i++) {
+    await kotuIsYap(g.id, "rakibi_dov");
+    const s = await stateGetir(g.id);
+    if (s.kariyer_puani > oncePuan) denemeArtti = true;
+    oncePuan = s.kariyer_puani;
+  }
+  kontrol(`karanlık iş başarısı sonrası kariyer_puani en az bir kez arttı`, denemeArtti);
 
   console.log(`\nSonuç: ${gecti} geçti, ${kaldi} kaldı.`);
   process.exit(kaldi > 0 ? 1 : 0);

@@ -318,6 +318,15 @@ export const KATALOG_EN: Record<string, string> = {
     "An invitation-only evening where crystal glasses clink and intrigue turns beneath a velvet glove.",
 
   // ---------------------------------------------------------------------------
+  // Karanlık işler
+  // ---------------------------------------------------------------------------
+  "Rakibini Korkut": "Intimidate Your Rival",
+  "Zevkine Adam Döv": "Beat Someone for Sport",
+  "Rakibini Dövdür": "Have Your Rival Beaten",
+  "Birini Soy": "Rob Someone",
+  "Rakibin İş Yerini Yak": "Burn Down Your Rival's Business",
+
+  // ---------------------------------------------------------------------------
   // Piyasa mülkleri
   // ---------------------------------------------------------------------------
   "Küçük Tarla": "Small Plot",

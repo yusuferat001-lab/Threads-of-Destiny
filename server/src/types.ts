@@ -152,8 +152,10 @@ export interface CharacterState {
   konut_id: string;
   /** Yaşam tarzı seçimi (yasamSecenekleri.ts); yıllık yaşam giderini ve sağlık/mutluluk etkisini belirler. */
   yasam_secimi_id: string;
-  /** "kendi_isi" yatırımının kaç kez yapıldığı; her tekrarda maliyeti büyüten eskalasyon formülü için tutulur. */
-  kendi_isi_yatirim_sayisi: number;
+  /** Hazard (zar) mini-oyununda oynanan toplam el sayısı — "rakip bıçak çekti" periyodu için. */
+  hazard_el_sayisi: number;
+  /** Üç Kağıtçı mini-oyununda oynanan toplam oyun sayısı (istatistik/ileride aranma tırmanışı için). */
+  uc_kagitci_oyun_sayisi: number;
 
   aile_meslegi: string;
   aile_mirasi_surduruldu: boolean;
