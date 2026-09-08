@@ -2108,7 +2108,7 @@ export function dunyaFinansEtkileri(state: CharacterState): DunyaFinansEtkisi[] 
     const vergi = Math.round(state.buyuk_savas.vergiOrani * 100);
     liste.push({
       ikon: "⚔️",
-      metin: T(dil, "Büyük savaş ({0}): maaş −%15 · yemek +%{1} · maaşının %{2}'i savaş vergisi", [
+      metin: T(dil, "Büyük savaş ({0}): maaş −%15 · yemek +%{1} · savaş vergisi %{2}", [
         K(dil, state.buyuk_savas.dusman),
         gida,
         vergi,

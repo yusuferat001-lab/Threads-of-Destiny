@@ -50,13 +50,13 @@ export function FinansOzetPaneli({ finans, maasYillikYedek, paraBirimi }: Finans
       </div>
 
       {dunyaEtkileri.length > 0 && (
-        <div className="finans-ozet-mini-dunya" title={dunyaEtkileri.map((e) => `${e.ikon} ${e.metin}`).join('\n')}>
+        <ul className="finans-ozet-mini-dunya">
           {dunyaEtkileri.map((e, i) => (
-            <span key={i} className="finans-ozet-mini-dunya-cip">
-              {e.ikon} {e.metin.split(':')[0]}
-            </span>
+            <li key={i}>
+              <span aria-hidden="true">{e.ikon}</span> {e.metin}
+            </li>
           ))}
-        </div>
+        </ul>
       )}
     </div>
   );

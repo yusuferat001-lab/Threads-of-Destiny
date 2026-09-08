@@ -29,25 +29,97 @@ describe("ebeveynler (anne/baba)", () => {
 
 /** Testin kendi bağımsız beklenti listesi — npcIsimleri.ts'teki gerçek havuzla birebir örtüşmeli. */
 const KADIN_ISIMLERI: Record<string, string[]> = {
-  Fransa: ["Isabeau", "Marguerite", "Blanche", "Aliénor"],
-  "Kutsal Roma": ["Adelheid", "Gertrud", "Brunhild", "Hildegard"],
-  Bizans: ["Zoe", "Eirene", "Theodora", "Anna"],
-  Selçuklu: ["Elif", "Zeynep", "Gülhatun"],
-  Eyyubiler: ["Zeynab", "Amina", "Leyla", "Nur"],
-  İngiltere: ["Margaret", "Charlotte", "Alice", "Emily"],
-  Osmanlı: ["Fatma", "Ayşe", "Zehra", "Emine"],
-  Rusya: ["Elena", "Anastasia", "Olga", "Irina"],
+  Fransa: [
+    "Isabeau", "Marguerite", "Blanche", "Aliénor", "Adèle", "Mahaut",
+    "Béatrice", "Jeanne", "Sibylle", "Agnès", "Ermengarde", "Constance",
+  ],
+  "Kutsal Roma": [
+    "Adelheid", "Gertrud", "Brunhild", "Hildegard", "Kunigunde", "Mechthild",
+    "Agnes", "Beatrix", "Irmgard", "Uta", "Sophie", "Richenza",
+  ],
+  Bizans: [
+    "Zoe", "Eirene", "Theodora", "Anna", "Maria", "Euphrosyne",
+    "Helena", "Sophia", "Kale", "Xene", "Martha", "Pulcheria",
+  ],
+  Selçuklu: [
+    "Elif", "Zeynep", "Gülhatun", "Terken", "Mahperi", "Devlet",
+    "Safiye", "Gevher", "Melike", "Hunat", "Raziye", "Şahnaz",
+  ],
+  Eyyubiler: [
+    "Zeynab", "Amina", "Leyla", "Nur", "Fatıma", "Halime",
+    "Rabia", "Safiye", "Aişe", "Cemile", "Rukiye", "Sara",
+  ],
+  İngiltere: [
+    "Margaret", "Charlotte", "Alice", "Emily", "Victoria", "Eleanor",
+    "Florence", "Harriet", "Jane", "Mary", "Edith", "Beatrice",
+  ],
+  Osmanlı: [
+    "Fatma", "Ayşe", "Zehra", "Emine", "Hatice", "Zeliha",
+    "Hanife", "Naime", "Şerife", "Rukiye", "Münevver", "Sıdıka",
+  ],
+  Rusya: [
+    "Elena", "Anastasia", "Olga", "Irina", "Tatiana", "Ekaterina",
+    "Natalia", "Maria", "Vera", "Sofia", "Lidia", "Praskovya",
+  ],
 };
 
 const ERKEK_ISIMLERI: Record<string, string[]> = {
-  Fransa: ["Étienne", "Baudouin", "Guillaume", "Aymeric", "Thibault", "Renaud"],
-  "Kutsal Roma": ["Konrad", "Heinrich", "Friedrich", "Wolfram", "Ludwig", "Otto"],
-  Bizans: ["Theodoros", "Ioannes", "Anastasios", "Konstantinos", "Photios", "Nikephoros"],
-  Selçuklu: ["Alparslan", "Yusuf", "Melikşah", "Turhan", "Sencer", "Tuğrul", "Kılıçarslan"],
-  Eyyubiler: ["Selahaddin", "Faruk", "Halil", "Kerim", "Tarık", "Eyüp"],
-  İngiltere: ["Thomas", "William", "Edward", "Henry", "George", "Arthur"],
-  Osmanlı: ["Ahmet", "Mehmet", "Hasan", "Hüseyin", "Mustafa", "Osman"],
-  Rusya: ["Ivan", "Nikolai", "Mikhail", "Dmitri", "Pyotr", "Sergei"],
+  Fransa: [
+    "Étienne", "Baudouin", "Guillaume", "Aymeric", "Thibault", "Renaud",
+    "Geoffroi", "Foulques", "Hugues", "Amaury", "Gautier", "Enguerrand",
+    "Raoul", "Barthélemy", "Gilles", "Eudes", "Payen", "Adhémar",
+    "Bertrand", "Gervais", "Simon", "Anselme", "Roland", "Girard",
+    "Philippe", "Josselin", "Robert", "Hervé", "Lancelin", "Garnier",
+  ],
+  "Kutsal Roma": [
+    "Konrad", "Heinrich", "Friedrich", "Wolfram", "Ludwig", "Otto",
+    "Albrecht", "Dietrich", "Gottfried", "Lothar", "Sigmund", "Rudolf",
+    "Bernhard", "Ekkehard", "Kuno", "Werner", "Hartmann", "Gerhard",
+    "Adalbert", "Reinhard", "Wilhelm", "Berthold", "Manfred", "Günther",
+    "Arnulf", "Eberhard", "Sieghart", "Volker", "Hermann", "Diethelm",
+  ],
+  Bizans: [
+    "Theodoros", "Ioannes", "Anastasios", "Konstantinos", "Photios", "Nikephoros",
+    "Alexios", "Basileios", "Michael", "Georgios", "Demetrios", "Leon",
+    "Romanos", "Isaakios", "Andronikos", "Stephanos", "Manuel", "Nikolaos",
+    "Bardas", "Symeon", "Petros", "Loukas", "Kosmas", "Theophylaktos",
+    "Prokopios", "Eustathios", "Gregorios", "Sergios", "Philaretos", "Niketas",
+  ],
+  Selçuklu: [
+    "Alparslan", "Yusuf", "Melikşah", "Turhan", "Sencer", "Tuğrul", "Kılıçarslan",
+    "Berkyaruk", "Mesud", "Süleyman", "Çağrı", "Arslan", "Böri", "Danişmend",
+    "Aytekin", "Kutalmış", "Porsuk", "Gümüştekin", "Sungur", "Yağızarslan", "Tekiş",
+    "Artuk", "Çaka", "Balak", "Aksungur", "Bozan", "Karatekin",
+    "Yaruk", "Emirdad", "Kürboğa", "Tutuş", "İlgazi", "Altuntaş",
+  ],
+  Eyyubiler: [
+    "Selahaddin", "Faruk", "Halil", "Kerim", "Tarık", "Eyüp",
+    "Turan", "Adil", "Kamil", "Salih", "Nasır", "Efdal",
+    "Aziz", "Muzaffer", "İmad", "Esed", "Şirkuh", "Necmeddin",
+    "Emin", "Cafer", "Behram", "Zahir", "Mansur", "Reşid",
+    "Sabri", "Şihab", "Fahreddin", "Bahaeddin", "Seyfeddin", "Alaeddin",
+  ],
+  İngiltere: [
+    "Thomas", "William", "Edward", "Henry", "George", "Arthur",
+    "Charles", "James", "John", "Frederick", "Albert", "Walter",
+    "Ernest", "Herbert", "Alfred", "Samuel", "Francis", "Robert",
+    "Edwin", "Percy", "Reginald", "Harold", "Wilfred", "Cecil",
+    "Leonard", "Horace", "Sidney", "Clarence", "Bertram", "Oswald",
+  ],
+  Osmanlı: [
+    "Ahmet", "Mehmet", "Hasan", "Hüseyin", "Mustafa", "Osman",
+    "İbrahim", "İsmail", "Ali", "Süleyman", "Kemal", "Rıza",
+    "Cemal", "Salih", "Halil", "Ömer", "Yusuf", "Bekir",
+    "Kadri", "Şükrü", "Necip", "Tahir", "Nuri", "Recep",
+    "Fuat", "Hakkı", "Sadık", "Vehbi", "Zeki", "Lütfi",
+  ],
+  Rusya: [
+    "Ivan", "Nikolai", "Mikhail", "Dmitri", "Pyotr", "Sergei",
+    "Alexei", "Fyodor", "Vasili", "Andrei", "Grigori", "Pavel",
+    "Boris", "Yuri", "Konstantin", "Stepan", "Anton", "Lev",
+    "Maksim", "Timofei", "Ignat", "Rodion", "Kirill", "Yakov",
+    "Semyon", "Gavriil", "Arkadi", "Nikita", "Prokhor", "Yefim",
+  ],
 };
 
 /** Test yardımcısı: eşikleri fazlasıyla doldurup yılı ilerleterek karakteri hedef kademeye çıkarır. */

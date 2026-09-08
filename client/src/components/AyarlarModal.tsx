@@ -6,8 +6,10 @@ import type { GeriBildirimGirdi, GeriBildirimKategori } from '../types';
 interface Props {
   dil: Dil;
   sesKapali: boolean;
+  muzikAcik: boolean;
   onDilDegistir: (dil: Dil) => void;
   onSesToggle: () => void;
+  onMuzikToggle: () => void;
   onGeriBildirimGonder: (girdi: GeriBildirimGirdi) => Promise<void>;
   onKapat: () => void;
   /** Oyun ortasındayken verilir: "Ana Menüye Dön" butonunu gösterir (oyun kaydı korunur). */
@@ -24,8 +26,10 @@ const MAKS_MESAJ = 2000;
 export function AyarlarModal({
   dil,
   sesKapali,
+  muzikAcik,
   onDilDegistir,
   onSesToggle,
+  onMuzikToggle,
   onGeriBildirimGonder,
   onKapat,
   onAnaMenu,
@@ -150,6 +154,29 @@ export function AyarlarModal({
                     className={`ayar-secenek${sesKapali ? ' secili' : ''}`}
                     onClick={() => {
                       if (!sesKapali) onSesToggle();
+                    }}
+                  >
+                    {M.sesKapali}
+                  </button>
+                </div>
+              </section>
+
+              <section className="ayar-bolum">
+                <h3>🎵 {M.muzikBaslik}</h3>
+                <p className="ayar-bolum-aciklama">{M.muzikAciklama}</p>
+                <div className="ayar-secenek-grup">
+                  <button
+                    className={`ayar-secenek${muzikAcik ? ' secili' : ''}`}
+                    onClick={() => {
+                      if (!muzikAcik) onMuzikToggle();
+                    }}
+                  >
+                    {M.sesAcik}
+                  </button>
+                  <button
+                    className={`ayar-secenek${!muzikAcik ? ' secili' : ''}`}
+                    onClick={() => {
+                      if (muzikAcik) onMuzikToggle();
                     }}
                   >
                     {M.sesKapali}

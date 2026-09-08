@@ -35,6 +35,8 @@ const TR = {
   sesAciklama: 'Seçim sonuçlarında çalan kısa geri bildirim sesleri.',
   sesAcik: 'Açık',
   sesKapali: 'Kapalı',
+  muzikBaslik: 'Müzik',
+  muzikAciklama: 'Arka planda çalan dönem müziği (çağına ve bulunduğun ekrana göre değişir).',
   gbBaslik: 'Görüşünü paylaş',
   gbAciklama: 'Bir hata mı buldun, bir fikrin mi var? Doğrudan geliştiriciye ulaşır.',
   gbKategoriHata: '🐞 Hata',
@@ -67,11 +69,13 @@ const TR = {
   sohret: 'Şöhret',
 
   // ---- Giriş ekranı ----
-  oyunAdi: 'Kader Çarkı',
+  oyunAdi: 'Threads of Destiny',
   girisAciklama:
     'Çağını, ülkeni ve mesleğini sen seç; ailen ve kişiliğin rastgele belirlensin. Gerisini kaderin ve kararların belirlesin. Ölüm kalıcıdır.',
   btnYeniHayat: '⚙️ Yeni Hayata Başla',
   btnLiderlik: '🏆 Liderlik Tablosu',
+  btnNasilOynanir: '📖 Nasıl Oynanır?',
+  nasilOynanirBaslik: 'Nasıl Oynanır?',
   btnAyarlar: '⚙️ Ayarlar',
   panelGecmisHayatlar: '📜 Geçmiş Hayatların',
   temizle: 'Temizle',
@@ -82,11 +86,16 @@ const TR = {
   panelBasarimlar: '🏵️ Başarımların',
   gecmisHayatSkorSonek: 'puan',
   oyunaDevamEt: '▶ Oyuna Devam Et',
+  girisDevamAlt: '{0} · {1} yaşında · {2}',
+  girisYeniHayatUyari: 'Mevcut oyunun silinmez; Ayarlar → Ana Menü ile geri dönersin.',
   girisGorusCta: '💬 Oyunu birlikte geliştirelim — görüşünü yaz',
   panelYolHaritasi: '🗺️ Yol Haritası',
   yhDurumYakinda: 'Planlanıyor',
   yhDurumYapiliyor: 'Yapılıyor',
   yhDurumTamam: 'Tamamlandı',
+  gizemBaslik: '✦ Yakında',
+  gizemYeniMeslek: 'Yeni meslek',
+  gizemTarih: '12 Eylül',
   panelYapimci: '👤 Yapımcı',
   yapimciLinkedin: 'LinkedIn →',
   anaMenuyeDon: '🏠 Ana Menüye Dön',
@@ -95,6 +104,10 @@ const TR = {
   bgAc: '🏆 Başarım Galerisi',
   bgGizli: 'Gizli başarım — koşulunu kendin keşfet.',
   bgYeniBasarim: '🏆 Yeni başarım: {0}',
+
+  // ---- Kurulum akışı (çağ→bölge→yerleşim→isim) ----
+  adimEtiketi: 'Adım {0} / {1}',
+  girisSlogan: 'Weave the threads of your fate.',
 
   // ---- Çağ seçimi ----
   cagSecBaslik: 'Çağını Seç',
@@ -345,7 +358,7 @@ const TR = {
   feNetYillikDahil: 'Net yıllık (gayrimenkul dahil)',
   feNetYillik: 'Net yıllık',
   feYasamTarzin: 'Yaşam Tarzın',
-  feDegistirNot: 'İstediğin an değiştirebilirsin, tur harcamaz.',
+  feDegistirNot: 'Tur harcamaz.',
   feSuAnBu: ' (şu an bu)',
   feSuAnBurada: ' (şu an burada)',
   feYillikGider: 'Yıllık gider',
@@ -385,8 +398,7 @@ const TR = {
   iyBakimVergi: '🔧 Bakım/vergi: ~-{0} {1}/yıl',
   iyBakimTitle:
     '7-11 yılda bir çıkan bakım/vergi masrafının yıllığa bölünmüş yaklaşık tutarı; getiriden ayrı, her koşulda gider.',
-  iyBakimAcikla:
-    'Bu mülk 7-11 yılda bir, güncel değerinin yaklaşık üçte biri kadar bakım/vergi masrafı çıkarır. Yukarıdaki "eline kalan" bu gideri düştükten sonraki net akıştır.',
+  iyBakimAcikla: '🔧 Her mülk 7-11 yılda bir değerinin ~⅓\'ü kadar bakım/vergi çıkarır; "net" bunu düşer.',
   iyKendiParan: 'Kendi Paran',
   iyKendiIsin: 'Kendi İşin',
   iyKendiIsineYatirim: 'Kendi İşine Yatırım Yap',
@@ -426,14 +438,11 @@ const TR = {
 
   // ---- MagazaPaneli ----
   mpBaslik: 'Mağaza',
-  mpAciklama:
-    'Elindeki {0} {1} ile alışveriş yapabilirsin. Fiyatlar sabit değil — savaş, kıtlık, veba ve bolluk gibi durumlara göre anlık değişir.',
+  mpAciklama: 'Elindeki {0} {1}. Fiyatlar savaş, kıtlık ve bolluğa göre değişir.',
   mpSekmeSifa: 'Temel Tüketim & Şifa',
   mpSekmeLuks: 'Lüks Tüketim',
-  mpSifaAciklama:
-    'Sağlık ve mutluluk verir; kullanılmazsa bir süre sonra çürüyüp envanterden silinir. Bir sifa ürünü almak, kategorinin tamamını bir süreliğine kilitler.',
-  mpLuksAciklama:
-    'Satın alınca hemen ün/statü kazandırır; çürümez ama her türden en fazla bir tane sahiplenilir, ve arada bir bakım/vergi masrafı çıkarır.',
+  mpSifaAciklama: 'Sağlık/mutluluk verir; kullanılmazsa çürür. Alışveriş kategoriyi bir süre kilitler.',
+  mpLuksAciklama: 'Anında ün kazandırır; türünden 1 tane, arada bakım masrafı.',
   mpKategoriBos: 'Bu kategoride şu an çağına uygun bir eşya yok.',
   mpSaglik: 'sağlık',
   mpMutluluk: 'mutluluk',
@@ -573,7 +582,7 @@ const TR = {
   // ---- SosyallesmePaneli (tam) ----
   spSosyallesBaslik: 'Sosyalleş',
   spIntro:
-    'Bir mekâna gitmek bir tur harcamaz ama küçük bir giriş ücreti ister; orada yaşadığın olay hem biraz para götürür hem de moralini yükseltir, ve çözmek zamanı ilerletir. Alkollü mekânları sık sık ziyaret etmek kalıcı bir ayyaşlık damgasına yol açabilir.',
+    'Küçük bir ücret ödersin; olay biraz para götürür ama moral verir. Alkollü mekânlara sık gitmek "ayyaş" damgası getirir.',
   spMekanYok: 'Şu an gidebileceğin bir mekân yok.',
   spAyyasZaten: 'Zaten ayyaş olarak tanınıyorsun.',
   spZiyaretUyari: 'Şimdiye kadar {0} kez gittin — {1} ziyaret daha ayyaşlık damgası vurur.',
@@ -597,12 +606,11 @@ const TR = {
 
   // ---- Sadeleştirilmiş / kısaltılmış metinler ----
   feKirilimLejant: '🎖️ 📈 kalıcı · 🤝 🌍 dünya durumuna göre değişir',
-  feTasinNotKisa: 'Tur harcamaz. Pahalı eve geçiş bir kerelik {0} {1}; ucuza dönüş bedava.',
+  feTasinNotKisa: 'Tur harcamaz. Pahalıya geçiş bir kerelik {0} {1}.',
   feTasinmaKisa: ' · +{0} {1} taşınma',
   iyNetKisa: '💰 Net ~{0}{1} {2}/yıl ({3}%)',
   iyFiyatKisa: 'Fiyat: {0} {1}',
-  iyRutbeNasilKisa: 'İşine yatır, {0} yüksek tut, kıdem biriktir. Terfiler arası birkaç yıl geçer; rütbe asla düşmez.',
-  iyZarNot: 'Kazanırsan bahsin 2 katı, kaybedersen hepsi gider. Kazanma şansı ~%40.',
+  iyRutbeNasilKisa: 'İşine yatır, {0} yüksek tut, kıdem biriktir. Rütbe asla düşmez.',
   mpFayda: 'fayda',
   mpRafKisa: '~{0}y raf ömrü',
 
@@ -629,6 +637,8 @@ const EN: Metinler = {
   sesAciklama: 'Short feedback sounds played on choice outcomes.',
   sesAcik: 'On',
   sesKapali: 'Off',
+  muzikBaslik: 'Music',
+  muzikAciklama: 'Period background music (changes with your era and the screen you are on).',
   gbBaslik: 'Share your thoughts',
   gbAciklama: 'Found a bug or have an idea? It goes straight to the developer.',
   gbKategoriHata: '🐞 Bug',
@@ -666,6 +676,8 @@ const EN: Metinler = {
     'Choose your era, your country and your profession; your family and personality are set at random. Let your fate and your choices decide the rest. Death is permanent.',
   btnYeniHayat: '⚙️ Begin a New Life',
   btnLiderlik: '🏆 Leaderboard',
+  btnNasilOynanir: '📖 How to Play?',
+  nasilOynanirBaslik: 'How to Play',
   btnAyarlar: '⚙️ Settings',
   panelGecmisHayatlar: '📜 Your Past Lives',
   temizle: 'Clear',
@@ -676,11 +688,16 @@ const EN: Metinler = {
   panelBasarimlar: '🏵️ Your Achievements',
   gecmisHayatSkorSonek: 'pts',
   oyunaDevamEt: '▶ Resume Game',
+  girisDevamAlt: '{0} · age {1} · {2}',
+  girisYeniHayatUyari: 'Your current game is kept; return via Settings → Main Menu.',
   girisGorusCta: "💬 Help shape the game — send your feedback",
   panelYolHaritasi: '🗺️ Roadmap',
   yhDurumYakinda: 'Planned',
   yhDurumYapiliyor: 'In progress',
   yhDurumTamam: 'Done',
+  gizemBaslik: '✦ Coming Soon',
+  gizemYeniMeslek: 'New profession',
+  gizemTarih: 'Sept 12',
   panelYapimci: '👤 Creator',
   yapimciLinkedin: 'LinkedIn →',
   anaMenuyeDon: '🏠 Back to Main Menu',
@@ -689,6 +706,10 @@ const EN: Metinler = {
   bgAc: '🏆 Achievement Gallery',
   bgGizli: 'Hidden achievement — discover its condition yourself.',
   bgYeniBasarim: '🏆 New achievement: {0}',
+
+  // ---- Setup flow (era→region→settlement→name) ----
+  adimEtiketi: 'Step {0} / {1}',
+  girisSlogan: 'Weave the threads of your fate.',
 
   // ---- Era selection ----
   cagSecBaslik: 'Choose Your Era',
@@ -939,7 +960,7 @@ const EN: Metinler = {
   feNetYillikDahil: 'Net yearly (incl. real estate)',
   feNetYillik: 'Net yearly',
   feYasamTarzin: 'Your Lifestyle',
-  feDegistirNot: 'Change it whenever you like; it costs no turn.',
+  feDegistirNot: 'Costs no turn.',
   feSuAnBu: ' (current)',
   feSuAnBurada: ' (currently here)',
   feYillikGider: 'Yearly cost',
@@ -979,8 +1000,7 @@ const EN: Metinler = {
   iyBakimVergi: '🔧 Upkeep/tax: ~-{0} {1}/yr',
   iyBakimTitle:
     'The upkeep/tax cost that comes due every 7–11 years, divided into a yearly figure; separate from the yield and paid in every case.',
-  iyBakimAcikla:
-    'This property incurs an upkeep/tax cost of about a third of its current value every 7–11 years. The "take-home" figure above is the net flow after that cost.',
+  iyBakimAcikla: '🔧 Every property incurs upkeep/tax of ~⅓ its value every 7–11 years; "net" already subtracts it.',
   iyKendiParan: 'Your Cash',
   iyKendiIsin: 'Your Own Business',
   iyKendiIsineYatirim: 'Invest in Your Own Business',
@@ -1020,14 +1040,11 @@ const EN: Metinler = {
 
   // ---- MagazaPaneli ----
   mpBaslik: 'Shop',
-  mpAciklama:
-    'You can shop with the {0} {1} in hand. Prices are not fixed — they shift with situations like war, famine, plague and plenty.',
+  mpAciklama: 'You hold {0} {1}. Prices shift with war, famine and plenty.',
   mpSekmeSifa: 'Essentials & Remedies',
   mpSekmeLuks: 'Luxury Goods',
-  mpSifaAciklama:
-    'Grants health and happiness; if unused it rots and is removed from your inventory after a while. Buying one remedy locks the whole category for a time.',
-  mpLuksAciklama:
-    'Grants fame/status immediately on purchase; does not rot, but at most one of each type can be owned, and it incurs an upkeep/tax cost now and then.',
+  mpSifaAciklama: 'Grants health/happiness; rots if unused. A purchase locks the category for a while.',
+  mpLuksAciklama: 'Instant fame; one per type, occasional upkeep cost.',
   mpKategoriBos: 'There is no item in this category suited to your era right now.',
   mpSaglik: 'health',
   mpMutluluk: 'happiness',
@@ -1167,7 +1184,7 @@ const EN: Metinler = {
   // ---- SosyallesmePaneli ----
   spSosyallesBaslik: 'Socialize',
   spIntro:
-    'Going to a venue costs no turn but charges a small entry fee; the event you have there costs a little money and lifts your spirits, and resolving it advances time. Visiting drinking venues often can lead to a permanent drunkard mark.',
+    'You pay a small fee; the event costs a little money but lifts your mood. Frequent drinking venues earn a "drunkard" mark.',
   spMekanYok: 'There is no venue for you to go to right now.',
   spAyyasZaten: 'You are already known as a drunkard.',
   spZiyaretUyari: 'You have gone {0} times so far — {1} more visits will earn a drunkard mark.',
@@ -1191,13 +1208,11 @@ const EN: Metinler = {
 
   // ---- Simplified / shortened text ----
   feKirilimLejant: '🎖️ 📈 permanent · 🤝 🌍 vary with world conditions',
-  feTasinNotKisa: 'Costs no turn. Moving to a pricier home: one-time {0} {1}; moving back down is free.',
+  feTasinNotKisa: 'Costs no turn. Upgrading costs a one-time {0} {1}.',
   feTasinmaKisa: ' · +{0} {1} to move',
   iyNetKisa: '💰 Net ~{0}{1} {2}/yr ({3}%)',
   iyFiyatKisa: 'Price: {0} {1}',
-  iyRutbeNasilKisa:
-    'Invest in your work, keep your {0} high, build seniority. A few years pass between promotions; rank never drops.',
-  iyZarNot: 'Win: double your stake. Lose: all of it. ~40% chance to win.',
+  iyRutbeNasilKisa: 'Invest in your work, keep your {0} high, build seniority. Rank never drops.',
   mpFayda: 'benefit',
   mpRafKisa: '~{0}y shelf life',
 

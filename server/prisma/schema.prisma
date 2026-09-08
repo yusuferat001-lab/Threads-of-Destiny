@@ -39,3 +39,33 @@ model Score {
   hayat_amaci_tamamlandi Boolean @default(false)
   createdAt   DateTime @default(now())
 }
+
+/// Toplu oyun metriği — append-only olay günlüğü (§32). Kalıcı (Neon), Render free
+/// diskine bağımsız. Yalnız `GET /api/istatistik?key=…` (anahtar korumalı) okur;
+/// oyuncuya hiç gösterilmez. Tek satır = tek olay (ziyaret / yeni_oyun / meslek_secim
+/// / olum / skor_kaydi). Kişisel veri yok — `istemci_id` tarayıcıda üretilen rastgele
+/// bir UUID'dir (tekil ziyaretçi tahmini için), IP/isim tutulmaz.
+model Metrik {
+  id          Int      @id @default(autoincrement())
+  tur         String
+  istemci_id  String   @default("")
+  oturum_id   String   @default("")
+  cag         String   @default("")
+  bolge       String   @default("")
+  yerlesim    String   @default("")
+  meslek      String   @default("")
+  yas         Int      @default(0)
+  /// Oyun-içi oynanan tur (~yıl) sayısı — yalnız "olum"da anlamlı.
+  tur_sayisi  Int      @default(0)
+  /// Nakit + gayrimenkul değeri — yalnız "olum"da.
+  servet      Float    @default(0)
+  skor        Float    @default(0)
+  olum_nedeni String   @default("")
+  /// Gerçek-zaman oturum süresi (saniye): ölüm anı − Session.createdAt. Yalnız "olum"da.
+  oturum_sn   Int      @default(0)
+  meta        String   @default("")
+  createdAt   DateTime @default(now())
+
+  @@index([tur])
+  @@index([createdAt])
+}

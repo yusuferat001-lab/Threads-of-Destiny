@@ -1,0 +1,35 @@
+Kader Çarkı — arka plan müziği künyesi
+=====================================
+Kaynak: Wikimedia Commons. Son güncelleme: 2026-09-08.
+
+>>> 13 parçanın 13'ü de TAM TELİFSİZ (kamu malı / CC0). Künye ZORUNLU DEĞİL. <<<
+Aşağıdaki liste yalnızca kayıt tutmak için; oyunda hiçbir atıf/lisans metni göstermek gerekmez.
+YouTube/Spotify kaydı YOK — kaldırma/telep riski yok.
+Hepsi ~96 kbps OGG'ye yeniden kodlandı + -16 LUFS'a normalize edildi (klasör ~34 MB).
+
+--- menu (giriş / kurulum / liderlik) ---
+menu-1.ogg  Bach — Air on the G String (BWV 1068)         · U.S. Air Force Strings   · Kamu Malı
+menu-2.ogg  Mozart — Figaro'nun Düğünü Uvertürü            · U.S. Army Band           · Kamu Malı
+menu-3.ogg  Vivaldi — İlkbahar / Dört Mevsim I. Allegro    · Modena Chamber Orch.     · Kamu Malı (PD Mark)
+
+--- ortacag (Orta Çağ karakteriyle oyun) ---
+ortacag-1.ogg  Vivaldi — Sonbahar / Dört Mevsim III. Allegro ("Av")  · Modena CO   · Kamu Malı (PD Mark)
+ortacag-2.ogg  Vivaldi — Kış / Dört Mevsim III. Allegro (hızlı final) · Modena CO   · Kamu Malı (PD Mark)
+ortacag-3.ogg  "Sumer Is Icumen In" (13. yy İngiliz round'u, anonim) · ~50 sn      · Kamu Malı
+   NOT: ortacag-1/2 barok (Vivaldi, ~1720) — Orta Çağ değil. Wikimedia'da hızlı + kamu malı
+   GERÇEK ortaçağ kaydı pratikte yok. Dönem-sadık istersen kendi render'ını (MuseScore) üret.
+
+--- sanayi (Sanayi Devrimi karakteriyle oyun) ---
+sanayi-1.ogg  Grieg — "Sabah" / Peer Gynt                    · Musopen Symphony        · Kamu Malı (PD Mark)
+sanayi-2.ogg  Suppé — Hafif Süvari Uvertürü (1866)           · U.S. Marine Band        · Kamu Malı
+   (~4.5 MB — 96 kbps'ye küçültüldü)
+sanayi-3.ogg  Grieg — "Dağ Kralının Salonunda" / Peer Gynt   · Czech National SO       · Kamu Malı (PD Mark)
+sanayi-4.ogg  Offenbach — "Can-Can" / Cehennem Galobu (1858) · Musopen                 · Kamu Malı (CC0)
+sanayi-5.ogg  Rossini — Wilhelm Tell Uvertürü (1829)         · U.S. Marine Band (~11 dk)· Kamu Malı
+   (~6.6 MB / ~11 dk — 96 kbps. İstersen son ~4 dk'lık galobu kes: ffmpeg -ss 420 -i sanayi-5.ogg -c:a libvorbis -q:a 3 out.ogg)
+sanayi-6.ogg  Vivaldi — "Yaz" / Dört Mevsim III. Presto (fırtına) · Modena CO         · Kamu Malı (PD Mark)
+
+--- olum (ölüm ekranı) ---
+olum-1.ogg  Chopin — Cenaze Marşı (Piyano Sonatı No. 2, Op. 35, III) · Andreas Xenopoulos (Musopen) · CC0
+
+Yeniden indirmek / güncellemek:  bash indir.sh

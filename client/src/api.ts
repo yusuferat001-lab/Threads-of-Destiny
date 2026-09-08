@@ -72,11 +72,12 @@ export function yeniOyunBaslat(
   bolge: string,
   yerlesim: string,
   isim?: string,
-  dil?: string
+  dil?: string,
+  istemciId?: string
 ) {
   return istek<{ state: CharacterState }>('/api/game/new', {
     method: 'POST',
-    body: JSON.stringify({ cag, bolge, yerlesim, isim, dil }),
+    body: JSON.stringify({ cag, bolge, yerlesim, isim, dil, istemciId }),
   });
 }
 
@@ -236,6 +237,18 @@ export function geriBildirimGonder(govde: {
 }) {
   return istek<{ ok: true }>('/api/geri-bildirim', {
     method: 'POST',
+    body: JSON.stringify(govde),
+  });
+}
+
+/**
+ * İstatistik olayı bildir (§32) — şimdilik yalnız "ziyaret". Ateşle-unut:
+ * çağıran hatayı yutar, oyun akışını etkilemez.
+ */
+export function istatistikOlayBildir(govde: { tur: 'ziyaret'; istemci_id: string }) {
+  return fetch('/api/istatistik/olay', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(govde),
   });
 }

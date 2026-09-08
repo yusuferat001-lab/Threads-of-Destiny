@@ -71,7 +71,7 @@ gameRouter.get("/isim-onerisi", (req, res) => {
 });
 
 gameRouter.post("/new", async (req, res) => {
-  const { cag, bolge, yerlesim, isim, dil } = req.body ?? {};
+  const { cag, bolge, yerlesim, isim, dil, istemciId } = req.body ?? {};
   if (!GECERLI_CAGLAR.includes(cag)) {
     return res.status(400).json({ hata: "Geçersiz çağ." });
   }
@@ -89,8 +89,17 @@ gameRouter.post("/new", async (req, res) => {
     }
     oyuncuIsmi = temiz;
   }
+  const temizIstemciId =
+    typeof istemciId === "string" ? istemciId.trim().slice(0, 64) : undefined;
   try {
-    const state = await yeniOyun(cag, bolge, yerlesim, oyuncuIsmi, dil === "en" ? "en" : "tr");
+    const state = await yeniOyun(
+      cag,
+      bolge,
+      yerlesim,
+      oyuncuIsmi,
+      dil === "en" ? "en" : "tr",
+      temizIstemciId
+    );
     res.json({ state });
   } catch (err) {
     res.status(400).json({ hata: String(err) });

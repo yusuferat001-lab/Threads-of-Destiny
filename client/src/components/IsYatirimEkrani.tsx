@@ -246,7 +246,6 @@ export function IsYatirimEkrani({
             {bic(m.iySucSeviyen, Math.round(sucSeviyesi), sucSeviyesiEtiketi(m, sucSeviyesi))}
           </p>
 
-          <p className="giris-aciklama">{m.iyZarNot}</p>
           <div className="isyatirim-zar-izgara">
             {zarKademeleri.map((tutar) => (
               <button key={tutar} className="zar-karo" disabled={yukleniyor || para < tutar} onClick={() => onZarAt(tutar)}>

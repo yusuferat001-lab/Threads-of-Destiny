@@ -45,6 +45,14 @@ export class PrismaClient {
     create: async ({ data }: any) => ({ id: Math.floor(Math.random() * 1e9), ...data }),
     findMany: async () => [] as any[],
   };
+  metrik = {
+    create: async ({ data }: any) => ({
+      id: Math.floor(Math.random() * 1e9),
+      createdAt: new Date(),
+      ...data,
+    }),
+    findMany: async () => [] as any[],
+  };
   $queryRawUnsafe = async () => [] as any[];
   $executeRawUnsafe = async () => 0;
   $connect = async () => {};

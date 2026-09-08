@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import type {
   CharacterState,
   SenaryoResponse,
@@ -81,18 +81,23 @@ import { AyarlarModal } from './components/AyarlarModal';
 import { ayarlariGetir, ayarlariKaydet, type Dil } from './ayarlar';
 import type { GeriBildirimGirdi, EvlilikAdayi } from './types';
 import { sesKapaliMi, sesTercihiKaydet } from './ses';
+import { muzikModunuAyarla, muzikDurdur, muzikSessizAyarla, type MuzikModu } from './muzik';
 import { aktifOturumIdGetir, aktifOturumIdKaydet, aktifOturumIdSil } from './oturum';
 import { basarimlariKaydet, basarimlariGetir } from './basarimlar';
 import { gecmisHayatKaydet, gecmisHayatlariGetir, gecmisHayatlariTemizle, type GecmisHayat } from './gecmisHayatlar';
 import { YAPIMCI } from './yapimci';
-import { YOL_HARITASI } from './yolHaritasi';
 import { basarimlariDegerlendir, type BasarimTanimi } from './basarimSistemi';
 import { BasarimGaleri } from './components/BasarimGaleri';
+import { NasilOynanir } from './components/NasilOynanir';
+import { istemciId, ziyaretBildir } from './istemci';
 import { sonucIkonuGetir, unUnvani, MESLEK_KATEGORI, yatkinlikEtiketi, etkiTahminiGetir } from './bolgeTema';
 import { formatPara } from './format';
 import { bic } from './i18n';
 import { DilContext, dilCtxYap } from './DilContext';
+import { CarkLogo, KoseTezhibi, MuhurAyrac, AdimGostergesi, KaderYollari } from './components/Suslemeler';
+import { CagAmblemi, BolgeAmblemi } from './components/Amblemler';
 import './App.css';
+import './giris.css';
 
 type Ekran =
   | 'giris'
@@ -131,11 +136,6 @@ const MESLEK_SIMGE: Record<string, string> = {
   'Din Adamı': '🙏',
 };
 
-const CAG_SIMGE: Record<string, string> = {
-  'Orta Çağ': '🏰',
-  'Sanayi Devrimi': '🏭',
-};
-
 /** Meslek/çağ kısa açıklamaları — dile göre i18n sözlüğünden. */
 function meslekAciklama(m: ReturnType<typeof dilCtxYap>['m'], meslek: string): string {
   if (meslek === 'Asker') return m.meslekAciklamaAsker;
@@ -154,11 +154,72 @@ function cagAciklama(m: ReturnType<typeof dilCtxYap>['m'], cag: string): string 
  * hiç kaymaz, sadece sütun/ızgara kendi içinde kayar" modelini kullanır (bkz.
  * .oyun-kapsayici-tam) — `aile` (sol panelden "Aileni Gör →" ile açılır, hotspot değil) bu
  * gruba dahil DEĞİL, o hâlâ dar/ortalanmış, doğal yükseklikte basit bir liste ekranı. */
-const TAM_EKRAN_GRUBU: Ekran[] = ['oyun', 'sonuc', 'yatirim', 'finans', 'sosyallesme', 'magaza', 'evlilik'];
+const TAM_EKRAN_GRUBU: Ekran[] = [
+  'giris',
+  'cag_sec',
+  'bolge_sec',
+  'yerlesim_sec',
+  'isim_sec',
+  'acilis',
+  'meslek',
+  'oyun',
+  'sonuc',
+  'yatirim',
+  'finans',
+  'sosyallesme',
+  'magaza',
+  'evlilik',
+];
 
 /** Geri bildirim mesajlarına eklenen uygulama sürümü — bir hata raporunun hangi build'e
  * ait olduğunu ayırt etmek için. Yeni bir sürüm çıkınca elle güncelle. */
 const APP_SURUM = '1.0.0';
+
+/** Ekran telefon genişliğinde mi? (oyun ekranı düzeni için tek kırılım noktası, ≤767px) */
+function useMobil() {
+  const [mobil, setMobil] = useState(
+    typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches,
+  );
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)');
+    const dinle = () => setMobil(mq.matches);
+    mq.addEventListener('change', dinle);
+    return () => mq.removeEventListener('change', dinle);
+  }, []);
+  return mobil;
+}
+
+/**
+ * Oyun ekranının yan panelleri (sol: karakter, sağ: dünya & siyaset).
+ * Masaüstünde her zaman açık bir kutu; telefonda başlığa dokununca açılıp kapanan bir
+ * `<details>` — böylece olay + seçenekler ekrana sığar, ayrıntı isteyen açar (Paket 5).
+ */
+function YanPanel({
+  className,
+  baslik,
+  mobil,
+  children,
+}: {
+  className: string;
+  baslik: string;
+  mobil: boolean;
+  children: ReactNode;
+}) {
+  if (mobil) {
+    return (
+      <details className={`${className} panel-katla`}>
+        <summary className="panel-parsomen-baslik">{baslik}</summary>
+        {children}
+      </details>
+    );
+  }
+  return (
+    <div className={className}>
+      <div className="panel-parsomen-baslik">{baslik}</div>
+      {children}
+    </div>
+  );
+}
 
 function App() {
   const [ekran, setEkran] = useState<Ekran>('giris');
@@ -196,9 +257,11 @@ function App() {
   const [evlilikAdaylari, setEvlilikAdaylari] = useState<EvlilikAdayi[]>([]);
 
   const [sesKapali, setSesKapali] = useState(() => sesKapaliMi());
+  const [muzikAcik, setMuzikAcik] = useState(() => ayarlariGetir().muzik);
   const [ayarlarAcik, setAyarlarAcik] = useState(false);
   const [ayarlarSekme, setAyarlarSekme] = useState<'genel' | 'geri_bildirim'>('genel');
   const [basarimGaleriAcik, setBasarimGaleriAcik] = useState(false);
+  const [nasilOynanirAcik, setNasilOynanirAcik] = useState(false);
   const [yeniBasarimlar, setYeniBasarimlar] = useState<BasarimTanimi[]>([]);
   const [dil, setDil] = useState<Dil>(() => ayarlariGetir().dil);
   const [basarimlar, setBasarimlar] = useState(() => basarimlariGetir());
@@ -211,6 +274,11 @@ function App() {
   const dilCtx = dilCtxYap(dil);
   const { m, kt } = dilCtx;
 
+  // Mobilde: her tur / her sonuç ekranında merkez paneli (olay + seçenekler) görünür alana
+  // kaydırır — oyuncu üst şeridi/sol paneli geçip aramak zorunda kalmasın.
+  const merkezAltRef = useRef<HTMLDivElement | null>(null);
+  const mobil = useMobil();
+
   function sesToggle() {
     setSesKapali((onceki) => {
       const yeni = !onceki;
@@ -218,6 +286,42 @@ function App() {
       return yeni;
     });
   }
+
+  function muzikToggle() {
+    setMuzikAcik((onceki) => {
+      const yeni = !onceki;
+      ayarlariKaydet({ muzik: yeni });
+      muzikSessizAyarla(!yeni);
+      return yeni;
+    });
+  }
+
+  // Ekrana/çağa göre arka plan müziği modunu seç. Müzik kapalıysa hiç başlatma.
+  useEffect(() => {
+    if (!muzikAcik) {
+      muzikDurdur();
+      return;
+    }
+    let mod: MuzikModu;
+    if (ekran === 'olum') {
+      mod = 'olum';
+    } else if (
+      ekran === 'oyun' ||
+      ekran === 'sonuc' ||
+      ekran === 'aile' ||
+      ekran === 'gorev' ||
+      ekran === 'finans' ||
+      ekran === 'yatirim' ||
+      ekran === 'sosyallesme' ||
+      ekran === 'magaza' ||
+      ekran === 'evlilik'
+    ) {
+      mod = karakter?.cag === 'Sanayi Devrimi' ? 'sanayi' : 'ortacag';
+    } else {
+      mod = 'menu';
+    }
+    muzikModunuAyarla(mod);
+  }, [ekran, karakter?.cag, muzikAcik]);
 
   function dilDegistir(yeni: Dil) {
     setDil(yeni);
@@ -253,6 +357,11 @@ function App() {
       },
     });
   }
+
+  // Günde bir kez "ziyaret" istatistik ping'i (§32) — ateşle-unut.
+  useEffect(() => {
+    ziyaretBildir();
+  }, []);
 
   useEffect(() => {
     mesleklerGetir()
@@ -322,6 +431,16 @@ function App() {
     };
   }, [karakter?.id, karakter?.tur_sayisi, karakter?.meslek]);
 
+  // Mobilde olay/sonuç değişince merkez paneli ekrana getir (masaüstünde sayfa zaten kaymıyor).
+  useEffect(() => {
+    if (ekran !== 'oyun' && ekran !== 'sonuc') return;
+    if (typeof window === 'undefined' || !window.matchMedia('(max-width: 767px)').matches) return;
+    const t = setTimeout(() => {
+      merkezAltRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 60);
+    return () => clearTimeout(t);
+  }, [ekran, senaryo?.olay_basligi, sonEtki]);
+
   // Karakter öldüğünde kazandığı ünvanları/efsanevi ölümü tarayıcının kalıcı başarım koleksiyonuna ekler.
   useEffect(() => {
     if (ekran === 'olum' && karakter) {
@@ -386,6 +505,8 @@ function App() {
     setOyuncuIsmi('');
     setHata(null);
     setEkran('isim_sec');
+    // Her oyun başında ülkeye/çağa uygun rastgele bir isim öner (kutuya ön-doldur).
+    void rastgeleIsimGetir();
   }
 
   async function rastgeleIsimGetir() {
@@ -416,7 +537,8 @@ function App() {
         secilenBolge,
         secilenYerlesim,
         isim || undefined,
-        dil
+        dil,
+        istemciId()
       );
       setKarakter(state);
       aktifOturumIdKaydet(state.id);
@@ -861,8 +983,10 @@ function App() {
         <AyarlarModal
           dil={dil}
           sesKapali={sesKapali}
+          muzikAcik={muzikAcik}
           onDilDegistir={dilDegistir}
           onSesToggle={sesToggle}
+          onMuzikToggle={muzikToggle}
           onGeriBildirimGonder={geriBildirimGonderHandler}
           onKapat={() => {
             setAyarlarAcik(false);
@@ -884,23 +1008,47 @@ function App() {
 
       {basarimGaleriAcik && <BasarimGaleri dil={dil} onKapat={() => setBasarimGaleriAcik(false)} />}
 
+      {nasilOynanirAcik && <NasilOynanir dil={dil} onKapat={() => setNasilOynanirAcik(false)} />}
+
       {ekran === 'giris' && (
         <div className="ekran ekran-giris">
+          <KoseTezhibi />
+          <div className="giris-yollar" aria-hidden="true">
+            <KaderYollari />
+          </div>
+
           <div className="giris-hero">
-            <span className="giris-cark" aria-hidden="true">⚙️</span>
             <h1>{m.oyunAdi}</h1>
-            <p className="giris-aciklama">{m.girisAciklama}</p>
+            <p className="giris-slogan">{m.girisSlogan}</p>
+            <CarkLogo boyut={132} />
             <div className="giris-hero-butonlar">
               {karakter?.aktif && (
-                <button disabled={yukleniyor} onClick={devamEt}>
-                  {m.oyunaDevamEt}
+                <button
+                  className="giris-devam-buton"
+                  disabled={yukleniyor}
+                  onClick={devamEt}
+                >
+                  <span className="giris-devam-ana">{m.oyunaDevamEt}</span>
+                  <span className="giris-devam-alt">
+                    {bic(
+                      m.girisDevamAlt,
+                      karakter.isim || m.isimsiz,
+                      karakter.yas,
+                      karakter.meslek ? kt(karakter.rutbe || karakter.meslek) : kt(karakter.bolge),
+                    )}
+                  </span>
                 </button>
               )}
-              <button disabled={yukleniyor} onClick={() => setEkran('cag_sec')}>
+              <button
+                className={karakter?.aktif ? 'ikincil' : undefined}
+                disabled={yukleniyor}
+                onClick={() => setEkran('cag_sec')}
+                title={karakter?.aktif ? m.girisYeniHayatUyari : undefined}
+              >
                 {m.btnYeniHayat}
               </button>
-              <button className="ikincil" disabled={yukleniyor} onClick={() => liderligiAc('genel')}>
-                {m.btnLiderlik}
+              <button className="ikincil" disabled={yukleniyor} onClick={() => setNasilOynanirAcik(true)}>
+                {m.btnNasilOynanir}
               </button>
               <button className="ikincil" disabled={yukleniyor} onClick={() => setBasarimGaleriAcik(true)}>
                 {m.bgAc}
@@ -909,19 +1057,9 @@ function App() {
                 {m.btnAyarlar}
               </button>
             </div>
-            <button
-              className="ikincil giris-gorus-cta"
-              disabled={yukleniyor}
-              onClick={() => {
-                setAyarlarSekme('geri_bildirim');
-                setAyarlarAcik(true);
-              }}
-            >
-              {m.girisGorusCta}
-            </button>
           </div>
 
-          <div className="giris-paneller">
+          <div className="giris-yan giris-yan-sol">
             <div className="giris-panel">
               <div className="giris-panel-baslik">
                 <span>{m.panelGecmisHayatlar} ({gecmisHayatlar.length})</span>
@@ -958,6 +1096,9 @@ function App() {
               )}
             </div>
 
+          </div>
+
+          <div className="giris-yan giris-yan-sag">
             <div className="giris-panel">
               <div className="giris-panel-baslik">
                 <span>{m.panelLiderlik}</span>
@@ -1006,44 +1147,37 @@ function App() {
               </div>
             )}
 
-            <div className="giris-panel">
-              <div className="giris-panel-baslik">
-                <span>{m.panelYolHaritasi}</span>
-              </div>
-              <ul className="yol-haritasi-liste">
-                {YOL_HARITASI.map((madde, i) => (
-                  <li key={i} className={`yol-haritasi-madde yol-haritasi-${madde.durum}`}>
-                    <span className="yol-haritasi-durum">
-                      {madde.durum === 'tamam'
-                        ? `✅ ${m.yhDurumTamam}`
-                        : madde.durum === 'yapiliyor'
-                          ? `🔧 ${m.yhDurumYapiliyor}`
-                          : `🕓 ${m.yhDurumYakinda}`}
-                    </span>
-                    <strong>{madde.baslik}</strong>
-                    {madde.not && <span className="yol-haritasi-not">{madde.not}</span>}
-                  </li>
-                ))}
-              </ul>
-            </div>
+          </div>
 
-            <div className="giris-panel giris-panel-yapimci">
-              <div className="giris-panel-baslik">
-                <span>{m.panelYapimci}</span>
-              </div>
-              <p className="yapimci-isim">{YAPIMCI.isim}</p>
-              <p className="yapimci-tanitim">{YAPIMCI.tanitim}</p>
-              {YAPIMCI.linkedin && (
-                <a
-                  className="yapimci-linkedin"
-                  href={YAPIMCI.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {m.yapimciLinkedin}
-                </a>
-              )}
-            </div>
+          <div className="giris-gizem-kutu">
+            <span className="giris-gizem-baslik">{m.gizemBaslik}</span>
+            <span className="giris-gizem-ana">{m.gizemYeniMeslek}</span>
+            <span className="giris-gizem-tarih">{m.gizemTarih}</span>
+          </div>
+
+          <div className="giris-imza">
+            {YAPIMCI.linkedin ? (
+              <a
+                className="giris-imza-isim"
+                href={YAPIMCI.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {YAPIMCI.isim}
+              </a>
+            ) : (
+              <span className="giris-imza-isim">{YAPIMCI.isim}</span>
+            )}
+            <button
+              className="giris-imza-gorus"
+              disabled={yukleniyor}
+              onClick={() => {
+                setAyarlarSekme('geri_bildirim');
+                setAyarlarAcik(true);
+              }}
+            >
+              {m.girisGorusCta}
+            </button>
           </div>
 
           {secilenGecmisHayat && (
@@ -1096,13 +1230,19 @@ function App() {
       )}
 
       {ekran === 'cag_sec' && (
-        <div className="ekran ekran-meslek">
+        <div className="ekran ekran-meslek ekran-kurulum ekran-adim-cag">
+          <KoseTezhibi />
+          <div className="giris-yollar" aria-hidden="true">
+            <KaderYollari />
+          </div>
+          <AdimGostergesi adim={1} toplam={4} etiket={bic(m.adimEtiketi, 1, 4)} />
           <h2>{m.cagSecBaslik}</h2>
+          <MuhurAyrac />
           <p className="giris-aciklama">{m.cagSecAlt}</p>
           <div className="meslek-kartlari">
             {Object.keys(bolgeler).map((cag) => (
               <button key={cag} className="meslek-kart" disabled={yukleniyor} onClick={() => cagSecildi(cag)}>
-                <span className="meslek-simge">{CAG_SIMGE[cag] ?? '📜'}</span>
+                <CagAmblemi cag={cag} />
                 <strong>{kt(cag)}</strong>
                 <span className="meslek-aciklama">{cagAciklama(m, cag)}</span>
               </button>
@@ -1115,8 +1255,14 @@ function App() {
       )}
 
       {ekran === 'bolge_sec' && secilenCag && (
-        <div className="ekran ekran-meslek">
+        <div className="ekran ekran-meslek ekran-kurulum ekran-adim-bolge">
+          <KoseTezhibi />
+          <div className="giris-yollar" aria-hidden="true">
+            <KaderYollari />
+          </div>
+          <AdimGostergesi adim={2} toplam={4} etiket={bic(m.adimEtiketi, 2, 4)} />
           <h2>{m.bolgeSecBaslik}</h2>
+          <MuhurAyrac />
           <p className="giris-aciklama">{bic(m.bolgeSecAlt, kt(secilenCag))}</p>
           <div className="meslek-kartlari">
             {(bolgeler[secilenCag] ?? []).map((bolge) => (
@@ -1126,6 +1272,7 @@ function App() {
                 disabled={yukleniyor}
                 onClick={() => bolgeSecildi(bolge)}
               >
+                <BolgeAmblemi bolge={bolge} cag={secilenCag ?? undefined} />
                 <strong>{kt(bolge)}</strong>
               </button>
             ))}
@@ -1137,8 +1284,14 @@ function App() {
       )}
 
       {ekran === 'yerlesim_sec' && secilenBolge && (
-        <div className="ekran ekran-meslek">
+        <div className="ekran ekran-meslek ekran-kurulum ekran-adim-yerlesim">
+          <KoseTezhibi />
+          <div className="giris-yollar" aria-hidden="true">
+            <KaderYollari />
+          </div>
+          <AdimGostergesi adim={3} toplam={4} etiket={bic(m.adimEtiketi, 3, 4)} />
           <h2>{m.yerlesimSecBaslik}</h2>
+          <MuhurAyrac />
           <p className="giris-aciklama">{bic(m.yerlesimSecAlt, kt(secilenBolge))}</p>
           <div className="yerlesim-kartlari">
             {yerlesimler.map((yerlesim) => (
@@ -1174,8 +1327,14 @@ function App() {
       )}
 
       {ekran === 'isim_sec' && (
-        <div className="ekran ekran-isim">
+        <div className="ekran ekran-isim ekran-kurulum ekran-adim-isim">
+          <KoseTezhibi />
+          <div className="giris-yollar" aria-hidden="true">
+            <KaderYollari />
+          </div>
+          <AdimGostergesi adim={4} toplam={4} etiket={bic(m.adimEtiketi, 4, 4)} />
           <h2>{m.isimSecBaslik}</h2>
+          <MuhurAyrac />
           <p className="giris-aciklama">{bic(m.isimSecAlt, kt(secilenBolge))}</p>
           <div className="isim-sec-form">
             <input
@@ -1200,11 +1359,13 @@ function App() {
       )}
 
       {ekran === 'meslek' && (
-        <div className="ekran ekran-meslek">
+        <div className="ekran ekran-meslek ekran-kurulum ekran-adim-meslek">
+          <KoseTezhibi />
           {karakter && (
             <BolgeSahnesi cag={karakter.cag} bolge={karakter.bolge} yerlesim={karakter.yerlesim} ulke={karakter.ulke} un={karakter.un} />
           )}
           <h2>{m.meslekSecBaslik}</h2>
+          <MuhurAyrac />
           <p className="giris-aciklama">{m.meslekSecAlt}</p>
           <div className="meslek-kartlari">
             {meslekler.map((meslek) => {
@@ -1247,6 +1408,7 @@ function App() {
 
       {ekran === 'acilis' && karakter && (
         <div className="ekran ekran-acilis">
+          <KoseTezhibi />
           <Banner
             cag={karakter.cag}
             bolge={karakter.bolge}
@@ -1308,9 +1470,7 @@ function App() {
             onBolgeTikla={() => setBolgeBilgiAcik(true)}
           />
           <div className="oyun-govde">
-            <div className="sol-panel panel-parsomen">
-              <div className="panel-parsomen-baslik">{m.panelKisiselHayat}</div>
-
+            <YanPanel className="sol-panel panel-parsomen" baslik={m.panelKisiselHayat} mobil={mobil}>
               <div className="sol-panel-kimlik">
                 <KarakterAvatari
                   meslek={karakter.meslek}
@@ -1362,20 +1522,10 @@ function App() {
                 kaynaklar={karakter.yatkinlik_kaynaklari}
                 eksenler={karakter.kisilik_eksenleri}
               />
-            </div>
+            </YanPanel>
 
-            <div className="merkez-panel">
-              <div className="merkez-sahne">
-                <div className="merkez-sahne-arkaplan">
-                  <BolgeSahnesi
-                    cag={karakter.cag}
-                    bolge={karakter.bolge}
-                    yerlesim={karakter.yerlesim}
-                    ulke={karakter.ulke}
-                    un={karakter.un}
-                    tamYukseklik
-                  />
-                </div>
+            {(() => {
+              const hotspotlar = (
                 <SahneHotspotlari
                   cag={karakter.cag}
                   meslek={karakter.meslek}
@@ -1388,9 +1538,27 @@ function App() {
                   onMagaza={magazaEkraniniAc}
                   onSosyallesme={sosyallesmeEkraniniAc}
                 />
+              );
+              return (
+            <div className="merkez-panel">
+              <div className="merkez-sahne">
+                <div className="merkez-sahne-arkaplan">
+                  <BolgeSahnesi
+                    cag={karakter.cag}
+                    bolge={karakter.bolge}
+                    yerlesim={karakter.yerlesim}
+                    ulke={karakter.ulke}
+                    un={karakter.un}
+                    tamYukseklik
+                  />
+                </div>
+                {/* Masaüstünde hotspot'lar sahnenin ÜSTÜNDE (cqw/cqh ile görsele yapışık);
+                    mobilde sahnenin ALTINDA ayrı bir aksiyon satırı olarak (bkz. Paket 2). */}
+                {!mobil && hotspotlar}
               </div>
+              {mobil && hotspotlar}
 
-              <div className="merkez-alt">
+              <div ref={merkezAltRef} className={`merkez-alt${ekran === 'sonuc' ? ' merkez-alt-sonuc' : ''}`}>
                 {ekran === 'sonuc' && sonEtki ? (
                   <div className="olay-karti olay-karti-sonuc">
                     <div className="sonuc-efekti-kapsayici">
@@ -1463,20 +1631,22 @@ function App() {
                             {secenek.metin}
                           </span>
                           {!secenek.kilitli && !tepkiModu && (
-                            <span className="secenek-sans">
-                              {bic(m.sansEki, secenek.belirsiz_aralik.min, secenek.belirsiz_aralik.max)}
-                            </span>
-                          )}
-                          {!secenek.kilitli && !tepkiModu && tahminler.length > 0 && (
-                            <span className="secenek-tahminler">
-                              {tahminler.map((t, ti) => (
-                                <span
-                                  key={ti}
-                                  className={`secenek-tahmin ${t.pozitif ? 'tahmin-pozitif' : 'tahmin-negatif'}`}
-                                >
-                                  {t.simge} {t.metin}
+                            <span className="secenek-meta">
+                              <span className="secenek-sans">
+                                {bic(m.sansEki, secenek.belirsiz_aralik.min, secenek.belirsiz_aralik.max)}
+                              </span>
+                              {tahminler.length > 0 && (
+                                <span className="secenek-tahminler">
+                                  {tahminler.map((t, ti) => (
+                                    <span
+                                      key={ti}
+                                      className={`secenek-tahmin ${t.pozitif ? 'tahmin-pozitif' : 'tahmin-negatif'}`}
+                                    >
+                                      {t.simge} {t.metin}
+                                    </span>
+                                  ))}
                                 </span>
-                              ))}
+                              )}
                             </span>
                           )}
                           {secenek.kilitli && <span className="secenek-kilit">{secenek.kilit_nedeni}</span>}
@@ -1487,9 +1657,10 @@ function App() {
                 )}
               </div>
             </div>
+              );
+            })()}
 
-            <div className="sag-panel panel-parsomen">
-              <div className="panel-parsomen-baslik">{m.panelDunyaSiyaset}</div>
+            <YanPanel className="sag-panel panel-parsomen" baslik={m.panelDunyaSiyaset} mobil={mobil}>
               <SiyasetPaneli cag={karakter.cag} hizip={karakter.hizip} />
               <HaberlerPaneli haberler={karakter.haberler} />
 
@@ -1527,7 +1698,7 @@ function App() {
                 rakipPuani={karakter.rakip_puani}
               />
               <DurumPaneli durumlar={karakter.durumlar} />
-            </div>
+            </YanPanel>
           </div>
 
           {bolgeBilgiAcik && (

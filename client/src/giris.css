@@ -1,0 +1,943 @@
+/* =====================================================================
+   Faz 1 — Giriş akışı görsel yenileme
+   "Altın yaldızlı el yazması" yönü + SVG süsleme + orta düzey animasyon.
+   App.css'ten SONRA yüklenir; eşit özgüllükte kaskadı kazanır, gerektiğinde
+   biraz daha güçlü seçici kullanır. Sadece giriş akışı ekranlarını hedefler:
+   giris · cag_sec · bolge_sec · yerlesim_sec · isim_sec · acilis · meslek.
+   ===================================================================== */
+
+/* ---------- Ortak kurulum kabuğu ---------- */
+
+.ekran-giris,
+.ekran-kurulum,
+.ekran-acilis {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 50% -10%, rgba(201, 162, 39, 0.12), transparent 55%),
+    linear-gradient(180deg, #241a12 0%, #1b140d 60%, #150f0a 100%);
+  border: 1px solid var(--renk-ahsap-kenar);
+  border-radius: var(--r-yumusak);
+  box-shadow:
+    var(--golge-derin),
+    inset 0 0 0 1px rgba(224, 199, 137, 0.14),
+    inset 0 0 60px rgba(0, 0, 0, 0.5);
+  padding: clamp(1.5rem, 4vw, 2.6rem) clamp(1.1rem, 3.5vw, 2.6rem) clamp(1.6rem, 4vw, 2.6rem);
+  /* Giriş akışının tamamı 100dvh içine sığar; sayfa DIŞTAN asla kaymaz
+     (bkz. .oyun-kapsayici-tam) — taşan içerik ilgili sütun/blok içinde kayar. */
+  flex: 1;
+  min-height: 0;
+  margin-top: 0;
+}
+
+/* Kurulum + açılış ekranları: arka plan TAM EKRAN (giriş ekranı gibi kenardan
+   kenara), içerik ortalanmış sınırlı bir sütunda. Çerçeve çizgisi YOK. */
+.ekran-kurulum,
+.ekran-acilis {
+  align-self: stretch;
+  width: 100%;
+  max-width: none;
+  border: none;
+  border-radius: 0;
+  overflow-y: auto;
+  justify-content: safe center;
+  box-shadow: inset 0 0 90px rgba(0, 0, 0, 0.5);
+  padding: clamp(1rem, 3vw, 2.4rem) clamp(1rem, 5vw, 3.5rem);
+}
+/* İçeriği ortada sınırlı genişlikte tut — butonlar hariç (doğal boyutta kalsınlar).
+   Kart ızgaraları zaten flex-wrap + justify-center ile ortalı, sabit boyutlu. */
+.ekran-kurulum > :not(.kose-tezhip-kat):not(.giris-yollar):not(button):not(.giris-aciklama),
+.ekran-acilis > :not(.kose-tezhip-kat):not(.giris-yollar):not(button):not(.acilis-metni):not(.giris-aciklama) {
+  width: 100%;
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.ekran-kurulum > .giris-aciklama,
+.ekran-acilis > .giris-aciklama {
+  max-width: 480px;
+  margin: 0.2rem auto 0;
+}
+
+/* Giriş ekranı = TAM SAHNE (kutu değil). Yatay 3 sütun: yan panolar SAĞ ve SOL
+   kenarda, ortada oyunun ana menüsü. Sayfa dıştan kaymaz; ana menü hiç kaymaz. */
+.ekran-giris {
+  display: grid;
+  /* Geniş ekranda: yan panolar ekran KENARLARINA yakın (HUD gibi), ortadaki menü
+     esnek orta sütunda. Dar ekranda (tablet) sütunlar daralır, telefonda tek
+     sütuna iner (aşağıdaki medya sorgusu). */
+  /* Ultrawide'da orta sütun boşluğa yayılmasın: dışta esnek boşluk sütunları,
+     ortada sınırlı genişlikte bir menü, yan panolar menüye yakın durur. */
+  grid-template-columns:
+    minmax(0, 1fr)
+    clamp(240px, 20vw, 330px)
+    minmax(340px, 600px)
+    clamp(240px, 20vw, 330px)
+    minmax(0, 1fr);
+  grid-template-areas: '. sol orta sag .';
+  gap: clamp(1rem, 2.5vw, 2.5rem);
+  align-items: center;
+  align-self: stretch;
+  max-width: none;
+  padding: clamp(1rem, 3vh, 2.4rem) clamp(1rem, 3.5vw, 3.2rem);
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  /* Mum ışığı / ocak atmosferi — düz kahverengi zemin değil, derin bir sahne */
+  background:
+    radial-gradient(circle at 50% 36%, rgba(201, 162, 39, 0.16), transparent 40%),
+    radial-gradient(ellipse at 50% -5%, rgba(150, 78, 34, 0.16), transparent 55%),
+    radial-gradient(ellipse at 50% 118%, rgba(0, 0, 0, 0.65), transparent 62%),
+    linear-gradient(180deg, #241a11 0%, #17110b 62%, #0e0a06 100%);
+}
+
+/* Arka plan — merkezdeki yıldızdan her yöne dallanan "kader yolları" + dallanma
+   noktaları. Tam sahne, çok soluk, yavaşça döner. Kenarlara doğru silikleşerek
+   ekran dışına uzanmaya devam eder (radyal maske). */
+.giris-yollar {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  -webkit-mask-image: radial-gradient(ellipse 90% 78% at 50% 45%, #000 26%, rgba(0, 0, 0, 0.4) 64%, transparent 98%);
+  mask-image: radial-gradient(ellipse 90% 78% at 50% 45%, #000 26%, rgba(0, 0, 0, 0.4) 64%, transparent 98%);
+}
+.kader-yollari-svg { width: 100%; height: 100%; display: block; }
+
+.ky-donen {
+  transform-origin: 500px 452px;
+  animation: carkDon 150s linear infinite;
+  will-change: transform;
+}
+/* Yolları kendi GPU katmanına al — dönerken yeniden rasterize edilmesin */
+.giris-yollar {
+  transform: translateZ(0);
+}
+.ky-yol path {
+  fill: none;
+  stroke: rgba(201, 162, 39, 0.07);
+  stroke-width: 0.7;
+  stroke-linecap: round;
+}
+.ky-nokta circle { fill: rgba(224, 199, 137, 0.22); }
+.ky-halka circle {
+  fill: none;
+  stroke: rgba(201, 162, 39, 0.05);
+  stroke-width: 1;
+  stroke-dasharray: 3 9;
+}
+
+/* Menü butonlarının arkasında doku sönük olsun (okunurluk) — merkezdeki yıldızı
+   boğmamak için vinyet biraz aşağıya, menünün üstüne kaydırıldı. */
+.giris-yollar::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 62%;
+  width: min(600px, 76%);
+  height: min(460px, 62%);
+  transform: translate(-50%, -50%);
+  background: radial-gradient(ellipse at center, rgba(14, 10, 6, 0.58), rgba(14, 10, 6, 0.22) 50%, transparent 76%);
+}
+
+.ekran-giris > .giris-hero {
+  grid-area: orta;
+  justify-self: center;
+}
+
+.giris-yan {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: safe center;
+  gap: 0.8rem;
+  /* Çok yüksek ekranda panolar dikeyde gerilmesin; kendi içinde kayar. */
+  max-height: min(100%, 660px);
+  overflow-y: auto;
+  padding: 2px 4px;
+  content-visibility: auto;
+}
+.giris-yan-sol { grid-area: sol; }
+.giris-yan-sag { grid-area: sag; }
+
+/* Yan sütun kaydırma çubuğu ince */
+.giris-yan {
+  scrollbar-width: thin;
+  scrollbar-color: var(--renk-ahsap-kenar) rgba(0, 0, 0, 0.25);
+}
+.giris-yan::-webkit-scrollbar { width: 8px; }
+.giris-yan::-webkit-scrollbar-thumb { background: var(--renk-ahsap-kenar); border-radius: 6px; }
+
+
+/* Çocukların sıralı belirmesi (orta düzey animasyon).
+   Kapsayıcı .ekran zaten bir bütün olarak fade-in yapıyor (ekranBelir); burada
+   yalnız hafif bir yukarı-kayma katmanı ekleriz — opaklığa DOKUNMAYIZ, yoksa
+   stagger gecikmeleri boyunca ekran boş/siyah görünüyor. */
+.ekran-kurulum > *:not(.kose-tezhip-kat),
+.ekran-acilis > *:not(.kose-tezhip-kat):not(.banner) {
+  animation: parcaBelir 0.34s var(--gecis-yay) both;
+}
+.ekran-kurulum > *:nth-child(2) { animation-delay: 0.03s; }
+.ekran-kurulum > *:nth-child(3) { animation-delay: 0.06s; }
+.ekran-kurulum > *:nth-child(4) { animation-delay: 0.09s; }
+.ekran-kurulum > *:nth-child(5) { animation-delay: 0.12s; }
+.ekran-kurulum > *:nth-child(6) { animation-delay: 0.15s; }
+
+@keyframes parcaBelir {
+  from { transform: translateY(9px); }
+  to { transform: translateY(0); }
+}
+
+/* ---------- Köşe tezhipleri ---------- */
+
+.kose-tezhip-kat {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.kose-tezhip {
+  position: absolute;
+  width: clamp(34px, 7vw, 56px);
+  height: clamp(34px, 7vw, 56px);
+  opacity: 0;
+  animation: tezhipCiz 0.7s ease-out 0.15s forwards;
+}
+.kose-tezhip svg { width: 100%; height: 100%; display: block; }
+
+.kt-sol-ust { top: 6px; left: 6px; }
+.kt-sag-ust { top: 6px; right: 6px; transform: scaleX(-1); }
+.kt-sol-alt { bottom: 6px; left: 6px; transform: scaleY(-1); }
+.kt-sag-alt { bottom: 6px; right: 6px; transform: scale(-1); }
+
+/* Giriş ekranında alt köşe tezhipleri alt imzayla çakışıyor — yalnız üst köşeler kalsın */
+.ekran-giris .kt-sol-alt,
+.ekran-giris .kt-sag-alt { display: none; }
+
+@keyframes tezhipCiz {
+  from { opacity: 0; }
+  to { opacity: 0.85; }
+}
+
+/* ---------- Süslü ayraç + mühür ---------- */
+
+.muhur-ayrac {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: min(320px, 80%);
+  margin: 0.15rem auto 0.35rem;
+}
+.muhur-ayrac-cizgi {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--renk-altin), transparent);
+}
+.muhur-ayrac-muhur {
+  width: 30px;
+  height: 30px;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.55));
+  flex: 0 0 auto;
+}
+
+/* ---------- Adım göstergesi ---------- */
+
+.adim-gostergesi {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.2rem;
+}
+.adim-noktalar {
+  display: flex;
+  gap: 0.5rem;
+}
+.adim-nokta {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1px solid var(--renk-altin-koyu);
+  background: transparent;
+  transition: background 0.25s, box-shadow 0.25s, transform 0.25s;
+}
+.adim-nokta-gecti { background: var(--renk-altin-koyu); }
+.adim-nokta-aktif {
+  background: var(--altin-gradyan);
+  border-color: var(--renk-altin-parlak);
+  box-shadow: var(--yaldiz-parilti);
+  transform: scale(1.25);
+}
+.adim-gostergesi-metin {
+  font-family: var(--font-baslik);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--renk-altin-parlak);
+  opacity: 0.85;
+}
+
+/* ---------- Giriş ekranı: ana menü (kutu YOK, sahnede yüzer) ---------- */
+
+.giris-hero {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  gap: 0.4rem;
+  padding: 0;
+  border: none;
+  background: none;
+  box-shadow: none;
+}
+
+/* Merkezdeki çarkın arkasında yumuşak bir ışık halesi (kutu yerine) */
+.giris-hero::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 26%;
+  width: 90%;
+  height: 62%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at center, rgba(201, 162, 39, 0.15), transparent 68%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Dönen çark logosu — artık ismin/sloganın ALTINDA, kompozisyonun merkezi */
+.cark-logo {
+  display: inline-block;
+  margin: 0.5rem 0 0.15rem;
+  filter: drop-shadow(0 0 14px rgba(201, 162, 39, 0.5));
+}
+.cark-logo-svg { width: 100%; height: 100%; display: block; }
+.cark-logo-donen {
+  transform-origin: 50px 50px;
+  animation: carkDon 30s linear infinite;
+}
+@keyframes carkDon { to { transform: rotate(360deg); } }
+
+/* Başlık = "rubrik" mühür kırmızısı (dönemin el yazmalarında kırmızı mürekkeple
+   yazılan başlıklar) — gövde/altın temayla ince altın kenar/gölgeyle bağlanır. */
+.ekran-giris h1 {
+  font-size: clamp(2.1rem, 3vw + 1.4rem, 3.4rem);
+  line-height: 1.05;
+  background: linear-gradient(165deg, #ff7a4e 0%, #ef4a2c 44%, #c0301f 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 2px 9px rgba(0, 0, 0, 0.5), 0 0 26px rgba(239, 74, 44, 0.5);
+  margin: 0.35rem 0 0;
+}
+
+.giris-slogan {
+  font-family: var(--font-baslik);
+  font-size: 0.8rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--renk-altin-parlak);
+  opacity: 0.78;
+  margin: 0;
+}
+
+.giris-aciklama {
+  color: #d8ccae;
+  opacity: 0.8;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  max-width: 400px;
+  margin: 0.1rem auto 0;
+}
+
+/* Mühürlü ana menü butonları */
+.ekran-giris .giris-hero-butonlar {
+  gap: 0.5rem;
+  margin-top: 1rem;
+  max-width: 340px;
+}
+.ekran-giris .giris-hero-butonlar > button {
+  padding: 0.72rem 1.1rem;
+  font-size: 0.98rem;
+}
+.ekran-giris .giris-hero-butonlar > button {
+  position: relative;
+  font-family: var(--font-baslik);
+  letter-spacing: 0.06em;
+  transition: transform 0.14s var(--gecis-yay), box-shadow 0.18s, background 0.18s, border-color 0.18s;
+}
+.ekran-giris .giris-hero-butonlar > button:not(.ikincil) {
+  background: var(--altin-gradyan-dik);
+  color: #211703;
+  border: 1px solid var(--renk-altin-parlak);
+  font-weight: 700;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 3px 10px rgba(0, 0, 0, 0.45);
+}
+.ekran-giris .giris-hero-butonlar > button:not(.ikincil)::before {
+  content: '';
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  margin-top: -6px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, var(--muhur-kirmizi-parlak), var(--muhur-kirmizi));
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35);
+}
+.ekran-giris .giris-hero-butonlar > button:not(.ikincil):hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 6px 16px rgba(0, 0, 0, 0.5), var(--yaldiz-parilti);
+}
+.ekran-giris .giris-hero-butonlar > button:not(.ikincil):active:not(:disabled) {
+  transform: translateY(0) scale(0.985);
+}
+.ekran-giris .giris-hero-butonlar > button.ikincil:hover:not(:disabled) {
+  border-color: var(--renk-altin);
+  box-shadow: var(--yaldiz-parilti);
+}
+
+/* Görünür klavye odağı — altın butonlarda şimdiye dek yalnız hover/active vardı. */
+.ekran-giris .giris-hero-butonlar > button:focus-visible,
+.giris-panel button:focus-visible,
+.giris-imza a:focus-visible,
+.giris-imza button:focus-visible {
+  outline: 2px solid var(--renk-altin-parlak);
+  outline-offset: 2px;
+}
+
+/* "Oyuna Devam Et" — aktif oyun varken en belirgin buton: iki satır (eylem +
+   karakter özeti), biraz daha yüksek, mühür kırmızısı bir nokta zaten ::before'da. */
+.ekran-giris .giris-hero-butonlar > button.giris-devam-buton {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  padding: 0.72rem 1.1rem 0.72rem 2rem;
+  line-height: 1.2;
+}
+.giris-devam-ana {
+  font-weight: 700;
+  font-size: 1rem;
+}
+.giris-devam-alt {
+  font-family: var(--font-govde);
+  font-weight: 400;
+  letter-spacing: 0;
+  font-size: 0.76rem;
+  opacity: 0.78;
+}
+
+
+/* ---------- Alt imza: yapımcı adı + görüş bağlantısı (bloklardan ayrı) ---------- */
+
+.giris-imza {
+  position: absolute;
+  left: clamp(14px, 4vw, 46px);
+  bottom: clamp(10px, 2.4vh, 22px);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  text-align: left;
+  pointer-events: auto;
+}
+.giris-imza-isim {
+  font-family: var(--font-baslik);
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+  color: #b9a6ff;
+  font-weight: 700;
+  text-decoration: none;
+  text-shadow: 0 0 12px rgba(140, 108, 220, 0.35);
+}
+a.giris-imza-isim:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  color: #d8ccff;
+}
+.giris-imza-gorus {
+  background: none;
+  border: none;
+  box-shadow: none;
+  padding: 0.1rem 0;
+  margin: 0;
+  font-size: 0.74rem;
+  color: #b39a5e;
+  opacity: 0.85;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.giris-imza-gorus:hover:not(:disabled) {
+  opacity: 1;
+  color: var(--renk-altin-parlak);
+  background: none;
+  box-shadow: none;
+  transform: none;
+}
+
+/* ---------- "Yakında" gizem kutusu — küçük, aykırı, sağ üste yakın,
+   panolarla AYNI HİZADA DEĞİL (hafif eğik, sahneye iliştirilmiş bir not) ---------- */
+
+.giris-gizem-kutu {
+  position: absolute;
+  top: clamp(54px, 8vh, 92px);
+  right: clamp(16px, 8vw, 120px);
+  z-index: 3;
+  width: clamp(138px, 13vw, 172px);
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.5rem 0.7rem 0.55rem;
+  border-radius: var(--r-sert);
+  transform: rotate(3deg);
+  transform-origin: top right;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(120, 96, 200, 0.28), transparent 70%),
+    linear-gradient(180deg, rgba(40, 31, 66, 0.92), rgba(19, 15, 34, 0.88));
+  border: 1px solid #5b4c90;
+  box-shadow: inset 0 0 0 1px rgba(170, 150, 240, 0.16), 0 6px 18px rgba(0, 0, 0, 0.45),
+    0 0 22px rgba(110, 84, 200, 0.3);
+}
+.giris-gizem-baslik {
+  font-family: var(--font-baslik);
+  font-size: 0.64rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #c9bcff;
+  opacity: 0.9;
+}
+.giris-gizem-ana {
+  font-family: var(--font-baslik);
+  font-size: 0.92rem;
+  color: #ece5ff;
+  letter-spacing: 0.02em;
+  line-height: 1.15;
+}
+.giris-gizem-tarih {
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #a99fd0;
+}
+
+/* ---------- Giriş panoları (kenar tabletleri) ---------- */
+
+.giris-paneller {
+  position: relative;
+  z-index: 2;
+}
+
+.giris-panel {
+  background:
+    linear-gradient(180deg, rgba(43, 32, 21, 0.6), rgba(20, 15, 10, 0.5));
+  border: 1px solid var(--renk-ahsap-kenar);
+  border-radius: var(--r-orta);
+  box-shadow: inset 0 0 0 1px rgba(224, 199, 137, 0.08), 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: transform 0.16s var(--gecis-yay), border-color 0.16s, box-shadow 0.16s;
+}
+.giris-panel:hover {
+  transform: translateY(-2px);
+  border-color: rgba(201, 162, 39, 0.45);
+  box-shadow: inset 0 0 0 1px rgba(224, 199, 137, 0.12), 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.giris-panel-baslik {
+  font-family: var(--font-baslik);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.82rem;
+  border-bottom: 1px solid rgba(201, 162, 39, 0.3);
+}
+
+/* ---------- Kart ızgaraları (çağ / bölge / yerleşim / meslek) ---------- */
+
+.ekran-kurulum .meslek-kart,
+.ekran-kurulum .yerlesim-kart {
+  position: relative;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(201, 162, 39, 0.1), transparent 60%),
+    linear-gradient(180deg, #2c2016 0%, #221913 100%);
+  border: 1px solid var(--renk-ahsap-kenar);
+  border-radius: var(--r-orta);
+  box-shadow: inset 0 0 0 1px rgba(224, 199, 137, 0.06), 0 3px 10px rgba(0, 0, 0, 0.35);
+  transition: transform 0.16s var(--gecis-yay), border-color 0.16s, box-shadow 0.16s, background 0.16s;
+}
+/* Üst yaldız cetveli */
+.ekran-kurulum .meslek-kart::before,
+.ekran-kurulum .yerlesim-kart::before {
+  content: '';
+  position: absolute;
+  left: 14%;
+  right: 14%;
+  top: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--renk-altin), transparent);
+  opacity: 0.7;
+}
+.ekran-kurulum .meslek-kart:hover:not(:disabled),
+.ekran-kurulum .yerlesim-kart:hover:not(:disabled) {
+  transform: translateY(-3px) scale(1.015);
+  border-color: var(--renk-altin);
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(201, 162, 39, 0.18), transparent 60%),
+    linear-gradient(180deg, #362719 0%, #281d14 100%);
+  box-shadow: inset 0 0 0 1px rgba(224, 199, 137, 0.14), 0 10px 24px rgba(0, 0, 0, 0.45), var(--yaldiz-parilti);
+}
+.ekran-kurulum .meslek-kart:active:not(:disabled),
+.ekran-kurulum .yerlesim-kart:active:not(:disabled) {
+  transform: translateY(-1px) scale(1);
+}
+
+/* Emoji simgesi arkasına madalyon (yerleşim kartları hâlâ emoji kullanıyor) */
+.ekran-kurulum .meslek-simge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.1rem;
+  height: 3.1rem;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 32%, rgba(201, 162, 39, 0.28), rgba(0, 0, 0, 0.25) 70%);
+  box-shadow: inset 0 0 0 1px rgba(224, 199, 137, 0.35);
+  font-size: 1.7rem;
+}
+
+/* Çağ madalyonu + ülke kalkanı görselleri */
+.cag-amblem,
+.bolge-amblem {
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+.cag-amblem svg {
+  width: 76px;
+  height: 76px;
+  display: block;
+  filter: drop-shadow(0 2px 7px rgba(0, 0, 0, 0.5));
+}
+.bolge-amblem svg {
+  width: 58px;
+  height: 68px;
+  display: block;
+  filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.55));
+}
+.ekran-kurulum .meslek-kart:hover:not(:disabled) .cag-amblem svg,
+.ekran-kurulum .meslek-kart:hover:not(:disabled) .bolge-amblem svg {
+  filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 8px rgba(201, 162, 39, 0.4));
+}
+
+.ekran-kurulum .meslek-kart strong,
+.ekran-kurulum .yerlesim-kart strong {
+  font-family: var(--font-baslik);
+  letter-spacing: 0.03em;
+  color: var(--renk-altin-parlak);
+}
+
+.meslek-yatkinlik {
+  font-size: 0.78rem;
+  color: #d8c9a3;
+  opacity: 0.9;
+}
+
+/* Tüm kurulum kartları SABİT boyut — tam ekranda esneyip yataya yayılmasınlar,
+   her ekran genişliğinde kareye yakın bir dikdörtgen olarak kalsınlar. */
+.ekran-kurulum .meslek-kartlari,
+.ekran-kurulum .yerlesim-kartlari {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: stretch;
+  gap: 1rem;
+}
+.ekran-kurulum .meslek-kart {
+  flex: 0 0 auto;
+  width: 232px;
+  min-height: 248px;
+}
+.ekran-kurulum .yerlesim-kart {
+  flex: 0 0 auto;
+  width: 258px;
+  min-height: 300px;
+}
+
+/* Çağ seçimi: aynı sabit boyut, biraz daha büyük simge */
+.ekran-adim-cag .meslek-kart {
+  width: 250px;
+  min-height: 264px;
+  padding: 1.9rem 1.4rem;
+}
+.ekran-adim-cag .meslek-simge { font-size: 2.1rem; }
+
+/* Bölge seçimi: kareye yakın küçük kartlar (artık yatay şerit değil) */
+.ekran-adim-bolge .meslek-kart {
+  width: 190px;
+  min-height: 130px;
+  padding: 1.15rem 1rem;
+}
+.ekran-adim-bolge .meslek-kart strong { font-size: 1.05rem; }
+
+/* ---------- İsim seçimi ---------- */
+
+.ekran-isim .isim-sec-input {
+  background: var(--renk-parsomen);
+  border: 2px solid var(--renk-ahsap-kenar);
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.25);
+  transition: border-color 0.15s, box-shadow 0.15s;
+  font-family: var(--font-baslik);
+  letter-spacing: 0.03em;
+}
+.ekran-isim .isim-sec-input:focus {
+  outline: none;
+  border-color: var(--renk-altin);
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.25), var(--yaldiz-parilti);
+}
+.ekran-isim > button:not(.ikincil) {
+  font-family: var(--font-baslik);
+  letter-spacing: 0.05em;
+  background: var(--altin-gradyan-dik);
+  color: #211703;
+  border: 1px solid var(--renk-altin-parlak);
+  font-weight: 700;
+}
+
+/* ---------- Açılış (künye/berat) ---------- */
+
+.ekran-acilis { gap: 0.9rem; }
+
+.ekran-acilis h2 {
+  font-family: var(--font-baslik);
+  color: var(--renk-altin-parlak);
+}
+
+.acilis-metni {
+  background: linear-gradient(180deg, rgba(36, 28, 21, 0.9), rgba(24, 18, 13, 0.9));
+  border-left: 3px solid var(--renk-altin);
+  box-shadow: inset 0 0 0 1px rgba(224, 199, 137, 0.08);
+  border-radius: 0 var(--r-orta) var(--r-orta) 0;
+}
+/* İlk harf büyütme (drop cap) */
+.acilis-metni::first-letter {
+  font-family: var(--font-baslik);
+  font-size: 2.9rem;
+  line-height: 0.9;
+  float: left;
+  margin: 0.1rem 0.4rem 0 0;
+  color: var(--renk-altin);
+}
+
+.acilis-ozet span {
+  background: linear-gradient(180deg, rgba(43, 32, 21, 0.7), rgba(20, 15, 10, 0.6));
+  border: 1px solid rgba(201, 162, 39, 0.3);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.3);
+}
+
+.ekran-acilis button:not(.ikincil) {
+  font-family: var(--font-baslik);
+  letter-spacing: 0.05em;
+  background: var(--altin-gradyan-dik);
+  color: #211703;
+  border: 1px solid var(--renk-altin-parlak);
+  font-weight: 700;
+}
+
+/* ---------- Mobil (≤767px) — her ekran için ayrı sadeleştirme ---------- */
+
+@media (max-width: 767px) {
+  /* Telefonda yatay 3 sütun anlamsız — dikey tek sütuna iner, sayfa doğal kayar
+     (bkz. .oyun-kapsayici-tam mobil kuralı: height:auto; overflow:visible). */
+  .ekran-giris,
+  .ekran-kurulum,
+  .ekran-acilis {
+    border-radius: 10px;
+    padding: 1.15rem max(0.9rem, env(safe-area-inset-left))
+      calc(1.4rem + env(safe-area-inset-bottom))
+      max(0.9rem, env(safe-area-inset-right));
+    display: block;
+    flex: none;
+    align-self: stretch;
+    max-width: none;
+    overflow-y: visible;
+  }
+  .ekran-giris > .giris-hero {
+    max-height: none;
+    overflow-y: visible;
+  }
+  .giris-yan {
+    overflow-y: visible;
+    min-height: 0;
+    max-height: none;
+    margin-top: 0.7rem;
+  }
+  /* Geçmiş Hayatlar 20 kayıtla telefonda sayfayı çok uzatmasın — pano içi kayar. */
+  .giris-panel .gecmis-hayat-liste,
+  .giris-panel .giris-liderlik-liste {
+    max-height: 42vh;
+    overflow-y: auto;
+  }
+  .giris-imza {
+    position: static;
+    align-items: center;
+    text-align: center;
+    margin: 1.1rem auto 0.2rem;
+  }
+  .giris-gizem-kutu {
+    position: static;
+    transform: none;
+    width: auto;
+    margin: 0.8rem 0 0;
+    order: 5;
+  }
+  .giris-fon { opacity: 0.05; }
+  .ekran-giris::after,
+  .ekran-kurulum::after,
+  .ekran-acilis::after {
+    inset: 6px;
+  }
+
+  /* Köşe tezhipleri telefonda görsel gürültü — sadece üst köşeler, küçük */
+  .kt-sol-alt,
+  .kt-sag-alt { display: none; }
+  .kose-tezhip { width: 28px; height: 28px; }
+
+  .cark-logo { width: 68px !important; height: 68px !important; }
+  .ekran-giris h1 { font-size: 1.9rem; }
+  .giris-slogan { font-size: 0.7rem; letter-spacing: 0.12em; }
+
+  .giris-hero {
+    padding: 1.1rem 0.9rem 1.2rem;
+  }
+  .ekran-giris .giris-hero-butonlar > button {
+    width: 100%;
+    max-width: none;
+    min-height: 48px;
+    padding: 0.95rem 1rem;
+    text-align: center;
+  }
+  /* İki satırlı "Devam Et" butonu mobilde ortalı kalsın. */
+  .ekran-giris .giris-hero-butonlar > button.giris-devam-buton {
+    align-items: center;
+    padding: 0.8rem 1rem;
+  }
+
+  /* Paneller tek sütun, açılır his */
+  .giris-paneller {
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+  }
+
+  /* Adım göstergesi kompakt */
+  .adim-gostergesi-metin { font-size: 0.66rem; letter-spacing: 0.12em; }
+
+  /* Kartlar tam genişlik tek sütun */
+  .ekran-kurulum .meslek-kartlari,
+  .ekran-kurulum .yerlesim-kartlari,
+  .ekran-adim-cag .meslek-kartlari,
+  .ekran-adim-bolge .meslek-kartlari {
+    flex-direction: column;
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+  }
+  .ekran-kurulum .meslek-kart,
+  .ekran-kurulum .yerlesim-kart,
+  .ekran-adim-cag .meslek-kart,
+  .ekran-adim-bolge .meslek-kart {
+    width: 100%;
+    min-height: 0;
+    padding: 1.15rem 1rem;
+    flex-direction: row;
+    flex-wrap: wrap;
+    text-align: left;
+    align-items: center;
+  }
+  .ekran-kurulum .meslek-kart .meslek-simge { flex: 0 0 auto; }
+  .ekran-kurulum .meslek-kart strong { flex: 1 1 auto; }
+  .ekran-kurulum .meslek-kart .meslek-aciklama,
+  .ekran-kurulum .meslek-kart .meslek-yatkinlik,
+  .ekran-kurulum .meslek-kart .meslek-miras-ipucu { flex: 1 1 100%; }
+
+  /* Yerleşim kartı: dikey kalsın ama daha kısa */
+  .ekran-kurulum .yerlesim-kart { min-height: 0; padding: 1.15rem 1rem; }
+
+  /* Hover-lift'i dokunmatikte kapat (yalnız aktif basış geri bildirimi) */
+  .ekran-kurulum .meslek-kart:hover:not(:disabled),
+  .ekran-kurulum .yerlesim-kart:hover:not(:disabled),
+  .giris-panel:hover {
+    transform: none;
+  }
+
+  .acilis-metni::first-letter { font-size: 2.3rem; }
+}
+
+/* ---------- Hareket azaltma ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .cark-logo-donen { animation: none; }
+  .ky-donen { animation: none; }
+  .ekran-kurulum > *,
+  .ekran-acilis > *,
+  .kose-tezhip {
+    animation: none !important;
+    opacity: 1;
+  }
+  .kose-tezhip { opacity: 0.7; }
+  .ekran-kurulum .meslek-kart,
+  .ekran-kurulum .yerlesim-kart,
+  .giris-panel,
+  .ekran-giris .giris-hero-butonlar > button {
+    transition: none;
+  }
+}
+
+/* ---------- "Nasıl Oynanır?" modalı ---------- */
+
+.nasil-oynanir-modal {
+  max-width: 760px;
+}
+/* Masaüstünde bölümler 2 sütuna akar (uzun öğretici tek kolonda çok kaydırma
+   istiyordu); dar ekranda tek sütun. Gövde zaten kendi içinde kayar. */
+.nasil-govde {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.1rem 1.6rem;
+  align-content: start;
+}
+@media (min-width: 640px) {
+  .nasil-govde {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.nasil-bolum {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+.nasil-bolum h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--renk-altin);
+  letter-spacing: 0.02em;
+}
+.nasil-bolum p {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: #d8ccae;
+}
+.nasil-bolum ul {
+  margin: 0.1rem 0 0;
+  padding-left: 1.05rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+}
+.nasil-bolum li {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: #c7bd9f;
+}
+.nasil-bolum li::marker {
+  color: var(--renk-altin-koyu);
+}

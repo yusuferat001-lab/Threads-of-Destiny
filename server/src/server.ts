@@ -8,6 +8,7 @@ import rateLimit from "express-rate-limit";
 import { gameRouter } from "./routes/game.routes";
 import { scoreRouter } from "./routes/score.routes";
 import { geriBildirimRouter } from "./routes/geriBildirim.routes";
+import { istatistikRouter } from "./routes/istatistik.routes";
 import { oturumlariYukle, oturumlariBellektenTemizle } from "./game/gameEngine";
 import { eskiOturumlariTemizle } from "./db/sessionRepository";
 
@@ -75,9 +76,19 @@ const geriBildirimLimiti = rateLimit({
   legacyHeaders: false,
 });
 
+// İstatistik: client yalnız "ziyaret" olayı yazar (günde bir); okuma anahtarlıdır.
+// Ziyaret ping'i sekme başına ~1 olduğu için orta bir limit yeter.
+const istatistikLimiti = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 app.use("/api/game", oyunLimiti, gameRouter);
 app.use("/api/scores", skorLimiti, scoreRouter);
 app.use("/api/geri-bildirim", geriBildirimLimiti, geriBildirimRouter);
+app.use("/api/istatistik", istatistikLimiti, istatistikRouter);
 
 // Render sağlık kontrolü için hafif uç nokta.
 app.get("/healthz", (_req, res) => {

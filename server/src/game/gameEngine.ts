@@ -53,6 +53,7 @@ import {
   rastgeleMulkBakimAraligi,
   mulkYillikBakimTahmini,
   gayrimenkulDegeriHesapla,
+  hesaplaSkor,
   dunyaFinansEtkileri,
   DunyaFinansEtkisi,
   sucSeviyesiUygula,
@@ -88,7 +89,7 @@ import {
   sosyallesmeYeriGetir,
   sosyallesmeYeriUygunMu,
 } from "../data/sosyallesmeYerleri";
-import { rastgeleBirIsimSec } from "../data/npcIsimleri";
+import { rastgeleBirIsimSec, rastgeleOyuncuIsmiSec } from "../data/npcIsimleri";
 import { rastgeleKisilikCifti, kisilikGetir } from "../data/kisilikler";
 import {
   rastgeleHayvanTuruSec,
@@ -99,7 +100,8 @@ import {
 import { tarihiSavasKontrol } from "../data/tarihiSavaslar";
 import { GIZEMLI_ESYA_TAKIP_HAVUZU } from "../data/gizemliEsyalar";
 import { yerlesimGetir } from "../data/yerlesimler";
-import { oturumKaydet, oturumYukle, aktifOturumlariYukle } from "../db/sessionRepository";
+import { oturumKaydet, oturumYukle, aktifOturumlariYukle, oturumYasiSaniye } from "../db/sessionRepository";
+import { metrikYaz } from "../db/metrikRepository";
 import { MULK_TANIMLARI, mulkTanimiGetir } from "../data/mulkler";
 import {
   MAGAZA_ESYALARI,
@@ -331,7 +333,8 @@ export async function yeniOyun(
   bolge: string,
   yerlesimId: string,
   oyuncuIsmi?: string,
-  dil?: string
+  dil?: string,
+  istemciId?: string
 ): Promise<CharacterState> {
   const state = createCharacter(cag, bolge, yerlesimId, oyuncuIsmi, dil);
   oturumlar.set(state.id, {
@@ -344,12 +347,20 @@ export async function yeniOyun(
     bekleyenTepki: null,
   });
   await oturumKaydet(state);
+  void metrikYaz({
+    tur: "yeni_oyun",
+    oturum_id: state.id,
+    istemci_id: istemciId,
+    cag: state.cag,
+    bolge: state.bolge,
+    yerlesim: state.yerlesim,
+  });
   return state;
 }
 
-/** İsim seçim ekranı için: bölge/çağa uygun kültürel bir isim önerir. */
+/** İsim seçim ekranı için: bölge/çağa uygun kültürel bir ERKEK isim önerir (oyun şu an yalnız erkek karakter). */
 export function isimOnerisiGetir(cag: Cag, bolge: string): string {
-  return rastgeleBirIsimSec(cag, bolge);
+  return rastgeleOyuncuIsmiSec(cag, bolge);
 }
 
 export async function mesleğiAta(id: string, meslek: string): Promise<CharacterState> {
@@ -357,6 +368,13 @@ export async function mesleğiAta(id: string, meslek: string): Promise<Character
   if (oturum.state.meslek) throw new Error("Meslek zaten seçildi.");
   mesleğiSec(oturum.state, meslek);
   await oturumKaydet(oturum.state);
+  void metrikYaz({
+    tur: "meslek_secim",
+    oturum_id: id,
+    meslek: oturum.state.meslek,
+    cag: oturum.state.cag,
+    bolge: oturum.state.bolge,
+  });
   return oturum.state;
 }
 
@@ -1352,6 +1370,27 @@ async function sonucuUygulaVeIlerlet(
   nakitAkisi.digerNet = paraYuvarla(state.para - paraGiris - mutabakatliToplam);
 
   await oturumKaydet(state);
+
+  // Bu turda öldüyse (fonksiyona hep aktif oyunla girilir) bir "olum" metriği yaz
+  // — oynanan süre / servet / skor / ölüm nedeni dağılımları için (§32). Ateşle-unut.
+  if (!state.aktif) {
+    const oturumSn = await oturumYasiSaniye(state.id);
+    void metrikYaz({
+      tur: "olum",
+      oturum_id: state.id,
+      cag: state.cag,
+      bolge: state.bolge,
+      yerlesim: state.yerlesim,
+      meslek: state.meslek,
+      yas: state.yas,
+      tur_sayisi: state.tur_sayisi,
+      servet: paraYuvarla(state.para + gayrimenkulDegeriHesapla(state)),
+      skor: hesaplaSkor(state),
+      olum_nedeni: state.olum_nedeni ?? "",
+      oturum_sn: oturumSn,
+    });
+  }
+
   return { state, basarili, uygulananEtki: etki, yasArtisi, sonucAnlatimi, zamanAnlatimi, terfiOldu, nakitAkisi };
 }
 
@@ -1555,6 +1594,15 @@ export async function liderlikTablosunaKaydet(id: string, isim: string) {
   const kayit = await skoruDbyeYaz(state, isim);
   state.skoru_kaydedildi = true;
   await oturumKaydet(state);
+  void metrikYaz({
+    tur: "skor_kaydi",
+    oturum_id: id,
+    cag: state.cag,
+    bolge: state.bolge,
+    meslek: state.meslek,
+    yas: state.yas,
+    skor: hesaplaSkor(state),
+  });
   return kayit;
 }
 

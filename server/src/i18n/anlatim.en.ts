@@ -285,8 +285,8 @@ export const ANLATIM_EN: Record<string, string> = {
   // ---- Dünya finans etkileri (dunyaFinansEtkileri) ----
   "Kötü ekonomi: maaş −%20": "Poor economy: salary −20%",
   "İyi ekonomi: maaş +%15": "Good economy: salary +15%",
-  "Büyük savaş ({0}): maaş −%15 · yemek +%{1} · maaşının %{2}'i savaş vergisi":
-    "Great war ({0}): salary −15% · food +{1}% · {2}% of your salary as war tax",
+  "Büyük savaş ({0}): maaş −%15 · yemek +%{1} · savaş vergisi %{2}":
+    "Great war ({0}): salary −15% · food +{1}% · war tax {2}%",
   "Savaş: maaş −%15": "War: salary −15%",
   "Salgın: her yıl ölüm riski · işçi kıtlığı maaş +%{0} · kira −%{1}":
     "Plague: yearly death risk · labor shortage salary +{0}% · rent −{1}%",

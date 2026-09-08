@@ -19,6 +19,38 @@
   --font-baslik: 'Cinzel', Georgia, serif;
   --font-govde: 'EB Garamond', Georgia, 'Times New Roman', serif;
   --golge-derin: 0 10px 30px rgba(0, 0, 0, 0.5);
+
+  /* ---- Faz 1: Altın yaldızlı el yazması aksanları ---- */
+  --altin-gradyan: linear-gradient(150deg, #f2dc9e 0%, #d7b24a 42%, #9c7519 78%, #7a5b12 100%);
+  --altin-gradyan-dik: linear-gradient(180deg, #f2dc9e, #c9a227 55%, #8a6512);
+  --muhur-kirmizi: #7c2b22;
+  --muhur-kirmizi-parlak: #b0402f;
+  --gece-mavisi: #17203c;
+  --gece-mavisi-parlak: #313f70;
+  --tezhip-altin: rgba(201, 162, 39, 0.55);
+  --yaldiz-parilti: 0 0 20px rgba(224, 199, 137, 0.32);
+  --halka-odak: 0 0 0 2px var(--renk-ahsap), 0 0 0 4px var(--renk-altin);
+  --r-yumusak: 14px;
+  --r-orta: 9px;
+  --r-sert: 5px;
+  --gecis-yay: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* ---- Kahve aksanı ---- Altın hakimiyetini kıran ikinci sıcak ton.
+     Şu an yalnızca Ayarlar modalında kullanılıyor; ileride yan ekranlara da taşınabilir.
+     Kırmızı için ayrı token yok — mevcut --muhur-kirmizi / --muhur-kirmizi-parlak ince vurgu olarak yeniden kullanılıyor. */
+  --renk-kahve-koyu: #1c120b;
+  --renk-kahve-panel: #2b1d13;
+  --renk-kahve: #241811;
+  --renk-kahve-kenar: #5a3a24;
+  --renk-kahve-acik: #6e4529;
+  --renk-kahve-metin: #d8c4a8;
+  --renk-kahve-vurgu: #c9955c;
+  --kahve-gradyan-panel: linear-gradient(180deg, #2b1d13, #1f150e);
+  --kahve-gradyan-sekme: linear-gradient(180deg, #3a2718, #2a1b10);
+  /* İkinci renk: açık bej / ekru — kahve çerçevenin içindeki aydınlık yüzey (Ayarlar gövdesi). */
+  --renk-ekru: #ece0c8;
+  --renk-ekru-parlak: #f5ecd9;
+  --renk-ekru-kenar: #c8b487;
 }
 
 * {
@@ -212,18 +244,7 @@ button.ikincil {
   gap: 0.4rem;
 }
 
-.giris-cark {
-  font-size: 2.4rem;
-  line-height: 1;
-  animation: giris-cark-don 12s linear infinite;
-  filter: drop-shadow(0 0 6px rgba(201, 162, 39, 0.5));
-}
-
-@keyframes giris-cark-don {
-  to {
-    transform: rotate(360deg);
-  }
-}
+/* .giris-cark (emoji çark) Faz 1'de <CarkLogo/> SVG bileşeniyle değiştirildi — bkz. giris.css */
 
 .giris-hero-butonlar {
   display: flex;
@@ -860,20 +881,42 @@ button.ikincil {
 .merkez-alt {
   position: relative;
   z-index: 2; /* sahnenin ve .sahne-hotspot-*'ın üstünde kalsın */
-  flex: 0 0 clamp(280px, 58%, 480px);
+  /* Paket 3: kartın payı %58'den %52'ye — bölge sahnesi masaüstünde daha çok nefes alsın
+     (sahne artık merkezin ~yarısı). Sabit oran korunur ki olay→sonuç geçişinde sahne
+     "zıplamasın"; içerik sığmazsa kart yine kendi içinde kayar. */
+  flex: 0 0 clamp(260px, 52%, 440px);
   min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
   width: min(680px, 88%);
-  /* Sahnenin altına yalnızca ~%7 taşar (eskiden ~%10); arka planı tam opak. */
-  margin: clamp(-1.6rem, -3vh, -0.85rem) auto 0;
-  padding: 0.6rem 1.15rem 0.75rem;
+  /* Sahnenin altına yalnızca ~%6 taşar; arka planı tam opak. */
+  margin: clamp(-1.4rem, -2.6vh, -0.75rem) auto 0;
+  padding: 0.55rem 1.1rem 0.7rem;
   border: 2px solid var(--renk-altin);
   border-radius: 16px;
   background: var(--renk-ahsap-panel);
   box-shadow: var(--golge-derin);
   overflow-y: auto;
+}
+
+/* Seçim SONUCU ekranında kart sahnenin altına daha az taşar: sahne artık arka
+   planda kaldığı için kartın okunurluğu > sabit sahne payı. Uzun sonuç metni
+   ilk satırından itibaren tam görünür, sahne/hotspot'la iç içe girmez. */
+.merkez-alt-sonuc {
+  margin-top: clamp(-0.8rem, -1.4vh, -0.4rem);
+}
+/* İçerik taşıyorsa kaydırılabilir olduğunu belli eden alt kenar gölgesi —
+   layout'ta yer kaplamaz (negatif üst margin ile içeriğin üstüne biner). */
+.merkez-alt-sonuc::after {
+  content: '';
+  position: sticky;
+  bottom: -0.75rem;
+  display: block;
+  height: 1.6rem;
+  margin: -1.6rem -1.15rem -0.75rem;
+  background: linear-gradient(to top, var(--renk-ahsap-panel), transparent);
+  pointer-events: none;
 }
 
 .olay-karti {
@@ -1433,23 +1476,22 @@ button.ikincil {
   font-variant-numeric: tabular-nums;
 }
 
-/* Şu an etkin dünya olayları — kısa çipler, tam metin title'da */
+/* Şu an etkin dünya olayları — "Eline kalan"ın hemen altında, etkisiyle birlikte
+   tam metin (savaş/veba/kıtlık neden bütçeyi değiştiriyor oyuncu görsün). */
 .finans-ozet-mini-dunya {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
+  list-style: none;
+  margin: 0;
+  padding: 0.3rem 0 0;
   border-top: 1px dashed rgba(74, 53, 32, 0.35);
-  padding-top: 0.3rem;
-  cursor: help;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
 }
 
-.finans-ozet-mini-dunya-cip {
-  font-size: clamp(0.58rem, 0.2vw + 0.48rem, 0.74rem);
-  padding: 0.08rem 0.35rem;
-  border-radius: 999px;
-  background: rgba(74, 53, 32, 0.16);
-  border: 1px solid rgba(74, 53, 32, 0.3);
-  white-space: nowrap;
+.finans-ozet-mini-dunya li {
+  font-size: clamp(0.6rem, 0.2vw + 0.5rem, 0.76rem);
+  line-height: 1.3;
+  opacity: 0.9;
 }
 
 /* "Şu an bütçeni etkileyen dünya durumları" bloğu (Gelir & Gider ekranı) */
@@ -1747,6 +1789,8 @@ button.ikincil {
 .secenekler {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  /* Paket 4: aynı satırdaki seçenekler eşit yükseklik — 2x2 ızgara tırtıklı dizilmesin. */
+  grid-auto-rows: 1fr;
   gap: 0.5rem;
 }
 
@@ -1769,10 +1813,25 @@ button.ikincil {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
+  gap: 0.2rem;
+  height: 100%;
   padding: 0.45rem 0.8rem 0.45rem clamp(2.6rem, 0.8vw + 2.2rem, 3.2rem);
   border: 1px solid var(--renk-ahsap-kenar);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Paket 4: şans + etki çipleri artık tek kompakt satır (alt alta yığılmıyor).
+   `display: contents` ile .secenek-tahmin çipleri de bu satırın parçası olur. */
+.secenek-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.4rem;
+  margin-top: auto;
+  padding-top: 0.15rem;
+}
+.secenek-meta .secenek-tahminler {
+  display: contents;
 }
 
 .secenek:hover:not(:disabled) {
@@ -3096,23 +3155,25 @@ button.ikincil {
   margin: 0;
 }
 
-/* Seçim sonucu + turun pasif özeti tek metinde; en fazla 2 satır (taşan kısım
-   title'da). Blok, seçim sonucu ekranında yavaşça yukarı kayarak belirir (#17). */
+/* Seçim sonucu + turun pasif özeti tek metinde. Eskiden masaüstünde
+   `-webkit-line-clamp:2` ile kırpılıp geri kalanı `title` tooltip'ine
+   gizleniyordu — dokunmatikte hiç erişilemiyor, masaüstünde de fareyle
+   beklemek gerekiyordu ("olay sonucu tam okunmuyor"). Artık HER platformda
+   tam metin görünür; kutu `.merkez-alt` içinde kendi payında, gerekiyorsa
+   `.merkez-alt` kendi içinde kayar (alt kenarda bir fade ipucu var).
+   `title` zararsız bir yedek olarak kalır. Blok yavaşça yukarı kayarak belirir (#17). */
 .tur-ozeti {
   font-size: 0.9rem;
-  line-height: 1.45;
+  line-height: 1.5;
   max-width: 560px;
   text-align: left;
   background: #241c15;
   border-left: 3px solid #6b4f2a;
-  padding: 0.55rem 0.85rem;
+  padding: 0.6rem 0.9rem;
   border-radius: 0 8px 8px 0;
   margin: 0;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  display: block;
+  overflow: visible;
   animation: turOzetiBelir 0.24s ease-out both;
 }
 
@@ -3437,12 +3498,13 @@ button.ikincil {
   padding: 0.35rem 0.5rem;
   font-size: 1.1rem;
   background: rgba(20, 15, 10, 0.55);
-  border: 1px solid rgba(224, 199, 137, 0.35);
+  border: 1px solid var(--renk-kahve-kenar);
   border-radius: 8px;
 }
 
 .ayar-ac-buton:hover:not(:disabled) {
-  background: rgba(40, 30, 18, 0.8);
+  background: rgba(43, 29, 19, 0.85);
+  border-color: var(--renk-kahve-vurgu);
 }
 
 .sonuc-efekti-kapsayici {
@@ -3660,30 +3722,81 @@ button.ikincil {
     min-height: 100dvh;
     display: block;
     overflow: visible;
-    padding: 0.85rem 0.75rem 1.5rem;
+    padding: 0.4rem 0.5rem 1.25rem;
   }
 
   .oyun-ekrani {
     display: block;
     height: auto;
+    gap: 0.4rem;
+  }
+
+  /* ---- Paket 1: mobilde oyun-önce sıralama + yapışkan kompakt üst şerit ----
+   * Sıra artık merkez (olay + seçenekler) EN ÜSTTE; karakter/dünya panelleri altında,
+   * katlanmış (bkz. .panel-katla). Üst şerit ekran tepesine yapışır ki seçim sonrası
+   * yıl/yaş/can/para delta parlamaları görünür kalsın. */
+  .oyun-ekrani > .ust-serit {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    flex-wrap: nowrap;
+    gap: 0.35rem;
+    padding: 0.3rem 0.4rem;
+    border-radius: 0 0 10px 10px;
+    border-bottom-width: 2px;
+  }
+
+  .ust-serit-moduller {
+    flex-basis: auto;
+    gap: 0.2rem;
+    grid-template-columns: repeat(7, 1fr);
+  }
+
+  .ust-serit-modul {
+    flex-direction: column;
+    gap: 0.05rem;
+    padding: 0.18rem 0.08rem;
+  }
+
+  .ust-serit-modul-ikon {
+    font-size: 0.92rem;
+  }
+
+  /* İkon + değer yeter; sözel etiket ("Sağlık" vb.) mobilde gizli — 7 modül tek satıra sığsın. */
+  .ust-serit-modul-etiket {
+    display: none;
+  }
+
+  .ust-serit-modul-deger {
+    font-size: 0.7rem;
+  }
+
+  .ust-serit-aranma-yildizlari {
+    font-size: 0.6rem;
+  }
+
+  /* Ülke/hükümdar kutusu üst şeritten çıkar — aynı bilgi sağ panelde (Dünya & Siyaset) zaten var. */
+  .ust-serit-bolge {
+    display: none;
   }
 
   .oyun-govde {
-    margin-top: 0.65rem;
+    margin-top: 0.4rem;
     display: grid;
     grid-template-areas:
-      'sol'
       'merkez'
+      'sol'
       'sag';
     grid-template-columns: 1fr;
     flex: none;
-    gap: 0.65rem;
+    gap: 0.5rem;
   }
 
   .panel-parsomen {
     height: auto;
     max-height: none;
     overflow-y: visible;
+    padding: 0.5rem 0.6rem;
   }
 
   .merkez-panel {
@@ -3691,67 +3804,131 @@ button.ikincil {
     min-height: 0;
   }
 
+  /* Sahne mobilde sadece atmosfer — daha kısa bir şerit; hotspot'lar artık üstünde değil. */
   .merkez-sahne {
     flex: none;
     min-height: 0;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 21 / 8;
+  }
+
+  /* ---- Paket 2: hotspot'lar sahnenin üstünden alınıp altında etiketli aksiyon satırına ----
+   * Büyük dokunma hedefi, net etiket, kaza dokunması yok. .sahne-hotspotlar artık sahne
+   * içinde mutlak konumlu bir overlay değil, merkez-panel içinde normal akışta bir grid. */
+  .merkez-panel .sahne-hotspotlar {
+    position: static;
+    inset: auto;
+    width: 100%;
+    height: auto;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.3rem;
+    padding: 0.4rem;
+    background: rgba(0, 0, 0, 0.28);
+    border-top: 1px solid var(--renk-ahsap-kenar);
+    pointer-events: auto;
+  }
+
+  .merkez-panel .sahne-hotspot {
+    position: static;
+    inset: auto;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    transform: none;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-height: 46px;
+    padding: 0.35rem 0.2rem;
+    background: rgba(0, 0, 0, 0.35);
+    border: 1px solid var(--renk-ahsap-kenar);
+    border-radius: 8px;
+  }
+
+  .merkez-panel .sahne-hotspot:hover:not(:disabled),
+  .merkez-panel .sahne-hotspot:focus-visible:not(:disabled) {
+    transform: none;
+    border-color: var(--renk-altin);
+  }
+
+  .merkez-panel .sahne-hotspot .sahne-hotspot-ikon,
+  .merkez-panel .sahne-hotspot-magaza .sahne-hotspot-ikon,
+  .merkez-panel .sahne-hotspot-sosyallesme .sahne-hotspot-ikon {
+    font-size: 1.3rem !important;
+  }
+
+  .merkez-panel .sahne-hotspot-etiket {
+    font-size: 0.55rem;
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--renk-altin-parlak);
   }
 
   .merkez-alt {
     flex: none;
     overflow-y: visible;
-    /* Masaüstündeki -vh tabanlı taşma payı burada işe yaramaz: sahne artık flex:1 değil,
-       sabit en-boy oranıyla (16/9) SADECE genişliğe göre boyutlanıyor — bu yüzden taşma
-       miktarı da sahne yüksekliğiyle orantılı olsun diye vw tabanlı hesaplanır. Değer
-       masaüstünden küçültüldü: .tur-ozeti artık mobilde tam metni gösterip doğal olarak
-       uzayabildiği için, büyük bir taşma kartın sahne/hotspot'larla görsel olarak iç içe
-       girmesine (okunamaz hale gelmesine) yol açıyordu. */
-    margin-top: clamp(-0.6rem, -2vw, -0.3rem);
+    width: 100%;
+    margin-top: 0;
+    padding: 0.55rem 0.7rem 0.7rem;
+    /* scrollIntoView sonrası yapışkan üst şerit kartın ilk satırını örtmesin. */
+    scroll-margin-top: 3.4rem;
   }
 
-  /* Mobilde title tooltip'i (dokunmatik ekranda hiç tetiklenmiyor) tek erişim yolu
-     olduğu için 2 satırlık kırpma, sonuç metninin geri kalanını tamamen erişilemez
-     kılıyordu ("olay sonucu iç içe giriyor, okunamıyor"). Mobilde kırpma tamamen
-     kaldırılır — sayfa zaten doğal olarak kayabiliyor, tam metin görünür olur. */
+  .merkez-alt-sonuc {
+    margin-top: 0;
+  }
+  .merkez-alt-sonuc::after {
+    display: none;
+  }
+
   .tur-ozeti {
     display: block;
-    -webkit-line-clamp: unset;
-    line-clamp: unset;
     overflow: visible;
     max-width: 100%;
   }
 
-  .ust-serit {
-    flex-wrap: wrap;
-    justify-content: center;
+  .secenekler {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+    gap: 0.4rem;
   }
 
-  .ust-serit-moduller {
-    flex-basis: 100%;
-    grid-template-columns: repeat(3, 1fr);
+  .secenek {
+    height: auto;
+  }
+  .secenek-meta {
+    margin-top: 0.15rem;
   }
 
-  .ust-serit-bolge {
-    width: 100%;
-    justify-content: center;
+  /* ---- Paket 5: yan paneller mobilde katlanır <details> ----
+   * Başlığa dokununca açılır; kapalıyken yalnızca başlık satırı kadar yer kaplar,
+   * böylece olay + seçenekler tek ekrana sığar. */
+  .panel-katla:not([open]) > summary {
+    margin-bottom: 0;
+  }
+  .panel-katla > summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .panel-katla > summary::-webkit-details-marker {
+    display: none;
+  }
+  .panel-katla > summary::after {
+    content: '▸';
+    margin-left: auto;
+    opacity: 0.65;
+    transition: transform 0.15s ease;
+  }
+  .panel-katla[open] > summary::after {
+    transform: rotate(90deg);
   }
 
   .banner-rozetler {
     margin-left: 0;
-  }
-
-  .sahne-hotspot {
-    transform: scale(0.78);
-    transform-origin: bottom center;
-  }
-
-  .sahne-hotspot:hover:not(:disabled),
-  .sahne-hotspot:focus-visible:not(:disabled) {
-    transform: scale(0.85) translateY(-2px);
-  }
-
-  .sahne-hotspot-etiket {
-    font-size: 0.56rem;
   }
 }
 
@@ -3792,11 +3969,12 @@ button.ikincil {
 }
 
 .ayarlar-modal {
-  background: linear-gradient(180deg, var(--renk-ahsap-panel), var(--renk-ahsap));
-  border: 3px solid var(--renk-ahsap-kenar);
+  background: var(--kahve-gradyan-panel);
+  border: 3px solid var(--renk-kahve-kenar);
+  border-top: 3px solid var(--muhur-kirmizi-parlak);
   border-radius: 12px;
-  box-shadow: var(--golge-derin), 0 0 0 1px rgba(224, 199, 137, 0.12) inset,
-    0 0 40px rgba(201, 162, 39, 0.12);
+  box-shadow: var(--golge-derin), 0 0 0 1px rgba(216, 196, 168, 0.1) inset,
+    0 0 40px rgba(110, 69, 41, 0.28);
   width: 100%;
   max-width: 460px;
   max-height: min(88dvh, 620px);
@@ -3812,13 +3990,14 @@ button.ikincil {
   justify-content: space-between;
   gap: 0.75rem;
   padding: 0.9rem 1rem;
-  border-bottom: 1px solid var(--renk-ahsap-kenar);
-  background: rgba(0, 0, 0, 0.22);
+  border-bottom: 1px solid var(--renk-kahve-kenar);
+  box-shadow: 0 1px 0 rgba(176, 64, 47, 0.35);
+  background: rgba(0, 0, 0, 0.25);
 }
 
 .ayarlar-modal-ust h2 {
   font-size: 1.25rem;
-  color: var(--renk-altin-parlak);
+  color: var(--renk-kahve-vurgu);
   letter-spacing: 0.04em;
 }
 
@@ -3843,13 +4022,14 @@ button.ikincil {
   padding: 0.55rem 0.6rem;
   font-size: 0.92rem;
   border-radius: 8px 8px 0 0;
-  background: linear-gradient(180deg, #3a2c1a, #2a2013);
+  background: var(--kahve-gradyan-sekme);
   border-bottom: 2px solid transparent;
 }
 
 .ayarlar-sekmeler button.aktif-sekme {
-  background: #b5893a !important;
-  border-bottom-color: var(--renk-altin-parlak);
+  background: var(--renk-ekru) !important;
+  color: #4a2f1c;
+  border-bottom-color: var(--muhur-kirmizi-parlak);
 }
 
 .ayarlar-govde {
@@ -3858,8 +4038,10 @@ button.ikincil {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+  background: var(--renk-ekru);
+  color: var(--renk-parsomen-metin);
   scrollbar-width: thin;
-  scrollbar-color: var(--renk-ahsap-kenar) rgba(0, 0, 0, 0.25);
+  scrollbar-color: var(--renk-kahve-kenar) rgba(0, 0, 0, 0.12);
 }
 
 .ayar-bolum {
@@ -3870,14 +4052,14 @@ button.ikincil {
 
 .ayar-bolum h3 {
   font-size: 1.02rem;
-  color: var(--renk-altin);
+  color: #5f3c22;
   margin: 0;
 }
 
 .ayar-bolum-aciklama {
   margin: 0;
   font-size: 0.86rem;
-  color: #cdbb95;
+  color: var(--renk-parsomen-metin-soluk);
   line-height: 1.4;
 }
 
@@ -3894,16 +4076,24 @@ button.ikincil {
   padding: 0.6rem 0.8rem;
   font-size: 0.92rem;
   border-radius: 8px;
-  background: linear-gradient(180deg, #3a2c1a, #2a2013);
-  border: 1px solid rgba(224, 199, 137, 0.2);
+  background: var(--renk-ekru-parlak);
+  color: var(--renk-parsomen-metin);
+  border: 1px solid var(--renk-ekru-kenar);
   transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
 }
 
-.ayar-secenek.secili {
-  background: linear-gradient(180deg, #c9a227, #9c7519);
-  color: #1c140d;
-  border-color: var(--renk-altin-parlak);
-  box-shadow: 0 0 14px rgba(201, 162, 39, 0.35);
+.ayar-secenek:hover:not(:disabled) {
+  background: #fff;
+  border-color: var(--renk-kahve-vurgu);
+  box-shadow: none;
+}
+
+.ayar-secenek.secili,
+.ayar-secenek.secili:hover:not(:disabled) {
+  background: linear-gradient(180deg, #8a5630, #5f3c22);
+  color: var(--renk-parsomen);
+  border-color: var(--muhur-kirmizi-parlak);
+  box-shadow: 0 0 14px rgba(110, 69, 41, 0.4);
   font-weight: 700;
 }
 
@@ -3911,7 +4101,7 @@ button.ikincil {
   margin: 0;
   font-size: 0.8rem;
   font-style: italic;
-  color: var(--renk-altin-parlak);
+  color: #7a3b2c;
 }
 
 .gb-kategori-grup .ayar-secenek {
@@ -3923,9 +4113,9 @@ button.ikincil {
   width: 100%;
   font-family: inherit;
   font-size: 0.95rem;
-  background: var(--renk-parsomen);
+  background: var(--renk-ekru-parlak);
   color: var(--renk-parsomen-metin);
-  border: 2px solid var(--renk-ahsap-kenar);
+  border: 2px solid var(--renk-kahve-kenar);
   border-radius: 6px;
   padding: 0.6rem 0.7rem;
   resize: vertical;
@@ -3934,21 +4124,21 @@ button.ikincil {
 .gb-mesaj:focus,
 .gb-iletisim:focus {
   outline: none;
-  border-color: var(--renk-altin);
-  box-shadow: 0 0 10px rgba(201, 162, 39, 0.3);
+  border-color: var(--renk-kahve-vurgu);
+  box-shadow: 0 0 10px rgba(176, 64, 47, 0.3);
 }
 
 .gb-sayac {
   margin-top: -0.3rem;
   align-self: flex-end;
   font-size: 0.75rem;
-  color: #a58f68;
+  color: var(--renk-parsomen-metin-soluk);
 }
 
 .gb-uyari {
   margin: 0;
   font-size: 0.85rem;
-  color: #e6a5a5;
+  color: var(--renk-tehlike);
 }
 
 .gb-gonder {
@@ -3956,8 +4146,9 @@ button.ikincil {
   width: auto;
   max-width: none;
   padding: 0.65rem 1.4rem;
-  background: linear-gradient(180deg, #c9a227, #9c7519);
-  color: #1c140d;
+  background: linear-gradient(180deg, #8a5630, #5f3c22);
+  color: var(--renk-parsomen);
+  border-color: var(--muhur-kirmizi-parlak);
   font-weight: 700;
   text-align: center;
 }
@@ -3985,7 +4176,7 @@ button.ikincil {
 
 .ayarlar-basari p {
   margin: 0;
-  color: var(--renk-parsomen);
+  color: var(--renk-parsomen-metin);
 }
 
 .ayarlar-basari .ikincil {

@@ -41,3 +41,7 @@ services:
       # GET /api/geri-bildirim?key=<bu değer> ile kayıtları okumak için.
       - key: GERI_BILDIRIM_ANAHTARI
         sync: false
+      # GET /api/istatistik?key=<bu değer> (+ /panel) ile oyun metriklerini okumak
+      # için (§32). Boşsa uç 403 döner; metrik toplama (yazma) yine de çalışır.
+      - key: ISTATISTIK_ANAHTARI
+        sync: false

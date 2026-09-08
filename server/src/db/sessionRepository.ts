@@ -27,6 +27,21 @@ export async function oturumSil(id: string): Promise<void> {
   await prisma.session.deleteMany({ where: { id } });
 }
 
+/**
+ * Oturumun oluşturulmasından bu yana geçen gerçek-dünya saniye sayısı (metrik §32
+ * "oynanan süre" için). Kayıt yoksa / hata olursa 0 döner — metrik yazımı bunun
+ * yüzünden düşmesin.
+ */
+export async function oturumYasiSaniye(id: string): Promise<number> {
+  try {
+    const kayit = await prisma.session.findUnique({ where: { id } });
+    if (!kayit?.createdAt) return 0;
+    return Math.max(0, Math.round((Date.now() - kayit.createdAt.getTime()) / 1000));
+  } catch {
+    return 0;
+  }
+}
+
 /** Belirli bir süreden eski, bitmiş oturumları siler (RAM/DB büyümesini sınırlar). */
 export async function eskiOturumlariTemizle(oncekiTarih: Date): Promise<number> {
   const sonuc = await prisma.session.deleteMany({
