@@ -99,6 +99,8 @@ export interface OlayTanimi {
   hapisOlayi?: boolean;
   /** true ise bu olay sadece "yolculukta" etiketi taşıyan karakterlere çıkar; yolculuktayken normal olay havuzu tamamen kapanır (hapisOlayi ile birebir aynı mantık, çok yıllı yolculuk zincirleri için). */
   yolculukOlayi?: boolean;
+  /** true ise bu olay sadece vebayı bizzat kapmış ("veba_hastasi" etiketi) karakterlere çıkar; hastayken normal havuz tamamen kapanır (hapisOlayi ile aynı mantık). Hekim/tedavi/ihmal seçimleriyle veba_olum_riski'ni düşürüp yükseltir. */
+  vebaHastasiOlayi?: boolean;
   /**
    * Belirtilirse bu olay bir sosyalleşme mekânına (sosyallesmeYerleri.ts) aittir:
    * normal rastgele havuzdan tamamen dışlanır (hapisOlayi/yolculukOlayi'ndan farklı

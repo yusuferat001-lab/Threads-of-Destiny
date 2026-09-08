@@ -1423,8 +1423,9 @@ function App() {
                   <div className="secenekler sonuc-detay-panel">
                     <EtkiCipleri etki={sonEtki.etki} paraBirimi={sonEtki.paraBirimi} />
                     {(() => {
-                      // Tek metin: olay sonucu + turun pasif özeti (kazanç/dünya olayları/terfi).
-                      // sonucAnlatimi (çoğunlukla mesaj'ın tekrarı) yalnız zamanAnlatimi yoksa yedek.
+                      // Tek metin: olay mesajı + (varsa) turun tek durumsal cümlesi.
+                      // Sayısal deltalar EtkiCipleri'nde; zamanAnlatimi/sonucAnlatimi
+                      // artık çoğu turda boş döner, o zaman yalnız mesaj görünür.
                       const ozet = [sonEtki.etki.mesaj, sonEtki.zamanAnlatimi ?? sonEtki.sonucAnlatimi]
                         .filter((s): s is string => !!s && s.trim() !== '')
                         .join(' ');
@@ -1668,6 +1669,9 @@ function App() {
           ticaretSermaye={karakter.ticaret_sermaye}
           nufuz={karakter.nufuz}
           hapiste={karakter.etiketler.includes('hapiste')}
+          hapisCezaKalan={karakter.hapis_ceza_kalan}
+          vebaHastasi={karakter.etiketler.includes('veba_hastasi')}
+          vebaOlumRiski={karakter.veba_olum_riski}
           paraBirimi={karakter.para_birimi}
           yukleniyor={yukleniyor}
           onEkipCikar={ekipCikarHandler}

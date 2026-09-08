@@ -27,6 +27,9 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         metin: "Sakin kal, sorularına düzgün cevap ver.",
         baseBasariSansi: 85,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Sakinliğin işe yaradı; kısa bir kontrolün ardından seni yoluna gönderdiler.",
           detay: "Bazen en iyi savunma, yapacak hiçbir şeyin olmamasıdır.",
         },
@@ -42,6 +45,9 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         baseBasariSansi: 40,
         ipucu: "Başarırsan hiç iz bırakmazsın, ama yakalanırsan şüphe kesinleşir",
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Kalabalığın arasında görünmez oldun; devriye seni bulamadı.",
           detay: "Bugünlük şansın yaver gitti.",
         },
@@ -157,6 +163,8 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         metin: "Teklifi geri çevir, yoluna devam et.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          ahlak: 3,
+          mutluluk: -1,
           mesaj: "Teklifi reddedip hızlı adımlarla uzaklaştın.",
           detay: "Bazı kapılar kapalı kalmalı.",
         },
@@ -219,6 +227,9 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         metin: "Sorularını nazikçe geçiştir, para verme.",
         baseBasariSansi: 55,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Nazik tavrın işe yaradı; görevli omuz silkip gitti.",
           detay: "Bazen tek gereken biraz sakinlik.",
         },
@@ -350,6 +361,9 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         metin: "Görmezden gel, kendi kendine söner.",
         baseBasariSansi: 50,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Haklıydın; birkaç gün içinde dedikodu başka bir olaya kaydı.",
           detay: "Bazen sabır en ucuz çözümdür.",
         },
@@ -394,6 +408,9 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         baseBasariSansi: 35,
         ipucu: "Başarırsan bedava kurtulursun, kaybedersen arama gerçekleşir",
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Kararlı tavrın görevliyi ikna etti; tehdidini geri çekti.",
           detay: "Bazen soğukkanlılık paradan değerlidir.",
         },
@@ -696,7 +713,7 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         baseBasariSansi: 75,
         maliyet: 65,
         basariliSonuc: {
-          para: -65,
+          para: -59,
           suc_artis: -25,
           mesaj: "Kefaret makamlara ulaştı; dosyan resmi olarak bir kademe hafifledi.",
           detay: "Adalet bazen faturalı işler.",
@@ -711,6 +728,9 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         metin: "Aracıya güvenme, kendi başının çaresine bak.",
         baseBasariSansi: 90,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Aracıyı geri çevirdin; en azından kimseye güvenip aldatılmadın.",
           detay: "Bazen hiçbir şey yapmamak en güvenlisidir.",
         },
@@ -834,7 +854,7 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         baseBasariSansi: 60,
         maliyet: 130,
         basariliSonuc: {
-          para: -130,
+          para: -124,
           suc_artis: -65,
           mesaj: "Şefaat gerçekten işe yaradı; dosyan neredeyse tertemiz bir sayfaya döndü.",
           detay: "Bazı borçlar sadece çok büyük paralarla kapanır.",
@@ -849,6 +869,9 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         metin: "Bu kadar riske girme, parana güven.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Teklifi geri çevirdin; en azından cebindeki son paran senin kaldı.",
           detay: "Bazen hiç oynamamak en akıllıca hamledir.",
         },
@@ -968,7 +991,7 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         baseBasariSansi: 25,
         ipucu: "Çok riskli — ama başarırsan şehrin unuttuğu bir kaçak olarak dağlara sığınırsın",
         basariliSonuc: {
-          saglik: -15,
+          saglik: -9,
           yerlesim_zorla: "dag_basi",
           suc_seviyesi_ayarla: 10,
           etiket_ekle: ["kacak"],
@@ -1047,7 +1070,7 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         baseBasariSansi: 25,
         ipucu: "Çok riskli — ama başarırsan şehrin unuttuğu bir kaçak olarak dağlara sığınırsın",
         basariliSonuc: {
-          saglik: -15,
+          saglik: -9,
           yerlesim_zorla: "dag_basi",
           suc_seviyesi_ayarla: 10,
           etiket_ekle: ["kacak"],
@@ -1139,6 +1162,9 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         metin: "Uzak dur, yalnız kalmayı tercih et.",
         baseBasariSansi: 90,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Grubu selamlayıp yoluna devam ettin; yalnızlığın seni daha az riske sokuyor.",
           detay: "Bazı yalnızlıklar bir tercihtir, bir kader değil.",
         },
@@ -1224,6 +1250,9 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         baseBasariSansi: 35,
         ipucu: "Riskli ama doğruysa boşuna yorulmamış olursun",
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Sesler sadece bir avcı grubuymuş, sana yönelmediler; boş yere paniklemişsin.",
           detay: "Dağda her ses bir tehdit değildir.",
         },
@@ -1333,8 +1362,8 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         maliyet: 40,
         ipucu: "Pahalı ve riskli ama işe yararsa özgürce şehre dönebilirsin",
         basariliSonuc: {
-          para: -40,
-          un: -10,
+          para: -34,
+          un: -8,
           etiket_sil: ["kacak"],
           etiket_ekle: ["kalici:yeni_kimlik"],
           mesaj: "Yeni kağıtlarınla birlikte eski adın da geride kaldı; artık kimse seni tanımıyor, kimse aramıyor.",
@@ -1350,6 +1379,9 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         metin: "Ona güvenme, kendi yolunda devam et.",
         baseBasariSansi: 90,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Teklifi geri çevirip dağın derinliklerine doğru yürümeye devam ettin.",
           detay: "Güvenmemek bazen en güvenli seçimdir.",
         },
@@ -1423,6 +1455,7 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
           detay: "Dağ köylerinde nadir mallar değerlidir.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: 5,
           mesaj: "Köylüler pazarlıkta seni fazla sıkıştırdı; beklediğinden çok az kazandın.",
           detay: "Dağ köyleri de kendi kurallarına göre pazarlık eder.",
@@ -1460,6 +1493,9 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         metin: "Yavaşça, ani hareket etmeden geri çekil.",
         baseBasariSansi: 65,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Adım adım geri çekilip başka bir patikadan dolaştın; hayvan seni fark etmedi bile.",
           detay: "Dağda sabır, kılıçtan daha değerli bir silahtır.",
         },

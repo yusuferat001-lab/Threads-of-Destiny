@@ -84,7 +84,9 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Görmezden gel, zaten pek bir şeyin yok.",
         baseBasariSansi: 90,
         basariliSonuc: {
-          mutluluk: 2,
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: 1,
           mesaj: "Görmezden geldin; belli ki daha aç birine denk geldi zavallı çocuk.",
         },
         basarisizSonuc: {
@@ -122,6 +124,9 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Nazikçe reddet, kendi masana dön.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Tedbiri elden bırakmadın. Yabancı omuz silkti ve karanlığa geri çekildi.",
         },
         basarisizSonuc: {
@@ -199,6 +204,9 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Masanı al, köşeye çekil.",
         baseBasariSansi: 85,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Sağduyulu davrandın, kavgayı uzaktan izleyip kadehini kurtardın.",
         },
         basarisizSonuc: {
@@ -229,6 +237,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
           mesaj: "Kâğıtlar senden yana geldi; masadan cebin dolu kalktın.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -8,
           suc_artis: 3,
           mesaj: "Kötü bir el aldın, masadan eli boş kalktın. En azından muhafızlar gelmedi.",
@@ -238,6 +247,8 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Teşekkür et, katılma.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          ahlak: 3,
+          mutluluk: -1,
           mesaj: "Aklını başında tuttun; parana ve sicil temizliğine dokunmadın.",
         },
         basarisizSonuc: {
@@ -262,7 +273,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         maliyet: 6,
         ipucu: "Rakibine karşı küçük bir avantaj",
         basariliSonuc: {
-          para: -6,
+          para: -4,
           rakip_puani: -6,
           mesaj: "Anlattıkları işine yarayacak cinstendi; {rakip} hakkında artık senin de bir koz var.",
         },
@@ -275,6 +286,9 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "İlgilenmediğini söyle.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Dedikodunun peşinden koşmadın; meyhaneci omuz silkip başka birine döndü.",
         },
         basarisizSonuc: {
@@ -313,6 +327,9 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Gülümse, uzaklaş.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Nazikçe uzaklaştın, gecenin geri kalanını huzur içinde geçirdin.",
         },
         basarisizSonuc: {
@@ -355,6 +372,9 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Aklını kullan, iddiayı reddet.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Sağlığını riske atmadın; kabadayı seni 'akıllı ama sıkıcı' diye etiketledi, sen de umursamadın.",
         },
         basarisizSonuc: {
@@ -431,6 +451,9 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Görmezden gel, sırtını dön.",
         baseBasariSansi: 90,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Provokasyona gelmedin; {rakip} bir süre sonra ilgisini kaybetti.",
         },
         basarisizSonuc: {
@@ -469,6 +492,9 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Özür dile, tırnağını gösterme.",
         baseBasariSansi: 90,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Gururunu bir kenara bırakıp özür diledin; adam homurdanarak masasına döndü.",
         },
         basarisizSonuc: {
@@ -594,9 +620,12 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Tarafsız kal, sadece dinle.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          saglik: 2,
+          mutluluk: -2,
           mesaj: "Sessizce dinledin, şehrin nabzını tuttun.",
         },
         basarisizSonuc: {
+          mutluluk: -2,
           mesaj: "Sessizliğin bazılarına 'kibirli' göründü ama önemli değildi.",
         },
       },
@@ -622,6 +651,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
           mesaj: "Adamın sözü doğru çıktı; birkaç hafta sonra kapına gönderdiği zarfta fazlasıyla kârın vardı.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -12,
           mesaj: "Adam bir daha görünmedi. Kartvizitindeki isim bile sahteydi.",
         },
@@ -630,6 +660,8 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Kibarca reddet.",
         baseBasariSansi: 90,
         basariliSonuc: {
+          ahlak: 3,
+          mutluluk: -1,
           mesaj: "İçgüdülerine güvendin; adam omuz silkip başka bir masaya geçti.",
         },
         basarisizSonuc: {
@@ -660,6 +692,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
           mesaj: "Son topu köşe cebe soktun! Masa senin adına alkış tuttu.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -5,
           mesaj: "Elin titredi, top köşeyi ıskaladı. Şampiyon unvanını korudu.",
         },
@@ -742,6 +775,9 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Kenardan sıyrıl, karışma.",
         baseBasariSansi: 90,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Akıllıca davrandın; kavga polis gelmeden kendiliğinden bitti.",
         },
         basarisizSonuc: {
@@ -818,6 +854,9 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Gülümse, kabul etme.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Aptalca bir meydan okumaya kapılmadın.",
         },
         basarisizSonuc: {
@@ -854,9 +893,12 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Gülümse, ilgilenmediğini belirt.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          saglik: 2,
+          mutluluk: -2,
           mesaj: "Görücülük işine karışmadın, huzurunu bozmadın.",
         },
         basarisizSonuc: {
+          mutluluk: -2,
           mesaj: "Yine de arkandan fısıldamaya devam ettiler.",
         },
       },
@@ -925,7 +967,8 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Boş ver, önemli değil.",
         baseBasariSansi: 95,
         basariliSonuc: {
-          mutluluk: 1,
+          saglik: 2,
+          ahlak: 1,
           mesaj: "Kaybını sineye çektin, günün geri kalanını huzurla geçirdin.",
         },
         basarisizSonuc: {
@@ -982,7 +1025,9 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         baseBasariSansi: 40,
         ipucu: "Dayanırsan bir şey olmaz, dayanamazsan bayılırsın",
         basariliSonuc: {
-          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
+          saglik: 6,
           mesaj: "Zorlasan da toparlandın, gerçekten iyi bir ısınma oldu.",
         },
         basarisizSonuc: {
@@ -995,7 +1040,9 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Hemen serin bölüme geç.",
         baseBasariSansi: 90,
         basariliSonuc: {
-          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
+          saglik: 4,
           mesaj: "Zamanında müdahale ettin, kendini toparladın.",
         },
         basarisizSonuc: {
@@ -1034,6 +1081,9 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Görmezden gel, kendi işine bak.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Başını belaya sokmadın, sakin bir şekilde yıkanmana devam ettin.",
         },
         basarisizSonuc: {
@@ -1110,10 +1160,13 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "İzle, katılma.",
         baseBasariSansi: 95,
         basariliSonuc: {
-          mutluluk: 2,
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: 1,
           mesaj: "Keyifli bir izleyici oldun.",
         },
         basarisizSonuc: {
+          mutluluk: -2,
           mesaj: "Fazla bir şey olmadı.",
         },
       },
@@ -1146,9 +1199,12 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Teşekkür et, baktırma.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          saglik: 2,
+          mutluluk: -2,
           mesaj: "Kaderini bir fincan telveye bırakmadın.",
         },
         basarisizSonuc: {
+          mutluluk: -2,
           mesaj: "Kadın biraz gücenmiş göründü ama önemli değil.",
         },
       },
@@ -1182,9 +1238,12 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Tarafsız kal, sadece dinle.",
         baseBasariSansi: 90,
         basariliSonuc: {
+          saglik: 2,
+          mutluluk: -2,
           mesaj: "Fikrini kimseye açmadan, farklı görüşleri dinleyip zihninde tarttın.",
         },
         basarisizSonuc: {
+          mutluluk: -2,
           mesaj: "Sessizliğin kimsenin dikkatini çekmedi.",
         },
       },
@@ -1208,6 +1267,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
           mesaj: "Fırsat gerçekten iyiymiş; birkaç gün içinde yatırdığının fazlasını geri aldın.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -10,
           mesaj: "Mal partisi beklendiği gibi çıkmadı, yatırdığın parayı geri alamadın.",
         },
@@ -1216,9 +1276,12 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Sadece dinle, katılma.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          ahlak: 3,
+          mutluluk: -2,
           mesaj: "Riske girmeden kahveni yudumlamaya devam ettin.",
         },
         basarisizSonuc: {
+          mutluluk: -2,
           mesaj: "Fırsatı kaçırmış olabilirsin ama pişman değilsin.",
         },
       },
@@ -1251,6 +1314,9 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Teşekkür et, kendi masana dön.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Yalnız başına sakin bir akşam geçirdin.",
         },
         basarisizSonuc: {
@@ -1273,6 +1339,9 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         baseBasariSansi: 80,
         ipucu: "Güncel bir bilgi kazancı",
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Anlatılanlar şehrin nabzını tutmana yardım etti; artık bir sonraki adımını daha bilinçli atacaksın.",
         },
         basarisizSonuc: {
@@ -1284,9 +1353,12 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Kendi işine bak, ilgilenme.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          saglik: 2,
+          mutluluk: -2,
           mesaj: "Dedikodunun peşine düşmedin.",
         },
         basarisizSonuc: {
+          mutluluk: -2,
           mesaj: "Yine de kulağına birkaç kelime çalındı.",
         },
       },
@@ -1314,6 +1386,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
           mesaj: "Sert bir pazarlığın ardından anlaştınız; aldığın kumaşları şehirde iyi bir fiyata elden çıkardın.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -14,
           mesaj: "Pazarlıkta üstün geldiğini sandın ama malın kalitesi göründüğü gibi değilmiş.",
         },
@@ -1322,9 +1395,12 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Sadece sohbet et, hikâyelerini dinle.",
         baseBasariSansi: 90,
         basariliSonuc: {
+          ahlak: 3,
+          mutluluk: -2,
           mesaj: "Anlattığı diyarlar hayal gücünü genişletti.",
         },
         basarisizSonuc: {
+          mutluluk: -2,
           mesaj: "Yorgun tüccar pek konuşkan değildi.",
         },
       },
@@ -1383,6 +1459,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
           mesaj: "Kervan güvenle şehre ulaştı; reis sana söz verdiğinden fazlasını ödedi.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           saglik: -10,
           para: 6,
           mesaj: "Yolda küçük bir eşkıya baskınına uğradınız; kervanı korudun ama yara almadan olmadı.",
@@ -1392,6 +1469,8 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Teşekkür et, reddet.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          ahlak: 3,
+          mutluluk: -1,
           mesaj: "Rahat bir gece geçirmeyi tercih ettin.",
         },
         basarisizSonuc: {
@@ -1427,6 +1506,9 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Görmezden gel, kapını sıkı kilitle.",
         baseBasariSansi: 90,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Kendi eşyanı korudun, başkasının derdine karışmadın.",
         },
         basarisizSonuc: {
@@ -1462,9 +1544,12 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Vazgeç, başka bir tezgâha git.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          saglik: 2,
+          mutluluk: -2,
           mesaj: "Vaktini boşa harcamadın.",
         },
         basarisizSonuc: {
+          mutluluk: -2,
           mesaj: "Biraz kaba davranmış olabilirsin.",
         },
       },
@@ -1569,6 +1654,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
           mesaj: "Kâğıtlar senden yana geldi, çadırdaki herkesin cebinden bir şeyler çıktı.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -6,
           suc_artis: 2,
           mesaj: "Kötü bir gece geçirdin, maaşının bir kısmı diğer askerlerin cebinde kaldı.",
@@ -1578,9 +1664,12 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "İzle, katılma.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          ahlak: 3,
+          mutluluk: -2,
           mesaj: "Maaşını cebinde tuttun.",
         },
         basarisizSonuc: {
+          mutluluk: -2,
           mesaj: "Askerler seni biraz takıldı ama önemli değildi.",
         },
       },
@@ -1652,6 +1741,8 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Kurallara uy, reddet.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          ahlak: 3,
+          mutluluk: -1,
           mesaj: "Disiplinini korudun, riske girmedin.",
         },
         basarisizSonuc: {
@@ -1690,6 +1781,9 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Katılma, uykuna bak.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "İyi bir uyku çektin.",
         },
         basarisizSonuc: {
@@ -1727,6 +1821,9 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Mesafeni koru, uzaklaş.",
         baseBasariSansi: 90,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Emirlere sadık kaldın, riske girmedin.",
         },
         basarisizSonuc: {
@@ -1764,9 +1861,12 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Boş inançlara vaktin yok, reddet.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          saglik: 2,
+          mutluluk: -2,
           mesaj: "Kaderine falcıların değil kendi kılıcının karar vereceğini düşünüyorsun.",
         },
         basarisizSonuc: {
+          mutluluk: -2,
           mesaj: "Yine de diğer askerlerin fısıltıları kulağına çalındı.",
         },
       },
@@ -1799,6 +1899,9 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Kadehini kaldırma, gülümseyerek izle.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Büyük sözler yerine sessiz bir saygıyı tercih ettin.",
         },
         basarisizSonuc: {
@@ -1838,6 +1941,9 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Vaktin olmadığını söyle.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Kendi huzuruna öncelik verdin.",
         },
         basarisizSonuc: {
@@ -1875,6 +1981,9 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Nazikçe reddet.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Parana dokunmadın, sade bir akşam geçirdin.",
         },
         basarisizSonuc: {
@@ -1911,9 +2020,12 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Tartışmayı büyütme, konuyu değiştir.",
         baseBasariSansi: 90,
         basariliSonuc: {
+          saglik: 2,
+          mutluluk: -2,
           mesaj: "Gereksiz bir çatışmadan kaçındın.",
         },
         basarisizSonuc: {
+          mutluluk: -2,
           mesaj: "Bazıları kaçtığını düşündü ama önemli değildi.",
         },
       },
@@ -1945,9 +2057,12 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Yerine bırak, karışma.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          saglik: 2,
+          mutluluk: -2,
           mesaj: "Merakını bastırdın, sofraya geri döndün.",
         },
         basarisizSonuc: {
+          mutluluk: -2,
           mesaj: "Sandığın ne sakladığını hiç öğrenemeyeceksin.",
         },
       },
@@ -1979,6 +2094,9 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Karışma, kendi işine bak.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Cemaat içi meselelere bulaşmadın.",
         },
         basarisizSonuc: {
@@ -2016,6 +2134,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         baseBasariSansi: 55,
         ipucu: "Kısa vadede ün, ama gerçek ortaya çıkarsa itibar kaybı",
         basariliSonuc: {
+          ahlak: 3,
           un: 14,
           mesaj: "Söylenti hızla yayıldı; artık senin adına 'mucizevi' sıfatı ekleniyor.",
         },
@@ -2087,6 +2206,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
           mesaj: "Ortaklık ilk aydan itibaren kâr getirdi; loncadaki itibarın da bir kademe yükseldi.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -15,
           mesaj: "Ortaklık beklenen kârı getirmedi, yatırdığın sermaye eridi.",
         },
@@ -2095,9 +2215,12 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Şimdilik reddet, düşünmek istediğini söyle.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          ahlak: 3,
+          mutluluk: -2,
           mesaj: "Sermayeni riske atmadın.",
         },
         basarisizSonuc: {
+          mutluluk: -2,
           mesaj: "Adam başka bir ortak bulup güzel bir kâr elde etti; içinden bir pişmanlık geçti.",
         },
       },
@@ -2155,7 +2278,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         maliyet: 12,
         ipucu: "Değerli bir bilgi, ama yanlış çıkma ihtimali var",
         basariliSonuc: {
-          para: -12,
+          para: -8,
           ticaret_sermaye_artis: 12,
           mesaj: "Bilgi doğruydu; yeni yol sayesinde mallarını çok daha ucuza getirmeye başladın.",
         },
@@ -2168,9 +2291,12 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Şüpheyle yaklaş, reddet.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          saglik: 2,
+          mutluluk: -2,
           mesaj: "Paranı riske atmadın.",
         },
         basarisizSonuc: {
+          mutluluk: -2,
           mesaj: "Belki de gerçekten değerli bir fırsatı kaçırdın.",
         },
       },
@@ -2205,6 +2331,9 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         baseBasariSansi: 50,
         ipucu: "Riskli — kurtulursan itibarın sağlam kalır, yakalanırsan çok daha kötü olur",
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "İddia kanıtlanamadı, olay kapandı. İçten içe rahatsız olsan da itibarın sağlam kaldı.",
         },
         basarisizSonuc: {
@@ -2245,9 +2374,12 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Şimdilik geri çekil.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          saglik: 2,
+          mutluluk: -2,
           mesaj: "Zamanının henüz gelmediğini düşündün.",
         },
         basarisizSonuc: {
+          mutluluk: -2,
           mesaj: "Bazıları bu fırsatı kaçırdığını düşünüyor.",
         },
       },
@@ -2319,6 +2451,9 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Vaktin yok, geç.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Kendi işine devam ettin.",
         },
         basarisizSonuc: {
@@ -2355,9 +2490,12 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Karışma, kendi işine bak.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          saglik: 2,
+          mutluluk: -2,
           mesaj: "Olaya karışmadın.",
         },
         basarisizSonuc: {
+          mutluluk: -2,
           mesaj: "Bazıları senin de yardım edebileceğini düşündü.",
         },
       },
@@ -2391,9 +2529,12 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Şüpheyle uzaklaş.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          saglik: 2,
+          mutluluk: -2,
           mesaj: "Sağduyulu davrandın.",
         },
         basarisizSonuc: {
+          mutluluk: -2,
           mesaj: "Belki de gerçekten kaçırdığın bir fırsattı.",
         },
       },
@@ -2462,9 +2603,12 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Uzaklaş, ilgilenme.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          saglik: 2,
+          mutluluk: -2,
           mesaj: "Kaderini bir yabancının sözlerine emanet etmedin.",
         },
         basarisizSonuc: {
+          mutluluk: -2,
           mesaj: "Yine de arkandan baktığını hissettin.",
         },
       },
@@ -2536,9 +2680,12 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Kendi sohbetine devam et.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          saglik: 2,
+          mutluluk: -2,
           mesaj: "Entrikalara bulaşmadın.",
         },
         basarisizSonuc: {
+          mutluluk: -2,
           mesaj: "Yine de fısıltının bir kısmı kulağına çalındı.",
         },
       },
@@ -2572,6 +2719,9 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Nazikçe reddet, kenarda kal.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Dans etmeden de keyifli bir akşam geçirdin.",
         },
         basarisizSonuc: {
@@ -2601,6 +2751,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
           mesaj: "Kâğıtlar senden yandaydı; masadan kalkarken salon senin adını fısıldıyordu.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -18,
           mesaj: "Kötü bir el aldın, kaybın büyüktü. Gülümsemeye devam etmek zorunda kaldın.",
         },
@@ -2609,9 +2760,12 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "İzleyici kal, katılma.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          ahlak: 3,
+          mutluluk: -2,
           mesaj: "Parana dokunmadın.",
         },
         basarisizSonuc: {
+          mutluluk: -2,
           mesaj: "Sıkıcı bulundun ama önemli değildi.",
         },
       },
@@ -2682,9 +2836,12 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Fark etmeden geç.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          saglik: 2,
+          mutluluk: -2,
           mesaj: "Salonun kalabalığına karıştın.",
         },
         basarisizSonuc: {
+          mutluluk: -2,
           mesaj: "Belki de gerçek bir yeteneği kaçırdın.",
         },
       },

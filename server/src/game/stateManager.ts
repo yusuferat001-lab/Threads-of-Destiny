@@ -212,7 +212,9 @@ function paraBirimiGetir(cag: Cag, bolge: string): string {
 // dengesindeki üçüncü +%10 zam (ekonomi sıkılaştırma turunda) geri alındı —
 // karakterler çok kolay zenginleşiyordu. Her meslek ve çağda orantılı yansır
 // (rütbe/enflasyon/itibar zaten ayrı çarpan kalemleri).
-const TEMEL_MAAS: Record<string, number> = { Asker: 10.35, Tüccar: 11.5, "Din Adamı": 9.2 };
+// Din Adamı tabanı 9.2 → 9.85: diğer iki mesleğin efektif tabanına yaklaşsın
+// (pragmatik din adamı düşük-orta rütbelerde çok geride kalıyordu).
+const TEMEL_MAAS: Record<string, number> = { Asker: 10.35, Tüccar: 11.5, "Din Adamı": 9.85 };
 
 /**
  * "İtibarın" maaş düzenleyicisi: mutluluk + şöhret(un) + ahlak'ı TEK bir kaleme
@@ -296,10 +298,13 @@ const ENFLASYON_ORANI_YILLIK: Record<Cag, number> = {
   "Sanayi Devrimi": 0.02,
 };
 
-/** Yaşam + konut giderlerine uygulanan, gelir enflasyonundan biraz yüksek yıllık oran. */
+/**
+ * Yaşam + konut giderlerine uygulanan, gelir enflasyonundan biraz yüksek yıllık oran.
+ * (2→1.2 / 3→2.2: gelir–gider makası daraltıldı; orta-yaş borç kaymasını hafifletir.)
+ */
 const GIDER_ENFLASYON_ORANI_YILLIK: Record<Cag, number> = {
-  "Orta Çağ": 0.02,
-  "Sanayi Devrimi": 0.03,
+  "Orta Çağ": 0.012,
+  "Sanayi Devrimi": 0.022,
 };
 
 export function enflasyonCarpani(state: CharacterState): number {
@@ -658,6 +663,7 @@ export function createCharacter(
     ticaret_sermaye: 0,
     nufuz: 0,
     suc_seviyesi: 0,
+    hapis_ceza_kalan: 0,
     mulkler: [],
     mulk_bakim_kalan: {},
     magaza_envanteri: [],
@@ -697,6 +703,7 @@ export function createCharacter(
     veba: null,
     veba_gecirdi: false,
     son_veba_bitis_yili: null,
+    veba_olum_riski: 0,
     kucuk_kriz_sonraki_yil: yil + 5 + Math.floor(Math.random() * 3), // 5-7 yıl sonra ilk eşik
     gida_fiyat_sok_bitis_yili: null,
     borc_yardimi_alindi: false,
@@ -855,6 +862,14 @@ export function eskiKayitGocu(state: CharacterState): void {
   if (state.son_zenginlik_sizinti_yili === undefined) state.son_zenginlik_sizinti_yili = null;
   // Ömürde bir kez borç yardımı sonradan eklendi; eski kayıtlar bunu hiç almadı sayılır (yeniden alınabilsin).
   if (typeof state.borc_yardimi_alindi !== "boolean") state.borc_yardimi_alindi = false;
+  // Hapis ceza süresi sonradan eklendi; hapisteki eski kayıtlara makul bir kalan süre ver.
+  if (typeof state.hapis_ceza_kalan !== "number") {
+    state.hapis_ceza_kalan = state.etiketler.includes("hapiste") ? 4 : 0;
+  }
+  // Kişisel veba hastalığı ölüm riski sonradan eklendi.
+  if (typeof state.veba_olum_riski !== "number") {
+    state.veba_olum_riski = state.etiketler.includes("veba_hastasi") ? 55 : 0;
+  }
   // Dil alanı sonradan eklendi; eski kayıtlar her zaman Türkçe oynanmıştı.
   if (state.dil !== "en") state.dil = "tr";
 }
@@ -945,6 +960,9 @@ export function clampStats(state: CharacterState): void {
   state.dost_puani = clamp(state.dost_puani, 0, 100);
   state.rakip_puani = clamp(state.rakip_puani, 0, 100);
   state.suc_seviyesi = clamp(state.suc_seviyesi, 0, 100);
+  // Nüfuz pasif olarak kesirli birikir (+0.3/yıl); tam sayıda tutulur ki
+  // arayüzde ve maaş kırılımında "12.6" gibi değerler görünmesin.
+  state.nufuz = Math.round(Math.max(0, state.nufuz));
   if (state.es_adi) state.es_puani = clamp(state.es_puani, 0, 100);
   state.cocuk_sayisi = Math.max(0, state.cocuk_sayisi);
   // Para alt/üst sınırsız bırakılır: borca girebilir, sınırsız zenginleşebilir.
@@ -1265,6 +1283,9 @@ export function pasifEkonomiUygula(state: CharacterState, yasArtisi: number): Ek
   // ve güçlendirir. Küçük bir sürüklenme; olayların etkisini domine etmez.
   if (state.meslek === "Din Adamı") {
     state.un += 0.4 * yasArtisi;
+    // Cemaat içindeki nüfuz da yıllar içinde sessizce birikir: olayları hep
+    // "güvenli" oynayan bir din adamı bile yavaşça nüfuz → maaş çarpanı toplar.
+    state.nufuz += 0.3 * yasArtisi;
   } else if (state.meslek === "Tüccar") {
     state.ahlak += (netGelir >= 0 ? -0.4 : 0.4) * yasArtisi;
   }
@@ -1353,11 +1374,14 @@ export function sonucAnlatimiUret(
 ): string {
   const dil = state.dil;
   const b = (tr: string, args?: (string | number)[]) => T(dil, tr, args); // kısa yardımcı
-  const birim = state.para_birimi;
   const cumleler: string[] = [];
+  void basarili; // artık dolgu cümlesi üretilmiyor; imza geriye dönük uyum için korundu
 
   if (etki.detay) cumleler.push(etki.detay);
 
+  // Yalnızca çiplerde GÖRÜNMEYEN, gerçekten yeni bilgi taşıyan tek bir cümle
+  // eklenir. Para/ün/ahlak/hafif sağlık deltaları zaten EtkiCipleri'nde sayı
+  // olarak var — burada tekrar anlatmak "her şeyi iki kere söyleme" sorunuydu.
   const ekCumle =
     (etki.yeni_meslek
       ? b("Artık {0} olarak anılıyorsun.", [K(dil, etki.yeni_meslek).toLocaleLowerCase(dil === "en" ? "en" : "tr")])
@@ -1377,97 +1401,21 @@ export function sonucAnlatimiUret(
             ])
           )
       : null) ??
-    (etki.para
-      ? etki.para > 0
-        ? sec([
-            b("Kesene giren {0} {birim} güzel bir rahatlıktı.", [Math.abs(etki.para)]).replace(/\{birim\}/g, birim),
-            b("{0} {birim} kazandın.", [Math.abs(etki.para)]).replace(/\{birim\}/g, birim),
-          ])
-        : sec([
-            b("{0} {birim} kaybettin.", [Math.abs(etki.para)]).replace(/\{birim\}/g, birim),
-            b("Cebinden {0} {birim} gitti.", [Math.abs(etki.para)]).replace(/\{birim\}/g, birim),
-          ])
-      : null) ??
-    (etki.saglik
-      ? b(
-          sec([
-            "Bedeninde kalan sızı bir süre bu günü hatırlattı.",
-            "Ufak yaralarını kendin sardın, kimseye çaktırmadın.",
-          ])
-        )
-      : null) ??
-    (etki.un
-      ? etki.un > 0
-        ? sec([
-            b("{bolge} sokaklarında adın anılmaya başladı.").replace(/\{bolge\}/g, K(dil, state.bolge)),
-            b("Hikaye ağızdan ağıza dolaştı, itibarın arttı."),
-          ])
-        : sec([
-            b("Dedikodu hızla yayıldı, itibarın zedelendi."),
-            b("{bolge} çevrende adın eskisi kadar güvenle anılmıyor.").replace(/\{bolge\}/g, K(dil, state.bolge)),
-          ])
-      : null) ??
-    (etki.ahlak
-      ? etki.ahlak > 0
-        ? b("Doğru olanı yaptığını biliyorsun, bu seni ayakta tutuyor.")
-        : b(
-            sec([
-              "Kendine bunun mecburiyetten olduğunu söyledin, tam inanamadın.",
-              "O geceden sonra aynaya bakmak biraz zorlaştı.",
-            ])
-          )
-      : null) ??
     null;
 
   if (ekCumle) cumleler.push(ekCumle);
 
-  if (cumleler.length === 0) {
-    cumleler.push(
-      basarili
-        ? b("Olay sessizce kapandı, hayatında somut bir şey değişmedi.")
-        : b("İşler istediğin gibi gitmedi, yine de büyük bir kayıp yaşamadın.")
-    );
-  }
-
+  // Söylenecek somut bir şey yoksa boş dön — istemci `etki.mesaj`'ı tek başına
+  // gösterir (dolgu "olay sessizce kapandı" cümlesi kaldırıldı).
   return cumleler.join(" ");
 }
 
 /**
- * Kayda değer bir olay/durum yoksa aradan geçen sürede yaşanan, tamamen
- * kozmetik (hiçbir istatistiği etkilemeyen) küçük bir "gün be gün hayat"
- * anı. Kısa, tek cümlelik, sebep-sonuç tonunda.
- */
-const GUNLUK_FLAVOR: string[] = [
-  "Kafana bir saksı düştü, canın acıdı ama ciddi bir şey olmadı.",
-  "Attığın taş geri sekti, şaşkınlıktan yerinde sıçradın.",
-  "Sokakta bir köpek havladı, ödün patladı.",
-  "Ayağın bir taşa takıldı, bir anlığına dengeni kaybettin.",
-  "Ani bir yağmura yakalandın, sırılsıklam eve döndün.",
-  "Komşunun horozu seni sabah erkenden uyandırdı, homurdanarak kalktın.",
-  "Pazarda tanımadığın biri sana gülümsedi, günün biraz güzelleşti.",
-  "Önünü bir kedi kesti, uğursuzluk getirir diye içinden geçirdin.",
-  "Ayakkabının bağı koptu, yolun ortasında eğilip bağlamak zorunda kaldın.",
-  "Uzaktan bir çan sesi duydun, dalıp gittin.",
-  "Rüzgar başlığını uçurdu, peşinden koşup yakaladın.",
-  "Bir çocuk topunu sana attı, gülerek geri fırlattın.",
-  "Akşam ocağın tütmedi, komşudan ateş istemek zorunda kaldın.",
-  "Başıboş bir köpek peşine takıldı, birkaç sokak seni izledi.",
-  "Elin bir kıymığa takıldı, bir süre canını yaktı.",
-  "Uzak bir tanıdık elini salladı, sen de karşılık verdin.",
-  "Beklenmedik bir esinti mumunu söndürdü, karanlıkta el yordamıyla kaldın.",
-  "Bir güvercin tam üstünden geçti, refleksle başını eğdin.",
-];
-
-function gunlukFlavorSec(): string {
-  return GUNLUK_FLAVOR[Math.floor(Math.random() * GUNLUK_FLAVOR.length)];
-}
-
-/**
- * Bir turda geçen yılların kısa özeti: en fazla iki cümle. İlk cümle
- * (varsa) kazancı bildirir — oyuncu için asıl önemli olan bu. İkinci
- * cümle, varsa en öncelikli durumsal uyarıyı (borç > kronik hastalık >
- * veba > savaş > kötü ekonomi), yoksa kısa, kozmetik bir "gün be gün
- * hayat" anını verir.
+ * Bir turda geçen yılların kısa özeti: EN FAZLA tek cümle, o da yalnızca
+ * gerçekten önemli bir durumsal uyarı varsa (borç > kronik hastalık > veba >
+ * savaş > kötü ekonomi). Yıllık kazanç artık burada YAZILMAZ — üst şeritteki
+ * para deltası ve sol paneldeki gelir özeti zaten gösteriyor. Durumsal bir
+ * uyarı da yoksa `null` döner ve istemci turda yalnız olay mesajını gösterir.
  */
 export function zamanAnlatimiUret(
   state: CharacterState,
@@ -1476,39 +1424,27 @@ export function zamanAnlatimiUret(
 ): string | null {
   if (yasArtisi <= 0) return null;
 
-  const cumleler: string[] = [];
   const dil = state.dil;
-
-  if (ekonomi.yillikGelirler.length > 0) {
-    const dokum = ekonomi.yillikGelirler.join(", ");
-    cumleler.push(
-      ekonomi.yillikGelirler.length === 1
-        ? T(dil, "{0} {birim} kazandın.", [dokum]).replace(/\{birim\}/g, state.para_birimi)
-        : T(dil, "{1} yılda {0} {birim} kazandın.", [dokum, yasArtisi]).replace(/\{birim\}/g, state.para_birimi)
-    );
-  }
-
   const surenHastalik = state.durumlar.find((d) => d.tur === "gecici" && (d.tur_basi_saglik ?? 0) < 0);
 
   if (ekonomi.borcaGirdi) {
-    cumleler.push(
-      ekonomi.faiz > 0
-        ? T(dil, "Borcun kapanmadı, üstüne {0} {birim} faiz bindi.", [ekonomi.faiz]).replace(/\{birim\}/g, state.para_birimi)
-        : T(dil, "Borcun hâlâ kapanmadı, tefeciler peşini bırakmıyor.")
-    );
-  } else if (surenHastalik) {
-    cumleler.push(T(dil, "{0} bu süre boyunca da seni yatağa düşürdü.", [K(dil, surenHastalik.ad)]));
-  } else if (state.ulke.vebada) {
-    cumleler.push(T(dil, "Salgın sürüyordu, cenaze alayları artık gündelikti."));
-  } else if (state.ulke.savasta) {
-    cumleler.push(T(dil, "Savaş sürüyordu; pazarlar durgun, insanlar tedirgindi."));
-  } else if (state.ulke.ekonomi === "kotu") {
-    cumleler.push(T(dil, "Ekonomik darlık herkesi vurmuştu, ekmek her ay biraz daha pahalandı."));
-  } else {
-    cumleler.push(T(dil, gunlukFlavorSec()));
+    return ekonomi.faiz > 0
+      ? T(dil, "Borcun kapanmadı, üstüne {0} {birim} faiz bindi.", [ekonomi.faiz]).replace(/\{birim\}/g, state.para_birimi)
+      : T(dil, "Borcun hâlâ kapanmadı, tefeciler peşini bırakmıyor.");
   }
-
-  return cumleler.join(" ");
+  if (surenHastalik) {
+    return T(dil, "{0} bu süre boyunca da seni yatağa düşürdü.", [K(dil, surenHastalik.ad)]);
+  }
+  if (state.ulke.vebada) {
+    return T(dil, "Salgın sürüyordu, cenaze alayları artık gündelikti.");
+  }
+  if (state.ulke.savasta) {
+    return T(dil, "Savaş sürüyordu; pazarlar durgun, insanlar tedirgindi.");
+  }
+  if (state.ulke.ekonomi === "kotu") {
+    return T(dil, "Ekonomik darlık herkesi vurmuştu, ekmek her ay biraz daha pahalandı.");
+  }
+  return null;
 }
 
 interface SansOlayi {
@@ -1544,7 +1480,10 @@ const SANS_OLAYLARI: SansOlayi[] = [
  * Nadir, tamamen anlamsız/absürt ölümler: hiçbir seçimin, servetin ya da
  * sağlığın bunu engelleyemeyeceği kaçınılmaz kaza riskleri. Çok düşük bir
  * ihtimalle her turda kontrol edilir; efsanevi_olum olarak işaretlenir ki
- * liderlik tablosunda bir rozet gibi görünsün.
+ * liderlik tablosunda bir rozet gibi görünsün. Not: absürt ölümlerin ASIL
+ * yolu artık komikOlumler.ts'teki SEÇİM tabanlı olaylardır (oyuncu "aptalca
+ * olanı yap" der, düşük ihtimalle ölür); bu ansızın/şanssız kanal bilerek
+ * çok seyrek (yılda ~%0.4) tutuluyor.
  */
 const ANI_OLUM_OLAYLARI: { mesaj: string; efsane: string; cag?: Cag }[] = [
   { mesaj: "Bir evin penceresinden düşen saksı tam kafana isabet etti.", efsane: "Saksı Kurbanı" },
@@ -1558,7 +1497,7 @@ const ANI_OLUM_OLAYLARI: { mesaj: string; efsane: string; cag?: Cag }[] = [
   { mesaj: "Şehirdeki ilk buharlı makinelerden biri, tam yanından geçerken infilak etti.", efsane: "Makinenin Kurbanı", cag: "Sanayi Devrimi" },
 ];
 
-const ANI_OLUM_IHTIMALI = 0.008;
+const ANI_OLUM_IHTIMALI = 0.004;
 
 /** Kaçınılmaz, tamamen şansa bağlı ölüm riskini kontrol eder; tetiklenirse checkDeath ile birlikte kullanılacak mesajı döner. */
 export function aniOlumDene(state: CharacterState): { mesaj: string; efsane: string } | null {
@@ -1876,7 +1815,7 @@ export function buyukSavasBitisKontrolEt(state: CharacterState): string | null {
 const VEBA_MIN_YAS = 18;
 const VEBA_YILLIK_IHTIMAL = 0.03;
 /** Bir veba dalgası (iz fazı dahil) bittikten sonra yeni bir dalga için beklenmesi gereken yıl. */
-const VEBA_COOLDOWN_YIL = 20;
+const VEBA_COOLDOWN_YIL = 25;
 
 /**
  * Vebanın zamanı geldi mi: 18+ yaşındayken yıllık %3 ihtimalle. Artık "ömürde
@@ -1899,8 +1838,8 @@ export function vebaBaslamaliMi(state: CharacterState, yasArtisi: number): boole
   return false;
 }
 
-const VEBA_AKTIF_SURE_MIN_YIL = 2;
-const VEBA_AKTIF_SURE_ARALIK_YIL = 2; // 2-4 yıl
+const VEBA_AKTIF_SURE_MIN_YIL = 5;
+const VEBA_AKTIF_SURE_ARALIK_YIL = 2; // 5-7 yıl (eskiden 2-4; kullanıcı isteğiyle +3 yıl uzatıldı)
 const VEBA_ETKI_SURE_MIN_YIL = 10;
 const VEBA_ETKI_SURE_ARALIK_YIL = 5; // aktif süreye eklenen 10-15 yıllık kalıcı iz
 const VEBA_KONUT_KIRA_CARPANI_MIN = 0.6;
@@ -1925,42 +1864,62 @@ export function vebaBaslat(state: CharacterState, korumaSeviyesi = 0): void {
 }
 
 export interface VebaYillikSonuc {
-  karakterOldu: boolean;
+  /** Karakter bu turda vebayı BİZZAT KAPTI mı (ölüm değil — "veba_hastasi" etiketi + veba_olum_riski açıldı). */
+  hastalandi: boolean;
   mesajlar: string[];
 }
 
 /**
- * Aktif veba sürerken karakter / eş / çocuk için YILLIK ölüm riski, korunma
- * düzeyine göre 3 kademe (2026-09'da ciddileştirildi — korunmayan bir veba
- * gerçekten ölümcül olsun, korunma da gerçek bir yatırım olsun). Aktif faz
- * 2-4 yıl sürdüğü için kümülatif risk: korumasız karakter ~%20-28, tam
- * korunmalı ~%6-8. (Ayrıca kureselOlaylar.ts'teki "veba dönemi" bulaşma
- * olayları bunun ÜSTÜNE ek risk getirir.)
+ * Aktif veba sürerken (sadece state.veba.aktif iken) YILLIK oranlar, korunma
+ * düzeyine göre 3 kademe. Karakter için bu artık bir ÖLÜM değil, HASTALIĞI
+ * KAPMA ihtimalidir (kullanıcı isteği): 2026-09'da eski ölüm kademesi ~%50
+ * büyütülüp "bulaşma" olarak yeniden yorumlandı. Bulaşınca karakter
+ * `veba_hastasi` etiketi + `veba_olum_riski` (~70) alır ve `vebaHastasiOlayi`
+ * olay havuzuna geçer (bkz. vebaHastaligiKontrol). Eş/çocuk için oran hâlâ
+ * DOĞRUDAN ölümdür (onlar için olay katmanı yok), yalnız ~%50 büyütüldü.
  */
-const VEBA_OLUM_KADEME = [0.09, 0.05, 0.025]; // [hiç, kısmi, tam koruma]
-const VEBA_ES_KAYIP_KADEME = [0.05, 0.03, 0.015];
-const VEBA_COCUK_KAYIP_KADEME = [0.045, 0.028, 0.013];
+const VEBA_KAPMA_KADEME = [0.093, 0.054, 0.027]; // [hiç, kısmi, tam koruma] — karakterin hastalığı kapma ihtimali/yıl
+const VEBA_ES_KAYIP_KADEME = [0.054, 0.033, 0.017];
+const VEBA_COCUK_KAYIP_KADEME = [0.048, 0.03, 0.015];
+
+/** Vebayı yeni kapan bir karakterin başlangıç ölüm riski (%). Olaylarla düşer/yükselir. */
+const VEBA_BASLANGIC_OLUM_RISKI = 70;
 
 /**
- * Aktif veba sürerken (sadece state.veba.aktif iken) her yıl için karakterin,
- * eşinin ve bir çocuğunun ölüm riskini kontrol eder; risk state.veba.korumaSeviyesi
- * (0/1/2) kademesinden okunur. Karakterin kendi ölümü burada UYGULANMAZ
- * (saglik/aktif'e dokunmaz) — sadece sinyal döner, gerçek checkDeath çağrısı
- * gameEngine.ts'te mevcut olumTetiklendi deseniyle yapılır.
+ * Karaktere kişisel veba hastalığını başlatır: "veba_hastasi" etiketi + (henüz
+ * ayarlanmadıysa) ~%70 başlangıç ölüm riski. Hem yıllık bulaşma zarından
+ * (vebaYillikKontrol) hem de bir olayın `etiket_ekle:["veba_hastasi"]` etkisinden
+ * (gameEngine) çağrılır — tek doğruluk kaynağı.
+ */
+export function vebaHastaligiBaslatEt(state: CharacterState): void {
+  if (!state.etiketler.includes("veba_hastasi")) etiketEkle(state, ["veba_hastasi"]);
+  if (state.veba_olum_riski <= 0) state.veba_olum_riski = VEBA_BASLANGIC_OLUM_RISKI;
+}
+/** Hasta bir turu ölmeden atlatınca ölüm riskinden düşülen sabit miktar (beden direniyor). */
+const VEBA_HASTALIK_DOGAL_DUSUS = 15;
+/** Ölüm riski bu eşiğin altına inince hastalık atlatılmış sayılır (etiket silinir). */
+const VEBA_HASTALIK_IYILESME_ESIGI = 12;
+
+/**
+ * Aktif veba sürerken her yıl: karakterin hastalığı KAPIP kapmadığını, eşinin
+ * ve bir çocuğunun ise doğrudan ölümünü kontrol eder. Karakter zaten hastaysa
+ * (veba_hastasi) yeniden bulaşma denenmez. Karakterin ölümü burada UYGULANMAZ.
  */
 export function vebaYillikKontrol(state: CharacterState, yasArtisi: number): VebaYillikSonuc {
-  const sonuc: VebaYillikSonuc = { karakterOldu: false, mesajlar: [] };
+  const sonuc: VebaYillikSonuc = { hastalandi: false, mesajlar: [] };
   if (yasArtisi <= 0 || !state.veba?.aktif) return sonuc;
   const k = Math.max(0, Math.min(2, state.veba.korumaSeviyesi ?? 0));
-  const olumSansi = VEBA_OLUM_KADEME[k];
+  const kapmaSansi = VEBA_KAPMA_KADEME[k];
   const esSansi = VEBA_ES_KAYIP_KADEME[k];
   const cocukSansi = VEBA_COCUK_KAYIP_KADEME[k];
+  const zatenHasta = state.etiketler.includes("veba_hastasi");
 
-  for (let i = 0; i < yasArtisi && !sonuc.karakterOldu; i++) {
-    if (Math.random() < olumSansi) {
-      sonuc.karakterOldu = true;
-      sonuc.mesajlar.push(T(state.dil, "Veba seni de bulmuştu."));
-      break;
+  for (let i = 0; i < yasArtisi; i++) {
+    if (!zatenHasta && !sonuc.hastalandi && Math.random() < kapmaSansi) {
+      sonuc.hastalandi = true;
+      vebaHastaligiBaslatEt(state);
+      hayatOlayiEkle(state, "🦠", T(state.dil, "Vebaya yakalandı"));
+      sonuc.mesajlar.push(T(state.dil, "🦠 Veba sana da bulaştı — hastalandın. Hayatta kalman bundan sonraki seçimlerine bağlı."));
     }
     if (state.es_adi && Math.random() < esSansi) {
       const kaybedilenEs = state.es_adi;
@@ -1981,6 +1940,45 @@ export function vebaYillikKontrol(state: CharacterState, yasArtisi: number): Veb
       hayatOlayiEkle(state, "💔", T(state.dil, "{0} vebaya yenik düştü", [secilen.isim]));
       sonuc.mesajlar.push(T(state.dil, "💔 {0} vebaya yenik düştü.", [secilen.isim]));
     }
+  }
+  return sonuc;
+}
+
+export interface VebaHastaligiSonuc {
+  karakterOldu: boolean;
+  iyilesti: boolean;
+  mesajlar: string[];
+}
+
+/**
+ * Karakter vebayı BİZZAT kapmışsa (etiket "veba_hastasi") her turda BİR KEZ
+ * çalışır: o anki `veba_olum_riski` (%) yüzdesine karşı ölüm zarı atılır.
+ * Ölmezse risk `VEBA_HASTALIK_DOGAL_DUSUS` kadar düşer; eşiğin altına inince
+ * hastalık atlatılmış sayılır (etiket + alan temizlenir). `vebaHastasiOlayi`
+ * olaylarının `veba_olum_riski_artis` etkisi bu turdan ÖNCE (olay çözümünde)
+ * uygulandığı için, iyi bir tedavi seçimi bu zarı belirgin biçimde iyileştirir.
+ * Karakter ölümü burada UYGULANMAZ — sinyal döner, checkDeath gameEngine'de.
+ */
+export function vebaHastaligiKontrol(state: CharacterState): VebaHastaligiSonuc {
+  const sonuc: VebaHastaligiSonuc = { karakterOldu: false, iyilesti: false, mesajlar: [] };
+  if (!state.etiketler.includes("veba_hastasi")) return sonuc;
+  const risk = Math.max(0, Math.min(100, state.veba_olum_riski));
+  if (Math.random() * 100 < risk) {
+    sonuc.karakterOldu = true;
+    sonuc.mesajlar.push(T(state.dil, "Veba direncini kırdı; ateşler içinde son nefesini verdin."));
+    return sonuc;
+  }
+  state.veba_olum_riski = Math.max(0, risk - VEBA_HASTALIK_DOGAL_DUSUS);
+  if (state.veba_olum_riski <= VEBA_HASTALIK_IYILESME_ESIGI) {
+    state.veba_olum_riski = 0;
+    etiketSil(state, ["veba_hastasi"]);
+    sonuc.iyilesti = true;
+    hayatOlayiEkle(state, "🌿", T(state.dil, "Vebayı atlattı"));
+    sonuc.mesajlar.push(T(state.dil, "🌿 Ateşin düştü, gücün yavaş yavaş geri geliyor — vebayı atlattın."));
+  } else {
+    sonuc.mesajlar.push(T(state.dil, "🤒 Hastalık sürüyor; şu an hayatta kalma şansın kabaca %{0}.", [
+      Math.round(100 - state.veba_olum_riski),
+    ]));
   }
   return sonuc;
 }

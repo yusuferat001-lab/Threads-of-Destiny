@@ -531,6 +531,7 @@ function kovaAnaliz(izler: OyunIzi[]): KovaOzet[] {
         un: y2(ortala(durumlar.map((d) => d.un))),
         ahlak: y2(ortala(durumlar.map((d) => d.ahlak))),
         suc: y2(ortala(durumlar.map((d) => d.suc))),
+        yildiz: y2(ortala(durumlar.map((d) => Math.min(5, d.suc / 20)))),
         maas: y2(ortala(durumlar.map((d) => d.maas))),
         rutbeSeviye: y2(ortala(durumlar.map((d) => d.rutbeSeviye))),
         kariyerPuani: y2(ortala(durumlar.map((d) => d.kariyerPuani))),
@@ -545,6 +546,11 @@ function kovaAnaliz(izler: OyunIzi[]): KovaOzet[] {
         hapiste: y2((durumlar.filter((d) => d.hapiste).length / nz) * 100),
         kacak: y2((durumlar.filter((d) => d.kacak).length / nz) * 100),
         yolculukta: y2((durumlar.filter((d) => d.yolculukta).length / nz) * 100),
+        mulkVar: y2((durumlar.filter((d) => d.mulkSayisi > 0).length / nz) * 100),
+        sucTemiz: y2((durumlar.filter((d) => d.suc < 20).length / nz) * 100),
+        sucK1: y2((durumlar.filter((d) => d.suc >= 20 && d.suc < 40).length / nz) * 100),
+        sucK2: y2((durumlar.filter((d) => d.suc >= 40 && d.suc < 60).length / nz) * 100),
+        sucK3p: y2((durumlar.filter((d) => d.suc >= 60).length / nz) * 100),
       },
     });
   }
@@ -567,7 +573,13 @@ function tabloYazdir(baslik: string, izler: OyunIzi[]): void {
     `Ömür başına ort. eylem: yatırım ${y2(ortala(izler.map((i) => i.sayaclar.yatirimSayisi)))} | mülk ${y2(ortala(izler.map((i) => i.sayaclar.mulkSayisi)))} | şifa ${y2(ortala(izler.map((i) => i.sayaclar.magazaSifaSayisi)))} | lüks ${y2(ortala(izler.map((i) => i.sayaclar.magazaLuksSayisi)))} | zar ${y2(ortala(izler.map((i) => i.sayaclar.zarSayisi)))} | sosyal ${y2(ortala(izler.map((i) => i.sayaclar.sosyallesmeSayisi)))}`
   );
 
-  const bsl = ["Yaş", "Yaşyor%", "Para", "Servet", "Sağlk", "Mutlk", "Şöhrt", "Ahlak", "Suç", "Maaş", "Rütbe", "Krej", "Çocuk", "Mülk", "Borç%", "Evli%", "5y-Ölm"];
+  // Ömür boyunca EN AZ BİR KEZ şunu yapan ömürlerin yüzdesi:
+  const p = (f: (i: OyunIzi) => boolean) => y2((izler.filter(f).length / izler.length) * 100);
+  console.log(
+    `Ömrün EN AZ 1 kez: mülk aldı %${p((i) => i.sayaclar.mulkSayisi > 0)} | kendi-iş yatırımı %${p((i) => i.sayaclar.yatirimSayisi > 0)} | mağaza-şifa %${p((i) => i.sayaclar.magazaSifaSayisi > 0)} | mağaza-lüks %${p((i) => i.sayaclar.magazaLuksSayisi > 0)} | sosyalleşti %${p((i) => i.sayaclar.sosyallesmeSayisi > 0)} | zar %${p((i) => i.sayaclar.zarSayisi > 0)} | hapis %${p((i) => i.anlar.some((a) => a.hapiste))} | kaçak %${p((i) => i.anlar.some((a) => a.kacak))} | ayyaş %${p((i) => i.anlar.some((a) => a.ayyas))} | evlendi %${p((i) => i.anlar.some((a) => a.evli))} | çocuk %${p((i) => i.anlar.some((a) => a.yasayanCocuk > 0))}`
+  );
+
+  const bsl = ["Yaş", "Yaşyor%", "Para", "Servet", "Sağlk", "Mutlk", "Şöhrt", "Ahlak", "Suç", "Yıldz", "Maaş", "Rütbe", "Krej", "Çocuk", "Mülk", "Borç%", "Evli%", "5y-Ölm"];
   console.log("\n" + bsl.map((b) => b.padStart(8)).join(" "));
   console.log("-".repeat(bsl.length * 9));
   for (const o of ozet) {
@@ -583,6 +595,7 @@ function tabloYazdir(baslik: string, izler: OyunIzi[]): void {
         o.ort.un.toFixed(1),
         o.ort.ahlak.toFixed(1),
         o.ort.suc.toFixed(1),
+        o.ort.yildiz.toFixed(2),
         o.ort.maas.toFixed(1),
         o.ort.rutbeSeviye.toFixed(2),
         o.ort.kariyerPuani.toFixed(0),
@@ -597,11 +610,19 @@ function tabloYazdir(baslik: string, izler: OyunIzi[]): void {
     );
   }
 
-  console.log("\n  Durum oranları (%):  Yaş | Ayyaş | Hapis | Kaçak | Yolculuk | ŞehirYön(ort)");
+  console.log("\n  Durum oranları (%):  Yaş | Ayyaş | Hapis | Kaçak | Yolculuk | Mülk-sahibi | ŞehirYön(ort)");
   for (const o of ozet) {
     if (o.yasayanSayi === 0) continue;
     console.log(
-      `   ${String(o.yasKovasi).padStart(3)}  | ${o.oran.ayyas.toFixed(1).padStart(5)} | ${o.oran.hapiste.toFixed(1).padStart(5)} | ${o.oran.kacak.toFixed(1).padStart(5)} | ${o.oran.yolculukta.toFixed(1).padStart(8)} | ${o.ort.sehirYonetim.toFixed(2)}`
+      `   ${String(o.yasKovasi).padStart(3)}  | ${o.oran.ayyas.toFixed(1).padStart(5)} | ${o.oran.hapiste.toFixed(1).padStart(5)} | ${o.oran.kacak.toFixed(1).padStart(5)} | ${o.oran.yolculukta.toFixed(1).padStart(8)} | ${o.oran.mulkVar.toFixed(1).padStart(11)} | ${o.ort.sehirYonetim.toFixed(2)}`
+    );
+  }
+
+  console.log("\n  Aranma/suç kademesi dağılımı (yaşayanların %'si):  Yaş | Temiz(0★) | Kad.1(1★) | Kad.2(2★) | Kad.3+(3★+)");
+  for (const o of ozet) {
+    if (o.yasayanSayi === 0) continue;
+    console.log(
+      `   ${String(o.yasKovasi).padStart(3)}  | ${o.oran.sucTemiz.toFixed(1).padStart(8)} | ${o.oran.sucK1.toFixed(1).padStart(8)} | ${o.oran.sucK2.toFixed(1).padStart(8)} | ${o.oran.sucK3p.toFixed(1).padStart(9)}`
     );
   }
 

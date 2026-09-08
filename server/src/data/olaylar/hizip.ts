@@ -63,6 +63,7 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         baseBasariSansi: 60,
         ipucu: "Hizbin içinde güven, hiyerarşide risk",
         basariliSonuc: {
+          para: 2,
           dost_puani: 12,
           un: 10,
           mesaj: "Hizbinin emrini yerine getirdin; yoldaşların sana güven duydu.",
@@ -80,7 +81,7 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         baseBasariSansi: 70,
         ipucu: "Kariyer güvenliği, hizip içi güvensizlik",
         basariliSonuc: {
-          para: 10,
+          para: 7,
           mesaj: "Emri eksiksiz yerine getirdin; üst subay seni not etti.",
           detay: "Disiplin ödüllendirildi ama kendi hizbin bunu unutmayacak.",
         },
@@ -250,6 +251,7 @@ export const OLAY_HIZIP: OlayTanimi[] = [
           detay: "Kazandın ama bu savaş her iki tarafı da yıprattı.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -45,
           mesaj: "Fiyat savaşını sen kaybettin, birkaç ay ciddi zarar ettin.",
           detay: "Bazı kumarlar, kaybedeni çok daha ağır cezalandırır.",
@@ -581,7 +583,7 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         baseBasariSansi: 75,
         ipucu: "Geleneklere bağlı, güvenli liman",
         basariliSonuc: {
-          un: 10,
+          un: 5,
           dost_puani: 10,
           mesaj: "Yaşlı paşayı destekledin. Sadakatin eski topraklar arasında büyük saygı gördü.",
           detay: "Geleneksel hiyerarşiye bağlılık her zaman takdir görüyor.",
@@ -597,6 +599,10 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         baseBasariSansi: 65,
         ipucu: "Tehlikeli bir tarafsızlık",
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
+          un: 4,
           mesaj: "Tartışmaya hiç bulaşmadın ve kavgadan hasarsız çıktın.",
           detay: "Bazen en güvenli yol, görünmez olmaktır.",
         },
@@ -835,6 +841,9 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         metin: "Nazikçe reddet, bu yükü taşıyamayacağını söyle.",
         baseBasariSansi: 90,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Yaşlı asker hayal kırıklığına uğradı ama dürüstlüğünü takdir etti.",
           detay: "Her onur kabul edilmeyi hak etmez, bazen dürüstlük daha değerlidir.",
         },
@@ -881,6 +890,9 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         metin: "Karışma, bu senin savaşın değil.",
         baseBasariSansi: 90,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Sessiz kaldın, kimse senin bu bilgiye sahip olduğunu öğrenmedi.",
           detay: "Bazen en güvenli yol hiçbir yol değildir.",
         },
@@ -929,6 +941,8 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         baseBasariSansi: 80,
         ipucu: "Canını kurtarır, yoldaşlarını küstürür",
         basariliSonuc: {
+          ahlak: 3,
+          mutluluk: -1,
           mesaj: "Evinde güvenle uyudun. Sabah değirmenin basıldığını ve arkadaşlarının tutuklandığını duydun.",
           detay: "Korkaklığın hayatını kurtardı ama vicdanın kanıyor.",
         },
@@ -1113,6 +1127,8 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         baseBasariSansi: 65,
         ipucu: "Para sende kalır, risk %50",
         basariliSonuc: {
+          ahlak: 3,
+          mutluluk: -1,
           mesaj: "Bekledin. Hiçbir şey olmadı. Adam korkup şehri terk etmiş.",
           detay: "Bazen en iyi tepki, tepki vermemektir.",
         },
@@ -1194,6 +1210,9 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         metin: "Notların senin olmadığını iddia et, yalan söyle.",
         baseBasariSansi: 55,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Subay ikna oldu, notları sana geri verip yoluna gitti.",
           detay: "Kalbin küt küt atarken rahat bir nefes aldın.",
         },
@@ -1438,7 +1457,7 @@ export const OLAY_HIZIP: OlayTanimi[] = [
           detay: "Loncada bağlantılar bazen sermayeden daha değerlidir.",
         },
         basarisizSonuc: {
-          mutluluk: -5,
+          mutluluk: -9,
           para: -10,
           mesaj: "Şımarık oğlan ilk haftadan bir skandala karıştı, adın da lekelendi.",
           detay: "Bazı kefaletler pişmanlıkla sonuçlanır.",
@@ -1448,6 +1467,8 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         metin: "Kibarca reddet, kendi işine odaklan.",
         baseBasariSansi: 85,
         basariliSonuc: {
+          ahlak: 3,
+          mutluluk: -1,
           mesaj: "Reddettin; zamanını kendi ticaretine ayırdın.",
           detay: "Her bağlantı peşinden koşmaya değmez.",
         },
@@ -1622,6 +1643,7 @@ export const OLAY_HIZIP: OlayTanimi[] = [
           detay: "İtibar bazen altından daha değerlidir.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -10,
           mesaj: "Mührü aldın ama sıkı denetimler bazı işlerini yavaşlattı.",
           detay: "Her ayrıcalığın bir bedeli var.",
@@ -1714,6 +1736,7 @@ export const OLAY_HIZIP: OlayTanimi[] = [
           detay: "Bazen en eski usuller en sağlamıdır.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -20,
           mesaj: "Adam sözünden caydı, elinde hiçbir belge olmadığı için hakkını arayamadın.",
           detay: "Güven bazen pahalıya patlar.",
@@ -1896,6 +1919,9 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         metin: "Saklan, ortalıkta görünme.",
         baseBasariSansi: 75,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Bir süre gözden uzak durdun, soruşturma seni atlattı.",
           detay: "Sabır bazen en iyi savunmadır.",
         },
@@ -1987,7 +2013,7 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         maliyet: 20,
         ipucu: "Kısa vadede masraf, uzun vadede güç birliği",
         basariliSonuc: {
-          para: -20,
+          para: -14,
           maas_carpani: 1.05,
           mesaj: "Ortak depo kuruldu; artık büyük siparişlerde tek başına değilsin.",
           detay: "Birlikte hareket etmek küçük esnafa büyüklerle rekabet gücü veriyor.",
@@ -2002,6 +2028,9 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         metin: "Katılma, kendi başına yeter.",
         baseBasariSansi: 80,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Katılmadın; bağımsızlığını korudun.",
           detay: "Yalnız hareket etmek her zaman özgürlük getirir, güç değil.",
         },
@@ -2037,6 +2066,7 @@ export const OLAY_HIZIP: OlayTanimi[] = [
           detay: "Bazen kural tanımazlık en çok kazandıran şeydir.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -15,
           un: -10,
           mesaj: "Lonca muhafızları pazarı bastı, malına el konuldu.",
@@ -2078,7 +2108,7 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         ipucu: "Dostluğunu riske atabilir",
         basariliSonuc: {
           dost_puani: -5,
-          un: 10,
+          un: 12,
           mesaj: "Gerçek casus başkasıymış, arkadaşınla yanlış anlaşmayı çözdünüz.",
           detay: "Şüphe bazen en yakınındakini de yaralar.",
         },
@@ -2092,7 +2122,7 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         metin: "Sessizce kendi araştırmanı yap.",
         baseBasariSansi: 70,
         basariliSonuc: {
-          un: 15,
+          un: 13,
           mesaj: "Gerçek casusu sessizce tespit edip birliğe bildirdin, kimse incinmedi.",
           detay: "Sabırlı bir araştırma çoğu zaman en iyi yoldur.",
         },
@@ -2172,6 +2202,7 @@ export const OLAY_HIZIP: OlayTanimi[] = [
           detay: "Bazen en büyük fırsatlar en genç fikirlerden doğar.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -20,
           mesaj: "Girişim çöktü, tecrübesizlik pahalıya patladı.",
           detay: "Her cesur fikir başarıya ulaşmaz.",
@@ -2226,6 +2257,7 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         metin: "Ritüeli biraz sadeleştir.",
         baseBasariSansi: 55,
         basariliSonuc: {
+          ahlak: 4,
           dost_puani: 8,
           mesaj: "Sadeleştirmen gençler tarafından beğenildi.",
           detay: "Küçük değişiklikler bazen köprü kurar.",
@@ -2316,6 +2348,9 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         metin: "Tarafsız kal.",
         baseBasariSansi: 75,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Tarafsız kaldın; kimse seni suçlamadı.",
           detay: "Bazen en güvenli yol taraf tutmamaktır.",
         },
@@ -2448,6 +2483,9 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         metin: "Bir çırağa devret, sen sadece denetle.",
         baseBasariSansi: 85,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Çırak işi iyi hallettti, senin zamanın da boşa gitmedi.",
           detay: "Bazen görevi devretmek de bir bilgeliktir.",
         },
@@ -2478,7 +2516,7 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         baseBasariSansi: 85,
         basariliSonuc: {
           ahlak: 10,
-          un: 5,
+          un: 1,
           mesaj: "Yaşlılar memnun kaldı, 'gerçek bir Gelenekçi' olduğunu onayladılar.",
           detay: "Bazen sadakat ezbere değil, içtenlikle ölçülür.",
         },
@@ -2493,6 +2531,7 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         baseBasariSansi: 55,
         ipucu: "Riskli ama derinliğini gösterebilir",
         basariliSonuc: {
+          un: 3,
           ahlak: 15,
           mesaj: "Yorumun bazı yaşlıları etkiledi, 'bu genç düşünüyor' dediler takdirle.",
           detay: "Gelenek bazen taze bir bakışla daha da güçlenir.",
@@ -2539,6 +2578,9 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         metin: "Uzun ama güvenli bir dolambaçlı yoldan git.",
         baseBasariSansi: 85,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Sessizce, tehlikesizce vardın.",
           detay: "Sabır bazen en bilge yoldur.",
         },
@@ -2627,6 +2669,9 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         metin: "Uzaktan destekle, fazla karışma.",
         baseBasariSansi: 85,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Ölçülü desteğin yeterli bulundu.",
           detay: "Her katkı büyük olmak zorunda değil.",
         },
@@ -2672,6 +2717,9 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         metin: "Sessiz kal, fırtınanın geçmesini bekle.",
         baseBasariSansi: 70,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Sessizliğin zamanla suçlamanın etkisini azalttı.",
           detay: "Bazen zaman en iyi savunmadır.",
         },
@@ -2852,6 +2900,9 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         metin: "Nazikçe reddet, zamanının olmadığını söyle.",
         baseBasariSansi: 90,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Daveti reddettin, kimse bunu pek önemsemedi.",
           detay: "Her savaş meydanında verilmez.",
         },
@@ -2896,6 +2947,9 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         metin: "Geleneksel, güvenli cevaplarla geç.",
         baseBasariSansi: 85,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Sorular sessizce geçiştirildi, kimse gücenmedi.",
           detay: "Bazen güvenli yol da bir yoldur.",
         },
@@ -2942,6 +2996,9 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         metin: "Yumuşak, uzlaşmacı bir yanıt yaz.",
         baseBasariSansi: 80,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Yanıtın gerginliği yatıştırdı, itham sessizce kapandı.",
           detay: "Bazen yumuşaklık en güçlü kalkandır.",
         },
@@ -3160,6 +3217,8 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         kilitAciklamasi: "Bunun için usta bir fare avcısına ihtiyacın var.",
         ipucu: "Gizli Şık: Gemi kedileri yüzyıllardır bunun ustası",
         basariliSonuc: {
+          ahlak: -3,
+          mutluluk: -3,
           para: 20,
           un: 12,
           dost_puani: 10,
@@ -3251,6 +3310,7 @@ export const OLAY_HIZIP: OlayTanimi[] = [
           detay: "Dürüst bir zafer her zaman daha tatlıdır.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -15,
           un: -10,
           mesaj: "Rakip lonca seni geride bıraktı; birlik içinde biraz itibar kaybettin.",

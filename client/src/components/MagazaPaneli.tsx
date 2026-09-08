@@ -59,25 +59,25 @@ export function MagazaPaneli({ para, paraBirimi, katalog, yukleniyor, islemMesaj
                 className={`yatirim-kart magaza-kart${esya.sahipMi ? ' mulk-kart-sahip' : ''}`}
                 disabled={yukleniyor || satinAlinamaz || para < esya.fiyat}
                 onClick={() => onSatinAl(esya.id)}
+                title={`${kt(esya.aciklama)}${
+                  esya.sifaFaydaAralik
+                    ? `\n${bic(m.mpSifaSans, esya.sifaFaydaAralik.min, esya.sifaFaydaAralik.max)}`
+                    : ''
+                }`}
               >
                 <span className="meslek-simge">{esya.simge}</span>
                 <strong>
                   {kt(esya.ad)} {esya.sahipMi && m.mpSahipsinTam}
                 </strong>
-                <span className="meslek-aciklama">{kt(esya.aciklama)}</span>
                 <span className="meslek-aciklama magaza-etki-satiri">
-                  {esya.saglikEtkisi ? `❤️ +${esya.saglikEtkisi} ${m.mpSaglik} ` : ''}
-                  {esya.mutlulukEtkisi ? `😊 +${esya.mutlulukEtkisi} ${m.mpMutluluk} ` : ''}
-                  {esya.unEtkisi ? `⭐ +${esya.unEtkisi} ${m.mpSohret} ` : ''}
+                  {esya.saglikEtkisi ? `❤️ +${esya.saglikEtkisi} ` : ''}
+                  {esya.mutlulukEtkisi ? `😊 +${esya.mutlulukEtkisi} ` : ''}
+                  {esya.unEtkisi ? `⭐ +${esya.unEtkisi} ` : ''}
+                  {esya.sifaFaydaAralik
+                    ? `· %${esya.sifaFaydaAralik.min}-${esya.sifaFaydaAralik.max} ${m.mpFayda}`
+                    : ''}
+                  {esya.omurYil && !esya.sahipMi ? ` · ${bic(m.mpRafKisa, esya.omurYil)}` : ''}
                 </span>
-                {esya.sifaFaydaAralik && (
-                  <span className="meslek-aciklama magaza-sifa-sans">
-                    {bic(m.mpSifaSans, esya.sifaFaydaAralik.min, esya.sifaFaydaAralik.max)}
-                  </span>
-                )}
-                {esya.omurYil && !esya.sahipMi && (
-                  <span className="magaza-omur-uyarisi">{bic(m.mpCurukUyari, esya.omurYil)}</span>
-                )}
                 {!esya.sahipMi && (
                   <span className="magaza-fiyat">
                     {formatPara(esya.fiyat)} {paraBirimi}

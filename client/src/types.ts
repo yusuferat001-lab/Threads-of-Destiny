@@ -142,6 +142,8 @@ export interface CharacterState {
   nufuz: number;
 
   suc_seviyesi: number;
+  /** Hapiste kalan ceza süresi (yıl); 0'a inince otomatik serbest kalınır. Hapiste değilken 0. */
+  hapis_ceza_kalan: number;
   mulkler: MulkTuru[];
   /** Her mülk için bir sonraki periyodik bakım/vergi masrafına kalan yıl (7-10 yılda bir). */
   mulk_bakim_kalan: Partial<Record<MulkTuru, number>>;
@@ -190,6 +192,8 @@ export interface CharacterState {
   veba: VebaDurumu | null;
   veba_gecirdi: boolean;
   son_veba_bitis_yili: number | null;
+  /** Vebayı bizzat kaptıysa ("veba_hastasi" etiketi) o anki ölüm riski % (0-100). Hasta değilken 0. */
+  veba_olum_riski: number;
   kucuk_kriz_sonraki_yil: number;
   gida_fiyat_sok_bitis_yili: number | null;
   /** Ömürde bir kez borçtayken alınan kilise/eş dost yardımı kullanıldı mı. */
@@ -266,6 +270,8 @@ export interface SonucEtkisi {
   durum_ekle?: Durum;
   ulke_etkisi?: Partial<UlkeDurumu>;
   veba_koruma?: number;
+  /** Veba hastasıyken veba_olum_riski'ni değiştirir (± ). */
+  veba_olum_riski_artis?: number;
   maas_carpani?: number;
   es_ata?: boolean;
   es_puani?: number;
@@ -283,6 +289,8 @@ export interface SonucEtkisi {
   nufuz_artis?: number;
   suc_artis?: number;
   suc_seviyesi_ayarla?: number;
+  /** Hapis ceza süresini yıl olarak uzatır (başarısız riskli kaçış girişimi). */
+  hapis_ceza_artis?: number;
   para_sifirla?: boolean;
   un_sifirla?: boolean;
   para_yuzde_kaybet?: number;

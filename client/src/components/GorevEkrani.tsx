@@ -12,6 +12,9 @@ interface GorevEkraniProps {
   ticaretSermaye: number;
   nufuz: number;
   hapiste: boolean;
+  hapisCezaKalan?: number;
+  vebaHastasi?: boolean;
+  vebaOlumRiski?: number;
   paraBirimi: string;
   yukleniyor: boolean;
   onEkipCikar: (ekipId: string) => void;
@@ -34,6 +37,9 @@ export function GorevEkrani({
   ticaretSermaye,
   nufuz,
   hapiste,
+  hapisCezaKalan,
+  vebaHastasi,
+  vebaOlumRiski,
   paraBirimi,
   yukleniyor,
   onEkipCikar,
@@ -48,7 +54,7 @@ export function GorevEkrani({
   } else if (meslek === 'Tüccar' && ticaretSermaye > 0) {
     meslekGucSatirlari.push([m.iyTicaretSermayesi, String(ticaretSermaye)]);
   } else if (meslek === 'Din Adamı' && nufuz > 0) {
-    meslekGucSatirlari.push([m.iyNufuz, String(nufuz)]);
+    meslekGucSatirlari.push([m.iyNufuz, String(Math.round(nufuz))]);
   }
 
   return (
@@ -57,7 +63,23 @@ export function GorevEkrani({
 
       {hapiste && (
         <div className="aile-koken-karti gorev-hapis-karti">
-          <span className="iliski-rozet">⛓️ {m.ksHapiste}</span>
+          <span className="iliski-rozet">
+            ⛓️ {m.ksHapiste}
+            {typeof hapisCezaKalan === 'number' && hapisCezaKalan > 0
+              ? ` · ~${hapisCezaKalan} ${m.geHapisYilKalan}`
+              : ''}
+          </span>
+        </div>
+      )}
+
+      {vebaHastasi && (
+        <div className="aile-koken-karti gorev-hapis-karti">
+          <span className="iliski-rozet">
+            🦠 {m.geVebaHastasi}
+            {typeof vebaOlumRiski === 'number' && vebaOlumRiski > 0
+              ? ` · ${m.geVebaHayatta} ~%${Math.max(0, Math.round(100 - vebaOlumRiski))}`
+              : ''}
+          </span>
         </div>
       )}
 

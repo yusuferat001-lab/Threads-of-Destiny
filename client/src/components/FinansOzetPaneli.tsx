@@ -8,19 +8,11 @@ interface FinansOzetPaneliProps {
   paraBirimi: string;
 }
 
-/** +40 → "+%40", -15 → "−%15", 0 → "%0" */
-function yuzdeKisa(y: number): string {
-  if (y > 0) return `+%${y}`;
-  if (y < 0) return `−%${Math.abs(y)}`;
-  return '%0';
-}
-
-/** Sol paneldeki kompakt gelir/gider/net özeti + maaşın rütbe/ün/dönemsel kırılımı
- *  ve şu an etkin dünya olayları — oyuncunun her an göz ucuyla bakabileceği özet.
- *  Tam döküm "Gelir & Gider" ekranında. */
+/** Sol paneldeki kompakt gelir/gider/net özeti + şu an etkin dünya olayları —
+ *  oyuncunun her an göz ucuyla bakabileceği özet. Maaşın tam kırılımı
+ *  "Gelir & Gider" ekranındaki açılır dökümde. */
 export function FinansOzetPaneli({ finans, maasYillikYedek, paraBirimi }: FinansOzetPaneliProps) {
-  const { m, kt } = useDil();
-  const kirilim = finans?.maasKirilim ?? null;
+  const { m } = useDil();
   const dunyaEtkileri = finans?.dunyaEtkileri ?? [];
   // "Yıllık gelir" = maaş + (varsa) mülklerden gelen tahmini yıllık net gelir; ikisi ayrı akış
   // ama oyuncunun göz ucuyla baktığı özet için toplamı daha anlamlı.
@@ -56,20 +48,6 @@ export function FinansOzetPaneli({ finans, maasYillikYedek, paraBirimi }: Finans
           {net === null ? '…' : `${net >= 0 ? '+' : ''}${formatPara(net)} ${paraBirimi}`}
         </span>
       </div>
-
-      {kirilim && (
-        <div
-          className="finans-ozet-mini-kirilim"
-          title={`${m.foMaasNasilTam}\n${m.foRutbeSat} (${kt(kirilim.rutbeAd)}): ${yuzdeKisa(kirilim.rutbeYuzde)} · ${m.foKaliciEk}\n${m.foKariyerSat}: ${yuzdeKisa(kirilim.kariyerYuzde)} · ${m.foKaliciEk}\n${m.foItibarSat}: ${yuzdeKisa(kirilim.itibarYuzde)} · ${m.foDegiskenEk}\n${m.foDonemselSat}: ${yuzdeKisa(kirilim.donemselYuzde)} · ${m.foDegiskenEk}\n${m.foTamDokumEk}`}
-        >
-          <span>🎖️ {yuzdeKisa(kirilim.rutbeYuzde)}</span>
-          <span>📈 {yuzdeKisa(kirilim.kariyerYuzde)}</span>
-          <span className={kirilim.itibarYuzde <= -12 ? 'finans-net-negatif' : undefined}>
-            🤝 {yuzdeKisa(kirilim.itibarYuzde)}
-          </span>
-          <span>🌍 {yuzdeKisa(kirilim.donemselYuzde)}</span>
-        </div>
-      )}
 
       {dunyaEtkileri.length > 0 && (
         <div className="finans-ozet-mini-dunya" title={dunyaEtkileri.map((e) => `${e.ikon} ${e.metin}`).join('\n')}>

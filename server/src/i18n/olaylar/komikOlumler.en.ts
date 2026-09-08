@@ -15,7 +15,7 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
           detay: "Some stupidities pay off.",
         },
         basarisizSonuc: {
-          mesaj: "The barrel shattered on the first rock. The crowd laughed first, then fell silent.",
+          mesaj: "The barrel shattered on the first rock. The crowd laughed first, then fell silent; when they pulled you from the water you were barely breathing.",
         },
       },
       {
@@ -42,7 +42,7 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
           mesaj: "Your face went purple, tears burst from your eyes, but you swallowed it. The peddler handed over the basket with a grin.",
         },
         basarisizSonuc: {
-          mesaj: "Your breath caught, then never came back. The doctor said 'I've never seen anything like it.'",
+          mesaj: "Your breath caught and your face went purple; you spent days in bed while the doctor kept muttering 'I've never seen anything like it.'",
         },
       },
       {
@@ -69,7 +69,7 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
           mesaj: "The moustache came out perfect. The city was in stitches by morning, and no one gave you up.",
         },
         basarisizSonuc: {
-          mesaj: "The ladder slipped. Your last words were 'almost had it.'",
+          mesaj: "The ladder slipped and you slammed hard onto the stone. You kept mumbling 'almost had it' for days.",
         },
       },
       {
@@ -231,7 +231,7 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
           mesaj: "You went a full turn round, shouted 'I left my stomach up there' at the top, then came down safe and sound. The village is talking about you.",
         },
         basarisizSonuc: {
-          mesaj: "At the top your hands came loose. The landing didn't go as planned.",
+          mesaj: "At the top your hands came loose. The landing didn't go as planned; you lay unable to move for days.",
         },
       },
       {
@@ -285,7 +285,7 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
           mesaj: "For a few seconds you really did glide — then buried yourself in a haystack. But you flew. Everyone saw you fly.",
         },
         basarisizSonuc: {
-          mesaj: "The wings opened, then folded. The haystack wasn't where it should have been this time.",
+          mesaj: "The wings opened, then folded. The haystack wasn't where it should have been this time; you hit the ground and stayed down.",
         },
       },
       {
@@ -339,7 +339,7 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
           mesaj: "The storm passed and you were still standing. They said 'mad but brave'; both were true.",
         },
         basarisizSonuc: {
-          mesaj: "The sky accepted your claim. It answered very clearly.",
+          mesaj: "The sky answered your claim with a roar; the blast knocked you tumbling off the hilltop, hair reeking of soot.",
         },
       },
       {

@@ -144,7 +144,7 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 60,
         ipucu: "Zor ama anlamlı bir orta yol",
         basariliSonuc: {
-          ahlak: 15,
+          ahlak: 19,
           un: 20,
           para: -5,
           etiket_ekle: ["yol:din:durust", "din_yolu_secildi"],
@@ -333,7 +333,7 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         ipucu: "Yumuşak ama etkili bir yol olabilir",
         basariliSonuc: {
           ahlak: 20,
-          un: 10,
+          un: 8,
           dost_puani: 10,
           etiket_ekle: ["yol:din:durust", "din_yolu_secildi"],
           etiket_sil: ["din_yol_egilim:tarikat"],
@@ -520,7 +520,7 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 45,
         ipucu: "Zor ama kalıcı bir barış olabilir",
         basariliSonuc: {
-          ahlak: 20,
+          ahlak: 22,
           un: 18,
           dost_puani: 10,
           mesaj: "Uzun bir gece boyunca konuştun; kardeşler tarlayı paylaşmayı kabul etti.",
@@ -615,8 +615,9 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 60,
         ipucu: "Daha güvenli ama sırrı bir başkasına emanet edersin",
         basariliSonuc: {
+          un: 3,
           ahlak: 15,
-          para: -8,
+          para: -5,
           mesaj: "Tüccar sözünü tuttu, kadın yardımın nereden geldiğini hiç bilmedi.",
           detay: "Bazen bir sırrı taşımak, onu vermekten daha zor.",
         },
@@ -634,7 +635,7 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         ipucu: "Kurumsal ve güvenli ama daha az kişisel",
         basariliSonuc: {
           ahlak: 15,
-          un: 8,
+          un: 5,
           mesaj: "Fon üzerinden düzenli yardım gitti; kadın kimseye borçlu hissetmedi.",
           detay: "Sistem bazen kişisel fedakarlıktan daha nazik olabiliyor.",
         },
@@ -678,7 +679,7 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 50,
         ipucu: "Daha sessiz ama garantisi yok",
         basariliSonuc: {
-          ahlak: 18,
+          ahlak: 23,
           mesaj: "Uzun bir konuşmadan sonra adam uygulamayı bıraktı, aranızda kalan bir sır oldu.",
           detay: "Bazı düzeltmeler gürültü koparmadan olur.",
         },
@@ -896,7 +897,7 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         ipucu: "Sırrı korursun ama koca cezasız kalır",
         basariliSonuc: {
           ahlak: 20,
-          un: 5,
+          un: -2,
           dost_puani: 12,
           mesaj: "Kadını ve çocuklarını gizlice uzak bir akrabaya yerleştirdin; kimse nasıl kaçtığını öğrenmedi.",
           detay: "Adalet tam gelmedi ama en azından güvendeler.",
@@ -914,7 +915,7 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         ipucu: "Adaleti zorlarsın ama sırrı sen ifşa etmemiş olursun",
         basariliSonuc: {
           ahlak: 25,
-          un: 15,
+          un: 8,
           mesaj: "Kadın cesaretini topladı, şikayette bulundu; koca cezalandırıldı ve sen sırrı hiç çiğnemedin.",
           detay: "Bazen en iyi yardım, birine kendi sesini bulmasını sağlamaktır.",
         },
@@ -930,8 +931,8 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 40,
         ipucu: "Hızlı müdahale, mesleki güveni kırma riski",
         basariliSonuc: {
-          ahlak: 15,
-          un: -10,
+          ahlak: 26,
+          un: 2,
           mesaj: "Üst makamlar müdahale etti, kadın ve çocukları korumaya alındı; ama artık kimse sana sır vermek istemiyor.",
           detay: "Bir hayatı kurtarmak için mesleki bir değeri feda ettin.",
         },
@@ -1070,7 +1071,7 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         basariliSonuc: {
           ahlak: 20,
           un: 12,
-          para: 8,
+          para: 6,
           mesaj: "Kararın her iki tarafça da kabul edildi; adaletinin tarafsızlığı şehirde konuşuldu.",
           detay: "Bazı itibarlar sabırla kazanılıyor.",
         },
@@ -1085,6 +1086,7 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 50,
         ipucu: "Yemin gerektirmeyen daha barışçıl bir çözüm",
         basariliSonuc: {
+          para: 2,
           ahlak: 18,
           un: 10,
           dost_puani: 8,
@@ -1116,7 +1118,7 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         ipucu: "Dürüstlüğün sağlam kalır, kariyerin durgunlaşabilir",
         basariliSonuc: {
           ahlak: 25,
-          un: 10,
+          un: 8,
           mesaj: "Reddin üst makamı rahatsız etti ama kayıtların bozulmadı; sen de rahat uyudun.",
           detay: "Bazı terfiler almaya değmeyecek kadar pahalı.",
         },
@@ -1134,8 +1136,8 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         ipucu: "Riskli ama yolsuzluğu görünür kılar",
         basariliSonuc: {
           ahlak: 28,
-          un: 20,
-          para: -10,
+          un: 22,
+          para: -6,
           mesaj: "Durumu paylaşman diğer din adamlarının da cesaretini topladı; üst makam geri adım attı.",
           detay: "Yalnız değilmişsin, bunu görmek seni güçlendirdi.",
         },
@@ -1307,7 +1309,7 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         ipucu: "İlkeli ama akrabanla arana mesafe girer",
         basariliSonuc: {
           ahlak: 22,
-          un: 10,
+          un: 7,
           mesaj: "Fonu sırasına göre dağıttın; akraban küstü ama cemaat senin tarafsızlığına güvenmeye devam etti.",
           detay: "Bazı bağlar ilkelerin önüne geçmiyor.",
         },
@@ -1324,8 +1326,8 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         maliyet: 20,
         ipucu: "Kurumu korursun, kişisel yükü sen taşırsın",
         basariliSonuc: {
-          para: -20,
-          ahlak: 18,
+          para: -14,
+          ahlak: 21,
           mesaj: "Akrabana kendi kesenden yardım ettin, fona hiç dokunmadın; kimse adaletsizlik sayamadı.",
           detay: "Sadakatini gösterirken kimseyi mağdur etmedin.",
         },
@@ -1354,7 +1356,7 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         ipucu: "Dürüst bir miras, kusursuz bir efsane değil",
         basariliSonuc: {
           ahlak: 20,
-          un: 10,
+          un: 6,
           mutluluk: 6,
           mesaj: "Genç din adamı, senin kusurlarını duyunca daha çok saygı duydu; sana 'gerçek' dedi.",
           detay: "Mükemmel olmayan bir örnek, bazen daha çok ilham veriyor.",
@@ -1371,7 +1373,8 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 70,
         ipucu: "Mütevazı bir final, büyük bir ün bırakmaz",
         basariliSonuc: {
-          ahlak: 15,
+          un: 3,
+          ahlak: 17,
           mutluluk: 5,
           mesaj: "Adın büyük hikayelerde geçmedi ama seni tanıyanlar, kapılarına bıraktığın erzağı hiç unutmadı.",
           detay: "Bazı mirasların en güzeli, kayıtlara değil kalplere yazılıyor.",
@@ -1514,11 +1517,12 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 50,
         ipucu: "Sert pazarlık, ortaklığın kırılma riski",
         basariliSonuc: {
-          para: 25,
+          para: 21,
           mesaj: "Sert pazarlığın işe yaradı, payını korudun; tüccar isteksizce kabul etti.",
           detay: "Suç ortaklığında bile güç dengesi konuşulur.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -15,
           un: -8,
           mesaj: "Tüccar pazarlıktan sinirlenip birkaç hafta işi durdurdu, sen de payından oldun.",
@@ -1530,7 +1534,7 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 80,
         ipucu: "Az ama güvenli kazanç",
         basariliSonuc: {
-          para: 12,
+          para: 6,
           ahlak: -8,
           mesaj: "Teklifi kabul ettin, ortaklık sorunsuz sürdü.",
           detay: "Küçük bir pay, büyük bir kavgadan iyidir.",
@@ -1688,7 +1692,7 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         ipucu: "Ustaca bir savunma seni kurtarabilir, sıkışırsan daha çok şüphe çekersin",
         basariliSonuc: {
           ahlak: -10,
-          un: 5,
+          un: 2,
           mesaj: "Alimi tartışmalarla oyaladın, şüphelerini tam gideremese de şehri terk etti.",
           detay: "Bu kez ucuz atlattın; bir dahaki sefere bu kadar şanslı olmayabilirsin.",
         },
@@ -1817,7 +1821,7 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         ipucu: "Daha yavaş büyüme, daha düşük ama yönetilebilir risk",
         basariliSonuc: {
           para: 25,
-          un: 15,
+          un: 11,
           ahlak: -15,
           mesaj: "Sandığı sadece güvendiğin küçük bir çevreye tanıttın; yayılma yavaş ama güvenli oldu.",
           detay: "Açgözlülüğünü frenlemek bu sefer işe yaradı.",
@@ -1974,11 +1978,12 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 75,
         ipucu: "Daha az kazanç, daha kontrollü bir risk",
         basariliSonuc: {
-          para: 15,
+          para: 13,
           mesaj: "Riski almadın, tüccar homurdandı ama iş eskisi gibi sessizce devam etti.",
           detay: "Bazen hırsını dizginlemek, en büyük kazançtır.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: 5,
           un: -5,
           mesaj: "Tüccar reddini 'korkaklık' sayıp başka ortaklar aramaya başladı.",
@@ -2133,7 +2138,7 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 65,
         ipucu: "Daha yavaş ama daha güvenli bir yol",
         basariliSonuc: {
-          un: 10,
+          un: 7,
           mesaj: "Casusluktan vazgeçtin, bunun yerine kendi vaazlarını güçlendirmeye odaklandın.",
           detay: "Bazı savaşlar gölgede değil, açıkta kazanılır.",
         },
@@ -2293,6 +2298,7 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
           detay: "Bazen orta yol, hem vicdanı hem kasayı idare ediyor.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: 5,
           un: -5,
           mesaj: "Aile 'neden araya girdin' diye kuşkulandı, ilişkiniz soğudu.",
@@ -2485,7 +2491,7 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 55,
         ipucu: "Hızlı bir itiraf, ama zorlamanın bedeli olabilir",
         basariliSonuc: {
-          un: 15,
+          un: 13,
           ahlak: -15,
           mesaj: "Kız korkudan ağzına geleni söyledi; raporun 'kesin bir itiraf' olarak üst makamlara gitti.",
           detay: "İçinde bir kuşku kıpırdadı ama onu hemen bastırdın — şüphe, zayıflıktır dedin kendine.",
@@ -2646,6 +2652,7 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 80,
         ipucu: "Kolay ama üzerinde biriken bir risk",
         basariliSonuc: {
+          ahlak: 3,
           dost_puani: 5,
           mesaj: "Sustun, geçiştirdin; {dost} sözlerinin unutulduğunu sandı.",
           detay: "Bazı sessizlikler bir çözüm değil, sadece ertelemedir.",
@@ -3540,7 +3547,7 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         ipucu: "Orta yol; hem güvenli hem sınırlı bir kazanç",
         basariliSonuc: {
           dost_puani: 6,
-          mutluluk: 3,
+          mutluluk: 1,
           mesaj: "Kızı dış çevrende tuttun; meraklı ama güvenilir bir yüz kazandın.",
           detay: "Bazı bağlar, mesafeliyken daha sağlam durur.",
         },
@@ -3935,6 +3942,7 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 45,
         ipucu: "Pasif ama en az riskli görünen yol",
         basariliSonuc: {
+          ahlak: 2,
           mutluluk: -3,
           mesaj: "Adam sonunda vazgeçti, tehdidini hiç gerçekleştirmedi.",
           detay: "Bazen zaman, en iyi çözümü kendisi getirir.",
@@ -4420,6 +4428,7 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 50,
         ipucu: "Vicdanını temizler ama sırrını bir yabancıya açar",
         basariliSonuc: {
+          un: 3,
           ahlak: 12,
           mesaj: "Vaiz özrünü ve ödemeni kabul etti, konuyu kapattı.",
           detay: "Bazı yaraları, sessizce sarmak en doğrusudur.",
@@ -4532,7 +4541,7 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         ipucu: "Güvenli bir geri çekiliş ama yılların emeğinden vazgeçersin",
         basariliSonuc: {
           ahlak: 15,
-          un: 5,
+          un: -5,
           nufuz_artis: -20,
           mesaj: "Cemaatini sessizce dağıttın; tehlike geçti ama kurduğun her şey elinden kaydı.",
           detay: "Bazı krallıklar, kurucusunun elleriyle yıkılır — ondan iyisi de yok.",

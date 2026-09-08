@@ -187,6 +187,13 @@ export interface CharacterState {
    * avcıları). Olaylar minSucSeviyesi/maxSucSeviyesi ile bu bantlara kilitlenir.
    */
   suc_seviyesi: number;
+  /**
+   * "hapiste" etiketi eklendiğinde belirlenen ceza süresi (yıl); her turda geçen
+   * yıl kadar azalır, 0'a inince karakter otomatik serbest kalır ("hapiste"
+   * etiketi silinir). Riskli kaçış girişimleri başarısız olursa
+   * SonucEtkisi.hapis_ceza_artis ile bu sayaç uzar. Hapiste değilken 0.
+   */
+  hapis_ceza_kalan: number;
   /** Sahip olunan piyasa mülkleri (her türden en fazla bir tane). */
   mulkler: MulkTuru[];
   /**
@@ -257,8 +264,16 @@ export interface CharacterState {
   veba: VebaDurumu | null;
   /** Karakter hayatında en az bir kez veba geçirdi mi (salt istatistik/flavor; tetiklemeyi artık bloklamaz). */
   veba_gecirdi: boolean;
-  /** En son veba dalgasının (iz fazı dahil) tamamen bittiği yıl; 20 yıllık cooldown buradan sayılır. Hiç veba olmadıysa null. */
+  /** En son veba dalgasının (iz fazı dahil) tamamen bittiği yıl; 25 yıllık cooldown buradan sayılır. Hiç veba olmadıysa null. */
   son_veba_bitis_yili: number | null;
+  /**
+   * Karakter vebayı bizzat KAPTIYSA (etiket "veba_hastasi") o anki ölüm riski
+   * yüzdesi (0-100). Bulaşma anında ~70 olur; her hastalık turunda `vebaHastasiOlayi`
+   * olaylarının `veba_olum_riski_artis` etkisiyle ± değişir ve turda geçen zamanla
+   * doğal olarak düşer; eşik altına inince iyileşilir (etiket silinir, alan 0'lanır).
+   * Hasta değilken 0.
+   */
+  veba_olum_riski: number;
   /** Bir sonraki küçük krizin (kıtlık/haydut baskını) tetikleneceği yıl eşiği. */
   kucuk_kriz_sonraki_yil: number;
   /** Küçük kriz tetiklendiğinde SADECE bu yıla kadar geçerli olan ×2 gıda fiyat şoku; null = şok yok. */
@@ -349,6 +364,8 @@ export interface SonucEtkisi {
   ulke_etkisi?: Partial<UlkeDurumu>;
   /** Bir veba başlatan seçenekte (ulke_etkisi.vebada = true), o seçimin sağladığı korunma düzeyi: 0/1/2. vebaBaslat'a aktarılır. */
   veba_koruma?: number;
+  /** Karakter veba hastasıyken (etiket "veba_hastasi") `veba_olum_riski`'ni değiştirir; ± olabilir (hekim/tedavi negatif, ihmal/şarlatan pozitif). Yalnız hastayken anlamlı, 0-100 clamp. */
+  veba_olum_riski_artis?: number;
   maas_carpani?: number;
   dost_puani?: number;
   rakip_puani?: number;
@@ -380,6 +397,8 @@ export interface SonucEtkisi {
   suc_artis?: number;
   /** suc_seviyesi'ni mevcut değerden bağımsız, doğrudan belirtilen değere (0-100) sabitler — ör. büyük baskın sonrası "temize çıkar / kademe 1'e in" gibi kesin hedefler için; genel yükseliş/düşüş için bunun yerine suc_artis kullanılmalı. */
   suc_seviyesi_ayarla?: number;
+  /** Hapiste kalan ceza süresini (state.hapis_ceza_kalan) yıl olarak uzatır — riskli kaçış girişimi başarısız olunca kullanılır. Yalnız "hapiste" etiketi varken anlamlıdır. */
+  hapis_ceza_artis?: number;
   /** true ise para, mevcut değerden bağımsız kesin olarak sıfırlanır (el koyma/müsadere gibi durumlar için; normal para deltası yetmez çünkü paranın alt sınırı yoktur). */
   para_sifirla?: boolean;
   /** true ise şöhret (un), mevcut değerden bağımsız kesin olarak sıfırlanır (itibar kaybı/teşhir cezası gibi durumlar için). */

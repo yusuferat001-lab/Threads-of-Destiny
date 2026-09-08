@@ -61,6 +61,7 @@ export const OLAY_ORTACAG_TUCCAR: OlayTanimi[] = [
           detay: "Ücretlerini ödedikten sonra kalan kâr azdı ama kesindi. Muhafız kaptanı 'bir dahakine indirim' dedi ve bu da bir bağlantı.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -20,
           un: -10,
           mesaj: "Tuttuğun muhafızlar haydutlarla anlaşmıştı; malları paylaştılar.",
@@ -170,6 +171,7 @@ export const OLAY_ORTACAG_TUCCAR: OlayTanimi[] = [
           detay: "Zenginler senden ipek almıyor ama esnaf ve zanaatkârlar hep sana geliyor. Küçük kârların toplamı büyük çıktı.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -12,
           mesaj: "Ucuz kumaşa da alıcı çıkmadı; deponda kaldı.",
           detay: "Dürüstlük satış garantisi değilmiş. Malı zararına elden çıkardın ve o tedarikçiyle bir daha çalışmadın.",
@@ -429,6 +431,8 @@ export const OLAY_ORTACAG_TUCCAR: OlayTanimi[] = [
         ],
         ipucu: "Gizli Şık: Tüccarlar komik ve zeki insanları sever",
         basariliSonuc: {
+          ahlak: -3,
+          mutluluk: -7,
           para: 50,
           un: 20,
           etiket_ekle: [
@@ -455,6 +459,7 @@ export const OLAY_ORTACAG_TUCCAR: OlayTanimi[] = [
           detay: "Bu tüccarlar her yıl aynı mevsimde geliyor; artık senin müşterin oldular.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -20,
           mesaj: "Tuttuğun tercüman fiyatları yanlış çevirdi; zararına alışveriş yaptın.",
           detay: "İletişimsizlik bazen paradan daha pahalıya mal oluyor.",
@@ -470,6 +475,7 @@ export const OLAY_ORTACAG_TUCCAR: OlayTanimi[] = [
           detay: "Kervanın lideri gülerek elini sıktı; belki dil ortak olmasa da ticaret ortaktı.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -8,
           mesaj: "Yanlış anlaşılma yüzünden istemediğin bir malı almak zorunda kaldın.",
           detay: "Bazen sessizlik anlaşmadan daha çok yanlış anlaşılmaya yol açıyor.",
@@ -629,7 +635,8 @@ export const OLAY_ORTACAG_TUCCAR: OlayTanimi[] = [
         baseBasariSansi: 50,
         ipucu: "Zaman kazanırsın ya da tuzağa düşersin",
         basariliSonuc: {
-          para: 20,
+          saglik: 3,
+          para: 25,
           mesaj: "Kestirme gerçekten işe yaradı; rakiplerinden önce pazara vardın.",
           detay: "Rehber içten içe gülümsedi; belki de sadece iyi bir rehberdi.",
         },
@@ -645,7 +652,7 @@ export const OLAY_ORTACAG_TUCCAR: OlayTanimi[] = [
         baseBasariSansi: 80,
         ipucu: "Güvenli ama yavaş",
         basariliSonuc: {
-          para: 8,
+          para: 4,
           mesaj: "Ana yoldan güvenle vardın; rehber suratını astı ama sorun çıkmadı.",
           detay: "İçgüdülerine güvenmek bazen en iyi ticaret stratejisidir.",
         },
@@ -700,6 +707,7 @@ export const OLAY_ORTACAG_TUCCAR: OlayTanimi[] = [
           detay: "Yavaş büyüyen ağaçlar daha derin kök salar derler; senin işin de öyle oldu.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -10,
           mesaj: "Yetiştirdiğin çırak yeteneksiz çıktı, zamanın boşa gitti.",
           detay: "Her yatırım karşılığını vermiyor; bu sefer şanssızdın.",
@@ -725,11 +733,13 @@ export const OLAY_ORTACAG_TUCCAR: OlayTanimi[] = [
         ipucu: "Şansına güvenen bir kazanç",
         basariliSonuc: {
           para: 30,
-          un: 20,
+          un: 12,
           mesaj: "Soylu, dürüstlüğünü ödüllendirdi; şehirde adın hemen yayıldı.",
           detay: "'Dilenciye bile saygıyla davranan tüccar' hikayen aylarca anlatıldı.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
+          para: -30,
           un: 10,
           mesaj: "Soylu memnun kaldı ama ödülü sandığından küçüktü.",
           detay: "Beklentin yüksekti; yine de kötü bir sonuç değildi.",
@@ -740,13 +750,15 @@ export const OLAY_ORTACAG_TUCCAR: OlayTanimi[] = [
         baseBasariSansi: 45,
         ipucu: "Büyük fırsat, açgözlü görünme riski",
         basariliSonuc: {
-          para: 45,
-          un: 15,
+          para: 47,
+          un: 21,
           maas_carpani: 1.15,
           mesaj: "Soylu, açık sözlülüğünü beğendi ve seni saraya tedarikçi yaptı.",
           detay: "Cesaretin karşılığını fazlasıyla aldın; artık saray mutfağına da mal satıyorsun.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
+          para: -45,
           un: -15,
           mesaj: "Soylu bunu 'küstahlık' saydı ve sessizce ayrıldı.",
           detay: "Fırsatı zorlamak bazen elindekini de kaybettiriyor.",
@@ -787,6 +799,9 @@ export const OLAY_ORTACAG_TUCCAR: OlayTanimi[] = [
         baseBasariSansi: 95,
         ipucu: "Risksiz",
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Kenardan izledin, eğlendin, hiçbir şey riske atmadın.",
           detay: "Bazı günler sadece izlemek de yeterlidir.",
         },

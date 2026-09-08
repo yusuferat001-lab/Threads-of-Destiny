@@ -56,6 +56,7 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
           detay: "Güzellik solar, altın solmaz diye düşünüp içini rahatlattın.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           es_ata: true,
           es_puani: -25,
           para: 25,
@@ -292,7 +293,7 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
         ipucu: "Durumu netleştirebilir ya da daha da kötüleştirebilir",
         basariliSonuc: {
           es_puani: 5,
-          un: 10,
+          un: 12,
           mesaj: "Yüzleşme sert geçti ama {es} en azından bir daha açıkça yaymayacağına söz verdi.",
           detay: "Bazı savaşlar sadece açık konuşulunca durur.",
         },
@@ -309,7 +310,7 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
         baseBasariSansi: 65,
         ipucu: "Daha sakin ama yavaş bir onarım",
         basariliSonuc: {
-          un: 8,
+          un: 6,
           mesaj: "Dedikoduya hiç cevap vermedin; çevren yavaş yavaş kendi gözlemleriyle gerçeği gördü.",
           detay: "Bazen susmak, tartışmaktan daha güçlü bir cevaptır.",
         },
@@ -344,6 +345,7 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
           detay: "Bazı güven kayıpları asla tam onarılmaz.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -15,
           es_puani: -30,
           mesaj: "{es} seni suçladı: 'Sen de beni hiç güvende hissettirmedin.' Kavga büyüdü, kaybettiğin para geri gelmedi.",
@@ -438,6 +440,7 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
           detay: "Bazı ittifaklar sevgiyle değil, karşılıklı saygıyla da güçlenir.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: 10,
           un: 5,
           mesaj: "Bazı çevreler seni hâlâ 'dışarıdan gelen' olarak görse de, {es}'in çabası boşa gitmedi.",
@@ -536,6 +539,9 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
         metin: "Onu izle, tepki verme, geçmesini bekle.",
         baseBasariSansi: 85,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Sessizce izledin. Nihayetinde kendi kendine sakinleşti, sanki hiçbir şey olmamış gibi çaya döndü.",
           detay: "Bazı fırtınalar müdahalesiz de diner.",
         },
@@ -767,7 +773,7 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
         baseBasariSansi: 90,
         basariliSonuc: {
           es_puani: 25,
-          mutluluk: 12,
+          mutluluk: 7,
           saglik: 8,
           mesaj: "İki 'hesaplı' insan, yıllar sonra birbirini gerçekten sevdiğini fark etti. Bu, beklemediğiniz ama en gerçek anınız oldu.",
           detay: "Bazı aşklar bir törenle değil, yıllarla başlar.",
@@ -783,6 +789,9 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
         metin: "Temkinli kal, yıllarca süren mesafeye güvenme.",
         baseBasariSansi: 70,
         basariliSonuc: {
+          saglik: 5,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Temkinli kaldın; {es} kırılmadı ama bu anın büyüsü biraz söndü.",
           detay: "Bazı fırsatlar temkinle kaçırılır.",
         },
@@ -813,7 +822,7 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
         ipucu: "İlişkini güçlendirir ama pazarda düşman kazanırsın",
         basariliSonuc: {
           es_puani: 20,
-          un: -10,
+          un: -5,
           mesaj: "Sesini yükselttin, kimse eşinle bir daha böyle alay edemeyecek şekilde. {es} gözlerinde ilk kez gerçek bir minnetle baktı.",
           detay: "Bazı sadakatler para değil, cesaretle kanıtlanır.",
         },
@@ -827,6 +836,9 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
         metin: "Görmezden gel, sahneyi büyütme.",
         baseBasariSansi: 80,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Tepki vermedin; kalabalık çabuk sıkıldı ve konu kapandı.",
           detay: "Bazı ateşler beslenmezse söner.",
         },
@@ -954,6 +966,7 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
           detay: "Bazı güven kayıpları parayla telafi edilmez.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -10,
           es_puani: -30,
           mesaj: "{es} 'Zaten benim param bu evlilikle geldi' diyerek geri adım atmadı. Kavga bomba gibi patladı.",
@@ -996,7 +1009,7 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
         ipucu: "Gerçeği öğrenirsin ama kavga büyüyebilir",
         basariliSonuc: {
           es_puani: 5,
-          un: 8,
+          un: 13,
           mesaj: "İtiraf etti: 'Belki de sana bu şekilde acı çektirmek istedim.' Acı ama en azından artık nedenini biliyorsun.",
           detay: "Bazı kırgınlıklar sözle değil, dedikoduyla dışa vurulur.",
         },
@@ -1012,7 +1025,7 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
         baseBasariSansi: 70,
         ipucu: "İtibarını onarır ama eşinle aran daha da bozulur",
         basariliSonuc: {
-          un: 15,
+          un: 9,
           es_puani: -10,
           mesaj: "Defterlerini açıkça gösterdin; dedikodu söndü. Ama {es} kendi sözünün bu şekilde çürütülmesinden hoşlanmadı.",
           detay: "Bazı itibar kurtarmaları evde bir bedel doğurur.",
@@ -1043,6 +1056,8 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
         baseBasariSansi: 50,
         ipucu: "Onurunu korursun ama evlilik büyük olasılıkla biter",
         basariliSonuc: {
+          para: 3,
+          un: 3,
           es_puani: -30,
           rakip_puani: -10,
           ahlak: 5,
@@ -1097,6 +1112,7 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
           detay: "Bazı evlilikler yavaş yavaş gerçek bir ortaklığa dönüşür.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: 10,
           mesaj: "Yatırım umduğun kadar büyümedi ama en azından beraber denediniz.",
           detay: "Bazı sonuçlar değil, çabalar önemlidir.",
@@ -1134,7 +1150,7 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
         baseBasariSansi: 90,
         basariliSonuc: {
           es_puani: 18,
-          mutluluk: 8,
+          mutluluk: 5,
           mesaj: "Teşekkürün içtendi ve {es} bunu hissetti. Belki de görünüşün ötesinde bir şey inşa ediyorsunuz.",
           detay: "Bazı güzellikler gözle değil, zamanla görülür.",
         },
@@ -1148,6 +1164,9 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
         metin: "Yine de mesafeli kal, alışkanlığını değiştirme.",
         baseBasariSansi: 70,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Mesafeni korudun; {es} üzülmedi ama bu güzel anın tadını biraz kaçırdın.",
           detay: "Bazı fırsatlar temkinle kaçırılır.",
         },
@@ -1270,7 +1289,7 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
         ipucu: "Hem evliliği hem sermayeyi kurtarabilir, hem de tamamen kaybedebilirsin",
         basariliSonuc: {
           es_puani: 25,
-          para: -20,
+          para: -17,
           mesaj: "Son anda bir uzlaşma buldunuz; sermaye kaldı, evlilik de -kırılgan da olsa- devam ediyor.",
           detay: "Bazı ilişkiler tam çökmeden bir kez daha toparlanır.",
         },
@@ -1329,6 +1348,8 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
           detay: "Bazı haklı talepler bile bir bedel taşır.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
+          para: -30,
           es_puani: -20,
           un: -10,
           mesaj: "Kayınpederin seni 'açgözlü' ilan etti; {es} de bu tartışmadan yorgun çıktı.",
@@ -1384,8 +1405,9 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
         baseBasariSansi: 55,
         ipucu: "Kısa vadede tatmin edici ama mahallede gerginlik yaratır",
         basariliSonuc: {
+          ahlak: 3,
           mutluluk: 4,
-          un: -5,
+          un: -2,
           mesaj: "Ailelere gittin, özür aldın. Ama mahallede 'aşırı tepkili' diye anılmaya başladın.",
           detay: "Bazı zaferler küçük bir bedel taşır.",
         },
@@ -1463,7 +1485,7 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
         baseBasariSansi: 90,
         basariliSonuc: {
           es_puani: 25,
-          mutluluk: 10,
+          mutluluk: 6,
           mesaj: "{es} gözyaşlarını tutamadı: 'Bunu duymak için yıllarca bekledim' dedi. Bu, çıkar için başlayan bir hikayenin gerçek aşka dönüştüğü an oldu.",
           detay: "Bazı aşklar bir bakışla değil, yıllarca süren sadakatle doğar.",
         },
@@ -1525,7 +1547,7 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
         ipucu: "Yakınlığınızı korur, sorunu hemen çözmez",
         basariliSonuc: {
           es_puani: 18,
-          mutluluk: 5,
+          mutluluk: 2,
           mesaj: "Sarıldınız, ağladınız, sonra güldünüz. Para hâlâ yok ama birbirinize daha sıkı sarıldınız.",
           detay: "Bazı yoksulluklar sevgiyle daha hafif taşınır.",
         },
@@ -1568,6 +1590,9 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
         metin: "Sabret, zamanla kabullenmelerini bekle.",
         baseBasariSansi: 70,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Sabrettin; yıllar içinde aile yavaş yavaş yumuşadı, bir bayram sofrasında {es}'i de davet ettiler.",
           detay: "Bazı kabuller acele ettirilemez.",
         },
@@ -1655,6 +1680,9 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
         metin: "Duymazdan gel, üstünde durma.",
         baseBasariSansi: 70,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Üstünde durmadın; söylenti zamanla söndü ama içinde küçük bir diken kaldı.",
           detay: "Bazı sözler susup geçilse de unutulmuyor.",
         },
@@ -1775,12 +1803,13 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
         baseBasariSansi: 90,
         basariliSonuc: {
           mutluluk: 9,
-          para: 15,
+          para: 10,
           mesaj: "{es}'in desteğiyle yeniden odaklandın; kısa süre içinde işlerin toparlanmaya başladı.",
           detay: "Bazı sevgiler bir yatırımdan daha değerli getiriler sağlar.",
         },
         basarisizSonuc: {
-          mutluluk: -4,
+          para: -15,
+          mutluluk: -8,
           mesaj: "Destek harikaydı ama işler henüz toparlanmadı; en azından yalnız değilsin.",
           detay: "Bazı destekler anında sonuç vermez ama güç verir.",
         },
@@ -1789,6 +1818,7 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
         metin: "Ona yük olmamak için duygularını sakla.",
         baseBasariSansi: 60,
         basariliSonuc: {
+          para: 5,
           es_puani: -5,
           mesaj: "Duygularını sakladın; {es} bunu fark etti ve biraz üzüldü: 'Bana güvenebilirsin' dedi.",
           detay: "Bazı korumalar aslında bir mesafe yaratır.",
@@ -1818,7 +1848,7 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
         basariliSonuc: {
           saglik: 15,
           es_puani: 20,
-          mutluluk: 6,
+          mutluluk: 4,
           mesaj: "{es}'in özverisi ve sevgisi, en pahalı hekimden daha etkili oldu. İyileştin ve bağınız daha da güçlendi.",
           detay: "Bazı şifalar altından değil, sevgiden gelir.",
         },
@@ -1835,7 +1865,7 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
         ipucu: "Onu korursun ama incitirsin",
         basariliSonuc: {
           es_puani: -10,
-          saglik: -5,
+          saglik: 1,
           mesaj: "Reddettin; {es} kırıldı: 'Beni de bu evliliğin bir parçası say' dedi.",
           detay: "Bazı korumalar aslında bir reddediliş gibi hissettiriyor.",
         },
@@ -1878,6 +1908,9 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
         metin: "Onu kendi haline bırak, geçmesini bekle.",
         baseBasariSansi: 75,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Bıraktın; yarım saat sonra kapıdan çıkıp sanki hiçbir şey olmamış gibi sofraya döndü.",
           detay: "Bazı fırtınalar kendi hızında diner.",
         },
@@ -1905,7 +1938,7 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
         baseBasariSansi: 85,
         basariliSonuc: {
           es_puani: 15,
-          mutluluk: 8,
+          mutluluk: 5,
           mesaj: "Eski günlerinizi anarak kutladınız; {es} hiç değişmedi, hâlâ aynı sevgiyle bakıyor sana.",
           detay: "Bazı sevgiler zenginlikle sınanır ve zenginlikten daha güçlü çıkar.",
         },
@@ -1919,6 +1952,9 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
         metin: "Sessizce izle, gerçek karakterini gör.",
         baseBasariSansi: 70,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "İzledin; {es} parayı hiç umursamadan eski alçakgönüllülüğüyle davrandı. İçin rahatladı.",
           detay: "Bazı testler beklenmedik bir güven getirir.",
         },
@@ -2101,6 +2137,7 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
           detay: "Bazı şanslar iyi yönetilirse kalıcı bir huzura dönüşür.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: 20,
           mesaj: "Parayı harcarken bazı fırsatları kaçırdınız ama yine de bir rahatlama oldu.",
           detay: "Her şans en verimli şekilde değerlendirilemez.",
@@ -2158,6 +2195,7 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
         metin: "Ona bunca yıl sonra hâlâ neden onu sevdiğini anlat.",
         baseBasariSansi: 85,
         basariliSonuc: {
+          saglik: 3,
           es_puani: 22,
           mutluluk: 10,
           mesaj: "Kelimelerin onu ağlattı, güzel bir şekilde. 'Bunca yıl parasız geçse de, seninle geçen her günü yeniden yaşardım' dedin ve bunu her ikiniz de gerçekten hissettiniz.",
@@ -2296,7 +2334,7 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
         basariliSonuc: {
           es_puani: 18,
           ahlak: 12,
-          mutluluk: 5,
+          mutluluk: 3,
           mesaj: "Çabaların meyvesini verdi; üvey evladın sana ilk kez gerçekten 'anne/baba' dedi. {es} gözyaşlarını tutamadı.",
           detay: "Bazı bağlar kanla değil, emekle kurulur.",
         },
@@ -2464,6 +2502,7 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
         baseBasariSansi: 60,
         ipucu: "Dürüst bir tepki ama ilişkiyi zedeler",
         basariliSonuc: {
+          ahlak: 3,
           es_puani: -20,
           mutluluk: -10,
           mesaj: "Mesafe koydun; {es} bunu hak ettiğini kabul etti ama ev haftalarca buz gibi kaldı.",
@@ -2503,6 +2542,7 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
           detay: "Bazı zaferler bir aileyi paramparça eder.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -15,
           dost_puani: -25,
           un: -10,
@@ -2562,7 +2602,6 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
         baseBasariSansi: 75,
         ipucu: "Riskli ama çocuğunla bağını korur",
         basariliSonuc: {
-          mutluluk: 8,
           ahlak: 8,
           mesaj: "Şüphelerini bir kenara bıraktın. {cocuk} bu güveni hiç unutmadı; evlilik de umduğundan iyi gitti.",
           detay: "Bazı güvenler doğru çıkar.",
@@ -2697,8 +2736,9 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
           detay: "Bazı kazançların bedelini sadece bir taraf öder.",
         },
         basarisizSonuc: {
+          para: -35,
           es_puani: -25,
-          mutluluk: -15,
+          mutluluk: -19,
           mesaj: "Fırsat umduğun gibi çıkmadı, üstüne {es} yeni şehirde hiç tutunamadı; ikiniz de pişmansınız.",
           detay: "Bazı riskler her iki tarafı da yorar.",
         },
@@ -2837,7 +2877,8 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
         maliyet: 25,
         ipucu: "Tehlikeli ve masraflı bir yolculuk ama onu mutlu edebilirsin",
         basariliSonuc: {
-          para: -25,
+          saglik: 2,
+          para: -19,
           es_puani: 30,
           mutluluk: 8,
           mesaj: "Yolculuk zorluydu ama {es}, doğduğu toprakları son kez görüp gözlerini oraya bakarak yumdu. Huzurluydu.",
@@ -3075,7 +3116,6 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
         metin: "Onu destekle, mutlu olmasına sevin.",
         baseBasariSansi: 90,
         basariliSonuc: {
-          mutluluk: 6,
           ahlak: 8,
           mesaj: "'Sen mutluysan ben de mutluyum anne' dedin. {anne} bir genç kız gibi kızardı ve sana sarıldı.",
           detay: "Bazı geç gelen mutluluklar en tatlı olanlarıdır.",
@@ -3090,6 +3130,7 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
         baseBasariSansi: 55,
         ipucu: "Komik bir gerginlik yaratır ama anneni üzebilir",
         basariliSonuc: {
+          ahlak: 3,
           mutluluk: -5,
           mesaj: "'Anne, sen... ciddi misin?' dedin şaşkınlıkla. O da güldü: 'Sen de bir gün anlayacaksın.' Sonunda ikiniz de gülmeye başladınız.",
           detay: "Bazı garip anlar sonunda güzel bir anıya dönüşür.",

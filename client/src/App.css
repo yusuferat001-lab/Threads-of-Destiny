@@ -2412,12 +2412,27 @@ button.ikincil {
   padding-top: 0;
 }
 
-/* Maaş kırılımı: "gelirim neden bir anda arttı, kalıcı mı?" dökümü */
+/* Maaş kırılımı: varsayılan olarak tek satır özet, tıklayınca açılan döküm */
 .finans-maas-kirilim {
   margin: 0.2rem 0 0.4rem;
-  padding: 0.5rem 0.6rem;
+  padding: 0.4rem 0.6rem;
   background: rgba(61, 46, 31, 0.28);
   border-radius: 6px;
+}
+
+.finans-kirilim-ozet {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem 0.7rem;
+  font-size: 0.82rem;
+  cursor: pointer;
+  list-style: revert;
+}
+
+.finans-kirilim-lejant {
+  margin-top: 0.25rem;
+  opacity: 0.55;
+  font-style: italic;
 }
 
 .finans-kirilim-satiri {

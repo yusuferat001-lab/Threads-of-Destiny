@@ -51,6 +51,7 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
           detay: "Ücretler yüksek, devir hızı sıfır. Rakipler her ay yeni işçi ararken senin ustaların on yıldır aynı tezgâhta ve hiç fire vermiyorlar.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -35,
           un: 12,
           ahlak: 20,
@@ -70,6 +71,7 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
           detay: "Zengin olmadın ama batmadın da. Sekiz kişilik atölyende herkesin adını biliyorsun ve bu sana yetiyor.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -15,
           mesaj: "Talep tutmadı; atölye zar zor masrafını çıkardı ve kapandı.",
           detay: "Küçük oynadın ve yine kaybettin. En azından kaybın da küçük oldu; ayakta kalmayı sürdürüyorsun.",
@@ -93,7 +95,7 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
         ipucu: "Sadık iş gücü ve itibar, maliyet artışı",
         basariliSonuc: {
           para: -20,
-          un: 22,
+          un: 7,
           ahlak: 25,
           maas_carpani: 1.12,
           etiket_ekle: [
@@ -114,7 +116,7 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
         baseBasariSansi: 55,
         ipucu: "Maliyeti korur, grev riskini yükseltir",
         basariliSonuc: {
-          para: 18,
+          para: 10,
           un: -8,
           ahlak: -12,
           mesaj: "Küçük bir taviz verip anlaşmayı bitirdin; maliyetin neredeyse aynı kaldı.",
@@ -175,6 +177,7 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
           detay: "Bazı riskler efsanevi kazançlara dönüşüyor.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -70,
           un: -10,
           mesaj: "Balon patladı, hisseler bir gecede değersizleşti; sermayenin büyük kısmı buhar oldu.",
@@ -192,6 +195,7 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
           detay: "Bazen küçük adımlar en güvenlisidir.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -10,
           mesaj: "Küçük yatırımın bile buharlaştı ama en azından felaket boyutunda değildi.",
           detay: "Temkinli olmak zararı sınırlıyor.",
@@ -243,6 +247,8 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
           detay: "Güven, en pahalı reklamdan daha değerli.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
+          para: -12,
           mesaj: "İlan pek dikkat çekmedi, satışlar durgun kaldı.",
           detay: "Dürüstlük bazen göz kamaştırmıyor.",
         },
@@ -341,6 +347,7 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
           detay: "Risk almak bu sefer işe yaradı.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -55,
           saglik: -5,
           mesaj: "Fabrikada küçük bir yangın çıktı; sigortasız olduğun için hasarın tamamını kendi cebinden karşıladın.",

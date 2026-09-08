@@ -5,7 +5,10 @@ import type { OlayTanimi } from "./types";
  * (`ANI_OLUM_OLAYLARI`, `ANI_OLUM_IHTIMALI`) DOKUNULMADAN, oyuncunun bir SEÇİMİ
  * sonucu tetiklenen komik ölümleri çeşitlendirir. Hepsi düşük ağırlıklı,
  * `ton: "hafif"`, 2 seçenekli: "aptalca olanı yap" (başarıda küçük komik ödül,
- * başarısızlıkta absürt ölüm + `efsanevi_olum`) vs "yapma" (güvenli, ufak).
+ * başarısızlıkta yüksek ama KESİN OLMAYAN `olum_sansi` (35-62) + ağır sağlık
+ * kaybı; ölürsen `efsanevi_olum` rozeti) vs "yapma" (güvenli, ufak).
+ * Absürt ölüm bir SEÇİMİN sonucudur; ansızın/şanssız kanal (stateManager
+ * `aniOlumDene`) bilerek çok seyreğe çekildi (%0.4).
  */
 export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
   {
@@ -31,9 +34,11 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
           detay: "Bazı aptallıklar tutar.",
         },
         basarisizSonuc: {
-          olum: true,
+          olum_sansi: 55,
           efsanevi_olum: "Fıçıyla Şelaleden İnen Adam",
-          mesaj: "Fıçı ilk kayada paramparça oldu. Kalabalık önce güldü, sonra sustu.",
+          saglik: -22,
+          mutluluk: -6,
+          mesaj: "Fıçı ilk kayada paramparça oldu. Kalabalık önce güldü, sonra sustu; seni sudan çıkardıklarında zar zor nefes alıyordun.",
         },
       },
       {
@@ -73,9 +78,10 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
           mesaj: "Yüzün mora döndü, gözlerinden yaş fışkırdı ama yuttun. Satıcı sepeti sırıtarak uzattı.",
         },
         basarisizSonuc: {
-          olum: true,
+          olum_sansi: 55,
           efsanevi_olum: "Ejderha Nefesini Yutan Kahraman",
-          mesaj: "Nefesin kesildi, sonra hiç açılmadı. Doktor 'ilk kez böyle bir şey görüyorum' dedi.",
+          saglik: -22,
+          mesaj: "Nefesin kesildi, yüzün morardı; günlerce yatakta kaldın, doktor 'ilk kez böyle bir şey görüyorum' deyip durdu.",
         },
       },
       {
@@ -115,9 +121,11 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
           mesaj: "Bıyık kusursuz oldu. Şehir sabah gülmekten kırıldı, kimse seni ele vermedi.",
         },
         basarisizSonuc: {
-          olum: true,
+          olum_sansi: 55,
           efsanevi_olum: "Kralın Bıyığını Çizerken Düşen",
-          mesaj: "Merdiven kaydı. Son sözün 'neredeyse bitiyordu' oldu.",
+          saglik: -20,
+          suc_artis: 6,
+          mesaj: "Merdiven kaydı; taş zemine sertçe çakıldın. 'Neredeyse bitiyordu' diye sayıklayıp durdun.",
         },
       },
       {
@@ -369,9 +377,10 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
           mesaj: "Bir tam tur döndün, tam tepede midemi bıraktım diye bağırdın, sonra sağ salim indin. Köy seni konuşuyor.",
         },
         basarisizSonuc: {
-          olum: true,
+          olum_sansi: 58,
           efsanevi_olum: "Değirmen Kanadıyla Uçmayı Deneyen",
-          mesaj: "Tepede eller çözüldü. İniş, planladığın gibi olmadı.",
+          saglik: -24,
+          mesaj: "Tepede eller çözüldü. İniş planladığın gibi olmadı; günlerce kımıldayamadan yattın.",
         },
       },
       {
@@ -451,9 +460,10 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
           mesaj: "Birkaç saniye gerçekten süzüldün — sonra bir saman yığınına gömüldün. Ama uçtun. Herkes uçtuğunu gördü.",
         },
         basarisizSonuc: {
-          olum: true,
+          olum_sansi: 62,
           efsanevi_olum: "Bez Kanatlara Güvenen Öncü",
-          mesaj: "Kanatlar açıldı, sonra kapandı. Saman yığını bu sefer yerinde değildi.",
+          saglik: -25,
+          mesaj: "Kanatlar açıldı, sonra kapandı. Saman yığını bu sefer yerinde değildi; toprağa çakılıp öylece kaldın.",
         },
       },
       {
@@ -531,9 +541,10 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
           mesaj: "Fırtına dindi, sen hâlâ ayaktaydın. 'Deli ama cesur' dediler; ikisi de doğruydu.",
         },
         basarisizSonuc: {
-          olum: true,
+          olum_sansi: 58,
           efsanevi_olum: "Fırtınada Demir Çubukla En Uzun Duran",
-          mesaj: "Gök, iddianı kabul etti. Çok net bir cevap verdi.",
+          saglik: -22,
+          mesaj: "Gök, iddiana gürültüyle cevap verdi; çarpmanın şokuyla tepeden yuvarlandın, saçların is kokuyordu.",
         },
       },
       {

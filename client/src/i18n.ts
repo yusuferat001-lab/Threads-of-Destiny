@@ -197,6 +197,9 @@ const TR = {
   // ---- GorevEkrani (tam sayfa) ----
   geBaslik: 'Görevin',
   geGorevGor: '🎖️ Görevini Gör →',
+  geHapisYilKalan: 'yıl kaldı',
+  geVebaHastasi: 'Veba hastası',
+  geVebaHayatta: 'hayatta kalma şansı',
   geAmirYok: 'En tepedesin — doğrudan hükümdara bağlısın.',
   geAstlarin: 'Astların',
   geEkibin: 'Ekibin',
@@ -592,6 +595,17 @@ const TR = {
   // ---- KarakterAvatari / SonucEfekti (aria) ----
   kaAria: 'Karakter görseli',
 
+  // ---- Sadeleştirilmiş / kısaltılmış metinler ----
+  feKirilimLejant: '🎖️ 📈 kalıcı · 🤝 🌍 dünya durumuna göre değişir',
+  feTasinNotKisa: 'Tur harcamaz. Pahalı eve geçiş bir kerelik {0} {1}; ucuza dönüş bedava.',
+  feTasinmaKisa: ' · +{0} {1} taşınma',
+  iyNetKisa: '💰 Net ~{0}{1} {2}/yıl ({3}%)',
+  iyFiyatKisa: 'Fiyat: {0} {1}',
+  iyRutbeNasilKisa: 'İşine yatır, {0} yüksek tut, kıdem biriktir. Terfiler arası birkaç yıl geçer; rütbe asla düşmez.',
+  iyZarNot: 'Kazanırsan bahsin 2 katı, kaybedersen hepsi gider. Kazanma şansı ~%40.',
+  mpFayda: 'fayda',
+  mpRafKisa: '~{0}y raf ömrü',
+
   // ---- Meslek/çağ kısa etiketler (fallback dolgu) ----
   bilinmiyor: 'Bilinmiyor',
 } as const;
@@ -777,6 +791,9 @@ const EN: Metinler = {
   // ---- GorevEkrani (full screen) ----
   geBaslik: 'Your Duty',
   geGorevGor: '🎖️ View Your Duty →',
+  geHapisYilKalan: 'yr left',
+  geVebaHastasi: 'Plague-stricken',
+  geVebaHayatta: 'survival chance',
   geAmirYok: 'You are at the top — answerable directly to the ruler.',
   geAstlarin: 'Your Subordinates',
   geEkibin: 'Your Crew',
@@ -1171,6 +1188,18 @@ const EN: Metinler = {
 
   // ---- KarakterAvatari / SonucEfekti ----
   kaAria: 'Character portrait',
+
+  // ---- Simplified / shortened text ----
+  feKirilimLejant: '🎖️ 📈 permanent · 🤝 🌍 vary with world conditions',
+  feTasinNotKisa: 'Costs no turn. Moving to a pricier home: one-time {0} {1}; moving back down is free.',
+  feTasinmaKisa: ' · +{0} {1} to move',
+  iyNetKisa: '💰 Net ~{0}{1} {2}/yr ({3}%)',
+  iyFiyatKisa: 'Price: {0} {1}',
+  iyRutbeNasilKisa:
+    'Invest in your work, keep your {0} high, build seniority. A few years pass between promotions; rank never drops.',
+  iyZarNot: 'Win: double your stake. Lose: all of it. ~40% chance to win.',
+  mpFayda: 'benefit',
+  mpRafKisa: '~{0}y shelf life',
 
   bilinmiyor: 'Unknown',
 };

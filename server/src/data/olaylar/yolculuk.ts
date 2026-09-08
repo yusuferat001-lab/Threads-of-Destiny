@@ -153,7 +153,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         ipucu: "Deneyimli bir rehber riski azaltır ama çöl acımasızdır",
         basariliSonuc: {
           saglik: -5,
-          ahlak: 8,
+          ahlak: 13,
           zorunlu_sonraki: "hac_sunni_kara_2",
           mesaj: "Fırtınayı kervanla birlikte atlattınız; yorgun ama sağ salimsiniz.",
           detay: "Çölün sınavından geçtin. Kutsal şehir artık çok uzak değil.",
@@ -208,7 +208,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         baseBasariSansi: 95,
         ipucu: "Hayatının en dönüştürücü anı",
         basariliSonuc: {          ahlak: 25,
-          un: 15,
+          un: 13,
           mutluluk: 8,
           unvan_kazan: "Hacı",
           etiket_ekle: [
@@ -242,8 +242,8 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         metin: "Kalabalıktan biraz uzakta, sessizce dua et.",
         baseBasariSansi: 90,
         ipucu: "Sakin ve içe dönük bir tercih",
-        basariliSonuc: {          ahlak: 18,
-          un: 10,
+        basariliSonuc: {          ahlak: 20,
+          un: 12,
           mutluluk: 5,
           unvan_kazan: "Hacı",
           etiket_ekle: [
@@ -428,7 +428,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         ipucu: "Deneyimli bir kaptan riski azaltır ama deniz acımasızdır",
         basariliSonuc: {
           saglik: -5,
-          ahlak: 8,
+          ahlak: 13,
           zorunlu_sonraki: "hac_katolik_deniz_2",
           mesaj: "Fırtınayı ve şüpheli gemiyi geride bıraktınız; yorgun ama sağ salimsiniz.",
           detay: "Denizin sınavından geçtin. Kutsal şehir artık çok uzak değil.",
@@ -483,7 +483,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         baseBasariSansi: 95,
         ipucu: "Hayatının en dönüştürücü anı",
         basariliSonuc: {          ahlak: 25,
-          un: 15,
+          un: 13,
           mutluluk: 8,
           unvan_kazan: "Kudüs Hacısı",
           etiket_ekle: [
@@ -517,8 +517,8 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         metin: "Kalabalıktan biraz uzakta, sessizce dua et.",
         baseBasariSansi: 90,
         ipucu: "Sakin ve içe dönük bir tercih",
-        basariliSonuc: {          ahlak: 18,
-          un: 10,
+        basariliSonuc: {          ahlak: 20,
+          un: 12,
           mutluluk: 5,
           unvan_kazan: "Kudüs Hacısı",
           etiket_ekle: [
@@ -703,7 +703,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         ipucu: "Deneyimli bir rehber riski azaltır ama dağ acımasızdır",
         basariliSonuc: {
           saglik: -5,
-          ahlak: 8,
+          ahlak: 13,
           zorunlu_sonraki: "hac_ortodoks_kara_2",
           mesaj: "Gizli patikadan eşkıyaya görünmeden geçtiniz; yorgun ama sağ salimsiniz.",
           detay: "Dağın sınavından geçtin. Kutsal şehir artık çok uzak değil.",
@@ -758,7 +758,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         baseBasariSansi: 95,
         ipucu: "Hayatının en dönüştürücü anı",
         basariliSonuc: {          ahlak: 25,
-          un: 15,
+          un: 13,
           mutluluk: 8,
           unvan_kazan: "Kutsal Toprak Hacısı",
           etiket_ekle: [
@@ -792,8 +792,8 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         metin: "Kalabalıktan biraz uzakta, sessizce dua et.",
         baseBasariSansi: 90,
         ipucu: "Sakin ve içe dönük bir tercih",
-        basariliSonuc: {          ahlak: 18,
-          un: 10,
+        basariliSonuc: {          ahlak: 20,
+          un: 12,
           mutluluk: 5,
           unvan_kazan: "Kutsal Toprak Hacısı",
           etiket_ekle: [
@@ -978,7 +978,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         ipucu: "Güvenli ama yorucu bir bekleyiş",
         basariliSonuc: {
           saglik: -5,
-          ahlak: 8,
+          ahlak: 13,
           zorunlu_sonraki: "hac_anglikan_deniz_2",
           mesaj: "Karantinayı sabırla atlattınız; herkes sağlıklı bir şekilde yola devam etti.",
           detay: "Bekleyişin sınavından geçtin. Kutsal şehir artık çok uzak değil.",
@@ -1033,7 +1033,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         baseBasariSansi: 95,
         ipucu: "Hayatının en dönüştürücü anı",
         basariliSonuc: {          ahlak: 25,
-          un: 15,
+          un: 13,
           mutluluk: 8,
           unvan_kazan: "Kutsal Toprak Gezgini",
           etiket_ekle: [
@@ -1067,8 +1067,8 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         metin: "Küçük not defterine gördüklerini sessizce yaz.",
         baseBasariSansi: 90,
         ipucu: "Sakin ve içe dönük bir tercih",
-        basariliSonuc: {          ahlak: 18,
-          un: 10,
+        basariliSonuc: {          ahlak: 20,
+          un: 12,
           mutluluk: 5,
           unvan_kazan: "Kutsal Toprak Gezgini",
           etiket_ekle: [
@@ -1539,7 +1539,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         baseBasariSansi: 60,
         ipucu: "Faizi ağır ama kaybolma riskin azalır",
         basariliSonuc: {
-          para: -15,
+          para: -9,
           zorunlu_sonraki: "oc_hacli_kutsal_topraklar_savasi",
           mesaj: "Faizi ödedin ama altının güvende olduğunu bilmek içini rahatlattı.",
           detay: "Bazı huzurların bedeli ağırdır.",
@@ -1917,7 +1917,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         ipucu: "Dayanışma güç verir ama koşullar sert kalır",
         basariliSonuc: {
           dost_puani: 12,
-          saglik: -5,
+          saglik: -1,
           zorunlu_sonraki: "oc_hacli_esaret_2",
           mesaj: "Diğer esirlerle erzağınızı ve umudunuzu paylaştınız; birlikte dayanmak seni güçlü tuttu.",
           detay: "Zor günlerde dayanışma, ekmekten daha doyurucu.",
@@ -1999,7 +1999,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         baseBasariSansi: 85,
         ipucu: "Zor ama iyileştirici bir dürüstlük",
         basariliSonuc: {          ahlak: 15,
-          mutluluk: 8,
+          mutluluk: 6,
           etiket_ekle: [
             "yolculuk_tamamlandi",
           ],
@@ -2025,7 +2025,9 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         metin: "Geçmişi geride bırak, hiç konuşma.",
         baseBasariSansi: 90,
         ipucu: "Kolay görünür ama içine atarsın",
-        basariliSonuc: {          mutluluk: 3,
+        basariliSonuc: {
+          ahlak: 4,
+          mutluluk: 3,
           etiket_ekle: [
             "yolculuk_tamamlandi",
           ],
@@ -2129,6 +2131,9 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         baseBasariSansi: 85,
         ipucu: "Güvenli, sabır ister",
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Fısıltılara aldırmadın; zamanla başka bir dedikodu gündeme geldi.",
           detay: "Her fırtına diner.",
         },
@@ -2173,7 +2178,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
             "yolculuk_tipi:somurge",
             "yolculuk_yolu:diplomasi",
           ],
-          para: -15,
+          para: -9,
           zorunlu_sonraki: "sd_somurge_diplomasi_1",
           mesaj: "Eşyalarını topladın, limandan gemiye bindin; ülkeni geride bıraktın.",
           detay: "Önünde ne olduğunu bilmiyorsun, ama artık geri dönüş yok.",
@@ -2208,7 +2213,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
             "yolculuk_tipi:somurge",
             "yolculuk_yolu:askeri",
           ],
-          para: -25,
+          para: -19,
           zorunlu_sonraki: "sd_somurge_askeri_1",
           mesaj: "Silahını kuşandın, birliğinle birlikte gemiye bindin; ülkeni geride bıraktın.",
           detay: "Önünde ne olduğunu bilmiyorsun, ama artık geri dönüş yok.",
@@ -2726,6 +2731,8 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
           detay: "Herkes okyanus aşmak zorunda değil.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
+          para: -12,
           mesaj: "İşler beklediğin gibi gitmedi ama en azından güvendesin.",
           detay: "İstikrar da bir çeşit kazançtır.",
         },
@@ -2735,7 +2742,8 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         baseBasariSansi: 90,
         ipucu: "Güvenli, hüzünlü bir tatmin",
         basariliSonuc: {
-          mutluluk: 2,
+          ahlak: 3,
+          mutluluk: 1,
           mesaj: "Uzak diyarların hikayelerini okumak sana küçük bir kaçış oldu.",
           detay: "Bazen hayal etmek bile yetiyor.",
         },
@@ -3286,6 +3294,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         baseBasariSansi: 50,
         ipucu: "Hızlı ama eşkıya riski var",
         basariliSonuc: {
+          para: 4,
           zorunlu_sonraki: "hac_katolik_varis",
           mesaj: "Şans yaver gitti, eşkıyaya rastlamadan kısa yoldan ilerlediniz.",
           detay: "Bazen risk kazandırır.",
@@ -3564,6 +3573,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         baseBasariSansi: 90,
         ipucu: "Sakin, içe dönük",
         basariliSonuc: {
+          ahlak: 3,
           zorunlu_sonraki: "hac_ortodoks_varis",
           mesaj: "Sessizce kendi duanı ettin; kalabalığın şükranına içten katıldın.",
           detay: "Her ibadet sözle olmak zorunda değil.",
@@ -3971,7 +3981,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         ipucu: "Hızlı ama yorucu ve tehlikeli bir dörtnala",
         basariliSonuc: {
           un: 12,
-          saglik: -10,
+          saglik: -8,
           zorunlu_sonraki: "yolculuk_savunma_deniz_2",
           mesaj: "Habercisi sen oldun; kale garnizonu zamanında hazırlığa başladı.",
           detay: "Bu uyarı, nice hayat kurtaracak.",
@@ -4249,6 +4259,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         baseBasariSansi: 50,
         ipucu: "Onurlu ama ölümcül olabilir",
         basariliSonuc: {
+          saglik: 2,
           zorunlu_sonraki: "yolculuk_savunma_direnis_1",
           mesaj: "Gediğin önünde son bir hat kurup savaşmaya devam ettin.",
           detay: "Bu topraklar için sonuna kadar duracaksın.",
@@ -4593,7 +4604,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         baseBasariSansi: 85,
         ipucu: "Zor ama iyileştirici bir dürüstlük",
         basariliSonuc: {          ahlak: 15,
-          mutluluk: 8,
+          mutluluk: 6,
           etiket_ekle: [
             "yolculuk_tamamlandi",
           ],
@@ -4619,7 +4630,9 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         metin: "Geçmişi geride bırak, hiç konuşma.",
         baseBasariSansi: 90,
         ipucu: "Kolay görünür ama içine atarsın",
-        basariliSonuc: {          mutluluk: 3,
+        basariliSonuc: {
+          ahlak: 4,
+          mutluluk: 3,
           etiket_ekle: [
             "yolculuk_tamamlandi",
           ],
@@ -4673,7 +4686,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
             "yolculuk_tipi:kesif",
             "yolculuk_yolu:deniz",
           ],
-          para: -35,
+          para: -29,
           zorunlu_sonraki: "yolculuk_kesif_deniz_1",
           mesaj: "Gemini erzakla doldurdun, tayfanı topladın; ufka doğru yelken açtın.",
           detay: "Haritanın kenarına yazılmış 'burada canavarlar var' ibaresini görmezden geldin.",
@@ -4706,7 +4719,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
             "yolculuk_tipi:kesif",
             "yolculuk_yolu:kara",
           ],
-          para: -25,
+          para: -19,
           zorunlu_sonraki: "yolculuk_kesif_kara_1",
           mesaj: "Kervanını develerle ve erzakla donattın; haritanın bittiği yere doğru yola çıktın.",
           detay: "Önündeki topraklar hiçbir tüccar tarafından haritalanmamış.",
@@ -4900,6 +4913,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         baseBasariSansi: 45,
         ipucu: "Büyük kazanç ya da tehlikeli bir gecikme",
         basariliSonuc: {
+          saglik: 3,
           para: 70,
           un: 15,
           zorunlu_sonraki: "yolculuk_kesif_donus",
@@ -4926,6 +4940,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
           detay: "Bazen yeterli olan, en akıllıcasıdır.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: 15,
           zorunlu_sonraki: "yolculuk_kesif_donus",
           mesaj: "Dönüş yolunda malların bir kısmı hasar gördü, kazancın azaldı.",
@@ -5013,7 +5028,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         baseBasariSansi: 55,
         ipucu: "Zaman kazandırır ama tehlikeli",
         basariliSonuc: {
-          saglik: -8,
+          saglik: -3,
           zorunlu_sonraki: "yolculuk_kesif_kara_3",
           mesaj: "Zorlu geçidi aştınız; kervan yorgun ama zamanında ilerliyor.",
           detay: "Cesaretiniz vakit kazandırdı.",
@@ -5090,6 +5105,8 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
           detay: "Cesur pazarlıklar bazen ikisini de kazandırıyor.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
+          para: -40,
           un: -8,
           zorunlu_sonraki: "yolculuk_kesif_donus",
           mesaj: "Hükümdar ısrarını küstahlık saydı, seni kısa sürede sınır dışı etti.",
@@ -5201,7 +5218,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
             "yolculuk_tipi:mucit",
             "yolculuk_yolu:saray",
           ],
-          para: -25,
+          para: -19,
           zorunlu_sonraki: "yolculuk_mucit_saray_1",
           mesaj: "Modelini özenle paketleyip, ilk davetin geldiği konağa doğru yola çıktın.",
           detay: "Soyluların dünyası yavaş işler ama unutmaz.",
@@ -5234,7 +5251,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
             "yolculuk_tipi:mucit",
             "yolculuk_yolu:sanayici",
           ],
-          para: -20,
+          para: -14,
           zorunlu_sonraki: "yolculuk_mucit_sanayici_1",
           mesaj: "Modelini bir çantaya sıkıştırıp, fabrika bölgesine giden trene atladın.",
           detay: "Sanayiciler zaman kaybetmez; ya işe yarar ya da unutulursun.",
@@ -5402,7 +5419,8 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
           detay: "Bazı ilkeler pazarlık konusu olmuyor.",
         },
         basarisizSonuc: {
-          mutluluk: -5,
+          para: -15,
+          mutluluk: -9,
           zorunlu_sonraki: "yolculuk_mucit_saray_3",
           mesaj: "Düşes reddini gururuna yediremedi, desteğini tamamen çekti.",
           detay: "İlkeli olmak bazen pahalıya patlıyor.",
@@ -5440,8 +5458,9 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
           detay: "Bu an, kariyerinin dönüm noktası oldu.",
         },
         basarisizSonuc: {
+          para: -20,
           un: -15,
-          mutluluk: -8,
+          mutluluk: -12,
           zorunlu_sonraki: "yolculuk_mucit_donus",
           mesaj: "Gösteri sarayın önünde başarısız oldu, mahcup bir sessizlik salonu kapladı.",
           detay: "Bazı riskler herkesin önünde patlıyor.",
@@ -5496,7 +5515,8 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
           detay: "Sanayiciler duygudan çok kârdan etkileniyor.",
         },
         basarisizSonuc: {
-          mutluluk: -3,
+          para: -25,
+          mutluluk: -7,
           zorunlu_sonraki: "yolculuk_mucit_sanayici_2",
           mesaj: "Rakamların onları tam ikna etmedi, temkinli bir ilgiyle karşılandı.",
           detay: "Her hesap aynı etkiyi yaratmıyor.",
@@ -5514,7 +5534,8 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
           detay: "Bazen tutku, rakamlardan daha ikna edici.",
         },
         basarisizSonuc: {
-          mutluluk: -5,
+          para: -15,
+          mutluluk: -9,
           zorunlu_sonraki: "yolculuk_mucit_sanayici_2",
           mesaj: "Vizyonun 'gerçekçi değil' diye küçümsendi, toplantı soğuk bitti.",
           detay: "Bu dünyada hayaller bazen para etmiyor.",
@@ -5629,6 +5650,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
           detay: "Bazı kazançlar yavaş ama sağlam büyüyor.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -10,
           zorunlu_sonraki: "yolculuk_mucit_donus",
           mesaj: "Israrın çoğu fabrikatörü caydırdı; anlaşma bulmak sandığından zor oldu.",

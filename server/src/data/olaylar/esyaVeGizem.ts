@@ -117,6 +117,9 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         metin: "Satıcıya güvenme, uzaklaş.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Sağduyulu davrandın, paran cebinde kaldı.",
         },
         basarisizSonuc: {
@@ -130,7 +133,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         maliyet: 15,
         ipucu: "Muhtemelen para ziyanı, ama ya gerçekse? (Envantere eklenir)",
         basariliSonuc: {
-          para: -15,
+          para: -10,
           etiket_ekle: [
             "envanter:sirli_iksir",
           ],
@@ -178,7 +181,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         maliyet: 50,
         ipucu: "Efsanevi bir koruma sağlar ama seni iflas ettirebilir",
         basariliSonuc: {
-          para: -50,
+          para: -44,
           etiket_ekle: [
             "envanter:ejderha_tilsimi",
           ],
@@ -214,6 +217,9 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         baseBasariSansi: 92,
         ipucu: "Güvenli ama efsaneyi kaçırmış olmanın hafif bir pişmanlığı olabilir",
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Bu tür mistik şeylerin sonu genelde kötü biter dedin ve evine döndün.",
         },
         basarisizSonuc: {
@@ -486,6 +492,9 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         metin: "Kendi başına, odana kapanarak direnmeye çalış.",
         baseBasariSansi: 70,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Nasılsa geçer diye düşündün ve kapıya kilit vurup günlerce bekledin. Bir süreliğine haklı çıktın.",
         },
         basarisizSonuc: {
@@ -1036,6 +1045,8 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         ],
         ipucu: "Gizli Envanter: Çaldığın yüzük hayatını kurtarır",
         basariliSonuc: {
+          ahlak: -3,
+          mutluluk: -3,
           para: 20,
           etiket_sil: [
             "envanter:olunun_yuzugu",
@@ -1108,7 +1119,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         maliyet: 5,
         ipucu: "Ucuz bir merak — muhtemelen sıradan bir taş (Envantere eklenir)",
         basariliSonuc: {
-          para: -5,
+          para: -3,
           etiket_ekle: [
             "esya:fisildayan_tas",
           ],
@@ -1144,6 +1155,9 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         baseBasariSansi: 92,
         ipucu: "Güvenli ama taşı hiç merak etmeden edemeyebilirsin",
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Omuz silkip yürüdün. Arkandan kadının kikirdediğini duydun ama aldırmadın.",
         },
         basarisizSonuc: {
@@ -1187,6 +1201,9 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         metin: "Bu bir rüyaydı, aldırma.",
         baseBasariSansi: 90,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Omuz silktin ve unuttun gitti. Belki de gerçekten sadece bir rüyaydı.",
         },
         basarisizSonuc: {
@@ -1294,7 +1311,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         maliyet: 15,
         ipucu: "Ucuz değil ama içindeki his paha biçilemez (Envantere eklenir)",
         basariliSonuc: {
-          para: -15,
+          para: -10,
           etiket_ekle: [
             "esya:eski_ayna",
           ],
@@ -1329,6 +1346,9 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         baseBasariSansi: 92,
         ipucu: "Güvenli ama o yansımayı unutman zor olabilir",
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Aynaya son bir bakış attın ve arkanı döndün. İçindeki yansımanın da -bir an için- arkasını döndüğünü fark etmedin bile.",
         },
         basarisizSonuc: {
@@ -1373,7 +1393,6 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         metin: "Aynayı bir bezle ört, sabaha kadar açma.",
         baseBasariSansi: 95,
         basariliSonuc: {
-          mutluluk: 3,
           mesaj: "Aynayı örttün ve sırtını dönüp yattın. Sabah her şey normaldi, ya da öyle görünüyordu.",
         },
         basarisizSonuc: {
@@ -1415,6 +1434,9 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         metin: "Boş ver, kadere karışma; her zamanki gibi yaşa.",
         baseBasariSansi: 60,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Görüntüyü unutmaya çalıştın. Günler sıradan geçti, ayna bir daha o sokaktan bahsetmedi.",
         },
         basarisizSonuc: {
@@ -1553,6 +1575,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           detay: "Geriye dönüp baktığında bu anlaşmanın seni büyük ölçüde değiştirdiğini görüyorsun. Artık şehirdeki en tanınan tüccarlardan birisin.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -20,
           un: -10,
           etiket_ekle: [
@@ -1582,6 +1605,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           detay: "Bizzat orada olmadın ama sonuç gayet tatmin ediciydi. Bazen güvenmek yeterlidir.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -15,
           etiket_ekle: [
             "buyuk_siparis_bitti",
@@ -1704,6 +1728,8 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         baseBasariSansi: 65,
         ipucu: "Güvenli ama sinir bozucu bekleyiş",
         basariliSonuc: {
+          ahlak: 3,
+          mutluluk: -1,
           mesaj: "Ayı ilgisini kaybedip ormana döndü; sen de nefesini tutarak evine ulaştın.",
           detay: "Dağda yaşamanın ilk kuralı sabırdır; bugün onu bir kez daha kanıtladın.",
         },
@@ -1807,7 +1833,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_ekle: [
             "envanter:hazine_haritasi",
           ],
-          para: -10,
+          para: -6,
           mesaj: "Haritayı aldın; belki sadece kağıt parçası, belki gerçek bir hazinenin anahtarı.",
           detay: "Meraklı bir zihin için küçük bir bedel.",
         },
@@ -1822,6 +1848,9 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         baseBasariSansi: 95,
         ipucu: "Güvenli",
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Haritayı görmezden geldin, yoluna devam ettin.",
           detay: "Bazı fırsatlar gözden kaçırılmaya değer olabilir — ya da değmez, kim bilir.",
         },
@@ -1889,6 +1918,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           detay: "Bazen merakı başkasına devretmek en akıllıcasıdır.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: 8,
           etiket_sil: [
             "envanter:hazine_haritasi",
@@ -1981,7 +2011,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         baseBasariSansi: 55,
         ipucu: "Güvenli bir inanç ama efsaneyi hiç sınamayacaksın",
         basariliSonuc: {
-          saglik: -10,
+          saglik: -5,
           mesaj: "Vücudun kendi başına direndi, ateş yavaşça düştü. Emanet hâlâ boynunda, sırrını hiç öğrenemedin.",
         },
         basarisizSonuc: {
@@ -2024,6 +2054,10 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         metin: "Emaneti sakla, kimseye göstermeyi reddet.",
         baseBasariSansi: 80,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 7,
+          mutluluk: -1,
+          un: 4,
           mesaj: "Kapıyı kapattın. Bazıları hayal kırıklığına uğradı ama emanet güvende.",
         },
         basarisizSonuc: {
@@ -2037,7 +2071,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         ipucu: "Huzur bulursun ama efsaneyi bir daha asla sınayamazsın",
         basariliSonuc: {
           ahlak: 20,
-          un: 10,
+          un: 5,
           etiket_sil: [
             "esya:kutsal_kalinti",
           ],
@@ -2087,6 +2121,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           detay: "Bazı kazançların, görünmeyen küçük bir bedeli oluyor.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -10,
           mesaj: "Satıcı son anda vazgeçti, keseyi geri aldı.",
           detay: "Bazı fırsatlar elinden kayıp gidiyor.",
@@ -2097,6 +2132,8 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         baseBasariSansi: 90,
         ipucu: "Güvenli",
         basariliSonuc: {
+          ahlak: 3,
+          mutluluk: -1,
           mesaj: "Altına dokunmadın, yoluna devam ettin.",
           detay: "Bazı fırsatlar, taşıdıkları riskle birlikte değerlendirilmeli.",
         },
@@ -2237,6 +2274,8 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           mesaj: "Şaşırtıcı biçimde gülümsedi: 'Ben de böyle şeylere meraklıyımdır.' Daha az parayla da olsa laneti bilerek satın aldı.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
+          para: -50,
           mesaj: "Anlatınca yüzü asıldı, 'çıldırmışsın sen' deyip uzaklaştı. Kese hâlâ elinde, alıcı da gitti.",
         },
       },
@@ -2306,6 +2345,8 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           detay: "Bu kardeşlik güç değil, bilgi ve bağlantı üzerine kurulu.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
+          para: -15,
           etiket_ekle: [
             "orgut:Gölgede Kardeşlik",
             "orgut_secildi",
@@ -2382,6 +2423,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           detay: "Bilgi ve bağlantı, altından daha değerli olabiliyor.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -20,
           un: -8,
           mesaj: "Görev sırasında fark edildin, küçük bir skandal çıktı.",
@@ -2393,6 +2435,8 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         baseBasariSansi: 90,
         ipucu: "Güvenli",
         basariliSonuc: {
+          ahlak: 3,
+          mutluluk: -1,
           mesaj: "Görevi nazikçe reddettin.",
           detay: "Her fırsatı kabul etmek zorunda değilsin.",
         },
@@ -2428,6 +2472,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           detay: "Kazanmanın verdiği heyecan, tehlikeli bir tada dönüşebilir.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -20,
           etiket_ekle: [
             "bagimlilik:kumarbaz",
@@ -2448,6 +2493,8 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         baseBasariSansi: 90,
         ipucu: "Güvenli",
         basariliSonuc: {
+          ahlak: 3,
+          mutluluk: -1,
           mesaj: "Daveti reddettin, gecen sakin geçti.",
           detay: "Bazı heyecanlar, uzak durulmaya değer.",
         },
@@ -2541,10 +2588,13 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         baseBasariSansi: 100,
         ipucu: "Güvenli",
         basariliSonuc: {
+          ahlak: 3,
+          mutluluk: -2,
           mesaj: "Bugün denemekten vazgeçtin.",
           detay: "Saray bir yere kaçmıyor.",
         },
         basarisizSonuc: {
+          mutluluk: -2,
           mesaj: "Kullanılmadı.",
         },
       },
@@ -2604,6 +2654,9 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         baseBasariSansi: 90,
         ipucu: "Güvenli ama vicdanına dokunur",
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Uzak durdun; komşun yalnız başına mücadele etti.",
           detay: "Kendini korumak da bir hayatta kalma stratejisi.",
         },
@@ -2814,7 +2867,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         },
         basarisizSonuc: {
           para: -50,
-          mutluluk: -12,
+          mutluluk: -16,
           mesaj: "Sikke yere düşüp öteki yüzünü gösterdi. Elindeki her şeyi masada bıraktın.",
           detay: "Kader bazen fısıldadığı gibi davranmıyor.",
         },
@@ -2883,6 +2936,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           detay: "Bazen merakı başkasına devretmek en akıllıcasıdır.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: 10,
           etiket_sil: [
             "envanter:gizemli_harita",
@@ -2918,6 +2972,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           detay: "Yarım kazanç, tam bir güven ilişkisinden ucuz değil.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -10,
           mesaj: "Ortağın son anda vazgeçti, kazı yarım kaldı, masraf cebinden gitti.",
           detay: "Her ortaklık umduğun gibi yürümüyor.",
@@ -2979,6 +3034,9 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         baseBasariSansi: 80,
         ipucu: "Paran cepte kalır ama söylenti peşini bırakmaz",
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Yüzüğü takmaya devam ettin, hiçbir şey olmadı; boş inançlara güldün geçtin.",
           detay: "Bazen korku sadece korkunun kendisidir.",
         },

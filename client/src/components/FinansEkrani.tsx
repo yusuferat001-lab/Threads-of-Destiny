@@ -69,8 +69,9 @@ export function FinansEkrani({
   onGeriDon,
 }: FinansEkraniProps) {
   const { m, kt, dil } = useDil();
-  const { maasYillik, giderKalemleri, netYillik, giderEnflasyonYuzdesi, maasKirilim, gayrimenkulYillikGelir, dunyaEtkileri } =
-    finans;
+  const { maasYillik, giderKalemleri, netYillik, giderEnflasyonYuzdesi, maasKirilim, gayrimenkulYillikGelir } = finans;
+  const kirilimKalem = (kalemler: { ad: string; yuzde: number }[]) =>
+    kalemler.length > 0 ? ` (${kalemler.map((k) => `${kt(k.ad)} ${yuzdeMetni(k.yuzde, dil)}`).join(' · ')})` : '';
   const toplamGider =
     giderKalemleri.yasam +
     giderKalemleri.konut +
@@ -103,81 +104,35 @@ export function FinansEkrani({
               </span>
             </div>
 
-            <div className="finans-maas-kirilim">
-              <div className="finans-satiri finans-kirilim-satiri">
-                <span>
-                  {m.feRutbedenGelen}{' '}
-                  <em className="finans-kirilim-alt">
-                    {kt(maasKirilim.rutbeAd)}
-                    {maasKirilim.rutbeSeviye ? ` · Sv.${maasKirilim.rutbeSeviye}` : ''}
-                  </em>
+            <details className="finans-maas-kirilim">
+              <summary className="finans-kirilim-ozet">
+                <span>🎖️ {yuzdeMetni(maasKirilim.rutbeYuzde, dil)}</span>
+                <span>📈 {yuzdeMetni(maasKirilim.kariyerYuzde, dil)}</span>
+                <span className={maasKirilim.itibarYuzde <= -8 ? 'finans-net-negatif' : undefined}>
+                  🤝 {yuzdeMetni(maasKirilim.itibarYuzde, dil)}
                 </span>
-                <span className="finans-kirilim-kalici">{yuzdeMetni(maasKirilim.rutbeYuzde, dil)} · {m.feKalici}</span>
-              </div>
-
-              {(maasKirilim.kariyerYuzde !== 0 || maasKirilim.kariyerKalemler.length > 0) && (
-                <>
-                  <div className="finans-satiri finans-kirilim-satiri">
-                    <span>{m.feKariyerBirikimi}</span>
-                    <span className="finans-kirilim-kalici">{yuzdeMetni(maasKirilim.kariyerYuzde, dil)} · {m.feKalici}</span>
-                  </div>
-                  {maasKirilim.kariyerKalemler.length > 0 && (
-                    <div className="finans-kirilim-detay">
-                      {maasKirilim.kariyerKalemler.map((k) => `${kt(k.ad)} ${yuzdeMetni(k.yuzde, dil)}`).join(' · ')}
-                    </div>
-                  )}
-                </>
-              )}
-
-              <div className="finans-satiri finans-kirilim-satiri">
-                <span>{m.feItibarin}</span>
-                <span
-                  className={
-                    maasKirilim.itibarYuzde <= -8
-                      ? 'finans-kirilim-degisken finans-net-negatif'
-                      : 'finans-kirilim-degisken'
-                  }
-                >
-                  {yuzdeMetni(maasKirilim.itibarYuzde, dil)} · {m.feDegisebilir}
-                </span>
+                <span>🌍 {yuzdeMetni(maasKirilim.donemselYuzde, dil)}</span>
+              </summary>
+              <div className="finans-kirilim-detay">
+                🎖️ {m.feRutbedenGelen} — {kt(maasKirilim.rutbeAd)}
+                {maasKirilim.rutbeSeviye ? ` · Sv.${maasKirilim.rutbeSeviye}` : ''}: {yuzdeMetni(maasKirilim.rutbeYuzde, dil)} ·{' '}
+                {m.feKalici}
               </div>
               <div className="finans-kirilim-detay">
-                {maasKirilim.itibarKalemler.map((k) => `${kt(k.ad)} ${yuzdeMetni(k.yuzde, dil)}`).join(' · ')}
+                📈 {m.feKariyerBirikimi}: {yuzdeMetni(maasKirilim.kariyerYuzde, dil)} · {m.feKalici}
+                {kirilimKalem(maasKirilim.kariyerKalemler)}
               </div>
-              {maasKirilim.itibarYuzde <= -8 && (
-                <div className="finans-kirilim-detay finans-net-negatif">{m.feItibarUyari}</div>
-              )}
-
-              <div className="finans-satiri finans-kirilim-satiri">
-                <span>{m.feDonemselEtkiler}</span>
-                <span className="finans-kirilim-degisken">{yuzdeMetni(maasKirilim.donemselYuzde, dil)} · {m.feDegisebilir}</span>
+              <div className={`finans-kirilim-detay${maasKirilim.itibarYuzde <= -8 ? ' finans-net-negatif' : ''}`}>
+                🤝 {m.feItibarin}: {yuzdeMetni(maasKirilim.itibarYuzde, dil)} · {m.feDegisebilir}
+                {kirilimKalem(maasKirilim.itibarKalemler)}
+                {maasKirilim.itibarYuzde <= -8 ? ` — ${m.feItibarUyari}` : ''}
               </div>
-              {maasKirilim.donemselKalemler.filter((k) => k.ad !== 'Enflasyon').length > 0 && (
-                <div className="finans-kirilim-detay">
-                  {maasKirilim.donemselKalemler
-                    .filter((k) => k.ad !== 'Enflasyon')
-                    .map((k) => `${kt(k.ad)} ${yuzdeMetni(k.yuzde, dil)}`)
-                    .join(' · ')}
-                </div>
-              )}
-
-              <p className="finans-kirilim-not">{m.feMaasNot}</p>
-            </div>
-
-            <div className="finans-dunya-etkileri">
-              <div className="finans-dunya-baslik">{m.feDunyaBaslik}</div>
-              {dunyaEtkileri.length === 0 ? (
-                <p className="finans-kirilim-detay">{m.feDunyaYok}</p>
-              ) : (
-                <ul className="finans-dunya-liste">
-                  {dunyaEtkileri.map((e, i) => (
-                    <li key={i}>
-                      <span aria-hidden="true">{e.ikon}</span> {e.metin}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
+              <div className="finans-kirilim-detay">
+                🌍 {m.feDonemselEtkiler}: {yuzdeMetni(maasKirilim.donemselYuzde, dil)} · {m.feDegisebilir}
+                {kirilimKalem(maasKirilim.donemselKalemler.filter((k) => k.ad !== 'Enflasyon'))}
+              </div>
+              <div className="finans-kirilim-detay finans-kirilim-lejant">{m.feKirilimLejant}</div>
+            </details>
 
             {gayrimenkulYillikGelir !== 0 && (
               <div
@@ -205,12 +160,14 @@ export function FinansEkrani({
                 -{formatPara(giderKalemleri.konut)} {paraBirimi}
               </span>
             </div>
-            <div className="finans-satiri">
-              <span>{m.feEkipMaaslari}</span>
-              <span>
-                -{formatPara(giderKalemleri.ekip)} {paraBirimi}
-              </span>
-            </div>
+            {giderKalemleri.ekip > 0 && (
+              <div className="finans-satiri">
+                <span>{m.feEkipMaaslari}</span>
+                <span>
+                  -{formatPara(giderKalemleri.ekip)} {paraBirimi}
+                </span>
+              </div>
+            )}
             {giderKalemleri.evcilHayvan > 0 && (
               <div className="finans-satiri">
                 <span>{m.feEvcilHayvanBakimi}</span>
@@ -234,32 +191,13 @@ export function FinansEkrani({
               </span>
             </div>
 
-            {gayrimenkulYillikGelir !== 0 ? (
-              <>
-                <div className="finans-satiri finans-servet-detay">
-                  <span>{m.feMaasEksiGider}</span>
-                  <span>
-                    {netYillik >= 0 ? '+' : ''}
-                    {formatPara(netYillik)} {paraBirimi}
-                  </span>
-                </div>
-                <div className={`finans-satiri finans-net ${gercekNet < 0 ? 'finans-net-negatif' : ''}`}>
-                  <span>{m.feNetYillikDahil}</span>
-                  <span>
-                    {gercekNet >= 0 ? '+' : ''}
-                    {formatPara(gercekNet)} {paraBirimi}
-                  </span>
-                </div>
-              </>
-            ) : (
-              <div className={`finans-satiri finans-net ${netYillik < 0 ? 'finans-net-negatif' : ''}`}>
-                <span>{m.feNetYillik}</span>
-                <span>
-                  {netYillik >= 0 ? '+' : ''}
-                  {formatPara(netYillik)} {paraBirimi}
-                </span>
-              </div>
-            )}
+            <div className={`finans-satiri finans-net ${gercekNet < 0 ? 'finans-net-negatif' : ''}`}>
+              <span>{gayrimenkulYillikGelir !== 0 ? m.feNetYillikDahil : m.feNetYillik}</span>
+              <span>
+                {gercekNet >= 0 ? '+' : ''}
+                {formatPara(gercekNet)} {paraBirimi}
+              </span>
+            </div>
           </div>
 
           <GecmisGrafik gecmis={gecmis} paraBirimi={paraBirimi} />
@@ -278,14 +216,15 @@ export function FinansEkrani({
                   className={`yatirim-kart${guncel ? ' yatirim-kart-secili' : ''}`}
                   disabled={yukleniyor || guncel}
                   onClick={() => onYasamSecimiDegistir(secenek.id)}
+                  title={kt(secenek.aciklama)}
                 >
                   <span className="meslek-simge">{secenek.simge}</span>
                   <strong>
                     {kt(secenek.ad)}
-                    {guncel ? m.feSuAnBu : ''}
+                    {guncel ? ' ✓' : ''}
                   </strong>
                   <span className="meslek-aciklama">
-                    {m.feYillikGider}: {formatPara(enflasyonluTutar(secenek.maliyetYillik))} {paraBirimi}. {kt(secenek.aciklama)}
+                    {formatPara(enflasyonluTutar(secenek.maliyetYillik))} {paraBirimi}/{m.yil}
                   </span>
                   {etkiSatiri && <span className="meslek-aciklama yatirim-etki-satiri">{etkiSatiri}</span>}
                 </button>
@@ -297,7 +236,7 @@ export function FinansEkrani({
 
         <div className="tam-sutun">
           <h3 className="tam-baslik">{m.feEvin}</h3>
-          <p className="giris-aciklama">{bic(m.feTasinNot, tasinmaMaliyeti, paraBirimi)}</p>
+          <p className="giris-aciklama">{bic(m.feTasinNotKisa, tasinmaMaliyeti, paraBirimi)}</p>
           <div className="yatirim-kartlari finans-secim-izgara">
             {konutlar.map((konut) => {
               const guncel = konut.id === guncelKonutId;
@@ -312,20 +251,17 @@ export function FinansEkrani({
                   className={`yatirim-kart${guncel ? ' yatirim-kart-secili' : ''}`}
                   disabled={yukleniyor || guncel || tasinamaz}
                   onClick={() => onKonutDegistir(konut.id)}
+                  title={kt(konut.aciklama)}
                 >
                   <span className="meslek-simge">{gorunum.simge}</span>
                   <strong>
                     {gorunum.ad}
-                    {guncel ? m.feSuAnBurada : ''}
+                    {guncel ? ' ✓' : ''}
                   </strong>
                   <span className="meslek-aciklama">
-                    {m.feYillikKira}: {formatPara(enflasyonluTutar(konut.kiraYillik))} {paraBirimi}. {kt(konut.aciklama)}
+                    {formatPara(enflasyonluTutar(konut.kiraYillik))} {paraBirimi}/{m.yil}
+                    {!guncel && !geriCekilme ? bic(m.feTasinmaKisa, tasinmaMaliyeti, paraBirimi) : ''}
                   </span>
-                  {!guncel && (
-                    <span className="meslek-aciklama yatirim-etki-satiri">
-                      {geriCekilme ? m.feUcuzaGecis : bic(m.feNakliyeUcreti, tasinmaMaliyeti, paraBirimi)}
-                    </span>
-                  )}
                   {etkiSatiri && <span className="meslek-aciklama yatirim-etki-satiri">{etkiSatiri}</span>}
                 </button>
               );

@@ -330,6 +330,9 @@ export const OLAY_ILISKILER: OlayTanimi[] = [
         metin: "Bir yılanla aynı çuvala girmem! Defol.",
         baseBasariSansi: 90,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Kapıyı suratına kapattın. İhtiyatlı olmak seni hayatta tutar.",
         },
         basarisizSonuc: {
@@ -558,7 +561,7 @@ export const OLAY_ILISKILER: OlayTanimi[] = [
         baseBasariSansi: 60,
         ipucu: "Onurunu korursun, dostluk zedelenir",
         basariliSonuc: {
-          ahlak: 5,
+          ahlak: 7,
           dost_puani: -15,
           mesaj: "Haklıydın ama {dost} bunu kabul etmek yerine senden uzaklaştı.",
           detay: "Haklı çıkmak bazen en pahalı zaferdir.",
@@ -604,6 +607,9 @@ export const OLAY_ILISKILER: OlayTanimi[] = [
         baseBasariSansi: 70,
         ipucu: "Sakin ama riskli bekleyiş",
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Dedikodu gerçekten de zamanla sönümlendi; sen de sinirlerini yormadın.",
           detay: "Her ateşe koşmak gerekmiyor, bazıları kendi kendine söner.",
         },
@@ -813,6 +819,9 @@ export const OLAY_ILISKILER: OlayTanimi[] = [
         metin: "İçinde tut, cesaret edemedin.",
         baseBasariSansi: 90,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Duygularını kimseye açmadın, güvenli ama biraz da hüzünlü bir sessizlik seçtin.",
           detay: "Bazı duygular sadece kendine ait kalır.",
         },
@@ -881,7 +890,7 @@ export const OLAY_ILISKILER: OlayTanimi[] = [
         metin: "Bu özgürlüğü değerlendir, kendine zaman ayır.",
         baseBasariSansi: 85,
         basariliSonuc: {
-          mutluluk: 4,
+          mutluluk: 2,
           mesaj: "Kendine ayırdığın zaman seni tazeledi.",
           detay: "Bazen en iyi arkadaşlık kendinledir.",
         },
@@ -895,6 +904,9 @@ export const OLAY_ILISKILER: OlayTanimi[] = [
         metin: "Yalnızlığın ağırlığını hisset.",
         baseBasariSansi: 70,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Yalnızlığın bir süre ağırlaştı ama sonra kabullendin.",
           detay: "Bazı duygular kabul edilmeyi bekler.",
         },
@@ -936,6 +948,9 @@ export const OLAY_ILISKILER: OlayTanimi[] = [
         metin: "Açıkça sinirlendiğini belli et.",
         baseBasariSansi: 55,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Tepkin bir daha aynı soruyu sormalarını engelledi.",
           detay: "Bazen net olmak en etkili yoldur.",
         },
@@ -1022,6 +1037,9 @@ export const OLAY_ILISKILER: OlayTanimi[] = [
         metin: "Düşünceyi bastır, başka şeylerle oyala kendini.",
         baseBasariSansi: 80,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Kendini oyaladın, düşünce bir süreliğine geri çekildi.",
           detay: "Bazen ertelemek de bir stratejidir.",
         },

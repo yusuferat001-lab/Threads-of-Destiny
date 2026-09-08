@@ -65,6 +65,7 @@ export const OLAY_ORTACAG_DINADAMI: OlayTanimi[] = [
           detay: "Zor yolu seçtin ve işe yaradı. Cemaat hem çatısını onardı hem de adaletin satın alınamayacağını gördü.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -12,
           un: -12,
           ahlak: 12,
@@ -539,7 +540,7 @@ export const OLAY_ORTACAG_DINADAMI: OlayTanimi[] = [
         baseBasariSansi: 60,
         ipucu: "Emek ister ama kalıcı",
         basariliSonuc: {
-          un: 20,
+          un: 14,
           ahlak: 10,
           mesaj: "Yenilenen vaazların cemaati geri kazandırdı; hatta yenilerini de kattı.",
           detay: "Rekabet seni tembelleşmekten kurtardı; bu senin için de iyi oldu.",
@@ -741,7 +742,7 @@ export const OLAY_ORTACAG_DINADAMI: OlayTanimi[] = [
         ipucu: "Kimse dışlanmaz ama hiç kimseye yetmez",
         basariliSonuc: {
           ahlak: 12,
-          un: 8,
+          un: 4,
           mesaj: "Herkes bir şeyler aldı; kimse eli boş dönmedi ama hiçbirinin sorunu tam anlamıyla çözülmedi.",
           detay: "Adalet bazen herkesi biraz mutlu, hiç kimseyi tam mutlu etmiyor.",
         },
@@ -756,6 +757,7 @@ export const OLAY_ORTACAG_DINADAMI: OlayTanimi[] = [
         baseBasariSansi: 70,
         ipucu: "Birkaç hayat gerçekten değişir ama geri çevirdiklerin seni suçlar",
         basariliSonuc: {
+          un: 4,
           ahlak: 15,
           dost_puani: 10,
           mesaj: "Seçtiğin ailelerin hayatı gerçekten değişti; ama kapından eli boş dönenlerin gözlerini unutamıyorsun.",

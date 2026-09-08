@@ -49,6 +49,12 @@ export function temelUygunMu(olay: OlayTanimi, state: CharacterState): boolean {
   if (olay.gerekliEkip && state.ekip.length === 0) return false;
   if (olay.gerekliEkipRolu && !state.ekip.some((uye) => uye.rol === olay.gerekliEkipRolu)) return false;
   if (olay.gerekliHizip && state.hizip === null) return false;
+  // Veba hastalığı: bizzat vebayı kapmış bir karakter, iyileşene/ölene kadar
+  // yalnız vebaHastasiOlayi havuzunu görür (hapisOlayi/yolculukOlayi ile aynı
+  // "havuz kilitleme" mantığı; sağlık acil durumu diğer kilitlerin önündedir).
+  const vebaHastasi = state.etiketler.includes("veba_hastasi");
+  if (vebaHastasi && !olay.vebaHastasiOlayi) return false;
+  if (!vebaHastasi && olay.vebaHastasiOlayi) return false;
   const hapiste = state.etiketler.includes("hapiste");
   if (hapiste && !olay.hapisOlayi) return false;
   if (!hapiste && olay.hapisOlayi) return false;

@@ -349,6 +349,8 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
         ],
         ipucu: "Gizli Şık: Kurtlar asla koku kaybetmez",
         basariliSonuc: {
+          ahlak: -3,
+          mutluluk: -4,
           para: 25,
           un: 20,
           mesaj: "Kurdun ormanın derinliklerinde hırsızı köşeye sıkıştırdı. Adam korkudan bayılmıştı. Atını ve adamın üzerindeki tüm altınları aldın.",
@@ -555,6 +557,8 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
           detay: "Aylarca çalıştın ve karşılığını aldın; astların artık sana farklı bakıyor.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
+          para: -15,
           un: -10,
           saglik: -8,
           mesaj: "Fiziksel bölümde tükendin, sınavı geçemedin.",
@@ -615,6 +619,9 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
         baseBasariSansi: 85,
         ipucu: "Güvenli ama vicdan sızlatır",
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Olaya karışmadın; genç asker cezalandırıldı, sen sessiz kaldın.",
           detay: "Belki masumdu belki değildi; hiçbir zaman öğrenmeyeceksin ve bu seni rahatsız ediyor.",
         },
@@ -661,6 +668,8 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
         baseBasariSansi: 90,
         ipucu: "Sıkıcı ama güvenli",
         basariliSonuc: {
+          ahlak: 3,
+          mutluluk: -1,
           mesaj: "Yarışa katılmadın; komutan disiplinini fark etti.",
           detay: "Diğerleri eğlenirken sen göreve odaklandın; kimse bunu fark etmedi ama sen ettin.",
         },
@@ -689,8 +698,9 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
         baseBasariSansi: 50,
         ipucu: "Güzel bir aşk ya da komutanın gazabı",
         basariliSonuc: {
+          para: 3,
           ahlak: 10,
-          un: 12,
+          un: 14,
           mesaj: "İlişkiniz gizli kalmayı başardı; mutlusun.",
           detay: "Bazı akşamlar risk almaya değermiş; en azından şimdilik.",
         },
@@ -734,11 +744,12 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
         ipucu: "Doğruysa büyük başarı, yanlışsa itibar kaybı",
         basariliSonuc: {
           un: 25,
-          para: 15,
+          para: 13,
           mesaj: "Adam gerçekten casusmuş; itiraflarıyla bir komployu ortaya çıkardın.",
           detay: "Kale komutanı seni bizzat tebrik etti; adın garnizonun her yerinde konuşuldu.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           un: -15,
           para: -10,
           mesaj: "Adam masum bir tüccarmış; haksız yere tutukladığın için özür dilemek zorunda kaldın.",
@@ -750,6 +761,7 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
         baseBasariSansi: 65,
         ipucu: "Daha güvenli, yavaş",
         basariliSonuc: {
+          para: 2,
           un: 18,
           mesaj: "Sabırla izleyip sağlam kanıt topladın; casus tuzağa düştü.",
           detay: "Acele etmeden doğru sonuca ulaştın; komutan yaklaşımını beğendi.",
@@ -785,6 +797,8 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
           detay: "Sıradan askerler seni sözcüleri olarak görmeye başladı; subaylar ise seni izlemeye.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
+          para: -15,
           un: -18,
           mesaj: "İtirazın 'disiplinsizlik' sayıldı; paylaşım aynı kaldı, sen cezalandırıldın.",
           detay: "Doğru olanı söyledin ve sistem seni susturdu.",

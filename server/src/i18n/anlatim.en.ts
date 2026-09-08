@@ -170,6 +170,13 @@ export const ANLATIM_EN: Record<string, string> = {
   "🙏 Zor günlerinde kilise ve birkaç eş dost devreye girdi; borcunun {0} {1}'ini kapattılar. Bu bir daha olmayacak.":
     "🙏 In your hard times the church and a few friends stepped in; they cleared {0} {1} of your debt. This won't happen again.",
   "Borç yardımı aldı: +{0} {1}": "Received debt relief: +{0} {1}",
+
+  // ---- Hapis ceza süresi ----
+  "Cezasını tamamlayıp serbest kaldı": "Served the full sentence and was released",
+  "⛓️ Cezan doldu; kapılar açıldı ve özgür bir insan olarak dışarı çıktın.":
+    "⛓️ Your sentence is up; the gates opened and you walked out a free person.",
+  "⛓️ Hücrede bir yıl daha geçti; tahliyene yaklaşık {0} yıl kaldı.":
+    "⛓️ Another year passed in the cell; about {0} years left until release.",
   "{0} bu süre boyunca da seni yatağa düşürdü.":
     "{0} kept you bedridden through this period as well.",
   "Salgın sürüyordu, cenaze alayları artık gündelikti.":

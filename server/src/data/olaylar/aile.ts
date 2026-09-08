@@ -29,7 +29,8 @@ export const OLAY_AILE: OlayTanimi[] = [
           mesaj: "Tören oldukça gösterişliydi. Artık güçlü bir ailenin parçasısın ancak yatağa girdiğinde hissettiğin tek şey üşüme.",
         },
         basarisizSonuc: {
-          mutluluk: -10,
+          para: -25,
+          mutluluk: -14,
           un: -15,
           mesaj: "Aile son anda senin statünü yetersiz bulup düğünü iptal etti. Şehirde alay konusu oldun.",
         },
@@ -219,6 +220,7 @@ export const OLAY_AILE: OlayTanimi[] = [
         baseBasariSansi: 20,
         ipucu: "Mucize ihtimali çok zayıf",
         basariliSonuc: {
+          saglik: 3,
           mutluluk: 8,
           etiket_sil: [
             "cocuk_saglik_zamani:kotu",
@@ -390,7 +392,8 @@ export const OLAY_AILE: OlayTanimi[] = [
           mesaj: "Zorla da olsa seni dinledi. Artık sana yardım ediyor, işin kazancı arttı.",
         },
         basarisizSonuc: {
-          mutluluk: -15,
+          para: -15,
+          mutluluk: -19,
           mesaj: "Kavga ettiniz. Eşyalarını toplayıp evden kaçtı. İşin sana, gözyaşların yastığına kaldı.",
         },
       },
@@ -427,7 +430,7 @@ export const OLAY_AILE: OlayTanimi[] = [
         metin: "Tüm gününü onlara ayır, oyunlar oyna.",
         baseBasariSansi: 95,
         basariliSonuc: {
-          mutluluk: 12,
+          mutluluk: 9,
           saglik: 5,
           mesaj: "Torunlarınla oynamak seni 10 yaş gençleştirdi. Hayatın gerçek anlamı bu diyorsun.",
         },
@@ -441,6 +444,7 @@ export const OLAY_AILE: OlayTanimi[] = [
         metin: "Yaşlı bedenin kaldırmıyor, kısa bir sohbetle yetin.",
         baseBasariSansi: 100,
         basariliSonuc: {
+          saglik: 2,
           mutluluk: 3,
           mesaj: "Gürültüden çabuk yoruldun ve odana çekildin. Yalnızlık sana daha uygun.",
         },
@@ -961,6 +965,9 @@ export const OLAY_AILE: OlayTanimi[] = [
         baseBasariSansi: 95,
         ipucu: "Güvenli ama vicdan sızlatabilir",
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Evde kaldın; çocuk sabaha karşı kendi kendine bulundu.",
           detay: "İyi bitti ama katılmadığın için içinde hafif bir suçluluk var.",
         },
@@ -1368,6 +1375,7 @@ export const OLAY_AILE: OlayTanimi[] = [
           detay: "Kariyerin yükseldi ama masanda artık bir sandalye eksik.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -5,
           dost_puani: -20,
           mesaj: "Görüşme de umduğun gibi gitmedi, üstüne {dost}'u da kırdın.",
@@ -1418,7 +1426,8 @@ export const OLAY_AILE: OlayTanimi[] = [
           detay: "Sabır bazen en keskin cevaptır.",
         },
         basarisizSonuc: {
-          mutluluk: -6,
+          para: -15,
+          mutluluk: -10,
           mesaj: "Çabaların yavaş ilerledi, önyargı kolay kolay kırılmadı.",
           detay: "Bazı duvarlar tek başına yıkılmıyor.",
         },
@@ -1716,6 +1725,9 @@ export const OLAY_AILE: OlayTanimi[] = [
         baseBasariSansi: 85,
         ipucu: "Güvenli ama içindeki o soru hep kalır",
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Affı kabul etmedin; hayatın burada devam etti ama atalarının toprağını hiç görmemiş olmak içinde hafif bir boşluk bıraktı.",
           detay: "Bazı kapılar kapalı kalmayı da hak ediyor.",
         },

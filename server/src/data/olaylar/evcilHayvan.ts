@@ -122,7 +122,8 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
           detay: "Özgürlüğe değil, sana dönmeyi seçti. Ve eli boş da dönmedi.",
         },
         basarisizSonuc: {
-          mutluluk: -8,
+          para: -35,
+          mutluluk: -12,
           saglik: -4,
           mesaj: "Şahin bir hafta sonra bitkin ve pençeleri boş döndü. Sağ salim, ama günlerce onun için endişelenmek seni yıprattı.",
           detay: "Bu sefer gökyüzü ona hiçbir şey vermedi.",
@@ -186,6 +187,8 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
           detay: "Sadık bir dostun değerini bu gece bir kez daha anladın.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
+          para: -12,
           saglik: -10,
           mesaj: "Karanlıkta bir şeye çarpıp düştün; hırsız da kaçtı, elin boş kaldı.",
           detay: "Bazı geceler pürüzsüz geçmiyor.",
@@ -196,6 +199,8 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
         baseBasariSansi: 80,
         ipucu: "Güvenli ama riski göze alırsın",
         basariliSonuc: {
+          ahlak: 3,
+          mutluluk: -1,
           mesaj: "Sabah her şey yerli yerindeydi; belki de sadece bir gölgeydi.",
           detay: "Bazen endişe boşunaymış.",
         },
@@ -275,10 +280,13 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
         baseBasariSansi: 100,
         ipucu: "Sorumluluk yok",
         basariliSonuc: {
+          saglik: 2,
+          mutluluk: -2,
           mesaj: "Kararını verdin: şimdilik yalnız kalmayı tercih ediyorsun.",
           detay: "Belki ileride fikrin değişir.",
         },
         basarisizSonuc: {
+          mutluluk: -2,
           mesaj: "Kullanılmadı.",
         },
       },
@@ -352,10 +360,13 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
         baseBasariSansi: 100,
         ipucu: "Sorumluluk yok",
         basariliSonuc: {
+          saglik: 2,
+          mutluluk: -2,
           mesaj: "Kararını verdin: şimdilik yalnız kalmayı tercih ediyorsun.",
           detay: "Belki ileride fikrin değişir.",
         },
         basarisizSonuc: {
+          mutluluk: -2,
           mesaj: "Kullanılmadı.",
         },
       },
@@ -385,6 +396,8 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
           detay: "Şahinini eğitmenin karşılığını aldın.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
+          para: -20,
           saglik: -8,
           mesaj: "{hayvan} bir kartalla çatıştı, ikiniz de yaralı döndünüz.",
           detay: "Gökyüzü bazen paylaşılmıyor.",
@@ -490,6 +503,9 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
         baseBasariSansi: 85,
         ipucu: "Güvenli ama sönük",
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Kısa bir özürle olay kapandı, kimse fazla üzerinde durmadı.",
           detay: "Bazen en iyi savunma, hızlı bir özürdür.",
         },
@@ -536,6 +552,9 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
         baseBasariSansi: 90,
         ipucu: "Güvenli",
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Gösteriyi nazikçe reddettin; hayat sakin akmaya devam etti.",
           detay: "Her fırsatın peşinden koşmak zorunda değilsin.",
         },
@@ -566,7 +585,7 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
         baseBasariSansi: 95,
         ipucu: "Sakin kal",
         basariliSonuc: {
-          mutluluk: 3,
+          mutluluk: 1,
           mesaj: "Kırık parçaları topladın; {hayvan} olan biteni izlemekten keyif alıyor gibiydi.",
           detay: "Kedilerle yaşamanın bedeli bu, dedin kendine.",
         },
@@ -627,6 +646,9 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
         baseBasariSansi: 90,
         ipucu: "Güvenli",
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Olayı izlemekle yetindin; {hayvan} bir süre sonra yanına döndü.",
           detay: "Her kahramanlık senin olmak zorunda değil.",
         },
@@ -662,6 +684,8 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
           detay: "Nereden bulduğunu asla öğrenemeyeceksin.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
+          para: -12,
           mesaj: "Kese boşmuş, sadece birkaç taş çıktı içinden.",
           detay: "{hayvan} yine de kendinden çok memnun görünüyordu.",
         },
@@ -716,6 +740,9 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
         baseBasariSansi: 90,
         ipucu: "Güvenli ama fırsatı kaçırırsın",
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Nazikçe vedalaşıp yoluna devam ettin.",
           detay: "Her karşılaşma bir dostluğa dönüşmek zorunda değil.",
         },
@@ -810,6 +837,9 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
         baseBasariSansi: 40,
         ipucu: "Riskli; komşunla arana mesafe girebilir",
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Komşun homurdanarak da olsa konuyu kapattı.",
           detay: "Kediler kimseye hesap vermez, sen de biliyordun.",
         },
@@ -971,6 +1001,8 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
         baseBasariSansi: 95,
         ipucu: "Güvenli, sorumluluk yok",
         basariliSonuc: {
+          ahlak: 3,
+          mutluluk: -1,
           mesaj: "Yavruyu olduğu yerde bıraktın; kaderi kendi ellerinde.",
           detay: "Bazı kararlar vermemek de bir karardır.",
         },

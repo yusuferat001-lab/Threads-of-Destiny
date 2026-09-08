@@ -46,7 +46,7 @@ export const OLAY_MULK: OlayTanimi[] = [
         },
         basarisizSonuc: {
           para: -6,
-          mutluluk: -3,
+          mutluluk: -7,
           mesaj: "Tuttuğun işçiler yarım günde işi bırakıp gitti, ödediğin ücret boşa gitti.",
         },
       },
@@ -275,6 +275,9 @@ export const OLAY_MULK: OlayTanimi[] = [
         baseBasariSansi: 60,
         ipucu: "Riskli ama hızlı",
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Alevleri daha büyümeden söndürdün, atölye küçük bir kurumla kurtuldu.",
         },
         basarisizSonuc: {
@@ -289,6 +292,9 @@ export const OLAY_MULK: OlayTanimi[] = [
         maliyet: 4,
         ipucu: "Güvenli, küçük bir minnet borcuyla",
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Birkaç komşu esnafla birlikte yangını çabucak kontrol altına aldınız.",
         },
         basarisizSonuc: {
@@ -327,6 +333,8 @@ export const OLAY_MULK: OlayTanimi[] = [
         baseBasariSansi: 95,
         ipucu: "Güvenli, fırsat kaçar",
         basariliSonuc: {
+          ahlak: 3,
+          mutluluk: -1,
           mesaj: "Riske girmedin, atölyen alışılmış tempoda işlemeye devam etti.",
         },
         basarisizSonuc: {
@@ -353,10 +361,11 @@ export const OLAY_MULK: OlayTanimi[] = [
         baseBasariSansi: 55,
         ipucu: "Erken varış, büyük kazanç ihtimali — ama soygun riski",
         basariliSonuc: {
-          para: 20,
+          para: 22,
           mesaj: "Kervan dağ yolundan sağ salim ve hızlıca geçti, mallar taze fiyattan satıldı.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -18,
           mesaj: "Dağ geçidinde eşkıyalar kervanın bir kısmını yağmaladı.",
         },
@@ -366,7 +375,7 @@ export const OLAY_MULK: OlayTanimi[] = [
         baseBasariSansi: 85,
         ipucu: "Daha az kazanç, daha az risk",
         basariliSonuc: {
-          para: 10,
+          para: 8,
           mesaj: "Kervan uzun ama sorunsuz bir yolculuğun ardından hedefe ulaştı.",
         },
         basarisizSonuc: {
@@ -394,7 +403,8 @@ export const OLAY_MULK: OlayTanimi[] = [
           mesaj: "Şüphen doğru çıktı, eksik hesapları geri aldın; kervancıbaşı bir daha risk almadı.",
         },
         basarisizSonuc: {
-          mutluluk: -4,
+          para: -12,
+          mutluluk: -8,
           rakip_puani: 3,
           mesaj: "Hesaplar temiz çıktı, boşuna suçlamış olmanın kırgınlığı kervanın havasına sindi.",
         },
@@ -404,6 +414,8 @@ export const OLAY_MULK: OlayTanimi[] = [
         baseBasariSansi: 80,
         ipucu: "Rahat ama riski göze alırsın",
         basariliSonuc: {
+          ahlak: 3,
+          mutluluk: -1,
           mesaj: "Şüphenin bir kuruntu olduğu anlaşıldı, kervan her zamanki gibi işlemeye devam etti.",
         },
         basarisizSonuc: {
@@ -446,6 +458,8 @@ export const OLAY_MULK: OlayTanimi[] = [
         baseBasariSansi: 90,
         ipucu: "Daha güvenli, kazanç sınırlı kalır",
         basariliSonuc: {
+          ahlak: 3,
+          mutluluk: -1,
           mesaj: "Riske girmedin, karaborsa deponu her zamanki sessiz tempoda işlemeye devam etti.",
         },
         basarisizSonuc: {
@@ -482,6 +496,9 @@ export const OLAY_MULK: OlayTanimi[] = [
         baseBasariSansi: 55,
         ipucu: "Riskli — doğruysa pahalıya patlar",
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Şüphe asılsız çıktı, depo sorunsuz işlemeye devam etti.",
         },
         basarisizSonuc: {

@@ -33,12 +33,12 @@ export const TERFI_COOLDOWN: Record<number, number> = { 2: 0, 3: 2, 4: 2, 5: 8 }
 /**
  * Seviye 1..5 için maaşa çarpımsal, kalıcı rütbe primi (hesaplaMaasYillik içinde
  * TEK bir çarpan kalemi olarak girer — kıdem/itibar/enflasyonla da çarpılır).
- * BİLEŞİK: her kademe bir öncekinin ~%10 üstü (1.1^(seviye-1)). Yani S3 primi
- * "S2 primi × 1.1"dir, baz maaşa göre ayrı bir +%X değil — S1..S5 sırasıyla
- * ×1.00 / ×1.10 / ×1.21 / ×1.33 / ×1.46. (Büyük denge turunda 1.2 → 1.1:
- * kullanıcı "rütbe bonusunu azaltalım, 5 seviye var, her birinde %10'ar artsın" dedi.)
+ * BİLEŞİK: her kademe bir öncekinin ~%15 üstü (1.15^(seviye-1)). Yani S3 primi
+ * "S2 primi × 1.15"tir, baz maaşa göre ayrı bir +%X değil — S1..S5 sırasıyla
+ * ×1.00 / ×1.15 / ×1.32 / ×1.52 / ×1.75. (1.2 → 1.1 → 1.15: rütbe ilerlemesi
+ * geç oyunda gelir tarafında daha görünür olsun; orta-yaş borç kaymasını hafifletir.)
  */
-const RUTBE_MAAS_ARTIS_ORANI = 1.1;
+const RUTBE_MAAS_ARTIS_ORANI = 1.15;
 export const RUTBE_MAAS_CARPANI: [number, number, number, number, number] = [0, 1, 2, 3, 4].map(
   (i) => Math.round(Math.pow(RUTBE_MAAS_ARTIS_ORANI, i) * 100) / 100
 ) as [number, number, number, number, number];
@@ -100,20 +100,24 @@ export const RUTBELER: Record<string, Record<Cag, RutbeTanimi>> = {
   "Din Adamı": {
     "Orta Çağ": {
       unvanlar: ["Acemi Rahip", "Rahip", "Vaiz", "Başrahip", "Piskopos"],
+      // Ahlak eşikleri 50/58/66/86 → 44/50/58/78: pragmatik (ille de "aziz"
+      // olmayan) bir din adamı düşük-orta rütbeleri de tırmanabilsin.
       esikler: [
-        { kariyer_puani: 10, ahlak: 50 },
-        { kariyer_puani: 24, ahlak: 58 },
-        { kariyer_puani: 44, ahlak: 66 },
-        { kariyer_puani: 210, ahlak: 86 },
+        { kariyer_puani: 10, ahlak: 44 },
+        { kariyer_puani: 24, ahlak: 50 },
+        { kariyer_puani: 44, ahlak: 58 },
+        { kariyer_puani: 210, ahlak: 78 },
       ],
     },
     "Sanayi Devrimi": {
       unvanlar: ["Papaz Yardımcısı", "Papaz", "Vaiz", "Başpapaz", "Piskopos"],
+      // Ahlak eşikleri 50/58/66/86 → 44/50/58/78: pragmatik (ille de "aziz"
+      // olmayan) bir din adamı düşük-orta rütbeleri de tırmanabilsin.
       esikler: [
-        { kariyer_puani: 10, ahlak: 50 },
-        { kariyer_puani: 24, ahlak: 58 },
-        { kariyer_puani: 44, ahlak: 66 },
-        { kariyer_puani: 210, ahlak: 86 },
+        { kariyer_puani: 10, ahlak: 44 },
+        { kariyer_puani: 24, ahlak: 50 },
+        { kariyer_puani: 44, ahlak: 58 },
+        { kariyer_puani: 210, ahlak: 78 },
       ],
     },
   },

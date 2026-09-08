@@ -72,7 +72,7 @@ export const OLAY_SANAYI_DINADAMI: OlayTanimi[] = [
         ipucu: "Gelenekçi kesim seni alkışlar, aydın kesim uzaklaşır",
         basariliSonuc: {
           ahlak: 8,
-          un: 10,
+          un: 5,
           mesaj: "Sert vaazın gelenekçi cemaati coşturdu; bilimciyle ilgilenenler seni bir daha dinlemedi.",
           detay: "Bazı kürsüler köprüleri yakıyor.",
         },
@@ -88,7 +88,7 @@ export const OLAY_SANAYI_DINADAMI: OlayTanimi[] = [
         ipucu: "Ufkun genişler ama gelenekçiler seni kuşkuyla izler",
         basariliSonuc: {
           ahlak: 5,
-          un: -5,
+          un: -1,
           mesaj: "Konuşma saygılı ve derinlikli geçti; ikiniz de birbirinizden bir şeyler öğrendiniz.",
           detay: "Bazı köprüler yıkılmak yerine kurulmalı.",
         },

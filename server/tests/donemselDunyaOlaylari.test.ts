@@ -10,6 +10,8 @@ import {
   vebaBaslamaliMi,
   vebaBaslat,
   vebaYillikKontrol,
+  vebaHastaligiKontrol,
+  vebaHastaligiBaslatEt,
   vebaBitisKontrolEt,
   kucukKrizKontrolEt,
   giderKalemleriHesapla,
@@ -180,7 +182,7 @@ describe("vebaBaslamaliMi / vebaBaslat / vebaYillikKontrol / vebaBitisKontrolEt"
     }
   });
 
-  it("dalga bittikten sonra 20 yıl cooldown boyunca tetiklenmez, sonra tekrar tetiklenebilir", () => {
+  it("dalga bittikten sonra 25 yıl cooldown boyunca tetiklenmez, sonra tekrar tetiklenebilir", () => {
     const state = taze();
     state.yas = 40;
     state.veba_gecirdi = true;
@@ -212,8 +214,8 @@ describe("vebaBaslamaliMi / vebaBaslat / vebaYillikKontrol / vebaBitisKontrolEt"
     expect(state.veba_gecirdi).toBe(true);
     const v = state.veba!;
     expect(v.aktif).toBe(true);
-    expect(v.bitisYili - v.baslangicYili).toBeGreaterThanOrEqual(2);
-    expect(v.bitisYili - v.baslangicYili).toBeLessThanOrEqual(4);
+    expect(v.bitisYili - v.baslangicYili).toBeGreaterThanOrEqual(5);
+    expect(v.bitisYili - v.baslangicYili).toBeLessThanOrEqual(7);
     expect(v.etkiBitisYili - v.bitisYili).toBeGreaterThanOrEqual(10);
     expect(v.etkiBitisYili - v.bitisYili).toBeLessThanOrEqual(15);
     expect(v.konutKiraCarpani).toBeGreaterThanOrEqual(0.6);
@@ -222,21 +224,68 @@ describe("vebaBaslamaliMi / vebaBaslat / vebaYillikKontrol / vebaBitisKontrolEt"
     expect(v.gelirCarpani).toBeLessThanOrEqual(1.3);
   });
 
-  it("önlem alınmışsa ölüm riski önlem alınmamıştan belirgin şekilde düşüktür", () => {
-    let olumluOnlemsiz = 0;
-    let olumluOnlemli = 0;
+  it("önlem alınmışsa hastalığı KAPMA oranı önlem alınmamıştan belirgin şekilde düşüktür", () => {
+    let kapanOnlemsiz = 0;
+    let kapanOnlemli = 0;
     const DENEME = 2000;
     for (let i = 0; i < DENEME; i++) {
       const onlemsiz = taze();
       vebaBaslat(onlemsiz, 0);
-      if (vebaYillikKontrol(onlemsiz, 1).karakterOldu) olumluOnlemsiz++;
+      if (vebaYillikKontrol(onlemsiz, 1).hastalandi) kapanOnlemsiz++;
 
       const onlemli = taze();
       vebaBaslat(onlemli, 2);
-      if (vebaYillikKontrol(onlemli, 1).karakterOldu) olumluOnlemli++;
+      if (vebaYillikKontrol(onlemli, 1).hastalandi) kapanOnlemli++;
     }
-    expect(olumluOnlemsiz).toBeGreaterThan(0);
-    expect(olumluOnlemli).toBeLessThan(olumluOnlemsiz);
+    expect(kapanOnlemsiz).toBeGreaterThan(0);
+    expect(kapanOnlemli).toBeLessThan(kapanOnlemsiz);
+  });
+
+  it("hastalığı kapan karakter 'veba_hastasi' etiketi + ~%70 ölüm riski alır (ölmez)", () => {
+    const state = taze();
+    state.yas = 30;
+    vebaBaslat(state, 0);
+    let denemeSayisi = 0;
+    while (!state.etiketler.includes("veba_hastasi") && denemeSayisi < 5000) {
+      vebaYillikKontrol(state, 1);
+      denemeSayisi++;
+    }
+    expect(state.etiketler.includes("veba_hastasi")).toBe(true);
+    expect(state.veba_olum_riski).toBe(70);
+    expect(state.aktif).toBe(true);
+  });
+
+  it("vebaHastaligiKontrol: ölmezse risk düşer, eşik altında iyileşir (etiket silinir)", () => {
+    const state = taze();
+    vebaHastaligiBaslatEt(state);
+    expect(state.veba_olum_riski).toBe(70);
+    // Riski elle düşürüp iyileşmeyi zorla (tek turda eşik altına insin).
+    state.veba_olum_riski = 20;
+    let iyilesti = false;
+    for (let i = 0; i < 50 && !iyilesti; i++) {
+      const sonuc = vebaHastaligiKontrol(state);
+      if (sonuc.karakterOldu) {
+        // düşük riskte de nadiren ölebilir; yeniden hastalandır ve dene
+        vebaHastaligiBaslatEt(state);
+        state.veba_olum_riski = 20;
+        continue;
+      }
+      iyilesti = sonuc.iyilesti;
+    }
+    expect(iyilesti).toBe(true);
+    expect(state.etiketler.includes("veba_hastasi")).toBe(false);
+    expect(state.veba_olum_riski).toBe(0);
+  });
+
+  it("vebaHastaligiKontrol: yüksek riskte karakter ölebilir (sinyal döner)", () => {
+    let oldu = false;
+    for (let i = 0; i < 200 && !oldu; i++) {
+      const state = taze();
+      vebaHastaligiBaslatEt(state);
+      state.veba_olum_riski = 95;
+      oldu = vebaHastaligiKontrol(state).karakterOldu;
+    }
+    expect(oldu).toBe(true);
   });
 
   it("aktif faz bitince ulke.vebada kapanır ama iz (state.veba) etkiBitisYili'ne kadar sürer", () => {

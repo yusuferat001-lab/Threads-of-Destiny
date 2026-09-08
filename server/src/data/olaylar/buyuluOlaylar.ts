@@ -45,7 +45,9 @@ export const OLAY_BUYULU: OlayTanimi[] = [
         metin: "Bu işlere inanmam, geç yanından.",
         baseBasariSansi: 80,
         basariliSonuc: {
-          ahlak: 2,
+          saglik: 2,
+          mutluluk: -1,
+          ahlak: 3,
           mesaj: "Omuz silkip yürüdün. Batıl korkulara pabuç bırakmayan biri olmak da bir huzur.",
         },
         basarisizSonuc: {
@@ -72,7 +74,7 @@ export const OLAY_BUYULU: OlayTanimi[] = [
         baseBasariSansi: 45,
         ipucu: "Ya bir uyarı ya bir hayal kırıklığı",
         basariliSonuc: {
-          para: -6,
+          para: -4,
           mutluluk: -4,
           etiket_ekle: ["bilgi:yasak_ilim"],
           mesaj:
@@ -88,7 +90,9 @@ export const OLAY_BUYULU: OlayTanimi[] = [
         metin: "Dolandırıcının tekidir; reddet.",
         baseBasariSansi: 75,
         basariliSonuc: {
-          ahlak: 1,
+          saglik: 2,
+          mutluluk: -1,
+          ahlak: 2,
           mesaj: "Sırtını döndün. Arkandan söylenen 'pişman olacaksın' lafı sadece bir tezgâhtı.",
         },
         basarisizSonuc: {
@@ -180,7 +184,9 @@ export const OLAY_BUYULU: OlayTanimi[] = [
         metin: "'Dua kâğıttan olmaz' deyip geç.",
         baseBasariSansi: 80,
         basariliSonuc: {
-          ahlak: 2,
+          saglik: 2,
+          mutluluk: -1,
+          ahlak: 3,
           mesaj: "Satıcı bozuldu ama sen inancını bir deri parçasına bağlamayacak kadar sağlamsın.",
         },
         basarisizSonuc: {
@@ -305,7 +311,7 @@ export const OLAY_BUYULU: OlayTanimi[] = [
         },
         basarisizSonuc: {
           para: -12,
-          mutluluk: -5,
+          mutluluk: -9,
           mesaj: "Deney patladı, kaşların yandı, adam 'yarın olur' dedi ve bir daha görünmedi. Paran duman oldu.",
         },
       },
@@ -313,6 +319,9 @@ export const OLAY_BUYULU: OlayTanimi[] = [
         metin: "Gülüp merdivenleri çık.",
         baseBasariSansi: 85,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Simya masalına kanmadın. Bodrumdan temiz havaya çıkmak bile iyi geldi.",
         },
         basarisizSonuc: {
@@ -393,7 +402,8 @@ export const OLAY_BUYULU: OlayTanimi[] = [
         metin: "Rüya rüyadır, boşver.",
         baseBasariSansi: 75,
         basariliSonuc: {
-          mutluluk: 1,
+          saglik: 2,
+          ahlak: 1,
           mesaj: "Üstünde durmadın. Birkaç gün sonra rüya kendiliğinden geçti.",
         },
         basarisizSonuc: {
@@ -481,7 +491,9 @@ export const OLAY_BUYULU: OlayTanimi[] = [
         metin: "Başka yoldan dolaş.",
         baseBasariSansi: 85,
         basariliSonuc: {
-          mutluluk: -1,
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -2,
           mesaj: "Uzun yoldan gittin. Bir kediden kaçtığın için kendine kızdın ama bir şey olmadı.",
         },
         basarisizSonuc: {
@@ -570,7 +582,9 @@ export const OLAY_BUYULU: OlayTanimi[] = [
         metin: "'Zehir olmasın bu' deyip uzaklaş.",
         baseBasariSansi: 80,
         basariliSonuc: {
-          ahlak: 1,
+          saglik: 2,
+          mutluluk: -1,
+          ahlak: 2,
           mesaj: "Renkli şişelere kanmadın. Bazen en iyi ilaç, hiçbir şey almamaktır.",
         },
         basarisizSonuc: {
@@ -611,7 +625,9 @@ export const OLAY_BUYULU: OlayTanimi[] = [
         metin: "Görmezden gel, evine kapan.",
         baseBasariSansi: 70,
         basariliSonuc: {
-          mutluluk: -2,
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -3,
           mesaj: "Kapıyı sürgüledin. Birkaç gece sonra gölge kayboldu — ya da sen bakmayı bıraktın.",
         },
         basarisizSonuc: {
@@ -652,7 +668,8 @@ export const OLAY_BUYULU: OlayTanimi[] = [
         metin: "Perdeyi çek, yat uyu.",
         baseBasariSansi: 75,
         basariliSonuc: {
-          mutluluk: 1,
+          saglik: 2,
+          ahlak: 1,
           mesaj: "Sabah kalktığında ay yerindeydi, dünya dönüyordu. Panik yapmamak da bir marifet.",
         },
         basarisizSonuc: {
@@ -680,7 +697,7 @@ export const OLAY_BUYULU: OlayTanimi[] = [
         baseBasariSansi: 40,
         ipucu: "Zil çalar, borazan uçar — hepsi ipli",
         basariliSonuc: {
-          para: -7,
+          para: -5,
           mutluluk: -4,
           mesaj:
             "Masanın altında bir ip, madamın ayağında bir pedal gördün. Yine de söyledikleri bir an seni sarstı.",
@@ -698,7 +715,7 @@ export const OLAY_BUYULU: OlayTanimi[] = [
         basariliSonuc: {
           un: 6,
           ahlak: 4,
-          mutluluk: 3,
+          mutluluk: 1,
           mesaj: "Lambayı yaktın: ipler, pedallar ortada. Salon dağıldı, herkes seni konuştu.",
         },
         basarisizSonuc: {

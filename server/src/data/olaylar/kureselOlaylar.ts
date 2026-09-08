@@ -121,10 +121,10 @@ export const OLAY_KURESEL: OlayTanimi[] = [
           mesaj: "Günlerce başında bekledin. İyileşti. Komşular bunu konuştu — merhametli biri olduğun bilindi.",
         },
         basarisizSonuc: {
-          saglik: -22,
-          olum_sansi: 12,
+          saglik: -18,
           ahlak: 5,
-          mesaj: "Onu kaybettin, üstüne hastalık sana da bulaştı. Haftalarca ateşle boğuştun.",
+          etiket_ekle: ["veba_hastasi"],
+          mesaj: "Onu kaybettin, üstüne hastalık sana da bulaştı. Ateşin çıktı — artık sen de vebalısın.",
         },
       },
       {
@@ -168,9 +168,9 @@ export const OLAY_KURESEL: OlayTanimi[] = [
           mesaj: "Toprağa verilişine tanık oldun. İçin biraz olsun rahatladı; insanlar orada olduğunu gördü.",
         },
         basarisizSonuc: {
-          saglik: -18,
-          olum_sansi: 8,
-          mesaj: "Cenazede omuz omuza durduğun birinden kaptın. Sonraki günler ağır geçti.",
+          saglik: -14,
+          etiket_ekle: ["veba_hastasi"],
+          mesaj: "Cenazede omuz omuza durduğun birinden kaptın. Birkaç gün sonra ateşin çıktı — vebayı kaptın.",
         },
       },
       {
@@ -204,7 +204,9 @@ export const OLAY_KURESEL: OlayTanimi[] = [
         baseBasariSansi: 80,
         ipucu: "Ucuz ve makul; yine de küçük bir risk kalır",
         basariliSonuc: {
-          mutluluk: -2,
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -3,
           mesaj: "Birkaç gün huzursuz bekledin ama bir belirti çıkmadı. Şanslıydın.",
         },
         basarisizSonuc: {
@@ -256,15 +258,18 @@ export const OLAY_KURESEL: OlayTanimi[] = [
           mesaj: "Aylarca ölümün içinde çalıştın ve sağ çıktın. Cebin doldu, adın 'cesur' diye anıldı.",
         },
         basarisizSonuc: {
-          saglik: -25,
-          olum_sansi: 15,
-          mesaj: "Baktığın hastalardan biri sana da bulaştırdı. Bu kez hastalık seni de yatağa düşürdü.",
+          saglik: -20,
+          etiket_ekle: ["veba_hastasi"],
+          mesaj: "Baktığın hastalardan biri sana da bulaştırdı. Bu kez hastalık seni de yatağa düşürdü — vebalısın.",
         },
       },
       {
         metin: "Reddet, bu iş ölüm demek",
         baseBasariSansi: 95,
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Parayı geri çevirdin. Aç ama sağ kaldın.",
         },
         basarisizSonuc: {

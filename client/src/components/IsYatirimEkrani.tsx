@@ -188,44 +188,39 @@ export function IsYatirimEkrani({
                 className={`yatirim-kart mulk-kart${mulk.sahipMi ? ' mulk-kart-sahip' : ''}${mulk.tahminiYillikGetiriYuzdesi < 0 ? ' mulk-kart-zararda' : ''}`}
                 disabled={yukleniyor || mulk.sahipMi || para < mulk.maliyet}
                 onClick={() => onMulkSatinAl(mulk.tur)}
+                title={`${kt(mulk.aciklama)}\n${bic(
+                  m.iyGetiriBrut,
+                  mulk.tahminiYillikGetiriMiktari >= 0 ? '+' : '',
+                  formatPara(mulk.tahminiYillikGetiriMiktari),
+                  paraBirimi,
+                  (mulk.tahminiYillikGetiriYuzdesi > 0 ? '+' : '') + mulk.tahminiYillikGetiriYuzdesi
+                )}\n${bic(m.iyBakimVergi, formatPara(mulk.yillikBakimTahmini), paraBirimi)}`}
               >
                 <span className="meslek-simge">{mulk.simge}</span>
                 <strong>
                   {kt(mulk.ad)} {mulk.sahipMi && m.iySahipsin}
                 </strong>
-                <span className="meslek-aciklama">{kt(mulk.aciklama)}</span>
                 <span className="meslek-aciklama">
-                  {m.iyAvantajli}: {kt(mulk.avantajliDurum)} · {m.iyDezavantajli}: {kt(mulk.dezavantajliDurum)}
+                  ▲ {kt(mulk.avantajliDurum)} · ▼ {kt(mulk.dezavantajliDurum)}
                 </span>
-                <span className="mulk-getiri mulk-getiri-pozitif">
+                <span className={`mulk-getiri ${mulk.tahminiYillikNet < 0 ? 'mulk-getiri-negatif' : 'mulk-getiri-pozitif'}`}>
                   {bic(
-                    m.iyGetiriBrut,
-                    mulk.tahminiYillikGetiriMiktari >= 0 ? '+' : '',
-                    formatPara(mulk.tahminiYillikGetiriMiktari),
+                    m.iyNetKisa,
+                    mulk.tahminiYillikNet >= 0 ? '+' : '',
+                    formatPara(mulk.tahminiYillikNet),
                     paraBirimi,
                     (mulk.tahminiYillikGetiriYuzdesi > 0 ? '+' : '') + mulk.tahminiYillikGetiriYuzdesi
                   )}
                 </span>
-                <span className="meslek-aciklama" title={m.iyBakimTitle}>
-                  {bic(m.iyBakimVergi, formatPara(mulk.yillikBakimTahmini), paraBirimi)}
-                </span>
-                <span className={`mulk-getiri ${mulk.tahminiYillikNet < 0 ? 'mulk-getiri-negatif' : 'mulk-getiri-pozitif'}`}>
-                  {bic(
-                    m.iyGetiriNet,
-                    mulk.tahminiYillikNet >= 0 ? '+' : '',
-                    formatPara(mulk.tahminiYillikNet),
-                    paraBirimi
-                  )}
-                </span>
-                {mulk.sahipMi && <span className="meslek-aciklama">{m.iyBakimAcikla}</span>}
                 {!mulk.sahipMi && (
                   <span className="meslek-aciklama">
-                    {formatPara(mulk.maliyet)} {paraBirimi}
+                    {bic(m.iyFiyatKisa, formatPara(mulk.maliyet), paraBirimi)}
                   </span>
                 )}
               </button>
             ))}
           </div>
+          <p className="giris-aciklama">{m.iyBakimAcikla}</p>
         </div>
 
         <div className="tam-sutun">
@@ -235,16 +230,14 @@ export function IsYatirimEkrani({
             <span className="meslek-simge">💼</span>
             <strong>{m.iyKendiIsineYatirim}</strong>
             <span className="meslek-aciklama">
-              {formatPara(config.kendiIsiMaliyeti)} {paraBirimi} {kendiIsiAciklama}
+              {formatPara(config.kendiIsiMaliyeti)} {paraBirimi} — {kendiIsiAciklama}
             </span>
-            <span className="meslek-aciklama">
-              {kendiIsiAsamaEtiketi(m, config.kendiIsiYatirimSayisi)} {m.iyKendiIsiEskalasyon}
-            </span>
+            <span className="meslek-aciklama">{kendiIsiAsamaEtiketi(m, config.kendiIsiYatirimSayisi)}</span>
           </button>
 
           <p className="rutbe-ipucu">
             <strong>{m.iyRutbeNasil}</strong>{' '}
-            {bic(m.iyRutbeNasilMetin, meslek === 'Din Adamı' ? m.iyRutbeAhlakini : m.iyRutbeSohretini)}
+            {bic(m.iyRutbeNasilKisa, meslek === 'Din Adamı' ? m.iyRutbeAhlakini : m.iyRutbeSohretini)}
           </p>
 
           <h3 className="tam-baslik">{m.iyRiskliIsler}</h3>
@@ -253,6 +246,7 @@ export function IsYatirimEkrani({
             {bic(m.iySucSeviyen, Math.round(sucSeviyesi), sucSeviyesiEtiketi(m, sucSeviyesi))}
           </p>
 
+          <p className="giris-aciklama">{m.iyZarNot}</p>
           <div className="isyatirim-zar-izgara">
             {zarKademeleri.map((tutar) => (
               <button key={tutar} className="zar-karo" disabled={yukleniyor || para < tutar} onClick={() => onZarAt(tutar)}>
@@ -260,9 +254,6 @@ export function IsYatirimEkrani({
                 <strong>
                   {formatPara(tutar)} {paraBirimi}
                 </strong>
-                <span className="meslek-aciklama">
-                  {bic(m.iyZarKazanirsan, formatPara(tutar * 2), paraBirimi)}
-                </span>
               </button>
             ))}
           </div>

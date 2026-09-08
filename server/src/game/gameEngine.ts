@@ -70,6 +70,8 @@ import {
   vebaBaslamaliMi,
   vebaBaslat,
   vebaYillikKontrol,
+  vebaHastaligiKontrol,
+  vebaHastaligiBaslatEt,
   vebaBitisKontrolEt,
   kucukKrizKontrolEt,
   MESLEK_KATEGORI,
@@ -852,10 +854,18 @@ async function sonucuUygulaVeIlerlet(
   // seni rütbede ilerletir; kilit taşı olaylar ayrıca doğrudan puan verebilir.
   if (basarili && MESLEK_KATEGORI[state.meslek] === mevcutOlay.kategori) {
     state.kariyer_puani += KARIYER_PUANI_KATEGORI_BASARI;
+    // Din Adamı, din kategorisinde başarılı olduğu her olayda biraz nüfuz kazanır
+    // (pasif un +0.4/yıl sürüklenmesinin eşi) — nüfuz → maaş metrik çarpanı.
+    if (state.meslek === "Din Adamı") state.nufuz += 1.5;
   }
   if (etki.kariyer_puani_artis) state.kariyer_puani += etki.kariyer_puani_artis;
   if (etki.suc_artis) state.suc_seviyesi += etki.suc_artis;
   if (etki.suc_seviyesi_ayarla !== undefined) state.suc_seviyesi = etki.suc_seviyesi_ayarla;
+  // Veba hastalığı ölüm riski: yalnız hastayken (veba_hastasi) anlamlı; olay
+  // seçimi bu turdaki ölüm zarından ÖNCE uygulanır (vebaHastaligiKontrol).
+  if (etki.veba_olum_riski_artis && state.etiketler.includes("veba_hastasi")) {
+    state.veba_olum_riski = Math.max(0, Math.min(100, state.veba_olum_riski + etki.veba_olum_riski_artis));
+  }
   if (etki.yeni_meslek) state.meslek = etki.yeni_meslek;
   if (etki.maas_carpani) maasCarpaniUygula(state, etki.maas_carpani);
   if (etki.sehir_yonetim_artis) {
@@ -1015,8 +1025,27 @@ async function sonucuUygulaVeIlerlet(
   if (etki.kriz_baslat) {
     state.ulke.kriz = { tur: etki.kriz_baslat.tur, bitisYili: state.yil + etki.kriz_baslat.sureYil };
   }
+  const hapistenCiktiBuEtki =
+    !!etki.etiket_sil?.includes("hapiste") && state.etiketler.includes("hapiste");
   etiketEkle(state, etki.etiket_ekle);
   etiketSil(state, etki.etiket_sil);
+  // Hapse yeni girildiyse ceza süresini belirle: taban 3-6 yıl + aranma
+  // kademesine göre 0-3 yıl (suç seviyesi ağırsa ceza uzun). Zaten bir cezan
+  // varsa (üst üste tutuklanma) dokunma.
+  if (etki.etiket_ekle?.includes("hapiste") && state.hapis_ceza_kalan <= 0) {
+    const taban = 3 + Math.floor(Math.random() * 4);
+    const kademeCeza = Math.min(3, Math.floor(state.suc_seviyesi / 30));
+    state.hapis_ceza_kalan = taban + kademeCeza;
+  }
+  // Riskli kaçış girişimi başarısız oldu → ceza uzadı.
+  if (etki.hapis_ceza_artis && state.etiketler.includes("hapiste")) {
+    state.hapis_ceza_kalan += etki.hapis_ceza_artis;
+  }
+  // Bir olay seçimiyle serbest kalındıysa (rüşvet/af/başarılı kaçış) sayaç sıfırlanır.
+  if (hapistenCiktiBuEtki) state.hapis_ceza_kalan = 0;
+  // Bir olay (veba dönemi bulaşma olayı) vebayı bulaştırdıysa kişisel hastalığı
+  // başlat: ~%70 ölüm riski + vebaHastasiOlayi havuzuna geç.
+  if (etki.etiket_ekle?.includes("veba_hastasi")) vebaHastaligiBaslatEt(state);
   ulkeGuncelle(state, etki.ulke_etkisi);
   durumEkle(state, etki.durum_ekle);
   if (etki.durum_sil) {
@@ -1107,6 +1136,23 @@ async function sonucuUygulaVeIlerlet(
         }
         if (state.aktif) {
           zamanAnlatimi = zamanAnlatimiUret(state, yasArtisi, ekonomi);
+          // Hapis cezası: her turda geçen yıl kadar erir; dolduğunda karakter
+          // kendiliğinden serbest kalır (bir kaçış/af olayı beklemek zorunda değil).
+          if (state.etiketler.includes("hapiste")) {
+            state.hapis_ceza_kalan -= yasArtisi;
+            if (state.hapis_ceza_kalan <= 0) {
+              state.hapis_ceza_kalan = 0;
+              etiketSil(state, ["hapiste"]);
+              hayatOlayiEkle(state, "⛓️", T(state.dil, "Cezasını tamamlayıp serbest kaldı"));
+              const cikisMesaji = T(state.dil, "⛓️ Cezan doldu; kapılar açıldı ve özgür bir insan olarak dışarı çıktın.");
+              zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${cikisMesaji}` : cikisMesaji;
+            } else {
+              const kalanMesaji = T(state.dil, "⛓️ Hücrede bir yıl daha geçti; tahliyene yaklaşık {0} yıl kaldı.", [
+                state.hapis_ceza_kalan,
+              ]);
+              zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${kalanMesaji}` : kalanMesaji;
+            }
+          }
           if (ayyasOlduBuTur) {
             const ayyasMesaji =
               "🍷 Artık mahallede 'ayyaş' diye biliniyorsun; bu sağlığını, itibarını ve işini kalıcı olarak yıpratacak.";
@@ -1207,8 +1253,17 @@ async function sonucuUygulaVeIlerlet(
           for (const vebaMesaji of vebaSonucu.mesajlar) {
             zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${vebaMesaji}` : vebaMesaji;
           }
-          if (vebaSonucu.karakterOldu) {
-            checkDeath(state, true, "Veba seni de bulmuştu.");
+          // Vebayı bizzat kapmış karakter için her tur BİR ölüm/iyileşme zarı.
+          // Bu turda YENİ bulaştıysa atlanır — önce bir vebaHastasiOlayi seçip
+          // hayatta kalma şansını yükseltme fırsatı olsun.
+          if (state.aktif && !vebaSonucu.hastalandi) {
+            const hastalikSonucu = vebaHastaligiKontrol(state);
+            for (const hm of hastalikSonucu.mesajlar) {
+              zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${hm}` : hm;
+            }
+            if (hastalikSonucu.karakterOldu) {
+              checkDeath(state, true, "Veba direncini kırdı; hastalıktan kurtulamadın.");
+            }
           }
           if (state.aktif) {
             const vebaBitisMesaji = vebaBitisKontrolEt(state);

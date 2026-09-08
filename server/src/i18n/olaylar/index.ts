@@ -50,6 +50,7 @@ import { OLAYLAR_SANAYI_TUCCAR_EN } from "./sanayiTuccar.en";
 import { OLAYLAR_SANAYI_DINADAMI_EN } from "./sanayiDinAdami.en";
 import { OLAYLAR_SANAYI_ASKER_EN } from "./sanayiAsker.en";
 import { OLAYLAR_KURESEL_EN } from "./kureselOlaylar.en";
+import { OLAYLAR_VEBA_HASTALIGI_EN } from "./vebaHastaligi.en";
 import { OLAYLAR_SAGLIK_TOPARLANMA_EN } from "./saglikToparlanma.en";
 import { OLAYLAR_ORTACAG_DINADAMI_EN } from "./ortaCagDinAdami.en";
 import { OLAYLAR_ORTACAG_TUCCAR_EN } from "./ortaCagTuccar.en";
@@ -79,6 +80,7 @@ const KAYIT: Record<string, OlayCeviri>[] = [
   OLAYLAR_SANAYI_DINADAMI_EN,
   OLAYLAR_SANAYI_ASKER_EN,
   OLAYLAR_KURESEL_EN,
+  OLAYLAR_VEBA_HASTALIGI_EN,
   OLAYLAR_SAGLIK_TOPARLANMA_EN,
   OLAYLAR_ORTACAG_DINADAMI_EN,
   OLAYLAR_ORTACAG_TUCCAR_EN,

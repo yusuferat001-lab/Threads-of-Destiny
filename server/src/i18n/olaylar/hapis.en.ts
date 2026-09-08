@@ -1418,4 +1418,100 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
     ],
   },
+
+  hapis_avlu_duvari: {
+    baslik: "The Yard Wall",
+    metin:
+      "During the daily exercise you noticed the mortar crumbling from the wall in the north corner of the yard. The watchtower can't quite see that corner. Climbing it takes a few seconds — but if you fall or get spotted, the price is steep.",
+    secenekler: [
+      {
+        metin: "Climb the wall as exercise ends and drop over.",
+        ipucu: "Succeed and you're free; get caught and you're beaten and your sentence grows",
+        basariliSonuc: {
+          mesaj: "The mortar crumbled in your hands but you held on; you dropped to the fields on the far side and started running. You're free.",
+          detay: "You ran without looking back.",
+        },
+        basarisizSonuc: {
+          mesaj: "Right at the top a guard shouted; you tumbled down, were met with clubs, and an 'escape attempt' was added to your sentence.",
+          detay: "Next time you'll have to wait longer.",
+        },
+      },
+      {
+        metin: "Give it up, go back in line.",
+        ipucu: "Safe; the sentence runs on unchanged",
+        basariliSonuc: {
+          mesaj: "You couldn't take the risk; you slipped back among the others quietly.",
+          detay: "Maybe another day, another wall.",
+        },
+        basarisizSonuc: {
+          mesaj: "Your hesitation on the way back caught a guard's eye; you were watched closely for a few extra days.",
+          detay: "Eyes on you.",
+        },
+      },
+    ],
+  },
+
+  hapis_camasir_arabasi: {
+    baslik: "The Laundry Cart",
+    metin:
+      "Once a week the dirty laundry is hauled out on a big horse cart. The driver is old and absent-minded. You could bury yourself under the soiled cloth and ride out through the gate that way.",
+    secenekler: [
+      {
+        metin: "Hide under the laundry, slip out with the cart.",
+        ipucu: "A quiet escape — or being searched and caught at the gate",
+        basariliSonuc: {
+          mesaj: "You held your breath as the cart passed the gate; a few streets on you climbed out of the cloth and melted into the crowd. You're free.",
+          detay: "No one looked at that laundry cart the same way again.",
+        },
+        basarisizSonuc: {
+          mesaj: "The gate guard routinely jabbed his bayonet into the pile; your scream gave you away. You were dragged back and your sentence extended.",
+          detay: "You hadn't counted on that routine jab.",
+        },
+      },
+      {
+        metin: "Too risky; don't try it this week.",
+        ipucu: "Safe; the sentence runs on unchanged",
+        basariliSonuc: {
+          mesaj: "You watched the cart and memorised the timing, but didn't jump in this time.",
+          detay: "Knowledge is piling up.",
+        },
+        basarisizSonuc: {
+          mesaj: "The waiting wore your spirits down a little more.",
+          detay: "The walls are patient.",
+        },
+      },
+    ],
+  },
+
+  hapis_sayim_karisikligi: {
+    baslik: "Confusion at Roll Call",
+    metin:
+      "A fight broke out at the evening roll call and the guards scattered. In the foggy yard, someone walking calmly toward the main gate might go unnoticed. Your heart is pounding.",
+    secenekler: [
+      {
+        metin: "Use the chaos, walk toward the gate.",
+        ipucu: "The boldest escape; if caught, your sentence grows badly",
+        basariliSonuc: {
+          mesaj: "No one turned to look; you walked out the gate and vanished into the fog. This escape will become legend in the ward.",
+          detay: "Sometimes the best plan is no plan.",
+        },
+        basarisizSonuc: {
+          mesaj: "Ten steps from the gate a guard grabbed your collar. A savage beating and a markedly longer sentence — it cost you dearly.",
+          detay: "They've marked you a 'flight risk' now.",
+        },
+      },
+      {
+        metin: "Stay put, wait out the count.",
+        ipucu: "Safe; the sentence runs on unchanged",
+        basariliSonuc: {
+          mesaj: "You stood still; the fight was put down and the count finished.",
+          detay: "The chance is gone, but your ribs are intact.",
+        },
+        basarisizSonuc: {
+          mesaj: "Caught in the middle of the brawl, you took a few elbows.",
+          detay: "Standing in the wrong spot takes skill too.",
+        },
+      },
+    ],
+  },
 };

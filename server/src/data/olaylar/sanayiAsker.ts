@@ -403,6 +403,8 @@ export const OLAY_SANAYI_ASKER: OlayTanimi[] = [
         ],
         ipucu: "Evlatların Büyüdü: Onların mahalle bilgisi düşman ateşinden korur",
         basariliSonuc: {
+          ahlak: -3,
+          mutluluk: -3,
           un: 30,
           para: 20,
           mesaj: "Büyüttüğün evlatlarından biri bölgeyi avucunun içi gibi biliyordu. Onun rehberliğinde düşman pusuya düşmeden hattı tamir ettiniz.",
@@ -471,6 +473,7 @@ export const OLAY_SANAYI_ASKER: OlayTanimi[] = [
           detay: "Diğer askerler senden çekinerek 'bir daha oynamam' dedi.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
           para: -25,
           mesaj: "Kötü bir gecendi; maaşının çoğunu masada bıraktın.",
           detay: "Ay sonuna kadar nasıl idare edeceğini düşünüyorsun.",
@@ -481,6 +484,8 @@ export const OLAY_SANAYI_ASKER: OlayTanimi[] = [
         baseBasariSansi: 90,
         ipucu: "Güvenli",
         basariliSonuc: {
+          ahlak: 3,
+          mutluluk: -1,
           mesaj: "Kumara bulaşmadın, parana da itibarına da bir şey olmadı.",
           detay: "Bazı arkadaşların 'sıkıcı' dese de sen kararına razısın.",
         },
@@ -533,6 +538,8 @@ export const OLAY_SANAYI_ASKER: OlayTanimi[] = [
           detay: "Söylediklerin tam gerçek değildi ama kimse bunu sorgulamadı.",
         },
         basarisizSonuc: {
+          mutluluk: -4,
+          para: -15,
           un: -10,
           mesaj: "Cephedeki askerler abartılı anlatımını okuyunca sana güvenini kaybetti.",
           detay: "Üstlerini memnun ettin ama yoldaşlarını hayal kırıklığına uğrattın.",
@@ -577,6 +584,9 @@ export const OLAY_SANAYI_ASKER: OlayTanimi[] = [
         baseBasariSansi: 90,
         ipucu: "Güvenli ama 'cesaretsiz' damgası riski",
         basariliSonuc: {
+          saglik: 2,
+          ahlak: 1,
+          mutluluk: -1,
           mesaj: "Reddettin; komutanın kaşları çatıldı ama sağlığın yerinde.",
           detay: "Bazı güvenceler itibardan daha değerlidir.",
         },
