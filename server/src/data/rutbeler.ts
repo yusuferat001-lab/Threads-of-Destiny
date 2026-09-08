@@ -33,15 +33,19 @@ export const TERFI_COOLDOWN: Record<number, number> = { 2: 0, 3: 2, 4: 2, 5: 8 }
 /**
  * Seviye 1..5 için maaşa çarpımsal, kalıcı rütbe primi (hesaplaMaasYillik içinde
  * TEK bir çarpan kalemi olarak girer — kıdem/itibar/enflasyonla da çarpılır).
- * BİLEŞİK: her kademe bir öncekinin ~%15 üstü (1.15^(seviye-1)). Yani S3 primi
- * "S2 primi × 1.15"tir, baz maaşa göre ayrı bir +%X değil — S1..S5 sırasıyla
- * ×1.00 / ×1.15 / ×1.32 / ×1.52 / ×1.75. (1.2 → 1.1 → 1.15: rütbe ilerlemesi
- * geç oyunda gelir tarafında daha görünür olsun; orta-yaş borç kaymasını hafifletir.)
+ * BİLEŞİK: her kademe bir öncekinin üstüne kademeye özgü bir yüzde bindirir.
+ * Kademe artışları sırasıyla %15 · %12 · %12 · %11 · %10 (… diye devam eder) —
+ * yani S2 = S1 ×1.15, S3 = S2 ×1.12, S4 = S3 ×1.12, S5 = S4 ×1.11. S1..S5
+ * sonuçları ≈ ×1.00 / ×1.15 / ×1.29 / ×1.44 / ×1.60.
  */
-const RUTBE_MAAS_ARTIS_ORANI = 1.15;
-export const RUTBE_MAAS_CARPANI: [number, number, number, number, number] = [0, 1, 2, 3, 4].map(
-  (i) => Math.round(Math.pow(RUTBE_MAAS_ARTIS_ORANI, i) * 100) / 100
-) as [number, number, number, number, number];
+const RUTBE_MAAS_ARTIS_ORANLARI = [0.15, 0.12, 0.12, 0.11, 0.1];
+export const RUTBE_MAAS_CARPANI: [number, number, number, number, number] = (() => {
+  const carpanlar: number[] = [1];
+  for (let i = 1; i < 5; i++) {
+    carpanlar.push(carpanlar[i - 1] * (1 + RUTBE_MAAS_ARTIS_ORANLARI[i - 1]));
+  }
+  return carpanlar.map((c) => Math.round(c * 100) / 100) as [number, number, number, number, number];
+})();
 
 /** Hayatta geçen her yıl için pasif kıdem kazancı (kariyer_puani). */
 export const KARIYER_PUANI_YILLIK = 2;

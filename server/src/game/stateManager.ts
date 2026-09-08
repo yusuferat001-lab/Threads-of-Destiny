@@ -356,10 +356,10 @@ export function sehirYonetimUnvanGetir(meslek: string, seviye: number): string |
 }
 
 /**
- * Şehir yönetimine bir kez girmek maaşa kalıcı, SABİT +%8 katar — seviyeyle
+ * Şehir yönetimine bir kez girmek maaşa kalıcı, SABİT +%3 katar — seviyeyle
  * ölçeklenmez (seviye/unvan yalnızca prestij içindir, maaşa ek katkısı yoktur).
  */
-const SEHIR_YONETIM_MAAS_CARPANI_ADIM = 0.08;
+const SEHIR_YONETIM_MAAS_CARPANI_ADIM = 0.03;
 
 export function sehirYonetimMaasCarpani(seviye: number): number {
   return seviye >= 1 ? 1 + SEHIR_YONETIM_MAAS_CARPANI_ADIM : 1;

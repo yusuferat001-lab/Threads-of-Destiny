@@ -242,6 +242,8 @@ function App() {
 
   const [isim, setIsim] = useState('');
   const [kaydedildi, setKaydedildi] = useState(false);
+  // Otomatik skor kaydı denendi ve başarısız oldu → ölüm ekranında elle kayıt formunu yedek olarak göster.
+  const [otoKayitBasarisiz, setOtoKayitBasarisiz] = useState(false);
 
   const [liderlikTuru, setLiderlikTuru] = useState<SiralamaTuru>('genel');
   const [liderlik, setLiderlik] = useState<ScoreKaydi[]>([]);
@@ -277,6 +279,9 @@ function App() {
   // Mobilde: her tur / her sonuç ekranında merkez paneli (olay + seçenekler) görünür alana
   // kaydırır — oyuncu üst şeridi/sol paneli geçip aramak zorunda kalmasın.
   const merkezAltRef = useRef<HTMLDivElement | null>(null);
+  // Ölümde skorun otomatik kaydedilmesi denendi mi (oturum id başına tek sefer) —
+  // StrictMode çift-render'ında ve tekrar render'larda ikinci bir POST /api/scores atmamak için.
+  const otoSkorKaydiRef = useRef<string | null>(null);
   const mobil = useMobil();
 
   function sesToggle() {
@@ -453,6 +458,35 @@ function App() {
       setYeniBasarimlar(yeniAcilanlar);
     }
   }, [ekran, karakter]);
+
+  // Oynanan her oyun ölünce liderlik tablosuna OTOMATİK eklenir — oyuncu artık
+  // ölüm ekranında isim yazıp "kaydet" demek zorunda değil (isim zaten oyun
+  // başında alınıyor; boşsa sunucu rastgele atamıştı). Elle kayıt formu yalnız
+  // otomatik deneme başarısız olursa yedek olarak görünür kalır.
+  useEffect(() => {
+    if (ekran !== 'olum' || !karakter) return;
+    if (kaydedildi) return;
+    if (karakter.skoru_kaydedildi) {
+      setKaydedildi(true);
+      return;
+    }
+    if (otoSkorKaydiRef.current === karakter.id) return;
+    otoSkorKaydiRef.current = karakter.id;
+    const ad = (karakter.isim || '').trim() || (dil === 'en' ? 'Nameless' : 'İsimsiz');
+    let iptal = false;
+    (async () => {
+      try {
+        await skorKaydet(karakter.id, ad);
+        if (!iptal) setKaydedildi(true);
+      } catch {
+        // Otomatik kayıt tutmadı (ağ/hız sınırı) → elle kayıt formunu yedek olarak aç.
+        if (!iptal) setOtoKayitBasarisiz(true);
+      }
+    })();
+    return () => {
+      iptal = true;
+    };
+  }, [ekran, karakter, kaydedildi, dil]);
 
   // Sayfa yenilenince (ya da sekme kapatılıp geri açılınca) kaldığı yerden devam etmeyi dener;
   // sunucudaki oyun kalıcı olduğu için sadece tarayıcıdaki bağlantı (state.id) unutuluyordu.
@@ -954,6 +988,8 @@ function App() {
     setHata(null);
     setIsim('');
     setKaydedildi(false);
+    setOtoKayitBasarisiz(false);
+    otoSkorKaydiRef.current = null;
     setSecilenCag(null);
     setSecilenBolge(null);
     setSecilenYerlesim(null);
@@ -1884,7 +1920,9 @@ function App() {
           <GecmisGrafik gecmis={karakter.gecmis} paraBirimi={karakter.para_birimi} />
           <HayatHikayesi hikaye={karakter.hayat_hikayesi} />
 
-          {!kaydedildi ? (
+          {kaydedildi ? (
+            <p>{m.skorKaydedildi}</p>
+          ) : otoKayitBasarisiz ? (
             <div className="isim-form">
               <input
                 value={isim}
@@ -1897,7 +1935,7 @@ function App() {
               </button>
             </div>
           ) : (
-            <p>{m.skorKaydedildi}</p>
+            <p className="olum-ozet">{m.skorKaydediliyor}</p>
           )}
 
           <div className="olum-butonlari">

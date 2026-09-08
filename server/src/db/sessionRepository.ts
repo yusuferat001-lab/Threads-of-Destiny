@@ -23,6 +23,16 @@ export async function aktifOturumlariYukle(): Promise<CharacterState[]> {
   return kayitlar.map((k) => JSON.parse(k.data) as CharacterState);
 }
 
+/**
+ * Bitmiş (ölümle sonuçlanmış) oturumları döndürür — server açılışında skoru hâlâ
+ * kaydedilmemiş geçmiş oyunları liderlik tablosuna geçirmek için (`gecmisSkorlariKaydet`).
+ * 7 günlük temizlik yüzünden yalnız son ~1 haftanın bitmiş oturumları burada olur.
+ */
+export async function bitmisOturumlariYukle(): Promise<CharacterState[]> {
+  const kayitlar = await prisma.session.findMany({ where: { aktif: false } });
+  return kayitlar.map((k) => JSON.parse(k.data) as CharacterState);
+}
+
 export async function oturumSil(id: string): Promise<void> {
   await prisma.session.deleteMany({ where: { id } });
 }

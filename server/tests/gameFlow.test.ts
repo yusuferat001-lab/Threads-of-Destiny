@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { yeniOyun, mesleğiAta, senaryoUret, secimUygula, liderlikTablosunaKaydet } from "../src/game/gameEngine";
+import { yeniOyun, mesleğiAta, senaryoUret, secimUygula, liderlikTablosunaKaydet, gecmisSkorlariKaydet } from "../src/game/gameEngine";
 import { skorKaydet } from "../src/db/scoreRepository";
 import { secimUygulaVeCoz } from "./testUtils";
 
@@ -93,6 +93,22 @@ describe("kritik oyun akışı: yeni oyun → meslek → seçim → ölüm → s
     await expect(liderlikTablosunaKaydet(sonState.id, "İkinci Sahte İsim")).rejects.toThrow(
       "skor zaten kaydedildi"
     );
+  });
+
+  it("gecmisSkorlariKaydet: skoru kaydedilmemiş bitmiş oyunları liderliğe geçirir, ikinci çağrıda tekrar etmez", async () => {
+    const sonState = await oyunuOlumeKadarOyna("Asker");
+    expect(sonState.aktif).toBe(false);
+    expect(sonState.skoru_kaydedildi).toBe(false);
+
+    const ilk = await gecmisSkorlariKaydet();
+    expect(ilk).toBeGreaterThanOrEqual(1);
+
+    // İkinci çağrı: artık skoru_kaydedildi=true olduğu için hiçbirini tekrar eklemez.
+    const ikinci = await gecmisSkorlariKaydet();
+    expect(ikinci).toBe(0);
+
+    // Aynı oyunu elle kaydetmek de artık reddedilir (spam engeli tutuyor).
+    await expect(liderlikTablosunaKaydet(sonState.id, "Elle")).rejects.toThrow("skor zaten kaydedildi");
   });
 
   it("kilitli bir seçenek uygulanmaya çalışıldığında hata fırlatır", async () => {

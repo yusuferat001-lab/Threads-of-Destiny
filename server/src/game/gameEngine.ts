@@ -100,7 +100,8 @@ import {
 import { tarihiSavasKontrol } from "../data/tarihiSavaslar";
 import { GIZEMLI_ESYA_TAKIP_HAVUZU } from "../data/gizemliEsyalar";
 import { yerlesimGetir } from "../data/yerlesimler";
-import { oturumKaydet, oturumYukle, aktifOturumlariYukle, oturumYasiSaniye } from "../db/sessionRepository";
+import { oturumKaydet, oturumYukle, aktifOturumlariYukle, bitmisOturumlariYukle, oturumYasiSaniye } from "../db/sessionRepository";
+import { uygunsuzMu } from "../moderasyon/kufurFiltresi";
 import { metrikYaz } from "../db/metrikRepository";
 import { MULK_TANIMLARI, mulkTanimiGetir } from "../data/mulkler";
 import {
@@ -283,6 +284,51 @@ export async function oturumlariYukle(): Promise<number> {
     });
   }
   return stateler.length;
+}
+
+/**
+ * Server açılışında, DB'de hâlâ duran bitmiş (ölmüş) oturumlardan skoru henüz
+ * kaydedilmemiş olanları liderlik tablosuna otomatik geçirir — istemci "kaydet"
+ * demeden ölen ya da eski istemciyle oynanan geçmiş oyunlar da tabloya girsin.
+ * İsim `state.isim`'den alınır (boş/uygunsuzsa "İsimsiz"). `skoru_kaydedildi`
+ * bayrağıyla tekilleştirilir: sonraki restart'larda aynı oyun tekrar eklenmez.
+ * 7 günlük oturum temizliği yüzünden yalnız son ~1 haftanın oyunları kurtarılır.
+ */
+export async function gecmisSkorlariKaydet(): Promise<number> {
+  let kaydedilen = 0;
+  let stateler: CharacterState[];
+  try {
+    stateler = await bitmisOturumlariYukle();
+  } catch (err) {
+    console.error("Geçmiş skorlar okunamadı:", err);
+    return 0;
+  }
+  for (const state of stateler) {
+    if (state.aktif || state.skoru_kaydedildi) continue;
+    eskiKayitGocu(state);
+    let isim = (state.isim ?? "").trim().slice(0, 40);
+    if (!isim || uygunsuzMu(isim)) isim = "İsimsiz";
+    try {
+      await skoruDbyeYaz(state, isim);
+      state.skoru_kaydedildi = true;
+      await oturumKaydet(state);
+      const bellek = oturumlar.get(state.id);
+      if (bellek) bellek.state.skoru_kaydedildi = true;
+      void metrikYaz({
+        tur: "skor_kaydi",
+        oturum_id: state.id,
+        cag: state.cag,
+        bolge: state.bolge,
+        meslek: state.meslek,
+        yas: state.yas,
+        skor: hesaplaSkor(state),
+      });
+      kaydedilen++;
+    } catch (err) {
+      console.error(`Geçmiş skor kaydedilemedi (${state.id}):`, err);
+    }
+  }
+  return kaydedilen;
 }
 
 async function oturumGetir(id: string): Promise<Oturum> {

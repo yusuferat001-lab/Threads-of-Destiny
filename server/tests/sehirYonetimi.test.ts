@@ -95,10 +95,10 @@ describe("şehir yönetimi (en üst rütbe sonrası sonsuz ilerleme)", () => {
     expect(yirmiSeviye).toBe(birSeviye); // daha yüksek seviye maaşa ek katkı sağlamaz
   });
 
-  it("sehirYonetimMaasCarpani girilmişse 1.08, girilmemişse 1.0 döner", () => {
+  it("sehirYonetimMaasCarpani girilmişse 1.03, girilmemişse 1.0 döner", () => {
     expect(sehirYonetimMaasCarpani(0)).toBeCloseTo(1);
-    expect(sehirYonetimMaasCarpani(1)).toBeCloseTo(1.08);
-    expect(sehirYonetimMaasCarpani(10)).toBeCloseTo(1.08);
-    expect(sehirYonetimMaasCarpani(100)).toBeCloseTo(1.08);
+    expect(sehirYonetimMaasCarpani(1)).toBeCloseTo(1.03);
+    expect(sehirYonetimMaasCarpani(10)).toBeCloseTo(1.03);
+    expect(sehirYonetimMaasCarpani(100)).toBeCloseTo(1.03);
   });
 });

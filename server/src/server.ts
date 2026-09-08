@@ -9,7 +9,7 @@ import { gameRouter } from "./routes/game.routes";
 import { scoreRouter } from "./routes/score.routes";
 import { geriBildirimRouter } from "./routes/geriBildirim.routes";
 import { istatistikRouter } from "./routes/istatistik.routes";
-import { oturumlariYukle, oturumlariBellektenTemizle } from "./game/gameEngine";
+import { oturumlariYukle, oturumlariBellektenTemizle, gecmisSkorlariKaydet } from "./game/gameEngine";
 import { eskiOturumlariTemizle } from "./db/sessionRepository";
 
 const app = express();
@@ -134,6 +134,14 @@ async function basla() {
   const yuklenenSayisi = await oturumlariYukle();
   if (yuklenenSayisi > 0) {
     console.log(`${yuklenenSayisi} aktif oturum DB'den geri yüklendi.`);
+  }
+  try {
+    const gecmisSkorSayisi = await gecmisSkorlariKaydet();
+    if (gecmisSkorSayisi > 0) {
+      console.log(`${gecmisSkorSayisi} geçmiş oyun liderlik tablosuna eklendi.`);
+    }
+  } catch (err) {
+    console.error("Geçmiş skorlar kaydedilemedi:", err);
   }
   periyodikTemizlemeyiBaslat();
   app.listen(PORT, () => {

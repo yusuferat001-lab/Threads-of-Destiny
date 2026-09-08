@@ -917,14 +917,14 @@ a.giris-imza-isim:hover {
 .nasil-bolum h3 {
   margin: 0;
   font-size: 1rem;
-  color: var(--renk-altin);
+  color: #5f3c22;
   letter-spacing: 0.02em;
 }
 .nasil-bolum p {
   margin: 0;
   font-size: 0.88rem;
   line-height: 1.55;
-  color: #d8ccae;
+  color: var(--renk-parsomen-metin);
 }
 .nasil-bolum ul {
   margin: 0.1rem 0 0;
@@ -936,7 +936,7 @@ a.giris-imza-isim:hover {
 .nasil-bolum li {
   font-size: 0.82rem;
   line-height: 1.5;
-  color: #c7bd9f;
+  color: #3a2817;
 }
 .nasil-bolum li::marker {
   color: var(--renk-altin-koyu);

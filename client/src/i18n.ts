@@ -163,7 +163,8 @@ const TR = {
     '{0} yılı. {1} yaşında, {2} ({3}) olarak, {4} topraklarında hayatını kaybetti. {5} ailesinin çocuğuydu.',
   isimGir: 'İsmini gir',
   btnSkoruKaydet: 'Skoru Kaydet',
-  skorKaydedildi: 'Skorun kaydedildi.',
+  skorKaydedildi: 'Skorun liderlik tablosuna kaydedildi.',
+  skorKaydediliyor: 'Skorun liderlik tablosuna kaydediliyor…',
   btnLiderlikTablosu: 'Liderlik Tablosu',
 
   // ---- Liderlik ----
@@ -765,7 +766,8 @@ const EN: Metinler = {
     'The year {0}. Died at {1}, as {2} ({3}), in the lands of {4}. They were the child of a {5} family.',
   isimGir: 'Enter your name',
   btnSkoruKaydet: 'Save Score',
-  skorKaydedildi: 'Your score has been saved.',
+  skorKaydedildi: 'Your score has been saved to the leaderboard.',
+  skorKaydediliyor: 'Saving your score to the leaderboard…',
   btnLiderlikTablosu: 'Leaderboard',
 
   // ---- Leaderboard ----

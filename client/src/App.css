@@ -383,31 +383,40 @@ button.ikincil {
   gap: 0.6rem;
 }
 
+/* Modal gövdesi açık ekru — kartlar da açık zeminli + koyu mürekkep yazı olmalı
+   (eski koyu panel zemininde yazı okunmuyordu). */
 .basarim-karti {
-  border: 2px solid var(--renk-ahsap-kenar);
+  border: 1px solid var(--renk-ekru-kenar);
   border-radius: 6px;
   padding: 0.6rem;
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  background: var(--renk-ahsap-panel);
+  background: var(--renk-ekru-parlak);
+  color: var(--renk-parsomen-metin);
 }
 
 .basarim-karti-kilitli {
-  opacity: 0.55;
+  opacity: 0.62;
 }
 
 .basarim-karti-acik {
-  border-color: var(--renk-altin-parlak);
+  border-color: var(--muhur-kirmizi-parlak);
+  background: #fff;
+  box-shadow: 0 0 0 1px rgba(176, 64, 47, 0.25);
 }
 
 .basarim-karti-ikon {
   font-size: 1.4rem;
 }
 
+.basarim-karti strong {
+  color: #4a2f1c;
+}
+
 .basarim-karti-aciklama {
   font-size: 0.78rem;
-  opacity: 0.8;
+  color: var(--renk-parsomen-metin-soluk);
 }
 
 .olum-yeni-basarimlar {
