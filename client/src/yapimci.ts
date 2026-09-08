@@ -15,5 +15,5 @@ export interface YapimciBilgisi {
 export const YAPIMCI: YapimciBilgisi = {
   isim: 'Yusuf Erat',
   tanitim: 'Kader Çarkı\'nın tasarımcısı ve geliştiricisi.',
-  linkedin: '', // TODO: tam LinkedIn URL'sini buraya yapıştır — boş kalırsa link gösterilmez.
+  linkedin: 'https://www.linkedin.com/in/yusuf-erat-26a152262/',
 };
