@@ -280,6 +280,123 @@ button.ikincil {
   opacity: 0.7;
 }
 
+/* Giriş: Yol Haritası + Yapımcı panelleri */
+.yol-haritasi-liste {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.yol-haritasi-madde {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  font-size: 0.85rem;
+  border-left: 3px solid var(--renk-ahsap-kenar);
+  padding-left: 0.5rem;
+}
+
+.yol-haritasi-madde.yol-haritasi-tamam {
+  border-left-color: #4c9a5b;
+}
+.yol-haritasi-madde.yol-haritasi-yapiliyor {
+  border-left-color: var(--renk-altin-parlak);
+}
+
+.yol-haritasi-durum {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.8;
+}
+
+.yol-haritasi-not {
+  font-size: 0.78rem;
+  opacity: 0.7;
+}
+
+.giris-panel-yapimci .yapimci-isim {
+  margin: 0;
+  font-weight: 700;
+  color: var(--renk-altin-parlak);
+}
+
+.giris-panel-yapimci .yapimci-tanitim {
+  margin: 0;
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+
+.yapimci-linkedin {
+  align-self: flex-start;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--renk-altin-parlak);
+  text-decoration: none;
+  border: 1px solid var(--renk-ahsap-kenar);
+  border-radius: 4px;
+  padding: 0.2rem 0.55rem;
+}
+.yapimci-linkedin:hover {
+  background: var(--renk-ahsap-kenar);
+}
+
+.ekran-giris .giris-gorus-cta {
+  width: auto;
+  max-width: none;
+  margin: 0.6rem auto 0;
+  font-size: 0.85rem;
+}
+
+/* Başarım galerisi */
+.basarim-galeri-modal {
+  max-width: 720px;
+}
+
+.basarim-galeri-izgara {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.6rem;
+}
+
+.basarim-karti {
+  border: 2px solid var(--renk-ahsap-kenar);
+  border-radius: 6px;
+  padding: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  background: var(--renk-ahsap-panel);
+}
+
+.basarim-karti-kilitli {
+  opacity: 0.55;
+}
+
+.basarim-karti-acik {
+  border-color: var(--renk-altin-parlak);
+}
+
+.basarim-karti-ikon {
+  font-size: 1.4rem;
+}
+
+.basarim-karti-aciklama {
+  font-size: 0.78rem;
+  opacity: 0.8;
+}
+
+.olum-yeni-basarimlar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+  margin: 0.6rem 0;
+}
+
 .gecmis-hayat-liste,
 .giris-liderlik-liste {
   list-style: none;
@@ -2692,6 +2809,20 @@ button.ikincil {
   grid-template-columns: repeat(auto-fill, minmax(230px, 270px));
 }
 
+/* ---- Evlilik ekranı ---- */
+
+.evlilik-kartlari {
+  grid-template-columns: repeat(auto-fill, minmax(230px, 300px));
+}
+
+.evlilik-kart {
+  gap: 0.4rem;
+}
+
+.evlilik-kart button.birincil {
+  margin-top: auto;
+}
+
 .sosyallesme-kart-alkollu {
   border-color: #6b2a2a;
 }
@@ -3556,8 +3687,23 @@ button.ikincil {
     overflow-y: visible;
     /* Masaüstündeki -vh tabanlı taşma payı burada işe yaramaz: sahne artık flex:1 değil,
        sabit en-boy oranıyla (16/9) SADECE genişliğe göre boyutlanıyor — bu yüzden taşma
-       miktarı da sahne yüksekliğiyle orantılı olsun diye vw tabanlı hesaplanır. */
-    margin-top: clamp(-1.5rem, -5.4vw, -0.75rem);
+       miktarı da sahne yüksekliğiyle orantılı olsun diye vw tabanlı hesaplanır. Değer
+       masaüstünden küçültüldü: .tur-ozeti artık mobilde tam metni gösterip doğal olarak
+       uzayabildiği için, büyük bir taşma kartın sahne/hotspot'larla görsel olarak iç içe
+       girmesine (okunamaz hale gelmesine) yol açıyordu. */
+    margin-top: clamp(-0.6rem, -2vw, -0.3rem);
+  }
+
+  /* Mobilde title tooltip'i (dokunmatik ekranda hiç tetiklenmiyor) tek erişim yolu
+     olduğu için 2 satırlık kırpma, sonuç metninin geri kalanını tamamen erişilemez
+     kılıyordu ("olay sonucu iç içe giriyor, okunamıyor"). Mobilde kırpma tamamen
+     kaldırılır — sayfa zaten doğal olarak kayabiliyor, tam metin görünür olur. */
+  .tur-ozeti {
+    display: block;
+    -webkit-line-clamp: unset;
+    line-clamp: unset;
+    overflow: visible;
+    max-width: 100%;
   }
 
   .ust-serit {

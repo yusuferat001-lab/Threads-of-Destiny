@@ -23,7 +23,9 @@ describe("mülk getiri hesabı — dünya durumuna göre", () => {
     const iyi = taze();
     iyi.ulke.ekonomi = "iyi";
     const oranIyi = mulkGetiriOraniHesapla("ciftlik", iyi.ulke);
-    expect(oranIyi).toBeGreaterThanOrEqual(0.2); // MULK_GETIRI_AVANTAJLI = 0.20 (avantajlı taban)
+    // Büyük denge turu: AVANTAJLI = 0.085, tüm oranlar ±0.09'a kırpılır.
+    expect(oranIyi).toBeGreaterThan(0.04); // NORMAL'in üstünde
+    expect(oranIyi).toBeLessThanOrEqual(0.09); // tavan
 
     const kitlik = taze();
     kitlik.ulke.kriz = { tur: "kitlik", bitisYili: 9999 };
@@ -35,12 +37,13 @@ describe("mülk getiri hesabı — dünya durumuna göre", () => {
     const avantajli = taze();
     avantajli.ulke.nufusDurumu = "artiyor";
     const oranAvantajli = mulkGetiriOraniHesapla("han", avantajli.ulke);
-    expect(oranAvantajli).toBeGreaterThanOrEqual(0.2); // MULK_GETIRI_AVANTAJLI = 0.20
+    expect(oranAvantajli).toBeGreaterThan(0.04); // NORMAL'in üstünde (AVANTAJLI = 0.075)
+    expect(oranAvantajli).toBeLessThanOrEqual(0.09);
 
     const veba = taze();
     veba.ulke.vebada = true;
     const oranVeba = mulkGetiriOraniHesapla("han", veba.ulke);
-    expect(oranVeba).toBeLessThan(-0.15);
+    expect(oranVeba).toBeLessThan(-0.01); // DEZAVANTAJLI(-0.02) * 1.3
   });
 
   it("demirci: savaşta getirisi normalin en az 2 katı", () => {
@@ -58,7 +61,7 @@ describe("mülk getiri hesabı — dünya durumuna göre", () => {
     const savasState = taze();
     savasState.ulke.savasta = true;
     const oranSavas = mulkGetiriOraniHesapla("karaborsa", savasState.ulke);
-    expect(oranSavas).toBeGreaterThan(0.2);
+    expect(oranSavas).toBeGreaterThanOrEqual(0.07); // AVANTAJLI(0.075) * 1.2 → 0.09, ±0.08 tavanına kırpılı
 
     const barisState = taze();
     const oranBaris = mulkGetiriOraniHesapla("karaborsa", barisState.ulke);
@@ -101,16 +104,15 @@ describe("mülk getiri hesabı — dünya durumuna göre", () => {
 });
 
 describe("suç seviyesi pasif azalma", () => {
-  it("zamanla doğal olarak azalır, taban 0'ın altına inmez", () => {
+  it("artık zamanla düşmez, sabit kalır (ekonomi sıkılaştırma turu)", () => {
     const state = taze();
     state.suc_seviyesi = 10;
     sucSeviyesiUygula(state, 3);
-    expect(state.suc_seviyesi).toBeLessThan(10);
-    expect(state.suc_seviyesi).toBeGreaterThanOrEqual(0);
+    expect(state.suc_seviyesi).toBe(10);
 
     state.suc_seviyesi = 1;
     sucSeviyesiUygula(state, 10);
-    expect(state.suc_seviyesi).toBe(0);
+    expect(state.suc_seviyesi).toBe(1);
   });
 });
 
@@ -155,12 +157,12 @@ describe("gameEngine entegrasyonu — mülk/zar/dedikodu aksiyonları", () => {
     await expect(mulkSatinAl(state.id, "kervan")).rejects.toThrow();
   });
 
-  it("mulkConfigGetir: 5 mülkün tamamını, güncel maliyet/getiri ile döner", async () => {
+  it("mulkConfigGetir: 6 mülkün tamamını, güncel maliyet/getiri ile döner", async () => {
     const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
     await mesleğiAta(state.id, "Tüccar");
     const config = await mulkConfigGetir(state.id);
-    expect(config).toHaveLength(5);
-    expect(config.map((m) => m.tur).sort()).toEqual(["ciftlik", "demirci", "han", "karaborsa", "kervan"]);
+    expect(config).toHaveLength(6);
+    expect(config.map((m) => m.tur).sort()).toEqual(["ciftlik", "demirci", "han", "karaborsa", "kervan", "kucuk_tarla"]);
     for (const mulk of config) {
       expect(mulk.maliyet).toBeGreaterThan(0);
       expect(mulk.sahipMi).toBe(false);

@@ -32,7 +32,7 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         },
         basarisizSonuc: {
           mutluluk: -5,
-          suc_artis: 25,
+          suc_artis: 35,
           mesaj: "Sakin durmana rağmen içlerinden biri bir şeyden şüphelendi; adını bir deftere yazdılar.",
           detay: "Artık gözleri üstünde.",
         },
@@ -47,7 +47,7 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         },
         basarisizSonuc: {
           saglik: -5,
-          suc_artis: 25,
+          suc_artis: 35,
           mesaj: "Omzundan yakalandın; kaçmaya çalışman tam da şüphelenecekleri şeyi yaptı.",
           detay: "Artık resmen aranıyorsun.",
         },
@@ -85,14 +85,14 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         basariliSonuc: {
           mutluluk: 10,
           ahlak: -5,
-          suc_artis: 25,
+          suc_artis: 35,
           mesaj: "Adamı yere serdin; meyhane seni alkışladı ama gürültü sokaktaki devriyenin dikkatini çekti.",
           detay: "Zafer bazen bedava değildir.",
         },
         basarisizSonuc: {
           saglik: -15,
           ahlak: -5,
-          suc_artis: 25,
+          suc_artis: 35,
           mesaj: "Adam senden güçlü çıktı; kavga sokağa taştı ve devriye ikinizi de not aldı.",
           detay: "Şimdi hem yaralısın hem de bir dosyaya girdin.",
         },
@@ -135,7 +135,7 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
           detay: "Bu sefer haklı çıkan sendin.",
         },
         basarisizSonuc: {
-          suc_artis: 25,
+          suc_artis: 35,
           mutluluk: -5,
           mesaj: "Tahsildar itirazını 'devlete karşı gelmek' diye deftere geçirdi.",
           detay: "Artık resmi kayıtlarda adın var.",
@@ -179,7 +179,7 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         basarisizSonuc: {
           para: 10,
           ahlak: -8,
-          suc_artis: 25,
+          suc_artis: 35,
           mesaj: "İş yarım kaldı, üstüne bir de gözcüler seni fark etti.",
           detay: "Artık bu çevrede adın biliniyor — hiç de iyi anlamda değil.",
         },
@@ -223,7 +223,7 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
           detay: "Bazen tek gereken biraz sakinlik.",
         },
         basarisizSonuc: {
-          suc_artis: 25,
+          suc_artis: 35,
           mesaj: "Cevapların tatmin etmedi; adın şimdi resmi olarak işaretlendi.",
           detay: "Şüphe iyice büyüdü.",
         },
@@ -267,7 +267,7 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         },
         basarisizSonuc: {
           para: -10,
-          suc_artis: 25,
+          suc_artis: 35,
           mesaj: "Müfettiş inatçılığını 'işbirliğine yanaşmamak' olarak üst makama bildirdi.",
           detay: "Şimdi eskisinden daha dikkatli izleniyorsun.",
         },
@@ -354,7 +354,7 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
           detay: "Bazen sabır en ucuz çözümdür.",
         },
         basarisizSonuc: {
-          suc_artis: 25,
+          suc_artis: 35,
           mesaj: "Sessizliğin, dedikodunun doğru olduğu izlenimini güçlendirdi; söylenti resmi kulaklara ulaştı.",
           detay: "Şimdi seni gerçekten arıyorlar.",
         },
@@ -399,7 +399,7 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         },
         basarisizSonuc: {
           saglik: -8,
-          suc_artis: 25,
+          suc_artis: 35,
           mesaj: "Görevli blöf yaptığını anladı ve arama emrini gerçekten çıkardı; ev alt üst edildi.",
           detay: "Şimdi hakkındaki dosya iyice kabardı.",
         },
@@ -445,7 +445,7 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         },
         basarisizSonuc: {
           para: -15,
-          suc_artis: 25,
+          suc_artis: 35,
           mesaj: "Teklifini hakaret sayıp öfkeyle ayrıldı — ve doğruca yetkililere gitti.",
           detay: "Cimrilik bu sefer pahalıya patladı.",
         },
@@ -489,7 +489,7 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         },
         basarisizSonuc: {
           para: -10,
-          suc_artis: 25,
+          suc_artis: 35,
           mesaj: "İtirazın 'küstahlık' sayıldı; dosyana yeni bir not daha eklendi.",
           detay: "Şimdi eskisinden de dikkatli izleniyorsun.",
         },
@@ -533,7 +533,7 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         },
         basarisizSonuc: {
           saglik: -10,
-          suc_artis: 25,
+          suc_artis: 35,
           mesaj: "Çabana rağmen bir detayı gözden kaçırdın; denetim seni haklı çıkardı.",
           detay: "Görevliler artık seni resmi bir tehdit sayıyor.",
         },
@@ -628,7 +628,7 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         },
         basarisizSonuc: {
           para: -28,
-          suc_artis: 25,
+          suc_artis: 35,
           mesaj: "Mahalleni sustursan da ihbar başka bir semtten geldi; üstüne bir de para harcamış oldun.",
           detay: "Dar kapsamlı çözümler dar kapsamlı kalıyor.",
         },
@@ -1377,7 +1377,7 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         basariliSonuc: {
           etiket_sil: ["kacak"],
           suc_seviyesi_ayarla: 10,
-          mutluluk: 15,
+          mutluluk: 12,
           mesaj: "Şehre girdiğinde kimse dönüp bakmadı bile; adın gerçekten unutulmuş.",
           detay: "Yıllar sonra ilk kez, korkmadan sokakta yürüdün.",
         },

@@ -216,8 +216,8 @@ export const KATALOG_EN: Record<string, string> = {
   "Şato": "Castle",
   "Neredeyse bedava ama nemli, soğuk ve sağlıksız; burada sürekli yaşamak bedenini, moralini ve itibarını yıpratır. Sadece geçici bir dip.":
     "Almost free, but damp, cold and unhealthy; living here for long wears down your body, your spirits and your reputation. Only a temporary low point.",
-  "Sağlam sayılmaz ama bir çatı; yine de bakımsız ve dar — sağlığını, moralini ve adını yavaş yavaş aşındırır. İlk fırsatta gerçek bir eve geçmek gerekir.":
-    "Hardly sturdy, but a roof; still, it is run-down and cramped — it slowly erodes your health, your spirits and your name. Move to a real house at the first chance.",
+  "Ucuz ve gösterişsiz ama kendi tempon var; komşularla iç içe, dar ve bakımsız bir çatı sağlığını ve adını biraz aşındırsa da, kimseye hesap vermeyen bu sade hayat sana huzur veriyor.":
+    "Cheap and unassuming, but it's your own pace; a cramped, run-down roof packed in among neighbors chips a little at your health and name, yet this simple life answering to no one gives you peace.",
   "Sıradan ama gerçek bir yuva; kendi dört duvarının verdiği küçük bir huzur var. Artık ev seni yıpratmıyor.":
     "Plain but a real home; there is a small peace in having your own four walls. The house no longer wears you down.",
   "Sağlam duvarları ve ayrı odalarıyla gerçek bir konfor sunar; komşuların arasında adın biraz daha anılır. Sofranı da bu seviyeye yakın tutmak (Normal ya da İyi Ye) genelde daha tutarlı bir hayat demek.":
@@ -320,11 +320,15 @@ export const KATALOG_EN: Record<string, string> = {
   // ---------------------------------------------------------------------------
   // Piyasa mülkleri
   // ---------------------------------------------------------------------------
+  "Küçük Tarla": "Small Plot",
   "Buğday Tarlası": "Wheat Field",
   "Demirci Atölyesi": "Blacksmith's Workshop",
   "Şehir Hanı": "City Inn",
   "Ticaret Kervanı": "Trade Caravan",
   "Karaborsa Deposu": "Black Market Warehouse",
+  "En ucuz ve en istikrarlı yatırım: getirisi küçük ama kıtlıkta bile neredeyse hiç zarar ettirmez. Garanti arayan için.":
+    "The cheapest, steadiest investment: small returns, but it barely loses money even in a famine. For those who want a sure thing.",
+  "Kıtlık (küçük kayıp)": "Famine (small loss)",
   "Ekonomi iyiyken bereketli bir hasat getirir; kıtlıkta zarar ettirir.":
     "Brings a bountiful harvest when the economy is good; loses money in a famine.",
   "Savaş ve isyan dönemlerinde ordu siparişleriyle kazancı katlanır; uzun barışta sürünür.":
@@ -369,7 +373,7 @@ export const KATALOG_EN: Record<string, string> = {
   // Hayat amaçları
   // ---------------------------------------------------------------------------
   "Şehrin En Zengini Olmak": "Become the Richest in the City",
-  "Servetini 300'ün üzerine çıkar.": "Raise your wealth above 300.",
+  "Servetini 180'in üzerine çıkar.": "Raise your wealth above 180.",
   "Efsanevi Bir Şöhret Kazanmak": "Win Legendary Fame",
   "Şöhretini neredeyse zirveye taşı.": "Carry your fame almost to its peak.",
   "Kutsal Topraklara Ulaşmak": "Reach the Holy Land",

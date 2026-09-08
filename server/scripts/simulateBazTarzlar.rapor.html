@@ -1,5 +1,5 @@
-<title>Temel Kademe Tarz Analizi</title>
-<meta name="description" content="Kader Çarkı — en düşük konut ve yemek kademesine kilitli 5.400 simüle ömürde altı oyun tarzının 5'er yıllık gelişimi." />
+<title>Nötr Kademe Tarz Analizi</title>
+<meta name="description" content="Kader Çarkı — 0 cezalı (nötr) konut ve yemek kademesine kilitli 5.400 simüle ömürde altı oyun tarzının 5'er yıllık gelişimi." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" />
@@ -92,11 +92,7 @@
     padding-top: 1.4rem;
     border-top: 2px solid var(--line-strong);
   }
-  h3 {
-    font-weight: 600;
-    font-size: 1.12rem;
-    margin: 1.6rem 0 0.3rem;
-  }
+  h3 { font-weight: 600; font-size: 1.12rem; margin: 1.6rem 0 0.3rem; }
   p { margin: 0.6rem 0; }
   a { color: var(--accent); }
   strong { font-weight: 600; }
@@ -123,14 +119,11 @@
     border: 1px solid var(--line);
     border-radius: 3px;
     font-family: var(--mono);
-    font-size: 0.8rem;
-    line-height: 1.5;
   }
   .method div { padding: 0.15rem 0; }
   .method b { color: var(--muted); font-weight: 500; display: block; font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; }
   .method span { color: var(--ink); font-size: 0.95rem; }
 
-  /* Leaderboard */
   .board {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -153,7 +146,6 @@
   .board .kv { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 0.82rem; padding: 0.12rem 0; }
   .board .kv .v { font-weight: 600; font-variant-numeric: tabular-nums; }
 
-  /* Tables */
   .tablewrap { overflow-x: auto; margin: 0.9rem 0 0; border: 1px solid var(--line-strong); border-radius: 3px; }
   table { border-collapse: collapse; width: 100%; font-family: var(--mono); font-size: 0.82rem; }
   caption {
@@ -191,16 +183,6 @@
   td.c { background: var(--crit-bg); color: var(--crit); font-weight: 600; }
   tbody tr:last-child td { border-bottom: none; }
 
-  .readout {
-    font-family: var(--serif);
-    font-size: 0.98rem;
-    color: var(--ink-soft);
-    margin: 0.7rem 0 0;
-    padding-left: 0.9rem;
-    border-left: 2px solid var(--gold);
-  }
-
-  /* Charts */
   .charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.6rem; margin-top: 1.2rem; }
   .chartcard { background: var(--surface); border: 1px solid var(--line-strong); border-radius: 3px; padding: 1rem 1rem 0.6rem; }
   .chartcard h3 { margin: 0 0 0.1rem; font-family: var(--serif); }
@@ -215,64 +197,64 @@
 
   ul.find { padding-left: 0; list-style: none; margin: 1rem 0 0; }
   ul.find li { position: relative; padding: 0.5rem 0 0.5rem 1.7rem; border-bottom: 1px solid var(--line); }
-  ul.find li::before { content: "→"; position: absolute; left: 0.2rem; color: var(--accent); font-family: var(--mono); }
+  ul.find li::before { content: "\2192"; position: absolute; left: 0.2rem; color: var(--accent); font-family: var(--mono); }
   ul.find b { font-weight: 600; }
 
   footer { margin-top: 3rem; padding-top: 1.2rem; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 0.74rem; color: var(--muted); }
-
   @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
 </style>
 
 <div class="wrap">
   <p class="eyebrow">Kader Çarkı · Denge Telemetrisi</p>
-  <h1>Temel kademede altı tarz, 5&apos;er yıl</h1>
+  <h1>Nötr kademede altı tarz, 5&apos;er yıl</h1>
   <p class="lede prose">
-    Karakter <strong>en düşük konutta</strong> (<span class="muted">basit barınak</span>) ve
-    <strong>en düşük satın-alınan yemekte</strong> (<span class="muted">ucuza ye</span>) doğuyor ve
-    ömür boyu bir daha kademe değiştirmiyor. Bu kilit altında altı farklı oyun tarzı — dengeli, şifa,
-    sosyalleşme, gayrimenkul, kumar, suç — botla defalarca oynatıldı; her ömürde oyun içi
-    <em>her 5 yılda bir</em> tüm göstergeler alındı ve tarz başına ortalandı.
+    Karakter <strong>0 cezalı konutta</strong> (<span class="muted">normal ev</span>) ve
+    <strong>0 cezalı yemekte</strong> (<span class="muted">normal ye</span>) doğuyor — ikisi de
+    can·mutluluk·şöhrete hiçbir yıllık etki yapmayan nötr kademe — ve ömür boyu bir daha
+    değiştirilmiyor. Bu sabit altında altı oyun tarzı botla defalarca oynatıldı; her ömürde
+    oyun-içi <em>her 5 yılda bir</em> tüm göstergeler alındı ve tarz başına ortalandı.
   </p>
 
   <div class="method">
-    <div><b>Kilit</b><span>basit_barinak + ucuza_ye</span></div>
+    <div><b>Kilit</b><span>normal_ev + normal_ye (nötr)</span></div>
     <div><b>Ömür</b><span>5.400 (tarz başına 900)</span></div>
     <div><b>Örneklem</b><span>N=150 · 2 çağ · 3 meslek</span></div>
     <div><b>Motor</b><span>gerçek gameEngine, HTTP baypas</span></div>
-    <div><b>Süre</b><span>32 sn</span></div>
+    <div><b>Süre</b><span>74 sn</span></div>
   </div>
 
   <h2 id="ozet">Sıralama</h2>
   <p class="prose muted" style="font-size:0.95rem">
-    Ortalama ölüm yaşı, ölüm skoru ve 35 yaşında hâlâ hayatta olma oranı. Temel kademenin çift
-    yönlü −2/yıl can·mutluluk·şöhret cezası yüzünden <strong>hiçbir tarz orta yaşı geçemiyor</strong>;
-    fark, çöküşün ne kadar geciktiği ve bu sırada ne biriktirildiğinde.
+    Ortalama ölüm yaşı, ölüm skoru ve 60 yaşında hâlâ hayatta olma oranı. Nötr kademeyle tüm
+    tarzlar <strong>ilerlemiş yaşa (56&ndash;59)</strong> ulaşıyor; fark, canın ne kadar
+    geç düştüğünde ve bu sırada ne biriktirildiğinde.
   </p>
   <div class="board" id="board"></div>
 
   <h2 id="tablolar">Tarz tarz, 5&apos;er yıllık ortalama</h2>
   <p class="prose muted" style="font-size:0.95rem">
-    Her satır o yaşa <em>ulaşabilen</em> ömürlerin ortalamasıdır (hayatta kalanlar). Renk yalnızca
-    dört sinyal sütununda: <span style="color:var(--good)">iyi</span> ·
+    Her satır o yaşa <em>ulaşabilen</em> ömürlerin ortalamasıdır. Renk yalnızca dört sinyal
+    sütununda: <span style="color:var(--good)">iyi</span> ·
     <span style="color:var(--warn)">uyarı</span> · <span style="color:var(--crit)">kritik</span>.
   </p>
   <div id="tables"></div>
 
   <h2 id="grafik">Çöküş ve birikim eğrileri</h2>
   <p class="prose muted" style="font-size:0.95rem">
-    Altı tarz üst üste. Sol: ortalama can yaşa göre — temel kademe cezası tüm eğrileri aşağı çekiyor,
-    şifa tarzı en yavaş düşen. Sağ: ortalama servet (para + gayrimenkul) — mülk alan tarzlar (gayrimenkul,
-    suç) net serveti ikiye katlıyor ama bunu ahlak ve aranma pahasına yapıyor.
+    Altı tarz üst üste. Sol: ortalama can yaşa göre — nötr kademeyle can 55&apos;e kadar
+    yüksek kalıyor, sonra ecel + yaşlanma hepsini indiriyor. Sağ: ortalama servet
+    (para + gayrimenkul) — mülk alan tarzlar (gayrimenkul, suç) net serveti 2&ndash;3 katına
+    çıkarıyor, ama ahlak ve aranmayı bozarak.
   </p>
   <div class="charts">
     <div class="chartcard">
       <h3>Ortalama Can</h3>
-      <p>yaşa göre, 15&ndash;50</p>
+      <p>yaşa göre, 15&ndash;75</p>
       <div id="chart-can"></div>
     </div>
     <div class="chartcard">
       <h3>Ortalama Servet</h3>
-      <p>para + gayrimenkul, yaşa göre, 15&ndash;50</p>
+      <p>para + gayrimenkul, yaşa göre, 15&ndash;75</p>
       <div id="chart-servet"></div>
     </div>
   </div>
@@ -280,89 +262,117 @@
 
   <h2 id="bulgular">Denge açısından bulgular</h2>
   <ul class="find">
-    <li><b>Temel kademe bir ölüm fitili.</b> Kilitli botlar ~35 yaşında can-sıfıra gidiyor; kişilik simülasyonundaki (ev/sofra yükselten) botlar 45&ndash;60&apos;a ulaşıyordu. Çift eksenli −2/yıl ceza + yaşlanma + borç faizi birleşince orta oyun nefes alamıyor.</li>
-    <li><b>Şifa tarzı tek başına ~2 yıl ömür + en yüksek sürdürülen can alıyor</b> (35&apos;te %66 hayatta, denge %60; 45&apos;te %17,6&apos;ya karşı %5,2). Mağaza şifa + envanter döngüsü temel-kademe aşınmasını kısmen telafi ediyor — ama servet en düşüklerden (şifaya para gidiyor).</li>
-    <li><b>Sosyalleşme şöhreti yok ediyor.</b> Şöhret 20 yaşında 10&apos;a, 25&apos;te 4&apos;e düşüyor (denge: 13 → 8,7). Alkollü mekân olayları + temel kademe −2/yıl şöhret cezası üst üste biniyor; skor 352 ile en dip. Buna karşılık aranma ~0 kalıyor.</li>
-    <li><b>Gayrimenkul en yüksek skoru veriyor (811)</b> ama en erken ölen tarz (34,0). Kendi işine yatırım + mülk nakiti erken kilitliyor, borçlu tur ortalaması en yüksek (0,3); ahlak 50→20&apos;ye, aranma 0→17&apos;ye kayıyor (karaborsa + kâr-taviz seçimleri).</li>
-    <li><b>Kumar aranmayı tırmandırıyor.</b> Her zar +4 suç: aranma 30 yaşında ~27, 45&apos;te ~31 (2. kademe eşiği). Servet erken şişip (20&apos;de 94) sonra eriyor; net etki denge ile başa baş skor (716) ama çok daha gürültülü.</li>
-    <li><b>Suç en yüksek serveti biriktiriyor</b> (35&apos;te ~160, gayrimenkulün 1,5 katı) çünkü karaborsa deposu değeri şişiriyor; ama ahlak 22&apos;ye, aranma 21&apos;e oturuyor ve 40 yaşında hayatta kalma %14&apos;e çöküyor — birikimi harcayacak kadar yaşamıyor. Skor 503.</li>
-    <li><b>Rütbe hiçbir tarzda ilerlemiyor.</b> Ortalama rütbe seviyesi ömür boyunca 1&apos;den ~2&apos;ye zor çıkıyor; kısa ömür + düşük şöhret/ahlak (kariyer eşikleri) temel kademede S3+&apos;yı pratikte kapatıyor.</li>
+    <li><b>Nötr kademe sağlıklı bir taban.</b> Ortalama ölüm yaşı 56&ndash;59; oyuncular 55 yaşına kadar canı 60&apos;ın üstünde tutuyor, sonra ecel (70+) ve yaşlanma (55+) hepsini birlikte indiriyor. Cezalı en düşük kademeyle (ör. basit_barinak) aynı botlar ~35&apos;te ölüyordu — kademe seçiminin tek başına etkisi ~22 yıl ömür.</li>
+    <li><b>&quot;Dengeli&quot; en yüksek skoru veriyor (29.831).</b> Hiç yan eylem yapmadan, sadece en güvenli seçimle: para 55&apos;te ~341, şöhret ~53, aranma ~6. Ekstra mekanik kullanmak skoru <em>düşürüyor</em> — çünkü hepsinin bir bedeli var.</li>
+    <li><b>Şifa tarzı canı düzleştiriyor ama skoru kırıyor.</b> Can 50 yaşına kadar ~79&apos;da sabit (denge 69), 70&apos;te %50 hayatta (denge %40.6). Bedeli: para birikmiyor (55&apos;te 163 vs denge 341) → skor 24.997.</li>
+    <li><b>Sosyalleşme şöhreti bastırıyor.</b> 19× mekân ziyaretine rağmen şöhret 55&apos;te ~45 (denge ~53); alkollü olay cezaları kazancı yiyor. Mutluluk en yüksek (55&apos;te ~91) ve aranma ~1&apos;de sabit, ama skor 20.344.</li>
+    <li><b>Gayrimenkul serveti uçuruyor, ahlak/aranmayı bozuyor.</b> 55&apos;te servet ~438 (yarısından fazlası gayrimenkul), 75&apos;te ~811. Ama ahlak 50→21, aranma 0→22 (karaborsa + kâr-taviz), borçlu tur ort. 0.9 ve ölüm yaşı 56.6 ile en düşük. Skor 23.941 — servetin skora katkısı log-ölçekli olduğu için dengeyi geçemiyor.</li>
+    <li><b>Kumar aranmayı 40&apos;a tırmandırıyor.</b> Her zar +4 suç: aranma 50&apos;de ~40, 55&apos;te ~43 (3. kademe eşiği). Servet dengeden düşük (55&apos;te 271 vs 341), ahlak 22 → net kayıp. Skor 20.648.</li>
+    <li><b>Suç en yüksek gayrimenkulü biriktiriyor (65&apos;te ~394) ama en düşük skoru veriyor (14.519).</b> Ahlak 17&apos;ye, aranma 33&apos;e oturuyor, borçlu tur ort. 1.4 (en yüksek), 65&apos;te hayatta kalma %46.8&apos;e düşüyor. Karaborsa değeri şişse de karakter onu güvene alamıyor.</li>
+    <li><b>Rütbe nötr kademeyle S3&ndash;S4&apos;e ulaşıyor</b> (ort. seviye 55&apos;te ~3.3), cezalı kademedeki ~2.0&apos;ye karşı. Uzun ömür + korunan şöhret/ahlak kariyer eşiklerini açıyor.</li>
   </ul>
 
   <footer>
-    Kaynak: <b>server/scripts/simulateBazTarzlar.ts</b> — 5.400 ömür, tarz başına 900 (N=150 × 2 çağ × 3 meslek).
-    Konut ve yaşam tarzı ömür boyu sabit; diğer tüm mekanikler (mağaza, sosyalleşme, kendi işi, mülk, yeraltı zarı) tarza göre serbest.
-    Ham çıktı simulateBazTarzlar.sonuc.json, özet simulateBazTarzlar.analiz.json.
+    Kaynak: <b>server/scripts/simulateBazTarzlar.ts</b> (SIM_KONUT=normal_ev SIM_YASAM=normal_ye) — 5.400 ömür,
+    tarz başına 900 (N=150 × 2 çağ × 3 meslek). Konut ve yaşam tarzı ömür boyu sabit; diğer tüm mekanikler
+    (mağaza, sosyalleşme, kendi işi, mülk, yeraltı zarı) tarza göre serbest. Ham çıktı
+    simulateBazTarzlar.sonuc.json, özet simulateBazTarzlar.analiz.json.
   </footer>
 </div>
 
 <script>
-  const KM = [15,20,25,30,35,40,45,50,55,60];
   // [yas, yasiyor%, can, sohret, para, gayrimenkul, servet, ahlak, aranma, mutluluk, rutbe]
   const DATA = {
-    denge: { ad:"Dengeli (kontrol)", olumYas:34.9, skor:608, s35:60.1, rows:[
-      [15,100,94.55,21.11,32.13,0,32.13,49.56,0,50,1],
-      [20,96.7,67.21,12.96,86.04,0,86.04,47.72,3.91,28,1.43],
-      [25,92,41.94,8.72,117,0,117,46.48,3.43,10.91,1.67],
-      [30,83,23.9,4.77,98.28,0,98.28,47.99,3.88,4.56,1.8],
-      [35,60.1,11.71,3.06,82.8,0,82.8,48.43,4.09,2.41,1.98],
-      [40,22.2,7.75,2.84,83.14,0,83.14,45.43,4.78,1.76,2.1],
-      [45,5.2,7.19,1.83,103.44,0,103.44,48.11,5.62,1.23,2.4],
-      [50,1.3,7,1.58,144.09,0,144.09,47.58,7.5,0.5,2.5],
-      [55,0.4,4.75,2.25,130.33,0,130.33,72,5.5,4.25,3.25],
+    denge: { ad:"Dengeli (kontrol)", olumYas:58.6, skor:29831, s60:67.1, rows:[
+      [15,100,94.44,22.1,31.86,0,31.86,49.4,0,50,1],
+      [20,96.7,87.92,28.8,53.34,0,53.34,46.97,4.13,53.86,1.65],
+      [25,92.8,83.46,35.84,74.17,0,74.17,46.29,4.18,59.87,2.15],
+      [30,87.4,79.86,39.56,108.14,0,108.14,48.41,5.01,63.4,2.56],
+      [35,83.2,76.54,42.95,151.38,0,151.38,49.74,4.96,67.49,2.94],
+      [40,80.1,73.74,45.85,203.23,0,203.23,48.19,5.5,70.91,3.11],
+      [45,75.9,71.07,48.69,256.3,0,256.3,47.05,6.37,74.63,3.22],
+      [50,72.7,69.02,50.89,301.87,0,301.87,46.23,5.89,79.51,3.28],
+      [55,69.6,62.02,52.65,340.85,0,340.85,45.28,5.91,81.93,3.34],
+      [60,67.1,42.96,54.59,348.8,0,348.8,44.94,6.32,84.42,3.38],
+      [65,61.6,25.09,56.29,329.69,0,329.69,44.67,6.72,88.62,3.47],
+      [70,40.6,8.34,60.42,282.54,0,282.54,44.84,7.41,91.66,3.56],
+      [75,6.7,1.77,64.03,282.82,0,282.82,45.9,6.33,94.87,3.6],
     ]},
-    sifa: { ad:"Şifa / Sağlık odaklı", olumYas:36.8, skor:721, s35:65.6, rows:[
-      [15,100,94.82,22.14,31.24,0,31.24,49.67,0,50,1],
-      [20,95.8,71.02,13.36,50.99,0,50.99,49.65,3.75,29.72,1.43],
-      [25,89.6,52.97,9.28,57.85,0,57.85,46.62,5.76,17.75,1.66],
-      [30,80.7,35.19,6.1,55.41,0,55.41,49.04,5.8,7.52,1.81],
-      [35,65.6,20.84,3.92,56.53,0,56.53,49.55,5.28,3.62,1.97],
-      [40,38.1,14.98,2.83,67.18,0,67.18,48.41,5.93,2.66,2.06],
-      [45,17.6,11.94,2.63,83.45,0,83.45,53.75,4.7,2.75,2.28],
-      [50,7.4,9.48,1.94,91.88,0,91.88,53.52,5.09,3.55,2.34],
-      [55,2.9,7.85,2.04,85.9,0,85.9,51.92,4.27,5.31,2.35],
-      [60,0.4,0,4,109.66,0,109.66,55,1,8.75,2],
+    sifa: { ad:"Şifa / Sağlık odaklı", olumYas:59.4, skor:24997, s60:64.2, rows:[
+      [15,100,95.17,21.93,31.47,0,31.47,49.38,0,50,1],
+      [20,95.8,89.46,29.55,40.6,0,40.6,49.68,4.08,54.92,1.66],
+      [25,90.3,85.88,36,55.2,0,55.2,47.15,5.69,61.64,2.18],
+      [30,86.4,82.86,41.23,72.1,0,72.1,50.08,5.77,65.56,2.58],
+      [35,83.4,81.09,44.99,89.8,0,89.8,52.44,5.23,69.44,3.01],
+      [40,79.8,79.85,48.81,110.44,0,110.44,52.51,5.41,73.77,3.17],
+      [45,74.7,79.53,51.19,127.34,0,127.34,52.54,5.95,77.84,3.27],
+      [50,71.3,79.4,53.49,146.87,0,146.87,52.77,5.25,82.94,3.34],
+      [55,67.8,73.45,55.15,163.44,0,163.44,52.37,5.44,85.57,3.4],
+      [60,64.2,61.6,57.36,160.08,0,160.08,53.55,5.63,90.21,3.46],
+      [65,59.3,46.21,58.75,172.32,0,172.32,54.57,5.1,91.49,3.52],
+      [70,50,23.85,59.94,185.25,0,185.25,54.48,5.73,92.16,3.62],
+      [75,24.4,10.49,62.44,202.58,0,202.58,56.4,6.33,94.05,3.81],
+      [80,2.9,2.81,69.69,222.89,0,222.89,65.73,6.85,94.12,3.92],
     ]},
-    sosyal: { ad:"Sosyalleşme odaklı", olumYas:35.8, skor:352, s35:71.1, rows:[
-      [15,100,95.12,21.5,30.99,0,30.99,49.85,0,50,1],
-      [20,97.9,70.91,10.49,76.97,0,76.97,50.15,0.8,31.98,1.4],
-      [25,95,45.91,4.18,114.4,0,114.4,48.9,0.6,17.2,1.54],
-      [30,90.6,25.01,2.89,94.33,0,94.33,47.33,0.48,8.41,1.64],
-      [35,71.1,10.03,2.14,71.75,0,71.75,47.79,0.43,4.5,1.83],
-      [40,21.3,3.41,1.62,72.71,0,72.71,51.06,0.32,2.78,1.98],
-      [45,1.4,2.77,0.23,74.67,0,74.67,55.08,1,4.15,2.08],
+    sosyal: { ad:"Sosyalleşme odaklı", olumYas:59.4, skor:20344, s60:71.8, rows:[
+      [15,100,95.18,21.74,30.54,0,30.54,49.46,0,50,1],
+      [20,97.9,91.93,26.43,43.11,0,43.11,48.91,1.16,58.91,1.62],
+      [25,93.7,87.97,28.88,64.04,0,64.04,48.07,1.12,67.95,1.92],
+      [30,89.7,84.08,31.82,90.08,0,90.08,47.49,1.02,74.04,2.29],
+      [35,86.7,80.23,35.95,133.29,0,133.29,48.17,1.01,78.98,2.68],
+      [40,83.1,76.35,39.2,186.05,0,186.05,48.19,0.95,83.56,2.85],
+      [45,79.8,72.1,41.1,231.58,0,231.58,48.03,0.94,86.69,2.93],
+      [50,77.9,67.56,43.09,264,0,264,47.93,0.96,89.58,2.99],
+      [55,75.3,57.85,44.75,298.25,0,298.25,48.15,0.99,91.35,3.04],
+      [60,71.8,37.08,46.8,283.41,0,283.41,49.51,0.86,93.03,3.09],
+      [65,65,17.58,49.02,237.63,0,237.63,49.77,0.94,93,3.13],
+      [70,24.6,4.72,52.95,221.1,0,221.1,52.56,1.01,94.6,3.34],
+      [75,1.6,0.36,47.57,214.11,0,214.11,56.07,0,97.07,3.43],
     ]},
-    gayrimenkul: { ad:"Gayrimenkul + kendi işi", olumYas:34.0, skor:811, s35:53.1, rows:[
-      [15,100,95.12,22.59,30.78,0,30.78,49.48,0,50,1],
-      [20,96.6,67.69,13.14,69.57,6.4,75.97,39.59,9.48,27.55,1.4],
-      [25,89.1,41.74,8.02,71.92,22.1,94.02,32.47,14.12,10.26,1.55],
-      [30,78.1,22.96,8.39,67.27,33.87,101.15,28.66,17.01,1.65,1.64],
-      [35,53.1,10.65,5.99,65.86,41.91,107.77,24.88,16.26,1.63,1.7],
-      [40,18.3,7.7,3.88,87.88,54.54,142.42,24.13,16.35,1.5,1.88],
-      [45,4.4,7.4,3.65,96.14,61.15,157.29,22.58,15.75,1.27,2.15],
-      [50,0.8,6.29,1.57,143.44,108.78,252.23,19.86,11.86,1.29,2.86],
-      [55,0.2,0,1,215.65,0,215.65,31.5,13,5,3],
+    gayrimenkul: { ad:"Gayrimenkul + kendi işi", olumYas:56.6, skor:23941, s60:60.2, rows:[
+      [15,100,95.05,22.52,30.7,0,30.7,49.76,0,50,1],
+      [20,96.3,87.73,28.9,50.44,3.51,53.96,39.55,10.31,53.88,1.63],
+      [25,91.6,83.06,34.66,55.18,11.66,66.84,33.1,14.54,60.43,2.05],
+      [30,87.1,79.14,42.12,79.82,24.52,104.34,28.62,17.64,63.32,2.5],
+      [35,82.2,76.34,50.02,94.2,46.3,140.51,26.57,17.56,66.6,2.81],
+      [40,78.1,72.93,52.63,113.94,76.84,190.78,25.49,18.45,69.21,2.91],
+      [45,74.7,69.03,54.66,135.62,116.75,252.37,24.29,19.65,71.73,2.98],
+      [50,70.3,66.19,55.35,165.91,165.39,331.3,22.8,20.09,73.24,3.03],
+      [55,65.2,58.24,56.65,198.02,239.75,437.77,21.52,22.19,74.94,3.08],
+      [60,60.2,39.14,55.89,236.91,305.08,541.99,20.42,23.12,77.44,3.12],
+      [65,54.3,21.63,55.68,255.51,373.31,628.82,19.84,21.77,80.65,3.15],
+      [70,28.6,7.88,58.36,295.02,459.72,754.75,20.32,20.25,85.05,3.28],
+      [75,4.9,2.36,54.57,347.34,463.76,811.1,20.27,20.82,88.98,3.59],
     ]},
-    kumar: { ad:"Kumar / Yeraltı zarı", olumYas:35.2, skor:716, s35:62.6, rows:[
-      [15,100,95.19,21.18,31.81,0,31.81,49.85,0,50,1],
-      [20,96.6,67.65,10.76,94.04,0,94.04,39.72,13.14,27.55,1.36],
-      [25,91.4,42.75,6.4,121.22,0,121.22,34.13,20.48,10.39,1.48],
-      [30,82.9,24.42,7.05,110.02,0,110.02,30.57,26.77,3.63,1.58],
-      [35,62.6,11.53,4.89,82,0,82,29.17,27.05,2,1.68],
-      [40,23.9,7.98,3.5,79.15,0,79.15,27.67,27.65,1.39,1.73],
-      [45,5.1,5.2,3.33,85.37,0,85.37,34.43,31.54,1.28,1.87],
-      [50,0.9,6.38,7.75,90.94,0,90.94,35.13,24.13,0,1.75],
-      [55,0.3,0,0,98.94,0,98.94,37.33,42,0,1.33],
+    kumar: { ad:"Kumar / Yeraltı zarı", olumYas:57.2, skor:20648, s60:64.7, rows:[
+      [15,100,95.17,22.12,29.91,0,29.91,49.91,0,50,1],
+      [20,95.8,88.24,27.87,61.64,0,61.64,40.41,11.82,53.97,1.58],
+      [25,91.6,84.01,32.85,84.17,0,84.17,34.05,20.05,60.34,1.97],
+      [30,86.1,80.14,39.87,114.39,0,114.39,30.88,26.22,63.28,2.37],
+      [35,81.9,77.27,46.58,144.57,0,144.57,28.31,30.34,66.35,2.74],
+      [40,79.3,73.84,49.39,183.92,0,183.92,25.95,33.21,69.09,2.84],
+      [45,76,69.88,49.94,212.13,0,212.13,23.88,37.16,71.64,2.89],
+      [50,73,66.72,51.64,239.13,0,239.13,23.12,40.42,73.88,2.91],
+      [55,69,58.63,51.72,270.68,0,270.68,22.08,42.67,76.46,2.98],
+      [60,64.7,37.64,52.6,273.65,0,273.65,21.84,42.04,79.43,3.03],
+      [65,55.2,21.59,52.65,241.33,0,241.33,21.03,41.9,83.51,3.11],
+      [70,27.4,7.09,52.18,221.54,0,221.54,22.61,38.88,87.43,3.29],
+      [75,4.1,2.27,47.62,199.12,0,199.12,20.16,39.97,92.95,3.51],
     ]},
-    suc: { ad:"Suç / Karaborsa", olumYas:34.1, skor:503, s35:57.2, rows:[
-      [15,100,95.07,21.77,30.78,0,30.78,49.72,0,50,1],
-      [20,96.9,68.39,11.4,87.05,9.86,96.91,40.17,10.18,28.74,1.36],
-      [25,91.8,42.76,4.88,101.41,41.43,142.84,32.56,15.64,11.53,1.42],
-      [30,83.4,22.76,5.01,80.01,72.31,152.32,27.21,20.08,3.49,1.5],
-      [35,57.2,8.93,3.22,68.3,91.34,159.64,22.7,21.36,1.81,1.57],
-      [40,14.4,4.6,1.47,73.16,99.48,172.63,22.34,21.72,1.76,1.63],
-      [45,1,5.11,1,64.7,106.57,171.27,40.89,20.78,2.11,1.78],
-      [50,0.2,3.5,0,88.91,57.23,146.14,72,4.5,3.5,1.5],
+    suc: { ad:"Suç / Karaborsa", olumYas:56.2, skor:14519, s60:62.6, rows:[
+      [15,100,95.13,20.89,31.7,0,31.7,49.73,0,50,1],
+      [20,97.3,89.7,25.17,57.21,4.21,61.42,41.44,10.05,55.28,1.57],
+      [25,93.3,85.53,26.92,73.58,17.26,90.84,34.26,15.32,62.41,1.85],
+      [30,88.7,80.37,32.4,97.47,38.42,135.9,29.09,19.82,65.83,2.2],
+      [35,84.2,75.43,37.41,113.76,71.69,185.45,25.69,22.21,68.07,2.54],
+      [40,80.7,70.1,39.71,132.21,118.47,250.68,22.16,25.8,69.97,2.7],
+      [45,76,64.92,40.65,141.49,169.29,310.78,19.69,28.53,71.1,2.77],
+      [50,72.3,60.3,41.2,154.12,218.29,372.41,18.54,30.21,72.29,2.81],
+      [55,69.2,49.49,42.87,161.82,276.71,438.54,17.68,31.99,73.35,2.87],
+      [60,62.6,29.55,44.3,134.47,344.75,479.22,17.13,33.29,75.11,2.94],
+      [65,46.8,13.32,43.96,132.09,394.08,526.17,17.3,33.05,77.06,3.03],
+      [70,12.2,4.03,45.25,161.19,453.81,615,20.67,35.12,85.17,3.29],
+      [75,0.3,2,39.67,461.59,1356.85,1818.43,6.67,37.33,91,4],
     ]},
   };
   const ORDER = ["denge","sifa","sosyal","gayrimenkul","kumar","suc"];
@@ -371,7 +381,6 @@
     gayrimenkul:"#2f6f9b", kumar:"#9b2f2f", suc:"#6b3f8f"
   };
 
-  // ---- Sıralama kartları ----
   const board = document.getElementById("board");
   ORDER.forEach(k => {
     const d = DATA[k];
@@ -380,18 +389,17 @@
     el.innerHTML =
       '<div class="name">' + d.ad + '</div>' +
       '<div class="kv"><span>Ölüm yaşı</span><span class="v">' + d.olumYas.toFixed(1) + '</span></div>' +
-      '<div class="kv"><span>Skor</span><span class="v">' + d.skor + '</span></div>' +
-      '<div class="kv"><span>35&apos;te yaşıyor</span><span class="v">%' + d.s35.toFixed(1) + '</span></div>';
+      '<div class="kv"><span>Skor</span><span class="v">' + d.skor.toLocaleString("tr-TR") + '</span></div>' +
+      '<div class="kv"><span>60&apos;ta yaşıyor</span><span class="v">%' + d.s60.toFixed(1) + '</span></div>';
     board.appendChild(el);
   });
 
-  // ---- Tablolar ----
   const HEAD = ["Yaş","Yaşıyor %","Can","Şöhret","Para","Gayrimenkul","Servet","Ahlak","Aranma","Mutluluk","Rütbe"];
   const band = (metric, v) => {
-    if (metric === "can")     return v >= 50 ? "g" : v >= 20 ? "w" : "c";
+    if (metric === "can")     return v >= 50 ? "g" : v >= 25 ? "w" : "c";
     if (metric === "aranma")  return v < 10 ? "g" : v < 25 ? "w" : "c";
     if (metric === "ahlak")   return v >= 45 ? "g" : v >= 30 ? "w" : "c";
-    if (metric === "surv")    return v >= 70 ? "g" : v >= 30 ? "w" : "c";
+    if (metric === "surv")    return v >= 70 ? "g" : v >= 35 ? "w" : "c";
     return "";
   };
   const fmt = (v) => Number.isInteger(v) ? String(v) : v.toFixed(2).replace(/\.?0+$/,"");
@@ -401,7 +409,7 @@
     const tw = document.createElement("div");
     tw.className = "tablewrap";
     let html = '<table><caption><b>' + d.ad + '</b> &nbsp;·&nbsp; 900 ömür &nbsp;·&nbsp; ort. ölüm yaşı ' +
-      d.olumYas.toFixed(1) + ' &nbsp;·&nbsp; skor ' + d.skor + '</caption><thead><tr>';
+      d.olumYas.toFixed(1) + ' &nbsp;·&nbsp; skor ' + d.skor.toLocaleString("tr-TR") + '</caption><thead><tr>';
     HEAD.forEach((h,i) => html += '<th class="' + (i===0?"lbl":"") + '">' + h + '</th>');
     html += '</tr></thead><tbody>';
     d.rows.forEach(r => {
@@ -425,24 +433,20 @@
     tables.appendChild(tw);
   });
 
-  // ---- Grafikler ----
   function lineChart(elId, field, yMax, yTicks) {
-    const W = 460, H = 300, P = { l: 42, r: 14, t: 12, b: 30 };
-    const xMin = 15, xMax = 50;
+    const W = 460, H = 300, P = { l: 46, r: 14, t: 12, b: 30 };
+    const xMin = 15, xMax = 75;
     const px = x => P.l + (x - xMin) / (xMax - xMin) * (W - P.l - P.r);
     const py = y => H - P.b - (y / yMax) * (H - P.t - P.b);
-    let s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + field + ' eğrisi">';
-    // grid + y labels
+    let s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + elId + '">';
     yTicks.forEach(t => {
       s += '<line class="grid" x1="' + P.l + '" y1="' + py(t) + '" x2="' + (W - P.r) + '" y2="' + py(t) + '"/>';
       s += '<text class="axlabel" x="' + (P.l - 6) + '" y="' + (py(t) + 3) + '" text-anchor="end">' + t + '</text>';
     });
-    // x axis + labels
     s += '<line class="ax" x1="' + P.l + '" y1="' + py(0) + '" x2="' + (W - P.r) + '" y2="' + py(0) + '"/>';
-    [15,20,25,30,35,40,45,50].forEach(x => {
+    [15,25,35,45,55,65,75].forEach(x => {
       s += '<text class="axlabel" x="' + px(x) + '" y="' + (H - P.b + 15) + '" text-anchor="middle">' + x + '</text>';
     });
-    // series
     ORDER.forEach(k => {
       const pts = DATA[k].rows.filter(r => r[0] <= xMax).map(r => [r[0], r[field]]);
       const dstr = pts.map((p,i) => (i?"L":"M") + px(p[0]).toFixed(1) + " " + py(p[1]).toFixed(1)).join(" ");
@@ -454,7 +458,7 @@
     document.getElementById(elId).innerHTML = s;
   }
   lineChart("chart-can", 2, 100, [0,25,50,75,100]);
-  lineChart("chart-servet", 6, 180, [0,45,90,135,180]);
+  lineChart("chart-servet", 6, 800, [0,200,400,600,800]);
 
   const legend = document.getElementById("legend");
   ORDER.forEach(k => {

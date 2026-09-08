@@ -13,6 +13,15 @@ export interface MulkTanimi {
 
 export const MULK_TANIMLARI: MulkTanimi[] = [
   {
+    tur: "kucuk_tarla",
+    ad: "Küçük Tarla",
+    simge: "🥕",
+    taban_maliyet: 50,
+    aciklama: "En ucuz ve en istikrarlı yatırım: getirisi küçük ama kıtlıkta bile neredeyse hiç zarar ettirmez. Garanti arayan için.",
+    avantajli_durum: "Bolluk (iyi ekonomi)",
+    dezavantajli_durum: "Kıtlık (küçük kayıp)",
+  },
+  {
     tur: "ciftlik",
     ad: "Buğday Tarlası",
     simge: "🌾",

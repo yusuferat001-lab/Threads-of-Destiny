@@ -25,6 +25,7 @@ import {
   yeniOyunBaslat,
   meslekAta,
   stateGetir,
+  oyunDiliAyarla,
   senaryoGetir,
   secimYap,
   skorKaydet,
@@ -47,6 +48,8 @@ import {
   magazadanSatinAl,
   envanterEsyasiKullan,
   geriBildirimGonder,
+  evlilikAdaylariGetir,
+  evlilikTeklifEt,
 } from './api';
 import { Banner } from './components/Banner';
 import { UstSerit } from './components/UstSerit';
@@ -70,16 +73,21 @@ import { SahneHotspotlari } from './components/SahneHotspotlari';
 import { EnvanterPaneli } from './components/EnvanterPaneli';
 import { FinansEkrani } from './components/FinansEkrani';
 import { SosyallesmePaneli } from './components/SosyallesmePaneli';
+import { EvlilikPaneli } from './components/EvlilikPaneli';
 import { MagazaPaneli } from './components/MagazaPaneli';
 import { IsYatirimEkrani } from './components/IsYatirimEkrani';
 import { SonucEfekti } from './components/SonucEfekti';
 import { AyarlarModal } from './components/AyarlarModal';
 import { ayarlariGetir, ayarlariKaydet, type Dil } from './ayarlar';
-import type { GeriBildirimGirdi } from './types';
+import type { GeriBildirimGirdi, EvlilikAdayi } from './types';
 import { sesKapaliMi, sesTercihiKaydet } from './ses';
 import { aktifOturumIdGetir, aktifOturumIdKaydet, aktifOturumIdSil } from './oturum';
 import { basarimlariKaydet, basarimlariGetir } from './basarimlar';
 import { gecmisHayatKaydet, gecmisHayatlariGetir, gecmisHayatlariTemizle, type GecmisHayat } from './gecmisHayatlar';
+import { YAPIMCI } from './yapimci';
+import { YOL_HARITASI } from './yolHaritasi';
+import { basarimlariDegerlendir, type BasarimTanimi } from './basarimSistemi';
+import { BasarimGaleri } from './components/BasarimGaleri';
 import { sonucIkonuGetir, unUnvani, MESLEK_KATEGORI, yatkinlikEtiketi, etkiTahminiGetir } from './bolgeTema';
 import { formatPara } from './format';
 import { bic } from './i18n';
@@ -103,7 +111,8 @@ type Ekran =
   | 'finans'
   | 'yatirim'
   | 'sosyallesme'
-  | 'magaza';
+  | 'magaza'
+  | 'evlilik';
 
 interface SonEtki {
   basarili: boolean;
@@ -145,7 +154,7 @@ function cagAciklama(m: ReturnType<typeof dilCtxYap>['m'], cag: string): string 
  * hiç kaymaz, sadece sütun/ızgara kendi içinde kayar" modelini kullanır (bkz.
  * .oyun-kapsayici-tam) — `aile` (sol panelden "Aileni Gör →" ile açılır, hotspot değil) bu
  * gruba dahil DEĞİL, o hâlâ dar/ortalanmış, doğal yükseklikte basit bir liste ekranı. */
-const TAM_EKRAN_GRUBU: Ekran[] = ['oyun', 'sonuc', 'yatirim', 'finans', 'sosyallesme', 'magaza'];
+const TAM_EKRAN_GRUBU: Ekran[] = ['oyun', 'sonuc', 'yatirim', 'finans', 'sosyallesme', 'magaza', 'evlilik'];
 
 /** Geri bildirim mesajlarına eklenen uygulama sürümü — bir hata raporunun hangi build'e
  * ait olduğunu ayırt etmek için. Yeni bir sürüm çıkınca elle güncelle. */
@@ -184,9 +193,13 @@ function App() {
   const [islemMesaji, setIslemMesaji] = useState<string | null>(null);
   const [sosyallesmeYerleri, setSosyallesmeYerleri] = useState<SosyallesmeYeri[]>([]);
   const [magazaKatalogu, setMagazaKatalogu] = useState<MagazaEsyaKarti[]>([]);
+  const [evlilikAdaylari, setEvlilikAdaylari] = useState<EvlilikAdayi[]>([]);
 
   const [sesKapali, setSesKapali] = useState(() => sesKapaliMi());
   const [ayarlarAcik, setAyarlarAcik] = useState(false);
+  const [ayarlarSekme, setAyarlarSekme] = useState<'genel' | 'geri_bildirim'>('genel');
+  const [basarimGaleriAcik, setBasarimGaleriAcik] = useState(false);
+  const [yeniBasarimlar, setYeniBasarimlar] = useState<BasarimTanimi[]>([]);
   const [dil, setDil] = useState<Dil>(() => ayarlariGetir().dil);
   const [basarimlar, setBasarimlar] = useState(() => basarimlariGetir());
   const [basarimlarAcik, setBasarimlarAcik] = useState(false);
@@ -209,6 +222,17 @@ function App() {
   function dilDegistir(yeni: Dil) {
     setDil(yeni);
     ayarlariKaydet({ dil: yeni });
+    // Oyun sürerken dil değişirse sunucudaki state.dil'i de güncelle; yoksa
+    // arayüz çevrilse bile olay/anlatı metinleri eski dilde takılı kalır
+    // (state.dil normalde yalnız yeni oyun açılışında yazılıyor). Değişiklik
+    // bir sonraki senaryodan itibaren geçerli olur.
+    if (karakter?.id && karakter.aktif) {
+      oyunDiliAyarla(karakter.id, yeni)
+        .then(({ state }) => setKarakter(state))
+        .catch(() => {
+          /* sessiz geç: sonraki denemede ya da yeni oyunda düzelir */
+        });
+    }
   }
 
   async function geriBildirimGonderHandler(girdi: GeriBildirimGirdi) {
@@ -306,6 +330,8 @@ function App() {
       gecmisHayatKaydet(karakter);
       setGecmisHayatlar(gecmisHayatlariGetir());
       setIsim((mevcut) => mevcut || karakter.isim || '');
+      const { yeniAcilanlar } = basarimlariDegerlendir(karakter);
+      setYeniBasarimlar(yeniAcilanlar);
     }
   }, [ekran, karakter]);
 
@@ -681,6 +707,57 @@ function App() {
     }
   }
 
+  async function evlilikEkraniniAc() {
+    if (!karakter) return;
+    setHata(null);
+    setYukleniyor(true);
+    try {
+      const { adaylar } = await evlilikAdaylariGetir(karakter.id);
+      setEvlilikAdaylari(adaylar);
+      setIslemMesaji(null);
+      setEkran('evlilik');
+    } catch (err) {
+      setHata(String(err));
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
+  async function evlilikYeniAdaylarHandler() {
+    if (!karakter) return;
+    setHata(null);
+    setYukleniyor(true);
+    try {
+      const { adaylar } = await evlilikAdaylariGetir(karakter.id);
+      setEvlilikAdaylari(adaylar);
+    } catch (err) {
+      setHata(String(err));
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
+  async function evlilikTeklifEtHandler(aday: EvlilikAdayi) {
+    if (!karakter) return;
+    setHata(null);
+    setYukleniyor(true);
+    try {
+      const sonuc = await evlilikTeklifEt(karakter.id, aday);
+      setKarakter(sonuc.state);
+      setIslemMesaji(sonuc.mesaj);
+      if (!sonuc.basarili) {
+        const { adaylar } = await evlilikAdaylariGetir(sonuc.state.id);
+        setEvlilikAdaylari(adaylar);
+      } else {
+        setEvlilikAdaylari([]);
+      }
+    } catch (err) {
+      setHata(String(err));
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
   async function envanterKullanHandler(esyaId: string) {
     if (!karakter) return;
     setHata(null);
@@ -760,6 +837,7 @@ function App() {
     setSecilenYerlesim(null);
     setOyuncuIsmi('');
     setSecilenGecmisHayat(null);
+    setYeniBasarimlar([]);
     setEkran('giris');
   }
 
@@ -786,9 +864,25 @@ function App() {
           onDilDegistir={dilDegistir}
           onSesToggle={sesToggle}
           onGeriBildirimGonder={geriBildirimGonderHandler}
-          onKapat={() => setAyarlarAcik(false)}
+          onKapat={() => {
+            setAyarlarAcik(false);
+            setAyarlarSekme('genel');
+          }}
+          baslangicSekme={ayarlarSekme}
+          onAnaMenu={
+            ekran === 'giris'
+              ? undefined
+              : () => {
+                  // Oyun kaydını SİLMEDEN ana menüye dön; "Oyuna Devam Et" ile geri gelinir.
+                  setAyarlarAcik(false);
+                  setAyarlarSekme('genel');
+                  setEkran('giris');
+                }
+          }
         />
       )}
+
+      {basarimGaleriAcik && <BasarimGaleri dil={dil} onKapat={() => setBasarimGaleriAcik(false)} />}
 
       {ekran === 'giris' && (
         <div className="ekran ekran-giris">
@@ -797,16 +891,34 @@ function App() {
             <h1>{m.oyunAdi}</h1>
             <p className="giris-aciklama">{m.girisAciklama}</p>
             <div className="giris-hero-butonlar">
+              {karakter?.aktif && (
+                <button disabled={yukleniyor} onClick={devamEt}>
+                  {m.oyunaDevamEt}
+                </button>
+              )}
               <button disabled={yukleniyor} onClick={() => setEkran('cag_sec')}>
                 {m.btnYeniHayat}
               </button>
               <button className="ikincil" disabled={yukleniyor} onClick={() => liderligiAc('genel')}>
                 {m.btnLiderlik}
               </button>
+              <button className="ikincil" disabled={yukleniyor} onClick={() => setBasarimGaleriAcik(true)}>
+                {m.bgAc}
+              </button>
               <button className="ikincil" disabled={yukleniyor} onClick={() => setAyarlarAcik(true)}>
                 {m.btnAyarlar}
               </button>
             </div>
+            <button
+              className="ikincil giris-gorus-cta"
+              disabled={yukleniyor}
+              onClick={() => {
+                setAyarlarSekme('geri_bildirim');
+                setAyarlarAcik(true);
+              }}
+            >
+              {m.girisGorusCta}
+            </button>
           </div>
 
           <div className="giris-paneller">
@@ -893,6 +1005,45 @@ function App() {
                 )}
               </div>
             )}
+
+            <div className="giris-panel">
+              <div className="giris-panel-baslik">
+                <span>{m.panelYolHaritasi}</span>
+              </div>
+              <ul className="yol-haritasi-liste">
+                {YOL_HARITASI.map((madde, i) => (
+                  <li key={i} className={`yol-haritasi-madde yol-haritasi-${madde.durum}`}>
+                    <span className="yol-haritasi-durum">
+                      {madde.durum === 'tamam'
+                        ? `✅ ${m.yhDurumTamam}`
+                        : madde.durum === 'yapiliyor'
+                          ? `🔧 ${m.yhDurumYapiliyor}`
+                          : `🕓 ${m.yhDurumYakinda}`}
+                    </span>
+                    <strong>{madde.baslik}</strong>
+                    {madde.not && <span className="yol-haritasi-not">{madde.not}</span>}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="giris-panel giris-panel-yapimci">
+              <div className="giris-panel-baslik">
+                <span>{m.panelYapimci}</span>
+              </div>
+              <p className="yapimci-isim">{YAPIMCI.isim}</p>
+              <p className="yapimci-tanitim">{YAPIMCI.tanitim}</p>
+              {YAPIMCI.linkedin && (
+                <a
+                  className="yapimci-linkedin"
+                  href={YAPIMCI.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {m.yapimciLinkedin}
+                </a>
+              )}
+            </div>
           </div>
 
           {secilenGecmisHayat && (
@@ -1361,6 +1512,11 @@ function App() {
                 <button className="ikincil aile-gor-buton" onClick={() => setEkran('aile')}>
                   {m.btnAileniGor}
                 </button>
+                {!karakter.es_adi && karakter.yas >= 18 && (
+                  <button className="ikincil aile-gor-buton" onClick={evlilikEkraniniAc}>
+                    💍 {m.evBaslik}
+                  </button>
+                )}
               </div>
 
               <IliskilerPaneli
@@ -1457,6 +1613,20 @@ function App() {
         />
       )}
 
+      {ekran === 'evlilik' && (
+        <EvlilikPaneli
+          adaylar={evlilikAdaylari}
+          yukleniyor={yukleniyor}
+          islemMesaji={islemMesaji}
+          onTeklifEt={evlilikTeklifEtHandler}
+          onYeniAdaylar={evlilikYeniAdaylarHandler}
+          onGeriDon={() => {
+            setIslemMesaji(null);
+            setEkran('oyun');
+          }}
+        />
+      )}
+
       {ekran === 'magaza' && karakter && (
         <MagazaPaneli
           para={karakter.para}
@@ -1525,6 +1695,16 @@ function App() {
           <p className="olum-ozet">
             {formatPara(karakter.para)} {karakter.para_birimi} · {m.sohret}: {unUnvani(karakter.un, dil)}
           </p>
+
+          {yeniBasarimlar.length > 0 && (
+            <div className="olum-yeni-basarimlar">
+              {yeniBasarimlar.map((b) => (
+                <span key={b.id} className="liderlik-rozet liderlik-rozet-unvan">
+                  {bic(m.bgYeniBasarim, `${b.ikon} ${b.ad[dil]}`)}
+                </span>
+              ))}
+            </div>
+          )}
 
           <GecmisGrafik gecmis={karakter.gecmis} paraBirimi={karakter.para_birimi} />
           <HayatHikayesi hikaye={karakter.hayat_hikayesi} />

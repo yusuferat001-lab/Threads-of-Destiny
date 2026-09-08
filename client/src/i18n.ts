@@ -81,6 +81,20 @@ const TR = {
   skorKaydiYok: 'Henüz skor kaydı yok.',
   panelBasarimlar: '🏵️ Başarımların',
   gecmisHayatSkorSonek: 'puan',
+  oyunaDevamEt: '▶ Oyuna Devam Et',
+  girisGorusCta: '💬 Oyunu birlikte geliştirelim — görüşünü yaz',
+  panelYolHaritasi: '🗺️ Yol Haritası',
+  yhDurumYakinda: 'Planlanıyor',
+  yhDurumYapiliyor: 'Yapılıyor',
+  yhDurumTamam: 'Tamamlandı',
+  panelYapimci: '👤 Yapımcı',
+  yapimciLinkedin: 'LinkedIn →',
+  anaMenuyeDon: '🏠 Ana Menüye Dön',
+  anaMenuAciklama: 'Oyunun kaydı korunur; giriş ekranından "Oyuna Devam Et" ile geri dönebilirsin.',
+  bgBaslik: 'Başarımlar',
+  bgAc: '🏆 Başarım Galerisi',
+  bgGizli: 'Gizli başarım — koşulunu kendin keşfet.',
+  bgYeniBasarim: '🏆 Yeni başarım: {0}',
 
   // ---- Çağ seçimi ----
   cagSecBaslik: 'Çağını Seç',
@@ -363,9 +377,14 @@ const TR = {
   iyAvantajli: 'Avantajlı',
   iyDezavantajli: 'Dezavantajlı',
   iySuAnTahminiGetiri: 'Şu an tahmini getiri',
+  iyGetiriBrut: '📈 Getiri (brüt): {0}{1} {2}/yıl ({3}%)',
+  iyGetiriNet: '💰 Eline kalan (net): {0}{1} {2}/yıl',
   iyBakimVergi: '🔧 Bakım/vergi: ~-{0} {1}/yıl',
   iyBakimTitle:
-    '7-10 yılda bir çıkan bakım/vergi masrafının yıllığa bölünmüş yaklaşık tutarı; getiriden ayrı, her koşulda gider.',
+    '7-11 yılda bir çıkan bakım/vergi masrafının yıllığa bölünmüş yaklaşık tutarı; getiriden ayrı, her koşulda gider.',
+  iyBakimAcikla:
+    'Bu mülk 7-11 yılda bir, güncel değerinin yaklaşık üçte biri kadar bakım/vergi masrafı çıkarır. Yukarıdaki "eline kalan" bu gideri düştükten sonraki net akıştır.',
+  iyKendiParan: 'Kendi Paran',
   iyKendiIsin: 'Kendi İşin',
   iyKendiIsineYatirim: 'Kendi İşine Yatırım Yap',
   iyKendiIsiAsama0: 'Henüz hiç yatırım yapmadın.',
@@ -417,7 +436,7 @@ const TR = {
   mpMutluluk: 'mutluluk',
   mpSohret: 'şöhret',
   mpCurukUyari: '⏳ {0} yıl içinde kullanılmazsa çürür',
-  mpSifaSans: '🎲 ~%{0}-{1} fayda · bazen boşa gider ya da ters teper',
+  mpSifaSans: '🎲 Kullanınca ~%{0}-{1} ihtimalle tam etki eder; küçük bir ihtimalle hiç işe yaramaz; nadiren ters tepip canını azaltabilir',
   mpSatinAl: 'Satın Al',
   mpSahipsin: 'Sahipsin',
   mpYeterliPara: 'Yeterli paran yok',
@@ -499,7 +518,7 @@ const TR = {
   enCurumeUyariTam: '⏳ {0} yıl içinde kullanılmazsa çürür.',
   enKullanimBekliyor: 'Kullanılmayı bekliyor.',
   enKullanTam: 'Kullan',
-  enKullanSansHint: '🎲 Sonuç şansa bağlı: genelde iyi gelir, bazen boşa gider ya da ters teper.',
+  enKullanSansHint: '🎲 Kullandığında zar atılır: çoğunlukla tam fayda verir, küçük bir ihtimalle hiç işe yaramaz, nadiren ters tepip canını azaltır.',
 
   // ---- BolgeBilgisiPaneli (ek) ----
   bbHakkinda: '{0} Hakkında',
@@ -551,10 +570,19 @@ const TR = {
   // ---- SosyallesmePaneli (tam) ----
   spSosyallesBaslik: 'Sosyalleş',
   spIntro:
-    'Bir mekâna gidip vakit geçirmek bir tur harcamaz; ama orada yaşayacağın olayı çözmek zamanı ilerletir. Alkollü mekânları sık sık ziyaret etmek kalıcı bir ayyaşlık damgasına yol açabilir.',
+    'Bir mekâna gitmek bir tur harcamaz ama küçük bir giriş ücreti ister; orada yaşadığın olay hem biraz para götürür hem de moralini yükseltir, ve çözmek zamanı ilerletir. Alkollü mekânları sık sık ziyaret etmek kalıcı bir ayyaşlık damgasına yol açabilir.',
   spMekanYok: 'Şu an gidebileceğin bir mekân yok.',
   spAyyasZaten: 'Zaten ayyaş olarak tanınıyorsun.',
   spZiyaretUyari: 'Şimdiye kadar {0} kez gittin — {1} ziyaret daha ayyaşlık damgası vurur.',
+
+  // ---- EvlilikPaneli (tam) ----
+  evBaslik: 'Evlilik',
+  evIntro: 'Kaderin seni bir olayla evlendirmesini beklemeden, kendi adayını seçip teklif edebilirsin. Turu tüketmez, teklif reddedilirse tekrar deneyebilirsin.',
+  evYukleniyorMesaji: 'Adaylar aranıyor...',
+  evUyum: 'Uyum: ~%{0}',
+  evTeklifEt: 'Evlenme Teklif Et',
+  evYeniAdaylar: 'Farklı Adaylar Göster',
+  evZatenEvli: 'Zaten evlisin.',
 
   // ---- IsYatirimEkrani (ek) ----
   iyMaliyetEk: 'Maliyet: {0} {1}',
@@ -633,6 +661,20 @@ const EN: Metinler = {
   skorKaydiYok: 'No scores recorded yet.',
   panelBasarimlar: '🏵️ Your Achievements',
   gecmisHayatSkorSonek: 'pts',
+  oyunaDevamEt: '▶ Resume Game',
+  girisGorusCta: "💬 Help shape the game — send your feedback",
+  panelYolHaritasi: '🗺️ Roadmap',
+  yhDurumYakinda: 'Planned',
+  yhDurumYapiliyor: 'In progress',
+  yhDurumTamam: 'Done',
+  panelYapimci: '👤 Creator',
+  yapimciLinkedin: 'LinkedIn →',
+  anaMenuyeDon: '🏠 Back to Main Menu',
+  anaMenuAciklama: 'Your game is saved; return to it with "Resume Game" from the start screen.',
+  bgBaslik: 'Achievements',
+  bgAc: '🏆 Achievement Gallery',
+  bgGizli: 'Hidden achievement — discover its condition yourself.',
+  bgYeniBasarim: '🏆 New achievement: {0}',
 
   // ---- Era selection ----
   cagSecBaslik: 'Choose Your Era',
@@ -915,9 +957,14 @@ const EN: Metinler = {
   iyAvantajli: 'Favorable',
   iyDezavantajli: 'Unfavorable',
   iySuAnTahminiGetiri: 'Current estimated yield',
+  iyGetiriBrut: '📈 Yield (gross): {0}{1} {2}/yr ({3}%)',
+  iyGetiriNet: '💰 Take-home (net): {0}{1} {2}/yr',
   iyBakimVergi: '🔧 Upkeep/tax: ~-{0} {1}/yr',
   iyBakimTitle:
-    'The upkeep/tax cost that comes due every 7–10 years, divided into a yearly figure; separate from the yield and paid in every case.',
+    'The upkeep/tax cost that comes due every 7–11 years, divided into a yearly figure; separate from the yield and paid in every case.',
+  iyBakimAcikla:
+    'This property incurs an upkeep/tax cost of about a third of its current value every 7–11 years. The "take-home" figure above is the net flow after that cost.',
+  iyKendiParan: 'Your Cash',
   iyKendiIsin: 'Your Own Business',
   iyKendiIsineYatirim: 'Invest in Your Own Business',
   iyKendiIsiAsama0: 'You have not invested at all yet.',
@@ -969,7 +1016,7 @@ const EN: Metinler = {
   mpMutluluk: 'happiness',
   mpSohret: 'fame',
   mpCurukUyari: '⏳ rots if not used within {0} years',
-  mpSifaSans: '🎲 ~{0}-{1}% benefit · sometimes wasted or backfires',
+  mpSifaSans: '🎲 When used, ~{0}-{1}% chance of full effect; small chance it does nothing; rarely it backfires and costs you health',
   mpSatinAl: 'Buy',
   mpSahipsin: 'Owned',
   mpYeterliPara: 'Not enough money',
@@ -1051,7 +1098,7 @@ const EN: Metinler = {
   enCurumeUyariTam: '⏳ rots if not used within {0} years.',
   enKullanimBekliyor: 'Waiting to be used.',
   enKullanTam: 'Use',
-  enKullanSansHint: '🎲 Outcome is chance-based: usually helps, sometimes wasted or backfires.',
+  enKullanSansHint: '🎲 Using it rolls the dice: usually gives full benefit, small chance it does nothing, rarely backfires and costs you health.',
 
   // ---- BolgeBilgisiPaneli ----
   bbHakkinda: 'About {0}',
@@ -1103,10 +1150,19 @@ const EN: Metinler = {
   // ---- SosyallesmePaneli ----
   spSosyallesBaslik: 'Socialize',
   spIntro:
-    'Going to a venue to spend time costs no turn; but resolving the event you have there advances time. Visiting drinking venues often can lead to a permanent drunkard mark.',
+    'Going to a venue costs no turn but charges a small entry fee; the event you have there costs a little money and lifts your spirits, and resolving it advances time. Visiting drinking venues often can lead to a permanent drunkard mark.',
   spMekanYok: 'There is no venue for you to go to right now.',
   spAyyasZaten: 'You are already known as a drunkard.',
   spZiyaretUyari: 'You have gone {0} times so far — {1} more visits will earn a drunkard mark.',
+
+  // ---- EvlilikPaneli ----
+  evBaslik: 'Marriage',
+  evIntro: "Instead of waiting for fate to marry you off through an event, you can pick your own candidate and propose. Costs no turn — if rejected, you can try again.",
+  evYukleniyorMesaji: 'Searching for candidates...',
+  evUyum: 'Compatibility: ~{0}%',
+  evTeklifEt: 'Propose Marriage',
+  evYeniAdaylar: 'Show Different Candidates',
+  evZatenEvli: 'You are already married.',
 
   // ---- IsYatirimEkrani ----
   iyMaliyetEk: 'Cost: {0} {1}',

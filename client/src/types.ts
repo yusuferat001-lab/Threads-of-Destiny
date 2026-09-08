@@ -43,7 +43,21 @@ export interface UlkeDurumu {
   nufusDurumu: 'artiyor' | 'normal' | 'azaliyor';
 }
 
-export type MulkTuru = 'ciftlik' | 'han' | 'demirci' | 'kervan' | 'karaborsa';
+export type MulkTuru = 'kucuk_tarla' | 'ciftlik' | 'han' | 'demirci' | 'kervan' | 'karaborsa';
+
+export interface EvlilikAdayi {
+  isim: string;
+  meslek: string;
+  rutbe: string;
+  kisilik: [string, string];
+  uyumYuzdesi: number;
+}
+
+export interface EvlilikTeklifSonucu {
+  state: CharacterState;
+  basarili: boolean;
+  mesaj: string;
+}
 
 export type MagazaEsyaKategori = 'sifa' | 'luks';
 
@@ -401,7 +415,10 @@ export interface FinansOzeti {
   maasYillik: number;
   giderKalemleri: GiderKalemleri;
   netYillik: number;
+  /** Gelir (maaş) enflasyonu yüzdesi — oyuncuya gösterilmez. */
   enflasyonYuzdesi: number;
+  /** Yaşam + konut GİDER enflasyonu yüzdesi; Gelir&Gider ekranındaki seçim kartları bunu kullanır. */
+  giderEnflasyonYuzdesi: number;
   gayrimenkulDegeri: number;
   maasKirilim: MaasKirilim;
   /** Mülklerden gelen yıllık tahmini net gelir — maaşın dışında ayrı akış. */
@@ -435,9 +452,12 @@ export interface MulkKartBilgisi {
   maliyet: number;
   sahipMi: boolean;
   tahminiYillikGetiriYuzdesi: number;
+  /** BRÜT yıllık getiri (bakım hariç). */
   tahminiYillikGetiriMiktari: number;
-  /** 7-10 yılda bir çıkan bakım/vergi masrafının yıllığa indirgenmiş yaklaşık tutarı. */
+  /** 7-11 yılda bir çıkan bakım/vergi masrafının yıllığa indirgenmiş yaklaşık tutarı. */
   yillikBakimTahmini: number;
+  /** NET = brüt getiri − yıllık bakım = oyuncunun eline gerçekten kalan. */
+  tahminiYillikNet: number;
 }
 
 export interface MulkSatinAlSonucu {
@@ -463,6 +483,8 @@ export interface SosyallesmeYeri {
 
 export interface SosyallesmeSonucu {
   state: CharacterState;
+  /** Bu mekâna gitmek için düşülen peşin giriş ücreti. */
+  girisUcreti: number;
 }
 
 export interface MagazaEsyaKarti {

@@ -66,9 +66,9 @@ export function temelUygunMu(olay: OlayTanimi, state: CharacterState): boolean {
   return true;
 }
 
-/** Normal rastgele havuz için: sosyalleşme mekânı olayları burada her zaman dışlanır — sadece sosyallesmeIcinOlaySec üzerinden, oyuncu ilgili mekâna gitmeyi seçtiğinde gelirler. */
+/** Normal rastgele havuz için: sosyalleşme mekânı ve mülk-bağlantılı olaylar burada her zaman dışlanır — ilki sosyallesmeIcinOlaySec, ikincisi gameEngine.ts'teki mülk-olayı kaskadı tarafından zorlanan olay olarak getirilir. */
 function uygunMu(olay: OlayTanimi, state: CharacterState): boolean {
-  return temelUygunMu(olay, state) && olay.sosyallesmeYeri === undefined;
+  return temelUygunMu(olay, state) && olay.sosyallesmeYeri === undefined && olay.mulkOlayi === undefined;
 }
 
 function rastgeleYasayanCocukAdi(state: CharacterState): string {
@@ -227,8 +227,17 @@ export function olaySec(
     // kadar önceliklidir. Havuz tükenip aynı olaylara dönülmesi gerektiğinde
     // bile en yakın zamanda görülen (en yüksek index'li) tekrar edilmez.
     const sonGorulmeSirasi = (id: string) => state.gecmis_olaylar.lastIndexOf(id);
-    const enOncelikliSira = Math.min(...uygunlar.map((o) => sonGorulmeSirasi(o.id)));
-    const havuz = uygunlar.filter((o) => sonGorulmeSirasi(o.id) === enOncelikliSira);
+    // Ek olarak: uygun havuz "son K görülende hiç yok" alt kümesi boş değilse
+    // önce ondan seçilir — küçük havuzlu (tag-gated) zincirlerde bile aynı
+    // olayın art arda/sık sık tekrar çıkması önlenir. Havuz bu filtreyle
+    // boşalırsa (gerçekten tek/iki seçenek kaldıysa) eski tied-minimum
+    // davranışına geri dönülür (güvenlik ağı — hiçbir zaman olaysız kalınmaz).
+    const SON_K_TEKRAR_ONLEME = 6;
+    const sonGorulenler = new Set(state.gecmis_olaylar.slice(-SON_K_TEKRAR_ONLEME));
+    const yakinTekrarEtmeyenler = uygunlar.filter((o) => !sonGorulenler.has(o.id));
+    const adaylar = yakinTekrarEtmeyenler.length > 0 ? yakinTekrarEtmeyenler : uygunlar;
+    const enOncelikliSira = Math.min(...adaylar.map((o) => sonGorulmeSirasi(o.id)));
+    const havuz = adaylar.filter((o) => sonGorulmeSirasi(o.id) === enOncelikliSira);
     olay = agirlikliSec(havuz, state, sonTon);
   }
 

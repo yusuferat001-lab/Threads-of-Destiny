@@ -49,9 +49,16 @@ function yaz(liste: GecmisHayat[]) {
   }
 }
 
-/** hesaplaSkor (sunucu) ile aynı formül: yas × max(un,1) × max(para,1), amaç tamamlandıysa ×5. */
+/**
+ * hesaplaSkor (sunucu, yama #1) ile hizalı: yas × max(un,1) × servetFaktoru (LOG-ölçekli),
+ * amaç tamamlandıysa ×5. İstemcide gayrimenkul değeri elde olmadığı için servet ≈ nakit
+ * (basarimSistemi.ts'teki kopyayla aynı yaklaşım). Eski `× max(para,1)` çarpanı tek zengin
+ * ömrü milyonlara fırlatıyordu.
+ */
 function skorHesapla(state: CharacterState): number {
-  const taban = state.yas * Math.max(state.un, 1) * Math.max(Math.round(state.para), 1);
+  const servet = state.para;
+  const servetFaktoru = servet > 0 ? 1 + Math.log10(1 + servet) : Math.max(0.15, 1 + servet / 400);
+  const taban = Math.round(state.yas * Math.max(state.un, 1) * servetFaktoru);
   return state.hayat_amaci?.tamamlandi ? taban * 5 : taban;
 }
 

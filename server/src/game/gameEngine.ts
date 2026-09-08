@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { CharacterState, Cag, SenaryoResponse, SonucEtkisi, TepkiSonucu, MulkTuru } from "../types";
+import { CharacterState, Cag, SenaryoResponse, SonucEtkisi, TepkiSonucu, MulkTuru, EvlilikAdayi } from "../types";
 import { T, K, Khukumdar } from "../i18n";
 import { olayCevirisiUygula } from "../i18n/olaylar";
 import { skorKaydet as skoruDbyeYaz } from "../db/scoreRepository";
@@ -38,6 +38,7 @@ import {
   giderKalemleriHesapla,
   GiderKalemleri,
   enflasyonYuzdesiHesapla,
+  giderEnflasyonYuzdesiHesapla,
   meslekMetrikCarpani,
   orduKaybiUygula,
   orduBuyumesiDene,
@@ -86,6 +87,7 @@ import {
   sosyallesmeYeriUygunMu,
 } from "../data/sosyallesmeYerleri";
 import { rastgeleBirIsimSec } from "../data/npcIsimleri";
+import { rastgeleKisilikCifti, kisilikGetir } from "../data/kisilikler";
 import {
   rastgeleHayvanTuruSec,
   rastgeleHayvanIsmiSec,
@@ -123,6 +125,16 @@ const EKIP_KISILIK_HAVUZU = ["Sadık", "Hırslı", "Korkak", "Kurnaz", "Tembel",
 const AYYAS_ESIGI = 3;
 
 /**
+ * Sosyalleşme (büyük denge turu — kullanıcı: "sosyalleşme daha masraflı olsun ama moral
+ * yükseltsin"). Bir mekâna gitmek artık peşin bir giriş ücreti ister (enflasyonla ölçekli),
+ * o mekânda yaşanan olay çözülünce de motor kuralı olarak küçük bir ek masraf düşülür ve
+ * moral (jittersiz, sabit) yükselir — 73 sosyalleşme olayını tek tek elden geçirmeden.
+ */
+const SOSYALLESME_GIRIS_UCRETI = 3;
+const SOSYALLESME_EK_MASRAF = 2;
+const SOSYALLESME_MORAL_BONUSU = 4;
+
+/**
  * "Suç işleyerek para kazanma" motor kuralı. Uygulanan sonuç etkisi hem para
  * kazandırıyor (para>0) hem de ağır bir ahlaki taviz içeriyorsa (ahlak <= eşik),
  * bu bir "kazanç için suç" seçimi sayılır ve olay bankasındaki ~180 böyle seçenek
@@ -135,12 +147,19 @@ const AYYAS_ESIGI = 3;
  */
 const SUC_KAZANC_AHLAK_ESIGI = -5;
 const SUC_KAZANC_PARA_CARPANI = 1.6;
-const SUC_KAZANC_SUC_ARTIS_TABAN = 6;
-const SUC_KAZANC_SUC_ARTIS_TAVAN = 20;
+// Büyük denge turunda tekrar büyütüldü (10→16 taban, 28→45 / 40→65 tavan, formül
+// katsayıları 0.5/0.15 → 0.8/0.25): pasif azalma yok (bkz. stateManager.sucSeviyesiUygula),
+// suç birikimi kalıcı ve kullanıcı "aranma seviyesi çok daha hızlı artsın" istedi —
+// tek bir "kazanç için ahlaki taviz" seçimi artık bir-iki aranma kademesi sıçratabilir.
+const SUC_KAZANC_SUC_ARTIS_TABAN = 16;
+const SUC_KAZANC_SUC_ARTIS_TAVAN = 45;
 const SUC_KAZANC_CIDDI_AHLAK = -15;
 const SUC_KAZANC_CIDDI_PARA = 40;
 /** Ağır suçlarda suc_artis tavanı bu değere yükselir (bir aranma kademesini tek suçta atlatabilir). */
-const SUC_KAZANC_CIDDI_TAVAN = 32;
+const SUC_KAZANC_CIDDI_TAVAN = 65;
+
+/** Mülk sahibi bir karaktere, her senaryoUret çağrısında mulkOlaylari.ts'ten zorlanan bir olay gelme ihtimali. */
+const MULK_OLAYI_IHTIMALI = 0.12;
 
 /**
  * Yolculuk (Haçlı Seferi / Hac / Keşif / Sömürge Seferi vb.) olaylarında kazanılan
@@ -151,12 +170,13 @@ const SUC_KAZANC_CIDDI_TAVAN = 32;
 const YOLCULUK_KAZANC_CARPANI = 1.2;
 
 /**
- * Her olay seçiminden gelen pozitif paraya uygulanan sabit prim (~%5.5). Maaş dışı
- * gelir kanalını (olay ödülleri) hafifçe güçlendirir — oyuncuya "maaş bekleme"
- * dışında ekonomik ajans verir. Meslek/yolculuk/suç çarpanlarının hepsinin altında,
- * ilk sırada uygulanır.
+ * Her olay seçiminden gelen pozitif paraya uygulanan sabit çarpan. Büyük denge
+ * turunda 1.055'ten 0.85'e çekildi: kullanıcı "olaylardan gelen para ödüllerini
+ * %20 düşür" dedi — eski +%5.5 primi de yutularak net ≈ −%20. YALNIZ pozitif
+ * para'ya biner (kayıplara değil). Meslek/yolculuk/suç çarpanlarının hepsinin
+ * altında, ilk sırada uygulanır.
  */
-const OLAY_PARA_PRIMI = 1.055;
+const OLAY_PARA_PRIMI = 0.85;
 
 type SucKazanciSonucu = "yok" | "suc" | "ciddi";
 
@@ -177,7 +197,7 @@ export function sucKazanciUygula(etki: SonucEtkisi): SucKazanciSonucu {
   const ciddi = ahlak <= SUC_KAZANC_CIDDI_AHLAK || para >= SUC_KAZANC_CIDDI_PARA;
   const tavan = ciddi ? SUC_KAZANC_CIDDI_TAVAN : SUC_KAZANC_SUC_ARTIS_TAVAN;
   const artis = Math.round(
-    Math.min(tavan, SUC_KAZANC_SUC_ARTIS_TABAN + Math.abs(ahlak) * 0.5 + para * 0.15)
+    Math.min(tavan, SUC_KAZANC_SUC_ARTIS_TABAN + Math.abs(ahlak) * 0.8 + para * 0.25)
   );
   etki.suc_artis = (etki.suc_artis ?? 0) + artis;
 
@@ -340,6 +360,20 @@ export async function mesleğiAta(id: string, meslek: string): Promise<Character
 
 export async function stateGetir(id: string): Promise<CharacterState> {
   return (await oturumGetir(id)).state;
+}
+
+/**
+ * Oyun sürerken oyuncu Ayarlar'dan dili değiştirdiğinde çağrılır. state.dil
+ * sadece POST /new anında yazıldığı için, Türkçe başlayıp sonradan İngilizceye
+ * geçen (ya da eski/göç etmiş) kayıtlarda olay/anlatı metinleri Türkçe kalıyordu
+ * — arayüz istemci tarafında çevrilse bile. Bu, sonraki senaryodan itibaren
+ * olayları da çevirmek için state.dil'i günceller.
+ */
+export async function oturumDiliAyarla(id: string, dil: "tr" | "en"): Promise<CharacterState> {
+  const oturum = await oturumGetir(id);
+  oturum.state.dil = dil === "en" ? "en" : "tr";
+  await oturumKaydet(oturum.state);
+  return oturum.state;
 }
 
 export async function senaryoUret(id: string): Promise<SenaryoResponse> {
@@ -529,6 +563,36 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
     const uygunlar = uygunYolculukTeklifleri(oturum.state);
     if (uygunlar.length > 0) {
       zorlananId = uygunlar[Math.floor(Math.random() * uygunlar.length)];
+    }
+  }
+  // Her karakter hayatında en az bir "gizemli" (esrarengiz eşya/olay) anıyla
+  // karşılaşsın diye: 25-45 yaş aralığında, hiç gizemli:true olay görmemişse
+  // ve o an uygun (çağ/bölge/meslek/etiket filtrelerinden geçen) en az bir
+  // gizemli olay varsa, zorla tetiklenir. Havuz küçükse (çoğu takip olayı belirli
+  // bir eşyaya sahip olmayı gerektirir) bu kural sıklıkla giriş olaylarından
+  // birini (gizem_ejderha_tilsimi, derinlik_hazine_haritasi vb.) seçer.
+  if (!zorlananId && oturum.state.yas >= 25 && oturum.state.yas < 45) {
+    const gizemliGorulduMu = oturum.state.gecmis_olaylar.some(
+      (id) => OLAY_BANKASI.find((o) => o.id === id)?.gizemli
+    );
+    if (!gizemliGorulduMu) {
+      const uygunGizemliler = OLAY_BANKASI.filter((o) => o.gizemli && temelUygunMu(o, oturum.state));
+      if (uygunGizemliler.length > 0) {
+        zorlananId = uygunGizemliler[Math.floor(Math.random() * uygunGizemliler.length)].id;
+      }
+    }
+  }
+  // Sahip olunan her piyasa mülkü türünün kendine özel bir flavor/karar olay
+  // havuzu var (mulkOlaylari.ts) — normal rastgele havuzdan tamamen dışlanır,
+  // sadece burada düşük bir periyodik şansla (sansOlayiDene ile aynı ruhta)
+  // zorlanan olay olarak gelir. Görülmemiş olaylar önceliklidir.
+  if (!zorlananId && oturum.state.mulkler.length > 0 && Math.random() < MULK_OLAYI_IHTIMALI) {
+    const sahipTurler = new Set(oturum.state.mulkler);
+    const uygunMulkOlaylari = OLAY_BANKASI.filter((o) => o.mulkOlayi && sahipTurler.has(o.mulkOlayi));
+    if (uygunMulkOlaylari.length > 0) {
+      const gorulmemis = uygunMulkOlaylari.filter((o) => !oturum.state.gecmis_olaylar.includes(o.id));
+      const havuz = gorulmemis.length > 0 ? gorulmemis : uygunMulkOlaylari;
+      zorlananId = havuz[Math.floor(Math.random() * havuz.length)].id;
     }
   }
 
@@ -734,6 +798,11 @@ async function sonucuUygulaVeIlerlet(
   // dönüş yok (kalıcı), tek çıkışı sosyal_meyhane_ayilma olayıdır.
   let ayyasOlduBuTur = false;
   if (mevcutOlay.sosyallesmeYeri) {
+    // Büyük denge turu: sosyalleşme "masraflı ama moral verir". Mekân olayı çözülünce
+    // enflasyonla ölçekli sabit bir ek masraf düşülür ve moral (jittersiz, sabit) yükselir —
+    // 73 sosyalleşme olayını tek tek elden geçirmeye gerek kalmadan.
+    etki.para = paraYuvarla((etki.para ?? 0) - SOSYALLESME_EK_MASRAF * enflasyonCarpani(state));
+    etki.mutluluk = (etki.mutluluk ?? 0) + SOSYALLESME_MORAL_BONUSU;
     const ziyaretEdilenYer = sosyallesmeYeriGetir(mevcutOlay.sosyallesmeYeri);
     if (ziyaretEdilenYer?.alkolluMu) {
       state.alkol_ziyaret_sayisi += 1;
@@ -1235,7 +1304,10 @@ export interface FinansOzeti {
   maasYillik: number;
   giderKalemleri: GiderKalemleri;
   netYillik: number;
+  /** Gelir (maaş) enflasyonu yüzdesi — oyuncuya gösterilmez, iç kullanım/uyum için. */
   enflasyonYuzdesi: number;
+  /** Yaşam + konut GİDER enflasyonu yüzdesi (gelirden ayrı, biraz yüksek). Gelir&Gider ekranındaki seçim kartları bunu kullanır ki tutar gerçek gider dökümüyle birebir eşleşsin. */
+  giderEnflasyonYuzdesi: number;
   /** Sahip olunan tüm gayrimenkullerin güncel toplam değeri (zorunlu bağış eşiği bu + nakit toplamına bakar). */
   gayrimenkulDegeri: number;
   /** Yıllık maaşın hangi bileşenlerden oluştuğu + her birinin kalıcı mı dönemsel mi olduğu. */
@@ -1263,6 +1335,7 @@ export async function finansGetir(id: string): Promise<FinansOzeti> {
     giderKalemleri,
     netYillik: paraYuvarla(maasYillik - toplamGider),
     enflasyonYuzdesi: enflasyonYuzdesiHesapla(state),
+    giderEnflasyonYuzdesi: giderEnflasyonYuzdesiHesapla(state),
     gayrimenkulDegeri: gayrimenkulDegeriHesapla(state),
     maasKirilim: maasKirilimHesapla(state),
     gayrimenkulYillikGelir: gayrimenkulYillikGelirHesapla(state),
@@ -1298,6 +1371,101 @@ export async function yasamSecimiDegistir(id: string, secimId: string): Promise<
   const mesaj = yasamSecimiDegistirState(state, secimId);
   await oturumKaydet(state);
   return { state, mesaj };
+}
+
+/** Bir karakterin şu an evlenmeye uygun olup olmadığını kontrol eder; değilse sebebi fırlatır. */
+function evlilikUygunlukKontrolEt(state: CharacterState): void {
+  if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  if (state.yas < 18) throw new Error("Evlenmek için henüz çok gençsin.");
+  if (state.etiketler.includes("medeni:evli")) throw new Error("Zaten evlisin.");
+  if (state.etiketler.includes("hapiste")) throw new Error("Hapisteyken evlenemezsin.");
+  if (state.etiketler.includes("yolculukta")) throw new Error("Yolculuktayken evlenemezsin.");
+}
+
+/** Bir evlilik adayının oyuncunun kişiliğiyle kaba bir uyum yüzdesi — paylaşılan özellik bonus verir, çelişen özellik kırar. */
+function evlilikUyumHesapla(state: CharacterState, adayKisilik: [string, string]): number {
+  let uyum = 45 + Math.floor(Math.random() * 30); // taban 45-74
+  for (const ozellik of adayKisilik) {
+    if (state.kisilik.includes(ozellik)) uyum += 12;
+    const tanim = kisilikGetir(ozellik);
+    if (tanim && state.kisilik.some((sahip) => tanim.celisenler.includes(sahip))) uyum -= 15;
+  }
+  return Math.max(15, Math.min(95, uyum));
+}
+
+function rastgeleEvlilikAdayiUret(state: CharacterState): EvlilikAdayi {
+  const meslek = MESLEKLER[Math.floor(Math.random() * MESLEKLER.length)];
+  const rutbeTanimi = rutbeTanimiGetir(meslek, state.cag, state.din_kultur);
+  const rutbe = rutbeTanimi
+    ? rutbeTanimi.unvanlar[Math.floor(Math.random() * rutbeTanimi.unvanlar.length)]
+    : meslek;
+  const kisilik = rastgeleKisilikCifti();
+  const disariBirak = [state.dost_adi, state.rakip_adi, state.es_adi].filter((a): a is string => Boolean(a));
+  const isim = rastgeleBirIsimSec(state.cag, state.bolge, disariBirak);
+  return { isim, meslek, rutbe, kisilik, uyumYuzdesi: evlilikUyumHesapla(state, kisilik) };
+}
+
+/** Olay beklemeden, oyuncunun istediği an açabileceği evlilik adayları listesi (2 aday, her çağrıda yeniden üretilir). Turu tüketmez. */
+export async function evlilikAdaylariGetir(id: string): Promise<EvlilikAdayi[]> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  evlilikUygunlukKontrolEt(state);
+  return [rastgeleEvlilikAdayiUret(state), rastgeleEvlilikAdayiUret(state)];
+}
+
+interface EvlilikTeklifSonucu {
+  state: CharacterState;
+  basarili: boolean;
+  mesaj: string;
+}
+
+/**
+ * Bir aday listeden seçilip teklif edilir: başarı şansı adayın uyumYuzdesi'ne +
+ * oyuncunun mutluluk/ün durumuna göre küçük bir düzeltmeye bağlıdır (zar atılır).
+ * Reddedilirse hiçbir state değişikliği olmaz, tekrar denenebilir. Turu tüketmez.
+ */
+export async function evlilikTeklifEt(id: string, aday: EvlilikAdayi): Promise<EvlilikTeklifSonucu> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  evlilikUygunlukKontrolEt(state);
+  if (
+    !aday ||
+    typeof aday.isim !== "string" ||
+    typeof aday.meslek !== "string" ||
+    typeof aday.rutbe !== "string" ||
+    !Array.isArray(aday.kisilik) ||
+    aday.kisilik.length !== 2
+  ) {
+    throw new Error("Geçersiz evlilik adayı.");
+  }
+  const uyum = Math.max(5, Math.min(95, Math.round(aday.uyumYuzdesi ?? 50)));
+  const sans = Math.max(
+    10,
+    Math.min(90, uyum + Math.round((state.mutluluk - 50) / 5) + Math.round((state.un - 20) / 10))
+  );
+  const basarili = Math.random() * 100 < sans;
+  if (basarili) {
+    state.es_adi = aday.isim;
+    state.es_meslek = aday.meslek;
+    state.es_rutbe = aday.rutbe;
+    state.es_puani = 55 + Math.round(uyum / 5);
+    etiketEkle(state, ["medeni:evli"]);
+    hayatOlayiEkle(
+      state,
+      "💍",
+      T(state.dil, "{0} ile evlendi ({1}, {2})", [
+        aday.isim,
+        K(state.dil, aday.kisilik[0]),
+        K(state.dil, aday.kisilik[1]),
+      ])
+    );
+    clampStats(state);
+  }
+  const mesaj = basarili
+    ? T(state.dil, "{0} teklifini kabul etti! Artık evlisin.", [aday.isim])
+    : T(state.dil, "{0} teklifini nazikçe geri çevirdi. Belki başka zaman...", [aday.isim]);
+  await oturumKaydet(state);
+  return { state, basarili, mesaj };
 }
 
 interface EkipCikarSonucu {
@@ -1449,10 +1617,12 @@ export interface MulkKartBilgisi {
   sahipMi: boolean;
   /** Şu anki dünya durumuna göre tahmini yıllık getiri (%); negatifse mülk o an zarar ettiriyor demektir. */
   tahminiYillikGetiriYuzdesi: number;
-  /** Aynı oranın, güncel para biriminde karşılığı (mulkGelirleriUygula'nın gerçekte ekleyeceği/düşeceği miktarla birebir aynı formül). */
+  /** BRÜT: aynı oranın, güncel para biriminde karşılığı (mulkGelirleriUygula'nın gerçekte ekleyeceği getiriyle birebir aynı formül; bakım DAHİL DEĞİL). */
   tahminiYillikGetiriMiktari: number;
-  /** 7-10 yılda bir çıkan periyodik bakım/vergi masrafının yıllığa indirgenmiş yaklaşık tutarı (getiriden ayrı, her zaman gider). */
+  /** 7-11 yılda bir çıkan periyodik bakım/vergi masrafının yıllığa indirgenmiş yaklaşık tutarı (getiriden ayrı, her zaman gider). */
   yillikBakimTahmini: number;
+  /** NET: brüt getiri − yıllık bakım tahmini = oyuncunun eline gerçekten kalan yıllık akış. Negatifse mülk o an zarar ettiriyor. */
+  tahminiYillikNet: number;
 }
 
 /** Yatırım ekranının "Yatırımlık Gayrimenkuller" bölümü için 5 mülkün güncel fiyat/getiri önizlemesini döner. */
@@ -1475,6 +1645,7 @@ export async function mulkConfigGetir(id: string): Promise<MulkKartBilgisi[]> {
       tahminiYillikGetiriYuzdesi: Math.round(oran * 100),
       tahminiYillikGetiriMiktari: paraYuvarla(tabanDegeri * oran),
       yillikBakimTahmini: mulkYillikBakimTahmini(tanim.tur, state),
+      tahminiYillikNet: paraYuvarla(tabanDegeri * oran - mulkYillikBakimTahmini(tanim.tur, state)),
     };
   });
 }
@@ -1519,7 +1690,8 @@ export async function dedikoduGetir(id: string): Promise<string[]> {
 
 const ZAR_KADEMELERI = [10, 50, 100] as const;
 const ZAR_KAZANMA_SANSI = 0.4;
-const ZAR_SUC_ARTISI = 4;
+// Büyük denge turunda 4→7: aranma seviyesi genelde daha hızlı artsın (kullanıcı isteği).
+const ZAR_SUC_ARTISI = 7;
 
 /** Zar masası ekranının canlı bahis kademelerini döner (enflasyona göre ölçeklenir). */
 export async function zarKademeleriGetir(id: string): Promise<number[]> {
@@ -1596,6 +1768,8 @@ export async function sosyallesmeYerleriGetir(id: string): Promise<SosyallesmeYe
 
 interface SosyallesmeSonucu {
   state: CharacterState;
+  /** Bu mekâna gitmek için düşülen peşin giriş ücreti (enflasyonla ölçekli). */
+  girisUcreti: number;
 }
 
 /**
@@ -1614,10 +1788,15 @@ export async function sosyallesmeYerineGit(id: string, yerId: string): Promise<S
   if (!yer || !sosyallesmeYeriUygunMu(yer, state.cag, state.bolge, state.meslek)) {
     throw new Error("Bu mekân şu an sana uygun değil.");
   }
+  const girisUcreti = paraYuvarla(SOSYALLESME_GIRIS_UCRETI * enflasyonCarpani(state));
+  if (state.para < girisUcreti) {
+    throw new Error(`Cebinde bu mekâna gidecek kadar para yok (~${girisUcreti} ${state.para_birimi} giriş ücreti).`);
+  }
+  state.para = paraYuvarla(state.para - girisUcreti);
   const olay = sosyallesmeIcinOlaySec(state, yerId);
   oturum.zorlananOlayId = olay.id;
   await oturumKaydet(state);
-  return { state };
+  return { state, girisUcreti };
 }
 
 // ---------------------------------------------------------------------------

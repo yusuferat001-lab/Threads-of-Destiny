@@ -3,6 +3,7 @@ import type { OlayTanimi } from "./types";
 export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
   {
     id: "kg_antika_harita",
+    gizemli: true,
     kategori: "ticaret",
     agirlik: 0.6,
     gorsel: "🎨",
@@ -15,7 +16,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         ipucu: "Yorucu bir çaba ama efsanevi bir gizli eşya (Envanter) verebilir",
         basariliSonuc: {
           saglik: -5,
-          mutluluk: 15,
+          mutluluk: 12,
           etiket_ekle: [
             "envanter:gizemli_harita",
           ],
@@ -164,6 +165,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
   },
   {
     id: "gizem_ejderha_tilsimi",
+    gizemli: true,
     kategori: "ticaret",
     agirlik: 0.2,
     gorsel: "🐉",
@@ -224,6 +226,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
   },
   {
     id: "gizem_kara_kilic",
+    gizemli: true,
     kategori: "savas",
     meslekler: [
       "Asker",
@@ -268,6 +271,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
   },
   {
     id: "gizem_melek_tuyu",
+    gizemli: true,
     kategori: "din",
     meslekler: [
       "Din Adamı",
@@ -450,7 +454,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         ],
         ipucu: "Sadece kılıca sahip olanlar görebilir: Delilik ya da muazzam bir uyanış",
         basariliSonuc: {
-          mutluluk: 30,
+          mutluluk: 12,
           ahlak: -40,
           un: 20,
           mesaj: "Seslerin kaynağı kılıçtı! Onun karanlığıyla birleştin. Artık korkmuyorsun, çünkü karanlığın kendisi sen oldun.",
@@ -467,7 +471,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         ipucu: "Masraflı ama rahatlama getirir",
         basariliSonuc: {
           para: -10,
-          mutluluk: 15,
+          mutluluk: 12,
           saglik: 5,
           mesaj: "Hekimin verdiği afyonlu şuruplar içini hafifletti; gölgeler biraz dağıldı.",
         },
@@ -513,7 +517,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_sil: [
             "envanter:sirli_iksir",
           ],
-          mutluluk: 20,
+          mutluluk: 12,
           durum_ekle: {
             id: "cocuk_tedavi_surecinde",
             ad: "Mucizevi Şifa",
@@ -813,7 +817,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_ekle: [
             "tibbi:veba_bagisik",
           ],
-          mutluluk: 20,
+          mutluluk: 12,
           saglik: 15,
           un: 10,
           ulke_etkisi: {
@@ -910,7 +914,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         ],
         ipucu: "Gizli Eşya: Kedi, veba taşıyan pireli fareleri avlar!",
         basariliSonuc: {
-          mutluluk: 15,
+          mutluluk: 12,
           saglik: 10,
           mesaj: "O tuhaf kara kedi gece gündüz avlandı. Evin etrafına tek bir hastalıklı fare bile yaklaşamadı. Kedi senin ailenin koruyucu meleği oldu!",
         },
@@ -994,7 +998,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         basariliSonuc: {
           para: -40,
           saglik: 10,
-          mutluluk: 15,
+          mutluluk: 12,
           ahlak: 20,
           un: -15,
           mesaj: "Dükkânın kepenklerini sonsuza dek kapattın. Ticaret bitti. Ama çocukların o akşam doya doya ekmek yedi. Ailenin kahramanısın.",
@@ -1046,6 +1050,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
   },
   {
     id: "gizem_golge_pazari",
+    gizemli: true,
     kategori: "ticaret",
     agirlik: 0.2,
     gorsel: "🌒",
@@ -1729,6 +1734,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
   },
   {
     id: "derinlik_manastir_kedisi",
+    gizemli: true,
     kategori: "din",
     meslekler: [
       "Din Adamı",
@@ -1779,6 +1785,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
   },
   {
     id: "derinlik_hazine_haritasi",
+    gizemli: true,
     kategori: "ticaret",
     yasakliEtiketler: [
       "envanter:hazine_haritasi",
@@ -1894,6 +1901,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
   },
   {
     id: "derinlik_kutsal_kalinti",
+    gizemli: true,
     kategori: "din",
     yasakliEtiketler: [
       "esya:kutsal_kalinti",
@@ -2047,6 +2055,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
   },
   {
     id: "derinlik_lanetli_altin",
+    gizemli: true,
     kategori: "ticaret",
     yasakliEtiketler: [
       "esya:lanetli_altin",
@@ -2247,6 +2256,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
   },
   {
     id: "derinlik_gizli_orgut_daveti",
+    gizemli: true,
     kategori: "siyaset",
     minYas: 18,
     yasakliEtiketler: [
@@ -2396,6 +2406,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
   },
   {
     id: "derinlik_kumarhane_daveti",
+    gizemli: true,
     kategori: "sosyal",
     yasakliEtiketler: [
       "bagimlilik:kumarbaz",
@@ -2607,6 +2618,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
   },
   {
     id: "gizem_koleksiyoncu_ejderha",
+    gizemli: true,
     kategori: "ticaret",
     gerekliEtiketler: [
       "envanter:ejderha_tilsimi",
@@ -2713,6 +2725,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
   },
   {
     id: "gizem_sirli_iksir_ikilemi",
+    gizemli: true,
     kategori: "saglik",
     ton: "agir",
     agirlik: 0.4,
@@ -2731,7 +2744,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         ipucu: "Belki bir mucize, belki boşa harcanan tek şansın",
         basariliSonuc: {
           dost_puani: 25,
-          mutluluk: 15,
+          mutluluk: 12,
           etiket_sil: [
             "envanter:sirli_iksir",
           ],
@@ -2776,6 +2789,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
   },
   {
     id: "gizem_golge_sikke_kumari",
+    gizemli: true,
     kategori: "ticaret",
     ton: "hafif",
     agirlik: 0.4,
@@ -2822,6 +2836,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
   },
   {
     id: "gizem_gizemli_harita_ikinci_yol",
+    gizemli: true,
     kategori: "ticaret",
     agirlik: 0.5,
     gerekliEtiketler: [
@@ -2880,6 +2895,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
   },
   {
     id: "gizem_hazine_haritasi_ortaklik",
+    gizemli: true,
     kategori: "ticaret",
     agirlik: 0.4,
     gerekliEtiketler: [
@@ -2928,6 +2944,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
   },
   {
     id: "gizem_olunun_yuzugu_lanet_soylentisi",
+    gizemli: true,
     kategori: "din",
     ton: "agir",
     agirlik: 0.4,
@@ -2976,6 +2993,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
   },
   {
     id: "gizem_hazine_bulundu_vergi_sorunu",
+    gizemli: true,
     kategori: "siyaset",
     agirlik: 0.4,
     gerekliEtiketler: [

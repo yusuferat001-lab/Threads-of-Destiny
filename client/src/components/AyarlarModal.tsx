@@ -10,6 +10,10 @@ interface Props {
   onSesToggle: () => void;
   onGeriBildirimGonder: (girdi: GeriBildirimGirdi) => Promise<void>;
   onKapat: () => void;
+  /** Oyun ortasındayken verilir: "Ana Menüye Dön" butonunu gösterir (oyun kaydı korunur). */
+  onAnaMenu?: () => void;
+  /** Modal açılırken gösterilecek ilk sekme (varsayılan: 'genel'). */
+  baslangicSekme?: Sekme;
 }
 
 type Sekme = 'genel' | 'geri_bildirim';
@@ -24,9 +28,11 @@ export function AyarlarModal({
   onSesToggle,
   onGeriBildirimGonder,
   onKapat,
+  onAnaMenu,
+  baslangicSekme = 'genel',
 }: Props) {
   const M = metinler(dil);
-  const [sekme, setSekme] = useState<Sekme>('genel');
+  const [sekme, setSekme] = useState<Sekme>(baslangicSekme);
 
   const [kategori, setKategori] = useState<GeriBildirimKategori>('oneri');
   const [mesaj, setMesaj] = useState('');
@@ -150,6 +156,16 @@ export function AyarlarModal({
                   </button>
                 </div>
               </section>
+
+              {onAnaMenu && (
+                <section className="ayar-bolum">
+                  <h3>🏠 {M.anaMenu}</h3>
+                  <p className="ayar-bolum-aciklama">{M.anaMenuAciklama}</p>
+                  <button className="ikincil" onClick={onAnaMenu}>
+                    {M.anaMenuyeDon}
+                  </button>
+                </section>
+              )}
             </>
           ) : (
             <section className="ayar-bolum">

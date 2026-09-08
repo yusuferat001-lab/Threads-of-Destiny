@@ -133,7 +133,9 @@ export function IsYatirimEkrani({
           </div>
 
           <div className="is-karo-izgara">
-            <StatKarosu ikon="💰" etiket={m.iyYillikKazanc} deger={`~${formatPara(maasYillik)} ${paraBirimi}`} vurgu />
+            <StatKarosu ikon="🪙" etiket={m.iyKendiParan} deger={`${formatPara(para)} ${paraBirimi}`} vurgu />
+
+            <StatKarosu ikon="💰" etiket={m.iyYillikKazanc} deger={`~${formatPara(maasYillik)} ${paraBirimi}`} />
 
             {amirAdi && <StatKarosu ikon="🎖️" etiket={m.iyAmirin} deger={amirAdi} alt={amirRutbe ? kt(amirRutbe) : undefined} />}
 
@@ -195,14 +197,27 @@ export function IsYatirimEkrani({
                 <span className="meslek-aciklama">
                   {m.iyAvantajli}: {kt(mulk.avantajliDurum)} · {m.iyDezavantajli}: {kt(mulk.dezavantajliDurum)}
                 </span>
-                <span className={`mulk-getiri ${mulk.tahminiYillikGetiriYuzdesi < 0 ? 'mulk-getiri-negatif' : 'mulk-getiri-pozitif'}`}>
-                  {m.iySuAnTahminiGetiri}: {mulk.tahminiYillikGetiriMiktari >= 0 ? '+' : ''}
-                  {formatPara(mulk.tahminiYillikGetiriMiktari)} {paraBirimi}{m.iyGetiriYilBasi} ({mulk.tahminiYillikGetiriYuzdesi > 0 ? '+' : ''}
-                  {mulk.tahminiYillikGetiriYuzdesi}%)
+                <span className="mulk-getiri mulk-getiri-pozitif">
+                  {bic(
+                    m.iyGetiriBrut,
+                    mulk.tahminiYillikGetiriMiktari >= 0 ? '+' : '',
+                    formatPara(mulk.tahminiYillikGetiriMiktari),
+                    paraBirimi,
+                    (mulk.tahminiYillikGetiriYuzdesi > 0 ? '+' : '') + mulk.tahminiYillikGetiriYuzdesi
+                  )}
                 </span>
                 <span className="meslek-aciklama" title={m.iyBakimTitle}>
                   {bic(m.iyBakimVergi, formatPara(mulk.yillikBakimTahmini), paraBirimi)}
                 </span>
+                <span className={`mulk-getiri ${mulk.tahminiYillikNet < 0 ? 'mulk-getiri-negatif' : 'mulk-getiri-pozitif'}`}>
+                  {bic(
+                    m.iyGetiriNet,
+                    mulk.tahminiYillikNet >= 0 ? '+' : '',
+                    formatPara(mulk.tahminiYillikNet),
+                    paraBirimi
+                  )}
+                </span>
+                {mulk.sahipMi && <span className="meslek-aciklama">{m.iyBakimAcikla}</span>}
                 {!mulk.sahipMi && (
                   <span className="meslek-aciklama">
                     {formatPara(mulk.maliyet)} {paraBirimi}

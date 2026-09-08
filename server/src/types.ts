@@ -54,7 +54,21 @@ export interface UlkeDurumu {
 }
 
 /** Piyasa mülkleri: her biri en fazla bir kez sahiplenilebilir, getirisi state.ulke'ye göre her tur yeniden hesaplanır. */
-export type MulkTuru = "ciftlik" | "han" | "demirci" | "kervan" | "karaborsa";
+export type MulkTuru = "kucuk_tarla" | "ciftlik" | "han" | "demirci" | "kervan" | "karaborsa";
+
+/**
+ * Olay dışı evlenme akışının (GET /:id/evlilik-adaylari, POST /:id/evlilik-teklifi)
+ * adayı: her GET çağrısında rastgele üretilir, state'te saklanmaz — istemci seçtiği
+ * adayı olduğu gibi POST'a geri gönderir.
+ */
+export interface EvlilikAdayi {
+  isim: string;
+  meslek: string;
+  rutbe: string;
+  kisilik: [string, string];
+  /** Oyuncunun kişiliğiyle kaba bir uyum tahmini (0-100); teklif başarı şansını etkiler. */
+  uyumYuzdesi: number;
+}
 
 /** Mağaza eşya türü: "sifa" sağlık/mutluluk verir ve zamanla bozulur; "luks" ün/statü verir ve kalıcıdır. */
 export type MagazaEsyaKategori = "sifa" | "luks";

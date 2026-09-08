@@ -21,7 +21,7 @@ export const OLAY_ILISKILER: OlayTanimi[] = [
         basariliSonuc: {
           es_ata: true,
           es_puani: 15,
-          mutluluk: 30,
+          mutluluk: 12,
           etiket_ekle: [
             "medeni:evli",
             "itibar:fakir_ama_mutlu",
@@ -178,7 +178,7 @@ export const OLAY_ILISKILER: OlayTanimi[] = [
         basariliSonuc: {
           para: -20,
           es_puani: 30,
-          mutluluk: 10,
+          mutluluk: 5,
           mesaj: "Hediyeler, tavizler ve uzun gözyaşları işe yaradı. Evlilik kurtuldu ama iplerin kimin elinde olduğu artık belli.",
         },
         basarisizSonuc: {
@@ -251,7 +251,7 @@ export const OLAY_ILISKILER: OlayTanimi[] = [
         ipucu: "Maddi çöküş, ancak en yüksek kurtulma ihtimali",
         basariliSonuc: {
           es_puani: 40,
-          mutluluk: 15,
+          mutluluk: 8,
           para: -40,
           etiket_ekle: [
             "es_minnettar",
@@ -768,7 +768,7 @@ export const OLAY_ILISKILER: OlayTanimi[] = [
           metin: "{rakip} karşında, etraftakiler durup izlemeye başladı. Bir adım daha atarsan bu artık geri dönülemez bir yüzleşmeye dönüşecek.",
           geriCekilMetni: "Son anda vazgeç, sırtını dön.",
           geriCekilSonucu: {
-            mutluluk: 5,
+            mutluluk: -4,
             rakip_puani: 5,
             mesaj: "Son anda vazgeçtin; {rakip} şaşkın bakışlarla seni izledi.",
             detay: "Bazen en güçlü hamle, hamle yapmamaktır.",
@@ -798,7 +798,7 @@ export const OLAY_ILISKILER: OlayTanimi[] = [
         metin: "Duygularını açıkça söyle.",
         baseBasariSansi: 55,
         basariliSonuc: {
-          mutluluk: 15,
+          mutluluk: 8,
           dost_puani: 5,
           mesaj: "Kalbin gibi sözlerin de karşılık buldu, günlerce bulutların üstünde yürüdün.",
           detay: "İlk aşk bir daha asla aynı tatta gelmez.",
@@ -839,7 +839,7 @@ export const OLAY_ILISKILER: OlayTanimi[] = [
         basariliSonuc: {
           ahlak: 10,
           rakip_puani: 20,
-          mutluluk: 10,
+          mutluluk: 5,
           mesaj: "{rakip} şaşkınlıkla elini sıktı, yıllardır süren gerginlik bir anda eridi.",
           detay: "Bazı savaşların en iyi bitişi barıştır.",
         },
@@ -881,7 +881,7 @@ export const OLAY_ILISKILER: OlayTanimi[] = [
         metin: "Bu özgürlüğü değerlendir, kendine zaman ayır.",
         baseBasariSansi: 85,
         basariliSonuc: {
-          mutluluk: 8,
+          mutluluk: 4,
           mesaj: "Kendine ayırdığın zaman seni tazeledi.",
           detay: "Bazen en iyi arkadaşlık kendinledir.",
         },
@@ -963,7 +963,7 @@ export const OLAY_ILISKILER: OlayTanimi[] = [
         metin: "Daveti kabul et, maceraya atıl.",
         baseBasariSansi: 65,
         basariliSonuc: {
-          mutluluk: 15,
+          mutluluk: 8,
           dost_puani: 10,
           mesaj: "Gece beklenmedik güzellikte geçti; unutulmaz bir anı oldu.",
           detay: "Bazı geceler yılın en güzel anları arasına girer.",
@@ -1007,7 +1007,7 @@ export const OLAY_ILISKILER: OlayTanimi[] = [
         baseBasariSansi: 75,
         basariliSonuc: {
           ahlak: 8,
-          mutluluk: 5,
+          mutluluk: 3,
           mesaj: "Düşünceyle yüzleşmen sana beklenmedik bir huzur getirdi.",
           detay: "Bazı korkular, onlarla yüzleşince küçülür.",
         },
@@ -1064,7 +1064,7 @@ export const OLAY_ILISKILER: OlayTanimi[] = [
         metin: "Dengeyi koru, hayatın diğer yönlerine de zaman ayır.",
         baseBasariSansi: 85,
         basariliSonuc: {
-          mutluluk: 10,
+          mutluluk: 5,
           mesaj: "Dengeli yaklaşımın seni hem başarılı hem mutlu kıldı.",
           detay: "Denge bazen en akıllıca stratejidir.",
         },
@@ -1117,7 +1117,7 @@ export const OLAY_ILISKILER: OlayTanimi[] = [
         ipucu: "Ailen mutlu, kariyerin yerinde sayar",
         basariliSonuc: {
           es_puani: 15,
-          mutluluk: 10,
+          mutluluk: 5,
           un: -8,
           mesaj: "Teklifi reddettin; {es} minnetle sarıldı, kariyerin bir süre yerinde saysa da eve her akşam dönüyorsun.",
           detay: "Bazı terfiler bir akşam yemeğine değmez.",

@@ -22,6 +22,9 @@ import {
   magazaConfigGetir,
   magazadanSatinAl,
   envanterEsyasiKullan,
+  evlilikAdaylariGetir,
+  evlilikTeklifEt,
+  oturumDiliAyarla,
 } from "../game/gameEngine";
 import { MESLEKLER, BOLGELER_BY_CAG } from "../game/stateManager";
 import { YERLESIMLER } from "../data/yerlesimler";
@@ -101,6 +104,16 @@ gameRouter.post("/:id/meslek", async (req, res) => {
   }
   try {
     const state = await mesleğiAta(req.params.id, meslek);
+    res.json({ state });
+  } catch (err) {
+    res.status(400).json({ hata: String(err) });
+  }
+});
+
+gameRouter.post("/:id/dil", async (req, res) => {
+  try {
+    const { dil } = req.body ?? {};
+    const state = await oturumDiliAyarla(req.params.id, dil === "en" ? "en" : "tr");
     res.json({ state });
   } catch (err) {
     res.status(400).json({ hata: String(err) });
@@ -271,6 +284,28 @@ gameRouter.post("/:id/sosyallesme", async (req, res) => {
   }
   try {
     const sonuc = await sosyallesmeYerineGit(req.params.id, yerId);
+    res.json(sonuc);
+  } catch (err) {
+    res.status(400).json({ hata: String(err) });
+  }
+});
+
+gameRouter.get("/:id/evlilik-adaylari", async (req, res) => {
+  try {
+    const adaylar = await evlilikAdaylariGetir(req.params.id);
+    res.json({ adaylar });
+  } catch (err) {
+    res.status(400).json({ hata: String(err) });
+  }
+});
+
+gameRouter.post("/:id/evlilik-teklifi", async (req, res) => {
+  const { aday } = req.body ?? {};
+  if (!aday || typeof aday !== "object") {
+    return res.status(400).json({ hata: "Geçersiz aday." });
+  }
+  try {
+    const sonuc = await evlilikTeklifEt(req.params.id, aday);
     res.json(sonuc);
   } catch (err) {
     res.status(400).json({ hata: String(err) });

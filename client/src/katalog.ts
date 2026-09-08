@@ -369,7 +369,7 @@ const KATALOG_EN: Record<string, string> = {
   // Hayat amaçları
   // ---------------------------------------------------------------------------
   "Şehrin En Zengini Olmak": "Become the Richest in the City",
-  "Servetini 300'ün üzerine çıkar.": "Raise your wealth above 300.",
+  "Servetini 180'in üzerine çıkar.": "Raise your wealth above 180.",
   "Efsanevi Bir Şöhret Kazanmak": "Win Legendary Fame",
   "Şöhretini neredeyse zirveye taşı.": "Carry your fame almost to its peak.",
   "Kutsal Topraklara Ulaşmak": "Reach the Holy Land",

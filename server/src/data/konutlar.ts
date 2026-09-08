@@ -41,11 +41,11 @@ export const KONUTLAR: KonutTanimi[] = [
     ad: "Ahşap Ev",
     simge: "🪵",
     aciklama:
-      "Sağlam sayılmaz ama bir çatı; yine de bakımsız ve dar — sağlığını, moralini ve adını yavaş yavaş aşındırır. İlk fırsatta gerçek bir eve geçmek gerekir.",
+      "Ucuz ve gösterişsiz ama kendi tempon var; komşularla iç içe, dar ve bakımsız bir çatı sağlığını ve adını biraz aşındırsa da, kimseye hesap vermeyen bu sade hayat sana huzur veriyor.",
     kiraYillik: 3,
-    saglikEtkisiYillik: -2,
-    mutlulukEtkisiYillik: -2,
-    unEtkisiYillik: -2,
+    saglikEtkisiYillik: -1,
+    mutlulukEtkisiYillik: 1,
+    unEtkisiYillik: -1,
   },
   {
     id: "normal_ev",

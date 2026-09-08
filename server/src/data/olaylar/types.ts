@@ -1,4 +1,4 @@
-import { Cag, Kategori, SonucEtkisi, UlkeDurumu } from "../../types";
+import { Cag, Kategori, MulkTuru, SonucEtkisi, UlkeDurumu } from "../../types";
 
 /**
  * Bir seçeneğin hemen dice atmak yerine önce bir "tepki" gösterip oyuncuya
@@ -106,6 +106,13 @@ export interface OlayTanimi {
    * gitmeyi seçtiğinde (POST /:id/sosyallesme) zorlanan olay olarak karşısına çıkar.
    */
   sosyallesmeYeri?: string;
+  /**
+   * Belirtilirse bu olay bir piyasa mülkü türüne (mulkler.ts) aittir: normal
+   * rastgele havuzdan tamamen dışlanır (bkz. olaySecici.ts uygunMu), sadece o
+   * mülkü sahiplenen bir karaktere gameEngine.ts'teki periyodik mülk-olayı
+   * kaskadı tarafından zorlanan olay olarak sunulur.
+   */
+  mulkOlayi?: MulkTuru;
   agirlik?: number;
   sureYilMin?: number;
   sureYilMax?: number;

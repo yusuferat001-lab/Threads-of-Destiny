@@ -69,7 +69,7 @@ export function FinansEkrani({
   onGeriDon,
 }: FinansEkraniProps) {
   const { m, kt, dil } = useDil();
-  const { maasYillik, giderKalemleri, netYillik, enflasyonYuzdesi, maasKirilim, gayrimenkulYillikGelir, dunyaEtkileri } =
+  const { maasYillik, giderKalemleri, netYillik, giderEnflasyonYuzdesi, maasKirilim, gayrimenkulYillikGelir, dunyaEtkileri } =
     finans;
   const toplamGider =
     giderKalemleri.yasam +
@@ -80,8 +80,10 @@ export function FinansEkrani({
   // Gerçek net: maaş − gider + mülk geliri (server'ın netYillik'i sadece maaş − gider).
   const gercekNet = netYillik + gayrimenkulYillikGelir;
   // Yaşam tarzı + konut listesindeki liste fiyatları enflasyonsuz; gider dökümündeki
-  // gerçek yaşam/kira tutarına (enflasyonla ölçekli) hizalamak için burada da uygularız.
-  const enfCarpan = 1 + enflasyonYuzdesi / 100;
+  // gerçek yaşam/kira tutarıyla BİREBİR hizalamak için GİDER enflasyonu çarpanını
+  // kullanırız (gelir enflasyonu değil — eskiden o kullanılıyordu ve kart tutarı
+  // gerçek giderden farklı çıkıyordu).
+  const enfCarpan = 1 + giderEnflasyonYuzdesi / 100;
   const enflasyonluTutar = (taban: number) => Math.round(taban * enfCarpan * 100) / 100;
 
   return (

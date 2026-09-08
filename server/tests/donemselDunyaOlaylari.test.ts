@@ -31,10 +31,10 @@ describe("enflasyonCarpani — çağa göre yıllık bileşik oran", () => {
     expect(enflasyonCarpani(state)).toBeCloseTo(Math.pow(1.01, 10), 6);
   });
 
-  it("Sanayi Devrimi'nde yılda %3 büyür (Orta Çağ'dan belirgin şekilde hızlı)", () => {
+  it("Sanayi Devrimi'nde gelir enflasyonu yılda %2 büyür (Orta Çağ'dan belirgin şekilde hızlı)", () => {
     const state = taze("Sanayi Devrimi");
     state.yil = state.baslangic_yili + 10;
-    expect(enflasyonCarpani(state)).toBeCloseTo(Math.pow(1.03, 10), 6);
+    expect(enflasyonCarpani(state)).toBeCloseTo(Math.pow(1.02, 10), 6);
     expect(enflasyonCarpani(state)).toBeGreaterThan(Math.pow(1.01, 10));
   });
 

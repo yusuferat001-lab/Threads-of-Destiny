@@ -304,7 +304,7 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         metin: "Tanrı barış ister. Kalpleri yumuşatmaya çalış.",
         baseBasariSansi: 75,
         basariliSonuc: {
-          mutluluk: 15,
+          mutluluk: 8,
           ahlak: 25,
           mesaj: "Sesindeki şefkat öfkeli kalabalığı ağlattı. Şehir o gün bir katliamdan döndü.",
         },
@@ -393,7 +393,7 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         baseBasariSansi: 70,
         basariliSonuc: {
           ahlak: 20,
-          mutluluk: 10,
+          mutluluk: 5,
           mesaj: "Hoşgörülü tutumun cemaati bir arada tuttu; herkes kendi sesini bulabildi.",
           detay: "Bazen en güçlü birlik, farklılığı kabul etmekten doğar.",
         },
@@ -2746,7 +2746,7 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         metin: "Öncülerle vakit geçir, ilham al.",
         baseBasariSansi: 85,
         basariliSonuc: {
-          mutluluk: 8,
+          mutluluk: 4,
           un: 5,
           mesaj: "Destekçilerinle geçirdiğin zaman seni güçlendirdi.",
           detay: "İlham bazen basit bir sohbetten gelir.",

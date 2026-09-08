@@ -10,10 +10,11 @@ describe("kendi_isi yatırımı", () => {
     state.para = 1_000_000;
     state.etiketler = state.etiketler.filter((e) => !e.startsWith("maas_carpani:"));
 
-    // KENDI_ISI_MAAS_PRIMI 1.05^n · MAAS_CARPANI_TAVAN 1.40 → 0.9 tabandan ~9 yatırım
-    // sığar; eskalasyon/yuvarlama testi için 6 tekrar yeter.
+    // KENDI_ISI_MAAS_PRIMI 1.05^n · MAAS_CARPANI_TAVAN 1.20 (ekonomi sıkılaştırma
+    // turunda 1.40'tan düşürüldü) → 1.0 tabandan ~3 yatırım sığar; eskalasyon/
+    // yuvarlama testi için 3 tekrar yeter.
     const maliyetler: number[] = [];
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 3; i++) {
       const config = await yatirimConfigGetir(state.id);
       maliyetler.push(config.kendiIsiMaliyeti);
       await yatirimYap(state.id);

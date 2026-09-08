@@ -81,7 +81,7 @@ export const OLAY_AILE: OlayTanimi[] = [
         basariliSonuc: {
           para: -25,
           cocuk_ekle: 1,
-          mutluluk: 20,
+          mutluluk: 10,
           es_puani: 15,
           mesaj: "Parayı esirgemedin ve doktorların müdahalesiyle hem {es} hem de çocuğun sağ salim kurtuldu! Evde bayram havası var.",
         },
@@ -103,7 +103,7 @@ export const OLAY_AILE: OlayTanimi[] = [
         ipucu: "Çok riskli! Ölüm ihtimali yüksek",
         basariliSonuc: {
           cocuk_ekle: 1,
-          mutluluk: 15,
+          mutluluk: 8,
           mesaj: "Tanrı'nın bir lütfu! Hiçbir masraf yapmadan, tamamen şans eseri sağlıklı bir çocuk dünyaya geldi.",
         },
         basarisizSonuc: {
@@ -190,7 +190,7 @@ export const OLAY_AILE: OlayTanimi[] = [
         metin: "Sevincini paylaş, Tanrı'ya şükret.",
         baseBasariSansi: 100,
         basariliSonuc: {
-          mutluluk: 20,
+          mutluluk: 10,
           saglik: 5,
           etiket_sil: [
             "cocuk_saglik_zamani:iyi",
@@ -219,7 +219,7 @@ export const OLAY_AILE: OlayTanimi[] = [
         baseBasariSansi: 20,
         ipucu: "Mucize ihtimali çok zayıf",
         basariliSonuc: {
-          mutluluk: 15,
+          mutluluk: 8,
           etiket_sil: [
             "cocuk_saglik_zamani:kotu",
           ],
@@ -343,13 +343,13 @@ export const OLAY_AILE: OlayTanimi[] = [
         ipucu: "Un ve mutluluk tavan yapar, ekonomi dibe vurur",
         basariliSonuc: {
           para: -35,
-          mutluluk: 20,
+          mutluluk: 10,
           un: 15,
           mesaj: "Haftalarca konuşulan bir düğün oldu! Evladının yüzündeki gülümseme her şeye değer.",
         },
         basarisizSonuc: {
           para: -35,
-          mutluluk: 5,
+          mutluluk: -4,
           mesaj: "Büyük masraf yaptın ama yağmur yağdı, misafirler rezil oldu. Para tamamen boşa gitti.",
         },
       },
@@ -359,7 +359,7 @@ export const OLAY_AILE: OlayTanimi[] = [
         maliyet: 10,
         basariliSonuc: {
           para: -10,
-          mutluluk: 10,
+          mutluluk: 5,
           mesaj: "Küçük ama sıcak bir törenle onu uğurladın. Huzur içindesin.",
         },
         basarisizSonuc: {
@@ -385,7 +385,7 @@ export const OLAY_AILE: OlayTanimi[] = [
         metin: "Karşı çık, 'Benim işimi devralacaksın!' diye diret.",
         baseBasariSansi: 65,
         basariliSonuc: {
-          mutluluk: 8,
+          mutluluk: 4,
           para: 15,
           mesaj: "Zorla da olsa seni dinledi. Artık sana yardım ediyor, işin kazancı arttı.",
         },
@@ -400,7 +400,7 @@ export const OLAY_AILE: OlayTanimi[] = [
         maliyet: 10,
         basariliSonuc: {
           para: -10,
-          mutluluk: 10,
+          mutluluk: 5,
           ahlak: 10,
           mesaj: "Gemiye binerken sana sarıldı. Hayallerinin peşinden giden bir çocuk yetiştirmenin gururunu yaşıyorsun.",
         },
@@ -427,12 +427,12 @@ export const OLAY_AILE: OlayTanimi[] = [
         metin: "Tüm gününü onlara ayır, oyunlar oyna.",
         baseBasariSansi: 95,
         basariliSonuc: {
-          mutluluk: 25,
+          mutluluk: 12,
           saglik: 5,
           mesaj: "Torunlarınla oynamak seni 10 yaş gençleştirdi. Hayatın gerçek anlamı bu diyorsun.",
         },
         basarisizSonuc: {
-          mutluluk: 10,
+          mutluluk: -4,
           saglik: -5,
           mesaj: "Oyun oynarken belini incittin ama yine de değdi.",
         },
@@ -441,7 +441,7 @@ export const OLAY_AILE: OlayTanimi[] = [
         metin: "Yaşlı bedenin kaldırmıyor, kısa bir sohbetle yetin.",
         baseBasariSansi: 100,
         basariliSonuc: {
-          mutluluk: 5,
+          mutluluk: 3,
           mesaj: "Gürültüden çabuk yoruldun ve odana çekildin. Yalnızlık sana daha uygun.",
         },
         basarisizSonuc: {
@@ -466,7 +466,7 @@ export const OLAY_AILE: OlayTanimi[] = [
         ipucu: "Ahlaki zafer ama devasa bir serveti elinin tersiyle itersin",
         basariliSonuc: {
           ahlak: 30,
-          mutluluk: 15,
+          mutluluk: 8,
           un: 10,
           mesaj: "Yaşlı adamı dükkânından kovdun. Çocuğun sana yaşlı gözlerle sarıldı. Zengin değilsin ama harika bir ebeveynsin.",
         },
@@ -642,7 +642,7 @@ export const OLAY_AILE: OlayTanimi[] = [
         basariliSonuc: {
           un: 25,
           ahlak: 20,
-          mutluluk: 15,
+          mutluluk: 8,
           etiket_ekle: [
             "gecmisiyle_barisik",
           ],
@@ -783,7 +783,7 @@ export const OLAY_AILE: OlayTanimi[] = [
         ipucu: "Ailen yaşar, ancak vicdanın sonsuza dek sızlar",
         basariliSonuc: {
           saglik: 15,
-          mutluluk: 10,
+          mutluluk: 5,
           ahlak: -30,
           un: -20,
           mesaj: "Kendi aileni kurtardın. Sabah olduğunda yetimhaneden 10 küçük ceset çıkarılırken sen pencereni sıkıca kapattın.",
@@ -1014,7 +1014,7 @@ export const OLAY_AILE: OlayTanimi[] = [
         ipucu: "Cesur bir ebeveynlik ama örgütü karşına alırsın",
         basariliSonuc: {
           ahlak: 40,
-          mutluluk: 20,
+          mutluluk: 10,
           un: -15,
           etiket_sil: [
             "orgut_secildi",
@@ -1051,14 +1051,14 @@ export const OLAY_AILE: OlayTanimi[] = [
         ipucu: "Cebin küçülür ama ailenin geleceği büyür",
         basariliSonuc: {
           para: -25,
-          mutluluk: 12,
+          mutluluk: 6,
           ahlak: 8,
           mesaj: "{cocuk} eğitimine başladı, gözlerindeki heyecan her kuruşa değdi.",
           detay: "Bazı yatırımların meyvesi yıllar sonra toplanır.",
         },
         basarisizSonuc: {
           para: -25,
-          mutluluk: 4,
+          mutluluk: -4,
           mesaj: "Eğitim başladı ama {cocuk} zorlandı; yine de elinden geleni yapıyor.",
           detay: "Her yatırım hemen meyve vermez.",
         },
@@ -1099,13 +1099,13 @@ export const OLAY_AILE: OlayTanimi[] = [
         basariliSonuc: {
           para: -15,
           ahlak: 10,
-          mutluluk: 8,
+          mutluluk: 4,
           mesaj: "{anne} ile {baba} artık daha rahat; yüzlerindeki minnet her kuruşa değdi.",
           detay: "Bazı borçlar parayla değil, zamanla ödenir.",
         },
         basarisizSonuc: {
           para: -15,
-          mutluluk: 4,
+          mutluluk: -4,
           mesaj: "Elinden geleni yaptın ama yaşlılığın getirdiği dertler bitmek bilmiyor.",
           detay: "Bazı yükler hiç hafiflemiyor, sadece paylaşılıyor.",
         },
@@ -1151,7 +1151,7 @@ export const OLAY_AILE: OlayTanimi[] = [
         basariliSonuc: {
           para: -30,
           es_puani: 20,
-          mutluluk: 15,
+          mutluluk: 8,
           mesaj: "{es} işine başladı; gözlerindeki heyecan yıllar sonra ilk kez bu kadar parlaktı.",
           detay: "Bazı yatırımlar bilançoda değil, ilişkide görünür.",
         },
@@ -1248,14 +1248,14 @@ export const OLAY_AILE: OlayTanimi[] = [
         baseBasariSansi: 80,
         ipucu: "Çocuğun mutlu olur ama toplum içinde konuşulursunuz",
         basariliSonuc: {
-          mutluluk: 14,
+          mutluluk: 7,
           un: -10,
           ahlak: 8,
           mesaj: "{cocuk} gözleri dolu dolu sana sarıldı. Mahallede biraz dedikodu çıksa da vicdanın huzurlu.",
           detay: "Bazı gururlar toplumun gözünde değil, evin içinde parlar.",
         },
         basarisizSonuc: {
-          mutluluk: 6,
+          mutluluk: -4,
           un: -15,
           mesaj: "Desteğin sevindirdi ama komşular seni 'çocuğuna hakim olamayan' diye eleştirdi.",
           detay: "Her destek alkışla karşılanmıyor.",
@@ -1344,7 +1344,7 @@ export const OLAY_AILE: OlayTanimi[] = [
         ipucu: "Dostluk kazanır, fırsat kaçar",
         basariliSonuc: {
           dost_puani: 18,
-          mutluluk: 10,
+          mutluluk: 5,
           para: -10,
           mesaj: "{dost}'un yanında oldun; gözlerindeki mutluluk, kaçırdığın fırsata değdi.",
           detay: "Bazı anlar bir daha asla geri gelmiyor, tıpkı kaçırılan fırsatlar gibi.",
@@ -1699,7 +1699,7 @@ export const OLAY_AILE: OlayTanimi[] = [
         ipucu: "Köklerine kavuşursun ama kurduğun hayatı geride bırakırsın",
         basariliSonuc: {
           para: -20,
-          mutluluk: 18,
+          mutluluk: 9,
           ahlak: 10,
           mesaj: "Atalarının topraklarına ilk adımını attığında gözlerin doldu; nesillerdir taşınan bir hasret sonunda dindi.",
           detay: "Bazı yolculuklar parayla değil, ruhla ölçülür.",

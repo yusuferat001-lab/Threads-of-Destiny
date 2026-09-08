@@ -15,7 +15,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         ipucu: "Kalıcı fiziksel güç ya da kronik bir sakatlık",
         basariliSonuc: {
           saglik: 15,
-          mutluluk: 5,
+          mutluluk: 3,
           etiket_ekle: [
             "fiziksel:guc_sembolu",
           ],
@@ -62,7 +62,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 70,
         ipucu: "Gizli bilgi kazandırır ama ahlakı lekeler, yakalanma riski vardır",
         basariliSonuc: {
-          mutluluk: 10,
+          mutluluk: 5,
           ahlak: -15,
           etiket_ekle: [
             "bilgi:yasak_ilim",
@@ -123,7 +123,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         ipucu: "Dostluk artar ama bağımlılık (alkol) riski başlar",
         basariliSonuc: {
           dost_puani: 10,
-          mutluluk: 5,
+          mutluluk: 3,
           etiket_ekle: [
             "bagimlilik:alkol_meyil",
           ],
@@ -678,7 +678,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 60,
         ipucu: "Başarırsan efsanevi bir unvan, olmazsa komedi",
         basariliSonuc: {
-          mutluluk: 15,
+          mutluluk: 8,
           un: 10,
           unvan_kazan: "Keçi Fatihi",
           etiket_ekle: [
@@ -721,7 +721,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 60,
         maliyet: 10,
         basariliSonuc: {
-          mutluluk: 12,
+          mutluluk: 6,
           saglik: 8,
           para: -10,
           mesaj: "Dualar ve tütsüler işe yaradı. Nihayet deliksiz bir uyku çektin.",
@@ -736,7 +736,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         metin: "Aklımı kaçırıyorum! Kendi kendime idare etmeliyim.",
         baseBasariSansi: 55,
         basariliSonuc: {
-          mutluluk: 5,
+          mutluluk: 3,
           mesaj: "Zamanla yorgunluktan bayıldın ve beynin kendini sıfırladı.",
         },
         basarisizSonuc: {
@@ -805,7 +805,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         basariliSonuc: {
           para: -10,
           un: 20,
-          mutluluk: 6,
+          mutluluk: 3,
           mesaj: "Gösterişli kıyafetlerin ve cömertliğin sayesinde sonunda bazı insanlar adını öğrendi!",
         },
         basarisizSonuc: {
@@ -932,7 +932,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         ipucu: "Vicdanın rahatlar ama tehlike hayatta kalır",
         basariliSonuc: {
           ahlak: 25,
-          mutluluk: 15,
+          mutluluk: 8,
           mesaj: "İntikam zehrini içmeyi reddettin. Düşmanın ağlayarak ellerini öptü ve şehri terk etti.",
         },
         basarisizSonuc: {
@@ -5130,7 +5130,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         basariliSonuc: {
           ahlak: 15,
           un: 8,
-          mutluluk: 5,
+          mutluluk: 3,
           mesaj: "Nazik ama net duruşun saygı gördü; adam istediğinden vazgeçti.",
           detay: "Yumuşak huylu olmak, sınır koyamamak demek değilmiş; bunu kanıtladın.",
         },
@@ -5179,7 +5179,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         basariliSonuc: {
           para: 40,
           un: 25,
-          mutluluk: 15,
+          mutluluk: 8,
           mesaj: "Rekabeti açık farkla kazandın; rakibin bile seni tebrik etmek zorunda kaldı.",
           detay: "Rekabetçi doğan bir kez daha seni öne çıkardı.",
         },
@@ -5197,7 +5197,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         ipucu: "Doğana aykırı ama sağduyulu",
         basariliSonuc: {
           ahlak: 15,
-          mutluluk: 5,
+          mutluluk: 3,
           mesaj: "Rekabete girmedin; içinde bir huzursuzluk olsa da işlerin sağlıklı ilerledi.",
           detay: "Her yarışa girmemeyi öğrenmek de bir olgunluk.",
         },
@@ -5276,7 +5276,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         basariliSonuc: {
           ahlak: 30,
           un: 12,
-          mutluluk: 15,
+          mutluluk: 8,
           mesaj: "Vicdanının sesini dinledin; kimse bilmese de kendinle barışıksın.",
           detay: "Vicdanlı doğan bir kez daha seni doğru olana yöneltti. Başını yastığa rahat koyuyorsun.",
         },
@@ -5840,7 +5840,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           geriCekilMetni: "Hemen yumuşat: 'öyle demek istemedim.'",
           geriCekilSonucu: {
             ahlak: -5,
-            mutluluk: 2,
+            mutluluk: -2,
             mesaj: "Son anda geri adım attın; gerginlik dağıldı ama içinde bir pişmanlık kaldı.",
             detay: "Bazen en cesur şey susmayı bilmektir.",
           },
@@ -6453,7 +6453,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 60,
         basariliSonuc: {
           dost_puani: 10,
-          mutluluk: 10,
+          mutluluk: 5,
           mesaj: "Gece unutulmaz bir maceraya dönüştü, arkadaş grubunda efsane oldun.",
           detay: "Bazı anılar yıllar sonra bile gülümsetir.",
         },
@@ -6494,7 +6494,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 65,
         basariliSonuc: {
           ahlak: 10,
-          mutluluk: 5,
+          mutluluk: 3,
           mesaj: "İkinci denemende başardın, ilk başarısızlığının seni güçlendirdiğini fark ettin.",
           detay: "Bazı dersler sadece düşerek öğrenilir.",
         },
@@ -6657,7 +6657,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         metin: "Herkese hikayelerini anlat.",
         baseBasariSansi: 90,
         basariliSonuc: {
-          mutluluk: 15,
+          mutluluk: 8,
           dost_puani: 5,
           mesaj: "Hikayelerin herkesi büyüledi, gece geç saatlere kadar sohbet ettiniz.",
           detay: "Paylaşılan bir hayat, iki kat yaşanmış olur.",
@@ -6696,7 +6696,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 40,
         ipucu: "Riskli, bedenin artık eskisi gibi değil",
         basariliSonuc: {
-          mutluluk: 10,
+          mutluluk: 5,
           mesaj: "Başardın! Bedenin hâlâ eski günlerdeki gibi cevap verebiliyor.",
           detay: "İrade bazen yaşı yener.",
         },
@@ -6735,7 +6735,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         metin: "Servetini ve bilgeliğini genç birine aktar.",
         baseBasariSansi: 85,
         basariliSonuc: {
-          mutluluk: 15,
+          mutluluk: 8,
           dost_puani: 10,
           mesaj: "Seçtiğin genç, öğrettiklerini can kulağıyla dinledi, mirasının yaşayacağını bilmek seni rahatlattı.",
           detay: "Gerçek miras, altından çok bilgidir.",
@@ -6778,7 +6778,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 75,
         basariliSonuc: {
           un: 15,
-          mutluluk: 10,
+          mutluluk: 5,
           mesaj: "Genç askere öğrettiklerin onun hayatını kurtaracak bilgilerdi, gurur doluydun.",
           detay: "Bazı nöbetler bir hayat boyu sürer.",
         },
@@ -6819,7 +6819,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         metin: "Güven et, işi ona devret.",
         baseBasariSansi: 80,
         basariliSonuc: {
-          mutluluk: 15,
+          mutluluk: 8,
           dost_puani: 10,
           mesaj: "Genç yardımcın işi büyük bir titizlikle devraldı, mirasının devam ettiğini görmek seni gururlandırdı.",
           detay: "Emek bazen en iyi ellerde devam eder.",
@@ -6863,7 +6863,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         basariliSonuc: {
           un: 20,
           ahlak: 10,
-          mutluluk: 15,
+          mutluluk: 8,
           mesaj: "Sözlerin cemaati gözyaşlarına boğdu, yıllarca anlatılacak bir vaaz verdin.",
           detay: "Bir ömrün özü birkaç cümleye sığabilir.",
         },
@@ -7029,7 +7029,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 85,
         ipucu: "Daha güvenli, kariyerini biraz yavaşlatır",
         basariliSonuc: {
-          mutluluk: 10,
+          mutluluk: 5,
           un: -5,
           mesaj: "Kendine tanıdığın zaman iyi geldi; birkaç gün sonra daha güçlü döndün.",
           detay: "Kendine karşı nazik olmak zayıflık değildir.",
@@ -7617,12 +7617,12 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 60,
         ipucu: "Anlık rahatlama, uzun vadeli risk",
         basariliSonuc: {
-          mutluluk: 15,
+          mutluluk: 8,
           mesaj: "Acın bir süreliğine dindi; kendini hafiflemiş hissettin.",
           detay: "Rahatlama gerçek ama geçici.",
         },
         basarisizSonuc: {
-          mutluluk: 10,
+          mutluluk: -4,
           etiket_ekle: [
             "bagimlilik:afyon",
             "bagimlilik:var",
@@ -7673,7 +7673,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         ipucu: "Zor ama kalıcı bir özgürlük",
         basariliSonuc: {
           ahlak: 20,
-          mutluluk: 15,
+          mutluluk: 8,
           etiket_sil: [
             "bagimlilik:kumarbaz",
             "bagimlilik:afyon",
@@ -8215,7 +8215,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 65,
         ipucu: "Komik ama tehlikeli bir kovalamaca",
         basariliSonuc: {
-          mutluluk: 12,
+          mutluluk: 6,
           un: 5,
           mesaj: "Keçiyi büyük bir alkış eşliğinde yakaladın; kasaba günlerce bunu konuştu.",
           detay: "Bazı zaferler küçük ama unutulmaz.",
@@ -8261,7 +8261,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         ipucu: "Vicdan rahatlar ama sır güvende kalmayabilir",
         basariliSonuc: {
           ahlak: 15,
-          mutluluk: 10,
+          mutluluk: 5,
           mesaj: "İçini dökmek büyük bir yük kaldırdı; günlerdir ilk kez rahat uyudun.",
           detay: "Papaz sırrını mezara kadar taşıyacağına yemin etti.",
         },
@@ -8365,7 +8365,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 75,
         ipucu: "Huzur ya da hayal kırıklığı",
         basariliSonuc: {
-          mutluluk: 8,
+          mutluluk: 4,
           ahlak: 5,
           mesaj: "Dua ederken içini saran huzur günlerce sürdü.",
           detay: "Mucize gerçek mi değil mi bilmiyorsun ama hissettiğin gerçekti.",
@@ -8446,7 +8446,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 70,
         ipucu: "Komik ama riskli, yakalanırsan mahcup olursun",
         basariliSonuc: {
-          mutluluk: 10,
+          mutluluk: 5,
           mesaj: "Kimse görmeden karnını doyurdun; vicdanın biraz sızladı ama tabak boştu.",
           detay: "Bazı günahlar en azından lezzetli oluyor.",
         },
@@ -8491,7 +8491,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 40,
         ipucu: "Riskli, herkesin önünde uyuyakalabilirsin",
         basariliSonuc: {
-          mutluluk: 6,
+          mutluluk: 3,
           mesaj: "Küçük bir şekerleme çektin, kimse fark etmedi.",
           detay: "Bazen risk alıp kazanıyorsun.",
         },
@@ -8701,12 +8701,12 @@ export const OLAY_GENEL: OlayTanimi[] = [
         ipucu: "Küçük ama içten bir kazanç",
         basariliSonuc: {
           para: 8,
-          mutluluk: 4,
+          mutluluk: 3,
           mesaj: "Küçük hediye, verdiğin emeğin karşılığı gibi hissettirdi.",
           detay: "Bazen en küçük jestler en çok değeni taşıyor.",
         },
         basarisizSonuc: {
-          mutluluk: 2,
+          mutluluk: -2,
           mesaj: "Hediye mütevazıydı ama düşüncesi güzeldi.",
           detay: "Her zaman büyük olması gerekmiyor.",
         },
@@ -9538,7 +9538,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         ipucu: "Zarif bir tepki itibarını artırabilir",
         basariliSonuc: {
           un: 8,
-          mutluluk: 4,
+          mutluluk: 3,
           mesaj: "Kendine gülerek durumu şakaya çevirdin; salon senin soğukkanlılığını konuştu.",
           detay: "Bazen en iyi izlenim, kusursuzluktan değil zarafetten gelir.",
         },
@@ -10139,7 +10139,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         ipucu: "Destansı bir komedi zaferi ya da utanç verici bir sakatlık",
         basariliSonuc: {
           un: 30,
-          mutluluk: 25,
+          mutluluk: 12,
           unvan_kazan: "Efsanevi Keçi Fatihi",
           mesaj: "Toz bulutu kalktığında keçi pes etmiş halde ayaklarının dibindeydi! Kalabalık seni çılgınca alkışlıyor.",
           detay: "Tarih kitapları seni bu saçma ama muazzam zaferinle yazacak.",
@@ -10443,7 +10443,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         ipucu: "Sağlığın korunur, fırsat kaçar",
         basariliSonuc: {
           saglik: 8,
-          mutluluk: 6,
+          mutluluk: 3,
           mesaj: "Reddettin, iyi dinlendin; bedenin sana teşekkür ediyor.",
           detay: "Bazen en iyi kazanç, dinlenmiş bir bedendir.",
         },

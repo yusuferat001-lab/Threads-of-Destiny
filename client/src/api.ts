@@ -21,6 +21,8 @@ import type {
   MagazaEsyaKarti,
   MagazaSatinAlSonucu,
   EnvanterKullanSonucu,
+  EvlilikAdayi,
+  EvlilikTeklifSonucu,
 } from './types';
 
 async function istek<T>(url: string, init?: RequestInit): Promise<T> {
@@ -93,6 +95,14 @@ export function meslekAta(stateId: string, meslek: string) {
 
 export function stateGetir(stateId: string) {
   return istek<{ state: CharacterState }>(`/api/game/${stateId}/state`);
+}
+
+/** Oyun sürerken dili değiştir — sonraki senaryodan itibaren olay/anlatı metinleri de bu dile geçer. */
+export function oyunDiliAyarla(stateId: string, dil: string) {
+  return istek<{ state: CharacterState }>(`/api/game/${stateId}/dil`, {
+    method: 'POST',
+    body: JSON.stringify({ dil }),
+  });
 }
 
 export function senaryoGetir(stateId: string) {
@@ -187,6 +197,17 @@ export function sosyallesmeYerineGit(stateId: string, yerId: string) {
   return istek<SosyallesmeSonucu>(`/api/game/${stateId}/sosyallesme`, {
     method: 'POST',
     body: JSON.stringify({ yerId }),
+  });
+}
+
+export function evlilikAdaylariGetir(stateId: string) {
+  return istek<{ adaylar: EvlilikAdayi[] }>(`/api/game/${stateId}/evlilik-adaylari`);
+}
+
+export function evlilikTeklifEt(stateId: string, aday: EvlilikAdayi) {
+  return istek<EvlilikTeklifSonucu>(`/api/game/${stateId}/evlilik-teklifi`, {
+    method: 'POST',
+    body: JSON.stringify({ aday }),
   });
 }
 

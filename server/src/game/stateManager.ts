@@ -207,11 +207,12 @@ function paraBirimiGetir(cag: Cag, bolge: string): string {
   return PARA_BIRIMI[`${cag}|${bolge}`] ?? "Akçe";
 }
 
-// Taban değerler (özgün: Asker 9 / Tüccar 10 / Din Adamı 8) üzerine üç genel zam:
-// 2026-08'de +%10, 2026-09'da (yama #2) +%5, 2026-09 ekonomi dengesinde ayrıca +%10
-// → toplam ×1.2705. Her meslek ve çağda orantılı yansır (rütbe/enflasyon/itibar
-// zaten ayrı çarpan kalemleri).
-const TEMEL_MAAS: Record<string, number> = { Asker: 11.434, Tüccar: 12.705, "Din Adamı": 10.164 };
+// Taban değerler (özgün: Asker 9 / Tüccar 10 / Din Adamı 8) üzerine iki genel zam:
+// 2026-08'de +%10, 2026-09'da (yama #2) +%5 → toplam ×1.15. 2026-09 ekonomi
+// dengesindeki üçüncü +%10 zam (ekonomi sıkılaştırma turunda) geri alındı —
+// karakterler çok kolay zenginleşiyordu. Her meslek ve çağda orantılı yansır
+// (rütbe/enflasyon/itibar zaten ayrı çarpan kalemleri).
+const TEMEL_MAAS: Record<string, number> = { Asker: 10.35, Tüccar: 11.5, "Din Adamı": 9.2 };
 
 /**
  * "İtibarın" maaş düzenleyicisi: mutluluk + şöhret(un) + ahlak'ı TEK bir kaleme
@@ -260,7 +261,7 @@ export function maasCarpaniGetir(state: CharacterState): number {
 }
 
 /** Kalıcı maaş çarpanının toplam üst/alt sınırı: olay + aile + ekip + yatırım bonusları hep bu bandın içinde kalır. */
-export const MAAS_CARPANI_TAVAN = 1.4;
+export const MAAS_CARPANI_TAVAN = 1.2;
 export const MAAS_CARPANI_TABAN = 0.6;
 
 /**
@@ -283,13 +284,21 @@ export function maasCarpaniUygula(state: CharacterState, carpan: number, ham = f
 /**
  * Zamanla fiyatların ve maaşların birlikte büyümesini sağlayan enflasyon
  * çarpanı: karakterin yaratıldığı yıldan bu yana geçen GERÇEK yıl sayısına
- * göre, çağa özel bir oranla bileşik büyür — Orta Çağ'da yılda %1, Sanayi
- * Devrimi'nde yılda %3 (dönemin ekonomik hızlanmasını yansıtır). Hem maaş
- * hem yaşam/konut giderleri buna göre şişer, böylece reel denge bozulmaz ama
- * uzun oyunlarda nominal sayılar zamanla anlamlı şekilde büyür.
+ * göre, çağa özel bir oranla bileşik büyür. Büyük denge turunda GELİR ve GİDER
+ * enflasyonu ayrıştırıldı (kullanıcı: "Orta Çağ'da gelire %1, giderlere %2;
+ * Sanayi Devrimi'nde gelire %2, gidere %3"). GELİR (maaş, mülk/yatırım/mağaza
+ * maliyetleri) `enflasyonCarpani`'yı; yaşam + konut GİDERLERİ ise ayrı,
+ * her zaman biraz daha yüksek `giderEnflasyonCarpani`'yı kullanır — böylece
+ * uzun oyunlarda giderler gelirden hafifçe hızlı artıp reel dengeyi sıkılaştırır.
  */
 const ENFLASYON_ORANI_YILLIK: Record<Cag, number> = {
   "Orta Çağ": 0.01,
+  "Sanayi Devrimi": 0.02,
+};
+
+/** Yaşam + konut giderlerine uygulanan, gelir enflasyonundan biraz yüksek yıllık oran. */
+const GIDER_ENFLASYON_ORANI_YILLIK: Record<Cag, number> = {
+  "Orta Çağ": 0.02,
   "Sanayi Devrimi": 0.03,
 };
 
@@ -299,9 +308,21 @@ export function enflasyonCarpani(state: CharacterState): number {
   return Math.pow(1 + oran, gecenYil);
 }
 
-/** Finans ekranında gösterilecek toplam enflasyon yüzdesi (oyunun başından bu yana). */
+/** Yaşam/konut giderlerine uygulanan bileşik gider enflasyon çarpanı (gelir enflasyonundan ayrı, biraz yüksek). */
+export function giderEnflasyonCarpani(state: CharacterState): number {
+  const gecenYil = Math.max(0, state.yil - state.baslangic_yili);
+  const oran = GIDER_ENFLASYON_ORANI_YILLIK[state.cag] ?? 0.02;
+  return Math.pow(1 + oran, gecenYil);
+}
+
+/** Finans ekranında gösterilecek toplam gelir enflasyonu yüzdesi (oyunun başından bu yana). */
 export function enflasyonYuzdesiHesapla(state: CharacterState): number {
   return Math.round((enflasyonCarpani(state) - 1) * 100);
+}
+
+/** Gelir&Gider ekranındaki yaşam/kira seçim kartlarının, gerçek gider dökümüyle birebir hizalanması için kullanılan gider enflasyonu yüzdesi. */
+export function giderEnflasyonYuzdesiHesapla(state: CharacterState): number {
+  return Math.round((giderEnflasyonCarpani(state) - 1) * 100);
 }
 
 /** Para tutarlarını 2 ondalık basamağa yuvarlar; sağlık/mutluluk/ün/ahlak gibi istatistikler bundan etkilenmez, onlar hep tam sayı kalır. */
@@ -364,11 +385,11 @@ interface MaasCarpanKalemi {
 function maasCarpanKalemleri(state: CharacterState): { tabanMaas: number; kalemler: MaasCarpanKalemi[] } {
   const tabanMaas = TEMEL_MAAS[state.meslek] ?? 6;
   const itibarToplam = itibarMaasKirilimi(state).toplam; // mutluluk+şöhret+ahlak bantları toplamı, ±%; §13
-  // Kıdem çok yavaş büyür ve en fazla +%15'e ulaşır: 40 tur (≈55-65 oyun yılı,
+  // Kıdem çok yavaş büyür ve en fazla +%10'a ulaşır: 40 tur (≈55-65 oyun yılı,
   // yani neredeyse tam bir ömür) sonunda tavana gelir. Eskiden +%2/tur ile
-  // 20 turda +%40'a çıkıyordu; artık +%0.375/tur (2026-09 ekonomi dengesinde
-  // tavan +%10'dan +%15'e çıkarıldı).
-  const kariyerYili = Math.min(state.tur_sayisi + 8, 40); // "ikinci seviyeden" başlar: taze karakter +%3 kıdem alır, tavan +%15
+  // 20 turda +%40'a çıkıyordu, sonra +%0.375/tur ile tavan +%15'e çekildi;
+  // ekonomi sıkılaştırma turunda tekrar +%10 tavanına döndürüldü.
+  const kariyerYili = Math.min(state.tur_sayisi + 8, 40); // "ikinci seviyeden" başlar: taze karakter +%2 kıdem alır, tavan +%10
   const durumCarpani = state.durumlar.reduce((c, d) => c * (d.gelir_carpani ?? 1), 1);
   // Veba sonrası işçi kıtlığı, salgın hem aktifken hem de izi süren yıllarda maaşı büyütür.
   const vebaCarpani = state.veba && state.yil < state.veba.etkiBitisYili ? state.veba.gelirCarpani : 1;
@@ -382,7 +403,7 @@ function maasCarpanKalemleri(state: CharacterState): { tabanMaas: number; kaleml
   return {
     tabanMaas,
     kalemler: [
-      { ad: T(dil, "Kıdem"), carpan: 1 + kariyerYili * 0.00375, grup: "kariyer" },
+      { ad: T(dil, "Kıdem"), carpan: 1 + kariyerYili * 0.0025, grup: "kariyer" },
       { ad: T(dil, "Şehir yönetimi"), carpan: sehirYonetimMaasCarpani(state.sehir_yonetim_seviyesi), grup: "kariyer" },
       { ad: T(dil, "Kalıcı ödüller (köken + olaylar)"), carpan: maasCarpaniGetir(state), grup: "kariyer" },
       { ad: T(dil, "İtibarın (mutluluk·şöhret·ahlak)"), carpan: 1 + itibarToplam / 100, grup: "itibar" },
@@ -532,9 +553,14 @@ const HAYAT_AMACI_SECENEKLERI: Omit<HayatAmaci, "tamamlandi">[] = [
   {
     id: "en_zengin",
     ad: "Şehrin En Zengini Olmak",
-    aciklama: "Servetini 300'ün üzerine çıkar.",
+    aciklama: "Servetini 180'in üzerine çıkar.",
     hedefTuru: "para",
-    hedefDeger: 300,
+    // Ekonomi sıkılaştırma turunda 300→180: maaş/mülk nerfleri + geç oyun gider
+    // enflasyonu para birikimini o kadar yavaşlattı ki eski 300 eşiği simülasyonda
+    // (simulateKisilikler.ts) neredeyse hiçbir kişilikte tamamlanamaz hale gelmişti
+    // (~%0-1). 180, yeni ekonomide diğer 3 hayat amacıyla kıyaslanabilir bir zorluğa
+    // (kabaca %15-30 tamamlanma) denk geliyor — bkz. CLAUDE.md §18/§13.
+    hedefDeger: 180,
   },
   {
     id: "efsanevi_un",
@@ -618,7 +644,11 @@ export function createCharacter(
     // ama şöhretin nötr bandı düşükten başladığı için ceza yemez, bkz.
     // itibarUnYuzdesi). İlk olaylar bu değerleri kolayca oynatır.
     mutluluk: 50,
-    para: 20 + (aile.para ?? 0) + (yerlesim.para ?? 0),
+    // Büyük denge turu: taban 20→12 ve sonuç [5, 35]'e kırpılır (kullanıcı: "oyun başı
+    // para bonuslarla 35'i aşmasın, en düşük 5 olsun"). tefeci/soylu gibi zengin aile
+    // kökenleri artık başlangıçta 35'i geçiremez; köle/sürgün gibi kökenler de 5'in
+    // altına düşüremez.
+    para: Math.max(5, Math.min(35, 12 + (aile.para ?? 0) + (yerlesim.para ?? 0))),
     para_birimi: paraBirimiGetir(cag, bolge),
     maas_yillik: 0,
     un: 20 + (aile.un ?? 0),
@@ -1167,11 +1197,14 @@ function yasamMaliyetCarpaniGetir(state: CharacterState): number {
 /** Bir sonraki turun gider dökümünü, gerçekte uygulamadan hesaplar; Finans ekranı bunu kullanır. */
 export function giderKalemleriHesapla(state: CharacterState): GiderKalemleri {
   const enflasyon = enflasyonCarpani(state);
-  // Yaşam + kira giderlerine enflasyonun yalnızca %70'i uygulanır (2026-09 ekonomi
-  // dengesi): maaş çarpanları enflasyondan yavaş büyüdüğü için, tam enflasyonla şişen
-  // giderler uzun oyunda reel geliri eritiyordu. Evcil hayvan / savaş vergisi (maaşa
-  // endeksli) tam enflasyonda kalır.
-  const giderEnflasyon = 1 + (enflasyon - 1) * 0.7;
+  // Yaşam + kira giderleri, gelir enflasyonundan AYRI ve biraz daha yüksek olan
+  // gider enflasyonuyla şişer (büyük denge turu — kullanıcı isteğiyle çağ başına
+  // ayrı oran: OÇ gider %2, SD gider %3). Eskiden "gelir enflasyonunun %70→%100'ü"
+  // gibi kademeli bir yama vardı; artık kalıcı ayrı oran kullanılıyor ve Gelir&Gider
+  // ekranındaki seçim kartları da tam bu çarpanı gösterdiği için kart tutarı gerçek
+  // gider dökümüyle birebir tutuyor. Evcil hayvan / savaş vergisi (maaşa endeksli)
+  // gelir enflasyonunda kalır.
+  const giderEnflasyon = giderEnflasyonCarpani(state);
   const yasamSecenegi = yasamSecenegiGetir(state.yasam_secimi_id);
   // Büyük savaş sırasında gıda pahalanır (gidaCarpani); küçük kriz tetiklendiği yıl için
   // ayrıca ×2 tek yıllık bir şok biner — ikisi çarpımsal birleşir (nadir ama kasıtlı).
@@ -1204,7 +1237,7 @@ export function pasifEkonomiUygula(state: CharacterState, yasArtisi: number): Ek
   const yillikGelirler: number[] = [];
   let netGelir = 0;
   for (let i = 0; i < yasArtisi; i++) {
-    const dalga = 0.88 + Math.random() * 0.27; // 0.88x - 1.15x (2026-09: bant daraltıldı, üst üste kötü yıl batırmasın)
+    const dalga = 0.85 + Math.random() * 0.3; // 0.85x - 1.15x (büyük denge turu: kullanıcı isteğiyle bant 0.85–1.15)
     const oYilkiGelir = Math.max(0, paraYuvarla(state.maas_yillik * dalga));
     yillikGelirler.push(oYilkiGelir);
     netGelir += oYilkiGelir - gider;
@@ -1674,9 +1707,12 @@ export function krizEtkisiUygula(state: CharacterState, yasArtisi: number): stri
   return null;
 }
 
-const SUC_SEVIYESI_PASIF_AZALMA_YILLIK = 1;
+// Ekonomi sıkılaştırma turunda pasif azalma KALDIRILDI: suç/aranma seviyesi artık
+// zamanla kendiliğinden düşmez, sabit kalır. Tek düşüş yolu aranmaSeviyesi.ts'teki
+// kefaret/rüşvet seçenekleri (suc_artis negatif) ve büyük baskının suc_seviyesi_ayarla'sı.
+const SUC_SEVIYESI_PASIF_AZALMA_YILLIK = 0;
 
-/** Suç/aranma seviyesini her yıl pasif olarak biraz düşürür (taban 0); kalıcı bir ceza sarmalı oluşmasın diye. */
+/** Suç/aranma seviyesi artık pasif olarak düşmüyor (bkz. yukarıdaki not) — fonksiyon geriye dönük uyum için duruyor. */
 export function sucSeviyesiUygula(state: CharacterState, yasArtisi: number): void {
   if (yasArtisi <= 0) return;
   state.suc_seviyesi = Math.max(0, state.suc_seviyesi - SUC_SEVIYESI_PASIF_AZALMA_YILLIK * yasArtisi);
@@ -1964,21 +2000,40 @@ export function vebaBitisKontrolEt(state: CharacterState): string | null {
 }
 
 // Yıllık getiri oranları (taban maliyetin yüzdesi olarak); enflasyonCarpani ile ölçeklenen
-// taban_maliyet üzerine uygulanır. Değerler kasıtlı olarak "güvenli yatırım"dan (yıllık ~%5-6)
-// belirgin şekilde daha oynak: mülkler dünyayı okumanın karşılığı, sabit gelir değil.
-const MULK_GETIRI_NORMAL = 0.08;
-const MULK_GETIRI_AVANTAJLI = 0.2;
-const MULK_GETIRI_DEZAVANTAJLI = -0.15;
+// taban_maliyet üzerine uygulanır. Büyük denge turunda kullanıcı isteğiyle belirgin şekilde
+// düşürüldü + tüm sonuç mulkGetiriOraniHesapla sonunda ±%8'e kırpıldı: "gayrimenkuller yıllık
+// en yüksek %7-8 getirsin, çok getirmesin"; "bir anda çok getirip çok götürmesin"; "gidip %20
+// zarar ettirmesin". Artık mülk = küçük, istikrarlı, ara sıra hafif negatif bir pasif akış.
+// Brüt oranlar bilinçli olarak bakımın yıllık amortize maliyetine (~%3/yıl, aşağıda) yakın
+// tutuldu: NORMAL brüt ~%6 → net ~+%3/yıl, DEZAVANTAJLI yıl net ~−%5 (felaket değil),
+// AVANTAJLI yıl net ~+%5. Böylece mülk "istikrarlı, ara sıra hafif negatif" bir akış olur;
+// simulateGayrimenkul.ts ile 30 yıllık ortalama hafif pozitif çıkacak şekilde ayarlandı.
+const MULK_GETIRI_NORMAL = 0.06;
+const MULK_GETIRI_AVANTAJLI = 0.085;
+const MULK_GETIRI_DEZAVANTAJLI = -0.02;
+/** Tüm mülk getiri oranlarının (çarpanlar uygulandıktan sonra) mutlak tavanı — "bir anda çok getirip çok götürmesin". */
+const MULK_GETIRI_TAVAN = 0.09;
 const MULK_DEMIRCI_SAVAS_CARPANI = 2.5;
 const KERVAN_BATMA_IHTIMALI_YILLIK = 0.25;
-const KARABORSA_SUC_ARTISI_YILLIK = 2;
+// Büyük denge turunda 2→3: karaborsa aranma seviyesini daha hızlı yükseltsin.
+const KARABORSA_SUC_ARTISI_YILLIK = 3;
 const KARABORSA_AHLAK_ASINMASI_YILLIK = 0.3;
+// Küçük Tarla — büyük denge turunda "en garanti" mülk yapıldı (kullanıcı: "bir tane uygun
+// gayrimenkul olsun 50'ye alabileceği daha garanti bir şey"): getirisi küçük ama kıtlıkta
+// bile kaybı çok az. taban_maliyet 40→50 (bkz. mulkler.ts).
+const MULK_GETIRI_KUCUK_TARLA_NORMAL = 0.055;
+const MULK_GETIRI_KUCUK_TARLA_AVANTAJLI = 0.065;
+const MULK_GETIRI_KUCUK_TARLA_DEZAVANTAJLI = -0.005;
 
-/** Her mülk 7-10 yılda bir periyodik bir bakım/vergi masrafı çıkarır (tıpkı "luks" mağaza eşyaları gibi). */
-const MULK_BAKIM_ARALIGI_MIN_YIL = 6;
-const MULK_BAKIM_ARALIGI_MAX_YIL = 9;
+/** Her mülk 7-11 yılda bir periyodik bir bakım/vergi masrafı çıkarır (tıpkı "luks" mağaza eşyaları gibi). */
+const MULK_BAKIM_ARALIGI_MIN_YIL = 7;
+const MULK_BAKIM_ARALIGI_MAX_YIL = 11;
 /** Bakım masrafı, mülkün GÜNCEL (enflasyona göre ölçeklenmiş) değerinin yaklaşık bu oranı kadardır. */
-const MULK_BAKIM_ORANI = 0.13;
+// Büyük denge turunda %14→%30 (kullanıcı: "7-11 yılda bir masraf çıkarsın kendi maliyetinin
+// ~üçte biri kadar"). ~%30 / ortalama 9 yıl ≈ yıllık ~%3.3 amorti gider — brüt getiri
+// ~%6 olduğu için net ortalama hafif pozitif, kötü yıllarda hafif negatif ("çok götürmesin").
+// Kart üzerinde oyuncuya açıkça yazılır.
+const MULK_BAKIM_ORANI = 0.3;
 
 export function rastgeleMulkBakimAraligi(): number {
   return (
@@ -2085,26 +2140,10 @@ export function dunyaFinansEtkileri(state: CharacterState): DunyaFinansEtkisi[] 
     liste.push({ ikon: "🥖", metin: T(dil, "Gıda fiyat şoku: yemek gideri bu yıl ×2") });
   }
 
-  if (state.para + gayrimenkulDegeriHesapla(state) > ZORUNLU_BAGIS_ESIGI) {
-    const taban = state.son_zorunlu_bagis_yili ?? state.baslangic_yili;
-    const kalanCooldown = ZORUNLU_BAGIS_COOLDOWN_YIL - (state.yil - taban);
-    const oranAralik = `%${Math.round(ZORUNLU_BAGIS_ORAN_MIN * 100)}-${Math.round(
-      (ZORUNLU_BAGIS_ORAN_MIN + ZORUNLU_BAGIS_ORAN_ARALIK) * 100
-    )}`;
-    const metin =
-      kalanCooldown > 0
-        ? T(dil, "Servetin {0}'ü aştı: hükümdarın gözü üstünde ama ~{1} yıl daha bağış isteyemez (servetinin {2}'si)", [
-            ZORUNLU_BAGIS_ESIGI,
-            kalanCooldown,
-            oranAralik,
-          ])
-        : T(
-            dil,
-            'Servetin {0}\'ü aştı: hükümdar zenginleştiğini fark etti — her yıl ~%{1} ihtimalle servetinin {2}\'sini "bağış" olarak alabilir',
-            [ZORUNLU_BAGIS_ESIGI, Math.round(ZORUNLU_BAGIS_YILLIK_IHTIMAL * 100), oranAralik]
-          );
-    liste.push({ ikon: "👑", metin });
-  }
+  // Not: "servetin X'ü aştı" ileriye dönük uyarısı kasıtlı olarak kaldırıldı —
+  // zorunluBagisKontrolEt() arka planda sessizce çalışmaya devam ediyor, sadece
+  // sürekli görünen bu standart uyarı metni (ana ekran + Gelir&Gider) kaldırıldı.
+  // Gerçekten tetiklendiğinde çıkan bildirim cümlesi (zamanAnlatimi) değişmedi.
 
   return liste;
 }
@@ -2113,9 +2152,17 @@ export function dunyaFinansEtkileri(state: CharacterState): DunyaFinansEtkisi[] 
  * Bir mülk türünün ŞU ANKİ dünya durumuna göre yıllık getiri oranını (taban
  * maliyetin yüzdesi) hesaplar; hem gerçek tur tikinde (mulkGelirleriUygula) hem
  * de istemciye "tahmini getiri" göstermek için salt-okunur önizlemede
- * (gameEngine.ts mulkConfigGetir) kullanılan tek doğruluk kaynağı.
+ * (gameEngine.ts mulkConfigGetir) kullanılan tek doğruluk kaynağı. Ham oran
+ * (durum çarpanları dahil) hesaplanır, sonra mulkGetiriOraniHesapla ±%8'e kırpar.
  */
-export function mulkGetiriOraniHesapla(tur: MulkTuru, ulke: CharacterState["ulke"]): number {
+function hamMulkGetiriOrani(tur: MulkTuru, ulke: CharacterState["ulke"]): number {
+  if (tur === "kucuk_tarla") {
+    return ulke.kriz?.tur === "kitlik"
+      ? MULK_GETIRI_KUCUK_TARLA_DEZAVANTAJLI
+      : ulke.ekonomi === "iyi"
+        ? MULK_GETIRI_KUCUK_TARLA_AVANTAJLI
+        : MULK_GETIRI_KUCUK_TARLA_NORMAL;
+  }
   if (tur === "ciftlik") {
     return ulke.kriz?.tur === "kitlik" ? MULK_GETIRI_DEZAVANTAJLI : ulke.ekonomi === "iyi" ? MULK_GETIRI_AVANTAJLI : MULK_GETIRI_NORMAL;
   }
@@ -2134,6 +2181,17 @@ export function mulkGetiriOraniHesapla(tur: MulkTuru, ulke: CharacterState["ulke
   }
   // karaborsa
   return ulke.kriz?.tur === "kitlik" || ulke.vebada || ulke.savasta ? MULK_GETIRI_AVANTAJLI * 1.2 : MULK_GETIRI_DEZAVANTAJLI * 0.5;
+}
+
+/**
+ * Mülkün güncel yıllık getiri oranı — hamMulkGetiriOrani'nın çıktısını ±MULK_GETIRI_TAVAN
+ * (%8) bandına kırpar: demirci/kervan/karaborsa durum çarpanları uçları taşısa bile
+ * "bir anda çok getirip çok götürmesin" (kullanıcı isteği). mulkGelirleriUygula ve
+ * gameEngine.mulkConfigGetir bunu kullanır.
+ */
+export function mulkGetiriOraniHesapla(tur: MulkTuru, ulke: CharacterState["ulke"]): number {
+  const ham = hamMulkGetiriOrani(tur, ulke);
+  return Math.max(-MULK_GETIRI_TAVAN, Math.min(MULK_GETIRI_TAVAN, ham));
 }
 
 /**
@@ -2169,7 +2227,7 @@ export function mulkGelirleriUygula(state: CharacterState, yasArtisi: number): M
 
     toplamNet += paraYuvarla(taban * oran) * yasArtisi;
 
-    // Periyodik bakım/vergi: 7-10 yılda bir, mülkün güncel değerinin ~%12'si.
+    // Periyodik bakım/vergi: 7-10 yılda bir, mülkün güncel değerinin ~%14'ü.
     const kalan = (state.mulk_bakim_kalan[tur] ?? rastgeleMulkBakimAraligi()) - yasArtisi;
     if (kalan <= 0) {
       const masraf = sonBasamagiDuzelt(taban * MULK_BAKIM_ORANI);
@@ -2191,27 +2249,45 @@ const DEDIKODU_SAVAS: string[] = [
   "Sınır boylarında komutanlar asker topluyor... ({0} ile yakında savaş çıkabilir)",
   "Tüccarlar {0} sınırından artık mal geçirmek istemiyor, bir şeyler seziyorlar...",
   "Kalelerde nöbetler sıklaştırıldı; {0} ile gerginliğin büyüdüğü konuşuluyor...",
+  "{0} ile olası bir çatışma yüzünden silah ve zırh fiyatları bir anda tırmandı, demirciler gece gündüz çalışıyor...",
+  "{0} yönünden habercilerin at değiştirmeden dörtnala geçtiği görüldü; kötü haber taşıyor olmalılar...",
 ];
 const DEDIKODU_KITLIK: string[] = [
   "Gökler aylardır damla düşürmedi, köylüler endişeli... (Kuraklık/Kıtlık kapıda)",
   "Ambarlar hızla boşalıyor, ekmek fiyatları günden güne artıyor...",
+  "Değirmenciler buğday bulamadıklarını, sıranın haftalarca uzadığını söylüyor...",
 ];
 const DEDIKODU_ISYAN: string[] = [
   "Meydanlarda öfkeli kalabalıklar toplanıyor, muhafızlar tedirgin...",
   "Vergilere isyan eden köylülerin silahlandığı söyleniyor...",
+  "Duvarlara geceleri hükümdarı hedef alan yazılar karalanıyor...",
 ];
 const DEDIKODU_NUFUS: string[] = [
   "Şehre her gün yeni göçmen kafileleri geliyor... (Nüfus artıyor)",
   "Sokaklar eskisinden çok daha kalabalık, her köşede yeni bir yüz var...",
+  "Yeni mahalleler hızla kuruluyor, arsa fiyatları uçuşa geçti...",
 ];
 const DEDIKODU_BOLLUK: string[] = [
   "Komşu ülkelerle barış antlaşmaları imzalandı, yollar güvenli... (Barış/Bolluk dönemi)",
   "Pazarlar dolup taşıyor, kimsenin bir şikayeti yok; bu huzur ne kadar sürer kim bilir...",
+  "Kervanlar art arda sağ salim varıyor, mal bolluğundan fiyatlar düşüyor...",
 ];
 const DEDIKODU_SAKIN: string[] = [
   "Bugünlerde ortalık sakin, herkes kendi işine bakıyor...",
   "Meydanda konuşulacak pek bir şey yok, sıradan bir gün...",
+  "Pazar yerinde her zamanki gevezelik dışında dikkat çeken bir şey yok...",
 ];
+/** Dünya durumundan bağımsız, koşullu havuzların yanına eklenebilen genel flavor dedikodusu — 2-3 satırlı sonuçların sık görülmesi için. */
+const DEDIKODU_GENEL: string[] = [
+  "Kasabanın en zengin tüccarının kızı, bir yabancıya kaçmayı planlıyormuş...",
+  "Yeni gelen bir gezgin şifacı, mucize tedaviler vaat ediyor; kimileri şüpheci...",
+  "Bir zamanlar itibarlı bir aile, borç yüzünden mülklerini elden çıkarmaya başlamış...",
+  "Pazarda tuz fiyatları yine oynadı, herkes bir sonraki gemiyi bekliyor...",
+  "Meyhanede geceleri anlatılan bir hazine söylentisi gitgide büyüyor...",
+  "Şehrin dışındaki değirmende garip ışıklar görüldüğü konuşuluyor...",
+];
+/** DEDIKODU_GENEL'in ana listeye eklenme ihtimali (koşullu satırlardan bağımsız). */
+const DEDIKODU_GENEL_IHTIMALI = 0.4;
 
 /**
  * Yatırım ekranının üstünde gösterilen "piyasa dedikoduları" — savaş için
@@ -2229,6 +2305,9 @@ export function piyasaDedikodulariUret(state: CharacterState): string[] {
   if (state.ulke.nufusDurumu === "artiyor") dedikodular.push(T(dil, sec(DEDIKODU_NUFUS)));
   if (!state.ulke.savasta && state.ulke.ekonomi === "iyi") dedikodular.push(T(dil, sec(DEDIKODU_BOLLUK)));
   if (dedikodular.length === 0) dedikodular.push(T(dil, sec(DEDIKODU_SAKIN)));
+  // Koşullardan bağımsız bir genel flavor dedikodusu da eklenebilir — böylece
+  // 2-3 satırlı sonuçlar tek satırlık "sakin" sonuç kadar yaygın hale gelir.
+  if (Math.random() < DEDIKODU_GENEL_IHTIMALI) dedikodular.push(T(dil, sec(DEDIKODU_GENEL)));
   return dedikodular;
 }
 

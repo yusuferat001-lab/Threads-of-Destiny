@@ -339,7 +339,36 @@ export const ANLATIM_EN: Record<string, string> = {
     "Things are quiet these days; everyone minds their own business...",
   "Meydanda konuşulacak pek bir şey yok, sıradan bir gün...":
     "There's little to talk about in the square; an ordinary day...",
+  "{0} ile olası bir çatışma yüzünden silah ve zırh fiyatları bir anda tırmandı, demirciler gece gündüz çalışıyor...":
+    "Over a possible conflict with {0}, weapon and armor prices have shot up all at once; the blacksmiths are working day and night...",
+  "{0} yönünden habercilerin at değiştirmeden dörtnala geçtiği görüldü; kötü haber taşıyor olmalılar...":
+    "Messengers have been seen galloping in from the direction of {0} without changing horses; they must be carrying bad news...",
+  "Değirmenciler buğday bulamadıklarını, sıranın haftalarca uzadığını söylüyor...":
+    "The millers say they can't find wheat, and the queue has grown to weeks...",
+  "Duvarlara geceleri hükümdarı hedef alan yazılar karalanıyor...":
+    "At night, writings targeting the ruler are being scrawled on the walls...",
+  "Yeni mahalleler hızla kuruluyor, arsa fiyatları uçuşa geçti...":
+    "New neighborhoods are springing up fast; land prices have taken flight...",
+  "Kervanlar art arda sağ salim varıyor, mal bolluğundan fiyatlar düşüyor...":
+    "Caravans keep arriving safely one after another; prices are falling from the abundance of goods...",
+  "Pazar yerinde her zamanki gevezelik dışında dikkat çeken bir şey yok...":
+    "Nothing stands out at the market beyond the usual chatter...",
+  "Kasabanın en zengin tüccarının kızı, bir yabancıya kaçmayı planlıyormuş...":
+    "The wealthiest merchant's daughter in town is said to be planning to elope with a stranger...",
+  "Yeni gelen bir gezgin şifacı, mucize tedaviler vaat ediyor; kimileri şüpheci...":
+    "A newly arrived traveling healer promises miracle cures; some are skeptical...",
+  "Bir zamanlar itibarlı bir aile, borç yüzünden mülklerini elden çıkarmaya başlamış...":
+    "A once-respected family has reportedly started selling off their properties due to debt...",
+  "Pazarda tuz fiyatları yine oynadı, herkes bir sonraki gemiyi bekliyor...":
+    "Salt prices have shifted again at the market; everyone is waiting for the next ship...",
+  "Meyhanede geceleri anlatılan bir hazine söylentisi gitgide büyüyor...":
+    "A treasure rumor told at the tavern by night keeps growing bigger...",
+  "Şehrin dışındaki değirmende garip ışıklar görüldüğü konuşuluyor...":
+    "There is talk of strange lights seen at the mill outside the city...",
 
+  "{0} ile evlendi ({1}, {2})": "Married {0} ({1}, {2})",
+  "{0} teklifini kabul etti! Artık evlisin.": "{0} accepted your proposal! You are now married.",
+  "{0} teklifini nazikçe geri çevirdi. Belki başka zaman...": "{0} gently turned down your proposal. Maybe another time...",
   "{0} {birim} kaybettin.": "You lost {0} {birim}.",
   "Cebinden {0} {birim} gitti.": "{0} {birim} left your pocket.",
   "Hükümdar değişti: {0}": "The ruler changed: {0}",

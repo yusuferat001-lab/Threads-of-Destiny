@@ -33,11 +33,12 @@ export const TERFI_COOLDOWN: Record<number, number> = { 2: 0, 3: 2, 4: 2, 5: 8 }
 /**
  * Seviye 1..5 için maaşa çarpımsal, kalıcı rütbe primi (hesaplaMaasYillik içinde
  * TEK bir çarpan kalemi olarak girer — kıdem/itibar/enflasyonla da çarpılır).
- * BİLEŞİK: her kademe bir öncekinin ~%20 üstü (1.2^(seviye-1)). Yani S3 primi
- * "S2 primi × 1.2"dir, baz maaşa göre ayrı bir +%X değil — S1..S5 sırasıyla
- * ×1.00 / ×1.20 / ×1.44 / ×1.73 / ×2.07.
+ * BİLEŞİK: her kademe bir öncekinin ~%10 üstü (1.1^(seviye-1)). Yani S3 primi
+ * "S2 primi × 1.1"dir, baz maaşa göre ayrı bir +%X değil — S1..S5 sırasıyla
+ * ×1.00 / ×1.10 / ×1.21 / ×1.33 / ×1.46. (Büyük denge turunda 1.2 → 1.1:
+ * kullanıcı "rütbe bonusunu azaltalım, 5 seviye var, her birinde %10'ar artsın" dedi.)
  */
-const RUTBE_MAAS_ARTIS_ORANI = 1.2;
+const RUTBE_MAAS_ARTIS_ORANI = 1.1;
 export const RUTBE_MAAS_CARPANI: [number, number, number, number, number] = [0, 1, 2, 3, 4].map(
   (i) => Math.round(Math.pow(RUTBE_MAAS_ARTIS_ORANI, i) * 100) / 100
 ) as [number, number, number, number, number];

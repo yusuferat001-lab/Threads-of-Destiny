@@ -26,14 +26,14 @@ describe("suç işleyerek para kazanma — motor kuralı (birim)", () => {
     expect(sucKazanciUygula(etki)).toBe("suc");
     expect(etki.para).toBe(32); // 20 * 1.6
     expect(etki.suc_artis).toBeGreaterThan(0);
-    expect(etki.suc_artis).toBeLessThanOrEqual(20); // normal tavan
+    expect(etki.suc_artis).toBeLessThanOrEqual(45); // normal tavan (büyük denge turu: 28 → 45)
   });
 
   it("ciddi suç (ağır ahlak tavizi): suc_seviyesi'ni daha çok sıçratır", () => {
-    const etki: SonucEtkisi = { para: 20, ahlak: -30, mesaj: "x" };
+    const etki: SonucEtkisi = { para: 20, ahlak: -40, mesaj: "x" };
     expect(sucKazanciUygula(etki)).toBe("ciddi");
     expect(etki.para).toBe(32);
-    expect(etki.suc_artis).toBeGreaterThan(20); // ciddi tavan (32) devreye girer
+    expect(etki.suc_artis).toBeGreaterThan(45); // normal tavanı (45) aşar, ciddi tavana (65) doğru büyür
   });
 
   it("ciddi suç (büyük vurgun): eşiği para tarafından geçer", () => {
@@ -42,10 +42,10 @@ describe("suç işleyerek para kazanma — motor kuralı (birim)", () => {
     expect(etki.para).toBe(80);
   });
 
-  it("suc_artis katkısı ciddi tavana (32) sınırlanır", () => {
+  it("suc_artis katkısı ciddi tavana (65) sınırlanır", () => {
     const etki: SonucEtkisi = { para: 300, ahlak: -60, mesaj: "x" };
     sucKazanciUygula(etki);
-    expect(etki.suc_artis).toBeLessThanOrEqual(32);
+    expect(etki.suc_artis).toBeLessThanOrEqual(65);
   });
 
   it("mevcut suc_artis değerinin üstüne biner", () => {

@@ -639,7 +639,7 @@ export const OLAY_ORTACAG_DINADAMI: OlayTanimi[] = [
         ipucu: "Halkın morali yükselir ama bir yalan üzerine kurulu",
         basariliSonuc: {
           un: 20,
-          mutluluk: 10,
+          mutluluk: 5,
           ahlak: -18,
           mesaj: "'Mucize' halkın arasında hızla yayıldı; umut geri geldi, sokaklar yeniden canlandı.",
           detay: "Bazı yalanlar iyi niyetle söylense de yalandır.",
