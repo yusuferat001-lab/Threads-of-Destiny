@@ -37,6 +37,8 @@ export const OLAY_ORTACAG_TUCCAR: OlayTanimi[] = [
         baseBasariSansi: 78,
         ipucu: "Düşük ama güvenli kâr, zaman kaybı",
         basariliSonuc: {
+          mutluluk: -7,
+          un: -3,
           para: 18,
           saglik: -5,
           mesaj: "Dağ yolu uzundu ama kervan eksiksiz vardı.",
@@ -470,6 +472,8 @@ export const OLAY_ORTACAG_TUCCAR: OlayTanimi[] = [
         baseBasariSansi: 65,
         ipucu: "Ücretsiz ama sınırlı",
         basariliSonuc: {
+          mutluluk: -6,
+          un: -2,
           para: 15,
           mesaj: "El kol hareketleriyle küçük ama karlı bir alışveriş yaptın.",
           detay: "Kervanın lideri gülerek elini sıktı; belki dil ortak olmasa da ticaret ortaktı.",
@@ -514,8 +518,9 @@ export const OLAY_ORTACAG_TUCCAR: OlayTanimi[] = [
         baseBasariSansi: 40,
         ipucu: "Ya tüm yükü korursun ya da her şeyi kaybedersin",
         basariliSonuc: {
+          mutluluk: -8,
           para: 20,
-          un: 10,
+          un: 5,
           mesaj: "Gemi mucizevi şekilde fırtınayı yükle birlikte atlattı.",
           detay: "Kaptan bir daha seninle çalışmak istemediğini söyledi ama bu sefer kazandın.",
         },
@@ -635,6 +640,8 @@ export const OLAY_ORTACAG_TUCCAR: OlayTanimi[] = [
         baseBasariSansi: 50,
         ipucu: "Zaman kazanırsın ya da tuzağa düşersin",
         basariliSonuc: {
+          mutluluk: -10,
+          un: -4,
           saglik: 3,
           para: 25,
           mesaj: "Kestirme gerçekten işe yaradı; rakiplerinden önce pazara vardın.",
@@ -701,8 +708,10 @@ export const OLAY_ORTACAG_TUCCAR: OlayTanimi[] = [
         baseBasariSansi: 70,
         ipucu: "Yavaş ama sağlam ve itibarlı",
         basariliSonuc: {
+          mutluluk: -6,
+          un: -2,
           para: 15,
-          ahlak: 12,
+          ahlak: 6,
           mesaj: "Kendi çırağını sıfırdan yetiştirdin; zaman aldı ama sadakati tamdı.",
           detay: "Yavaş büyüyen ağaçlar daha derin kök salar derler; senin işin de öyle oldu.",
         },
@@ -732,8 +741,9 @@ export const OLAY_ORTACAG_TUCCAR: OlayTanimi[] = [
         baseBasariSansi: 85,
         ipucu: "Şansına güvenen bir kazanç",
         basariliSonuc: {
+          mutluluk: -11,
           para: 30,
-          un: 12,
+          un: 6,
           mesaj: "Soylu, dürüstlüğünü ödüllendirdi; şehirde adın hemen yayıldı.",
           detay: "'Dilenciye bile saygıyla davranan tüccar' hikayen aylarca anlatıldı.",
         },

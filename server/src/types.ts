@@ -215,6 +215,13 @@ export interface CharacterState {
    * etiketi ve kalıcı bir Ayyaşlık durumu tetiklenir (bkz. gameEngine.ts).
    */
   alkol_ziyaret_sayisi: number;
+  /**
+   * Sosyalleşme ekranındaki tur-harcamayan aksiyonların (içki iç, deliyle konuş,
+   * sadaka ver, kulak kabart, birine içki ısmarla, fal baktır) son kullanıldığı
+   * oyun yılı — aksiyon id → yıl. Her aksiyon kendi cooldown'ı dolana kadar
+   * yeniden yapılamaz (bkz. gameEngine.ts sosyallesmeAksiyonYap).
+   */
+  sosyallesme_aksiyon_kilit: Record<string, number>;
 
   yatkinliklar: Record<Kategori, number>;
   yatkinlik_kaynaklari: YatkinlikKaynagi[];
@@ -258,6 +265,8 @@ export interface CharacterState {
   son_zorunlu_bagis_yili: number | null;
   /** Zenginlik sızıntısının (hırsız/haraç/dolandırıcı vb. — net servet ≥ 350 & nakit ≥ 50) son tetiklendiği yıl; 6 yıllık cooldown takibi. Hiç olmadıysa null. */
   son_zenginlik_sizinti_yili: number | null;
+  /** Rakip'in "parayı alıp kaçtığı" soygunun son yaşandığı yıl (nakit yüksekken düşük ihtimalli, 8 yıllık cooldown). Hiç olmadıysa null. */
+  son_rakip_soygun_yili: number | null;
   /** Aktif büyük savaşın parametreleri; savaş yokken null. */
   buyuk_savas: BuyukSavas | null;
   /** En son büyük savaşın bittiği yıl (10 yıllık minimum cooldown takibi); hiç savaş olmadıysa null. */
@@ -282,6 +291,13 @@ export interface CharacterState {
   gida_fiyat_sok_bitis_yili: number | null;
   /** Ömürde bir kez: borçtayken (para < 0, bütçe açığı sürerken) kilise/eş dost bir kereliğine borcun bir kısmını kapatır. true olunca bir daha tetiklenmez. */
   borc_yardimi_alindi: boolean;
+
+  /** Aile ekranı etkileşim cooldown'ları: anahtar (ör. "es:hediye", "cocuk:2:oyna") → tekrar açılacağı oyun yılı. */
+  aile_etkilesim_kilit: Record<string, number>;
+  /** Eş/çocuğun bekleyen para talebi; yoksa null (§33). */
+  aile_talep: AileTalep | null;
+  /** Bir sonraki aile talebinin üretilebileceği en erken yıl (yaratılışta baslangic_yili + 4). */
+  aile_talep_sonraki_yil: number;
 
   tur_sayisi: number;
   gecmis_olaylar: string[];
@@ -317,6 +333,25 @@ export interface Cocuk {
   isim: string;
   dogum_yili: number;
   yasiyor: boolean;
+  /** Çocukla ilişki puanı (0-100); yeni doğan çocuk 65 ile başlar. Aile ekranındaki etkileşimlerle artar, ilgilenilmezse yılda ~0.6 düşer. Eski kayıtlarda eskiKayitGocu 60 backfill eder. */
+  iliski: number;
+}
+
+/**
+ * Eş ya da çocuğun ara sıra ilettiği, parayla karşılanan bir istek (Aile ekranında
+ * "Kabul Et / Reddet" kartı olarak gösterilir). sonYil'e kadar cevaplanmazsa
+ * görmezden gelinmiş sayılır: ilgili ilişki puanı ve mutluluk düşer.
+ */
+export interface AileTalep {
+  id: string;
+  kimden: "es" | "cocuk";
+  kimAdi: string;
+  /** kimden === "cocuk" ise cocuklar[] içindeki index; aksi halde null. */
+  cocukIndex: number | null;
+  tutar: number;
+  /** İstenen şeyin insan-okunur adı (ör. "yeni bir at", "ipek elbise"). */
+  kalem: string;
+  sonYil: number;
 }
 
 /** 0-100 arası iki uçlu kişilik ekseni: fevrilik (0=planlayıcı, 100=fevri), merhamet (0=zalim, 100=barışçıl). */
@@ -379,6 +414,8 @@ export interface SonucEtkisi {
   cocuk_ekle?: number;
   /** true ise yaşayan çocuklardan rastgele biri kaybedilir. */
   cocuk_kaybet?: boolean;
+  /** Yaşayan TÜM çocukların ilişki puanına uygulanan delta (± olabilir); §33. */
+  cocuk_iliski?: number;
   /** Belirtilirse bir sonraki olay havuzdan rastgele seçilmez, doğrudan bu id ile gelir. */
   zorunlu_sonraki?: string;
   /** Belirtilirse yeni bir ekip üyesi eklenir; gerçek kalitesi gizlice hesaplanır. */

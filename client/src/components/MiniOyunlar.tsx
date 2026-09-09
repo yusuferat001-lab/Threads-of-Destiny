@@ -29,11 +29,13 @@ export function HazardWidget({
   const [donuyor, setDonuyor] = useState(false);
   const [sonuc, setSonuc] = useState<ZarSonucu | null>(null);
   const [sahteZar, setSahteZar] = useState<[number, number]>([5, 3]);
+  const [sahteRakipZar, setSahteRakipZar] = useState<[number, number]>([2, 6]);
 
   useEffect(() => {
     if (!donuyor) return;
     const t = setInterval(() => {
       setSahteZar([1 + Math.floor(Math.random() * 6), 1 + Math.floor(Math.random() * 6)]);
+      setSahteRakipZar([1 + Math.floor(Math.random() * 6), 1 + Math.floor(Math.random() * 6)]);
     }, 90);
     return () => clearInterval(t);
   }, [donuyor]);
@@ -50,24 +52,37 @@ export function HazardWidget({
     setTimeout(() => {
       setDonuyor(false);
       setSonuc(r);
-    }, 900);
+    }, 2000);
   }
 
-  const senZar = donuyor || !sonuc ? sahteZar : sonuc.senZar;
+  const bitti = !!sonuc && !donuyor;
+  const senZar = bitti ? sonuc!.senZar : sahteZar;
+  const rakipZar = bitti ? sonuc!.rakipZar : sahteRakipZar;
 
   return (
-    <div className="mini-oyun mini-oyun-hazard">
+    <div className="mini-oyun mini-oyun-hazard" title={m.moHazardAciklama}>
       <h4 className="mini-oyun-baslik">{m.moHazardBaslik}</h4>
-      <p className="mini-oyun-aciklama">{m.moHazardAciklama}</p>
 
-      <div className={`hazard-zarlar${donuyor ? ' hazard-donuyor' : ''}`} aria-hidden="true">
-        <span className="hazard-zar">{ZAR_YUZLERI[senZar[0] - 1]}</span>
-        <span className="hazard-zar">{ZAR_YUZLERI[senZar[1] - 1]}</span>
+      <div className={`hazard-masa${donuyor ? ' hazard-donuyor' : ''}`} aria-hidden="true">
+        <div className={`hazard-taraf${bitti && sonuc!.kazandi ? ' hazard-taraf-kazanan' : ''}`}>
+          <span className="hazard-taraf-etiket">{m.moSen}</span>
+          <div className="hazard-zarlar">
+            <span className="hazard-zar">{ZAR_YUZLERI[senZar[0] - 1]}</span>
+            <span className="hazard-zar">{ZAR_YUZLERI[senZar[1] - 1]}</span>
+          </div>
+        </div>
+        <div className={`hazard-taraf${bitti && !sonuc!.kazandi ? ' hazard-taraf-kazanan' : ''}`}>
+          <span className="hazard-taraf-etiket">{m.moRakip}</span>
+          <div className="hazard-zarlar">
+            <span className="hazard-zar">{ZAR_YUZLERI[rakipZar[0] - 1]}</span>
+            <span className="hazard-zar">{ZAR_YUZLERI[rakipZar[1] - 1]}</span>
+          </div>
+        </div>
       </div>
 
-      {sonuc && !donuyor && (
-        <p className={`mini-oyun-sonuc ${sonuc.kazandi ? 'mini-oyun-kazanc' : 'mini-oyun-kayip'}`}>
-          {m.moRakip}: {ZAR_YUZLERI[sonuc.rakipZar[0] - 1]} {ZAR_YUZLERI[sonuc.rakipZar[1] - 1]} — {sonuc.mesaj}
+      {bitti && (
+        <p className={`mini-oyun-sonuc ${sonuc!.kazandi ? 'mini-oyun-kazanc' : 'mini-oyun-kayip'}`}>
+          {sonuc!.mesaj}
         </p>
       )}
 
@@ -131,9 +146,8 @@ export function UcKagitciWidget({
   }
 
   return (
-    <div className="mini-oyun mini-oyun-uckagit">
+    <div className="mini-oyun mini-oyun-uckagit" title={m.moUcKagitAciklama}>
       <h4 className="mini-oyun-baslik">{m.moUcKagitBaslik}</h4>
-      <p className="mini-oyun-aciklama">{m.moUcKagitAciklama}</p>
 
       <div className={`uc-bardaklar uc-asama-${asama}`}>
         {[0, 1, 2].map((i) => {
@@ -249,9 +263,8 @@ export function BilekGuresiWidget({
   const oran = Math.min(1, tik / BILEK_HEDEF);
 
   return (
-    <div className="mini-oyun mini-oyun-bilek">
+    <div className="mini-oyun mini-oyun-bilek" title={m.moBilekAciklama}>
       <h4 className="mini-oyun-baslik">{m.moBilekBaslik}</h4>
-      <p className="mini-oyun-aciklama">{m.moBilekAciklama}</p>
 
       <div className="bilek-bar">
         <div className="bilek-bar-dolgu" style={{ width: `${oran * 100}%` }} />

@@ -1284,7 +1284,9 @@ export const OLAY_HAPIS: OlayTanimi[] = [
         metin: "Bir el dene.",
         baseBasariSansi: 50,
         ipucu: "Küçük kazanç ya da tehlikeli bir alışkanlığın başlangıcı",
-        basariliSonuc: { para: 12, un: 5, mesaj: "Şansın yaver gitti, koğuşta adın 'şanslı' diye anılmaya başladı.", detay: "Küçük bir zafer bile burada büyük anlam taşıyor." },
+        basariliSonuc: {
+        mutluluk: -5,
+ para: 12, un: 3, mesaj: "Şansın yaver gitti, koğuşta adın 'şanslı' diye anılmaya başladı.", detay: "Küçük bir zafer bile burada büyük anlam taşıyor." },
         basarisizSonuc: {
           mutluluk: -4,
           para: -10,

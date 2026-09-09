@@ -1517,6 +1517,8 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 50,
         ipucu: "Sert pazarlık, ortaklığın kırılma riski",
         basariliSonuc: {
+          mutluluk: -8,
+          un: -3,
           para: 21,
           mesaj: "Sert pazarlığın işe yaradı, payını korudun; tüccar isteksizce kabul etti.",
           detay: "Suç ortaklığında bile güç dengesi konuşulur.",
@@ -1978,6 +1980,8 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 75,
         ipucu: "Daha az kazanç, daha kontrollü bir risk",
         basariliSonuc: {
+          mutluluk: -5,
+          un: -2,
           para: 13,
           mesaj: "Riski almadın, tüccar homurdandı ama iş eskisi gibi sessizce devam etti.",
           detay: "Bazen hırsını dizginlemek, en büyük kazançtır.",
@@ -2091,9 +2095,10 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 55,
         ipucu: "Dengeli bir yaklaşım, ne tam güven ne tam kazanç getirir",
         basariliSonuc: {
+          mutluluk: -6,
           para: 15,
-          un: 12,
-          ahlak: -5,
+          un: 6,
+          ahlak: -8,
           mesaj: "Sözlerin hem vicdanını hem kasanı biraz rahatlattı; halk ne tam korktu ne tam sakinleşti.",
           detay: "Ortada durmak bazen en güvenli yoldur.",
         },
@@ -2292,6 +2297,8 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 65,
         ipucu: "Daha az ama daha güvenli, aileyle iyi ilişkiler kurar",
         basariliSonuc: {
+          mutluluk: -7,
+          un: -3,
           para: 18,
           dost_puani: 8,
           mesaj: "Aileyi bilgilendirdin, küçük bir aracılık payı aldın; herkes senden memnun ayrıldı.",

@@ -252,9 +252,10 @@ export const OLAY_KURESEL: OlayTanimi[] = [
         baseBasariSansi: 40,
         ipucu: "İyi para + itibar; ölümcül bulaşma riski",
         basariliSonuc: {
+          mutluluk: -10,
           para: 25,
-          ahlak: 6,
-          un: 4,
+          ahlak: 3,
+          un: 2,
           mesaj: "Aylarca ölümün içinde çalıştın ve sağ çıktın. Cebin doldu, adın 'cesur' diye anıldı.",
         },
         basarisizSonuc: {

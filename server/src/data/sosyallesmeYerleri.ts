@@ -23,14 +23,29 @@ export interface SosyallesmeYeri {
   meslekler?: string[];
 }
 
+/**
+ * Sosyalleşme ekranı "az ve öz" 3 slota indirildi (2026-09): oyuncu aynı anda en
+ * fazla üç mekân görür — (1) her zaman **Pazar Meydanı** (evrensel), (2) çağa göre
+ * bir **alkollü mekân** (Sanayi+İngiltere → Pub, aksi halde Meyhane), (3) mesleğe
+ * özel bir mekân (Asker → Ordugâh Çadırı, Din Adamı → Cemaat Sofrası, Tüccar →
+ * Lonca Meclisi). Kaldırılan mekânların (hamam/kahvehane/kervansaray/salon) olay
+ * havuzları Pazar Meydanı ve Meyhane'ye taşındı (bkz. sosyallesme.ts).
+ */
 export const SOSYALLESME_YERLERI: SosyallesmeYeri[] = [
+  {
+    id: "pazar_meydani",
+    ad: "Pazar Meydanı",
+    simge: "🗣️",
+    aciklama: "Şehrin nabzının attığı, herkesin birbirini tanıdığı ya da tanıyormuş gibi davrandığı açık meydan.",
+    alkolluMu: false,
+  },
   {
     id: "meyhane",
     ad: "Meyhane",
     simge: "🍷",
-    aciklama: "Şarabın, dedikodunun ve kavganın bir arada aktığı, kapısından her tabakadan insanın girip çıktığı gürültülü mekân.",
+    aciklama: "Şarabın, dedikodunun ve kavganın bir arada aktığı, her tabakadan insanın girip çıktığı gürültülü mekân.",
     alkolluMu: true,
-    bolgeler: ["Fransa", "Kutsal Roma", "Bizans", "Osmanlı", "Rusya"],
+    bolgeler: ["Fransa", "Kutsal Roma", "Bizans", "Selçuklu", "Eyyubiler", "Osmanlı", "Rusya"],
   },
   {
     id: "pub",
@@ -40,32 +55,6 @@ export const SOSYALLESME_YERLERI: SosyallesmeYeri[] = [
     alkolluMu: true,
     cag: "Sanayi Devrimi",
     bolgeler: ["İngiltere"],
-  },
-  {
-    id: "hamam",
-    ad: "Hamam",
-    simge: "♨️",
-    aciklama: "Buharın içinde kimsenin rütbesinin görünmediği; iş bağlantılarının, evlilik konuşmalarının ve şehir dedikodusunun asıl mekânı.",
-    alkolluMu: false,
-    bolgeler: ["Bizans", "Selçuklu", "Eyyubiler", "Osmanlı"],
-  },
-  {
-    id: "kahvehane",
-    ad: "Kahvehane",
-    simge: "☕",
-    aciklama: "Nargilenin dumanı, tavla taşlarının sesi ve bir meddahın hikâyesi eşliğinde saatlerce oturulan mahalle kahvehanesi.",
-    alkolluMu: false,
-    cag: "Sanayi Devrimi",
-    bolgeler: ["Osmanlı"],
-  },
-  {
-    id: "kervansaray",
-    ad: "Kervansaray",
-    simge: "🐫",
-    aciklama: "Uzak diyarlardan gelen tüccarların, hikâyelerin ve garip eşyaların bir gecelik konakladığı taş avlu.",
-    alkolluMu: false,
-    cag: "Orta Çağ",
-    bolgeler: ["Selçuklu", "Eyyubiler", "Bizans"],
   },
   {
     id: "ordugah_cadiri",
@@ -90,21 +79,6 @@ export const SOSYALLESME_YERLERI: SosyallesmeYeri[] = [
     aciklama: "Esnafın fiyat, rekabet ve dedikodu konuştuğu; bazen sert pazarlıkların masaya yumruk indirdiği toplantı salonu.",
     alkolluMu: false,
     meslekler: ["Tüccar"],
-  },
-  {
-    id: "pazar_meydani",
-    ad: "Pazar Meydanı",
-    simge: "🗣️",
-    aciklama: "Şehrin nabzının attığı, herkesin birbirini tanıdığı ya da tanıyormuş gibi davrandığı açık meydan.",
-    alkolluMu: false,
-  },
-  {
-    id: "salon",
-    ad: "Soylu Salonu",
-    simge: "🎻",
-    aciklama: "Kristal kadehlerin tokuşturulduğu, entrikanın kadife eldiven altında döndüğü davetli gecesi.",
-    alkolluMu: false,
-    bolgeler: ["Fransa", "Kutsal Roma", "Bizans", "İngiltere"],
   },
 ];
 

@@ -14,7 +14,9 @@ import type {
   MulkTuru,
   TepkiSonucu,
   SosyallesmeYeri,
+  SosyalAksiyonConfig,
   MagazaEsyaKarti,
+  AileDurumu,
 } from './types';
 import {
   mesleklerGetir,
@@ -46,12 +48,18 @@ import {
   ekipCikar,
   sosyallesmeYerleriGetir,
   sosyallesmeYerineGit,
+  sosyallesmeAksiyonConfigGetir,
+  sosyallesmeAksiyonYap,
+  sosyallesmeOlayCoz,
   magazaKatalogGetir,
   magazadanSatinAl,
   envanterEsyasiKullan,
   geriBildirimGonder,
   evlilikAdaylariGetir,
   evlilikTeklifEt,
+  aileDurumGetir,
+  aileEtkilesimYap,
+  aileTalebiKararlastir,
 } from './api';
 import { Banner } from './components/Banner';
 import { UstSerit } from './components/UstSerit';
@@ -154,8 +162,8 @@ function cagAciklama(m: ReturnType<typeof dilCtxYap>['m'], cag: string): string 
 /** Gelir/Sosyalleş/Mağaza artık sahne üzerindeki tıklama noktalarından açılır ama tam
  * sayfa olarak (oyun HUD'unun yerini alarak) açılır — hepsi ana oyun ekranıyla aynı "sayfa
  * hiç kaymaz, sadece sütun/ızgara kendi içinde kayar" modelini kullanır (bkz.
- * .oyun-kapsayici-tam) — `aile` (sol panelden "Aileni Gör →" ile açılır, hotspot değil) bu
- * gruba dahil DEĞİL, o hâlâ dar/ortalanmış, doğal yükseklikte basit bir liste ekranı. */
+ * .oyun-kapsayici-tam) — `aile` de (sol panelden "Aileni Gör →" ile açılır) artık bu gruba
+ * dahildir: evin-içi arka planlı, eş/çocuk ilişkisi + etkileşim + talep ekranı (§33). */
 const TAM_EKRAN_GRUBU: Ekran[] = [
   'giris',
   'cag_sec',
@@ -171,6 +179,7 @@ const TAM_EKRAN_GRUBU: Ekran[] = [
   'sosyallesme',
   'magaza',
   'evlilik',
+  'aile',
 ];
 
 /** Geri bildirim mesajlarına eklenen uygulama sürümü — bir hata raporunun hangi build'e
@@ -208,8 +217,10 @@ function YanPanel({
   children: ReactNode;
 }) {
   if (mobil) {
+    // Varsayılan AÇIK — iki yan panel mobilde alt alta değil yan yana ve açık durur
+    // (bkz. App.css mobil .oyun-govde 2 sütunlu grid). Başlığa dokunarak yine katlanabilir.
     return (
-      <details className={`${className} panel-katla`}>
+      <details open className={`${className} panel-katla`}>
         <summary className="panel-parsomen-baslik">{baslik}</summary>
         {children}
       </details>
@@ -239,6 +250,10 @@ function App() {
   const [senaryo, setSenaryo] = useState<SenaryoResponse | null>(null);
   const [tepkiModu, setTepkiModu] = useState(false);
   const [sonEtki, setSonEtki] = useState<SonEtki | null>(null);
+  // Sosyalleş ekranından çıkmadan çözülen mekân olayı (kullanıcı: "oranın içinde kalalım").
+  const [sosyalOlay, setSosyalOlay] = useState<SenaryoResponse | null>(null);
+  const [sosyalOlaySonuc, setSosyalOlaySonuc] = useState<SonEtki | null>(null);
+  const [sosyalOlayTepkiModu, setSosyalOlayTepkiModu] = useState(false);
   const [yukleniyor, setYukleniyor] = useState(false);
   const [hata, setHata] = useState<string | null>(null);
 
@@ -251,12 +266,14 @@ function App() {
   const [liderlik, setLiderlik] = useState<ScoreKaydi[]>([]);
 
   const [finans, setFinans] = useState<FinansOzeti | null>(null);
+  const [aileDurum, setAileDurum] = useState<AileDurumu | null>(null);
   const [kotuIsler, setKotuIsler] = useState<KotuIsKarti[]>([]);
   const [dedikodular, setDedikodular] = useState<string[]>([]);
   const [mulkler, setMulkler] = useState<MulkKartBilgisi[]>([]);
   const [zarKademeleri, setZarKademeleri] = useState<number[]>([]);
   const [islemMesaji, setIslemMesaji] = useState<string | null>(null);
   const [sosyallesmeYerleri, setSosyallesmeYerleri] = useState<SosyallesmeYeri[]>([]);
+  const [sosyalAksiyonConfig, setSosyalAksiyonConfig] = useState<SosyalAksiyonConfig | null>(null);
   const [magazaKatalogu, setMagazaKatalogu] = useState<MagazaEsyaKarti[]>([]);
   const [evlilikAdaylari, setEvlilikAdaylari] = useState<EvlilikAdayi[]>([]);
 
@@ -717,6 +734,62 @@ function App() {
     }
   }
 
+  async function aileEkraniniAc() {
+    if (!karakter) return;
+    setHata(null);
+    setYukleniyor(true);
+    try {
+      const durum = await aileDurumGetir(karakter.id);
+      setAileDurum(durum);
+      setIslemMesaji(null);
+      setEkran('aile');
+    } catch (err) {
+      setHata(String(err));
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
+  async function aileEtkilesimHandler(etkilesimId: string, cocukIndex?: number) {
+    if (!karakter) return;
+    setHata(null);
+    setYukleniyor(true);
+    try {
+      const sonuc = await aileEtkilesimYap(karakter.id, etkilesimId, cocukIndex);
+      setKarakter(sonuc.state);
+      setIslemMesaji(sonuc.mesaj);
+      try {
+        setAileDurum(await aileDurumGetir(karakter.id));
+      } catch {
+        /* durum yenilenemezse eldeki kalır */
+      }
+    } catch (err) {
+      setHata(String(err));
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
+  async function aileTalepHandler(karar: 'kabul' | 'ret') {
+    if (!karakter) return;
+    setHata(null);
+    setYukleniyor(true);
+    try {
+      const sonuc = await aileTalebiKararlastir(karakter.id, karar);
+      setKarakter(sonuc.state);
+      setIslemMesaji(sonuc.mesaj);
+      try {
+        setAileDurum(await aileDurumGetir(karakter.id));
+      } catch {
+        /* durum yenilenemezse eldeki kalır */
+      }
+    } catch (err) {
+      setHata(String(err));
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
   async function yatirimEkraniniAc() {
     if (!karakter) return;
     setHata(null);
@@ -841,17 +914,41 @@ function App() {
     setHata(null);
     setYukleniyor(true);
     try {
-      const [{ yerler }, { kademeler }] = await Promise.all([
+      const [{ yerler }, { kademeler }, aksiyonConfig] = await Promise.all([
         sosyallesmeYerleriGetir(karakter.id),
         zarKademeleriGetir(karakter.id),
+        sosyallesmeAksiyonConfigGetir(karakter.id),
       ]);
       setSosyallesmeYerleri(yerler);
       setZarKademeleri(kademeler);
+      setSosyalAksiyonConfig(aksiyonConfig);
+      setSosyalOlay(null);
+      setSosyalOlaySonuc(null);
+      setSosyalOlayTepkiModu(false);
       setEkran('sosyallesme');
     } catch (err) {
       setHata(String(err));
     } finally {
       setYukleniyor(false);
+    }
+  }
+
+  async function sosyalAksiyonHandler(aksiyonId: string, varyant?: string) {
+    if (!karakter) return null;
+    setHata(null);
+    try {
+      const sonuc = await sosyallesmeAksiyonYap(karakter.id, aksiyonId, varyant);
+      setKarakter(sonuc.state);
+      try {
+        const yeniConfig = await sosyallesmeAksiyonConfigGetir(karakter.id);
+        setSosyalAksiyonConfig(yeniConfig);
+      } catch {
+        /* config yenilenemezse eldeki kalır */
+      }
+      return sonuc;
+    } catch (err) {
+      setHata(String(err));
+      return null;
     }
   }
 
@@ -862,10 +959,69 @@ function App() {
     try {
       const sonuc = await sosyallesmeYerineGit(karakter.id, yerId);
       setKarakter(sonuc.state);
-      const { senaryo } = await senaryoGetir(sonuc.state.id);
-      setSenaryo(senaryo);
-      setTepkiModu(false);
-      setEkran('oyun');
+      const { senaryo: mekanOlayi } = await senaryoGetir(sonuc.state.id);
+      // Ana oyun ekranına GEÇMEDEN, olayı Sosyalleş ekranının içinde göster.
+      setSosyalOlay(mekanOlayi);
+      setSosyalOlaySonuc(null);
+      setSosyalOlayTepkiModu(false);
+    } catch (err) {
+      setHata(String(err));
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
+  async function sosyalOlaySecim(index: number) {
+    if (!karakter || !sosyalOlay) return;
+    const paraBirimi = karakter.para_birimi;
+    setHata(null);
+    setYukleniyor(true);
+    try {
+      // TUR HARCAMAYAN çözüm: normal /choice pipeline'ı yerine sosyallesme-olay ucu.
+      const sonuc = await sosyallesmeOlayCoz(karakter.id, index);
+      setSosyalOlayTepkiModu(false);
+      setKarakter(sonuc.state);
+      const etki: SonEtki = {
+        basarili: sonuc.basarili,
+        etki: sonuc.uygulananEtki,
+        yasArtisi: 0,
+        kategori: sosyalOlay.kategori,
+        sonucAnlatimi: '',
+        zamanAnlatimi: null,
+        paraBirimi,
+        terfiOldu: false,
+      };
+      if (!sonuc.state.aktif) {
+        // Mekân olayında öldü (ör. meyhanede bıçak) — ölüm ekranına geç.
+        setSonEtki(etki);
+        setSosyalOlay(null);
+        setSosyalOlaySonuc(null);
+        setEkran('olum');
+        return;
+      }
+      setSosyalOlaySonuc(etki);
+    } catch (err) {
+      setHata(String(err));
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
+  async function sosyalOlayKapat() {
+    setSosyalOlay(null);
+    setSosyalOlaySonuc(null);
+    setSosyalOlayTepkiModu(false);
+    if (!karakter) return;
+    setYukleniyor(true);
+    try {
+      // Tur İLERLEMEDİ — yalnız Sosyalleş ekranının canlı verisini tazele
+      // (mekân cooldown'ları + içki/aksiyon kilitleri değişmiş olabilir).
+      const [{ yerler }, aksiyonConfig] = await Promise.all([
+        sosyallesmeYerleriGetir(karakter.id),
+        sosyallesmeAksiyonConfigGetir(karakter.id),
+      ]);
+      setSosyallesmeYerleri(yerler);
+      setSosyalAksiyonConfig(aksiyonConfig);
     } catch (err) {
       setHata(String(err));
     } finally {
@@ -1764,8 +1920,9 @@ function App() {
                   cocuklar={karakter.cocuklar}
                   evcilHayvan={karakter.evcil_hayvan}
                 />
-                <button className="ikincil aile-gor-buton" onClick={() => setEkran('aile')}>
+                <button className="ikincil aile-gor-buton" onClick={aileEkraniniAc}>
                   {m.btnAileniGor}
+                  {karakter.aile_talep ? ' 🔔' : ''}
                 </button>
                 {!karakter.es_adi && karakter.yas >= 18 && (
                   <button className="ikincil aile-gor-buton" onClick={evlilikEkraniniAc}>
@@ -1864,12 +2021,92 @@ function App() {
           para={karakter.para}
           paraBirimi={karakter.para_birimi}
           zarKademeleri={zarKademeleri}
+          aksiyonConfig={sosyalAksiyonConfig}
+          olayAcik={!!sosyalOlay}
+          olayIcerik={
+            sosyalOlay ? (
+              <div className="sosyal-olay-karti">
+                <span className="olay-gorseli" aria-hidden="true">
+                  {sosyalOlay.gorsel}
+                </span>
+                <h3>{sosyalOlay.olay_basligi}</h3>
+                {sosyalOlayTepkiModu && <p className="tepki-notu">{m.tepkiNotu}</p>}
+                <p className="olay-metni">{sosyalOlay.olay_metni}</p>
+
+                {sosyalOlaySonuc ? (
+                  <div className="secenekler sonuc-detay-panel">
+                    <EtkiCipleri etki={sosyalOlaySonuc.etki} paraBirimi={sosyalOlaySonuc.paraBirimi} />
+                    {(() => {
+                      const ozet = [
+                        sosyalOlaySonuc.etki.mesaj,
+                        sosyalOlaySonuc.zamanAnlatimi ?? sosyalOlaySonuc.sonucAnlatimi,
+                      ]
+                        .filter((s): s is string => !!s && s.trim() !== '')
+                        .join(' ');
+                      return ozet ? (
+                        <p className="tur-ozeti" title={ozet}>
+                          {ozet}
+                        </p>
+                      ) : null;
+                    })()}
+                    <button disabled={yukleniyor} onClick={sosyalOlayKapat}>
+                      {yukleniyor ? m.yukleniyor : m.devamEt}
+                    </button>
+                  </div>
+                ) : (
+                  <div className="secenekler">
+                    {sosyalOlay.secenekler.map((secenek, i) => {
+                      const tahminler =
+                        !secenek.kilitli && !sosyalOlayTepkiModu
+                          ? etkiTahminiGetir(secenek.basarili_sonuc, secenek.basarisiz_sonuc, dil)
+                          : [];
+                      return (
+                        <button
+                          key={i}
+                          className={secenek.kilitli ? 'secenek kilitli' : 'secenek'}
+                          disabled={yukleniyor || secenek.kilitli}
+                          onClick={() => sosyalOlaySecim(i)}
+                        >
+                          <span className="secenek-metin">
+                            {secenek.kilitli ? '🔒 ' : ''}
+                            {secenek.metin}
+                          </span>
+                          {!secenek.kilitli && !sosyalOlayTepkiModu && (
+                            <span className="secenek-meta">
+                              <span className="secenek-sans">
+                                {bic(m.sansEki, secenek.belirsiz_aralik.min, secenek.belirsiz_aralik.max)}
+                              </span>
+                              {tahminler.length > 0 && (
+                                <span className="secenek-tahminler">
+                                  {tahminler.map((t, ti) => (
+                                    <span
+                                      key={ti}
+                                      className={`secenek-tahmin ${t.pozitif ? 'tahmin-pozitif' : 'tahmin-negatif'}`}
+                                    >
+                                      {t.simge} {t.metin}
+                                    </span>
+                                  ))}
+                                </span>
+                              )}
+                            </span>
+                          )}
+                          {secenek.kilitli && <span className="secenek-kilit">{secenek.kilit_nedeni}</span>}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            ) : null
+          }
           onGit={sosyallesmeYerineGitHandler}
+          onAksiyon={sosyalAksiyonHandler}
           onZarAt={zarAtHandler}
           onUcKagitci={ucKagitciHandler}
           onBilekGuresi={bilekGuresiHandler}
           onGeriDon={() => {
             setIslemMesaji(null);
+            // Sosyalleşme artık hiç tur harcamıyor — `senaryo` bayat değil, tazelemeye gerek yok.
             setEkran('oyun');
           }}
         />
@@ -1908,13 +2145,15 @@ function App() {
         <AileEkrani
           anneAdi={karakter.anne_adi}
           babaAdi={karakter.baba_adi}
-          esAdi={karakter.es_adi}
-          esMeslek={karakter.es_meslek}
-          esRutbe={karakter.es_rutbe}
-          esPuani={karakter.es_puani}
-          cocuklar={karakter.cocuklar}
-          guncelYil={karakter.yil}
-          onGeriDon={() => setEkran('oyun')}
+          durum={aileDurum}
+          yukleniyor={yukleniyor}
+          islemMesaji={islemMesaji}
+          onEtkilesim={aileEtkilesimHandler}
+          onTalep={aileTalepHandler}
+          onGeriDon={() => {
+            setIslemMesaji(null);
+            setEkran('oyun');
+          }}
         />
       )}
 

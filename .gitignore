@@ -29,3 +29,6 @@ server/scripts/*.analiz.json
 
 # Geri bildirim yerel yedek kaydı (anlık teslimat webhook ile; bu dosya sadece yedek)
 server/data/
+
+# Gömülü yerel Postgres cluster (npm run db:local)
+server/.localdb/

@@ -5,6 +5,7 @@ import {
   enflasyonCarpani,
   paraYuvarla,
   zorunluBagisKontrolEt,
+  rakipSoygunKontrolEt,
   buyukSavasKontrolEt,
   buyukSavasBitisKontrolEt,
   vebaBaslamaliMi,
@@ -94,6 +95,55 @@ describe("zorunluBagisKontrolEt", () => {
     // ZORUNLU_BAGIS_ORAN_MIN 0.20 + ARALIK 0.05 → toplam servetin %20-25'i (jitter/yuvarlama payıyla).
     expect(sonuc!.miktar).toBeGreaterThan(5000 * 0.19);
     expect(sonuc!.miktar).toBeLessThan(5000 * 0.26);
+  });
+});
+
+describe("rakipSoygunKontrolEt — çok nakitle dolaşırken rakip parayı alıp kaçar", () => {
+  it("nakit eşiğin (150) altındayken asla tetiklenmez", () => {
+    const state = taze();
+    state.para = 120;
+    for (let i = 0; i < 300; i++) {
+      expect(rakipSoygunKontrolEt(state, 1)).toBeNull();
+    }
+  });
+
+  it("hapiste/yolculukta iken tetiklenmez", () => {
+    const state = taze();
+    state.para = 5000;
+    state.yil = state.baslangic_yili + 20;
+    state.etiketler.push("yolculukta");
+    for (let i = 0; i < 300; i++) {
+      expect(rakipSoygunKontrolEt(state, 1)).toBeNull();
+    }
+  });
+
+  it("cooldown dolmadan tetiklenmez", () => {
+    const state = taze();
+    state.para = 5000;
+    state.son_rakip_soygun_yili = state.yil;
+    for (let i = 0; i < 300; i++) {
+      expect(rakipSoygunKontrolEt(state, 1)).toBeNull();
+    }
+  });
+
+  it("eşik + cooldown dolmuşken tetiklenir, nakitin %25-45'ini alır, ilişkiyi bozar", () => {
+    const state = taze();
+    state.para = 5000;
+    state.yil = state.baslangic_yili + 30;
+    const rakipOnce = state.rakip_puani;
+    let sonuc = null;
+    for (let i = 0; i < 4000 && !sonuc; i++) {
+      state.para = 5000;
+      state.son_rakip_soygun_yili = null;
+      state.yil = state.baslangic_yili + 30;
+      sonuc = rakipSoygunKontrolEt(state, 1);
+    }
+    expect(sonuc).not.toBeNull();
+    expect(sonuc!.miktar).toBeGreaterThan(5000 * 0.24);
+    expect(sonuc!.miktar).toBeLessThan(5000 * 0.46);
+    expect(sonuc!.mesaj).toContain(state.rakip_adi);
+    expect(state.son_rakip_soygun_yili).toBe(state.yil);
+    expect(state.rakip_puani).toBeLessThan(rakipOnce);
   });
 });
 

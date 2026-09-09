@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { CharacterState, Cag, Dil, Kategori, SonucEtkisi, YatkinlikKaynagi, KisilikEksenleri, UlkeKrizi, HayatAmaci, MulkTuru, SahipOlunanEsya } from "../types";
+import { CharacterState, Cag, Dil, Kategori, SonucEtkisi, YatkinlikKaynagi, KisilikEksenleri, UlkeKrizi, HayatAmaci, MulkTuru, SahipOlunanEsya, AileTalep } from "../types";
 import { T, K } from "../i18n";
 import { AILELER, AileTanimi } from "../data/aileler";
 import { rastgeleKisilikCifti, kisilikGetir } from "../data/kisilikler";
@@ -670,6 +670,7 @@ export function createCharacter(
     magaza_envanteri: [],
     magaza_temel_kilit_bitis_yili: null,
     alkol_ziyaret_sayisi: 0,
+    sosyallesme_aksiyon_kilit: {},
     yatkinliklar,
     yatkinlik_kaynaklari: kaynaklar,
     dost_adi: dostAdi,
@@ -699,6 +700,7 @@ export function createCharacter(
     ulke: { savasta: false, vebada: false, ekonomi: "normal", kriz: null, nufusDurumu: "normal" },
     son_zorunlu_bagis_yili: null,
     son_zenginlik_sizinti_yili: null,
+    son_rakip_soygun_yili: null,
     buyuk_savas: null,
     son_buyuk_savas_bitis_yili: null,
     veba: null,
@@ -708,6 +710,9 @@ export function createCharacter(
     kucuk_kriz_sonraki_yil: yil + 5 + Math.floor(Math.random() * 3), // 5-7 yıl sonra ilk eşik
     gida_fiyat_sok_bitis_yili: null,
     borc_yardimi_alindi: false,
+    aile_etkilesim_kilit: {},
+    aile_talep: null,
+    aile_talep_sonraki_yil: yil + 4,
     tur_sayisi: 0,
     gecmis_olaylar: [],
     gecmis: [],
@@ -865,6 +870,7 @@ export function eskiKayitGocu(state: CharacterState): void {
     state.veba.korumaSeviyesi = (state.veba as any).onlemAlindiMi ? 2 : 0;
   }
   if (state.son_zenginlik_sizinti_yili === undefined) state.son_zenginlik_sizinti_yili = null;
+  if (state.son_rakip_soygun_yili === undefined) state.son_rakip_soygun_yili = null;
   // Ömürde bir kez borç yardımı sonradan eklendi; eski kayıtlar bunu hiç almadı sayılır (yeniden alınabilsin).
   if (typeof state.borc_yardimi_alindi !== "boolean") state.borc_yardimi_alindi = false;
   // Hapis ceza süresi sonradan eklendi; hapisteki eski kayıtlara makul bir kalan süre ver.
@@ -880,6 +886,21 @@ export function eskiKayitGocu(state: CharacterState): void {
   if (typeof state.uc_kagitci_oyun_sayisi !== "number") state.uc_kagitci_oyun_sayisi = 0;
   // Dil alanı sonradan eklendi; eski kayıtlar her zaman Türkçe oynanmıştı.
   if (state.dil !== "en") state.dil = "tr";
+  // Aile ekranı (eş/çocuk ilişkisi + etkileşim + talep) sonradan eklendi (§33).
+  if (!state.aile_etkilesim_kilit || typeof state.aile_etkilesim_kilit !== "object") {
+    state.aile_etkilesim_kilit = {};
+  }
+  // Sosyalleşme ekranı tur-harcamayan aksiyonları (içki/deli/sadaka/kulak/ısmarla/fal) sonradan eklendi.
+  if (!state.sosyallesme_aksiyon_kilit || typeof state.sosyallesme_aksiyon_kilit !== "object") {
+    state.sosyallesme_aksiyon_kilit = {};
+  }
+  if (state.aile_talep === undefined) state.aile_talep = null;
+  if (typeof state.aile_talep_sonraki_yil !== "number") {
+    state.aile_talep_sonraki_yil = state.yil + 4;
+  }
+  for (const c of state.cocuklar ?? []) {
+    if (typeof c.iliski !== "number") c.iliski = 60;
+  }
 }
 
 /** Oyuncu mesleğini seçtikten sonra çağrılır: miras bonusunu ve maaşı uygular. */
@@ -972,6 +993,9 @@ export function clampStats(state: CharacterState): void {
   // arayüzde ve maaş kırılımında "12.6" gibi değerler görünmesin.
   state.nufuz = Math.round(Math.max(0, state.nufuz));
   if (state.es_adi) state.es_puani = clamp(state.es_puani, 0, 100);
+  for (const c of state.cocuklar) {
+    if (typeof c.iliski === "number") c.iliski = Math.round(clamp(c.iliski, 0, 100));
+  }
   state.cocuk_sayisi = Math.max(0, state.cocuk_sayisi);
   // Para alt/üst sınırsız bırakılır: borca girebilir, sınırsız zenginleşebilir.
 }
@@ -1067,6 +1091,152 @@ const KOTU_EVLILIK_MUTLULUK_YILLIK_MIN = 0.8; // es_puani ~35'te ceza
 const KOTU_EVLILIK_MUTLULUK_YILLIK_EK = 1.2; // es_puani 0'da toplam -2.0/yıl
 const IYI_EVLILIK_ESIGI = 70; // es_puani bunun üstündeyse mutlu evlilik
 const IYI_EVLILIK_MUTLULUK_YILLIK = 0.5; // +0.5/yıl
+
+// ===== Aile ekranı: eş/çocuk ilişkisi pasif sürüklenmesi + para talebi (§33) =====
+// Felsefe evlilik moraliyle aynı: ilgilenmezsen ilişki soğur, düşük ilişki moral
+// aşındırır, oyuncu Aile ekranındaki etkileşimlerle (hediye/zaman/gezi) yukarı çeker.
+const AILE_ES_ILISKI_DUSUS_YILLIK = 0.4;
+const AILE_COCUK_ILISKI_DUSUS_YILLIK = 0.6;
+const AILE_COCUK_KOTU_ESIGI = 35; // çocuk ilişkisi bunun altındaysa moral cezası
+const AILE_COCUK_IYI_ESIGI = 75; // bunun üstündeyse küçük moral bonusu
+const AILE_COCUK_MORAL_CEZA_KAP_YILLIK = 2.0; // tüm çocukların toplam cezası
+const AILE_COCUK_MORAL_BONUS_KAP_YILLIK = 1.2;
+const AILE_TALEP_YILLIK_IHTIMAL = 0.15;
+const AILE_TALEP_SURESI_DOLMA_CEZA = 12; // görmezden gelinen talebin ilişki cezası
+
+const AILE_TALEP_ES_KALEMLERI = [
+  "yeni bir elbise",
+  "gümüş bir ayna",
+  "bir mücevher",
+  "ipek bir şal",
+  "güzel bir at",
+  "yeni bir yatak takımı",
+  "bir hizmetçi tutulması",
+  "annesine bir hediye",
+];
+const AILE_TALEP_COCUK_KALEMLERI = [
+  "yeni bir oyuncak",
+  "bir çift sağlam ayakkabı",
+  "kitaplar",
+  "bir müzik aleti",
+  "bir tay",
+  "arkadaşlarıyla bir gezi",
+  "yeni giysiler",
+  "bir usta çıraklığı ücreti",
+];
+
+/** Yıllık pasif kontrol: eş/çocuk ilişkisi soğuması, düşük ilişki moral cezası, bekleyen talebin süresi dolması ve yeni talep üretimi. Bir anlatı cümlesi döndürebilir (gameEngine zamanAnlatimi'ye ekler). */
+export function aileYillikUygula(state: CharacterState, yasArtisi: number): string | null {
+  let not: string | null = null;
+
+  if (state.es_adi) {
+    state.es_puani = Math.max(0, state.es_puani - AILE_ES_ILISKI_DUSUS_YILLIK * yasArtisi);
+  }
+
+  let cocukCeza = 0;
+  let cocukBonus = 0;
+  for (const c of state.cocuklar) {
+    if (!c.yasiyor) continue;
+    if (typeof c.iliski !== "number") c.iliski = 60;
+    c.iliski = Math.max(0, c.iliski - AILE_COCUK_ILISKI_DUSUS_YILLIK * yasArtisi);
+    if (c.iliski < AILE_COCUK_KOTU_ESIGI) {
+      const siddet = (AILE_COCUK_KOTU_ESIGI - c.iliski) / AILE_COCUK_KOTU_ESIGI; // 0..1
+      cocukCeza += (0.4 + siddet * 0.8) * yasArtisi;
+    } else if (c.iliski >= AILE_COCUK_IYI_ESIGI) {
+      cocukBonus += 0.4 * yasArtisi;
+    }
+  }
+  state.mutluluk -= Math.min(cocukCeza, AILE_COCUK_MORAL_CEZA_KAP_YILLIK * yasArtisi);
+  state.mutluluk += Math.min(cocukBonus, AILE_COCUK_MORAL_BONUS_KAP_YILLIK * yasArtisi);
+
+  // Bekleyen talebin süresi doldu mu?
+  if (state.aile_talep && state.yil > state.aile_talep.sonYil) {
+    const t = state.aile_talep;
+    if (t.kimden === "es" && state.es_adi) {
+      state.es_puani = Math.max(0, state.es_puani - AILE_TALEP_SURESI_DOLMA_CEZA);
+    } else if (
+      t.kimden === "cocuk" &&
+      t.cocukIndex != null &&
+      state.cocuklar[t.cocukIndex]?.yasiyor
+    ) {
+      const c = state.cocuklar[t.cocukIndex];
+      c.iliski = Math.max(0, c.iliski - AILE_TALEP_SURESI_DOLMA_CEZA);
+    }
+    state.mutluluk -= 4;
+    not = T(state.dil, "{0} istediği şeyi alamamana alındı; aranıza bir soğukluk girdi.", [t.kimAdi]);
+    state.aile_talep = null;
+  }
+
+  // Yeni talep üretimi
+  const yasayanCocukVar = state.cocuklar.some((c) => c.yasiyor);
+  if (
+    !state.aile_talep &&
+    state.yil >= state.aile_talep_sonraki_yil &&
+    (state.es_adi || yasayanCocukVar) &&
+    !state.etiketler.includes("hapiste") &&
+    !state.etiketler.includes("yolculukta") &&
+    Math.random() < AILE_TALEP_YILLIK_IHTIMAL
+  ) {
+    const yeni = aileTalebiUret(state);
+    if (yeni) {
+      state.aile_talep = yeni;
+      state.aile_talep_sonraki_yil = state.yil + 5 + Math.floor(Math.random() * 4);
+      if (!not) {
+        not = T(state.dil, "{0} senden bir şey rica etti — Aile ekranından yanıtlayabilirsin.", [
+          yeni.kimAdi,
+        ]);
+      }
+    }
+  }
+
+  return not;
+}
+
+/** Rastgele bir eş/çocuk para talebi üretir; uygun kimse yoksa null. */
+export function aileTalebiUret(state: CharacterState): AileTalep | null {
+  const yasayanCocukIndexleri = state.cocuklar
+    .map((c, i) => (c.yasiyor ? i : -1))
+    .filter((i) => i >= 0);
+  const esVar = Boolean(state.es_adi);
+  const kaynaklar: ("es" | "cocuk")[] = [];
+  if (esVar) kaynaklar.push("es");
+  if (yasayanCocukIndexleri.length > 0) kaynaklar.push("cocuk");
+  if (kaynaklar.length === 0) return null;
+  const kimden = kaynaklar[Math.floor(Math.random() * kaynaklar.length)];
+
+  const enf = enflasyonCarpani(state);
+  // Servete hafif ölçekli, enflasyonlu 12-40 taban.
+  const servetEk = Math.max(0, Math.min(20, Math.round(Math.max(0, state.para) * 0.03)));
+  const tabanTutar = 12 + Math.floor(Math.random() * 20) + servetEk;
+  const tutar = paraYuvarla(tabanTutar * enf);
+  const sonYil = state.yil + 3 + Math.floor(Math.random() * 2);
+
+  if (kimden === "es") {
+    const kalem = AILE_TALEP_ES_KALEMLERI[Math.floor(Math.random() * AILE_TALEP_ES_KALEMLERI.length)];
+    return {
+      id: randomUUID(),
+      kimden: "es",
+      kimAdi: state.es_adi as string,
+      cocukIndex: null,
+      tutar,
+      kalem,
+      sonYil,
+    };
+  }
+  const cocukIndex =
+    yasayanCocukIndexleri[Math.floor(Math.random() * yasayanCocukIndexleri.length)];
+  const kalem =
+    AILE_TALEP_COCUK_KALEMLERI[Math.floor(Math.random() * AILE_TALEP_COCUK_KALEMLERI.length)];
+  return {
+    id: randomUUID(),
+    kimden: "cocuk",
+    kimAdi: state.cocuklar[cocukIndex].isim,
+    cocukIndex,
+    tutar,
+    kalem,
+    sonYil,
+  };
+}
 
 /**
  * Konut + yaşam tarzının sağladığı yıllık PASİF sağlık/mutluluk kazancı, ilgili
@@ -1796,6 +1966,56 @@ export function zenginlikSizintiKontrolEt(state: CharacterState, yasArtisi: numb
     return {
       miktar,
       mesaj: T(state.dil, flavor, [`${miktar} ${state.para_birimi}`, K(state.dil, state.bolge)]),
+    };
+  }
+  return null;
+}
+
+// ---------------------------------------------------------------------------
+// Rakip soygunu: nakit yüksekken (≥ 150) DÜŞÜK ihtimalle karakterin isimli
+// rakibi cebindeki paranın büyük bir kısmını alıp kaçar. Zenginlik sızıntısından
+// ayrı ve daha nadir/sert: bu, "üzerinde çok nakitle dolaşmanın" kişisel bedeli
+// ("çok parayla herhangi bir olaya girersen rakip parayı alıp kaçabilsin").
+// Cebindeki NAKİT'e bakar (gayrimenkule değil); ilişkiyi de bozar. Olay ekranı
+// yok — zamanAnlatimi'ye + hayat_hikayesi'ne eklenir.
+// ---------------------------------------------------------------------------
+const RAKIP_SOYGUN_NAKIT_ESIGI = 150;
+const RAKIP_SOYGUN_COOLDOWN_YIL = 8;
+const RAKIP_SOYGUN_YILLIK_IHTIMAL = 0.035;
+const RAKIP_SOYGUN_ORAN_MIN = 0.25;
+const RAKIP_SOYGUN_ORAN_ARALIK = 0.2; // nakitin %25-45'i
+
+export interface RakipSoygunSonucu {
+  miktar: number;
+  mesaj: string;
+}
+
+/**
+ * Turdaki her yıl ayrı kontrol edilir (bağış/sızıntı/savaş deseni). Nakit ≥ 150
+ * VE 8 yıl cooldown dolmuşken her yıl %3.5 ihtimalle tetiklenir: rakip nakitin
+ * %25-45'ini (min 10) alıp kaçar, rakip_puani -12, mutluluk -6, cooldown güncellenir.
+ */
+export function rakipSoygunKontrolEt(state: CharacterState, yasArtisi: number): RakipSoygunSonucu | null {
+  if (yasArtisi <= 0) return null;
+  if (state.etiketler.includes("hapiste") || state.etiketler.includes("yolculukta")) return null;
+  for (let i = 0; i < yasArtisi; i++) {
+    if (state.para < RAKIP_SOYGUN_NAKIT_ESIGI) continue;
+    const taban = state.son_rakip_soygun_yili ?? state.baslangic_yili;
+    if (state.yil - taban < RAKIP_SOYGUN_COOLDOWN_YIL) continue;
+    if (Math.random() >= RAKIP_SOYGUN_YILLIK_IHTIMAL) continue;
+    const oran = RAKIP_SOYGUN_ORAN_MIN + Math.random() * RAKIP_SOYGUN_ORAN_ARALIK;
+    const miktar = Math.max(10, paraYuvarla(state.para * oran));
+    state.para -= miktar;
+    state.son_rakip_soygun_yili = state.yil;
+    state.rakip_puani = Math.max(0, state.rakip_puani - 12);
+    state.mutluluk = Math.max(0, state.mutluluk - 6);
+    return {
+      miktar,
+      mesaj: T(
+        state.dil,
+        "🗡️ Üzerinde büyük miktarda nakit olduğunu öğrenen {0}, seni pusuya düşürüp {1} {birim} alıp kaçtı.",
+        [state.rakip_adi, miktar],
+      ).replace(/\{birim\}/g, state.para_birimi),
     };
   }
   return null;

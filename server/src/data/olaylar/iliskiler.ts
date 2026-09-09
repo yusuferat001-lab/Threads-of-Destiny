@@ -499,6 +499,8 @@ export const OLAY_ILISKILER: OlayTanimi[] = [
         baseBasariSansi: 55,
         ipucu: "Büyük fırsat ya da büyük hata",
         basariliSonuc: {
+          mutluluk: -11,
+          un: -5,
           para: 35,
           rakip_puani: 30,
           mesaj: "Ortaklık işe yaradı; {rakip} ile aranızdaki gerginlik şaşırtıcı bir şekilde eridi.",
@@ -1066,8 +1068,9 @@ export const OLAY_ILISKILER: OlayTanimi[] = [
         metin: "Tüm enerjini işine ver.",
         baseBasariSansi: 70,
         basariliSonuc: {
+          mutluluk: -8,
           para: 20,
-          un: 10,
+          un: 5,
           mesaj: "Odaklanman güzel bir kazanç ve tanınırlık getirdi.",
           detay: "Bazen tek bir şeye adanmak kazandırır.",
         },

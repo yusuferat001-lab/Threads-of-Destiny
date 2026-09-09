@@ -1234,7 +1234,8 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         baseBasariSansi: 50,
         ipucu: "Riskli bir hile — taş anlarsa öfkelenebilir",
         basariliSonuc: {
-          un: 15,
+          mutluluk: -8,
+          un: 8,
           para: 20,
           mesaj: "Taş bir süre sessiz kaldı, sonra 'Kabul ettim' diye fısıldadı. İnandırıcı yalanın işe yaramış gibi görünüyor; önümüzdeki günler tuhaf bir şansla geçti.",
           detay: "Ya da her şey sadece tesadüftü.",
@@ -2398,7 +2399,8 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         kilitAciklamasi: "Bu görev sadece Tapınak Şövalyeleri üyelerine açık.",
         ipucu: "Riskli ama kardeşlik içindeki itibarını büyütür",
         basariliSonuc: {
-          un: 20,
+          mutluluk: -10,
+          un: 10,
           para: 25,
           mesaj: "Görevi başarıyla tamamladın; kardeşlik içindeki itibarın büyüdü.",
           detay: "Sadakatinin karşılığını aldın.",
@@ -2418,6 +2420,8 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         kilitAciklamasi: "Bu görev sadece Gölgede Kardeşlik üyelerine açık.",
         ipucu: "Riskli ama kazançlı bir bağlantı ağı sağlar",
         basariliSonuc: {
+          mutluluk: -11,
+          un: -5,
           para: 45,
           mesaj: "Görevi sorunsuz tamamladın; ağın genişledi.",
           detay: "Bilgi ve bağlantı, altından daha değerli olabiliyor.",
@@ -2467,6 +2471,8 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         baseBasariSansi: 55,
         ipucu: "Kazanç ya da tehlikeli bir alışkanlığın başlangıcı",
         basariliSonuc: {
+          mutluluk: -11,
+          un: -4,
           para: 30,
           mesaj: "Bu gece şanslıydın; cebin biraz kabardı.",
           detay: "Kazanmanın verdiği heyecan, tehlikeli bir tada dönüşebilir.",
@@ -2860,8 +2866,9 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         baseBasariSansi: 50,
         ipucu: "Ya iki katı kazanç ya her şeyi kaybetme",
         basariliSonuc: {
+          un: -5,
           para: 60,
-          mutluluk: 12,
+          mutluluk: 1,
           mesaj: "Sikke havada üç kez döndü ve senin istediğin yüzü gösterdi! Masadakiler dehşetle izledi.",
           detay: "Gölge Sikke'nin ünü seninle birlikte büyüdü.",
         },
@@ -2966,6 +2973,8 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         baseBasariSansi: 75,
         ipucu: "Daha güvenli ama kazanç yarıya düşer",
         basariliSonuc: {
+          mutluluk: -11,
+          un: -5,
           para: 35,
           dost_puani: 8,
           mesaj: "Deneyimli avcı sayesinde kazı güvenle ilerledi; hazineyi paylaştınız.",
@@ -2983,8 +2992,9 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         baseBasariSansi: 45,
         ipucu: "Tüm kazanç sende ama tehlike de tamamen senin",
         basariliSonuc: {
+          mutluluk: -11,
           para: 70,
-          un: 10,
+          un: 5,
           mesaj: "Tek başına kazdın, tüm hazine senin oldu! Riske değdi.",
           detay: "Bazen paylaşmamak en büyük zenginliği getiriyor.",
         },

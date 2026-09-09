@@ -794,7 +794,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
   {
     id: "sosyal_hamam_dedikodu_agi",
     kategori: "sosyal",
-    sosyallesmeYeri: "hamam",
+    sosyallesmeYeri: "pazar_meydani",
     gorsel: "🗞️",
     baslik: "Buharın Ardındaki Fısıltılar",
     metin: "Sıcak taşların üzerinde uzanırken, birkaç adım ötende iki kadın/erkek şehrin en taze dedikodularını fısıldıyor. Sesleri buharda net duyuluyor.",
@@ -829,7 +829,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
   {
     id: "sosyal_hamam_govde_gosterisi",
     kategori: "sosyal",
-    sosyallesmeYeri: "hamam",
+    sosyallesmeYeri: "pazar_meydani",
     minYas: 17,
     ton: "hafif",
     gorsel: "💦",
@@ -869,7 +869,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
   {
     id: "sosyal_hamam_evlilik_ciziligi",
     kategori: "sosyal",
-    sosyallesmeYeri: "hamam",
+    sosyallesmeYeri: "pazar_meydani",
     minYas: 20,
     yasakliEtiketler: ["medeni:evli"],
     gorsel: "💌",
@@ -907,7 +907,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
   {
     id: "sosyal_hamam_tellak_sohbeti",
     kategori: "saglik",
-    sosyallesmeYeri: "hamam",
+    sosyallesmeYeri: "pazar_meydani",
     gorsel: "🧴",
     baslik: "Tellağın Elleri",
     metin: "Deneyimli tellak/natır, günlerdir sırtında taşıdığın yorgunluğu fark edip uzun bir masaj öneriyor.",
@@ -945,7 +945,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
   {
     id: "sosyal_hamam_kaybolan_esya",
     kategori: "sosyal",
-    sosyallesmeYeri: "hamam",
+    sosyallesmeYeri: "pazar_meydani",
     gorsel: "🧺",
     baslik: "Boş Sepet",
     metin: "Yıkanmadan çıkıp eşyalarının olduğu sepete döndüğünde, kesenin bir köşesinin hafiflediğini fark ediyorsun.",
@@ -981,7 +981,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
   {
     id: "sosyal_hamam_yabanci_tuccar",
     kategori: "ticaret",
-    sosyallesmeYeri: "hamam",
+    sosyallesmeYeri: "pazar_meydani",
     gorsel: "🌍",
     baslik: "Uzak Diyarların Tüccarı",
     metin: "Yanındaki taşta oturan, tuhaf bir aksanla konuşan bir tüccar, kervanının getirdiği egzotik mallardan bahsediyor.",
@@ -1014,7 +1014,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
   {
     id: "sosyal_hamam_asiri_sicak",
     kategori: "saglik",
-    sosyallesmeYeri: "hamam",
+    sosyallesmeYeri: "pazar_meydani",
     ton: "hafif",
     gorsel: "🥵",
     baslik: "Göz Kararması",
@@ -1055,7 +1055,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
   {
     id: "sosyal_hamam_gizli_toplanti",
     kategori: "siyaset",
-    sosyallesmeYeri: "hamam",
+    sosyallesmeYeri: "pazar_meydani",
     minAhlak: 0,
     gizemli: true,
     ton: "agir",
@@ -1100,7 +1100,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
   {
     id: "sosyal_kahvehane_meddah",
     kategori: "sosyal",
-    sosyallesmeYeri: "kahvehane",
+    sosyallesmeYeri: "pazar_meydani",
     ton: "hafif",
     gorsel: "📖",
     baslik: "Meddahın Hikâyesi",
@@ -1135,7 +1135,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
   {
     id: "sosyal_kahvehane_tavla",
     kategori: "sosyal",
-    sosyallesmeYeri: "kahvehane",
+    sosyallesmeYeri: "pazar_meydani",
     ton: "hafif",
     gorsel: "🎲",
     baslik: "Tavla Şakırtısı",
@@ -1175,7 +1175,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
   {
     id: "sosyal_kahvehane_falci_telve",
     kategori: "sosyal",
-    sosyallesmeYeri: "kahvehane",
+    sosyallesmeYeri: "pazar_meydani",
     gizemli: true,
     gorsel: "☕",
     baslik: "Telvedeki Şekiller",
@@ -1213,7 +1213,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
   {
     id: "sosyal_kahvehane_siyaset_tartismasi",
     kategori: "siyaset",
-    sosyallesmeYeri: "kahvehane",
+    sosyallesmeYeri: "pazar_meydani",
     ton: "agir",
     gorsel: "📰",
     baslik: "Gazete Etrafında Tartışma",
@@ -1252,7 +1252,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
   {
     id: "sosyal_kahvehane_ticaret_firsati",
     kategori: "ticaret",
-    sosyallesmeYeri: "kahvehane",
+    sosyallesmeYeri: "pazar_meydani",
     gorsel: "📦",
     baslik: "Duyulan Fırsat",
     metin: "Yan masadaki tüccarlar, yeni gelen bir mal partisinden ve iyi bir fiyat fırsatından bahsediyor. Kulak misafiri oldun.",
@@ -1290,7 +1290,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
   {
     id: "sosyal_kahvehane_nargile_arkadasligi",
     kategori: "sosyal",
-    sosyallesmeYeri: "kahvehane",
+    sosyallesmeYeri: "pazar_meydani",
     ton: "hafif",
     gorsel: "💨",
     baslik: "Paylaşılan Nargile",
@@ -1329,7 +1329,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
   {
     id: "sosyal_kahvehane_haber_soylentisi",
     kategori: "sosyal",
-    sosyallesmeYeri: "kahvehane",
+    sosyallesmeYeri: "pazar_meydani",
     gorsel: "📯",
     baslik: "Kapıdan Gelen Haber",
     metin: "Kahvehaneye giren biri soluk soluğa uzak bir mahalledeki bir olayı anlatıyor; herkes başını çevirip dinliyor, sen de meraklısın.",
@@ -1371,7 +1371,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
   {
     id: "sosyal_kervansaray_uzak_diyar_tuccari",
     kategori: "ticaret",
-    sosyallesmeYeri: "kervansaray",
+    sosyallesmeYeri: "pazar_meydani",
     gorsel: "🏮",
     baslik: "İpek Yolu Tüccarı",
     metin: "Avluda mallarını sergileyen bir tüccar, aylardır aştığı çölleri ve dağları anlatıyor. Denklerinde göz kamaştırıcı kumaşlar var.",
@@ -1409,7 +1409,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
   {
     id: "sosyal_kervansaray_gezgin_hikayeci",
     kategori: "sosyal",
-    sosyallesmeYeri: "kervansaray",
+    sosyallesmeYeri: "pazar_meydani",
     gizemli: true,
     gorsel: "🧭",
     baslik: "Yollarda Yaşlanmış Adam",
@@ -1444,7 +1444,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
   {
     id: "sosyal_kervansaray_koruma_teklifi",
     kategori: "ticaret",
-    sosyallesmeYeri: "kervansaray",
+    sosyallesmeYeri: "pazar_meydani",
     gorsel: "🛡️",
     baslik: "Kervan Koruma Teklifi",
     metin: "Bir kervan reisi, sabah yola çıkacak kafilesine eskort/koruma olarak katılıp katılamayacağını soruyor. Ödül cazip ama yol tehlikeli.",
@@ -1454,8 +1454,9 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         baseBasariSansi: 60,
         ipucu: "İyi bir kazanç ama eşkıya riski var",
         basariliSonuc: {
+          mutluluk: -7,
           para: 18,
-          un: 5,
+          un: 3,
           mesaj: "Kervan güvenle şehre ulaştı; reis sana söz verdiğinden fazlasını ödedi.",
         },
         basarisizSonuc: {
@@ -1483,7 +1484,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
   {
     id: "sosyal_kervansaray_calinan_mal",
     kategori: "sosyal",
-    sosyallesmeYeri: "kervansaray",
+    sosyallesmeYeri: "pazar_meydani",
     gorsel: "🎒",
     baslik: "Karanlıkta Bir Gölge",
     metin: "Gece yarısı, denklerin arasında dolaşan bir gölge fark ediyorsun. Kimsenin olmadığı bu avluda tek başınasın.",
@@ -1521,7 +1522,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
   {
     id: "sosyal_kervansaray_dil_pazarligi",
     kategori: "ticaret",
-    sosyallesmeYeri: "kervansaray",
+    sosyallesmeYeri: "pazar_meydani",
     gorsel: "🗣️",
     baslik: "Ortak Dil Aramak",
     metin: "Hiçbir ortak dili konuşamadığın bir tüccarla el kol hareketleri ve gülüşmelerle anlaşmaya çalışıyorsun.",
@@ -1558,7 +1559,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
   {
     id: "sosyal_kervansaray_deve_yarisi",
     kategori: "sosyal",
-    sosyallesmeYeri: "kervansaray",
+    sosyallesmeYeri: "pazar_meydani",
     ton: "hafif",
     gorsel: "🐫",
     baslik: "Avluda Deve Yarışı",
@@ -2201,6 +2202,8 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         maliyet: 15,
         ipucu: "Yüksek risk, yüksek getiri",
         basariliSonuc: {
+          mutluluk: -4,
+          un: -2,
           para: 26,
           ticaret_sermaye_artis: 8,
           mesaj: "Ortaklık ilk aydan itibaren kâr getirdi; loncadaki itibarın da bir kademe yükseldi.",
@@ -2656,7 +2659,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
   {
     id: "sosyal_salon_entrika_fisiltisi",
     kategori: "siyaset",
-    sosyallesmeYeri: "salon",
+    sosyallesmeYeri: "meyhane",
     minYas: 18,
     gizemli: true,
     gorsel: "🕯️",
@@ -2694,7 +2697,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
   {
     id: "sosyal_salon_dans_daveti",
     kategori: "sosyal",
-    sosyallesmeYeri: "salon",
+    sosyallesmeYeri: "meyhane",
     minYas: 17,
     ton: "hafif",
     gorsel: "💃",
@@ -2734,7 +2737,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
   {
     id: "sosyal_salon_kumar_masasi",
     kategori: "sosyal",
-    sosyallesmeYeri: "salon",
+    sosyallesmeYeri: "meyhane",
     minYas: 18,
     gorsel: "♠️",
     baslik: "Kristal Kadehler Arasında Kumar",
@@ -2746,8 +2749,9 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         maliyet: 18,
         ipucu: "Yüksek bahis, yüksek risk",
         basariliSonuc: {
+          mutluluk: -5,
           para: 30,
-          un: 6,
+          un: 3,
           mesaj: "Kâğıtlar senden yandaydı; masadan kalkarken salon senin adını fısıldıyordu.",
         },
         basarisizSonuc: {
@@ -2774,7 +2778,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
   {
     id: "sosyal_salon_skandal_soylentisi",
     kategori: "sosyal",
-    sosyallesmeYeri: "salon",
+    sosyallesmeYeri: "meyhane",
     minYas: 18,
     ton: "agir",
     gorsel: "📯",
@@ -2812,7 +2816,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
   {
     id: "sosyal_salon_sanatci_kesfi",
     kategori: "sosyal",
-    sosyallesmeYeri: "salon",
+    sosyallesmeYeri: "meyhane",
     gorsel: "🎨",
     baslik: "Keşfedilmemiş Yetenek",
     metin: "Salonun köşesinde kimsenin dikkatini çekmeyen genç bir ressam/müzisyen, sessizce eserini sergiliyor. Senin gözün ondan başka bir şey görmüyor.",
@@ -2850,7 +2854,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
   {
     id: "sosyal_salon_duello_meydan_okumasi",
     kategori: "sosyal",
-    sosyallesmeYeri: "salon",
+    sosyallesmeYeri: "meyhane",
     minYas: 18,
     ton: "agir",
     gorsel: "🎭",

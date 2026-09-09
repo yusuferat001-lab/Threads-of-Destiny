@@ -2121,4 +2121,304 @@ export const OLAYLAR_EVLILIK_AILE_EN: Record<string, OlayCeviri> = {
       },
     ],
   },
+
+  // ==================== NEW SET: DETAILED SPOUSE/CHILD DECISIONS (§33) ====================
+  evl_kiskanclik: {
+    baslik: "The Shadow of Jealousy",
+    metin: "{es} heard you were talking a little too warmly with someone else. At supper their face is closed, their voice trembles.",
+    secenekler: [
+      {
+        metin: "Explain calmly, reassure them, take their hand.",
+        ipucu: "Takes patience but renews trust",
+        basariliSonuc: {
+          mesaj: "{es} didn't want to listen at first, then leaned on your shoulder. The storm passed.",
+          detay: "Jealousy is often just another word for thinking you go unseen.",
+        },
+        basarisizSonuc: { mesaj: "Nothing you said convinced them; that night they turned their back to you." },
+      },
+      {
+        metin: "Brush it off, say 'don't be ridiculous' and move on.",
+        ipucu: "The easy way — but the pit deepens",
+        basariliSonuc: { mesaj: "The argument ended but a worm had entered {es}'s heart." },
+        basarisizSonuc: { mesaj: "'You never take me seriously,' they wept; things stayed icy for days." },
+      },
+      {
+        metin: "Hit back, dig into their past.",
+        ipucu: "Petrol on fire — it can burn the marriage down",
+        basariliSonuc: { mesaj: "The fight grew, then you both fell silent from exhaustion. Nobody won." },
+        basarisizSonuc: { mesaj: "The words said weren't taken back; that night {es} went to their mother's." },
+      },
+    ],
+  },
+  evl_para_talebi_es: {
+    baslik: "Your Spouse's Wish",
+    metin: "{es} had wanted something for a long time: a costly cloth, finer than the neighbor's. There's hope in their eyes.",
+    secenekler: [
+      {
+        metin: "Buy it, they deserve it.",
+        ipucu: "Burns your pocket but lights up their face",
+        basariliSonuc: { mesaj: "When {es} saw the cloth they were delighted like a child; talked about it for days." },
+        basarisizSonuc: { mesaj: "You bought it but the merchant cheated you; the cloth turned out plainer than expected." },
+      },
+      {
+        metin: "Haggle, find a cheaper one.",
+        ipucu: "Meeting halfway",
+        basariliSonuc: { mesaj: "You bought a more modest cloth; {es} made do but their eye was still on the other one." },
+        basarisizSonuc: { mesaj: "'You always think the cheapest is good enough for me,' they said, and sulked." },
+      },
+      {
+        metin: "Refuse, it's no time for luxury.",
+        ipucu: "The coffer is safe, morale collapses",
+        basariliSonuc: { mesaj: "{es} said nothing but no one spoke at supper that evening." },
+        basarisizSonuc: { mesaj: "They sulked for days; you heard them complain to the neighbors that you were tight-fisted." },
+      },
+    ],
+  },
+  evl_kayinvalide: {
+    baslik: "Mother-in-law at the Door",
+    metin: "{es}'s mother has grown old and cannot live alone. {es} wants to take her into the house.",
+    secenekler: [
+      {
+        metin: "Accept, set aside a room for her.",
+        ipucu: "Your spouse stays grateful but the house grows crowded",
+        basariliSonuc: { mesaj: "{es} embraced you. The old woman is cranky but in {es}'s eyes you're a hero now." },
+        basarisizSonuc: { mesaj: "You accepted, but the woman's nagging turned the house into a hell." },
+      },
+      {
+        metin: "Hire a servant so she can stay in her own home.",
+        ipucu: "Middle ground — costs money",
+        basariliSonuc: { mesaj: "It wasn't quite what {es} wanted, but seeing their mother cared for, they softened." },
+        basarisizSonuc: { mesaj: "The servant proved unreliable; {es} reproached you: 'you left my mother to strangers.'" },
+      },
+      {
+        metin: "Refuse firmly, this is your house.",
+        ipucu: "You set a boundary but wound your spouse",
+        basariliSonuc: { mesaj: "{es} couldn't say anything but the hurt in their eyes lingered a long time." },
+        basarisizSonuc: { mesaj: "{es} cried out 'without you my mother would be on the street'; you didn't speak for days." },
+      },
+    ],
+  },
+  evl_krizi: {
+    baslik: "Breaking Point",
+    metin: "Things with {es} have gone truly sour. One morning at the table they said 'this can't go on.' The moment of decision.",
+    secenekler: [
+      {
+        metin: "Hire a mediator/counselor, try to save the marriage.",
+        ipucu: "Expensive and hard — but the only real chance",
+        basariliSonuc: {
+          mesaj: "It took weeks but you can look at each other again. An ember remained under the ash.",
+        },
+        basarisizSonuc: { mesaj: "The effort went unanswered; {es} said 'we tried, it didn't work.'" },
+      },
+      {
+        metin: "Endure in silence, let the marriage go on like this.",
+        ipucu: "The home doesn't break but you go cold inside",
+        basariliSonuc: { mesaj: "You got used to living under one roof like two strangers." },
+        basarisizSonuc: { mesaj: "The anger you buried gnawed at you; you can't sleep at night." },
+      },
+      {
+        metin: "Separate, everyone to their own road.",
+        ipucu: "Painful but freedom — with the price of loneliness",
+        basariliSonuc: {
+          mesaj: "It was a short, cold farewell. The first days heavy, then a strange lightness.",
+          detay: "Untying some bonds is a kind of mercy too.",
+        },
+        basarisizSonuc: {
+          mesaj: "The separation turned ugly; court, gossip, relatives taking sides. Everyone came out wounded.",
+        },
+      },
+    ],
+  },
+  evl_yildonumu: {
+    baslik: "Wedding Anniversary",
+    metin: "This year is your wedding anniversary. {es} pretends to expect nothing but their eye is on the door.",
+    secenekler: [
+      {
+        metin: "Prepare a grand celebration.",
+        ipucu: "Generosity is remembered",
+        basariliSonuc: { mesaj: "{es}'s eyes filled. 'I thought you'd forgotten,' they said, and laughed." },
+        basarisizSonuc: { mesaj: "The preparations went wrong, guests came late; the intent was good but the evening was a mess." },
+      },
+      {
+        metin: "A modest but heartfelt supper.",
+        ipucu: "Small but enough",
+        basariliSonuc: { mesaj: "Two plates, one candle. {es} said 'this is enough for me' and took your hand." },
+        basarisizSonuc: { mesaj: "The meal was ordinary but at least you remembered the day." },
+      },
+      {
+        metin: "Forget it, spend it like an ordinary day.",
+        ipucu: "Free — but it leaves a mark",
+        basariliSonuc: { mesaj: "{es} said nothing. In the morning there was a wet trace on the pillow." },
+        basarisizSonuc: { mesaj: "Unused." },
+      },
+    ],
+  },
+  evl_es_hastalik: {
+    baslik: "Your Spouse Fell Ill",
+    metin: "{es} has been feverish for days, can't get out of bed. Their gaze is locked on you.",
+    secenekler: [
+      {
+        metin: "Call the best physician in the city.",
+        ipucu: "Expensive but the safest",
+        basariliSonuc: { mesaj: "The physician's medicine worked. {es} was on their feet a week later, grateful to you." },
+        basarisizSonuc: { mesaj: "The physician did his best but the recovery was long; still, they saw you stayed by their side." },
+      },
+      {
+        metin: "Keep watch yourself, nurse them at home.",
+        ipucu: "Free but risky and exhausting",
+        basariliSonuc: { mesaj: "You kept watch for nights. The fever broke; when {es} opened their eyes they saw you first." },
+        basarisizSonuc: { mesaj: "The illness worsened and you burned out too. {es} whispered 'you should have called a physician.'" },
+      },
+      {
+        metin: "Mind your own work, it'll pass anyway.",
+        ipucu: "The price of indifference can be heavy",
+        basariliSonuc: { mesaj: "{es} recovered on their own but never forgot that you didn't even pass by the door." },
+        basarisizSonuc: { mesaj: "The illness dragged on, the house fell apart; even the children asked 'where was father.'" },
+      },
+    ],
+  },
+  cocuk_okul_secimi: {
+    baslik: "Your Child's Education",
+    metin: "Your children are growing. Time to build them a future: an artisan's apprenticeship, a church/madrasa school, or the field beside you?",
+    secenekler: [
+      {
+        metin: "Send them to an expensive school/tutor, demand the best.",
+        ipucu: "The coffer burns but the future opens",
+        basariliSonuc: { mesaj: "Your child learned their letters, does sums. The neighbors say 'your boy is educated.'" },
+        basarisizSonuc: { mesaj: "The money went but the tutor was lax; the child learned things by halves." },
+      },
+      {
+        metin: "Apprentice them to a craftsman.",
+        ipucu: "Balanced — their hands learn a trade",
+        basariliSonuc: { mesaj: "The child came home sweaty but proud: 'I hammered the first nail today.'" },
+        basarisizSonuc: { mesaj: "The master was harsh; the child complained of being taught by beatings." },
+      },
+      {
+        metin: "No need for school, put them to work beside you.",
+        ipucu: "Earnings today, regret tomorrow",
+        basariliSonuc: { mesaj: "An extra pair of hands helped, but a door closed in the child's eyes." },
+        basarisizSonuc: { mesaj: "One day the child said 'you never cared about me'; that sentence won't leave your mind." },
+      },
+    ],
+  },
+  cocuk_para_talebi: {
+    baslik: "Your Child's Wish",
+    metin: "Your child has been after something for days: a toy, a pair of shoes their friends have. Shyly, they opened up to you.",
+    secenekler: [
+      {
+        metin: "Buy it, childhood happens only once.",
+        ipucu: "Small money, big smile",
+        basariliSonuc: { mesaj: "Your child toured the whole neighborhood with joy. That evening they fell asleep hugging your neck." },
+        basarisizSonuc: { mesaj: "You bought it but it wasn't the one they liked; still they said 'thanks, father.'" },
+      },
+      {
+        metin: "Patiently explain why not now.",
+        ipucu: "Hard but it matures them",
+        basariliSonuc: { mesaj: "They pouted but listened. 'Okay,' they said at last, seeming a bit grown." },
+        basarisizSonuc: { mesaj: "'Always excuses,' they cried, and shut themselves in their room." },
+      },
+      {
+        metin: "Scold them, say 'does money grow on trees.'",
+        ipucu: "Free — but cold",
+        basariliSonuc: { mesaj: "They never asked you for anything again. Nothing. That's a kind of loss too." },
+        basarisizSonuc: { mesaj: "The child kept saying 'the neighbor's father is better'; it stung." },
+      },
+    ],
+  },
+  cocuk_ergenlik: {
+    baslik: "The Rebel Years",
+    metin: "Your eldest child no longer listens: comes home late, speaks rudely, doesn't recognize your authority.",
+    secenekler: [
+      {
+        metin: "Be patient, listen, give trust.",
+        ipucu: "The hardest way — but it saves the bond",
+        basariliSonuc: { mesaj: "It took months. One night they came to you themselves, you talked. The wall cracked." },
+        basarisizSonuc: { mesaj: "Whatever you did wasn't enough; they slammed the door in your face and left." },
+      },
+      {
+        metin: "Strict discipline, set rules, punish.",
+        ipucu: "Order in the short term, an abyss in the long",
+        basariliSonuc: { mesaj: "Silence rules the house now. There's obedience but the light in their eyes is gone." },
+        basarisizSonuc: { mesaj: "The child rebelled, one night never came home. Found two days later — blood came between you." },
+      },
+      {
+        metin: "Ignore it, let it pass on its own.",
+        ipucu: "Easy — but the distance becomes permanent",
+        basariliSonuc: { mesaj: "The storm died down on its own but they tell you nothing anymore." },
+        basarisizSonuc: { mesaj: "They filled your indifference with bad friends; their name got mixed up in trouble." },
+      },
+    ],
+  },
+  cocuk_dugun_masrafi: {
+    baslik: "Your Child's Wedding",
+    metin: "Your eldest is getting married. All eyes are on you: what kind of wedding will it be?",
+    secenekler: [
+      {
+        metin: "Throw a magnificent wedding, open the purse to the brim.",
+        ipucu: "Fortune goes, honor and love come",
+        basariliSonuc: { mesaj: "It lasted three days and three nights. In tears the child embraced you: 'I owe you everything.'" },
+        basarisizSonuc: { mesaj: "The expense was great but the rain came down, half of it was cut short." },
+      },
+      {
+        metin: "A simple, warm ceremony is enough.",
+        ipucu: "Measured — no one is hurt",
+        basariliSonuc: { mesaj: "It was a small but heartfelt day. Your child said 'there was no need for show anyway.'" },
+        basarisizSonuc: { mesaj: "The in-laws turned up their noses; your child was embarrassed but didn't show it." },
+      },
+      {
+        metin: "Don't contribute, let them handle it themselves.",
+        ipucu: "Free — but unforgettable",
+        basariliSonuc: { mesaj: "You were invited to the wedding but sat at the very back. The distance became permanent that day." },
+        basarisizSonuc: { mesaj: "The in-law family said 'what kind of father is this'; your child flushed on your behalf." },
+      },
+    ],
+  },
+  cocuk_yetenek: {
+    baslik: "A Spark",
+    metin: "One of the children has a strong gift: a hand for drawing, a fine voice, a head for numbers... But feeding that gift takes money and time.",
+    secenekler: [
+      {
+        metin: "Find a master, let the gift be nurtured.",
+        ipucu: "An investment — maybe one day it pays back",
+        basariliSonuc: { mesaj: "The more the child practiced the more they shone. 'Thank you for seeing me, father,' they said one day." },
+        basarisizSonuc: { mesaj: "The master was expensive, progress slow; still the child felt they were being tried for." },
+      },
+      {
+        metin: "Encourage them at home, give what you can.",
+        ipucu: "Small but heartfelt support",
+        basariliSonuc: { mesaj: "Your applause, your attention were enough; every evening the child shows you something new." },
+        basarisizSonuc: { mesaj: "You meant well but couldn't spare enough time; the spark began to fade." },
+      },
+      {
+        metin: "Say 'this won't fill a belly,' talk them out of it.",
+        ipucu: "Pragmatic — but it kills something",
+        basariliSonuc: { mesaj: "The child set their instrument aside. Never picked it up again." },
+        basarisizSonuc: { mesaj: "Even years later they look at you: 'if only you'd let me.'" },
+      },
+    ],
+  },
+  aile_tatil_karari: {
+    baslik: "A Getaway Together",
+    metin: "Home to work, work to home... For months the family hasn't spent proper time together. {es} says 'let's all go somewhere.'",
+    secenekler: [
+      {
+        metin: "Go on a long family trip.",
+        ipucu: "Costly but it refreshes everyone",
+        basariliSonuc: { mesaj: "You laughed for days, walked, did nothing. Years later it'll still be called 'that trip.'" },
+        basarisizSonuc: { mesaj: "Rain on the road, fleas in the inns... Still, heading home everyone huddled together." },
+      },
+      {
+        metin: "A short day trip nearby is enough.",
+        ipucu: "Small but real",
+        basariliSonuc: { mesaj: "A creekside, a cloth spread for food. The little one kept saying 'let's come again.'" },
+        basarisizSonuc: { mesaj: "It was short, someone got cranky; still, you got out of the house." },
+      },
+      {
+        metin: "No, work can't be left.",
+        ipucu: "There's income — but everyone resents it",
+        basariliSonuc: { mesaj: "Your coffer filled a little. But when you came home that evening, no one looked up." },
+        basarisizSonuc: { mesaj: "Unused." },
+      },
+    ],
+  },
 };

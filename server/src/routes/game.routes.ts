@@ -16,6 +16,9 @@ import {
   mulkSatinAl,
   dedikoduGetir,
   zarKademeleriGetir,
+  sosyallesmeAksiyonConfigGetir,
+  sosyallesmeAksiyonYap,
+  sosyallesmeOlayCoz,
   zarAt,
   ucKagitciOyna,
   bilekGuresiSonuc,
@@ -26,6 +29,9 @@ import {
   envanterEsyasiKullan,
   evlilikAdaylariGetir,
   evlilikTeklifEt,
+  aileDurumGetir,
+  aileEtkilesimYap,
+  aileTalebiKararlastir,
   oturumDiliAyarla,
 } from "../game/gameEngine";
 import { MESLEKLER, BOLGELER_BY_CAG } from "../game/stateManager";
@@ -331,6 +337,45 @@ gameRouter.post("/:id/sosyallesme", async (req, res) => {
   }
 });
 
+gameRouter.post("/:id/sosyallesme-olay", async (req, res) => {
+  const { secenekIndex } = req.body ?? {};
+  if (typeof secenekIndex !== "number") {
+    return res.status(400).json({ hata: "Geçersiz seçenek." });
+  }
+  try {
+    const sonuc = await sosyallesmeOlayCoz(req.params.id, secenekIndex);
+    res.json(sonuc);
+  } catch (err) {
+    res.status(400).json({ hata: String(err) });
+  }
+});
+
+gameRouter.get("/:id/sosyallesme-aksiyonlar", async (req, res) => {
+  try {
+    const config = await sosyallesmeAksiyonConfigGetir(req.params.id);
+    res.json(config);
+  } catch (err) {
+    res.status(404).json({ hata: String(err) });
+  }
+});
+
+gameRouter.post("/:id/sosyallesme-aksiyon", async (req, res) => {
+  const { aksiyonId, varyant } = req.body ?? {};
+  if (typeof aksiyonId !== "string") {
+    return res.status(400).json({ hata: "Geçersiz aksiyon." });
+  }
+  try {
+    const sonuc = await sosyallesmeAksiyonYap(
+      req.params.id,
+      aksiyonId,
+      typeof varyant === "string" ? varyant : undefined
+    );
+    res.json(sonuc);
+  } catch (err) {
+    res.status(400).json({ hata: String(err) });
+  }
+});
+
 gameRouter.get("/:id/evlilik-adaylari", async (req, res) => {
   try {
     const adaylar = await evlilikAdaylariGetir(req.params.id);
@@ -347,6 +392,45 @@ gameRouter.post("/:id/evlilik-teklifi", async (req, res) => {
   }
   try {
     const sonuc = await evlilikTeklifEt(req.params.id, aday);
+    res.json(sonuc);
+  } catch (err) {
+    res.status(400).json({ hata: String(err) });
+  }
+});
+
+gameRouter.get("/:id/aile", async (req, res) => {
+  try {
+    const durum = await aileDurumGetir(req.params.id);
+    res.json(durum);
+  } catch (err) {
+    res.status(404).json({ hata: String(err) });
+  }
+});
+
+gameRouter.post("/:id/aile/etkilesim", async (req, res) => {
+  const { etkilesimId, cocukIndex } = req.body ?? {};
+  if (typeof etkilesimId !== "string") {
+    return res.status(400).json({ hata: "Geçersiz etkileşim." });
+  }
+  try {
+    const sonuc = await aileEtkilesimYap(
+      req.params.id,
+      etkilesimId,
+      typeof cocukIndex === "number" ? cocukIndex : null
+    );
+    res.json(sonuc);
+  } catch (err) {
+    res.status(400).json({ hata: String(err) });
+  }
+});
+
+gameRouter.post("/:id/aile/talep", async (req, res) => {
+  const { karar } = req.body ?? {};
+  if (karar !== "kabul" && karar !== "ret") {
+    return res.status(400).json({ hata: "Geçersiz karar." });
+  }
+  try {
+    const sonuc = await aileTalebiKararlastir(req.params.id, karar);
     res.json(sonuc);
   } catch (err) {
     res.status(400).json({ hata: String(err) });

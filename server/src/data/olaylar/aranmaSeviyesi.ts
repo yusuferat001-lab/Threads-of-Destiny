@@ -1450,6 +1450,8 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         metin: "Elindeki avladığın/topladığın malları köyde sat.",
         baseBasariSansi: 70,
         basariliSonuc: {
+          mutluluk: -7,
+          un: -3,
           para: 18,
           mesaj: "Köylüler getirdiklerine iyi fiyat verdi; cebine biraz para girdi.",
           detay: "Dağ köylerinde nadir mallar değerlidir.",
@@ -1510,6 +1512,8 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         baseBasariSansi: 40,
         ipucu: "Riskli ama başarırsan hem hayatta kalır hem de değerli bir post kazanırsın",
         basariliSonuc: {
+          mutluluk: -5,
+          un: -2,
           saglik: -8,
           para: 12,
           mesaj: "Zorlu bir boğuşmanın ardından hayvanı püskürttün; postu bile işine yarayabilir.",

@@ -21,11 +21,15 @@ import type {
   BilekGuresiSonucu,
   SosyallesmeYeri,
   SosyallesmeSonucu,
+  SosyalAksiyonConfig,
+  SosyalAksiyonSonucu,
+  SosyalOlaySonucu,
   MagazaEsyaKarti,
   MagazaSatinAlSonucu,
   EnvanterKullanSonucu,
   EvlilikAdayi,
   EvlilikTeklifSonucu,
+  AileDurumu,
 } from './types';
 
 async function istek<T>(url: string, init?: RequestInit): Promise<T> {
@@ -219,6 +223,24 @@ export function sosyallesmeYerineGit(stateId: string, yerId: string) {
   });
 }
 
+export function sosyallesmeAksiyonConfigGetir(stateId: string) {
+  return istek<SosyalAksiyonConfig>(`/api/game/${stateId}/sosyallesme-aksiyonlar`);
+}
+
+export function sosyallesmeAksiyonYap(stateId: string, aksiyonId: string, varyant?: string) {
+  return istek<SosyalAksiyonSonucu>(`/api/game/${stateId}/sosyallesme-aksiyon`, {
+    method: 'POST',
+    body: JSON.stringify({ aksiyonId, varyant }),
+  });
+}
+
+export function sosyallesmeOlayCoz(stateId: string, secenekIndex: number) {
+  return istek<SosyalOlaySonucu>(`/api/game/${stateId}/sosyallesme-olay`, {
+    method: 'POST',
+    body: JSON.stringify({ secenekIndex }),
+  });
+}
+
 export function evlilikAdaylariGetir(stateId: string) {
   return istek<{ adaylar: EvlilikAdayi[] }>(`/api/game/${stateId}/evlilik-adaylari`);
 }
@@ -228,6 +250,30 @@ export function evlilikTeklifEt(stateId: string, aday: EvlilikAdayi) {
     method: 'POST',
     body: JSON.stringify({ aday }),
   });
+}
+
+export function aileDurumGetir(stateId: string) {
+  return istek<AileDurumu>(`/api/game/${stateId}/aile`);
+}
+
+export function aileEtkilesimYap(stateId: string, etkilesimId: string, cocukIndex?: number) {
+  return istek<{ state: CharacterState; tam: boolean; mesaj: string }>(
+    `/api/game/${stateId}/aile/etkilesim`,
+    {
+      method: 'POST',
+      body: JSON.stringify({ etkilesimId, cocukIndex }),
+    },
+  );
+}
+
+export function aileTalebiKararlastir(stateId: string, karar: 'kabul' | 'ret') {
+  return istek<{ state: CharacterState; kabul: boolean; mesaj: string }>(
+    `/api/game/${stateId}/aile/talep`,
+    {
+      method: 'POST',
+      body: JSON.stringify({ karar }),
+    },
+  );
 }
 
 export function magazaKatalogGetir(stateId: string) {

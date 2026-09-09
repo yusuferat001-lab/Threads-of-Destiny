@@ -304,8 +304,9 @@ export const OLAY_BUYULU: OlayTanimi[] = [
         baseBasariSansi: 25,
         ipucu: "Neredeyse kesin zarar, ama ya olursa?",
         basariliSonuc: {
+          un: -3,
           para: 30,
-          mutluluk: 6,
+          mutluluk: -3,
           mesaj:
             "Bir mucize mi, bir hile mi bilmiyorsun ama elinde gerçek altın var. Adam ertesi gün ortadan kayboldu.",
         },

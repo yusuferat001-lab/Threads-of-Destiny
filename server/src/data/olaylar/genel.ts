@@ -1130,8 +1130,9 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 65,
         ipucu: "Daha güvenli, ancak ekibini kalıcı olarak kaybedebilirsin",
         basariliSonuc: {
+          mutluluk: -11,
           para: 35,
-          un: 5,
+          un: 3,
           mesaj: "Ekibin kan ter içinde ama başarılı bir şekilde malları getirdi. Liderlik budur.",
         },
         basarisizSonuc: {
@@ -1173,8 +1174,9 @@ export const OLAY_GENEL: OlayTanimi[] = [
         metin: "Gölgeler içinde halledilsin, {ekip}'i yolla.",
         baseBasariSansi: 55,
         basariliSonuc: {
+          mutluluk: -8,
           para: 20,
-          un: 10,
+          un: 5,
           mesaj: "{ekip} görevi senin adına tamamladı ve güvenle geri döndü.",
         },
         basarisizSonuc: {
@@ -2428,8 +2430,9 @@ export const OLAY_GENEL: OlayTanimi[] = [
         maliyet: 30,
         ipucu: "Servet ya da iflas",
         basariliSonuc: {
+          mutluluk: -11,
           para: 70,
-          un: 12,
+          un: 6,
           mesaj: "Ortaklık tuttu; yatırdığın paranın iki katından fazlasını geri aldın.",
           detay: "Riski aldın ve kazandın. Şimdi herkes sana 'nasıl bildin' diye soruyor; sen de bilmediğini söylemiyorsun.",
         },
@@ -2447,6 +2450,8 @@ export const OLAY_GENEL: OlayTanimi[] = [
         maliyet: 18,
         ipucu: "Makul kazanç, makul risk",
         basariliSonuc: {
+          mutluluk: -5,
+          un: -2,
           para: 30,
           mesaj: "Aldığın mallar sezonunda iyi fiyat buldu; sağlam bir kâr çıkardın.",
           detay: "Ne heyecan verici ne felaket. Hesabını yaptın, sabrettin ve karşılığını aldın; ticaretin büyük kısmı bundan ibaret.",
@@ -2604,8 +2609,9 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 70,
         ipucu: "İçmeden kazanma yolu, kalabalığın alayı",
         basariliSonuc: {
+          mutluluk: -7,
           para: 18,
-          un: -5,
+          un: -8,
           mesaj: "Bahisleri sen topladın; kim kazanırsa kazansın komisyon senindi.",
           detay: "Meyhane 'korkak' diye bağırdı, sen komisyonu sayarken gülümsedin. Ertesi sabah başı ağrımayan tek kişi sendin.",
         },
@@ -2649,8 +2655,9 @@ export const OLAY_GENEL: OlayTanimi[] = [
         maliyet: 15,
         ipucu: "Riski mucide bırakır, paranı riske atar",
         basariliSonuc: {
+          mutluluk: -8,
           para: 35,
-          un: 10,
+          un: 5,
           mesaj: "Balon uçtu; ortağı olarak sen de gelirden pay aldın.",
           detay: "Ayakların yerden hiç kesilmedi ama cebin doldu. En iyi yatırım, riski başkasının aldığı yatırımmış.",
         },
@@ -2698,8 +2705,9 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 70,
         ipucu: "Risksiz komisyon, düşük heyecan",
         basariliSonuc: {
+          mutluluk: -7,
           para: 18,
-          un: 5,
+          un: 3,
           mesaj: "Bilet satışından komisyon aldın; kimse sana bakmadı ama kimse de seni yemedi.",
           detay: "Sirk sahibi 'sen bu işi biliyorsun' dedi ve şehre her gelişinde seni arıyor. Küçük ama tekrarlayan bir gelir.",
         },
@@ -4018,6 +4026,8 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 55,
         ipucu: "Parayı geri alma şansı, utandırma riski",
         basariliSonuc: {
+          mutluluk: -8,
+          un: -3,
           para: 20,
           mesaj: "Utanan adam borcunu hemen ödedi.",
           detay: "Bir daha kimse senden borç para istemedi ama parayı da almış oldun.",
@@ -4108,8 +4118,9 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 85,
         ipucu: "Küçük ödeme ve tuhaf bir şöhret",
         basariliSonuc: {
+          mutluluk: -6,
           para: 15,
-          un: 12,
+          un: 6,
           mesaj: "Fotoğrafın vitrine asıldı; tanıdıkların seni görünce gülüyor.",
           detay: "Küçük bir ek gelir ve mahallede eğlenceli bir üne kavuştun.",
         },
@@ -4382,7 +4393,8 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 55,
         ipucu: "Yeni çevre ya da büyük mahcubiyet",
         basariliSonuc: {
-          un: 22,
+          mutluluk: -6,
+          un: 11,
           para: 15,
           mesaj: "Kimse hatayı fark etmedi; hatta etkileyici birkaç isimle tanıştın.",
           detay: "Bazen doğru yerde olmak, davetli olup olmadığından daha önemli.",
@@ -4474,8 +4486,9 @@ export const OLAY_GENEL: OlayTanimi[] = [
         maliyet: 10,
         ipucu: "Büyük bir buluşa ortak olabilirsin ya da gülünç olabilirsin",
         basariliSonuc: {
+          mutluluk: -10,
           para: 35,
-          un: 15,
+          un: 8,
           mesaj: "Makine gerçekten işe yaradı! Komşun seninle ortaklık kurdu, birlikte küçük bir üretim başlattınız.",
           detay: "Kimse bu tuhaf alete bir kuruş vermeyi düşünmezken sen düşündün ve kazandın.",
         },
@@ -4611,6 +4624,8 @@ export const OLAY_GENEL: OlayTanimi[] = [
         maliyet: 8,
         ipucu: "Küçük masraf, büyük ya da hiç kazanç",
         basariliSonuc: {
+          mutluluk: -11,
+          un: -4,
           para: 40,
           mesaj: "Eşya gerçekten değerliymiş; bir koleksiyoncuya iyi bir fiyata sattın.",
           detay: "Tavan arasında yıllarca duran bir şey, beklenmedik bir gelir kapısı oldu.",
@@ -4891,9 +4906,10 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 50,
         ipucu: "Doğana aykırı bir çaba, gerçek bir ödül",
         basariliSonuc: {
+          mutluluk: -11,
           para: 35,
-          un: 18,
-          ahlak: 15,
+          un: 9,
+          ahlak: 7,
           mesaj: "Şaşırtıcı biçimde işe yaradı; belki de her şey boşuna değilmiş.",
           detay: "İçindeki umutsuzluğa rağmen denemen, sandığından daha iyi sonuçlandı.",
         },
@@ -5075,8 +5091,9 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 70,
         ipucu: "Sosyal ağının meyvesi",
         basariliSonuc: {
+          mutluluk: -11,
           para: 40,
-          un: 25,
+          un: 13,
           mesaj: "Bağlantıların sayesinde kapı gerçekten açıldı; herkes 'onu tanıyorum' demenin değerini bir kez daha gösterdi.",
           detay: "Geniş çevren yine işine yaradı; bazı insanlar için ağ, sermayeden değerlidir.",
         },
@@ -5121,7 +5138,8 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 55,
         ipucu: "Doğana aykırı ama fırsat getirebilir",
         basariliSonuc: {
-          un: 22,
+          mutluluk: -6,
+          un: 11,
           para: 15,
           saglik: -10,
           mesaj: "Zorlukla da olsa katıldın; birkaç değerli tanışıklık edindin.",
@@ -5260,8 +5278,8 @@ export const OLAY_GENEL: OlayTanimi[] = [
         ipucu: "Doğana uygun, yüksek risk yüksek ödül",
         basariliSonuc: {
           para: 40,
-          un: 25,
-          mutluluk: 8,
+          un: 13,
+          mutluluk: -3,
           mesaj: "Rekabeti açık farkla kazandın; rakibin bile seni tebrik etmek zorunda kaldı.",
           detay: "Rekabetçi doğan bir kez daha seni öne çıkardı.",
         },
@@ -5327,8 +5345,10 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 80,
         ipucu: "Doğana aykırı ama güvenli",
         basariliSonuc: {
+          mutluluk: -5,
+          un: -2,
           para: 12,
-          ahlak: 12,
+          ahlak: 6,
           mesaj: "Elindekiyle yetindin; içindeki huzursuzluğa rağmen işin istikrarlı kaldı.",
           detay: "Hırsını bu sefer frenlemeyi başardın; kolay olmadı.",
         },
@@ -5461,6 +5481,8 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 60,
         ipucu: "Kazanç fırsatı, hastalık riski",
         basariliSonuc: {
+          mutluluk: -10,
+          un: -4,
           para: 25,
           mesaj: "Kalabalığın içinde iyi bir pazarlık yakaladın; hastalıktan da payına düşmedi.",
           detay: "Şehirde yaşamanın avantajı bu: fırsat her zaman kalabalığın içinde.",
@@ -5651,8 +5673,9 @@ export const OLAY_GENEL: OlayTanimi[] = [
         maliyet: 15,
         ipucu: "Büyük kazanç potansiyeli, bilet parası cepten gider",
         basariliSonuc: {
+          mutluluk: -11,
           para: 50,
-          un: 10,
+          un: 5,
           mesaj: "Yolculuk karşılığını fazlasıyla verdi; anlaşma imzalandı.",
           detay: "Demiryolu çağı, mesafeleri fırsata çevirenleri ödüllendiriyor.",
         },
@@ -5964,6 +5987,8 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 80,
         ipucu: "Güvenli, orta yol",
         basariliSonuc: {
+          mutluluk: -5,
+          un: -2,
           para: 12,
           mesaj: "Makul bir orta yol buldunuz; ilişki soğumadı.",
           detay: "Sakinlik bazen en iyi pazarlık taktiğidir.",
@@ -6677,8 +6702,9 @@ export const OLAY_GENEL: OlayTanimi[] = [
         metin: "Cesurca yüksek bir fiyat teklif et.",
         baseBasariSansi: 50,
         basariliSonuc: {
+          mutluluk: -8,
           para: 20,
-          un: 10,
+          un: 5,
           mesaj: "Cesaretin karşılık buldu, iyi bir fiyata anlaştın.",
           detay: "İlk büyük pazarlık zaferini asla unutmayacaksın.",
         },
@@ -7196,6 +7222,8 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 45,
         ipucu: "Büyük kazanç ya da kalıcı bir dışlanma riski",
         basariliSonuc: {
+          mutluluk: -11,
+          un: -5,
           para: 50,
           mesaj: "Anlaşma fark edilmeden gerçekleşti; cebin kabardı.",
           detay: "Bu kez şanslıydın, ama bu tür şanslar sonsuza dek sürmez.",
@@ -8054,8 +8082,9 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 55,
         ipucu: "Riskli ama itibarını korur",
         basariliSonuc: {
+          mutluluk: -6,
           para: 16,
-          un: 12,
+          un: 6,
           mesaj: "Müşteri kaliteni takdir etti, {rakip}'in ucuz oyununa itibar etmedi.",
           detay: "Bazen fiyat değil, güven kazandırır.",
         },
@@ -8816,8 +8845,9 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 65,
         ipucu: "Küçük ama garanti bir ganimet payı",
         basariliSonuc: {
+          mutluluk: -6,
           para: 14,
-          un: 3,
+          un: 2,
           mesaj: "Payına düşen ganimetle cebin biraz şişti; komutanın da seni fark etti.",
           detay: "Küçük zaferler de sayılır.",
         },
@@ -9855,8 +9885,9 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 50,
         ipucu: "Kazanırsan malını korursun, kaybedersen yaralanırsın",
         basariliSonuc: {
+          mutluluk: -8,
           para: 20,
-          un: 6,
+          un: 3,
           mesaj: "Kervan direndi ve eşkıyaları püskürttü; payına düşen ganimetle daha da zenginleştin.",
           detay: "Bu geçit artık senin cesaretinle anılıyor.",
         },
@@ -9903,8 +9934,9 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 55,
         ipucu: "Büyük kazanç ya da büyük kayıp",
         basariliSonuc: {
+          mutluluk: -11,
           para: 40,
-          un: 8,
+          un: 4,
           mesaj: "Yaptığın anlaşma inanılmaz kârlı çıktı; şehre döndüğünde herkes bu ticaretini konuşacak.",
           detay: "Uzak diyarlarla kurduğun bu bağlantı sana yeni kapılar açacak.",
         },
@@ -9920,6 +9952,8 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 90,
         ipucu: "Güvenli, küçük kazanç",
         basariliSonuc: {
+          mutluluk: -5,
+          un: -2,
           para: 12,
           mesaj: "Küçük ama güvenli bir kazançla yetindin.",
           detay: "Bazen az ama garanti, çoktan iyidir.",
@@ -10138,6 +10172,8 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 85,
         ipucu: "Küçük ama garanti bir kazanım",
         basariliSonuc: {
+          mutluluk: -6,
+          un: -2,
           para: 15,
           mesaj: "Küçük bir ücret iyileştirmesiyle anlaştınız; herkes işe geri döndü.",
           detay: "Tam istediğin değildi ama bir kazanımdı.",
@@ -10262,8 +10298,9 @@ export const OLAY_GENEL: OlayTanimi[] = [
         maliyet: 30,
         ipucu: "Çok riskli ama tutarsa büyük kazanç getirir",
         basariliSonuc: {
+          mutluluk: -11,
           para: 80,
-          un: 10,
+          un: 5,
           mesaj: "Makine gerçekten çalıştı; fabrikalar sipariş vermeye başladı, yatırımın kat kat geri döndü.",
           detay: "Bu buluşun bir parçası olmak seni tarihe geçirdi.",
         },
@@ -10310,8 +10347,9 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 60,
         ipucu: "Küçük bir buluş, orta düzey risk",
         basariliSonuc: {
+          mutluluk: -6,
           para: 15,
-          un: 6,
+          un: 3,
           mesaj: "Düzeneğin işe yaradı; adın 'akıllı biri' olarak anılmaya başladı.",
           detay: "Küçük fikirler bazen büyük fark yaratıyor.",
         },
@@ -10644,6 +10682,8 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 75,
         ipucu: "Cebin dolar ama bedenin yorulur",
         basariliSonuc: {
+          mutluluk: -9,
+          un: -3,
           para: 22,
           saglik: -12,
           mesaj: "Haftalarca az uyudun ama sonunda kasan hatırı sayılır şekilde doldu.",

@@ -2726,6 +2726,8 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         baseBasariSansi: 85,
         ipucu: "İstikrarlı, sabırlı bir yol",
         basariliSonuc: {
+          mutluluk: -5,
+          un: -2,
           para: 12,
           mesaj: "Sabırla kendi işini büyüttün; risksiz de olsa kazancın istikrarlı.",
           detay: "Herkes okyanus aşmak zorunda değil.",

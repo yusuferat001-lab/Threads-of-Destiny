@@ -151,6 +151,8 @@ export interface CharacterState {
   magaza_envanteri: SahipOlunanEsya[];
   magaza_temel_kilit_bitis_yili: number | null;
   alkol_ziyaret_sayisi: number;
+  /** Sosyalleşme ekranı tur-harcamayan aksiyonlarının son kullanıldığı oyun yılı (id → yıl). */
+  sosyallesme_aksiyon_kilit: Record<string, number>;
 
   yatkinliklar: Record<string, number>;
   yatkinlik_kaynaklari: YatkinlikKaynagi[];
@@ -188,6 +190,7 @@ export interface CharacterState {
 
   son_zorunlu_bagis_yili: number | null;
   son_zenginlik_sizinti_yili: number | null;
+  son_rakip_soygun_yili: number | null;
   buyuk_savas: BuyukSavas | null;
   son_buyuk_savas_bitis_yili: number | null;
   veba: VebaDurumu | null;
@@ -199,6 +202,12 @@ export interface CharacterState {
   gida_fiyat_sok_bitis_yili: number | null;
   /** Ömürde bir kez borçtayken alınan kilise/eş dost yardımı kullanıldı mı. */
   borc_yardimi_alindi: boolean;
+
+  /** Aile ekranı etkileşim cooldown'ları: anahtar → tekrar açılacağı oyun yılı (§33). */
+  aile_etkilesim_kilit: Record<string, number>;
+  /** Eş/çocuğun bekleyen para talebi; yoksa null. */
+  aile_talep: AileTalep | null;
+  aile_talep_sonraki_yil: number;
 
   tur_sayisi: number;
   gecmis_olaylar: string[];
@@ -232,6 +241,31 @@ export interface Cocuk {
   isim: string;
   dogum_yili: number;
   yasiyor: boolean;
+  /** Çocukla ilişki puanı (0-100); Aile ekranındaki etkileşimlerle artar, ilgilenilmezse yılda ~0.6 düşer (§33). */
+  iliski: number;
+}
+
+/** Eş/çocuğun bekleyen para talebi (Aile ekranında "Kabul Et / Reddet" kartı). */
+export interface AileTalep {
+  id: string;
+  kimden: 'es' | 'cocuk';
+  kimAdi: string;
+  cocukIndex: number | null;
+  tutar: number;
+  kalem: string;
+  sonYil: number;
+}
+
+/** GET /:id/aile yanıtı — Aile ekranının ihtiyaç duyduğu her şey. */
+export interface AileDurumu {
+  es: { adi: string; meslek: string | null; rutbe: string | null; puan: number } | null;
+  cocuklar: { isim: string; dogumYili: number; yas: number; yasiyor: boolean; iliski: number }[];
+  etkilesimler: { id: string; ikon: string; hedef: 'es' | 'cocuk' | 'hepsi'; maliyet: number }[];
+  kilitler: Record<string, number>;
+  talep: AileTalep | null;
+  guncelYil: number;
+  para: number;
+  paraBirimi: string;
 }
 
 export interface KisilikEksenleri {
@@ -279,6 +313,8 @@ export interface SonucEtkisi {
   es_kaybet?: boolean;
   cocuk_ekle?: number;
   cocuk_kaybet?: boolean;
+  /** Yaşayan tüm çocukların ilişki puanına uygulanan delta (§33). */
+  cocuk_iliski?: number;
   ekip_ekle?: { rol: string; tahminGenisligi: number };
   ekip_kaybi?: boolean;
   ekip_sil?: string;
@@ -518,12 +554,52 @@ export interface SosyallesmeYeri {
   alkolluMu: boolean;
   /** Sadece alkollü mekânlar için: şu ana kadarki ziyaret sayısı (3'e ulaşınca ayyaşlık damgası vurulur). */
   ziyaretSayisi?: number;
+  /** Bu mekâna bu yıl zaten girildi mi (mekân olayı çözülünce ~2 yıl kilitlenir). */
+  kilitli?: boolean;
+  /** Kilidin açılmasına kalan oyun yılı. */
+  kalanYil?: number;
 }
 
 export interface SosyallesmeSonucu {
   state: CharacterState;
   /** Bu mekâna gitmek için düşülen peşin giriş ücreti. */
   girisUcreti: number;
+}
+
+export interface SosyalAksiyonKarti {
+  /** "icki:<icecekId>" ya da "deli"|"sadaka"|"kulak"|"ismarla"|"fal". */
+  id: string;
+  tur: 'icki' | 'aksiyon';
+  simge: string;
+  ad: string;
+  aciklama: string;
+  fiyat: number;
+  alkollu?: boolean;
+  gizli?: boolean;
+  /** true ise iki kademeli (sadaka: az / çok). */
+  varyantli?: boolean;
+  kilitli: boolean;
+  kalanYil: number;
+  neden?: string;
+}
+
+export interface SosyalAksiyonConfig {
+  icecekler: SosyalAksiyonKarti[];
+  aksiyonlar: SosyalAksiyonKarti[];
+  alkolluMekanVar: boolean;
+}
+
+export interface SosyalAksiyonSonucu {
+  state: CharacterState;
+  mesaj: string;
+}
+
+/** Bir mekân olayının tur harcamadan çözülmesinin sonucu (POST /:id/sosyallesme-olay). */
+export interface SosyalOlaySonucu {
+  state: CharacterState;
+  basarili: boolean;
+  uygulananEtki: SonucEtkisi;
+  mesaj: string;
 }
 
 export interface MagazaEsyaKarti {

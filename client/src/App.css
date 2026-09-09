@@ -2951,15 +2951,42 @@ button.ikincil {
 }
 
 /* Hazard zarları */
+.hazard-masa {
+  display: flex;
+  gap: 1.4rem;
+  align-items: flex-start;
+}
+
+.hazard-taraf {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.35rem 0.55rem;
+  border-radius: 6px;
+  border: 1px solid transparent;
+}
+
+.hazard-taraf-etiket {
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.hazard-taraf-kazanan {
+  border-color: #6ab04c;
+  background: rgba(106, 176, 76, 0.12);
+}
+
 .hazard-zarlar {
   display: flex;
-  gap: 0.6rem;
-  font-size: 2.6rem;
+  gap: 0.5rem;
+  font-size: 2.3rem;
   line-height: 1;
 }
 
 .hazard-donuyor .hazard-zar {
-  animation: hazardTitre 0.18s linear infinite;
+  animation: hazardTitre 0.24s linear infinite;
 }
 
 @keyframes hazardTitre {
@@ -3071,10 +3098,171 @@ button.ikincil {
   grid-template-columns: repeat(auto-fill, minmax(230px, 270px));
 }
 
-.sosyallesme-kumar {
+.sosyallesme-kumar,
+.sosyallesme-etkinlik {
   margin-bottom: 1.2rem;
   padding-bottom: 0.6rem;
   border-bottom: 1px solid #4a3a28;
+}
+
+/* Tur harcamayan aksiyonlar: içki çipleri + aksiyon kartları */
+.sosyal-aksiyon-mesaj {
+  margin: 0.2rem 0 0.7rem;
+  padding: 0.5rem 0.7rem;
+  font-size: 0.88rem;
+  line-height: 1.4;
+  background: rgba(201, 162, 74, 0.12);
+  border-left: 3px solid var(--renk-altin, #c9a24a);
+  border-radius: 4px;
+}
+
+.sosyal-icki-cipler {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.85rem;
+}
+
+.sosyal-icki-cip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.85rem;
+  background: #241a13;
+  border: 1px solid #5a4632;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.sosyal-icki-cip:hover:not(:disabled) {
+  border-color: var(--renk-altin, #c9a24a);
+  background: #2f2417;
+}
+
+.sosyal-icki-cip:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.sosyal-icki-gizli {
+  border-color: #6b2a2a;
+  border-style: dashed;
+}
+
+.sosyal-cip-fiyat {
+  font-size: 0.78rem;
+  opacity: 0.75;
+  margin-left: 0.15rem;
+}
+
+.sosyal-aksiyon-kartlari {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.7rem;
+}
+
+.sosyal-aksiyon-kart {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.7rem 0.8rem;
+  background: #2a1f18;
+  border: 1px solid #5a4632;
+  border-radius: 6px;
+}
+
+.sosyal-aksiyon-kilitli {
+  opacity: 0.55;
+}
+
+.sosyal-aksiyon-ust {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.sosyal-aksiyon-aciklama {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.35;
+  opacity: 0.8;
+  flex: 1;
+}
+
+.sosyal-aksiyon-butonlar {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.sosyal-aksiyon-butonlar button,
+.sosyal-aksiyon-buton {
+  padding: 0.4rem 0.7rem;
+  font-size: 0.82rem;
+  background: #3a2c18;
+  border: 1px solid #5a4632;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.sosyal-aksiyon-butonlar button:hover:not(:disabled),
+.sosyal-aksiyon-buton:hover:not(:disabled) {
+  border-color: var(--renk-altin, #c9a24a);
+}
+
+.sosyal-aksiyon-butonlar button:disabled,
+.sosyal-aksiyon-buton:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.sosyal-aksiyon-neden {
+  font-size: 0.75rem;
+  font-style: italic;
+  opacity: 0.7;
+}
+
+/* Mekân olayının ekrandan çıkmadan çözüldüğü inline kart */
+.sosyal-olay-katman {
+  display: flex;
+  justify-content: center;
+  padding: 0.5rem 0;
+}
+
+.sosyal-olay-karti {
+  width: min(680px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 1.1rem 1.3rem 1.3rem;
+  background: var(--renk-ahsap-panel, #2a1f18);
+  border: 1px solid #6b5436;
+  border-radius: 8px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+}
+
+.sosyal-olay-karti > .olay-gorseli {
+  font-size: 2.4rem;
+  line-height: 1;
+  align-self: center;
+}
+
+.sosyal-olay-karti > h3 {
+  margin: 0;
+  text-align: center;
+  font-size: 1.15rem;
+}
+
+.sosyal-olay-karti .olay-metni {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.sosyal-olay-karti .secenekler {
+  margin-top: 0.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .sosyallesme-kumar-oyunlar {
@@ -3109,6 +3297,11 @@ button.ikincil {
 .sosyallesme-kart-alkollu:hover:not(:disabled) {
   background: #3a2020;
   border-color: #8a3a3a;
+}
+
+.sosyallesme-kart-kilitli {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .sosyallesme-uyari {
@@ -3177,32 +3370,68 @@ button.ikincil {
   color: #d9b97a;
 }
 
-/* ---- Aile ekranı ---- */
+/* ---- Aile ekranı (evin içi, tam sayfa — §33) ---- */
 
 .ekran-aile {
-  align-items: center;
-  text-align: center;
-  max-width: 480px;
-  margin: 0 auto;
-}
-
-.aile-koken-karti,
-.aile-es-karti,
-.aile-cocuklar-karti {
-  width: 100%;
-  background: #1e1712;
-  border: 1px solid #3d2e1f;
-  border-radius: 14px;
-  padding: 1rem 1.15rem;
+  position: relative;
   text-align: left;
+  background: #8a6038; /* SVG yüklenene kadar sıcak duvar tonu */
+  --aile-kart-kenar: #7a5a36;
 }
 
-.aile-koken-karti h3,
-.aile-es-karti h3,
-.aile-cocuklar-karti h3 {
-  margin: 0 0 0.75rem;
-  font-size: 1rem;
-  opacity: 0.85;
+/* Oda tam görünür bir zemin. */
+.aile-arkaplan {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 12px;
+}
+
+.ekran-aile > h2,
+.ekran-aile > .aile-islem-mesaji,
+.ekran-aile > .tam-kaydirilan,
+.ekran-aile > .tam-geri-buton {
+  position: relative;
+  z-index: 1;
+}
+
+.ekran-aile > h2 {
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.75);
+}
+
+.aile-islem-mesaji {
+  margin: 0;
+  background: rgba(20, 13, 8, 0.9);
+  border: 1px solid var(--aile-kart-kenar);
+  border-radius: 10px;
+  padding: 0.55rem 0.9rem;
+}
+
+.aile-govde {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding-right: 0.4rem;
+}
+
+/* Kartlar tam opak ahşap paneller — arkadaki oda okunurluğu bozmasın. */
+.aile-kart {
+  background: linear-gradient(180deg, #241811, #1a110b);
+  border: 1px solid var(--aile-kart-kenar);
+  border-left: 3px solid var(--renk-altin, #c9a24a);
+  border-radius: 12px;
+  padding: 0.9rem 1.05rem;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5);
+}
+
+.aile-kart h3 {
+  margin: 0 0 0.65rem;
+  font-size: 0.95rem;
+  color: var(--renk-altin, #d9b25a);
+  letter-spacing: 0.03em;
 }
 
 .aile-koken-listesi {
@@ -3227,10 +3456,21 @@ button.ikincil {
   border: 1px solid rgba(100, 140, 180, 0.5);
 }
 
+.aile-es-baslik {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 0.75rem;
+  margin-bottom: 0.55rem;
+}
+
+.aile-es-ad {
+  font-weight: 600;
+}
+
 .aile-es-meslek {
-  margin: 0.5rem 0 0;
-  font-size: 0.85rem;
-  opacity: 0.8;
+  font-size: 0.8rem;
+  opacity: 0.75;
 }
 
 .aile-bos-metin {
@@ -3239,24 +3479,109 @@ button.ikincil {
   margin: 0;
 }
 
+/* İlişki barı */
+.aile-iliski {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0.35rem 0 0.7rem;
+}
+
+.aile-iliski-bar {
+  flex: 1;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+
+.aile-iliski-dolgu {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #b5533f, #e8a53b 55%, #7fbf6a);
+  transition: width 0.4s ease;
+}
+
+.aile-iliski-etiket {
+  font-size: 0.75rem;
+  opacity: 0.85;
+  min-width: 5.5em;
+  text-align: right;
+}
+
+/* Etkileşim buton satırı */
+.aile-etkilesim-satir {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.5rem;
+}
+
+.aile-etkilesim-buton {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: 10px;
+  border: 1px solid var(--aile-kart-kenar);
+  background: rgba(255, 255, 255, 0.05);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.aile-etkilesim-buton:hover:not(:disabled) {
+  background: rgba(232, 165, 59, 0.14);
+  border-color: rgba(232, 165, 59, 0.5);
+}
+
+.aile-etkilesim-buton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.aile-etkilesim-ad {
+  font-size: 0.85rem;
+}
+
+.aile-etkilesim-alt {
+  font-size: 0.72rem;
+  opacity: 0.8;
+}
+
+/* Çocuk kartları */
 .aile-cocuk-listesi {
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.7rem;
 }
 
 .aile-cocuk-satiri {
+  padding: 0.65rem 0.75rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--aile-kart-kenar);
+}
+
+.aile-cocuk-satiri.aile-cocuk-olu {
+  opacity: 0.5;
+}
+
+.aile-cocuk-ust {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem 0.65rem;
-  border-radius: 8px;
-  background: rgba(90, 90, 110, 0.25);
-  border: 1px solid rgba(120, 120, 140, 0.5);
-  font-size: 0.85rem;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.aile-cocuk-ad {
+  font-weight: 600;
+  font-size: 0.9rem;
 }
 
 .aile-cocuk-detay {
@@ -3264,9 +3589,43 @@ button.ikincil {
   opacity: 0.8;
 }
 
+/* Bekleyen talep kartı — dikkat çekici */
+.aile-talep-karti {
+  border-color: rgba(232, 165, 59, 0.6);
+  background: rgba(232, 165, 59, 0.12);
+}
+
+.aile-talep-metin {
+  margin: 0 0 0.25rem;
+  font-size: 0.92rem;
+}
+
+.aile-talep-tutar {
+  margin: 0 0 0.25rem;
+  font-weight: 600;
+}
+
+.aile-talep-son {
+  margin: 0 0 0.7rem;
+  font-size: 0.78rem;
+  opacity: 0.8;
+}
+
+.aile-talep-butonlar {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
 .aile-gor-buton {
   width: 100%;
   margin-top: 0.5rem;
+}
+
+@media (max-width: 767px) {
+  .aile-etkilesim-satir {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 /* ---- Yıldız glifi (paylaşılan) ----
@@ -3995,23 +4354,79 @@ button.ikincil {
     display: none;
   }
 
+  /* Kişisel Hayat + Dünya & Siyaset panelleri mobilde merkez olayın ALTINDA
+     YAN YANA (2 sütun) ve açık durur — dikeyde çok daha az yer kaplar. */
   .oyun-govde {
     margin-top: 0.4rem;
     display: grid;
     grid-template-areas:
-      'merkez'
-      'sol'
-      'sag';
-    grid-template-columns: 1fr;
+      'merkez merkez'
+      'sol sag';
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
     flex: none;
+    column-gap: 0.4rem;
+    row-gap: 0.5rem;
+  }
+
+  .oyun-govde > .sol-panel,
+  .oyun-govde > .sag-panel {
+    min-width: 0; /* grid item taşmasını engelle — içerik sarsın */
+    align-self: start;
     gap: 0.5rem;
+  }
+  .oyun-govde > .sol-panel {
+    align-items: stretch;
   }
 
   .panel-parsomen {
     height: auto;
     max-height: none;
     overflow-y: visible;
-    padding: 0.5rem 0.6rem;
+    padding: 0.4rem 0.45rem;
+  }
+
+  /* Panel başlık şeridi mobilde ince — büyük altın kutu + ✦ süsler yer yiyordu. */
+  .panel-parsomen-baslik {
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
+    padding: 0.28rem 0.35rem;
+    margin-bottom: 0.4rem;
+    border-bottom-width: 1px;
+  }
+  .panel-parsomen-baslik::before,
+  .panel-parsomen-baslik::after {
+    margin: 0 0.3em;
+  }
+
+  /* Panel içi alt başlıklar (Bölgeden Haberler / İlişkilerin / Durumlar /
+     Kişilik & Miras / Cemaatin / Aile ...) da küçülür — yazı boyu okunur kalır. */
+  .sol-panel h3,
+  .sag-panel h3,
+  .kisilik-paneli h3,
+  .envanter-paneli h3 {
+    font-size: 0.72rem;
+    letter-spacing: 0.03em;
+    margin: 0.5rem 0 0.3rem;
+  }
+
+  /* Kimlik bloğu (avatar + isim + rütbe) daha kompakt. */
+  .sol-panel-kimlik {
+    gap: 0.45rem;
+  }
+  .sol-panel-kimlik .karakter-avatari {
+    width: clamp(48px, 14vw, 62px);
+  }
+  .sol-panel-mini-barlar {
+    gap: 0.6rem;
+    padding: 0.25rem 0;
+  }
+
+  /* Gereksiz/tekrar eden dünya bilgisi — mobilde gizli:
+     "⏳ Dönem" satırı (çağ zaten değişmez) ve bölge haber akışı (salt flavor). */
+  .sag-panel .siyaset-donem,
+  .sag-panel .haberler-paneli {
+    display: none;
   }
 
   .merkez-panel {
@@ -4276,6 +4691,17 @@ button.ikincil {
   font-size: 0.86rem;
   color: var(--renk-parsomen-metin-soluk);
   line-height: 1.4;
+}
+
+/* Açık ekru gövde üzerinde ".ikincil" (şeffaf zemin + global açık krem yazı) okunmuyordu —
+   "🏠 Ana Menüye Dön" ve "Yeni mesaj gönder" butonlarını koyu mürekkebe çevir. */
+.ayarlar-govde button.ikincil {
+  color: var(--renk-parsomen-metin);
+  border-color: var(--renk-kahve-kenar);
+}
+
+.ayarlar-govde button.ikincil:hover:not(:disabled) {
+  background: rgba(74, 53, 32, 0.1);
 }
 
 .ayar-secenek-grup {

@@ -1,6 +1,12 @@
 import { describe, it, expect } from "vitest";
 import { yeniOyun, mesleğiAta, evlilikAdaylariGetir, evlilikTeklifEt } from "../src/game/gameEngine";
 
+// Oyuncu karakteri erkek → eş ve tüm evlilik adayları kadın isim havuzundan gelmeli.
+const FRANSA_KADIN_ISIMLERI = new Set([
+  "Isabeau", "Marguerite", "Blanche", "Aliénor", "Adèle", "Mahaut",
+  "Béatrice", "Jeanne", "Sibylle", "Agnès", "Ermengarde", "Constance",
+]);
+
 describe("olay dışı evlenme (evlilik-adaylari / evlilik-teklifi)", () => {
   it("evlilikAdaylariGetir: reşit ve bekar bir karaktere 2 aday döner", async () => {
     const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
@@ -14,6 +20,36 @@ describe("olay dışı evlenme (evlilik-adaylari / evlilik-teklifi)", () => {
       expect(aday.uyumYuzdesi).toBeGreaterThanOrEqual(0);
       expect(aday.uyumYuzdesi).toBeLessThanOrEqual(100);
     }
+  });
+
+  it("tüm evlilik adayları kadın isim havuzundan gelir", async () => {
+    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    await mesleğiAta(state.id, "Asker");
+    state.yas = 24;
+    for (let i = 0; i < 25; i++) {
+      const adaylar = await evlilikAdaylariGetir(state.id);
+      for (const aday of adaylar) {
+        expect(FRANSA_KADIN_ISIMLERI.has(aday.isim)).toBe(true);
+      }
+    }
+  });
+
+  it("teklif kabul edilince atanan eş adı kadın isim havuzundan olur", async () => {
+    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    await mesleğiAta(state.id, "Asker");
+    state.yas = 30;
+    state.mutluluk = 90;
+    state.un = 90;
+    let evlendi = false;
+    for (let i = 0; i < 40 && !evlendi; i++) {
+      const [aday] = await evlilikAdaylariGetir(state.id);
+      const sonuc = await evlilikTeklifEt(state.id, { ...aday, uyumYuzdesi: 95 });
+      if (sonuc.basarili) {
+        evlendi = true;
+        expect(FRANSA_KADIN_ISIMLERI.has(sonuc.state.es_adi as string)).toBe(true);
+      }
+    }
+    expect(evlendi).toBe(true);
   });
 
   it("18 yaş altına adaylar/teklif reddedilir", async () => {

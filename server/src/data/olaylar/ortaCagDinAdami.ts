@@ -58,9 +58,10 @@ export const OLAY_ORTACAG_DINADAMI: OlayTanimi[] = [
         baseBasariSansi: 50,
         ipucu: "Hem kaynak hem adalet — ikisini de kaçırma riski",
         basariliSonuc: {
+          mutluluk: -11,
           para: 28,
-          un: 22,
-          ahlak: 15,
+          un: 11,
+          ahlak: 7,
           mesaj: "Aile meydanda özür diledi ve bağışı yaptı; hem adalet hem kaynak.",
           detay: "Zor yolu seçtin ve işe yaradı. Cemaat hem çatısını onardı hem de adaletin satın alınamayacağını gördü.",
         },
@@ -157,7 +158,8 @@ export const OLAY_ORTACAG_DINADAMI: OlayTanimi[] = [
         baseBasariSansi: 55,
         ipucu: "Büyük ün ve gelir, sahtekârlık suçlaması riski",
         basariliSonuc: {
-          un: 30,
+          mutluluk: -10,
+          un: 15,
           para: 25,
           mesaj: "Hacılar akın etti, cemaatin zenginleşti; adın uzak diyarlara yayıldı.",
           detay: "Gerçekten bir mucize miydi yoksa tesadüf mü, sen bile artık emin değilsin. Ama inananlar var ve onlara umut veriyorsun.",

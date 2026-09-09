@@ -11,7 +11,9 @@
     "prisma:generate": "prisma generate",
     "test": "vitest run",
     "simulate": "tsx scripts/simulateEconomy.ts",
-    "analyze-olaylar": "tsx scripts/analyzeOlaylar.ts"
+    "analyze-olaylar": "tsx scripts/analyzeOlaylar.ts",
+    "db:local": "tsx scripts/localDb.ts",
+    "db:setup": "prisma generate && prisma migrate deploy"
   },
   "keywords": [],
   "author": "",
@@ -30,6 +32,7 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/node": "^26.1.1",
+    "embedded-postgres": "^18.4.0-beta.17",
     "tsx": "^4.23.1",
     "typescript": "^7.0.2",
     "vitest": "^4.1.10"
@@ -38,6 +41,7 @@
     "esbuild@0.28.1": true,
     "@prisma/client@6.19.3": true,
     "@prisma/engines@6.19.3": true,
-    "prisma@6.19.3": true
+    "prisma@6.19.3": true,
+    "@embedded-postgres/windows-x64@18.4.0-beta.17": true
   }
 }

@@ -3320,7 +3320,8 @@ export const OLAY_ORTACAG_ASKER_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 55,
         ipucu: "Cüretkâr bir başlangıç, riskli bir bahis",
         basariliSonuc: {
-          un: 25,
+          mutluluk: -8,
+          un: 13,
           para: 20,
           rakip_puani: 10,
           mesaj: "Teklifin kabul gördü, ama bazı kıdemli subaylar seni fazla acemi ve fazla hırslı buldu.",
@@ -3822,8 +3823,9 @@ export const OLAY_ORTACAG_ASKER_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 80,
         ipucu: "Az kazanç, güvenli bir örtü",
         basariliSonuc: {
+          un: -3,
           para: 20,
-          mutluluk: 3,
+          mutluluk: -5,
           mesaj: "Sırtında çuvallarla günler geçti; kimse sana bakıp da asker olduğunu düşünmedi.",
           detay: "Nasırlı eller, geçmişini en iyi gizleyen şeydi.",
         },
@@ -3840,6 +3842,8 @@ export const OLAY_ORTACAG_ASKER_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 45,
         ipucu: "Daha fazla kazanç, dikkat çekme riski",
         basariliSonuc: {
+          mutluluk: -11,
+          un: -5,
           para: 35,
           mesaj: "Israrın işe yaradı; usta sana beklediğinden fazla ödedi.",
           detay: "Bazen hayatta kalmak, biraz cüret de gerektiriyor.",
@@ -3870,8 +3874,9 @@ export const OLAY_ORTACAG_ASKER_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 65,
         ipucu: "İyi para, eski hayatın hayaletleriyle yüzleşme",
         basariliSonuc: {
+          mutluluk: -11,
           para: 30,
-          un: 5,
+          un: 3,
           saglik: -5,
           mesaj: "Kervanı haydutlardan korudun; kılıcın elinde ne kadar yabancı hissettirse de işini gördü.",
           detay: "Bir zamanlar bir orduya ait olan kolların, şimdi bir tüccara hizmet ediyor.",
@@ -4303,6 +4308,8 @@ export const OLAY_ORTACAG_ASKER_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 50,
         ipucu: "Sınırlı risk, sınırlı kazanç",
         basariliSonuc: {
+          mutluluk: -6,
+          un: -2,
           para: 15,
           saglik: -5,
           mesaj: "Tek seferlik görevi tamamladın, parasını aldın ve hemen ayrıldın.",
@@ -4558,8 +4565,9 @@ export const OLAY_ORTACAG_ASKER_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 60,
         ipucu: "İyi para ve saygı, yorucu ve tehlikeli bir yol",
         basariliSonuc: {
+          mutluluk: -11,
           para: 35,
-          un: 10,
+          un: 5,
           saglik: -10,
           mesaj: "Kervanı güvenle geçitten geçirdin; tüccar minnettar, adın yol boyunca yayıldı.",
           detay: "Askerlik yıllarından kalan tek şey, bu dağları avucun içi gibi bilmen oldu.",
@@ -4896,7 +4904,9 @@ export const OLAY_ORTACAG_ASKER_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 50,
         ipucu: "Vicdanını rahatlatırsın, ajanın güvenini riske atarsın",
         basariliSonuc: {
-          ahlak: 12,
+          mutluluk: -6,
+          un: -2,
+          ahlak: 6,
           para: 15,
           mesaj: "Verdiğin yanlış bilgi kervanı yanlışlıkla kurtardı; ajan bunu bir hata sandı, sen ise içinden rahat bir nefes aldın.",
           detay: "Bazen en iyi ihanet, hiç ihanet etmemektir.",

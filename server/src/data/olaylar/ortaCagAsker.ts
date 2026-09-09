@@ -651,8 +651,9 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
         maliyet: 10,
         ipucu: "Eğlenceli ve kârlı, sakatlanma riski",
         basariliSonuc: {
+          mutluluk: -6,
           para: 25,
-          un: 15,
+          un: 8,
           mesaj: "Yarışı kıl payı kazandın; kışlada uzun süre konuşuldu.",
           detay: "Komutan duyunca kaşlarını çattı ama gülümsemesini gizleyemedi.",
         },
@@ -743,7 +744,8 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
         baseBasariSansi: 60,
         ipucu: "Doğruysa büyük başarı, yanlışsa itibar kaybı",
         basariliSonuc: {
-          un: 25,
+          mutluluk: -5,
+          un: 13,
           para: 13,
           mesaj: "Adam gerçekten casusmuş; itiraflarıyla bir komployu ortaya çıkardın.",
           detay: "Kale komutanı seni bizzat tebrik etti; adın garnizonun her yerinde konuşuldu.",
@@ -790,9 +792,10 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
         baseBasariSansi: 50,
         ipucu: "Adalet ya da 'baş belası' damgası",
         basariliSonuc: {
-          un: 22,
+          mutluluk: -6,
+          un: 11,
           para: 15,
-          ahlak: 15,
+          ahlak: 7,
           mesaj: "İtirazın işe yaradı; paylaşım yeniden düzenlendi.",
           detay: "Sıradan askerler seni sözcüleri olarak görmeye başladı; subaylar ise seni izlemeye.",
         },

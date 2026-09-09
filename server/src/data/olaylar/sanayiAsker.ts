@@ -152,7 +152,8 @@ export const OLAY_SANAYI_ASKER: OlayTanimi[] = [
         baseBasariSansi: 60,
         ipucu: "Ordu içinde tanınırlık, fiziksel risk",
         basariliSonuc: {
-          un: 22,
+          mutluluk: -6,
+          un: 11,
           para: 15,
           mesaj: "Silah sorunsuz çalıştı; raporun ordunun karar alma sürecinde kullanıldı.",
           detay: "Artık 'yeni silahları ilk deneyen adam' olarak biliniyorsun.",
@@ -468,6 +469,8 @@ export const OLAY_SANAYI_ASKER: OlayTanimi[] = [
         maliyet: 10,
         ipucu: "Hızlı kazanç ya da hızlı kayıp",
         basariliSonuc: {
+          mutluluk: -8,
+          un: -3,
           para: 30,
           mesaj: "Şanslı bir gecendi; masadan cebin dolu kalktın.",
           detay: "Diğer askerler senden çekinerek 'bir daha oynamam' dedi.",
@@ -532,8 +535,9 @@ export const OLAY_SANAYI_ASKER: OlayTanimi[] = [
         baseBasariSansi: 80,
         ipucu: "Güvenli ama içtenlikten uzak",
         basariliSonuc: {
+          mutluluk: -6,
           para: 15,
-          un: 10,
+          un: 5,
           mesaj: "Üstlerin röportajdan memnun kaldı; küçük bir ödül aldın.",
           detay: "Söylediklerin tam gerçek değildi ama kimse bunu sorgulamadı.",
         },

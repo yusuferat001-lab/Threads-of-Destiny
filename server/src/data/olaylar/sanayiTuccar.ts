@@ -172,6 +172,8 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
         maliyet: 35,
         ipucu: "Büyük kazanç ya da yıkıcı kayıp",
         basariliSonuc: {
+          mutluluk: -11,
+          un: -5,
           para: 90,
           mesaj: "Hisseler tavan yaptı! Sermayenin kısa sürede iki katından fazlasına ulaştı.",
           detay: "Bazı riskler efsanevi kazançlara dönüşüyor.",
@@ -241,8 +243,9 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
         baseBasariSansi: 80,
         ipucu: "Yavaş ama güvenilir bir büyüme",
         basariliSonuc: {
+          mutluluk: -5,
           para: 12,
-          un: 8,
+          un: 4,
           mesaj: "Dürüst ilanın az ama sadık bir müşteri kitlesi kazandırdı.",
           detay: "Güven, en pahalı reklamdan daha değerli.",
         },
@@ -342,6 +345,8 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
         baseBasariSansi: 75,
         ipucu: "Kısa vadede kazanç, felaket anında yıkım riski",
         basariliSonuc: {
+          mutluluk: -8,
+          un: -3,
           para: 20,
           mesaj: "Parayı işine yatırdın, üretim arttı; şimdilik hiçbir kaza olmadı.",
           detay: "Risk almak bu sefer işe yaradı.",

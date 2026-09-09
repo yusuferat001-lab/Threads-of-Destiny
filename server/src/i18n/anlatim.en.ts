@@ -136,6 +136,8 @@ export const ANLATIM_EN: Record<string, string> = {
   "Adın bir yerde saygıyla anıldı, ama bu sana bir şey kazandırmadı.":
     "Your name was mentioned with respect somewhere, but it earned you nothing.",
   "Yolda küçük bir kese buldun — kısmet.": "You found a small purse on the road — fortune.",
+  "🗡️ Üzerinde büyük miktarda nakit olduğunu öğrenen {0}, seni pusuya düşürüp {1} {birim} alıp kaçtı.":
+    "🗡️ Learning you were carrying a large sum of cash, {0} ambushed you and made off with {1} {birim}.",
   "🗡️ Bir hırsız gece kilerine girdi; sabah {0} eksikti.":
     "🗡️ A thief broke into your cellar at night; by morning {0} was missing.",
   "💰 {1} kabadayıları \"koruma parası\" istedi; {0} vermek zorunda kaldın.":
@@ -407,6 +409,7 @@ export const ANLATIM_EN: Record<string, string> = {
   "\"{0}\" ünvanını kazandı": "Earned the title \"{0}\"",
   "Zorunlu bağış: -{0} {birim}": "Forced donation: -{0} {birim}",
   "Zenginlik sızıntısı: -{0} {birim}": "Wealth leak: -{0} {birim}",
+  "Rakip parayı alıp kaçtı: -{0} {birim}": "Rival grabbed the money and fled: -{0} {birim}",
   "Veba sona erdi": "The plague ended",
   "{0} rütbesine terfi etti": "Promoted to the rank of {0}",
 
@@ -469,4 +472,97 @@ export const ANLATIM_EN: Record<string, string> = {
   "{0} ters tepti; biraz fenalaştın ({1} sağlık).": "{0} backfired; you felt worse ({1} health).",
   "sağlık": "health",
   "mutluluk": "happiness",
+
+  // ---- Sosyalleşme ekranı: tur harcamayan aksiyonlar ----
+  "Yasak ama... bir kadeh. Ahlakın ve itibarın çentik yer.":
+    "Forbidden, but... just one cup. It nicks your morality and your standing.",
+  "Keyiflenirsin ama ertesi gün ağır olur.": "You'll enjoy it, but the morning after is rough.",
+  "Hafif bir keyif, zararsız.": "A mild, harmless pleasure.",
+  "Bu yıl bir şey içtin.": "You've had a drink this year.",
+  "Yeterli paran yok.": "You don't have enough money.",
+  "Yakında tekrar yapabilirsin ({0} yıl).": "You can do this again soon ({0} yr).",
+  "Bunun için alkollü bir mekân gerek.": "This needs a venue that serves drink.",
+  "{0} devirdin. Keyiflendin ama yarın seni bekliyor.":
+    "You downed {0}. You're merry now, but tomorrow is waiting.",
+  "Meydan artık seni 'ayyaş' diye anıyor.": "The square now calls you a drunkard.",
+  "{0} içtin. Hafif, tatlı bir mola.": "You had {0}. A light, sweet little break.",
+  "Gören olmadı sandın ama fısıltı çabuk yayılır.":
+    "You thought no one saw — but whispers travel fast.",
+  "Deli anlamsız sözler arasında sıradaki işini tarif eder gibi bir şeyler saydı. Tüylerin ürperdi ama kulağın açıldı.":
+    "Amid nonsense, the fool rattled off something that sounded like your next task. It chilled you — but sharpened your ear.",
+  "Delinin taklitleri meydanı kırıp geçirdi; karnın ağrıyana kadar güldün.":
+    "The fool's impressions brought down the square; you laughed until your stomach hurt.",
+  "Deli gözlerini kısıp kulağına bir isim ve bir yıl fısıldadı. Gece boyu uyuyamadın.":
+    "The fool narrowed his eyes and whispered a name and a year in your ear. You didn't sleep all night.",
+  "Deliye avuç dolusu bozukluk verdin; 'ne cömert adam' diye fısıldandı meydan.":
+    "You gave the fool a fistful of coppers; 'what a generous man,' the square murmured.",
+  "Deli bir an durulup gayet aklı başında bir öğüt verdi. İçin tuhaf bir şekilde ısındı.":
+    "For a moment the fool went still and gave a perfectly sane piece of advice. Something in you warmed, strangely.",
+  "Deli bir süre peşinden yürüdü, uydurma bir marş söyledi, sonra kayboldu.":
+    "The fool trailed you a while, sang a made-up anthem, then vanished.",
+  "Kesenden {0} {birim} çıkarıp dağıttın; içindeki düğüm biraz çözüldü.":
+    "You took {0} {birim} from your purse and gave it away; the knot inside you loosened a little.",
+  "Yan masada bir görevli sıradaki seferden dem vurdu — kulağın açık, bir sonraki işi daha net göreceksin.":
+    "An official at the next table went on about the coming campaign — your ear is open; you'll see the next task more clearly.",
+  "Kulak misafiri olduğun dedikodu senin hakkındaydı ve hiç hoş değildi.":
+    "The gossip you overheard was about you, and it wasn't kind.",
+  "Çarşı her zamanki gibi kaynıyor: kim kiminle küs, hangi tüccar batmış, kimin oğlu askere yazılmış...":
+    "The market churns as ever: who's fallen out with whom, which merchant went under, whose son signed up...",
+  "Bütün masaya bir tur ısmarladın; kadehler senin şerefine kalktı, birkaç yeni yüz sana dost oldu.":
+    "You stood the whole table a round; the cups rose in your name and a few new faces became friends.",
+  "Falcı avucundaki çizgileri izledi: 'Uzun bir yol, ortasında beklenmedik bir kısmet' dedi.":
+    "The fortune teller traced the lines of your palm: 'A long road, and an unexpected fortune halfway along,' she said.",
+  "Fincanın dibinde bir kuş görmüş: 'Haber gelecek' dedi, o kadar.":
+    "She saw a bird at the bottom of the cup: 'News is coming,' she said, and no more.",
+  "'Yakında yüzün gülecek' dedi falcı ve nedense buna bütün kalbinle inandın.":
+    "'You'll be smiling soon,' said the fortune teller, and for some reason you believed it with all your heart.",
+  "Falcının yüzü asıldı, fincanı hızla ters kapattı. 'Bu ay temkinli ol' demekle yetindi.":
+    "The fortune teller's face fell; she flipped the cup over quickly. 'Be careful this month,' was all she offered.",
+  "Falcı ürkütücü bir kesinlikle sıradaki işini tarif etti. Ensende bir ürperti.":
+    "With unnerving precision the fortune teller described your next task. A shiver down your neck.",
+
+  // ---- Aile ekranı: etkileşimler + talep (§33) ----
+  "{0} istediği şeyi alamamana alındı; aranıza bir soğukluk girdi.":
+    "{0} took it badly that you wouldn't get what they wanted; a coldness came between you.",
+  "{0} senden bir şey rica etti — Aile ekranından yanıtlayabilirsin.":
+    "{0} has asked you for something — you can answer from the Family screen.",
+  "{0} için bir hediye aldın; yüzü güldü.": "You bought {0} a gift; their face lit up.",
+  "{0} ile baş başa vakit geçirdin; ikiniz de dinlendiniz.":
+    "You spent time alone with {0}; you both felt rested.",
+  "{0}'e sarılıp sevgini gösterdin; aranız yumuşadı.":
+    "You held {0} and showed your love; things softened between you.",
+  "{0} ile bir geziye çıktınız; uzun zamandır bu kadar iyi anlaşmamıştınız.":
+    "You went on an outing with {0}; you hadn't gotten along this well in a long time.",
+  "{0} ile oyun oynadın; kahkahası eve doldu.":
+    "You played with {0}; their laughter filled the house.",
+  "{0} için bir hediye aldın; sevincinden zıpladı.":
+    "You bought {0} a gift; they jumped for joy.",
+  "{0}'in eğitimi için para ayırdın; sana minnettar.":
+    "You set aside money for {0}'s education; they're grateful to you.",
+  "Tüm aileyle birlikte bir gün geçirdiniz; herkesin yüzü gülüyor.":
+    "You spent a day together with the whole family; everyone is smiling.",
+  "{0} ile vakit geçirdin.": "You spent time with {0}.",
+  "Ama bugün pek keyifli değildi; etkisi az oldu.":
+    "But it wasn't very cheerful today; the effect was small.",
+  "{0} istediğini aldı; çok mutlu oldu.": "{0} got what they wanted; they were overjoyed.",
+  "{0}'e hayır dedin; aranıza bir kırgınlık girdi.":
+    "You said no to {0}; a resentment came between you.",
+  // Talep kalemleri (eş)
+  "yeni bir elbise": "a new dress",
+  "gümüş bir ayna": "a silver mirror",
+  "bir mücevher": "a piece of jewelry",
+  "ipek bir şal": "a silk shawl",
+  "güzel bir at": "a fine horse",
+  "yeni bir yatak takımı": "a new bed set",
+  "bir hizmetçi tutulması": "hiring a servant",
+  "annesine bir hediye": "a gift for their mother",
+  // Talep kalemleri (çocuk)
+  "yeni bir oyuncak": "a new toy",
+  "bir çift sağlam ayakkabı": "a sturdy pair of shoes",
+  "kitaplar": "books",
+  "bir müzik aleti": "a musical instrument",
+  "bir tay": "a colt",
+  "arkadaşlarıyla bir gezi": "an outing with friends",
+  "yeni giysiler": "new clothes",
+  "bir usta çıraklığı ücreti": "an apprenticeship fee",
 };

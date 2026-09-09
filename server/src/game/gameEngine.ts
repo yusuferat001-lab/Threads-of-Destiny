@@ -66,6 +66,7 @@ import {
   paraYuvarla,
   zorunluBagisKontrolEt,
   zenginlikSizintiKontrolEt,
+  rakipSoygunKontrolEt,
   buyukSavasKontrolEt,
   buyukSavasBitisKontrolEt,
   vebaBaslamaliMi,
@@ -77,6 +78,7 @@ import {
   kucukKrizKontrolEt,
   MESLEK_KATEGORI,
   eskiKayitGocu,
+  aileYillikUygula,
 } from "./stateManager";
 import { rutbeTanimiGetir, KARIYER_PUANI_YILLIK, KARIYER_PUANI_KATEGORI_BASARI } from "../data/rutbeler";
 import { KOTU_ISLER, kotuIsTanimiGetir, KotuIsEtki } from "../data/kotuIsler";
@@ -90,7 +92,14 @@ import {
   sosyallesmeYeriGetir,
   sosyallesmeYeriUygunMu,
 } from "../data/sosyallesmeYerleri";
-import { rastgeleBirIsimSec, rastgeleOyuncuIsmiSec } from "../data/npcIsimleri";
+import {
+  bolgeIcecekleri,
+  icecekTanimiGetir,
+  sosyalAksiyonTanimiGetir,
+  SOSYAL_AKSIYONLAR,
+  AKSIYON_COOLDOWN,
+} from "../data/sosyallesmeAksiyonlari";
+import { rastgeleBirIsimSec, rastgeleOyuncuIsmiSec, rastgeleCinsiyetliIsimSec } from "../data/npcIsimleri";
 import { rastgeleKisilikCifti, kisilikGetir } from "../data/kisilikler";
 import {
   rastgeleHayvanTuruSec,
@@ -139,6 +148,8 @@ const AYYAS_ESIGI = 3;
 const SOSYALLESME_GIRIS_UCRETI = 3;
 const SOSYALLESME_EK_MASRAF = 2;
 const SOSYALLESME_MORAL_BONUSU = 4;
+/** Bir mekân olayı çözüldükten sonra o mekânın kaç oyun yılı kilitli kalacağı (kullanıcı: mekân olayı tur harcamaz ama farm da olmasın). */
+const SOSYALLESME_MEKAN_COOLDOWN = 2;
 
 /**
  * "Suç işleyerek para kazanma" motor kuralı. Uygulanan sonuç etkisi hem para
@@ -722,6 +733,8 @@ export interface TurNakitAkisi {
   zorunluBagis: number;
   /** Zenginlik sızıntısı (hırsız/haraç/dolandırıcı — net servet ≥ 350 & nakit ≥ 50; mutlak değer). */
   zenginlikSizinti: number;
+  /** Rakibin "parayı alıp kaçtığı" soygun (nakit ≥ 150 iken düşük ihtimalli; mutlak değer). */
+  rakipSoygun: number;
   /** Yukarıdaki kalemlerin dışında kalan her şey (kriz para etkisi, şans olayı, servet_kaybet/para_sifirla vb.) — net. */
   digerNet: number;
   /** Bilgi amaçlı: mülk bakım tutarı (mulkNet içinde zaten düşülü — mutabakata AYRICA girmez). */
@@ -836,7 +849,7 @@ async function sonucuUygulaVeIlerlet(
   const nakitAkisi: TurNakitAkisi = {
     olayGeliri: 0, olayGideri: 0, maasBrut: 0, giderYasam: 0, giderKonut: 0,
     giderEkip: 0, giderEvcil: 0, savasVergisi: 0, faiz: 0, mulkNet: 0,
-    envanterBakim: 0, zorunluBagis: 0, zenginlikSizinti: 0, digerNet: 0, bilgiMulkBakim: 0,
+    envanterBakim: 0, zorunluBagis: 0, zenginlikSizinti: 0, rakipSoygun: 0, digerNet: 0, bilgiMulkBakim: 0,
   };
   // Olay geliri primi: maaş dışı gelir kanalını hafifçe güçlendirir (her olay için ~%5.5).
   if (etki.para && etki.para > 0) {
@@ -872,22 +885,7 @@ async function sonucuUygulaVeIlerlet(
     etki.mutluluk = (etki.mutluluk ?? 0) + SOSYALLESME_MORAL_BONUSU;
     const ziyaretEdilenYer = sosyallesmeYeriGetir(mevcutOlay.sosyallesmeYeri);
     if (ziyaretEdilenYer?.alkolluMu) {
-      state.alkol_ziyaret_sayisi += 1;
-      if (state.alkol_ziyaret_sayisi >= AYYAS_ESIGI && !state.etiketler.includes("bagimlilik:ayyas")) {
-        etiketEkle(state, ["bagimlilik:ayyas", "bagimlilik:var"]);
-        state.ahlak -= 10;
-        state.un -= 15;
-        durumEkle(state, {
-          id: "ayyaslik",
-          ad: "Ayyaşlık",
-          tur: "kalici",
-          tur_basi_saglik: -1,
-          tur_basi_mutluluk: -1,
-        });
-        maasCarpaniUygula(state, 0.95);
-        hayatOlayiEkle(state, "🍷", "Artık bir ayyaş olarak tanınıyor");
-        ayyasOlduBuTur = true;
-      }
+      ayyasOlduBuTur = ayyasZiyaretiIsle(state);
     }
   }
 
@@ -964,7 +962,8 @@ async function sonucuUygulaVeIlerlet(
   }
 
   if (etki.es_ata) {
-    state.es_adi = rastgeleBirIsimSec(state.cag, state.bolge, [state.dost_adi, state.rakip_adi]);
+    // Oyuncu karakteri erkek — eş her zaman kadın isim havuzundan seçilir.
+    state.es_adi = rastgeleCinsiyetliIsimSec(state.cag, state.bolge, "kadin", [state.dost_adi, state.rakip_adi]);
     state.es_puani = 60;
     state.es_meslek = MESLEKLER[Math.floor(Math.random() * MESLEKLER.length)];
     const esRutbeTanimi = rutbeTanimiGetir(state.es_meslek, state.cag, state.din_kultur);
@@ -992,7 +991,7 @@ async function sonucuUygulaVeIlerlet(
         state.es_adi ?? "",
         ...state.cocuklar.map((c) => c.isim),
       ]);
-      state.cocuklar.push({ isim, dogum_yili: state.yil, yasiyor: true });
+      state.cocuklar.push({ isim, dogum_yili: state.yil, yasiyor: true, iliski: 65 });
       hayatOlayiEkle(state, "👶", T(state.dil, "{0} doğdu", [isim]));
     }
     state.cocuk_sayisi = state.cocuklar.filter((c) => c.yasiyor).length;
@@ -1006,6 +1005,13 @@ async function sonucuUygulaVeIlerlet(
       state.cocuk_sayisi = state.cocuklar.filter((c) => c.yasiyor).length;
       hayatOlayiEkle(state, "💔", T(state.dil, "{0} kaybedildi", [secilen.isim]));
       if (state.cocuk_sayisi === 0) etiketSil(state, ["cocuk_var"]);
+    }
+  }
+  if (typeof etki.cocuk_iliski === "number" && etki.cocuk_iliski !== 0) {
+    for (const c of state.cocuklar) {
+      if (c.yasiyor && typeof c.iliski === "number") {
+        c.iliski = Math.max(0, Math.min(100, c.iliski + etki.cocuk_iliski));
+      }
     }
   }
 
@@ -1260,6 +1266,12 @@ async function sonucuUygulaVeIlerlet(
           nakitAkisi.mulkNet = mulkSonucu.toplamNet;
           nakitAkisi.bilgiMulkBakim = mulkSonucu.bakimOdemeleri.reduce((a, b) => a + b.miktar, 0);
           sucSeviyesiUygula(state, yasArtisi);
+          // Aile ekranı: eş/çocuk ilişkisi soğuması + düşük ilişki moral cezası +
+          // bekleyen para talebinin süresi dolması / yeni talep üretimi (§33).
+          const aileMesaji = aileYillikUygula(state, yasArtisi);
+          if (aileMesaji) {
+            zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${aileMesaji}` : aileMesaji;
+          }
           const envanterSonucu = envanterBozulmasiUygula(state, yasArtisi);
           if (envanterSonucu.cozulenler.length > 0) {
             const cozulmeMesaji =
@@ -1298,6 +1310,15 @@ async function sonucuUygulaVeIlerlet(
             zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${sizintiSonucu.mesaj}` : sizintiSonucu.mesaj;
             hayatOlayiEkle(state, "🗡️", T(state.dil, "Zenginlik sızıntısı: -{0} {birim}", [sizintiSonucu.miktar]).replace(/\{birim\}/g, state.para_birimi));
             nakitAkisi.zenginlikSizinti = sizintiSonucu.miktar;
+          }
+
+          // Rakip soygunu: üzerinde çok nakitle dolaşırken düşük ihtimalle isimli
+          // rakip parayı alıp kaçar (zenginlik sızıntısından ayrı ve daha nadir/sert).
+          const rakipSoygunSonucu = rakipSoygunKontrolEt(state, yasArtisi);
+          if (rakipSoygunSonucu) {
+            zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${rakipSoygunSonucu.mesaj}` : rakipSoygunSonucu.mesaj;
+            hayatOlayiEkle(state, "🗡️", T(state.dil, "Rakip parayı alıp kaçtı: -{0} {birim}", [rakipSoygunSonucu.miktar]).replace(/\{birim\}/g, state.para_birimi));
+            nakitAkisi.rakipSoygun = rakipSoygunSonucu.miktar;
           }
 
           const savasBaslamaMesaji = buyukSavasKontrolEt(state, yasArtisi);
@@ -1413,7 +1434,8 @@ async function sonucuUygulaVeIlerlet(
     nakitAkisi.mulkNet -
     nakitAkisi.envanterBakim -
     nakitAkisi.zorunluBagis -
-    nakitAkisi.zenginlikSizinti;
+    nakitAkisi.zenginlikSizinti -
+    nakitAkisi.rakipSoygun;
   nakitAkisi.digerNet = paraYuvarla(state.para - paraGiris - mutabakatliToplam);
 
   await oturumKaydet(state);
@@ -1542,7 +1564,8 @@ function rastgeleEvlilikAdayiUret(state: CharacterState): EvlilikAdayi {
     : meslek;
   const kisilik = rastgeleKisilikCifti();
   const disariBirak = [state.dost_adi, state.rakip_adi, state.es_adi].filter((a): a is string => Boolean(a));
-  const isim = rastgeleBirIsimSec(state.cag, state.bolge, disariBirak);
+  // Oyuncu karakteri erkek — evlilik adayları her zaman kadın isim havuzundan.
+  const isim = rastgeleCinsiyetliIsimSec(state.cag, state.bolge, "kadin", disariBirak);
   return { isim, meslek, rutbe, kisilik, uyumYuzdesi: evlilikUyumHesapla(state, kisilik) };
 }
 
@@ -1607,6 +1630,223 @@ export async function evlilikTeklifEt(id: string, aday: EvlilikAdayi): Promise<E
     : T(state.dil, "{0} teklifini nazikçe geri çevirdi. Belki başka zaman...", [aday.isim]);
   await oturumKaydet(state);
   return { state, basarili, mesaj };
+}
+
+// ---------------------------------------------------------------------------
+// Aile ekranı: eş/çocuk etkileşimleri + bekleyen para talebi (§33)
+// Sosyalleşme/mağaza deseni: hepsi tur harcamaz, oturumKaydet sonrası döner.
+// ---------------------------------------------------------------------------
+
+type AileEtkilesimHedef = "es" | "cocuk" | "hepsi";
+
+interface AileEtkilesimTanimi {
+  id: string;
+  ikon: string;
+  hedef: AileEtkilesimHedef;
+  /** Enflasyondan ÖNCEki taban maliyet (0 = ücretsiz). */
+  tabanMaliyet: number;
+  cooldownYil: number;
+  esPuani?: number;
+  cocukIliski?: number;
+  mutluluk?: number;
+  saglik?: number;
+  un?: number;
+}
+
+const AILE_ETKILESIMLERI: AileEtkilesimTanimi[] = [
+  { id: "es_hediye", ikon: "🎁", hedef: "es", tabanMaliyet: 10, cooldownYil: 3, esPuani: 12, mutluluk: 3 },
+  { id: "es_zaman", ikon: "⏳", hedef: "es", tabanMaliyet: 0, cooldownYil: 3, esPuani: 7, mutluluk: 4, saglik: 2 },
+  { id: "es_sevgi", ikon: "💋", hedef: "es", tabanMaliyet: 0, cooldownYil: 2, esPuani: 5, mutluluk: 3 },
+  { id: "es_gezi", ikon: "🌇", hedef: "es", tabanMaliyet: 14, cooldownYil: 4, esPuani: 9, mutluluk: 6 },
+  { id: "cocuk_oyna", ikon: "🎠", hedef: "cocuk", tabanMaliyet: 0, cooldownYil: 3, cocukIliski: 8, mutluluk: 4 },
+  { id: "cocuk_hediye", ikon: "🧸", hedef: "cocuk", tabanMaliyet: 8, cooldownYil: 3, cocukIliski: 12, mutluluk: 3 },
+  { id: "cocuk_egitim", ikon: "🎓", hedef: "cocuk", tabanMaliyet: 18, cooldownYil: 6, cocukIliski: 9, un: 2 },
+  { id: "aile_gezi", ikon: "🧺", hedef: "hepsi", tabanMaliyet: 16, cooldownYil: 5, esPuani: 6, cocukIliski: 6, mutluluk: 6, saglik: 2 },
+];
+
+function aileEtkilesimKilitAnahtari(tanim: AileEtkilesimTanimi, cocukIndex: number | null): string {
+  return tanim.hedef === "cocuk" ? `${tanim.id}:${cocukIndex}` : tanim.id;
+}
+
+function aileEtkilesimMaliyeti(state: CharacterState, tanim: AileEtkilesimTanimi): number {
+  if (tanim.tabanMaliyet <= 0) return 0;
+  return Math.max(1, paraYuvarla(tanim.tabanMaliyet * enflasyonCarpani(state)));
+}
+
+export interface AileDurumu {
+  es: { adi: string; meslek: string | null; rutbe: string | null; puan: number } | null;
+  cocuklar: { isim: string; dogumYili: number; yas: number; yasiyor: boolean; iliski: number }[];
+  etkilesimler: { id: string; ikon: string; hedef: AileEtkilesimHedef; maliyet: number }[];
+  /** Etkileşim kilit anahtarı → tekrar açılacağı oyun yılı (istemci kalanYil'i guncelYil ile hesaplar). */
+  kilitler: Record<string, number>;
+  talep: CharacterState["aile_talep"];
+  guncelYil: number;
+  para: number;
+  paraBirimi: string;
+}
+
+/** Aile ekranının ihtiyaç duyduğu her şey: eş/çocuk özeti, etkileşim kataloğu + kilitler, bekleyen talep. Turu tüketmez. */
+export async function aileDurumGetir(id: string): Promise<AileDurumu> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  return {
+    es: state.es_adi
+      ? { adi: state.es_adi, meslek: state.es_meslek, rutbe: state.es_rutbe, puan: Math.round(state.es_puani) }
+      : null,
+    cocuklar: state.cocuklar.map((c) => ({
+      isim: c.isim,
+      dogumYili: c.dogum_yili,
+      yas: Math.max(0, state.yil - c.dogum_yili),
+      yasiyor: c.yasiyor,
+      iliski: Math.round(typeof c.iliski === "number" ? c.iliski : 60),
+    })),
+    etkilesimler: AILE_ETKILESIMLERI.map((t) => ({
+      id: t.id,
+      ikon: t.ikon,
+      hedef: t.hedef,
+      maliyet: aileEtkilesimMaliyeti(state, t),
+    })),
+    kilitler: { ...state.aile_etkilesim_kilit },
+    talep: state.aile_talep,
+    guncelYil: state.yil,
+    para: state.para,
+    paraBirimi: state.para_birimi,
+  };
+}
+
+interface AileEtkilesimSonucu {
+  state: CharacterState;
+  tam: boolean;
+  mesaj: string;
+}
+
+const AILE_ETKILESIM_MESAJLARI: Record<string, string> = {
+  es_hediye: "{0} için bir hediye aldın; yüzü güldü.",
+  es_zaman: "{0} ile baş başa vakit geçirdin; ikiniz de dinlendiniz.",
+  es_sevgi: "{0}'e sarılıp sevgini gösterdin; aranız yumuşadı.",
+  es_gezi: "{0} ile bir geziye çıktınız; uzun zamandır bu kadar iyi anlaşmamıştınız.",
+  cocuk_oyna: "{0} ile oyun oynadın; kahkahası eve doldu.",
+  cocuk_hediye: "{0} için bir hediye aldın; sevincinden zıpladı.",
+  cocuk_egitim: "{0}'in eğitimi için para ayırdın; sana minnettar.",
+  aile_gezi: "Tüm aileyle birlikte bir gün geçirdiniz; herkesin yüzü gülüyor.",
+};
+
+/** Aile ekranından bir etkileşim (hediye/zaman/sevgi/gezi/eğitim...) — turu TÜKETMEZ. Maliyeti düşer, ilişki/mutluluk uygular, cooldown yazar. */
+export async function aileEtkilesimYap(
+  id: string,
+  etkilesimId: string,
+  cocukIndex: number | null = null
+): Promise<AileEtkilesimSonucu> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  if (state.etiketler.includes("hapiste")) throw new Error("Hapisteyken ailenle ilgilenemezsin.");
+  if (state.etiketler.includes("yolculukta")) throw new Error("Yolculuktayken ailenle ilgilenemezsin.");
+
+  const tanim = AILE_ETKILESIMLERI.find((t) => t.id === etkilesimId);
+  if (!tanim) throw new Error("Böyle bir etkileşim yok.");
+
+  const esGerekli = tanim.hedef === "es" || tanim.hedef === "hepsi";
+  if (esGerekli && !state.es_adi && tanim.hedef === "es") throw new Error("Bunun için bir eşin olmalı.");
+
+  let hedefCocuk: CharacterState["cocuklar"][number] | null = null;
+  if (tanim.hedef === "cocuk") {
+    if (cocukIndex == null || !state.cocuklar[cocukIndex] || !state.cocuklar[cocukIndex].yasiyor) {
+      throw new Error("Geçerli bir çocuk seçmelisin.");
+    }
+    hedefCocuk = state.cocuklar[cocukIndex];
+  }
+  if (tanim.hedef === "hepsi" && !state.es_adi && !state.cocuklar.some((c) => c.yasiyor)) {
+    throw new Error("Ailen yok.");
+  }
+
+  const anahtar = aileEtkilesimKilitAnahtari(tanim, cocukIndex);
+  const kilitYili = state.aile_etkilesim_kilit[anahtar];
+  if (typeof kilitYili === "number" && state.yil < kilitYili) {
+    throw new Error("Bunu bu kadar sık yapamazsın; biraz zaman geçmeli.");
+  }
+
+  const maliyet = aileEtkilesimMaliyeti(state, tanim);
+  if (maliyet > 0 && state.para < maliyet) throw new Error("Bunu karşılayacak paran yok.");
+  if (maliyet > 0) state.para = paraYuvarla(state.para - maliyet);
+
+  // Hafif zar: %80 tam etki, %20 yarım ("bugün pek keyfi yoktu").
+  const tam = Math.random() < 0.8;
+  const carpan = tam ? 1 : 0.5;
+  const olcek = (x: number | undefined) => (x ? Math.max(1, Math.round(x * carpan)) : 0);
+
+  if ((tanim.hedef === "es" || tanim.hedef === "hepsi") && state.es_adi && tanim.esPuani) {
+    state.es_puani += olcek(tanim.esPuani);
+  }
+  if (tanim.cocukIliski) {
+    if (tanim.hedef === "cocuk" && hedefCocuk) {
+      hedefCocuk.iliski = (typeof hedefCocuk.iliski === "number" ? hedefCocuk.iliski : 60) + olcek(tanim.cocukIliski);
+    } else if (tanim.hedef === "hepsi") {
+      for (const c of state.cocuklar) {
+        if (c.yasiyor) c.iliski = (typeof c.iliski === "number" ? c.iliski : 60) + olcek(tanim.cocukIliski);
+      }
+    }
+  }
+  if (tanim.mutluluk) state.mutluluk += olcek(tanim.mutluluk);
+  if (tanim.saglik) state.saglik += olcek(tanim.saglik);
+  if (tanim.un) state.un += tanim.un;
+  clampStats(state);
+
+  state.aile_etkilesim_kilit[anahtar] = state.yil + tanim.cooldownYil;
+
+  const kimAdi =
+    tanim.hedef === "cocuk" && hedefCocuk ? hedefCocuk.isim : state.es_adi ?? "";
+  const sablon = AILE_ETKILESIM_MESAJLARI[etkilesimId] ?? "{0} ile vakit geçirdin.";
+  let mesaj = T(state.dil, sablon, [kimAdi]);
+  if (!tam) mesaj += " " + T(state.dil, "Ama bugün pek keyifli değildi; etkisi az oldu.");
+
+  await oturumKaydet(state);
+  return { state, tam, mesaj };
+}
+
+interface AileTalepSonucu {
+  state: CharacterState;
+  kabul: boolean;
+  mesaj: string;
+}
+
+/** Bekleyen aile talebini yanıtlar: kabul → para düşer + ilişki artar; ret → ilişki + mutluluk düşer. Turu tüketmez. */
+export async function aileTalebiKararlastir(id: string, karar: "kabul" | "ret"): Promise<AileTalepSonucu> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  const talep = state.aile_talep;
+  if (!talep) throw new Error("Bekleyen bir talep yok.");
+  if (karar !== "kabul" && karar !== "ret") throw new Error("Geçersiz karar.");
+
+  const hedefCocuk =
+    talep.kimden === "cocuk" && talep.cocukIndex != null ? state.cocuklar[talep.cocukIndex] : null;
+
+  if (karar === "kabul") {
+    if (state.para < talep.tutar) throw new Error("Bunu karşılayacak paran yok.");
+    state.para = paraYuvarla(state.para - talep.tutar);
+    if (talep.kimden === "es" && state.es_adi) state.es_puani += 14;
+    else if (hedefCocuk && hedefCocuk.yasiyor) {
+      hedefCocuk.iliski = (typeof hedefCocuk.iliski === "number" ? hedefCocuk.iliski : 60) + 16;
+    }
+    state.mutluluk += 4;
+  } else {
+    if (talep.kimden === "es" && state.es_adi) state.es_puani -= 10;
+    else if (hedefCocuk && hedefCocuk.yasiyor) {
+      hedefCocuk.iliski = (typeof hedefCocuk.iliski === "number" ? hedefCocuk.iliski : 60) - 12;
+    }
+    state.mutluluk -= 3;
+  }
+  clampStats(state);
+  state.aile_talep = null;
+
+  const mesaj =
+    karar === "kabul"
+      ? T(state.dil, "{0} istediğini aldı; çok mutlu oldu.", [talep.kimAdi])
+      : T(state.dil, "{0}'e hayır dedin; aranıza bir kırgınlık girdi.", [talep.kimAdi]);
+  await oturumKaydet(state);
+  return { state, kabul: karar === "kabul", mesaj };
 }
 
 interface EkipCikarSonucu {
@@ -1958,7 +2198,7 @@ interface UcKagitciSonucu {
  * şansı SABİT ~%34 — bardak seçimi kozmetiktir: sunucu önce kazanıp kazanmadığını
  * belirler, sonra "doğru bardağı" (kazandıysa seçilen, kaybettiyse başka bir)
  * bardağa koyar; istemci animasyonu bu sonuca göre biter. Kaybedince bahis gider,
- * kazanınca ×2. Sokak dolandırıcılığı → küçük suç/aranma artışı. Turu tüketmez.
+ * kazanınca ×3 (net +2 kat bahis). Sokak dolandırıcılığı → küçük suç/aranma artışı. Turu tüketmez.
  */
 export async function ucKagitciOyna(id: string, tutar: number, secim: number): Promise<UcKagitciSonucu> {
   const oturum = await oturumGetir(id);
@@ -1979,7 +2219,7 @@ export async function ucKagitciOyna(id: string, tutar: number, secim: number): P
 
   let mesaj: string;
   if (kazandi) {
-    const kazanc = tutar * 2;
+    const kazanc = tutar * 3;
     state.para = paraYuvarla(state.para + kazanc);
     hayatOlayiEkle(state, "🥃", T(state.dil, "Üç kağıtçıyı bir kez olsun yendi: +{0} {birim}", [kazanc - tutar]).replace(/\{birim\}/g, birim));
     mesaj = T(state.dil, "Doğru bardağı buldun! {0} {birim} kazandın.", [kazanc]).replace(/\{birim\}/g, birim);
@@ -2036,6 +2276,17 @@ export async function bilekGuresiSonuc(id: string, basarili: boolean): Promise<B
 export interface SosyallesmeYeriKarti extends SosyallesmeYeri {
   /** Sadece alkollü mekânlar için: karakterin şu ana kadarki ziyaret sayısı (AYYAS_ESIGI'ye ne kadar yakın olduğunu göstermek için). */
   ziyaretSayisi?: number;
+  /** Bu mekâna bu yıl zaten girildi mi (SOSYALLESME_MEKAN_COOLDOWN yıl kilitli). */
+  kilitli?: boolean;
+  /** Kilidin açılmasına kalan oyun yılı (0 = hazır). */
+  kalanYil?: number;
+}
+
+/** Bir sosyalleşme mekânının cooldown'unun bitmesine kalan oyun yılı. */
+function mekanKalanYil(state: CharacterState, yerId: string): number {
+  const son = state.sosyallesme_aksiyon_kilit[`mekan:${yerId}`];
+  if (son === undefined) return 0;
+  return Math.max(0, SOSYALLESME_MEKAN_COOLDOWN - (state.yil - son));
 }
 
 /**
@@ -2052,10 +2303,15 @@ export async function sosyallesmeYerleriGetir(id: string): Promise<SosyallesmeYe
     (yer) =>
       sosyallesmeYeriUygunMu(yer, state.cag, state.bolge, state.meslek) &&
       OLAY_SOSYALLESME.some((o) => o.sosyallesmeYeri === yer.id && temelUygunMu(o, state))
-  ).map((yer) => ({
-    ...yer,
-    ziyaretSayisi: yer.alkolluMu ? state.alkol_ziyaret_sayisi : undefined,
-  }));
+  ).map((yer) => {
+    const kalanYil = mekanKalanYil(state, yer.id);
+    return {
+      ...yer,
+      ziyaretSayisi: yer.alkolluMu ? state.alkol_ziyaret_sayisi : undefined,
+      kilitli: kalanYil > 0,
+      kalanYil,
+    };
+  });
 }
 
 interface SosyallesmeSonucu {
@@ -2065,10 +2321,11 @@ interface SosyallesmeSonucu {
 }
 
 /**
- * Oyuncunun istediği an tetikleyebileceği, bir tur harcamayan aksiyon: seçilen
- * mekâna gitmeyi kabul eder ve o mekâna ait bir olayı zorlanan-olay olarak
- * kuyruğa alır (oturum.zorlananOlayId). Olayın kendisi normal akışla (bir
- * sonraki POST /:id/scenario + /:id/choice) çözülür — zaman ORADA ilerler.
+ * Oyuncunun istediği an tetikleyebileceği aksiyon: seçilen mekâna gitmeyi kabul
+ * eder, peşin giriş ücretini düşer ve o mekâna ait bir olayı zorlanan-olay olarak
+ * kuyruğa alır (oturum.zorlananOlayId). İstemci ardından POST /:id/scenario +
+ * POST /:id/sosyallesme-olay ile olayı **tur harcamadan** çözer (§25). Her mekân
+ * çözüldükten sonra SOSYALLESME_MEKAN_COOLDOWN yıl kilitlenir.
  */
 export async function sosyallesmeYerineGit(id: string, yerId: string): Promise<SosyallesmeSonucu> {
   const oturum = await oturumGetir(id);
@@ -2080,6 +2337,9 @@ export async function sosyallesmeYerineGit(id: string, yerId: string): Promise<S
   if (!yer || !sosyallesmeYeriUygunMu(yer, state.cag, state.bolge, state.meslek)) {
     throw new Error("Bu mekân şu an sana uygun değil.");
   }
+  if (mekanKalanYil(state, yerId) > 0) {
+    throw new Error("Bu mekâna bu yıl zaten gittin; biraz zaman geçmeli.");
+  }
   const girisUcreti = paraYuvarla(SOSYALLESME_GIRIS_UCRETI * enflasyonCarpani(state));
   if (state.para < girisUcreti) {
     throw new Error(`Cebinde bu mekâna gidecek kadar para yok (~${girisUcreti} ${state.para_birimi} giriş ücreti).`);
@@ -2089,6 +2349,419 @@ export async function sosyallesmeYerineGit(id: string, yerId: string): Promise<S
   oturum.zorlananOlayId = olay.id;
   await oturumKaydet(state);
   return { state, girisUcreti };
+}
+
+export interface SosyalOlaySonucu {
+  state: CharacterState;
+  basarili: boolean;
+  uygulananEtki: SonucEtkisi;
+  mesaj: string;
+}
+
+/**
+ * Bir sosyalleşme mekân olayının seçimini **TUR HARCAMADAN** çözer (kullanıcı:
+ * "mekânlara turda birer kez girelim, max 3 olay"). Normal /choice pipeline'ının
+ * aksine ilerletYas / pasifEkonomi / yaşlanma / rütbe / haber ADIMLARI ÇALIŞMAZ;
+ * yalnız seçimin SonucEtkisi deltaları + para primi/meslek çarpanı + suç kazancı
+ * + sosyalleşme moral/masraf/ayyaş kuralı + (olay öldürücüyse) ölüm zarı uygulanır.
+ * Çözülen mekân SOSYALLESME_MEKAN_COOLDOWN yıl kilitlenir. Sosyalleşme olayları
+ * onTepki / zorunlu_sonraki / yeni_meslek / kriz / es_ata içermez (banka denetlendi).
+ */
+export async function sosyallesmeOlayCoz(id: string, secenekIndex: number): Promise<SosyalOlaySonucu> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  const { mevcutSenaryo, mevcutOlay } = oturum;
+  if (!mevcutSenaryo || !mevcutOlay || !mevcutOlay.sosyallesmeYeri) {
+    throw new Error("Ortada çözülecek bir mekân olayı yok.");
+  }
+  const secenek = mevcutSenaryo.secenekler[secenekIndex];
+  const hamSecenek = mevcutOlay.secenekler[secenekIndex];
+  if (!secenek || !hamSecenek) throw new Error("Geçersiz seçenek index'i.");
+  if (secenek.kilitli) throw new Error(secenek.kilit_nedeni ?? "Bu seçenek şu an seçilemez.");
+  if (hamSecenek.onTepki) throw new Error("Bu seçim burada çözülemez.");
+
+  const basarili = rollSuccess(secenek.basari_sansi);
+  const etki = jitterUygula(basarili ? secenek.basarili_sonuc : secenek.basarisiz_sonuc);
+  etki.mesaj = doldur(etki.mesaj, state);
+  if (etki.detay) etki.detay = doldur(etki.detay, state);
+
+  // Para primi + meslek metrik çarpanı (sonucuUygulaVeIlerlet ile aynı sıra/oran).
+  if (etki.para && etki.para > 0) etki.para = paraYuvarla(etki.para * OLAY_PARA_PRIMI);
+  if (etki.para && etki.para > 0) etki.para = Math.round(etki.para * meslekMetrikCarpani(state, mevcutOlay.kategori));
+  sucKazanciUygula(etki);
+  if (mevcutOlay.kategori === "savas") orduKaybiUygula(state, basarili);
+
+  // Sosyalleşme moral/masraf/ayyaş kuralı (yer.alkolluMu ise ziyaret sayacı + damga).
+  etki.para = paraYuvarla((etki.para ?? 0) - SOSYALLESME_EK_MASRAF * enflasyonCarpani(state));
+  etki.mutluluk = (etki.mutluluk ?? 0) + SOSYALLESME_MORAL_BONUSU;
+  const ziyaretEdilenYer = sosyallesmeYeriGetir(mevcutOlay.sosyallesmeYeri);
+  if (ziyaretEdilenYer?.alkolluMu) ayyasZiyaretiIsle(state);
+
+  // Temel stat deltaları.
+  state.para = paraYuvarla(state.para + (etki.para ?? 0));
+  state.un += etki.un ?? 0;
+  state.ahlak += etki.ahlak ?? 0;
+  state.saglik += etki.saglik ?? 0;
+  state.mutluluk += etki.mutluluk ?? 0;
+  state.dost_puani += etki.dost_puani ?? 0;
+  state.rakip_puani += etki.rakip_puani ?? 0;
+
+  // Meslek metrikleri + kariyer puanı + suç/aranma.
+  if (etki.ordu_techizat_artis) {
+    state.ordu_techizat_seviyesi = Math.min(100, state.ordu_techizat_seviyesi + etki.ordu_techizat_artis);
+  }
+  if (etki.ticaret_sermaye_artis) state.ticaret_sermaye += etki.ticaret_sermaye_artis;
+  if (etki.nufuz_artis) state.nufuz += etki.nufuz_artis;
+  if (basarili && MESLEK_KATEGORI[state.meslek] === mevcutOlay.kategori) {
+    state.kariyer_puani += KARIYER_PUANI_KATEGORI_BASARI;
+    if (state.meslek === "Din Adamı") state.nufuz += 1.5;
+  }
+  if (etki.kariyer_puani_artis) state.kariyer_puani += etki.kariyer_puani_artis;
+  if (etki.suc_artis) state.suc_seviyesi += etki.suc_artis;
+  if (etki.suc_seviyesi_ayarla !== undefined) state.suc_seviyesi = etki.suc_seviyesi_ayarla;
+
+  // Sosyalleşme olaylarının kullandığı seyrek alanlar (banka denetimi: ekip_ekle 1×, unvan_kazan 2×).
+  if (etki.ekip_ekle) {
+    const isim = rastgeleBirIsimSec(state.cag, state.bolge, [
+      state.dost_adi, state.rakip_adi, state.es_adi ?? "", ...state.ekip.map((e) => e.isim),
+    ]);
+    const gercekKalite = Math.round((Math.random() * 100 + Math.random() * 100 + Math.random() * 100) / 3);
+    const genislik = etki.ekip_ekle.tahminGenisligi;
+    state.ekip.push({
+      id: randomUUID(),
+      isim,
+      rol: etki.ekip_ekle.rol,
+      gercekKalite,
+      tahminiMin: Math.max(0, Math.round(gercekKalite - genislik / 2)),
+      tahminiMax: Math.min(100, Math.round(gercekKalite + genislik / 2)),
+      maas: 2 + Math.round(gercekKalite / 14),
+      sadakat: Math.round(30 + Math.random() * 60),
+      kisilik: EKIP_KISILIK_HAVUZU[Math.floor(Math.random() * EKIP_KISILIK_HAVUZU.length)],
+    });
+    maasCarpaniUygula(state, 1 + (gercekKalite - 50) / 500);
+    hayatOlayiEkle(state, "🤝", T(state.dil, "{0} ({1}) ekibine katıldı", [isim, K(state.dil, etki.ekip_ekle.rol)]));
+  }
+  if (etki.ekip_kaybi && state.ekip.length > 0) {
+    const kaybedilen = state.ekip.splice(Math.floor(Math.random() * state.ekip.length), 1)[0];
+    hayatOlayiEkle(state, "👋", T(state.dil, "{0} ekipten ayrıldı", [kaybedilen.isim]));
+  }
+  if (etki.unvan_kazan && !state.unvanlar.includes(etki.unvan_kazan)) {
+    state.unvanlar.push(etki.unvan_kazan);
+    hayatOlayiEkle(state, "🏵️", T(state.dil, '"{0}" ünvanını kazandı', [K(state.dil, etki.unvan_kazan)]));
+  }
+
+  etiketEkle(state, etki.etiket_ekle);
+  etiketSil(state, etki.etiket_sil);
+  durumEkle(state, etki.durum_ekle);
+  if (etki.durum_sil) state.durumlar = state.durumlar.filter((d) => !etki.durum_sil!.includes(d.id));
+
+  clampStats(state);
+
+  // Zaman ilerlemese de olay öldürebilir (meyhane bıçağı vb.).
+  if (etki.olum === true) {
+    checkDeath(state, true, etki.mesaj);
+  } else if (etki.olum_sansi && Math.random() * 100 < efektifOlumSansi(etki.olum_sansi, state.saglik)) {
+    checkDeath(state, true, etki.mesaj);
+  }
+  if (!state.aktif && etki.efsanevi_olum && !state.efsanevi_olum) {
+    state.efsanevi_olum = etki.efsanevi_olum;
+  }
+
+  state.sosyallesme_aksiyon_kilit[`mekan:${mevcutOlay.sosyallesmeYeri}`] = state.yil;
+  oturum.zorlananOlayId = null;
+
+  clampStats(state);
+  await oturumKaydet(state);
+  return { state, basarili, uygulananEtki: etki, mesaj: etki.mesaj };
+}
+
+/**
+ * Alkollü bir sosyalleşme etkileşimi sonrası ziyaret sayacını artırır; eşiğe İLK
+ * kez ulaşıldığında (bagimlilik:ayyas henüz yoksa) kalıcı "ayyaşlık" damgasını
+ * vurar (rising-edge, tersine dönüşü yok — tek çıkışı sosyal_meyhane_ayilma).
+ * Damga bu çağrıda vurulduysa true döner.
+ */
+function ayyasZiyaretiIsle(state: CharacterState): boolean {
+  state.alkol_ziyaret_sayisi += 1;
+  if (state.alkol_ziyaret_sayisi >= AYYAS_ESIGI && !state.etiketler.includes("bagimlilik:ayyas")) {
+    etiketEkle(state, ["bagimlilik:ayyas", "bagimlilik:var"]);
+    state.ahlak -= 10;
+    state.un -= 15;
+    durumEkle(state, {
+      id: "ayyaslik",
+      ad: "Ayyaşlık",
+      tur: "kalici",
+      tur_basi_saglik: -1,
+      tur_basi_mutluluk: -1,
+    });
+    maasCarpaniUygula(state, 0.95);
+    hayatOlayiEkle(state, "🍷", "Artık bir ayyaş olarak tanınıyor");
+    return true;
+  }
+  return false;
+}
+
+// ---------------------------------------------------------------------------
+// Sosyalleşme ekranı — tur harcamayan aksiyonlar (içki / deli / sadaka / kulak / ısmarla / fal)
+// ---------------------------------------------------------------------------
+
+export interface SosyalAksiyonKarti {
+  /** "icki:<icecekId>" ya da "deli"|"sadaka"|"kulak"|"ismarla"|"fal". */
+  id: string;
+  tur: "icki" | "aksiyon";
+  simge: string;
+  ad: string;
+  aciklama: string;
+  fiyat: number;
+  alkollu?: boolean;
+  gizli?: boolean;
+  /** true ise iki kademeli (sadaka: az / çok) — istemci `varyant` gönderir. */
+  varyantli?: boolean;
+  kilitli: boolean;
+  /** Cooldown'un dolmasına kalan oyun yılı (0 = hazır). */
+  kalanYil: number;
+  neden?: string;
+}
+
+export interface SosyalAksiyonConfig {
+  icecekler: SosyalAksiyonKarti[];
+  aksiyonlar: SosyalAksiyonKarti[];
+  alkolluMekanVar: boolean;
+}
+
+function aksiyonKalanYil(state: CharacterState, anahtar: string): number {
+  const cd = AKSIYON_COOLDOWN[anahtar] ?? 0;
+  const son = state.sosyallesme_aksiyon_kilit[anahtar];
+  if (son === undefined) return 0;
+  return Math.max(0, cd - (state.yil - son));
+}
+
+/** Sosyalleş ekranının tur-harcamayan aksiyon panelinin canlı hâlini döner. */
+export async function sosyallesmeAksiyonConfigGetir(id: string): Promise<SosyalAksiyonConfig> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  const bos: SosyalAksiyonConfig = { icecekler: [], aksiyonlar: [], alkolluMekanVar: false };
+  if (state.etiketler.includes("hapiste") || state.etiketler.includes("yolculukta")) return bos;
+
+  const en = state.dil === "en";
+  const enfl = enflasyonCarpani(state);
+  const alkolluMekanVar = SOSYALLESME_YERLERI.some(
+    (y) => y.alkolluMu && sosyallesmeYeriUygunMu(y, state.cag, state.bolge, state.meslek)
+  );
+
+  const icecekBekleyen = aksiyonKalanYil(state, "icki");
+  const icecekler: SosyalAksiyonKarti[] = bolgeIcecekleri(state.cag, state.bolge).map((ic) => {
+    const fiyat = Math.max(1, paraYuvarla((ic.alkollu ? 3 : 2) * enfl));
+    const paraYok = state.para < fiyat;
+    return {
+      id: `icki:${ic.id}`,
+      tur: "icki" as const,
+      simge: ic.alkollu ? "🍺" : "🥤",
+      ad: en ? ic.adEn : ic.ad,
+      aciklama: ic.gizli
+        ? T(state.dil, "Yasak ama... bir kadeh. Ahlakın ve itibarın çentik yer.")
+        : ic.alkollu
+          ? T(state.dil, "Keyiflenirsin ama ertesi gün ağır olur.")
+          : T(state.dil, "Hafif bir keyif, zararsız."),
+      fiyat,
+      alkollu: ic.alkollu,
+      gizli: ic.gizli,
+      kilitli: icecekBekleyen > 0 || paraYok,
+      kalanYil: icecekBekleyen,
+      neden:
+        icecekBekleyen > 0
+          ? T(state.dil, "Bu yıl bir şey içtin.")
+          : paraYok
+            ? T(state.dil, "Yeterli paran yok.")
+            : undefined,
+    };
+  });
+
+  const aksiyonlar: SosyalAksiyonKarti[] = SOSYAL_AKSIYONLAR.map((a) => {
+    const bekleyen = aksiyonKalanYil(state, a.id);
+    const fiyat = a.tabanFiyat === 0 ? 0 : Math.max(1, paraYuvarla(a.tabanFiyat * enfl));
+    const mekanEngeli = a.alkolluMekanGerekir === true && !alkolluMekanVar;
+    const paraYok = state.para < fiyat;
+    return {
+      id: a.id,
+      tur: "aksiyon" as const,
+      simge: a.simge,
+      ad: en ? a.adEn : a.ad,
+      aciklama: en ? a.aciklamaEn : a.aciklama,
+      fiyat,
+      varyantli: a.id === "sadaka",
+      kilitli: bekleyen > 0 || mekanEngeli || paraYok,
+      kalanYil: bekleyen,
+      neden:
+        bekleyen > 0
+          ? T(state.dil, "Yakında tekrar yapabilirsin ({0} yıl).", [bekleyen])
+          : mekanEngeli
+            ? T(state.dil, "Bunun için alkollü bir mekân gerek.")
+            : paraYok
+              ? T(state.dil, "Yeterli paran yok.")
+              : undefined,
+    };
+  });
+
+  return { icecekler, aksiyonlar, alkolluMekanVar };
+}
+
+export interface SosyalAksiyonSonucu {
+  state: CharacterState;
+  mesaj: string;
+}
+
+/**
+ * Tur harcamayan bir sosyalleşme aksiyonunu uygular. `aksiyonId` ya
+ * "icki:<icecekId>" ya da "deli"|"sadaka"|"kulak"|"ismarla"|"fal". Etkiler
+ * jitter'sız ve doğrudan; her aksiyonun kendi cooldown'ı (oyun yılı) vardır.
+ */
+export async function sosyallesmeAksiyonYap(
+  id: string,
+  aksiyonId: string,
+  varyant?: string
+): Promise<SosyalAksiyonSonucu> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  if (state.etiketler.includes("hapiste")) throw new Error("Hapisteyken sosyalleşemezsin.");
+  if (state.etiketler.includes("yolculukta")) throw new Error("Yolculuktayken bunu yapamazsın.");
+
+  const birim = state.para_birimi;
+  const enfl = enflasyonCarpani(state);
+  let mesaj = "";
+
+  if (aksiyonId.startsWith("icki:")) {
+    if (aksiyonKalanYil(state, "icki") > 0) throw new Error("Bu yıl zaten bir şey içtin.");
+    const ic = icecekTanimiGetir(state.cag, state.bolge, aksiyonId.slice(5));
+    if (!ic) throw new Error("Böyle bir içki yok.");
+    const fiyat = Math.max(1, paraYuvarla((ic.alkollu ? 3 : 2) * enfl));
+    if (state.para < fiyat) throw new Error(`Yeterli paran yok (${fiyat} ${birim} gerekli).`);
+    state.para = paraYuvarla(state.para - fiyat);
+
+    if (ic.alkollu) {
+      state.mutluluk += 4;
+      state.saglik -= 2;
+      mesaj = T(state.dil, "{0} devirdin. Keyiflendin ama yarın seni bekliyor.", [state.dil === "en" ? ic.adEn : ic.ad]);
+      const damga = ayyasZiyaretiIsle(state);
+      if (damga) mesaj += " " + T(state.dil, "Meydan artık seni 'ayyaş' diye anıyor.");
+    } else {
+      state.mutluluk += 2;
+      state.saglik += 1;
+      mesaj = T(state.dil, "{0} içtin. Hafif, tatlı bir mola.", [state.dil === "en" ? ic.adEn : ic.ad]);
+    }
+    if (ic.gizli) {
+      state.ahlak -= 4;
+      state.un -= 2;
+      mesaj += " " + T(state.dil, "Gören olmadı sandın ama fısıltı çabuk yayılır.");
+    }
+    state.sosyallesme_aksiyon_kilit["icki"] = state.yil;
+    clampStats(state);
+    await oturumKaydet(state);
+    return { state, mesaj };
+  }
+
+  const tanim = sosyalAksiyonTanimiGetir(aksiyonId);
+  if (!tanim) throw new Error("Böyle bir aksiyon yok.");
+  if (aksiyonKalanYil(state, aksiyonId) > 0) throw new Error("Bunu yakında tekrar yapamazsın.");
+
+  if (aksiyonId === "deli") {
+    const fiyat = Math.max(1, paraYuvarla(1 * enfl));
+    if (state.para < fiyat) throw new Error(`Yeterli paran yok (${fiyat} ${birim} gerekli).`);
+    state.para = paraYuvarla(state.para - fiyat);
+    const d = 1 + Math.floor(Math.random() * 6);
+    if (d === 1) {
+      etiketEkle(state, ["istihbarat_var"]);
+      state.mutluluk += 1;
+      mesaj = T(state.dil, "Deli anlamsız sözler arasında sıradaki işini tarif eder gibi bir şeyler saydı. Tüylerin ürperdi ama kulağın açıldı.");
+    } else if (d === 2) {
+      state.mutluluk += 5;
+      mesaj = T(state.dil, "Delinin taklitleri meydanı kırıp geçirdi; karnın ağrıyana kadar güldün.");
+    } else if (d === 3) {
+      state.mutluluk -= 4;
+      mesaj = T(state.dil, "Deli gözlerini kısıp kulağına bir isim ve bir yıl fısıldadı. Gece boyu uyuyamadın.");
+    } else if (d === 4) {
+      const ekstra = Math.max(1, paraYuvarla(1 * enfl));
+      state.para = paraYuvarla(state.para - ekstra);
+      state.un += 3;
+      mesaj = T(state.dil, "Deliye avuç dolusu bozukluk verdin; 'ne cömert adam' diye fısıldandı meydan.");
+    } else if (d === 5) {
+      state.ahlak += 3;
+      state.mutluluk += 2;
+      mesaj = T(state.dil, "Deli bir an durulup gayet aklı başında bir öğüt verdi. İçin tuhaf bir şekilde ısındı.");
+    } else {
+      state.mutluluk += 1;
+      mesaj = T(state.dil, "Deli bir süre peşinden yürüdü, uydurma bir marş söyledi, sonra kayboldu.");
+    }
+  } else if (aksiyonId === "sadaka") {
+    const cok = varyant === "cok";
+    const fiyat = Math.max(1, paraYuvarla((cok ? 6 : 2) * enfl));
+    if (state.para < fiyat) throw new Error(`Yeterli paran yok (${fiyat} ${birim} gerekli).`);
+    state.para = paraYuvarla(state.para - fiyat);
+    state.ahlak += cok ? 6 : 3;
+    state.mutluluk += cok ? 3 : 2;
+    state.un += cok ? 2 : 1;
+    if (cok && state.meslek === "Din Adamı") state.nufuz += 1;
+    mesaj = T(state.dil, "Kesenden {0} {birim} çıkarıp dağıttın; içindeki düğüm biraz çözüldü.", [fiyat]).replace(
+      /\{birim\}/g,
+      birim
+    );
+  } else if (aksiyonId === "kulak") {
+    const r = Math.random();
+    if (r < 0.25) {
+      etiketEkle(state, ["istihbarat_var"]);
+      mesaj = T(state.dil, "Yan masada bir görevli sıradaki seferden dem vurdu — kulağın açık, bir sonraki işi daha net göreceksin.");
+    } else if (r < 0.35) {
+      state.mutluluk -= 2;
+      mesaj = T(state.dil, "Kulak misafiri olduğun dedikodu senin hakkındaydı ve hiç hoş değildi.");
+    } else {
+      const haberler = haberleriUret(state);
+      mesaj =
+        haberler[Math.floor(Math.random() * haberler.length)] ??
+        T(state.dil, "Çarşı her zamanki gibi kaynıyor: kim kiminle küs, hangi tüccar batmış, kimin oğlu askere yazılmış...");
+    }
+  } else if (aksiyonId === "ismarla") {
+    const alkolluMekanVar = SOSYALLESME_YERLERI.some(
+      (y) => y.alkolluMu && sosyallesmeYeriUygunMu(y, state.cag, state.bolge, state.meslek)
+    );
+    if (!alkolluMekanVar) throw new Error("Bunun için alkollü bir mekân gerek.");
+    const fiyat = Math.max(1, paraYuvarla(4 * enfl));
+    if (state.para < fiyat) throw new Error(`Yeterli paran yok (${fiyat} ${birim} gerekli).`);
+    state.para = paraYuvarla(state.para - fiyat);
+    state.mutluluk += 5;
+    state.un += 3;
+    state.dost_puani += 2;
+    mesaj = T(state.dil, "Bütün masaya bir tur ısmarladın; kadehler senin şerefine kalktı, birkaç yeni yüz sana dost oldu.");
+  } else if (aksiyonId === "fal") {
+    const fiyat = Math.max(1, paraYuvarla(3 * enfl));
+    if (state.para < fiyat) throw new Error(`Yeterli paran yok (${fiyat} ${birim} gerekli).`);
+    state.para = paraYuvarla(state.para - fiyat);
+    const r = Math.random();
+    if (r < 0.55) {
+      state.mutluluk += 2;
+      mesaj =
+        Math.random() < 0.5
+          ? T(state.dil, "Falcı avucundaki çizgileri izledi: 'Uzun bir yol, ortasında beklenmedik bir kısmet' dedi.")
+          : T(state.dil, "Fincanın dibinde bir kuş görmüş: 'Haber gelecek' dedi, o kadar.");
+    } else if (r < 0.75) {
+      state.mutluluk += 8;
+      mesaj = T(state.dil, "'Yakında yüzün gülecek' dedi falcı ve nedense buna bütün kalbinle inandın.");
+    } else if (r < 0.9) {
+      state.mutluluk -= 8;
+      mesaj = T(state.dil, "Falcının yüzü asıldı, fincanı hızla ters kapattı. 'Bu ay temkinli ol' demekle yetindi.");
+    } else {
+      etiketEkle(state, ["istihbarat_var"]);
+      mesaj = T(state.dil, "Falcı ürkütücü bir kesinlikle sıradaki işini tarif etti. Ensende bir ürperti.");
+    }
+  } else {
+    throw new Error("Böyle bir aksiyon yok.");
+  }
+
+  state.sosyallesme_aksiyon_kilit[aksiyonId] = state.yil;
+  clampStats(state);
+  await oturumKaydet(state);
+  return { state, mesaj };
 }
 
 // ---------------------------------------------------------------------------

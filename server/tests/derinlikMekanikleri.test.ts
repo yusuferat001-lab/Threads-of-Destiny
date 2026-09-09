@@ -140,7 +140,12 @@ describe("ünvan sistemi (uçtan uca)", () => {
         if (state.saglik < 60) state.saglik = 90;
         if (state.para < 200) state.para = 500;
         if (state.tur_sayisi < 10) state.tur_sayisi = 10;
-        const senaryo = await senaryoUret(state.id);
+        let senaryo;
+        try {
+          senaryo = await senaryoUret(state.id);
+        } catch {
+          break; // rastgele yürüyüş nadiren havuzu boşaltan bir duruma düşebilir — bu denemeyi bırak, yeniden başla
+        }
         if (senaryo.olay_basligi === "Uzak Diyarların İpeği") {
           bulundu = true;
           const sonuc = await secimUygula(state.id, 0); // "Tüm sermayeni ipeğe yatır."

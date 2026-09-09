@@ -116,7 +116,8 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
         ],
         ipucu: "Gizli Şık: Yırtıcılar genellikle boş dönmez",
         basariliSonuc: {
-          mutluluk: 10,
+          un: -5,
+          mutluluk: -1,
           para: 35,
           mesaj: "Şahin üçüncü günün sabahında çığlık atarak döndü. Üstelik pençelerinde, muhtemelen bir soyludan kopardığı değerli bir yakut kolye var!",
           detay: "Özgürlüğe değil, sana dönmeyi seçti. Ve eli boş da dönmedi.",
@@ -182,6 +183,8 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
         baseBasariSansi: 65,
         ipucu: "Riskli ama bir şeyi önleyebilirsin",
         basariliSonuc: {
+          mutluluk: -5,
+          un: -2,
           para: 12,
           mesaj: "Gerçekten de bir hırsız vardı; {hayvan}'ın uyarısı sayesinde onu kovaladın.",
           detay: "Sadık bir dostun değerini bu gece bir kez daha anladın.",
@@ -390,8 +393,9 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
         baseBasariSansi: 60,
         ipucu: "İyi bir av büyük kazanç demek",
         basariliSonuc: {
+          mutluluk: -8,
           para: 20,
-          un: 8,
+          un: 4,
           mesaj: "{hayvan} art arda iki tavşan yakaladı; akşam sofran bu hafta zengin.",
           detay: "Şahinini eğitmenin karşılığını aldın.",
         },
@@ -679,6 +683,8 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
         baseBasariSansi: 90,
         ipucu: "Küçük ama tereddütsüz bir kazanç",
         basariliSonuc: {
+          mutluluk: -5,
+          un: -2,
           para: 12,
           mesaj: "Keseyi açtın; birkaç sikke düştü avucuna. {hayvan} gururla kuyruğunu (ya da kanatlarını) salladı.",
           detay: "Nereden bulduğunu asla öğrenemeyeceksin.",
