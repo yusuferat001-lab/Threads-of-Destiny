@@ -14,6 +14,10 @@
  */
 import fs from "fs";
 import path from "path";
+// Şema PostgreSQL'e taşındığı için eski `DATABASE_URL="file:./simulation.db"` yolu
+// artık çalışmıyor; bellek-içi Prisma taklidi tüm DB katmanını no-op'lar (bkz.
+// _simPrismaStub.ts). gameEngine import edilmeden ÖNCE gelmeli.
+import "./_simPrismaStub";
 import { prisma } from "../src/db/prismaClient";
 import {
   yeniOyun,
@@ -24,8 +28,6 @@ import {
   finansGetir,
   konutDegistir,
   yasamSecimiDegistir,
-  yatirimConfigGetir,
-  yatirimYap,
   mulkConfigGetir,
   mulkSatinAl,
   sosyallesmeYerleriGetir,
@@ -36,6 +38,7 @@ import {
   zarKademeleriGetir,
   zarAt,
 } from "../src/game/gameEngine";
+import { yatirimConfigGetir, yatirimYap } from "./_yatirimShim";
 import { MESLEKLER, BOLGELER_BY_CAG, hesaplaSkor, gayrimenkulDegeriHesapla } from "../src/game/stateManager";
 import { KONUTLAR, KonutTanimi } from "../src/data/konutlar";
 import { YASAM_SECENEKLERI, YasamSecenegiTanimi } from "../src/data/yasamSecenekleri";

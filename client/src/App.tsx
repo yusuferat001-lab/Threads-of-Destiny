@@ -10,6 +10,9 @@ import type {
   YasamSecenegiTanimi,
   FinansOzeti,
   KotuIsKarti,
+  RakipKarti,
+  SalginKorunmaKarti,
+  KrediConfig,
   MulkKartBilgisi,
   MulkTuru,
   TepkiSonucu,
@@ -36,6 +39,13 @@ import {
   finansGetir,
   kotuIsYap,
   kotuIsConfigGetir,
+  rakiplerGetir,
+  hediyeEt,
+  salginKorunmaGetir,
+  salginKorunmaYatirimiYap,
+  krediGetir,
+  krediAl,
+  krediPazarlik,
   mulkConfigGetir,
   mulkSatinAl,
   dedikoduGetir,
@@ -268,6 +278,9 @@ function App() {
   const [finans, setFinans] = useState<FinansOzeti | null>(null);
   const [aileDurum, setAileDurum] = useState<AileDurumu | null>(null);
   const [kotuIsler, setKotuIsler] = useState<KotuIsKarti[]>([]);
+  const [rakipler, setRakipler] = useState<RakipKarti[]>([]);
+  const [salginKorunma, setSalginKorunma] = useState<{ kartlar: SalginKorunmaKarti[]; aktifKademe: number; vebaVar: boolean } | null>(null);
+  const [krediConfig, setKrediConfig] = useState<KrediConfig | null>(null);
   const [dedikodular, setDedikodular] = useState<string[]>([]);
   const [mulkler, setMulkler] = useState<MulkKartBilgisi[]>([]);
   const [zarKademeleri, setZarKademeleri] = useState<number[]>([]);
@@ -795,16 +808,23 @@ function App() {
     setHata(null);
     setYukleniyor(true);
     try {
-      const [{ config }, { dedikodular }, { config: mulkConfig }, { kademeler }] = await Promise.all([
-        kotuIsConfigGetir(karakter.id),
-        dedikoduGetir(karakter.id),
-        mulkConfigGetir(karakter.id),
-        zarKademeleriGetir(karakter.id),
-      ]);
+      const [{ config }, { dedikodular }, { config: mulkConfig }, { kademeler }, { rakipler: rk }, sk, kr] =
+        await Promise.all([
+          kotuIsConfigGetir(karakter.id),
+          dedikoduGetir(karakter.id),
+          mulkConfigGetir(karakter.id),
+          zarKademeleriGetir(karakter.id),
+          rakiplerGetir(karakter.id),
+          salginKorunmaGetir(karakter.id),
+          krediGetir(karakter.id),
+        ]);
       setKotuIsler(config);
       setDedikodular(dedikodular);
       setMulkler(mulkConfig);
       setZarKademeleri(kademeler);
+      setRakipler(rk);
+      setSalginKorunma(sk);
+      setKrediConfig(kr);
       setIslemMesaji(null);
       setEkran('yatirim');
     } catch (err) {
@@ -815,26 +835,103 @@ function App() {
   }
 
   async function yatirimEkraniniYenile(stateId: string) {
-    const [{ config }, { config: mulkConfig }] = await Promise.all([
+    const [{ config }, { config: mulkConfig }, { rakipler: rk }, sk, kr] = await Promise.all([
       kotuIsConfigGetir(stateId),
       mulkConfigGetir(stateId),
+      rakiplerGetir(stateId),
+      salginKorunmaGetir(stateId),
+      krediGetir(stateId),
     ]);
     setKotuIsler(config);
     setMulkler(mulkConfig);
+    setRakipler(rk);
+    setSalginKorunma(sk);
+    setKrediConfig(kr);
   }
 
-  async function kotuIsHandler(tur: string) {
+  async function kotuIsHandler(tur: string, opts?: { hedefRakipAd?: string; vekil?: boolean }) {
     if (!karakter) return;
     if (!window.confirm(m.iyKaranlikOnay)) return;
     setHata(null);
     setYukleniyor(true);
     try {
-      const sonuc = await kotuIsYap(karakter.id, tur);
+      const sonuc = await kotuIsYap(karakter.id, tur, opts);
       setKarakter(sonuc.state);
       setIslemMesaji(sonuc.mesaj);
       const { finans } = await finansGetir(sonuc.state.id);
       setFinans(finans);
       await yatirimEkraniniYenile(sonuc.state.id);
+    } catch (err) {
+      setHata(String(err));
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
+  async function salginKorunmaHandler(kademe: 1 | 2) {
+    if (!karakter) return;
+    setHata(null);
+    setYukleniyor(true);
+    try {
+      const sonuc = await salginKorunmaYatirimiYap(karakter.id, kademe);
+      setKarakter(sonuc.state);
+      setIslemMesaji(sonuc.mesaj);
+      const { finans } = await finansGetir(sonuc.state.id);
+      setFinans(finans);
+      await yatirimEkraniniYenile(sonuc.state.id);
+    } catch (err) {
+      setHata(String(err));
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
+  async function krediAlHandler(tutar: number) {
+    if (!karakter) return;
+    setHata(null);
+    setYukleniyor(true);
+    try {
+      const sonuc = await krediAl(karakter.id, tutar);
+      setKarakter(sonuc.state);
+      setIslemMesaji(sonuc.mesaj);
+      const { finans } = await finansGetir(sonuc.state.id);
+      setFinans(finans);
+      await yatirimEkraniniYenile(sonuc.state.id);
+    } catch (err) {
+      setHata(String(err));
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
+  async function krediPazarlikHandler() {
+    if (!karakter) return;
+    setHata(null);
+    setYukleniyor(true);
+    try {
+      const sonuc = await krediPazarlik(karakter.id);
+      setKarakter(sonuc.state);
+      setIslemMesaji(sonuc.mesaj);
+      await yatirimEkraniniYenile(sonuc.state.id);
+    } catch (err) {
+      setHata(String(err));
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
+  async function hediyeHandler(
+    esyaId: string,
+    hedef: 'es' | 'cocuk' | 'ekip' | 'dost',
+    opts?: { cocukIndex?: number; ekipId?: string },
+  ) {
+    if (!karakter) return;
+    setHata(null);
+    setYukleniyor(true);
+    try {
+      const sonuc = await hediyeEt(karakter.id, esyaId, hedef, opts);
+      setKarakter(sonuc.state);
+      setIslemMesaji(sonuc.mesaj);
     } catch (err) {
       setHata(String(err));
     } finally {
@@ -1751,8 +1848,13 @@ function App() {
               <EnvanterPaneli
                 etiketler={karakter.etiketler}
                 magazaEnvanteri={karakter.magaza_envanteri}
+                evli={!!karakter.es_adi}
+                yasayanCocuklar={karakter.cocuklar.filter((c) => c.yasiyor).map((c) => c.isim)}
+                ekipVar={karakter.ekip.length > 0}
+                dostAdi={karakter.dost_adi}
                 yukleniyor={yukleniyor}
                 onKullan={envanterKullanHandler}
+                onHediye={hediyeHandler}
               />
 
               <KisilikPaneli
@@ -2000,12 +2102,18 @@ function App() {
           sehirYonetimUnvan={karakter.sehir_yonetim_unvan}
           para={karakter.para}
           kotuIsler={kotuIsler}
+          rakipler={rakipler}
+          salginKorunma={salginKorunma}
+          krediConfig={krediConfig}
           dedikodular={dedikodular}
           mulkler={mulkler}
           sucSeviyesi={karakter.suc_seviyesi}
           yukleniyor={yukleniyor}
           islemMesaji={islemMesaji}
           onKotuIs={kotuIsHandler}
+          onSalginKorunma={salginKorunmaHandler}
+          onKrediAl={krediAlHandler}
+          onKrediPazarlik={krediPazarlikHandler}
           onMulkSatinAl={mulkSatinAlHandler}
           onGeriDon={() => {
             setIslemMesaji(null);
@@ -2164,6 +2272,7 @@ function App() {
           amirRutbe={karakter.amir_rutbe}
           astlar={karakter.astlar}
           ekip={karakter.ekip}
+          rakipler={karakter.rakipler}
           orduMevcudu={karakter.ordu_mevcudu}
           orduTechizatSeviyesi={karakter.ordu_techizat_seviyesi}
           ticaretSermaye={karakter.ticaret_sermaye}

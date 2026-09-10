@@ -5,6 +5,15 @@ import { komsuGucSec } from "../data/liderler";
 import { tarihiSavasKontrol } from "../data/tarihiSavaslar";
 import { K, T } from "../i18n";
 import { olayCevirisiUygula } from "../i18n/olaylar";
+import { HAVUZ_KILIT_ETIKETLERI as HAVUZ_KILIT_LISTESI } from "./stateManager";
+
+/**
+ * Normal olay havuzunu tamamen kapatıp kendi özel havuzuna geçiren etiketler
+ * (§8/§17/§27). Tanım stateManager'da (etiketEkle invariant'ı orada zorlanıyor);
+ * burada Set olarak kullanılır. olaySec, kilitler beklenmedik biçimde çakışırsa
+ * son çare fallback'iyle throw'u engeller.
+ */
+const HAVUZ_KILIT_ETIKETLERI = new Set<string>(HAVUZ_KILIT_LISTESI);
 
 const KATEGORI_GORSEL: Record<Kategori, string> = {
   savas: "⚔️",
@@ -222,9 +231,37 @@ export function olaySec(
   if (zorlananOlay) {
     olay = zorlananOlay;
   } else {
-    const uygunlar = OLAY_BANKASI.filter((o) => uygunMu(o, state));
+    let uygunlar = OLAY_BANKASI.filter((o) => uygunMu(o, state));
     if (uygunlar.length === 0) {
-      throw new Error("Bu karakter için uygun olay bulunamadı.");
+      // SON ÇARE — burası ASLA throw etmemeli: bir tur olay üretemezse o
+      // karakterin oyunu tamamen kilitlenir (her /scenario 500 döner). Havuz
+      // kilitleyen etiketler (hapiste / kacak / yolculukta / veba_hastasi)
+      // beklenmedik biçimde çakıştıysa (ör. arka plan veba bulaşması bir kilit
+      // altındayken tetiklendiyse) yumuşak bir kaçış: bu dört kilidi ve
+      // gecmis/tag koşullarını yok sayıp en gevşek uygun havuza düş. Böyle bir
+      // olay kısmen bağlam dışı düşse bile, kilitli oyundan iyidir.
+      const gevsekUygun = (o: (typeof OLAY_BANKASI)[number]) =>
+        temelUygunMu(o, { ...state, etiketler: state.etiketler.filter((e) => !HAVUZ_KILIT_ETIKETLERI.has(e)) }) &&
+        o.sosyallesmeYeri === undefined &&
+        o.mulkOlayi === undefined &&
+        !o.hapisOlayi &&
+        !o.yolculukOlayi &&
+        !o.kacakOlayi &&
+        !o.vebaHastasiOlayi;
+      uygunlar = OLAY_BANKASI.filter(gevsekUygun);
+      if (uygunlar.length === 0) {
+        // Teorik olarak imkânsız (127 tamamen kısıtsız olay var) ama yine de
+        // throw yerine ilk kısıtsız olayı ver.
+        uygunlar = OLAY_BANKASI.filter(
+          (o) =>
+            o.sosyallesmeYeri === undefined &&
+            o.mulkOlayi === undefined &&
+            !o.hapisOlayi &&
+            !o.yolculukOlayi &&
+            !o.kacakOlayi &&
+            !o.vebaHastasiOlayi
+        );
+      }
     }
     // (İngilizce çeviri seçimden SONRA, aşağıda uygulanır — filtre/ağırlık mantığı hep Türkçe tanımı kullanır.)
     // Öncelik: hiç görülmemiş olaylar > en uzun süredir görülmemiş olaylar.

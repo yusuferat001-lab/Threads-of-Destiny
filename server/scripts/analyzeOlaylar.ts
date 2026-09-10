@@ -1,5 +1,5 @@
 /**
- * Olay bankasının (367 olay) tam envanter analizi:
+ * Olay bankasının (~990 olay; kesin sayı çıktının başında) tam envanter analizi:
  *  - Ülkeye (bölge) özel olay sayıları
  *  - Çağ x meslek başına özel olay sayıları
  *  - Yaşa özel olay sayıları (yaş eğrisi)
@@ -435,7 +435,7 @@ function partB(): void {
   const garantiler = [
     "dunya_savas_ilani — bölgeye özel tarihi bir savaş başladığında garanti",
     "iliski_evlilik_teklifi — 29 yaşına kadar hâlâ bekarsa garanti",
-    "sehir_yonetim_{tuccar,dinadami,asker}_baslangic — rütbe 3'e ulaşınca garanti",
+    "sehir_yonetim_{tuccar,dinadami,asker}_baslangic — rütbe seviyesi 4'e ulaşınca garanti",
     "evcilhayvan_sahiplenme_teklifi_{ortacag,sanayi} — 20-25 yaş arası evcil hayvanı yoksa garanti",
     "EVCIL_HAYVAN_GENEL_TAKIP_OLAY_IDLERI havuzundan biri — evcil hayvanı olan karakterde 45-50 yaşta, 2.'den az görülmüşse garanti",
     "hizip takip olaylarından biri — bir hizbe katılmışsa 45-50 yaşta, 3.'ten az görülmüşse garanti",

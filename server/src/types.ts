@@ -230,6 +230,8 @@ export interface CharacterState {
   rakip_adi: string;
   dost_puani: number;
   rakip_puani: number;
+  /** Derin rakip ilişkileri (§13): isimli rakipler + güç/husumet. rakipler[0].ad === rakip_adi. Eski kayıtlarda eskiKayitGocu üretir. */
+  rakipler: Rakip[];
 
   es_adi: string | null;
   es_puani: number;
@@ -291,6 +293,10 @@ export interface CharacterState {
   gida_fiyat_sok_bitis_yili: number | null;
   /** Ömürde bir kez: borçtayken (para < 0, bütçe açığı sürerken) kilise/eş dost bir kereliğine borcun bir kısmını kapatır. true olunca bir daha tetiklenmez. */
   borc_yardimi_alindi: boolean;
+  /** Kalıcı salgından korunma yatırımı; yoksa null. Bir sonraki veba dalgasında tüketilir. */
+  salgin_korunma_yatirimi: SalginKorunmaYatirimi | null;
+  /** Aktif tefeci kredisi; yoksa null. Aynı anda en fazla bir kredi. */
+  kredi: Kredi | null;
 
   /** Aile ekranı etkileşim cooldown'ları: anahtar (ör. "es:hediye", "cocuk:2:oyna") → tekrar açılacağı oyun yılı. */
   aile_etkilesim_kilit: Record<string, number>;
@@ -358,6 +364,56 @@ export interface AileTalep {
 export interface KisilikEksenleri {
   fevrilik: number;
   merhamet: number;
+}
+
+/**
+ * "Derin rakip ilişkileri" (§13): meslek seçilince 2 isimli rakip üretilir
+ * (rakipler[0].ad = eski tekil rakip_adi ile aynı — geriye dönük uyum).
+ * `guc` = pazar payı / nüfuz (0-100, yıllar içinde yavaşça büyür); karanlık
+ * işlerle kırılır, kırılan güç oyuncuya pazar payı (para + kariyer puanı)
+ * olarak döner. `husumet` = rakibin oyuncuya kini (0-100); karanlık iş
+ * çevirdikçe artar, yüksekken rakip misilleme yapabilir. `yenildi` olunca
+ * rakip devre dışı: ne getirisi ne misillemesi kalır.
+ */
+export interface Rakip {
+  ad: string;
+  meslek: string;
+  guc: number;
+  husumet: number;
+  yenildi: boolean;
+}
+
+/**
+ * Kalıcı salgından korunma yatırımı (§27): veba dalgası GELMEDEN önce para
+ * harcayıp bir sonraki dalgada `vebaBaslat`'a aktarılacak taban korunma
+ * kademesini (0/1/2) yükseltir. Dalga geldiğinde seçilen korunma ile bunun
+ * MAX'ı kullanılır. Bir dalga bittikten sonra tüketilir (tekrar yatırım gerekir).
+ */
+export interface SalginKorunmaYatirimi {
+  /** 0 = yok, 1 = kısmi (hekim anlaşması/temiz su), 2 = tam (karantina evi). */
+  kademe: number;
+  /** Bu yatırımın yapıldığı oyun yılı (flavor/gösterim). */
+  yil: number;
+}
+
+/**
+ * Tefeciden alınan kontrollü borç (§ "Kredi / tefeci"). Aktif tek bir kredi
+ * olabilir. Anapara + faiz her yıl `kalanBorc`'a işler; ödeme oyuncunun elindeki
+ * nakitten otomatik yapılır (yıllık taksit). Üst üste ödenemezse tefeci önce
+ * uyarır, sonra bir mülke/servete el koyar.
+ */
+export interface Kredi {
+  anapara: number;
+  kalanBorc: number;
+  /** Yıllık faiz oranı (ör. 0.12). Pazarlıkla düşebilir. */
+  faizOrani: number;
+  /** Yıllık taksit hedefi (kalanBorc buna göre erir). */
+  yillikTaksit: number;
+  alindigiYil: number;
+  /** Üst üste ödenemeyen taksit sayısı; 2'de uyarı, 3'te el koyma. */
+  odenmeyenTaksit: number;
+  /** Bu kredi için faiz pazarlığı yapıldı mı (kredi başına bir kez). */
+  pazarlikYapildi: boolean;
 }
 
 /** Rütbe yükseldikçe emrine giren, isim ve unvanı sabit kalan bir ast; işe alınmaz/maaşı yok, salt rütbenin doğal sonucu. */

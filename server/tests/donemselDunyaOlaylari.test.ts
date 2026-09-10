@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import {
   createCharacter,
   mesleğiSec,
@@ -18,6 +18,7 @@ import {
   giderKalemleriHesapla,
   hesaplaMaasYillik,
 } from "../src/game/stateManager";
+import { olaySec } from "../src/game/olaySecici";
 import type { CharacterState } from "../src/types";
 
 function taze(cag: CharacterState["cag"] = "Orta Çağ"): CharacterState {
@@ -415,5 +416,50 @@ describe("kucukKrizKontrolEt", () => {
 
     state.yil += 1; // iki tur sonra — normale döner
     expect(giderKalemleriHesapla(state).yasam).toBeLessThan(giderOncesi * 1.2);
+  });
+});
+
+describe("havuz kilidi çakışması — oyunu kilitleyen crash regresyonu", () => {
+  it("vebaYillikKontrol, havuz kilitleyen etiket (hapiste/kacak/yolculukta) varken karaktere veba BULAŞTIRMAZ", () => {
+    for (const kilit of ["hapiste", "kacak", "yolculukta"]) {
+      const state = taze();
+      vebaBaslat(state, 0); // en yüksek bulaşma kademesi
+      state.etiketler.push(kilit);
+      const rnd = vi.spyOn(Math, "random").mockReturnValue(0); // zar her zaman "bulaştı" der
+      try {
+        for (let i = 0; i < 20; i++) vebaYillikKontrol(state, 2);
+      } finally {
+        rnd.mockRestore();
+      }
+      expect(state.etiketler.includes("veba_hastasi")).toBe(false);
+    }
+  });
+
+  it("kilit yokken aynı koşulda veba BULAŞIR (guard fazla geniş değil)", () => {
+    const state = taze();
+    vebaBaslat(state, 0);
+    const rnd = vi.spyOn(Math, "random").mockReturnValue(0);
+    try {
+      vebaYillikKontrol(state, 2);
+    } finally {
+      rnd.mockRestore();
+    }
+    expect(state.etiketler.includes("veba_hastasi")).toBe(true);
+  });
+
+  it("olaySec, iki havuz kilidi aynı anda set olsa bile ASLA throw etmez", () => {
+    const kombinasyonlar = [
+      ["kacak", "veba_hastasi"],
+      ["hapiste", "veba_hastasi"],
+      ["yolculukta", "veba_hastasi"],
+      ["hapiste", "kacak"],
+    ];
+    for (const etiketler of kombinasyonlar) {
+      const state = taze();
+      state.etiketler.push(...etiketler);
+      expect(() => olaySec(state)).not.toThrow();
+      const secilen = olaySec(state);
+      expect(secilen.senaryo.secenekler.length).toBeGreaterThan(0);
+    }
   });
 });

@@ -30,6 +30,9 @@ import type {
   EvlilikAdayi,
   EvlilikTeklifSonucu,
   AileDurumu,
+  RakipKarti,
+  SalginKorunmaKarti,
+  KrediConfig,
 } from './types';
 
 async function istek<T>(url: string, init?: RequestInit): Promise<T> {
@@ -145,10 +148,60 @@ export function kotuIsConfigGetir(stateId: string) {
   return istek<{ config: KotuIsKarti[] }>(`/api/game/${stateId}/kotu-is-config`);
 }
 
-export function kotuIsYap(stateId: string, tur: string) {
+export function kotuIsYap(
+  stateId: string,
+  tur: string,
+  opts?: { hedefRakipAd?: string; vekil?: boolean },
+) {
   return istek<KotuIsSonucu>(`/api/game/${stateId}/kotu-is`, {
     method: 'POST',
-    body: JSON.stringify({ tur }),
+    body: JSON.stringify({ tur, ...opts }),
+  });
+}
+
+export function rakiplerGetir(stateId: string) {
+  return istek<{ rakipler: RakipKarti[] }>(`/api/game/${stateId}/rakipler`);
+}
+
+export function hediyeEt(
+  stateId: string,
+  esyaId: string,
+  hedef: 'es' | 'cocuk' | 'ekip' | 'dost',
+  opts?: { cocukIndex?: number; ekipId?: string },
+) {
+  return istek<{ state: CharacterState; mesaj: string }>(
+    `/api/game/${stateId}/envanter/${esyaId}/hediye`,
+    { method: 'POST', body: JSON.stringify({ hedef, ...opts }) },
+  );
+}
+
+export function salginKorunmaGetir(stateId: string) {
+  return istek<{ kartlar: SalginKorunmaKarti[]; aktifKademe: number; vebaVar: boolean }>(
+    `/api/game/${stateId}/salgin-korunma`,
+  );
+}
+
+export function salginKorunmaYatirimiYap(stateId: string, kademe: 1 | 2) {
+  return istek<{ state: CharacterState; mesaj: string }>(`/api/game/${stateId}/salgin-korunma`, {
+    method: 'POST',
+    body: JSON.stringify({ kademe }),
+  });
+}
+
+export function krediGetir(stateId: string) {
+  return istek<KrediConfig>(`/api/game/${stateId}/kredi`);
+}
+
+export function krediAl(stateId: string, tutar: number) {
+  return istek<{ state: CharacterState; mesaj: string }>(`/api/game/${stateId}/kredi/al`, {
+    method: 'POST',
+    body: JSON.stringify({ tutar }),
+  });
+}
+
+export function krediPazarlik(stateId: string) {
+  return istek<{ state: CharacterState; mesaj: string }>(`/api/game/${stateId}/kredi/pazarlik`, {
+    method: 'POST',
   });
 }
 

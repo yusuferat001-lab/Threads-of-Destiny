@@ -77,7 +77,7 @@ describe("Kervan (Orta Çağ, dallanan)", () => {
     mesleğiSec(state, "Tüccar");
     etiketEkle(state, ["kervan:katildi", "kervan_karari_verildi"]);
     let bulundu = false;
-    for (let i = 0; i < 500 && !bulundu; i++) {
+    for (let i = 0; i < 2000 && !bulundu; i++) {
       const { olay } = olaySec(state);
       if (olay.id === "oc_kervan_soygun_riski") bulundu = true;
     }
@@ -101,7 +101,7 @@ describe("Veba kişisel karşılaşma (Orta Çağ)", () => {
     mesleğiSec(state, "Tüccar");
     ulkeGuncelle(state, { vebada: true });
     let bulundu = false;
-    for (let i = 0; i < 500 && !bulundu; i++) {
+    for (let i = 0; i < 2000 && !bulundu; i++) {
       const { olay } = olaySec(state);
       if (olay.id === "oc_veba_karsilasma") bulundu = true;
     }

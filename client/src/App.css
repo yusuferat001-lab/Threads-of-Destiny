@@ -4034,6 +4034,78 @@ button.ikincil {
   cursor: default;
 }
 
+.envanter-esya-butonlar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-left: auto;
+}
+.envanter-hediye-buton {
+  background: #3a2f1f;
+  border-color: #8a6a3a;
+  color: #ecd9b8;
+}
+.envanter-hediye-buton:hover:not(:disabled) {
+  background: #4a3a26;
+  border-color: #c79a52;
+}
+.envanter-hediye-satir {
+  margin-top: 0.35rem;
+}
+.envanter-hediye-secim,
+.karanlik-hedef-secim,
+.kredi-tutar-girdi {
+  width: 100%;
+  padding: 0.3rem 0.45rem;
+  font-size: 0.82rem;
+  background: #1f2430;
+  border: 1px solid #4a5570;
+  border-radius: 5px;
+  color: #dfe6f2;
+}
+
+/* ---- Karanlık iş: rakip hedefleme + "adamına yaptır" ---- */
+.karanlik-hedef-satir {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin: 0.4rem 0;
+}
+.karanlik-vekil-etiket {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.35rem;
+  font-size: 0.76rem;
+  line-height: 1.25;
+  color: #c9b8a0;
+}
+.karanlik-cevir-buton {
+  align-self: flex-start;
+  margin-top: 0.3rem;
+  padding: 0.3rem 0.8rem;
+}
+
+/* ---- Piyasa "şimdi al / bekle" sinyali ---- */
+.mulk-piyasa-sinyal {
+  font-size: 0.74rem;
+  font-weight: 600;
+}
+.mulk-piyasa-sinyal.piyasa-firsat {
+  color: #7bd08a;
+}
+.mulk-piyasa-sinyal.piyasa-zirve {
+  color: #e58b8b;
+}
+.mulk-piyasa-sinyal.piyasa-durgun {
+  color: #9aa4b2;
+}
+
+/* ---- GorevEkrani: yenilmiş rakip ---- */
+.iliski-rozet.rakip-yenildi {
+  opacity: 0.55;
+  text-decoration: line-through;
+}
+
 /* ---- Sonuç / Ölüm ekranları ---- */
 
 .ekran-olum {

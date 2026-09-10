@@ -33,6 +33,13 @@ import {
   aileEtkilesimYap,
   aileTalebiKararlastir,
   oturumDiliAyarla,
+  rakiplerGetir,
+  hediyeEt,
+  salginKorunmaConfigGetir,
+  salginKorunmaYatirimiYap,
+  krediConfigGetir,
+  krediAlEndpoint,
+  krediPazarlikEndpoint,
 } from "../game/gameEngine";
 import { MESLEKLER, BOLGELER_BY_CAG } from "../game/stateManager";
 import { YERLESIMLER } from "../data/yerlesimler";
@@ -187,12 +194,15 @@ gameRouter.get("/:id/kotu-is-config", async (req, res) => {
 });
 
 gameRouter.post("/:id/kotu-is", async (req, res) => {
-  const { tur } = req.body ?? {};
+  const { tur, hedefRakipAd, vekil } = req.body ?? {};
   if (typeof tur !== "string") {
     return res.status(400).json({ hata: "Geçersiz iş." });
   }
   try {
-    const sonuc = await kotuIsYap(req.params.id, tur);
+    const sonuc = await kotuIsYap(req.params.id, tur, {
+      hedefRakipAd: typeof hedefRakipAd === "string" ? hedefRakipAd : undefined,
+      vekil: vekil === true,
+    });
     res.json(sonuc);
   } catch (err) {
     res.status(400).json({ hata: String(err) });
@@ -463,6 +473,79 @@ gameRouter.post("/:id/envanter/:esyaId/kullan", async (req, res) => {
   try {
     const sonuc = await envanterEsyasiKullan(req.params.id, req.params.esyaId);
     res.json(sonuc);
+  } catch (err) {
+    res.status(400).json({ hata: String(err) });
+  }
+});
+
+gameRouter.post("/:id/envanter/:esyaId/hediye", async (req, res) => {
+  const { hedef, cocukIndex, ekipId } = req.body ?? {};
+  if (hedef !== "es" && hedef !== "cocuk" && hedef !== "ekip" && hedef !== "dost") {
+    return res.status(400).json({ hata: "Geçersiz hediye hedefi." });
+  }
+  try {
+    const sonuc = await hediyeEt(req.params.id, req.params.esyaId, hedef, {
+      cocukIndex: typeof cocukIndex === "number" ? cocukIndex : undefined,
+      ekipId: typeof ekipId === "string" ? ekipId : undefined,
+    });
+    res.json(sonuc);
+  } catch (err) {
+    res.status(400).json({ hata: String(err) });
+  }
+});
+
+gameRouter.get("/:id/rakipler", async (req, res) => {
+  try {
+    const rakipler = await rakiplerGetir(req.params.id);
+    res.json({ rakipler });
+  } catch (err) {
+    res.status(404).json({ hata: String(err) });
+  }
+});
+
+gameRouter.get("/:id/salgin-korunma", async (req, res) => {
+  try {
+    res.json(await salginKorunmaConfigGetir(req.params.id));
+  } catch (err) {
+    res.status(404).json({ hata: String(err) });
+  }
+});
+
+gameRouter.post("/:id/salgin-korunma", async (req, res) => {
+  const { kademe } = req.body ?? {};
+  if (kademe !== 1 && kademe !== 2) {
+    return res.status(400).json({ hata: "Geçersiz kademe." });
+  }
+  try {
+    res.json(await salginKorunmaYatirimiYap(req.params.id, kademe));
+  } catch (err) {
+    res.status(400).json({ hata: String(err) });
+  }
+});
+
+gameRouter.get("/:id/kredi", async (req, res) => {
+  try {
+    res.json(await krediConfigGetir(req.params.id));
+  } catch (err) {
+    res.status(404).json({ hata: String(err) });
+  }
+});
+
+gameRouter.post("/:id/kredi/al", async (req, res) => {
+  const { tutar } = req.body ?? {};
+  if (typeof tutar !== "number" || !isFinite(tutar) || tutar <= 0) {
+    return res.status(400).json({ hata: "Geçersiz tutar." });
+  }
+  try {
+    res.json(await krediAlEndpoint(req.params.id, tutar));
+  } catch (err) {
+    res.status(400).json({ hata: String(err) });
+  }
+});
+
+gameRouter.post("/:id/kredi/pazarlik", async (req, res) => {
+  try {
+    res.json(await krediPazarlikEndpoint(req.params.id));
   } catch (err) {
     res.status(400).json({ hata: String(err) });
   }

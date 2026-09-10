@@ -54,6 +54,16 @@ const sahtePrisma = {
       return [];
     },
   },
+  // metrikRepository.ts (§32) ateşle-unut yazar; simülasyonda kalıcılık gerekmez —
+  // no-op ver ki "Metrik yazılamadı: TypeError" konsol gürültüsü akmasın.
+  metrik: {
+    async create({ data }: any) {
+      return { id: Math.floor(Math.random() * 1e9), ...data };
+    },
+    async findMany() {
+      return [];
+    },
+  },
   async $queryRawUnsafe() {
     return [];
   },

@@ -1,4 +1,4 @@
-import type { Ast, EkipUyesi } from '../types';
+import type { Ast, EkipUyesi, Rakip } from '../types';
 import { useDil } from '../DilContext';
 
 interface GorevEkraniProps {
@@ -7,6 +7,7 @@ interface GorevEkraniProps {
   amirRutbe: string | null;
   astlar: Ast[];
   ekip: EkipUyesi[];
+  rakipler: Rakip[];
   orduMevcudu: number;
   orduTechizatSeviyesi: number;
   ticaretSermaye: number;
@@ -32,6 +33,7 @@ export function GorevEkrani({
   amirRutbe,
   astlar,
   ekip,
+  rakipler,
   orduMevcudu,
   orduTechizatSeviyesi,
   ticaretSermaye,
@@ -45,7 +47,13 @@ export function GorevEkrani({
   onEkipCikar,
   onGeriDon,
 }: GorevEkraniProps) {
-  const { m, kt } = useDil();
+  const { m, kt, dil } = useDil();
+  const en = dil === 'en';
+
+  const gucEtiket = (g: number) =>
+    g >= 75 ? (en ? 'dominant' : 'çok güçlü') : g >= 50 ? (en ? 'strong' : 'güçlü') : g >= 25 ? (en ? 'middling' : 'orta') : (en ? 'weak' : 'zayıf');
+  const husumetEtiket = (h: number) =>
+    h >= 70 ? (en ? 'blood feud' : 'kan davası') : h >= 45 ? (en ? 'holds a grudge' : 'kırgın') : (en ? 'lukewarm' : 'ılımlı');
 
   const meslekGucSatirlari: [string, string][] = [];
   if (meslek === 'Asker') {
@@ -131,6 +139,27 @@ export function GorevEkrani({
           </ul>
         )}
       </div>
+
+      {rakipler.length > 0 && (
+        <div className="aile-koken-karti">
+          <h3>{en ? 'Your Rivals' : 'Rakiplerin'}</h3>
+          <div className="aile-koken-listesi">
+            {rakipler.map((r) => (
+              <span key={r.ad} className={`iliski-rozet${r.yenildi ? ' rakip-yenildi' : ''}`}>
+                ♟️ {r.ad} · {kt(r.meslek)}
+                {r.yenildi
+                  ? ` · ${en ? 'defeated' : 'saf dışı'}`
+                  : ` · ${en ? 'power' : 'güç'}: ${gucEtiket(r.guc)} · ${husumetEtiket(r.husumet)}`}
+              </span>
+            ))}
+          </div>
+          <p className="aile-bos-metin">
+            {en
+              ? 'Break a rival with dark deeds (Work & Investments) to seize their market share.'
+              : 'İşin & Yatırımların ekranındaki karanlık işlerle bir rakibi kır, pazar payını al.'}
+          </p>
+        </div>
+      )}
 
       {meslekGucSatirlari.length > 0 && (
         <div className="aile-koken-karti">

@@ -79,6 +79,16 @@ import {
   MESLEK_KATEGORI,
   eskiKayitGocu,
   aileYillikUygula,
+  havuzKilidiVar,
+  rakipGucKir,
+  rakipMisillemesiDene,
+  rakiplerGuncelle,
+  RAKIP_KOTU_IS_HEDEFLERI,
+  krediAl,
+  krediPazarlik,
+  krediYillikUygula,
+  krediMaksTutar,
+  krediFaizTeklifi,
 } from "./stateManager";
 import { rutbeTanimiGetir, KARIYER_PUANI_YILLIK, KARIYER_PUANI_KATEGORI_BASARI } from "../data/rutbeler";
 import { KOTU_ISLER, kotuIsTanimiGetir, KotuIsEtki } from "../data/kotuIsler";
@@ -460,7 +470,13 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
 
   let zorlananId = oturum.zorlananOlayId ?? undefined;
   let etiketDegisti = false;
-  if (!zorlananId && !oturum.state.ulke.savasta && oturum.state.yas <= 55) {
+  // §24 düzeltmesi: karakter bir havuz kilidi altındaysa (hapiste / yolculukta /
+  // kacak / veba_hastasi) hiçbir "hayat dönüm noktası" olayı zorlanmaz — bu
+  // olaylar kilitli havuzda gösterilemez ve "hapiste evlilik teklifi" gibi
+  // tuhaflıklara yol açardı. Zaten kuyruğa alınmış bir olay (veba başlangıcı,
+  // zorunlu_sonraki zinciri, sosyalleşme) varsa milestone kaskadı zaten atlanır.
+  const milestoneKilitli = !zorlananId && havuzKilidiVar(oturum.state);
+  if (!zorlananId && !milestoneKilitli && !oturum.state.ulke.savasta && oturum.state.yas <= 55) {
     const rakip = tarihiSavasKontrol(oturum.state.bolge, oturum.state.yil, oturum.state.cag);
     if (rakip) {
       const izlemeEtiketi = `tarihi_savas_gordu:${rakip}`;
@@ -481,6 +497,7 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
   // kilitlenir; şansa bırakılmış hizip sisteminin aksine bu garanti bir kaskad.
   if (
     !zorlananId &&
+    !milestoneKilitli &&
     oturum.state.cag === "Orta Çağ" &&
     oturum.state.yas >= 18 &&
     (oturum.state.meslek === "Asker" || oturum.state.meslek === "Din Adamı")
@@ -498,6 +515,7 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
   // (ne ilk teklif ne de ikinci teklif zinciri), garanti bir kez zorla tetiklenir.
   if (
     !zorlananId &&
+    !milestoneKilitli &&
     oturum.state.yas >= 29 &&
     !oturum.state.etiketler.includes("medeni:evli") &&
     !oturum.state.gecmis_olaylar.includes("iliski_evlilik_teklifi") &&
@@ -508,7 +526,7 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
   // Rütbe 4'e (5 kademeli merdivende "başarılı kariyer" eşiği) ulaşan bir
   // karaktere, şansa bırakmadan bir kez şehir yönetimi arenasına giriş teklifi
   // zorla sunulur — yoksa 360+ olayın arasında yıllarca gizli kalabilir.
-  if (!zorlananId && oturum.state.rutbe_seviye >= 4 && !oturum.state.etiketler.includes("sehir_yonetimi_basladi")) {
+  if (!zorlananId && !milestoneKilitli && oturum.state.rutbe_seviye >= 4 && !oturum.state.etiketler.includes("sehir_yonetimi_basladi")) {
     const baslangicId =
       oturum.state.meslek === "Tüccar"
         ? "sehir_yonetim_tuccar_baslangic"
@@ -525,6 +543,7 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
   // (rastgele bir olayı beklemeden) doğrudan sahiplenme teklifi sunulur.
   if (
     !zorlananId &&
+    !milestoneKilitli &&
     !oturum.state.evcil_hayvan &&
     oturum.state.yas >= 20 &&
     oturum.state.yas < 25
@@ -542,6 +561,7 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
   // takip olaylarından biri zorla tetiklenir; havuz tükendikçe tekrar edebilir.
   if (
     !zorlananId &&
+    !milestoneKilitli &&
     oturum.state.evcil_hayvan &&
     oturum.state.yas >= 45 &&
     oturum.state.yas < 50
@@ -560,7 +580,7 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
   // Gizemli bir eşyaya (envanter:/esya: etiketli) sahip olup henüz onun kendi
   // takip olaylarından hiçbirini yaşamamış bir karaktere, 38-46 yaş aralığında
   // (ölmeden önce bir marj bırakılır) o eşyanın havuzundan biri zorla tetiklenir.
-  if (!zorlananId && oturum.state.yas >= 38 && oturum.state.yas < 46) {
+  if (!zorlananId && !milestoneKilitli && oturum.state.yas >= 38 && oturum.state.yas < 46) {
     const sahipOlunanEsyalar = oturum.state.etiketler
       .filter((e) => e.startsWith("esya:") || e.startsWith("envanter:"))
       .map((e) => e.slice(e.indexOf(":") + 1));
@@ -579,7 +599,7 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
   // Bir hizbe katılmış karakter 45-50 yaş aralığında henüz en az üç hizip-özel
   // olay yaşamadıysa (o hizbe özel olaylar + kendi mesleğine uygun çatışma
   // olayı + genel hizip olayları), havuzdan biri zorla tetiklenir.
-  if (!zorlananId && oturum.state.hizip !== null && oturum.state.yas >= 45 && oturum.state.yas < 50) {
+  if (!zorlananId && !milestoneKilitli && oturum.state.hizip !== null && oturum.state.yas >= 45 && oturum.state.yas < 50) {
     const hizipEtiketi = `hizip:${oturum.state.hizip}`;
     const hizipOlaylari = OLAY_BANKASI.filter(
       (o) =>
@@ -600,6 +620,7 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
   // girmenin garantili, şansa bağlı olmayan ikinci bir yolu.
   if (
     !zorlananId &&
+    !milestoneKilitli &&
     !oturum.state.etiketler.includes("sarayda") &&
     oturum.state.un >= 70 &&
     oturum.state.ahlak >= 70 &&
@@ -612,6 +633,7 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
   // önce bir marj bırakılır), havuzdan biri zorla tetiklenir.
   if (
     !zorlananId &&
+    !milestoneKilitli &&
     oturum.state.etiketler.includes("sarayda") &&
     oturum.state.yas >= 50 &&
     oturum.state.yas < 58
@@ -631,6 +653,7 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
   // garanti kalıcı olarak kapanır — ikinci bir yolculuk asla zorlanmaz.
   if (
     !zorlananId &&
+    !milestoneKilitli &&
     oturum.state.yas >= 22 &&
     !oturum.state.etiketler.includes("yolculukta") &&
     !oturum.state.etiketler.includes("hapiste") &&
@@ -649,7 +672,7 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
   // gizemli olay varsa, zorla tetiklenir. Havuz küçükse (çoğu takip olayı belirli
   // bir eşyaya sahip olmayı gerektirir) bu kural sıklıkla giriş olaylarından
   // birini (gizem_ejderha_tilsimi, derinlik_hazine_haritasi vb.) seçer.
-  if (!zorlananId && oturum.state.yas >= 25 && oturum.state.yas < 45) {
+  if (!zorlananId && !milestoneKilitli && oturum.state.yas >= 25 && oturum.state.yas < 45) {
     const gizemliGorulduMu = oturum.state.gecmis_olaylar.some(
       (id) => OLAY_BANKASI.find((o) => o.id === id)?.gizemli
     );
@@ -664,7 +687,7 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
   // havuzu var (mulkOlaylari.ts) — normal rastgele havuzdan tamamen dışlanır,
   // sadece burada düşük bir periyodik şansla (sansOlayiDene ile aynı ruhta)
   // zorlanan olay olarak gelir. Görülmemiş olaylar önceliklidir.
-  if (!zorlananId && oturum.state.mulkler.length > 0 && Math.random() < MULK_OLAYI_IHTIMALI) {
+  if (!zorlananId && !milestoneKilitli && oturum.state.mulkler.length > 0 && Math.random() < MULK_OLAYI_IHTIMALI) {
     const sahipTurler = new Set(oturum.state.mulkler);
     const uygunMulkOlaylari = OLAY_BANKASI.filter((o) => o.mulkOlayi && sahipTurler.has(o.mulkOlayi));
     if (uygunMulkOlaylari.length > 0) {
@@ -1321,6 +1344,23 @@ async function sonucuUygulaVeIlerlet(
             nakitAkisi.rakipSoygun = rakipSoygunSonucu.miktar;
           }
 
+          // Derin rakip ilişkileri: rakiplerin gücü yavaşça büyür; husumeti
+          // yüksek bir rakip düşük ihtimalle misilleme yapar (§13).
+          rakiplerGuncelle(state, yasArtisi);
+          const rakipMisillemeSonucu = rakipMisillemesiDene(state, yasArtisi);
+          if (rakipMisillemeSonucu) {
+            zamanAnlatimi = zamanAnlatimi
+              ? `${zamanAnlatimi} ${rakipMisillemeSonucu.mesaj}`
+              : rakipMisillemeSonucu.mesaj;
+          }
+
+          // Tefeci kredisi: yıllık taksit nakitten otomatik erir; üst üste
+          // ödenemezse tefeci önce uyarır, sonra servete/mülke el koyar.
+          const krediSonucu = krediYillikUygula(state, yasArtisi);
+          if (krediSonucu) {
+            zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${krediSonucu}` : krediSonucu;
+          }
+
           const savasBaslamaMesaji = buyukSavasKontrolEt(state, yasArtisi);
           if (savasBaslamaMesaji) {
             zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${savasBaslamaMesaji}` : savasBaslamaMesaji;
@@ -1911,6 +1951,8 @@ export interface KotuIsKarti {
   tahminiKazanc: number;
   /** Rakip hedefliyor mu (etiket/anlatı için). */
   rakibeYonelik: boolean;
+  /** İsimli bir rakibin gücünü kırabilir mi (RAKIP_KOTU_IS_HEDEFLERI). 0 ise kıramaz. */
+  rakipKirmaGucu: number;
 }
 
 function kotuIsBasariSansi(state: CharacterState, tanim: (typeof KOTU_ISLER)[number]): number {
@@ -1929,6 +1971,27 @@ export async function kotuIsConfigGetir(id: string): Promise<KotuIsKarti[]> {
     basariSansi: kotuIsBasariSansi(state, tanim),
     tahminiKazanc: tanim.basarili.para ? Math.max(1, paraYuvarla(tanim.basarili.para * enflasyon)) : 0,
     rakibeYonelik: (tanim.basarili.rakip_puani ?? 0) < 0,
+    rakipKirmaGucu: RAKIP_KOTU_IS_HEDEFLERI[tanim.id] ?? 0,
+  }));
+}
+
+export interface RakipKarti {
+  ad: string;
+  meslek: string;
+  guc: number;
+  husumet: number;
+  yenildi: boolean;
+}
+
+/** GorevEkrani "Rakiplerin" paneli + karanlık iş hedef seçimi için. */
+export async function rakiplerGetir(id: string): Promise<RakipKarti[]> {
+  const oturum = await oturumGetir(id);
+  return oturum.state.rakipler.map((r) => ({
+    ad: r.ad,
+    meslek: r.meslek,
+    guc: Math.round(r.guc),
+    husumet: Math.round(r.husumet),
+    yenildi: r.yenildi,
   }));
 }
 
@@ -1955,7 +2018,14 @@ function kotuIsEtkiUygula(state: CharacterState, etki: KotuIsEtki, enflasyon: nu
  * başarı/başarısız dalın etkileri doğrudan uygulanır. Başarısız dalda hapis
  * ("ortaya çıktın") ve nadiren ölüm riski vardır.
  */
-export async function kotuIsYap(id: string, tur: string): Promise<KotuIsSonucu> {
+interface KotuIsSecenek {
+  /** Rakip hedefleyen işlerde (rakibi_korkut/rakibi_dov/isyeri_yak) hedef rakibin adı. */
+  hedefRakipAd?: string;
+  /** "Adamına yaptır": ücret öde, kişisel ahlak/hapis riskini azalt — ama "ortaya çıkma" riski. */
+  vekil?: boolean;
+}
+
+export async function kotuIsYap(id: string, tur: string, secenek: KotuIsSecenek = {}): Promise<KotuIsSonucu> {
   const oturum = await oturumGetir(id);
   const { state } = oturum;
   if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
@@ -1966,17 +2036,61 @@ export async function kotuIsYap(id: string, tur: string): Promise<KotuIsSonucu> 
   if (!tanim) throw new Error("Geçersiz iş.");
 
   const enflasyon = enflasyonCarpani(state);
-  const sans = kotuIsBasariSansi(state, tanim);
-  const kazandi = rollSuccess(sans);
-  const dal = kazandi ? tanim.basarili : tanim.basarisiz;
-  kotuIsEtkiUygula(state, dal, enflasyon);
-
   const dil = state.dil;
   const birim = state.para_birimi;
+
+  // Rakip hedefleme: yalnız rakip kıran işlerde ve geçerli/yenilmemiş bir rakip için.
+  const hedefRakip =
+    secenek.hedefRakipAd && tur in RAKIP_KOTU_IS_HEDEFLERI
+      ? state.rakipler.find((r) => r.ad === secenek.hedefRakipAd && !r.yenildi)
+      : undefined;
+
+  // "Adamına yaptır": peşin ücret; kişisel risk (ahlak/hapis) yarıya iner.
+  const vekil = secenek.vekil === true;
+  let vekilUcret = 0;
+  if (vekil) {
+    vekilUcret = Math.max(3, paraYuvarla(10 * enflasyon));
+    if (state.para < vekilUcret) throw new Error("Adam tutacak paran yok.");
+    state.para = paraYuvarla(state.para - vekilUcret);
+  }
+
+  const sans = kotuIsBasariSansi(state, tanim);
+  const kazandi = rollSuccess(sans);
+  const hamDal = kazandi ? tanim.basarili : tanim.basarisiz;
+  // Vekil kullanınca kişisel ahlak yükü ve hapis riski yarıya iner (fiziksel işi
+  // başkası yaptı); suç izi tamamen kaybolmaz.
+  const dal: KotuIsEtki = vekil
+    ? {
+        ...hamDal,
+        ahlak: hamDal.ahlak ? Math.round(hamDal.ahlak / 2) : hamDal.ahlak,
+        hapis_sansi: hamDal.hapis_sansi ? hamDal.hapis_sansi / 2 : hamDal.hapis_sansi,
+        suc_artis: hamDal.suc_artis ? Math.round(hamDal.suc_artis * 0.6) : hamDal.suc_artis,
+      }
+    : hamDal;
+  kotuIsEtkiUygula(state, dal, enflasyon);
+
   const adi = K(dil, KOTU_IS_ADLARI[tur] ?? tur);
   let mesaj = kazandi
     ? T(dil, "{0}: işini gördün.", [adi])
     : T(dil, "{0}: işler ters gitti.", [adi]);
+
+  // Rakip gücü kır: başarılı dalda hedef rakibin gücünü düşür, pazar payını al.
+  if (kazandi && hedefRakip) {
+    const kirSonucu = rakipGucKir(state, hedefRakip.ad, RAKIP_KOTU_IS_HEDEFLERI[tur], enflasyon);
+    if (kirSonucu) mesaj += " " + kirSonucu.mesaj;
+  } else if (hedefRakip) {
+    // Başarısız da olsa rakip senin peşinde olduğunu anlar.
+    hedefRakip.husumet = Math.min(100, hedefRakip.husumet + 12);
+  }
+
+  // "Ortaya çıkma": vekille yaptırınca bile iz kalabilir (%25). Ortaya çıkarsa
+  // suç izi tam biner + itibar düşer + (varsa) hedef rakip iyice azılı olur.
+  if (vekil && Math.random() < 0.25) {
+    state.suc_seviyesi = Math.min(100, state.suc_seviyesi + (hamDal.suc_artis ?? 8));
+    state.un = Math.max(0, state.un - 3);
+    if (hedefRakip) hedefRakip.husumet = Math.min(100, hedefRakip.husumet + 25);
+    mesaj += " " + T(dil, "Ama tuttuğun adam konuştu; iş sana kadar izlendi.");
+  }
 
   // Başarısız dalda "ortaya çıkma": hapis + (bazı işlerde) ölüm riski.
   if (!kazandi && dal.hapis_sansi && Math.random() < dal.hapis_sansi) {
@@ -2030,6 +2144,34 @@ export interface MulkKartBilgisi {
   yillikBakimTahmini: number;
   /** NET: brüt getiri − yıllık bakım tahmini = oyuncunun eline gerçekten kalan yıllık akış. Negatifse mülk o an zarar ettiriyor. */
   tahminiYillikNet: number;
+  /** "Şimdi al / bekle" zamanlama sinyali: getirinin normal duruma göre nerede olduğu. */
+  piyasaSinyali: "firsat" | "zirve" | "durgun";
+  /** İnsan-okunur zamanlama ipucu. */
+  piyasaIpucu: string;
+}
+
+const NOTR_ULKE = { savasta: false, vebada: false, ekonomi: "normal" as const, kriz: null, nufusDurumu: "normal" as const };
+
+function mulkPiyasaSinyali(
+  tur: MulkTuru,
+  state: CharacterState
+): { sinyal: "firsat" | "zirve" | "durgun"; ipucu: string } {
+  const simdi = mulkGetiriOraniHesapla(tur, state.ulke);
+  const normal = mulkGetiriOraniHesapla(tur, NOTR_ULKE);
+  const delta = simdi - normal;
+  if (delta > 0.02) {
+    return {
+      sinyal: "zirve",
+      ipucu: T(state.dil, "Getiri şu an zirvede — bu koşullar geçince düşer. Elindekini tut, yeni almak için acele etme."),
+    };
+  }
+  if (delta < -0.02) {
+    return {
+      sinyal: "firsat",
+      ipucu: T(state.dil, "Getiri şu an dipte; koşullar düzelince toparlanır. Ucuza girmek için iyi bir zaman olabilir."),
+    };
+  }
+  return { sinyal: "durgun", ipucu: T(state.dil, "Piyasa durgun — acele bir karar gerektirmiyor.") };
 }
 
 /** Yatırım ekranının "Yatırımlık Gayrimenkuller" bölümü için 5 mülkün güncel fiyat/getiri önizlemesini döner. */
@@ -2053,6 +2195,10 @@ export async function mulkConfigGetir(id: string): Promise<MulkKartBilgisi[]> {
       tahminiYillikGetiriMiktari: paraYuvarla(tabanDegeri * oran),
       yillikBakimTahmini: mulkYillikBakimTahmini(tanim.tur, state),
       tahminiYillikNet: paraYuvarla(tabanDegeri * oran - mulkYillikBakimTahmini(tanim.tur, state)),
+      ...(() => {
+        const s = mulkPiyasaSinyali(tanim.tur, state);
+        return { piyasaSinyali: s.sinyal, piyasaIpucu: s.ipucu };
+      })(),
     };
   });
 }
@@ -2928,6 +3074,163 @@ export async function envanterEsyasiKullan(id: string, esyaId: string): Promise<
     mesaj = T(state.dil, "{0} ters tepti; biraz fenalaştın ({1} sağlık).", [K(state.dil, esya.ad), etki.saglik ?? -5]);
   }
   clampStats(state);
+  await oturumKaydet(state);
+  return { state, mesaj };
+}
+
+// ---------------------------------------------------------------------------
+// Hediye et: magaza_envanteri'nden bir eşyayı eş/çocuk/ekip/dosta ver → ilişki
+// puanı artar (§26 "hediye" altyapısı). Eşya tüketilir. Turu tüketmez.
+// ---------------------------------------------------------------------------
+
+interface HediyeSonucu {
+  state: CharacterState;
+  mesaj: string;
+}
+
+export async function hediyeEt(
+  id: string,
+  esyaId: string,
+  hedefTur: "es" | "cocuk" | "ekip" | "dost",
+  opts: { cocukIndex?: number; ekipId?: string } = {}
+): Promise<HediyeSonucu> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  const index = state.magaza_envanteri.findIndex((e) => e.id === esyaId);
+  if (index === -1) throw new Error("Envanterinde böyle bir eşya yok.");
+  const esya = state.magaza_envanteri[index];
+  const tanim = magazaEsyasiTanimiGetir(esya.katalogId);
+  const artis = Math.max(3, Math.min(14, Math.round((tanim?.tabanFiyat ?? 20) / 12)));
+  const dil = state.dil;
+  let mesaj: string;
+
+  if (hedefTur === "es") {
+    if (!state.es_adi) throw new Error("Evli değilsin.");
+    state.es_puani = Math.min(100, state.es_puani + artis);
+    state.mutluluk += 2;
+    mesaj = T(dil, "{0}'e {1} hediye ettin; çok mutlu oldu (+{2} ilişki).", [state.es_adi, K(dil, esya.ad), artis]);
+  } else if (hedefTur === "cocuk") {
+    const yasayanlar = state.cocuklar.map((c, i) => ({ c, i })).filter((x) => x.c.yasiyor);
+    if (yasayanlar.length === 0) throw new Error("Yaşayan çocuğun yok.");
+    const secili =
+      opts.cocukIndex !== undefined && state.cocuklar[opts.cocukIndex]?.yasiyor
+        ? { c: state.cocuklar[opts.cocukIndex], i: opts.cocukIndex }
+        : yasayanlar[0];
+    secili.c.iliski = Math.min(100, (secili.c.iliski ?? 60) + artis + 2);
+    state.mutluluk += 2;
+    mesaj = T(dil, "{0}'e {1} hediye ettin (+{2} ilişki).", [secili.c.isim, K(dil, esya.ad), artis + 2]);
+  } else if (hedefTur === "ekip") {
+    if (state.ekip.length === 0) throw new Error("Ekibinde kimse yok.");
+    const uye = opts.ekipId ? state.ekip.find((e) => e.id === opts.ekipId) : state.ekip[0];
+    if (!uye) throw new Error("Ekip üyesi bulunamadı.");
+    uye.sadakat = Math.min(100, uye.sadakat + artis);
+    mesaj = T(dil, "{0}'e {1} hediye ettin; sadakati arttı (+{2}).", [uye.isim, K(dil, esya.ad), artis]);
+  } else {
+    state.dost_puani = Math.min(100, state.dost_puani + artis);
+    state.mutluluk += 1;
+    mesaj = T(dil, "{0}'e {1} hediye ettin (+{2} dostluk).", [state.dost_adi, K(dil, esya.ad), artis]);
+  }
+
+  state.magaza_envanteri.splice(index, 1);
+  clampStats(state);
+  await oturumKaydet(state);
+  return { state, mesaj };
+}
+
+// ---------------------------------------------------------------------------
+// Kalıcı salgından korunma yatırımı (§27): veba GELMEDEN önce para harcayıp bir
+// sonraki dalganın taban korunma kademesini yükselt. Turu tüketmez.
+// ---------------------------------------------------------------------------
+
+export interface SalginKorunmaKarti {
+  kademe: number;
+  ad: string;
+  aciklama: string;
+  maliyet: number;
+  sahipMi: boolean;
+  alinabilir: boolean;
+}
+
+const SALGIN_KORUNMA_TABAN_MALIYET = [0, 22, 55];
+
+export async function salginKorunmaConfigGetir(
+  id: string
+): Promise<{ kartlar: SalginKorunmaKarti[]; aktifKademe: number; vebaVar: boolean }> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  const enflasyon = enflasyonCarpani(state);
+  const aktifKademe = state.salgin_korunma_yatirimi?.kademe ?? 0;
+  const vebaVar = !!state.veba?.aktif;
+  const meta = [
+    { kademe: 1, ad: "Hekim anlaşması + temiz su", aciklama: "Bir sonraki salgında kısmi korunma (bulaşma riskini düşürür)." },
+    { kademe: 2, ad: "Karantina evi", aciklama: "Bir sonraki salgında tam korunma (en düşük bulaşma riski)." },
+  ];
+  const kartlar: SalginKorunmaKarti[] = meta.map((m) => ({
+    kademe: m.kademe,
+    ad: m.ad,
+    aciklama: m.aciklama,
+    maliyet: Math.max(1, paraYuvarla(SALGIN_KORUNMA_TABAN_MALIYET[m.kademe] * enflasyon)),
+    sahipMi: aktifKademe >= m.kademe,
+    alinabilir: !vebaVar && aktifKademe < m.kademe,
+  }));
+  return { kartlar, aktifKademe, vebaVar };
+}
+
+export async function salginKorunmaYatirimiYap(
+  id: string,
+  kademe: number
+): Promise<{ state: CharacterState; mesaj: string }> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  if (kademe !== 1 && kademe !== 2) throw new Error("Geçersiz korunma kademesi.");
+  if (state.veba?.aktif) throw new Error("Salgın çoktan başladı; artık hazırlık yapamazsın.");
+  const mevcut = state.salgin_korunma_yatirimi?.kademe ?? 0;
+  if (mevcut >= kademe) throw new Error("Bu korunma kademesine zaten sahipsin.");
+  const enflasyon = enflasyonCarpani(state);
+  const maliyet = Math.max(1, paraYuvarla(SALGIN_KORUNMA_TABAN_MALIYET[kademe] * enflasyon));
+  if (state.para < maliyet) throw new Error(`Yeterli paran yok (${maliyet} ${state.para_birimi} gerekli).`);
+  state.para = paraYuvarla(state.para - maliyet);
+  state.salgin_korunma_yatirimi = { kademe, yil: state.yil };
+  clampStats(state);
+  await oturumKaydet(state);
+  return {
+    state,
+    mesaj: T(state.dil, "Salgına karşı hazırlık yaptın (kademe {0}). Bir sonraki dalgada işine yarayacak.", [kademe]),
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Kredi / tefeci endpoint sarmalayıcıları
+// ---------------------------------------------------------------------------
+
+export async function krediConfigGetir(id: string): Promise<{
+  aktifKredi: CharacterState["kredi"];
+  maksTutar: number;
+  faizTeklifi: number;
+  minTutar: number;
+}> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  return { aktifKredi: state.kredi, maksTutar: krediMaksTutar(state), faizTeklifi: krediFaizTeklifi(state), minTutar: 20 };
+}
+
+export async function krediAlEndpoint(id: string, tutar: number): Promise<{ state: CharacterState; mesaj: string }> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  const mesaj = krediAl(state, tutar);
+  clampStats(state);
+  await oturumKaydet(state);
+  return { state, mesaj };
+}
+
+export async function krediPazarlikEndpoint(id: string): Promise<{ state: CharacterState; mesaj: string }> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  const mesaj = krediPazarlik(state);
   await oturumKaydet(state);
   return { state, mesaj };
 }

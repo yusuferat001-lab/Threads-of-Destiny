@@ -677,6 +677,8 @@ export function createCharacter(
     rakip_adi: rakipAdi,
     dost_puani: 50,
     rakip_puani: 50,
+    // rakipler meslek seçilince (mesleğiSec) doldurulur — rakip_adi ilk rakip olur.
+    rakipler: [],
 
     es_adi: null,
     es_puani: 0,
@@ -710,6 +712,8 @@ export function createCharacter(
     kucuk_kriz_sonraki_yil: yil + 5 + Math.floor(Math.random() * 3), // 5-7 yıl sonra ilk eşik
     gida_fiyat_sok_bitis_yili: null,
     borc_yardimi_alindi: false,
+    salgin_korunma_yatirimi: null,
+    kredi: null,
     aile_etkilesim_kilit: {},
     aile_talep: null,
     aile_talep_sonraki_yil: yil + 4,
@@ -877,9 +881,11 @@ export function eskiKayitGocu(state: CharacterState): void {
   if (typeof state.hapis_ceza_kalan !== "number") {
     state.hapis_ceza_kalan = state.etiketler.includes("hapiste") ? 4 : 0;
   }
-  // Kişisel veba hastalığı ölüm riski sonradan eklendi.
+  // Kişisel veba hastalığı ölüm riski sonradan eklendi. Yeni bir vakada
+  // vebaHastaligiBaslatEt bunu 70 yapıyor; göçmüş bir hasta kaydı da aynı
+  // başlangıç değerini almalı (doğal −15/tur düşüşü zaten devrede).
   if (typeof state.veba_olum_riski !== "number") {
-    state.veba_olum_riski = state.etiketler.includes("veba_hastasi") ? 55 : 0;
+    state.veba_olum_riski = state.etiketler.includes("veba_hastasi") ? 70 : 0;
   }
   // Mini-oyun sayaçları sonradan eklendi.
   if (typeof state.hazard_el_sayisi !== "number") state.hazard_el_sayisi = 0;
@@ -901,6 +907,26 @@ export function eskiKayitGocu(state: CharacterState): void {
   for (const c of state.cocuklar ?? []) {
     if (typeof c.iliski !== "number") c.iliski = 60;
   }
+  // Derin rakip ilişkileri sonradan eklendi: meslek seçilmişse eski tekil
+  // rakip_adi'ndan + bir ek isimden iki rakip türet.
+  if (!Array.isArray(state.rakipler) || state.rakipler.length === 0) {
+    if (state.meslek && MESLEKLER.includes(state.meslek)) {
+      let ikinci = state.dost_adi === state.rakip_adi ? "Konrad" : state.dost_adi;
+      try {
+        ikinci = rastgeleBirIsimSec(state.cag, state.bolge, [state.dost_adi, state.rakip_adi, state.anne_adi, state.baba_adi]);
+      } catch {
+        /* isim havuzu yoksa yukarıdaki yedek kalır */
+      }
+      state.rakipler = [
+        { ad: state.rakip_adi, meslek: state.meslek, guc: 55, husumet: 35, yenildi: false },
+        { ad: ikinci, meslek: state.meslek, guc: 50, husumet: 28, yenildi: false },
+      ];
+    } else {
+      state.rakipler = [];
+    }
+  }
+  if (state.salgin_korunma_yatirimi === undefined) state.salgin_korunma_yatirimi = null;
+  if (state.kredi === undefined) state.kredi = null;
 }
 
 /** Oyuncu mesleğini seçtikten sonra çağrılır: miras bonusunu ve maaşı uygular. */
@@ -911,6 +937,21 @@ export function mesleğiSec(state: CharacterState, meslek: string): void {
 
   state.meslek = meslek;
   state.aile_mirasi_surduruldu = mirasSurduruldu;
+
+  // Derin rakip ilişkileri (§13): meslektaş 2 isimli rakip. İlki eski tekil
+  // rakip_adi ile aynı kişi (geriye dönük uyum — olaylar {rakip}'i kullanır).
+  if (state.rakipler.length === 0) {
+    const ikinciAd = rastgeleBirIsimSec(state.cag, state.bolge, [
+      state.dost_adi,
+      state.rakip_adi,
+      state.anne_adi,
+      state.baba_adi,
+    ]);
+    state.rakipler = [
+      { ad: state.rakip_adi, meslek, guc: 48 + Math.floor(Math.random() * 22), husumet: 28 + Math.floor(Math.random() * 14), yenildi: false },
+      { ad: ikinciAd, meslek, guc: 42 + Math.floor(Math.random() * 24), husumet: 22 + Math.floor(Math.random() * 14), yenildi: false },
+    ];
+  }
 
   if (meslek === "Asker") state.ordu_mevcudu = 10;
 
@@ -1323,11 +1364,33 @@ export function capraletkiUygula(
   return { saglikKaybi, mutlulukKaybi };
 }
 
+/**
+ * Normal olay havuzunu tamamen kapatıp kendi özel havuzuna geçiren etiketler
+ * (§8/§17/§27). Tasarımca KARŞILIKLI DIŞLAYICIdırlar: ikisi birden set olursa
+ * hiçbir olay ikisini de sağlayamaz ve olaySec olaysız kalır. etiketEkle bu
+ * invariant'ı zorunlu kılar (yeni bir kilit eklenince diğerleri düşer);
+ * olaySecici.ts ayrıca son çare fallback'iyle throw'u engeller.
+ */
+export const HAVUZ_KILIT_ETIKETLERI = ["hapiste", "yolculukta", "kacak", "veba_hastasi"] as const;
+
 export function etiketEkle(state: CharacterState, etiketler?: string[]): void {
   if (!etiketler) return;
   for (const etiket of etiketler) {
-    if (!state.etiketler.includes(etiket)) state.etiketler.push(etiket);
+    if (state.etiketler.includes(etiket)) continue;
+    // Bir havuz-kilit etiketi eklenirken, çakışan diğer havuz kilitlerini kaldır
+    // (karşılıklı dışlama invariant'ı). Yeni eklenen kilit "kazanır".
+    if ((HAVUZ_KILIT_ETIKETLERI as readonly string[]).includes(etiket)) {
+      state.etiketler = state.etiketler.filter(
+        (e) => e === etiket || !(HAVUZ_KILIT_ETIKETLERI as readonly string[]).includes(e)
+      );
+    }
+    state.etiketler.push(etiket);
   }
+}
+
+/** Karakter bir havuz-kilit etiketi altında mı (normal olay havuzu kapalı mı)? */
+export function havuzKilidiVar(state: CharacterState): boolean {
+  return (HAVUZ_KILIT_ETIKETLERI as readonly string[]).some((e) => state.etiketler.includes(e));
 }
 
 export function etiketSil(state: CharacterState, etiketler?: string[]): void {
@@ -1883,10 +1946,10 @@ export interface ZorunluBagisSonucu {
 
 /**
  * "Kral zenginleştiğini fark etti, bağış istiyor": toplam servet (nakit+mülk)
- * 500'ü aştıkça, en az 5 yıllık cooldown sonrasında yıllık %25 ihtimalle
- * hükümdar servetin %15-20'sini zorunlu "bağış" olarak alır. Zenginliğin TEK
- * bedeli budur — eski pasif %4/yıl zenginlik vergisi kaldırıldı; bu tek seferlik,
- * büyük ve kendi cooldown'una sahip bir mekanik olarak kaldı.
+ * ZORUNLU_BAGIS_ESIGI'yi (350) aştıkça, en az 5 yıllık cooldown sonrasında yıllık
+ * %30 ihtimalle hükümdar servetin %20-25'ini zorunlu "bağış" olarak alır.
+ * Zenginliğin TEK bedeli budur — eski pasif %4/yıl zenginlik vergisi kaldırıldı;
+ * bu tek seferlik, büyük ve kendi cooldown'una sahip bir mekanik olarak kaldı.
  */
 export function zorunluBagisKontrolEt(state: CharacterState, yasArtisi: number): ZorunluBagisSonucu | null {
   if (yasArtisi <= 0) return null;
@@ -2021,6 +2084,236 @@ export function rakipSoygunKontrolEt(state: CharacterState, yasArtisi: number): 
   return null;
 }
 
+// ---------------------------------------------------------------------------
+// Derin rakip ilişkileri (§13): isimli rakiplerin gücünü karanlık işlerle kır,
+// kırılan güç pazar payı (para + kariyer) olarak sana döner; husumet yükselince
+// rakip misilleme yapar. Rakip "yenildi" olunca sistemden çıkar.
+// ---------------------------------------------------------------------------
+
+/** Hangi karanlık işler bir rakibi hedefleyebilir + o iş rakip gücünü ne kadar kırar. */
+export const RAKIP_KOTU_IS_HEDEFLERI: Record<string, number> = {
+  rakibi_korkut: 8,
+  rakibi_dov: 15,
+  isyeri_yak: 26,
+};
+
+export interface RakipGucKirSonucu {
+  kirilan: number;
+  pazarPayi: number;
+  kariyerKazanci: number;
+  yenildiMi: boolean;
+  mesaj: string;
+}
+
+/**
+ * Bir rakibin gücünü `taban` kadar (0-100 clamp) kırar. Kırılan güç oyuncuya
+ * pazar payı olarak döner: para += kırılan × 0.5 × enflasyon, kariyer_puani +=
+ * kırılana orantılı 2..6. Güç ≤ 10'a inince rakip "yenildi" (tek seferlik büyük
+ * kariyer + ün bonusu). Her çağrı rakibin husumetini artırır (misilleme riski).
+ */
+export function rakipGucKir(
+  state: CharacterState,
+  rakipAd: string,
+  taban: number,
+  enflasyon: number
+): RakipGucKirSonucu | null {
+  const rakip = state.rakipler.find((r) => r.ad === rakipAd && !r.yenildi);
+  if (!rakip) return null;
+  const oncekiGuc = rakip.guc;
+  rakip.guc = Math.max(0, Math.min(100, rakip.guc - taban));
+  const kirilan = oncekiGuc - rakip.guc;
+  rakip.husumet = Math.min(100, rakip.husumet + 10 + Math.floor(Math.random() * 11)); // +10..20
+
+  const pazarPayi = Math.max(1, paraYuvarla(kirilan * 0.5 * enflasyon));
+  const kariyerKazanci = Math.round(2 + (kirilan / 26) * 4); // 26 kırılırsa ~+6
+  state.para = paraYuvarla(state.para + pazarPayi);
+  state.kariyer_puani += kariyerKazanci;
+
+  let yenildiMi = false;
+  if (rakip.guc <= 10) {
+    rakip.yenildi = true;
+    yenildiMi = true;
+    state.kariyer_puani += 10;
+    state.un = Math.min(100, state.un + 4);
+    hayatOlayiEkle(state, "♟️", T(state.dil, "{0} rekabeti tamamen bırakmak zorunda kaldı", [rakipAd]));
+  }
+
+  const mesaj = yenildiMi
+    ? T(state.dil, "♟️ {0}'ın gücünü kırdın; artık senin karşında bir rakip değil. Pazar payı sana geçti (+{1} {birim}).", [
+        rakipAd,
+        pazarPayi,
+      ]).replace(/\{birim\}/g, state.para_birimi)
+    : T(state.dil, "♟️ {0} sarsıldı; pazarın bir kısmı sana geçti (+{1} {birim}). Ama bunu unutmayacak.", [
+        rakipAd,
+        pazarPayi,
+      ]).replace(/\{birim\}/g, state.para_birimi);
+  return { kirilan, pazarPayi, kariyerKazanci, yenildiMi, mesaj };
+}
+
+/** Yıllık: yenilmemiş rakiplerin gücü yavaşça büyür, husumet yavaşça soğur. */
+export function rakiplerGuncelle(state: CharacterState, yasArtisi: number): void {
+  if (yasArtisi <= 0) return;
+  for (const r of state.rakipler) {
+    if (r.yenildi) continue;
+    r.guc = Math.min(100, r.guc + 0.3 * yasArtisi);
+    r.husumet = Math.max(15, r.husumet - 0.5 * yasArtisi);
+  }
+}
+
+export interface RakipMisillemeSonucu {
+  rakipAd: string;
+  mesaj: string;
+}
+
+/**
+ * Yıllık: husumeti yüksek (≥55) yenilmemiş bir rakip, düşük ihtimalle
+ * (husumet/320 per yıl) misilleme yapar — nakit/ün/sağlıktan birini vurur.
+ * Misillemeden sonra husumet ~20 düşer. hapiste/yolculukta iken atlanır.
+ */
+export function rakipMisillemesiDene(state: CharacterState, yasArtisi: number): RakipMisillemeSonucu | null {
+  if (yasArtisi <= 0) return null;
+  if (state.etiketler.includes("hapiste") || state.etiketler.includes("yolculukta")) return null;
+  for (let i = 0; i < yasArtisi; i++) {
+    const adaylar = state.rakipler.filter((r) => !r.yenildi && r.husumet >= 55);
+    if (adaylar.length === 0) return null;
+    const rakip = adaylar[Math.floor(Math.random() * adaylar.length)];
+    if (Math.random() >= rakip.husumet / 320) continue;
+    const tur = Math.floor(Math.random() * 3);
+    let mesaj: string;
+    if (tur === 0) {
+      const kayip = Math.max(4, paraYuvarla(Math.max(0, state.para) * 0.1));
+      state.para = paraYuvarla(state.para - kayip);
+      mesaj = T(state.dil, "🎯 {0} adamlarını gönderdi; deponu basıp {1} {birim} zarar verdiler.", [rakip.ad, kayip]).replace(
+        /\{birim\}/g,
+        state.para_birimi
+      );
+    } else if (tur === 1) {
+      state.un = Math.max(0, state.un - 5);
+      mesaj = T(state.dil, "🎯 {0} hakkında çirkin dedikodular yaydı; itibarın zedelendi.", [rakip.ad]);
+    } else {
+      state.saglik = Math.max(0, state.saglik - 8);
+      mesaj = T(state.dil, "🎯 {0}'ın tuttuğu kabadayılar seni bir ara sokakta sıkıştırdı.", [rakip.ad]);
+    }
+    rakip.husumet = Math.max(15, rakip.husumet - 20);
+    hayatOlayiEkle(state, "🎯", T(state.dil, "{0} misilleme yaptı", [rakip.ad]));
+    return { rakipAd: rakip.ad, mesaj };
+  }
+  return null;
+}
+
+// ---------------------------------------------------------------------------
+// Kredi / tefeci: kontrollü borçlanma. Aynı anda tek kredi. Yıllık taksit
+// nakitten otomatik erir; üst üste ödenemezse tefeci önce uyarır, sonra mülke/
+// servete el koyar. Pazarlıkla faiz bir kez düşürülebilir (ya da ters teper).
+// ---------------------------------------------------------------------------
+
+export const KREDI_TABAN_FAIZ = 0.12;
+export const KREDI_MIN_TUTAR = 20;
+export const KREDI_MAKS_TUTAR = 200;
+
+/** Oyuncunun şu an alabileceği en yüksek kredi (maaşa + mevcut borç yokluğuna bağlı). */
+export function krediMaksTutar(state: CharacterState): number {
+  if (state.kredi) return 0;
+  const maas = state.maas_yillik || hesaplaMaasYillik(state);
+  // ~6 yıllık maaş kadar, KREDI_MAKS_TUTAR tavanıyla; suç seviyesi yüksekse tefeci daha az verir.
+  const sucKesinti = state.suc_seviyesi >= 60 ? 0.5 : state.suc_seviyesi >= 40 ? 0.75 : 1;
+  return Math.max(0, Math.min(KREDI_MAKS_TUTAR, Math.round(maas * 6 * sucKesinti)));
+}
+
+/** Verilen tutar için tefecinin isteyeceği faiz oranı (borçluysa / suçluysa yükselir). */
+export function krediFaizTeklifi(state: CharacterState): number {
+  let faiz = KREDI_TABAN_FAIZ;
+  if (state.para < 0) faiz += 0.04;
+  if (state.suc_seviyesi >= 40) faiz += 0.03;
+  if (state.ahlak < 35) faiz += 0.02;
+  return Math.round(faiz * 100) / 100;
+}
+
+export function krediAl(state: CharacterState, tutar: number): string {
+  if (state.kredi) throw new Error("Zaten ödenmemiş bir kredin var.");
+  const maks = krediMaksTutar(state);
+  const t = Math.round(tutar);
+  if (t < KREDI_MIN_TUTAR) throw new Error(`En az ${KREDI_MIN_TUTAR} ${state.para_birimi} kredi alabilirsin.`);
+  if (t > maks) throw new Error(`Tefeci sana en fazla ${maks} ${state.para_birimi} verir.`);
+  const faiz = krediFaizTeklifi(state);
+  state.kredi = {
+    anapara: t,
+    kalanBorc: t,
+    faizOrani: faiz,
+    yillikTaksit: Math.max(2, Math.round(t * 0.18)),
+    alindigiYil: state.yil,
+    odenmeyenTaksit: 0,
+    pazarlikYapildi: false,
+  };
+  state.para = paraYuvarla(state.para + t);
+  hayatOlayiEkle(state, "🪙", T(state.dil, "Tefeciden {0} {birim} borç aldı", [t]).replace(/\{birim\}/g, state.para_birimi));
+  return T(state.dil, "Tefeci kesesini açtı: +{0} {birim}. Yıllık taksit ~{1}, faiz %{2}.", [
+    t,
+    state.kredi.yillikTaksit,
+    Math.round(faiz * 100),
+  ]).replace(/\{birim\}/g, state.para_birimi);
+}
+
+export function krediPazarlik(state: CharacterState): string {
+  if (!state.kredi) throw new Error("Ortada bir kredi yok.");
+  if (state.kredi.pazarlikYapildi) throw new Error("Bu kredi için zaten pazarlık ettin.");
+  state.kredi.pazarlikYapildi = true;
+  const sans = 30 + (state.un - 20) / 2 + (state.ahlak - 50) / 4; // ~%20-70
+  if (Math.random() * 100 < sans) {
+    state.kredi.faizOrani = Math.max(0.05, Math.round((state.kredi.faizOrani - 0.03) * 100) / 100);
+    state.kredi.yillikTaksit = Math.max(2, Math.round(state.kredi.kalanBorc * 0.16));
+    return T(state.dil, "Tefeci homurdandı ama faizi %{0}'e indirdi.", [Math.round(state.kredi.faizOrani * 100)]);
+  }
+  state.kredi.faizOrani = Math.min(0.30, Math.round((state.kredi.faizOrani + 0.02) * 100) / 100);
+  return T(state.dil, "Pazarlık ters tepti; tefeci faizi %{0}'e çıkardı.", [Math.round(state.kredi.faizOrani * 100)]);
+}
+
+/** Yıllık: faiz işler, taksit nakitten otomatik ödenir, ödenmezse el koyma zinciri. */
+export function krediYillikUygula(state: CharacterState, yasArtisi: number): string | null {
+  if (!state.kredi || yasArtisi <= 0) return null;
+  const mesajlar: string[] = [];
+  for (let i = 0; i < yasArtisi; i++) {
+    if (!state.kredi) break;
+    const k = state.kredi;
+    k.kalanBorc = paraYuvarla(k.kalanBorc * (1 + k.faizOrani));
+    if (state.para >= k.yillikTaksit) {
+      const odeme = Math.min(k.yillikTaksit, k.kalanBorc);
+      state.para = paraYuvarla(state.para - odeme);
+      k.kalanBorc = paraYuvarla(k.kalanBorc - odeme);
+      k.odenmeyenTaksit = 0;
+    } else {
+      k.odenmeyenTaksit += 1;
+      if (k.odenmeyenTaksit === 2) {
+        mesajlar.push(T(state.dil, "🪙 Tefeci taksitini alamadı; 'bir daha kaçırma' diye tehdit etti."));
+      } else if (k.odenmeyenTaksit >= 3) {
+        // El koyma: varsa en değerli mülke, yoksa nakde + itibara.
+        if (state.mulkler.length > 0) {
+          const alinan = state.mulkler.pop()!;
+          delete state.mulk_bakim_kalan[alinan];
+          mesajlar.push(
+            T(state.dil, "🪙 Tefecinin adamları borcun karşılığında {0} el koydu.", [K(state.dil, alinan)])
+          );
+          hayatOlayiEkle(state, "🪙", T(state.dil, "Tefeci borç için {0} el koydu", [K(state.dil, alinan)]));
+        } else {
+          const alinan = Math.max(0, paraYuvarla(Math.min(k.kalanBorc, Math.max(0, state.para))));
+          state.para = paraYuvarla(state.para - alinan);
+          state.un = Math.max(0, state.un - 10);
+          mesajlar.push(T(state.dil, "🪙 Tefeci borcun için elinde ne varsa aldı; itibarın da yerlerde."));
+          hayatOlayiEkle(state, "🪙", T(state.dil, "Tefeci borç için servetine el koydu"));
+        }
+        state.kredi = null;
+        break;
+      }
+    }
+    if (state.kredi && state.kredi.kalanBorc <= 0) {
+      mesajlar.push(T(state.dil, "🪙 Tefecinin borcunu tamamen kapattın; defterden adın silindi."));
+      hayatOlayiEkle(state, "🪙", T(state.dil, "Tefeci borcu bitti"));
+      state.kredi = null;
+    }
+  }
+  return mesajlar.length > 0 ? mesajlar.join(" ") : null;
+}
+
 const BUYUK_SAVAS_MIN_COOLDOWN_YIL = 10;
 const BUYUK_SAVAS_YILLIK_IHTIMAL = 0.1;
 const BUYUK_SAVAS_SURE_MIN_YIL = 3;
@@ -2107,6 +2400,11 @@ const VEBA_GELIR_CARPANI_ARALIK = 0.1;
 export function vebaBaslat(state: CharacterState, korumaSeviyesi = 0): void {
   const aktifSureYil = VEBA_AKTIF_SURE_MIN_YIL + Math.floor(Math.random() * (VEBA_AKTIF_SURE_ARALIK_YIL + 1));
   const etkiSureYil = VEBA_ETKI_SURE_MIN_YIL + Math.floor(Math.random() * (VEBA_ETKI_SURE_ARALIK_YIL + 1));
+  // Salgından ÖNCE yapılmış kalıcı korunma yatırımı (§ "salgın korunma") ile
+  // olayda seçilen korunmanın MAX'ı kullanılır; yatırım bu dalgada tüketilir.
+  const yatirimKademe = state.salgin_korunma_yatirimi?.kademe ?? 0;
+  const etkinKoruma = Math.max(Math.round(korumaSeviyesi), yatirimKademe);
+  state.salgin_korunma_yatirimi = null;
   state.veba = {
     aktif: true,
     baslangicYili: state.yil,
@@ -2114,7 +2412,7 @@ export function vebaBaslat(state: CharacterState, korumaSeviyesi = 0): void {
     etkiBitisYili: state.yil + aktifSureYil + etkiSureYil,
     konutKiraCarpani: VEBA_KONUT_KIRA_CARPANI_MIN + Math.random() * VEBA_KONUT_KIRA_CARPANI_ARALIK,
     gelirCarpani: VEBA_GELIR_CARPANI_MIN + Math.random() * VEBA_GELIR_CARPANI_ARALIK,
-    korumaSeviyesi: Math.max(0, Math.min(2, Math.round(korumaSeviyesi))),
+    korumaSeviyesi: Math.max(0, Math.min(2, etkinKoruma)),
   };
   state.veba_gecirdi = true;
 }
@@ -2169,9 +2467,19 @@ export function vebaYillikKontrol(state: CharacterState, yasArtisi: number): Veb
   const esSansi = VEBA_ES_KAYIP_KADEME[k];
   const cocukSansi = VEBA_COCUK_KAYIP_KADEME[k];
   const zatenHasta = state.etiketler.includes("veba_hastasi");
+  // Karakterin BİZZAT hastalanması, kendi başına havuz kilitleyen bir etiket
+  // eklediği için (yalnız vebaHastasiOlayi:true olaylar gösterilir); zaten bir
+  // havuz kilidi altındayken (hapiste / kacak / yolculukta) bulaşırsa iki kilit
+  // çakışır ve olaySec hiç uygun olay bulamaz → oyun kilitlenirdi. Bu durumlarda
+  // karaktere bulaşmayı atla (§27 zorunlu bağış / büyük savaş / küçük kriz de
+  // aynı etiketlerde atlanıyor). Eş/çocuk kaybının olay havuzu yok, onlar sürer.
+  const karakterBulasabilir =
+    !state.etiketler.includes("hapiste") &&
+    !state.etiketler.includes("kacak") &&
+    !state.etiketler.includes("yolculukta");
 
   for (let i = 0; i < yasArtisi; i++) {
-    if (!zatenHasta && !sonuc.hastalandi && Math.random() < kapmaSansi) {
+    if (karakterBulasabilir && !zatenHasta && !sonuc.hastalandi && Math.random() < kapmaSansi) {
       sonuc.hastalandi = true;
       vebaHastaligiBaslatEt(state);
       hayatOlayiEkle(state, "🦠", T(state.dil, "Vebaya yakalandı"));

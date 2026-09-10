@@ -27,8 +27,6 @@ import {
   finansGetir,
   konutDegistir,
   yasamSecimiDegistir,
-  yatirimConfigGetir,
-  yatirimYap,
   mulkConfigGetir,
   mulkSatinAl,
   sosyallesmeYerleriGetir,
@@ -39,6 +37,7 @@ import {
   zarKademeleriGetir,
   zarAt,
 } from "../src/game/gameEngine";
+import { yatirimConfigGetir, yatirimYap } from "./_yatirimShim";
 import { MESLEKLER, BOLGELER_BY_CAG, gayrimenkulDegeriHesapla } from "../src/game/stateManager";
 import { KONUTLAR } from "../src/data/konutlar";
 import { YASAM_SECENEKLERI } from "../src/data/yasamSecenekleri";

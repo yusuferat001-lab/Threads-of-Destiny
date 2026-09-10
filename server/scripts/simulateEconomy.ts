@@ -3,7 +3,7 @@
  *
  * Gerçek oyun formüllerini (maaş, gider, enflasyon, yaşlanma, çapraz etki,
  * durum tikleri, şans/ani ölüm olayları) doğrudan stateManager.ts/gameEngine.ts'ten
- * import edip binlerce karakterin tüm ömrünü simüle eder. Olay içeriği (367 olay)
+ * import edip binlerce karakterin tüm ömrünü simüle eder. Olay içeriği (~990 olay)
  * tam uygunluk/seçilebilirlik mantığıyla (olaySecici.ts) simüle edilmez — bunun
  * yerine OLAY_BANKASI'ndan ağırlıklı rastgele örnekleme yapılır. Bu, "hangi olay
  * hangi karaktere çıkar" inceliğini feda eder ama gerçek para/sağlık/mutluluk
@@ -235,7 +235,9 @@ function birOmurSimuleEt(cag: Cag, yerlesimId: string, meslek: string, arketip: 
 function yuzdelik(sirali: number[], p: number): number {
   if (sirali.length === 0) return NaN;
   const idx = Math.min(sirali.length - 1, Math.max(0, Math.round((sirali.length - 1) * p)));
-  return sirali[idx];
+  // Para tutarları float birikimi yüzünden -0.6700000000000017 gibi çıkabiliyor;
+  // rapor okunurluğu için 2 basamağa yuvarla.
+  return Math.round(sirali[idx] * 100) / 100;
 }
 
 const N_PER_GROUP = Number(process.env.SIM_N ?? 600);
@@ -298,7 +300,7 @@ function main(): void {
   }
 
   console.log(
-    "\nNot: Olay içeriği (367 olay) OLAY_BANKASI'ndan ağırlıklı örneklenir; olaySecici.ts'in tam uygunluk/" +
+    "\nNot: Olay içeriği (~990 olay) OLAY_BANKASI'ndan ağırlıklı örneklenir; olaySecici.ts'in tam uygunluk/" +
       "kişilik/etiket gating mantığı simüle edilmez. Yatırım mekaniği (guvenli/kendi_isi/riskli) bu " +
       "simülasyona dahil değildir — o, ayrı deterministik formül muhakemesi ve birim testleriyle doğrulanır.\n"
   );

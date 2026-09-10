@@ -161,6 +161,7 @@ export interface CharacterState {
   rakip_adi: string;
   dost_puani: number;
   rakip_puani: number;
+  rakipler: Rakip[];
 
   es_adi: string | null;
   es_puani: number;
@@ -202,6 +203,10 @@ export interface CharacterState {
   gida_fiyat_sok_bitis_yili: number | null;
   /** Ömürde bir kez borçtayken alınan kilise/eş dost yardımı kullanıldı mı. */
   borc_yardimi_alindi: boolean;
+  /** Kalıcı salgından korunma yatırımı; yoksa null. */
+  salgin_korunma_yatirimi: SalginKorunmaYatirimi | null;
+  /** Aktif tefeci kredisi; yoksa null. */
+  kredi: Kredi | null;
 
   /** Aile ekranı etkileşim cooldown'ları: anahtar → tekrar açılacağı oyun yılı (§33). */
   aile_etkilesim_kilit: Record<string, number>;
@@ -271,6 +276,57 @@ export interface AileDurumu {
 export interface KisilikEksenleri {
   fevrilik: number;
   merhamet: number;
+}
+
+/** Derin rakip ilişkileri (§13): isimli rakip + güç/husumet. rakipler[0].ad === rakip_adi. */
+export interface Rakip {
+  ad: string;
+  meslek: string;
+  guc: number;
+  husumet: number;
+  yenildi: boolean;
+}
+
+/** GorevEkrani "Rakiplerin" paneli + karanlık iş hedef seçimi için (yuvarlanmış). */
+export interface RakipKarti {
+  ad: string;
+  meslek: string;
+  guc: number;
+  husumet: number;
+  yenildi: boolean;
+}
+
+/** Kalıcı salgından korunma yatırımı (§27). */
+export interface SalginKorunmaYatirimi {
+  kademe: number;
+  yil: number;
+}
+
+export interface SalginKorunmaKarti {
+  kademe: number;
+  ad: string;
+  aciklama: string;
+  maliyet: number;
+  sahipMi: boolean;
+  alinabilir: boolean;
+}
+
+/** Tefeciden alınan kontrollü borç. */
+export interface Kredi {
+  anapara: number;
+  kalanBorc: number;
+  faizOrani: number;
+  yillikTaksit: number;
+  alindigiYil: number;
+  odenmeyenTaksit: number;
+  pazarlikYapildi: boolean;
+}
+
+export interface KrediConfig {
+  aktifKredi: Kredi | null;
+  maksTutar: number;
+  faizTeklifi: number;
+  minTutar: number;
 }
 
 export interface EkipUyesi {
@@ -486,6 +542,8 @@ export interface KotuIsKarti {
   /** Başarılı dalın verebileceği yaklaşık para (enflasyonlu); 0 ise para getirisi yok. */
   tahminiKazanc: number;
   rakibeYonelik: boolean;
+  /** İsimli bir rakibin gücünü kırabilir mi (>0 ise kırar). */
+  rakipKirmaGucu: number;
 }
 
 export interface KotuIsSonucu {
@@ -515,6 +573,9 @@ export interface MulkKartBilgisi {
   yillikBakimTahmini: number;
   /** NET = brüt getiri − yıllık bakım = oyuncunun eline gerçekten kalan. */
   tahminiYillikNet: number;
+  /** "Şimdi al / bekle" zamanlama sinyali. */
+  piyasaSinyali: 'firsat' | 'zirve' | 'durgun';
+  piyasaIpucu: string;
 }
 
 export interface MulkSatinAlSonucu {
