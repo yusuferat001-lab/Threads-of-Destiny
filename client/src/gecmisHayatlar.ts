@@ -55,11 +55,19 @@ function yaz(liste: GecmisHayat[]) {
  * (basarimSistemi.ts'teki kopyayla aynı yaklaşım). Eski `× max(para,1)` çarpanı tek zengin
  * ömrü milyonlara fırlatıyordu.
  */
+function amacCarpani(state: CharacterState): number {
+  const t = (state.hayat_amaclari ?? [])
+    .filter((a) => a.tamamlandi)
+    .reduce((s, a) => s + (a.bonus ?? 0), 0);
+  if (t > 0) return Math.max(1, t);
+  return state.hayat_amaci?.tamamlandi ? 5 : 1; // eski kayıt fallback
+}
+
 function skorHesapla(state: CharacterState): number {
   const servet = state.para;
   const servetFaktoru = servet > 0 ? 1 + Math.log10(1 + servet) : Math.max(0.15, 1 + servet / 400);
   const taban = Math.round(state.yas * Math.max(state.un, 1) * servetFaktoru);
-  return state.hayat_amaci?.tamamlandi ? taban * 5 : taban;
+  return Math.round(taban * amacCarpani(state));
 }
 
 /** Bir karakter öldüğünde çağrılır; aynı id zaten kayıtlıysa hiçbir şey yapmaz. */
@@ -85,7 +93,8 @@ export function gecmisHayatKaydet(state: CharacterState): void {
     olumNedeni: state.olum_nedeni ?? 'Bilinmiyor',
     efsaneviOlum: state.efsanevi_olum,
     unvanlar: state.unvanlar,
-    amacTamamlandi: state.hayat_amaci?.tamamlandi ?? false,
+    amacTamamlandi:
+      (state.hayat_amaclari ?? []).some((a) => a.tamamlandi) || (state.hayat_amaci?.tamamlandi ?? false),
     skor: skorHesapla(state),
     hayatHikayesi: state.hayat_hikayesi,
     gecmis: state.gecmis,

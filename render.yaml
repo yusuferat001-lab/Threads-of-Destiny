@@ -31,9 +31,10 @@ services:
       # bir domain'den erişim istersen virgülle ayrılmış origin listesi gir.
       - key: CORS_ORIGIN
         sync: false
-      # Geri bildirim (Ayarlar → Görüş & Öneri): yeni mesajlar bu webhook'a düşer
-      # (Discord webhook URL'si ya da Telegram sendMessage URL'si). Boşsa yalnızca
-      # yerel JSONL'ye yazılır (free planda kalıcı disk yok → restart'ta silinir).
+      # Geri bildirim (Ayarlar → Görüş & Öneri): mesajlar her durumda Neon Postgres'e
+      # (GeriBildirim tablosu) yazılır — kalıcı. Bu webhook OPSİYONELdir: doluysa yeni
+      # mesaj geldiğinde ayrıca anlık haber gönderilir (Discord webhook URL'si ya da
+      # Telegram sendMessage URL'si).
       - key: GERI_BILDIRIM_WEBHOOK_URL
         sync: false
       - key: GERI_BILDIRIM_TELEGRAM_CHAT_ID

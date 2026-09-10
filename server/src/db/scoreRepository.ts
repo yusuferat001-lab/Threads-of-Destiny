@@ -24,7 +24,9 @@ export async function skorKaydet(state: CharacterState, isim: string) {
       un: state.un,
       unvanlar: state.unvanlar.join(", "),
       efsanevi_olum: state.efsanevi_olum ?? "",
-      hayat_amaci_tamamlandi: state.hayat_amaci?.tamamlandi ?? false,
+      // "en az bir kişisel amaç tamamlandı mı" (eski tekil alan fallback'iyle).
+      hayat_amaci_tamamlandi:
+        (state.hayat_amaclari ?? []).some((a) => a.tamamlandi) || (state.hayat_amaci?.tamamlandi ?? false),
     },
   });
 }

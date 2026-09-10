@@ -265,13 +265,14 @@ const TR = {
 
   // ---- SahneHotspotlari ----
   shEv: 'Gelir & Gider',
-  shIsyeri: 'İşin & Yatırımların',
+  shIsyeri: 'Yatırım',
   shMagaza: 'Mağaza',
   shSosyallesme: 'Sosyalleş',
-  shIsinKisa: 'İşin',
+  shIsinKisa: 'Yatırım',
+  shKariyer: 'Kariyer',
   shEvinKisa: 'Evin',
   shEvFallback: 'Ev',
-  shIsyeriTitle: '{0} — İşin',
+  shIsyeriTitle: '{0} — Yatırım',
   shEvTitle: '{0} — Gelir & Gider',
 
   // ---- EtkiCipleri ----
@@ -940,13 +941,14 @@ const EN: Metinler = {
 
   // ---- SahneHotspotlari ----
   shEv: 'Income & Expenses',
-  shIsyeri: 'Work & Investments',
+  shIsyeri: 'Investments',
   shMagaza: 'Shop',
   shSosyallesme: 'Socialize',
-  shIsinKisa: 'Work',
+  shIsinKisa: 'Investments',
+  shKariyer: 'Career',
   shEvinKisa: 'Home',
   shEvFallback: 'Home',
-  shIsyeriTitle: '{0} — Work',
+  shIsyeriTitle: '{0} — Investments',
   shEvTitle: '{0} — Income & Expenses',
 
   // ---- EtkiCipleri ----

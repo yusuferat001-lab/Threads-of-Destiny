@@ -53,6 +53,10 @@ export class PrismaClient {
     }),
     findMany: async () => [] as any[],
   };
+  geriBildirim = {
+    create: async ({ data }: any) => ({ createdAt: new Date(), ...data }),
+    findMany: async () => [] as any[],
+  };
   $queryRawUnsafe = async () => [] as any[];
   $executeRawUnsafe = async () => 0;
   $connect = async () => {};

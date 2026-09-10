@@ -11,16 +11,19 @@ interface SahneHotspotlariProps {
   konutId: string;
   konutlar: KonutTanimi[];
   devreDisi: boolean;
+  /** Bekleyen yönetim talebi varsa Kariyer noktasında 🔔 gösterilir. */
+  talepVar?: boolean;
   onEv: () => void;
   onIsyeri: () => void;
-  onMagaza: () => void;
+  onKariyer: () => void;
   onSosyallesme: () => void;
 }
 
 /**
  * Oyun sahnesinin (BolgeSahnesi) arka plan görselinin ÜSTÜNE binen, tıklanabilir dört nokta.
- * Soldan sağa sabit sıra: 🛒 Mağaza · işyeri binası · ev · 🍷 Sosyalleş — her biri arka plan
- * resmindeki bir bölgeye denk gelir (sol bina / meydan / boş arsa / sağ bina).
+ * Soldan sağa sabit sıra: 🎖️ Kariyer · işyeri binası (Yatırım) · ev (Gelir & Gider) · 🍷 Sosyalleş —
+ * her biri arka plan resmindeki bir bölgeye denk gelir (sol bina / meydan / boş arsa / sağ bina).
+ * Mağaza artık burada değil — sol paneldeki "🛒 Mağaza" butonundan açılır.
  *
  * Kapsayıcı, arka plan görseliyle AYNI en-boy oranına kilitlenir (`--sahne-orani`) ve
  * `object-fit: contain` gibi ortalanır — böylece noktalar görselin kendisine "yapışır" ve
@@ -41,9 +44,10 @@ export function SahneHotspotlari({
   konutId,
   konutlar,
   devreDisi,
+  talepVar,
   onEv,
   onIsyeri,
-  onMagaza,
+  onKariyer,
   onSosyallesme,
 }: SahneHotspotlariProps) {
   const { m, dil } = useDil();
@@ -61,15 +65,18 @@ export function SahneHotspotlari({
     <div className="sahne-hotspotlar" style={{ '--sahne-orani': oran } as CSSProperties}>
       <button
         type="button"
-        className="sahne-hotspot sahne-hotspot-magaza"
+        className="sahne-hotspot sahne-hotspot-kariyer"
         disabled={devreDisi}
-        onClick={onMagaza}
-        title={m.shMagaza}
+        onClick={onKariyer}
+        title={m.shKariyer}
       >
         <span className="sahne-hotspot-ikon" aria-hidden="true">
-          🛒
+          🎖️
         </span>
-        <span className="sahne-hotspot-etiket">{m.shMagaza}</span>
+        <span className="sahne-hotspot-etiket">
+          {m.shKariyer}
+          {talepVar ? ' 🔔' : ''}
+        </span>
       </button>
 
       <button

@@ -32,6 +32,7 @@ import type {
   AileDurumu,
   YonetimDurumu,
   RakipKarti,
+  AmaclarDurumu,
   SalginKorunmaKarti,
   KrediConfig,
 } from './types';
@@ -162,6 +163,10 @@ export function kotuIsYap(
 
 export function rakiplerGetir(stateId: string) {
   return istek<{ rakipler: RakipKarti[] }>(`/api/game/${stateId}/rakipler`);
+}
+
+export function amaclarGetir(stateId: string) {
+  return istek<AmaclarDurumu>(`/api/game/${stateId}/amaclar`);
 }
 
 export function hediyeEt(
@@ -335,10 +340,10 @@ export function yonetimDurumGetir(stateId: string) {
   return istek<YonetimDurumu>(`/api/game/${stateId}/yonetim`);
 }
 
-export function yonetimEtkilesimYap(stateId: string, etkilesimId: string) {
+export function yonetimEtkilesimYap(stateId: string, etkilesimId: string, kademe?: number) {
   return istek<{ state: CharacterState; tam: boolean; mesaj: string }>(
     `/api/game/${stateId}/yonetim/etkilesim`,
-    { method: 'POST', body: JSON.stringify({ etkilesimId }) },
+    { method: 'POST', body: JSON.stringify({ etkilesimId, kademe }) },
   );
 }
 

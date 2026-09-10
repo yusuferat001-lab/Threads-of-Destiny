@@ -1,66 +1,61 @@
 import { describe, it, expect } from "vitest";
-import { createCharacter, mesleğiSec, hesaplaSkor, hayatAmaciKontrolEt, krizEtkisiUygula } from "../src/game/stateManager";
+import { createCharacter, mesleğiSec, hesaplaSkor, krizEtkisiUygula } from "../src/game/stateManager";
+import { amaclariHerhangiKontrol } from "../src/data/hayatAmaclari";
 import { skorKaydet } from "../src/db/scoreRepository";
 
-describe("hayat amacı", () => {
-  it("hedefe ulaşınca tamamlandi=true olur ve hayat hikayesine eklenir", () => {
+describe("hayat amaçları (3'lü sistem)", () => {
+  it("meslek seçilince 2 normal + 1 zor amaç atanır", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
     mesleğiSec(state, "Tüccar");
-    state.hayat_amaci = {
-      id: "en_zengin",
-      ad: "Şehrin En Zengini Olmak",
-      aciklama: "300 para",
-      hedefTuru: "para",
-      hedefDeger: 300,
-      tamamlandi: false,
-    };
-    state.para = 250;
-    hayatAmaciKontrolEt(state);
-    expect(state.hayat_amaci.tamamlandi).toBe(false);
-
-    state.para = 300;
-    hayatAmaciKontrolEt(state);
-    expect(state.hayat_amaci.tamamlandi).toBe(true);
-    expect(state.hayat_hikayesi.some((h) => h.baslik.includes("Hayat amacını tamamladı"))).toBe(true);
+    expect(state.hayat_amaclari).toHaveLength(3);
+    expect(state.hayat_amaclari.filter((a) => a.zorluk === "normal")).toHaveLength(2);
+    expect(state.hayat_amaclari.filter((a) => a.zorluk === "zor")).toHaveLength(1);
+    expect(state.hayat_amaclari.every((a) => !a.tamamlandi)).toBe(true);
   });
 
-  it("tamamlanmış bir hayat amacı tekrar kontrol edilince değişmez (idempotent)", () => {
+  it("koşul sağlanınca 'herhangi' amaç kalıcı kilitlenir; tekrar kontrol idempotenttir", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
     mesleğiSec(state, "Tüccar");
-    state.hayat_amaci = {
-      id: "efsanevi_un",
-      ad: "Efsanevi Bir Ün Kazanmak",
-      aciklama: "90 ün",
-      hedefTuru: "un",
-      hedefDeger: 90,
-      tamamlandi: true,
-    };
-    const oncekiHikayeUzunlugu = state.hayat_hikayesi.length;
-    state.un = 95;
-    hayatAmaciKontrolEt(state);
-    expect(state.hayat_hikayesi.length).toBe(oncekiHikayeUzunlugu);
+    // Test için bilinen bir amacı zorla ekle.
+    state.hayat_amaclari = [
+      { id: "taninan_yuz", zorluk: "normal", bonus: 1.5, kontrolAni: "herhangi", tamamlandi: false },
+    ];
+    state.un = 60;
+    expect(amaclariHerhangiKontrol(state, state.para)).toHaveLength(0);
+    expect(state.hayat_amaclari[0].tamamlandi).toBe(false);
+
+    state.un = 80;
+    const yeni = amaclariHerhangiKontrol(state, state.para);
+    expect(yeni.map((a) => a.id)).toEqual(["taninan_yuz"]);
+    expect(state.hayat_amaclari[0].tamamlandi).toBe(true);
+    expect(state.hayat_amaclari[0].tamamlanmaYili).toBe(state.yil);
+
+    // idempotent: ikinci kontrol tekrar döndürmez
+    state.un = 40; // eşiğin altına düşse bile kilitli kalır
+    expect(amaclariHerhangiKontrol(state, state.para)).toHaveLength(0);
+    expect(state.hayat_amaclari[0].tamamlandi).toBe(true);
   });
 
-  it("hesaplaSkor tamamlanmış hayat amacında skoru 5 katına çıkarır", () => {
+  it("skor çarpanı = max(1, Σ tamamlanan bonuslar) — 2 normal + 1 zor = ×5", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
     mesleğiSec(state, "Tüccar");
     state.yas = 40;
     state.un = 50;
     state.para = 100;
+    state.hayat_amaclari = [
+      { id: "a", zorluk: "normal", bonus: 1.5, kontrolAni: "herhangi", tamamlandi: false },
+      { id: "b", zorluk: "normal", bonus: 1.5, kontrolAni: "herhangi", tamamlandi: false },
+      { id: "c", zorluk: "zor", bonus: 2, kontrolAni: "herhangi", tamamlandi: false },
+    ];
 
     const tabanSkor = hesaplaSkor(state);
-    state.hayat_amaci = {
-      id: "buyuk_aile",
-      ad: "Büyük Bir Aile Kurmak",
-      aciklama: "3 çocuk",
-      hedefTuru: "cocuk",
-      hedefDeger: 3,
-      tamamlandi: true,
-    };
+    state.hayat_amaclari.forEach((a) => (a.tamamlandi = true));
     const carpanliSkor = hesaplaSkor(state);
-    // hesaplaSkor iç yuvarlama yapıyor (round(taban) vs round(taban*5)) — birkaç
-    // puanlık yuvarlama farkı normal; asıl kontrol ×5 çarpanının uygulandığı.
     expect(Math.abs(carpanliSkor - tabanSkor * 5)).toBeLessThanOrEqual(5);
+
+    // sadece 1 normal → ×1.5
+    state.hayat_amaclari.forEach((a, i) => (a.tamamlandi = i === 0));
+    expect(Math.abs(hesaplaSkor(state) - tabanSkor * 1.5)).toBeLessThanOrEqual(5);
   });
 });
 

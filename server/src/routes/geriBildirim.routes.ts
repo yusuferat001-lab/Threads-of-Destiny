@@ -67,7 +67,7 @@ export function geriBildirimTemizle(govde: unknown): TemizlemeSonucu {
   };
 }
 
-geriBildirimRouter.post("/", (req, res) => {
+geriBildirimRouter.post("/", async (req, res) => {
   try {
     const sonuc = geriBildirimTemizle(req.body);
     if (!sonuc.ok) {
@@ -76,7 +76,7 @@ geriBildirimRouter.post("/", (req, res) => {
     }
 
     const kayit: GeriBildirimKaydi = { ...sonuc.kayit, ip: req.ip ?? null };
-    geriBildirimYaz(kayit);
+    await geriBildirimYaz(kayit);
 
     const ozet = [
       `📨 Yeni geri bildirim — ${kayit.kategori}`,
@@ -95,10 +95,10 @@ geriBildirimRouter.post("/", (req, res) => {
 });
 
 // Geliştiricinin kayıtları okuması için — `GERI_BILDIRIM_ANAHTARI` env değeriyle korunur.
-geriBildirimRouter.get("/", (req, res) => {
+geriBildirimRouter.get("/", async (req, res) => {
   const anahtar = process.env.GERI_BILDIRIM_ANAHTARI;
   if (!anahtar || req.query.key !== anahtar) {
     return res.status(403).json({ hata: "Yetkisiz." });
   }
-  res.json({ kayitlar: geriBildirimleriOku() });
+  res.json({ kayitlar: await geriBildirimleriOku() });
 });

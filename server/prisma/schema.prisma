@@ -69,3 +69,21 @@ model Metrik {
   @@index([tur])
   @@index([createdAt])
 }
+
+/// Ayarlar → "Görüş & Öneri" formundan gelen kullanıcı geri bildirimleri (§29).
+/// Kalıcı (Neon) — eski JSONL yedeği kaldırıldı: Render "free" planında kalıcı disk
+/// olmadığından her deploy/restart'ta siliniyordu. Yalnız `GET /api/geri-bildirim?key=…`
+/// (anahtar korumalı) okur; oyuncuya hiç gösterilmez. Anlık haber için webhook
+/// (`GERI_BILDIRIM_WEBHOOK_URL`) hâlâ opsiyonel olarak ayrıca gönderilir.
+model GeriBildirim {
+  id        String   @id
+  kategori  String   @default("diger")
+  mesaj     String
+  iletisim  String?
+  /// Oyun bağlamı (çağ/bölge/meslek/yaş/sürüm/userAgent…) — JSON.stringify'lı nesne.
+  baglam    String   @default("{}")
+  ip        String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}

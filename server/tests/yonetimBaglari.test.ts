@@ -27,7 +27,12 @@ describe("yonetimDurumGetir", () => {
     expect(durum.yonetici.ad).toBeTruthy();
     expect(durum.patron.ad).toBeTruthy();
     expect(durum.etkilesimler.some((e) => e.id === "yonetici:bagis")).toBe(true);
-    expect(durum.etkilesimler.some((e) => e.id === "patron:zam" as string)).toBe(false); // zam bir istek, etkileşim değil
+    expect(durum.etkilesimler.some((e) => e.id === "yonetici:hediye")).toBe(false); // hediye bağışla birleşti
+    expect(durum.yonetici.bagisKademeleri.length).toBeGreaterThan(0);
+    expect(durum.patron.bagisKademeleri.length).toBeGreaterThan(0);
+    // Kral bağışı işle ilgili kişininkinden belirgin pahalı.
+    expect(durum.yonetici.bagisKademeleri[0]).toBeGreaterThan(durum.patron.bagisKademeleri[0]);
+    expect(typeof durum.bikkinlik).toBe("number");
     expect(durum.istekler.some((i) => i.id === "zam" && i.hat === "patron")).toBe(true);
     // Düşük ilişkiyle istekler kilitli.
     expect(durum.istekler.every((i) => !i.acik)).toBe(true);
@@ -35,18 +40,34 @@ describe("yonetimDurumGetir", () => {
 });
 
 describe("yonetimEtkilesimYap", () => {
-  it("bağış parayı düşürür, ilişkiyi artırır, cooldown yazar; ikinci çağrı reddedilir", async () => {
-    vi.spyOn(Math, "random").mockReturnValue(0.1); // tam etki, ifşa yok
+  it("seçilen bağış tutarı parayı düşürür, ilişkiyi artırır, cooldown yazar; ikinci çağrı reddedilir", async () => {
+    vi.spyOn(Math, "random").mockReturnValue(0.1); // tam etki, ifşa/ters yok
     const state = await oturum();
+    const durum = await yonetimDurumGetir(state.id);
+    const tutar = durum.patron.bagisKademeleri[1];
     const oncekiPara = state.para;
-    const oncekiIliski = state.yonetim_iliski;
 
-    const sonuc = await yonetimEtkilesimYap(state.id, "yonetici:bagis");
-    expect(sonuc.state.para).toBeLessThan(oncekiPara);
-    expect(sonuc.state.yonetim_iliski).toBeGreaterThan(oncekiIliski);
-    expect(sonuc.state.yonetim_etkilesim_kilit["yonetici:bagis"]).toBeGreaterThan(sonuc.state.yil);
+    const sonuc = await yonetimEtkilesimYap(state.id, "patron:bagis", tutar);
+    expect(sonuc.state.para).toBe(oncekiPara - tutar);
+    expect(sonuc.state.patron_iliski).toBeGreaterThan(40);
+    expect(sonuc.state.yonetim_etkilesim_kilit["patron:bagis"]).toBeGreaterThan(sonuc.state.yil);
 
-    await expect(yonetimEtkilesimYap(state.id, "yonetici:bagis")).rejects.toThrow();
+    await expect(yonetimEtkilesimYap(state.id, "patron:bagis", tutar)).rejects.toThrow();
+  });
+
+  it("geçersiz bağış tutarı reddedilir", async () => {
+    const state = await oturum();
+    await expect(yonetimEtkilesimYap(state.id, "patron:bagis", 7)).rejects.toThrow();
+    await expect(yonetimEtkilesimYap(state.id, "patron:bagis")).rejects.toThrow();
+  });
+
+  it("çok sık üstüne gidilince ters teper: ilişki düşer", async () => {
+    vi.spyOn(Math, "random").mockReturnValue(0.1); // ters tepme zarını geçer
+    const state = await oturum();
+    state.yonetim_yakin_etkilesim = 6; // bikkinlik yüksek
+    const sonuc = await yonetimEtkilesimYap(state.id, "patron:hizmet");
+    expect(sonuc.tam).toBe(false);
+    expect(sonuc.state.patron_iliski).toBeLessThan(40);
   });
 
   it("yağcılık (yalan) ahlak ve mutluluğu düşürür ama parasızdır", async () => {

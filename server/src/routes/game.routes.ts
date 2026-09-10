@@ -38,6 +38,7 @@ import {
   yonetimTalebiKararlastir,
   oturumDiliAyarla,
   rakiplerGetir,
+  amaclarGetir,
   hediyeEt,
   salginKorunmaConfigGetir,
   salginKorunmaYatirimiYap,
@@ -462,12 +463,16 @@ gameRouter.get("/:id/yonetim", async (req, res) => {
 });
 
 gameRouter.post("/:id/yonetim/etkilesim", async (req, res) => {
-  const { etkilesimId } = req.body ?? {};
+  const { etkilesimId, kademe } = req.body ?? {};
   if (typeof etkilesimId !== "string") {
     return res.status(400).json({ hata: "Geçersiz etkileşim." });
   }
   try {
-    const sonuc = await yonetimEtkilesimYap(req.params.id, etkilesimId);
+    const sonuc = await yonetimEtkilesimYap(
+      req.params.id,
+      etkilesimId,
+      typeof kademe === "number" ? kademe : undefined
+    );
     res.json(sonuc);
   } catch (err) {
     res.status(400).json({ hata: String(err) });
@@ -551,6 +556,14 @@ gameRouter.get("/:id/rakipler", async (req, res) => {
   try {
     const rakipler = await rakiplerGetir(req.params.id);
     res.json({ rakipler });
+  } catch (err) {
+    res.status(404).json({ hata: String(err) });
+  }
+});
+
+gameRouter.get("/:id/amaclar", async (req, res) => {
+  try {
+    res.json(await amaclarGetir(req.params.id));
   } catch (err) {
     res.status(404).json({ hata: String(err) });
   }

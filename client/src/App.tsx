@@ -11,6 +11,7 @@ import type {
   FinansOzeti,
   KotuIsKarti,
   RakipKarti,
+  AmaclarDurumu,
   SalginKorunmaKarti,
   KrediConfig,
   MulkKartBilgisi,
@@ -41,6 +42,7 @@ import {
   kotuIsYap,
   kotuIsConfigGetir,
   rakiplerGetir,
+  amaclarGetir,
   hediyeEt,
   salginKorunmaGetir,
   salginKorunmaYatirimiYap,
@@ -80,6 +82,7 @@ import { Banner } from './components/Banner';
 import { UstSerit } from './components/UstSerit';
 import { AileOzetPaneli } from './components/AileOzetPaneli';
 import { SiyasetPaneli } from './components/SiyasetPaneli';
+import { AmacPaneli } from './components/AmacPaneli';
 import { DurumPaneli } from './components/DurumPaneli';
 import { EtkiCipleri } from './components/EtkiCipleri';
 import { KisilikPaneli } from './components/KisilikPaneli';
@@ -201,6 +204,12 @@ const TAM_EKRAN_GRUBU: Ekran[] = [
  * ait olduğunu ayırt etmek için. Yeni bir sürüm çıkınca elle güncelle. */
 const APP_SURUM = '1.0.0';
 
+/** Yakalanan hatayı kullanıcıya gösterilecek sade bir cümleye çevirir (çift "Error:" önekini kırpar). */
+function temizHata(err: unknown): string {
+  const ham = err instanceof Error ? err.message : String(err);
+  return ham.replace(/^(Error:\s*)+/i, '');
+}
+
 /** Ekran telefon genişliğinde mi? (oyun ekranı düzeni için tek kırılım noktası, ≤767px) */
 function useMobil() {
   const [mobil, setMobil] = useState(
@@ -281,6 +290,7 @@ function App() {
   const [liderlik, setLiderlik] = useState<ScoreKaydi[]>([]);
 
   const [finans, setFinans] = useState<FinansOzeti | null>(null);
+  const [amaclar, setAmaclar] = useState<AmaclarDurumu | null>(null);
   const [aileDurum, setAileDurum] = useState<AileDurumu | null>(null);
   const [yonetimDurum, setYonetimDurum] = useState<YonetimDurumu | null>(null);
   const [kotuIsler, setKotuIsler] = useState<KotuIsKarti[]>([]);
@@ -474,6 +484,23 @@ function App() {
       iptal = true;
     };
   }, [karakter?.id, karakter?.tur_sayisi, karakter?.meslek]);
+
+  // "🎯 Amaçların" kartı (sağ panel + Görevin + ölüm ekranı) — her tur tazelenir.
+  useEffect(() => {
+    if (!karakter || !karakter.meslek) {
+      setAmaclar(null);
+      return;
+    }
+    let iptal = false;
+    amaclarGetir(karakter.id)
+      .then((d) => {
+        if (!iptal) setAmaclar(d);
+      })
+      .catch(() => {});
+    return () => {
+      iptal = true;
+    };
+  }, [karakter?.id, karakter?.tur_sayisi, karakter?.meslek, ekran]);
 
   // Mobilde olay/sonuç değişince merkez paneli ekrana getir (masaüstünde sayfa zaten kaymıyor).
   useEffect(() => {
@@ -835,17 +862,20 @@ function App() {
     }
   }
 
-  async function yonetimEtkilesimHandler(etkilesimId: string) {
+  // Yönetim işlemlerinde hem sonuç hem hata Kariyer ekranındaki açılır pencerede
+  // gösterilir (üstte sabit hata bandı yok) — bu yüzden catch'te setHata değil
+  // setIslemMesaji kullanılır.
+  async function yonetimEtkilesimHandler(etkilesimId: string, kademe?: number) {
     if (!karakter) return;
     setHata(null);
     setYukleniyor(true);
     try {
-      const sonuc = await yonetimEtkilesimYap(karakter.id, etkilesimId);
+      const sonuc = await yonetimEtkilesimYap(karakter.id, etkilesimId, kademe);
       setKarakter(sonuc.state);
       setIslemMesaji(sonuc.mesaj);
       await yonetimTazele(karakter.id);
     } catch (err) {
-      setHata(String(err));
+      setIslemMesaji(temizHata(err));
     } finally {
       setYukleniyor(false);
     }
@@ -861,7 +891,7 @@ function App() {
       setIslemMesaji(sonuc.mesaj);
       await yonetimTazele(karakter.id);
     } catch (err) {
-      setHata(String(err));
+      setIslemMesaji(temizHata(err));
     } finally {
       setYukleniyor(false);
     }
@@ -877,7 +907,7 @@ function App() {
       setIslemMesaji(sonuc.mesaj);
       await yonetimTazele(karakter.id);
     } catch (err) {
-      setHata(String(err));
+      setIslemMesaji(temizHata(err));
     } finally {
       setYukleniyor(false);
     }
@@ -1921,9 +1951,8 @@ function App() {
               <FinansOzetPaneli finans={finans} maasYillikYedek={karakter.maas_yillik} paraBirimi={karakter.para_birimi} />
 
               <div className="gorev-blok">
-                <button className="ikincil gorev-gor-buton" onClick={kariyerEkraniniAc}>
-                  {m.geGorevGor}
-                  {karakter.yonetim_talep ? ' 🔔' : ''}
+                <button className="ikincil gorev-gor-buton" onClick={magazaEkraniniAc}>
+                  🛒 {m.shMagaza}
                 </button>
               </div>
 
@@ -1958,8 +1987,9 @@ function App() {
                   devreDisi={yukleniyor}
                   onEv={finansEkraniniAc}
                   onIsyeri={yatirimEkraniniAc}
-                  onMagaza={magazaEkraniniAc}
+                  onKariyer={kariyerEkraniniAc}
                   onSosyallesme={sosyallesmeEkraniniAc}
+                  talepVar={!!karakter.yonetim_talep}
                 />
               );
               return (
@@ -2085,6 +2115,7 @@ function App() {
 
             <YanPanel className="sag-panel panel-parsomen" baslik={m.panelDunyaSiyaset} mobil={mobil}>
               <SiyasetPaneli cag={karakter.cag} hizip={karakter.hizip} />
+              <AmacPaneli durum={amaclar} />
               <HaberlerPaneli haberler={karakter.haberler} />
 
               <IsyeriPaneli
@@ -2352,7 +2383,6 @@ function App() {
           meslek={karakter.meslek}
           amirAdi={karakter.amir_adi}
           amirRutbe={karakter.amir_rutbe}
-          astlar={karakter.astlar}
           ekip={karakter.ekip}
           rakipler={karakter.rakipler}
           orduMevcudu={karakter.ordu_mevcudu}
@@ -2427,6 +2457,7 @@ function App() {
             </div>
           )}
 
+          <AmacPaneli durum={amaclar} varyant="olum" />
           <GecmisGrafik gecmis={karakter.gecmis} paraBirimi={karakter.para_birimi} />
           <HayatHikayesi hikaye={karakter.hayat_hikayesi} />
 

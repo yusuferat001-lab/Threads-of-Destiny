@@ -1,18 +1,14 @@
-import fs from "node:fs";
-import path from "node:path";
+import { prisma } from "../db/prismaClient";
 
 /**
- * Geri bildirimlerin yerel yedek kaydı — her satır bir JSON nesnesi (JSONL).
+ * Geri bildirim deposu — artık PostgreSQL (Neon), eski JSONL dosyası KALDIRILDI.
  *
- * Anlık teslimat `webhookBildirimGonder` ile yapılır; bu dosya bir güvenlik ağı ve
- * `GET /api/geri-bildirim?key=...` okuması için kaynaktır. Render "free" planında
- * kalıcı disk olmadığından bu dosya deploy/restart'ta SIFIRLANIR — prod'da tek
- * güvenilir kanal webhook'tur. `GERI_BILDIRIM_DOSYA` ile yol değiştirilebilir
- * (ör. bir kalıcı disk mount noktası).
+ * Render "free" planında kalıcı disk olmadığından JSONL her deploy/restart'ta
+ * sıfırlanıyordu; `Metrik` ile aynı desende kalıcı bir tabloya taşındı (§20/§29).
+ * Yazım ateşle-unut'tur (Prisma patlarsa ana istek ETKİLENMEZ, sadece log).
+ * `GET /api/geri-bildirim?key=…` (anahtar korumalı) bu tablodan okur. Anlık haber
+ * için `webhookBildirimGonder` ayrıca çağrılır (opsiyonel).
  */
-const DOSYA =
-  process.env.GERI_BILDIRIM_DOSYA ??
-  path.resolve(__dirname, "..", "..", "data", "geri-bildirim.jsonl");
 
 export interface GeriBildirimKaydi {
   id: string;
@@ -24,25 +20,49 @@ export interface GeriBildirimKaydi {
   ip: string | null;
 }
 
-export function geriBildirimYaz(kayit: GeriBildirimKaydi): void {
+function guvenliParse(s: string): Record<string, unknown> {
   try {
-    fs.mkdirSync(path.dirname(DOSYA), { recursive: true });
-    fs.appendFileSync(DOSYA, JSON.stringify(kayit) + "\n", "utf8");
-  } catch (err) {
-    console.error("Geri bildirim dosyaya yazılamadı:", err);
+    const v = JSON.parse(s);
+    return v && typeof v === "object" && !Array.isArray(v) ? v : {};
+  } catch {
+    return {};
   }
 }
 
-export function geriBildirimleriOku(limit = 200): GeriBildirimKaydi[] {
+export async function geriBildirimYaz(kayit: GeriBildirimKaydi): Promise<void> {
   try {
-    const ham = fs.readFileSync(DOSYA, "utf8");
-    return ham
-      .split("\n")
-      .filter(Boolean)
-      .slice(-limit)
-      .map((s) => JSON.parse(s) as GeriBildirimKaydi)
-      .reverse();
-  } catch {
+    await prisma.geriBildirim.create({
+      data: {
+        id: kayit.id,
+        kategori: kayit.kategori,
+        mesaj: kayit.mesaj,
+        iletisim: kayit.iletisim,
+        baglam: JSON.stringify(kayit.baglam ?? {}),
+        ip: kayit.ip,
+      },
+    });
+  } catch (err) {
+    console.error("Geri bildirim yazılamadı:", err);
+  }
+}
+
+export async function geriBildirimleriOku(limit = 200): Promise<GeriBildirimKaydi[]> {
+  try {
+    const satirlar = await prisma.geriBildirim.findMany({
+      orderBy: { createdAt: "desc" },
+      take: limit,
+    });
+    return satirlar.map((s) => ({
+      id: s.id,
+      tarih: s.createdAt.toISOString(),
+      kategori: s.kategori,
+      mesaj: s.mesaj,
+      iletisim: s.iletisim,
+      baglam: guvenliParse(s.baglam),
+      ip: s.ip,
+    }));
+  } catch (err) {
+    console.error("Geri bildirim okunamadı:", err);
     return [];
   }
 }

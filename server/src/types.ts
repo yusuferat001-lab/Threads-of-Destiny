@@ -92,7 +92,8 @@ export interface SahipOlunanEsya {
   kalanYil: number | null;
 }
 
-/** 15 yaşında seçilen, ölüm anında tamamlanmışsa nihai skoru 5 kat büyüten uzun vadeli hedef. */
+/** ESKİ tekil hayat amacı (2026-09'a kadar). Artık kullanılmıyor — yerini `hayat_amaclari` aldı.
+ * Alan geriye dönük uyum için tipte kalıyor (eski test/sim/istemci referansları + eski DB blob'ları). */
 export interface HayatAmaci {
   id: string;
   ad: string;
@@ -100,6 +101,26 @@ export interface HayatAmaci {
   hedefTuru: "para" | "un" | "ahlak" | "cocuk";
   hedefDeger: number;
   tamamlandi: boolean;
+}
+
+export type AmacZorluk = "normal" | "zor";
+/** "herhangi" = bir an eşiğe dokunmak yeter, kalıcı kilitlenir. "olumde" = yalnız ölüm anındaki duruma bakılır. */
+export type AmacKontrolAni = "herhangi" | "olumde";
+
+/**
+ * Karakterin 15 yaşında meslek seçince havuzdan çekilen 3 kişisel amacından biri
+ * (2 normal + 1 zor). Her tamamlanan amaç nihai skor çarpanına `bonus` kadar
+ * TOPLAMSAL katkı yapar: skorCarpani = max(1, Σ tamamlanan bonuslar). normal=1.5,
+ * zor=2 → hepsi tamamlanırsa ×5 (eski tekil "amaç tamamlandı = ×5" tavanı korunur).
+ */
+export interface AmacIlerleme {
+  id: string;
+  zorluk: AmacZorluk;
+  bonus: number;
+  kontrolAni: AmacKontrolAni;
+  tamamlandi: boolean;
+  /** Tamamlandığı oyun yılı (yalnız tamamlandi=true iken). */
+  tamamlanmaYili?: number;
 }
 
 export interface Durum {
@@ -255,7 +276,20 @@ export interface CharacterState {
   evcil_hayvan: EvcilHayvan | null;
   /** Kazanılan lakaplar/ünvanlar (ör. "İpek Kralı", "Cesur Yürek"); kalıcı, birikimli. */
   unvanlar: string[];
+  /** ESKİ tekil amaç — artık atanmıyor (yeni karakterde null). Geriye dönük uyum için duruyor. */
   hayat_amaci: HayatAmaci | null;
+  /** Meslek seçilince atanan 3 kişisel amaç (2 normal + 1 zor). Skoru `amacSkorCarpani` ile çarpar. */
+  hayat_amaclari: AmacIlerleme[];
+  /** Suç seviyesinin ömür boyu ulaştığı en yüksek değer (amaç koşulları için — "hiç aranmadan yaşa"). */
+  omur_zirve_suc: number;
+  /** Zar/üç kâğıt/bilek güreşinden ömür boyu net kâr/zarar toplamı (kumar amaçları için). */
+  omur_kumar_net: number;
+  /** Ömür boyu verilen sadaka sayısı (sosyalleşme "sadaka" aksiyonu + bağış olayları). */
+  omur_sadaka_sayisi: number;
+  /** Ömür boyu eşe/çocuğa/ekibe/dosta verilen hediye sayısı (envanter hediye + aile hediye etkileşimi). */
+  omur_hediye_sayisi: number;
+  /** Başarısızlığında ölüm/`olum_sansi` ≥ 25 olan bir seçimi başarıyla atlatma sayısı ("korkusuz"/"ölümle dans" amaçları). */
+  omur_riskli_basari: number;
   /** Ölüm nadir/komik bir şekilde gerçekleştiyse (ör. "Kendi Kazdığı Kuyuya Düşen") burada saklanır; liderlik tablosunda rozet olarak gösterilir. */
   efsanevi_olum: string | null;
 
@@ -311,6 +345,8 @@ export interface CharacterState {
   patron_iliski: number;
   /** Yönetim etkileşim/istek cooldown'ları: anahtar (ör. "yonetici:bagis", "patron:istek:zam") → tekrar açılacağı oyun yılı. */
   yonetim_etkilesim_kilit: Record<string, number>;
+  /** Son turlarda yapılan yönetim etkileşimi sayısı (her etkileşimde +1, yılda ~2 azalır); yüksekken "çok üstüne gidiyorsun" ters tepmesi olasılığı artar. §35. */
+  yonetim_yakin_etkilesim: number;
   /** Yönetimden gelen bekleyen dayatılan bağış / sadakat talebi; yoksa null. §35. */
   yonetim_talep: YonetimTalep | null;
   /** Bir sonraki yönetim talebinin üretilebileceği en erken yıl (yaratılışta baslangic_yili + 6). */

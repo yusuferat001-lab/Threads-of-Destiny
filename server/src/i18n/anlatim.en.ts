@@ -46,6 +46,7 @@ export const ANLATIM_EN: Record<string, string> = {
   // ---- Ölüm / hayat amacı ----
   "Hayat amacını belirledi: {0}": "Set their life goal: {0}",
   "Hayat amacını tamamladı: {0}": "Completed their life goal: {0}",
+  "Hayat amacı: {0}": "Life goal: {0}",
   "Kutsal bir emanet sayesinde ölümden döndü": "Returned from death thanks to a holy relic",
   "Sağlık kaybı": "Loss of health",
   "Bilinmeyen sebep": "Unknown cause",

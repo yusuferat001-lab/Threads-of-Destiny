@@ -1,6 +1,7 @@
 import { randomUUID } from "crypto";
-import { CharacterState, Cag, Dil, Kategori, SonucEtkisi, YatkinlikKaynagi, KisilikEksenleri, UlkeKrizi, HayatAmaci, MulkTuru, SahipOlunanEsya, AileTalep, YonetimTalep } from "../types";
+import { CharacterState, Cag, Dil, Kategori, SonucEtkisi, YatkinlikKaynagi, KisilikEksenleri, UlkeKrizi, MulkTuru, SahipOlunanEsya, AileTalep, YonetimTalep } from "../types";
 import { T, K } from "../i18n";
+import { amaclariUret, amacSkorCarpani, amaclariOlumdeKontrol, amacTanimiGetir } from "../data/hayatAmaclari";
 import { AILELER, AileTanimi } from "../data/aileler";
 import { rastgeleKisilikCifti, kisilikGetir } from "../data/kisilikler";
 import {
@@ -553,42 +554,9 @@ function agirlikliAileSec(cag: Cag): AileTanimi {
   return uygunlar[uygunlar.length - 1];
 }
 
-/** Hayat amacı seçenekleri: oyuncuya artık sorulmuyor, doğuşta rastgele biri atanıyor (tamamlanırsa skor x5 olur). */
-const HAYAT_AMACI_SECENEKLERI: Omit<HayatAmaci, "tamamlandi">[] = [
-  {
-    id: "en_zengin",
-    ad: "Şehrin En Zengini Olmak",
-    aciklama: "Servetini 180'in üzerine çıkar.",
-    hedefTuru: "para",
-    // Ekonomi sıkılaştırma turunda 300→180: maaş/mülk nerfleri + geç oyun gider
-    // enflasyonu para birikimini o kadar yavaşlattı ki eski 300 eşiği simülasyonda
-    // (simulateKisilikler.ts) neredeyse hiçbir kişilikte tamamlanamaz hale gelmişti
-    // (~%0-1). 180, yeni ekonomide diğer 3 hayat amacıyla kıyaslanabilir bir zorluğa
-    // (kabaca %15-30 tamamlanma) denk geliyor — bkz. CLAUDE.md §18/§13.
-    hedefDeger: 180,
-  },
-  {
-    id: "efsanevi_un",
-    ad: "Efsanevi Bir Şöhret Kazanmak",
-    aciklama: "Şöhretini neredeyse zirveye taşı.",
-    hedefTuru: "un",
-    hedefDeger: 90,
-  },
-  {
-    id: "kutsal_topraklar",
-    ad: "Kutsal Topraklara Ulaşmak",
-    aciklama: "Ahlakını neredeyse kusursuz bir seviyeye taşı.",
-    hedefTuru: "ahlak",
-    hedefDeger: 90,
-  },
-  {
-    id: "buyuk_aile",
-    ad: "Büyük Bir Aile Kurmak",
-    aciklama: "En az 3 yaşayan çocuğa sahip ol.",
-    hedefTuru: "cocuk",
-    hedefDeger: 3,
-  },
-];
+// Eski tekil rastgele "hayat amacı" 2026-09'da kaldırıldı; yerine meslek seçilince
+// havuzdan çekilen 3 amaç geldi (bkz. data/hayatAmaclari.ts). Skor çarpanı artık
+// `taban × 5` değil `taban × amacSkorCarpani(state)` (toplamsal, tavan yine ×5).
 
 export function createCharacter(
   cag: Cag,
@@ -610,7 +578,6 @@ export function createCharacter(
   const kisilik = rastgeleKisilikCifti();
   const { yatkinliklar, kaynaklar } = yatkinlikHesapla(kisilik, aile, yerlesim);
   const [dostAdi, rakipAdi] = rastgeleIkiIsimSec(cag, bolge);
-  const hayatAmaci = HAYAT_AMACI_SECENEKLERI[Math.floor(Math.random() * HAYAT_AMACI_SECENEKLERI.length)];
   const anneAdi = rastgeleCinsiyetliIsimSec(cag, bolge, "kadin", [dostAdi, rakipAdi]);
   const babaAdi = rastgeleCinsiyetliIsimSec(cag, bolge, "erkek", [dostAdi, rakipAdi, anneAdi]);
 
@@ -695,7 +662,14 @@ export function createCharacter(
     baba_adi: babaAdi,
     evcil_hayvan: null,
     unvanlar: [],
-    hayat_amaci: { ...hayatAmaci, tamamlandi: false },
+    hayat_amaci: null,
+    // 15 yaşında meslek seçilince (mesleğiSec) doldurulur.
+    hayat_amaclari: [],
+    omur_zirve_suc: 0,
+    omur_kumar_net: 0,
+    omur_sadaka_sayisi: 0,
+    omur_hediye_sayisi: 0,
+    omur_riskli_basari: 0,
     efsanevi_olum: null,
     etiketler: [...(aile.etiketler ?? []), ...yerlesim.etiketler],
     durumlar: (aile.durumlar ?? []).map((d) => ({ ...d })),
@@ -720,6 +694,7 @@ export function createCharacter(
     yonetim_iliski: 40,
     patron_iliski: 40,
     yonetim_etkilesim_kilit: {},
+    yonetim_yakin_etkilesim: 0,
     yonetim_talep: null,
     yonetim_talep_sonraki_yil: yil + 6,
     tur_sayisi: 0,
@@ -738,7 +713,6 @@ export function createCharacter(
   clampStats(state);
   state.acilis_anlatimi = acilisAnlatimiUret(state, aile, yerlesim);
   state.haberler = haberleriUret(state);
-  hayatOlayiEkle(state, "🎯", T(state.dil, "Hayat amacını belirledi: {0}", [K(state.dil, hayatAmaci.ad)]));
   return state;
 }
 
@@ -895,6 +869,18 @@ export function eskiKayitGocu(state: CharacterState): void {
   // Mini-oyun sayaçları sonradan eklendi.
   if (typeof state.hazard_el_sayisi !== "number") state.hazard_el_sayisi = 0;
   if (typeof state.uc_kagitci_oyun_sayisi !== "number") state.uc_kagitci_oyun_sayisi = 0;
+  // 3'lü hayat amacı sistemi (§18) sonradan eklendi. Meslek seçilmişse havuzdan taze
+  // 3 amaç ata; eski tekil hayat_amaci tamamlanmışsa bir bilgi bırak ama yeni amaçları
+  // otomatik tamamlanmış saymayız (koşulları farklı). Meslek yoksa boş — mesleğiSec dolduracak.
+  if (!Array.isArray(state.hayat_amaclari)) {
+    state.hayat_amaclari =
+      state.meslek && MESLEKLER.includes(state.meslek) ? amaclariUret(state.cag, state.meslek) : [];
+  }
+  if (typeof state.omur_zirve_suc !== "number") state.omur_zirve_suc = state.suc_seviyesi ?? 0;
+  if (typeof state.omur_kumar_net !== "number") state.omur_kumar_net = 0;
+  if (typeof state.omur_sadaka_sayisi !== "number") state.omur_sadaka_sayisi = 0;
+  if (typeof state.omur_hediye_sayisi !== "number") state.omur_hediye_sayisi = 0;
+  if (typeof state.omur_riskli_basari !== "number") state.omur_riskli_basari = 0;
   // Dil alanı sonradan eklendi; eski kayıtlar her zaman Türkçe oynanmıştı.
   if (state.dil !== "en") state.dil = "tr";
   // Aile ekranı (eş/çocuk ilişkisi + etkileşim + talep) sonradan eklendi (§33).
@@ -938,6 +924,7 @@ export function eskiKayitGocu(state: CharacterState): void {
   if (!state.yonetim_etkilesim_kilit || typeof state.yonetim_etkilesim_kilit !== "object") {
     state.yonetim_etkilesim_kilit = {};
   }
+  if (typeof state.yonetim_yakin_etkilesim !== "number") state.yonetim_yakin_etkilesim = 0;
   if (state.yonetim_talep === undefined) state.yonetim_talep = null;
   if (typeof state.yonetim_talep_sonraki_yil !== "number") {
     state.yonetim_talep_sonraki_yil = state.yil + 6;
@@ -952,6 +939,21 @@ export function mesleğiSec(state: CharacterState, meslek: string): void {
 
   state.meslek = meslek;
   state.aile_mirasi_surduruldu = mirasSurduruldu;
+
+  // 3 kişisel hayat amacı: havuzdan (ortak + meslek + çağ) 2 normal + 1 zor çekilir (§18).
+  if (!state.hayat_amaclari || state.hayat_amaclari.length === 0) {
+    state.hayat_amaclari = amaclariUret(state.cag, meslek);
+    for (const a of state.hayat_amaclari) {
+      const tanim = amacTanimiGetir(a.id);
+      if (tanim) {
+        hayatOlayiEkle(
+          state,
+          "🎯",
+          T(state.dil, "Hayat amacı: {0}", [tanim.baslik[state.dil === "en" ? "en" : "tr"]])
+        );
+      }
+    }
+  }
 
   // Derin rakip ilişkileri (§13): meslektaş 2 isimli rakip. İlki eski tekil
   // rakip_adi ile aynı kişi (geriye dönük uyum — olaylar {rakip}'i kullanır).
@@ -1045,6 +1047,9 @@ export function clampStats(state: CharacterState): void {
   state.dost_puani = clamp(state.dost_puani, 0, 100);
   state.rakip_puani = clamp(state.rakip_puani, 0, 100);
   state.suc_seviyesi = clamp(state.suc_seviyesi, 0, 100);
+  // Suçun ömür boyu ulaştığı tepe (amaç koşulları: "hiç aranmadan yaşa"). Suç seviyesi
+  // artık pasif azalmıyor ama büyük baskın "temize çık" onu düşürebiliyor — bu sayaç unutmaz.
+  state.omur_zirve_suc = Math.max(state.omur_zirve_suc ?? 0, state.suc_seviyesi);
   // Nüfuz pasif olarak kesirli birikir (+0.3/yıl); tam sayıda tutulur ki
   // arayüzde ve maaş kırılımında "12.6" gibi değerler görünmesin.
   state.nufuz = Math.round(Math.max(0, state.nufuz));
@@ -1072,6 +1077,13 @@ export function checkDeath(state: CharacterState, zorunluOlum: boolean, mesaj?: 
     state.aktif = false;
     state.olum_nedeni =
       mesaj ?? (state.saglik <= 0 ? T(state.dil, "Sağlık kaybı") : T(state.dil, "Bilinmeyen sebep"));
+    // Ölüm anında tüm tamamlanmamış amaçlara son bir kez bak ("olumde" koşulları +
+    // son turda kaçmış olabilecek "herhangi" koşulları). Skor yazımından önce kilitlenir.
+    for (const a of amaclariOlumdeKontrol(state, state.para + gayrimenkulDegeriHesapla(state))) {
+      const tanim = amacTanimiGetir(a.id);
+      const ad = tanim ? tanim.baslik[state.dil === "en" ? "en" : "tr"] : a.id;
+      hayatOlayiEkle(state, "🎯", T(state.dil, "Hayat amacını tamamladı: {0}", [ad]));
+    }
   }
 }
 
@@ -1368,6 +1380,8 @@ export function yonetimYillikUygula(state: CharacterState, yasArtisi: number): s
 
   state.yonetim_iliski = Math.max(0, state.yonetim_iliski - YONETIM_ILISKI_DUSUS_YILLIK * yasArtisi);
   state.patron_iliski = Math.max(0, state.patron_iliski - YONETIM_ILISKI_DUSUS_YILLIK * yasArtisi);
+  // "Çok sık üstüne gitme" sayacı zamanla soğur (bir tur ~2-4 puan siler).
+  state.yonetim_yakin_etkilesim = Math.max(0, (state.yonetim_yakin_etkilesim ?? 0) - yasArtisi * 2);
 
   // Yüksek ilişki: küçük, sessiz perk.
   if (state.yonetim_iliski >= 70) {
@@ -1966,7 +1980,15 @@ export function hesaplaSkor(state: CharacterState): number {
   const servetFaktoru =
     servet > 0 ? 1 + Math.log10(1 + servet) : Math.max(0.15, 1 + servet / 400);
   const taban = state.yas * Math.max(state.un, 1) * servetFaktoru;
-  return Math.round(state.hayat_amaci?.tamamlandi ? taban * 5 : taban);
+  // Yeni sistem: skorCarpani = max(1, Σ tamamlanan amaç bonusları) (normal 1.5 · zor 2 → tavan ×5).
+  // Eski kayıt/test (hayat_amaclari boş, tekil hayat_amaci dolu) için ×5 fallback korunur.
+  const carpan =
+    (state.hayat_amaclari?.length ?? 0) > 0
+      ? amacSkorCarpani(state)
+      : state.hayat_amaci?.tamamlandi
+        ? 5
+        : 1;
+  return Math.round(taban * carpan);
 }
 
 /** state.hayat_amaci'nin hedefine ulaşılıp ulaşılmadığını kontrol eder; ulaşıldıysa tamamlandi=true yapıp hayat hikayesine ekler. */

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import type { Ast, EkipUyesi, Rakip, YonetimDurumu, YonetimHat } from '../types';
+import { useEffect, useState } from 'react';
+import type { EkipUyesi, Rakip, YonetimDurumu, YonetimHat } from '../types';
 import { useDil } from '../DilContext';
 import { formatPara } from '../format';
 
@@ -7,7 +7,6 @@ interface KariyerEkraniProps {
   meslek: string;
   amirAdi: string | null;
   amirRutbe: string | null;
-  astlar: Ast[];
   ekip: EkipUyesi[];
   rakipler: Rakip[];
   orduMevcudu: number;
@@ -20,28 +19,23 @@ interface KariyerEkraniProps {
   vebaOlumRiski?: number;
   paraBirimi: string;
   yukleniyor: boolean;
+  /** Son işlem/hata metni — ekrana açılır sonuç penceresinde gösterilir. */
   islemMesaji: string | null;
   yonetimDurum: YonetimDurumu | null;
-  onEtkilesim: (etkilesimId: string) => void;
+  onEtkilesim: (etkilesimId: string, kademe?: number) => void;
   onIstek: (istekId: string, yalan: boolean) => void;
   onTalep: (karar: 'kabul' | 'ret' | 'yalan') => void;
   onEkipCikar: (ekipId: string) => void;
   onGeriDon: () => void;
 }
 
-/** Yönetim etkileşimleri (bağış/hediye/yağcılık/hizmet) — iki dilli, bileşene gömülü. */
+/** Yönetim etkileşimleri (bağış / yağcılık / hizmet) — iki dilli, bileşene gömülü. */
 const ETKILESIM_ADLARI: Record<string, { tr: string; en: string; ipTr: string; ipEn: string }> = {
   bagis: {
-    tr: '💰 Bağış yap',
-    en: '💰 Donate',
-    ipTr: 'Para ver, gözüne gir. İlişki belirgin artar.',
-    ipEn: 'Give money, win favor. Relationship rises clearly.',
-  },
-  hediye: {
-    tr: '🎁 Hediye sun',
-    en: '🎁 Give a gift',
-    ipTr: 'Küçük bir jest; ilişki + biraz şöhret.',
-    ipEn: 'A small gesture; relationship + a little fame.',
+    tr: '💰 Bağış',
+    en: '💰 Donation',
+    ipTr: 'Tutarı sen seç. Büyük bağış ilişkiyi daha çok yükseltir.',
+    ipEn: 'You pick the amount. A bigger gift raises the relationship more.',
   },
   yalan: {
     tr: '🗣️ Yağ çek / kandır',
@@ -128,7 +122,7 @@ function HatKarti({
   hat: YonetimHat;
   durum: YonetimDurumu;
   yukleniyor: boolean;
-  onEtkilesim: (id: string) => void;
+  onEtkilesim: (id: string, kademe?: number) => void;
   onIstek: (id: string, yalan: boolean) => void;
 }) {
   const { dil } = useDil();
@@ -137,12 +131,12 @@ function HatKarti({
 
   const kisi = hat === 'yonetici' ? durum.yonetici : durum.patron;
   const etkilesimler = durum.etkilesimler.filter((e) => e.hat === hat);
-  const istekler = durum.istekler.filter((i) => i.hat === hat);
   const kilitli = (anahtar: string) => {
     const y = durum.kilitler[anahtar];
     return typeof y === 'number' && y > durum.guncelYil ? y - durum.guncelYil : 0;
   };
   const kademe = iliskiKademe(kisi.iliski, en);
+  const yil = (n: number) => (en ? `~${n} yr` : `~${n} yıl`);
 
   return (
     <div className="kariyer-hat-karti">
@@ -166,44 +160,51 @@ function HatKarti({
         aria-valuemin={0}
         aria-valuemax={100}
       >
-        <div
-          className="kariyer-iliski-bar-dolgu"
-          data-kademe={kademe}
-          style={{ width: `${kisi.iliski}%` }}
-        />
+        <div className="kariyer-iliski-bar-dolgu" data-kademe={kademe} style={{ width: `${kisi.iliski}%` }} />
         <span className="kariyer-iliski-deger">{kisi.iliski}/100</span>
       </div>
 
-      <div className="kariyer-etkilesim-izgara">
-        {etkilesimler.map((e) => {
-          const taban = e.id.split(':')[1];
-          const ad = ETKILESIM_ADLARI[taban];
-          const kalan = kilitli(e.id);
-          const parasiz = e.maliyet <= 0;
-          const yetmez = !parasiz && e.maliyet > durum.para;
-          return (
+      {/* Bağış: tutarı oyuncu seçer */}
+      <div className="kariyer-bagis-satir">
+        <span className="kariyer-bagis-etiket" title={en ? ETKILESIM_ADLARI.bagis.ipEn : ETKILESIM_ADLARI.bagis.ipTr}>
+          {en ? ETKILESIM_ADLARI.bagis.en : ETKILESIM_ADLARI.bagis.tr}
+          {kilitli(`${hat}:bagis`) > 0 && ` · ${yil(kilitli(`${hat}:bagis`))}`}
+        </span>
+        <div className="kariyer-bagis-kademeler">
+          {kisi.bagisKademeleri.map((tutar) => (
             <button
-              key={e.id}
-              className="kariyer-etkilesim-buton"
-              disabled={yukleniyor || kalan > 0 || yetmez}
-              title={en ? ad?.ipEn : ad?.ipTr}
-              onClick={() => onEtkilesim(e.id)}
+              key={tutar}
+              className="kariyer-bagis-cip"
+              disabled={yukleniyor || kilitli(`${hat}:bagis`) > 0 || tutar > durum.para}
+              onClick={() => onEtkilesim(`${hat}:bagis`, tutar)}
             >
-              <span>{en ? ad?.en : ad?.tr}</span>
-              <span className="kariyer-etkilesim-alt">
-                {kalan > 0
-                  ? en
-                    ? `~${kalan} yr`
-                    : `~${kalan} yıl`
-                  : parasiz
-                    ? en
-                      ? 'free'
-                      : 'bedava'
-                    : `${formatPara(e.maliyet)} ${durum.paraBirimi}`}
-              </span>
+              {formatPara(tutar)} {durum.paraBirimi}
             </button>
-          );
-        })}
+          ))}
+        </div>
+      </div>
+
+      {/* Diğer etkileşimler (yalan / hizmet) */}
+      <div className="kariyer-etkilesim-izgara">
+        {etkilesimler
+          .filter((e) => e.id.split(':')[1] !== 'bagis')
+          .map((e) => {
+            const taban = e.id.split(':')[1];
+            const ad = ETKILESIM_ADLARI[taban];
+            const kalan = kilitli(e.id);
+            return (
+              <button
+                key={e.id}
+                className="kariyer-etkilesim-buton"
+                disabled={yukleniyor || kalan > 0}
+                title={en ? ad?.ipEn : ad?.ipTr}
+                onClick={() => onEtkilesim(e.id)}
+              >
+                <span>{en ? ad?.en : ad?.tr}</span>
+                <span className="kariyer-etkilesim-alt">{kalan > 0 ? yil(kalan) : en ? 'free' : 'bedava'}</span>
+              </button>
+            );
+          })}
       </div>
 
       <button className="kariyer-istek-ac" onClick={() => setIstekAcik((v) => !v)}>
@@ -212,37 +213,27 @@ function HatKarti({
 
       {istekAcik && (
         <ul className="kariyer-istek-listesi">
-          {istekler.map((i) => {
-            const ad = ISTEK_ADLARI[i.id];
-            const kalan = kilitli(`${hat}:istek:${i.id}`);
-            return (
-              <li
-                key={i.id}
-                className={`kariyer-istek-satir${i.acik ? '' : ' kariyer-istek-kilit'}`}
-              >
-                <div className="kariyer-istek-ust">
-                  <strong>{en ? ad?.en : ad?.tr}</strong>
-                  {!i.acik && kalan === 0 && (
-                    <span className="kariyer-istek-rozet">🔒 {en ? 'min' : 'min'} %{i.minIliski}</span>
+          {durum.istekler
+            .filter((i) => i.hat === hat)
+            .map((i) => {
+              const ad = ISTEK_ADLARI[i.id];
+              const kalan = kilitli(`${hat}:istek:${i.id}`);
+              return (
+                <li key={i.id} className={`kariyer-istek-satir${i.acik ? '' : ' kariyer-istek-kilit'}`}>
+                  <div className="kariyer-istek-ust">
+                    <strong>{en ? ad?.en : ad?.tr}</strong>
+                    {!i.acik && kalan === 0 && (
+                      <span className="kariyer-istek-rozet">🔒 min %{i.minIliski}</span>
+                    )}
+                    {kalan > 0 && <span className="kariyer-istek-rozet">⏳ {yil(kalan)}</span>}
+                  </div>
+                  <p className="kariyer-istek-ip">{en ? ad?.ipEn : ad?.ipTr}</p>
+                  {i.acik && kalan === 0 && (
+                    <IstekAksiyon istek={i} yukleniyor={yukleniyor} onIstek={onIstek} en={en} />
                   )}
-                  {kalan > 0 && (
-                    <span className="kariyer-istek-rozet">
-                      ⏳ {en ? `~${kalan} yr` : `~${kalan} yıl`}
-                    </span>
-                  )}
-                </div>
-                <p className="kariyer-istek-ip">{en ? ad?.ipEn : ad?.ipTr}</p>
-                {i.acik && kalan === 0 && (
-                  <IstekAksiyon
-                    istek={i}
-                    yukleniyor={yukleniyor}
-                    onIstek={onIstek}
-                    en={en}
-                  />
-                )}
-              </li>
-            );
-          })}
+                </li>
+              );
+            })}
         </ul>
       )}
     </div>
@@ -268,19 +259,10 @@ function IstekAksiyon({
         {yalan ? ' +' : ''}
       </span>
       <label className="kariyer-istek-yalan">
-        <input
-          type="checkbox"
-          checked={yalan}
-          disabled={yukleniyor}
-          onChange={(e) => setYalan(e.target.checked)}
-        />
+        <input type="checkbox" checked={yalan} disabled={yukleniyor} onChange={(e) => setYalan(e.target.checked)} />
         {en ? 'back it with a lie' : 'yalanla destekle'}
       </label>
-      <button
-        className="ikincil"
-        disabled={yukleniyor}
-        onClick={() => onIstek(istek.id, yalan)}
-      >
+      <button className="ikincil" disabled={yukleniyor} onClick={() => onIstek(istek.id, yalan)}>
         {en ? 'Ask' : 'İste'}
       </button>
     </div>
@@ -289,14 +271,14 @@ function IstekAksiyon({
 
 /**
  * Tam sayfa "Kariyer" ekranı (eski "Görevin"): yönetimle bağlar (Yönetici + Patron
- * ilişki hatları, etkileşimler, istekler, dayatılan talep), ekip (Kov), rakipler,
- * amir/astlar ve mesleğe özel güç metrikleri. §35.
+ * ilişki hatları, bağış/yağcılık/hizmet, istekler, dayatılan talep), ekip (Kov),
+ * rakipler, amir ve mesleğe özel güç metrikleri. İşlem sonuçları ekrana açılır
+ * bir pencerede gösterilir (üstte sabit metin yok). §35.
  */
 export function KariyerEkrani({
   meslek,
   amirAdi,
   amirRutbe,
-  astlar,
   ekip,
   rakipler,
   orduMevcudu,
@@ -320,6 +302,12 @@ export function KariyerEkrani({
   const { m, kt, dil } = useDil();
   const en = dil === 'en';
 
+  // İşlem sonucu / hata → ekrana açılır pencere.
+  const [modalMesaj, setModalMesaj] = useState<string | null>(null);
+  useEffect(() => {
+    if (islemMesaji) setModalMesaj(islemMesaji);
+  }, [islemMesaji]);
+
   const gucEtiket = (g: number) =>
     g >= 75 ? (en ? 'dominant' : 'çok güçlü') : g >= 50 ? (en ? 'strong' : 'güçlü') : g >= 25 ? (en ? 'middling' : 'orta') : en ? 'weak' : 'zayıf';
   const husumetEtiket = (h: number) =>
@@ -336,11 +324,20 @@ export function KariyerEkrani({
   }
 
   const talep = yonetimDurum?.talep ?? null;
+  const bikkin = (yonetimDurum?.bikkinlik ?? 0) >= 3;
 
   return (
     <div className="ekran ekran-aile ekran-kariyer">
       <h2>{m.geBaslik}</h2>
-      {islemMesaji && <p className="aile-islem-mesaji">{islemMesaji}</p>}
+
+      {modalMesaj && (
+        <div className="kariyer-sonuc-katman" onClick={() => setModalMesaj(null)}>
+          <div className="kariyer-sonuc-modal" onClick={(e) => e.stopPropagation()}>
+            <p>{modalMesaj}</p>
+            <button onClick={() => setModalMesaj(null)}>{en ? 'OK' : 'Tamam'}</button>
+          </div>
+        </div>
+      )}
 
       {hapiste && (
         <div className="aile-koken-karti gorev-hapis-karti">
@@ -367,19 +364,13 @@ export function KariyerEkrani({
       {/* ===== YÖNETİMLE BAĞLAR ===== */}
       {yonetimDurum && (
         <section className="kariyer-bolum kariyer-yonetim">
-          <h3>{en ? 'Ties with Power' : 'Yönetimle Bağların'}</h3>
-
           {talep && (
             <div className="kariyer-talep-afisi">
               <strong>📜 {talep.kimAdi}</strong>
               <p>
                 {talep.tur === 'bagis'
-                  ? en
-                    ? `${talep.kalem} — ${formatPara(talep.tutar)} ${paraBirimi} istiyor.`
-                    : `${talep.kalem} — ${formatPara(talep.tutar)} ${paraBirimi} istiyor.`
-                  : en
-                    ? `${talep.kalem} bekliyor.`
-                    : `${talep.kalem} bekliyor.`}
+                  ? `${talep.kalem} — ${formatPara(talep.tutar)} ${paraBirimi} ${en ? 'demanded.' : 'istiyor.'}`
+                  : `${talep.kalem} ${en ? 'awaited.' : 'bekliyor.'}`}
               </p>
               <div className="kariyer-talep-butonlar">
                 <button disabled={yukleniyor} onClick={() => onTalep('kabul')}>
@@ -395,21 +386,17 @@ export function KariyerEkrani({
             </div>
           )}
 
+          {bikkin && (
+            <p className="kariyer-bikkin-uyari">
+              ⚠️ {en
+                ? "You've been pushing too often — interactions may backfire."
+                : 'Çok sık üstüne gidiyorsun — etkileşimler ters tepebilir.'}
+            </p>
+          )}
+
           <div className="kariyer-hatlar">
-            <HatKarti
-              hat="yonetici"
-              durum={yonetimDurum}
-              yukleniyor={yukleniyor}
-              onEtkilesim={onEtkilesim}
-              onIstek={onIstek}
-            />
-            <HatKarti
-              hat="patron"
-              durum={yonetimDurum}
-              yukleniyor={yukleniyor}
-              onEtkilesim={onEtkilesim}
-              onIstek={onIstek}
-            />
+            <HatKarti hat="yonetici" durum={yonetimDurum} yukleniyor={yukleniyor} onEtkilesim={onEtkilesim} onIstek={onIstek} />
+            <HatKarti hat="patron" durum={yonetimDurum} yukleniyor={yukleniyor} onEtkilesim={onEtkilesim} onIstek={onIstek} />
           </div>
         </section>
       )}
@@ -428,11 +415,7 @@ export function KariyerEkrani({
                   {kt(uye.rol)} · {uye.maas} {paraBirimi}/{m.ksYilBasi} · 🎭 {kt(uye.kisilik)} · 🤝 %{uye.sadakat} ·{' '}
                   {m.ksKalite} %{uye.tahminiMin}-{uye.tahminiMax}
                 </span>
-                <button
-                  className="ikincil gorev-ekip-kov"
-                  disabled={yukleniyor}
-                  onClick={() => onEkipCikar(uye.id)}
-                >
+                <button className="ikincil gorev-ekip-kov" disabled={yukleniyor} onClick={() => onEkipCikar(uye.id)}>
                   {m.ksKov}
                 </button>
               </li>
@@ -463,7 +446,7 @@ export function KariyerEkrani({
         </div>
       )}
 
-      {/* ===== AMİR & ASTLAR ===== */}
+      {/* ===== AMİR ===== */}
       <div className="aile-koken-karti">
         <h3>{m.iyAmirin}</h3>
         {amirAdi ? (
@@ -473,21 +456,6 @@ export function KariyerEkrani({
           </div>
         ) : (
           <p className="aile-bos-metin">{m.geAmirYok}</p>
-        )}
-      </div>
-
-      <div className="aile-koken-karti">
-        <h3>{m.geAstlarin}</h3>
-        {astlar.length === 0 ? (
-          <p className="aile-bos-metin">{m.geKimseYok}</p>
-        ) : (
-          <div className="aile-koken-listesi">
-            {astlar.map((ast) => (
-              <span key={ast.isim} className="iliski-rozet">
-                🎗️ {ast.isim} · {kt(ast.rutbe)}
-              </span>
-            ))}
-          </div>
         )}
       </div>
 

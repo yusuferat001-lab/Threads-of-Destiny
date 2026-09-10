@@ -73,6 +73,7 @@ export interface SahipOlunanEsya {
   kalanYil: number | null;
 }
 
+/** ESKİ tekil hayat amacı — artık atanmıyor, geriye dönük uyum için duruyor. */
 export interface HayatAmaci {
   id: string;
   ad: string;
@@ -80,6 +81,37 @@ export interface HayatAmaci {
   hedefTuru: 'para' | 'un' | 'ahlak' | 'cocuk';
   hedefDeger: number;
   tamamlandi: boolean;
+}
+
+export type AmacZorluk = 'normal' | 'zor';
+export type AmacKontrolAni = 'herhangi' | 'olumde';
+
+export interface AmacIlerleme {
+  id: string;
+  zorluk: AmacZorluk;
+  bonus: number;
+  kontrolAni: AmacKontrolAni;
+  tamamlandi: boolean;
+  tamamlanmaYili?: number;
+}
+
+/** GET /:id/amaclar — sağ panel "🎯 Amaçların" kartı + Görevin ekranı + ölüm ekranı. */
+export interface AmacKarti {
+  id: string;
+  baslik: string;
+  aciklama: string;
+  zorluk: AmacZorluk;
+  bonus: number;
+  kontrolAni: AmacKontrolAni;
+  tamamlandi: boolean;
+  tamamlanmaYili: number | null;
+  mevcut: number | null;
+  hedef: number | null;
+}
+
+export interface AmaclarDurumu {
+  amaclar: AmacKarti[];
+  carpan: number;
 }
 
 export interface BolgeIstatistigi {
@@ -183,6 +215,12 @@ export interface CharacterState {
   evcil_hayvan: EvcilHayvan | null;
   unvanlar: string[];
   hayat_amaci: HayatAmaci | null;
+  hayat_amaclari: AmacIlerleme[];
+  omur_zirve_suc: number;
+  omur_kumar_net: number;
+  omur_sadaka_sayisi: number;
+  omur_hediye_sayisi: number;
+  omur_riskli_basari: number;
   efsanevi_olum: string | null;
 
   etiketler: string[];
@@ -219,6 +257,8 @@ export interface CharacterState {
   /** Kariyer sayfası — mesleğe göre patron (lonca reisi / fabrika patronu / yüksek ruhban) ilişkisi (0-100). §35. */
   patron_iliski: number;
   yonetim_etkilesim_kilit: Record<string, number>;
+  /** Son turlarda yapılan yönetim etkileşimi sayısı; yüksekken ters tepme olasılığı artar. §35. */
+  yonetim_yakin_etkilesim: number;
   /** Yönetimden gelen bekleyen dayatılan bağış / sadakat talebi; yoksa null. §35. */
   yonetim_talep: YonetimTalep | null;
   yonetim_talep_sonraki_yil: number;
@@ -297,9 +337,9 @@ export type YonetimHat = 'yonetici' | 'patron';
 
 /** GET /:id/yonetim yanıtı — Kariyer sayfasının "Yönetim" bölümü. §35. */
 export interface YonetimDurumu {
-  yonetici: { unvan: string; ad: string; iliski: number };
-  patron: { unvan: string; ad: string; iliski: number };
-  etkilesimler: { id: string; hat: YonetimHat; ikon: string; maliyet: number }[];
+  yonetici: { unvan: string; ad: string; iliski: number; bagisKademeleri: number[] };
+  patron: { unvan: string; ad: string; iliski: number; bagisKademeleri: number[] };
+  etkilesimler: { id: string; hat: YonetimHat; ikon: string }[];
   istekler: {
     id: string;
     hat: YonetimHat;
@@ -309,6 +349,8 @@ export interface YonetimDurumu {
     tahminiSans: number;
   }[];
   kilitler: Record<string, number>;
+  /** "Çok sık üstüne gitme" sayacı; ≥3 iken etkileşimler ters tepebilir. */
+  bikkinlik: number;
   talep: YonetimTalep | null;
   guncelYil: number;
   para: number;
