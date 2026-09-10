@@ -173,6 +173,19 @@ export const KATALOG_EN: Record<string, string> = {
   "İmam": "Imam",
   "Baş İmam": "Chief Imam",
 
+  // Kariyer sayfası — yönetimle bağlar unvanları (§35)
+  "Hükümdar": "Ruler",
+  "Vali": "Governor",
+  "Bölge Beyi": "Regional Lord",
+  "Ordu Kumandanı": "Army Commander",
+  "Karargâh Komutanı": "Garrison Commander",
+  "Kadı": "Qadi",
+  "Başpiskopos": "Archbishop",
+  "Patron": "Boss",
+  "Usta": "Master",
+  "şehri yöneten kişi": "the person who rules the city",
+  "patronun": "your patron",
+
   // Şehir yönetimi unvanları (post-max-rank)
   "Bölge Komutanı": "Regional Commander",
   "Ordu Generali": "Army General",

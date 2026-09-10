@@ -214,6 +214,15 @@ export interface CharacterState {
   aile_talep: AileTalep | null;
   aile_talep_sonraki_yil: number;
 
+  /** Kariyer sayfası — şehri yöneten kişiyle ilişki (0-100). §35. */
+  yonetim_iliski: number;
+  /** Kariyer sayfası — mesleğe göre patron (lonca reisi / fabrika patronu / yüksek ruhban) ilişkisi (0-100). §35. */
+  patron_iliski: number;
+  yonetim_etkilesim_kilit: Record<string, number>;
+  /** Yönetimden gelen bekleyen dayatılan bağış / sadakat talebi; yoksa null. §35. */
+  yonetim_talep: YonetimTalep | null;
+  yonetim_talep_sonraki_yil: number;
+
   tur_sayisi: number;
   gecmis_olaylar: string[];
   gecmis: GecmisNoktasi[];
@@ -268,6 +277,39 @@ export interface AileDurumu {
   etkilesimler: { id: string; ikon: string; hedef: 'es' | 'cocuk' | 'hepsi'; maliyet: number }[];
   kilitler: Record<string, number>;
   talep: AileTalep | null;
+  guncelYil: number;
+  para: number;
+  paraBirimi: string;
+}
+
+/** Kariyer sayfası — yönetimden gelen dayatılan bağış / sadakat talebi. §35. */
+export interface YonetimTalep {
+  id: string;
+  kimden: 'yonetici' | 'patron';
+  kimAdi: string;
+  tur: 'bagis' | 'sadakat';
+  tutar: number;
+  kalem: string;
+  sonYil: number;
+}
+
+export type YonetimHat = 'yonetici' | 'patron';
+
+/** GET /:id/yonetim yanıtı — Kariyer sayfasının "Yönetim" bölümü. §35. */
+export interface YonetimDurumu {
+  yonetici: { unvan: string; ad: string; iliski: number };
+  patron: { unvan: string; ad: string; iliski: number };
+  etkilesimler: { id: string; hat: YonetimHat; ikon: string; maliyet: number }[];
+  istekler: {
+    id: string;
+    hat: YonetimHat;
+    minIliski: number;
+    acik: boolean;
+    iliskiBedeli: number;
+    tahminiSans: number;
+  }[];
+  kilitler: Record<string, number>;
+  talep: YonetimTalep | null;
   guncelYil: number;
   para: number;
   paraBirimi: string;

@@ -32,6 +32,10 @@ import {
   aileDurumGetir,
   aileEtkilesimYap,
   aileTalebiKararlastir,
+  yonetimDurumGetir,
+  yonetimEtkilesimYap,
+  yonetimIstekYap,
+  yonetimTalebiKararlastir,
   oturumDiliAyarla,
   rakiplerGetir,
   hediyeEt,
@@ -441,6 +445,55 @@ gameRouter.post("/:id/aile/talep", async (req, res) => {
   }
   try {
     const sonuc = await aileTalebiKararlastir(req.params.id, karar);
+    res.json(sonuc);
+  } catch (err) {
+    res.status(400).json({ hata: String(err) });
+  }
+});
+
+// ===== Kariyer sayfası: Yönetimle Bağlar (§35) =====
+gameRouter.get("/:id/yonetim", async (req, res) => {
+  try {
+    const durum = await yonetimDurumGetir(req.params.id);
+    res.json(durum);
+  } catch (err) {
+    res.status(404).json({ hata: String(err) });
+  }
+});
+
+gameRouter.post("/:id/yonetim/etkilesim", async (req, res) => {
+  const { etkilesimId } = req.body ?? {};
+  if (typeof etkilesimId !== "string") {
+    return res.status(400).json({ hata: "Geçersiz etkileşim." });
+  }
+  try {
+    const sonuc = await yonetimEtkilesimYap(req.params.id, etkilesimId);
+    res.json(sonuc);
+  } catch (err) {
+    res.status(400).json({ hata: String(err) });
+  }
+});
+
+gameRouter.post("/:id/yonetim/istek", async (req, res) => {
+  const { istekId, yalan } = req.body ?? {};
+  if (typeof istekId !== "string") {
+    return res.status(400).json({ hata: "Geçersiz istek." });
+  }
+  try {
+    const sonuc = await yonetimIstekYap(req.params.id, istekId, { yalan: yalan === true });
+    res.json(sonuc);
+  } catch (err) {
+    res.status(400).json({ hata: String(err) });
+  }
+});
+
+gameRouter.post("/:id/yonetim/talep", async (req, res) => {
+  const { karar } = req.body ?? {};
+  if (karar !== "kabul" && karar !== "ret" && karar !== "yalan") {
+    return res.status(400).json({ hata: "Geçersiz karar." });
+  }
+  try {
+    const sonuc = await yonetimTalebiKararlastir(req.params.id, karar);
     res.json(sonuc);
   } catch (err) {
     res.status(400).json({ hata: String(err) });

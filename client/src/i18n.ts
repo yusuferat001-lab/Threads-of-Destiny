@@ -104,6 +104,17 @@ const TR = {
   bgAc: '🏆 Başarım Galerisi',
   bgGizli: 'Gizli başarım — koşulunu kendin keşfet.',
   bgYeniBasarim: '🏆 Yeni başarım: {0}',
+  bgGrupKilometre: 'Kilometre Taşları',
+  bgGrupTarz: 'Tarz',
+  bgGrupKesif: 'Keşif',
+  bgGrupDunya: 'Dünya',
+  bgGrupKoleksiyon: 'Koleksiyonlar',
+  bgNadirYaygin: 'Yaygın',
+  bgNadirNadir: 'Nadir',
+  bgNadirEfsanevi: 'Efsanevi',
+  bgIlerleme: '{0} / {1}',
+  bgYeniRozet: 'YENİ',
+  olumKazanimBaslik: 'Bu Hayatın Kazanımları',
 
   // ---- Kurulum akışı (çağ→bölge→yerleşim→isim) ----
   adimEtiketi: 'Adım {0} / {1}',
@@ -208,9 +219,9 @@ const TR = {
   ksKov: 'Kov',
   ksOzetAria: 'Görevin ve emrindekilerin özeti',
 
-  // ---- GorevEkrani (tam sayfa) ----
-  geBaslik: 'Görevin',
-  geGorevGor: '🎖️ Görevini Gör →',
+  // ---- KariyerEkrani (tam sayfa; eski "Görevin") ----
+  geBaslik: 'Kariyer',
+  geGorevGor: '🎖️ Kariyer →',
   geHapisYilKalan: 'yıl kaldı',
   geVebaHastasi: 'Veba hastası',
   geVebaHayatta: 'hayatta kalma şansı',
@@ -375,7 +386,7 @@ const TR = {
   feSohretYil: '⭐ Şöhret {0}/yıl',
 
   // ---- IsYatirimEkrani ----
-  iyBaslik: 'İşin & Yatırımların',
+  iyBaslik: 'Yatırım',
   iyGorevin: 'Görevin',
   iyYillikKazanc: 'Yıllık Kazanç',
   iyAmirin: 'Amirin',
@@ -768,6 +779,17 @@ const EN: Metinler = {
   bgAc: '🏆 Achievement Gallery',
   bgGizli: 'Hidden achievement — discover its condition yourself.',
   bgYeniBasarim: '🏆 New achievement: {0}',
+  bgGrupKilometre: 'Milestones',
+  bgGrupTarz: 'Playstyle',
+  bgGrupKesif: 'Discovery',
+  bgGrupDunya: 'The World',
+  bgGrupKoleksiyon: 'Collections',
+  bgNadirYaygin: 'Common',
+  bgNadirNadir: 'Rare',
+  bgNadirEfsanevi: 'Legendary',
+  bgIlerleme: '{0} / {1}',
+  bgYeniRozet: 'NEW',
+  olumKazanimBaslik: 'This Life\'s Honours',
 
   // ---- Setup flow (era→region→settlement→name) ----
   adimEtiketi: 'Step {0} / {1}',
@@ -872,9 +894,9 @@ const EN: Metinler = {
   ksKov: 'Dismiss',
   ksOzetAria: 'Summary of your duty and those under your command',
 
-  // ---- GorevEkrani (full screen) ----
-  geBaslik: 'Your Duty',
-  geGorevGor: '🎖️ View Your Duty →',
+  // ---- KariyerEkrani (full screen; formerly "Your Duty") ----
+  geBaslik: 'Career',
+  geGorevGor: '🎖️ Career →',
   geHapisYilKalan: 'yr left',
   geVebaHastasi: 'Plague-stricken',
   geVebaHayatta: 'survival chance',
@@ -1039,7 +1061,7 @@ const EN: Metinler = {
   feSohretYil: '⭐ Fame {0}/yr',
 
   // ---- IsYatirimEkrani ----
-  iyBaslik: 'Work & Investments',
+  iyBaslik: 'Investments',
   iyGorevin: 'Your Duty',
   iyYillikKazanc: 'Yearly Earnings',
   iyAmirin: 'Your Superior',

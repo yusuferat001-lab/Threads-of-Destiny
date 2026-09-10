@@ -419,12 +419,109 @@ button.ikincil {
   color: var(--renk-parsomen-metin-soluk);
 }
 
+.basarim-galeri-grup {
+  margin-bottom: 1rem;
+}
+
+.basarim-galeri-grup-baslik {
+  font-size: 0.95rem;
+  margin: 0.2rem 0 0.5rem;
+  color: #4a2f1c;
+  border-bottom: 1px solid var(--renk-ekru-kenar);
+  padding-bottom: 0.2rem;
+}
+
+.basarim-galeri-grup-baslik span {
+  font-weight: 400;
+  color: var(--renk-parsomen-metin-soluk);
+}
+
+.basarim-karti {
+  position: relative;
+}
+
+/* Nadirlik — sol kenar şeridi */
+.basarim-nadir-nadir {
+  border-left: 3px solid #7a6bd8;
+}
+
+.basarim-nadir-efsanevi {
+  border-left: 3px solid #c9962e;
+}
+
+.basarim-karti-nadir {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  align-self: flex-start;
+  padding: 0.05rem 0.3rem;
+  border-radius: 3px;
+  color: #fff;
+}
+
+.basarim-nadir-etiket-yaygin {
+  background: #8a8577;
+}
+
+.basarim-nadir-etiket-nadir {
+  background: #7a6bd8;
+}
+
+.basarim-nadir-etiket-efsanevi {
+  background: #c9962e;
+}
+
+.basarim-karti-ilerleme {
+  position: relative;
+  height: 14px;
+  border-radius: 7px;
+  background: var(--renk-ekru-kenar);
+  overflow: hidden;
+  margin-top: 0.2rem;
+}
+
+.basarim-karti-ilerleme-dolu {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--muhur-kirmizi-parlak);
+  opacity: 0.55;
+}
+
+.basarim-karti-ilerleme-metin {
+  position: relative;
+  display: block;
+  text-align: center;
+  font-size: 0.66rem;
+  line-height: 14px;
+  color: #4a2f1c;
+}
+
 .olum-yeni-basarimlar {
+  margin: 0.6rem 0;
+}
+
+.olum-kazanim-baslik {
+  font-size: 0.9rem;
+  margin: 0 0 0.4rem;
+  text-align: center;
+  opacity: 0.85;
+}
+
+.olum-kazanim-rozetler {
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
   justify-content: center;
-  margin: 0.6rem 0;
+}
+
+.olum-rozet-yeni {
+  box-shadow: 0 0 0 2px rgba(201, 150, 46, 0.6);
+}
+
+.olum-rozet-yeni-etiket {
+  font-style: normal;
+  font-weight: 700;
+  color: #c9962e;
 }
 
 .gecmis-hayat-liste,
@@ -4100,10 +4197,272 @@ button.ikincil {
   color: #9aa4b2;
 }
 
-/* ---- GorevEkrani: yenilmiş rakip ---- */
+/* ---- KariyerEkrani: yenilmiş rakip ---- */
 .iliski-rozet.rakip-yenildi {
   opacity: 0.55;
   text-decoration: line-through;
+}
+
+/* ================= Kariyer sayfası — Yönetimle Bağlar (§35) ================= */
+/* .ekran-aile'yi temel alır (sıcak zemin, sola hizalı); yönetim bölümü bir
+   strateji-oyunu paneli gibi: iki ilişki hattı kartı + ilerleme barları. */
+.ekran-kariyer {
+  background: linear-gradient(180deg, #2a2018, #1c150f);
+  gap: 0.85rem;
+}
+.ekran-kariyer > h2 {
+  color: var(--renk-altin-parlak);
+}
+/* Bölüm başlıkları (Ekibin / Rakiplerin / Amir & Astlar) dark zeminde okunur kalsın. */
+.ekran-kariyer .aile-koken-karti,
+.ekran-kariyer .aile-cocuklar-karti {
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(201, 162, 74, 0.28);
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+}
+.ekran-kariyer .aile-koken-karti > h3,
+.ekran-kariyer .aile-cocuklar-karti > h3,
+.ekran-kariyer .kariyer-yonetim > h3 {
+  margin: 0 0 0.6rem;
+  color: var(--renk-altin-parlak);
+  letter-spacing: 0.04em;
+  font-size: 0.9rem;
+}
+.ekran-kariyer .aile-bos-metin {
+  opacity: 0.75;
+}
+
+.kariyer-bolum {
+  position: relative;
+  z-index: 1;
+}
+
+/* --- Dayatılan talep afişi (mühür mumu kırmızısı, dikkat çekici) --- */
+.kariyer-talep-afisi {
+  border: 1px solid #7c3b34;
+  border-left: 4px solid #c0473c;
+  background: linear-gradient(180deg, rgba(120, 40, 34, 0.28), rgba(60, 20, 16, 0.35));
+  border-radius: 12px;
+  padding: 0.8rem 0.95rem;
+  margin-bottom: 0.9rem;
+}
+.kariyer-talep-afisi strong {
+  display: block;
+  color: #f0c9a0;
+}
+.kariyer-talep-afisi p {
+  margin: 0.35rem 0 0.7rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.kariyer-talep-butonlar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.kariyer-talep-butonlar button {
+  flex: 1 1 auto;
+  min-height: 42px;
+}
+
+/* --- İki ilişki hattı --- */
+.kariyer-hatlar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 0.85rem;
+}
+.kariyer-hat-karti {
+  background: linear-gradient(180deg, #241811, #1a110b);
+  border: 1px solid #7a5a36;
+  border-left: 3px solid var(--renk-altin, #c9a24a);
+  border-radius: 12px;
+  padding: 0.85rem 0.95rem;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5);
+}
+.kariyer-hat-baslik {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+.kariyer-hat-ikon {
+  font-size: 1.5rem;
+}
+.kariyer-hat-kimlik {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+.kariyer-hat-kimlik strong {
+  color: var(--renk-altin-parlak);
+  line-height: 1.2;
+}
+.kariyer-hat-kimlik span {
+  font-size: 0.78rem;
+  opacity: 0.75;
+}
+.kariyer-hat-kademe {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  color: #b9c4d0;
+}
+.kariyer-hat-kademe[data-kademe='gözde'],
+.kariyer-hat-kademe[data-kademe='favored'] {
+  color: #7ecb92;
+}
+.kariyer-hat-kademe[data-kademe='düşman'],
+.kariyer-hat-kademe[data-kademe='hostile'] {
+  color: #e58b8b;
+}
+
+.kariyer-iliski-bar {
+  position: relative;
+  height: 20px;
+  margin: 0.6rem 0 0.75rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(201, 162, 74, 0.35);
+  overflow: hidden;
+}
+.kariyer-iliski-bar-dolgu {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #9c7519, #e0c789);
+  transition: width 0.35s ease;
+}
+.kariyer-iliski-bar-dolgu[data-kademe='düşman'],
+.kariyer-iliski-bar-dolgu[data-kademe='hostile'],
+.kariyer-iliski-bar-dolgu[data-kademe='mesafeli'],
+.kariyer-iliski-bar-dolgu[data-kademe='distant'] {
+  background: linear-gradient(90deg, #7c3b34, #c0473c);
+}
+.kariyer-iliski-bar-dolgu[data-kademe='gözde'],
+.kariyer-iliski-bar-dolgu[data-kademe='favored'] {
+  background: linear-gradient(90deg, #2f7d4f, #7ecb92);
+}
+.kariyer-iliski-deger {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+}
+
+.kariyer-etkilesim-izgara {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.45rem;
+}
+.kariyer-etkilesim-buton {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  padding: 0.5rem 0.6rem;
+  min-height: 52px;
+  border-radius: 9px;
+  border: 1px solid rgba(201, 162, 74, 0.4);
+  background: rgba(201, 162, 74, 0.08);
+  color: inherit;
+  font-size: 0.8rem;
+  text-align: left;
+  cursor: pointer;
+}
+.kariyer-etkilesim-buton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.kariyer-etkilesim-alt {
+  font-size: 0.68rem;
+  opacity: 0.7;
+}
+
+.kariyer-istek-ac {
+  margin-top: 0.7rem;
+  padding: 0.35rem 0;
+  background: none;
+  border: none;
+  color: var(--renk-altin-parlak);
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+.kariyer-istek-listesi {
+  list-style: none;
+  margin: 0.3rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.kariyer-istek-satir {
+  border: 1px solid rgba(201, 162, 74, 0.25);
+  border-radius: 9px;
+  padding: 0.55rem 0.65rem;
+  background: rgba(0, 0, 0, 0.22);
+}
+.kariyer-istek-satir.kariyer-istek-kilit {
+  opacity: 0.55;
+}
+.kariyer-istek-ust {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.kariyer-istek-ust strong {
+  font-size: 0.86rem;
+}
+.kariyer-istek-rozet {
+  font-size: 0.7rem;
+  opacity: 0.8;
+  white-space: nowrap;
+}
+.kariyer-istek-ip {
+  margin: 0.3rem 0 0;
+  font-size: 0.76rem;
+  line-height: 1.45;
+  opacity: 0.8;
+}
+.kariyer-istek-aksiyon {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: 0.55rem;
+}
+.kariyer-istek-maliyet {
+  font-size: 0.74rem;
+  opacity: 0.85;
+}
+.kariyer-istek-yalan {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.74rem;
+  opacity: 0.9;
+}
+.kariyer-istek-aksiyon button {
+  margin-left: auto;
+  min-height: 38px;
+}
+
+@media (max-width: 767px) {
+  .kariyer-hatlar {
+    grid-template-columns: 1fr;
+  }
+  .kariyer-etkilesim-buton {
+    min-height: 58px;
+  }
 }
 
 /* ---- Sonuç / Ölüm ekranları ---- */

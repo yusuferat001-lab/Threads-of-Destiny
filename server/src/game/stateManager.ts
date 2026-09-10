@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { CharacterState, Cag, Dil, Kategori, SonucEtkisi, YatkinlikKaynagi, KisilikEksenleri, UlkeKrizi, HayatAmaci, MulkTuru, SahipOlunanEsya, AileTalep } from "../types";
+import { CharacterState, Cag, Dil, Kategori, SonucEtkisi, YatkinlikKaynagi, KisilikEksenleri, UlkeKrizi, HayatAmaci, MulkTuru, SahipOlunanEsya, AileTalep, YonetimTalep } from "../types";
 import { T, K } from "../i18n";
 import { AILELER, AileTanimi } from "../data/aileler";
 import { rastgeleKisilikCifti, kisilikGetir } from "../data/kisilikler";
@@ -717,6 +717,11 @@ export function createCharacter(
     aile_etkilesim_kilit: {},
     aile_talep: null,
     aile_talep_sonraki_yil: yil + 4,
+    yonetim_iliski: 40,
+    patron_iliski: 40,
+    yonetim_etkilesim_kilit: {},
+    yonetim_talep: null,
+    yonetim_talep_sonraki_yil: yil + 6,
     tur_sayisi: 0,
     gecmis_olaylar: [],
     gecmis: [],
@@ -927,6 +932,16 @@ export function eskiKayitGocu(state: CharacterState): void {
   }
   if (state.salgin_korunma_yatirimi === undefined) state.salgin_korunma_yatirimi = null;
   if (state.kredi === undefined) state.kredi = null;
+  // Kariyer sayfası — yönetimle bağlar (§35) sonradan eklendi.
+  if (typeof state.yonetim_iliski !== "number") state.yonetim_iliski = 40;
+  if (typeof state.patron_iliski !== "number") state.patron_iliski = 40;
+  if (!state.yonetim_etkilesim_kilit || typeof state.yonetim_etkilesim_kilit !== "object") {
+    state.yonetim_etkilesim_kilit = {};
+  }
+  if (state.yonetim_talep === undefined) state.yonetim_talep = null;
+  if (typeof state.yonetim_talep_sonraki_yil !== "number") {
+    state.yonetim_talep_sonraki_yil = state.yil + 6;
+  }
 }
 
 /** Oyuncu mesleğini seçtikten sonra çağrılır: miras bonusunu ve maaşı uygular. */
@@ -1034,6 +1049,8 @@ export function clampStats(state: CharacterState): void {
   // arayüzde ve maaş kırılımında "12.6" gibi değerler görünmesin.
   state.nufuz = Math.round(Math.max(0, state.nufuz));
   if (state.es_adi) state.es_puani = clamp(state.es_puani, 0, 100);
+  state.yonetim_iliski = clamp(state.yonetim_iliski ?? 40, 0, 100);
+  state.patron_iliski = clamp(state.patron_iliski ?? 40, 0, 100);
   for (const c of state.cocuklar) {
     if (typeof c.iliski === "number") c.iliski = Math.round(clamp(c.iliski, 0, 100));
   }
@@ -1277,6 +1294,121 @@ export function aileTalebiUret(state: CharacterState): AileTalep | null {
     kalem,
     sonYil,
   };
+}
+
+// ===== Kariyer sayfası: yönetimle bağlar pasif sürüklenmesi + dayatılan talep (§35) =====
+// Aile ekranıyla aynı felsefe: ilgilenmezsen ilişki soğur; yüksek ilişki küçük bir
+// sessiz perk verir; bazen yönetici/patron dayatılan bir bağış ya da sadakat yemini ister.
+const YONETIM_ILISKI_DUSUS_YILLIK = 0.5;
+const YONETIM_TALEP_SURESI_DOLMA_CEZA = 14;
+const YONETIM_TALEP_YILLIK_IHTIMAL = 0.13;
+
+/** Kariyer sayfası "yönetici" / "patron" talebi için insan-okunur gerekçeler. */
+const YONETIM_TALEP_KALEMLERI: Record<"yonetici" | "patron", { bagis: string[]; sadakat: string[] }> = {
+  yonetici: {
+    bagis: [
+      "saray onarımı için bağış",
+      "ordu masrafları için katkı",
+      "şehir surlarının tamiri için pay",
+      "hükümdarın düğün masrafına katkı",
+      "vergi açığını kapatmak için bağış",
+    ],
+    sadakat: [
+      "meclis önünde bağlılık yemini",
+      "hükümdarın seferine destek sözü",
+      "muhaliflerden uzak durma taahhüdü",
+    ],
+  },
+  patron: {
+    bagis: [
+      "lonca sandığına katkı",
+      "atölye borcunun kapatılması için pay",
+      "ortak yatırım için sermaye",
+      "patronun kızının çeyizine katkı",
+      "grev tazminatı için bağış",
+    ],
+    sadakat: [
+      "loncaya bağlılık yemini",
+      "rakip loncayla iş yapmama sözü",
+      "patronun adamlarını kollama taahhüdü",
+    ],
+  },
+};
+
+/** Rastgele bir yönetim (yönetici/patron) dayatılan bağış / sadakat talebi üretir. */
+export function yonetimTalebiUret(state: CharacterState): YonetimTalep {
+  const kimden: "yonetici" | "patron" = Math.random() < 0.5 ? "yonetici" : "patron";
+  const tur: "bagis" | "sadakat" = Math.random() < 0.6 ? "bagis" : "sadakat";
+  const enf = enflasyonCarpani(state);
+  const servetEk = Math.max(0, Math.min(30, Math.round(gayrimenkulDegeriHesapla(state) * 0.04)));
+  const tutar =
+    tur === "bagis" ? paraYuvarla((14 + Math.floor(Math.random() * 32) + servetEk) * enf) : 0;
+  const havuz = YONETIM_TALEP_KALEMLERI[kimden][tur];
+  return {
+    id: randomUUID(),
+    kimden,
+    kimAdi:
+      kimden === "yonetici"
+        ? state.hukumdar ?? T(state.dil, "şehri yöneten kişi")
+        : T(state.dil, "patronun"),
+    tur,
+    tutar,
+    kalem: havuz[Math.floor(Math.random() * havuz.length)],
+    sonYil: state.yil + 3 + Math.floor(Math.random() * 2),
+  };
+}
+
+/**
+ * Yönetimle bağların yıllık pasif işlemesi (§35): iki hattın doğal soğuması,
+ * yüksek ilişkinin küçük perkleri, bekleyen talebin süresinin dolması ve yeni
+ * talep üretimi. Bir anlatı cümlesi döndürebilir (aile deseni).
+ */
+export function yonetimYillikUygula(state: CharacterState, yasArtisi: number): string | null {
+  let not: string | null = null;
+
+  state.yonetim_iliski = Math.max(0, state.yonetim_iliski - YONETIM_ILISKI_DUSUS_YILLIK * yasArtisi);
+  state.patron_iliski = Math.max(0, state.patron_iliski - YONETIM_ILISKI_DUSUS_YILLIK * yasArtisi);
+
+  // Yüksek ilişki: küçük, sessiz perk.
+  if (state.yonetim_iliski >= 70) {
+    state.suc_seviyesi = Math.max(0, state.suc_seviyesi - 0.5 * yasArtisi);
+  }
+  if (state.patron_iliski >= 70) {
+    state.kariyer_puani += 0.5 * yasArtisi;
+  }
+
+  // Bekleyen talebin süresi doldu mu?
+  if (state.yonetim_talep && state.yil > state.yonetim_talep.sonYil) {
+    const t = state.yonetim_talep;
+    if (t.kimden === "yonetici") {
+      state.yonetim_iliski = Math.max(0, state.yonetim_iliski - YONETIM_TALEP_SURESI_DOLMA_CEZA);
+    } else {
+      state.patron_iliski = Math.max(0, state.patron_iliski - YONETIM_TALEP_SURESI_DOLMA_CEZA);
+    }
+    state.mutluluk -= 4;
+    not = T(state.dil, "{0} talebini görmezden geldin; arası açıldı.", [t.kimAdi]);
+    state.yonetim_talep = null;
+  }
+
+  // Yeni talep üretimi.
+  if (
+    !state.yonetim_talep &&
+    state.yil >= state.yonetim_talep_sonraki_yil &&
+    !state.etiketler.includes("hapiste") &&
+    !state.etiketler.includes("yolculukta") &&
+    Math.random() < YONETIM_TALEP_YILLIK_IHTIMAL
+  ) {
+    const yeni = yonetimTalebiUret(state);
+    state.yonetim_talep = yeni;
+    state.yonetim_talep_sonraki_yil = state.yil + 6 + Math.floor(Math.random() * 5);
+    if (!not) {
+      not = T(state.dil, "{0} senden bir şey bekliyor — Kariyer ekranından yanıtlayabilirsin.", [
+        yeni.kimAdi,
+      ]);
+    }
+  }
+
+  return not;
 }
 
 /**

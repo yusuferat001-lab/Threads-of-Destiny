@@ -20,6 +20,7 @@ import type {
   SosyalAksiyonConfig,
   MagazaEsyaKarti,
   AileDurumu,
+  YonetimDurumu,
 } from './types';
 import {
   mesleklerGetir,
@@ -70,6 +71,10 @@ import {
   aileDurumGetir,
   aileEtkilesimYap,
   aileTalebiKararlastir,
+  yonetimDurumGetir,
+  yonetimEtkilesimYap,
+  yonetimIstekYap,
+  yonetimTalebiKararlastir,
 } from './api';
 import { Banner } from './components/Banner';
 import { UstSerit } from './components/UstSerit';
@@ -87,7 +92,7 @@ import { HayatHikayesi } from './components/HayatHikayesi';
 import { HaberlerPaneli } from './components/HaberlerPaneli';
 import { BolgeBilgisiPaneli } from './components/BolgeBilgisiPaneli';
 import { AileEkrani } from './components/AileEkrani';
-import { GorevEkrani } from './components/GorevEkrani';
+import { KariyerEkrani } from './components/KariyerEkrani';
 import { FinansOzetPaneli } from './components/FinansOzetPaneli';
 import { SahneHotspotlari } from './components/SahneHotspotlari';
 import { EnvanterPaneli } from './components/EnvanterPaneli';
@@ -132,7 +137,7 @@ type Ekran =
   | 'olum'
   | 'liderlik'
   | 'aile'
-  | 'gorev'
+  | 'kariyer'
   | 'finans'
   | 'yatirim'
   | 'sosyallesme'
@@ -277,6 +282,7 @@ function App() {
 
   const [finans, setFinans] = useState<FinansOzeti | null>(null);
   const [aileDurum, setAileDurum] = useState<AileDurumu | null>(null);
+  const [yonetimDurum, setYonetimDurum] = useState<YonetimDurumu | null>(null);
   const [kotuIsler, setKotuIsler] = useState<KotuIsKarti[]>([]);
   const [rakipler, setRakipler] = useState<RakipKarti[]>([]);
   const [salginKorunma, setSalginKorunma] = useState<{ kartlar: SalginKorunmaKarti[]; aktifKademe: number; vebaVar: boolean } | null>(null);
@@ -297,6 +303,7 @@ function App() {
   const [basarimGaleriAcik, setBasarimGaleriAcik] = useState(false);
   const [nasilOynanirAcik, setNasilOynanirAcik] = useState(false);
   const [yeniBasarimlar, setYeniBasarimlar] = useState<BasarimTanimi[]>([]);
+  const [buOmurBasarimlar, setBuOmurBasarimlar] = useState<BasarimTanimi[]>([]);
   const [dil, setDil] = useState<Dil>(() => ayarlariGetir().dil);
   const [basarimlar, setBasarimlar] = useState(() => basarimlariGetir());
   const [basarimlarAcik, setBasarimlarAcik] = useState(false);
@@ -346,7 +353,7 @@ function App() {
       ekran === 'oyun' ||
       ekran === 'sonuc' ||
       ekran === 'aile' ||
-      ekran === 'gorev' ||
+      ekran === 'kariyer' ||
       ekran === 'finans' ||
       ekran === 'yatirim' ||
       ekran === 'sosyallesme' ||
@@ -486,8 +493,9 @@ function App() {
       gecmisHayatKaydet(karakter);
       setGecmisHayatlar(gecmisHayatlariGetir());
       setIsim((mevcut) => mevcut || karakter.isim || '');
-      const { yeniAcilanlar } = basarimlariDegerlendir(karakter);
+      const { yeniAcilanlar, buOmurKazanilanlar } = basarimlariDegerlendir(karakter);
       setYeniBasarimlar(yeniAcilanlar);
+      setBuOmurBasarimlar(buOmurKazanilanlar);
     }
   }, [ekran, karakter]);
 
@@ -796,6 +804,78 @@ function App() {
       } catch {
         /* durum yenilenemezse eldeki kalır */
       }
+    } catch (err) {
+      setHata(String(err));
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
+  // ===== Kariyer sayfası: Yönetimle Bağlar (§35) =====
+  async function kariyerEkraniniAc() {
+    if (!karakter) return;
+    setHata(null);
+    setYukleniyor(true);
+    try {
+      setYonetimDurum(await yonetimDurumGetir(karakter.id));
+      setIslemMesaji(null);
+      setEkran('kariyer');
+    } catch (err) {
+      setHata(String(err));
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
+  async function yonetimTazele(id: string) {
+    try {
+      setYonetimDurum(await yonetimDurumGetir(id));
+    } catch {
+      /* durum yenilenemezse eldeki kalır */
+    }
+  }
+
+  async function yonetimEtkilesimHandler(etkilesimId: string) {
+    if (!karakter) return;
+    setHata(null);
+    setYukleniyor(true);
+    try {
+      const sonuc = await yonetimEtkilesimYap(karakter.id, etkilesimId);
+      setKarakter(sonuc.state);
+      setIslemMesaji(sonuc.mesaj);
+      await yonetimTazele(karakter.id);
+    } catch (err) {
+      setHata(String(err));
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
+  async function yonetimIstekHandler(istekId: string, yalan: boolean) {
+    if (!karakter) return;
+    setHata(null);
+    setYukleniyor(true);
+    try {
+      const sonuc = await yonetimIstekYap(karakter.id, istekId, yalan);
+      setKarakter(sonuc.state);
+      setIslemMesaji(sonuc.mesaj);
+      await yonetimTazele(karakter.id);
+    } catch (err) {
+      setHata(String(err));
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
+  async function yonetimTalepHandler(karar: 'kabul' | 'ret' | 'yalan') {
+    if (!karakter) return;
+    setHata(null);
+    setYukleniyor(true);
+    try {
+      const sonuc = await yonetimTalebiKararlastir(karakter.id, karar);
+      setKarakter(sonuc.state);
+      setIslemMesaji(sonuc.mesaj);
+      await yonetimTazele(karakter.id);
     } catch (err) {
       setHata(String(err));
     } finally {
@@ -1292,6 +1372,7 @@ function App() {
     setOyuncuIsmi('');
     setSecilenGecmisHayat(null);
     setYeniBasarimlar([]);
+    setBuOmurBasarimlar([]);
     setEkran('giris');
   }
 
@@ -1840,8 +1921,9 @@ function App() {
               <FinansOzetPaneli finans={finans} maasYillikYedek={karakter.maas_yillik} paraBirimi={karakter.para_birimi} />
 
               <div className="gorev-blok">
-                <button className="ikincil gorev-gor-buton" onClick={() => setEkran('gorev')}>
+                <button className="ikincil gorev-gor-buton" onClick={kariyerEkraniniAc}>
                   {m.geGorevGor}
+                  {karakter.yonetim_talep ? ' 🔔' : ''}
                 </button>
               </div>
 
@@ -2265,8 +2347,8 @@ function App() {
         />
       )}
 
-      {ekran === 'gorev' && karakter && (
-        <GorevEkrani
+      {ekran === 'kariyer' && karakter && (
+        <KariyerEkrani
           meslek={karakter.meslek}
           amirAdi={karakter.amir_adi}
           amirRutbe={karakter.amir_rutbe}
@@ -2283,8 +2365,16 @@ function App() {
           vebaOlumRiski={karakter.veba_olum_riski}
           paraBirimi={karakter.para_birimi}
           yukleniyor={yukleniyor}
+          islemMesaji={islemMesaji}
+          yonetimDurum={yonetimDurum}
+          onEtkilesim={yonetimEtkilesimHandler}
+          onIstek={yonetimIstekHandler}
+          onTalep={yonetimTalepHandler}
           onEkipCikar={ekipCikarHandler}
-          onGeriDon={() => setEkran('oyun')}
+          onGeriDon={() => {
+            setIslemMesaji(null);
+            setEkran('oyun');
+          }}
         />
       )}
 
@@ -2309,13 +2399,31 @@ function App() {
             {formatPara(karakter.para)} {karakter.para_birimi} · {m.sohret}: {unUnvani(karakter.un, dil)}
           </p>
 
-          {yeniBasarimlar.length > 0 && (
+          {(buOmurBasarimlar.length > 0 || karakter.unvanlar.length > 0 || karakter.efsanevi_olum) && (
             <div className="olum-yeni-basarimlar">
-              {yeniBasarimlar.map((b) => (
-                <span key={b.id} className="liderlik-rozet liderlik-rozet-unvan">
-                  {bic(m.bgYeniBasarim, `${b.ikon} ${b.ad[dil]}`)}
-                </span>
-              ))}
+              <h3 className="olum-kazanim-baslik">🏆 {m.olumKazanimBaslik}</h3>
+              <div className="olum-kazanim-rozetler">
+                {karakter.unvanlar.map((u) => (
+                  <span key={`u-${u}`} className="liderlik-rozet liderlik-rozet-unvan">
+                    🏵️ {kt(u)}
+                  </span>
+                ))}
+                {karakter.efsanevi_olum && (
+                  <span className="liderlik-rozet liderlik-rozet-olum">💀 {karakter.efsanevi_olum}</span>
+                )}
+                {buOmurBasarimlar.map((b) => {
+                  const yeni = yeniBasarimlar.some((y) => y.id === b.id);
+                  return (
+                    <span
+                      key={`b-${b.id}`}
+                      className={`liderlik-rozet liderlik-rozet-unvan${yeni ? ' olum-rozet-yeni' : ''}`}
+                    >
+                      {b.ikon} {b.ad[dil]}
+                      {yeni && <em className="olum-rozet-yeni-etiket"> · {m.bgYeniRozet}</em>}
+                    </span>
+                  );
+                })}
+              </div>
             </div>
           )}
 

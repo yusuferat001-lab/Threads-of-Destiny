@@ -30,6 +30,7 @@ import type {
   EvlilikAdayi,
   EvlilikTeklifSonucu,
   AileDurumu,
+  YonetimDurumu,
   RakipKarti,
   SalginKorunmaKarti,
   KrediConfig,
@@ -326,6 +327,32 @@ export function aileTalebiKararlastir(stateId: string, karar: 'kabul' | 'ret') {
       method: 'POST',
       body: JSON.stringify({ karar }),
     },
+  );
+}
+
+// ===== Kariyer sayfası: Yönetimle Bağlar (§35) =====
+export function yonetimDurumGetir(stateId: string) {
+  return istek<YonetimDurumu>(`/api/game/${stateId}/yonetim`);
+}
+
+export function yonetimEtkilesimYap(stateId: string, etkilesimId: string) {
+  return istek<{ state: CharacterState; tam: boolean; mesaj: string }>(
+    `/api/game/${stateId}/yonetim/etkilesim`,
+    { method: 'POST', body: JSON.stringify({ etkilesimId }) },
+  );
+}
+
+export function yonetimIstekYap(stateId: string, istekId: string, yalan?: boolean) {
+  return istek<{ state: CharacterState; basarili: boolean; mesaj: string }>(
+    `/api/game/${stateId}/yonetim/istek`,
+    { method: 'POST', body: JSON.stringify({ istekId, yalan: yalan === true }) },
+  );
+}
+
+export function yonetimTalebiKararlastir(stateId: string, karar: 'kabul' | 'ret' | 'yalan') {
+  return istek<{ state: CharacterState; kabul: boolean; mesaj: string }>(
+    `/api/game/${stateId}/yonetim/talep`,
+    { method: 'POST', body: JSON.stringify({ karar }) },
   );
 }
 

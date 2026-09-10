@@ -79,6 +79,7 @@ import {
   MESLEK_KATEGORI,
   eskiKayitGocu,
   aileYillikUygula,
+  yonetimYillikUygula,
   havuzKilidiVar,
   rakipGucKir,
   rakipMisillemesiDene,
@@ -1295,6 +1296,11 @@ async function sonucuUygulaVeIlerlet(
           if (aileMesaji) {
             zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${aileMesaji}` : aileMesaji;
           }
+          // Kariyer sayfası: yönetimle bağların soğuması + dayatılan talep (§35).
+          const yonetimMesaji = yonetimYillikUygula(state, yasArtisi);
+          if (yonetimMesaji) {
+            zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${yonetimMesaji}` : yonetimMesaji;
+          }
           const envanterSonucu = envanterBozulmasiUygula(state, yasArtisi);
           if (envanterSonucu.cozulenler.length > 0) {
             const cozulmeMesaji =
@@ -1885,6 +1891,471 @@ export async function aileTalebiKararlastir(id: string, karar: "kabul" | "ret"):
     karar === "kabul"
       ? T(state.dil, "{0} istediğini aldı; çok mutlu oldu.", [talep.kimAdi])
       : T(state.dil, "{0}'e hayır dedin; aranıza bir kırgınlık girdi.", [talep.kimAdi]);
+  await oturumKaydet(state);
+  return { state, kabul: karar === "kabul", mesaj };
+}
+
+// ---------------------------------------------------------------------------
+// Kariyer sayfası: Yönetimle Bağlar (§35)
+// Aile ekranıyla aynı desen — hiçbiri turu TÜKETMEZ, oturumKaydet ile biter.
+// İki ilişki hattı: "yonetici" (state.yonetim_iliski) + "patron" (state.patron_iliski).
+// ---------------------------------------------------------------------------
+
+type YonetimHat = "yonetici" | "patron";
+
+function yonetimIliskiOku(state: CharacterState, hat: YonetimHat): number {
+  return hat === "yonetici" ? state.yonetim_iliski : state.patron_iliski;
+}
+function yonetimIliskiYaz(state: CharacterState, hat: YonetimHat, deger: number): void {
+  const v = Math.max(0, Math.min(100, deger));
+  if (hat === "yonetici") state.yonetim_iliski = v;
+  else state.patron_iliski = v;
+}
+
+const YONETIM_ISIM_HAVUZU = [
+  "Cezmi",
+  "Bertrand",
+  "Konrad",
+  "Halil",
+  "Théodore",
+  "Marcus",
+  "Yakup",
+  "Anselm",
+  "Rüstem",
+  "Gregor",
+];
+function yonetimDeterministikIsim(seed: string, tuz: number): string {
+  let h = tuz >>> 0;
+  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
+  return YONETIM_ISIM_HAVUZU[h % YONETIM_ISIM_HAVUZU.length];
+}
+
+function yoneticiBilgisi(state: CharacterState): { unvan: string; ad: string } {
+  if (state.hukumdar) return { unvan: K(state.dil, "Hükümdar"), ad: state.hukumdar };
+  const unvan = state.cag === "Sanayi Devrimi" ? "Vali" : "Bölge Beyi";
+  return { unvan: K(state.dil, unvan), ad: yonetimDeterministikIsim(state.id, 7) };
+}
+
+function patronBilgisi(state: CharacterState): { unvan: string; ad: string } {
+  const sanayi = state.cag === "Sanayi Devrimi";
+  let unvan: string;
+  if (state.meslek === "Asker") unvan = sanayi ? "Karargâh Komutanı" : "Ordu Kumandanı";
+  else if (state.meslek === "Tüccar") unvan = sanayi ? "Fabrika Patronu" : "Lonca Reisi";
+  else if (state.meslek === "Din Adamı") {
+    unvan = state.din_kultur === "Sünni İslam" ? "Kadı" : sanayi ? "Başpiskopos" : "Başrahip";
+  } else unvan = sanayi ? "Patron" : "Usta";
+  return { unvan: K(state.dil, unvan), ad: yonetimDeterministikIsim(state.id, 19) };
+}
+
+interface YonetimEtkilesimTabani {
+  id: string;
+  ikon: string;
+  tabanMaliyet: number;
+  cooldownYil: number;
+  iliski: number;
+  ahlak?: number;
+  mutluluk?: number;
+  un?: number;
+  kariyerPuani?: number;
+  /** "Yalan söyle" dalı: yakalanma ihtimali (0-1). */
+  ifsaSansi?: number;
+}
+
+/** Her iki hat da bu 4 etkileşimi paylaşır; cooldown anahtarı `${hat}:${id}`. */
+const YONETIM_ETKILESIM_TABANLARI: YonetimEtkilesimTabani[] = [
+  { id: "bagis", ikon: "💰", tabanMaliyet: 16, cooldownYil: 3, iliski: 14 },
+  { id: "hediye", ikon: "🎁", tabanMaliyet: 7, cooldownYil: 2, iliski: 7, un: 1 },
+  { id: "yalan", ikon: "🗣️", tabanMaliyet: 0, cooldownYil: 3, iliski: 11, ahlak: -6, mutluluk: -4, ifsaSansi: 0.25 },
+  { id: "hizmet", ikon: "🤝", tabanMaliyet: 0, cooldownYil: 2, iliski: 6, kariyerPuani: 3, mutluluk: -1 },
+];
+
+interface YonetimIstekTanimi {
+  id: string;
+  hat: YonetimHat;
+  minIliski: number;
+  iliskiBedeli: number;
+  cooldownYil: number;
+  tabanSans: number;
+  kullanilabilir?: (state: CharacterState) => boolean;
+  uygula: (state: CharacterState, enflasyon: number) => void;
+}
+
+const YONETIM_ISTEKLERI: YonetimIstekTanimi[] = [
+  {
+    id: "vergi_kayirma",
+    hat: "yonetici",
+    minIliski: 60,
+    iliskiBedeli: 18,
+    cooldownYil: 10,
+    tabanSans: 65,
+    uygula: (state) => maasCarpaniUygula(state, 1.07),
+  },
+  {
+    id: "sicil_temizligi",
+    hat: "yonetici",
+    minIliski: 65,
+    iliskiBedeli: 22,
+    cooldownYil: 12,
+    tabanSans: 60,
+    kullanilabilir: (state) => state.suc_seviyesi >= 20,
+    uygula: (state) => {
+      state.suc_seviyesi = Math.max(10, state.suc_seviyesi - 40);
+    },
+  },
+  {
+    id: "terfi_destegi",
+    hat: "yonetici",
+    minIliski: 60,
+    iliskiBedeli: 16,
+    cooldownYil: 10,
+    tabanSans: 65,
+    uygula: (state) => {
+      state.kariyer_puani += 18 + Math.floor(Math.random() * 9);
+    },
+  },
+  {
+    id: "rakibe_darbe",
+    hat: "yonetici",
+    minIliski: 70,
+    iliskiBedeli: 20,
+    cooldownYil: 8,
+    tabanSans: 60,
+    kullanilabilir: (state) => state.rakipler.some((r) => !r.yenildi),
+    uygula: (state, enflasyon) => {
+      const hedef = [...state.rakipler]
+        .filter((r) => !r.yenildi)
+        .sort((a, b) => b.guc - a.guc)[0];
+      if (hedef) rakipGucKir(state, hedef.ad, 12, enflasyon);
+    },
+  },
+  {
+    id: "sermaye_destegi",
+    hat: "patron",
+    minIliski: 60,
+    iliskiBedeli: 18,
+    cooldownYil: 10,
+    tabanSans: 65,
+    uygula: (state, enflasyon) => {
+      if (state.meslek === "Asker") {
+        state.ordu_techizat_seviyesi = Math.min(100, state.ordu_techizat_seviyesi + 10);
+      } else if (state.meslek === "Tüccar") {
+        state.ticaret_sermaye += Math.round(15 * enflasyon);
+      } else if (state.meslek === "Din Adamı") {
+        state.nufuz += 8;
+      }
+    },
+  },
+  {
+    id: "zam",
+    hat: "patron",
+    minIliski: 55,
+    iliskiBedeli: 15,
+    cooldownYil: 10,
+    tabanSans: 70,
+    uygula: (state) => maasCarpaniUygula(state, 1.06),
+  },
+  {
+    id: "kredi_kefaleti",
+    hat: "patron",
+    minIliski: 60,
+    iliskiBedeli: 20,
+    cooldownYil: 12,
+    tabanSans: 65,
+    kullanilabilir: (state) => state.kredi != null,
+    uygula: (state) => {
+      if (state.kredi) {
+        state.kredi.odenmeyenTaksit = 0;
+        state.kredi.faizOrani = Math.round(state.kredi.faizOrani * 0.8 * 1000) / 1000;
+      }
+    },
+  },
+  {
+    id: "is_baglantisi",
+    hat: "patron",
+    minIliski: 55,
+    iliskiBedeli: 14,
+    cooldownYil: 8,
+    tabanSans: 70,
+    uygula: (state, enflasyon) => {
+      state.para = paraYuvarla(state.para + (20 + Math.floor(Math.random() * 21)) * enflasyon);
+      state.kariyer_puani += 6;
+    },
+  },
+];
+
+function yonetimEtkilesimMaliyeti(state: CharacterState, taban: YonetimEtkilesimTabani): number {
+  if (taban.tabanMaliyet <= 0) return 0;
+  return Math.max(1, paraYuvarla(taban.tabanMaliyet * enflasyonCarpani(state)));
+}
+
+function yonetimIstekSansi(tanim: YonetimIstekTanimi, iliski: number, yalan: boolean): number {
+  return Math.round(
+    Math.min(90, Math.max(20, tanim.tabanSans + (iliski - 60) + (yalan ? 18 : 0)))
+  );
+}
+
+function yonetimIstekAcikMi(state: CharacterState, tanim: YonetimIstekTanimi): boolean {
+  if (yonetimIliskiOku(state, tanim.hat) < tanim.minIliski) return false;
+  if (tanim.kullanilabilir && !tanim.kullanilabilir(state)) return false;
+  const kilit = state.yonetim_etkilesim_kilit[`${tanim.hat}:istek:${tanim.id}`];
+  if (typeof kilit === "number" && state.yil < kilit) return false;
+  return true;
+}
+
+export interface YonetimDurumu {
+  yonetici: { unvan: string; ad: string; iliski: number };
+  patron: { unvan: string; ad: string; iliski: number };
+  etkilesimler: { id: string; hat: YonetimHat; ikon: string; maliyet: number }[];
+  istekler: {
+    id: string;
+    hat: YonetimHat;
+    minIliski: number;
+    acik: boolean;
+    iliskiBedeli: number;
+    tahminiSans: number;
+  }[];
+  /** Etkileşim/istek kilit anahtarı → tekrar açılacağı oyun yılı. */
+  kilitler: Record<string, number>;
+  talep: CharacterState["yonetim_talep"];
+  guncelYil: number;
+  para: number;
+  paraBirimi: string;
+}
+
+/** Kariyer sayfası "Yönetim" bölümünün ihtiyaç duyduğu her şey. Turu tüketmez. */
+export async function yonetimDurumGetir(id: string): Promise<YonetimDurumu> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  const yon = yoneticiBilgisi(state);
+  const pat = patronBilgisi(state);
+  return {
+    yonetici: { unvan: yon.unvan, ad: yon.ad, iliski: Math.round(state.yonetim_iliski) },
+    patron: { unvan: pat.unvan, ad: pat.ad, iliski: Math.round(state.patron_iliski) },
+    etkilesimler: (["yonetici", "patron"] as YonetimHat[]).flatMap((hat) =>
+      YONETIM_ETKILESIM_TABANLARI.map((t) => ({
+        id: `${hat}:${t.id}`,
+        hat,
+        ikon: t.ikon,
+        maliyet: yonetimEtkilesimMaliyeti(state, t),
+      }))
+    ),
+    istekler: YONETIM_ISTEKLERI.map((tanim) => ({
+      id: tanim.id,
+      hat: tanim.hat,
+      minIliski: tanim.minIliski,
+      acik: yonetimIstekAcikMi(state, tanim),
+      iliskiBedeli: tanim.iliskiBedeli,
+      tahminiSans: yonetimIstekSansi(tanim, yonetimIliskiOku(state, tanim.hat), false),
+    })),
+    kilitler: { ...state.yonetim_etkilesim_kilit },
+    talep: state.yonetim_talep
+      ? { ...state.yonetim_talep, kimAdi: state.yonetim_talep.kimden === "yonetici" ? yon.ad : pat.ad }
+      : null,
+    guncelYil: state.yil,
+    para: state.para,
+    paraBirimi: state.para_birimi,
+  };
+}
+
+interface YonetimEtkilesimSonucu {
+  state: CharacterState;
+  tam: boolean;
+  mesaj: string;
+}
+
+/** Bir yönetim etkileşimi (bağış/hediye/yağcılık/hizmet) — turu TÜKETMEZ. */
+export async function yonetimEtkilesimYap(
+  id: string,
+  etkilesimId: string
+): Promise<YonetimEtkilesimSonucu> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  if (state.etiketler.includes("hapiste")) throw new Error("Hapisteyken bununla ilgilenemezsin.");
+  if (state.etiketler.includes("yolculukta")) throw new Error("Yolculuktayken bununla ilgilenemezsin.");
+
+  const [hatRaw, tabanId] = etkilesimId.split(":");
+  const hat = hatRaw as YonetimHat;
+  if (hat !== "yonetici" && hat !== "patron") throw new Error("Geçersiz hat.");
+  const taban = YONETIM_ETKILESIM_TABANLARI.find((t) => t.id === tabanId);
+  if (!taban) throw new Error("Böyle bir etkileşim yok.");
+
+  const kilitYili = state.yonetim_etkilesim_kilit[etkilesimId];
+  if (typeof kilitYili === "number" && state.yil < kilitYili) {
+    throw new Error("Bunu bu kadar sık yapamazsın; biraz zaman geçmeli.");
+  }
+
+  const maliyet = yonetimEtkilesimMaliyeti(state, taban);
+  if (maliyet > 0 && state.para < maliyet) throw new Error("Bunu karşılayacak paran yok.");
+  if (maliyet > 0) state.para = paraYuvarla(state.para - maliyet);
+
+  const tam = Math.random() < 0.8;
+  const carpan = tam ? 1 : 0.5;
+
+  // Negatif bedeller (ahlak/mutluluk) tam işler; pozitif kazanç yarım-zarla ölçeklenir.
+  if (taban.ahlak) state.ahlak += taban.ahlak;
+  if (taban.mutluluk) state.mutluluk += taban.mutluluk;
+
+  let ifsaOldu = false;
+  if (taban.ifsaSansi && Math.random() < taban.ifsaSansi) {
+    ifsaOldu = true;
+    yonetimIliskiYaz(state, hat, yonetimIliskiOku(state, hat) - 16);
+    state.un -= 4;
+  } else {
+    yonetimIliskiYaz(state, hat, yonetimIliskiOku(state, hat) + Math.max(1, Math.round(taban.iliski * carpan)));
+    if (taban.un) state.un += taban.un;
+    if (taban.kariyerPuani) state.kariyer_puani += Math.max(1, Math.round(taban.kariyerPuani * carpan));
+  }
+  clampStats(state);
+
+  state.yonetim_etkilesim_kilit[etkilesimId] = state.yil + taban.cooldownYil;
+
+  const kimAdi = hat === "yonetici" ? yoneticiBilgisi(state).ad : patronBilgisi(state).ad;
+  let mesaj: string;
+  if (ifsaOldu) {
+    mesaj = T(state.dil, "{0} yağcılığını fark etti; güveni sarsıldı.", [kimAdi]);
+  } else if (tabanId === "bagis") {
+    mesaj = T(state.dil, "{0} bağışını memnuniyetle aldı.", [kimAdi]);
+  } else if (tabanId === "hediye") {
+    mesaj = T(state.dil, "{0} hediyeni beğendi.", [kimAdi]);
+  } else if (tabanId === "yalan") {
+    mesaj = T(state.dil, "{0}'e yağ çektin; hoşuna gitti ama içine sinmedi.", [kimAdi]);
+  } else {
+    mesaj = T(state.dil, "{0} için bir iş gördün; seni not etti.", [kimAdi]);
+  }
+  if (!tam && !ifsaOldu) mesaj += " " + T(state.dil, "Ama beklediğin kadar etkili olmadı.");
+
+  await oturumKaydet(state);
+  return { state, tam, mesaj };
+}
+
+interface YonetimIstekSonucu {
+  state: CharacterState;
+  basarili: boolean;
+  mesaj: string;
+}
+
+/** İlişki yüksekken açılan bir "istek" (iyilik) — ilişki harcar, zarlıdır. Turu TÜKETMEZ. */
+export async function yonetimIstekYap(
+  id: string,
+  istekId: string,
+  opts: { yalan?: boolean } = {}
+): Promise<YonetimIstekSonucu> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  if (state.etiketler.includes("hapiste")) throw new Error("Hapisteyken istekte bulunamazsın.");
+  if (state.etiketler.includes("yolculukta")) throw new Error("Yolculuktayken istekte bulunamazsın.");
+
+  const tanim = YONETIM_ISTEKLERI.find((t) => t.id === istekId);
+  if (!tanim) throw new Error("Böyle bir istek yok.");
+  if (yonetimIliskiOku(state, tanim.hat) < tanim.minIliski) {
+    throw new Error("Bunu istemek için ilişkin yeterince güçlü değil.");
+  }
+  if (tanim.kullanilabilir && !tanim.kullanilabilir(state)) {
+    throw new Error("Şu an bu isteğin bir anlamı yok.");
+  }
+  const kilitAnahtari = `${tanim.hat}:istek:${tanim.id}`;
+  const kilit = state.yonetim_etkilesim_kilit[kilitAnahtari];
+  if (typeof kilit === "number" && state.yil < kilit) {
+    throw new Error("Aynı iyiliği bu kadar sık isteyemezsin.");
+  }
+
+  const enflasyon = enflasyonCarpani(state);
+  const yalan = opts.yalan === true;
+  const iliskiOncesi = yonetimIliskiOku(state, tanim.hat);
+  const sans = yonetimIstekSansi(tanim, iliskiOncesi, yalan);
+
+  if (yalan) {
+    state.ahlak -= 5;
+    state.mutluluk -= 3;
+  }
+
+  let basarili = rollSuccess(sans);
+  let ifsaOldu = false;
+  if (yalan && Math.random() < 0.22) {
+    ifsaOldu = true;
+    basarili = false;
+    yonetimIliskiYaz(state, tanim.hat, yonetimIliskiOku(state, tanim.hat) - 20);
+    state.un -= 5;
+  }
+
+  // İlişki bedeli: başarıda tam, başarısızda yarım.
+  const bedel = basarili ? tanim.iliskiBedeli : Math.round(tanim.iliskiBedeli / 2);
+  yonetimIliskiYaz(state, tanim.hat, yonetimIliskiOku(state, tanim.hat) - bedel);
+
+  if (basarili) tanim.uygula(state, enflasyon);
+  clampStats(state);
+
+  state.yonetim_etkilesim_kilit[kilitAnahtari] = state.yil + tanim.cooldownYil;
+
+  const kimAdi = tanim.hat === "yonetici" ? yoneticiBilgisi(state).ad : patronBilgisi(state).ad;
+  let mesaj: string;
+  if (ifsaOldu) {
+    mesaj = T(state.dil, "Yalanın ortaya çıktı; {0} sana sırtını döndü ve isteğin geri çevrildi.", [
+      kimAdi,
+    ]);
+  } else if (basarili) {
+    mesaj = T(state.dil, "{0} isteğini yerine getirdi.", [kimAdi]);
+  } else {
+    mesaj = T(state.dil, "{0} bu sefer isteğini geri çevirdi.", [kimAdi]);
+  }
+
+  await oturumKaydet(state);
+  return { state, basarili, mesaj };
+}
+
+interface YonetimTalepSonucu {
+  state: CharacterState;
+  kabul: boolean;
+  mesaj: string;
+}
+
+/** Bekleyen dayatılan bağış / sadakat talebini yanıtlar: kabul / ret / yalan. Turu TÜKETMEZ. */
+export async function yonetimTalebiKararlastir(
+  id: string,
+  karar: "kabul" | "ret" | "yalan"
+): Promise<YonetimTalepSonucu> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  const talep = state.yonetim_talep;
+  if (!talep) throw new Error("Bekleyen bir talep yok.");
+  if (karar !== "kabul" && karar !== "ret" && karar !== "yalan") throw new Error("Geçersiz karar.");
+
+  const hat = talep.kimden;
+  let mesaj: string;
+
+  if (karar === "kabul") {
+    if (talep.tur === "bagis") {
+      if (state.para < talep.tutar) throw new Error("Bu bağışı karşılayacak paran yok.");
+      state.para = paraYuvarla(state.para - talep.tutar);
+    }
+    yonetimIliskiYaz(state, hat, yonetimIliskiOku(state, hat) + 12);
+    state.mutluluk -= 2;
+    mesaj = T(state.dil, "{0} talebini yerine getirdin; aranız pekişti.", [talep.kimAdi]);
+  } else if (karar === "ret") {
+    yonetimIliskiYaz(state, hat, yonetimIliskiOku(state, hat) - 16);
+    state.mutluluk -= 4;
+    state.un -= 3;
+    mesaj = T(state.dil, "{0} talebini geri çevirdin; arası soğudu.", [talep.kimAdi]);
+  } else {
+    state.ahlak -= 5;
+    state.mutluluk -= 4;
+    if (Math.random() < 0.3) {
+      yonetimIliskiYaz(state, hat, yonetimIliskiOku(state, hat) - 22);
+      state.un -= 6;
+      if (talep.tur === "bagis") state.para = paraYuvarla(state.para - talep.tutar);
+      mesaj = T(state.dil, "{0} yalanını yakaladı; hem parayı verdin hem itibarını.", [talep.kimAdi]);
+    } else {
+      yonetimIliskiYaz(state, hat, yonetimIliskiOku(state, hat) - 4);
+      mesaj = T(state.dil, "\"Elim darda\" dedin; {0} homurdanarak kabul etti.", [talep.kimAdi]);
+    }
+  }
+
+  clampStats(state);
+  state.yonetim_talep = null;
   await oturumKaydet(state);
   return { state, kabul: karar === "kabul", mesaj };
 }

@@ -305,6 +305,17 @@ export interface CharacterState {
   /** Bir sonraki aile talebinin üretilebileceği en erken yıl (yaratılışta baslangic_yili + 4). */
   aile_talep_sonraki_yil: number;
 
+  /** Kariyer sayfası — şehri yöneten kişiyle (hükümdar/vali) ilişki (0-100, başlangıç 40). §35. */
+  yonetim_iliski: number;
+  /** Kariyer sayfası — mesleğe göre patron (lonca reisi / fabrika patronu / yüksek ruhban) ile ilişki (0-100, başlangıç 40). §35. */
+  patron_iliski: number;
+  /** Yönetim etkileşim/istek cooldown'ları: anahtar (ör. "yonetici:bagis", "patron:istek:zam") → tekrar açılacağı oyun yılı. */
+  yonetim_etkilesim_kilit: Record<string, number>;
+  /** Yönetimden gelen bekleyen dayatılan bağış / sadakat talebi; yoksa null. §35. */
+  yonetim_talep: YonetimTalep | null;
+  /** Bir sonraki yönetim talebinin üretilebileceği en erken yıl (yaratılışta baslangic_yili + 6). */
+  yonetim_talep_sonraki_yil: number;
+
   tur_sayisi: number;
   gecmis_olaylar: string[];
   gecmis: GecmisNoktasi[];
@@ -356,6 +367,22 @@ export interface AileTalep {
   cocukIndex: number | null;
   tutar: number;
   /** İstenen şeyin insan-okunur adı (ör. "yeni bir at", "ipek elbise"). */
+  kalem: string;
+  sonYil: number;
+}
+
+/** Yönetimden (yönetici ya da patron) gelen dayatılan bağış / sadakat talebi. §35. */
+export interface YonetimTalep {
+  id: string;
+  /** Talebi yapan hat. */
+  kimden: "yonetici" | "patron";
+  /** Talebi yapan kişinin adı (gösterim). */
+  kimAdi: string;
+  /** "bagis" = para ister; "sadakat" = para yok ama ret ilişkiyi çok düşürür. */
+  tur: "bagis" | "sadakat";
+  /** İstenen para (tur === "sadakat" ise 0). */
+  tutar: number;
+  /** Talebin insan-okunur gerekçesi (ör. "saray onarımı için bağış"). */
   kalem: string;
   sonYil: number;
 }
