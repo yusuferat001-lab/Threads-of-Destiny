@@ -11,10 +11,10 @@
  *  - "Koleksiyon" başarımları — `basarimlar.ts`'teki efsanevi ölüm / ünvan
  *    sayısına bağlanır, böylece OLAYLI (efsanevi) ölümler de gerçek başarım sayılır.
  *
- * 2026-09: başlangıçta ~68 tanım vardı; kullanıcı isteğiyle ~36'ya indirildi
- * (kademeli eksenler 3→2 kademe, örtüşen/zayıf tekliler kaldırıldı). Kaldırılan
- * id'ler eski localStorage kümesinde yetim kalabilir — zararsız (galeri yalnız
- * `BASARIMLAR` içindekileri render eder).
+ * 2026-09: kullanıcının seçtiği havuz ~54 tanıma sabitlendi (kademeli eksenler
+ * 2 kademe, tarz/keşif kümeleri seyreltildi, büyülü/lanetli eşya kümesi bütün
+ * bırakıldı). Kaldırılan id'ler eski localStorage kümesinde yetim kalabilir —
+ * zararsız (galeri/sayaç yalnız `BASARIMLAR` içindekileri işler).
  *
  * Hiçbir şey sunucuya gönderilmez.
  */
@@ -122,7 +122,7 @@ export interface BasarimTanimi {
   ilerleme?: (b: IlerlemeBaglami) => [number, number];
 }
 
-const yasayanCocuk = (s: CharacterState) => s.cocuklar.filter((c) => c.yasiyor).length;
+const yasayanCocuklar = (s: CharacterState) => s.cocuklar.filter((c) => c.yasiyor);
 const etiketVar = (s: CharacterState, e: string) => s.etiketler.includes(e);
 const etiketBiri = (s: CharacterState, ...ler: string[]) => ler.some((e) => s.etiketler.includes(e));
 const olayGorildi = (s: CharacterState, ...ler: string[]) =>
@@ -164,7 +164,7 @@ export const BASARIMLAR: BasarimTanimi[] = [
   ),
   ...kademeli(
     'servet', '💰', 'kilometre', ['Servet', 'Fortune'],
-    [500, 4000],
+    [400, 4000],
     (b) => b.istatistik.enTekOmurServet,
     [(n) => `Tek bir hayatta ${n} nakit biriktir.`, (n) => `Amass ${n} cash in a single life.`],
   ),
@@ -208,6 +208,19 @@ export const BASARIMLAR: BasarimTanimi[] = [
       o.istatistik.rekor.sermaye >= 200 ||
       o.istatistik.rekor.nufuz >= 150,
   },
+  {
+    id: 'bolge_gezgini',
+    ikon: '🗺️',
+    grup: 'kilometre',
+    nadirlik: 'nadir',
+    ad: { tr: 'Diyar Diyar', en: 'Land after Land' },
+    aciklama: {
+      tr: '4 farklı bölgede birer hayat tamamla.',
+      en: 'Finish a life in 4 different regions.',
+    },
+    kosul: (o) => o.istatistik.bolgeler.length >= 4,
+    ilerleme: (b) => [Math.min(b.istatistik.bolgeler.length, 4), 4],
+  },
 
   // ============================ TARZ (çok koşullu) ============================
   {
@@ -240,18 +253,6 @@ export const BASARIMLAR: BasarimTanimi[] = [
     ],
   },
   {
-    id: 'borcsuz_ihtiyar',
-    ikon: '🧓',
-    grup: 'tarz',
-    nadirlik: 'nadir',
-    ad: { tr: 'Borçsuz İhtiyar', en: 'Debt-Free Elder' },
-    aciklama: {
-      tr: 'En az 80 yaşında, cebinde para varken öl.',
-      en: 'Die at 80 or older with money still in your pocket.',
-    },
-    kosul: (o) => o.state.yas >= 80 && o.state.para >= 0,
-  },
-  {
     id: 'mutevazi_son',
     ikon: '🌾',
     grup: 'tarz',
@@ -274,15 +275,6 @@ export const BASARIMLAR: BasarimTanimi[] = [
       en: 'Die before 35 but leave a score above 250,000.',
     },
     kosul: (o) => o.state.yas < 35 && o.skor >= 250000,
-  },
-  {
-    id: 'amac',
-    ikon: '🎯',
-    grup: 'tarz',
-    nadirlik: 'nadir',
-    ad: { tr: 'Kaderini Tamamladı', en: 'Fulfilled Their Fate' },
-    aciklama: { tr: 'Hayat amacını tamamlayarak öl.', en: 'Die having completed your life goal.' },
-    kosul: (o) => o.state.hayat_amaci?.tamamlandi === true,
   },
   {
     id: 'yeminli',
@@ -346,6 +338,83 @@ export const BASARIMLAR: BasarimTanimi[] = [
     },
     kosul: (o) => etiketVar(o.state, 'medeni:evli') && o.state.es_puani >= 90,
   },
+  {
+    id: 'yalniz_kalan',
+    ikon: '💔',
+    grup: 'tarz',
+    nadirlik: 'nadir',
+    ad: { tr: 'Yalnız Kalan', en: 'The Bereaved' },
+    aciklama: {
+      tr: 'Hem eş hem evlat acısını taşırken 60 yaşını gör.',
+      en: 'Reach age 60 bearing the loss of both a spouse and a child.',
+    },
+    kosul: (o) => etiketVar(o.state, 'kalici:dul') && etiketVar(o.state, 'kalici:evlat_acisi') && o.state.yas >= 60,
+  },
+  {
+    id: 'kumarbaz',
+    ikon: '🎲',
+    grup: 'tarz',
+    gizli: true,
+    nadirlik: 'nadir',
+    ad: { tr: 'Kumarbaz', en: 'The Gambler' },
+    aciklama: {
+      tr: 'Kumar bağımlısı damgasıyla öl.',
+      en: 'Die bearing the gambling-addict mark.',
+    },
+    kosul: (o) => etiketVar(o.state, 'bagimlilik:kumarbaz'),
+  },
+  {
+    id: 'katil',
+    ikon: '🔪',
+    grup: 'tarz',
+    gizli: true,
+    nadirlik: 'nadir',
+    ad: { tr: 'Kanlı Sır', en: 'A Bloody Secret' },
+    aciklama: {
+      tr: 'Bir cinayet sırrını mezara götür.',
+      en: 'Carry the secret of a killing to your grave.',
+    },
+    kosul: (o) => etiketBiri(o.state, 'sir:cinayet', 'sir:kanli_eller'),
+  },
+  {
+    id: 'soylu_kani',
+    ikon: '👑',
+    grup: 'tarz',
+    nadirlik: 'nadir',
+    ad: { tr: 'Soylu Kanı', en: 'Noble Blood' },
+    aciklama: {
+      tr: 'Soylu bir aileden doğ, şatoda ve şöhretin 80\'in üstündeyken öl.',
+      en: 'Be born noble and die in a castle with fame above 80.',
+    },
+    kosul: (o) => etiketVar(o.state, 'aile:soylu') && o.state.konut_id === 'sato' && o.state.un >= 80,
+  },
+  {
+    id: 'sevilen_baba',
+    ikon: '🫂',
+    grup: 'tarz',
+    nadirlik: 'efsanevi',
+    ad: { tr: 'Sevilen Baba', en: 'A Beloved Parent' },
+    aciklama: {
+      tr: 'En az 3 yaşayan çocuğun olsun ve hepsinin sana bağlılığı 75\'in üstünde olsun.',
+      en: 'Have at least 3 living children, each with a bond above 75.',
+    },
+    kosul: (o) => {
+      const yc = yasayanCocuklar(o.state);
+      return yc.length >= 3 && yc.every((c) => (c.iliski ?? 0) >= 75);
+    },
+  },
+  {
+    id: 'sadik_asker',
+    ikon: '🛡️',
+    grup: 'tarz',
+    nadirlik: 'nadir',
+    ad: { tr: 'Sadık Asker', en: 'The Loyal Soldier' },
+    aciklama: {
+      tr: 'Sadık asker yolunu seç ve 5. rütbeye ulaş.',
+      en: 'Walk the loyal-soldier path and reach rank 5.',
+    },
+    kosul: (o) => etiketVar(o.state, 'yol:asker:sadik') && o.state.rutbe_seviye >= 5,
+  },
 
   // ============================== KEŞİF (içerik) ==============================
   {
@@ -383,6 +452,19 @@ export const BASARIMLAR: BasarimTanimi[] = [
     kosul: (o) => etiketVar(o.state, 'yolculuk_tamamlandi'),
   },
   {
+    id: 'yollara_dusen',
+    ikon: '🐫',
+    grup: 'kesif',
+    nadirlik: 'efsanevi',
+    ad: { tr: 'Yollara Düşen', en: 'The Wayfarer' },
+    aciklama: {
+      tr: 'Ayrı hayatlarda 3 büyük yolculuğu tamamla.',
+      en: 'Complete 3 great journeys across separate lives.',
+    },
+    kosul: (o) => o.istatistik.yolculukTamamlayan >= 3,
+    ilerleme: (b) => [Math.min(b.istatistik.yolculukTamamlayan, 3), 3],
+  },
+  {
     id: 'zindandan_kacis',
     ikon: '⛓️',
     grup: 'kesif',
@@ -417,6 +499,112 @@ export const BASARIMLAR: BasarimTanimi[] = [
     },
     kosul: (o) => o.state.hayat_hikayesi.some((h) => /kutsal|relic|holy/i.test(h.baslik)),
   },
+  {
+    id: 'gizemli_kader',
+    ikon: '🔮',
+    grup: 'kesif',
+    gizli: true,
+    nadirlik: 'yaygin',
+    ad: { tr: 'Gizemli Kader', en: 'A Mysterious Fate' },
+    aciklama: {
+      tr: 'Gizemli bir eşyayı yanında taşırken öl.',
+      en: 'Die while carrying a mysterious item.',
+    },
+    kosul: (o) => o.state.etiketler.some((e) => e.startsWith('esya:') || e.startsWith('envanter:')),
+  },
+  {
+    id: 'ejderha',
+    ikon: '🐉',
+    grup: 'kesif',
+    gizli: true,
+    nadirlik: 'nadir',
+    ad: { tr: 'Ejderhanın İzinde', en: 'On the Dragon\'s Trail' },
+    aciklama: {
+      tr: 'Ejderha tılsımıyla başlayan gizemi kendi hayatında yaşa.',
+      en: 'Live through the mystery that begins with the dragon talisman.',
+    },
+    kosul: (o) => olayGorildi(o.state, 'gizem_ejderha_tilsimi'),
+  },
+  {
+    id: 'yasak_ilim',
+    ikon: '📕',
+    grup: 'kesif',
+    gizli: true,
+    nadirlik: 'nadir',
+    ad: { tr: 'Yasak İlim', en: 'Forbidden Lore' },
+    aciklama: {
+      tr: 'Yasak bir bilginin peşine düşmüş olarak öl.',
+      en: 'Die having pursued forbidden knowledge.',
+    },
+    kosul: (o) => etiketVar(o.state, 'bilgi:yasak_ilim'),
+  },
+  {
+    id: 'fisildayan_tas',
+    ikon: '🪨',
+    grup: 'kesif',
+    gizli: true,
+    nadirlik: 'nadir',
+    ad: { tr: 'Fısıldayan Taş', en: 'The Whispering Stone' },
+    aciklama: {
+      tr: 'Ruh çağırma seansından fısıldayan taşla çık.',
+      en: 'Walk away from a séance with the whispering stone.',
+    },
+    kosul: (o) =>
+      etiketVar(o.state, 'envanter:fisildayan_tas') || olayGorildi(o.state, 'gizem_fisildayan_tas'),
+  },
+  {
+    id: 'seytanla_pazarlik',
+    ikon: '😈',
+    grup: 'kesif',
+    gizli: true,
+    nadirlik: 'efsanevi',
+    ad: { tr: 'Dört Yol Ağzı', en: 'The Crossroads' },
+    aciklama: {
+      tr: 'Dört yol ağzında karanlık bir pazarlığa otur.',
+      en: 'Sit down to a dark bargain at the crossroads.',
+    },
+    kosul: (o) => olayGorildi(o.state, 'buyu_seytanla_pazarlik'),
+  },
+  {
+    id: 'kara_kilic',
+    ikon: '⚔️',
+    grup: 'kesif',
+    gizli: true,
+    nadirlik: 'nadir',
+    ad: { tr: 'Kara Kılıç', en: 'The Black Sword' },
+    aciklama: {
+      tr: 'Lanetli kara kılıcı kuşanmış olarak öl.',
+      en: 'Die girded with the cursed black sword.',
+    },
+    kosul: (o) => etiketVar(o.state, 'envanter:kara_kilic'),
+  },
+  {
+    id: 'kara_kedi',
+    ikon: '🐈‍⬛',
+    grup: 'kesif',
+    gizli: true,
+    nadirlik: 'nadir',
+    ad: { tr: 'Uğursuz Kedi', en: 'The Ill-Omened Cat' },
+    aciklama: {
+      tr: 'Kara kedinin yolunu bir kez kesmesine izin ver.',
+      en: 'Let a black cat cross your path once.',
+    },
+    kosul: (o) =>
+      olayGorildi(o.state, 'buyu_kara_kedi', 'derinlik_manastir_kedisi') ||
+      etiketVar(o.state, 'esya:veba_koruyucu_kedi'),
+  },
+  {
+    id: 'kahin',
+    ikon: '🔯',
+    grup: 'kesif',
+    nadirlik: 'yaygin',
+    ad: { tr: 'Kâhinin Dediği', en: 'The Oracle\'s Word' },
+    aciklama: {
+      tr: 'Bir medyuma, kristal küreye ya da kâhine danış.',
+      en: 'Consult a medium, a crystal ball or an oracle.',
+    },
+    kosul: (o) => olayGorildi(o.state, 'buyu_koy_medyumu', 'buyu_kristal_kure', 'buyu_kahin_kehaneti'),
+  },
 
   // ================================= DÜNYA ==================================
   {
@@ -447,6 +635,31 @@ export const BASARIMLAR: BasarimTanimi[] = [
     kosul: (o) => o.state.son_buyuk_savas_bitis_yili != null && o.state.yas >= 55,
   },
   {
+    id: 'kiyametten_sag',
+    ikon: '🌩️',
+    grup: 'dunya',
+    nadirlik: 'efsanevi',
+    ad: { tr: 'Kıyametten Sağ Çıkan', en: 'Rode Out the Apocalypse' },
+    aciklama: {
+      tr: 'Aynı hayatta hem vebayı hem bir büyük savaşı atlat, 60 yaşını gör.',
+      en: 'Survive both a plague and a great war in one life, and reach age 60.',
+    },
+    kosul: (o) =>
+      o.state.veba_gecirdi && o.state.son_buyuk_savas_bitis_yili != null && o.state.yas >= 60,
+  },
+  {
+    id: 'veba_bagisik',
+    ikon: '🧬',
+    grup: 'dunya',
+    nadirlik: 'nadir',
+    ad: { tr: 'Veba Bağışıklı', en: 'Plague-Immune' },
+    aciklama: {
+      tr: 'Vebaya karşı bağışıklık kazanmış olarak öl.',
+      en: 'Die having gained immunity to the plague.',
+    },
+    kosul: (o) => etiketVar(o.state, 'tibbi:veba_bagisik'),
+  },
+  {
     id: 'rakipsiz',
     ikon: '🕸️',
     grup: 'dunya',
@@ -473,8 +686,6 @@ export const BASARIMLAR: BasarimTanimi[] = [
   },
 
   // ============================== KOLEKSİYONLAR ==============================
-  // `basarimlar.ts`'teki efsanevi ölüm / ünvan sayısına bağlanır —
-  // OLAYLI (efsanevi) ölümler ve olaylardan gelen ünvanlar böylece gerçek başarım sayılır.
   {
     id: 'efsanevi_olum',
     ikon: '💀',
@@ -513,6 +724,31 @@ export const BASARIMLAR: BasarimTanimi[] = [
     },
     kosul: (o) => o.koleksiyon.unvanSayisi >= 8,
     ilerleme: (b) => [Math.min(b.koleksiyon.unvanSayisi, 8), 8],
+  },
+  {
+    id: 'evcil_dost',
+    ikon: '🐾',
+    grup: 'koleksiyon',
+    nadirlik: 'yaygin',
+    ad: { tr: 'Sadık Dost', en: 'A Faithful Friend' },
+    aciklama: {
+      tr: 'Bir evcil hayvanınla birlikte öl.',
+      en: 'Die with a pet at your side.',
+    },
+    kosul: (o) => o.state.evcil_hayvan != null,
+  },
+  {
+    id: 'luks_duskun',
+    ikon: '💎',
+    grup: 'koleksiyon',
+    nadirlik: 'efsanevi',
+    ad: { tr: 'Lüks Düşkünü', en: 'Lover of Luxury' },
+    aciklama: {
+      tr: '4 lüks eşyanın hepsine aynı anda sahipken öl.',
+      en: 'Die owning all 4 luxury items at once.',
+    },
+    kosul: (o) => o.state.magaza_envanteri.filter((e) => e.kategori === 'luks').length >= 4,
+    ilerleme: () => [0, 4],
   },
 ];
 
@@ -604,6 +840,41 @@ export function acilanBasarimIdleri(): Set<string> {
   return okuSet(ACILAN_ANAHTAR);
 }
 
+/**
+ * Uygulama açılışında bir kez çağrılır: çapraz-oyun verisinden (rekor/istatistik/koleksiyon)
+ * hâlihazırda KARŞILANAN kademeli/koleksiyon başarımlarını, oyuncunun tekrar ölmesini
+ * beklemeden açar. Yalnız `ilerleme` tanımlı — yani `state` olmadan değerlendirilebilen —
+ * başarımlara bakar (kademeli eksenler, koleksiyonlar, iki_cag, uc_meslek, yollara_dusen…).
+ * Sürüm değişince kilidi görünmez kalan oyuncuların ilerlemesini geri kazandırır.
+ */
+export function retroaktifKilitAc(): void {
+  try {
+    const baglam: IlerlemeBaglami = {
+      istatistik: oyunIstatistigiGetir(),
+      koleksiyon: koleksiyonSayilari(),
+    };
+    const acilan = okuSet(ACILAN_ANAHTAR);
+    let degisti = false;
+    for (const b of BASARIMLAR) {
+      if (!b.ilerleme || acilan.has(b.id)) continue;
+      let p: [number, number];
+      try {
+        p = b.ilerleme(baglam);
+      } catch {
+        continue;
+      }
+      if (p[1] > 0 && p[0] >= p[1]) {
+        acilan.add(b.id);
+        degisti = true;
+      }
+    }
+    if (degisti) yazSet(ACILAN_ANAHTAR, acilan);
+  } catch {
+    // yok say
+  }
+}
+retroaktifKilitAc();
+
 /** `basarimlar.ts` koleksiyonundaki benzersiz efsanevi ölüm / ünvan sayısı. */
 export function koleksiyonSayilari(): KoleksiyonSayilari {
   const { unvanlar, olumler } = basarimlariGetir();
@@ -635,7 +906,7 @@ function istatistigiGuncelle(state: CharacterState, skor: number): OyunIstatisti
   }
   if (state.etiketler.includes('yolculuk_tamamlandi')) ist.yolculukTamamlayan += 1;
 
-  const yasayan = yasayanCocuk(state);
+  const yasayan = yasayanCocuklar(state).length;
   const r = ist.rekor;
   r.un = Math.max(r.un, state.un);
   r.ahlak = Math.max(r.ahlak, state.ahlak);
