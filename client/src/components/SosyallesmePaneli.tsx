@@ -46,7 +46,7 @@ export function SosyallesmePaneli({
   onBilekGuresi,
   onGeriDon,
 }: SosyallesmePaneliProps) {
-  const { m, kt } = useDil();
+  const { m, kt, dil } = useDil();
   const [sonMesaj, setSonMesaj] = useState<string | null>(null);
   const [aksiyonBekliyor, setAksiyonBekliyor] = useState(false);
 
@@ -70,6 +70,16 @@ export function SosyallesmePaneli({
       <h2>{m.spSosyallesBaslik}</h2>
       <p className="giris-aciklama">{m.spIntro}</p>
 
+      {/* İçki/deli/fal gibi tur-harcamayan aksiyon sonuçları — açılır pencerede (kullanıcı isteği). */}
+      {sonMesaj && (
+        <div className="kariyer-sonuc-katman" onClick={() => setSonMesaj(null)}>
+          <div className="kariyer-sonuc-modal" onClick={(e) => e.stopPropagation()}>
+            <p>{sonMesaj}</p>
+            <button onClick={() => setSonMesaj(null)}>{dil === 'en' ? 'OK' : 'Tamam'}</button>
+          </div>
+        </div>
+      )}
+
       {!olayAcik && yerler.length === 0 && <p className="yatirim-islem-mesaji">{m.spMekanYok}</p>}
 
       <div className="tam-kaydirilan">
@@ -79,8 +89,6 @@ export function SosyallesmePaneli({
             <h3 className="tam-baslik" title={m.spEtkinlikNot}>
               {m.spEtkinlikBaslik}
             </h3>
-
-            {sonMesaj && <p className="sosyal-aksiyon-mesaj">{sonMesaj}</p>}
 
             {aksiyonConfig.icecekler.length > 0 && (
               <div className="sosyal-icki-cipler">

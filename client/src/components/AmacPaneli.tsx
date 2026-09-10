@@ -61,7 +61,11 @@ export function AmacPaneli({ durum, varyant = 'panel' }: AmacPaneliProps) {
         {durum.amaclar.map((a) => {
           const p = yuzde(a);
           return (
-            <li key={a.id} className={`amac-satir${a.tamamlandi ? ' amac-tamam' : ''} amac-${a.zorluk}`}>
+            <li
+              key={a.id}
+              className={`amac-satir${a.tamamlandi ? ' amac-tamam' : ''} amac-${a.zorluk}`}
+              title={a.aciklama}
+            >
               <div className="amac-ust">
                 <span className="amac-ikon">{a.tamamlandi ? '✓' : a.zorluk === 'zor' ? '★' : '◆'}</span>
                 <span className="amac-baslik">{a.baslik}</span>

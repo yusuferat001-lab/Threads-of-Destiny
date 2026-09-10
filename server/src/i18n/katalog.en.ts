@@ -202,6 +202,7 @@ export const KATALOG_EN: Record<string, string> = {
   // ---------------------------------------------------------------------------
   // Yerleşimler
   // ---------------------------------------------------------------------------
+  "Kasaba": "Town",
   "Şehir Merkezi": "City Center",
   "Sınır Bölgesi": "Frontier Region",
   "Dağ Başı": "Mountain Reaches",

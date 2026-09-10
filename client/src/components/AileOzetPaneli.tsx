@@ -13,12 +13,9 @@ interface AileOzetPaneliProps {
 export function AileOzetPaneli({ esAdi, esMeslek, esRutbe, cocuklar, evcilHayvan }: AileOzetPaneliProps) {
   const { m, kt } = useDil();
   const yasayanCocuklar = cocuklar.filter((c) => c.yasiyor);
-  const hicKimseYok = !esAdi && yasayanCocuklar.length === 0 && !evcilHayvan;
 
   return (
     <div className="aile-ozet-paneli">
-      <h3>{m.aoBaslik}</h3>
-      {hicKimseYok && <p className="aile-ozet-bos">{m.aoYalniz}</p>}
       {esAdi && (
         <div className="aile-ozet-satir">
           <span className="aile-ozet-simge" aria-hidden="true">

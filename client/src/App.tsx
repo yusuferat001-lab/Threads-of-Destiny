@@ -5,7 +5,6 @@ import type {
   SonucEtkisi,
   ScoreKaydi,
   SiralamaTuru,
-  YerlesimTanimi,
   KonutTanimi,
   YasamSecenegiTanimi,
   FinansOzeti,
@@ -26,7 +25,6 @@ import type {
 import {
   mesleklerGetir,
   bolgelerGetir,
-  yerlesimlerGetir,
   konutlarGetir,
   yasamSecenekleriGetir,
   yeniOyunBaslat,
@@ -89,7 +87,6 @@ import { KisilikPaneli } from './components/KisilikPaneli';
 import { BolgeSahnesi } from './components/BolgeSahnesi';
 import { KarakterAvatari } from './components/KarakterAvatari';
 import { IsyeriPaneli } from './components/IsyeriPaneli';
-import { IliskilerPaneli } from './components/IliskilerPaneli';
 import { GecmisGrafik } from './components/GecmisGrafik';
 import { HayatHikayesi } from './components/HayatHikayesi';
 import { HaberlerPaneli } from './components/HaberlerPaneli';
@@ -131,10 +128,8 @@ type Ekran =
   | 'giris'
   | 'cag_sec'
   | 'bolge_sec'
-  | 'yerlesim_sec'
   | 'isim_sec'
   | 'acilis'
-  | 'meslek'
   | 'oyun'
   | 'sonuc'
   | 'olum'
@@ -186,10 +181,8 @@ const TAM_EKRAN_GRUBU: Ekran[] = [
   'giris',
   'cag_sec',
   'bolge_sec',
-  'yerlesim_sec',
   'isim_sec',
   'acilis',
-  'meslek',
   'oyun',
   'sonuc',
   'yatirim',
@@ -262,7 +255,6 @@ function App() {
   const [ekran, setEkran] = useState<Ekran>('giris');
   const [meslekler, setMeslekler] = useState<string[]>([]);
   const [bolgeler, setBolgeler] = useState<Record<string, string[]>>({});
-  const [yerlesimler, setYerlesimler] = useState<YerlesimTanimi[]>([]);
   const [konutlar, setKonutlar] = useState<KonutTanimi[]>([]);
   const [tasinmaMaliyeti, setTasinmaMaliyeti] = useState(10);
   const [yasamSecenekleri, setYasamSecenekleri] = useState<YasamSecenegiTanimi[]>([]);
@@ -429,33 +421,6 @@ function App() {
           'Sanayi Devrimi': ['İngiltere', 'Fransa', 'Osmanlı', 'Rusya'],
         })
       );
-    yerlesimlerGetir()
-      .then(({ yerlesimler }) => setYerlesimler(yerlesimler))
-      .catch(() =>
-        setYerlesimler([
-          {
-            id: 'sehir_merkezi',
-            ad: 'Şehir Merkezi',
-            simge: '🏙️',
-            artilar: ['Ticaret ve sosyal fırsatlar bol', 'Yıllık kazancın %10 daha yüksek'],
-            eksiler: ['Kalabalık ve salgın riski yüksek', 'Başlangıç sağlığın daha düşük'],
-          },
-          {
-            id: 'sinir_bolgesi',
-            ad: 'Sınır Bölgesi',
-            simge: '🛡️',
-            artilar: ['Toprağın bereketli, vergiler hafif', 'Askeri fırsatlar ve ganimet bol'],
-            eksiler: ['Baskın ve savaş riski yüksek', 'Ticaret ağın zayıf, yıllık kazancın %5 daha düşük'],
-          },
-          {
-            id: 'dag_basi',
-            ad: 'Dağ Başı',
-            simge: '⛰️',
-            artilar: ['Yalnız ve özgürsün, vergi baskısı az', 'Başlangıç sağlığın daha yüksek'],
-            eksiler: ['Vahşi hayvanlar ve zorlu kışlarla karşılaşabilirsin', 'Pazardan uzak, yıllık kazancın %10 daha düşük'],
-          },
-        ])
-      );
     konutlarGetir()
       .then(({ konutlar, tasinmaMaliyeti }) => {
         setKonutlar(konutlar);
@@ -570,7 +535,7 @@ function App() {
         if (!state.aktif) {
           setEkran('olum');
         } else if (!state.meslek) {
-          setEkran('meslek');
+          setEkran('acilis');
         } else {
           const { senaryo } = await senaryoGetir(state.id);
           if (iptal) return;
@@ -596,28 +561,29 @@ function App() {
   }
 
   function bolgeSecildi(bolge: string) {
+    // Yerleşim seçim ekranı kaldırıldı — yeni karakter her zaman nötr "kasaba"
+    // yerleşimini alır; doğrudan isim adımına geç.
     setSecilenBolge(bolge);
-    setEkran('yerlesim_sec');
-  }
-
-  function yerlesimSecildi(yerlesimId: string) {
-    if (!secilenCag || !secilenBolge) return;
-    setSecilenYerlesim(yerlesimId);
+    setSecilenYerlesim('kasaba');
     setOyuncuIsmi('');
     setHata(null);
     setEkran('isim_sec');
     // Her oyun başında ülkeye/çağa uygun rastgele bir isim öner (kutuya ön-doldur).
-    void rastgeleIsimGetir();
+    void rastgeleIsimGetirIcin(secilenCag, bolge);
   }
 
-  async function rastgeleIsimGetir() {
-    if (!secilenCag || !secilenBolge) return;
+  async function rastgeleIsimGetirIcin(cag: string | null, bolge: string | null) {
+    if (!cag || !bolge) return;
     try {
-      const { isim } = await isimOnerisiGetir(secilenCag, secilenBolge);
+      const { isim } = await isimOnerisiGetir(cag, bolge);
       setOyuncuIsmi(isim);
     } catch (err) {
       setHata(String(err));
     }
+  }
+
+  async function rastgeleIsimGetir() {
+    return rastgeleIsimGetirIcin(secilenCag, secilenBolge);
   }
 
   async function karakteriOlustur() {
@@ -961,7 +927,7 @@ function App() {
 
   async function kotuIsHandler(tur: string, opts?: { hedefRakipAd?: string; vekil?: boolean }) {
     if (!karakter) return;
-    if (!window.confirm(m.iyKaranlikOnay)) return;
+    // Kullanıcı isteği: suç işlerken onay sorma; sonuç açılır pencerede gösterilir.
     setHata(null);
     setYukleniyor(true);
     try {
@@ -1420,6 +1386,17 @@ function App() {
         ⚙️
       </button>
       {/* Ses aç/kapa artık yalnızca Ayarlar modalında (sağ üstteki ayrı buton kaldırıldı). */}
+      {/* Oyun-içi yan ekranlarda (Yatırım/Sosyalleş/Mağaza/Aile/Kariyer/Gelir&Gider/Evlilik)
+         paranın her zaman görünür olması için sabit bir rozet. Ana oyun/sonuç ekranında
+         zaten UstSerit'te para modülü var, orada tekrar göstermeyiz. */}
+      {karakter &&
+        (['yatirim', 'sosyallesme', 'magaza', 'aile', 'kariyer', 'finans', 'evlilik'] as Ekran[]).includes(
+          ekran,
+        ) && (
+          <div className="oyun-para-rozeti" aria-label={m.iyKendiParan}>
+            💰 {formatPara(karakter.para)} {karakter.para_birimi}
+          </div>
+        )}
       {hata && <div className="hata-kutusu">{hata}</div>}
 
       {ayarlarAcik && (
@@ -1678,7 +1655,7 @@ function App() {
           <div className="giris-yollar" aria-hidden="true">
             <KaderYollari />
           </div>
-          <AdimGostergesi adim={1} toplam={4} etiket={bic(m.adimEtiketi, 1, 4)} />
+          <AdimGostergesi adim={1} toplam={3} etiket={bic(m.adimEtiketi, 1, 3)} />
           <h2>{m.cagSecBaslik}</h2>
           <MuhurAyrac />
           <p className="giris-aciklama">{m.cagSecAlt}</p>
@@ -1703,7 +1680,7 @@ function App() {
           <div className="giris-yollar" aria-hidden="true">
             <KaderYollari />
           </div>
-          <AdimGostergesi adim={2} toplam={4} etiket={bic(m.adimEtiketi, 2, 4)} />
+          <AdimGostergesi adim={2} toplam={3} etiket={bic(m.adimEtiketi, 2, 3)} />
           <h2>{m.bolgeSecBaslik}</h2>
           <MuhurAyrac />
           <p className="giris-aciklama">{bic(m.bolgeSecAlt, kt(secilenCag))}</p>
@@ -1726,56 +1703,13 @@ function App() {
         </div>
       )}
 
-      {ekran === 'yerlesim_sec' && secilenBolge && (
-        <div className="ekran ekran-meslek ekran-kurulum ekran-adim-yerlesim">
-          <KoseTezhibi />
-          <div className="giris-yollar" aria-hidden="true">
-            <KaderYollari />
-          </div>
-          <AdimGostergesi adim={3} toplam={4} etiket={bic(m.adimEtiketi, 3, 4)} />
-          <h2>{m.yerlesimSecBaslik}</h2>
-          <MuhurAyrac />
-          <p className="giris-aciklama">{bic(m.yerlesimSecAlt, kt(secilenBolge))}</p>
-          <div className="yerlesim-kartlari">
-            {yerlesimler.map((yerlesim) => (
-              <button
-                key={yerlesim.id}
-                className="yerlesim-kart"
-                disabled={yukleniyor}
-                onClick={() => yerlesimSecildi(yerlesim.id)}
-              >
-                <span className="meslek-simge">{yerlesim.simge}</span>
-                <strong>{kt(yerlesim.ad)}</strong>
-                <div className="yerlesim-artilar">
-                  {yerlesim.artilar.map((artı) => (
-                    <span key={artı} className="yerlesim-arti">
-                      ✓ {kt(artı)}
-                    </span>
-                  ))}
-                </div>
-                <div className="yerlesim-eksiler">
-                  {yerlesim.eksiler.map((eksi) => (
-                    <span key={eksi} className="yerlesim-eksi">
-                      ✕ {kt(eksi)}
-                    </span>
-                  ))}
-                </div>
-              </button>
-            ))}
-          </div>
-          <button className="ikincil" onClick={() => setEkran('bolge_sec')}>
-            {m.geri}
-          </button>
-        </div>
-      )}
-
       {ekran === 'isim_sec' && (
         <div className="ekran ekran-isim ekran-kurulum ekran-adim-isim">
           <KoseTezhibi />
           <div className="giris-yollar" aria-hidden="true">
             <KaderYollari />
           </div>
-          <AdimGostergesi adim={4} toplam={4} etiket={bic(m.adimEtiketi, 4, 4)} />
+          <AdimGostergesi adim={3} toplam={3} etiket={bic(m.adimEtiketi, 3, 3)} />
           <h2>{m.isimSecBaslik}</h2>
           <MuhurAyrac />
           <p className="giris-aciklama">{bic(m.isimSecAlt, kt(secilenBolge))}</p>
@@ -1795,66 +1729,23 @@ function App() {
           <button disabled={yukleniyor} onClick={karakteriOlustur}>
             {yukleniyor ? m.yukleniyor : oyuncuIsmi.trim() ? m.btnBuIsimleBasla : m.btnRastgeleIsimleBasla}
           </button>
-          <button className="ikincil" disabled={yukleniyor} onClick={() => setEkran('yerlesim_sec')}>
+          <button className="ikincil" disabled={yukleniyor} onClick={() => setEkran('bolge_sec')}>
             {m.geri}
           </button>
         </div>
       )}
 
-      {ekran === 'meslek' && (
-        <div className="ekran ekran-meslek ekran-kurulum ekran-adim-meslek">
-          <KoseTezhibi />
-          {karakter && (
-            <BolgeSahnesi cag={karakter.cag} bolge={karakter.bolge} yerlesim={karakter.yerlesim} ulke={karakter.ulke} un={karakter.un} />
-          )}
-          <h2>{m.meslekSecBaslik}</h2>
-          <MuhurAyrac />
-          <p className="giris-aciklama">{m.meslekSecAlt}</p>
-          <div className="meslek-kartlari">
-            {meslekler.map((meslek) => {
-              const kategori = MESLEK_KATEGORI[meslek];
-              const puan = kategori ? karakter?.yatkinliklar[kategori] ?? 0 : 0;
-              const { etiket, simge } = yatkinlikEtiketi(puan, dil);
-              return (
-                <button
-                  key={meslek}
-                  className="meslek-kart"
-                  disabled={yukleniyor}
-                  onClick={() => meslekSecildi(meslek)}
-                >
-                  <span className="meslek-simge">{MESLEK_SIMGE[meslek] ?? '📜'}</span>
-                  <strong>{kt(meslek)}</strong>
-                  <span className="meslek-aciklama">{meslekAciklama(m, meslek)}</span>
-                  {karakter && (
-                    <span className="meslek-yatkinlik">
-                      {simge} {etiket} ({puan > 0 ? '+' : ''}
-                      {puan})
-                    </span>
-                  )}
-                  {karakter?.aile_meslegi === meslek && (
-                    <span className="meslek-miras-ipucu">{m.meslekMirasIpucu}</span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-          {karakter && (
-            <KisilikPaneli
-              kisilik={karakter.kisilik}
-              aileMeslegi={karakter.aile_meslegi}
-              kaynaklar={karakter.yatkinlik_kaynaklari}
-              eksenler={karakter.kisilik_eksenleri}
-            />
-          )}
-        </div>
-      )}
-
       {ekran === 'acilis' && karakter && (
-        <div className="ekran ekran-acilis">
+        <div className="ekran ekran-acilis ekran-kurulum">
           <KoseTezhibi />
-          {/* Mobilde tek kompakt satır: prosedürel sahne solda küçük, "Fransa" başlığı sağında.
-             Masaüstünde .acilis-ust normal blok akışında kalır (Banner üstte, sahne altında). */}
+          <div className="giris-yollar" aria-hidden="true">
+            <KaderYollari />
+          </div>
+          {/* Tek kompakt satır: karakter portresi SOLDA küçük, ülke/tarih (Banner) SAĞINDA
+             aynı hizada — dikey yer kaplamasın (kullanıcı isteği). Prosedürel sahne açılışta
+             gösterilmez; oyun ekranında zaten var. */}
           <div className="acilis-ust">
+            <KarakterAvatari kisilik={karakter.kisilik} />
             <Banner
               cag={karakter.cag}
               bolge={karakter.bolge}
@@ -1862,9 +1753,7 @@ function App() {
               ulke={karakter.ulke}
               hukumdar={karakter.hukumdar}
             />
-            <BolgeSahnesi cag={karakter.cag} bolge={karakter.bolge} yerlesim={karakter.yerlesim} ulke={karakter.ulke} un={karakter.un} />
           </div>
-          <KarakterAvatari kisilik={karakter.kisilik} />
           <h2>
             {karakter.isim ? `${karakter.isim} — ` : ''}
             {bic(m.acilisAileCocugu, kt(karakter.aile_meslegi))}
@@ -1894,9 +1783,36 @@ function App() {
             eksenler={karakter.kisilik_eksenleri}
           />
 
-          <button disabled={yukleniyor} onClick={() => setEkran('meslek')}>
-            {yukleniyor ? m.yukleniyor : m.devamEt}
-          </button>
+          {/* Meslek seçimi artık ayrı bir sayfa değil — açılışla aynı ekranda. */}
+          <h3 className="acilis-meslek-baslik">{m.meslekSecBaslik}</h3>
+          <p className="giris-aciklama">{m.meslekSecAlt}</p>
+          <div className="meslek-kartlari acilis-meslek-kartlari">
+            {meslekler.map((meslek) => {
+              const kategori = MESLEK_KATEGORI[meslek];
+              const puan = kategori ? karakter?.yatkinliklar[kategori] ?? 0 : 0;
+              const { etiket, simge } = yatkinlikEtiketi(puan, dil);
+              return (
+                <button
+                  key={meslek}
+                  className="meslek-kart"
+                  disabled={yukleniyor}
+                  onClick={() => meslekSecildi(meslek)}
+                >
+                  <span className="meslek-simge">{MESLEK_SIMGE[meslek] ?? '📜'}</span>
+                  <strong>{kt(meslek)}</strong>
+                  <span className="meslek-aciklama">{meslekAciklama(m, meslek)}</span>
+                  <span className="meslek-yatkinlik">
+                    {simge} {etiket} ({puan > 0 ? '+' : ''}
+                    {puan})
+                  </span>
+                  {karakter.aile_meslegi === meslek && (
+                    <span className="meslek-miras-ipucu">{m.meslekMirasIpucu}</span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+          {yukleniyor && <p className="giris-aciklama">{m.yukleniyor}</p>}
         </div>
       )}
 
@@ -2146,12 +2062,6 @@ function App() {
                 )}
               </div>
 
-              <IliskilerPaneli
-                dostAdi={karakter.dost_adi}
-                rakipAdi={karakter.rakip_adi}
-                dostPuani={karakter.dost_puani}
-                rakipPuani={karakter.rakip_puani}
-              />
               <DurumPaneli durumlar={karakter.durumlar} />
             </YanPanel>
           </div>

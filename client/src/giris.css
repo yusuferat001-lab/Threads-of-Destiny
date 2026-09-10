@@ -46,8 +46,8 @@
 }
 /* İçeriği ortada sınırlı genişlikte tut — butonlar hariç (doğal boyutta kalsınlar).
    Kart ızgaraları zaten flex-wrap + justify-center ile ortalı, sabit boyutlu. */
-.ekran-kurulum > :not(.kose-tezhip-kat):not(.giris-yollar):not(button):not(.giris-aciklama),
-.ekran-acilis > :not(.kose-tezhip-kat):not(.giris-yollar):not(button):not(.acilis-metni):not(.giris-aciklama) {
+.ekran-kurulum > :not(.kose-tezhip-kat):not(.giris-yollar):not(button):not(.giris-aciklama):not(.karakter-avatari),
+.ekran-acilis > :not(.kose-tezhip-kat):not(.giris-yollar):not(button):not(.acilis-metni):not(.giris-aciklama):not(.karakter-avatari) {
   width: 100%;
   max-width: 940px;
   margin-left: auto;
@@ -733,7 +733,10 @@ a.giris-imza-isim:hover {
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.3);
 }
 
-.ekran-acilis button:not(.ikincil) {
+/* NOT: `.meslek-kart` hariç — meslek seçimi artık açılışa gömülü ve o kartlar
+   kendi koyu kurulum stilini (`.ekran-kurulum .meslek-kart`) korumalı; yoksa
+   altın gradyan zemin + soluk altın başlık = okunmaz. */
+.ekran-acilis button:not(.ikincil):not(.meslek-kart) {
   font-family: var(--font-baslik);
   letter-spacing: 0.05em;
   background: var(--altin-gradyan-dik);
@@ -942,55 +945,73 @@ a.giris-imza-isim:hover {
   color: var(--renk-altin-koyu);
 }
 
+/* ---------- Açılış ekranı (meslek seçimi buraya gömüldü) ---------- */
+
+/* Kullanıcı isteği: portre SOLDA küçük, ülke/tarih (Banner) SAĞINDA aynı hizada —
+   ikisi tek satırda, dikey yer kaplamadan. Prosedürel sahne açılışta gösterilmez. */
+.ekran-acilis .acilis-ust {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 0.35rem;
+}
+.ekran-acilis .acilis-ust > .karakter-avatari {
+  flex: 0 0 auto;
+  width: clamp(56px, 4vw + 40px, 84px);
+  margin: 0;
+}
+.ekran-acilis .acilis-ust > .banner {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin-top: 0;
+  padding: 0.65rem 1rem;
+}
+/* Aile geçmişi anlatısı: kullanıcı isteği — çoğu görünsün. Kırpma kaldırıldı,
+   uzun metinde nadiren de olsa kendi içinde kayar. */
+.ekran-acilis .acilis-metni {
+  max-height: 340px;
+  overflow-y: auto;
+}
+
+/* Meslek kartları açılışta biraz fazla yer kaplıyordu — hafifçe küçültüldü
+   (min yükseklik + padding + simge/başlık). */
+.ekran-acilis .acilis-meslek-kartlari .meslek-kart {
+  min-height: 0;
+  padding: 0.8rem 1rem;
+  gap: 0.3rem;
+}
+.ekran-acilis .acilis-meslek-kartlari .meslek-simge {
+  width: 2.2rem;
+  height: 2.2rem;
+  font-size: 1.25rem;
+}
+.ekran-acilis .acilis-meslek-kartlari .meslek-kart strong {
+  font-size: 1rem;
+}
+
 /* ---------- Açılış + meslek ekranı: mobil kompaktlaştırma ---------- */
-/* Masaüstünde .acilis-ust normal blok akışıdır (Banner üstte, prosedürel sahne altında,
-   ikisi de merkezdeki 940px sütunda) — ekstra kural gerekmez. */
 
 @media (max-width: 767px) {
   .ekran-acilis {
     gap: 0.55rem;
   }
 
-  /* Banner + sahne yan yana: sahne solda küçük kare, "Fransa" başlığı sağında. */
-  .acilis-ust {
-    display: flex;
-    align-items: stretch;
+  /* Portre solda küçük, Banner (ülke/tarih) sağda — tek satır, sol hizalı. */
+  .ekran-acilis .acilis-ust {
+    align-items: center;
     gap: 0.5rem;
   }
-  .acilis-ust > .banner {
-    order: 2;
-    flex: 1 1 auto;
-    min-width: 0;
+  .ekran-acilis .acilis-ust > .karakter-avatari {
+    width: 52px;
+  }
+  .ekran-acilis .acilis-ust > .banner {
     margin: 0;
-    padding: 0.55rem 0.7rem;
+    padding: 0.5rem 0.7rem;
     gap: 0.5rem;
   }
-  .acilis-ust > .banner .banner-sembol {
-    font-size: 1.5rem;
-  }
-  .acilis-ust > .bolge-sahnesi {
-    order: 1;
-    flex: 0 0 38%;
-    max-width: 132px;
-    margin: 0;
-    align-self: stretch;
-  }
-  .acilis-ust > .bolge-sahnesi .bolge-sahnesi-svg,
-  .acilis-ust > .bolge-sahnesi .bolge-sahnesi-katman,
-  .acilis-ust > .bolge-sahnesi .bolge-sahnesi-bolge-tonu {
-    height: 100%;
-    min-height: 78px;
-  }
-
-  /* Meslek ekranındaki prosedürel sahne de küçük ve üstte kalsın. */
-  .ekran-meslek > .bolge-sahnesi {
-    max-width: 200px;
-    margin: 0 auto 0.3rem;
-  }
-  .ekran-meslek > .bolge-sahnesi .bolge-sahnesi-svg,
-  .ekran-meslek > .bolge-sahnesi .bolge-sahnesi-katman,
-  .ekran-meslek > .bolge-sahnesi .bolge-sahnesi-bolge-tonu {
-    height: 70px;
+  .ekran-acilis .acilis-ust > .banner .banner-sembol {
+    font-size: 1.4rem;
   }
 
   /* Açılış metni + özet: daha az dikey yer, aynı yazı boyu. */
@@ -1020,5 +1041,70 @@ a.giris-imza-isim:hover {
     padding: 0.3rem 0.45rem;
     margin-bottom: 0.3rem;
     gap: 0.05rem;
+  }
+
+  /* Aile geçmişi anlatısı: çoğu görünsün (kullanıcı isteği) — mobilde de bol pay. */
+  .ekran-acilis .acilis-metni {
+    max-height: 240px;
+    font-size: 0.9rem;
+    padding: 0.6rem 0.75rem;
+  }
+  .acilis-meslek-baslik {
+    margin: 0.3rem 0 0;
+    font-size: 0.95rem;
+  }
+  .acilis-meslek-kartlari {
+    gap: 0.4rem;
+  }
+  /* Meslek kartları mobilde daha da kısa (dikeyde) — kullanıcı: "büyük, dikeyde küçült". */
+  .ekran-acilis .acilis-meslek-kartlari .meslek-kart {
+    min-height: 0;
+    padding: 0.5rem 0.7rem;
+    gap: 0.15rem;
+  }
+  .ekran-acilis .acilis-meslek-kartlari .meslek-simge {
+    width: 1.8rem;
+    height: 1.8rem;
+    font-size: 1.05rem;
+  }
+  .ekran-acilis .acilis-meslek-kartlari .meslek-kart strong {
+    font-size: 0.92rem;
+  }
+  .acilis-meslek-kartlari .meslek-aciklama {
+    font-size: 0.7rem;
+    line-height: 1.3;
+  }
+  .ekran-acilis .acilis-meslek-kartlari .meslek-yatkinlik,
+  .ekran-acilis .acilis-meslek-kartlari .meslek-miras-ipucu {
+    font-size: 0.7rem;
+  }
+
+  /* Açılış: dikey alanı topla. */
+  .ekran-acilis .acilis-ust > .banner {
+    padding: 0.5rem 0.75rem;
+  }
+  .ekran-acilis .acilis-ust > .banner .banner-sembol {
+    font-size: 1.4rem;
+  }
+  .ekran-acilis .kisilik-paneli {
+    margin-top: 0.35rem;
+  }
+  .ekran-acilis .kisilik-paneli h3 {
+    margin: 0.3rem 0 0.25rem;
+  }
+  .ekran-acilis .kisilik-paneli .eksen-gostergesi {
+    margin-bottom: 0.3rem;
+  }
+  /* Açılışta kişilik detay rozetleri gizli — eksen çubukları + "Kişilik & Miras"
+     başlığı yeterli; tam döküm oyun-içi sol panelde. */
+  .ekran-acilis .kisilik-paneli .kisilik-rozet {
+    display: none;
+  }
+  .ekran-acilis .acilis-ozet {
+    font-size: 0.82rem;
+    gap: 0.3rem;
+  }
+  .ekran-acilis .acilis-ozet span {
+    padding: 0.3rem 0.55rem;
   }
 }

@@ -23,6 +23,19 @@ export interface YerlesimTanimi {
  */
 export const YERLESIMLER: YerlesimTanimi[] = [
   {
+    // Nötr varsayılan — yerleşim seçim ekranı 2026-09'da kaldırıldı; yeni her
+    // karakter bunu alır. Hiçbir stat/maaş/yatkınlık etkisi YOK (denge bozulmasın).
+    // Eski kayıtlar hâlâ "Şehir Merkezi"/"Sınır Bölgesi"/"Dağ Başı" adlarını
+    // taşıyabilir ve o kayıtlarda ilgili etkiler korunur.
+    id: "kasaba",
+    ad: "Kasaba",
+    simge: "🏘️",
+    artilar: [],
+    eksiler: [],
+    etiketler: ["yerlesim:kasaba"],
+    yasamMaliyetCarpani: 1,
+  },
+  {
     id: "sehir_merkezi",
     ad: "Şehir Merkezi",
     simge: "🏙️",
