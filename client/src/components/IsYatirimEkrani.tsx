@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useState } from 'react';
 import type {
   MulkKartBilgisi,
   MulkTuru,
@@ -11,6 +11,7 @@ import { formatPara } from '../format';
 import { bic, type Metinler } from '../i18n';
 import { useDil } from '../DilContext';
 import type { Dil } from '../ayarlar';
+import { useMobilEkran } from '../hooks';
 
 interface SalginKorunmaConfig {
   kartlar: SalginKorunmaKarti[];
@@ -21,15 +22,10 @@ interface SalginKorunmaConfig {
 interface IsYatirimEkraniProps {
   meslek: string;
   rutbe: string;
-  rutbeSeviye: number;
-  amirAdi: string | null;
-  amirRutbe: string | null;
-  maasYillik: number;
   paraBirimi: string;
   orduMevcudu: number;
   orduTechizatSeviyesi: number;
   ticaretSermaye: number;
-  nufuz: number;
   sehirYonetimSeviyesi: number;
   sehirYonetimUnvan: string | null;
   para: number;
@@ -151,7 +147,7 @@ function KaranlikIsKart({
         {bic(m.iyKaranlikSans, is.basariSansi)}
         {is.tahminiKazanc > 0 && ` · ${bic(m.iyKaranlikKazanc, formatPara(is.tahminiKazanc), paraBirimi)}`}
       </span>
-      <span className="meslek-aciklama">{m.iyKaranlikBedel}</span>
+      <span className="meslek-aciklama tam-yardimci-metin">{m.iyKaranlikBedel}</span>
 
       {rakipHedefli && (
         <div className="karanlik-hedef-satir">
@@ -191,57 +187,6 @@ function KaranlikIsKart({
   );
 }
 
-/** Telefon genişliği mi? (mobilde sütunlar tıklayınca açılan akordeona döner) */
-function useMobilEkran() {
-  const [mobil, setMobil] = useState(
-    typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches,
-  );
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 767px)');
-    const dinle = () => setMobil(mq.matches);
-    mq.addEventListener('change', dinle);
-    return () => mq.removeEventListener('change', dinle);
-  }, []);
-  return mobil;
-}
-
-/**
- * Bir sütun: masaüstünde her zaman açık kutu; mobilde başlığa dokununca açılan
- * akordeon (aynı anda tek sütun açık — sayfa tek ekrana yaklaşsın diye).
- */
-function Sutun({
-  baslik,
-  idx,
-  mobil,
-  acik,
-  setAcik,
-  children,
-}: {
-  baslik: string;
-  idx: number;
-  mobil: boolean;
-  acik: number | null;
-  setAcik: (i: number | null) => void;
-  children: ReactNode;
-}) {
-  if (!mobil) return <div className="tam-sutun">{children}</div>;
-  const buAcik = acik === idx;
-  return (
-    <div className={`tam-sutun tam-sutun-katla${buAcik ? ' tam-sutun-acik' : ''}`}>
-      <button
-        type="button"
-        className="tam-sutun-katla-baslik"
-        aria-expanded={buAcik}
-        onClick={() => setAcik(buAcik ? null : idx)}
-      >
-        {baslik}
-        <span aria-hidden="true">{buAcik ? '▲' : '▼'}</span>
-      </button>
-      {buAcik && <div className="tam-sutun-katla-govde">{children}</div>}
-    </div>
-  );
-}
-
 const PIYASA_SINYAL_ETIKET: Record<string, { tr: string; en: string; sinif: string }> = {
   firsat: { tr: '🟢 Fırsat: şimdi al', en: '🟢 Opportunity: buy now', sinif: 'piyasa-firsat' },
   zirve: { tr: '🔴 Zirvede: beklemek daha iyi', en: '🔴 Peaking: better to wait', sinif: 'piyasa-zirve' },
@@ -251,15 +196,10 @@ const PIYASA_SINYAL_ETIKET: Record<string, { tr: string; en: string; sinif: stri
 export function IsYatirimEkrani({
   meslek,
   rutbe,
-  rutbeSeviye,
-  amirAdi,
-  amirRutbe,
-  maasYillik,
   paraBirimi,
   orduMevcudu,
   orduTechizatSeviyesi,
   ticaretSermaye,
-  nufuz,
   sehirYonetimSeviyesi,
   sehirYonetimUnvan,
   para,
@@ -284,7 +224,7 @@ export function IsYatirimEkrani({
   const saldiriGucu = Math.round(orduMevcudu * (1 + orduTechizatSeviyesi / 100));
   const [krediTutar, setKrediTutar] = useState<number>(0);
   const mobil = useMobilEkran();
-  const [acikSutun, setAcikSutun] = useState<number | null>(0);
+  const [aktifSekme, setAktifSekme] = useState(0);
 
   // İşlem sonucu / hata → ekrana açılır pencere (kullanıcı isteği: suç/işlem sonucu
   // sayfa başında sabit metin değil, kapatılabilir bir pencerede gelsin).
@@ -306,8 +246,23 @@ export function IsYatirimEkrani({
         </div>
       )}
 
-      <div className={`tam-govde-3col${mobil ? ' tam-govde-3col-katli' : ''}`}>
-        <Sutun baslik={m.iyGorevin} idx={0} mobil={mobil} acik={acikSutun} setAcik={setAcikSutun}>
+      {mobil && (
+        <div className="ekran-sekmeleri">
+          {[m.iyGorevin, m.iyYatirimlikGayrimenkuller, m.iyKaranlikIsler].map((baslik, i) => (
+            <button
+              key={i}
+              type="button"
+              className={`ekran-sekme${aktifSekme === i ? ' ekran-sekme-aktif' : ''}`}
+              onClick={() => setAktifSekme(i)}
+            >
+              {baslik}
+            </button>
+          ))}
+        </div>
+      )}
+
+      <div className={mobil ? 'tam-sutun-tekli-sarici' : 'tam-govde-3col'}>
+        <div className="tam-sutun" hidden={mobil && aktifSekme !== 0}>
           <h3 className="tam-baslik">{m.iyGorevin}</h3>
 
           <div className="is-profil-karti">
@@ -318,19 +273,10 @@ export function IsYatirimEkrani({
               <strong>{kt(rutbe)}</strong>
               <span>{kt(meslek)}</span>
             </div>
-            <span className="kademe-gostergesi" aria-label={bic(m.iyKademeAria, rutbeSeviye)}>
-              {[1, 2, 3, 4, 5].map((seviye) => (
-                <span key={seviye} className={`kademe-nokta${seviye <= rutbeSeviye ? ' kademe-nokta-dolu' : ''}`} />
-              ))}
-            </span>
           </div>
 
           <div className="is-karo-izgara">
             <StatKarosu ikon="🪙" etiket={m.iyKendiParan} deger={`${formatPara(para)} ${paraBirimi}`} vurgu />
-
-            <StatKarosu ikon="💰" etiket={m.iyYillikKazanc} deger={`~${formatPara(maasYillik)} ${paraBirimi}`} />
-
-            {amirAdi && <StatKarosu ikon="🎖️" etiket={m.iyAmirin} deger={amirAdi} alt={amirRutbe ? kt(amirRutbe) : undefined} />}
 
             {sehirYonetimSeviyesi > 0 && (
               <StatKarosu
@@ -352,13 +298,11 @@ export function IsYatirimEkrani({
             {meslek === 'Tüccar' && (
               <StatKarosu ikon="📈" etiket={m.iyTicaretSermayesi} deger={`${formatPara(ticaretSermaye)} ${paraBirimi}`} />
             )}
-
-            {meslek === 'Din Adamı' && <StatKarosu ikon="🕊️" etiket={m.iyNufuz} deger={`${nufuz}`} />}
           </div>
 
           <h3 className="tam-baslik tam-baslik-dedikodu">{m.iyPiyasaDedikodulari}</h3>
 
-          {dedikodular.length > 0 ? (
+          {dedikodular.length > 0 && (
             <div className="dedikodu-panosu dedikodu-panosu-vurgu">
               <ul>
                 {dedikodular.map((d, i) => (
@@ -366,8 +310,6 @@ export function IsYatirimEkrani({
                 ))}
               </ul>
             </div>
-          ) : (
-            <p className="giris-aciklama">{m.iyDedikoduYok}</p>
           )}
 
           {/* Tefeci / kredi */}
@@ -420,9 +362,9 @@ export function IsYatirimEkrani({
           ) : (
             <p className="giris-aciklama">{en ? 'The moneylender turns you away for now.' : 'Tefeci şimdilik sana borç vermiyor.'}</p>
           )}
-        </Sutun>
+        </div>
 
-        <Sutun baslik={m.iyYatirimlikGayrimenkuller} idx={1} mobil={mobil} acik={acikSutun} setAcik={setAcikSutun}>
+        <div className="tam-sutun" hidden={mobil && aktifSekme !== 1}>
           <h3 className="tam-baslik">{m.iyYatirimlikGayrimenkuller}</h3>
 
           <div className="yatirim-kartlari yatirim-mulk-kartlari">
@@ -470,7 +412,7 @@ export function IsYatirimEkrani({
               );
             })}
           </div>
-          <p className="giris-aciklama">{m.iyBakimAcikla}</p>
+          <p className="giris-aciklama tam-yardimci-metin">{m.iyBakimAcikla}</p>
 
           {/* Salgına hazırlık */}
           {salginKorunma && (
@@ -506,11 +448,11 @@ export function IsYatirimEkrani({
               )}
             </>
           )}
-        </Sutun>
+        </div>
 
-        <Sutun baslik={m.iyKaranlikIsler} idx={2} mobil={mobil} acik={acikSutun} setAcik={setAcikSutun}>
+        <div className="tam-sutun" hidden={mobil && aktifSekme !== 2}>
           <h3 className="tam-baslik">{m.iyKaranlikIsler}</h3>
-          <p className="giris-aciklama">{m.iyKaranlikIsAcikla}</p>
+          <p className="giris-aciklama tam-yardimci-metin">{m.iyKaranlikIsAcikla}</p>
 
           <div className="yatirim-kartlari">
             {kotuIsler.map((is) => (
@@ -530,7 +472,7 @@ export function IsYatirimEkrani({
           <p className={`suc-seviyesi-gostergesi ${sucSeviyesi >= 45 ? 'suc-seviyesi-riskli' : ''}`}>
             {bic(m.iySucSeviyen, Math.round(sucSeviyesi), sucSeviyesiEtiketi(m, sucSeviyesi))}
           </p>
-        </Sutun>
+        </div>
       </div>
 
       <button className="ikincil tam-geri-buton" onClick={onGeriDon}>

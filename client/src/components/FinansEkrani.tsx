@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import type { FinansOzeti, GecmisNoktasi, KonutTanimi, YasamSecenegiTanimi } from '../types';
 import { GecmisGrafik } from './GecmisGrafik';
 import { konutGoruntusuGetir } from '../bolgeTema';
 import { formatPara } from '../format';
 import { bic, type Metinler } from '../i18n';
 import { useDil } from '../DilContext';
+import { useMobilEkran } from '../hooks';
 
 /** Çarpan yüzdesini biçimlendirir: +40 → "+%40" / "+40%", -15 → "−%15" / "−15%", 0 → "%0" / "0%". */
 function yuzdeMetni(yuzde: number, dil: 'tr' | 'en'): string {
@@ -69,6 +71,8 @@ export function FinansEkrani({
   onGeriDon,
 }: FinansEkraniProps) {
   const { m, kt, dil } = useDil();
+  const mobil = useMobilEkran();
+  const [aktifSekme, setAktifSekme] = useState(0);
   const { maasYillik, giderKalemleri, netYillik, giderEnflasyonYuzdesi, maasKirilim, gayrimenkulYillikGelir } = finans;
   const kirilimKalem = (kalemler: { ad: string; yuzde: number }[]) =>
     kalemler.length > 0 ? ` (${kalemler.map((k) => `${kt(k.ad)} ${yuzdeMetni(k.yuzde, dil)}`).join(' · ')})` : '';
@@ -92,8 +96,23 @@ export function FinansEkrani({
       <h2>{m.shEv}</h2>
       {islemMesaji && <p className="yatirim-islem-mesaji">{islemMesaji}</p>}
 
-      <div className="tam-govde-3col tam-govde-3col-finans">
-        <div className="tam-sutun">
+      {mobil && (
+        <div className="ekran-sekmeleri">
+          {[m.feButcen, m.feYasamTarzin, m.feEvin].map((baslik, i) => (
+            <button
+              key={i}
+              type="button"
+              className={`ekran-sekme${aktifSekme === i ? ' ekran-sekme-aktif' : ''}`}
+              onClick={() => setAktifSekme(i)}
+            >
+              {baslik}
+            </button>
+          ))}
+        </div>
+      )}
+
+      <div className={mobil ? 'tam-sutun-tekli-sarici' : 'tam-govde-3col tam-govde-3col-finans'}>
+        <div className="tam-sutun" hidden={mobil && aktifSekme !== 0}>
           <h3 className="tam-baslik">{m.feButcen}</h3>
 
           <div className="finans-karti">
@@ -203,9 +222,9 @@ export function FinansEkrani({
           <GecmisGrafik gecmis={gecmis} paraBirimi={paraBirimi} />
         </div>
 
-        <div className="tam-sutun">
+        <div className="tam-sutun" hidden={mobil && aktifSekme !== 1}>
           <h3 className="tam-baslik">{m.feYasamTarzin}</h3>
-          <p className="giris-aciklama">{m.feDegistirNot}</p>
+          <p className="giris-aciklama tam-yardimci-metin">{m.feDegistirNot}</p>
           <div className="yatirim-kartlari finans-secim-izgara">
             {yasamSecenekleri.map((secenek) => {
               const guncel = secenek.id === guncelYasamSecimiId;
@@ -234,9 +253,9 @@ export function FinansEkrani({
 
         </div>
 
-        <div className="tam-sutun">
+        <div className="tam-sutun" hidden={mobil && aktifSekme !== 2}>
           <h3 className="tam-baslik">{m.feEvin}</h3>
-          <p className="giris-aciklama">{bic(m.feTasinNotKisa, tasinmaMaliyeti, paraBirimi)}</p>
+          <p className="giris-aciklama tam-yardimci-metin">{bic(m.feTasinNotKisa, tasinmaMaliyeti, paraBirimi)}</p>
           <div className="yatirim-kartlari finans-secim-izgara">
             {konutlar.map((konut) => {
               const guncel = konut.id === guncelKonutId;

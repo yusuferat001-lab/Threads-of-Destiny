@@ -40,7 +40,7 @@ export function MagazaPaneli({ para, paraBirimi, katalog, yukleniyor, islemMesaj
           </button>
         ))}
       </div>
-      <p className="giris-aciklama magaza-sekme-aciklama">{sekmeAciklama}</p>
+      <p className="giris-aciklama magaza-sekme-aciklama tam-yardimci-metin">{sekmeAciklama}</p>
 
       {islemMesaji && <p className="yatirim-islem-mesaji">{islemMesaji}</p>}
       {kilitAciklamasi && <p className="yatirim-islem-mesaji magaza-kilit-mesaji">{bic(m.mpKilitli, kilitAciklamasi)}</p>}

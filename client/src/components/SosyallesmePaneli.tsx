@@ -11,6 +11,7 @@ import { useDil } from '../DilContext';
 import { bic } from '../i18n';
 import { formatPara } from '../format';
 import { HazardWidget, UcKagitciWidget, BilekGuresiWidget } from './MiniOyunlar';
+import { useMobilEkran } from '../hooks';
 
 interface SosyallesmePaneliProps {
   yerler: SosyallesmeYeri[];
@@ -49,6 +50,8 @@ export function SosyallesmePaneli({
   const { m, kt, dil } = useDil();
   const [sonMesaj, setSonMesaj] = useState<string | null>(null);
   const [aksiyonBekliyor, setAksiyonBekliyor] = useState(false);
+  const mobil = useMobilEkran();
+  const [aktifSekme, setAktifSekme] = useState(0);
 
   async function aksiyonTikla(aksiyonId: string, varyant?: string) {
     if (aksiyonBekliyor || yukleniyor) return;
@@ -68,7 +71,7 @@ export function SosyallesmePaneli({
   return (
     <div className="ekran ekran-tam-sayfa ekran-sosyallesme">
       <h2>{m.spSosyallesBaslik}</h2>
-      <p className="giris-aciklama">{m.spIntro}</p>
+      <p className="giris-aciklama tam-yardimci-metin">{m.spIntro}</p>
 
       {/* İçki/deli/fal gibi tur-harcamayan aksiyon sonuçları — açılır pencerede (kullanıcı isteği). */}
       {sonMesaj && (
@@ -82,9 +85,24 @@ export function SosyallesmePaneli({
 
       {!olayAcik && yerler.length === 0 && <p className="yatirim-islem-mesaji">{m.spMekanYok}</p>}
 
+      {!olayAcik && mobil && (
+        <div className="ekran-sekmeleri">
+          {[m.spEtkinlikBaslik, m.spKumarBaslik, m.spMekanlarBaslik].map((baslik, i) => (
+            <button
+              key={i}
+              type="button"
+              className={`ekran-sekme${aktifSekme === i ? ' ekran-sekme-aktif' : ''}`}
+              onClick={() => setAktifSekme(i)}
+            >
+              {baslik}
+            </button>
+          ))}
+        </div>
+      )}
+
       <div className="tam-kaydirilan">
         {olayAcik && <div className="sosyal-olay-katman">{olayIcerik}</div>}
-        {!olayAcik && aksiyonConfig && (aksiyonConfig.icecekler.length > 0 || aksiyonConfig.aksiyonlar.length > 0) && (
+        {!olayAcik && (mobil ? aktifSekme === 0 : true) && aksiyonConfig && (aksiyonConfig.icecekler.length > 0 || aksiyonConfig.aksiyonlar.length > 0) && (
           <section className="sosyallesme-etkinlik">
             <h3 className="tam-baslik" title={m.spEtkinlikNot}>
               {m.spEtkinlikBaslik}
@@ -143,7 +161,7 @@ export function SosyallesmePaneli({
           </section>
         )}
 
-        {!olayAcik && (
+        {!olayAcik && (mobil ? aktifSekme === 1 : true) && (
         <section className="sosyallesme-kumar">
           <h3 className="tam-baslik" title={m.spKumarNot}>
             {m.spKumarBaslik}
@@ -168,7 +186,7 @@ export function SosyallesmePaneli({
         </section>
         )}
 
-        {!olayAcik && (
+        {!olayAcik && (mobil ? aktifSekme === 2 : true) && (
           <>
             <h3 className="tam-baslik" title={m.spMekanNot}>
               {m.spMekanlarBaslik}

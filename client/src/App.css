@@ -2891,6 +2891,12 @@ button.ikincil {
   text-align: left;
 }
 
+/* Mobilde sekme dışı kalan panelleri gerçekten gizle — `display:flex` yukarıda tarayıcının
+   varsayılan `[hidden]{display:none}` kuralını author-origin önceliğiyle ezerdi. */
+.tam-sutun[hidden] {
+  display: none;
+}
+
 .tam-baslik {
   margin: 0;
   font-size: clamp(0.82rem, 0.35vw + 0.65rem, 1.05rem);
@@ -2926,6 +2932,51 @@ button.ikincil {
   padding: 0.15rem 0.3rem 0.4rem 0.05rem;
 }
 
+/* Mobilde bölüm başına bir "sekme" (segmented control) — Yatırım/Ev/Sosyalleş ekranları
+ * bunu kullanır: tıklayınca o bölüm ANINDA gözükür, diğerleri tamamen gizlenir (accordion
+ * gibi aşağı doğru büyümez). Masaüstünde bu bar hiç render edilmez (3 sütun yan yana kalır). */
+.ekran-sekmeleri,
+.magaza-sekmeleri {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.ekran-sekme,
+.magaza-sekme {
+  flex: 1 1 auto;
+  padding: 0.5rem 0.9rem;
+  background: #2a1f18;
+  border: 1px solid #3d2e1f;
+  border-radius: 6px;
+  color: #d8c9a3;
+  cursor: pointer;
+}
+
+.ekran-sekme:hover:not(:disabled),
+.magaza-sekme:hover:not(:disabled) {
+  background: #3a2b20;
+  border-color: #6b4f2a;
+}
+
+.ekran-sekme-aktif,
+.magaza-sekme-aktif {
+  border-color: #c9a86a;
+  background: #332616;
+  font-weight: 600;
+}
+
+/* Mobilde tek panel gösteren ekranların (Yatırım/Ev/Sosyalleş) sarıcısı — 3 sütunlu grid
+   yerine düz bir blok; içindeki `.tam-sutun`lardan yalnız aktif sekmeninki `hidden` değildir. */
+.tam-sutun-tekli-sarici {
+  display: block;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Yalnız mobilde gösterilen sekme yardımcı/açıklama metinleri — masaüstünde normal görünür,
+   telefonda "ekran çok uzuyor" şikayetine karşı kısılır. */
 @media (max-width: 767px) {
   .ekran-tam-sayfa {
     height: auto;
@@ -2943,46 +2994,68 @@ button.ikincil {
     padding: 0 0 1.25rem;
   }
 
+  .tam-sutun-tekli-sarici > .tam-sutun {
+    padding: 0.7rem 0.1rem 1.1rem;
+  }
+
   .tam-kaydirilan {
     flex: none;
     overflow-y: visible;
   }
 
-  /* İşin & Yatırımların: mobilde 3 sütun tıklayınca açılan akordeona döner —
-     hedef, her şeyin tek ekrana yakın durması, aşağı kaydırmanın azalması. */
-  .tam-govde-3col-katli {
-    gap: 0.4rem;
+  /* Yardımcı metin sınıfı bir "gizle" yardımcısıdır — .ekran-tam-sayfa .meslek-aciklama gibi
+     display'i ayrıca ayarlayan daha spesifik kurallardan her zaman kazanmalı. */
+  .tam-yardimci-metin {
+    display: none !important;
   }
-  .tam-sutun-katla {
-    overflow: visible;
-    padding: 0;
-    border: 1px solid #3d2e1f;
-    border-radius: 8px;
-    background: #241c15;
-  }
-  .tam-sutun-katla-baslik {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.7rem 0.85rem;
-    background: transparent;
-    border: none;
-    color: inherit;
-    font-weight: 600;
-    font-size: 0.95rem;
-    text-align: left;
-  }
-  .tam-sutun-acik .tam-sutun-katla-baslik {
-    border-bottom: 1px solid #3d2e1f;
-  }
-  .tam-sutun-katla-govde {
-    padding: 0.6rem 0.7rem 0.9rem;
-  }
-  /* Akordeon içinde tekrar eden büyük başlık gizlenir (özet zaten başlıkta). */
-  .tam-sutun-katla-govde > .tam-baslik:first-child {
+
+  /* Sekme başlığı zaten bölümü adlandırıyor — panel içindeki tekrar eden büyük başlığı gizle. */
+  .tam-sutun-tekli-sarici > .tam-sutun > .tam-baslik:first-child {
     display: none;
+  }
+
+  /* Kart/kutuları telefonda küçült — masaüstündeki min-height:200px kutular mobilde
+     ekranı gereksiz uzatıyordu (kullanıcı isteği: "yazılar ve kutuları çok büyük"). */
+  .ekran-tam-sayfa .yatirim-kart {
+    min-height: 0;
+    padding: 0.75rem 0.7rem;
+    gap: 0.25rem;
+  }
+  .ekran-tam-sayfa .yatirim-kartlari {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+  .ekran-tam-sayfa .meslek-simge {
+    font-size: 1.5rem;
+  }
+  .ekran-tam-sayfa .yatirim-kart strong {
+    font-size: 0.92rem;
+    line-height: 1.2;
+  }
+  .ekran-tam-sayfa .meslek-aciklama {
+    font-size: 0.72rem;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+  }
+
+  /* Sosyalleşme aksiyon kartları (içki/deli/sadaka/kulak/ısmarla/fal) da 2 sütuna sıkışır. */
+  .ekran-tam-sayfa .sosyal-aksiyon-kartlari {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.45rem;
+  }
+  .ekran-tam-sayfa .sosyal-aksiyon-kart {
+    padding: 0.55rem 0.6rem;
+    gap: 0.25rem;
+  }
+  .ekran-tam-sayfa .sosyal-aksiyon-aciklama {
+    font-size: 0.72rem;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
   }
 }
 
@@ -3494,35 +3567,9 @@ button.ikincil {
   font-style: italic;
 }
 
-/* ---- Mağaza ekranı ---- */
-
-.magaza-sekmeleri {
-  display: flex;
-  gap: 0.5rem;
-  width: 100%;
-  flex-wrap: wrap;
-}
-
-.magaza-sekme {
-  flex: 1 1 auto;
-  padding: 0.5rem 0.9rem;
-  background: #2a1f18;
-  border: 1px solid #3d2e1f;
-  border-radius: 6px;
-  color: #d8c9a3;
-  cursor: pointer;
-}
-
-.magaza-sekme:hover:not(:disabled) {
-  background: #3a2b20;
-  border-color: #6b4f2a;
-}
-
-.magaza-sekme-aktif {
-  border-color: #c9a86a;
-  background: #332616;
-  font-weight: 600;
-}
+/* ---- Mağaza ekranı ----
+ * (.magaza-sekmeleri/.magaza-sekme/.magaza-sekme-aktif artık .ekran-sekme* ile paylaşılıyor
+ * — bkz. yukarıdaki "Tam-sayfa gösterge ekranları" bölümü.) */
 
 .magaza-sekme-aciklama {
   margin-top: 0.4rem;
