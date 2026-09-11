@@ -6,6 +6,7 @@ import {
   type GeriBildirimKaydi,
 } from "../utils/geriBildirimDeposu";
 import { webhookBildirimGonder } from "../utils/webhookBildirim";
+import { geriBildirimPaneliHtml } from "../utils/geriBildirimPanel";
 
 export const geriBildirimRouter = Router();
 
@@ -94,11 +95,25 @@ geriBildirimRouter.post("/", async (req, res) => {
   }
 });
 
+function yetkili(req: { query: Record<string, unknown> }): boolean {
+  const anahtar = process.env.GERI_BILDIRIM_ANAHTARI;
+  return !!anahtar && req.query.key === anahtar;
+}
+
 // Geliştiricinin kayıtları okuması için — `GERI_BILDIRIM_ANAHTARI` env değeriyle korunur.
 geriBildirimRouter.get("/", async (req, res) => {
-  const anahtar = process.env.GERI_BILDIRIM_ANAHTARI;
-  if (!anahtar || req.query.key !== anahtar) {
-    return res.status(403).json({ hata: "Yetkisiz." });
-  }
+  if (!yetkili(req)) return res.status(403).json({ hata: "Yetkisiz." });
   res.json({ kayitlar: await geriBildirimleriOku() });
+});
+
+// Aynı anahtar — kayıtları tek-dosya bağımlılıksız bir HTML panosu olarak render eder
+// (`GET /api/istatistik/panel` ile aynı desen).
+geriBildirimRouter.get("/panel", async (req, res) => {
+  if (!yetkili(req)) return res.status(403).type("text/plain").send("Yetkisiz.");
+  try {
+    const kayitlar = await geriBildirimleriOku();
+    res.type("text/html").send(geriBildirimPaneliHtml(kayitlar));
+  } catch (err) {
+    res.status(500).type("text/plain").send(String(err));
+  }
 });
