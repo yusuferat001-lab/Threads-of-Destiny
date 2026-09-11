@@ -29,20 +29,36 @@ function guvenliParse(s: string): Record<string, unknown> {
   }
 }
 
+/**
+ * Neon'a yazar. ÖNEMLİ: eskiden bu fonksiyon hatayı yutup sadece `console.error`
+ * basıyordu — route da hep `{ok:true}` döndüğü için DB yazımı sessizce başarısız
+ * olduğunda (geçici bağlantı kopması, Neon free-tier soğuk başlangıç vb.) kullanıcı
+ * "gönderildi" mesajını görüyor ama mesaj hiçbir yere kaydedilmiyordu. Artık:
+ * geçici hatalar için TEK bir yeniden deneme yapılır (kısa bir bekleme sonrası);
+ * o da başarısız olursa hata YUKARI FIRLATILIR ki çağıran (route) gerçek bir hata
+ * döndürüp kullanıcıya "tekrar dene" gösterebilsin.
+ */
 export async function geriBildirimYaz(kayit: GeriBildirimKaydi): Promise<void> {
+  const veri = {
+    id: kayit.id,
+    kategori: kayit.kategori,
+    mesaj: kayit.mesaj,
+    iletisim: kayit.iletisim,
+    baglam: JSON.stringify(kayit.baglam ?? {}),
+    ip: kayit.ip,
+  };
   try {
-    await prisma.geriBildirim.create({
-      data: {
-        id: kayit.id,
-        kategori: kayit.kategori,
-        mesaj: kayit.mesaj,
-        iletisim: kayit.iletisim,
-        baglam: JSON.stringify(kayit.baglam ?? {}),
-        ip: kayit.ip,
-      },
-    });
+    await prisma.geriBildirim.create({ data: veri });
+    return;
   } catch (err) {
-    console.error("Geri bildirim yazılamadı:", err);
+    console.error("Geri bildirim yazılamadı (1. deneme):", err);
+  }
+  await new Promise((r) => setTimeout(r, 400));
+  try {
+    await prisma.geriBildirim.create({ data: veri });
+  } catch (err) {
+    console.error("Geri bildirim yazılamadı (2. deneme, vazgeçildi):", err);
+    throw err;
   }
 }
 

@@ -76,7 +76,14 @@ geriBildirimRouter.post("/", async (req, res) => {
     }
 
     const kayit: GeriBildirimKaydi = { ...sonuc.kayit, ip: req.ip ?? null };
-    await geriBildirimYaz(kayit);
+    try {
+      await geriBildirimYaz(kayit);
+    } catch (err) {
+      console.error("Geri bildirim kaydedilemedi, kullanıcıya hata döndürülüyor:", err);
+      return res
+        .status(503)
+        .json({ hata: "Geri bildirim şu an kaydedilemedi. Lütfen birazdan tekrar dene." });
+    }
 
     const ozet = [
       `📨 Yeni geri bildirim — ${kayit.kategori}`,

@@ -65,8 +65,31 @@ function elemanGetir(): HTMLAudioElement | null {
       ardArdaHata = 0;
     });
     audio.addEventListener('error', parcaHatasi);
+    gorunurlukDinleyicisiKur();
   }
   return audio;
+}
+
+let gorunurlukKuruldu = false;
+
+/**
+ * Sekme/uygulama arka plana alınınca müziği duraklatır, geri gelince (müzik açıksa
+ * ve bir mod aktifse) kaldığı yerden devam ettirir. Tarayıcılar arka plan sekmesinde
+ * sesi kendiliğinden durdurmaz — bu dinleyici olmadan oyundan/siteden uzaklaşılsa
+ * (başka sekme/uygulama, telefon kilidi) bile müzik çalmaya devam ediyordu.
+ */
+function gorunurlukDinleyicisiKur(): void {
+  if (gorunurlukKuruldu || typeof document === 'undefined') return;
+  gorunurlukKuruldu = true;
+  document.addEventListener('visibilitychange', () => {
+    const el = audio;
+    if (!el) return;
+    if (document.hidden) {
+      el.pause();
+    } else if (!sessiz && aktifMod && el.paused) {
+      oynatmayiDene();
+    }
+  });
 }
 
 function fadeIptal(): void {
