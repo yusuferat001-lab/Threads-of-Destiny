@@ -32,7 +32,8 @@ function ifadeCikar(kisilik: [string, string]): 'mutlu' | 'uzgun' | 'notr' {
 export function KarakterAvatari({ meslek, kisilik, rutbeSeviye = 1 }: KarakterAvatariProps) {
   const { m, kt } = useDil();
   const govdeRengi = (meslek && MESLEK_RENK[meslek]) || '#5a4632';
-  const aksesuar = (meslek && MESLEK_AKSESUAR[meslek]) || '👤';
+  // Meslek seçilmeden önce köşedeki "👤" (mavi insan silueti gibi görünüyordu) hiç gösterilmez.
+  const aksesuar = meslek ? MESLEK_AKSESUAR[meslek] : null;
   const ifade = ifadeCikar(kisilik);
 
   return (
@@ -67,9 +68,11 @@ export function KarakterAvatari({ meslek, kisilik, rutbeSeviye = 1 }: KarakterAv
         )}
         {ifade === 'notr' && <line x1="49" y1="44" x2="71" y2="44" stroke="#241a12" strokeWidth="2.5" strokeLinecap="round" />}
       </svg>
-      <span className="karakter-avatari-aksesuar" aria-hidden>
-        {aksesuar}
-      </span>
+      {aksesuar && (
+        <span className="karakter-avatari-aksesuar" aria-hidden>
+          {aksesuar}
+        </span>
+      )}
     </div>
   );
 }

@@ -2,9 +2,12 @@ import { useEffect, useState } from 'react';
 import type { EkipUyesi, Rakip, YonetimDurumu, YonetimHat } from '../types';
 import { useDil } from '../DilContext';
 import { formatPara } from '../format';
+import { bic } from '../i18n';
 
 interface KariyerEkraniProps {
   meslek: string;
+  rutbe: string;
+  rutbeSeviye: number;
   amirAdi: string | null;
   amirRutbe: string | null;
   ekip: EkipUyesi[];
@@ -201,7 +204,7 @@ function HatKarti({
                 onClick={() => onEtkilesim(e.id)}
               >
                 <span>{en ? ad?.en : ad?.tr}</span>
-                <span className="kariyer-etkilesim-alt">{kalan > 0 ? yil(kalan) : en ? 'free' : 'bedava'}</span>
+                {kalan > 0 && <span className="kariyer-etkilesim-alt">{yil(kalan)}</span>}
               </button>
             );
           })}
@@ -277,6 +280,8 @@ function IstekAksiyon({
  */
 export function KariyerEkrani({
   meslek,
+  rutbe,
+  rutbeSeviye,
   amirAdi,
   amirRutbe,
   ekip,
@@ -329,6 +334,16 @@ export function KariyerEkrani({
   return (
     <div className="ekran ekran-aile ekran-kariyer">
       <h2>{m.geBaslik}</h2>
+
+      {/* Rütbe/kademe göstergesi — Yatırım ekranından buraya taşındı, küçültülerek. */}
+      <div className="kariyer-kademe-satiri">
+        <strong>{kt(rutbe)}</strong>
+        <span className="kariyer-kademe-noktalar" aria-label={bic(m.iyKademeAria, rutbeSeviye)}>
+          {[1, 2, 3, 4, 5].map((s) => (
+            <span key={s} className={`kademe-nokta${s <= rutbeSeviye ? ' kademe-nokta-dolu' : ''}`} />
+          ))}
+        </span>
+      </div>
 
       {modalMesaj && (
         <div className="kariyer-sonuc-katman" onClick={() => setModalMesaj(null)}>

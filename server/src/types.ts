@@ -260,6 +260,8 @@ export interface CharacterState {
   es_rutbe: string | null;
   cocuk_sayisi: number;
   cocuklar: Cocuk[];
+  /** Son çocuğun doğduğu oyun yılı — eşle ilişkiye bağlı doğum denemesinin cooldown'u (§33). */
+  son_dogum_yili?: number;
 
   ekip: EkipUyesi[];
   hizip: string | null;

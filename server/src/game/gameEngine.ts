@@ -875,6 +875,57 @@ export async function secimUygula(id: string, secenekIndex: number): Promise<Sec
   return sonucuUygulaVeIlerlet(oturum, mevcutOlay, etki, basarili, eskiRutbeSeviye);
 }
 
+/** Doğum denemesi cooldown'u (yıl) — bu kadar yıl geçmeden yeni çocuk olmaz. */
+const DOGUM_COOLDOWN_YIL = 4;
+/** Yaşayan+ölü toplam çocuk tavanı — bunun üstünde doğum denenmez. */
+const DOGUM_COCUK_TAVANI = 8;
+
+/**
+ * Evli bir karakterde, eşle ilişkiye (es_puani) çok güçlü bağlı, cooldown'lu bir
+ * yıllık doğum zarı atar. es_puani ≤ 45 iken şans ~0; 100 iken yılda ~%28.
+ * Başarılıysa bir çocuk ekler ve `hayat_hikayesi`'ne yazar; anlatı cümlesi döner.
+ */
+function dogumDenemesiUygula(state: CharacterState, yasArtisi: number): string | null {
+  if (!state.es_adi) return null;
+  if (state.yas >= 55) return null;
+  if (
+    state.etiketler.includes("hapiste") ||
+    state.etiketler.includes("yolculukta") ||
+    state.etiketler.includes("veba_hastasi")
+  ) {
+    return null;
+  }
+  if (state.cocuklar.length >= DOGUM_COCUK_TAVANI) return null;
+  const sonDogum = typeof state.son_dogum_yili === "number" ? state.son_dogum_yili : -9999;
+  if (state.yil - sonDogum < DOGUM_COOLDOWN_YIL) return null;
+
+  // es_puani 45 → 0, 100 → 1 arası lineer; sonra yıllık taban orana ölçekle.
+  const iliskiCarpani = Math.max(0, Math.min(1, (state.es_puani - 45) / 55));
+  if (iliskiCarpani <= 0) return null;
+  const yillikSans = iliskiCarpani * 0.28;
+  let oldu = false;
+  for (let i = 0; i < yasArtisi; i++) {
+    if (Math.random() < yillikSans) {
+      oldu = true;
+      break;
+    }
+  }
+  if (!oldu) return null;
+
+  const isim = rastgeleBirIsimSec(state.cag, state.bolge, [
+    state.dost_adi,
+    state.rakip_adi,
+    state.es_adi ?? "",
+    ...state.cocuklar.map((c) => c.isim),
+  ]);
+  state.cocuklar.push({ isim, dogum_yili: state.yil, yasiyor: true, iliski: 65 });
+  state.cocuk_sayisi = state.cocuklar.filter((c) => c.yasiyor).length;
+  state.son_dogum_yili = state.yil;
+  etiketEkle(state, ["cocuk_var"]);
+  hayatOlayiEkle(state, "👶", T(state.dil, "{0} doğdu", [isim]));
+  return T(state.dil, "👶 Eşin {0} ile aranız iyiydi; bir bebeğiniz oldu: {1}.", [state.es_adi, isim]);
+}
+
 async function sonucuUygulaVeIlerlet(
   oturum: Oturum,
   mevcutOlay: OlayTanimi,
@@ -1311,6 +1362,13 @@ async function sonucuUygulaVeIlerlet(
           const aileMesaji = aileYillikUygula(state, yasArtisi);
           if (aileMesaji) {
             zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${aileMesaji}` : aileMesaji;
+          }
+          // Eşle ilişkiye bağlı doğum denemesi (§33) — es_puani çok belirleyici,
+          // cooldown sonsuz çocuğu engeller. İçerik gameEngine'de çünkü çocuk
+          // ismi üretimi burada.
+          const dogumMesaji = dogumDenemesiUygula(state, yasArtisi);
+          if (dogumMesaji) {
+            zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${dogumMesaji}` : dogumMesaji;
           }
           // Kariyer sayfası: yönetimle bağların soğuması + dayatılan talep (§35).
           const yonetimMesaji = yonetimYillikUygula(state, yasArtisi);

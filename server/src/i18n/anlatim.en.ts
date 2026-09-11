@@ -363,6 +363,22 @@ export const ANLATIM_EN: Record<string, string> = {
     "Caravans keep arriving safely one after another; prices are falling from the abundance of goods...",
   "Pazar yerinde her zamanki gevezelik dışında dikkat çeken bir şey yok...":
     "Nothing stands out at the market beyond the usual chatter...",
+  "Uzak bir diyarda büyük bir savaş çıkmış diyorlar; buraya sıçrar mı kimse bilmiyor...":
+    "They say a great war has broken out in a distant land; whether it spreads here, no one knows...",
+  "Komşu vilayette veba görüldüğü fısıldanıyor, ama kimse emin değil...":
+    "There are whispers of plague in the neighboring province, but no one is certain...",
+  "Dağ köylerinde kıtlık başlamış deniyor; tüccarlar tedirgin, belki abartıyorlar...":
+    "Famine is said to have struck the mountain villages; merchants are uneasy — perhaps they exaggerate...",
+  "Bir yerlerde köylülerin ayaklandığı söyleniyor — doğrulanmış bir haber değil...":
+    "It is said peasants have risen up somewhere — an unconfirmed report...",
+  "Hükümdarın hastalandığına dair söylentiler var; saray sessiz kalıyor...":
+    "There are rumors the ruler has fallen ill; the palace stays silent...",
+  "Limanda garip bayraklı gemiler görüldüğü konuşuluyor, belki sadece tüccardır...":
+    "There is talk of ships with strange flags seen at the harbor; perhaps just traders...",
+  "Uzaktaki bir şehirde para biriminin değer kaybettiği söyleniyor; buraya yansır mı?":
+    "In a far-off city the currency is said to be losing value; will it reach here?",
+  "Kuzeyden gelen kervancılar yol kesen çetelerden dem vuruyor, kimi de 'boş laf' diyor...":
+    "Caravanners from the north speak of highwaymen; others call it idle talk...",
   "Kasabanın en zengin tüccarının kızı, bir yabancıya kaçmayı planlıyormuş...":
     "The wealthiest merchant's daughter in town is said to be planning to elope with a stranger...",
   "Yeni gelen bir gezgin şifacı, mucize tedaviler vaat ediyor; kimileri şüpheci...":
@@ -401,6 +417,8 @@ export const ANLATIM_EN: Record<string, string> = {
   "{0} ile evlendi": "Married {0}",
   "{0} ile yolları ayrıldı": "Parted ways with {0}",
   "{0} doğdu": "{0} was born",
+  "👶 Eşin {0} ile aranız iyiydi; bir bebeğiniz oldu: {1}.":
+    "👶 You and your spouse {0} were close; you had a baby: {1}.",
   "{0} kaybedildi": "{0} was lost",
   "{0} ({1}) ekibine katıldı": "{0} ({1}) joined the crew",
   "{0} ekipten ayrıldı": "{0} left the crew",

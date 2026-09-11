@@ -171,7 +171,7 @@ export function haberleriUret(state: CharacterState): string[] {
 }
 
 export const BOLGELER_BY_CAG: Record<Cag, string[]> = {
-  "Orta Çağ": ["Fransa", "Kutsal Roma", "Bizans", "Selçuklu", "Eyyubiler"],
+  "Orta Çağ": ["Fransa", "Kutsal Roma", "Bizans", "Selçuklu"],
   "Sanayi Devrimi": ["İngiltere", "Fransa", "Osmanlı", "Rusya"],
 };
 
@@ -691,7 +691,10 @@ export function createCharacter(
     aile_etkilesim_kilit: {},
     aile_talep: null,
     aile_talep_sonraki_yil: yil + 4,
-    yonetim_iliski: 40,
+    // Kral/yönetici ile başlangıçta neredeyse hiç ilişki yok (kullanıcı isteği);
+    // şöhret arttıkça `yonetimYillikUygula` bunu yavaşça yukarı iter. Patron (iş
+    // hattı) normal başlar.
+    yonetim_iliski: 5,
     patron_iliski: 40,
     yonetim_etkilesim_kilit: {},
     yonetim_yakin_etkilesim: 0,
@@ -1380,6 +1383,10 @@ export function yonetimYillikUygula(state: CharacterState, yasArtisi: number): s
 
   state.yonetim_iliski = Math.max(0, state.yonetim_iliski - YONETIM_ILISKI_DUSUS_YILLIK * yasArtisi);
   state.patron_iliski = Math.max(0, state.patron_iliski - YONETIM_ILISKI_DUSUS_YILLIK * yasArtisi);
+  // Şöhret arttıkça kral seni yavaşça fark eder — küçük pasif artış (un≤30 → 0,
+  // un=100 → yılda ~+0.63; yıllık düşüşü ancak yüksek şöhrette geçer).
+  const unItisi = Math.max(0, (state.un - 30) / 100) * 0.9 * yasArtisi;
+  if (unItisi > 0) state.yonetim_iliski = Math.min(100, state.yonetim_iliski + unItisi);
   // "Çok sık üstüne gitme" sayacı zamanla soğur (bir tur ~2-4 puan siler).
   state.yonetim_yakin_etkilesim = Math.max(0, (state.yonetim_yakin_etkilesim ?? 0) - yasArtisi * 2);
 
@@ -2988,10 +2995,20 @@ const DEDIKODU_BOLLUK: string[] = [
   "Pazarlar dolup taşıyor, kimsenin bir şikayeti yok; bu huzur ne kadar sürer kim bilir...",
   "Kervanlar art arda sağ salim varıyor, mal bolluğundan fiyatlar düşüyor...",
 ];
-const DEDIKODU_SAKIN: string[] = [
-  "Bugünlerde ortalık sakin, herkes kendi işine bakıyor...",
-  "Meydanda konuşulacak pek bir şey yok, sıradan bir gün...",
-  "Pazar yerinde her zamanki gevezelik dışında dikkat çeken bir şey yok...",
+/**
+ * "Meydanda konuşulacak bir şey yok" satırları kaldırıldı (kullanıcı isteği) —
+ * yerine her zaman ilginç ama DOĞRULUĞU BELİRSİZ söylenti havuzu. Bunların
+ * yaklaşık %60'ı gerçeği andırır, %40'ı tamamen kolpa olabilir; hepsi
+ * "deniyor / söyleniyor / belki" tonuyla yazıldı ki oyuncu tam güvenmesin. */
+const DEDIKODU_SPEKULASYON: string[] = [
+  "Uzak bir diyarda büyük bir savaş çıkmış diyorlar; buraya sıçrar mı kimse bilmiyor...",
+  "Komşu vilayette veba görüldüğü fısıldanıyor, ama kimse emin değil...",
+  "Dağ köylerinde kıtlık başlamış deniyor; tüccarlar tedirgin, belki abartıyorlar...",
+  "Bir yerlerde köylülerin ayaklandığı söyleniyor — doğrulanmış bir haber değil...",
+  "Hükümdarın hastalandığına dair söylentiler var; saray sessiz kalıyor...",
+  "Limanda garip bayraklı gemiler görüldüğü konuşuluyor, belki sadece tüccardır...",
+  "Uzaktaki bir şehirde para biriminin değer kaybettiği söyleniyor; buraya yansır mı?",
+  "Kuzeyden gelen kervancılar yol kesen çetelerden dem vuruyor, kimi de 'boş laf' diyor...",
 ];
 /** Dünya durumundan bağımsız, koşullu havuzların yanına eklenebilen genel flavor dedikodusu — 2-3 satırlı sonuçların sık görülmesi için. */
 const DEDIKODU_GENEL: string[] = [
@@ -3020,11 +3037,14 @@ export function piyasaDedikodulariUret(state: CharacterState): string[] {
   if (state.ulke.kriz?.tur === "isyan") dedikodular.push(T(dil, sec(DEDIKODU_ISYAN)));
   if (state.ulke.nufusDurumu === "artiyor") dedikodular.push(T(dil, sec(DEDIKODU_NUFUS)));
   if (!state.ulke.savasta && state.ulke.ekonomi === "iyi") dedikodular.push(T(dil, sec(DEDIKODU_BOLLUK)));
-  if (dedikodular.length === 0) dedikodular.push(T(dil, sec(DEDIKODU_SAKIN)));
-  // Koşullardan bağımsız bir genel flavor dedikodusu da eklenebilir — böylece
-  // 2-3 satırlı sonuçlar tek satırlık "sakin" sonuç kadar yaygın hale gelir.
-  if (Math.random() < DEDIKODU_GENEL_IHTIMALI) dedikodular.push(T(dil, sec(DEDIKODU_GENEL)));
-  return dedikodular;
+  // "Konuşulacak bir şey yok" satırı kaldırıldı — meydanda her zaman en az bir
+  // söylenti döner. Gerçek dünya-durumu satırı yoksa (ya da tek satır varsa),
+  // doğruluğu belirsiz bir spekülasyon eklenir; toplam en fazla 2 satır.
+  if (dedikodular.length < 2) dedikodular.push(T(dil, sec(DEDIKODU_SPEKULASYON)));
+  if (dedikodular.length < 2 && Math.random() < DEDIKODU_GENEL_IHTIMALI) {
+    dedikodular.push(T(dil, sec(DEDIKODU_GENEL)));
+  }
+  return dedikodular.slice(0, 2);
 }
 
 // ---------------------------------------------------------------------------

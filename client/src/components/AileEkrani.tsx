@@ -1,15 +1,21 @@
-import type { AileDurumu } from '../types';
+import type { AileDurumu, EvcilHayvan } from '../types';
 import { bic, type Metinler } from '../i18n';
+import { HAYVAN_SIMGESI } from '../bolgeTema';
 import { useDil } from '../DilContext';
 
 interface AileEkraniProps {
   anneAdi: string;
   babaAdi: string;
   durum: AileDurumu | null;
+  /** Evli mi + yaşı — evlilik butonunu göstermek için (18+ ve bekar). */
+  evli: boolean;
+  yas: number;
+  evcilHayvan: EvcilHayvan | null;
   yukleniyor: boolean;
   islemMesaji: string | null;
   onEtkilesim: (etkilesimId: string, cocukIndex?: number) => void;
   onTalep: (karar: 'kabul' | 'ret') => void;
+  onEvlilik: () => void;
   onGeriDon: () => void;
 }
 
@@ -171,10 +177,14 @@ export function AileEkrani({
   anneAdi,
   babaAdi,
   durum,
+  evli,
+  yas,
+  evcilHayvan,
   yukleniyor,
   islemMesaji,
   onEtkilesim,
   onTalep,
+  onEvlilik,
   onGeriDon,
 }: AileEkraniProps) {
   const { m, kt } = useDil();
@@ -256,8 +266,28 @@ export function AileEkrani({
             </div>
           </div>
         ) : (
-          <p className="aile-bos-metin">{m.aeEsYokMetin}</p>
+          <div className="aile-kart aile-es-karti">
+            <h3>{m.aeEsin}</h3>
+            <p className="aile-bos-metin">{m.aeEsYokMetin}</p>
+            {!evli && yas >= 18 && (
+              <button className="ikincil aile-evlen-buton" disabled={yukleniyor} onClick={onEvlilik}>
+                {m.aeEvlen}
+                <span className="aile-etkilesim-alt">{m.aeEvlenAlt}</span>
+              </button>
+            )}
+          </div>
         )}
+
+        <div className="aile-kart aile-evcil-karti">
+          <h3>{m.aeEvcilBaslik}</h3>
+          {evcilHayvan ? (
+            <span className="iliski-rozet">
+              {HAYVAN_SIMGESI[evcilHayvan.tur] ?? '🐾'} {evcilHayvan.isim} · {kt(evcilHayvan.tur)}
+            </span>
+          ) : (
+            <p className="aile-bos-metin">{m.aeEvcilYok}</p>
+          )}
+        </div>
 
         <div className="aile-kart aile-cocuklar-karti">
           <h3>{m.aeCocuklarin}</h3>

@@ -140,10 +140,11 @@ describe("yonetimTalebiKararlastir", () => {
   it("kabul: bağış parası düşer, ilişki artar, talep temizlenir", async () => {
     const state = await oturum();
     bagisTalebiEkle(state);
+    const oncekiIliski = state.yonetim_iliski;
     const sonuc = await yonetimTalebiKararlastir(state.id, "kabul");
     expect(sonuc.kabul).toBe(true);
     expect(sonuc.state.para).toBe(460);
-    expect(sonuc.state.yonetim_iliski).toBeGreaterThan(40);
+    expect(sonuc.state.yonetim_iliski).toBeGreaterThan(oncekiIliski);
     expect(sonuc.state.yonetim_talep).toBeNull();
   });
 

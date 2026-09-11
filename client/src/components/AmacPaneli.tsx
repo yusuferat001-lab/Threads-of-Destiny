@@ -3,8 +3,9 @@ import type { AmaclarDurumu, AmacKarti } from '../types';
 
 interface AmacPaneliProps {
   durum: AmaclarDurumu | null;
-  /** 'panel' = sağ panel / Görevin ekranı; 'olum' = ölüm ekranı özeti. */
-  varyant?: 'panel' | 'olum';
+  /** 'panel' = sağ panel / Görevin ekranı; 'olum' = ölüm ekranı özeti;
+   *  'serit' = oyun ekranının üstündeki ince yatay şerit (3 amaç yan yana, çok küçük). */
+  varyant?: 'panel' | 'olum' | 'serit';
 }
 
 const TR = {
@@ -39,6 +40,46 @@ function yuzde(a: AmacKarti): number {
 export function AmacPaneli({ durum, varyant = 'panel' }: AmacPaneliProps) {
   const { dil } = useDil();
   const t = dil === 'en' ? EN : TR;
+
+  // ---- İnce yatay şerit — arka plan görselinin ÜSTÜNDE (oyun sahnesi overlay'i) ----
+  if (varyant === 'serit') {
+    if (!durum || durum.amaclar.length === 0) return null;
+    return (
+      <div className="amac-serit" role="list">
+        {durum.amaclar.map((a) => {
+          const p = yuzde(a);
+          return (
+            <span
+              key={a.id}
+              role="listitem"
+              className={`amac-serit-oge${a.tamamlandi ? ' amac-serit-tamam' : ''} amac-${a.zorluk}`}
+              title={`${a.baslik} — ${a.aciklama}${
+                a.mevcut != null && a.hedef != null ? ` (${a.mevcut}/${a.hedef})` : ''
+              }`}
+            >
+              <span className="amac-serit-ust">
+                <span className="amac-serit-ikon" aria-hidden="true">
+                  {a.tamamlandi ? '✓' : a.zorluk === 'zor' ? '★' : '◆'}
+                </span>
+                <span className="amac-serit-baslik">{a.baslik}</span>
+                {a.mevcut != null && a.hedef != null && (
+                  <span className="amac-serit-oran">
+                    {a.mevcut}/{a.hedef}
+                  </span>
+                )}
+              </span>
+              {/* Görevi çok kısa anlat */}
+              <span className="amac-serit-aciklama">{a.aciklama}</span>
+              <span className="amac-serit-bar" aria-hidden="true">
+                <span className="amac-serit-bar-dolu" style={{ width: `${p}%` }} />
+              </span>
+            </span>
+          );
+        })}
+      </div>
+    );
+  }
+
   if (!durum || durum.amaclar.length === 0) {
     if (varyant === 'olum') return null;
     return (
@@ -51,12 +92,7 @@ export function AmacPaneli({ durum, varyant = 'panel' }: AmacPaneliProps) {
 
   return (
     <div className={`amac-paneli amac-paneli-${varyant}`}>
-      <h3 className="amac-paneli-baslik">
-        {varyant === 'olum' ? t.ozetBaslik : t.baslik}
-        <span className="amac-carpan-rozet" title={t.carpan}>
-          ×{durum.carpan % 1 === 0 ? durum.carpan : durum.carpan.toFixed(1)}
-        </span>
-      </h3>
+      <h3 className="amac-paneli-baslik">{varyant === 'olum' ? t.ozetBaslik : t.baslik}</h3>
       <ul className="amac-liste">
         {durum.amaclar.map((a) => {
           const p = yuzde(a);

@@ -115,7 +115,7 @@ import { basarimlariDegerlendir, type BasarimTanimi } from './basarimSistemi';
 import { BasarimGaleri } from './components/BasarimGaleri';
 import { NasilOynanir } from './components/NasilOynanir';
 import { istemciId, ziyaretBildir } from './istemci';
-import { sonucIkonuGetir, unUnvani, MESLEK_KATEGORI, yatkinlikEtiketi, etkiTahminiGetir } from './bolgeTema';
+import { sonucIkonuGetir, unUnvani, MESLEK_KATEGORI, yatkinlikEtiketi, etkiTahminiGetir, type EtkiTahmini } from './bolgeTema';
 import { formatPara } from './format';
 import { bic } from './i18n';
 import { DilContext, dilCtxYap } from './DilContext';
@@ -127,7 +127,6 @@ import './giris.css';
 type Ekran =
   | 'giris'
   | 'cag_sec'
-  | 'bolge_sec'
   | 'isim_sec'
   | 'acilis'
   | 'oyun'
@@ -172,6 +171,30 @@ function cagAciklama(m: ReturnType<typeof dilCtxYap>['m'], cag: string): string 
   return '';
 }
 
+/**
+ * Seçenek altındaki olası etkiler — kullanıcı isteği: tüm artılar TEK yerde,
+ * tüm eksiler TEK yerde (dikeyde az yer kaplasın). Her grup tek satır çip.
+ */
+function TahminOzeti({ tahminler }: { tahminler: EtkiTahmini[] }) {
+  if (tahminler.length === 0) return null;
+  const poz = tahminler.filter((t) => t.pozitif);
+  const neg = tahminler.filter((t) => !t.pozitif);
+  return (
+    <span className="secenek-tahminler">
+      {poz.length > 0 && (
+        <span className="secenek-tahmin tahmin-pozitif">
+          {poz.map((t) => t.simge).join('')} {poz.map((t) => t.metin).join(' · ')}
+        </span>
+      )}
+      {neg.length > 0 && (
+        <span className="secenek-tahmin tahmin-negatif">
+          {neg.map((t) => t.simge).join('')} {neg.map((t) => t.metin).join(' · ')}
+        </span>
+      )}
+    </span>
+  );
+}
+
 /** Gelir/Sosyalleş/Mağaza artık sahne üzerindeki tıklama noktalarından açılır ama tam
  * sayfa olarak (oyun HUD'unun yerini alarak) açılır — hepsi ana oyun ekranıyla aynı "sayfa
  * hiç kaymaz, sadece sütun/ızgara kendi içinde kayar" modelini kullanır (bkz.
@@ -180,7 +203,6 @@ function cagAciklama(m: ReturnType<typeof dilCtxYap>['m'], cag: string): string 
 const TAM_EKRAN_GRUBU: Ekran[] = [
   'giris',
   'cag_sec',
-  'bolge_sec',
   'isim_sec',
   'acilis',
   'oyun',
@@ -233,6 +255,11 @@ function YanPanel({
   mobil: boolean;
   children: ReactNode;
 }) {
+  // Başlık kaldırıldıysa (kullanıcı isteği) hiç kutu/summary çubuğu gösterme —
+  // düz bir <div>. Katlama tutamacı yalnız gerçek başlığı olan panellerde.
+  if (!baslik) {
+    return <div className={className}>{children}</div>;
+  }
   if (mobil) {
     // Varsayılan AÇIK — iki yan panel mobilde alt alta değil yan yana ve açık durur
     // (bkz. App.css mobil .oyun-govde 2 sütunlu grid). Başlığa dokunarak yine katlanabilir.
@@ -313,6 +340,8 @@ function App() {
   const [secilenGecmisHayat, setSecilenGecmisHayat] = useState<GecmisHayat | null>(null);
   const [liderlikOnizleme, setLiderlikOnizleme] = useState<ScoreKaydi[]>([]);
   const [bolgeBilgiAcik, setBolgeBilgiAcik] = useState(false);
+  // Kişilik & Miras artık sol panelde sabit değil — portreye/isme tıklayınca açılan pencere.
+  const [kisilikModalAcik, setKisilikModalAcik] = useState(false);
 
   const dilCtx = dilCtxYap(dil);
   const { m, kt } = dilCtx;
@@ -417,7 +446,7 @@ function App() {
       .then(({ bolgeler }) => setBolgeler(bolgeler))
       .catch(() =>
         setBolgeler({
-          'Orta Çağ': ['Fransa', 'Kutsal Roma', 'Bizans', 'Selçuklu', 'Eyyubiler'],
+          'Orta Çağ': ['Fransa', 'Kutsal Roma', 'Bizans', 'Selçuklu'],
           'Sanayi Devrimi': ['İngiltere', 'Fransa', 'Osmanlı', 'Rusya'],
         })
       );
@@ -556,8 +585,10 @@ function App() {
   }, []);
 
   function cagSecildi(cag: string) {
+    // Çağ ve bölge artık tek sayfada — çağa tıklamak sadece seçer, altta o çağın
+    // bayrakları belirir. Çağ değişince önceki bölge seçimi düşer.
     setSecilenCag(cag);
-    setEkran('bolge_sec');
+    setSecilenBolge(null);
   }
 
   function bolgeSecildi(bolge: string) {
@@ -1440,7 +1471,14 @@ function App() {
           <div className="giris-hero">
             <h1>{m.oyunAdi}</h1>
             <p className="giris-slogan">{m.girisSlogan}</p>
-            <CarkLogo boyut={132} />
+            <div className="giris-cark-sar">
+              <CarkLogo boyut={132} />
+              {/* "Yeni meslek" duyurusu — tekerin sağında çapraz, küçük; nadiren
+                 bozuk LED gibi yanıp söner. */}
+              <span className="giris-yenimeslek-rozet" aria-hidden="true">
+                ✦ {m.gizemYeniMeslek} · {m.gizemTarih}
+              </span>
+            </div>
             <div className="giris-hero-butonlar">
               {karakter?.aktif && (
                 <button
@@ -1569,12 +1607,6 @@ function App() {
 
           </div>
 
-          <div className="giris-gizem-kutu">
-            <span className="giris-gizem-baslik">{m.gizemBaslik}</span>
-            <span className="giris-gizem-ana">{m.gizemYeniMeslek}</span>
-            <span className="giris-gizem-tarih">{m.gizemTarih}</span>
-          </div>
-
           <div className="giris-imza">
             {YAPIMCI.linkedin ? (
               <a
@@ -1655,49 +1687,46 @@ function App() {
           <div className="giris-yollar" aria-hidden="true">
             <KaderYollari />
           </div>
-          <AdimGostergesi adim={1} toplam={3} etiket={bic(m.adimEtiketi, 1, 3)} />
+          <AdimGostergesi adim={1} toplam={2} etiket={bic(m.adimEtiketi, 1, 2)} />
           <h2>{m.cagSecBaslik}</h2>
           <MuhurAyrac />
           <p className="giris-aciklama">{m.cagSecAlt}</p>
-          <div className="meslek-kartlari">
+          <div className="meslek-kartlari cag-kartlari">
             {Object.keys(bolgeler).map((cag) => (
-              <button key={cag} className="meslek-kart" disabled={yukleniyor} onClick={() => cagSecildi(cag)}>
+              <button
+                key={cag}
+                className={`meslek-kart${secilenCag === cag ? ' meslek-kart-secili' : ''}`}
+                disabled={yukleniyor}
+                onClick={() => cagSecildi(cag)}
+              >
                 <CagAmblemi cag={cag} />
                 <strong>{kt(cag)}</strong>
                 <span className="meslek-aciklama">{cagAciklama(m, cag)}</span>
               </button>
             ))}
           </div>
-          <button className="ikincil" onClick={() => setEkran('giris')}>
-            {m.geri}
-          </button>
-        </div>
-      )}
 
-      {ekran === 'bolge_sec' && secilenCag && (
-        <div className="ekran ekran-meslek ekran-kurulum ekran-adim-bolge">
-          <KoseTezhibi />
-          <div className="giris-yollar" aria-hidden="true">
-            <KaderYollari />
-          </div>
-          <AdimGostergesi adim={2} toplam={3} etiket={bic(m.adimEtiketi, 2, 3)} />
-          <h2>{m.bolgeSecBaslik}</h2>
-          <MuhurAyrac />
-          <p className="giris-aciklama">{bic(m.bolgeSecAlt, kt(secilenCag))}</p>
-          <div className="meslek-kartlari">
-            {(bolgeler[secilenCag] ?? []).map((bolge) => (
-              <button
-                key={bolge}
-                className="meslek-kart"
-                disabled={yukleniyor}
-                onClick={() => bolgeSecildi(bolge)}
-              >
-                <BolgeAmblemi bolge={bolge} cag={secilenCag ?? undefined} />
-                <strong>{kt(bolge)}</strong>
-              </button>
-            ))}
-          </div>
-          <button className="ikincil" onClick={() => setEkran('cag_sec')}>
+          {/* Çağ seçilince aynı sayfada altta o çağın bayrakları çıkar. */}
+          {secilenCag && (
+            <div className="bolge-secim-blok">
+              <p className="giris-aciklama">{bic(m.bolgeSecAlt, kt(secilenCag))}</p>
+              <div className="meslek-kartlari bolge-bayrak-kartlari">
+                {(bolgeler[secilenCag] ?? []).map((bolge) => (
+                  <button
+                    key={bolge}
+                    className="meslek-kart bolge-bayrak-kart"
+                    disabled={yukleniyor}
+                    onClick={() => bolgeSecildi(bolge)}
+                  >
+                    <BolgeAmblemi bolge={bolge} cag={secilenCag ?? undefined} />
+                    <strong>{kt(bolge)}</strong>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <button className="ikincil" onClick={() => setEkran('giris')}>
             {m.geri}
           </button>
         </div>
@@ -1709,7 +1738,7 @@ function App() {
           <div className="giris-yollar" aria-hidden="true">
             <KaderYollari />
           </div>
-          <AdimGostergesi adim={3} toplam={3} etiket={bic(m.adimEtiketi, 3, 3)} />
+          <AdimGostergesi adim={2} toplam={2} etiket={bic(m.adimEtiketi, 2, 2)} />
           <h2>{m.isimSecBaslik}</h2>
           <MuhurAyrac />
           <p className="giris-aciklama">{bic(m.isimSecAlt, kt(secilenBolge))}</p>
@@ -1729,7 +1758,7 @@ function App() {
           <button disabled={yukleniyor} onClick={karakteriOlustur}>
             {yukleniyor ? m.yukleniyor : oyuncuIsmi.trim() ? m.btnBuIsimleBasla : m.btnRastgeleIsimleBasla}
           </button>
-          <button className="ikincil" disabled={yukleniyor} onClick={() => setEkran('bolge_sec')}>
+          <button className="ikincil" disabled={yukleniyor} onClick={() => setEkran('cag_sec')}>
             {m.geri}
           </button>
         </div>
@@ -1833,8 +1862,14 @@ function App() {
             onBolgeTikla={() => setBolgeBilgiAcik(true)}
           />
           <div className="oyun-govde">
-            <YanPanel className="sol-panel panel-parsomen" baslik={m.panelKisiselHayat} mobil={mobil}>
-              <div className="sol-panel-kimlik">
+            <YanPanel className="sol-panel panel-parsomen" baslik="" mobil={mobil}>
+              {/* Portre ya da isme dokununca Kişilik & Miras penceresi açılır (default kapalı). */}
+              <button
+                type="button"
+                className="sol-panel-kimlik sol-panel-kimlik-buton"
+                onClick={() => setKisilikModalAcik(true)}
+                aria-haspopup="dialog"
+              >
                 <KarakterAvatari
                   meslek={karakter.meslek}
                   kisilik={karakter.kisilik}
@@ -1850,7 +1885,7 @@ function App() {
                     {kt(karakter.meslek)} · {bic(m.yasSonek, karakter.yas)}
                   </span>
                 </div>
-              </div>
+              </button>
 
               <div className="sol-panel-mini-barlar">
                 <div className="un-rozeti">
@@ -1883,13 +1918,6 @@ function App() {
                 onKullan={envanterKullanHandler}
                 onHediye={hediyeHandler}
               />
-
-              <KisilikPaneli
-                kisilik={karakter.kisilik}
-                aileMeslegi={karakter.aile_meslegi}
-                kaynaklar={karakter.yatkinlik_kaynaklari}
-                eksenler={karakter.kisilik_eksenleri}
-              />
             </YanPanel>
 
             {(() => {
@@ -1921,9 +1949,15 @@ function App() {
                     tamYukseklik
                   />
                 </div>
+                {/* Amaçlar arka plan görselinin ÜSTÜNDE ince bir şerit — her amaç
+                    çok kısa açıklamasıyla (kullanıcı isteği). */}
+                <AmacPaneli durum={amaclar} varyant="serit" />
                 {/* Masaüstünde hotspot'lar sahnenin ÜSTÜNDE (cqw/cqh ile görsele yapışık);
                     mobilde sahnenin ALTINDA ayrı bir aksiyon satırı olarak (bkz. Paket 2). */}
                 {!mobil && hotspotlar}
+                {/* Mobilde: aktif durumlar arka plan resminin üstünde ince bir şerit
+                    (tur/yıl bilgisi verilmeden — kullanıcı isteği). */}
+                {mobil && <DurumPaneli durumlar={karakter.durumlar} varyant="sahne" />}
               </div>
               {mobil && hotspotlar}
 
@@ -1944,15 +1978,27 @@ function App() {
                   </div>
                 ) : (
                   <div className="olay-karti">
-                    <span
-                      className={`olay-gorseli${yukleniyor ? ' olay-gorseli-yukleniyor' : ''}`}
-                      aria-hidden="true"
-                    >
-                      {senaryo.gorsel}
-                    </span>
-                    <h2>{senaryo.olay_basligi}</h2>
-                    {tepkiModu && <p className="tepki-notu">{m.tepkiNotu}</p>}
-                    <p className="olay-metni">{senaryo.olay_metni}</p>
+                    {/* Emoji artık ortada üstte değil; metnin sol ve sağında çapraz
+                        duruyor — böylece başlık/metin yatayda daralmıyor. */}
+                    <div className="olay-karti-govde">
+                      <span
+                        className={`olay-gorseli olay-gorseli-sol${yukleniyor ? ' olay-gorseli-yukleniyor' : ''}`}
+                        aria-hidden="true"
+                      >
+                        {senaryo.gorsel}
+                      </span>
+                      <div className="olay-karti-metin-blok">
+                        <h2>{senaryo.olay_basligi}</h2>
+                        {tepkiModu && <p className="tepki-notu">{m.tepkiNotu}</p>}
+                        <p className="olay-metni">{senaryo.olay_metni}</p>
+                      </div>
+                      <span
+                        className={`olay-gorseli olay-gorseli-sag${yukleniyor ? ' olay-gorseli-yukleniyor' : ''}`}
+                        aria-hidden="true"
+                      >
+                        {senaryo.gorsel}
+                      </span>
+                    </div>
                   </div>
                 )}
 
@@ -2001,21 +2047,7 @@ function App() {
                           </span>
                           {!secenek.kilitli && !tepkiModu && (
                             <span className="secenek-meta">
-                              <span className="secenek-sans">
-                                {bic(m.sansEki, secenek.belirsiz_aralik.min, secenek.belirsiz_aralik.max)}
-                              </span>
-                              {tahminler.length > 0 && (
-                                <span className="secenek-tahminler">
-                                  {tahminler.map((t, ti) => (
-                                    <span
-                                      key={ti}
-                                      className={`secenek-tahmin ${t.pozitif ? 'tahmin-pozitif' : 'tahmin-negatif'}`}
-                                    >
-                                      {t.simge} {t.metin}
-                                    </span>
-                                  ))}
-                                </span>
-                              )}
+                              <TahminOzeti tahminler={tahminler} />
                             </span>
                           )}
                           {secenek.kilitli && <span className="secenek-kilit">{secenek.kilit_nedeni}</span>}
@@ -2029,9 +2061,8 @@ function App() {
               );
             })()}
 
-            <YanPanel className="sag-panel panel-parsomen" baslik={m.panelDunyaSiyaset} mobil={mobil}>
+            <YanPanel className="sag-panel panel-parsomen" baslik="" mobil={mobil}>
               <SiyasetPaneli cag={karakter.cag} hizip={karakter.hizip} />
-              <AmacPaneli durum={amaclar} />
               <HaberlerPaneli haberler={karakter.haberler} />
 
               <IsyeriPaneli
@@ -2054,12 +2085,8 @@ function App() {
                 <button className="ikincil aile-gor-buton" onClick={aileEkraniniAc}>
                   {m.btnAileniGor}
                   {karakter.aile_talep ? ' 🔔' : ''}
+                  {!karakter.es_adi && karakter.yas >= 18 ? ' 💍' : ''}
                 </button>
-                {!karakter.es_adi && karakter.yas >= 18 && (
-                  <button className="ikincil aile-gor-buton" onClick={evlilikEkraniniAc}>
-                    💍 {m.evBaslik}
-                  </button>
-                )}
               </div>
 
               <DurumPaneli durumlar={karakter.durumlar} />
@@ -2079,6 +2106,25 @@ function App() {
                   {m.kapatX}
                 </button>
                 <BolgeBilgisiPaneli bolge={karakter.bolge} bilgi={karakter.bolge_bilgi} />
+              </div>
+            </div>
+          )}
+
+          {kisilikModalAcik && (
+            <div className="gecmis-hayat-detay-katman" onClick={() => setKisilikModalAcik(false)}>
+              <div className="gecmis-hayat-detay kisilik-modal" onClick={(e) => e.stopPropagation()}>
+                <button
+                  className="ikincil gecmis-hayat-kapat"
+                  onClick={() => setKisilikModalAcik(false)}
+                >
+                  {m.kapatX}
+                </button>
+                <KisilikPaneli
+                  kisilik={karakter.kisilik}
+                  aileMeslegi={karakter.aile_meslegi}
+                  kaynaklar={karakter.yatkinlik_kaynaklari}
+                  eksenler={karakter.kisilik_eksenleri}
+                />
               </div>
             </div>
           )}
@@ -2112,15 +2158,10 @@ function App() {
         <IsYatirimEkrani
           meslek={karakter.meslek}
           rutbe={karakter.rutbe}
-          rutbeSeviye={karakter.rutbe_seviye}
-          amirAdi={karakter.amir_adi}
-          amirRutbe={karakter.amir_rutbe}
-          maasYillik={karakter.maas_yillik}
           paraBirimi={karakter.para_birimi}
           orduMevcudu={karakter.ordu_mevcudu}
           orduTechizatSeviyesi={karakter.ordu_techizat_seviyesi}
           ticaretSermaye={karakter.ticaret_sermaye}
-          nufuz={karakter.nufuz}
           sehirYonetimSeviyesi={karakter.sehir_yonetim_seviyesi}
           sehirYonetimUnvan={karakter.sehir_yonetim_unvan}
           para={karakter.para}
@@ -2204,21 +2245,7 @@ function App() {
                           </span>
                           {!secenek.kilitli && !sosyalOlayTepkiModu && (
                             <span className="secenek-meta">
-                              <span className="secenek-sans">
-                                {bic(m.sansEki, secenek.belirsiz_aralik.min, secenek.belirsiz_aralik.max)}
-                              </span>
-                              {tahminler.length > 0 && (
-                                <span className="secenek-tahminler">
-                                  {tahminler.map((t, ti) => (
-                                    <span
-                                      key={ti}
-                                      className={`secenek-tahmin ${t.pozitif ? 'tahmin-pozitif' : 'tahmin-negatif'}`}
-                                    >
-                                      {t.simge} {t.metin}
-                                    </span>
-                                  ))}
-                                </span>
-                              )}
+                              <TahminOzeti tahminler={tahminler} />
                             </span>
                           )}
                           {secenek.kilitli && <span className="secenek-kilit">{secenek.kilit_nedeni}</span>}
@@ -2277,10 +2304,14 @@ function App() {
           anneAdi={karakter.anne_adi}
           babaAdi={karakter.baba_adi}
           durum={aileDurum}
+          evli={!!karakter.es_adi}
+          yas={karakter.yas}
+          evcilHayvan={karakter.evcil_hayvan}
           yukleniyor={yukleniyor}
           islemMesaji={islemMesaji}
           onEtkilesim={aileEtkilesimHandler}
           onTalep={aileTalepHandler}
+          onEvlilik={evlilikEkraniniAc}
           onGeriDon={() => {
             setIslemMesaji(null);
             setEkran('oyun');
@@ -2291,6 +2322,8 @@ function App() {
       {ekran === 'kariyer' && karakter && (
         <KariyerEkrani
           meslek={karakter.meslek}
+          rutbe={karakter.rutbe}
+          rutbeSeviye={karakter.rutbe_seviye}
           amirAdi={karakter.amir_adi}
           amirRutbe={karakter.amir_rutbe}
           ekip={karakter.ekip}
@@ -2420,6 +2453,12 @@ function App() {
             >
               {m.sekmeEnUnlu}
             </button>
+            <button
+              className={liderlikTuru === 'en_uzun_yasayan' ? 'aktif-sekme' : ''}
+              onClick={() => liderligiAc('en_uzun_yasayan')}
+            >
+              {m.sekmeEnUzunYasayan}
+            </button>
           </div>
           <ol className="liderlik-liste">
             {liderlik.map((kayit) => (
@@ -2432,12 +2471,10 @@ function App() {
                     </span>
                   )}
                   {' '}— {kayit.skor} {m.puan} ({kayit.rutbe ? `${kt(kayit.rutbe)}, ` : ''}
-                  {kt(kayit.meslek)}, {kt(kayit.cag)}, {bic(m.yasSonek, kayit.yas)}, {kayit.olum_nedeni})
+                  {kt(kayit.cag)}, {bic(m.yasSonek, kayit.yas)}, {kayit.olum_nedeni})
                 </div>
-                {(kayit.yerlesim || kayit.kisilik || kayit.unvanlar || kayit.efsanevi_olum) && (
+                {(kayit.unvanlar || kayit.efsanevi_olum) && (
                   <div className="liderlik-detay">
-                    {kayit.yerlesim && <span>📍 {kt(kayit.yerlesim)}</span>}
-                    {kayit.kisilik && <span>🎭 {kayit.kisilik.split(', ').map((k) => kt(k.trim())).join(' · ')}</span>}
                     {kayit.unvanlar &&
                       kayit.unvanlar.split(', ').map((unvan) => (
                         <span key={unvan} className="liderlik-rozet liderlik-rozet-unvan">

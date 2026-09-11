@@ -201,6 +201,7 @@ export interface CharacterState {
   es_rutbe: string | null;
   cocuk_sayisi: number;
   cocuklar: Cocuk[];
+  son_dogum_yili?: number;
 
   ekip: EkipUyesi[];
   hizip: string | null;
@@ -788,7 +789,7 @@ export interface GeriBildirimGirdi {
   iletisim?: string;
 }
 
-export type SiralamaTuru = 'genel' | 'en_zengin' | 'en_unlu';
+export type SiralamaTuru = 'genel' | 'en_zengin' | 'en_unlu' | 'en_uzun_yasayan';
 
 export interface ScoreKaydi {
   id: number;

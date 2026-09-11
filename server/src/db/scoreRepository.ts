@@ -31,15 +31,17 @@ export async function skorKaydet(state: CharacterState, isim: string) {
   });
 }
 
-export type SiralamaTuru = "genel" | "en_zengin" | "en_unlu";
+export type SiralamaTuru = "genel" | "en_zengin" | "en_unlu" | "en_uzun_yasayan";
 
-export async function skorTablosuGetir(tur: SiralamaTuru = "genel", limit = 20) {
+export async function skorTablosuGetir(tur: SiralamaTuru = "genel", limit = 15) {
   const orderBy =
     tur === "en_zengin"
       ? { para: "desc" as const }
       : tur === "en_unlu"
         ? { un: "desc" as const }
-        : { skor: "desc" as const };
+        : tur === "en_uzun_yasayan"
+          ? { yas: "desc" as const }
+          : { skor: "desc" as const };
 
   return prisma.score.findMany({
     orderBy,
