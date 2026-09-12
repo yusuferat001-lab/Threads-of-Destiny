@@ -398,6 +398,14 @@ function App() {
     muzikModunuAyarla(mod);
   }, [ekran, karakter?.cag, muzikAcik]);
 
+  // Ekran değişince sayfayı en başa al — bu tek sayfalık akışta (router yok) React
+  // ekranlar arasında geçince tarayıcı scroll konumunu KENDİLİĞİNDEN sıfırlamıyor;
+  // önceki ekranda aşağı kaydırılmışsa yeni ekran da aynı ofsetle (başlığı, sabit
+  // "para" rozetinin arkasında/ekran dışında kalacak şekilde) açılıyordu.
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [ekran]);
+
   function dilDegistir(yeni: Dil) {
     setDil(yeni);
     ayarlariKaydet({ dil: yeni });

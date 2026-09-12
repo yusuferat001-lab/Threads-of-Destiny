@@ -21,7 +21,7 @@ export function bic(s: string, ...a: (string | number)[]): string {
 
 const TR = {
   // ---- Ayarlar modalı ----
-  ayarlarBaslik: 'Settings',
+  ayarlarBaslik: 'Ayarlar',
   ayarlarİpucu: 'Ayarlar',
   sekmeGenel: 'Genel',
   sekmeGeriBildirim: 'Görüş & Öneri',
@@ -69,14 +69,14 @@ const TR = {
   sohret: 'Şöhret',
 
   // ---- Giriş ekranı ----
-  oyunAdi: 'Threads of Destiny',
+  oyunAdi: 'Kader Çarkı',
   girisAciklama:
     'Çağını, ülkeni ve mesleğini sen seç; ailen ve kişiliğin rastgele belirlensin. Gerisini kaderin ve kararların belirlesin. Ölüm kalıcıdır.',
   btnYeniHayat: '⚙️ Yeni Hayata Başla',
   btnLiderlik: '🏆 Liderlik Tablosu',
   btnNasilOynanir: '📖 Nasıl Oynanır?',
   nasilOynanirBaslik: 'Nasıl Oynanır?',
-  btnAyarlar: '⚙️ Settings',
+  btnAyarlar: '⚙️ Ayarlar',
   panelGecmisHayatlar: '📜 Geçmiş Hayatlarım',
   temizle: 'Temizle',
   gecmisHayatBos: 'Bu cihazda henüz tamamlanmış bir hayat yok.',
@@ -118,7 +118,7 @@ const TR = {
 
   // ---- Kurulum akışı (çağ→bölge→yerleşim→isim) ----
   adimEtiketi: 'Adım {0} / {1}',
-  girisSlogan: 'Weave the threads of your fate.',
+  girisSlogan: 'Kaderinin ipliklerini kendi ellerinle ör.',
 
   // ---- Çağ seçimi ----
   cagSecBaslik: 'Çağını Seç',

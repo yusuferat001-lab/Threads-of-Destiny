@@ -1304,7 +1304,11 @@ button.ikincil {
 }
 
 .ust-serit-modul-deger {
-  font-size: clamp(0.88rem, 0.55vw + 0.68rem, 1.35rem);
+  /* Ahlak artık sayı değil sözel bir kademe ("Yüksek Onurlu"), para artık 2 ondalıklı
+     gösterilebiliyor ("10.74 Livre") — eski daha büyük/geniş ölçek bu uzunlukları
+     7 eşit sütuna sığdıramayıp ortadan kırpıyordu. Ölçek küçültüldü ki gerçekçi en
+     uzun değerler bile "…" ile kesilmeden sığsın. */
+  font-size: clamp(0.72rem, 0.22vw + 0.56rem, 0.98rem);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   color: var(--renk-altin-parlak);
@@ -5022,8 +5026,20 @@ button.ikincil {
 
   .ust-serit-modul {
     flex-direction: column;
+    /* align-items:center (masaüstü kuralından miras) sütun modunda metni
+       "shrink-to-fit" bırakıyordu — uzun bir değer (ör. "10.74 Livre",
+       "Yüksek Onurlu") modülün gerçek genişliğini aşıp komşu modülün
+       üstüne taşıyordu (ellipsis hiç devreye girmiyordu, çünkü kutunun
+       kendisi genişliyordu). stretch ile modül genişliğine sabitlenir,
+       taşan metin ellipsis'e düşer. */
+    align-items: stretch;
     gap: 0.05rem;
     padding: 0.18rem 0.08rem;
+  }
+
+  .ust-serit-modul-metin {
+    width: 100%;
+    text-align: center;
   }
 
   .ust-serit-modul-ikon {
