@@ -214,18 +214,18 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
     metin: "Adının küçük bir şüphe listesine girdiğini duydun; bir görevli seni durdurup birkaç soru soruyor. Ciddi bir şey değil — henüz.",
     secenekler: [
       {
-        metin: "Görevliye küçük bir 'anlayış payı' uzat. (Kefaret: 12)",
+        metin: "Görevliye küçük bir 'anlayış payı' uzat. (Kefaret: 13)",
         baseBasariSansi: 85,
-        maliyet: 12,
+        maliyet: 13,
         ipucu: "Ucuz ve güvenilir bir yol",
         basariliSonuc: {
-          para: -12,
+          para: -13,
           suc_artis: -25,
           mesaj: "Görevlinin eline sıkıştırdığın birkaç sikke, adının listeden silinmesine yetti.",
           detay: "Küçük paralar büyük dertleri çözebiliyor.",
         },
         basarisizSonuc: {
-          para: -12,
+          para: -13,
           mesaj: "Parayı aldı ama listeyi değiştirmeye yanaşmadı; en azından bugünlük seni rahat bıraktı.",
           detay: "Bazı görevliler açgözlü ama temkinli.",
         },
@@ -258,17 +258,17 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
     metin: "Bir müfettiş işyerine uğrayıp 'usulsüzlük' bahanesiyle üstüne küçük bir ceza yazdı. Ödemek can sıkıcı ama itiraz etmek daha da can sıkıcı olabilir.",
     secenekler: [
       {
-        metin: "Cezayı hemen öde, kapat gitsin. (Kefaret: 15)",
+        metin: "Cezayı hemen öde, kapat gitsin. (Kefaret: 17)",
         baseBasariSansi: 90,
-        maliyet: 15,
+        maliyet: 17,
         basariliSonuc: {
-          para: -15,
+          para: -17,
           suc_artis: -25,
           mesaj: "Cezayı ödeyip makbuzu aldın; müfettiş dosyanı kapattı.",
           detay: "Bazen en ucuz yol, en hızlı olandır.",
         },
         basarisizSonuc: {
-          para: -15,
+          para: -17,
           mesaj: "Ödedin ama müfettiş 'bir dahakine göz açık' diye tehdit savurarak çıktı.",
           detay: "Para işi bitirmedi, sadece erteledi.",
         },
@@ -301,35 +301,35 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
     metin: "Tanıdığın bir nöbetçi, gözlerini kaçırarak 'küçük bir jest karşılığında dosyanı görmezden gelebilirim' diye fısıldadı. Tam fiyatını mı ödersin, yoksa pazarlık mı denersin?",
     secenekler: [
       {
-        metin: "İstediği tam meblağı öde. (Kefaret: 16)",
+        metin: "İstediği tam meblağı öde. (Kefaret: 18)",
         baseBasariSansi: 88,
-        maliyet: 16,
+        maliyet: 18,
         ipucu: "Güvenilir yol",
         basariliSonuc: {
-          para: -16,
+          para: -18,
           suc_artis: -25,
           mesaj: "Nöbetçi parayı cebine indirip dosyanı gerçekten kaybetti.",
           detay: "Bazı adamların sözü parayla birlikte gelir.",
         },
         basarisizSonuc: {
-          para: -16,
+          para: -18,
           mesaj: "Parayı aldı ama dosyayı 'unutmaya' cesaret edemedi; en azından bugünlük sessiz kaldı.",
           detay: "Korkak bir nöbetçi bile bazen işe yarar.",
         },
       },
       {
-        metin: "Yarı fiyatına pazarlık etmeyi dene. (Kefaret: 8)",
+        metin: "Yarı fiyatına pazarlık etmeyi dene. (Kefaret: 9)",
         baseBasariSansi: 45,
-        maliyet: 8,
+        maliyet: 9,
         ipucu: "Ucuz ama riskli — anlaşma bozulursa para boşuna gider",
         basariliSonuc: {
-          para: -8,
+          para: -9,
           suc_artis: -25,
           mesaj: "Şaşırtıcı biçimde pazarlığı kabul etti; yarı fiyata aynı sonucu aldın.",
           detay: "Bazen cesaret para kazandırır.",
         },
         basarisizSonuc: {
-          para: -8,
+          para: -9,
           mesaj: "Az parayı hakaret sayıp geri çevirdi; verdiğin sikkeler boşa gitti, dosyan yerinde duruyor.",
           detay: "Ucuz teklif bazen hiç teklif etmemekten kötü sonuçlanır.",
         },
@@ -346,17 +346,17 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
     metin: "Komşuların arasında hakkında tedirgin edici bir dedikodu dolaşıyor; birkaç kelime daha yayılırsa yanlış kulaklara ulaşabilir.",
     secenekler: [
       {
-        metin: "Mahalle muhtarına küçük bir 'bağış' yap, sözü kapat. (Kefaret: 14)",
+        metin: "Mahalle muhtarına küçük bir 'bağış' yap, sözü kapat. (Kefaret: 15)",
         baseBasariSansi: 85,
-        maliyet: 14,
+        maliyet: 15,
         basariliSonuc: {
-          para: -14,
+          para: -15,
           suc_artis: -25,
           mesaj: "Bağışın muhtarın ağzını bağladı; dedikodu bir günde söndü.",
           detay: "Cömertlik bazen en iyi susturucu.",
         },
         basarisizSonuc: {
-          para: -14,
+          para: -15,
           mesaj: "Bağışı kabul etti ama dedikodu zaten fazla yayılmıştı; en azından muhtar seni savunmaya başladı.",
           detay: "Bazı sözler geri alınamaz.",
         },
@@ -392,17 +392,17 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
     metin: "Bir görevli, evini/işyerini aramak için resmi izin çıkarabileceğini ima ediyor. Şimdi anlaşırsanız kağıt hiç yazılmayacak.",
     secenekler: [
       {
-        metin: "İzin kağıdının 'kaybolması' için öde. (Kefaret: 28)",
+        metin: "İzin kağıdının 'kaybolması' için öde. (Kefaret: 31)",
         baseBasariSansi: 80,
-        maliyet: 28,
+        maliyet: 31,
         basariliSonuc: {
-          para: -28,
+          para: -31,
           suc_artis: -25,
           mesaj: "Kağıt gerçekten de bir daha hiç görülmedi.",
           detay: "Bürokrasi bazen parayla en hızlı işleyen makinedir.",
         },
         basarisizSonuc: {
-          para: -28,
+          para: -31,
           mesaj: "Parayı aldı ama üstlerinden biri araya girdi; kağıt yine de bekletildi, en azından bugün gelmeyecekler.",
           detay: "Her rüşvet garanti değildir.",
         },
@@ -438,34 +438,34 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
     metin: "Tanıdığın biri, seni ele vermekle tehdit ediyor; sessiz kalması için bir bedel istiyor. Tam istediğini mi verirsin, yoksa yarısıyla mı idare etmeye çalışırsın?",
     secenekler: [
       {
-        metin: "İstediği tam parayı ver. (Kefaret: 30)",
+        metin: "İstediği tam parayı ver. (Kefaret: 33)",
         baseBasariSansi: 82,
-        maliyet: 30,
+        maliyet: 33,
         basariliSonuc: {
-          para: -30,
+          para: -33,
           suc_artis: -25,
           mesaj: "Parayı alınca gerçekten sustu; ihbar hiç gitmedi.",
           detay: "Açgözlü ama en azından sözünü tuttu.",
         },
         basarisizSonuc: {
-          para: -30,
+          para: -33,
           mesaj: "Parayı aldı ama zaten birilerine ağzından bir şey kaçırmıştı; hasar kısmen oluştu.",
           detay: "Bazı sırlar tam olarak geri alınamıyor.",
         },
       },
       {
-        metin: "Yarısını teklif et, gerisini reddet. (Kefaret: 15)",
+        metin: "Yarısını teklif et, gerisini reddet. (Kefaret: 17)",
         baseBasariSansi: 40,
-        maliyet: 15,
+        maliyet: 17,
         ipucu: "Ucuz ama öfkelendirebilir — reddederse doğruca ihbar edip seni tutuklatabilir",
         basariliSonuc: {
-          para: -15,
+          para: -17,
           suc_artis: -25,
           mesaj: "Beklenmedik biçimde kabul etti; görünüşe göre parayı hiç sanmıyordu.",
           detay: "Bazen az bile fazlasıyla yeterlidir.",
         },
         basarisizSonuc: {
-          para: -15,
+          para: -17,
           etiket_ekle: ["hapiste"],
           mesaj: "Teklifini hakaret sayıp öfkeyle ayrıldı — doğruca yetkililere gitti ve seni tutuklattı.",
           detay: "Cimrilik bu sefer pahalıya patladı; şimdi hapistesin, istersen kaçmayı deneyebilirsin.",
@@ -484,17 +484,17 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
     metin: "Pazar yerindeki ceza memuru, dosyandaki önceki kaydı görünce cezanı ikiye katladı. İtiraz hakkın var ama memurun sabrı da öyle.",
     secenekler: [
       {
-        metin: "Yüksek cezayı sessizce öde. (Kefaret: 32)",
+        metin: "Yüksek cezayı sessizce öde. (Kefaret: 35)",
         baseBasariSansi: 88,
-        maliyet: 32,
+        maliyet: 35,
         basariliSonuc: {
-          para: -32,
+          para: -35,
           suc_artis: -25,
           mesaj: "Ödedin; memur dosyanı bir kademe hafifletti.",
           detay: "Bazen susup ödemek en akıllıca yoldur.",
         },
         basarisizSonuc: {
-          para: -32,
+          para: -35,
           mesaj: "Ödedin ama makbuzu 'kaybettiğini' söyleyip seni yine de listede tuttu.",
           detay: "Bürokrasinin hafızası kolay silinmiyor.",
         },
@@ -528,17 +528,17 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
     metin: "Güvendiğin bir tanıdık, birkaç gün içinde adına küçük bir gece denetimi planlandığını fısıldadı. Önceden harekete geçmek mümkün.",
     secenekler: [
       {
-        metin: "Denetimi yapacak görevliyi önceden satın al. (Kefaret: 35)",
+        metin: "Denetimi yapacak görevliyi önceden satın al. (Kefaret: 39)",
         baseBasariSansi: 78,
-        maliyet: 35,
+        maliyet: 39,
         basariliSonuc: {
-          para: -35,
+          para: -39,
           suc_artis: -25,
           mesaj: "Görevli, denetim raporuna 'temiz' yazıp imzaladı.",
           detay: "Bazı kağıtlar altınla yazılır.",
         },
         basarisizSonuc: {
-          para: -35,
+          para: -39,
           mesaj: "Parayı aldı ama son anda üstleri de denetime katıldı; rapor yine de temkinli yazıldı, en azından ağırlaştırılmadı.",
           detay: "Tam kontrol asla garanti değil.",
         },
@@ -574,18 +574,18 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
     metin: "Artık şüphe değil, kesinlik var: özel bir tutuklama ekibi seni arıyor. Sokakta yürürken bile omzunun üstünden bakıyorsun.",
     secenekler: [
       {
-        metin: "Ekibin başındaki adamı büyük bir kefaretle satın al. (Kefaret: 55)",
+        metin: "Ekibin başındaki adamı büyük bir kefaretle satın al. (Kefaret: 61)",
         baseBasariSansi: 65,
-        maliyet: 55,
+        maliyet: 61,
         ipucu: "Pahalı ama işe yararsa nefes alırsın",
         basariliSonuc: {
-          para: -55,
+          para: -61,
           suc_artis: -25,
           mesaj: "Ekibin başındaki adam parayı alıp raporunu 'iz bulunamadı' diye yazdı.",
           detay: "Yüksek rütbeliler bile satılık çıkabiliyor.",
         },
         basarisizSonuc: {
-          para: -55,
+          para: -61,
           saglik: -10,
           etiket_ekle: ["hapiste"],
           mesaj: "Adam parayı aldı ama seni yine de teslim etti — hem parasız hem parmaklıklar ardında kaldın.",
@@ -621,34 +621,34 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
     metin: "Yetkililer sana ulaşmak için mahalledeki muhbirlere para dağıtıyor. Artık en yakın komşun bile seni ihbar edebilir.",
     secenekler: [
       {
-        metin: "Muhbirlerin patronuna daha büyük parayı sen ver. (Kefaret: 60)",
+        metin: "Muhbirlerin patronuna daha büyük parayı sen ver. (Kefaret: 66)",
         baseBasariSansi: 60,
-        maliyet: 60,
+        maliyet: 66,
         basariliSonuc: {
-          para: -60,
+          para: -66,
           suc_artis: -25,
           mesaj: "Muhbir ağının başı senin paranı görünce yön değiştirdi; ağ artık seni değil başkasını arıyor.",
           detay: "Karanlık ekonomide en yüksek teklif kazanır.",
         },
         basarisizSonuc: {
-          para: -60,
+          para: -66,
           mesaj: "Parayı aldı ama zaten ağ çok büyümüştü, kontrol edemediğini itiraf etti; en azından üstüne para daha eklenmedi.",
           detay: "Bazen para bile yetmiyor.",
         },
       },
       {
-        metin: "Yarı fiyatına sadece kendi mahallendeki muhbirleri sustur. (Kefaret: 28)",
+        metin: "Yarı fiyatına sadece kendi mahallendeki muhbirleri sustur. (Kefaret: 31)",
         baseBasariSansi: 40,
-        maliyet: 28,
+        maliyet: 31,
         ipucu: "Ucuz ama dar kapsamlı — para boşa gidebilir",
         basariliSonuc: {
-          para: -28,
+          para: -31,
           suc_artis: -25,
           mesaj: "Mahallendeki muhbirler sustu; şans eseri asıl tehlike de oradaymış.",
           detay: "Bazen küçük bir yatırım yeter.",
         },
         basarisizSonuc: {
-          para: -28,
+          para: -31,
           suc_artis: 35,
           mesaj: "Mahalleni sustursan da ihbar başka bir semtten geldi; üstüne bir de para harcamış oldun.",
           detay: "Dar kapsamlı çözümler dar kapsamlı kalıyor.",
@@ -684,17 +684,17 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         },
       },
       {
-        metin: "Sakin görün, yanlış kişi olduğunu iddia et. (Kefaret: 50)",
+        metin: "Sakin görün, yanlış kişi olduğunu iddia et. (Kefaret: 55)",
         baseBasariSansi: 55,
-        maliyet: 50,
+        maliyet: 55,
         basariliSonuc: {
-          para: -50,
+          para: -55,
           suc_artis: -25,
           mesaj: "Cebindeki paranın bir kısmını 'yanlışlıkla düşürdün'; görevliler eşkali unutmayı tercih etti.",
           detay: "Bazı kimlik kontrolleri altınla çözülür.",
         },
         basarisizSonuc: {
-          para: -50,
+          para: -55,
           etiket_ekle: ["hapiste"],
           mesaj: "İkna olmadılar; hem paranı kaybettin hem de kelepçelendin.",
           detay: "Bu sefer hiçbir şey işe yaramadı.",
@@ -713,17 +713,17 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
     metin: "Bölgenin yargıcına dolaylı yoldan ulaşan bir aracı, dosyanı resmi olarak hafifletebileceğini söylüyor — tabii uygun bir 'kefaret' karşılığında.",
     secenekler: [
       {
-        metin: "Aracının istediği kefareti öde. (Kefaret: 65)",
+        metin: "Aracının istediği kefareti öde. (Kefaret: 72)",
         baseBasariSansi: 75,
-        maliyet: 65,
+        maliyet: 72,
         basariliSonuc: {
-          para: -59,
+          para: -65,
           suc_artis: -25,
           mesaj: "Kefaret makamlara ulaştı; dosyan resmi olarak bir kademe hafifledi.",
           detay: "Adalet bazen faturalı işler.",
         },
         basarisizSonuc: {
-          para: -65,
+          para: -72,
           mesaj: "Aracı parayı gönderdiğini söyledi ama hiçbir şey değişmedi; belki de cebine attı.",
           detay: "Aracılara güvenmek her zaman riskli.",
         },
@@ -759,18 +759,18 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
     metin: "Artık senin için özel bir birim kuruldu; her sokak başında bir göz, her hanın kapısında bir soru var. Bu, kaçmanın neredeyse imkansız olduğu bir seviye.",
     secenekler: [
       {
-        metin: "Elindeki her şeyi büyük bir kefarete dök. (Kefaret: 100)",
+        metin: "Elindeki her şeyi büyük bir kefarete dök. (Kefaret: 110)",
         baseBasariSansi: 55,
-        maliyet: 100,
+        maliyet: 110,
         ipucu: "Çok pahalı ama tek gerçek şansın bu olabilir",
         basariliSonuc: {
-          para: -100,
+          para: -110,
           suc_artis: -45,
           mesaj: "Yüklü kefaret en üst makamlara kadar ulaştı; takip birimi resmen küçültüldü.",
           detay: "Servetin, hayatını satın aldı.",
         },
         basarisizSonuc: {
-          para: -100,
+          para: -110,
           saglik: -10,
           etiket_ekle: ["hapiste"],
           mesaj: "Bu kadar büyük bir parayı bile görmezden gelip seni yakaladılar; artık nakdin de yok.",
@@ -807,18 +807,18 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
     metin: "Başına konan ödül, bağımsız ödül avcılarını bile harekete geçirdi. Artık sadece resmi görevlilerden değil, parayı koklayan sıradan insanlardan da saklanman gerekiyor.",
     secenekler: [
       {
-        metin: "Bir ödül avcısını kendi tarafına çekmeye çalış. (Kefaret: 90)",
+        metin: "Bir ödül avcısını kendi tarafına çekmeye çalış. (Kefaret: 99)",
         baseBasariSansi: 50,
-        maliyet: 90,
+        maliyet: 99,
         ipucu: "Riskli bir kumar — avcı parayı alıp yine de seni satabilir",
         basariliSonuc: {
-          para: -90,
+          para: -99,
           suc_artis: -45,
           mesaj: "Ödül avcısı senin teklifini ödülden daha cazip buldu; peşini bıraktı ve hatta diğerlerini yanılttı.",
           detay: "Bazen avcı en iyi müttefik olur.",
         },
         basarisizSonuc: {
-          para: -90,
+          para: -99,
           saglik: -20,
           etiket_ekle: ["hapiste"],
           mesaj: "Avcı parayı aldıktan hemen sonra seni teslim etti; hem parasız hem yaralı kaldın.",
@@ -854,11 +854,11 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
     metin: "Etkili bir aracı, en üst makamlara senin adına şefaat edebileceğini söylüyor — ama bu seviyede bir af, akıl almaz bir kefaret gerektiriyor.",
     secenekler: [
       {
-        metin: "İstenen devasa kefareti öde. (Kefaret: 130)",
+        metin: "İstenen devasa kefareti öde. (Kefaret: 143)",
         baseBasariSansi: 60,
-        maliyet: 130,
+        maliyet: 143,
         basariliSonuc: {
-          para: -124,
+          para: -136,
           suc_artis: -65,
           mesaj: "Şefaat gerçekten işe yaradı; dosyan neredeyse tertemiz bir sayfaya döndü.",
           detay: "Bazı borçlar sadece çok büyük paralarla kapanır.",
@@ -914,17 +914,17 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         },
       },
       {
-        metin: "Kapıyı aç, elindeki parayla oyalamaya çalış. (Kefaret: 95)",
+        metin: "Kapıyı aç, elindeki parayla oyalamaya çalış. (Kefaret: 105)",
         baseBasariSansi: 45,
-        maliyet: 95,
+        maliyet: 105,
         basariliSonuc: {
-          para: -95,
+          para: -105,
           suc_artis: -45,
           mesaj: "Elindeki her şeyi kapıdaki komutanın eline tutuşturdun; adam bir an duraksadı ve 'yanlış ev' diyerek geri çekildi.",
           detay: "Bu gece açgözlülük hayatını kurtardı.",
         },
         basarisizSonuc: {
-          para: -95,
+          para: -105,
           saglik: -15,
           etiket_ekle: ["hapiste"],
           mesaj: "Komutan parayı reddedip adamlarına işaret etti; kapı kırıldı.",
@@ -970,9 +970,9 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         },
       },
       {
-        metin: "Servetinle rüşvet ver, satın almayı dene. (En az 50 gerekir)",
+        metin: "Servetinle rüşvet ver, satın almayı dene. (En az 55 gerekir)",
         baseBasariSansi: 60,
-        maliyet: 50,
+        maliyet: 55,
         ipucu: "Pahalı ama hapse girmeden kurtulabilirsin",
         basariliSonuc: {
           para_yuzde_kaybet: 75,
@@ -1049,9 +1049,9 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         },
       },
       {
-        metin: "Servetinle rüşvet ver, satın almayı dene. (En az 50 gerekir)",
+        metin: "Servetinle rüşvet ver, satın almayı dene. (En az 55 gerekir)",
         baseBasariSansi: 60,
-        maliyet: 50,
+        maliyet: 55,
         ipucu: "Pahalı ama hapse girmeden kurtulabilirsin",
         basariliSonuc: {
           para_yuzde_kaybet: 75,
