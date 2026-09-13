@@ -544,7 +544,7 @@ Ayrıca her mülk türünün kendine özel, normal havuzdan tamamen dışlanmı�
 
 **Kriz/Altın Çağ** (`kriz_baslat` ile başlar, `bitisYili`'ye kadar her yıl): Kıtlık → sağlık **-1**/yıl (yama #1'de -2→-1; `dunyaFinansEtkileri` metni de -1'e güncellendi); İsyan → para-3/yıl, un-1/yıl; Altın Çağ → para+4/yıl, mutluluk+1/yıl. Küçük kriz süresi de kısaldı: 2-3 → **1-2 yıl** (`KUCUK_KRIZ_SURE_MIN_YIL=1`).
 
-**Konut/yaşam tarzı:** Turu tüketmez. Konutta **daha pahalıya** geçişte `TASINMA_MALIYETI=3` tek seferlik ücret (ucuza geri çekilme ücretsiz); yaşam tarzı değişimi her zaman ücretsiz/anlık. Yeni karakter varsayılanı 2026-09 ekonomi dengesinde **`normal_ev` + `normal_ye`** — ikisi de sağlık/ün açısından TAMAMEN NÖTR: ev/sofra ekranını hiç açmayan sıradan oyuncu ilk 15-20 yıl boyunca sessizce sağlık/itibar kaybetmesin. **Başlangıç parası (büyük denge turu): `Math.max(5, Math.min(35, 12 + aile.para + yerlesim.para))`** — taban 20→12, sonuç [5, 35]'e kırpılır (kullanıcı: "bonuslarla 35'i aşmasın, en düşük 5 olsun"). En ucuz 2 konut/sofra kademesinin cezası da yumuşatıldı: -4/-3 → **-2/yıl** (§16).
+**Konut/yaşam tarzı:** Turu tüketmez. Konutta **daha pahalıya** geçişte `TASINMA_MALIYETI=3` tek seferlik ücret (ucuza geri çekilme ücretsiz); yaşam tarzı değişimi her zaman ücretsiz/anlık. Yeni karakter varsayılanı 2026-09 ekonomi dengesinde **`normal_ev` + `normal_ye`** — ikisi de sağlık/ün açısından TAMAMEN NÖTR: ev/sofra ekranını hiç açmayan sıradan oyuncu ilk 15-20 yıl boyunca sessizce sağlık/itibar kaybetmesin. **Başlangıç parası (2026-09 ikinci denge turu): `Math.max(5, Math.min(40, 10 + aile.para + yerlesim.para))`** — taban 12→10, aile etkisi artık dar bir ~±20 bandında (eskiden +80/-25 gibi aşırı uçlar vardı), sonuç [5, 40]'a kırpılır (taban 5'te sabit kalıyor — en fakir kökende bile temel bir aksiyonu karşılayacak kadar para). En ucuz 2 konut/sofra kademesinin cezası da yumuşatıldı: -4/-3 → **-2/yıl** (§16).
 
 **Skor** (yama #1'de yeniden yazıldı): `servet = para + gayrimenkulDegeriHesapla(state)`; `servetFaktoru = servet>0 ? 1+log10(1+servet) : max(0.15, 1+servet/400)`; `skor = round(yas × max(un,1) × servetFaktoru)`, hayat amacı tamamlandıysa **×5**. Eski `× max(para,1)` çarpanı tek zengin ömrü milyonlara fırlatıp liderlik tablosunu domine ediyordu + borçlu bitişleri 1'e ezip ayırt edilemez kılıyordu; log-ölçek ikisini de çözdü (servet 100→~3.0, 500→~3.7, 8M→~7.9; borç küçük ama gerçek bir ceza).
 
@@ -614,29 +614,39 @@ Yeni her karakter nötr **`kasaba`** (ad "Kasaba", `YERLESIMLER[0]`) alır: hiç
 | Sınır Bölgesi | 0 | +8 | ×0.95 | savaş+10, ticaret-5 | ×1.00 |
 | Dağ Başı | +5 | -10 | ×0.90 | sağlık+8, sosyal-10 | ×0.98 |
 
-### Aile Mesleği (18 tip, doğuşta ağırlıklı rastgele seçilir — `agirlik` alanı)
-Her satır: para/sağlık/ün/ahlak başlangıç bonusu + yatkınlık etkisi. `devamMeslegi` varsa, oyuncu o mesleği seçerse "aile mirası sürdürüldü" bonusu (+10un, +15para, ×1.15 kalıcı maaş) alır.
+### Aile Mesleği (28 tip, doğuşta EŞİT ağırlıkla rastgele seçilir)
+Kaynak: [aileler.ts](server/src/data/aileler.ts). Her satır: para/sağlık/ün/ahlak/**mutluluk** başlangıç bonusu + yatkınlık etkisi. `devamMeslegi` varsa, oyuncu o mesleği seçerse "aile mirası sürdürüldü" bonusu (+10un, +15para, ×1.15 kalıcı maaş) alır. **2026-09 birinci denge turu:** tüm `agirlik` değerleri `1`'e eşitlendi (eskiden 0.6-1.5 arası değişen ağırlıklarla bazı aileler diğerlerinden sık/nadir çıkıyordu); aynı turda çağa özel **6 yeni aile** (3 Orta Çağ, 3 Sanayi Devrimi) + **4 komik/absürt aile** (her iki çağda da çıkabilir) eklendi (18→28), ardından **var olan 6 aile** de (kole/zanaatkar/hekim → Orta Çağ, madenci/denizci/katip → Sanayi Devrimi) çağa özel hale getirildi. **2026-09 ikinci denge turu (kullanıcı isteği):** tüm 28 ailenin para/sağlık/ün/ahlak değerleri ortak, dar bantlara sıkıştırılarak yeniden planlandı (para/ün/ahlak ~±20, sağlık ~±16 — eskiden bazı aileler +80/-25 gibi aşırı uçlardaydı, bazıları neredeyse etkisizdi) ve `AileTanimi`'ye yeni bir `mutluluk` alanı eklenerek **HER aile artık mutluluğu da ~±10-12 bandında etkiler** (eskiden hiçbiri etkilemiyordu). Buna paralel `createCharacter`'daki tabanlar da değişti: sağlık 100→**80**, ahlak 50→**45**, para tabanı 12→**10** (sonuç aralığı 35→**40** tavana, taban yine **5**'te — bkz. yukarısı).
 
-| id (agirlik) | Çağ kısıtı | Devam Mesleği | para | sağlık | ün | ahlak |
-|---|---|---|---|---|---|---|
-| ciftci (1.5) | – | – | -10 | +15 | -8 | +8 |
-| asker (1.2) | – | Asker | +5 | +12 | +10 | -12 |
-| kole (0.8) | – | – | -25 | -5 | -20 | +20 |
-| soylu (0.9) | – | – | +55 | -5 | +40 | -30 |
-| sanatci (1.0) | – | – | -18 | -3 | +18 | +5 |
-| fabrika_iscisi (1.4) | Sanayi | – | -12 | -15 | -5 | +18 |
-| tuccar (1.2) | – | Tüccar | +60 | -5 | +12 | -15 |
-| din_adami (1.1) | – | Din Adamı | -12 | -3 | +15 | +25 |
-| zanaatkar (1.3) | – | – | +18 | +8 | -10 | +5 |
-| hekim (0.9) | – | – | -15 | +15 | +8 | +5 |
-| denizci (1.0) | – | – | +10 | +10 | -3 | -15 |
-| madenci (1.0) | – | – | +22 | -18 | -5 | +10 |
-| kacakci (0.9) | – | – | +40 | +5 | -22 | -18 |
-| tefeci (0.8) | – | – | +80 | -2 | -18 | -25 |
-| katip (1.0) | – | – | -8 | -12 | +15 | +12 |
-| cellat (0.6) | – | – | +25 | +8 | -25 | -12 |
-| saray_hizmetkari (1.0) | – | – | +8 | -5 | +16 | -12 |
-| surgun (0.9) | – | – | -8 | +8 | -22 | +15 |
+| id | Çağ kısıtı | Devam Mesleği | para | sağlık | ün | ahlak | mutluluk |
+|---|---|---|---|---|---|---|---|
+| ciftci | – | – | -15 | +12 | -8 | +8 | +6 |
+| asker | – | Asker | +5 | +10 | +10 | -12 | -4 |
+| kole | Orta Çağ | – | -20 | -8 | -18 | +18 | -10 |
+| soylu | – | – | +20 | -5 | +20 | -20 | -8 |
+| sanatci | – | – | -14 | -3 | +14 | +5 | +8 |
+| fabrika_iscisi | Sanayi | – | -12 | -14 | -6 | +14 | -6 |
+| tuccar | – | Tüccar | +20 | -4 | +12 | -14 | +4 |
+| din_adami | – | Din Adamı | -10 | -3 | +14 | +20 | +6 |
+| zanaatkar | Orta Çağ | – | +12 | +8 | -8 | +6 | +4 |
+| hekim | Orta Çağ | – | -14 | +14 | +8 | +6 | -2 |
+| denizci | Sanayi | – | +12 | +10 | -4 | -14 | -2 |
+| madenci | Sanayi | – | +18 | -16 | -6 | +10 | -8 |
+| kacakci | – | – | +18 | +4 | -18 | -16 | -6 |
+| tefeci | – | – | +20 | -2 | -16 | -20 | -10 |
+| katip | Sanayi | – | -10 | -10 | +14 | +12 | -4 |
+| cellat | – | – | +14 | +6 | -20 | -14 | -10 |
+| saray_hizmetkari | – | – | +6 | -4 | +14 | -10 | -2 |
+| surgun | – | – | -12 | +6 | -18 | +14 | -8 |
+| sovalye | Orta Çağ | Asker | +10 | +6 | +20 | +10 | -4 |
+| haci | Orta Çağ | – | -12 | -4 | +6 | +14 | +6 |
+| soytari *(komik)* | Orta Çağ | – | -14 | +4 | -6 | +6 | +10 |
+| muhendis | Sanayi | – | +16 | -6 | +8 | +6 | +2 |
+| gazeteci | Sanayi | – | -12 | -4 | +20 | +8 | +2 |
+| sirk_ailesi *(komik)* | Sanayi | – | -16 | +12 | +12 | -6 | +10 |
+| define_avcisi *(komik)* | – | – | -18 | -4 | -8 | +4 | +6 |
+| falci *(komik)* | – | – | -10 | +4 | -4 | -6 | +4 |
+| kumarbaz *(komik)* | – | – | -16 | +4 | -10 | -12 | -6 |
+| tavuk_hirsizi *(komik)* | – | – | +8 | +4 | -14 | -8 | +6 |
 
 (`fabrika_iscisi` ayrıca kalıcı `Durum` verir: "Tozlu Ciğerler" `tur_basi_saglik:-1`.)
 
@@ -690,7 +700,7 @@ Taşınma ücreti (sadece daha pahalıya geçişte): **3**. `normal_ev` bilinçl
 | kaliteli_ye | 13 | +3 | +2 | – |
 | ziyafet_gibi_ye | 20 | +3 | +4 | +1 |
 
-**Başlangıç statları** (`createCharacter`, aile/yerleşim bonusları ayrıca eklenir): mutluluk **50**, ahlak **50**, şöhret(un) **20**, sağlık 100, para **`max(5, min(35, 12 + aile.para + yerlesim.para))`** (büyük denge turu, §13). Üçü de itibar maaş bandında nötr başlar (§13).
+**Başlangıç statları** (`createCharacter`, aile/yerleşim bonusları ayrıca eklenir — **2026-09 ikinci denge turu**, kullanıcı isteği): mutluluk **50** + aile etkisi (yeni: her aile artık mutluluğu da ~±12 bandında etkiler, eskiden hiçbiri etkilemiyordu), ahlak **45** (eski 50) + aile etkisi (~±20 bandı, eski uçlar +25/-30'du), şöhret(un) **20** + aile etkisi (~±20 bandı, eski uçlar +40/-25'ti), sağlık **80** (eski 100) + aile etkisi (~±16 bandı) + yerleşim etkisi, para **`max(5, min(40, 10 + aile.para + yerlesim.para))`** (eski taban 12/tavan 35; aile etkisi artık ~±20 bandı, eski uçlar +80/-25'ti). Tüm aile etkileri artık ortak, dar bantlarda tutuluyor (§16) — hiçbir aile aşırı uçta durmuyor ama hiçbiri de etkisiz kalmıyor.
 
 ### Piyasa Mülkleri (6 tür — ekonomi sıkılaştırma turunda "Küçük Tarla" eklendi —, her türden en fazla 1, taban maliyet enflasyonla ölçeklenir)
 | tur | Ad | Taban Maliyet | Avantajlı | Dezavantajlı |
