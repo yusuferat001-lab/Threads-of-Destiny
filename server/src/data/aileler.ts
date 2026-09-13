@@ -59,6 +59,7 @@ export const AILELER: AileTanimi[] = [
     id: "kole",
     ad: "Köle",
     agirlik: 1,
+    cag: "Orta Çağ",
     anlati:
       "Ailen {bolge} topraklarında bir efendinin malıydı. Özgürlüğünü ancak efendinin ölümüyle kazandın; elinde ne para ne isim vardı. Acıyı ve adaletsizliği ilk elden tanıdığın için insanları çok iyi okuyorsun, ama toplum sana hâlâ geçmişinle bakıyor.",
     etiketler: ["aile:kole", "azat_edilmis"],
@@ -141,6 +142,7 @@ export const AILELER: AileTanimi[] = [
     id: "zanaatkar",
     ad: "Zanaatkâr",
     agirlik: 1,
+    cag: "Orta Çağ",
     anlati:
       "Baban {bolge} çarşısında demir döverdi, sen körüğü çekerek büyüdün. Ne zengin ne fakirdiniz; ödenmiş bir kira ve dolu bir tencere yeterdi. Elin iş tutar, gözün ölçü bilir — ama çekiç sallayan adama kimse büyük fırsat sunmaz.",
     etiketler: ["aile:zanaatkar", "zanaat_bilgisi"],
@@ -154,6 +156,7 @@ export const AILELER: AileTanimi[] = [
     id: "hekim",
     ad: "Hekim",
     agirlik: 1,
+    cag: "Orta Çağ",
     anlati:
       "Annen {bolge} çevresinde şifacı olarak bilinirdi; otları, yaraları, ateşi tanırdı. Kan görmeye küçük yaşta alıştın. İnsanların en kırılgan hallerini gördüğün için ölümden az korkarsın — ama hekimlik yapmayı seçmedin ve bu ailende hâlâ bir kırgınlık.",
     etiketler: ["aile:hekim", "sifa_bilgisi"],
@@ -167,8 +170,9 @@ export const AILELER: AileTanimi[] = [
     id: "denizci",
     ad: "Denizci",
     agirlik: 1,
+    cag: "Sanayi Devrimi",
     anlati:
-      "Baban {bolge} limanlarından kalkan gemilerde yıllarca çalıştı, bir seferden hiç dönmedi. Sen liman meyhanelerinde büyüdün; yabancı dilleri, hileli zarları ve fırtınadan önceki sessizliği tanırsın.",
+      "Baban {bolge} limanlarından kalkan buharlı gemilerde yıllarca çalıştı, bir seferden hiç dönmedi. Sen liman meyhanelerinde büyüdün; yabancı dilleri, hileli zarları ve fırtınadan önceki sessizliği tanırsın.",
     etiketler: ["aile:denizci", "liman_asinasi"],
     saglik: 10,
     para: 10,
@@ -180,6 +184,7 @@ export const AILELER: AileTanimi[] = [
     id: "madenci",
     ad: "Madenci",
     agirlik: 1,
+    cag: "Sanayi Devrimi",
     anlati:
       "Ailen {bolge} yakınlarındaki madende çalıştı; iki amcan yer altında kaldı. Karanlıktan korkmayı çoktan bıraktın. Ağır işin parası iyiydi, bedeli ciğerlerindi — ve o bedeli sen de ödemeye başladın bile.",
     etiketler: ["aile:madenci", "yeralti_bilgisi"],
@@ -219,8 +224,9 @@ export const AILELER: AileTanimi[] = [
     id: "katip",
     ad: "Kâtip",
     agirlik: 1,
+    cag: "Sanayi Devrimi",
     anlati:
-      "Baban {bolge} divanında kayıt tutar, insanların doğumunu ve borcunu aynı defterin sayfalarına yazardı. Okuma yazmayı ve kimin kime ne borçlu olduğunu erken öğrendin. Kalem tutan eller güçlüdür ama yumruk yediğinde kırılır.",
+      "Baban {bolge}'nin yeni demiryolu şirketinde defter tutar, kimin kime ne borçlu olduğunu aynı sayfalara yazardı. Okuma yazmayı ve rakamları erken öğrendin. Kalem tutan eller güçlüdür ama fabrika patronunun öfkesine karşı hiçbir zaman yeterli değildir.",
     etiketler: ["aile:katip", "okur_yazar"],
     un: 15,
     ahlak: 12,

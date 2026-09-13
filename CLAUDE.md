@@ -614,25 +614,25 @@ Yeni her karakter nötr **`kasaba`** (ad "Kasaba", `YERLESIMLER[0]`) alır: hiç
 | Dağ Başı | +5 | -10 | ×0.90 | sağlık+8, sosyal-10 | ×0.98 |
 
 ### Aile Mesleği (28 tip, doğuşta EŞİT ağırlıkla rastgele seçilir)
-Kaynak: [aileler.ts](server/src/data/aileler.ts). Her satır: para/sağlık/ün/ahlak başlangıç bonusu + yatkınlık etkisi. `devamMeslegi` varsa, oyuncu o mesleği seçerse "aile mirası sürdürüldü" bonusu (+10un, +15para, ×1.15 kalıcı maaş) alır. **2026-09'da tüm `agirlik` değerleri `1`'e eşitlendi** (eskiden 0.6-1.5 arası değişen ağırlıklarla bazı aileler diğerlerinden sık/nadir çıkıyordu — kullanıcı isteği: "eşit olsun"); aynı turda çağa özel **6 yeni aile** (3 Orta Çağ, 3 Sanayi Devrimi) + **4 komik/absürt aile** (her iki çağda da çıkabilir) eklendi, toplam 18→28.
+Kaynak: [aileler.ts](server/src/data/aileler.ts). Her satır: para/sağlık/ün/ahlak başlangıç bonusu + yatkınlık etkisi. `devamMeslegi` varsa, oyuncu o mesleği seçerse "aile mirası sürdürüldü" bonusu (+10un, +15para, ×1.15 kalıcı maaş) alır. **2026-09'da tüm `agirlik` değerleri `1`'e eşitlendi** (eskiden 0.6-1.5 arası değişen ağırlıklarla bazı aileler diğerlerinden sık/nadir çıkıyordu — kullanıcı isteği: "eşit olsun"); aynı turda çağa özel **6 yeni aile** (3 Orta Çağ, 3 Sanayi Devrimi) + **4 komik/absürt aile** (her iki çağda da çıkabilir) eklendi (18→28), ardından **var olan 6 aile** de (kole/zanaatkar/hekim → Orta Çağ, madenci/denizci/katip → Sanayi Devrimi) çağa özel hale getirildi — anlatı metinleri zaten o çağa daha çok yakışıyordu (katip'in "divan" metni Sanayi Devrimi'ne uymadığı için demiryolu şirketi defterine güncellendi, denizci'ye "buharlı gemi" eklendi).
 
 | id | Çağ kısıtı | Devam Mesleği | para | sağlık | ün | ahlak |
 |---|---|---|---|---|---|---|
 | ciftci | – | – | -10 | +15 | -8 | +8 |
 | asker | – | Asker | +5 | +12 | +10 | -12 |
-| kole | – | – | -25 | -5 | -20 | +20 |
+| kole | Orta Çağ | – | -25 | -5 | -20 | +20 |
 | soylu | – | – | +55 | -5 | +40 | -30 |
 | sanatci | – | – | -18 | -3 | +18 | +5 |
 | fabrika_iscisi | Sanayi | – | -12 | -15 | -5 | +18 |
 | tuccar | – | Tüccar | +60 | -5 | +12 | -15 |
 | din_adami | – | Din Adamı | -12 | -3 | +15 | +25 |
-| zanaatkar | – | – | +18 | +8 | -10 | +5 |
-| hekim | – | – | -15 | +15 | +8 | +5 |
-| denizci | – | – | +10 | +10 | -3 | -15 |
-| madenci | – | – | +22 | -18 | -5 | +10 |
+| zanaatkar | Orta Çağ | – | +18 | +8 | -10 | +5 |
+| hekim | Orta Çağ | – | -15 | +15 | +8 | +5 |
+| denizci | Sanayi | – | +10 | +10 | -3 | -15 |
+| madenci | Sanayi | – | +22 | -18 | -5 | +10 |
 | kacakci | – | – | +40 | +5 | -22 | -18 |
 | tefeci | – | – | +80 | -2 | -18 | -25 |
-| katip | – | – | -8 | -12 | +15 | +12 |
+| katip | Sanayi | – | -8 | -12 | +15 | +12 |
 | cellat | – | – | +25 | +8 | -25 | -12 |
 | saray_hizmetkari | – | – | +8 | -5 | +16 | -12 |
 | surgun | – | – | -8 | +8 | -22 | +15 |
