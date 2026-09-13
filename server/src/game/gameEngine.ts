@@ -127,6 +127,9 @@ import {
 } from "../data/evcilHayvanlar";
 import { tarihiSavasKontrol } from "../data/tarihiSavaslar";
 import { GIZEMLI_ESYA_TAKIP_HAVUZU } from "../data/gizemliEsyalar";
+
+/** Bir gizemli eşya edinildikten sonra, takip olayı garantisinin tetiklenmesi için beklenecek minimum olay/tur sayısı (§11 kural 8). */
+const GIZEMLI_ESYA_TAKIP_GECIKME_TUR = 4;
 import { yerlesimGetir } from "../data/yerlesimler";
 import { oturumKaydet, oturumYukle, aktifOturumlariYukle, bitmisOturumlariYukle, oturumYasiSaniye } from "../db/sessionRepository";
 import { uygunsuzMu } from "../moderasyon/kufurFiltresi";
@@ -631,9 +634,11 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
     }
   }
   // Gizemli bir eşyaya (envanter:/esya: etiketli) sahip olup henüz onun kendi
-  // takip olaylarından hiçbirini yaşamamış bir karaktere, YAŞ SINIRI OLMADAN
-  // (eşyayı ne zaman edinirse etsin, ilk fırsatta) o eşyanın havuzundan biri
-  // zorla tetiklenir — havuzdan biri görülünce bir daha tetiklenmez (ömürde bir kez).
+  // takip olaylarından hiçbirini yaşamamış bir karaktere, YAŞ SINIRI OLMADAN ama
+  // eşyayı edinir edinmez de değil — GIZEMLI_ESYA_TAKIP_GECIKME_TUR (4) olay/tur
+  // geçtikten sonra o eşyanın havuzundan biri zorla tetiklenir (eşyayı elde eder
+  // etmez hemen bir "takip" olayının gelmesi çok ani/mekanik hissettiriyordu).
+  // Havuzdan biri görülünce bir daha tetiklenmez (ömürde bir kez).
   if (!zorlananId && !milestoneKilitli) {
     const sahipOlunanEsyalar = oturum.state.etiketler
       .filter((e) => e.startsWith("esya:") || e.startsWith("envanter:"))
@@ -641,6 +646,8 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
     for (const esyaId of sahipOlunanEsyalar) {
       const havuz = GIZEMLI_ESYA_TAKIP_HAVUZU[esyaId];
       if (!havuz || havuz.length === 0) continue;
+      const edinmeTuru = oturum.state.esya_edinilme_turu?.[esyaId] ?? 0;
+      if (oturum.state.tur_sayisi - edinmeTuru < GIZEMLI_ESYA_TAKIP_GECIKME_TUR) continue;
       const gorulenSayisi = havuz.filter((id) => oturum.state.gecmis_olaylar.includes(id)).length;
       if (gorulenSayisi === 0) {
         const gorulmemis = havuz.filter((id) => !oturum.state.gecmis_olaylar.includes(id));

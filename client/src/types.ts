@@ -267,6 +267,7 @@ export interface CharacterState {
   tur_sayisi: number;
   gecmis_olaylar: string[];
   onceki_omurler_gorulen_olaylar: string[];
+  esya_edinilme_turu: Record<string, number>;
   gecmis: GecmisNoktasi[];
   hayat_hikayesi: HayatOlayi[];
   aktif: boolean;

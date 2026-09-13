@@ -704,6 +704,7 @@ export function createCharacter(
     tur_sayisi: 0,
     gecmis_olaylar: [],
     onceki_omurler_gorulen_olaylar: [...new Set(gorulmusOlaylar ?? [])].slice(0, 1200),
+    esya_edinilme_turu: {},
     gecmis: [],
     hayat_hikayesi: [],
     aktif: true,
@@ -842,6 +843,7 @@ export function eskiKayitGocu(state: CharacterState): void {
   // aritmetik uyguladığı için (Finans ekranı) minimum güvenli varsayılana çekiyoruz.
   if (!Array.isArray(state.mulkler)) state.mulkler = [];
   if (!Array.isArray(state.onceki_omurler_gorulen_olaylar)) state.onceki_omurler_gorulen_olaylar = [];
+  if (!state.esya_edinilme_turu || typeof state.esya_edinilme_turu !== "object") state.esya_edinilme_turu = {};
   if (typeof state.baslangic_yili !== "number") state.baslangic_yili = state.yil;
   // Periyodik mülk bakımı sonradan eklendi; eski kayıtlarda sayaç yok — sahip olunan
   // her mülke rastgele bir 7-10 yıl kur (hepsi aynı yıl tetiklenmesin diye ayrı ayrı).
@@ -1541,6 +1543,15 @@ export function etiketEkle(state: CharacterState, etiketler?: string[]): void {
       );
     }
     state.etiketler.push(etiket);
+    // Gizemli eşya edinme anı: takip olayı garantisinin (§11 kural 8) "eşya
+    // edinildikten en az 4 olay sonra" gecikmesini hesaplayabilmesi için kaydedilir.
+    if (etiket.startsWith("esya:") || etiket.startsWith("envanter:")) {
+      const esyaId = etiket.slice(etiket.indexOf(":") + 1);
+      if (!state.esya_edinilme_turu) state.esya_edinilme_turu = {};
+      if (state.esya_edinilme_turu[esyaId] === undefined) {
+        state.esya_edinilme_turu[esyaId] = state.tur_sayisi;
+      }
+    }
   }
 }
 

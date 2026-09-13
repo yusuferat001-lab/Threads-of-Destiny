@@ -366,6 +366,14 @@ export interface CharacterState {
    * için kullanılır. Eski kayıtlarda `eskiKayitGocu` [] backfill eder.
    */
   onceki_omurler_gorulen_olaylar: string[];
+  /**
+   * Bir gizemli eşya (`esya:`/`envanter:` etiketi) edinildiği andaki `tur_sayisi`.
+   * Anahtar eşya id'si (etiketin ":"den sonrası). `etiketEkle` tarafından otomatik
+   * yazılır. Takip olayı garantisi (§11 kural 8) bunu kullanarak eşya edinilir
+   * edinilmez değil, en az 4 olay/tur sonra tetiklenmesini sağlar. Eski kayıtlarda
+   * yoksa `eskiKayitGocu` {} atar (o eşyalar için diff büyük çıkar, hemen uygun sayılır).
+   */
+  esya_edinilme_turu: Record<string, number>;
   gecmis: GecmisNoktasi[];
   hayat_hikayesi: HayatOlayi[];
   aktif: boolean;

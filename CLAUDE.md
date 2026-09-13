@@ -237,6 +237,8 @@ Kaynak: [server/src/types.ts](server/src/types.ts). Tek kaynak — client `types
 | `durumlar: Durum[]` | Süreli/kalıcı pasif efektler — `{id, ad, tur:"gecici"\|"kalici", kalan_tur?, tur_basi_saglik?, tur_basi_para?, tur_basi_mutluluk?, gelir_carpani?, bitince_etiket?}` |
 | `tur_sayisi` | Toplam tur (yıl değil!) sayısı — rütbe kıdemi bunu kullanır. Enflasyon **artık bunu kullanmaz** — `baslangic_yili`'den bu yana geçen gerçek yıl sayısını kullanır (§13) |
 | `gecmis_olaylar: string[]` | Görülen **tüm** olay id'lerinin kronolojik listesi (sınırsız büyür) — olay seçim önceliği bunu kullanır |
+| `onceki_omurler_gorulen_olaylar: string[]` | Bu cihazda önceki ömürlerde görülen olay id'leri (istemci `localStorage`'dan `POST /new`'e gönderilir) — sadece `olaySec`'in ömür-boyu tekrar sınırını (§12) yeni ömürde de geçerli kılmak için, milestone-gating'e (bu alanı okumaz) karışmaz |
+| `esya_edinilme_turu: Record<string, number>` | Bir gizemli eşyanın (`esya:`/`envanter:`) edinildiği andaki `tur_sayisi`; `etiketEkle`'de otomatik yazılır, takip olayı garantisinin (§11 kural 8) 4-tur gecikmesi bunu kullanır |
 | `gecmis: GecmisNoktasi[]` | `{yil,para,saglik,un}` grafiği, **en fazla 40 nokta** (eski silinir) |
 | `hayat_hikayesi: HayatOlayi[]` | `{yil,yas,ikon,baslik}` — ölüm ekranı özeti, **en fazla 10 kayıt** |
 | `aktif` | false olunca oyun biter |
@@ -412,7 +414,7 @@ Bir seçeneğin `onTepki` alanı varsa: seçilince **zar atılmaz**, zaman ilerl
 5. **Şehir yönetimi girişi** — `rutbe_seviye>=4` (2026-08 rütbe reformuyla eski `>=3`'ten yükseltildi, §14), `sehir_yonetimi_basladi` etiketi yok → mesleğe göre `sehir_yonetim_{tuccar|dinadami|asker}_baslangic`.
 6. **Evcil hayvan teklifi** — 20≤yaş<25, evcil hayvanı yok, teklif olayı görülmemiş → çağa göre `evcilhayvan_sahiplenme_teklifi_{sanayi|ortacag}`.
 7. **Evcil hayvan takip garantisi** — evcil hayvanı var, 45≤yaş<50, `EVCIL_HAYVAN_TAKIP_OLAY_IDLERI`'den <2 görülmüş → `EVCIL_HAYVAN_GENEL_TAKIP_OLAY_IDLERI` havuzundan (öncelik görülmemişlerde) rastgele.
-8. **Gizemli eşya takip garantisi** (2026-09'da yaş sınırı KALDIRILDI) — sahip olunan her `esya:`/`envanter:` etiketi için `GIZEMLI_ESYA_TAKIP_HAVUZU[esyaId]`'den hiç görülmemişse → o havuzdan rastgele (ilk eşleşen eşya kazanır). Artık yaşa bakılmaksızın, eşya edinildikten sonraki ilk fırsatta tetiklenir; havuzdan biri görülünce bir daha tetiklenmez (doğal olarak ömürde bir kez).
+8. **Gizemli eşya takip garantisi** (2026-09'da yaş sınırı KALDIRILDI, yerine gecikme sayacı eklendi) — sahip olunan her `esya:`/`envanter:` etiketi için, o eşya **edinildikten en az `GIZEMLI_ESYA_TAKIP_GECIKME_TUR=4` olay/tur sonra** ve `GIZEMLI_ESYA_TAKIP_HAVUZU[esyaId]`'den hiç görülmemişse → o havuzdan rastgele (ilk eşleşen eşya kazanır). Eşyayı ne zaman edinirse etsin (yaşa bakılmaksızın) uygulanır; havuzdan biri görülünce bir daha tetiklenmez (doğal olarak ömürde bir kez). Edinme anı `CharacterState.esya_edinilme_turu: Record<esyaId, tur_sayisi>` içinde `etiketEkle`'de otomatik kaydedilir (eski kayıtlarda eksikse diff büyük çıkar, hemen uygun sayılır).
 9. **Hizip takip garantisi** (2026-09: eşik 3'ten 4'e, pencere 45-50'den 40-55'e genişletildi) — hizbe katılmış, 40≤yaş<55, hizbe özel olaylardan <4 görülmüş → o havuzdan rastgele.
 10. **Saray daveti** — henüz `sarayda` değil, `un>=70 AND ahlak>=70`, `saray_kral_daveti` görülmemiş → `saray_kral_daveti`.
 11. **Saray takip garantisi** — `sarayda`, 50≤yaş<58, `SARAY_OLAY_IDLERI` (6 id) 'den <2 görülmüş → havuzdan rastgele.

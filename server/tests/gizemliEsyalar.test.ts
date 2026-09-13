@@ -49,6 +49,7 @@ describe("gizemli eşya sistemi", () => {
     digerZorunluOlaylariGecistir(state);
     state.etiketler.push("esya:fisildayan_tas");
     state.yas = 40;
+    state.tur_sayisi = 10; // eşya edinildikten sonraki 4 olaylık gecikmeyi (GIZEMLI_ESYA_TAKIP_GECIKME_TUR) geçmiş say
     const senaryo = await senaryoUret(state.id);
     const beklenenBasliklar = GIZEMLI_ESYA_TAKIP_HAVUZU["fisildayan_tas"].map(baslikGetir);
     expect(beklenenBasliklar).toContain(senaryo.olay_basligi);
@@ -64,5 +65,19 @@ describe("gizemli eşya sistemi", () => {
     const senaryo = await senaryoUret(state.id);
     const takipBasliklari = GIZEMLI_ESYA_TAKIP_HAVUZU["eski_ayna"].map(baslikGetir);
     expect(takipBasliklari).not.toContain(senaryo.olay_basligi);
+  });
+
+  it("bir eşya edinilir edinilmez (GIZEMLI_ESYA_TAKIP_GECIKME_TUR dolmadan) garanti tetiklenmez", async () => {
+    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    await mesleğiAta(state.id, "Tüccar");
+    digerZorunluOlaylariGecistir(state);
+    state.yas = 40;
+    // etiketEkle üzerinden eklenirse esya_edinilme_turu = mevcut tur_sayisi (0) olarak kaydedilir.
+    const { etiketEkle } = await import("../src/game/stateManager");
+    etiketEkle(state, ["esya:fisildayan_tas"]);
+    expect(state.esya_edinilme_turu["fisildayan_tas"]).toBe(0);
+    const tumTakipBasliklari = new Set(GIZEMLI_ESYA_TAKIP_HAVUZU["fisildayan_tas"].map(baslikGetir));
+    const senaryo = await senaryoUret(state.id);
+    expect(tumTakipBasliklari.has(senaryo.olay_basligi)).toBe(false);
   });
 });
