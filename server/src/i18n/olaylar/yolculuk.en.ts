@@ -3500,4 +3500,217 @@ export const OLAYLAR_YOLCULUK_EN: Record<string, OlayCeviri> = {
       },
     ],
   },
+
+  // "Az olay var" turu Faz 5 (2026-09): second branch point for the remaining
+  // 5 journey types
+  oc_hacli_kutsal_topraklar_savasi_b: {
+    baslik: "Night Raid",
+    metin: "Rather than forcing the walls, the commander proposes sneaking in through a tunnel at night to open the gates from within. Risky, but it could bring victory without bloodshed.",
+    secenekler: [
+      {
+        metin: "Join the infiltration team, use the tunnel.",
+        ipucu: "A silent victory or the risk of a trap",
+        basariliSonuc: {
+          mesaj: "You slipped through the tunnel and opened the gates from within; the fortress fell with barely any resistance.",
+          detay: "Some victories are won with silence, not swords.",
+        },
+        basarisizSonuc: {
+          mesaj: "The tunnel began to collapse; a few soldiers were trapped under the rubble, the rest barely escaped.",
+          detay: "This night raid cost you dearly.",
+        },
+      },
+      {
+        metin: "Stay with the main force, continue the classic siege.",
+        ipucu: "Ordinary but safe",
+        basariliSonuc: {
+          mesaj: "You stayed with the main force; the fortress eventually fell the conventional way.",
+          detay: "Not every victory needs a brilliant maneuver.",
+        },
+        basarisizSonuc: {
+          mesaj: "You were lightly wounded during a counterattack in the siege.",
+          detay: "Even ordinary duties carry risk in this war.",
+        },
+      },
+    ],
+  },
+  sd_somurge_ahlaki_ikilem_b: {
+    baslik: "The Journalist's Question",
+    metin: "A journalist from back home is asking you direct questions about the practices in the colony. What you say will be published.",
+    secenekler: [
+      {
+        metin: "Defend the company, say everything is fine.",
+        ipucu: "Your career is safe, the truth stays hidden",
+        basariliSonuc: {
+          mesaj: "The interview pleased the company; you even got a promise of promotion, but what you said stayed with your conscience.",
+          detay: "Some words keep bothering you long after they're spoken.",
+        },
+        basarisizSonuc: {
+          mesaj: "Your words seemed inconsistent, and the journalist wrote with a skeptical tone.",
+          detay: "Lies sometimes give themselves away.",
+        },
+      },
+      {
+        metin: "Tell the truth, take the risk.",
+        ipucu: "Your conscience is clear but you may get in trouble with the company",
+        basariliSonuc: {
+          mesaj: "Your honest interview made a big impact back home; many people admired you.",
+          detay: "Sometimes telling the truth is its own kind of victory.",
+        },
+        basarisizSonuc: {
+          mesaj: "The company didn't like the interview and cut your bonuses.",
+          detay: "The honest word had a cost.",
+        },
+      },
+    ],
+  },
+  yolculuk_savunma_savas_ortak_b: {
+    baslik: "The Wounded Behind the Front",
+    metin: "The assault wave was repelled, but the rear is filling with wounded; the medics can't keep up. Meanwhile, watch duty must continue.",
+    secenekler: [
+      {
+        metin: "Leave your post, help the wounded.",
+        ipucu: "Compassionate but weakens the watch",
+        basariliSonuc: {
+          mesaj: "You helped the wounded; a few lives were saved thanks to you.",
+          detay: "This kindness will be talked about in the fortress for a long time.",
+        },
+        basarisizSonuc: {
+          mesaj: "You did what you could, but some of the wounded couldn't be saved, and you were left exhausted too.",
+          detay: "Not every effort gives the result you want.",
+        },
+      },
+      {
+        metin: "Stay at your post, keep watch.",
+        ipucu: "Disciplined but weighs on your conscience",
+        basariliSonuc: {
+          mesaj: "Your watch caught and prevented a sudden night attack.",
+          detay: "Discipline is sometimes invisible but vital.",
+        },
+        basarisizSonuc: {
+          mesaj: "You stayed at your post, but the screams behind you stayed in your ears for a long time.",
+          detay: "Some sounds never fade.",
+        },
+      },
+    ],
+  },
+  yolculuk_kesif_kara_3b: {
+    baslik: "An Abandoned City",
+    metin: "The caravan came across the ruins of an abandoned city, unmarked on any map. Some caravan members want to spend time searching for treasure; the caravan leader wants to press on.",
+    secenekler: [
+      {
+        metin: "Stay briefly and explore the ruins.",
+        ipucu: "Risky but could be a valuable find",
+        basariliSonuc: {
+          mesaj: "You found a forgotten treasure chamber in the ruins; the caravan moved on richer.",
+          detay: "Some discoveries hide in unexpected places.",
+        },
+        basarisizSonuc: {
+          mesaj: "A few people were lightly injured in a collapsing tunnel, and nothing tangible was found.",
+          detay: "Not every exploration pays off.",
+        },
+      },
+      {
+        metin: "Don't stop, move on immediately.",
+        ipucu: "Safe but you miss the opportunity",
+        basariliSonuc: {
+          mesaj: "The caravan pressed on without stopping; the city's secrets stayed unsolved behind you.",
+          detay: "Sometimes moving forward suppresses curiosity.",
+        },
+        basarisizSonuc: {
+          mesaj: "Some caravan members grew restless, thinking the opportunity had been missed.",
+          detay: "Not every decision pleases everyone.",
+        },
+      },
+    ],
+  },
+  yolculuk_kesif_deniz_3b: {
+    baslik: "An Unmapped Island",
+    metin: "A small island unmarked on any chart appeared on the horizon. The crew is curious to go ashore, but the weather window is narrow.",
+    secenekler: [
+      {
+        metin: "Anchor and make a brief exploration.",
+        ipucu: "A valuable find, but you might miss the weather window",
+        basariliSonuc: {
+          mesaj: "You discovered a rare spice source on the island; a new route was added to the caravan's ledger.",
+          detay: "Some islands don't deserve to be forgotten.",
+        },
+        basarisizSonuc: {
+          mesaj: "The wind shifted suddenly and the ship barely made it back out to open water; the exploration was cut short.",
+          detay: "The sea doesn't wait even for the curious.",
+        },
+      },
+      {
+        metin: "Hold course, leave the island behind.",
+        ipucu: "Safe but the opportunity slips away",
+        basariliSonuc: {
+          mesaj: "The ship held its course; the island shrank into the horizon.",
+          detay: "Some curiosities have to be suppressed.",
+        },
+        basarisizSonuc: {
+          mesaj: "The crew was disappointed at the missed opportunity, morale dipped a little.",
+          detay: "Not every cautious decision is popular.",
+        },
+      },
+    ],
+  },
+  yolculuk_mucit_saray_3b: {
+    baslik: "The Rival Inventor's Trap",
+    metin: "A rival inventor competing with you at court has spread a malicious rumor about your invention right before your show. The hall is full of whispers.",
+    secenekler: [
+      {
+        metin: "Ignore the rumor, focus on your show.",
+        ipucu: "Calm, but the rumor might cast a shadow",
+        basariliSonuc: {
+          mesaj: "Your show thoroughly disproved the rumor; the rival inventor was left in the shadows.",
+          detay: "Sometimes the best answer is simply doing your job well.",
+        },
+        basarisizSonuc: {
+          mesaj: "The rumor lingered in some nobles' minds, and your show passed in the shadows.",
+          detay: "Some whispers finish the job before it's even started.",
+        },
+      },
+      {
+        metin: "Confront the rival openly in front of the hall.",
+        ipucu: "Risky but could clear your name at once",
+        basariliSonuc: {
+          mesaj: "The confrontation cornered the rival; the hall took your side.",
+          detay: "A bold confrontation is sometimes the best defense.",
+        },
+        basarisizSonuc: {
+          mesaj: "The confrontation turned ugly, and the hall was uncomfortable with both of you.",
+          detay: "Not every confrontation ends in your favor.",
+        },
+      },
+    ],
+  },
+  yolculuk_mucit_sanayici_3b: {
+    baslik: "A Patent Dispute",
+    metin: "A factory owner claims part of your invention was his engineer's idea and demands a share. Taking it to court could cost time and money.",
+    secenekler: [
+      {
+        metin: "Settle, give up a small share.",
+        ipucu: "A cheap way out but some lost earnings",
+        basariliSonuc: {
+          mesaj: "A small-share settlement was reached; the invention went into production without trouble.",
+          detay: "Some disputes are settled with a small price.",
+        },
+        basarisizSonuc: {
+          mesaj: "Despite the settlement, the factory owner didn't fully keep his word, and production was somewhat disrupted.",
+          detay: "Some agreements stay only on paper.",
+        },
+      },
+      {
+        metin: "Refuse, defend your right in court.",
+        ipucu: "Risky but if you win, full rights are yours",
+        basariliSonuc: {
+          mesaj: "The court ruled in your favor; the invention was credited entirely to your name.",
+          detay: "Some rights are only kept through struggle.",
+        },
+        basarisizSonuc: {
+          mesaj: "The court sided with the factory owner; you lost both money and reputation.",
+          detay: "Not every fight is won.",
+        },
+      },
+    ],
+  },
 };
