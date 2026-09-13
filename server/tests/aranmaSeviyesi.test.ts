@@ -49,18 +49,22 @@ describe("aranma kademesi — olay havuzu şekli", () => {
     expect(OLAY_ARANMA_SEVIYESI.length).toBeGreaterThanOrEqual(25);
   });
 
-  it("tetikleyici olaylar temiz banda (maxSucSeviyesi:19) kilitli", () => {
-    const tetikleyiciler = OLAY_ARANMA_SEVIYESI.filter((o) => o.maxSucSeviyesi === 19);
+  it("tetikleyici olaylar temiz banda (maxSucSeviyesi:24) kilitli", () => {
+    const tetikleyiciler = OLAY_ARANMA_SEVIYESI.filter((o) => o.maxSucSeviyesi === 24);
     expect(tetikleyiciler.length).toBeGreaterThanOrEqual(3);
     for (const o of tetikleyiciler) expect(o.minSucSeviyesi).toBeUndefined();
   });
 
   it("her kademe (1-4) için o banda kilitli en az bir olay var", () => {
-    const bantlar: Array<[number, number | undefined]> = [
-      [20, 39],
-      [40, 59],
-      [60, 79],
-      [80, undefined],
+    // 2026-09 aranma yeniden dengeleme turu: 5 bant (temiz+1-4) → 4 bant
+    // (0-25/25-50/50-75/75-100). Kademe 1 (rutin/rüşvet) artık temiz bandıyla
+    // aynı üst sınırı (25) paylaşır (minSucSeviyesi tanımsız, temiz olaylarla
+    // aynı havuzda rekabet eder).
+    const bantlar: Array<[number | undefined, number | undefined]> = [
+      [undefined, 25],
+      [25, 50],
+      [50, 75],
+      [75, undefined],
     ];
     for (const [min, max] of bantlar) {
       const varMi = OLAY_ARANMA_SEVIYESI.some(
@@ -75,11 +79,11 @@ describe("aranma kademesi — olay havuzu şekli", () => {
     expect(kacakOlaylari.length).toBeGreaterThanOrEqual(8);
   });
 
-  it("iki baskın olayı da suc_seviyesi 60'ta başlar, üst sınırı yok (kademe 3 VE 4'te çıkar)", () => {
+  it("iki baskın olayı da suc_seviyesi 50'de başlar, üst sınırı yok (kademe 3 VE 4'te çıkar)", () => {
     const baskinlar = OLAY_ARANMA_SEVIYESI.filter((o) => o.id.startsWith("aranma_baskin_"));
     expect(baskinlar).toHaveLength(2);
     for (const b of baskinlar) {
-      expect(b.minSucSeviyesi).toBe(60);
+      expect(b.minSucSeviyesi).toBe(50);
       expect(b.maxSucSeviyesi).toBeUndefined();
       expect(b.secenekler).toHaveLength(3);
     }

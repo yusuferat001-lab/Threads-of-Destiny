@@ -97,6 +97,17 @@ export interface OlayTanimi {
   gerekliHizip?: boolean;
   /** true ise bu olay sadece "hapiste" etiketi taşıyan karakterlere çıkar; hapisteyken normal olay havuzu tamamen kapanır. */
   hapisOlayi?: boolean;
+  /**
+   * true ise bu bir hapis.ts olayıdır ve başarılı seçimi rüşvet/af/kefaret gibi
+   * PARA YA DA İYİ HAL karşılığında KESİN bir serbest bırakma sunar (fiziksel
+   * kaçış girişimleri — tünel, bayıltma, avlu duvarı vb. — bu kapsamda DEĞİLDİR,
+   * onlar her zaman denenebilir kalır). Tutuklanma anındaki suc_seviyesi
+   * ≥50 (bkz. §17 "baskın"/"azılı suçlu" bantları) ise, `hapis_ceza_toplam -
+   * hapis_ceza_kalan` (yıl yatılan) `HAPIS_ERKEN_CIKIS_MIN_YIL`'a ulaşana kadar
+   * bu olaylar havuzdan gizlenir — "en az N yıl yatmadan para/af ile çıkamazsın"
+   * kuralını uygular (`olaySecici.ts` `uygunMu`).
+   */
+  hapisParaylaCikisOlayi?: boolean;
   /** true ise bu olay sadece "yolculukta" etiketi taşıyan karakterlere çıkar; yolculuktayken normal olay havuzu tamamen kapanır (hapisOlayi ile birebir aynı mantık, çok yıllı yolculuk zincirleri için). */
   yolculukOlayi?: boolean;
   /** true ise bu olay sadece vebayı bizzat kapmış ("veba_hastasi" etiketi) karakterlere çıkar; hastayken normal havuz tamamen kapanır (hapisOlayi ile aynı mantık). Hekim/tedavi/ihmal seçimleriyle veba_olum_riski'ni düşürüp yükseltir. */

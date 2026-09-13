@@ -196,6 +196,38 @@ const SUC_KAZANC_CIDDI_TAVAN = 65;
 /** Mülk sahibi bir karaktere, her senaryoUret çağrısında mulkOlaylari.ts'ten zorlanan bir olay gelme ihtimali. */
 const MULK_OLAYI_IHTIMALI = 0.12;
 
+// Aranma yeniden dengeleme turu (4 bant: 0-25/25-50/50-75/75-100, bkz.
+// aranmaSeviyesi.ts): hapse yeni girişte, tutuklama anındaki suc_seviyesi
+// bandına göre ceza süresi doğrudan bir aralıktan rastgele seçilir — hangi
+// olay/yol tutukladığından (aranmaSeviyesi.ts olayları ya da kotuIsler.ts
+// karanlık iş yakalanması) bağımsız, tek bir fonksiyonda (hapisCezaSuresiHesapla).
+const HAPIS_CEZA_TEMIZ_MIN_YIL = 2;
+const HAPIS_CEZA_TEMIZ_MAX_YIL = 4;
+const HAPIS_CEZA_YAKALANMA_MIN_YIL = 4;
+const HAPIS_CEZA_YAKALANMA_MAX_YIL = 7;
+const HAPIS_CEZA_BASKIN_MIN_YIL = 7;
+const HAPIS_CEZA_BASKIN_MAX_YIL = 9;
+const HAPIS_CEZA_AZILI_MIN_YIL = 9;
+const HAPIS_CEZA_AZILI_MAX_YIL = 12;
+
+/** Bir min-max aralığından (dahil) rastgele tam sayı yıl döndürür. */
+function rastgeleYilAraligi(min: number, max: number): number {
+  return min + Math.floor(Math.random() * (max - min + 1));
+}
+
+/**
+ * Tutuklanma anındaki suc_seviyesi bandına göre hapis cezası süresini (yıl)
+ * belirler — aranmaSeviyesi.ts'teki 4 bantla birebir hizalı:
+ * 0-25 temiz/rutin (3-6y) · 25-50 yakalanma (5-8y) · 50-75 baskın (7-9y) ·
+ * 75-100 azılı suçlu (9-12y).
+ */
+export function hapisCezaSuresiHesapla(sucSeviyesi: number): number {
+  if (sucSeviyesi >= 75) return rastgeleYilAraligi(HAPIS_CEZA_AZILI_MIN_YIL, HAPIS_CEZA_AZILI_MAX_YIL);
+  if (sucSeviyesi >= 50) return rastgeleYilAraligi(HAPIS_CEZA_BASKIN_MIN_YIL, HAPIS_CEZA_BASKIN_MAX_YIL);
+  if (sucSeviyesi >= 25) return rastgeleYilAraligi(HAPIS_CEZA_YAKALANMA_MIN_YIL, HAPIS_CEZA_YAKALANMA_MAX_YIL);
+  return rastgeleYilAraligi(HAPIS_CEZA_TEMIZ_MIN_YIL, HAPIS_CEZA_TEMIZ_MAX_YIL);
+}
+
 /**
  * Yolculuk (Haçlı Seferi / Hac / Keşif / Sömürge Seferi vb.) olaylarında kazanılan
  * paraya uygulanan sabit zam. Eskiden yolculuğu bitirmek kalıcı bir maaş primi
@@ -1191,18 +1223,31 @@ async function sonucuUygulaVeIlerlet(
     !!etki.etiket_sil?.includes("hapiste") && state.etiketler.includes("hapiste");
   etiketEkle(state, etki.etiket_ekle);
   etiketSil(state, etki.etiket_sil);
-  // Hapse yeni girildiyse ceza süresini belirle: taban 3-6 yıl + aranma
-  // kademesine göre 0-3 yıl (suç seviyesi ağırsa ceza uzun). Zaten bir cezan
-  // varsa (üst üste tutuklanma) dokunma.
+  // Hapse yeni girildiyse ceza süresi tutuklanma anındaki suc_seviyesi bandına
+  // göre belirlenir (hapisCezaSuresiHesapla, aranmaSeviyesi.ts bant eşikleriyle
+  // hizalı: 0-25→3-6y · 25-50→5-8y · 50-75→7-9y · 75-100→9-12y). Zaten bir
+  // cezan varsa (üst üste tutuklanma) dokunma. `hapis_ceza_toplam` başlangıç
+  // cezasını sabit tutar — "yıl yatılan" (toplam-kalan) hesaplaması ve bandı
+  // ağır tutuklamalarda erken parayla/af ile çıkışı engelleyen kural bunu kullanır.
+  // Bu turda TAZE tutuklanma oldu mu? Aşağıdaki yıl-ilerleme bloğu, aynı turda
+  // hem "hapiste"yi ekleyip hem de o turun yasArtisi'ni cezadan düşerse (kısa
+  // cezalarda — bkz. HAPIS_CEZA_TEMIZ_MIN_YIL — ceza yasArtisi'ne eşit/az olabilir)
+  // karakter tutuklandığı turda görünmeden serbest kalabilir. Bu bayrak o turun
+  // doğal erimesini atlayıp cezanın en az bir tam tur hissedilmesini garantiler.
+  let hapisteYeniGirildiBuTur = false;
   if (etki.etiket_ekle?.includes("hapiste") && state.hapis_ceza_kalan <= 0) {
-    const taban = 3 + Math.floor(Math.random() * 4);
-    const kademeCeza = Math.min(3, Math.floor(state.suc_seviyesi / 30));
-    state.hapis_ceza_kalan = taban + kademeCeza;
+    const ceza = hapisCezaSuresiHesapla(state.suc_seviyesi);
+    state.hapis_ceza_kalan = ceza;
+    state.hapis_ceza_toplam = ceza;
+    hapisteYeniGirildiBuTur = true;
   }
-  // Riskli kaçış girişimi başarısız oldu → ceza uzadı.
+  // Riskli kaçış girişimi başarısız oldu → ceza uzadı (toplam ceza da birlikte uzar).
   if (etki.hapis_ceza_artis && state.etiketler.includes("hapiste")) {
     state.hapis_ceza_kalan += etki.hapis_ceza_artis;
+    state.hapis_ceza_toplam += etki.hapis_ceza_artis;
   }
+  // Bir seçimle "hapiste" silindiyse (rüşvet/af/başarılı kaçış) toplam sayaç sıfırlanır.
+  if (hapistenCiktiBuEtki) state.hapis_ceza_toplam = 0;
   // Bir olay seçimiyle serbest kalındıysa (rüşvet/af/başarılı kaçış) sayaç sıfırlanır.
   if (hapistenCiktiBuEtki) state.hapis_ceza_kalan = 0;
   // Bir olay (veba dönemi bulaşma olayı) vebayı bulaştırdıysa kişisel hastalığı
@@ -1300,10 +1345,14 @@ async function sonucuUygulaVeIlerlet(
           zamanAnlatimi = zamanAnlatimiUret(state, yasArtisi, ekonomi);
           // Hapis cezası: her turda geçen yıl kadar erir; dolduğunda karakter
           // kendiliğinden serbest kalır (bir kaçış/af olayı beklemek zorunda değil).
-          if (state.etiketler.includes("hapiste")) {
+          // Tutuklanmanın olduğu turda erimeyi atla (hapisteYeniGirildiBuTur) —
+          // aksi halde kısa bir ceza, tutuklandığı turun yasArtisi'yle aynı anda
+          // sıfırlanıp hiç hissedilmeden bitebilir.
+          if (state.etiketler.includes("hapiste") && !hapisteYeniGirildiBuTur) {
             state.hapis_ceza_kalan -= yasArtisi;
             if (state.hapis_ceza_kalan <= 0) {
               state.hapis_ceza_kalan = 0;
+              state.hapis_ceza_toplam = 0;
               etiketSil(state, ["hapiste"]);
               hayatOlayiEkle(state, "⛓️", T(state.dil, "Cezasını tamamlayıp serbest kaldı"));
               const cikisMesaji = T(state.dil, "⛓️ Cezan doldu; kapılar açıldı ve özgür bir insan olarak dışarı çıktın.");
@@ -2755,7 +2804,9 @@ export async function kotuIsYap(id: string, tur: string, secenek: KotuIsSecenek 
   if (!kazandi && dal.hapis_sansi && Math.random() < dal.hapis_sansi) {
     etiketEkle(state, ["hapiste"]);
     if (state.hapis_ceza_kalan <= 0) {
-      state.hapis_ceza_kalan = 3 + Math.floor(Math.random() * 4) + Math.min(3, Math.floor(state.suc_seviyesi / 30));
+      const ceza = hapisCezaSuresiHesapla(state.suc_seviyesi);
+      state.hapis_ceza_kalan = ceza;
+      state.hapis_ceza_toplam = ceza;
     }
     hayatOlayiEkle(state, "⛓️", T(dil, "Karanlık bir iş sırasında enselendi"));
     mesaj += " " + T(dil, "Enselendin — kodesi boyladın.");
@@ -2901,13 +2952,17 @@ export async function dedikoduGetir(id: string): Promise<string[]> {
 }
 
 const ZAR_KADEMELERI = [10, 50, 100] as const;
-// Büyük denge turunda 4→7: aranma seviyesi genelde daha hızlı artsın (kullanıcı isteği).
-const ZAR_SUC_ARTISI = 7;
+// Aranma yeniden dengeleme turu: tur harcamadan defalarca oynanabildiği için
+// (kullanıcı: "kumar adam dövmekle aynı şey değil") 7→3'e düşürüldü — kumar
+// hâlâ suç sayılır ama karanlık işler (şiddet/soygun) listesiyle tekrar
+// yarışmasın.
+const ZAR_SUC_ARTISI = 3;
 // Hazard: her kaç elde bir "rakip bıçak çekti" tetiklenmeyi denesin ve ihtimali.
 const HAZARD_BICAK_HER_KAC_EL = 4;
 const HAZARD_BICAK_IHTIMAL = 0.45;
 const UC_KAGITCI_KAZANMA_SANSI = 0.34;
-const UC_KAGITCI_SUC_ARTISI = 4;
+// Aranma yeniden dengeleme turu: 4→2 (aynı gerekçe, §ZAR_SUC_ARTISI).
+const UC_KAGITCI_SUC_ARTISI = 2;
 const BILEK_GURESI_ODUL_TABAN = 4;
 
 function zarAtBir(): number {
