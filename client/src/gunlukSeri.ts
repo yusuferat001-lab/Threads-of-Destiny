@@ -5,9 +5,9 @@
  * Ardışık günlerde seri +1 artar; 1 günlük bir "grace" payı var (bir gün
  * atlanırsa seri kırılmaz, ama iki gün üst üste atlanırsa sıfırlanır) —
  * agresif seri sistemleri terk sebebi olduğu için kasıtlı yumuşak.
- * Ödül `kaderSikkesi.ts`'e Kader Sikkesi olarak yazılır.
+ * Ödül `miras.ts`'e Miras olarak yazılır.
  */
-import { sikkeEkle } from './kaderSikkesi';
+import { mirasEkle } from './miras';
 
 interface GunlukSeriDurumu {
   sonGirisTarihi: string | null;
@@ -50,7 +50,7 @@ function yaz(d: GunlukSeriDurumu) {
   }
 }
 
-/** Seri uzunluğuna göre kademeli sikke ödülü. */
+/** Seri uzunluğuna göre kademeli Miras ödülü. */
 function odulMiktariHesapla(seri: number): number {
   if (seri >= 14) return 15;
   if (seri >= 7) return 10;
@@ -88,7 +88,7 @@ export function gunlukSeriKontrolEt(): GunlukSeriSonuc {
   yaz({ sonGirisTarihi: bugun, seriUzunlugu: yeniSeri, enUzunSeri: enUzun });
 
   const odul = odulMiktariHesapla(yeniSeri);
-  sikkeEkle(odul);
+  mirasEkle(odul);
 
   return { seri: yeniSeri, enUzunSeri: enUzun, yeniOdulMu: true, odulMiktari: odul };
 }

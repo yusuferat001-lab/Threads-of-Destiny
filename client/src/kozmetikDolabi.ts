@@ -2,7 +2,7 @@
  * Kalıcı kozmetik dolabı — cihaz-yerel (`localStorage`), sunucuya gitmez.
  * `basarimlar.ts` deseniyle aynı: karakter ölse de dolap kalır.
  */
-import { sikkeHarca } from './kaderSikkesi';
+import { mirasHarca } from './miras';
 import { KOZMETIK_KATALOG, kozmetikTanimGetir, type KozmetikKategori } from './kozmetikKatalog';
 
 const SAHIP_ANAHTAR = 'kader_carki_kozmetik_sahip';
@@ -60,13 +60,13 @@ export function kozmetikGiyilenlerGetir(): GiyilenKozmetikler {
   return giyilenOku();
 }
 
-/** Yeterli sikke varsa satın alır + sahiplenir, yetersizse false döner. */
+/** Yeterli Miras varsa satın alır + sahiplenir, yetersizse false döner. */
 export function kozmetikSatinAl(id: string): boolean {
   const tanim = kozmetikTanimGetir(id);
   if (!tanim) return false;
   const sahip = sahipOkuSet();
   if (sahip.has(id)) return false; // zaten sahip — tekrar satın alınmaz
-  if (!sikkeHarca(tanim.fiyat)) return false;
+  if (!mirasHarca(tanim.fiyat)) return false;
   sahip.add(id);
   sahipYaz(sahip);
   return true;

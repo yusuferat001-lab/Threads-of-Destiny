@@ -2,7 +2,7 @@
  * Kalıcı kozmetik dolabı katalogu — hesap/cihaz düzeyinde, hayattan bağımsız
  * görsel eşyalar. Oyun-içi `magaza_envanteri`den (§26, karakter ölünce kaybolur)
  * TAMAMEN AYRI bir katman: burada satın alınan hiçbir şey hiçbir stat/güç
- * etkisi taşımaz, salt görünüm. Kader Sikkesi (`kaderSikkesi.ts`) ile satın
+ * etkisi taşımaz, salt görünüm. Miras (`miras.ts`) ile satın
  * alınır, `kozmetikDolabi.ts` localStorage'da hangilerinin sahiplenildiğini/
  * giyildiğini tutar, `KarakterAvatari` bunları katman olarak render eder.
  *

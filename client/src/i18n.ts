@@ -125,7 +125,7 @@ const TR = {
   kzCikar: 'Çıkar',
   kzGiy: 'Giy',
   kzGiyili: 'Giyili',
-  kzYetersizSikke: 'Yetersiz Kader Sikkesi.',
+  kzYetersizMiras: 'Yetersiz Miras.',
 
   olumKazanimBaslik: 'Bu Hayatın Kazanımları',
 
@@ -191,12 +191,12 @@ const TR = {
   skorKaydediliyor: 'Skorun liderlik tablosuna kaydediliyor…',
   btnLiderlikTablosu: 'Liderlik Tablosu',
 
-  // ---- Günlük seri & Kader Sikkesi ----
+  // ---- Günlük seri & Miras ----
   gunlukSeriEtiket: '{0} gün',
   gunlukSeriTitle: 'En uzun serin: {0} gün',
-  sikkeAciklama: 'Kader Sikkesi — ölümlerden ve günlük girişten kazanılan kalıcı meta-para; kozmetik dolapta harcanır.',
-  gunlukOdulMesaji: '{0} günlük seri! +{1} Kader Sikkesi kazandın.',
-  olumSikkeKazanci: 'Bu hayat +{0} Kader Sikkesi kazandırdı.',
+  mirasAciklama: 'Miras — ölümlerden ve günlük girişten kazanılan kalıcı meta-para; kozmetik dolapta harcanır.',
+  gunlukOdulMesaji: '{0} günlük seri! +{1} Miras kazandın.',
+  olumMirasKazandi: 'Bu hayat +{0} Miras kazandırdı.',
 
   // ---- Liderlik ----
   liderlikBaslik: 'Liderlik Tablosu',
@@ -829,7 +829,7 @@ const EN: Metinler = {
   kzCikar: 'Remove',
   kzGiy: 'Equip',
   kzGiyili: 'Equipped',
-  kzYetersizSikke: 'Not enough Fate Coin.',
+  kzYetersizMiras: 'Not enough Legacy.',
 
   olumKazanimBaslik: 'This Life\'s Honours',
 
@@ -895,12 +895,12 @@ const EN: Metinler = {
   skorKaydediliyor: 'Saving your score to the leaderboard…',
   btnLiderlikTablosu: 'Leaderboard',
 
-  // ---- Daily streak & Fate Coin ----
+  // ---- Daily streak & Legacy ----
   gunlukSeriEtiket: '{0}-day streak',
   gunlukSeriTitle: 'Longest streak: {0} days',
-  sikkeAciklama: 'Fate Coin — a persistent meta-currency earned from deaths and daily logins; spent in the cosmetic wardrobe.',
-  gunlukOdulMesaji: '{0}-day streak! You earned +{1} Fate Coin.',
-  olumSikkeKazanci: 'This life earned you +{0} Fate Coin.',
+  mirasAciklama: 'Legacy — a persistent meta-currency earned from deaths and daily logins; spent in the cosmetic wardrobe.',
+  gunlukOdulMesaji: '{0}-day streak! You earned +{1} Legacy.',
+  olumMirasKazandi: 'This life earned you +{0} Legacy.',
 
   // ---- Leaderboard ----
   liderlikBaslik: 'Leaderboard',
