@@ -613,29 +613,39 @@ Yeni her karakter nötr **`kasaba`** (ad "Kasaba", `YERLESIMLER[0]`) alır: hiç
 | Sınır Bölgesi | 0 | +8 | ×0.95 | savaş+10, ticaret-5 | ×1.00 |
 | Dağ Başı | +5 | -10 | ×0.90 | sağlık+8, sosyal-10 | ×0.98 |
 
-### Aile Mesleği (18 tip, doğuşta ağırlıklı rastgele seçilir — `agirlik` alanı)
-Her satır: para/sağlık/ün/ahlak başlangıç bonusu + yatkınlık etkisi. `devamMeslegi` varsa, oyuncu o mesleği seçerse "aile mirası sürdürüldü" bonusu (+10un, +15para, ×1.15 kalıcı maaş) alır.
+### Aile Mesleği (28 tip, doğuşta EŞİT ağırlıkla rastgele seçilir)
+Kaynak: [aileler.ts](server/src/data/aileler.ts). Her satır: para/sağlık/ün/ahlak başlangıç bonusu + yatkınlık etkisi. `devamMeslegi` varsa, oyuncu o mesleği seçerse "aile mirası sürdürüldü" bonusu (+10un, +15para, ×1.15 kalıcı maaş) alır. **2026-09'da tüm `agirlik` değerleri `1`'e eşitlendi** (eskiden 0.6-1.5 arası değişen ağırlıklarla bazı aileler diğerlerinden sık/nadir çıkıyordu — kullanıcı isteği: "eşit olsun"); aynı turda çağa özel **6 yeni aile** (3 Orta Çağ, 3 Sanayi Devrimi) + **4 komik/absürt aile** (her iki çağda da çıkabilir) eklendi, toplam 18→28.
 
-| id (agirlik) | Çağ kısıtı | Devam Mesleği | para | sağlık | ün | ahlak |
+| id | Çağ kısıtı | Devam Mesleği | para | sağlık | ün | ahlak |
 |---|---|---|---|---|---|---|
-| ciftci (1.5) | – | – | -10 | +15 | -8 | +8 |
-| asker (1.2) | – | Asker | +5 | +12 | +10 | -12 |
-| kole (0.8) | – | – | -25 | -5 | -20 | +20 |
-| soylu (0.9) | – | – | +55 | -5 | +40 | -30 |
-| sanatci (1.0) | – | – | -18 | -3 | +18 | +5 |
-| fabrika_iscisi (1.4) | Sanayi | – | -12 | -15 | -5 | +18 |
-| tuccar (1.2) | – | Tüccar | +60 | -5 | +12 | -15 |
-| din_adami (1.1) | – | Din Adamı | -12 | -3 | +15 | +25 |
-| zanaatkar (1.3) | – | – | +18 | +8 | -10 | +5 |
-| hekim (0.9) | – | – | -15 | +15 | +8 | +5 |
-| denizci (1.0) | – | – | +10 | +10 | -3 | -15 |
-| madenci (1.0) | – | – | +22 | -18 | -5 | +10 |
-| kacakci (0.9) | – | – | +40 | +5 | -22 | -18 |
-| tefeci (0.8) | – | – | +80 | -2 | -18 | -25 |
-| katip (1.0) | – | – | -8 | -12 | +15 | +12 |
-| cellat (0.6) | – | – | +25 | +8 | -25 | -12 |
-| saray_hizmetkari (1.0) | – | – | +8 | -5 | +16 | -12 |
-| surgun (0.9) | – | – | -8 | +8 | -22 | +15 |
+| ciftci | – | – | -10 | +15 | -8 | +8 |
+| asker | – | Asker | +5 | +12 | +10 | -12 |
+| kole | – | – | -25 | -5 | -20 | +20 |
+| soylu | – | – | +55 | -5 | +40 | -30 |
+| sanatci | – | – | -18 | -3 | +18 | +5 |
+| fabrika_iscisi | Sanayi | – | -12 | -15 | -5 | +18 |
+| tuccar | – | Tüccar | +60 | -5 | +12 | -15 |
+| din_adami | – | Din Adamı | -12 | -3 | +15 | +25 |
+| zanaatkar | – | – | +18 | +8 | -10 | +5 |
+| hekim | – | – | -15 | +15 | +8 | +5 |
+| denizci | – | – | +10 | +10 | -3 | -15 |
+| madenci | – | – | +22 | -18 | -5 | +10 |
+| kacakci | – | – | +40 | +5 | -22 | -18 |
+| tefeci | – | – | +80 | -2 | -18 | -25 |
+| katip | – | – | -8 | -12 | +15 | +12 |
+| cellat | – | – | +25 | +8 | -25 | -12 |
+| saray_hizmetkari | – | – | +8 | -5 | +16 | -12 |
+| surgun | – | – | -8 | +8 | -22 | +15 |
+| sovalye | Orta Çağ | Asker | +10 | +5 | +22 | +10 |
+| haci | Orta Çağ | – | -10 | -3 | +5 | +15 |
+| soytari *(komik)* | Orta Çağ | – | -15 | +3 | -5 | +8 |
+| muhendis | Sanayi | – | +15 | -5 | +8 | +5 |
+| gazeteci | Sanayi | – | -10 | -5 | +20 | +8 |
+| sirk_ailesi *(komik)* | Sanayi | – | -18 | +10 | +12 | -5 |
+| define_avcisi *(komik)* | – | – | -20 | -3 | -8 | +5 |
+| falci *(komik)* | – | – | -12 | +5 | -3 | -5 |
+| kumarbaz *(komik)* | – | – | -20 | +5 | -10 | -10 |
+| tavuk_hirsizi *(komik)* | – | – | +8 | +3 | -15 | -8 |
 
 (`fabrika_iscisi` ayrıca kalıcı `Durum` verir: "Tozlu Ciğerler" `tur_basi_saglik:-1`.)
 
