@@ -21,7 +21,7 @@ export function bic(s: string, ...a: (string | number)[]): string {
 
 const TR = {
   // ---- Ayarlar modalı ----
-  ayarlarBaslik: 'Settings',
+  ayarlarBaslik: 'Ayarlar',
   ayarlarİpucu: 'Ayarlar',
   sekmeGenel: 'Genel',
   sekmeGeriBildirim: 'Görüş & Öneri',
@@ -76,7 +76,7 @@ const TR = {
   btnLiderlik: '🏆 Liderlik Tablosu',
   btnNasilOynanir: '📖 Nasıl Oynanır?',
   nasilOynanirBaslik: 'Nasıl Oynanır?',
-  btnAyarlar: '⚙️ Settings',
+  btnAyarlar: '⚙️ Ayarlar',
   panelGecmisHayatlar: '📜 Geçmiş Hayatlarım',
   temizle: 'Temizle',
   gecmisHayatBos: 'Bu cihazda henüz tamamlanmış bir hayat yok.',
@@ -118,7 +118,7 @@ const TR = {
 
   // ---- Kurulum akışı (çağ→bölge→yerleşim→isim) ----
   adimEtiketi: 'Adım {0} / {1}',
-  girisSlogan: 'Weave the threads of your fate.',
+  girisSlogan: 'Kaderinin ipliklerini sen ör.',
 
   // ---- Çağ seçimi ----
   cagSecBaslik: 'Çağını Seç',

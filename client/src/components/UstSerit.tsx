@@ -47,7 +47,7 @@ function useGecisDeltasi(deger: number): { delta: number; nonce: number } {
 function DeltaRozeti({ deger, nonce, birim }: { deger: number; nonce: number; birim?: string }) {
   if (nonce === 0 || Math.abs(deger) < 0.01) return null;
   const pozitif = deger > 0;
-  const gosterim = `${pozitif ? '+' : '−'}${formatPara(Math.abs(deger))}${birim ? ` ${birim}` : ''}`;
+  const gosterim = `${pozitif ? '+' : '−'}${formatPara(Math.abs(deger))}`;
   return (
     <span
       key={nonce}
@@ -55,6 +55,9 @@ function DeltaRozeti({ deger, nonce, birim }: { deger: number; nonce: number; bi
       aria-hidden="true"
     >
       {gosterim}
+      {/* Para birimi (ör. "Livre") dar mobil ekranda gizlenir — 7 dar sütunlu üst
+         şeritte uçan rozet birimle birlikte komşu modüle taşıyordu (§ust-serit-delta-birim). */}
+      {birim && <span className="ust-serit-delta-birim"> {birim}</span>}
     </span>
   );
 }
