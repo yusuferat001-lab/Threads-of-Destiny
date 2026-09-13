@@ -52,6 +52,207 @@ export const OLAYLAR_EVLILIK_AILE_EN: Record<string, OlayCeviri> = {
     ],
   },
 
+  iliski_evlilik_teklifi_oc_fransa: {
+    baslik: "A Knight's Daughter",
+    metin:
+      "A local baron's daughter has heard of the courage you showed in the tournament and wants to meet you. The family is looking for a strong knight son-in-law; the daughter says she just wants 'someone good with a sword.'",
+    secenekler: [
+      {
+        metin: "Accept the baron's offer, seal the alliance between families.",
+        basariliSonuc: {
+          mesaj: "A grand ceremony was held in the castle courtyard. The baron's daughter is your spouse now, but it's clear she sees your title, not you.",
+        },
+        basarisizSonuc: {
+          mesaj: "At the last moment the baron didn't find your lineage 'clean' enough and withdrew the offer. You became the talk of the castle.",
+        },
+      },
+      {
+        metin: "Say you want love, not land, and turn down the offer.",
+        basariliSonuc: {
+          mesaj: "You politely declined the baron's offer. The knights think you're a fool, but your conscience is clear.",
+        },
+        basarisizSonuc: {
+          mesaj: "You declined, but on night watch, looking at the castle's lights, regret crept in.",
+        },
+      },
+    ],
+  },
+  iliski_evlilik_teklifi_oc_kutsalroma: {
+    baslik: "A Principality's Offer",
+    metin:
+      "An envoy from a neighboring principality showed up at your door: marry the prince's daughter and two lands will unite, forming a common front against the emperor. You've never seen her; politics awaits you.",
+    secenekler: [
+      {
+        metin: "Accept the alliance marriage.",
+        basariliSonuc: {
+          mesaj: "The treaty signed between envoys united the two lands. The princess's gaze at you is cold as ice, but the crown is safer now.",
+        },
+        basarisizSonuc: {
+          mesaj: "The prince changed his mind at the last moment, and the alliance fell apart. You became known at court as 'the rejected suitor.'",
+        },
+      },
+      {
+        metin: "Say you won't be politics' plaything, and turn down the offer.",
+        basariliSonuc: {
+          mesaj: "You sent the envoy back. Your advisors are furious, but you didn't want to bind your life to a stranger.",
+        },
+        basarisizSonuc: {
+          mesaj: "You declined, but eating dinner alone, you wondered if you'd made a mistake.",
+        },
+      },
+    ],
+  },
+  iliski_evlilik_teklifi_oc_bizans: {
+    baslik: "Court Intrigue",
+    metin:
+      "A senatorial family's daughter is making a name for herself in court circles. Her family has even secured the emperor's approval for her to marry you — but in the Byzantine court, no marriage is ever just about love.",
+    secenekler: [
+      {
+        metin: "Marry into the senator's family, secure your place at court.",
+        basariliSonuc: {
+          mesaj: "In a ceremony held in Hagia Sophia's shadow, you became son-in-law to a senatorial family. Your spouse sees you as a stone in court's foundation — valuable as long as you stay put.",
+        },
+        basarisizSonuc: {
+          mesaj: "A rival family convinced the emperor to withdraw his approval. You fell victim to court intrigue.",
+        },
+      },
+      {
+        metin: "Refuse to be a pawn in court games, and turn down the offer.",
+        basariliSonuc: {
+          mesaj: "You politely declined the offer. The court gossips find you 'strange,' but your conscience is clear.",
+        },
+        basarisizSonuc: {
+          mesaj: "You declined, but walking the empty corridors of the palace alone, your heart ached.",
+        },
+      },
+    ],
+  },
+  iliski_evlilik_teklifi_oc_selcuklu: {
+    baslik: "The Vizier's Daughter",
+    metin:
+      "One of the court's most influential viziers wants to give you his daughter. He promises a generous dowry and a direct door into the palace — but you've never seen his daughter, only heard her name.",
+    secenekler: [
+      {
+        metin: "Accept the vizier's offer.",
+        basariliSonuc: {
+          mesaj: "The wedding was held with a crowded feast at the vizier's mansion. Your spouse is respectful but distant — someone raised in her father's shadow doesn't warm up easily.",
+        },
+        basarisizSonuc: {
+          mesaj: "The vizier fell for his rivals' whispers and withdrew. You were humiliated in court circles.",
+        },
+      },
+      {
+        metin: "Say you won't enter a marriage your heart doesn't accept, and refuse.",
+        basariliSonuc: {
+          mesaj: "You politely declined the offer. The vizier seemed offended, but your conscience is clear.",
+        },
+        basarisizSonuc: {
+          mesaj: "You declined, but sitting alone at evening prayer, your heart ached.",
+        },
+      },
+    ],
+  },
+  iliski_evlilik_teklifi_sd_ingiltere: {
+    baslik: "The Factory Owner's Daughter",
+    metin:
+      "The owner of the city's biggest factory wants to give his daughter to 'a reliable man who will grow the business.' The offer is entirely commercial — no sentiment involved — but the inheritance is enormous.",
+    secenekler: [
+      {
+        metin: "Accept the factory owner's offer.",
+        basariliSonuc: {
+          mesaj: "The wedding was held in the factory's great hall, in front of the workers. Your spouse sees you as an 'investment,' and you're learning to act like one too.",
+        },
+        basarisizSonuc: {
+          mesaj: "When the factory owner learned of your debts, he cancelled the deal. You became known in town as 'the penniless suitor.'",
+        },
+      },
+      {
+        metin: "Say you won't sell your heart for money, and turn down the offer.",
+        basariliSonuc: {
+          mesaj: "You turned down the offer. The factory owner never looked your way again, but your conscience is clear.",
+        },
+        basarisizSonuc: {
+          mesaj: "You declined, but looking at the smoking factory chimneys, regret crept in.",
+        },
+      },
+    ],
+  },
+  iliski_evlilik_teklifi_sd_fransa: {
+    baslik: "A Banker's Salon",
+    metin:
+      "A well-known banking family in Paris arranged a private salon evening to introduce you to their daughter. The family wants a son-in-law with 'a bright future and a clean past.'",
+    secenekler: [
+      {
+        metin: "Accept the banking family's offer.",
+        basariliSonuc: {
+          mesaj: "The engagement was celebrated under the salon's crystal chandeliers. Your spouse fits high society perfectly, and is trying to mold you into the same shape.",
+        },
+        basarisizSonuc: {
+          mesaj: "When the family heard a rumor about your past, they called off the deal. Your name was tarnished in salon circles.",
+        },
+      },
+      {
+        metin: "Say you won't play society's games, and turn down the offer.",
+        basariliSonuc: {
+          mesaj: "You politely declined the invitation. Salon society talks behind your back, but your conscience is clear.",
+        },
+        basarisizSonuc: {
+          mesaj: "You declined, but sitting alone in your empty apartment, your heart ached.",
+        },
+      },
+    ],
+  },
+  iliski_evlilik_teklifi_sd_osmanli: {
+    baslik: "The Pasha's Mansion",
+    metin:
+      "A pasha wants to marry his daughter to 'a man with a future' in the capital; you're invited to his mansion. In post-Tanzimat Istanbul, such a marriage is both status and risk.",
+    secenekler: [
+      {
+        metin: "Accept the pasha's offer.",
+        basariliSonuc: {
+          mesaj: "A crowded wedding was held at the mansion, and you became the pasha's son-in-law. Your spouse respects you but never strays from her father's word.",
+        },
+        basarisizSonuc: {
+          mesaj: "The pasha withdrew after a rival's intrigue at court. Your name was tarnished in the capital.",
+        },
+      },
+      {
+        metin: "Say you won't get tangled in mansion intrigues, and turn down the offer.",
+        basariliSonuc: {
+          mesaj: "You politely declined the invitation. The pasha seemed offended, but your conscience is clear.",
+        },
+        basarisizSonuc: {
+          mesaj: "You declined, but eating dinner alone, your heart ached.",
+        },
+      },
+    ],
+  },
+  iliski_evlilik_teklifi_sd_rusya: {
+    baslik: "A Boyar Family",
+    metin:
+      "An old boyar family invited you to their estate to introduce their daughter. After a cold but polite conversation over the samovar, the family made their offer.",
+    secenekler: [
+      {
+        metin: "Accept the boyar family's offer.",
+        basariliSonuc: {
+          mesaj: "You married in a crowded ceremony in the estate's great hall. Your spouse is polite but not warm — you're in a marriage as cold as snow.",
+        },
+        basarisizSonuc: {
+          mesaj: "The family learned your fortune wasn't as solid as it looked and withdrew the offer. You were humiliated among your circle.",
+        },
+      },
+      {
+        metin: "Say you won't settle for a cold marriage, and turn down the offer.",
+        basariliSonuc: {
+          mesaj: "You politely declined the offer. The family seemed surprised, but your conscience is clear.",
+        },
+        basarisizSonuc: {
+          mesaj: "You declined, but sitting alone by the frosted window, your heart ached.",
+        },
+      },
+    ],
+  },
+
   evl_ms_sogukluk: {
     baslik: "Same Table, Two Strangers",
     metin:

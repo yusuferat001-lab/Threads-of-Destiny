@@ -50,6 +50,7 @@ describe("şehir yönetimi (en üst rütbe sonrası sonsuz ilerleme)", () => {
       await mesleğiAta(state.id, meslek);
       state.hayat_amaci = { id: "x", ad: "x", aciklama: "x", hedefTuru: "para", hedefDeger: 999999, tamamlandi: false };
       state.gecmis_olaylar.push("hayat_amaci_secimi", "iliski_evlilik_teklifi", "iliski_ikinci_teklif");
+      state.etiketler.push("hizip_secildi"); // rekabet eden hizip-girişi kaskadını (rutbe_seviye>=2) devre dışı bırak
       state.ulke.savasta = true;
       state.rutbe_seviye = 4;
       const senaryo = await senaryoUret(state.id);

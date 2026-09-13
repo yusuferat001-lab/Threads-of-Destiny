@@ -301,7 +301,7 @@ Olay/seçenek metninde ve sonuç `mesaj`/`detay`'ında kullanılabilir: `{bolge}
 
 ## 7. Olay Bankası Dosya Haritası
 
-`data/olaylar/index.ts` tüm alt listeleri `OLAY_BANKASI: OlayTanimi[]` içinde birleştirir. **Toplam ~1115 olay** (id sayımıyla; `ceviriDurumu.ts` "Toplam olay" satırıyla teyit). Belirli bir olayı bulmak için `grep -n "id: \"<olay_id>\"" server/src/data/olaylar/*.ts` kullan — dosyayı baştan sona okuma.
+`data/olaylar/index.ts` tüm alt listeleri `OLAY_BANKASI: OlayTanimi[]` içinde birleştirir. **Toplam ~1135 olay** (id sayımıyla; `ceviriDurumu.ts` "Toplam olay" satırıyla teyit — 2026-09'da 8 bölgeye özel evlilik teklifi adayı eklenince 1115→1135). Belirli bir olayı bulmak için `grep -n "id: \"<olay_id>\"" server/src/data/olaylar/*.ts` kullan — dosyayı baştan sona okuma.
 
 | Dosya | ~Olay Sayısı | Satır | İçerik |
 |---|---|---|---|
@@ -311,7 +311,7 @@ Olay/seçenek metninde ve sonuç `mesaj`/`detay`'ında kullanılabilir: `{bolge}
 | `ortaCagDinAdamiYollari.ts` | 85 | 4546 | Orta Çağ Din Adamı kariyer yolu dallanması ("yol:din:*") |
 | `sosyallesme.ts` | 73 | 2752 | Sosyalleşme mekân olayları — 2026-09'dan beri sadece 6 mekân id'sine bağlı (pazar_meydani, meyhane, pub, ordugah_cadiri, dini_meclis, lonca_meclisi; hamam/kahvehane/kervansaray→pazar_meydani, salon→meyhane remap edildi). Normal havuzdan tamamen dışlanır, sadece `POST /:id/sosyallesme` ile zorlanır (§25). Tur-harcamayan içki/deli/sadaka/kulak/ısmarla/fal aksiyonları ayrı: [sosyallesmeAksiyonlari.ts](server/src/data/sosyallesmeAksiyonlari.ts) |
 | `hizip.ts` | 70 | 3416 | Hizip (faction) sistemi olayları (§16) |
-| `evlilikVeAile.ts` | 66 | 3154 | Evlilik yolu + aile devamı olayları |
+| `evlilikVeAile.ts` | 74 | 3154+ | Evlilik yolu + aile devamı olayları + 8 bölgeye özel evlilik teklifi adayı (2026-09, §11 kural 4) |
 | `esyaVeGizem.ts` | 48 | 3020 | Gizemli eşya edinme/takip olayları (§16) |
 | `hapis.ts` | 46 | ~1600 | Hapis alt sistemi (§17) — ceza yılı sayacı + parasız riskli kaçış olayları dahil |
 | `aile.ts` | 35 | 1779 | Aile geçmişine özel olaylar |
@@ -405,19 +405,22 @@ Bir seçeneğin `onTepki` alanı varsa: seçilince **zar atılmaz**, zaman ilerl
 
 `POST /:id/scenario` çağrıldığında, normal ağırlıklı seçime geçmeden önce **aşağıdaki sırayla** (ilk eşleşen kazanır, `!zorlananId &&` zinciri) bir dizi garanti/zorunlu olay kontrol edilir:
 
-1. **Tarihi savaş ilanı** — savaşta değil, yaş≤55, `tarihiSavasKontrol(bolge,yil,cag)` bir rakip döndürüyor ve `tarihi_savas_gordu:<rakip>` etiketi yoksa → `dunya_savas_ilani_asker` (Asker) / `dunya_savas_ilani` (diğer); etiket eklenir.
-2. **Kariyer yolu girişi** (sadece Orta Çağ) — Asker/Din Adamı, yaş≥18, henüz `yol:asker:*`/`yol:din:*` etiketi yok, giriş olayı daha önce görülmemiş → `oc_asker_yol_ilk_emir` / `oc_din_yol_ilk_sinav`.
-3. **Evlilik teklifi garantisi** — yaş≥29, evli değil, ne `iliski_evlilik_teklifi` ne `iliski_ikinci_teklif` hiç görülmemiş → `iliski_evlilik_teklifi`.
-4. **Şehir yönetimi girişi** — `rutbe_seviye>=4` (2026-08 rütbe reformuyla eski `>=3`'ten yükseltildi, §14), `sehir_yonetimi_basladi` etiketi yok → mesleğe göre `sehir_yonetim_{tuccar|dinadami|asker}_baslangic`.
-5. **Evcil hayvan teklifi** — 20≤yaş<25, evcil hayvanı yok, teklif olayı görülmemiş → çağa göre `evcilhayvan_sahiplenme_teklifi_{sanayi|ortacag}`.
-6. **Evcil hayvan takip garantisi** — evcil hayvanı var, 45≤yaş<50, `EVCIL_HAYVAN_TAKIP_OLAY_IDLERI`'den <2 görülmüş → `EVCIL_HAYVAN_GENEL_TAKIP_OLAY_IDLERI` havuzundan (öncelik görülmemişlerde) rastgele.
-7. **Gizemli eşya takip garantisi** — 38≤yaş<46, sahip olunan her `esya:`/`envanter:` etiketi için `GIZEMLI_ESYA_TAKIP_HAVUZU[esyaId]`'den hiç görülmemişse → o havuzdan rastgele (ilk eşleşen eşya kazanır).
-8. **Hizip takip garantisi** — hizbe katılmış, 45≤yaş<50, hizbe özel olaylardan <3 görülmüş → o havuzdan rastgele.
-9. **Saray daveti** — henüz `sarayda` değil, `un>=70 AND ahlak>=70`, `saray_kral_daveti` görülmemiş → `saray_kral_daveti`.
-10. **Saray takip garantisi** — `sarayda`, 50≤yaş<58, `SARAY_OLAY_IDLERI` (6 id) 'den <2 görülmüş → havuzdan rastgele.
-11. **Büyük yolculuk garantisi** (ömürde bir kez) — yaş≥22, ne `yolculukta` ne `hapiste`, `yolculuk_tamamlandi` yok, (hiç teklif edilmemiş VEYA `yolculuk_teklifi_zamani` cooldown'u dolmuş) → `uygunYolculukTeklifleri(state)` listesinden rastgele (meslek/çağ/bölge/din'e göre, §17).
-12. **Mistik garanti** (ekonomi sıkılaştırma turu, ömürde bir kez) — 25≤yaş<45, `gecmis_olaylar`'da `gizemli:true` işaretli hiçbir olay yoksa ve `uygunMu`'dan geçen en az bir `gizemli:true` olay varsa → o havuzdan rastgele. "Her ömürde en az bir esrarengiz olay" (kullanıcı isteği); `esyaVeGizem.ts`'teki giriş olayları (`gizem_ejderha_tilsimi`, `derinlik_hazine_haritasi` vb.) bu turda `gizemli:true` ile işaretlendi (eskiden sadece sahiplik-sonrası takip olayları işaretliydi).
-13. **Mülk olayı** (ekonomi sıkılaştırma turu, periyodik) — en az bir mülk sahipken, her çağrıda `MULK_OLAYI_IHTIMALI=0.12` ihtimalle, sahip olunan türlere ait hiç görülmemiş bir [mulkOlaylari.ts](server/src/data/olaylar/mulkOlaylari.ts) olayı → §13/§16.
+1. **Tarihi savaş ilanı** — savaşta değil, yaş≤55, `tarihiSavasKontrol(bolge,yil,cag)` bir rakip döndürüyor ve `tarihi_savas_gordu:<rakip>` etiketi yoksa → `dunya_savas_ilani_asker` (Asker) / `dunya_savas_ilani` (diğer); etiket eklenir. **Bu, §27'deki dinamik "Büyük Savaş" sistemiyle AYNI ANDA çalışır, ama asla üst üste binmez** — Büyük Savaş kontrolü sadece `!ulke.savasta` iken tetiklenir, tarihi savaş ilanı da savaşı `ulke.savasta=true` yapar; yani ikisi paralel iki ayrı "savaş başlatma yolu"dur, hangisi önce `savasta`'yı true yaparsa öbürü o savaş bitene kadar sessizce beklemeye devam eder.
+2. **Kariyer yolu girişi** (sadece Orta Çağ) — Asker/Din Adamı, yaş≥18, henüz `yol:asker:*`/`yol:din:*` etiketi yok, giriş olayı daha önce görülmemiş → `oc_asker_yol_ilk_emir` / `oc_din_yol_ilk_sinav`. Bu olayı seçmek karakteri 5 dallı (Asker: sadik/isyanci/kahraman/firari/hain) ya da 4 dallı (Din Adamı: durust/fanatik/tarikat/yozlasmis) devasa bir dallanan zincire (§16 "Kariyer Yolları") kilitler — meslek/rütbe sisteminden bağımsız, sadece anlatı/kişilik ekseni.
+3. **Hizip girişi garantisi** (2026-09, çağdan bağımsız) — `rutbe_seviye>=2`, henüz `hizip_secildi` etiketi yok → mesleğe göre `hizip_asker_saflasma` / `hizip_tuccar_saflasma` / `hizip_din_saflasma` zorla sunulur. Bu üç giriş olayının **nötr/tarafsız kalma seçeneği kaldırıldı** — oyuncu artık iki hizipten birini seçmek ZORUNDA (§16 "Hizipler").
+4. **Evlilik teklifi garantisi** — yaş≥29, evli değil, `iliski_ikinci_teklif` hiç görülmemiş, VE `uygunEvlilikTeklifleri(state)` havuzundaki (jenerik `iliski_evlilik_teklifi` + `evlilik_uc_yol_karari` + varsa çağ/bölgeye özel aday, aşağıya bakın) hiçbir olay görülmemişse → o havuzdan rastgele.
+5. **Şehir yönetimi girişi** — `rutbe_seviye>=4` (2026-08 rütbe reformuyla eski `>=3`'ten yükseltildi, §14), `sehir_yonetimi_basladi` etiketi yok → mesleğe göre `sehir_yonetim_{tuccar|dinadami|asker}_baslangic`.
+6. **Evcil hayvan teklifi** — 20≤yaş<25, evcil hayvanı yok, teklif olayı görülmemiş → çağa göre `evcilhayvan_sahiplenme_teklifi_{sanayi|ortacag}`.
+7. **Evcil hayvan takip garantisi** — evcil hayvanı var, 45≤yaş<50, `EVCIL_HAYVAN_TAKIP_OLAY_IDLERI`'den <2 görülmüş → `EVCIL_HAYVAN_GENEL_TAKIP_OLAY_IDLERI` havuzundan (öncelik görülmemişlerde) rastgele.
+8. **Gizemli eşya takip garantisi** (2026-09'da yaş sınırı KALDIRILDI) — sahip olunan her `esya:`/`envanter:` etiketi için `GIZEMLI_ESYA_TAKIP_HAVUZU[esyaId]`'den hiç görülmemişse → o havuzdan rastgele (ilk eşleşen eşya kazanır). Artık yaşa bakılmaksızın, eşya edinildikten sonraki ilk fırsatta tetiklenir; havuzdan biri görülünce bir daha tetiklenmez (doğal olarak ömürde bir kez).
+9. **Hizip takip garantisi** (2026-09: eşik 3'ten 4'e, pencere 45-50'den 40-55'e genişletildi) — hizbe katılmış, 40≤yaş<55, hizbe özel olaylardan <4 görülmüş → o havuzdan rastgele.
+10. **Saray daveti** — henüz `sarayda` değil, `un>=70 AND ahlak>=70`, `saray_kral_daveti` görülmemiş → `saray_kral_daveti`.
+11. **Saray takip garantisi** — `sarayda`, 50≤yaş<58, `SARAY_OLAY_IDLERI` (6 id) 'den <2 görülmüş → havuzdan rastgele.
+12. **Büyük yolculuk garantisi** (ömürde bir kez) — yaş≥22, ne `yolculukta` ne `hapiste`, `yolculuk_tamamlandi` yok, (hiç teklif edilmemiş VEYA `yolculuk_teklifi_zamani` cooldown'u dolmuş) → `uygunYolculukTeklifleri(state)` listesinden rastgele (meslek/çağ/bölge/din'e göre, §17).
+13. **Mistik garanti** (ekonomi sıkılaştırma turu, ömürde bir kez) — 25≤yaş<45, `gecmis_olaylar`'da `gizemli:true` işaretli hiçbir olay yoksa ve `uygunMu`'dan geçen en az bir `gizemli:true` olay varsa → o havuzdan rastgele. "Her ömürde en az bir esrarengiz olay" (kullanıcı isteği); `esyaVeGizem.ts`'teki giriş olayları (`gizem_ejderha_tilsimi`, `derinlik_hazine_haritasi` vb.) bu turda `gizemli:true` ile işaretlendi (eskiden sadece sahiplik-sonrası takip olayları işaretliydi).
+14. **Mülk olayı** (ekonomi sıkılaştırma turu, periyodik) — en az bir mülk sahipken, her çağrıda `MULK_OLAYI_IHTIMALI=0.12` ihtimalle, sahip olunan türlere ait hiç görülmemiş bir [mulkOlaylari.ts](server/src/data/olaylar/mulkOlaylari.ts) olayı → §13/§16.
+
+**Bölgeye özel evlilik teklifi adayları (2026-09, `uygunEvlilikTeklifleri`, gameEngine.ts):** Kural 4'teki havuz artık her zaman `iliski_evlilik_teklifi` (jenerik, aile.ts) + `evlilik_uc_yol_karari` (3 yollu zengin karar, evlilikVeAile.ts) içerir, ve `${cag}|${bolge}` eşleşiyorsa şuna bir bölgeye özel "aday" olayı da ekler (hepsi `evlilikVeAile.ts`'te, aynı 2-şıklı kabul/reddet iskeletini kullanır, sadece anlatı+aday farklı): OÇ Fransa → `iliski_evlilik_teklifi_oc_fransa` (bir şövalyenin kızı), OÇ Kutsal Roma → `..._oc_kutsalroma` (komşu prenslik ittifakı), OÇ Bizans → `..._oc_bizans` (senatör ailesi/saray entrikası), OÇ Selçuklu → `..._oc_selcuklu` (vezirin kızı), SD İngiltere → `..._sd_ingiltere` (fabrikatörün kızı), SD Fransa → `..._sd_fransa` (bankacı ailesi/salon), SD Osmanlı → `..._sd_osmanli` (paşanın konağı), SD Rusya → `..._sd_rusya` (boyar ailesi). Havuzdaki hiçbiri görülmemişse aralarından rastgele biri zorlanır — yani her bölge/çağ kombinasyonunda oyuncu potansiyel olarak 3 farklı aday/anlatıdan birini görür.
 
 Hiçbiri eşleşmezse `zorlananOlayId` `null` kalır ve normal ağırlıklı seçim (§12) çalışır. Kaskad sonunda: `bekleyenTepki` sıfırlanır, `sonTon` güncellenir, tek-seferlik `istihbarat_var` etiketi varsa tüketilir.
 
@@ -733,6 +736,21 @@ Kaynak: [gizemliEsyalar.ts](server/src/data/gizemliEsyalar.ts) (garanti havuzu) 
 | Asker | Eski Muhafızlar | Yeni Nizam |
 | Tüccar | Liman Loncası | Pazar Birliği |
 | Din Adamı | Gelenekçiler | Yenilikçiler |
+
+**Giriş (2026-09'da garanti hâle geldi, §11 kural 3):** `rutbe_seviye>=2` olan, henüz `hizip_secildi` etiketi taşımayan her karaktere mesleğine göre `hizip_asker_saflasma` / `hizip_tuccar_saflasma` / `hizip_din_saflasma` (genel.ts, üçü de `minYas:17`) zorla sunulur. Bu üç olayın eskiden bir de "tarafsız kal" seçeneği vardı; **kaldırıldı** — artık iki hizipten birine katılmak zorunlu.
+
+**Olay sayıları** (`hizip.ts`, 69 olay + genel.ts'teki 3 giriş olayı = 72):
+| Grup | ~Olay Sayısı | Kapsam |
+|---|---|---|
+| Meslek çatışma tetikleyicileri | 9 (3+3+3) | Asker/Tüccar/Din Adamı, hizipsizken de çıkabilen genel gerilim olayları (`hizip_asker_catisma` vb.) |
+| Eski Muhafızlar | 10 | Sadece bu hizbi seçmiş Asker'e (`gerekliEtiketler:["hizip:Eski Muhafızlar"]`) |
+| Yeni Nizam | 10 | Sadece bu hizbi seçmiş Asker'e |
+| Liman Loncası | 10 | Sadece bu hizbi seçmiş Tüccar'a |
+| Pazar Birliği | 10 | Sadece bu hizbi seçmiş Tüccar'a |
+| Gelenekçiler | 9 | Sadece bu hizbi seçmiş Din Adamı'na |
+| Yenilikçiler | 10 | Sadece bu hizbi seçmiş Din Adamı'na |
+
+Hepsi çağdan bağımsız (Orta Çağ + Sanayi Devrimi'nde aynı hizipler geçerli). Takip garantisi (§11 kural 9): hizbe katılmış, 40≤yaş<55, hizbe özel olaylardan **<4** görülmüşse havuzdan biri zorla tetiklenir — yani her hizipçi karakter ömründe **en az 4** hizip-özel olay görmeyi garantiler (2026-09'da eşik 3'ten 4'e, pencere 45-50'den 40-55'e genişletildi).
 
 ### Kariyer Yolları (sadece Orta Çağ, §11 kural 2 ile girilir)
 - **Asker** (`yol:asker:*`): sadik, isyanci, kahraman, firari, hain — [ortaCagAskerYollari.ts](server/src/data/olaylar/ortaCagAskerYollari.ts) (5723 satır, 105 olay).

@@ -252,6 +252,25 @@ const DIN_HAC_TEKLIF_IDLERI: Record<string, string> = {
  * teklif olaylarının id listesini döndürür (birden fazlaysa rastgele biri seçilir,
  * böylece aynı meslek/çağdaki karakterler farklı yolculuklar yaşayabilir).
  */
+/** §11 kural 3: bölge/çağa özel evlilik teklifi adayı + iki jenerik yedek. */
+const EVLILIK_TEKLIFI_ID_BY_CAG_BOLGE: Record<string, string> = {
+  "Orta Çağ|Fransa": "iliski_evlilik_teklifi_oc_fransa",
+  "Orta Çağ|Kutsal Roma": "iliski_evlilik_teklifi_oc_kutsalroma",
+  "Orta Çağ|Bizans": "iliski_evlilik_teklifi_oc_bizans",
+  "Orta Çağ|Selçuklu": "iliski_evlilik_teklifi_oc_selcuklu",
+  "Sanayi Devrimi|İngiltere": "iliski_evlilik_teklifi_sd_ingiltere",
+  "Sanayi Devrimi|Fransa": "iliski_evlilik_teklifi_sd_fransa",
+  "Sanayi Devrimi|Osmanlı": "iliski_evlilik_teklifi_sd_osmanli",
+  "Sanayi Devrimi|Rusya": "iliski_evlilik_teklifi_sd_rusya",
+};
+
+function uygunEvlilikTeklifleri(state: CharacterState): string[] {
+  const bolgeyeOzel = EVLILIK_TEKLIFI_ID_BY_CAG_BOLGE[`${state.cag}|${state.bolge}`];
+  const havuz = ["iliski_evlilik_teklifi", "evlilik_uc_yol_karari"];
+  if (bolgeyeOzel) havuz.push(bolgeyeOzel);
+  return havuz;
+}
+
 function uygunYolculukTeklifleri(state: CharacterState): string[] {
   const teklifler: string[] = [];
   if (state.meslek === "Asker" && state.cag === "Orta Çağ") {
@@ -502,8 +521,7 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
   // Orta Çağ'da Asker/Din Adamı, 18 yaşından itibaren henüz bir kariyer yoluna
   // girmemişse (yol:asker:*/yol:din:* etiketi yok), o mesleğin dallanan kariyer
   // sisteminin giriş olayı zorla tetiklenir — böylece her karakter mutlaka bir
-  // yola (itaatkâr/isyancı/kahraman/... ya da dürüst/yozlaşmış/tarikat/...)
-  // kilitlenir; şansa bırakılmış hizip sisteminin aksine bu garanti bir kaskad.
+  // yola (itaatkâr/isyancı/kahraman/... ya da dürüst/yozlaşmış/tarikat/...) kilitlenir.
   if (
     !zorlananId &&
     !milestoneKilitli &&
@@ -520,17 +538,43 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
       }
     }
   }
+  // Hizip girişi (çağdan bağımsız): rütbe seviye 2'ye ulaşan, henüz bir hizbe
+  // katılmamış karaktere mesleğine uygun "saflaşma" olayı zorla sunulur — iki
+  // hizipten birine katılmak zorunda kalır (nötr/tarafsız seçenek kaldırıldı).
+  if (
+    !zorlananId &&
+    !milestoneKilitli &&
+    oturum.state.rutbe_seviye >= 2 &&
+    !oturum.state.etiketler.includes("hizip_secildi")
+  ) {
+    const saflasmaId =
+      oturum.state.meslek === "Asker"
+        ? "hizip_asker_saflasma"
+        : oturum.state.meslek === "Tüccar"
+          ? "hizip_tuccar_saflasma"
+          : oturum.state.meslek === "Din Adamı"
+            ? "hizip_din_saflasma"
+            : undefined;
+    if (saflasmaId && !oturum.state.gecmis_olaylar.includes(saflasmaId)) {
+      zorlananId = saflasmaId;
+    }
+  }
   // 29 yaşına kadar hiç evlenmemiş ve evlilik teklifiyle hiç karşılaşmamışsa
-  // (ne ilk teklif ne de ikinci teklif zinciri), garanti bir kez zorla tetiklenir.
+  // (ne bölgeye özel adaylardan biri, ne jenerik teklifler, ne ikinci teklif
+  // zinciri), garanti bir kez zorla tetiklenir — bölgeye özel bir aday varsa
+  // jeneriklerle birlikte rastgele seçilir (§11 kural 3, "farklı adaylar").
   if (
     !zorlananId &&
     !milestoneKilitli &&
     oturum.state.yas >= 29 &&
     !oturum.state.etiketler.includes("medeni:evli") &&
-    !oturum.state.gecmis_olaylar.includes("iliski_evlilik_teklifi") &&
     !oturum.state.gecmis_olaylar.includes("iliski_ikinci_teklif")
   ) {
-    zorlananId = "iliski_evlilik_teklifi";
+    const adaylar = uygunEvlilikTeklifleri(oturum.state);
+    const hicGorulmemis = adaylar.every((id) => !oturum.state.gecmis_olaylar.includes(id));
+    if (hicGorulmemis) {
+      zorlananId = adaylar[Math.floor(Math.random() * adaylar.length)];
+    }
   }
   // Rütbe 4'e (5 kademeli merdivende "başarılı kariyer" eşiği) ulaşan bir
   // karaktere, şansa bırakmadan bir kez şehir yönetimi arenasına giriş teklifi
@@ -587,9 +631,10 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
     }
   }
   // Gizemli bir eşyaya (envanter:/esya: etiketli) sahip olup henüz onun kendi
-  // takip olaylarından hiçbirini yaşamamış bir karaktere, 38-46 yaş aralığında
-  // (ölmeden önce bir marj bırakılır) o eşyanın havuzundan biri zorla tetiklenir.
-  if (!zorlananId && !milestoneKilitli && oturum.state.yas >= 38 && oturum.state.yas < 46) {
+  // takip olaylarından hiçbirini yaşamamış bir karaktere, YAŞ SINIRI OLMADAN
+  // (eşyayı ne zaman edinirse etsin, ilk fırsatta) o eşyanın havuzundan biri
+  // zorla tetiklenir — havuzdan biri görülünce bir daha tetiklenmez (ömürde bir kez).
+  if (!zorlananId && !milestoneKilitli) {
     const sahipOlunanEsyalar = oturum.state.etiketler
       .filter((e) => e.startsWith("esya:") || e.startsWith("envanter:"))
       .map((e) => e.slice(e.indexOf(":") + 1));
@@ -605,10 +650,10 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
       }
     }
   }
-  // Bir hizbe katılmış karakter 45-50 yaş aralığında henüz en az üç hizip-özel
+  // Bir hizbe katılmış karakter 40-55 yaş aralığında henüz en az DÖRT hizip-özel
   // olay yaşamadıysa (o hizbe özel olaylar + kendi mesleğine uygun çatışma
   // olayı + genel hizip olayları), havuzdan biri zorla tetiklenir.
-  if (!zorlananId && !milestoneKilitli && oturum.state.hizip !== null && oturum.state.yas >= 45 && oturum.state.yas < 50) {
+  if (!zorlananId && !milestoneKilitli && oturum.state.hizip !== null && oturum.state.yas >= 40 && oturum.state.yas < 55) {
     const hizipEtiketi = `hizip:${oturum.state.hizip}`;
     const hizipOlaylari = OLAY_BANKASI.filter(
       (o) =>
@@ -616,7 +661,7 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
         o.gerekliEtiketler?.includes(hizipEtiketi)
     );
     const gorulenSayisi = hizipOlaylari.filter((o) => oturum.state.gecmis_olaylar.includes(o.id)).length;
-    if (gorulenSayisi < 3) {
+    if (gorulenSayisi < 4) {
       const gorulmemis = hizipOlaylari.filter((o) => !oturum.state.gecmis_olaylar.includes(o.id));
       const havuz = gorulmemis.length > 0 ? gorulmemis : hizipOlaylari;
       if (havuz.length > 0) {
