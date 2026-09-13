@@ -2711,4 +2711,247 @@ export const OLAYLAR_YOLCULUK_EN: Record<string, OlayCeviri> = {
       },
     ],
   },
+
+  // --- "Too few events" pass, Phase 3 (Path A): pooled alternates for the
+  // middle step of each Hajj religion×route chain (see server-side comment).
+  hac_sunni_kara_2b: {
+    baslik: "A Dream",
+    metin: "At the night's camp, an elderly pilgrim says he dreamed the pass ahead is dangerous, and asks the caravan master to try a longer, alternate route.",
+    secenekler: [
+      {
+        metin: "Heed the dream; take the longer but safer road.",
+        ipucu: "A loss of time, but caution is never wasted",
+        basariliSonuc: {
+          mesaj: "You took the long road; the crossing was tiring but calm.",
+          detay: "Some instincts are worth resting on.",
+        },
+        basarisizSonuc: {
+          mesaj: "The long road proved even more exhausting than expected, and the caravan fell behind.",
+          detay: "Caution is not always free.",
+        },
+      },
+      {
+        metin: "Ignore the dream; continue on the planned short pass.",
+        ipucu: "Fast but risky",
+        basariliSonuc: {
+          mesaj: "The pass was crossed without incident; the caravan pressed on without losing time.",
+          detay: "Sometimes instincts are wrong.",
+        },
+        basarisizSonuc: {
+          mesaj: "A rockslide really did happen at the pass; you continued on with a few injured.",
+          detay: "You should have listened to the old pilgrim.",
+        },
+      },
+    ],
+  },
+  hac_sunni_deniz_2b: {
+    baslik: "Sickness Aboard",
+    metin: "A feverish illness has broken out among several passengers on deck. The captain wants to isolate the sick in a separate hold, but some pilgrims object.",
+    secenekler: [
+      {
+        metin: "Back the captain; have the sick isolated.",
+        ipucu: "Harsh but protects the ship",
+        basariliSonuc: {
+          mesaj: "The isolation worked; the illness died out before spreading.",
+          detay: "A hard call, but it saved the ship.",
+        },
+        basarisizSonuc: {
+          mesaj: "Despite the isolation, the illness spread to a few more people.",
+          detay: "Some precautions fall short.",
+        },
+      },
+      {
+        metin: "Tend to the sick yourself; don't leave their side.",
+        ipucu: "Compassionate but risky",
+        basariliSonuc: {
+          mesaj: "You tended to the sick through the night; by morning their fevers had broken.",
+          detay: "Your kindness is the talk of the ship.",
+        },
+        basarisizSonuc: {
+          mesaj: "Caring for the sick, you caught a mild fever yourself — but they recovered.",
+          detay: "You paid for your kindness with your own body.",
+        },
+      },
+    ],
+  },
+  hac_katolik_kara_2b: {
+    baslik: "Bandit Threat",
+    metin: "In a narrow valley, an armed band of bandits blocks the caravan's path, demanding a heavy 'toll' for passage.",
+    secenekler: [
+      {
+        metin: "Pay what they ask; save the caravan.",
+        ipucu: "Costly but safe",
+        basariliSonuc: {
+          mesaj: "You made the payment; the bandits let you pass.",
+          detay: "Some prices are only money.",
+        },
+        basarisizSonuc: {
+          mesaj: "Despite the payment, the bandits seized a few more belongings.",
+          detay: "Some deals get broken one-sidedly.",
+        },
+      },
+      {
+        metin: "Resist with the caravan master's armed men.",
+        ipucu: "Free but dangerous",
+        basariliSonuc: {
+          mesaj: "After a brief clash, the bandits retreated.",
+          detay: "Your courage will be talked about among the caravan.",
+        },
+        basarisizSonuc: {
+          mesaj: "The clash went badly; you continued on with the wounded and lost belongings.",
+          detay: "Resisting doesn't always pay off.",
+        },
+      },
+    ],
+  },
+  hac_katolik_deniz_2b: {
+    baslik: "A Shady Harbor",
+    metin: "The ship anchors unexpectedly at a port; as cargo is quietly unloaded in the dark, it becomes clear the captain is dealing in smuggling.",
+    secenekler: [
+      {
+        metin: "Look away; retreat to your own cabin.",
+        ipucu: "Safe but weighs on your conscience",
+        basariliSonuc: {
+          mesaj: "You acted as if you'd seen nothing; the ship set sail before dawn.",
+          detay: "Some things are easier not to know.",
+        },
+        basarisizSonuc: {
+          mesaj: "Though you tried to look away, your conscience found no peace.",
+          detay: "Silence is sometimes a heavy burden.",
+        },
+      },
+      {
+        metin: "Openly confront the captain; demand he stop.",
+        ipucu: "Virtuous but risky",
+        basariliSonuc: {
+          mesaj: "The captain heeded you, had the cargo reloaded, and continued on.",
+          detay: "Speaking up worked.",
+        },
+        basarisizSonuc: {
+          mesaj: "The captain scolded you and sent you to your cabin; the smuggling continued anyway.",
+          detay: "Not every objection changes anything.",
+        },
+      },
+    ],
+  },
+  hac_ortodoks_kara_2b: {
+    baslik: "The Relic Bearer",
+    metin: "An elderly monk you meet on the road asks for your help delivering a holy relic safely to a monastery — a small detour from the caravan's route.",
+    secenekler: [
+      {
+        metin: "Agree, and deliver the relic to the monastery.",
+        ipucu: "A holy task, at the cost of a little time",
+        basariliSonuc: {
+          mesaj: "You delivered the relic safely; the monastery's monks sent you off with prayers.",
+          detay: "Some tasks are holier than the road itself.",
+        },
+        basarisizSonuc: {
+          mesaj: "The road proved harder than expected, but you delivered the relic all the same.",
+          detay: "You paid for your kindness with your own body.",
+        },
+      },
+      {
+        metin: "Politely decline and continue with the caravan.",
+        ipucu: "Safe, but leaves a lingering regret",
+        basariliSonuc: {
+          mesaj: "You gently said no to the monk; the caravan moved on without losing time.",
+          detay: "You don't have to take on every task.",
+        },
+        basarisizSonuc: {
+          mesaj: "Your refusal saddened the monk; his gaze still lingers in your mind.",
+          detay: "Some refusals leave a mark.",
+        },
+      },
+    ],
+  },
+  hac_ortodoks_deniz_2b: {
+    baslik: "A Birth at Sea",
+    metin: "The wife of one of the pilgrims aboard has gone into labor; there is no experienced midwife on the ship, and every eye turns to you.",
+    secenekler: [
+      {
+        metin: "Do your best; help with the birth.",
+        ipucu: "A great risk, but the congregation is with you",
+        basariliSonuc: {
+          mesaj: "A healthy baby was born; cries of joy rose on deck.",
+          detay: "This journey will now also be remembered for a birth.",
+        },
+        basarisizSonuc: {
+          mesaj: "You did your best, but the labor was very hard; everyone was shaken.",
+          detay: "Some nights are never forgotten.",
+        },
+      },
+      {
+        metin: "Admit your inexperience; just pray.",
+        ipucu: "Safe but a passive choice",
+        basariliSonuc: {
+          mesaj: "While you prayed on the side, a woman aboard helped with the birth; everything went fine.",
+          detay: "Sometimes the best help is stepping aside.",
+        },
+        basarisizSonuc: {
+          mesaj: "The birth was difficult; you could only watch from the side.",
+          detay: "Being unable to help wore you down.",
+        },
+      },
+    ],
+  },
+  hac_anglikan_deniz_2b: {
+    baslik: "Off Course",
+    metin: "During a night storm the compass broke; by morning the ship realizes it has drifted seriously off course. The captain offers two options.",
+    secenekler: [
+      {
+        metin: "Follow the safe but long backup route.",
+        ipucu: "A loss of time but safe",
+        basariliSonuc: {
+          mesaj: "The backup route added a few days, but you proceeded without incident.",
+          detay: "Patience is sometimes the fastest road.",
+        },
+        basarisizSonuc: {
+          mesaj: "The backup route proved harder than expected too; morale dropped among everyone.",
+          detay: "Some days simply pass slowly, patience or not.",
+        },
+      },
+      {
+        metin: "Try the shortcut, through unknown waters.",
+        ipucu: "Risky but fast",
+        basariliSonuc: {
+          mesaj: "You bravely crossed the unknown waters; the lost time was made up.",
+          detay: "Your courage will be talked about among the crew.",
+        },
+        basarisizSonuc: {
+          mesaj: "The ship scraped against a shallow reef; everyone spent a frightening night.",
+          detay: "Shortcuts sometimes cost more.",
+        },
+      },
+    ],
+  },
+  hac_anglikan_kara_2b: {
+    baslik: "The Dried-Up Well",
+    metin: "You discover the well along the road has run completely dry; the nearest water source is a day away, but a local shepherd offers you a hidden shortcut.",
+    secenekler: [
+      {
+        metin: "Trust the shepherd's shortcut.",
+        ipucu: "Fast but an unknown path",
+        basariliSonuc: {
+          mesaj: "The shortcut really worked; the caravan continued on with fresh water.",
+          detay: "Sometimes trusting a stranger pays off.",
+        },
+        basarisizSonuc: {
+          mesaj: "The shortcut led you the wrong way; you spent an extra day without water.",
+          detay: "Not every shortcut turns out as hoped.",
+        },
+      },
+      {
+        metin: "Continue on the known, longer but safe road.",
+        ipucu: "Slow but safe",
+        basariliSonuc: {
+          mesaj: "You reached the water source by the long road; everyone tired but safe.",
+          detay: "The known road rarely disappoints.",
+        },
+        basarisizSonuc: {
+          mesaj: "The long road proved even more exhausting than expected, and the thirst grew worse.",
+          detay: "Some days are simply long.",
+        },
+      },
+    ],
+  },
 };

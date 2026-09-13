@@ -274,6 +274,20 @@ function uygunYolculukTeklifleri(state: CharacterState): string[] {
   return teklifler;
 }
 
+/**
+ * `SonucEtkisi.zorunlu_sonraki_havuzu`'ndan bir sonraki olayı seçer — mümkünse
+ * bu karakterin `gecmis_olaylar`'ında hiç görülmemiş bir aday tercih edilir
+ * (aynı yolculuk zincirinin farklı hayatlarda farklı dallar izlemesi için, §17
+ * "az olay var" turu Yol A). Havuzdaki hepsi zaten görülmüşse (nadir — çok
+ * uzun bir ömürde aynı zincir noktasına ikinci kez gelinmesi) rastgele biri
+ * seçilir; tek eleman kalmışsa doğrudan o döner.
+ */
+function zorunluSonrakiHavuzdanSec(havuz: string[], gecmisOlaylar: string[]): string {
+  const gorulmemis = havuz.filter((id) => !gecmisOlaylar.includes(id));
+  const adaylar = gorulmemis.length > 0 ? gorulmemis : havuz;
+  return adaylar[Math.floor(Math.random() * adaylar.length)];
+}
+
 interface BekleyenTepki {
   onTepki: OnTepki;
   mevcutOlay: OlayTanimi;
@@ -1215,7 +1229,11 @@ async function sonucuUygulaVeIlerlet(
   }
   clampStats(state);
 
-  if (etki.zorunlu_sonraki) oturum.zorlananOlayId = etki.zorunlu_sonraki;
+  if (etki.zorunlu_sonraki_havuzu && etki.zorunlu_sonraki_havuzu.length > 0) {
+    oturum.zorlananOlayId = zorunluSonrakiHavuzdanSec(etki.zorunlu_sonraki_havuzu, state.gecmis_olaylar);
+  } else if (etki.zorunlu_sonraki) {
+    oturum.zorlananOlayId = etki.zorunlu_sonraki;
+  }
 
   let sonucAnlatimi = sonucAnlatimiUret(state, etki, basarili);
   if (sucKazanci === "ciddi") {

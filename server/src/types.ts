@@ -539,6 +539,14 @@ export interface SonucEtkisi {
   cocuk_iliski?: number;
   /** Belirtilirse bir sonraki olay havuzdan rastgele seçilmez, doğrudan bu id ile gelir. */
   zorunlu_sonraki?: string;
+  /**
+   * Belirtilirse `zorunlu_sonraki`'nin YERİNE geçer: bir sonraki olay bu id
+   * listesinden rastgele seçilir (mümkünse `gecmis_olaylar`'da hiç görülmemiş
+   * olan tercih edilir) — sabit, tek-id'li zincirlerin ("her seferinde aynı
+   * yolculuk") aksine her oynanışta farklı bir dal izlenmesini sağlar (§17,
+   * "az olay var" turu Yol A). İki alan birlikte varsa bu öncelikli.
+   */
+  zorunlu_sonraki_havuzu?: string[];
   /** Belirtilirse yeni bir ekip üyesi eklenir; gerçek kalitesi gizlice hesaplanır. */
   ekip_ekle?: { rol: string; tahminGenisligi: number };
   /** true ise ekipten rastgele biri kaybedilir (görevden dönmeme, ayrılma vb.). */

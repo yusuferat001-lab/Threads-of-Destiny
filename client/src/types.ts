@@ -476,6 +476,7 @@ export interface SonucEtkisi {
   dost_puani?: number;
   rakip_puani?: number;
   zorunlu_sonraki?: string;
+  zorunlu_sonraki_havuzu?: string[];
   mulk_kaybet?: MulkTuru;
   evcil_hayvan_edin?: { tur?: string };
   evcil_hayvan_kaybet?: boolean;
