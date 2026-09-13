@@ -632,6 +632,7 @@ export function createCharacter(
     nufuz: 0,
     suc_seviyesi: 0,
     hapis_ceza_kalan: 0,
+    hapis_ceza_toplam: 0,
     mulkler: [],
     mulk_bakim_kalan: {},
     magaza_envanteri: [],
@@ -862,6 +863,11 @@ export function eskiKayitGocu(state: CharacterState): void {
   // Hapis ceza süresi sonradan eklendi; hapisteki eski kayıtlara makul bir kalan süre ver.
   if (typeof state.hapis_ceza_kalan !== "number") {
     state.hapis_ceza_kalan = state.etiketler.includes("hapiste") ? 4 : 0;
+  }
+  // hapis_ceza_toplam sonradan eklendi (§17, para/af ile erken çıkışı bandına
+  // göre kısıtlayan kural için); eski hapisteki kayıtlarda kalan süreyi toplam say.
+  if (typeof state.hapis_ceza_toplam !== "number") {
+    state.hapis_ceza_toplam = state.etiketler.includes("hapiste") ? state.hapis_ceza_kalan : 0;
   }
   // Kişisel veba hastalığı ölüm riski sonradan eklendi. Yeni bir vakada
   // vebaHastaligiBaslatEt bunu 70 yapıyor; göçmüş bir hasta kaydı da aynı
@@ -1544,6 +1550,21 @@ export function etiketEkle(state: CharacterState, etiketler?: string[]): void {
 /** Karakter bir havuz-kilit etiketi altında mı (normal olay havuzu kapalı mı)? */
 export function havuzKilidiVar(state: CharacterState): boolean {
   return (HAVUZ_KILIT_ETIKETLERI as readonly string[]).some((e) => state.etiketler.includes(e));
+}
+
+// §17: 50+ aranma bandından (gameEngine.ts HAPIS_CEZA_BASKIN_MIN_YIL ile aynı
+// eşik — o banttaki cezalar hep bu değerden başlar) gelen ağır bir tutuklamada,
+// para/af ile KESİN serbest bırakma sunan olaylar (OlayTanimi.hapisParaylaCikisOlayi)
+// en az bu kadar yıl yatılana kadar havuzdan gizlenir. Fiziksel kaçış girişimleri
+// bu kısıtlamadan muaftır, her zaman denenebilir.
+const HAPIS_AGIR_CEZA_ESIGI_YIL = 7;
+const HAPIS_ERKEN_CIKIS_MIN_YIL_YATILAN = 5;
+
+/** Ağır bir tutuklamadan (toplam ceza ≥7y) para/af ile erken çıkış — en az 5 yıl yatılmış olmalı. Hafif tutuklamalarda (toplam <7y) her zaman true. */
+export function hapisErkenCikisMumkunMu(state: CharacterState): boolean {
+  if (state.hapis_ceza_toplam < HAPIS_AGIR_CEZA_ESIGI_YIL) return true;
+  const yilYatilan = state.hapis_ceza_toplam - state.hapis_ceza_kalan;
+  return yilYatilan >= HAPIS_ERKEN_CIKIS_MIN_YIL_YATILAN;
 }
 
 export function etiketSil(state: CharacterState, etiketler?: string[]): void {

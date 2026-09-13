@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { yeniOyun, mesleğiAta, kotuIsYap, kotuIsConfigGetir, stateGetir } from "../src/game/gameEngine";
+import { yeniOyun, mesleğiAta, kotuIsYap, kotuIsConfigGetir, stateGetir, hapisCezaSuresiHesapla } from "../src/game/gameEngine";
 
 describe("karanlık işler (illegal işler paneli)", () => {
   it("kotuIsConfigGetir 5 aksiyonu şans/kazanç önizlemesiyle döner", async () => {
@@ -54,5 +54,44 @@ describe("karanlık işler (illegal işler paneli)", () => {
     }
     s = await stateGetir(state.id);
     expect(s.kariyer_puani).toBeGreaterThan(oncePuan);
+  });
+
+  it("hapisCezaSuresiHesapla, tutuklanma anındaki aranma bandına göre doğru aralıkta ceza üretir (2026-09 yeniden düzenleme)", () => {
+    const beklenenAralik: [number, [number, number]][] = [
+      [0, [3, 6]],
+      [10, [3, 6]],
+      [24, [3, 6]],
+      [25, [5, 8]],
+      [40, [5, 8]],
+      [49, [5, 8]],
+      [50, [7, 9]],
+      [60, [7, 9]],
+      [74, [7, 9]],
+      [75, [9, 12]],
+      [90, [9, 12]],
+      [100, [9, 12]],
+    ];
+    for (const [sucSeviyesi, [min, max]] of beklenenAralik) {
+      for (let i = 0; i < 50; i++) {
+        const ceza = hapisCezaSuresiHesapla(sucSeviyesi);
+        expect(ceza).toBeGreaterThanOrEqual(min);
+        expect(ceza).toBeLessThanOrEqual(max);
+      }
+    }
+  });
+
+  it("karanlık iş yakalanması hapis_ceza_kalan ve hapis_ceza_toplam'ı birlikte, tutarlı bir aralıkta ayarlar", async () => {
+    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    await mesleğiAta(state.id, "Asker");
+    const s = await stateGetir(state.id);
+    s.para = 1000; // birini_soy'un maliyet kontrolüne takılmasın (ölüm riski yok, güvenle döngüye sokulabilir)
+    let tutuklandi = false;
+    for (let i = 0; i < 60 && !tutuklandi; i++) {
+      await kotuIsYap(state.id, "birini_soy");
+      if (s.etiketler.includes("hapiste")) tutuklandi = true;
+    }
+    expect(tutuklandi).toBe(true);
+    expect(s.hapis_ceza_kalan).toBeGreaterThanOrEqual(3);
+    expect(s.hapis_ceza_toplam).toBe(s.hapis_ceza_kalan);
   });
 });
