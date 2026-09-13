@@ -3258,4 +3258,246 @@ export const OLAYLAR_YOLCULUK_EN: Record<string, OlayCeviri> = {
       },
     ],
   },
+
+  // "Az olay var" turu Faz 4 (2026-09): pos2→pos3 branching alternates
+  hac_sunni_kara_3b: {
+    baslik: "Sandstorm",
+    metin: "Darkening skies on the horizon herald a sandstorm. The caravan leader can't decide whether to pitch tents and wait it out, or race for the rocky pass ahead; he asks you.",
+    secenekler: [
+      {
+        metin: "Pitch tents now, wait out the storm here.",
+        ipucu: "Safe but a tiring wait",
+        basariliSonuc: {
+          mesaj: "The tents held firm; everyone waited out the storm cramped but safe.",
+          detay: "Sometimes caution is nothing but patience.",
+        },
+        basarisizSonuc: {
+          mesaj: "A tent pole snapped and sand got everywhere; you spent a rough night.",
+          detay: "The desert's fury doesn't always listen to canvas.",
+        },
+      },
+      {
+        metin: "Race for the rocky pass, take shelter before the storm.",
+        ipucu: "Risky but you might avoid the storm entirely",
+        basariliSonuc: {
+          mesaj: "You reached the pass just in time; the storm howled outside while you laughed behind the rocks.",
+          detay: "A brave dash rewarded with sweet relief.",
+        },
+        basarisizSonuc: {
+          mesaj: "The storm caught up halfway; sand filled your eyes and you struggled to finish the trek.",
+          detay: "Some bets are lost.",
+        },
+      },
+    ],
+  },
+  hac_sunni_deniz_3b: {
+    baslik: "Crowds at Jeddah Port",
+    metin: "As you approach Jeddah Port, pushing and shoving breaks out on deck — everyone wants to be first ashore. The captain asks whether to enforce an orderly line or let the pilgrims sort it out themselves.",
+    secenekler: [
+      {
+        metin: "Have the captain enforce a line, wait patiently.",
+        ipucu: "Orderly but a bit delayed",
+        basariliSonuc: {
+          mesaj: "The line calmed everyone down; disembarking was slow but peaceful.",
+          detay: "Sometimes patience is the fastest road.",
+        },
+        basarisizSonuc: {
+          mesaj: "The line broke down quickly anyway, but at least everyone made it off, more exhausted than before.",
+          detay: "Order sometimes stays only on paper.",
+        },
+      },
+      {
+        metin: "Fend for yourself, push through the crowd.",
+        ipucu: "Fast but dangerous",
+        basariliSonuc: {
+          mesaj: "You skillfully slipped through the crowd and were among the first ashore.",
+          detay: "Sometimes agility pays off.",
+        },
+        basarisizSonuc: {
+          mesaj: "You stumbled in the crush and hurt your ankle, limping onto the dock.",
+          detay: "Crowds show no mercy.",
+        },
+      },
+    ],
+  },
+  hac_katolik_kara_3b: {
+    baslik: "Avalanche Danger",
+    metin: "In the mountain pass, the guide whispers that the snow mass above looks loose and must be crossed quietly and quickly. Some pilgrims want to pray aloud in excitement.",
+    secenekler: [
+      {
+        metin: "Convince everyone to stay silent, move carefully.",
+        ipucu: "Cautious and safe",
+        basariliSonuc: {
+          mesaj: "You crossed the pass step by step in silence; the snow never stirred.",
+          detay: "Sometimes leadership demands silence.",
+        },
+        basarisizSonuc: {
+          mesaj: "Some still murmured prayers; you crossed tense but safe.",
+          detay: "Full obedience is rarely achieved.",
+        },
+      },
+      {
+        metin: "Allow the prayers, trust in faith.",
+        ipucu: "Surrender to faith, take the risk",
+        basariliSonuc: {
+          mesaj: "The prayers echoed but no avalanche came; the group called it a miracle.",
+          detay: "Some moments strengthen faith.",
+        },
+        basarisizSonuc: {
+          mesaj: "The vibration triggered a small snow slide; a few were slightly injured.",
+          detay: "Nature is sometimes unforgiving.",
+        },
+      },
+    ],
+  },
+  hac_katolik_deniz_3b: {
+    baslik: "Mass on Deck",
+    metin: "On the last night before arrival, the pilgrims want to gather on deck for a thanksgiving mass. The captain says the weather will turn and everyone should stay below instead of on deck.",
+    secenekler: [
+      {
+        metin: "Keep the mass short, gather everyone on deck.",
+        ipucu: "Meaningful but somewhat risky",
+        basariliSonuc: {
+          mesaj: "It was a short but deeply moving mass; everyone gave thanks in tears.",
+          detay: "Some memories are carried for a lifetime.",
+        },
+        basarisizSonuc: {
+          mesaj: "An unexpected wave soaked the deck during the mass, and a few caught a chill.",
+          detay: "The sea has no respect for plans.",
+        },
+      },
+      {
+        metin: "Follow the captain, hold a quiet mass below deck.",
+        ipucu: "Safe but less grand",
+        basariliSonuc: {
+          mesaj: "You held a calm mass below deck; modest but peaceful.",
+          detay: "Safety sometimes outweighs splendor.",
+        },
+        basarisizSonuc: {
+          mesaj: "The mass was cut short in the cramped hold, leaving everyone a little disappointed.",
+          detay: "Not every ceremony ends as hoped.",
+        },
+      },
+    ],
+  },
+  hac_ortodoks_kara_3b: {
+    baslik: "A Youth Lost in the Woods",
+    metin: "During a rest stop, a young pilgrim from the caravan wandered into the woods looking for water and got lost. Night is falling; the caravan leader wants to move on, but the youth's family begs to search.",
+    secenekler: [
+      {
+        metin: "Form a search party, find the youth.",
+        ipucu: "Compassionate but costs time",
+        basariliSonuc: {
+          mesaj: "The youth was found, scared but unharmed; the family was endlessly grateful.",
+          detay: "Some nights gain meaning by saving a life.",
+        },
+        basarisizSonuc: {
+          mesaj: "You searched for hours but couldn't find the youth; the caravan had to move on in sorrow.",
+          detay: "Not every search ends happily.",
+        },
+      },
+      {
+        metin: "Follow the caravan leader, move on.",
+        ipucu: "Fast but a heavy weight on your conscience",
+        basariliSonuc: {
+          mesaj: "The caravan moved on; the family's cries followed you for a long while.",
+          detay: "Some decisions are paid for with a guilty conscience.",
+        },
+        basarisizSonuc: {
+          mesaj: "You moved on, but the weight of that night stayed with you for the whole journey.",
+          detay: "Some burdens never lighten.",
+        },
+      },
+    ],
+  },
+  hac_ortodoks_deniz_3b: {
+    baslik: "Encounter with a Fishing Boat",
+    metin: "A small fishing boat signals on the horizon — their supplies are gone and they're asking for help. The ship's captain says diverting course will cause delay.",
+    secenekler: [
+      {
+        metin: "Divert course, give the fishermen supplies.",
+        ipucu: "A small delay, great peace of mind",
+        basariliSonuc: {
+          mesaj: "Supplies were given to the fishermen; they waved off gratefully.",
+          detay: "Solidarity at sea is a tradition.",
+        },
+        basarisizSonuc: {
+          mesaj: "A crate of supplies fell overboard while helping, costing more than expected.",
+          detay: "Kindness sometimes costs more than planned.",
+        },
+      },
+      {
+        metin: "Hold course, pass without helping.",
+        ipucu: "Fast but a cold choice",
+        basariliSonuc: {
+          mesaj: "The ship held its course; the fishing boat shrank into the horizon.",
+          detay: "Some choices are practical but cold.",
+        },
+        basarisizSonuc: {
+          mesaj: "You passed by, but some passengers on deck quietly condemned the decision.",
+          detay: "Every decision has an observer.",
+        },
+      },
+    ],
+  },
+  hac_anglikan_kara_3b: {
+    baslik: "Weary Horses",
+    metin: "The caravan's horses have been walking without rest for days; one now refuses to go on. The farrier wants more rest, but time is tight.",
+    secenekler: [
+      {
+        metin: "Take a day's rest, let the horses recover.",
+        ipucu: "Slow but healthy",
+        basariliSonuc: {
+          mesaj: "A day's rest refreshed the horses; you completed the rest of the journey safely.",
+          detay: "Sometimes progress comes from stopping.",
+        },
+        basarisizSonuc: {
+          mesaj: "The rest took longer than expected, and everyone grew a bit impatient, but you moved on.",
+          detay: "Even rest sometimes costs.",
+        },
+      },
+      {
+        metin: "Swap the horse, press on immediately.",
+        ipucu: "Costly but fast",
+        basariliSonuc: {
+          mesaj: "The new horse blended into the caravan quickly; you continued without loss.",
+          detay: "Sometimes money buys time.",
+        },
+        basarisizSonuc: {
+          mesaj: "The new horse turned out stubborn too; the caravan had a jolting, exhausting day.",
+          detay: "Not every investment pays off.",
+        },
+      },
+    ],
+  },
+  hac_anglikan_deniz_3b: {
+    baslik: "Anchor Trouble",
+    metin: "The ship anchored overnight finds in the morning that its anchor is wedged on a rock. Sending a diver is risky, but cutting the anchor loose will make future anchoring harder.",
+    secenekler: [
+      {
+        metin: "Send a diver, try to save the anchor.",
+        ipucu: "Risky but frugal",
+        basariliSonuc: {
+          mesaj: "The diver skillfully freed the anchor; the ship continued without loss.",
+          detay: "Some risks are taken with skill.",
+        },
+        basarisizSonuc: {
+          mesaj: "The diver was injured pulling free from the rock, and the anchor still couldn't be saved.",
+          detay: "Some attempts cost twice.",
+        },
+      },
+      {
+        metin: "Cut the anchor loose, don't waste time.",
+        ipucu: "Fast but a permanent loss",
+        basariliSonuc: {
+          mesaj: "The anchor was cut and the ship set off at once; a small material loss, cheaply escaped.",
+          detay: "Sometimes accepting a loss is the fastest solution.",
+        },
+        basarisizSonuc: {
+          mesaj: "The rope snapped while cutting the anchor, lightly grazing a couple of sailors.",
+          detay: "Even simple tasks can go wrong.",
+        },
+      },
+    ],
+  },
 };
