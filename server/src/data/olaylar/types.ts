@@ -97,6 +97,16 @@ export interface OlayTanimi {
   gerekliHizip?: boolean;
   /** true ise bu olay sadece "hapiste" etiketi taşıyan karakterlere çıkar; hapisteyken normal olay havuzu tamamen kapanır. */
   hapisOlayi?: boolean;
+  /**
+   * true ise bu olay bir kaçış/erken-tahliye stratejisini BAŞLATAN olaydır (tünel,
+   * rüşvet, isyan, bayıltma, iyi hal, parasız riskli kaçışlar). "Az olay var" turu
+   * Faz 8: bu olaylar (a) hapse yeni girildiğinde ilk 2 hapisOlayi çözülene kadar
+   * (`hapis_tur_sayaci<2`) ve (b) toplam ceza 5 yıldan kısaysa (`hapis_ceza_toplam<5`)
+   * havuzdan çıkarılır — önce hapishane hayatını yaşa, kaçış fikri sonra gelsin;
+   * kısa cezada zaten kaçış zincirine girecek zaman/gerekçe yok. Zincirin kendi
+   * içindeki devam adımları (`zorunlu_sonraki` ile zorlanan) bu filtreden etkilenmez.
+   */
+  hapisKacisBaslangici?: boolean;
   /** true ise bu olay sadece "yolculukta" etiketi taşıyan karakterlere çıkar; yolculuktayken normal olay havuzu tamamen kapanır (hapisOlayi ile birebir aynı mantık, çok yıllı yolculuk zincirleri için). */
   yolculukOlayi?: boolean;
   /** true ise bu olay sadece vebayı bizzat kapmış ("veba_hastasi" etiketi) karakterlere çıkar; hastayken normal havuz tamamen kapanır (hapisOlayi ile aynı mantık). Hekim/tedavi/ihmal seçimleriyle veba_olum_riski'ni düşürüp yükseltir. */

@@ -67,6 +67,14 @@ export function temelUygunMu(olay: OlayTanimi, state: CharacterState): boolean {
   const hapiste = state.etiketler.includes("hapiste");
   if (hapiste && !olay.hapisOlayi) return false;
   if (!hapiste && olay.hapisOlayi) return false;
+  // "Az olay var" turu Faz 8: kaçış/erken-tahliye stratejisini BAŞLATAN olaylar
+  // (a) ilk 2 hapisOlayi çözülene kadar (önce hapishane hayatını yaşa) ve
+  // (b) toplam ceza 5 yıldan kısaysa (kısa cezada kaçış zincirine zaman/gerekçe
+  // yok) havuzdan çıkarılır. Zincirin devam adımları zorunlu_sonraki ile
+  // zorlandığı için bu filtreden hiç geçmiyor, etkilenmiyor.
+  if (olay.hapisKacisBaslangici && (state.hapis_tur_sayaci < 2 || state.hapis_ceza_toplam < 5)) {
+    return false;
+  }
   const yolculukta = state.etiketler.includes("yolculukta");
   if (yolculukta && !olay.yolculukOlayi) return false;
   if (!yolculukta && olay.yolculukOlayi) return false;

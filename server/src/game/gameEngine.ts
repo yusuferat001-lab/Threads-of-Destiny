@@ -1212,6 +1212,8 @@ async function sonucuUygulaVeIlerlet(
     const taban = 3 + Math.floor(Math.random() * 4);
     const kademeCeza = Math.min(3, Math.floor(state.suc_seviyesi / 30));
     state.hapis_ceza_kalan = taban + kademeCeza;
+    state.hapis_ceza_toplam = state.hapis_ceza_kalan;
+    state.hapis_tur_sayaci = 0;
   }
   // Riskli kaçış girişimi başarısız oldu → ceza uzadı.
   if (etki.hapis_ceza_artis && state.etiketler.includes("hapiste")) {
@@ -1319,6 +1321,10 @@ async function sonucuUygulaVeIlerlet(
           // Hapis cezası: her turda geçen yıl kadar erir; dolduğunda karakter
           // kendiliğinden serbest kalır (bir kaçış/af olayı beklemek zorunda değil).
           if (state.etiketler.includes("hapiste")) {
+            // "Az olay var" turu Faz 8: yalnız gerçek bir hapisOlayi:true olayı
+            // çözüldüğünde sayaç artar — tutuklanma anının kendisi (hapisOlayi
+            // değil, normal havuzdan gelir) bunu tüketmez.
+            if (mevcutOlay.hapisOlayi) state.hapis_tur_sayaci += 1;
             state.hapis_ceza_kalan -= yasArtisi;
             if (state.hapis_ceza_kalan <= 0) {
               state.hapis_ceza_kalan = 0;
@@ -2774,6 +2780,8 @@ export async function kotuIsYap(id: string, tur: string, secenek: KotuIsSecenek 
     etiketEkle(state, ["hapiste"]);
     if (state.hapis_ceza_kalan <= 0) {
       state.hapis_ceza_kalan = 3 + Math.floor(Math.random() * 4) + Math.min(3, Math.floor(state.suc_seviyesi / 30));
+      state.hapis_ceza_toplam = state.hapis_ceza_kalan;
+      state.hapis_tur_sayaci = 0;
     }
     hayatOlayiEkle(state, "⛓️", T(dil, "Karanlık bir iş sırasında enselendi"));
     mesaj += " " + T(dil, "Enselendin — kodesi boyladın.");

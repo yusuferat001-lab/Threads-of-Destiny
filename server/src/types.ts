@@ -217,6 +217,22 @@ export interface CharacterState {
    * SonucEtkisi.hapis_ceza_artis ile bu sayaç uzar. Hapiste değilken 0.
    */
   hapis_ceza_kalan: number;
+  /**
+   * "Az olay var" turu Faz 8: "hapiste" etiketi yeni eklendiğinde hapis_ceza_kalan
+   * ile birlikte AYNI değere set edilir ve bir daha değişmez — hapis_ceza_kalan
+   * geri sayarken bu alan cezanın orijinal toplam uzunluğunu (yıl) hatırlar.
+   * `hapisKacisBaslangici:true` olaylarının "toplam ceza ≥5 yıl mı" filtresi
+   * bunu kullanır (kalan süre değil, çünkü o zamanla küçülüyor). Hapiste değilken
+   * son cezanın değerinde kalır (anlamsız, okunmaz).
+   */
+  hapis_ceza_toplam: number;
+  /**
+   * "Az olay var" turu Faz 8: hapse her yeni girişte 0'a sıfırlanır, çözülen her
+   * hapisOlayi:true olayında +1 artar. `hapisKacisBaslangici:true` olayları bu
+   * sayaç 2'ye ulaşana kadar havuzdan çıkarılır — önce en az 2 "hapishane hayatı"
+   * olayı yaşansın, kaçış fikri ondan sonra gelsin.
+   */
+  hapis_tur_sayaci: number;
   /** Sahip olunan piyasa mülkleri (her türden en fazla bir tane). */
   mulkler: MulkTuru[];
   /**

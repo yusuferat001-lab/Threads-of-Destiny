@@ -177,6 +177,10 @@ export interface CharacterState {
   suc_seviyesi: number;
   /** Hapiste kalan ceza süresi (yıl); 0'a inince otomatik serbest kalınır. Hapiste değilken 0. */
   hapis_ceza_kalan: number;
+  /** Cezanın orijinal toplam uzunluğu (yıl); hapis_ceza_kalan geri sayarken bu sabit kalır. */
+  hapis_ceza_toplam: number;
+  /** Hapse en son girişten beri çözülen hapisOlayi:true olay sayısı. */
+  hapis_tur_sayaci: number;
   mulkler: MulkTuru[];
   /** Her mülk için bir sonraki periyodik bakım/vergi masrafına kalan yıl (7-10 yılda bir). */
   mulk_bakim_kalan: Partial<Record<MulkTuru, number>>;
