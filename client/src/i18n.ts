@@ -114,6 +114,19 @@ const TR = {
   bgNadirEfsanevi: 'Efsanevi',
   bgIlerleme: '{0} / {1}',
   bgYeniRozet: 'YENİ',
+
+  // ---- Kozmetik Dolabı ----
+  btnKozmetik: '🎨 Kozmetik Dolabı',
+  kzBaslik: 'Kozmetik Dolabı',
+  kzKategoriBas: 'Baş',
+  kzKategoriSirt: 'Sırt & Aksesuar',
+  kzKategoriCerceve: 'Çerçeve',
+  kzOnizlemeNot: 'Sadece görünüm — hiçbir eşyanın stat/güç etkisi yoktur.',
+  kzCikar: 'Çıkar',
+  kzGiy: 'Giy',
+  kzGiyili: 'Giyili',
+  kzYetersizSikke: 'Yetersiz Kader Sikkesi.',
+
   olumKazanimBaslik: 'Bu Hayatın Kazanımları',
 
   // ---- Kurulum akışı (çağ→bölge→yerleşim→isim) ----
@@ -178,8 +191,18 @@ const TR = {
   skorKaydediliyor: 'Skorun liderlik tablosuna kaydediliyor…',
   btnLiderlikTablosu: 'Liderlik Tablosu',
 
+  // ---- Günlük seri & Kader Sikkesi ----
+  gunlukSeriEtiket: '{0} gün',
+  gunlukSeriTitle: 'En uzun serin: {0} gün',
+  sikkeAciklama: 'Kader Sikkesi — ölümlerden ve günlük girişten kazanılan kalıcı meta-para; kozmetik dolapta harcanır.',
+  gunlukOdulMesaji: '{0} günlük seri! +{1} Kader Sikkesi kazandın.',
+  olumSikkeKazanci: 'Bu hayat +{0} Kader Sikkesi kazandırdı.',
+
   // ---- Liderlik ----
   liderlikBaslik: 'Liderlik Tablosu',
+  donemTumZaman: 'Tüm Zamanlar',
+  donemBuHafta: 'Bu Hafta',
+  haftaSifirlanma: 'Hafta sıfırlanmasına',
   sekmeGenelLb: 'Genel',
   sekmeEnZengin: 'En Zenginler',
   sekmeEnUnlu: 'En Çok Tanınanlar',
@@ -795,6 +818,19 @@ const EN: Metinler = {
   bgNadirEfsanevi: 'Legendary',
   bgIlerleme: '{0} / {1}',
   bgYeniRozet: 'NEW',
+
+  // ---- Cosmetic Wardrobe ----
+  btnKozmetik: '🎨 Cosmetic Wardrobe',
+  kzBaslik: 'Cosmetic Wardrobe',
+  kzKategoriBas: 'Head',
+  kzKategoriSirt: 'Back & Accessory',
+  kzKategoriCerceve: 'Frame',
+  kzOnizlemeNot: 'Purely cosmetic — no item affects any stat or power.',
+  kzCikar: 'Remove',
+  kzGiy: 'Equip',
+  kzGiyili: 'Equipped',
+  kzYetersizSikke: 'Not enough Fate Coin.',
+
   olumKazanimBaslik: 'This Life\'s Honours',
 
   // ---- Setup flow (era→region→settlement→name) ----
@@ -859,8 +895,18 @@ const EN: Metinler = {
   skorKaydediliyor: 'Saving your score to the leaderboard…',
   btnLiderlikTablosu: 'Leaderboard',
 
+  // ---- Daily streak & Fate Coin ----
+  gunlukSeriEtiket: '{0}-day streak',
+  gunlukSeriTitle: 'Longest streak: {0} days',
+  sikkeAciklama: 'Fate Coin — a persistent meta-currency earned from deaths and daily logins; spent in the cosmetic wardrobe.',
+  gunlukOdulMesaji: '{0}-day streak! You earned +{1} Fate Coin.',
+  olumSikkeKazanci: 'This life earned you +{0} Fate Coin.',
+
   // ---- Leaderboard ----
   liderlikBaslik: 'Leaderboard',
+  donemTumZaman: 'All Time',
+  donemBuHafta: 'This Week',
+  haftaSifirlanma: 'Weekly reset in',
   sekmeGenelLb: 'Overall',
   sekmeEnZengin: 'Richest',
   sekmeEnUnlu: 'Most Renowned',

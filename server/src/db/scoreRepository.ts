@@ -32,8 +32,23 @@ export async function skorKaydet(state: CharacterState, isim: string) {
 }
 
 export type SiralamaTuru = "genel" | "en_zengin" | "en_unlu" | "en_uzun_yasayan";
+export type SiralamaDonemi = "tumZaman" | "hafta";
 
-export async function skorTablosuGetir(tur: SiralamaTuru = "genel", limit = 15) {
+/** Haftanın başlangıcını (Pazartesi 00:00 UTC) döner — liderlik tablosu haftalık sıfırlanması bu sınırı kullanır. */
+export function haftaBaslangici(simdi: Date = new Date()): Date {
+  const gun = simdi.getUTCDay(); // 0=Pazar..6=Cumartesi
+  const pazartesiyeUzaklik = (gun + 6) % 7; // Pazartesi=0, Salı=1, ..., Pazar=6
+  const baslangic = new Date(
+    Date.UTC(simdi.getUTCFullYear(), simdi.getUTCMonth(), simdi.getUTCDate() - pazartesiyeUzaklik)
+  );
+  return baslangic;
+}
+
+export async function skorTablosuGetir(
+  tur: SiralamaTuru = "genel",
+  limit = 15,
+  donem: SiralamaDonemi = "tumZaman"
+) {
   const orderBy =
     tur === "en_zengin"
       ? { para: "desc" as const }
@@ -44,6 +59,7 @@ export async function skorTablosuGetir(tur: SiralamaTuru = "genel", limit = 15) 
           : { skor: "desc" as const };
 
   return prisma.score.findMany({
+    where: donem === "hafta" ? { createdAt: { gte: haftaBaslangici() } } : undefined,
     orderBy,
     take: limit,
   });

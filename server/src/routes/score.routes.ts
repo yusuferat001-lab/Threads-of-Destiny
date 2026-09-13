@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { skorTablosuGetir, SiralamaTuru } from "../db/scoreRepository";
+import { skorTablosuGetir, SiralamaTuru, SiralamaDonemi } from "../db/scoreRepository";
 import { liderlikTablosunaKaydet } from "../game/gameEngine";
 import { uygunsuzMu } from "../moderasyon/kufurFiltresi";
 
@@ -24,6 +24,7 @@ scoreRouter.post("/", async (req, res) => {
 
 scoreRouter.get("/", async (req, res) => {
   const tur = (req.query.tur as SiralamaTuru) ?? "genel";
-  const tablo = await skorTablosuGetir(tur);
+  const donem: SiralamaDonemi = req.query.donem === "hafta" ? "hafta" : "tumZaman";
+  const tablo = await skorTablosuGetir(tur, 15, donem);
   res.json({ tablo });
 });

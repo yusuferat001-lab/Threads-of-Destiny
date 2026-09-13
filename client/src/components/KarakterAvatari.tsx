@@ -1,9 +1,13 @@
 import { useDil } from '../DilContext';
+import type { GiyilenKozmetikler } from '../kozmetikDolabi';
+import { kozmetikTanimGetir } from '../kozmetikKatalog';
 
 interface KarakterAvatariProps {
   meslek?: string;
   kisilik: [string, string];
   rutbeSeviye?: number;
+  /** Kalıcı kozmetik dolaptan (§ Kader Sikkesi) giyilen eşyalar — tamamen kozmetik, stat etkisi yok. */
+  giyilenKozmetikler?: GiyilenKozmetikler;
 }
 
 const MESLEK_RENK: Record<string, string> = {
@@ -29,12 +33,16 @@ function ifadeCikar(kisilik: [string, string]): 'mutlu' | 'uzgun' | 'notr' {
   return 'notr';
 }
 
-export function KarakterAvatari({ meslek, kisilik, rutbeSeviye = 1 }: KarakterAvatariProps) {
-  const { m, kt } = useDil();
+export function KarakterAvatari({ meslek, kisilik, rutbeSeviye = 1, giyilenKozmetikler }: KarakterAvatariProps) {
+  const { m, kt, dil } = useDil();
   const govdeRengi = (meslek && MESLEK_RENK[meslek]) || '#5a4632';
   // Meslek seçilmeden önce köşedeki "👤" (mavi insan silueti gibi görünüyordu) hiç gösterilmez.
   const aksesuar = meslek ? MESLEK_AKSESUAR[meslek] : null;
   const ifade = ifadeCikar(kisilik);
+
+  const basEsyasi = giyilenKozmetikler?.bas ? kozmetikTanimGetir(giyilenKozmetikler.bas) : undefined;
+  const sirtEsyasi = giyilenKozmetikler?.sirt ? kozmetikTanimGetir(giyilenKozmetikler.sirt) : undefined;
+  const cerceveEsyasi = giyilenKozmetikler?.cerceve ? kozmetikTanimGetir(giyilenKozmetikler.cerceve) : undefined;
 
   return (
     <div className="karakter-avatari" role="img" aria-label={`${m.kaAria}${meslek ? `, ${kt(meslek)}` : ''}`}>
@@ -44,6 +52,10 @@ export function KarakterAvatari({ meslek, kisilik, rutbeSeviye = 1 }: KarakterAv
       <svg viewBox="0 0 120 120" className="karakter-avatari-svg" aria-hidden="true">
         {/* madalyon zemini — karakterin arkasında kasıtlı, temayla uyumlu koyu bir zemin bırakır */}
         <circle cx="60" cy="60" r="60" fill="#3a2b1c" />
+        {/* kozmetik çerçeve — kalıcı dolaptan giyilen halka, tamamen görsel */}
+        {cerceveEsyasi?.renk && (
+          <circle cx="60" cy="60" r="57" fill="none" stroke={cerceveEsyasi.renk} strokeWidth="4" />
+        )}
         {/* gövde */}
         <rect x="30" y="65" width="60" height="50" rx="18" fill={govdeRengi} />
         {/* rütbe rozetleri */}
@@ -71,6 +83,16 @@ export function KarakterAvatari({ meslek, kisilik, rutbeSeviye = 1 }: KarakterAv
       {aksesuar && (
         <span className="karakter-avatari-aksesuar" aria-hidden>
           {aksesuar}
+        </span>
+      )}
+      {basEsyasi?.emoji && (
+        <span className="karakter-avatari-kozmetik-bas" aria-hidden title={basEsyasi.ad[dil]}>
+          {basEsyasi.emoji}
+        </span>
+      )}
+      {sirtEsyasi?.emoji && (
+        <span className="karakter-avatari-kozmetik-sirt" aria-hidden>
+          {sirtEsyasi.emoji}
         </span>
       )}
     </div>

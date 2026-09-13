@@ -790,6 +790,7 @@ export interface GeriBildirimGirdi {
 }
 
 export type SiralamaTuru = 'genel' | 'en_zengin' | 'en_unlu' | 'en_uzun_yasayan';
+export type SiralamaDonemi = 'tumZaman' | 'hafta';
 
 export interface ScoreKaydi {
   id: number;
