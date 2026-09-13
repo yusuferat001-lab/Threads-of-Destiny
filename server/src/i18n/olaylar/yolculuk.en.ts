@@ -3713,4 +3713,247 @@ export const OLAYLAR_YOLCULUK_EN: Record<string, OlayCeviri> = {
       },
     ],
   },
+
+  // "Az olay var" turu Faz 6 (2026-09): second branch point for the Crusade's
+  // escape/captivity branches and the Defense's resistance/captivity branches
+  oc_hacli_kacis_2b: {
+    baslik: "Hiding in a Hayloft",
+    metin: "Patrols are getting close; ahead is a farm hayloft. Hiding inside might keep you from being found, but the farmer could spot you and report you.",
+    secenekler: [
+      {
+        metin: "Hide in the hayloft, wait out the patrol.",
+        ipucu: "A good hiding spot, but the farmer might find you",
+        basariliSonuc: {
+          mesaj: "The patrol passed without noticing the hayloft; you rested safely for a few hours.",
+          detay: "Some hiding spots are found at just the right time.",
+        },
+        basarisizSonuc: {
+          mesaj: "The farmer found you but had mercy and didn't tell the patrol; you still left uneasy.",
+          detay: "Some secrets weigh on you even unshared.",
+        },
+      },
+      {
+        metin: "Don't risk it, run across the open field.",
+        ipucu: "Faster but a high risk of being caught by the patrol",
+        basariliSonuc: {
+          mesaj: "You ran across the open field until you were out of breath, but you left the patrol behind.",
+          detay: "Sometimes running saves you, not stopping.",
+        },
+        basarisizSonuc: {
+          mesaj: "The patrol spotted you and gave chase; you barely escaped, wounded.",
+          detay: "Open ground is never safe.",
+        },
+      },
+    ],
+  },
+  oc_hacli_kacis_3b: {
+    baslik: "The Encounter at the Door",
+    metin: "When you reached your door, no one at home was expecting you; they had assumed you dead and even mourned you. Before you knock, you hear your family's voices inside.",
+    secenekler: [
+      {
+        metin: "Go inside, face their shock head-on.",
+        ipucu: "Emotional but healing",
+        basariliSonuc: {
+          mesaj: "When you walked in there was shock first, then tears and embraces; you had truly come home.",
+          detay: "Some homecomings restart a life.",
+        },
+        basarisizSonuc: {
+          mesaj: "The shock passed, but some things weren't the same; now you feel like a stranger even in your own home.",
+          detay: "Some absences leave a mark.",
+        },
+      },
+      {
+        metin: "Wait outside first, let someone prepare them.",
+        ipucu: "A gentler transition",
+        basariliSonuc: {
+          mesaj: "You sent word through a neighbor first; your family greeted you prepared.",
+          detay: "Even good news should sometimes be given slowly.",
+        },
+        basarisizSonuc: {
+          mesaj: "The message was misunderstood and caused panic at home; everyone was still shaken when you walked in.",
+          detay: "Not every precaution works as intended.",
+        },
+      },
+    ],
+  },
+  oc_hacli_esaret_2b: {
+    baslik: "The Clergyman in the Camp",
+    metin: "An elderly clergyman, also a captive in the camp, secretly gathers a small prayer circle at night. Joining could lift morale, but the guards might see it as 'preparing a revolt'.",
+    secenekler: [
+      {
+        metin: "Join the prayer circle, share the hope.",
+        ipucu: "Boosts morale but risky",
+        basariliSonuc: {
+          mesaj: "The secret prayer circle gave you and the other captives hope; the guards noticed nothing.",
+          detay: "Some hope blossoms even behind walls.",
+        },
+        basarisizSonuc: {
+          mesaj: "The circle was discovered and everyone was punished; still, you don't regret it.",
+          detay: "Some hopes come at a heavy price.",
+        },
+      },
+      {
+        metin: "Stay away, don't take the risk.",
+        ipucu: "Safe but lonely",
+        basariliSonuc: {
+          mesaj: "You stayed quietly in your corner; safe from danger, but your morale is low too.",
+          detay: "Safety sometimes comes with loneliness.",
+        },
+        basarisizSonuc: {
+          mesaj: "Staying away isolated you in the other captives' eyes.",
+          detay: "Every caution has a cost.",
+        },
+      },
+    ],
+  },
+  oc_hacli_esaret_3b: {
+    baslik: "Returning as a Changed Man",
+    metin: "When you return from captivity, your old friends have trouble recognizing you — you're quieter, more guarded, a different person now. Some ask about your old self.",
+    secenekler: [
+      {
+        metin: "Admit that you've changed, ask them to accept the new you.",
+        ipucu: "An honest, mature acceptance",
+        basariliSonuc: {
+          mesaj: "Your candor surprised your friends but also earned respect; you were accepted as you are now.",
+          detay: "Some changes are understood with time.",
+        },
+        basarisizSonuc: {
+          mesaj: "Some friends chose to keep their distance from your new self; the old closeness never returned.",
+          detay: "Not every change is welcomed by everyone.",
+        },
+      },
+      {
+        metin: "Try to act like your old self.",
+        ipucu: "Looks easy but hard to sustain",
+        basariliSonuc: {
+          mesaj: "You largely managed to put on your old mannerisms; no one asked too much.",
+          detay: "Some masks work, at least for a while.",
+        },
+        basarisizSonuc: {
+          mesaj: "You couldn't keep up the mask; the change inside you surfaced sooner or later.",
+          detay: "You can't outrun yourself for long.",
+        },
+      },
+    ],
+  },
+  yolculuk_savunma_direnis_2b: {
+    baslik: "The Last Volley of Arrows",
+    metin: "The archers' arrow supply is running low. Should they unload everything at once on the largest enemy group, or ration them to hold out longer?",
+    secenekler: [
+      {
+        metin: "Unload all arrows at once on the largest group.",
+        ipucu: "Big impact but leaves you defenseless afterward",
+        basariliSonuc: {
+          mesaj: "The volley tore a huge gap in the enemy ranks; the breach held for a while.",
+          detay: "Some gambles pay off at just the right moment.",
+        },
+        basarisizSonuc: {
+          mesaj: "Right after the arrows ran out, a counterattack came; you barely fended it off.",
+          detay: "Not every gamble pays off.",
+        },
+      },
+      {
+        metin: "Ration the arrows, keep striking small blows.",
+        ipucu: "Less effective but more sustainable",
+        basariliSonuc: {
+          mesaj: "The rationed use kept the line standing a bit longer.",
+          detay: "Patience works in this siege too.",
+        },
+        basarisizSonuc: {
+          mesaj: "The rationed use wasn't enough, the enemy advanced anyway.",
+          detay: "Some tactics fall short.",
+        },
+      },
+    ],
+  },
+  yolculuk_savunma_direnis_3b: {
+    baslik: "The Medal Ceremony",
+    metin: "The Sultan wants to honor you with a small ceremony for your resilience in the siege. But standing in the spotlight also brings back the comrades you lost.",
+    secenekler: [
+      {
+        metin: "Accept the ceremony, take the medal with pride.",
+        ipucu: "Honorable but emotionally hard",
+        basariliSonuc: {
+          mesaj: "Your eyes welled up as the medal was pinned on; pride and grief mixed together.",
+          detay: "Some honors come together with pain.",
+        },
+        basarisizSonuc: {
+          mesaj: "You couldn't hold back your emotions during the ceremony; the hall watched you in silence.",
+          detay: "Some memories return even at ceremonies.",
+        },
+      },
+      {
+        metin: "Politely decline the ceremony, step back quietly.",
+        ipucu: "Humble but you go unnoticed",
+        basariliSonuc: {
+          mesaj: "Your humility was quietly talked about among some soldiers.",
+          detay: "Some honors are earned without being accepted.",
+        },
+        basarisizSonuc: {
+          mesaj: "Your refusal was seen as disrespect by some senior officers.",
+          detay: "Not every humility is understood correctly.",
+        },
+      },
+    ],
+  },
+  yolculuk_savunma_esaret_2b: {
+    baslik: "Talking to an Enemy Captive",
+    metin: "In the camp, you're placed in the same tent as a Crusader soldier who was also taken captive. Despite the enmity between you, you're both suffering the same pain.",
+    secenekler: [
+      {
+        metin: "Talk to him, find your shared humanity.",
+        ipucu: "An unexpected solidarity might form",
+        basariliSonuc: {
+          mesaj: "You both shared exhaustion more than enmity; an odd but real bond formed.",
+          detay: "Some friendships are born in the most unexpected places.",
+        },
+        basarisizSonuc: {
+          mesaj: "The conversation turned tense, old hostility got in the way.",
+          detay: "Not every attempt at closeness succeeds.",
+        },
+      },
+      {
+        metin: "Keep your distance, don't trust him.",
+        ipucu: "Safe but hardens things",
+        basariliSonuc: {
+          mesaj: "You kept your distance; neither friendship nor trouble came of it.",
+          detay: "Some caution passes by quietly.",
+        },
+        basarisizSonuc: {
+          mesaj: "Your coldness strained the atmosphere in the tent, the days felt even heavier.",
+          detay: "Every distance has a cost.",
+        },
+      },
+    ],
+  },
+  yolculuk_savunma_esaret_3b: {
+    baslik: "Return to the Garrison",
+    metin: "When you return to your garrison after captivity, someone else has been assigned your post. While the commander tries to find you a new duty, he also asks if you want your old post back.",
+    secenekler: [
+      {
+        metin: "Ask for your old post back, insist on it.",
+        ipucu: "Preserves your pride but may create tension",
+        basariliSonuc: {
+          mesaj: "Your insistence was accepted; you returned to your old post, with some tension.",
+          detay: "Some rights need to be reclaimed.",
+        },
+        basarisizSonuc: {
+          mesaj: "Your insistence was refused; you started your new post a bit resentful.",
+          detay: "Not every insistence pays off.",
+        },
+      },
+      {
+        metin: "Accept a new duty, start over.",
+        ipucu: "Flexible but you lose your old post",
+        basariliSonuc: {
+          mesaj: "You started your new duty with an open mind; the garrison appreciated your flexibility.",
+          detay: "Some fresh starts are well received.",
+        },
+        basarisizSonuc: {
+          mesaj: "The new duty turned out harder than expected, and settling in was a bit rough.",
+          detay: "Not every fresh start is easy.",
+        },
+      },
+    ],
+  },
 };

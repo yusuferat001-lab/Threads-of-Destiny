@@ -1726,13 +1726,13 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         ipucu: "Erzak kazanabilirsin ama ele verilme riski var",
         basariliSonuc: {
           saglik: 8,
-          zorunlu_sonraki: "oc_hacli_kacis_2",
+          zorunlu_sonraki_havuzu: ["oc_hacli_kacis_2", "oc_hacli_kacis_2b"],
           mesaj: "Merhametli bir köylü sana ekmek ve peynir verdi, kimseye söylemeyeceğine yemin etti.",
           detay: "Bazı yabancılar tehlikeyi göze alıp yardım ediyor.",
         },
         basarisizSonuc: {
           saglik: -15,
-          zorunlu_sonraki: "oc_hacli_kacis_2",
+          zorunlu_sonraki_havuzu: ["oc_hacli_kacis_2", "oc_hacli_kacis_2b"],
           mesaj: "Köylüler seni düşman askeri sanıp kovaladı; aç ve yaralı kaçtın.",
           detay: "Her yabancı dost değil.",
         },
@@ -1743,13 +1743,13 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         ipucu: "Daha güvenli ama bedenin yıpranır",
         basariliSonuc: {
           saglik: -10,
-          zorunlu_sonraki: "oc_hacli_kacis_2",
+          zorunlu_sonraki_havuzu: ["oc_hacli_kacis_2", "oc_hacli_kacis_2b"],
           mesaj: "Yabani otlar ve dereyle idare ettin; zayıfladın ama kimseye görünmedin.",
           detay: "Hayatta kalmak bazen çok az şeyle oluyor.",
         },
         basarisizSonuc: {
           saglik: -20,
-          zorunlu_sonraki: "oc_hacli_kacis_2",
+          zorunlu_sonraki_havuzu: ["oc_hacli_kacis_2", "oc_hacli_kacis_2b"],
           mesaj: "Zehirli bir bitki yedin, günlerce midenle boğuştun.",
           detay: "Doğa bazen düşmandan daha acımasız.",
         },
@@ -1776,13 +1776,13 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         ipucu: "Birlikte güçlü ama daha kolay fark edilirsiniz",
         basariliSonuc: {
           dost_puani: 10,
-          zorunlu_sonraki: "oc_hacli_kacis_3",
+          zorunlu_sonraki_havuzu: ["oc_hacli_kacis_3", "oc_hacli_kacis_3b"],
           mesaj: "Birlikte hareket etmek moralinizi yükseltti; birbirinize destek oldunuz.",
           detay: "Yalnız değilsin artık.",
         },
         basarisizSonuc: {
           saglik: -15,
-          zorunlu_sonraki: "oc_hacli_kacis_3",
+          zorunlu_sonraki_havuzu: ["oc_hacli_kacis_3", "oc_hacli_kacis_3b"],
           mesaj: "Kalabalık grubunuz bir devriyenin dikkatini çekti, çatışarak dağılmak zorunda kaldınız.",
           detay: "Sayı bazen güvenlik değil, tehlike demek.",
         },
@@ -1793,13 +1793,13 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         ipucu: "Daha sessiz ama yalnız",
         basariliSonuc: {
           mutluluk: -5,
-          zorunlu_sonraki: "oc_hacli_kacis_3",
+          zorunlu_sonraki_havuzu: ["oc_hacli_kacis_3", "oc_hacli_kacis_3b"],
           mesaj: "Yalnız yoluna devam ettin; yalnızlık ağır ama iz bırakmadın.",
           detay: "Bazen en güvenlisi kimseye güvenmemek.",
         },
         basarisizSonuc: {
           saglik: -10,
-          zorunlu_sonraki: "oc_hacli_kacis_3",
+          zorunlu_sonraki_havuzu: ["oc_hacli_kacis_3", "oc_hacli_kacis_3b"],
           mesaj: "Yalnızlığın seni umutsuzluğa sürükledi, zayıf ve kararsız ilerledin.",
           detay: "Yalnız kaçış, ruhu da yoruyor.",
         },
@@ -1900,13 +1900,13 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         basariliSonuc: {
           saglik: 8,
           dost_puani: -8,
-          zorunlu_sonraki: "oc_hacli_esaret_2",
+          zorunlu_sonraki_havuzu: ["oc_hacli_esaret_2", "oc_hacli_esaret_2b"],
           mesaj: "Gardiyan sana biraz daha fazla ekmek verdi; ama diğer esirler seni 'işbirlikçi' diye süzüyor.",
           detay: "Hayatta kalmanın bedeli bazen yalnızlıktır.",
         },
         basarisizSonuc: {
           saglik: -8,
-          zorunlu_sonraki: "oc_hacli_esaret_2",
+          zorunlu_sonraki_havuzu: ["oc_hacli_esaret_2", "oc_hacli_esaret_2b"],
           mesaj: "Ekstra iş bedenini daha da yordu, karşılığında hiçbir şey almadın.",
           detay: "Bazı sözler tutulmuyor.",
         },
@@ -1918,13 +1918,13 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         basariliSonuc: {
           dost_puani: 12,
           saglik: -1,
-          zorunlu_sonraki: "oc_hacli_esaret_2",
+          zorunlu_sonraki_havuzu: ["oc_hacli_esaret_2", "oc_hacli_esaret_2b"],
           mesaj: "Diğer esirlerle erzağınızı ve umudunuzu paylaştınız; birlikte dayanmak seni güçlü tuttu.",
           detay: "Zor günlerde dayanışma, ekmekten daha doyurucu.",
         },
         basarisizSonuc: {
           saglik: -14,
-          zorunlu_sonraki: "oc_hacli_esaret_2",
+          zorunlu_sonraki_havuzu: ["oc_hacli_esaret_2", "oc_hacli_esaret_2b"],
           mesaj: "Koşullar ağırlaştı, dayanışmanız gardiyanların gazabını çekti.",
           detay: "Bazen birlik bile yetmiyor.",
         },
@@ -1950,14 +1950,14 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         ipucu: "Güvenli ama pahalı ve uzun",
         basariliSonuc: {
           para: -60,
-          zorunlu_sonraki: "oc_hacli_esaret_3",
+          zorunlu_sonraki_havuzu: ["oc_hacli_esaret_3", "oc_hacli_esaret_3b"],
           mesaj: "Aylar sonra fidye ulaştı; gardiyanlar seni serbest bıraktı.",
           detay: "Özgürlüğün bir bedeli vardı ve ailen onu ödedi.",
         },
         basarisizSonuc: {
           para: -80,
           saglik: -10,
-          zorunlu_sonraki: "oc_hacli_esaret_3",
+          zorunlu_sonraki_havuzu: ["oc_hacli_esaret_3", "oc_hacli_esaret_3b"],
           mesaj: "Fidye pazarlığı uzadı, bu süre zarfında koşullar iyice ağırlaştı.",
           detay: "Bazı bekleyişler bedeninle ödeniyor.",
         },
@@ -1967,14 +1967,14 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         baseBasariSansi: 40,
         ipucu: "Bedava ama yakalanırsan ağır bedel",
         basariliSonuc: {
-          zorunlu_sonraki: "oc_hacli_esaret_3",
+          zorunlu_sonraki_havuzu: ["oc_hacli_esaret_3", "oc_hacli_esaret_3b"],
           mesaj: "Karanlıkta gölgeden gölgeye sıçrayarak kamptan kaçmayı başardın!",
           detay: "Kalbin hâlâ küt küt atıyor ama özgürsün.",
         },
         basarisizSonuc: {
           saglik: -25,
           olum_sansi: 10,
-          zorunlu_sonraki: "oc_hacli_esaret_3",
+          zorunlu_sonraki_havuzu: ["oc_hacli_esaret_3", "oc_hacli_esaret_3b"],
           mesaj: "Kaçış girişimin fark edildi, ağır bir cezaya çarptırıldın.",
           detay: "Bazı fırsatlar göründükleri kadar açık değil.",
         },
@@ -2483,14 +2483,14 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         basariliSonuc: {
           ahlak: 18,
           dost_puani: 10,
-          zorunlu_sonraki: "sd_somurge_tropik_hastalik",
+          zorunlu_sonraki_havuzu: ["sd_somurge_ahlaki_ikilem", "sd_somurge_ahlaki_ikilem_b"],
           mesaj: "Müzakere masası kuruldu; taraflar gerginlikle de olsa bir ateşkese vardı.",
           detay: "Bazı zaferler silahsız kazanılıyor.",
         },
         basarisizSonuc: {
           saglik: -10,
           ahlak: 10,
-          zorunlu_sonraki: "sd_somurge_tropik_hastalik",
+          zorunlu_sonraki_havuzu: ["sd_somurge_ahlaki_ikilem", "sd_somurge_ahlaki_ikilem_b"],
           mesaj: "Müzakere girişimi sırasında pusuya düştün, güçlükle kurtuldun.",
           detay: "İyi niyet her zaman karşılık bulmuyor.",
         },
@@ -2502,14 +2502,14 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         basariliSonuc: {
           un: 15,
           ahlak: -28,
-          zorunlu_sonraki: "sd_somurge_tropik_hastalik",
+          zorunlu_sonraki_havuzu: ["sd_somurge_ahlaki_ikilem", "sd_somurge_ahlaki_ikilem_b"],
           mesaj: "Direniş kısa sürede bastırıldı; üstlerin seni ödüllendirdi ama o gece hiç uyuyamadın.",
           detay: "Bazı zaferlerin sesi hiç susmuyor.",
         },
         basarisizSonuc: {
           saglik: -20,
           ahlak: -28,
-          zorunlu_sonraki: "sd_somurge_tropik_hastalik",
+          zorunlu_sonraki_havuzu: ["sd_somurge_ahlaki_ikilem", "sd_somurge_ahlaki_ikilem_b"],
           mesaj: "Direniş beklenenden güçlü çıktı, çatışma uzadı ve ağır yaralandın.",
           detay: "Güç kullanmak her zaman hızlı sonuç vermiyor.",
         },
@@ -4316,14 +4316,14 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         basariliSonuc: {
           un: 18,
           saglik: -14,
-          zorunlu_sonraki: "yolculuk_savunma_direnis_2",
+          zorunlu_sonraki_havuzu: ["yolculuk_savunma_direnis_2", "yolculuk_savunma_direnis_2b"],
           mesaj: "Sesin gruba yeniden düzen kazandırdı; birlikte hattı bir süre daha tuttunuz.",
           detay: "Liderlik, en karanlık anda bile doğuyor.",
         },
         basarisizSonuc: {
           saglik: -24,
           olum_sansi: 8,
-          zorunlu_sonraki: "yolculuk_savunma_direnis_2",
+          zorunlu_sonraki_havuzu: ["yolculuk_savunma_direnis_2", "yolculuk_savunma_direnis_2b"],
           mesaj: "Öne atılman seni hedef haline getirdi, ağır yaralandın.",
           detay: "Cesaret her zaman ödüllendirilmiyor.",
         },
@@ -4335,13 +4335,13 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         basariliSonuc: {
           ahlak: 15,
           dost_puani: 10,
-          zorunlu_sonraki: "yolculuk_savunma_direnis_2",
+          zorunlu_sonraki_havuzu: ["yolculuk_savunma_direnis_2", "yolculuk_savunma_direnis_2b"],
           mesaj: "Birkaç yaralı yoldaşını güvenli bir köşeye taşımayı başardın.",
           detay: "Bu kaosta bile hayat kurtarmayı seçtin.",
         },
         basarisizSonuc: {
           saglik: -16,
-          zorunlu_sonraki: "yolculuk_savunma_direnis_2",
+          zorunlu_sonraki_havuzu: ["yolculuk_savunma_direnis_2", "yolculuk_savunma_direnis_2b"],
           mesaj: "Taşırken sen de bir darbe aldın, ikisi de yere yığıldınız.",
           detay: "İyilik yapmanın bedeli bazen ağır.",
         },
@@ -4372,14 +4372,14 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         ipucu: "Ya bir mucize ya da sonun",
         basariliSonuc: {
           un: 20,
-          zorunlu_sonraki: "yolculuk_savunma_direnis_3",
+          zorunlu_sonraki_havuzu: ["yolculuk_savunma_direnis_3", "yolculuk_savunma_direnis_3b"],
           mesaj: "Boru sesi gerçekmiş! Sultan'ın takviye birlikleri tam vaktinde yetişti.",
           detay: "Bazı umutlar gerçekten gelir.",
         },
         basarisizSonuc: {
           saglik: -22,
           olum_sansi: 12,
-          zorunlu_sonraki: "yolculuk_savunma_direnis_3",
+          zorunlu_sonraki_havuzu: ["yolculuk_savunma_direnis_3", "yolculuk_savunma_direnis_3b"],
           mesaj: "Takviye geç kaldı, sen de ağır yaralı bir şekilde yere yığıldın.",
           detay: "Bazı umutlar zamanında yetişmiyor.",
         },
@@ -4390,13 +4390,13 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         ipucu: "Ün az ama çok sayıda hayat kurtarır",
         basariliSonuc: {
           ahlak: 22,
-          zorunlu_sonraki: "yolculuk_savunma_direnis_3",
+          zorunlu_sonraki_havuzu: ["yolculuk_savunma_direnis_3", "yolculuk_savunma_direnis_3b"],
           mesaj: "Kalenin gizli tünelinden onlarca sivili güvenle çıkardın.",
           detay: "Bazı zaferler kılıçla değil, vicdanla kazanılıyor.",
         },
         basarisizSonuc: {
           saglik: -10,
-          zorunlu_sonraki: "yolculuk_savunma_direnis_3",
+          zorunlu_sonraki_havuzu: ["yolculuk_savunma_direnis_3", "yolculuk_savunma_direnis_3b"],
           mesaj: "Tahliye sırasında bir çatışma çıktı, birkaç kişi kaybedildi ama çoğu kurtuldu.",
           detay: "Her kurtarış kayıpsız olmuyor.",
         },
@@ -4499,13 +4499,13 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         basariliSonuc: {
           ahlak: 20,
           saglik: -10,
-          zorunlu_sonraki: "yolculuk_savunma_esaret_2",
+          zorunlu_sonraki_havuzu: ["yolculuk_savunma_esaret_2", "yolculuk_savunma_esaret_2b"],
           mesaj: "Reddin diğer esirler arasında sessiz bir saygı uyandırdı; koşullar sertleşse de onurun sapasağlam.",
           detay: "Bazı şeyler hiçbir koşulda satılık değil.",
         },
         basarisizSonuc: {
           saglik: -18,
-          zorunlu_sonraki: "yolculuk_savunma_esaret_2",
+          zorunlu_sonraki_havuzu: ["yolculuk_savunma_esaret_2", "yolculuk_savunma_esaret_2b"],
           mesaj: "Reddin karşılığında ağır bir ceza aldın ama boyun eğmedin.",
           detay: "Direncin bedeli ağır, ama pişman değilsin.",
         },
@@ -4517,14 +4517,14 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         basariliSonuc: {
           saglik: 10,
           ahlak: -12,
-          zorunlu_sonraki: "yolculuk_savunma_esaret_2",
+          zorunlu_sonraki_havuzu: ["yolculuk_savunma_esaret_2", "yolculuk_savunma_esaret_2b"],
           mesaj: "Oyununu gardiyanlara yuttun; koşulların iyileşti ama içinde bir kirlilik hissi var.",
           detay: "Hayatta kalmak bazen bir maskeyle oluyor.",
         },
         basarisizSonuc: {
           ahlak: -12,
           un: -10,
-          zorunlu_sonraki: "yolculuk_savunma_esaret_2",
+          zorunlu_sonraki_havuzu: ["yolculuk_savunma_esaret_2", "yolculuk_savunma_esaret_2b"],
           mesaj: "Oyunun anlaşıldı, hem gardiyanların hem diğer esirlerin güvenini kaybettin.",
           detay: "Bazı oyunlar herkesi karşına alıyor.",
         },
@@ -4554,14 +4554,14 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         ipucu: "Güvenli ama uzun ve masraflı",
         basariliSonuc: {
           para: -50,
-          zorunlu_sonraki: "yolculuk_savunma_esaret_3",
+          zorunlu_sonraki_havuzu: ["yolculuk_savunma_esaret_3", "yolculuk_savunma_esaret_3b"],
           mesaj: "Aylar sonra fidyen ödendi; kampın kapısından özgür olarak çıktın.",
           detay: "Sultan'ın hazinesi bu kez seni kurtardı.",
         },
         basarisizSonuc: {
           para: -70,
           saglik: -10,
-          zorunlu_sonraki: "yolculuk_savunma_esaret_3",
+          zorunlu_sonraki_havuzu: ["yolculuk_savunma_esaret_3", "yolculuk_savunma_esaret_3b"],
           mesaj: "Fidye pazarlığı uzadı, bu süre zarfında koşullar iyice ağırlaştı.",
           detay: "Bazı bekleyişler bedeninle ödeniyor.",
         },
@@ -4571,14 +4571,14 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         baseBasariSansi: 40,
         ipucu: "Bedava ama yakalanırsan ağır bedel",
         basariliSonuc: {
-          zorunlu_sonraki: "yolculuk_savunma_esaret_3",
+          zorunlu_sonraki_havuzu: ["yolculuk_savunma_esaret_3", "yolculuk_savunma_esaret_3b"],
           mesaj: "Karanlıkta gölgeden gölgeye sıçrayarak kamptan kaçmayı başardın!",
           detay: "Kalbin hâlâ küt küt atıyor ama özgürsün.",
         },
         basarisizSonuc: {
           saglik: -25,
           olum_sansi: 10,
-          zorunlu_sonraki: "yolculuk_savunma_esaret_3",
+          zorunlu_sonraki_havuzu: ["yolculuk_savunma_esaret_3", "yolculuk_savunma_esaret_3b"],
           mesaj: "Kaçış girişimin fark edildi, ağır bir cezaya çarptırıldın.",
           detay: "Bazı fırsatlar göründükleri kadar açık değil.",
         },
@@ -7499,6 +7499,502 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
           zorunlu_sonraki: "yolculuk_mucit_donus",
           mesaj: "Mahkeme fabrikacıya hak verdi; hem para hem itibar kaybettin.",
           detay: "Her mücadele kazanılmıyor.",
+        },
+      },
+    ],
+  },
+
+  // "Az olay var" turu Faz 6 (2026-09): Haçlı Seferi'nin kaçış/esaret dalları
+  // ile Savunma Seferi'nin direniş/esaret dalları da diğer zincirlerle aynı
+  // sayıda (2) dönemeç kazandı (§17) — her zincirde artık 2×2 = 4 farklı
+  // olay-kombinasyonu mümkün.
+  {
+    id: "oc_hacli_kacis_2b",
+    kategori: "savas",
+    gerekliEtiketler: [
+      "hacli:katildi",
+    ],
+    yolculukOlayi: true,
+    ton: "agir",
+    gorsel: "🌾",
+    sureYilMin: 1,
+    sureYilMax: 1,
+    baslik: "Bir Samanlıkta Saklanmak",
+    metin: "Devriyeler yakınlaşıyor; önünde bir çiftlik samanlığı var. İçine saklanmak seni bulunmaktan koruyabilir ama çiftçi seni fark edip ihbar edebilir.",
+    secenekler: [
+      {
+        metin: "Samanlığa gizlen, devriye geçene kadar bekle.",
+        baseBasariSansi: 60,
+        ipucu: "İyi bir saklanak ama çiftçi seni bulabilir",
+        basariliSonuc: {
+          saglik: 5,
+          zorunlu_sonraki_havuzu: ["oc_hacli_kacis_3", "oc_hacli_kacis_3b"],
+          mesaj: "Devriye samanlığı fark etmeden geçti; birkaç saat güvenle dinlendin.",
+          detay: "Bazı saklanaklar tam vaktinde bulunuyor.",
+        },
+        basarisizSonuc: {
+          saglik: -12,
+          zorunlu_sonraki_havuzu: ["oc_hacli_kacis_3", "oc_hacli_kacis_3b"],
+          mesaj: "Çiftçi seni buldu ama merhamet edip devriyeye söylemedi; yine de tedirgin ayrıldın.",
+          detay: "Bazı sırlar paylaşılmadan da ağırlık yapıyor.",
+        },
+      },
+      {
+        metin: "Riske girme, açık arazide koşarak ilerle.",
+        baseBasariSansi: 45,
+        ipucu: "Daha hızlı ama devriyeye yakalanma riski yüksek",
+        basariliSonuc: {
+          zorunlu_sonraki_havuzu: ["oc_hacli_kacis_3", "oc_hacli_kacis_3b"],
+          mesaj: "Açık arazide soluğun kesilene kadar koştun ama devriyeyi geride bıraktın.",
+          detay: "Bazen durmak değil koşmak kurtarıyor.",
+        },
+        basarisizSonuc: {
+          saglik: -18,
+          zorunlu_sonraki_havuzu: ["oc_hacli_kacis_3", "oc_hacli_kacis_3b"],
+          mesaj: "Devriye seni fark edip peşine düştü, güçlükle ve yaralı bir şekilde atlattın.",
+          detay: "Açık arazi hiçbir zaman güvenli değil.",
+        },
+      },
+    ],
+  },
+  {
+    id: "oc_hacli_kacis_3b",
+    kategori: "sosyal",
+    gerekliEtiketler: [
+      "hacli:katildi",
+    ],
+    yolculukOlayi: true,
+    gorsel: "🚪",
+    sureYilMin: 1,
+    sureYilMax: 1,
+    baslik: "Kapıdaki Karşılaşma",
+    metin: "Kapına vardığında evde kimse seni beklemiyordu; öldüğünü sanıp yasını bile tutmuşlar. Kapıyı çalmadan önce içeriden ailenin sesini duyuyorsun.",
+    secenekler: [
+      {
+        metin: "İçeri gir, şaşkınlıklarını göğüsle.",
+        baseBasariSansi: 85,
+        ipucu: "Duygusal ama iyileştirici",
+        basariliSonuc: {
+          mutluluk: 12,
+          dost_puani: 8,
+          etiket_ekle: [
+            "yolculuk_tamamlandi",
+          ],
+          etiket_sil: [
+            "yolculukta",
+          ],
+          mesaj: "Kapıdan girdiğinde önce şaşkınlık, sonra gözyaşlarıyla kucaklaşma oldu; eve gerçekten döndün.",
+          detay: "Bazı dönüşler bir hayatı yeniden başlatıyor.",
+        },
+        basarisizSonuc: {
+          mutluluk: 4,
+          etiket_ekle: [
+            "yolculuk_tamamlandi",
+          ],
+          etiket_sil: [
+            "yolculukta",
+          ],
+          mesaj: "Şaşkınlık geçse de bazı şeyler eskisi gibi olmadı; sen artık evinde bile bir yabancı gibisin.",
+          detay: "Bazı yokluklar iz bırakıyor.",
+        },
+      },
+      {
+        metin: "Önce dışarıda bekle, onları hazırla.",
+        baseBasariSansi: 70,
+        ipucu: "Daha yumuşak bir geçiş",
+        basariliSonuc: {
+          ahlak: 8,
+          mutluluk: 6,
+          etiket_ekle: [
+            "yolculuk_tamamlandi",
+          ],
+          etiket_sil: [
+            "yolculukta",
+          ],
+          mesaj: "Bir komşu aracılığıyla önce haber saldın; ailen hazırlıklı bir şekilde seni karşıladı.",
+          detay: "Bazı iyi haberler bile yavaşça verilmeli.",
+        },
+        basarisizSonuc: {
+          mutluluk: -3,
+          etiket_ekle: [
+            "yolculuk_tamamlandi",
+          ],
+          etiket_sil: [
+            "yolculukta",
+          ],
+          mesaj: "Haber yanlış anlaşılıp evde panik yarattı; kapıdan girdiğinde herkes hâlâ sarsılmıştı.",
+          detay: "Her tedbir umulduğu gibi işlemiyor.",
+        },
+      },
+    ],
+  },
+  {
+    id: "oc_hacli_esaret_2b",
+    kategori: "din",
+    gerekliEtiketler: [
+      "hacli:katildi",
+    ],
+    yolculukOlayi: true,
+    gorsel: "📖",
+    sureYilMin: 1,
+    sureYilMax: 1,
+    baslik: "Esir Kampındaki Din Adamı",
+    metin: "Kampta esir düşmüş yaşlı bir din adamı, geceleri gizlice küçük bir dua halkası topluyor. Katılmak moral verebilir ama gardiyanlar bunu 'isyan hazırlığı' sayabilir.",
+    secenekler: [
+      {
+        metin: "Dua halkasına katıl, umudu paylaş.",
+        baseBasariSansi: 70,
+        ipucu: "Moral kazandırır ama riskli",
+        basariliSonuc: {
+          ahlak: 12,
+          mutluluk: 8,
+          zorunlu_sonraki_havuzu: ["oc_hacli_esaret_3", "oc_hacli_esaret_3b"],
+          mesaj: "Gizli dua halkası sana ve diğer esirlere umut verdi; gardiyanlar hiçbir şey fark etmedi.",
+          detay: "Bazı umutlar duvarların ardında bile yeşeriyor.",
+        },
+        basarisizSonuc: {
+          saglik: -14,
+          zorunlu_sonraki_havuzu: ["oc_hacli_esaret_3", "oc_hacli_esaret_3b"],
+          mesaj: "Halka fark edildi, herkes cezalandırıldı; yine de pişman değilsin.",
+          detay: "Bazı umutların bedeli ağır.",
+        },
+      },
+      {
+        metin: "Uzak dur, riske girme.",
+        baseBasariSansi: 88,
+        ipucu: "Güvenli ama yalnız",
+        basariliSonuc: {
+          zorunlu_sonraki_havuzu: ["oc_hacli_esaret_3", "oc_hacli_esaret_3b"],
+          mesaj: "Kendi köşende sessizce kaldın; tehlikeden uzak ama moralin de düşük.",
+          detay: "Güvenlik bazen yalnızlıkla geliyor.",
+        },
+        basarisizSonuc: {
+          mutluluk: -6,
+          zorunlu_sonraki_havuzu: ["oc_hacli_esaret_3", "oc_hacli_esaret_3b"],
+          mesaj: "Uzak durman diğer esirlerin gözünde seni yalnızlaştırdı.",
+          detay: "Her ihtiyat bir bedel getiriyor.",
+        },
+      },
+    ],
+  },
+  {
+    id: "oc_hacli_esaret_3b",
+    kategori: "sosyal",
+    gerekliEtiketler: [
+      "hacli:katildi",
+    ],
+    yolculukOlayi: true,
+    gorsel: "🕊️",
+    sureYilMin: 1,
+    sureYilMax: 1,
+    baslik: "Değişen Biri Olarak Dönüş",
+    metin: "Esaretten döndüğünde eski dostların seni tanımakta zorlanıyor — daha sessiz, daha temkinli, daha farklı birisin artık. Bazıları eski halini soruyor.",
+    secenekler: [
+      {
+        metin: "Değiştiğini kabul et, yeni haline alışmalarını iste.",
+        baseBasariSansi: 80,
+        ipucu: "Dürüst ve olgun bir kabulleniş",
+        basariliSonuc: {
+          ahlak: 10,
+          mutluluk: 7,
+          etiket_ekle: [
+            "yolculuk_tamamlandi",
+          ],
+          etiket_sil: [
+            "yolculukta",
+          ],
+          mesaj: "Açık sözlülüğün dostlarını şaşırttı ama saygı da uyandırdı; yeni halinle kabul edildin.",
+          detay: "Bazı değişimler zamanla anlaşılıyor.",
+        },
+        basarisizSonuc: {
+          mutluluk: -5,
+          etiket_ekle: [
+            "yolculuk_tamamlandi",
+          ],
+          etiket_sil: [
+            "yolculukta",
+          ],
+          mesaj: "Bazı dostların yeni haline uzak durmayı seçti; eski yakınlık bir daha gelmedi.",
+          detay: "Her değişim herkes tarafından karşılanmıyor.",
+        },
+      },
+      {
+        metin: "Eski halinmiş gibi davranmaya çalış.",
+        baseBasariSansi: 55,
+        ipucu: "Kolay görünür ama sürdürmesi zor",
+        basariliSonuc: {
+          mutluluk: 3,
+          etiket_ekle: [
+            "yolculuk_tamamlandi",
+          ],
+          etiket_sil: [
+            "yolculukta",
+          ],
+          mesaj: "Eski tavırlarını takınmayı büyük ölçüde başardın; kimse fazla bir şey sormadı.",
+          detay: "Bazı maskeler işe yarıyor, en azından bir süre.",
+        },
+        basarisizSonuc: {
+          mutluluk: -10,
+          etiket_ekle: [
+            "yolculuk_tamamlandi",
+          ],
+          etiket_sil: [
+            "yolculukta",
+          ],
+          mesaj: "Maskeni sürdüremedin; içindeki değişim er ya da geç dışarı taştı.",
+          detay: "Kendinden kaçış uzun sürmüyor.",
+        },
+      },
+    ],
+  },
+  {
+    id: "yolculuk_savunma_direnis_2b",
+    kategori: "savas",
+    meslekler: [
+      "Asker",
+    ],
+    gerekliEtiketler: [
+      "yolculukta",
+      "yolculuk_tipi:savunma",
+    ],
+    yolculukOlayi: true,
+    ton: "agir",
+    gorsel: "🏹",
+    sureYilMin: 1,
+    sureYilMax: 1,
+    baslik: "Son Ok Yağmuru",
+    metin: "Okçuların ok stoğu tükenmek üzere. Kalan okları en kalabalık düşman grubuna mı boşaltmalı, yoksa idareli kullanıp uzun süre dayanmayı mı denemeli?",
+    secenekler: [
+      {
+        metin: "Tüm okları tek seferde, en kalabalık gruba boşalt.",
+        baseBasariSansi: 50,
+        ipucu: "Büyük etki ama sonrasında savunmasız kalırsın",
+        basariliSonuc: {
+          un: 16,
+          zorunlu_sonraki_havuzu: ["yolculuk_savunma_direnis_3", "yolculuk_savunma_direnis_3b"],
+          mesaj: "Ok yağmuru düşman saflarında büyük bir gedik açtı; gedik bir süre kapandı.",
+          detay: "Bazı riskler tam vaktinde işe yarıyor.",
+        },
+        basarisizSonuc: {
+          saglik: -20,
+          zorunlu_sonraki_havuzu: ["yolculuk_savunma_direnis_3", "yolculuk_savunma_direnis_3b"],
+          mesaj: "Oklar tükendikten hemen sonra bir karşı saldırı geldi, güçlükle savuşturdun.",
+          detay: "Her kumar kazandırmıyor.",
+        },
+      },
+      {
+        metin: "Okları idareli kullan, sürekli küçük darbeler vur.",
+        baseBasariSansi: 75,
+        ipucu: "Daha az etkili ama daha dayanıklı",
+        basariliSonuc: {
+          saglik: -4,
+          zorunlu_sonraki_havuzu: ["yolculuk_savunma_direnis_3", "yolculuk_savunma_direnis_3b"],
+          mesaj: "İdareli kullanım hattı biraz daha uzun süre ayakta tuttu.",
+          detay: "Sabır bu kuşatmada da işe yarıyor.",
+        },
+        basarisizSonuc: {
+          saglik: -12,
+          zorunlu_sonraki_havuzu: ["yolculuk_savunma_direnis_3", "yolculuk_savunma_direnis_3b"],
+          mesaj: "İdareli kullanım yeterli olmadı, düşman yine de ilerledi.",
+          detay: "Bazı taktikler yetersiz kalıyor.",
+        },
+      },
+    ],
+  },
+  {
+    id: "yolculuk_savunma_direnis_3b",
+    kategori: "sosyal",
+    meslekler: [
+      "Asker",
+    ],
+    gerekliEtiketler: [
+      "yolculukta",
+      "yolculuk_tipi:savunma",
+    ],
+    gorsel: "🎖️",
+    sureYilMin: 1,
+    sureYilMax: 1,
+    baslik: "Madalya Töreni",
+    metin: "Sultan, kuşatmada gösterdiğin direnç için seni küçük bir törenle ödüllendirmek istiyor. Ama sahnede olmak, kaybettiğin yoldaşları da hatırlatıyor.",
+    secenekler: [
+      {
+        metin: "Töreni kabul et, madalyayı gururla al.",
+        baseBasariSansi: 85,
+        ipucu: "Onurlu ama duygusal olarak zorlayıcı",
+        basariliSonuc: {
+          un: 20,
+          etiket_ekle: [
+            "yolculuk_tamamlandi",
+          ],
+          etiket_sil: [
+            "yolculukta",
+          ],
+          mesaj: "Madalyayı göğsüne takarken gözlerin doldu; hem gurur hem hüzün bir aradaydı.",
+          detay: "Bazı onurlar acıyla birlikte geliyor.",
+        },
+        basarisizSonuc: {
+          mutluluk: -4,
+          etiket_ekle: [
+            "yolculuk_tamamlandi",
+          ],
+          etiket_sil: [
+            "yolculukta",
+          ],
+          mesaj: "Tören sırasında duygularına hakim olamadın, salon sessizce seni izledi.",
+          detay: "Bazı anılar törenlerde bile geri dönüyor.",
+        },
+      },
+      {
+        metin: "Töreni nazikçe reddet, sessizce çekil.",
+        baseBasariSansi: 70,
+        ipucu: "Mütevazı ama gözden kaçarsın",
+        basariliSonuc: {
+          ahlak: 8,
+          etiket_ekle: [
+            "yolculuk_tamamlandi",
+          ],
+          etiket_sil: [
+            "yolculukta",
+          ],
+          mesaj: "Alçakgönüllülüğün bazı askerler arasında sessizce konuşuldu.",
+          detay: "Bazı onurlar kabul edilmeden de kazanılıyor.",
+        },
+        basarisizSonuc: {
+          un: -6,
+          etiket_ekle: [
+            "yolculuk_tamamlandi",
+          ],
+          etiket_sil: [
+            "yolculukta",
+          ],
+          mesaj: "Reddin bazı üst rütbeliler tarafından saygısızlık olarak algılandı.",
+          detay: "Her alçakgönüllülük doğru anlaşılmıyor.",
+        },
+      },
+    ],
+  },
+  {
+    id: "yolculuk_savunma_esaret_2b",
+    kategori: "din",
+    meslekler: [
+      "Asker",
+    ],
+    gerekliEtiketler: [
+      "yolculukta",
+      "yolculuk_tipi:savunma",
+    ],
+    yolculukOlayi: true,
+    gorsel: "🤝",
+    sureYilMin: 1,
+    sureYilMax: 1,
+    baslik: "Düşman Esirle Konuşma",
+    metin: "Kampta, senin gibi esir düşmüş bir haçlı askeriyle aynı çadıra kondun. Aranızdaki düşmanlığa rağmen, ikiniz de aynı acıyı çekiyorsunuz.",
+    secenekler: [
+      {
+        metin: "Onunla konuş, ortak insanlığınızı bul.",
+        baseBasariSansi: 75,
+        ipucu: "Beklenmedik bir dayanışma doğabilir",
+        basariliSonuc: {
+          ahlak: 14,
+          dost_puani: 6,
+          zorunlu_sonraki_havuzu: ["yolculuk_savunma_esaret_3", "yolculuk_savunma_esaret_3b"],
+          mesaj: "İkiniz de düşmanlıktan çok yorgunluğu paylaştınız; garip ama gerçek bir bağ kurdunuz.",
+          detay: "Bazı dostluklar en beklenmedik yerlerde doğuyor.",
+        },
+        basarisizSonuc: {
+          mutluluk: -3,
+          zorunlu_sonraki_havuzu: ["yolculuk_savunma_esaret_3", "yolculuk_savunma_esaret_3b"],
+          mesaj: "Konuşma gerginleşti, eski husumet araya girdi.",
+          detay: "Her yakınlaşma başarılı olmuyor.",
+        },
+      },
+      {
+        metin: "Mesafeni koru, ona güvenme.",
+        baseBasariSansi: 88,
+        ipucu: "Güvenli ama katılaştırır",
+        basariliSonuc: {
+          zorunlu_sonraki_havuzu: ["yolculuk_savunma_esaret_3", "yolculuk_savunma_esaret_3b"],
+          mesaj: "Mesafeni korudun; ne bir dostluk ne bir sorun çıktı.",
+          detay: "Bazı temkinler sessizce geçip gidiyor.",
+        },
+        basarisizSonuc: {
+          mutluluk: -4,
+          zorunlu_sonraki_havuzu: ["yolculuk_savunma_esaret_3", "yolculuk_savunma_esaret_3b"],
+          mesaj: "Soğukluğun çadırdaki havayı gerdi, günler daha da ağır geçti.",
+          detay: "Her mesafe bedelsiz değil.",
+        },
+      },
+    ],
+  },
+  {
+    id: "yolculuk_savunma_esaret_3b",
+    kategori: "sosyal",
+    meslekler: [
+      "Asker",
+    ],
+    gerekliEtiketler: [
+      "yolculukta",
+      "yolculuk_tipi:savunma",
+    ],
+    gorsel: "🏘️",
+    sureYilMin: 1,
+    sureYilMax: 1,
+    baslik: "Garnizona Dönüş",
+    metin: "Esaretten sonra kendi garnizonuna döndüğünde, yerine başka biri atanmış. Komutan sana yeni bir görev bulmaya çalışırken bir yandan da eski yerini geri isteyip istemediğini soruyor.",
+    secenekler: [
+      {
+        metin: "Eski görevini geri iste, ısrar et.",
+        baseBasariSansi: 60,
+        ipucu: "Gururunu korur ama gerginlik yaratabilir",
+        basariliSonuc: {
+          un: 10,
+          etiket_ekle: [
+            "yolculuk_tamamlandi",
+          ],
+          etiket_sil: [
+            "yolculukta",
+          ],
+          mesaj: "Israrın kabul gördü; eski yerine, biraz gerginlikle de olsa geri döndün.",
+          detay: "Bazı haklar geri istenmeli.",
+        },
+        basarisizSonuc: {
+          mutluluk: -6,
+          etiket_ekle: [
+            "yolculuk_tamamlandi",
+          ],
+          etiket_sil: [
+            "yolculukta",
+          ],
+          mesaj: "Israrın reddedildi; yeni yerine biraz küskün başladın.",
+          detay: "Her ısrar sonuç vermiyor.",
+        },
+      },
+      {
+        metin: "Yeni bir göreve razı ol, yeniden başla.",
+        baseBasariSansi: 85,
+        ipucu: "Esnek ama eski yerini kaybedersin",
+        basariliSonuc: {
+          ahlak: 6,
+          mutluluk: 4,
+          etiket_ekle: [
+            "yolculuk_tamamlandi",
+          ],
+          etiket_sil: [
+            "yolculukta",
+          ],
+          mesaj: "Yeni görevine açık fikirle başladın; garnizon esnekliğini takdir etti.",
+          detay: "Bazı yeni başlangıçlar iyi karşılanıyor.",
+        },
+        basarisizSonuc: {
+          mutluluk: -3,
+          etiket_ekle: [
+            "yolculuk_tamamlandi",
+          ],
+          etiket_sil: [
+            "yolculukta",
+          ],
+          mesaj: "Yeni görev beklediğinden daha zor çıktı, uyum biraz sancılı oldu.",
+          detay: "Her yeni başlangıç kolay olmuyor.",
         },
       },
     ],
