@@ -196,6 +196,15 @@ const SUC_KAZANC_CIDDI_TAVAN = 65;
 /** Mülk sahibi bir karaktere, her senaryoUret çağrısında mulkOlaylari.ts'ten zorlanan bir olay gelme ihtimali. */
 const MULK_OLAYI_IHTIMALI = 0.12;
 
+// Aranma yeniden dengeleme turu (4 bant: 0-25/25-50/50-75/75-100, bkz.
+// aranmaSeviyesi.ts): hapse yeni girişte, tutuklama anındaki suc_seviyesi
+// bandına göre ceza süresine bir taban dayatılır — hangi olay/yol tutukladığından
+// (aranmaSeviyesi.ts olayları ya da kotuIsler.ts karanlık iş yakalanması) bağımsız.
+/** Kademe 3 "baskın" bandında (50-75) minimum hapis cezası (yıl). */
+const HAPIS_CEZA_BASKIN_MIN_YIL = 5;
+/** Kademe 4 "azılı suçlu" bandında (75-100) SABİT hapis cezası (yıl). */
+const HAPIS_CEZA_AZILI_SUCLU_YIL = 10;
+
 /**
  * Yolculuk (Haçlı Seferi / Hac / Keşif / Sömürge Seferi vb.) olaylarında kazanılan
  * paraya uygulanan sabit zam. Eskiden yolculuğu bitirmek kalıcı bir maaş primi
@@ -1194,10 +1203,20 @@ async function sonucuUygulaVeIlerlet(
   // Hapse yeni girildiyse ceza süresini belirle: taban 3-6 yıl + aranma
   // kademesine göre 0-3 yıl (suç seviyesi ağırsa ceza uzun). Zaten bir cezan
   // varsa (üst üste tutuklanma) dokunma.
+  // Aranma yeniden dengeleme turu: 50-75 (kademe 3, "baskın") bandında ceza
+  // EN AZ HAPIS_CEZA_BASKIN_MIN_YIL, 75-100 (kademe 4, "azılı suçlu") bandında
+  // ceza SABİT HAPIS_CEZA_AZILI_SUCLU_YIL — hangi olay tutukladığından bağımsız,
+  // tek bir yerde uygulanır (aranmaSeviyesi.ts bant eşikleriyle hizalı).
   if (etki.etiket_ekle?.includes("hapiste") && state.hapis_ceza_kalan <= 0) {
     const taban = 3 + Math.floor(Math.random() * 4);
     const kademeCeza = Math.min(3, Math.floor(state.suc_seviyesi / 30));
-    state.hapis_ceza_kalan = taban + kademeCeza;
+    let ceza = taban + kademeCeza;
+    if (state.suc_seviyesi >= 75) {
+      ceza = HAPIS_CEZA_AZILI_SUCLU_YIL;
+    } else if (state.suc_seviyesi >= 50) {
+      ceza = Math.max(HAPIS_CEZA_BASKIN_MIN_YIL, ceza);
+    }
+    state.hapis_ceza_kalan = ceza;
   }
   // Riskli kaçış girişimi başarısız oldu → ceza uzadı.
   if (etki.hapis_ceza_artis && state.etiketler.includes("hapiste")) {
@@ -2755,7 +2774,10 @@ export async function kotuIsYap(id: string, tur: string, secenek: KotuIsSecenek 
   if (!kazandi && dal.hapis_sansi && Math.random() < dal.hapis_sansi) {
     etiketEkle(state, ["hapiste"]);
     if (state.hapis_ceza_kalan <= 0) {
-      state.hapis_ceza_kalan = 3 + Math.floor(Math.random() * 4) + Math.min(3, Math.floor(state.suc_seviyesi / 30));
+      let ceza = 3 + Math.floor(Math.random() * 4) + Math.min(3, Math.floor(state.suc_seviyesi / 30));
+      if (state.suc_seviyesi >= 75) ceza = HAPIS_CEZA_AZILI_SUCLU_YIL;
+      else if (state.suc_seviyesi >= 50) ceza = Math.max(HAPIS_CEZA_BASKIN_MIN_YIL, ceza);
+      state.hapis_ceza_kalan = ceza;
     }
     hayatOlayiEkle(state, "⛓️", T(dil, "Karanlık bir iş sırasında enselendi"));
     mesaj += " " + T(dil, "Enselendin — kodesi boyladın.");

@@ -2,21 +2,29 @@ import type { OlayTanimi } from "./types";
 
 /**
  * Aranma kademesi olay havuzu. TEK suç/aranma ekseni olan suc_seviyesi'nin (0-100)
- * bantlarına kilitlenir: 0-19 temiz (giriş/tetikleyici olaylar, maxSucSeviyesi:19),
- * 20-39 kademe 1, 40-59 kademe 2, 60-79 kademe 3, 80-100 kademe 4 (her kademe
- * min/maxSucSeviyesi ile bantlanır, her birinin kendi kefaret/rüşvet çıkışı var:
- * suc_artis negatif). 60+ iken devreye giren iki büyük "baskın" olayı (minSucSeviyesi:60,
- * max yok) -> başarılı kaçış sonrası "kacak" etiketiyle açılan, şehir havuzunu tamamen
- * kapatan bağımsız dağ/kaçak olay havuzu (hapisOlayi/yolculukOlayi ile birebir aynı
- * mantık; kacakOlayi:true). Büyük baskınların "temize çık / kademe 1'e in" sonuçları
- * suc_seviyesi_ayarla ile kesin değere sabitler.
+ * 4 yıldızlık (25 puanlık) bantlarına kilitlenir (2026-09 yeniden düzenleme):
+ * 0-24 temiz (giriş/tetikleyici olaylar, maxSucSeviyesi:24) — rutin çevirme/rüşvet,
+ * 25-49 kademe 1 (yakalanma: öde-ve-düş VEYA reddet-ve-hapse-gir/kaç dalı — bkz.
+ * aranma_2_ev_arastirmasi_tehdidi/aranma_2_ihbarci_tehdidi'nin "reddet" seçeneği artık
+ * başarısızlıkta doğrudan etiket_ekle:["hapiste"] veriyor, hapis.ts'teki parasız riskli
+ * kaçış olaylarıyla "hapis yatarak kaçmaya çalış" akışını açıyor),
+ * 50-74 kademe 2/"baskın" (giderek artan kefaret + zorunlu ev/işyeri baskını —
+ * aranma_baskin_ortacag/sanayi eşiği 60'tan 50'ye çekildi; ceza formülü bu bantta
+ * EN AZ 5 yıl dayatır, bkz. gameEngine.ts hapis_ceza_kalan hesaplaması),
+ * 75-100 kademe 3/"azılı suçlu" (ceza formülü SABİT 10 yıl + en yüksek kefaretler).
+ * Her kademenin kendi kefaret/rüşvet çıkışı var: suc_artis negatif. 50+ iken devreye
+ * giren iki büyük "baskın" olayı (minSucSeviyesi:50, max yok) -> başarılı kaçış sonrası
+ * "kacak" etiketiyle açılan, şehir havuzunu tamamen kapatan bağımsız dağ/kaçak olay
+ * havuzu (hapisOlayi/yolculukOlayi ile birebir aynı mantık; kacakOlayi:true). Büyük
+ * baskınların "temize çık / kademe 1'e in" sonuçları suc_seviyesi_ayarla ile kesin
+ * değere sabitler.
  */
 export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
   // ---- Giriş/tetikleyici olaylar: suc_seviyesi 0-19 bandında (temiz) ----
   {
     id: "aranma_giris_devriye_durdurmasi",
     kategori: "siyaset",
-    maxSucSeviyesi: 19,
+    maxSucSeviyesi: 24,
     agirlik: 1.5,
     gorsel: "🛡️",
     baslik: "Devriye Seni Durdurdu",
@@ -63,7 +71,7 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
   {
     id: "aranma_giris_meyhane_kavgasi",
     kategori: "sosyal",
-    maxSucSeviyesi: 19,
+    maxSucSeviyesi: 24,
     agirlik: 1.5,
     gorsel: "🍺",
     baslik: "Meyhanede Kavga",
@@ -108,7 +116,7 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
   {
     id: "aranma_giris_vergi_direnci",
     kategori: "ticaret",
-    maxSucSeviyesi: 19,
+    maxSucSeviyesi: 24,
     agirlik: 1.5,
     gorsel: "📜",
     baslik: "Tahsildara Kafa Tutmak",
@@ -152,7 +160,7 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
   {
     id: "aranma_giris_karanlik_teklif",
     kategori: "ticaret",
-    maxSucSeviyesi: 19,
+    maxSucSeviyesi: 24,
     agirlik: 1.3,
     gorsel: "🕶️",
     baslik: "Karanlık Bir Teklif",
@@ -195,12 +203,11 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
     ],
   },
 
-  // ---- Seviye 1: rutin çevirmeler, rüşvetçi bekçiler, küçük cezalar ----
+  // ---- Kademe 1 (0-25): rutin çevirmeler, rüşvetçi bekçiler, küçük cezalar ----
   {
     id: "aranma_1_rutin_sorgu",
     kategori: "siyaset",
-    minSucSeviyesi: 20,
-    maxSucSeviyesi: 39,
+    maxSucSeviyesi: 25,
     agirlik: 3,
     gorsel: "🔍",
     baslik: "Rutin Bir Sorgu",
@@ -244,8 +251,7 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
   {
     id: "aranma_1_isyeri_cezasi",
     kategori: "ticaret",
-    minSucSeviyesi: 20,
-    maxSucSeviyesi: 39,
+    maxSucSeviyesi: 25,
     agirlik: 3,
     gorsel: "🏷️",
     baslik: "İşyerine Kesilen Ceza",
@@ -288,8 +294,7 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
   {
     id: "aranma_1_rusvetci_nobetci",
     kategori: "siyaset",
-    minSucSeviyesi: 20,
-    maxSucSeviyesi: 39,
+    maxSucSeviyesi: 25,
     agirlik: 3,
     gorsel: "🪙",
     baslik: "Rüşvetçi Nöbetçi",
@@ -334,8 +339,7 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
   {
     id: "aranma_1_mahalle_dedikodusu",
     kategori: "sosyal",
-    minSucSeviyesi: 20,
-    maxSucSeviyesi: 39,
+    maxSucSeviyesi: 25,
     agirlik: 3,
     gorsel: "🗣️",
     baslik: "Mahalledeki Dedikodu",
@@ -376,12 +380,12 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
     ],
   },
 
-  // ---- Seviye 2: daha ciddi ilgi, daha yüksek kefaret ----
+  // ---- Kademe 2 (25-50): "Yakalanma" — öde ve kefaretle düş, ya da reddet (reddedip kaybedersen hapse girer, oradan kaçmayı deneyebilirsin) ----
   {
     id: "aranma_2_ev_arastirmasi_tehdidi",
     kategori: "siyaset",
-    minSucSeviyesi: 40,
-    maxSucSeviyesi: 59,
+    minSucSeviyesi: 25,
+    maxSucSeviyesi: 50,
     agirlik: 4,
     gorsel: "🚪",
     baslik: "Ev Araması Tehdidi",
@@ -406,7 +410,7 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
       {
         metin: "Sakin görün, saklayacak bir şeyin olmadığını söyle.",
         baseBasariSansi: 35,
-        ipucu: "Başarırsan bedava kurtulursun, kaybedersen arama gerçekleşir",
+        ipucu: "Başarırsan bedava kurtulursun, kaybedersen tutuklanıp hapse (oradan kaçmayı deneyebilirsin)",
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
@@ -416,9 +420,9 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         },
         basarisizSonuc: {
           saglik: -8,
-          suc_artis: 35,
-          mesaj: "Görevli blöf yaptığını anladı ve arama emrini gerçekten çıkardı; ev alt üst edildi.",
-          detay: "Şimdi hakkındaki dosya iyice kabardı.",
+          etiket_ekle: ["hapiste"],
+          mesaj: "Görevli blöf yaptığını anladı ve arama emrini gerçekten çıkardı; ev alt üst edildi, seni de gözaltına aldılar.",
+          detay: "Şimdi hesabını hapiste vereceksin — istersen içeriden kaçmayı deneyebilirsin.",
         },
       },
     ],
@@ -426,8 +430,8 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
   {
     id: "aranma_2_ihbarci_tehdidi",
     kategori: "sosyal",
-    minSucSeviyesi: 40,
-    maxSucSeviyesi: 59,
+    minSucSeviyesi: 25,
+    maxSucSeviyesi: 50,
     agirlik: 4,
     gorsel: "🐀",
     baslik: "Bir İhbarcı",
@@ -453,7 +457,7 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         metin: "Yarısını teklif et, gerisini reddet. (Kefaret: 15)",
         baseBasariSansi: 40,
         maliyet: 15,
-        ipucu: "Ucuz ama öfkelendirebilir — para boşa gidebilir",
+        ipucu: "Ucuz ama öfkelendirebilir — reddederse doğruca ihbar edip seni tutuklatabilir",
         basariliSonuc: {
           para: -15,
           suc_artis: -25,
@@ -462,9 +466,9 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         },
         basarisizSonuc: {
           para: -15,
-          suc_artis: 35,
-          mesaj: "Teklifini hakaret sayıp öfkeyle ayrıldı — ve doğruca yetkililere gitti.",
-          detay: "Cimrilik bu sefer pahalıya patladı.",
+          etiket_ekle: ["hapiste"],
+          mesaj: "Teklifini hakaret sayıp öfkeyle ayrıldı — doğruca yetkililere gitti ve seni tutuklattı.",
+          detay: "Cimrilik bu sefer pahalıya patladı; şimdi hapistesin, istersen kaçmayı deneyebilirsin.",
         },
       },
     ],
@@ -472,8 +476,8 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
   {
     id: "aranma_2_pazar_ceza_ikinci",
     kategori: "ticaret",
-    minSucSeviyesi: 40,
-    maxSucSeviyesi: 59,
+    minSucSeviyesi: 25,
+    maxSucSeviyesi: 50,
     agirlik: 4,
     gorsel: "⚖️",
     baslik: "İkinci Ceza",
@@ -516,8 +520,8 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
   {
     id: "aranma_2_gece_baskin_uyarisi",
     kategori: "siyaset",
-    minSucSeviyesi: 40,
-    maxSucSeviyesi: 59,
+    minSucSeviyesi: 25,
+    maxSucSeviyesi: 50,
     agirlik: 4,
     gorsel: "🌙",
     baslik: "Gece Baskını Uyarısı",
@@ -558,12 +562,12 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
     ],
   },
 
-  // ---- Seviye 3: "Tutuklama" havuzu başlıyor — yüksek ağırlık, sert sonuçlar ----
+  // ---- Kademe 3 (50-75): "Baskın" — kefaretler ciddi artar, ev/işyeri baskını neredeyse kaçınılmaz; tutuklanırsan ceza EN AZ 5 yıl (gameEngine.ts) ----
   {
     id: "aranma_3_tutuklama_ekibi",
     kategori: "siyaset",
-    minSucSeviyesi: 60,
-    maxSucSeviyesi: 79,
+    minSucSeviyesi: 50,
+    maxSucSeviyesi: 75,
     agirlik: 15,
     gorsel: "⛓️",
     baslik: "Tutuklama Ekibi Sokakta",
@@ -609,8 +613,8 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
   {
     id: "aranma_3_muhbir_agi",
     kategori: "sosyal",
-    minSucSeviyesi: 60,
-    maxSucSeviyesi: 79,
+    minSucSeviyesi: 50,
+    maxSucSeviyesi: 75,
     agirlik: 15,
     gorsel: "👁️",
     baslik: "Muhbir Ağı",
@@ -655,8 +659,8 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
   {
     id: "aranma_3_sokak_baskini",
     kategori: "siyaset",
-    minSucSeviyesi: 60,
-    maxSucSeviyesi: 79,
+    minSucSeviyesi: 50,
+    maxSucSeviyesi: 75,
     agirlik: 15,
     ton: "agir",
     gorsel: "🚨",
@@ -701,8 +705,8 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
   {
     id: "aranma_3_kefaret_odemesi",
     kategori: "din",
-    minSucSeviyesi: 60,
-    maxSucSeviyesi: 79,
+    minSucSeviyesi: 50,
+    maxSucSeviyesi: 75,
     agirlik: 6,
     gorsel: "🪙",
     baslik: "Resmi Kefaret Ödemesi",
@@ -743,11 +747,11 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
     ],
   },
 
-  // ---- Seviye 4: azami tehlike — en yüksek ağırlık, en sert sonuçlar ----
+  // ---- Kademe 4 (75-100): "Azılı Suçlu" — en sert sonuçlar; tutuklanırsan ceza SABİT 10 yıl + en yüksek kefaretler (gameEngine.ts) ----
   {
     id: "aranma_4_azami_takip",
     kategori: "siyaset",
-    minSucSeviyesi: 80,
+    minSucSeviyesi: 75,
     ton: "agir",
     agirlik: 18,
     gorsel: "🎯",
@@ -795,7 +799,7 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
   {
     id: "aranma_4_odul_avcilari",
     kategori: "siyaset",
-    minSucSeviyesi: 80,
+    minSucSeviyesi: 75,
     ton: "agir",
     agirlik: 18,
     gorsel: "🏹",
@@ -843,7 +847,7 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
   {
     id: "aranma_4_son_sans_kefareti",
     kategori: "din",
-    minSucSeviyesi: 80,
+    minSucSeviyesi: 75,
     agirlik: 7,
     gorsel: "🙏",
     baslik: "Son Şans Kefareti",
@@ -886,7 +890,7 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
   {
     id: "aranma_4_gece_yarisi_baskini",
     kategori: "siyaset",
-    minSucSeviyesi: 80,
+    minSucSeviyesi: 75,
     ton: "agir",
     agirlik: 18,
     gorsel: "🔦",
@@ -930,12 +934,12 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
     ],
   },
 
-  // ---- Kritik olay: Ev/İş Yeri Baskını — Seviye 3 VE 4'te devreye girer ----
+  // ---- Kritik olay: Ev/İş Yeri Baskını — Kademe 3 VE 4'te devreye girer (50+) ----
   {
     id: "aranma_baskin_ortacag",
     kategori: "siyaset",
     cag: "Orta Çağ",
-    minSucSeviyesi: 60,
+    minSucSeviyesi: 50,
     ton: "agir",
     agirlik: 28,
     gorsel: "🏹",
@@ -1014,7 +1018,7 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
     id: "aranma_baskin_sanayi",
     kategori: "siyaset",
     cag: "Sanayi Devrimi",
-    minSucSeviyesi: 60,
+    minSucSeviyesi: 50,
     ton: "agir",
     agirlik: 28,
     gorsel: "🚔",
