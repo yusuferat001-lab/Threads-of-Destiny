@@ -61,16 +61,16 @@ export const OLUM_MIRAS_TAVANI = 10;
  * dahil) 50.000+ olabiliyor). Bunun yerine karekök eğrisi kullanılır: düşük
  * skorlarda hızlı, yüksekte yavaş artar — kademeli bir his verir, ama
  * `OLUM_MIRAS_TAVANI`'nı asla aşmaz. Yaklaşık dağılım:
- *   skor  ~500   → 2
- *   skor ~3.000  → 4
- *   skor ~8.000  → 6
- *   skor ~15.000 → 9
- *   skor ≥20.000 → 10 (tavan, bu noktadan sonra sabit)
+ *   skor  ~1.000  → 2
+ *   skor  ~6.000  → 4
+ *   skor ~16.000  → 6
+ *   skor ~30.000  → 9
+ *   skor ≥40.000  → 10 (tavan, bu noktadan sonra sabit)
  * Tavanın nerede doyacağını ayarlamak için yalnız `BOLEN`'i değiştirmek yeter
  * (büyütmek tavana ulaşmayı zorlaştırır/geciktirir, küçültmek kolaylaştırır).
  */
 export function olumMirasiHesapla(skor: number): number {
-  const BOLEN = 14; // tavan (10) ~20.000 skorda doyar
+  const BOLEN = 20; // tavan (10) ~40.000 skorda doyar
   const ham = Math.round(Math.sqrt(Math.max(0, skor)) / BOLEN);
   return Math.min(OLUM_MIRAS_TAVANI, Math.max(1, ham));
 }
