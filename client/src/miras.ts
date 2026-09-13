@@ -54,23 +54,24 @@ export const OLUM_MIRAS_TAVANI = 10;
 /**
  * Bir ölümden kazanılacak Miras miktarı — oyun başı EN FAZLA {@link OLUM_MIRAS_TAVANI}.
  *
- * Doğrusal bir oran (`skor/100` gibi) skorun büyüme aralığı çok geniş olduğu
- * için hızla tavana çarpıp orta-iyi hayatları birbirinden ayırt edilemez hale
- * getiriyordu (§18 skor formülü: kısa/fakir bir hayat bile birkaç yüz, iyi bir
- * hayat 5.000-20.000, hayat amacı tamamlanmış olağanüstü bir hayat (×5 çarpanı
- * dahil) 50.000+ olabiliyor). Bunun yerine karekök eğrisi kullanılır: düşük
- * skorlarda hızlı, yüksekte yavaş artar — kademeli bir his verir, ama
- * `OLUM_MIRAS_TAVANI`'nı asla aşmaz. Yaklaşık dağılım:
- *   skor  ~1.000  → 2
- *   skor  ~6.000  → 4
- *   skor ~16.000  → 6
- *   skor ~30.000  → 9
- *   skor ≥40.000  → 10 (tavan, bu noktadan sonra sabit)
- * Tavanın nerede doyacağını ayarlamak için yalnız `BOLEN`'i değiştirmek yeter
- * (büyütmek tavana ulaşmayı zorlaştırır/geciktirir, küçültmek kolaylaştırır).
+ * İki parçalı, doğrusal bir eğri (§18 skor formülü: kısa/fakir bir hayat
+ * bile birkaç yüz, iyi bir hayat 5.000-20.000, hayat amacı tamamlanmış
+ * olağanüstü bir hayat (×5 çarpanı dahil) 50.000+ olabiliyor):
+ *   - **0 - 10.000:** her 2.500 puanda +1 (kademe 1-4) — kısa/sıradan hayatlar
+ *     arasında da ince bir fark bıraksın diye.
+ *   - **10.000 - 40.000:** her 5.000 puanda +1 (kademe 4-10) — "orta-iyi"
+ *     aralık en çok oynanan bant olduğu için burası özellikle sık/eşit
+ *     bölündü (kullanıcı isteği).
+ *   - **40.000+:** sabit 10 (tavan) — bu noktadan sonra skor artışı Miras
+ *     kazancını artırmaz.
+ * Yaklaşık dağılım: 2.500→1 · 7.500→3 · 10.000→4 · 15.000→5 · 25.000→7 ·
+ * 35.000→9 · 40.000+→10.
  */
 export function olumMirasiHesapla(skor: number): number {
-  const BOLEN = 20; // tavan (10) ~40.000 skorda doyar
-  const ham = Math.round(Math.sqrt(Math.max(0, skor)) / BOLEN);
-  return Math.min(OLUM_MIRAS_TAVANI, Math.max(1, ham));
+  const s = Math.max(0, skor);
+  if (s <= 10000) {
+    return Math.min(4, Math.max(1, Math.round(s / 2500)));
+  }
+  const kademe = 4 + Math.round((s - 10000) / 5000);
+  return Math.min(OLUM_MIRAS_TAVANI, kademe);
 }
