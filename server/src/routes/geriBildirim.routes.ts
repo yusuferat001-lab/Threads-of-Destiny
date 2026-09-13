@@ -6,6 +6,7 @@ import {
   type GeriBildirimKaydi,
 } from "../utils/geriBildirimDeposu";
 import { webhookBildirimGonder } from "../utils/webhookBildirim";
+import { geriBildirimPaneliHtml } from "../utils/geriBildirimPanel";
 
 export const geriBildirimRouter = Router();
 
@@ -108,4 +109,17 @@ geriBildirimRouter.get("/", async (req, res) => {
     return res.status(403).json({ hata: "Yetkisiz." });
   }
   res.json({ kayitlar: await geriBildirimleriOku() });
+});
+
+// Aynı anahtar — okunaklı, sunucuda render edilmiş HTML özet (istatistik panosuyla aynı desen).
+geriBildirimRouter.get("/panel", async (req, res) => {
+  const anahtar = process.env.GERI_BILDIRIM_ANAHTARI;
+  if (!anahtar || req.query.key !== anahtar) {
+    return res.status(403).type("text/plain").send("Yetkisiz.");
+  }
+  try {
+    res.type("text/html").send(geriBildirimPaneliHtml(await geriBildirimleriOku()));
+  } catch (err) {
+    res.status(500).type("text/plain").send(String(err));
+  }
 });
