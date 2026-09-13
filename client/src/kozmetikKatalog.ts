@@ -26,24 +26,26 @@ export interface KozmetikEsyaTanimi {
   nadirlik: KozmetikNadirlik;
 }
 
+// Fiyat aralığı kasıtlı olarak 20 (en ucuz yaygın) - 100 (en pahalı efsanevi) arasına
+// sıkıştırıldı (kullanıcı isteği): yaygın 20-35, nadir 45-65, efsanevi 80-100.
 export const KOZMETIK_KATALOG: KozmetikEsyaTanimi[] = [
   // --- Baş ---
-  { id: 'bas_kukuleta', kategori: 'bas', ad: { tr: 'Gezgin Kukuletası', en: "Traveler's Hood" }, emoji: '🧢', fiyat: 15, nadirlik: 'yaygin' },
-  { id: 'bas_migfer', kategori: 'bas', ad: { tr: 'Savaşçı Miğferi', en: "Warrior's Helm" }, emoji: '🪖', fiyat: 40, nadirlik: 'nadir' },
-  { id: 'bas_silindir', kategori: 'bas', ad: { tr: 'Silindir Şapka', en: 'Top Hat' }, emoji: '🎩', fiyat: 45, nadirlik: 'nadir' },
-  { id: 'bas_tac', kategori: 'bas', ad: { tr: 'Kraliyet Tacı', en: 'Royal Crown' }, emoji: '👑', fiyat: 120, nadirlik: 'efsanevi' },
+  { id: 'bas_kukuleta', kategori: 'bas', ad: { tr: 'Gezgin Kukuletası', en: "Traveler's Hood" }, emoji: '🧢', fiyat: 30, nadirlik: 'yaygin' },
+  { id: 'bas_migfer', kategori: 'bas', ad: { tr: 'Savaşçı Miğferi', en: "Warrior's Helm" }, emoji: '🪖', fiyat: 55, nadirlik: 'nadir' },
+  { id: 'bas_silindir', kategori: 'bas', ad: { tr: 'Silindir Şapka', en: 'Top Hat' }, emoji: '🎩', fiyat: 60, nadirlik: 'nadir' },
+  { id: 'bas_tac', kategori: 'bas', ad: { tr: 'Kraliyet Tacı', en: 'Royal Crown' }, emoji: '👑', fiyat: 100, nadirlik: 'efsanevi' },
 
   // --- Sırt / aksesuar ---
-  { id: 'sirt_atki', kategori: 'sirt', ad: { tr: 'Yün Atkı', en: 'Wool Scarf' }, emoji: '🧣', fiyat: 12, nadirlik: 'yaygin' },
-  { id: 'sirt_pelerin', kategori: 'sirt', ad: { tr: 'Gezgin Pelerini', en: "Traveler's Cape" }, emoji: '🧥', fiyat: 20, nadirlik: 'yaygin' },
-  { id: 'sirt_kanat', kategori: 'sirt', ad: { tr: 'Gölge Kanatları', en: 'Shadow Wings' }, emoji: '🦇', fiyat: 120, nadirlik: 'efsanevi' },
+  { id: 'sirt_atki', kategori: 'sirt', ad: { tr: 'Yün Atkı', en: 'Wool Scarf' }, emoji: '🧣', fiyat: 25, nadirlik: 'yaygin' },
+  { id: 'sirt_pelerin', kategori: 'sirt', ad: { tr: 'Gezgin Pelerini', en: "Traveler's Cape" }, emoji: '🧥', fiyat: 35, nadirlik: 'yaygin' },
+  { id: 'sirt_kanat', kategori: 'sirt', ad: { tr: 'Gölge Kanatları', en: 'Shadow Wings' }, emoji: '🦇', fiyat: 100, nadirlik: 'efsanevi' },
 
   // --- Çerçeve (madalyon halkası rengi) ---
-  { id: 'cerceve_bronz', kategori: 'cerceve', ad: { tr: 'Bronz Çerçeve', en: 'Bronze Frame' }, renk: '#8a6a2a', fiyat: 10, nadirlik: 'yaygin' },
-  { id: 'cerceve_gumus', kategori: 'cerceve', ad: { tr: 'Gümüş Çerçeve', en: 'Silver Frame' }, renk: '#b9c2cc', fiyat: 35, nadirlik: 'nadir' },
-  { id: 'cerceve_altin', kategori: 'cerceve', ad: { tr: 'Altın Çerçeve', en: 'Gold Frame' }, renk: '#e0c789', fiyat: 50, nadirlik: 'nadir' },
-  { id: 'cerceve_yakut', kategori: 'cerceve', ad: { tr: 'Yakut Çerçeve', en: 'Ruby Frame' }, renk: '#b5293a', fiyat: 100, nadirlik: 'efsanevi' },
-  { id: 'cerceve_zumrut', kategori: 'cerceve', ad: { tr: 'Zümrüt Çerçeve', en: 'Emerald Frame' }, renk: '#2a8a5a', fiyat: 100, nadirlik: 'efsanevi' },
+  { id: 'cerceve_bronz', kategori: 'cerceve', ad: { tr: 'Bronz Çerçeve', en: 'Bronze Frame' }, renk: '#8a6a2a', fiyat: 20, nadirlik: 'yaygin' },
+  { id: 'cerceve_gumus', kategori: 'cerceve', ad: { tr: 'Gümüş Çerçeve', en: 'Silver Frame' }, renk: '#b9c2cc', fiyat: 45, nadirlik: 'nadir' },
+  { id: 'cerceve_altin', kategori: 'cerceve', ad: { tr: 'Altın Çerçeve', en: 'Gold Frame' }, renk: '#e0c789', fiyat: 65, nadirlik: 'nadir' },
+  { id: 'cerceve_yakut', kategori: 'cerceve', ad: { tr: 'Yakut Çerçeve', en: 'Ruby Frame' }, renk: '#b5293a', fiyat: 80, nadirlik: 'efsanevi' },
+  { id: 'cerceve_zumrut', kategori: 'cerceve', ad: { tr: 'Zümrüt Çerçeve', en: 'Emerald Frame' }, renk: '#2a8a5a', fiyat: 80, nadirlik: 'efsanevi' },
 ];
 
 export function kozmetikTanimGetir(id: string): KozmetikEsyaTanimi | undefined {
