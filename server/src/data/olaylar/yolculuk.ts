@@ -1575,14 +1575,14 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         basariliSonuc: {
           un: 18,
           saglik: -10,
-          zorunlu_sonraki: "oc_hacli_ganimet_yagma",
+          zorunlu_sonraki_havuzu: ["oc_hacli_ganimet_yagma", "oc_hacli_ganimet_yagma_b"],
           mesaj: "Surlara ilk tırmananlardan biri oldun; adın bütün ordu içinde yayıldı.",
           detay: "Bu cesaret hikayen yıllarca anlatılacak.",
         },
         basarisizSonuc: {
           saglik: -25,
           olum_sansi: 8,
-          zorunlu_sonraki: "oc_hacli_ganimet_yagma",
+          zorunlu_sonraki_havuzu: ["oc_hacli_ganimet_yagma", "oc_hacli_ganimet_yagma_b"],
           mesaj: "Ok yağmuru altında ağır yaralandın; seni geri çektiler.",
           detay: "Bu kuşatma sana pahalıya mal oldu.",
         },
@@ -1593,13 +1593,13 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         ipucu: "Daha güvenli, daha az ün",
         basariliSonuc: {
           un: 5,
-          zorunlu_sonraki: "oc_hacli_ganimet_yagma",
+          zorunlu_sonraki_havuzu: ["oc_hacli_ganimet_yagma", "oc_hacli_ganimet_yagma_b"],
           mesaj: "Görevini sessizce yerine getirdin; kale sonunda düştü.",
           detay: "Her zafer öne çıkanlarla değil, arkada duranlarla da kazanılıyor.",
         },
         basarisizSonuc: {
           saglik: -8,
-          zorunlu_sonraki: "oc_hacli_ganimet_yagma",
+          zorunlu_sonraki_havuzu: ["oc_hacli_ganimet_yagma", "oc_hacli_ganimet_yagma_b"],
           mesaj: "Bir taş mancınıktan sıçrayıp seni sıyırdı.",
           detay: "Geride durmak bile bu savaşta güvenlik vermiyor.",
         },
@@ -7137,14 +7137,14 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         ipucu: "Sessiz bir zafer ya da tuzağa düşme riski",
         basariliSonuc: {
           un: 22,
-          zorunlu_sonraki: "oc_hacli_ganimet_yagma",
+          zorunlu_sonraki_havuzu: ["oc_hacli_ganimet_yagma", "oc_hacli_ganimet_yagma_b"],
           mesaj: "Tünelden sızıp kapıları içten açtınız; kale neredeyse hiç direnmeden düştü.",
           detay: "Bazı zaferler kılıç değil sessizlikle kazanılıyor.",
         },
         basarisizSonuc: {
           saglik: -22,
           olum_sansi: 6,
-          zorunlu_sonraki: "oc_hacli_ganimet_yagma",
+          zorunlu_sonraki_havuzu: ["oc_hacli_ganimet_yagma", "oc_hacli_ganimet_yagma_b"],
           mesaj: "Tünel çökmeye başladı, birkaç asker göçük altında kaldı; geri kalanı zar zor çıktı.",
           detay: "Bu gece baskını pahalıya patladı.",
         },
@@ -7155,13 +7155,13 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         ipucu: "Sıradan ama güvenli",
         basariliSonuc: {
           un: 6,
-          zorunlu_sonraki: "oc_hacli_ganimet_yagma",
+          zorunlu_sonraki_havuzu: ["oc_hacli_ganimet_yagma", "oc_hacli_ganimet_yagma_b"],
           mesaj: "Ana kuvvetle kuşatmayı sürdürdün; kale sonunda klasik yoldan düştü.",
           detay: "Her zafer parlak bir manevra gerektirmiyor.",
         },
         basarisizSonuc: {
           saglik: -10,
-          zorunlu_sonraki: "oc_hacli_ganimet_yagma",
+          zorunlu_sonraki_havuzu: ["oc_hacli_ganimet_yagma", "oc_hacli_ganimet_yagma_b"],
           mesaj: "Kuşatma sırasında bir karşı saldırıda hafif yaralandın.",
           detay: "Sıradan görevler bile bu savaşta risk taşıyor.",
         },
@@ -7995,6 +7995,62 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
           ],
           mesaj: "Yeni görev beklediğinden daha zor çıktı, uyum biraz sancılı oldu.",
           detay: "Her yeni başlangıç kolay olmuyor.",
+        },
+      },
+    ],
+  },
+
+  // "Az olay var" turu Faz 7 (2026-09): Haçlı Seferi'ne üçüncü bir dönemeç —
+  // kuşatma sahnesinden (kutsal_topraklar_savasi/_b) sonraki adıma da alternatif.
+  {
+    id: "oc_hacli_ganimet_yagma_b",
+    kategori: "din",
+    gerekliEtiketler: [
+      "hacli:katildi",
+    ],
+    yolculukOlayi: true,
+    agirlik: 0.7,
+    gorsel: "🏛️",
+    sureYilMin: 1,
+    sureYilMax: 1,
+    baslik: "Ele Geçen Kütüphane",
+    metin: "Ordu şehri ele geçirdikten sonra, yerel bir manastırın kütüphanesinin yağmadan kurtarılması gerektiğini fark ettin — içindeki eski elyazmaları hem değerli hem de kırılgan. Zaman daralıyor.",
+    secenekler: [
+      {
+        metin: "Elyazmalarını kurtar, kiliseye teslim et.",
+        baseBasariSansi: 75,
+        ipucu: "Vicdan huzuru, küçük bir ün kazancı",
+        basariliSonuc: {
+          ahlak: 14,
+          un: 6,
+          zorunlu_sonraki: "oc_hacli_ordu_dagiliyor",
+          mesaj: "Kütüphaneyi ateşten ve yağmadan kurtardın; kilise adını uzun süre andı.",
+          detay: "Bazı zaferler kılıçla değil, kağıtla kazanılıyor.",
+        },
+        basarisizSonuc: {
+          saglik: -6,
+          zorunlu_sonraki: "oc_hacli_ordu_dagiliyor",
+          mesaj: "Dumandan boğulur halde birkaç ciltten fazlasını kurtaramadın.",
+          detay: "Bazı kayıplar geri getirilemez.",
+        },
+      },
+      {
+        metin: "Değerli ciltleri kendine sakla, sat.",
+        baseBasariSansi: 80,
+        ipucu: "Kazanç var ama vicdan ağır",
+        basariliSonuc: {
+          para: 35,
+          ahlak: -16,
+          zorunlu_sonraki: "oc_hacli_ordu_dagiliyor",
+          mesaj: "En değerli ciltleri kendine ayırdın; sonradan sattığında cebini iyi doldurdu.",
+          detay: "Zengin döndün ama o kütüphanenin hayaleti peşini bırakmadı.",
+        },
+        basarisizSonuc: {
+          para: 10,
+          ahlak: -12,
+          zorunlu_sonraki: "oc_hacli_ordu_dagiliyor",
+          mesaj: "Aceleyle aldığın ciltlerin çoğu değersiz çıktı, üstüne bir de vicdan azabı sardı.",
+          detay: "Ne tam kazandın ne de vicdanını korudun.",
         },
       },
     ],

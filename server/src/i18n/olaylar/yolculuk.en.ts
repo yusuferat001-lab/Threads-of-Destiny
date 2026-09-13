@@ -3956,4 +3956,36 @@ export const OLAYLAR_YOLCULUK_EN: Record<string, OlayCeviri> = {
       },
     ],
   },
+
+  // "Az olay var" turu Faz 7 (2026-09): a third Crusade branch point
+  oc_hacli_ganimet_yagma_b: {
+    baslik: "The Captured Library",
+    metin: "After the army takes the city, you notice a local monastery's library needs saving from the looting — the old manuscripts inside are both valuable and fragile. Time is running out.",
+    secenekler: [
+      {
+        metin: "Save the manuscripts, hand them to the church.",
+        ipucu: "Peace of mind, a small reputation gain",
+        basariliSonuc: {
+          mesaj: "You saved the library from fire and looting; the church remembered your name for a long time.",
+          detay: "Some victories are won with paper, not swords.",
+        },
+        basarisizSonuc: {
+          mesaj: "Choking on smoke, you couldn't save more than a few volumes.",
+          detay: "Some losses can't be undone.",
+        },
+      },
+      {
+        metin: "Keep the valuable volumes for yourself, sell them.",
+        ipucu: "There's profit but a heavy conscience",
+        basariliSonuc: {
+          mesaj: "You set aside the most valuable volumes; selling them later filled your pocket nicely.",
+          detay: "You returned rich, but that library's ghost never left you.",
+        },
+        basarisizSonuc: {
+          mesaj: "Most of the volumes you grabbed in haste turned out worthless, and guilt settled in besides.",
+          detay: "You neither gained much nor kept your conscience clean.",
+        },
+      },
+    ],
+  },
 };
