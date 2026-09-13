@@ -2738,8 +2738,10 @@ const MULK_GETIRI_DEZAVANTAJLI = -0.02;
 const MULK_GETIRI_TAVAN = 0.09;
 const MULK_DEMIRCI_SAVAS_CARPANI = 2.5;
 const KERVAN_BATMA_IHTIMALI_YILLIK = 0.25;
-// Büyük denge turunda 2→3: karaborsa aranma seviyesini daha hızlı yükseltsin.
-const KARABORSA_SUC_ARTISI_YILLIK = 3;
+// Aranma yeniden dengeleme turu: 3→2 — pasif/ambient bir kaynak olduğu için
+// (yıl başına otomatik işler, oyuncu aksiyonu gerektirmez) karanlık işler
+// (şiddet/soygun) listesiyle aynı hızda birikmesin (kullanıcı isteği).
+const KARABORSA_SUC_ARTISI_YILLIK = 2;
 const KARABORSA_AHLAK_ASINMASI_YILLIK = 0.3;
 // Küçük Tarla — büyük denge turunda "en garanti" mülk yapıldı (kullanıcı: "bir tane uygun
 // gayrimenkul olsun 50'ye alabileceği daha garanti bir şey"): getirisi küçük ama kıtlıkta

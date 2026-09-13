@@ -2901,13 +2901,17 @@ export async function dedikoduGetir(id: string): Promise<string[]> {
 }
 
 const ZAR_KADEMELERI = [10, 50, 100] as const;
-// Büyük denge turunda 4→7: aranma seviyesi genelde daha hızlı artsın (kullanıcı isteği).
-const ZAR_SUC_ARTISI = 7;
+// Aranma yeniden dengeleme turu: tur harcamadan defalarca oynanabildiği için
+// (kullanıcı: "kumar adam dövmekle aynı şey değil") 7→3'e düşürüldü — kumar
+// hâlâ suç sayılır ama karanlık işler (şiddet/soygun) listesiyle tekrar
+// yarışmasın.
+const ZAR_SUC_ARTISI = 3;
 // Hazard: her kaç elde bir "rakip bıçak çekti" tetiklenmeyi denesin ve ihtimali.
 const HAZARD_BICAK_HER_KAC_EL = 4;
 const HAZARD_BICAK_IHTIMAL = 0.45;
 const UC_KAGITCI_KAZANMA_SANSI = 0.34;
-const UC_KAGITCI_SUC_ARTISI = 4;
+// Aranma yeniden dengeleme turu: 4→2 (aynı gerekçe, §ZAR_SUC_ARTISI).
+const UC_KAGITCI_SUC_ARTISI = 2;
 const BILEK_GURESI_ODUL_TABAN = 4;
 
 function zarAtBir(): number {
