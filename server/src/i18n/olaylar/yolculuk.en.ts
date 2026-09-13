@@ -2954,4 +2954,308 @@ export const OLAYLAR_YOLCULUK_EN: Record<string, OlayCeviri> = {
       },
     ],
   },
+
+  // --- "Too few events" pass, Phase 3.2: same pooling pattern applied to
+  // the other 5 journey types (Crusade, Colonial, Defense, Exploration,
+  // Invention Tour).
+  oc_hacli_kara_2b: {
+    baslik: "A Local Guide",
+    metin: "A local shepherd says he can show the army a safer mountain pass than the one it knows — asking only a few coins in return. The commanders debate whether to trust him.",
+    secenekler: [
+      {
+        metin: "Trust the guide; accept the offer.",
+        ipucu: "Risky, but could save time",
+        basariliSonuc: {
+          mesaj: "The guide told the truth; the pass really was safer.",
+          detay: "Sometimes trusting a stranger pays off.",
+        },
+        basarisizSonuc: {
+          mesaj: "The guide led you into an ambush; you escaped with the loss of a few soldiers.",
+          detay: "Not every stranger means well.",
+        },
+      },
+      {
+        metin: "Refuse; continue on the known but long road.",
+        ipucu: "Slow but safe",
+        basariliSonuc: {
+          mesaj: "You advanced on the known road; a tiring but uneventful crossing.",
+          detay: "Caution sometimes takes patience.",
+        },
+        basarisizSonuc: {
+          mesaj: "The long road proved even more exhausting than expected, and the army wore down.",
+          detay: "Some roads are simply long.",
+        },
+      },
+    ],
+  },
+  oc_hacli_deniz_2b: {
+    baslik: "Pirate Attack at Sea",
+    metin: "Ships flying pirate colors appear on the horizon. Should the captain form the fleet into a defensive line, or try to outrun them with the faster ships?",
+    secenekler: [
+      {
+        metin: "Form the fleet up and fight back.",
+        ipucu: "Risky but honorable",
+        basariliSonuc: {
+          mesaj: "After a brief clash, the pirates withdrew.",
+          detay: "Your courage will be talked about in the fleet.",
+        },
+        basarisizSonuc: {
+          mesaj: "The clash went badly; you continued on with some losses and looted holds.",
+          detay: "Resisting doesn't always pay off.",
+        },
+      },
+      {
+        metin: "Try to flee with the fastest ships.",
+        ipucu: "Safe but the fleet may scatter",
+        basariliSonuc: {
+          mesaj: "The fleet got away from the pirates without scattering.",
+          detay: "Sometimes fleeing is the wisest choice.",
+        },
+        basarisizSonuc: {
+          mesaj: "The slowest ship was caught and looted while fleeing; the rest got away.",
+          detay: "Not every escape saves everyone.",
+        },
+      },
+    ],
+  },
+  sd_somurge_diplomasi_2b: {
+    baslik: "A Local Dispute",
+    metin: "A land dispute between the settlers and the local people is growing. Both sides ask you to mediate.",
+    secenekler: [
+      {
+        metin: "Propose a fair compromise; hear both sides out.",
+        ipucu: "Takes time but earns respect",
+        basariliSonuc: {
+          mesaj: "Your compromise satisfied both sides; your name is spoken of with respect in the region.",
+          detay: "Justice is sometimes the best diplomacy.",
+        },
+        basarisizSonuc: {
+          mesaj: "Your mediation attempt failed; neither side was pleased with you.",
+          detay: "Not every mediation succeeds.",
+        },
+      },
+      {
+        metin: "Side with the settlers; decide quickly.",
+        ipucu: "Fast but weighs on your conscience",
+        basariliSonuc: {
+          mesaj: "The settlers were pleased with your decision and sent you a gift.",
+          detay: "Some decisions are quick but wear on the conscience.",
+        },
+        basarisizSonuc: {
+          mesaj: "Your decision only made the tension worse; both sides left angry.",
+          detay: "Hasty decisions sometimes backfire.",
+        },
+      },
+    ],
+  },
+  sd_somurge_askeri_2b: {
+    baslik: "A Night Raid",
+    metin: "The sentries have noticed suspicious movement around the camp. There is talk that a local resistance group may be preparing a night raid.",
+    secenekler: [
+      {
+        metin: "Prepare the camp's defenses; tighten the watch.",
+        ipucu: "Cautious but an exhausting night",
+        basariliSonuc: {
+          mesaj: "The raid attempt was repelled by the tight watch.",
+          detay: "Caution paid off tonight.",
+        },
+        basarisizSonuc: {
+          mesaj: "The raid was fiercer than expected; you met the morning with a few wounded.",
+          detay: "Not every precaution is enough.",
+        },
+      },
+      {
+        metin: "Take the initiative; scout the suspicious area yourself.",
+        ipucu: "Risky but brings certain intelligence",
+        basariliSonuc: {
+          mesaj: "Your scouting revealed there was no real threat; the camp settled down.",
+          detay: "Sometimes looking directly is best.",
+        },
+        basarisizSonuc: {
+          mesaj: "You actually ran into a real clash while scouting; you returned wounded but alive.",
+          detay: "Courage sometimes has a price.",
+        },
+      },
+    ],
+  },
+  yolculuk_savunma_kara_2b: {
+    baslik: "Spy Suspicion",
+    metin: "Rumors are spreading that a spy leaking information to the enemy may be within the unit. Suspicion falls on a new soldier.",
+    secenekler: [
+      {
+        metin: "Launch a fair investigation; gather evidence.",
+        ipucu: "Takes time but preserves justice",
+        basariliSonuc: {
+          mesaj: "The investigation showed the soldier was innocent; trust within the unit grew.",
+          detay: "Justice can be worth more than discipline.",
+        },
+        basarisizSonuc: {
+          mesaj: "The investigation reached no conclusion, but the air of suspicion strains the unit.",
+          detay: "Some suspicions never close.",
+        },
+      },
+      {
+        metin: "Detain the suspect immediately; interrogate.",
+        ipucu: "Fast but harsh",
+        basariliSonuc: {
+          mesaj: "The harsh interrogation revealed the real spy was someone else.",
+          detay: "Speed sometimes works.",
+        },
+        basarisizSonuc: {
+          mesaj: "An innocent soldier suffered a harsh interrogation; unease grew within the unit.",
+          detay: "Harshness sometimes hits the wrong target.",
+        },
+      },
+    ],
+  },
+  yolculuk_savunma_deniz_2b: {
+    baslik: "Naval Blockade",
+    metin: "Enemy ships have blockaded the way to the harbor. The ships must either break through the blockade line or try a long, roundabout route.",
+    secenekler: [
+      {
+        metin: "Try to break through the blockade line.",
+        ipucu: "Risky but fast",
+        basariliSonuc: {
+          mesaj: "A bold maneuver broke the blockade; the fleet got through safely.",
+          detay: "Your courage will be talked about among the crew.",
+        },
+        basarisizSonuc: {
+          mesaj: "The blockade line was tighter than thought; you got through with heavy damage.",
+          detay: "Not every maneuver turns out as hoped.",
+        },
+      },
+      {
+        metin: "Follow the long, roundabout route.",
+        ipucu: "Slow but safe",
+        basariliSonuc: {
+          mesaj: "The roundabout route took time but the fleet advanced undamaged.",
+          detay: "Patience is sometimes the safest weapon.",
+        },
+        basarisizSonuc: {
+          mesaj: "The roundabout route also ran into a storm; everyone was worn out.",
+          detay: "Some days are simply hard.",
+        },
+      },
+    ],
+  },
+  yolculuk_kesif_kara_2b: {
+    baslik: "A Lost Map",
+    metin: "The caravan's guide has discovered a valley unmarked on any old map; he thinks there may be a rare mineral deposit here, but straying off route costs time.",
+    secenekler: [
+      {
+        metin: "Make a small detour to investigate the valley.",
+        ipucu: "Risky but a chance of great reward",
+        basariliSonuc: {
+          mesaj: "You really did find a valuable mineral deposit in the valley; your discovery went into the record.",
+          detay: "Some detours bring great rewards.",
+        },
+        basarisizSonuc: {
+          mesaj: "The valley turned out empty; morale dropped along with the lost time.",
+          detay: "Not every trail leads to treasure.",
+        },
+      },
+      {
+        metin: "Stick to the plan, no detour.",
+        ipucu: "Safe but risks missing an opportunity",
+        basariliSonuc: {
+          mesaj: "You stuck to the plan; the caravan advanced on schedule.",
+          detay: "Some opportunities are worth letting go.",
+        },
+        basarisizSonuc: {
+          mesaj: "Despite the guide's insistence you gave it up; there's mild disappointment in the caravan.",
+          detay: "Caution sometimes leaves dissatisfaction.",
+        },
+      },
+    ],
+  },
+  yolculuk_kesif_deniz_2b: {
+    baslik: "An Uncharted Island",
+    metin: "A small island unmarked on any map has been sighted. Does the crew want to land and explore it, or continue the voyage?",
+    secenekler: [
+      {
+        metin: "Land and explore the island.",
+        ipucu: "Risky but the find could be valuable",
+        basariliSonuc: {
+          mesaj: "The island was full of a valuable resource not on any map; your discovery will be talked about.",
+          detay: "Some islands give up their secrets generously.",
+        },
+        basarisizSonuc: {
+          mesaj: "The island turned out dangerous; you returned to the ship with some wounded.",
+          detay: "Not every discovery is safe.",
+        },
+      },
+      {
+        metin: "Note the island's location; continue the voyage.",
+        ipucu: "Safe but defers the opportunity",
+        basariliSonuc: {
+          mesaj: "You noted the island's location; maybe for another voyage.",
+          detay: "Some discoveries are worth waiting for.",
+        },
+        basarisizSonuc: {
+          mesaj: "The crew was disappointed by the decision, but the voyage went on.",
+          detay: "Caution sometimes dampens morale.",
+        },
+      },
+    ],
+  },
+  yolculuk_mucit_saray_2b: {
+    baslik: "A Jealous Rival Inventor",
+    metin: "Another inventor at court is spreading rumors that your invention was actually his idea. The matter has begun circulating among the nobles.",
+    secenekler: [
+      {
+        metin: "Disprove the claim with a public demonstration.",
+        ipucu: "Risky but clears your reputation",
+        basariliSonuc: {
+          mesaj: "The demonstration disproved the claims; it became clear you are the true inventor.",
+          detay: "Some claims are only silenced by proof.",
+        },
+        basarisizSonuc: {
+          mesaj: "The demonstration went wrong; the rumors grew even bigger.",
+          detay: "Not every challenge works.",
+        },
+      },
+      {
+        metin: "Ignore it; focus on your work.",
+        ipucu: "Safe but the rumor may linger",
+        basariliSonuc: {
+          mesaj: "You ignored the rumor; over time it died down on its own.",
+          detay: "Some noise is best left to fade.",
+        },
+        basarisizSonuc: {
+          mesaj: "Though ignored, the rumor kept circulating for a while longer.",
+          detay: "Some voices don't quiet down easily.",
+        },
+      },
+    ],
+  },
+  yolculuk_mucit_sanayici_2b: {
+    baslik: "A Factory Accident",
+    metin: "During a factory demonstration, one of the machines overheats and begins hissing dangerously. As the workers panic, you must decide.",
+    secenekler: [
+      {
+        metin: "Approach the machine yourself and try to stop it.",
+        ipucu: "Risky but heroic",
+        basariliSonuc: {
+          mesaj: "You stopped the machine in time; the workers applauded you.",
+          detay: "Your courage will be talked about in the factory.",
+        },
+        basarisizSonuc: {
+          mesaj: "Your intervention didn't work; a small blast injured you but no one died.",
+          detay: "Not every act of heroism is rewarded.",
+        },
+      },
+      {
+        metin: "Have everyone evacuated; leave it to the factory workers.",
+        ipucu: "Safe but a passive choice",
+        basariliSonuc: {
+          mesaj: "The evacuation went smoothly; the factory workers brought the machine under control.",
+          detay: "Sometimes the best help is stepping aside.",
+        },
+        basarisizSonuc: {
+          mesaj: "Some equipment was damaged during the evacuation, and you had to pay compensation.",
+          detay: "Some accidents cost money.",
+        },
+      },
+    ],
+  },
 };
