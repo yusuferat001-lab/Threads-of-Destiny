@@ -5,9 +5,10 @@
  * Ardışık günlerde seri +1 artar; 1 günlük bir "grace" payı var (bir gün
  * atlanırsa seri kırılmaz, ama iki gün üst üste atlanırsa sıfırlanır) —
  * agresif seri sistemleri terk sebebi olduğu için kasıtlı yumuşak.
- * Ödül `miras.ts`'e Miras olarak yazılır.
+ * Ödül `gold.ts`'e Gold olarak yazılır, **haftalık bir döngüde** artar
+ * (bkz. `odulMiktariHesapla`) — sınırsız büyümesin diye 7 günde bir sıfırlanır.
  */
-import { mirasEkle } from './miras';
+import { goldEkle } from './gold';
 
 interface GunlukSeriDurumu {
   sonGirisTarihi: string | null;
@@ -50,16 +51,19 @@ function yaz(d: GunlukSeriDurumu) {
   }
 }
 
+/** Haftanın 7 günü için ödül tablosu — 1. gün 10 Gold, her gün +5, 7. gün 40. */
+const HAFTALIK_ODUL = [10, 15, 20, 25, 30, 35, 40];
+
 /**
- * Seri uzunluğuna göre kademeli Miras ödülü — tek bir oyundan kazanılabilecek
- * tavanla (`OLUM_MIRAS_TAVANI`, şu an 10) aynı ölçekte tutulur ki günlük giriş
- * tek başına ekonomiyi domine etmesin.
+ * Seri uzunluğuna göre Gold ödülü — **haftalık döngü**: toplam seri sayısı
+ * ne olursa olsun, `((seri - 1) % 7) + 1` ile "bu haftanın kaçıncı günü"
+ * hesaplanır ve `HAFTALIK_ODUL`'den okunur. 7. günden sonra 1. güne (10 Gold)
+ * döner — böylece hem her gün girmenin haftalık bir karşılığı olur hem de
+ * ödül sınırsız büyümez (bir önceki tek-yönlü kademeli sistem yerine).
  */
 function odulMiktariHesapla(seri: number): number {
-  if (seri >= 14) return 10;
-  if (seri >= 7) return 7;
-  if (seri >= 3) return 4;
-  return 2;
+  const haftaninGunu = ((seri - 1) % 7) + 1; // 1..7
+  return HAFTALIK_ODUL[haftaninGunu - 1];
 }
 
 export interface GunlukSeriSonuc {
@@ -92,7 +96,7 @@ export function gunlukSeriKontrolEt(): GunlukSeriSonuc {
   yaz({ sonGirisTarihi: bugun, seriUzunlugu: yeniSeri, enUzunSeri: enUzun });
 
   const odul = odulMiktariHesapla(yeniSeri);
-  mirasEkle(odul);
+  goldEkle(odul);
 
   return { seri: yeniSeri, enUzunSeri: enUzun, yeniOdulMu: true, odulMiktari: odul };
 }

@@ -119,7 +119,7 @@ import { kozmetikGiyilenlerGetir, type GiyilenKozmetikler } from './kozmetikDola
 import { NasilOynanir } from './components/NasilOynanir';
 import { istemciId, ziyaretBildir } from './istemci';
 import { gunlukSeriKontrolEt, gunlukSeriGetir, type GunlukSeriSonuc } from './gunlukSeri';
-import { mirasBakiyeGetir, olumMirasiHesapla, mirasEkle } from './miras';
+import { goldBakiyeGetir, olumGoldHesapla, goldEkle } from './gold';
 import { sonucIkonuGetir, unUnvani, MESLEK_KATEGORI, yatkinlikEtiketi, etkiTahminiGetir, type EtkiTahmini } from './bolgeTema';
 import { formatPara } from './format';
 import { bic } from './i18n';
@@ -347,7 +347,7 @@ function App() {
   const [liderlikOnizleme, setLiderlikOnizleme] = useState<ScoreKaydi[]>([]);
   const [gunlukSeri, setGunlukSeri] = useState(() => gunlukSeriGetir());
   const [gunlukOdulBildirimi, setGunlukOdulBildirimi] = useState<GunlukSeriSonuc | null>(null);
-  const [mirasBakiye, setMirasBakiye] = useState(() => mirasBakiyeGetir());
+  const [goldBakiye, setGoldBakiye] = useState(() => goldBakiyeGetir());
   const [kozmetikMagazaAcik, setKozmetikMagazaAcik] = useState(false);
   const [giyilenKozmetikler, setGiyilenKozmetikler] = useState<GiyilenKozmetikler>(() => kozmetikGiyilenlerGetir());
   const [bolgeBilgiAcik, setBolgeBilgiAcik] = useState(false);
@@ -363,8 +363,8 @@ function App() {
   // Ölümde skorun otomatik kaydedilmesi denendi mi (oturum id başına tek sefer) —
   // StrictMode çift-render'ında ve tekrar render'larda ikinci bir POST /api/scores atmamak için.
   const otoSkorKaydiRef = useRef<string | null>(null);
-  const olumMirasOdenenRef = useRef<string | null>(null);
-  const [olumMirasKazanci, setOlumMirasKazanci] = useState<number | null>(null);
+  const olumGoldOdenenRef = useRef<string | null>(null);
+  const [olumGoldKazanci, setOlumGoldKazanci] = useState<number | null>(null);
   const mobil = useMobil();
 
   function sesToggle() {
@@ -451,7 +451,7 @@ function App() {
     ziyaretBildir();
     const sonuc = gunlukSeriKontrolEt();
     setGunlukSeri({ seri: sonuc.seri, enUzunSeri: sonuc.enUzunSeri });
-    setMirasBakiye(mirasBakiyeGetir());
+    setGoldBakiye(goldBakiyeGetir());
     if (sonuc.yeniOdulMu) setGunlukOdulBildirimi(sonuc);
   }, []);
 
@@ -534,12 +534,12 @@ function App() {
       const { yeniAcilanlar, buOmurKazanilanlar, skor } = basarimlariDegerlendir(karakter);
       setYeniBasarimlar(yeniAcilanlar);
       setBuOmurBasarimlar(buOmurKazanilanlar);
-      // Miras — ölümde kazanılan skorun küçük bir oranı (amaç ×5 çarpanı zaten skora yansımış).
-      if (olumMirasOdenenRef.current !== karakter.id) {
-        olumMirasOdenenRef.current = karakter.id;
-        const kazanc = olumMirasiHesapla(skor);
-        setMirasBakiye(mirasEkle(kazanc));
-        setOlumMirasKazanci(kazanc);
+      // Gold — ölümde kazanılan skorun küçük bir oranı (amaç ×5 çarpanı zaten skora yansımış).
+      if (olumGoldOdenenRef.current !== karakter.id) {
+        olumGoldOdenenRef.current = karakter.id;
+        const kazanc = olumGoldHesapla(skor);
+        setGoldBakiye(goldEkle(kazanc));
+        setOlumGoldKazanci(kazanc);
       }
     }
   }, [ekran, karakter]);
@@ -1432,8 +1432,8 @@ function App() {
     setKaydedildi(false);
     setOtoKayitBasarisiz(false);
     otoSkorKaydiRef.current = null;
-    olumMirasOdenenRef.current = null;
-    setOlumMirasKazanci(null);
+    olumGoldOdenenRef.current = null;
+    setOlumGoldKazanci(null);
     setSecilenCag(null);
     setSecilenBolge(null);
     setSecilenYerlesim(null);
@@ -1504,7 +1504,7 @@ function App() {
           dil={dil}
           onKapat={() => setKozmetikMagazaAcik(false)}
           onDegisti={() => {
-            setMirasBakiye(mirasBakiyeGetir());
+            setGoldBakiye(goldBakiyeGetir());
             setGiyilenKozmetikler(kozmetikGiyilenlerGetir());
           }}
         />
@@ -1536,8 +1536,8 @@ function App() {
                   🔥 {bic(m.gunlukSeriEtiket, gunlukSeri.seri)}
                 </span>
               )}
-              <span className="giris-miras-rozet" title={m.mirasAciklama}>
-                🪙 {mirasBakiye}
+              <span className="giris-gold-rozet" title={m.goldAciklama}>
+                🪙 {goldBakiye}
               </span>
             </div>
             {gunlukOdulBildirimi && (
@@ -2446,8 +2446,8 @@ function App() {
           <p className="olum-ozet">
             {formatPara(karakter.para)} {karakter.para_birimi} · {m.sohret}: {unUnvani(karakter.un, dil)}
           </p>
-          {olumMirasKazanci !== null && (
-            <p className="olum-miras-kazanc">🪙 {bic(m.olumMirasKazandi, olumMirasKazanci)}</p>
+          {olumGoldKazanci !== null && (
+            <p className="olum-gold-kazanc">🪙 {bic(m.olumGoldKazandi, olumGoldKazanci)}</p>
           )}
 
           {(buOmurBasarimlar.length > 0 || karakter.unvanlar.length > 0 || karakter.efsanevi_olum) && (

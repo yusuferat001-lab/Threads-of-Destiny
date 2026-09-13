@@ -10,13 +10,13 @@ import {
   kozmetikCikar,
   type GiyilenKozmetikler,
 } from '../kozmetikDolabi';
-import { mirasBakiyeGetir } from '../miras';
+import { goldBakiyeGetir } from '../gold';
 import { KarakterAvatari } from './KarakterAvatari';
 
 interface Props {
   dil: Dil;
   onKapat: () => void;
-  /** Satın alma/giyme sonrası ana ekranın Miras bakiyesini/avatar giysisini tazelemesi için. */
+  /** Satın alma/giyme sonrası ana ekranın Gold bakiyesini/avatar giysisini tazelemesi için. */
   onDegisti: () => void;
 }
 
@@ -26,7 +26,7 @@ export function KozmetikMagaza({ dil, onKapat, onDegisti }: Props) {
   const M = metinler(dil);
   const kapatRef = useRef<HTMLButtonElement>(null);
 
-  const [bakiye, setBakiye] = useState(() => mirasBakiyeGetir());
+  const [bakiye, setBakiye] = useState(() => goldBakiyeGetir());
   const [sahipListe, setSahipListe] = useState(() => new Set(kozmetikSahipListesiGetir()));
   const [giyilen, setGiyilen] = useState<GiyilenKozmetikler>(() => kozmetikGiyilenlerGetir());
   const [mesaj, setMesaj] = useState<string | null>(null);
@@ -41,7 +41,7 @@ export function KozmetikMagaza({ dil, onKapat, onDegisti }: Props) {
   }, [onKapat]);
 
   function tazele() {
-    setBakiye(mirasBakiyeGetir());
+    setBakiye(goldBakiyeGetir());
     setSahipListe(new Set(kozmetikSahipListesiGetir()));
     setGiyilen(kozmetikGiyilenlerGetir());
     onDegisti();
@@ -53,7 +53,7 @@ export function KozmetikMagaza({ dil, onKapat, onDegisti }: Props) {
       setMesaj(null);
       tazele();
     } else {
-      setMesaj(M.kzYetersizMiras);
+      setMesaj(M.kzYetersizGold);
     }
   }
 

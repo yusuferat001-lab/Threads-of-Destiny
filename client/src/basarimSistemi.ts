@@ -931,7 +931,7 @@ export interface BasarimDegerlendirmeSonucu {
   /** Bu hayatın karşıladığı TÜM başarımlar (ölüm ekranı rozet şeridi). */
   buOmurKazanilanlar: BasarimTanimi[];
   istatistik: OyunIstatistigi;
-  /** Bu ömrün nihai skoru (Miras kazancı bundan türetilir). */
+  /** Bu ömrün nihai skoru (Gold kazancı bundan türetilir). */
   skor: number;
 }
 

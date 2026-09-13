@@ -1,14 +1,14 @@
 /**
- * Miras (Legacy) — cihaz-yerel, hayattan bağımsız kalıcı meta-para.
+ * Gold — cihaz-yerel, hayattan bağımsız kalıcı meta-para.
  *
  * `basarimlar.ts`/`gecmisHayatlar.ts` ile aynı desen: yalnız `localStorage`'da
  * tutulur, sunucuya hiç gitmez. Ölümde kazanılan skordan (oyun başı EN FAZLA
- * `OLUM_MIRAS_TAVANI`, bkz. `olumMirasiHesapla`) ve günlük seri ödülleriyle
+ * `OLUM_GOLD_TAVANI`, bkz. `olumGoldHesapla`) ve günlük seri ödülleriyle
  * (`gunlukSeri.ts`) birikir; kalıcı kozmetik dolaptaki (`kozmetikDolabi.ts`)
  * eşyaları satın almak için harcanır. Oyun-içi `para` ile KARIŞMAZ — hiçbir
  * stat/güç dengesine etkisi yoktur, salt görünüm/koleksiyon ekonomisi.
  */
-const BAKIYE_ANAHTAR = 'kader_carki_miras_bakiye';
+const BAKIYE_ANAHTAR = 'kader_carki_gold_bakiye';
 
 function oku(): number {
   try {
@@ -28,12 +28,12 @@ function yaz(bakiye: number) {
   }
 }
 
-export function mirasBakiyeGetir(): number {
+export function goldBakiyeGetir(): number {
   return oku();
 }
 
-/** Miras ekler (ödül/kazanç), yeni bakiyeyi döner. */
-export function mirasEkle(miktar: number): number {
+/** Gold ekler (ödül/kazanç), yeni bakiyeyi döner. */
+export function goldEkle(miktar: number): number {
   if (!Number.isFinite(miktar) || miktar <= 0) return oku();
   const yeni = oku() + Math.round(miktar);
   yaz(yeni);
@@ -41,18 +41,18 @@ export function mirasEkle(miktar: number): number {
 }
 
 /** Yeterli bakiye varsa düşer ve true döner; yetersizse hiçbir şey yapmadan false döner. */
-export function mirasHarca(miktar: number): boolean {
+export function goldHarca(miktar: number): boolean {
   const mevcut = oku();
   if (miktar <= 0 || mevcut < miktar) return false;
   yaz(mevcut - miktar);
   return true;
 }
 
-/** Bir ölümden kazanılabilecek en yüksek Miras — ekonominin "uçmasını" engelleyen sert tavan. */
-export const OLUM_MIRAS_TAVANI = 10;
+/** Bir ölümden kazanılabilecek en yüksek Gold — ekonominin "uçmasını" engelleyen sert tavan. */
+export const OLUM_GOLD_TAVANI = 10;
 
 /**
- * Bir ölümden kazanılacak Miras miktarı — oyun başı EN FAZLA {@link OLUM_MIRAS_TAVANI}.
+ * Bir ölümden kazanılacak Gold miktarı — oyun başı EN FAZLA {@link OLUM_GOLD_TAVANI}.
  *
  * İki parçalı, doğrusal bir eğri (§18 skor formülü: kısa/fakir bir hayat
  * bile birkaç yüz, iyi bir hayat 5.000-20.000, hayat amacı tamamlanmış
@@ -62,16 +62,16 @@ export const OLUM_MIRAS_TAVANI = 10;
  *   - **10.000 - 40.000:** her 5.000 puanda +1 (kademe 4-10) — "orta-iyi"
  *     aralık en çok oynanan bant olduğu için burası özellikle sık/eşit
  *     bölündü (kullanıcı isteği).
- *   - **40.000+:** sabit 10 (tavan) — bu noktadan sonra skor artışı Miras
+ *   - **40.000+:** sabit 10 (tavan) — bu noktadan sonra skor artışı Gold
  *     kazancını artırmaz.
  * Yaklaşık dağılım: 2.500→1 · 7.500→3 · 10.000→4 · 15.000→5 · 25.000→7 ·
  * 35.000→9 · 40.000+→10.
  */
-export function olumMirasiHesapla(skor: number): number {
+export function olumGoldHesapla(skor: number): number {
   const s = Math.max(0, skor);
   if (s <= 10000) {
     return Math.min(4, Math.max(1, Math.round(s / 2500)));
   }
   const kademe = 4 + Math.round((s - 10000) / 5000);
-  return Math.min(OLUM_MIRAS_TAVANI, kademe);
+  return Math.min(OLUM_GOLD_TAVANI, kademe);
 }

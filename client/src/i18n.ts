@@ -125,7 +125,7 @@ const TR = {
   kzCikar: 'Çıkar',
   kzGiy: 'Giy',
   kzGiyili: 'Giyili',
-  kzYetersizMiras: 'Yetersiz Miras.',
+  kzYetersizGold: 'Yetersiz Gold.',
 
   olumKazanimBaslik: 'Bu Hayatın Kazanımları',
 
@@ -191,12 +191,12 @@ const TR = {
   skorKaydediliyor: 'Skorun liderlik tablosuna kaydediliyor…',
   btnLiderlikTablosu: 'Liderlik Tablosu',
 
-  // ---- Günlük seri & Miras ----
+  // ---- Günlük seri & Gold ----
   gunlukSeriEtiket: '{0} gün',
   gunlukSeriTitle: 'En uzun serin: {0} gün',
-  mirasAciklama: 'Miras — ölümlerden ve günlük girişten kazanılan kalıcı meta-para; kozmetik dolapta harcanır.',
-  gunlukOdulMesaji: '{0} günlük seri! +{1} Miras kazandın.',
-  olumMirasKazandi: 'Bu hayat +{0} Miras kazandırdı.',
+  goldAciklama: 'Gold — ölümlerden ve günlük girişten kazanılan kalıcı meta-para; kozmetik dolapta harcanır.',
+  gunlukOdulMesaji: '{0} günlük seri! +{1} Gold kazandın.',
+  olumGoldKazandi: 'Bu hayat +{0} Gold kazandırdı.',
 
   // ---- Liderlik ----
   liderlikBaslik: 'Liderlik Tablosu',
@@ -829,7 +829,7 @@ const EN: Metinler = {
   kzCikar: 'Remove',
   kzGiy: 'Equip',
   kzGiyili: 'Equipped',
-  kzYetersizMiras: 'Not enough Legacy.',
+  kzYetersizGold: 'Not enough Gold.',
 
   olumKazanimBaslik: 'This Life\'s Honours',
 
@@ -895,12 +895,12 @@ const EN: Metinler = {
   skorKaydediliyor: 'Saving your score to the leaderboard…',
   btnLiderlikTablosu: 'Leaderboard',
 
-  // ---- Daily streak & Legacy ----
+  // ---- Daily streak & Gold ----
   gunlukSeriEtiket: '{0}-day streak',
   gunlukSeriTitle: 'Longest streak: {0} days',
-  mirasAciklama: 'Legacy — a persistent meta-currency earned from deaths and daily logins; spent in the cosmetic wardrobe.',
-  gunlukOdulMesaji: '{0}-day streak! You earned +{1} Legacy.',
-  olumMirasKazandi: 'This life earned you +{0} Legacy.',
+  goldAciklama: 'Gold — a persistent meta-currency earned from deaths and daily logins; spent in the cosmetic wardrobe.',
+  gunlukOdulMesaji: '{0}-day streak! You earned +{1} Gold.',
+  olumGoldKazandi: 'This life earned you +{0} Gold.',
 
   // ---- Leaderboard ----
   liderlikBaslik: 'Leaderboard',

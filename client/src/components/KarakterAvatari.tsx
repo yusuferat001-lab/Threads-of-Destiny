@@ -6,7 +6,7 @@ interface KarakterAvatariProps {
   meslek?: string;
   kisilik: [string, string];
   rutbeSeviye?: number;
-  /** Kalıcı kozmetik dolaptan (§ Miras) giyilen eşyalar — tamamen kozmetik, stat etkisi yok. */
+  /** Kalıcı kozmetik dolaptan (§ Gold) giyilen eşyalar — tamamen kozmetik, stat etkisi yok. */
   giyilenKozmetikler?: GiyilenKozmetikler;
 }
 
