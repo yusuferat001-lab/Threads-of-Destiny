@@ -201,10 +201,10 @@ const MULK_OLAYI_IHTIMALI = 0.12;
 // bandına göre ceza süresi doğrudan bir aralıktan rastgele seçilir — hangi
 // olay/yol tutukladığından (aranmaSeviyesi.ts olayları ya da kotuIsler.ts
 // karanlık iş yakalanması) bağımsız, tek bir fonksiyonda (hapisCezaSuresiHesapla).
-const HAPIS_CEZA_TEMIZ_MIN_YIL = 3;
-const HAPIS_CEZA_TEMIZ_MAX_YIL = 6;
-const HAPIS_CEZA_YAKALANMA_MIN_YIL = 5;
-const HAPIS_CEZA_YAKALANMA_MAX_YIL = 8;
+const HAPIS_CEZA_TEMIZ_MIN_YIL = 2;
+const HAPIS_CEZA_TEMIZ_MAX_YIL = 4;
+const HAPIS_CEZA_YAKALANMA_MIN_YIL = 4;
+const HAPIS_CEZA_YAKALANMA_MAX_YIL = 7;
 const HAPIS_CEZA_BASKIN_MIN_YIL = 7;
 const HAPIS_CEZA_BASKIN_MAX_YIL = 9;
 const HAPIS_CEZA_AZILI_MIN_YIL = 9;
@@ -1229,10 +1229,17 @@ async function sonucuUygulaVeIlerlet(
   // cezan varsa (üst üste tutuklanma) dokunma. `hapis_ceza_toplam` başlangıç
   // cezasını sabit tutar — "yıl yatılan" (toplam-kalan) hesaplaması ve bandı
   // ağır tutuklamalarda erken parayla/af ile çıkışı engelleyen kural bunu kullanır.
+  // Bu turda TAZE tutuklanma oldu mu? Aşağıdaki yıl-ilerleme bloğu, aynı turda
+  // hem "hapiste"yi ekleyip hem de o turun yasArtisi'ni cezadan düşerse (kısa
+  // cezalarda — bkz. HAPIS_CEZA_TEMIZ_MIN_YIL — ceza yasArtisi'ne eşit/az olabilir)
+  // karakter tutuklandığı turda görünmeden serbest kalabilir. Bu bayrak o turun
+  // doğal erimesini atlayıp cezanın en az bir tam tur hissedilmesini garantiler.
+  let hapisteYeniGirildiBuTur = false;
   if (etki.etiket_ekle?.includes("hapiste") && state.hapis_ceza_kalan <= 0) {
     const ceza = hapisCezaSuresiHesapla(state.suc_seviyesi);
     state.hapis_ceza_kalan = ceza;
     state.hapis_ceza_toplam = ceza;
+    hapisteYeniGirildiBuTur = true;
   }
   // Riskli kaçış girişimi başarısız oldu → ceza uzadı (toplam ceza da birlikte uzar).
   if (etki.hapis_ceza_artis && state.etiketler.includes("hapiste")) {
@@ -1338,7 +1345,10 @@ async function sonucuUygulaVeIlerlet(
           zamanAnlatimi = zamanAnlatimiUret(state, yasArtisi, ekonomi);
           // Hapis cezası: her turda geçen yıl kadar erir; dolduğunda karakter
           // kendiliğinden serbest kalır (bir kaçış/af olayı beklemek zorunda değil).
-          if (state.etiketler.includes("hapiste")) {
+          // Tutuklanmanın olduğu turda erimeyi atla (hapisteYeniGirildiBuTur) —
+          // aksi halde kısa bir ceza, tutuklandığı turun yasArtisi'yle aynı anda
+          // sıfırlanıp hiç hissedilmeden bitebilir.
+          if (state.etiketler.includes("hapiste") && !hapisteYeniGirildiBuTur) {
             state.hapis_ceza_kalan -= yasArtisi;
             if (state.hapis_ceza_kalan <= 0) {
               state.hapis_ceza_kalan = 0;

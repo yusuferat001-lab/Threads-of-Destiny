@@ -58,12 +58,12 @@ describe("karanlık işler (illegal işler paneli)", () => {
 
   it("hapisCezaSuresiHesapla, tutuklanma anındaki aranma bandına göre doğru aralıkta ceza üretir (2026-09 yeniden düzenleme)", () => {
     const beklenenAralik: [number, [number, number]][] = [
-      [0, [3, 6]],
-      [10, [3, 6]],
-      [24, [3, 6]],
-      [25, [5, 8]],
-      [40, [5, 8]],
-      [49, [5, 8]],
+      [0, [2, 4]],
+      [10, [2, 4]],
+      [24, [2, 4]],
+      [25, [4, 7]],
+      [40, [4, 7]],
+      [49, [4, 7]],
       [50, [7, 9]],
       [60, [7, 9]],
       [74, [7, 9]],
@@ -91,7 +91,7 @@ describe("karanlık işler (illegal işler paneli)", () => {
       if (s.etiketler.includes("hapiste")) tutuklandi = true;
     }
     expect(tutuklandi).toBe(true);
-    expect(s.hapis_ceza_kalan).toBeGreaterThanOrEqual(3);
+    expect(s.hapis_ceza_kalan).toBeGreaterThanOrEqual(2);
     expect(s.hapis_ceza_toplam).toBe(s.hapis_ceza_kalan);
   });
 });
