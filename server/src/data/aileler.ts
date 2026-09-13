@@ -31,7 +31,7 @@ export const AILELER: AileTanimi[] = [
   {
     id: "ciftci",
     ad: "Çiftçi",
-    agirlik: 1.5,
+    agirlik: 1,
     anlati:
       "Ailen kuşaklardır {bolge} kırsalında toprağa bakar. Şafakla kalkmayı, sırtın ağrırken bile devam etmeyi ve hasat kötü geçtiğinde susmayı öğrendin. Bedenin sağlam, ellerin nasırlı — ama şehirde kimse köylünün adını sormaz.",
     etiketler: ["aile:ciftci", "toprak_bilgisi"],
@@ -44,7 +44,7 @@ export const AILELER: AileTanimi[] = [
   {
     id: "asker",
     ad: "Asker",
-    agirlik: 1.2,
+    agirlik: 1,
     anlati:
       "Baban da deden de {bolge} ordusunda hizmet etti; evinizin duvarında paslı bir kılıç asılıydı. Yürümeyi öğrendiğin gün eline tahta bir kalkan verdiler. Disiplinli ve dayanıklısın, ama o evde merhamet hiçbir zaman bir erdem sayılmadı.",
     devamMeslegi: "Asker",
@@ -58,7 +58,7 @@ export const AILELER: AileTanimi[] = [
   {
     id: "kole",
     ad: "Köle",
-    agirlik: 0.8,
+    agirlik: 1,
     anlati:
       "Ailen {bolge} topraklarında bir efendinin malıydı. Özgürlüğünü ancak efendinin ölümüyle kazandın; elinde ne para ne isim vardı. Acıyı ve adaletsizliği ilk elden tanıdığın için insanları çok iyi okuyorsun, ama toplum sana hâlâ geçmişinle bakıyor.",
     etiketler: ["aile:kole", "azat_edilmis"],
@@ -71,7 +71,7 @@ export const AILELER: AileTanimi[] = [
   {
     id: "soylu",
     ad: "Soylu",
-    agirlik: 0.9,
+    agirlik: 1,
     anlati:
       "Aile armanız {bolge} boyunca tanınır; adını duyan kapıyı açar, hizmetkârlar önünde eğilir. Ne var ki bu evde herkes birbirini kollar, kimse kimseye acımaz. Ayrıcalıkla büyüdün ve ayrıcalığın bedelini vicdanınla ödemeyi öğrendin.",
     etiketler: ["aile:soylu", "soylu_kani"],
@@ -97,7 +97,7 @@ export const AILELER: AileTanimi[] = [
   {
     id: "fabrika_iscisi",
     ad: "Fabrika İşçisi",
-    agirlik: 1.4,
+    agirlik: 1,
     cag: "Sanayi Devrimi",
     anlati:
       "Baban {bolge} tekstil fabrikasında günde on dört saat çalıştı, ciğerleri pamuk tozuyla doldu. Sen de sekiz yaşından beri makinelerin arasındaydın. Dayanışmanın ne olduğunu bilirsin; parmaklarının ikisini de o makinelerde bıraktın.",
@@ -112,7 +112,7 @@ export const AILELER: AileTanimi[] = [
   {
     id: "tuccar",
     ad: "Tüccar",
-    agirlik: 1.2,
+    agirlik: 1,
     anlati:
       "Baban {bolge} pazarlarının tanınmış bir simsarıydı; evinizde baharat ve mürekkep kokusu eksik olmazdı. Hesap yapmayı, pazarlık etmeyi ve gerektiğinde gerçeği biraz eğip bükmeyi sofrada öğrendin.",
     devamMeslegi: "Tüccar",
@@ -126,7 +126,7 @@ export const AILELER: AileTanimi[] = [
   {
     id: "din_adami",
     ad: "Din Adamı",
-    agirlik: 1.1,
+    agirlik: 1,
     anlati:
       "Baban {bolge} cemaatinin saygın bir üyesiydi; evinizde her akşam dua edilir, her sabah şükredilirdi. Okuma yazmayı kutsal metinlerden öğrendin. Ailenin adı sana güven kazandırıyor, ama herkes senden bir aziz gibi yaşamanı bekliyor.",
     devamMeslegi: "Din Adamı",
@@ -140,7 +140,7 @@ export const AILELER: AileTanimi[] = [
   {
     id: "zanaatkar",
     ad: "Zanaatkâr",
-    agirlik: 1.3,
+    agirlik: 1,
     anlati:
       "Baban {bolge} çarşısında demir döverdi, sen körüğü çekerek büyüdün. Ne zengin ne fakirdiniz; ödenmiş bir kira ve dolu bir tencere yeterdi. Elin iş tutar, gözün ölçü bilir — ama çekiç sallayan adama kimse büyük fırsat sunmaz.",
     etiketler: ["aile:zanaatkar", "zanaat_bilgisi"],
@@ -153,7 +153,7 @@ export const AILELER: AileTanimi[] = [
   {
     id: "hekim",
     ad: "Hekim",
-    agirlik: 0.9,
+    agirlik: 1,
     anlati:
       "Annen {bolge} çevresinde şifacı olarak bilinirdi; otları, yaraları, ateşi tanırdı. Kan görmeye küçük yaşta alıştın. İnsanların en kırılgan hallerini gördüğün için ölümden az korkarsın — ama hekimlik yapmayı seçmedin ve bu ailende hâlâ bir kırgınlık.",
     etiketler: ["aile:hekim", "sifa_bilgisi"],
@@ -192,7 +192,7 @@ export const AILELER: AileTanimi[] = [
   {
     id: "kacakci",
     ad: "Kaçakçı",
-    agirlik: 0.9,
+    agirlik: 1,
     anlati:
       "Ailen {bolge} sınırlarında gümrüğe uğramayan mallarla geçindi. Gece yürümeyi, soru sormamayı ve kimseye tam adını söylememeyi öğrendin. Cebinde her zaman para vardı; ama jandarma da her zaman kapıdaydı.",
     etiketler: ["aile:kacakci", "karanlik_baglantilar"],
@@ -205,7 +205,7 @@ export const AILELER: AileTanimi[] = [
   {
     id: "tefeci",
     ad: "Tefeci",
-    agirlik: 0.8,
+    agirlik: 1,
     anlati:
       "Baban {bolge} esnafına faizle borç verirdi; kapınızı çalanlar ya yalvarırdı ya tehdit ederdi. Paranın insanları nasıl değiştirdiğini çocukken öğrendin. Zengin büyüdün, sevilmeden büyüdün.",
     etiketler: ["aile:tefeci", "borc_agi"],
@@ -231,7 +231,7 @@ export const AILELER: AileTanimi[] = [
   {
     id: "cellat",
     ad: "Cellat",
-    agirlik: 0.6,
+    agirlik: 1,
     anlati:
       "Babanın mesleğini kimse yüksek sesle söylemezdi. {bolge} meydanında infazları o yapardı; eve döndüğünde ellerini uzun uzun yıkardı. Devlet iyi para verirdi, komşular ise selam vermezdi. Ölümle senli benli büyüdün.",
     etiketler: ["aile:cellat", "korkulan_soyad"],
@@ -257,7 +257,7 @@ export const AILELER: AileTanimi[] = [
   {
     id: "surgun",
     ad: "Sürgün",
-    agirlik: 0.9,
+    agirlik: 1,
     anlati:
       "Aileniz bir isyana karıştığı için memleketinden sürüldü; {bolge} topraklarına yabancı olarak geldiniz. Soyadınız burada kimseye bir şey ifade etmiyor, hatta bazı kapılar duyunca kapanıyor. Sıfırdan başlamayı herkesten iyi bilirsin.",
     etiketler: ["aile:surgun", "yabanci_sayilir"],
