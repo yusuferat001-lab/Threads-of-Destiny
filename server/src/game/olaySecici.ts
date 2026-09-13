@@ -270,15 +270,17 @@ export function olaySec(
     // kadar önceliklidir. Havuz tükenip aynı olaylara dönülmesi gerektiğinde
     // bile en yakın zamanda görülen (en yüksek index'li) tekrar edilmez.
     const sonGorulmeSirasi = (id: string) => state.gecmis_olaylar.lastIndexOf(id);
-    // Ek olarak: uygun havuz "son K görülende hiç yok" alt kümesi boş değilse
-    // önce ondan seçilir — küçük havuzlu (tag-gated) zincirlerde bile aynı
-    // olayın art arda/sık sık tekrar çıkması önlenir. Havuz bu filtreyle
-    // boşalırsa (gerçekten tek/iki seçenek kaldıysa) eski tied-minimum
-    // davranışına geri dönülür (güvenlik ağı — hiçbir zaman olaysız kalınmaz).
-    const SON_K_TEKRAR_ONLEME = 6;
-    const sonGorulenler = new Set(state.gecmis_olaylar.slice(-SON_K_TEKRAR_ONLEME));
-    const yakinTekrarEtmeyenler = uygunlar.filter((o) => !sonGorulenler.has(o.id));
-    const adaylar = yakinTekrarEtmeyenler.length > 0 ? yakinTekrarEtmeyenler : uygunlar;
+    // Ek olarak: bir olay ömür boyunca en fazla OLAY_TEKRAR_LIMITI kez çıkabilir
+    // (eski "son 6 turda görülmemiş" penceresi yerine — küçük/dar-filtreli
+    // havuzlarda pencere kayınca aynı olay ömür içinde tekrar tekrar dönüyordu;
+    // kalıcı bir sınır bunu kesin olarak engeller). Sınır uygulanınca havuz
+    // boşalırsa (gerçekten çok dar bir havuzda tüm olaylar limite ulaştıysa)
+    // sınır yok sayılır — güvenlik ağı, hiçbir zaman olaysız kalınmaz.
+    const OLAY_TEKRAR_LIMITI = 2;
+    const gorulmeSayisi = new Map<string, number>();
+    for (const id of state.gecmis_olaylar) gorulmeSayisi.set(id, (gorulmeSayisi.get(id) ?? 0) + 1);
+    const tekrarSiniriniAsmayanlar = uygunlar.filter((o) => (gorulmeSayisi.get(o.id) ?? 0) < OLAY_TEKRAR_LIMITI);
+    const adaylar = tekrarSiniriniAsmayanlar.length > 0 ? tekrarSiniriniAsmayanlar : uygunlar;
     const enOncelikliSira = Math.min(...adaylar.map((o) => sonGorulmeSirasi(o.id)));
     const havuz = adaylar.filter((o) => sonGorulmeSirasi(o.id) === enOncelikliSira);
     olay = agirlikliSec(havuz, state, sonTon);
@@ -367,8 +369,13 @@ export function sosyallesmeIcinOlaySec(state: CharacterState, yerId: string): Ol
   if (adaylar.length === 0) {
     throw new Error("Bu mekân için şu an uygun bir olay yok.");
   }
+  const OLAY_TEKRAR_LIMITI = 2;
+  const gorulmeSayisi = new Map<string, number>();
+  for (const id of state.gecmis_olaylar) gorulmeSayisi.set(id, (gorulmeSayisi.get(id) ?? 0) + 1);
+  const tekrarSiniriniAsmayanlar = adaylar.filter((o) => (gorulmeSayisi.get(o.id) ?? 0) < OLAY_TEKRAR_LIMITI);
+  const sinirliAdaylar = tekrarSiniriniAsmayanlar.length > 0 ? tekrarSiniriniAsmayanlar : adaylar;
   const sonGorulmeSirasi = (id: string) => state.gecmis_olaylar.lastIndexOf(id);
-  const enOncelikliSira = Math.min(...adaylar.map((o) => sonGorulmeSirasi(o.id)));
-  const havuz = adaylar.filter((o) => sonGorulmeSirasi(o.id) === enOncelikliSira);
+  const enOncelikliSira = Math.min(...sinirliAdaylar.map((o) => sonGorulmeSirasi(o.id)));
+  const havuz = sinirliAdaylar.filter((o) => sonGorulmeSirasi(o.id) === enOncelikliSira);
   return agirlikliSec(havuz, state, null);
 }
