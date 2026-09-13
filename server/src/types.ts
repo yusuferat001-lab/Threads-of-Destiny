@@ -356,6 +356,16 @@ export interface CharacterState {
 
   tur_sayisi: number;
   gecmis_olaylar: string[];
+  /**
+   * Bu karakterin İLK ömrü değilse, aynı cihazda oynanan önceki ömürlerde
+   * görülmüş olay id'leri (istemci localStorage'dan POST /new'e gönderilir).
+   * `gecmis_olaylar`'ın aksine milestone-gating mantığı (evlilik teklifi,
+   * şehir yönetimi başlangıcı vb. "hiç görülmemiş" kontrolleri) bu alanı hiç
+   * okumaz — sadece olaySec/sosyallesmeIcinOlaySec'teki ömür-boyu tekrar
+   * sınırını (OLAY_TEKRAR_LIMITI=1) yeni bir ömrün başında da geçerli kılmak
+   * için kullanılır. Eski kayıtlarda `eskiKayitGocu` [] backfill eder.
+   */
+  onceki_omurler_gorulen_olaylar: string[];
   gecmis: GecmisNoktasi[];
   hayat_hikayesi: HayatOlayi[];
   aktif: boolean;
@@ -605,6 +615,8 @@ export interface Secenek {
 }
 
 export interface SenaryoResponse {
+  /** Olayın kaynak id'si — istemci bunu ömürler-arası tekrar önleme için biriktirip bir sonraki `POST /new`'e geri gönderir (bkz. types.ts CharacterState.onceki_omurler_gorulen_olaylar). */
+  id: string;
   olay_basligi: string;
   olay_metni: string;
   kategori: Kategori;

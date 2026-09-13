@@ -563,7 +563,8 @@ export function createCharacter(
   bolge: string,
   yerlesimId: string,
   oyuncuIsmi?: string,
-  dil?: string
+  dil?: string,
+  gorulmusOlaylar?: string[]
 ): CharacterState {
   if (!BOLGELER_BY_CAG[cag]?.includes(bolge)) {
     throw new Error("Geçersiz çağ/bölge kombinasyonu.");
@@ -702,6 +703,7 @@ export function createCharacter(
     yonetim_talep_sonraki_yil: yil + 6,
     tur_sayisi: 0,
     gecmis_olaylar: [],
+    onceki_omurler_gorulen_olaylar: [...new Set(gorulmusOlaylar ?? [])].slice(0, 1200),
     gecmis: [],
     hayat_hikayesi: [],
     aktif: true,
@@ -839,6 +841,7 @@ export function eskiKayitGocu(state: CharacterState): void {
   // kalıyor; gayrimenkul değeri/geliri ve enflasyon hesabı bunlara doğrudan .length /
   // aritmetik uyguladığı için (Finans ekranı) minimum güvenli varsayılana çekiyoruz.
   if (!Array.isArray(state.mulkler)) state.mulkler = [];
+  if (!Array.isArray(state.onceki_omurler_gorulen_olaylar)) state.onceki_omurler_gorulen_olaylar = [];
   if (typeof state.baslangic_yili !== "number") state.baslangic_yili = state.yil;
   // Periyodik mülk bakımı sonradan eklendi; eski kayıtlarda sayaç yok — sahip olunan
   // her mülke rastgele bir 7-10 yıl kur (hepsi aynı yıl tetiklenmesin diye ayrı ayrı).

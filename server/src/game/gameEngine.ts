@@ -410,9 +410,10 @@ export async function yeniOyun(
   yerlesimId: string,
   oyuncuIsmi?: string,
   dil?: string,
-  istemciId?: string
+  istemciId?: string,
+  gorulmusOlaylar?: string[]
 ): Promise<CharacterState> {
-  const state = createCharacter(cag, bolge, yerlesimId, oyuncuIsmi, dil);
+  const state = createCharacter(cag, bolge, yerlesimId, oyuncuIsmi, dil, gorulmusOlaylar);
   oturumlar.set(state.id, {
     state,
     mevcutSenaryo: null,

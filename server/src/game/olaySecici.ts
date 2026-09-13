@@ -276,8 +276,12 @@ export function olaySec(
     // kalıcı bir sınır bunu kesin olarak engeller). Sınır uygulanınca havuz
     // boşalırsa (gerçekten çok dar bir havuzda tüm olaylar limite ulaştıysa)
     // sınır yok sayılır — güvenlik ağı, hiçbir zaman olaysız kalınmaz.
-    const OLAY_TEKRAR_LIMITI = 2;
+    const OLAY_TEKRAR_LIMITI = 1;
     const gorulmeSayisi = new Map<string, number>();
+    // Önce bu cihazda önceki ömürlerde görülenler "1 kez görülmüş" sayılır, sonra
+    // bu ömrün kendi gecmis_olaylar'ı üstüne biner — böylece yeni bir karakterde
+    // bile daha önce görülmüş bir olay, havuzda başka seçenek varken tekrar çıkmaz.
+    for (const id of state.onceki_omurler_gorulen_olaylar ?? []) gorulmeSayisi.set(id, 1);
     for (const id of state.gecmis_olaylar) gorulmeSayisi.set(id, (gorulmeSayisi.get(id) ?? 0) + 1);
     const tekrarSiniriniAsmayanlar = uygunlar.filter((o) => (gorulmeSayisi.get(o.id) ?? 0) < OLAY_TEKRAR_LIMITI);
     const adaylar = tekrarSiniriniAsmayanlar.length > 0 ? tekrarSiniriniAsmayanlar : uygunlar;
@@ -344,6 +348,7 @@ export function olaySec(
   return {
     olay,
     senaryo: {
+      id: olay.id,
       olay_basligi: olay.baslik,
       olay_metni: doldur(olay.metin, state),
       kategori: olay.kategori,
@@ -369,8 +374,9 @@ export function sosyallesmeIcinOlaySec(state: CharacterState, yerId: string): Ol
   if (adaylar.length === 0) {
     throw new Error("Bu mekân için şu an uygun bir olay yok.");
   }
-  const OLAY_TEKRAR_LIMITI = 2;
+  const OLAY_TEKRAR_LIMITI = 1;
   const gorulmeSayisi = new Map<string, number>();
+  for (const id of state.onceki_omurler_gorulen_olaylar ?? []) gorulmeSayisi.set(id, 1);
   for (const id of state.gecmis_olaylar) gorulmeSayisi.set(id, (gorulmeSayisi.get(id) ?? 0) + 1);
   const tekrarSiniriniAsmayanlar = adaylar.filter((o) => (gorulmeSayisi.get(o.id) ?? 0) < OLAY_TEKRAR_LIMITI);
   const sinirliAdaylar = tekrarSiniriniAsmayanlar.length > 0 ? tekrarSiniriniAsmayanlar : adaylar;

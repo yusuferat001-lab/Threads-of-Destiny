@@ -115,6 +115,7 @@ import { basarimlariDegerlendir, type BasarimTanimi } from './basarimSistemi';
 import { BasarimGaleri } from './components/BasarimGaleri';
 import { NasilOynanir } from './components/NasilOynanir';
 import { istemciId, ziyaretBildir } from './istemci';
+import { gorulenOlayEkle, gorulenOlaylariGetir } from './gorulenOlaylar';
 import { sonucIkonuGetir, unUnvani, MESLEK_KATEGORI, yatkinlikEtiketi, etkiTahminiGetir, type EtkiTahmini } from './bolgeTema';
 import { formatPara } from './format';
 import { bic } from './i18n';
@@ -568,6 +569,7 @@ function App() {
         } else {
           const { senaryo } = await senaryoGetir(state.id);
           if (iptal) return;
+          gorulenOlayEkle(senaryo.id);
           setSenaryo(senaryo);
           setTepkiModu(false);
           setEkran('oyun');
@@ -636,7 +638,8 @@ function App() {
         secilenYerlesim,
         isim || undefined,
         dil,
-        istemciId()
+        istemciId(),
+        gorulenOlaylariGetir()
       );
       setKarakter(state);
       aktifOturumIdKaydet(state.id);
@@ -656,6 +659,7 @@ function App() {
       const { state } = await meslekAta(karakter.id, meslek);
       setKarakter(state);
       const { senaryo } = await senaryoGetir(state.id);
+      gorulenOlayEkle(senaryo.id);
       setSenaryo(senaryo);
       setTepkiModu(false);
       setEkran('oyun');
@@ -668,6 +672,8 @@ function App() {
 
   function tepkiSonucundanSenaryoUret(t: TepkiSonucu): SenaryoResponse {
     return {
+      // Ara-tepki ekranı aynı olayın devamı — takip için ayrı bir id üretmiyoruz.
+      id: senaryo?.id ?? '',
       olay_basligi: t.olay_basligi,
       olay_metni: t.olay_metni,
       kategori: senaryo?.kategori ?? 'sosyal',
@@ -721,6 +727,7 @@ function App() {
     setYukleniyor(true);
     try {
       const { senaryo } = await senaryoGetir(karakter.id);
+      gorulenOlayEkle(senaryo.id);
       setSenaryo(senaryo);
       setTepkiModu(false);
       setEkran('oyun');
@@ -1164,6 +1171,7 @@ function App() {
       const sonuc = await sosyallesmeYerineGit(karakter.id, yerId);
       setKarakter(sonuc.state);
       const { senaryo: mekanOlayi } = await senaryoGetir(sonuc.state.id);
+      gorulenOlayEkle(mekanOlayi.id);
       // Ana oyun ekranına GEÇMEDEN, olayı Sosyalleş ekranının içinde göster.
       setSosyalOlay(mekanOlayi);
       setSosyalOlaySonuc(null);

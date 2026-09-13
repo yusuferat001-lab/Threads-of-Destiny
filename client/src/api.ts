@@ -85,11 +85,12 @@ export function yeniOyunBaslat(
   yerlesim: string,
   isim?: string,
   dil?: string,
-  istemciId?: string
+  istemciId?: string,
+  gorulmusOlaylar?: string[]
 ) {
   return istek<{ state: CharacterState }>('/api/game/new', {
     method: 'POST',
-    body: JSON.stringify({ cag, bolge, yerlesim, isim, dil, istemciId }),
+    body: JSON.stringify({ cag, bolge, yerlesim, isim, dil, istemciId, gorulmusOlaylar }),
   });
 }
 

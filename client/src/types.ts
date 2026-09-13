@@ -266,6 +266,7 @@ export interface CharacterState {
 
   tur_sayisi: number;
   gecmis_olaylar: string[];
+  onceki_omurler_gorulen_olaylar: string[];
   gecmis: GecmisNoktasi[];
   hayat_hikayesi: HayatOlayi[];
   aktif: boolean;
@@ -504,6 +505,7 @@ export interface Secenek {
 }
 
 export interface SenaryoResponse {
+  id: string;
   olay_basligi: string;
   olay_metni: string;
   kategori: string;
