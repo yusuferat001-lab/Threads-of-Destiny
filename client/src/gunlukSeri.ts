@@ -50,12 +50,16 @@ function yaz(d: GunlukSeriDurumu) {
   }
 }
 
-/** Seri uzunluğuna göre kademeli Miras ödülü. */
+/**
+ * Seri uzunluğuna göre kademeli Miras ödülü — tek bir oyundan kazanılabilecek
+ * tavanla (`OLUM_MIRAS_TAVANI`, şu an 10) aynı ölçekte tutulur ki günlük giriş
+ * tek başına ekonomiyi domine etmesin.
+ */
 function odulMiktariHesapla(seri: number): number {
-  if (seri >= 14) return 15;
-  if (seri >= 7) return 10;
-  if (seri >= 3) return 5;
-  return 3;
+  if (seri >= 14) return 10;
+  if (seri >= 7) return 7;
+  if (seri >= 3) return 4;
+  return 2;
 }
 
 export interface GunlukSeriSonuc {

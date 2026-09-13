@@ -2,11 +2,11 @@
  * Miras (Legacy) — cihaz-yerel, hayattan bağımsız kalıcı meta-para.
  *
  * `basarimlar.ts`/`gecmisHayatlar.ts` ile aynı desen: yalnız `localStorage`'da
- * tutulur, sunucuya hiç gitmez. Ölümde kazanılan skorun küçük bir oranıyla
- * (~%1) ve günlük seri ödülleriyle (`gunlukSeri.ts`) birikir; kalıcı kozmetik
- * dolaptaki (`kozmetikDolabi.ts`) eşyaları satın almak için harcanır. Oyun-içi
- * `para` ile KARIŞMAZ — hiçbir stat/güç dengesine etkisi yoktur, salt
- * görünüm/koleksiyon ekonomisi.
+ * tutulur, sunucuya hiç gitmez. Ölümde kazanılan skordan (oyun başı EN FAZLA
+ * `OLUM_MIRAS_TAVANI`, bkz. `olumMirasiHesapla`) ve günlük seri ödülleriyle
+ * (`gunlukSeri.ts`) birikir; kalıcı kozmetik dolaptaki (`kozmetikDolabi.ts`)
+ * eşyaları satın almak için harcanır. Oyun-içi `para` ile KARIŞMAZ — hiçbir
+ * stat/güç dengesine etkisi yoktur, salt görünüm/koleksiyon ekonomisi.
  */
 const BAKIYE_ANAHTAR = 'kader_carki_miras_bakiye';
 
@@ -48,15 +48,29 @@ export function mirasHarca(miktar: number): boolean {
   return true;
 }
 
+/** Bir ölümden kazanılabilecek en yüksek Miras — ekonominin "uçmasını" engelleyen sert tavan. */
+export const OLUM_MIRAS_TAVANI = 10;
+
 /**
- * Bir ölümden kazanılacak miras miktarı — nihai skorun (`hayat amacı ×5`
- * çarpanı zaten skora yansımış) yaklaşık %1'i. En az 1.
+ * Bir ölümden kazanılacak Miras miktarı — oyun başı EN FAZLA {@link OLUM_MIRAS_TAVANI}.
  *
- * Oyundaki skorlar geniş bir aralığa yayılır (kısa/fakir bir hayatta birkaç
- * yüz, olağanüstü uzun+zengin+amaç-tamamlanmış bir hayatta on binleri
- * bulabilir) — %1 oranı, kozmetik dolaptaki eşya fiyatlarıyla (10-120 miras)
- * makul bir eşleşme versin diye kasıtlı düşük tutuldu.
+ * Doğrusal bir oran (`skor/100` gibi) skorun büyüme aralığı çok geniş olduğu
+ * için hızla tavana çarpıp orta-iyi hayatları birbirinden ayırt edilemez hale
+ * getiriyordu (§18 skor formülü: kısa/fakir bir hayat bile birkaç yüz, iyi bir
+ * hayat 5.000-20.000, hayat amacı tamamlanmış olağanüstü bir hayat (×5 çarpanı
+ * dahil) 50.000+ olabiliyor). Bunun yerine karekök eğrisi kullanılır: düşük
+ * skorlarda hızlı, yüksekte yavaş artar — kademeli bir his verir, ama
+ * `OLUM_MIRAS_TAVANI`'nı asla aşmaz. Yaklaşık dağılım:
+ *   skor  ~500   → 2
+ *   skor ~3.000  → 4
+ *   skor ~8.000  → 6
+ *   skor ~15.000 → 9
+ *   skor ≥20.000 → 10 (tavan, bu noktadan sonra sabit)
+ * Tavanın nerede doyacağını ayarlamak için yalnız `BOLEN`'i değiştirmek yeter
+ * (büyütmek tavana ulaşmayı zorlaştırır/geciktirir, küçültmek kolaylaştırır).
  */
 export function olumMirasiHesapla(skor: number): number {
-  return Math.max(1, Math.round(skor / 100));
+  const BOLEN = 14; // tavan (10) ~20.000 skorda doyar
+  const ham = Math.round(Math.sqrt(Math.max(0, skor)) / BOLEN);
+  return Math.min(OLUM_MIRAS_TAVANI, Math.max(1, ham));
 }
