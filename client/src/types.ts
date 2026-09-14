@@ -179,6 +179,8 @@ export interface CharacterState {
   hapis_ceza_kalan: number;
   /** Tutuklanma anında belirlenen TOPLAM hapis cezası (yıl); hapis_ceza_kalan'ın aksine azalmaz. Hapiste değilken 0. */
   hapis_ceza_toplam: number;
+  /** Hapse en son girişten beri çözülen hapisOlayi:true olay sayısı. */
+  hapis_tur_sayaci: number;
   mulkler: MulkTuru[];
   /** Her mülk için bir sonraki periyodik bakım/vergi masrafına kalan yıl (7-10 yılda bir). */
   mulk_bakim_kalan: Partial<Record<MulkTuru, number>>;
@@ -478,6 +480,7 @@ export interface SonucEtkisi {
   dost_puani?: number;
   rakip_puani?: number;
   zorunlu_sonraki?: string;
+  zorunlu_sonraki_havuzu?: string[];
   mulk_kaybet?: MulkTuru;
   evcil_hayvan_edin?: { tur?: string };
   evcil_hayvan_kaybet?: boolean;
