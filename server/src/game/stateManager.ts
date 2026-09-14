@@ -1167,9 +1167,9 @@ export function yaslanmaUygula(state: CharacterState, yasArtisi: number): number
   let yas = state.yas - yasArtisi;
   for (let i = 0; i < yasArtisi; i++) {
     yas += 1;
-    if (yas >= 75) toplamKayip += 10;
-    else if (yas >= 65) toplamKayip += 7;
-    else if (yas >= 55) toplamKayip += 4;
+    if (yas >= 75) toplamKayip += 7;
+    else if (yas >= 65) toplamKayip += 5;
+    else if (yas >= 55) toplamKayip += 3;
   }
   state.saglik -= toplamKayip;
   return toplamKayip;
@@ -2116,12 +2116,14 @@ export function krizEtkisiUygula(state: CharacterState, yasArtisi: number): stri
   return null;
 }
 
-// Ekonomi sıkılaştırma turunda pasif azalma KALDIRILDI: suç/aranma seviyesi artık
-// zamanla kendiliğinden düşmez, sabit kalır. Tek düşüş yolu aranmaSeviyesi.ts'teki
-// kefaret/rüşvet seçenekleri (suc_artis negatif) ve büyük baskının suc_seviyesi_ayarla'sı.
-const SUC_SEVIYESI_PASIF_AZALMA_YILLIK = 0;
+// 2026-09 (kullanıcı isteği): "aranma seviyesi zamanla çok yavaş düşsün" — tamamen
+// suç işlemeyi bırakan bir karakter artık sonsuza dek sabit kademede kalmaz, ama
+// düşüş kasıtlı olarak çok yavaştır (0.15/yıl → 100'den 0'a inmesi ~667 yıl sürer,
+// gerçekçi bir ömürde en fazla bir-iki bandı aşağı çeker). Ana düşüş yolu hâlâ
+// aranmaSeviyesi.ts'teki kefaret/rüşvet seçenekleri (suc_artis negatif) ve büyük
+// baskının suc_seviyesi_ayarla'sıdır — bu sadece küçük bir pasif "unutulma" payı.
+const SUC_SEVIYESI_PASIF_AZALMA_YILLIK = 0.15;
 
-/** Suç/aranma seviyesi artık pasif olarak düşmüyor (bkz. yukarıdaki not) — fonksiyon geriye dönük uyum için duruyor. */
 export function sucSeviyesiUygula(state: CharacterState, yasArtisi: number): void {
   if (yasArtisi <= 0) return;
   state.suc_seviyesi = Math.max(0, state.suc_seviyesi - SUC_SEVIYESI_PASIF_AZALMA_YILLIK * yasArtisi);

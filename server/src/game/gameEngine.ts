@@ -522,6 +522,16 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
   const oturum = await oturumGetir(id);
   if (!oturum.state.aktif) throw new Error("Oyun zaten bitmiş.");
 
+  // Zaten cevaplanmamış bir olay varsa (sayfa yenilendi, sekme yeniden açıldı,
+  // istemci /scenario'yu tekrar çağırdı) YENİDEN ZAR ATILMAZ — aynı olay aynen
+  // döndürülür. Bunun garantisi olmadan her çağrı olaySec'i tekrar çalıştırıp
+  // oyuncunun az önce gördüğü olayı sessizce başka bir rastgele olayla
+  // değiştiriyordu ("ekran yenilenince olay değişiyor" hatası).
+  if (oturum.mevcutOlay && oturum.mevcutSenaryo) {
+    oturum.bekleyenTepki = null;
+    return oturum.mevcutSenaryo;
+  }
+
   let zorlananId = oturum.zorlananOlayId ?? undefined;
   let etiketDegisti = false;
   // §24 düzeltmesi: karakter bir havuz kilidi altındaysa (hapiste / yolculukta /
