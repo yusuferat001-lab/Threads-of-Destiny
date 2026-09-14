@@ -157,6 +157,51 @@ const YOL_SISTEMLERI: Record<string, { yolOnEki: string; girisId: string }> = {
   "Sanayi Devrimi|Din Adamı": { yolOnEki: "yol:din:", girisId: "sd_din_yol_ilk_vaaz" },
 };
 
+/**
+ * Yol dalı takip garantisinin (§11 kural 2b) kümülatif hedefleri: her yaş
+ * eşiğine ulaşınca, o ana kadar o dala özel havuzdan görülmüş olay sayısı
+ * en az `hedef` olmalı (yoksa biri zorla tetiklenir). Eski/büyük havuzlar
+ * (Orta Çağ Asker ~21 olay/dal, Din Adamı ~21 olay/dal) daha yüksek bir
+ * hedefe kademeli tırmanır; yeni/küçük havuzlar (dal başına 11 olay) daha
+ * düşük bir hedefe — havuz tükenip normal çeşitliliği boğmasın diye. Yaş
+ * aralıkları da meslek/çağa göre kasıtlı farklı (asker gençken, tüccar/din
+ * adamı kariyerin ortasında/sonunda daha çok dönüm noktası yaşar).
+ */
+const YOL_TAKIP_KONTROL_NOKTALARI: Record<string, { yas: number; hedef: number }[]> = {
+  "Orta Çağ|Asker": [
+    { yas: 20, hedef: 1 },
+    { yas: 28, hedef: 2 },
+    { yas: 38, hedef: 3 },
+    { yas: 50, hedef: 4 },
+    { yas: 65, hedef: 5 },
+  ],
+  "Orta Çağ|Din Adamı": [
+    { yas: 22, hedef: 1 },
+    { yas: 35, hedef: 2 },
+    { yas: 50, hedef: 3 },
+    { yas: 65, hedef: 4 },
+  ],
+  "Orta Çağ|Tüccar": [
+    { yas: 21, hedef: 1 },
+    { yas: 38, hedef: 2 },
+    { yas: 58, hedef: 3 },
+  ],
+  "Sanayi Devrimi|Asker": [
+    { yas: 20, hedef: 1 },
+    { yas: 35, hedef: 2 },
+    { yas: 52, hedef: 3 },
+  ],
+  "Sanayi Devrimi|Tüccar": [
+    { yas: 24, hedef: 1 },
+    { yas: 42, hedef: 2 },
+    { yas: 60, hedef: 3 },
+  ],
+  "Sanayi Devrimi|Din Adamı": [
+    { yas: 25, hedef: 1 },
+    { yas: 48, hedef: 2 },
+  ],
+};
+
 const SARAY_OLAY_IDLERI = [
   "saray_ic_entrika",
   "saray_balosu",
@@ -743,36 +788,47 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
       zorlananId = uygunlar[Math.floor(Math.random() * uygunlar.length)];
     }
   }
-  // Yol dalı takip garantisi: bir "yol:<meslek>:<dal>" etiketine kilitlenmiş
-  // karakter, kilitlendikten sonraki ilk yıllarda o dala özel havuzdan HİÇ
-  // olay görmediyse bir tanesi zorla tetiklenir. Orta Çağ Asker/Din Adamı'nın
-  // giriş olayı `zorunlu_sonraki` ile ikinci bir dal-özel olayı garanti
-  // ediyordu; 2026-09'da eklenen tek-adımlı yol sistemlerinde (Orta Çağ
-  // Tüccar, Sanayi Devrimi Asker/Tüccar/Din Adamı) bu garanti yoktu — dal
-  // havuzu (44 olay) binlerce diğer olayla eşit ağırlıkta yarışıp neredeyse
-  // hiç çıkmıyordu (bkz. simülasyon teşhisi: ~%15 vs eski sistemlerde %100).
-  // Bu kural her iki tip sistemde de aynı şekilde çalışıp farkı kapatır.
+  // Yol dalı takip garantisi (2026-09, kümülatif kontrol noktaları): bir
+  // "yol:<meslek>:<dal>" etiketine kilitlenmiş karakter, hayatı boyunca o
+  // dala özel havuzdan belirli yaşlara kadar en az N olay görmüş olmalı —
+  // N ve yaş eşikleri sisteme göre değişir (`YOL_TAKIP_KONTROL_NOKTALARI`):
+  // büyük/eski havuzlar (Orta Çağ Asker/Din Adamı, dal başına ~20 olay) daha
+  // yüksek bir hedefe kademeli kilitlenir, küçük/yeni havuzlar (dal başına
+  // 11 olay) daha düşük bir hedefe — havuz tükenmesin, ama karakter kendi
+  // seçtiği yolun hikayesini gerçekten hissetsin. Orta Çağ Asker/Din
+  // Adamı'nın giriş olayı ayrıca `zorunlu_sonraki` ile bağımsız bir dal-özel
+  // olayı daha garantiliyor (bu kuralın dışında, ekstra).
   // Yolculuk teklifinin (yukarıdaki kural) HEMEN ardına taşındı — ikisi de
-  // "ömürde bir kez, geniş yaş penceresi" garantisi ama yolculuk teklifi
+  // "ömürde bir kez / geniş yaş penceresi" garantisi ama yolculuk teklifi
   // önceliklidir; aksi halde bir yol:<dal> etiketi taşıyan karakterde
   // yolculuk teklifi hiç sıraya giremiyordu (bkz. yolculuk.test.ts).
-  if (!zorlananId && !milestoneKilitli && oturum.state.yas >= 19 && oturum.state.yas < 60) {
+  if (!zorlananId && !milestoneKilitli) {
+    const sistemAnahtari = `${oturum.state.cag}|${oturum.state.meslek}`;
+    const kontrolNoktalari = YOL_TAKIP_KONTROL_NOKTALARI[sistemAnahtari];
     const yolTag = oturum.state.etiketler.find((e) => e.startsWith("yol:"));
-    if (yolTag) {
-      // NOT: bazı dal isimleri (durust/fanatik/yozlasmis Din Adamı'nda,
-      // sadik/firari Asker'de, hayirsever Tüccar'da) Orta Çağ ve Sanayi
-      // Devrimi sistemleri arasında paylaşılır — `cag` filtresi olmadan
-      // yanlış çağdan bir olay zorlanabilirdi.
-      const dalHavuzu = OLAY_BANKASI.filter(
-        (o) =>
-          o.gerekliEtiketler?.includes(yolTag) &&
-          o.cag === oturum.state.cag &&
-          (o.minYas === undefined || oturum.state.yas >= o.minYas) &&
-          (o.maxYas === undefined || oturum.state.yas <= o.maxYas)
+    if (kontrolNoktalari && yolTag) {
+      const suAnkiHedef = kontrolNoktalari.reduce(
+        (maks, nokta) => (oturum.state.yas >= nokta.yas ? Math.max(maks, nokta.hedef) : maks),
+        0
       );
-      const gorulenSayisi = dalHavuzu.filter((o) => oturum.state.gecmis_olaylar.includes(o.id)).length;
-      if (gorulenSayisi === 0 && dalHavuzu.length > 0) {
-        zorlananId = dalHavuzu[Math.floor(Math.random() * dalHavuzu.length)].id;
+      if (suAnkiHedef > 0) {
+        // NOT: bazı dal isimleri (durust/fanatik/yozlasmis Din Adamı'nda,
+        // sadik/firari Asker'de, hayirsever Tüccar'da) Orta Çağ ve Sanayi
+        // Devrimi sistemleri arasında paylaşılır — `cag` filtresi olmadan
+        // yanlış çağdan bir olay zorlanabilirdi.
+        const tumDalHavuzu = OLAY_BANKASI.filter((o) => o.gerekliEtiketler?.includes(yolTag) && o.cag === oturum.state.cag);
+        const gorulenSayisi = tumDalHavuzu.filter((o) => oturum.state.gecmis_olaylar.includes(o.id)).length;
+        if (gorulenSayisi < suAnkiHedef) {
+          const yasaUygunGorulmemis = tumDalHavuzu.filter(
+            (o) =>
+              !oturum.state.gecmis_olaylar.includes(o.id) &&
+              (o.minYas === undefined || oturum.state.yas >= o.minYas) &&
+              (o.maxYas === undefined || oturum.state.yas <= o.maxYas)
+          );
+          if (yasaUygunGorulmemis.length > 0) {
+            zorlananId = yasaUygunGorulmemis[Math.floor(Math.random() * yasaUygunGorulmemis.length)].id;
+          }
+        }
       }
     }
   }
