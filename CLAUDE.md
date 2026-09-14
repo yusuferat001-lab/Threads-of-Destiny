@@ -302,7 +302,7 @@ Olay/seçenek metninde ve sonuç `mesaj`/`detay`'ında kullanılabilir: `{bolge}
 
 ## 7. Olay Bankası Dosya Haritası
 
-`data/olaylar/index.ts` tüm alt listeleri `OLAY_BANKASI: OlayTanimi[]` içinde birleştirir. **Toplam ~1115 olay** (id sayımıyla; `ceviriDurumu.ts` "Toplam olay" satırıyla teyit). Belirli bir olayı bulmak için `grep -n "id: \"<olay_id>\"" server/src/data/olaylar/*.ts` kullan — dosyayı baştan sona okuma.
+`data/olaylar/index.ts` tüm alt listeleri `OLAY_BANKASI: OlayTanimi[]` içinde birleştirir. **Toplam ~1340 olay** (id sayımıyla). Belirli bir olayı bulmak için `grep -n "id: \"<olay_id>\"" server/src/data/olaylar/*.ts` kullan — dosyayı baştan sona okuma.
 
 | Dosya | ~Olay Sayısı | Satır | İçerik |
 |---|---|---|---|
@@ -310,6 +310,10 @@ Olay/seçenek metninde ve sonuç `mesaj`/`detay`'ında kullanılabilir: `{bolge}
 | `ortaCagAskerYollari.ts` | 105 | 5723 | Orta Çağ Asker **kariyer yolu** dallanması (§16 "yol:asker:*") |
 | `yolculuk.ts` | 87 | 5755 | "Büyük yolculuk" zincirleri (Haçlı Seferi, Hac, Keşif, vb. — §17) |
 | `ortaCagDinAdamiYollari.ts` | 85 | 4546 | Orta Çağ Din Adamı kariyer yolu dallanması ("yol:din:*") |
+| `ortaCagTuccarYollari.ts` | 45 | ~2000 | **(2026-09 yeni)** Orta Çağ Tüccar kariyer yolu dallanması ("yol:tuccar:durust/acgozlu/kacakci/hayirsever", §16) |
+| `sanayiAskerYollari.ts` | 45 | ~2000 | **(2026-09 yeni)** Sanayi Devrimi Asker kariyer yolu dallanması ("yol:asker:sadik/reformcu/zalim/firari", §16) |
+| `sanayiTuccarYollari.ts` | 45 | ~2000 | **(2026-09 yeni)** Sanayi Devrimi Tüccar kariyer yolu dallanması ("yol:tuccar:adil/somurucu/spekulator/hayirsever", §16) |
+| `sanayiDinAdamiYollari.ts` | 45 | ~2000 | **(2026-09 yeni)** Sanayi Devrimi Din Adamı kariyer yolu dallanması ("yol:din:durust/fanatik/sosyal/yozlasmis", §16) |
 | `sosyallesme.ts` | 73 | 2752 | Sosyalleşme mekân olayları — 2026-09'dan beri sadece 6 mekân id'sine bağlı (pazar_meydani, meyhane, pub, ordugah_cadiri, dini_meclis, lonca_meclisi; hamam/kahvehane/kervansaray→pazar_meydani, salon→meyhane remap edildi). Normal havuzdan tamamen dışlanır, sadece `POST /:id/sosyallesme` ile zorlanır (§25). Tur-harcamayan içki/deli/sadaka/kulak/ısmarla/fal aksiyonları ayrı: [sosyallesmeAksiyonlari.ts](server/src/data/sosyallesmeAksiyonlari.ts) |
 | `hizip.ts` | 70 | 3416 | Hizip (faction) sistemi olayları (§16) |
 | `evlilikVeAile.ts` | 66 | 3154 | Evlilik yolu + aile devamı olayları |
@@ -319,12 +323,12 @@ Olay/seçenek metninde ve sonuç `mesaj`/`detay`'ında kullanılabilir: `{bolge}
 | `aranmaSeviyesi.ts` | 32 | ~1495 | Aranma kademesi alt sistemi — TEK eksen `suc_seviyesi`'nin bantlarına (`min/maxSucSeviyesi`) kilitli tetikleyici/kademe/baskın/kaçak olayları (§17) |
 | `evcilHayvan.ts` | 28 | 1425 | Evcil hayvan olayları |
 | `iliskiler.ts` | 23 | 1133 | Dost/rakip/eş ilişki olayları |
-| `ortaCagTuccar.ts` | 18 | 961 | Orta Çağ Tüccar'a özel |
-| `ortaCagAsker.ts` | 18 | 1011 | Orta Çağ Asker'e özel (yol-öncesi) |
-| `ortaCagDinAdami.ts` | 15 | 772 | Orta Çağ Din Adamı'na özel (yol-öncesi) |
-| `sanayiAsker.ts` | 13 | 694 | Sanayi Devrimi Asker'e özel |
-| `sanayiDinAdami.ts` | 9 | 462 | Sanayi Devrimi Din Adamı'na özel |
-| `sanayiTuccar.ts` | 8 | 457 | Sanayi Devrimi Tüccar'a özel |
+| `ortaCagTuccar.ts` | 26 | ~1400 | Orta Çağ Tüccar'a özel (yol-öncesi/yol-bağımsız standalone havuz) |
+| `ortaCagAsker.ts` | 26 | ~1400 | Orta Çağ Asker'e özel (yol-öncesi/yol-bağımsız standalone havuz) |
+| `ortaCagDinAdami.ts` | 23 | ~1200 | Orta Çağ Din Adamı'na özel (yol-öncesi/yol-bağımsız standalone havuz) |
+| `sanayiAsker.ts` | 22 | ~1150 | Sanayi Devrimi Asker'e özel (yol-öncesi/yol-bağımsız standalone havuz) |
+| `sanayiDinAdami.ts` | 19 | ~950 | Sanayi Devrimi Din Adamı'na özel (yol-öncesi/yol-bağımsız standalone havuz) |
+| `sanayiTuccar.ts` | 18 | ~950 | Sanayi Devrimi Tüccar'a özel (yol-öncesi/yol-bağımsız standalone havuz) |
 | `saglikToparlanma.ts` | 8 | ~330 | **Düşük-can toparlanma olayları (yama #1)** — HEPSİ `maxSaglik:45` ile kilitli; yatak istirahati/hekim/kaplıca/aile bakımı/inziva/nekahet/gezgin doktor(Sanayi)/otacı(Orta Çağ). Bedelli ama "güvenli" seçenekleri yüksek şansla belirgin sağlık verir |
 | `kureselOlaylar.ts` | 5 | ~260 | "Dünya olayları". `kuresel_veba_baslangici` (3 seçenek = 3 korunma kademesi `veba_koruma` 0/1/2) + 4 "salgın dönemi" bulaşma olayı (`gerekliUlke:{vebada:true}`: kapını çalan / cenaze / çarşıda temas / hasta bakıcılığı — başarısızlıkta artık `etiket_ekle:["veba_hastasi"]`, öldürmez) — §27. Savaş/bağış/kriz hâlâ arka planda, olay ekranı yok |
 | `vebaHastaligi.ts` | 10 | ~360 | **Vebayı bizzat kapmış (`veba_hastasi` etiketi) karaktere çıkan özel havuz (§27).** `vebaHastasiOlayi:true` → hastayken normal havuz kapanır (hapisOlayi mantığı). Hekim/ilaç/tedavi/hacamat/dinlenme/şarlatan/aile bakımı — `veba_olum_riski_artis` (± ) ile ölüm riskini düşürür/yükseltir; para harcayarak hayatta kalma şansı ciddi artar |
@@ -407,7 +411,7 @@ Bir seçeneğin `onTepki` alanı varsa: seçilince **zar atılmaz**, zaman ilerl
 `POST /:id/scenario` çağrıldığında, normal ağırlıklı seçime geçmeden önce **aşağıdaki sırayla** (ilk eşleşen kazanır, `!zorlananId &&` zinciri) bir dizi garanti/zorunlu olay kontrol edilir:
 
 1. **Tarihi savaş ilanı** — savaşta değil, yaş≤55, `tarihiSavasKontrol(bolge,yil,cag)` bir rakip döndürüyor ve `tarihi_savas_gordu:<rakip>` etiketi yoksa → `dunya_savas_ilani_asker` (Asker) / `dunya_savas_ilani` (diğer); etiket eklenir.
-2. **Kariyer yolu girişi** (sadece Orta Çağ) — Asker/Din Adamı, yaş≥18, henüz `yol:asker:*`/`yol:din:*` etiketi yok, giriş olayı daha önce görülmemiş → `oc_asker_yol_ilk_emir` / `oc_din_yol_ilk_sinav`.
+2. **Kariyer yolu girişi** (2026-09'dan beri **6 çağ×meslek kombinasyonunun hepsi**, `gameEngine.ts`'teki `YOL_SISTEMLERI` tablosundan okunur — eskiden sadece Orta Çağ Asker/Din Adamı'ydı) — yaş≥18, ilgili `yol:asker:*`/`yol:din:*`/`yol:tuccar:*` etiketi henüz yok, giriş olayı daha önce görülmemiş → Orta Çağ Asker `oc_asker_yol_ilk_emir` / Orta Çağ Din Adamı `oc_din_yol_ilk_sinav` / Orta Çağ Tüccar `oc_tuccar_yol_ilk_anlasma` / Sanayi Devrimi Asker `sd_asker_yol_ilk_gorev` / Sanayi Devrimi Tüccar `sd_tuccar_yol_ilk_karar` / Sanayi Devrimi Din Adamı `sd_din_yol_ilk_vaaz`.
 3. **Evlilik teklifi garantisi** — yaş≥29, evli değil, ne `iliski_evlilik_teklifi` ne `iliski_ikinci_teklif` hiç görülmemiş → `iliski_evlilik_teklifi`.
 4. **Şehir yönetimi girişi** — `rutbe_seviye>=4` (2026-08 rütbe reformuyla eski `>=3`'ten yükseltildi, §14), `sehir_yonetimi_basladi` etiketi yok → mesleğe göre `sehir_yonetim_{tuccar|dinadami|asker}_baslangic`.
 5. **Evcil hayvan teklifi** — 20≤yaş<25, evcil hayvanı yok, teklif olayı görülmemiş → çağa göre `evcilhayvan_sahiplenme_teklifi_{sanayi|ortacag}`.
@@ -743,11 +747,18 @@ Kaynak: [gizemliEsyalar.ts](server/src/data/gizemliEsyalar.ts) (garanti havuzu) 
 | Tüccar | Liman Loncası | Pazar Birliği |
 | Din Adamı | Gelenekçiler | Yenilikçiler |
 
-### Kariyer Yolları (sadece Orta Çağ, §11 kural 2 ile girilir)
-- **Asker** (`yol:asker:*`): sadik, isyanci, kahraman, firari, hain — [ortaCagAskerYollari.ts](server/src/data/olaylar/ortaCagAskerYollari.ts) (5723 satır, 105 olay).
-- **Din Adamı** (`yol:din:*`): durust, fanatik, tarikat, yozlasmis — [ortaCagDinAdamiYollari.ts](server/src/data/olaylar/ortaCagDinAdamiYollari.ts) (4546 satır, 85 olay).
+### Kariyer Yolları (§11 kural 2 ile girilir — 2026-09'dan beri **6 çağ×meslek kombinasyonunun hepsinde** var, eskiden sadece Orta Çağ Asker/Din Adamı'ydı)
 
-Bu iki dosya devasa dallanan zincirlerdir — belirli bir dalın içeriği gerekmedikçe okuma, `grep "yol:asker:kahraman"` gibi hedefli ara.
+Mekanik: giriş olayının seçenekleri, hem `basariliSonuc` hem `basarisizSonuc`'ta doğrudan kalıcı bir `yol:<meslek>:<dal>` etiketi ekler (Orta Çağ Asker/Din Adamı'daki gibi ayrı bir "eğilim → ikinci olay → kesin kilit" iki-adımlı zincir değil, tek adımda kilitlenir). Kilitlenen etiket bir daha değişmez; o dala özel olaylar `gerekliEtiketler:["yol:<meslek>:<dal>"]` taşıdığı için karşı dalların içeriği otomatik kapalı kalır. Aynı meslek farklı çağlarda aynı `yol:<meslek>:` önekini paylaşabilir (ör. hem Orta Çağ hem Sanayi Devrimi Asker'i `yol:asker:`) — çakışma yoktur çünkü her olay `cag` filtresi taşır.
+
+- **Orta Çağ Asker** (`yol:asker:*`): sadik, isyanci, kahraman, firari, hain — [ortaCagAskerYollari.ts](server/src/data/olaylar/ortaCagAskerYollari.ts) (5723 satır, 105 olay). Giriş: `oc_asker_yol_ilk_emir`.
+- **Orta Çağ Din Adamı** (`yol:din:*`): durust, fanatik, tarikat, yozlasmis — [ortaCagDinAdamiYollari.ts](server/src/data/olaylar/ortaCagDinAdamiYollari.ts) (4546 satır, 85 olay). Giriş: `oc_din_yol_ilk_sinav`.
+- **Orta Çağ Tüccar** *(2026-09 yeni)* (`yol:tuccar:*`): durust, acgozlu, kacakci, hayirsever — [ortaCagTuccarYollari.ts](server/src/data/olaylar/ortaCagTuccarYollari.ts) (45 olay: 1 giriş + 44 dal havuzu, 11/dal). Giriş: `oc_tuccar_yol_ilk_anlasma`.
+- **Sanayi Devrimi Asker** *(2026-09 yeni)* (`yol:asker:*`): sadik, reformcu, zalim, firari — [sanayiAskerYollari.ts](server/src/data/olaylar/sanayiAskerYollari.ts) (45 olay). Giriş: `sd_asker_yol_ilk_gorev`.
+- **Sanayi Devrimi Tüccar** *(2026-09 yeni)* (`yol:tuccar:*`): adil, somurucu, spekulator, hayirsever — [sanayiTuccarYollari.ts](server/src/data/olaylar/sanayiTuccarYollari.ts) (45 olay). Giriş: `sd_tuccar_yol_ilk_karar`.
+- **Sanayi Devrimi Din Adamı** *(2026-09 yeni)* (`yol:din:*`): durust, fanatik, sosyal, yozlasmis — [sanayiDinAdamiYollari.ts](server/src/data/olaylar/sanayiDinAdamiYollari.ts) (45 olay). Giriş: `sd_din_yol_ilk_vaaz`.
+
+Bu 6 dosya (özellikle ilk ikisi) devasa dallanan havuzlardır — belirli bir dalın içeriği gerekmedikçe okuma, `grep "yol:asker:kahraman"` gibi hedefli ara. Giriş olayının kendisi `gameEngine.ts`'teki `YOL_SISTEMLERI` tablosunda kayıtlıdır (§11 kural 2); yeni bir çağ×meslek kombinasyonu eklenecekse hem yeni dosya+giriş olayı hem de bu tabloya bir satır gerekir.
 
 ### Evlilik Yolları (`evlilik_yolu:*`)
 `ask` (aşk evliliği), `mantik_soylu` (statü/asalet güdümlü), `mantik_ticari` (çıkar/ticaret güdümlü) — evlilik teklifi olayındaki seçime göre atanır, sonraki evlilik olaylarının tonunu belirler.
