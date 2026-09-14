@@ -855,6 +855,11 @@ export function eskiKayitGocu(state: CharacterState): void {
   for (const tur of state.mulkler) {
     if (typeof state.mulk_bakim_kalan[tur] !== "number") state.mulk_bakim_kalan[tur] = rastgeleMulkBakimAraligi();
   }
+  // Mağaza sonradan eklendi; eski kayıtlarda alan yok — envanterBozulmasiUygula
+  // (her tur) ve magazaConfigGetir/EnvanterPaneli buna doğrudan .some()/.map()
+  // uyguladığı için eksikse çöküyordu (mağaza + envanter tamamen kayboluyordu).
+  if (!Array.isArray(state.magaza_envanteri)) state.magaza_envanteri = [];
+  if (typeof state.magaza_temel_kilit_bitis_yili !== "number") state.magaza_temel_kilit_bitis_yili = null;
   // Veba "ömürde bir kez" → "20 yıl cooldown"a çevrildi; eski kayıtta zaten
   // veba geçirmiş biri için cooldown'u başından dolmuş say (yeniden yakalanabilsin).
   if (state.son_veba_bitis_yili === undefined) {
