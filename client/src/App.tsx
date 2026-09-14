@@ -5,6 +5,7 @@ import type {
   SonucEtkisi,
   ScoreKaydi,
   SiralamaTuru,
+  SiralamaDonemi,
   KonutTanimi,
   YasamSecenegiTanimi,
   FinansOzeti,
@@ -113,8 +114,12 @@ import { gecmisHayatKaydet, gecmisHayatlariGetir, gecmisHayatlariTemizle, gecmis
 import { YAPIMCI } from './yapimci';
 import { basarimlariDegerlendir, type BasarimTanimi } from './basarimSistemi';
 import { BasarimGaleri } from './components/BasarimGaleri';
+import { KozmetikMagaza } from './components/KozmetikMagaza';
+import { kozmetikGiyilenlerGetir, type GiyilenKozmetikler } from './kozmetikDolabi';
 import { NasilOynanir } from './components/NasilOynanir';
 import { istemciId, ziyaretBildir } from './istemci';
+import { gunlukSeriKontrolEt, gunlukSeriGetir, type GunlukSeriSonuc } from './gunlukSeri';
+import { goldBakiyeGetir, olumGoldHesapla, goldEkle } from './gold';
 import { sonucIkonuGetir, unUnvani, MESLEK_KATEGORI, yatkinlikEtiketi, etkiTahminiGetir, type EtkiTahmini } from './bolgeTema';
 import { formatPara } from './format';
 import { bic } from './i18n';
@@ -315,6 +320,7 @@ function App() {
   const [otoKayitBasarisiz, setOtoKayitBasarisiz] = useState(false);
 
   const [liderlikTuru, setLiderlikTuru] = useState<SiralamaTuru>('genel');
+  const [liderlikDonemi, setLiderlikDonemi] = useState<SiralamaDonemi>('tumZaman');
   const [liderlik, setLiderlik] = useState<ScoreKaydi[]>([]);
 
   const [finans, setFinans] = useState<FinansOzeti | null>(null);
@@ -348,6 +354,11 @@ function App() {
   const [gecmisHayatlar, setGecmisHayatlar] = useState<GecmisHayat[]>(() => gecmisHayatlariGetir());
   const [secilenGecmisHayat, setSecilenGecmisHayat] = useState<GecmisHayat | null>(null);
   const [liderlikOnizleme, setLiderlikOnizleme] = useState<ScoreKaydi[]>([]);
+  const [gunlukSeri, setGunlukSeri] = useState(() => gunlukSeriGetir());
+  const [gunlukOdulBildirimi, setGunlukOdulBildirimi] = useState<GunlukSeriSonuc | null>(null);
+  const [goldBakiye, setGoldBakiye] = useState(() => goldBakiyeGetir());
+  const [kozmetikMagazaAcik, setKozmetikMagazaAcik] = useState(false);
+  const [giyilenKozmetikler, setGiyilenKozmetikler] = useState<GiyilenKozmetikler>(() => kozmetikGiyilenlerGetir());
   const [bolgeBilgiAcik, setBolgeBilgiAcik] = useState(false);
   // Kişilik & Miras artık sol panelde sabit değil — portreye/isme tıklayınca açılan pencere.
   const [kisilikModalAcik, setKisilikModalAcik] = useState(false);
@@ -361,6 +372,8 @@ function App() {
   // Ölümde skorun otomatik kaydedilmesi denendi mi (oturum id başına tek sefer) —
   // StrictMode çift-render'ında ve tekrar render'larda ikinci bir POST /api/scores atmamak için.
   const otoSkorKaydiRef = useRef<string | null>(null);
+  const olumGoldOdenenRef = useRef<string | null>(null);
+  const [olumGoldKazanci, setOlumGoldKazanci] = useState<number | null>(null);
   const mobil = useMobil();
 
   function sesToggle() {
@@ -445,6 +458,10 @@ function App() {
   // Günde bir kez "ziyaret" istatistik ping'i (§32) — ateşle-unut.
   useEffect(() => {
     ziyaretBildir();
+    const sonuc = gunlukSeriKontrolEt();
+    setGunlukSeri({ seri: sonuc.seri, enUzunSeri: sonuc.enUzunSeri });
+    setGoldBakiye(goldBakiyeGetir());
+    if (sonuc.yeniOdulMu) setGunlukOdulBildirimi(sonuc);
   }, []);
 
   useEffect(() => {
@@ -523,9 +540,16 @@ function App() {
       gecmisHayatKaydet(karakter);
       setGecmisHayatlar(gecmisHayatlariGetir());
       setIsim((mevcut) => mevcut || karakter.isim || '');
-      const { yeniAcilanlar, buOmurKazanilanlar } = basarimlariDegerlendir(karakter);
+      const { yeniAcilanlar, buOmurKazanilanlar, skor } = basarimlariDegerlendir(karakter);
       setYeniBasarimlar(yeniAcilanlar);
       setBuOmurBasarimlar(buOmurKazanilanlar);
+      // Gold — ölümde kazanılan skorun küçük bir oranı (amaç ×5 çarpanı zaten skora yansımış).
+      if (olumGoldOdenenRef.current !== karakter.id) {
+        olumGoldOdenenRef.current = karakter.id;
+        const kazanc = olumGoldHesapla(skor);
+        setGoldBakiye(goldEkle(kazanc));
+        setOlumGoldKazanci(kazanc);
+      }
     }
   }, [ekran, karakter]);
 
@@ -753,12 +777,13 @@ function App() {
     }
   }
 
-  async function liderligiAc(tur: SiralamaTuru = liderlikTuru) {
+  async function liderligiAc(tur: SiralamaTuru = liderlikTuru, donem: SiralamaDonemi = liderlikDonemi) {
     setLiderlikTuru(tur);
+    setLiderlikDonemi(donem);
     setHata(null);
     setYukleniyor(true);
     try {
-      const { tablo } = await skorTablosuGetir(tur);
+      const { tablo } = await skorTablosuGetir(tur, donem);
       setLiderlik(tablo);
       setEkran('liderlik');
     } catch (err) {
@@ -766,6 +791,20 @@ function App() {
     } finally {
       setYukleniyor(false);
     }
+  }
+
+  /** Haftalık liderlik tablosunun sıfırlanmasına kalan süreyi ("Xg Ys") döner (Pazartesi 00:00 UTC). */
+  function haftaSonuKalan(): string {
+    const simdi = new Date();
+    const gun = simdi.getUTCDay();
+    const pazartesiyeUzaklik = (gun + 6) % 7;
+    const buHaftaBasi = Date.UTC(simdi.getUTCFullYear(), simdi.getUTCMonth(), simdi.getUTCDate() - pazartesiyeUzaklik);
+    const sonrakiHaftaBasi = buHaftaBasi + 7 * 24 * 60 * 60 * 1000;
+    const kalanMs = sonrakiHaftaBasi - simdi.getTime();
+    const kalanSaat = Math.max(0, Math.floor(kalanMs / (60 * 60 * 1000)));
+    const gunKalan = Math.floor(kalanSaat / 24);
+    const saatKalan = kalanSaat % 24;
+    return dil === 'en' ? `${gunKalan}d ${saatKalan}h left` : `${gunKalan}g ${saatKalan}s kaldı`;
   }
 
   async function finansEkraniniAc() {
@@ -1402,6 +1441,8 @@ function App() {
     setKaydedildi(false);
     setOtoKayitBasarisiz(false);
     otoSkorKaydiRef.current = null;
+    olumGoldOdenenRef.current = null;
+    setOlumGoldKazanci(null);
     setSecilenCag(null);
     setSecilenBolge(null);
     setSecilenYerlesim(null);
@@ -1477,6 +1518,16 @@ function App() {
       )}
 
       {basarimGaleriAcik && <BasarimGaleri dil={dil} onKapat={() => setBasarimGaleriAcik(false)} />}
+      {kozmetikMagazaAcik && (
+        <KozmetikMagaza
+          dil={dil}
+          onKapat={() => setKozmetikMagazaAcik(false)}
+          onDegisti={() => {
+            setGoldBakiye(goldBakiyeGetir());
+            setGiyilenKozmetikler(kozmetikGiyilenlerGetir());
+          }}
+        />
+      )}
 
       {nasilOynanirAcik && <NasilOynanir dil={dil} onKapat={() => setNasilOynanirAcik(false)} />}
 
@@ -1498,6 +1549,26 @@ function App() {
                 ✦ {m.gizemYeniMeslek} · {m.gizemTarih}
               </span>
             </div>
+            <div className="giris-durum-rozetleri">
+              {gunlukSeri.seri > 0 && (
+                <span className="giris-seri-rozet" title={bic(m.gunlukSeriTitle, gunlukSeri.enUzunSeri)}>
+                  🔥 {bic(m.gunlukSeriEtiket, gunlukSeri.seri)}
+                </span>
+              )}
+              <span className="giris-gold-rozet" title={m.goldAciklama}>
+                🪙 {goldBakiye}
+              </span>
+            </div>
+            {gunlukOdulBildirimi && (
+              <div className="giris-gunluk-odul-bildirim" role="status">
+                <span>
+                  🔥 {bic(m.gunlukOdulMesaji, gunlukOdulBildirimi.seri, gunlukOdulBildirimi.odulMiktari)}
+                </span>
+                <button className="ikincil" onClick={() => setGunlukOdulBildirimi(null)}>
+                  ✕
+                </button>
+              </div>
+            )}
             <div className="giris-hero-butonlar">
               {karakter?.aktif && (
                 <button
@@ -1529,6 +1600,9 @@ function App() {
               </button>
               <button className="ikincil" disabled={yukleniyor} onClick={() => setBasarimGaleriAcik(true)}>
                 {m.bgAc}
+              </button>
+              <button className="ikincil" disabled={yukleniyor} onClick={() => setKozmetikMagazaAcik(true)}>
+                {m.btnKozmetik}
               </button>
               <button className="ikincil" disabled={yukleniyor} onClick={() => setAyarlarAcik(true)}>
                 {m.btnAyarlar}
@@ -1809,7 +1883,7 @@ function App() {
              taşmıyor. */}
           <div className="acilis-sahne">
             <aside className="acilis-kimlik">
-              <KarakterAvatari kisilik={karakter.kisilik} />
+              <KarakterAvatari kisilik={karakter.kisilik} giyilenKozmetikler={giyilenKozmetikler} />
               <h2 className="acilis-kimlik-ad">
                 {karakter.isim && <strong>{karakter.isim}</strong>}
                 <span className="acilis-kimlik-alt">{bic(m.acilisAileCocugu, kt(karakter.aile_meslegi))}</span>
@@ -1912,6 +1986,7 @@ function App() {
                   meslek={karakter.meslek}
                   kisilik={karakter.kisilik}
                   rutbeSeviye={karakter.rutbe_seviye}
+                  giyilenKozmetikler={giyilenKozmetikler}
                 />
                 <div className="sol-panel-baslik">
                   {karakter.isim && <span className="sol-panel-isim">{karakter.isim}</span>}
@@ -2409,6 +2484,9 @@ function App() {
           <p className="olum-ozet">
             {formatPara(karakter.para)} {karakter.para_birimi} · {m.sohret}: {unUnvani(karakter.un, dil)}
           </p>
+          {olumGoldKazanci !== null && (
+            <p className="olum-gold-kazanc">🪙 {bic(m.olumGoldKazandi, olumGoldKazanci)}</p>
+          )}
 
           {(buOmurBasarimlar.length > 0 || karakter.unvanlar.length > 0 || karakter.efsanevi_olum) && (
             <div className="olum-yeni-basarimlar">
@@ -2472,6 +2550,23 @@ function App() {
       {ekran === 'liderlik' && (
         <div className="ekran ekran-liderlik">
           <h2>{m.liderlikBaslik}</h2>
+          <div className="liderlik-donem-sekmeler">
+            <button
+              className={liderlikDonemi === 'tumZaman' ? 'aktif-sekme' : ''}
+              onClick={() => liderligiAc(liderlikTuru, 'tumZaman')}
+            >
+              {m.donemTumZaman}
+            </button>
+            <button
+              className={liderlikDonemi === 'hafta' ? 'aktif-sekme' : ''}
+              onClick={() => liderligiAc(liderlikTuru, 'hafta')}
+            >
+              {m.donemBuHafta}
+            </button>
+          </div>
+          {liderlikDonemi === 'hafta' && (
+            <p className="liderlik-hafta-sayac">⏳ {m.haftaSifirlanma}: {haftaSonuKalan()}</p>
+          )}
           <div className="liderlik-sekmeler">
             <button
               className={liderlikTuru === 'genel' ? 'aktif-sekme' : ''}

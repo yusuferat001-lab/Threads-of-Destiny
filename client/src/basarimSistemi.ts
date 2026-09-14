@@ -931,6 +931,8 @@ export interface BasarimDegerlendirmeSonucu {
   /** Bu hayatın karşıladığı TÜM başarımlar (ölüm ekranı rozet şeridi). */
   buOmurKazanilanlar: BasarimTanimi[];
   istatistik: OyunIstatistigi;
+  /** Bu ömrün nihai skoru (Gold kazancı bundan türetilir). */
+  skor: number;
 }
 
 /**
@@ -974,5 +976,5 @@ export function basarimlariDegerlendir(state: CharacterState): BasarimDegerlendi
     yazSet(DEGERLENDIRILEN_ANAHTAR, new Set(kirpik));
   }
 
-  return { yeniAcilanlar, buOmurKazanilanlar, istatistik: ist };
+  return { yeniAcilanlar, buOmurKazanilanlar, istatistik: ist, skor };
 }

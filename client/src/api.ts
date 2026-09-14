@@ -4,6 +4,7 @@ import type {
   SecimSonucu,
   ScoreKaydi,
   SiralamaTuru,
+  SiralamaDonemi,
   YerlesimTanimi,
   KonutTanimi,
   YasamSecenegiTanimi,
@@ -138,8 +139,8 @@ export function skorKaydet(stateId: string, isim: string) {
   });
 }
 
-export function skorTablosuGetir(tur: SiralamaTuru = 'genel') {
-  return istek<{ tablo: ScoreKaydi[] }>(`/api/scores?tur=${tur}`);
+export function skorTablosuGetir(tur: SiralamaTuru = 'genel', donem: SiralamaDonemi = 'tumZaman') {
+  return istek<{ tablo: ScoreKaydi[] }>(`/api/scores?tur=${tur}&donem=${donem}`);
 }
 
 export function finansGetir(stateId: string) {
