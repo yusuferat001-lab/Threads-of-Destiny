@@ -142,6 +142,21 @@ import {
 import { SahipOlunanEsya, MagazaEsyaKategori } from "../types";
 
 /** Saray-içi ("sarayda" etiketiyle açılan) takip olayları; "ölmeden önce en az iki kez" garantisi bu listeye göre sayılır. */
+/**
+ * Her çağ×meslek kombinasyonunun dallanan kariyer yolu sistemi: `yolOnEki`
+ * kilitlenmiş olup olmadığını kontrol etmek için, `girisId` de zorla
+ * tetiklenecek giriş olayının kimliği için kullanılır. Bkz. senaryoUret
+ * milestone kaskadı (§11 kural 2).
+ */
+const YOL_SISTEMLERI: Record<string, { yolOnEki: string; girisId: string }> = {
+  "Orta Çağ|Asker": { yolOnEki: "yol:asker:", girisId: "oc_asker_yol_ilk_emir" },
+  "Orta Çağ|Din Adamı": { yolOnEki: "yol:din:", girisId: "oc_din_yol_ilk_sinav" },
+  "Orta Çağ|Tüccar": { yolOnEki: "yol:tuccar:", girisId: "oc_tuccar_yol_ilk_anlasma" },
+  "Sanayi Devrimi|Asker": { yolOnEki: "yol:asker:", girisId: "sd_asker_yol_ilk_gorev" },
+  "Sanayi Devrimi|Tüccar": { yolOnEki: "yol:tuccar:", girisId: "sd_tuccar_yol_ilk_karar" },
+  "Sanayi Devrimi|Din Adamı": { yolOnEki: "yol:din:", girisId: "sd_din_yol_ilk_vaaz" },
+};
+
 const SARAY_OLAY_IDLERI = [
   "saray_ic_entrika",
   "saray_balosu",
@@ -530,24 +545,22 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
       }
     }
   }
-  // Orta Çağ'da Asker/Din Adamı, 18 yaşından itibaren henüz bir kariyer yoluna
-  // girmemişse (yol:asker:*/yol:din:* etiketi yok), o mesleğin dallanan kariyer
-  // sisteminin giriş olayı zorla tetiklenir — böylece her karakter mutlaka bir
-  // yola (itaatkâr/isyancı/kahraman/... ya da dürüst/yozlaşmış/tarikat/...)
-  // kilitlenir; şansa bırakılmış hizip sisteminin aksine bu garanti bir kaskad.
-  if (
-    !zorlananId &&
-    !milestoneKilitli &&
-    oturum.state.cag === "Orta Çağ" &&
-    oturum.state.yas >= 18 &&
-    (oturum.state.meslek === "Asker" || oturum.state.meslek === "Din Adamı")
-  ) {
-    const yolOnEki = oturum.state.meslek === "Asker" ? "yol:asker:" : "yol:din:";
-    const zatenYolda = oturum.state.etiketler.some((e) => e.startsWith(yolOnEki));
-    if (!zatenYolda) {
-      const girisId = oturum.state.meslek === "Asker" ? "oc_asker_yol_ilk_emir" : "oc_din_yol_ilk_sinav";
-      if (!oturum.state.gecmis_olaylar.includes(girisId)) {
-        zorlananId = girisId;
+  // Her çağ×meslek kombinasyonunun kendi dallanan kariyer yolu var: 18
+  // yaşından itibaren henüz bir kariyer yoluna girmemişse (yol:asker:*/
+  // yol:din:*/yol:tuccar:* etiketi yok), o kombinasyonun giriş olayı zorla
+  // tetiklenir — böylece her karakter mutlaka bir yola (itaatkâr/isyancı/
+  // kahraman/... ya da dürüst/yozlaşmış/tarikat/... ya da durust/acgozlu/
+  // kacakci/hayirsever/...) kilitlenir; şansa bırakılmış hizip sisteminin
+  // aksine bu garanti bir kaskad. Aynı meslek farklı çağlarda aynı
+  // "yol:X:" önekini paylaşabilir (ör. Orta Çağ ve Sanayi Devrimi Asker'i
+  // ikisi de "yol:asker:") — çakışma yoktur çünkü her olay `cag` filtresi
+  // taşır ve bir karakter yalnız bir çağda yaşar.
+  if (!zorlananId && !milestoneKilitli && oturum.state.yas >= 18) {
+    const sistem = YOL_SISTEMLERI[`${oturum.state.cag}|${oturum.state.meslek}`];
+    if (sistem) {
+      const zatenYolda = oturum.state.etiketler.some((e) => e.startsWith(sistem.yolOnEki));
+      if (!zatenYolda && !oturum.state.gecmis_olaylar.includes(sistem.girisId)) {
+        zorlananId = sistem.girisId;
       }
     }
   }
