@@ -4369,11 +4369,34 @@ button.ikincil {
 /* ================= Kariyer sayfası — Yönetimle Bağlar (§35) ================= */
 /* .ekran-aile'yi temel alır (sıcak zemin, sola hizalı); yönetim bölümü bir
    strateji-oyunu paneli gibi: iki ilişki hattı kartı + ilerleme barları. */
+/* PC'de tüm ekran genişliğini boşa harcamasın diye bu tek ekran için kapsayıcı
+   genişletildi (diğer doğal-yükseklik ekranlar 920px'te kalıyor) — strateji
+   oyunlarındaki "saray/danışman" ekranları gibi iki sütuna yayılabilsin. */
+.oyun-kapsayici:has(.ekran-kariyer) {
+  max-width: 1180px;
+}
+
 .ekran-kariyer {
   background: linear-gradient(180deg, #2a2018, #1c150f);
   gap: 0.7rem;
   margin-top: 0.6rem;
   padding-top: 1rem;
+}
+
+/* İki sütunlu "saray" düzeni: solda geniş yönetim/ekip bölümü, sağda dar bir
+   rakip/amir/güç özeti sütunu. */
+.kariyer-govde {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(240px, 1fr);
+  align-items: start;
+  gap: 1rem;
+}
+.kariyer-ana-sutun,
+.kariyer-yan-sutun {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  min-width: 0;
 }
 .ekran-kariyer > h2 {
   color: var(--renk-altin-parlak);
@@ -4708,6 +4731,10 @@ button.ikincil {
 
 @media (max-width: 767px) {
   .ekran-kariyer {
+    gap: 0.6rem;
+  }
+  .kariyer-govde {
+    grid-template-columns: 1fr;
     gap: 0.6rem;
   }
   .ekran-kariyer > h2 {
