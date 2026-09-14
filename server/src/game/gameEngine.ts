@@ -573,12 +573,17 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
   // havuzu (44 olay) binlerce diğer olayla eşit ağırlıkta yarışıp neredeyse
   // hiç çıkmıyordu (bkz. simülasyon teşhisi: ~%15 vs eski sistemlerde %100).
   // Bu kural her iki tip sistemde de aynı şekilde çalışıp farkı kapatır.
-  if (!zorlananId && !milestoneKilitli && oturum.state.yas >= 19 && oturum.state.yas < 40) {
+  if (!zorlananId && !milestoneKilitli && oturum.state.yas >= 19 && oturum.state.yas < 60) {
     const yolTag = oturum.state.etiketler.find((e) => e.startsWith("yol:"));
     if (yolTag) {
+      // NOT: bazı dal isimleri (durust/fanatik/yozlasmis Din Adamı'nda,
+      // sadik/firari Asker'de, hayirsever Tüccar'da) Orta Çağ ve Sanayi
+      // Devrimi sistemleri arasında paylaşılır — `cag` filtresi olmadan
+      // yanlış çağdan bir olay zorlanabilirdi.
       const dalHavuzu = OLAY_BANKASI.filter(
         (o) =>
           o.gerekliEtiketler?.includes(yolTag) &&
+          o.cag === oturum.state.cag &&
           (o.minYas === undefined || oturum.state.yas >= o.minYas) &&
           (o.maxYas === undefined || oturum.state.yas <= o.maxYas)
       );
