@@ -83,6 +83,11 @@ describe("evcil hayvan sistemi", () => {
     state.gecmis_olaylar.push("hayat_amaci_secimi", "iliski_evlilik_teklifi", "iliski_ikinci_teklif");
     // Tarihi savaş ilanı zorlanan olayı bazı yıl/bölge kombinasyonlarında devreye girebiliyor; savasta=true ile o kontrolü baştan atlarız.
     state.ulke.savasta = true;
+    // Kariyer yolu girişi (Tüccar için "İlk Anlaşma") 18 yaşından itibaren zorla
+    // tetiklenir; bu karakter zaten bir yola girmiş gibi işaretlenir ki evcil
+    // hayvan garantisi kural sırasında gölgelenmesin.
+    state.etiketler.push("yol:tuccar:hayirsever");
+    state.gecmis_olaylar.push("oc_tuccar_yol_ilk_anlasma");
   }
 
   it("20-25 yaş arası, evcil hayvanı olmayan bir karaktere garantili sahiplenme teklifi zorla çıkar", async () => {

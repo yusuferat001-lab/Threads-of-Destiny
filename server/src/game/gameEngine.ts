@@ -321,6 +321,20 @@ function uygunYolculukTeklifleri(state: CharacterState): string[] {
   return teklifler;
 }
 
+/**
+ * `SonucEtkisi.zorunlu_sonraki_havuzu`'ndan bir sonraki olayı seçer — mümkünse
+ * bu karakterin `gecmis_olaylar`'ında hiç görülmemiş bir aday tercih edilir
+ * (aynı yolculuk zincirinin farklı hayatlarda farklı dallar izlemesi için, §17
+ * "az olay var" turu Yol A). Havuzdaki hepsi zaten görülmüşse (nadir — çok
+ * uzun bir ömürde aynı zincir noktasına ikinci kez gelinmesi) rastgele biri
+ * seçilir; tek eleman kalmışsa doğrudan o döner.
+ */
+function zorunluSonrakiHavuzdanSec(havuz: string[], gecmisOlaylar: string[]): string {
+  const gorulmemis = havuz.filter((id) => !gecmisOlaylar.includes(id));
+  const adaylar = gorulmemis.length > 0 ? gorulmemis : havuz;
+  return adaylar[Math.floor(Math.random() * adaylar.length)];
+}
+
 interface BekleyenTepki {
   onTepki: OnTepki;
   mevcutOlay: OlayTanimi;
@@ -523,6 +537,16 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
   const oturum = await oturumGetir(id);
   if (!oturum.state.aktif) throw new Error("Oyun zaten bitmiş.");
 
+  // Zaten cevaplanmamış bir olay varsa (sayfa yenilendi, sekme yeniden açıldı,
+  // istemci /scenario'yu tekrar çağırdı) YENİDEN ZAR ATILMAZ — aynı olay aynen
+  // döndürülür. Bunun garantisi olmadan her çağrı olaySec'i tekrar çalıştırıp
+  // oyuncunun az önce gördüğü olayı sessizce başka bir rastgele olayla
+  // değiştiriyordu ("ekran yenilenince olay değişiyor" hatası).
+  if (oturum.mevcutOlay && oturum.mevcutSenaryo) {
+    oturum.bekleyenTepki = null;
+    return oturum.mevcutSenaryo;
+  }
+
   let zorlananId = oturum.zorlananOlayId ?? undefined;
   let etiketDegisti = false;
   // §24 düzeltmesi: karakter bir havuz kilidi altındaysa (hapiste / yolculukta /
@@ -561,35 +585,6 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
       const zatenYolda = oturum.state.etiketler.some((e) => e.startsWith(sistem.yolOnEki));
       if (!zatenYolda && !oturum.state.gecmis_olaylar.includes(sistem.girisId)) {
         zorlananId = sistem.girisId;
-      }
-    }
-  }
-  // Yol dalı takip garantisi: bir "yol:<meslek>:<dal>" etiketine kilitlenmiş
-  // karakter, kilitlendikten sonraki ilk yıllarda o dala özel havuzdan HİÇ
-  // olay görmediyse bir tanesi zorla tetiklenir. Orta Çağ Asker/Din Adamı'nın
-  // giriş olayı `zorunlu_sonraki` ile ikinci bir dal-özel olayı garanti
-  // ediyordu; 2026-09'da eklenen tek-adımlı yol sistemlerinde (Orta Çağ
-  // Tüccar, Sanayi Devrimi Asker/Tüccar/Din Adamı) bu garanti yoktu — dal
-  // havuzu (44 olay) binlerce diğer olayla eşit ağırlıkta yarışıp neredeyse
-  // hiç çıkmıyordu (bkz. simülasyon teşhisi: ~%15 vs eski sistemlerde %100).
-  // Bu kural her iki tip sistemde de aynı şekilde çalışıp farkı kapatır.
-  if (!zorlananId && !milestoneKilitli && oturum.state.yas >= 19 && oturum.state.yas < 60) {
-    const yolTag = oturum.state.etiketler.find((e) => e.startsWith("yol:"));
-    if (yolTag) {
-      // NOT: bazı dal isimleri (durust/fanatik/yozlasmis Din Adamı'nda,
-      // sadik/firari Asker'de, hayirsever Tüccar'da) Orta Çağ ve Sanayi
-      // Devrimi sistemleri arasında paylaşılır — `cag` filtresi olmadan
-      // yanlış çağdan bir olay zorlanabilirdi.
-      const dalHavuzu = OLAY_BANKASI.filter(
-        (o) =>
-          o.gerekliEtiketler?.includes(yolTag) &&
-          o.cag === oturum.state.cag &&
-          (o.minYas === undefined || oturum.state.yas >= o.minYas) &&
-          (o.maxYas === undefined || oturum.state.yas <= o.maxYas)
-      );
-      const gorulenSayisi = dalHavuzu.filter((o) => oturum.state.gecmis_olaylar.includes(o.id)).length;
-      if (gorulenSayisi === 0 && dalHavuzu.length > 0) {
-        zorlananId = dalHavuzu[Math.floor(Math.random() * dalHavuzu.length)].id;
       }
     }
   }
@@ -746,6 +741,39 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
     const uygunlar = uygunYolculukTeklifleri(oturum.state);
     if (uygunlar.length > 0) {
       zorlananId = uygunlar[Math.floor(Math.random() * uygunlar.length)];
+    }
+  }
+  // Yol dalı takip garantisi: bir "yol:<meslek>:<dal>" etiketine kilitlenmiş
+  // karakter, kilitlendikten sonraki ilk yıllarda o dala özel havuzdan HİÇ
+  // olay görmediyse bir tanesi zorla tetiklenir. Orta Çağ Asker/Din Adamı'nın
+  // giriş olayı `zorunlu_sonraki` ile ikinci bir dal-özel olayı garanti
+  // ediyordu; 2026-09'da eklenen tek-adımlı yol sistemlerinde (Orta Çağ
+  // Tüccar, Sanayi Devrimi Asker/Tüccar/Din Adamı) bu garanti yoktu — dal
+  // havuzu (44 olay) binlerce diğer olayla eşit ağırlıkta yarışıp neredeyse
+  // hiç çıkmıyordu (bkz. simülasyon teşhisi: ~%15 vs eski sistemlerde %100).
+  // Bu kural her iki tip sistemde de aynı şekilde çalışıp farkı kapatır.
+  // Yolculuk teklifinin (yukarıdaki kural) HEMEN ardına taşındı — ikisi de
+  // "ömürde bir kez, geniş yaş penceresi" garantisi ama yolculuk teklifi
+  // önceliklidir; aksi halde bir yol:<dal> etiketi taşıyan karakterde
+  // yolculuk teklifi hiç sıraya giremiyordu (bkz. yolculuk.test.ts).
+  if (!zorlananId && !milestoneKilitli && oturum.state.yas >= 19 && oturum.state.yas < 60) {
+    const yolTag = oturum.state.etiketler.find((e) => e.startsWith("yol:"));
+    if (yolTag) {
+      // NOT: bazı dal isimleri (durust/fanatik/yozlasmis Din Adamı'nda,
+      // sadik/firari Asker'de, hayirsever Tüccar'da) Orta Çağ ve Sanayi
+      // Devrimi sistemleri arasında paylaşılır — `cag` filtresi olmadan
+      // yanlış çağdan bir olay zorlanabilirdi.
+      const dalHavuzu = OLAY_BANKASI.filter(
+        (o) =>
+          o.gerekliEtiketler?.includes(yolTag) &&
+          o.cag === oturum.state.cag &&
+          (o.minYas === undefined || oturum.state.yas >= o.minYas) &&
+          (o.maxYas === undefined || oturum.state.yas <= o.maxYas)
+      );
+      const gorulenSayisi = dalHavuzu.filter((o) => oturum.state.gecmis_olaylar.includes(o.id)).length;
+      if (gorulenSayisi === 0 && dalHavuzu.length > 0) {
+        zorlananId = dalHavuzu[Math.floor(Math.random() * dalHavuzu.length)].id;
+      }
     }
   }
   // Her karakter hayatında en az bir "gizemli" (esrarengiz eşya/olay) anıyla
@@ -1281,6 +1309,7 @@ async function sonucuUygulaVeIlerlet(
     const ceza = hapisCezaSuresiHesapla(state.suc_seviyesi);
     state.hapis_ceza_kalan = ceza;
     state.hapis_ceza_toplam = ceza;
+    state.hapis_tur_sayaci = 0;
     hapisteYeniGirildiBuTur = true;
   }
   // Riskli kaçış girişimi başarısız oldu → ceza uzadı (toplam ceza da birlikte uzar).
@@ -1302,7 +1331,11 @@ async function sonucuUygulaVeIlerlet(
   }
   clampStats(state);
 
-  if (etki.zorunlu_sonraki) oturum.zorlananOlayId = etki.zorunlu_sonraki;
+  if (etki.zorunlu_sonraki_havuzu && etki.zorunlu_sonraki_havuzu.length > 0) {
+    oturum.zorlananOlayId = zorunluSonrakiHavuzdanSec(etki.zorunlu_sonraki_havuzu, state.gecmis_olaylar);
+  } else if (etki.zorunlu_sonraki) {
+    oturum.zorlananOlayId = etki.zorunlu_sonraki;
+  }
 
   let sonucAnlatimi = sonucAnlatimiUret(state, etki, basarili);
   if (sucKazanci === "ciddi") {
@@ -1391,6 +1424,10 @@ async function sonucuUygulaVeIlerlet(
           // aksi halde kısa bir ceza, tutuklandığı turun yasArtisi'yle aynı anda
           // sıfırlanıp hiç hissedilmeden bitebilir.
           if (state.etiketler.includes("hapiste") && !hapisteYeniGirildiBuTur) {
+            // "Az olay var" turu Faz 8: yalnız gerçek bir hapisOlayi:true olayı
+            // çözüldüğünde sayaç artar — tutuklanma anının kendisi (hapisOlayi
+            // değil, normal havuzdan gelir) bunu tüketmez.
+            if (mevcutOlay.hapisOlayi) state.hapis_tur_sayaci += 1;
             state.hapis_ceza_kalan -= yasArtisi;
             if (state.hapis_ceza_kalan <= 0) {
               state.hapis_ceza_kalan = 0;
@@ -2849,6 +2886,7 @@ export async function kotuIsYap(id: string, tur: string, secenek: KotuIsSecenek 
       const ceza = hapisCezaSuresiHesapla(state.suc_seviyesi);
       state.hapis_ceza_kalan = ceza;
       state.hapis_ceza_toplam = ceza;
+      state.hapis_tur_sayaci = 0;
     }
     hayatOlayiEkle(state, "⛓️", T(dil, "Karanlık bir iş sırasında enselendi"));
     mesaj += " " + T(dil, "Enselendin — kodesi boyladın.");

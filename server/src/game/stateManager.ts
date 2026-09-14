@@ -640,6 +640,7 @@ export function createCharacter(
     suc_seviyesi: 0,
     hapis_ceza_kalan: 0,
     hapis_ceza_toplam: 0,
+    hapis_tur_sayaci: 0,
     mulkler: [],
     mulk_bakim_kalan: {},
     magaza_envanteri: [],
@@ -854,6 +855,11 @@ export function eskiKayitGocu(state: CharacterState): void {
   for (const tur of state.mulkler) {
     if (typeof state.mulk_bakim_kalan[tur] !== "number") state.mulk_bakim_kalan[tur] = rastgeleMulkBakimAraligi();
   }
+  // Mağaza sonradan eklendi; eski kayıtlarda alan yok — envanterBozulmasiUygula
+  // (her tur) ve magazaConfigGetir/EnvanterPaneli buna doğrudan .some()/.map()
+  // uyguladığı için eksikse çöküyordu (mağaza + envanter tamamen kayboluyordu).
+  if (!Array.isArray(state.magaza_envanteri)) state.magaza_envanteri = [];
+  if (typeof state.magaza_temel_kilit_bitis_yili !== "number") state.magaza_temel_kilit_bitis_yili = null;
   // Veba "ömürde bir kez" → "20 yıl cooldown"a çevrildi; eski kayıtta zaten
   // veba geçirmiş biri için cooldown'u başından dolmuş say (yeniden yakalanabilsin).
   if (state.son_veba_bitis_yili === undefined) {
@@ -875,6 +881,12 @@ export function eskiKayitGocu(state: CharacterState): void {
   // göre kısıtlayan kural için); eski hapisteki kayıtlarda kalan süreyi toplam say.
   if (typeof state.hapis_ceza_toplam !== "number") {
     state.hapis_ceza_toplam = state.etiketler.includes("hapiste") ? state.hapis_ceza_kalan : 0;
+  }
+  // Kaçış-başlangıcı geciktirme sayacı (Faz 8) sonradan eklendi; eski kayıtlarda
+  // hapiste olan bir karakter zaten "içeride" sayılır (filtre kapansın) — ilk 2
+  // hapisOlayi'nı zaten yaşamış kabul edilir ki kaçış olayları hemen açılabilsin.
+  if (typeof state.hapis_tur_sayaci !== "number") {
+    state.hapis_tur_sayaci = state.etiketler.includes("hapiste") ? 2 : 0;
   }
   // Kişisel veba hastalığı ölüm riski sonradan eklendi. Yeni bir vakada
   // vebaHastaligiBaslatEt bunu 70 yapıyor; göçmüş bir hasta kaydı da aynı
@@ -1155,9 +1167,9 @@ export function yaslanmaUygula(state: CharacterState, yasArtisi: number): number
   let yas = state.yas - yasArtisi;
   for (let i = 0; i < yasArtisi; i++) {
     yas += 1;
-    if (yas >= 75) toplamKayip += 10;
-    else if (yas >= 65) toplamKayip += 7;
-    else if (yas >= 55) toplamKayip += 4;
+    if (yas >= 75) toplamKayip += 7;
+    else if (yas >= 65) toplamKayip += 5;
+    else if (yas >= 55) toplamKayip += 3;
   }
   state.saglik -= toplamKayip;
   return toplamKayip;
@@ -2104,12 +2116,14 @@ export function krizEtkisiUygula(state: CharacterState, yasArtisi: number): stri
   return null;
 }
 
-// Ekonomi sıkılaştırma turunda pasif azalma KALDIRILDI: suç/aranma seviyesi artık
-// zamanla kendiliğinden düşmez, sabit kalır. Tek düşüş yolu aranmaSeviyesi.ts'teki
-// kefaret/rüşvet seçenekleri (suc_artis negatif) ve büyük baskının suc_seviyesi_ayarla'sı.
-const SUC_SEVIYESI_PASIF_AZALMA_YILLIK = 0;
+// 2026-09 (kullanıcı isteği): "aranma seviyesi zamanla çok yavaş düşsün" — tamamen
+// suç işlemeyi bırakan bir karakter artık sonsuza dek sabit kademede kalmaz, ama
+// düşüş kasıtlı olarak çok yavaştır (0.15/yıl → 100'den 0'a inmesi ~667 yıl sürer,
+// gerçekçi bir ömürde en fazla bir-iki bandı aşağı çeker). Ana düşüş yolu hâlâ
+// aranmaSeviyesi.ts'teki kefaret/rüşvet seçenekleri (suc_artis negatif) ve büyük
+// baskının suc_seviyesi_ayarla'sıdır — bu sadece küçük bir pasif "unutulma" payı.
+const SUC_SEVIYESI_PASIF_AZALMA_YILLIK = 0.15;
 
-/** Suç/aranma seviyesi artık pasif olarak düşmüyor (bkz. yukarıdaki not) — fonksiyon geriye dönük uyum için duruyor. */
 export function sucSeviyesiUygula(state: CharacterState, yasArtisi: number): void {
   if (yasArtisi <= 0) return;
   state.suc_seviyesi = Math.max(0, state.suc_seviyesi - SUC_SEVIYESI_PASIF_AZALMA_YILLIK * yasArtisi);

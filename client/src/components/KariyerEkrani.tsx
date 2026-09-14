@@ -376,116 +376,125 @@ export function KariyerEkrani({
         </div>
       )}
 
-      {/* ===== YÖNETİMLE BAĞLAR ===== */}
-      {yonetimDurum && (
-        <section className="kariyer-bolum kariyer-yonetim">
-          {talep && (
-            <div className="kariyer-talep-afisi">
-              <strong>📜 {talep.kimAdi}</strong>
-              <p>
-                {talep.tur === 'bagis'
-                  ? `${talep.kalem} — ${formatPara(talep.tutar)} ${paraBirimi} ${en ? 'demanded.' : 'istiyor.'}`
-                  : `${talep.kalem} ${en ? 'awaited.' : 'bekliyor.'}`}
-              </p>
-              <div className="kariyer-talep-butonlar">
-                <button disabled={yukleniyor} onClick={() => onTalep('kabul')}>
-                  {talep.tur === 'bagis' ? (en ? 'Pay' : 'Öde') : en ? 'Swear it' : 'Kabul et'}
-                </button>
-                <button className="ikincil" disabled={yukleniyor} onClick={() => onTalep('ret')}>
-                  {en ? 'Refuse' : 'Reddet'}
-                </button>
-                <button className="ikincil" disabled={yukleniyor} onClick={() => onTalep('yalan')}>
-                  {en ? '“I’m broke”' : '“Param yok” de'}
-                </button>
+      {/* PC'de iki sütunlu "saray" düzeni: solda geniş yönetim/ilişki bölümü,
+          sağda ekip/rakip/amir/güç özeti — strateji oyunlarındaki danışman
+          ekranlarına benzer şekilde. Mobilde tek sütuna iner (bkz. medya sorgusu). */}
+      <div className="kariyer-govde">
+        <div className="kariyer-ana-sutun">
+          {/* ===== YÖNETİMLE BAĞLAR ===== */}
+          {yonetimDurum && (
+            <section className="kariyer-bolum kariyer-yonetim">
+              {talep && (
+                <div className="kariyer-talep-afisi">
+                  <strong>📜 {talep.kimAdi}</strong>
+                  <p>
+                    {talep.tur === 'bagis'
+                      ? `${talep.kalem} — ${formatPara(talep.tutar)} ${paraBirimi} ${en ? 'demanded.' : 'istiyor.'}`
+                      : `${talep.kalem} ${en ? 'awaited.' : 'bekliyor.'}`}
+                  </p>
+                  <div className="kariyer-talep-butonlar">
+                    <button disabled={yukleniyor} onClick={() => onTalep('kabul')}>
+                      {talep.tur === 'bagis' ? (en ? 'Pay' : 'Öde') : en ? 'Swear it' : 'Kabul et'}
+                    </button>
+                    <button className="ikincil" disabled={yukleniyor} onClick={() => onTalep('ret')}>
+                      {en ? 'Refuse' : 'Reddet'}
+                    </button>
+                    <button className="ikincil" disabled={yukleniyor} onClick={() => onTalep('yalan')}>
+                      {en ? '“I’m broke”' : '“Param yok” de'}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {bikkin && (
+                <p className="kariyer-bikkin-uyari">
+                  ⚠️ {en
+                    ? "You've been pushing too often — interactions may backfire."
+                    : 'Çok sık üstüne gidiyorsun — etkileşimler ters tepebilir.'}
+                </p>
+              )}
+
+              <div className="kariyer-hatlar">
+                <HatKarti hat="yonetici" durum={yonetimDurum} yukleniyor={yukleniyor} onEtkilesim={onEtkilesim} onIstek={onIstek} />
+                <HatKarti hat="patron" durum={yonetimDurum} yukleniyor={yukleniyor} onEtkilesim={onEtkilesim} onIstek={onIstek} />
               </div>
+            </section>
+          )}
+
+          {/* ===== EKİBİN ===== */}
+          <div className="aile-cocuklar-karti">
+            <h3>{m.geEkibin}</h3>
+            {ekip.length === 0 ? (
+              <p className="aile-bos-metin">{m.geEkipYok}</p>
+            ) : (
+              <ul className="aile-cocuk-listesi">
+                {ekip.map((uye) => (
+                  <li key={uye.id} className="aile-cocuk-satiri gorev-ekip-satiri">
+                    <span className="aile-cocuk-ad">🧑 {uye.isim}</span>
+                    <span className="aile-cocuk-detay">
+                      {kt(uye.rol)} · {uye.maas} {paraBirimi}/{m.ksYilBasi} · 🎭 {kt(uye.kisilik)} · 🤝 %{uye.sadakat} ·{' '}
+                      {m.ksKalite} %{uye.tahminiMin}-{uye.tahminiMax}
+                    </span>
+                    <button className="ikincil gorev-ekip-kov" disabled={yukleniyor} onClick={() => onEkipCikar(uye.id)}>
+                      {m.ksKov}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+
+        <aside className="kariyer-yan-sutun">
+          {/* ===== RAKİPLERİN ===== */}
+          {rakipler.length > 0 && (
+            <div className="aile-koken-karti">
+              <h3>{en ? 'Your Rivals' : 'Rakiplerin'}</h3>
+              <div className="aile-koken-listesi">
+                {rakipler.map((r) => (
+                  <span key={r.ad} className={`iliski-rozet${r.yenildi ? ' rakip-yenildi' : ''}`}>
+                    ♟️ {r.ad} · {kt(r.meslek)}
+                    {r.yenildi
+                      ? ` · ${en ? 'defeated' : 'saf dışı'}`
+                      : ` · ${en ? 'power' : 'güç'}: ${gucEtiket(r.guc)} · ${husumetEtiket(r.husumet)}`}
+                  </span>
+                ))}
+              </div>
+              <p className="aile-bos-metin">
+                {en
+                  ? 'Break a rival with dark deeds on the Investments screen, or ask the ruler to strike one here.'
+                  : 'Rakibini Yatırım ekranındaki karanlık işlerle kır, ya da buradan yöneticiden darbe iste.'}
+              </p>
             </div>
           )}
 
-          {bikkin && (
-            <p className="kariyer-bikkin-uyari">
-              ⚠️ {en
-                ? "You've been pushing too often — interactions may backfire."
-                : 'Çok sık üstüne gidiyorsun — etkileşimler ters tepebilir.'}
-            </p>
+          {/* ===== AMİR ===== */}
+          <div className="aile-koken-karti">
+            <h3>{m.iyAmirin}</h3>
+            {amirAdi ? (
+              <div className="iliski-rozet iliski-es">
+                <span className="iliski-ad">🎖️ {amirAdi}</span>
+                {amirRutbe && <span className="iliski-etiket">{kt(amirRutbe)}</span>}
+              </div>
+            ) : (
+              <p className="aile-bos-metin">{m.geAmirYok}</p>
+            )}
+          </div>
+
+          {meslekGucSatirlari.length > 0 && (
+            <div className="aile-koken-karti">
+              <h3>{m.geMeslekGucu}</h3>
+              <div className="aile-koken-listesi">
+                {meslekGucSatirlari.map(([ad, deger]) => (
+                  <span key={ad} className="iliski-rozet">
+                    {ad}: {deger}
+                  </span>
+                ))}
+              </div>
+            </div>
           )}
-
-          <div className="kariyer-hatlar">
-            <HatKarti hat="yonetici" durum={yonetimDurum} yukleniyor={yukleniyor} onEtkilesim={onEtkilesim} onIstek={onIstek} />
-            <HatKarti hat="patron" durum={yonetimDurum} yukleniyor={yukleniyor} onEtkilesim={onEtkilesim} onIstek={onIstek} />
-          </div>
-        </section>
-      )}
-
-      {/* ===== EKİBİN ===== */}
-      <div className="aile-cocuklar-karti">
-        <h3>{m.geEkibin}</h3>
-        {ekip.length === 0 ? (
-          <p className="aile-bos-metin">{m.geEkipYok}</p>
-        ) : (
-          <ul className="aile-cocuk-listesi">
-            {ekip.map((uye) => (
-              <li key={uye.id} className="aile-cocuk-satiri gorev-ekip-satiri">
-                <span className="aile-cocuk-ad">🧑 {uye.isim}</span>
-                <span className="aile-cocuk-detay">
-                  {kt(uye.rol)} · {uye.maas} {paraBirimi}/{m.ksYilBasi} · 🎭 {kt(uye.kisilik)} · 🤝 %{uye.sadakat} ·{' '}
-                  {m.ksKalite} %{uye.tahminiMin}-{uye.tahminiMax}
-                </span>
-                <button className="ikincil gorev-ekip-kov" disabled={yukleniyor} onClick={() => onEkipCikar(uye.id)}>
-                  {m.ksKov}
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
+        </aside>
       </div>
-
-      {/* ===== RAKİPLERİN ===== */}
-      {rakipler.length > 0 && (
-        <div className="aile-koken-karti">
-          <h3>{en ? 'Your Rivals' : 'Rakiplerin'}</h3>
-          <div className="aile-koken-listesi">
-            {rakipler.map((r) => (
-              <span key={r.ad} className={`iliski-rozet${r.yenildi ? ' rakip-yenildi' : ''}`}>
-                ♟️ {r.ad} · {kt(r.meslek)}
-                {r.yenildi
-                  ? ` · ${en ? 'defeated' : 'saf dışı'}`
-                  : ` · ${en ? 'power' : 'güç'}: ${gucEtiket(r.guc)} · ${husumetEtiket(r.husumet)}`}
-              </span>
-            ))}
-          </div>
-          <p className="aile-bos-metin">
-            {en
-              ? 'Break a rival with dark deeds on the Investments screen, or ask the ruler to strike one here.'
-              : 'Rakibini Yatırım ekranındaki karanlık işlerle kır, ya da buradan yöneticiden darbe iste.'}
-          </p>
-        </div>
-      )}
-
-      {/* ===== AMİR ===== */}
-      <div className="aile-koken-karti">
-        <h3>{m.iyAmirin}</h3>
-        {amirAdi ? (
-          <div className="iliski-rozet iliski-es">
-            <span className="iliski-ad">🎖️ {amirAdi}</span>
-            {amirRutbe && <span className="iliski-etiket">{kt(amirRutbe)}</span>}
-          </div>
-        ) : (
-          <p className="aile-bos-metin">{m.geAmirYok}</p>
-        )}
-      </div>
-
-      {meslekGucSatirlari.length > 0 && (
-        <div className="aile-koken-karti">
-          <h3>{m.geMeslekGucu}</h3>
-          <div className="aile-koken-listesi">
-            {meslekGucSatirlari.map(([ad, deger]) => (
-              <span key={ad} className="iliski-rozet">
-                {ad}: {deger}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
 
       <button className="ikincil" onClick={onGeriDon}>
         {m.geriDon}

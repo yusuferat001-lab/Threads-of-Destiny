@@ -104,15 +104,15 @@ describe("mülk getiri hesabı — dünya durumuna göre", () => {
 });
 
 describe("suç seviyesi pasif azalma", () => {
-  it("artık zamanla düşmez, sabit kalır (ekonomi sıkılaştırma turu)", () => {
+  it("zamanla çok yavaş düşer (2026-09, 0.15/yıl), sıfırın altına inmez", () => {
     const state = taze();
     state.suc_seviyesi = 10;
     sucSeviyesiUygula(state, 3);
-    expect(state.suc_seviyesi).toBe(10);
+    expect(state.suc_seviyesi).toBeCloseTo(10 - 0.15 * 3, 5);
 
     state.suc_seviyesi = 1;
     sucSeviyesiUygula(state, 10);
-    expect(state.suc_seviyesi).toBe(1);
+    expect(state.suc_seviyesi).toBe(0);
   });
 });
 

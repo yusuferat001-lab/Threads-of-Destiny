@@ -225,6 +225,13 @@ export interface CharacterState {
    * kullanır (§17). Tahliyede 0'a sıfırlanır. Hapiste değilken 0.
    */
   hapis_ceza_toplam: number;
+  /**
+   * "Az olay var" turu Faz 8: hapse her yeni girişte 0'a sıfırlanır, çözülen her
+   * hapisOlayi:true olayında +1 artar. `hapisKacisBaslangici:true` olayları bu
+   * sayaç 2'ye ulaşana kadar havuzdan çıkarılır — önce en az 2 "hapishane hayatı"
+   * olayı yaşansın, kaçış fikri ondan sonra gelsin.
+   */
+  hapis_tur_sayaci: number;
   /** Sahip olunan piyasa mülkleri (her türden en fazla bir tane). */
   mulkler: MulkTuru[];
   /**
@@ -547,6 +554,14 @@ export interface SonucEtkisi {
   cocuk_iliski?: number;
   /** Belirtilirse bir sonraki olay havuzdan rastgele seçilmez, doğrudan bu id ile gelir. */
   zorunlu_sonraki?: string;
+  /**
+   * Belirtilirse `zorunlu_sonraki`'nin YERİNE geçer: bir sonraki olay bu id
+   * listesinden rastgele seçilir (mümkünse `gecmis_olaylar`'da hiç görülmemiş
+   * olan tercih edilir) — sabit, tek-id'li zincirlerin ("her seferinde aynı
+   * yolculuk") aksine her oynanışta farklı bir dal izlenmesini sağlar (§17,
+   * "az olay var" turu Yol A). İki alan birlikte varsa bu öncelikli.
+   */
+  zorunlu_sonraki_havuzu?: string[];
   /** Belirtilirse yeni bir ekip üyesi eklenir; gerçek kalitesi gizlice hesaplanır. */
   ekip_ekle?: { rol: string; tahminGenisligi: number };
   /** true ise ekipten rastgele biri kaybedilir (görevden dönmeme, ayrılma vb.). */

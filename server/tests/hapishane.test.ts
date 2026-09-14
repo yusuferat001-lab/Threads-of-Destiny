@@ -174,6 +174,64 @@ describe("hapishane sistemi", () => {
     expect(hazirlik.secenekler.every((s) => s.basariliSonuc.zorunlu_sonraki === "hapis_isyan_firsati")).toBe(true);
   });
 
+  describe("kaçış/erken-tahliye stratejilerini geciktirme (Faz 8)", () => {
+    const KACIS_BASLANGICI = [
+      "hapis_kacis_girisimi",
+      "hapis_rusvet_girisimi",
+      "hapis_isyan_firsati",
+      "hapis_tunel_karar",
+      "hapis_rusvet_muhbir_bulma",
+      "hapis_bayiltma_plan",
+      "hapis_iyi_hal_karar",
+      "hapis_avlu_duvari",
+      "hapis_camasir_arabasi",
+      "hapis_sayim_karisikligi",
+    ];
+
+    it("tam olarak 10 olay hapisKacisBaslangici:true taşır", () => {
+      const isaretliler = OLAY_BANKASI.filter((o) => o.hapisKacisBaslangici === true).map((o) => o.id);
+      expect(isaretliler.sort()).toEqual([...KACIS_BASLANGICI].sort());
+    });
+
+    it("toplam ceza 5 yıldan kısaysa hiçbir kaçış-başlangıç olayı çıkmaz (sayaç yeterli olsa bile)", () => {
+      const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+      mesleğiSec(state, "Tüccar");
+      state.hapis_ceza_toplam = 4;
+      state.hapis_tur_sayaci = 10;
+      etiketEkle(state, ["hapiste"]);
+      for (let i = 0; i < 500; i++) {
+        const { olay } = olaySec(state);
+        expect(KACIS_BASLANGICI).not.toContain(olay.id);
+      }
+    });
+
+    it("ceza yeterli (≥5 yıl) ama ilk 2 hapisOlayi çözülmeden kaçış-başlangıç olayı çıkmaz", () => {
+      const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+      mesleğiSec(state, "Tüccar");
+      state.hapis_ceza_toplam = 8;
+      state.hapis_tur_sayaci = 1;
+      etiketEkle(state, ["hapiste"]);
+      for (let i = 0; i < 500; i++) {
+        const { olay } = olaySec(state);
+        expect(KACIS_BASLANGICI).not.toContain(olay.id);
+      }
+    });
+
+    it("ceza yeterli VE en az 2 hapisOlayi çözülmüşse kaçış-başlangıç olayları uygun hale gelir", () => {
+      const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+      mesleğiSec(state, "Tüccar");
+      state.hapis_ceza_toplam = 8;
+      state.hapis_tur_sayaci = 2;
+      etiketEkle(state, ["hapiste"]);
+      const gorulen = new Set<string>();
+      for (let i = 0; i < 500; i++) {
+        const { olay } = olaySec(state);
+        gorulen.add(olay.id);
+      }
+      expect(KACIS_BASLANGICI.some((id) => gorulen.has(id))).toBe(true);
+    });
+  });
+
   describe("aranma bandına göre ceza süresi (2026-09 yeniden düzenleme)", () => {
     it("hafif bir tutuklamada (toplam ceza <7y) para/af ile çıkış her zaman görülebilir", () => {
       const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
@@ -181,6 +239,7 @@ describe("hapishane sistemi", () => {
       etiketEkle(state, ["hapiste"]);
       state.hapis_ceza_toplam = 6;
       state.hapis_ceza_kalan = 6;
+      state.hapis_tur_sayaci = 2; // Faz 8 kapısı: kaçış/çıkış-başlangıç olayları için en az 2 hapisOlayi geçmiş olmalı
       let bulundu = false;
       for (let i = 0; i < 1000 && !bulundu; i++) {
         const { olay } = olaySec(state);
@@ -207,6 +266,7 @@ describe("hapishane sistemi", () => {
       etiketEkle(state, ["hapiste"]);
       state.hapis_ceza_toplam = 9;
       state.hapis_ceza_kalan = 4; // 5 yıl yatmış (9-4)
+      state.hapis_tur_sayaci = 2; // Faz 8 kapısı: kaçış/çıkış-başlangıç olayları için en az 2 hapisOlayi geçmiş olmalı
       let bulundu = false;
       for (let i = 0; i < 1000 && !bulundu; i++) {
         const { olay } = olaySec(state);
@@ -221,6 +281,7 @@ describe("hapishane sistemi", () => {
       etiketEkle(state, ["hapiste"]);
       state.hapis_ceza_toplam = 12;
       state.hapis_ceza_kalan = 12;
+      state.hapis_tur_sayaci = 2; // Faz 8 kapısı: kaçış/çıkış-başlangıç olayları için en az 2 hapisOlayi geçmiş olmalı
       const kacisIdleri = ["hapis_kacis_girisimi", "hapis_avlu_duvari", "hapis_camasir_arabasi", "hapis_sayim_karisikligi"];
       const bulunanlar = new Set<string>();
       for (let i = 0; i < 2000 && bulunanlar.size < kacisIdleri.length; i++) {
