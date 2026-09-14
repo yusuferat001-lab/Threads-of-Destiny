@@ -168,19 +168,23 @@ const YOL_SISTEMLERI: Record<string, { yolOnEki: string; girisId: string }> = {
  * adamı kariyerin ortasında/sonunda daha çok dönüm noktası yaşar).
  */
 const YOL_TAKIP_KONTROL_NOKTALARI: Record<string, { yas: number; hedef: number }[]> = {
+  // Orta Çağ Asker/Din Adamı: dal başına tam 20 olay → hedef 5 (%25).
   "Orta Çağ|Asker": [
     { yas: 20, hedef: 1 },
-    { yas: 28, hedef: 2 },
-    { yas: 38, hedef: 3 },
-    { yas: 50, hedef: 4 },
+    { yas: 30, hedef: 2 },
+    { yas: 40, hedef: 3 },
+    { yas: 52, hedef: 4 },
     { yas: 65, hedef: 5 },
   ],
   "Orta Çağ|Din Adamı": [
     { yas: 22, hedef: 1 },
-    { yas: 35, hedef: 2 },
-    { yas: 50, hedef: 3 },
-    { yas: 65, hedef: 4 },
+    { yas: 33, hedef: 2 },
+    { yas: 44, hedef: 3 },
+    { yas: 56, hedef: 4 },
+    { yas: 68, hedef: 5 },
   ],
+  // Orta Çağ Tüccar / Sanayi Devrimi (Asker/Tüccar/Din Adamı): dal başına
+  // tam 11 olay → hedef 3 (%27, aşağı yuvarlanmış en yakın tam sayı).
   "Orta Çağ|Tüccar": [
     { yas: 21, hedef: 1 },
     { yas: 38, hedef: 2 },
@@ -198,7 +202,8 @@ const YOL_TAKIP_KONTROL_NOKTALARI: Record<string, { yas: number; hedef: number }
   ],
   "Sanayi Devrimi|Din Adamı": [
     { yas: 25, hedef: 1 },
-    { yas: 48, hedef: 2 },
+    { yas: 42, hedef: 2 },
+    { yas: 60, hedef: 3 },
   ],
 };
 
@@ -238,11 +243,11 @@ const EVCIL_HAYVAN_TAKIP_KONTROL_NOKTALARI = [
   { yas: 55, hedef: 3 },
 ];
 
-/** Gizemli eşya takip garantisi: her eşyanın kendi havuzu sadece 2 olay — hedef ikisini de görmek. */
-const GIZEMLI_ESYA_TAKIP_KONTROL_NOKTALARI = [
-  { yas: 35, hedef: 1 },
-  { yas: 52, hedef: 2 },
-];
+// Gizemli eşya takip garantisi: her eşyanın kendi havuzu sadece 2 olay.
+// Havuz sadece 2 olay; ikisini de garanti etmek gizemi tamamen ortadan
+// kaldırırdı (§26 "gizemli eşya" adını hak etsin diye) — hedef 1'de kalır,
+// ikincisini görüp görmemek normal ağırlıklı seçime/şansa bırakılır.
+const GIZEMLI_ESYA_TAKIP_KONTROL_NOKTALARI = [{ yas: 40, hedef: 1 }];
 
 /** Hizip takip garantisi: her hizbin kendi havuzu ~10 olay (9 hizbe özel + 1 meslek-çatışma genel). */
 const HIZIP_TAKIP_KONTROL_NOKTALARI = [
@@ -791,7 +796,8 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
     if (secilen) zorlananId = secilen;
   }
   // Gizemli eşya takip garantisi (kümülatif): her eşyanın kendi havuzu
-  // sadece 2 olay taşır — hedef eninde sonunda ikisini de göstermek.
+  // sadece 2 olay taşır — hedef 1 (en az birini garanti et, ikincisi şansa
+  // kalsın ki gerçekten "gizemli" kalabilsin).
   if (!zorlananId && !milestoneKilitli) {
     const sahipOlunanEsyalar = oturum.state.etiketler
       .filter((e) => e.startsWith("esya:") || e.startsWith("envanter:"))
