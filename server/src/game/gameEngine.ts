@@ -202,6 +202,63 @@ const YOL_TAKIP_KONTROL_NOKTALARI: Record<string, { yas: number; hedef: number }
   ],
 };
 
+/**
+ * Ortak "kümülatif takip garantisi" yardımcısı: yaşa göre kaç olay
+ * görülmüş OLMALI (`noktalar`) hesaplanır; `tumHavuz`'daki (görülmüş
+ * sayımı için) gerçek görülen sayısı bu hedefin altındaysa, `secimHavuzu`
+ * (adaylar — bazı sistemlerde `tumHavuz` ile aynı, yol sisteminde olduğu
+ * gibi yaşa göre daraltılmış bir alt küme de olabilir) içinden henüz
+ * görülmemiş biri (hepsi görüldüyse tekrar edilebilir) döner. §11 kural
+ * 2b/6/7/8/10'un hepsi bu tek fonksiyonu kullanır.
+ */
+function kumulatifTakipSec(
+  noktalar: { yas: number; hedef: number }[],
+  yas: number,
+  tumHavuz: string[],
+  secimHavuzu: string[],
+  gecmisOlaylar: string[]
+): string | null {
+  const suAnkiHedef = noktalar.reduce((maks, nokta) => (yas >= nokta.yas ? Math.max(maks, nokta.hedef) : maks), 0);
+  if (suAnkiHedef === 0) return null;
+  const gorulenSayisi = tumHavuz.filter((id) => gecmisOlaylar.includes(id)).length;
+  if (gorulenSayisi >= suAnkiHedef) return null;
+  const gorulmemis = secimHavuzu.filter((id) => !gecmisOlaylar.includes(id));
+  const aday = gorulmemis.length > 0 ? gorulmemis : secimHavuzu;
+  return aday.length > 0 ? aday[Math.floor(Math.random() * aday.length)] : null;
+}
+
+/**
+ * Evcil hayvan takip garantisinin kümülatif hedefleri (havuz: 6 genel +
+ * türe özel ~2 = ~8 aday). 20-25 yaşında sahiplenildiği için ilk kontrol
+ * noktası biraz sonraya bırakılır.
+ */
+const EVCIL_HAYVAN_TAKIP_KONTROL_NOKTALARI = [
+  { yas: 30, hedef: 1 },
+  { yas: 42, hedef: 2 },
+  { yas: 55, hedef: 3 },
+];
+
+/** Gizemli eşya takip garantisi: her eşyanın kendi havuzu sadece 2 olay — hedef ikisini de görmek. */
+const GIZEMLI_ESYA_TAKIP_KONTROL_NOKTALARI = [
+  { yas: 35, hedef: 1 },
+  { yas: 52, hedef: 2 },
+];
+
+/** Hizip takip garantisi: her hizbin kendi havuzu ~10 olay (9 hizbe özel + 1 meslek-çatışma genel). */
+const HIZIP_TAKIP_KONTROL_NOKTALARI = [
+  { yas: 30, hedef: 1 },
+  { yas: 42, hedef: 2 },
+  { yas: 55, hedef: 3 },
+  { yas: 65, hedef: 4 },
+];
+
+/** Saray takip garantisi: sabit 6 olaylık küçük havuz — hepsini tüketmeden çeşitlilik payı bırakılır. */
+const SARAY_TAKIP_KONTROL_NOKTALARI = [
+  { yas: 50, hedef: 1 },
+  { yas: 58, hedef: 2 },
+  { yas: 68, hedef: 3 },
+];
+
 const SARAY_OLAY_IDLERI = [
   "saray_ic_entrika",
   "saray_balosu",
@@ -633,19 +690,13 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
         // sadik/firari Asker'de, hayirsever Tüccar'da) Orta Çağ ve Sanayi
         // Devrimi sistemleri arasında paylaşılır — `cag` filtresi olmadan
         // yanlış çağdan bir olay zorlanabilirdi.
-        const tumDalHavuzu = OLAY_BANKASI.filter((o) => o.gerekliEtiketler?.includes(yolTag) && o.cag === oturum.state.cag);
-        const gorulenSayisi = tumDalHavuzu.filter((o) => oturum.state.gecmis_olaylar.includes(o.id)).length;
-        if (gorulenSayisi < suAnkiHedef) {
-          const yasaUygunGorulmemis = tumDalHavuzu.filter(
-            (o) =>
-              !oturum.state.gecmis_olaylar.includes(o.id) &&
-              (o.minYas === undefined || oturum.state.yas >= o.minYas) &&
-              (o.maxYas === undefined || oturum.state.yas <= o.maxYas)
-          );
-          if (yasaUygunGorulmemis.length > 0) {
-            zorlananId = yasaUygunGorulmemis[Math.floor(Math.random() * yasaUygunGorulmemis.length)].id;
-          }
-        }
+        const tumDalOlaylari = OLAY_BANKASI.filter((o) => o.gerekliEtiketler?.includes(yolTag) && o.cag === oturum.state.cag);
+        const tumDalHavuzu = tumDalOlaylari.map((o) => o.id);
+        const yasaUygunHavuz = tumDalOlaylari
+          .filter((o) => (o.minYas === undefined || oturum.state.yas >= o.minYas) && (o.maxYas === undefined || oturum.state.yas <= o.maxYas))
+          .map((o) => o.id);
+        const secilen = kumulatifTakipSec([{ yas: 0, hedef: suAnkiHedef }], oturum.state.yas, tumDalHavuzu, yasaUygunHavuz, oturum.state.gecmis_olaylar);
+        if (secilen) zorlananId = secilen;
       }
     }
   }
@@ -694,64 +745,46 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
       zorlananId = teklifId;
     }
   }
-  // Evcil hayvanı olan bir karakter 45-50 yaş aralığında henüz en az iki
-  // hayvanla-ilgili olay yaşamadıysa, genel (türden bağımsız, her zaman uygun)
-  // takip olaylarından biri zorla tetiklenir; havuz tükendikçe tekrar edebilir.
-  if (
-    !zorlananId &&
-    !milestoneKilitli &&
-    oturum.state.evcil_hayvan &&
-    oturum.state.yas >= 45 &&
-    oturum.state.yas < 50
-  ) {
-    const gorulenSayisi = oturum.state.gecmis_olaylar.filter((id) =>
-      EVCIL_HAYVAN_TAKIP_OLAY_IDLERI.includes(id)
-    ).length;
-    if (gorulenSayisi < 2) {
-      const gorulmemis = EVCIL_HAYVAN_GENEL_TAKIP_OLAY_IDLERI.filter(
-        (id) => !oturum.state.gecmis_olaylar.includes(id)
-      );
-      const havuz = gorulmemis.length > 0 ? gorulmemis : EVCIL_HAYVAN_GENEL_TAKIP_OLAY_IDLERI;
-      zorlananId = havuz[Math.floor(Math.random() * havuz.length)];
-    }
+  // Evcil hayvan takip garantisi (kümülatif): havuz 6 genel + türe özel ~2
+  // olaydan oluşur (~8 aday); yalnız genel havuzdan seçilir (türe özel
+  // olaylar normal ağırlıklı seçimle çıkar), ama sayım her ikisini kapsar.
+  if (!zorlananId && !milestoneKilitli && oturum.state.evcil_hayvan) {
+    const secilen = kumulatifTakipSec(
+      EVCIL_HAYVAN_TAKIP_KONTROL_NOKTALARI,
+      oturum.state.yas,
+      EVCIL_HAYVAN_TAKIP_OLAY_IDLERI,
+      EVCIL_HAYVAN_GENEL_TAKIP_OLAY_IDLERI,
+      oturum.state.gecmis_olaylar
+    );
+    if (secilen) zorlananId = secilen;
   }
-  // Gizemli bir eşyaya (envanter:/esya: etiketli) sahip olup henüz onun kendi
-  // takip olaylarından hiçbirini yaşamamış bir karaktere, 38-46 yaş aralığında
-  // (ölmeden önce bir marj bırakılır) o eşyanın havuzundan biri zorla tetiklenir.
-  if (!zorlananId && !milestoneKilitli && oturum.state.yas >= 38 && oturum.state.yas < 46) {
+  // Gizemli eşya takip garantisi (kümülatif): her eşyanın kendi havuzu
+  // sadece 2 olay taşır — hedef eninde sonunda ikisini de göstermek.
+  if (!zorlananId && !milestoneKilitli) {
     const sahipOlunanEsyalar = oturum.state.etiketler
       .filter((e) => e.startsWith("esya:") || e.startsWith("envanter:"))
       .map((e) => e.slice(e.indexOf(":") + 1));
     for (const esyaId of sahipOlunanEsyalar) {
       const havuz = GIZEMLI_ESYA_TAKIP_HAVUZU[esyaId];
       if (!havuz || havuz.length === 0) continue;
-      const gorulenSayisi = havuz.filter((id) => oturum.state.gecmis_olaylar.includes(id)).length;
-      if (gorulenSayisi === 0) {
-        const gorulmemis = havuz.filter((id) => !oturum.state.gecmis_olaylar.includes(id));
-        const secimHavuzu = gorulmemis.length > 0 ? gorulmemis : havuz;
-        zorlananId = secimHavuzu[Math.floor(Math.random() * secimHavuzu.length)];
+      const secilen = kumulatifTakipSec(GIZEMLI_ESYA_TAKIP_KONTROL_NOKTALARI, oturum.state.yas, havuz, havuz, oturum.state.gecmis_olaylar);
+      if (secilen) {
+        zorlananId = secilen;
         break;
       }
     }
   }
-  // Bir hizbe katılmış karakter 45-50 yaş aralığında henüz en az üç hizip-özel
-  // olay yaşamadıysa (o hizbe özel olaylar + kendi mesleğine uygun çatışma
-  // olayı + genel hizip olayları), havuzdan biri zorla tetiklenir.
-  if (!zorlananId && !milestoneKilitli && oturum.state.hizip !== null && oturum.state.yas >= 45 && oturum.state.yas < 50) {
+  // Hizip takip garantisi (kümülatif): her hizbin kendi havuzu ~10 olay
+  // (9 hizbe özel + 1 meslek-çatışma genel).
+  if (!zorlananId && !milestoneKilitli && oturum.state.hizip !== null) {
     const hizipEtiketi = `hizip:${oturum.state.hizip}`;
     const hizipOlaylari = OLAY_BANKASI.filter(
       (o) =>
         (o.gerekliHizip && (!o.meslekler || o.meslekler.includes(oturum.state.meslek))) ||
         o.gerekliEtiketler?.includes(hizipEtiketi)
-    );
-    const gorulenSayisi = hizipOlaylari.filter((o) => oturum.state.gecmis_olaylar.includes(o.id)).length;
-    if (gorulenSayisi < 3) {
-      const gorulmemis = hizipOlaylari.filter((o) => !oturum.state.gecmis_olaylar.includes(o.id));
-      const havuz = gorulmemis.length > 0 ? gorulmemis : hizipOlaylari;
-      if (havuz.length > 0) {
-        zorlananId = havuz[Math.floor(Math.random() * havuz.length)].id;
-      }
-    }
+    ).map((o) => o.id);
+    const secilen = kumulatifTakipSec(HIZIP_TAKIP_KONTROL_NOKTALARI, oturum.state.yas, hizipOlaylari, hizipOlaylari, oturum.state.gecmis_olaylar);
+    if (secilen) zorlananId = secilen;
   }
   // Ün ve ahlak belli bir eşiğin üstündeyse kral karakteri saraya çağırır;
   // bu, rüşvet/saygınlık denemesinin (saray_girme_denemesi) yanında saraya
@@ -766,22 +799,17 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
   ) {
     zorlananId = "saray_kral_daveti";
   }
-  // Saraya girmiş bir karakter 50-58 yaş aralığında henüz en az iki saray
-  // olayı yaşamadıysa (ortalama ölüm yaşı ~60 hedeflendiği için ölmeden
-  // önce bir marj bırakılır), havuzdan biri zorla tetiklenir.
-  if (
-    !zorlananId &&
-    !milestoneKilitli &&
-    oturum.state.etiketler.includes("sarayda") &&
-    oturum.state.yas >= 50 &&
-    oturum.state.yas < 58
-  ) {
-    const gorulenSayisi = oturum.state.gecmis_olaylar.filter((id) => SARAY_OLAY_IDLERI.includes(id)).length;
-    if (gorulenSayisi < 2) {
-      const gorulmemis = SARAY_OLAY_IDLERI.filter((id) => !oturum.state.gecmis_olaylar.includes(id));
-      const havuz = gorulmemis.length > 0 ? gorulmemis : SARAY_OLAY_IDLERI;
-      zorlananId = havuz[Math.floor(Math.random() * havuz.length)];
-    }
+  // Saray takip garantisi (kümülatif): sabit 6 olaylık küçük havuz — hepsini
+  // tüketmeden çeşitlilik payı bırakmak için hedef en fazla 3'e çıkar.
+  if (!zorlananId && !milestoneKilitli && oturum.state.etiketler.includes("sarayda")) {
+    const secilen = kumulatifTakipSec(
+      SARAY_TAKIP_KONTROL_NOKTALARI,
+      oturum.state.yas,
+      SARAY_OLAY_IDLERI,
+      SARAY_OLAY_IDLERI,
+      oturum.state.gecmis_olaylar
+    );
+    if (secilen) zorlananId = secilen;
   }
   // Her karakter hayatında en az bir kez, mesleğine/çağına/bölgesine/dinine uygun
   // bir "büyük yolculuk"a (Haçlı Seferi, Hac, Coğrafi Keşif, Mucit Turnesi, Sömürge
