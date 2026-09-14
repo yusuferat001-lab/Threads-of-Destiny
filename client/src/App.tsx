@@ -1791,78 +1791,85 @@ function App() {
           <div className="giris-yollar" aria-hidden="true">
             <KaderYollari />
           </div>
-          {/* Tek kompakt satır: karakter portresi SOLDA küçük, ülke/tarih (Banner) SAĞINDA
-             aynı hizada — dikey yer kaplamasın (kullanıcı isteği). Prosedürel sahne açılışta
-             gösterilmez; oyun ekranında zaten var. */}
-          <div className="acilis-ust">
-            <KarakterAvatari kisilik={karakter.kisilik} />
-            <Banner
-              cag={karakter.cag}
-              bolge={karakter.bolge}
-              yil={karakter.yil}
-              ulke={karakter.ulke}
-              hukumdar={karakter.hukumdar}
-            />
+          {/* İki sütunlu "kimlik + anlatı" düzeni: solda kalıcı bir kimlik kartı
+             (portre/isim/ülke/kaynaklar/kişilik), sağda anlatı + meslek seçimi.
+             Eski tek-sütunlu istifte dar (560px) aile metni tam genişlikteki
+             (940px) satırların arasında sıkışıp okunaksız görünüyordu — artık
+             her sütunun kendi net genişliği var, hiçbir öğe diğerinin üstüne
+             taşmıyor. */}
+          <div className="acilis-sahne">
+            <aside className="acilis-kimlik">
+              <KarakterAvatari kisilik={karakter.kisilik} />
+              <h2 className="acilis-kimlik-ad">
+                {karakter.isim && <strong>{karakter.isim}</strong>}
+                <span className="acilis-kimlik-alt">{bic(m.acilisAileCocugu, kt(karakter.aile_meslegi))}</span>
+              </h2>
+              <Banner
+                cag={karakter.cag}
+                bolge={karakter.bolge}
+                yil={karakter.yil}
+                ulke={karakter.ulke}
+                hukumdar={karakter.hukumdar}
+              />
+              <div className="acilis-ozet">
+                <span>
+                  💰 {formatPara(karakter.para)} {karakter.para_birimi}
+                </span>
+                <span>❤️ {m.statSaglik} {karakter.saglik}</span>
+                <span>🙂 {m.statMutluluk} {karakter.mutluluk}</span>
+                <span>🏅 {unUnvani(karakter.un, dil)}</span>
+                <span>🎭 {karakter.kisilik.map((k) => kt(k)).join(' · ')}</span>
+              </div>
+
+              {karakter.durumlar.length > 0 && (
+                <p className="acilis-durum">
+                  {bic(m.acilisDurum, karakter.durumlar.map((d) => kt(d.ad)).join(', '))}
+                </p>
+              )}
+
+              <KisilikPaneli
+                kisilik={karakter.kisilik}
+                aileMeslegi={karakter.aile_meslegi}
+                kaynaklar={karakter.yatkinlik_kaynaklari}
+                eksenler={karakter.kisilik_eksenleri}
+              />
+            </aside>
+
+            <div className="acilis-icerik">
+              <p className="acilis-metni">{karakter.acilis_anlatimi}</p>
+
+              {/* Meslek seçimi artık ayrı bir sayfa değil — açılışla aynı ekranda. */}
+              <h3 className="acilis-meslek-baslik">{m.meslekSecBaslik}</h3>
+              <p className="giris-aciklama">{m.meslekSecAlt}</p>
+              <div className="meslek-kartlari acilis-meslek-kartlari">
+                {meslekler.map((meslek) => {
+                  const kategori = MESLEK_KATEGORI[meslek];
+                  const puan = kategori ? karakter?.yatkinliklar[kategori] ?? 0 : 0;
+                  const { etiket, simge } = yatkinlikEtiketi(puan, dil);
+                  return (
+                    <button
+                      key={meslek}
+                      className="meslek-kart"
+                      disabled={yukleniyor}
+                      onClick={() => meslekSecildi(meslek)}
+                    >
+                      <span className="meslek-simge">{MESLEK_SIMGE[meslek] ?? '📜'}</span>
+                      <strong>{kt(meslek)}</strong>
+                      <span className="meslek-aciklama">{meslekAciklama(m, meslek)}</span>
+                      <span className="meslek-yatkinlik">
+                        {simge} {etiket} ({puan > 0 ? '+' : ''}
+                        {puan})
+                      </span>
+                      {karakter.aile_meslegi === meslek && (
+                        <span className="meslek-miras-ipucu">{m.meslekMirasIpucu}</span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+              {yukleniyor && <p className="giris-aciklama">{m.yukleniyor}</p>}
+            </div>
           </div>
-          <h2>
-            {karakter.isim ? `${karakter.isim} — ` : ''}
-            {bic(m.acilisAileCocugu, kt(karakter.aile_meslegi))}
-          </h2>
-          <p className="acilis-metni">{karakter.acilis_anlatimi}</p>
-
-          <div className="acilis-ozet">
-            <span>
-              💰 {formatPara(karakter.para)} {karakter.para_birimi}
-            </span>
-            <span>❤️ {m.statSaglik} {karakter.saglik}</span>
-            <span>🙂 {m.statMutluluk} {karakter.mutluluk}</span>
-            <span>🏅 {unUnvani(karakter.un, dil)}</span>
-            <span>🎭 {karakter.kisilik.map((k) => kt(k)).join(' · ')}</span>
-          </div>
-
-          {karakter.durumlar.length > 0 && (
-            <p className="acilis-durum">
-              {bic(m.acilisDurum, karakter.durumlar.map((d) => kt(d.ad)).join(', '))}
-            </p>
-          )}
-
-          <KisilikPaneli
-            kisilik={karakter.kisilik}
-            aileMeslegi={karakter.aile_meslegi}
-            kaynaklar={karakter.yatkinlik_kaynaklari}
-            eksenler={karakter.kisilik_eksenleri}
-          />
-
-          {/* Meslek seçimi artık ayrı bir sayfa değil — açılışla aynı ekranda. */}
-          <h3 className="acilis-meslek-baslik">{m.meslekSecBaslik}</h3>
-          <p className="giris-aciklama">{m.meslekSecAlt}</p>
-          <div className="meslek-kartlari acilis-meslek-kartlari">
-            {meslekler.map((meslek) => {
-              const kategori = MESLEK_KATEGORI[meslek];
-              const puan = kategori ? karakter?.yatkinliklar[kategori] ?? 0 : 0;
-              const { etiket, simge } = yatkinlikEtiketi(puan, dil);
-              return (
-                <button
-                  key={meslek}
-                  className="meslek-kart"
-                  disabled={yukleniyor}
-                  onClick={() => meslekSecildi(meslek)}
-                >
-                  <span className="meslek-simge">{MESLEK_SIMGE[meslek] ?? '📜'}</span>
-                  <strong>{kt(meslek)}</strong>
-                  <span className="meslek-aciklama">{meslekAciklama(m, meslek)}</span>
-                  <span className="meslek-yatkinlik">
-                    {simge} {etiket} ({puan > 0 ? '+' : ''}
-                    {puan})
-                  </span>
-                  {karakter.aile_meslegi === meslek && (
-                    <span className="meslek-miras-ipucu">{m.meslekMirasIpucu}</span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-          {yukleniyor && <p className="giris-aciklama">{m.yukleniyor}</p>}
         </div>
       )}
 

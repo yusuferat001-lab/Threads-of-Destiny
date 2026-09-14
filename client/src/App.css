@@ -6143,16 +6143,6 @@ button.ikincil {
   .giris-yenimeslek-rozet { animation: none; }
 }
 
-/* --- Açılış/meslek ekranı: portre biraz büyüsün, ülke şeridi sağa --- */
-.ekran-acilis .acilis-ust > .karakter-avatari {
-  width: clamp(66px, 4vw + 48px, 94px);
-}
-.ekran-acilis .acilis-ust > .banner {
-  flex: 0 1 auto;
-  margin-left: auto;
-  max-width: 62%;
-}
-
 /* --- Liderlik: üst/yan boşlukları kıs, satırları sadeleştir --- */
 .ekran-liderlik {
   margin-top: 0.6rem;
@@ -6197,13 +6187,6 @@ button.ikincil {
   }
   .ekran-isim .isim-sec-form {
     margin-bottom: 0.3rem;
-  }
-
-  .ekran-acilis .acilis-ust > .karakter-avatari {
-    width: 62px;
-  }
-  .ekran-acilis .acilis-ust > .banner {
-    max-width: 66%;
   }
 
   /* Liderlik telefonda: üst/yan boşluk iyice azalsın, az kaydırılsın */
