@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { EkipUyesi, Rakip, YonetimDurumu, YonetimHat } from '../types';
 import { useDil } from '../DilContext';
+import { useMobilEkran } from '../hooks';
 import { formatPara } from '../format';
 import { bic } from '../i18n';
 
@@ -272,6 +273,82 @@ function IstekAksiyon({
   );
 }
 
+/** Kariyer ekranının yan sütunu (rakipler/amir/meslek gücü) — mobilde katlanır bir
+ * `<details>` içine, masaüstünde her zaman açık bir `<aside>` içine konur (aynı JSX). */
+function KariyerYanIcerik({
+  rakipler,
+  amirAdi,
+  amirRutbe,
+  meslekGucSatirlari,
+  m,
+  kt,
+  en,
+  gucEtiket,
+  husumetEtiket,
+}: {
+  rakipler: Rakip[];
+  amirAdi: string | null;
+  amirRutbe: string | null;
+  meslekGucSatirlari: [string, string][];
+  m: ReturnType<typeof useDil>['m'];
+  kt: ReturnType<typeof useDil>['kt'];
+  en: boolean;
+  gucEtiket: (g: number) => string;
+  husumetEtiket: (h: number) => string;
+}) {
+  return (
+    <>
+      {/* ===== RAKİPLERİN ===== */}
+      {rakipler.length > 0 && (
+        <div className="aile-koken-karti">
+          <h3>{en ? 'Your Rivals' : 'Rakiplerin'}</h3>
+          <div className="aile-koken-listesi">
+            {rakipler.map((r) => (
+              <span key={r.ad} className={`iliski-rozet${r.yenildi ? ' rakip-yenildi' : ''}`}>
+                ♟️ {r.ad} · {kt(r.meslek)}
+                {r.yenildi
+                  ? ` · ${en ? 'defeated' : 'saf dışı'}`
+                  : ` · ${en ? 'power' : 'güç'}: ${gucEtiket(r.guc)} · ${husumetEtiket(r.husumet)}`}
+              </span>
+            ))}
+          </div>
+          <p className="aile-bos-metin">
+            {en
+              ? 'Break a rival with dark deeds on the Investments screen, or ask the ruler to strike one here.'
+              : 'Rakibini Yatırım ekranındaki karanlık işlerle kır, ya da buradan yöneticiden darbe iste.'}
+          </p>
+        </div>
+      )}
+
+      {/* ===== AMİR ===== */}
+      <div className="aile-koken-karti">
+        <h3>{m.iyAmirin}</h3>
+        {amirAdi ? (
+          <div className="iliski-rozet iliski-es">
+            <span className="iliski-ad">🎖️ {amirAdi}</span>
+            {amirRutbe && <span className="iliski-etiket">{kt(amirRutbe)}</span>}
+          </div>
+        ) : (
+          <p className="aile-bos-metin">{m.geAmirYok}</p>
+        )}
+      </div>
+
+      {meslekGucSatirlari.length > 0 && (
+        <div className="aile-koken-karti">
+          <h3>{m.geMeslekGucu}</h3>
+          <div className="aile-koken-listesi">
+            {meslekGucSatirlari.map(([ad, deger]) => (
+              <span key={ad} className="iliski-rozet">
+                {ad}: {deger}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 /**
  * Tam sayfa "Kariyer" ekranı (eski "Görevin"): yönetimle bağlar (Yönetici + Patron
  * ilişki hatları, bağış/yağcılık/hizmet, istekler, dayatılan talep), ekip (Kov),
@@ -306,6 +383,9 @@ export function KariyerEkrani({
 }: KariyerEkraniProps) {
   const { m, kt, dil } = useDil();
   const en = dil === 'en';
+  // Telefonda ekranın çok aşağı kaymaması için ikincil bilgiler (rakipler/amir/güç)
+  // varsayılan kapalı bir <details>'e toplanır — asıl etkileşim (Yönetim + Ekip) hep açık kalır.
+  const mobil = useMobilEkran();
 
   // İşlem sonucu / hata → ekrana açılır pencere.
   const [modalMesaj, setModalMesaj] = useState<string | null>(null);
@@ -445,55 +525,38 @@ export function KariyerEkrani({
           </div>
         </div>
 
-        <aside className="kariyer-yan-sutun">
-          {/* ===== RAKİPLERİN ===== */}
-          {rakipler.length > 0 && (
-            <div className="aile-koken-karti">
-              <h3>{en ? 'Your Rivals' : 'Rakiplerin'}</h3>
-              <div className="aile-koken-listesi">
-                {rakipler.map((r) => (
-                  <span key={r.ad} className={`iliski-rozet${r.yenildi ? ' rakip-yenildi' : ''}`}>
-                    ♟️ {r.ad} · {kt(r.meslek)}
-                    {r.yenildi
-                      ? ` · ${en ? 'defeated' : 'saf dışı'}`
-                      : ` · ${en ? 'power' : 'güç'}: ${gucEtiket(r.guc)} · ${husumetEtiket(r.husumet)}`}
-                  </span>
-                ))}
-              </div>
-              <p className="aile-bos-metin">
-                {en
-                  ? 'Break a rival with dark deeds on the Investments screen, or ask the ruler to strike one here.'
-                  : 'Rakibini Yatırım ekranındaki karanlık işlerle kır, ya da buradan yöneticiden darbe iste.'}
-              </p>
-            </div>
-          )}
-
-          {/* ===== AMİR ===== */}
-          <div className="aile-koken-karti">
-            <h3>{m.iyAmirin}</h3>
-            {amirAdi ? (
-              <div className="iliski-rozet iliski-es">
-                <span className="iliski-ad">🎖️ {amirAdi}</span>
-                {amirRutbe && <span className="iliski-etiket">{kt(amirRutbe)}</span>}
-              </div>
-            ) : (
-              <p className="aile-bos-metin">{m.geAmirYok}</p>
-            )}
-          </div>
-
-          {meslekGucSatirlari.length > 0 && (
-            <div className="aile-koken-karti">
-              <h3>{m.geMeslekGucu}</h3>
-              <div className="aile-koken-listesi">
-                {meslekGucSatirlari.map(([ad, deger]) => (
-                  <span key={ad} className="iliski-rozet">
-                    {ad}: {deger}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-        </aside>
+        {mobil ? (
+          <details className="kariyer-yan-sutun panel-katla">
+            <summary className="panel-parsomen-baslik">
+              {en ? 'Rivals, Superior & Power' : 'Rakipler, Amir & Güç'}
+            </summary>
+            <KariyerYanIcerik
+              rakipler={rakipler}
+              amirAdi={amirAdi}
+              amirRutbe={amirRutbe}
+              meslekGucSatirlari={meslekGucSatirlari}
+              m={m}
+              kt={kt}
+              en={en}
+              gucEtiket={gucEtiket}
+              husumetEtiket={husumetEtiket}
+            />
+          </details>
+        ) : (
+          <aside className="kariyer-yan-sutun">
+            <KariyerYanIcerik
+              rakipler={rakipler}
+              amirAdi={amirAdi}
+              amirRutbe={amirRutbe}
+              meslekGucSatirlari={meslekGucSatirlari}
+              m={m}
+              kt={kt}
+              en={en}
+              gucEtiket={gucEtiket}
+              husumetEtiket={husumetEtiket}
+            />
+          </aside>
+        )}
       </div>
 
       <button className="ikincil" onClick={onGeriDon}>
