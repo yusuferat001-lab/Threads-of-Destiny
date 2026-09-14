@@ -564,6 +564,30 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
       }
     }
   }
+  // Yol dalı takip garantisi: bir "yol:<meslek>:<dal>" etiketine kilitlenmiş
+  // karakter, kilitlendikten sonraki ilk yıllarda o dala özel havuzdan HİÇ
+  // olay görmediyse bir tanesi zorla tetiklenir. Orta Çağ Asker/Din Adamı'nın
+  // giriş olayı `zorunlu_sonraki` ile ikinci bir dal-özel olayı garanti
+  // ediyordu; 2026-09'da eklenen tek-adımlı yol sistemlerinde (Orta Çağ
+  // Tüccar, Sanayi Devrimi Asker/Tüccar/Din Adamı) bu garanti yoktu — dal
+  // havuzu (44 olay) binlerce diğer olayla eşit ağırlıkta yarışıp neredeyse
+  // hiç çıkmıyordu (bkz. simülasyon teşhisi: ~%15 vs eski sistemlerde %100).
+  // Bu kural her iki tip sistemde de aynı şekilde çalışıp farkı kapatır.
+  if (!zorlananId && !milestoneKilitli && oturum.state.yas >= 19 && oturum.state.yas < 40) {
+    const yolTag = oturum.state.etiketler.find((e) => e.startsWith("yol:"));
+    if (yolTag) {
+      const dalHavuzu = OLAY_BANKASI.filter(
+        (o) =>
+          o.gerekliEtiketler?.includes(yolTag) &&
+          (o.minYas === undefined || oturum.state.yas >= o.minYas) &&
+          (o.maxYas === undefined || oturum.state.yas <= o.maxYas)
+      );
+      const gorulenSayisi = dalHavuzu.filter((o) => oturum.state.gecmis_olaylar.includes(o.id)).length;
+      if (gorulenSayisi === 0 && dalHavuzu.length > 0) {
+        zorlananId = dalHavuzu[Math.floor(Math.random() * dalHavuzu.length)].id;
+      }
+    }
+  }
   // 29 yaşına kadar hiç evlenmemiş ve evlilik teklifiyle hiç karşılaşmamışsa
   // (ne ilk teklif ne de ikinci teklif zinciri), garanti bir kez zorla tetiklenir.
   if (
