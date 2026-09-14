@@ -20,11 +20,20 @@ function digerGarantileriGecistir(state: CharacterState) {
   state.veba_gecirdi = true;
   state.gecmis_olaylar.push("iliski_evlilik_teklifi", "iliski_ikinci_teklif");
   state.evcil_hayvan = { tur: "Kedi", isim: "Testçik" };
-  // Orta Çağ Asker/Din Adamı'nda kariyer yolu girişi (oc_asker_yol_ilk_emir /
-  // oc_din_yol_ilk_sinav) 18 yaşından itibaren zorla tetiklenir; bu testler
-  // sadece yolculuk garantisini izole ettiği için karakter zaten bir yola
-  // girmiş gibi işaretlenir.
-  state.etiketler.push("yol:asker:sadik", "yol:din:durust");
+  // Her çağ×meslek kombinasyonunda (Asker/Din Adamı/Tüccar) kariyer yolu girişi
+  // 18 yaşından itibaren zorla tetiklenir; bu testler sadece yolculuk garantisini
+  // izole ettiği için karakter zaten bir yola girmiş gibi işaretlenir. Yol dalı
+  // takip garantisi (yolculuk teklifinin hemen ardında) da aynı tag'lere göz
+  // atacağı için ilgili dal havuzundan bir olayı zaten "görülmüş" işaretleriz.
+  state.etiketler.push("yol:asker:sadik", "yol:din:durust", "yol:tuccar:hayirsever");
+  state.gecmis_olaylar.push(
+    "oc_asker_yol_ilk_emir",
+    "oc_din_yol_ilk_sinav",
+    "oc_tuccar_yol_ilk_anlasma",
+    "sd_asker_yol_ilk_gorev",
+    "sd_tuccar_yol_ilk_karar",
+    "sd_din_yol_ilk_vaaz"
+  );
 }
 
 describe("yolculuk teklifi garantisi (senaryoUret)", () => {

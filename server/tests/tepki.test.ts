@@ -85,9 +85,14 @@ describe("geri adım mekanizması (onTepki)", () => {
     const sonuc = await secimUygula(bulunan.state.id, idx >= 0 ? idx : 0);
     // Eski bekleyenTepki iptal olmalı: dönen sonuç ya normal bir SecimSonucu
     // (zaman ilerler) ya da YENİ senaryoya ait taze bir ara_tepki olmalı —
-    // asla eski/alakasız onTepki'nin sonucu olmamalı.
+    // asla eski/alakasız onTepki'nin sonucu olmamalı. Not: ara_tepki yanıtının
+    // olay_basligi'si motor tarafından her zaman sabit "Bir An Duraksadın"
+    // döner (gerçek olay başlığını taşımaz, bkz. gameEngine.ts secimUygula) —
+    // bu yüzden başlık karşılaştırması yerine yalnızca ara_tepki şeklinin
+    // kendisi + iki seçenekli yapısı doğrulanır.
     if ("ara_tepki" in sonuc) {
-      expect(sonuc.olay_basligi).toBe(yeniSenaryo.olay_basligi);
+      expect(sonuc.olay_basligi).toBe("Bir An Duraksadın");
+      expect(sonuc.secenekler).toHaveLength(2);
     } else {
       expect(sonuc.state.yas).toBeGreaterThan(oncekiYas);
     }
