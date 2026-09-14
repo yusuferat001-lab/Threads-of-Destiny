@@ -1415,7 +1415,17 @@ function App() {
   return (
     <DilContext.Provider value={dilCtx}>
     <div
-      className={TAM_EKRAN_GRUBU.includes(ekran) ? 'oyun-kapsayici oyun-kapsayici-tam' : 'oyun-kapsayici'}
+      className={[
+        'oyun-kapsayici',
+        TAM_EKRAN_GRUBU.includes(ekran) ? 'oyun-kapsayici-tam' : null,
+        // Çağa göre vurgu rengi (§ CLAUDE.md "Seçenek 2"): Sanayi Devrimi'nde
+        // vurgu paleti soğuk pirinç/turkuaza kayar (App.css `.tema-sanayi`).
+        // Orta Çağ ve henüz çağ seçilmemiş ekranlar (giriş menüsü) varsayılan
+        // amber/bronz paleti kullanır — hiçbir sınıf eklenmez.
+        (karakter?.cag ?? secilenCag) === 'Sanayi Devrimi' ? 'tema-sanayi' : null,
+      ]
+        .filter(Boolean)
+        .join(' ')}
     >
       <button
         className="ayar-ac-buton"

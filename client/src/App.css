@@ -7,9 +7,27 @@
   --renk-ahsap: #1c140d;
   --renk-ahsap-panel: #1e1712;
   --renk-ahsap-kenar: #4a3520;
-  --renk-altin: #c9a227;
-  --renk-altin-parlak: #e0c789;
-  --renk-altin-koyu: #9c7519;
+  /* ---- Çağa göre vurgu rengi (2026-09, "Seçenek 2" — kullanıcı onaylı) ----
+   * Aşağıdaki --renk-altin* / --buton-gradyan* / --renk-ikincil* değişkenleri
+   * Orta Çağ'ın varsayılanıdır ("El Yazması": mum ışığı amber + oksitlenmiş
+   * bronz). Sanayi Devrimi'nde en dıştaki kapsayıcıya eklenen `.tema-sanayi`
+   * sınıfı (App.tsx, `karakter.cag`'a göre) bu SATIRLARI ezer — var() kullanan
+   * HER bileşen (kart/buton/üst şerit/rozet...) otomatik olarak yeni paleti
+   * alır, hiçbir JSX/bileşen değişikliği gerekmez. Yapısal tonlar (ahşap panel/
+   * kenar, tehlike kırmızısı, başarı yeşili) kasıtlı olarak paylaşılır — sadece
+   * "parlak vurgu" ve "ikincil vurgu" çağa göre değişir. */
+  --renk-altin: #b8863f;
+  --renk-altin-parlak: #d9ac5e;
+  --renk-altin-koyu: #7a5222;
+  --renk-altin-rgb: 184, 134, 63;
+  --renk-ikincil: #9c6a3f;
+  --renk-ikincil-parlak: #c98a4f;
+  --buton-gradyan: linear-gradient(180deg, #7a5c33, #5a4023);
+  --buton-gradyan-hover: linear-gradient(180deg, #8f6c3c, #6b4f2a);
+  --buton-kenar-hover: rgba(224, 199, 137, 0.55);
+  /* "Kabartma kart" panelleri (kariyer/yatırım/kimlik kartları) — sıcak kahve. */
+  --panel-ust: #2c2016;
+  --panel-alt: #1a110b;
   --renk-parsomen: #ecdfc0;
   --renk-parsomen-koyu: #ddc99a;
   --renk-parsomen-metin: #2b1d12;
@@ -21,13 +39,13 @@
   --golge-derin: 0 10px 30px rgba(0, 0, 0, 0.5);
 
   /* ---- Faz 1: Altın yaldızlı el yazması aksanları ---- */
-  --altin-gradyan: linear-gradient(150deg, #f2dc9e 0%, #d7b24a 42%, #9c7519 78%, #7a5b12 100%);
-  --altin-gradyan-dik: linear-gradient(180deg, #f2dc9e, #c9a227 55%, #8a6512);
+  --altin-gradyan: linear-gradient(150deg, #e6c17a 0%, #c9a24a 42%, #8a6a2a 78%, #6b4f1f 100%);
+  --altin-gradyan-dik: linear-gradient(180deg, #e6c17a, #b8863f 55%, #6b4f1f);
   --muhur-kirmizi: #7c2b22;
   --muhur-kirmizi-parlak: #b0402f;
   --gece-mavisi: #17203c;
   --gece-mavisi-parlak: #313f70;
-  --tezhip-altin: rgba(201, 162, 39, 0.55);
+  --tezhip-altin: rgba(184, 134, 63, 0.55);
   --yaldiz-parilti: 0 0 20px rgba(224, 199, 137, 0.32);
   --halka-odak: 0 0 0 2px var(--renk-ahsap), 0 0 0 4px var(--renk-altin);
   --r-yumusak: 14px;
@@ -51,6 +69,31 @@
   --renk-ekru: #ece0c8;
   --renk-ekru-parlak: #f5ecd9;
   --renk-ekru-kenar: #c8b487;
+}
+
+/* ---- Sanayi Devrimi vurgu paleti ("Buhar & Pirinç") ----
+ * `.tema-sanayi` App.tsx'te `karakter.cag === "Sanayi Devrimi"` iken en dıştaki
+ * `.oyun-kapsayici`ya eklenir. Donuk pirinç/bakır + soğuk bir ikincil yeşil-
+ * turkuaz — Orta Çağ'ın sıcak amber/bronzundan bilinçli olarak ayrışır ki iki
+ * çağ görsel olarak da birbirinden farklı hissettirsin. Yapısal tonlara
+ * (ahşap panel/kenar, tehlike/başarı) dokunulmaz — bu ikisi her çağda evrensel
+ * "kötü/iyi" okunurluğunu korusun diye kasıtlı olarak paylaşılır. */
+.tema-sanayi {
+  --renk-altin: #a9822f;
+  --renk-altin-parlak: #c9a24a;
+  --renk-altin-koyu: #6b5220;
+  --renk-altin-rgb: 169, 130, 47;
+  --renk-ikincil: #3f7d74;
+  --renk-ikincil-parlak: #4f9c8f;
+  --buton-gradyan: linear-gradient(180deg, #6b6258, #423b33);
+  --buton-gradyan-hover: linear-gradient(180deg, #7d7367, #524a40);
+  --buton-kenar-hover: rgba(201, 178, 140, 0.5);
+  /* Soğuk, is/pirinç renkli kabartma paneller — sıcak kahveden kasıtlı ayrışır. */
+  --panel-ust: #2b2c30;
+  --panel-alt: #17181b;
+  --altin-gradyan: linear-gradient(150deg, #d8bd7a 0%, #a9822f 42%, #6b5220 78%, #4a3814 100%);
+  --altin-gradyan-dik: linear-gradient(180deg, #d8bd7a, #a9822f 55%, #4a3814);
+  --tezhip-altin: rgba(169, 130, 47, 0.5);
 }
 
 * {
@@ -127,7 +170,7 @@ h2 {
 }
 
 button {
-  background: linear-gradient(180deg, #7a5c33, #5a4023);
+  background: var(--buton-gradyan);
   color: #f0e6d2;
   border: 1px solid rgba(224, 199, 137, 0.25);
   border-radius: 8px;
@@ -141,11 +184,11 @@ button {
 }
 
 button:hover:not(:disabled) {
-  background: linear-gradient(180deg, #8f6c3c, #6b4f2a);
-  border-color: rgba(224, 199, 137, 0.55);
+  background: var(--buton-gradyan-hover);
+  border-color: var(--buton-kenar-hover);
   transform: translateY(-1px);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 4px 10px rgba(0, 0, 0, 0.4),
-    0 0 12px rgba(201, 162, 39, 0.25);
+    0 0 12px rgba(var(--renk-altin-rgb), 0.25);
 }
 
 button:disabled {
@@ -2382,7 +2425,7 @@ button.ikincil {
 .sahne-hotspot:hover:not(:disabled),
 .sahne-hotspot:focus-visible:not(:disabled) {
   transform: translateY(-4px) scale(1.07);
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.85)) drop-shadow(0 0 10px rgba(201, 162, 39, 0.55));
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.85)) drop-shadow(0 0 10px rgba(var(--renk-altin-rgb), 0.55));
 }
 
 .sahne-hotspot:disabled {
@@ -2404,7 +2447,7 @@ button.ikincil {
   background: rgba(10, 7, 4, 0.6);
   padding: 0.1rem 0.5rem;
   border-radius: 999px;
-  border: 1px solid rgba(201, 162, 39, 0.45);
+  border: 1px solid rgba(var(--renk-altin-rgb), 0.45);
   color: var(--renk-altin-parlak);
   white-space: nowrap;
 }
@@ -2466,7 +2509,7 @@ button.ikincil {
   display: flex;
   align-items: center;
   gap: 1rem;
-  background: linear-gradient(180deg, #241a12, #191209);
+  background: linear-gradient(180deg, var(--panel-ust), var(--panel-alt));
   border: 1px solid #3d2e1f;
   border-radius: 14px;
   padding: 0.9rem 1.25rem;
@@ -2521,7 +2564,7 @@ button.ikincil {
   gap: 0.2rem;
   text-align: center;
   padding: 0.55rem 0.4rem;
-  background: linear-gradient(180deg, #2e2219, #221910);
+  background: linear-gradient(180deg, var(--panel-ust), var(--panel-alt));
   border: 1px solid #3d2e1f;
   border-radius: 10px;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
@@ -2529,8 +2572,8 @@ button.ikincil {
 
 .is-karo-vurgu {
   border-color: var(--renk-altin-koyu);
-  background: linear-gradient(180deg, #3a2b18, #2a1f10);
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(201, 162, 39, 0.15);
+  background: linear-gradient(180deg, rgba(var(--renk-altin-rgb), 0.22), var(--panel-alt));
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(var(--renk-altin-rgb), 0.15);
 }
 
 .is-karo-ikon {
@@ -2742,7 +2785,7 @@ button.ikincil {
   text-align: center;
   padding: 1.15rem 1.2rem;
   min-height: 200px;
-  background: linear-gradient(180deg, #2e2219, #1e150e);
+  background: linear-gradient(180deg, var(--panel-ust), var(--panel-alt));
   border: 1px solid #3d2e1f;
   border-radius: 12px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
@@ -2750,16 +2793,16 @@ button.ikincil {
 }
 
 .yatirim-kart:hover:not(:disabled) {
-  background: linear-gradient(180deg, #3f2e20, #291e15);
+  background: linear-gradient(180deg, rgba(var(--renk-altin-rgb), 0.14), var(--panel-alt));
   border-color: #8a6a2a;
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(201, 162, 39, 0.15);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(var(--renk-altin-rgb), 0.15);
   transform: translateY(-1px);
 }
 
 .yatirim-kart-secili {
   border-color: var(--renk-altin, #c9a24a);
-  background: linear-gradient(180deg, #3a2b1a, #241a10);
-  box-shadow: 0 0 0 1px rgba(201, 162, 39, 0.35), 0 8px 20px rgba(0, 0, 0, 0.45);
+  background: linear-gradient(180deg, rgba(var(--renk-altin-rgb), 0.22), var(--panel-alt));
+  box-shadow: 0 0 0 1px rgba(var(--renk-altin-rgb), 0.35), 0 8px 20px rgba(0, 0, 0, 0.45);
 }
 
 .kademe-gostergesi {
@@ -2781,7 +2824,7 @@ button.ikincil {
 }
 
 .yatirim-islem-mesaji {
-  background: linear-gradient(180deg, #2e2219, #221910);
+  background: linear-gradient(180deg, var(--panel-ust), var(--panel-alt));
   border: 1px solid #6b4f2a;
   border-radius: 8px;
   padding: 0.6rem 0.9rem;
@@ -2792,7 +2835,7 @@ button.ikincil {
 
 .dedikodu-panosu {
   width: 100%;
-  background: linear-gradient(180deg, #2e2219, #221910);
+  background: linear-gradient(180deg, var(--panel-ust), var(--panel-alt));
   border: 1px solid #6b4f2a;
   border-radius: 8px;
   padding: 0.6rem 0.75rem;
@@ -3690,7 +3733,7 @@ button.ikincil {
 
 /* Kartlar tam opak ahşap paneller — arkadaki oda okunurluğu bozmasın. */
 .aile-kart {
-  background: linear-gradient(180deg, #241811, #1a110b);
+  background: linear-gradient(180deg, var(--panel-ust), var(--panel-alt));
   border: 1px solid var(--aile-kart-kenar);
   border-left: 3px solid var(--renk-altin, #c9a24a);
   border-radius: 12px;
@@ -4388,7 +4431,7 @@ button.ikincil {
 }
 
 .ekran-kariyer {
-  background: linear-gradient(180deg, #2a2018, #1c150f);
+  background: linear-gradient(180deg, var(--panel-ust), var(--panel-alt));
   gap: 0.7rem;
   margin-top: 0.6rem;
   padding-top: 1rem;
@@ -4474,7 +4517,7 @@ button.ikincil {
   gap: 0.85rem;
 }
 .kariyer-hat-karti {
-  background: linear-gradient(180deg, #241811, #1a110b);
+  background: linear-gradient(180deg, var(--panel-ust), var(--panel-alt));
   border: 1px solid #7a5a36;
   border-left: 3px solid var(--renk-altin, #c9a24a);
   border-radius: 12px;
@@ -4534,7 +4577,9 @@ button.ikincil {
   position: absolute;
   inset: 0 auto 0 0;
   border-radius: 999px;
-  background: linear-gradient(90deg, #9c7519, #e0c789);
+  /* İkincil vurgu kullanır (gold değil) — çağa göre daha belirgin ayrışsın diye:
+     Orta Çağ'da sıcak amber-turuncu, Sanayi Devrimi'nde soğuk yeşil-turkuaz. */
+  background: linear-gradient(90deg, var(--renk-ikincil), var(--renk-ikincil-parlak));
   transition: width 0.35s ease;
 }
 .kariyer-iliski-bar-dolgu[data-kademe='düşman'],
@@ -4723,7 +4768,7 @@ button.ikincil {
 .kariyer-sonuc-modal {
   max-width: 420px;
   width: 100%;
-  background: linear-gradient(180deg, #2a2018, #1c150f);
+  background: linear-gradient(180deg, var(--panel-ust), var(--panel-alt));
   border: 1px solid #7a5a36;
   border-left: 3px solid var(--renk-altin, #c9a24a);
   border-radius: 12px;
