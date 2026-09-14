@@ -795,6 +795,7 @@ export interface GeriBildirimGirdi {
 }
 
 export type SiralamaTuru = 'genel' | 'en_zengin' | 'en_unlu' | 'en_uzun_yasayan';
+export type SiralamaDonemi = 'genel' | 'haftalik';
 
 export interface ScoreKaydi {
   id: number;

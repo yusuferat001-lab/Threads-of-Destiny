@@ -1,7 +1,8 @@
 import { Router } from "express";
-import { skorTablosuGetir, SiralamaTuru } from "../db/scoreRepository";
+import { skorTablosuGetir, SiralamaTuru, SiralamaDonemi } from "../db/scoreRepository";
 import { liderlikTablosunaKaydet } from "../game/gameEngine";
 import { uygunsuzMu } from "../moderasyon/kufurFiltresi";
+import { haftaAraligiHesapla } from "../utils/zaman";
 
 export const scoreRouter = Router();
 
@@ -24,6 +25,8 @@ scoreRouter.post("/", async (req, res) => {
 
 scoreRouter.get("/", async (req, res) => {
   const tur = (req.query.tur as SiralamaTuru) ?? "genel";
-  const tablo = await skorTablosuGetir(tur);
-  res.json({ tablo });
+  const donem = (req.query.donem as SiralamaDonemi) ?? "genel";
+  const tablo = await skorTablosuGetir(tur, donem);
+  const haftaBitis = donem === "haftalik" ? haftaAraligiHesapla().bitis.toISOString() : null;
+  res.json({ tablo, haftaBitis });
 });

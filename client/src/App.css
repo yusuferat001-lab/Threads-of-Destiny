@@ -5037,6 +5037,24 @@ button.ikincil {
   background: #b5893a !important;
 }
 
+.liderlik-donem-sekmeler {
+  margin-bottom: 0.6rem;
+}
+
+.liderlik-donem-sekmeler button {
+  font-size: 1.05rem;
+  font-weight: 700;
+  padding: 0.6rem 0.8rem;
+}
+
+.liderlik-hafta-bitis {
+  width: 100%;
+  text-align: center;
+  font-size: 0.85rem;
+  opacity: 0.8;
+  margin: 0 0 0.6rem;
+}
+
 .liderlik-liste {
   display: flex;
   flex-direction: column;

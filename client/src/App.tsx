@@ -5,6 +5,7 @@ import type {
   SonucEtkisi,
   ScoreKaydi,
   SiralamaTuru,
+  SiralamaDonemi,
   KonutTanimi,
   YasamSecenegiTanimi,
   FinansOzeti,
@@ -225,6 +226,19 @@ function temizHata(err: unknown): string {
   return ham.replace(/^(Error:\s*)+/i, '');
 }
 
+/** Haftalık liderlik bitiş zamanını her zaman Türkiye saatiyle (Europe/Istanbul, sabit UTC+3) biçimler. */
+function haftaBitisMetni(iso: string, dil: 'tr' | 'en'): string {
+  const tarih = new Date(iso);
+  const bicimli = tarih.toLocaleString(dil === 'en' ? 'en-US' : 'tr-TR', {
+    timeZone: 'Europe/Istanbul',
+    day: '2-digit',
+    month: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+  return `${bicimli} (TSİ)`;
+}
+
 /** Ekran telefon genişliğinde mi? (oyun ekranı düzeni için tek kırılım noktası, ≤767px) */
 function useMobil() {
   const [mobil, setMobil] = useState(
@@ -315,7 +329,9 @@ function App() {
   const [otoKayitBasarisiz, setOtoKayitBasarisiz] = useState(false);
 
   const [liderlikTuru, setLiderlikTuru] = useState<SiralamaTuru>('genel');
+  const [liderlikDonem, setLiderlikDonem] = useState<SiralamaDonemi>('genel');
   const [liderlik, setLiderlik] = useState<ScoreKaydi[]>([]);
+  const [liderlikHaftaBitis, setLiderlikHaftaBitis] = useState<string | null>(null);
 
   const [finans, setFinans] = useState<FinansOzeti | null>(null);
   const [amaclar, setAmaclar] = useState<AmaclarDurumu | null>(null);
@@ -753,13 +769,15 @@ function App() {
     }
   }
 
-  async function liderligiAc(tur: SiralamaTuru = liderlikTuru) {
+  async function liderligiAc(tur: SiralamaTuru = liderlikTuru, donem: SiralamaDonemi = liderlikDonem) {
     setLiderlikTuru(tur);
+    setLiderlikDonem(donem);
     setHata(null);
     setYukleniyor(true);
     try {
-      const { tablo } = await skorTablosuGetir(tur);
+      const { tablo, haftaBitis } = await skorTablosuGetir(tur, donem);
       setLiderlik(tablo);
+      setLiderlikHaftaBitis(haftaBitis);
       setEkran('liderlik');
     } catch (err) {
       setHata(String(err));
@@ -2472,34 +2490,53 @@ function App() {
       {ekran === 'liderlik' && (
         <div className="ekran ekran-liderlik">
           <h2>{m.liderlikBaslik}</h2>
+          <div className="liderlik-sekmeler liderlik-donem-sekmeler">
+            <button
+              className={liderlikDonem === 'haftalik' ? 'aktif-sekme' : ''}
+              onClick={() => liderligiAc(liderlikTuru, 'haftalik')}
+            >
+              {m.sekmeDonemHaftalik}
+            </button>
+            <button
+              className={liderlikDonem === 'genel' ? 'aktif-sekme' : ''}
+              onClick={() => liderligiAc(liderlikTuru, 'genel')}
+            >
+              {m.sekmeDonemGenel}
+            </button>
+          </div>
+          {liderlikDonem === 'haftalik' && liderlikHaftaBitis && (
+            <p className="liderlik-hafta-bitis">
+              ⏳ {m.haftaBitisEtiketi}: {haftaBitisMetni(liderlikHaftaBitis, dil)}
+            </p>
+          )}
           <div className="liderlik-sekmeler">
             <button
               className={liderlikTuru === 'genel' ? 'aktif-sekme' : ''}
-              onClick={() => liderligiAc('genel')}
+              onClick={() => liderligiAc('genel', liderlikDonem)}
             >
               {m.sekmeGenelLb}
             </button>
             <button
               className={liderlikTuru === 'en_zengin' ? 'aktif-sekme' : ''}
-              onClick={() => liderligiAc('en_zengin')}
+              onClick={() => liderligiAc('en_zengin', liderlikDonem)}
             >
               {m.sekmeEnZengin}
             </button>
             <button
               className={liderlikTuru === 'en_unlu' ? 'aktif-sekme' : ''}
-              onClick={() => liderligiAc('en_unlu')}
+              onClick={() => liderligiAc('en_unlu', liderlikDonem)}
             >
               {m.sekmeEnUnlu}
             </button>
             <button
               className={liderlikTuru === 'en_uzun_yasayan' ? 'aktif-sekme' : ''}
-              onClick={() => liderligiAc('en_uzun_yasayan')}
+              onClick={() => liderligiAc('en_uzun_yasayan', liderlikDonem)}
             >
               {m.sekmeEnUzunYasayan}
             </button>
           </div>
           {liderlik.length === 0 ? (
-            <p className="giris-panel-bos">{m.kayitYok}</p>
+            <p className="giris-panel-bos">{liderlikDonem === 'haftalik' ? m.kayitYokHaftalik : m.kayitYok}</p>
           ) : (
             <ol className="liderlik-liste">
               {liderlik.map((kayit) => (

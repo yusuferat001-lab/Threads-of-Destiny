@@ -1,6 +1,7 @@
 import { prisma } from "./prismaClient";
 import { CharacterState } from "../types";
 import { hesaplaSkor, gayrimenkulDegeriHesapla, paraYuvarla } from "../game/stateManager";
+import { haftaAraligiHesapla } from "../utils/zaman";
 
 export async function skorKaydet(state: CharacterState, isim: string) {
   const skor = hesaplaSkor(state);
@@ -32,8 +33,14 @@ export async function skorKaydet(state: CharacterState, isim: string) {
 }
 
 export type SiralamaTuru = "genel" | "en_zengin" | "en_unlu" | "en_uzun_yasayan";
+export type SiralamaDonemi = "genel" | "haftalik";
 
-export async function skorTablosuGetir(tur: SiralamaTuru = "genel", limit = 15) {
+/** "haftalik" dönem, `donem`'e göre limit vermezsen top **10**; "genel" (tüm-zamanlar) top **15** (§18). */
+export async function skorTablosuGetir(
+  tur: SiralamaTuru = "genel",
+  donem: SiralamaDonemi = "genel",
+  limit?: number,
+) {
   const orderBy =
     tur === "en_zengin"
       ? { para: "desc" as const }
@@ -43,8 +50,18 @@ export async function skorTablosuGetir(tur: SiralamaTuru = "genel", limit = 15) 
           ? { yas: "desc" as const }
           : { skor: "desc" as const };
 
+  const effectiveLimit = limit ?? (donem === "haftalik" ? 10 : 15);
+  const where =
+    donem === "haftalik"
+      ? (() => {
+          const { baslangic, bitis } = haftaAraligiHesapla();
+          return { createdAt: { gte: baslangic, lt: bitis } };
+        })()
+      : undefined;
+
   return prisma.score.findMany({
+    where,
     orderBy,
-    take: limit,
+    take: effectiveLimit,
   });
 }

@@ -180,12 +180,16 @@ const TR = {
 
   // ---- Liderlik ----
   liderlikBaslik: 'Liderlik Tablosu',
+  sekmeDonemHaftalik: 'Haftalık',
+  sekmeDonemGenel: 'Genel',
   sekmeGenelLb: 'Genel',
   sekmeEnZengin: 'En Zenginler',
   sekmeEnUnlu: 'En Çok Tanınanlar',
   sekmeEnUzunYasayan: 'En Uzun Yaşayanlar',
   kayitYok: 'Henüz kayıt yok.',
+  kayitYokHaftalik: 'Bu hafta henüz kayıt yok.',
   amacTamamladiTitle: 'Hayat amacını tamamladı (x5 skor)',
+  haftaBitisEtiketi: 'Bu haftanın bitişi',
 
   // ---- UstSerit ----
   usAraniyorsun: '▲ aranıyorsun',
@@ -861,12 +865,16 @@ const EN: Metinler = {
 
   // ---- Leaderboard ----
   liderlikBaslik: 'Leaderboard',
+  sekmeDonemHaftalik: 'Weekly',
+  sekmeDonemGenel: 'Overall',
   sekmeGenelLb: 'Overall',
   sekmeEnZengin: 'Richest',
   sekmeEnUnlu: 'Most Renowned',
   sekmeEnUzunYasayan: 'Longest-Lived',
   kayitYok: 'No records yet.',
+  kayitYokHaftalik: 'No records for this week yet.',
   amacTamamladiTitle: 'Completed their life goal (x5 score)',
+  haftaBitisEtiketi: 'This week ends',
 
   // ---- UstSerit ----
   usAraniyorsun: '▲ wanted',

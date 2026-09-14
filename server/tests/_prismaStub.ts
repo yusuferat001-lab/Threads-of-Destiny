@@ -42,7 +42,11 @@ export class PrismaClient {
     },
   };
   score = {
-    create: async ({ data }: any) => ({ id: Math.floor(Math.random() * 1e9), ...data }),
+    create: async ({ data }: any) => ({
+      id: Math.floor(Math.random() * 1e9),
+      createdAt: new Date(),
+      ...data,
+    }),
     findMany: async () => [] as any[],
   };
   metrik = {
