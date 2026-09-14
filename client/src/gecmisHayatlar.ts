@@ -110,3 +110,8 @@ export function gecmisHayatlariGetir(): GecmisHayat[] {
 export function gecmisHayatlariTemizle(): void {
   yaz([]);
 }
+
+/** Tek bir geçmiş hayat kaydını listeden çıkarır (id ile). */
+export function gecmisHayatSil(id: string): void {
+  yaz(oku().filter((h) => h.id !== id));
+}

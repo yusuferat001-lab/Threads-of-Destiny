@@ -109,7 +109,7 @@ import { sesKapaliMi, sesTercihiKaydet } from './ses';
 import { muzikModunuAyarla, muzikDurdur, muzikSessizAyarla, type MuzikModu } from './muzik';
 import { aktifOturumIdGetir, aktifOturumIdKaydet, aktifOturumIdSil } from './oturum';
 import { basarimlariKaydet, basarimlariGetir } from './basarimlar';
-import { gecmisHayatKaydet, gecmisHayatlariGetir, gecmisHayatlariTemizle, type GecmisHayat } from './gecmisHayatlar';
+import { gecmisHayatKaydet, gecmisHayatlariGetir, gecmisHayatlariTemizle, gecmisHayatSil, type GecmisHayat } from './gecmisHayatlar';
 import { YAPIMCI } from './yapimci';
 import { basarimlariDegerlendir, type BasarimTanimi } from './basarimSistemi';
 import { BasarimGaleri } from './components/BasarimGaleri';
@@ -1547,7 +1547,7 @@ function App() {
               ) : (
                 <ul className="gecmis-hayat-liste">
                   {gecmisHayatlar.map((h) => (
-                    <li key={h.id}>
+                    <li key={h.id} className="gecmis-hayat-satir-kapsayici">
                       <button className="gecmis-hayat-satiri" onClick={() => setSecilenGecmisHayat(h)}>
                         <span className="gecmis-hayat-ust">
                           <strong>💀 {h.isim ?? m.isimsiz}</strong>
@@ -1556,6 +1556,18 @@ function App() {
                         <span className="gecmis-hayat-alt">
                           {h.yas} {m.yasinda} · {kt(h.meslek)} · {kt(h.bolge)} · {h.olumNedeni}
                         </span>
+                      </button>
+                      <button
+                        className="gecmis-hayat-sil"
+                        title={m.temizle}
+                        aria-label={m.temizle}
+                        onClick={() => {
+                          gecmisHayatSil(h.id);
+                          setGecmisHayatlar(gecmisHayatlariGetir());
+                          if (secilenGecmisHayat?.id === h.id) setSecilenGecmisHayat(null);
+                        }}
+                      >
+                        ✕
                       </button>
                     </li>
                   ))}
