@@ -177,7 +177,7 @@ export interface CharacterState {
   suc_seviyesi: number;
   /** Hapiste kalan ceza süresi (yıl); 0'a inince otomatik serbest kalınır. Hapiste değilken 0. */
   hapis_ceza_kalan: number;
-  /** Cezanın orijinal toplam uzunluğu (yıl); hapis_ceza_kalan geri sayarken bu sabit kalır. */
+  /** Tutuklanma anında belirlenen TOPLAM hapis cezası (yıl); hapis_ceza_kalan'ın aksine azalmaz. Hapiste değilken 0. */
   hapis_ceza_toplam: number;
   /** Hapse en son girişten beri çözülen hapisOlayi:true olay sayısı. */
   hapis_tur_sayaci: number;

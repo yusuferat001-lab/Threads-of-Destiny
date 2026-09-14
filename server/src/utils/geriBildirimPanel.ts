@@ -36,7 +36,9 @@ export function geriBildirimPaneliHtml(kayitlar: GeriBildirimKaydi[]): string {
 
   const satirlar = kayitlar
     .map((k) => {
-      const baglamGirdileri = Object.entries(k.baglam ?? {});
+      const baglamGirdileri = Object.entries(k.baglam ?? {}).filter(
+        ([, v]) => v !== null && v !== undefined && v !== ""
+      );
       const baglamOzet = baglamGirdileri.length
         ? baglamGirdileri.map(([bk, bv]) => `${kacar(bk)}=${kacar(String(bv))}`).join(" · ")
         : "";

@@ -231,4 +231,64 @@ describe("hapishane sistemi", () => {
       expect(KACIS_BASLANGICI.some((id) => gorulen.has(id))).toBe(true);
     });
   });
+
+  describe("aranma bandına göre ceza süresi (2026-09 yeniden düzenleme)", () => {
+    it("hafif bir tutuklamada (toplam ceza <7y) para/af ile çıkış her zaman görülebilir", () => {
+      const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+      mesleğiSec(state, "Tüccar");
+      etiketEkle(state, ["hapiste"]);
+      state.hapis_ceza_toplam = 6;
+      state.hapis_ceza_kalan = 6;
+      state.hapis_tur_sayaci = 2; // Faz 8 kapısı: kaçış/çıkış-başlangıç olayları için en az 2 hapisOlayi geçmiş olmalı
+      let bulundu = false;
+      for (let i = 0; i < 1000 && !bulundu; i++) {
+        const { olay } = olaySec(state);
+        if (olay.hapisParaylaCikisOlayi) bulundu = true;
+      }
+      expect(bulundu).toBe(true);
+    });
+
+    it("ağır bir tutuklamada (toplam ceza ≥7y) 5 yıl yatmadan para/af ile çıkış olayı hiç çıkmaz", () => {
+      const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+      mesleğiSec(state, "Tüccar");
+      etiketEkle(state, ["hapiste"]);
+      state.hapis_ceza_toplam = 9;
+      state.hapis_ceza_kalan = 9; // henüz hiç yatmadı
+      for (let i = 0; i < 1000; i++) {
+        const { olay } = olaySec(state);
+        expect(olay.hapisParaylaCikisOlayi).not.toBe(true);
+      }
+    });
+
+    it("ağır bir tutuklamada 5 yıl yatınca para/af ile çıkış olayı tekrar görülebilir", () => {
+      const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+      mesleğiSec(state, "Tüccar");
+      etiketEkle(state, ["hapiste"]);
+      state.hapis_ceza_toplam = 9;
+      state.hapis_ceza_kalan = 4; // 5 yıl yatmış (9-4)
+      state.hapis_tur_sayaci = 2; // Faz 8 kapısı: kaçış/çıkış-başlangıç olayları için en az 2 hapisOlayi geçmiş olmalı
+      let bulundu = false;
+      for (let i = 0; i < 1000 && !bulundu; i++) {
+        const { olay } = olaySec(state);
+        if (olay.hapisParaylaCikisOlayi) bulundu = true;
+      }
+      expect(bulundu).toBe(true);
+    });
+
+    it("fiziksel kaçış girişimleri (tünel/bayıltma/avlu duvarı) ağır tutuklamada da her zaman uygun kalır", () => {
+      const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+      mesleğiSec(state, "Tüccar");
+      etiketEkle(state, ["hapiste"]);
+      state.hapis_ceza_toplam = 12;
+      state.hapis_ceza_kalan = 12;
+      state.hapis_tur_sayaci = 2; // Faz 8 kapısı: kaçış/çıkış-başlangıç olayları için en az 2 hapisOlayi geçmiş olmalı
+      const kacisIdleri = ["hapis_kacis_girisimi", "hapis_avlu_duvari", "hapis_camasir_arabasi", "hapis_sayim_karisikligi"];
+      const bulunanlar = new Set<string>();
+      for (let i = 0; i < 2000 && bulunanlar.size < kacisIdleri.length; i++) {
+        const { olay } = olaySec(state);
+        if (kacisIdleri.includes(olay.id)) bulunanlar.add(olay.id);
+      }
+      expect(bulunanlar.size).toBeGreaterThan(0);
+    });
+  });
 });

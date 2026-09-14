@@ -5,7 +5,7 @@ import { komsuGucSec } from "../data/liderler";
 import { tarihiSavasKontrol } from "../data/tarihiSavaslar";
 import { K, T } from "../i18n";
 import { olayCevirisiUygula } from "../i18n/olaylar";
-import { HAVUZ_KILIT_ETIKETLERI as HAVUZ_KILIT_LISTESI } from "./stateManager";
+import { HAVUZ_KILIT_ETIKETLERI as HAVUZ_KILIT_LISTESI, hapisErkenCikisMumkunMu } from "./stateManager";
 
 /**
  * Normal olay havuzunu tamamen kapatıp kendi özel havuzuna geçiren etiketler
@@ -67,6 +67,11 @@ export function temelUygunMu(olay: OlayTanimi, state: CharacterState): boolean {
   const hapiste = state.etiketler.includes("hapiste");
   if (hapiste && !olay.hapisOlayi) return false;
   if (!hapiste && olay.hapisOlayi) return false;
+  // Ağır bir tutuklamada (§17 "baskın"/"azılı suçlu" bantları) minimum yatma
+  // süresi dolmadan para/af ile KESİN serbest bırakma sunan olaylar gizlenir —
+  // fiziksel kaçış girişimleri (hapisParaylaCikisOlayi:false/undefined) bundan
+  // etkilenmez, her zaman denenebilir kalır.
+  if (hapiste && olay.hapisParaylaCikisOlayi && !hapisErkenCikisMumkunMu(state)) return false;
   // "Az olay var" turu Faz 8: kaçış/erken-tahliye stratejisini BAŞLATAN olaylar
   // (a) ilk 2 hapisOlayi çözülene kadar (önce hapishane hayatını yaşa) ve
   // (b) toplam ceza 5 yıldan kısaysa (kısa cezada kaçış zincirine zaman/gerekçe

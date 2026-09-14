@@ -280,6 +280,15 @@ function YanPanel({
 
 function App() {
   const [ekran, setEkran] = useState<Ekran>('giris');
+  // Mobilde tam-sayfa ekranlar (Yatırım/Kariyer/Aile/...) sabit yükseklikte
+  // değil, sayfa doğal olarak kayar (bkz. CLAUDE.md §19). Aynı belge içinde
+  // ekran değiştirdiğimiz için (route yok) önceki ekrandan kalan scroll
+  // pozisyonu korunuyordu — bir önceki ekranda aşağı kaydırılmışsa yeni
+  // ekranın başlığı, sabit (position:fixed) para rozeti/ayar dişlisinin
+  // ALTINDA gizli kalarak açılıyordu. Her ekran değişiminde tepeye sar.
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [ekran]);
   const [meslekler, setMeslekler] = useState<string[]>([]);
   const [bolgeler, setBolgeler] = useState<Record<string, string[]>>({});
   const [konutlar, setKonutlar] = useState<KonutTanimi[]>([]);
@@ -2460,36 +2469,39 @@ function App() {
               {m.sekmeEnUzunYasayan}
             </button>
           </div>
-          <ol className="liderlik-liste">
-            {liderlik.map((kayit) => (
-              <li key={kayit.id}>
-                <div>
-                  <strong>{kayit.isim}</strong>
-                  {kayit.hayat_amaci_tamamlandi && (
-                    <span className="liderlik-rozet liderlik-rozet-amac" title={m.amacTamamladiTitle}>
-                      🎯 x5
-                    </span>
-                  )}
-                  {' '}— {kayit.skor} {m.puan} ({kayit.rutbe ? `${kt(kayit.rutbe)}, ` : ''}
-                  {kt(kayit.cag)}, {bic(m.yasSonek, kayit.yas)}, {kayit.olum_nedeni})
-                </div>
-                {(kayit.unvanlar || kayit.efsanevi_olum) && (
-                  <div className="liderlik-detay">
-                    {kayit.unvanlar &&
-                      kayit.unvanlar.split(', ').map((unvan) => (
-                        <span key={unvan} className="liderlik-rozet liderlik-rozet-unvan">
-                          🏵️ {kt(unvan)}
-                        </span>
-                      ))}
-                    {kayit.efsanevi_olum && (
-                      <span className="liderlik-rozet liderlik-rozet-olum">💀 {kayit.efsanevi_olum}</span>
+          {liderlik.length === 0 ? (
+            <p className="giris-panel-bos">{m.kayitYok}</p>
+          ) : (
+            <ol className="liderlik-liste">
+              {liderlik.map((kayit) => (
+                <li key={kayit.id}>
+                  <div>
+                    <strong>{kayit.isim}</strong>
+                    {kayit.hayat_amaci_tamamlandi && (
+                      <span className="liderlik-rozet liderlik-rozet-amac" title={m.amacTamamladiTitle}>
+                        🎯 x5
+                      </span>
                     )}
+                    {' '}— {kayit.skor} {m.puan} ({kayit.rutbe ? `${kt(kayit.rutbe)}, ` : ''}
+                    {kt(kayit.cag)}, {bic(m.yasSonek, kayit.yas)}, {kayit.olum_nedeni})
                   </div>
-                )}
-              </li>
-            ))}
-            {liderlik.length === 0 && <li>{m.kayitYok}</li>}
-          </ol>
+                  {(kayit.unvanlar || kayit.efsanevi_olum) && (
+                    <div className="liderlik-detay">
+                      {kayit.unvanlar &&
+                        kayit.unvanlar.split(', ').map((unvan) => (
+                          <span key={unvan} className="liderlik-rozet liderlik-rozet-unvan">
+                            🏵️ {kt(unvan)}
+                          </span>
+                        ))}
+                      {kayit.efsanevi_olum && (
+                        <span className="liderlik-rozet liderlik-rozet-olum">💀 {kayit.efsanevi_olum}</span>
+                      )}
+                    </div>
+                  )}
+                </li>
+              ))}
+            </ol>
+          )}
           <button className="ikincil" onClick={bastanBasla}>
             {m.anaMenu}
           </button>

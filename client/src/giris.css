@@ -717,15 +717,10 @@ a.giris-imza-isim:hover {
   box-shadow: inset 0 0 0 1px rgba(224, 199, 137, 0.08);
   border-radius: 0 var(--r-orta) var(--r-orta) 0;
 }
-/* İlk harf büyütme (drop cap) */
-.acilis-metni::first-letter {
-  font-family: var(--font-baslik);
-  font-size: 2.9rem;
-  line-height: 0.9;
-  float: left;
-  margin: 0.1rem 0.4rem 0 0;
-  color: var(--renk-altin);
-}
+/* Not: burada eskiden bir ::first-letter drop-cap (büyük ilk harf) efekti vardı.
+   Metin her zaman "{yıl} yılı, ..." ile başladığı (bkz. stateManager.ts
+   acilisAnlatimiUret) için drop-cap yalnızca yılın İLK RAKAMINI büyütüp
+   "1" + "058" gibi bölünmüş, bozuk görünen bir sayı üretiyordu — kaldırıldı. */
 
 .acilis-ozet span {
   background: linear-gradient(180deg, rgba(43, 32, 21, 0.7), rgba(20, 15, 10, 0.6));
@@ -869,8 +864,6 @@ a.giris-imza-isim:hover {
   .giris-panel:hover {
     transform: none;
   }
-
-  .acilis-metni::first-letter { font-size: 2.3rem; }
 }
 
 /* ---------- Hareket azaltma ---------- */

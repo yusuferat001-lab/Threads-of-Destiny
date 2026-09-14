@@ -83,9 +83,9 @@ function karanlikIsMetni(dil: Dil, id: string): { ad: string; aciklama: string }
 }
 
 function sucSeviyesiEtiketi(m: Metinler, seviye: number): string {
-  if (seviye < 20) return m.iySicilTemiz;
-  if (seviye < 45) return m.iySicilDikkat;
-  if (seviye < 70) return m.iySicilCiddi;
+  if (seviye < 25) return m.iySicilTemiz;
+  if (seviye < 50) return m.iySicilDikkat;
+  if (seviye < 75) return m.iySicilCiddi;
   return m.iySicilPesinde;
 }
 
@@ -469,7 +469,7 @@ export function IsYatirimEkrani({
             ))}
           </div>
 
-          <p className={`suc-seviyesi-gostergesi ${sucSeviyesi >= 45 ? 'suc-seviyesi-riskli' : ''}`}>
+          <p className={`suc-seviyesi-gostergesi ${sucSeviyesi >= 50 ? 'suc-seviyesi-riskli' : ''}`}>
             {bic(m.iySucSeviyen, Math.round(sucSeviyesi), sucSeviyesiEtiketi(m, sucSeviyesi))}
           </p>
         </div>

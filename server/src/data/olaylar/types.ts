@@ -98,6 +98,17 @@ export interface OlayTanimi {
   /** true ise bu olay sadece "hapiste" etiketi taşıyan karakterlere çıkar; hapisteyken normal olay havuzu tamamen kapanır. */
   hapisOlayi?: boolean;
   /**
+   * true ise bu bir hapis.ts olayıdır ve başarılı seçimi rüşvet/af/kefaret gibi
+   * PARA YA DA İYİ HAL karşılığında KESİN bir serbest bırakma sunar (fiziksel
+   * kaçış girişimleri — tünel, bayıltma, avlu duvarı vb. — bu kapsamda DEĞİLDİR,
+   * onlar her zaman denenebilir kalır). Tutuklanma anındaki suc_seviyesi
+   * ≥50 (bkz. §17 "baskın"/"azılı suçlu" bantları) ise, `hapis_ceza_toplam -
+   * hapis_ceza_kalan` (yıl yatılan) `HAPIS_ERKEN_CIKIS_MIN_YIL`'a ulaşana kadar
+   * bu olaylar havuzdan gizlenir — "en az N yıl yatmadan para/af ile çıkamazsın"
+   * kuralını uygular (`olaySecici.ts` `uygunMu`).
+   */
+  hapisParaylaCikisOlayi?: boolean;
+  /**
    * true ise bu olay bir kaçış/erken-tahliye stratejisini BAŞLATAN olaydır (tünel,
    * rüşvet, isyan, bayıltma, iyi hal, parasız riskli kaçışlar). "Az olay var" turu
    * Faz 8: bu olaylar (a) hapse yeni girildiğinde ilk 2 hapisOlayi çözülene kadar

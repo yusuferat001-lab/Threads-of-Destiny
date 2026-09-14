@@ -86,7 +86,9 @@ export function unUnvani(un: number, dil: Dil = 'tr'): string {
 
 /** Aranma (suç) seviyesini üst şeritte yıldız olarak göstermek için 0-5 aralığına ölçekler. */
 export function aranmaYildiz(sucSeviyesi: number): number {
-  return Math.max(0, Math.min(5, sucSeviyesi / 20));
+  // Aranma yeniden dengeleme turu: 5 yıldız/20-band → 4 yıldız/25-band
+  // (bkz. server/src/data/olaylar/aranmaSeviyesi.ts kademe bantları).
+  return Math.max(0, Math.min(4, sucSeviyesi / 25));
 }
 
 export const HAYVAN_SIMGESI: Record<string, string> = {

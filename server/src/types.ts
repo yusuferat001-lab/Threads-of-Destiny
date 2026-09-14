@@ -218,12 +218,11 @@ export interface CharacterState {
    */
   hapis_ceza_kalan: number;
   /**
-   * "Az olay var" turu Faz 8: "hapiste" etiketi yeni eklendiğinde hapis_ceza_kalan
-   * ile birlikte AYNI değere set edilir ve bir daha değişmez — hapis_ceza_kalan
-   * geri sayarken bu alan cezanın orijinal toplam uzunluğunu (yıl) hatırlar.
-   * `hapisKacisBaslangici:true` olaylarının "toplam ceza ≥5 yıl mı" filtresi
-   * bunu kullanır (kalan süre değil, çünkü o zamanla küçülüyor). Hapiste değilken
-   * son cezanın değerinde kalır (anlamsız, okunmaz).
+   * Tutuklanma anında belirlenen TOPLAM hapis cezası (yıl) — hapis_ceza_kalan'ın
+   * aksine azalmaz, ceza boyunca sabit kalır (hapis_ceza_artis ile birlikte uzar).
+   * "Yıl yatılan" = hapis_ceza_toplam - hapis_ceza_kalan; ağır bantlarda (suc_seviyesi
+   * ≥50) para/af ile erken çıkışı engelleyen minimum yatma süresi kuralı bunu
+   * kullanır (§17). Tahliyede 0'a sıfırlanır. Hapiste değilken 0.
    */
   hapis_ceza_toplam: number;
   /**

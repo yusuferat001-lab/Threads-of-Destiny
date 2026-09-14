@@ -47,7 +47,7 @@ function useGecisDeltasi(deger: number): { delta: number; nonce: number } {
 function DeltaRozeti({ deger, nonce, birim }: { deger: number; nonce: number; birim?: string }) {
   if (nonce === 0 || Math.abs(deger) < 0.01) return null;
   const pozitif = deger > 0;
-  const gosterim = `${pozitif ? '+' : '−'}${formatPara(Math.abs(deger))}${birim ? ` ${birim}` : ''}`;
+  const gosterim = `${pozitif ? '+' : '−'}${formatPara(Math.abs(deger))}`;
   return (
     <span
       key={nonce}
@@ -55,6 +55,9 @@ function DeltaRozeti({ deger, nonce, birim }: { deger: number; nonce: number; bi
       aria-hidden="true"
     >
       {gosterim}
+      {/* Para birimi (ör. "Livre") dar mobil ekranda gizlenir — 7 dar sütunlu üst
+         şeritte uçan rozet birimle birlikte komşu modüle taşıyordu (§ust-serit-delta-birim). */}
+      {birim && <span className="ust-serit-delta-birim"> {birim}</span>}
     </span>
   );
 }
@@ -97,13 +100,13 @@ function StatModulu({
   );
 }
 
-/** Aranma seviyesini (suç puanı) 5 yıldızlık bir ölçekte gösterir — hapis olaylarının
- *  tetiklendiği eşiğe (suc_seviyesi>=45, bkz. CLAUDE.md §17) ulaşınca yıldızlar kırmızıya döner. */
+/** Aranma seviyesini (suç puanı) 4 yıldızlık bir ölçekte gösterir (25 puanlık bantlar,
+ *  bkz. CLAUDE.md §17) — "baskın" bandına (suc_seviyesi>=50) ulaşınca yıldızlar kırmızıya döner. */
 function AranmaModulu({ sucSeviyesi }: { sucSeviyesi: number }) {
   const { m } = useDil();
   const yildiz = aranmaYildiz(sucSeviyesi);
-  const slotlar = Array.from({ length: 5 }, (_, i) => Math.max(0, Math.min(1, yildiz - i)));
-  const tehlike = sucSeviyesi >= 45;
+  const slotlar = Array.from({ length: 4 }, (_, i) => Math.max(0, Math.min(1, yildiz - i)));
+  const tehlike = sucSeviyesi >= 50;
   const { delta, nonce } = useGecisDeltasi(sucSeviyesi);
   return (
     <div className="ust-serit-modul">

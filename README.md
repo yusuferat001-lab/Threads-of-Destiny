@@ -1,4 +1,4 @@
-# Kader Çarkı (Threads of Destiny)
+# (Threads of Destiny)
 
 Çağını, ülkeni ve mesleğini sen seç; ailen ve kişiliğin rastgele belirlensin. Gerisini kaderin ve kararların belirlesin. Ölüm kalıcıdır.
 

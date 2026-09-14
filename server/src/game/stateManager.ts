@@ -611,21 +611,28 @@ export function createCharacter(
     hukumdar: liderGetir(bolge, yil, cag),
     bolge_bilgi: bolgeIstatistigiGetir(cag, bolge) ?? null,
     haberler: [],
-    saglik: 100 + (aile.saglik ?? 0) + (yerlesim.saglik ?? 0),
-    // Başlangıç statları (aile bonusları hariç): mutluluk/ahlak 50 (itibar
-    // bandında tam nötr, 40-60 arası), şöhret 20 (taze bir karakter az tanınır
-    // ama şöhretin nötr bandı düşükten başladığı için ceza yemez, bkz.
-    // itibarUnYuzdesi). İlk olaylar bu değerleri kolayca oynatır.
-    mutluluk: 50,
-    // Büyük denge turu: taban 20→12 ve sonuç [5, 35]'e kırpılır (kullanıcı: "oyun başı
-    // para bonuslarla 35'i aşmasın, en düşük 5 olsun"). tefeci/soylu gibi zengin aile
-    // kökenleri artık başlangıçta 35'i geçiremez; köle/sürgün gibi kökenler de 5'in
-    // altına düşüremez.
-    para: Math.max(5, Math.min(35, 12 + (aile.para ?? 0) + (yerlesim.para ?? 0))),
+    // 2026-09 denge turu (kullanıcı isteği): sağlık tabanı 100→80 (aile
+    // artık her yönde ~±16 oynatabiliyor, ama 80 tabanla bile 100 tavanını
+    // aşmıyor); yerleşim etkisi hâlâ ekleniyor.
+    saglik: 80 + (aile.saglik ?? 0) + (yerlesim.saglik ?? 0),
+    // Başlangıç statları (aile bonusları hariç): mutluluk 50 (nötr), ahlak
+    // 45 (itibar bandında hâlâ nötr, 40-60 arası — sadece taban biraz aşağı
+    // çekildi), şöhret 20 (taze bir karakter az tanınır ama şöhretin nötr
+    // bandı düşükten başladığı için ceza yemez, bkz. itibarUnYuzdesi).
+    // HER aile artık mutluluğu da ~±12 bandında etkiler (eskiden hiçbiri
+    // etkilemiyordu). İlk olaylar bu değerleri kolayca oynatır.
+    mutluluk: 50 + (aile.mutluluk ?? 0),
+    // 2026-09 denge turu: taban 12→10, aile etkisi artık dar bir ~±20
+    // bandında (eskiden +80/-25 gibi aşırı uçlar vardı); sonuç yine de
+    // [5, 40]'a kırpılır — en zengin/fakir aile+yerleşim kombinasyonu bile
+    // bu aralığın dışına taşmaz. Taban 5'te tutuldu (0 değil): oyuncu en
+    // fakir kökende bile temel bir aksiyonu (sosyalleşme giriş ücreti vb.)
+    // karşılayabilecek kadar parayla başlamalı.
+    para: Math.max(5, Math.min(40, 10 + (aile.para ?? 0) + (yerlesim.para ?? 0))),
     para_birimi: paraBirimiGetir(cag, bolge),
     maas_yillik: 0,
     un: 20 + (aile.un ?? 0),
-    ahlak: 50 + (aile.ahlak ?? 0),
+    ahlak: 45 + (aile.ahlak ?? 0),
     ordu_mevcudu: 0,
     ordu_techizat_seviyesi: 0,
     ticaret_sermaye: 0,
@@ -865,12 +872,14 @@ export function eskiKayitGocu(state: CharacterState): void {
   if (typeof state.hapis_ceza_kalan !== "number") {
     state.hapis_ceza_kalan = state.etiketler.includes("hapiste") ? 4 : 0;
   }
-  // Kaçış-başlangıcı geciktirme sayaçları (Faz 8) sonradan eklendi; eski kayıtlarda
-  // hapiste olan bir karakter zaten "içeride" sayılır (filtre kapansın), toplam
-  // ceza da bilinmediği için mevcut kalan süreyi taban alır.
+  // hapis_ceza_toplam sonradan eklendi (§17, para/af ile erken çıkışı bandına
+  // göre kısıtlayan kural için); eski hapisteki kayıtlarda kalan süreyi toplam say.
   if (typeof state.hapis_ceza_toplam !== "number") {
-    state.hapis_ceza_toplam = state.hapis_ceza_kalan;
+    state.hapis_ceza_toplam = state.etiketler.includes("hapiste") ? state.hapis_ceza_kalan : 0;
   }
+  // Kaçış-başlangıcı geciktirme sayacı (Faz 8) sonradan eklendi; eski kayıtlarda
+  // hapiste olan bir karakter zaten "içeride" sayılır (filtre kapansın) — ilk 2
+  // hapisOlayi'nı zaten yaşamış kabul edilir ki kaçış olayları hemen açılabilsin.
   if (typeof state.hapis_tur_sayaci !== "number") {
     state.hapis_tur_sayaci = state.etiketler.includes("hapiste") ? 2 : 0;
   }
@@ -1555,6 +1564,21 @@ export function etiketEkle(state: CharacterState, etiketler?: string[]): void {
 /** Karakter bir havuz-kilit etiketi altında mı (normal olay havuzu kapalı mı)? */
 export function havuzKilidiVar(state: CharacterState): boolean {
   return (HAVUZ_KILIT_ETIKETLERI as readonly string[]).some((e) => state.etiketler.includes(e));
+}
+
+// §17: 50+ aranma bandından (gameEngine.ts HAPIS_CEZA_BASKIN_MIN_YIL ile aynı
+// eşik — o banttaki cezalar hep bu değerden başlar) gelen ağır bir tutuklamada,
+// para/af ile KESİN serbest bırakma sunan olaylar (OlayTanimi.hapisParaylaCikisOlayi)
+// en az bu kadar yıl yatılana kadar havuzdan gizlenir. Fiziksel kaçış girişimleri
+// bu kısıtlamadan muaftır, her zaman denenebilir.
+const HAPIS_AGIR_CEZA_ESIGI_YIL = 7;
+const HAPIS_ERKEN_CIKIS_MIN_YIL_YATILAN = 5;
+
+/** Ağır bir tutuklamadan (toplam ceza ≥7y) para/af ile erken çıkış — en az 5 yıl yatılmış olmalı. Hafif tutuklamalarda (toplam <7y) her zaman true. */
+export function hapisErkenCikisMumkunMu(state: CharacterState): boolean {
+  if (state.hapis_ceza_toplam < HAPIS_AGIR_CEZA_ESIGI_YIL) return true;
+  const yilYatilan = state.hapis_ceza_toplam - state.hapis_ceza_kalan;
+  return yilYatilan >= HAPIS_ERKEN_CIKIS_MIN_YIL_YATILAN;
 }
 
 export function etiketSil(state: CharacterState, etiketler?: string[]): void {
@@ -2749,8 +2773,10 @@ const MULK_GETIRI_DEZAVANTAJLI = -0.02;
 const MULK_GETIRI_TAVAN = 0.09;
 const MULK_DEMIRCI_SAVAS_CARPANI = 2.5;
 const KERVAN_BATMA_IHTIMALI_YILLIK = 0.25;
-// Büyük denge turunda 2→3: karaborsa aranma seviyesini daha hızlı yükseltsin.
-const KARABORSA_SUC_ARTISI_YILLIK = 3;
+// Aranma yeniden dengeleme turu: 3→2 — pasif/ambient bir kaynak olduğu için
+// (yıl başına otomatik işler, oyuncu aksiyonu gerektirmez) karanlık işler
+// (şiddet/soygun) listesiyle aynı hızda birikmesin (kullanıcı isteği).
+const KARABORSA_SUC_ARTISI_YILLIK = 2;
 const KARABORSA_AHLAK_ASINMASI_YILLIK = 0.3;
 // Küçük Tarla — büyük denge turunda "en garanti" mülk yapıldı (kullanıcı: "bir tane uygun
 // gayrimenkul olsun 50'ye alabileceği daha garanti bir şey"): getirisi küçük ama kıtlıkta

@@ -5037,6 +5037,30 @@ button.ikincil {
 
   .ust-serit-modul-deger {
     font-size: 0.7rem;
+    /* 7 dar sütunlu mobil şeritte "align-items:center" (dikey istiflenmiş
+       ikon+değer) değeri İÇERİĞİNE göre ortalar, sütun genişliğine göre değil
+       — bu yüzden "5 Livre" / "Yüksek Onurlu" gibi uzun değerler kutunun
+       dışına taşıp komşu modülün üstüne biniyordu. max-width + zaten var olan
+       ellipsis (bkz. .ust-serit-modul-deger üstteki temel kural) bunu keser;
+       tam metin `title` tooltip'inde duruyor. */
+    max-width: 12vw;
+    text-align: center;
+  }
+
+  /* Uçan delta rozeti (ör. "-0.08 Livre") 7 dar mobil sütuna göre çok geniş
+     oluyor ve sağa yaslı + nowrap olduğundan komşu modülün üstüne taşıp
+     ikonunu kapatıyordu. Para biriminin kısaltılması yeterli: sayı + işaret
+     tek başına dar sütuna sığıyor. */
+  .ust-serit-delta {
+    font-size: 0.6rem;
+    right: 0.1rem;
+    padding: 0.05rem 0.22rem;
+    max-width: 92px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .ust-serit-delta-birim {
+    display: none;
   }
 
   .ust-serit-aranma-yildizlari {
@@ -6026,7 +6050,11 @@ button.ikincil {
   border-top: 1px dashed rgba(224, 199, 137, 0.3);
   animation: ekranBelir 0.3s ease-out;
 }
-.ekran-kurulum .bolge-bayrak-kartlari {
+/* Compound selector (.meslek-kartlari.bolge-bayrak-kartlari) — bu satır olmadan
+   giris.css'teki ".ekran-kurulum .meslek-kartlari{display:flex}" kuralı (aynı
+   özgüllük, ama sonradan yüklendiği için kazanıyor) grid'i eziyor ve bölge
+   bayrak kartları 2 sütun yerine tek sütunda üst üste yığılıyordu. */
+.ekran-kurulum .meslek-kartlari.bolge-bayrak-kartlari {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.7rem;
@@ -6120,7 +6148,8 @@ button.ikincil {
     min-height: 150px;
     padding: 0.9rem 0.5rem;
   }
-  .ekran-kurulum .bolge-bayrak-kartlari {
+  .ekran-kurulum .meslek-kartlari.bolge-bayrak-kartlari {
+    grid-template-columns: 1fr;
     max-width: 100%;
     gap: 0.55rem;
   }
