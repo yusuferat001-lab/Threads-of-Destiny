@@ -213,6 +213,10 @@ const TAM_EKRAN_GRUBU: Ekran[] = [
   'magaza',
   'evlilik',
   'aile',
+  // 2026-09: Kariyer artık PC'de tam ekranı kaplasın diye bu gruba eklendi —
+  // eskiden doğal-yükseklik/sayfa-kayan bir liste ekranıydı, geniş monitörlerde
+  // (1920×1080 vb.) hem yatayda hem dikeyde büyük boş/siyah alan bırakıyordu.
+  'kariyer',
 ];
 
 /** Geri bildirim mesajlarına eklenen uygulama sürümü — bir hata raporunun hangi build'e

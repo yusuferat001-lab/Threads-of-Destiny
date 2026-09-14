@@ -4425,25 +4425,36 @@ button.ikincil {
    strateji-oyunu paneli gibi: iki ilişki hattı kartı + ilerleme barları. */
 /* PC'de tüm ekran genişliğini boşa harcamasın diye bu tek ekran için kapsayıcı
    genişletildi (diğer doğal-yükseklik ekranlar 920px'te kalıyor) — strateji
-   oyunlarındaki "saray/danışman" ekranları gibi iki sütuna yayılabilsin. */
+   oyunlarındaki "saray/danışman" ekranları gibi iki sütuna yayılabilsin.
+   2026-09: ekran ayrıca TAM_EKRAN_GRUBU'na eklendi (App.tsx) — eskiden doğal-
+   yükseklikte, sayfa kendisi kayan bir liste ekranıydı; geniş monitörlerde
+   (1920×1080 vb.) hem yatayda hem dikeyde büyük boş/siyah alan bırakıyordu.
+   Artık diğer tam-sayfa ekranlarla (Yatırım/Finans) aynı "100dvh'i doldur,
+   sadece kendi sütunların içi kaysın" modelini kullanıyor. */
 .oyun-kapsayici:has(.ekran-kariyer) {
-  max-width: 1180px;
+  max-width: 1440px;
 }
 
 .ekran-kariyer {
   background: linear-gradient(180deg, var(--panel-ust), var(--panel-alt));
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
   gap: 0.7rem;
   margin-top: 0.6rem;
   padding-top: 1rem;
 }
 
 /* İki sütunlu "saray" düzeni: solda geniş yönetim/ekip bölümü, sağda dar bir
-   rakip/amir/güç özeti sütunu. */
+   rakip/amir/güç özeti sütunu. Govde kalan tüm dikey alanı doldurur; taşan
+   içerik sayfayı değil, kendi sütununu kaydırır (.tam-sutun ile aynı ilke). */
 .kariyer-govde {
   display: grid;
   grid-template-columns: minmax(0, 1.7fr) minmax(240px, 1fr);
   align-items: start;
   gap: 1rem;
+  flex: 1;
+  min-height: 0;
 }
 .kariyer-ana-sutun,
 .kariyer-yan-sutun {
@@ -4451,6 +4462,10 @@ button.ikincil {
   flex-direction: column;
   gap: 0.7rem;
   min-width: 0;
+  min-height: 0;
+  height: 100%;
+  overflow-y: auto;
+  padding-right: 0.3rem;
 }
 .ekran-kariyer > h2 {
   color: var(--renk-altin-parlak);
@@ -4786,12 +4801,24 @@ button.ikincil {
 }
 
 @media (max-width: 767px) {
+  /* PC'de eklenen "100dvh'i doldur, sütun içi kaysın" davranışı telefonda
+     eski doğal-yükseklik/sayfa-kayan hale geri döner (mobil ayrı bir turda
+     ele alınacak; şimdilik yalnız kırılmaması garanti ediliyor). */
   .ekran-kariyer {
     gap: 0.6rem;
+    flex: none;
+    overflow: visible;
   }
   .kariyer-govde {
     grid-template-columns: 1fr;
     gap: 0.6rem;
+    flex: none;
+  }
+  .kariyer-ana-sutun,
+  .kariyer-yan-sutun {
+    height: auto;
+    overflow-y: visible;
+    padding-right: 0;
   }
   .ekran-kariyer > h2 {
     font-size: 1rem;
