@@ -72,6 +72,14 @@ export function temelUygunMu(olay: OlayTanimi, state: CharacterState): boolean {
   // fiziksel kaçış girişimleri (hapisParaylaCikisOlayi:false/undefined) bundan
   // etkilenmez, her zaman denenebilir kalır.
   if (hapiste && olay.hapisParaylaCikisOlayi && !hapisErkenCikisMumkunMu(state)) return false;
+  // "Az olay var" turu Faz 8: kaçış/erken-tahliye stratejisini BAŞLATAN olaylar
+  // (a) ilk 2 hapisOlayi çözülene kadar (önce hapishane hayatını yaşa) ve
+  // (b) toplam ceza 5 yıldan kısaysa (kısa cezada kaçış zincirine zaman/gerekçe
+  // yok) havuzdan çıkarılır. Zincirin devam adımları zorunlu_sonraki ile
+  // zorlandığı için bu filtreden hiç geçmiyor, etkilenmiyor.
+  if (olay.hapisKacisBaslangici && (state.hapis_tur_sayaci < 2 || state.hapis_ceza_toplam < 5)) {
+    return false;
+  }
   const yolculukta = state.etiketler.includes("yolculukta");
   if (yolculukta && !olay.yolculukOlayi) return false;
   if (!yolculukta && olay.yolculukOlayi) return false;
@@ -191,6 +199,16 @@ function agirlikliSec(olaylar: OlayTanimi[], state: CharacterState, sonTon?: "ag
   return olaylar[olaylar.length - 1];
 }
 
+/**
+ * Havuz büyüklüğüne göre uyarlanan tekrar-önleme penceresi (§12, Yol C).
+ * Taban 6 korunur (çok küçük havuzlarda bile en az bir miktar koruma),
+ * havuzun %70'i kadar büyür, 30'da tavanlanır (büyük havuzda maliyeti/etkiyi
+ * sınırlamak için — zaten geniş bir havuzda daha büyük pencerenin faydası az).
+ */
+export function sonKTekrarOnlemeHesapla(havuzBuyuklugu: number): number {
+  return Math.min(30, Math.max(6, Math.floor(havuzBuyuklugu * 0.7)));
+}
+
 /** Bir seçeneğin neden seçilemediğini döndürür; seçilebiliyorsa null. */
 function kilitNedeni(secenek: OlaySecenegi, state: CharacterState): string | null {
   if (secenek.maliyet !== undefined && state.para < secenek.maliyet) {
@@ -280,7 +298,14 @@ export function olaySec(
     // olayın art arda/sık sık tekrar çıkması önlenir. Havuz bu filtreyle
     // boşalırsa (gerçekten tek/iki seçenek kaldıysa) eski tied-minimum
     // davranışına geri dönülür (güvenlik ağı — hiçbir zaman olaysız kalınmaz).
-    const SON_K_TEKRAR_ONLEME = 6;
+    // K, havuz büyüklüğüne UYARLANIR (2026-09, "az olay var" turu — Yol C):
+    // sabit 6, hapis (39)/kaçak (10)/veba (8)/yolculuk (tek dal ~4) gibi KÜÇÜK
+    // havuzlarda neredeyse hiç koruma sağlamıyordu (havuzun %15-75'i gibi
+    // devasa bir pay 6 turda tekrar edilebiliyordu). Küçük havuzda K havuzun
+    // kendisine yakın büyür (aynı olay neredeyse hepsi görülene kadar
+    // dönmez); büyük (normal ~150'lik) havuzda 30'da tavanlanır — zaten geniş
+    // olduğu için daha fazla pencereye gerek yok, maliyeti sınırlı tutar.
+    const SON_K_TEKRAR_ONLEME = sonKTekrarOnlemeHesapla(uygunlar.length);
     const sonGorulenler = new Set(state.gecmis_olaylar.slice(-SON_K_TEKRAR_ONLEME));
     const yakinTekrarEtmeyenler = uygunlar.filter((o) => !sonGorulenler.has(o.id));
     const adaylar = yakinTekrarEtmeyenler.length > 0 ? yakinTekrarEtmeyenler : uygunlar;

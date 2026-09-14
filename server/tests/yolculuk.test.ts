@@ -135,7 +135,9 @@ describe("yolculukta iken normal olay havuzu tamamen kilitleniyor", () => {
     const izinVerilenler = new Set([
       "yolculuk_kesif_deniz_1",
       "yolculuk_kesif_deniz_2",
+      "yolculuk_kesif_deniz_2b", // pos2 için havuzlaştırılmış alternatif (Faz 3.2)
       "yolculuk_kesif_deniz_3",
+      "yolculuk_kesif_deniz_3b", // pos3 için havuzlaştırılmış alternatif (Faz 5)
       "yolculuk_kesif_donus",
     ]);
     for (let i = 0; i < 300; i++) {
@@ -144,7 +146,9 @@ describe("yolculukta iken normal olay havuzu tamamen kilitleniyor", () => {
       // Kara rotasına ait hiçbir olay hiçbir zaman çıkmamalı.
       expect(olay.id).not.toBe("yolculuk_kesif_kara_1");
       expect(olay.id).not.toBe("yolculuk_kesif_kara_2");
+      expect(olay.id).not.toBe("yolculuk_kesif_kara_2b");
       expect(olay.id).not.toBe("yolculuk_kesif_kara_3");
+      expect(olay.id).not.toBe("yolculuk_kesif_kara_3b");
     }
   });
 
@@ -157,7 +161,9 @@ describe("yolculukta iken normal olay havuzu tamamen kilitleniyor", () => {
     const izinVerilenler = new Set([
       "yolculuk_kesif_kara_1",
       "yolculuk_kesif_kara_2",
+      "yolculuk_kesif_kara_2b", // pos2 için havuzlaştırılmış alternatif (Faz 3.2)
       "yolculuk_kesif_kara_3",
+      "yolculuk_kesif_kara_3b", // pos3 için havuzlaştırılmış alternatif (Faz 5)
       "yolculuk_kesif_donus",
     ]);
     for (let i = 0; i < 300; i++) {
@@ -165,7 +171,9 @@ describe("yolculukta iken normal olay havuzu tamamen kilitleniyor", () => {
       expect(izinVerilenler.has(olay.id)).toBe(true);
       expect(olay.id).not.toBe("yolculuk_kesif_deniz_1");
       expect(olay.id).not.toBe("yolculuk_kesif_deniz_2");
+      expect(olay.id).not.toBe("yolculuk_kesif_deniz_2b");
       expect(olay.id).not.toBe("yolculuk_kesif_deniz_3");
+      expect(olay.id).not.toBe("yolculuk_kesif_deniz_3b");
     }
   });
 
@@ -193,7 +201,15 @@ describe("yolculukta iken normal olay havuzu tamamen kilitleniyor", () => {
 
 describe("yolculuk zinciri uçtan uca (Coğrafi Keşif, deniz rotası)", () => {
   it("teklif kabul edilince zincir sırayla ilerler ve sonunda yolculuk_tamamlandi ile normal havuz açılır", async () => {
-    const beklenenSira = ["yolculuk_kesif_deniz_1", "yolculuk_kesif_deniz_2", "yolculuk_kesif_deniz_3", "yolculuk_kesif_donus"];
+    // pos2 VE pos3 adımları artık havuzlaştırıldı (Faz 3.2 + Faz 5,
+    // zorunlu_sonraki_havuzu) — her ikisinde de ya orijinal ya da yeni
+    // alternatif olay gelebilir, hepsi geçerli.
+    const beklenenSira = [
+      new Set(["yolculuk_kesif_deniz_1"]),
+      new Set(["yolculuk_kesif_deniz_2", "yolculuk_kesif_deniz_2b"]),
+      new Set(["yolculuk_kesif_deniz_3", "yolculuk_kesif_deniz_3b"]),
+      new Set(["yolculuk_kesif_donus"]),
+    ];
 
     // Zincir SIRASINI doğruluyoruz; ~5 tur boyunca ANI_OLUM/veba gibi tamamen
     // rastgele bir ölüm zinciri yarıda kesebildiği için (test mekaniği değil),
@@ -212,11 +228,12 @@ describe("yolculuk zinciri uçtan uca (Coğrafi Keşif, deniz rotası)", () => {
       expect(sonuc.state.etiketler).toContain("yolculuk_yolu:deniz");
 
       let oldu = false;
-      for (const beklenenId of beklenenSira) {
+      for (const beklenenIdler of beklenenSira) {
         sonuc.state.saglik = 100;
         sonuc.state.para = 500;
         const senaryo = await senaryoUret(state.id);
-        expect(senaryo.olay_basligi).toBe(baslikGetir(beklenenId));
+        const beklenenBasliklar = [...beklenenIdler].map(baslikGetir);
+        expect(beklenenBasliklar).toContain(senaryo.olay_basligi);
         let acikIdx = -1;
         let enIyiSans = -1;
         senaryo.secenekler.forEach((s, i) => {

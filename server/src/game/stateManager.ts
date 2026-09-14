@@ -640,6 +640,7 @@ export function createCharacter(
     suc_seviyesi: 0,
     hapis_ceza_kalan: 0,
     hapis_ceza_toplam: 0,
+    hapis_tur_sayaci: 0,
     mulkler: [],
     mulk_bakim_kalan: {},
     magaza_envanteri: [],
@@ -875,6 +876,12 @@ export function eskiKayitGocu(state: CharacterState): void {
   // göre kısıtlayan kural için); eski hapisteki kayıtlarda kalan süreyi toplam say.
   if (typeof state.hapis_ceza_toplam !== "number") {
     state.hapis_ceza_toplam = state.etiketler.includes("hapiste") ? state.hapis_ceza_kalan : 0;
+  }
+  // Kaçış-başlangıcı geciktirme sayacı (Faz 8) sonradan eklendi; eski kayıtlarda
+  // hapiste olan bir karakter zaten "içeride" sayılır (filtre kapansın) — ilk 2
+  // hapisOlayi'nı zaten yaşamış kabul edilir ki kaçış olayları hemen açılabilsin.
+  if (typeof state.hapis_tur_sayaci !== "number") {
+    state.hapis_tur_sayaci = state.etiketler.includes("hapiste") ? 2 : 0;
   }
   // Kişisel veba hastalığı ölüm riski sonradan eklendi. Yeni bir vakada
   // vebaHastaligiBaslatEt bunu 70 yapıyor; göçmüş bir hasta kaydı da aynı

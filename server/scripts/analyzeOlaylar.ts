@@ -46,6 +46,12 @@ import { olaySec } from "../src/game/olaySecici";
 import { OLAY_BANKASI, OlayTanimi } from "../src/data/olaylar";
 import { YERLESIMLER } from "../src/data/yerlesimler";
 import { Cag, CharacterState } from "../src/types";
+import {
+  kapsamMatrisiHesapla,
+  kilitliHavuzlariHesapla,
+  gercekciProfilleriHesapla,
+  KAPSAM_YAS_BANTLARI,
+} from "../src/game/olayKapsami";
 
 // ---------------------------------------------------------------------------
 // PART A: statik envanter (salt veri taraması, simülasyon yok)
@@ -446,5 +452,60 @@ function partB(): void {
   garantiler.forEach((g) => console.log(`  • ${g}`));
 }
 
+// ---------------------------------------------------------------------------
+// PART C: anlık erişilebilir havuz büyüklüğü — "az olay var" kapsama matrisi
+// ---------------------------------------------------------------------------
+
+function partC(): void {
+  console.log("\n" + "=".repeat(78));
+  console.log("PART C — ANLIK ERİŞİLEBİLİR HAVUZ BÜYÜKLÜĞÜ (kapsama matrisi)");
+  console.log("=".repeat(78));
+  console.log(
+    "\nHer (çağ×bölge×meslek×yaş) için NÖTR statlarla (etiketsiz, ortalama ahlak/\n" +
+      "mutluluk/ün, hizipsiz) kaç DİSTİNCT olay o anda seçilebilir durumda —\n" +
+      "olaySec()'teki uygunMu ile birebir aynı kural. Bu bir ÜST SINIRDIR: gerçek\n" +
+      "oyuncularda ek etiketler (suç kademesi, evlilik, hizip vb.) sayıyı daha da\n" +
+      "düşürebilir. Sosyalleşme/mülk-olayı/hapis/yolculuk/kaçak/veba-hastası gibi\n" +
+      "ayrı alt sistemlere kilitli olaylar burada SAYILMAZ (normal havuzdan zaten\n" +
+      "dışlanıyorlar, §12)."
+  );
+
+  const satirlar = kapsamMatrisiHesapla();
+  const KOTU_ESIK = 40; // bu sayının altı "dar havuz, hızlı tekrar" riski taşır
+  let enDusuk = Infinity;
+  let enDusukSatir: (typeof satirlar)[number] | null = null;
+
+  console.log(`\n${"Çağ".padEnd(18)}${"Bölge".padEnd(14)}${"Meslek".padEnd(12)}${"Yaş".padEnd(6)}Sayı`);
+  for (const s of satirlar) {
+    const bayrak = s.sayi < KOTU_ESIK ? "  ⚠️ DAR" : "";
+    console.log(`${s.cag.padEnd(18)}${s.bolge.padEnd(14)}${s.meslek.padEnd(12)}${String(s.yas).padEnd(6)}${s.sayi}${bayrak}`);
+    if (s.sayi < enDusuk) {
+      enDusuk = s.sayi;
+      enDusukSatir = s;
+    }
+  }
+
+  const darOlanlar = satirlar.filter((s) => s.sayi < KOTU_ESIK);
+  console.log(`\nToplam ${satirlar.length} kombinasyon (yaş bantları: ${KAPSAM_YAS_BANTLARI.join(", ")}).`);
+  console.log(`En düşük: ${enDusuk} olay (${enDusukSatir?.cag} · ${enDusukSatir?.bolge} · ${enDusukSatir?.meslek} · yaş ${enDusukSatir?.yas}).`);
+  console.log(`Eşik ${KOTU_ESIK}'ın altında kalan kombinasyon sayısı: ${darOlanlar.length}/${satirlar.length}.`);
+  console.log(
+    "\nBu tablo düştükçe (yeni bir dar filtre eklenince) tests/olayKapsami.test.ts\n" +
+      "kırılır — regresyonu erken yakalar (Faz 1/Yol E)."
+  );
+
+  console.log("\n--- Gerçekçi etiket birikimiyle havuz daralması (nötr üst-sınırla karşılaştırma) ---");
+  for (const p of gercekciProfilleriHesapla()) {
+    console.log(`  ${p.profil.padEnd(45)}: ${p.sayi}`);
+  }
+
+  console.log("\n--- Havuz-kilit etiketleri aktifken görülebilen alt-havuz büyüklüğü (§17/§27) ---");
+  console.log("(Bu etiketlerden biri varken NORMAL havuz tamamen kapanır, sadece bu sayı kadar olay kalır.)");
+  for (const k of kilitliHavuzlariHesapla()) {
+    console.log(`  ${k.etiket.padEnd(16)}: ${k.sayi} olay ${k.sayi < 15 ? "  ⚠️ ÇOK DAR" : ""}`);
+  }
+}
+
 partA();
 partB();
+partC();
