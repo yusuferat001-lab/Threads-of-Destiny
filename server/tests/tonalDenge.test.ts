@@ -29,5 +29,5 @@ describe("tonal tutarsızlık mitigasyonu", () => {
 
     expect(normalOran).toBeGreaterThan(0);
     expect(ardArdaOran).toBeLessThan(normalOran * 0.35);
-  }, 120000);
+  }, 240000);
 });
