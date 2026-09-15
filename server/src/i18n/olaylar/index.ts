@@ -72,6 +72,10 @@ import { OLAYLAR_KOMIK_OLUM_EN } from "./komikOlumler.en";
 import { OLAYLAR_MULK_EN } from "./mulkOlaylari.en";
 import { OLAYLAR_BUYULU_EN } from "./buyuluOlaylar.en";
 import { OLAYLAR_KOMIK_GARIP_EN } from "./komikGaripOlaylar.en";
+import { OLAYLAR_SANAYI_ASKER_YOLLARI_EN } from "./sanayiAskerYollari.en";
+import { OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN } from "./sanayiDinAdamiYollari.en";
+import { OLAYLAR_ORTACAG_TUCCAR_YOLLARI_EN } from "./ortaCagTuccarYollari.en";
+import { OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN } from "./sanayiTuccarYollari.en";
 
 const KAYIT: Record<string, OlayCeviri>[] = [
   OLAYLAR_KOMIK_OLUM_EN,
@@ -97,6 +101,10 @@ const KAYIT: Record<string, OlayCeviri>[] = [
   OLAYLAR_HIZIP_EN,
   OLAYLAR_ORTACAG_DINADAMI_YOLLARI_EN,
   OLAYLAR_ORTACAG_ASKER_YOLLARI_EN,
+  OLAYLAR_SANAYI_ASKER_YOLLARI_EN,
+  OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN,
+  OLAYLAR_ORTACAG_TUCCAR_YOLLARI_EN,
+  OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN,
   OLAYLAR_YOLCULUK_EN,
   OLAYLAR_SOSYALLESME_EN,
   OLAYLAR_GENEL_EN,
