@@ -9,7 +9,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Give a balanced, measured sermon — neither provoke anyone nor silence anyone.",
-        ipucu: "A reliable start, it leaves no extraordinary impression",
         basariliSonuc: {
           mesaj: "Your sermon made everyone feel heard; the congregation began calling you 'the balanced shepherd'.",
           detay: "Some paths begin quietly but are the most solid of all.",
@@ -21,7 +20,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Declare science and new ideas to be the devil's work, cling tight to old doctrine.",
-        ipucu: "You win a loyal flock, you put distance between yourself and the learned",
         basariliSonuc: {
           mesaj: "The conservative congregation gave your sermon a standing ovation; you're now a name that carries weight.",
           detay: "Certainty is sometimes convincing — regardless of whether it's true.",
@@ -33,7 +31,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Stand openly with the workers against the factory owners.",
-        ipucu: "You win the workers' hearts, you draw the enmity of the powerful",
         basariliSonuc: {
           mesaj: "The workers carried you on their shoulders; but the factory owners now see you as a threat.",
           detay: "Preaching justice has a price, usually paid to the powerful.",
@@ -45,7 +42,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Preach 'obedience and patience' in exchange for a secret donation from the factory owner.",
-        ipucu: "A comfortable church budget, a lasting stain on your conscience",
         basariliSonuc: {
           mesaj: "The donation repaired the church's roof; but you can't ignore the disappointment on the workers' faces.",
           detay: "Some comforts are paid for by the conscience.",
@@ -66,7 +62,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Listen for hours, work for a fair settlement.",
-        ipucu: "Exhausting but an effort that earns respect",
         basariliSonuc: {
           mesaj: "After hours of talks both sides shook hands and left; you're known as the voice of justice.",
           detay: "Patience is sometimes more effective than the strongest sermon.",
@@ -78,7 +73,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Take the easy way out, settle for a symbolic prayer.",
-        ipucu: "Little effort, but your avoidance is obvious",
         basariliSonuc: {
           mesaj: "You closed the meeting with a short prayer; no one was pleased, but no one blamed you either.",
           detay: "Sometimes silence is the cheapest way out.",
@@ -97,7 +91,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Correct him privately, gently.",
-        ipucu: "Humble but limited in effect",
         basariliSonuc: {
           mesaj: "The young priest admitted his mistake without shame, and is grateful to you.",
           detay: "A gentle correction doesn't burn bridges.",
@@ -109,7 +102,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Correct him openly in front of the congregation.",
-        ipucu: "A clear lesson, but it can be humiliating",
         basariliSonuc: {
           mesaj: "You corrected the mistake in front of everyone; the congregation trusted your integrity, but the young priest never forgave you.",
           detay: "Telling the truth sometimes costs a relationship.",
@@ -128,7 +120,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Meticulously record every last penny, be transparent.",
-        ipucu: "Costs time and money, but builds trust",
         basariliSonuc: {
           mesaj: "Every entry of your fund is on record; the congregation began trusting the church's honesty.",
           detay: "Transparency is a slow but lasting capital.",
@@ -140,7 +131,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Distribute it quickly, don't bother with record-keeping.",
-        ipucu: "Easy and fast, but you sacrifice transparency",
         basariliSonuc: {
           mesaj: "The relief was distributed fast, people are happy; but some started asking 'where did this money go'.",
           detay: "Speed sometimes sacrifices trust.",
@@ -159,7 +149,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Politely decline, keep your measured stance.",
-        ipucu: "You keep your stance, but the pressure is exhausting",
         basariliSonuc: {
           mesaj: "You stayed balanced despite the pressure; some were disappointed, but you remained respected.",
           detay: "Balance sometimes satisfies no one completely.",
@@ -171,7 +160,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Join in part, support them with cautious language.",
-        ipucu: "Try a middle path, small but real risk",
         basariliSonuc: {
           mesaj: "Your measured support pleased the workers, and the conservative congregation members began to question you.",
           detay: "The middle path sometimes tests both sides' trust.",
@@ -190,7 +178,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Give a calm, reasoned defense.",
-        ipucu: "The weight of your words could save you",
         basariliSonuc: {
           mesaj: "The board listened to your words, found the accusations baseless; your reputation solidified once more.",
           detay: "Calm is sometimes the strongest defense.",
@@ -202,7 +189,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Ignore the complaint, keep going about your work.",
-        ipucu: "A risky indifference",
         basariliSonuc: {
           mesaj: "The complaint died down on its own over time; but a small unease remained inside you.",
           detay: "Ignoring it sometimes works, sometimes it grows.",
@@ -221,7 +207,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Tell the truth as you saw it, whichever side it favors.",
-        ipucu: "Honesty is sure to anger one side",
         basariliSonuc: {
           mesaj: "Your testimony decided the course of the case; everyone learned they could trust your word.",
           detay: "The truth is sometimes costly but always valuable.",
@@ -233,7 +218,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Say vague things that won't offend either side.",
-        ipucu: "Safe, but it damages your reputation",
         basariliSonuc: {
           mesaj: "Your evasive answers didn't affect the case; but everyone in the courtroom felt you were hiding the truth.",
           detay: "Vagueness is sometimes costlier than honesty.",
@@ -252,7 +236,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Take the time, teach him with patience.",
-        ipucu: "Like an investment — not immediate, but a lasting return",
         basariliSonuc: {
           mesaj: "The young priest hung on every word you taught him; a real bond formed between you.",
           detay: "Being a good teacher is also a form of service.",
@@ -264,7 +247,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Give a few brief pieces of advice, move on.",
-        ipucu: "Little effort, a limited bond",
         basariliSonuc: {
           mesaj: "A few brief, well-placed words guided the young priest.",
           detay: "Sometimes a few words are enough.",
@@ -283,7 +265,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Vote independently, according to your conscience.",
-        ipucu: "Principled but could leave you isolated",
         basariliSonuc: {
           mesaj: "Your independent vote surprised everyone; the assembly members respected your principles.",
           detay: "Sometimes a single honest vote outweighs a whole pile of votes.",
@@ -295,7 +276,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Join the powerful faction, stand on the comfortable side.",
-        ipucu: "Easy, but it means compromising your principles",
         basariliSonuc: {
           mesaj: "You sided with the powerful faction; life got easier, but a discomfort remained inside.",
           detay: "The easy road sometimes stings the conscience.",
@@ -314,7 +294,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Take the risk, visit the sick, pray with them.",
-        ipucu: "The risk of infection is real but your reputation grows",
         basariliSonuc: {
           mesaj: "The hours you spent in the wards gave the sick one last hope; everyone speaks of your courage.",
           detay: "Some acts of service take a piece of the body with them.",
@@ -326,7 +305,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Give support from a distance by letter, don't take the risk.",
-        ipucu: "Safe, but it can look ineffective",
         basariliSonuc: {
           mesaj: "Your letters comforted some families, but there were those who asked 'why doesn't he come'.",
           detay: "Service from a distance doesn't always seem enough.",
@@ -345,7 +323,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Visit regularly, be by his side.",
-        ipucu: "A small sacrifice, a great comfort",
         basariliSonuc: {
           mesaj: "The old teacher started smiling again thanks to your visits; he gave you his blessing.",
           detay: "The cure for loneliness is sometimes just a chair.",
@@ -357,7 +334,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Use your busy schedule as an excuse, drop by rarely.",
-        ipucu: "Easy, but it touches your conscience",
         basariliSonuc: {
           mesaj: "You focused on your work; the old teacher's loneliness left a small ache inside you.",
           detay: "Being busy is sometimes just an excuse.",
@@ -376,7 +352,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept the title, but keep your neutrality, speak honestly.",
-        ipucu: "Hard but a closing worthy of your whole career",
         basariliSonuc: {
           mesaj: "The balanced stance you kept for years earned you lasting respect at the end of your career.",
           detay: "Some renown is earned not with noise, but with consistency.",
@@ -388,7 +363,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Stay silent, decline the title, retire in peace.",
-        ipucu: "A calm finale, less glorious",
         basariliSonuc: {
           mesaj: "You chose a quiet retirement; you left in peace.",
           detay: "Some closings are beautiful precisely for their silence.",
@@ -409,7 +383,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Condemn it fiercely from the pulpit.",
-        ipucu: "You grow your loyal flock, you push the learned away",
         basariliSonuc: {
           mesaj: "Your sermon electrified the conservative congregation; you're now known as 'the guardian of true faith'.",
           detay: "Certainty is sometimes convincing — regardless of whether it's true.",
@@ -421,7 +394,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Ignore it, stay silent.",
-        ipucu: "Safe but it disappoints your loyal flock",
         basariliSonuc: {
           mesaj: "Your silence let the storm pass; but some had expected a harsher reaction from you.",
           detay: "Not every silence looks safe.",
@@ -440,7 +412,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Submit a harsh petition to the school board, organize a parents' meeting.",
-        ipucu: "Gathers loyal supporters, puts the board against you",
         basariliSonuc: {
           mesaj: "Your campaign found great resonance; a loyal following gathered around you.",
           detay: "A fight sometimes gathers followers, not peace.",
@@ -452,7 +423,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Only voice your grievance within your own congregation, no formal action.",
-        ipucu: "Safer, smaller impact",
         basariliSonuc: {
           mesaj: "Your grievance found an echo inside your congregation, but it didn't change the school's decision.",
           detay: "A small voice makes a small echo.",
@@ -471,7 +441,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Incite the crowd with fiery words.",
-        ipucu: "Gives you power but can spiral out of control",
         basariliSonuc: {
           mesaj: "The crowd rose to your words; the journalist fled, your name became legend in the city.",
           detay: "Power is sometimes born from an uncontrolled flame.",
@@ -483,7 +452,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Try to calm things at the last moment, back off.",
-        ipucu: "Responsible but it can damage your reputation",
         basariliSonuc: {
           mesaj: "You barely calmed the crowd; some of your loyal followers found you 'soft'.",
           detay: "Good judgment sometimes costs you followers.",
@@ -502,7 +470,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Don't mind it, grow your flock with the faithful.",
-        ipucu: "Your loyal flock grows, your reputation takes a small hit",
         basariliSonuc: {
           mesaj: "Your loyal followers embraced you even more; you didn't mind the ones who left.",
           detay: "Every loss can be balanced by a gain — but not always of the same kind.",
@@ -514,7 +481,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Go after them, soften your tone, try to win them back.",
-        ipucu: "Risky but could balance your reputation",
         basariliSonuc: {
           mesaj: "You convinced the family, they came back; but some of your loyal followers criticized you for 'softening'.",
           detay: "Reconciliation sometimes unsettles the hardliners.",
@@ -533,7 +499,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Rise to the challenge, argue with harsh arguments.",
-        ipucu: "High risk, high reward",
         basariliSonuc: {
           mesaj: "You closed the debate with fiery arguments; the hall gave you a standing ovation.",
           detay: "Winning in front of a crowd is talked about for a long time.",
@@ -545,7 +510,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Decline the invitation, say 'it's not worth debating them'.",
-        ipucu: "Safe but can look weak",
         basariliSonuc: {
           mesaj: "Your refusal was read by your loyal followers as 'a dignified stance'.",
           detay: "Sometimes not fighting is also a choice.",
@@ -564,7 +528,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Respond harshly with a counter series of your own.",
-        ipucu: "Raises your visibility, but also raises the tension",
         basariliSonuc: {
           mesaj: "Your harsh response electrified your supporters; your name is now circulating in the newspaper pages.",
           detay: "A dispute sometimes feeds a career.",
@@ -576,7 +539,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Don't respond, trust in the power of silence.",
-        ipucu: "Calm but it can look passive",
         basariliSonuc: {
           mesaj: "Your silence let the storm die down over time.",
           detay: "Some fights fade away when left unanswered.",
@@ -595,7 +557,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Leave, found your own church.",
-        ipucu: "Costly and risky, but true freedom",
         basariliSonuc: {
           mesaj: "Your new congregation grew fast; you now preach without answering to anyone.",
           detay: "Independence has a price, but it brings freedom too.",
@@ -607,7 +568,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Stay, put up with the restrictions.",
-        ipucu: "Safe but a compromise that eats away at you inside",
         basariliSonuc: {
           mesaj: "You put up with the restrictions; your peace was disturbed but your position is secure.",
           detay: "Some kinds of security come with unease.",
@@ -626,7 +586,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Enthusiastically endorse the miracle, add it to your sermons.",
-        ipucu: "It grows the crowd, it touches your conscience",
         basariliSonuc: {
           mesaj: "News of the miracle spread through the city; your congregation tripled in size.",
           detay: "Faith is sometimes a stronger pull than proof.",
@@ -638,7 +597,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Approach it with skepticism, stay cautious.",
-        ipucu: "Principled but it may not please your loyal followers",
         basariliSonuc: {
           mesaj: "Your cautious stance was found 'reasonable' by some.",
           detay: "Skepticism doesn't always contradict faith.",
@@ -657,7 +615,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Defend the list, don't back down.",
-        ipucu: "Risk of a costly lawsuit",
         basariliSonuc: {
           mesaj: "The case was dismissed, your loyal followers welcomed you like a hero.",
           detay: "Some victories are costly but grow your reputation.",
@@ -669,7 +626,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Quietly destroy the list, avoid the case.",
-        ipucu: "Safe but humbling",
         basariliSonuc: {
           mesaj: "You destroyed the list, the case was dropped; but a feeling of defeat remained inside you.",
           detay: "Backing down is sometimes the wisest choice.",
@@ -688,7 +644,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Question the past, try to mend a few bridges.",
-        ipucu: "Late but worth trying",
         basariliSonuc: {
           mesaj: "A few of your old friends came back; your old age feels a little warmer now.",
           detay: "Some bridges can be mended, even late.",
@@ -700,7 +655,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Never compromise your stance, accept the loneliness.",
-        ipucu: "True to your principles, but uneasy",
         basariliSonuc: {
           mesaj: "You never gave up your principles; but your evenings pass alone.",
           detay: "Consistency has a price.",
@@ -719,7 +673,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Stand behind your words, say you have no regrets.",
-        ipucu: "A consistent finale, but uncompromising",
         basariliSonuc: {
           mesaj: "The interview made a great impact; you went down in history as 'the voice that never bent'.",
           detay: "Some voices never quiet down — regardless of whether they were right.",
@@ -731,7 +684,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Hint at a faint remorse, soften.",
-        ipucu: "A risky attempt at softening",
         basariliSonuc: {
           mesaj: "Your softer words placated some of your old enemies, but your loyal followers were disappointed.",
           detay: "Change sometimes pushes away old allies.",
@@ -752,7 +704,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Join the committee, give open support.",
-        ipucu: "Wins the workers' hearts, risks the church's donations",
         basariliSonuc: {
           mesaj: "The workers took heart seeing you on their side; the strike gained strength.",
           detay: "Taking a side for justice has a price.",
@@ -764,7 +715,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Give only moral support, don't join officially.",
-        ipucu: "Safe but can look ineffective",
         basariliSonuc: {
           mesaj: "Your moral support gave the workers a little comfort.",
           detay: "A small gesture is sometimes not enough, but it's still something.",
@@ -783,7 +733,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Openly criticize him in a sermon.",
-        ipucu: "Principled but it risks the donations",
         basariliSonuc: {
           mesaj: "Your sermon found an echo in the city; the workers embraced you, but the factory owner cut off his donations.",
           detay: "Telling the truth has a bill.",
@@ -795,7 +744,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Warn him gently in a private meeting.",
-        ipucu: "Safer but limited in effect",
         basariliSonuc: {
           mesaj: "The meeting went calmly; the factory owner promised a few small improvements.",
           detay: "Some changes begin with quiet words.",
@@ -814,7 +762,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Spend the time and money, found the school.",
-        ipucu: "Costly but a lasting legacy",
         basariliSonuc: {
           mesaj: "The night school opened; dozens of children began learning to read and write for the first time.",
           detay: "Some investments last generations.",
@@ -826,7 +773,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Just propose the idea, leave it to others.",
-        ipucu: "Cheap but ineffective",
         basariliSonuc: {
           mesaj: "Others brought your idea to life; your contribution was small.",
           detay: "Sometimes giving an idea is a contribution too — even a small one.",
@@ -845,7 +791,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Rise to the challenge, keep raising your voice.",
-        ipucu: "Courageous but risks a clash with your superiors",
         basariliSonuc: {
           mesaj: "You kept preaching despite the hierarchy; your congregation embraced you even more.",
           detay: "Sometimes not bending is the greatest sermon.",
@@ -857,7 +802,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Quiet your voice for a while, wait out the storm.",
-        ipucu: "Safe but it stings the conscience",
         basariliSonuc: {
           mesaj: "You stayed silent for a while; the storm passed, but a guilt remained inside.",
           detay: "Silence is sometimes the price of survival.",
@@ -876,7 +820,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Openly defend your stance, don't back down.",
-        ipucu: "Principled but could cost you your career",
         basariliSonuc: {
           mesaj: "The inquiry board found you innocent, the strength of your stance earned you respect.",
           detay: "Sometimes honesty is the best defense.",
@@ -888,7 +831,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Give a moderate defense, soften some of the claims.",
-        ipucu: "Safer but it strains your conscience",
         basariliSonuc: {
           mesaj: "Your softened defense ended the inquiry, but you didn't feel fully yourself.",
           detay: "Compromise sometimes means giving up a piece of yourself.",
@@ -907,7 +849,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Arrange medicine and a doctor from your own pocket.",
-        ipucu: "Costly but saves lives",
         basariliSonuc: {
           mesaj: "The doctor you brought in saved many working families; the neighborhood will never forget you.",
           detay: "Generosity sometimes touches the body, not just the purse.",
@@ -919,7 +860,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Only pray, preserve the church's limited resources.",
-        ipucu: "Cheap but it touches your conscience",
         basariliSonuc: {
           mesaj: "You prayed, but the neighborhood expected more from you.",
           detay: "Sometimes prayer isn't enough, action is needed.",
@@ -938,7 +878,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Open the church, allow the meeting.",
-        ipucu: "Wins solidarity, unsettles the conservatives",
         basariliSonuc: {
           mesaj: "The meeting went well, the women are grateful to you.",
           detay: "Opening a space sometimes lays the ground for a movement.",
@@ -950,7 +889,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Decline, ask that the church stay neutral.",
-        ipucu: "Safe but distances you from solidarity",
         basariliSonuc: {
           mesaj: "Your refusal kept the church out of the dispute; but the women were disappointed.",
           detay: "Neutrality sometimes upsets one side.",
@@ -969,7 +907,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept the interview, speak openly.",
-        ipucu: "Brings visibility, puts distance between you and the powerful",
         basariliSonuc: {
           mesaj: "The interview found wide resonance, you started being called 'the working class's own priest'.",
           detay: "A voice grows louder when it spreads in the right place.",
@@ -981,7 +918,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Politely decline, remain cautious.",
-        ipucu: "Safe but limits your visibility",
         basariliSonuc: {
           mesaj: "Your refusal passed quietly; but you missed the chance to make your voice heard.",
           detay: "Not every opportunity comes twice.",
@@ -1000,7 +936,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Show resistance, rally your congregation behind you.",
-        ipucu: "Risky but you could win with your congregation's strength",
         basariliSonuc: {
           mesaj: "Your congregation resisted the hierarchy for you; the exile plan was shelved.",
           detay: "Sometimes the voice of a community is stronger than a single voice standing alone.",
@@ -1012,7 +947,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Submit, accept the exile.",
-        ipucu: "Safe but painful",
         basariliSonuc: {
           mesaj: "You accepted the exile; your congregation wept as you left, but you walked away all the same.",
           detay: "Some prices are unavoidable without being paid.",
@@ -1031,7 +965,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Spend the time and effort, grow the movement.",
-        ipucu: "Costly but could leave a lasting legacy",
         basariliSonuc: {
           mesaj: "The movement spread to neighboring cities; your name began to be known as one of the pioneers of the 'social gospel'.",
           detay: "Some seeds turn into a forest years later.",
@@ -1043,7 +976,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Let it stay small and local.",
-        ipucu: "Safe, a modest choice",
         basariliSonuc: {
           mesaj: "The movement stayed small but solid; you became a trusted name among the local people.",
           detay: "Staying small sometimes means staying durable.",
@@ -1062,7 +994,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "One last time, raise your voice as harshly as you can.",
-        ipucu: "High risk, great legacy",
         basariliSonuc: {
           mesaj: "Your last sermon inspired generations; the people call you 'their own priest'.",
           detay: "Some farewells become a career's strongest moment.",
@@ -1074,7 +1005,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Step back, quietly prepare for retirement.",
-        ipucu: "Safe but it diminishes your legacy",
         basariliSonuc: {
           mesaj: "You chose a quiet retirement; a peaceful but less remembered finale.",
           detay: "Some finales bring peace with their silence.",
@@ -1095,7 +1025,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept the offer.",
-        ipucu: "Easy money, a dirty start",
         basariliSonuc: {
           mesaj: "You accepted the arrangement, the church's budget got some relief; but a small stain remained on your conscience.",
           detay: "Some comforts are paid for by the conscience.",
@@ -1107,7 +1036,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Decline, stay honest.",
-        ipucu: "Your conscience stays clean, but the budget tightens",
         basariliSonuc: {
           mesaj: "You declined the offer; there's peace inside you, but the church's budget is still tight.",
           detay: "Honesty isn't always comfortable.",
@@ -1126,7 +1054,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Take money from the fund in secret.",
-        ipucu: "A small theft, a big risk",
         basariliSonuc: {
           mesaj: "No one noticed; your pocket is fuller, but there's an ache inside.",
           detay: "Even a silent crime leaves an echo in the conscience.",
@@ -1138,7 +1065,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Don't touch it, leave the fund untouched.",
-        ipucu: "A safe, clean choice",
         basariliSonuc: {
           mesaj: "You didn't touch the fund; it reached the poor, there's a small peace inside you.",
           detay: "Some decisions give the quiet comfort of being right.",
@@ -1157,7 +1083,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Continue the affair, hide it more carefully.",
-        ipucu: "Risky but it's bringing you happiness for now",
         basariliSonuc: {
           mesaj: "The hush money worked, your affair stayed hidden a while longer.",
           detay: "Secret happiness has a price.",
@@ -1169,7 +1094,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "End the affair, don't risk it.",
-        ipucu: "Safer but painful",
         basariliSonuc: {
           mesaj: "You ended the affair; your reputation was preserved, but an emptiness remained inside.",
           detay: "Safety sometimes comes with a broken heart.",
@@ -1188,7 +1112,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept the donation, publicly absolve his sin.",
-        ipucu: "Big money, a serious price on conscience",
         basariliSonuc: {
           mesaj: "The merchant felt relieved, the church grew richer; but some members of the congregation looked on with suspicion.",
           detay: "Absolution loses its worth once it's for sale.",
@@ -1200,7 +1123,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Decline, act on principle.",
-        ipucu: "Your conscience stays clean",
         basariliSonuc: {
           mesaj: "You turned down the offer; the merchant is angry, but your conscience is at ease.",
           detay: "Some refusals are costly but worthwhile.",
@@ -1219,7 +1141,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Lie, cover up the accounts with forged documents.",
-        ipucu: "A short-term fix, a long-term risk",
         basariliSonuc: {
           mesaj: "The forged documents convinced the accountant; but now every accounting period frightens you.",
           detay: "One lie generally requires a second.",
@@ -1231,7 +1152,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Partly admit the truth, offer to make amends.",
-        ipucu: "Less risky, but there's still a price",
         basariliSonuc: {
           mesaj: "Your partial admission calmed the accountant down; you had to make up for the losses.",
           detay: "Partial honesty isn't a full redemption, but it's a start.",
@@ -1250,7 +1170,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Forge the record.",
-        ipucu: "Big money, it taints the church's records",
         basariliSonuc: {
           mesaj: "The forged record went through without a hitch; your coffers filled up, but the church's records are no longer trustworthy.",
           detay: "Records are a church's memory; when they're tainted, so is trust.",
@@ -1262,7 +1181,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Decline, protect the church's records.",
-        ipucu: "Principled but you miss the financial opportunity",
         basariliSonuc: {
           mesaj: "You declined the offer, the family found another way; but the church's records stayed clean.",
           detay: "Some refusals protect an unseen value.",
@@ -1281,7 +1199,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Keep taking it, be more careful.",
-        ipucu: "A risk that has become a habit",
         basariliSonuc: {
           mesaj: "You acted more carefully, no one found firm proof.",
           detay: "Habits are the hardest sins to give up.",
@@ -1293,7 +1210,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Stop, start filling the box back up.",
-        ipucu: "A step toward cleansing your conscience",
         basariliSonuc: {
           mesaj: "You quietly put the money back you'd taken; no one noticed, but there's a relief inside you.",
           detay: "A late honesty is still an honesty.",
@@ -1312,7 +1228,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Blackmail him with the secret, gain an advantage.",
-        ipucu: "Effective but a dirty weapon",
         basariliSonuc: {
           mesaj: "Your rival quietly backed down, and left you a small 'thank you'.",
           detay: "Power sometimes comes from fear.",
@@ -1324,7 +1239,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Don't use the secret, keep it but stay quiet.",
-        ipucu: "Safer but you miss the opportunity",
         basariliSonuc: {
           mesaj: "You kept the secret, thinking it might come in handy one day.",
           detay: "Some knowledge carries power even unused.",
@@ -1343,7 +1257,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Hide the evidence, silence the inspector with a bribe.",
-        ipucu: "Expensive and extremely risky",
         basariliSonuc: {
           mesaj: "The inspector accepted the bribe, the report was submitted as 'clean'.",
           detay: "A bribe sometimes hides a problem temporarily, without solving it.",
@@ -1355,7 +1268,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Cooperate, accept the punishment.",
-        ipucu: "Less risky but a heavy price",
         basariliSonuc: {
           mesaj: "Your cooperation lightened the penalty, but a serious shadow still fell over your reputation.",
           detay: "Cooperation is sometimes the least bad choice.",
@@ -1374,7 +1286,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Offer the journalist a large bribe.",
-        ipucu: "Expensive, a temporary cover-up",
         basariliSonuc: {
           mesaj: "The journalist accepted the bribe, the story wasn't published — for now.",
           detay: "A cover-up isn't always permanent.",
@@ -1386,7 +1297,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Head it off with a partial admission, go public.",
-        ipucu: "Painful but a more controlled path",
         basariliSonuc: {
           mesaj: "Your partial admission softened the affair; everyone was disappointed but you avoided the worst.",
           detay: "A controlled truth is better than an uncontrolled scandal.",
@@ -1405,7 +1315,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Cover everything up with one last big bribe, retire quietly.",
-        ipucu: "A comfortable finale, but it never cleanses the conscience",
         basariliSonuc: {
           mesaj: "The last bribe worked; you bought a comfortable retirement, but there's no peace at night.",
           detay: "Some victories only feed the pocket, never the conscience.",
@@ -1417,7 +1326,6 @@ export const OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Tell the truth, cleanse your conscience.",
-        ipucu: "Late but a genuine deliverance",
         basariliSonuc: {
           mesaj: "You told the truth; your reputation was shaken, but you were freed from the burden you'd carried for years.",
           detay: "Some confessions bring peace even late.",
