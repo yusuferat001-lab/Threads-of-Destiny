@@ -10,7 +10,6 @@ export const OLAYLAR_KURESEL_EN: Record<string, OlayCeviri> = {
       {
         metin: "Use your wealth: leave the city, rent a place in the countryside, isolate yourself completely",
         kilitAciklamasi: "You don't have the money to retreat to the countryside and live for months.",
-        ipucu: "The strongest protection; expensive, lowers morale, the 'he fled' gossip",
         basariliSonuc: {
           mesaj:
             "You will never forget the faces you left behind as you passed through the city gates. But far away, in clean air, your chances of surviving the plague's worst years are far higher.",
@@ -23,7 +22,6 @@ export const OLAYLAR_KURESEL_EN: Record<string, OlayCeviri> = {
       {
         metin: "Strict quarantine at home: wall up your door, stockpile provisions, let no one in",
         kilitAciklamasi: "You don't have the money to stockpile provisions to last months.",
-        ipucu: "Medium protection; the cost of provisions, being shut in eats at morale",
         basariliSonuc: {
           mesaj:
             "You lived for months within four walls, listening to the screams outside. It was dull and stifling, but it worked.",
@@ -35,7 +33,6 @@ export const OLAYLAR_KURESEL_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Carry on with your life as normal: there's nowhere to run, whatever fate has written",
-        ipucu: "No protection at all; free, you won't look like a coward",
         basariliSonuc: {
           mesaj:
             "No one can shame you for hiding. The plague has gripped {bolge}; you share the same fate as everyone else.",
@@ -55,7 +52,6 @@ export const OLAYLAR_KURESEL_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Let him in, do what you can",
-        ipucu: "You gain reputation and conscience, but the risk of infection is high",
         basariliSonuc: {
           mesaj: "You watched over him for days. He recovered. The neighbors talked about it — you were known as a merciful person.",
         },
@@ -65,7 +61,6 @@ export const OLAYLAR_KURESEL_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Don't open the door, tell him to move on",
-        ipucu: "Safe, but the weight on your conscience is heavy",
         basariliSonuc: {
           mesaj: "That voice cut off behind the door will not leave your mind for years. But the sickness did not enter the house.",
         },
@@ -83,7 +78,6 @@ export const OLAYLAR_KURESEL_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Go to the funeral, perform your last duty",
-        ipucu: "Peace and respect; the risk of infection in the crowd",
         basariliSonuc: {
           mesaj: "You witnessed them laid to rest. Your heart eased a little; people saw that you were there.",
         },
@@ -110,7 +104,6 @@ export const OLAYLAR_KURESEL_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Stay calm, go straight home, wash thoroughly and wait",
-        ipucu: "Cheap and sensible; a small risk still remains",
         basariliSonuc: {
           mesaj: "You waited uneasily for a few days, but no symptom appeared. You were lucky.",
         },
@@ -121,7 +114,6 @@ export const OLAYLAR_KURESEL_EN: Record<string, OlayCeviri> = {
       {
         metin: "Run to a healer at once, get incense and salve",
         kilitAciklamasi: "You don't have the money to pay the healer.",
-        ipucu: "You spend money; if it works, you feel relieved",
         basariliSonuc: {
           mesaj: "The healer's treatments may not have helped medically, but they helped your spirit; you breathed easier.",
         },
@@ -139,7 +131,6 @@ export const OLAYLAR_KURESEL_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Take the job, tend the sick",
-        ipucu: "Good money + reputation; a deadly risk of infection",
         basariliSonuc: {
           mesaj: "You worked amid death for months and came out alive. Your pocket filled, your name was spoken as 'brave'.",
         },

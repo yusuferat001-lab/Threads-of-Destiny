@@ -4180,7 +4180,7 @@ button.ikincil {
    `.merkez-alt` kendi içinde kayar (alt kenarda bir fade ipucu var).
    `title` zararsız bir yedek olarak kalır. Blok yavaşça yukarı kayarak belirir (#17). */
 .tur-ozeti {
-  font-size: 0.9rem;
+  font-size: clamp(0.95rem, 0.25vw + 0.82rem, 1.15rem);
   line-height: 1.5;
   max-width: 560px;
   text-align: left;

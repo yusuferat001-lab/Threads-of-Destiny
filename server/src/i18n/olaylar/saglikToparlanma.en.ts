@@ -9,7 +9,6 @@ export const OLAYLAR_SAGLIK_TOPARLANMA_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Drop everything, rest for weeks.",
-        ipucu: "A noticeable recovery of health; a little loss of reputation and income",
         basariliSonuc: {
           mesaj:
             "After a long rest your body recovered. People around you talked about your absence, but you stayed alive.",
@@ -20,7 +19,6 @@ export const OLAYLAR_SAGLIK_TOPARLANMA_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Grit your teeth, keep working.",
-        ipucu: "Protects your reputation, but your body may collapse further",
         basariliSonuc: {
           mesaj: "You showed no one your weakness. Your body barely held on.",
         },
@@ -39,7 +37,6 @@ export const OLAYLAR_SAGLIK_TOPARLANMA_EN: Record<string, OlayCeviri> = {
       {
         metin: "Be examined by a good physician.",
         kilitAciklamasi: "You don't have the money to cover the physician's fee.",
-        ipucu: "An expensive but reliable recovery",
         basariliSonuc: {
           mesaj: "The physician made the right diagnosis; within a few weeks you improved noticeably.",
         },
@@ -49,7 +46,6 @@ export const OLAYLAR_SAGLIK_TOPARLANMA_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Go to a cheap healer.",
-        ipucu: "Cheap; it may work or it may aggravate the condition",
         basariliSonuc: {
           mesaj: "The healer's herbs and poultices worked unexpectedly well; you are pulling yourself together.",
         },
@@ -68,7 +64,6 @@ export const OLAYLAR_SAGLIK_TOPARLANMA_EN: Record<string, OlayCeviri> = {
       {
         metin: "Stay a few days at the spa.",
         kilitAciklamasi: "You don't even have money for the journey and lodging.",
-        ipucu: "A recovery of both health and morale",
         basariliSonuc: {
           mesaj: "The hot waters worked into your bones. Both your body and your spirits were restored.",
         },
@@ -95,7 +90,6 @@ export const OLAYLAR_SAGLIK_TOPARLANMA_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept the offer, give yourself over to their care.",
-        ipucu: "A strong recovery; you give up a little of your pride",
         basariliSonuc: {
           mesaj: "Warm food, a clean bed, and someone fussing over you. Within weeks you were back on your feet.",
         },
@@ -122,7 +116,6 @@ export const OLAYLAR_SAGLIK_TOPARLANMA_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Go into seclusion, fasting and rest.",
-        ipucu: "Health and morale recover, your reputation rises a little",
         basariliSonuc: {
           mesaj:
             "Simplicity and rest did your body good; when you returned you were calmer and stronger.",
@@ -150,7 +143,6 @@ export const OLAYLAR_SAGLIK_TOPARLANMA_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Follow the convalescence, be patient.",
-        ipucu: "A slow but solid recovery; loss of income",
         basariliSonuc: {
           mesaj: "After months of careful convalescence, your body was truly repaired.",
         },
@@ -178,7 +170,6 @@ export const OLAYLAR_SAGLIK_TOPARLANMA_EN: Record<string, OlayCeviri> = {
       {
         metin: "See the modern doctor, take the medicines.",
         kilitAciklamasi: "You can't afford the doctor's fee and the medicines.",
-        ipucu: "Expensive but the most reliable recovery",
         basariliSonuc: {
           mesaj: "The right medicine, in the right dose. You recovered noticeably in a short time.",
         },
@@ -207,7 +198,6 @@ export const OLAYLAR_SAGLIK_TOPARLANMA_EN: Record<string, OlayCeviri> = {
       {
         metin: "Have the mixture made and follow the recipe exactly.",
         kilitAciklamasi: "You don't have the money to pay the herbalist.",
-        ipucu: "A cheap and usually effective recovery",
         basariliSonuc: {
           mesaj: "The bitter-smelling mixture worked; within a few weeks you grew noticeably stronger.",
         },

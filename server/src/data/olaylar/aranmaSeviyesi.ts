@@ -51,7 +51,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
       {
         metin: "Aramadan önce kalabalığa karışıp sıvış.",
         baseBasariSansi: 40,
-        ipucu: "Başarırsan hiç iz bırakmazsın, ama yakalanırsan şüphe kesinleşir",
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
@@ -95,7 +94,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
       {
         metin: "Adama son bir yumruk daha at, hakkını ver.",
         baseBasariSansi: 55,
-        ipucu: "Kazanırsan gururun tatmin olur, kaybedersen dikkat çekersin",
         basariliSonuc: {
           mutluluk: 10,
           ahlak: -5,
@@ -142,7 +140,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
       {
         metin: "Hesabı yüzüne karşı sorgula, ödemeyi reddet.",
         baseBasariSansi: 35,
-        ipucu: "Haklı çıkarsan para cebinde kalır, çıkamazsan adın deftere yazılır",
         basariliSonuc: {
           un: 10,
           mesaj: "Hesaplardaki tutarsızlığı yakaladın; tahsildar mahcup bir şekilde geri çekildi.",
@@ -185,7 +182,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
       {
         metin: "İşi kabul et, parayı cebe indir.",
         baseBasariSansi: 55,
-        ipucu: "Kazanırsan cepler dolar, kaybedersen üstüne iş yazılır",
         basariliSonuc: {
           para: 25,
           ahlak: -8,
@@ -217,7 +213,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         metin: "Görevliye küçük bir 'anlayış payı' uzat. (Kefaret: 18)",
         baseBasariSansi: 85,
         maliyet: 18,
-        ipucu: "Ucuz ve güvenilir bir yol",
         basariliSonuc: {
           para: -18,
           suc_artis: -25,
@@ -276,7 +271,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
       {
         metin: "İtiraz et, cezanın haksız olduğunu söyle.",
         baseBasariSansi: 30,
-        ipucu: "Kazanırsan bedavaya kurtulursun, kaybedersen daha çok dikkat çekersin",
         basariliSonuc: {
           un: 8,
           mesaj: "Haklılığını kanıtladın; müfettiş cezayı geri çekmek zorunda kaldı.",
@@ -304,7 +298,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         metin: "İstediği tam meblağı öde. (Kefaret: 25)",
         baseBasariSansi: 88,
         maliyet: 25,
-        ipucu: "Güvenilir yol",
         basariliSonuc: {
           para: -25,
           suc_artis: -25,
@@ -321,7 +314,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         metin: "Yarı fiyatına pazarlık etmeyi dene. (Kefaret: 13)",
         baseBasariSansi: 45,
         maliyet: 13,
-        ipucu: "Ucuz ama riskli — anlaşma bozulursa para boşuna gider",
         basariliSonuc: {
           para: -13,
           suc_artis: -25,
@@ -410,7 +402,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
       {
         metin: "Sakin görün, saklayacak bir şeyin olmadığını söyle.",
         baseBasariSansi: 35,
-        ipucu: "Başarırsan bedava kurtulursun, kaybedersen tutuklanıp hapse (oradan kaçmayı deneyebilirsin)",
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
@@ -457,7 +448,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         metin: "Yarısını teklif et, gerisini reddet. (Kefaret: 24)",
         baseBasariSansi: 40,
         maliyet: 24,
-        ipucu: "Ucuz ama öfkelendirebilir — reddederse doğruca ihbar edip seni tutuklatabilir",
         basariliSonuc: {
           para: -24,
           suc_artis: -25,
@@ -502,7 +492,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
       {
         metin: "Cezaya itiraz et, önceki kaydın haksız olduğunu savun.",
         baseBasariSansi: 30,
-        ipucu: "Kazanırsan bedavaya kurtulursun, kaybedersen daha çok dikkat çekersin",
         basariliSonuc: {
           un: 10,
           mesaj: "Savunman mantıklı geldi; memur cezayı iptal etti.",
@@ -546,7 +535,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
       {
         metin: "Ortalığı topla, izleri sil, denetimi bekle.",
         baseBasariSansi: 45,
-        ipucu: "Bedava ama şansa bağlı",
         basariliSonuc: {
           mutluluk: -3,
           mesaj: "Gece boyu didinip her şeyi tertemiz bıraktın; denetim izsiz geçti.",
@@ -577,7 +565,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         metin: "Ekibin başındaki adamı büyük bir kefaretle satın al. (Kefaret: 85)",
         baseBasariSansi: 65,
         maliyet: 85,
-        ipucu: "Pahalı ama işe yararsa nefes alırsın",
         basariliSonuc: {
           para: -85,
           suc_artis: -25,
@@ -595,7 +582,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
       {
         metin: "Şehri terk etmeden önce son bir gece sessizce saklan.",
         baseBasariSansi: 30,
-        ipucu: "Riskli ama başarırsan zaman kazanırsın",
         basariliSonuc: {
           mutluluk: -5,
           mesaj: "Bir tanıdığının ahırında gizlenip ekibin şehri taramasını izledin; şimdilik atlattın.",
@@ -640,7 +626,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         metin: "Yarı fiyatına sadece kendi mahallendeki muhbirleri sustur. (Kefaret: 43)",
         baseBasariSansi: 40,
         maliyet: 43,
-        ipucu: "Ucuz ama dar kapsamlı — para boşa gidebilir",
         basariliSonuc: {
           para: -43,
           suc_artis: -25,
@@ -670,7 +655,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
       {
         metin: "Kalabalığın arasına dalıp koş.",
         baseBasariSansi: 35,
-        ipucu: "Başarırsan sıyrılırsın, kaybedersen çok kötü yakalanırsın",
         basariliSonuc: {
           saglik: -5,
           mesaj: "Pazar tezgahlarının arasından geçip nefes nefese bir ara sokağa sığındın.",
@@ -762,7 +746,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         metin: "Elindeki her şeyi büyük bir kefarete dök. (Kefaret: 154)",
         baseBasariSansi: 55,
         maliyet: 154,
-        ipucu: "Çok pahalı ama tek gerçek şansın bu olabilir",
         basariliSonuc: {
           para: -154,
           suc_artis: -45,
@@ -780,7 +763,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
       {
         metin: "Şehirden tamamen uzaklaşmayı dene, iz bırakma.",
         baseBasariSansi: 25,
-        ipucu: "En riskli seçenek ama başarırsan takip resmen biter",
         basariliSonuc: {
           saglik: -10,
           suc_artis: -65,
@@ -810,7 +792,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         metin: "Bir ödül avcısını kendi tarafına çekmeye çalış. (Kefaret: 139)",
         baseBasariSansi: 50,
         maliyet: 139,
-        ipucu: "Riskli bir kumar — avcı parayı alıp yine de seni satabilir",
         basariliSonuc: {
           para: -139,
           suc_artis: -45,
@@ -828,7 +809,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
       {
         metin: "Kimliğini tamamen değiştirip gözden kaybol.",
         baseBasariSansi: 30,
-        ipucu: "Zor ama başarırsan avcılar seni bir daha asla tanımaz",
         basariliSonuc: {
           un: -15,
           suc_artis: -45,
@@ -900,7 +880,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
       {
         metin: "Pencereden çatıya sıçrayıp kaç.",
         baseBasariSansi: 30,
-        ipucu: "Karanlıkta riskli ama yakalanmazsan nefes alırsın",
         basariliSonuc: {
           saglik: -12,
           mesaj: "Kiremitlerin üstünde kayarak da olsa komşu çatıya atladın; arkanda bağırışlar kaldı.",
@@ -950,7 +929,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
       {
         metin: "Teslim ol, direnme.",
         baseBasariSansi: 95,
-        ipucu: "Hapse kesin girersin ama en azından sağ ve bütün kalırsın",
         basariliSonuc: {
           etiket_ekle: ["hapiste"],
           para_sifirla: true,
@@ -973,7 +951,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         metin: "Servetinle rüşvet ver, satın almayı dene. (En az 77 gerekir)",
         baseBasariSansi: 60,
         maliyet: 77,
-        ipucu: "Pahalı ama hapse girmeden kurtulabilirsin",
         basariliSonuc: {
           para_yuzde_kaybet: 75,
           suc_seviyesi_ayarla: 30,
@@ -993,7 +970,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
       {
         metin: "Arka kapıdan zorlu bir kaçış dene.",
         baseBasariSansi: 25,
-        ipucu: "Çok riskli — ama başarırsan şehrin unuttuğu bir kaçak olarak dağlara sığınırsın",
         basariliSonuc: {
           saglik: -9,
           yerlesim_zorla: "dag_basi",
@@ -1029,7 +1005,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
       {
         metin: "Teslim ol, direnme.",
         baseBasariSansi: 95,
-        ipucu: "Hapse kesin girersin ama en azından sağ ve bütün kalırsın",
         basariliSonuc: {
           etiket_ekle: ["hapiste"],
           para_sifirla: true,
@@ -1052,7 +1027,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         metin: "Servetinle rüşvet ver, satın almayı dene. (En az 77 gerekir)",
         baseBasariSansi: 60,
         maliyet: 77,
-        ipucu: "Pahalı ama hapse girmeden kurtulabilirsin",
         basariliSonuc: {
           para_yuzde_kaybet: 75,
           suc_seviyesi_ayarla: 30,
@@ -1072,7 +1046,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
       {
         metin: "Arka kapıdan zorlu bir kaçış dene.",
         baseBasariSansi: 25,
-        ipucu: "Çok riskli — ama başarırsan şehrin unuttuğu bir kaçak olarak dağlara sığınırsın",
         basariliSonuc: {
           saglik: -9,
           yerlesim_zorla: "dag_basi",
@@ -1208,7 +1181,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
       {
         metin: "Gece yarısı azıklarını çalıp sessizce ayrıl.",
         baseBasariSansi: 60,
-        ipucu: "Kolay ama vicdanına ağır gelebilir",
         basariliSonuc: {
           para: 15,
           ahlak: -15,
@@ -1237,7 +1209,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
       {
         metin: "Kampını hemen söküp başka bir vadiye taşın.",
         baseBasariSansi: 55,
-        ipucu: "Güvenli ama yorucu",
         basariliSonuc: {
           saglik: -8,
           mesaj: "Gece yarısı her şeyini toplayıp saatlerce yürüdün; yeni vadi daha güvenli görünüyor.",
@@ -1252,7 +1223,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
       {
         metin: "Sesleri gözlemlemek için sakince bekle.",
         baseBasariSansi: 35,
-        ipucu: "Riskli ama doğruysa boşuna yorulmamış olursun",
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
@@ -1280,7 +1250,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
       {
         metin: "Pusu kurup kervanı bas.",
         baseBasariSansi: 40,
-        ipucu: "Kazanırsan doyarsın, kaybedersen ağır yaralanırsın",
         basariliSonuc: {
           para: 30,
           ahlak: -15,
@@ -1337,7 +1306,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
       {
         metin: "Daha alçak, ıssız bir vadiye inmeyi riske at.",
         baseBasariSansi: 45,
-        ipucu: "Riskli ama başarırsan daha güvenli bir kışlık bulursun",
         basariliSonuc: {
           saglik: 5,
           mesaj: "İnişte bulduğun terk edilmiş bir kulübe seni fırtınadan korudu.",
@@ -1364,7 +1332,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         metin: "Yeni bir kimlik satın al, geçmişini geride bırak. (En az 40 gerekir)",
         baseBasariSansi: 55,
         maliyet: 40,
-        ipucu: "Pahalı ve riskli ama işe yararsa özgürce şehre dönebilirsin",
         basariliSonuc: {
           para: -34,
           un: -8,
@@ -1409,7 +1376,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
       {
         metin: "Temkinli adımlarla şehre, eski hayatına dönmeyi dene.",
         baseBasariSansi: 60,
-        ipucu: "Başarırsan özgürce eski hayatına dönersin, kaybedersen tekrar dağa kaçman gerekir",
         basariliSonuc: {
           etiket_sil: ["kacak"],
           suc_seviyesi_ayarla: 10,
@@ -1426,7 +1392,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
       {
         metin: "Riske girme, dağların güvenliğinde kal.",
         baseBasariSansi: 95,
-        ipucu: "Bu artık kalıcı yeni hayatın olabilir",
         basariliSonuc: {
           unvan_kazan: "Dağların Efsanesi",
           mutluluk: 5,
@@ -1514,7 +1479,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
       {
         metin: "Elindeki neyin varsa savaşarak kendini koru.",
         baseBasariSansi: 40,
-        ipucu: "Riskli ama başarırsan hem hayatta kalır hem de değerli bir post kazanırsın",
         basariliSonuc: {
           mutluluk: -5,
           un: -2,

@@ -29,7 +29,6 @@ export const OLAY_VEBA_HASTALIGI: OlayTanimi[] = [
         baseBasariSansi: 75,
         maliyet: 18,
         kilitAciklamasi: "Hekimin ücretini karşılayacak paran yok.",
-        ipucu: "En güçlü tedavi; pahalı",
         basariliSonuc: {
           para: -18,
           saglik: 4,
@@ -47,7 +46,6 @@ export const OLAY_VEBA_HASTALIGI: OlayTanimi[] = [
       {
         metin: "Parayı veremem; kendi başına atlatmaya çalış.",
         baseBasariSansi: 90,
-        ipucu: "Bedava; hiçbir iyileşme yok",
         basariliSonuc: {
           mesaj: "Hekimi geri gönderdin. Yatağında ter içinde, kendi bedeninin savaşını izledin.",
         },
@@ -74,7 +72,6 @@ export const OLAY_VEBA_HASTALIGI: OlayTanimi[] = [
         baseBasariSansi: 62,
         maliyet: 12,
         kilitAciklamasi: "Şifacıya verecek paran yok.",
-        ipucu: "Orta güçte; ucuz ama garantisiz",
         basariliSonuc: {
           para: -12,
           veba_olum_riski_artis: -22,
@@ -117,7 +114,6 @@ export const OLAY_VEBA_HASTALIGI: OlayTanimi[] = [
         baseBasariSansi: 68,
         maliyet: 16,
         kilitAciklamasi: "Manastıra bağış yapıp orada kalacak paran yok.",
-        ipucu: "Güçlü tedavi + huzur; birkaç gün yol",
         basariliSonuc: {
           para: -16,
           mutluluk: 4,
@@ -160,7 +156,6 @@ export const OLAY_VEBA_HASTALIGI: OlayTanimi[] = [
         baseBasariSansi: 60,
         maliyet: 24,
         kilitAciklamasi: "Hastane ücretini ödeyecek paran yok.",
-        ipucu: "En güçlü şans; en pahalı, garantisiz",
         basariliSonuc: {
           para: -24,
           saglik: 5,
@@ -202,7 +197,6 @@ export const OLAY_VEBA_HASTALIGI: OlayTanimi[] = [
         metin: "Bırak kanını alsın.",
         baseBasariSansi: 50,
         maliyet: 6,
-        ipucu: "Kumar gibi: ya belirgin düzelme ya sert düşüş",
         basariliSonuc: {
           para: -6,
           veba_olum_riski_artis: -24,
@@ -241,7 +235,6 @@ export const OLAY_VEBA_HASTALIGI: OlayTanimi[] = [
       {
         metin: "İşi tamamen bırak, sadece dinlen.",
         baseBasariSansi: 82,
-        ipucu: "Bedava değil (kazanç kaybı) ama güvenli bir iyileşme",
         basariliSonuc: {
           para: -8,
           mutluluk: -2,
@@ -257,7 +250,6 @@ export const OLAY_VEBA_HASTALIGI: OlayTanimi[] = [
       {
         metin: "Dinlenmeye lüksüm yok, ayakta kalmalıyım.",
         baseBasariSansi: 70,
-        ipucu: "Kazancını korursun ama hastalık uzayabilir",
         basariliSonuc: {
           para: 4,
           veba_olum_riski_artis: 2,
@@ -286,7 +278,6 @@ export const OLAY_VEBA_HASTALIGI: OlayTanimi[] = [
         metin: "Umutsuzsun; şişeyi al, iç.",
         baseBasariSansi: 32,
         maliyet: 10,
-        ipucu: "Çoğu zaman işe yaramaz ya da zehirler; nadiren tutar",
         basariliSonuc: {
           para: -10,
           veba_olum_riski_artis: -26,
@@ -325,7 +316,6 @@ export const OLAY_VEBA_HASTALIGI: OlayTanimi[] = [
       {
         metin: "Kabul et, başında beklesin.",
         baseBasariSansi: 78,
-        ipucu: "Bakım hayatta kalma şansını yükseltir; sevdiğin de risk alır",
         basariliSonuc: {
           mutluluk: 4,
           veba_olum_riski_artis: -18,
@@ -340,7 +330,6 @@ export const OLAY_VEBA_HASTALIGI: OlayTanimi[] = [
       {
         metin: "Reddet, kimse yaklaşmasın.",
         baseBasariSansi: 85,
-        ipucu: "Sevdiğini korursun; sen daha yalnız savaşırsın",
         basariliSonuc: {
           ahlak: 4,
           veba_olum_riski_artis: 4,
@@ -368,7 +357,6 @@ export const OLAY_VEBA_HASTALIGI: OlayTanimi[] = [
       {
         metin: "Son gücünle diren; su iç, ıslak bez, ayakta kal.",
         baseBasariSansi: 55,
-        ipucu: "Zorlu ama krizi kırabilir",
         basariliSonuc: {
           saglik: -4,
           veba_olum_riski_artis: -18,
@@ -383,7 +371,6 @@ export const OLAY_VEBA_HASTALIGI: OlayTanimi[] = [
       {
         metin: "Bırak kendini; ne olacaksa olsun.",
         baseBasariSansi: 60,
-        ipucu: "Huzurlu ama hastalığa alan açar",
         basariliSonuc: {
           mutluluk: 3,
           veba_olum_riski_artis: 6,

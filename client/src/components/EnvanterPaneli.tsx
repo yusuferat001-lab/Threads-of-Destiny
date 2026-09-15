@@ -11,7 +11,7 @@ interface EnvanterPaneliProps {
   magazaEnvanteri: SahipOlunanEsya[];
   evli?: boolean;
   yasayanCocuklar?: string[];
-  ekipVar?: boolean;
+  ekip?: { id: string; isim: string; rol: string }[];
   dostAdi?: string;
   yukleniyor?: boolean;
   onKullan?: (esyaId: string) => void;
@@ -27,7 +27,7 @@ export function EnvanterPaneli({
   magazaEnvanteri,
   evli,
   yasayanCocuklar = [],
-  ekipVar,
+  ekip = [],
   dostAdi,
   yukleniyor,
   onKullan,
@@ -39,12 +39,20 @@ export function EnvanterPaneli({
   if (gizemliEsyalar.length === 0 && magazaEnvanteri.length === 0) return null;
 
   const en = dil === 'en';
-  const hediyeSecenekleri: { deger: string; etiket: string; hedef: HediyeHedef; cocukIndex?: number }[] = [];
+  const hediyeSecenekleri: {
+    deger: string;
+    etiket: string;
+    hedef: HediyeHedef;
+    cocukIndex?: number;
+    ekipId?: string;
+  }[] = [];
   if (evli) hediyeSecenekleri.push({ deger: 'es', etiket: en ? 'Spouse' : 'Eş', hedef: 'es' });
   yasayanCocuklar.forEach((ad, i) =>
     hediyeSecenekleri.push({ deger: `cocuk:${i}`, etiket: ad, hedef: 'cocuk', cocukIndex: i }),
   );
-  if (ekipVar) hediyeSecenekleri.push({ deger: 'ekip', etiket: en ? 'A crew member' : 'Ekip üyesi', hedef: 'ekip' });
+  ekip.forEach((u) =>
+    hediyeSecenekleri.push({ deger: `ekip:${u.id}`, etiket: `${u.isim} (${u.rol})`, hedef: 'ekip', ekipId: u.id }),
+  );
   hediyeSecenekleri.push({ deger: 'dost', etiket: dostAdi ?? (en ? 'Friend' : 'Dost'), hedef: 'dost' });
 
   return (
@@ -86,7 +94,13 @@ export function EnvanterPaneli({
                   onChange={(e) => {
                     const s = hediyeSecenekleri.find((x) => x.deger === e.target.value);
                     if (!s) return;
-                    onHediye(esya.id, s.hedef, s.cocukIndex !== undefined ? { cocukIndex: s.cocukIndex } : undefined);
+                    const opts =
+                      s.cocukIndex !== undefined
+                        ? { cocukIndex: s.cocukIndex }
+                        : s.ekipId !== undefined
+                          ? { ekipId: s.ekipId }
+                          : undefined;
+                    onHediye(esya.id, s.hedef, opts);
                     setHediyeAcik(null);
                   }}
                 >

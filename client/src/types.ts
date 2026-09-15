@@ -505,7 +505,6 @@ export interface Secenek {
   basarisiz_sonuc: SonucEtkisi;
   kilitli: boolean;
   kilit_nedeni?: string;
-  ipucu?: string;
 }
 
 export interface SenaryoResponse {

@@ -18,7 +18,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
         metin: "Bir hayvan şifacısına götür, parası ne olursa olsun.",
         baseBasariSansi: 80,
         maliyet: 15,
-        ipucu: "Masraflı ama güvenilir",
         basariliSonuc: {
           para: -15,
           mutluluk: 6,
@@ -35,7 +34,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Evde kendi bildiğin yöntemlerle bakmayı dene.",
         baseBasariSansi: 45,
-        ipucu: "Ücretsiz ama riskli",
         basariliSonuc: {
           mutluluk: 4,
           mesaj: "Sabırlı bakımın işe yaradı; {hayvan} yavaş yavaş toparlandı.",
@@ -66,7 +64,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Yanına otur, o anın tadını çıkar.",
         baseBasariSansi: 95,
-        ipucu: "Küçük ama gerçek bir mutluluk",
         basariliSonuc: {
           mutluluk: 8,
           mesaj: "O sessiz an, günün tüm yorgunluğunu bir kenara koydu.",
@@ -81,7 +78,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Yorgunluğunu bahane et, hemen uyu.",
         baseBasariSansi: 90,
-        ipucu: "Güvenli ama fırsatı kaçırırsın",
         basariliSonuc: {
           saglik: 5,
           mesaj: "İyi bir uyku çektin; ama o anı kaçırdığını biraz hissettin.",
@@ -114,7 +110,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
         gerekliEtiketler: [
           "evcil_hayvan_tur:Şahin",
         ],
-        ipucu: "Gizli Şık: Yırtıcılar genellikle boş dönmez",
         basariliSonuc: {
           un: -5,
           mutluluk: -1,
@@ -133,7 +128,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Sokak sokak ara.",
         baseBasariSansi: 55,
-        ipucu: "Zaman alır ama bulma şansın var",
         basariliSonuc: {
           mutluluk: 8,
           mesaj: "Saatlerce aradıktan sonra {hayvan}'ı bir ara sokakta buldun; sağ salim eve döndünüz.",
@@ -150,7 +144,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Kendi kendine döneceğini um.",
         baseBasariSansi: 60,
-        ipucu: "Pasif, şansa bağlı",
         basariliSonuc: {
           mutluluk: 3,
           mesaj: "Birkaç gün sonra {hayvan} kendi kendine kapıda belirdi.",
@@ -181,7 +174,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Kalk, dışarıyı kontrol et.",
         baseBasariSansi: 65,
-        ipucu: "Riskli ama bir şeyi önleyebilirsin",
         basariliSonuc: {
           mutluluk: -5,
           un: -2,
@@ -200,7 +192,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Görmezden gel, tekrar uyu.",
         baseBasariSansi: 80,
-        ipucu: "Güvenli ama riski göze alırsın",
         basariliSonuc: {
           ahlak: 3,
           mutluluk: -1,
@@ -229,7 +220,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Bir köpek yavrusu edin.",
         baseBasariSansi: 95,
-        ipucu: "Sadık bir dost",
         basariliSonuc: {
           mutluluk: 3,
           evcil_hayvan_edin: {
@@ -246,7 +236,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Bir kedi edin.",
         baseBasariSansi: 95,
-        ipucu: "Bağımsız bir arkadaş",
         basariliSonuc: {
           mutluluk: 3,
           evcil_hayvan_edin: {
@@ -263,7 +252,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Bir şahin edinip eğit.",
         baseBasariSansi: 70,
-        ipucu: "Zor ama gösterişli ve avda faydalı",
         basariliSonuc: {
           un: 6,
           evcil_hayvan_edin: {
@@ -281,7 +269,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Hayır, tek başıma daha rahatım.",
         baseBasariSansi: 100,
-        ipucu: "Sorumluluk yok",
         basariliSonuc: {
           saglik: 2,
           mutluluk: -2,
@@ -309,7 +296,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Bir köpek yavrusu edin.",
         baseBasariSansi: 95,
-        ipucu: "Sadık bir dost",
         basariliSonuc: {
           mutluluk: 3,
           evcil_hayvan_edin: {
@@ -326,7 +312,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Bir kedi edin.",
         baseBasariSansi: 95,
-        ipucu: "Bağımsız bir arkadaş",
         basariliSonuc: {
           mutluluk: 3,
           evcil_hayvan_edin: {
@@ -343,7 +328,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Konuşan bir papağan al.",
         baseBasariSansi: 90,
-        ipucu: "Eğlenceli ama ağzından ne çıkacağı belirsiz",
         basariliSonuc: {
           mutluluk: 3,
           evcil_hayvan_edin: {
@@ -361,7 +345,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Hayır, tek başıma daha rahatım.",
         baseBasariSansi: 100,
-        ipucu: "Sorumluluk yok",
         basariliSonuc: {
           saglik: 2,
           mutluluk: -2,
@@ -391,7 +374,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Ava devam et, riski göze al.",
         baseBasariSansi: 60,
-        ipucu: "İyi bir av büyük kazanç demek",
         basariliSonuc: {
           mutluluk: -8,
           para: 20,
@@ -410,7 +392,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Erken dön, riske girme.",
         baseBasariSansi: 90,
-        ipucu: "Güvenli, küçük kazanç",
         basariliSonuc: {
           para: 5,
           mesaj: "Küçük bir avla yetindin ama ikiniz de sağ salim döndünüz.",
@@ -440,7 +421,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Peşinden git, sesini duyurmaya çalış.",
         baseBasariSansi: 65,
-        ipucu: "Yorucu ama umut var",
         basariliSonuc: {
           mutluluk: 5,
           mesaj: "Saatler sonra {hayvan} bileğine geri kondu; ikiniz de rahatladınız.",
@@ -456,7 +436,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Güven, kendi kendine döneceğini um.",
         baseBasariSansi: 70,
-        ipucu: "Pasif ama genelde işe yarar",
         basariliSonuc: {
           mutluluk: 3,
           mesaj: "Akşama doğru {hayvan} kendiliğinden geri döndü.",
@@ -488,7 +467,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Gülüp geçiştir, 'kuş konuşur' de.",
         baseBasariSansi: 70,
-        ipucu: "Rahat bir çıkış ama garanti değil",
         basariliSonuc: {
           un: 5,
           mutluluk: 3,
@@ -505,7 +483,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Utanıp özür dile, konuyu kapat.",
         baseBasariSansi: 85,
-        ipucu: "Güvenli ama sönük",
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
@@ -538,7 +515,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Meydanda küçük bir gösteri düzenle.",
         baseBasariSansi: 65,
-        ipucu: "Riskli ama eğlenceli bir ün fırsatı",
         basariliSonuc: {
           un: 15,
           para: 10,
@@ -554,7 +530,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Teklifi geri çevir, mahremiyetini koru.",
         baseBasariSansi: 90,
-        ipucu: "Güvenli",
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
@@ -587,7 +562,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Kızma, temizle geç.",
         baseBasariSansi: 95,
-        ipucu: "Sakin kal",
         basariliSonuc: {
           mutluluk: 1,
           mesaj: "Kırık parçaları topladın; {hayvan} olan biteni izlemekten keyif alıyor gibiydi.",
@@ -602,7 +576,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Azarla, ders vermeye çalış.",
         baseBasariSansi: 40,
-        ipucu: "Muhtemelen boşuna",
         basariliSonuc: {
           mutluluk: 3,
           mesaj: "{hayvan} sesini duyunca bir süre uslu durdu, en azından o gün.",
@@ -632,7 +605,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Peşinden koş, durumu düzelt.",
         baseBasariSansi: 70,
-        ipucu: "Küçük bir kahramanlık anı",
         basariliSonuc: {
           un: 15,
           mutluluk: 5,
@@ -648,7 +620,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Karışma, kendi işine bak.",
         baseBasariSansi: 90,
-        ipucu: "Güvenli",
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
@@ -681,7 +652,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Keseyi al, sahibini merak etme.",
         baseBasariSansi: 90,
-        ipucu: "Küçük ama tereddütsüz bir kazanç",
         basariliSonuc: {
           mutluluk: -5,
           un: -2,
@@ -699,7 +669,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Sahibini bulmaya çalış, geri ver.",
         baseBasariSansi: 60,
-        ipucu: "Ahlaklı ama zaman alır",
         basariliSonuc: {
           ahlak: 10,
           dost_puani: 5,
@@ -729,7 +698,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Sohbeti uzat, tanışıklığı ilerlet.",
         baseBasariSansi: 85,
-        ipucu: "Küçük bir rastlantı, yeni bir tanıdık",
         basariliSonuc: {
           dost_puani: 8,
           mutluluk: 3,
@@ -744,7 +712,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Kısa kes, yoluna devam et.",
         baseBasariSansi: 90,
-        ipucu: "Güvenli ama fırsatı kaçırırsın",
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
@@ -777,7 +744,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Sakin kal, yeni bir sandalye yaptır.",
         baseBasariSansi: 90,
-        ipucu: "Küçük bir masraf, sinirlerin sağlam kalır",
         basariliSonuc: {
           para: -6,
           mesaj: "Yeni bir sandalye yaptırdın; {hayvan} bu sefer masaya dokunmadı bile.",
@@ -793,7 +759,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Kız, eğitmeye çalış.",
         baseBasariSansi: 45,
-        ipucu: "Zor ama kalıcı bir çözüm olabilir",
         basariliSonuc: {
           mutluluk: 3,
           mesaj: "Sabırlı eğitimin işe yaradı; {hayvan} artık mobilyalara dokunmuyor.",
@@ -825,7 +790,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
         metin: "Özür dile, zararı öde.",
         baseBasariSansi: 85,
         maliyet: 8,
-        ipucu: "Ucuz bir barış, komşuluk ilişkin bozulmaz",
         basariliSonuc: {
           para: -8,
           dost_puani: 3,
@@ -841,7 +805,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Kedinin doğası bu, savun.",
         baseBasariSansi: 40,
-        ipucu: "Riskli; komşunla arana mesafe girebilir",
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
@@ -874,7 +837,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Araya gir, {hayvan}'ı durdur.",
         baseBasariSansi: 50,
-        ipucu: "Riskli ama olayı büyümeden kapatabilirsin",
         basariliSonuc: {
           saglik: -6,
           mesaj: "Elin biraz zedelendi ama {hayvan}'ı zamanında çektin; kimse ciddi zarar görmedi.",
@@ -890,7 +852,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Karışma, doğasına bırak.",
         baseBasariSansi: 60,
-        ipucu: "Güvenli ama vicdanına dokunabilir",
         basariliSonuc: {
           ahlak: -5,
           mesaj: "Olaya karışmadın; {hayvan} kendi kendine sakinleşti.",
@@ -922,7 +883,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Bırak, doğasının çağrısına uysun.",
         baseBasariSansi: 55,
-        ipucu: "Onurlu ama onu sonsuza dek kaybedebilirsin",
         basariliSonuc: {
           evcil_hayvan_kaybet: true,
           ahlak: 8,
@@ -939,7 +899,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Yanına git, onu sakinleştir.",
         baseBasariSansi: 70,
-        ipucu: "Bağınızı güçlendirebilir",
         basariliSonuc: {
           mutluluk: 3,
           mesaj: "Yanında oturup onu okşadın; {hayvan} yavaşça sakinleşti ve başını omzuna yasladı.",
@@ -968,7 +927,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Yavruyu al, sabırla evcilleştirmeyi dene.",
         baseBasariSansi: 55,
-        ipucu: "Zorlu ama sadık, vahşi bir dost kazandırabilir",
         basariliSonuc: {
           mutluluk: 5,
           saglik: -3,
@@ -987,7 +945,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Postu ve dişleri için avlanmış say, satışa hazırla.",
         baseBasariSansi: 90,
-        ipucu: "Vicdansız ama garanti bir kazanç",
         basariliSonuc: {
           para: 18,
           ahlak: -12,
@@ -1005,7 +962,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Doğaya bırak, karışma.",
         baseBasariSansi: 95,
-        ipucu: "Güvenli, sorumluluk yok",
         basariliSonuc: {
           ahlak: 3,
           mutluluk: -1,
@@ -1038,7 +994,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
         metin: "Yüzüğü sakla, kimseye sorma.",
         baseBasariSansi: 70,
         maxAhlak: 60,
-        ipucu: "Küçük ama riskli bir kazanç",
         basariliSonuc: {
           para: 14,
           ahlak: -8,
@@ -1055,7 +1010,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Mahalleyi dolaşıp sahibini bul, geri ver.",
         baseBasariSansi: 85,
-        ipucu: "Dürüstlük küçük bir ödülle karşılık bulabilir",
         basariliSonuc: {
           dost_puani: 6,
           un: 6,
@@ -1087,7 +1041,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Kendin tırman, riske gir.",
         baseBasariSansi: 55,
-        ipucu: "Kahramanlık ama düşme riski var",
         basariliSonuc: {
           mutluluk: 5,
           un: 4,
@@ -1105,7 +1058,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
         metin: "Komşunun oğluna birkaç kuruş verip tırmandır.",
         baseBasariSansi: 85,
         maliyet: 6,
-        ipucu: "Güvenli ama cepten para gider",
         basariliSonuc: {
           para: -6,
           mutluluk: 3,
@@ -1138,7 +1090,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
         metin: "Ne pahasına olursa olsun en iyi tedaviyi al.",
         baseBasariSansi: 80,
         maliyet: 20,
-        ipucu: "Pahalı ama dostunu neredeyse garantili kurtarır",
         basariliSonuc: {
           para: -20,
           mutluluk: 5,
@@ -1155,7 +1106,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Evde kendi imkanlarınla bakmayı dene.",
         baseBasariSansi: 45,
-        ipucu: "Ücretsiz ama kaybetme riski yüksek",
         basariliSonuc: {
           mutluluk: 4,
           mesaj: "Gecelerce başında bekledin; {hayvan} inatla iyileşti.",
@@ -1188,7 +1138,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
         metin: "Sessizce tazminatı öde, olayı kapat.",
         baseBasariSansi: 90,
         maliyet: 12,
-        ipucu: "Ucuz bir barış ama gururun kırılır",
         basariliSonuc: {
           para: -12,
           mesaj: "Parayı ödedin, aile homurdanarak da olsa uzaklaştı.",
@@ -1204,7 +1153,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Hayır, senin köpeğin haklıydı — sonuna kadar savun.",
         baseBasariSansi: 45,
-        ipucu: "Gururunu korursun ama itibarın zedelenebilir",
         basariliSonuc: {
           ahlak: 6,
           dost_puani: 5,
@@ -1236,7 +1184,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "En zorlu parkura katıl, büyük şöhreti hedefle.",
         baseBasariSansi: 45,
-        ipucu: "Büyük ün riski, ama {hayvan}'ı kaybedebilirsin",
         basariliSonuc: {
           un: 22,
           mutluluk: 5,
@@ -1253,7 +1200,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Sadece kolay, gösterişsiz bir gösteriye katıl.",
         baseBasariSansi: 90,
-        ipucu: "Güvenli, mütevazı bir takdir",
         basariliSonuc: {
           un: 5,
           mutluluk: 3,
@@ -1284,7 +1230,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Mührü kır, içindeki sırrı öğren.",
         baseBasariSansi: 75,
-        ipucu: "Değerli bir istihbarat kazandırabilir ama ahlaki bedeli var",
         basariliSonuc: {
           ahlak: -10,
           etiket_ekle: [
@@ -1303,7 +1248,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Mührü bozmadan, sahibini bulup teslim et.",
         baseBasariSansi: 80,
-        ipucu: "Dürüstlük, küçük bir minnet",
         basariliSonuc: {
           ahlak: 12,
           dost_puani: 6,
@@ -1336,7 +1280,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
         metin: "Papağanı rakibin sesiyle konuşturup müşterileri kandır.",
         baseBasariSansi: 55,
         maxAhlak: 50,
-        ipucu: "Komik ama sahtekarlık; yakalanırsa itibarın gider",
         basariliSonuc: {
           para: 22,
           ahlak: -14,
@@ -1354,7 +1297,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Sadece eğlence için mahallede küçük bir gösteri yap.",
         baseBasariSansi: 90,
-        ipucu: "Güvenli, küçük bir keyif",
         basariliSonuc: {
           mutluluk: 4,
           dost_puani: 3,
@@ -1385,7 +1327,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
         metin: "Egzotik hekime götür, ne gerekirse öde.",
         baseBasariSansi: 75,
         maliyet: 18,
-        ipucu: "Pahalı ama neredeyse garantili şifa",
         basariliSonuc: {
           para: -18,
           mutluluk: 5,
@@ -1402,7 +1343,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Evde dinlendir, doğal iyileşmeyi bekle.",
         baseBasariSansi: 40,
-        ipucu: "Ücretsiz ama kaybetme riski var",
         basariliSonuc: {
           mutluluk: 3,
           mesaj: "Sabrın işe yaradı; {hayvan} yavaş yavaş eski neşesine döndü.",
@@ -1433,7 +1373,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Onu arka bahçeye bağla, işini önceliklendir.",
         baseBasariSansi: 85,
-        ipucu: "Kazancı korur ama {hayvan} üzülür",
         basariliSonuc: {
           para: 15,
           mutluluk: -8,
@@ -1450,7 +1389,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Yanından ayırma, müşteri kaybını göze al.",
         baseBasariSansi: 80,
-        ipucu: "Dostluk önde, kasa geride kalır",
         basariliSonuc: {
           mutluluk: 5,
           para: -12,

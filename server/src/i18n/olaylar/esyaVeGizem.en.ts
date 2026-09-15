@@ -9,7 +9,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Spend your nights restoring the map.",
-        ipucu: "An exhausting effort but it could give a legendary hidden item (Inventory)",
         basariliSonuc: {
           mesaj:
             "You worked until your eyes gave out, but you did it! This isn't an ordinary parchment — it's a map of a forgotten passage. You should keep this.",
@@ -20,7 +19,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Don't bother with it, sell it straight to a noble as an 'antique'.",
-        ipucu: "Quick money, a drop in morality",
         basariliSonuc: {
           mesaj: "With fancy words you sold the muddy parchment as an antique. Your pocket filled but you know who you tricked.",
         },
@@ -38,7 +36,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Openly admit the situation and apologize.",
-        ipucu: "Honesty could soften the mood",
         basariliSonuc: {
           mesaj: "Your confession made the grieving family laugh. You became an unexpected, warm memory at the funeral.",
         },
@@ -48,7 +45,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Act as if you didn't notice, pretend to cry and slip away.",
-        ipucu: "If you leave skillfully no one will notice",
         basariliSonuc: {
           mesaj: "You pretended to wipe away tears and slipped quietly outside. You'll tell this story with a laugh for years.",
         },
@@ -59,7 +55,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Take advantage of the confusion and steal a keepsake (!) from the deceased.",
-        ipucu: "Only for the immoral: a risky but profitable theft",
         basariliSonuc: {
           mesaj: "While no one was looking you pocketed the gold ring off the deceased's finger. Ruthless, but profitable.",
         },
@@ -86,7 +81,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Pour out your gold and buy a bottle.",
-        ipucu: "Probably a waste of money, but what if it's real? (Added to inventory)",
         basariliSonuc: {
           mesaj:
             "You paid and dropped the elixir into your bag. Strangely, the bottle seems to be warming. It might come in handy one day.",
@@ -97,7 +91,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Seize the chance in the crowd, steal a bottle from the stall.",
-        ipucu: "Only for the immoral: a free miracle, or the dungeon",
         basariliSonuc: {
           mesaj:
             "With a sleight of hand you hid the bottle in your robe. Your money stayed in your pocket and you have a mysterious elixir.",
@@ -117,7 +110,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Pay the outrageous price he wants and take the talisman.",
-        ipucu: "It provides legendary protection but it could bankrupt you",
         basariliSonuc: {
           mesaj:
             "You piled the gold before him. The moment you hung the talisman around your neck you felt a warm power in your chest. This is no ordinary item.",
@@ -128,7 +120,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Take advantage of his blindness, steal the talisman quietly.",
-        ipucu: "For dark hearts only: taking legendary power for free...",
         basariliSonuc: {
           mesaj:
             "You snatched the talisman and ran! The blind man shouted after you, 'You'll pay for it with your soul!' The power is yours but you tremble inside.",
@@ -140,7 +131,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "This magic business isn't for me, walk away fast.",
-        ipucu: "Safe but there might be a slight regret at missing the legend",
         basariliSonuc: {
           mesaj: "You said the end of these mystical things is usually bad, and went home.",
         },
@@ -160,7 +150,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Grip the sword by the hilt and pull it from the grave.",
-        ipucu: "It gives you unmatched battle power but drowns your mind in darkness",
         basariliSonuc: {
           mesaj:
             "You drew the sword! The steel instantly attuned to your blood. You'll be unbeatable on the battlefield, but the whispers inside the sword never fall silent.",
@@ -189,7 +178,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Keep the feather as a holy relic.",
-        ipucu: "A holy item that will protect you from death (Inventory)",
         basariliSonuc: {
           mesaj:
             "You kept the feather at your chest. Whenever your heart grows heavy, the feather's warmth gives you peace. This is a true grace.",
@@ -200,7 +188,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Sell it to a rich noble as a 'genuine angel feather'.",
-        ipucu: "Only for those weak in faith: an immense fortune but a moral collapse",
         basariliSonuc: {
           mesaj:
             "The noble loved this story and paid you a fortune. Your pocket is full of gold but you feel as if you've sold your soul to the devil.",
@@ -229,7 +216,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Take out the feather, touch it to her forehead and pray.",
-        ipucu: "If the legend proves real, a great miracle; if not, a great disappointment",
         basariliSonuc: {
           mesaj:
             "The feather warmed in your palm, almost trembled. The woman's breathing steadied at once, she opened her eyes! Everyone around looks at you with awe and wonder — you'll be known as a 'miracle hand' now.",
@@ -262,7 +248,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Raise your voice, chase the man off.",
-        ipucu: "You keep the feather but the noise could rouse the neighborhood",
         basariliSonuc: {
           mesaj: "Neighbors came running at your shout, the man fled into the dark. The feather is still yours but your night is ruined.",
         },
@@ -273,7 +258,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Calm him down, listen to his story, offer to share the feather.",
-        ipucu: "Sharing could bring peace, or muddle things",
         basariliSonuc: {
           mesaj:
             "You talked with the man until morning; you heard his story, you wept together. You decided to share the feather — you both felt a little lighter.",
@@ -284,7 +268,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Grip the feather tight, say you'll never give it up.",
-        ipucu: "Selfish but maybe right — this is your trust to keep",
         basariliSonuc: {
           mesaj: "The man backed off before your resolve. The feather is still yours, but you won't forget the disappointment in his eyes.",
         },
@@ -302,7 +285,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Answer the whispers of the Black Sword and embrace the darkness.",
-        ipucu: "Only those who own the sword can see this: madness, or an immense awakening",
         basariliSonuc: {
           mesaj:
             "The voices' source was the sword! You merged with its darkness. You're not afraid anymore, because you've become the darkness itself.",
@@ -313,7 +295,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Try to pull yourself together, ask a physician for help.",
-        ipucu: "Costly but it brings relief",
         basariliSonuc: {
           mesaj: "The opium syrups the physician gave lightened your mind; the shadows dispersed a little.",
         },
@@ -340,7 +321,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Use the Mysterious Elixir and heal them instantly!",
-        ipucu: "Secret Inventory: is the elixir you stole/bought really a miracle?",
         basariliSonuc: {
           mesaj:
             "The moment you dripped the liquid on your child's lips the fever broke! They opened their eyes and smiled. That traveling salesman was telling the truth!",
@@ -349,7 +329,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Send for the physician and give him all your savings.",
-        ipucu: "Expensive but the safest way (resolves in 1 turn)",
         basariliSonuc: {
           mesaj: "The physician came and began treatment with leeches and ointments. The situation will become clear in a few days.",
         },
@@ -359,7 +338,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "I have no money, I'll treat it myself with a wet cloth.",
-        ipucu: "The risk of death is very high",
         basariliSonuc: {
           mesaj: "You kept vigil at their bedside day and night and brought the fever down.",
         },
@@ -377,7 +355,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Gird on the Black Sword and go to the front, at the very front!",
-        ipucu: "Secret Inventory: the sword thirsts for blood! Absolute victory but your soul darkens",
         basariliSonuc: {
           mesaj:
             "The Black Sword danced in your hand almost of its own accord. The enemy fled in terror of you! You're spoken of like a war god, but when night falls you can't forget the vile things the sword whispered to you.",
@@ -386,7 +363,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Enlist as a volunteer, shed your blood for the homeland.",
-        ipucu: "High fame and spoils, a serious risk of death or maiming",
         basariliSonuc: {
           mesaj:
             "You spent months in the trenches in mud and blood. But you're alive, you got a medal and came back with your share of the spoils.",
@@ -398,7 +374,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Arrange a false medical exemption and flee the war.",
-        ipucu: "It saves your life, ruins your pocket and your conscience",
         basariliSonuc: {
           mesaj:
             "By bribing the physician you secured yourself at home. While news of your neighbors' deaths comes from the front, you're in your warm bed. Your reputation is in ruins.",
@@ -418,7 +393,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Gird on the Black Sword and go to the front, at the very front!",
-        ipucu: "Secret Inventory: the sword thirsts for blood! Absolute victory but your soul darkens",
         basariliSonuc: {
           mesaj:
             "The Black Sword danced in your hand almost of its own accord. The enemy fled in terror of you! You're spoken of like a war god, but when night falls you can't forget the vile things the sword whispered to you.",
@@ -427,7 +401,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Join the frontline assault unit, fight heroically.",
-        ipucu: "High fame and spoils, a serious risk of death or maiming",
         basariliSonuc: {
           mesaj:
             "You spent months in the trenches in mud and blood. But you're alive, you got a medal and came back with your share of the spoils.",
@@ -439,7 +412,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Take a post at the rear, in logistics and support.",
-        ipucu: "A safer duty but your share of spoils and fame is low",
         basariliSonuc: {
           mesaj:
             "You kept provisions and munitions flowing behind the front; no one will speak your name, but the army would have gone hungry without you.",
@@ -460,7 +432,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Use the Mysterious Elixir for your family and yourself!",
-        ipucu: "Secret Inventory: the elixir you thought was fake turns out to be a masterpiece",
         basariliSonuc: {
           mesaj:
             "You drank the elixir. An ice-cold feeling spread through your veins. As everyone around you was struck down, not a single fly could touch you or your family!",
@@ -470,7 +441,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Drop everything, take the family and flee to the countryside (the mountains).",
-        ipucu: "You protect your health but your place in the city's economy resets to zero",
         basariliSonuc: {
           mesaj:
             "You fled to the forest before the plague-masked men held the gates. You lived in the cold and in misery, but you're alive.",
@@ -483,7 +453,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Stay in the city! Run a black market in medicine and provisions.",
-        ipucu: "A terrible wealth but a high risk of death and pangs of conscience",
         basariliSonuc: {
           mesaj:
             "You sold aspirin and clean water at the price of gold. While people died groaning, you added fortune to fortune.",
@@ -503,7 +472,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Let the Monastery Cat loose in the house to protect you from the rats.",
-        ipucu: "Secret Item: the cat hunts the flea-ridden rats that carry the plague!",
         basariliSonuc: {
           mesaj:
             "That strange black cat hunted day and night. Not a single sick rat could come near the house. The cat became your family's guardian angel!",
@@ -512,7 +480,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Defy the crowd and go into the burning house to save that child!",
-        ipucu: "Great heroism, a peak of morality, but an immense risk of infection",
         basariliSonuc: {
           mesaj:
             "You broke down the door and carried that child out through the flames on your shoulder. You didn't catch the disease. The city sees you like a prophet.",
@@ -524,7 +491,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Nail the doors shut, board up the windows. Pity no one.",
-        ipucu: "The safest way, but you lose your soul",
         basariliSonuc: {
           mesaj: "You stopped your ears until the child's screams ceased. You didn't step out the door, and you survived.",
           detay: "You'll never forget the night you heard those screams.",
@@ -544,7 +510,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       {
         metin: "I'll use my last money to buy food for my children/family on the black market.",
         kilitAciklamasi: "You must have children to feed your family.",
-        ipucu: "The family survives, you go completely bankrupt",
         basariliSonuc: {
           mesaj:
             "You closed the shop's shutters forever. Trade is over. But your children ate their fill of bread that evening. You're the family's hero.",
@@ -555,7 +520,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "I have to save the business! Let the family grit their teeth, put the money into the shop.",
-        ipucu: "You get rich but you commit a great betrayal against your family",
         basariliSonuc: {
           mesaj:
             "While everyone was going under, you built an empire out of the crisis! But when you got home you'll never be able to erase the hurt look your children, wasted thin from weakness, gave you.",
@@ -566,7 +530,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Buy time by pawning the Dead Man's Ring to a moneylender.",
-        ipucu: "Secret Inventory: the ring you stole saves your life",
         basariliSonuc: {
           mesaj:
             "You tossed the ring you'd lifted from the grave/coffin to the moneylender. His eyes lit up and he didn't put you in debt. You saved both your family and your business!",
@@ -583,7 +546,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Give the happy memories of my past and take the coin.",
-        ipucu: "It drains your happiness and morality; usually gives the legendary Shadow Coin but the merchant can cheat",
         basariliSonuc: {
           mesaj:
             "The merchant touched your forehead. Your childhood joys, your mother's face... all erased. In your hand is a 'Shadow Coin', cold as hell.",
@@ -614,7 +576,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Smile, buy the stone for a few copper coins.",
-        ipucu: "A cheap curiosity — probably an ordinary stone (Added to inventory)",
         basariliSonuc: {
           mesaj:
             "You took the stone in your palm; its weight is strangely just right. The woman smiled: 'Now it's a part of you too.' When you put it in your pocket you thought you heard a faint humming.",
@@ -626,7 +587,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Take advantage of the woman and steal the stone.",
-        ipucu: "Only for the immoral: a mysterious item for free, or disgrace",
         basariliSonuc: {
           mesaj:
             "While the woman looked away you snatched the stone and ran. You heard her shout after you: 'It will find you, even without payment!'",
@@ -639,7 +599,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Call it nonsense, go on your way.",
-        ipucu: "Safe but you may not be able to help wondering about the stone",
         basariliSonuc: {
           mesaj: "You shrugged and walked on. You heard the woman giggle behind you but paid it no mind.",
         },
@@ -659,7 +618,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Take the warning seriously, be cautious the next day.",
-        ipucu: "Maybe imagination, maybe a real warning — caution rarely hurts",
         basariliSonuc: {
           mesaj:
             "You went about the day on alert; a close friend had bad news they had to tell you, and you noticed it at the last moment, not caught unprepared.",
@@ -688,7 +646,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Make up the name of a stranger at random, deceive it.",
-        ipucu: "A risky trick — if the stone realizes, it could grow angry",
         basariliSonuc: {
           mesaj:
             "The stone was silent for a while, then whispered 'I accept.' Your convincing lie seems to have worked; the coming days passed with strange luck.",
@@ -700,7 +657,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Give no one's name; quietly throw the stone into a well.",
-        ipucu: "Safe but you lose the mystery forever",
         basariliSonuc: {
           mesaj:
             "You dropped the stone into the darkness of the well. A faint, disappointed hum rose from the depths, then nothing. You felt relieved.",
@@ -712,7 +668,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Actually whisper the name of someone you love.",
-        ipucu: "A dark but mostly effective bet — the price isn't exactly clear, and it can backfire",
         basariliSonuc: {
           mesaj:
             "The moment you whispered the name the stone went ice-cold, then turned to dust in your hand. The next week your affairs opened up incredibly — but you shudder inside every time you look at the person whose name you gave.",
@@ -734,7 +689,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Buy the mirror.",
-        ipucu: "Not cheap but the feeling in it is priceless (Added to inventory)",
         basariliSonuc: {
           mesaj:
             "You carried the mirror home. The moment you hung it on the wall, the reflection in it lagged a beat and caught up to you — as if the mirror too were seeing this room for the first time, like you.",
@@ -746,7 +700,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Take advantage of the crowd's confusion and take the mirror quietly.",
-        ipucu: "Only for the immoral: a mysterious item for free, or arrest",
         basariliSonuc: {
           mesaj:
             "Without anyone noticing you wrapped the mirror in a cloth and walked off. Your hands had gone cold for a reason you can't explain.",
@@ -757,7 +710,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "It's a strange item, leave it alone.",
-        ipucu: "Safe but that reflection may be hard to forget",
         basariliSonuc: {
           mesaj: "You gave the mirror one last look and turned away. You didn't even notice that its reflection — for a moment — also turned away.",
         },
@@ -777,7 +729,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Approach the mirror, examine it carefully.",
-        ipucu: "Courage could teach you something, but it could also be terrifying",
         basariliSonuc: {
           mesaj:
             "You brought your face inches from the glass. Your reflection smiled — without you smiling. But the moment you pulled back, everything was yours again. You can't fully explain what you saw, but you look at the world a little differently now.",
@@ -807,7 +758,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Stay away from the street you saw for a few days.",
-        ipucu: "Maybe paranoia, maybe an intuition that will save your life",
         basariliSonuc: {
           mesaj:
             "You changed your route. Three days later you heard that a cart really did topple on that street, badly wounding someone. The mirror wasn't lying.",
@@ -836,7 +786,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Give the Cursed Ring as a bribe.",
-        ipucu: "Secret Inventory: get both the permit and revenge on the official",
         basariliSonuc: {
           mesaj:
             "You gave the official that cold ring you'd lifted from a coffin. The man joyfully stamped the seal. Three days later you heard the official had lost his mind and thrown himself into the river.",
@@ -845,7 +794,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Give him what he wants, feed the system.",
-        ipucu: "A quick fix, a moral drop",
         basariliSonuc: {
           mesaj: "He took the gold and handled your business in seconds. You're a loyal part of this broken order now.",
         },
@@ -855,7 +803,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "I don't pay bribes! Report him to a higher office.",
-        ipucu: "Great respect but the risk of setting the system against you",
         basariliSonuc: {
           mesaj: "You reported the official and got him fired! Your business was handled and the honest tradesmen carried you on their shoulders.",
         },
@@ -873,7 +820,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Put the Shadow Coin on the table and take over your partner's mind.",
-        ipucu: "Secret Inventory: all the profit is yours, but another piece breaks off your soul",
         basariliSonuc: {
           mesaj:
             "When you put the coin on the table your partner's eyes fell into emptiness. He signed over the greater part of the company rights to you with his own hands.",
@@ -883,7 +829,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Close the deal by overseeing the final delivery yourself.",
-        ipucu: "The reward for years of effort, or disappointment",
         basariliSonuc: {
           mesaj: "The deal was completed successfully; you were repaid many times over for years of effort.",
           detay: "Looking back, you see this deal changed you a great deal. You're one of the best-known merchants in the city now.",
@@ -895,7 +840,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Send your deputy, keep your distance yourself.",
-        ipucu: "Less risk, less control",
         basariliSonuc: {
           mesaj: "Your deputy handled it properly; the deal closed without a hitch.",
           detay: "You weren't there in person but the result was quite satisfying. Sometimes trust is enough.",
@@ -915,7 +859,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Give them the Mysterious Map and show them the site of the old temple.",
-        ipucu: "Secret Inventory: it protects your provisions and saves them both",
         basariliSonuc: {
           mesaj:
             "You gave the refugees the old map and described the way to a hidden provision store. In tears they kissed your hands and set off.",
@@ -925,7 +868,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Share most of your provisions with them.",
-        ipucu: "Peace of conscience, your own journey gets harder",
         basariliSonuc: {
           mesaj: "You shared your provisions; with what was left you carried on, though it was hard.",
           detay: "There were days you went hungry, but the gratitude in that family's eyes is still on your mind.",
@@ -937,7 +879,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Keep your own provisions, go on your way.",
-        ipucu: "A safe journey, a price on your conscience",
         basariliSonuc: {
           mesaj: "You kept your provisions and reached your posting in good health.",
           detay: "You remember that family's faces from time to time; you line up justifications for yourself.",
@@ -957,7 +898,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Draw the Black Sword and advance on the bear!",
-        ipucu: "Secret Inventory: the sword thirsts for blood — but the bear is fast too",
         basariliSonuc: {
           mesaj:
             "The moment you drew the sword the bear looked not at you but at the darkness seeping from the blade, and stepped back in fear. But you didn't stop. You laid the beast out with a single blow.",
@@ -971,7 +911,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Slowly back away, make no noise.",
-        ipucu: "Safe but a nerve-wracking wait",
         basariliSonuc: {
           mesaj: "The bear lost interest and turned back to the forest; you reached your home holding your breath.",
           detay: "The first rule of living on the mountain is patience; you proved it once more today.",
@@ -983,7 +922,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Wave the stick in your hand and shout loudly.",
-        ipucu: "Risky but a fast resolution",
         basariliSonuc: {
           mesaj: "The bear was startled and fled; when you got back to the village you couldn't stop telling your story.",
           detay: "Among the mountain villagers your name was spoken as 'brave' for a while.",
@@ -1003,7 +941,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Take the cat in, keep it in the storehouse.",
-        ipucu: "A small tradition, a long-term benefit",
         basariliSonuc: {
           mesaj: "You decided to keep the cat in the storehouse; as the rats dwindled the storehouse stayed cleaner.",
           detay: "Sometimes the most ordinary creature can be a silent shield against the greatest dangers.",
@@ -1015,7 +952,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Drive the cat off because it brings bad luck.",
-        ipucu: "Traditional but risky",
         basariliSonuc: {
           mesaj: "The cat was driven off; some monks were relieved.",
           detay: "Superstition sometimes gets ahead of practical benefit.",
@@ -1035,7 +971,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Buy the map.",
-        ipucu: "A small expense, an unknown opportunity",
         basariliSonuc: {
           mesaj: "You bought the map; maybe just a scrap of paper, maybe the key to a real treasure.",
           detay: "A small price for a curious mind.",
@@ -1047,7 +982,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Not interested, call it an ordinary scrap of paper.",
-        ipucu: "Safe",
         basariliSonuc: {
           mesaj: "You ignored the map and went on your way.",
           detay: "Some opportunities may be worth missing — or not, who knows.",
@@ -1067,7 +1001,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Dig, take the risk.",
-        ipucu: "A great treasure, or wasted time and danger",
         basariliSonuc: {
           mesaj: "Deep in the cave you really did find a treasure chest!",
           detay: "Sometimes a curiosity that seems childish can turn into the biggest gain of your life.",
@@ -1079,7 +1012,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Don't take the risk, sell the map.",
-        ipucu: "Safe, a small gain",
         basariliSonuc: {
           mesaj: "You sold the map to a curious collector; a small but guaranteed gain.",
           detay: "Sometimes handing your curiosity to someone else is the smartest thing.",
@@ -1099,7 +1031,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Carry the relic with you.",
-        ipucu: "Just a rumor, or the truth?",
         basariliSonuc: {
           mesaj: "You wrapped the relic in a piece of cloth and took it with you; maybe just a comfort, maybe more.",
           detay: "Believe it or not, you now carry a slight weight around your neck.",
@@ -1111,7 +1042,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Don't touch the relic, report it to church authorities.",
-        ipucu: "Safe, moral",
         basariliSonuc: {
           mesaj: "You handed the relic to the official authorities; your honesty drew appreciation.",
           detay: "Some treasures are not personal, but a shared inheritance.",
@@ -1131,7 +1061,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Grip the relic tight, trust the legend.",
-        ipucu: "Secret Relic: the legend was real — but a miracle like this is a one-time thing",
         basariliSonuc: {
           mesaj:
             "The relic glowed in your hand and you warmed inside all at once. The fever broke, your breath opened — as if something pulled you back. And the relic turned to dust in your hand; it spent its power on this one-time miracle.",
@@ -1141,7 +1070,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Don't trust the relic, trust only the physician and fate.",
-        ipucu: "A safe belief, but you'll never test the legend",
         basariliSonuc: {
           mesaj: "Your body resisted on its own, the fever slowly fell. The relic is still around your neck, and you never learned its secret.",
         },
@@ -1159,7 +1087,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Show the relic, let them touch it.",
-        ipucu: "Generosity earns respect but you put the relic at risk",
         basariliSonuc: {
           mesaj: "The pilgrims touched the relic and prayed one by one. Your name began to be spoken in the region as 'keeper of the holy relic'.",
         },
@@ -1179,7 +1106,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Donate the relic to the church/foundation, be rid of the crowd.",
-        ipucu: "You'll find peace but you'll never be able to test the legend again",
         basariliSonuc: {
           mesaj: "You handed the relic to the official authority; a heavy weight lifted from your shoulders. You're not its keeper now, just a witness.",
         },
@@ -1197,7 +1123,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Buy the gold, never mind the rumors.",
-        ipucu: "A cheap gain, an uncertain price",
         basariliSonuc: {
           mesaj: "You bought the gold; your pocket swelled but there's a strange unease inside you.",
           detay: "Some gains have a small, invisible price.",
@@ -1209,7 +1134,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Heed the rumors, stay away.",
-        ipucu: "Safe",
         basariliSonuc: {
           mesaj: "You didn't touch the gold and went on your way.",
           detay: "Some opportunities should be weighed together with the risk they carry.",
@@ -1229,7 +1153,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Go to a priest/cleric and ask them to break the curse.",
-        ipucu: "Expensive but it could remove the curse entirely",
         basariliSonuc: {
           mesaj:
             "After a long rite, incense and prayers, that coldness inside you dispersed. The dreams stopped, and the gold is no different from an ordinary purse now.",
@@ -1241,7 +1164,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Give the gold as it is, without ever opening it, to someone.",
-        ipucu: "You pass the curse to someone else — your conscience may not be at ease",
         basariliSonuc: {
           mesaj:
             "You held the purse out, unopened, to a beggar; when you saw the joy in his eyes a shudder ran through you. The curse is not yours anymore.",
@@ -1253,7 +1175,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Ignore the dream, cling tight to the gold.",
-        ipucu: "The curse deepens but all the gold's power is yours",
         basariliSonuc: {
           mesaj:
             "'No one can take it from me,' you told the ghost in the dream. He smiled and vanished — the next morning you found an unexpected amount more gold in your purse. But the coldness inside you is deeper now.",
@@ -1271,7 +1192,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Sell it without telling him about the curse, settle for triple the price.",
-        ipucu: "A big gain but you pass the curse to someone who doesn't know",
         basariliSonuc: {
           mesaj:
             "He counted out the money, took the purse joyfully and left. Your pocket got heavier but you can't help wondering what awaits that man.",
@@ -1284,7 +1204,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Be honest, tell him about the curse — if he still wants it, sell.",
-        ipucu: "Your conscience will be at ease but the sale will most likely fall through",
         basariliSonuc: {
           mesaj: "Surprisingly he smiled: 'I'm fond of things like that myself.' He bought the curse knowingly, though for less money.",
         },
@@ -1311,7 +1230,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Join the Temple Knights.",
-        ipucu: "A disciplined, martial brotherhood",
         basariliSonuc: {
           mesaj: "You took the oath; you're now part of a brotherhood that stands in the shadows but is powerful.",
           detay: "In return for brotherhood, discipline and loyalty, it promises protection and power.",
@@ -1323,7 +1241,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Join the Brotherhood in Shadow.",
-        ipucu: "A secret network with strong commercial and political connections",
         basariliSonuc: {
           mesaj: "You took the oath; you now have access to the city's unseen networks.",
           detay: "This brotherhood is built not on power but on information and connections.",
@@ -1335,7 +1252,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse the invitation, leave the room.",
-        ipucu: "Safe, incurious",
         basariliSonuc: {
           mesaj: "You politely refused the invitation, no one forced you.",
           detay: "Not every mysterious door deserves to be opened.",
@@ -1356,7 +1272,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       {
         metin: "Accept the Temple Knights mission.",
         kilitAciklamasi: "This mission is open only to Temple Knights members.",
-        ipucu: "Risky but it grows your standing within the brotherhood",
         basariliSonuc: {
           mesaj: "You completed the mission successfully; your standing within the brotherhood grew.",
           detay: "Your loyalty was repaid.",
@@ -1369,7 +1284,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       {
         metin: "Accept the Brotherhood in Shadow mission.",
         kilitAciklamasi: "This mission is open only to Brotherhood in Shadow members.",
-        ipucu: "Risky but it provides a profitable network of connections",
         basariliSonuc: {
           mesaj: "You completed the mission without a hitch; your network expanded.",
           detay: "Information and connections can be worth more than gold.",
@@ -1381,7 +1295,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse the mission, find it too risky.",
-        ipucu: "Safe",
         basariliSonuc: {
           mesaj: "You politely refused the mission.",
           detay: "You don't have to accept every opportunity.",
@@ -1401,7 +1314,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Try a hand, taste the thrill.",
-        ipucu: "A gain, or the start of a dangerous habit",
         basariliSonuc: {
           mesaj: "You were lucky tonight; your pocket swelled a bit.",
           detay: "The thrill of winning can turn into a dangerous taste.",
@@ -1413,7 +1325,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Politely refuse, stay away.",
-        ipucu: "Safe",
         basariliSonuc: {
           mesaj: "You refused the invitation, your night passed quietly.",
           detay: "Some thrills are worth staying away from.",
@@ -1433,7 +1344,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Show the Shadow Coin in your palm.",
-        ipucu: "Secret Inventory: hypnotize the guards",
         basariliSonuc: {
           mesaj:
             "The guards' eyes went dark when they saw the coin. Without a word they opened the heavy doors wide for you.",
@@ -1443,7 +1353,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Bribe the gate official.",
-        ipucu: "Expensive and risky but if it works you get into the palace",
         basariliSonuc: {
           mesaj: "Your gold spoke; the door cracked open quietly and they let you in.",
           detay: "You're a face known around the palace now.",
@@ -1455,7 +1364,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Assert yourself with your standing and your acquaintances.",
-        ipucu: "Free but it depends on your fame, risky",
         kilitAciklamasi: "You aren't well enough known; you need to make a name for yourself first",
         basariliSonuc: {
           mesaj: "A palace official who'd heard your name ushered you in.",
@@ -1468,7 +1376,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Give up, try another day.",
-        ipucu: "Safe",
         basariliSonuc: {
           mesaj: "You gave up trying for today.",
           detay: "The palace isn't going anywhere.",
@@ -1485,7 +1392,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Let the Monastery Cat loose in the neighbor's house.",
-        ipucu: "Secret Item: the cat hunts the plague rats",
         basariliSonuc: {
           mesaj:
             "The black cat went into the neighbor's house and hunted all the rats spreading the plague. Your neighbor recovered and stayed grateful to you.",
@@ -1495,7 +1401,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Go to him, care for him.",
-        ipucu: "Great compassion, great risk",
         basariliSonuc: {
           mesaj: "You cared for your neighbor and helped him recover; the neighborhood will never forget this courage.",
           detay: "Some kindnesses are done at the risk of life and death.",
@@ -1507,7 +1412,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Stay away, protect yourself.",
-        ipucu: "Safe but it touches your conscience",
         basariliSonuc: {
           mesaj: "You stayed away; your neighbor struggled alone.",
           detay: "Protecting yourself is a survival strategy too.",
@@ -1527,7 +1431,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Give the talisman and take the gold.",
-        ipucu: "Usually a serious fortune, but you lose the legendary protection; trusting the masked man is risky",
         basariliSonuc: {
           mesaj:
             "The moment you took the talisman from your neck you placed it in the man's hand. In return he gave you a heavy purse of gold and melted into the mist.",
@@ -1541,7 +1444,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "The talisman is mine! Draw your sword and attack the masked man.",
-        ipucu: "A duel only the luckiest could survive",
         basariliSonuc: {
           mesaj:
             "The talisman lent power to your sword! The moment you struck the masked man he dissolved into black smoke and was gone. Only his mask remained.",
@@ -1563,7 +1465,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Listen to the whisper, settle the score with that person.",
-        ipucu: "A dark satisfaction, a heavy moral price",
         basariliSonuc: {
           mesaj:
             "The sword moved almost of its own accord in your hand. When it was done you felt neither regret nor relief, just emptiness.",
@@ -1576,7 +1477,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Lock the sword in a chest, ignore the whisper.",
-        ipucu: "Your conscience stays at ease but you give up its power",
         basariliSonuc: {
           mesaj: "You locked the sword in a deep chest; you sleep more easily at night now.",
           detay: "Staying away from some powers is a kind of courage too.",
@@ -1596,7 +1496,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Give the elixir to {dost} to drink.",
-        ipucu: "Maybe a miracle, maybe your one chance wasted",
         basariliSonuc: {
           mesaj: "The moment the bottle emptied, {dost}'s breathing steadied; when they opened their eyes, the first thing they saw was you.",
           detay: "The mystery you kept for years turned into a miracle right on time.",
@@ -1608,7 +1507,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Keep the elixir, think about selling it to a rich collector.",
-        ipucu: "Choosing gain over conscience",
         basariliSonuc: {
           mesaj: "You sold the elixir; your coffer filled but you could never say so at {dost}'s bedside.",
           detay: "Some gains are carried like a lifelong guilt.",
@@ -1628,7 +1526,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Stake the coin in a big wager, force fate.",
-        ipucu: "Either double the gain or lose everything",
         basariliSonuc: {
           mesaj: "The coin spun three times in the air and showed the face you wanted! The people at the table watched in horror.",
           detay: "The Shadow Coin's fame grew along with yours.",
@@ -1640,7 +1537,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Keep the coin in your pocket, hold it just as a charm.",
-        ipucu: "Safe, you keep the mystery",
         basariliSonuc: {
           mesaj: "You put the coin back in your pocket without using it; its mystery lives on along with your curiosity.",
           detay: "Carrying some powers without spending them is a wisdom too.",
@@ -1657,7 +1553,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Explore the dangerous passage yourself.",
-        ipucu: "A great reward, or serious injury",
         basariliSonuc: {
           mesaj: "At the end of the passage you found the treasure of a forgotten temple! Your name spread quickly.",
           detay: "Some risks turn into legendary stories.",
@@ -1669,7 +1564,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Sell the map to the curious collector.",
-        ipucu: "Safe, a guaranteed gain",
         basariliSonuc: {
           mesaj: "The collector had been dying to have the map; you got a good price for it.",
           detay: "Sometimes handing your curiosity to someone else is the smartest thing.",
@@ -1689,7 +1583,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept the offer, share the risk.",
-        ipucu: "Safer but the gain drops by half",
         basariliSonuc: {
           mesaj: "Thanks to the experienced hunter the dig went safely; you split the treasure.",
           detay: "Half a gain isn't cheap next to a whole trust relationship.",
@@ -1701,7 +1594,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse, go alone.",
-        ipucu: "All the gain is yours but so is all the danger",
         basariliSonuc: {
           mesaj: "You dug alone, and all the treasure was yours! It was worth the risk.",
           detay: "Sometimes not sharing brings the greatest wealth.",
@@ -1721,7 +1613,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Pay the priest, have the ring cleansed.",
-        ipucu: "A small expense, a mind at peace",
         basariliSonuc: {
           mesaj: "The priest 'purified' the ring with a long prayer; somehow you really did feel relieved inside.",
           detay: "Sometimes the price of peace is just a few coins.",
@@ -1733,7 +1624,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Don't listen to superstition, keep wearing the ring.",
-        ipucu: "Your money stays in your pocket but the rumor won't let go of you",
         basariliSonuc: {
           mesaj: "You kept wearing the ring, nothing happened; you laughed off the superstition.",
           detay: "Sometimes fear is just fear itself.",
@@ -1753,7 +1643,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Quietly pay the tax, close the matter.",
-        ipucu: "Safe but your pocket gets a lot lighter",
         basariliSonuc: {
           mesaj: "You paid the tax, and the collector left, though frowning.",
           detay: "A price of wealth is the state's cut.",
@@ -1765,7 +1654,6 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Silence the collector with a small bribe.",
-        ipucu: "It could be cheaper but there's a risk of being caught",
         basariliSonuc: {
           mesaj: "The collector pocketed the money and winked; nothing will show in the records.",
           detay: "Some problems are paid for not with gold but with your morality.",

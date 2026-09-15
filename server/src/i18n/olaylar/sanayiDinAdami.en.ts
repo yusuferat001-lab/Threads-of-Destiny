@@ -9,7 +9,6 @@ export const OLAYLAR_SANAYI_DINADAMI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept the donation, give the sermon he asked for.",
-        ipucu: "Your congregation grows richer, the workers lose their trust in you",
         basariliSonuc: {
           mesaj:
             "The sermon pleased the factory owner; the church coffer filled, but whispers began among the worker members of your flock.",
@@ -22,7 +21,6 @@ export const OLAYLAR_SANAYI_DINADAMI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse the donation, preach on the side of the workers.",
-        ipucu: "Your conscience is at ease, your congregation stays poor",
         basariliSonuc: {
           mesaj:
             "Your sermon declaring you stood with the workers moved them deeply; the factory owner never called on you again.",
@@ -44,7 +42,6 @@ export const OLAYLAR_SANAYI_DINADAMI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Condemn it sharply from the pulpit and warn the congregation.",
-        ipucu: "The traditionalists applaud you, the educated drift away",
         basariliSonuc: {
           mesaj:
             "Your fierce sermon roused the traditionalist congregation; those interested in the scientist never listened to you again.",
@@ -57,7 +54,6 @@ export const OLAYLAR_SANAYI_DINADAMI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Enter a respectful dialogue with the scientist, listen and debate.",
-        ipucu: "Your horizons widen, but the traditionalists watch you with suspicion",
         basariliSonuc: {
           mesaj: "The conversation was respectful and thoughtful; you each learned something from the other.",
           detay: "Some bridges should be built rather than torn down.",
@@ -77,7 +73,6 @@ export const OLAYLAR_SANAYI_DINADAMI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Report the situation to the authorities, try to protect the children.",
-        ipucu: "Your conscience eases, but you lose your biggest donor",
         basariliSonuc: {
           mesaj:
             "Your report shortened some children's working hours; the donor angrily cut his ties with the church.",
@@ -90,7 +85,6 @@ export const OLAYLAR_SANAYI_DINADAMI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Stay silent, don't cut off the donations.",
-        ipucu: "The church stays rich, but your conscience is stained",
         basariliSonuc: {
           mesaj:
             "You stayed silent; the donations kept flowing, but those children's eyes still won't leave your mind.",
@@ -111,7 +105,6 @@ export const OLAYLAR_SANAYI_DINADAMI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Open the doors, share the church's resources with the people.",
-        ipucu: "You win the people's love, the upper council does not welcome it",
         basariliSonuc: {
           mesaj:
             "You opened the doors; the church turned soup kitchen was talked about for weeks; in the people's eyes you became a saint.",
@@ -124,7 +117,6 @@ export const OLAYLAR_SANAYI_DINADAMI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Call the guards, disperse the demonstration.",
-        ipucu: "Order is restored, but your image in the people's eyes is damaged",
         basariliSonuc: {
           mesaj:
             "The guards dispersed the crowd; the church calmed, but in the streets your name became 'the priest of the rich'.",
@@ -145,7 +137,6 @@ export const OLAYLAR_SANAYI_DINADAMI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Attend out of curiosity, watch the séance.",
-        ipucu: "Valuable connections, but a clash with your faith",
         basariliSonuc: {
           mesaj: "The séance was strange but striking; you built valuable connections with the lady's circle.",
           detay: "A curious mind sometimes shakes faith a little.",
@@ -158,7 +149,6 @@ export const OLAYLAR_SANAYI_DINADAMI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Politely decline the invitation, stay true to your faith.",
-        ipucu: "Your faith stays solid, but you lose a valuable connection",
         basariliSonuc: {
           mesaj: "You declined the invitation; the lady was a little offended, but your congregation approved.",
           detay: "Some boundaries protect faith.",
@@ -178,7 +168,6 @@ export const OLAYLAR_SANAYI_DINADAMI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Install the electricity, modernize the church.",
-        ipucu: "The young rejoice, the old take offense",
         basariliSonuc: {
           mesaj:
             "The first evening you gave the service under bright lights, the young congregation was full of enthusiasm; a few old members quietly turned their backs.",
@@ -191,7 +180,6 @@ export const OLAYLAR_SANAYI_DINADAMI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Preserve tradition, carry on by candlelight.",
-        ipucu: "The money is safe, the young may drift away",
         basariliSonuc: {
           mesaj:
             "Tradition was preserved; the old congregation was relieved, but a few young families went to another church.",
@@ -212,7 +200,6 @@ export const OLAYLAR_SANAYI_DINADAMI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Pay the fee, cover up the scandal.",
-        ipucu: "The church's reputation is protected, but your conscience is stained",
         basariliSonuc: {
           mesaj:
             "The journalist took the money, the story never ran; the church's name stayed clean, but you know the truth.",
@@ -225,7 +212,6 @@ export const OLAYLAR_SANAYI_DINADAMI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse to pay, let the truth come out.",
-        ipucu: "Short-term reputation loss, long-term peace of conscience",
         basariliSonuc: {
           mesaj: "The story ran, there was a brief scandal, but your honesty was appreciated in the end.",
           detay: "The truth hurts, but it also heals.",
@@ -245,7 +231,6 @@ export const OLAYLAR_SANAYI_DINADAMI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Go to the city, chase your growing congregation.",
-        ipucu: "Your career grows, those in the village are left alone",
         basariliSonuc: {
           mesaj:
             "The new church in the city is crowded and grand; but you can't forget the old faces you left behind in the village.",
@@ -258,7 +243,6 @@ export const OLAYLAR_SANAYI_DINADAMI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Stay in the village, stay loyal to your dwindling congregation.",
-        ipucu: "Your conscience is at ease, your career stalls",
         basariliSonuc: {
           mesaj:
             "You stayed in the village; the old congregation held you to their bosom like a son, the church stayed small but warm.",
@@ -280,7 +264,6 @@ export const OLAYLAR_SANAYI_DINADAMI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept the donation, build the cathedral.",
-        ipucu: "Great fame and a lasting work, but its source is dirty",
         basariliSonuc: {
           mesaj:
             "The magnificent cathedral rose, your name will be spoken for generations; but you know what labor lies beneath its stones.",
@@ -294,7 +277,6 @@ export const OLAYLAR_SANAYI_DINADAMI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Decline the offer, stay true to your principles.",
-        ipucu: "Your conscience stays clean, but you miss a historic opportunity",
         basariliSonuc: {
           mesaj:
             "You declined the offer; the factory owner left in anger, but your congregation applauded your principled stand.",

@@ -31,7 +31,6 @@ export interface OnTepkiCeviri {
 /** Bir seçeneğin çevrilebilir metin alanları (index ile eşleşir). */
 export interface SecenekCeviri {
   metin?: string;
-  ipucu?: string;
   kilitAciklamasi?: string;
   basariliSonuc?: SonucCeviri;
   basarisizSonuc?: SonucCeviri;
@@ -138,7 +137,6 @@ export function olayCevirisiUygula(olay: OlayTanimi, dil: Dil): OlayTanimi {
     const yeni: OlaySecenegi = {
       ...secenek,
       ...(sc.metin !== undefined ? { metin: sc.metin } : {}),
-      ...(sc.ipucu !== undefined ? { ipucu: sc.ipucu } : {}),
       ...(sc.kilitAciklamasi !== undefined ? { kilitAciklamasi: sc.kilitAciklamasi } : {}),
       basariliSonuc: sonucCevir(secenek.basariliSonuc, sc.basariliSonuc),
       basarisizSonuc: sonucCevir(secenek.basarisizSonuc, sc.basarisizSonuc),

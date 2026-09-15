@@ -20,7 +20,6 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Blend into the crowd and slip away before the search.",
-        ipucu: "If you succeed you leave no trace, but if caught the suspicion is confirmed",
         basariliSonuc: {
           mesaj: "You became invisible in the crowd; the patrol couldn't find you.",
           detay: "Luck was on your side for today.",
@@ -51,7 +50,6 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Throw the man one last punch, give him what he's owed.",
-        ipucu: "If you win your pride is satisfied, if you lose you draw attention",
         basariliSonuc: {
           mesaj: "You laid the man out; the tavern cheered, but the noise caught the eye of the patrol in the street.",
           detay: "Victory sometimes isn't free.",
@@ -82,7 +80,6 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Question the account to his face, refuse to pay.",
-        ipucu: "If you're proven right your money stays in your pocket, if not your name goes in the ledger",
         basariliSonuc: {
           mesaj: "You caught the inconsistency in the figures; the collector withdrew, abashed.",
           detay: "This time you were the one in the right.",
@@ -113,7 +110,6 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Accept the job, pocket the money.",
-        ipucu: "If you win your pockets fill, if you lose a job gets written down against you",
         basariliSonuc: {
           mesaj: "The job went smoothly; a nice sum went into your pocket.",
           detay: "Your conscience ached a little but your purse got heavier.",
@@ -133,7 +129,6 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Slip the officer a small 'understanding fee'. (Penance: 12)",
-        ipucu: "A cheap and reliable way",
         basariliSonuc: {
           mesaj: "The few coins you pressed into the officer's hand were enough to strike your name off the list.",
           detay: "Small sums can solve big troubles.",
@@ -175,7 +170,6 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Object, say the fine is unjust.",
-        ipucu: "If you win you get off free, if you lose you draw more attention",
         basariliSonuc: {
           mesaj: "You proved you were right; the inspector had to withdraw the fine.",
           detay: "Rarely, objecting works.",
@@ -195,7 +189,6 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Pay the full amount he wants. (Penance: 16)",
-        ipucu: "A reliable way",
         basariliSonuc: {
           mesaj: "The sentry pocketed the money and really did lose your file.",
           detay: "Some men's word comes with the money.",
@@ -207,7 +200,6 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Try to haggle for half price. (Penance: 8)",
-        ipucu: "Cheap but risky — if the deal falls through the money is wasted",
         basariliSonuc: {
           mesaj: "Surprisingly he accepted the haggle; you got the same result for half price.",
           detay: "Sometimes courage earns money.",
@@ -269,7 +261,6 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Look calm, say you have nothing to hide.",
-        ipucu: "If you succeed you get off free, if you lose the search happens",
         basariliSonuc: {
           mesaj: "Your firm manner convinced the officer; he withdrew his threat.",
           detay: "Sometimes composure is worth more than money.",
@@ -300,7 +291,6 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Offer half, refuse the rest. (Penance: 15)",
-        ipucu: "Cheap but it could anger him — the money could be wasted",
         basariliSonuc: {
           mesaj: "Unexpectedly he accepted; it seems he never thought he'd get the money at all.",
           detay: "Sometimes even a little is more than enough.",
@@ -331,7 +321,6 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Object to the fine, argue your earlier record was unjust.",
-        ipucu: "If you win you get off free, if you lose you draw more attention",
         basariliSonuc: {
           mesaj: "Your defense seemed reasonable; the officer cancelled the fine.",
           detay: "Rare, but not impossible.",
@@ -363,7 +352,6 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Tidy up, erase the traces, wait for the inspection.",
-        ipucu: "Free but up to chance",
         basariliSonuc: {
           mesaj: "You toiled all night and left everything spotless; the inspection passed without a trace.",
           detay: "Sometimes all it takes is labor.",
@@ -383,7 +371,6 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Buy off the man leading the team with a large penance. (Penance: 55)",
-        ipucu: "Expensive but if it works you can breathe",
         basariliSonuc: {
           mesaj: "The man leading the team took the money and wrote his report as 'no trace found'.",
           detay: "Even the high-ranking can turn out to be for sale.",
@@ -395,7 +382,6 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Hide quietly for one last night before leaving the city.",
-        ipucu: "Risky but if you succeed you buy time",
         basariliSonuc: {
           mesaj: "You hid in an acquaintance's barn and watched the team comb the city; you dodged it for now.",
           detay: "But they're as patient as you.",
@@ -427,7 +413,6 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "For half the price, silence only the informers in your own neighborhood. (Penance: 28)",
-        ipucu: "Cheap but narrow — the money could be wasted",
         basariliSonuc: {
           mesaj: "The informers in your neighborhood fell silent; by luck the real danger was there too.",
           detay: "Sometimes a small investment is enough.",
@@ -447,7 +432,6 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Dive into the crowd and run.",
-        ipucu: "If you succeed you slip away, if you lose you're caught very badly",
         basariliSonuc: {
           mesaj: "You passed between the market stalls and took shelter, gasping, in a side street.",
           detay: "Your heart is still pounding.",
@@ -508,7 +492,6 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Pour everything you have into a large penance. (Penance: 100)",
-        ipucu: "Very expensive but it might be your only real chance",
         basariliSonuc: {
           mesaj: "The hefty penance reached the highest offices; the pursuit unit was officially scaled down.",
           detay: "Your fortune bought your life.",
@@ -520,7 +503,6 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Try to leave the city entirely, leave no trace.",
-        ipucu: "The riskiest option, but if you succeed the pursuit officially ends",
         basariliSonuc: {
           mesaj: "You moved through back roads for days and got completely beyond the city's sphere of influence.",
           detay: "The pursuit unit is smart enough not to look for you beyond the border.",
@@ -540,7 +522,6 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Try to bring a bounty hunter over to your side. (Penance: 90)",
-        ipucu: "A risky gamble — the hunter could take the money and still sell you out",
         basariliSonuc: {
           mesaj: "The bounty hunter found your offer more tempting than the reward; he backed off and even threw the others off your scent.",
           detay: "Sometimes the hunter makes the best ally.",
@@ -552,7 +533,6 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Change your identity completely and disappear.",
-        ipucu: "Hard but if you succeed the hunters will never recognize you again",
         basariliSonuc: {
           mesaj: "You changed your hair, your clothes, even your walk; your old description is useless now.",
           detay: "You lost a bit of your old standing, but at least you're alive.",
@@ -602,7 +582,6 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Leap from the window to the roof and run.",
-        ipucu: "Risky in the dark but if you aren't caught you can breathe",
         basariliSonuc: {
           mesaj: "You jumped to the neighboring roof, even sliding on the tiles; you left shouting behind you.",
           detay: "Tonight was the fastest run of your life.",
@@ -633,7 +612,6 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Surrender, don't resist.",
-        ipucu: "You definitely go to prison but at least you stay alive and whole",
         basariliSonuc: {
           mesaj: "You raised your hands and surrendered; the guards plundered your home from top to bottom and put you in chains.",
           detay: "Your fortune and your name were the first things taken from you this morning. Now you'll answer for it in prison.",
@@ -645,7 +623,6 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Bribe them with your fortune, try to buy your way out. (Requires at least 50)",
-        ipucu: "Expensive but you might get off without going to prison",
         basariliSonuc: {
           mesaj: "The man leading the guards looked away when he saw the gold you piled before him; he pulled his men back, saying 'wrong house'.",
           detay: "Most of your fortune was gone this morning, but at least you're free. Your name is still noted somewhere.",
@@ -657,7 +634,6 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Attempt a hard escape through the back door.",
-        ipucu: "Very risky — but if you succeed you take shelter in the mountains as a fugitive the city has forgotten",
         basariliSonuc: {
           mesaj:
             "You jumped from the back window, climbed the garden wall and vanished in the twilight of dawn; after days of walking you took shelter in a lonely cave on a mountaintop.",
@@ -678,7 +654,6 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Surrender, don't resist.",
-        ipucu: "You definitely go to prison but at least you stay alive and whole",
         basariliSonuc: {
           mesaj: "You calmly held out your hands; the officers searched the workplace thoroughly, seized your till, and took you away in iron shackles.",
           detay: "Your fortune and reputation went into the records this morning as 'seized'. Now you'll answer for it in prison.",
@@ -690,7 +665,6 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Bribe them with your fortune, try to buy your way out. (Requires at least 50)",
-        ipucu: "Expensive but you might get off without going to prison",
         basariliSonuc: {
           mesaj: "The bundle of banknotes you quietly left in the drawer of the chief's desk was enough for the arrest paper to be quietly folded and put in a pocket.",
           detay: "Most of your fortune was gone this morning, but at least you're free. Your file is still waiting somewhere.",
@@ -702,7 +676,6 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Attempt a hard escape through the back door.",
-        ipucu: "Very risky — but if you succeed you take shelter in the mountains as a fugitive the city has forgotten",
         basariliSonuc: {
           mesaj:
             "You jumped from the back courtyard and ducked into the back streets; after an escape of days, by train and on foot, you caught your breath at the foot of a distant mountain village.",
@@ -794,7 +767,6 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Steal their provisions at midnight and leave quietly.",
-        ipucu: "Easy but it may weigh on your conscience",
         basariliSonuc: {
           mesaj: "With the provisions you took from their pantry you quietly headed back up the mountain.",
           detay: "Survival sometimes requires leaving your conscience behind.",
@@ -814,7 +786,6 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Strike camp at once and move to another valley.",
-        ipucu: "Safe but exhausting",
         basariliSonuc: {
           mesaj: "At midnight you packed everything and walked for hours; the new valley looks safer.",
           detay: "Constant movement is a fugitive's best friend.",
@@ -826,7 +797,6 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Wait calmly to observe the sounds.",
-        ipucu: "Risky but if it's true you won't have tired yourself for nothing",
         basariliSonuc: {
           mesaj: "The sounds were just a hunting party, they weren't after you; you panicked for nothing.",
           detay: "Not every sound on the mountain is a threat.",
@@ -846,7 +816,6 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Set an ambush and raid the caravan.",
-        ipucu: "If you win you'll be fed, if you lose you'll be badly wounded",
         basariliSonuc: {
           mesaj: "The raid worked; you took enough provisions and a few coins from the caravan.",
           detay: "The law of the mountain works differently from the law of the city now.",
@@ -888,7 +857,6 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Risk descending to a lower, deserted valley.",
-        ipucu: "Risky but if you succeed you'll find a safer place to winter",
         basariliSonuc: {
           mesaj: "An abandoned hut you found on the way down protected you from the storm.",
           detay: "Sometimes taking a risk is the only way to survive.",
@@ -908,7 +876,6 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Buy a new identity, leave your past behind. (Requires at least 40)",
-        ipucu: "Expensive and risky but if it works you can return freely to the city",
         basariliSonuc: {
           mesaj: "With your new papers your old name was left behind too; no one recognizes you now, no one is looking for you.",
           detay: "The traces of your old life are erased, but you're still alive — that counts as a victory.",
@@ -939,7 +906,6 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Try to return to the city, to your old life, with cautious steps.",
-        ipucu: "If you succeed you return freely to your old life, if you lose you have to flee to the mountains again",
         basariliSonuc: {
           mesaj: "When you entered the city no one even turned to look; your name really has been forgotten.",
           detay: "For the first time in years, you walked the street unafraid.",
@@ -951,7 +917,6 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Don't take the risk, stay in the safety of the mountains.",
-        ipucu: "This could be your permanent new life now",
         basariliSonuc: {
           mesaj: "You decided to leave the city behind forever; the mountain is your true home now.",
           detay: "In the city below, your name has turned into a legend, almost a fairy tale.",
@@ -1012,7 +977,6 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Defend yourself, fighting with whatever you have.",
-        ipucu: "Risky but if you succeed you both survive and win a valuable pelt",
         basariliSonuc: {
           mesaj: "After a hard struggle you drove the animal off; even its pelt could be useful to you.",
           detay: "Surviving on this mountain sometimes requires fighting.",

@@ -8,7 +8,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Take them to an animal healer, whatever the cost.",
-        ipucu: "Costly but reliable",
         basariliSonuc: {
           mesaj: "With the treatment the healer gave, {hayvan} was back to their old cheerful self within a few days.",
           detay: "Some expenses are made without hesitation.",
@@ -20,7 +19,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Try to care for them at home with your own methods.",
-        ipucu: "Free but risky",
         basariliSonuc: {
           mesaj: "Your patient care worked; {hayvan} slowly recovered.",
           detay: "Sometimes love and patience are more effective than money.",
@@ -40,7 +38,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Sit down with them, savor the moment.",
-        ipucu: "A small but real happiness",
         basariliSonuc: {
           mesaj: "That silent moment set aside all the weariness of the day.",
           detay: "Sometimes the greatest comfort is the presence of a friend who doesn't speak.",
@@ -52,7 +49,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Use your tiredness as an excuse, go straight to sleep.",
-        ipucu: "Safe but you miss the chance",
         basariliSonuc: {
           mesaj: "You got a good sleep; but you felt a little that you'd missed that moment.",
           detay: "Rest is necessary too, but some moments don't come again.",
@@ -71,7 +67,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Look to the sky and wait for your falcon.",
-        ipucu: "Hidden Option: birds of prey usually don't return empty-handed",
         basariliSonuc: {
           mesaj:
             "The falcon returned screeching on the morning of the third day. And in its talons is a valuable ruby necklace, probably snatched from some noble!",
@@ -85,7 +80,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Search street by street.",
-        ipucu: "It takes time but there's a chance of finding them",
         basariliSonuc: {
           mesaj: "After hours of searching you found {hayvan} in a side street; you came home safe and sound.",
           detay: "Your persistence paid off.",
@@ -97,7 +91,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Hope they come back on their own.",
-        ipucu: "Passive, up to chance",
         basariliSonuc: {
           mesaj: "A few days later {hayvan} showed up at the door on their own.",
           detay: "Sometimes patience works better than searching.",
@@ -117,7 +110,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Get up, check outside.",
-        ipucu: "Risky but you might prevent something",
         basariliSonuc: {
           mesaj: "There really was a thief; thanks to {hayvan}'s warning you chased them off.",
           detay: "Tonight you understood the worth of a loyal friend once more.",
@@ -129,7 +121,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Ignore it, go back to sleep.",
-        ipucu: "Safe but you take the risk",
         basariliSonuc: {
           mesaj: "In the morning everything was in its place; maybe it really was just a shadow.",
           detay: "Sometimes the worry was for nothing.",
@@ -149,7 +140,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Get a puppy.",
-        ipucu: "A loyal friend",
         basariliSonuc: {
           mesaj: "You took a little puppy home; it started following you around, wagging its tail.",
           detay: "You're not alone anymore.",
@@ -161,7 +151,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Get a cat.",
-        ipucu: "An independent companion",
         basariliSonuc: {
           mesaj: "A little cat settled into your home; it even makes ignoring you charming.",
           detay: "There's another master in your house now — your cat.",
@@ -173,7 +162,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Get and train a falcon.",
-        ipucu: "Hard but impressive and useful for hunting",
         basariliSonuc: {
           mesaj:
             "Your patient work paid off; the falcon now sits on your shoulder and everyone looks at you with admiration.",
@@ -186,7 +174,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "No, I'm more comfortable alone.",
-        ipucu: "No responsibility",
         basariliSonuc: {
           mesaj: "You've made your decision: for now, you prefer to stay alone.",
           detay: "Maybe you'll change your mind later.",
@@ -203,7 +190,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Get a puppy.",
-        ipucu: "A loyal friend",
         basariliSonuc: {
           mesaj: "You took a little puppy home; it started following you around, wagging its tail.",
           detay: "You're not alone anymore.",
@@ -215,7 +201,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Get a cat.",
-        ipucu: "An independent companion",
         basariliSonuc: {
           mesaj: "A little cat settled into your home; it even makes ignoring you charming.",
           detay: "There's another master in your house now — your cat.",
@@ -227,7 +212,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Buy a talking parrot.",
-        ipucu: "Fun but you never know what it'll say",
         basariliSonuc: {
           mesaj: "You bought a colorful parrot; before you even got home it started memorizing your curses.",
           detay: "With this bird, your life will never be quiet again.",
@@ -239,7 +223,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "No, I'm more comfortable alone.",
-        ipucu: "No responsibility",
         basariliSonuc: {
           mesaj: "You've made your decision: for now, you prefer to stay alone.",
           detay: "Maybe you'll change your mind later.",
@@ -256,7 +239,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Keep hunting, take the risk.",
-        ipucu: "A good hunt means a big gain",
         basariliSonuc: {
           mesaj: "{hayvan} caught two rabbits one after another; your table is rich this week.",
           detay: "Training your falcon paid off.",
@@ -268,7 +250,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Return early, don't take the risk.",
-        ipucu: "Safe, a small gain",
         basariliSonuc: {
           mesaj: "You settled for a small catch, but you both came back safe and sound.",
           detay: "Sometimes little but certain is better than a lot.",
@@ -288,7 +269,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Go after them, try to make yourself heard.",
-        ipucu: "Exhausting but there's hope",
         basariliSonuc: {
           mesaj: "Hours later {hayvan} landed back on your wrist; you were both relieved.",
           detay: "Your bond was stronger than you thought.",
@@ -300,7 +280,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Trust them, hope they return on their own.",
-        ipucu: "Passive but it usually works",
         basariliSonuc: {
           mesaj: "Toward evening {hayvan} came back of their own accord.",
           detay: "Sometimes waiting is enough.",
@@ -320,7 +299,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Laugh it off, say 'the bird talks'.",
-        ipucu: "An easy way out but not guaranteed",
         basariliSonuc: {
           mesaj: "The room burst into laughter, the whole thing turned into a joke and was even found a bit endearing.",
           detay: "Thanks to {hayvan} you were the favorite of the gathering, at least for today.",
@@ -332,7 +310,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Be embarrassed and apologize, close the subject.",
-        ipucu: "Safe but dull",
         basariliSonuc: {
           mesaj: "A brief apology closed the matter; no one dwelt on it much.",
           detay: "Sometimes the best defense is a quick apology.",
@@ -352,7 +329,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Put on a small show in the square.",
-        ipucu: "Risky but a fun chance for fame",
         basariliSonuc: {
           mesaj: "{hayvan} had everyone in stitches; the onlookers even left you tips.",
           detay: "Who would have thought a bird would make you this famous.",
@@ -364,7 +340,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Turn the offer down, protect your privacy.",
-        ipucu: "Safe",
         basariliSonuc: {
           mesaj: "You politely declined the show; life went on calmly.",
           detay: "You don't have to chase every opportunity.",
@@ -384,7 +359,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Don't get angry, clean it up and move on.",
-        ipucu: "Stay calm",
         basariliSonuc: {
           mesaj: "You gathered the broken pieces; {hayvan} seemed to enjoy watching what was going on.",
           detay: "This is the price of living with cats, you told yourself.",
@@ -396,7 +370,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Scold it, try to teach it a lesson.",
-        ipucu: "Probably pointless",
         basariliSonuc: {
           mesaj: "{hayvan} behaved for a while when it heard your voice, at least that day.",
           detay: "It counts as a small victory.",
@@ -416,7 +389,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Run after them, set things right.",
-        ipucu: "A small moment of heroism",
         basariliSonuc: {
           mesaj: "{hayvan} cornered the thief, the bread went back to its owner; the crowd cheered.",
           detay: "That day you were the favorite of the neighborhood — or rather it was {hayvan}.",
@@ -428,7 +400,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Don't get involved, mind your own business.",
-        ipucu: "Safe",
         basariliSonuc: {
           mesaj: "You settled for watching; {hayvan} came back to you after a while.",
           detay: "Not every act of heroism has to be yours.",
@@ -448,7 +419,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Take the purse, don't wonder about the owner.",
-        ipucu: "A small but unhesitating gain",
         basariliSonuc: {
           mesaj: "You opened the purse; a few coins fell into your palm. {hayvan} wagged its tail (or wings) proudly.",
           detay: "You'll never learn where it found it.",
@@ -460,7 +430,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Try to find the owner, give it back.",
-        ipucu: "Moral but it takes time",
         basariliSonuc: {
           mesaj: "You found the neighbor who lost the purse; their gratitude lasted a long time.",
           detay: "Your honesty was talked about in the neighborhood.",
@@ -480,7 +449,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Extend the conversation, develop the acquaintance.",
-        ipucu: "A small coincidence, a new acquaintance",
         basariliSonuc: {
           mesaj: "After a long conversation you made a new acquaintance; {hayvan} was the secret hero of this meeting.",
           detay: "Sometimes the best introductions happen when an animal steps in.",
@@ -492,7 +460,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Keep it short, go on your way.",
-        ipucu: "Safe but you miss the chance",
         basariliSonuc: {
           mesaj: "You said a polite goodbye and went on your way.",
           detay: "Not every encounter has to turn into a friendship.",
@@ -512,7 +479,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Stay calm, have a new chair made.",
-        ipucu: "A small expense, your nerves stay intact",
         basariliSonuc: {
           mesaj: "You had a new chair made; this time {hayvan} didn't even touch the table.",
           detay: "Some habits fade slowly.",
@@ -524,7 +490,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Get angry, try to train it.",
-        ipucu: "Hard but it could be a lasting solution",
         basariliSonuc: {
           mesaj: "Your patient training worked; {hayvan} no longer touches the furniture.",
           detay: "Your persistence paid off.",
@@ -544,7 +509,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Apologize, pay for the damage.",
-        ipucu: "A cheap peace, your neighborly relations stay intact",
         basariliSonuc: {
           mesaj: "Your apology and small payment calmed your neighbor down.",
           detay: "Good neighborliness is sometimes kept for a few coins.",
@@ -556,7 +520,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "It's a cat's nature, defend it.",
-        ipucu: "Risky; distance could grow between you and your neighbor",
         basariliSonuc: {
           mesaj: "Your neighbor let it go, though with some grumbling.",
           detay: "Cats answer to no one, and you knew that.",
@@ -576,7 +539,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Step in, stop {hayvan}.",
-        ipucu: "Risky but you can close the matter before it escalates",
         basariliSonuc: {
           mesaj: "Your hand got a little hurt but you pulled {hayvan} back in time; no one was seriously harmed.",
           detay: "This is sometimes the price of living with a wild animal.",
@@ -589,7 +551,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Don't get involved, let it follow its nature.",
-        ipucu: "Safe but it could touch your conscience",
         basariliSonuc: {
           mesaj: "You didn't get involved; {hayvan} calmed down on its own.",
           detay: "Sometimes being a bystander is a choice too.",
@@ -609,7 +570,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Let it answer the call of its nature.",
-        ipucu: "Honorable but you could lose it forever",
         basariliSonuc: {
           mesaj: "The next morning {hayvan} was gone; you'd left the door open, and it chose its pack.",
           detay: "You let it go because you loved it; that was a love harder than keeping it.",
@@ -621,7 +581,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Go to it, calm it down.",
-        ipucu: "It could strengthen your bond",
         basariliSonuc: {
           mesaj: "You sat beside it and stroked it; {hayvan} slowly calmed and laid its head on your shoulder.",
           detay: "Some bonds overcome even wild nature.",
@@ -641,7 +600,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Take the cub, patiently try to tame it.",
-        ipucu: "Hard but it could win you a loyal, wild friend",
         basariliSonuc: {
           mesaj: "The cub first growled, then accepted the meat from your hand. Weeks later it no longer leaves your side.",
           detay: "Owning a tame wolf isn't easy, but its loyalty is unmatched.",
@@ -653,7 +611,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Count it as hunted for its pelt and teeth, prepare it for sale.",
-        ipucu: "Heartless but a guaranteed gain",
         basariliSonuc: {
           mesaj: "You sold the cub to a furrier; you earned a few coins but a strange weight stayed in you.",
           detay: "Some gains always taste bitter.",
@@ -665,7 +622,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Leave it to nature, don't get involved.",
-        ipucu: "Safe, no responsibility",
         basariliSonuc: {
           mesaj: "You left the cub where it was; its fate is in its own hands.",
           detay: "Not making a decision is a decision too.",
@@ -685,7 +641,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Keep the ring, ask no one.",
-        ipucu: "A small but risky gain",
         basariliSonuc: {
           mesaj: "You quietly kept the ring; no one even suspected {hayvan}.",
           detay: "Cats have no conscience, and yours is now a little short too.",
@@ -697,7 +652,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Go around the neighborhood, find the owner and return it.",
-        ipucu: "Honesty could be met with a small reward",
         basariliSonuc: {
           mesaj: "You found the ring's owner; the grateful neighbor gave you a small reward.",
           detay: "Your honesty was talked about in the neighborhood.",
@@ -717,7 +671,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Climb up yourself, take the risk.",
-        ipucu: "Heroism but there's a risk of falling",
         basariliSonuc: {
           mesaj: "With difficulty you took {hayvan} into your arms; the neighborhood applauded you.",
           detay: "Sometimes being a hero is as simple as climbing a tree.",
@@ -729,7 +682,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Give the neighbor's boy a few coins to climb up.",
-        ipucu: "Safe but it costs money",
         basariliSonuc: {
           mesaj: "The nimble boy got {hayvan} down within minutes.",
           detay: "Leaving some jobs to an expert is wise.",
@@ -749,7 +701,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Get the best treatment, whatever it costs.",
-        ipucu: "Expensive but it saves your friend almost for certain",
         basariliSonuc: {
           mesaj: "The healer worked for hours; {hayvan} was back on its feet within a few days.",
           detay: "You didn't hesitate to repay its loyalty.",
@@ -761,7 +712,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Try to care for it at home with your own means.",
-        ipucu: "Free but a high risk of losing it",
         basariliSonuc: {
           mesaj: "You stayed by its side for nights; {hayvan} stubbornly healed.",
           detay: "Sometimes love is a stronger medicine than gold.",
@@ -781,7 +731,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Quietly pay the compensation, close the matter.",
-        ipucu: "A cheap peace but your pride is bruised",
         basariliSonuc: {
           mesaj: "You paid the money and the family left, though with grumbling.",
           detay: "In some fights being right isn't enough — money talks.",
@@ -793,7 +742,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "No, your dog was in the right — defend it to the end.",
-        ipucu: "You keep your pride but your reputation could suffer",
         basariliSonuc: {
           mesaj: "The witnesses took your side; the family backed down.",
           detay: "Sometimes defending the truth works.",
@@ -814,7 +762,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Enter the toughest course, aim for great fame.",
-        ipucu: "A chance at great fame, but you could lose {hayvan}",
         basariliSonuc: {
           mesaj: "{hayvan} left its rivals behind and reached the top! Your name began to be spoken with falconry in the region.",
           detay: "Some risks pay off many times over.",
@@ -826,7 +773,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Enter only an easy, modest demonstration.",
-        ipucu: "Safe, a modest recognition",
         basariliSonuc: {
           mesaj: "The small demonstration won some praise; {hayvan} returned safely to your shoulder.",
           detay: "Being cautious isn't always a bad thing.",
@@ -846,7 +792,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Break the seal, learn the secret inside.",
-        ipucu: "It could win you valuable intelligence but there's a moral price",
         basariliSonuc: {
           mesaj: "The secrets in the letter astonished you; this information could serve you later.",
           detay: "Reading someone else's secret is a heavy burden, even if it's profitable.",
@@ -858,7 +803,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Without breaking the seal, find the owner and deliver it.",
-        ipucu: "Honesty, a small gratitude",
         basariliSonuc: {
           mesaj: "You got the letter to its owner; the relief in the man's eyes was priceless.",
           detay: "Your honesty was quietly rewarded.",
@@ -878,7 +822,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Have the parrot speak in your rival's voice and trick the customers.",
-        ipucu: "Funny but it's fraud; if you're caught your reputation is gone",
         basariliSonuc: {
           mesaj: "The customers fell for the strange offer coming from 'your rival's' mouth and headed to your stall!",
           detay: "You won, but you know it was a con.",
@@ -890,7 +833,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Just put on a small show in the neighborhood for fun.",
-        ipucu: "Safe, a small pleasure",
         basariliSonuc: {
           mesaj: "The children and neighbors watched, laughing; {hayvan} was the star of the day.",
           detay: "Sometimes the best gain is just a laugh.",
@@ -910,7 +852,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Take it to the exotic doctor, pay whatever it takes.",
-        ipucu: "Expensive but an almost guaranteed cure",
         basariliSonuc: {
           mesaj: "The drops the doctor gave worked; a few days later {hayvan} is making the whole house ring again.",
           detay: "When its voice came back you realized how quiet the house had been.",
@@ -922,7 +863,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Let it rest at home, wait for natural healing.",
-        ipucu: "Free but there's a risk of losing it",
         basariliSonuc: {
           mesaj: "Your patience worked; {hayvan} slowly returned to its old cheerful self.",
           detay: "Sometimes time is the best medicine.",
@@ -942,7 +882,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Tie it in the back garden, put your business first.",
-        ipucu: "It protects your earnings but {hayvan} is sad",
         basariliSonuc: {
           mesaj: "The customers came back and your till filled again. {hayvan}, meanwhile, keeps watching you from the window.",
           detay: "Your business is saved but there's a thorn in your conscience.",
@@ -954,7 +893,6 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Never leave its side, accept the loss of customers.",
-        ipucu: "Friendship first, the till second",
         basariliSonuc: {
           mesaj: "{hayvan} kept staying by your side; your earnings dropped but your heart is at ease.",
           detay: "Some friendships fit in no profit column.",

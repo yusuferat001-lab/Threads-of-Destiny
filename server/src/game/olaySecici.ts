@@ -315,7 +315,7 @@ export function olaySec(
   }
 
   // Olay artık seçildi; oyuncunun dili İngilizceyse gösterim metinlerini (başlık/
-  // metin/seçenek/mesaj/detay/ipucu) çevrilmiş bir kopyayla değiştir. Tüm mantık
+  // metin/seçenek/mesaj/detay) çevrilmiş bir kopyayla değiştir. Tüm mantık
   // alanları (id, filtreler, etkiler, baseBasariSansi) aynen korunur.
   olay = olayCevirisiUygula(olay, state.dil);
 
@@ -357,7 +357,6 @@ export function olaySec(
         basarisiz_sonuc: secenek.basarisizSonuc,
         kilitli: neden !== null,
         kilit_nedeni: neden ?? undefined,
-        ipucu: secenek.ipucu,
       };
     });
 

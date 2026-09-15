@@ -145,7 +145,7 @@ Kaynak: [server/src/types.ts](server/src/types.ts). Tek kaynak — client `types
 | `mutluluk` | 0-100 | — |
 | `para` | number (**sınırsız**, borca girebilir) | — |
 | `para_birimi` | string | Çağ+bölgeye göre (§16) |
-| `un` | 0-100 | Kod alanı `un` ama **arayüzde 2026-09'dan beri "Şöhret"** olarak etiketlenir (HUD rozeti, `EtkiCipleri` çipi, konut/yaşam/mağaza kartları, ölüm/geçmiş-hayat özeti). Olay `ipucu`/`mesaj` serbest metinleri hâlâ "ün" diyebilir (kör değiştirme metni bozacağı için elle taranmadı). Sayısal değer `bolgeTema.unUnvani` ile 8 kademeli bir ünvana çevrilerek gösterilir (Kimliği Belirsiz → ... → Yaşayan Efsane). Maaşa etkisi artık ayrı "ün primi" değil, §13 "İtibarın" düzenleyicisinin bir parçası |
+| `un` | 0-100 | Kod alanı `un` ama **arayüzde 2026-09'dan beri "Şöhret"** olarak etiketlenir (HUD rozeti, `EtkiCipleri` çipi, konut/yaşam/mağaza kartları, ölüm/geçmiş-hayat özeti). Olay `mesaj` serbest metinleri hâlâ "ün" diyebilir (kör değiştirme metni bozacağı için elle taranmadı). Sayısal değer `bolgeTema.unUnvani` ile 8 kademeli bir ünvana çevrilerek gösterilir (Kimliği Belirsiz → ... → Yaşayan Efsane). Maaşa etkisi artık ayrı "ün primi" değil, §13 "İtibarın" düzenleyicisinin bir parçası |
 | `ahlak` | 0-100 | — |
 | `dost_puani` / `rakip_puani` | 0-100 (başlangıç 50/50) | — |
 | `es_puani` | 0-100 | Sadece `es_adi` varken clamp'lenir |
@@ -288,7 +288,6 @@ gorsel?  (yoksa kategoriye göre emoji, bkz. olaySecici.ts KATEGORI_GORSEL)
 metin, baseBasariSansi (0-100), basariliSonuc, basarisizSonuc: SonucEtkisi
 ```
 **Kilit koşulları** (kilitlenirse `kilitAciklamasi` gösterilir, bkz. §12 `kilitNedeni`): `maliyet? (para eşiği), minUn?, minAhlak?, maxAhlak?, gerekliEtiketler?[], yasakliEtiketler?[]`.
-**Görünüm:** `ipucu?` (risk/ödül tek satır özeti).
 **Kişilik/eksen kısıtı:** `gerekliKisilik?` (sahip olmayana seçenek hiç gösterilmez), `gerekliEksen?: {eksen:"fevrilik"|"merhamet", min?, max?}`.
 **Özel mekanikler:** `onTepki?: OnTepki` (zar YOK — ara-ekran, §10), `ekipKalitesiZarBelirler?: string` (belirtilen role sahip ekip üyesinin gizli `gercekKalite`'si başarı şansının YERİNE geçer, `baseBasariSansi` yok sayılır).
 
@@ -1123,8 +1122,8 @@ Oyunun **tamamı** İngilizceye çevrildi. **Türkçe kaynak KANONİK** kalır: 
 ### Olay çevirileri ([server/src/i18n/olaylar/](server/src/i18n/olaylar/))
 Her kaynak `data/olaylar/X.ts` için bir **ayna dosyası** `X.en.ts`, `export const OLAYLAR_X_EN: Record<olayId, OlayCeviri>` dışa aktarır. Hepsi [olaylar/index.ts](server/src/i18n/olaylar/index.ts)'teki `KAYIT: Record<string, OlayCeviri>[]` dizisine (import satırı + dizi girişi) eklenir; `CEVIRI_INDEKSI = Object.assign({}, ...KAYIT)`.
 - **`OlayCeviri`** şekli: `{ baslik?, metin?, secenekler?: (SecenekCeviri | null)[] }`. `secenekler` kaynak sırasıyla **birebir** eşleşir; çevrilmeyen seçeneğe `null` konur.
-- **`SecenekCeviri`:** `{ metin?, ipucu?, kilitAciklamasi?, basariliSonuc?: {mesaj?, detay?}, basarisizSonuc?: {mesaj?, detay?}, onTepki?: {metin?, geriCekilMetni?, geriCekilSonucu?: {mesaj?, detay?}, devamMetni?, devamSonucu?: {mesaj?, detay?}} }`.
-- **`olayCevirisiUygula(olay, dil)`** ([olaylar/index.ts](server/src/i18n/olaylar/index.ts)): `dil !== "en"` ya da kayıt yoksa olayı olduğu gibi verir; aksi halde **sığ bir kopya** döndürür — yalnız gösterim alanları (`baslik`, `metin`, `secenekler[].metin`/`ipucu`/`kilitAciklamasi`/`basariliSonuc.{mesaj,detay}`/`basarisizSonuc.{mesaj,detay}`/`onTepki.*`) İngilizceye çevrilir; **tüm mantık alanları** (filtreler, `baseBasariSansi`, `etki`'ler, `id`, `etiket_ekle` vb.) aynen korunur. `olaySecici.ts`'teki `olaySec()`'e bağlıdır.
+- **`SecenekCeviri`:** `{ metin?, kilitAciklamasi?, basariliSonuc?: {mesaj?, detay?}, basarisizSonuc?: {mesaj?, detay?}, onTepki?: {metin?, geriCekilMetni?, geriCekilSonucu?: {mesaj?, detay?}, devamMetni?, devamSonucu?: {mesaj?, detay?}} }`.
+- **`olayCevirisiUygula(olay, dil)`** ([olaylar/index.ts](server/src/i18n/olaylar/index.ts)): `dil !== "en"` ya da kayıt yoksa olayı olduğu gibi verir; aksi halde **sığ bir kopya** döndürür — yalnız gösterim alanları (`baslik`, `metin`, `secenekler[].metin`/`kilitAciklamasi`/`basariliSonuc.{mesaj,detay}`/`basarisizSonuc.{mesaj,detay}`/`onTepki.*`) İngilizceye çevrilir; **tüm mantık alanları** (filtreler, `baseBasariSansi`, `etki`'ler, `id`, `etiket_ekle` vb.) aynen korunur. `olaySecici.ts`'teki `olaySec()`'e bağlıdır.
 - **Kanonik kalanlar:** olay/seçenek metnindeki `{dost}/{rakip}/{es}/{amir}/{ekip}/{bolge}/{yil}/{birim}` vb. placeholder'lar **birebir** korunur; `unvan_kazan` gibi mantık alanları çevrilmez (anlatı `mesaj`/`detay` içinde unvana atıf yapılıyorsa cümle doğal İngilizceye çevrilir).
 - Kaynak koddaki `//` yorumlar **Türkçe kalır**; sadece oyuncuya görünen dizeler (oyuncuya görünen hata mesajları dahil) çevrilir.
 
