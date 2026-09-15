@@ -2443,6 +2443,7 @@ function App() {
           rutbeSeviye={karakter.rutbe_seviye}
           amirAdi={karakter.amir_adi}
           amirRutbe={karakter.amir_rutbe}
+          astlar={karakter.astlar}
           ekip={karakter.ekip}
           rakipler={karakter.rakipler}
           orduMevcudu={karakter.ordu_mevcudu}

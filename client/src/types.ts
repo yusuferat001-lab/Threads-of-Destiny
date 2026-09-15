@@ -485,7 +485,6 @@ export interface SonucEtkisi {
   evcil_hayvan_edin?: { tur?: string };
   evcil_hayvan_kaybet?: boolean;
   unvan_kazan?: string;
-  hayat_amaci_ata?: { id: string; ad: string; aciklama: string; hedefTuru: HayatAmaci['hedefTuru']; hedefDeger: number };
   kriz_baslat?: { tur: UlkeKrizi['tur']; sureYil: number };
   efsanevi_olum?: string;
   sehir_yonetim_artis?: number;

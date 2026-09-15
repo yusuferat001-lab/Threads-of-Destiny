@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import type { EkipUyesi, Rakip, YonetimDurumu, YonetimHat } from '../types';
+import type { Ast, EkipUyesi, Rakip, YonetimDurumu, YonetimHat } from '../types';
 import { useDil } from '../DilContext';
 import { formatPara } from '../format';
 import { bic } from '../i18n';
@@ -10,6 +10,7 @@ interface KariyerEkraniProps {
   rutbeSeviye: number;
   amirAdi: string | null;
   amirRutbe: string | null;
+  astlar: Ast[];
   ekip: EkipUyesi[];
   rakipler: Rakip[];
   orduMevcudu: number;
@@ -284,6 +285,7 @@ export function KariyerEkrani({
   rutbeSeviye,
   amirAdi,
   amirRutbe,
+  astlar,
   ekip,
   rakipler,
   orduMevcudu,
@@ -478,6 +480,22 @@ export function KariyerEkrani({
               </div>
             ) : (
               <p className="aile-bos-metin">{m.geAmirYok}</p>
+            )}
+          </div>
+
+          {/* ===== ASTLARIN ===== */}
+          <div className="aile-koken-karti">
+            <h3>{m.geAstlarin}</h3>
+            {astlar.length > 0 ? (
+              <div className="aile-koken-listesi">
+                {astlar.map((ast) => (
+                  <span key={ast.isim} className="iliski-rozet">
+                    🎖️ {ast.isim} · {kt(ast.rutbe)}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className="aile-bos-metin">{m.geKimseYok}</p>
             )}
           </div>
 

@@ -1380,10 +1380,6 @@ async function sonucuUygulaVeIlerlet(
     state.unvanlar.push(etki.unvan_kazan);
     hayatOlayiEkle(state, "🏵️", T(state.dil, '"{0}" ünvanını kazandı', [K(state.dil, etki.unvan_kazan)]));
   }
-  if (etki.hayat_amaci_ata && !state.hayat_amaci) {
-    state.hayat_amaci = { ...etki.hayat_amaci_ata, tamamlandi: false };
-    hayatOlayiEkle(state, "🎯", T(state.dil, "Hayat amacını belirledi: {0}", [K(state.dil, etki.hayat_amaci_ata.ad)]));
-  }
   if (etki.kriz_baslat) {
     state.ulke.kriz = { tur: etki.kriz_baslat.tur, bitisYili: state.yil + etki.kriz_baslat.sureYil };
   }

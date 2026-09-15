@@ -598,8 +598,6 @@ export interface SonucEtkisi {
   evcil_hayvan_kaybet?: boolean;
   /** Belirtilirse ve karakter bu ünvanı henüz taşımıyorsa, unvanlar listesine eklenir. */
   unvan_kazan?: string;
-  /** 15 yaşındaki hayat amacı seçim olayında kullanılır; state.hayat_amaci'ni atar. */
-  hayat_amaci_ata?: { id: string; ad: string; aciklama: string; hedefTuru: HayatAmaci["hedefTuru"]; hedefDeger: number };
   /** Belirtilirse global bir kriz/altın çağ başlatır; bitisYili = o anki yıl + sureYil olarak hesaplanır. */
   kriz_baslat?: { tur: UlkeKrizi["tur"]; sureYil: number };
   /** Ölüm bu seçimden kaynaklanıyorsa, nadir/komik bir ölüm başlığı olarak kaydedilir (liderlik tablosunda rozet). */
