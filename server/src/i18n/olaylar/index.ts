@@ -71,9 +71,11 @@ import { OLAYLAR_GENEL_EN } from "./genel.en";
 import { OLAYLAR_KOMIK_OLUM_EN } from "./komikOlumler.en";
 import { OLAYLAR_MULK_EN } from "./mulkOlaylari.en";
 import { OLAYLAR_BUYULU_EN } from "./buyuluOlaylar.en";
+import { OLAYLAR_KOMIK_GARIP_EN } from "./komikGaripOlaylar.en";
 
 const KAYIT: Record<string, OlayCeviri>[] = [
   OLAYLAR_KOMIK_OLUM_EN,
+  OLAYLAR_KOMIK_GARIP_EN,
   OLAYLAR_MULK_EN,
   OLAYLAR_BUYULU_EN,
   OLAYLAR_SANAYI_TUCCAR_EN,
