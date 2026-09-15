@@ -6,6 +6,10 @@ import { useDil } from '../DilContext';
 interface AileEkraniProps {
   anneAdi: string;
   babaAdi: string;
+  dostAdi: string;
+  rakipAdi: string;
+  dostPuani: number;
+  rakipPuani: number;
   durum: AileDurumu | null;
   /** Evli mi + yaşı — evlilik butonunu göstermek için (18+ ve bekar). */
   evli: boolean;
@@ -45,6 +49,62 @@ function cocukEtiket(m: Metinler, deger: number): string {
   if (deger < 65) return m.aeCocukIyi;
   if (deger < 85) return m.aeCocukYakin;
   return m.aeCocukCokYakin;
+}
+
+function dostEtiketleri(m: Metinler): [number, string][] {
+  return [
+    [20, m.ilDostKusgun],
+    [40, m.ilDostMesafeli],
+    [60, m.ilDostTanidik],
+    [80, m.ilDostDost],
+    [100, m.ilDostYakin],
+  ];
+}
+
+function rakipEtiketleri(m: Metinler): [number, string][] {
+  return [
+    [20, m.ilRakipAmansiz],
+    [40, m.ilRakipDusman],
+    [60, m.ilRakipGergin],
+    [80, m.ilRakipNotr],
+    [100, m.ilRakipYumusak],
+  ];
+}
+
+function iliskiEtiketBul(deger: number, tablo: [number, string][]): string {
+  for (const [esik, etiket] of tablo) {
+    if (deger <= esik) return etiket;
+  }
+  return tablo[tablo.length - 1][1];
+}
+
+/** Dost/rakip ilişki kartı — eskiden ayrı bir sağ panel bileşeniydi (IliskilerPaneli), 2026-09 sonunda Aile ekranına taşındı. */
+function DostRakipKarti({
+  m,
+  dostAdi,
+  rakipAdi,
+  dostPuani,
+  rakipPuani,
+}: {
+  m: Metinler;
+  dostAdi: string;
+  rakipAdi: string;
+  dostPuani: number;
+  rakipPuani: number;
+}) {
+  return (
+    <div className="aile-kart aile-iliskiler-karti">
+      <h3>{m.ilBaslik}</h3>
+      <div className="aile-koken-listesi">
+        <span className="iliski-rozet iliski-dost">
+          🤝 {dostAdi} · {iliskiEtiketBul(dostPuani, dostEtiketleri(m))}
+        </span>
+        <span className="iliski-rozet iliski-rakip">
+          ⚔️ {rakipAdi} · {iliskiEtiketBul(rakipPuani, rakipEtiketleri(m))}
+        </span>
+      </div>
+    </div>
+  );
 }
 
 function IliskiBar({ deger, etiket }: { deger: number; etiket: string }) {
@@ -176,6 +236,10 @@ function EtkilesimButonu({
 export function AileEkrani({
   anneAdi,
   babaAdi,
+  dostAdi,
+  rakipAdi,
+  dostPuani,
+  rakipPuani,
   durum,
   evli,
   yas,
@@ -235,6 +299,8 @@ export function AileEkrani({
             <span className="iliski-rozet iliski-baba">👨 {babaAdi}</span>
           </div>
         </div>
+
+        <DostRakipKarti m={m} dostAdi={dostAdi} rakipAdi={rakipAdi} dostPuani={dostPuani} rakipPuani={rakipPuani} />
 
         {durum?.es ? (
           <div className="aile-kart aile-es-karti">

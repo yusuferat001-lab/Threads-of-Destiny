@@ -2480,16 +2480,6 @@ button.ikincil {
 
 /* ---- İlişkiler paneli ---- */
 
-.iliskiler-paneli {
-  margin-bottom: 1rem;
-}
-
-.iliskiler-paneli h3 {
-  margin: 0 0 0.75rem;
-  font-size: clamp(1rem, 0.35vw + 0.82rem, 1.35rem);
-  opacity: 0.85;
-}
-
 .iliski-rozet {
   display: flex;
   justify-content: space-between;
