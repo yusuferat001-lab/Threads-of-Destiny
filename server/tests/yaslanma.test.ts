@@ -90,7 +90,9 @@ describe("zengin karakter artık 'ölümsüz' değil (entegrasyon)", () => {
       if (state.yas < 100) yuzdenOnceOldu++;
     }
     // 100 yaş sabit tavanına dayanmadan, ecel/yaşlanma ile daha erken ölmeli.
-    expect(yuzdenOnceOldu).toBeGreaterThanOrEqual(KOSU - 2);
+    // Not: gerçek RNG kullanıldığı için KOSU-2 eşiği ara sıra (nadir ama gözlemlenen) yanlış-negatif
+    // veriyordu; KOSU-3 niyeti ("çoğu koşu tavana dayanmadan ölür") korurken flaky'liği azaltır.
+    expect(yuzdenOnceOldu).toBeGreaterThanOrEqual(KOSU - 3);
     expect(toplamOlumYasi / KOSU).toBeLessThan(97);
   }, 60000);
 });

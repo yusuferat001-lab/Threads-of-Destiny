@@ -2416,6 +2416,10 @@ function App() {
         <AileEkrani
           anneAdi={karakter.anne_adi}
           babaAdi={karakter.baba_adi}
+          dostAdi={karakter.dost_adi}
+          rakipAdi={karakter.rakip_adi}
+          dostPuani={karakter.dost_puani}
+          rakipPuani={karakter.rakip_puani}
           durum={aileDurum}
           evli={!!karakter.es_adi}
           yas={karakter.yas}

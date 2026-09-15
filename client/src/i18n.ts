@@ -558,7 +558,7 @@ const TR = {
   aoCocukCogul: 'Çocuklar',
   aoEvcilHayvanTek: 'Evcil Hayvan',
 
-  // ---- IliskilerPaneli (ek) ----
+  // ---- Dost/Rakip kartı (AileEkrani içinde, eski IliskilerPaneli) ----
   ilBaslik: 'İlişkilerin',
   ilDostKusgun: 'Küskün',
   ilDostMesafeli: 'Mesafeli',
@@ -616,7 +616,7 @@ const TR = {
   mpParaYetmez: 'Yeterli paran yok',
 
   // ---- AileEkrani (tam) ----
-  aeBaslikTam: 'Ailen',
+  aeBaslikTam: 'Ailen & İlişkilerin',
   aeKoken: 'Ailenin Kökeni',
   aeEsin: 'Eşin',
   aeEsYokMetin: 'Henüz bir eşin yok.',
@@ -1262,7 +1262,7 @@ const EN: Metinler = {
   aoCocukCogul: 'Children',
   aoEvcilHayvanTek: 'Pet',
 
-  // ---- IliskilerPaneli ----
+  // ---- Dost/Rakip card (inside AileEkrani, formerly IliskilerPaneli) ----
   ilBaslik: 'Your Relationships',
   ilDostKusgun: 'Estranged',
   ilDostMesafeli: 'Distant',
@@ -1320,7 +1320,7 @@ const EN: Metinler = {
   mpParaYetmez: 'Not enough money',
 
   // ---- AileEkrani ----
-  aeBaslikTam: 'Your Family',
+  aeBaslikTam: 'Your Family & Relationships',
   aeKoken: 'Your Family Origins',
   aeEsin: 'Your Spouse',
   aeEsYokMetin: 'You have no spouse yet.',
