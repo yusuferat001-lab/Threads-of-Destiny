@@ -304,7 +304,7 @@ Olay/seçenek metninde ve sonuç `mesaj`/`detay`'ında kullanılabilir: `{bolge}
 
 ## 7. Olay Bankası Dosya Haritası
 
-`data/olaylar/index.ts` tüm alt listeleri `OLAY_BANKASI: OlayTanimi[]` içinde birleştirir. **Toplam ~1340 olay** (id sayımıyla). Belirli bir olayı bulmak için `grep -n "id: \"<olay_id>\"" server/src/data/olaylar/*.ts` kullan — dosyayı baştan sona okuma.
+`data/olaylar/index.ts` tüm alt listeleri `OLAY_BANKASI: OlayTanimi[]` içinde birleştirir. **Toplam ~1460 olay** (id sayımıyla, 2026-09 sonu itibarıyla güncellendi — önceki "~1340" sayımı `komikGaripOlaylar.ts` eklendikten sonra güncellenmemişti). Belirli bir olayı bulmak için `grep -n "id: \"<olay_id>\"" server/src/data/olaylar/*.ts` kullan — dosyayı baştan sona okuma.
 
 | Dosya | ~Olay Sayısı | Satır | İçerik |
 |---|---|---|---|
@@ -335,6 +335,7 @@ Olay/seçenek metninde ve sonuç `mesaj`/`detay`'ında kullanılabilir: `{bolge}
 | `kureselOlaylar.ts` | 5 | ~260 | "Dünya olayları". `kuresel_veba_baslangici` (3 seçenek = 3 korunma kademesi `veba_koruma` 0/1/2) + 4 "salgın dönemi" bulaşma olayı (`gerekliUlke:{vebada:true}`: kapını çalan / cenaze / çarşıda temas / hasta bakıcılığı — başarısızlıkta artık `etiket_ekle:["veba_hastasi"]`, öldürmez) — §27. Savaş/bağış/kriz hâlâ arka planda, olay ekranı yok |
 | `vebaHastaligi.ts` | 10 | ~360 | **Vebayı bizzat kapmış (`veba_hastasi` etiketi) karaktere çıkan özel havuz (§27).** `vebaHastasiOlayi:true` → hastayken normal havuz kapanır (hapisOlayi mantığı). Hekim/ilaç/tedavi/hacamat/dinlenme/şarlatan/aile bakımı — `veba_olum_riski_artis` (± ) ile ölüm riskini düşürür/yükseltir; para harcayarak hayatta kalma şansı ciddi artar |
 | `buyuluOlaylar.ts` | 16 | ~600 | **Büyü / büyücü / medyum / kehanet / ritüel olayları (büyük denge turu).** Hepsi `gizemli:true` → "her ömürde en az bir esrarengiz olay" kaskadı (§11.12) otomatik kapsar + düşük `agirlik` ile normal havuzda fırsatçı çıkarlar. Köy medyumu, kristal küre, cadı pazarlığı (OÇ, engizisyon riski), muska, lanet kaldırma ayini (`gerekliEtiketler:["bilgi:yasak_ilim"]`), ruh çağırma seansı (→ `envanter:fisildayan_tas`), simyacı, yıldız falı, rüya tabircisi, dört yol ağzında şeytanla pazarlık (`unvan_kazan`/`efsanevi_olum` dalları), uğursuz kara kedi, meydandaki kâhin, sahte iksir satıcısı, gölge adam, ay tutulması ritüeli, spiritüalist salon (SD). Mutluluk deltaları rubrik uyumlu (çoğu tedirginlik/−). İngilizce aynası `i18n/olaylar/buyuluOlaylar.en.ts` |
+| `komikGaripOlaylar.ts` | 60 | 2523 | **Komik/garip sosyal olaylar (2026-09, önceki CLAUDE.md sürümünde bu tabloya hiç eklenmemişti).** Tamamı `kategori:"sosyal"` — yeme yarışması, yanlış şarkı, yanlış cenaze, köpekle banyo, dedikodu ikilemi, ağır taş kaldırma, kimlik gizleme, beklenmedik dans, hırsız yanlışlığı, yanlış sahte sakal vb. flavor/komedi odaklı olaylar. **§30 iki-dillilik kapsamı DIŞINDA** — hiç İngilizce çeviri mirror'ı (`komikGaripOlaylar.en.ts`) yok, `dil==="en"` iken bu olaylar Türkçe kalır (bilinen eksik, bkz. §30 kapsam notu). |
 | `komikOlumler.ts` | 14 | ~460 | **Komik/absürt ölüm olayları (2026-09).** Rastgele ani-ölüm havuzuna (`ANI_OLUM_OLAYLARI`, `ANI_OLUM_IHTIMALI`) DOKUNULMADAN oyuncu SEÇİMİYLE tetiklenen komik ölümler: fıçıyla şelale, en acı biber, heykele bıyık, arı kovanı, nefes tutma, dev kabak, buz gölü, gülle taşıma, değirmen kanadı, domuzla yarış, bez kanatlar, çürük köprü, fırtınada demir çubuk, buhar kazanı. Hepsi `ton:"hafif"`, düşük ağırlık (0.2-0.3), 2 seçenek: "aptalca olanı yap" (başarıda ufak komik ödül, başarısızlıkta `olum_sansi` 35-62 + ağır sağlık kaybı; ölürse `efsanevi_olum`) vs "yapma" (güvenli). 2026-09'da kalan 6 `olum:true` de `olum_sansi`'ye çevrildi — hepsinde "düşük de olsa hayatta kalma" şansı var |
 
 `types.ts` (107 satır, şemalar) ve `index.ts` (39 satır, birleştirme) bu sayıma dahil değil.
@@ -839,7 +840,7 @@ Tests: [server/tests/hayatAmaclari.test.ts](server/tests/hayatAmaclari.test.ts) 
 
 ## 19. İstemci (Client) Mimarisi
 
-React 19 + Vite, **state kütüphanesi yok** (saf `useState`, `App.tsx` ~1355 satırlık tek ekran-durum-makinesi). `client/src/types.ts` server tiplerinin **elle senkronize edilen** bir kopyasıdır.
+React 19 + Vite, **state kütüphanesi yok** (saf `useState`, `App.tsx` ~2640 satırlık tek ekran-durum-makinesi — 2026-09 sonu itibarıyla; dosya büyümeye devam ediyor, bölünmesi ayrı bir teknik borç maddesi olarak not edildi). `client/src/types.ts` server tiplerinin **elle senkronize edilen** bir kopyasıdır.
 
 **Ekran akışı** (`type Ekran`, `App.tsx`):
 ```
@@ -1138,7 +1139,7 @@ Her kaynak `data/olaylar/X.ts` için bir **ayna dosyası** `X.en.ts`, `export co
 ```
 cd server && npx tsc --noEmit --pretty false && npx tsx scripts/ceviriDurumu.ts
 ```
-[ceviriDurumu.ts](server/scripts/ceviriDurumu.ts): kapsam yüzdesi + **sürüklenme (drift) kontrolü** — çeviride kaynaktan fazla seçenek var mı, **yetim çeviri id'si** (kaynağı olmayan `Record` anahtarı, `tumCeviriIdleri()` ile) var mı. `--full` dosya dosya döküm verir. Şu an: **1115/1115 olay %100 kayıtlı, ~%99.9 dize çevrili, sürüklenme yok.** Yeni bir kaynak olayı eklerken `X.en.ts`'ine karşılığını da ekle, yoksa `ceviriDurumu` kapsam düşüşü gösterir (uyarı değil, sadece yüzde).
+[ceviriDurumu.ts](server/scripts/ceviriDurumu.ts): kapsam yüzdesi + **sürüklenme (drift) kontrolü** — çeviride kaynaktan fazla seçenek var mı, **yetim çeviri id'si** (kaynağı olmayan `Record` anahtarı, `tumCeviriIdleri()` ile) var mı. `--full` dosya dosya döküm verir. **Güncel durum (2026-09 sonu, önceki "1115/1115 %100" iddiası bayatlamıştı — o zamandan beri 5 yeni olay dosyası çeviri mirror'ı ALMADAN eklendi):** 1462 olaydan **1169'u (%80.0) kayıtlı, ~%80.4 dize çevrili**, sürüklenme yok. **Çevirisi tamamen eksik 5 dosya** (`X.en.ts` hiç yok): `komikGaripOlaylar.ts` (60 olay), `ortaCagTuccarYollari.ts`, `sanayiAskerYollari.ts`, `sanayiDinAdamiYollari.ts`, `sanayiTuccarYollari.ts` (45'er olay, toplam 180) — bu ~240 olay `dil==="en"` iken de Türkçe kalıyor. Yeni bir kaynak olayı eklerken `X.en.ts`'ine karşılığını da ekle, yoksa `ceviriDurumu` kapsam düşüşü gösterir (uyarı değil, sadece yüzde) — CI bu script'i henüz çalıştırmıyor, düşüş fark edilmeden birikebiliyor.
 
 ## 31. Başarım Sistemi (Gerçek, Adlandırılmış Başarımlar)
 
