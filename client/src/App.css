@@ -3940,6 +3940,33 @@ button.ikincil {
   .aile-etkilesim-satir {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+  /* Kart aralarındaki boşluk ve iç dolgu telefonda sıkılaştırılır — çok sayıda
+     çocuk/etkileşim kartı olduğunda gereksiz aşağı kaydırmayı azaltır. */
+  .aile-govde {
+    gap: 0.55rem;
+  }
+  .aile-kart {
+    padding: 0.65rem 0.75rem;
+  }
+  .aile-kart h3 {
+    margin: 0 0 0.4rem;
+    font-size: 0.85rem;
+  }
+  .aile-cocuk-listesi {
+    gap: 0.5rem;
+  }
+  .aile-etkilesim-buton {
+    padding: 0.4rem 0.5rem;
+  }
+  .aile-etkilesim-ad {
+    font-size: 0.78rem;
+  }
+  .aile-etkilesim-alt {
+    font-size: 0.68rem;
+  }
+  .aile-iliski {
+    margin: 0.25rem 0 0.5rem;
+  }
 }
 
 /* ---- Yıldız glifi (paylaşılan) ----
