@@ -95,13 +95,12 @@ describe("rütbe reformu — 5 kademe, ratchet, cooldown, kariyer puanı", () =>
     expect(s.rutbe_seviye).toBe(4);
   });
 
-  it("en üst kademede (5) amir yoktur, 4 ast vardır", () => {
+  it("en üst kademede (5) amir yoktur", () => {
     const s = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
     mesleğiSec(s, "Asker");
     terfiEttir(s, 5);
     expect(s.rutbe_seviye).toBe(5);
     expect(s.amir_adi).toBeNull();
-    expect(s.astlar).toHaveLength(4);
   });
 
   it("Tüccar'da her kademe ün ister — ün düşükken kariyer_puani ne olursa olsun terfi olmaz", () => {

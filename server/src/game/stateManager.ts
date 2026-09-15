@@ -666,7 +666,6 @@ export function createCharacter(
     hizip: null,
     amir_adi: null,
     amir_rutbe: null,
-    astlar: [],
     anne_adi: anneAdi,
     baba_adi: babaAdi,
     evcil_hayvan: null,
@@ -755,30 +754,6 @@ function amirGuncelle(state: CharacterState, tanim: RutbeTanimi, seviye: number)
 }
 
 /**
- * Rütbe yükseldikçe (seviye 2'de 1, seviye 3'te 2 kişi) astlar ekler; rütbe
- * ladder'ının kendinden düşük basamaklarını taşırlar (ör. seviye 3'teki bir
- * Kumandan'ın astları Er ve Silahşor unvanlarını taşır). Zaten atanmış bir
- * astın ismi/unvanı sabit kalır — rütbe düşse bile çıkarılmaz, sadece terfi
- * ile yeni kademeye ulaşılınca yeni bir ast eklenir.
- */
-function astlariGuncelle(state: CharacterState, tanim: RutbeTanimi, seviye: number): void {
-  const hedefSayisi = Math.max(0, seviye - 1);
-  while (state.astlar.length < hedefSayisi) {
-    const rutbe = tanim.unvanlar[state.astlar.length];
-    const isim = rastgeleBirIsimSec(state.cag, state.bolge, [
-      state.dost_adi,
-      state.rakip_adi,
-      state.es_adi ?? "",
-      state.amir_adi ?? "",
-      state.anne_adi,
-      state.baba_adi,
-      ...state.astlar.map((a) => a.isim),
-    ]);
-    state.astlar.push({ isim, rutbe });
-  }
-}
-
-/**
  * Güncel rütbeyi hesaplayıp state'e yazar. Kurallar:
  *  - Kademe HAK ETME: kariyer_puani + mesleğe özgü stat (Asker/Tüccar şöhret, Din ahlak)
  *    esikler[0..3]'ü (S2..S5) sırayla karşılamalı.
@@ -821,7 +796,6 @@ export function rutbeGuncelle(state: CharacterState): void {
   state.rutbe_seviye = hedef;
   state.rutbe = tanim.unvanlar[hedef - 1];
   amirGuncelle(state, tanim, hedef);
-  astlariGuncelle(state, tanim, hedef);
 }
 
 /**

@@ -283,8 +283,6 @@ export interface CharacterState {
 
   amir_adi: string | null;
   amir_rutbe: string | null;
-  /** Rütbe yükseldikçe (seviye 2'de 1, seviye 3'te 2 kişi) emrine giren astlar; rütbe ladder'ının kendinden düşük basamaklarını taşırlar. */
-  astlar: Ast[];
 
   /** Doğuştan gelen, hayat boyu sabit kalan ebeveyn isimleri (bölgeye uygun, dost/rakipten farklı). */
   anne_adi: string;
@@ -494,12 +492,6 @@ export interface Kredi {
   odenmeyenTaksit: number;
   /** Bu kredi için faiz pazarlığı yapıldı mı (kredi başına bir kez). */
   pazarlikYapildi: boolean;
-}
-
-/** Rütbe yükseldikçe emrine giren, isim ve unvanı sabit kalan bir ast; işe alınmaz/maaşı yok, salt rütbenin doğal sonucu. */
-export interface Ast {
-  isim: string;
-  rutbe: string;
 }
 
 /** Yanına aldığın (satın aldığın/işe aldığın) yardımcı; gerçek kalitesi gizli, sadece tahmini bir aralık gösterilir. */

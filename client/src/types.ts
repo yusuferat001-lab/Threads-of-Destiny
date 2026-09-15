@@ -212,7 +212,6 @@ export interface CharacterState {
 
   amir_adi: string | null;
   amir_rutbe: string | null;
-  astlar: Ast[];
 
   anne_adi: string;
   baba_adi: string;
@@ -427,11 +426,6 @@ export interface EkipUyesi {
   maas: number;
   sadakat: number;
   kisilik: string;
-}
-
-export interface Ast {
-  isim: string;
-  rutbe: string;
 }
 
 export interface SonucEtkisi {

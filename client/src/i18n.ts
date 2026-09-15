@@ -231,7 +231,6 @@ const TR = {
   ksGorev: 'Görev',
   ksHapiste: 'Hapiste',
   ksAmirin: 'Amirin',
-  ksAstin: 'Astın',
   ksAsker: 'asker',
   ksTechizat: 'teçhizat',
   ksSermaye: 'sermaye',
@@ -250,10 +249,8 @@ const TR = {
   geVebaHastasi: 'Veba hastası',
   geVebaHayatta: 'hayatta kalma şansı',
   geAmirYok: 'En tepedesin — doğrudan hükümdara bağlısın.',
-  geAstlarin: 'Astların',
   geEkibin: 'Ekibin',
   geMeslekGucu: 'Meslek Gücün',
-  geKimseYok: 'Henüz emrinde kimse yok.',
   geEkipYok: 'Ekibinde kimse yok.',
 
   // ---- FinansOzetPaneli ----
@@ -935,7 +932,6 @@ const EN: Metinler = {
   ksGorev: 'Duty',
   ksHapiste: 'In Prison',
   ksAmirin: 'Your superior',
-  ksAstin: 'Your subordinate',
   ksAsker: 'troops',
   ksTechizat: 'equipment',
   ksSermaye: 'capital',
@@ -954,10 +950,8 @@ const EN: Metinler = {
   geVebaHastasi: 'Plague-stricken',
   geVebaHayatta: 'survival chance',
   geAmirYok: 'You are at the top — answerable directly to the ruler.',
-  geAstlarin: 'Your Subordinates',
   geEkibin: 'Your Crew',
   geMeslekGucu: 'Your Professional Power',
-  geKimseYok: 'No one under your command yet.',
   geEkipYok: 'No one on your crew.',
 
   // ---- FinansOzetPaneli ----
