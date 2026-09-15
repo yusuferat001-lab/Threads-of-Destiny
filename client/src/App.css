@@ -3140,6 +3140,30 @@ button.ikincil {
     -webkit-line-clamp: 2;
     overflow: hidden;
   }
+
+  /* Gelir & Gider'deki "Evin"/"Yaşam Tarzın" kartları (.finans-secim-izgara) masaüstünde
+     bilerek büyütülmüştü (daha az kart, daha çok okunabilirlik) — bu büyütme aynı
+     seçici özgüllüğüyle mobilde de geçerli kalıyordu ve kartları gereksiz uzatıyordu
+     (kullanıcı: "evi seçme seçenekleri biraz büyük"). Burada aynı .yatirim-kart
+     ailesinin genel mobil boyutuna geri çekiliyor. */
+  .finans-secim-izgara .yatirim-kart {
+    padding: 0.6rem 0.55rem;
+    gap: 0.2rem;
+  }
+  .finans-secim-izgara .meslek-simge {
+    font-size: 1.3rem;
+  }
+  .finans-secim-izgara .yatirim-kart strong {
+    font-size: 0.85rem;
+    line-height: 1.15;
+  }
+  .finans-secim-izgara .meslek-aciklama {
+    font-size: 0.68rem;
+    line-height: 1.25;
+  }
+  .finans-secim-izgara .meslek-aciklama:not(.yatirim-etki-satiri) {
+    -webkit-line-clamp: 2;
+  }
 }
 
 /* Oyun-içi yan ekranlarda paranın her zaman görünür olduğu sabit rozet. */
