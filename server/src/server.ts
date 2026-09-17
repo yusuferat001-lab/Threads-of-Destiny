@@ -68,6 +68,19 @@ const skorLimiti = rateLimit({
   legacyHeaders: false,
 });
 
+// Yeni karakter oluşturma: normal bir oyuncu dakikada birkaç kez yeniden başlayabilir
+// (yanlış çağ/bölge seçip geri dönmek gibi) ama onlarca yeni oturum asla gerektirmez.
+// Her `/new` çağrısı belleğe bir oturum + DB'ye bir Session satırı ekler; kimlik
+// doğrulaması olmadığı için bu, tek gerçek "kaynak tüketme / oturum çiftleme" vektörü
+// — genel `oyunLimiti`'nin (60/60sn, tüm /api/game uçlarını kapsar) ÜSTÜNE binen ayrı
+// ve çok daha sıkı bir limit.
+const yeniKarakterLimiti = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 8,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 // Geri bildirim nadir bir işlem; skordan da sıkı sınırlanır (spam / bot koruması).
 const geriBildirimLimiti = rateLimit({
   windowMs: 60 * 1000,
@@ -85,6 +98,7 @@ const istatistikLimiti = rateLimit({
   legacyHeaders: false,
 });
 
+app.use("/api/game/new", yeniKarakterLimiti);
 app.use("/api/game", oyunLimiti, gameRouter);
 app.use("/api/scores", skorLimiti, scoreRouter);
 app.use("/api/geri-bildirim", geriBildirimLimiti, geriBildirimRouter);
