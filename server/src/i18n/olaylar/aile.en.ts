@@ -9,7 +9,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept the marriage of convenience.",
-        ipucu: "Brings status and money; a high risk of an unhappy marriage",
         basariliSonuc: {
           mesaj:
             "The ceremony was quite grand. You are now part of a powerful family, but the only thing you feel when you get into bed is cold.",
@@ -20,7 +19,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Say you need love, and turn the offer down.",
-        ipucu: "Morality rises, the reputation and money opportunity is lost",
         basariliSonuc: {
           mesaj:
             "You brushed aside influence and money. Everyone calls you mad, but your conscience is very much at ease.",
@@ -40,7 +38,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Hire the most expensive midwife and doctor (reduce the risks).",
-        ipucu: "Costly, but greatly raises the chance your spouse and child survive",
         basariliSonuc: {
           mesaj:
             "You didn't spare the money and, with the doctors' help, both {es} and your child came through safely! There is a festive air in the house.",
@@ -52,7 +49,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "I have no money; we'll trust the village's old midwife.",
-        ipucu: "Very risky! A high chance of death",
         basariliSonuc: {
           mesaj:
             "A blessing! With no expense at all, purely by chance, a healthy child was born.",
@@ -72,7 +68,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Ignore the threat, increase your guard.",
-        ipucu: "If you stay calm your reputation rises, but the assassination risk is real",
         basariliSonuc: {
           mesaj:
             "You kept your composure. Seeing you unafraid, your enemies backed off; your name is spoken with respect at the palace.",
@@ -84,7 +79,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Hire dark men, be the first to eliminate the one you suspect.",
-        ipucu: "Removes the threat entirely but stains your soul",
         basariliSonuc: {
           mesaj:
             "Your cousin/rival died in 'an unfortunate riding accident'. You are safe. But now when you look in the mirror you see a killer.",
@@ -118,7 +112,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "With one last hope, hold them and beg them to wake.",
-        ipucu: "The chance of a miracle is very slim",
         basariliSonuc: {
           mesaj:
             "As you wept your tears fell on their face. Suddenly they coughed and drew breath! They weren't dead, only in a deep coma!",
@@ -145,7 +138,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Secretly bribe the guards and the merchant (silence it).",
-        ipucu: "Your child's record stays clean but they learn corruption",
         basariliSonuc: {
           mesaj:
             "You pressed purses into their hands. The merchant said 'it was a misunderstanding'. Your child, seeing that justice could be bought with money, smiled a nasty smile.",
@@ -157,7 +149,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Take the blame yourself! Say 'if they stole, they stole on my orders.'",
-        ipucu: "Usually saves your child but you go straight to the dungeon; the guards may not buy it",
         basariliSonuc: {
           mesaj:
             "You pushed your child aside and held out your hands. As the guards chained you and dragged you to the dungeon, your child cried behind you.",
@@ -169,7 +160,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Slap the child in front of everyone and hand them over.",
-        ipucu: "Morality and reputation rise but your child hates you to death",
         basariliSonuc: {
           mesaj:
             "You slapped them and handed them over to justice. The market crowd appreciated your honesty, but you will never forget the hatred your child threw at you as they were led to the guardhouse.",
@@ -188,7 +178,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Go into debt and throw a wedding that shakes the city.",
-        ipucu: "Fame and happiness hit the ceiling, the finances hit rock bottom",
         basariliSonuc: {
           mesaj: "It was a wedding talked about for weeks! The smile on your child's face was worth everything.",
         },
@@ -266,7 +255,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "My child's life is not for sale! Refuse the offer.",
-        ipucu: "A moral victory, but you brush aside a vast fortune",
         basariliSonuc: {
           mesaj:
             "You threw the old man out of your shop. Your child hugged you with tearful eyes. You are not rich, but you are a wonderful parent.",
@@ -277,7 +265,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Business is business. Marry your child off by force and take the network.",
-        ipucu: "Endless money, a permanent salary increase, but you tear your family apart",
         basariliSonuc: {
           mesaj:
             "You signed the contract. You took the helm of a trade empire. Your child didn't even look at you on the wedding day and erased you from their life.",
@@ -296,7 +283,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "I won't sell out my own blood! Approve the tax.",
-        ipucu: "Tremendous power among the nobles; the people may want to lynch you",
         basariliSonuc: {
           mesaj:
             "You stamped your seal. You became the most respected member of the family. While the peasants die of hunger on the roads, gold rains on your castle.",
@@ -307,7 +293,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "This is tyranny! Oppose it and protect the people.",
-        ipucu: "The people's love, but the risk of your family's betrayal",
         basariliSonuc: {
           mesaj:
             "You overturned the table! They stripped you of your noble title, but as you walk the streets thousands of peasants pray for you.",
@@ -327,7 +312,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Become a Palace Guard. A warm bed and safe pay.",
-        ipucu: "Safety and money, but a loss of military honor",
         basariliSonuc: {
           mesaj:
             "Using your father's name you slipped into the palace. While your friends fight in the mud, you drink wine.",
@@ -339,7 +323,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Insist on joining your father's old regiment (the Death Battalion).",
-        ipucu: "High fame, a tremendous sense of belonging, but an extremely high risk of death",
         basariliSonuc: {
           mesaj:
             "You joined the Death Battalion! When the soldiers saw you they said your father's spirit had returned. Your standing is of legendary proportions.",
@@ -359,7 +342,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Take the gold and kiss his foot. Pride doesn't fill a belly.",
-        ipucu: "A vile humiliation, but solid money",
         basariliSonuc: {
           mesaj:
             "You kissed his foot. You were humiliated in front of everyone in the tavern. Your purse filled, but your soul stayed crushed on that floor.",
@@ -370,7 +352,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Overturn the table and show him you are no slave!",
-        ipucu: "You keep your honor, there's a risk of injury in the fight",
         basariliSonuc: {
           mesaj:
             "The punch you landed on his face knocked the man to the floor. The crowd admired your courage. No one can mock your past now!",
@@ -389,7 +370,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Take up the torch! 'You will pay for what you did to my father!'",
-        ipucu: "The working class makes you a legend, the state and the bosses mark you a target",
         basariliSonuc: {
           mesaj:
             "You turned the strike into a revolution! The bosses knelt. You avenged your father and became the people's idol.",
@@ -401,7 +381,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Meet secretly with the boss and sell out the revolt from within.",
-        ipucu: "Only for the immoral: the boss makes you rich, the workers curse you",
         basariliSonuc: {
           mesaj:
             "You gave the boss the leaders' names. The revolt was put down. The boss made you a manager, but your own neighborhood spits in your face now.",
@@ -420,7 +399,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Say 'I am ashamed of my father! I'm changing my surname.'",
-        ipucu: "You are accepted, but a great betrayal of your roots",
         basariliSonuc: {
           mesaj:
             "You denied your past. You married, but your father's sad eyes and this life built on a lie eat away at you.",
@@ -431,7 +409,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "I will use your fears! Become the chief dungeon-keeper.",
-        ipucu: "A brutal reputation and a high state salary",
         basariliSonuc: {
           mesaj:
             "You forgot about love. You became the state's most feared dungeon-keeper. That family who wouldn't give you their daughter now trembles in fear of you.",
@@ -450,7 +427,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Give it only to my own family (my child); I don't care about the others.",
-        ipucu: "Your family lives, but your conscience aches forever",
         basariliSonuc: {
           mesaj:
             "You saved your own family. When morning came and 10 small corpses were carried from the orphanage, you shut your window tight.",
@@ -462,7 +438,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "These herbs are everyone's right! Go to the orphanage.",
-        ipucu: "You risk your family but turn into a hero/saint",
         basariliSonuc: {
           mesaj:
             "You saved the orphans! As a blessing, your own child gained immunity too. The city is grateful enough to raise a statue in your name.",
@@ -482,7 +457,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Smuggle the jewels! This is my father's legacy.",
-        ipucu: "A historic fortune, or the dungeon/execution",
         basariliSonuc: {
           mesaj:
             "You smuggled the jewels out! The king went mad, but overnight you reached unimaginable wealth.",
@@ -494,7 +468,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "I will not be a criminal like my father! Report them.",
-        ipucu: "A clean and honest life, a dangerous underworld enemy",
         basariliSonuc: {
           mesaj: "You sold the men to the king! The king rewarded you and cleared your family's name.",
         },
@@ -513,7 +486,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Cut my own child's/spouse's provisions and send it to the village.",
-        ipucu: "Your conscience is at ease in the village, your children at home suffer poverty",
         basariliSonuc: {
           mesaj:
             "Your siblings in the village survived on your money. But your own child slept hungry for weeks and looked at you with hatred.",
@@ -525,7 +497,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "This is my home. Those in the village can fend for themselves.",
-        ipucu: "Your family stays safe, your roots are cut",
         basariliSonuc: {
           mesaj:
             "You kept your money for yourself. Your own children slept full. Months later, the only news from the village was that your mother had died.",
@@ -542,7 +513,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Join the search.",
-        ipucu: "Conscience and reputation, an exhausting search all night",
         basariliSonuc: {
           mesaj: "You found the child in an old mill; the family was grateful to you.",
           detay: "Every step you took that night was worth it; the mother's tears are still on your mind.",
@@ -554,7 +524,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Stay home, don't get involved.",
-        ipucu: "Safe but it may sting the conscience",
         basariliSonuc: {
           mesaj: "You stayed home; the child turned up on their own toward morning.",
           detay: "It ended well, but there's a slight guilt in you for not joining.",
@@ -574,7 +543,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Take my child in too. Let my legacy continue.",
-        ipucu: "Great power and prestige, but you push your child into darkness",
         basariliSonuc: {
           mesaj: "Your child took the oath and melted into the shadows. Within the organization your family's place became legendary.",
           detay: "You are very powerful. But now at dinner you see the innocence in your child's eyes has died.",
@@ -586,7 +554,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Never! My child will not touch this filthy business.",
-        ipucu: "Brave parenting, but you turn the organization against you",
         basariliSonuc: {
           mesaj: "You drew your weapon and defied the leaders. They excommunicated you from the organization, but you saved your child.",
           detay: "You are an ordinary person now, and in danger, but you are proud of your parenting.",
@@ -606,7 +573,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Spend the money, invest in {cocuk}'s education.",
-        ipucu: "Your pocket shrinks but your family's future grows",
         basariliSonuc: {
           mesaj: "{cocuk} began their training; the excitement in their eyes was worth every coin.",
           detay: "The fruit of some investments is harvested years later.",
@@ -618,7 +584,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Keep the money, secure your own future.",
-        ipucu: "Your finances are safe but {cocuk} is disappointed",
         basariliSonuc: {
           mesaj: "You kept the money; {cocuk} was disappointed but your finances are safe.",
           detay: "Some securities are traded for the dreams of those you love.",
@@ -638,7 +603,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Set aside money for regular care, visit often.",
-        ipucu: "Your conscience eases, your purse lightens",
         basariliSonuc: {
           mesaj: "{anne} and {baba} are more comfortable now; the gratitude on their faces was worth every coin.",
           detay: "Some debts are paid not with money but with time.",
@@ -650,7 +614,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Focus on your own work and family, drop by now and then.",
-        ipucu: "Your career continues but the guilt grows",
         basariliSonuc: {
           mesaj: "You focused on your work; {anne} and {baba} get by, but you notice the sadness in their voices.",
           detay: "Time is the one thing you can't get back.",
@@ -671,7 +634,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Give the savings, support their dream.",
-        ipucu: "A big risk but your bond with your spouse could grow stronger",
         basariliSonuc: {
           mesaj: "{es} started their business; the excitement in their eyes was brighter than it had been in years.",
           detay: "Some investments show up not on the balance sheet but in the relationship.",
@@ -683,7 +645,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Say no, keep the savings safe.",
-        ipucu: "The money stays safe but your spouse is disappointed",
         basariliSonuc: {
           mesaj: "You refused; {es} took it with understanding, but the light in their eyes dimmed a little.",
           detay: "Safety is sometimes bought at the price of a dream.",
@@ -703,7 +664,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Pay the debt, keep the family peace.",
-        ipucu: "Expensive but your family ties stay firm",
         basariliSonuc: {
           mesaj: "You cleared the debt; your relative thanked you in tears and swore 'never again'.",
           detay: "You've lost count of how many times you've heard 'never again', but you did it anyway.",
@@ -715,7 +675,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse, let them solve their own problem.",
-        ipucu: "Your money is safe but a hurt forms within the family",
         basariliSonuc: {
           mesaj: "You refused; your relative left in anger but solved the problem on their own.",
           detay: "Sometimes tough love is the right thing.",
@@ -735,7 +694,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Support their decision, clear the way for them.",
-        ipucu: "Your child is happy but you'll be talked about in society",
         basariliSonuc: {
           mesaj: "{cocuk} hugged you with tearful eyes. There's some gossip in the neighborhood, but your conscience is at peace.",
           detay: "Some pride shines not in society's eyes but within the home.",
@@ -747,7 +705,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Insistently steer them toward the family trade.",
-        ipucu: "Society approves but your relationship is damaged",
         basariliSonuc: {
           mesaj: "{cocuk} chose your path, however reluctantly; the light in their eyes never came back as it was.",
           detay: "Some victories are no different from losing.",
@@ -767,7 +724,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Hire a lawyer, pursue your rights to the end.",
-        ipucu: "If you win, good money; if you lose, both money and peace are gone",
         basariliSonuc: {
           mesaj: "The court ruled in your favor; you got your share but your relative never contacted you again.",
           detay: "You can't tell whether the gold you won outweighed the kinship you lost.",
@@ -779,7 +735,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Give up your share, choose family peace.",
-        ipucu: "Your pocket lightens but your conscience and relationships stay firm",
         basariliSonuc: {
           mesaj: "You gave up your share; your relative thanked you in surprise, and your family bonds grew stronger.",
           detay: "Some riches aren't measured in gold.",
@@ -799,7 +754,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Be there for {dost}.",
-        ipucu: "Friendship wins, the opportunity is lost",
         basariliSonuc: {
           mesaj: "You were there for {dost}; the happiness in their eyes was worth the opportunity you missed.",
           detay: "Some moments never come back, just like missed opportunities.",
@@ -811,7 +765,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Go to the business meeting.",
-        ipucu: "The opportunity wins, the friendship takes a wound",
         basariliSonuc: {
           mesaj: "The meeting went wonderfully, you seized a great opportunity. {dost}, though, never contacted you like before.",
           detay: "Your career rose but there's an empty chair at your table now.",
@@ -831,7 +784,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Defy him in front of everyone, defend your rights.",
-        ipucu: "You keep your honor but gain an enemy",
         basariliSonuc: {
           mesaj: "Your words echoed within the guild; some members quietly showed their support.",
           detay: "Some challenges bear fruit with time.",
@@ -843,7 +795,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Withdraw quietly, work twice as hard and prove yourself another way.",
-        ipucu: "A slow but solid building of reputation",
         basariliSonuc: {
           mesaj:
             "Over the years your independent work grew so renowned that the guild now wants you in its ranks.",
@@ -864,7 +815,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Examine the document; if he's right, pay compensation.",
-        ipucu: "Your pocket lightens but your conscience and honor gain",
         basariliSonuc: {
           mesaj: "The document was genuine; you paid the compensation and the old man thanked you in tears.",
           detay: "Some debts deserve to be paid even generations later.",
@@ -876,7 +826,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Use your noble influence to drive the man from your door.",
-        ipucu: "Your money is safe but the moral price is heavy",
         basariliSonuc: {
           mesaj: "You had the man thrown out; no one could stand against you, but something bothered you inside.",
           detay: "Privilege sometimes silences the conscience, but does not kill it.",
@@ -896,7 +845,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Ruthlessly collect every debt in the ledger.",
-        ipucu: "A great fortune but a heavy moral price",
         basariliSonuc: {
           mesaj: "You collected the debts one by one; your coffer filled, but your father's nickname stuck to you too in the neighborhood.",
           detay: "Some inheritances carry as much hatred as wealth.",
@@ -908,7 +856,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Burn the ledger, free everyone of their debt.",
-        ipucu: "You give up a great fortune but your name is cleared",
         basariliSonuc: {
           mesaj:
             "News that you threw the ledger in the fire spread fast in the neighborhood; your father's tainted name was cleared a little thanks to you.",
@@ -929,7 +876,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept the offer, return to the family trade.",
-        ipucu: "A great gain, the risk of being caught and a return to an old life",
         basariliSonuc: {
           mesaj: "The goods passed through without trouble; your coffer filled, but you noticed you were walking in your father's footsteps.",
           detay: "Some blood just won't change.",
@@ -941,7 +887,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse, remind him you left that life behind.",
-        ipucu: "You stay clean but take a 'weak' mark in the old world",
         basariliSonuc: {
           mesaj: "You refused the offer; the man shrugged and melted into the dark, and you felt lighter.",
           detay: "Refusing the past is a kind of courage too.",
@@ -961,7 +906,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Refuse, say this fate is not yours.",
-        ipucu: "You chart your own course but the authorities are displeased",
         basariliSonuc: {
           mesaj: "You refused; the authorities found someone else, and you stepped one more pace out of your father's shadow.",
           detay: "Fate is sometimes waiting to be refused.",
@@ -973,7 +917,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Accept, be the continuation of the family trade.",
-        ipucu: "You are valued in authority's eyes but the mark is permanent",
         basariliSonuc: {
           mesaj: "You carried out the duty; the authorities are pleased, but now even children who see you on the street whisper.",
           detay: "Some inheritances label you forever.",
@@ -993,7 +936,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Use the secret to wring an advantage from the noble.",
-        ipucu: "A concrete gain, a moral price",
         basariliSonuc: {
           mesaj:
             "The noble, afraid of the secret coming out, gave you what you wanted; you won, but you broke the principle of loyalty your mother taught.",
@@ -1006,7 +948,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Keep the secret forever, stay true to your mother's oath of loyalty.",
-        ipucu: "Your conscience stays clean, the opportunity slips away",
         basariliSonuc: {
           mesaj: "You never used the secret; you kept alive that old palace loyalty your mother taught.",
           detay: "Some inheritances are worth more than gold.",
@@ -1026,7 +967,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Leave everything, return to your ancestors' lands.",
-        ipucu: "You reach your roots but leave the life you built behind",
         basariliSonuc: {
           mesaj:
             "When you first set foot on your ancestors' lands your eyes filled; a longing carried for generations was finally soothed.",
@@ -1040,7 +980,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Stay here, protect the life you built.",
-        ipucu: "Safe but that question inside you always remains",
         basariliSonuc: {
           mesaj:
             "You didn't accept the pardon; your life went on here, but never having seen your ancestors' land left a slight emptiness in you.",
@@ -1061,7 +1000,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Join the rescue team yourself.",
-        ipucu: "A real act of heroism but your life is in danger",
         basariliSonuc: {
           mesaj:
             "You worked for hours in the dark tunnels; when you brought a few workers out alive you couldn't hold back your tears.",
@@ -1074,7 +1012,6 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Make a generous donation from a safe distance.",
-        ipucu: "Safe but a help from afar",
         basariliSonuc: {
           mesaj: "Your donation strengthened the rescue team's equipment; many workers were saved thanks to you.",
           detay: "Not every act of heroism happens underground.",

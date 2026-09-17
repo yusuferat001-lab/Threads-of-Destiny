@@ -27,7 +27,6 @@ export const OLAY_SAGLIK_TOPARLANMA: OlayTanimi[] = [
       {
         metin: "Her şeyi bırak, haftalarca dinlen.",
         baseBasariSansi: 88,
-        ipucu: "Belirgin sağlık toparlanması; biraz ün ve gelir kaybı",
         basariliSonuc: {
           saglik: 16,
           mutluluk: 4,
@@ -43,7 +42,6 @@ export const OLAY_SAGLIK_TOPARLANMA: OlayTanimi[] = [
       {
         metin: "Dişini sık, çalışmaya devam et.",
         baseBasariSansi: 45,
-        ipucu: "İtibarını korur ama bedenin daha da çökebilir",
         basariliSonuc: {
           saglik: 3,
           un: 2,
@@ -72,7 +70,6 @@ export const OLAY_SAGLIK_TOPARLANMA: OlayTanimi[] = [
         baseBasariSansi: 85,
         maliyet: 8,
         kilitAciklamasi: "Hekimin ücretini karşılayacak paran yok.",
-        ipucu: "Pahalı ama güvenilir bir toparlanma",
         basariliSonuc: {
           para: -8,
           saglik: 18,
@@ -87,7 +84,6 @@ export const OLAY_SAGLIK_TOPARLANMA: OlayTanimi[] = [
       {
         metin: "Ucuz bir şifacıya git.",
         baseBasariSansi: 55,
-        ipucu: "Ucuz; işe yarayabilir ya da durumu ağırlaştırabilir",
         basariliSonuc: {
           para: -2,
           saglik: 11,
@@ -117,7 +113,6 @@ export const OLAY_SAGLIK_TOPARLANMA: OlayTanimi[] = [
         baseBasariSansi: 80,
         maliyet: 3,
         kilitAciklamasi: "Yol ve konaklama için bile paran yok.",
-        ipucu: "Hem sağlık hem moral toparlanması",
         basariliSonuc: {
           para: -3,
           saglik: 13,
@@ -158,7 +153,6 @@ export const OLAY_SAGLIK_TOPARLANMA: OlayTanimi[] = [
       {
         metin: "Teklifi kabul et, bakıma teslim ol.",
         baseBasariSansi: 86,
-        ipucu: "Güçlü toparlanma; gururundan biraz verirsin",
         basariliSonuc: {
           saglik: 15,
           mutluluk: 6,
@@ -199,7 +193,6 @@ export const OLAY_SAGLIK_TOPARLANMA: OlayTanimi[] = [
       {
         metin: "İnzivaya çekil, perhiz ve dinlenme.",
         baseBasariSansi: 82,
-        ipucu: "Sağlık ve moral toparlanır, itibarın biraz artar",
         basariliSonuc: {
           saglik: 13,
           mutluluk: 7,
@@ -241,7 +234,6 @@ export const OLAY_SAGLIK_TOPARLANMA: OlayTanimi[] = [
       {
         metin: "Nekahet dönemine uy, sabret.",
         baseBasariSansi: 84,
-        ipucu: "Yavaş ama sağlam toparlanma; gelir kaybı",
         basariliSonuc: {
           saglik: 17,
           para: -5,
@@ -285,7 +277,6 @@ export const OLAY_SAGLIK_TOPARLANMA: OlayTanimi[] = [
         baseBasariSansi: 88,
         maliyet: 10,
         kilitAciklamasi: "Doktorun ücretini ve ilaçları karşılayamıyorsun.",
-        ipucu: "Pahalı ama en güvenilir toparlanma",
         basariliSonuc: {
           para: -10,
           saglik: 20,
@@ -331,7 +322,6 @@ export const OLAY_SAGLIK_TOPARLANMA: OlayTanimi[] = [
         baseBasariSansi: 74,
         maliyet: 2,
         kilitAciklamasi: "Otacıya verecek paran yok.",
-        ipucu: "Ucuz ve genelde etkili bir toparlanma",
         basariliSonuc: {
           para: -2,
           saglik: 14,

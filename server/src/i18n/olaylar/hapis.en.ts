@@ -9,7 +9,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Try to escape through the back door.",
-        ipucu: "If you succeed you escape prison entirely, but it's very risky",
         basariliSonuc: {
           mesaj: "You leapt across the rooftops and shook off the guards; you ended up gasping for breath at the far end of the city, but you are free.",
           detay: "This escape story will be passed from mouth to mouth for a while.",
@@ -21,7 +20,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Don't resist, surrender.",
-        ipucu: "Going to prison is inevitable, but at least it goes calmly",
         basariliSonuc: {
           mesaj: "You surrendered without resisting; you were chained and taken to prison.",
           detay: "You are a prisoner now. You'll need to find a way out of here.",
@@ -41,7 +39,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Start digging the tunnel, take the risk.",
-        ipucu: "If you succeed you're free, but if you're caught you could lose your life",
         basariliSonuc: {
           mesaj: "At midnight you slipped through the tunnel and made it out of the city; you're free now.",
           detay: "This escape story of yours will turn into a legend.",
@@ -54,7 +51,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Wait, watch for a safer moment.",
-        ipucu: "Safe, no progress",
         basariliSonuc: {
           mesaj: "You chose to spend today quietly; the chance may come another day.",
           detay: "Patience is sometimes your only weapon.",
@@ -74,7 +70,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Offer the money you have as a bribe.",
-        ipucu: "Expensive, but if it works you're free",
         basariliSonuc: {
           mesaj: "The guard pocketed the money and 'accidentally' left the door open that night.",
           detay: "Justice sometimes smiles on the highest bidder.",
@@ -86,7 +81,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Don't take the risk, don't trust your money.",
-        ipucu: "Safe",
         basariliSonuc: {
           mesaj: "You turned the offer down; at least your money stayed in your pocket.",
           detay: "Not trusting some opportunities is the wiser choice.",
@@ -106,7 +100,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Draw the Black Sword and bring the whole ward to heel!",
-        ipucu: "Secret Inventory: usually makes you the prison boss, but the chaos can be bigger than the blade",
         basariliSonuc: {
           mesaj:
             "When you drew the Black Sword the cells ran with blood. Neither prisoners nor guards could stand against you. You run this prison now.",
@@ -120,7 +113,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Take advantage of the chaos and run for the door.",
-        ipucu: "Very risky — a high chance of both being caught and taking a beating",
         basariliSonuc: {
           mesaj: "In the middle of the chaos no one noticed you; you slipped out the door and reached freedom.",
           detay: "The screams you left behind won't leave your ears for a long time.",
@@ -132,7 +124,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Withdraw to your cell, stay out of the chaos.",
-        ipucu: "Safe, but the chance is lost",
         basariliSonuc: {
           mesaj: "You waited quietly in the corner; no one touched you until the riot was put down.",
           detay: "Some fights are not yours.",
@@ -152,7 +143,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Trust them, grow the friendship.",
-        ipucu: "Makes life inside a little more bearable",
         basariliSonuc: {
           mesaj: "A real bond formed between you and {dost}; you aren't alone here anymore.",
           detay: "Some friendships are born in the darkest places.",
@@ -164,7 +154,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Keep your distance, trust no one.",
-        ipucu: "Safe but lonely",
         basariliSonuc: {
           mesaj: "You kept your distance; at least no one could use you.",
           detay: "Trust is a luxury here.",
@@ -183,7 +172,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Object, defend your rights.",
-        ipucu: "Brave but risky",
         basariliSonuc: {
           mesaj: "The other prisoners cheered you on; the guard backed down.",
           detay: "Sometimes resistance works.",
@@ -195,7 +183,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Bow your head, stay silent.",
-        ipucu: "Safe but it breaks your pride",
         basariliSonuc: {
           mesaj: "You endured it silently; another bad day is behind you.",
           detay: "Surviving sometimes requires bowing your head.",
@@ -215,7 +202,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Step outside, turn a new page.",
-        ipucu: "Freedom",
         basariliSonuc: {
           mesaj: "You completed your sentence and stepped outside a free person.",
           detay: "You've decided to leave your past behind.",
@@ -227,7 +213,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Leave the city entirely, leave no trace.",
-        ipucu: "A quiet new beginning",
         basariliSonuc: {
           mesaj: "You left the city without being seen by anyone; your name will slowly be forgotten.",
           detay: "Sometimes the best beginning is a quiet escape.",
@@ -247,7 +232,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Push through the crowd and run.",
-        ipucu: "If you succeed you get away clean, but risky",
         basariliSonuc: {
           mesaj: "You slipped free amid the shoving and ran; with your heart pounding you ducked into a side street.",
           detay: "You got away with it this time.",
@@ -259,7 +243,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Accept that you're caught, don't resist.",
-        ipucu: "Inevitable but at least it goes calmly",
         basariliSonuc: {
           mesaj: "You didn't resist; the guards took you quietly.",
           detay: "At least you weren't beaten.",
@@ -279,7 +262,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Apologize, beg for mercy.",
-        ipucu: "Your pride is broken but maybe you're spared",
         basariliSonuc: {
           mesaj: "Your humble apology soothed the lord's temper a little; you were only banished.",
           detay: "Your pride is broken but you're free.",
@@ -291,7 +273,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Defend yourself, say you were in the right.",
-        ipucu: "Risky, but if you win your honor stays intact",
         basariliSonuc: {
           mesaj: "Your courage won respect in some circles; the lord backed down this time.",
           detay: "Rarely, a nobody can win.",
@@ -311,7 +292,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Burn the goods to destroy the evidence, then try to run.",
-        ipucu: "You lose your capital but there may be no proof left",
         basariliSonuc: {
           mesaj: "You set the goods ablaze and escaped in the smoke; no evidence was left.",
           detay: "Your capital turned to ash but you're free.",
@@ -323,7 +303,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Surrender quietly, hire a lawyer.",
-        ipucu: "Expensive but it can lighten the sentence",
         basariliSonuc: {
           mesaj: "Thanks to the lawyer you hired, you got off with a small fine.",
           detay: "Money worked here too.",
@@ -343,7 +322,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Blend into the crowd and try to hide your identity.",
-        ipucu: "If you succeed you slip away entirely",
         basariliSonuc: {
           mesaj: "You acted like an ordinary bystander, and the soldiers let you go.",
           detay: "Luck was on your side this time.",
@@ -355,7 +333,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "State your cause openly, stand behind it.",
-        ipucu: "Honorable but arrest is nearly certain",
         basariliSonuc: {
           mesaj: "Your courage won the respect of even some soldiers, but you were arrested all the same.",
           detay: "Your conscience is at ease, your cell is narrow.",
@@ -375,7 +352,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Try to slip out the back door.",
-        ipucu: "If you succeed you slip away entirely, if caught you get a beating",
         basariliSonuc: {
           mesaj: "Taking advantage of the smoke and chaos, you slipped out the back door.",
           detay: "This time you escaped both the table and prison.",
@@ -387,7 +363,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Offer the guard a bribe, leave quietly.",
-        ipucu: "Expensive but it could be a quiet exit",
         basariliSonuc: {
           mesaj: "The guard pocketed the purse and looked the other way.",
           detay: "Some doors open with gold.",
@@ -399,7 +374,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Don't resist, surrender.",
-        ipucu: "Inevitable but at least it goes calmly",
         basariliSonuc: {
           mesaj: "You surrendered calmly; at least you weren't beaten.",
           detay: "The cell is cold but at least your ribs are intact.",
@@ -419,7 +393,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Escape through the warehouse's back exit.",
-        ipucu: "If you succeed you can't save your goods but you stay free",
         basariliSonuc: {
           mesaj: "You slipped out the back of the warehouse; your goods were seized but at least you weren't jailed.",
           detay: "Your fortune is gone, your freedom remains.",
@@ -431,7 +404,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Try to close the case with a hefty bribe.",
-        ipucu: "Very expensive but you might save the warehouse",
         basariliSonuc: {
           mesaj: "The bribe worked; the case was dropped and you kept your warehouse too.",
           detay: "This time the power of gold covered your crime.",
@@ -443,7 +415,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Don't resist, surrender.",
-        ipucu: "Your warehouse is gone but at least you don't get beaten",
         basariliSonuc: {
           mesaj: "You surrendered calmly; your entire warehouse was seized.",
           detay: "Your dark earnings ended in a dark way.",
@@ -463,7 +434,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Dig alone, trust no one.",
-        ipucu: "Slow but easy to keep secret",
         basariliSonuc: {
           mesaj: "Late at night you started digging alone. You take care to make no sound.",
           detay: "Being alone is slow but safe.",
@@ -475,7 +445,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Form a team with a few trusted prisoners.",
-        ipucu: "Faster but keeping the secret gets harder",
         basariliSonuc: {
           mesaj: "You made a quiet deal with three prisoners; you started digging in shifts.",
           detay: "A team is faster but the secret gets harder to keep.",
@@ -495,7 +464,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Keep digging, take the risk.",
-        ipucu: "It speeds up but there's a risk of being heard",
         basariliSonuc: {
           mesaj: "The guard walked off in another direction; the tunnel advanced quite a bit.",
           detay: "Luck was on your side.",
@@ -508,7 +476,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Stop, wait quietly.",
-        ipucu: "Safe but slow",
         basariliSonuc: {
           mesaj: "The guard passed by; you lost a few hours but you're safe.",
           detay: "Patience is part of this job.",
@@ -527,7 +494,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Crawl out right away, run.",
-        ipucu: "If you succeed a legendary escape, if caught a mortal risk",
         basariliSonuc: {
           mesaj: "You slipped through the tunnel and melted into the city's darkness; you're free now.",
           detay: "You did it alone — this story will become a legend.",
@@ -539,7 +505,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Be patient, wait for the calmest hour.",
-        ipucu: "Safer but the tunnel could collapse",
         basariliSonuc: {
           mesaj: "You waited for the quietest hour and got out unnoticed.",
           detay: "Your patience paid off.",
@@ -559,7 +524,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Keep trusting them.",
-        ipucu: "If they're honest the friendship grows, if you're wrong you're at risk",
         basariliSonuc: {
           mesaj: "Your suspicion was unfounded; they wanted freedom as much as you did.",
           detay: "Your trust was repaid.",
@@ -572,7 +536,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Hide the plan from them, continue only with the others.",
-        ipucu: "Cautious but it damages trust within the group",
         basariliSonuc: {
           mesaj: "You cut the suspicious prisoner out of the plan; the dig continued quietly.",
           detay: "Caution worked this time.",
@@ -591,7 +554,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Speed it up, take the risk.",
-        ipucu: "It finishes fast but the risk of being heard rises",
         basariliSonuc: {
           mesaj: "Working fast paid off; the tunnel was finished earlier than expected.",
           detay: "Team spirit made the difference.",
@@ -603,7 +565,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Advance slowly and quietly.",
-        ipucu: "Safe but it can hurt morale",
         basariliSonuc: {
           mesaj: "Thanks to the patient pace, no one noticed.",
           detay: "Slow but sure steps.",
@@ -623,7 +584,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Get out all together, quickly.",
-        ipucu: "Either an epic mass escape or a mass disaster",
         basariliSonuc: {
           mesaj:
             "You all plunged into the darkness together; by the time the guards noticed the crowd, most of you were long gone.",
@@ -637,7 +597,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Get out one by one, at intervals.",
-        ipucu: "Slower but less conspicuous",
         basariliSonuc: {
           mesaj: "You slipped out one by one, quietly; no one noticed until the morning count.",
           detay: "Patience and order made the crowd invisible.",
@@ -657,7 +616,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Approach him, carefully start a conversation.",
-        ipucu: "A direct but risky approach",
         basariliSonuc: {
           mesaj: "The young guard started talking about his debts; exactly the person you're looking for.",
           detay: "Weaknesses are sometimes the best key.",
@@ -669,7 +627,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Gather information from other prisoners, find a solid name.",
-        ipucu: "A small expense but more reliable",
         basariliSonuc: {
           mesaj: "For a small 'thank you' you got a reliable name.",
           detay: "Information is worth money even in prison.",
@@ -688,7 +645,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Haggle insistently.",
-        ipucu: "It could come cheaper but it might offend the guard",
         basariliSonuc: {
           mesaj: "Your haggling worked; you brought the price down quite a bit.",
           detay: "Your purse is a little less wounded.",
@@ -701,7 +657,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Give him what he wants, accept without arguing.",
-        ipucu: "Expensive but fast and safe",
         basariliSonuc: {
           mesaj: "The deal was done quickly and smoothly.",
           detay: "Sometimes time is worth more than money.",
@@ -721,7 +676,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Trust the plan, go at the agreed hour.",
-        ipucu: "Either freedom or a heavy trap",
         basariliSonuc: {
           mesaj: "The guard kept his word; the door really was left 'accidentally' open.",
           detay: "The power of gold was proven once more.",
@@ -733,7 +687,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Grow suspicious at the last moment, cancel the plan.",
-        ipucu: "Safe but you can't get the advance back",
         basariliSonuc: {
           mesaj: "You trusted your instincts and pulled back; later you learned it was the right hunch.",
           detay: "Sometimes avoiding is a victory too.",
@@ -753,7 +706,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Prepare for a hard blow (hide a stone/piece of bone).",
-        ipucu: "A physical preparation",
         basariliSonuc: {
           mesaj: "You hid a hard object within reach; the plan is taking shape.",
           detay: "Preparation is the foundation of every plan.",
@@ -765,7 +717,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Prepare a story/lie to keep him occupied, distract him.",
-        ipucu: "A mental preparation",
         basariliSonuc: {
           mesaj: "You crafted a convincing story; it'll catch the guard's attention.",
           detay: "Sometimes the best weapon is words.",
@@ -785,7 +736,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Attack with a sudden move, knock him out.",
-        ipucu: "If you succeed the keys are yours, in failure a mortal risk",
         basariliSonuc: {
           mesaj: "The blow landed square; the guard crumpled silently to the floor. You took the keys.",
           detay: "Your heart is about to leap out of your chest, but you did it.",
@@ -798,7 +748,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Give up at the last moment, pull back.",
-        ipucu: "Safe but the chance is lost",
         basariliSonuc: {
           mesaj: "You trusted your instincts and cancelled the plan; maybe another chance will come.",
           detay: "Sometimes stepping back takes courage.",
@@ -818,7 +767,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Run fast, try the nearest exit.",
-        ipucu: "Fast but showy, it could draw attention",
         basariliSonuc: {
           mesaj: "You managed to run out through the dark corridors; you're free now.",
           detay: "This daring escape will become a legend.",
@@ -830,7 +778,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Stay calm, put on the guard's disguise and walk out as if it's normal.",
-        ipucu: "Daring but if you succeed it's much more solid",
         basariliSonuc: {
           mesaj: "You pulled the guard's uniform on and calmly walked out the main gate.",
           detay: "Your daring proved more effective than force.",
@@ -850,7 +797,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Follow the rules fully, be hardworking and quiet.",
-        ipucu: "A slow but solid strategy",
         basariliSonuc: {
           mesaj: "Your behavior drew the positive attention of the guards and the administration.",
           detay: "Patience became a strategy here.",
@@ -862,7 +808,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Do small favors for the guards, get in their good graces.",
-        ipucu: "Risky — you could get branded a 'bootlicker' in the ward",
         basariliSonuc: {
           mesaj: "Your small favors worked; a guard has already started mentioning you.",
           detay: "Sometimes small kindnesses open big doors.",
@@ -882,7 +827,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Give a sincere speech of remorse before the board.",
-        ipucu: "It can be honest and effective",
         basariliSonuc: {
           mesaj: "Your words moved the board; your sentence ended early.",
           detay: "Sometimes honesty is the strongest defense.",
@@ -894,7 +838,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Settle for a short, formal petition.",
-        ipucu: "Plain but it can be effective",
         basariliSonuc: {
           mesaj: "Your formal petition was accepted; you were released quietly, without ceremony.",
           detay: "Some victories are won without fanfare.",
@@ -914,7 +857,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Join the plan with a few prisoners you trust.",
-        ipucu: "It builds solidarity but it's risky",
         basariliSonuc: {
           mesaj: "You quietly came to an understanding with prisoners you trust; when the riot breaks out you'll be ready.",
           detay: "Some alliances are made in the dark.",
@@ -926,7 +868,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Trust no one, just watch.",
-        ipucu: "Safe but you could be caught unprepared",
         basariliSonuc: {
           mesaj: "You chose to watch quietly; you said nothing to anyone.",
           detay: "Information is sometimes the safest weapon — by not using it.",
@@ -946,7 +887,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Share the water with the sick prisoner.",
-        ipucu: "Peace of conscience, a sacrifice of your own health",
         basariliSonuc: {
           mesaj: "You shared your water; the prisoner slowly recovered and stayed grateful to you.",
           detay: "Some kindnesses are done without expecting anything in return.",
@@ -958,7 +898,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Keep the water for yourself, protect your health.",
-        ipucu: "Selfish but smart",
         basariliSonuc: {
           mesaj: "You kept the water for yourself; your health held up, but the prisoner beside you coughed harder.",
           detay: "Survival sometimes demands selfishness.",
@@ -978,7 +917,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Join the strike, show solidarity.",
-        ipucu: "Conditions could improve but your health suffers",
         basariliSonuc: {
           mesaj: "The strike stirred the administration to act; conditions improved a little, and you were part of that victory.",
           detay: "Going hungry was a price, but it was worth it.",
@@ -990,7 +928,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Don't join, eat your own share.",
-        ipucu: "Safe but isolating",
         basariliSonuc: {
           mesaj: "You protected your health but the other prisoners shunned you as 'without solidarity'.",
           detay: "Some choices isolate you.",
@@ -1010,7 +947,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Open it right away, read it.",
-        ipucu: "Hope or bitter news",
         basariliSonuc: {
           mesaj: "{dost} wrote that they're still waiting for you; the hope inside you flared up again.",
           detay: "Even behind walls, having someone think of you is priceless.",
@@ -1022,7 +958,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Keep it hidden, wait for the right time.",
-        ipucu: "Postponing hope",
         basariliSonuc: {
           mesaj: "You hid the letter under your pillow; even the idea of reading it gives you strength.",
           detay: "Sometimes postponing hope is a strategy too.",
@@ -1042,7 +977,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Step in, protect the weak prisoner.",
-        ipucu: "Brave but there's a risk of a beating",
         basariliSonuc: {
           mesaj: "Your courage worked; the strong ones backed off, and the old prisoner is grateful to you.",
           detay: "Sometimes even one person can make a difference.",
@@ -1054,7 +988,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Don't get involved, mind your own business.",
-        ipucu: "Safe but it touches your conscience",
         basariliSonuc: {
           mesaj: "You didn't get involved; at least your own safety is intact.",
           detay: "Some pangs of conscience are carried silently.",
@@ -1074,7 +1007,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Agree, make small regular payments.",
-        ipucu: "A small expense, visible comfort",
         basariliSonuc: {
           mesaj: "The deal worked; your conditions noticeably improved.",
           detay: "Small sums make a big difference here.",
@@ -1086,7 +1018,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse, owe no one anything.",
-        ipucu: "Independent but without comfort",
         basariliSonuc: {
           mesaj: "You refused; at least you don't depend on anyone.",
           detay: "Independence has a price too — comfort doesn't.",
@@ -1106,7 +1037,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Learn it, practice patiently.",
-        ipucu: "A small but real pleasure",
         basariliSonuc: {
           mesaj:
             "You learned the craft; the small carved pieces in your hands give you both peace and a small pride.",
@@ -1119,7 +1049,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Not interested, spend your time another way.",
-        ipucu: "Safe, neutral",
         basariliSonuc: {
           mesaj: "You politely declined the offer; you preferred your own silence.",
           detay: "Everyone passes time differently.",
@@ -1138,7 +1067,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Pour your heart out, be sincere.",
-        ipucu: "Hard but healing",
         basariliSonuc: {
           mesaj: "Pouring your heart out lifted a great weight; you went back to your cell at peace.",
           detay: "Some burdens only lighten when shared.",
@@ -1150,7 +1078,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Keep your distance, listen only out of courtesy.",
-        ipucu: "Safe, closed off",
         basariliSonuc: {
           mesaj: "You listened politely but didn't open up; still, the visit was a small comfort.",
           detay: "Not everyone has to open up the same way.",
@@ -1170,7 +1097,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Try a hand.",
-        ipucu: "A small gain or the start of a dangerous habit",
         basariliSonuc: {
           mesaj: "Luck was on your side; your name started being spoken as 'the lucky one' in the ward.",
           detay: "Even a small victory carries great meaning here.",
@@ -1182,7 +1108,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Don't join, watch from the side.",
-        ipucu: "Safe",
         basariliSonuc: {
           mesaj: "You settled for watching from the side; at least your share stayed in your hand.",
           detay: "Sometimes watching is entertainment enough.",
@@ -1202,7 +1127,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept the offer, give the information.",
-        ipucu: "Comfort rises, conscience and reputation suffer",
         basariliSonuc: {
           mesaj: "You gave the information; your conditions improved but now you look away when you meet anyone's eyes.",
           detay: "Your comfort came off someone's back.",
@@ -1214,7 +1138,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse, keep your loyalty.",
-        ipucu: "Conscience at ease, the administration is offended",
         basariliSonuc: {
           mesaj: "You refused; among the other prisoners you started being called 'reliable'.",
           detay: "Some principles aren't up for negotiation.",
@@ -1234,7 +1157,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Hide your feelings, look strong.",
-        ipucu: "It protects them but you bottle it up",
         basariliSonuc: {
           mesaj: "Your strong bearing reassured them; you did everything you could so they wouldn't worry.",
           detay: "Sometimes protecting your loved ones means hiding yourself.",
@@ -1246,7 +1168,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Share your feelings openly.",
-        ipucu: "Weakness but a real bond",
         basariliSonuc: {
           mesaj: "Your sincerity strengthened the bond between you; you both felt a little lighter.",
           detay: "Sometimes showing weakness is the greatest strength.",
@@ -1266,7 +1187,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Share your blanket.",
-        ipucu: "Peace of conscience, loss of health",
         basariliSonuc: {
           mesaj: "You shared your blanket; you both got cold but you weren't alone.",
           detay: "Warmth sometimes multiplies when shared.",
@@ -1278,7 +1198,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Keep the blanket for yourself.",
-        ipucu: "Selfish but smart",
         basariliSonuc: {
           mesaj: "You stayed warm but it was hard not to hear the prisoner beside you shivering.",
           detay: "Survival sometimes demands selfishness.",
@@ -1298,7 +1217,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Mentor him, teach him the rules.",
-        ipucu: "A small investment, a new friend",
         basariliSonuc: {
           mesaj: "The young prisoner stayed grateful to you; you taught him how the ward works before anyone else could.",
           detay: "Some leadership begins with a small favor.",
@@ -1310,7 +1228,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Leave him to himself.",
-        ipucu: "Safe, neutral",
         basariliSonuc: {
           mesaj: "You didn't get involved; the young prisoner started learning the hard way.",
           detay: "Everyone finds their own path, sooner or later.",
@@ -1330,7 +1247,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Report it to the prison warden.",
-        ipucu: "Risky but justice could be served",
         basariliSonuc: {
           mesaj: "Your report was taken seriously, the guard was removed from duty; your name was spoken as 'fair' in the ward.",
           detay: "Speaking the truth worked this time.",
@@ -1342,7 +1258,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Stay silent, don't get involved.",
-        ipucu: "Safe but it touches your conscience",
         basariliSonuc: {
           mesaj: "You stayed silent; at least you stayed out of trouble.",
           detay: "Some silences are safe but uncomfortable.",
@@ -1362,7 +1277,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Describe your condition as it is.",
-        ipucu: "Honesty is the best chance of treatment",
         basariliSonuc: {
           mesaj: "The doctor took your complaints seriously and gave you a simple but effective treatment.",
           detay: "Honesty worked here too.",
@@ -1374,7 +1288,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Look strong, act as if nothing's wrong.",
-        ipucu: "You gain reputation but miss the treatment",
         basariliSonuc: {
           mesaj: "Your sturdy appearance got you spoken of as 'tough' in the ward.",
           detay: "Sometimes image comes before health — but it has a price.",
@@ -1394,7 +1307,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Buy something, even at an exorbitant price.",
-        ipucu: "A small but expensive pleasure",
         basariliSonuc: {
           mesaj: "Even a small piece of soap felt like a great luxury here.",
           detay: "Some small joys are worth the expense.",
@@ -1406,7 +1318,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Trust your money, don't shop.",
-        ipucu: "Thrifty",
         basariliSonuc: {
           mesaj: "You didn't spend the money; it may serve you better later.",
           detay: "Thrift is a virtue here too.",
@@ -1426,7 +1337,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Climb the wall as exercise ends and drop over.",
-        ipucu: "Succeed and you're free; get caught and you're beaten and your sentence grows",
         basariliSonuc: {
           mesaj: "The mortar crumbled in your hands but you held on; you dropped to the fields on the far side and started running. You're free.",
           detay: "You ran without looking back.",
@@ -1438,7 +1348,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Give it up, go back in line.",
-        ipucu: "Safe; the sentence runs on unchanged",
         basariliSonuc: {
           mesaj: "You couldn't take the risk; you slipped back among the others quietly.",
           detay: "Maybe another day, another wall.",
@@ -1458,7 +1367,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Hide under the laundry, slip out with the cart.",
-        ipucu: "A quiet escape — or being searched and caught at the gate",
         basariliSonuc: {
           mesaj: "You held your breath as the cart passed the gate; a few streets on you climbed out of the cloth and melted into the crowd. You're free.",
           detay: "No one looked at that laundry cart the same way again.",
@@ -1470,7 +1378,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Too risky; don't try it this week.",
-        ipucu: "Safe; the sentence runs on unchanged",
         basariliSonuc: {
           mesaj: "You watched the cart and memorised the timing, but didn't jump in this time.",
           detay: "Knowledge is piling up.",
@@ -1490,7 +1397,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Use the chaos, walk toward the gate.",
-        ipucu: "The boldest escape; if caught, your sentence grows badly",
         basariliSonuc: {
           mesaj: "No one turned to look; you walked out the gate and vanished into the fog. This escape will become legend in the ward.",
           detay: "Sometimes the best plan is no plan.",
@@ -1502,7 +1408,6 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Stay put, wait out the count.",
-        ipucu: "Safe; the sentence runs on unchanged",
         basariliSonuc: {
           mesaj: "You stood still; the fight was put down and the count finished.",
           detay: "The chance is gone, but your ribs are intact.",

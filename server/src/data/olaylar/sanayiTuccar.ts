@@ -17,7 +17,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
         metin: "Ucuz çocuk işçiyle maliyeti dibe çek.",
         baseBasariSansi: 65,
         maliyet: 20,
-        ipucu: "En yüksek kâr, ağır vicdan ve itibar bedeli",
         basariliSonuc: {
           para: 60,
           ahlak: -30,
@@ -38,7 +37,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
         metin: "Adil ücret ve güvenli koşullarla kur.",
         baseBasariSansi: 60,
         maliyet: 30,
-        ipucu: "Yavaş ama sağlam büyüme, yüksek başlangıç maliyeti",
         basariliSonuc: {
           para: 30,
           un: 25,
@@ -63,7 +61,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
         metin: "Küçük bir atölyeyle başla, riski minimumda tut.",
         baseBasariSansi: 80,
         maliyet: 12,
-        ipucu: "Düşük risk, düşük tavan",
         basariliSonuc: {
           para: 18,
           maas_carpani: 1.1,
@@ -92,7 +89,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
       {
         metin: "Talepleri kabul et, sendikayı tanı.",
         baseBasariSansi: 78,
-        ipucu: "Sadık iş gücü ve itibar, maliyet artışı",
         basariliSonuc: {
           para: -20,
           un: 7,
@@ -114,7 +110,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
       {
         metin: "Sert pazarlık yap, minimum taviz ver.",
         baseBasariSansi: 55,
-        ipucu: "Maliyeti korur, grev riskini yükseltir",
         basariliSonuc: {
           para: 10,
           un: -8,
@@ -134,7 +129,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
         metin: "Sendika liderini satın almayı dene.",
         baseBasariSansi: 45,
         maliyet: 25,
-        ipucu: "Sorunu kökten çözebilir ya da tamamen patlatabilir",
         basariliSonuc: {
           para: -25,
           ahlak: -25,
@@ -170,7 +164,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
         metin: "Sermayenin büyük kısmını hisselere yatır.",
         baseBasariSansi: 45,
         maliyet: 35,
-        ipucu: "Büyük kazanç ya da yıkıcı kayıp",
         basariliSonuc: {
           mutluluk: -11,
           un: -5,
@@ -190,7 +183,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
         metin: "Küçük, temkinli bir miktar yatır.",
         baseBasariSansi: 80,
         maliyet: 10,
-        ipucu: "Sınırlı kazanç, sınırlı risk",
         basariliSonuc: {
           para: 18,
           mesaj: "Küçük yatırımın makul bir kazanç getirdi; ihtiyatın işe yaradı.",
@@ -223,7 +215,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
       {
         metin: "İlanı olabildiğince abart, mucizevi vaatlerde bulun.",
         baseBasariSansi: 55,
-        ipucu: "Hızlı satış artışı, skandal riski",
         basariliSonuc: {
           para: 28,
           ahlak: -10,
@@ -241,7 +232,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
       {
         metin: "Dürüst, mütevazı bir ilan hazırla.",
         baseBasariSansi: 80,
-        ipucu: "Yavaş ama güvenilir bir büyüme",
         basariliSonuc: {
           mutluluk: -5,
           para: 12,
@@ -276,7 +266,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
       {
         metin: "Çizimleri kullan, makineyi üret.",
         baseBasariSansi: 50,
-        ipucu: "Büyük üretim sıçraması, hukuki ve ahlaki risk",
         basariliSonuc: {
           para: 60,
           un: 12,
@@ -295,7 +284,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
       {
         metin: "Çizimleri geri gönder, kendi yolunla ilerle.",
         baseBasariSansi: 85,
-        ipucu: "Yavaş ama temiz bir gelişim",
         basariliSonuc: {
           ahlak: 10,
           mesaj: "Çizimleri iade ettin; mühendis şaşkındı ama kendi araştırmana devam ettin.",
@@ -327,7 +315,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
         metin: "Sigorta yaptır, güvenceye al.",
         baseBasariSansi: 90,
         maliyet: 14,
-        ipucu: "Küçük düzenli masraf, büyük güvence",
         basariliSonuc: {
           para: -14,
           mesaj: "Poliçeyi imzaladın; içinde artık bir güvenlik hissi var.",
@@ -343,7 +330,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
       {
         metin: "Reddet, parayı işine yatır.",
         baseBasariSansi: 75,
-        ipucu: "Kısa vadede kazanç, felaket anında yıkım riski",
         basariliSonuc: {
           mutluluk: -8,
           un: -3,
@@ -380,7 +366,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
         metin: "Yatırımı yap, işçileri koru.",
         baseBasariSansi: 90,
         maliyet: 22,
-        ipucu: "Maliyetli ama vicdanın ve işçilerin güvende",
         basariliSonuc: {
           para: -22,
           ahlak: 15,
@@ -397,7 +382,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
       {
         metin: "Masrafı erteleyip kâr marjını koru.",
         baseBasariSansi: 80,
-        ipucu: "Kısa vadede kazançlı ama vicdani ve itibar riski büyük",
         basariliSonuc: {
           para: 20,
           ahlak: -18,
@@ -433,7 +417,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
       {
         metin: "Teklifi kabul et, çocukları işe al.",
         baseBasariSansi: 90,
-        ipucu: "Büyük kâr artışı, ağır bir ahlaki bedel",
         basariliSonuc: {
           para: 45,
           ahlak: -28,
@@ -451,7 +434,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
       {
         metin: "Reddet, yetişkin işçi almaya devam et.",
         baseBasariSansi: 85,
-        ipucu: "Kâr marjın düşük kalır ama vicdanın temiz",
         basariliSonuc: {
           ahlak: 15,
           un: 6,
@@ -484,7 +466,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
         metin: "Büyük pay al, hattın önde gelen hissedarı ol.",
         baseBasariSansi: 55,
         maliyet: 32,
-        ipucu: "Kalıcı nakliye avantajı ya da batık sermaye",
         basariliSonuc: {
           para: 42,
           maas_carpani: 1.14,
@@ -503,7 +484,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
         metin: "Küçük bir pay al, riski dağıt.",
         baseBasariSansi: 78,
         maliyet: 12,
-        ipucu: "Sınırlı kazanç, sınırlı kayıp",
         basariliSonuc: {
           para: 15,
           mesaj: "Küçük payın makul bir temettü getirdi; hat tamamlandığında memnun kaldın.",
@@ -519,7 +499,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
       {
         metin: "Uzak dur, raylara güvenme.",
         baseBasariSansi: 90,
-        ipucu: "Hiç risk yok ama fırsatı tamamen kaçırma ihtimali",
         basariliSonuc: {
           mutluluk: 2,
           mesaj: "Kenarda durdun; hat gecikti ve şüphelerinde haklı çıktığını düşündün.",
@@ -553,7 +532,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
         metin: "Fiyatları sen de dibe çek, savaşı kabul et.",
         baseBasariSansi: 48,
         maliyet: 18,
-        ipucu: "Müşterini geri kazanabilirsin ama kâr marjın eriyip gidebilir",
         basariliSonuc: {
           para: 20,
           un: 6,
@@ -570,7 +548,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
       {
         metin: "Fiyatı koru, kaliteyi ve kişisel hizmeti öne çıkar.",
         baseBasariSansi: 62,
-        ipucu: "Yavaş bir uyum, garantisiz ama daha az riskli",
         basariliSonuc: {
           un: 10,
           dost_puani: 6,
@@ -604,7 +581,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
         metin: "Elindeki tüm nakiti ver, vadeyi yeniden müzakere et.",
         baseBasariSansi: 65,
         maliyet: 24,
-        ipucu: "Ağır ama kontrollü bir kayıp",
         basariliSonuc: {
           para: -24,
           un: 3,
@@ -621,7 +597,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
       {
         metin: "Başka bir tefeciden yüksek faizle borç al, bankayı kapat.",
         baseBasariSansi: 50,
-        ipucu: "Bugünü kurtarır, yarını daha ağır bir yüke boğar",
         basariliSonuc: {
           para: 10,
           ahlak: -6,
@@ -659,7 +634,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
       {
         metin: "Jandarmaya teslim et, davayı büyüt.",
         baseBasariSansi: 60,
-        ipucu: "Adalet ve caydırıcılık, ama uzun ve maliyetli bir dava",
         basariliSonuc: {
           para: -12,
           un: 14,
@@ -676,7 +650,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
       {
         metin: "Adamı gizlice serbest bırak, karşılığında rakibinden taviz iste.",
         baseBasariSansi: 50,
-        ipucu: "Sessiz bir kazanç ya da tam bir aşağılanma",
         basariliSonuc: {
           para: 22,
           ahlak: -8,
@@ -711,7 +684,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
       {
         metin: "Kapıları aç, fabrikayı olduğu gibi göster.",
         baseBasariSansi: 58,
-        ipucu: "Dürüstlük seni açığa çıkarır ama sahtekârlıkla suçlanmazsın",
         basariliSonuc: {
           un: 12,
           ahlak: 8,
@@ -729,7 +701,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
         metin: "Gazeteciyi güzelce ağırla, ona sadece hazırlanmış vitrini göster.",
         baseBasariSansi: 65,
         maliyet: 10,
-        ipucu: "Görüntüyü kontrol edersin ama gerçek ortaya çıkarsa daha ağır yıkılırsın",
         basariliSonuc: {
           para: -10,
           un: 8,
@@ -764,7 +735,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
         metin: "En gösterişli standı kur, büyük vitrin yap.",
         baseBasariSansi: 52,
         maliyet: 28,
-        ipucu: "Uluslararası ün ya da gösterişli bir israf",
         basariliSonuc: {
           para: 35,
           un: 20,
@@ -783,7 +753,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
         metin: "Mütevazı, işlevsel bir stand kur.",
         baseBasariSansi: 78,
         maliyet: 10,
-        ipucu: "Küçük ama güvenli bir görünürlük",
         basariliSonuc: {
           para: 12,
           un: 5,
@@ -817,7 +786,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
         metin: "Malı büyük miktarda al, kâr marjını katla.",
         baseBasariSansi: 82,
         maliyet: 18,
-        ipucu: "Yüksek kâr, ama nereden geldiğini biliyorsun",
         basariliSonuc: {
           para: 38,
           ahlak: -14,
@@ -836,7 +804,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
         metin: "Daha pahalı ama adil koşullarda üretilen malı tercih et.",
         baseBasariSansi: 70,
         maliyet: 26,
-        ipucu: "Daha düşük kâr ama temiz bir vicdan",
         basariliSonuc: {
           para: 10,
           ahlak: 14,
@@ -869,7 +836,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
       {
         metin: "Teklifi kabul et, fabrikayı işçilere devret.",
         baseBasariSansi: 88,
-        ipucu: "Anında ve garantili para, ama piyasa değerinin altında",
         basariliSonuc: {
           para: 40,
           un: 16,
@@ -886,7 +852,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
       {
         metin: "Reddet, daha yüksek teklifi bekle.",
         baseBasariSansi: 48,
-        ipucu: "Daha büyük bir kazanç umudu ya da hiçbir alıcı bulamama riski",
         basariliSonuc: {
           para: 65,
           mesaj: "Aylar sonra çıkan başka bir alıcı çok daha yüksek bir fiyat teklif etti.",
@@ -920,7 +885,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
         metin: "Çöküşünden faydalan, varlıklarını ucuza kapat.",
         baseBasariSansi: 75,
         maliyet: 15,
-        ipucu: "Kolay bir kazanç, ama düşmanlığı kalıcılaşır",
         basariliSonuc: {
           para: 32,
           rakip_puani: -18,
@@ -939,7 +903,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
         metin: "Ona borç ver, ayakta kalmasına yardım et.",
         baseBasariSansi: 55,
         maliyet: 20,
-        ipucu: "Riskli bir cömertlik, ama uzun vadede bir müttefik kazanabilirsin",
         basariliSonuc: {
           ahlak: 12,
           rakip_puani: 20,
@@ -974,7 +937,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
         metin: "Nakdinin büyük kısmını hemen mala/altına çevir.",
         baseBasariSansi: 55,
         maliyet: 20,
-        ipucu: "Söylenti doğruysa büyük koruma, yanlışsa gereksiz kayıp",
         basariliSonuc: {
           para: 30,
           mesaj: "Devalüasyon gerçekleşti; malda tuttuğun servetin değerini korudu, hatta arttı.",
@@ -990,7 +952,6 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
       {
         metin: "Söylentiye kulak asma, nakitte kal.",
         baseBasariSansi: 70,
-        ipucu: "Yanılırsan güvende kalırsın, doğru çıkarsa ağır kaybedersin",
         basariliSonuc: {
           mutluluk: 2,
           mesaj: "Söylenti asılsız çıktı; hiçbir şey kaybetmeden temkinli davranmış oldun.",

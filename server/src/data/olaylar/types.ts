@@ -28,8 +28,6 @@ export interface OlaySecenegi {
   /** Bu etiketlerden herhangi biri karakterde varsa seçenek kilitlenir (ör. fiziksel sakatlık, fobi). */
   yasakliEtiketler?: string[];
   kilitAciklamasi?: string;
-  /** Oyuncuya gösterilen kısa risk/ödül ipucu. */
-  ipucu?: string;
   /** Belirtilirse bu seçenek sadece bu kişilik özelliğine sahip karakterlere gösterilir. */
   gerekliKisilik?: string;
   /** Belirtilirse bu seçenek sadece kişilik ekseninde belirli bir aralıkta olan karakterlere gösterilir. */

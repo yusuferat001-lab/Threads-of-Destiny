@@ -16,7 +16,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Silahını çek ve kendi hizbin için savaş!",
         baseBasariSansi: 50,
-        ipucu: "Kesin sadakat ya da ağır yara",
         basariliSonuc: {
           un: 25,
           dost_puani: 15,
@@ -32,7 +31,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Silahları indirin! Araya girip kavgayı durdur.",
         baseBasariSansi: 65,
-        ipucu: "Kahramanca bir arabuluculuk",
         basariliSonuc: {
           ahlak: 20,
           un: 15,
@@ -61,7 +59,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Kendi hizbinin emrine uy, üst subayı görmezden gel.",
         baseBasariSansi: 60,
-        ipucu: "Hizbin içinde güven, hiyerarşide risk",
         basariliSonuc: {
           para: 2,
           dost_puani: 12,
@@ -79,7 +76,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Hiyerarşiye uy, üst subayın emrini yerine getir.",
         baseBasariSansi: 70,
-        ipucu: "Kariyer güvenliği, hizip içi güvensizlik",
         basariliSonuc: {
           para: 7,
           mesaj: "Emri eksiksiz yerine getirdin; üst subay seni not etti.",
@@ -108,7 +104,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Listeyi hazırla, hizbinin gücünü pekiştir.",
         baseBasariSansi: 55,
-        ipucu: "Hizip içinde yükseliş, vicdan azabı",
         basariliSonuc: {
           un: 18,
           ahlak: -20,
@@ -196,7 +191,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Yangını üstlen (üstü kapalı), hizbinin gücünü göster.",
         baseBasariSansi: 40,
-        ipucu: "Korku salar ama iz bırakabilir",
         basariliSonuc: {
           un: 20,
           ahlak: -30,
@@ -243,7 +237,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         metin: "Sen de fiyatları maliyetin altına çek, kim dayanacak görelim.",
         baseBasariSansi: 45,
         maliyet: 15,
-        ipucu: "Sarsıcı bir kumar",
         basariliSonuc: {
           mutluluk: -11,
           para: 50,
@@ -290,7 +283,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Karşı tarafı sapkınlıkla suçla ve cemaati kışkırt!",
         baseBasariSansi: 50,
-        ipucu: "Muazzam bir güç kazanırsın ama kan dökülebilir",
         basariliSonuc: {
           un: 30,
           ahlak: -20,
@@ -333,7 +325,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Daveti kabul et, meydanda açıkça tartış.",
         baseBasariSansi: 55,
-        ipucu: "Büyük prestij ya da büyük utanç",
         basariliSonuc: {
           un: 25,
           dost_puani: 10,
@@ -378,7 +369,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Cemaati kendi hizbinin çizgisinde birleştirmeye zorla.",
         baseBasariSansi: 55,
-        ipucu: "Birlik sağlanır ama bazıları küser",
         basariliSonuc: {
           un: 15,
           dost_puani: -5,
@@ -421,7 +411,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Sırrı kendine sakla, hiçbir şey yapma.",
         baseBasariSansi: 85,
-        ipucu: "Güvenli ama vicdan yükü",
         basariliSonuc: {
           ahlak: -5,
           mesaj: "Sessiz kaldın; sır seninle kaldı, güvendesin ama içinde bir ağırlık var.",
@@ -437,7 +426,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Sırrı açığa vurmak üzeresin.",
         baseBasariSansi: 50,
-        ipucu: "Riskli, hizbinle bağını koparabilir",
         basariliSonuc: {
           mesaj: "Kullanılmadı.",
         },
@@ -481,7 +469,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Yemini gururla et, kanını akıt.",
         baseBasariSansi: 85,
-        ipucu: "Bağlılığını kanıtlarsın ama kralın her suçuna ortak olursun",
         basariliSonuc: {
           un: 15,
           ahlak: -5,
@@ -498,7 +485,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Yemini et ama sadece dudak ucuyla, kanını akıtma.",
         baseBasariSansi: 60,
-        ipucu: "Riski düşük ama fark edilirse bedeli ağır",
         basariliSonuc: {
           ahlak: 5,
           mesaj: "Gölgede kaldın, yalandan ağzını oynattın ve elini kesmiş gibi yaptın.",
@@ -530,7 +516,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Görevi tam bir sadakat ve acımasızlıkla yerine getir.",
         baseBasariSansi: 60,
-        ipucu: "Kariyer sıçraması, ruhun çürüyüşü",
         basariliSonuc: {
           un: 25,
           para: 20,
@@ -548,7 +533,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Görevi yavaşlat, kapıyı çalıp kaçmalarına izin ver.",
         baseBasariSansi: 50,
-        ipucu: "Vicdanın rahatlar ama vatan hainliğiyle suçlanabilirsin",
         basariliSonuc: {
           ahlak: 25,
           un: -10,
@@ -582,7 +566,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Kıdemli ve yaşlı paşayı destekle.",
         baseBasariSansi: 75,
-        ipucu: "Geleneklere bağlı, güvenli liman",
         basariliSonuc: {
           un: 5,
           dost_puani: 10,
@@ -598,7 +581,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "İkisine de yalan söyle, taraf tutma.",
         baseBasariSansi: 65,
-        ipucu: "Tehlikeli bir tarafsızlık",
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
@@ -632,7 +614,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Kılıcının kabzasını göster ve onları korkutarak dağıt.",
         baseBasariSansi: 85,
-        ipucu: "Otoriteyi korur, nefreti büyütür",
         basariliSonuc: {
           un: 5,
           ahlak: -10,
@@ -648,7 +629,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Tükürüğü sil, cebinden para çıkarıp onlara at.",
         baseBasariSansi: 55,
-        ipucu: "Vicdan azabını dindirir, şaşırtıcı bir hamle",
         basariliSonuc: {
           dost_puani: 10,
           ahlak: 20,
@@ -683,7 +663,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         metin: "Altını al ve adamı oracıkta tutukla!",
         baseBasariSansi: 70,
         maxAhlak: 45,
-        ipucu: "Sadece ahlaksızlara: Hem rüşveti al hem sadakatini sat",
         basariliSonuc: {
           para: 50,
           un: 25,
@@ -701,7 +680,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Teklifi reddet, defol git de.",
         baseBasariSansi: 85,
-        ipucu: "Sadakat ve şeref",
         basariliSonuc: {
           ahlak: 15,
           un: 10,
@@ -777,7 +755,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Görevi hiç sorgulamadan kabul et.",
         baseBasariSansi: 65,
-        ipucu: "Büyük ün ama ciddi yaralanma riski",
         basariliSonuc: {
           un: 20,
           ahlak: 5,
@@ -873,7 +850,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Derhal komutana bildir.",
         baseBasariSansi: 75,
-        ipucu: "Büyük itibar ama Yeni Nizam'ın gazabını üstüne çekersin",
         basariliSonuc: {
           un: 20,
           para: 10,
@@ -922,7 +898,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Korkusuzca toplantıya katıl ve en radikal fikri savun.",
         baseBasariSansi: 65,
-        ipucu: "Liderliğe yükselirsin ama büyük risk",
         basariliSonuc: {
           un: 25,
           dost_puani: 15,
@@ -940,7 +915,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Katılma, riski göze alma.",
         baseBasariSansi: 80,
-        ipucu: "Canını kurtarır, yoldaşlarını küstürür",
         basariliSonuc: {
           ahlak: 3,
           mutluluk: -1,
@@ -973,7 +947,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Görevi kabul et, sivil zayiatı umursama.",
         baseBasariSansi: 45,
-        ipucu: "Harekette kahramanlık, ahlaki yıkım",
         basariliSonuc: {
           un: 35,
           para: 20,
@@ -993,7 +966,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         metin: "Önce depodaki değerli şeyleri kendi cebine aktar, sonra patlat.",
         baseBasariSansi: 35,
         maxAhlak: 40,
-        ipucu: "Sadece ahlaksızlara: Hem zengin ol hem kahraman",
         basariliSonuc: {
           para: 80,
           un: 20,
@@ -1009,7 +981,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Siviller ölür! Bu görevi yapamam.",
         baseBasariSansi: 85,
-        ipucu: "Vicdanın rahatlar ama davana ihanet",
         basariliSonuc: {
           ahlak: 25,
           un: -15,
@@ -1041,7 +1012,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Ilımlı adayı destekle (Siyasi çözüm).",
         baseBasariSansi: 75,
-        ipucu: "Ahlaki ve güvenli",
         basariliSonuc: {
           ahlak: 15,
           dost_puani: 10,
@@ -1057,7 +1027,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Atılgan ve kanlı adayı destekle (Silahlı isyan).",
         baseBasariSansi: 60,
-        ipucu: "Radikal, tehlikeli ve acımasız",
         basariliSonuc: {
           un: 25,
           ahlak: -20,
@@ -1091,7 +1060,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         metin: "Ödemeyi yap, ağzını bağla.",
         baseBasariSansi: 85,
         maliyet: 35,
-        ipucu: "Büyük bir para kaybı, ama hayatını kurtarır",
         basariliSonuc: {
           para: -35,
           mesaj: "Adama parayı verdin. Şimdilik sustu.",
@@ -1108,7 +1076,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         metin: "Onu kandır ve gece vakti bir ara sokakta işini bitir.",
         baseBasariSansi: 40,
         maxAhlak: 45,
-        ipucu: "Sadece karanlık olanlara: Ölümcül ve ahlaksız çözüm",
         basariliSonuc: {
           ahlak: -40,
           un: 15,
@@ -1126,7 +1093,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Blöf yapıyor! Ona hiçbir şey verme.",
         baseBasariSansi: 65,
-        ipucu: "Para sende kalır, risk %50",
         basariliSonuc: {
           ahlak: 3,
           mutluluk: -1,
@@ -1160,7 +1126,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Şüpheliyi sorgula, gerekirse sert yöntemler kullan.",
         baseBasariSansi: 55,
-        ipucu: "Hareketi korur ama masum olabilir",
         basariliSonuc: {
           un: 15,
           ahlak: -20,
@@ -1177,7 +1142,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Kanıt olmadan kimseyi suçlama, sabırla gerçek casusu bekle.",
         baseBasariSansi: 60,
-        ipucu: "Vicdanlı ama tehlikeli bir bekleyiş",
         basariliSonuc: {
           ahlak: 15,
           mesaj: "Sabrın sonunda gerçek casus kendi hatasıyla ele verdi; kimseye haksızlık etmedin.",
@@ -1227,7 +1191,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Doğruyu söyle, fikirlerini savun.",
         baseBasariSansi: 60,
-        ipucu: "Riskli ama subayın kendisi de gizliden reformcu olabilir",
         basariliSonuc: {
           un: 15,
           dost_puani: 10,
@@ -1305,7 +1268,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Riski göze al, yine de git.",
         baseBasariSansi: 45,
-        ipucu: "Gerçekten tuzak olabilir ama gerçek de olabilir",
         basariliSonuc: {
           mutluluk: -11,
           para: 30,
@@ -1399,7 +1361,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Loncaya uy, halkı sömür.",
         baseBasariSansi: 90,
-        ipucu: "Para kazandırır, ahlakı bitirir",
         basariliSonuc: {
           para: 35,
           ahlak: -25,
@@ -1417,7 +1378,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Gizlice eski fiyattan satıp halkı koru.",
         baseBasariSansi: 45,
-        ipucu: "Vicdanlı ama loncaya ihanet",
         basariliSonuc: {
           ahlak: 25,
           un: 20,
@@ -1451,7 +1411,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Kefil ol, gelecekteki bağlantılara yatırım yap.",
         baseBasariSansi: 75,
-        ipucu: "Uzun vadeli bağlantı, kısa vadeli baş ağrısı",
         basariliSonuc: {
           mutluluk: -6,
           un: -2,
@@ -1501,7 +1460,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Defterlerini geceden düzelt, izleri sil.",
         baseBasariSansi: 55,
-        ipucu: "Riskli ama denetimi atlatabilirsin",
         basariliSonuc: {
           ahlak: -10,
           mesaj: "Defterleri temizledin; müfettiş hiçbir şey bulamadan gitti.",
@@ -1591,7 +1549,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Ambargoya tam uy, loncaya sadakatini göster.",
         baseBasariSansi: 80,
-        ipucu: "Lonca içinde itibar, dışarıda kayıp müşteri",
         basariliSonuc: {
           un: 12,
           para: -10,
@@ -1607,7 +1564,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Gizli bir ara yoldan eski müşterilerine mal ulaştırmaya devam et.",
         baseBasariSansi: 45,
-        ipucu: "Riskli ama kazançlı bir ihanet",
         basariliSonuc: {
           para: 35,
           ahlak: -10,
@@ -1687,7 +1643,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Malları topla, kimseye söyleme.",
         baseBasariSansi: 70,
-        ipucu: "Kolay kazanç ama vicdanını yorar",
         basariliSonuc: {
           para: 35,
           ahlak: -10,
@@ -1827,7 +1782,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Boykota tam destek ver, dükkanı feda et.",
         baseBasariSansi: 60,
-        ipucu: "Maddi hasar ama Pazar Birliği'nde kahraman olursun",
         basariliSonuc: {
           un: 30,
           para: -20,
@@ -1845,7 +1799,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Gizlice limandan mal almaya devam et.",
         baseBasariSansi: 50,
-        ipucu: "Riskli ikiyüzlülük",
         basariliSonuc: {
           para: 40,
           ahlak: -15,
@@ -2017,7 +1970,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         metin: "Payına düşeni ver, ortak depoya katıl.",
         baseBasariSansi: 70,
         maliyet: 20,
-        ipucu: "Kısa vadede masraf, uzun vadede güç birliği",
         basariliSonuc: {
           para: -14,
           maas_carpani: 1.05,
@@ -2112,7 +2064,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Arkadaşını sorgula, gerçeği öğren.",
         baseBasariSansi: 60,
-        ipucu: "Dostluğunu riske atabilir",
         basariliSonuc: {
           dost_puani: -5,
           un: 12,
@@ -2537,7 +2488,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Kendi yorumunu da katarak cevapla.",
         baseBasariSansi: 55,
-        ipucu: "Riskli ama derinliğini gösterebilir",
         basariliSonuc: {
           un: 3,
           ahlak: 15,
@@ -2986,7 +2936,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Sert, kararlı bir yanıt yaz, fikirlerini savun.",
         baseBasariSansi: 50,
-        ipucu: "Riskli ama pes etmediğini gösterir",
         basariliSonuc: {
           un: 20,
           ahlak: 10,
@@ -3087,7 +3036,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
           "evcil_hayvan_tur:Şahin",
         ],
         kilitAciklamasi: "Bunun için eğitimli bir şahine ihtiyacın var.",
-        ipucu: "Gizli Şık: Şahinler devriyelerin gözünden kaçar",
         basariliSonuc: {
           un: 20,
           dost_puani: 8,
@@ -3101,7 +3049,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Kendin git, geceyi kullanarak sızmaya çalış.",
         baseBasariSansi: 45,
-        ipucu: "Onurlu ama son derece tehlikeli",
         basariliSonuc: {
           un: 15,
           mesaj: "Devriyelerden ustalıkla kaçıp mesajı bizzat ulaştırdın; askerler arasında adın efsaneye dönüştü.",
@@ -3117,7 +3064,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Görevi reddet, çok riskli bul.",
         baseBasariSansi: 90,
-        ipucu: "Güvenli ama hizip içinde itibar kaybı",
         basariliSonuc: {
           un: -8,
           mesaj: "Görevi geri çevirdin; general suratını asıp başka birini görevlendirdi.",
@@ -3155,7 +3101,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
           "envanter:kara_kilic",
         ],
         kilitAciklamasi: "Bunun için efsanevi bir silaha ihtiyacın var.",
-        ipucu: "Gizli Envanter: Kara Kılıç rakibine şans tanımaz",
         basariliSonuc: {
           un: 25,
           ahlak: -5,
@@ -3169,7 +3114,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Kendi kılıcınla, sıradan bir asker gibi savaş.",
         baseBasariSansi: 50,
-        ipucu: "Adil bir düello, sonucu belirsiz",
         basariliSonuc: {
           un: 18,
           saglik: -5,
@@ -3186,7 +3130,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Sakatlanma bahanesiyle düellodan çekil.",
         baseBasariSansi: 85,
-        ipucu: "Güvenli ama itibarın örselenir",
         basariliSonuc: {
           un: -10,
           mesaj: "Çekildin; hizip içindekiler senin için hayal kırıklığını gizleyemedi.",
@@ -3223,7 +3166,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
           "evcil_hayvan_tur:Kedi",
         ],
         kilitAciklamasi: "Bunun için usta bir fare avcısına ihtiyacın var.",
-        ipucu: "Gizli Şık: Gemi kedileri yüzyıllardır bunun ustası",
         basariliSonuc: {
           ahlak: -3,
           mutluluk: -3,
@@ -3241,7 +3183,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         metin: "Pahalı fare avcıları ve tuzaklar kirala.",
         baseBasariSansi: 80,
         maliyet: 22,
-        ipucu: "Güvenilir ama masraflı",
         basariliSonuc: {
           para: -22,
           un: 8,
@@ -3257,7 +3198,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Görmezden gel, stoğun bir kısmını yazık say.",
         baseBasariSansi: 90,
-        ipucu: "Masrafsız ama kayıp kesin",
         basariliSonuc: {
           para: -15,
           mesaj: "Fareler doyana kadar yediler; kayıp cebinden gitti ama en azından uğraşmadın.",
@@ -3295,7 +3235,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
           "envanter:golge_sikke",
         ],
         kilitAciklamasi: "Bunun için gizemli bir sikkeye ihtiyacın var.",
-        ipucu: "Gizli Envanter: Ahlaki bedeli var ama sonucu garanti eder",
         basariliSonuc: {
           para: 20,
           un: 15,
@@ -3310,7 +3249,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Dürüstçe, olağan ticaret becerinle yarış.",
         baseBasariSansi: 50,
-        ipucu: "Adil ama sonucu belirsiz",
         basariliSonuc: {
           mutluluk: -7,
           para: 18,
@@ -3329,7 +3267,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Bahisten çekil, onuru fazla önemseme.",
         baseBasariSansi: 90,
-        ipucu: "Güvenli ama birlik seni hafife alır",
         basariliSonuc: {
           un: -8,
           mesaj: "Çekildin; birlik üyeleri arkandan fısıldadı ama en azından riske girmedin.",
@@ -3367,7 +3304,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
           "esya:kutsal_kalinti",
         ],
         kilitAciklamasi: "Bunun için kutsal bir kalıntıya ihtiyacın var.",
-        ipucu: "Gizli Envanter: Gözle görülür bir mucize şüpheleri anında susturur",
         basariliSonuc: {
           ahlak: 15,
           un: 22,
@@ -3381,7 +3317,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Sadece güçlü bir hitabetle, sözlerine güven.",
         baseBasariSansi: 55,
-        ipucu: "Zorlu ama kelimelerin gücüne inanıyorsun",
         basariliSonuc: {
           ahlak: 10,
           un: 15,
@@ -3397,7 +3332,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Vaazı erteleyip hazırlıksız çıkmaktan kaçın.",
         baseBasariSansi: 85,
-        ipucu: "Güvenli ama Gelenekçiler hayal kırıklığına uğrar",
         basariliSonuc: {
           un: -6,
           mesaj: "Vaaz ertelendi; cemaat anlayışla karşıladı ama şüpheciler bir hafta daha rahat konuştu.",
@@ -3434,7 +3368,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
           "evcil_hayvan_tur:Papağan",
         ],
         kilitAciklamasi: "Bunun için eğitimli, taklitçi bir kuşa ihtiyacın var.",
-        ipucu: "Gizli Şık: Etkileyici ama sahte bir 'mucize'",
         basariliSonuc: {
           un: 20,
           ahlak: -18,
@@ -3451,7 +3384,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Sadece içten, dürüst bir vaazla coşku yarat.",
         baseBasariSansi: 55,
-        ipucu: "Yavaş ama dürüst bir büyüme",
         basariliSonuc: {
           ahlak: 10,
           un: 12,
@@ -3467,7 +3399,6 @@ export const OLAY_HIZIP: OlayTanimi[] = [
       {
         metin: "Fikri reddet, gösteriye hiç girme.",
         baseBasariSansi: 90,
-        ipucu: "Güvenli ama Yenilikçiler'i hayal kırıklığına uğratır",
         basariliSonuc: {
           ahlak: 6,
           un: -6,

@@ -9,7 +9,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Take the desert road — short, cheap, dangerous.",
-        ipucu: "The highest profit, the risk of bandits and thirst",
         basariliSonuc: {
           mesaj: "You crossed the desert in ten days; the goods reached the market before anyone else.",
           detay:
@@ -23,7 +22,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Take the mountain road — long, tiring, safe.",
-        ipucu: "A low but safe profit, loss of time",
         basariliSonuc: {
           mesaj: "The mountain road was long but the caravan arrived intact.",
           detay: "By the time you arrived the best prices were gone, but you still made a profit. A dull success is a success too.",
@@ -36,7 +34,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Hire guards, take the main road.",
-        ipucu: "The safest; the guards' fee eats the profit",
         basariliSonuc: {
           mesaj: "Thanks to the guards, not a single bandit could get close.",
           detay:
@@ -58,7 +55,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Join, follow the guild's rules.",
-        ipucu: "A permanent income boost and protection, you lose your independence",
         basariliSonuc: {
           mesaj: "You were admitted to the guild; you can now bid on the big contracts.",
           detay:
@@ -72,7 +68,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Don't join, work independent and unregulated.",
-        ipucu: "Free pricing and flexibility, the guild's hostility",
         basariliSonuc: {
           mesaj: "You undercut the guild's prices; customers poured in.",
           detay:
@@ -94,7 +89,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Buy it and sell it as silk.",
-        ipucu: "High profit, puts your reputation at risk",
         basariliSonuc: {
           mesaj: "No one noticed the difference; your profit margin tripled.",
           detay:
@@ -107,7 +101,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Buy it but sell it under its real name, as cheap cloth.",
-        ipucu: "Honest and low profit, a new customer base",
         basariliSonuc: {
           mesaj: "You sold the cheap cloth honestly; you got a steady clientele from the poor quarters.",
           detay:
@@ -120,7 +113,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse, report the supplier to the guild.",
-        ipucu: "A great reputation gain, a dangerous enemy",
         basariliSonuc: {
           mesaj: "Thanks to your report the fraud ring was broken; your name became that of an honest merchant.",
           detay:
@@ -141,7 +133,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Quietly keep spending the coins.",
-        ipucu: "Hides your loss, a serious charge if caught",
         basariliSonuc: {
           mesaj: "The coins passed unnoticed; your loss was made good.",
           detay: "You told no one; this became your little secret.",
@@ -153,7 +144,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Take the coins back to the person you got them from.",
-        ipucu: "Honest but a loss of time and money",
         basariliSonuc: {
           mesaj: "The man was embarrassed, changed the coins, and apologized to you.",
           detay: "Your honesty was talked about in the market; some merchants now do business with you more easily.",
@@ -173,7 +163,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Save the goods.",
-        ipucu: "Protects your capital, you lose the animals",
         basariliSonuc: {
           mesaj: "You saved most of the goods through the smoke; your animals were lost.",
           detay: "Your capital stayed intact, but finding new animals will take time.",
@@ -185,7 +174,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Save the animals.",
-        ipucu: "Protects your means of transport, you lose your goods",
         basariliSonuc: {
           mesaj: "You saved the horses and camels; at least you can carry on the road.",
           detay: "The goods burned but having the animals is enough for a new start.",
@@ -205,7 +193,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Sell your partner to the guild, seize the whole shop!",
-        ipucu: "Only for the immoral: a very profitable betrayal",
         basariliSonuc: {
           mesaj:
             "You reported your partner to the treasury! The man was thrown in the dungeon, and you, as an 'honest citizen', bought up all his shares cheap.",
@@ -217,7 +204,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Accept the suggestion.",
-        ipucu: "Big savings on tax, big risk in an audit",
         basariliSonuc: {
           mesaj: "You evaded tax for years; your earnings stayed far above their recorded value.",
           detay: "Even your acquaintances in the state office don't know about it; you keep this secret tight.",
@@ -229,7 +215,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse, keep a single honest ledger.",
-        ipucu: "Less profit, full safety",
         basariliSonuc: {
           mesaj: "You stayed honest; audits never worry you at all.",
           detay: "Your partner finds you 'too cautious', but you sleep easy at night.",
@@ -249,7 +234,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Spend all your savings on the dowry, secure a good marriage.",
-        ipucu: "Your daughter's future, your capital",
         basariliSonuc: {
           mesaj: "The dowry was approved, the wedding was grand; your daughter began a happy life.",
           detay: "You wiped out your capital, but the happiness in your daughter's eyes was worth it.",
@@ -261,7 +245,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Offer a more modest dowry.",
-        ipucu: "Protects your capital, risks the marriage",
         basariliSonuc: {
           mesaj: "The family accepted the modest offer; the wedding was plain but warm.",
           detay: "Your daughter said she was proud not of the money but of you.",
@@ -281,7 +264,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Break the ice using your pet parrot's talent for mimicry.",
-        ipucu: "Hidden option: merchants love funny and clever people",
         basariliSonuc: {
           mesaj:
             "When your parrot mimicked the strangers' odd sounds, the whole caravan burst out laughing. A wonderful bond formed between you and you struck a deal at the best price!",
@@ -292,7 +274,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Hire an interpreter, bargain directly.",
-        ipucu: "A direct advantage, the interpreter may be untrustworthy",
         basariliSonuc: {
           mesaj: "Thanks to the interpreter you bought the best goods at the best price.",
           detay: "These merchants come the same season every year; they are your customers now.",
@@ -304,7 +285,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Try to deal with signs, don't take the risk.",
-        ipucu: "Free but limited",
         basariliSonuc: {
           mesaj: "With hand gestures you made a small but profitable trade.",
           detay: "The caravan leader laughed and shook your hand; language may not have been shared, but trade was.",
@@ -324,7 +304,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Give the captain permission to throw half the cargo.",
-        ipucu: "A partial loss, saving the ship and remaining cargo",
         basariliSonuc: {
           mesaj: "The ship and your remaining cargo weathered the storm.",
           detay: "The loss was great but you didn't lose everything; the captain said you made the right call.",
@@ -336,7 +315,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Let nothing be thrown, take the risk.",
-        ipucu: "Either you protect the whole cargo or you lose everything",
         basariliSonuc: {
           mesaj: "The ship miraculously weathered the storm with the cargo intact.",
           detay: "The captain said he'd never work with you again, but this time you won.",
@@ -356,7 +334,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Pay, carry on your way.",
-        ipucu: "Safe but sets a precedent",
         basariliSonuc: {
           mesaj: "You paid the levy and passed without trouble.",
           detay: "You know he'll be here again next time, and it bothers you.",
@@ -368,7 +345,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse to pay, complain to the higher authority.",
-        ipucu: "A long-term solution, a short-term danger",
         basariliSonuc: {
           mesaj: "Your complaint was heeded; the lordling was warned and the levy lifted.",
           detay: "Other merchants thanked you; this road is safer to travel now.",
@@ -388,7 +364,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept the partnership.",
-        ipucu: "An immense fortune, execution if caught",
         basariliSonuc: {
           mesaj: "The counterfeit coins circulated without trouble; your fortune multiplied.",
           detay: "The life you built with this money carries a lie at its foundation, and you know it.",
@@ -400,7 +375,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse the offer, report the goldsmith.",
-        ipucu: "Honorable but earns a dangerous enemy",
         basariliSonuc: {
           mesaj: "Thanks to your report the counterfeiting ring was broken.",
           detay: "The guild rewarded you, but the goldsmith's relatives will never forgive you.",
@@ -420,7 +394,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Trust the guide, take the shortcut.",
-        ipucu: "You save time or you fall into a trap",
         basariliSonuc: {
           mesaj: "The shortcut really worked; you reached the market ahead of your rivals.",
           detay: "The guide smiled to himself; maybe he was just a good guide.",
@@ -432,7 +405,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Take the main road despite his insistence.",
-        ipucu: "Safe but slow",
         basariliSonuc: {
           mesaj: "You arrived safely by the main road; the guide sulked but there was no trouble.",
           detay: "Trusting your instincts is sometimes the best trade strategy.",
@@ -452,7 +424,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Secretly make the apprentice a better offer.",
-        ipucu: "You gain a talent, you gain an enemy too",
         basariliSonuc: {
           mesaj: "The apprentice accepted your offer; the quality of your work rose visibly.",
           detay: "His old master doesn't speak to you anymore, but your new apprentice more than makes up for it.",
@@ -464,7 +435,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Stay honest, train your own apprentice.",
-        ipucu: "Slow but solid and reputable",
         basariliSonuc: {
           mesaj: "You trained your own apprentice from scratch; it took time but his loyalty was total.",
           detay: "They say slow-growing trees put down deeper roots; so it was with your business.",
@@ -484,7 +454,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Be modest, accept the reward.",
-        ipucu: "A gain that trusts to luck",
         basariliSonuc: {
           mesaj: "The noble rewarded your honesty; your name spread through the city at once.",
           detay: "The tale of 'the merchant who treats even a beggar with respect' was told for months.",
@@ -496,7 +465,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Turn it into an opportunity, ask the noble for a contract.",
-        ipucu: "A great opportunity, the risk of looking greedy",
         basariliSonuc: {
           mesaj: "The noble liked your frankness and made you a supplier to the palace.",
           detay: "Your boldness was more than repaid; you now sell to the palace kitchen too.",
@@ -516,7 +484,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Enter the contest.",
-        ipucu: "A fun risk; earns fame or laughter",
         basariliSonuc: {
           mesaj: "You got your rival to sell a goat for two worthless stones; the crowd laughed and applauded.",
           detay: "In the city you are now known as 'the master of the bargain'.",
@@ -528,7 +495,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Stay a spectator.",
-        ipucu: "No risk",
         basariliSonuc: {
           mesaj: "You watched from the side, enjoyed it, risked nothing.",
           detay: "Some days just watching is enough.",
@@ -548,7 +514,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept the offer, take a share in the business.",
-        ipucu: "A great gain, a deadly risk",
         basariliSonuc: {
           mesaj: "The counterfeit coins entered circulation unnoticed; your coffer filled unbelievably.",
           detay: "Some riches come with a dangerous secret.",
@@ -560,7 +525,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse the offer, report the matter to the tradesmen's guild.",
-        ipucu: "Safe, an honest tradesman's reputation",
         basariliSonuc: {
           mesaj:
             "Your report broke the counterfeiting ring; you began to be spoken of within the guild as an 'honest merchant'.",
@@ -581,7 +545,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Raise prices as high as possible.",
-        ipucu: "A great gain, the people's hatred",
         basariliSonuc: {
           mesaj: "The panicked people agreed to any price; your coffer filled as it never had.",
           detay: "Some gains are built on other people's desperation.",
@@ -593,7 +556,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Keep prices fair, even give discounts to those in need.",
-        ipucu: "Your gain drops but you become a hero of the people",
         basariliSonuc: {
           mesaj:
             "Your fair prices were talked about in the city; when the plague passed, your name became an example of honesty remembered for generations.",
@@ -614,7 +576,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept the partnership.",
-        ipucu: "Profitable and eye-opening, but the risk of a local backlash",
         basariliSonuc: {
           mesaj:
             "The partnership proved even more profitable than expected; you opened to new markets, while some local tradesmen condemned you.",
@@ -628,7 +589,6 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse, work only with local tradesmen.",
-        ipucu: "Safe and familiar, but you miss a great opportunity",
         basariliSonuc: {
           mesaj: "You refused; the local tradesmen appreciated you as 'one of us'.",
           detay: "Some assurances come from familiarity.",

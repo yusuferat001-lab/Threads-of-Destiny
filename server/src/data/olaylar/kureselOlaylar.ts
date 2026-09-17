@@ -32,7 +32,6 @@ export const OLAY_KURESEL: OlayTanimi[] = [
         baseBasariSansi: 80,
         maliyet: 15,
         kilitAciklamasi: "Kırsala çekilip aylarca geçinecek paran yok.",
-        ipucu: "En güçlü korunma; pahalı, morali düşürür, 'kaçtı' dedikodusu",
         basariliSonuc: {
           ulke_etkisi: { vebada: true },
           veba_koruma: 2,
@@ -57,7 +56,6 @@ export const OLAY_KURESEL: OlayTanimi[] = [
         baseBasariSansi: 85,
         maliyet: 6,
         kilitAciklamasi: "Aylarca yetecek erzağı stoklayacak paran yok.",
-        ipucu: "Orta düzey korunma; erzak masrafı, kapalı kalmak morali yer",
         basariliSonuc: {
           ulke_etkisi: { vebada: true },
           veba_koruma: 1,
@@ -79,7 +77,6 @@ export const OLAY_KURESEL: OlayTanimi[] = [
       {
         metin: "Hayatına normal devam et: kaçacak yer yok, kader ne yazdıysa",
         baseBasariSansi: 60,
-        ipucu: "Hiç korunma yok; bedava, korkak görünmezsin",
         basariliSonuc: {
           ulke_etkisi: { vebada: true },
           veba_koruma: 0,
@@ -113,7 +110,6 @@ export const OLAY_KURESEL: OlayTanimi[] = [
       {
         metin: "İçeri al, elinden geleni yap",
         baseBasariSansi: 45,
-        ipucu: "İtibar ve vicdan kazanırsın ama bulaşma riski yüksek",
         basariliSonuc: {
           ahlak: 8,
           mutluluk: 5,
@@ -130,7 +126,6 @@ export const OLAY_KURESEL: OlayTanimi[] = [
       {
         metin: "Kapıyı açma, uzaklaşmasını söyle",
         baseBasariSansi: 90,
-        ipucu: "Güvenli ama vicdan yükü ağır",
         basariliSonuc: {
           ahlak: -6,
           mutluluk: -5,
@@ -160,7 +155,6 @@ export const OLAY_KURESEL: OlayTanimi[] = [
       {
         metin: "Cenazeye git, son görevini yap",
         baseBasariSansi: 50,
-        ipucu: "Huzur ve saygınlık; kalabalıkta bulaşma riski",
         basariliSonuc: {
           mutluluk: 4,
           ahlak: 4,
@@ -202,7 +196,6 @@ export const OLAY_KURESEL: OlayTanimi[] = [
       {
         metin: "Sakin ol, doğruca eve git, iyice yıkan ve bekle",
         baseBasariSansi: 80,
-        ipucu: "Ucuz ve makul; yine de küçük bir risk kalır",
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
@@ -219,7 +212,6 @@ export const OLAY_KURESEL: OlayTanimi[] = [
         baseBasariSansi: 66,
         maliyet: 3,
         kilitAciklamasi: "Şifacıya verecek paran yok.",
-        ipucu: "Para harcarsın; işe yararsa rahatlarsın",
         basariliSonuc: {
           para: -3,
           saglik: 2,
@@ -250,7 +242,6 @@ export const OLAY_KURESEL: OlayTanimi[] = [
       {
         metin: "İşi kabul et, hastalara bak",
         baseBasariSansi: 40,
-        ipucu: "İyi para + itibar; ölümcül bulaşma riski",
         basariliSonuc: {
           mutluluk: -10,
           para: 25,

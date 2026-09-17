@@ -22,7 +22,6 @@ export const OLAY_MULK: OlayTanimi[] = [
       {
         metin: "Kendi ellerinle, aileyle birlikte topla.",
         baseBasariSansi: 75,
-        ipucu: "Bedava ama yorucu — mutluluk küçük bir bedel",
         basariliSonuc: {
           para: 8,
           mutluluk: -3,
@@ -39,7 +38,6 @@ export const OLAY_MULK: OlayTanimi[] = [
         metin: "Birkaç günlük yevmiyeli işçi tut.",
         baseBasariSansi: 85,
         maliyet: 6,
-        ipucu: "Küçük bir masraf, garantiye yakın bir hasat",
         basariliSonuc: {
           para: 14,
           mesaj: "İşçiler hızlı çalıştı, hasat zamanında ve eksiksiz kaldırıldı.",
@@ -63,7 +61,6 @@ export const OLAY_MULK: OlayTanimi[] = [
       {
         metin: "Köy büyüğüne git, meseleyi çözdür.",
         baseBasariSansi: 65,
-        ipucu: "Adil ama zaman alıcı bir yol",
         basariliSonuc: {
           ahlak: 4,
           mutluluk: -2,
@@ -79,7 +76,6 @@ export const OLAY_MULK: OlayTanimi[] = [
         metin: "Sert çık, taşı sen kendin dikersin.",
         baseBasariSansi: 40,
         maxAhlak: 70,
-        ipucu: "Riskli — kazanırsan tarla senin, kaybedersen düşman kazanırsın",
         basariliSonuc: {
           para: 6,
           rakip_puani: 2,
@@ -110,7 +106,6 @@ export const OLAY_MULK: OlayTanimi[] = [
         metin: "Şenliğe katıl, masrafı sen karşıla.",
         baseBasariSansi: 80,
         maliyet: 10,
-        ipucu: "Mutluluk ve ün getirir, cebinden biraz gider",
         basariliSonuc: {
           un: 8,
           mutluluk: 10,
@@ -125,7 +120,6 @@ export const OLAY_MULK: OlayTanimi[] = [
       {
         metin: "Hasadı sessizce ambara kaldır, kutlamayı geç.",
         baseBasariSansi: 90,
-        ipucu: "Güvenli ama sıradan",
         basariliSonuc: {
           para: 10,
           mesaj: "Hasadın tamamını sessizce depoladın, kâr hanene fazladan bir kaç akçe daha yazıldı.",
@@ -150,7 +144,6 @@ export const OLAY_MULK: OlayTanimi[] = [
         metin: "Deneyimli bir otacı/ilaç tut, parasını öde.",
         baseBasariSansi: 78,
         maliyet: 12,
-        ipucu: "Pahalı ama etkili",
         basariliSonuc: {
           para: 6,
           mesaj: "Zararlılar temizlendi, hasadın büyük kısmı kurtuldu.",
@@ -164,7 +157,6 @@ export const OLAY_MULK: OlayTanimi[] = [
       {
         metin: "Riske gir, kendi yöntemlerinle uğraş.",
         baseBasariSansi: 45,
-        ipucu: "Bedava ama şansa bağlı",
         basariliSonuc: {
           para: 4,
           mesaj: "Uykusuz birkaç gecenin sonunda istilayı kendi başına atlattın.",
@@ -192,7 +184,6 @@ export const OLAY_MULK: OlayTanimi[] = [
       {
         metin: "Kendi elinle sakinleştirmeye çalış.",
         baseBasariSansi: 55,
-        ipucu: "Riskli — kavgaya karışabilirsin",
         basariliSonuc: {
           un: 5,
           mutluluk: 3,
@@ -207,7 +198,6 @@ export const OLAY_MULK: OlayTanimi[] = [
       {
         metin: "Kapıya götür, hanından at.",
         baseBasariSansi: 80,
-        ipucu: "Güvenli ama misafirin dilinde kalırsın",
         basariliSonuc: {
           mutluluk: -1,
           para: 4,
@@ -232,7 +222,6 @@ export const OLAY_MULK: OlayTanimi[] = [
         metin: "En iyi odayı ve sofrayı sun, masrafına aldırma.",
         baseBasariSansi: 75,
         maliyet: 8,
-        ipucu: "Pahalı ama uzun vadede ün getirebilir",
         basariliSonuc: {
           un: 10,
           para: 6,
@@ -246,7 +235,6 @@ export const OLAY_MULK: OlayTanimi[] = [
       {
         metin: "Standart hizmeti sun, fazladan uğraşma.",
         baseBasariSansi: 85,
-        ipucu: "Güvenli, ama büyük bir fırsatı kaçırabilirsin",
         basariliSonuc: {
           para: 5,
           mesaj: "Gezgin sessizce kaldı ve ayrıldı, ne övgü ne şikâyet — sıradan bir gece geçti.",
@@ -273,7 +261,6 @@ export const OLAY_MULK: OlayTanimi[] = [
       {
         metin: "Elindeki suyla hemen üstüne git.",
         baseBasariSansi: 60,
-        ipucu: "Riskli ama hızlı",
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
@@ -290,7 +277,6 @@ export const OLAY_MULK: OlayTanimi[] = [
         metin: "Komşu esnafı yardıma çağır.",
         baseBasariSansi: 82,
         maliyet: 4,
-        ipucu: "Güvenli, küçük bir minnet borcuyla",
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
@@ -315,7 +301,6 @@ export const OLAY_MULK: OlayTanimi[] = [
       {
         metin: "Siparişi kabul et, gece gündüz çalış.",
         baseBasariSansi: 60,
-        ipucu: "Büyük kazanç ama yorucu ve riskli",
         basariliSonuc: {
           mutluluk: -9,
           para: 22,
@@ -332,7 +317,6 @@ export const OLAY_MULK: OlayTanimi[] = [
       {
         metin: "Nazikçe reddet, mevcut işlerine devam et.",
         baseBasariSansi: 95,
-        ipucu: "Güvenli, fırsat kaçar",
         basariliSonuc: {
           ahlak: 3,
           mutluluk: -1,
@@ -360,7 +344,6 @@ export const OLAY_MULK: OlayTanimi[] = [
       {
         metin: "Kısa, tehlikeli dağ yolunu seç.",
         baseBasariSansi: 55,
-        ipucu: "Erken varış, büyük kazanç ihtimali — ama soygun riski",
         basariliSonuc: {
           mutluluk: -9,
           un: -3,
@@ -376,7 +359,6 @@ export const OLAY_MULK: OlayTanimi[] = [
       {
         metin: "Uzun ama güvenli kıyı yolunu seç.",
         baseBasariSansi: 85,
-        ipucu: "Daha az kazanç, daha az risk",
         basariliSonuc: {
           para: 8,
           mesaj: "Kervan uzun ama sorunsuz bir yolculuğun ardından hedefe ulaştı.",
@@ -399,7 +381,6 @@ export const OLAY_MULK: OlayTanimi[] = [
       {
         metin: "Defterleri açıkça kontrol et, hesap sor.",
         baseBasariSansi: 65,
-        ipucu: "Doğruysa parayı geri alırsın, yanılırsan güveni sarsarsın",
         basariliSonuc: {
           mutluluk: -5,
           un: -2,
@@ -417,7 +398,6 @@ export const OLAY_MULK: OlayTanimi[] = [
       {
         metin: "Görmezden gel, güvenmeye devam et.",
         baseBasariSansi: 80,
-        ipucu: "Rahat ama riski göze alırsın",
         basariliSonuc: {
           ahlak: 3,
           mutluluk: -1,
@@ -445,7 +425,6 @@ export const OLAY_MULK: OlayTanimi[] = [
       {
         metin: "Teklifi kabul et, derine dal.",
         baseBasariSansi: 50,
-        ipucu: "Büyük para, büyük risk — iz bırakır",
         basariliSonuc: {
           para: 35,
           ahlak: -10,
@@ -461,7 +440,6 @@ export const OLAY_MULK: OlayTanimi[] = [
       {
         metin: "Teklifi geri çevir, mevcut düzenine devam et.",
         baseBasariSansi: 90,
-        ipucu: "Daha güvenli, kazanç sınırlı kalır",
         basariliSonuc: {
           ahlak: 3,
           mutluluk: -1,
@@ -485,7 +463,6 @@ export const OLAY_MULK: OlayTanimi[] = [
       {
         metin: "Kişiyi hemen işten çıkar, iz sürmesine izin verme.",
         baseBasariSansi: 70,
-        ipucu: "Temkinli — aranmanı bir miktar düşürür",
         basariliSonuc: {
           suc_artis: -6,
           para: -4,
@@ -499,7 +476,6 @@ export const OLAY_MULK: OlayTanimi[] = [
       {
         metin: "Görmezden gel, işlere devam et.",
         baseBasariSansi: 55,
-        ipucu: "Riskli — doğruysa pahalıya patlar",
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,

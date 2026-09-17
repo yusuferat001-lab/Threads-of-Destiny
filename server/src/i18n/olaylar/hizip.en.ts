@@ -14,7 +14,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Draw your weapon and fight for your own faction!",
-        ipucu: "Absolute loyalty, or a serious wound",
         basariliSonuc: {
           mesaj: "You were at the very front of the fight! Your own comrades lifted you onto their shoulders — you're a leader.",
         },
@@ -24,7 +23,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Lower your weapons! Step in and stop the fight.",
-        ipucu: "A heroic mediation",
         basariliSonuc: {
           mesaj: "You made the courtyard ring with your booming voice! Everyone lowered their weapons in shame.",
         },
@@ -42,7 +40,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Follow your own faction's order, ignore the senior officer.",
-        ipucu: "Trust within the faction, risk in the hierarchy",
         basariliSonuc: {
           mesaj: "You carried out your faction's order; your comrades trusted you.",
           detay: "Your loyalty was rewarded but a crack formed in the chain of discipline.",
@@ -54,7 +51,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Follow the hierarchy, carry out the senior officer's order.",
-        ipucu: "Career safety, distrust within the faction",
         basariliSonuc: {
           mesaj: "You carried out the order in full; the senior officer took note of you.",
           detay: "Discipline was rewarded but your own faction won't forget this.",
@@ -74,7 +70,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Prepare the list, consolidate your faction's power.",
-        ipucu: "A rise within the faction, pangs of conscience",
         basariliSonuc: {
           mesaj: "The list was prepared and the rivals were quietly removed from the barracks. Your name rose within the faction.",
           detay: "You gained power but you know this method isn't fair.",
@@ -131,7 +126,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Take credit for the fire (obliquely), show your faction's power.",
-        ipucu: "It spreads fear but it can leave a trail",
         basariliSonuc: {
           mesaj: "The rumor spread: this is how anyone who crosses your rivals ends up. You're spoken of with fear within the faction.",
           detay: "You gained power but your conscience began to darken.",
@@ -162,7 +156,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Cut your prices below cost too, let's see who holds out.",
-        ipucu: "A shattering gamble",
         basariliSonuc: {
           mesaj: "Your rival gave in first, came to the edge of bankruptcy. The market is yours again.",
           detay: "You won but this war wore down both sides.",
@@ -193,7 +186,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accuse the other side of heresy and rouse the congregation!",
-        ipucu: "You gain immense power but blood could be shed",
         basariliSonuc: {
           mesaj: "Your fiery sermon drove the congregation mad! You rose to the position of your faction's absolute spiritual leader.",
         },
@@ -220,7 +212,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept the invitation, debate it openly in the square.",
-        ipucu: "Great prestige, or great shame",
         basariliSonuc: {
           mesaj: "You came out on top in the debate! The congregation declared you the brightest voice of your faction.",
           detay: "Your words will stay in the crowd's memory for a long time.",
@@ -251,7 +242,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Force the congregation to unite along your own faction's line.",
-        ipucu: "Unity is achieved but some sulk",
         basariliSonuc: {
           mesaj: "The majority of the congregation embraced your line; a few families quietly left.",
           detay: "Unity is sometimes achieved at a price.",
@@ -282,7 +272,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Keep the secret to yourself, do nothing.",
-        ipucu: "Safe but a burden on the conscience",
         basariliSonuc: {
           mesaj: "You stayed silent; the secret stayed with you, you're safe but there's a weight inside you.",
           detay: "Some silences pay a price, it's just invisible.",
@@ -294,7 +283,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "You're about to reveal the secret.",
-        ipucu: "Risky, it could cut your ties with the faction",
         basariliSonuc: { mesaj: "Not used." },
         basarisizSonuc: { mesaj: "Not used." },
         onTepki: {
@@ -323,7 +311,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Take the oath with pride, shed your blood.",
-        ipucu: "You prove your loyalty but you become complicit in every crime of the king",
         basariliSonuc: {
           mesaj: "You cut your hand on your sword and cried out the oath. The general looked into your eyes and smiled.",
           detay: "You became an unshakable pillar of the old order. There's no turning back now.",
@@ -335,7 +322,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Take the oath but only with your lips, don't shed your blood.",
-        ipucu: "Low risk but a heavy price if noticed",
         basariliSonuc: {
           mesaj: "You stayed in the shadows, moved your mouth for show and pretended to cut your hand.",
           detay: "No one noticed but this hypocrisy left an unease in you.",
@@ -355,7 +341,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Carry out the mission with full loyalty and ruthlessness.",
-        ipucu: "A career leap, a rotting of the soul",
         basariliSonuc: {
           mesaj: "You burst into the room and spared no one. Your old acquaintance drew their last breath looking at your face.",
           detay: "The command staff declared you a hero but at night those looks come into your dreams.",
@@ -367,7 +352,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Slow the mission down, knock on the door and let them flee.",
-        ipucu: "Your conscience is at ease but you could be accused of treason",
         basariliSonuc: {
           mesaj: "You went to the operation late. When you arrived there were only burnt documents.",
           detay: "You saved your old friend's life. The commanders are angry but there's no proof.",
@@ -387,7 +371,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Support the senior, elderly pasha.",
-        ipucu: "Bound to tradition, a safe harbor",
         basariliSonuc: {
           mesaj: "You supported the old pasha. Your loyalty won great respect among the old hands.",
           detay: "Loyalty to the traditional hierarchy is always appreciated.",
@@ -399,7 +382,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Lie to both, take no side.",
-        ipucu: "A dangerous neutrality",
         basariliSonuc: {
           mesaj: "You never got involved in the dispute and came out of the fight unharmed.",
           detay: "Sometimes the safest way is to be invisible.",
@@ -419,7 +401,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Show them the hilt of your sword and scatter them with fear.",
-        ipucu: "It protects authority, it grows the hatred",
         basariliSonuc: {
           mesaj: "Just touching your sword was enough. The youths fled in fear. And you walked on with your shoulders squared.",
           detay: "You mistake the fear in the street for authority, but this hatred is growing inside.",
@@ -431,7 +412,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Wipe off the spit, take money from your pocket and toss it to them.",
-        ipucu: "It soothes the pangs of conscience, a surprising move",
         basariliSonuc: {
           mesaj: "You gave money to the ones who spat on you. They took it in shock and left.",
           detay: "The tradesmen couldn't believe this move. Maybe they saw the heart under the uniform.",
@@ -451,7 +431,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Take the gold and arrest the man on the spot!",
-        ipucu: "For the immoral only: take the bribe and sell your loyalty",
         basariliSonuc: {
           mesaj: "You had the man seized and handed him to your superiors, but you hid the chest of gold under your own bed.",
           detay: "You became both a hero and rich. You're at the peak of hypocrisy.",
@@ -463,7 +442,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse the offer, tell them to get lost.",
-        ipucu: "Loyalty and honor",
         basariliSonuc: {
           mesaj: "The man took his gold and melted into the dark. The next day your superiors heard of this loyalty.",
           detay: "You're now completely trusted within the Old Guard.",
@@ -513,7 +491,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept the mission without questioning it at all.",
-        ipucu: "Great fame but a serious risk of injury",
         basariliSonuc: {
           mesaj: "You completed the mission successfully, and the commander nodded, looking into your eyes.",
           detay: "That look was worth more than any reward you'd get for years.",
@@ -574,7 +551,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Report it to the commander at once.",
-        ipucu: "Great favor but you draw the New Order's wrath onto yourself",
         basariliSonuc: {
           mesaj: "A raid was carried out, the commander rewarded you.",
           detay: "But you're a target in the New Order's eyes now.",
@@ -605,7 +581,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Attend the meeting fearlessly and argue the most radical idea.",
-        ipucu: "You rise to leadership but a great risk",
         basariliSonuc: {
           mesaj: "Your fiery speech spellbound everyone. You're now one of the movement's shadow leaders.",
           detay: "On the maps at the table you marked with your own hands the places where blood would be shed.",
@@ -617,7 +592,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Don't attend, don't take the risk.",
-        ipucu: "It saves your life, it offends your comrades",
         basariliSonuc: {
           mesaj: "You slept safely at home. In the morning you heard the mill was raided and your friends arrested.",
           detay: "Your cowardice saved your life but your conscience is bleeding.",
@@ -637,7 +611,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept the mission, don't care about civilian casualties.",
-        ipucu: "Heroism in the movement, a moral collapse",
         basariliSonuc: {
           mesaj: "The depot went up in a massive explosion! But the homes next to it burned too.",
           detay: "You're the movement's hero but you'll never forget the screams from the burning homes.",
@@ -649,7 +622,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "First move the valuables from the depot into your own pocket, then blow it up.",
-        ipucu: "For the immoral only: be both rich and a hero",
         basariliSonuc: {
           mesaj: "Before the blast you stole the gold/valuables inside. Then you blew up the depot.",
           detay: "You're not a revolutionary, you're a vulture that feeds on war.",
@@ -660,7 +632,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Civilians will die! I can't do this mission.",
-        ipucu: "Your conscience is at ease but a betrayal of your cause",
         basariliSonuc: {
           mesaj: "You refused the dynamite. Those homes in the city didn't burn but your comrades are disgusted with you.",
           detay: "Sometimes doing nothing is the hardest heroism.",
@@ -680,7 +651,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Support the moderate candidate (a political solution).",
-        ipucu: "Moral and safe",
         basariliSonuc: {
           mesaj: "The moderates took power. The movement advances with newspapers and propaganda instead of shedding blood.",
           detay: "Common sense is sometimes the most valuable revolution.",
@@ -692,7 +662,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Support the daring and bloody candidate (armed rebellion).",
-        ipucu: "Radical, dangerous and ruthless",
         basariliSonuc: {
           mesaj: "The bloody leader took charge. Together you're ready to turn the city into an inferno.",
           detay: "You set mercy aside, you want only power.",
@@ -712,7 +681,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Pay them off, seal their mouth.",
-        ipucu: "A big loss of money, but it saves your life",
         basariliSonuc: {
           mesaj: "You gave the man the money. For now he's silent.",
           detay: "But who can guarantee a blackmailer won't come back once he's taken money?",
@@ -724,7 +692,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Deceive him and finish him off in a back alley at night.",
-        ipucu: "For the dark only: a lethal and immoral solution",
         basariliSonuc: {
           mesaj: "You went to meet the man with your sword. You finished him off without anyone seeing and threw him in the river.",
           detay: "Your secret is safe. But your soul is one step closer to hell.",
@@ -735,7 +702,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "He's bluffing! Give him nothing.",
-        ipucu: "The money stays with you, a 50% risk",
         basariliSonuc: {
           mesaj: "You waited. Nothing happened. The man got scared and left the city.",
           detay: "Sometimes the best reaction is no reaction.",
@@ -755,7 +721,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Interrogate the suspect, use harsh methods if needed.",
-        ipucu: "It protects the movement but they could be innocent",
         basariliSonuc: {
           mesaj: "Under interrogation the real spy confessed! Thanks to you the movement came back from a great disaster.",
           detay: "It turned out you were right but the methods you used trouble you.",
@@ -767,7 +732,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Don't accuse anyone without evidence, patiently wait for the real spy.",
-        ipucu: "Conscientious but a dangerous wait",
         basariliSonuc: {
           mesaj: "Your patience paid off when the real spy gave themselves away by their own mistake; you wronged no one.",
           detay: "Justice sometimes smiles on those who don't rush.",
@@ -798,7 +762,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Tell the truth, defend your ideas.",
-        ipucu: "Risky but the officer himself could be a secret reformist",
         basariliSonuc: {
           mesaj: "The officer surprisingly smiled: 'I think so too,' he said.",
           detay: "Sometimes courage wins unexpected allies.",
@@ -848,7 +811,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Take the risk, go anyway.",
-        ipucu: "It really could be a trap, but it could be real",
         basariliSonuc: {
           mesaj: "The depot was real! You came back with valuable supplies.",
           detay: "Sometimes suspicion keeps you from the most valuable opportunities.",
@@ -909,7 +871,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Follow the guild, exploit the people.",
-        ipucu: "It makes money, it ends your morality",
         basariliSonuc: {
           mesaj: "You raised the prices. People bought goods in tears. In the guild you're like a king.",
           detay: "Loyalty to the order fills the wallet, empties the conscience.",
@@ -921,7 +882,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Secretly sell at the old price and protect the people.",
-        ipucu: "Conscientious but a betrayal of the guild",
         basariliSonuc: {
           mesaj: "At night you gave goods cheap to the poor through the back door. You're spoken of like an angel in the city.",
           detay: "The guild didn't notice. You kept your heart clean and kept your trade going.",
@@ -941,7 +901,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Vouch for him, invest in future connections.",
-        ipucu: "A long-term connection, a short-term headache",
         basariliSonuc: {
           mesaj: "You vouched for him; his father showed his gratitude with a gift right away.",
           detay: "In the guild, connections are sometimes worth more than capital.",
@@ -972,7 +931,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Fix your ledgers overnight, erase the traces.",
-        ipucu: "Risky but you could get past the inspection",
         basariliSonuc: {
           mesaj: "You cleaned the ledgers; the inspector left without finding anything.",
           detay: "Once again you came out clean with a lie.",
@@ -1033,7 +991,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Follow the embargo fully, show your loyalty to the guild.",
-        ipucu: "Standing within the guild, lost customers outside",
         basariliSonuc: {
           mesaj: "You followed the embargo to the letter; the guild elders noted your loyalty.",
           detay: "Some gains come not right away but as standing.",
@@ -1045,7 +1002,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Keep getting goods to your old customers by a secret back route.",
-        ipucu: "A risky but profitable betrayal",
         basariliSonuc: {
           mesaj: "You kept your trade going through secret routes; you lost neither money nor customers.",
           detay: "The guild's rules can be bent to a flexible conscience.",
@@ -1095,7 +1051,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Gather the goods, tell no one.",
-        ipucu: "Easy gain but it wears on your conscience",
         basariliSonuc: {
           mesaj: "You quietly gathered the goods, your purse swelled.",
           detay: "Fortune is sometimes born of someone else's disaster.",
@@ -1186,7 +1141,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Fully support the boycott, sacrifice your shop.",
-        ipucu: "A material loss but you become a hero in the Market Union",
         basariliSonuc: {
           mesaj: "The shelves stayed empty but you became a symbol of the Market Union. The tradesmen hold you in great respect.",
           detay: "You bled your wallet for your principles.",
@@ -1198,7 +1152,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Secretly keep buying goods from the harbor.",
-        ipucu: "A risky hypocrisy",
         basariliSonuc: {
           mesaj: "Your shelves were full and with the boycott on, you had a monopoly. You earned a lot.",
           detay: "Betrayal can bear sweet fruit.",
@@ -1308,7 +1261,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Pay your share, join the common warehouse.",
-        ipucu: "An expense in the short term, a union of strength in the long term",
         basariliSonuc: {
           mesaj: "The common warehouse was set up; you're not alone on big orders anymore.",
           detay: "Acting together gives small tradesmen the strength to compete with the big ones.",
@@ -1369,7 +1321,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Interrogate your friend, learn the truth.",
-        ipucu: "It could put your friendship at risk",
         basariliSonuc: {
           mesaj: "The real spy was someone else, you cleared up the misunderstanding with your friend.",
           detay: "Suspicion sometimes wounds even those closest to you.",
@@ -1651,7 +1602,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Answer with your own interpretation added.",
-        ipucu: "Risky but it could show your depth",
         basariliSonuc: {
           mesaj: "Your interpretation impressed some of the elders, 'this young one thinks,' they said with appreciation.",
           detay: "Tradition is sometimes strengthened by a fresh look.",
@@ -1941,7 +1891,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Write a firm, resolute response, defend your ideas.",
-        ipucu: "Risky but it shows you haven't given up",
         basariliSonuc: {
           mesaj: "Your response convinced the authorities, the accusations were dropped.",
           detay: "An idea defended with courage is sometimes the strongest.",
@@ -2003,7 +1952,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       {
         metin: "Tie the message to {hayvan}'s leg and send it.",
         kilitAciklamasi: "For this you need a trained falcon.",
-        ipucu: "Hidden Option: falcons slip past the patrols' eyes",
         basariliSonuc: {
           mesaj: "{hayvan} soared over the enemy lines and delivered the message in time. The general spoke your name with praise.",
           detay: "A winged friend proved more reliable than the best spy.",
@@ -2012,7 +1960,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Go yourself, try to slip through under cover of night.",
-        ipucu: "Honorable but extremely dangerous",
         basariliSonuc: {
           mesaj: "You skillfully dodged the patrols and delivered the message yourself; your name became a legend among the soldiers.",
           detay: "Some heroics deserve to be done in person.",
@@ -2024,7 +1971,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse the mission, find it too risky.",
-        ipucu: "Safe but a loss of standing within the faction",
         basariliSonuc: {
           mesaj: "You turned the mission down; the general scowled and assigned someone else.",
           detay: "Missing some opportunities carries a price too.",
@@ -2045,7 +1991,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       {
         metin: "Gird on your Black Sword, win the duel skillfully.",
         kilitAciklamasi: "For this you need a legendary weapon.",
-        ipucu: "Secret Inventory: the Black Sword gives your opponent no chance",
         basariliSonuc: {
           mesaj: "The Black Sword danced in your hand almost of its own accord; your opponent dropped his weapon at the first strike. The square erupted in cheers.",
           detay: "You became the New Order's brightest star.",
@@ -2054,7 +1999,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Fight with your own sword, like an ordinary soldier.",
-        ipucu: "A fair duel, the outcome uncertain",
         basariliSonuc: {
           mesaj: "After a hard duel you beat your opponent; the people declared you the symbol of the new order.",
           detay: "The gain came by the sweat of your brow.",
@@ -2066,7 +2010,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Withdraw from the duel on the pretext of an injury.",
-        ipucu: "Safe but your reputation is bruised",
         basariliSonuc: {
           mesaj: "You withdrew; the others in the faction couldn't hide their disappointment in you.",
           detay: "Some escapes leave a mark.",
@@ -2087,7 +2030,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       {
         metin: "Let {hayvan} loose in the storehouse, leave the work to nature.",
         kilitAciklamasi: "For this you need a master rat-hunter.",
-        ipucu: "Hidden Option: ship's cats have been masters of this for centuries",
         basariliSonuc: {
           mesaj: "{hayvan} cleared the storehouse of rats in a week; the guild masters keep talking about your 'cheap genius'.",
           detay: "Your cat became the whole guild's favorite.",
@@ -2096,7 +2038,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Hire expensive rat-hunters and traps.",
-        ipucu: "Reliable but costly",
         basariliSonuc: {
           mesaj: "The hired hunters handled it in a few days; the stock was saved but your purse shrank noticeably.",
           detay: "Some solutions come at a price.",
@@ -2108,7 +2049,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Ignore it, write off part of the stock as a loss.",
-        ipucu: "No expense but the loss is certain",
         basariliSonuc: {
           mesaj: "The rats ate until they were full; the loss came out of your pocket but at least you didn't have to deal with it.",
           detay: "Sometimes doing nothing pays a price too.",
@@ -2129,7 +2069,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       {
         metin: "Secretly use the Shadow Coin, turn fate in your favor.",
         kilitAciklamasi: "For this you need a mysterious coin.",
-        ipucu: "Secret Inventory: it has a moral price but it guarantees the result",
         basariliSonuc: {
           mesaj: "The coin seemed to wink at you; your luck turned incredibly and you left the rival guild behind by a crushing margin.",
           detay: "The victory is sweet but only you know how you won it.",
@@ -2138,7 +2077,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Compete honestly, with your usual trading skill.",
-        ipucu: "Fair but the outcome uncertain",
         basariliSonuc: {
           mesaj: "After a hard competition you honored the Union; the fountain went to the rival guild but the pride is yours.",
           detay: "An honest victory is always sweeter.",
@@ -2150,7 +2088,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Pull out of the bet, don't care so much about honor.",
-        ipucu: "Safe but the Union takes you lightly",
         basariliSonuc: {
           mesaj: "You pulled out; the Union members whispered behind your back but at least you took no risk.",
           detay: "Not entering some battles is a choice too.",
@@ -2171,7 +2108,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       {
         metin: "Show the Holy Relic to the congregation.",
         kilitAciklamasi: "For this you need a holy relic.",
-        ipucu: "Secret Inventory: a visible miracle silences doubts at once",
         basariliSonuc: {
           mesaj: "The moment you raised the relic high, a silence fell over the square; even the skeptics knelt.",
           detay: "Some proofs are stronger than a thousand sermons.",
@@ -2180,7 +2116,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Rely on strong oratory alone, trust your words.",
-        ipucu: "Hard but you believe in the power of words",
         basariliSonuc: {
           mesaj: "Your words touched the congregation's hearts; even the skeptics applauded.",
           detay: "Sometimes the strongest proof is faith itself.",
@@ -2192,7 +2127,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Postpone the sermon, avoid going in unprepared.",
-        ipucu: "Safe but the Traditionalists are disappointed",
         basariliSonuc: {
           mesaj: "The sermon was postponed; the congregation took it with understanding but the skeptics spoke freely for another week.",
           detay: "Some postponements don't come cheap.",
@@ -2213,7 +2147,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       {
         metin: "Secretly place {hayvan} behind the pulpit and have it mimic holy words.",
         kilitAciklamasi: "For this you need a trained, mimicking bird.",
-        ipucu: "Hidden Option: an impressive but fake 'miracle'",
         basariliSonuc: {
           mesaj: "The 'heavenly voice' rising from behind the pulpit made the crowd weep; new followers flocked in.",
           detay: "The believers rejoiced, and you carry the truth alone.",
@@ -2225,7 +2158,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Create fervor with a sincere, honest sermon only.",
-        ipucu: "Slow but honest growth",
         basariliSonuc: {
           mesaj: "Your sincere words won a few new followers; the growth is slow but solid.",
           detay: "An honest seed takes root, slowly as it may.",
@@ -2237,7 +2169,6 @@ export const OLAYLAR_HIZIP_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Reject the idea, don't take part in the show at all.",
-        ipucu: "Safe but it disappoints the Reformists",
         basariliSonuc: {
           mesaj: "You rejected the idea; though some Reformists found you 'too conservative', your conscience is at ease.",
           detay: "Some lines need to be drawn.",

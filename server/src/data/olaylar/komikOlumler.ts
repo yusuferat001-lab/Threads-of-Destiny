@@ -25,7 +25,6 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
       {
         metin: "Fıçıya gir, iniş için itilmeni bekle.",
         baseBasariSansi: 45,
-        ipucu: "Başarırsan efsane olursun; başarısız olursan da efsane olursun",
         basariliSonuc: {
           un: 14,
           mutluluk: 10,
@@ -44,7 +43,6 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
       {
         metin: "İddiayı geri çevir, bir bardak daha iste.",
         baseBasariSansi: 90,
-        ipucu: "Güvenli; biraz dalga geçilirsin",
         basariliSonuc: {
           mutluluk: 2,
           mesaj: "Omuz silktin. Birkaç kişi 'ödlek' dedi ama sabaha unuttular.",
@@ -70,7 +68,6 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
       {
         metin: "Al ağzına, çiğne, yut. Gözünü kırpma.",
         baseBasariSansi: 40,
-        ipucu: "Ucuz şöhret ya da çok pahalı bir ders",
         basariliSonuc: {
           un: 10,
           mutluluk: 6,
@@ -87,7 +84,6 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
       {
         metin: "Bir dilim tadına bak, gerisini bırak.",
         baseBasariSansi: 85,
-        ipucu: "Makul; sepet senin olmaz",
         basariliSonuc: {
           mutluluk: 2,
           mesaj: "Bir dilim yetti de arttı bile. Ağzın yandı ama hikâyeni anlatacak kadar yaşadın.",
@@ -113,7 +109,6 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
       {
         metin: "Merdivene çık, bıyığı çiz.",
         baseBasariSansi: 50,
-        ipucu: "Efsane bir şaka ya da çok kötü bir düşüş",
         basariliSonuc: {
           un: 8,
           mutluluk: 8,
@@ -131,7 +126,6 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
       {
         metin: "Boyayı arkadaşına ver, sen gözcü ol.",
         baseBasariSansi: 80,
-        ipucu: "Daha güvenli; şöhret de az",
         basariliSonuc: {
           mutluluk: 4,
           mesaj: "Gözcülük ettin, iş bitti, kimse yakalanmadı. Kahraman arkadaşın oldu ama gülen sen de vardın.",
@@ -158,7 +152,6 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
       {
         metin: "Ağaca tırman, kovanı sopayla dürt.",
         baseBasariSansi: 45,
-        ipucu: "Tatlı kâr ya da çok sinirli bir sürü",
         basariliSonuc: {
           para: 12,
           mutluluk: 5,
@@ -174,7 +167,6 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
       {
         metin: "Bir arıcıya haber ver, payını iste.",
         baseBasariSansi: 85,
-        ipucu: "Az bal, sağlam vücut",
         basariliSonuc: {
           para: 4,
           mesaj: "Arıcı işini bilerek yaptı, sana da bir kavanoz düştü. Tek bir sokma bile yok.",
@@ -199,7 +191,6 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
       {
         metin: "Ciğerini doldur, gözlerini kapat, dayan.",
         baseBasariSansi: 55,
-        ipucu: "Küçük bir bahis, küçük bir risk... genelde",
         basariliSonuc: {
           para: 6,
           un: 4,
@@ -215,7 +206,6 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
       {
         metin: "'Ben sayarım' de, bahse girme.",
         baseBasariSansi: 95,
-        ipucu: "En akıllısı",
         basariliSonuc: {
           mesaj: "Saydın, güldün, kimse fark etmeden kenara çekildin. Akşamın en sağlıklı adamı sendin.",
         },
@@ -240,7 +230,6 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
       {
         metin: "Sırtla, meydana kadar taşı.",
         baseBasariSansi: 50,
-        ipucu: "Ödül tatlı, belin nazik",
         basariliSonuc: {
           para: 15,
           un: 5,
@@ -257,7 +246,6 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
         metin: "El arabası kirala, öyle taşı.",
         baseBasariSansi: 88,
         maliyet: 4,
-        ipucu: "Küçük masraf, sağlam bel",
         basariliSonuc: {
           para: 6,
           mesaj: "El arabasıyla rahat rahat getirdin. Birinci olamadın ama sağlam olan üçüncülük de fena değil.",
@@ -284,7 +272,6 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
       {
         metin: "Buzun ortasına doğru koş, kay.",
         baseBasariSansi: 50,
-        ipucu: "Kısa bir eğlence ya da çok soğuk bir son",
         basariliSonuc: {
           mutluluk: 8,
           un: 4,
@@ -300,7 +287,6 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
       {
         metin: "Kıyıda, sığ yerde bir tur at.",
         baseBasariSansi: 90,
-        ipucu: "Eğlence az, ıslanma ihtimali düşük",
         basariliSonuc: {
           mutluluk: 3,
           mesaj: "Kıyıda birkaç tur attın, güldün, kuru döndün. Çocuklar yine de memnundu.",
@@ -326,7 +312,6 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
       {
         metin: "En büyüğünü kucakla, yürü.",
         baseBasariSansi: 50,
-        ipucu: "Onur ya da fıtık — belki ikisi",
         basariliSonuc: {
           un: 6,
           saglik: -3,
@@ -343,7 +328,6 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
       {
         metin: "Orta boydan birini seç, garantiye oyna.",
         baseBasariSansi: 85,
-        ipucu: "Kazanamazsın ama sağ kalırsın",
         basariliSonuc: {
           mutluluk: 3,
           mesaj: "Makul bir gülle, makul bir mesafe. İkinci oldun, ayakların yerinde.",
@@ -370,7 +354,6 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
       {
         metin: "Kanada atla, sıkı tutun.",
         baseBasariSansi: 40,
-        ipucu: "Bir turluk şöhret ya da tek yönlü uçuş",
         basariliSonuc: {
           un: 12,
           mutluluk: 8,
@@ -386,7 +369,6 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
       {
         metin: "Kanadın alt ucuna elini değdir, geri çekil.",
         baseBasariSansi: 90,
-        ipucu: "Yeterince cesur, yeterince akıllı",
         basariliSonuc: {
           mutluluk: 3,
           mesaj: "Kanada bir dokundun, herkes 'gördük gördük' dedi. Yeterince cesur, hâlâ tek parça.",
@@ -412,7 +394,6 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
       {
         metin: "İpi çöz, domuzla yarış.",
         baseBasariSansi: 40,
-        ipucu: "Hızlı para ya da hızlı domuz",
         basariliSonuc: {
           para: 12,
           un: 6,
@@ -428,7 +409,6 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
       {
         metin: "Adamla pazarlık et, sadece domuzu izle.",
         baseBasariSansi: 85,
-        ipucu: "Ödül yok ama bacakların da yerinde",
         basariliSonuc: {
           mutluluk: 2,
           mesaj: "Kenardan izledin, başkası koştu, sen güldün. Akşam sağ salim eve döndün.",
@@ -453,7 +433,6 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
       {
         metin: "Kanatları tak, kuleden atla.",
         baseBasariSansi: 25,
-        ipucu: "Tarihe geç ya da tarihe karış",
         basariliSonuc: {
           un: 20,
           mutluluk: 12,
@@ -469,7 +448,6 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
       {
         metin: "Önce bir çuval taş at, kanatları dene.",
         baseBasariSansi: 90,
-        ipucu: "Bilimsel yaklaşım hayat kurtarır",
         basariliSonuc: {
           un: 3,
           mesaj: "Çuval taş gibi düştü. 'Belki başka gün' dedin, mucit sana kızdı ama sen yaşıyorsun.",
@@ -494,7 +472,6 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
       {
         metin: "Koşarak geç, arkana bakma.",
         baseBasariSansi: 55,
-        ipucu: "Kısa yol ya da kısa hayat",
         basariliSonuc: {
           mutluluk: 4,
           mesaj: "Tahtalar çatırdadı ama sen çoktan öbür yakadaydın. Dolambaçlı yoldan yarım gün kazandın.",
@@ -509,7 +486,6 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
       {
         metin: "Uzun yoldan dolan.",
         baseBasariSansi: 95,
-        ipucu: "Sıkıcı ama yaşarsın",
         basariliSonuc: {
           mesaj: "Yarım gün fazladan yürüdün, ayakların şişti ama akşam ateşin başına oturan sen oldun.",
         },
@@ -534,7 +510,6 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
       {
         metin: "Demir çubuğu kap, tepeye çık.",
         baseBasariSansi: 40,
-        ipucu: "Cesaret gösterisi ya da iletken bir son",
         basariliSonuc: {
           un: 10,
           mutluluk: 6,
@@ -550,7 +525,6 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
       {
         metin: "Herkesle beraber sundurmaya sığın.",
         baseBasariSansi: 97,
-        ipucu: "En sıkıcı, en akıllı",
         basariliSonuc: {
           mesaj: "Sundurmanın altında ıslanmadan bekledin. Aptallar dışarıda, sen içerideydin.",
         },
@@ -576,7 +550,6 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
       {
         metin: "Çekici al, valfe sert bir vur.",
         baseBasariSansi: 45,
-        ipucu: "Kısa yol çözüm ya da kısa yol felaket",
         basariliSonuc: {
           para: 10,
           un: 5,
@@ -592,7 +565,6 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
       {
         metin: "Ateşi söndür, kazan soğusun, sonra bak.",
         baseBasariSansi: 88,
-        ipucu: "Yavaş ama uzuvların yerinde kalır",
         basariliSonuc: {
           para: 3,
           mesaj: "Bir vardiya kaybettiniz ama kazan soğuyunca valf kolayca temizlendi. Kimse yanmadı.",

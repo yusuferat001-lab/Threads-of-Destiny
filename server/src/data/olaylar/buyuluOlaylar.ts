@@ -27,7 +27,6 @@ export const OLAY_BUYULU: OlayTanimi[] = [
       {
         metin: "Avucunu aç, ne diyecek dinle.",
         baseBasariSansi: 55,
-        ipucu: "Söyledikleri aklına takılabilir",
         basariliSonuc: {
           mutluluk: -3,
           para: -2,
@@ -72,7 +71,6 @@ export const OLAY_BUYULU: OlayTanimi[] = [
         metin: "Bedelini öde, küreye baktır.",
         maliyet: 4,
         baseBasariSansi: 45,
-        ipucu: "Ya bir uyarı ya bir hayal kırıklığı",
         basariliSonuc: {
           para: -4,
           mutluluk: -4,
@@ -118,7 +116,6 @@ export const OLAY_BUYULU: OlayTanimi[] = [
       {
         metin: "Ne istediğini sor ve pazarlık et.",
         baseBasariSansi: 35,
-        ipucu: "Büyük kazanç ya da lanet — ve engizisyon riski",
         basariliSonuc: {
           para: 25,
           ahlak: -12,
@@ -168,7 +165,6 @@ export const OLAY_BUYULU: OlayTanimi[] = [
         metin: "Al, boynuna as.",
         maliyet: 2,
         baseBasariSansi: 60,
-        ipucu: "Bir teselli — ya da boşa para",
         basariliSonuc: {
           para: -3,
           mutluluk: 4,
@@ -212,7 +208,6 @@ export const OLAY_BUYULU: OlayTanimi[] = [
         metin: "Ayine katıl, sabaha kadar otur.",
         maliyet: 5,
         baseBasariSansi: 50,
-        ipucu: "Ya rahatlarsın ya daha da kötü olur",
         basariliSonuc: {
           para: -8,
           saglik: -3,
@@ -259,7 +254,6 @@ export const OLAY_BUYULU: OlayTanimi[] = [
       {
         metin: "Halkaya gir, gözünü bardaktan ayırma.",
         baseBasariSansi: 45,
-        ipucu: "Bardak kıpırdarsa geri dönüşü yok",
         basariliSonuc: {
           mutluluk: -8,
           etiket_ekle: ["envanter:fisildayan_tas"],
@@ -302,7 +296,6 @@ export const OLAY_BUYULU: OlayTanimi[] = [
         metin: "Biraz para koy, işi gör.",
         maliyet: 8,
         baseBasariSansi: 25,
-        ipucu: "Neredeyse kesin zarar, ama ya olursa?",
         basariliSonuc: {
           un: -3,
           para: 30,
@@ -346,7 +339,6 @@ export const OLAY_BUYULU: OlayTanimi[] = [
       {
         metin: "Doğum yılını söyle, dinle.",
         baseBasariSansi: 60,
-        ipucu: "Genelde hoş, ama belirsiz",
         basariliSonuc: {
           mutluluk: 3,
           mesaj:
@@ -387,7 +379,6 @@ export const OLAY_BUYULU: OlayTanimi[] = [
         metin: "Rüyanı anlat, yorumunu iste.",
         maliyet: 2,
         baseBasariSansi: 55,
-        ipucu: "Ferahlatabilir ya da tedirgin edebilir",
         basariliSonuc: {
           para: -2,
           mutluluk: 6,
@@ -430,7 +421,6 @@ export const OLAY_BUYULU: OlayTanimi[] = [
       {
         metin: "Deftere adını yaz.",
         baseBasariSansi: 40,
-        ipucu: "Servet ya da felaket — ve vicdanın",
         basariliSonuc: {
           para: 40,
           ahlak: -20,
@@ -477,7 +467,6 @@ export const OLAY_BUYULU: OlayTanimi[] = [
       {
         metin: "Eğil, kediyi sev.",
         baseBasariSansi: 65,
-        ipucu: "Batıl korkuya meydan okumak",
         basariliSonuc: {
           mutluluk: 4,
           mesaj: "Kedi elini yaladı, sonra kuyruğunu dikip gitti. Kalabalık şaşkın baktı, sen güldün.",
@@ -520,7 +509,6 @@ export const OLAY_BUYULU: OlayTanimi[] = [
       {
         metin: "Kâhini yanına çağır, ne demek istediğini sor.",
         baseBasariSansi: 45,
-        ipucu: "Cevabı hoşuna gitmeyebilir",
         basariliSonuc: {
           mutluluk: -6,
           un: 2,
@@ -565,7 +553,6 @@ export const OLAY_BUYULU: OlayTanimi[] = [
         metin: "Bir şişe al, dene.",
         maliyet: 3,
         baseBasariSansi: 30,
-        ipucu: "Neredeyse kesin dolandırıcılık",
         basariliSonuc: {
           para: -4,
           saglik: 3,
@@ -610,7 +597,6 @@ export const OLAY_BUYULU: OlayTanimi[] = [
       {
         metin: "Üstüne yürü, kim olduğunu sor.",
         baseBasariSansi: 50,
-        ipucu: "Belki bir hiç, belki bir kâbus",
         basariliSonuc: {
           mutluluk: 3,
           mesaj: "Meğer yolunu şaşırmış yaşlı bir yolcuymuş. Güldünüz. Korkuların çoğu böyle işte.",
@@ -653,7 +639,6 @@ export const OLAY_BUYULU: OlayTanimi[] = [
       {
         metin: "Ritüele katıl, sabaha kadar davul çal.",
         baseBasariSansi: 55,
-        ipucu: "Ortak korku bazen bağ kurar",
         basariliSonuc: {
           mutluluk: 5,
           dost_puani: 4,
@@ -696,7 +681,6 @@ export const OLAY_BUYULU: OlayTanimi[] = [
         metin: "Masaya otur, 'mesajı' dinle.",
         maliyet: 5,
         baseBasariSansi: 40,
-        ipucu: "Zil çalar, borazan uçar — hepsi ipli",
         basariliSonuc: {
           para: -5,
           mutluluk: -4,
@@ -712,7 +696,6 @@ export const OLAY_BUYULU: OlayTanimi[] = [
       {
         metin: "Işıkları aç, düzeneği herkese göster.",
         baseBasariSansi: 45,
-        ipucu: "Rezil edersen ün, edemezsen sen rezil olursun",
         basariliSonuc: {
           un: 6,
           ahlak: 4,

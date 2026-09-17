@@ -9,7 +9,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Carry out the order to the letter, don't question it.",
-        ipucu: "You become trustworthy in your superiors' eyes, your conscience pays a small price",
         basariliSonuc: {
           mesaj: "You carried out the order without hesitation; your corporal is pleased, and the youths never looked at you the same way again.",
           detay: "Some soldiers obey without thinking; you'll decide in time whether that's a virtue or a flaw.",
@@ -21,7 +20,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Object, refuse to carry out the order together with the other soldiers.",
-        ipucu: "Saying no to injustice, it goes into your disciplinary file",
         basariliSonuc: {
           mesaj: "Your words emboldened the other soldiers too; your corporal backed down but wrote you into his notebook.",
           detay: "Saying no to injustice sometimes means striking a spark.",
@@ -33,7 +31,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Take the punishment on yourself to protect the youths.",
-        ipucu: "Sacrifice can bring great fame, your back may hurt",
         basariliSonuc: {
           mesaj: "You took the punishment on your own back; the whip came down on you but the youths were let go. Your name spread fast through the barracks.",
           detay: "Some men become leaders by throwing themselves forward.",
@@ -45,7 +42,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Watch silently, assess the situation without being seen.",
-        ipucu: "You stay neutral but you start learning who does what in the barracks",
         basariliSonuc: {
           mesaj: "You neither questioned the order nor objected; you just watched. You started learning very well who does what in this barracks.",
           detay: "Sometimes the most dangerous person is the one who takes no side.",
@@ -65,7 +61,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Sign it, stay loyal to your commander to the end.",
-        ipucu: "You gain trust and promotion, your conscience shrinks",
         basariliSonuc: {
           mesaj: "You signed it; your commander now trusts you blindly. You're a truly loyal soldier of this army now.",
           detay: "Obedience became your identity — without question, always.",
@@ -77,7 +72,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse but stay silent, show your loyalty another way.",
-        ipucu: "Your conscience eases, your commander may turn cold",
         basariliSonuc: {
           mesaj: "You didn't sign but you told no one either; your commander read it as a silent loyalty.",
           detay: "Being loyal doesn't always mean blind obedience.",
@@ -97,7 +91,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Join, become part of the mutiny.",
-        ipucu: "You're not alone anymore but there's no going back",
         basariliSonuc: {
           mesaj: "You took the oath; you're part of this secret brotherhood now. You're not alone against injustice, but there's no turning back now either.",
           detay: "Once a mutiny begins, it carries you to the end.",
@@ -109,7 +102,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Report it, tell the commander about the situation.",
-        ipucu: "You rise in your superiors' eyes, you get branded an 'informer'",
         basariliSonuc: {
           mesaj: "The commander rewarded your report; but there are people in the barracks who call you 'informer' now.",
           detay: "Loyalty has a price, you're learning that now.",
@@ -129,7 +121,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Break the enemy line alone, try to save the unit.",
-        ipucu: "If you succeed you become a legend, if you fail you could be taken prisoner",
         basariliSonuc: {
           mesaj: "With a wild move you broke the enemy line; your unit was saved thanks to you. Your name is turning into a legend in the barracks now.",
           detay: "Some moments turn a soldier into a hero — you lived that moment.",
@@ -141,7 +132,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Pull the unit back in a calculated way, reduce the losses.",
-        ipucu: "Safer, a smaller share of fame",
         basariliSonuc: {
           mesaj: "Your composure saved the unit; no one died and everyone owes you. Heroism isn't always being reckless.",
           detay: "Calculated courage is courage too.",
@@ -161,7 +151,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept the offer, sell the information.",
-        ipucu: "A great fortune, a heavy burden on the conscience",
         basariliSonuc: {
           mesaj: "You gave the information, the gold is in your purse; you live between two worlds now. Your conscience will never look at you the same way again.",
           detay: "Some decisions can't be taken back; this is one of them.",
@@ -173,7 +162,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse, try to catch the man.",
-        ipucu: "You prove your loyalty, the man could get away",
         basariliSonuc: {
           mesaj: "You caught the man; your commander rewarded you. No one will know how close you came to being seduced.",
           detay: "Some tests are passed quietly.",
@@ -193,7 +181,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Take the watch without questioning the order.",
-        ipucu: "Duty despite an exhausted body, but your focus weakens",
         basariliSonuc: {
           mesaj: "You forced your eyes to stay open until morning; no one suspected you.",
           detay: "The next day {amir} quietly touched your shoulder, and even that was enough for you.",
@@ -205,7 +192,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Secretly swap the watch with a comrade.",
-        ipucu: "A chance to rest, a risk of disobeying the order",
         basariliSonuc: {
           mesaj: "No one noticed, you rested.",
           detay: "But you know you broke the order; next time you may not be so lucky.",
@@ -225,7 +211,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Carry out the order to the letter, hand the man over.",
-        ipucu: "You complete your duty, your conscience aches",
         basariliSonuc: {
           mesaj: "You chained the carpenter and handed him to the garrison.",
           detay: "Your superior praised you; you couldn't forget the man's face at night.",
@@ -237,7 +222,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Pay the debt from your own pocket, try to have the arrest postponed.",
-        ipucu: "Your conscience eases, your pocket and your obedience take a hit",
         basariliSonuc: {
           mesaj: "You cleared the debt, the man was released.",
           detay: "You know your superior wouldn't be happy if he found out, but you slept easy that night.",
@@ -249,7 +233,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Carry out the order but write a report and flag the situation.",
-        ipucu: "Trusting the system makes the outcome uncertain",
         basariliSonuc: {
           mesaj: "Your report reached your superior's superior, and the man's sentence was lightened.",
           detay: "You saw you could change something by staying within the rules.",
@@ -269,7 +252,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Refuse the bribe, report the merchant.",
-        ipucu: "Your honor stays clean, you draw the merchant's anger onto yourself",
         basariliSonuc: {
           mesaj: "You had the merchant caught, your superior held up your honesty as an example.",
           detay: "But the merchant's men know your face now.",
@@ -281,7 +263,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Take the gold, ignore the load.",
-        ipucu: "Easy money, a heavy price if caught",
         basariliSonuc: {
           mesaj: "The purse went into your pocket, the load entered the city quietly.",
           detay: "Before you slept that night you told yourself 'just this once'.",
@@ -301,7 +282,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Give the order unchanged, show no favoritism.",
-        ipucu: "Justice is kept, the friendship is damaged",
         basariliSonuc: {
           mesaj: "You gave the order, {dost} accepted it in silence.",
           detay: "You know you were fair but he doesn't laugh with you the way he used to.",
@@ -313,7 +293,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Lighten the duty, but let no one see it.",
-        ipucu: "You protect the friendship, if discovered your reputation is shaken",
         basariliSonuc: {
           mesaj: "No one noticed, {dost} stayed grateful to you.",
           detay: "Deep down, you know you crossed the line with your very first order.",
@@ -333,7 +312,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Leave the ceremony at once, rush to duty.",
-        ipucu: "Duty comes first, your heart stays behind",
         basariliSonuc: {
           mesaj: "You leapt on your horse and reached the post; your superior never forgot your loyalty.",
           detay: "{es} forgave you, but there's always a memory missing, like a wedding portrait.",
@@ -345,7 +323,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Finish the ceremony, set off at first light.",
-        ipucu: "Your heart wins, a stain goes on your disciplinary record",
         basariliSonuc: {
           mesaj: "You completed your wedding, {es} never let go of your hand.",
           detay: "When you reached the garrison you answered for the delay, but you weren't sorry.",
@@ -365,7 +342,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Set aside extra time in the evenings and train him.",
-        ipucu: "It takes time and patience, the return is loyalty",
         basariliSonuc: {
           mesaj: "The young private came together quickly, and stayed grateful to you.",
           detay: "If one day you see him training someone too, you'll know this effort wasn't wasted.",
@@ -377,7 +353,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Leave him be, let discipline change him.",
-        ipucu: "Little effort, but the boy is left alone",
         basariliSonuc: {
           mesaj: "The boy toughened up and learned on his own.",
           detay: "But he trusts no one now, not even you.",
@@ -389,7 +364,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Report the situation to the official trainer, don't spend your own time.",
-        ipucu: "You share the responsibility, you don't form a personal bond with the boy",
         basariliSonuc: {
           mesaj: "The trainer took over, the boy came together in time.",
           detay: "You did your duty but no bond was ever formed between you.",
@@ -409,7 +383,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Take your punishment in silence, show your obedience.",
-        ipucu: "Your reputation is protected, the injustice stands",
         basariliSonuc: {
           mesaj: "You took your punishment without a word; your superior mistook your silence for discipline.",
           detay: "But you didn't forget the injustice, you only learned to swallow it.",
@@ -421,7 +394,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Quietly tell your superior's superior about the situation.",
-        ipucu: "Justice is possible, but the risk of skipping the chain of command is great",
         basariliSonuc: {
           mesaj: "The senior officer found the real culprit, your name was cleared.",
           detay: "But your superior will never see you the same way again.",
@@ -441,7 +413,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Carry out the order without questioning.",
-        ipucu: "Obedience could reward you or lead you the wrong way",
         basariliSonuc: {
           mesaj: "In the morning it turned out the hill was an ambush; {amir}'s instinct saved your lives.",
           detay: "You never forgot how valuable your obedience was that time.",
@@ -453,7 +424,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Voice your reservations to your superior gently.",
-        ipucu: "You make yourself heard, a risk of being branded distrustful",
         basariliSonuc: {
           mesaj: "{amir} listened to you, changed the plan a little, you were both proven right.",
           detay: "You learned that making yourself heard isn't insubordination.",
@@ -473,7 +443,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept the praise quietly, focus on your work.",
-        ipucu: "Your career grows, so does your loneliness",
         basariliSonuc: {
           mesaj: "Your superiors appreciated you more; but fewer people sat next to you at the evening table.",
           detay: "Being respected and being liked aren't the same, you learned.",
@@ -485,7 +454,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Share your successes with your comrades, put them forward too.",
-        ipucu: "Your bonds strengthen, your personal star dims a little",
         basariliSonuc: {
           mesaj: "Your comrades appreciated you, the coldness between you dispersed.",
           detay: "Instead of rising alone you chose to walk together.",
@@ -497,7 +465,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Ignore the jealousy, go your own way.",
-        ipucu: "You don't face the problem, the tension quietly grows",
         basariliSonuc: {
           mesaj: "You didn't care about the jealousy, it died down in time.",
           detay: "You learned you don't have to please everyone.",
@@ -517,7 +484,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Join the campaign despite your wound.",
-        ipucu: "You prove your obedience, you put your body at risk",
         basariliSonuc: {
           mesaj: "You gritted your teeth and joined the campaign, no one saw your weakness.",
           detay: "Your superior was proud of you; you were just trying to stay on your feet.",
@@ -529,7 +495,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Listen to the physician, ask for leave.",
-        ipucu: "Your body heals, your obedient image takes a small shadow",
         basariliSonuc: {
           mesaj: "Leave was granted, you fully recovered.",
           detay: "Your superior showed understanding but you noticed the slight disappointment in his eyes.",
@@ -549,7 +514,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Have the load searched properly, apply the rule.",
-        ipucu: "The duty is fully done, a family's fate is in your hands",
         basariliSonuc: {
           mesaj: "You found the weapons, arrested the caravan; your superior rewarded you.",
           detay: "The caravan leader's begging voice didn't leave your ears for a long time.",
@@ -561,7 +525,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Look the other way, let the caravan through.",
-        ipucu: "One conscience eases, a big risk of betraying the order",
         basariliSonuc: {
           mesaj: "You let the caravan through, the caravan leader thanked you in tears.",
           detay: "But the lie you wrote in the post's ledger is part of you now.",
@@ -573,7 +536,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Apply the rule but help the caravan leader's family from your own pocket.",
-        ipucu: "A partial answer to both duty and conscience, your pocket lightens",
         basariliSonuc: {
           mesaj: "You handed over the weapons, but secretly left money with the caravan leader's family.",
           detay: "Without breaking the rule you didn't fully ignore your conscience either.",
@@ -593,7 +555,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Take the oath, bind your conscience to God.",
-        ipucu: "Your soul eases, you take on a bond that could conflict with your obedience",
         basariliSonuc: {
           mesaj: "You took the oath, felt a strange peace inside.",
           detay: "But you'll have to think twice about every order now.",
@@ -605,7 +566,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Make only confession, gently refuse the oath.",
-        ipucu: "You keep your simplicity, your spiritual bond stays incomplete",
         basariliSonuc: {
           mesaj: "You made your confession, and turned down the oath saying 'as a soldier I'm bound to my superior'.",
           detay: "The priest nodded, not without objection but with respect.",
@@ -625,7 +585,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Pass the order along unchanged, carry the weight of command.",
-        ipucu: "Your authority is respected, some of the affection lessens",
         basariliSonuc: {
           mesaj: "You gave the order, no one objected but a coldness hung in the air.",
           detay: "You learned the price of being a commander from the first day.",
@@ -637,7 +596,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Take the task on yourself, spare your men.",
-        ipucu: "Your men love you, your superiors may find you weak",
         basariliSonuc: {
           mesaj: "You did the task yourself, your men looked at you with devotion.",
           detay: "But {amir} thinks a commander shouldn't dirty his own hands.",
@@ -657,7 +615,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Carry out the order, show your obedience.",
-        ipucu: "Your military discipline is complete, your conscience is never the same",
         basariliSonuc: {
           mesaj: "You carried out the order; {amir} nodded without a word.",
           detay: "The eyes you saw that night never left your dreams, even years later.",
@@ -669,7 +626,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Delay the order, look for a way to keep the prisoner alive.",
-        ipucu: "You could save your conscience, open disobedience carries a great risk",
         basariliSonuc: {
           mesaj: "You managed to have the prisoner secretly recorded on the exchange list; {amir} was furious but your order was effectively changed.",
           detay: "You saved a life but you're an untrustworthy man in {amir}'s eyes now.",
@@ -689,7 +645,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Carry out the order, keep the quarantine strict.",
-        ipucu: "You stop the epidemic, you share in the sick men's suffering",
         basariliSonuc: {
           mesaj: "The quarantine worked, the rest of the barracks stayed healthy.",
           detay: "The sound of coughing from the tent is still in your ears at night.",
@@ -701,7 +656,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Secretly bring food and blankets to those in quarantine.",
-        ipucu: "Your mercy eases them, there's a risk of breaking the order",
         basariliSonuc: {
           mesaj: "What you brought made a few lives easier, no one noticed.",
           detay: "You chose to follow the spirit of some orders, not the letter.",
@@ -721,7 +675,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Apply the rule, report the offense to your superiors.",
-        ipucu: "You keep your discipline, the boy's life takes a heavy wound",
         basariliSonuc: {
           mesaj: "You filed your report, the young private was hit with a heavy punishment.",
           detay: "You stayed true to the rules; the face of staying true is sometimes bitter.",
@@ -733,7 +686,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Lighten the punishment with your own authority, don't blow it up.",
-        ipucu: "You give the boy a chance, you take the risk of bending the rules",
         basariliSonuc: {
           mesaj: "You punished the young private with your own authority, didn't escalate it to your superiors.",
           detay: "The boy never made the same mistake again, and stayed grateful to you for life.",
@@ -753,7 +705,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Carry out the order, close the gates.",
-        ipucu: "You save those inside, you share in the fate of those outside",
         basariliSonuc: {
           mesaj: "You closed the gates; those inside the fortress survived.",
           detay: "The screams of those left outside stayed with you always, as part of the victory you won.",
@@ -765,7 +716,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Secretly let a small number of children and elderly in.",
-        ipucu: "You save a few lives, the risk of openly defying the order is great",
         basariliSonuc: {
           mesaj: "You let a few children and elderly in through a hidden gate; {amir} was furious when he found out but couldn't undo it.",
           detay: "You knowingly took the first big stain on your command, and you're not sorry.",
@@ -785,7 +735,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Stay in service, give what strength you have left.",
-        ipucu: "You keep your honor, your body wears down more",
         basariliSonuc: {
           mesaj: "You stayed in service, the young privates kept learning from you.",
           detay: "Your honor is intact but your body reminds you of the price every morning.",
@@ -797,7 +746,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "File for retirement, focus on passing your experience to the young privates.",
-        ipucu: "A peaceful transition, a withdrawal from active service",
         basariliSonuc: {
           mesaj: "Your petition was accepted, you stay in the barracks as a trainer now.",
           detay: "You set down your sword but not what you know.",
@@ -809,7 +757,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Test your limits by sparring with a young private.",
-        ipucu: "You prove yourself but your body pays for it",
         basariliSonuc: {
           mesaj: "You showed you could still beat a young private, your standing in the barracks rose.",
           detay: "But when you got up the next morning you felt it was not a victory but a reminder.",
@@ -829,7 +776,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Ask for leave, don't set off until you have an answer.",
-        ipucu: "You stay bound to the rules, time may not wait for your father",
         basariliSonuc: {
           mesaj: "Your leave was approved at the last moment, you made it to your father's last breath.",
           detay: "Staying bound to the rules didn't make you sorry this time.",
@@ -841,7 +787,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Go without permission, take the punishment.",
-        ipucu: "Your conscience eases, your disciplinary record takes a heavy stain",
         basariliSonuc: {
           mesaj: "You got to hold your father's hand one last time, but a heavy punishment waited for you when you returned.",
           detay: "You're not sorry; some things are worth more than rank.",
@@ -861,7 +806,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Tell it honestly: obedience both saved you and cost you sleep some nights.",
-        ipucu: "Your honesty is a lesson to the young, your flawless image is shaken",
         basariliSonuc: {
           mesaj: "The young private listened in silence, started speaking of you as 'a real soldier'.",
           detay: "Admitting you weren't flawless made you more respected still.",
@@ -873,7 +817,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Just say 'staying true to orders is always right', don't confuse the boy.",
-        ipucu: "You leave a simple, strong legacy, the truth stays more complicated",
         basariliSonuc: {
           mesaj: "The young private memorized your words, swore to become like you.",
           detay: "You didn't tell him the whole truth, but maybe that was the greatest kindness you could do for him.",
@@ -893,7 +836,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Distract the sentry, slip into the tent.",
-        ipucu: "You win the organization's trust, a high risk of being caught",
         basariliSonuc: {
           mesaj: "You copied the roster, no one noticed; the organization trusts you more now.",
           detay: "You passed your first test quietly.",
@@ -905,7 +847,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse the task, say it's too risky.",
-        ipucu: "You stay safe, your standing in the organization is shaken",
         basariliSonuc: {
           mesaj: "You refused; your comrades understood but didn't hide the disappointment in their eyes.",
         },
@@ -915,7 +856,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Persuade another comrade to take on the risk.",
-        ipucu: "You share out the risk, it could damage trust within the organization",
         basariliSonuc: {
           mesaj: "Your comrade took on the task and succeeded; but you know you put him in danger.",
         },
@@ -934,7 +874,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Test him, with a piece of dangerous information.",
-        ipucu: "You could reveal his true identity, if it turns out wrong you lose trust",
         basariliSonuc: {
           mesaj: "The false information you gave reached the commander's ear a day later; the man really was an informer, you warned the organization in time.",
           detay: "Suspicion is sometimes a weapon in itself.",
@@ -945,7 +884,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Quietly ease him out of the organization, give no reason.",
-        ipucu: "You reduce the risk, you may have hurt an innocent person",
         basariliSonuc: {
           mesaj: "The man quietly drifted away, no one reacted; the danger — maybe — was removed.",
         },
@@ -955,7 +893,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Trust him, bring him fully into your ranks.",
-        ipucu: "The organization grows, if it turns out wrong everyone is in danger",
         basariliSonuc: {
           mesaj: "The man really was your comrade in the cause; the organization grew stronger by one.",
         },
@@ -974,7 +911,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Develop a new sign system, take the risk.",
-        ipucu: "You strengthen the organization, it's dangerous until the new method is tested",
         basariliSonuc: {
           mesaj: "The new signs worked; communication is far safer than before.",
         },
@@ -984,7 +920,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Stop the meetings for a while, propose waiting.",
-        ipucu: "Safe but the organization could lose its momentum",
         basariliSonuc: {
           mesaj: "Nothing happened during the silent period; but some comrades started to grow impatient.",
         },
@@ -1002,7 +937,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Carry the provisions at midnight, take them to the village yourself.",
-        ipucu: "You win the people's real support, a big risk of being caught",
         basariliSonuc: {
           mesaj: "The provisions reached the village; the women thanked you in tears, the organization's name started being whispered in the village.",
           detay: "The people's love sometimes outweighs a sword.",
@@ -1013,7 +947,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Hand the task to another comrade, you keep watch.",
-        ipucu: "You share out the risk, your share of the trust drops",
         basariliSonuc: {
           mesaj: "Your lookout work paid off, the provisions arrived without trouble; but someone else got the people's gratitude.",
         },
@@ -1023,7 +956,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Cancel the plan, say it's too risky.",
-        ipucu: "You stay safe, the village is left alone with its hunger",
         basariliSonuc: {
           mesaj: "You stopped the plan; the village went hungry but the organization dodged another danger.",
         },
@@ -1041,7 +973,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Support the violent, fast action.",
-        ipucu: "A sense of instant justice, it could turn into an uncontrolled blood feud",
         basariliSonuc: {
           mesaj: "Your words emboldened the fast-action camp; the organization is a sharper knife now.",
         },
@@ -1051,7 +982,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Support the patient, organizing approach.",
-        ipucu: "A safer way, its results come slowly",
         basariliSonuc: {
           mesaj: "Your words convinced the majority; the organization gave up hasty moves and decided to grow patiently.",
         },
@@ -1061,7 +991,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Stay neutral, try to reconcile the two.",
-        ipucu: "You could hold the organization together, you may not fully please anyone",
         basariliSonuc: {
           mesaj: "Your conciliatory words worked; both groups listened to you, the organization stood without splitting.",
         },
@@ -1079,7 +1008,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Stage a raid, free him by force.",
-        ipucu: "Heroic but it could endanger the whole organization",
         basariliSonuc: {
           mesaj: "The raid worked, you spirited your comrade off into the dark; your hearts are still pounding.",
           detay: "Some nights show you the price of friendship.",
@@ -1090,7 +1018,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Stay silent, leave him to his fate.",
-        ipucu: "You protect the organization, your conscience carries a heavy burden",
         basariliSonuc: {
           mesaj: "You did nothing; your comrade was taken to interrogation, the organization survived to the next day.",
         },
@@ -1100,7 +1027,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Try to persuade the sentry with a bribe.",
-        ipucu: "A bloodless solution, it risks your money and your trust",
         basariliSonuc: {
           mesaj: "The sentry pocketed the gold and closed his eyes; your comrade slipped away down the corridor.",
         },
@@ -1118,7 +1044,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Grit your teeth, give no names.",
-        ipucu: "You protect your comrades, you pay the price with your body",
         basariliSonuc: {
           mesaj: "You didn't say a word; in the end they let you go, but your body didn't heal for weeks.",
           detay: "Your silence was stronger than any word you could have said.",
@@ -1130,7 +1055,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Give a small, unimportant name, protect the real organization.",
-        ipucu: "Your chance of getting out rises, a stain stays on your conscience",
         basariliSonuc: {
           mesaj: "The false name you gave worked; the interrogators were satisfied, the organization stayed safe once more.",
           detay: "You got out but you'll always remember whose name you sacrificed.",
@@ -1141,7 +1065,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Try to escape, seize the gap between interrogations.",
-        ipucu: "If you succeed you're free, if you fail you pay a very heavy price",
         basariliSonuc: {
           mesaj: "You seized a sentry's momentary lapse and melted into the dark.",
         },
@@ -1159,7 +1082,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Take on the leadership, rally the organization.",
-        ipucu: "You gain real power, every mistake is on your shoulders now",
         basariliSonuc: {
           mesaj: "Your comrades accepted you as leader; the organization went on without falling apart.",
           detay: "Every decision of yours affects many lives now.",
@@ -1170,7 +1092,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Stay back, support another experienced comrade.",
-        ipucu: "Safer, your say over the organization lessens",
         basariliSonuc: {
           mesaj: "The comrade you supported took the leadership, the organization went on unshaken.",
         },
@@ -1180,7 +1101,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Break the organization into small, independent cells, give up the single center.",
-        ipucu: "You reduce the risk of being caught, coordination gets harder",
         basariliSonuc: {
           mesaj: "Splitting into cells worked; even if one cell is caught, the others stay safe.",
         },
@@ -1198,7 +1118,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Talk to him, open up trusting the old friendship.",
-        ipucu: "You could rebuild the bond, he could give you away",
         basariliSonuc: {
           mesaj: "{dost} listened to you, remembered the old days; he swore he'd say nothing to anyone.",
         },
@@ -1209,7 +1128,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Act distant, give nothing away.",
-        ipucu: "Safe but you lose the old friendship entirely",
         basariliSonuc: {
           mesaj: "You passed with a cold greeting; {dost} seemed to sense something but didn't dwell on it.",
         },
@@ -1227,7 +1145,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Make a large purchase from the organization's common purse.",
-        ipucu: "You arm the organization, the big expense could leave a trail",
         basariliSonuc: {
           mesaj: "The weapons were delivered secretly at midnight; the organization has the means to defend itself now.",
         },
@@ -1237,7 +1154,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Buy a small, inconspicuous quantity.",
-        ipucu: "Safe but an inadequate arming",
         basariliSonuc: {
           mesaj: "The small batch came without trouble; inadequate but at least a start.",
         },
@@ -1247,7 +1163,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse the offer, don't trust the merchant.",
-        ipucu: "Safe but the organization stays unarmed",
         basariliSonuc: {
           mesaj: "You turned the offer down; the merchant shrugged and left, the organization a little more unarmed but safe.",
         },
@@ -1265,7 +1180,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Hang the text yourself before dawn.",
-        ipucu: "You become the people's voice, being caught is instant and dangerous",
         basariliSonuc: {
           mesaj: "In the morning you saw people gathered around the text in the market square; your words reached beyond the barracks for the first time.",
           detay: "Some words reach farther than a sword.",
@@ -1276,7 +1190,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Have a trusted peasant do the job.",
-        ipucu: "You protect yourself, you put the risk on someone else",
         basariliSonuc: {
           mesaj: "The peasant hung the text, no one suspected; the words reached the people anyway.",
         },
@@ -1294,7 +1207,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Quietly get the young soldier outside, cover it up.",
-        ipucu: "You limit the damage, you can't be fully sure",
         basariliSonuc: {
           mesaj: "You got the soldier out, the noise in the tavern seemed to have drowned the talk.",
         },
@@ -1304,7 +1216,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Follow the stranger, find out who he is.",
-        ipucu: "You could see the danger coming, you could also expose your own identity",
         basariliSonuc: {
           mesaj: "You learned the man was an ordinary peddler; you felt a bit relieved.",
         },
@@ -1314,7 +1225,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Cut the young soldier off from the organization entirely, never trust him again.",
-        ipucu: "You increase security, you lose a comrade",
         basariliSonuc: {
           mesaj: "You cut the young man off from the organization; he left sad but the organization took one more precaution.",
         },
@@ -1332,7 +1242,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Open up to him partly, try to feel out his side.",
-        ipucu: "You could win an unexpected ally, you could give yourself away entirely",
         basariliSonuc: {
           mesaj: "The priest whispered that he shared your anger; the church now offers the organization a secret refuge.",
           detay: "Some allies wear unexpected robes.",
@@ -1344,7 +1253,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Say nothing, pass over your sins in general terms.",
-        ipucu: "Safe but you miss a possible ally",
         basariliSonuc: {
           mesaj: "It was an ordinary confession; you left before the priest could learn anything.",
         },
@@ -1362,7 +1270,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Join the plan, take part in the attempt to seize the commander.",
-        ipucu: "You dispense justice yourself, failure could end the organization",
         basariliSonuc: {
           mesaj: "The commander was quietly taken from the barracks and his crimes read before the people; this time it was the superiors who felt the fear.",
           detay: "Justice sometimes waits for night.",
@@ -1373,7 +1280,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Try to stop the plan, argue it's too risky.",
-        ipucu: "You protect the organization, some comrades find you weak",
         basariliSonuc: {
           mesaj: "Your words convinced the majority, the plan was postponed; still, some accused you of a lack of courage.",
         },
@@ -1391,7 +1297,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Open up to a trusted comrade, share the burden.",
-        ipucu: "You feel better, the person you trust could let you down",
         basariliSonuc: {
           mesaj: "Your comrade listened, reminded you that you weren't alone; the weight on your shoulders eased a little.",
         },
@@ -1401,7 +1306,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Grit your teeth, give nothing away, carry it alone.",
-        ipucu: "You protect the organization, your own spirit wears down",
         basariliSonuc: {
           mesaj: "You gave nothing away; the organization stayed safe but the darkness inside you grew.",
           detay: "Some burdens are carried without ever being shared.",
@@ -1420,7 +1324,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Sneak into the command tent, steal the list.",
-        ipucu: "You could save the organization, you carry the biggest risk yourself",
         basariliSonuc: {
           mesaj: "You got the list; you warned everyone named in time, the organization was saved from a great blow.",
           detay: "Sometimes a scrap of paper means a dozen lives.",
@@ -1431,7 +1334,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Get a clerk in the tent talking with a bribe.",
-        ipucu: "A safer way, the information could be incomplete or wrong",
         basariliSonuc: {
           mesaj: "The clerk whispered a few names; at least you could warn those in most danger.",
         },
@@ -1441,7 +1343,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Ignore the list, let fate bring what it will.",
-        ipucu: "You stay safe, your comrades are left in the dark",
         basariliSonuc: {
           mesaj: "You did nothing; a few weeks later two names on the list were arrested, you were left untouched.",
         },
@@ -1459,7 +1360,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept the promotion, become the organization's secret eye.",
-        ipucu: "You give the organization priceless information, the double life could wear you out",
         basariliSonuc: {
           mesaj: "The promotion was accepted; you live in two worlds now, but thanks to you the organization is a step ahead.",
           detay: "Power sometimes takes the most dangerous disguise.",
@@ -1470,7 +1370,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Politely refuse the promotion, stay with the organization.",
-        ipucu: "You keep your loyalty to the organization, you raise suspicion in your superiors' eyes",
         basariliSonuc: {
           mesaj: "Your refusal surprised {amir} but he didn't push; deep down you were relieved, your place in the organization stayed solid.",
         },
@@ -1488,7 +1387,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Take the front ranks, lead the uprising.",
-        ipucu: "You become the leader of a historic moment, if you lose the price is very heavy",
         basariliSonuc: {
           mesaj: "The armory was seized, the unjust commanders stripped of their ranks; your name is a word of hope in the barracks now.",
           detay: "This night will be told even years from now.",
@@ -1500,7 +1398,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Stay back, provide only support and communication.",
-        ipucu: "Safer, your name isn't written into history as a leader",
         basariliSonuc: {
           mesaj: "The information you gave made the front group's job easier; the uprising succeeded, you stayed in the shadows.",
         },
@@ -1510,7 +1407,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Pull back at the last moment, think the plan is too early.",
-        ipucu: "You protect yourself, the organization may never forgive you",
         basariliSonuc: {
           mesaj: "You pulled back; the uprising went on without you and was crushed in blood, your survival weighed on you like guilt.",
         },
@@ -1528,7 +1424,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Try the tunnel, escape whatever it takes.",
-        ipucu: "The only door to freedom, a risk of collapse or ambush",
         basariliSonuc: {
           mesaj: "You slipped under the fence and dove into the dark, swallowing the earth's breath; you came out into freedom with everything you left behind.",
           detay: "Freedom feels heavy even at the first breath.",
@@ -1539,7 +1434,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Blend into the city and hide by concealing your identity.",
-        ipucu: "Slow but a relatively calm way, the risk of being recognized continues",
         basariliSonuc: {
           mesaj: "You lived for months like an ordinary craftsman; those looking for you finally forgot you, but nothing was left of your old life.",
         },
@@ -1549,7 +1443,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Surrender, at least beg mercy for your comrades.",
-        ipucu: "An honorable submission, you definitely lose your freedom",
         basariliSonuc: {
           mesaj: "You surrendered; your words saved some comrades' lives but your own freedom is no longer yours.",
           detay: "Some victories are won from behind chains.",
@@ -1568,7 +1461,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Protect the gain, quietly disband the organization, let no one suspect.",
-        ipucu: "You make the gain lasting, the story of the struggle stays in the shadows",
         basariliSonuc: {
           mesaj: "The organization quietly disbanded; the injustice eased a little, no one ever learned the names behind it.",
           detay: "Some victories are won without applause.",
@@ -1579,7 +1471,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Announce the gain, tell the people the organization's name and cause.",
-        ipucu: "You become a people's hero, the command could seek revenge",
         basariliSonuc: {
           mesaj: "The people learned the story of those who resisted injustice; your name is spoken outside the barracks now.",
           detay: "Some names live longer than chains.",
@@ -1590,7 +1481,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Keep fighting, don't count this small victory as enough.",
-        ipucu: "A bigger change is possible, you risk the gain you have",
         basariliSonuc: {
           mesaj: "The organization set new goals; the small victory became just the first step of a bigger struggle.",
         },
@@ -1608,7 +1498,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Correct what's being told, describe what happened as it was.",
-        ipucu: "Less fame, but a solid name",
         basariliSonuc: {
           mesaj: "You told the truth; no one embellished the story as much anymore but they trusted you more.",
           detay: "Some heroism needs not exaggeration but honesty.",
@@ -1620,7 +1509,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Let the story grow, stay silent.",
-        ipucu: "Easy fame, but the shadow of the lie grows",
         basariliSonuc: {
           mesaj: "The legend grew on its own, you just watched.",
           detay: "The story everyone loves was a little different from the one you lived.",
@@ -1640,7 +1528,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Host the bard, let him spread the ballad further.",
-        ipucu: "Spreading fame, growing expectation",
         basariliSonuc: {
           mesaj: "The ballad was sung in inns and markets; your name isn't yours anymore, it belongs to the people.",
           detay: "This made you proud, but part of you was uneasy — everything you do now will be compared to that ballad.",
@@ -1652,7 +1539,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Send the bard off, protect your privacy.",
-        ipucu: "Less fame, a bit of calm",
         basariliSonuc: {
           mesaj: "The bard left the barracks, you got some peace for a while.",
           detay: "Being a name everyone knows is tiring sometimes.",
@@ -1664,7 +1550,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Don't care, mind your own business.",
-        ipucu: "No risk but no effect",
         basariliSonuc: {
           mesaj: "The ballad spread on its own, you carried on with your watch.",
           detay: "Not trying to change some things is a choice too.",
@@ -1684,7 +1569,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Confront him openly, say the truth in front of everyone.",
-        ipucu: "It saves your honor but you make an enemy",
         basariliSonuc: {
           mesaj: "The truth came out, the soldiers took your side.",
           detay: "But the hatred in the officer's eyes isn't hidden anymore.",
@@ -1696,7 +1580,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Stay silent, trust that time will show the truth.",
-        ipucu: "Patience, but your reputation could erode",
         basariliSonuc: {
           mesaj: "Your silence was seen as maturity, the other soldiers already knew the truth.",
           detay: "Some battles are won by staying silent.",
@@ -1708,7 +1591,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Complain to {amir}, make it official.",
-        ipucu: "A lasting solution, a risky path",
         basariliSonuc: {
           mesaj: "{amir} took your side, the officer was humiliated in front of his superiors.",
           detay: "The justice you won came at the price of a permanent hostility.",
@@ -1728,7 +1610,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Make time for him, tell him what real war is.",
-        ipucu: "A small investment, a big responsibility",
         basariliSonuc: {
           mesaj: "The light in the boy's eyes dimmed a little but something more solid came in its place: knowing the truth.",
           detay: "Maybe your greatest heroism was breaking someone's dream to keep him alive.",
@@ -1740,7 +1621,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Pat his head briefly, get back to your work.",
-        ipucu: "Easy but cold",
         basariliSonuc: {
           mesaj: "The boy went off without being disappointed.",
           detay: "You can't make time for everyone, you know that.",
@@ -1760,7 +1640,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Tell no one, carry it in silence.",
-        ipucu: "You keep your pride, you make the burden heavier",
         basariliSonuc: {
           mesaj: "No one noticed, and you went on living the same battle again every night.",
           detay: "Some wounds stay hidden under the armor.",
@@ -1772,7 +1651,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Tell an old comrade-in-arms, share the burden.",
-        ipucu: "Hard but healing",
         basariliSonuc: {
           mesaj: "{dost} listened, fixed nothing, but sat beside you.",
           detay: "Some wounds close not with a sword but with words.",
@@ -1792,7 +1670,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept the rank with humility, stay silent at the ceremony.",
-        ipucu: "A solid reputation, without display",
         basariliSonuc: {
           mesaj: "Your words were few but the soldiers read it as strength.",
           detay: "Some men are more respected the less they speak.",
@@ -1804,7 +1681,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Accept the rank, give a speech at once.",
-        ipucu: "A big effect, a big risk",
         basariliSonuc: {
           mesaj: "Your words got the soldiers on their feet, but some officers found you too ambitious.",
           detay: "Applause doesn't always come from everyone.",
@@ -1816,7 +1692,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Don't accept the rank, say you owe more to the soldiers first.",
-        ipucu: "A rare humility, it surprises the commander",
         basariliSonuc: {
           mesaj: "Though the commander was surprised, this stance made you even greater; he declared the rank a joint victory of the unit.",
           detay: "Sometimes refusing the crown makes you the one who most deserves it.",
@@ -1836,7 +1711,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Push forward, break the line together.",
-        ipucu: "A great victory, the loss could be heavy",
         basariliSonuc: {
           mesaj: "The line broke, the enemy scattered; but three soldiers beside you never rose again.",
           detay: "As the victory ballads were written you tried not to forget their names.",
@@ -1848,7 +1722,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Advance cautiously, send scouts first.",
-        ipucu: "A safer, slower victory",
         basariliSonuc: {
           mesaj: "You advanced with few losses, the victory wasn't brilliant but it was solid.",
           detay: "Calculated courage is a courage without display but real.",
@@ -1868,7 +1741,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept the challenge.",
-        ipucu: "It cements your legend or ends it",
         basariliSonuc: {
           mesaj: "The duel was short; when the knight fell to his knees your own army roared your name.",
           detay: "Even in the enemy ranks a few nodded their heads.",
@@ -1880,7 +1752,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse, say it could be a trap.",
-        ipucu: "Wise but it casts a shadow on your reputation",
         basariliSonuc: {
           mesaj: "The commander backed your decision, the battle went on its normal course.",
           detay: "You don't have to accept every challenge.",
@@ -1892,7 +1763,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Propose a young soldier in your place, give him a chance.",
-        ipucu: "You share out the risk, you can't fully control the outcome",
         basariliSonuc: {
           mesaj: "The young soldier won with an unexpected courage, and you stood proudly behind him.",
           detay: "Sometimes the greatest heroism is giving the stage to someone else.",
@@ -1912,7 +1782,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Climb the walls alone, confirm your image.",
-        ipucu: "It grows the legend, it puts your life at risk",
         basariliSonuc: {
           mesaj: "You reached the walls, opened the gate from inside; while the unit cheered you, you just gave thanks you were still standing.",
           detay: "You told no one but you know you won't be this lucky again.",
@@ -1924,7 +1793,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Follow the safe way planned with the team.",
-        ipucu: "Less glory, more sense",
         basariliSonuc: {
           mesaj: "The tower was taken, no one was harmed but no one shouted your name either.",
           detay: "A smart victory sometimes gets no applause.",
@@ -1944,7 +1812,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Carry the news to his family with your own hand.",
-        ipucu: "A heavy task, but the right one",
         basariliSonuc: {
           mesaj: "You'll never forget the look in his mother's eyes, but you didn't lie.",
           detay: "Some burdens aren't shared, only carried.",
@@ -1956,7 +1823,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Suppress the pain, carry on with duty.",
-        ipucu: "It looks easy, it builds up inside",
         basariliSonuc: {
           mesaj: "The soldiers admired your resilience, no one saw the emptiness in your eyes.",
           detay: "The hero everyone saw carried a burden no one saw.",
@@ -1976,7 +1842,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Insist on acting like the old days, try to close the gap.",
-        ipucu: "Hard but a real bond could be saved",
         basariliSonuc: {
           mesaj: "You laughed together for a night, the distance melted for a moment.",
           detay: "Some bonds are worth insisting on being remembered.",
@@ -1988,7 +1853,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Accept the distance, get used to your loneliness.",
-        ipucu: "Easy but it hollows you out",
         basariliSonuc: {
           mesaj: "You withdrew to your tent without talking to anyone; your fame became a crown and a wall at once.",
           detay: "Someone everyone knows can be the loneliest person.",
@@ -2000,7 +1864,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Spend time with the new recruits, they don't judge you.",
-        ipucu: "A different bond, but still a bond",
         basariliSonuc: {
           mesaj: "You could breathe a little among the young, even though they still see you only with admiring eyes.",
           detay: "A new bond, though it doesn't replace the old, is something.",
@@ -2020,7 +1883,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Hold the narrow passage alone, wait for reinforcements.",
-        ipucu: "A legendary stand, or it ends here",
         basariliSonuc: {
           mesaj: "You held until dawn; when the reinforcements came the passage was still yours.",
           detay: "Even years later you couldn't quite explain how you survived that night.",
@@ -2032,7 +1894,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Abandon the passage, leave the fortress and retreat.",
-        ipucu: "You survive, your reputation is shaken",
         basariliSonuc: {
           mesaj: "You lived, but the fortress fell; the nickname 'hero' started being said for the first time in a mocking tone.",
           detay: "Surviving is sometimes a harder choice than victory.",
@@ -2052,7 +1913,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept their request, stay in the village a few days.",
-        ipucu: "You win the people's hearts, you delay your real duty",
         basariliSonuc: {
           mesaj: "The villagers slept easy, the children smiled even watching you from a distance.",
           detay: "Sometimes heroism protects something without swinging a sword.",
@@ -2064,7 +1924,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Politely refuse, say your real duty is waiting for you.",
-        ipucu: "A sense of duty, a price in disappointment",
         basariliSonuc: {
           mesaj: "The villagers were disappointed but understood; you're a person, you can't be everywhere at once.",
           detay: "Even a legend can't be in two places at once.",
@@ -2084,7 +1943,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Go to your superiors with evidence and witnesses.",
-        ipucu: "It brings justice but it takes time",
         basariliSonuc: {
           mesaj: "The testimonies cleared you, the officer who spread the slander got a sharp warning.",
           detay: "The truth won but the hostility became permanent.",
@@ -2096,7 +1954,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Ignore the rumor, answer with your conduct.",
-        ipucu: "A patient but slow clearing",
         basariliSonuc: {
           mesaj: "In time the rumor died on its own, your conduct proved stronger than words.",
           detay: "Some answers are given by silence.",
@@ -2108,7 +1965,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Threaten the officer privately, silence him.",
-        ipucu: "A fast but dangerous method",
         basariliSonuc: {
           mesaj: "The officer got scared and took back the rumor, but he really hates you now.",
           detay: "A silenced enemy is more dangerous than a talking one.",
@@ -2128,7 +1984,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Listen to the physician's warning, rest.",
-        ipucu: "Wise in the long run, it brings criticism in the short run",
         basariliSonuc: {
           mesaj: "Your wound closed, but because 'the hero' stayed away from the front for a while, gossip started.",
           detay: "Protecting your body sometimes risks your reputation.",
@@ -2140,7 +1995,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Ignore the warning, keep fighting.",
-        ipucu: "It protects your image, it drains your body",
         basariliSonuc: {
           mesaj: "You stayed at the front, the soldiers' morale rose but your arm aches more every day.",
           detay: "The price of heroism is sometimes paid slowly, quietly.",
@@ -2160,7 +2014,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept the seal, swear an oath of loyalty to your soldiers.",
-        ipucu: "A solid foundation, a great burden",
         basariliSonuc: {
           mesaj: "Your oath shook the hall; you're not just a hero now, you're a commander.",
           detay: "From that day, every decision carries not just your life but the lives of those under your command.",
@@ -2172,7 +2025,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Accept the seal, propose a new campaign at once.",
-        ipucu: "A bold beginning, a risky bet",
         basariliSonuc: {
           mesaj: "Your proposal was accepted, but some senior officers found you too green and too ambitious.",
           detay: "With your new rank came new enemies too.",
@@ -2184,7 +2036,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Accept the seal quietly, return to your duty at once.",
-        ipucu: "Without display but effective",
         basariliSonuc: {
           mesaj: "Even your slipping away from the ceremony turned into a legend: 'Even as a Commander, he chose the war over the ceremony.'",
           detay: "Some people win more respect in the moments they run.",
@@ -2204,7 +2055,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Pull him aside, tell him the real price.",
-        ipucu: "A hard talk, a life you could save",
         basariliSonuc: {
           mesaj: "The young soldier listened to you, the fire in his eyes dimmed a little but his sense returned.",
           detay: "The one thing you didn't tell him was that you haven't slept the same since that night either.",
@@ -2216,7 +2066,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Don't get involved, say everyone has the right to chart their own path.",
-        ipucu: "Easy but it tests your conscience",
         basariliSonuc: {
           mesaj: "You didn't get involved, the soldier made his own decision; you'll see the outcome in time.",
           detay: "You can't make every decision, you know that, but it still gnaws at you.",
@@ -2236,7 +2085,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Lead the front personally, fight at the very front.",
-        ipucu: "A legendary victory, a heavy price",
         basariliSonuc: {
           mesaj: "The right wing scattered the enemy, the victory was spoken of with your name.",
           detay: "But at the victory celebrations you're aware of the missing voices too.",
@@ -2248,7 +2096,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Command from the rear, trust your soldiers, spread the risk.",
-        ipucu: "Less glory, more lives saved",
         basariliSonuc: {
           mesaj: "The wing advanced in order, the losses were few; the victory wasn't brilliant but it was solid.",
           detay: "Being a commander demands more now than running at the front.",
@@ -2260,7 +2107,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Strike the enemy from the flank with a risky maneuver, surprise the commanders.",
-        ipucu: "A brilliant victory or a catastrophe",
         basariliSonuc: {
           mesaj: "The maneuver worked, you split the enemy ranks in two; it became a move for the history books.",
           detay: "Even years later this maneuver will be told in the barracks.",
@@ -2280,7 +2126,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Visit each grave one by one, speak their names aloud.",
-        ipucu: "A heavy but honorable reckoning of conscience",
         basariliSonuc: {
           mesaj: "You spoke each name, the wind took your words but you made a place for them inside you.",
           detay: "The legend may belong to the people, but the memories were still only yours.",
@@ -2292,7 +2137,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Leave the past behind, focus only on today.",
-        ipucu: "An easy escape, an account that never fully closes",
         basariliSonuc: {
           mesaj: "You looked forward, your shoulders lightened; but at night some names still come back.",
           detay: "Looking forward doesn't mean forgetting what's behind entirely.",
@@ -2312,7 +2156,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Speak at the ceremony, tell the story to future generations with your own voice.",
-        ipucu: "A lasting legacy, a great responsibility",
         basariliSonuc: {
           mesaj: "Your words left a mark more lasting than the stone; there was a real fire in the young soldiers' eyes as they listened.",
           detay: "Maybe the greatest legacy you leave isn't the stone but the fire in those eyes.",
@@ -2324,7 +2167,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Stay silent before the monument, just watch.",
-        ipucu: "Humble but distant",
         basariliSonuc: {
           mesaj: "Your silence said more than words; everyone bowed before the stone with respect.",
           detay: "Some moments are completed without speaking.",
@@ -2336,7 +2178,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse the monument, ask that your name be carved not in stone but in the soldiers' memory.",
-        ipucu: "A rare humility, a risk of offending the lord",
         basariliSonuc: {
           mesaj: "The lord was surprised at first, then appreciated your stance; the monument was raised anyway but your words echoed more among the soldiers.",
           detay: "You know your real legacy lives not in stone but in the memory of those who stood shoulder to shoulder with you.",
@@ -2356,7 +2197,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Bow your head, observe without being seen.",
-        ipucu: "You stay safe but your honor shrinks",
         basariliSonuc: {
           mesaj: "You got through the day without drawing anyone's attention; the sentries can't even tell you apart from an ordinary prisoner.",
           detay: "Surviving sometimes means learning to be invisible.",
@@ -2368,7 +2208,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Quietly build solidarity with the prisoners beside you.",
-        ipucu: "You gain friendship, you could also draw attention",
         basariliSonuc: {
           mesaj: "A quiet trust grew between you and the prisoners you whispered with on empty stomachs.",
           detay: "Shared hunger is lighter than hunger borne alone.",
@@ -2380,7 +2219,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Do small services for a sentry, try to gain a privilege.",
-        ipucu: "A small comfort, mistrust among the prisoners",
         basariliSonuc: {
           mesaj: "You made yourself useful to the sentry; in return you got an extra crust of bread and a little respect.",
           detay: "The other prisoners look at you differently now.",
@@ -2400,7 +2238,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Make the plan alone, tell no one.",
-        ipucu: "The secret stays with you, you're left without help",
         basariliSonuc: {
           mesaj: "You quietly worked out an escape route on your own; no one knows, no one can betray you.",
           detay: "Loneliness is sometimes the most trustworthy confidant.",
@@ -2412,7 +2249,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Make a joint plan with a few prisoners you trust.",
-        ipucu: "A stronger plan, the risk of being betrayed grows",
         basariliSonuc: {
           mesaj: "You secretly agreed with three prisoners; each of you has a separate task now.",
           detay: "A shared hope weighs less than one carried alone.",
@@ -2432,7 +2268,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Move now, take the risk.",
-        ipucu: "Freedom or a very heavy price",
         basariliSonuc: {
           mesaj: "You slipped under the fence and dove into the dark; the camp lights behind you grew smaller and smaller.",
           detay: "Freedom feels heavy even at the first breath.",
@@ -2444,7 +2279,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Give it up, wait for a safer chance.",
-        ipucu: "Safe but your hope is postponed",
         basariliSonuc: {
           mesaj: "You pulled back; 'not tonight' you told yourself, and still the fire in you didn't go out.",
           detay: "Patience is sometimes a harder choice than courage.",
@@ -2464,7 +2298,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Take on the identity of a dead traveling merchant.",
-        ipucu: "A new name, a risk of being discovered",
         basariliSonuc: {
           mesaj: "You took the papers off a body you found on the road; you're someone else now.",
           detay: "Setting your own name aside was easier than you thought.",
@@ -2476,7 +2309,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Hide your real past, say only 'a traveler fleeing the war'.",
-        ipucu: "A simpler lie, less security",
         basariliSonuc: {
           mesaj: "The villagers gave you shelter for a night without questioning; no one asked too many questions.",
           detay: "In the war years, fugitives like you are not few.",
@@ -2488,7 +2320,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Knock on a monastery door, ask for sanctuary.",
-        ipucu: "A temporary safety, it creates a religious debt",
         basariliSonuc: {
           mesaj: "The monks took you in without questions; you rested in a warm bed for a few days.",
           detay: "Some doors open without asking your past.",
@@ -2508,7 +2339,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Take the job, work quietly.",
-        ipucu: "Little gain, a safe cover",
         basariliSonuc: {
           mesaj: "Days passed with sacks on your back; no one looked at you and thought you were a soldier.",
           detay: "Callused hands were the best thing to hide your past.",
@@ -2520,7 +2350,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Bargain for a better wage.",
-        ipucu: "More gain, a risk of drawing attention",
         basariliSonuc: {
           mesaj: "Your insistence worked; the foreman paid you more than you expected.",
           detay: "Sometimes surviving takes a little boldness too.",
@@ -2540,7 +2369,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept the offer, take up your sword again.",
-        ipucu: "Good money, facing the ghosts of your old life",
         basariliSonuc: {
           mesaj: "You protected the caravan from bandits; however foreign the sword felt in your hand, it did its job.",
           detay: "Arms that once belonged to an army now serve a merchant.",
@@ -2552,7 +2380,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse, look for unarmed work.",
-        ipucu: "Safer, further from your past",
         basariliSonuc: {
           mesaj: "You didn't touch a weapon; instead you found small work in the warehouses.",
           detay: "Sometimes the greatest victory is being able to choose not to fight.",
@@ -2572,7 +2399,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Send the letter, take the risk.",
-        ipucu: "Your family's peace of mind, a risk to your own safety",
         basariliSonuc: {
           mesaj: "The letter reached your family; for the first time in years you could say 'I'm alive' to someone who wasn't hunting you.",
           detay: "Some words feel lighter than the heaviest chains.",
@@ -2584,7 +2410,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Give it up, keep your silence.",
-        ipucu: "Safe but the loneliness grows heavier",
         basariliSonuc: {
           mesaj: "You tore up the letter without writing it; your safety outweighed your longing.",
           detay: "Some silences are born not of love but of fear.",
@@ -2604,7 +2429,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Give him the money he wants, pass quietly.",
-        ipucu: "It costs you money but leaves no trail",
         basariliSonuc: {
           mesaj: "You gave the money, the man winked and let you through; it was a cheap price.",
           detay: "Some doors open only with silver.",
@@ -2616,7 +2440,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Bargain with him, pay only half.",
-        ipucu: "A cheap escape, a risk of angering him",
         basariliSonuc: {
           mesaj: "You bargained, the man agreed though grumbling; you kept a little money.",
           detay: "Sometimes boldness is worth more than thrift.",
@@ -2628,7 +2451,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse, try to escape by blending into the crowd.",
-        ipucu: "A free escape, a heavy risk",
         basariliSonuc: {
           mesaj: "You blended into the crowd; even if the man kept after you, he lost you.",
           detay: "Sometimes the only way out is your quick legs.",
@@ -2648,7 +2470,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Quietly leave the inn, disappear without a trace.",
-        ipucu: "A safe exit, and a bit of lost cash",
         basariliSonuc: {
           mesaj: "You left your meal half-finished and slipped out the back door; you left the city before the two men noticed you.",
           detay: "Sometimes the best fight is the one you never enter.",
@@ -2660,7 +2481,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Watch the men and deal with them first.",
-        ipucu: "You remove the threat, a bloody business",
         basariliSonuc: {
           mesaj: "You finished it in a dark street; the bounty hunters will never hunt anyone again.",
           detay: "Surviving turns you into someone you didn't want to be.",
@@ -2680,7 +2500,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Tell him the truth, pour your heart out.",
-        ipucu: "Your conscience lightens, one more person knows your secret",
         basariliSonuc: {
           mesaj: "The monk listened without judging you; 'surviving is not a sin,' he said.",
           detay: "Some words lighten a burden you've carried for years.",
@@ -2692,7 +2511,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Stay silent, leave his question unanswered.",
-        ipucu: "Your secret stays safe, your loneliness grows",
         basariliSonuc: {
           mesaj: "You only nodded; the monk didn't press, held out another bowl of hot soup.",
           detay: "Some questions deserve to stay unanswered.",
@@ -2712,7 +2530,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Go up to him, explain yourself.",
-        ipucu: "A chance to clear your past, a great risk",
         basariliSonuc: {
           mesaj: "Your commander heard you out; he said being taken prisoner wasn't cowardice, that he was there that day.",
           detay: "Sometimes one person's belief lightens a shame you've carried for years.",
@@ -2724,7 +2541,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Ignore him, blend into the crowd.",
-        ipucu: "Safe but you never face your past",
         basariliSonuc: {
           mesaj: "You turned your head and walked off; your commander didn't notice you, or pretended not to.",
           detay: "Not facing some ghosts is a choice too.",
@@ -2744,7 +2560,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Talk to him, propose a kind of truce.",
-        ipucu: "A shared secret, hard to trust",
         basariliSonuc: {
           mesaj: "You came to an understanding in a strange silence: you both pretended not to have seen each other.",
           detay: "Sometimes the hardest peace is the one never spoken.",
@@ -2756,7 +2571,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Walk away without being noticed.",
-        ipucu: "It postpones the risk but doesn't end it",
         basariliSonuc: {
           mesaj: "You blended into the crowd and vanished; still your heart raced for hours.",
           detay: "The past sometimes just waits for you to turn a corner.",
@@ -2776,7 +2590,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Look calm, hand them over with confidence.",
-        ipucu: "Composure helps, but there's no guarantee",
         basariliSonuc: {
           mesaj: "The guard glanced over the papers and let you go; even you were surprised your hands didn't tremble.",
           detay: "Sometimes the best weapon is the calm on your face.",
@@ -2788,7 +2601,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Blend into the crowd and slip out unnoticed.",
-        ipucu: "Risky but a way out without papers",
         basariliSonuc: {
           mesaj: "With a carter's help you slipped through the back streets; it's as if you never went through the gate.",
           detay: "Sometimes the safest way is never being seen at all.",
@@ -2808,7 +2620,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Join, become a mercenary.",
-        ipucu: "Steady money, a sense of betraying your old oath",
         basariliSonuc: {
           mesaj: "You fought under a new flag; the pay is good, but in every battle you remembered your old oath.",
           detay: "For a soldier the flag can change, the conscience doesn't.",
@@ -2820,7 +2631,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse, never raise your weapon for anyone again.",
-        ipucu: "Your conscience is at ease, your pocket stays empty",
         basariliSonuc: {
           mesaj: "You turned the offer down; you may go hungry but at least you betrayed no one.",
           detay: "Some lines even hunger can't erode.",
@@ -2832,7 +2642,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Join only briefly, for a single one-off mission.",
-        ipucu: "Limited risk, limited gain",
         basariliSonuc: {
           mesaj: "You completed the one-off mission, took your pay and left at once.",
           detay: "Sometimes the smartest choice is not committing.",
@@ -2852,7 +2661,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Take the risk, go to a healer.",
-        ipucu: "A hope of recovery, a risk of your identity coming out",
         basariliSonuc: {
           mesaj: "The healer woman cured you without asking questions, she just took the last of your money.",
           detay: "Some people care not about a stranger's past but only about his state right now.",
@@ -2864,7 +2672,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Wait to heal on your own, hide.",
-        ipucu: "No one sees you, but the fever may not break",
         basariliSonuc: {
           mesaj: "You shivered for days in an abandoned barn; the fever slowly broke but your body is still weak.",
           detay: "Falling ill alone is the coldest loneliness.",
@@ -2884,7 +2691,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Go to the court, testify.",
-        ipucu: "You could clear your name, you could also be caught as a deserter",
         basariliSonuc: {
           mesaj: "Your testimony brought the officer's betrayal to light; your name was spoken as 'victim', not 'fugitive'.",
           detay: "For the first time in years, you could make peace with your past.",
@@ -2896,7 +2702,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Stay silent, protect your safety.",
-        ipucu: "You stay safe, the chance won't come again",
         basariliSonuc: {
           mesaj: "You told the innkeeper you'd heard nothing and walked away; the chance slipped through your fingers.",
           detay: "Some chances never knock on your door again.",
@@ -2916,7 +2721,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Go home secretly at night.",
-        ipucu: "You reunite with your family, the risk of being recognized is great",
         basariliSonuc: {
           mesaj: "When you knocked, the astonishment in your mother's eyes was worth everything you'd carried for years.",
           detay: "Some moments forgive a whole life of fleeing.",
@@ -2928,7 +2732,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Give it up, settle for looking from a distance.",
-        ipucu: "Safe but the longing doesn't end",
         basariliSonuc: {
           mesaj: "From the hill you watched the smoke rising from your home's chimney, then quietly turned back.",
           detay: "Sometimes loving is accepting watching from a distance.",
@@ -2948,7 +2751,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Open the shop, settle in the town.",
-        ipucu: "A lasting life, your past always remains a shadow",
         basariliSonuc: {
           mesaj: "The shop opened, the townsfolk knew you as 'a quiet but honest man'.",
           detay: "Maybe identity isn't in the name you were born with but in the life you live.",
@@ -2960,7 +2762,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Don't settle, keep moving.",
-        ipucu: "Safer, you never have a permanent home",
         basariliSonuc: {
           mesaj: "A week later you threw your bag over your shoulder again; putting down roots still feels dangerous to you.",
           detay: "Some fugitives forget how to stop.",
@@ -2972,7 +2773,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Half-settle in the town but always keep your escape plan ready.",
-        ipucu: "You strike a balance, you never reach full peace",
         basariliSonuc: {
           mesaj: "You chose to live half-rooted, half-ready; neither fully at peace nor fully on edge, but you found your balance.",
           detay: "For some people safety always means leaving an escape door.",
@@ -2992,7 +2792,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept the guiding job.",
-        ipucu: "Good pay and respect, an exhausting and dangerous road",
         basariliSonuc: {
           mesaj: "You brought the caravan safely through the pass; the merchant is grateful, your name spread along the road.",
           detay: "The one thing left from your army years turned out to be knowing these mountains like the back of your hand.",
@@ -3004,7 +2803,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse, look for calmer work.",
-        ipucu: "Safe but an ordinary life",
         basariliSonuc: {
           mesaj: "You turned down the guiding job and found calmer work at the harbor.",
           detay: "Sometimes not seeking adventure is a form of courage too.",
@@ -3024,7 +2822,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Leave your past entirely behind, accept this new name as your real identity.",
-        ipucu: "You find inner peace, your old identity is buried forever",
         basariliSonuc: {
           mesaj: "You don't wake with your old name at night anymore; this life became your real life.",
           detay: "Some people carry not the identity they lost but the new one they built.",
@@ -3036,7 +2833,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Face your past, look for a way to take up your real identity once more.",
-        ipucu: "You could win back your honor, you put everything at risk",
         basariliSonuc: {
           mesaj: "You decided to carry your old name again; you're ready to pay the price for it now.",
           detay: "Some people stop fleeing and choose to return where they came from.",
@@ -3056,7 +2852,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Learn the system, follow the rules meticulously.",
-        ipucu: "You win their trust, turning back gets harder at every step",
         basariliSonuc: {
           mesaj: "You memorized the instructions; the agent left satisfied. You're not on the side of this business now, you're part of it.",
           detay: "Being a cog in a machine makes getting free of it harder too.",
@@ -3068,7 +2863,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Learn the system but keep an escape plan in mind too.",
-        ipucu: "You act cautiously, your focus wavers",
         basariliSonuc: {
           mesaj: "You took the instructions, but always kept an escape route hidden in a corner of your mind.",
           detay: "Maybe the spies who survive are the ones who never fully trust.",
@@ -3080,7 +2874,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Learn the danger but make no further commitment, keep your distance.",
-        ipucu: "You loosen the bond, the agent's trust doesn't fully form",
         basariliSonuc: {
           mesaj: "You learned the system but didn't fully hand yourself over; the agent sensed it, a cautious distance stayed between you.",
           detay: "A half commitment may be the smartest way to survive.",
@@ -3100,7 +2893,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Bury the money in the ground, be patient.",
-        ipucu: "Safe but your money does you no good",
         basariliSonuc: {
           mesaj: "You buried the gold one night in a place no one knows; at least it's safe for now.",
           detay: "Your wealth means nothing as long as you can't touch it.",
@@ -3112,7 +2904,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Spend it in small amounts, say you won it at gambling.",
-        ipucu: "You can use your money, but your lie is a rotten foundation",
         basariliSonuc: {
           mesaj: "You said you won it at the dice table and spent a few coins; no one questioned it.",
           detay: "A small lie can cover a big secret — for now.",
@@ -3132,7 +2923,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Tell him a partial truth, invent a love story.",
-        ipucu: "Convincing but it could tie you down in the future",
         basariliSonuc: {
           mesaj: "{dost} believed you were meeting a secret lover and smiled; he swore he'd tell no one your secret.",
           detay: "A lie is sometimes more convincing than the truth.",
@@ -3144,7 +2934,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Come out hard, tell him not to meddle in your private life.",
-        ipucu: "You silence him but a distance grows between you",
         basariliSonuc: {
           mesaj: "Your words forced {dost} to back off; he never asked again but he doesn't look at you the way he used to.",
           detay: "Some bonds are cut to protect them.",
@@ -3156,7 +2945,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Ask him for help too, share the danger.",
-        ipucu: "Very risky but you might win your one true ally",
         basariliSonuc: {
           mesaj: "{dost} listened in shock but didn't give you away; you both carry this secret now.",
           detay: "Sharing a secret sometimes lightens it, sometimes doubles it.",
@@ -3176,7 +2964,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Plant the false evidence, sacrifice the innocent private.",
-        ipucu: "You protect yourself, you ruin another life",
         basariliSonuc: {
           mesaj: "The letters were found; the innocent private was sent to the gallows, and you were cleared of all suspicion.",
           detay: "Your conscience will never forget this night, but your neck is still on your shoulders.",
@@ -3188,7 +2975,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Destroy the evidence, make up an excuse for the agent.",
-        ipucu: "You protect your conscience, the agent's trust is shaken",
         basariliSonuc: {
           mesaj: "You threw the evidence in the fire; you lied to the agent, saying 'no one suspects anything'.",
           detay: "Saving a person doesn't make you one step less a traitor but it makes you a little less soiled.",
@@ -3208,7 +2994,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Give the route, take the big payment in return.",
-        ipucu: "The highest payment, the heaviest conscience",
         basariliSonuc: {
           mesaj: "You gave the information; the caravan fell into an ambush, and you took your biggest payment yet.",
           detay: "You never heard the carters scream but you can't stop imagining it.",
@@ -3220,7 +3005,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Distort the route, protect the caravan indirectly.",
-        ipucu: "You ease your conscience, you risk the agent's trust",
         basariliSonuc: {
           mesaj: "The wrong information you gave accidentally saved the caravan; the agent thought it a mistake, and you breathed a quiet sigh of relief.",
           detay: "Sometimes the best betrayal is no betrayal at all.",
@@ -3240,7 +3024,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Stay cold, answer the questions clearly.",
-        ipucu: "Your professionalism could save you",
         basariliSonuc: {
           mesaj: "Your voice didn't tremble, your answers were fluid; the officer took you off the list.",
           detay: "Learning to hide fear is the most painful skill of this work.",
@@ -3252,7 +3035,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Steer the interrogation to another name, spread the suspicion.",
-        ipucu: "You save yourself, you darken someone's life",
         basariliSonuc: {
           mesaj: "You pointed to a private who'd acted strangely last week; the officer turned his attention to him.",
           detay: "Hiding in someone else's shadow is the easiest escape.",
@@ -3264,7 +3046,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Confess a small, unimportant crime (e.g. a gambling debt), distract him.",
-        ipucu: "You confess a small sin to hide the big one",
         basariliSonuc: {
           mesaj: "You confessed the gambling debt; the officer counted it a sufficient explanation and let you go.",
           detay: "A small truth is sometimes what best hides a big lie.",
@@ -3284,7 +3065,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Keep your distance, finish the business and leave.",
-        ipucu: "Safe but your loneliness grows",
         basariliSonuc: {
           mesaj: "You kept it short and left; you did what the work needed, allowed nothing more.",
           detay: "In this life loneliness is sometimes the only safe refuge.",
@@ -3296,7 +3076,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Let the conversation happen, trust him a little.",
-        ipucu: "You form a bond, both your secrets grow",
         basariliSonuc: {
           mesaj: "You talked for hours; for the first time you shared with someone the loneliness of being stuck between two worlds.",
           detay: "Talking with someone who carries the same darkness gives a strange peace.",
@@ -3316,7 +3095,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Sell the entire campaign plan.",
-        ipucu: "The biggest gain yet, the biggest risk",
         basariliSonuc: {
           mesaj: "You gave the plan in full; the agent called you 'a valuable partner' this time.",
           detay: "As your value rises, so does what you have to lose.",
@@ -3328,7 +3106,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Give only a part that looks unimportant.",
-        ipucu: "Less gain, less trail",
         basariliSonuc: {
           mesaj: "The piece you gave meant nothing on its own; the agent was a bit disappointed but made do.",
           detay: "Even small betrayals pile up somewhere.",
@@ -3348,7 +3125,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Give him hush money.",
-        ipucu: "Your secret stays, your pocket lightens",
         basariliSonuc: {
           mesaj: "You gave the moneylender a small sum; he swallowed his questions.",
           detay: "The price of silence is cheaper than the price of gossip.",
@@ -3360,7 +3136,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Threaten him, tell him he'll be sorry if he doesn't stay quiet.",
-        ipucu: "A firm solution but you make an enemy",
         basariliSonuc: {
           mesaj: "Your threat worked; the moneylender wouldn't even come near you again.",
           detay: "Fear sometimes creates a more reliable silence than loyalty.",
@@ -3372,7 +3147,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Bring him in on your business, share your secret.",
-        ipucu: "You widen your network, your control lessens",
         basariliSonuc: {
           mesaj: "You brought the moneylender into your business; he answers some questions in your place now.",
           detay: "Every new partner is both a shield and a new weak point.",
@@ -3392,7 +3166,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Knowingly give the enemy wrong information, protect your own army.",
-        ipucu: "You ease your conscience, the agent's trust could be shaken",
         basariliSonuc: {
           mesaj: "The false information you gave sent the enemy the wrong way; your own army was saved from a blow thanks to it.",
           detay: "Traitor though you are, tonight you stood on your own side once more.",
@@ -3404,7 +3177,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Don't take the risk, carry on your business as usual.",
-        ipucu: "You're safe but your conscience knows it missed a chance",
         basariliSonuc: {
           mesaj: "You didn't take the chance; business went on as usual, your purse filled.",
           detay: "Some nights, even doing nothing is a choice.",
@@ -3424,7 +3196,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Bribe the patrol and save the courier.",
-        ipucu: "You prove your loyalty, your pocket takes a serious hit",
         basariliSonuc: {
           mesaj: "You secretly paid the patrol commander; the courier was released, no one asked too many questions.",
           detay: "In this work sometimes the only trustworthy tongue is money.",
@@ -3436,7 +3207,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Leave the courier to his fate, stay silent.",
-        ipucu: "You're safe but your conscience grows heavier",
         basariliSonuc: {
           mesaj: "The courier came out of the interrogation without talking, you were saved by chance; but you'll never forget that you abandoned him.",
           detay: "Some victories taste bitter even to the winner.",
@@ -3448,7 +3218,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Find the courier before the interrogation, tell him to stay silent.",
-        ipucu: "The most direct solution, the highest risk",
         basariliSonuc: {
           mesaj: "You met the courier in the dark and persuaded him; he swore he'd stay silent and kept his word.",
           detay: "Sometimes the most dangerous way is the most honest one.",
@@ -3468,7 +3237,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Live the moment, really feel like one of them.",
-        ipucu: "A small happiness, but a deeper guilt",
         basariliSonuc: {
           mesaj: "You joined the laughter, raised a cup; for a moment you forgot you were a traitor.",
           detay: "Sometimes the most dangerous moment is when you truly feel you belong.",
@@ -3480,7 +3248,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Stay distant, don't drink much, stay alert.",
-        ipucu: "You're safe but your loneliness grows",
         basariliSonuc: {
           mesaj: "You raised your cup but your mind stayed alert; no one suspected you that night.",
           detay: "Staying alert is a habit of this life that isn't free.",
@@ -3500,7 +3267,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Confess without telling the truth, act relieved.",
-        ipucu: "An easy escape but a false peace",
         basariliSonuc: {
           mesaj: "The monk blessed you, you felt lighter; but the real burden inside you never lifted.",
           detay: "An unspoken sin is never really forgiven.",
@@ -3512,7 +3278,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse to kneel, miss your turn at confession.",
-        ipucu: "You avoid a false peace, your loneliness grows",
         basariliSonuc: {
           mesaj: "You didn't stand in line; at least you didn't tell one more lie.",
           detay: "Some burdens must go on being carried.",
@@ -3532,7 +3297,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Give the information, put your own life first.",
-        ipucu: "You protect yourself, your comrade-in-arms's blood stays on your hands",
         basariliSonuc: {
           mesaj: "You gave the information; the unit fell into an ambush, {dost} never came back to the barracks.",
           detay: "Some nights are never forgotten, only suppressed.",
@@ -3544,7 +3308,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Give the information wrong, try to protect your friend.",
-        ipucu: "You save your conscience, you put the agent's trust at great risk",
         basariliSonuc: {
           mesaj: "The wrong information you gave worked; {dost} survived, and the agent didn't notice.",
           detay: "Tonight you were at peace not because you're a traitor but because you couldn't stay one.",
@@ -3556,7 +3319,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Give the information partly, manage both the agent and your friend.",
-        ipucu: "You try to manage both sides, you walk a tightrope",
         basariliSonuc: {
           mesaj: "You gave the agent enough truth and {dost} enough of a hint; the unit moved carefully, the losses were fewer.",
           detay: "Sometimes the best betrayal is not fully selling anyone.",
@@ -3576,7 +3338,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Hand over the whole war strategy, deliver the enemy a victory.",
-        ipucu: "The greatest betrayal, the greatest reward — and the greatest danger",
         basariliSonuc: {
           mesaj: "You gave the strategy in full; the agent counts you now not a 'partner' but almost an equal.",
           detay: "After rising this high, falling is that much deeper too.",
@@ -3588,7 +3349,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Leak only the non-critical part of the strategy, keep the balance.",
-        ipucu: "Less risk, the agent's patience wears thin",
         basariliSonuc: {
           mesaj: "The piece you gave was valuable but didn't change the fate of the war; the agent made do.",
           detay: "Keeping the balance may be the only way to survive in this game.",
@@ -3608,7 +3368,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Ask the barracks physician for help, feign illness.",
-        ipucu: "You feel a bit better, the physician starts watching you closely",
         basariliSonuc: {
           mesaj: "The physician gave you a mixture of roots; you slept easy for a few nights.",
           detay: "Your body healed a little but your mind is still split two ways.",
@@ -3620,7 +3379,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Show no one, hold on alone.",
-        ipucu: "No one suspects but your body wears down more",
         basariliSonuc: {
           mesaj: "You held on in silence; no one noticed but getting up each morning got a little harder.",
           detay: "Some burdens don't lighten unless shared, they just sink deeper.",
@@ -3640,7 +3398,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept the offer, cross fully to the enemy side.",
-        ipucu: "A new life, the complete erasure of your old one",
         basariliSonuc: {
           mesaj: "On a dark night you left the barracks; your name is spoken as 'traitor' in these lands now, but you live under a different sky with a new name.",
           detay: "Ending one life and building another is a lonelier thing than you thought.",
@@ -3652,7 +3409,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse, decide you've gone far enough now.",
-        ipucu: "You stay on your own side but the agent may not let go easily",
         basariliSonuc: {
           mesaj: "You turned the offer down; the agent left in disappointment but didn't threaten you.",
           detay: "To draw some lines you first have to see how far you've gone.",
@@ -3664,7 +3420,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Try to buy time, give no firm answer.",
-        ipucu: "Uncertainty protects you but it can't last forever",
         basariliSonuc: {
           mesaj: "You told the agent you needed to think; he waited patiently but the trust in his eyes lessened.",
           detay: "Buying time is sometimes not a solution, just a postponed reckoning.",
@@ -3684,7 +3439,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Use your influence to quietly close the file.",
-        ipucu: "You protect yourself, you commit a second injustice",
         basariliSonuc: {
           mesaj: "The file was closed, the man stayed in the mine; no one blamed you but your own conscience had long since passed its verdict.",
           detay: "Some injustices multiply when you cover them up.",
@@ -3696,7 +3450,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Bring the truth out with an anonymous letter, save the man.",
-        ipucu: "You pay a debt of conscience, you put yourself in great danger",
         basariliSonuc: {
           mesaj: "Your letter had the file reopened; the man was freed, no one learned who the letter was from.",
           detay: "Righting a wrong even years later eases something inside you.",
@@ -3716,7 +3469,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Secretly move the items elsewhere before the search.",
-        ipucu: "You race against time, a high risk of being caught",
         basariliSonuc: {
           mesaj: "At the last moment you hid everything in a friend's saddlebag; the search passed you by entirely.",
           detay: "Your heart was in your throat but once more you got off cheap.",
@@ -3728,7 +3480,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Don't take the risk, stay where you are, wait for the search.",
-        ipucu: "You don't move but the chest sits there",
         basariliSonuc: {
           mesaj: "The officer rummaged through your chest sloppily and didn't notice the cloth under the gold.",
           detay: "Sometimes the best strategy is waiting without doing anything.",
@@ -3740,7 +3491,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Confess a small privacy to the officer, distract him.",
-        ipucu: "You sacrifice a small shame to hide the big secret",
         basariliSonuc: {
           mesaj: "You said there was a private letter in the chest and stalled the officer; you got him to go over the real search only on the surface.",
           detay: "Sometimes a small shame overshadows a big crime.",
@@ -3760,7 +3510,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Stay silent, carry the secret to your grave.",
-        ipucu: "You're safe but you'll die alone",
         basariliSonuc: {
           mesaj: "You said nothing; you'll be remembered in the barracks as 'a loyal, silent soldier' — no one will know the truth.",
           detay: "Some truths mix with the earth along with the one who carried them.",
@@ -3772,7 +3521,6 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Tell the truth one last time to someone you trust.",
-        ipucu: "You feel lighter but one more person knows the truth",
         basariliSonuc: {
           mesaj: "You finally shared the burden you'd carried for years; the one across from you just listened without judging you.",
           detay: "Sometimes all you needed was for the truth to echo in another ear.",

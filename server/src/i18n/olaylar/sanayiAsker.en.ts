@@ -9,7 +9,6 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Carry out the order, break the barricade.",
-        ipucu: "Your military career advances, your conscience and public support are gone",
         basariliSonuc: {
           mesaj: "The barricade was broken; command put you on the promotion list.",
           detay:
@@ -23,7 +22,6 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Delay the intervention, try to mediate.",
-        ipucu: "No blood is spilled, you come up against your superiors",
         basariliSonuc: {
           mesaj: "The talks worked; the barricade came down without bloodshed, no one died.",
           detay:
@@ -37,7 +35,6 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Leave the post on a pretext of illness.",
-        ipucu: "Your hands stay clean, your career stops",
         basariliSonuc: {
           mesaj: "You went on medical leave; you did not join the crackdown, and no one pressed the matter.",
           detay:
@@ -59,7 +56,6 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Join the mission with full commitment.",
-        ipucu: "Land, rank and money; the risk of disease and death",
         basariliSonuc: {
           mesaj: "The revolt was put down; you received a medal, rank, and land in the colony.",
           detay:
@@ -73,7 +69,6 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Apply for a clerkship in the colonial administration.",
-        ipucu: "Safe and profitable, no glory of war",
         basariliSonuc: {
           mesaj: "You got a clerkship in the administration building; you watched the war from a window.",
           detay:
@@ -95,7 +90,6 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Volunteer to take on the test.",
-        ipucu: "Recognition within the army, physical risk",
         basariliSonuc: {
           mesaj: "The weapon worked without a hitch; your report was used in the army's decision-making.",
           detay: "You are now known as 'the man who tests new weapons first'.",
@@ -107,7 +101,6 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse the test, keep to the old-model rifle.",
-        ipucu: "Safe, but the 'shies from innovation' mark",
         basariliSonuc: {
           mesaj: "Your refusal was received as reasonable; another volunteer was found.",
           detay: "You prioritized your safety and no one used it against you.",
@@ -127,7 +120,6 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept the assignment, begin to infiltrate.",
-        ipucu: "Good money, betraying your friends",
         basariliSonuc: {
           mesaj: "You received a considerable payment for the information you gathered.",
           detay: "You remember the faces of the workers who came to the meetings; they had trusted you.",
@@ -139,7 +131,6 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse the offer.",
-        ipucu: "Conscientious, but you miss a career opportunity",
         basariliSonuc: {
           mesaj: "Your refusal stayed as a note on your file, but your conscience is at ease.",
           detay: "Some doors will not open for you now, but at least you betrayed no one.",
@@ -159,7 +150,6 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Lead the quarantine.",
-        ipucu: "Protects health, morale suffers",
         basariliSonuc: {
           mesaj: "The quarantine was effective; the outbreak did not spread beyond the barracks.",
           detay: "The soldiers grumbled at first, then thanked you.",
@@ -171,7 +161,6 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Don't cancel leave, put the sick in a separate tent.",
-        ipucu: "Morale stays high, the risk of spread rises",
         basariliSonuc: {
           mesaj: "The soldiers kept their morale and the sickness did not spread; you were lucky.",
           detay: "You took the risk and this time it worked.",
@@ -191,7 +180,6 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept the offer, guard the factory.",
-        ipucu: "Good extra income, coming up against the workers",
         basariliSonuc: {
           mesaj: "The factory was guarded without incident; the owner paid generously.",
           detay: "People stare at you now when you pass through the worker district; you have learned to ignore it.",
@@ -203,7 +191,6 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse the offer, focus on your official duty.",
-        ipucu: "You stay neutral, you give up the extra income",
         basariliSonuc: {
           mesaj: "You stayed neutral; neither the workers nor the boss is angry with you.",
           detay: "You gave up the extra income, but your conscience and reputation stayed intact.",
@@ -223,7 +210,6 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Make the false application.",
-        ipucu: "Easy reputation, great shame if it comes out",
         basariliSonuc: {
           mesaj: "The medal was given to you; no one questioned your story.",
           detay: "Every time you look at the medal on your chest, you are the only one who knows you did not earn it.",
@@ -235,7 +221,6 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Don't apply, be content with your real service.",
-        ipucu: "Honest but ordinary",
         basariliSonuc: {
           mesaj: "You carried on with your ordinary service; no one questioned you.",
           detay: "Even without a medal, you can be proud of yourself.",
@@ -255,7 +240,6 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Use one of your foster children as a scout to repair the line safely.",
-        ipucu: "Your Foster Children Grew Up: their knowledge of the district protects from enemy fire",
         basariliSonuc: {
           mesaj:
             "One of the foster children you raised knew the area like the back of his hand. Under his guidance you repaired the line without falling into an ambush.",
@@ -267,7 +251,6 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Join the repair team, fix the line.",
-        ipucu: "A critical mission, the risk of enemy fire",
         basariliSonuc: {
           mesaj: "You repaired the line under enemy fire; communication was restored.",
           detay: "Command said this repair changed the course of the war.",
@@ -279,7 +262,6 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Deliver the message by hand as a courier.",
-        ipucu: "An alternative solution, a tiring and risky journey",
         basariliSonuc: {
           mesaj: "You delivered the message on horseback without approaching the enemy lines.",
           detay: "You were spent with exhaustion, but the mission was completed.",
@@ -299,7 +281,6 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Sit at the table, try your luck.",
-        ipucu: "A quick gain or a quick loss",
         basariliSonuc: {
           mesaj: "It was a lucky night; you left the table with your pockets full.",
           detay: "The other soldiers eyed you warily and said 'I won't play again'.",
@@ -311,7 +292,6 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Stay away, keep your discipline.",
-        ipucu: "Safe",
         basariliSonuc: {
           mesaj: "You did not get mixed up in the gambling; nothing happened to your money or your reputation.",
           detay: "Some of your friends call it 'boring', but you are content with your decision.",
@@ -331,7 +311,6 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Tell the truth as it is.",
-        ipucu: "Wins the people's trust, angers your superiors",
         basariliSonuc: {
           mesaj: "Your interview caused a great stir among the public; you became known for your honesty.",
           detay:
@@ -344,7 +323,6 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Paint an optimistic picture that praises the army.",
-        ipucu: "Safe, but far from sincere",
         basariliSonuc: {
           mesaj: "Your superiors were pleased with the interview; you received a small reward.",
           detay: "What you said was not quite the truth, but no one questioned it.",
@@ -364,7 +342,6 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept the test, use the weapon in the field.",
-        ipucu: "A career opportunity, the risk of serious injury",
         basariliSonuc: {
           mesaj: "The weapon proved unexpectedly effective; your performance was talked about at command level.",
           detay: "Some risks put you into history.",
@@ -376,7 +353,6 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse the test, keep your traditional weapon.",
-        ipucu: "Safe, but the risk of a 'lacks courage' mark",
         basariliSonuc: {
           mesaj: "You refused; your commander frowned, but your health is intact.",
           detay: "Some assurances are worth more than reputation.",
@@ -396,7 +372,6 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Carry out the order harshly, put down the strike.",
-        ipucu: "Your superiors pleased, the hatred of the working class",
         basariliSonuc: {
           mesaj:
             "You dispersed the strike; command rewarded you, but no one in your district will meet your eye now.",
@@ -409,7 +384,6 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Slow the intervention, try to lower the tension.",
-        ipucu: "Your conscience is at ease, but the risk of a disobedience charge",
         basariliSonuc: {
           mesaj:
             "You eased the tension, they dispersed without bloodshed; your old district still counts you as 'one of us'.",
@@ -430,7 +404,6 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Defend the family, object to your superiors.",
-        ipucu: "Your conscience eases, but your career is under serious risk",
         basariliSonuc: {
           mesaj: "Your objection drew the attention of some senior officers; part of the family got their land back.",
           detay: "Some voices work better than expected.",
@@ -442,7 +415,6 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Stay silent, follow orders and the order of things.",
-        ipucu: "Your career is safe, your conscience is stained",
         basariliSonuc: {
           mesaj:
             "You stayed silent, your career advanced without a hitch; but the helplessness in that family's eyes still won't leave your mind.",

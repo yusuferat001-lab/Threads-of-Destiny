@@ -13,7 +13,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Take the challenge; sit down at the table.",
-        ipucu: "Win for renown and a cup, lose for a sore arm and wounded pride",
         basariliSonuc: {
           mesaj: "You slammed your opponent's arm to the table! The tavern cheered in your honor; the night's drinks were free.",
           detay: "Your arm ached the next day, but the number of people who know you on the street rose overnight.",
@@ -24,7 +23,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Watch from the side; bet on the winner.",
-        ipucu: "Small risk, small gain",
         basariliSonuc: {
           mesaj: "You bet on the right wrestler; a few {birim} went into your pocket.",
         },
@@ -40,7 +38,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Grab his wrist; go after him.",
-        ipucu: "Catch him and you keep your money, if he runs a small loss",
         basariliSonuc: {
           mesaj: "You caught his wrist at the last moment; the child mumbled an apology in fear and melted into the dark.",
           detay: "The tavern keeper stood you a drink: 'Keep your eyes open always, lad.'",
@@ -66,7 +63,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Sit down; hear what he wants.",
-        ipucu: "A mysterious acquaintance gained, or an empty threat",
         basariliSonuc: {
           mesaj: "The stranger whispered tales of a distant land; as he left he set down a coin marked with a strange symbol.",
           detay: "You still do not know who he was, but you felt once again that the world is larger than you thought.",
@@ -92,7 +88,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Get up on stage; give it your all.",
-        ipucu: "If it lands, great renown; if not, great embarrassment",
         basariliSonuc: {
           mesaj: "Your voice brought the tavern to its feet! Everyone sang the chorus with you.",
           detay: "After this night you started hearing 'there's that singer' whispered on the street.",
@@ -118,7 +113,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Step in; break up the fight.",
-        ipucu: "Succeed for renown and gratitude, fail for a loss of health",
         basariliSonuc: {
           mesaj: "You managed to pull the two fighters apart; the tavern looks at you with gratitude.",
         },
@@ -143,7 +137,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Sit down; join the game.",
-        ipucu: "Win money or lose money — plus a risk of getting caught",
         basariliSonuc: {
           mesaj: "The cards fell your way; you left the table with your pockets full.",
         },
@@ -168,7 +161,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Lend an ear; stand a round.",
-        ipucu: "A small advantage against your rival",
         basariliSonuc: {
           mesaj: "What he told was the useful kind; you now have a card of your own against {rakip}.",
         },
@@ -193,7 +185,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Sit down; take him seriously.",
-        ipucu: "An unexpected wisdom, or an absurd waste of time",
         basariliSonuc: {
           mesaj: "Among his words you found a real flicker of wisdom behind the drunkenness.",
           detay: "'Everyone dies one day, but few truly live,' he said, and raised his cup; that sentence stayed with you.",
@@ -219,7 +210,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept the bet; go to the end.",
-        ipucu: "Very risky — great renown or a very bad morning, or worse",
         basariliSonuc: {
           mesaj: "Your opponent collapsed onto the table, and you are still standing! The tavern screamed in your honor.",
           detay: "Your head split the next day, but you are a legendary name in this tavern now.",
@@ -246,7 +236,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Make him an offer; take him onto your crew.",
-        ipucu: "A chance to gain a new crew member",
         basariliSonuc: {
           mesaj: "He accepted your offer; behind the drunkenness there really was someone useful.",
         },
@@ -271,7 +260,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Raise your cup; challenge him.",
-        ipucu: "The tension grows, but the crowd backs you — or you are humiliated",
         basariliSonuc: {
           mesaj: "You won the verbal duel; the crowd took your side and {rakip} stormed out in anger.",
         },
@@ -296,7 +284,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept; go outside.",
-        ipucu: "Win for great renown, lose for a serious wound — there is a small risk of death",
         basariliSonuc: {
           mesaj: "After a short but hard fight the stranger was left on the ground; the tavern carried you on its shoulders.",
         },
@@ -321,7 +308,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Set the cup on the table; try to pull yourself together.",
-        ipucu: "Hard, but if you succeed it eases the burden of your drunkenness",
         basariliSonuc: {
           mesaj: "You pushed the cup back and left the tavern that night empty-handed but with your head held high. It took months, but you started to look like yourself again.",
           detay: "Though everyone keeps talking about you, you no longer let them be proven right.",
@@ -349,7 +335,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Get in line; take your throw.",
-        ipucu: "A good throw brings renown, a bad one only laughter",
         basariliSonuc: {
           mesaj: "You stuck the dart right in the bullseye! The pub raised a glass in your honor.",
         },
@@ -374,7 +359,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Speak on their side; hear their grievances.",
-        ipucu: "A good name in the eyes of the people, but unease in some circles",
         basariliSonuc: {
           mesaj: "Your words pleased the workers; they bought you a beer and told you their troubles at length.",
         },
@@ -399,7 +383,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Hear the offer; invest a little.",
-        ipucu: "Risky, but if you win, a good return",
         basariliSonuc: {
           mesaj: "The man's word held true; a few weeks later the envelope he sent to your door held more than your profit.",
         },
@@ -424,7 +407,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Play; show your skill.",
-        ipucu: "Win for the bet and renown, lose for just the bet",
         basariliSonuc: {
           mesaj: "You sank the last ball in the corner pocket! The table applauded your name.",
         },
@@ -449,7 +431,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Let yourself go; join the chorus.",
-        ipucu: "An almost guaranteed moment of happiness",
         basariliSonuc: {
           mesaj: "You raised your voice and for a moment forgot all your troubles. Singing shoulder to shoulder with strangers felt good.",
         },
@@ -474,7 +455,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Step between them; break it up.",
-        ipucu: "Succeed for gratitude and renown, fail for a loss of health",
         basariliSonuc: {
           mesaj: "You barely managed to pull the two apart; the pub owner stood you a beer in gratitude.",
         },
@@ -501,7 +481,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Listen quietly; prick up your ears.",
-        ipucu: "A scrap of information that could be useful",
         basariliSonuc: {
           mesaj: "What you heard was exactly the useful kind; you will take your next step more clearly.",
         },
@@ -526,7 +505,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Jump in the pool; hold on.",
-        ipucu: "Hold on for renown, fail and risk a chill",
         basariliSonuc: {
           mesaj: "You held on longer than anyone; when you came out you were met with applause.",
         },
@@ -551,7 +529,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Approach; ask who they have in mind.",
-        ipucu: "An interesting name, a risk-free chat",
         basariliSonuc: {
           mesaj: "They whispered a few names from a well-rooted family; an interesting possibility waits at the door.",
         },
@@ -576,7 +553,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept; pay for it.",
-        ipucu: "An almost guaranteed rest",
         basariliSonuc: {
           mesaj: "Weeks of weariness melted under their hands; you left the bathhouse feeling newborn.",
         },
@@ -601,7 +577,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Ask the bath attendant; look into it.",
-        ipucu: "Maybe you get it back, maybe you just waste time",
         basariliSonuc: {
           mesaj: "The attendant remembered another customer had mixed up the baskets; you got part of your lost money back.",
         },
@@ -626,7 +601,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Strike up a conversation; make a connection.",
-        ipucu: "A new acquaintance and possible trade gain",
         basariliSonuc: {
           mesaj: "Your conversation ran long; as he left he gave you a small but valuable gift and promised to do business in the future.",
         },
@@ -651,7 +625,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Push yourself; stay a little longer.",
-        ipucu: "Hold on and nothing happens, fail and you faint",
         basariliSonuc: {
           mesaj: "Though you pushed yourself you recovered; it turned out to be a really good warm-up.",
         },
@@ -676,7 +649,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Draw near; try to hear what they are saying.",
-        ipucu: "Valuable information, but a risk of being caught",
         basariliSonuc: {
           mesaj: "You pocketed what you heard without telling anyone; you are sure it will be useful later.",
         },
@@ -703,7 +675,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Sit up front; lose yourself in the story.",
-        ipucu: "An almost guaranteed pleasant evening",
         basariliSonuc: {
           mesaj: "The story carried you into another world; you did not notice the hours pass.",
         },
@@ -728,7 +699,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Sit down; play.",
-        ipucu: "Small bet, small risk",
         basariliSonuc: {
           mesaj: "The dice fell your way and you won the game. The onlookers congratulated you.",
         },
@@ -753,7 +723,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Hand over the cup; let her read your fortune.",
-        ipucu: "A mysterious prediction that affects your mood",
         basariliSonuc: {
           mesaj: "The woman sees 'a long road and an unexpected gain' in the cup; what she says fills you with a strange hope.",
           detay: "You do not know if it is true or false, but your steps have been a little lighter since that day.",
@@ -779,7 +748,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "State your opinion openly.",
-        ipucu: "A bold stance brings renown but can also earn you an enemy",
         basariliSonuc: {
           mesaj: "Your words echoed around the table; some applauded you, some cursed — but you are known now.",
         },
@@ -804,7 +772,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Join the conversation; seize the opportunity.",
-        ipucu: "A small investment, a chance of a good return",
         basariliSonuc: {
           mesaj: "The opportunity really was good; within days you got back more than you put in.",
         },
@@ -829,7 +796,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Sit down; join the conversation.",
-        ipucu: "A warm moment of friendship",
         basariliSonuc: {
           mesaj: "You talked for hours; the man's life story left a deep mark on you.",
         },
@@ -854,7 +820,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Draw near; learn the details.",
-        ipucu: "A gain of current information",
         basariliSonuc: {
           mesaj: "What was told helped you take the city's pulse; you will take your next step more knowingly.",
         },
@@ -881,7 +846,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Haggle; buy goods.",
-        ipucu: "If you haggle well, a profitable trade",
         basariliSonuc: {
           mesaj: "After a hard bargain you came to terms; you sold the fabrics you bought at a good price in the city.",
         },
@@ -906,7 +870,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Sit by the fire; listen.",
-        ipucu: "A pleasant, risk-free evening",
         basariliSonuc: {
           mesaj: "In his tales the line between truth and legend disappeared; you felt once again how large the world is.",
         },
@@ -931,7 +894,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept the offer.",
-        ipucu: "A good earning, but there is a brigand risk",
         basariliSonuc: {
           mesaj: "The caravan reached the city safely; the chief paid you more than he promised.",
         },
@@ -956,7 +918,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Advance on him; call out.",
-        ipucu: "Catch him for goods and renown, if he runs a loss",
         basariliSonuc: {
           mesaj: "The thief took fright and fled, leaving what he had stolen behind. In the morning the caravanserai owner thanked you.",
         },
@@ -981,7 +942,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Keep haggling persistently.",
-        ipucu: "A hard but fun bargain",
         basariliSonuc: {
           mesaj: "In the end you came to terms, and at a good price too! You both shook hands laughing.",
         },
@@ -1006,7 +966,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Place a bet; pick your camel.",
-        ipucu: "Down to luck, a fun gamble",
         basariliSonuc: {
           mesaj: "The camel you picked kicked up dust! You won the best meal of the night.",
         },
@@ -1033,7 +992,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Take the challenge; show your strength.",
-        ipucu: "Win for standing within the unit, lose and only your pride is hurt",
         basariliSonuc: {
           mesaj: "You slammed his arm to the table! The unit hoisted you onto their shoulders; you are someone whose word carries weight among them now.",
         },
@@ -1058,7 +1016,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Sit down; play.",
-        ipucu: "Risky but fun",
         basariliSonuc: {
           mesaj: "The cards fell your way; everyone in the tent lost something from their pocket.",
         },
@@ -1083,7 +1040,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Tell your own story with embellishment.",
-        ipucu: "Tell it well and you become a legend, exaggerate and you are humiliated",
         basariliSonuc: {
           mesaj: "Your story was so gripping the tent fell silent; in the end they raised a cup.",
         },
@@ -1108,7 +1064,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Hold out your cup; join in.",
-        ipucu: "Friendship grows, but the risk of being caught leaves a small mark on your record",
         basariliSonuc: {
           mesaj: "No one saw; the night went well, and the bonds within the unit grew a little stronger.",
         },
@@ -1133,7 +1088,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Join the plan; pull off the prank.",
-        ipucu: "Succeed and you become a legend in the unit, get caught and you are punished",
         basariliSonuc: {
           mesaj: "The prank worked perfectly! The sentry's scream made the whole camp laugh; it was talked about all night.",
         },
@@ -1158,7 +1112,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Share your cup; talk.",
-        ipucu: "A moment when humanity is remembered — risky but valuable",
         basariliSonuc: {
           mesaj: "Tomorrow you may draw swords on each other, but tonight you were only two people. That conversation made it impossible to see war the way you used to.",
         },
@@ -1183,7 +1136,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Hold out your palm; hear the prophecy.",
-        ipucu: "A prediction that encourages or unsettles",
         basariliSonuc: {
           mesaj: "'Your name will be remembered in these lands for a long time,' the woman said; her words gave you an unexpected confidence.",
         },
@@ -1208,7 +1160,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Raise your cup; swear the oath.",
-        ipucu: "A strong and lasting bond of friendship",
         basariliSonuc: {
           mesaj: "The cups were clinked, the words were serious. After this night the bond between you will not be shaken even on the battlefield.",
         },
@@ -1235,7 +1186,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Listen to him; give counsel.",
-        ipucu: "Spiritual guidance strengthens your morals and your influence",
         basariliSonuc: {
           mesaj: "Your words gave him peace; this small moment quietly grew your standing within the congregation.",
         },
@@ -1260,7 +1210,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept the offer; contribute.",
-        ipucu: "Lasting standing in exchange for a sum of money",
         basariliSonuc: {
           mesaj: "Your donation was talked about at once; your name began to be spoken of for generosity within the congregation.",
         },
@@ -1285,7 +1234,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Defend your view firmly.",
-        ipucu: "Win and your influence grows, lose and your reputation is shaken",
         basariliSonuc: {
           mesaj: "Your arguments convinced those at the table; the rival preacher bowed his head in silence.",
         },
@@ -1310,7 +1258,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Examine it carefully; read it.",
-        ipucu: "A gain of rare knowledge, or just an old notebook",
         basariliSonuc: {
           mesaj: "The lines in the manuscript shed light on a forgotten teaching; this knowledge will set you apart among your colleagues.",
         },
@@ -1335,7 +1282,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Offer to mediate.",
-        ipucu: "If you succeed you gain standing",
         basariliSonuc: {
           mesaj: "You built a bridge between the two families; the congregation began to speak of you as a wise mediator.",
         },
@@ -1360,7 +1306,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Do not correct the rumor; stay humble.",
-        ipucu: "Honesty is worth more in the long run",
         basariliSonuc: {
           mesaj: "'This was not mine, it was God's work,' you said; your humility was talked about more than the rumor itself.",
         },
@@ -1370,7 +1315,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Let the rumor grow.",
-        ipucu: "Renown in the short run, but a loss of reputation if the truth comes out",
         basariliSonuc: {
           mesaj: "The rumor spread fast; the word 'miraculous' is now added to your name.",
         },
@@ -1388,7 +1332,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Support the common price floor.",
-        ipucu: "It brings stability but angers some tradesmen",
         basariliSonuc: {
           mesaj: "The proposal was accepted; thanks to the stability in the guild your business became more predictable.",
         },
@@ -1398,7 +1341,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Defend free competition.",
-        ipucu: "Risky but it strengthens your entrepreneurial spirit",
         basariliSonuc: {
           mesaj: "Free competition won; doors opened wider for bold tradesmen like you.",
         },
@@ -1414,7 +1356,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept the offer; sign.",
-        ipucu: "High risk, high return",
         basariliSonuc: {
           mesaj: "The partnership turned a profit from the first month; your standing in the guild rose a rung too.",
         },
@@ -1439,7 +1380,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Defend yourself; show your evidence.",
-        ipucu: "Win and your reputation grows, lose and it takes serious harm",
         basariliSonuc: {
           mesaj: "Your evidence demolished the accusation; {rakip} was humiliated before the guild.",
         },
@@ -1464,7 +1404,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Pay the price; take the information.",
-        ipucu: "Valuable information, but there is a chance it turns out false",
         basariliSonuc: {
           mesaj: "The information was true; thanks to the new route you started bringing your goods in far cheaper.",
         },
@@ -1489,7 +1428,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Tell the truth; admit your mistake.",
-        ipucu: "Honesty is bitter in the short run but earns trust in the long run",
         basariliSonuc: {
           mesaj: "You admitted your mistake and paid the customer compensation; the guild appreciated your honesty.",
         },
@@ -1499,7 +1437,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Deny it; put the blame on your supplier.",
-        ipucu: "Risky — get away with it and your reputation stays intact, get caught and it is far worse",
         basariliSonuc: {
           mesaj: "The claim could not be proven and the matter was closed. Uneasy as you felt inside, your reputation stayed intact.",
         },
@@ -1515,7 +1452,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Put yourself forward; run a campaign.",
-        ipucu: "Win for a great political gain, lose and it is just the money spent",
         basariliSonuc: {
           mesaj: "You won the majority vote! You are now one of the guild's most influential names.",
         },
@@ -1542,7 +1478,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Volunteer; get on stage.",
-        ipucu: "If it goes well, fun and renown; if not, embarrassment",
         basariliSonuc: {
           mesaj: "Together with the jester you managed to make the crowd laugh; the square applauded you.",
         },
@@ -1567,7 +1502,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Take his hand; help find his family.",
-        ipucu: "A good deed; it earns morals and renown",
         basariliSonuc: {
           mesaj: "After a long search you found his family; the grateful parent embraced you in tears.",
         },
@@ -1592,7 +1526,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Run after him; catch him.",
-        ipucu: "Catch him for great renown, if he escapes you just get tired",
         basariliSonuc: {
           mesaj: "You cornered him behind a stall and caught him! The square declared you a hero.",
         },
@@ -1617,7 +1550,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Buy a bottle; try it.",
-        ipucu: "Most likely wasted money, a small chance it works out",
         basariliSonuc: {
           mesaj: "Unbelievable, but it really worked! You feel more vigorous than you have in days.",
         },
@@ -1642,7 +1574,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Tip the minstrel; make a request.",
-        ipucu: "A pleasant moment for a small price",
         basariliSonuc: {
           mesaj: "The minstrel composed a special verse just for you; the square looked at you with a smile.",
         },
@@ -1667,7 +1598,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Go over; sit down.",
-        ipucu: "A mysterious prediction that affects your mood",
         basariliSonuc: {
           mesaj: "She told you something vague but hopeful about your future. You could not quite make out what she meant, but it warmed you.",
         },
@@ -1692,7 +1622,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Step in; calm them down.",
-        ipucu: "Succeed for approval, fail for a wound",
         basariliSonuc: {
           mesaj: "You managed to calm both of them; the square's people applauded you.",
         },
@@ -1719,7 +1648,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Draw near; eavesdrop.",
-        ipucu: "Valuable information, but a risk of being noticed",
         basariliSonuc: {
           mesaj: "The few sentences you heard helped you understand the balance of power in the salon.",
         },
@@ -1744,7 +1672,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Take the hand; step onto the dance floor.",
-        ipucu: "If it goes well, renown and happiness; if not, embarrassment",
         basariliSonuc: {
           mesaj: "Your steps were surprisingly fluid; the salon began to watch you.",
         },
@@ -1769,7 +1696,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Sit down at the table; play.",
-        ipucu: "High stakes, high risk",
         basariliSonuc: {
           mesaj: "The cards were with you; as you rose from the table the salon was whispering your name.",
         },
@@ -1794,7 +1720,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Confront it directly; refute the rumor.",
-        ipucu: "Succeed and your reputation is saved, fail and it grows even more",
         basariliSonuc: {
           mesaj: "Your calm, clear explanation put out the rumor; the salon came around to your side.",
         },
@@ -1819,7 +1744,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Go over; praise the work and offer support.",
-        ipucu: "A gain of goodwill for a small investment",
         basariliSonuc: {
           mesaj: "Your support made the artist's eyes shine; years later, when you hear their name spoken, you will be proud.",
         },
@@ -1844,7 +1768,6 @@ export const OLAYLAR_SOSYALLESME_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Call him to a duel for your honor.",
-        ipucu: "Very risky, but win and you become a legend; there is a small risk of death",
         basariliSonuc: {
           mesaj: "After a short and showy duel your opponent apologized. The salon spoke your name in whispers.",
         },

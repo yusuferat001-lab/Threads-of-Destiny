@@ -2025,7 +2025,7 @@ function App() {
                 magazaEnvanteri={karakter.magaza_envanteri}
                 evli={!!karakter.es_adi}
                 yasayanCocuklar={karakter.cocuklar.filter((c) => c.yasiyor).map((c) => c.isim)}
-                ekipVar={karakter.ekip.length > 0}
+                ekip={karakter.ekip.map((u) => ({ id: u.id, isim: u.isim, rol: u.rol }))}
                 dostAdi={karakter.dost_adi}
                 yukleniyor={yukleniyor}
                 onKullan={envanterKullanHandler}

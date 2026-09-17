@@ -9,7 +9,6 @@ export const OLAYLAR_ILISKILER_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Follow your feelings and marry.",
-        ipucu: "Immense happiness, zero material gain",
         basariliSonuc: {
           mesaj:
             "You married in a very plain ceremony. There is only dry bread on our table, but with them it feels like a palace feast.",
@@ -39,7 +38,6 @@ export const OLAYLAR_ILISKILER_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "React hard, don't let your authority slip.",
-        ipucu: "Great tension, the marriage cracks",
         basariliSonuc: {
           mesaj:
             "You raised your voice louder than theirs. They fell silent and left the room. You won this battle, but your marriage took a wound.",
@@ -51,7 +49,6 @@ export const OLAYLAR_ILISKILER_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Gather the shards with your own hands, embrace them and calm things.",
-        ipucu: "Wounds your pride but saves the relationship",
         basariliSonuc: {
           mesaj:
             "Instead of answering with anger you bent down and gathered the shards. They helped you, crying. The storm passed.",
@@ -70,7 +67,6 @@ export const OLAYLAR_ILISKILER_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Clear the debt without a word.",
-        ipucu: "A serious financial collapse but endless gratitude",
         basariliSonuc: {
           mesaj:
             "You gave all your savings to the moneylender and saved them. {es} will stay loyal to you like a servant for life.",
@@ -81,7 +77,6 @@ export const OLAYLAR_ILISKILER_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "This is your fault, tell them to fend for themselves.",
-        ipucu: "You keep your money, but you put your spouse's life at risk",
         basariliSonuc: {
           mesaj:
             "You didn't touch your money. {es} didn't come home for days; you don't know how they paid the debt and you're afraid to ask.",
@@ -101,7 +96,6 @@ export const OLAYLAR_ILISKILER_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Swallow your pride, work to fix everything.",
-        ipucu: "Wounds your pride and is costly but may save the marriage",
         basariliSonuc: {
           mesaj:
             "Gifts, concessions and long tears worked. The marriage was saved, but it's clear now whose hands hold the strings.",
@@ -113,7 +107,6 @@ export const OLAYLAR_ILISKILER_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Let it be over, go to the court (or the judge).",
-        ipucu: "You pay a heavy alimony and take the divorced/widowed mark in society",
         basariliSonuc: {
           mesaj:
             "The separation was painful. Belongings were divided, your purse emptied, but at least that suffocating silence is over.",
@@ -133,7 +126,6 @@ export const OLAYLAR_ILISKILER_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Sell the shop, go into debt, send for that physician!",
-        ipucu: "Financial collapse, but the highest chance of survival",
         basariliSonuc: {
           mesaj:
             "The physician arrived just in time! {es} came back from the edge of death. Your coffer is empty but there is a soul breathing in your house.",
@@ -145,7 +137,6 @@ export const OLAYLAR_ILISKILER_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "I have no money; whatever fate has written will be.",
-        ipucu: "A moral collapse and a high risk of death",
         basariliSonuc: {
           mesaj:
             "A miracle happened! {es} beat the sickness with their own body's resistance. But your grudging the money built an invisible wall between you.",
@@ -165,7 +156,6 @@ export const OLAYLAR_ILISKILER_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "I don't trust you but I need your strength (Hire).",
-        ipucu: "Taking an enemy onto your crew carries great risk but is very high quality",
         basariliSonuc: {
           mesaj:
             "Your old enemy is now your commander/assistant. You still shudder turning your back to them, but their sword is raised for you.",
@@ -193,7 +183,6 @@ export const OLAYLAR_ILISKILER_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Stand by your old, loyal friend.",
-        ipucu: "Conscience and loyalty, a lost opportunity",
         basariliSonuc: {
           mesaj: "You stood by your old friend; and they stood by you all their life.",
           detay:
@@ -206,7 +195,6 @@ export const OLAYLAR_ILISKILER_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Stand by your influential new friend.",
-        ipucu: "Career and money, the weight of betrayal",
         basariliSonuc: {
           mesaj: "Your influential friend won and raised you up with them.",
           detay:
@@ -228,7 +216,6 @@ export const OLAYLAR_ILISKILER_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Spend time with them, reminisce about the old days.",
-        ipucu: "A small but warm moment",
         basariliSonuc: {
           mesaj: "You had a lovely evening; your old friendship was renewed.",
           detay: "Sometimes a short trip to the past does the present good.",
@@ -240,7 +227,6 @@ export const OLAYLAR_ILISKILER_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "You're busy, keep it short.",
-        ipucu: "You save time, you may feel regret",
         basariliSonuc: {
           mesaj: "You went back to your work; your friend left with understanding.",
           detay: "Maybe you missed a lovely memory, but your work didn't fall behind.",
@@ -260,7 +246,6 @@ export const OLAYLAR_ILISKILER_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Share the money you have, help {dost}.",
-        ipucu: "Your friendship strengthens, money leaves your pocket",
         basariliSonuc: {
           mesaj: "You saw {dost}'s eyes fill; they said they would never forget this help.",
           detay: "Being there in a hard time is the true test of friendship.",
@@ -272,7 +257,6 @@ export const OLAYLAR_ILISKILER_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Your own affairs are hard too; apologize and turn them away.",
-        ipucu: "No money leaves your pocket, the friendship is damaged",
         basariliSonuc: {
           mesaj: "{dost} said they understood, but the disappointment in their eyes couldn't be hidden.",
           detay: "Refusing is sometimes sensible, but it is not without cost.",
@@ -292,7 +276,6 @@ export const OLAYLAR_ILISKILER_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept the offer, join forces with {rakip}.",
-        ipucu: "A great opportunity or a great mistake",
         basariliSonuc: {
           mesaj: "The partnership worked; the tension between you and {rakip} surprisingly melted away.",
           detay: "Sometimes your greatest rival can turn into your most trustworthy partner.",
@@ -304,7 +287,6 @@ export const OLAYLAR_ILISKILER_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse the offer, keep your distance.",
-        ipucu: "Safe but the opportunity is gone",
         basariliSonuc: {
           mesaj: "{rakip} took the refusal coolly, but the distance between you grew.",
           detay: "Being cautious saved you from a loss, and from a gain.",
@@ -324,7 +306,6 @@ export const OLAYLAR_ILISKILER_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Set your pride aside, make peace first.",
-        ipucu: "The friendship is saved, your pride takes a wound",
         basariliSonuc: {
           mesaj: "When {dost} saw you reach out your hand they smiled; you went back to the old days.",
           detay: "Sometimes taking the first step is not losing but winning.",
@@ -336,7 +317,6 @@ export const OLAYLAR_ILISKILER_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Dig in your heels, you think you're right.",
-        ipucu: "You keep your honor, the friendship is damaged",
         basariliSonuc: {
           mesaj: "You were right, but instead of admitting it {dost} pulled away from you.",
           detay: "Being proven right is sometimes the most expensive victory.",
@@ -356,7 +336,6 @@ export const OLAYLAR_ILISKILER_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Confront {rakip}, tell the truth in front of everyone.",
-        ipucu: "Could clear your reputation or spread it further",
         basariliSonuc: {
           mesaj: "The confrontation worked; the rumor died down and you were proven right.",
           detay: "Sometimes saying the truth out loud is the best defense.",
@@ -368,7 +347,6 @@ export const OLAYLAR_ILISKILER_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Ignore it, think it will be forgotten with time.",
-        ipucu: "A calm but risky wait",
         basariliSonuc: {
           mesaj: "The rumor really did die down with time; and you didn't wear out your nerves.",
           detay: "You don't have to run to every fire; some go out on their own.",
@@ -388,7 +366,6 @@ export const OLAYLAR_ILISKILER_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Close the subject, say 'we'll talk later'.",
-        ipucu: "Safe but unresolved",
         basariliSonuc: {
           mesaj: "You postponed the argument; the house went quiet but the matter hangs in the air.",
           detay: "Some subjects don't shrink when postponed, they just wait.",
@@ -400,7 +377,6 @@ export const OLAYLAR_ILISKILER_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "You are about to say something harsh you can't take back.",
-        ipucu: "Risky, could seriously shake the relationship",
         basariliSonuc: { mesaj: "Not used." },
         basarisizSonuc: { mesaj: "Not used." },
         onTepki: {
@@ -428,7 +404,6 @@ export const OLAYLAR_ILISKILER_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Take a deep breath, soften the subject.",
-        ipucu: "Safe, protects the friendship",
         basariliSonuc: {
           mesaj: "You stayed calm; {dost} appreciated it.",
           detay: "Some friendships stay standing through patience.",
@@ -440,7 +415,6 @@ export const OLAYLAR_ILISKILER_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "You are about to say a harsh word.",
-        ipucu: "Risky, could end the friendship",
         basariliSonuc: { mesaj: "Not used." },
         basarisizSonuc: { mesaj: "Not used." },
         onTepki: {
@@ -468,7 +442,6 @@ export const OLAYLAR_ILISKILER_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Ignore it, carry on your way.",
-        ipucu: "Safe but unsatisfying",
         basariliSonuc: {
           mesaj: "You ignored it; though it bothered you inside, you acted with maturity.",
           detay: "Not every fight is worth winning.",
@@ -480,7 +453,6 @@ export const OLAYLAR_ILISKILER_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Confront them in front of everyone.",
-        ipucu: "Risky, you gain or lose reputation",
         basariliSonuc: { mesaj: "Not used." },
         basarisizSonuc: { mesaj: "Not used." },
         onTepki: {
@@ -719,7 +691,6 @@ export const OLAYLAR_ILISKILER_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept the assignment, set out.",
-        ipucu: "Your career shines, your family takes offense",
         basariliSonuc: {
           mesaj:
             "The assignment ended in great success; when you returned, {es}'s eyes held both pride and the traces of a long longing.",
@@ -733,7 +704,6 @@ export const OLAYLAR_ILISKILER_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse the offer, stay with your family.",
-        ipucu: "Your family is happy, your career stalls",
         basariliSonuc: {
           mesaj:
             "You refused the offer; {es} embraced you with gratitude, and though your career stalls for a while, you come home every evening.",

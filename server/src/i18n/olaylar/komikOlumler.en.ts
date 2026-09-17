@@ -9,7 +9,6 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Get in the barrel and wait to be pushed off.",
-        ipucu: "Succeed and you're a legend; fail and you're also a legend",
         basariliSonuc: {
           mesaj: "The barrel tumbled down, and you came out soaked but alive. The tavern spoke your name for weeks.",
           detay: "Some stupidities pay off.",
@@ -20,7 +19,6 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Turn down the bet, order another drink.",
-        ipucu: "Safe; you'll get teased a bit",
         basariliSonuc: {
           mesaj: "You shrugged. A few called you a coward, but by morning they'd forgotten.",
         },
@@ -37,7 +35,6 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Into the mouth, chew, swallow. Don't blink.",
-        ipucu: "Cheap fame or a very expensive lesson",
         basariliSonuc: {
           mesaj: "Your face went purple, tears burst from your eyes, but you swallowed it. The peddler handed over the basket with a grin.",
         },
@@ -47,7 +44,6 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Just taste a slice, leave the rest.",
-        ipucu: "Reasonable; the basket won't be yours",
         basariliSonuc: {
           mesaj: "One slice was more than enough. Your mouth burned, but you lived long enough to tell the tale.",
         },
@@ -64,7 +60,6 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Climb the ladder, paint the moustache.",
-        ipucu: "A legendary prank or a very bad fall",
         basariliSonuc: {
           mesaj: "The moustache came out perfect. The city was in stitches by morning, and no one gave you up.",
         },
@@ -74,7 +69,6 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Give the paint to your friend, you keep watch.",
-        ipucu: "Safer; less fame too",
         basariliSonuc: {
           mesaj: "You kept watch, the job got done, no one was caught. Your friend was the hero, but you laughed too.",
         },
@@ -91,7 +85,6 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Climb the tree, poke the hive with a stick.",
-        ipucu: "Sweet profit or a very angry swarm",
         basariliSonuc: {
           mesaj: "You got stung in a few places but brought down a bucket of honey. You treated everyone for days.",
         },
@@ -101,7 +94,6 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Tell a beekeeper, ask for a share.",
-        ipucu: "Little honey, sound body",
         basariliSonuc: {
           mesaj: "The beekeeper did it right, and a jar came your way. Not a single sting.",
         },
@@ -118,7 +110,6 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Fill your lungs, close your eyes, hold on.",
-        ipucu: "A small bet, a small risk... usually",
         basariliSonuc: {
           mesaj: "Your face reddened, your veins throbbed, but you were the last one holding. You took the pot.",
         },
@@ -128,7 +119,6 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Say 'I'll count' and stay out of the bet.",
-        ipucu: "The smartest move",
         basariliSonuc: {
           mesaj: "You counted, laughed, slipped aside unnoticed. You were the healthiest man of the evening.",
         },
@@ -145,7 +135,6 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Hoist it on your back, carry it to the square.",
-        ipucu: "Sweet prize, tender spine",
         basariliSonuc: {
           mesaj: "You came back from the brink of a slipped disc, but you got the pumpkin there and came first.",
         },
@@ -155,7 +144,6 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Rent a handcart, carry it that way.",
-        ipucu: "A small expense, a sound spine",
         basariliSonuc: {
           mesaj: "You brought it easily on the handcart. You didn't come first, but a healthy third place isn't bad.",
         },
@@ -172,7 +160,6 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Run toward the middle of the ice and slide.",
-        ipucu: "A brief bit of fun or a very cold ending",
         basariliSonuc: {
           mesaj: "The ice held, you slid to the middle, the children applauded. A legend was born.",
         },
@@ -182,7 +169,6 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Take a turn near the bank, in the shallows.",
-        ipucu: "Little fun, low chance of a soaking",
         basariliSonuc: {
           mesaj: "You took a few turns by the bank, laughed, went home dry. The children were happy anyway.",
         },
@@ -199,7 +185,6 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Hug the biggest one and walk.",
-        ipucu: "Honor or a hernia — maybe both",
         basariliSonuc: {
           mesaj: "Your face was crimson, your veins near bursting, but you carried it the farthest. The feast that night was yours.",
         },
@@ -209,7 +194,6 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Pick a medium one, play it safe.",
-        ipucu: "You won't win, but you'll survive",
         basariliSonuc: {
           mesaj: "A reasonable ball, a reasonable distance. You came second, feet intact.",
         },
@@ -226,7 +210,6 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Jump onto a sail, hold on tight.",
-        ipucu: "One turn of fame or a one-way flight",
         basariliSonuc: {
           mesaj: "You went a full turn round, shouted 'I left my stomach up there' at the top, then came down safe and sound. The village is talking about you.",
         },
@@ -236,7 +219,6 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Touch the bottom tip of the sail, step back.",
-        ipucu: "Brave enough, smart enough",
         basariliSonuc: {
           mesaj: "You touched the sail, everyone said 'we saw, we saw.' Brave enough, still in one piece.",
         },
@@ -253,7 +235,6 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Untie the rope, race the boar.",
-        ipucu: "Quick money or a quick boar",
         basariliSonuc: {
           mesaj: "The boar was startled, you ran, you crossed the line first. You took the prize, and the boar bolted into a field.",
         },
@@ -263,7 +244,6 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Bargain with the man, just watch the boar.",
-        ipucu: "No prize, but your legs stay attached",
         basariliSonuc: {
           mesaj: "You watched from the side, someone else ran, you laughed. You went home safe and sound.",
         },
@@ -280,7 +260,6 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Strap on the wings, jump from the tower.",
-        ipucu: "Enter history or become part of it",
         basariliSonuc: {
           mesaj: "For a few seconds you really did glide — then buried yourself in a haystack. But you flew. Everyone saw you fly.",
         },
@@ -290,7 +269,6 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Throw a sack of stones first, test the wings.",
-        ipucu: "A scientific approach saves lives",
         basariliSonuc: {
           mesaj: "The sack dropped like a stone. 'Maybe another day,' you said. The inventor was cross, but you're alive.",
         },
@@ -307,7 +285,6 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Cross at a run, don't look back.",
-        ipucu: "A shortcut or a short life",
         basariliSonuc: {
           mesaj: "The planks creaked, but you were already on the other bank. You saved half a day off the winding road.",
         },
@@ -317,7 +294,6 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Take the long way round.",
-        ipucu: "Boring, but you live",
         basariliSonuc: {
           mesaj: "You walked half a day extra, your feet swelled, but you were the one sitting by the fire that night.",
         },
@@ -334,7 +310,6 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Grab the iron rod, climb the hill.",
-        ipucu: "A show of courage or a conductive ending",
         basariliSonuc: {
           mesaj: "The storm passed and you were still standing. They said 'mad but brave'; both were true.",
         },
@@ -344,7 +319,6 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Shelter under the lean-to with everyone else.",
-        ipucu: "The most boring, the smartest",
         basariliSonuc: {
           mesaj: "You waited dry under the lean-to. The fools were outside, you were in.",
         },
@@ -361,7 +335,6 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Take the hammer, give the valve a hard knock.",
-        ipucu: "A shortcut fix or a shortcut disaster",
         basariliSonuc: {
           mesaj: "The valve went 'psst' and opened, the pressure dropped. The foreman patted your back, the overseer wrote you a bonus.",
         },
@@ -371,7 +344,6 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Put out the fire, let the boiler cool, then check.",
-        ipucu: "Slow, but your limbs stay attached",
         basariliSonuc: {
           mesaj: "You lost a shift, but once the boiler cooled the valve cleaned out easily. No one got burned.",
         },

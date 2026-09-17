@@ -16,7 +16,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Arka kapıdan kaçmayı dene.",
         baseBasariSansi: 35,
-        ipucu: "Başarırsan hapisten tamamen kurtulursun, ama çok riskli",
         basariliSonuc: {
           saglik: -5,
           para: -18,
@@ -35,7 +34,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Direnme, teslim ol.",
         baseBasariSansi: 95,
-        ipucu: "Hapse giriş kaçınılmaz ama en azından sakin geçer",
         basariliSonuc: {
           etiket_ekle: [
             "hapiste",
@@ -69,7 +67,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Tüneli kazmaya başla, riski göze al.",
         baseBasariSansi: 30,
-        ipucu: "Başarırsan özgürsün, ama yakalanırsan hayatını kaybedebilirsin",
         basariliSonuc: {
           etiket_sil: [
             "hapiste",
@@ -90,7 +87,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Bekle, daha güvenli bir zaman kolla.",
         baseBasariSansi: 90,
-        ipucu: "Güvenli, ilerleme yok",
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
@@ -123,7 +119,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
         metin: "Elindeki parayı rüşvet olarak teklif et.",
         baseBasariSansi: 50,
         maliyet: 30,
-        ipucu: "Pahalı ama işe yararsa özgürsün",
         basariliSonuc: {
           ahlak: 2,
           etiket_sil: [
@@ -143,7 +138,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Riske girme, parana güvenme.",
         baseBasariSansi: 95,
-        ipucu: "Güvenli",
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
@@ -178,7 +172,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
         gerekliEtiketler: [
           "envanter:kara_kilic",
         ],
-        ipucu: "Gizli Envanter: Genellikle hapishane lideri olursun ama kaos kılıçtan büyük olabilir",
         basariliSonuc: {
           un: 35,
           ahlak: -25,
@@ -196,7 +189,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Kargaşadan faydalanıp kapıya doğru koş.",
         baseBasariSansi: 35,
-        ipucu: "Çok riskli — hem yakalanma hem darbe alma ihtimali yüksek",
         basariliSonuc: {
           etiket_sil: [
             "hapiste",
@@ -216,7 +208,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Hücrene çekil, kargaşaya karışma.",
         baseBasariSansi: 85,
-        ipucu: "Güvenli, ama fırsat kaçar",
         basariliSonuc: {
           ahlak: 3,
           mutluluk: -1,
@@ -245,7 +236,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Güven, dostluğu büyüt.",
         baseBasariSansi: 85,
-        ipucu: "İçerideki hayatı biraz katlanılır kılar",
         basariliSonuc: {
           dost_puani: 15,
           mutluluk: 3,
@@ -261,7 +251,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Mesafeli kal, kimseye güvenme.",
         baseBasariSansi: 90,
-        ipucu: "Güvenli ama yalnız",
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
@@ -292,7 +281,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Karşı çık, hakkını savun.",
         baseBasariSansi: 40,
-        ipucu: "Cesur ama riskli",
         basariliSonuc: {
           un: 10,
           mesaj: "Diğer mahkumlar seni alkışladı; gardiyan geri adım attı.",
@@ -307,7 +295,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Başını eğ, sessiz kal.",
         baseBasariSansi: 90,
-        ipucu: "Güvenli ama gururunu kırar",
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
@@ -337,7 +324,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Dışarı çık, yeni bir sayfa aç.",
         baseBasariSansi: 95,
-        ipucu: "Özgürlük",
         basariliSonuc: {
           etiket_sil: [
             "hapiste",
@@ -357,7 +343,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Şehirden tamamen uzaklaş, iz bırakma.",
         baseBasariSansi: 90,
-        ipucu: "Sessiz bir yeni başlangıç",
         basariliSonuc: {
           ahlak: 3,
           etiket_sil: [
@@ -398,14 +383,12 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Kalabalığı yararak kaç.",
         baseBasariSansi: 40,
-        ipucu: "Başarırsan tamamen kurtulursun, ama riskli",
         basariliSonuc: { saglik: -4, mesaj: "İtiş kakış arasında sıyrılıp kaçtın; kalbin küt küt atarken bir ara sokağa daldın.", detay: "Bu sefer paçayı kurtardın." },
         basarisizSonuc: { saglik: -15, etiket_ekle: ["hapiste"], mesaj: "Yakalandın, halk seni linç etmeden muhafızlar araya girdi.", detay: "Artık parmaklıklar ardındasın." },
       },
       {
         metin: "Yakalandığını kabullen, direnme.",
         baseBasariSansi: 90,
-        ipucu: "Kaçınılmaz ama en azından sakin geçer",
         basariliSonuc: { etiket_ekle: ["hapiste"], mesaj: "Direnmedin; muhafızlar seni sakince aldı.", detay: "En azından dövülmedin." },
         basarisizSonuc: { saglik: -10, etiket_ekle: ["hapiste"], mesaj: "Kalabalıktan biri sana bir yumruk attı, muhafızlar zor ayırdı.", detay: "Halkın öfkesi bazen adaletten hızlı." },
       },
@@ -426,14 +409,12 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Özür dile, merhamet dilen.",
         baseBasariSansi: 50,
-        ipucu: "Gururun kırılır ama belki kurtulursun",
         basariliSonuc: { ahlak: -5, mesaj: "Alçakgönüllü özrün lordun sinirini bir nebze yatıştırdı; sadece sınır dışı edildin.", detay: "Gururun kırıldı ama özgürsün." },
         basarisizSonuc: { etiket_ekle: ["hapiste"], un: -10, mesaj: "Özrün 'zayıflık' sayıldı, lord seni örnek olsun diye hapse attırdı.", detay: "Güçlünün önünde eğilmek bazen yetmiyor." },
       },
       {
         metin: "Kendini savun, haklı olduğunu söyle.",
         baseBasariSansi: 30,
-        ipucu: "Riskli ama kazanırsan onurun sapasağlam kalır",
         basariliSonuc: { un: 15, ahlak: 8, mesaj: "Cesaretin bazı çevrelerde saygı gördü; lord bu sefer geri adım attı.", detay: "Nadiren de olsa küçük biri kazanabiliyor." },
         basarisizSonuc: { etiket_ekle: ["hapiste"], saglik: -10, mesaj: "Lord küstahlığına tahammül edemedi; adamları seni dövüp zindana attı.", detay: "Güçlüye kafa tutmanın bedeli ağır oldu." },
       },
@@ -453,7 +434,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Malları yakıp delil yok et, sonra kaçmaya çalış.",
         baseBasariSansi: 35,
-        ipucu: "Sermayenden olursun ama kanıt kalmayabilir",
         basariliSonuc: { para: -15, mesaj: "Malları alevlere verip dumandan yararlanarak kaçtın; delil kalmadı.", detay: "Sermayen küle döndü ama özgürsün." },
         basarisizSonuc: { para: -15, saglik: -10, etiket_ekle: ["hapiste"], mesaj: "Dumanın içinde yakalandın, suçüstü.", detay: "Kanıtları yok etmek bile seni kurtaramadı." },
       },
@@ -461,7 +441,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
         metin: "Sessizce teslim ol, avukat tut.",
         baseBasariSansi: 80,
         maliyet: 20,
-        ipucu: "Pahalı ama cezayı hafifletebilir",
         basariliSonuc: { para: -20, mesaj: "Tuttuğun avukat sayesinde küçük bir para cezasıyla kurtuldun.", detay: "Para burada da işe yaradı." },
         basarisizSonuc: { para: -20, etiket_ekle: ["hapiste"], mesaj: "Avukatının çabalarına rağmen hakim seni içeri attı.", detay: "Bazı suçlar avukatla bile kapanmıyor." },
       },
@@ -482,7 +461,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Kalabalığa karışıp kimliğini gizlemeye çalış.",
         baseBasariSansi: 45,
-        ipucu: "Başarırsan tamamen sıyrılırsın",
         basariliSonuc: {
         saglik: 2,
         ahlak: 1,
@@ -493,7 +471,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Amacını açıkça söyle, arkasında dur.",
         baseBasariSansi: 30,
-        ipucu: "Onurlu ama tutuklanma neredeyse kesin",
         basariliSonuc: { ahlak: 15, un: 10, etiket_ekle: ["hapiste"], mesaj: "Cesaretin bazı askerlerin bile saygısını kazandı ama yine de tutuklandın.", detay: "Vicdanın rahat, hücren dar." },
         basarisizSonuc: { ahlak: 10, saglik: -15, etiket_ekle: ["hapiste"], mesaj: "Sözlerin askerleri öfkelendirdi, dövülerek hapse atıldın.", detay: "Doğruyu söylemenin bedeli bu kez ağır oldu." },
       },
@@ -513,7 +490,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Arka kapıdan sıvışmayı dene.",
         baseBasariSansi: 40,
-        ipucu: "Başarırsan tamamen sıyrılırsın, yakalanırsan dövülürsün",
         basariliSonuc: {
         saglik: 4,
         ahlak: 1,
@@ -525,14 +501,12 @@ export const OLAY_HAPIS: OlayTanimi[] = [
         metin: "Muhafıza rüşvet öner, sessizce çık.",
         baseBasariSansi: 55,
         maliyet: 30,
-        ipucu: "Pahalı ama sessiz bir çıkış olabilir",
         basariliSonuc: { para: -30, mesaj: "Muhafız keseyi cebine attı, seni görmezden geldi.", detay: "Bazı kapılar altınla açılır." },
         basarisizSonuc: { para: -30, etiket_ekle: ["hapiste"], mesaj: "Rüşvet teklifin başka bir muhafızın gözünden kaçmadı; hem paran gitti hem içeri tıkıldın.", detay: "Yanlış muhafıza güvendin." },
       },
       {
         metin: "Direnme, teslim ol.",
         baseBasariSansi: 90,
-        ipucu: "Kaçınılmaz ama en azından sakin geçer",
         basariliSonuc: { etiket_ekle: ["hapiste"], mesaj: "Sakince teslim oldun; en azından dövülmedin.", detay: "Hücre soğuk ama en azından kaburgaların sağlam." },
         basarisizSonuc: { saglik: -8, etiket_ekle: ["hapiste"], mesaj: "Sakin durmana rağmen bir muhafız sinirini senden çıkardı.", detay: "Bazen sessizlik bile yetmiyor." },
       },
@@ -552,7 +526,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Deponun arka çıkışından kaç.",
         baseBasariSansi: 35,
-        ipucu: "Başarırsan malını kurtaramasan da özgür kalırsın",
         basariliSonuc: {
         saglik: 3,
  mulk_kaybet: "karaborsa", mesaj: "Deponun arkasından sıyrıldın; malın el konuldu ama en azından hapse düşmedin.", detay: "Servetin gitti, özgürlüğün kaldı." },
@@ -562,14 +535,12 @@ export const OLAY_HAPIS: OlayTanimi[] = [
         metin: "Yüklü bir rüşvetle davayı kapatmaya çalış.",
         baseBasariSansi: 45,
         maliyet: 60,
-        ipucu: "Çok pahalı ama depoyu kurtarabilirsin",
         basariliSonuc: { para: -60, mesaj: "Rüşvet işe yaradı; dava kapandı, deponu da elinde tuttun.", detay: "Bu sefer altının gücü suçunu örttü." },
         basarisizSonuc: { para: -60, mulk_kaybet: "karaborsa", etiket_ekle: ["hapiste"], mesaj: "Rüşvetin reddedildi; hem paran gitti hem depon el kondu hem de içeri tıkıldın.", detay: "Bazen para bile yetmiyor." },
       },
       {
         metin: "Direnme, teslim ol.",
         baseBasariSansi: 90,
-        ipucu: "Depon gider ama en azından dövülmezsin",
         basariliSonuc: { mulk_kaybet: "karaborsa", etiket_ekle: ["hapiste"], mesaj: "Sakince teslim oldun; deponun tamamına el kondu.", detay: "Karanlık kazancın, karanlık bir sonla bitti." },
         basarisizSonuc: { saglik: -10, mulk_kaybet: "karaborsa", etiket_ekle: ["hapiste"], mesaj: "Teslim olmana rağmen bir muhafız öfkesini senden çıkardı.", detay: "Yıllarca sırtından kazandıkların bugün elinden alındı." },
       },
@@ -597,14 +568,12 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Tek başına kaz, kimseye güvenme.",
         baseBasariSansi: 90,
-        ipucu: "Yavaş ama sır tutması kolay",
         basariliSonuc: { zorunlu_sonraki: "hapis_tunel_tek_1", mesaj: "Gece geç saatte, tek başına kazmaya başladın. Ses çıkarmamaya özen gösteriyorsun.", detay: "Yalnız olmak yavaş ama güvenli." },
         basarisizSonuc: { saglik: -4, zorunlu_sonraki: "hapis_tunel_tek_1", mesaj: "İlk gece taşı kaldırırken elini kesip biraz kan kaybettin ama kimse duymadı.", detay: "Küçük bir aksilik, büyütmeye değmez." },
       },
       {
         metin: "Güvenilir birkaç mahkumla ekip kur.",
         baseBasariSansi: 90,
-        ipucu: "Daha hızlı ama sır tutmak zorlaşır",
         basariliSonuc: { zorunlu_sonraki: "hapis_tunel_ekip_1", mesaj: "Üç mahkumla gizlice anlaştınız; nöbetleşe kazmaya başladınız.", detay: "Ekip daha hızlı ama sır tutmak zorlaşıyor." },
         basarisizSonuc: { mutluluk: -3, zorunlu_sonraki: "hapis_tunel_ekip_1", mesaj: "Ekip kurmak sandığından zor oldu, güven inşa etmek zaman aldı.", detay: "Yine de plan işlemeye başladı." },
       },
@@ -624,14 +593,12 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Kazmaya devam et, riske gir.",
         baseBasariSansi: 60,
-        ipucu: "Hızlanır ama duyulma riski var",
         basariliSonuc: { zorunlu_sonraki: "hapis_tunel_tek_2", mesaj: "Gardiyan başka yöne yürüdü; tünel epey ilerledi.", detay: "Şansın yaver gitti." },
         basarisizSonuc: { saglik: -10, zorunlu_sonraki: "hapis_tunel_tek_2", mesaj: "Gardiyan sesi duydu, hücreni aradı ama gevşek taşı fark etmedi; yine de gerginlikten bitkin düştün.", detay: "Bu sefer ucuz atlattın." },
       },
       {
         metin: "Dur, sessizce bekle.",
         baseBasariSansi: 90,
-        ipucu: "Güvenli ama yavaş",
         basariliSonuc: { zorunlu_sonraki: "hapis_tunel_tek_2", mesaj: "Gardiyan geçip gitti; birkaç saat kaybettin ama güvendesin.", detay: "Sabır bu işin bir parçası." },
         basarisizSonuc: { mutluluk: -3, zorunlu_sonraki: "hapis_tunel_tek_2", mesaj: "Bekleyiş uzun sürdü, moralin bozuldu.", detay: "Yeraltında zaman daha da yavaş akıyor." },
       },
@@ -652,7 +619,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Hemen dışarı sürün, koş.",
         baseBasariSansi: 45,
-        ipucu: "Başarırsan efsanevi bir kaçış, yakalanırsan hayati risk",
         basariliSonuc: {
         saglik: 2,
  etiket_sil: ["hapiste"], un: 15, mesaj: "Tünelden sıyrılıp şehrin karanlığına karıştın; artık özgürsün.", detay: "Tek başına başardın — bu hikaye efsaneye dönüşecek." },
@@ -661,7 +627,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Sabret, en sakin saati bekle.",
         baseBasariSansi: 65,
-        ipucu: "Daha güvenli ama tünel çökebilir",
         basariliSonuc: { etiket_sil: ["hapiste"], un: 10, mesaj: "En sessiz saati bekleyip fark edilmeden çıktın.", detay: "Sabrın işe yaradı." },
         basarisizSonuc: { saglik: -15, olum_sansi: 8, etiket_ekle: ["hapiste"], mesaj: "Beklerken tünelin çökme tehlikesi baş gösterdi, güçlükle geri döndün ve yakalandın.", detay: "Toprak da senin düşmanın oldu." },
       },
@@ -683,7 +648,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Ona güvenmeye devam et.",
         baseBasariSansi: 65,
-        ipucu: "Doğruysa dostluk büyür, yanılıyorsan risklisin",
         basariliSonuc: {
         saglik: 1,
  dost_puani: 10, zorunlu_sonraki: "hapis_tunel_ekip_2", mesaj: "Şüphen yersizmiş; o da senin kadar özgürlüğü istiyordu.", detay: "Güvenin karşılığını buldu." },
@@ -692,7 +656,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Planı ondan gizle, sadece diğerleriyle devam et.",
         baseBasariSansi: 75,
-        ipucu: "İhtiyatlı ama grup içi güveni zedeler",
         basariliSonuc: { zorunlu_sonraki: "hapis_tunel_ekip_2", mesaj: "Şüpheli mahkumu plandan dışladınız; kazı sessizce devam etti.", detay: "İhtiyat bu kez işe yaradı." },
         basarisizSonuc: { dost_puani: -10, zorunlu_sonraki: "hapis_tunel_ekip_2", mesaj: "Dışlanan mahkum bunu fark etti, aranızda gerginlik doğdu.", detay: "Güvensizlik bazen kendi kendini besliyor." },
       },
@@ -712,14 +675,12 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Hızlandırın, riski göze alın.",
         baseBasariSansi: 55,
-        ipucu: "Hızlı biter ama duyulma riski artar",
         basariliSonuc: { zorunlu_sonraki: "hapis_tunel_ekip_3", mesaj: "Hızlı çalışma işe yaradı, tünel beklenenden erken tamamlandı.", detay: "Ekip ruhu fark yarattı." },
         basarisizSonuc: { saglik: -10, zorunlu_sonraki: "hapis_tunel_ekip_3", mesaj: "Bir gardiyan sesleri fark etti ama kazının kaynağını bulamadı; ekip donup kaldı.", detay: "Ucuz atlattınız." },
       },
       {
         metin: "Yavaş ve sessiz ilerleyin.",
         baseBasariSansi: 85,
-        ipucu: "Güvenli ama moral bozabilir",
         basariliSonuc: { zorunlu_sonraki: "hapis_tunel_ekip_3", mesaj: "Sabırlı ilerleme sayesinde kimse fark etmedi.", detay: "Yavaş ama emin adımlar." },
         basarisizSonuc: { mutluluk: -5, zorunlu_sonraki: "hapis_tunel_ekip_3", mesaj: "Yavaşlık moral bozdu, ekipte huzursuzluk başladı.", detay: "Bazıları sabırsızlanıyor." },
       },
@@ -740,7 +701,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Hep birlikte, hızlıca çıkın.",
         baseBasariSansi: 40,
-        ipucu: "Ya destansı bir toplu kaçış ya da toplu bir felaket",
         basariliSonuc: {
           saglik: 2,
           etiket_sil: ["hapiste"],
@@ -760,7 +720,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Teker teker, aralıklarla çıkın.",
         baseBasariSansi: 60,
-        ipucu: "Daha yavaş ama daha az göze batıyor",
         basariliSonuc: { etiket_sil: ["hapiste"], un: 15, mesaj: "Tek tek, sessizce süzüldünüz; sabah sayım yapılana kadar kimse fark etmedi.", detay: "Sabır ve düzen, kalabalığı görünmez kıldı." },
         basarisizSonuc: {
           saglik: -18,
@@ -793,7 +752,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Ona yaklaş, dikkatlice sohbet başlat.",
         baseBasariSansi: 65,
-        ipucu: "Doğrudan ama riskli bir yaklaşım",
         basariliSonuc: { zorunlu_sonraki: "hapis_rusvet_pazarlik_derin", mesaj: "Genç gardiyan borçlarından bahsetmeye başladı; tam aradığın kişi.", detay: "Zaaflar bazen en iyi anahtar." },
         basarisizSonuc: { mutluluk: -3, zorunlu_sonraki: "hapis_rusvet_pazarlik_derin", mesaj: "Gardiyan mesafeli kaldı, güvenini kazanmak beklediğinden zor.", detay: "Herkes kolay açılmıyor." },
       },
@@ -801,7 +759,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
         metin: "Diğer mahkumlardan bilgi topla, sağlam bir isim bul.",
         baseBasariSansi: 80,
         maliyet: 5,
-        ipucu: "Küçük bir masraf ama daha güvenilir",
         basariliSonuc: { para: -5, zorunlu_sonraki: "hapis_rusvet_pazarlik_derin", mesaj: "Küçük bir 'teşekkür' karşılığında güvenilir bir isim edindin.", detay: "Hapiste bile bilgi para eder." },
         basarisizSonuc: { para: -5, zorunlu_sonraki: "hapis_rusvet_pazarlik_derin", mesaj: "Verilen isim işe yaramadı, paran boşa gitti.", detay: "Her ipucu doğru çıkmıyor." },
       },
@@ -821,14 +778,12 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Israrla pazarlık et.",
         baseBasariSansi: 50,
-        ipucu: "Ucuza gelebilir ama gardiyanı gücendirebilir",
         basariliSonuc: { para: -15, zorunlu_sonraki: "hapis_rusvet_uygulama", mesaj: "Pazarlığın işe yaradı, fiyatı epey düşürdün.", detay: "Cüzdanın biraz daha az yaralı." },
         basarisizSonuc: { para: -15, ahlak: -5, zorunlu_sonraki: "hapis_rusvet_uygulama", mesaj: "Israrın gardiyanı gücendirdi, anlaşma neredeyse bozuluyordu; yine de son anda kabul etti.", detay: "Ucuza kaçmak riskli bir oyun." },
       },
       {
         metin: "İstediğini ver, tartışmadan kabul et.",
         baseBasariSansi: 85,
-        ipucu: "Pahalı ama hızlı ve güvenli",
         basariliSonuc: { para: -35, zorunlu_sonraki: "hapis_rusvet_uygulama", mesaj: "Anlaşma hızla ve sorunsuz tamamlandı.", detay: "Bazen zaman paradan daha değerli." },
         basarisizSonuc: { para: -35, zorunlu_sonraki: "hapis_rusvet_uygulama", mesaj: "Anlaştınız ama gardiyan planı biraz ertelemek zorunda kaldı.", detay: "Her anlaşma dediği gibi yürümüyor." },
       },
@@ -849,14 +804,12 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Plana güven, belirlenen saatte git.",
         baseBasariSansi: 60,
-        ipucu: "Ya özgürlük ya ağır bir tuzak",
         basariliSonuc: { etiket_sil: ["hapiste"], mesaj: "Gardiyan sözünü tuttu; kapı gerçekten 'yanlışlıkla' açık kaldı.", detay: "Altının gücü bir kez daha kanıtlandı." },
         basarisizSonuc: { saglik: -15, para: -20, etiket_ekle: ["hapiste"], mesaj: "Bu bir tuzakmış! Gardiyan komutanına ihbar etmiş; ağır bir cezayla karşılaştın.", detay: "Bazı anlaşmalar en başından çürükmüş." },
       },
       {
         metin: "Son anda şüphelen, planı iptal et.",
         baseBasariSansi: 90,
-        ipucu: "Güvenli ama avansı geri alamazsın",
         basariliSonuc: { para: -10, mesaj: "İçgüdülerine güvendin ve geri çekildin; sonradan bunun doğru bir sezgi olduğunu öğrendin.", detay: "Bazen kaçınmak da bir zaferdir." },
         basarisizSonuc: { para: -35, mutluluk: -5, mesaj: "Vazgeçtin ama verdiğin avansı geri alamadın.", detay: "Güvensizliğin bir bedeli oldu." },
       },
@@ -882,14 +835,12 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Sert bir darbe için hazırlan (bir taş/kemik parçası sakla).",
         baseBasariSansi: 90,
-        ipucu: "Fiziksel bir hazırlık",
         basariliSonuc: { zorunlu_sonraki: "hapis_bayiltma_saldiri", mesaj: "Elinin altında sert bir nesne sakladın; plan şekilleniyor.", detay: "Hazırlık, her planın temeli." },
         basarisizSonuc: { zorunlu_sonraki: "hapis_bayiltma_saldiri", mesaj: "Kullanışlı bir şey bulmak sandığından zor oldu ama yine de idare eder bir şey buldun.", detay: "Mükemmel olmasa da yeter." },
       },
       {
         metin: "Onu oyalayacak bir hikaye/yalan hazırla, dikkatini dağıt.",
         baseBasariSansi: 90,
-        ipucu: "Zihinsel bir hazırlık",
         basariliSonuc: { zorunlu_sonraki: "hapis_bayiltma_saldiri", mesaj: "İnandırıcı bir hikaye kurguladın; gardiyanın dikkatini çekecek.", detay: "Bazen en iyi silah kelimelerdir." },
         basarisizSonuc: { zorunlu_sonraki: "hapis_bayiltma_saldiri", mesaj: "Hikayen biraz zayıf kaldı ama deneyecek kadar cesursun.", detay: "Kusursuz bir plan diye bir şey yok." },
       },
@@ -910,7 +861,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Ani bir hamleyle saldır, onu bayılt.",
         baseBasariSansi: 40,
-        ipucu: "Başarırsan anahtarlar elinde, başarısızlıkta hayati risk",
         basariliSonuc: {
         saglik: 6,
  zorunlu_sonraki: "hapis_bayiltma_kacis", mesaj: "Darbe tam isabet etti; gardiyan sessizce yere yığıldı. Anahtarları aldın.", detay: "Kalbin göğsünden fırlayacak gibi ama başardın." },
@@ -925,7 +875,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Son anda vazgeç, geri çekil.",
         baseBasariSansi: 90,
-        ipucu: "Güvenli ama fırsat kaçar",
         basariliSonuc: {
         saglik: 2,
         ahlak: 1,
@@ -950,7 +899,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Hızla koş, en yakın çıkışı dene.",
         baseBasariSansi: 55,
-        ipucu: "Hızlı ama gösterişli, dikkat çekebilir",
         basariliSonuc: { etiket_sil: ["hapiste"], un: 20, mesaj: "Karanlık koridorlarda koşarak dışarı çıkmayı başardın; artık özgürsün.", detay: "Bu cüretkar kaçış efsaneye dönüşecek." },
         basarisizSonuc: {
           saglik: -25,
@@ -963,7 +911,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Sakin ol, gardiyan kılığına girip normalmiş gibi yürü.",
         baseBasariSansi: 45,
-        ipucu: "Cüretkar ama başarırsan çok daha sağlam",
         basariliSonuc: {
         saglik: 1,
  etiket_sil: ["hapiste"], un: 25, mesaj: "Gardiyanın üniformasını üstüne geçirip sakince ana kapıdan yürüyerek çıktın.", detay: "Cüretin, gücünden daha etkili çıktı." },
@@ -998,14 +945,12 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Kurallara tam uy, çalışkan ve sessiz ol.",
         baseBasariSansi: 85,
-        ipucu: "Yavaş ama sağlam bir strateji",
         basariliSonuc: { ahlak: 8, zorunlu_sonraki: "hapis_iyi_hal_degerlendirme", mesaj: "Davranışların gardiyanların ve idarenin dikkatini olumlu yönde çekti.", detay: "Sabır, burada bir strateji haline geldi." },
         basarisizSonuc: { mutluluk: -5, zorunlu_sonraki: "hapis_iyi_hal_degerlendirme", mesaj: "Çabaların pek fark edilmedi, kimse seni önemsemedi.", detay: "Bazen iyilik görünmez kalıyor." },
       },
       {
         metin: "Gardiyanlara küçük hizmetler sun, gözlerine gir.",
         baseBasariSansi: 70,
-        ipucu: "Riskli — koğuşta 'yalaka' damgası yiyebilirsin",
         basariliSonuc: { dost_puani: 5, zorunlu_sonraki: "hapis_iyi_hal_degerlendirme", mesaj: "Küçük yardımların işe yaradı, bir gardiyan senden bahsetmeye başladı bile.", detay: "Bazen küçük iyilikler büyük kapılar açıyor." },
         basarisizSonuc: { ahlak: -5, zorunlu_sonraki: "hapis_iyi_hal_degerlendirme", mesaj: "Diğer mahkumlar seni 'yalaka' diye damgaladı, itibarın koğuşta sarsıldı.", detay: "Her strateji bedelsiz değil." },
       },
@@ -1025,14 +970,12 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Kurulun önünde içten bir pişmanlık konuşması yap.",
         baseBasariSansi: 55,
-        ipucu: "Dürüst ve etkili olabilir",
         basariliSonuc: { etiket_sil: ["hapiste"], ahlak: 15, mesaj: "Sözlerin kurulu etkiledi; cezan erken sona erdi.", detay: "Bazen dürüstlük en güçlü savunmadır." },
         basarisizSonuc: { mutluluk: -8, mesaj: "Kurul ikna olmadı, tahliyen reddedildi; cezanın geri kalanını tamamlamak zorundasın.", detay: "Her çaba karşılığını hemen bulmuyor." },
       },
       {
         metin: "Kısa ve resmi bir dilekçeyle yetin.",
         baseBasariSansi: 70,
-        ipucu: "Sade ama etkili olabilir",
         basariliSonuc: { etiket_sil: ["hapiste"], mesaj: "Resmi dilekçen kabul gördü; sessizce, törensiz bir şekilde tahliye edildin.", detay: "Bazı zaferler gösterişsiz kazanılıyor." },
         basarisizSonuc: { mutluluk: -5, mesaj: "Dilekçen yetersiz bulundu, bir sonraki değerlendirmeye kadar beklemen gerekiyor.", detay: "Bürokrasi burada da yavaş işliyor." },
       },
@@ -1058,14 +1001,12 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Güvendiğin birkaç mahkumla plana dahil ol.",
         baseBasariSansi: 75,
-        ipucu: "Dayanışma kurar ama risklidir",
         basariliSonuc: { dost_puani: 8, zorunlu_sonraki: "hapis_isyan_firsati", mesaj: "Güvendiğin mahkumlarla sessizce anlaştınız; isyan patladığında hazırlıklı olacaksın.", detay: "Bazı ittifaklar karanlıkta kuruluyor." },
         basarisizSonuc: { mutluluk: -3, zorunlu_sonraki: "hapis_isyan_firsati", mesaj: "Kime güveneceğine karar vermek sandığından zor oldu, gerginlik içinde bekliyorsun.", detay: "Belirsizlik en yorucusu." },
       },
       {
         metin: "Hiç kimseye güvenme, sadece izle.",
         baseBasariSansi: 90,
-        ipucu: "Güvenli ama hazırlıksız yakalanabilirsin",
         basariliSonuc: { zorunlu_sonraki: "hapis_isyan_firsati", mesaj: "Sessizce izlemeyi seçtin; kimseye bir şey söylemedin.", detay: "Bilgi bazen en güvenli silahtır — kullanmamak." },
         basarisizSonuc: { mutluluk: -3, zorunlu_sonraki: "hapis_isyan_firsati", mesaj: "İzlemek bile seni gergin tuttu, ne olacağını kestiremiyorsun.", detay: "Bekleyiş bazen eylemden daha yorucu." },
       },
@@ -1091,14 +1032,12 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Suyu hasta mahkumla paylaş.",
         baseBasariSansi: 70,
-        ipucu: "Vicdan huzuru, kendi sağlığından fedakarlık",
         basariliSonuc: { ahlak: 15, saglik: -8, mesaj: "Suyunu paylaştın; mahkum yavaş yavaş iyileşti, sana minnettar kaldı.", detay: "Bazı iyilikler karşılık beklemeden yapılıyor." },
         basarisizSonuc: { saglik: -15, mesaj: "Paylaştığın su yetmedi, ikiniz de zayıf düştünüz.", detay: "İyi niyet her zaman yeterli olmuyor." },
       },
       {
         metin: "Suyu kendine sakla, sağlığını koru.",
         baseBasariSansi: 85,
-        ipucu: "Bencilce ama akıllıca",
         basariliSonuc: { saglik: 8, ahlak: -8, mesaj: "Suyu kendine sakladın; sağlığın korundu ama yanındaki mahkumun öksürüğü şiddetlendi.", detay: "Hayatta kalmak bazen bencillik istiyor." },
         basarisizSonuc: { saglik: -5, ahlak: -8, mesaj: "Sakladığın suya rağmen sen de hafifçe hastalandın; vicdanın da rahat değil.", detay: "Bazı seçimlerin hiçbir kazananı olmuyor." },
       },
@@ -1118,14 +1057,12 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Greve katıl, dayanışma göster.",
         baseBasariSansi: 55,
-        ipucu: "Koşullar iyileşebilir ama sağlığın zarar görür",
         basariliSonuc: { un: 12, dost_puani: 10, saglik: -10, mesaj: "Grev idareyi harekete geçirdi; koşullar biraz iyileşti, sen de bu zaferin bir parçasıydın.", detay: "Aç kalmak bedel oldu ama değdi." },
         basarisizSonuc: { saglik: -20, mesaj: "Grev sonuçsuz kaldı, idare umursamadı; sadece açlıktan zayıf düştün.", detay: "Her direniş kazanmıyor." },
       },
       {
         metin: "Katılma, kendi payını ye.",
         baseBasariSansi: 85,
-        ipucu: "Güvenli ama yalnızlaştırıcı",
         basariliSonuc: { saglik: 5, dost_puani: -8, mesaj: "Sağlığını korudun ama diğer mahkumlar seni 'dayanışmasız' diye dışladı.", detay: "Bazı seçimler yalnızlaştırıyor." },
         basarisizSonuc: { mutluluk: -5, mesaj: "Katılmadın ama içinde bir suçluluk kaldı.", detay: "Kenarda durmak bile bir seçimdir." },
       },
@@ -1145,14 +1082,12 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Hemen aç, oku.",
         baseBasariSansi: 80,
-        ipucu: "Umut ya da acı haber",
         basariliSonuc: { mutluluk: 8, dost_puani: 8, mesaj: "{dost} seni hâlâ beklediğini yazmış; içindeki umut yeniden canlandı.", detay: "Duvarların ardında bile birinin seni düşünmesi paha biçilmez." },
         basarisizSonuc: { mutluluk: -15, mesaj: "Mektup acı bir haber taşıyordu; günlerce içine kapandın.", detay: "Bazı haberler duvarları daha da daraltıyor." },
       },
       {
         metin: "Saklı tut, doğru zamanı bekle.",
         baseBasariSansi: 90,
-        ipucu: "Umudu erteleme",
         basariliSonuc: { mutluluk: 3, mesaj: "Mektubu yastığının altına sakladın; onu okuma fikri bile sana güç veriyor.", detay: "Bazen umudu ertelemek de bir stratejidir." },
         basarisizSonuc: { mutluluk: -3, mesaj: "Merakın seni yiyip bitirdi, sonunda dayanamayıp okudun; beklediğin an hiç gelmedi.", detay: "Sabır her zaman ödüllendirilmiyor." },
       },
@@ -1173,14 +1108,12 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Araya gir, zayıf mahkumu koru.",
         baseBasariSansi: 45,
-        ipucu: "Cesur ama dövülme riski var",
         basariliSonuc: { ahlak: 20, dost_puani: 10, mesaj: "Cesaretin işe yaradı; güçlüler geri adım attı, yaşlı mahkum sana minnettar.", detay: "Bazen bir kişi bile fark yaratabiliyor." },
         basarisizSonuc: { saglik: -18, mesaj: "Araya girdin ama dövüldün; yine de yaşlı mahkum bir süre rahat bıraktı.", detay: "Cesaretin bedeli ağır oldu ama boşa gitmedi." },
       },
       {
         metin: "Karışma, kendi derdine bak.",
         baseBasariSansi: 90,
-        ipucu: "Güvenli ama vicdanına dokunur",
         basariliSonuc: { ahlak: -12, mesaj: "Karışmadın; en azından kendi güvenliğin sağlam.", detay: "Bazı vicdan sızıları sessizce taşınıyor." },
         basarisizSonuc: { ahlak: -15, mutluluk: -8, mesaj: "Karışmaman seni de rahatsız etti; yaşlı mahkumun çığlıkları geceleri aklından çıkmıyor.", detay: "Sessiz kalmanın da bir bedeli var." },
       },
@@ -1201,14 +1134,12 @@ export const OLAY_HAPIS: OlayTanimi[] = [
         metin: "Anlaş, düzenli küçük ödemeler yap.",
         baseBasariSansi: 80,
         maliyet: 8,
-        ipucu: "Küçük masraf, gözle görülür konfor",
         basariliSonuc: { para: -8, saglik: 8, mutluluk: 3, mesaj: "Anlaşma işe yaradı; koşulların hissedilir derecede iyileşti.", detay: "Küçük paralar burada büyük fark yaratıyor." },
         basarisizSonuc: { para: -8, mesaj: "Ödemene rağmen gardiyan sözünü pek tutmadı.", detay: "Bazı anlaşmalar tek taraflı kalıyor." },
       },
       {
         metin: "Reddet, kimseye borçlanma.",
         baseBasariSansi: 90,
-        ipucu: "Bağımsız ama konforsuz",
         basariliSonuc: { ahlak: 5, mesaj: "Reddettin; en azından kimseye bağımlı değilsin.", detay: "Bağımsızlığın bir bedeli de var, konforun değil." },
         basarisizSonuc: { mutluluk: -3, mesaj: "Reddin gardiyanı gücendirdi, birkaç gün daha soğuk davrandı.", detay: "Her hayır bir bedel taşıyabiliyor." },
       },
@@ -1229,14 +1160,12 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Öğren, sabırla pratik yap.",
         baseBasariSansi: 80,
-        ipucu: "Küçük ama gerçek bir keyif",
         basariliSonuc: { mutluluk: 6, mesaj: "Zanaati öğrendin; elindeki küçük oyma parçaları sana hem huzur hem de küçük bir gurur veriyor.", detay: "Bazı beceriler duvarların ardında doğuyor." },
         basarisizSonuc: { mutluluk: -2, mesaj: "Elin pek yatkın çıkmadı ama denemek bile keyifliydi.", detay: "Her beceri kolay öğrenilmiyor." },
       },
       {
         metin: "İlgilenme, vaktini başka türlü geçir.",
         baseBasariSansi: 90,
-        ipucu: "Güvenli, nötr",
         basariliSonuc: {
         saglik: 2,
         ahlak: 1,
@@ -1260,14 +1189,12 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "İçini dök, samimi ol.",
         baseBasariSansi: 85,
-        ipucu: "Zor ama iyileştirici",
         basariliSonuc: { ahlak: 15, mutluluk: 5, mesaj: "İçini dökmek büyük bir yük kaldırdı; huzurlu bir şekilde hücrene döndün.", detay: "Bazı yükler sadece paylaşılınca hafifliyor." },
         basarisizSonuc: { mutluluk: -3, mesaj: "Anlatmak istediğin kadar kolay olmadı, sözler boğazında düğümlendi.", detay: "Bazı açılmalar zaman istiyor." },
       },
       {
         metin: "Mesafeli kal, sadece nezaketen dinle.",
         baseBasariSansi: 90,
-        ipucu: "Güvenli, içe kapalı",
         basariliSonuc: {
         saglik: 2,
         ahlak: 5,
@@ -1293,7 +1220,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Bir el dene.",
         baseBasariSansi: 50,
-        ipucu: "Küçük kazanç ya da tehlikeli bir alışkanlığın başlangıcı",
         basariliSonuc: {
         mutluluk: -5,
  para: 12, un: 3, mesaj: "Şansın yaver gitti, koğuşta adın 'şanslı' diye anılmaya başladı.", detay: "Küçük bir zafer bile burada büyük anlam taşıyor." },
@@ -1308,7 +1234,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Katılma, kenardan izle.",
         baseBasariSansi: 90,
-        ipucu: "Güvenli",
         basariliSonuc: {
         ahlak: 3,
         mutluluk: -1,
@@ -1332,14 +1257,12 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Teklifi kabul et, bilgi ver.",
         baseBasariSansi: 85,
-        ipucu: "Konfor artar, vicdan ve itibar zarar görür",
         basariliSonuc: { saglik: 8, ahlak: -20, mesaj: "Bilgi verdin; koşulların iyileşti ama artık kimseye bakarken gözlerini kaçırıyorsun.", detay: "Konforun, birinin sırtından geldi." },
         basarisizSonuc: { ahlak: -20, dost_puani: -15, mesaj: "Muhbir olduğun anlaşıldı, koğuşta artık kimse sana güvenmiyor.", detay: "İhanetin bedeli, faydasından ağır bastı." },
       },
       {
         metin: "Reddet, sadakatini koru.",
         baseBasariSansi: 85,
-        ipucu: "Vicdan rahat, idare gücenir",
         basariliSonuc: { ahlak: 15, dost_puani: 10, mesaj: "Reddettin; diğer mahkumlar arasında 'güvenilir' diye anılmaya başladın.", detay: "Bazı ilkeler pazarlık konusu olmuyor." },
         basarisizSonuc: { saglik: -8, mesaj: "Reddin idareyi kızdırdı, küçük bir cezayla karşılaştın.", detay: "Doğru olanı yapmanın bir bedeli oldu." },
       },
@@ -1359,14 +1282,12 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Duygularını sakla, güçlü görün.",
         baseBasariSansi: 85,
-        ipucu: "Onu korur ama içine atarsın",
         basariliSonuc: { dost_puani: 5, mutluluk: 3, mesaj: "Güçlü duruşun onu rahatlattı; endişelenmemesi için elinden geleni yaptın.", detay: "Bazen sevdiklerini korumak, kendini gizlemekle olur." },
         basarisizSonuc: { mutluluk: -5, mesaj: "Güçlü görünmeye çalışsan da sesin titredi.", detay: "Bazı duygular saklanamıyor." },
       },
       {
         metin: "Duygularını açıkça paylaş.",
         baseBasariSansi: 90,
-        ipucu: "Zayıflık ama gerçek bir bağ",
         basariliSonuc: { dost_puani: 12, mutluluk: 6, mesaj: "İçtenliğin aranızdaki bağı güçlendirdi; ikiniz de biraz hafiflediniz.", detay: "Bazen zayıflık göstermek en büyük güçtür." },
         basarisizSonuc: { mutluluk: -3, mesaj: "Duygularını paylaşmak seni beklediğinden daha çok yordu.", detay: "Bazı anlar hem iyileştirir hem yorar." },
       },
@@ -1387,14 +1308,12 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Battaniyeni paylaş.",
         baseBasariSansi: 80,
-        ipucu: "Vicdan huzuru, sağlık kaybı",
         basariliSonuc: { ahlak: 15, saglik: -10, mesaj: "Battaniyeni paylaştın; ikiniz de üşüdünüz ama yalnız değildiniz.", detay: "Sıcaklık bazen paylaşılınca çoğalıyor." },
         basarisizSonuc: { saglik: -18, mesaj: "Paylaşım yeterli gelmedi, ikiniz de zor bir gece geçirdiniz.", detay: "Kış burada hiç merhametli değil." },
       },
       {
         metin: "Battaniyeyi kendine sakla.",
         baseBasariSansi: 90,
-        ipucu: "Bencilce ama akıllıca",
         basariliSonuc: { saglik: 8, ahlak: -10, mesaj: "Sıcak kaldın ama yanı başındaki mahkumun titremesini duymamak zor oldu.", detay: "Hayatta kalmak bazen bencillik istiyor." },
         basarisizSonuc: { saglik: 2, ahlak: -10, mesaj: "Sakladığın battaniyeye rağmen soğuk her yerden sızdı.", detay: "Bazı kışlar kimseyi esirgemiyor." },
       },
@@ -1415,14 +1334,12 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Ona akıl hocalığı yap, kuralları öğret.",
         baseBasariSansi: 85,
-        ipucu: "Küçük bir yatırım, yeni bir dost",
         basariliSonuc: { dost_puani: 10, ahlak: 8, mesaj: "Genç mahkum sana minnettar kaldı; koğuşun işleyişini ondan önce sen öğretmiş oldun.", detay: "Bazı liderlikler küçük bir yardımla başlıyor." },
         basarisizSonuc: { mutluluk: -3, mesaj: "Öğütlerin tam anlaşılmadı, genç mahkum yine de kendi başının çaresine bakmak zorunda kaldı.", detay: "Her öğüt hemen anlaşılmıyor." },
       },
       {
         metin: "Kendi haline bırak.",
         baseBasariSansi: 90,
-        ipucu: "Güvenli, nötr",
         basariliSonuc: {
         saglik: 2,
         ahlak: 4,
@@ -1447,14 +1364,12 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Hapishane müdürüne ihbar et.",
         baseBasariSansi: 45,
-        ipucu: "Riskli ama adalet sağlanabilir",
         basariliSonuc: { ahlak: 18, un: 10, mesaj: "İhbarın ciddiye alındı, gardiyan görevden alındı; koğuşta adın 'adil' diye anıldı.", detay: "Doğruyu söylemek bu sefer işe yaradı." },
         basarisizSonuc: { saglik: -15, mesaj: "İhbarın gardiyanın diğer arkadaşlarına ulaştı, misilleme gördün.", detay: "Doğruyu söylemenin bir bedeli oldu." },
       },
       {
         metin: "Sessiz kal, karışma.",
         baseBasariSansi: 90,
-        ipucu: "Güvenli ama vicdanına dokunur",
         basariliSonuc: { ahlak: -10, mesaj: "Sessiz kaldın; en azından başın belaya girmedi.", detay: "Bazı sessizlikler güvenlidir ama rahatsız edicidir." },
         basarisizSonuc: { ahlak: -12, mutluluk: -5, mesaj: "Sessizliğin içini kemirmeye devam ediyor.", detay: "Bazı vicdan sızıları geçmiyor." },
       },
@@ -1475,14 +1390,12 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Durumunu olduğu gibi anlat.",
         baseBasariSansi: 80,
-        ipucu: "Dürüstlük en iyi tedavi şansı",
         basariliSonuc: { saglik: 15, mesaj: "Doktor şikayetlerini ciddiye aldı, sana basit ama etkili bir tedavi verdi.", detay: "Dürüstlük burada da işe yaradı." },
         basarisizSonuc: { saglik: 5, mesaj: "Doktor ilgilendi ama imkanları kısıtlıydı, tedavi yarım kaldı.", detay: "Her derde her zaman çare bulunmuyor." },
       },
       {
         metin: "Güçlü görün, hiçbir şeyin yokmuş gibi davran.",
         baseBasariSansi: 85,
-        ipucu: "İtibar kazanır ama tedaviyi kaçırırsın",
         basariliSonuc: { un: 5, mesaj: "Sağlam görüntün koğuşta 'dayanıklı' diye söylenmene neden oldu.", detay: "Bazen imaj sağlıktan önce geliyor — ama bedeli var." },
         basarisizSonuc: { saglik: -15, mesaj: "Sakladığın rahatsızlık günler sonra iyice ağırlaştı.", detay: "Görmezden gelinen dertler büyüyerek geri dönüyor." },
       },
@@ -1504,14 +1417,12 @@ export const OLAY_HAPIS: OlayTanimi[] = [
         metin: "Fahiş fiyata da olsa bir şeyler al.",
         baseBasariSansi: 90,
         maliyet: 6,
-        ipucu: "Küçük ama pahalı bir keyif",
         basariliSonuc: { para: -6, mutluluk: 5, mesaj: "Küçük bir sabun parçası bile burada büyük bir lüks gibi hissettirdi.", detay: "Bazı küçük mutluluklar pahalıya değer." },
         basarisizSonuc: { para: -6, mutluluk: -2, mesaj: "Aldığın şey umduğun kadar iyi değildi ama yine de küçük bir değişiklikti.", detay: "Her alışveriş beklentiyi karşılamıyor." },
       },
       {
         metin: "Parana güven, alışveriş yapma.",
         baseBasariSansi: 90,
-        ipucu: "Tutumlu",
         basariliSonuc: {
         saglik: 2,
         ahlak: 1,
@@ -1541,7 +1452,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Havalandırma biterken duvara tırman, atla.",
         baseBasariSansi: 32,
-        ipucu: "Başarırsan özgürsün; yakalanırsan hem dayak yersin hem cezan uzar",
         basariliSonuc: {
           etiket_sil: ["hapiste"],
           saglik: -8,
@@ -1560,7 +1470,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Vazgeç, sıraya geri dön.",
         baseBasariSansi: 95,
-        ipucu: "Güvenli; ceza aynen işler",
         basariliSonuc: {
           mesaj: "Riski göze alamadın; sessizce diğerlerinin arasına karıştın.",
           detay: "Belki başka bir gün, başka bir duvar.",
@@ -1589,7 +1498,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Çamaşırların altına saklan, arabayla dışarı süzül.",
         baseBasariSansi: 38,
-        ipucu: "Sessiz bir kaçış — ya da kapıda aranıp yakalanmak",
         basariliSonuc: {
           etiket_sil: ["hapiste"],
           saglik: -4,
@@ -1608,7 +1516,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Çok riskli; bu hafta deneme.",
         baseBasariSansi: 95,
-        ipucu: "Güvenli; ceza aynen işler",
         basariliSonuc: {
           mesaj: "Arabayı gözledin, zamanlamayı ezberledin ama bu sefer atlamadın.",
           detay: "Bilgi birikiyor.",
@@ -1637,7 +1544,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Karışıklıktan yararlan, kapıya doğru yürü.",
         baseBasariSansi: 30,
-        ipucu: "En cüretkâr kaçış; yakalanırsan cezan ciddi biçimde uzar",
         basariliSonuc: {
           etiket_sil: ["hapiste"],
           saglik: -6,
@@ -1656,7 +1562,6 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Yerinde kal, sayımı bekle.",
         baseBasariSansi: 95,
-        ipucu: "Güvenli; ceza aynen işler",
         basariliSonuc: {
           mesaj: "Kıpırdamadan durdun; kavga bastırıldı, sayım tamamlandı.",
           detay: "Fırsat kaçtı ama kaburgaların sağlam.",

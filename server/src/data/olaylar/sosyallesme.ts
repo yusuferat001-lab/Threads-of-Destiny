@@ -28,7 +28,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Meydan oku, masaya otur.",
         baseBasariSansi: 50,
-        ipucu: "Kazanırsan ün ve kadeh, kaybedersen ağrıyan kol ve gurur kaybı",
         basariliSonuc: {
           un: 12,
           mutluluk: 5,
@@ -45,7 +44,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Kenardan izle, kazanana bahis oyna.",
         baseBasariSansi: 45,
         maliyet: 5,
-        ipucu: "Küçük risk, küçük kazanç",
         basariliSonuc: {
           para: 10,
           mesaj: "Doğru pehlivana oynadın; cebine birkaç {birim} girdi.",
@@ -69,7 +67,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Bileğini kavra, üstüne git.",
         baseBasariSansi: 65,
-        ipucu: "Yakalarsan paranı korursun, kaçarsa küçük bir kayıp",
         basariliSonuc: {
           ahlak: 3,
           mesaj: "Bileğini son anda kavradın; çocuk korkuyla özür mırıldanıp karanlığa karıştı.",
@@ -109,7 +106,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Yanına otur, ne istediğini dinle.",
         baseBasariSansi: 60,
-        ipucu: "Gizemli bir tanışıklık kazancı, ya da boş bir tehdit",
         basariliSonuc: {
           mutluluk: 3,
           mesaj: "Yabancı, uzak bir diyarın hikâyelerini fısıldadı; ayrılırken sana tuhaf bir sembol çizili bir madeni para bıraktı.",
@@ -149,7 +145,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Sahneye çık, elinden geleni yap.",
         baseBasariSansi: 50,
-        ipucu: "Tutarsa büyük ün, tutmazsa büyük rezillik",
         basariliSonuc: {
           un: 15,
           mutluluk: 6,
@@ -189,7 +184,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Araya gir, kavgayı ayır.",
         baseBasariSansi: 55,
-        ipucu: "Başarırsan ün ve minnet, başarısız olursan sağlık kaybı",
         basariliSonuc: {
           un: 8,
           ahlak: 4,
@@ -230,7 +224,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Otur, oyuna katıl.",
         baseBasariSansi: 45,
         maliyet: 8,
-        ipucu: "Kazanırsan para, kaybedersen para — ayrıca yakalanma riski",
         basariliSonuc: {
           para: 16,
           suc_artis: 3,
@@ -271,7 +264,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Kulak ver, bir tur ısmarla.",
         baseBasariSansi: 70,
         maliyet: 6,
-        ipucu: "Rakibine karşı küçük bir avantaj",
         basariliSonuc: {
           para: -4,
           rakip_puani: -6,
@@ -311,7 +303,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Otur, ciddiye al.",
         baseBasariSansi: 65,
-        ipucu: "Beklenmedik bir bilgelik ya da saçma sapan zaman kaybı",
         basariliSonuc: {
           ahlak: 6,
           mutluluk: 3,
@@ -352,7 +343,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "İddiayı kabul et, sonuna kadar git.",
         baseBasariSansi: 35,
-        ipucu: "Çok riskli — büyük ün ya da çok kötü bir sabah, hatta daha kötüsü",
         basariliSonuc: {
           para: 22,
           un: 14,
@@ -397,7 +387,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Ona bir teklif yap, ekibine kat.",
         baseBasariSansi: 60,
         maliyet: 4,
-        ipucu: "Yeni bir ekip üyesi kazanma şansı",
         basariliSonuc: {
           para: -4,
           ekip_ekle: { rol: "Yardımcı", tahminGenisligi: 30 },
@@ -435,7 +424,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Kadehini kaldır, meydan oku.",
         baseBasariSansi: 50,
-        ipucu: "Gerilim büyür ama etraftakiler seni destekler ya da rezil olursun",
         basariliSonuc: {
           un: 8,
           rakip_puani: -8,
@@ -476,7 +464,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Kabul et, dışarı çık.",
         baseBasariSansi: 55,
-        ipucu: "Kazanırsan büyük ün, kaybedersen ciddi yara — küçük bir ölüm riski var",
         basariliSonuc: {
           un: 14,
           saglik: -8,
@@ -518,7 +505,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Kadehi masaya bırak, kendini toparlamaya çalış.",
         baseBasariSansi: 45,
-        ipucu: "Zor ama başarırsan ayyaşlığın yükünü hafifletir",
         basariliSonuc: {
           ahlak: 12,
           un: 10,
@@ -567,7 +553,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Sıraya gir, atışını yap.",
         baseBasariSansi: 55,
-        ipucu: "İyi bir atış ün getirir, kötüsü sadece kahkaha",
         basariliSonuc: {
           un: 10,
           mutluluk: 4,
@@ -604,7 +589,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Onlardan yana konuş, dertlerini dinle.",
         baseBasariSansi: 70,
-        ipucu: "Halkın gözünde iyi bir isim, ama bazı çevrelerde rahatsızlık",
         basariliSonuc: {
           ahlak: 6,
           un: 6,
@@ -645,7 +629,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Teklifi dinle, biraz yatırım yap.",
         baseBasariSansi: 50,
         maliyet: 12,
-        ipucu: "Riskli ama kazanırsan iyi bir getiri",
         basariliSonuc: {
           para: 20,
           mesaj: "Adamın sözü doğru çıktı; birkaç hafta sonra kapına gönderdiği zarfta fazlasıyla kârın vardı.",
@@ -685,7 +668,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Oyna, yeteneğini göster.",
         baseBasariSansi: 50,
         maliyet: 5,
-        ipucu: "Kazanırsan bahis ve ün, kaybedersen sadece bahis",
         basariliSonuc: {
           para: 14,
           un: 6,
@@ -723,7 +705,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Kendini bırak, koroya katıl.",
         baseBasariSansi: 85,
-        ipucu: "Neredeyse garanti bir mutluluk anı",
         basariliSonuc: {
           mutluluk: 6,
           dost_puani: 3,
@@ -760,7 +741,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Aralarına gir, ayır.",
         baseBasariSansi: 50,
-        ipucu: "Başarırsan minnet ve ün, başarısız olursan sağlık kaybı",
         basariliSonuc: {
           un: 7,
           ahlak: 5,
@@ -802,7 +782,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Sessizce dinle, kulak kabart.",
         baseBasariSansi: 75,
-        ipucu: "İşine yarayacak bir bilgi kırıntısı",
         basariliSonuc: {
           etiket_ekle: ["istihbarat_var"],
           mesaj: "Duyduğun bilgi tam da işine yarayacak cinstendi; bir sonraki adımını daha net atacaksın.",
@@ -839,7 +818,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Havuza atla, dayan.",
         baseBasariSansi: 55,
-        ipucu: "Dayanırsan ün, dayanamazsan üşütme riski",
         basariliSonuc: {
           un: 8,
           saglik: 3,
@@ -879,7 +857,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Yaklaş, kiminle ilgilendiğini sor.",
         baseBasariSansi: 70,
-        ipucu: "İlgi çekici bir isim, risksiz bir sohbet",
         basariliSonuc: {
           mutluluk: 3,
           mesaj: "Sana ailesi köklü bir hane halkından biriyle ilgili birkaç isim fısıldadı; ilginç bir olasılık kapıda bekliyor.",
@@ -916,7 +893,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Kabul et, parasını öde.",
         baseBasariSansi: 90,
         maliyet: 6,
-        ipucu: "Neredeyse garanti bir dinlenme",
         basariliSonuc: {
           para: -6,
           saglik: 8,
@@ -953,7 +929,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Hamam görevlisine sor, araştır.",
         baseBasariSansi: 55,
-        ipucu: "Belki geri alırsın, belki sadece vakit kaybedersin",
         basariliSonuc: {
           para: 5,
           mesaj: "Görevli, başka bir müşterinin sepetleri karıştırdığını hatırladı; kaybolan parandan bir kısmını geri aldın.",
@@ -989,7 +964,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Sohbete gir, bağlantı kur.",
         baseBasariSansi: 65,
-        ipucu: "Yeni bir tanışıklık ve olası ticaret kazancı",
         basariliSonuc: {
           para: 8,
           mesaj: "Sohbetiniz uzun sürdü; ayrılırken sana küçük ama değerli bir hediye bıraktı ve gelecekte iş yapma sözü verdi.",
@@ -1023,7 +997,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Kendini zorla, biraz daha kal.",
         baseBasariSansi: 40,
-        ipucu: "Dayanırsan bir şey olmaz, dayanamazsan bayılırsın",
         basariliSonuc: {
           ahlak: 1,
           mutluluk: -1,
@@ -1066,7 +1039,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Yaklaş, ne konuştuklarını dinlemeye çalış.",
         baseBasariSansi: 45,
-        ipucu: "Değerli bir bilgi, ama yakalanma riski",
         basariliSonuc: {
           etiket_ekle: ["istihbarat_var"],
           mesaj: "Duyduklarını kimseye söylemeden cebine attın; ileride işine yarayacağından eminsin.",
@@ -1109,7 +1081,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Öne otur, hikâyeye kendini kaptır.",
         baseBasariSansi: 90,
-        ipucu: "Neredeyse garanti keyifli bir akşam",
         basariliSonuc: {
           mutluluk: 5,
           mesaj: "Hikâye seni başka bir dünyaya götürdü; saatler nasıl geçti anlamadın.",
@@ -1145,7 +1116,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Otur, oyna.",
         baseBasariSansi: 50,
         maliyet: 3,
-        ipucu: "Küçük bahis, küçük risk",
         basariliSonuc: {
           para: 7,
           mutluluk: 3,
@@ -1184,7 +1154,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Fincanı uzat, falına baktır.",
         baseBasariSansi: 80,
-        ipucu: "Ruh hâlini etkileyen gizemli bir öngörü",
         basariliSonuc: {
           mutluluk: 4,
           mesaj: "Kadın fincanda 'uzun bir yol ve beklenmedik bir kazanç' görüyor; söyledikleri içini tuhaf bir umutla dolduruyor.",
@@ -1222,7 +1191,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Fikrini açıkça söyle.",
         baseBasariSansi: 55,
-        ipucu: "Cesur bir tavır ün getirir ama düşman da kazandırabilir",
         basariliSonuc: {
           un: 8,
           rakip_puani: 4,
@@ -1261,7 +1229,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Sohbete katıl, fırsatı değerlendir.",
         baseBasariSansi: 60,
         maliyet: 10,
-        ipucu: "Küçük bir yatırım, iyi bir getiri ihtimali",
         basariliSonuc: {
           para: 16,
           mesaj: "Fırsat gerçekten iyiymiş; birkaç gün içinde yatırdığının fazlasını geri aldın.",
@@ -1299,7 +1266,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Otur, sohbete katıl.",
         baseBasariSansi: 85,
-        ipucu: "Sıcak bir dostluk anı",
         basariliSonuc: {
           dost_puani: 5,
           mutluluk: 4,
@@ -1337,7 +1303,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Yaklaş, detayları öğren.",
         baseBasariSansi: 80,
-        ipucu: "Güncel bir bilgi kazancı",
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
@@ -1380,7 +1345,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Pazarlığa gir, mal al.",
         baseBasariSansi: 55,
         maliyet: 14,
-        ipucu: "İyi pazarlık edersen kârlı bir alışveriş",
         basariliSonuc: {
           para: 22,
           mesaj: "Sert bir pazarlığın ardından anlaştınız; aldığın kumaşları şehirde iyi bir fiyata elden çıkardın.",
@@ -1418,7 +1382,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Ateşin başına otur, dinle.",
         baseBasariSansi: 85,
-        ipucu: "Keyifli, risksiz bir akşam",
         basariliSonuc: {
           mutluluk: 3,
           mesaj: "Anlattıkları arasında gerçekle efsanenin sınırı kayboldu; dünyanın ne kadar büyük olduğunu bir kez daha hissettin.",
@@ -1452,7 +1415,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Teklifi kabul et.",
         baseBasariSansi: 60,
-        ipucu: "İyi bir kazanç ama eşkıya riski var",
         basariliSonuc: {
           mutluluk: -7,
           para: 18,
@@ -1492,7 +1454,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Üstüne yürü, seslen.",
         baseBasariSansi: 55,
-        ipucu: "Yakalarsan mal ve ün, kaçarsa kayıp",
         basariliSonuc: {
           para: 8,
           un: 5,
@@ -1531,7 +1492,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Israrla pazarlığa devam et.",
         baseBasariSansi: 60,
         maliyet: 8,
-        ipucu: "Zorlu ama eğlenceli bir pazarlık",
         basariliSonuc: {
           para: 4,
           mesaj: "Sonunda anlaştınız, hatta iyi bir fiyata da anlaştınız! İkiniz de kahkahalarla tokalaştınız.",
@@ -1569,7 +1529,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Bahis oyna, deveni seç.",
         baseBasariSansi: 45,
         maliyet: 5,
-        ipucu: "Şansına bağlı, eğlenceli bir kumar",
         basariliSonuc: {
           para: 10,
           mutluluk: 3,
@@ -1611,7 +1570,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Meydan oku, gücünü göster.",
         baseBasariSansi: 50,
-        ipucu: "Kazanırsan takım içinde saygınlık, kaybedersen sadece gurur kırılır",
         basariliSonuc: {
           un: 10,
           dost_puani: 5,
@@ -1648,7 +1606,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Otur, oyna.",
         baseBasariSansi: 45,
         maliyet: 6,
-        ipucu: "Riskli ama eğlenceli",
         basariliSonuc: {
           para: 14,
           suc_artis: 2,
@@ -1689,7 +1646,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Kendi hikâyeni büyüterek anlat.",
         baseBasariSansi: 55,
-        ipucu: "İyi anlatırsan efsane olursun, abartırsan rezil olursun",
         basariliSonuc: {
           un: 10,
           mutluluk: 3,
@@ -1725,7 +1681,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Kadehini uzat, katıl.",
         baseBasariSansi: 70,
-        ipucu: "Dostluk artar ama yakalanma riski küçük bir suç lekesi bırakır",
         basariliSonuc: {
           dost_puani: 6,
           mutluluk: 3,
@@ -1766,7 +1721,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Plana katıl, şakayı yap.",
         baseBasariSansi: 55,
-        ipucu: "Başarırsan takımda efsane olursun, yakalanırsan ceza yersin",
         basariliSonuc: {
           mutluluk: 5,
           dost_puani: 6,
@@ -1808,7 +1762,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Kadehini paylaş, konuş.",
         baseBasariSansi: 75,
-        ipucu: "İnsanlığın hatırlatıldığı, riskli ama değerli bir an",
         basariliSonuc: {
           ahlak: 8,
           mesaj: "Yarın belki birbirinize kılıç çekeceksiniz ama bu gece sadece iki insandınız. O konuşma seni bir daha savaşa hiç eskisi gibi bakmaz hâle getirdi.",
@@ -1847,7 +1800,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Avucunu uzat, kehaneti dinle.",
         baseBasariSansi: 80,
-        ipucu: "Cesaret veren ya da ürkütücü bir öngörü",
         basariliSonuc: {
           mutluluk: 4,
           un: 4,
@@ -1885,7 +1837,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Kadehini kaldır, yemin et.",
         baseBasariSansi: 90,
-        ipucu: "Güçlü ve kalıcı bir dostluk bağı",
         basariliSonuc: {
           dost_puani: 10,
           mutluluk: 4,
@@ -1927,7 +1878,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Onu dinle, öğüt ver.",
         baseBasariSansi: 80,
-        ipucu: "Manevi rehberlik ahlakını ve nüfuzunu güçlendirir",
         basariliSonuc: {
           ahlak: 6,
           nufuz_artis: 8,
@@ -1966,7 +1916,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Teklifi kabul et, katkı ver.",
         baseBasariSansi: 70,
         maliyet: 10,
-        ipucu: "Bir miktar para karşılığında kalıcı bir saygınlık",
         basariliSonuc: {
           para: -10,
           un: 12,
@@ -2005,7 +1954,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Görüşünü kararlılıkla savun.",
         baseBasariSansi: 55,
-        ipucu: "Kazanırsan nüfuz artar, kaybedersen itibar sarsılır",
         basariliSonuc: {
           nufuz_artis: 10,
           un: 6,
@@ -2044,7 +1992,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Dikkatle incele, oku.",
         baseBasariSansi: 65,
-        ipucu: "Nadir bir bilgi kazancı, ya da sadece eski bir defter",
         basariliSonuc: {
           nufuz_artis: 5,
           mesaj: "Yazmadaki satırlar, unutulmuş bir öğretiye ışık tutuyor; bu bilgi seni meslektaşların arasında farklı kılacak.",
@@ -2080,7 +2027,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Arabuluculuk teklif et.",
         baseBasariSansi: 65,
-        ipucu: "Başarılı olursan saygınlık kazanırsın",
         basariliSonuc: {
           un: 8,
           ahlak: 4,
@@ -2119,7 +2065,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Söylentiyi düzeltme, alçakgönüllü kal.",
         baseBasariSansi: 80,
-        ipucu: "Dürüstlük uzun vadede daha değerli",
         basariliSonuc: {
           ahlak: 6,
           un: 5,
@@ -2133,7 +2078,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Söylentinin büyümesine izin ver.",
         baseBasariSansi: 55,
-        ipucu: "Kısa vadede ün, ama gerçek ortaya çıkarsa itibar kaybı",
         basariliSonuc: {
           ahlak: 3,
           un: 14,
@@ -2162,7 +2106,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Ortak fiyat tabanını destekle.",
         baseBasariSansi: 65,
-        ipucu: "İstikrar getirir ama bazı esnafı kızdırır",
         basariliSonuc: {
           ticaret_sermaye_artis: 10,
           dost_puani: 3,
@@ -2176,7 +2119,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Serbest rekabeti savun.",
         baseBasariSansi: 60,
-        ipucu: "Riskli ama girişimci ruhunu güçlendirir",
         basariliSonuc: {
           ticaret_sermaye_artis: 14,
           mesaj: "Serbest rekabet kazandı; senin gibi cesur esnaf için kapılar daha da açıldı.",
@@ -2200,7 +2142,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Teklifi kabul et, imzala.",
         baseBasariSansi: 55,
         maliyet: 15,
-        ipucu: "Yüksek risk, yüksek getiri",
         basariliSonuc: {
           mutluluk: -4,
           un: -2,
@@ -2240,7 +2181,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Kendini savun, delillerini göster.",
         baseBasariSansi: 55,
-        ipucu: "Kazanırsan itibarın artar, kaybedersen ciddi zarar görür",
         basariliSonuc: {
           un: 8,
           rakip_puani: -8,
@@ -2279,7 +2219,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Bedelini öde, bilgiyi al.",
         baseBasariSansi: 65,
         maliyet: 12,
-        ipucu: "Değerli bir bilgi, ama yanlış çıkma ihtimali var",
         basariliSonuc: {
           para: -8,
           ticaret_sermaye_artis: 12,
@@ -2317,7 +2256,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Gerçeği söyle, hatanı kabul et.",
         baseBasariSansi: 70,
-        ipucu: "Dürüstlük kısa vadede acı ama uzun vadede güven kazandırır",
         basariliSonuc: {
           ahlak: 8,
           un: -4,
@@ -2332,7 +2270,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "İnkâr et, suçu tedarikçine at.",
         baseBasariSansi: 50,
-        ipucu: "Riskli — kurtulursan itibarın sağlam kalır, yakalanırsan çok daha kötü olur",
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
@@ -2360,7 +2297,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Adaylığını koy, kampanya yap.",
         baseBasariSansi: 50,
         maliyet: 10,
-        ipucu: "Kazanırsan büyük bir siyasi kazanç, kaybedersen sadece harcanan para",
         basariliSonuc: {
           un: 16,
           para: -10,
@@ -2404,7 +2340,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Gönüllü ol, sahneye çık.",
         baseBasariSansi: 55,
-        ipucu: "İyi giderse eğlence ve ün, kötü giderse mahcubiyet",
         basariliSonuc: {
           mutluluk: 5,
           un: 6,
@@ -2439,7 +2374,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Elinden tut, ailesini bulmaya yardım et.",
         baseBasariSansi: 80,
-        ipucu: "İyi bir davranış, ahlak ve ün kazandırır",
         basariliSonuc: {
           ahlak: 8,
           un: 6,
@@ -2478,7 +2412,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Peşinden koş, yakala.",
         baseBasariSansi: 55,
-        ipucu: "Yakalarsan büyük ün, kaçarsa sadece yorulursun",
         basariliSonuc: {
           un: 12,
           ahlak: 5,
@@ -2517,7 +2450,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Bir şişe al, dene.",
         baseBasariSansi: 35,
         maliyet: 6,
-        ipucu: "Büyük ihtimalle boşa para, küçük bir şans var iyi çıkabilir",
         basariliSonuc: {
           saglik: 10,
           mesaj: "İnanılmaz ama gerçekten işe yaradı! Kendini günlerdir olmadığın kadar zinde hissediyorsun.",
@@ -2556,7 +2488,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Ozana bahşiş ver, isteğinde bulun.",
         baseBasariSansi: 85,
         maliyet: 4,
-        ipucu: "Küçük bir bedelle keyifli bir an",
         basariliSonuc: {
           para: -4,
           mutluluk: 4,
@@ -2592,7 +2523,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Yanına git, otur.",
         baseBasariSansi: 75,
-        ipucu: "Gizemli bir öngörü, ruh hâlini etkiler",
         basariliSonuc: {
           mutluluk: 3,
           mesaj: "Sana geleceğinle ilgili muğlak ama umut verici bir şey söyledi. Ne demek istediğini tam çözemesen de için ısındı.",
@@ -2628,7 +2558,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Araya gir, sakinleştir.",
         baseBasariSansi: 60,
-        ipucu: "Başarırsan takdir toplarsın, başarısız olursan yara alırsın",
         basariliSonuc: {
           un: 8,
           ahlak: 4,
@@ -2669,7 +2598,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Yaklaş, kulak misafiri ol.",
         baseBasariSansi: 55,
-        ipucu: "Değerli bir bilgi, ama fark edilme riski",
         basariliSonuc: {
           etiket_ekle: ["istihbarat_var"],
           mesaj: "Duyduğun birkaç cümle, salondaki güç dengesini anlamana yardımcı oldu.",
@@ -2707,7 +2635,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Elini tut, dans pistine çık.",
         baseBasariSansi: 65,
-        ipucu: "İyi giderse ün ve mutluluk, kötü giderse mahcubiyet",
         basariliSonuc: {
           mutluluk: 5,
           un: 6,
@@ -2747,7 +2674,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Masaya otur, oyna.",
         baseBasariSansi: 45,
         maliyet: 18,
-        ipucu: "Yüksek bahis, yüksek risk",
         basariliSonuc: {
           mutluluk: -5,
           para: 30,
@@ -2788,7 +2714,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Doğrudan yüzleş, söylentiyi çürüt.",
         baseBasariSansi: 55,
-        ipucu: "Başarırsan itibarın kurtulur, başarısız olursan daha da büyür",
         basariliSonuc: {
           un: 6,
           mesaj: "Sakin ve net açıklaman söylentiyi söndürdü; salon sana hak verdi.",
@@ -2825,7 +2750,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         metin: "Yanına git, eserini övüp destek ol.",
         baseBasariSansi: 80,
         maliyet: 6,
-        ipucu: "Küçük bir yatırımla iyi niyet kazanımı",
         basariliSonuc: {
           para: -6,
           mutluluk: 3,
@@ -2864,7 +2788,6 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
       {
         metin: "Onuru için düelloya çağır.",
         baseBasariSansi: 50,
-        ipucu: "Çok riskli ama kazanırsan efsane olursun; küçük bir ölüm riski var",
         basariliSonuc: {
           un: 18,
           unvan_kazan: "Salonun Onurlu Kılıcı",

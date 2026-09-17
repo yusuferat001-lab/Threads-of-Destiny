@@ -9,7 +9,6 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Take the donation, forgive the family.",
-        ipucu: "A great resource for the congregation, a compromise of your faith",
         basariliSonuc: {
           mesaj: "The donation came; the roof was repaired, the congregation spent the winter warm.",
           detay:
@@ -23,7 +22,6 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse the donation, sentence the boy to serve the congregation.",
-        ipucu: "Moral consistency and respect, no resource",
         basariliSonuc: {
           mesaj: "The boy served the congregation for a year and truly changed; everyone saw it.",
           detay:
@@ -37,7 +35,6 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Take the donation, but require the family to apologize publicly.",
-        ipucu: "Both resource and justice — the risk of losing both",
         basariliSonuc: {
           mesaj: "The family apologized in the square and made the donation; both justice and resource.",
           detay:
@@ -59,7 +56,6 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Keep the secret, try to talk him out of it.",
-        ipucu: "Professional integrity, the risk of failing to prevent the murder",
         basariliSonuc: {
           mesaj: "You talked with him for days and talked him out of it; no one learned anything.",
           detay:
@@ -73,7 +69,6 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Warn the lord, break the secret.",
-        ipucu: "Saves a life, destroys the congregation's trust",
         basariliSonuc: {
           mesaj: "The assassination was prevented; the lord rewarded you and took you into his circle.",
           detay:
@@ -87,7 +82,6 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Use the knowledge as leverage against the man himself.",
-        ipucu: "Personal gain, death if it comes out",
         basariliSonuc: {
           mesaj: "The man gave you whatever you asked to keep quiet; the secret stayed and the purse filled.",
           detay:
@@ -108,7 +102,6 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Confirm the miracle, build the affair up.",
-        ipucu: "Great fame and income, the risk of a fraud accusation",
         basariliSonuc: {
           mesaj: "Pilgrims poured in, your congregation grew rich; your name spread to distant lands.",
           detay:
@@ -121,7 +114,6 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Say openly that it was not a miracle.",
-        ipucu: "Honest, but it disappoints",
         basariliSonuc: {
           mesaj:
             "Your honesty disappointed some pilgrims but increased your congregation's trust in you.",
@@ -142,7 +134,6 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Spend your own savings on the repair.",
-        ipucu: "Generosity, a heavy personal cost",
         basariliSonuc: {
           mesaj: "The roof was repaired; the congregation never forgot your sacrifice.",
           detay: "You gave every coin in your pocket to that roof, but no one got wet in the rain again.",
@@ -154,7 +145,6 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Ask a wealthy family for a large donation.",
-        ipucu: "There may be no help without strings",
         basariliSonuc: {
           mesaj:
             "The family made the donation but in return asked you to carve their family name into the roof.",
@@ -175,7 +165,6 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Find a conciliatory middle way.",
-        ipucu: "Preserves unity, fully satisfies no one",
         basariliSonuc: {
           mesaj: "The middle way you found managed both sides; the congregation did not split.",
           detay: "No one got quite what they wanted, but no one left; sometimes that is a victory.",
@@ -187,7 +176,6 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Take a firm side, defend your teaching clearly.",
-        ipucu: "Strong support or a split",
         basariliSonuc: {
           mesaj: "Your stance convinced most of the congregation; the dissenters quietly left.",
           detay: "Your congregation shrank but those who remained are fully devoted to you; that is enough for you.",
@@ -207,7 +195,6 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Stay silent, accept the inheritance.",
-        ipucu: "A great fortune, the weight of your professional secret",
         basariliSonuc: {
           mesaj: "The man died, the inheritance came to you; no one learned the truth.",
           detay:
@@ -221,7 +208,6 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse the inheritance, tell his family so that justice may be done.",
-        ipucu: "You break the professional secret but justice is served",
         basariliSonuc: {
           mesaj:
             "What you said was investigated and the family of the real murder victim found peace years later.",
@@ -243,7 +229,6 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Raise the children under the congregation's roof.",
-        ipucu: "A long-term expense, great reputation",
         basariliSonuc: {
           mesaj: "The children grew up in the congregation; years later some became your most loyal helpers.",
           detay: "Small hands learned to work the bellows, big hearts learned to be grateful.",
@@ -255,7 +240,6 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Place the children with wealthy families for adoption.",
-        ipucu: "Less burden, the children's fate uncertain",
         basariliSonuc: {
           mesaj: "The children settled with good families; from time to time they come to visit you.",
           detay: "You tried to do the best for everyone and mostly succeeded.",
@@ -275,7 +259,6 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Give the sermon he asked for, urge the people to the campaign.",
-        ipucu: "You rise in the lord's eyes, you send the young to their deaths",
         basariliSonuc: {
           mesaj: "Your sermon was effective; dozens of young men enlisted, the lord rewarded you.",
           detay:
@@ -288,7 +271,6 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Refuse the sermon, stand with your congregation's conscience.",
-        ipucu: "Peace of conscience, the lord's wrath",
         basariliSonuc: {
           mesaj: "Your refusal won the congregation's respect; the lord held his tongue this time.",
           detay: "The congregation began to see you as its protector; that is a trust no money can measure.",
@@ -308,7 +290,6 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Investigate quietly, find the truth.",
-        ipucu: "Justice, or the risk of accusing the innocent",
         basariliSonuc: {
           mesaj: "Your investigation found the real thief; the innocent helper was cleared and the relic returned.",
           detay: "Acting patiently and fairly made you even more respected in the congregation's eyes.",
@@ -320,7 +301,6 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Explain the situation to the congregation, mourn the loss together.",
-        ipucu: "Calm, but leaves it unresolved",
         basariliSonuc: {
           mesaj: "The congregation met the loss with maturity; the community did not fall apart.",
           detay: "The relic is gone but the congregation's trust in one another is not.",
@@ -340,7 +320,6 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accuse the woman of heresy, stop the practice.",
-        ipucu: "Protects the teaching, offends some of the people",
         basariliSonuc: {
           mesaj: "The woman gave up the practice; the authority of the teaching was preserved.",
           detay: "Some villagers found you rigid, but you believe this is right.",
@@ -352,7 +331,6 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Turn a blind eye, leave the people to their own ways.",
-        ipucu: "Peaceful, but debatable on principle",
         basariliSonuc: {
           mesaj: "Both traditions quietly went on existing side by side.",
           detay: "Not choosing some battles is a wisdom too.",
@@ -372,7 +350,6 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Improve your own sermons, win the people back.",
-        ipucu: "Takes effort but is lasting",
         basariliSonuc: {
           mesaj: "Your renewed sermons won the congregation back; you even added new members.",
           detay: "The rivalry kept you from growing lazy; that was good for you too.",
@@ -384,7 +361,6 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Spread negative rumors about the rival.",
-        ipucu: "A quick but dirty solution",
         basariliSonuc: {
           mesaj: "The rumors damaged your rival's reputation; your congregation came back.",
           detay: "You won, but you know how this win came, and it bothers you.",
@@ -404,7 +380,6 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Interpret honestly, stay neutral.",
-        ipucu: "Conscientious but may not please the lord",
         basariliSonuc: {
           mesaj: "Your interpretation was balanced; the lord made his decision with his own mind.",
           detay:
@@ -417,7 +392,6 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Give the interpretation the lord wants to hear.",
-        ipucu: "Immediate satisfaction, the risk of blame in the future",
         basariliSonuc: {
           mesaj: "The lord was pleased with your interpretation and rewarded you.",
           detay: "Time will tell whether what you said comes true.",
@@ -437,7 +411,6 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Stage a small miracle, give hope.",
-        ipucu: "The people's morale rises but it is built on a lie",
         basariliSonuc: {
           mesaj: "The 'miracle' spread fast among the people; hope returned, the streets came alive again.",
           detay: "Some lies are lies even when told in good faith.",
@@ -449,7 +422,6 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Tell the people the bitter truth, call for patience and solidarity.",
-        ipucu: "Honest but a weak comfort",
         basariliSonuc: {
           mesaj: "Your words did not comfort everyone, but your honesty strengthened the congregation's trust in you.",
           detay: "Sometimes comfort is as valuable as hope.",
@@ -469,7 +441,6 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Give the testimony they want, accuse the woman.",
-        ipucu: "You are safe in authority's eyes but an innocent pays the price",
         basariliSonuc: {
           mesaj:
             "Your testimony was accepted; in the authorities' eyes you are a loyal clergyman, but that woman's screams come into your dreams.",
@@ -482,7 +453,6 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Defend the woman, stress the insufficiency of the evidence.",
-        ipucu: "Your conscience is clean but you draw the authorities' suspicion on yourself",
         basariliSonuc: {
           mesaj:
             "Your defense worked, the woman was released; among the people you began to be spoken of as 'just'.",
@@ -503,7 +473,6 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Hand out small equal shares to everyone.",
-        ipucu: "No one is excluded but it is enough for no one",
         basariliSonuc: {
           mesaj:
             "Everyone got something; no one went away empty-handed, but not one of them had their problem truly solved.",
@@ -516,7 +485,6 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Give full support to the few most in need, turn the others away.",
-        ipucu: "A few lives truly change but those you turn away blame you",
         basariliSonuc: {
           mesaj:
             "The lives of the families you chose truly changed; but you can't forget the eyes of those who left your door empty-handed.",

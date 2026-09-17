@@ -9,7 +9,6 @@ export const OLAYLAR_SANAYI_TUCCAR_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Drive costs to the floor with cheap child labor.",
-        ipucu: "Highest profit, a heavy toll on conscience and reputation",
         basariliSonuc: {
           mesaj: "Your costs are half your rivals'; the factory grew fast.",
           detay:
@@ -23,7 +22,6 @@ export const OLAYLAR_SANAYI_TUCCAR_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Build it with fair wages and safe conditions.",
-        ipucu: "Slow but solid growth, high initial cost",
         basariliSonuc: {
           mesaj: "The workers won't leave you; your productivity has passed your rivals'.",
           detay:
@@ -37,7 +35,6 @@ export const OLAYLAR_SANAYI_TUCCAR_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Start with a small workshop, keep the risk minimal.",
-        ipucu: "Low risk, low ceiling",
         basariliSonuc: {
           mesaj: "The small workshop built a steady income.",
           detay:
@@ -59,7 +56,6 @@ export const OLAYLAR_SANAYI_TUCCAR_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept the demands, recognize the union.",
-        ipucu: "A loyal workforce and reputation, rising costs",
         basariliSonuc: {
           mesaj: "The agreement was signed; your factory became the most stable workplace in the region.",
           detay:
@@ -73,7 +69,6 @@ export const OLAYLAR_SANAYI_TUCCAR_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Bargain hard, give the minimum concession.",
-        ipucu: "Protects your costs, raises the risk of a strike",
         basariliSonuc: {
           mesaj: "You gave a small concession and closed the deal; your costs stayed almost the same.",
           detay:
@@ -87,7 +82,6 @@ export const OLAYLAR_SANAYI_TUCCAR_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Try to buy off the union leader.",
-        ipucu: "Could solve the problem at the root, or blow it up entirely",
         basariliSonuc: {
           mesaj: "The leader took the money and watered down the demands; the union collapsed from within.",
           detay:
@@ -109,7 +103,6 @@ export const OLAYLAR_SANAYI_TUCCAR_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Put most of your capital into the shares.",
-        ipucu: "A great gain or a ruinous loss",
         basariliSonuc: {
           mesaj: "The shares hit the ceiling! Your capital more than doubled in a short time.",
           detay: "Some risks turn into legendary gains.",
@@ -121,7 +114,6 @@ export const OLAYLAR_SANAYI_TUCCAR_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Invest a small, cautious amount.",
-        ipucu: "Limited gain, limited risk",
         basariliSonuc: {
           mesaj: "Your small investment brought a reasonable return; your caution paid off.",
           detay: "Sometimes small steps are the safest.",
@@ -141,7 +133,6 @@ export const OLAYLAR_SANAYI_TUCCAR_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Exaggerate the ad as much as possible, make miraculous claims.",
-        ipucu: "A quick sales spike, scandal risk",
         basariliSonuc: {
           mesaj: "The overblown ad brought a flood of customers; your till filled fast.",
           detay: "Some lies convince the customer right away.",
@@ -154,7 +145,6 @@ export const OLAYLAR_SANAYI_TUCCAR_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Prepare an honest, modest advertisement.",
-        ipucu: "Slow but dependable growth",
         basariliSonuc: {
           mesaj: "Your honest ad won a small but loyal customer base.",
           detay: "Trust is worth more than the most expensive advertising.",
@@ -174,7 +164,6 @@ export const OLAYLAR_SANAYI_TUCCAR_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Use the drawings, build the machine.",
-        ipucu: "A big production leap, legal and moral risk",
         basariliSonuc: {
           mesaj: "The new machine doubled your output; your rivals keep wondering how you grew so fast.",
           detay: "Some leaps rest on theft.",
@@ -186,7 +175,6 @@ export const OLAYLAR_SANAYI_TUCCAR_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Send the drawings back, advance on your own.",
-        ipucu: "Slow but clean progress",
         basariliSonuc: {
           mesaj: "You returned the drawings; the engineer was baffled, but you carried on with your own research.",
           detay: "Turning down some opportunities is a kind of character too.",
@@ -206,7 +194,6 @@ export const OLAYLAR_SANAYI_TUCCAR_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Take out the insurance, get covered.",
-        ipucu: "A small regular cost, a large safeguard",
         basariliSonuc: {
           mesaj: "You signed the policy; there is a sense of safety in it now.",
           detay: "Some expenses are really a way of buying peace of mind.",
@@ -218,7 +205,6 @@ export const OLAYLAR_SANAYI_TUCCAR_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Decline, put the money into your business.",
-        ipucu: "A short-term gain, ruin in a disaster",
         basariliSonuc: {
           mesaj: "You put the money into your business, output rose; no accident has happened so far.",
           detay: "Taking the risk paid off this time.",
@@ -239,7 +225,6 @@ export const OLAYLAR_SANAYI_TUCCAR_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Make the investment, protect the workers.",
-        ipucu: "Costly, but your conscience and your workers are safe",
         basariliSonuc: {
           mesaj: "The new barriers cut accidents almost to zero; among the workers your name became 'the fair boss'.",
           detay: "Some investments come back as peace of mind.",
@@ -251,7 +236,6 @@ export const OLAYLAR_SANAYI_TUCCAR_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Put the cost off and protect your profit margin.",
-        ipucu: "Profitable short-term, but big conscience and reputation risk",
         basariliSonuc: {
           mesaj:
             "You put the cost off and kept your margin; but you can't ignore the uneasy looks of the workers as they approach the machines.",
@@ -273,7 +257,6 @@ export const OLAYLAR_SANAYI_TUCCAR_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Accept the offer, hire the children.",
-        ipucu: "A big profit jump, a heavy moral price",
         basariliSonuc: {
           mesaj:
             "Your profit margin rose noticeably; but something twists inside you every time you see the small hands among the machines.",
@@ -287,7 +270,6 @@ export const OLAYLAR_SANAYI_TUCCAR_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Decline, keep hiring adult workers.",
-        ipucu: "Your margin stays low, but your conscience is clean",
         basariliSonuc: {
           mesaj: "You declined the offer; your margin lags your rivals', but you sleep easy at night.",
           detay: "Some decisions are rewarded only with peace of mind.",

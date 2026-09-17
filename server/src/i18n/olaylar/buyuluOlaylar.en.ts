@@ -9,7 +9,6 @@ export const OLAYLAR_BUYULU_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Open your palm, listen to what she says.",
-        ipucu: "What she says may stick in your mind",
         basariliSonuc: {
           mesaj:
             "She stared at your lines for a long time, then said 'a loss, soon' and fell silent. You spent days wondering what she meant.",
@@ -37,7 +36,6 @@ export const OLAYLAR_BUYULU_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Pay the price, look into the ball.",
-        ipucu: "Either a warning or a disappointment",
         basariliSonuc: {
           mesaj:
             "For a moment you thought you saw your own face in the ball, years from now. What you saw won't leave your mind.",
@@ -65,7 +63,6 @@ export const OLAYLAR_BUYULU_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Ask what she wants and bargain.",
-        ipucu: "A great gain or a curse — and the risk of the inquisition",
         basariliSonuc: {
           mesaj:
             "You came back with a purse of gold, but every time you remember the promise you made, a worm turns inside you. You can tell no one.",
@@ -94,7 +91,6 @@ export const OLAYLAR_BUYULU_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Take it, hang it around your neck.",
-        ipucu: "A comfort — or wasted money",
         basariliSonuc: {
           mesaj: "You don't know if it works, but feeling a weight at your neck oddly put you at ease.",
         },
@@ -121,7 +117,6 @@ export const OLAYLAR_BUYULU_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Join the rite, sit until dawn.",
-        ipucu: "Either you feel lighter or it gets worse",
         basariliSonuc: {
           mesaj:
             "By the time it ended at daybreak you were spent, but it was as if a weight lifted off your shoulder. You slept without waking for the first time.",
@@ -149,7 +144,6 @@ export const OLAYLAR_BUYULU_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Join the circle, keep your eyes on the glass.",
-        ipucu: "If the glass moves, there's no going back",
         basariliSonuc: {
           mesaj:
             "The glass slid across the table — was it the wind, a hand, you don't know. The next day you found a small stone you didn't recognize in your pocket.",
@@ -177,7 +171,6 @@ export const OLAYLAR_BUYULU_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Put in some money, see it through.",
-        ipucu: "Almost certain loss, but what if?",
         basariliSonuc: {
           mesaj:
             "A miracle or a trick, you don't know — but you're holding real gold. The man vanished the next day.",
@@ -205,7 +198,6 @@ export const OLAYLAR_BUYULU_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Tell him your birth year, listen.",
-        ipucu: "Usually pleasant, but vague",
         basariliSonuc: {
           mesaj: "'A long road awaits you,' he said, that was all. It was vague, but somehow it planted a hope in you.",
         },
@@ -232,7 +224,6 @@ export const OLAYLAR_BUYULU_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Tell your dream, ask for its meaning.",
-        ipucu: "It may relieve you or unsettle you",
         basariliSonuc: {
           mesaj: "'You'll set down a burden,' he said. You don't know what it means, but the dream didn't return that night.",
         },
@@ -259,7 +250,6 @@ export const OLAYLAR_BUYULU_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Write your name in the book.",
-        ipucu: "Fortune or ruin — and your conscience",
         basariliSonuc: {
           mesaj:
             "Your pockets filled, your affairs opened up. But now something tears loose inside you every time you pass a crossroads.",
@@ -287,7 +277,6 @@ export const OLAYLAR_BUYULU_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Bend down, pet the cat.",
-        ipucu: "Defying a superstition",
         basariliSonuc: {
           mesaj: "The cat licked your hand, then raised its tail and left. The crowd stared, baffled, and you laughed.",
         },
@@ -314,7 +303,6 @@ export const OLAYLAR_BUYULU_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Call the seer over, ask what he means.",
-        ipucu: "You may not like the answer",
         basariliSonuc: {
           mesaj: "He whispered a few words in your ear and vanished. Those words won't leave your head.",
         },
@@ -341,7 +329,6 @@ export const OLAYLAR_BUYULU_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Buy a bottle, try it.",
-        ipucu: "Almost certainly a swindle",
         basariliSonuc: {
           mesaj: "It tasted awful, but the next day you felt a little better. Maybe it's because you believed.",
         },
@@ -368,7 +355,6 @@ export const OLAYLAR_BUYULU_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Walk up to him, ask who he is.",
-        ipucu: "Maybe nothing, maybe a nightmare",
         basariliSonuc: {
           mesaj: "Turns out he was an old traveler who'd lost his way. You laughed together. Most fears are like this.",
         },
@@ -395,7 +381,6 @@ export const OLAYLAR_BUYULU_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Join the ritual, beat a drum until dawn.",
-        ipucu: "Shared fear can sometimes bind people",
         basariliSonuc: {
           mesaj: "When the moon returned, everyone embraced one another. Sharing the fear built an odd closeness.",
         },
@@ -422,7 +407,6 @@ export const OLAYLAR_BUYULU_EN: Record<string, OlayCeviri> = {
     secenekler: [
       {
         metin: "Sit at the table, listen to the 'message'.",
-        ipucu: "The bell rings, the trumpet flies — all on strings",
         basariliSonuc: {
           mesaj:
             "You spotted a string under the table and a pedal at the madam's foot. Still, for a moment what they said shook you.",
@@ -433,7 +417,6 @@ export const OLAYLAR_BUYULU_EN: Record<string, OlayCeviri> = {
       },
       {
         metin: "Turn on the lights, show everyone the rig.",
-        ipucu: "Expose her and gain fame; fail and you're the fool",
         basariliSonuc: {
           mesaj: "You lit the lamp: strings, pedals, all out in the open. The parlor broke up, everyone talked about you.",
         },

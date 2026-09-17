@@ -21,7 +21,6 @@ function olayDizeSayisi(o: (typeof tumOlaylar)[number]): number {
   let n = 2; // baslik + metin
   for (const s of o.secenekler) {
     n += 1; // metin
-    if (s.ipucu) n += 1;
     if (s.kilitAciklamasi) n += 1;
     n += 1 + (s.basariliSonuc.detay ? 1 : 0);
     n += 1 + (s.basarisizSonuc.detay ? 1 : 0);
@@ -54,7 +53,6 @@ for (const o of tumOlaylar) {
       const src = o.secenekler[i];
       if (!src) return;
       if (sc.metin !== undefined) cev += 1;
-      if (sc.ipucu !== undefined) cev += 1;
       if (sc.kilitAciklamasi !== undefined) cev += 1;
       if (sc.basariliSonuc?.mesaj !== undefined) cev += 1;
       if (sc.basariliSonuc?.detay !== undefined) cev += 1;

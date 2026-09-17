@@ -20,7 +20,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
         gerekliEtiketler: [
           "envanter:kara_kilic",
         ],
-        ipucu: "Gizli Envanter: Kılıcın gücü düşmanı ezer geçer ama ruhunu tüketir",
         basariliSonuc: {
           para: 60,
           un: 35,
@@ -39,7 +38,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Öncü birliğe yazıl, ganimetten büyük pay al.",
         baseBasariSansi: 50,
-        ipucu: "Yüksek ganimet ve ün, yüksek ölüm riski",
         basariliSonuc: {
           para: 40,
           un: 25,
@@ -59,7 +57,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
         metin: "Beyin karargâh muhafızlığına talip ol.",
         baseBasariSansi: 60,
         minUn: 25,
-        ipucu: "Güvenli ve prestijli, ganimet payı düşük",
         basariliSonuc: {
           para: 15,
           un: 18,
@@ -81,7 +78,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Sefere gitme, geride kalıp kışla düzenini yönet.",
         baseBasariSansi: 70,
-        ipucu: "Can güvenliği ve istikrar, ün ve ganimet kaybı",
         basariliSonuc: {
           para: 10,
           un: -15,
@@ -113,7 +109,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Erzağı adil dağıt, halkın yanında ol.",
         baseBasariSansi: 65,
-        ipucu: "Halk desteği ve vicdan, kendi payından fedakârlık",
         basariliSonuc: {
           un: 22,
           ahlak: 25,
@@ -136,7 +131,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Erzağı askerlere öncelikli ver, savunmayı güçlendir.",
         baseBasariSansi: 70,
-        ipucu: "Askeri başarı, halkın nefreti",
         basariliSonuc: {
           un: 18,
           para: 15,
@@ -156,7 +150,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Bir kısmını karaborsaya aktarıp kendine servet yap.",
         baseBasariSansi: 50,
-        ipucu: "Büyük servet, yakalanırsan idam",
         basariliSonuc: {
           para: 55,
           ahlak: -30,
@@ -186,7 +179,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
         metin: "Mızrak dövüşüne katıl, sahada ad yap.",
         baseBasariSansi: 50,
         maliyet: 15,
-        ipucu: "Büyük ün ve ödül, sakatlanma riski",
         basariliSonuc: {
           para: 30,
           un: 28,
@@ -213,7 +205,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Katılma, tribünde soylularla bağlantı kur.",
         baseBasariSansi: 65,
-        ipucu: "Risksiz sosyal sermaye, sahada ün yok",
         basariliSonuc: {
           un: 15,
           para: -10,
@@ -235,7 +226,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
         metin: "Turnuvada bahis oyna, ringe girmeden kazanmayı dene.",
         baseBasariSansi: 45,
         maliyet: 12,
-        ipucu: "Hızlı para, hızlı kayıp",
         basariliSonuc: {
           para: 35,
           ahlak: -8,
@@ -265,7 +255,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Emri uygula, vergiyi zorla topla.",
         baseBasariSansi: 70,
-        ipucu: "Beyin gözünde yükselirsin, vicdanın bedelini öder",
         basariliSonuc: {
           para: 25,
           un: 12,
@@ -287,7 +276,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
         metin: "Vergiyi kendi kesenden ödeyip köyü kurtar.",
         baseBasariSansi: 75,
         maliyet: 25,
-        ipucu: "Vicdan ve halk desteği, ağır mali yük",
         basariliSonuc: {
           para: -25,
           ahlak: 28,
@@ -309,7 +297,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Köye haber uçur, sonra 'boş bulduk' raporu yaz.",
         baseBasariSansi: 50,
-        ipucu: "Kurnaz çözüm, yalanın açığa çıkma riski",
         basariliSonuc: {
           ahlak: 18,
           un: 8,
@@ -347,7 +334,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
         gerekliEtiketler: [
           "evcil_hayvan_tur:Kurt",
         ],
-        ipucu: "Gizli Şık: Kurtlar asla koku kaybetmez",
         basariliSonuc: {
           ahlak: -3,
           mutluluk: -4,
@@ -363,7 +349,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Peşine düş, atını geri al.",
         baseBasariSansi: 55,
-        ipucu: "Atını kurtarabilir, tuzağa da düşebilirsin",
         basariliSonuc: {
           para: 5,
           un: 10,
@@ -380,7 +365,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Şikayet et, yeni at için ödenek iste.",
         baseBasariSansi: 70,
-        ipucu: "Güvenli ama yavaş bürokrasi",
         basariliSonuc: {
           para: -10,
           mesaj: "Ödenek çıktı ama tam istediğin cinsten bir at değildi.",
@@ -409,7 +393,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Emre karşı gel, adamı sağ bırak.",
         baseBasariSansi: 55,
-        ipucu: "Vicdan rahatlığı, emre itaatsizlik riski",
         basariliSonuc: {
           ahlak: 25,
           un: -5,
@@ -427,7 +410,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Emri uygula.",
         baseBasariSansi: 85,
-        ipucu: "Askeri disiplin, ahlaki bedel",
         basariliSonuc: {
           ahlak: -22,
           un: 5,
@@ -457,7 +439,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Teklifi kabul et.",
         baseBasariSansi: 45,
-        ipucu: "Büyük para, vatana ihanet suçlaması riski",
         basariliSonuc: {
           para: 50,
           ahlak: -30,
@@ -472,7 +453,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Teklifi reddet, durumu komutana bildir.",
         baseBasariSansi: 70,
-        ipucu: "Onurlu ama düşman kazandırabilir",
         basariliSonuc: {
           un: 20,
           para: 10,
@@ -501,7 +481,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Emri uygula, manastırı yağmala.",
         baseBasariSansi: 75,
-        ipucu: "Ganimet ve terfi, dini vicdan bedeli",
         basariliSonuc: {
           para: 35,
           un: 10,
@@ -519,7 +498,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Emri sessizce sabote et, manastırı uyar.",
         baseBasariSansi: 45,
-        ipucu: "Vicdan rahatlığı, açığa çıkarsa idam",
         basariliSonuc: {
           ahlak: 28,
           un: -10,
@@ -548,7 +526,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Sıkı çalış, sınava hazırlan.",
         baseBasariSansi: 60,
-        ipucu: "Emek karşılığında kalıcı kazanç",
         basariliSonuc: {
           un: 20,
           para: 15,
@@ -569,7 +546,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
         metin: "Sınav görevlisine rüşvet ver.",
         baseBasariSansi: 55,
         maliyet: 18,
-        ipucu: "Kestirme yol, yakalanırsan büyük utanç",
         basariliSonuc: {
           para: -18,
           un: 12,
@@ -600,7 +576,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Gördüğünü anlat, gerçek hırsızı araştır.",
         baseBasariSansi: 55,
-        ipucu: "Adalet ya da yanlış birine iftira",
         basariliSonuc: {
           un: 18,
           ahlak: 15,
@@ -617,7 +592,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Karışma, kendi işine bak.",
         baseBasariSansi: 85,
-        ipucu: "Güvenli ama vicdan sızlatır",
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
@@ -649,7 +623,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
         metin: "Yarışa katıl.",
         baseBasariSansi: 50,
         maliyet: 10,
-        ipucu: "Eğlenceli ve kârlı, sakatlanma riski",
         basariliSonuc: {
           mutluluk: -6,
           para: 25,
@@ -667,7 +640,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Katılma, kurallara uy.",
         baseBasariSansi: 90,
-        ipucu: "Sıkıcı ama güvenli",
         basariliSonuc: {
           ahlak: 3,
           mutluluk: -1,
@@ -697,7 +669,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "İlgiye karşılık ver, gizlice görüş.",
         baseBasariSansi: 50,
-        ipucu: "Güzel bir aşk ya da komutanın gazabı",
         basariliSonuc: {
           para: 3,
           ahlak: 10,
@@ -715,7 +686,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Mesafeni koru, riske girme.",
         baseBasariSansi: 90,
-        ipucu: "Güvenli ama pişmanlık verebilir",
         basariliSonuc: {
           ahlak: 5,
           mesaj: "Mesafeni korudun; kariyerin güvende kaldı.",
@@ -742,7 +712,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Yakala ve sorguya çek.",
         baseBasariSansi: 60,
-        ipucu: "Doğruysa büyük başarı, yanlışsa itibar kaybı",
         basariliSonuc: {
           mutluluk: -5,
           un: 13,
@@ -761,7 +730,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Uzaktan izle, kanıt topla.",
         baseBasariSansi: 65,
-        ipucu: "Daha güvenli, yavaş",
         basariliSonuc: {
           para: 2,
           un: 18,
@@ -790,7 +758,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Askerler adına itiraz et.",
         baseBasariSansi: 50,
-        ipucu: "Adalet ya da 'baş belası' damgası",
         basariliSonuc: {
           mutluluk: -6,
           un: 11,
@@ -810,7 +777,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Sessiz kal, payına razı ol.",
         baseBasariSansi: 90,
-        ipucu: "Güvenli ama adaletsizliğe ortak olursun",
         basariliSonuc: {
           para: 10,
           mesaj: "Payını aldın, ses çıkarmadın.",
@@ -839,7 +805,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Öneriyi destekle, uygulanmasına yardım et.",
         baseBasariSansi: 65,
-        ipucu: "Hızlı zafer, ağır vicdan yükü",
         basariliSonuc: {
           un: 20,
           para: 15,
@@ -857,7 +822,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Öneriye karşı çık, geleneksel yolu savun.",
         baseBasariSansi: 55,
-        ipucu: "Onurlu ama kuşatmayı uzatır",
         basariliSonuc: {
           ahlak: 25,
           un: 10,
@@ -890,7 +854,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Emredileni eksiksiz topla.",
         baseBasariSansi: 85,
-        ipucu: "Üstlerin memnun, köylü seni lanetler",
         basariliSonuc: {
           para: 20,
           un: 8,
@@ -909,7 +872,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
         metin: "Miktarı gizlice azalt, farkı kendi cebinden tamamla.",
         baseBasariSansi: 55,
         maliyet: 10,
-        ipucu: "Köylü nefes alır, cebin ve rütben risk altında",
         basariliSonuc: {
           para: -10,
           ahlak: 20,
@@ -943,7 +905,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Komutana ihbar et.",
         baseBasariSansi: 55,
-        ipucu: "Haklıysan kahramansın, haksızsan bir dostu mahvedersin",
         basariliSonuc: {
           un: 20,
           mesaj: "İhbarın doğru çıktı; gerçek bir casus yakalandı, kışlada adın 'keskin gözlü' diye anıldı.",
@@ -959,7 +920,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Önce onunla özel olarak konuş, gerçeği kendinden öğrenmeye çalış.",
         baseBasariSansi: 65,
-        ipucu: "Daha adil ama zaman kaybı riskli olabilir",
         basariliSonuc: {
           dost_puani: 10,
           ahlak: 10,
@@ -989,7 +949,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Komutana bildir, görevini yap.",
         baseBasariSansi: 80,
-        ipucu: "Disiplinli ama vicdan ağır",
         basariliSonuc: {
           un: 12,
           ahlak: -18,
@@ -1006,7 +965,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Sessiz kal, ona kaçması için gizlice yardım et.",
         baseBasariSansi: 45,
-        ipucu: "Vicdan rahat, ihanetle suçlanma riski",
         basariliSonuc: {
           ahlak: 18,
           dost_puani: 10,
@@ -1039,7 +997,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Sahiplen, kimse görmeden sakla.",
         baseBasariSansi: 75,
-        ipucu: "Kişisel kazanç, keşfedilirse hırsızlıkla suçlanırsın",
         basariliSonuc: {
           para: 22,
           ahlak: -12,
@@ -1058,7 +1015,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Komutana teslim et, resmi ganimete ekle.",
         baseBasariSansi: 85,
-        ipucu: "Onurlu, küçük bir pay alırsın",
         basariliSonuc: {
           para: 8,
           un: 10,
@@ -1088,7 +1044,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Teklifi kabul et, gözünü kapat.",
         baseBasariSansi: 55,
-        ipucu: "Düzenli ek gelir, denetimde büyük risk",
         basariliSonuc: {
           para: 20,
           ahlak: -14,
@@ -1106,7 +1061,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Reddet, kaçakçıyı yakala.",
         baseBasariSansi: 60,
-        ipucu: "Onurlu, kaçakçı direnebilir",
         basariliSonuc: {
           un: 16,
           para: 8,
@@ -1137,7 +1091,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Teklifi kabul et, saf değiştir.",
         baseBasariSansi: 45,
-        ipucu: "Yüksek ücret, vatan haini damgası",
         basariliSonuc: {
           para: 45,
           ahlak: -28,
@@ -1155,7 +1108,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Reddet, sadık kal.",
         baseBasariSansi: 85,
-        ipucu: "Onurlu, kaçırılan fırsat",
         basariliSonuc: {
           ahlak: 15,
           un: 10,
@@ -1186,7 +1138,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Kervanın geçmesine izin ver.",
         baseBasariSansi: 60,
-        ipucu: "Vicdan rahatlığı, kuşatmayı uzatabilir",
         basariliSonuc: {
           ahlak: 22,
           un: -8,
@@ -1204,7 +1155,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "İzin verme, açlığın teslimiyeti hızlandıracağını düşün.",
         baseBasariSansi: 75,
-        ipucu: "Askeri mantık, ağır vicdan yükü",
         basariliSonuc: {
           un: 15,
           para: 10,
@@ -1236,7 +1186,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Emri sorgulamadan yerine getir.",
         baseBasariSansi: 85,
-        ipucu: "Kariyerin güvende, vicdanın kanar",
         basariliSonuc: {
           un: 8,
           ahlak: -26,
@@ -1253,7 +1202,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "İnfazı geciktir, kanıtları araştır.",
         baseBasariSansi: 45,
-        ipucu: "Adalet arayışı, emre itaatsizlik cezası riski",
         basariliSonuc: {
           ahlak: 25,
           un: -12,
@@ -1285,7 +1233,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Onu sırtına al, birlikte kaç.",
         baseBasariSansi: 50,
-        ipucu: "Vicdan ve dostluk, ikinizin de ölüm riski",
         basariliSonuc: {
           ahlak: 22,
           dost_puani: 12,
@@ -1303,7 +1250,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Onu bırak, kendi canını kurtar.",
         baseBasariSansi: 80,
-        ipucu: "Hayatta kalırsın, vicdanın seni asla bırakmaz",
         basariliSonuc: {
           saglik: 5,
           ahlak: -22,
@@ -1334,7 +1280,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Sessiz kal, madalyayı kabul et.",
         baseBasariSansi: 80,
-        ipucu: "Kolay ün, gerçek kahramanın hakkı elinden alınır",
         basariliSonuc: {
           un: 20,
           ahlak: -14,
@@ -1351,7 +1296,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Gerçeği söyle, madalyayı gerçek sahibine yönlendir.",
         baseBasariSansi: 85,
-        ipucu: "Onurlu, kişisel ün kaybı",
         basariliSonuc: {
           ahlak: 20,
           un: -5,
@@ -1385,7 +1329,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Sert ve acımasız bir eğitimle onları hızla sertleştir.",
         baseBasariSansi: 75,
-        ipucu: "Etkili askerler yaratır ama çocukluklarını çalar",
         basariliSonuc: {
           un: 15,
           ahlak: -18,
@@ -1402,7 +1345,6 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
       {
         metin: "Onları olabildiğince cepheden uzak, destek görevlerinde tut.",
         baseBasariSansi: 55,
-        ipucu: "Vicdanın rahat ama komutanı hayal kırıklığına uğratırsın",
         basariliSonuc: {
           ahlak: 20,
           dost_puani: 8,
