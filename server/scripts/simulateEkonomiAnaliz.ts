@@ -37,7 +37,6 @@ import {
   zarKademeleriGetir,
   zarAt,
 } from "../src/game/gameEngine";
-import { yatirimConfigGetir, yatirimYap } from "./_yatirimShim";
 import { MESLEKLER, BOLGELER_BY_CAG, gayrimenkulDegeriHesapla } from "../src/game/stateManager";
 import { KONUTLAR } from "../src/data/konutlar";
 import { YASAM_SECENEKLERI } from "../src/data/yasamSecenekleri";
@@ -468,20 +467,9 @@ async function yanEylemler(
     /* yok say (taşınma maliyeti vb.) */
   }
 
-  // 2) Kendi işine yatırım.
-  try {
-    if (state.saglik > 22 && Math.random() < ky.yatirimSans) {
-      const cfg = await yatirimConfigGetir(id);
-      const yeter =
-        state.para >= cfg.kendiIsiMaliyeti * ky.yatirimNakitKat && state.para - cfg.kendiIsiMaliyeti >= 12;
-      if (yeter) {
-        await harcamaOlc(d, state, "yatirim", () => yatirimYap(id));
-        sayaclar.yatirimSayisi++;
-      }
-    }
-  } catch {
-    /* yok say */
-  }
+  // 2) Kendi işine yatırım — 2026-09'da özellik tamamen kaldırıldı (CLAUDE.md §13);
+  // sayaclar.yatirimSayisi ve "yatirim" gider kovası geriye dönük çıktı uyumluluğu
+  // için 0'da kalır.
 
   // 3) Piyasa mülkü.
   try {

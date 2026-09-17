@@ -40,7 +40,6 @@ import {
   zarKademeleriGetir,
   zarAt,
 } from "../src/game/gameEngine";
-import { yatirimConfigGetir, yatirimYap } from "./_yatirimShim";
 import {
   MESLEKLER,
   BOLGELER_BY_CAG,
@@ -314,19 +313,8 @@ interface Sayaclar {
 async function yanEylemler(id: string, state: CharacterState, ky: YanAyar, s: Sayaclar): Promise<void> {
   // NOT: konut/yaşam tarzı burada BİLEREK hiç değiştirilmez — kilit budur.
 
-  // Kendi işine yatırım
-  try {
-    if (state.saglik > 22 && Math.random() < ky.yatirimSans) {
-      const cfg = await yatirimConfigGetir(id);
-      if (state.para >= cfg.kendiIsiMaliyeti * ky.yatirimNakitKat && state.para - cfg.kendiIsiMaliyeti >= 12) {
-        await yatirimYap(id);
-        s.yatirim++;
-        s.kendiIsHarcanan += cfg.kendiIsiMaliyeti;
-      }
-    }
-  } catch {
-    /* yok say */
-  }
+  // Kendi işine yatırım — 2026-09'da özellik tamamen kaldırıldı (CLAUDE.md §13);
+  // s.yatirim/s.kendiIsHarcanan sayaçları geriye dönük çıktı uyumluluğu için 0'da kalır.
 
   // Piyasa mülkü
   try {

@@ -38,7 +38,6 @@ import {
   zarKademeleriGetir,
   zarAt,
 } from "../src/game/gameEngine";
-import { yatirimConfigGetir, yatirimYap } from "./_yatirimShim";
 import { MESLEKLER, BOLGELER_BY_CAG, hesaplaSkor, gayrimenkulDegeriHesapla } from "../src/game/stateManager";
 import { KONUTLAR, KonutTanimi } from "../src/data/konutlar";
 import { YASAM_SECENEKLERI, YasamSecenegiTanimi } from "../src/data/yasamSecenekleri";
@@ -140,19 +139,9 @@ async function yanEylemler(id: string, state: CharacterState, sayaclar: Sayaclar
     /* yok say */
   }
 
-  // 2) Kendi işine yatırım.
-  try {
-    if (Math.random() < 0.3) {
-      const cfg = await yatirimConfigGetir(id);
-      if (state.para >= cfg.kendiIsiMaliyeti * 1.8) {
-        await yatirimYap(id);
-        sayaclar.yatirimSayisi++;
-        sayaclar.kendiIsHarcanan += cfg.kendiIsiMaliyeti;
-      }
-    }
-  } catch {
-    /* yok say (ordu/teçhizat tavanı vb.) */
-  }
+  // 2) Kendi işine yatırım — 2026-09'da özellik tamamen kaldırıldı (CLAUDE.md §13);
+  // yatirimSayisi/kendiIsHarcanan sayaçları geriye dönük çıktı uyumluluğu için
+  // 0'da kalır (aşağıda hiç artırılmaz).
 
   // 3) Piyasa mülkü.
   try {
