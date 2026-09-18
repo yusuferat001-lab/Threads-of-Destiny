@@ -1796,40 +1796,46 @@ function App() {
           <h2>{m.cagSecBaslik}</h2>
           <MuhurAyrac />
           <p className="giris-aciklama">{m.cagSecAlt}</p>
-          <div className="meslek-kartlari cag-kartlari">
-            {Object.keys(bolgeler).map((cag) => (
-              <button
-                key={cag}
-                className={`meslek-kart${secilenCag === cag ? ' meslek-kart-secili' : ''}`}
-                disabled={yukleniyor}
-                onClick={() => cagSecildi(cag)}
-              >
-                <CagAmblemi cag={cag} />
-                <strong>{kt(cag)}</strong>
-                <span className="meslek-aciklama">{cagAciklama(m, cag)}</span>
-              </button>
-            ))}
-          </div>
-
-          {/* Çağ seçilince aynı sayfada altta o çağın bayrakları çıkar. */}
-          {secilenCag && (
-            <div className="bolge-secim-blok">
-              <p className="giris-aciklama">{bic(m.bolgeSecAlt, kt(secilenCag))}</p>
-              <div className="meslek-kartlari bolge-bayrak-kartlari">
-                {(bolgeler[secilenCag] ?? []).map((bolge) => (
-                  <button
-                    key={bolge}
-                    className="meslek-kart bolge-bayrak-kart"
-                    disabled={yukleniyor}
-                    onClick={() => bolgeSecildi(bolge)}
-                  >
-                    <BolgeAmblemi bolge={bolge} cag={secilenCag ?? undefined} />
-                    <strong>{kt(bolge)}</strong>
-                  </button>
-                ))}
-              </div>
+          <div className="cag-bolge-grid">
+            <div className="meslek-kartlari cag-kartlari cag-kartlari-sutun">
+              {Object.keys(bolgeler).map((cag) => (
+                <button
+                  key={cag}
+                  className={`meslek-kart${secilenCag === cag ? ' meslek-kart-secili' : ''}`}
+                  disabled={yukleniyor}
+                  onClick={() => cagSecildi(cag)}
+                >
+                  <CagAmblemi cag={cag} />
+                  <strong>{kt(cag)}</strong>
+                  <span className="meslek-aciklama">{cagAciklama(m, cag)}</span>
+                </button>
+              ))}
             </div>
-          )}
+
+            {/* Sağ sütun: çağ seçilince o çağın ülke/bayrak kartları burada çıkar. */}
+            <div className="bolge-secim-blok">
+              {secilenCag ? (
+                <>
+                  <p className="giris-aciklama">{bic(m.bolgeSecAlt, kt(secilenCag))}</p>
+                  <div className="meslek-kartlari bolge-bayrak-kartlari">
+                    {(bolgeler[secilenCag] ?? []).map((bolge) => (
+                      <button
+                        key={bolge}
+                        className="meslek-kart bolge-bayrak-kart"
+                        disabled={yukleniyor}
+                        onClick={() => bolgeSecildi(bolge)}
+                      >
+                        <BolgeAmblemi bolge={bolge} cag={secilenCag ?? undefined} />
+                        <strong>{kt(bolge)}</strong>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <p className="giris-aciklama bolge-secim-bos">{m.cagSecAlt}</p>
+              )}
+            </div>
+          </div>
 
           <button className="ikincil" onClick={() => setEkran('giris')}>
             {m.geri}

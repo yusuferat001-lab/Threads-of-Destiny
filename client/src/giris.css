@@ -670,13 +670,45 @@ a.giris-imza-isim:hover {
 }
 .ekran-adim-cag .meslek-simge { font-size: 2.1rem; }
 
+/* Çağ + Ülke iki sütunlu düzen: solda çağ listesi (dikey), sağda seçilen
+   çağın ülke/bayrak kartları — eskiden bayraklar çağ kartlarının ALTINA,
+   sayfanın çok aşağısına düşüyordu; artık yan yana, hep görünür. */
+.cag-bolge-grid {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2rem;
+  width: 100%;
+}
+.cag-kartlari-sutun {
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: stretch;
+}
+.cag-kartlari-sutun .meslek-kart {
+  width: 240px;
+}
+.bolge-secim-blok {
+  flex: 1 1 360px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.bolge-secim-bos {
+  opacity: 0.55;
+  font-style: italic;
+}
+
 /* Bölge seçimi: kareye yakın küçük kartlar (artık yatay şerit değil) */
-.ekran-adim-bolge .meslek-kart {
+.ekran-adim-bolge .meslek-kart,
+.bolge-bayrak-kartlari .meslek-kart {
   width: 190px;
   min-height: 130px;
   padding: 1.15rem 1rem;
 }
-.ekran-adim-bolge .meslek-kart strong { font-size: 1.05rem; }
+.ekran-adim-bolge .meslek-kart strong,
+.bolge-bayrak-kartlari .meslek-kart strong { font-size: 1.05rem; }
 
 /* ---------- İsim seçimi ---------- */
 
@@ -836,6 +868,16 @@ a.giris-imza-isim:hover {
     flex-direction: column;
     grid-template-columns: 1fr;
     gap: 0.6rem;
+  }
+
+  /* Çağ/Ülke iki sütunu mobilde tek sütuna iner (çağ üstte, ülke altta) */
+  .cag-bolge-grid {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .cag-kartlari-sutun .meslek-kart,
+  .bolge-secim-blok .meslek-kart {
+    width: 100%;
   }
   .ekran-kurulum .meslek-kart,
   .ekran-kurulum .yerlesim-kart,
