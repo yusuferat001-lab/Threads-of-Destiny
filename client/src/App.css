@@ -743,12 +743,18 @@ button.ikincil {
   min-width: 0;
 }
 
-.gecmis-hayat-sil {
+/* .ekran-giris ile öneklendi: aksi halde `.ekran-giris button { width:100%; max-width:320px }`
+   (kaynak menü butonları için, satır ~269) daha yüksek özgüllükle bu küçük kare
+   sil düğmesini tüm satır genişliğine geriyor — geri kalan `.gecmis-hayat-satiri`
+   metnini min-content'e sıkıştırıp her kelimeyi ayrı satıra düşürüyordu. */
+.ekran-giris .gecmis-hayat-sil {
   flex: 0 0 auto;
   align-self: center;
   width: 1.6rem;
+  max-width: none;
   height: 1.6rem;
   line-height: 1;
+  text-align: center;
   border: 1px solid var(--renk-ahsap-kenar);
   border-radius: 4px;
   background: rgba(0, 0, 0, 0.2);
