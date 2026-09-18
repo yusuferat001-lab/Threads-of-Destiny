@@ -159,11 +159,7 @@ h3 {
    Tablet/masaüstünde (bkz. §mobil medya sorgusu) tüm ekran yüksekliğine sabitlenir —
    sayfa hiç kaymaz, taşan içerik panellerin kendi içinde kayar. */
 .oyun-kapsayici-tam {
-  /* Geniş/ultrawide masaüstü monitörlerde sol/sağ paneller ve sütunlu ekranlar
-     (Yatırım/Ev/Mağaza/Sosyalleş/Aile) tüm genişliğe orantılı yayılınca aşırı
-     genişleyip boş/dengesiz görünüyordu ("PC'de düzgün durmuyor"). Bir üst sınır
-     koyup ortalıyoruz — normal masaüstünde (≤1700px) davranış aynı kalır. */
-  max-width: 1680px;
+  /* Masaüstünde tam ekran genişliğini kaplar (eski davranış). */
   width: 100%;
   height: 100dvh;
   margin: 0 auto;
