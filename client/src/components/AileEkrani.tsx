@@ -272,7 +272,7 @@ export function AileEkrani({
 
       <div className="tam-kaydirilan aile-govde">
         {durum?.talep && (
-          <div className="aile-kart aile-talep-karti">
+          <div className="aile-kart aile-kart-tam aile-talep-karti">
             <h3>💰 {m.aeTalepBaslik}</h3>
             <p className="aile-talep-metin">{bic(m.aeTalepMetin, durum.talep.kimAdi, durum.talep.kalem)}</p>
             <p className="aile-talep-tutar">{bic(m.aeTalepTutar, durum.talep.tutar, durum.paraBirimi)}</p>
@@ -355,7 +355,7 @@ export function AileEkrani({
           )}
         </div>
 
-        <div className="aile-kart aile-cocuklar-karti">
+        <div className="aile-kart aile-kart-tam aile-cocuklar-karti">
           <h3>{m.aeCocuklarin}</h3>
           {(durum?.cocuklar ?? []).length === 0 ? (
             <p className="aile-bos-metin">{m.aeCocukYokMetin}</p>
@@ -402,7 +402,7 @@ export function AileEkrani({
         </div>
 
         {(durum?.es || yasayanCocukVar) && aileEtkilesimleri.length > 0 && (
-          <div className="aile-kart aile-birlikte-karti">
+          <div className="aile-kart aile-kart-tam aile-birlikte-karti">
             <h3>{m.aeBirlikteBaslik}</h3>
             <div className="aile-etkilesim-satir">
               {aileEtkilesimleri.map((e) => (
