@@ -459,6 +459,16 @@ interface Oturum {
   sonTon: "agir" | "hafif" | null;
   /** onTepki'li bir seçenek seçildiğinde, gerçek sonuç uygulanana kadar burada bekler. */
   bekleyenTepki: BekleyenTepki | null;
+  /**
+   * Oyuncu ana oyun ekranındaki cevaplanmamış bir olayı (mevcutOlay/mevcutSenaryo)
+   * bırakıp Sosyalleş'e gidip bir mekâna girdiğinde, o mekânın olayı ZORLA
+   * (zorlananOlayId) üretilmeden önce ana olay burada saklanır — aksi halde
+   * senaryoUret'in "sayfa yenileme" önbelleği (mevcutOlay doluyken aynen
+   * döndürür) zorlananOlayId'yi tamamen yok sayar ve mekân olayı hiç görünmez.
+   * Mekân olayı çözülünce (sosyallesmeOlayCoz) ya da terk edilip başka bir
+   * mekân/ana olay tekrar üretilince buradan geri yüklenir/temizlenir.
+   */
+  sakliOlay: { olay: OlayTanimi; senaryo: SenaryoResponse } | null;
 }
 
 const oturumlar = new Map<string, Oturum>();
@@ -479,6 +489,7 @@ export async function oturumlariYukle(): Promise<number> {
       sonErisim: Date.now(),
       sonTon: null,
       bekleyenTepki: null,
+      sakliOlay: null,
     });
   }
   return stateler.length;
@@ -546,6 +557,7 @@ async function oturumGetir(id: string): Promise<Oturum> {
     sonErisim: Date.now(),
     sonTon: null,
     bekleyenTepki: null,
+    sakliOlay: null,
   };
   oturumlar.set(id, oturum);
   return oturum;
@@ -589,6 +601,7 @@ export async function yeniOyun(
     sonErisim: Date.now(),
     sonTon: null,
     bekleyenTepki: null,
+    sakliOlay: null,
   });
   await oturumKaydet(state);
   void metrikYaz({
@@ -1035,6 +1048,17 @@ export async function secimUygula(id: string, secenekIndex: number): Promise<Sec
     // Burada zar yok; "basarili" bayrağı sonuç ekranındaki görsel/ses efektinin doğru
     // (kutlama ya da düşüş) yönde çalması için etkinin net iyi/kötü olduğuna bakılarak belirlenir.
     return sonucuUygulaVeIlerlet(oturum, mevcutOlay, etki, netEtkiOlumluMu(etki), eskiRutbeSeviye);
+  }
+
+  // Oyuncu bir mekân olayını (Sosyalleş) yanıtlamadan "Geri Dön" ile ana ekrana
+  // dönmüş olabilir — bu durumda oturum.mevcutOlay hâlâ o (terk edilmiş) mekân
+  // olayıdır, ama istemci ekranında hâlâ kenara ayrılmış (sakliOlay) asıl ana
+  // oyun olayı görünür. Normal /choice bu terk edilmiş mekân olayına
+  // uygulanmamalı — sakliOlay varsa önce o geri yüklenir.
+  if (oturum.mevcutOlay?.sosyallesmeYeri && oturum.sakliOlay) {
+    oturum.mevcutOlay = oturum.sakliOlay.olay;
+    oturum.mevcutSenaryo = oturum.sakliOlay.senaryo;
+    oturum.sakliOlay = null;
   }
 
   const { mevcutSenaryo, mevcutOlay } = oturum;
@@ -3406,6 +3430,23 @@ export async function sosyallesmeYerineGit(id: string, yerId: string): Promise<S
   state.para = paraYuvarla(state.para - girisUcreti);
   const olay = sosyallesmeIcinOlaySec(state, yerId);
   oturum.zorlananOlayId = olay.id;
+  // Ana oyun ekranında henüz cevaplanmamış bir senaryo (mevcutOlay/mevcutSenaryo)
+  // duruyor olabilir (oyuncu olayı yanıtlamadan sahne hotspot'undan Sosyalleş'e
+  // geçebilir) — senaryoUret bir mevcutOlay varken zorlananOlayId'yi TAMAMEN yok
+  // sayıp o eski olayı aynen döndürür (§9 "sayfa yenileme" korumasıyla aynı kod
+  // yolu). Bu yüzden burada temizlenmezse, oyuncu mekân olayını hiç görmeden
+  // eski (mekâna ait olmayan) olayla karşılaşır ve POST /sosyallesme-olay
+  // "Ortada çözülecek bir mekân olayı yok." hatasıyla reddeder — seçenekler
+  // tıklanamaz gibi görünür. O olayı kaybetmemek için (oyuncu geri döndüğünde
+  // istemci hâlâ onu hafızasında tutuyor, §19) burada sakliOlay'a taşınır;
+  // sosyallesmeOlayCoz mekân olayı bitince (ya da terk edilip başka bir mekâna
+  // gidilince) geri yüklenir. Bekleyen bir onTepki de aynı sebeple geçersiz.
+  if (oturum.mevcutOlay && oturum.mevcutSenaryo && !oturum.sakliOlay) {
+    oturum.sakliOlay = { olay: oturum.mevcutOlay, senaryo: oturum.mevcutSenaryo };
+  }
+  oturum.mevcutOlay = null;
+  oturum.mevcutSenaryo = null;
+  oturum.bekleyenTepki = null;
   await oturumKaydet(state);
   return { state, girisUcreti };
 }
@@ -3529,6 +3570,19 @@ export async function sosyallesmeOlayCoz(id: string, secenekIndex: number): Prom
 
   state.sosyallesme_aksiyon_kilit[`mekan:${mevcutOlay.sosyallesmeYeri}`] = state.yil;
   oturum.zorlananOlayId = null;
+
+  // Mekân olayı bitti — sosyallesmeYerineGit'te kenara ayrılmış ana oyun olayı
+  // varsa (§ yukarıdaki not) burada geri yüklenir, oyuncu "Geri Dön"düğünde
+  // kaldığı yerden (aynı olayla) devam eder; yoksa mevcutOlay/mevcutSenaryo
+  // normal şekilde boşaltılır (bir sonraki /scenario yeni bir olay üretir).
+  if (state.aktif && oturum.sakliOlay) {
+    oturum.mevcutOlay = oturum.sakliOlay.olay;
+    oturum.mevcutSenaryo = oturum.sakliOlay.senaryo;
+    oturum.sakliOlay = null;
+  } else {
+    oturum.mevcutOlay = null;
+    oturum.mevcutSenaryo = null;
+  }
 
   clampStats(state);
   await oturumKaydet(state);
