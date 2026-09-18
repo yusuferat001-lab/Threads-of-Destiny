@@ -6,6 +6,8 @@ import {
   paraYuvarla,
   zorunluBagisKontrolEt,
   rakipSoygunKontrolEt,
+  borcHapsiKontrolEt,
+  hapisteYillikUygula,
   buyukSavasKontrolEt,
   buyukSavasBitisKontrolEt,
   vebaBaslamaliMi,
@@ -461,5 +463,151 @@ describe("havuz kilidi çakışması — oyunu kilitleyen crash regresyonu", () 
       const secilen = olaySec(state);
       expect(secilen.senaryo.secenekler.length).toBeGreaterThan(0);
     }
+  });
+});
+
+describe("borcHapsiKontrolEt — ağır borç, düşük ihtimalle borç hapsine yol açar", () => {
+  it("borç eşiğin (-140) üstündeyken (daha az negatif/pozitifken) asla tetiklenmez", () => {
+    const state = taze();
+    state.para = -50;
+    for (let i = 0; i < 300; i++) {
+      expect(borcHapsiKontrolEt(state, 1)).toBeNull();
+    }
+  });
+
+  it("havuz kilidi varken (zaten hapiste/yolculukta/kacak/veba_hastasi) tetiklenmez", () => {
+    const state = taze();
+    state.para = -500;
+    state.yil = state.baslangic_yili + 20;
+    state.etiketler.push("yolculukta");
+    for (let i = 0; i < 300; i++) {
+      expect(borcHapsiKontrolEt(state, 1)).toBeNull();
+    }
+  });
+
+  it("cooldown dolmadan tetiklenmez", () => {
+    const state = taze();
+    state.para = -500;
+    state.son_borc_hapsi_yili = state.yil;
+    for (let i = 0; i < 300; i++) {
+      expect(borcHapsiKontrolEt(state, 1)).toBeNull();
+    }
+  });
+
+  it("eşik + cooldown dolmuşken makul sürede tetiklenir: 'hapiste' eklenir, 2-4 yıllık ceza atanır", () => {
+    const state = taze();
+    let sonuc = null;
+    for (let i = 0; i < 500 && !sonuc; i++) {
+      state.para = -500;
+      state.son_borc_hapsi_yili = null;
+      state.yil = state.baslangic_yili + 20;
+      state.etiketler = state.etiketler.filter((e) => e !== "hapiste");
+      state.hapis_ceza_kalan = 0;
+      state.hapis_ceza_toplam = 0;
+      sonuc = borcHapsiKontrolEt(state, 1);
+    }
+    expect(sonuc).not.toBeNull();
+    expect(sonuc!.ceza).toBeGreaterThanOrEqual(2);
+    expect(sonuc!.ceza).toBeLessThanOrEqual(5);
+    expect(state.etiketler).toContain("hapiste");
+    expect(state.hapis_ceza_kalan).toBe(sonuc!.ceza);
+    expect(state.hapis_ceza_toplam).toBe(sonuc!.ceza);
+    expect(state.son_borc_hapsi_yili).toBe(state.yil);
+  });
+
+  it("borcun kendisini SİLMEZ — hapse girse de para negatif kalır", () => {
+    const state = taze();
+    let sonuc = null;
+    for (let i = 0; i < 500 && !sonuc; i++) {
+      state.para = -500;
+      state.son_borc_hapsi_yili = null;
+      state.yil = state.baslangic_yili + 20;
+      state.etiketler = state.etiketler.filter((e) => e !== "hapiste");
+      state.hapis_ceza_kalan = 0;
+      state.hapis_ceza_toplam = 0;
+      sonuc = borcHapsiKontrolEt(state, 1);
+    }
+    expect(sonuc).not.toBeNull();
+    expect(state.para).toBe(-500);
+  });
+});
+
+describe("hapisteYillikUygula — hapiste geçen zaman sağlığı/mutluluğu YATILAN SÜRE UZADIKÇA BÜYÜYEN bir hızla eritir", () => {
+  it("'hapiste' etiketi yoksa hiçbir şey yapmaz", () => {
+    const state = taze();
+    const saglikOnce = state.saglik;
+    const mutlulukOnce = state.mutluluk;
+    hapisteYillikUygula(state, 3);
+    expect(state.saglik).toBe(saglikOnce);
+    expect(state.mutluluk).toBe(mutlulukOnce);
+  });
+
+  it("hapisteyken sağlık ve mutluluk düşer", () => {
+    const state = taze();
+    state.etiketler.push("hapiste");
+    state.hapis_ceza_toplam = 6;
+    state.hapis_ceza_kalan = 6; // henüz hiç yatmamış (yilYatilan=0)
+    const saglikOnce = state.saglik;
+    const mutlulukOnce = state.mutluluk;
+    hapisteYillikUygula(state, 2);
+    expect(state.saglik).toBeLessThan(saglikOnce);
+    expect(state.mutluluk).toBeLessThan(mutlulukOnce);
+  });
+
+  it("eskalasyon: aynı 1 yıllık kayıp, yeni tutuklanana göre uzun süredir yatana çok daha ağır gelir", () => {
+    // İki özdeş karakter, biri cezasının başında (0 yıl yatmış), diğeri epey
+    // ilerlemiş (çok yıl yatmış) — ikisine de aynı yasArtisi=1 uygulanır.
+    const taze1 = taze();
+    taze1.etiketler.push("hapiste");
+    taze1.hapis_ceza_toplam = 12;
+    taze1.hapis_ceza_kalan = 12; // 0 yıl yatılmış
+    const saglikTaze = taze1.saglik;
+
+    const eski = taze();
+    eski.etiketler.push("hapiste");
+    eski.hapis_ceza_toplam = 12;
+    eski.hapis_ceza_kalan = 2; // 10 yıl yatılmış
+    const saglikEski = eski.saglik;
+
+    hapisteYillikUygula(taze1, 1);
+    hapisteYillikUygula(eski, 1);
+
+    const tazeKayip = saglikTaze - taze1.saglik;
+    const eskiKayip = saglikEski - eski.saglik;
+    expect(eskiKayip).toBeGreaterThan(tazeKayip);
+  });
+
+  it("eskalasyon çok uzun cezalarda bir tavanda durur (sınırsız büyümez)", () => {
+    const cokEski = taze();
+    cokEski.etiketler.push("hapiste");
+    cokEski.hapis_ceza_toplam = 100;
+    cokEski.hapis_ceza_kalan = 1; // 99 yıl yatılmış (gerçekçi değil ama tavanı test ediyor)
+    const saglikOnce = cokEski.saglik;
+    hapisteYillikUygula(cokEski, 1);
+    const kayip1 = saglikOnce - cokEski.saglik;
+
+    const dahaEski = taze();
+    dahaEski.etiketler.push("hapiste");
+    dahaEski.hapis_ceza_toplam = 1000;
+    dahaEski.hapis_ceza_kalan = 1; // 999 yıl (tavanı zorlamak için)
+    const saglikOnce2 = dahaEski.saglik;
+    hapisteYillikUygula(dahaEski, 1);
+    const kayip2 = saglikOnce2 - dahaEski.saglik;
+
+    // İkisi de eskalasyon tavanında olmalı, bu yüzden kayıp neredeyse eşit
+    // (tavan carpani × taban hız) — sınırsız büyümediğini doğrular.
+    expect(Math.abs(kayip1 - kayip2)).toBeLessThan(0.01);
+  });
+
+  it("saglik/mutluluk 0'ın altına inmez", () => {
+    const state = taze();
+    state.etiketler.push("hapiste");
+    state.saglik = 1;
+    state.mutluluk = 1;
+    state.hapis_ceza_toplam = 20;
+    state.hapis_ceza_kalan = 1;
+    hapisteYillikUygula(state, 5);
+    expect(state.saglik).toBeGreaterThanOrEqual(0);
+    expect(state.mutluluk).toBeGreaterThanOrEqual(0);
   });
 });

@@ -74,6 +74,8 @@ import {
   zorunluBagisKontrolEt,
   zenginlikSizintiKontrolEt,
   rakipSoygunKontrolEt,
+  borcHapsiKontrolEt,
+  hapisteYillikUygula,
   buyukSavasKontrolEt,
   buyukSavasBitisKontrolEt,
   vebaBaslamaliMi,
@@ -1522,6 +1524,13 @@ async function sonucuUygulaVeIlerlet(
             // çözüldüğünde sayaç artar — tutuklanma anının kendisi (hapisOlayi
             // değil, normal havuzdan gelir) bunu tüketmez.
             if (mevcutOlay.hapisOlayi) state.hapis_tur_sayaci += 1;
+            // Hapiste geçen zaman kendi başına bir bedel: sağlık + mutluluk
+            // yatılan süre uzadıkça büyüyen bir hızla sessizce erir (tutuklanma
+            // turu hariç — hapisteYeniGirildiBuTur zaten bu bloğu o tur atlıyor).
+            hapisteYillikUygula(state, yasArtisi);
+            if (state.saglik <= 0) {
+              checkDeath(state, true, T(state.dil, "Hapishanenin sağlığa verdiği yıkım seni tüketti."));
+            }
             state.hapis_ceza_kalan -= yasArtisi;
             if (state.hapis_ceza_kalan <= 0) {
               state.hapis_ceza_kalan = 0;
@@ -1661,6 +1670,18 @@ async function sonucuUygulaVeIlerlet(
           const krediSonucu = krediYillikUygula(state, yasArtisi);
           if (krediSonucu) {
             zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${krediSonucu}` : krediSonucu;
+          }
+
+          // Borç hapsi: para çok ağır negatifken (≤ -140), düşük ihtimalle
+          // alacaklıların şikayetiyle tutuklanıp içeri atılırsın (§17 genişlemesi —
+          // hapse girişin dördüncü yolu: suç değil, ödenmemiş borç). Ceza kısa
+          // ve sabit (2-4y); borcun kendisi hapiste de dururken silinmez.
+          if (state.aktif) {
+            const borcHapsiSonucu = borcHapsiKontrolEt(state, yasArtisi);
+            if (borcHapsiSonucu) {
+              zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${borcHapsiSonucu.mesaj}` : borcHapsiSonucu.mesaj;
+              hayatOlayiEkle(state, "⛓️", T(state.dil, "Borç hapsine girdi"));
+            }
           }
 
           const savasBaslamaMesaji = buyukSavasKontrolEt(state, yasArtisi);

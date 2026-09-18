@@ -234,6 +234,7 @@ export interface CharacterState {
   son_zorunlu_bagis_yili: number | null;
   son_zenginlik_sizinti_yili: number | null;
   son_rakip_soygun_yili: number | null;
+  son_borc_hapsi_yili: number | null;
   buyuk_savas: BuyukSavas | null;
   son_buyuk_savas_bitis_yili: number | null;
   veba: VebaDurumu | null;

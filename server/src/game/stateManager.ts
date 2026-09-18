@@ -685,6 +685,7 @@ export function createCharacter(
     son_zorunlu_bagis_yili: null,
     son_zenginlik_sizinti_yili: null,
     son_rakip_soygun_yili: null,
+    son_borc_hapsi_yili: null,
     buyuk_savas: null,
     son_buyuk_savas_bitis_yili: null,
     veba: null,
@@ -845,6 +846,7 @@ export function eskiKayitGocu(state: CharacterState): void {
   }
   if (state.son_zenginlik_sizinti_yili === undefined) state.son_zenginlik_sizinti_yili = null;
   if (state.son_rakip_soygun_yili === undefined) state.son_rakip_soygun_yili = null;
+  if (state.son_borc_hapsi_yili === undefined) state.son_borc_hapsi_yili = null;
   // Ömürde bir kez borç yardımı sonradan eklendi; eski kayıtlar bunu hiç almadı sayılır (yeniden alınabilsin).
   if (typeof state.borc_yardimi_alindi !== "boolean") state.borc_yardimi_alindi = false;
   // Hapis ceza süresi sonradan eklendi; hapisteki eski kayıtlara makul bir kalan süre ver.
@@ -2259,6 +2261,85 @@ export function rakipSoygunKontrolEt(state: CharacterState, yasArtisi: number): 
     };
   }
   return null;
+}
+
+// ---------------------------------------------------------------------------
+// Borç hapsi: para ÇOK ağır negatifken (≥140 birim borç), düşük ihtimalle
+// alacaklıların şikayeti üzerine tutuklanıp içeri atılırsın. Suç/aranma
+// eksenine (suc_seviyesi) hiç dokunmaz — bu ayrı, sivil bir sebep; bu yüzden
+// ceza süresi de hapisCezaSuresiHesapla'nın suç bantlarını KULLANMAZ, kendi
+// sabit kısa aralığını (2-4 yıl) kullanır. havuzKilidiVar zaten "hapiste"/
+// "yolculukta"/"kacak"/"veba_hastasi" iken bu kontrolü atlar (karşılıklı dışlama).
+// ---------------------------------------------------------------------------
+const BORC_HAPIS_ESIGI = -140;
+const BORC_HAPIS_COOLDOWN_YIL = 6;
+const BORC_HAPIS_YILLIK_IHTIMAL = 0.22;
+const BORC_HAPIS_CEZA_MIN_YIL = 2;
+const BORC_HAPIS_CEZA_ARALIK_YIL = 3; // 2-4 yıl
+
+export interface BorcHapsiSonucu {
+  ceza: number;
+  mesaj: string;
+}
+
+/**
+ * Turdaki her yıl ayrı kontrol edilir (bağış/sızıntı/soygun deseni). Para ≤ -140
+ * VE 6 yıl cooldown dolmuşken her yıl %22 ihtimalle tetiklenir: "hapiste" etiketi
+ * eklenir (borç kendisi silinmez — hapisten çıkınca hâlâ oradadır), 2-4 yıllık
+ * sabit bir ceza atanır. `hapis_ceza_kalan`/`toplam`'ı burada YAZAR (gameEngine'deki
+ * `etiket_ekle` işleme bloğu zaten dolu bir cezaya dokunmuyor, bu yüzden çakışma
+ * riski yok); `hapis_tur_sayaci` sıfırlanır.
+ */
+export function borcHapsiKontrolEt(state: CharacterState, yasArtisi: number): BorcHapsiSonucu | null {
+  if (yasArtisi <= 0) return null;
+  for (let i = 0; i < yasArtisi; i++) {
+    if (havuzKilidiVar(state)) continue;
+    if (state.para > BORC_HAPIS_ESIGI) continue;
+    const taban = state.son_borc_hapsi_yili ?? state.baslangic_yili;
+    if (state.yil - taban < BORC_HAPIS_COOLDOWN_YIL) continue;
+    if (Math.random() >= BORC_HAPIS_YILLIK_IHTIMAL) continue;
+    const ceza = BORC_HAPIS_CEZA_MIN_YIL + Math.floor(Math.random() * (BORC_HAPIS_CEZA_ARALIK_YIL + 1));
+    etiketEkle(state, ["hapiste"]);
+    state.hapis_ceza_kalan = ceza;
+    state.hapis_ceza_toplam = ceza;
+    state.hapis_tur_sayaci = 0;
+    state.son_borc_hapsi_yili = state.yil;
+    return {
+      ceza,
+      mesaj: T(
+        state.dil,
+        "⛓️ Alacaklıların şikayeti üzerine kapına dayanan muhafızlar seni borç hapsine attı; cezan yaklaşık {0} yıl.",
+        [ceza]
+      ),
+    };
+  }
+  return null;
+}
+
+// ---------------------------------------------------------------------------
+// Hapiste geçen zamanın bedeli: sağlık ve mutluluk hapishanede sessizce, ama
+// YATILAN SÜRE UZADIKÇA BÜYÜYEN bir hızla erir (meslek/evlilik pasif sürüklenmesiyle
+// aynı felsefe — küçük, sessiz, anlatıya cümle eklemez). "Yatılan yıl" =
+// hapis_ceza_toplam - hapis_ceza_kalan (aynı cezada büyür, yeni tutuklanmada sıfırlanır).
+// Çarpan HAPIS_ESKALASYON_TAVAN_CARPAN'da tavanlanır — uzun cezalarda süresiz
+// büyümez, sadece belirgin biçimde ağırlaşır.
+// ---------------------------------------------------------------------------
+const HAPIS_SAGLIK_TABAN_YILLIK = 0.4;
+const HAPIS_MUTLULUK_TABAN_YILLIK = 0.6;
+const HAPIS_ESKALASYON_ORANI = 0.12; // yatılan her yıl decay'i %12 büyütür
+const HAPIS_ESKALASYON_TAVAN_CARPAN = 3; // en fazla 3 kat (taze mahkuma göre)
+
+/**
+ * Turda geçen HER yıl için ayrı uygulanır (yasArtisi ile çarpılır). "hapiste"
+ * etiketi yoksa ya da bu tur yeni tutuklanıldıysa (gameEngine `hapisteYeniGirildiBuTur`
+ * ile bu turu zaten atlıyor, bkz. çağrı yeri) hiçbir şey yapmaz.
+ */
+export function hapisteYillikUygula(state: CharacterState, yasArtisi: number): void {
+  if (yasArtisi <= 0 || !state.etiketler.includes("hapiste")) return;
+  const yilYatilan = Math.max(0, state.hapis_ceza_toplam - state.hapis_ceza_kalan);
+  const carpan = Math.min(HAPIS_ESKALASYON_TAVAN_CARPAN, 1 + yilYatilan * HAPIS_ESKALASYON_ORANI);
+  state.saglik = Math.max(0, state.saglik - HAPIS_SAGLIK_TABAN_YILLIK * carpan * yasArtisi);
+  state.mutluluk = Math.max(0, state.mutluluk - HAPIS_MUTLULUK_TABAN_YILLIK * carpan * yasArtisi);
 }
 
 // ---------------------------------------------------------------------------

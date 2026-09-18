@@ -318,6 +318,8 @@ export interface CharacterState {
   son_zenginlik_sizinti_yili: number | null;
   /** Rakip'in "parayı alıp kaçtığı" soygunun son yaşandığı yıl (nakit yüksekken düşük ihtimalli, 8 yıllık cooldown). Hiç olmadıysa null. */
   son_rakip_soygun_yili: number | null;
+  /** Borç hapsinin (para çok ağır negatifken düşük ihtimalli, 6 yıllık cooldown) son tetiklendiği yıl. Hiç olmadıysa null. */
+  son_borc_hapsi_yili: number | null;
   /** Aktif büyük savaşın parametreleri; savaş yokken null. */
   buyuk_savas: BuyukSavas | null;
   /** En son büyük savaşın bittiği yıl (10 yıllık minimum cooldown takibi); hiç savaş olmadıysa null. */

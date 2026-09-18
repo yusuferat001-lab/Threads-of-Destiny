@@ -122,30 +122,44 @@ describe("hapishane sistemi", () => {
     expect(dusukteUygunGiris.length).toBeGreaterThan(normaldeUygunGiris.length);
   });
 
-  it("tünel yöntemi (tek başına): karardan kaçışa kadar zorunlu_sonraki ile doğru sırayla ilerler", () => {
+  it("tünel yöntemi (tek başına): karardan kaçışa kadar zorunlu_sonraki(_havuzu) ile doğru sırayla ilerler", () => {
+    // Faz (çeşitlendirme): tek_1→tek_2 bağlantısı artık zorunlu_sonraki_havuzu
+    // ["hapis_tunel_tek_2","hapis_tunel_tek_2_b"] — sırayı, orijinali her zaman
+    // ilk eleman olarak koyarak doğruluyoruz (bkz. yolculuk.test.ts deseni).
     const karar = OLAY_BANKASI.find((o) => o.id === "hapis_tunel_karar")!;
     const tek1Id = karar.secenekler[0].basariliSonuc.zorunlu_sonraki;
     expect(tek1Id).toBe("hapis_tunel_tek_1");
     const tek1 = OLAY_BANKASI.find((o) => o.id === tek1Id)!;
-    const tek2Id = tek1.secenekler[0].basariliSonuc.zorunlu_sonraki;
-    expect(tek2Id).toBe("hapis_tunel_tek_2");
+    const tek2Havuzu = tek1.secenekler[0].basariliSonuc.zorunlu_sonraki_havuzu;
+    expect(tek2Havuzu).toEqual(["hapis_tunel_tek_2", "hapis_tunel_tek_2_b"]);
+    const tek2Id = tek2Havuzu![0];
     const tek2 = OLAY_BANKASI.find((o) => o.id === tek2Id)!;
     expect(tek2.secenekler.some((s) => s.basariliSonuc.etiket_sil?.includes("hapiste"))).toBe(true);
     // Yakalanma anında geri hapis veya ölüm riski gerçek olmalı.
     expect(tek2.secenekler.some((s) => s.basarisizSonuc.etiket_ekle?.includes("hapiste") && (s.basarisizSonuc.olum_sansi ?? 0) > 0)).toBe(true);
+    // Alternatif dal (tek_2_b) de aynı rolü oynamalı: başarıda özgürlük sunar.
+    const tek2b = OLAY_BANKASI.find((o) => o.id === "hapis_tunel_tek_2_b")!;
+    expect(tek2b.hapisOlayi).toBe(true);
+    expect(tek2b.secenekler.some((s) => s.basariliSonuc.etiket_sil?.includes("hapiste"))).toBe(true);
   });
 
-  it("tünel yöntemi (ekip): karardan toplu kaçışa kadar zorunlu_sonraki ile doğru sırayla ilerler", () => {
+  it("tünel yöntemi (ekip): karardan toplu kaçışa kadar zorunlu_sonraki(_havuzu) ile doğru sırayla ilerler", () => {
     const karar = OLAY_BANKASI.find((o) => o.id === "hapis_tunel_karar")!;
     const ekip1Id = karar.secenekler[1].basariliSonuc.zorunlu_sonraki;
     expect(ekip1Id).toBe("hapis_tunel_ekip_1");
     const ekip1 = OLAY_BANKASI.find((o) => o.id === ekip1Id)!;
-    const ekip2Id = ekip1.secenekler[0].basariliSonuc.zorunlu_sonraki;
-    const ekip2 = OLAY_BANKASI.find((o) => o.id === ekip2Id)!;
-    const ekip3Id = ekip2.secenekler[0].basariliSonuc.zorunlu_sonraki;
-    expect(ekip3Id).toBe("hapis_tunel_ekip_3");
-    const ekip3 = OLAY_BANKASI.find((o) => o.id === ekip3Id)!;
+    const ekip2Havuzu = ekip1.secenekler[0].basariliSonuc.zorunlu_sonraki_havuzu;
+    expect(ekip2Havuzu).toEqual(["hapis_tunel_ekip_2", "hapis_tunel_ekip_2_b"]);
+    const ekip2 = OLAY_BANKASI.find((o) => o.id === ekip2Havuzu![0])!;
+    const ekip3Havuzu = ekip2.secenekler[0].basariliSonuc.zorunlu_sonraki_havuzu;
+    expect(ekip3Havuzu).toEqual(["hapis_tunel_ekip_3", "hapis_tunel_ekip_3_b"]);
+    const ekip3 = OLAY_BANKASI.find((o) => o.id === ekip3Havuzu![0])!;
     expect(ekip3.secenekler.some((s) => s.basariliSonuc.etiket_sil?.includes("hapiste"))).toBe(true);
+    // Alternatif ara adım (ekip_2_b) ve alternatif son adım (ekip_3_b) da geçerli olmalı.
+    const ekip2b = OLAY_BANKASI.find((o) => o.id === "hapis_tunel_ekip_2_b")!;
+    expect(ekip2b.secenekler[0].basariliSonuc.zorunlu_sonraki_havuzu).toEqual(["hapis_tunel_ekip_3", "hapis_tunel_ekip_3_b"]);
+    const ekip3b = OLAY_BANKASI.find((o) => o.id === "hapis_tunel_ekip_3_b")!;
+    expect(ekip3b.secenekler.some((s) => s.basariliSonuc.etiket_sil?.includes("hapiste"))).toBe(true);
   });
 
   it("gardiyan bayıltma yöntemi: en yüksek ölüm riskini taşır (diğer yöntemlerden daha riskli)", () => {
@@ -167,6 +181,41 @@ describe("hapishane sistemi", () => {
     for (const olay of [rusvetSon, iyiHalSon]) {
       expect(olay.secenekler.some((s) => s.basariliSonuc.etiket_sil?.includes("hapiste"))).toBe(true);
     }
+  });
+
+  it("rüşvet/bayıltma/iyi-hal zincirlerinin her ara bağlantısı zorunlu_sonraki_havuzu ile çeşitlendirildi", () => {
+    // Her linkte orijinal id her zaman havuzun ilk elemanı; alt (_b) olay da
+    // hapisOlayi:true taşımalı ve aynı zincirin bir sonraki adımına akmalı.
+    const muhbirBulma = OLAY_BANKASI.find((o) => o.id === "hapis_rusvet_muhbir_bulma")!;
+    for (const s of muhbirBulma.secenekler) {
+      expect(s.basariliSonuc.zorunlu_sonraki_havuzu).toEqual(["hapis_rusvet_pazarlik_derin", "hapis_rusvet_pazarlik_derin_b"]);
+    }
+    const pazarlikDerinB = OLAY_BANKASI.find((o) => o.id === "hapis_rusvet_pazarlik_derin_b")!;
+    expect(pazarlikDerinB.hapisOlayi).toBe(true);
+    for (const s of pazarlikDerinB.secenekler) {
+      expect(s.basariliSonuc.zorunlu_sonraki_havuzu).toEqual(["hapis_rusvet_uygulama", "hapis_rusvet_uygulama_b"]);
+    }
+    const uygulamaB = OLAY_BANKASI.find((o) => o.id === "hapis_rusvet_uygulama_b")!;
+    expect(uygulamaB.secenekler.some((s) => s.basariliSonuc.etiket_sil?.includes("hapiste"))).toBe(true);
+
+    const bayiltmaPlan = OLAY_BANKASI.find((o) => o.id === "hapis_bayiltma_plan")!;
+    for (const s of bayiltmaPlan.secenekler) {
+      expect(s.basariliSonuc.zorunlu_sonraki_havuzu).toEqual(["hapis_bayiltma_saldiri", "hapis_bayiltma_saldiri_b"]);
+    }
+    const saldiriB = OLAY_BANKASI.find((o) => o.id === "hapis_bayiltma_saldiri_b")!;
+    expect(saldiriB.hapisOlayi).toBe(true);
+    expect(
+      saldiriB.secenekler.find((s) => s.basariliSonuc.zorunlu_sonraki_havuzu)?.basariliSonuc.zorunlu_sonraki_havuzu
+    ).toEqual(["hapis_bayiltma_kacis", "hapis_bayiltma_kacis_b"]);
+    const kacisB = OLAY_BANKASI.find((o) => o.id === "hapis_bayiltma_kacis_b")!;
+    expect(kacisB.secenekler.some((s) => s.basariliSonuc.etiket_sil?.includes("hapiste"))).toBe(true);
+
+    const iyiHalKarar = OLAY_BANKASI.find((o) => o.id === "hapis_iyi_hal_karar")!;
+    for (const s of iyiHalKarar.secenekler) {
+      expect(s.basariliSonuc.zorunlu_sonraki_havuzu).toEqual(["hapis_iyi_hal_degerlendirme", "hapis_iyi_hal_degerlendirme_b"]);
+    }
+    const degerlendirmeB = OLAY_BANKASI.find((o) => o.id === "hapis_iyi_hal_degerlendirme_b")!;
+    expect(degerlendirmeB.secenekler.some((s) => s.basariliSonuc.etiket_sil?.includes("hapiste"))).toBe(true);
   });
 
   it("isyan hazırlığı mevcut hapis_isyan_firsati'na bağlanır", () => {

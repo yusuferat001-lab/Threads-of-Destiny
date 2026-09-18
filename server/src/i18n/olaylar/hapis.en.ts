@@ -1514,4 +1514,265 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
       },
     ],
   },
+
+  // ============================================================
+  // Chain diversification (2026-09): one alternate "_b" branch point per
+  // link in each of the 4 multi-step escape chains, so the same characters
+  // don't see the exact same intermediate scene every playthrough.
+  // ============================================================
+  hapis_tunel_tek_2_b: {
+    baslik: "Flood",
+    metin:
+      "The tunnel you've been digging alone hits an unexpected underground water vein; the earth is turning to mud, and there's a real risk of collapse. You could push toward the flow of water hoping it leads somewhere, or abandon the tunnel and try the main door instead.",
+    secenekler: [
+      {
+        metin: "Follow the water through the mud, force your way out.",
+        ipucu: "Wet and dangerous, but water usually leads somewhere",
+        basariliSonuc: {
+          mesaj: "The water dragged you through a narrow gap; caked in mud, you emerged at a stream outside the city. You're free.",
+          detay: "Not elegant at all, but it worked.",
+        },
+        basarisizSonuc: {
+          mesaj: "The tunnel collapsed; you barely avoided being buried in the mud before the guards found you half-drowned.",
+          detay: "The earth showed you no mercy this time.",
+        },
+      },
+      {
+        metin: "Give up, abandon the tunnel and return to your cell.",
+        ipucu: "Safe, but months of digging wasted",
+        basariliSonuc: {
+          mesaj: "Soaked and exhausted, you made it back to your cell; the tunnel has effectively collapsed for now.",
+          detay: "Some plans get rejected by the ground itself.",
+        },
+        basarisizSonuc: {
+          mesaj: "You got stuck in the mud on the way back and barely avoided being spotted by a guard.",
+          detay: "Months of effort are now just a puddle of mud.",
+        },
+      },
+    ],
+  },
+
+  hapis_tunel_ekip_2_b: {
+    baslik: "The Ceiling Gives Way",
+    metin:
+      "At the point the digging has reached, the ceiling is loosening dangerously; small rocks are starting to rain down on you. Is it wiser to spend time shoring it up, or push through faster and risk it?",
+    secenekler: [
+      {
+        metin: "Reinforce the ceiling with wooden supports, advance patiently.",
+        ipucu: "Slower, but safer",
+        basariliSonuc: {
+          mesaj: "Thanks to solid supports, the tunnel is far safer now; the group relaxes a bit.",
+          detay: "Patient craftsmanship means a solid tunnel.",
+        },
+        basarisizSonuc: {
+          mesaj: "The supports didn't quite hold; a small cave-in lightly injured a couple of people, but the dig didn't stop.",
+          detay: "Not perfect, but good enough.",
+        },
+      },
+      {
+        metin: "Take the risk and push through quickly.",
+        ipucu: "Fast but dangerous",
+        basariliSonuc: {
+          mesaj: "The ceiling creaked but held; you got past the dangerous stretch.",
+          detay: "Luck was on your side this time.",
+        },
+        basarisizSonuc: {
+          mesaj: "A small collapse happened; a few people got trapped under the earth and were barely pulled out.",
+          detay: "The group is shaken but determined to continue.",
+        },
+      },
+    ],
+  },
+
+  hapis_tunel_ekip_3_b: {
+    baslik: "The Wrong Exit",
+    metin:
+      "The tunnel is finished, but your calculations were slightly off — the hole opens right next to a storage/stable area outside the prison, a spot patrols pass through often. Still, this is your only chance tonight.",
+    secenekler: [
+      {
+        metin: "Take horses/carts from the stable and get away fast.",
+        ipucu: "Noisy, but if it works you'll get much farther away",
+        basariliSonuc: {
+          mesaj: "You jumped on a cart and galloped off; by morning you were far from the city.",
+          detay: "Boldness paid off handsomely this time.",
+        },
+        basarisizSonuc: {
+          mesaj: "The noise drew the patrol right away; most of you were caught before even reaching the cart.",
+          detay: "This time courage fell victim to haste.",
+        },
+      },
+      {
+        metin: "Hide among the hay/sacks and wait for morning.",
+        ipucu: "Slower but less risky",
+        basariliSonuc: {
+          mesaj: "You stayed motionless among the hay bales until morning, then slipped away into the daytime crowd.",
+          detay: "Patience paid off here too.",
+        },
+        basarisizSonuc: {
+          mesaj: "The morning count started early; you were caught while your hiding spot was being searched.",
+          detay: "Dawn was not your friend this time.",
+        },
+      },
+    ],
+  },
+
+  hapis_rusvet_pazarlik_derin_b: {
+    baslik: "The Go-Between Woman",
+    metin:
+      "Instead of reaching the guard you had in mind directly, you learn that an old woman who delivers supplies to the prison kitchen has actually been doing 'business' between prisoners and the outside for years. Going through her is safer than negotiating directly, but she takes a cut.",
+    secenekler: [
+      {
+        metin: "Go through her, accept the commission.",
+        ipucu: "Expensive but leaves no trace",
+        basariliSonuc: {
+          mesaj: "She took a 'fee' in exchange, but locked in the deal; there will be no direct contact at all between you and the guard.",
+          detay: "An experienced go-between shoulders most of the risk.",
+        },
+        basarisizSonuc: {
+          mesaj: "She took the money, but the arrangement between her and the guard turns out shakier than expected.",
+          detay: "Some middlemen don't keep their word.",
+        },
+      },
+      {
+        metin: "Don't trust her, continue on your own.",
+        ipucu: "Free, but a more fragile connection",
+        basariliSonuc: {
+          mesaj: "You patiently built your own connection; you reached the same result without spending any money.",
+          detay: "Sometimes caution is the cheapest route.",
+        },
+        basarisizSonuc: {
+          mesaj: "Turning her down cost you time, and the plan became a bit more fragile.",
+          detay: "Every bit of caution has a price.",
+        },
+      },
+    ],
+  },
+
+  hapis_rusvet_uygulama_b: {
+    baslik: "The Forged Transfer Order",
+    metin:
+      "Instead of walking you out the door, the person you struck the deal with suggests a different route: a forged transfer order making it look like you're being 'moved to another prison.' Somewhere along the way you could slip from the guards and vanish.",
+    secenekler: [
+      {
+        metin: "Trust the forged order, set out on the road.",
+        ipucu: "Creative, but the smallest error on paper could give you away",
+        basariliSonuc: {
+          mesaj: "The transfer paper passed inspection; at a bend in the road you slipped away from the guards and disappeared.",
+          detay: "Bureaucracy itself became your weapon this time.",
+        },
+        basarisizSonuc: {
+          mesaj: "A seal on the paper gave it away; you were dragged back in chains halfway down the road.",
+          detay: "Forgery didn't come cheap here either.",
+        },
+      },
+      {
+        metin: "Don't risk it, go back to the original door plan.",
+        ipucu: "Safe, but the commission you paid may have been wasted",
+        basariliSonuc: {
+          mesaj: "You didn't trust the paper trick and went back to the classic method; at least you're safe.",
+          detay: "Sometimes the old way is still the most reliable.",
+        },
+        basarisizSonuc: {
+          mesaj: "You cancelled the plan, but the money you paid the go-between never came back.",
+          detay: "Caution had its own price too.",
+        },
+      },
+    ],
+  },
+
+  hapis_bayiltma_saldiri_b: {
+    baslik: "Sleeping Draught",
+    metin:
+      "Instead of a direct attack, you found a less bloody route: a sedative mixture, from an herb your cellmate knows, that you could slip into the guard's evening drink. Less certain than violence, but just as risky.",
+    secenekler: [
+      {
+        metin: "Prepare the mixture, secretly slip it into the guard's cup.",
+        ipucu: "No violence, but getting the dose right is a gamble",
+        basariliSonuc: {
+          mesaj: "The moment the guard finished his drink he slumped in his chair; you quietly took the keys.",
+          detay: "No one got hurt, but the plan was dangerous all the same.",
+        },
+        basarisizSonuc: {
+          mesaj: "The dose fell short; the guard, groggy but still on his feet, raised the alarm. An attempted poisoning was counted among the gravest offenses.",
+          detay: "Even a non-violent plan can carry a heavy price here.",
+        },
+      },
+      {
+        metin: "Not worth the risk, cancel the plan at the last moment.",
+        ipucu: "Safe, but the opportunity slips away",
+        basariliSonuc: {
+          mesaj: "You decided to pour out the mixture; maybe another, safer way will come along.",
+          detay: "Some plans are better left untried.",
+        },
+        basarisizSonuc: {
+          mesaj: "You were nearly caught hiding the herb; your heart is still pounding.",
+          detay: "Even backing out isn't risk-free here.",
+        },
+      },
+    ],
+  },
+
+  hapis_bayiltma_kacis_b: {
+    baslik: "The Supply Cart",
+    metin:
+      "The keys are in your hand, but the corridors are dangerous. Just then, an empty handcart waiting for the morning supply delivery catches your eye — you could curl up inside it and wait to be wheeled outside.",
+    secenekler: [
+      {
+        metin: "Hide inside the cart, wait to be moved.",
+        ipucu: "Patient, but whoever pushes the cart might notice you",
+        basariliSonuc: {
+          mesaj: "You curled up under some empty sacks; the cart carried you out the main gate without anyone noticing.",
+          detay: "Sometimes the most ordinary things make the best hiding spots.",
+        },
+        basarisizSonuc: {
+          mesaj: "The servant pushing the cart noticed the odd weight; when he opened the sacks, he found you, and the alarm went off.",
+          detay: "Hiding doesn't always mean staying unseen.",
+        },
+      },
+      {
+        metin: "Don't risk it, try walking out through the corridors.",
+        ipucu: "Faster but more exposed",
+        basariliSonuc: {
+          mesaj: "Moving from shadow to shadow, you made it outside without running into anyone.",
+          detay: "This time your courage was paired with silence.",
+        },
+        basarisizSonuc: {
+          mesaj: "You came face to face with a patrol in a corridor; there was nowhere left to run.",
+          detay: "Luck was not on your side this time.",
+        },
+      },
+    ],
+  },
+
+  hapis_iyi_hal_degerlendirme_b: {
+    baslik: "A Quiet Word",
+    metin:
+      "Instead of the formal board, an old guard who's taken a liking to you approaches quietly: 'I could put in a word for you with the commander, but I'll want something in return.' The formal process is slow but safe; this shortcut is fast but creates a debt.",
+    secenekler: [
+      {
+        metin: "Accept the offer, pay off the debt later.",
+        ipucu: "Fast, but you'll owe the guard something",
+        basariliSonuc: {
+          mesaj: "The guard's word worked; the commander marked your file as 'exemplary behavior' and released you early.",
+          detay: "Some doors open through acquaintance, not formality.",
+        },
+        basarisizSonuc: {
+          mesaj: "The guard's word wasn't enough to convince the commander; worse, you now owe him a favor.",
+          detay: "Some investments don't pay off.",
+        },
+      },
+      {
+        metin: "Refuse, stick with the formal process.",
+        ipucu: "Slow but clean",
+        basariliSonuc: {
+          mesaj: "You refused the shortcut; you'll keep waiting for the formal board's decision.",
+          detay: "Some paths are longer but leave a clear conscience.",
+        },
+        basarisizSonuc: {
+          mesaj: "Your refusal annoyed the guard a little, but at least you don't owe anyone anything.",
+          detay: "Staying clean had a small cost.",
+        },
+      },
+    ],
+  },
 };
