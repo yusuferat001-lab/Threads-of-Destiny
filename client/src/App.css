@@ -3852,8 +3852,14 @@ button.ikincil {
 .ekran-aile {
   position: relative;
   text-align: left;
-  background: #8a6038; /* SVG yüklenene kadar sıcak duvar tonu */
+  background: #8a6038; /* SVG yüklenene kadar sıcak duvar tonu (Orta Çağ) */
   --aile-kart-kenar: #7a5a36;
+}
+
+/* Sanayi Devrimi — Viktorya salonu tonları (mor-gri duvar kağıdı + dökme demir) */
+.ekran-aile-sanayi {
+  background: #3c2f42;
+  --aile-kart-kenar: #5c4a5e;
 }
 
 /* Oda tam görünür bir zemin. */

@@ -146,6 +146,20 @@ type Ekran =
   | 'magaza'
   | 'evlilik';
 
+// Bekleyen bir aile_talep/yonetim_talep varken karakter bu ekranlardan
+// herhangi birindeyse otomatik olarak Aile/Kariyer sayfasına yönlendirilir
+// (kurulum/liderlik/ölüm ekranları hariç — orada talep zaten anlamsız).
+// 'sonuc' bilinçli olarak yok — seçimin sonucu görülsün diye "Devam Et"
+// (devamEt) butonuna kadar bekletilir, o buton talebi kendi kontrol eder.
+const TALEP_ZORLAYABILECEK_EKRANLAR: Ekran[] = [
+  'oyun',
+  'finans',
+  'yatirim',
+  'sosyallesme',
+  'magaza',
+  'evlilik',
+];
+
 interface SonEtki {
   basarili: boolean;
   etki: SonucEtkisi;
@@ -304,6 +318,29 @@ function App() {
   const [secilenYerlesim, setSecilenYerlesim] = useState<string | null>(null);
   const [oyuncuIsmi, setOyuncuIsmi] = useState('');
   const [karakter, setKarakter] = useState<CharacterState | null>(null);
+  // Aile ya da Kariyer sayfasından dayatılan bir talep (aile_talep/yonetim_talep)
+  // gelince karakter oyunda başka bir yerdeyse otomatik olarak o sayfa açılır —
+  // oyuncu talebi yanıtlamadan oyuna devam edemez (aşağıdaki onGeriDon guard'ları
+  // da yanıtlanmadan çıkışı engeller).
+  const aileTalepAcmaRef = useRef(false);
+  const yonetimTalepAcmaRef = useRef(false);
+  useEffect(() => {
+    if (!karakter || !karakter.aktif) return;
+    if (!TALEP_ZORLAYABILECEK_EKRANLAR.includes(ekran)) return;
+    if (karakter.aile_talep && !aileTalepAcmaRef.current) {
+      aileTalepAcmaRef.current = true;
+      void aileEkraniniAc().finally(() => {
+        aileTalepAcmaRef.current = false;
+      });
+      return;
+    }
+    if (karakter.yonetim_talep && !yonetimTalepAcmaRef.current) {
+      yonetimTalepAcmaRef.current = true;
+      void kariyerEkraniniAc().finally(() => {
+        yonetimTalepAcmaRef.current = false;
+      });
+    }
+  }, [karakter, ekran]);
   const [senaryo, setSenaryo] = useState<SenaryoResponse | null>(null);
   const [tepkiModu, setTepkiModu] = useState(false);
   const [sonEtki, setSonEtki] = useState<SonEtki | null>(null);
@@ -750,6 +787,16 @@ function App() {
 
   async function devamEt() {
     if (!karakter) return;
+    // Aile/yönetim tarafından dayatılan bir talep varsa oyuna dönmeden önce
+    // önce o sayfayı açtırıyoruz — cevaplamadan senaryoya geçilemez.
+    if (karakter.aile_talep) {
+      await aileEkraniniAc();
+      return;
+    }
+    if (karakter.yonetim_talep) {
+      await kariyerEkraniniAc();
+      return;
+    }
     setHata(null);
     setYukleniyor(true);
     try {
@@ -2414,6 +2461,7 @@ function App() {
 
       {ekran === 'aile' && karakter && (
         <AileEkrani
+          cag={karakter.cag}
           anneAdi={karakter.anne_adi}
           babaAdi={karakter.baba_adi}
           dostAdi={karakter.dost_adi}
@@ -2430,6 +2478,12 @@ function App() {
           onTalep={aileTalepHandler}
           onEvlilik={evlilikEkraniniAc}
           onGeriDon={() => {
+            if (karakter.aile_talep) {
+              setIslemMesaji(
+                dil === 'en' ? 'You must respond to the request first.' : 'Önce isteğe yanıt vermelisin.'
+              );
+              return;
+            }
             setIslemMesaji(null);
             setEkran('oyun');
           }}
@@ -2462,6 +2516,12 @@ function App() {
           onTalep={yonetimTalepHandler}
           onEkipCikar={ekipCikarHandler}
           onGeriDon={() => {
+            if (karakter.yonetim_talep) {
+              setIslemMesaji(
+                dil === 'en' ? 'You must respond to the request first.' : 'Önce talebe yanıt vermelisin.'
+              );
+              return;
+            }
             setIslemMesaji(null);
             setEkran('oyun');
           }}
