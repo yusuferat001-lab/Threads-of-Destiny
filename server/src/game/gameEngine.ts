@@ -1075,14 +1075,24 @@ export async function secimUygula(id: string, secenekIndex: number): Promise<Sec
   return sonucuUygulaVeIlerlet(oturum, mevcutOlay, etki, basarili, eskiRutbeSeviye);
 }
 
-/** Doğum denemesi cooldown'u (yıl) — bu kadar yıl geçmeden yeni çocuk olmaz. */
+/** Doğum denemesi cooldown'u (yıl) — bu kadar yıl geçmeden yeni çocuk olmaz
+ * (çocuklar arası asgari düzenli aralık). */
 const DOGUM_COOLDOWN_YIL = 4;
 /** Yaşayan+ölü toplam çocuk tavanı — bunun üstünde doğum denenmez. */
 const DOGUM_COCUK_TAVANI = 8;
+/** Cooldown eşiğini aştıktan sonra her ek bekleme yılı şansa eklenen "sabır" payı —
+ * evlilik makul durumdaysa (es_puani ≥ 30) doğumun rastgele değil DÜZENLİ/öngörülebilir
+ * bir aralıkta gerçekleşmesini sağlar: kötü bir zar birkaç yıl doğumu geciktirebilir ama
+ * ilişki iyiyse birikerek neredeyse kesin hale gelir. */
+const DOGUM_SABIR_PAYI_YILLIK = 0.14;
+const DOGUM_YILLIK_SANS_TAVANI = 0.92;
 
 /**
- * Evli bir karakterde, eşle ilişkiye (es_puani) çok güçlü bağlı, cooldown'lu bir
- * yıllık doğum zarı atar. es_puani ≤ 45 iken şans ~0; 100 iken yılda ~%28.
+ * Evli bir karakterde, eşle ilişkiye (es_puani) bağlı, cooldown'lu bir yıllık doğum
+ * zarı atar. es_puani ≤ 30 iken hiç doğum olmaz; üstündeyse taban şans es_puani'yle
+ * büyür VE cooldown sonrası her geçen yıl "sabır payı" ekleyerek şansı yükseltir —
+ * böylece çocuklar tamamen şansa bağlı, seyrek/düzensiz bir olay olmak yerine, iyi
+ * giden bir evlilikte birkaç yıl içinde güvenilir biçimde gerçekleşir.
  * Başarılıysa bir çocuk ekler ve `hayat_hikayesi`'ne yazar; anlatı cümlesi döner.
  */
 function dogumDenemesiUygula(state: CharacterState, yasArtisi: number): string | null {
@@ -1097,12 +1107,17 @@ function dogumDenemesiUygula(state: CharacterState, yasArtisi: number): string |
   }
   if (state.cocuklar.length >= DOGUM_COCUK_TAVANI) return null;
   const sonDogum = typeof state.son_dogum_yili === "number" ? state.son_dogum_yili : -9999;
-  if (state.yil - sonDogum < DOGUM_COOLDOWN_YIL) return null;
+  const gecenYil = state.yil - sonDogum;
+  if (gecenYil < DOGUM_COOLDOWN_YIL) return null;
 
-  // es_puani 45 → 0, 100 → 1 arası lineer; sonra yıllık taban orana ölçekle.
-  const iliskiCarpani = Math.max(0, Math.min(1, (state.es_puani - 45) / 55));
+  // es_puani 30 → 0, 100 → 1 arası lineer taban çarpanı.
+  const iliskiCarpani = Math.max(0, Math.min(1, (state.es_puani - 30) / 70));
   if (iliskiCarpani <= 0) return null;
-  const yillikSans = iliskiCarpani * 0.28;
+  const bekleyisYil = gecenYil - DOGUM_COOLDOWN_YIL;
+  const yillikSans = Math.min(
+    DOGUM_YILLIK_SANS_TAVANI,
+    iliskiCarpani * 0.16 + bekleyisYil * DOGUM_SABIR_PAYI_YILLIK
+  );
   let oldu = false;
   for (let i = 0; i < yasArtisi; i++) {
     if (Math.random() < yillikSans) {
