@@ -34,11 +34,11 @@ export const TERFI_COOLDOWN: Record<number, number> = { 2: 0, 3: 2, 4: 2, 5: 8 }
  * Seviye 1..5 için maaşa çarpımsal, kalıcı rütbe primi (hesaplaMaasYillik içinde
  * TEK bir çarpan kalemi olarak girer — kıdem/itibar/enflasyonla da çarpılır).
  * BİLEŞİK: her kademe bir öncekinin üstüne kademeye özgü bir yüzde bindirir.
- * Kademe artışları sırasıyla %15 · %12 · %12 · %11 · %10 (… diye devam eder) —
- * yani S2 = S1 ×1.15, S3 = S2 ×1.12, S4 = S3 ×1.12, S5 = S4 ×1.11. S1..S5
- * sonuçları ≈ ×1.00 / ×1.15 / ×1.29 / ×1.44 / ×1.60.
+ * Kademe artışları sırasıyla %16 · %13 · %13 · %12 · %11 (… diye devam eder) —
+ * yani S2 = S1 ×1.16, S3 = S2 ×1.13, S4 = S3 ×1.13, S5 = S4 ×1.12. S1..S5
+ * sonuçları ≈ ×1.00 / ×1.16 / ×1.31 / ×1.48 / ×1.66.
  */
-const RUTBE_MAAS_ARTIS_ORANLARI = [0.15, 0.12, 0.12, 0.11, 0.1];
+const RUTBE_MAAS_ARTIS_ORANLARI = [0.16, 0.13, 0.13, 0.12, 0.11];
 export const RUTBE_MAAS_CARPANI: [number, number, number, number, number] = (() => {
   const carpanlar: number[] = [1];
   for (let i = 1; i < 5; i++) {

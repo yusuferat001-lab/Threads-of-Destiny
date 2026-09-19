@@ -243,6 +243,7 @@ export interface CharacterState {
   /** Vebayı bizzat kaptıysa ("veba_hastasi" etiketi) o anki ölüm riski % (0-100). Hasta değilken 0. */
   veba_olum_riski: number;
   kucuk_kriz_sonraki_yil: number;
+  din_bagis_sonraki_yil: number;
   gida_fiyat_sok_bitis_yili: number | null;
   /** Ömürde bir kez borçtayken alınan kilise/eş dost yardımı kullanıldı mı. */
   borc_yardimi_alindi: boolean;

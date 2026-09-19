@@ -399,7 +399,7 @@ function maasCarpanKalemleri(state: CharacterState): { tabanMaas: number; kaleml
   const durumCarpani = state.durumlar.reduce((c, d) => c * (d.gelir_carpani ?? 1), 1);
   // Veba sonrası işçi kıtlığı, salgın hem aktifken hem de izi süren yıllarda maaşı büyütür.
   const vebaCarpani = state.veba && state.yil < state.veba.etkiBitisYili ? state.veba.gelirCarpani : 1;
-  const ekonomiCarpani = state.ulke.ekonomi === "kotu" ? 0.8 : state.ulke.ekonomi === "iyi" ? 1.15 : 1;
+  const ekonomiCarpani = state.ulke.ekonomi === "kotu" ? 0.9 : state.ulke.ekonomi === "iyi" ? 1.1 : 1;
   const dil = state.dil;
   const ekonomiAd = T(
     dil,
@@ -693,6 +693,7 @@ export function createCharacter(
     son_veba_bitis_yili: null,
     veba_olum_riski: 0,
     kucuk_kriz_sonraki_yil: yil + 5 + Math.floor(Math.random() * 3), // 5-7 yıl sonra ilk eşik
+    din_bagis_sonraki_yil: yil + 6 + Math.floor(Math.random() * 2), // 6-7 yılda bir (yalnız Din Adamı'nda anlamlı)
     gida_fiyat_sok_bitis_yili: null,
     borc_yardimi_alindi: false,
     salgin_korunma_yatirimi: null,
@@ -870,6 +871,9 @@ export function eskiKayitGocu(state: CharacterState): void {
     state.veba.korumaSeviyesi = (state.veba as any).onlemAlindiMi ? 2 : 0;
   }
   if (state.son_zenginlik_sizinti_yili === undefined) state.son_zenginlik_sizinti_yili = null;
+  if (typeof state.din_bagis_sonraki_yil !== "number") {
+    state.din_bagis_sonraki_yil = (state.baslangic_yili ?? state.yil) + 6 + Math.floor(Math.random() * 2);
+  }
   if (state.son_rakip_soygun_yili === undefined) state.son_rakip_soygun_yili = null;
   // Ömürde bir kez borç yardımı sonradan eklendi; eski kayıtlar bunu hiç almadı sayılır (yeniden alınabilsin).
   if (typeof state.borc_yardimi_alindi !== "boolean") state.borc_yardimi_alindi = false;
@@ -2276,6 +2280,40 @@ export function rakipSoygunKontrolEt(state: CharacterState, yasArtisi: number): 
 }
 
 // ---------------------------------------------------------------------------
+// Din Adamı cemaat bağışı: 6-7 yılda bir düzenli aralıkla cemaatin topladığı
+// bağış doğrudan nakde eklenir (küçük kriz ile aynı "eşik dolunca kesin
+// tetiklenir" deseni — olasılıksal değil). Miktar enflasyonla VE cemaat
+// büyüklüğüyle (nüfuz) ölçeklenir: yüksek nüfuzlu bir din adamı çok daha
+// kalabalık bir cemaate vaaz veriyor demektir. Diğer mesleklerde hiç tetiklenmez.
+// ---------------------------------------------------------------------------
+const DIN_BAGIS_TABAN_MIKTAR = 14;
+const DIN_BAGIS_SONRAKI_ESIK_MIN_YIL = 6;
+const DIN_BAGIS_SONRAKI_ESIK_ARALIK_YIL = 1; // 6-7 yıl
+
+export interface DinBagisSonucu {
+  miktar: number;
+  mesaj: string;
+}
+
+export function dinAdamiBagisKontrolEt(state: CharacterState, yasArtisi: number): DinBagisSonucu | null {
+  if (yasArtisi <= 0 || state.meslek !== "Din Adamı") return null;
+  if (state.etiketler.includes("hapiste") || state.etiketler.includes("yolculukta")) return null;
+  if (state.yil < state.din_bagis_sonraki_yil) return null;
+  const cemaatCarpani = 1 + state.nufuz / 80; // nüfuz 0 → ×1, nüfuz 80 → ×2
+  const miktar = paraYuvarla(DIN_BAGIS_TABAN_MIKTAR * enflasyonCarpani(state) * cemaatCarpani);
+  state.para += miktar;
+  state.din_bagis_sonraki_yil =
+    state.yil + DIN_BAGIS_SONRAKI_ESIK_MIN_YIL + Math.floor(Math.random() * (DIN_BAGIS_SONRAKI_ESIK_ARALIK_YIL + 1));
+  return {
+    miktar,
+    mesaj: T(state.dil, "🙏 Cemaatin senin için bir bağış topladı: {0} {birim}.", [miktar]).replace(
+      /\{birim\}/g,
+      state.para_birimi,
+    ),
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Derin rakip ilişkileri (§13): isimli rakiplerin gücünü karanlık işlerle kır,
 // kırılan güç pazar payı (para + kariyer) olarak sana döner; husumet yükselince
 // rakip misilleme yapar. Rakip "yenildi" olunca sistemden çıkar.
@@ -2877,8 +2915,8 @@ export function dunyaFinansEtkileri(state: CharacterState): DunyaFinansEtkisi[] 
   const liste: DunyaFinansEtkisi[] = [];
   const dil = state.dil;
 
-  if (state.ulke.ekonomi === "kotu") liste.push({ ikon: "📉", metin: T(dil, "Kötü ekonomi: maaş −%20") });
-  else if (state.ulke.ekonomi === "iyi") liste.push({ ikon: "📈", metin: T(dil, "İyi ekonomi: maaş +%15") });
+  if (state.ulke.ekonomi === "kotu") liste.push({ ikon: "📉", metin: T(dil, "Kötü ekonomi: maaş −%10") });
+  else if (state.ulke.ekonomi === "iyi") liste.push({ ikon: "📈", metin: T(dil, "İyi ekonomi: maaş +%10") });
 
   if (state.buyuk_savas) {
     const gida = Math.round((state.buyuk_savas.gidaCarpani - 1) * 100);

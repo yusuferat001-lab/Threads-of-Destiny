@@ -74,6 +74,7 @@ import {
   zorunluBagisKontrolEt,
   zenginlikSizintiKontrolEt,
   rakipSoygunKontrolEt,
+  dinAdamiBagisKontrolEt,
   buyukSavasKontrolEt,
   buyukSavasBitisKontrolEt,
   vebaBaslamaliMi,
@@ -980,6 +981,8 @@ export interface TurNakitAkisi {
   zenginlikSizinti: number;
   /** Rakibin "parayı alıp kaçtığı" soygun (nakit ≥ 150 iken düşük ihtimalli; mutlak değer). */
   rakipSoygun: number;
+  /** Din Adamı'na 6-7 yılda bir gelen cemaat bağışı (diğer mesleklerde 0). */
+  cemaatBagisi: number;
   /** Yukarıdaki kalemlerin dışında kalan her şey (kriz para etkisi, şans olayı, servet_kaybet/para_sifirla vb.) — net. */
   digerNet: number;
   /** Bilgi amaçlı: mülk bakım tutarı (mulkNet içinde zaten düşülü — mutabakata AYRICA girmez). */
@@ -1180,7 +1183,7 @@ async function sonucuUygulaVeIlerlet(
   const nakitAkisi: TurNakitAkisi = {
     olayGeliri: 0, olayGideri: 0, maasBrut: 0, giderYasam: 0, giderKonut: 0,
     giderEkip: 0, giderEvcil: 0, savasVergisi: 0, faiz: 0, mulkNet: 0,
-    envanterBakim: 0, zorunluBagis: 0, zenginlikSizinti: 0, rakipSoygun: 0, digerNet: 0, bilgiMulkBakim: 0,
+    envanterBakim: 0, zorunluBagis: 0, zenginlikSizinti: 0, rakipSoygun: 0, cemaatBagisi: 0, digerNet: 0, bilgiMulkBakim: 0,
   };
   // Olay geliri primi: maaş dışı gelir kanalını hafifçe güçlendirir (her olay için ~%5.5).
   if (etki.para && etki.para > 0) {
@@ -1690,6 +1693,15 @@ async function sonucuUygulaVeIlerlet(
             nakitAkisi.rakipSoygun = rakipSoygunSonucu.miktar;
           }
 
+          // Din Adamı'na 6-7 yılda bir düzenli aralıkla cemaat bağışı gelir
+          // (enflasyon + nüfuz/cemaat büyüklüğüyle ölçekli, olasılıksal değil).
+          const cemaatBagisiSonucu = dinAdamiBagisKontrolEt(state, yasArtisi);
+          if (cemaatBagisiSonucu) {
+            zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${cemaatBagisiSonucu.mesaj}` : cemaatBagisiSonucu.mesaj;
+            hayatOlayiEkle(state, "🙏", T(state.dil, "Cemaat bağışı: +{0} {birim}", [cemaatBagisiSonucu.miktar]).replace(/\{birim\}/g, state.para_birimi));
+            nakitAkisi.cemaatBagisi = cemaatBagisiSonucu.miktar;
+          }
+
           // Derin rakip ilişkileri: rakiplerin gücü yavaşça büyür; husumeti
           // yüksek bir rakip düşük ihtimalle misilleme yapar (§13).
           rakiplerGuncelle(state, yasArtisi);
@@ -1826,7 +1838,8 @@ async function sonucuUygulaVeIlerlet(
     nakitAkisi.envanterBakim -
     nakitAkisi.zorunluBagis -
     nakitAkisi.zenginlikSizinti -
-    nakitAkisi.rakipSoygun;
+    nakitAkisi.rakipSoygun +
+    nakitAkisi.cemaatBagisi;
   nakitAkisi.digerNet = paraYuvarla(state.para - paraGiris - mutabakatliToplam);
 
   await oturumKaydet(state);

@@ -340,6 +340,8 @@ export interface CharacterState {
   veba_olum_riski: number;
   /** Bir sonraki küçük krizin (kıtlık/haydut baskını) tetikleneceği yıl eşiği. */
   kucuk_kriz_sonraki_yil: number;
+  /** Din Adamı için: bir sonraki cemaat bağışının tetikleneceği yıl eşiği (6-7 yılda bir düzenli aralık). Diğer mesleklerde kullanılmaz. */
+  din_bagis_sonraki_yil: number;
   /** Küçük kriz tetiklendiğinde SADECE bu yıla kadar geçerli olan ×2 gıda fiyat şoku; null = şok yok. */
   gida_fiyat_sok_bitis_yili: number | null;
   /** Ömürde bir kez: borçtayken (para < 0, bütçe açığı sürerken) kilise/eş dost bir kereliğine borcun bir kısmını kapatır. true olunca bir daha tetiklenmez. */
