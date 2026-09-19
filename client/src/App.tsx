@@ -1543,11 +1543,6 @@ function App() {
             <p className="giris-slogan">{m.girisSlogan}</p>
             <div className="giris-cark-sar">
               <CarkLogo boyut={132} />
-              {/* "Yeni meslek" duyurusu — tekerin sağında çapraz, küçük; nadiren
-                 bozuk LED gibi yanıp söner. */}
-              <span className="giris-yenimeslek-rozet" aria-hidden="true">
-                ✦ {m.gizemYeniMeslek} · {m.gizemTarih}
-              </span>
             </div>
             <div className="giris-durum-rozetleri">
               {gunlukSeri.seri > 0 && (

@@ -6399,7 +6399,6 @@ button.ikincil {
   padding-bottom: 0.55rem;
 }
 
-/* --- Giriş: "yeni meslek" duyurusu tekerin sağında, çapraz, küçük, nadir LED flicker --- */
 .giris-cark-sar {
   position: relative;
   display: inline-block;
@@ -6442,35 +6441,6 @@ button.ikincil {
   padding: 0.1rem 0.4rem;
   line-height: 1;
 }
-.giris-yenimeslek-rozet {
-  position: absolute;
-  top: 42%;
-  left: calc(100% - 0.2rem);
-  transform: rotate(-16deg);
-  transform-origin: left center;
-  white-space: nowrap;
-  font-family: var(--font-baslik);
-  font-size: 0.6rem;
-  letter-spacing: 0.06em;
-  color: var(--renk-altin-parlak);
-  opacity: 0.82;
-  text-shadow: 0 0 6px rgba(224, 199, 137, 0.55);
-  pointer-events: none;
-  animation: yeniMeslekLed 11s steps(1, end) infinite;
-}
-@keyframes yeniMeslekLed {
-  0%, 84%, 100% { opacity: 0.82; }
-  85% { opacity: 0.15; }
-  86% { opacity: 0.82; }
-  88% { opacity: 0.2; }
-  89% { opacity: 0.78; }
-  92% { opacity: 0.3; }
-  93% { opacity: 0.82; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .giris-yenimeslek-rozet { animation: none; }
-}
-
 /* --- Liderlik: üst/yan boşlukları kıs, satırları sadeleştir --- */
 .ekran-liderlik {
   margin-top: 0.6rem;
@@ -6537,8 +6507,5 @@ button.ikincil {
     flex: 1 1 40%;
     font-size: 0.8rem;
     padding: 0.4rem 0.3rem;
-  }
-  .giris-yenimeslek-rozet {
-    font-size: 0.52rem;
   }
 }
