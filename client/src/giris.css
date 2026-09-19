@@ -860,29 +860,42 @@ a.giris-imza-isim:hover {
   /* Adım göstergesi kompakt */
   .adim-gostergesi-metin { font-size: 0.66rem; letter-spacing: 0.12em; }
 
-  /* Kartlar tam genişlik tek sütun */
+  /* Kartlar tam genişlik tek sütun (meslek/yerleşim ekranları — çağ/ülke
+     kartları aşağıda ayrı ele alınır, buraya dahil DEĞİL: onlar App.css'teki
+     her zaman-aktif 2 sütunlu grid'i (.cag-kartlari/.bolge-bayrak-kartlari)
+     kullanmalı, bu kural onu ezmemeli — eskiden ezip mobilde çağı+ülkeyi tek
+     sütuna, uzun bir kaydırmalı listeye çeviriyordu). */
   .ekran-kurulum .meslek-kartlari,
-  .ekran-kurulum .yerlesim-kartlari,
-  .ekran-adim-cag .meslek-kartlari,
-  .ekran-adim-bolge .meslek-kartlari {
+  .ekran-kurulum .yerlesim-kartlari {
     flex-direction: column;
     grid-template-columns: 1fr;
     gap: 0.6rem;
   }
 
-  /* Çağ/Ülke iki sütunu mobilde tek sütuna iner (çağ üstte, ülke altta) */
+  /* Çağ + Ülke: mobilde de yan yana/ızgara kalır (kullanıcı isteği — "aşağı
+     kaydırmak gerekiyor" şikayeti) — çağ üstte 2 küçük kutu tek sırada,
+     altta ülkeler 2'şerli ızgarada. `.cag-bolge-grid` dikeyde çağ bloğunu
+     ülke bloğunun üstüne yığar (App.css grid'lerine dokunulmaz), yalnız
+     kart boyutları telefon için küçültülür. */
   .cag-bolge-grid {
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.7rem;
   }
-  .cag-kartlari-sutun .meslek-kart,
+  .ekran-adim-cag .cag-kartlari-sutun .meslek-kart {
+    width: auto;
+    min-height: 0;
+    padding: 0.6rem 0.4rem;
+    gap: 0.2rem;
+  }
+  .cag-kartlari-sutun .meslek-kart .meslek-simge { font-size: 1.35rem; }
+  .cag-kartlari-sutun .meslek-kart strong { font-size: 0.78rem; }
+  .cag-kartlari-sutun .meslek-kart .meslek-aciklama { display: none; }
+
   .bolge-secim-blok .meslek-kart {
     width: 100%;
   }
   .ekran-kurulum .meslek-kart,
-  .ekran-kurulum .yerlesim-kart,
-  .ekran-adim-cag .meslek-kart,
-  .ekran-adim-bolge .meslek-kart {
+  .ekran-kurulum .yerlesim-kart {
     width: 100%;
     min-height: 0;
     padding: 1.15rem 1rem;
