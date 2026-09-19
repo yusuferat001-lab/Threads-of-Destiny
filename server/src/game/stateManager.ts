@@ -927,22 +927,16 @@ export function eskiKayitGocu(state: CharacterState): void {
     if (typeof c.iliski !== "number") c.iliski = 60;
   }
   // Derin rakip ilişkileri sonradan eklendi: meslek seçilmişse eski tekil
-  // rakip_adi'ndan + bir ek isimden iki rakip türet.
+  // rakip_adi'ndan TEK bir rakip türet (2026-09: iki rakip yerine tek rakip).
   if (!Array.isArray(state.rakipler) || state.rakipler.length === 0) {
     if (state.meslek && MESLEKLER.includes(state.meslek)) {
-      let ikinci = state.dost_adi === state.rakip_adi ? "Konrad" : state.dost_adi;
-      try {
-        ikinci = rastgeleBirIsimSec(state.cag, state.bolge, [state.dost_adi, state.rakip_adi, state.anne_adi, state.baba_adi]);
-      } catch {
-        /* isim havuzu yoksa yukarıdaki yedek kalır */
-      }
-      state.rakipler = [
-        { ad: state.rakip_adi, meslek: state.meslek, guc: 55, husumet: 35, yenildi: false },
-        { ad: ikinci, meslek: state.meslek, guc: 50, husumet: 28, yenildi: false },
-      ];
+      state.rakipler = [{ ad: state.rakip_adi, meslek: state.meslek, guc: 55, husumet: 35, yenildi: false }];
     } else {
       state.rakipler = [];
     }
+  } else if (state.rakipler.length > 1) {
+    // Eski kayıtlarda iki rakip olabilir — tekil rakip kuralına indir.
+    state.rakipler = [state.rakipler[0]];
   }
   if (state.salgin_korunma_yatirimi === undefined) state.salgin_korunma_yatirimi = null;
   if (state.kredi === undefined) state.kredi = null;
@@ -983,18 +977,11 @@ export function mesleğiSec(state: CharacterState, meslek: string): void {
     }
   }
 
-  // Derin rakip ilişkileri (§13): meslektaş 2 isimli rakip. İlki eski tekil
+  // Derin rakip ilişkileri (§13): meslektaş TEK isimli rakip — eski tekil
   // rakip_adi ile aynı kişi (geriye dönük uyum — olaylar {rakip}'i kullanır).
   if (state.rakipler.length === 0) {
-    const ikinciAd = rastgeleBirIsimSec(state.cag, state.bolge, [
-      state.dost_adi,
-      state.rakip_adi,
-      state.anne_adi,
-      state.baba_adi,
-    ]);
     state.rakipler = [
       { ad: state.rakip_adi, meslek, guc: 48 + Math.floor(Math.random() * 22), husumet: 28 + Math.floor(Math.random() * 14), yenildi: false },
-      { ad: ikinciAd, meslek, guc: 42 + Math.floor(Math.random() * 24), husumet: 22 + Math.floor(Math.random() * 14), yenildi: false },
     ];
   }
 
