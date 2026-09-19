@@ -1167,9 +1167,10 @@ export function yaslanmaUygula(state: CharacterState, yasArtisi: number): number
   let yas = state.yas - yasArtisi;
   for (let i = 0; i < yasArtisi; i++) {
     yas += 1;
-    if (yas >= 75) toplamKayip += 7;
-    else if (yas >= 65) toplamKayip += 5;
-    else if (yas >= 55) toplamKayip += 3;
+    if (yas >= 80) toplamKayip += 7;
+    else if (yas >= 70) toplamKayip += 5;
+    else if (yas >= 60) toplamKayip += 4;
+    else if (yas >= 50) toplamKayip += 1;
   }
   state.saglik -= toplamKayip;
   return toplamKayip;
