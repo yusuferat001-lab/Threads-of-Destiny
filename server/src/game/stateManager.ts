@@ -2542,9 +2542,9 @@ const BUYUK_SAVAS_MIN_COOLDOWN_YIL = 10;
 const BUYUK_SAVAS_YILLIK_IHTIMAL = 0.1;
 const BUYUK_SAVAS_SURE_MIN_YIL = 3;
 const BUYUK_SAVAS_SURE_ARALIK_YIL = 3; // 3-6 yıl
-const BUYUK_SAVAS_VERGI_ORANI_MIN = 0.15;
-const BUYUK_SAVAS_VERGI_ORANI_ARALIK = 0.05;
-const BUYUK_SAVAS_GIDA_CARPANI_MIN = 1.25;
+const BUYUK_SAVAS_VERGI_ORANI_MIN = 0.08;
+const BUYUK_SAVAS_VERGI_ORANI_ARALIK = 0.04;
+const BUYUK_SAVAS_GIDA_CARPANI_MIN = 1.15;
 const BUYUK_SAVAS_GIDA_CARPANI_ARALIK = 0.1;
 
 /**
@@ -2674,7 +2674,7 @@ export function vebaHastaligiBaslatEt(state: CharacterState): void {
   if (state.veba_olum_riski <= 0) state.veba_olum_riski = VEBA_BASLANGIC_OLUM_RISKI;
 }
 /** Hasta bir turu ölmeden atlatınca ölüm riskinden düşülen sabit miktar (beden direniyor). */
-const VEBA_HASTALIK_DOGAL_DUSUS = 15;
+const VEBA_HASTALIK_DOGAL_DUSUS = 21;
 /** Ölüm riski bu eşiğin altına inince hastalık atlatılmış sayılır (etiket silinir). */
 const VEBA_HASTALIK_IYILESME_ESIGI = 12;
 

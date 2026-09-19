@@ -180,10 +180,10 @@ describe("buyukSavasKontrolEt / buyukSavasBitisKontrolEt", () => {
     expect(savas.dusman).toBeTruthy();
     expect(savas.bitisYili - savas.baslangicYili).toBeGreaterThanOrEqual(3);
     expect(savas.bitisYili - savas.baslangicYili).toBeLessThanOrEqual(6);
-    expect(savas.vergiOrani).toBeGreaterThanOrEqual(0.15);
-    expect(savas.vergiOrani).toBeLessThanOrEqual(0.2);
-    expect(savas.gidaCarpani).toBeGreaterThanOrEqual(1.25);
-    expect(savas.gidaCarpani).toBeLessThanOrEqual(1.35);
+    expect(savas.vergiOrani).toBeGreaterThanOrEqual(0.08);
+    expect(savas.vergiOrani).toBeLessThanOrEqual(0.12);
+    expect(savas.gidaCarpani).toBeGreaterThanOrEqual(1.15);
+    expect(savas.gidaCarpani).toBeLessThanOrEqual(1.25);
   });
 
   it("bitiş yılına ulaşınca savaş sona erer ve cooldown yeniden kurulur", () => {
