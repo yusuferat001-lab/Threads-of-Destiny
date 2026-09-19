@@ -3630,8 +3630,6 @@ export interface SosyalAksiyonKarti {
   fiyat: number;
   alkollu?: boolean;
   gizli?: boolean;
-  /** true ise iki kademeli (sadaka: az / çok) — istemci `varyant` gönderir. */
-  varyantli?: boolean;
   kilitli: boolean;
   /** Cooldown'un dolmasına kalan oyun yılı (0 = hazır). */
   kalanYil: number;
@@ -3704,7 +3702,6 @@ export async function sosyallesmeAksiyonConfigGetir(id: string): Promise<SosyalA
       ad: en ? a.adEn : a.ad,
       aciklama: en ? a.aciklamaEn : a.aciklama,
       fiyat,
-      varyantli: a.id === "sadaka",
       kilitli: bekleyen > 0 || mekanEngeli || paraYok,
       kalanYil: bekleyen,
       neden:
@@ -3809,14 +3806,12 @@ export async function sosyallesmeAksiyonYap(
       mesaj = T(state.dil, "Deli bir süre peşinden yürüdü, uydurma bir marş söyledi, sonra kayboldu.");
     }
   } else if (aksiyonId === "sadaka") {
-    const cok = varyant === "cok";
-    const fiyat = Math.max(1, paraYuvarla((cok ? 6 : 2) * enfl));
+    const fiyat = Math.max(1, paraYuvarla(2 * enfl));
     if (state.para < fiyat) throw new Error(`Yeterli paran yok (${fiyat} ${birim} gerekli).`);
     state.para = paraYuvarla(state.para - fiyat);
-    state.ahlak += cok ? 6 : 3;
-    state.mutluluk += cok ? 3 : 2;
-    state.un += cok ? 2 : 1;
-    if (cok && state.meslek === "Din Adamı") state.nufuz += 1;
+    state.ahlak += 3;
+    state.mutluluk += 2;
+    state.un += 1;
     state.omur_sadaka_sayisi = (state.omur_sadaka_sayisi ?? 0) + 1; // "Sadaka Taşı" amacı
     mesaj = T(state.dil, "Kesenden {0} {birim} çıkarıp dağıttın; içindeki düğüm biraz çözüldü.", [fiyat]).replace(
       /\{birim\}/g,

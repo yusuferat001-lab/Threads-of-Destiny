@@ -1340,10 +1340,6 @@ button.ikincil {
   opacity: 1;
 }
 
-.panel-parsomen .durum-etki {
-  color: var(--renk-altin-koyu);
-}
-
 .panel-parsomen button.ikincil {
   color: var(--renk-parsomen-metin);
   border-color: var(--renk-ahsap-kenar);
@@ -3650,13 +3646,20 @@ button.ikincil {
 .sosyal-icki-cip {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.4rem 0.75rem;
+  gap: 0.4rem;
+  padding: 0.42rem 0.8rem;
   font-size: 0.85rem;
+  font-weight: 600;
   background: #241a13;
   border: 1px solid #5a4632;
   border-radius: 999px;
   cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+}
+
+.sosyal-icki-simge {
+  font-size: 1.15em;
+  line-height: 1;
 }
 
 .sosyal-icki-cip:hover:not(:disabled) {
@@ -3667,6 +3670,27 @@ button.ikincil {
 .sosyal-icki-cip:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+/* Alkollü içkiler — daha ilgi çekici, şarap/bakır tonlarında canlı bir kutu
+   (kullanıcı isteği: alkol seçenekleri göze çarpsın, alkolsüzden ayrılsın). */
+.sosyal-icki-alkollu {
+  background: linear-gradient(135deg, #5c1524, #8a2b1f 55%, #a8481c);
+  border: 1px solid #d98a3f;
+  color: #fbe6c8;
+  box-shadow: 0 2px 8px rgba(140, 40, 20, 0.35), inset 0 0 0 1px rgba(255, 200, 130, 0.12);
+}
+
+.sosyal-icki-alkollu:hover:not(:disabled) {
+  border-color: #ffcf7a;
+  background: linear-gradient(135deg, #6c1a2c, #a13322 55%, #c05a20);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(140, 40, 20, 0.45), inset 0 0 0 1px rgba(255, 210, 150, 0.2);
+}
+
+.sosyal-icki-alkollu .sosyal-cip-fiyat {
+  opacity: 0.85;
+  color: #ffe3b0;
 }
 
 .sosyal-icki-gizli {
@@ -4299,40 +4323,6 @@ button.ikincil {
   margin: 0;
 }
 
-/* ---- Durum paneli ---- */
-
-.durum-paneli h3 {
-  margin: 0 0 0.75rem;
-  font-size: clamp(1rem, 0.35vw + 0.82rem, 1.35rem);
-  opacity: 0.85;
-}
-
-.durum-bos {
-  font-size: clamp(0.85rem, 0.3vw + 0.7rem, 1.15rem);
-  opacity: 0.6;
-  font-style: italic;
-}
-
-.durum-rozet {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  padding: 0.5rem 0.65rem;
-  border-radius: 8px;
-  margin-bottom: 0.5rem;
-  font-size: clamp(0.85rem, 0.3vw + 0.7rem, 1.15rem);
-}
-
-.durum-gecici {
-  background: rgba(139, 44, 44, 0.35);
-  border: 1px solid rgba(139, 44, 44, 0.6);
-}
-
-.durum-kalici {
-  background: rgba(90, 70, 40, 0.45);
-  border: 1px solid rgba(140, 110, 60, 0.6);
-}
-
 /* ---- Kişilik & miras paneli ---- */
 
 .gecmis-grafik {
@@ -4459,21 +4449,6 @@ button.ikincil {
   background: rgba(139, 44, 44, 0.25);
   border: 1px solid rgba(180, 70, 70, 0.45);
   color: #e0a6a6;
-}
-
-.durum-ad {
-  font-weight: bold;
-}
-
-.durum-sure {
-  font-size: clamp(0.75rem, 0.3vw + 0.6rem, 1.05rem);
-  opacity: 0.8;
-}
-
-.durum-etki {
-  font-size: clamp(0.75rem, 0.3vw + 0.6rem, 1.05rem);
-  opacity: 0.85;
-  color: #e0c789;
 }
 
 /* ---- Envanter paneli ---- */
@@ -5420,7 +5395,9 @@ button.ikincil {
       'merkez merkez'
       'sol sag';
     grid-template-columns: 1fr 1fr;
-    align-items: start;
+    /* Sol ve sağ sütun aynı satırda: 'stretch' ikisini de o satırın en uzun
+       içeriğine eşitler (kullanıcı isteği — iki kutu her zaman aynı boyda). */
+    align-items: stretch;
     flex: none;
     column-gap: 0.4rem;
     row-gap: 0.5rem;
@@ -5429,7 +5406,6 @@ button.ikincil {
   .oyun-govde > .sol-panel,
   .oyun-govde > .sag-panel {
     min-width: 0; /* grid item taşmasını engelle — içerik sarsın */
-    align-self: start;
     gap: 0.5rem;
   }
   .oyun-govde > .sol-panel {
@@ -5437,9 +5413,12 @@ button.ikincil {
   }
 
   .panel-parsomen {
-    height: auto;
+    /* Grid tarafından stretch'lenen kutunun tamamını doldur; içerik kutudan
+       taşarsa (biri diğerinden belirgin uzunsa) kendi içinde kayar — ama
+       kutuların dıştan görünen boyu her zaman eşit kalır. */
+    height: 100%;
     max-height: none;
-    overflow-y: visible;
+    overflow-y: auto;
     padding: 0.4rem 0.45rem;
   }
 
@@ -6239,35 +6218,6 @@ button.ikincil {
   background: linear-gradient(90deg, #4a8a3a, #6fb35a);
 }
 
-/* --- Task 19: aktif durumlar mobilde arka plan resminin üstünde ince şerit ---
-   Amaç şeridinin ALTINDA kalsın (üst üste binmesin). */
-.durum-sahne-serit {
-  position: absolute;
-  top: 3.3rem;
-  left: 0.35rem;
-  right: 0.35rem;
-  z-index: 2;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
-  pointer-events: none;
-}
-.durum-sahne-rozet {
-  font-size: 0.6rem;
-  line-height: 1.1;
-  padding: 0.1rem 0.4rem;
-  border-radius: 999px;
-  background: rgba(20, 12, 6, 0.72);
-  color: #f0e2c4;
-  border: 1px solid rgba(224, 199, 137, 0.4);
-}
-.durum-sahne-rozet.durum-kalici {
-  border-color: rgba(176, 64, 47, 0.6);
-}
-/* Sağ paneldeki durum paneli — başlık kaldırıldı, boşluğu daralt */
-.durum-paneli {
-  margin-top: 0.4rem;
-}
 
 /* --- Task 16: kariyer ekranı kademe göstergesi (Yatırım'dan taşındı, küçük) --- */
 .kariyer-kademe-satiri {
@@ -6318,8 +6268,23 @@ button.ikincil {
     padding: 0.16rem 0.4rem;
     font-size: 0.54rem;
   }
+  /* Mobilde tam sığmayan başlık/açıklama artık kırpılmıyor — sığan kutu
+     aynen kalır, ancak metin uzunsa kutu tek satır daha aşağı doğru
+     genişleyebilir (en fazla 2 satır; kullanıcı isteği). */
+  .amac-serit-baslik {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    white-space: normal;
+  }
   .amac-serit-aciklama {
     /* Görev kısa açıklaması mobilde de görünür (kullanıcı isteği) */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    white-space: normal;
     font-size: 0.9em;
   }
 
@@ -6332,15 +6297,6 @@ button.ikincil {
   }
   .olay-gorseli-sag {
     display: none;
-  }
-
-  .durum-sahne-serit {
-    top: 2.6rem;
-    left: 0.25rem;
-    right: 0.25rem;
-  }
-  .durum-sahne-rozet {
-    font-size: 0.55rem;
   }
 
   .kisilik-modal {
