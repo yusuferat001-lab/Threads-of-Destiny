@@ -2405,8 +2405,6 @@ function App() {
           meslek={karakter.meslek}
           rutbe={karakter.rutbe}
           rutbeSeviye={karakter.rutbe_seviye}
-          amirAdi={karakter.amir_adi}
-          amirRutbe={karakter.amir_rutbe}
           ekip={karakter.ekip}
           rakipler={karakter.rakipler}
           orduMevcudu={karakter.ordu_mevcudu}

@@ -4640,7 +4640,7 @@ button.ikincil {
   letter-spacing: 0.04em;
   margin: 0;
 }
-/* Bölüm başlıkları (Ekibin / Rakiplerin / Amir & Astlar) dark zeminde okunur kalsın. */
+/* Bölüm başlıkları (Ekibin / Rakibin / Meslek Gücün) dark zeminde okunur kalsın. */
 .ekran-kariyer .aile-koken-karti,
 .ekran-kariyer .aile-cocuklar-karti {
   background: rgba(0, 0, 0, 0.28);
@@ -4965,6 +4965,57 @@ button.ikincil {
 .kariyer-sonuc-modal button {
   min-height: 42px;
   width: 100%;
+}
+
+/* --- Karanlık İşler: ayrı, geniş, kaydırılabilir açılır pencere --- */
+.kariyer-karanlik-modal {
+  max-width: 640px;
+  max-height: 88vh;
+  overflow-y: auto;
+  text-align: left;
+}
+.kariyer-karanlik-modal-baslik {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-bottom: 0.7rem;
+}
+.kariyer-karanlik-modal-baslik h3 {
+  margin: 0;
+  color: var(--renk-altin-parlak);
+  letter-spacing: 0.04em;
+}
+.kariyer-karanlik-kapat {
+  width: auto;
+  min-height: 34px;
+  padding: 0.25rem 0.6rem;
+}
+.kariyer-karanlik-rakip {
+  margin-bottom: 0.8rem;
+}
+.kariyer-karanlik-rakip > h3 {
+  margin: 0 0 0.5rem;
+  color: var(--renk-altin-parlak);
+  letter-spacing: 0.04em;
+  font-size: 0.9rem;
+}
+.kariyer-karanlik-modal .yatirim-kartlari {
+  margin: 0.5rem 0 0.7rem;
+}
+.kariyer-karanlik-modal > button {
+  margin-top: 0.6rem;
+}
+
+@media (max-width: 767px) {
+  .kariyer-karanlik-modal {
+    max-width: 100%;
+    max-height: 92vh;
+    padding: 0.9rem 0.85rem;
+  }
+  .kariyer-karanlik-modal-baslik h3 {
+    font-size: 0.95rem;
+  }
 }
 
 @media (max-width: 767px) {

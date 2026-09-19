@@ -23,9 +23,9 @@ function taze(): CharacterState {
 }
 
 describe("Derin rakip ilişkileri", () => {
-  it("meslek seçilince 2 isimli rakip üretilir; ilki rakip_adi", () => {
+  it("meslek seçilince tek isimli rakip üretilir; rakip_adi ile aynı kişi", () => {
     const s = taze();
-    expect(s.rakipler).toHaveLength(2);
+    expect(s.rakipler).toHaveLength(1);
     expect(s.rakipler[0].ad).toBe(s.rakip_adi);
     expect(s.rakipler.every((r) => !r.yenildi)).toBe(true);
   });

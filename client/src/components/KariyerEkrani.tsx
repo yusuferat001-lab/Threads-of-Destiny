@@ -9,8 +9,6 @@ interface KariyerEkraniProps {
   meslek: string;
   rutbe: string;
   rutbeSeviye: number;
-  amirAdi: string | null;
-  amirRutbe: string | null;
   ekip: EkipUyesi[];
   rakipler: Rakip[];
   orduMevcudu: number;
@@ -389,15 +387,14 @@ function IstekAksiyon({
 /**
  * Tam sayfa "Kariyer" ekranı (eski "Görevin"): yönetimle bağlar (Yönetici + Patron
  * ilişki hatları, bağış/yağcılık/hizmet, istekler, dayatılan talep), ekip (Kov),
- * rakipler, amir ve mesleğe özel güç metrikleri. İşlem sonuçları ekrana açılır
- * bir pencerede gösterilir (üstte sabit metin yok). §35.
+ * rakibin ve mesleğe özel güç metrikleri. Karanlık İşler ayrı, tam ekranı kaplayan
+ * bir açılır pencerede — rakip kartı bu pencerenin en üstünde gösterilir. İşlem
+ * sonuçları da ekrana açılır bir pencerede gösterilir (üstte sabit metin yok). §35.
  */
 export function KariyerEkrani({
   meslek,
   rutbe,
   rutbeSeviye,
-  amirAdi,
-  amirRutbe,
   ekip,
   rakipler,
   orduMevcudu,
@@ -495,7 +492,7 @@ export function KariyerEkrani({
       )}
 
       {/* PC'de iki sütunlu "saray" düzeni: solda geniş yönetim/ilişki bölümü,
-          sağda ekip/rakip/amir/güç özeti — strateji oyunlarındaki danışman
+          sağda mesleğe özel güç özeti — strateji oyunlarındaki danışman
           ekranlarına benzer şekilde. Mobilde tek sütuna iner (bkz. medya sorgusu). */}
       <div className="kariyer-govde">
         <div className="kariyer-ana-sutun">
@@ -562,75 +559,15 @@ export function KariyerEkrani({
             )}
           </div>
 
-          {/* ===== KARANLIK İŞLER (açılır bölüm) ===== */}
+          {/* ===== KARANLIK İŞLER (ayrı bir pencerede açılır) ===== */}
           <div className="aile-cocuklar-karti">
-            <button className="kariyer-istek-ac" onClick={() => setKaranlikAcik((v) => !v)}>
-              {karanlikAcik ? '▾' : '▸'} {m.iyKaranlikIsler}
+            <button className="kariyer-istek-ac" onClick={() => setKaranlikAcik(true)}>
+              ▸ {m.iyKaranlikIsler}
             </button>
-
-            {karanlikAcik && (
-              <>
-                <p className="giris-aciklama tam-yardimci-metin">{m.iyKaranlikIsAcikla}</p>
-
-                <div className="yatirim-kartlari">
-                  {kotuIsler.map((is) => (
-                    <KaranlikIsKart
-                      key={is.id}
-                      is={is}
-                      dil={dil}
-                      m={m}
-                      paraBirimi={paraBirimi}
-                      yukleniyor={yukleniyor}
-                      rakipler={rakipler}
-                      onKotuIs={onKotuIs}
-                    />
-                  ))}
-                </div>
-
-                <p className={`suc-seviyesi-gostergesi ${sucSeviyesi >= 50 ? 'suc-seviyesi-riskli' : ''}`}>
-                  {bic(m.iySucSeviyen, Math.round(sucSeviyesi), sucSeviyesiEtiketi(m, sucSeviyesi))}
-                </p>
-              </>
-            )}
           </div>
         </div>
 
         <aside className="kariyer-yan-sutun">
-          {/* ===== RAKİPLERİN ===== */}
-          {rakipler.length > 0 && (
-            <div className="aile-koken-karti">
-              <h3>{en ? 'Your Rivals' : 'Rakiplerin'}</h3>
-              <div className="aile-koken-listesi">
-                {rakipler.map((r) => (
-                  <span key={r.ad} className={`iliski-rozet${r.yenildi ? ' rakip-yenildi' : ''}`}>
-                    ♟️ {r.ad} · {kt(r.meslek)}
-                    {r.yenildi
-                      ? ` · ${en ? 'defeated' : 'saf dışı'}`
-                      : ` · ${en ? 'power' : 'güç'}: ${gucEtiket(r.guc)} · ${husumetEtiket(r.husumet)}`}
-                  </span>
-                ))}
-              </div>
-              <p className="aile-bos-metin">
-                {en
-                  ? 'Break a rival with the dark deeds above, or ask the ruler to strike one here.'
-                  : 'Rakibini yukarıdaki karanlık işlerle kır, ya da buradan yöneticiden darbe iste.'}
-              </p>
-            </div>
-          )}
-
-          {/* ===== AMİR ===== */}
-          <div className="aile-koken-karti">
-            <h3>{m.iyAmirin}</h3>
-            {amirAdi ? (
-              <div className="iliski-rozet iliski-es">
-                <span className="iliski-ad">🎖️ {amirAdi}</span>
-                {amirRutbe && <span className="iliski-etiket">{kt(amirRutbe)}</span>}
-              </div>
-            ) : (
-              <p className="aile-bos-metin">{m.geAmirYok}</p>
-            )}
-          </div>
-
           {meslekGucSatirlari.length > 0 && (
             <div className="aile-koken-karti">
               <h3>{m.geMeslekGucu}</h3>
@@ -645,6 +582,64 @@ export function KariyerEkrani({
           )}
         </aside>
       </div>
+
+      {karanlikAcik && (
+        <div className="kariyer-sonuc-katman" onClick={() => setKaranlikAcik(false)}>
+          <div
+            className="kariyer-sonuc-modal kariyer-karanlik-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="kariyer-karanlik-modal-baslik">
+              <h3>{m.iyKaranlikIsler}</h3>
+              <button className="ikincil kariyer-karanlik-kapat" onClick={() => setKaranlikAcik(false)}>
+                ✕
+              </button>
+            </div>
+
+            {/* Rakibin — karanlık işlerin en üstünde: hedef seçimi buradan başlar. */}
+            {rakipler.length > 0 && (
+              <div className="aile-koken-karti kariyer-karanlik-rakip">
+                <h3>{en ? 'Your Rival' : 'Rakibin'}</h3>
+                <div className="aile-koken-listesi">
+                  {rakipler.map((r) => (
+                    <span key={r.ad} className={`iliski-rozet${r.yenildi ? ' rakip-yenildi' : ''}`}>
+                      ♟️ {r.ad} · {kt(r.meslek)}
+                      {r.yenildi
+                        ? ` · ${en ? 'defeated' : 'saf dışı'}`
+                        : ` · ${en ? 'power' : 'güç'}: ${gucEtiket(r.guc)} · ${husumetEtiket(r.husumet)}`}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <p className="giris-aciklama tam-yardimci-metin">{m.iyKaranlikIsAcikla}</p>
+
+            <div className="yatirim-kartlari">
+              {kotuIsler.map((is) => (
+                <KaranlikIsKart
+                  key={is.id}
+                  is={is}
+                  dil={dil}
+                  m={m}
+                  paraBirimi={paraBirimi}
+                  yukleniyor={yukleniyor}
+                  rakipler={rakipler}
+                  onKotuIs={onKotuIs}
+                />
+              ))}
+            </div>
+
+            <p className={`suc-seviyesi-gostergesi ${sucSeviyesi >= 50 ? 'suc-seviyesi-riskli' : ''}`}>
+              {bic(m.iySucSeviyen, Math.round(sucSeviyesi), sucSeviyesiEtiketi(m, sucSeviyesi))}
+            </p>
+
+            <button className="ikincil" onClick={() => setKaranlikAcik(false)}>
+              {en ? 'Close' : 'Kapat'}
+            </button>
+          </div>
+        </div>
+      )}
 
       <button className="ikincil" onClick={onGeriDon}>
         {m.geriDon}
