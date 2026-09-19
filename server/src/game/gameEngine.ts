@@ -1254,6 +1254,13 @@ async function sonucuUygulaVeIlerlet(
   }
   if (etki.kariyer_puani_artis) state.kariyer_puani += etki.kariyer_puani_artis;
   if (etki.suc_artis) state.suc_seviyesi += etki.suc_artis;
+  // Tutuklanma anındaki GERÇEK suç seviyesi — hapis cezası bandı bundan hesaplanır
+  // (aşağıda). `suc_seviyesi_ayarla` (ör. büyük baskının "teslim ol" dalının suçu
+  // temize çekmesi) bu değeri EZMEDEN önce yakalanıyor; aksi halde aynı SonucEtkisi
+  // içinde hem "hapiste" etiketi hem suc_seviyesi_ayarla:10 varsa (aranma_baskin_*
+  // olaylarındaki gibi) ceza yanlışlıkla temiz banttan (2-4y) hesaplanıp azılı-suçlu
+  // bir tutuklamayı bile kısa cezaya indirirdi.
+  const sucSeviyesiTutuklanmaAni = state.suc_seviyesi;
   if (etki.suc_seviyesi_ayarla !== undefined) state.suc_seviyesi = etki.suc_seviyesi_ayarla;
   // Veba hastalığı ölüm riski: yalnız hastayken (veba_hastasi) anlamlı; olay
   // seçimi bu turdaki ölüm zarından ÖNCE uygulanır (vebaHastaligiKontrol).
@@ -1444,7 +1451,7 @@ async function sonucuUygulaVeIlerlet(
   // doğal erimesini atlayıp cezanın en az bir tam tur hissedilmesini garantiler.
   let hapisteYeniGirildiBuTur = false;
   if (etki.etiket_ekle?.includes("hapiste") && state.hapis_ceza_kalan <= 0) {
-    const ceza = hapisCezaSuresiHesapla(state.suc_seviyesi);
+    const ceza = hapisCezaSuresiHesapla(sucSeviyesiTutuklanmaAni);
     state.hapis_ceza_kalan = ceza;
     state.hapis_ceza_toplam = ceza;
     state.hapis_tur_sayaci = 0;
