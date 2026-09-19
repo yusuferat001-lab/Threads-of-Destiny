@@ -271,13 +271,13 @@ describe("sosyalleşme ekranı — tur harcamayan aksiyonlar (içki / deli / sad
     expect(sonuc.state.un).toBeLessThan(40);
   });
 
-  it("sadaka (çok) ahlakı belirgin artırır", async () => {
+  it("sadaka ahlakı artırır", async () => {
     const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
     await mesleğiAta(state.id, "Din Adamı");
     state.para = 500;
     state.ahlak = 50;
-    const sonuc = await sosyallesmeAksiyonYap(state.id, "sadaka", "cok");
-    expect(sonuc.state.ahlak).toBeGreaterThanOrEqual(55);
+    const sonuc = await sosyallesmeAksiyonYap(state.id, "sadaka");
+    expect(sonuc.state.ahlak).toBeGreaterThanOrEqual(53);
   });
 
   it("hapisteyken aksiyon yapılamaz ve config boş döner", async () => {

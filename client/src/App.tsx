@@ -82,7 +82,6 @@ import { UstSerit } from './components/UstSerit';
 import { AileOzetPaneli } from './components/AileOzetPaneli';
 import { SiyasetPaneli } from './components/SiyasetPaneli';
 import { AmacPaneli } from './components/AmacPaneli';
-import { DurumPaneli } from './components/DurumPaneli';
 import { EtkiCipleri } from './components/EtkiCipleri';
 import { KisilikPaneli } from './components/KisilikPaneli';
 import { BolgeSahnesi } from './components/BolgeSahnesi';
@@ -2074,9 +2073,6 @@ function App() {
                 {/* Masaüstünde hotspot'lar sahnenin ÜSTÜNDE (cqw/cqh ile görsele yapışık);
                     mobilde sahnenin ALTINDA ayrı bir aksiyon satırı olarak (bkz. Paket 2). */}
                 {!mobil && hotspotlar}
-                {/* Mobilde: aktif durumlar arka plan resminin üstünde ince bir şerit
-                    (tur/yıl bilgisi verilmeden — kullanıcı isteği). */}
-                {mobil && <DurumPaneli durumlar={karakter.durumlar} varyant="sahne" />}
               </div>
               {mobil && hotspotlar}
 
@@ -2207,8 +2203,6 @@ function App() {
                   {!karakter.es_adi && karakter.yas >= 18 ? ' 💍' : ''}
                 </button>
               </div>
-
-              <DurumPaneli durumlar={karakter.durumlar} />
             </YanPanel>
           </div>
 

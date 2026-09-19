@@ -726,8 +726,6 @@ export interface SosyalAksiyonKarti {
   fiyat: number;
   alkollu?: boolean;
   gizli?: boolean;
-  /** true ise iki kademeli (sadaka: az / çok). */
-  varyantli?: boolean;
   kilitli: boolean;
   kalanYil: number;
   neden?: string;

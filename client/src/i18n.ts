@@ -333,11 +333,6 @@ const TR = {
   hbBaslik: 'Haberler',
   hbYok: 'Şu an dünyadan önemli bir haber yok.',
 
-  // ---- DurumPaneli ----
-  drBaslik: 'Durumlar',
-  drKalici: 'kalıcı',
-  drTur: 'tur',
-
   // ---- KisilikPaneli ----
   kpBaslik: 'Kişilik & Yatkınlıklar',
   kpEksenPlanci: 'Planlı',
@@ -534,13 +529,6 @@ const TR = {
   // ---- HaberlerPaneli (ek) ----
   hbBaslikTam: '📰 Bölgeden Haberler',
 
-  // ---- DurumPaneli (ek) ----
-  drBaslikTam: 'Durumlar',
-  drBos: 'Aktif bir durum yok.',
-  drKaliciTam: 'Kalıcı',
-  drTurKaldi: '{0} tur kaldı',
-  drTurBasi: '/tur',
-
   // ---- KisilikPaneli (ek) ----
   kpBaslikTam: 'Kişilik & Miras',
   kpPlanlayici: 'Planlayıcı',
@@ -685,8 +673,6 @@ const TR = {
   spEtkinlikBaslik: '🍺 İçki & Etkinlikler',
   spEtkinlikNot: 'Turu tüketmez. Bölgeye uygun bir içki iç, deliyle konuş, sadaka ver, kulak kabart, birine ısmarla ya da fal baktır. Her biri bir süre sonra tekrar yapılabilir.',
   spAksiyonBedava: 'bedava',
-  spSadakaAz: 'Az',
-  spSadakaCok: 'Bol',
   spAyyasZaten: 'Zaten ayyaş olarak tanınıyorsun.',
   spZiyaretUyari: 'Şimdiye kadar {0} kez gittin — {1} ziyaret daha ayyaşlık damgası vurur.',
 
@@ -1037,11 +1023,6 @@ const EN: Metinler = {
   hbBaslik: 'News',
   hbYok: 'No important news from the world right now.',
 
-  // ---- DurumPaneli ----
-  drBaslik: 'Conditions',
-  drKalici: 'permanent',
-  drTur: 'turns',
-
   // ---- KisilikPaneli ----
   kpBaslik: 'Personality & Aptitudes',
   kpEksenPlanci: 'Planner',
@@ -1238,13 +1219,6 @@ const EN: Metinler = {
   // ---- HaberlerPaneli ----
   hbBaslikTam: '📰 News From the Region',
 
-  // ---- DurumPaneli ----
-  drBaslikTam: 'Conditions',
-  drBos: 'No active condition.',
-  drKaliciTam: 'Permanent',
-  drTurKaldi: '{0} turns left',
-  drTurBasi: '/turn',
-
   // ---- KisilikPaneli ----
   kpBaslikTam: 'Personality & Heritage',
   kpPlanlayici: 'Planner',
@@ -1385,8 +1359,6 @@ const EN: Metinler = {
   spEtkinlikBaslik: '🍺 Drinks & Pastimes',
   spEtkinlikNot: 'Costs no turn. Have a region-appropriate drink, talk to the fool, give alms, eavesdrop, buy a round, or have your fortune told. Each can be repeated after a while.',
   spAksiyonBedava: 'free',
-  spSadakaAz: 'A little',
-  spSadakaCok: 'A lot',
   spAyyasZaten: 'You are already known as a drunkard.',
   spZiyaretUyari: 'You have gone {0} times so far — {1} more visits will earn a drunkard mark.',
 

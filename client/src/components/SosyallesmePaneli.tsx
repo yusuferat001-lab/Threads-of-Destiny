@@ -113,12 +113,13 @@ export function SosyallesmePaneli({
                 {aksiyonConfig.icecekler.map((ic) => (
                   <button
                     key={ic.id}
-                    className={`sosyal-icki-cip${ic.gizli ? ' sosyal-icki-gizli' : ''}`}
+                    className={`sosyal-icki-cip${ic.alkollu ? ' sosyal-icki-alkollu' : ''}${ic.gizli ? ' sosyal-icki-gizli' : ''}`}
                     disabled={kilitli || ic.kilitli}
                     title={ic.neden ?? ic.aciklama}
                     onClick={() => aksiyonTikla(ic.id)}
                   >
-                    <span>{ic.simge}</span> {ic.ad}
+                    <span className="sosyal-icki-simge">{ic.simge}</span>
+                    <span className="sosyal-icki-ad">{ic.ad}</span>
                     <span className="sosyal-cip-fiyat">{fiyatEtiketi(ic.fiyat)}</span>
                   </button>
                 ))}
@@ -136,24 +137,13 @@ export function SosyallesmePaneli({
                     <strong>{a.ad}</strong>
                   </div>
                   <p className="sosyal-aksiyon-aciklama">{a.aciklama}</p>
-                  {a.varyantli ? (
-                    <div className="sosyal-aksiyon-butonlar">
-                      <button disabled={kilitli || a.kilitli} onClick={() => aksiyonTikla(a.id, 'az')}>
-                        {m.spSadakaAz} · {fiyatEtiketi(a.fiyat)}
-                      </button>
-                      <button disabled={kilitli || a.kilitli} onClick={() => aksiyonTikla(a.id, 'cok')}>
-                        {m.spSadakaCok}
-                      </button>
-                    </div>
-                  ) : (
-                    <button
-                      className="sosyal-aksiyon-buton"
-                      disabled={kilitli || a.kilitli}
-                      onClick={() => aksiyonTikla(a.id)}
-                    >
-                      {fiyatEtiketi(a.fiyat)}
-                    </button>
-                  )}
+                  <button
+                    className="sosyal-aksiyon-buton"
+                    disabled={kilitli || a.kilitli}
+                    onClick={() => aksiyonTikla(a.id)}
+                  >
+                    {fiyatEtiketi(a.fiyat)}
+                  </button>
                   {a.kilitli && a.neden && <span className="sosyal-aksiyon-neden">{a.neden}</span>}
                 </div>
               ))}
