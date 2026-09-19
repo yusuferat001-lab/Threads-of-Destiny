@@ -3114,6 +3114,15 @@ button.ikincil {
   min-height: 0;
 }
 
+/* Karanlık İşler Kariyer ekranına taşındıktan sonra Yatırım ekranı 2 sütuna indi. */
+.tam-govde-2col {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 1.1rem;
+  flex: 1;
+  min-height: 0;
+}
+
 /* Gelir & Gider'e özel: sol "Bütçen" sütunu dar kalır, orta "Yaşam Tarzın" ve sağ "Evin"
    sütunları AYNI genişlikte — böylece her ikisinde de kartlar yan yana ikişerli dizilir
    ve sağ sütun tek kolon halinde uzayıp aşağı kaydırma gerektirmez. */

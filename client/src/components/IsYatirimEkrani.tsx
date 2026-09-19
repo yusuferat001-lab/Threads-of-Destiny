@@ -1,16 +1,8 @@
 import { useEffect, useState } from 'react';
-import type {
-  MulkKartBilgisi,
-  MulkTuru,
-  KotuIsKarti,
-  RakipKarti,
-  SalginKorunmaKarti,
-  KrediConfig,
-} from '../types';
+import type { MulkKartBilgisi, MulkTuru, SalginKorunmaKarti, KrediConfig } from '../types';
 import { formatPara } from '../format';
-import { bic, type Metinler } from '../i18n';
+import { bic } from '../i18n';
 import { useDil } from '../DilContext';
-import type { Dil } from '../ayarlar';
 import { useMobilEkran } from '../hooks';
 
 interface SalginKorunmaConfig {
@@ -29,16 +21,12 @@ interface IsYatirimEkraniProps {
   sehirYonetimSeviyesi: number;
   sehirYonetimUnvan: string | null;
   para: number;
-  kotuIsler: KotuIsKarti[];
-  rakipler: RakipKarti[];
   salginKorunma: SalginKorunmaConfig | null;
   krediConfig: KrediConfig | null;
   dedikodular: string[];
   mulkler: MulkKartBilgisi[];
-  sucSeviyesi: number;
   yukleniyor: boolean;
   islemMesaji: string | null;
-  onKotuIs: (id: string, opts?: { hedefRakipAd?: string; vekil?: boolean }) => void;
   onSalginKorunma: (kademe: 1 | 2) => void;
   onKrediAl: (tutar: number) => void;
   onKrediPazarlik: () => void;
@@ -51,43 +39,6 @@ const MESLEK_SIMGESI: Record<string, string> = {
   Tüccar: '📈',
   'Din Adamı': '🕊️',
 };
-
-/** Karanlık iş adları/açıklamaları — i18n.ts yerine bileşene gömülü (NasilOynanir deseni). */
-const KARANLIK_ISLER: Record<string, { tr: { ad: string; aciklama: string }; en: { ad: string; aciklama: string } }> = {
-  rakibi_korkut: {
-    tr: { ad: '🗡️ Rakibini Korkut', aciklama: 'Rakibinin gücünü kır, biraz da haraç al. Düşük risk.' },
-    en: { ad: '🗡️ Intimidate Your Rival', aciklama: "Cut your rival down a notch and squeeze a little coin. Low risk." },
-  },
-  adam_dov: {
-    tr: { ad: '👊 Zevkine Adam Döv', aciklama: 'Sırf içini rahatlatmak için birini benzet. Getirisi yok, ahlakın çöker.' },
-    en: { ad: '👊 Beat Someone for Sport', aciklama: 'Rough someone up just to blow off steam. No payoff, morality tanks.' },
-  },
-  rakibi_dov: {
-    tr: { ad: '🩸 Rakibini Dövdür', aciklama: 'Rakibini ciddi biçimde hırpala — pazar payın ve terfi şansın artar.' },
-    en: { ad: '🩸 Have Your Rival Beaten', aciklama: 'Hurt your rival badly — your market share and promotion odds rise.' },
-  },
-  birini_soy: {
-    tr: { ad: '💰 Birini Soy', aciklama: 'Doğrudan para. Yakalanırsan kodesi boylarsın.' },
-    en: { ad: '💰 Rob Someone', aciklama: 'Straight cash. Get caught and you land in a cell.' },
-  },
-  isyeri_yak: {
-    tr: { ad: '🔥 Rakibin İş Yerini Yak', aciklama: 'En büyük darbe, en büyük risk: ölüm ve hapis ihtimali var.' },
-    en: { ad: "🔥 Burn Down Your Rival's Business", aciklama: 'The biggest blow, the biggest risk: death and prison are on the table.' },
-  },
-};
-
-function karanlikIsMetni(dil: Dil, id: string): { ad: string; aciklama: string } {
-  const kayit = KARANLIK_ISLER[id];
-  if (!kayit) return { ad: id, aciklama: '' };
-  return dil === 'en' ? kayit.en : kayit.tr;
-}
-
-function sucSeviyesiEtiketi(m: Metinler, seviye: number): string {
-  if (seviye < 25) return m.iySicilTemiz;
-  if (seviye < 50) return m.iySicilDikkat;
-  if (seviye < 75) return m.iySicilCiddi;
-  return m.iySicilPesinde;
-}
 
 function StatKarosu({
   ikon,
@@ -114,79 +65,6 @@ function StatKarosu({
   );
 }
 
-/** Tek bir karanlık iş kartı — rakip hedefleyen işlerde hedef seçimi + "adamına yaptır" seçeneği taşır. */
-function KaranlikIsKart({
-  is,
-  dil,
-  m,
-  paraBirimi,
-  yukleniyor,
-  rakipler,
-  onKotuIs,
-}: {
-  is: KotuIsKarti;
-  dil: Dil;
-  m: Metinler;
-  paraBirimi: string;
-  yukleniyor: boolean;
-  rakipler: RakipKarti[];
-  onKotuIs: IsYatirimEkraniProps['onKotuIs'];
-}) {
-  const en = dil === 'en';
-  const metin = karanlikIsMetni(dil, is.id);
-  const aktifRakipler = rakipler.filter((r) => !r.yenildi);
-  const rakipHedefli = is.rakipKirmaGucu > 0 && aktifRakipler.length > 0;
-  const [hedef, setHedef] = useState<string>(aktifRakipler[0]?.ad ?? '');
-  const [vekil, setVekil] = useState(false);
-
-  return (
-    <div className="yatirim-kart isyatirim-kendi-is-kart" title={metin.aciklama}>
-      <span className="meslek-simge">{is.simge}</span>
-      <strong>{metin.ad}</strong>
-      <span className="meslek-aciklama">
-        {bic(m.iyKaranlikSans, is.basariSansi)}
-        {is.tahminiKazanc > 0 && ` · ${bic(m.iyKaranlikKazanc, formatPara(is.tahminiKazanc), paraBirimi)}`}
-      </span>
-      <span className="meslek-aciklama tam-yardimci-metin">{m.iyKaranlikBedel}</span>
-
-      {rakipHedefli && (
-        <div className="karanlik-hedef-satir">
-          <select
-            className="karanlik-hedef-secim"
-            value={hedef}
-            disabled={yukleniyor}
-            onChange={(e) => setHedef(e.target.value)}
-          >
-            {aktifRakipler.map((r) => (
-              <option key={r.ad} value={r.ad}>
-                {en ? 'Target: ' : 'Hedef: '}
-                {r.ad}
-              </option>
-            ))}
-          </select>
-          <label className="karanlik-vekil-etiket">
-            <input type="checkbox" checked={vekil} disabled={yukleniyor} onChange={(e) => setVekil(e.target.checked)} />
-            {en ? 'Send a hired hand (ücret; kişisel risk düşer, ifşa riski var)' : 'Adamına yaptır (ücret; risk düşer, ifşa riski)'}
-          </label>
-        </div>
-      )}
-
-      <button
-        className="ikincil karanlik-cevir-buton"
-        disabled={yukleniyor}
-        onClick={() =>
-          onKotuIs(is.id, {
-            hedefRakipAd: rakipHedefli ? hedef : undefined,
-            vekil: rakipHedefli ? vekil : undefined,
-          })
-        }
-      >
-        {en ? 'Do it' : 'Çevir'}
-      </button>
-    </div>
-  );
-}
-
 const PIYASA_SINYAL_ETIKET: Record<string, { tr: string; en: string; sinif: string }> = {
   firsat: { tr: '🟢 Fırsat: şimdi al', en: '🟢 Opportunity: buy now', sinif: 'piyasa-firsat' },
   zirve: { tr: '🔴 Zirvede: beklemek daha iyi', en: '🔴 Peaking: better to wait', sinif: 'piyasa-zirve' },
@@ -203,16 +81,12 @@ export function IsYatirimEkrani({
   sehirYonetimSeviyesi,
   sehirYonetimUnvan,
   para,
-  kotuIsler,
-  rakipler,
   salginKorunma,
   krediConfig,
   dedikodular,
   mulkler,
-  sucSeviyesi,
   yukleniyor,
   islemMesaji,
-  onKotuIs,
   onSalginKorunma,
   onKrediAl,
   onKrediPazarlik,
@@ -248,7 +122,7 @@ export function IsYatirimEkrani({
 
       {mobil && (
         <div className="ekran-sekmeleri">
-          {[m.iyGorevin, m.iyYatirimlikGayrimenkuller, m.iyKaranlikIsler].map((baslik, i) => (
+          {[m.iyGorevin, m.iyYatirimlikGayrimenkuller].map((baslik, i) => (
             <button
               key={i}
               type="button"
@@ -261,7 +135,7 @@ export function IsYatirimEkrani({
         </div>
       )}
 
-      <div className={mobil ? 'tam-sutun-tekli-sarici' : 'tam-govde-3col'}>
+      <div className={mobil ? 'tam-sutun-tekli-sarici' : 'tam-govde-2col'}>
         <div className="tam-sutun" hidden={mobil && aktifSekme !== 0}>
           <h3 className="tam-baslik">{m.iyGorevin}</h3>
 
@@ -448,30 +322,6 @@ export function IsYatirimEkrani({
               )}
             </>
           )}
-        </div>
-
-        <div className="tam-sutun" hidden={mobil && aktifSekme !== 2}>
-          <h3 className="tam-baslik">{m.iyKaranlikIsler}</h3>
-          <p className="giris-aciklama tam-yardimci-metin">{m.iyKaranlikIsAcikla}</p>
-
-          <div className="yatirim-kartlari">
-            {kotuIsler.map((is) => (
-              <KaranlikIsKart
-                key={is.id}
-                is={is}
-                dil={dil}
-                m={m}
-                paraBirimi={paraBirimi}
-                yukleniyor={yukleniyor}
-                rakipler={rakipler}
-                onKotuIs={onKotuIs}
-              />
-            ))}
-          </div>
-
-          <p className={`suc-seviyesi-gostergesi ${sucSeviyesi >= 50 ? 'suc-seviyesi-riskli' : ''}`}>
-            {bic(m.iySucSeviyen, Math.round(sucSeviyesi), sucSeviyesiEtiketi(m, sucSeviyesi))}
-          </p>
         </div>
       </div>
 
