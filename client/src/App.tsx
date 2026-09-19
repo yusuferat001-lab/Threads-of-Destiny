@@ -10,9 +10,7 @@ import type {
   YasamSecenegiTanimi,
   FinansOzeti,
   KotuIsKarti,
-  RakipKarti,
   AmaclarDurumu,
-  SalginKorunmaKarti,
   KrediConfig,
   MulkKartBilgisi,
   MulkTuru,
@@ -40,11 +38,8 @@ import {
   finansGetir,
   kotuIsYap,
   kotuIsConfigGetir,
-  rakiplerGetir,
   amaclarGetir,
   hediyeEt,
-  salginKorunmaGetir,
-  salginKorunmaYatirimiYap,
   krediGetir,
   krediAl,
   krediPazarlik,
@@ -328,8 +323,6 @@ function App() {
   const [aileDurum, setAileDurum] = useState<AileDurumu | null>(null);
   const [yonetimDurum, setYonetimDurum] = useState<YonetimDurumu | null>(null);
   const [kotuIsler, setKotuIsler] = useState<KotuIsKarti[]>([]);
-  const [rakipler, setRakipler] = useState<RakipKarti[]>([]);
-  const [salginKorunma, setSalginKorunma] = useState<{ kartlar: SalginKorunmaKarti[]; aktifKademe: number; vebaVar: boolean } | null>(null);
   const [krediConfig, setKrediConfig] = useState<KrediConfig | null>(null);
   const [dedikodular, setDedikodular] = useState<string[]>([]);
   const [mulkler, setMulkler] = useState<MulkKartBilgisi[]>([]);
@@ -889,7 +882,12 @@ function App() {
     setHata(null);
     setYukleniyor(true);
     try {
-      setYonetimDurum(await yonetimDurumGetir(karakter.id));
+      const [durum, { config }] = await Promise.all([
+        yonetimDurumGetir(karakter.id),
+        kotuIsConfigGetir(karakter.id),
+      ]);
+      setYonetimDurum(durum);
+      setKotuIsler(config);
       setIslemMesaji(null);
       setEkran('kariyer');
     } catch (err) {
@@ -902,6 +900,15 @@ function App() {
   async function yonetimTazele(id: string) {
     try {
       setYonetimDurum(await yonetimDurumGetir(id));
+    } catch {
+      /* durum yenilenemezse eldeki kalır */
+    }
+  }
+
+  async function kariyerKaranlikIslerTazele(id: string) {
+    try {
+      const { config } = await kotuIsConfigGetir(id);
+      setKotuIsler(config);
     } catch {
       /* durum yenilenemezse eldeki kalır */
     }
@@ -963,22 +970,15 @@ function App() {
     setHata(null);
     setYukleniyor(true);
     try {
-      const [{ config }, { dedikodular }, { config: mulkConfig }, { kademeler }, { rakipler: rk }, sk, kr] =
-        await Promise.all([
-          kotuIsConfigGetir(karakter.id),
-          dedikoduGetir(karakter.id),
-          mulkConfigGetir(karakter.id),
-          zarKademeleriGetir(karakter.id),
-          rakiplerGetir(karakter.id),
-          salginKorunmaGetir(karakter.id),
-          krediGetir(karakter.id),
-        ]);
-      setKotuIsler(config);
+      const [{ dedikodular }, { config: mulkConfig }, { kademeler }, kr] = await Promise.all([
+        dedikoduGetir(karakter.id),
+        mulkConfigGetir(karakter.id),
+        zarKademeleriGetir(karakter.id),
+        krediGetir(karakter.id),
+      ]);
       setDedikodular(dedikodular);
       setMulkler(mulkConfig);
       setZarKademeleri(kademeler);
-      setRakipler(rk);
-      setSalginKorunma(sk);
       setKrediConfig(kr);
       setIslemMesaji(null);
       setEkran('yatirim');
@@ -990,17 +990,11 @@ function App() {
   }
 
   async function yatirimEkraniniYenile(stateId: string) {
-    const [{ config }, { config: mulkConfig }, { rakipler: rk }, sk, kr] = await Promise.all([
-      kotuIsConfigGetir(stateId),
+    const [{ config: mulkConfig }, kr] = await Promise.all([
       mulkConfigGetir(stateId),
-      rakiplerGetir(stateId),
-      salginKorunmaGetir(stateId),
       krediGetir(stateId),
     ]);
-    setKotuIsler(config);
     setMulkler(mulkConfig);
-    setRakipler(rk);
-    setSalginKorunma(sk);
     setKrediConfig(kr);
   }
 
@@ -1015,25 +1009,7 @@ function App() {
       setIslemMesaji(sonuc.mesaj);
       const { finans } = await finansGetir(sonuc.state.id);
       setFinans(finans);
-      await yatirimEkraniniYenile(sonuc.state.id);
-    } catch (err) {
-      setHata(String(err));
-    } finally {
-      setYukleniyor(false);
-    }
-  }
-
-  async function salginKorunmaHandler(kademe: 1 | 2) {
-    if (!karakter) return;
-    setHata(null);
-    setYukleniyor(true);
-    try {
-      const sonuc = await salginKorunmaYatirimiYap(karakter.id, kademe);
-      setKarakter(sonuc.state);
-      setIslemMesaji(sonuc.mesaj);
-      const { finans } = await finansGetir(sonuc.state.id);
-      setFinans(finans);
-      await yatirimEkraniniYenile(sonuc.state.id);
+      await kariyerKaranlikIslerTazele(sonuc.state.id);
     } catch (err) {
       setHata(String(err));
     } finally {
@@ -2280,21 +2256,14 @@ function App() {
           paraBirimi={karakter.para_birimi}
           orduMevcudu={karakter.ordu_mevcudu}
           orduTechizatSeviyesi={karakter.ordu_techizat_seviyesi}
-          ticaretSermaye={karakter.ticaret_sermaye}
           sehirYonetimSeviyesi={karakter.sehir_yonetim_seviyesi}
           sehirYonetimUnvan={karakter.sehir_yonetim_unvan}
-          para={karakter.para}
-          kotuIsler={kotuIsler}
-          rakipler={rakipler}
-          salginKorunma={salginKorunma}
           krediConfig={krediConfig}
           dedikodular={dedikodular}
           mulkler={mulkler}
-          sucSeviyesi={karakter.suc_seviyesi}
+          para={karakter.para}
           yukleniyor={yukleniyor}
           islemMesaji={islemMesaji}
-          onKotuIs={kotuIsHandler}
-          onSalginKorunma={salginKorunmaHandler}
           onKrediAl={krediAlHandler}
           onKrediPazarlik={krediPazarlikHandler}
           onMulkSatinAl={mulkSatinAlHandler}
@@ -2460,6 +2429,8 @@ function App() {
           vebaHastasi={karakter.etiketler.includes('veba_hastasi')}
           vebaOlumRiski={karakter.veba_olum_riski}
           paraBirimi={karakter.para_birimi}
+          kotuIsler={kotuIsler}
+          sucSeviyesi={karakter.suc_seviyesi}
           yukleniyor={yukleniyor}
           islemMesaji={islemMesaji}
           yonetimDurum={yonetimDurum}
@@ -2467,6 +2438,7 @@ function App() {
           onIstek={yonetimIstekHandler}
           onTalep={yonetimTalepHandler}
           onEkipCikar={ekipCikarHandler}
+          onKotuIs={kotuIsHandler}
           onGeriDon={() => {
             setIslemMesaji(null);
             setEkran('oyun');

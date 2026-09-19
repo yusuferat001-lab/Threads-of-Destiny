@@ -1,23 +1,9 @@
 import { useEffect, useState } from 'react';
-import type {
-  MulkKartBilgisi,
-  MulkTuru,
-  KotuIsKarti,
-  RakipKarti,
-  SalginKorunmaKarti,
-  KrediConfig,
-} from '../types';
+import type { MulkKartBilgisi, MulkTuru, KrediConfig } from '../types';
 import { formatPara } from '../format';
-import { bic, type Metinler } from '../i18n';
+import { bic } from '../i18n';
 import { useDil } from '../DilContext';
-import type { Dil } from '../ayarlar';
 import { useMobilEkran } from '../hooks';
-
-interface SalginKorunmaConfig {
-  kartlar: SalginKorunmaKarti[];
-  aktifKademe: number;
-  vebaVar: boolean;
-}
 
 interface IsYatirimEkraniProps {
   meslek: string;
@@ -25,68 +11,18 @@ interface IsYatirimEkraniProps {
   paraBirimi: string;
   orduMevcudu: number;
   orduTechizatSeviyesi: number;
-  ticaretSermaye: number;
   sehirYonetimSeviyesi: number;
   sehirYonetimUnvan: string | null;
   para: number;
-  kotuIsler: KotuIsKarti[];
-  rakipler: RakipKarti[];
-  salginKorunma: SalginKorunmaConfig | null;
   krediConfig: KrediConfig | null;
   dedikodular: string[];
   mulkler: MulkKartBilgisi[];
-  sucSeviyesi: number;
   yukleniyor: boolean;
   islemMesaji: string | null;
-  onKotuIs: (id: string, opts?: { hedefRakipAd?: string; vekil?: boolean }) => void;
-  onSalginKorunma: (kademe: 1 | 2) => void;
   onKrediAl: (tutar: number) => void;
   onKrediPazarlik: () => void;
   onMulkSatinAl: (tur: MulkTuru) => void;
   onGeriDon: () => void;
-}
-
-const MESLEK_SIMGESI: Record<string, string> = {
-  Asker: '⚔️',
-  Tüccar: '📈',
-  'Din Adamı': '🕊️',
-};
-
-/** Karanlık iş adları/açıklamaları — i18n.ts yerine bileşene gömülü (NasilOynanir deseni). */
-const KARANLIK_ISLER: Record<string, { tr: { ad: string; aciklama: string }; en: { ad: string; aciklama: string } }> = {
-  rakibi_korkut: {
-    tr: { ad: '🗡️ Rakibini Korkut', aciklama: 'Rakibinin gücünü kır, biraz da haraç al. Düşük risk.' },
-    en: { ad: '🗡️ Intimidate Your Rival', aciklama: "Cut your rival down a notch and squeeze a little coin. Low risk." },
-  },
-  adam_dov: {
-    tr: { ad: '👊 Zevkine Adam Döv', aciklama: 'Sırf içini rahatlatmak için birini benzet. Getirisi yok, ahlakın çöker.' },
-    en: { ad: '👊 Beat Someone for Sport', aciklama: 'Rough someone up just to blow off steam. No payoff, morality tanks.' },
-  },
-  rakibi_dov: {
-    tr: { ad: '🩸 Rakibini Dövdür', aciklama: 'Rakibini ciddi biçimde hırpala — pazar payın ve terfi şansın artar.' },
-    en: { ad: '🩸 Have Your Rival Beaten', aciklama: 'Hurt your rival badly — your market share and promotion odds rise.' },
-  },
-  birini_soy: {
-    tr: { ad: '💰 Birini Soy', aciklama: 'Doğrudan para. Yakalanırsan kodesi boylarsın.' },
-    en: { ad: '💰 Rob Someone', aciklama: 'Straight cash. Get caught and you land in a cell.' },
-  },
-  isyeri_yak: {
-    tr: { ad: '🔥 Rakibin İş Yerini Yak', aciklama: 'En büyük darbe, en büyük risk: ölüm ve hapis ihtimali var.' },
-    en: { ad: "🔥 Burn Down Your Rival's Business", aciklama: 'The biggest blow, the biggest risk: death and prison are on the table.' },
-  },
-};
-
-function karanlikIsMetni(dil: Dil, id: string): { ad: string; aciklama: string } {
-  const kayit = KARANLIK_ISLER[id];
-  if (!kayit) return { ad: id, aciklama: '' };
-  return dil === 'en' ? kayit.en : kayit.tr;
-}
-
-function sucSeviyesiEtiketi(m: Metinler, seviye: number): string {
-  if (seviye < 25) return m.iySicilTemiz;
-  if (seviye < 50) return m.iySicilDikkat;
-  if (seviye < 75) return m.iySicilCiddi;
-  return m.iySicilPesinde;
 }
 
 function StatKarosu({
@@ -114,79 +50,6 @@ function StatKarosu({
   );
 }
 
-/** Tek bir karanlık iş kartı — rakip hedefleyen işlerde hedef seçimi + "adamına yaptır" seçeneği taşır. */
-function KaranlikIsKart({
-  is,
-  dil,
-  m,
-  paraBirimi,
-  yukleniyor,
-  rakipler,
-  onKotuIs,
-}: {
-  is: KotuIsKarti;
-  dil: Dil;
-  m: Metinler;
-  paraBirimi: string;
-  yukleniyor: boolean;
-  rakipler: RakipKarti[];
-  onKotuIs: IsYatirimEkraniProps['onKotuIs'];
-}) {
-  const en = dil === 'en';
-  const metin = karanlikIsMetni(dil, is.id);
-  const aktifRakipler = rakipler.filter((r) => !r.yenildi);
-  const rakipHedefli = is.rakipKirmaGucu > 0 && aktifRakipler.length > 0;
-  const [hedef, setHedef] = useState<string>(aktifRakipler[0]?.ad ?? '');
-  const [vekil, setVekil] = useState(false);
-
-  return (
-    <div className="yatirim-kart isyatirim-kendi-is-kart" title={metin.aciklama}>
-      <span className="meslek-simge">{is.simge}</span>
-      <strong>{metin.ad}</strong>
-      <span className="meslek-aciklama">
-        {bic(m.iyKaranlikSans, is.basariSansi)}
-        {is.tahminiKazanc > 0 && ` · ${bic(m.iyKaranlikKazanc, formatPara(is.tahminiKazanc), paraBirimi)}`}
-      </span>
-      <span className="meslek-aciklama tam-yardimci-metin">{m.iyKaranlikBedel}</span>
-
-      {rakipHedefli && (
-        <div className="karanlik-hedef-satir">
-          <select
-            className="karanlik-hedef-secim"
-            value={hedef}
-            disabled={yukleniyor}
-            onChange={(e) => setHedef(e.target.value)}
-          >
-            {aktifRakipler.map((r) => (
-              <option key={r.ad} value={r.ad}>
-                {en ? 'Target: ' : 'Hedef: '}
-                {r.ad}
-              </option>
-            ))}
-          </select>
-          <label className="karanlik-vekil-etiket">
-            <input type="checkbox" checked={vekil} disabled={yukleniyor} onChange={(e) => setVekil(e.target.checked)} />
-            {en ? 'Send a hired hand (ücret; kişisel risk düşer, ifşa riski var)' : 'Adamına yaptır (ücret; risk düşer, ifşa riski)'}
-          </label>
-        </div>
-      )}
-
-      <button
-        className="ikincil karanlik-cevir-buton"
-        disabled={yukleniyor}
-        onClick={() =>
-          onKotuIs(is.id, {
-            hedefRakipAd: rakipHedefli ? hedef : undefined,
-            vekil: rakipHedefli ? vekil : undefined,
-          })
-        }
-      >
-        {en ? 'Do it' : 'Çevir'}
-      </button>
-    </div>
-  );
-}
-
 const PIYASA_SINYAL_ETIKET: Record<string, { tr: string; en: string; sinif: string }> = {
   firsat: { tr: '🟢 Fırsat: şimdi al', en: '🟢 Opportunity: buy now', sinif: 'piyasa-firsat' },
   zirve: { tr: '🔴 Zirvede: beklemek daha iyi', en: '🔴 Peaking: better to wait', sinif: 'piyasa-zirve' },
@@ -199,21 +62,14 @@ export function IsYatirimEkrani({
   paraBirimi,
   orduMevcudu,
   orduTechizatSeviyesi,
-  ticaretSermaye,
   sehirYonetimSeviyesi,
   sehirYonetimUnvan,
   para,
-  kotuIsler,
-  rakipler,
-  salginKorunma,
   krediConfig,
   dedikodular,
   mulkler,
-  sucSeviyesi,
   yukleniyor,
   islemMesaji,
-  onKotuIs,
-  onSalginKorunma,
   onKrediAl,
   onKrediPazarlik,
   onMulkSatinAl,
@@ -222,7 +78,6 @@ export function IsYatirimEkrani({
   const { m, kt, dil } = useDil();
   const en = dil === 'en';
   const saldiriGucu = Math.round(orduMevcudu * (1 + orduTechizatSeviyesi / 100));
-  const [krediTutar, setKrediTutar] = useState<number>(0);
   const mobil = useMobilEkran();
   const [aktifSekme, setAktifSekme] = useState(0);
 
@@ -248,7 +103,7 @@ export function IsYatirimEkrani({
 
       {mobil && (
         <div className="ekran-sekmeleri">
-          {[m.iyGorevin, m.iyYatirimlikGayrimenkuller, m.iyKaranlikIsler].map((baslik, i) => (
+          {[m.iyGorevin, m.iyYatirimlikGayrimenkuller].map((baslik, i) => (
             <button
               key={i}
               type="button"
@@ -261,23 +116,17 @@ export function IsYatirimEkrani({
         </div>
       )}
 
-      <div className={mobil ? 'tam-sutun-tekli-sarici' : 'tam-govde-3col'}>
+      <div className={mobil ? 'tam-sutun-tekli-sarici' : 'tam-govde-2col'}>
         <div className="tam-sutun" hidden={mobil && aktifSekme !== 0}>
           <h3 className="tam-baslik">{m.iyGorevin}</h3>
 
           <div className="is-profil-karti">
-            <span className="is-profil-simge" aria-hidden="true">
-              {MESLEK_SIMGESI[meslek] ?? '🎯'}
-            </span>
             <div className="is-profil-metin">
               <strong>{kt(rutbe)}</strong>
-              <span>{kt(meslek)}</span>
             </div>
           </div>
 
           <div className="is-karo-izgara">
-            <StatKarosu ikon="🪙" etiket={m.iyKendiParan} deger={`${formatPara(para)} ${paraBirimi}`} vurgu />
-
             {sehirYonetimSeviyesi > 0 && (
               <StatKarosu
                 ikon="🏛️"
@@ -294,10 +143,6 @@ export function IsYatirimEkrani({
                 <StatKarosu ikon="💥" etiket={m.iySaldiriGucu} deger={`${saldiriGucu}`} />
               </>
             )}
-
-            {meslek === 'Tüccar' && (
-              <StatKarosu ikon="📈" etiket={m.iyTicaretSermayesi} deger={`${formatPara(ticaretSermaye)} ${paraBirimi}`} />
-            )}
           </div>
 
           <h3 className="tam-baslik tam-baslik-dedikodu">{m.iyPiyasaDedikodulari}</h3>
@@ -312,7 +157,7 @@ export function IsYatirimEkrani({
             </div>
           )}
 
-          {/* Tefeci / kredi */}
+          {/* Tefeci / kredi — iki sabit tutar (küçük/büyük), enflasyonla ölçekli. */}
           <h3 className="tam-baslik">{en ? 'Moneylender' : 'Tefeci'}</h3>
           {krediConfig?.aktifKredi ? (
             <div className="dedikodu-panosu">
@@ -332,31 +177,24 @@ export function IsYatirimEkrani({
                 </button>
               )}
             </div>
-          ) : krediConfig && krediConfig.maksTutar >= krediConfig.minTutar ? (
+          ) : krediConfig && krediConfig.kademeler.length > 0 ? (
             <div className="dedikodu-panosu">
               <p className="giris-aciklama">
                 {en
-                  ? `Borrow up to ${formatPara(krediConfig.maksTutar)} ${paraBirimi} at ~%${Math.round(krediConfig.faizTeklifi * 100)} interest. Miss three instalments and the moneylender seizes a property.`
-                  : `En fazla ${formatPara(krediConfig.maksTutar)} ${paraBirimi}, ~%${Math.round(krediConfig.faizTeklifi * 100)} faizle. Üst üste üç taksit kaçırırsan tefeci bir mülküne el koyar.`}
+                  ? `Interest ~%${Math.round(krediConfig.faizTeklifi * 100)}. Miss three instalments and the moneylender seizes a property.`
+                  : `~%${Math.round(krediConfig.faizTeklifi * 100)} faizle. Üst üste üç taksit kaçırırsan tefeci bir mülküne el koyar.`}
               </p>
-              <div className="karanlik-hedef-satir">
-                <input
-                  type="number"
-                  className="kredi-tutar-girdi"
-                  min={krediConfig.minTutar}
-                  max={krediConfig.maksTutar}
-                  value={krediTutar || ''}
-                  disabled={yukleniyor}
-                  onChange={(e) => setKrediTutar(Number(e.target.value))}
-                  placeholder={`${krediConfig.minTutar}–${formatPara(krediConfig.maksTutar)}`}
-                />
-                <button
-                  className="ikincil"
-                  disabled={yukleniyor || krediTutar < krediConfig.minTutar || krediTutar > krediConfig.maksTutar}
-                  onClick={() => onKrediAl(krediTutar)}
-                >
-                  {en ? 'Borrow' : 'Borç Al'}
-                </button>
+              <div className="kariyer-bagis-kademeler">
+                {krediConfig.kademeler.map((tutar) => (
+                  <button
+                    key={tutar}
+                    className="kariyer-bagis-cip"
+                    disabled={yukleniyor}
+                    onClick={() => onKrediAl(tutar)}
+                  >
+                    {formatPara(tutar)} {paraBirimi}
+                  </button>
+                ))}
               </div>
             </div>
           ) : (
@@ -413,65 +251,6 @@ export function IsYatirimEkrani({
             })}
           </div>
           <p className="giris-aciklama tam-yardimci-metin">{m.iyBakimAcikla}</p>
-
-          {/* Salgına hazırlık */}
-          {salginKorunma && (
-            <>
-              <h3 className="tam-baslik">{en ? 'Plague Preparedness' : 'Salgına Hazırlık'}</h3>
-              {salginKorunma.vebaVar ? (
-                <p className="giris-aciklama">
-                  {en ? 'A plague is already raging — too late to prepare.' : 'Salgın çoktan başladı — hazırlık için geç kaldın.'}
-                </p>
-              ) : (
-                <div className="yatirim-kartlari">
-                  {salginKorunma.kartlar.map((k) => (
-                    <button
-                      key={k.kademe}
-                      className={`yatirim-kart isyatirim-kendi-is-kart${k.sahipMi ? ' mulk-kart-sahip' : ''}`}
-                      disabled={yukleniyor || !k.alinabilir || para < k.maliyet}
-                      onClick={() => onSalginKorunma(k.kademe as 1 | 2)}
-                      title={k.aciklama}
-                    >
-                      <span className="meslek-simge">{k.kademe === 2 ? '🏚️' : '⚕️'}</span>
-                      <strong>{k.ad}</strong>
-                      <span className="meslek-aciklama">{k.aciklama}</span>
-                      <span className="meslek-aciklama">
-                        {k.sahipMi
-                          ? en
-                            ? '✓ ready for the next wave'
-                            : '✓ bir sonraki dalgaya hazır'
-                          : bic(m.iyFiyatKisa, formatPara(k.maliyet), paraBirimi)}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </>
-          )}
-        </div>
-
-        <div className="tam-sutun" hidden={mobil && aktifSekme !== 2}>
-          <h3 className="tam-baslik">{m.iyKaranlikIsler}</h3>
-          <p className="giris-aciklama tam-yardimci-metin">{m.iyKaranlikIsAcikla}</p>
-
-          <div className="yatirim-kartlari">
-            {kotuIsler.map((is) => (
-              <KaranlikIsKart
-                key={is.id}
-                is={is}
-                dil={dil}
-                m={m}
-                paraBirimi={paraBirimi}
-                yukleniyor={yukleniyor}
-                rakipler={rakipler}
-                onKotuIs={onKotuIs}
-              />
-            ))}
-          </div>
-
-          <p className={`suc-seviyesi-gostergesi ${sucSeviyesi >= 50 ? 'suc-seviyesi-riskli' : ''}`}>
-            {bic(m.iySucSeviyen, Math.round(sucSeviyesi), sucSeviyesiEtiketi(m, sucSeviyesi))}
-          </p>
         </div>
       </div>
 

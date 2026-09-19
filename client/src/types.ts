@@ -416,6 +416,8 @@ export interface KrediConfig {
   maksTutar: number;
   faizTeklifi: number;
   minTutar: number;
+  /** Tefecinin sunduğu sabit kredi tutarları (küçük/büyük), enflasyonla ölçekli. */
+  kademeler: number[];
 }
 
 export interface EkipUyesi {
