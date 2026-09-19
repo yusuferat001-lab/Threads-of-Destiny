@@ -159,7 +159,12 @@ h3 {
    Tablet/masaüstünde (bkz. §mobil medya sorgusu) tüm ekran yüksekliğine sabitlenir —
    sayfa hiç kaymaz, taşan içerik panellerin kendi içinde kayar. */
 .oyun-kapsayici-tam {
-  /* Masaüstünde tam ekran genişliğini kaplar (eski davranış). */
+  /* Masaüstünde tam ekran genişliğini kaplar (eski davranış).
+     `.oyun-kapsayici`'nin max-width:920px'i burada da uygulanmaya devam
+     ediyordu (ikisi de tek-sınıf seçici, `width:100%` max-width'i geçersiz
+     kılmıyor) — 1920x1080 gibi geniş ekranlarda oyun HUD'u 920px'e sıkışıp
+     "tam ekran değil" görünüyordu. */
+  max-width: none;
   width: 100%;
   height: 100dvh;
   margin: 0 auto;
