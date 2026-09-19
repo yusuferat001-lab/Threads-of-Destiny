@@ -2411,16 +2411,35 @@ export function rakipMisillemesiDene(state: CharacterState, yasArtisi: number): 
 // ---------------------------------------------------------------------------
 
 export const KREDI_TABAN_FAIZ = 0.12;
-export const KREDI_MIN_TUTAR = 20;
-export const KREDI_MAKS_TUTAR = 200;
+export const KREDI_MIN_TUTAR_TABAN = 20;
+export const KREDI_MAKS_TUTAR_TABAN = 200;
+/** Geriye dönük uyumluluk için sabit adlar (enflasyonsuz taban değerler). */
+export const KREDI_MIN_TUTAR = KREDI_MIN_TUTAR_TABAN;
+export const KREDI_MAKS_TUTAR = KREDI_MAKS_TUTAR_TABAN;
+/** İki sabit kredi kademesinin enflasyonsuz taban tutarları (küçük/büyük). */
+export const KREDI_KADEME_TABAN = [40, 130];
 
-/** Oyuncunun şu an alabileceği en yüksek kredi (maaşa + mevcut borç yokluğuna bağlı). */
+/** Oyuncunun şu an alabileceği en yüksek kredi (maaşa + mevcut borç yokluğuna + enflasyona bağlı). */
 export function krediMaksTutar(state: CharacterState): number {
   if (state.kredi) return 0;
   const maas = state.maas_yillik || hesaplaMaasYillik(state);
-  // ~6 yıllık maaş kadar, KREDI_MAKS_TUTAR tavanıyla; suç seviyesi yüksekse tefeci daha az verir.
+  // ~6 yıllık maaş kadar, enflasyonla ölçekli tavanla; suç seviyesi yüksekse tefeci daha az verir.
   const sucKesinti = state.suc_seviyesi >= 60 ? 0.5 : state.suc_seviyesi >= 40 ? 0.75 : 1;
-  return Math.max(0, Math.min(KREDI_MAKS_TUTAR, Math.round(maas * 6 * sucKesinti)));
+  const tavan = KREDI_MAKS_TUTAR_TABAN * enflasyonCarpani(state);
+  return Math.max(0, Math.min(tavan, Math.round(maas * 6 * sucKesinti)));
+}
+
+/** Tefecinin sunduğu iki sabit kredi tutarı (küçük/büyük), enflasyonla ölçekli ve mevcut tavana kırpılmış. */
+export function krediKademeleri(state: CharacterState): number[] {
+  const maks = krediMaksTutar(state);
+  if (maks <= 0) return [];
+  const enflasyon = enflasyonCarpani(state);
+  const min = Math.max(1, Math.round(KREDI_MIN_TUTAR_TABAN * enflasyon));
+  const kademeler = KREDI_KADEME_TABAN.map((t) => Math.round(t * enflasyon))
+    .map((t) => Math.min(t, maks))
+    .filter((t) => t >= min);
+  // Aynı değere kırpıldılarsa (düşük tavan) tekilleştir.
+  return kademeler.filter((t, i) => kademeler.indexOf(t) === i);
 }
 
 /** Verilen tutar için tefecinin isteyeceği faiz oranı (borçluysa / suçluysa yükselir). */
@@ -2436,7 +2455,8 @@ export function krediAl(state: CharacterState, tutar: number): string {
   if (state.kredi) throw new Error("Zaten ödenmemiş bir kredin var.");
   const maks = krediMaksTutar(state);
   const t = Math.round(tutar);
-  if (t < KREDI_MIN_TUTAR) throw new Error(`En az ${KREDI_MIN_TUTAR} ${state.para_birimi} kredi alabilirsin.`);
+  const minTutar = Math.max(1, Math.round(KREDI_MIN_TUTAR_TABAN * enflasyonCarpani(state)));
+  if (t < minTutar) throw new Error(`En az ${minTutar} ${state.para_birimi} kredi alabilirsin.`);
   if (t > maks) throw new Error(`Tefeci sana en fazla ${maks} ${state.para_birimi} verir.`);
   const faiz = krediFaizTeklifi(state);
   state.kredi = {

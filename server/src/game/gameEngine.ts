@@ -97,6 +97,7 @@ import {
   krediYillikUygula,
   krediMaksTutar,
   krediFaizTeklifi,
+  krediKademeleri,
 } from "./stateManager";
 import { rutbeTanimiGetir, KARIYER_PUANI_YILLIK, KARIYER_PUANI_KATEGORI_BASARI } from "../data/rutbeler";
 import { KOTU_ISLER, kotuIsTanimiGetir, KotuIsEtki } from "../data/kotuIsler";
@@ -4179,10 +4180,18 @@ export async function krediConfigGetir(id: string): Promise<{
   maksTutar: number;
   faizTeklifi: number;
   minTutar: number;
+  kademeler: number[];
 }> {
   const oturum = await oturumGetir(id);
   const { state } = oturum;
-  return { aktifKredi: state.kredi, maksTutar: krediMaksTutar(state), faizTeklifi: krediFaizTeklifi(state), minTutar: 20 };
+  const enflasyon = enflasyonCarpani(state);
+  return {
+    aktifKredi: state.kredi,
+    maksTutar: krediMaksTutar(state),
+    faizTeklifi: krediFaizTeklifi(state),
+    minTutar: Math.max(1, Math.round(20 * enflasyon)),
+    kademeler: krediKademeleri(state),
+  };
 }
 
 export async function krediAlEndpoint(id: string, tutar: number): Promise<{ state: CharacterState; mesaj: string }> {
