@@ -2782,7 +2782,7 @@ const MULK_GETIRI_NORMAL = 0.09;
 const MULK_GETIRI_AVANTAJLI = 0.12;
 const MULK_GETIRI_DEZAVANTAJLI = -0.015;
 /** Tüm mülk getiri oranlarının (çarpanlar uygulandıktan sonra) mutlak tavanı — "bir anda çok getirip çok götürmesin". */
-const MULK_GETIRI_TAVAN = 0.13;
+const MULK_GETIRI_TAVAN = 0.17;
 const MULK_DEMIRCI_SAVAS_CARPANI = 2.5;
 const KERVAN_BATMA_IHTIMALI_YILLIK = 0.25;
 // Aranma yeniden dengeleme turu: 3→2 — pasif/ambient bir kaynak olduğu için
@@ -2793,8 +2793,8 @@ const KARABORSA_AHLAK_ASINMASI_YILLIK = 0.3;
 // Küçük Tarla — büyük denge turunda "en garanti" mülk yapıldı (kullanıcı: "bir tane uygun
 // gayrimenkul olsun 50'ye alabileceği daha garanti bir şey"): getirisi küçük ama kıtlıkta
 // bile kaybı çok az. taban_maliyet 40→50 (bkz. mulkler.ts).
-const MULK_GETIRI_KUCUK_TARLA_NORMAL = 0.075;
-const MULK_GETIRI_KUCUK_TARLA_AVANTAJLI = 0.09;
+const MULK_GETIRI_KUCUK_TARLA_NORMAL = 0.09;
+const MULK_GETIRI_KUCUK_TARLA_AVANTAJLI = 0.105;
 const MULK_GETIRI_KUCUK_TARLA_DEZAVANTAJLI = -0.003;
 
 /** Her mülk 7-11 yılda bir periyodik bir bakım/vergi masrafı çıkarır (tıpkı "luks" mağaza eşyaları gibi). */
@@ -2945,13 +2945,13 @@ function hamMulkGetiriOrani(tur: MulkTuru, ulke: CharacterState["ulke"]): number
         : MULK_GETIRI_NORMAL;
   }
   if (tur === "demirci") {
-    return ulke.savasta || ulke.kriz?.tur === "isyan" ? MULK_GETIRI_NORMAL * MULK_DEMIRCI_SAVAS_CARPANI : MULK_GETIRI_NORMAL * 0.3;
+    return ulke.savasta || ulke.kriz?.tur === "isyan" ? MULK_GETIRI_NORMAL * MULK_DEMIRCI_SAVAS_CARPANI : MULK_GETIRI_NORMAL * 0.45;
   }
   if (tur === "kervan") {
-    return !ulke.savasta && ulke.ekonomi !== "kotu" ? MULK_GETIRI_AVANTAJLI * 1.1 : MULK_GETIRI_NORMAL * 0.5;
+    return !ulke.savasta && ulke.ekonomi !== "kotu" ? MULK_GETIRI_AVANTAJLI * 1.1 : MULK_GETIRI_NORMAL * 0.85;
   }
   // karaborsa
-  return ulke.kriz?.tur === "kitlik" || ulke.vebada || ulke.savasta ? MULK_GETIRI_AVANTAJLI * 1.2 : MULK_GETIRI_DEZAVANTAJLI * 0.5;
+  return ulke.kriz?.tur === "kitlik" || ulke.vebada || ulke.savasta ? MULK_GETIRI_AVANTAJLI * 1.6 : 0;
 }
 
 /**
