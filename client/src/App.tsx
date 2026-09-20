@@ -155,6 +155,7 @@ const MESLEK_SIMGE: Record<string, string> = {
   Asker: '⚔️',
   Tüccar: '💰',
   'Din Adamı': '🙏',
+  Zanaatkâr: '🔨',
 };
 
 /** Meslek/çağ kısa açıklamaları — dile göre i18n sözlüğünden. */
@@ -162,6 +163,7 @@ function meslekAciklama(m: ReturnType<typeof dilCtxYap>['m'], meslek: string): s
   if (meslek === 'Asker') return m.meslekAciklamaAsker;
   if (meslek === 'Tüccar') return m.meslekAciklamaTuccar;
   if (meslek === 'Din Adamı') return m.meslekAciklamaDinAdami;
+  if (meslek === 'Zanaatkâr') return m.meslekAciklamaZanaatkar;
   return '';
 }
 function cagAciklama(m: ReturnType<typeof dilCtxYap>['m'], cag: string): string {
@@ -459,7 +461,7 @@ function App() {
   useEffect(() => {
     mesleklerGetir()
       .then(({ meslekler }) => setMeslekler(meslekler))
-      .catch(() => setMeslekler(['Asker', 'Tüccar', 'Din Adamı']));
+      .catch(() => setMeslekler(['Asker', 'Tüccar', 'Din Adamı', 'Zanaatkâr']));
     bolgelerGetir()
       .then(({ bolgeler }) => setBolgeler(bolgeler))
       .catch(() =>

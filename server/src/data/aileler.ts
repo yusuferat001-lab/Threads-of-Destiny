@@ -156,6 +156,7 @@ export const AILELER: AileTanimi[] = [
     ad: "Zanaatkâr",
     agirlik: 1,
     cag: "Orta Çağ",
+    devamMeslegi: "Zanaatkâr",
     anlati:
       "Baban {bolge} çarşısında demir döverdi, sen körüğü çekerek büyüdün. Ne zengin ne fakirdiniz; ödenmiş bir kira ve dolu bir tencere yeterdi. Elin iş tutar, gözün ölçü bilir — ama çekiç sallayan adama kimse büyük fırsat sunmaz.",
     etiketler: ["aile:zanaatkar", "zanaat_bilgisi"],
@@ -164,7 +165,7 @@ export const AILELER: AileTanimi[] = [
     un: -8,
     ahlak: 6,
     mutluluk: 4,
-    yatkinlikEtkisi: { ticaret: 8, saglik: 5 },
+    yatkinlikEtkisi: { ticaret: 8, saglik: 5, zanaat: 15 },
   },
   {
     id: "hekim",
@@ -349,6 +350,7 @@ export const AILELER: AileTanimi[] = [
     ad: "Mühendis",
     agirlik: 1,
     cag: "Sanayi Devrimi",
+    devamMeslegi: "Zanaatkâr",
     anlati:
       "Baban {bolge}'nin yeni fabrikalarına buhar makineleri kurdu, evinizde her zaman bir plan kağıdı açık dururdu. Çarkların nasıl döndüğünü, bir hesabın nasıl tutmadığını erken yaşta öğrendin — ama makineler bazen ellerini de yerdi.",
     etiketler: ["aile:muhendis", "teknik_bilgi"],
@@ -357,7 +359,7 @@ export const AILELER: AileTanimi[] = [
     un: 8,
     ahlak: 6,
     mutluluk: 2,
-    yatkinlikEtkisi: { ticaret: 10, siyaset: 5 },
+    yatkinlikEtkisi: { ticaret: 10, siyaset: 5, zanaat: 15 },
   },
   {
     id: "gazeteci",

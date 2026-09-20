@@ -22,6 +22,7 @@ const KATEGORI_GORSEL: Record<Kategori, string> = {
   siyaset: "🏛️",
   saglik: "❤️‍🩹",
   sosyal: "🎉",
+  zanaat: "🔨",
 };
 
 /**

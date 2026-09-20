@@ -173,6 +173,7 @@ export interface CharacterState {
   ordu_techizat_seviyesi: number;
   ticaret_sermaye: number;
   nufuz: number;
+  uretim_kapasitesi: number;
 
   suc_seviyesi: number;
   /** Hapiste kalan ceza süresi (yıl); 0'a inince otomatik serbest kalınır. Hapiste değilken 0. */
@@ -471,6 +472,7 @@ export interface SonucEtkisi {
   ordu_techizat_artis?: number;
   ticaret_sermaye_artis?: number;
   nufuz_artis?: number;
+  uretim_kapasitesi_artis?: number;
   suc_artis?: number;
   suc_seviyesi_ayarla?: number;
   /** Hapis ceza süresini yıl olarak uzatır (başarısız riskli kaçış girişimi). */
