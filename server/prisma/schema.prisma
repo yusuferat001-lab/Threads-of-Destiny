@@ -70,6 +70,19 @@ model Metrik {
   @@index([createdAt])
 }
 
+/// Cihaz (istemci_id) bazlı çapraz-hayat olay geçmişi. Bir hayat ölünce o hayatın
+/// `gecmis_olaylar`'ı buraya birleştirilir (en fazla ISTEMCI_GECMIS_MAKS tekil id,
+/// en yeniler tutulur); bir sonraki hayat yaratılırken buradan okunup
+/// `CharacterState.istemci_gecmis_olaylar`'a yazılır — `olaySec` bu listeyi normal
+/// tekrar-önleme penceresine (§12) katarak aynı cihazdan art arda oynanan farklı
+/// hayatlarda hep aynı olayların çıkmasını azaltır. Kişisel veri yok (rastgele UUID).
+model IstemciOlayGecmisi {
+  istemciId String   @id
+  /// Olay id'lerinin JSON dizisi (kronolojik, en yeni sonda), capli.
+  olaylar   String
+  updatedAt DateTime @updatedAt
+}
+
 /// Ayarlar → "Görüş & Öneri" formundan gelen kullanıcı geri bildirimleri (§29).
 /// Kalıcı (Neon) — eski JSONL yedeği kaldırıldı: Render "free" planında kalıcı disk
 /// olmadığından her deploy/restart'ta siliniyordu. Yalnız `GET /api/geri-bildirim?key=…`

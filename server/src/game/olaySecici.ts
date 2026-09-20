@@ -305,8 +305,18 @@ export function olaySec(
     // kendisine yakın büyür (aynı olay neredeyse hepsi görülene kadar
     // dönmez); büyük (normal ~150'lik) havuzda 30'da tavanlanır — zaten geniş
     // olduğu için daha fazla pencereye gerek yok, maliyeti sınırlı tutar.
+    // Çapraz-hayat tekrar önleme: aynı cihazdan (istemci_id) önceki hayatlarda
+    // görülen olaylar da bu turun hard-exclusion penceresine katılır — "hep aynı
+    // olaylar çıkıyor" şikayetini yalnız TEK bir hayat içinde değil, aynı cihazdan
+    // art arda başlatılan FARKLI hayatlar arasında da azaltır. Milestone/kaskad
+    // kontrolleri (§11, senaryoUret) buna dokunmaz — onlar hâlâ yalnız
+    // state.gecmis_olaylar'a (bu hayatın kendi geçmişi) bakar, "ömürde bir kez"
+    // garantileri bu yüzden etkilenmez.
     const SON_K_TEKRAR_ONLEME = sonKTekrarOnlemeHesapla(uygunlar.length);
-    const sonGorulenler = new Set(state.gecmis_olaylar.slice(-SON_K_TEKRAR_ONLEME));
+    const sonGorulenler = new Set([
+      ...state.gecmis_olaylar.slice(-SON_K_TEKRAR_ONLEME),
+      ...(state.istemci_gecmis_olaylar ?? []),
+    ]);
     const yakinTekrarEtmeyenler = uygunlar.filter((o) => !sonGorulenler.has(o.id));
     const adaylar = yakinTekrarEtmeyenler.length > 0 ? yakinTekrarEtmeyenler : uygunlar;
     const enOncelikliSira = Math.min(...adaylar.map((o) => sonGorulmeSirasi(o.id)));
