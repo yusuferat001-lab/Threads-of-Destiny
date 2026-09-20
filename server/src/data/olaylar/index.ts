@@ -30,6 +30,8 @@ import { OLAY_KOMIK_OLUM } from "./komikOlumler";
 import { OLAY_KOMIK_GARIP } from "./komikGaripOlaylar";
 import { OLAY_MULK } from "./mulkOlaylari";
 import { OLAY_BUYULU } from "./buyuluOlaylar";
+import { OLAY_BOLGESEL_ORTACAG } from "./bolgeselOrtaCag";
+import { OLAY_BOLGESEL_SANAYI } from "./bolgeselSanayi";
 
 export const OLAY_BANKASI: OlayTanimi[] = [
   ...OLAY_HAPIS,
@@ -41,6 +43,8 @@ export const OLAY_BANKASI: OlayTanimi[] = [
   ...OLAY_KOMIK_GARIP,
   ...OLAY_MULK,
   ...OLAY_BUYULU,
+  ...OLAY_BOLGESEL_ORTACAG,
+  ...OLAY_BOLGESEL_SANAYI,
   ...OLAY_YOLCULUK,
   ...OLAY_HIZIP,
   ...OLAY_ORTACAG_ASKER,

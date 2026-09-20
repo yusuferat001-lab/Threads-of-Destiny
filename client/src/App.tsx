@@ -99,6 +99,7 @@ import { IsYatirimEkrani } from './components/IsYatirimEkrani';
 import { SonucEfekti } from './components/SonucEfekti';
 import { AyarlarModal } from './components/AyarlarModal';
 import { ayarlariGetir, ayarlariKaydet, type Dil } from './ayarlar';
+import { bolgeOzetiGetir } from './bolgeOzellikleri';
 import type { GeriBildirimGirdi, EvlilikAdayi } from './types';
 import { sesKapaliMi, sesTercihiKaydet } from './ses';
 import { muzikModunuAyarla, muzikDurdur, muzikSessizAyarla, type MuzikModu } from './muzik';
@@ -1794,9 +1795,15 @@ function App() {
                         className="meslek-kart bolge-bayrak-kart"
                         disabled={yukleniyor}
                         onClick={() => bolgeSecildi(bolge)}
+                        title={bolgeOzetiGetir(dil, secilenCag, bolge) ?? undefined}
                       >
                         <BolgeAmblemi bolge={bolge} cag={secilenCag ?? undefined} />
                         <strong>{kt(bolge)}</strong>
+                        {bolgeOzetiGetir(dil, secilenCag, bolge) && (
+                          <span className="meslek-aciklama bolge-bayrak-ozet">
+                            {bolgeOzetiGetir(dil, secilenCag, bolge)}
+                          </span>
+                        )}
                       </button>
                     ))}
                   </div>

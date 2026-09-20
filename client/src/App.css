@@ -6420,6 +6420,13 @@ button.ikincil {
 .bolge-bayrak-kart strong {
   font-size: 1rem;
 }
+.bolge-bayrak-ozet {
+  font-size: 0.62rem;
+  line-height: 1.25;
+  opacity: 0.85;
+  display: block;
+  margin-top: 0.15rem;
+}
 
 /* --- Giriş: "Yeni Hayata Başla" vb. kutuları dikeyde biraz küçült --- */
 .ekran-giris .giris-hero-butonlar > button {

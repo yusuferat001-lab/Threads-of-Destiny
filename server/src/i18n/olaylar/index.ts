@@ -75,6 +75,8 @@ import { OLAYLAR_SANAYI_ASKER_YOLLARI_EN } from "./sanayiAskerYollari.en";
 import { OLAYLAR_SANAYI_DINADAMI_YOLLARI_EN } from "./sanayiDinAdamiYollari.en";
 import { OLAYLAR_ORTACAG_TUCCAR_YOLLARI_EN } from "./ortaCagTuccarYollari.en";
 import { OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN } from "./sanayiTuccarYollari.en";
+import { OLAYLAR_BOLGESEL_ORTACAG_EN } from "./bolgeselOrtaCag.en";
+import { OLAYLAR_BOLGESEL_SANAYI_EN } from "./bolgeselSanayi.en";
 
 const KAYIT: Record<string, OlayCeviri>[] = [
   OLAYLAR_KOMIK_OLUM_EN,
@@ -107,6 +109,8 @@ const KAYIT: Record<string, OlayCeviri>[] = [
   OLAYLAR_YOLCULUK_EN,
   OLAYLAR_SOSYALLESME_EN,
   OLAYLAR_GENEL_EN,
+  OLAYLAR_BOLGESEL_ORTACAG_EN,
+  OLAYLAR_BOLGESEL_SANAYI_EN,
 ];
 
 const CEVIRI_INDEKSI: Record<string, OlayCeviri> = Object.assign({}, ...KAYIT);
