@@ -14,6 +14,7 @@
  * postgres'e migrate edecek şekilde geri getir.)
  */
 const sessionlar = new Map<string, { id: string; data: string; aktif: boolean; updatedAt: Date }>();
+const istemciGecmisleri = new Map<string, { istemciId: string; olaylar: string; updatedAt: Date }>();
 
 export class PrismaClient {
   session = {
@@ -56,6 +57,19 @@ export class PrismaClient {
   geriBildirim = {
     create: async ({ data }: any) => ({ createdAt: new Date(), ...data }),
     findMany: async () => [] as any[],
+  };
+  istemciOlayGecmisi = {
+    upsert: async ({ where, create, update }: any) => {
+      const v = istemciGecmisleri.get(where.istemciId);
+      if (v) {
+        Object.assign(v, update, { updatedAt: new Date() });
+        return v;
+      }
+      const y = { istemciId: create.istemciId, olaylar: create.olaylar, updatedAt: new Date() };
+      istemciGecmisleri.set(y.istemciId, y);
+      return y;
+    },
+    findUnique: async ({ where }: any) => istemciGecmisleri.get(where.istemciId) ?? null,
   };
   $queryRawUnsafe = async () => [] as any[];
   $executeRawUnsafe = async () => 0;
