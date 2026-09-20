@@ -214,13 +214,7 @@ export function IsYatirimEkrani({
                   className={`yatirim-kart mulk-kart${mulk.sahipMi ? ' mulk-kart-sahip' : ''}${mulk.tahminiYillikGetiriYuzdesi < 0 ? ' mulk-kart-zararda' : ''}`}
                   disabled={yukleniyor || mulk.sahipMi || para < mulk.maliyet}
                   onClick={() => onMulkSatinAl(mulk.tur)}
-                  title={`${kt(mulk.aciklama)}\n${bic(
-                    m.iyGetiriBrut,
-                    mulk.tahminiYillikGetiriMiktari >= 0 ? '+' : '',
-                    formatPara(mulk.tahminiYillikGetiriMiktari),
-                    paraBirimi,
-                    (mulk.tahminiYillikGetiriYuzdesi > 0 ? '+' : '') + mulk.tahminiYillikGetiriYuzdesi
-                  )}\n${bic(m.iyBakimVergi, formatPara(mulk.yillikBakimTahmini), paraBirimi)}\n${mulk.piyasaIpucu}`}
+                  title={`${kt(mulk.aciklama)}\n${mulk.piyasaIpucu}`}
                 >
                   <span className="meslek-simge">{mulk.simge}</span>
                   <strong>
@@ -229,11 +223,11 @@ export function IsYatirimEkrani({
                   <span className="meslek-aciklama">
                     ▲ {kt(mulk.avantajliDurum)} · ▼ {kt(mulk.dezavantajliDurum)}
                   </span>
-                  <span className={`mulk-getiri ${mulk.tahminiYillikNet < 0 ? 'mulk-getiri-negatif' : 'mulk-getiri-pozitif'}`}>
+                  <span className={`mulk-getiri ${mulk.tahminiYillikGetiriYuzdesi < 0 ? 'mulk-getiri-negatif' : 'mulk-getiri-pozitif'}`}>
                     {bic(
                       m.iyNetKisa,
-                      mulk.tahminiYillikNet >= 0 ? '+' : '',
-                      formatPara(mulk.tahminiYillikNet),
+                      mulk.tahminiYillikGetiriMiktari >= 0 ? '+' : '',
+                      formatPara(mulk.tahminiYillikGetiriMiktari),
                       paraBirimi,
                       (mulk.tahminiYillikGetiriYuzdesi > 0 ? '+' : '') + mulk.tahminiYillikGetiriYuzdesi
                     )}
@@ -250,7 +244,6 @@ export function IsYatirimEkrani({
               );
             })}
           </div>
-          <p className="giris-aciklama tam-yardimci-metin">{m.iyBakimAcikla}</p>
         </div>
       </div>
 

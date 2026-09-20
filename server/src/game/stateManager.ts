@@ -563,7 +563,9 @@ export function createCharacter(
   bolge: string,
   yerlesimId: string,
   oyuncuIsmi?: string,
-  dil?: string
+  dil?: string,
+  istemciId?: string,
+  istemciGecmisOlaylar?: string[]
 ): CharacterState {
   if (!BOLGELER_BY_CAG[cag]?.includes(bolge)) {
     throw new Error("Geçersiz çağ/bölge kombinasyonu.");
@@ -711,6 +713,8 @@ export function createCharacter(
     yonetim_talep_sonraki_yil: yil + 6,
     tur_sayisi: 0,
     gecmis_olaylar: [],
+    istemci_gecmis_olaylar: istemciGecmisOlaylar ?? [],
+    istemci_id: istemciId ?? null,
     gecmis: [],
     hayat_hikayesi: [],
     aktif: true,
@@ -951,6 +955,9 @@ export function eskiKayitGocu(state: CharacterState): void {
   if (typeof state.yonetim_talep_sonraki_yil !== "number") {
     state.yonetim_talep_sonraki_yil = state.yil + 6;
   }
+  // Çapraz-hayat tekrar önleme (istemci_id bazlı) sonradan eklendi.
+  if (!Array.isArray(state.istemci_gecmis_olaylar)) state.istemci_gecmis_olaylar = [];
+  if (state.istemci_id === undefined) state.istemci_id = null;
 }
 
 /** Oyuncu mesleğini seçtikten sonra çağrılır: miras bonusunu ve maaşı uygular. */
@@ -2773,19 +2780,16 @@ export function vebaBitisKontrolEt(state: CharacterState): string | null {
 }
 
 // Yıllık getiri oranları (taban maliyetin yüzdesi olarak); enflasyonCarpani ile ölçeklenen
-// taban_maliyet üzerine uygulanır. Büyük denge turunda kullanıcı isteğiyle belirgin şekilde
-// düşürüldü + tüm sonuç mulkGetiriOraniHesapla sonunda ±%8'e kırpıldı: "gayrimenkuller yıllık
-// en yüksek %7-8 getirsin, çok getirmesin"; "bir anda çok getirip çok götürmesin"; "gidip %20
-// zarar ettirmesin". Artık mülk = küçük, istikrarlı, ara sıra hafif negatif bir pasif akış.
-// Brüt oranlar bilinçli olarak bakımın yıllık amortize maliyetine (~%3/yıl, aşağıda) yakın
-// tutuldu: NORMAL brüt ~%6 → net ~+%3/yıl, DEZAVANTAJLI yıl net ~−%5 (felaket değil),
-// AVANTAJLI yıl net ~+%5. Böylece mülk "istikrarlı, ara sıra hafif negatif" bir akış olur;
-// simulateGayrimenkul.ts ile 30 yıllık ortalama hafif pozitif çıkacak şekilde ayarlandı.
-const MULK_GETIRI_NORMAL = 0.06;
-const MULK_GETIRI_AVANTAJLI = 0.085;
-const MULK_GETIRI_DEZAVANTAJLI = -0.02;
+// taban_maliyet üzerine uygulanır. Gelir/gider dengesi turu (kullanıcı: "bakımı düşür,
+// geliri artır"): oranlar yukarı çekildi + bakım oranı ayrıca yarıya indirildi (aşağıda,
+// MULK_BAKIM_ORANI). NORMAL brüt ~%9, bakımın amortize maliyeti ~%1.7/yıl olduğu için net
+// akış artık belirgin pozitif (eskiden ~+%3 net idi, bakım da yarıya inince ~+%7'ye çıktı).
+// simulateGayrimenkul.ts ile doğrulanabilir.
+const MULK_GETIRI_NORMAL = 0.09;
+const MULK_GETIRI_AVANTAJLI = 0.12;
+const MULK_GETIRI_DEZAVANTAJLI = -0.015;
 /** Tüm mülk getiri oranlarının (çarpanlar uygulandıktan sonra) mutlak tavanı — "bir anda çok getirip çok götürmesin". */
-const MULK_GETIRI_TAVAN = 0.09;
+const MULK_GETIRI_TAVAN = 0.17;
 const MULK_DEMIRCI_SAVAS_CARPANI = 2.5;
 const KERVAN_BATMA_IHTIMALI_YILLIK = 0.25;
 // Aranma yeniden dengeleme turu: 3→2 — pasif/ambient bir kaynak olduğu için
@@ -2796,19 +2800,18 @@ const KARABORSA_AHLAK_ASINMASI_YILLIK = 0.3;
 // Küçük Tarla — büyük denge turunda "en garanti" mülk yapıldı (kullanıcı: "bir tane uygun
 // gayrimenkul olsun 50'ye alabileceği daha garanti bir şey"): getirisi küçük ama kıtlıkta
 // bile kaybı çok az. taban_maliyet 40→50 (bkz. mulkler.ts).
-const MULK_GETIRI_KUCUK_TARLA_NORMAL = 0.055;
-const MULK_GETIRI_KUCUK_TARLA_AVANTAJLI = 0.065;
-const MULK_GETIRI_KUCUK_TARLA_DEZAVANTAJLI = -0.005;
+const MULK_GETIRI_KUCUK_TARLA_NORMAL = 0.09;
+const MULK_GETIRI_KUCUK_TARLA_AVANTAJLI = 0.105;
+const MULK_GETIRI_KUCUK_TARLA_DEZAVANTAJLI = -0.003;
 
 /** Her mülk 7-11 yılda bir periyodik bir bakım/vergi masrafı çıkarır (tıpkı "luks" mağaza eşyaları gibi). */
 const MULK_BAKIM_ARALIGI_MIN_YIL = 7;
 const MULK_BAKIM_ARALIGI_MAX_YIL = 11;
 /** Bakım masrafı, mülkün GÜNCEL (enflasyona göre ölçeklenmiş) değerinin yaklaşık bu oranı kadardır. */
-// Büyük denge turunda %14→%30 (kullanıcı: "7-11 yılda bir masraf çıkarsın kendi maliyetinin
-// ~üçte biri kadar"). ~%30 / ortalama 9 yıl ≈ yıllık ~%3.3 amorti gider — brüt getiri
-// ~%6 olduğu için net ortalama hafif pozitif, kötü yıllarda hafif negatif ("çok götürmesin").
-// Kart üzerinde oyuncuya açıkça yazılır.
-const MULK_BAKIM_ORANI = 0.3;
+// Gelir/gider dengesi turu: bakım oranı %30 → %15 (kullanıcı isteği: bakımı düşür, geliri
+// artır). %15 / ortalama 9 yıl ≈ yıllık ~%1.7 amorti gider — yükseltilmiş brüt getiriyle
+// (~%9 NORMAL) birlikte net akış artık belirgin pozitif.
+const MULK_BAKIM_ORANI = 0.15;
 
 export function rastgeleMulkBakimAraligi(): number {
   return (
@@ -2949,13 +2952,13 @@ function hamMulkGetiriOrani(tur: MulkTuru, ulke: CharacterState["ulke"]): number
         : MULK_GETIRI_NORMAL;
   }
   if (tur === "demirci") {
-    return ulke.savasta || ulke.kriz?.tur === "isyan" ? MULK_GETIRI_NORMAL * MULK_DEMIRCI_SAVAS_CARPANI : MULK_GETIRI_NORMAL * 0.3;
+    return ulke.savasta || ulke.kriz?.tur === "isyan" ? MULK_GETIRI_NORMAL * MULK_DEMIRCI_SAVAS_CARPANI : MULK_GETIRI_NORMAL * 0.45;
   }
   if (tur === "kervan") {
-    return !ulke.savasta && ulke.ekonomi !== "kotu" ? MULK_GETIRI_AVANTAJLI * 1.1 : MULK_GETIRI_NORMAL * 0.5;
+    return !ulke.savasta && ulke.ekonomi !== "kotu" ? MULK_GETIRI_AVANTAJLI * 1.1 : MULK_GETIRI_NORMAL * 0.85;
   }
   // karaborsa
-  return ulke.kriz?.tur === "kitlik" || ulke.vebada || ulke.savasta ? MULK_GETIRI_AVANTAJLI * 1.2 : MULK_GETIRI_DEZAVANTAJLI * 0.5;
+  return ulke.kriz?.tur === "kitlik" || ulke.vebada || ulke.savasta ? MULK_GETIRI_AVANTAJLI * 1.6 : 0;
 }
 
 /**

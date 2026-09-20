@@ -371,6 +371,10 @@ export interface CharacterState {
 
   tur_sayisi: number;
   gecmis_olaylar: string[];
+  /** Bu hayatı oluşturan cihazın (istemci_id) ÖNCEKİ hayatlarında görülen olay id'leri — yaratılışta bir kerelik doldurulur, hayat boyunca değişmez. Yalnız `olaySec`'teki tekrar-önleme penceresini (§12) genişletmek için kullanılır; "ömürde bir kez" milestone kontrolleri (§11) hâlâ yalnız `gecmis_olaylar`'a bakar, bundan etkilenmez. */
+  istemci_gecmis_olaylar: string[];
+  /** Bu hayatı yaratan tarayıcının rastgele istemci kimliği (varsa) — ölümde bu hayatın `gecmis_olaylar`'ını istemci geçmişine yazmak için kullanılır. Yoksa null. */
+  istemci_id: string | null;
   gecmis: GecmisNoktasi[];
   hayat_hikayesi: HayatOlayi[];
   aktif: boolean;

@@ -270,6 +270,9 @@ export interface CharacterState {
 
   tur_sayisi: number;
   gecmis_olaylar: string[];
+  /** Cihazın önceki hayatlarında görülen olaylar (sunucu-içi tekrar önleme için) — client mantığı kullanmaz. */
+  istemci_gecmis_olaylar: string[];
+  istemci_id: string | null;
   gecmis: GecmisNoktasi[];
   hayat_hikayesi: HayatOlayi[];
   aktif: boolean;

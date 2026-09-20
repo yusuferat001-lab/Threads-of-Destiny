@@ -419,12 +419,6 @@ const TR = {
   iyAvantajli: 'Avantajlı',
   iyDezavantajli: 'Dezavantajlı',
   iySuAnTahminiGetiri: 'Şu an tahmini getiri',
-  iyGetiriBrut: '📈 Getiri (brüt): {0}{1} {2}/yıl ({3}%)',
-  iyGetiriNet: '💰 Eline kalan (net): {0}{1} {2}/yıl',
-  iyBakimVergi: '🔧 Bakım/vergi: ~-{0} {1}/yıl',
-  iyBakimTitle:
-    '7-11 yılda bir çıkan bakım/vergi masrafının yıllığa bölünmüş yaklaşık tutarı; getiriden ayrı, her koşulda gider.',
-  iyBakimAcikla: '🔧 Her mülk 7-11 yılda bir değerinin ~⅓\'ü kadar bakım/vergi çıkarır; "net" bunu düşer.',
   iyKendiParan: 'Kendi Paran',
   iyKaranlikIsler: 'Karanlık İşler',
   iyKaranlikIsAcikla:
@@ -690,7 +684,7 @@ const TR = {
   feKirilimLejant: '🎖️ 📈 kalıcı · 🤝 🌍 dünya durumuna göre değişir',
   feTasinNotKisa: 'Tur harcamaz. Pahalıya geçiş bir kerelik {0} {1}.',
   feTasinmaKisa: ' · +{0} {1} taşınma',
-  iyNetKisa: '💰 Net ~{0}{1} {2}/yıl ({3}%)',
+  iyNetKisa: '💰 Kazanç ~{0}{1} {2}/yıl ({3}%)',
   iyFiyatKisa: 'Fiyat: {0} {1}',
   iyRutbeNasilKisa: '{0} yüksek tut, mesleğinde başarılı ol, kıdem biriktir. Rütbe asla düşmez.',
   mpFayda: 'fayda',
@@ -1103,12 +1097,6 @@ const EN: Metinler = {
   iyAvantajli: 'Favorable',
   iyDezavantajli: 'Unfavorable',
   iySuAnTahminiGetiri: 'Current estimated yield',
-  iyGetiriBrut: '📈 Yield (gross): {0}{1} {2}/yr ({3}%)',
-  iyGetiriNet: '💰 Take-home (net): {0}{1} {2}/yr',
-  iyBakimVergi: '🔧 Upkeep/tax: ~-{0} {1}/yr',
-  iyBakimTitle:
-    'The upkeep/tax cost that comes due every 7–11 years, divided into a yearly figure; separate from the yield and paid in every case.',
-  iyBakimAcikla: '🔧 Every property incurs upkeep/tax of ~⅓ its value every 7–11 years; "net" already subtracts it.',
   iyKendiParan: 'Your Cash',
   iyKaranlikIsler: 'Dark Dealings',
   iyKaranlikIsAcikla:
@@ -1370,7 +1358,7 @@ const EN: Metinler = {
   feKirilimLejant: '🎖️ 📈 permanent · 🤝 🌍 vary with world conditions',
   feTasinNotKisa: 'Costs no turn. Upgrading costs a one-time {0} {1}.',
   feTasinmaKisa: ' · +{0} {1} to move',
-  iyNetKisa: '💰 Net ~{0}{1} {2}/yr ({3}%)',
+  iyNetKisa: '💰 Return ~{0}{1} {2}/yr ({3}%)',
   iyFiyatKisa: 'Price: {0} {1}',
   iyRutbeNasilKisa: 'Keep your {0} high, succeed in your profession, build seniority. Rank never drops.',
   mpFayda: 'benefit',
