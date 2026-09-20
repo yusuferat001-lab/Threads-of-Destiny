@@ -3759,13 +3759,13 @@ export async function sosyallesmeAksiyonYap(
     state.para = paraYuvarla(state.para - fiyat);
 
     if (ic.alkollu) {
-      state.mutluluk += 4;
+      state.mutluluk += 6;
       state.saglik -= 2;
       mesaj = T(state.dil, "{0} devirdin. Keyiflendin ama yarın seni bekliyor.", [state.dil === "en" ? ic.adEn : ic.ad]);
       const damga = ayyasZiyaretiIsle(state);
       if (damga) mesaj += " " + T(state.dil, "Meydan artık seni 'ayyaş' diye anıyor.");
     } else {
-      state.mutluluk += 2;
+      state.mutluluk += 3;
       state.saglik += 1;
       mesaj = T(state.dil, "{0} içtin. Hafif, tatlı bir mola.", [state.dil === "en" ? ic.adEn : ic.ad]);
     }
@@ -3791,10 +3791,10 @@ export async function sosyallesmeAksiyonYap(
     const d = 1 + Math.floor(Math.random() * 6);
     if (d === 1) {
       etiketEkle(state, ["istihbarat_var"]);
-      state.mutluluk += 1;
+      state.mutluluk += 2;
       mesaj = T(state.dil, "Deli anlamsız sözler arasında sıradaki işini tarif eder gibi bir şeyler saydı. Tüylerin ürperdi ama kulağın açıldı.");
     } else if (d === 2) {
-      state.mutluluk += 5;
+      state.mutluluk += 7;
       mesaj = T(state.dil, "Delinin taklitleri meydanı kırıp geçirdi; karnın ağrıyana kadar güldün.");
     } else if (d === 3) {
       state.mutluluk -= 4;
@@ -3802,23 +3802,23 @@ export async function sosyallesmeAksiyonYap(
     } else if (d === 4) {
       const ekstra = Math.max(1, paraYuvarla(1 * enfl));
       state.para = paraYuvarla(state.para - ekstra);
-      state.un += 3;
+      state.un += 4;
       mesaj = T(state.dil, "Deliye avuç dolusu bozukluk verdin; 'ne cömert adam' diye fısıldandı meydan.");
     } else if (d === 5) {
-      state.ahlak += 3;
-      state.mutluluk += 2;
+      state.ahlak += 4;
+      state.mutluluk += 3;
       mesaj = T(state.dil, "Deli bir an durulup gayet aklı başında bir öğüt verdi. İçin tuhaf bir şekilde ısındı.");
     } else {
-      state.mutluluk += 1;
+      state.mutluluk += 2;
       mesaj = T(state.dil, "Deli bir süre peşinden yürüdü, uydurma bir marş söyledi, sonra kayboldu.");
     }
   } else if (aksiyonId === "sadaka") {
     const fiyat = Math.max(1, paraYuvarla(2 * enfl));
     if (state.para < fiyat) throw new Error(`Yeterli paran yok (${fiyat} ${birim} gerekli).`);
     state.para = paraYuvarla(state.para - fiyat);
-    state.ahlak += 3;
-    state.mutluluk += 2;
-    state.un += 1;
+    state.ahlak += 4;
+    state.mutluluk += 3;
+    state.un += 2;
     state.omur_sadaka_sayisi = (state.omur_sadaka_sayisi ?? 0) + 1; // "Sadaka Taşı" amacı
     mesaj = T(state.dil, "Kesenden {0} {birim} çıkarıp dağıttın; içindeki düğüm biraz çözüldü.", [fiyat]).replace(
       /\{birim\}/g,
@@ -3846,9 +3846,9 @@ export async function sosyallesmeAksiyonYap(
     const fiyat = Math.max(1, paraYuvarla(4 * enfl));
     if (state.para < fiyat) throw new Error(`Yeterli paran yok (${fiyat} ${birim} gerekli).`);
     state.para = paraYuvarla(state.para - fiyat);
-    state.mutluluk += 5;
-    state.un += 3;
-    state.dost_puani += 2;
+    state.mutluluk += 7;
+    state.un += 4;
+    state.dost_puani += 3;
     mesaj = T(state.dil, "Bütün masaya bir tur ısmarladın; kadehler senin şerefine kalktı, birkaç yeni yüz sana dost oldu.");
   } else if (aksiyonId === "fal") {
     const fiyat = Math.max(1, paraYuvarla(3 * enfl));
@@ -3856,13 +3856,13 @@ export async function sosyallesmeAksiyonYap(
     state.para = paraYuvarla(state.para - fiyat);
     const r = Math.random();
     if (r < 0.55) {
-      state.mutluluk += 2;
+      state.mutluluk += 3;
       mesaj =
         Math.random() < 0.5
           ? T(state.dil, "Falcı avucundaki çizgileri izledi: 'Uzun bir yol, ortasında beklenmedik bir kısmet' dedi.")
           : T(state.dil, "Fincanın dibinde bir kuş görmüş: 'Haber gelecek' dedi, o kadar.");
     } else if (r < 0.75) {
-      state.mutluluk += 8;
+      state.mutluluk += 10;
       mesaj = T(state.dil, "'Yakında yüzün gülecek' dedi falcı ve nedense buna bütün kalbinle inandın.");
     } else if (r < 0.9) {
       state.mutluluk -= 8;
