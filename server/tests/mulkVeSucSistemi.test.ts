@@ -23,9 +23,9 @@ describe("mülk getiri hesabı — dünya durumuna göre", () => {
     const iyi = taze();
     iyi.ulke.ekonomi = "iyi";
     const oranIyi = mulkGetiriOraniHesapla("ciftlik", iyi.ulke);
-    // Büyük denge turu: AVANTAJLI = 0.085, tüm oranlar ±0.09'a kırpılır.
+    // Gelir/gider dengesi turu: AVANTAJLI = 0.12, tüm oranlar ±0.13'e kırpılır.
     expect(oranIyi).toBeGreaterThan(0.04); // NORMAL'in üstünde
-    expect(oranIyi).toBeLessThanOrEqual(0.09); // tavan
+    expect(oranIyi).toBeLessThanOrEqual(0.13); // tavan
 
     const kitlik = taze();
     kitlik.ulke.kriz = { tur: "kitlik", bitisYili: 9999 };
@@ -37,8 +37,8 @@ describe("mülk getiri hesabı — dünya durumuna göre", () => {
     const avantajli = taze();
     avantajli.ulke.nufusDurumu = "artiyor";
     const oranAvantajli = mulkGetiriOraniHesapla("han", avantajli.ulke);
-    expect(oranAvantajli).toBeGreaterThan(0.04); // NORMAL'in üstünde (AVANTAJLI = 0.075)
-    expect(oranAvantajli).toBeLessThanOrEqual(0.09);
+    expect(oranAvantajli).toBeGreaterThan(0.04); // NORMAL'in üstünde (AVANTAJLI = 0.12)
+    expect(oranAvantajli).toBeLessThanOrEqual(0.13);
 
     const veba = taze();
     veba.ulke.vebada = true;
@@ -61,7 +61,7 @@ describe("mülk getiri hesabı — dünya durumuna göre", () => {
     const savasState = taze();
     savasState.ulke.savasta = true;
     const oranSavas = mulkGetiriOraniHesapla("karaborsa", savasState.ulke);
-    expect(oranSavas).toBeGreaterThanOrEqual(0.07); // AVANTAJLI(0.075) * 1.2 → 0.09, ±0.08 tavanına kırpılı
+    expect(oranSavas).toBeGreaterThanOrEqual(0.07); // AVANTAJLI(0.12) * 1.2 → 0.13 tavanına kırpılı
 
     const barisState = taze();
     const oranBaris = mulkGetiriOraniHesapla("karaborsa", barisState.ulke);
