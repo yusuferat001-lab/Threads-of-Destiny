@@ -113,7 +113,7 @@ export const SOSYAL_AKSIYONLAR: SosyalAksiyonTanimi[] = [
     adEn: "Talk to the fool",
     aciklama: "Meydanın delisine bir bozukluk ver, ağzından çıkacak şeyi dinle.",
     aciklamaEn: "Slip the town fool a coin and listen to whatever comes out.",
-    tabanFiyat: 1,
+    tabanFiyat: 2,
   },
   {
     id: "sadaka",
@@ -122,7 +122,7 @@ export const SOSYAL_AKSIYONLAR: SosyalAksiyonTanimi[] = [
     adEn: "Give alms",
     aciklama: "Kesenden çıkar, muhtaçlara dağıt. Vicdanın rahatlar.",
     aciklamaEn: "Empty a little of your purse to the needy. Eases the conscience.",
-    tabanFiyat: 2,
+    tabanFiyat: 4,
   },
   {
     id: "kulak",
@@ -140,7 +140,7 @@ export const SOSYAL_AKSIYONLAR: SosyalAksiyonTanimi[] = [
     adEn: "Buy a round",
     aciklama: "Bütün masaya bir tur ısmarla; kadehler senin şerefine kalksın.",
     aciklamaEn: "Stand the whole table a round; let the cups rise in your name.",
-    tabanFiyat: 4,
+    tabanFiyat: 7,
     alkolluMekanGerekir: true,
   },
   {
@@ -150,7 +150,7 @@ export const SOSYAL_AKSIYONLAR: SosyalAksiyonTanimi[] = [
     adEn: "Have your fortune told",
     aciklama: "Falcıya avucunu aç; kaderinden bir kırıntı duy.",
     aciklamaEn: "Open your palm to the fortune teller; hear a scrap of your fate.",
-    tabanFiyat: 3,
+    tabanFiyat: 5,
   },
 ];
 

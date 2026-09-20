@@ -3671,7 +3671,7 @@ export async function sosyallesmeAksiyonConfigGetir(id: string): Promise<SosyalA
 
   const icecekBekleyen = aksiyonKalanYil(state, "icki");
   const icecekler: SosyalAksiyonKarti[] = bolgeIcecekleri(state.cag, state.bolge).map((ic) => {
-    const fiyat = Math.max(1, paraYuvarla((ic.alkollu ? 3 : 2) * enfl));
+    const fiyat = Math.max(1, paraYuvarla((ic.alkollu ? 5 : 3) * enfl));
     const paraYok = state.para < fiyat;
     return {
       id: `icki:${ic.id}`,
@@ -3754,7 +3754,7 @@ export async function sosyallesmeAksiyonYap(
     if (aksiyonKalanYil(state, "icki") > 0) throw new Error("Bu yıl zaten bir şey içtin.");
     const ic = icecekTanimiGetir(state.cag, state.bolge, aksiyonId.slice(5));
     if (!ic) throw new Error("Böyle bir içki yok.");
-    const fiyat = Math.max(1, paraYuvarla((ic.alkollu ? 3 : 2) * enfl));
+    const fiyat = Math.max(1, paraYuvarla((ic.alkollu ? 5 : 3) * enfl));
     if (state.para < fiyat) throw new Error(`Yeterli paran yok (${fiyat} ${birim} gerekli).`);
     state.para = paraYuvarla(state.para - fiyat);
 
@@ -3785,7 +3785,7 @@ export async function sosyallesmeAksiyonYap(
   if (aksiyonKalanYil(state, aksiyonId) > 0) throw new Error("Bunu yakında tekrar yapamazsın.");
 
   if (aksiyonId === "deli") {
-    const fiyat = Math.max(1, paraYuvarla(1 * enfl));
+    const fiyat = Math.max(1, paraYuvarla(2 * enfl));
     if (state.para < fiyat) throw new Error(`Yeterli paran yok (${fiyat} ${birim} gerekli).`);
     state.para = paraYuvarla(state.para - fiyat);
     const d = 1 + Math.floor(Math.random() * 6);
@@ -3800,7 +3800,7 @@ export async function sosyallesmeAksiyonYap(
       state.mutluluk -= 4;
       mesaj = T(state.dil, "Deli gözlerini kısıp kulağına bir isim ve bir yıl fısıldadı. Gece boyu uyuyamadın.");
     } else if (d === 4) {
-      const ekstra = Math.max(1, paraYuvarla(1 * enfl));
+      const ekstra = Math.max(1, paraYuvarla(2 * enfl));
       state.para = paraYuvarla(state.para - ekstra);
       state.un += 4;
       mesaj = T(state.dil, "Deliye avuç dolusu bozukluk verdin; 'ne cömert adam' diye fısıldandı meydan.");
@@ -3813,7 +3813,7 @@ export async function sosyallesmeAksiyonYap(
       mesaj = T(state.dil, "Deli bir süre peşinden yürüdü, uydurma bir marş söyledi, sonra kayboldu.");
     }
   } else if (aksiyonId === "sadaka") {
-    const fiyat = Math.max(1, paraYuvarla(2 * enfl));
+    const fiyat = Math.max(1, paraYuvarla(4 * enfl));
     if (state.para < fiyat) throw new Error(`Yeterli paran yok (${fiyat} ${birim} gerekli).`);
     state.para = paraYuvarla(state.para - fiyat);
     state.ahlak += 4;
@@ -3843,7 +3843,7 @@ export async function sosyallesmeAksiyonYap(
       (y) => y.alkolluMu && sosyallesmeYeriUygunMu(y, state.cag, state.bolge, state.meslek)
     );
     if (!alkolluMekanVar) throw new Error("Bunun için alkollü bir mekân gerek.");
-    const fiyat = Math.max(1, paraYuvarla(4 * enfl));
+    const fiyat = Math.max(1, paraYuvarla(7 * enfl));
     if (state.para < fiyat) throw new Error(`Yeterli paran yok (${fiyat} ${birim} gerekli).`);
     state.para = paraYuvarla(state.para - fiyat);
     state.mutluluk += 7;
@@ -3851,7 +3851,7 @@ export async function sosyallesmeAksiyonYap(
     state.dost_puani += 3;
     mesaj = T(state.dil, "Bütün masaya bir tur ısmarladın; kadehler senin şerefine kalktı, birkaç yeni yüz sana dost oldu.");
   } else if (aksiyonId === "fal") {
-    const fiyat = Math.max(1, paraYuvarla(3 * enfl));
+    const fiyat = Math.max(1, paraYuvarla(5 * enfl));
     if (state.para < fiyat) throw new Error(`Yeterli paran yok (${fiyat} ${birim} gerekli).`);
     state.para = paraYuvarla(state.para - fiyat);
     const r = Math.random();
