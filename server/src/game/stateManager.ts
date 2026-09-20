@@ -563,7 +563,9 @@ export function createCharacter(
   bolge: string,
   yerlesimId: string,
   oyuncuIsmi?: string,
-  dil?: string
+  dil?: string,
+  istemciId?: string,
+  istemciGecmisOlaylar?: string[]
 ): CharacterState {
   if (!BOLGELER_BY_CAG[cag]?.includes(bolge)) {
     throw new Error("Geçersiz çağ/bölge kombinasyonu.");
@@ -711,6 +713,8 @@ export function createCharacter(
     yonetim_talep_sonraki_yil: yil + 6,
     tur_sayisi: 0,
     gecmis_olaylar: [],
+    istemci_gecmis_olaylar: istemciGecmisOlaylar ?? [],
+    istemci_id: istemciId ?? null,
     gecmis: [],
     hayat_hikayesi: [],
     aktif: true,
@@ -951,6 +955,9 @@ export function eskiKayitGocu(state: CharacterState): void {
   if (typeof state.yonetim_talep_sonraki_yil !== "number") {
     state.yonetim_talep_sonraki_yil = state.yil + 6;
   }
+  // Çapraz-hayat tekrar önleme (istemci_id bazlı) sonradan eklendi.
+  if (!Array.isArray(state.istemci_gecmis_olaylar)) state.istemci_gecmis_olaylar = [];
+  if (state.istemci_id === undefined) state.istemci_id = null;
 }
 
 /** Oyuncu mesleğini seçtikten sonra çağrılır: miras bonusunu ve maaşı uygular. */

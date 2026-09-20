@@ -132,6 +132,7 @@ import { yerlesimGetir } from "../data/yerlesimler";
 import { oturumKaydet, oturumYukle, aktifOturumlariYukle, bitmisOturumlariYukle, oturumYasiSaniye } from "../db/sessionRepository";
 import { uygunsuzMu } from "../moderasyon/kufurFiltresi";
 import { metrikYaz } from "../db/metrikRepository";
+import { istemciGecmisiOku, istemciGecmisiGuncelle } from "../db/istemciGecmisRepository";
 import { MULK_TANIMLARI, mulkTanimiGetir } from "../data/mulkler";
 import {
   MAGAZA_ESYALARI,
@@ -593,7 +594,11 @@ export async function yeniOyun(
   dil?: string,
   istemciId?: string
 ): Promise<CharacterState> {
-  const state = createCharacter(cag, bolge, yerlesimId, oyuncuIsmi, dil);
+  // Bu cihazın önceki hayatlarında görülen olayları çek — yeni hayatın olay
+  // seçimindeki tekrar-önleme penceresini (§12, olaySecici.ts) genişletmek için
+  // (aynı cihazdan art arda oynanan hayatlarda hep aynı olayların çıkmasını azaltır).
+  const caprazGecmis = istemciId ? await istemciGecmisiOku(istemciId) : [];
+  const state = createCharacter(cag, bolge, yerlesimId, oyuncuIsmi, dil, istemciId, caprazGecmis);
   oturumlar.set(state.id, {
     state,
     mevcutSenaryo: null,
@@ -1856,6 +1861,10 @@ async function sonucuUygulaVeIlerlet(
       olum_nedeni: state.olum_nedeni ?? "",
       oturum_sn: oturumSn,
     });
+    // Bu hayatta görülen olayları istemcinin çapraz-hayat geçmişine yaz — bir
+    // sonraki hayat aynı cihazdan başlatılınca bu olayları bir süre daha az
+    // görsün (§12'deki tekrar-önleme penceresinin hayatlar arası uzantısı).
+    void istemciGecmisiGuncelle(state.istemci_id, state.gecmis_olaylar);
   }
 
   return { state, basarili, uygulananEtki: etki, yasArtisi, sonucAnlatimi, zamanAnlatimi, terfiOldu, nakitAkisi };
