@@ -1,0 +1,928 @@
+import { OlayTanimi } from "./types";
+
+/**
+ * Bölgeye özgü flavor/karar olayları (Orta Çağ) — bölgeOzellikleri.ts'teki
+ * bonus/malus temasına dayanır (ör. Fransa'nın ticaret gücü/sağlık malusü,
+ * Selçuklu'nun din+savaş gücü/ticaret malusü vb.). `bolgeler` filtresiyle
+ * normal rastgele havuza girer, ayrı bir alt sistem gerektirmez.
+ */
+export const OLAY_BOLGESEL_ORTACAG: OlayTanimi[] = [
+  // ============================================================
+  // FRANSA (Orta Çağ)
+  // ============================================================
+  {
+    id: "bolge_fransa_oc_01",
+    kategori: "ticaret",
+    cag: "Orta Çağ",
+    bolgeler: ["Fransa"],
+    baslik: "Şampanya Panayırı",
+    metin: "Şampanya bölgesindeki büyük panayır başladı; Flandre'dan gelen kumaş tüccarları, İtalyan bezirganlarla masalarını yan yana kurmuş.",
+    secenekler: [
+      {
+        metin: "Kendi malını sat, pazarlık yap.",
+        baseBasariSansi: 75,
+        basariliSonuc: { para: 12, mesaj: "Malların iyi fiyata gitti, panayırdan cebin dolu döndün." },
+        basarisizSonuc: { para: -4, mutluluk: -3, mesaj: "Rakip tüccarlar fiyatı kırdı, umduğun kazancı bulamadın." },
+      },
+      {
+        metin: "Loncanın ortak kasasına yatırım yap.",
+        baseBasariSansi: 55,
+        maliyet: 8,
+        basariliSonuc: { para: 20, ahlak: 2, mesaj: "Ortak girişim beklenenden fazla kazandırdı, loncadaki itibarın arttı." },
+        basarisizSonuc: { para: -8, mutluluk: -5, mesaj: "Ortaklardan biri parayı kötüye kullandı, payını geri alamadın." },
+      },
+    ],
+  },
+  {
+    id: "bolge_fransa_oc_02",
+    kategori: "sosyal",
+    cag: "Orta Çağ",
+    bolgeler: ["Fransa"],
+    baslik: "Şövalye Turnuvası",
+    metin: "Yerel bir bey, şölen havasında bir turnuva düzenliyor; mızrak dövüşleri ve at yarışları köylüleri toplamış.",
+    secenekler: [
+      {
+        metin: "Seyirci olarak keyfini çıkar.",
+        baseBasariSansi: 80,
+        basariliSonuc: { mutluluk: 5, mesaj: "Kalabalığın coşkusuna kapılıp güzel bir gün geçirdin." },
+        basarisizSonuc: { para: -2, mutluluk: -2, mesaj: "Bahse girip kaybettin, cebinden birkaç kuruş gitti." },
+      },
+      {
+        metin: "Mızrak dövüşüne katıl.",
+        baseBasariSansi: 45,
+        basariliSonuc: { un: 8, saglik: -4, mesaj: "Beklenmedik şekilde iyi dövüştün, adın turnuvada anıldı." },
+        basarisizSonuc: { saglik: -10, mutluluk: -4, mesaj: "Attan düşüp ağır darbe aldın, günlerce yatağa mahkum kaldın." },
+      },
+    ],
+  },
+  {
+    id: "bolge_fransa_oc_03",
+    kategori: "saglik",
+    cag: "Orta Çağ",
+    bolgeler: ["Fransa"],
+    baslik: "Pazarda Salgın Söylentisi",
+    metin: "Şehir sokaklarında bir hastalığın yayıldığı konuşuluyor; pazar yerindeki kalabalık ve pislik işleri zorlaştırıyor.",
+    secenekler: [
+      {
+        metin: "Evde kal, temiz suya güven.",
+        baseBasariSansi: 70,
+        basariliSonuc: { saglik: 4, mesaj: "Tedbirli davranıp hastalıktan uzak durdun." },
+        basarisizSonuc: { saglik: -6, mutluluk: -3, mesaj: "Yine de hafif bir ateşe yakalandın, birkaç gün güçsüz kaldın." },
+      },
+      {
+        metin: "İşine devam et, pazara git.",
+        baseBasariSansi: 60,
+        basariliSonuc: { para: 6, mesaj: "Riski göze aldın ama sağlıklı kalıp işini de hallettin." },
+        basarisizSonuc: { saglik: -10, para: -3, mesaj: "Kalabalıkta hastalandın, hem sağlığın hem cebinden oldu." },
+      },
+    ],
+  },
+  {
+    id: "bolge_fransa_oc_04",
+    kategori: "ticaret",
+    cag: "Orta Çağ",
+    bolgeler: ["Fransa"],
+    baslik: "Loncalar Arası Rekabet",
+    metin: "Şehrindeki iki büyük lonca aynı malı satmak için birbirine düşmüş; sana da bir taraf tutman öneriliyor.",
+    secenekler: [
+      {
+        metin: "Tarafsız kal, kendi işine bak.",
+        baseBasariSansi: 75,
+        basariliSonuc: { para: 5, mesaj: "İşine odaklandın, kavgadan uzak durup küçük bir kazanç sağladın." },
+        basarisizSonuc: { mutluluk: -3, mesaj: "Tarafsızlığın her iki loncayı da küstürdü, birkaç müşterini kaybettin." },
+      },
+      {
+        metin: "Güçlü loncaya destek ver.",
+        baseBasariSansi: 55,
+        maliyet: 5,
+        basariliSonuc: { para: 14, ahlak: -3, mesaj: "Desteğinin karşılığını aldın, ama diğer loncayla aran bozuldu." },
+        basarisizSonuc: { para: -5, mutluluk: -4, mesaj: "Desteklediğin lonca kaybetti, hem paran hem itibarın sarsıldı." },
+      },
+    ],
+  },
+  {
+    id: "bolge_fransa_oc_05",
+    kategori: "savas",
+    cag: "Orta Çağ",
+    bolgeler: ["Fransa"],
+    baslik: "Sınırda İngiliz Akını",
+    metin: "Kanal kıyısındaki sınır köylerine İngiliz birlikleri akın düzenliyor; köylüler şehre sığınıyor.",
+    secenekler: [
+      {
+        metin: "Şehir surlarının onarımına katkı ver.",
+        baseBasariSansi: 70,
+        maliyet: 6,
+        basariliSonuc: { un: 5, mesaj: "Katkın takdir edildi, şehir daha güvende hissediyor." },
+        basarisizSonuc: { para: -6, mutluluk: -3, mesaj: "Verdiğin para israf oldu, onarım yarım kaldı." },
+      },
+      {
+        metin: "Silahlan, savunmaya katıl.",
+        baseBasariSansi: 45,
+        basariliSonuc: { un: 10, saglik: -5, mesaj: "Cesaretinle öne çıktın ama yara aldın." },
+        basarisizSonuc: { saglik: -14, mutluluk: -6, mesaj: "Çatışmada ağır yaralandın, uzun süre iyileşemedin." },
+      },
+    ],
+  },
+  {
+    id: "bolge_fransa_oc_06",
+    kategori: "din",
+    cag: "Orta Çağ",
+    bolgeler: ["Fransa"],
+    baslik: "Katedral İnşaatı",
+    metin: "Şehrin yeni gotik katedrali için bağış toplanıyor; taş ustaları ve mimarlar günlerdir çalışıyor.",
+    secenekler: [
+      {
+        metin: "Küçük bir bağışta bulun.",
+        baseBasariSansi: 80,
+        maliyet: 5,
+        basariliSonuc: { ahlak: 5, mutluluk: 3, mesaj: "Bağışın kayıtlara geçti, papaz seni hayırla andı." },
+        basarisizSonuc: { mutluluk: -2, mesaj: "Bağışın fark edilmedi bile, biraz hayal kırıklığına uğradın." },
+      },
+      {
+        metin: "İnşaatta gönüllü çalış.",
+        baseBasariSansi: 60,
+        basariliSonuc: { ahlak: 8, saglik: -3, mesaj: "Alın terinle katkı verdin, cemaat seni takdir etti." },
+        basarisizSonuc: { saglik: -6, mutluluk: -3, mesaj: "Ağır taşları taşırken sırtını incittin." },
+      },
+    ],
+  },
+  {
+    id: "bolge_fransa_oc_07",
+    kategori: "sosyal",
+    cag: "Orta Çağ",
+    bolgeler: ["Fransa"],
+    baslik: "Şarap Hasadı Şenliği",
+    metin: "Bağ bozumu bitti, köyde büyük bir şenlik var; herkes şarap fıçılarının etrafında toplanmış.",
+    secenekler: [
+      {
+        metin: "Şenliğe katıl, dans et.",
+        baseBasariSansi: 85,
+        basariliSonuc: { mutluluk: 8, mesaj: "Müzik ve şarapla geceyi unutulmaz kıldın." },
+        basarisizSonuc: { mutluluk: -2, saglik: -2, mesaj: "Fazla kaçırıp sabah başın ağrıdı." },
+      },
+      {
+        metin: "Şarabını pazara götür, sat.",
+        baseBasariSansi: 65,
+        basariliSonuc: { para: 10, mesaj: "Şarabın rağbet gördü, iyi para kazandın." },
+        basarisizSonuc: { para: -4, mesaj: "Bu yıl herkesin şarabı bol, senin fıçıların elde kaldı." },
+      },
+    ],
+  },
+  {
+    id: "bolge_fransa_oc_08",
+    kategori: "siyaset",
+    cag: "Orta Çağ",
+    bolgeler: ["Fransa"],
+    baslik: "Serflerin Huzursuzluğu",
+    metin: "Komşu topraklardaki serfler ağır vergilere karşı ayaklanma sinyalleri veriyor; bey senden fikrini soruyor.",
+    secenekler: [
+      {
+        metin: "Beyi ölçülü olmaya ikna et.",
+        baseBasariSansi: 55,
+        basariliSonuc: { ahlak: 6, un: 3, mesaj: "Sözlerin dinlendi, vergiler biraz hafifletildi." },
+        basarisizSonuc: { mutluluk: -4, mesaj: "Sözün dinlenmedi, huzursuzluk büyümeye devam etti." },
+      },
+      {
+        metin: "Sessiz kal, karışma.",
+        baseBasariSansi: 80,
+        basariliSonuc: { mutluluk: 2, mesaj: "İşine baktın, kimse seni bu işe karıştırmadı." },
+        basarisizSonuc: { ahlak: -4, mesaj: "Sessizliğin bazılarınca korkaklık olarak yorumlandı." },
+      },
+    ],
+  },
+  {
+    id: "bolge_fransa_oc_09",
+    kategori: "ticaret",
+    cag: "Orta Çağ",
+    bolgeler: ["Fransa"],
+    baslik: "Seyyar Kervan",
+    metin: "Uzak diyarlardan gelen bir kervan şehre uğradı; egzotik baharat ve kumaşlar satışa çıktı.",
+    secenekler: [
+      {
+        metin: "Küçük bir miktar al, elden çıkar.",
+        baseBasariSansi: 75,
+        maliyet: 6,
+        basariliSonuc: { para: 12, mesaj: "Aldığın mallar şehirde el üstünde tutuldu." },
+        basarisizSonuc: { para: -6, mesaj: "Mallar beklediğin gibi rağbet görmedi, zararına sattın." },
+      },
+      {
+        metin: "Büyük miktarda toptan al.",
+        baseBasariSansi: 50,
+        maliyet: 14,
+        basariliSonuc: { para: 26, mesaj: "Cesur yatırımın büyük kâr getirdi." },
+        basarisizSonuc: { para: -14, mutluluk: -4, mesaj: "Mallar bozulup elinde kaldı, ciddi zarar ettin." },
+      },
+    ],
+  },
+  {
+    id: "bolge_fransa_oc_10",
+    kategori: "saglik",
+    cag: "Orta Çağ",
+    bolgeler: ["Fransa"],
+    baslik: "Şehir Pisliği",
+    metin: "Sokaklardaki atık ve çamur, yağmurlarla birlikte dayanılmaz bir kokuya dönüştü; hastalık riski artıyor.",
+    secenekler: [
+      {
+        metin: "Kendi payına düşeni temizle.",
+        baseBasariSansi: 70,
+        basariliSonuc: { saglik: 3, mesaj: "Çevreni temizleyip biraz rahat nefes aldın." },
+        basarisizSonuc: { saglik: -4, mutluluk: -2, mesaj: "Uğraşına rağmen koku ve pislik seni bezdirdi." },
+      },
+      {
+        metin: "Umursama, işine devam et.",
+        baseBasariSansi: 65,
+        basariliSonuc: { mutluluk: 2, mesaj: "Alışmışsın artık, gündelik hayatına devam ettin." },
+        basarisizSonuc: { saglik: -8, mesaj: "Kirli sudan içip midenden rahatsızlandın." },
+      },
+    ],
+  },
+
+  // ============================================================
+  // KUTSAL ROMA
+  // ============================================================
+  {
+    id: "bolge_kutsalroma_01",
+    kategori: "ticaret",
+    cag: "Orta Çağ",
+    bolgeler: ["Kutsal Roma"],
+    baslik: "Usta-Çırak Anlaşmazlığı",
+    metin: "Ustan, yıllardır verdiğin emeğin karşılığını hakkıyla ödemiyor; loncaya şikayet etmeyi düşünüyorsun.",
+    secenekler: [
+      {
+        metin: "Loncaya resmi şikayette bulun.",
+        baseBasariSansi: 55,
+        basariliSonuc: { para: 10, ahlak: 3, mesaj: "Lonca seni haklı buldu, hakkın ödendi." },
+        basarisizSonuc: { mutluluk: -4, mesaj: "Şikayetin reddedildi, ustanla aran daha da bozuldu." },
+      },
+      {
+        metin: "Sessizce başka bir ustaya geç.",
+        baseBasariSansi: 75,
+        basariliSonuc: { para: 5, mesaj: "Yeni usta daha adil davrandı, işin düzeldi." },
+        basarisizSonuc: { para: -4, mesaj: "Yeni yerde de sorun çıktı, geçici bir süre işsiz kaldın." },
+      },
+    ],
+  },
+  {
+    id: "bolge_kutsalroma_02",
+    kategori: "siyaset",
+    cag: "Orta Çağ",
+    bolgeler: ["Kutsal Roma"],
+    baslik: "İmparator mu, Bey mi?",
+    metin: "Yerel bey ile İmparator'un temsilcisi aynı vergiyi farklı miktarlarda istiyor; ikisine de borçlu görünmek istemiyorsun.",
+    secenekler: [
+      {
+        metin: "Yerel beye sadakat göster.",
+        baseBasariSansi: 60,
+        basariliSonuc: { un: 5, mesaj: "Bey memnun kaldı, bölgede sözün geçer oldu." },
+        basarisizSonuc: { para: -6, mutluluk: -3, mesaj: "İmparator temsilcisi seni cezalandırdı, ekstra vergi ödedin." },
+      },
+      {
+        metin: "İkisine de idare edecek kadar öde.",
+        baseBasariSansi: 70,
+        maliyet: 8,
+        basariliSonuc: { mutluluk: 2, mesaj: "Kimseyi kızdırmadan işi tatlıya bağladın." },
+        basarisizSonuc: { para: -8, mesaj: "Ödediğin halde ikisi de senden şüphelendi, boşa para verdin." },
+      },
+    ],
+  },
+  {
+    id: "bolge_kutsalroma_03",
+    kategori: "ticaret",
+    cag: "Orta Çağ",
+    bolgeler: ["Kutsal Roma"],
+    baslik: "Ren Nehri Gümrüğü",
+    metin: "Nehir üzerindeki gümrük noktasında memurlar mallarına yüksek vergi biçmeye çalışıyor.",
+    secenekler: [
+      {
+        metin: "Pazarlık et.",
+        baseBasariSansi: 65,
+        basariliSonuc: { para: 8, mesaj: "Memuru ikna edip vergiyi düşürttün." },
+        basarisizSonuc: { para: -6, mesaj: "Memur inatlaştı, tam vergiyi ödemek zorunda kaldın." },
+      },
+      {
+        metin: "Rüşvet teklif et.",
+        baseBasariSansi: 55,
+        maliyet: 5,
+        basariliSonuc: { para: 14, ahlak: -4, mesaj: "Küçük bir rüşvetle işini hızlıca hallettin." },
+        basarisizSonuc: { para: -10, ahlak: -5, mutluluk: -3, mesaj: "Rüşvet fark edildi, hem parayı hem itibarını kaybettin." },
+      },
+    ],
+  },
+  {
+    id: "bolge_kutsalroma_04",
+    kategori: "savas",
+    cag: "Orta Çağ",
+    bolgeler: ["Kutsal Roma"],
+    baslik: "Şehir Surları Onarımı",
+    metin: "Şehir konseyi surlardaki gedikleri kapatmak için ustalardan yardım istiyor.",
+    secenekler: [
+      {
+        metin: "Ustalık becerini sun.",
+        baseBasariSansi: 70,
+        basariliSonuc: { un: 6, mesaj: "Ellerinle yaptığın onarım herkesin dikkatini çekti." },
+        basarisizSonuc: { saglik: -5, mesaj: "İskeleden düşüp yaralandın." },
+      },
+      {
+        metin: "Sadece para bağışla.",
+        baseBasariSansi: 80,
+        maliyet: 6,
+        basariliSonuc: { ahlak: 4, mesaj: "Bağışın onarımın tamamlanmasına yetti." },
+        basarisizSonuc: { mutluluk: -2, mesaj: "Para toplandı ama iş yine de yavaş ilerledi, biraz hayal kırıklığı yaşadın." },
+      },
+    ],
+  },
+  {
+    id: "bolge_kutsalroma_05",
+    kategori: "siyaset",
+    cag: "Orta Çağ",
+    bolgeler: ["Kutsal Roma"],
+    baslik: "Bey ile İmparator Temsilcisinin Çatışması",
+    metin: "Meydanda beyin adamları ile İmparator temsilcisinin muhafızları neredeyse birbirine girdi; herkes köşesine çekiliyor.",
+    secenekler: [
+      {
+        metin: "Araya gir, yatıştırmaya çalış.",
+        baseBasariSansi: 45,
+        basariliSonuc: { un: 8, ahlak: 3, mesaj: "Cesaretin takdir edildi, gerginlik yatıştı." },
+        basarisizSonuc: { saglik: -6, mutluluk: -4, mesaj: "Arada kalıp itiş kakışta dövüldün." },
+      },
+      {
+        metin: "Uzak dur, evine çekil.",
+        baseBasariSansi: 85,
+        basariliSonuc: { mutluluk: 2, mesaj: "Karışmayıp kendini korudun." },
+        basarisizSonuc: { mutluluk: -2, mesaj: "Olay biterken şehirde huzursuzluk hissediliyor, moralin bozuldu." },
+      },
+    ],
+  },
+  {
+    id: "bolge_kutsalroma_06",
+    kategori: "ticaret",
+    cag: "Orta Çağ",
+    bolgeler: ["Kutsal Roma"],
+    baslik: "Demirci Ustasının Sınavı",
+    metin: "Şehirdeki demirci ustası, loncaya kabul için senden zorlu bir parça istiyor.",
+    secenekler: [
+      {
+        metin: "Sabırla, özenle çalış.",
+        baseBasariSansi: 65,
+        basariliSonuc: { para: 10, un: 3, mesaj: "Yaptığın parça beğenildi, ustalar arasına kabul edildin." },
+        basarisizSonuc: { para: -3, mutluluk: -3, mesaj: "Parça çatladı, malzeme masrafın boşa gitti." },
+      },
+      {
+        metin: "Hızlı bitirip teslim et.",
+        baseBasariSansi: 50,
+        basariliSonuc: { para: 6, mesaj: "Zamanında teslim ettin, kabul gördü." },
+        basarisizSonuc: { un: -3, mutluluk: -3, mesaj: "Acele iş göze battı; ustalar seni beğenmedi." },
+      },
+    ],
+  },
+  {
+    id: "bolge_kutsalroma_07",
+    kategori: "din",
+    cag: "Orta Çağ",
+    bolgeler: ["Kutsal Roma"],
+    baslik: "Haçlı Seferi Çağrısı",
+    metin: "Kilise, kutsal topraklar için gönüllü ve bağış topluyor; şehirde vaazlar veriliyor.",
+    secenekler: [
+      {
+        metin: "Küçük bir bağış yap.",
+        baseBasariSansi: 80,
+        maliyet: 6,
+        basariliSonuc: { ahlak: 5, mesaj: "Bağışın kilise kayıtlarına geçti." },
+        basarisizSonuc: { mutluluk: -2, mesaj: "Bağışın yeterince fark edilmedi, biraz hayal kırıklığı." },
+      },
+      {
+        metin: "Vaaza katılıp coşkuyla destek ver.",
+        baseBasariSansi: 70,
+        basariliSonuc: { ahlak: 6, un: 4, mesaj: "Coşkun etrafındakilere de bulaştı, adın anıldı." },
+        basarisizSonuc: { mutluluk: -3, mesaj: "Vaiz seni pek dinlemedi, sözlerin havada kaldı." },
+      },
+    ],
+  },
+  {
+    id: "bolge_kutsalroma_08",
+    kategori: "siyaset",
+    cag: "Orta Çağ",
+    bolgeler: ["Kutsal Roma"],
+    baslik: "Serbest Şehir Statüsü",
+    metin: "Şehir konseyi, İmparator'dan 'serbest şehir' statüsü istemeyi tartışıyor; herkesin fikri soruluyor.",
+    secenekler: [
+      {
+        metin: "Meclis toplantısında konuş.",
+        baseBasariSansi: 50,
+        basariliSonuc: { un: 8, mesaj: "Sözlerin meclisi etkiledi, adın duyuldu." },
+        basarisizSonuc: { mutluluk: -4, ahlak: -2, mesaj: "Sözlerin yanlış anlaşıldı, seni suçlayanlar oldu." },
+      },
+      {
+        metin: "Kararı konseye bırak, izle.",
+        baseBasariSansi: 85,
+        basariliSonuc: { mutluluk: 2, mesaj: "Kimseyi kırmadan süreci izledin." },
+        basarisizSonuc: { mutluluk: -2, mesaj: "Karar senin istemediğin yönde çıktı, hayal kırıklığına uğradın." },
+      },
+    ],
+  },
+  {
+    id: "bolge_kutsalroma_09",
+    kategori: "siyaset",
+    cag: "Orta Çağ",
+    bolgeler: ["Kutsal Roma"],
+    baslik: "Taç İçin Entrikalar",
+    metin: "İmparatorluk tacı için adaylar arasında gizli anlaşmalar dönüyor; birinin senden destek istediği söyleniyor.",
+    secenekler: [
+      {
+        metin: "Reddet, tarafsız kal.",
+        baseBasariSansi: 75,
+        basariliSonuc: { ahlak: 4, mesaj: "Temiz kaldın, kimseye borçlanmadın." },
+        basarisizSonuc: { mutluluk: -3, mesaj: "Tarafsızlığın bazılarınca güvensizlik olarak görüldü." },
+      },
+      {
+        metin: "Gizlice destek ver, karşılık bekle.",
+        baseBasariSansi: 45,
+        maliyet: 8,
+        basariliSonuc: { para: 18, ahlak: -6, mesaj: "Desteklediğin aday kazandı, karşılığını fazlasıyla aldın." },
+        basarisizSonuc: { para: -8, ahlak: -4, mutluluk: -4, mesaj: "Desteklediğin aday kaybetti, hem parayı hem itibarını kaybettin." },
+      },
+    ],
+  },
+  {
+    id: "bolge_kutsalroma_10",
+    kategori: "sosyal",
+    cag: "Orta Çağ",
+    bolgeler: ["Kutsal Roma"],
+    baslik: "Zanaatkarlar Şenliği",
+    metin: "Şehirdeki tüm loncalar bir araya gelip yıllık bir şenlik düzenliyor; ürünler sergileniyor.",
+    secenekler: [
+      {
+        metin: "Kendi ürününü sergile.",
+        baseBasariSansi: 70,
+        basariliSonuc: { un: 7, para: 4, mesaj: "Ürünün beğeni topladı, hem tanındın hem kazandın." },
+        basarisizSonuc: { mutluluk: -3, mesaj: "Ürünün gölgede kaldı, kimse pek ilgilenmedi." },
+      },
+      {
+        metin: "Sadece şenliği izle, eğlen.",
+        baseBasariSansi: 85,
+        basariliSonuc: { mutluluk: 6, mesaj: "Güzel bir gün geçirdin, dertlerini bir kenara bıraktın." },
+        basarisizSonuc: { para: -3, mesaj: "Şenlikte cüzdanını kaptırdın." },
+      },
+    ],
+  },
+
+  // ============================================================
+  // BİZANS
+  // ============================================================
+  {
+    id: "bolge_bizans_01",
+    kategori: "ticaret",
+    cag: "Orta Çağ",
+    bolgeler: ["Bizans"],
+    baslik: "İpek Pazarı",
+    metin: "Konstantinopolis'in büyük pazarında İpek Yolu'ndan gelen kumaşlar el değiştiriyor.",
+    secenekler: [
+      {
+        metin: "Küçük miktarda ipek al, sat.",
+        baseBasariSansi: 75,
+        maliyet: 8,
+        basariliSonuc: { para: 16, mesaj: "İpek yüksek fiyata gitti, güzel kâr ettin." },
+        basarisizSonuc: { para: -8, mesaj: "Piyasa fiyatı düştü, zararına satmak zorunda kaldın." },
+      },
+      {
+        metin: "Doğrudan saraya mal tedarik etmeye çalış.",
+        baseBasariSansi: 45,
+        maliyet: 14,
+        basariliSonuc: { para: 30, un: 4, mesaj: "Saray tedarikçisi olarak adın duyuldu, büyük kazanç sağladın." },
+        basarisizSonuc: { para: -16, mutluluk: -4, mesaj: "Sarayın memurları seni oyaladı, sermayenin bir kısmını kaybettin." },
+      },
+    ],
+  },
+  {
+    id: "bolge_bizans_02",
+    kategori: "siyaset",
+    cag: "Orta Çağ",
+    bolgeler: ["Bizans"],
+    baslik: "Sarayda Entrika",
+    metin: "Sarayda bir soylu, senden kendi lehine küçük bir iyilik istiyor; karşılığında koruma vaat ediyor.",
+    secenekler: [
+      {
+        metin: "İyiliği yap, ilişki kur.",
+        baseBasariSansi: 55,
+        basariliSonuc: { un: 8, mesaj: "Soylunun gözüne girdin, sarayda tanınırlığın arttı." },
+        basarisizSonuc: { ahlak: -4, mutluluk: -3, mesaj: "İşler ters gitti, kirli bir işe bulaştığın konuşuldu." },
+      },
+      {
+        metin: "Nazikçe reddet.",
+        baseBasariSansi: 75,
+        basariliSonuc: { ahlak: 4, mesaj: "Temiz durdun, kimseye borçlanmadın." },
+        basarisizSonuc: { mutluluk: -3, mesaj: "Soylu küçük düşürüldüğünü hissedip sana küstü." },
+      },
+    ],
+  },
+  {
+    id: "bolge_bizans_03",
+    kategori: "din",
+    cag: "Orta Çağ",
+    bolgeler: ["Bizans"],
+    baslik: "Ayasofya'da Tören",
+    metin: "Büyük bir dini tören için Ayasofya'da kalabalık toplanmış; sen de katılmayı düşünüyorsun.",
+    secenekler: [
+      {
+        metin: "Törene katıl, dua et.",
+        baseBasariSansi: 85,
+        basariliSonuc: { ahlak: 5, mutluluk: 3, mesaj: "Muhteşem törenin huzuruyla için rahatladı." },
+        basarisizSonuc: { mutluluk: -2, mesaj: "Kalabalıkta itilip kakıldın, huzurun kaçtı." },
+      },
+      {
+        metin: "Törende öne çıkıp dikkat çek.",
+        baseBasariSansi: 50,
+        basariliSonuc: { un: 8, mesaj: "Davranışın rahiplerin dikkatini çekti, adın anıldı." },
+        basarisizSonuc: { ahlak: -4, mutluluk: -3, mesaj: "Törene saygısızlık ettiğin düşünüldü, hoş karşılanmadın." },
+      },
+    ],
+  },
+  {
+    id: "bolge_bizans_04",
+    kategori: "saglik",
+    cag: "Orta Çağ",
+    bolgeler: ["Bizans"],
+    baslik: "Kalabalık Şehirde Hastalık",
+    metin: "Şehrin dar sokakları tıklım tıklım; havasızlık ve pislik yüzünden hastalıklar kolayca yayılıyor.",
+    secenekler: [
+      {
+        metin: "Şehir dışına, temiz havaya çık.",
+        baseBasariSansi: 70,
+        maliyet: 4,
+        basariliSonuc: { saglik: 6, mesaj: "Birkaç günlük kaçış sağlığını yerine getirdi." },
+        basarisizSonuc: { saglik: -3, para: -4, mesaj: "Yolculuk beklediğin gibi rahatlatıcı olmadı, hem yorgun hem parasız döndün." },
+      },
+      {
+        metin: "Şehirde kal, dikkatli ol.",
+        baseBasariSansi: 60,
+        basariliSonuc: { saglik: 2, mesaj: "Dikkatli davranıp hastalıktan kurtuldun." },
+        basarisizSonuc: { saglik: -10, mesaj: "Kalabalık bir mahalledeki salgından payını aldın." },
+      },
+    ],
+  },
+  {
+    id: "bolge_bizans_05",
+    kategori: "savas",
+    cag: "Orta Çağ",
+    bolgeler: ["Bizans"],
+    baslik: "Yunan Ateşinin Sırrı",
+    metin: "Donanmanın gizli silahı Yunan ateşinin formülüne dair bir söylenti duydun; bilgiyi satmak isteyenler var.",
+    secenekler: [
+      {
+        metin: "Söylentiyi görmezden gel.",
+        baseBasariSansi: 90,
+        basariliSonuc: { ahlak: 3, mesaj: "Tehlikeli işe bulaşmadın, vicdanın rahat." },
+        basarisizSonuc: { mutluluk: -2, mesaj: "Meraklandın ama sonunda dedikoducu diye anıldın." },
+      },
+      {
+        metin: "Bilgiyi araştır, satmayı dene.",
+        baseBasariSansi: 35,
+        basariliSonuc: { para: 22, mesaj: "Bilgiyi doğru kişiye satıp iyi para kazandın." },
+        basarisizSonuc: { ahlak: -8, saglik: -8, mutluluk: -4, mesaj: "Devlet sırrına el attığın anlaşıldı, ağır şekilde cezalandırıldın." },
+      },
+    ],
+  },
+  {
+    id: "bolge_bizans_06",
+    kategori: "ticaret",
+    cag: "Orta Çağ",
+    bolgeler: ["Bizans"],
+    baslik: "Bizans Altını",
+    metin: "Değerli hiperpironların değerini kullanan bir yatırım fırsatı çıktı; bir tüccar ortaklık öneriyor.",
+    secenekler: [
+      {
+        metin: "Ortaklığa küçük payla katıl.",
+        baseBasariSansi: 70,
+        maliyet: 8,
+        basariliSonuc: { para: 14, mesaj: "Ortaklık kâr getirdi, payını fazlasıyla aldın." },
+        basarisizSonuc: { para: -8, mesaj: "Ortaklık zarar etti, yatırımının bir kısmını kaybettin." },
+      },
+      {
+        metin: "Tüm birikimini yatır.",
+        baseBasariSansi: 45,
+        maliyet: 18,
+        basariliSonuc: { para: 40, mesaj: "Cesur yatırımın büyük bir servet getirdi." },
+        basarisizSonuc: { para: -20, mutluluk: -5, mesaj: "Yatırım battı, ciddi bir servet kaybı yaşadın." },
+      },
+    ],
+  },
+  {
+    id: "bolge_bizans_07",
+    kategori: "sosyal",
+    cag: "Orta Çağ",
+    bolgeler: ["Bizans"],
+    baslik: "Hipodrom Bahisleri",
+    metin: "Hipodromda mavi ve yeşil takımlar arasında büyük bir at yarışı var; kalabalık coşkuyla bağırıyor.",
+    secenekler: [
+      {
+        metin: "Sadece izle, coşkuyu paylaş.",
+        baseBasariSansi: 85,
+        basariliSonuc: { mutluluk: 7, mesaj: "Kalabalığın çılgın coşkusuna kapıldın, harika vakit geçirdin." },
+        basarisizSonuc: { mutluluk: -2, mesaj: "İtiş kakışta bir tekme yedin, keyfin kaçtı." },
+      },
+      {
+        metin: "Bir takıma bahis oyna.",
+        baseBasariSansi: 50,
+        maliyet: 6,
+        basariliSonuc: { para: 12, mutluluk: 4, mesaj: "Tuttuğun takım kazandı, hem eğlendin hem para kazandın." },
+        basarisizSonuc: { para: -6, mutluluk: -3, mesaj: "Bahsi kaybettin, cebinden para gitti." },
+      },
+    ],
+  },
+  {
+    id: "bolge_bizans_08",
+    kategori: "ticaret",
+    cag: "Orta Çağ",
+    bolgeler: ["Bizans"],
+    baslik: "Venedikli Rakip",
+    metin: "Venedikli tüccarlar aynı limanda senin malına rakip mal getirmiş, fiyat savaşı başlamış.",
+    secenekler: [
+      {
+        metin: "Fiyatını düşür, satışa devam et.",
+        baseBasariSansi: 65,
+        basariliSonuc: { para: 6, mesaj: "Düşük kârla da olsa malını elden çıkardın." },
+        basarisizSonuc: { para: -8, mesaj: "Venedikliler daha da düşürdü, senin malların elde kaldı." },
+      },
+      {
+        metin: "Kaliteni öne çıkar, fiyatta direnç göster.",
+        baseBasariSansi: 55,
+        basariliSonuc: { para: 14, un: 3, mesaj: "Kaliteni takdir edenler senden almaya devam etti." },
+        basarisizSonuc: { para: -4, mutluluk: -3, mesaj: "Müşteriler ucuz olana yöneldi, satış yapamadın." },
+      },
+    ],
+  },
+  {
+    id: "bolge_bizans_09",
+    kategori: "sosyal",
+    cag: "Orta Çağ",
+    bolgeler: ["Bizans"],
+    baslik: "Sarayın Dedikodusu",
+    metin: "Sarayda senin hakkında bir dedikodu yayılıyor; bazıları senden uzak durmaya başladı.",
+    secenekler: [
+      {
+        metin: "Dedikoduyu görmezden gel.",
+        baseBasariSansi: 70,
+        basariliSonuc: { mutluluk: 2, mesaj: "Zamanla dedikodu unutuldu, sen sakinliğini korudun." },
+        basarisizSonuc: { un: -5, mutluluk: -4, mesaj: "Dedikodu büyüdü, itibarın bir miktar zedelendi." },
+      },
+      {
+        metin: "Kaynağını bulup yüzleş.",
+        baseBasariSansi: 45,
+        basariliSonuc: { un: 6, mesaj: "Gerçeği ortaya çıkardın, itibarın toparlandı." },
+        basarisizSonuc: { mutluluk: -5, ahlak: -3, mesaj: "Yüzleşme kavgaya dönüştü, herkes senden bahsetmeye başladı." },
+      },
+    ],
+  },
+  {
+    id: "bolge_bizans_10",
+    kategori: "savas",
+    cag: "Orta Çağ",
+    bolgeler: ["Bizans"],
+    baslik: "Kuşatma Tehdidi",
+    metin: "Şehir surlarının dışında düşman birlikleri görüldüğü haberi yayılıyor; halk arasında panik var.",
+    secenekler: [
+      {
+        metin: "Sur savunmasına gönüllü ol.",
+        baseBasariSansi: 55,
+        basariliSonuc: { un: 10, saglik: -5, mesaj: "Savunmada gösterdiğin cesaret dilden dile dolaştı." },
+        basarisizSonuc: { saglik: -14, mesaj: "Çatışmada ağır yaralandın." },
+      },
+      {
+        metin: "Ailenle birlikte güvenli bir yere sığın.",
+        baseBasariSansi: 80,
+        maliyet: 5,
+        basariliSonuc: { mutluluk: 3, mesaj: "Güvenliği önceledin, tehlike atlatılınca rahatladın." },
+        basarisizSonuc: { para: -5, mutluluk: -3, mesaj: "Sığındığın yerde eşyalarından bir kısmını kaybettin." },
+      },
+    ],
+  },
+
+  // ============================================================
+  // SELÇUKLU
+  // ============================================================
+  {
+    id: "bolge_selcuklu_01",
+    kategori: "din",
+    cag: "Orta Çağ",
+    bolgeler: ["Selçuklu"],
+    baslik: "Medresede Tartışma",
+    metin: "Medresede ilim adamları arasında bir tartışma çıktı; senin de görüşün soruluyor.",
+    secenekler: [
+      {
+        metin: "Bilgece, ölçülü konuş.",
+        baseBasariSansi: 70,
+        basariliSonuc: { ahlak: 5, un: 3, mesaj: "Sözlerin hoca tarafından takdir edildi." },
+        basarisizSonuc: { mutluluk: -3, mesaj: "Görüşün yanlış anlaşıldı, biraz mahcup oldun." },
+      },
+      {
+        metin: "Sessizce dinle, taraf tutma.",
+        baseBasariSansi: 85,
+        basariliSonuc: { mutluluk: 2, mesaj: "Tartışmadan uzak durup huzurunu korudun." },
+        basarisizSonuc: { mutluluk: -2, mesaj: "Sessizliğin bilgisizlik sanıldı." },
+      },
+    ],
+  },
+  {
+    id: "bolge_selcuklu_02",
+    kategori: "savas",
+    cag: "Orta Çağ",
+    bolgeler: ["Selçuklu"],
+    baslik: "Kervan Yolunda Eşkıya",
+    metin: "Kervan yolunda eşkıyaların pusu kurduğu haberi geldi; kervana katılmak riskli görünüyor.",
+    secenekler: [
+      {
+        metin: "Ekstra koruma parası öde, güvenli git.",
+        baseBasariSansi: 75,
+        maliyet: 8,
+        basariliSonuc: { para: 10, mesaj: "Korumalar sayesinde güvenle vardın, ticaretin kazanç getirdi." },
+        basarisizSonuc: { para: -8, mesaj: "Ödediğin paraya rağmen eşkıya küçük bir baskın yaptı." },
+      },
+      {
+        metin: "Riski göze al, korumasız git.",
+        baseBasariSansi: 45,
+        basariliSonuc: { para: 20, mesaj: "Şansın yaver gitti, hiç sorun yaşamadan vardın." },
+        basarisizSonuc: { para: -18, saglik: -8, mesaj: "Eşkıya kervanı bastı, hem malını hem sağlığını kaybettin." },
+      },
+    ],
+  },
+  {
+    id: "bolge_selcuklu_03",
+    kategori: "savas",
+    cag: "Orta Çağ",
+    bolgeler: ["Selçuklu"],
+    baslik: "Sultanın Seferi",
+    metin: "Sultan yeni bir sefere çıkıyor, gönüllü ve destek çağrısı yapılıyor.",
+    secenekler: [
+      {
+        metin: "Sefere lojistik destek ver.",
+        baseBasariSansi: 70,
+        maliyet: 6,
+        basariliSonuc: { un: 6, mesaj: "Katkın Sultan'ın adamlarınca not edildi." },
+        basarisizSonuc: { para: -6, mutluluk: -3, mesaj: "Verdiğin destek boşa gitti, teşekkür bile alamadın." },
+      },
+      {
+        metin: "Bizzat sefere katıl.",
+        baseBasariSansi: 45,
+        basariliSonuc: { un: 12, saglik: -6, mesaj: "Seferde gösterdiğin yararlılık övgüyle anıldı." },
+        basarisizSonuc: { saglik: -16, mesaj: "Seferde ağır yaralandın, uzun süre iyileşemedin." },
+      },
+    ],
+  },
+  {
+    id: "bolge_selcuklu_04",
+    kategori: "ticaret",
+    cag: "Orta Çağ",
+    bolgeler: ["Selçuklu"],
+    baslik: "Kervansarayda Pazarlık",
+    metin: "Kervansarayda uzak diyarlardan gelen bir tüccar, malının gerçek değerinin çok altında bir fiyat teklif ediyor.",
+    secenekler: [
+      {
+        metin: "Israrla gerçek fiyatı iste.",
+        baseBasariSansi: 50,
+        basariliSonuc: { para: 12, mesaj: "Israrın işe yaradı, hakkını aldın." },
+        basarisizSonuc: { mutluluk: -4, mesaj: "Tüccar pazarlıktan vazgeçip başka biriyle anlaştı." },
+      },
+      {
+        metin: "Teklifi kabul et, hızlı sat.",
+        baseBasariSansi: 80,
+        basariliSonuc: { para: 5, mesaj: "Düşük de olsa hızlıca nakde çevirdin." },
+        basarisizSonuc: { para: -3, mesaj: "Tüccar son anda cayıp seni oyaladı, zaman kaybettin." },
+      },
+    ],
+  },
+  {
+    id: "bolge_selcuklu_05",
+    kategori: "din",
+    cag: "Orta Çağ",
+    bolgeler: ["Selçuklu"],
+    baslik: "Cuma Hutbesi",
+    metin: "Cuma namazında cemaate kısa bir konuşma yapman için sana söz veriliyor.",
+    secenekler: [
+      {
+        metin: "İçtenlikle, sade konuş.",
+        baseBasariSansi: 75,
+        basariliSonuc: { ahlak: 6, un: 4, mesaj: "Sözlerin cemaatin kalbine dokundu." },
+        basarisizSonuc: { mutluluk: -3, mesaj: "Heyecandan sözlerin dağınık çıktı, pek etkileyici olmadı." },
+      },
+      {
+        metin: "Uzun, gösterişli bir vaaz hazırla.",
+        baseBasariSansi: 45,
+        basariliSonuc: { un: 10, mesaj: "Etkileyici hitabetin adını duyurdu." },
+        basarisizSonuc: { ahlak: -3, mutluluk: -3, mesaj: "Gösterişin samimiyetsiz bulundu, eleştirildin." },
+      },
+    ],
+  },
+  {
+    id: "bolge_selcuklu_06",
+    kategori: "savas",
+    cag: "Orta Çağ",
+    bolgeler: ["Selçuklu"],
+    baslik: "Bizans Sınırında Akın",
+    metin: "Sınır boyundaki bir uç beyi, Bizans topraklarına küçük bir akın düzenlemeyi planlıyor, katılım istiyor.",
+    secenekler: [
+      {
+        metin: "Akına katıl.",
+        baseBasariSansi: 50,
+        basariliSonuc: { para: 14, un: 4, mesaj: "Akından ganimetle döndün, adın anıldı." },
+        basarisizSonuc: { saglik: -12, para: -4, mesaj: "Akın başarısız oldu, yaralı ve eli boş döndün." },
+      },
+      {
+        metin: "Köyünde kal, tarlanla ilgilen.",
+        baseBasariSansi: 85,
+        basariliSonuc: { para: 4, mesaj: "Güvenli bir şekilde işine devam ettin." },
+        basarisizSonuc: { mutluluk: -2, mesaj: "Akına katılmadığın için bazıları seni ayıpladı." },
+      },
+    ],
+  },
+  {
+    id: "bolge_selcuklu_07",
+    kategori: "ticaret",
+    cag: "Orta Çağ",
+    bolgeler: ["Selçuklu"],
+    baslik: "Ahilik Teşkilatı",
+    metin: "Şehrin ahilik teşkilatı, dürüst esnaflığı ödüllendiren bir törene seni davet etti.",
+    secenekler: [
+      {
+        metin: "Törene katıl, esnaflığını sergile.",
+        baseBasariSansi: 75,
+        basariliSonuc: { un: 6, ahlak: 3, mesaj: "Dürüstlüğün takdir edildi, esnaflar arasında sözün geçti." },
+        basarisizSonuc: { mutluluk: -3, mesaj: "Törende beklediğin ilgiyi göremedin." },
+      },
+      {
+        metin: "Teşkilata bağış yap, üye ol.",
+        baseBasariSansi: 65,
+        maliyet: 8,
+        basariliSonuc: { para: 10, ahlak: 3, mesaj: "Üyeliğin sana yeni ticaret bağlantıları getirdi." },
+        basarisizSonuc: { para: -8, mesaj: "Bağışının karşılığını alamadın, boşa masraf ettin." },
+      },
+    ],
+  },
+  {
+    id: "bolge_selcuklu_08",
+    kategori: "siyaset",
+    cag: "Orta Çağ",
+    bolgeler: ["Selçuklu"],
+    baslik: "Kadılık Görevi",
+    metin: "Kadı, aranızdaki bir anlaşmazlıkta senden tanıklık yapmanı istiyor.",
+    secenekler: [
+      {
+        metin: "Doğruyu söyle, dürüst tanıklık et.",
+        baseBasariSansi: 80,
+        basariliSonuc: { ahlak: 6, un: 3, mesaj: "Dürüstlüğün mahkemede takdirle karşılandı." },
+        basarisizSonuc: { mutluluk: -3, mesaj: "Tanıklığın davanın seyrini değiştirmedi, boşa zaman harcadın." },
+      },
+      {
+        metin: "Taraflardan birine göz kırp, çıkar sağla.",
+        baseBasariSansi: 40,
+        basariliSonuc: { para: 14, ahlak: -8, mesaj: "Yalan tanıklığınla küçük bir çıkar sağladın." },
+        basarisizSonuc: { para: -10, ahlak: -6, mutluluk: -5, mesaj: "Yalanın ortaya çıktı, hem para hem itibar kaybettin." },
+      },
+    ],
+  },
+  {
+    id: "bolge_selcuklu_09",
+    kategori: "ticaret",
+    cag: "Orta Çağ",
+    bolgeler: ["Selçuklu"],
+    baslik: "İpek Yolu Kervanı",
+    metin: "Uzak Asya'ya giden büyük bir kervana katılma fırsatın var; yol uzun ve zorlu ama kazanç yüksek.",
+    secenekler: [
+      {
+        metin: "Kervana katıl.",
+        baseBasariSansi: 50,
+        maliyet: 12,
+        basariliSonuc: { para: 28, mesaj: "Uzun ve zorlu yolculuk, beklediğinden fazla kazandırdı." },
+        basarisizSonuc: { para: -14, saglik: -6, mesaj: "Yolda hastalanıp malının bir kısmını kaybettin." },
+      },
+      {
+        metin: "Şehirde kal, küçük ticaretine devam et.",
+        baseBasariSansi: 85,
+        basariliSonuc: { para: 6, mesaj: "Güvenli, mütevazı bir kazanç elde ettin." },
+        basarisizSonuc: { mutluluk: -2, mesaj: "Büyük fırsatı kaçırdığını düşünüp biraz üzüldün." },
+      },
+    ],
+  },
+  {
+    id: "bolge_selcuklu_10",
+    kategori: "din",
+    cag: "Orta Çağ",
+    bolgeler: ["Selçuklu"],
+    baslik: "Tekkede Sohbet",
+    metin: "Şehir dışındaki bir tekkede dervişler seni sohbete davet etti; içlerinde bilge bir şeyh var.",
+    secenekler: [
+      {
+        metin: "Sohbete katıl, dinle.",
+        baseBasariSansi: 85,
+        basariliSonuc: { ahlak: 5, mutluluk: 4, mesaj: "Şeyhin sözleri içini rahatlattı." },
+        basarisizSonuc: { mutluluk: -2, mesaj: "Sohbet uzun sürdü, pek bir şey anlamadan döndün." },
+      },
+      {
+        metin: "Tekkeye bağışta bulun.",
+        baseBasariSansi: 75,
+        maliyet: 6,
+        basariliSonuc: { ahlak: 7, mesaj: "Bağışın dervişlerin duasını kazandırdı." },
+        basarisizSonuc: { mutluluk: -2, mesaj: "Bağışını beklediğin gibi takdir etmediler." },
+      },
+    ],
+  },
+];

@@ -3,6 +3,7 @@ import { CharacterState, Cag, Dil, Kategori, SonucEtkisi, YatkinlikKaynagi, Kisi
 import { T, K } from "../i18n";
 import { amaclariUret, amacSkorCarpani, amaclariOlumdeKontrol, amacTanimiGetir } from "../data/hayatAmaclari";
 import { AILELER, AileTanimi } from "../data/aileler";
+import { BolgeOzellikleri, bolgeOzellikleriGetir } from "../data/bolgeOzellikleri";
 import { rastgeleKisilikCifti, kisilikGetir } from "../data/kisilikler";
 import {
   rutbeTanimiGetir,
@@ -52,7 +53,9 @@ export const MESLEK_KATEGORI: Record<string, Kategori> = {
 function yatkinlikHesapla(
   kisilik: [string, string],
   aile: AileTanimi,
-  yerlesim: YerlesimTanimi
+  yerlesim: YerlesimTanimi,
+  bolgeOzellik: BolgeOzellikleri | null,
+  bolgeAdi: string
 ): { yatkinliklar: Record<Kategori, number>; kaynaklar: YatkinlikKaynagi[] } {
   const yatkinliklar = {} as Record<Kategori, number>;
   for (const kategori of KATEGORILER) {
@@ -81,6 +84,13 @@ function yatkinlikHesapla(
     for (const [kategori, deger] of Object.entries(yerlesim.yatkinlikEtkisi) as [Kategori, number][]) {
       yatkinliklar[kategori] += deger;
       kaynaklar.push({ kaynak: yerlesim.ad, kategori, deger });
+    }
+  }
+
+  if (bolgeOzellik?.yatkinlikEtkisi) {
+    for (const [kategori, deger] of Object.entries(bolgeOzellik.yatkinlikEtkisi) as [Kategori, number][]) {
+      yatkinliklar[kategori] += deger;
+      kaynaklar.push({ kaynak: bolgeAdi, kategori, deger });
     }
   }
 
@@ -578,7 +588,8 @@ export function createCharacter(
   const yil = yilMin + Math.floor(Math.random() * (yilMax - yilMin + 1));
   const aile = agirlikliAileSec(cag);
   const kisilik = rastgeleKisilikCifti();
-  const { yatkinliklar, kaynaklar } = yatkinlikHesapla(kisilik, aile, yerlesim);
+  const bolgeOzellik = bolgeOzellikleriGetir(cag, bolge);
+  const { yatkinliklar, kaynaklar } = yatkinlikHesapla(kisilik, aile, yerlesim, bolgeOzellik, bolge);
   const [dostAdi, rakipAdi] = rastgeleIkiIsimSec(cag, bolge);
   const anneAdi = rastgeleCinsiyetliIsimSec(cag, bolge, "kadin", [dostAdi, rakipAdi]);
   const babaAdi = rastgeleCinsiyetliIsimSec(cag, bolge, "erkek", [dostAdi, rakipAdi, anneAdi]);
@@ -616,25 +627,25 @@ export function createCharacter(
     // 2026-09 denge turu (kullanıcı isteği): sağlık tabanı 100→80 (aile
     // artık her yönde ~±16 oynatabiliyor, ama 80 tabanla bile 100 tavanını
     // aşmıyor); yerleşim etkisi hâlâ ekleniyor.
-    saglik: 80 + (aile.saglik ?? 0) + (yerlesim.saglik ?? 0),
+    saglik: 80 + (aile.saglik ?? 0) + (yerlesim.saglik ?? 0) + (bolgeOzellik?.saglik ?? 0),
     // Başlangıç statları (aile bonusları hariç): mutluluk 50 (nötr), ahlak
     // 45 (itibar bandında hâlâ nötr, 40-60 arası — sadece taban biraz aşağı
     // çekildi), şöhret 20 (taze bir karakter az tanınır ama şöhretin nötr
     // bandı düşükten başladığı için ceza yemez, bkz. itibarUnYuzdesi).
     // HER aile artık mutluluğu da ~±12 bandında etkiler (eskiden hiçbiri
     // etkilemiyordu). İlk olaylar bu değerleri kolayca oynatır.
-    mutluluk: 50 + (aile.mutluluk ?? 0),
+    mutluluk: 50 + (aile.mutluluk ?? 0) + (bolgeOzellik?.mutluluk ?? 0),
     // 2026-09 denge turu: taban 12→10, aile etkisi artık dar bir ~±20
     // bandında (eskiden +80/-25 gibi aşırı uçlar vardı); sonuç yine de
     // [5, 40]'a kırpılır — en zengin/fakir aile+yerleşim kombinasyonu bile
     // bu aralığın dışına taşmaz. Taban 5'te tutuldu (0 değil): oyuncu en
     // fakir kökende bile temel bir aksiyonu (sosyalleşme giriş ücreti vb.)
     // karşılayabilecek kadar parayla başlamalı.
-    para: Math.max(5, Math.min(40, 10 + (aile.para ?? 0) + (yerlesim.para ?? 0))),
+    para: Math.max(5, Math.min(40, 10 + (aile.para ?? 0) + (yerlesim.para ?? 0) + (bolgeOzellik?.para ?? 0))),
     para_birimi: paraBirimiGetir(cag, bolge),
     maas_yillik: 0,
-    un: 20 + (aile.un ?? 0),
-    ahlak: 45 + (aile.ahlak ?? 0),
+    un: 20 + (aile.un ?? 0) + (bolgeOzellik?.un ?? 0),
+    ahlak: 45 + (aile.ahlak ?? 0) + (bolgeOzellik?.ahlak ?? 0),
     ordu_mevcudu: 0,
     ordu_techizat_seviyesi: 0,
     ticaret_sermaye: 0,

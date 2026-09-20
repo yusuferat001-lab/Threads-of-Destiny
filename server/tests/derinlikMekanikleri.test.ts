@@ -23,7 +23,7 @@ describe("fiziksel kalıcılık (option-level restricted_tags)", () => {
     mesleğiSec(state, "Asker");
     state.etiketler.push("kalici:tek_kolu_yok");
 
-    const senaryo = olayBul(state, "Sıra Dövüşü", 500);
+    const senaryo = olayBul(state, "Sıra Dövüşü", 1500);
     expect(senaryo).not.toBeNull();
     const onSaf = senaryo!.secenekler.find((s) => s.metin.includes("Ön safa geç"));
     expect(onSaf?.kilitli).toBe(true);
@@ -34,7 +34,7 @@ describe("fiziksel kalıcılık (option-level restricted_tags)", () => {
     state.yas = 25;
     mesleğiSec(state, "Asker");
 
-    const senaryo = olayBul(state, "Sıra Dövüşü", 500);
+    const senaryo = olayBul(state, "Sıra Dövüşü", 1500);
     expect(senaryo).not.toBeNull();
     const onSaf = senaryo!.secenekler.find((s) => s.metin.includes("Ön safa geç"));
     expect(onSaf?.kilitli).toBe(false);
@@ -56,7 +56,7 @@ describe("kan davası (gecikmeli tetikleyici zincir)", () => {
     durumlariUygula(state);
     expect(state.etiketler.includes("kandavasi:zamani")).toBe(true);
 
-    const senaryo = olayBul(state, "Gecenin Karanlığından", 500);
+    const senaryo = olayBul(state, "Gecenin Karanlığından", 1500);
     expect(senaryo).not.toBeNull();
   });
 
@@ -171,7 +171,7 @@ describe("bağımlılık ve durum_sil (kurtulma)", () => {
     state.etiketler.push("bagimlilik:kumarbaz", "bagimlilik:var");
     state.durumlar.push({ id: "kumar_bagimliligi", ad: "Kumar Bağımlılığı", tur: "kalici", tur_basi_para: -3 });
 
-    const senaryo = olayBul(state, "Bir Uyanış Anı", 500);
+    const senaryo = olayBul(state, "Bir Uyanış Anı", 1500);
     expect(senaryo).not.toBeNull();
   });
 
