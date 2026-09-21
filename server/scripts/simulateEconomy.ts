@@ -25,7 +25,6 @@ import {
   hesaplaMaasYillik,
   meslekMetrikCarpani,
   sansOlayiDene,
-  aniOlumDene,
   MESLEKLER,
 } from "../src/game/stateManager";
 import { jitterUygula, efektifOlumSansi } from "../src/game/gameEngine";
@@ -212,9 +211,6 @@ function birOmurSimuleEt(cag: Cag, yerlesimId: string, meslek: string, arketip: 
     if (state.mutluluk < 25) dusukMutlulukYili += yasArtisi;
 
     sansOlayiDene(state);
-    const aniOlum = aniOlumDene(state);
-    if (aniOlum) checkDeath(state, true, aniOlum.mesaj);
-    if (!state.aktif) break;
 
     clampStats(state);
   }

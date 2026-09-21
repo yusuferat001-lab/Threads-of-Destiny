@@ -128,6 +128,28 @@ export const RUTBELER: Record<string, Record<Cag, RutbeTanimi>> = {
       ],
     },
   },
+  // Zanaatkâr (2026-09 yeni meslek): un eşikleri Tüccar'dan biraz alçak —
+  // esnaf/usta itibarı, tüccarın "herkes tanır" şöhretinden daha mütevazı.
+  Zanaatkâr: {
+    "Orta Çağ": {
+      unvanlar: ["Çırak", "Kalfa", "Usta", "Baş Usta", "Loncabaşı"],
+      esikler: [
+        { kariyer_puani: 10, un: 8 },
+        { kariyer_puani: 24, un: 14 },
+        { kariyer_puani: 44, un: 20 },
+        { kariyer_puani: 210, un: 42 },
+      ],
+    },
+    "Sanayi Devrimi": {
+      unvanlar: ["Amele", "Vasıflı İşçi", "Ustabaşı", "Atölye Şefi", "Fabrika Müdürü"],
+      esikler: [
+        { kariyer_puani: 10, un: 8 },
+        { kariyer_puani: 24, un: 14 },
+        { kariyer_puani: 44, un: 20 },
+        { kariyer_puani: 210, un: 42 },
+      ],
+    },
+  },
 };
 
 /**

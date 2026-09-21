@@ -14,7 +14,7 @@ function ingilizceMi(s: string): boolean {
 }
 
 async function main() {
-  const s0 = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi", "DilTest", "tr");
+  const s0 = await yeniOyun("Orta Çağ", "Fransa", "kasaba", "DilTest", "tr");
   await mesleğiAta(s0.id, "Asker");
 
   const trSenaryo = await senaryoUret(s0.id);

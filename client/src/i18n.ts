@@ -161,6 +161,7 @@ const TR = {
   meslekAciklamaAsker: 'Savaş, sadakat ve rütbe. Yüksek risk, hızlı ün.',
   meslekAciklamaTuccar: 'Kâr, pazarlık ve ağ kurma. Yüksek kazanç potansiyeli.',
   meslekAciklamaDinAdami: 'Cemaat, vicdan ve nüfuz. İstikrarlı saygınlık.',
+  meslekAciklamaZanaatkar: 'El emeği, ustalık ve lonca. Sabırlı ama onurlu bir yol.',
 
   // ---- Açılış ----
   acilisAileCocugu: '{0} Ailesinin Çocuğu',
@@ -187,6 +188,18 @@ const TR = {
   skorKaydedildi: 'Skorun liderlik tablosuna kaydedildi.',
   skorKaydediliyor: 'Skorun liderlik tablosuna kaydediliyor…',
   btnLiderlikTablosu: 'Liderlik Tablosu',
+  skorKirilimBaslik: 'Skorun Nasıl Hesaplandı?',
+  skorKirilimServet: '💰 Servet',
+  skorKirilimSohret: '🏅 Şöhret',
+  skorKirilimAhlak: '⚖️ Ahlak',
+  skorKirilimMutluluk: '🙂 Mutluluk',
+  skorKirilimRutbe: '🎖️ Rütbe',
+  skorKirilimTikSaray: '👑 Sarayda bulundu',
+  skorKirilimTikYolculuk: '🗺️ Büyük yolculuğu tamamladı',
+  skorKirilimTikGizemli: '🔮 Esrarengiz bir eşyaya sahip',
+  skorKirilimToplam: 'Temel Toplam',
+  skorKirilimAmac: 'Hayat Amacı Çarpanı',
+  skorKirilimSonuc: 'TOPLAM SKOR',
 
   // ---- Günlük seri & Gold ----
   gunlukSeriEtiket: '{0} gün',
@@ -839,6 +852,7 @@ const EN: Metinler = {
   meslekAciklamaAsker: 'War, loyalty and rank. High risk, quick fame.',
   meslekAciklamaTuccar: 'Profit, bargaining and networking. High earning potential.',
   meslekAciklamaDinAdami: 'Congregation, conscience and influence. Steady prestige.',
+  meslekAciklamaZanaatkar: 'Craftsmanship, mastery and guild. A patient but honorable path.',
 
   // ---- Opening ----
   acilisAileCocugu: 'Child of a {0} Family',
@@ -865,6 +879,18 @@ const EN: Metinler = {
   skorKaydedildi: 'Your score has been saved to the leaderboard.',
   skorKaydediliyor: 'Saving your score to the leaderboard…',
   btnLiderlikTablosu: 'Leaderboard',
+  skorKirilimBaslik: 'How Your Score Was Calculated',
+  skorKirilimServet: '💰 Wealth',
+  skorKirilimSohret: '🏅 Fame',
+  skorKirilimAhlak: '⚖️ Morality',
+  skorKirilimMutluluk: '🙂 Happiness',
+  skorKirilimRutbe: '🎖️ Rank',
+  skorKirilimTikSaray: '👑 Was invited to court',
+  skorKirilimTikYolculuk: '🗺️ Completed a great journey',
+  skorKirilimTikGizemli: '🔮 Owns a mysterious item',
+  skorKirilimToplam: 'Base Total',
+  skorKirilimAmac: 'Life Goal Multiplier',
+  skorKirilimSonuc: 'TOTAL SCORE',
 
   // ---- Daily streak & Gold ----
   gunlukSeriEtiket: '{0}-day streak',

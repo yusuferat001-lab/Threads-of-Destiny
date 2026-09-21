@@ -7,7 +7,7 @@ import { createCharacter, mesleğiSec, checkDeath, KORUYUCU_MUSKA_ETIKETI } from
 
 describe("koruyucu muska (ölümden tek seferlik kurtulma)", () => {
   it("muska varken ölümcül darbe atlatılır ve etiket tüketilir", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.saglik = 0;
     state.etiketler.push(KORUYUCU_MUSKA_ETIKETI);
@@ -21,7 +21,7 @@ describe("koruyucu muska (ölümden tek seferlik kurtulma)", () => {
   });
 
   it("muska yokken ölümcül darbe normal şekilde öldürür", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.saglik = 0;
 
@@ -32,7 +32,7 @@ describe("koruyucu muska (ölümden tek seferlik kurtulma)", () => {
   });
 
   it("muska sadece bir kez çalışır, ikinci ölümcül darbede karakter ölür", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.etiketler.push(KORUYUCU_MUSKA_ETIKETI);
 
@@ -48,7 +48,7 @@ describe("koruyucu muska (ölümden tek seferlik kurtulma)", () => {
 
 describe("ünvan sistemi", () => {
   it("createCharacter boş unvanlar listesiyle başlar", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     expect(state.unvanlar).toEqual([]);
   });
 });

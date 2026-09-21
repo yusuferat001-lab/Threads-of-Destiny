@@ -104,6 +104,7 @@ export const MESLEK_KATEGORI: Record<string, string> = {
   Asker: 'savas',
   Tüccar: 'ticaret',
   'Din Adamı': 'din',
+  Zanaatkâr: 'zanaat',
 };
 
 export const KATEGORI_ADI: Record<string, string> = {
@@ -113,6 +114,7 @@ export const KATEGORI_ADI: Record<string, string> = {
   siyaset: 'Siyaset',
   saglik: 'Sağlık',
   sosyal: 'Sosyal',
+  zanaat: 'Zanaat',
 };
 
 const KATEGORI_ADI_EN: Record<string, string> = {
@@ -122,6 +124,7 @@ const KATEGORI_ADI_EN: Record<string, string> = {
   siyaset: 'Politics',
   saglik: 'Health',
   sosyal: 'Social',
+  zanaat: 'Craft',
 };
 
 export function kategoriAdi(kategori: string, dil: Dil = 'tr'): string {
@@ -305,6 +308,10 @@ const MESLEK_BINA_TEMALARI: Record<string, Partial<Record<string, { ad: string; 
   'Din Adamı': {
     'Orta Çağ': { ad: 'İbadethane', adEn: 'Place of Worship', simge: '⛪' },
     'Sanayi Devrimi': { ad: 'İbadethane', adEn: 'Place of Worship', simge: '⛪' },
+  },
+  Zanaatkâr: {
+    'Orta Çağ': { ad: 'Atölye', adEn: 'Workshop', simge: '🔨' },
+    'Sanayi Devrimi': { ad: 'Fabrika Atölyesi', adEn: 'Factory Workshop', simge: '⚙️' },
   },
 };
 

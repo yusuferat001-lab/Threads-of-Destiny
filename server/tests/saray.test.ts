@@ -6,7 +6,7 @@ import { OLAY_BANKASI } from "../src/data/olaylar";
 
 describe("saray sistemi", () => {
   it("sarayda değilken saray-içi olaylar hiç çıkmaz", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     for (let i = 0; i < 500; i++) {
       const { olay } = olaySec(state);
@@ -16,7 +16,7 @@ describe("saray sistemi", () => {
   });
 
   it("sarayda etiketi varken saray-içi olaylar uygun hale gelir", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     etiketEkle(state, ["sarayda"]);
     let bulundu = false;
@@ -28,7 +28,7 @@ describe("saray sistemi", () => {
   });
 
   it("un ve ahlak 70'in üstündeyse kral daveti olayı ilk turda zorla sunulur", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     state.hayat_amaci = { id: "x", ad: "x", aciklama: "x", hedefTuru: "para", hedefDeger: 999999, tamamlandi: false };
     state.gecmis_olaylar.push("hayat_amaci_secimi", "iliski_evlilik_teklifi", "iliski_ikinci_teklif");
@@ -40,7 +40,7 @@ describe("saray sistemi", () => {
   });
 
   it("un veya ahlak 70'in altındaysa kral daveti hiç zorlanmaz", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     state.hayat_amaci = { id: "x", ad: "x", aciklama: "x", hedefTuru: "para", hedefDeger: 999999, tamamlandi: false };
     state.gecmis_olaylar.push("hayat_amaci_secimi", "iliski_evlilik_teklifi", "iliski_ikinci_teklif");
@@ -52,7 +52,7 @@ describe("saray sistemi", () => {
   });
 
   it("saraya girme denemesinde her zaman en az bir kilitsiz seçenek vardır (para yetersizken bile)", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.para = 0;
     state.un = 0;

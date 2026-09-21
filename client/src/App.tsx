@@ -108,6 +108,7 @@ import { basarimlariKaydet, basarimlariGetir } from './basarimlar';
 import { gecmisHayatKaydet, gecmisHayatlariGetir, gecmisHayatlariTemizle, gecmisHayatSil, type GecmisHayat } from './gecmisHayatlar';
 import { YAPIMCI } from './yapimci';
 import { basarimlariDegerlendir, type BasarimTanimi } from './basarimSistemi';
+import { hesaplaSkorKirilimi } from './skor';
 import { BasarimGaleri } from './components/BasarimGaleri';
 import { KozmetikMagaza } from './components/KozmetikMagaza';
 import { kozmetikGiyilenlerGetir, type GiyilenKozmetikler } from './kozmetikDolabi';
@@ -156,6 +157,7 @@ const MESLEK_SIMGE: Record<string, string> = {
   Asker: '⚔️',
   Tüccar: '💰',
   'Din Adamı': '🙏',
+  Zanaatkâr: '🔨',
 };
 
 /** Meslek/çağ kısa açıklamaları — dile göre i18n sözlüğünden. */
@@ -163,6 +165,7 @@ function meslekAciklama(m: ReturnType<typeof dilCtxYap>['m'], meslek: string): s
   if (meslek === 'Asker') return m.meslekAciklamaAsker;
   if (meslek === 'Tüccar') return m.meslekAciklamaTuccar;
   if (meslek === 'Din Adamı') return m.meslekAciklamaDinAdami;
+  if (meslek === 'Zanaatkâr') return m.meslekAciklamaZanaatkar;
   return '';
 }
 function cagAciklama(m: ReturnType<typeof dilCtxYap>['m'], cag: string): string {
@@ -460,7 +463,7 @@ function App() {
   useEffect(() => {
     mesleklerGetir()
       .then(({ meslekler }) => setMeslekler(meslekler))
-      .catch(() => setMeslekler(['Asker', 'Tüccar', 'Din Adamı']));
+      .catch(() => setMeslekler(['Asker', 'Tüccar', 'Din Adamı', 'Zanaatkâr']));
     bolgelerGetir()
       .then(({ bolgeler }) => setBolgeler(bolgeler))
       .catch(() =>
@@ -2495,6 +2498,71 @@ function App() {
           <AmacPaneli durum={amaclar} varyant="olum" />
           <GecmisGrafik gecmis={karakter.gecmis} paraBirimi={karakter.para_birimi} />
           <HayatHikayesi hikaye={karakter.hayat_hikayesi} />
+
+          {(() => {
+            const kirilim = hesaplaSkorKirilimi(karakter);
+            const locale = dil === 'en' ? 'en-US' : 'tr-TR';
+            const say = (n: number) => n.toLocaleString(locale);
+            return (
+              <div className="skor-kirilimi">
+                <h3 className="skor-kirilimi-baslik">📊 {m.skorKirilimBaslik}</h3>
+                <ul className="skor-kirilimi-liste">
+                  <li>
+                    <span>{m.skorKirilimServet}</span>
+                    <span>{say(kirilim.servetPuani)}</span>
+                  </li>
+                  <li>
+                    <span>{m.skorKirilimSohret}</span>
+                    <span>{say(kirilim.sohretPuani)}</span>
+                  </li>
+                  <li>
+                    <span>{m.skorKirilimAhlak}</span>
+                    <span>{say(kirilim.ahlakPuani)}</span>
+                  </li>
+                  <li>
+                    <span>{m.skorKirilimMutluluk}</span>
+                    <span>{say(kirilim.mutlulukPuani)}</span>
+                  </li>
+                  <li>
+                    <span>{m.skorKirilimRutbe}</span>
+                    <span>{say(kirilim.rutbePuani)}</span>
+                  </li>
+                  {kirilim.sarayda && (
+                    <li className="skor-kirilimi-tik">
+                      <span>{m.skorKirilimTikSaray}</span>
+                      <span>+{say(3000)}</span>
+                    </li>
+                  )}
+                  {kirilim.yolculukTamamlandi && (
+                    <li className="skor-kirilimi-tik">
+                      <span>{m.skorKirilimTikYolculuk}</span>
+                      <span>+{say(3000)}</span>
+                    </li>
+                  )}
+                  {kirilim.gizemliEsyaSahibi && (
+                    <li className="skor-kirilimi-tik">
+                      <span>{m.skorKirilimTikGizemli}</span>
+                      <span>+{say(3000)}</span>
+                    </li>
+                  )}
+                </ul>
+                <div className="skor-kirilimi-toplam">
+                  <span>{m.skorKirilimToplam}</span>
+                  <span>{say(kirilim.temelToplam)}</span>
+                </div>
+                {kirilim.amacCarpani > 1 && (
+                  <div className="skor-kirilimi-carpan">
+                    <span>× {m.skorKirilimAmac}</span>
+                    <span>×{kirilim.amacCarpani}</span>
+                  </div>
+                )}
+                <div className="skor-kirilimi-sonuc">
+                  <span>{m.skorKirilimSonuc}</span>
+                  <span>{say(kirilim.skor)}</span>
+                </div>
+              </div>
+            );
+          })()}
 
           {kaydedildi ? (
             <p>{m.skorKaydedildi}</p>

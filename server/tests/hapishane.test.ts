@@ -5,7 +5,7 @@ import { OLAY_BANKASI } from "../src/data/olaylar";
 
 describe("hapishane sistemi", () => {
   it("hapiste değilken hapis olayları hiç çıkmaz", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     for (let i = 0; i < 500; i++) {
       const { olay } = olaySec(state);
@@ -14,7 +14,7 @@ describe("hapishane sistemi", () => {
   });
 
   it("hapisteyken sadece hapis olayları çıkar", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     etiketEkle(state, ["hapiste"]);
     for (let i = 0; i < 500; i++) {
@@ -24,7 +24,7 @@ describe("hapishane sistemi", () => {
   });
 
   it("ahlak ve ün çok düşükken tutuklanma olayı uygun hale gelir", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.ahlak = 5;
     state.un = 2;
@@ -37,7 +37,7 @@ describe("hapishane sistemi", () => {
   });
 
   it("ahlak/ün normalken tutuklanma olayı hiç çıkmaz", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.ahlak = 50;
     state.un = 50;
@@ -50,7 +50,7 @@ describe("hapishane sistemi", () => {
   it("her hapis olayında oyuncu için en az bir kilitsiz seçenek vardır (para/ahlak/ün yetersiz olsa bile)", () => {
     const hapisOlaylari = OLAY_BANKASI.filter((o) => o.hapisOlayi);
     expect(hapisOlaylari.length).toBeGreaterThan(0);
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.para = -50; // borçlu: maliyetli seçenekler kilitlenir
     etiketEkle(state, ["hapiste"]);
@@ -80,7 +80,7 @@ describe("hapishane sistemi", () => {
       const tanim = OLAY_BANKASI.find((o) => o.id === id)!;
       expect(tanim).toBeDefined();
 
-      const normalState = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+      const normalState = createCharacter("Orta Çağ", "Fransa", "kasaba");
       mesleğiSec(normalState, "Tüccar");
       normalState.ahlak = 60;
       normalState.un = 60;
@@ -89,7 +89,7 @@ describe("hapishane sistemi", () => {
         expect(olay.id).not.toBe(id);
       }
 
-      const dusukState = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+      const dusukState = createCharacter("Orta Çağ", "Fransa", "kasaba");
       mesleğiSec(dusukState, "Tüccar");
       dusukState.ahlak = 1;
       dusukState.un = 1;
@@ -103,7 +103,7 @@ describe("hapishane sistemi", () => {
   );
 
   it("ahlak ve ün düştükçe havuzda birden fazla giriş olayı aynı anda uygun hale gelir (toplam olasılık artışı)", () => {
-    const normalState = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const normalState = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(normalState, "Tüccar");
     normalState.ahlak = 60;
     normalState.un = 60;
@@ -111,7 +111,7 @@ describe("hapishane sistemi", () => {
       (o) => !o.hapisOlayi && (o.maxAhlak !== undefined || o.maxUn !== undefined) && o.id.startsWith("hapis_")
     ).filter((o) => (o.maxAhlak === undefined || normalState.ahlak <= o.maxAhlak) && (o.maxUn === undefined || normalState.un <= o.maxUn));
 
-    const dusukState = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const dusukState = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(dusukState, "Tüccar");
     dusukState.ahlak = 1;
     dusukState.un = 1;
@@ -194,7 +194,7 @@ describe("hapishane sistemi", () => {
     });
 
     it("toplam ceza 5 yıldan kısaysa hiçbir kaçış-başlangıç olayı çıkmaz (sayaç yeterli olsa bile)", () => {
-      const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+      const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
       mesleğiSec(state, "Tüccar");
       state.hapis_ceza_toplam = 4;
       state.hapis_tur_sayaci = 10;
@@ -206,7 +206,7 @@ describe("hapishane sistemi", () => {
     });
 
     it("ceza yeterli (≥5 yıl) ama ilk 2 hapisOlayi çözülmeden kaçış-başlangıç olayı çıkmaz", () => {
-      const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+      const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
       mesleğiSec(state, "Tüccar");
       state.hapis_ceza_toplam = 8;
       state.hapis_tur_sayaci = 1;
@@ -218,7 +218,7 @@ describe("hapishane sistemi", () => {
     });
 
     it("ceza yeterli VE en az 2 hapisOlayi çözülmüşse kaçış-başlangıç olayları uygun hale gelir", () => {
-      const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+      const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
       mesleğiSec(state, "Tüccar");
       state.hapis_ceza_toplam = 8;
       state.hapis_tur_sayaci = 2;
@@ -234,7 +234,7 @@ describe("hapishane sistemi", () => {
 
   describe("aranma bandına göre ceza süresi (2026-09 yeniden düzenleme)", () => {
     it("hafif bir tutuklamada (toplam ceza <7y) para/af ile çıkış her zaman görülebilir", () => {
-      const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+      const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
       mesleğiSec(state, "Tüccar");
       etiketEkle(state, ["hapiste"]);
       state.hapis_ceza_toplam = 6;
@@ -249,7 +249,7 @@ describe("hapishane sistemi", () => {
     });
 
     it("ağır bir tutuklamada (toplam ceza ≥7y) 5 yıl yatmadan para/af ile çıkış olayı hiç çıkmaz", () => {
-      const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+      const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
       mesleğiSec(state, "Tüccar");
       etiketEkle(state, ["hapiste"]);
       state.hapis_ceza_toplam = 9;
@@ -261,7 +261,7 @@ describe("hapishane sistemi", () => {
     });
 
     it("ağır bir tutuklamada 5 yıl yatınca para/af ile çıkış olayı tekrar görülebilir", () => {
-      const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+      const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
       mesleğiSec(state, "Tüccar");
       etiketEkle(state, ["hapiste"]);
       state.hapis_ceza_toplam = 9;
@@ -276,7 +276,7 @@ describe("hapishane sistemi", () => {
     });
 
     it("fiziksel kaçış girişimleri (tünel/bayıltma/avlu duvarı) ağır tutuklamada da her zaman uygun kalır", () => {
-      const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+      const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
       mesleğiSec(state, "Tüccar");
       etiketEkle(state, ["hapiste"]);
       state.hapis_ceza_toplam = 12;

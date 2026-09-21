@@ -24,7 +24,7 @@ function kontrol(ad: string, kosul: boolean): void {
 
 async function main(): Promise<void> {
   console.log("1) Başlangıç durumu");
-  const s = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+  const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
   mesleğiSec(s, "Asker");
   kontrol("yeni karakter seviye 1", s.rutbe_seviye === 1);
   kontrol("kariyer_puani 0", s.kariyer_puani === 0);
@@ -66,7 +66,7 @@ async function main(): Promise<void> {
   kontrol("seviye 5'te 4 ast", s.astlar.length === 4);
 
   console.log("\n6) Maaş rütbeyle artar");
-  const t = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+  const t = createCharacter("Orta Çağ", "Fransa", "kasaba");
   mesleğiSec(t, "Tüccar");
   t.un = 50;
   const maasS1 = hesaplaMaasYillik(t);
@@ -78,7 +78,7 @@ async function main(): Promise<void> {
   kontrol(`S3 (${maasS3}) < S5 (${maasS5})`, maasS5 > maasS3);
 
   console.log("\n7) Rakip hedefleyen karanlık iş kariyer puanını artırır (motor entegrasyonu)");
-  const g = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+  const g = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
   await mesleğiAta(g.id, "Tüccar");
   g.para = 5000;
   let oncePuan = g.kariyer_puani;

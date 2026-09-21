@@ -3,7 +3,7 @@ export type Cag = "Orta Çağ" | "Sanayi Devrimi";
 /** Oyuncunun arayüz/anlatı dili. Karakterle birlikte kaydedilir; eski kayıtlarda eskiKayitGocu "tr" atar. */
 export type Dil = "tr" | "en";
 
-export type Kategori = "savas" | "ticaret" | "din" | "siyaset" | "saglik" | "sosyal";
+export type Kategori = "savas" | "ticaret" | "din" | "siyaset" | "saglik" | "sosyal" | "zanaat";
 
 /** Bölge + çağa göre yaklaşık nüfus ve kısa "bilgin miydi" notları. */
 export interface BolgeIstatistigi {
@@ -200,6 +200,8 @@ export interface CharacterState {
   ordu_techizat_seviyesi: number;
   ticaret_sermaye: number;
   nufuz: number;
+  /** Zanaatkâr'a özel derinlik metriği (0-100). Şimdilik maaşa/oyun içi hiçbir etkisi yok — meslekMetrikCarpani için placeholder (dengelemesi sonraya bırakıldı). */
+  uretim_kapasitesi: number;
 
   /**
    * TEK suç/aranma ekseni (0-100, üst şeritteki yıldız göstergesi bunu okur).
@@ -580,6 +582,8 @@ export interface SonucEtkisi {
   ticaret_sermaye_artis?: number;
   /** Din Adamı'na özel: nufuz'u artırır. */
   nufuz_artis?: number;
+  /** Zanaatkâr'a özel: uretim_kapasitesi'ni artırır (0-100 aralığında kelepçelenir). Şimdilik oyun içi başka hiçbir etkisi yok. */
+  uretim_kapasitesi_artis?: number;
   /** TEK suç/aranma eksenini (suc_seviyesi, 0-100 aralığında kelepçelenir) değiştirir; ± olabilir (rüşvet/kefaret şıkları negatif verir). Kumar/karaborsa ve suç-kazancı motor kuralı da bunu kullanır. */
   suc_artis?: number;
   /** suc_seviyesi'ni mevcut değerden bağımsız, doğrudan belirtilen değere (0-100) sabitler — ör. büyük baskın sonrası "temize çıkar / kademe 1'e in" gibi kesin hedefler için; genel yükseliş/düşüş için bunun yerine suc_artis kullanılmalı. */

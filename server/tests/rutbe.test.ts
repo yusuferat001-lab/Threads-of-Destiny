@@ -33,7 +33,7 @@ describe("rütbe reformu — 5 kademe, ratchet, cooldown, kariyer puanı", () =>
   });
 
   it("yeni karakter seviye 1, kariyer_puani 0, son_terfi_yili = baslangic_yili", () => {
-    const s = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(s, "Asker");
     expect(s.rutbe_seviye).toBe(1);
     expect(s.kariyer_puani).toBe(0);
@@ -41,7 +41,7 @@ describe("rütbe reformu — 5 kademe, ratchet, cooldown, kariyer puanı", () =>
   });
 
   it("kariyer_puani + ün eşiği aşılınca seviye 2'ye terfi eder (S2 cooldown yok)", () => {
-    const s = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(s, "Asker");
     s.kariyer_puani = 20;
     s.un = 40;
@@ -52,7 +52,7 @@ describe("rütbe reformu — 5 kademe, ratchet, cooldown, kariyer puanı", () =>
   });
 
   it("cooldown: puan fazlasıyla dolsa bile son terfiden TERFI_COOLDOWN[3] yıl geçmeden seviye 3 olmaz", () => {
-    const s = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(s, "Asker");
     s.kariyer_puani = 20;
     s.un = 40;
@@ -70,7 +70,7 @@ describe("rütbe reformu — 5 kademe, ratchet, cooldown, kariyer puanı", () =>
   });
 
   it("çağrı başına en fazla +1 kademe ilerler", () => {
-    const s = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(s, "Tüccar");
     s.kariyer_puani = 999;
     s.un = 100;
@@ -83,7 +83,7 @@ describe("rütbe reformu — 5 kademe, ratchet, cooldown, kariyer puanı", () =>
   });
 
   it("RATCHET: kariyer_puani ve statlar sıfırlansa bile rütbe düşmez", () => {
-    const s = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(s, "Din Adamı");
     terfiEttir(s, 4);
     expect(s.rutbe_seviye).toBe(4);
@@ -96,7 +96,7 @@ describe("rütbe reformu — 5 kademe, ratchet, cooldown, kariyer puanı", () =>
   });
 
   it("en üst kademede (5) amir yoktur, 4 ast vardır", () => {
-    const s = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(s, "Asker");
     terfiEttir(s, 5);
     expect(s.rutbe_seviye).toBe(5);
@@ -105,7 +105,7 @@ describe("rütbe reformu — 5 kademe, ratchet, cooldown, kariyer puanı", () =>
   });
 
   it("Tüccar'da her kademe ün ister — ün düşükken kariyer_puani ne olursa olsun terfi olmaz", () => {
-    const s = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(s, "Tüccar");
     s.kariyer_puani = 999;
     s.un = 5; // S2 ün eşiğinin (12) altında
@@ -118,7 +118,7 @@ describe("rütbe reformu — 5 kademe, ratchet, cooldown, kariyer puanı", () =>
   });
 
   it("maaş rütbe yükseldikçe kalıcı olarak artar", () => {
-    const s = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(s, "Asker");
     s.un = 50;
     const m1 = hesaplaMaasYillik(s);
@@ -131,7 +131,7 @@ describe("rütbe reformu — 5 kademe, ratchet, cooldown, kariyer puanı", () =>
   });
 
   it("Din Adamı unvanları dine göre değişir (Sünni İslam), eşikler aynı kalır", () => {
-    const s = createCharacter("Orta Çağ", "Selçuklu", "sehir_merkezi");
+    const s = createCharacter("Orta Çağ", "Selçuklu", "kasaba");
     mesleğiSec(s, "Din Adamı");
     expect(s.din_kultur).toBe("Sünni İslam");
     terfiEttir(s, 5);

@@ -24,14 +24,14 @@ describe("pasifRegenEtkisi — yumuşak tavan", () => {
 
 describe("ecelDenemesi — ileri yaş doğal ölüm riski", () => {
   it("70 yaşından önce asla tetiklenmez", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     state.yas = 69;
     for (let i = 0; i < 5000; i++) expect(ecelDenemesi(state, 1)).toBeNull();
   });
 
   it("yaş ilerledikçe yıllık ölüm ihtimali artar", () => {
     function oran(yas: number): number {
-      const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+      const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
       state.yas = yas;
       let olum = 0;
       const N = 20000;
@@ -47,16 +47,16 @@ describe("ecelDenemesi — ileri yaş doğal ölüm riski", () => {
   });
 
   it("çok yıllı turda her yıl ayrı denenir (2 yıl ≈ tek yılın ~2 katı risk)", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     state.yas = 80;
     let tek = 0;
     let cift = 0;
     const N = 20000;
     for (let i = 0; i < N; i++) {
-      const s1 = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+      const s1 = createCharacter("Orta Çağ", "Fransa", "kasaba");
       s1.yas = 80;
       if (ecelDenemesi(s1, 1) !== null) tek++;
-      const s2 = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+      const s2 = createCharacter("Orta Çağ", "Fransa", "kasaba");
       s2.yas = 81;
       if (ecelDenemesi(s2, 2) !== null) cift++;
     }
@@ -70,7 +70,7 @@ describe("zengin karakter artık 'ölümsüz' değil (entegrasyon)", () => {
     let yuzdenOnceOldu = 0;
     const KOSU = 12;
     for (let k = 0; k < KOSU; k++) {
-      const state = await yeniOyun("Orta Çağ", "Fransa", "dag_basi");
+      const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
       await mesleğiAta(state.id, "Tüccar");
       state.yas = 70;
       state.saglik = 100;

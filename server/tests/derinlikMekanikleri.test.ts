@@ -18,7 +18,7 @@ function olayZorla(state: ReturnType<typeof createCharacter>, id: string) {
 
 describe("fiziksel kalıcılık (option-level restricted_tags)", () => {
   it("kalici:tek_kolu_yok etiketi olan asker için ön safa geçme seçeneği kilitlenir", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     state.yas = 25;
     mesleğiSec(state, "Asker");
     state.etiketler.push("kalici:tek_kolu_yok");
@@ -30,7 +30,7 @@ describe("fiziksel kalıcılık (option-level restricted_tags)", () => {
   });
 
   it("sağlıklı asker için ön safa geçme seçeneği açıktır", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     state.yas = 25;
     mesleğiSec(state, "Asker");
 
@@ -43,7 +43,7 @@ describe("fiziksel kalıcılık (option-level restricted_tags)", () => {
 
 describe("kan davası (gecikmeli tetikleyici zincir)", () => {
   it("kan_davasi_beklemede durumu bitince kandavasi:zamani etiketi eklenir ve suikast olayı erişilebilir olur", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.durumlar.push({
       id: "kan_davasi_beklemede",
@@ -61,7 +61,7 @@ describe("kan davası (gecikmeli tetikleyici zincir)", () => {
   });
 
   it("kandavasi:zamani etiketi yokken suikast olayı hiç çıkmaz", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     for (let i = 0; i < 400; i++) {
       const { senaryo } = olaySec(state);
@@ -72,7 +72,7 @@ describe("kan davası (gecikmeli tetikleyici zincir)", () => {
 
 describe("gizli örgüt (üyeye özel görev)", () => {
   it("örgüte davet edilmiş ama hiçbir örgüte katılmamış karakter için o görev seçeneği kilitlenir", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Asker");
     // derinlik_orgut_gizli_gorev artık orgut_secildi gerektirir (bkz. derinlik_gizli_orgut_daveti);
     // hiç davet edilmemiş biri için bu olay artık hiç çıkmaz, bu yüzden davet çözülmüş
@@ -89,7 +89,7 @@ describe("gizli örgüt (üyeye özel görev)", () => {
   });
 
   it("Tapınak Şövalyeleri üyesi için o görev seçeneği açıktır", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Asker");
     state.etiketler.push("orgut_secildi", "orgut:Tapınak Şövalyeleri");
 
@@ -102,7 +102,7 @@ describe("gizli örgüt (üyeye özel görev)", () => {
 
 describe("tıbbi bağışıklık (immunity)", () => {
   it("veba bağışıklığı olmayan din adamı için özgür yardım seçeneği kilitlenir", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Din Adamı");
     state.ulke.vebada = true;
 
@@ -112,7 +112,7 @@ describe("tıbbi bağışıklık (immunity)", () => {
   });
 
   it("veba bağışıklığı olan din adamı için özgür yardım seçeneği açıktır", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Din Adamı");
     state.ulke.vebada = true;
     state.etiketler.push("tibbi:veba_bagisik");
@@ -128,7 +128,7 @@ describe("ünvan sistemi (uçtan uca)", () => {
     let bulundu = false;
     let kalanButce = 10000;
     while (!bulundu && kalanButce > 0) {
-      const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+      const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
       state.yas = 25;
       state.para = 500;
       state.saglik = 100;
@@ -166,7 +166,7 @@ describe("ünvan sistemi (uçtan uca)", () => {
 
 describe("bağımlılık ve durum_sil (kurtulma)", () => {
   it("gerekliEtiketler:bagimlilik:var ile kurtulma olayı erişilebilir olur, durum_sil pasif etkiyi kaldırır", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.etiketler.push("bagimlilik:kumarbaz", "bagimlilik:var");
     state.durumlar.push({ id: "kumar_bagimliligi", ad: "Kumar Bağımlılığı", tur: "kalici", tur_basi_para: -3 });
@@ -176,7 +176,7 @@ describe("bağımlılık ve durum_sil (kurtulma)", () => {
   });
 
   it("bagimlilik:var etiketi yokken kurtulma olayı hiç çıkmaz", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     for (let i = 0; i < 400; i++) {
       const { senaryo } = olaySec(state);

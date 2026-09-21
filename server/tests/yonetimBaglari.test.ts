@@ -13,7 +13,7 @@ import type { CharacterState } from "../src/types";
 afterEach(() => vi.restoreAllMocks());
 
 async function oturum(): Promise<CharacterState> {
-  const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+  const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
   await mesleğiAta(state.id, "Tüccar");
   state.para = 500;
   state.yas = 30;
@@ -181,7 +181,7 @@ describe("yonetimTalebiKararlastir", () => {
 
 describe("yonetimYillikUygula", () => {
   it("ilgilenilmeyen iki hat zamanla soğur", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.yonetim_iliski = 60;
     state.patron_iliski = 60;
@@ -191,7 +191,7 @@ describe("yonetimYillikUygula", () => {
   });
 
   it("süresi dolan talep ilişki + mutluluk cezası verir ve temizlenir", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.yil = 1200;
     state.yonetim_iliski = 50;
@@ -215,7 +215,7 @@ describe("yonetimYillikUygula", () => {
 
   it("uygun koşulda yeni talep üretebilir", () => {
     vi.spyOn(Math, "random").mockReturnValue(0.01); // < 0.13 → talep üret
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.yil = 1300;
     state.yonetim_talep_sonraki_yil = 1290;

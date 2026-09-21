@@ -4,7 +4,7 @@ import { createCharacter } from "../src/game/stateManager";
 
 describe("tonal tutarsızlık mitigasyonu", () => {
   it("bir önceki olay ağırsa, art arda ağır olay gelme ihtimali belirgin şekilde azalır", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     state.yas = 20;
     state.meslek = "Tüccar";
     state.etiketler.push("aile:soylu");

@@ -12,7 +12,7 @@ import type { CharacterState } from "../src/types";
 afterEach(() => vi.restoreAllMocks());
 
 async function evliOturum(): Promise<CharacterState> {
-  const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+  const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
   await mesleğiAta(state.id, "Tüccar");
   state.para = 500;
   state.yas = 30;
@@ -121,7 +121,7 @@ describe("aileTalebiKararlastir", () => {
 
 describe("aileYillikUygula", () => {
   it("ilgilenilmeyen eş/çocuk ilişkisi zamanla düşer", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.es_adi = "Adela";
     state.es_puani = 60;
@@ -132,7 +132,7 @@ describe("aileYillikUygula", () => {
   });
 
   it("düşük çocuk ilişkisi mutluluğu aşındırır", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.mutluluk = 70;
     state.cocuklar.push({ isim: "Milo", dogum_yili: state.yil - 5, yasiyor: true, iliski: 5 });
@@ -141,7 +141,7 @@ describe("aileYillikUygula", () => {
   });
 
   it("süresi dolan talep ilişki + mutuluk cezası verir ve temizlenir", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.es_adi = "Adela";
     state.es_puani = 50;
@@ -166,7 +166,7 @@ describe("aileYillikUygula", () => {
 
   it("uygun koşulda yeni talep üretebilir", () => {
     vi.spyOn(Math, "random").mockReturnValue(0.01); // < 0.15 → talep üret
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.es_adi = "Adela";
     state.es_puani = 50;
