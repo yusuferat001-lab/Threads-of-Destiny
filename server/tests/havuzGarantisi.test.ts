@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { etiketEkle } from "../src/game/stateManager";
-import { yeniOyun, mesleğiAta, senaryoUret } from "../src/game/gameEngine";
+import { yeniOyun, mesleğiAta, senaryoUret, mulkSatinAl } from "../src/game/gameEngine";
 import { temelUygunMu } from "../src/game/olaySecici";
 import { OLAY_GENEL } from "../src/data/olaylar/genel";
 import { OLAY_ORTACAG_TUCCAR } from "../src/data/olaylar/ortaCagTuccar";
@@ -9,6 +9,7 @@ import { OLAY_AILE } from "../src/data/olaylar/aile";
 import { OLAY_EVLILIK_AILE } from "../src/data/olaylar/evlilikVeAile";
 import { OLAY_KOMIK_GARIP } from "../src/data/olaylar/komikGaripOlaylar";
 import { OLAY_KOMIK_OLUM } from "../src/data/olaylar/komikOlumler";
+import { OLAY_MULK } from "../src/data/olaylar/mulkOlaylari";
 import { OlayTanimi } from "../src/data/olaylar";
 
 /**
@@ -78,7 +79,7 @@ describe("standalone havuz garantisi", () => {
 
   it("hedef zaten karşılanmışsa aynı havuzdan fazladan zorlama yapılmaz (çökme yok, geçerli bir senaryo döner)", async () => {
     const state = await izoleKarakterOlustur("Tüccar");
-    // 95 yaşındaki en yüksek hedefi (7) fazlasıyla aşacak kadar genel.ts id'si "görülmüş" say.
+    // En yüksek kontrol noktasındaki (92 yaş, hedef 12) hedefi fazlasıyla aşacak kadar genel.ts id'si "görülmüş" say.
     state.gecmis_olaylar.push(...havuzTumIdler(OLAY_GENEL));
     state.gecmis_olaylar.push(...havuzTumIdler(OLAY_ORTACAG_TUCCAR));
     state.yas = 95;
@@ -89,7 +90,7 @@ describe("standalone havuz garantisi", () => {
 
   it("zorlanan olay her zaman kendi koşullarını (temelUygunMu) gerçekten sağlar — karakterin gerçek durumuyla çelişen bir olay asla zorlanmaz", async () => {
     const state = await izoleKarakterOlustur("Tüccar");
-    state.yas = 85; // tüm havuzların (genel hariç, 95'te) en yüksek kontrol noktası
+    state.yas = 85; // tüm havuzların (genel hariç, 92'de) en yüksek kontrol noktasının (meslek-standalone, 81) üstünde
     // genel/meslek/iliskiler/aile/komikGarip/komikOlum havuzlarını doyur —
     // yalnızca evlilikVeAile (karakter hiç evlenmedi) hedefin altında kalsın.
     state.gecmis_olaylar.push(...havuzTumIdler(OLAY_GENEL));
@@ -108,5 +109,50 @@ describe("standalone havuz garantisi", () => {
     if (zorlananOlay) {
       expect(temelUygunMu(zorlananOlay, state)).toBe(true);
     }
+  });
+});
+
+/**
+ * Mülk olayı garantisi (§11 kural 14, 2026-09 — kullanıcı isteği: "mülk olayını
+ * da tetikli hale getir satın aldıktan sonra 5 yıl sonra 15 yıl içinde gibi").
+ * Eski fırsatçı %12 şans yerine, satın alma yılından (`mulk_alis_yili`) 5-15 yıl
+ * sonrası arasında o türe ait hiç görülmemiş bir olay varsa kesin tetiklenir.
+ */
+describe("mülk olayı garantisi (satın alımdan 5-15 yıl içinde)", () => {
+  const CIFTLIK_BASLIKLAR = baslikSetiOlustur(OLAY_MULK.filter((o) => o.mulkOlayi === "ciftlik"));
+
+  it("pencere henüz açılmadıysa (satın alımdan <5 yıl) zorlanmaz", async () => {
+    const state = await izoleKarakterOlustur("Tüccar");
+    state.para = 1000;
+    await mulkSatinAl(state.id, "ciftlik");
+    state.yil += 3;
+    state.yas = 30;
+    const senaryo = await senaryoUret(state.id);
+    expect(CIFTLIK_BASLIKLAR.has(senaryo.olay_basligi)).toBe(false);
+  });
+
+  it("pencere içindeyken (satın alımdan 5-15 yıl) hiç görülmemiş bir mülk olayı kesin tetiklenir", async () => {
+    const state = await izoleKarakterOlustur("Tüccar");
+    state.para = 1000;
+    await mulkSatinAl(state.id, "ciftlik");
+    state.yil += 6;
+    state.yas = 30;
+    const senaryo = await senaryoUret(state.id);
+    expect(CIFTLIK_BASLIKLAR.has(senaryo.olay_basligi)).toBe(true);
+  });
+
+  it("pencere kapandıysa (satın alımdan >15 yıl) artık kesin zorlanmaz, eski fırsatçı mekanik geçerli kalır", async () => {
+    const state = await izoleKarakterOlustur("Tüccar");
+    state.para = 1000;
+    await mulkSatinAl(state.id, "ciftlik");
+    // Pencere içindeyken zaten görülmüş say (kesin tetikleme koşulunu doyur).
+    state.gecmis_olaylar.push(...havuzTumIdler(OLAY_MULK.filter((o) => o.mulkOlayi === "ciftlik")));
+    state.yil += 20; // pencere kapandı
+    state.yas = 30;
+    const senaryo = await senaryoUret(state.id);
+    // Kesin tetikleme koşulu artık geçerli değil (havuz zaten tükendi) — çökme
+    // olmadan geçerli bir senaryo dönmeli, fırsatçı mekanik en fazla görülmüş
+    // olayları tekrar sunabilir ama bunu garanti etmeyiz (rastgele şans).
+    expect(senaryo.olay_basligi).toBeTruthy();
   });
 });
