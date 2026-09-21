@@ -1517,7 +1517,7 @@ export function pasifRegenEtkisi(mevcut: number, delta: number): number {
 
 /**
  * İleri yaş ecel kontrolü: tetiklenirse checkDeath ile kullanılacak mesajı döner,
- * aksi halde null. Her yıl ayrı denenir (orduBuyumesiDene/aniOlumDene deseni).
+ * aksi halde null. Her yıl ayrı denenir (orduBuyumesiDene deseni).
  */
 export function ecelDenemesi(state: CharacterState, yasArtisi: number): string | null {
   if (yasArtisi <= 0) return null;
@@ -1951,37 +1951,6 @@ const SANS_OLAYLARI: SansOlayi[] = [
   { mesaj: "{rakip} senin aleyhinde konuşmuş, bazı çevrelere ulaşmış.", rakip_puani: -4 },
   { mesaj: "{dost} evlenmiş, sen davet edilmemişsin; içine hafif bir kırgınlık oturdu.", dost_puani: -3 },
 ];
-
-/**
- * Nadir, tamamen anlamsız/absürt ölümler: hiçbir seçimin, servetin ya da
- * sağlığın bunu engelleyemeyeceği kaçınılmaz kaza riskleri. Çok düşük bir
- * ihtimalle her turda kontrol edilir; efsanevi_olum olarak işaretlenir ki
- * liderlik tablosunda bir rozet gibi görünsün. Not: absürt ölümlerin ASIL
- * yolu artık komikOlumler.ts'teki SEÇİM tabanlı olaylardır (oyuncu "aptalca
- * olanı yap" der, düşük ihtimalle ölür); bu ansızın/şanssız kanal bilerek
- * çok seyrek (yılda ~%0.4) tutuluyor.
- */
-const ANI_OLUM_OLAYLARI: { mesaj: string; efsane: string; cag?: Cag }[] = [
-  { mesaj: "Bir evin penceresinden düşen saksı tam kafana isabet etti.", efsane: "Saksı Kurbanı" },
-  { mesaj: "Sokakta kontrolden çıkan bir at arabası seni ezip geçti.", efsane: "At Arabasının Altında" },
-  { mesaj: "Fırtınada bir yıldırım tam üstüne düştü.", efsane: "Gökten Gelen Ecel" },
-  { mesaj: "Bir kuyudan su çekerken ayağın kaydı ve bir daha çıkamadın.", efsane: "Kuyunun Dibinde" },
-  { mesaj: "Yediğin bir mantar, yanlışlıkla zehirli çıktı.", efsane: "Yanlış Mantar" },
-  { mesaj: "Uykunda evinin çatısı üstüne çöktü.", efsane: "Çöken Çatı" },
-  { mesaj: "Bir kavga izlerken sapan taşı yanlışlıkla sana geldi.", efsane: "Yanlış Zamanda Yanlış Yer" },
-  { mesaj: "Bir demirci dükkânının önünden geçerken kızgın bir demir parçası üstüne sıçradı.", efsane: "Demircinin Kıvılcımı", cag: "Orta Çağ" },
-  { mesaj: "Şehirdeki ilk buharlı makinelerden biri, tam yanından geçerken infilak etti.", efsane: "Makinenin Kurbanı", cag: "Sanayi Devrimi" },
-];
-
-const ANI_OLUM_IHTIMALI = 0.004;
-
-/** Kaçınılmaz, tamamen şansa bağlı ölüm riskini kontrol eder; tetiklenirse checkDeath ile birlikte kullanılacak mesajı döner. */
-export function aniOlumDene(state: CharacterState): { mesaj: string; efsane: string } | null {
-  if (Math.random() > ANI_OLUM_IHTIMALI) return null;
-  const havuz = ANI_OLUM_OLAYLARI.filter((o) => !o.cag || o.cag === state.cag);
-  const olay = havuz[Math.floor(Math.random() * havuz.length)];
-  return { mesaj: T(state.dil, olay.mesaj), efsane: T(state.dil, olay.efsane) };
-}
 
 const SANS_OLAYI_IHTIMALI = 0.18;
 

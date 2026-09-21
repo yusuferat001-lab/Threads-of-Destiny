@@ -29,7 +29,6 @@ import {
   MAAS_CARPANI_TAVAN,
   rutbeGuncelle,
   sansOlayiDene,
-  aniOlumDene,
   ecelDenemesi,
   gecmisKaydet,
   yaslanmaUygula,
@@ -1789,15 +1788,6 @@ async function sonucuUygulaVeIlerlet(
               : null);
           if (ekCumle) {
             zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${ekCumle}` : ekCumle;
-          }
-
-          if (state.aktif) {
-            const aniOlum = aniOlumDene(state);
-            if (aniOlum) {
-              checkDeath(state, true, aniOlum.mesaj);
-              // Relik ölümü iptal edebilir; rozet yalnız gerçekten öldüyse.
-              if (!state.aktif) state.efsanevi_olum = aniOlum.efsane;
-            }
           }
         }
       } else {
