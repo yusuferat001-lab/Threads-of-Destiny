@@ -1940,6 +1940,7 @@ function App() {
                   );
                 })}
               </div>
+              <p className="acilis-skor-ipucu">💡 {m.acilisSkorIpucu}</p>
               {yukleniyor && <p className="giris-aciklama">{m.yukleniyor}</p>}
             </div>
           </div>
@@ -2617,6 +2618,7 @@ function App() {
       {ekran === 'liderlik' && (
         <div className="ekran ekran-liderlik">
           <h2>{m.liderlikBaslik}</h2>
+          <p className="liderlik-skor-ipucu">💡 {m.acilisSkorIpucu}</p>
           <div className="liderlik-donem-sekmeler">
             <button
               className={liderlikDonemi === 'tumZaman' ? 'aktif-sekme' : ''}
