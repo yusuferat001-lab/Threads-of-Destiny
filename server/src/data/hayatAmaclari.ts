@@ -60,14 +60,21 @@ const ortalamaCocukIliskisi = (s: CharacterState) => {
   if (!yasayanlar.length) return 0;
   return yasayanlar.reduce((toplam, c) => toplam + (c.iliski ?? 0), 0) / yasayanlar.length;
 };
+const ortalamaEkipSadakati = (s: CharacterState) => {
+  const ekip = s.ekip ?? [];
+  if (!ekip.length) return 0;
+  return ekip.reduce((toplam, e) => toplam + (e.sadakat ?? 0), 0) / ekip.length;
+};
+const krediYonetimiBasarili = (s: CharacterState) =>
+  !!s.kredi && s.kredi.pazarlikYapildi && s.kredi.odenmeyenTaksit === 0;
 
 export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
   // ============================ ORTAK — NORMAL ============================
   {
     id: "denk_kasa", zorluk: "normal", kontrolAni: "herhangi",
     baslik: { tr: "Denk Kasa", en: "A Solid Coffer" },
-    aciklama: { tr: "Servetini (nakit + mülk) 200'ün üzerine çıkar — hem de kirli işlere bulaşmadan.", en: "Grow your wealth (cash + property) past 200 — without a criminal record." },
-    kosul: (s, servet) => servet >= 200 && temizEl(s),
+    aciklama: { tr: "Servetini (nakit + mülk) 230'un üzerine çıkar — hem de kirli işlere bulaşmadan.", en: "Grow your wealth (cash + property) past 230 — without a criminal record." },
+    kosul: (s, servet) => servet >= 230 && temizEl(s),
   },
   {
     id: "taninan_yuz", zorluk: "normal", kontrolAni: "herhangi",
@@ -90,8 +97,8 @@ export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
   {
     id: "saglam_omur", zorluk: "normal", kontrolAni: "herhangi",
     baslik: { tr: "Sağlam Ömür", en: "A Sound Body" },
-    aciklama: { tr: "62 yaşından sonra sağlığını 75'in üzerinde tut.", en: "Keep your health above 75 past the age of 62." },
-    kosul: (s) => s.yas >= 62 && s.saglik >= 75,
+    aciklama: { tr: "58 yaşından sonra sağlığını 68'in üzerinde tut.", en: "Keep your health above 68 past the age of 58." },
+    kosul: (s) => s.yas >= 58 && s.saglik >= 68,
   },
   {
     id: "meyhane_mudavimi", zorluk: "normal", kontrolAni: "herhangi",
@@ -102,8 +109,8 @@ export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
   {
     id: "sansli_el", zorluk: "normal", kontrolAni: "herhangi",
     baslik: { tr: "Şanslı El", en: "A Lucky Hand" },
-    aciklama: { tr: "Kumardan ömür boyu net 80 birim kâra geç.", en: "End a lifetime of gambling 80 coins ahead." },
-    kosul: (s) => (s.omur_kumar_net ?? 0) >= 80,
+    aciklama: { tr: "Kumardan ömür boyu net 95 birim kâra geç.", en: "End a lifetime of gambling 95 coins ahead." },
+    kosul: (s) => (s.omur_kumar_net ?? 0) >= 95,
   },
   {
     id: "gizemli_kader", zorluk: "normal", kontrolAni: "herhangi",
@@ -116,6 +123,30 @@ export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
     baslik: { tr: "Korkusuz", en: "Fearless" },
     aciklama: { tr: "Başarısızlığı ölüm demek olan bir seçimi başarıyla atlat.", en: "Pull off a choice where failure meant death." },
     kosul: (s) => (s.omur_riskli_basari ?? 0) >= 1,
+  },
+  {
+    id: "sadik_dost", zorluk: "normal", kontrolAni: "herhangi",
+    baslik: { tr: "Sadık Dost", en: "A Loyal Companion" },
+    aciklama: { tr: "Bir evcil hayvan edin ve mutluluğunu 60'ın üzerinde tut.", en: "Take in a pet and keep your happiness above 60." },
+    kosul: (s) => !!s.evcil_hayvan && s.mutluluk >= 60,
+  },
+  {
+    id: "patronun_gozdesi", zorluk: "normal", kontrolAni: "herhangi",
+    baslik: { tr: "Patronun Gözdesi", en: "The Boss's Favorite" },
+    aciklama: { tr: "İş çevrendeki patronunla (lonca reisi/komutan/başrahip) ilişkini 70'e taşı.", en: "Raise your bond with your workplace superior (guild chief/commander/high clergy) to 70." },
+    kosul: (s) => s.patron_iliski >= 70,
+  },
+  {
+    id: "akilli_borclanma", zorluk: "normal", kontrolAni: "herhangi",
+    baslik: { tr: "Akıllı Borçlanma", en: "Savvy Borrowing" },
+    aciklama: { tr: "Tefeciden kredi al, faizini pazarlıkla düşür ve hiç taksit kaçırma.", en: "Take a loan from the moneylender, haggle down the interest, and never miss a payment." },
+    kosul: (s) => krediYonetimiBasarili(s),
+  },
+  {
+    id: "guvenilir_ekip", zorluk: "normal", kontrolAni: "herhangi",
+    baslik: { tr: "Güvenilir Ekip", en: "A Trusted Crew" },
+    aciklama: { tr: "En az bir ekip üyesi edin ve ortalama sadakatlerini 75'in üzerinde tut.", en: "Hire at least one crew member and keep their average loyalty above 75." },
+    kosul: (s) => (s.ekip ?? []).length >= 1 && ortalamaEkipSadakati(s) >= 75,
   },
 
   // ============================ ORTAK — ZOR ============================
@@ -264,8 +295,8 @@ export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
   {
     id: "kar_marji", zorluk: "normal", kontrolAni: "herhangi", meslekler: ["Tüccar"],
     baslik: { tr: "Kâr Marjı", en: "Profit Margin" },
-    aciklama: { tr: "Servetini 240'ın üzerine çıkar — temiz bir sicille.", en: "Push your wealth past 240 — with a clean record." },
-    kosul: (s, servet) => servet >= 240 && temizEl(s),
+    aciklama: { tr: "Servetini 270'in üzerine çıkar — temiz bir sicille.", en: "Push your wealth past 270 — with a clean record." },
+    kosul: (s, servet) => servet >= 270 && temizEl(s),
   },
   {
     id: "hediye_agi", zorluk: "normal", kontrolAni: "herhangi", meslekler: ["Tüccar"],
@@ -372,8 +403,8 @@ export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
   {
     id: "sanayici", zorluk: "normal", kontrolAni: "herhangi", cag: "Sanayi Devrimi",
     baslik: { tr: "Sanayici", en: "Industrialist" },
-    aciklama: { tr: "Aynı anda 2 mülkün ve 200+ servetin olsun — temiz bir sicille.", en: "Hold 2 properties and 200+ wealth at once — with clean hands." },
-    kosul: (s, servet) => servet >= 200 && (s.mulkler?.length ?? 0) >= 2 && temizEl(s),
+    aciklama: { tr: "Aynı anda 2 mülkün ve 230+ servetin olsun — temiz bir sicille.", en: "Hold 2 properties and 230+ wealth at once — with clean hands." },
+    kosul: (s, servet) => servet >= 230 && (s.mulkler?.length ?? 0) >= 2 && temizEl(s),
   },
   {
     id: "kasif_ruhu", zorluk: "zor", kontrolAni: "herhangi", cag: "Sanayi Devrimi",
@@ -497,13 +528,16 @@ export const AMAC_ILERLEME: Record<
   string,
   { hedef: number; metrik: (s: CharacterState, servet: number) => number }
 > = {
-  denk_kasa: { hedef: 200, metrik: (_s, servet) => servet },
+  denk_kasa: { hedef: 230, metrik: (_s, servet) => servet },
   taninan_yuz: { hedef: 72, metrik: (s) => s.un },
   dinc_ihtiyar: { hedef: 75, metrik: (s) => s.yas },
   ocak_sahibi: { hedef: 3, metrik: (s) => (s.cocuklar ?? []).filter((c) => c.yasiyor).length },
-  saglam_omur: { hedef: 75, metrik: (s) => (s.yas >= 62 ? s.saglik : 0) },
+  saglam_omur: { hedef: 68, metrik: (s) => (s.yas >= 58 ? s.saglik : 0) },
   meyhane_mudavimi: { hedef: 3, metrik: (s) => s.alkol_ziyaret_sayisi ?? 0 },
-  sansli_el: { hedef: 80, metrik: (s) => Math.max(0, s.omur_kumar_net ?? 0) },
+  sansli_el: { hedef: 95, metrik: (s) => Math.max(0, s.omur_kumar_net ?? 0) },
+  sadik_dost: { hedef: 60, metrik: (s) => (s.evcil_hayvan ? s.mutluluk : 0) },
+  patronun_gozdesi: { hedef: 70, metrik: (s) => s.patron_iliski },
+  guvenilir_ekip: { hedef: 75, metrik: (s) => ortalamaEkipSadakati(s) },
   servet_zirvesi: { hedef: 700, metrik: (_s, servet) => servet },
   yasayan_efsane: { hedef: 95, metrik: (s) => s.un },
   kalabalik_soy: { hedef: 6, metrik: (s) => (s.cocuklar ?? []).filter((c) => c.yasiyor).length },
@@ -525,7 +559,7 @@ export const AMAC_ILERLEME: Record<
   lonca_ustasi: { hedef: 4, metrik: (s) => s.rutbe_seviye },
   uc_kepenk: { hedef: 3, metrik: (s) => s.mulkler?.length ?? 0 },
   buyuyen_sermaye: { hedef: 80, metrik: (s) => s.ticaret_sermaye },
-  kar_marji: { hedef: 240, metrik: (_s, servet) => servet },
+  kar_marji: { hedef: 270, metrik: (_s, servet) => servet },
   hediye_agi: { hedef: 6, metrik: (s) => s.omur_hediye_sayisi ?? 0 },
   lonca_reisi: { hedef: 5, metrik: (s) => s.rutbe_seviye },
   imparator: { hedef: 630, metrik: (_s, servet) => servet },
@@ -540,7 +574,7 @@ export const AMAC_ILERLEME: Record<
   ruhani_onder: { hedef: 5, metrik: (s) => s.sehir_yonetim_seviyesi },
   gunahsiz: { hedef: 65, metrik: (s) => s.yas },
   sarayda_soz: { hedef: 90, metrik: (s) => s.un },
-  sanayici: { hedef: 200, metrik: (_s, servet) => servet },
+  sanayici: { hedef: 230, metrik: (_s, servet) => servet },
   kasif_ruhu: { hedef: 480, metrik: (_s, servet) => servet },
   lekesiz_omur: { hedef: 58, metrik: (s) => s.yas },
   sarhos_ama_ayakta: { hedef: 67, metrik: (s) => s.yas },
