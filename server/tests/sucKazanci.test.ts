@@ -64,7 +64,7 @@ describe("suç işleyerek para kazanma — motor kuralı (birim)", () => {
 describe("suç işleyerek para kazanma — gerçek olay üzerinden (entegrasyon)", () => {
   it("manastır yağması seçilince suc_seviyesi (yıldız göstergesi) fırlar ve para çarpılır", async () => {
     for (let deneme = 0; deneme < 60; deneme++) {
-      const state = await yeniOyun("Orta Çağ", "Fransa", "sinir_bolgesi");
+      const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
       state.yas = 40;
       state.saglik = 100;
       state.etiketler.push("yolculuk_tamamlandi");

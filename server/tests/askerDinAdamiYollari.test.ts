@@ -10,7 +10,7 @@ function yolaKilitle(state: ReturnType<typeof createCharacter>, yolEtiketi: stri
 
 describe("Orta Çağ Asker kariyer yolları — karşılıklı dışlama", () => {
   it("Sadık yoluna kilitlenen asker, diğer 4 yolun olaylarını hiç görmez ve kendi yolunu görür", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     state.yas = 25;
     mesleğiSec(state, "Asker");
     yolaKilitle(state, "yol:asker:sadik", "asker_yolu_secildi");
@@ -28,7 +28,7 @@ describe("Orta Çağ Asker kariyer yolları — karşılıklı dışlama", () =>
   });
 
   it("Kahraman yoluna kilitlenen asker, diğer 4 yolun olaylarını hiç görmez ve kendi yolunu görür", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     state.yas = 25;
     state.rutbe_seviye = 3;
     mesleğiSec(state, "Asker");
@@ -47,7 +47,7 @@ describe("Orta Çağ Asker kariyer yolları — karşılıklı dışlama", () =>
   });
 
   it("hiçbir yola girmemiş asker hiçbir yol-özel olayı görmez", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     state.yas = 25;
     mesleğiSec(state, "Asker");
     for (let i = 0; i < 500; i++) {
@@ -59,7 +59,7 @@ describe("Orta Çağ Asker kariyer yolları — karşılıklı dışlama", () =>
 
 describe("Orta Çağ Din Adamı kariyer yolları — karşılıklı dışlama", () => {
   it("Tarikat yoluna kilitlenen din adamı, diğer 3 yolun olaylarını hiç görmez ve kendi yolunu görür", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     state.yas = 25;
     mesleğiSec(state, "Din Adamı");
     yolaKilitle(state, "yol:din:tarikat", "din_yolu_secildi");
@@ -76,7 +76,7 @@ describe("Orta Çağ Din Adamı kariyer yolları — karşılıklı dışlama", 
   });
 
   it("Dürüst yoluna kilitlenen din adamı, diğer 3 yolun olaylarını hiç görmez ve kendi yolunu görür", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     state.yas = 25;
     mesleğiSec(state, "Din Adamı");
     yolaKilitle(state, "yol:din:durust", "din_yolu_secildi");
@@ -93,7 +93,7 @@ describe("Orta Çağ Din Adamı kariyer yolları — karşılıklı dışlama", 
   });
 
   it("hiçbir yola girmemiş din adamı hiçbir yol-özel olayı görmez", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     state.yas = 25;
     mesleğiSec(state, "Din Adamı");
     for (let i = 0; i < 500; i++) {
@@ -105,7 +105,7 @@ describe("Orta Çağ Din Adamı kariyer yolları — karşılıklı dışlama", 
 
 describe("kariyer yolu giriş zinciri garantisi (senaryoUret)", () => {
   it("18 yaşındaki yeni bir Orta Çağ askeri, henüz yol seçmemişse 'İlk Emir' ile karşılaşır", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Asker");
     state.yas = 18;
     state.ulke.savasta = true; // dünya_savas_ilani garantisini devre dışı bırak
@@ -114,7 +114,7 @@ describe("kariyer yolu giriş zinciri garantisi (senaryoUret)", () => {
   });
 
   it("18 yaşındaki yeni bir Orta Çağ din adamı, henüz yol seçmemişse 'İlk Sınav' ile karşılaşır", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Din Adamı");
     state.yas = 18;
     state.ulke.savasta = true;
@@ -123,7 +123,7 @@ describe("kariyer yolu giriş zinciri garantisi (senaryoUret)", () => {
   });
 
   it("zaten bir yola kilitlenmiş asker 'İlk Emir' ile bir daha karşılaşmaz", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Asker");
     state.yas = 18;
     state.ulke.savasta = true;
@@ -133,7 +133,7 @@ describe("kariyer yolu giriş zinciri garantisi (senaryoUret)", () => {
   });
 
   it("İlk Emir'de bir seçenek seçildiğinde eğilime özel ikinci olay zorunlu olarak gelir ve yol kilitlenir", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Asker");
     state.yas = 18;
     state.saglik = 100; // rastgele ölüm ihtimalini en aza indirir, testi kırılganlıktan korur

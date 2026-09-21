@@ -6,7 +6,7 @@ import { secimUygulaVeCoz } from "./testUtils";
 
 describe("kişilik ekseni", () => {
   it("yüksek fevrilikte sadece fevri seçenek görünür", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     state.yas = 20;
     state.meslek = "Tüccar";
     state.kisilik_eksenleri.fevrilik = 90;
@@ -22,7 +22,7 @@ describe("kişilik ekseni", () => {
   });
 
   it("düşük fevrilikte sadece planlayıcı seçenek görünür", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     state.yas = 20;
     state.meslek = "Tüccar";
     state.kisilik_eksenleri.fevrilik = 10;
@@ -40,7 +40,7 @@ describe("kişilik ekseni", () => {
 
 describe("ekip sistemi", () => {
   it("başarılı işe alım gerçek kaliteyi gizler ama tahmini aralık üretir", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     state.yas = 20;
     state.para = 5000;
     await mesleğiAta(state.id, "Tüccar");
@@ -65,7 +65,7 @@ describe("ekip sistemi", () => {
   });
 
   it("gerekliEkip:true olaylar ekip yokken çıkmaz", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     state.yas = 20;
     state.meslek = "Tüccar";
     expect(state.ekip).toHaveLength(0);
@@ -77,7 +77,7 @@ describe("ekip sistemi", () => {
   });
 
   it("yeni işe alınan ekip üyesinin yıllık maaşı 2-9 aralığında kalır (eskiden 5-18'di)", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     state.yas = 20;
     state.para = 5000;
     await mesleğiAta(state.id, "Tüccar");
@@ -99,7 +99,7 @@ describe("ekip sistemi", () => {
   });
 
   it("ekipCikar bir tur harcamadan istenen ekip üyesini kaldırır", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     state.ekip.push({
       id: "test-uye-1",
@@ -120,7 +120,7 @@ describe("ekip sistemi", () => {
   });
 
   it("olmayan bir ekip üyesini kovmaya çalışmak hata fırlatır", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     await expect(ekipCikar(state.id, "olmayan-id")).rejects.toThrow();
   });
@@ -128,7 +128,7 @@ describe("ekip sistemi", () => {
 
 describe("hizip sistemi", () => {
   it("saflaşma olayı state.hizip'i doldurur, çatışma olayı sadece hizip varken çıkar", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     state.yas = 20;
     state.meslek = "Asker";
     expect(state.hizip).toBeNull();
@@ -141,14 +141,14 @@ describe("hizip sistemi", () => {
 
 describe("haberler", () => {
   it("ülke durumuna göre haber üretilir, hükümdar satırı artık yok", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     expect(Array.isArray(state.haberler)).toBe(true);
     expect(state.haberler.length).toBeGreaterThan(0);
     expect(state.haberler.some((h) => h.includes("yönetiyor"))).toBe(false);
   });
 
   it("aynı ülke durumunda art arda çağrılar farklı cümleler üretebilir", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     state.ulke.savasta = true;
     const gorulenler = new Set<string>();
     for (let i = 0; i < 100; i++) {
@@ -158,7 +158,7 @@ describe("haberler", () => {
   });
 
   it("bölgeye özgü yerel haberler zaman zaman eklenir", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     let yerelGorundu = false;
     for (let i = 0; i < 200 && !yerelGorundu; i++) {
       const haberler = haberleriUret(state);

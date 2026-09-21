@@ -21,7 +21,7 @@ async function secimUygulaVeCoz(id: string, idx: number) {
 }
 
 async function birOmurOyna(cag: "Orta Çağ" | "Sanayi Devrimi", bolge: string) {
-  const state = await yeniOyun(cag, bolge, "sehir_merkezi");
+  const state = await yeniOyun(cag, bolge, "kasaba");
   await mesleğiAta(state.id, "Zanaatkâr");
   let aktif = true;
   let sonState = state;

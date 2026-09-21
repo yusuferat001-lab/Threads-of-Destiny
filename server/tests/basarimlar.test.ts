@@ -5,7 +5,7 @@ import { skorKaydet } from "../src/db/scoreRepository";
 
 describe("hayat amaçları (3'lü sistem)", () => {
   it("meslek seçilince 2 normal + 1 zor amaç atanır", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     expect(state.hayat_amaclari).toHaveLength(3);
     expect(state.hayat_amaclari.filter((a) => a.zorluk === "normal")).toHaveLength(2);
@@ -14,7 +14,7 @@ describe("hayat amaçları (3'lü sistem)", () => {
   });
 
   it("koşul sağlanınca 'herhangi' amaç kalıcı kilitlenir; tekrar kontrol idempotenttir", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     // Test için bilinen bir amacı zorla ekle.
     state.hayat_amaclari = [
@@ -37,7 +37,7 @@ describe("hayat amaçları (3'lü sistem)", () => {
   });
 
   it("skor çarpanı = max(1, Σ tamamlanan bonuslar) — 2 normal + 1 zor = ×5", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.yas = 40;
     state.un = 50;
@@ -61,7 +61,7 @@ describe("hayat amaçları (3'lü sistem)", () => {
 
 describe("global kriz/altın çağ", () => {
   it("kıtlık her yıl sağlığı düşürür", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.saglik = 80;
     state.ulke.kriz = { tur: "kitlik", bitisYili: state.yil + 10 };
@@ -70,7 +70,7 @@ describe("global kriz/altın çağ", () => {
   });
 
   it("altın çağ her yıl para/mutluluk artırır", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.para = 50;
     state.mutluluk = 60;
@@ -81,7 +81,7 @@ describe("global kriz/altın çağ", () => {
   });
 
   it("bitiş yılına ulaşınca kriz temizlenir ve bitiş mesajı döner", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.ulke.kriz = { tur: "isyan", bitisYili: state.yil };
     const mesaj = krizEtkisiUygula(state, 1);
@@ -90,7 +90,7 @@ describe("global kriz/altın çağ", () => {
   });
 
   it("kriz yokken hiçbir şey yapmaz", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     const oncekiSaglik = state.saglik;
     const mesaj = krizEtkisiUygula(state, 5);
@@ -101,7 +101,7 @@ describe("global kriz/altın çağ", () => {
 
 describe("başarım kaydı (skorRepository)", () => {
   it("skorKaydet unvanlar/efsanevi_olum/hayat_amaci_tamamlandi alanlarını doğru saklar", async () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.unvanlar = ["İpek Kralı", "Cesur Yürek"];
     state.efsanevi_olum = "Kendi Kazdığı Kuyuya Düşen";
@@ -123,7 +123,7 @@ describe("başarım kaydı (skorRepository)", () => {
   });
 
   it("ünvan/efsanevi ölüm yokken boş string olarak kaydedilir", async () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.aktif = false;
     state.olum_nedeni = "Test";

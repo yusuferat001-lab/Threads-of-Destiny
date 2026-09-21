@@ -9,7 +9,7 @@ const FRANSA_KADIN_ISIMLERI = new Set([
 
 describe("olay dışı evlenme (evlilik-adaylari / evlilik-teklifi)", () => {
   it("evlilikAdaylariGetir: reşit ve bekar bir karaktere 2 aday döner", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     state.yas = 20;
     const adaylar = await evlilikAdaylariGetir(state.id);
@@ -23,7 +23,7 @@ describe("olay dışı evlenme (evlilik-adaylari / evlilik-teklifi)", () => {
   });
 
   it("tüm evlilik adayları kadın isim havuzundan gelir", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Asker");
     state.yas = 24;
     for (let i = 0; i < 25; i++) {
@@ -35,7 +35,7 @@ describe("olay dışı evlenme (evlilik-adaylari / evlilik-teklifi)", () => {
   });
 
   it("teklif kabul edilince atanan eş adı kadın isim havuzundan olur", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Asker");
     state.yas = 30;
     state.mutluluk = 90;
@@ -53,14 +53,14 @@ describe("olay dışı evlenme (evlilik-adaylari / evlilik-teklifi)", () => {
   });
 
   it("18 yaş altına adaylar/teklif reddedilir", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     state.yas = 16;
     await expect(evlilikAdaylariGetir(state.id)).rejects.toThrow();
   });
 
   it("zaten evliyken adaylar/teklif reddedilir", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     state.yas = 25;
     state.etiketler.push("medeni:evli");
@@ -68,7 +68,7 @@ describe("olay dışı evlenme (evlilik-adaylari / evlilik-teklifi)", () => {
   });
 
   it("evlilikTeklifEt: yüksek uyumlu bir aday çoğunlukla kabul eder ve state'i günceller", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     state.yas = 25;
     state.mutluluk = 90;
@@ -90,7 +90,7 @@ describe("olay dışı evlenme (evlilik-adaylari / evlilik-teklifi)", () => {
   });
 
   it("evlilikTeklifEt: geçersiz aday nesnesi hata fırlatır", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     state.yas = 25;
     await expect(evlilikTeklifEt(state.id, {} as never)).rejects.toThrow();

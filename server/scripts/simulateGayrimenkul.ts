@@ -102,7 +102,7 @@ interface Sonuc {
 }
 
 function tekTrial(cag: Cag, bolge: string, tur: MulkTuru): Sonuc {
-  const state = createCharacter(cag, bolge, "sehir_merkezi");
+  const state = createCharacter(cag, bolge, "kasaba");
   mesleğiSec(state, "Tüccar");
   // Yaşı sabitle ki veba 18+ tetiklensin, ecel/yaşlanma karışmasın (mülk hesabı izole)
   state.yas = 30;

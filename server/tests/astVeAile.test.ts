@@ -3,7 +3,7 @@ import { createCharacter, mesleğiSec, rutbeGuncelle, BOLGELER_BY_CAG } from "..
 
 describe("ebeveynler (anne/baba)", () => {
   it("yeni karakterin anne_adi ve baba_adi'si dolu ve birbirinden/dost-rakipten farklıdır", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     expect(state.anne_adi).toBeTruthy();
     expect(state.baba_adi).toBeTruthy();
     expect(state.anne_adi).not.toBe(state.baba_adi);
@@ -17,7 +17,7 @@ describe("ebeveynler (anne/baba)", () => {
     for (const cag of Object.keys(BOLGELER_BY_CAG) as (keyof typeof BOLGELER_BY_CAG)[]) {
       for (const bolge of BOLGELER_BY_CAG[cag]) {
         for (let i = 0; i < 100; i++) {
-          const state = createCharacter(cag, bolge, "sehir_merkezi");
+          const state = createCharacter(cag, bolge, "kasaba");
           expect(KADIN_ISIMLERI[bolge]).toBeDefined();
           expect(KADIN_ISIMLERI[bolge]).toContain(state.anne_adi);
           expect(ERKEK_ISIMLERI[bolge]).toContain(state.baba_adi);
@@ -136,14 +136,14 @@ function terfiEttir(state: ReturnType<typeof createCharacter>, hedefSeviye: numb
 
 describe("astlar", () => {
   it("meslek seçildiğinde (rütbe seviye 1) hiç ast yok", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Asker");
     expect(state.rutbe_seviye).toBe(1);
     expect(state.astlar).toEqual([]);
   });
 
   it("seviye 2'ye terfi edince tam 1 ast, kendinden düşük (seviye 1) unvanla eklenir", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Asker");
     state.kariyer_puani = 20;
     state.un = 40;
@@ -159,7 +159,7 @@ describe("astlar", () => {
   });
 
   it("seviye 3'e terfi edince 2. bir ast (seviye 2 unvanlı) eklenir, ilk astın ismi değişmez", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Asker");
     state.kariyer_puani = 20;
     state.un = 40;
@@ -180,7 +180,7 @@ describe("astlar", () => {
   });
 
   it("amir_adi en üst kademede (5) null olsa da astlar dolu kalır — en tepede bile ast eksikliği olmaz", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     terfiEttir(state, 5);
     expect(state.rutbe_seviye).toBe(5);

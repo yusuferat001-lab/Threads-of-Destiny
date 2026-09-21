@@ -38,7 +38,7 @@ function digerGarantileriGecistir(state: CharacterState) {
 
 describe("yolculuk teklifi garantisi (senaryoUret)", () => {
   it("Orta Çağ Fransa'da bir asker, Haçlı Seferi teklifiyle karşılaşır", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Asker");
     digerGarantileriGecistir(state);
     state.yas = 27;
@@ -49,7 +49,7 @@ describe("yolculuk teklifi garantisi (senaryoUret)", () => {
   });
 
   it("Orta Çağ Selçuklu'da bir asker, Kutsal Toprakları Savunma Seferi teklifiyle karşılaşır", async () => {
-    const state = await yeniOyun("Orta Çağ", "Selçuklu", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Selçuklu", "kasaba");
     await mesleğiAta(state.id, "Asker");
     digerGarantileriGecistir(state);
     state.yas = 27;
@@ -58,7 +58,7 @@ describe("yolculuk teklifi garantisi (senaryoUret)", () => {
   });
 
   it("Sanayi Devrimi'nde bir asker, Sömürge Seferi teklifiyle karşılaşır", async () => {
-    const state = await yeniOyun("Sanayi Devrimi", "İngiltere", "sehir_merkezi");
+    const state = await yeniOyun("Sanayi Devrimi", "İngiltere", "kasaba");
     await mesleğiAta(state.id, "Asker");
     digerGarantileriGecistir(state);
     state.yas = 27;
@@ -67,7 +67,7 @@ describe("yolculuk teklifi garantisi (senaryoUret)", () => {
   });
 
   it("Orta Çağ'da bir tüccar, Coğrafi Keşif teklifiyle karşılaşır", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     digerGarantileriGecistir(state);
     state.yas = 27;
@@ -76,7 +76,7 @@ describe("yolculuk teklifi garantisi (senaryoUret)", () => {
   });
 
   it("Sanayi Devrimi'nde bir tüccar, Coğrafi Keşif/Mucit Turnesi/Sömürge Seferi tekliflerinden biriyle karşılaşır", async () => {
-    const state = await yeniOyun("Sanayi Devrimi", "İngiltere", "sehir_merkezi");
+    const state = await yeniOyun("Sanayi Devrimi", "İngiltere", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     digerGarantileriGecistir(state);
     state.yas = 27;
@@ -93,7 +93,7 @@ describe("yolculuk teklifi garantisi (senaryoUret)", () => {
     ["Selçuklu", "Sünni İslam", "hac_sunni_karar"],
     ["Fransa", "Katolik", "hac_katolik_karar"],
   ])("Orta Çağ %s bölgesindeki bir din adamı (%s), kendi Hac teklifiyle karşılaşır", async (bolge, _din, beklenenId) => {
-    const state = await yeniOyun("Orta Çağ", bolge, "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", bolge, "kasaba");
     await mesleğiAta(state.id, "Din Adamı");
     digerGarantileriGecistir(state);
     state.yas = 27;
@@ -102,7 +102,7 @@ describe("yolculuk teklifi garantisi (senaryoUret)", () => {
   });
 
   it("bir yolculuk tamamlandıktan sonra garanti bir daha hiç tetiklenmez", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     digerGarantileriGecistir(state);
     state.yas = 27;
@@ -112,7 +112,7 @@ describe("yolculuk teklifi garantisi (senaryoUret)", () => {
   });
 
   it("reddedilen teklif birkaç yıl sonra tekrar sorulur", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     digerGarantileriGecistir(state);
     state.yas = 27;
@@ -136,7 +136,7 @@ describe("yolculuk teklifi garantisi (senaryoUret)", () => {
 
 describe("yolculukta iken normal olay havuzu tamamen kilitleniyor", () => {
   it("Coğrafi Keşif'in deniz rotasında sadece o rotaya ait olaylar çıkar", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.yas = 25;
     etiketEkle(state, ["yolculukta", "yolculuk_tipi:kesif", "yolculuk_yolu:deniz"]);
@@ -162,7 +162,7 @@ describe("yolculukta iken normal olay havuzu tamamen kilitleniyor", () => {
   });
 
   it("Coğrafi Keşif'in kara rotasında sadece o rotaya ait olaylar çıkar", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.yas = 25;
     etiketEkle(state, ["yolculukta", "yolculuk_tipi:kesif", "yolculuk_yolu:kara"]);
@@ -187,7 +187,7 @@ describe("yolculukta iken normal olay havuzu tamamen kilitleniyor", () => {
   });
 
   it("yolculukta etiketi varken hiçbir sıradan (yolculukOlayi olmayan) olay çıkmaz", () => {
-    const state = createCharacter("Sanayi Devrimi", "İngiltere", "sehir_merkezi");
+    const state = createCharacter("Sanayi Devrimi", "İngiltere", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.yas = 30;
     etiketEkle(state, ["yolculukta", "yolculuk_tipi:mucit", "yolculuk_yolu:sanayici"]);
@@ -198,7 +198,7 @@ describe("yolculukta iken normal olay havuzu tamamen kilitleniyor", () => {
   });
 
   it("yolculukta etiketi yokken hiçbir yolculuk olayı (yolculukOlayi:true) çıkmaz", () => {
-    const state = createCharacter("Sanayi Devrimi", "İngiltere", "sehir_merkezi");
+    const state = createCharacter("Sanayi Devrimi", "İngiltere", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.yas = 30;
     for (let i = 0; i < 300; i++) {
@@ -224,7 +224,7 @@ describe("yolculuk zinciri uçtan uca (Coğrafi Keşif, deniz rotası)", () => {
     // rastgele bir ölüm zinciri yarıda kesebildiği için (test mekaniği değil),
     // karakter yolda ölürse taze bir denemeyle baştan başlıyoruz.
     for (let deneme = 0; deneme < 8; deneme++) {
-      const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+      const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
       await mesleğiAta(state.id, "Tüccar");
       digerGarantileriGecistir(state);
       state.yas = 27;

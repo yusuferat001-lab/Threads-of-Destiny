@@ -9,7 +9,7 @@ function idBul(baslik: string): boolean {
 
 describe("Haçlı Seferi (Orta Çağ, dallanan)", () => {
   it("Selçuklu/Eyyubiler oyuncusuna haçlı sefer kararı hiç çıkmaz (bölge kısıtı)", () => {
-    const state = createCharacter("Orta Çağ", "Selçuklu", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Selçuklu", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.yas = 20;
     for (let i = 0; i < 500; i++) {
@@ -19,7 +19,7 @@ describe("Haçlı Seferi (Orta Çağ, dallanan)", () => {
   });
 
   it("hacli:katildi etiketi olmadan katılım-özel olaylar çıkmaz", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.yas = 20;
     for (let i = 0; i < 500; i++) {
@@ -30,7 +30,7 @@ describe("Haçlı Seferi (Orta Çağ, dallanan)", () => {
   });
 
   it("hacli:katildi etiketiyle katılım-özel olaylar uygun hale gelir, katilmadi-özel olaylar hiç çıkmaz", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.yas = 20;
     // yolculukta etiketi, artık kilitli yolculuk zincirinin parçası olan bu olayların
@@ -47,7 +47,7 @@ describe("Haçlı Seferi (Orta Çağ, dallanan)", () => {
   });
 
   it("hacli:katilmadi etiketiyle sadece katılmayanlara özel olaylar uygun hale gelir", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.yas = 20;
     etiketEkle(state, ["hacli:katilmadi", "hacli_karari_verildi"]);
@@ -63,7 +63,7 @@ describe("Haçlı Seferi (Orta Çağ, dallanan)", () => {
 
 describe("Kervan (Orta Çağ, dallanan)", () => {
   it("kervan:katildi olmadan kervan-özel takip olayları çıkmaz", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     for (let i = 0; i < 500; i++) {
       const { olay } = olaySec(state);
@@ -73,7 +73,7 @@ describe("Kervan (Orta Çağ, dallanan)", () => {
   });
 
   it("kervan:katildi ile takip olayları uygun hale gelir", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     etiketEkle(state, ["kervan:katildi", "kervan_karari_verildi"]);
     let bulundu = false;
@@ -87,7 +87,7 @@ describe("Kervan (Orta Çağ, dallanan)", () => {
 
 describe("Veba kişisel karşılaşma (Orta Çağ)", () => {
   it("ülke vebada değilken bu olay hiç çıkmaz", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.ulke.vebada = false;
     for (let i = 0; i < 500; i++) {
@@ -97,7 +97,7 @@ describe("Veba kişisel karşılaşma (Orta Çağ)", () => {
   });
 
   it("ülke vebadayken olay uygun hale gelir", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     ulkeGuncelle(state, { vebada: true });
     let bulundu = false;
@@ -111,7 +111,7 @@ describe("Veba kişisel karşılaşma (Orta Çağ)", () => {
 
 describe("Fabrika Grevi (Sanayi Devrimi, dallanan)", () => {
   it("Orta Çağ'da grev olayları hiç çıkmaz (cag kısıtı)", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     for (let i = 0; i < 500; i++) {
       const { olay } = olaySec(state);
@@ -120,7 +120,7 @@ describe("Fabrika Grevi (Sanayi Devrimi, dallanan)", () => {
   });
 
   it("grev:destekledi etiketiyle sadece o dalın olayları çıkar", () => {
-    const state = createCharacter("Sanayi Devrimi", "İngiltere", "sehir_merkezi");
+    const state = createCharacter("Sanayi Devrimi", "İngiltere", "kasaba");
     mesleğiSec(state, "Tüccar");
     etiketEkle(state, ["grev:destekledi", "grev_karari_verildi"]);
     let bulundu = false;
@@ -134,7 +134,7 @@ describe("Fabrika Grevi (Sanayi Devrimi, dallanan)", () => {
   });
 
   it("grev:karsi_cikti etiketiyle sadece o dalın olayları çıkar", () => {
-    const state = createCharacter("Sanayi Devrimi", "İngiltere", "sehir_merkezi");
+    const state = createCharacter("Sanayi Devrimi", "İngiltere", "kasaba");
     mesleğiSec(state, "Tüccar");
     etiketEkle(state, ["grev:karsi_cikti", "grev_karari_verildi"]);
     let bulundu = false;
@@ -150,7 +150,7 @@ describe("Fabrika Grevi (Sanayi Devrimi, dallanan)", () => {
 
 describe("Sömürgecilik (Sanayi Devrimi, dallanan)", () => {
   it("somurge:gitti etiketiyle sadece o dalın olayları çıkar", () => {
-    const state = createCharacter("Sanayi Devrimi", "İngiltere", "sehir_merkezi");
+    const state = createCharacter("Sanayi Devrimi", "İngiltere", "kasaba");
     mesleğiSec(state, "Tüccar");
     // yolculukta etiketi, artık kilitli yolculuk zincirinin parçası olan bu olayların
     // (yolculukOlayi:true) havuza girebilmesi için de gerekli — bkz. olaySecici.ts uygunMu().

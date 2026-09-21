@@ -22,7 +22,7 @@ import { olaySec } from "../src/game/olaySecici";
 import type { CharacterState } from "../src/types";
 
 function taze(cag: CharacterState["cag"] = "Orta Çağ"): CharacterState {
-  const state = createCharacter(cag, cag === "Orta Çağ" ? "Fransa" : "İngiltere", "sehir_merkezi");
+  const state = createCharacter(cag, cag === "Orta Çağ" ? "Fransa" : "İngiltere", "kasaba");
   mesleğiSec(state, "Tüccar");
   state.para = 1000;
   return state;

@@ -5,7 +5,7 @@ import { OLAY_BANKASI } from "../src/data/olaylar";
 
 describe("din bazlı olaylar", () => {
   it("gerekliDin karakterin din_kultur'üyle eşleşmiyorsa olay hiç çıkmaz", () => {
-    const state = createCharacter("Orta Çağ", "Selçuklu", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Selçuklu", "kasaba");
     mesleğiSec(state, "Tüccar");
     expect(state.din_kultur).toBe("Sünni İslam");
     for (let i = 0; i < 500; i++) {
@@ -23,7 +23,7 @@ describe("din bazlı olaylar", () => {
   });
 
   it("Katolik karakter Ortodoks'a özel bir olayı hiç görmez", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     expect(state.din_kultur).toBe("Katolik");
     for (let i = 0; i < 500; i++) {
