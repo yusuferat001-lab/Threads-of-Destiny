@@ -125,6 +125,11 @@ import { CagAmblemi, BolgeAmblemi } from './components/Amblemler';
 import './App.css';
 import './giris.css';
 
+// Geçici olarak kapatıldı (2026-09): günlük giriş serisi/ödülü, gold bakiyesi ve kozmetik dolabı
+// oyuncuya gösterilmiyor. Alttaki mekanik/veri katmanına dokunulmadı — yeniden açmak için bunu
+// `true` yap.
+const GUNLUK_KOZMETIK_GOLD_GORUNUR = false;
+
 type Ekran =
   | 'giris'
   | 'cag_sec'
@@ -1500,7 +1505,7 @@ function App() {
       )}
 
       {basarimGaleriAcik && <BasarimGaleri dil={dil} onKapat={() => setBasarimGaleriAcik(false)} />}
-      {kozmetikMagazaAcik && (
+      {GUNLUK_KOZMETIK_GOLD_GORUNUR && kozmetikMagazaAcik && (
         <KozmetikMagaza
           dil={dil}
           onKapat={() => setKozmetikMagazaAcik(false)}
@@ -1526,17 +1531,19 @@ function App() {
             <div className="giris-cark-sar">
               <CarkLogo boyut={132} />
             </div>
-            <div className="giris-durum-rozetleri">
-              {gunlukSeri.seri > 0 && (
-                <span className="giris-seri-rozet" title={bic(m.gunlukSeriTitle, gunlukSeri.enUzunSeri)}>
-                  🔥 {bic(m.gunlukSeriEtiket, gunlukSeri.seri)}
+            {GUNLUK_KOZMETIK_GOLD_GORUNUR && (
+              <div className="giris-durum-rozetleri">
+                {gunlukSeri.seri > 0 && (
+                  <span className="giris-seri-rozet" title={bic(m.gunlukSeriTitle, gunlukSeri.enUzunSeri)}>
+                    🔥 {bic(m.gunlukSeriEtiket, gunlukSeri.seri)}
+                  </span>
+                )}
+                <span className="giris-gold-rozet" title={m.goldAciklama}>
+                  🪙 {goldBakiye}
                 </span>
-              )}
-              <span className="giris-gold-rozet" title={m.goldAciklama}>
-                🪙 {goldBakiye}
-              </span>
-            </div>
-            {gunlukOdulBildirimi && (
+              </div>
+            )}
+            {GUNLUK_KOZMETIK_GOLD_GORUNUR && gunlukOdulBildirimi && (
               <div className="giris-gunluk-odul-bildirim" role="status">
                 <span>
                   🔥 {bic(m.gunlukOdulMesaji, gunlukOdulBildirimi.seri, gunlukOdulBildirimi.odulMiktari)}
@@ -1578,9 +1585,11 @@ function App() {
               <button className="ikincil" disabled={yukleniyor} onClick={() => setBasarimGaleriAcik(true)}>
                 {m.bgAc}
               </button>
-              <button className="ikincil" disabled={yukleniyor} onClick={() => setKozmetikMagazaAcik(true)}>
-                {m.btnKozmetik}
-              </button>
+              {GUNLUK_KOZMETIK_GOLD_GORUNUR && (
+                <button className="ikincil" disabled={yukleniyor} onClick={() => setKozmetikMagazaAcik(true)}>
+                  {m.btnKozmetik}
+                </button>
+              )}
               <button className="ikincil" disabled={yukleniyor} onClick={() => setAyarlarAcik(true)}>
                 {m.btnAyarlar}
               </button>
@@ -2467,7 +2476,7 @@ function App() {
           <p className="olum-ozet">
             {formatPara(karakter.para)} {karakter.para_birimi} · {m.sohret}: {unUnvani(karakter.un, dil)}
           </p>
-          {olumGoldKazanci !== null && (
+          {GUNLUK_KOZMETIK_GOLD_GORUNUR && olumGoldKazanci !== null && (
             <p className="olum-gold-kazanc">🪙 {bic(m.olumGoldKazandi, olumGoldKazanci)}</p>
           )}
 
