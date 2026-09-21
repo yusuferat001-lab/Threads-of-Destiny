@@ -51,6 +51,7 @@ import {
 } from "../src/game/gameEngine";
 import { yatirimConfigGetir, yatirimYap } from "./_yatirimShim";
 import { MESLEKLER, BOLGELER_BY_CAG, hesaplaSkor, gayrimenkulDegeriHesapla } from "../src/game/stateManager";
+import { amacSkorCarpani } from "../src/data/hayatAmaclari";
 import { KONUTLAR } from "../src/data/konutlar";
 import { YASAM_SECENEKLERI } from "../src/data/yasamSecenekleri";
 import { YERLESIMLER } from "../src/data/yerlesimler";
@@ -712,6 +713,14 @@ interface OyunKaydi {
   en_dusuk_para: number;
   en_yuksek_para: number;
   hataMi: boolean;
+  // Skor formülü kalibrasyonu (2026-09) için eklenen eksenler:
+  servet: number; // para + gayrimenkulDegeriHesapla
+  mutluluk_son: number;
+  amac_tamamlanan_sayisi: number;
+  amac_toplam_bonus: number; // amacSkorCarpani(son)
+  sarayda: boolean;
+  yolculuk_tamamlandi: boolean;
+  gizemli_esya_sahibi: boolean;
 }
 
 async function birOyunSimuleEt(kisilik: Kisilik, cag: Cag, meslek: string): Promise<OyunKaydi> {
@@ -823,6 +832,13 @@ async function birOyunSimuleEt(kisilik: Kisilik, cag: Cag, meslek: string): Prom
     en_dusuk_para: Math.round(sayaclar.enDusukPara * 100) / 100,
     en_yuksek_para: Math.round(sayaclar.enYuksekPara * 100) / 100,
     hataMi,
+    servet: Math.round((son.para + gayrimenkulDegeriHesapla(son)) * 100) / 100,
+    mutluluk_son: son.mutluluk,
+    amac_tamamlanan_sayisi: (son.hayat_amaclari ?? []).filter((a) => a.tamamlandi).length,
+    amac_toplam_bonus: amacSkorCarpani(son),
+    sarayda: son.etiketler.includes("sarayda"),
+    yolculuk_tamamlandi: son.etiketler.includes("yolculuk_tamamlandi"),
+    gizemli_esya_sahibi: son.etiketler.some((e) => e.startsWith("envanter:") || e.startsWith("esya:")),
   };
 }
 
