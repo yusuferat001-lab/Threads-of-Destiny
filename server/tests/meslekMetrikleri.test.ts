@@ -4,20 +4,20 @@ import { createCharacter, saldiriGucuHesapla, meslekMetrikCarpani, orduKaybiUygu
 
 describe("meslek-özel derinlik metrikleri", () => {
   it("Asker mesleği seçilince ordu_mevcudu başlangıç değeri alır", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Asker");
     expect(state.ordu_mevcudu).toBeGreaterThan(0);
     expect(state.ordu_techizat_seviyesi).toBe(0);
   });
 
   it("Tüccar/Din Adamı seçilince ordu_mevcudu 0 kalır", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     expect(state.ordu_mevcudu).toBe(0);
   });
 
   it("saldiriGucuHesapla ordu mevcudu ve teçhizat seviyesine göre büyür", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     state.meslek = "Asker";
     state.ordu_mevcudu = 10;
     state.ordu_techizat_seviyesi = 0;
@@ -28,7 +28,7 @@ describe("meslek-özel derinlik metrikleri", () => {
   });
 
   it("meslekMetrikCarpani sadece kendi kategorisinde ve kendi meslekte devreye girer", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     state.meslek = "Asker";
     state.ordu_mevcudu = 50;
     state.ordu_techizat_seviyesi = 50;
@@ -45,13 +45,13 @@ describe("meslek-özel derinlik metrikleri", () => {
     let toplamBarisKaybi = 0;
     let toplamSavasKaybi = 0;
     for (let i = 0; i < 200; i++) {
-      const barisState = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+      const barisState = createCharacter("Orta Çağ", "Fransa", "kasaba");
       barisState.meslek = "Asker";
       barisState.ordu_mevcudu = 100;
       barisState.ulke.savasta = false;
       toplamBarisKaybi += orduKaybiUygula(barisState, true);
 
-      const savasState = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+      const savasState = createCharacter("Orta Çağ", "Fransa", "kasaba");
       savasState.meslek = "Asker";
       savasState.ordu_mevcudu = 100;
       savasState.ulke.savasta = true;
@@ -61,7 +61,7 @@ describe("meslek-özel derinlik metrikleri", () => {
   });
 
   it("finansGetir hata fırlatmadan meslek metrikleri olan bir karakter için çalışır", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Asker");
     const finans = await finansGetir(state.id);
     expect(finans.maasYillik).toBeGreaterThan(0);

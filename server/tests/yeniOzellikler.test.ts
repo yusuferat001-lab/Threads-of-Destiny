@@ -16,7 +16,7 @@ import { yeniOyun, mesleğiAta, hediyeEt, salginKorunmaYatirimiYap, senaryoUret 
 import type { CharacterState } from "../src/types";
 
 function taze(): CharacterState {
-  const s = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+  const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
   mesleğiSec(s, "Tüccar");
   s.para = 500;
   return s;
@@ -93,7 +93,7 @@ describe("Havuz kilidi karşılıklı dışlama invariant'ı", () => {
 
 describe("§24: zorlanan kaskad havuz kilidi altında milestone zorlamaz", () => {
   it("yolculukta iken 30 yaşında bekar karaktere evlilik teklifi ZORLANMAZ", async () => {
-    const s = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const s = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(s.id, "Tüccar");
     // yolculuk havuzunu aç + yaşı ilerlet
     for (let i = 0; i < 40; i++) {
@@ -143,7 +143,7 @@ describe("Kredi / tefeci", () => {
 
 describe("Salgından korunma yatırımı", () => {
   it("yatırım yapılınca vebaBaslat taban korunmayı yükseltir ve yatırımı tüketir", async () => {
-    const s = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const s = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(s.id, "Tüccar");
     s.para = 300;
     const sonuc = await salginKorunmaYatirimiYap(s.id, 2);
@@ -157,7 +157,7 @@ describe("Salgından korunma yatırımı", () => {
 
 describe("Hediye et", () => {
   it("eşe hediye: eşya tükenir, es_puani artar", async () => {
-    const s = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const s = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(s.id, "Tüccar");
     // eş + envanter kur
     s.es_adi = "Jeanne";

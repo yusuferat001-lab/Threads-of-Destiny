@@ -1,14 +1,13 @@
 import type { OlayTanimi } from "./types";
 
 /**
- * "Komik / absürt ölüm" olayları (2026-09). Rastgele ani-ölüm havuzuna
- * (`ANI_OLUM_OLAYLARI`, `ANI_OLUM_IHTIMALI`) DOKUNULMADAN, oyuncunun bir SEÇİMİ
- * sonucu tetiklenen komik ölümleri çeşitlendirir. Hepsi düşük ağırlıklı,
+ * "Komik / absürt ölüm" olayları (2026-09). Oyuncunun bir SEÇİMİ sonucu
+ * tetiklenen komik ölümleri çeşitlendirir. Hepsi düşük ağırlıklı,
  * `ton: "hafif"`, 2 seçenekli: "aptalca olanı yap" (başarıda küçük komik ödül,
  * başarısızlıkta yüksek ama KESİN OLMAYAN `olum_sansi` (35-62) + ağır sağlık
  * kaybı; ölürsen `efsanevi_olum` rozeti) vs "yapma" (güvenli, ufak).
- * Absürt ölüm bir SEÇİMİN sonucudur; ansızın/şanssız kanal (stateManager
- * `aniOlumDene`) bilerek çok seyreğe çekildi (%0.4).
+ * Absürt ölüm daima bir SEÇİMİN sonucudur — seçim yapmadan, ansızın rastgele
+ * ölüm kanalı (eski `aniOlumDene`) tamamen kaldırıldı (2026-09 sonu).
  */
 export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
   {

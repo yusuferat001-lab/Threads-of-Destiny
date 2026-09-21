@@ -29,7 +29,6 @@ import {
   MAAS_CARPANI_TAVAN,
   rutbeGuncelle,
   sansOlayiDene,
-  aniOlumDene,
   ecelDenemesi,
   gecmisKaydet,
   yaslanmaUygula,
@@ -169,6 +168,8 @@ const YOL_SISTEMLERI: Record<string, { yolOnEki: string; girisId: string }> = {
   "Sanayi Devrimi|Asker": { yolOnEki: "yol:asker:", girisId: "sd_asker_yol_ilk_gorev" },
   "Sanayi Devrimi|Tüccar": { yolOnEki: "yol:tuccar:", girisId: "sd_tuccar_yol_ilk_karar" },
   "Sanayi Devrimi|Din Adamı": { yolOnEki: "yol:din:", girisId: "sd_din_yol_ilk_vaaz" },
+  "Orta Çağ|Zanaatkâr": { yolOnEki: "yol:zanaatkar:", girisId: "oc_zanaatkar_yol_ilk_siparis" },
+  "Sanayi Devrimi|Zanaatkâr": { yolOnEki: "yol:zanaatkar:", girisId: "sd_zanaatkar_yol_ilk_makine" },
 };
 
 /**
@@ -226,6 +227,17 @@ const YOL_TAKIP_KONTROL_NOKTALARI: Record<string, { yas: number; hedef: number }
     { yas: 37, hedef: 2 },
     { yas: 51, hedef: 3 },
     { yas: 65, hedef: 4 },
+  ],
+  // Zanaatkâr (2026-09 yeni): dal başına 11 olay → hedef 3, Tüccar/SD ile aynı desen.
+  "Orta Çağ|Zanaatkâr": [
+    { yas: 22, hedef: 1 },
+    { yas: 40, hedef: 2 },
+    { yas: 60, hedef: 3 },
+  ],
+  "Sanayi Devrimi|Zanaatkâr": [
+    { yas: 23, hedef: 1 },
+    { yas: 41, hedef: 2 },
+    { yas: 60, hedef: 3 },
   ],
 };
 
@@ -931,7 +943,9 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
           ? "sehir_yonetim_dinadami_baslangic"
           : oturum.state.meslek === "Asker"
             ? "sehir_yonetim_asker_baslangic"
-            : undefined;
+            : oturum.state.meslek === "Zanaatkâr"
+              ? "sehir_yonetim_zanaatkar_baslangic"
+              : undefined;
     if (baslangicId && !oturum.state.gecmis_olaylar.includes(baslangicId)) {
       zorlananId = baslangicId;
     }
@@ -1502,6 +1516,9 @@ async function sonucuUygulaVeIlerlet(
   }
   if (etki.ticaret_sermaye_artis) state.ticaret_sermaye += etki.ticaret_sermaye_artis;
   if (etki.nufuz_artis) state.nufuz += etki.nufuz_artis;
+  if (etki.uretim_kapasitesi_artis) {
+    state.uretim_kapasitesi = Math.min(100, Math.max(0, state.uretim_kapasitesi + etki.uretim_kapasitesi_artis));
+  }
   // Kariyer puanı: mesleğine uygun kategoride (savas/ticaret/din) başarılı olmak
   // seni rütbede ilerletir; kilit taşı olaylar ayrıca doğrudan puan verebilir.
   if (basarili && MESLEK_KATEGORI[state.meslek] === mevcutOlay.kategori) {
@@ -2025,15 +2042,6 @@ async function sonucuUygulaVeIlerlet(
               : null);
           if (ekCumle) {
             zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${ekCumle}` : ekCumle;
-          }
-
-          if (state.aktif) {
-            const aniOlum = aniOlumDene(state);
-            if (aniOlum) {
-              checkDeath(state, true, aniOlum.mesaj);
-              // Relik ölümü iptal edebilir; rozet yalnız gerçekten öldüyse.
-              if (!state.aktif) state.efsanevi_olum = aniOlum.efsane;
-            }
           }
         }
       } else {
@@ -2561,7 +2569,8 @@ function patronBilgisi(state: CharacterState): { unvan: string; ad: string } {
   else if (state.meslek === "Tüccar") unvan = sanayi ? "Fabrika Patronu" : "Lonca Reisi";
   else if (state.meslek === "Din Adamı") {
     unvan = state.din_kultur === "Sünni İslam" ? "Kadı" : sanayi ? "Başpiskopos" : "Başrahip";
-  } else unvan = sanayi ? "Patron" : "Usta";
+  } else if (state.meslek === "Zanaatkâr") unvan = sanayi ? "Atölye Sahibi" : "Loncabaşı";
+  else unvan = sanayi ? "Patron" : "Usta";
   return { unvan: K(state.dil, unvan), ad: yonetimDeterministikIsim(state.id, 19) };
 }
 
@@ -3786,6 +3795,9 @@ export async function sosyallesmeOlayCoz(id: string, secenekIndex: number): Prom
   }
   if (etki.ticaret_sermaye_artis) state.ticaret_sermaye += etki.ticaret_sermaye_artis;
   if (etki.nufuz_artis) state.nufuz += etki.nufuz_artis;
+  if (etki.uretim_kapasitesi_artis) {
+    state.uretim_kapasitesi = Math.min(100, Math.max(0, state.uretim_kapasitesi + etki.uretim_kapasitesi_artis));
+  }
   if (basarili && MESLEK_KATEGORI[state.meslek] === mevcutOlay.kategori) {
     state.kariyer_puani += KARIYER_PUANI_KATEGORI_BASARI;
     if (state.meslek === "Din Adamı") state.nufuz += 1.5;

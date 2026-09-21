@@ -36,13 +36,14 @@ import { tarihiSavasKontrol, gelecekSavasKontrol } from "../data/tarihiSavaslar"
 import { mulkTanimiGetir } from "../data/mulkler";
 import { MagazaEsyasiTanimi, magazaEsyasiTanimiGetir } from "../data/magazaEsyalari";
 
-const KATEGORILER: Kategori[] = ["savas", "ticaret", "din", "siyaset", "saglik", "sosyal"];
+const KATEGORILER: Kategori[] = ["savas", "ticaret", "din", "siyaset", "saglik", "sosyal", "zanaat"];
 
 /** Meslek adlarının hangi yatkınlık kategorisine karşılık geldiği. */
 export const MESLEK_KATEGORI: Record<string, Kategori> = {
   Asker: "savas",
   Tüccar: "ticaret",
   "Din Adamı": "din",
+  Zanaatkâr: "zanaat",
 };
 
 /**
@@ -224,7 +225,7 @@ function paraBirimiGetir(cag: Cag, bolge: string): string {
 // (rütbe/enflasyon/itibar zaten ayrı çarpan kalemleri).
 // Din Adamı tabanı 9.2 → 9.85: diğer iki mesleğin efektif tabanına yaklaşsın
 // (pragmatik din adamı düşük-orta rütbelerde çok geride kalıyordu).
-const TEMEL_MAAS: Record<string, number> = { Asker: 10.35, Tüccar: 11.5, "Din Adamı": 9.85 };
+const TEMEL_MAAS: Record<string, number> = { Asker: 10.35, Tüccar: 11.5, "Din Adamı": 9.85, Zanaatkâr: 10.0 };
 
 /**
  * "İtibarın" maaş düzenleyicisi: mutluluk + şöhret(un) + ahlak'ı TEK bir kaleme
@@ -356,6 +357,7 @@ const SEHIR_YONETIM_UNVANLARI: Record<string, string[]> = {
   Asker: ["Bölge Komutanı", "Ordu Generali", "Savaş Konseyi Üyesi", "Krallığın Kalkanı"],
   Tüccar: ["Ticaret Baronu", "Lonca Reisi", "Şehrin Hazine Nazırı", "Ticaret İmparatoru"],
   "Din Adamı": ["Piskopos Vekili", "Baş Piskopos", "Kutsal Meclis Üyesi", "Ruhani Önder"],
+  Zanaatkâr: ["Zanaat Şurası Üyesi", "Loncalar Birliği Başkanı", "Şehrin Baş Mimarı", "Sanayi Piri"],
 };
 
 export function sehirYonetimUnvanGetir(meslek: string, seviye: number): string | null {
@@ -520,6 +522,9 @@ export function meslekMetrikCarpani(state: CharacterState, kategori: Kategori): 
   if (state.meslek === "Asker") return 1 + saldiriGucuHesapla(state) / 200;
   if (state.meslek === "Tüccar") return 1 + state.ticaret_sermaye / 180;
   if (state.meslek === "Din Adamı") return 1 + state.nufuz / 180;
+  // Zanaatkâr: uretim_kapasitesi şimdilik BİLİNÇLİ OLARAK etkisiz (×1) —
+  // dengesi sonraya bırakıldı (kullanıcı isteği). Olaylar sayacı doldursun,
+  // aktive edilmek istendiğinde tek satır: `1 + state.uretim_kapasitesi / N`.
   return 1;
 }
 
@@ -547,7 +552,7 @@ export function orduBuyumesiDene(state: CharacterState, yasArtisi: number): void
 }
 
 
-export const MESLEKLER = ["Asker", "Tüccar", "Din Adamı"];
+export const MESLEKLER = ["Asker", "Tüccar", "Din Adamı", "Zanaatkâr"];
 
 function pickRandom<T>(items: T[]): T {
   return items[Math.floor(Math.random() * items.length)];
@@ -650,6 +655,7 @@ export function createCharacter(
     ordu_techizat_seviyesi: 0,
     ticaret_sermaye: 0,
     nufuz: 0,
+    uretim_kapasitesi: 0,
     suc_seviyesi: 0,
     hapis_ceza_kalan: 0,
     hapis_ceza_toplam: 0,
@@ -893,6 +899,8 @@ export function eskiKayitGocu(state: CharacterState): void {
   if (state.son_rakip_soygun_yili === undefined) state.son_rakip_soygun_yili = null;
   // Ömürde bir kez borç yardımı sonradan eklendi; eski kayıtlar bunu hiç almadı sayılır (yeniden alınabilsin).
   if (typeof state.borc_yardimi_alindi !== "boolean") state.borc_yardimi_alindi = false;
+  // Zanaatkâr mesleği (uretim_kapasitesi) sonradan eklendi; diğer mesleklerdeki eski kayıtlarda 0 kalır.
+  if (typeof state.uretim_kapasitesi !== "number") state.uretim_kapasitesi = 0;
   // Hapis ceza süresi sonradan eklendi; hapisteki eski kayıtlara makul bir kalan süre ver.
   if (typeof state.hapis_ceza_kalan !== "number") {
     state.hapis_ceza_kalan = state.etiketler.includes("hapiste") ? 4 : 0;
@@ -1514,7 +1522,7 @@ export function pasifRegenEtkisi(mevcut: number, delta: number): number {
 
 /**
  * İleri yaş ecel kontrolü: tetiklenirse checkDeath ile kullanılacak mesajı döner,
- * aksi halde null. Her yıl ayrı denenir (orduBuyumesiDene/aniOlumDene deseni).
+ * aksi halde null. Her yıl ayrı denenir (orduBuyumesiDene deseni).
  */
 export function ecelDenemesi(state: CharacterState, yasArtisi: number): string | null {
   if (yasArtisi <= 0) return null;
@@ -1949,37 +1957,6 @@ const SANS_OLAYLARI: SansOlayi[] = [
   { mesaj: "{dost} evlenmiş, sen davet edilmemişsin; içine hafif bir kırgınlık oturdu.", dost_puani: -3 },
 ];
 
-/**
- * Nadir, tamamen anlamsız/absürt ölümler: hiçbir seçimin, servetin ya da
- * sağlığın bunu engelleyemeyeceği kaçınılmaz kaza riskleri. Çok düşük bir
- * ihtimalle her turda kontrol edilir; efsanevi_olum olarak işaretlenir ki
- * liderlik tablosunda bir rozet gibi görünsün. Not: absürt ölümlerin ASIL
- * yolu artık komikOlumler.ts'teki SEÇİM tabanlı olaylardır (oyuncu "aptalca
- * olanı yap" der, düşük ihtimalle ölür); bu ansızın/şanssız kanal bilerek
- * çok seyrek (yılda ~%0.4) tutuluyor.
- */
-const ANI_OLUM_OLAYLARI: { mesaj: string; efsane: string; cag?: Cag }[] = [
-  { mesaj: "Bir evin penceresinden düşen saksı tam kafana isabet etti.", efsane: "Saksı Kurbanı" },
-  { mesaj: "Sokakta kontrolden çıkan bir at arabası seni ezip geçti.", efsane: "At Arabasının Altında" },
-  { mesaj: "Fırtınada bir yıldırım tam üstüne düştü.", efsane: "Gökten Gelen Ecel" },
-  { mesaj: "Bir kuyudan su çekerken ayağın kaydı ve bir daha çıkamadın.", efsane: "Kuyunun Dibinde" },
-  { mesaj: "Yediğin bir mantar, yanlışlıkla zehirli çıktı.", efsane: "Yanlış Mantar" },
-  { mesaj: "Uykunda evinin çatısı üstüne çöktü.", efsane: "Çöken Çatı" },
-  { mesaj: "Bir kavga izlerken sapan taşı yanlışlıkla sana geldi.", efsane: "Yanlış Zamanda Yanlış Yer" },
-  { mesaj: "Bir demirci dükkânının önünden geçerken kızgın bir demir parçası üstüne sıçradı.", efsane: "Demircinin Kıvılcımı", cag: "Orta Çağ" },
-  { mesaj: "Şehirdeki ilk buharlı makinelerden biri, tam yanından geçerken infilak etti.", efsane: "Makinenin Kurbanı", cag: "Sanayi Devrimi" },
-];
-
-const ANI_OLUM_IHTIMALI = 0.004;
-
-/** Kaçınılmaz, tamamen şansa bağlı ölüm riskini kontrol eder; tetiklenirse checkDeath ile birlikte kullanılacak mesajı döner. */
-export function aniOlumDene(state: CharacterState): { mesaj: string; efsane: string } | null {
-  if (Math.random() > ANI_OLUM_IHTIMALI) return null;
-  const havuz = ANI_OLUM_OLAYLARI.filter((o) => !o.cag || o.cag === state.cag);
-  const olay = havuz[Math.floor(Math.random() * havuz.length)];
-  return { mesaj: T(state.dil, olay.mesaj), efsane: T(state.dil, olay.efsane) };
-}
-
 const SANS_OLAYI_IHTIMALI = 0.18;
 
 /**
@@ -2024,29 +2001,90 @@ export function sansOlayiDene(state: CharacterState): string | null {
 }
 
 /**
- * Skor: yaş × şöhret × servet-faktörü × (hayat amacı tamamlandıysa ×5).
- * - Servet = nakit + gayrimenkul (madde 23): mülke servet bağlayan oyuncu
- *   cezalanmasın.
- * - Servet-faktörü LOG-ölçekli (madde 24): eski `max(para,1)` çarpanı tek bir
- *   zengin ömrü milyonlara fırlatıp liderlik tablosunu domine ediyor, ayrıca
- *   tüm borçlu bitişleri 1'e ezip ayırt edilemez kılıyordu.
- *     servet > 0 → 1 + log10(1 + servet)        (100→~3.0, 500→~3.7, 8M→~7.9)
- *     servet ≤ 0 → 1 + servet/400, taban 0.15   (borç küçük ama gerçek bir ceza)
+ * Skor: her eksen KENDİ puanını bağımsız üretir, hepsi TOPLANIR, sonra tik'ler
+ * (saray/yolculuk/gizemli-eşya) ve hayat amacı çarpanı uygulanır (2026-09 reformu —
+ * eski çarpımsal `yaş×şöhret×servetFaktörü×amaçÇarpanı` formülünün yerini aldı; o
+ * formülde ahlak/mutluluk/rütbe hiç kullanılmıyordu ve tek bir zayıf eksen (ör.
+ * şöhret=0) skoru neredeyse sıfırlıyordu). Toplamsal yapı oyuncuya EKSEN EKSEN
+ * kırılım göstermeyi de mümkün kılıyor (`hesaplaSkorKirilimi`, ölüm ekranı).
+ *
+ * - servetPuanı  = servet × (yaş/2)   — servet = nakit+gayrimenkul (madde 23);
+ *   borçta (servet≤0) katkı 0. Yaşla çarpılması "ömür boyu biriktirilen servet"
+ *   hissi verir, ayrıca yaş pratikte ~85'te tavanlandığı için kendiliğinden sınırlı.
+ * - şöhretPuanı  = şöhret(un) × 300
+ * - ahlakPuanı   = ahlak × 200
+ * - mutlulukPuanı= mutluluk × 100
+ * - rütbePuanı   = sabit tablo, S1..S5: 1.250 / 3.000 / 5.250 / 8.000 / 11.250
+ * - tikPuanı     = 3.000 × (sarayda + yolculuk_tamamlandi + gizemli eşya sahipliği)
+ *   — her biri TOPLAMSAL (çarpımsal değil), birbirini büyütmesin diye.
+ * - amaçÇarpanı  = max(1, Σ tamamlanan hayat amacı bonusları) — değişmedi, ×1..×5.
  */
-export function hesaplaSkor(state: CharacterState): number {
+const SKOR_RUTBE_PUANI = [625, 1500, 2625, 4000, 5625] as const;
+const SKOR_TIK_PUANI = 3000;
+const SKOR_SOHRET_CARPAN = 300;
+const SKOR_AHLAK_CARPAN = 200;
+const SKOR_MUTLULUK_CARPAN = 100;
+
+export interface SkorKirilimi {
+  servetPuani: number;
+  sohretPuani: number;
+  ahlakPuani: number;
+  mutlulukPuani: number;
+  rutbePuani: number;
+  tikPuani: number;
+  tikSayisi: number;
+  sarayda: boolean;
+  yolculukTamamlandi: boolean;
+  gizemliEsyaSahibi: boolean;
+  temelToplam: number;
+  amacCarpani: number;
+  skor: number;
+}
+
+/** Skoru eksen eksen kırar — ölüm ekranında oyuncuya gösterilir. */
+export function hesaplaSkorKirilimi(state: CharacterState): SkorKirilimi {
   const servet = state.para + gayrimenkulDegeriHesapla(state);
-  const servetFaktoru =
-    servet > 0 ? 1 + Math.log10(1 + servet) : Math.max(0.15, 1 + servet / 400);
-  const taban = state.yas * Math.max(state.un, 1) * servetFaktoru;
-  // Yeni sistem: skorCarpani = max(1, Σ tamamlanan amaç bonusları) (normal 1.5 · zor 2 → tavan ×5).
+  const servetPuani = servet > 0 ? Math.round(servet * (state.yas / 2)) : 0;
+  const sohretPuani = Math.round(Math.max(state.un, 0) * SKOR_SOHRET_CARPAN);
+  const ahlakPuani = Math.round(Math.max(state.ahlak, 0) * SKOR_AHLAK_CARPAN);
+  const mutlulukPuani = Math.round(Math.max(state.mutluluk, 0) * SKOR_MUTLULUK_CARPAN);
+  const rutbeIndeks = Math.min(Math.max(state.rutbe_seviye, 1), 5) - 1;
+  const rutbePuani = SKOR_RUTBE_PUANI[rutbeIndeks];
+  const sarayda = state.etiketler.includes("sarayda");
+  const yolculukTamamlandi = state.etiketler.includes("yolculuk_tamamlandi");
+  const gizemliEsyaSahibi = state.etiketler.some(
+    (e) => e.startsWith("envanter:") || e.startsWith("esya:")
+  );
+  const tikSayisi = (sarayda ? 1 : 0) + (yolculukTamamlandi ? 1 : 0) + (gizemliEsyaSahibi ? 1 : 0);
+  const tikPuani = tikSayisi * SKOR_TIK_PUANI;
+  const temelToplam = servetPuani + sohretPuani + ahlakPuani + mutlulukPuani + rutbePuani + tikPuani;
   // Eski kayıt/test (hayat_amaclari boş, tekil hayat_amaci dolu) için ×5 fallback korunur.
-  const carpan =
+  const amacCarpani =
     (state.hayat_amaclari?.length ?? 0) > 0
       ? amacSkorCarpani(state)
       : state.hayat_amaci?.tamamlandi
         ? 5
         : 1;
-  return Math.round(taban * carpan);
+  const skor = Math.round(temelToplam * amacCarpani);
+  return {
+    servetPuani,
+    sohretPuani,
+    ahlakPuani,
+    mutlulukPuani,
+    rutbePuani,
+    tikPuani,
+    tikSayisi,
+    sarayda,
+    yolculukTamamlandi,
+    gizemliEsyaSahibi,
+    temelToplam,
+    amacCarpani,
+    skor,
+  };
+}
+
+export function hesaplaSkor(state: CharacterState): number {
+  return hesaplaSkorKirilimi(state).skor;
 }
 
 /** state.hayat_amaci'nin hedefine ulaşılıp ulaşılmadığını kontrol eder; ulaşıldıysa tamamlandi=true yapıp hayat hikayesine ekler. */

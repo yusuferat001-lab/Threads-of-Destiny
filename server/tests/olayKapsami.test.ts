@@ -16,7 +16,7 @@ describe("olay kapsama matrisi (§12 uygunMu üst sınırı)", () => {
   it("her çağ×bölge×meslek×yaş kombinasyonunda nötr statlarla en az 100 farklı olay erişilebilir", () => {
     const satirlar = kapsamMatrisiHesapla();
     expect(satirlar.length).toBe(
-      2 /* çağ */ * 4 /* bölge/çağ */ * 3 /* meslek */ * KAPSAM_YAS_BANTLARI.length
+      2 /* çağ */ * 4 /* bölge/çağ */ * 4 /* meslek (2026-09: Zanaatkâr eklendi) */ * KAPSAM_YAS_BANTLARI.length
     );
     const enDusuk = Math.min(...satirlar.map((s) => s.sayi));
     expect(enDusuk).toBeGreaterThanOrEqual(100);

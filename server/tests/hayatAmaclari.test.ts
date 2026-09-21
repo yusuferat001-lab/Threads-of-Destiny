@@ -51,7 +51,7 @@ describe("hayat amaçları havuzu", () => {
   });
 
   it("her amaç tanımının 2 dilli başlık/açıklaması ve çalışan bir koşulu var", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Asker");
     for (const a of HAYAT_AMAC_HAVUZU) {
       expect(a.baslik.tr && a.baslik.en, a.id).toBeTruthy();
@@ -94,7 +94,7 @@ describe("amacSkorCarpani", () => {
 
 describe("kontrolAni: herhangi vs olumde", () => {
   it("olumde amacı yaşarken tamamlanmaz, ölüm kontrolünde tamamlanır", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.hayat_amaclari = [
       { id: "zengin_ve_ihtiyar", zorluk: "zor", bonus: 2, kontrolAni: "olumde", tamamlandi: false },

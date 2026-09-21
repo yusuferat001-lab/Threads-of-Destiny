@@ -29,7 +29,6 @@ import {
   yaslanmaUygula,
   capraletkiUygula,
   sansOlayiDene,
-  aniOlumDene,
   MESLEKLER,
   BOLGELER_BY_CAG,
 } from "../src/game/stateManager";
@@ -336,9 +335,6 @@ function birOmurSimuleEtVeOlaylariSay(
     if (!state.aktif) break;
 
     sansOlayiDene(state);
-    const aniOlum = aniOlumDene(state);
-    if (aniOlum) checkDeath(state, true, aniOlum.mesaj);
-    if (!state.aktif) break;
 
     clampStats(state);
   }

@@ -17,7 +17,7 @@ function sadeceBuOlayaZorla(state: CharacterState, hedefId: string): void {
 }
 
 async function tazeOturum(meslek: string): Promise<CharacterState> {
-  const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+  const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
   state.yas = 18;
   state.saglik = 100;
   state.mutluluk = 60;
@@ -28,13 +28,13 @@ async function tazeOturum(meslek: string): Promise<CharacterState> {
 
 describe("aranma kademesi — tek eksen (suc_seviyesi) ve klemp", () => {
   it("yeni karakter suc_seviyesi 0 ile başlar ve ayrı bir aranma_seviyesi alanı yoktur", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     expect(state.suc_seviyesi).toBe(0);
     expect((state as Record<string, unknown>).aranma_seviyesi).toBeUndefined();
   });
 
   it("clampStats suc_seviyesi'ni 0-100 aralığında tutar", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     state.suc_seviyesi = 250;
     clampStats(state);
     expect(state.suc_seviyesi).toBe(100);
@@ -90,7 +90,7 @@ describe("aranma kademesi — olay havuzu şekli", () => {
   });
 
   it("her aranma olayında en az bir kilitsiz seçenek vardır (borçlu/parasız karakterde bile)", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.para = -50;
     for (const tanim of OLAY_ARANMA_SEVIYESI) {
@@ -102,7 +102,7 @@ describe("aranma kademesi — olay havuzu şekli", () => {
 
 describe("aranma kademesi — havuz izolasyonu (kacak etiketi)", () => {
   it("kacak değilken kacak-özel olaylar hiç çıkmaz", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     for (let i = 0; i < 400; i++) {
       const { olay } = olaySec(state);
@@ -111,7 +111,7 @@ describe("aranma kademesi — havuz izolasyonu (kacak etiketi)", () => {
   });
 
   it("kacak etiketiyle SADECE kacak-özel olaylar çıkar (şehir havuzu tamamen kapanır)", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     etiketEkle(state, ["kacak"]);
     for (let i = 0; i < 400; i++) {
@@ -123,7 +123,7 @@ describe("aranma kademesi — havuz izolasyonu (kacak etiketi)", () => {
 
 describe("aranma kademesi — bant filtreleme (suc_seviyesi)", () => {
   it("temiz bandda (suc_seviyesi 0) üst kademelere özel olaylar (min>=20) hiç çıkmaz", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.suc_seviyesi = 0;
     for (let i = 0; i < 400; i++) {
@@ -135,7 +135,7 @@ describe("aranma kademesi — bant filtreleme (suc_seviyesi)", () => {
   it.each([BANT.k1, BANT.k2, BANT.k3, BANT.k4])(
     "suc_seviyesi %i iken sadece o banda uygun aranma olayları çıkar",
     (suc) => {
-      const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+      const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
       mesleğiSec(state, "Tüccar");
       state.suc_seviyesi = suc;
       for (let i = 0; i < 400; i++) {
@@ -191,7 +191,7 @@ describe("aranma kademesi — baskın olayının etkileri (gerçek secimUygula �
     expect(basariliGorundu || basarisizGorundu).toBe(true);
   });
 
-  it("Arka Kapıdan Kaç başarılı olduğunda: yerlesim dağ başına zorlanır, kacak etiketi eklenir, suc_seviyesi temiz banda iner", async () => {
+  it("Arka Kapıdan Kaç başarılı olduğunda: kacak etiketi eklenir, suc_seviyesi temiz banda iner", async () => {
     let basariylaKactiMi = false;
     for (let deneme = 0; deneme < 50 && !basariylaKactiMi; deneme++) {
       const state = await tazeOturum("Tüccar");
@@ -203,7 +203,6 @@ describe("aranma kademesi — baskın olayının etkileri (gerçek secimUygula �
 
       if (sonuc.state.etiketler.includes("kacak")) {
         basariylaKactiMi = true;
-        expect(sonuc.state.yerlesim).toBe("Dağ Başı");
         expect(sonuc.state.suc_seviyesi).toBeLessThan(20);
       } else {
         expect(sonuc.state.etiketler).toContain("hapiste");

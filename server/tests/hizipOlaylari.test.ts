@@ -9,7 +9,7 @@ function hizbeKatil(state: ReturnType<typeof createCharacter>, hizip: string) {
 
 describe("hizbe özel olaylar", () => {
   it("Eski Muhafızlar'a katılan asker, Yeni Nizam'a özel olayları hiç görmez", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     state.yas = 25;
     mesleğiSec(state, "Asker");
     hizbeKatil(state, "Eski Muhafızlar");
@@ -26,7 +26,7 @@ describe("hizbe özel olaylar", () => {
   });
 
   it("Yeni Nizam'a katılan asker, Eski Muhafızlar'a özel olayları hiç görmez", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     state.yas = 25;
     mesleğiSec(state, "Asker");
     hizbeKatil(state, "Yeni Nizam");
@@ -43,7 +43,7 @@ describe("hizbe özel olaylar", () => {
   });
 
   it("Liman Loncası'na katılan tüccar, Pazar Birliği'ne özel olayları hiç görmez", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     state.yas = 25;
     mesleğiSec(state, "Tüccar");
     hizbeKatil(state, "Liman Loncası");
@@ -59,7 +59,7 @@ describe("hizbe özel olaylar", () => {
   });
 
   it("Gelenekçiler'e katılan din adamı, Yenilikçiler'e özel olayları hiç görmez", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     state.yas = 25;
     mesleğiSec(state, "Din Adamı");
     hizbeKatil(state, "Gelenekçiler");
@@ -75,7 +75,7 @@ describe("hizbe özel olaylar", () => {
   });
 
   it("hizbi olmayan karakter hiçbir hizbe özel olayı görmez", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     state.yas = 25;
     mesleğiSec(state, "Asker");
     expect(state.hizip).toBeNull();
@@ -89,7 +89,7 @@ describe("hizbe özel olaylar", () => {
 
 describe("bekarlık olayları", () => {
   it("evli karakter bekarlık olaylarını hiç görmez", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     state.yas = 30;
     mesleğiSec(state, "Tüccar");
     state.etiketler.push("medeni:evli");
@@ -101,7 +101,7 @@ describe("bekarlık olayları", () => {
   });
 
   it("hiç evlenmemiş yetişkin karakter bekarlık olaylarını görebilir", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     state.yas = 30;
     mesleğiSec(state, "Tüccar");
     expect(state.etiketler.includes("medeni:evli")).toBe(false);

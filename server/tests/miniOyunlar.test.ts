@@ -11,7 +11,7 @@ import {
 
 describe("mini oyunlar", () => {
   it("Hazard (zarAt): 2+2 zar döner, çift ya da yüksek toplam kazandırır, suç seviyesi artar", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     let s = await stateGetir(state.id);
     s.para = 5000;
@@ -29,13 +29,13 @@ describe("mini oyunlar", () => {
   });
 
   it("Hazard: geçersiz bahis tutarı hata fırlatır", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     await expect(zarAt(state.id, 7)).rejects.toThrow();
   });
 
   it("Üç Kağıtçı: seçilen bardak kazanınca dogruBardak'a eşit, para hareket eder, oyun sayacı artar", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     let s = await stateGetir(state.id);
     s.para = 5000;
@@ -57,14 +57,14 @@ describe("mini oyunlar", () => {
   });
 
   it("Üç Kağıtçı: geçersiz bardak indeksi hata fırlatır", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     const [kademe] = await zarKademeleriGetir(state.id);
     await expect(ucKagitciOyna(state.id, kademe, 5)).rejects.toThrow();
   });
 
   it("Bilek güreşi: kazanınca ün artar, kaybedince sağlık düşer; turu tüketmez", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Asker");
     let s = await stateGetir(state.id);
     const onceTur = s.tur_sayisi;
@@ -81,7 +81,7 @@ describe("mini oyunlar", () => {
   });
 
   it("Bilek güreşi: hapisteyken yapılamaz", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Asker");
     const s = await stateGetir(state.id);
     s.etiketler.push("hapiste");

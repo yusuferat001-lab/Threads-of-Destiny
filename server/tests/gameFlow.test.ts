@@ -4,7 +4,7 @@ import { skorKaydet } from "../src/db/scoreRepository";
 import { secimUygulaVeCoz } from "./testUtils";
 
 async function oyunuOlumeKadarOyna(meslek: string) {
-  const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+  const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
   await mesleğiAta(state.id, meslek);
 
   let aktif = true;
@@ -21,7 +21,7 @@ async function oyunuOlumeKadarOyna(meslek: string) {
 
 describe("kritik oyun akışı: yeni oyun → meslek → seçim → ölüm → skor", () => {
   it("yeni oyun oluşturur ve geçerli bir başlangıç state'i döner", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     expect(state.id).toBeTruthy();
     expect(state.aktif).toBe(true);
     expect(state.yas).toBe(15);
@@ -29,11 +29,11 @@ describe("kritik oyun akışı: yeni oyun → meslek → seçim → ölüm → s
   });
 
   it("geçersiz bölge/çağ kombinasyonunda hata fırlatır", async () => {
-    await expect(yeniOyun("Orta Çağ", "Osmanlı", "sehir_merkezi")).rejects.toThrow();
+    await expect(yeniOyun("Orta Çağ", "Osmanlı", "kasaba")).rejects.toThrow();
   });
 
   it("meslek ataması sonrası senaryo üretilebilir ve seçim uygulanabilir", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     const atanmis = await mesleğiAta(state.id, "Tüccar");
     expect(atanmis.meslek).toBe("Tüccar");
     expect(atanmis.rutbe).toBeTruthy();
@@ -55,13 +55,13 @@ describe("kritik oyun akışı: yeni oyun → meslek → seçim → ölüm → s
   });
 
   it("meslek seçilmeden ikinci kez atanamaz", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     await expect(mesleğiAta(state.id, "Asker")).rejects.toThrow();
   });
 
   it("senaryo üretilmeden seçim uygulanamaz", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     await expect(secimUygula(state.id, 0)).rejects.toThrow("Önce bir senaryo üretilmeli");
   });
@@ -78,7 +78,7 @@ describe("kritik oyun akışı: yeni oyun → meslek → seçim → ölüm → s
   });
 
   it("aktif bir oyun için liderlikTablosunaKaydet reddedilir", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     await expect(liderlikTablosunaKaydet(state.id, "Erken Kayıt")).rejects.toThrow("Oyun henüz bitmedi");
   });
@@ -112,7 +112,7 @@ describe("kritik oyun akışı: yeni oyun → meslek → seçim → ölüm → s
   });
 
   it("kilitli bir seçenek uygulanmaya çalışıldığında hata fırlatır", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     const senaryo = await senaryoUret(state.id);
     const kilitliIdx = senaryo.secenekler.findIndex((s) => s.kilitli);

@@ -6,12 +6,12 @@ import { secimUygulaVeCoz } from "./testUtils";
 
 describe("evcil hayvan sistemi", () => {
   it("yeni karakter evcil hayvansız başlar", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     expect(state.evcil_hayvan).toBeNull();
   });
 
   it("evcil hayvan varken edinme olayları çıkmaz", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.evcil_hayvan = { tur: "Kedi", isim: "Boncuk" };
     state.etiketler.push("evcil_hayvan_var");
@@ -24,7 +24,7 @@ describe("evcil hayvan sistemi", () => {
   });
 
   it("evcil hayvan yokken takip olayları (hastalık, kayıp vb.) çıkmaz", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     expect(state.evcil_hayvan).toBeNull();
     for (let i = 0; i < 500; i++) {
@@ -35,7 +35,7 @@ describe("evcil hayvan sistemi", () => {
   });
 
   it("dağ başı yerleşiminde olmayan karakter kurt yavrusu olayını hiç görmez", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     expect(state.etiketler.includes("yerlesim:dag")).toBe(false);
     for (let i = 0; i < 500; i++) {
@@ -48,7 +48,7 @@ describe("evcil hayvan sistemi", () => {
     let bulundu = false;
     let kalanButce = 3000;
     while (!bulundu && kalanButce > 0) {
-      const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+      const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
       state.yas = 20;
       state.para = 200;
       await mesleğiAta(state.id, "Tüccar");
@@ -94,7 +94,7 @@ describe("evcil hayvan sistemi", () => {
   }
 
   it("20-25 yaş arası, evcil hayvanı olmayan bir karaktere garantili sahiplenme teklifi zorla çıkar", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     digerZorunluOlaylariGecistir(state);
     state.yas = 20;
@@ -104,7 +104,7 @@ describe("evcil hayvan sistemi", () => {
   });
 
   it("garantili sahiplenme teklifini reddetmek evcil hayvan atamaz ve olay bir daha zorlanmaz", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     digerZorunluOlaylariGecistir(state);
     state.yas = 20;
@@ -117,7 +117,7 @@ describe("evcil hayvan sistemi", () => {
   });
 
   it("evcil hayvan sahibiyken yıllık giderde bakım maliyeti görünür", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.evcil_hayvan = { tur: "Kedi", isim: "Boncuk" };
     const gider = giderKalemleriHesapla(state);
@@ -125,7 +125,7 @@ describe("evcil hayvan sistemi", () => {
   });
 
   it("evcil hayvanı olan ve 45-50 yaşında iken hiç takip olayı yaşamamış karaktere garanti olay zorlanır", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     digerZorunluOlaylariGecistir(state);
     state.evcil_hayvan = { tur: "Kedi", isim: "Boncuk" };

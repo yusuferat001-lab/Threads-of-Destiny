@@ -38,7 +38,7 @@ describe("gizemli eşya sistemi", () => {
   });
 
   it("hiçbir gizemli eşyası olmayan karakter hiçbir eşya takip olayını göremez", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     const tumTakipBasliklari = new Set(Object.values(GIZEMLI_ESYA_TAKIP_HAVUZU).flat().map(baslikGetir));
     for (let i = 0; i < 500; i++) {
@@ -48,7 +48,7 @@ describe("gizemli eşya sistemi", () => {
   });
 
   it("bir eşyaya sahip olup 38-46 yaşındayken hiç takip olayı yaşamamış karaktere garanti olay zorlanır", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     digerZorunluOlaylariGecistir(state);
     state.etiketler.push("esya:fisildayan_tas");
@@ -59,7 +59,7 @@ describe("gizemli eşya sistemi", () => {
   });
 
   it("takip olaylarından biri zaten görülmüşse garanti tekrar zorlanmaz", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     digerZorunluOlaylariGecistir(state);
     state.etiketler.push("esya:eski_ayna");

@@ -20,7 +20,7 @@ async function main() {
   console.log("K(tr, 'Fransa') (değişmemeli) =", K("tr", "Fransa"));
 
   bolum("EN karakter oluştur");
-  const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi", "Test", "en");
+  const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba", "Test", "en");
   console.log("dil:", state.dil, "| bölge (kanonik):", state.bolge, "| para_birimi:", state.para_birimi);
   console.log("açılış anlatımı:\n ", state.acilis_anlatimi);
 
@@ -57,7 +57,7 @@ async function main() {
   console.log("dunyaEtkileri:", fin.dunyaEtkileri.map((e: any) => e.metin));
 
   bolum("TR kontrol (regresyon): aynı akış Türkçe");
-  const trState = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi", "Test", "tr");
+  const trState = await yeniOyun("Orta Çağ", "Fransa", "kasaba", "Test", "tr");
   console.log("dil:", trState.dil);
   console.log("açılış:", trState.acilis_anlatimi.slice(0, 120) + "...");
 
