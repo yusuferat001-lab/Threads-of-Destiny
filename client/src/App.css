@@ -5190,6 +5190,67 @@ button.ikincil {
   font-size: 0.9rem;
 }
 
+.skor-kirilimi {
+  width: 100%;
+  max-width: 420px;
+  margin: 0.6rem 0;
+  padding: 0.6rem 0.8rem;
+  background: rgba(61, 46, 31, 0.28);
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+
+.skor-kirilimi-baslik {
+  margin: 0 0 0.4rem;
+  font-size: 0.9rem;
+  text-align: center;
+  opacity: 0.9;
+}
+
+.skor-kirilimi-liste {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.skor-kirilimi-liste li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.6rem;
+  opacity: 0.85;
+}
+
+.skor-kirilimi-liste li.skor-kirilimi-tik {
+  color: var(--renk-altin-parlak);
+  opacity: 1;
+}
+
+.skor-kirilimi-toplam,
+.skor-kirilimi-carpan {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-top: 0.35rem;
+  padding-top: 0.35rem;
+  border-top: 1px solid rgba(184, 134, 63, 0.3);
+  opacity: 0.9;
+}
+
+.skor-kirilimi-sonuc {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-top: 0.35rem;
+  padding-top: 0.4rem;
+  border-top: 1px solid var(--renk-altin);
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--renk-altin-parlak);
+}
+
 .isim-form {
   display: flex;
   gap: 0.5rem;

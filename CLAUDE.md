@@ -558,7 +558,21 @@ Ayrıca her mülk türünün kendine özel, normal havuzdan tamamen dışlanmı�
 
 **Konut/yaşam tarzı:** Turu tüketmez. Konutta **daha pahalıya** geçişte `TASINMA_MALIYETI=3` tek seferlik ücret (ucuza geri çekilme ücretsiz); yaşam tarzı değişimi her zaman ücretsiz/anlık. Yeni karakter varsayılanı 2026-09 ekonomi dengesinde **`normal_ev` + `normal_ye`** — ikisi de sağlık/ün açısından TAMAMEN NÖTR: ev/sofra ekranını hiç açmayan sıradan oyuncu ilk 15-20 yıl boyunca sessizce sağlık/itibar kaybetmesin. **Başlangıç parası (2026-09 ikinci denge turu): `Math.max(5, Math.min(40, 10 + aile.para + yerlesim.para))`** — taban 12→10, aile etkisi artık dar bir ~±20 bandında (eskiden +80/-25 gibi aşırı uçlar vardı), sonuç [5, 40]'a kırpılır (taban 5'te sabit kalıyor — en fakir kökende bile temel bir aksiyonu karşılayacak kadar para). En ucuz 2 konut/sofra kademesinin cezası da yumuşatıldı: -4/-3 → **-2/yıl** (§16).
 
-**Skor** (yama #1'de yeniden yazıldı): `servet = para + gayrimenkulDegeriHesapla(state)`; `servetFaktoru = servet>0 ? 1+log10(1+servet) : max(0.15, 1+servet/400)`; `skor = round(yas × max(un,1) × servetFaktoru)`, hayat amacı tamamlandıysa **×5**. Eski `× max(para,1)` çarpanı tek zengin ömrü milyonlara fırlatıp liderlik tablosunu domine ediyordu + borçlu bitişleri 1'e ezip ayırt edilemez kılıyordu; log-ölçek ikisini de çözdü (servet 100→~3.0, 500→~3.7, 8M→~7.9; borç küçük ama gerçek bir ceza).
+**Skor** (2026-09 ikinci reform — toplamsal formüle geçildi, `hesaplaSkorKirilimi`/`hesaplaSkor`, [stateManager.ts](server/src/game/stateManager.ts); istemci aynası [client/src/skor.ts](client/src/skor.ts)): Eski çarpımsal `yaş×şöhret×servetFaktörü×amaçÇarpanı` formülü (yama #1) ahlak/mutluluk/rütbe'yi hiç kullanmıyordu ve tek bir zayıf eksen (ör. şöhret=0) skoru neredeyse sıfırlıyordu — gerçek liderlik tablosu verisiyle doğrulandı (top-15'in TAMAMI düşük-ahlaklı ama şöhret=100 karakterlerdi). Yeni model: her eksen **kendi puanını bağımsız üretir, hepsi TOPLANIR**, sonra tik'ler ve amaç çarpanı uygulanır — bu sayede oyuncuya ölüm ekranında **eksen eksen kırılım** gösterilebiliyor.
+```
+servet = para + gayrimenkulDegeriHesapla(state)   // istemcide gayrimenkul yok, servet≈nakit
+servetPuanı   = servet>0 ? round(servet × (yaş/2)) : 0
+şöhretPuanı   = round(şöhret(un) × 300)
+ahlakPuanı    = round(ahlak × 200)
+mutlulukPuanı = round(mutluluk × 100)
+rütbePuanı    = [625, 1.500, 2.625, 4.000, 5.625][rutbe_seviye-1]   // S1..S5
+tikPuanı      = 3.000 × (sarayda + yolculuk_tamamlandi + gizemli-eşya-sahipliği)  // TOPLAMSAL, çarpımsal değil
+
+temelToplam = servetPuanı+şöhretPuanı+ahlakPuanı+mutlulukPuanı+rütbePuanı+tikPuanı
+amaçÇarpanı = max(1, Σ tamamlanan hayat amacı bonusları)   // değişmedi, ×1..×5
+skor = round(temelToplam × amaçÇarpanı)
+```
+900 ömürlük simülasyonda (`scripts/simulateKisilikler.ts`) medyan ~42-91k aralığında (sabitlere göre değişir), eski formüle göre çok daha erişilebilir (≥10.000 oranı %21→%96) ve top skorların ahlak dağılımı belirgin iyileşti. Ölüm ekranında `📊 Skorun Nasıl Hesaplandı?` bloğu (`App.tsx`, `.skor-kirilimi` CSS) her ekseni + tik'leri + amaç çarpanını ayrı ayrı gösterir.
 
 ## 14. Rütbe / Kariyer Sistemi (2026-08 reformu — 5 kademe)
 
@@ -833,7 +847,7 @@ Kendi özel havuzu [aranmaSeviyesi.ts](server/src/data/olaylar/aranmaSeviyesi.ts
 **Hayat Amaçları** (`state.hayat_amaclari: AmacIlerleme[]`, 2026-09 — eski tekil rastgele `hayat_amaci` KALDIRILDI). Kaynak: [server/src/data/hayatAmaclari.ts](server/src/data/hayatAmaclari.ts).
 
 - **Atama:** doğuşta değil, **15 yaşında meslek seçilince** (`mesleğiSec`). Havuz = **ortak + meslek + çağ** (`amacHavuzu(cag,meslek)`), her kombinasyon ≥8 normal + ≥5 zor görür; `amaclariUret` **2 normal + 1 zor** çeker. `createCharacter` artık amaç atamaz (`hayat_amaclari: []`).
-- **Bonus (toplamsal):** `amacSkorCarpani(state) = max(1, Σ tamamlanan amaçların bonusları)` — normal **+1.5**, zor **+2**. → 2 normal + 1 zor hepsi = **×5** (eski "amaç tamamlandı = ×5" tavanı korunur), kısmi tamamlama ×1.5/×2/×3/×3.5 üretir. `hesaplaSkor`: `taban × carpan` (eski kayıt/test için `hayat_amaclari` boş + tekil `hayat_amaci.tamamlandi` ise ×5 fallback).
+- **Bonus (toplamsal):** `amacSkorCarpani(state) = max(1, Σ tamamlanan amaçların bonusları)` — normal **+1.5**, zor **+2**. → 2 normal + 1 zor hepsi = **×5** (eski "amaç tamamlandı = ×5" tavanı korunur), kısmi tamamlama ×1.5/×2/×3/×3.5 üretir. `hesaplaSkor`: `temelToplam × carpan` (2026-09 ikinci reformu, §18 — eski kayıt/test için `hayat_amaclari` boş + tekil `hayat_amaci.tamamlandi` ise ×5 fallback).
 - **`kontrolAni`:** `"herhangi"` = bir an bile eşiğe dokunmak yeter, kalıcı kilitlenir (`amaclariHerhangiKontrol` her tur, §9 adım 16); `"olumde"` = yalnız ölüm anındaki duruma bakılır (`amaclariOlumdeKontrol`, `checkDeath` içinde — tüm tamamlanmamışlara son bir bakış). İkisi de hayat-hikayesine "🎯 Hayat amacını tamamladı: …" yazar.
 - **Para/servet amaçlarında "temiz el" şartı:** `suc_seviyesi < 40` (suçla zengin olan bonus alamaz).
 - **Ömürlük sayaçlar** (amaç koşulları için, hepsi `CharacterState`, `eskiKayitGocu` göçlü): `omur_zirve_suc` (suç seviyesinin tepe değeri — `clampStats`'te takip), `omur_kumar_net` (zar/üçkâğıt/bilek net kâr — `zarAt`/`ucKagitciOyna`/`bilekGuresiSonuc`), `omur_sadaka_sayisi` (`sosyallesmeAksiyonYap` sadaka dalı), `omur_hediye_sayisi` (`hediyeEt` + `aileEtkilesimYap` `es_hediye`/`cocuk_hediye`), `omur_riskli_basari` (`secimUygula`: zar başarılı **ve** o seçeneğin `basarisizSonuc`'unda `olum` ya da `olum_sansi ≥ RISKLI_OLUM_SANSI_ESIK=25` varsa +1).
@@ -912,7 +926,8 @@ Mobil (`max-width:767px`) için bu üç sınıfın (`.ekran-tam-sayfa`/`.tam-gov
 | `yapimci.ts` | Giriş "👤 Yapımcı" kartının statik içeriği (`YAPIMCI = {isim, tanitim, linkedin}`); geliştirici doldurur |
 | `yolHaritasi.ts` | Giriş "🗺️ Yol Haritası" panelinin statik `YOL_HARITASI[]` listesi (`durum: tamam\|yapiliyor\|yakinda`) |
 | `istemci.ts` | `istemciId()` (localStorage'da rastgele UUID — kişisel veri yok) + `ziyaretBildir()` (günde bir "ziyaret" istatistik ping'i, §32) |
-| `gecmisHayatlar.ts` | `localStorage`'da ölen karakterlerin özeti (son 20; giriş ekranı "Geçmiş Hayatların" listesi). `skorHesapla` artık sunucudaki log-ölçekli formülle (§13/§18) hizalı — servet ≈ nakit (istemcide gayrimenkul değeri yok) |
+| `gecmisHayatlar.ts` | `localStorage`'da ölen karakterlerin özeti (son 20; giriş ekranı "Geçmiş Hayatların" listesi). Skoru `skor.ts`'teki paylaşılan `hesaplaSkor`'dan alır (§18) — servet ≈ nakit (istemcide gayrimenkul değeri yok) |
+| `skor.ts` | Sunucudaki toplamsal skor formülünün (§18) istemci aynası — `hesaplaSkorKirilimi`/`hesaplaSkor`. `gecmisHayatlar.ts`, `basarimSistemi.ts` ve ölüm ekranındaki eksen kırılım paneli (`App.tsx`) buradan besleniyor — tek bir yerde tutulup 3 ayrı kopyanın birbirinden sapmasının önüne geçildi |
 | `envanter.ts` | Gizemli eşya etiketi → görüntülenecek ad/ikon/açıklama (`magaza_envanteri` için ayrıca §26) |
 | `format.ts` | `formatPara()` — para tutarlarını (enflasyon artık ondalık üretebildiği için) en fazla 2 ondalıkla, gereksiz sıfırlar kırpılarak gösterir (§13/§27) |
 | `bolgeTema.ts` | Bölgeye göre görsel tema; ayrıca `unUnvani` (ün → 8 kademeli ünvan), `aranmaYildiz` (suç seviyesi → 0-4 yıldız), `konutGoruntusuGetir` (konut kademesi+çağ → dönemsel ad/emoji) ve `meslekBinasiGetir` (meslek+çağ(+din_kultur) → sahnedeki işyeri binası ad/emoji) gibi sayı/id→gösterim dönüştürücüleri |
@@ -1169,7 +1184,7 @@ cd server && npx tsc --noEmit --pretty false && npx tsx scripts/ceviriDurumu.ts
 - **`basarimlariDegerlendir(state)`** (ölüm ekranı `useEffect`): istatistiği/rekorları günceller, `{yeniAcilanlar, buOmurKazanilanlar, istatistik}` döner. `yeniAcilanlar` = bu ölümde İLK kez açılan (kalıcı `kader_carki_basarimlar_v2`'ye yazılır); `buOmurKazanilanlar` = bu hayatın karşıladığı TÜM başarımlar (ölüm ekranı rozet şeridi). `kader_carki_basarim_degerlendirilen` (son 40 `state.id`) ile aynı ölüm istatistiği iki kez artırmaz (tekrar çağrıda yalnız `buOmurKazanilanlar` yeniden hesaplanır).
 - **Migrasyon:** `kader_carki_basarim_migrasyon_v3` bayrağıyla tek seferlik — eski tek-eşik id'leri kademeliye taşır (`yasayan_efsane→sohret_2`, `hanedan→aile_2`, `zirvenin_adami→rutbe_2`, `servet→servet_1`, `uzun_omur→omur_2`, `ilk_hayat→tecrube_1`, `on_hayat→tecrube_2`) — kilit kaybı olmaz.
 - **`retroaktifKilitAc()`** (modül yüklenince bir kez + istenirse App mount'ta): `ilerleme` tanımlı (yani `state`'siz, yalnız çapraz-oyun `rekor`/`istatistik`/`koleksiyon`'dan değerlendirilebilen) başarımları — kademeli eksenler, `bolge_gezgini`, `iki_cag`, `uc_meslek`, `yollara_dusen`, koleksiyon kademeleri — hâlihazırda karşılanıyorsa oyuncu ölmeyi beklemeden açar. **Sürüm değişikliğinde kilidi görünmez kalan eski oyuncuların ilerlemesini geri kazandırır** (id yeniden adlandırma → migrasyon; içerik silme → görünmez ama zararsız orphan; kavramı korunan başarım → retroaktif + zaten `basarimlariDegerlendir` bir sonraki ölümde rekordan yeniden açar).
-- **`skorHesapla`** (istemci kopyası): sunucudaki log-ölçekli formülle (§18) uyumlu.
+- **Skor:** `hesaplaSkor` artık `skor.ts`'ten (paylaşılan istemci modülü) alınıyor, sunucudaki toplamsal eksen-kırılımı formülüyle (§18) birebir aynı.
 - **UI:** [BasarimGaleri.tsx](client/src/components/BasarimGaleri.tsx) — giriş ekranı "🏆 Başarım Galerisi" butonu; **gruplara ayrılmış** (grup başlığı + `X/Y`), kilitli non-gizli kartlarda `ilerleme` varsa çubuk (`.basarim-karti-ilerleme`), nadirlik sol-kenar şeridi + etiket (`.basarim-nadir-*`). Ölüm ekranında `.olum-yeni-basarimlar` bloğu artık **"🏆 Bu Hayatın Kazanımları"**: bu hayatın `unvanlar` (🏵️) + `efsanevi_olum` (💀) + `buOmurKazanilanlar` rozetleri; yeni açılanlar `· YENİ` etiketi + altın halka (`.olum-rozet-yeni`). `bastanBasla` `yeniBasarimlar` + `buOmurBasarimlar`'ı temizler.
 
 ## 32. Toplu Oyun Metrikleri (İstatistik)
