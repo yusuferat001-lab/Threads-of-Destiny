@@ -267,6 +267,22 @@ button.ikincil {
   opacity: 0.9;
 }
 
+.acilis-skor-ipucu,
+.liderlik-skor-ipucu {
+  margin-top: 0.6rem;
+  padding: 0.5rem 0.7rem;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  opacity: 0.8;
+  background: rgba(61, 46, 31, 0.28);
+  border-radius: 6px;
+}
+
+.liderlik-skor-ipucu {
+  max-width: 480px;
+  margin: 0.4rem 0 0.8rem;
+}
+
 .ekran-giris button,
 .ekran-liderlik > button.ikincil {
   width: 100%;
