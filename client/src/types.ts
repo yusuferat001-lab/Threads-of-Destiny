@@ -185,6 +185,8 @@ export interface CharacterState {
   mulkler: MulkTuru[];
   /** Her mülk için bir sonraki periyodik bakım/vergi masrafına kalan yıl (7-10 yılda bir). */
   mulk_bakim_kalan: Partial<Record<MulkTuru, number>>;
+  /** Satın alındığı oyun yılı (mülk olayı garantisi referansı, §11 kural 14). */
+  mulk_alis_yili: Partial<Record<MulkTuru, number>>;
   magaza_envanteri: SahipOlunanEsya[];
   magaza_temel_kilit_bitis_yili: number | null;
   alkol_ziyaret_sayisi: number;

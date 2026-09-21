@@ -182,54 +182,65 @@ const YOL_SISTEMLERI: Record<string, { yolOnEki: string; girisId: string }> = {
  * aralıkları da meslek/çağa göre kasıtlı farklı (asker gençken, tüccar/din
  * adamı kariyerin ortasında/sonunda daha çok dönüm noktası yaşar).
  */
+// 2026-09 (kullanıcı isteği "hizip ve kariyer yollarını daha detaylı yaşlara
+// tetikle"): kontrol noktası sayısı artırıldı (daha sık/ince yaş aralıkları),
+// ilk kontrol yaşı biraz düşürüldü, nihai hedef de kontrol sıklığıyla orantılı
+// olarak bir birim yükseltildi (OÇ Asker/Din Adamı dal başına ~20-21 olay →
+// hedef 5→6 = %29; diğer 4 sistem dal başına ~11 olay → hedef 3→4 = %36).
 const YOL_TAKIP_KONTROL_NOKTALARI: Record<string, { yas: number; hedef: number }[]> = {
-  // Orta Çağ Asker/Din Adamı: dal başına tam 20 olay → hedef 5 (%25).
   "Orta Çağ|Asker": [
-    { yas: 20, hedef: 1 },
-    { yas: 30, hedef: 2 },
-    { yas: 40, hedef: 3 },
-    { yas: 52, hedef: 4 },
-    { yas: 65, hedef: 5 },
+    { yas: 18, hedef: 1 },
+    { yas: 27, hedef: 2 },
+    { yas: 35, hedef: 3 },
+    { yas: 43, hedef: 4 },
+    { yas: 51, hedef: 5 },
+    { yas: 60, hedef: 6 },
   ],
   "Orta Çağ|Din Adamı": [
-    { yas: 22, hedef: 1 },
-    { yas: 33, hedef: 2 },
-    { yas: 44, hedef: 3 },
-    { yas: 56, hedef: 4 },
-    { yas: 68, hedef: 5 },
+    { yas: 20, hedef: 1 },
+    { yas: 29, hedef: 2 },
+    { yas: 38, hedef: 3 },
+    { yas: 47, hedef: 4 },
+    { yas: 56, hedef: 5 },
+    { yas: 65, hedef: 6 },
   ],
-  // Orta Çağ Tüccar / Sanayi Devrimi (Asker/Tüccar/Din Adamı): dal başına
-  // tam 11 olay → hedef 3 (%27, aşağı yuvarlanmış en yakın tam sayı).
   "Orta Çağ|Tüccar": [
-    { yas: 21, hedef: 1 },
-    { yas: 38, hedef: 2 },
-    { yas: 58, hedef: 3 },
+    { yas: 19, hedef: 1 },
+    { yas: 31, hedef: 2 },
+    { yas: 43, hedef: 3 },
+    { yas: 55, hedef: 4 },
   ],
   "Sanayi Devrimi|Asker": [
-    { yas: 20, hedef: 1 },
-    { yas: 35, hedef: 2 },
-    { yas: 52, hedef: 3 },
+    { yas: 18, hedef: 1 },
+    { yas: 30, hedef: 2 },
+    { yas: 42, hedef: 3 },
+    { yas: 54, hedef: 4 },
   ],
   "Sanayi Devrimi|Tüccar": [
-    { yas: 24, hedef: 1 },
-    { yas: 42, hedef: 2 },
-    { yas: 60, hedef: 3 },
+    { yas: 22, hedef: 1 },
+    { yas: 36, hedef: 2 },
+    { yas: 50, hedef: 3 },
+    { yas: 64, hedef: 4 },
   ],
   "Sanayi Devrimi|Din Adamı": [
-    { yas: 25, hedef: 1 },
-    { yas: 42, hedef: 2 },
-    { yas: 60, hedef: 3 },
+    { yas: 23, hedef: 1 },
+    { yas: 37, hedef: 2 },
+    { yas: 51, hedef: 3 },
+    { yas: 65, hedef: 4 },
   ],
-  // Zanaatkâr (2026-09 yeni): dal başına 11 olay → hedef 3, Tüccar/SD ile aynı desen.
+  // Zanaatkâr: dal başına ~11 olay → hedef 4 (%36), diğer 4 sistemle aynı
+  // yoğunlaştırılmış desen (kariyer yolu densifikasyonu, yukarıdaki not).
   "Orta Çağ|Zanaatkâr": [
-    { yas: 22, hedef: 1 },
-    { yas: 40, hedef: 2 },
-    { yas: 60, hedef: 3 },
+    { yas: 21, hedef: 1 },
+    { yas: 34, hedef: 2 },
+    { yas: 46, hedef: 3 },
+    { yas: 58, hedef: 4 },
   ],
   "Sanayi Devrimi|Zanaatkâr": [
-    { yas: 23, hedef: 1 },
-    { yas: 41, hedef: 2 },
-    { yas: 60, hedef: 3 },
+    { yas: 25, hedef: 1 },
+    { yas: 39, hedef: 2 },
+    { yas: 53, hedef: 3 },
+    { yas: 67, hedef: 4 },
   ],
 };
 
@@ -334,16 +345,24 @@ function standaloneHavuzDurumu(tanim: StandaloneHavuzTanimi, state: CharacterSta
  *    sistemler de daha uzun ömürde orantılı pay alıyor). Hedefler bu dördüncü
  *    veriye göre ~%45-55 küçültüldü — 2. turun hedeflerine yakın ama yaş
  *    eşikleri "70-75 ortalama" beklentisine göre biraz uzatılmış hâliyle.
+ * 5. tur (kullanıcı isteği — "yaşlar birebir aynı olmasın azıcık değiştir ve
+ *    ilk olay yaşlarını düşür birazcık"): bu 7 tablonun (aşağıdaki 6 + meslek-
+ *    standalone) ilk kontrol yaşları birkaç yıl indirildi VE tüm tablolar
+ *    arasında hiçbir yaş sayısı birebir tekrar etmeyecek şekilde birbirinden
+ *    kaydırıldı (aynı yaşta iki havuzun aynı anda "hedef karşılanmadı" hâline
+ *    gelip `standaloneHavuzDurumu`'nun oransal seçiminde rastgele kararsız
+ *    kalmasını azaltmak için) — hedef sayıları (kapsam oranı) DEĞİŞMEDİ,
+ *    yalnızca hangi yaşta kontrol edildiği değişti.
  */
 const GENEL_HAVUZ_KONTROL_NOKTALARI: { yas: number; hedef: number }[] = [
-  { yas: 25, hedef: 1 },
-  { yas: 35, hedef: 2 },
-  { yas: 45, hedef: 3 },
-  { yas: 55, hedef: 4 },
-  { yas: 65, hedef: 6 },
-  { yas: 75, hedef: 8 },
-  { yas: 85, hedef: 10 },
-  { yas: 95, hedef: 12 },
+  { yas: 22, hedef: 1 },
+  { yas: 32, hedef: 2 },
+  { yas: 42, hedef: 3 },
+  { yas: 52, hedef: 4 },
+  { yas: 62, hedef: 6 },
+  { yas: 72, hedef: 8 },
+  { yas: 82, hedef: 10 },
+  { yas: 92, hedef: 12 },
 ];
 
 /**
@@ -351,13 +370,13 @@ const GENEL_HAVUZ_KONTROL_NOKTALARI: { yas: number; hedef: number }[] = [
  * Tuccar/DinAdami, ~18-27 olay/dosya) hepsi aynı kontrol noktalarını
  * paylaşır — her biri zaten yalnız eşleşen çağ×meslek'te devreye girer
  * (`temelUygunMu` içindeki cag/meslekler filtresi). genel.ts ile aynı 4.
- * kalibrasyon turunda küçültüldü (bkz. yukarısı).
+ * kalibrasyon turunda küçültüldü (bkz. yukarısı); yaşlar 5. turda kaydırıldı.
  */
 const MESLEK_STANDALONE_KONTROL_NOKTALARI: { yas: number; hedef: number }[] = [
-  { yas: 25, hedef: 1 },
-  { yas: 45, hedef: 2 },
-  { yas: 65, hedef: 3 },
-  { yas: 85, hedef: 4 },
+  { yas: 24, hedef: 1 },
+  { yas: 43, hedef: 2 },
+  { yas: 60, hedef: 3 },
+  { yas: 81, hedef: 4 },
 ];
 
 const MESLEK_STANDALONE_HAVUZLARI: Record<string, OlayTanimi[]> = {
@@ -370,37 +389,37 @@ const MESLEK_STANDALONE_HAVUZLARI: Record<string, OlayTanimi[]> = {
 };
 
 const ILISKILER_HAVUZ_KONTROL_NOKTALARI: { yas: number; hedef: number }[] = [
-  { yas: 35, hedef: 1 },
-  { yas: 50, hedef: 2 },
-  { yas: 65, hedef: 3 },
-  { yas: 80, hedef: 4 },
+  { yas: 31, hedef: 1 },
+  { yas: 46, hedef: 2 },
+  { yas: 61, hedef: 3 },
+  { yas: 76, hedef: 4 },
 ];
 
 const AILE_HAVUZ_KONTROL_NOKTALARI: { yas: number; hedef: number }[] = [
-  { yas: 35, hedef: 1 },
-  { yas: 50, hedef: 2 },
-  { yas: 65, hedef: 3 },
-  { yas: 80, hedef: 4 },
+  { yas: 33, hedef: 1 },
+  { yas: 48, hedef: 2 },
+  { yas: 63, hedef: 3 },
+  { yas: 78, hedef: 4 },
 ];
 
 const EVLILIK_AILE_HAVUZ_KONTROL_NOKTALARI: { yas: number; hedef: number }[] = [
-  { yas: 35, hedef: 1 },
-  { yas: 50, hedef: 2 },
-  { yas: 65, hedef: 3 },
-  { yas: 80, hedef: 5 },
+  { yas: 29, hedef: 1 },
+  { yas: 44, hedef: 2 },
+  { yas: 59, hedef: 3 },
+  { yas: 74, hedef: 5 },
 ];
 
 const KOMIK_GARIP_HAVUZ_KONTROL_NOKTALARI: { yas: number; hedef: number }[] = [
-  { yas: 35, hedef: 1 },
-  { yas: 50, hedef: 2 },
-  { yas: 65, hedef: 3 },
-  { yas: 80, hedef: 4 },
+  { yas: 26, hedef: 1 },
+  { yas: 41, hedef: 2 },
+  { yas: 56, hedef: 3 },
+  { yas: 71, hedef: 4 },
 ];
 
 /** komikOlumler.ts (14 olay, risk-tercihli "aptalca olanı yap mı?" ekranları — seçim yine oyuncunun, garanti sadece EKRANI göstermeyi zorlar, ölümü değil) — düşük hedef, düşük öncelik. */
 const KOMIK_OLUM_HAVUZ_KONTROL_NOKTALARI: { yas: number; hedef: number }[] = [
-  { yas: 40, hedef: 1 },
-  { yas: 70, hedef: 2 },
+  { yas: 36, hedef: 1 },
+  { yas: 64, hedef: 2 },
 ];
 
 /** Meslekten bağımsız standalone havuz garantileri — sabit liste, çağrı başına yeniden oluşturulmaz. */
@@ -430,12 +449,15 @@ const EVCIL_HAYVAN_TAKIP_KONTROL_NOKTALARI = [
 // ikincisini görüp görmemek normal ağırlıklı seçime/şansa bırakılır.
 const GIZEMLI_ESYA_TAKIP_KONTROL_NOKTALARI = [{ yas: 40, hedef: 1 }];
 
-/** Hizip takip garantisi: her hizbin kendi havuzu ~10 olay (9 hizbe özel + 1 meslek-çatışma genel). */
+// Hizip takip garantisi: her hizbin kendi havuzu ~10 olay (9 hizbe özel + 1
+// meslek-çatışma genel). 2026-09 (kullanıcı isteği): daha sık/ince kontrol
+// noktaları + ilk yaş biraz düşürüldü + nihai hedef bir birim yükseltildi.
 const HIZIP_TAKIP_KONTROL_NOKTALARI = [
-  { yas: 30, hedef: 1 },
-  { yas: 42, hedef: 2 },
-  { yas: 55, hedef: 3 },
-  { yas: 65, hedef: 4 },
+  { yas: 26, hedef: 1 },
+  { yas: 35, hedef: 2 },
+  { yas: 44, hedef: 3 },
+  { yas: 53, hedef: 4 },
+  { yas: 62, hedef: 5 },
 ];
 
 /** Saray takip garantisi: sabit 6 olaylık küçük havuz — hepsini tüketmeden çeşitlilik payı bırakılır. */
@@ -496,8 +518,16 @@ const SUC_KAZANC_CIDDI_PARA = 40;
 /** Ağır suçlarda suc_artis tavanı bu değere yükselir (bir aranma kademesini tek suçta atlatabilir). */
 const SUC_KAZANC_CIDDI_TAVAN = 65;
 
-/** Mülk sahibi bir karaktere, her senaryoUret çağrısında mulkOlaylari.ts'ten zorlanan bir olay gelme ihtimali. */
+/**
+ * Mülk sahibi bir karaktere, her senaryoUret çağrısında mulkOlaylari.ts'ten zorlanan
+ * bir olay gelme ihtimali — YALNIZ satın alma yılı bilinmeyen (eski kayıt) ya da
+ * garanti penceresini (bkz. MULK_OLAYI_PENCERE_*) aşmış mülkler için fırsatçı yedek.
+ */
 const MULK_OLAYI_IHTIMALI = 0.12;
+/** Mülk olayı garantisi (kullanıcı isteği, 2026-09): satın alımdan bu kadar yıl sonra pencere açılır. */
+const MULK_OLAYI_PENCERE_BASLANGIC_YIL = 5;
+/** ...ve bu kadar yıl içinde (satın alımdan itibaren) en az bir olay kesin tetiklenir. */
+const MULK_OLAYI_PENCERE_BITIS_YIL = 15;
 
 // Aranma yeniden dengeleme turu (4 bant: 0-25/25-50/50-75/75-100, bkz.
 // aranmaSeviyesi.ts): hapse yeni girişte, tutuklama anındaki suc_seviyesi
@@ -1092,16 +1122,48 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
     }
   }
   // Sahip olunan her piyasa mülkü türünün kendine özel bir flavor/karar olay
-  // havuzu var (mulkOlaylari.ts) — normal rastgele havuzdan tamamen dışlanır,
-  // sadece burada düşük bir periyodik şansla (sansOlayiDene ile aynı ruhta)
-  // zorlanan olay olarak gelir. Görülmemiş olaylar önceliklidir.
-  if (!zorlananId && !milestoneKilitli && oturum.state.mulkler.length > 0 && Math.random() < MULK_OLAYI_IHTIMALI) {
-    const sahipTurler = new Set(oturum.state.mulkler);
-    const uygunMulkOlaylari = OLAY_BANKASI.filter((o) => o.mulkOlayi && sahipTurler.has(o.mulkOlayi));
-    if (uygunMulkOlaylari.length > 0) {
-      const gorulmemis = uygunMulkOlaylari.filter((o) => !oturum.state.gecmis_olaylar.includes(o.id));
-      const havuz = gorulmemis.length > 0 ? gorulmemis : uygunMulkOlaylari;
-      zorlananId = havuz[Math.floor(Math.random() * havuz.length)].id;
+  // havuzu var (mulkOlaylari.ts) — normal rastgele havuzdan tamamen dışlanır.
+  // 2026-09 (kullanıcı isteği "mülk olayını tetikli hale getir, satın aldıktan
+  // 5 yıl sonra 15 yıl içinde gibi"): artık fırsatçı %12 şans DEĞİL, satın alma
+  // yılına göre deterministik bir garanti penceresi öncelikli — mülk sahibi
+  // olunduktan 5-15 yıl arasında (mulk_alis_yili), o türe ait hiç görülmemiş bir
+  // olay varsa kesin tetiklenir (pencere açıldığı ilk çağrıda). Satın alma yılı
+  // bilinmeyen (eski kayıt) ya da 15 yıllık pencereyi geçmiş mülkler için eski
+  // fırsatçı %12 şans mekaniği yedek olarak sürüyor.
+  if (!zorlananId && !milestoneKilitli && oturum.state.mulkler.length > 0) {
+    const pencereDisiTurler: MulkTuru[] = [];
+    let pencereIciId: string | null = null;
+    for (const tur of oturum.state.mulkler) {
+      const alisYili = oturum.state.mulk_alis_yili?.[tur];
+      if (typeof alisYili !== "number") {
+        pencereDisiTurler.push(tur);
+        continue;
+      }
+      const gecenYil = oturum.state.yil - alisYili;
+      if (gecenYil < MULK_OLAYI_PENCERE_BASLANGIC_YIL) continue; // pencere henüz açılmadı
+      if (gecenYil > MULK_OLAYI_PENCERE_BITIS_YIL) {
+        pencereDisiTurler.push(tur);
+        continue;
+      }
+      if (!pencereIciId) {
+        const gorulmemisPencereOlaylari = OLAY_BANKASI.filter(
+          (o) => o.mulkOlayi === tur && !oturum.state.gecmis_olaylar.includes(o.id)
+        );
+        if (gorulmemisPencereOlaylari.length > 0) {
+          pencereIciId = gorulmemisPencereOlaylari[Math.floor(Math.random() * gorulmemisPencereOlaylari.length)].id;
+        }
+      }
+    }
+    if (pencereIciId) {
+      zorlananId = pencereIciId;
+    } else if (pencereDisiTurler.length > 0 && Math.random() < MULK_OLAYI_IHTIMALI) {
+      const sahipTurSet = new Set(pencereDisiTurler);
+      const uygunMulkOlaylari = OLAY_BANKASI.filter((o) => o.mulkOlayi && sahipTurSet.has(o.mulkOlayi));
+      if (uygunMulkOlaylari.length > 0) {
+        const gorulmemis = uygunMulkOlaylari.filter((o) => !oturum.state.gecmis_olaylar.includes(o.id));
+        const havuz = gorulmemis.length > 0 ? gorulmemis : uygunMulkOlaylari;
+        zorlananId = havuz[Math.floor(Math.random() * havuz.length)].id;
+      }
     }
   }
   // Standalone havuz garantisi (§11 yeni kural, 2026-09): hiçbir kilide/garantiye
@@ -1637,6 +1699,7 @@ async function sonucuUygulaVeIlerlet(
     const kaybedilenMulk = mulkTanimiGetir(etki.mulk_kaybet);
     state.mulkler = state.mulkler.filter((m) => m !== etki.mulk_kaybet);
     if (state.mulk_bakim_kalan) delete state.mulk_bakim_kalan[etki.mulk_kaybet];
+    if (state.mulk_alis_yili) delete state.mulk_alis_yili[etki.mulk_kaybet];
     hayatOlayiEkle(state, "🚨", T(state.dil, "{0} el konuldu", [K(state.dil, kaybedilenMulk.ad)]));
   }
   if (etki.unvan_kazan && !state.unvanlar.includes(etki.unvan_kazan)) {
@@ -3370,6 +3433,8 @@ export async function mulkSatinAl(id: string, tur: MulkTuru): Promise<MulkSatinA
   state.mulkler.push(tur);
   if (!state.mulk_bakim_kalan) state.mulk_bakim_kalan = {};
   state.mulk_bakim_kalan[tur] = rastgeleMulkBakimAraligi();
+  if (!state.mulk_alis_yili) state.mulk_alis_yili = {};
+  state.mulk_alis_yili[tur] = state.yil;
   clampStats(state);
   await oturumKaydet(state);
   return {

@@ -243,6 +243,13 @@ export interface CharacterState {
    * yenilenir (mülk SİLİNMEZ). Mülk elden çıkınca ilgili anahtar da silinir.
    */
   mulk_bakim_kalan: Partial<Record<MulkTuru, number>>;
+  /**
+   * Her sahip olunan mülk için satın alındığı oyun yılı — mülk olayı garantisinin
+   * (satın alımdan 5-15 yıl içinde en az bir kez, §11 kural 14) referans noktası.
+   * Mülk elden çıkınca ilgili anahtar silinir; eski kayıtlarda/legacy satın
+   * almalarda bilinmiyorsa alan boş kalır ve eski fırsatçı (%12 şans) mekanik geçerli olur.
+   */
+  mulk_alis_yili: Partial<Record<MulkTuru, number>>;
   /** Mağazadan satın alınan eşyalar (gizemli eşyalardan ayrı, etiket değil dizi tabanlı envanter — bkz. SahipOlunanEsya). */
   magaza_envanteri: SahipOlunanEsya[];
   /** state.yil bu değere ulaşana kadar "sifa" mağaza alışverişi kilitlidir (herhangi bir sifa satın alımından sonra +3 yıl kilitlenir); null = kilit yok. */

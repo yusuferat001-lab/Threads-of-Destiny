@@ -662,6 +662,7 @@ export function createCharacter(
     hapis_tur_sayaci: 0,
     mulkler: [],
     mulk_bakim_kalan: {},
+    mulk_alis_yili: {},
     magaza_envanteri: [],
     magaza_temel_kilit_bitis_yili: null,
     alkol_ziyaret_sayisi: 0,
@@ -876,6 +877,10 @@ export function eskiKayitGocu(state: CharacterState): void {
   for (const tur of state.mulkler) {
     if (typeof state.mulk_bakim_kalan[tur] !== "number") state.mulk_bakim_kalan[tur] = rastgeleMulkBakimAraligi();
   }
+  // Mülk olayı garantisi (§11 kural 14) sonradan eklendi; eski kayıtlarda satın
+  // alma yılı bilinmiyor — boş bırakılır, kural bu durumda otomatik olarak eski
+  // fırsatçı (%12 şans) mekaniğe düşer (bkz. gameEngine.ts senaryoUret).
+  if (!state.mulk_alis_yili || typeof state.mulk_alis_yili !== "object") state.mulk_alis_yili = {};
   // Mağaza sonradan eklendi; eski kayıtlarda alan yok — envanterBozulmasiUygula
   // (her tur) ve magazaConfigGetir/EnvanterPaneli buna doğrudan .some()/.map()
   // uyguladığı için eksikse çöküyordu (mağaza + envanter tamamen kayboluyordu).
@@ -2557,6 +2562,7 @@ export function krediYillikUygula(state: CharacterState, yasArtisi: number): str
         if (state.mulkler.length > 0) {
           const alinan = state.mulkler.pop()!;
           delete state.mulk_bakim_kalan[alinan];
+          if (state.mulk_alis_yili) delete state.mulk_alis_yili[alinan];
           mesajlar.push(
             T(state.dil, "🪙 Tefecinin adamları borcun karşılığında {0} el koydu.", [K(state.dil, alinan)])
           );
@@ -3043,6 +3049,7 @@ export function mulkGelirleriUygula(state: CharacterState, yasArtisi: number): M
     if (tur === "kervan" && ulke.savasta && Math.random() < KERVAN_BATMA_IHTIMALI_YILLIK * yasArtisi) {
       state.mulkler = state.mulkler.filter((m) => m !== "kervan");
       delete state.mulk_bakim_kalan.kervan;
+      if (state.mulk_alis_yili) delete state.mulk_alis_yili.kervan;
       hayatOlayiEkle(state, "🌊", T(state.dil, "Ticaret kervanı savaş yüzünden tamamen kayboldu"));
       kervanBatti = true;
       continue;
