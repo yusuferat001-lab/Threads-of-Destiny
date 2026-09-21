@@ -122,8 +122,8 @@ export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
   {
     id: "servet_zirvesi", zorluk: "zor", kontrolAni: "herhangi",
     baslik: { tr: "Servet Zirvesi", en: "Summit of Wealth" },
-    aciklama: { tr: "Servetini 620'nin üzerine çıkar — hem temiz bir sicille hem de tefeciye hiç borcun olmadan.", en: "Push your wealth past 620 — with clean hands, and without owing the moneylender a single coin." },
-    kosul: (s, servet) => servet >= 620 && temizEl(s) && borcsuz(s),
+    aciklama: { tr: "Servetini 700'ün üzerine çıkar — hem temiz bir sicille hem de tefeciye hiç borcun olmadan.", en: "Push your wealth past 700 — with clean hands, and without owing the moneylender a single coin." },
+    kosul: (s, servet) => servet >= 700 && temizEl(s) && borcsuz(s),
   },
   {
     id: "yasayan_efsane", zorluk: "zor", kontrolAni: "herhangi",
@@ -140,8 +140,8 @@ export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
   {
     id: "zengin_ve_ihtiyar", zorluk: "zor", kontrolAni: "olumde",
     baslik: { tr: "Zengin ve İhtiyar", en: "Rich and Old" },
-    aciklama: { tr: "70 yaşını geçmiş, servetin 300'ün üzerinde ve tefeciye tek kuruş borcun yokken göç et.", en: "Pass on past the age of 70 with a wealth above 300 and not a coin owed to the moneylender." },
-    kosul: (s, servet) => s.yas >= 70 && servet >= 300 && borcsuz(s),
+    aciklama: { tr: "70 yaşını geçmiş, servetin 350'nin üzerinde ve tefeciye tek kuruş borcun yokken göç et.", en: "Pass on past the age of 70 with a wealth above 350 and not a coin owed to the moneylender." },
+    kosul: (s, servet) => s.yas >= 70 && servet >= 350 && borcsuz(s),
   },
   {
     id: "lekesiz_omur", zorluk: "zor", kontrolAni: "olumde",
@@ -282,8 +282,8 @@ export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
   {
     id: "imparator", zorluk: "zor", kontrolAni: "herhangi", meslekler: ["Tüccar"],
     baslik: { tr: "Ticaret İmparatoru", en: "Merchant Emperor" },
-    aciklama: { tr: "En üst rütbeye çık, servetin 550'yi geçsin — hem de tefeciye borcun olmadan.", en: "Reach the top rank with a wealth above 550 — and not a coin owed to the moneylender." },
-    kosul: (s, servet) => s.rutbe_seviye >= 5 && servet >= 550 && borcsuz(s),
+    aciklama: { tr: "En üst rütbeye çık, servetin 630'u geçsin — hem de tefeciye borcun olmadan.", en: "Reach the top rank with a wealth above 630 — and not a coin owed to the moneylender." },
+    kosul: (s, servet) => s.rutbe_seviye >= 5 && servet >= 630 && borcsuz(s),
   },
   {
     id: "tekelci", zorluk: "zor", kontrolAni: "herhangi", meslekler: ["Tüccar"],
@@ -378,8 +378,8 @@ export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
   {
     id: "kasif_ruhu", zorluk: "zor", kontrolAni: "herhangi", cag: "Sanayi Devrimi",
     baslik: { tr: "Kâşif Ruhu", en: "Explorer's Spirit" },
-    aciklama: { tr: "Büyük yolculuğu tamamla, servetin 350'yi geçsin — borçsuz ve en az bir lüks hatıra eşyanla.", en: "Complete the great journey with a wealth above 350 — debt-free, and with at least one luxury memento." },
-    kosul: (s, servet) => s.etiketler.includes("yolculuk_tamamlandi") && servet >= 350 && borcsuz(s) && luksEsyaSayisi(s) >= 1,
+    aciklama: { tr: "Büyük yolculuğu tamamla, servetin 480'i geçsin — borçsuz ve en az iki lüks hatıra eşyanla.", en: "Complete the great journey with a wealth above 480 — debt-free, and with at least two luxury mementos." },
+    kosul: (s, servet) => s.etiketler.includes("yolculuk_tamamlandi") && servet >= 480 && borcsuz(s) && luksEsyaSayisi(s) >= 2,
   },
 
   // ============================ ZANAATKÂR (2026-09 yeni meslek, iskelet) ============================
@@ -504,10 +504,10 @@ export const AMAC_ILERLEME: Record<
   saglam_omur: { hedef: 75, metrik: (s) => (s.yas >= 62 ? s.saglik : 0) },
   meyhane_mudavimi: { hedef: 3, metrik: (s) => s.alkol_ziyaret_sayisi ?? 0 },
   sansli_el: { hedef: 80, metrik: (s) => Math.max(0, s.omur_kumar_net ?? 0) },
-  servet_zirvesi: { hedef: 620, metrik: (_s, servet) => servet },
+  servet_zirvesi: { hedef: 700, metrik: (_s, servet) => servet },
   yasayan_efsane: { hedef: 95, metrik: (s) => s.un },
   kalabalik_soy: { hedef: 6, metrik: (s) => (s.cocuklar ?? []).filter((c) => c.yasiyor).length },
-  zengin_ve_ihtiyar: { hedef: 300, metrik: (_s, servet) => servet },
+  zengin_ve_ihtiyar: { hedef: 350, metrik: (_s, servet) => servet },
   kumar_efsanesi: { hedef: 350, metrik: (s) => Math.max(0, s.omur_kumar_net ?? 0) },
   olumle_dans: { hedef: 4, metrik: (s) => s.omur_riskli_basari ?? 0 },
   kralin_guveni: { hedef: 78, metrik: (s) => s.yonetim_iliski },
@@ -528,7 +528,7 @@ export const AMAC_ILERLEME: Record<
   kar_marji: { hedef: 240, metrik: (_s, servet) => servet },
   hediye_agi: { hedef: 6, metrik: (s) => s.omur_hediye_sayisi ?? 0 },
   lonca_reisi: { hedef: 5, metrik: (s) => s.rutbe_seviye },
-  imparator: { hedef: 550, metrik: (_s, servet) => servet },
+  imparator: { hedef: 630, metrik: (_s, servet) => servet },
   tekelci: { hedef: 5, metrik: (s) => s.mulkler?.length ?? 0 },
   sermaye_devi: { hedef: 180, metrik: (s) => s.ticaret_sermaye },
   kursu_sahibi: { hedef: 4, metrik: (s) => s.rutbe_seviye },
@@ -541,7 +541,7 @@ export const AMAC_ILERLEME: Record<
   gunahsiz: { hedef: 65, metrik: (s) => s.yas },
   sarayda_soz: { hedef: 90, metrik: (s) => s.un },
   sanayici: { hedef: 200, metrik: (_s, servet) => servet },
-  kasif_ruhu: { hedef: 350, metrik: (_s, servet) => servet },
+  kasif_ruhu: { hedef: 480, metrik: (_s, servet) => servet },
   lekesiz_omur: { hedef: 58, metrik: (s) => s.yas },
   sarhos_ama_ayakta: { hedef: 67, metrik: (s) => s.yas },
   sahesinde_efsane: { hedef: 95, metrik: (s) => s.un },
