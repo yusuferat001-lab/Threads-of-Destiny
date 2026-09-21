@@ -5889,6 +5889,35 @@ button.ikincil {
   gap: 0.55rem;
 }
 
+.yenilik-modal {
+  max-width: 460px;
+}
+
+.yenilik-govde {
+  gap: 0.9rem;
+}
+
+.yenilik-alt-baslik {
+  margin: 0;
+  font-weight: 600;
+  opacity: 0.85;
+}
+
+.yenilik-liste {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  line-height: 1.4;
+}
+
+.yenilik-tamam-buton {
+  align-self: center;
+  margin-top: 0.3rem;
+  padding: 0.55rem 1.6rem;
+}
+
 .ayar-bolum h3 {
   font-size: 1.02rem;
   color: #5f3c22;
@@ -6558,6 +6587,64 @@ button.ikincil {
   position: relative;
   display: inline-block;
   margin: 0 auto;
+}
+
+.giris-neon-tabela {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .giris-cark-sar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .giris-neon-tabela {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.2;
+    font-weight: 700;
+    font-size: 0.6rem;
+    letter-spacing: 0.03em;
+    color: #eec8ff;
+    text-shadow:
+      0 0 4px #d16bff,
+      0 0 9px #b026ff,
+      0 0 18px #a020f0,
+      0 0 32px #7b1fa2;
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+    animation: neonTabelaTitre 2.8s ease-in-out infinite;
+  }
+
+  .giris-neon-sol {
+    transform: rotate(-9deg);
+    animation-delay: 0.4s;
+  }
+
+  .giris-neon-sag {
+    transform: rotate(9deg);
+  }
+}
+
+@keyframes neonTabelaTitre {
+  0%, 89% { opacity: 1; }
+  90% { opacity: 0.35; }
+  91% { opacity: 1; }
+  93% { opacity: 0.5; }
+  95% { opacity: 1; }
+  100% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .giris-neon-tabela {
+    animation: none;
+  }
 }
 .giris-durum-rozetleri {
   display: flex;

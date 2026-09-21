@@ -129,6 +129,19 @@ const TR = {
   // ---- Kurulum akışı (çağ→bölge→yerleşim→isim) ----
   adimEtiketi: 'Adım {0} / {1}',
   girisSlogan: 'Kaderinin ipliklerini sen ör.',
+  neonTabelaSol1: 'YENİ MESLEK',
+  neonTabelaSol2: 'ZANAATKÂR',
+  neonTabelaSag1: 'YENİ SKOR',
+  neonTabelaSag2: 'FORMÜLÜ',
+
+  // ---- "Yenilikler" bildirimi (ilk açılış) ----
+  ynBaslik: 'Neler Yeni?',
+  ynAltBaslik: 'Kader Çarkı güncellendi — işte eklenenler:',
+  ynMadde1: '🛠️ Yeni meslek: Zanaatkâr — çırak\'tan loncabaşına, kendi kariyer yolun ve olaylarınla.',
+  ynMadde2: '📊 Yepyeni skor formülü — servet, şöhret, ahlak, mutluluk ve rütbenin toplamından hesaplanıyor; ölüm ekranında adım adım gösteriliyor.',
+  ynMadde3: '📜 Onlarca yeni olay eklendi — kariyer yollarından günlük hayata birçok yeni sahne seni bekliyor.',
+  ynMadde4: '🎯 Nasıl Oynanır rehberi güncellendi — yeni mesleği ve skor hesaplamasını orada da bulabilirsin.',
+  ynTamam: 'Anladım, başlayalım!',
 
   // ---- Çağ seçimi ----
   cagSecBaslik: 'Çağını Seç',
@@ -823,6 +836,19 @@ const EN: Metinler = {
   // ---- Setup flow (era→region→settlement→name) ----
   adimEtiketi: 'Step {0} / {1}',
   girisSlogan: 'Weave the threads of your fate.',
+  neonTabelaSol1: 'NEW PROFESSION',
+  neonTabelaSol2: 'ARTISAN',
+  neonTabelaSag1: 'NEW SCORE',
+  neonTabelaSag2: 'FORMULA',
+
+  // ---- "What's New" notice (first launch) ----
+  ynBaslik: "What's New?",
+  ynAltBaslik: 'Threads of Destiny was updated — here\'s what\'s new:',
+  ynMadde1: '🛠️ New profession: Artisan — from apprentice to guild master, with its own career path and events.',
+  ynMadde2: '📊 A brand-new score formula — calculated from wealth, fame, morality, happiness and rank, shown step by step on the death screen.',
+  ynMadde3: '📜 Dozens of new events added — new scenes await you from career paths to everyday life.',
+  ynMadde4: '🎯 The How to Play guide was updated — you can find the new profession and score formula there too.',
+  ynTamam: "Got it, let's go!",
 
   // ---- Era selection ----
   cagSecBaslik: 'Choose Your Era',

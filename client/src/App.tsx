@@ -113,6 +113,8 @@ import { BasarimGaleri } from './components/BasarimGaleri';
 import { KozmetikMagaza } from './components/KozmetikMagaza';
 import { kozmetikGiyilenlerGetir, type GiyilenKozmetikler } from './kozmetikDolabi';
 import { NasilOynanir } from './components/NasilOynanir';
+import { YenilikModal } from './components/YenilikModal';
+import { yenilikGosterilmeliMi, yenilikGorulduIsaretle } from './yenilikler';
 import { istemciId, ziyaretBildir } from './istemci';
 import { gunlukSeriKontrolEt, gunlukSeriGetir, type GunlukSeriSonuc } from './gunlukSeri';
 import { goldBakiyeGetir, olumGoldHesapla, goldEkle } from './gold';
@@ -349,6 +351,7 @@ function App() {
   const [ayarlarSekme, setAyarlarSekme] = useState<'genel' | 'geri_bildirim'>('genel');
   const [basarimGaleriAcik, setBasarimGaleriAcik] = useState(false);
   const [nasilOynanirAcik, setNasilOynanirAcik] = useState(false);
+  const [yenilikAcik, setYenilikAcik] = useState(false);
   const [yeniBasarimlar, setYeniBasarimlar] = useState<BasarimTanimi[]>([]);
   const [buOmurBasarimlar, setBuOmurBasarimlar] = useState<BasarimTanimi[]>([]);
   const [dil, setDil] = useState<Dil>(() => ayarlariGetir().dil);
@@ -465,6 +468,7 @@ function App() {
     setGunlukSeri({ seri: sonuc.seri, enUzunSeri: sonuc.enUzunSeri });
     setGoldBakiye(goldBakiyeGetir());
     if (sonuc.yeniOdulMu) setGunlukOdulBildirimi(sonuc);
+    if (yenilikGosterilmeliMi()) setYenilikAcik(true);
   }, []);
 
   useEffect(() => {
@@ -1504,6 +1508,15 @@ function App() {
         />
       )}
 
+      {yenilikAcik && (
+        <YenilikModal
+          dil={dil}
+          onKapat={() => {
+            yenilikGorulduIsaretle();
+            setYenilikAcik(false);
+          }}
+        />
+      )}
       {basarimGaleriAcik && <BasarimGaleri dil={dil} onKapat={() => setBasarimGaleriAcik(false)} />}
       {GUNLUK_KOZMETIK_GOLD_GORUNUR && kozmetikMagazaAcik && (
         <KozmetikMagaza
@@ -1529,7 +1542,15 @@ function App() {
             <h1>{m.oyunAdi}</h1>
             <p className="giris-slogan">{m.girisSlogan}</p>
             <div className="giris-cark-sar">
+              <span className="giris-neon-tabela giris-neon-sol" aria-hidden="true">
+                <span>{m.neonTabelaSol1}</span>
+                <span>{m.neonTabelaSol2}</span>
+              </span>
               <CarkLogo boyut={132} />
+              <span className="giris-neon-tabela giris-neon-sag" aria-hidden="true">
+                <span>{m.neonTabelaSag1}</span>
+                <span>{m.neonTabelaSag2}</span>
+              </span>
             </div>
             {GUNLUK_KOZMETIK_GOLD_GORUNUR && (
               <div className="giris-durum-rozetleri">
