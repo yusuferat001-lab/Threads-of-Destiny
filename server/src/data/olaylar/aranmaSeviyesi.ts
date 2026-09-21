@@ -972,7 +972,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         baseBasariSansi: 25,
         basariliSonuc: {
           saglik: -9,
-          yerlesim_zorla: "dag_basi",
           suc_seviyesi_ayarla: 10,
           etiket_ekle: ["kacak"],
           mesaj: "Arka pencereden atlayıp bahçe duvarını aşarak şafağın alacakaranlığında kayboldun; günler süren bir yürüyüşün sonunda dağ başındaki ıssız bir mağaraya sığındın.",
@@ -1048,7 +1047,6 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
         baseBasariSansi: 25,
         basariliSonuc: {
           saglik: -9,
-          yerlesim_zorla: "dag_basi",
           suc_seviyesi_ayarla: 10,
           etiket_ekle: ["kacak"],
           mesaj: "Arka avludan atlayıp arka sokaklara daldın; trenle ve yürüyerek günler süren bir kaçışın sonunda uzak bir dağ köyünün eteklerinde soluğu aldın.",

@@ -13,14 +13,14 @@ import { secimUygulaVeCoz } from "./testUtils";
 
 describe("oturum kalıcılığı", () => {
   it("yeni oyun oluşturulduğunda DB'ye de yazılır", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     const dbdenOkunan = await oturumYukle(state.id);
     expect(dbdenOkunan).not.toBeNull();
     expect(dbdenOkunan?.id).toBe(state.id);
   });
 
   it("seçim uygulandıktan sonra DB'deki kayıt güncellenir", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     const senaryo = await senaryoUret(state.id);
     const idx = senaryo.secenekler.findIndex((s) => !s.kilitli);
@@ -32,7 +32,7 @@ describe("oturum kalıcılığı", () => {
   });
 
   it("oturumlariYukle DB'deki aktif oturumları in-memory önbelleğe geri yükler", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
 
     const sayi = await oturumlariYukle();
@@ -49,9 +49,9 @@ describe("oturum kalıcılığı", () => {
   });
 
   it("bitmiş oturumlar bellekten temizlenir, aktifler kalır", async () => {
-    const olen = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const olen = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     olen.aktif = false;
-    const aktifOlan = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const aktifOlan = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
 
     const oncekiSayi = aktifOturumSayisi();
     // grace süresi 0: hemen erişilmemiş sayılıp silinsin (test amaçlı)
@@ -69,11 +69,11 @@ describe("oturum kalıcılığı", () => {
   });
 
   it("eskiOturumlariTemizle eski bitmiş kayıtları DB'den siler, aktif olanı silmez", async () => {
-    const bitmis = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const bitmis = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     bitmis.aktif = false;
     await mesleğiAta(bitmis.id, "Tüccar"); // state.aktif=false hâliyle DB'ye yazılmasını sağlar
 
-    const aktif = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const aktif = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
 
     const gelecekTarih = new Date(Date.now() + 1000 * 60 * 60);
     await eskiOturumlariTemizle(gelecekTarih);

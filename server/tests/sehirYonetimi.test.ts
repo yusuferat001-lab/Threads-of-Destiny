@@ -11,7 +11,7 @@ import { yeniOyun, mesleğiAta, senaryoUret } from "../src/game/gameEngine";
 
 describe("şehir yönetimi (en üst rütbe sonrası sonsuz ilerleme)", () => {
   it("en üst rütbeye ulaşmamış karaktere başlangıç olayı hiç çıkmaz", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Asker");
     state.rutbe_seviye = 2;
     for (let i = 0; i < 500; i++) {
@@ -28,7 +28,7 @@ describe("şehir yönetimi (en üst rütbe sonrası sonsuz ilerleme)", () => {
       Zanaatkâr: "sehir_yonetim_zanaatkar_baslangic",
     };
     for (const [meslek, beklenenId] of Object.entries(beklenenler)) {
-      const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+      const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
       mesleğiSec(state, meslek);
       state.rutbe_seviye = 4;
       let bulundu = false;
@@ -54,7 +54,7 @@ describe("şehir yönetimi (en üst rütbe sonrası sonsuz ilerleme)", () => {
       sehir_yonetim_zanaatkar_baslangic: "Loncanın Ötesinde",
     };
     for (const [meslek, beklenenId] of Object.entries(beklenenler)) {
-      const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+      const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
       await mesleğiAta(state.id, meslek);
       state.hayat_amaci = { id: "x", ad: "x", aciklama: "x", hedefTuru: "para", hedefDeger: 999999, tamamlandi: false };
       state.gecmis_olaylar.push("hayat_amaci_secimi", "iliski_evlilik_teklifi", "iliski_ikinci_teklif");
@@ -66,7 +66,7 @@ describe("şehir yönetimi (en üst rütbe sonrası sonsuz ilerleme)", () => {
   });
 
   it("sehir_yonetimi_basladi etiketi yokken tekrar eden rekabet olayları hiç çıkmaz", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.rutbe_seviye = 4;
     for (let i = 0; i < 500; i++) {
@@ -85,7 +85,7 @@ describe("şehir yönetimi (en üst rütbe sonrası sonsuz ilerleme)", () => {
   });
 
   it("şehir yönetimine girmek maaşa kalıcı SABİT +%8 katar; seviyeyle ölçeklenmez", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.rutbe_seviye = 4;
     const taban = hesaplaMaasYillik(state);

@@ -17,7 +17,7 @@ interface TepkiBulgusu {
 async function tepkiAra(toplamButce: number): Promise<TepkiBulgusu | null> {
   let kalan = toplamButce;
   while (kalan > 0) {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     state.yas = 20;
     state.para = 500;
     state.saglik = 100;

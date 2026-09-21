@@ -46,7 +46,7 @@ describe("sosyalleşme olay bankası — veri bütünlüğü", () => {
 
 describe("sosyalleşme olayları normal havuzdan tamamen dışlanır", () => {
   it("olaySec (zorlanmadan) hiçbir zaman bir sosyalleşme olayı döndürmez", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.yas = 30;
     const sosyallesmeIdleri = new Set(OLAY_SOSYALLESME.map((o) => o.id));
@@ -59,7 +59,7 @@ describe("sosyalleşme olayları normal havuzdan tamamen dışlanır", () => {
 
 describe("sosyalleşme yerleri — çağ/bölge/meslek filtreleme", () => {
   it("Sanayi Devrimi İngiltere'de bir Tüccar pub, pazar meydanı ve lonca meclisini görür — en fazla 3 mekân", async () => {
-    const state = await yeniOyun("Sanayi Devrimi", "İngiltere", "sehir_merkezi");
+    const state = await yeniOyun("Sanayi Devrimi", "İngiltere", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     state.yas = 25; // pub gibi alkollü mekânların olayları minYas:18 gerektirir
     const idler = (await sosyallesmeYerleriGetir(state.id)).map((y) => y.id);
@@ -72,7 +72,7 @@ describe("sosyalleşme yerleri — çağ/bölge/meslek filtreleme", () => {
   });
 
   it("bir Asker sadece kendi mesleğine özel ordugah_cadiri'nı görür, dini_meclis/lonca_meclisi'ni görmez", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Asker");
     state.yas = 25; // ordugah_cadiri olayları minYas:18 gerektirir
     const idler = (await sosyallesmeYerleriGetir(state.id)).map((y) => y.id);
@@ -82,7 +82,7 @@ describe("sosyalleşme yerleri — çağ/bölge/meslek filtreleme", () => {
   });
 
   it("Osmanlı Sanayi Devrimi'nde bir Din Adamı pazar meydanı, meyhane ve cemaat sofrasını görür", async () => {
-    const state = await yeniOyun("Sanayi Devrimi", "Osmanlı", "sehir_merkezi");
+    const state = await yeniOyun("Sanayi Devrimi", "Osmanlı", "kasaba");
     await mesleğiAta(state.id, "Din Adamı");
     state.yas = 25; // meyhane gibi alkollü mekânların olayları minYas:18 gerektirir
     const idler = (await sosyallesmeYerleriGetir(state.id)).map((y) => y.id);
@@ -94,7 +94,7 @@ describe("sosyalleşme yerleri — çağ/bölge/meslek filtreleme", () => {
   });
 
   it("hapisteyken ya da yolculuktayken hiçbir mekân listelenmez", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     state.etiketler.push("hapiste");
     expect(await sosyallesmeYerleriGetir(state.id)).toHaveLength(0);
@@ -107,7 +107,7 @@ describe("sosyalleşme yerleri — çağ/bölge/meslek filtreleme", () => {
 
 describe("sosyallesmeYerineGit — mekâna gitmek", () => {
   it("geçerli bir mekâna gitmek, bir sonraki senaryoyu o mekânın havuzundan getirir ve turu tüketmez", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     state.yas = 20;
     const turSayisiOncesi = state.tur_sayisi;
@@ -123,7 +123,7 @@ describe("sosyallesmeYerineGit — mekâna gitmek", () => {
   });
 
   it("sosyallesmeOlayCoz mekân olayını TUR HARCAMADAN çözer + mekânı ~2 yıl kilitler", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     state.yas = 25;
     state.para = 2000;
@@ -145,7 +145,7 @@ describe("sosyallesmeYerineGit — mekâna gitmek", () => {
   });
 
   it("aynı turda farklı mekânlar ayrı ayrı çözülebilir (max 3 olay/tur)", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Asker");
     state.yas = 25;
     state.para = 2000;
@@ -162,13 +162,13 @@ describe("sosyallesmeYerineGit — mekâna gitmek", () => {
   }, 20000);
 
   it("uygun olmayan bir mekâna (mesleğe göre) gitmeye çalışmak hata fırlatır", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     await expect(sosyallesmeYerineGit(state.id, "ordugah_cadiri")).rejects.toThrow();
   });
 
   it("hapisteyken bir mekâna gitmeye çalışmak hata fırlatır", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     state.etiketler.push("hapiste");
     await expect(sosyallesmeYerineGit(state.id, "meyhane")).rejects.toThrow();
@@ -186,7 +186,7 @@ describe("ayyaşlık mekaniği (3 alkollü ziyaret eşiği)", () => {
   }
 
   it("aynı alkollü mekâna üç kez gidip olay yaşamak kalıcı ayyaş damgası vurur", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     state.yas = 25;
     state.para = 2000;
@@ -213,7 +213,7 @@ describe("ayyaşlık mekaniği (3 alkollü ziyaret eşiği)", () => {
   }, 20000);
 
   it("alkolsüz bir mekâna gitmek alkol ziyaret sayacını artırmaz", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     state.yas = 25;
     state.para = 2000;
@@ -229,7 +229,7 @@ describe("ayyaşlık mekaniği (3 alkollü ziyaret eşiği)", () => {
 
 describe("sosyalleşme ekranı — tur harcamayan aksiyonlar (içki / deli / sadaka / kulak / ısmarla / fal)", () => {
   it("config bölge/çağa uygun isimli içecekler + 5 aksiyon döner", async () => {
-    const state = await yeniOyun("Sanayi Devrimi", "Rusya", "sehir_merkezi");
+    const state = await yeniOyun("Sanayi Devrimi", "Rusya", "kasaba");
     await mesleğiAta(state.id, "Asker");
     const cfg = await sosyallesmeAksiyonConfigGetir(state.id);
     expect(cfg.icecekler.map((i) => i.id)).toContain("icki:votka");
@@ -238,7 +238,7 @@ describe("sosyalleşme ekranı — tur harcamayan aksiyonlar (içki / deli / sad
   });
 
   it("alkollü içki içmek mutluluğu artırır, sağlığı düşürür, parayı azaltır ve turu tüketmez", async () => {
-    const state = await yeniOyun("Sanayi Devrimi", "Rusya", "sehir_merkezi");
+    const state = await yeniOyun("Sanayi Devrimi", "Rusya", "kasaba");
     await mesleğiAta(state.id, "Asker");
     state.para = 500;
     state.saglik = 90;
@@ -253,7 +253,7 @@ describe("sosyalleşme ekranı — tur harcamayan aksiyonlar (içki / deli / sad
   });
 
   it("aynı aksiyon cooldown dolmadan tekrar yapılamaz", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     state.para = 500;
     await sosyallesmeAksiyonYap(state.id, "fal");
@@ -261,7 +261,7 @@ describe("sosyalleşme ekranı — tur harcamayan aksiyonlar (içki / deli / sad
   });
 
   it("İslam bölgesinde 'gizli' içki ahlak ve şöhret cezası uygular", async () => {
-    const state = await yeniOyun("Orta Çağ", "Selçuklu", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Selçuklu", "kasaba");
     await mesleğiAta(state.id, "Asker");
     state.para = 500;
     state.ahlak = 60;
@@ -272,7 +272,7 @@ describe("sosyalleşme ekranı — tur harcamayan aksiyonlar (içki / deli / sad
   });
 
   it("sadaka ahlakı artırır", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Din Adamı");
     state.para = 500;
     state.ahlak = 50;
@@ -281,7 +281,7 @@ describe("sosyalleşme ekranı — tur harcamayan aksiyonlar (içki / deli / sad
   });
 
   it("hapisteyken aksiyon yapılamaz ve config boş döner", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     state.etiketler.push("hapiste");
     const cfg = await sosyallesmeAksiyonConfigGetir(state.id);

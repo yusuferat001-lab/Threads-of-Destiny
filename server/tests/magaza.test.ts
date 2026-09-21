@@ -18,7 +18,7 @@ import { MAGAZA_ESYALARI, magazaEsyasiTanimiGetir } from "../src/data/magazaEsya
 import type { CharacterState } from "../src/types";
 
 function taze(): CharacterState {
-  const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+  const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
   mesleğiSec(state, "Tüccar");
   state.para = 2000;
   return state;
@@ -171,7 +171,7 @@ describe("temelMagazaKilitliMi — sifa kategorisi satın alma kilidi", () => {
 
 describe("gameEngine entegrasyonu — mağaza/envanter aksiyonları", () => {
   it("magazadanSatinAl: sifa eşyası parayı düşürür, envantere ekler, TÜM sifa kategorisini kilitler", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     state.para = 500;
     const oncekiSaglik = state.saglik;
@@ -187,7 +187,7 @@ describe("gameEngine entegrasyonu — mağaza/envanter aksiyonları", () => {
   });
 
   it("kilit süresi geçince sifa alışverişi yeniden açılır", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     state.para = 500;
     await magazadanSatinAl(state.id, "kaliteli_erzak");
@@ -199,7 +199,7 @@ describe("gameEngine entegrasyonu — mağaza/envanter aksiyonları", () => {
   });
 
   it("magazadanSatinAl: luks eşya ünü hemen artırır, aynı eşya bir daha satın alınamaz", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     state.para = 1000;
     const oncekiUn = state.un;
@@ -216,7 +216,7 @@ describe("gameEngine entegrasyonu — mağaza/envanter aksiyonları", () => {
   });
 
   it("magazaConfigGetir: kilitli/sahip alanları doğru yansıtır", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     state.para = 1000;
     await magazadanSatinAl(state.id, "ipek_hali");
@@ -233,7 +233,7 @@ describe("gameEngine entegrasyonu — mağaza/envanter aksiyonları", () => {
 
   it("envanterEsyasiKullan: olumlu zar gelince sağlık artar ve eşya envanterden düşer", async () => {
     vi.spyOn(Math, "random").mockReturnValue(0); // r=0 < pPozitif → tam olumlu dal
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     state.para = 500;
     state.saglik = 50;
@@ -247,7 +247,7 @@ describe("gameEngine entegrasyonu — mağaza/envanter aksiyonları", () => {
 
   it("envanterEsyasiKullan: ters tepen zar gelince sağlık düşer, eşya yine tükenir", async () => {
     vi.spyOn(Math, "random").mockReturnValue(0.99); // r=0.99 > pPozitif+0.10 → ters tepme dalı
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     state.para = 500;
     state.saglik = 50;
@@ -260,7 +260,7 @@ describe("gameEngine entegrasyonu — mağaza/envanter aksiyonları", () => {
   });
 
   it("envanterEsyasiKullan: lüks eşya kullanılamaz, envanterde kalır", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     state.para = 1000;
     const satinAlma = await magazadanSatinAl(state.id, "antika_eser");

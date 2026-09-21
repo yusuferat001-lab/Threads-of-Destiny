@@ -3,7 +3,7 @@ import { yeniOyun, mesleğiAta, kotuIsYap, kotuIsConfigGetir, stateGetir, hapisC
 
 describe("karanlık işler (illegal işler paneli)", () => {
   it("kotuIsConfigGetir 5 aksiyonu şans/kazanç önizlemesiyle döner", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     const config = await kotuIsConfigGetir(state.id);
     expect(config).toHaveLength(5);
@@ -16,7 +16,7 @@ describe("karanlık işler (illegal işler paneli)", () => {
   });
 
   it("bir karanlık iş ahlakı düşürür ve suç seviyesini yükseltir", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Asker");
     let s = await stateGetir(state.id);
     const onceAhlak = s.ahlak;
@@ -28,13 +28,13 @@ describe("karanlık işler (illegal işler paneli)", () => {
   });
 
   it("geçersiz iş türü hata fırlatır", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     await expect(kotuIsYap(state.id, "olmayan_is")).rejects.toThrow();
   });
 
   it("hapisteyken karanlık iş çevrilemez", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     const s = await stateGetir(state.id);
     s.etiketler.push("hapiste");
@@ -42,7 +42,7 @@ describe("karanlık işler (illegal işler paneli)", () => {
   });
 
   it("rakip hedefleyen iş, yeterince denenince kariyer puanına katkı verebilir", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Asker");
     let s = await stateGetir(state.id);
     const oncePuan = s.kariyer_puani;
@@ -81,7 +81,7 @@ describe("karanlık işler (illegal işler paneli)", () => {
   });
 
   it("karanlık iş yakalanması hapis_ceza_kalan ve hapis_ceza_toplam'ı birlikte, tutarlı bir aralıkta ayarlar", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Asker");
     const s = await stateGetir(state.id);
     s.para = 1000; // birini_soy'un maliyet kontrolüne takılmasın (ölüm riski yok, güvenle döngüye sokulabilir)

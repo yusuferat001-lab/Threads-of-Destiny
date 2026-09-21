@@ -12,7 +12,7 @@ import { OLAY_BANKASI } from "../src/data/olaylar";
 import type { CharacterState } from "../src/types";
 
 function taze(): CharacterState {
-  const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
+  const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
   mesleğiSec(state, "Tüccar");
   state.para = 1000;
   return state;
@@ -139,7 +139,7 @@ describe("piyasa dedikoduları", () => {
 
 describe("gameEngine entegrasyonu — mülk/zar/dedikodu aksiyonları", () => {
   it("mulkSatinAl: yeterli parayla satın alınabilir, ikinci kez alınamaz", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     state.para = 500;
 
@@ -151,14 +151,14 @@ describe("gameEngine entegrasyonu — mülk/zar/dedikodu aksiyonları", () => {
   });
 
   it("mulkSatinAl: yetersiz parada hata fırlatır", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     state.para = 0;
     await expect(mulkSatinAl(state.id, "kervan")).rejects.toThrow();
   });
 
   it("mulkConfigGetir: 6 mülkün tamamını, güncel maliyet/getiri ile döner", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     const config = await mulkConfigGetir(state.id);
     expect(config).toHaveLength(6);
@@ -170,7 +170,7 @@ describe("gameEngine entegrasyonu — mülk/zar/dedikodu aksiyonları", () => {
   });
 
   it("zarAt: geçersiz tutarda hata fırlatır, geçerli tutarda suç seviyesini artırır", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     state.para = 500;
 
@@ -184,7 +184,7 @@ describe("gameEngine entegrasyonu — mülk/zar/dedikodu aksiyonları", () => {
   });
 
   it("dedikoduGetir: en az bir dedikodu satırı döner", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     const dedikodular = await dedikoduGetir(state.id);
     expect(dedikodular.length).toBeGreaterThan(0);

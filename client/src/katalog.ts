@@ -190,21 +190,6 @@ const KATALOG_EN: Record<string, string> = {
   // Yerleşimler
   // ---------------------------------------------------------------------------
   "Kasaba": "Town",
-  "Şehir Merkezi": "City Center",
-  "Sınır Bölgesi": "Frontier Region",
-  "Dağ Başı": "Mountain Reaches",
-  "Ticaret ve sosyal fırsatlar bol": "Abundant trade and social opportunities",
-  "Yıllık kazancın %10 daha yüksek": "Your yearly income is 10% higher",
-  "Kalabalık ve salgın riski yüksek": "Crowded, with a high risk of plague",
-  "Başlangıç sağlığın daha düşük": "Your starting health is lower",
-  "Toprağın bereketli, vergiler hafif": "Fertile land, light taxes",
-  "Askeri fırsatlar ve ganimet bol": "Plenty of military opportunity and plunder",
-  "Baskın ve savaş riski yüksek": "High risk of raids and war",
-  "Ticaret ağın zayıf, yıllık kazancın %5 daha düşük": "Your trade network is weak; your yearly income is 5% lower",
-  "Yalnız ve özgürsün, vergi baskısı az": "Alone and free, with little tax pressure",
-  "Başlangıç sağlığın daha yüksek": "Your starting health is higher",
-  "Vahşi hayvanlar ve zorlu kışlarla karşılaşabilirsin": "You may face wild animals and harsh winters",
-  "Pazardan uzak, yıllık kazancın %10 daha düşük": "Far from the market; your yearly income is 10% lower",
 
   // ---------------------------------------------------------------------------
   // Konutlar
