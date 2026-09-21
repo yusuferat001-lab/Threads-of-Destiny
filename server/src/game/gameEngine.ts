@@ -228,16 +228,19 @@ const YOL_TAKIP_KONTROL_NOKTALARI: Record<string, { yas: number; hedef: number }
     { yas: 51, hedef: 3 },
     { yas: 65, hedef: 4 },
   ],
-  // Zanaatkâr (2026-09 yeni): dal başına 11 olay → hedef 3, Tüccar/SD ile aynı desen.
+  // Zanaatkâr: dal başına ~11 olay → hedef 4 (%36), diğer 4 sistemle aynı
+  // yoğunlaştırılmış desen (kariyer yolu densifikasyonu, yukarıdaki not).
   "Orta Çağ|Zanaatkâr": [
-    { yas: 22, hedef: 1 },
-    { yas: 40, hedef: 2 },
-    { yas: 60, hedef: 3 },
+    { yas: 21, hedef: 1 },
+    { yas: 34, hedef: 2 },
+    { yas: 46, hedef: 3 },
+    { yas: 58, hedef: 4 },
   ],
   "Sanayi Devrimi|Zanaatkâr": [
-    { yas: 23, hedef: 1 },
-    { yas: 41, hedef: 2 },
-    { yas: 60, hedef: 3 },
+    { yas: 25, hedef: 1 },
+    { yas: 39, hedef: 2 },
+    { yas: 53, hedef: 3 },
+    { yas: 67, hedef: 4 },
   ],
 };
 
