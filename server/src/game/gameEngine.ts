@@ -304,47 +304,48 @@ function standaloneHavuzDurumu(tanim: StandaloneHavuzTanimi, state: CharacterSta
 
 /**
  * genel.ts (~213 olay, meslekten/çağdan bağımsız evrensel havuz) için kümülatif
- * hedefler. İKİ turda kalibre edildi (`SIM_N` bot-simülasyonuyla test edilerek):
- * 1. tur (20→2 ... 90→24): bir ömürdeki "serbest" (hiçbir üst öncelikli kaskad
- *    kuralının — özellikle uzun süren yolculuk/kariyer-yolu zincirlerinin —
- *    meşgul etmediği) tur sayısı beklenenden çok daha az çıktı (60 ömürlük
- *    örneklemde hedef %90 oranda tutmuyordu, bazı ömürlerde 40 yaşında hedef 8
- *    iken gerçekte 0 görülmüştü) → hedefler yarıya indirildi.
- * 2. tur: `standaloneHavuzDurumu`ya "oransal en geride kalan havuzu seç"
- *    mantığı eklendikten sonra (genel.ts artık diğer küçük havuzları açlıktan
- *    öldürmüyor) tekrar test edildi — bu kez genel.ts kendi payını başka
- *    havuzlarla PAYLAŞTIĞI için yarıya indirilmiş hedefler bile hâlâ %77
- *    oranda tutmuyordu (yine küçük farklarla, ör. 3/5, 4/7). Hedefler bu
- *    ikinci veriye göre bir kez daha ~%35-40 indirildi ve ilk kontrol noktası
- *    25→30'a ertelendi. Sonuç: küçük/orta miktarda yolculuk-hapis-veba yaşayan
- *    "ortalama" bir ömür hedefi rahatça tutturuyor; çok yoğun (uzun yolculuk +
- *    hapis + veba üst üste) ömürlerde küçük bir açık kalabilir — bu kasıtlı
- *    bir ödünleşim, aksi halde hedefi daha da düşürmek "kesinlikle görsün"
- *    isteğini anlamsızlaştırırdı.
+ * hedefler. DÖRT turda kalibre edildi (`SIM_N` bot-simülasyonuyla test edilerek):
+ * 1-2. tur: ilk tahminler ("bir ömürde ~50 tur var" varsayımı) gerçekte
+ *    tutmadı, hedefler ~%65 küçültüldü.
+ * 3. tur (kullanıcı düzeltmesi — "ortalama ölüm 70-75 civarı"): 1-2. turda
+ *    kullanılan bot başarı şansına göre AĞIRLIKLI RASTGELE seçim yapıyordu ve
+ *    `komikOlumler.ts`'teki riskli seçenekleri zaman zaman seçip erken
+ *    ölümleri şişiriyordu (~47-55 ortalama). Her zaman en yüksek başarı
+ *    şansını seçen "temkinli" bir botla ölçülünce ortalama 54.4/medyan 62/
+ *    %75 persentil 68 çıktı — hedefler bu beklentiyle ~2-3 katına büyütüldü.
+ * 4. tur (aynı temkinli bot, ama bu kez YENİ hedeflerle kapsam testi):
+ *    3. turdaki büyütme fazlaydı — kapsam oranı genel.ts'te %9'a, meslek
+ *    havuzunda %8'e düştü (60-75 yaş bandında gerçek görülen sayı hedefin
+ *    yaklaşık YARISI civarında kalıyordu, ör. hedef 11 iken gerçek 5-6,
+ *    hedef 4 iken gerçek 2 — yaş uzasa bile bir ömürdeki "serbest" tur PAYI
+ *    aynı hızla büyümüyor, çünkü yolculuk/kariyer-yolu/hapis/veba gibi diğer
+ *    sistemler de daha uzun ömürde orantılı pay alıyor). Hedefler bu dördüncü
+ *    veriye göre ~%45-55 küçültüldü — 2. turun hedeflerine yakın ama yaş
+ *    eşikleri "70-75 ortalama" beklentisine göre biraz uzatılmış hâliyle.
  */
 const GENEL_HAVUZ_KONTROL_NOKTALARI: { yas: number; hedef: number }[] = [
-  { yas: 30, hedef: 1 },
-  { yas: 45, hedef: 2 },
-  { yas: 55, hedef: 3 },
-  { yas: 65, hedef: 4 },
-  { yas: 75, hedef: 5 },
-  { yas: 85, hedef: 6 },
-  { yas: 95, hedef: 7 },
+  { yas: 25, hedef: 1 },
+  { yas: 35, hedef: 2 },
+  { yas: 45, hedef: 3 },
+  { yas: 55, hedef: 4 },
+  { yas: 65, hedef: 6 },
+  { yas: 75, hedef: 8 },
+  { yas: 85, hedef: 10 },
+  { yas: 95, hedef: 12 },
 ];
 
 /**
  * 6 meslek-standalone havuzun (ortaCagAsker/Tuccar/DinAdami, sanayiAsker/
  * Tuccar/DinAdami, ~18-27 olay/dosya) hepsi aynı kontrol noktalarını
  * paylaşır — her biri zaten yalnız eşleşen çağ×meslek'te devreye girer
- * (`temelUygunMu` içindeki cag/meslekler filtresi). "Oransal en geride kalan"
- * seçimi eklendikten sonra genel.ts ile aynı turlar için rekabet ettiği için
- * (2. kalibrasyon turu) hedefler bir basamak geriye çekildi (25→30 vb.).
+ * (`temelUygunMu` içindeki cag/meslekler filtresi). genel.ts ile aynı 4.
+ * kalibrasyon turunda küçültüldü (bkz. yukarısı).
  */
 const MESLEK_STANDALONE_KONTROL_NOKTALARI: { yas: number; hedef: number }[] = [
-  { yas: 30, hedef: 1 },
+  { yas: 25, hedef: 1 },
   { yas: 45, hedef: 2 },
-  { yas: 60, hedef: 3 },
-  { yas: 75, hedef: 4 },
+  { yas: 65, hedef: 3 },
+  { yas: 85, hedef: 4 },
 ];
 
 const MESLEK_STANDALONE_HAVUZLARI: Record<string, OlayTanimi[]> = {
@@ -357,24 +358,24 @@ const MESLEK_STANDALONE_HAVUZLARI: Record<string, OlayTanimi[]> = {
 };
 
 const ILISKILER_HAVUZ_KONTROL_NOKTALARI: { yas: number; hedef: number }[] = [
-  { yas: 40, hedef: 1 },
-  { yas: 55, hedef: 2 },
-  { yas: 70, hedef: 3 },
-  { yas: 85, hedef: 4 },
+  { yas: 35, hedef: 1 },
+  { yas: 50, hedef: 2 },
+  { yas: 65, hedef: 3 },
+  { yas: 80, hedef: 4 },
 ];
 
 const AILE_HAVUZ_KONTROL_NOKTALARI: { yas: number; hedef: number }[] = [
-  { yas: 40, hedef: 1 },
-  { yas: 55, hedef: 2 },
-  { yas: 70, hedef: 3 },
-  { yas: 85, hedef: 4 },
+  { yas: 35, hedef: 1 },
+  { yas: 50, hedef: 2 },
+  { yas: 65, hedef: 3 },
+  { yas: 80, hedef: 4 },
 ];
 
 const EVLILIK_AILE_HAVUZ_KONTROL_NOKTALARI: { yas: number; hedef: number }[] = [
-  { yas: 40, hedef: 1 },
-  { yas: 55, hedef: 2 },
-  { yas: 70, hedef: 3 },
-  { yas: 85, hedef: 4 },
+  { yas: 35, hedef: 1 },
+  { yas: 50, hedef: 2 },
+  { yas: 65, hedef: 3 },
+  { yas: 80, hedef: 5 },
 ];
 
 const KOMIK_GARIP_HAVUZ_KONTROL_NOKTALARI: { yas: number; hedef: number }[] = [
@@ -386,7 +387,7 @@ const KOMIK_GARIP_HAVUZ_KONTROL_NOKTALARI: { yas: number; hedef: number }[] = [
 
 /** komikOlumler.ts (14 olay, risk-tercihli "aptalca olanı yap mı?" ekranları — seçim yine oyuncunun, garanti sadece EKRANI göstermeyi zorlar, ölümü değil) — düşük hedef, düşük öncelik. */
 const KOMIK_OLUM_HAVUZ_KONTROL_NOKTALARI: { yas: number; hedef: number }[] = [
-  { yas: 45, hedef: 1 },
+  { yas: 40, hedef: 1 },
   { yas: 70, hedef: 2 },
 ];
 
