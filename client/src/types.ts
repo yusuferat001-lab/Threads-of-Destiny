@@ -816,5 +816,6 @@ export interface ScoreKaydi {
   unvanlar: string;
   efsanevi_olum: string;
   hayat_amaci_tamamlandi: boolean;
+  amac_carpani: number;
   createdAt: string;
 }

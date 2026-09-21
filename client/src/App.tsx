@@ -117,7 +117,7 @@ import { gunlukSeriKontrolEt, gunlukSeriGetir, type GunlukSeriSonuc } from './gu
 import { goldBakiyeGetir, olumGoldHesapla, goldEkle } from './gold';
 import { sonucIkonuGetir, unUnvani, MESLEK_KATEGORI, yatkinlikEtiketi, etkiTahminiGetir, type EtkiTahmini } from './bolgeTema';
 import { formatPara } from './format';
-import { bic } from './i18n';
+import { bic, amacCarpaniGoster } from './i18n';
 import { DilContext, dilCtxYap } from './DilContext';
 import { CarkLogo, KoseTezhibi, MuhurAyrac, AdimGostergesi, KaderYollari } from './components/Suslemeler';
 import { CagAmblemi, BolgeAmblemi } from './components/Amblemler';
@@ -1729,7 +1729,8 @@ function App() {
                   {formatPara(secilenGecmisHayat.para)} {secilenGecmisHayat.paraBirimi} · {m.sohret}:{' '}
                   {unUnvani(secilenGecmisHayat.un, dil)} ·{' '}
                   {secilenGecmisHayat.skor.toLocaleString(dil === 'en' ? 'en-US' : 'tr-TR')} {m.puan}
-                  {secilenGecmisHayat.amacTamamlandi && ' · 🎯 x5'}
+                  {secilenGecmisHayat.amacTamamlandi &&
+                    ` · 🎯 x${amacCarpaniGoster(secilenGecmisHayat.amacCarpani ?? 5)}`}
                 </p>
                 <p className="sonuc-hikaye">{secilenGecmisHayat.olumNedeni}</p>
                 {(secilenGecmisHayat.unvanlar.length > 0 || secilenGecmisHayat.efsaneviOlum) && (
@@ -2578,8 +2579,11 @@ function App() {
                   <div>
                     <strong>{kayit.isim}</strong>
                     {kayit.hayat_amaci_tamamlandi && (
-                      <span className="liderlik-rozet liderlik-rozet-amac" title={m.amacTamamladiTitle}>
-                        🎯 x5
+                      <span
+                        className="liderlik-rozet liderlik-rozet-amac"
+                        title={bic(m.amacTamamladiTitle, amacCarpaniGoster(kayit.amac_carpani ?? 1))}
+                      >
+                        🎯 x{amacCarpaniGoster(kayit.amac_carpani ?? 1)}
                       </span>
                     )}
                     {' '}— {kayit.skor} {m.puan} ({kayit.rutbe ? `${kt(kayit.rutbe)}, ` : ''}

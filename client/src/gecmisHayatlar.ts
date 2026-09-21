@@ -26,6 +26,7 @@ export interface GecmisHayat {
   efsaneviOlum: string | null;
   unvanlar: string[];
   amacTamamlandi: boolean;
+  amacCarpani: number;
   skor: number;
   hayatHikayesi: HayatOlayi[];
   gecmis: GecmisNoktasi[];
@@ -51,7 +52,7 @@ function yaz(liste: GecmisHayat[]) {
 
 /**
  * hesaplaSkor (sunucu, yama #1) ile hizalı: yas × max(un,1) × servetFaktoru (LOG-ölçekli),
- * amaç tamamlandıysa ×5. İstemcide gayrimenkul değeri elde olmadığı için servet ≈ nakit
+ * tamamlanan amaçların toplamsal bonusu kadar (tavan ×5). İstemcide gayrimenkul değeri elde olmadığı için servet ≈ nakit
  * (basarimSistemi.ts'teki kopyayla aynı yaklaşım). Eski `× max(para,1)` çarpanı tek zengin
  * ömrü milyonlara fırlatıyordu.
  */
@@ -95,6 +96,7 @@ export function gecmisHayatKaydet(state: CharacterState): void {
     unvanlar: state.unvanlar,
     amacTamamlandi:
       (state.hayat_amaclari ?? []).some((a) => a.tamamlandi) || (state.hayat_amaci?.tamamlandi ?? false),
+    amacCarpani: amacCarpani(state),
     skor: skorHesapla(state),
     hayatHikayesi: state.hayat_hikayesi,
     gecmis: state.gecmis,

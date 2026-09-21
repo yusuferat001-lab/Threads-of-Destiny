@@ -19,6 +19,11 @@ export function bic(s: string, ...a: (string | number)[]): string {
   });
 }
 
+/** Skor çarpanını "x{N}" rozeti için biçimlendirir — 1.5/3.5 gibi ondalıkları korur, 3/5 gibi tamları kırpar. */
+export function amacCarpaniGoster(carpan: number): string {
+  return Number.isInteger(carpan) ? String(carpan) : carpan.toFixed(1);
+}
+
 const TR = {
   // ---- Ayarlar modalı ----
   ayarlarBaslik: 'Ayarlar',
@@ -205,7 +210,7 @@ const TR = {
   sekmeEnUnlu: 'En Çok Tanınanlar',
   sekmeEnUzunYasayan: 'En Uzun Yaşayanlar',
   kayitYok: 'Henüz kayıt yok.',
-  amacTamamladiTitle: 'Hayat amacını tamamladı (x5 skor)',
+  amacTamamladiTitle: 'Hayat amacını tamamladı (x{0} skor)',
 
   // ---- UstSerit ----
   usAraniyorsun: '▲ aranıyorsun',
@@ -883,7 +888,7 @@ const EN: Metinler = {
   sekmeEnUnlu: 'Most Renowned',
   sekmeEnUzunYasayan: 'Longest-Lived',
   kayitYok: 'No records yet.',
-  amacTamamladiTitle: 'Completed their life goal (x5 score)',
+  amacTamamladiTitle: 'Completed their life goal (x{0} score)',
 
   // ---- UstSerit ----
   usAraniyorsun: '▲ wanted',

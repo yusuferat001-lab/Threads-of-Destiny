@@ -1,9 +1,21 @@
 import { prisma } from "./prismaClient";
 import { CharacterState } from "../types";
 import { hesaplaSkor, gayrimenkulDegeriHesapla, paraYuvarla } from "../game/stateManager";
+import { amacSkorCarpani } from "../data/hayatAmaclari";
 
 export async function skorKaydet(state: CharacterState, isim: string) {
   const skor = hesaplaSkor(state);
+  const amacTamamlandi =
+    (state.hayat_amaclari ?? []).some((a) => a.tamamlandi) || (state.hayat_amaci?.tamamlandi ?? false);
+  // hesaplaSkor'daki carpan mantığıyla birebir aynı (§18): yeni 3'lü sistemde
+  // amacSkorCarpani (toplamsal, 1.5/2 tavan ×5); eski tekil `hayat_amaci`
+  // kayıt/test fallback'inde sabit ×5.
+  const amacCarpani =
+    (state.hayat_amaclari?.length ?? 0) > 0
+      ? amacSkorCarpani(state)
+      : state.hayat_amaci?.tamamlandi
+        ? 5
+        : 1;
   // "en_zengin" sıralaması net serveti ödüllendirsin (madde 25): Score.para
   // artık salt nakit değil, nakit + gayrimenkul değeri — mülke servet bağlamış
   // bir oyuncu liderlik tablosunda cezalanmasın.
@@ -25,8 +37,8 @@ export async function skorKaydet(state: CharacterState, isim: string) {
       unvanlar: state.unvanlar.join(", "),
       efsanevi_olum: state.efsanevi_olum ?? "",
       // "en az bir kişisel amaç tamamlandı mı" (eski tekil alan fallback'iyle).
-      hayat_amaci_tamamlandi:
-        (state.hayat_amaclari ?? []).some((a) => a.tamamlandi) || (state.hayat_amaci?.tamamlandi ?? false),
+      hayat_amaci_tamamlandi: amacTamamlandi,
+      amac_carpani: amacCarpani,
     },
   });
 }
