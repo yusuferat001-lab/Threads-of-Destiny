@@ -745,7 +745,9 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
           ? "sehir_yonetim_dinadami_baslangic"
           : oturum.state.meslek === "Asker"
             ? "sehir_yonetim_asker_baslangic"
-            : undefined;
+            : oturum.state.meslek === "Zanaatkâr"
+              ? "sehir_yonetim_zanaatkar_baslangic"
+              : undefined;
     if (baslangicId && !oturum.state.gecmis_olaylar.includes(baslangicId)) {
       zorlananId = baslangicId;
     }

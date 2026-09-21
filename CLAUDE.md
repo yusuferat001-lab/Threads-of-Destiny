@@ -304,11 +304,11 @@ Olay/seçenek metninde ve sonuç `mesaj`/`detay`'ında kullanılabilir: `{bolge}
 
 ## 7. Olay Bankası Dosya Haritası
 
-`data/olaylar/index.ts` tüm alt listeleri `OLAY_BANKASI: OlayTanimi[]` içinde birleştirir. **Toplam 1519 olay** (id sayımıyla, 2026-09 sonu itibarıyla güncellendi — 4. meslek Zanaatkâr'ın 130 olayı eklendikten sonraki gerçek sayı, `npx tsx -e "import{OLAY_BANKASI}from './src/data/olaylar';console.log(OLAY_BANKASI.length)"` ile doğrulanabilir). Belirli bir olayı bulmak için `grep -n "id: \"<olay_id>\"" server/src/data/olaylar/*.ts` kullan — dosyayı baştan sona okuma.
+`data/olaylar/index.ts` tüm alt listeleri `OLAY_BANKASI: OlayTanimi[]` içinde birleştirir. **Toplam 1520 olay** (id sayımıyla, 2026-09 sonu itibarıyla güncellendi — 4. meslek Zanaatkâr'ın 130 olayı + `genel.ts`'e eklenen `sehir_yonetim_zanaatkar_baslangic` giriş olayı sonrası gerçek sayı, `npx tsx -e "import{OLAY_BANKASI}from './src/data/olaylar';console.log(OLAY_BANKASI.length)"` ile doğrulanabilir). Belirli bir olayı bulmak için `grep -n "id: \"<olay_id>\"" server/src/data/olaylar/*.ts` kullan — dosyayı baştan sona okuma.
 
 | Dosya | ~Olay Sayısı | Satır | İçerik |
 |---|---|---|---|
-| `genel.ts` | 199 | 10442 | Meslek/çağdan bağımsız evrensel olaylar (sağlık, sosyal, hizip başlangıcı vb.) |
+| `genel.ts` | 200 | ~10500 | Meslek/çağdan bağımsız evrensel olaylar (sağlık, sosyal, hizip başlangıcı vb.) — 2026-09 sonunda `sehir_yonetim_zanaatkar_baslangic` (§11 kural 4, §15) eklendi |
 | `ortaCagAskerYollari.ts` | 105 | 5723 | Orta Çağ Asker **kariyer yolu** dallanması (§16 "yol:asker:*") |
 | `yolculuk.ts` | 129 | 8058 | "Büyük yolculuk" zincirleri (Haçlı Seferi, Hac, Keşif, vb. — §17) |
 | `ortaCagDinAdamiYollari.ts` | 85 | 4546 | Orta Çağ Din Adamı kariyer yolu dallanması ("yol:din:*") |
@@ -420,7 +420,7 @@ Bir seçeneğin `onTepki` alanı varsa: seçilince **zar atılmaz**, zaman ilerl
 1. **Tarihi savaş ilanı** — savaşta değil, yaş≤55, `tarihiSavasKontrol(bolge,yil,cag)` bir rakip döndürüyor ve `tarihi_savas_gordu:<rakip>` etiketi yoksa → `dunya_savas_ilani_asker` (Asker) / `dunya_savas_ilani` (diğer); etiket eklenir.
 2. **Kariyer yolu girişi** (2026-09'dan beri **6 çağ×meslek kombinasyonunun hepsi**, `gameEngine.ts`'teki `YOL_SISTEMLERI` tablosundan okunur — eskiden sadece Orta Çağ Asker/Din Adamı'ydı) — yaş≥18, ilgili `yol:asker:*`/`yol:din:*`/`yol:tuccar:*` etiketi henüz yok, giriş olayı daha önce görülmemiş → Orta Çağ Asker `oc_asker_yol_ilk_emir` / Orta Çağ Din Adamı `oc_din_yol_ilk_sinav` / Orta Çağ Tüccar `oc_tuccar_yol_ilk_anlasma` / Sanayi Devrimi Asker `sd_asker_yol_ilk_gorev` / Sanayi Devrimi Tüccar `sd_tuccar_yol_ilk_karar` / Sanayi Devrimi Din Adamı `sd_din_yol_ilk_vaaz`.
 3. **Evlilik teklifi garantisi** — yaş≥29, evli değil, ne `iliski_evlilik_teklifi` ne `iliski_ikinci_teklif` hiç görülmemiş → `iliski_evlilik_teklifi`.
-4. **Şehir yönetimi girişi** — `rutbe_seviye>=4` (2026-08 rütbe reformuyla eski `>=3`'ten yükseltildi, §14), `sehir_yonetimi_basladi` etiketi yok → mesleğe göre `sehir_yonetim_{tuccar|dinadami|asker}_baslangic`.
+4. **Şehir yönetimi girişi** — `rutbe_seviye>=4` (2026-08 rütbe reformuyla eski `>=3`'ten yükseltildi, §14), `sehir_yonetimi_basladi` etiketi yok → mesleğe göre `sehir_yonetim_{tuccar|dinadami|asker|zanaatkar}_baslangic` (Zanaatkâr 2026-09 sonunda eklendi, §15).
 5. **Evcil hayvan teklifi** — 20≤yaş<25, evcil hayvanı yok, teklif olayı görülmemiş → çağa göre `evcilhayvan_sahiplenme_teklifi_{sanayi|ortacag}`.
 6. **Evcil hayvan takip garantisi** — evcil hayvanı var, 45≤yaş<50, `EVCIL_HAYVAN_TAKIP_OLAY_IDLERI`'den <2 görülmüş → `EVCIL_HAYVAN_GENEL_TAKIP_OLAY_IDLERI` havuzundan (öncelik görülmemişlerde) rastgele.
 7. **Gizemli eşya takip garantisi** — 38≤yaş<46, sahip olunan her `esya:`/`envanter:` etiketi için `GIZEMLI_ESYA_TAKIP_HAVUZU[esyaId]`'den hiç görülmemişse → o havuzdan rastgele (ilk eşleşen eşya kazanır).
@@ -607,7 +607,7 @@ Her kademe **hem** `kariyer_puani` **hem** mesleğe özgü statı ister (`esikKa
 | Din Adamı | Piskopos Vekili | Baş Piskopos | Kutsal Meclis Üyesi | Ruhani Önder | "Ruhani Önder (Seviye N)" |
 | Zanaatkâr | Zanaat Şurası Üyesi | Loncalar Birliği Başkanı | Şehrin Baş Mimarı | Sanayi Piri | "Sanayi Piri (Seviye N)" |
 
-**Bilinen eksik (2026-09 sonu):** unvan tablosu Zanaatkâr'ı da kapsıyor ama `gameEngine.ts`'teki giriş-zorlama mantığı (`sehir_yonetim_{tuccar|dinadami|asker}_baslangic`, §11 kural 4) henüz Zanaatkâr'a bir `sehir_yonetim_zanaatkar_baslangic` olayı bağlamıyor (`baslangicId` Zanaatkâr'da `undefined` kalıyor) — bu yüzden Zanaatkâr karakterleri rütbe 4'e ulaşsa bile şehir yönetimi eksenine hiç girmiyor (`sehir_yonetim_seviyesi` sıfırda kalır). Çökme/hata yok, yalnızca eksik bir içerik dalı; giriş olayını `genel.ts`'e ekleyip yukarıdaki `if` zincirine bir `"Zanaatkâr"` kolu eklemek yeterli olur.
+Zanaatkâr'ın giriş-zorlama olayı (`sehir_yonetim_zanaatkar_baslangic`, `genel.ts`) 2026-09 sonunda eklendi — `gameEngine.ts`'teki `if` zincirine bir `"Zanaatkâr"` kolu bağlandı, artık diğer 3 meslekle tam simetrik (§11 kural 4).
 
 **Maaş etkisi:** Şehir yönetimine **bir kez girmek** maaşa kalıcı, **SABİT +%3** katar (`sehirYonetimMaasCarpani = seviye>=1 ? 1.03 : 1`). Eskiden `1 + seviye*0.08` (tavansız, seviyeyle büyüyen), sonra sabit +%8 idi; artık +%3 ve seviye/unvan **yalnız prestij içindir**, maaşa ek katkısı yoktur.
 
