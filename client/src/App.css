@@ -5251,6 +5251,46 @@ button.ikincil {
   color: var(--renk-altin-parlak);
 }
 
+/* Skor kırılımı satır satır, yukarıdan aşağıya sırayla belirir. */
+@keyframes skorSatirBelir {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.skor-kirilimi-liste li,
+.skor-kirilimi-toplam,
+.skor-kirilimi-carpan,
+.skor-kirilimi-sonuc {
+  animation: skorSatirBelir 0.4s ease-out backwards;
+}
+
+.skor-kirilimi-liste li:nth-child(1) { animation-delay: 0.05s; }
+.skor-kirilimi-liste li:nth-child(2) { animation-delay: 0.17s; }
+.skor-kirilimi-liste li:nth-child(3) { animation-delay: 0.29s; }
+.skor-kirilimi-liste li:nth-child(4) { animation-delay: 0.41s; }
+.skor-kirilimi-liste li:nth-child(5) { animation-delay: 0.53s; }
+.skor-kirilimi-liste li:nth-child(6) { animation-delay: 0.65s; }
+.skor-kirilimi-liste li:nth-child(7) { animation-delay: 0.77s; }
+.skor-kirilimi-liste li:nth-child(8) { animation-delay: 0.89s; }
+.skor-kirilimi-toplam { animation-delay: 1.0s; }
+.skor-kirilimi-carpan { animation-delay: 1.12s; }
+.skor-kirilimi-sonuc { animation-delay: 1.24s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .skor-kirilimi-liste li,
+  .skor-kirilimi-toplam,
+  .skor-kirilimi-carpan,
+  .skor-kirilimi-sonuc {
+    animation: none;
+  }
+}
+
 .isim-form {
   display: flex;
   gap: 0.5rem;
