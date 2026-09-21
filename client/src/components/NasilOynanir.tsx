@@ -26,8 +26,14 @@ const BOLUMLER: Bolum[] = [
       en: 'You pick an era, a country and a settlement; your family, personality and faith come at random. At 15 you choose a profession, then live out a life by deciding on the events you meet each turn. Death is permanent.',
     },
     maddeler: {
-      tr: ['Doğuşta gizli bir hayat amacın olur; ölürken onu tamamladıysan skorun ciddi artar.'],
-      en: ['At birth you get a hidden life goal; completing it before you die boosts your score a lot.'],
+      tr: [
+        'Doğuşta gizli bir hayat amacın olur; ölürken onu tamamladıysan skorun ciddi artar.',
+        'Olay bankası 1500\'ü aşkın olaydan oluşur ve düzenli olarak yenileri eklenir.',
+      ],
+      en: [
+        'At birth you get a hidden life goal; completing it before you die boosts your score a lot.',
+        'The event bank has over 1,500 events, and new ones are added regularly.',
+      ],
     },
   },
   {
@@ -64,8 +70,12 @@ const BOLUMLER: Bolum[] = [
     ikon: '🎖️',
     baslik: { tr: 'Meslek & İlerleme', en: 'Profession & Progress' },
     metin: {
-      tr: 'Asker, Tüccar ya da Din Adamı olursun. Kendi alanında başarılı oldukça, kıdem kazandıkça ve işine yatırım yaptıkça rütben yükselir. Rütbe bir daha düşmez; ileride şehir yönetimi gibi ek bir yol da açılır.',
-      en: 'You become a Soldier, Merchant or Clergyman. Your rank rises as you succeed in your field, gain seniority and invest in your work. Rank never drops; later an extra track like city governance opens.',
+      tr: 'Asker, Tüccar, Din Adamı ya da Zanaatkâr olursun — dördü de kendi kariyer yoluna ve olaylarına sahip. Kendi alanında başarılı oldukça, kıdem kazandıkça ve işine yatırım yaptıkça rütben yükselir. Rütbe bir daha düşmez; ileride şehir yönetimi gibi ek bir yol da açılır.',
+      en: 'You become a Soldier, Merchant, Clergyman or Artisan — all four with their own career path and events. Your rank rises as you succeed in your field, gain seniority and invest in your work. Rank never drops; later an extra track like city governance opens.',
+    },
+    maddeler: {
+      tr: ['Zanaatkâr çırak\'lıktan loncabaşına uzanan yeni bir zanaat kariyeri sunar.'],
+      en: ['Artisan offers a brand-new craft career, from apprentice to guild master.'],
     },
   },
   {
@@ -100,8 +110,8 @@ const BOLUMLER: Bolum[] = [
     ikon: '🏆',
     baslik: { tr: 'Ölüm & Skor', en: 'Death & Score' },
     metin: {
-      tr: 'Öldüğünde yaşın, şöhretin ve servetinden bir skor çıkar; hayat amacını tamamladıysan çok daha yüksek olur. Skorunu liderlik tablosuna yazabilirsin. Kazandığın ünvanlar ve başarımlar cihazında kalır.',
-      en: 'On death a score comes from your age, fame and wealth; it is far higher if you completed your life goal. You can submit it to the leaderboard. Titles and achievements you earn stay on your device.',
+      tr: 'Öldüğünde servetin, şöhretin, ahlakın, mutluluğun ve rütbenin toplamından bir skor çıkar; hayat amacını tamamladıysan çok daha yüksek olur. Ölüm ekranında skorunun eksen eksen nasıl hesaplandığını görebilirsin. Skorunu liderlik tablosuna yazabilirsin. Kazandığın ünvanlar ve başarımlar cihazında kalır.',
+      en: 'On death a score is built from the sum of your wealth, fame, morality, happiness and rank; it is far higher if you completed your life goal. The death screen shows you exactly how each axis added up. You can submit it to the leaderboard. Titles and achievements you earn stay on your device.',
     },
   },
   {
