@@ -104,6 +104,18 @@ import { rollSuccess } from "./diceRoll";
 import { olaySec, doldur, temelUygunMu, sosyallesmeIcinOlaySec } from "./olaySecici";
 import { OlayTanimi, OnTepki, OLAY_BANKASI } from "../data/olaylar";
 import { OLAY_SOSYALLESME } from "../data/olaylar/sosyallesme";
+import { OLAY_GENEL } from "../data/olaylar/genel";
+import { OLAY_ORTACAG_ASKER } from "../data/olaylar/ortaCagAsker";
+import { OLAY_ORTACAG_TUCCAR } from "../data/olaylar/ortaCagTuccar";
+import { OLAY_ORTACAG_DINADAMI } from "../data/olaylar/ortaCagDinAdami";
+import { OLAY_SANAYI_ASKER } from "../data/olaylar/sanayiAsker";
+import { OLAY_SANAYI_TUCCAR } from "../data/olaylar/sanayiTuccar";
+import { OLAY_SANAYI_DINADAMI } from "../data/olaylar/sanayiDinAdami";
+import { OLAY_ILISKILER } from "../data/olaylar/iliskiler";
+import { OLAY_AILE } from "../data/olaylar/aile";
+import { OLAY_EVLILIK_AILE } from "../data/olaylar/evlilikVeAile";
+import { OLAY_KOMIK_GARIP } from "../data/olaylar/komikGaripOlaylar";
+import { OLAY_KOMIK_OLUM } from "../data/olaylar/komikOlumler";
 import {
   SOSYALLESME_YERLERI,
   SosyallesmeYeri,
@@ -245,6 +257,161 @@ function kumulatifTakipSec(
   const aday = gorulmemis.length > 0 ? gorulmemis : secimHavuzu;
   return aday.length > 0 ? aday[Math.floor(Math.random() * aday.length)] : null;
 }
+
+/**
+ * "Standalone havuz garantisi" (§11 yeni kural, 2026-09 — kullanıcı isteği:
+ * "belli yaşlarda yaşanmamışsa tetikleyelim ki bir hayatta belli sayıda
+ * kesinlikle görsünler"). `kumulatifTakipSec`'ten farkı: aday havuzu ham bir
+ * id listesi değil, HER ÇAĞRIDA `temelUygunMu` ile o anki state'e göre
+ * filtrelenen `OlayTanimi[]` — bu sayede etiket/stat/çağ/meslek koşulu
+ * tutmayan bir olay (ör. evli değilken bir evlilik-sonrası olay, "iliski_X_zamani"
+ * cooldown'u dolmadan bir takip olayı) ASLA zorlanmaz; koşul o an sağlanmıyorsa
+ * fonksiyon sessizce null döner ve bir sonraki turda tekrar denenir.
+ *
+ * Sadece hiçbir kilide/garantiye bağlı olmayan "standalone" havuzlar için
+ * kullanılır (genel.ts + 6 meslek-standalone dosya + iliskiler/aile/
+ * evlilikVeAile/komikGaripOlaylar/komikOlumler). hapis/veba/yolculuk/
+ * sosyalleşme/aranma/kariyer-yolu/evcil-hayvan/gizemli-eşya/büyülü-mistik
+ * havuzları kasıtlı olarak DIŞARIDA bırakıldı — hepsinin zaten kendi §11/§17/
+ * §27/§34 garantisi var, ikinci bir üst üste binen garanti çakışma/çifte
+ * zorlama yaratırdı.
+ */
+interface StandaloneHavuzTanimi {
+  havuz: OlayTanimi[];
+  kontrolNoktalari: { yas: number; hedef: number }[];
+}
+
+/**
+ * Bir havuzun o anki "geride kalma oranı"nı (0-1, büyük = hedefinden yüzdece
+ * daha geride) ve zorlanacak adayı hesaplar. Hiç zorlama gerekmiyorsa
+ * (hedef 0, hedef zaten karşılanmış, ya da o an `temelUygunMu`'dan geçen aday
+ * yoksa) null döner.
+ *
+ * ÖNEMLİ (2026-09, gerçek oyun simülasyonuyla test edildikten sonra düzeltme):
+ * İlk sürümde havuzlar SABİT bir öncelik sırasıyla (genel.ts hep önce)
+ * taranıyordu — büyük hedefli genel.ts, küçük hedefli iliskiler/aile/
+ * evlilikVeAile/komikGarip/komikOlum'u sistematik olarak açlıktan
+ * öldürüyordu (bir ömürde "serbest" tur sayısı zaten kısıtlı — yolculuk/
+ * kariyer-yolu/evcil-hayvan gibi diğer garantiler büyük payı yiyor). Artık
+ * her çağrıda TÜM adaylar arasından **oransal olarak en geride kalan**
+ * havuzdan zorlanıyor — küçük havuzlar hedeflerine ulaşınca hızla devreden
+ * çıkıyor, kalan serbest turlar diğerlerine (özellikle genel.ts'e) daha adil
+ * dağılıyor.
+ */
+function standaloneHavuzDurumu(tanim: StandaloneHavuzTanimi, state: CharacterState): { id: string; gerideKalmaOrani: number } | null {
+  const suAnkiHedef = tanim.kontrolNoktalari.reduce(
+    (maks, nokta) => (state.yas >= nokta.yas ? Math.max(maks, nokta.hedef) : maks),
+    0
+  );
+  if (suAnkiHedef === 0) return null;
+  const gorulenSayisi = tanim.havuz.filter((o) => state.gecmis_olaylar.includes(o.id)).length;
+  if (gorulenSayisi >= suAnkiHedef) return null;
+  const uygunlar = tanim.havuz.filter((o) => temelUygunMu(o, state));
+  if (uygunlar.length === 0) return null;
+  const gorulmemis = uygunlar.filter((o) => !state.gecmis_olaylar.includes(o.id));
+  const adaylar = gorulmemis.length > 0 ? gorulmemis : uygunlar;
+  const id = adaylar[Math.floor(Math.random() * adaylar.length)].id;
+  return { id, gerideKalmaOrani: (suAnkiHedef - gorulenSayisi) / suAnkiHedef };
+}
+
+/**
+ * genel.ts (~213 olay, meslekten/çağdan bağımsız evrensel havuz) için kümülatif
+ * hedefler. DÖRT turda kalibre edildi (`SIM_N` bot-simülasyonuyla test edilerek):
+ * 1-2. tur: ilk tahminler ("bir ömürde ~50 tur var" varsayımı) gerçekte
+ *    tutmadı, hedefler ~%65 küçültüldü.
+ * 3. tur (kullanıcı düzeltmesi — "ortalama ölüm 70-75 civarı"): 1-2. turda
+ *    kullanılan bot başarı şansına göre AĞIRLIKLI RASTGELE seçim yapıyordu ve
+ *    `komikOlumler.ts`'teki riskli seçenekleri zaman zaman seçip erken
+ *    ölümleri şişiriyordu (~47-55 ortalama). Her zaman en yüksek başarı
+ *    şansını seçen "temkinli" bir botla ölçülünce ortalama 54.4/medyan 62/
+ *    %75 persentil 68 çıktı — hedefler bu beklentiyle ~2-3 katına büyütüldü.
+ * 4. tur (aynı temkinli bot, ama bu kez YENİ hedeflerle kapsam testi):
+ *    3. turdaki büyütme fazlaydı — kapsam oranı genel.ts'te %9'a, meslek
+ *    havuzunda %8'e düştü (60-75 yaş bandında gerçek görülen sayı hedefin
+ *    yaklaşık YARISI civarında kalıyordu, ör. hedef 11 iken gerçek 5-6,
+ *    hedef 4 iken gerçek 2 — yaş uzasa bile bir ömürdeki "serbest" tur PAYI
+ *    aynı hızla büyümüyor, çünkü yolculuk/kariyer-yolu/hapis/veba gibi diğer
+ *    sistemler de daha uzun ömürde orantılı pay alıyor). Hedefler bu dördüncü
+ *    veriye göre ~%45-55 küçültüldü — 2. turun hedeflerine yakın ama yaş
+ *    eşikleri "70-75 ortalama" beklentisine göre biraz uzatılmış hâliyle.
+ */
+const GENEL_HAVUZ_KONTROL_NOKTALARI: { yas: number; hedef: number }[] = [
+  { yas: 25, hedef: 1 },
+  { yas: 35, hedef: 2 },
+  { yas: 45, hedef: 3 },
+  { yas: 55, hedef: 4 },
+  { yas: 65, hedef: 6 },
+  { yas: 75, hedef: 8 },
+  { yas: 85, hedef: 10 },
+  { yas: 95, hedef: 12 },
+];
+
+/**
+ * 6 meslek-standalone havuzun (ortaCagAsker/Tuccar/DinAdami, sanayiAsker/
+ * Tuccar/DinAdami, ~18-27 olay/dosya) hepsi aynı kontrol noktalarını
+ * paylaşır — her biri zaten yalnız eşleşen çağ×meslek'te devreye girer
+ * (`temelUygunMu` içindeki cag/meslekler filtresi). genel.ts ile aynı 4.
+ * kalibrasyon turunda küçültüldü (bkz. yukarısı).
+ */
+const MESLEK_STANDALONE_KONTROL_NOKTALARI: { yas: number; hedef: number }[] = [
+  { yas: 25, hedef: 1 },
+  { yas: 45, hedef: 2 },
+  { yas: 65, hedef: 3 },
+  { yas: 85, hedef: 4 },
+];
+
+const MESLEK_STANDALONE_HAVUZLARI: Record<string, OlayTanimi[]> = {
+  "Orta Çağ|Asker": OLAY_ORTACAG_ASKER,
+  "Orta Çağ|Tüccar": OLAY_ORTACAG_TUCCAR,
+  "Orta Çağ|Din Adamı": OLAY_ORTACAG_DINADAMI,
+  "Sanayi Devrimi|Asker": OLAY_SANAYI_ASKER,
+  "Sanayi Devrimi|Tüccar": OLAY_SANAYI_TUCCAR,
+  "Sanayi Devrimi|Din Adamı": OLAY_SANAYI_DINADAMI,
+};
+
+const ILISKILER_HAVUZ_KONTROL_NOKTALARI: { yas: number; hedef: number }[] = [
+  { yas: 35, hedef: 1 },
+  { yas: 50, hedef: 2 },
+  { yas: 65, hedef: 3 },
+  { yas: 80, hedef: 4 },
+];
+
+const AILE_HAVUZ_KONTROL_NOKTALARI: { yas: number; hedef: number }[] = [
+  { yas: 35, hedef: 1 },
+  { yas: 50, hedef: 2 },
+  { yas: 65, hedef: 3 },
+  { yas: 80, hedef: 4 },
+];
+
+const EVLILIK_AILE_HAVUZ_KONTROL_NOKTALARI: { yas: number; hedef: number }[] = [
+  { yas: 35, hedef: 1 },
+  { yas: 50, hedef: 2 },
+  { yas: 65, hedef: 3 },
+  { yas: 80, hedef: 5 },
+];
+
+const KOMIK_GARIP_HAVUZ_KONTROL_NOKTALARI: { yas: number; hedef: number }[] = [
+  { yas: 35, hedef: 1 },
+  { yas: 50, hedef: 2 },
+  { yas: 65, hedef: 3 },
+  { yas: 80, hedef: 4 },
+];
+
+/** komikOlumler.ts (14 olay, risk-tercihli "aptalca olanı yap mı?" ekranları — seçim yine oyuncunun, garanti sadece EKRANI göstermeyi zorlar, ölümü değil) — düşük hedef, düşük öncelik. */
+const KOMIK_OLUM_HAVUZ_KONTROL_NOKTALARI: { yas: number; hedef: number }[] = [
+  { yas: 40, hedef: 1 },
+  { yas: 70, hedef: 2 },
+];
+
+/** Meslekten bağımsız standalone havuz garantileri — sabit liste, çağrı başına yeniden oluşturulmaz. */
+const STANDALONE_HAVUZ_GARANTILERI: StandaloneHavuzTanimi[] = [
+  { havuz: OLAY_GENEL, kontrolNoktalari: GENEL_HAVUZ_KONTROL_NOKTALARI },
+  { havuz: OLAY_ILISKILER, kontrolNoktalari: ILISKILER_HAVUZ_KONTROL_NOKTALARI },
+  { havuz: OLAY_AILE, kontrolNoktalari: AILE_HAVUZ_KONTROL_NOKTALARI },
+  { havuz: OLAY_EVLILIK_AILE, kontrolNoktalari: EVLILIK_AILE_HAVUZ_KONTROL_NOKTALARI },
+  { havuz: OLAY_KOMIK_GARIP, kontrolNoktalari: KOMIK_GARIP_HAVUZ_KONTROL_NOKTALARI },
+  { havuz: OLAY_KOMIK_OLUM, kontrolNoktalari: KOMIK_OLUM_HAVUZ_KONTROL_NOKTALARI },
+];
 
 /**
  * Evcil hayvan takip garantisinin kümülatif hedefleri (havuz: 6 genel +
@@ -936,6 +1103,33 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
       const havuz = gorulmemis.length > 0 ? gorulmemis : uygunMulkOlaylari;
       zorlananId = havuz[Math.floor(Math.random() * havuz.length)].id;
     }
+  }
+  // Standalone havuz garantisi (§11 yeni kural, 2026-09): hiçbir kilide/garantiye
+  // bağlı olmayan genel havuzların (genel.ts + meslek-standalone 6 dosya +
+  // iliskiler/aile/evlilikVeAile/komikGaripOlaylar/komikOlumler) her biri, yaşa
+  // göre kümülatif olarak en az N farklı olay görülmüş olmasını garanti eder —
+  // aksi halde biri (o an gerçekten uygunsa) zorla tetiklenir. Kaskadın en
+  // sonuna bilinçli olarak konuldu: ömürde-bir-kez/dar-koşullu tüm garantiler
+  // (savaş ilanı, kariyer yolu, evlilik, şehir yönetimi, evcil hayvan, saray,
+  // yolculuk, takip garantileri, gizemli, mülk) her zaman önceliklidir; bu
+  // yalnızca onların hiçbiri eşleşmediği "sakin" turları doldurur. Aday
+  // havuzların TAMAMI taranır ve oransal olarak EN GERİDE kalan (hedefine göre
+  // en fazla eksiği olan) havuzdan zorlanır — sabit sıralı tarama (genel.ts
+  // hep önce) küçük hedefli havuzları (iliskiler/aile/komikGarip vb.) açlıktan
+  // öldürüyordu, bkz. `standaloneHavuzDurumu` yorumu.
+  if (!zorlananId && !milestoneKilitli) {
+    const meslekHavuzu = MESLEK_STANDALONE_HAVUZLARI[`${oturum.state.cag}|${oturum.state.meslek}`];
+    const adaylar = meslekHavuzu
+      ? [{ havuz: meslekHavuzu, kontrolNoktalari: MESLEK_STANDALONE_KONTROL_NOKTALARI }, ...STANDALONE_HAVUZ_GARANTILERI]
+      : STANDALONE_HAVUZ_GARANTILERI;
+    let enGeride: { id: string; gerideKalmaOrani: number } | null = null;
+    for (const tanim of adaylar) {
+      const durum = standaloneHavuzDurumu(tanim, oturum.state);
+      if (durum && (!enGeride || durum.gerideKalmaOrani > enGeride.gerideKalmaOrani)) {
+        enGeride = durum;
+      }
+    }
+    if (enGeride) zorlananId = enGeride.id;
   }
 
   const { olay, senaryo } = olaySec(oturum.state, zorlananId, oturum.sonTon);
