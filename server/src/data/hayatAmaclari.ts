@@ -52,6 +52,14 @@ const gizemliEsyaVar = (s: CharacterState) =>
 const yenilenRakip = (s: CharacterState) => (s.rakipler ?? []).filter((r) => r.yenildi).length;
 const temizEl = (s: CharacterState) => s.suc_seviyesi < TEMIZ_EL_SUC_ESIGI;
 const zirveSuc = (s: CharacterState) => s.omur_zirve_suc ?? s.suc_seviyesi ?? 0;
+const borcsuz = (s: CharacterState) => !s.kredi;
+const luksEsyaSayisi = (s: CharacterState) =>
+  (s.magaza_envanteri ?? []).filter((e) => e.kategori === "luks").length;
+const ortalamaCocukIliskisi = (s: CharacterState) => {
+  const yasayanlar = (s.cocuklar ?? []).filter((c) => c.yasiyor);
+  if (!yasayanlar.length) return 0;
+  return yasayanlar.reduce((toplam, c) => toplam + (c.iliski ?? 0), 0) / yasayanlar.length;
+};
 
 export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
   // ============================ ORTAK — NORMAL ============================
@@ -114,50 +122,68 @@ export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
   {
     id: "servet_zirvesi", zorluk: "zor", kontrolAni: "herhangi",
     baslik: { tr: "Servet Zirvesi", en: "Summit of Wealth" },
-    aciklama: { tr: "Servetini 400'ün üzerine çıkar — temiz bir sicille.", en: "Push your wealth past 400 — with clean hands." },
-    kosul: (s, servet) => servet >= 400 && temizEl(s),
+    aciklama: { tr: "Servetini 550'nin üzerine çıkar — hem temiz bir sicille hem de tefeciye hiç borcun olmadan.", en: "Push your wealth past 550 — with clean hands, and without owing the moneylender a single coin." },
+    kosul: (s, servet) => servet >= 550 && temizEl(s) && borcsuz(s),
   },
   {
     id: "yasayan_efsane", zorluk: "zor", kontrolAni: "herhangi",
     baslik: { tr: "Yaşayan Efsane", en: "A Living Legend" },
-    aciklama: { tr: "Şöhretini 97'ye taşı.", en: "Raise your renown to 97." },
-    kosul: (s) => s.un >= 97,
+    aciklama: { tr: "Şöhretini 98'e taşı — hem sarayda hem iş çevrende sözün geçsin.", en: "Raise your renown to 98 — your word must carry weight at court and in business alike." },
+    kosul: (s) => s.un >= 98 && s.yonetim_iliski >= 55 && s.patron_iliski >= 55,
   },
   {
     id: "kalabalik_soy", zorluk: "zor", kontrolAni: "herhangi",
     baslik: { tr: "Kalabalık Soy", en: "A Teeming Line" },
-    aciklama: { tr: "En az 5 yaşayan çocuğun olsun.", en: "Have at least 5 living children." },
-    kosul: (s) => yasayanCocuk(s) >= 5,
+    aciklama: { tr: "En az 6 yaşayan çocuğun olsun, hepsiyle de gerçekten yakın bir bağ kur.", en: "Have at least 6 living children — and stay genuinely close to every one of them." },
+    kosul: (s) => yasayanCocuk(s) >= 6 && ortalamaCocukIliskisi(s) >= 55,
   },
   {
     id: "zengin_ve_ihtiyar", zorluk: "zor", kontrolAni: "olumde",
     baslik: { tr: "Zengin ve İhtiyar", en: "Rich and Old" },
-    aciklama: { tr: "68 yaşını geçmiş, servetin 220'nin üzerindeyken göç et.", en: "Pass on past the age of 68 with a wealth above 220." },
-    kosul: (s, servet) => s.yas >= 68 && servet >= 220,
+    aciklama: { tr: "72 yaşını geçmiş, servetin 320'nin üzerinde ve tefeciye tek kuruş borcun yokken göç et.", en: "Pass on past the age of 72 with a wealth above 320 and not a coin owed to the moneylender." },
+    kosul: (s, servet) => s.yas >= 72 && servet >= 320 && borcsuz(s),
   },
   {
     id: "lekesiz_omur", zorluk: "zor", kontrolAni: "olumde",
     baslik: { tr: "Lekesiz Ömür", en: "An Unstained Life" },
-    aciklama: { tr: "55 yaşını geçip, ahlakın 90+ ve ömrün boyunca hiç ciddi biçimde aranmadan öl.", en: "Die past 55 with morality 90+, never once seriously wanted." },
-    kosul: (s) => s.yas >= 55 && s.ahlak >= 90 && zirveSuc(s) < 20,
+    aciklama: { tr: "60 yaşını geçip, ahlakın 94+, ömrün boyunca hiç ciddi biçimde aranmadan ve tefeciye hiç muhtaç kalmadan öl.", en: "Die past 60 with morality 94+, never once seriously wanted, and never once in debt to the moneylender." },
+    kosul: (s) => s.yas >= 60 && s.ahlak >= 94 && zirveSuc(s) < 12 && borcsuz(s),
   },
   {
     id: "sarhos_ama_ayakta", zorluk: "zor", kontrolAni: "olumde",
     baslik: { tr: "Sarhoş ama Ayakta", en: "Sozzled but Standing" },
-    aciklama: { tr: "Ayyaş damgası yemiş ol, ama yine de 65 yaşını sağ gör.", en: "Earn the drunkard's brand, yet still reach 65 alive." },
-    kosul: (s) => s.etiketler.includes("bagimlilik:ayyas") && s.yas >= 65,
+    aciklama: { tr: "Ayyaş damgası yemiş olsan da kariyerinde 3. kademeye ulaş ve 70 yaşını sağ gör.", en: "Earn the drunkard's brand, yet still climb to career rank 3 and live to see 70." },
+    kosul: (s) => s.etiketler.includes("bagimlilik:ayyas") && s.yas >= 70 && s.rutbe_seviye >= 3,
   },
   {
     id: "kumar_efsanesi", zorluk: "zor", kontrolAni: "herhangi",
     baslik: { tr: "Kumar Efsanesi", en: "Gambling Legend" },
-    aciklama: { tr: "Kumardan ömür boyu net 250 birim kâra geç.", en: "End a lifetime of gambling 250 coins ahead." },
-    kosul: (s) => (s.omur_kumar_net ?? 0) >= 250,
+    aciklama: { tr: "Kumardan ömür boyu net 400 birim kâra geç — bunu tefeciye hiç muhtaç kalmadan başar.", en: "End a lifetime of gambling 400 coins ahead — without ever needing the moneylender." },
+    kosul: (s) => (s.omur_kumar_net ?? 0) >= 400 && borcsuz(s),
   },
   {
     id: "olumle_dans", zorluk: "zor", kontrolAni: "herhangi",
     baslik: { tr: "Ölümle Dans", en: "Dance with Death" },
-    aciklama: { tr: "Başarısızlığı ölüm demek olan seçimleri üç kez başarıyla atlat.", en: "Survive three separate choices where failure meant death." },
-    kosul: (s) => (s.omur_riskli_basari ?? 0) >= 3,
+    aciklama: { tr: "Başarısızlığı ölüm demek olan seçimleri beş kez başarıyla atlat.", en: "Survive five separate choices where failure meant death." },
+    kosul: (s) => (s.omur_riskli_basari ?? 0) >= 5,
+  },
+  {
+    id: "kralin_guveni", zorluk: "zor", kontrolAni: "herhangi",
+    baslik: { tr: "Kralın Güveni", en: "The King's Trust" },
+    aciklama: { tr: "Yönetimle (kral/vali) ilişkini 85'e taşı — bu hat bilinçli olarak çok pahalı ve yavaş kurulur.", en: "Raise your bond with the crown (king/governor) to 85 — this line is deliberately slow and costly to build." },
+    kosul: (s) => s.yonetim_iliski >= 85,
+  },
+  {
+    id: "zevk_sahibi", zorluk: "zor", kontrolAni: "herhangi",
+    baslik: { tr: "Zevk Sahibi", en: "Refined Taste" },
+    aciklama: { tr: "Mağazadan 3 farklı lüks eşya edin ve şöhretini 65'in üzerinde tut.", en: "Collect 3 different luxury items from the shop and keep your renown above 65." },
+    kosul: (s) => luksEsyaSayisi(s) >= 3 && s.un >= 65,
+  },
+  {
+    id: "rakip_ustunlugu", zorluk: "zor", kontrolAni: "herhangi",
+    baslik: { tr: "Rakipsiz Kalmak", en: "Without Rival" },
+    aciklama: { tr: "En az bir isimli rakibini tamamen alt et ve şöhretini 80'in üzerine çıkar.", en: "Utterly defeat at least one named rival and raise your renown past 80." },
+    kosul: (s) => yenilenRakip(s) >= 1 && s.un >= 80,
   },
 
   // ============================ ASKER ============================
@@ -194,26 +220,26 @@ export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
   {
     id: "serdar", zorluk: "zor", kontrolAni: "herhangi", meslekler: ["Asker"],
     baslik: { tr: "Serdar", en: "Grand Commander" },
-    aciklama: { tr: "Rütbede en üst kademeye (5) ulaş.", en: "Reach the highest rank (5)." },
-    kosul: (s) => s.rutbe_seviye >= 5,
+    aciklama: { tr: "Rütbede en üst kademeye (5) ulaş ve kralın güvenini de kazan (yönetim ilişkisi 55+).", en: "Reach the highest rank (5) and win the crown's trust (crown bond 55+)." },
+    kosul: (s) => s.rutbe_seviye >= 5 && s.yonetim_iliski >= 55,
   },
   {
     id: "sehir_kalkani", zorluk: "zor", kontrolAni: "herhangi", meslekler: ["Asker"],
     baslik: { tr: "Şehrin Kalkanı", en: "Shield of the City" },
-    aciklama: { tr: "Şehir yönetiminde 3. kademeye çık.", en: "Reach the 3rd tier of city governance." },
-    kosul: (s) => s.sehir_yonetim_seviyesi >= 3,
+    aciklama: { tr: "Şehir yönetiminde 5. kademeye çık ve komutanınla ilişkini 60'ın üzerinde tut.", en: "Reach the 5th tier of city governance and keep your commander bond above 60." },
+    kosul: (s) => s.sehir_yonetim_seviyesi >= 5 && s.patron_iliski >= 60,
   },
   {
     id: "bas_belasi", zorluk: "zor", kontrolAni: "herhangi", meslekler: ["Asker"],
     baslik: { tr: "Baş Belası", en: "The Scourge" },
-    aciklama: { tr: "İki isimli rakibini de tamamen alt et.", en: "Utterly defeat both of your named rivals." },
-    kosul: (s) => yenilenRakip(s) >= 2,
+    aciklama: { tr: "İki isimli rakibini de tamamen alt et; bunu güçlü bir orduyla (teçhizat 70+) başar.", en: "Utterly defeat both of your named rivals — with a well-equipped army (equipment 70+) behind you." },
+    kosul: (s) => yenilenRakip(s) >= 2 && s.ordu_techizat_seviyesi >= 70,
   },
   {
     id: "ordu_kurucusu", zorluk: "zor", kontrolAni: "herhangi", meslekler: ["Asker"],
     baslik: { tr: "Ordu Kurucusu", en: "Army-Builder" },
-    aciklama: { tr: "Ordu mevcudunu 240'a, teçhizatını 75'e çıkar.", en: "Build your army to 240 troops with equipment at 75." },
-    kosul: (s) => s.ordu_mevcudu >= 240 && s.ordu_techizat_seviyesi >= 75,
+    aciklama: { tr: "Ordu mevcudunu 280'e, teçhizatını 85'e çıkar — komutanının güvenini de kaybetmeden.", en: "Build your army to 280 troops with equipment at 85 — without losing your commander's trust." },
+    kosul: (s) => s.ordu_mevcudu >= 280 && s.ordu_techizat_seviyesi >= 85 && s.patron_iliski >= 50,
   },
 
   // ============================ TÜCCAR ============================
@@ -250,26 +276,26 @@ export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
   {
     id: "lonca_reisi", zorluk: "zor", kontrolAni: "herhangi", meslekler: ["Tüccar"],
     baslik: { tr: "Lonca Reisi", en: "Guild Chairman" },
-    aciklama: { tr: "Rütbede en üst kademeye (5) ulaş.", en: "Reach the highest rank (5)." },
-    kosul: (s) => s.rutbe_seviye >= 5,
+    aciklama: { tr: "Rütbede en üst kademeye (5) ulaş ve lonca reisiyle ilişkini 60'ın üzerinde tut.", en: "Reach the highest rank (5) and keep your guild-chief bond above 60." },
+    kosul: (s) => s.rutbe_seviye >= 5 && s.patron_iliski >= 60,
   },
   {
     id: "imparator", zorluk: "zor", kontrolAni: "herhangi", meslekler: ["Tüccar"],
     baslik: { tr: "Ticaret İmparatoru", en: "Merchant Emperor" },
-    aciklama: { tr: "En üst rütbeye çık ve servetin 380'i geçsin.", en: "Reach the top rank with a wealth above 380." },
-    kosul: (s, servet) => s.rutbe_seviye >= 5 && servet >= 380,
+    aciklama: { tr: "En üst rütbeye çık, servetin 550'yi geçsin — hem de tefeciye borcun olmadan.", en: "Reach the top rank with a wealth above 550 — and not a coin owed to the moneylender." },
+    kosul: (s, servet) => s.rutbe_seviye >= 5 && servet >= 550 && borcsuz(s),
   },
   {
     id: "tekelci", zorluk: "zor", kontrolAni: "herhangi", meslekler: ["Tüccar"],
     baslik: { tr: "Tekelci", en: "Monopolist" },
-    aciklama: { tr: "Aynı anda 4 piyasa mülkü işlet.", en: "Run 4 market properties at once." },
-    kosul: (s) => (s.mulkler?.length ?? 0) >= 4,
+    aciklama: { tr: "Aynı anda 5 piyasa mülkü işlet ve zenginliğini lüks eşyalarla göster (2+ lüks eşya).", en: "Run 5 market properties at once and flaunt your wealth with luxury goods (2+ items)." },
+    kosul: (s) => (s.mulkler?.length ?? 0) >= 5 && luksEsyaSayisi(s) >= 2,
   },
   {
     id: "sermaye_devi", zorluk: "zor", kontrolAni: "herhangi", meslekler: ["Tüccar"],
     baslik: { tr: "Sermaye Devi", en: "Capital Titan" },
-    aciklama: { tr: "Ticaret sermayeni 140'a çıkar.", en: "Grow your trade capital to 140." },
-    kosul: (s) => s.ticaret_sermaye >= 140,
+    aciklama: { tr: "Ticaret sermayeni 180'e çıkar ve bir rakibini pazardan tamamen sil.", en: "Grow your trade capital to 180 and wipe a rival off the market entirely." },
+    kosul: (s) => s.ticaret_sermaye >= 180 && yenilenRakip(s) >= 1,
   },
 
   // ============================ DİN ADAMI ============================
@@ -306,26 +332,26 @@ export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
   {
     id: "piskopos", zorluk: "zor", kontrolAni: "herhangi", meslekler: ["Din Adamı"],
     baslik: { tr: "Piskopos", en: "Bishop" },
-    aciklama: { tr: "Rütbede en üst kademeye (5) ulaş.", en: "Reach the highest rank (5)." },
-    kosul: (s) => s.rutbe_seviye >= 5,
+    aciklama: { tr: "Rütbede en üst kademeye (5) ulaş ve kralın/valinin güvenini de kazan (yönetim ilişkisi 55+).", en: "Reach the highest rank (5) and win the crown's trust as well (crown bond 55+)." },
+    kosul: (s) => s.rutbe_seviye >= 5 && s.yonetim_iliski >= 55,
   },
   {
     id: "aziz", zorluk: "zor", kontrolAni: "herhangi", meslekler: ["Din Adamı"],
     baslik: { tr: "Aziz Mertebesi", en: "Sainthood" },
-    aciklama: { tr: "Ahlakın 96, nüfuzun 85'e ulaşsın.", en: "Reach morality 96 and influence 85." },
-    kosul: (s) => s.ahlak >= 96 && s.nufuz >= 85,
+    aciklama: { tr: "Ahlakın 98, nüfuzun 95'e ulaşsın; ömrün boyunca en az 25 kez sadaka ver.", en: "Reach morality 98 and influence 95; give alms at least 25 times over your life." },
+    kosul: (s) => s.ahlak >= 98 && s.nufuz >= 95 && (s.omur_sadaka_sayisi ?? 0) >= 25,
   },
   {
     id: "ruhani_onder", zorluk: "zor", kontrolAni: "herhangi", meslekler: ["Din Adamı"],
     baslik: { tr: "Ruhani Önder", en: "Spiritual Leader" },
-    aciklama: { tr: "Şehir yönetiminde 3. kademeye çık.", en: "Reach the 3rd tier of city governance." },
-    kosul: (s) => s.sehir_yonetim_seviyesi >= 3,
+    aciklama: { tr: "Şehir yönetiminde 5. kademeye çık ve başpiskoposla ilişkini 60'ın üzerinde tut.", en: "Reach the 5th tier of city governance and keep your archbishop bond above 60." },
+    kosul: (s) => s.sehir_yonetim_seviyesi >= 5 && s.patron_iliski >= 60,
   },
   {
     id: "gunahsiz", zorluk: "zor", kontrolAni: "olumde", meslekler: ["Din Adamı"],
     baslik: { tr: "Günahsız Ömür", en: "A Sinless Life" },
-    aciklama: { tr: "60 yaşını geçip, ahlakın 70+ ve ömrün boyunca hiç aranmadan öl.", en: "Die past 60 with morality 70+, never once wanted." },
-    kosul: (s) => s.yas >= 60 && s.ahlak >= 70 && zirveSuc(s) < 15,
+    aciklama: { tr: "65 yaşını geçip, ahlakın 85+, hiç ciddi biçimde aranmadan ve tefeciye hiç muhtaç kalmadan öl.", en: "Die past 65 with morality 85+, never once seriously wanted, and never once in debt to the moneylender." },
+    kosul: (s) => s.yas >= 65 && s.ahlak >= 85 && zirveSuc(s) < 10 && borcsuz(s),
   },
 
   // ============================ ÇAĞ — ORTA ÇAĞ ============================
@@ -338,8 +364,8 @@ export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
   {
     id: "sarayda_soz", zorluk: "zor", kontrolAni: "herhangi", cag: "Orta Çağ",
     baslik: { tr: "Sarayda Söz Sahibi", en: "A Voice at Court" },
-    aciklama: { tr: "Sarayda kabul gör ve şöhretin 75'i geçsin.", en: "Win a place at court with renown above 75." },
-    kosul: (s) => s.etiketler.includes("sarayda") && s.un >= 75,
+    aciklama: { tr: "Sarayda kabul gör, şöhretin 90'ı geçsin ve kralın güvenini de kazan (yönetim ilişkisi 60+).", en: "Win a place at court, push your renown past 90, and win the crown's trust as well (crown bond 60+)." },
+    kosul: (s) => s.etiketler.includes("sarayda") && s.un >= 90 && s.yonetim_iliski >= 60,
   },
 
   // ============================ ÇAĞ — SANAYİ DEVRİMİ ============================
@@ -352,8 +378,8 @@ export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
   {
     id: "kasif_ruhu", zorluk: "zor", kontrolAni: "herhangi", cag: "Sanayi Devrimi",
     baslik: { tr: "Kâşif Ruhu", en: "Explorer's Spirit" },
-    aciklama: { tr: "Büyük yolculuğu tamamla ve servetin 240'ı geçsin.", en: "Complete the great journey with a wealth above 240." },
-    kosul: (s, servet) => s.etiketler.includes("yolculuk_tamamlandi") && servet >= 240,
+    aciklama: { tr: "Büyük yolculuğu tamamla, servetin 350'yi geçsin — borçsuz ve en az bir lüks hatıra eşyanla.", en: "Complete the great journey with a wealth above 350 — debt-free, and with at least one luxury memento." },
+    kosul: (s, servet) => s.etiketler.includes("yolculuk_tamamlandi") && servet >= 350 && borcsuz(s) && luksEsyaSayisi(s) >= 1,
   },
 
   // ============================ ZANAATKÂR (2026-09 yeni meslek, iskelet) ============================
@@ -378,14 +404,26 @@ export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
   {
     id: "sahesinde_efsane", zorluk: "zor", kontrolAni: "herhangi", meslekler: ["Zanaatkâr"],
     baslik: { tr: "Alanında Efsane", en: "A Legend of the Craft" },
-    aciklama: { tr: "Şöhretin 90'ı, üretim kapasiten 80'i geçsin.", en: "Reach fame above 90 with production capacity above 80." },
-    kosul: (s) => s.un >= 90 && (s.uretim_kapasitesi ?? 0) >= 80,
+    aciklama: { tr: "Şöhretin 95'i, üretim kapasiten 95'i geçsin; loncabaşınla ilişkin de güçlü kalsın (55+).", en: "Reach fame above 95 with production capacity above 95 — and stay in your guildmaster's good graces (bond 55+)." },
+    kosul: (s) => s.un >= 95 && (s.uretim_kapasitesi ?? 0) >= 95 && s.patron_iliski >= 55,
   },
   {
     id: "loncabasi", zorluk: "zor", kontrolAni: "herhangi", meslekler: ["Zanaatkâr"],
     baslik: { tr: "Loncabaşı", en: "Guildmaster" },
-    aciklama: { tr: "Rütbede en üst kademeye (5) ulaş.", en: "Reach the highest rank (5)." },
-    kosul: (s) => s.rutbe_seviye >= 5,
+    aciklama: { tr: "Rütbede en üst kademeye (5) ulaş ve yönetimle ilişkini 50'nin üzerinde tut.", en: "Reach the highest rank (5) and keep your crown bond above 50." },
+    kosul: (s) => s.rutbe_seviye >= 5 && s.yonetim_iliski >= 50,
+  },
+  {
+    id: "atolye_imparatorlugu", zorluk: "zor", kontrolAni: "herhangi", meslekler: ["Zanaatkâr"],
+    baslik: { tr: "Atölye İmparatorluğu", en: "Workshop Empire" },
+    aciklama: { tr: "Üretim kapasiteni tavana (100) çıkar ve en az 2 piyasa mülkü işlet — hiç tefeciye muhtaç kalmadan.", en: "Max out your production capacity (100) and run at least 2 market properties — without ever needing the moneylender." },
+    kosul: (s) => (s.uretim_kapasitesi ?? 0) >= 100 && (s.mulkler?.length ?? 0) >= 2 && borcsuz(s),
+  },
+  {
+    id: "zanaat_rekabeti", zorluk: "zor", kontrolAni: "herhangi", meslekler: ["Zanaatkâr"],
+    baslik: { tr: "Rakipsiz Usta", en: "The Unrivaled Master" },
+    aciklama: { tr: "Bir rakip zanaatkârı pazardan sil; bunu üretim kapasiten 70+, şöhretin 70+ iken başar.", en: "Wipe a rival craftsman off the market — with production capacity 70+ and fame 70+." },
+    kosul: (s) => yenilenRakip(s) >= 1 && (s.uretim_kapasitesi ?? 0) >= 70 && s.un >= 70,
   },
 ];
 
@@ -466,43 +504,50 @@ export const AMAC_ILERLEME: Record<
   saglam_omur: { hedef: 75, metrik: (s) => (s.yas >= 62 ? s.saglik : 0) },
   meyhane_mudavimi: { hedef: 3, metrik: (s) => s.alkol_ziyaret_sayisi ?? 0 },
   sansli_el: { hedef: 80, metrik: (s) => Math.max(0, s.omur_kumar_net ?? 0) },
-  servet_zirvesi: { hedef: 400, metrik: (_s, servet) => servet },
-  yasayan_efsane: { hedef: 97, metrik: (s) => s.un },
-  kalabalik_soy: { hedef: 5, metrik: (s) => (s.cocuklar ?? []).filter((c) => c.yasiyor).length },
-  zengin_ve_ihtiyar: { hedef: 220, metrik: (_s, servet) => servet },
-  kumar_efsanesi: { hedef: 250, metrik: (s) => Math.max(0, s.omur_kumar_net ?? 0) },
-  olumle_dans: { hedef: 3, metrik: (s) => s.omur_riskli_basari ?? 0 },
+  servet_zirvesi: { hedef: 550, metrik: (_s, servet) => servet },
+  yasayan_efsane: { hedef: 98, metrik: (s) => s.un },
+  kalabalik_soy: { hedef: 6, metrik: (s) => (s.cocuklar ?? []).filter((c) => c.yasiyor).length },
+  zengin_ve_ihtiyar: { hedef: 320, metrik: (_s, servet) => servet },
+  kumar_efsanesi: { hedef: 400, metrik: (s) => Math.max(0, s.omur_kumar_net ?? 0) },
+  olumle_dans: { hedef: 5, metrik: (s) => s.omur_riskli_basari ?? 0 },
+  kralin_guveni: { hedef: 85, metrik: (s) => s.yonetim_iliski },
+  zevk_sahibi: { hedef: 3, metrik: (s) => luksEsyaSayisi(s) },
+  rakip_ustunlugu: { hedef: 1, metrik: (s) => yenilenRakip(s) },
   komuta: { hedef: 4, metrik: (s) => s.rutbe_seviye },
   cephe_gazisi: { hedef: 2, metrik: (s) => s.etiketler.filter((e) => e.startsWith("tarihi_savas_gordu:")).length },
   guclu_ordu: { hedef: 150, metrik: (s) => s.ordu_mevcudu },
   tam_donanim: { hedef: 80, metrik: (s) => s.ordu_techizat_seviyesi },
   madalyali: { hedef: 3, metrik: (s) => s.unvanlar?.length ?? 0 },
   serdar: { hedef: 5, metrik: (s) => s.rutbe_seviye },
-  sehir_kalkani: { hedef: 3, metrik: (s) => s.sehir_yonetim_seviyesi },
+  sehir_kalkani: { hedef: 5, metrik: (s) => s.sehir_yonetim_seviyesi },
   bas_belasi: { hedef: 2, metrik: (s) => (s.rakipler ?? []).filter((r) => r.yenildi).length },
-  ordu_kurucusu: { hedef: 240, metrik: (s) => s.ordu_mevcudu },
+  ordu_kurucusu: { hedef: 280, metrik: (s) => s.ordu_mevcudu },
   lonca_ustasi: { hedef: 4, metrik: (s) => s.rutbe_seviye },
   uc_kepenk: { hedef: 3, metrik: (s) => s.mulkler?.length ?? 0 },
   buyuyen_sermaye: { hedef: 80, metrik: (s) => s.ticaret_sermaye },
   kar_marji: { hedef: 240, metrik: (_s, servet) => servet },
   hediye_agi: { hedef: 6, metrik: (s) => s.omur_hediye_sayisi ?? 0 },
   lonca_reisi: { hedef: 5, metrik: (s) => s.rutbe_seviye },
-  imparator: { hedef: 380, metrik: (_s, servet) => servet },
-  tekelci: { hedef: 4, metrik: (s) => s.mulkler?.length ?? 0 },
-  sermaye_devi: { hedef: 140, metrik: (s) => s.ticaret_sermaye },
+  imparator: { hedef: 550, metrik: (_s, servet) => servet },
+  tekelci: { hedef: 5, metrik: (s) => s.mulkler?.length ?? 0 },
+  sermaye_devi: { hedef: 180, metrik: (s) => s.ticaret_sermaye },
   kursu_sahibi: { hedef: 4, metrik: (s) => s.rutbe_seviye },
   comert_el: { hedef: 82, metrik: (s) => s.ahlak },
   nufuzlu_vaiz: { hedef: 70, metrik: (s) => s.nufuz },
   sadaka_tasi: { hedef: 18, metrik: (s) => s.omur_sadaka_sayisi ?? 0 },
   piskopos: { hedef: 5, metrik: (s) => s.rutbe_seviye },
-  aziz: { hedef: 96, metrik: (s) => s.ahlak },
-  ruhani_onder: { hedef: 3, metrik: (s) => s.sehir_yonetim_seviyesi },
-  gunahsiz: { hedef: 60, metrik: (s) => s.yas },
-  sarayda_soz: { hedef: 75, metrik: (s) => s.un },
+  aziz: { hedef: 98, metrik: (s) => s.ahlak },
+  ruhani_onder: { hedef: 5, metrik: (s) => s.sehir_yonetim_seviyesi },
+  gunahsiz: { hedef: 65, metrik: (s) => s.yas },
+  sarayda_soz: { hedef: 90, metrik: (s) => s.un },
   sanayici: { hedef: 200, metrik: (_s, servet) => servet },
-  kasif_ruhu: { hedef: 240, metrik: (_s, servet) => servet },
-  lekesiz_omur: { hedef: 55, metrik: (s) => s.yas },
-  sarhos_ama_ayakta: { hedef: 65, metrik: (s) => s.yas },
+  kasif_ruhu: { hedef: 350, metrik: (_s, servet) => servet },
+  lekesiz_omur: { hedef: 60, metrik: (s) => s.yas },
+  sarhos_ama_ayakta: { hedef: 70, metrik: (s) => s.yas },
+  sahesinde_efsane: { hedef: 95, metrik: (s) => s.un },
+  loncabasi: { hedef: 5, metrik: (s) => s.rutbe_seviye },
+  atolye_imparatorlugu: { hedef: 100, metrik: (s) => s.uretim_kapasitesi ?? 0 },
+  zanaat_rekabeti: { hedef: 1, metrik: (s) => yenilenRakip(s) },
 };
 
 /** Ölüm anında TÜM tamamlanmamış amaçlara son bir kez bakar (olumde + kaçmış herhangi). */

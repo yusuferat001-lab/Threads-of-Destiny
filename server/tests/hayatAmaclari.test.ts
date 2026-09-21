@@ -99,8 +99,8 @@ describe("kontrolAni: herhangi vs olumde", () => {
     state.hayat_amaclari = [
       { id: "zengin_ve_ihtiyar", zorluk: "zor", bonus: 2, kontrolAni: "olumde", tamamlandi: false },
     ];
-    state.yas = 70;
-    const servet = 300;
+    state.yas = 75;
+    const servet = 350;
     amaclariHerhangiKontrol(state, servet); // herhangi taraması dokunmamalı
     expect(state.hayat_amaclari[0].tamamlandi).toBe(false);
     amaclariOlumdeKontrol(state, servet);
