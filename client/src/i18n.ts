@@ -161,6 +161,7 @@ const TR = {
   meslekAciklamaAsker: 'Savaş, sadakat ve rütbe. Yüksek risk, hızlı ün.',
   meslekAciklamaTuccar: 'Kâr, pazarlık ve ağ kurma. Yüksek kazanç potansiyeli.',
   meslekAciklamaDinAdami: 'Cemaat, vicdan ve nüfuz. İstikrarlı saygınlık.',
+  meslekAciklamaZanaatkar: 'El emeği, ustalık ve lonca. Sabırlı ama onurlu bir yol.',
 
   // ---- Açılış ----
   acilisAileCocugu: '{0} Ailesinin Çocuğu',
@@ -839,6 +840,7 @@ const EN: Metinler = {
   meslekAciklamaAsker: 'War, loyalty and rank. High risk, quick fame.',
   meslekAciklamaTuccar: 'Profit, bargaining and networking. High earning potential.',
   meslekAciklamaDinAdami: 'Congregation, conscience and influence. Steady prestige.',
+  meslekAciklamaZanaatkar: 'Craftsmanship, mastery and guild. A patient but honorable path.',
 
   // ---- Opening ----
   acilisAileCocugu: 'Child of a {0} Family',

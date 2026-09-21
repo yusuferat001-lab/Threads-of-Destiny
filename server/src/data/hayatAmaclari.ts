@@ -355,6 +355,38 @@ export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
     aciklama: { tr: "Büyük yolculuğu tamamla ve servetin 240'ı geçsin.", en: "Complete the great journey with a wealth above 240." },
     kosul: (s, servet) => s.etiketler.includes("yolculuk_tamamlandi") && servet >= 240,
   },
+
+  // ============================ ZANAATKÂR (2026-09 yeni meslek, iskelet) ============================
+  {
+    id: "usta_eli", zorluk: "normal", kontrolAni: "herhangi", meslekler: ["Zanaatkâr"],
+    baslik: { tr: "Usta Eli", en: "The Master's Hand" },
+    aciklama: { tr: "Üretim kapasiteni 70'e çıkar.", en: "Raise your production capacity to 70." },
+    kosul: (s) => (s.uretim_kapasitesi ?? 0) >= 70,
+  },
+  {
+    id: "loncanin_guveni", zorluk: "normal", kontrolAni: "herhangi", meslekler: ["Zanaatkâr"],
+    baslik: { tr: "Loncanın Güveni", en: "The Guild's Trust" },
+    aciklama: { tr: "Rütbede 4. kademeye çık.", en: "Rise to the 4th rank." },
+    kosul: (s) => s.rutbe_seviye >= 4,
+  },
+  {
+    id: "tanidik_zanaatkar", zorluk: "normal", kontrolAni: "herhangi", meslekler: ["Zanaatkâr"],
+    baslik: { tr: "Tanınan Usta", en: "A Known Craftsman" },
+    aciklama: { tr: "Şöhretini 65'e çıkar.", en: "Raise your fame to 65." },
+    kosul: (s) => s.un >= 65,
+  },
+  {
+    id: "sahesinde_efsane", zorluk: "zor", kontrolAni: "herhangi", meslekler: ["Zanaatkâr"],
+    baslik: { tr: "Alanında Efsane", en: "A Legend of the Craft" },
+    aciklama: { tr: "Şöhretin 90'ı, üretim kapasiten 80'i geçsin.", en: "Reach fame above 90 with production capacity above 80." },
+    kosul: (s) => s.un >= 90 && (s.uretim_kapasitesi ?? 0) >= 80,
+  },
+  {
+    id: "loncabasi", zorluk: "zor", kontrolAni: "herhangi", meslekler: ["Zanaatkâr"],
+    baslik: { tr: "Loncabaşı", en: "Guildmaster" },
+    aciklama: { tr: "Rütbede en üst kademeye (5) ulaş.", en: "Reach the highest rank (5)." },
+    kosul: (s) => s.rutbe_seviye >= 5,
+  },
 ];
 
 const HAVUZ_INDEKS: Record<string, AmacTanimi> = Object.fromEntries(

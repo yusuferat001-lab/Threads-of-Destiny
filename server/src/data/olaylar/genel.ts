@@ -8786,6 +8786,61 @@ export const OLAY_GENEL: OlayTanimi[] = [
     ],
   },
   {
+    id: "sehir_yonetim_zanaatkar_baslangic",
+    kategori: "siyaset",
+    meslekler: [
+      "Zanaatkâr",
+    ],
+    minRutbeSeviye: 3,
+    agirlik: 1,
+    gorsel: "🏛️",
+    sureYilMin: 1,
+    sureYilMax: 1,
+    baslik: "Loncanın Ötesinde",
+    metin: "Ustalığın artık senin için bir tavan değil, bir başlangıç. Şehrin zanaat şurasında bir koltuk boşaldı; rakip bir usta da aynı koltuğun peşinde. Kazanırsan sadece kendi atölyeni değil, şehrin zanaat düzeninin bir parçasını yönetirsin.",
+    secenekler: [
+      {
+        metin: "Mücadeleye gir, koltuğu hedefle.",
+        baseBasariSansi: 60,
+        basariliSonuc: {
+          sehir_yonetim_artis: 1,
+          para: 35,
+          un: 12,
+          etiket_ekle: [
+            "sehir_yonetimi_basladi",
+          ],
+          mesaj: "Rakip ustayı geride bıraktın; artık şehrin zanaat şurasında bir sözün var.",
+          detay: "Ustalık artık bir son değil, yeni bir yarışın başlangıcı.",
+        },
+        basarisizSonuc: {
+          mutluluk: -4,
+          para: -10,
+          un: -5,
+          etiket_ekle: [
+            "sehir_yonetimi_basladi",
+          ],
+          mesaj: "Bu turu rakip usta kazandı, ama yarış bitmedi; adın artık şurada biliniyor.",
+          detay: "İlk denemen başarısız oldu ama artık oyunun içindesin.",
+        },
+      },
+      {
+        metin: "Reddet, atölyenle yetin.",
+        baseBasariSansi: 95,
+        basariliSonuc: {
+          ahlak: 3,
+          mutluluk: -1,
+          mesaj: "Teklifi geri çevirdin; mevcut konumunla yetinmeyi seçtin.",
+          detay: "Belki başka bir gün fikrin değişir.",
+        },
+        basarisizSonuc: {
+          mutluluk: -2,
+          mesaj: "Reddettiğine biraz pişman oldun; rakip usta koltuğu sensiz aldı.",
+          detay: "Bazı fırsatlar bir daha aynı şekilde gelmiyor.",
+        },
+      },
+    ],
+  },
+  {
     id: "sehir_yonetim_asker_savunma_butcesi",
     kategori: "siyaset",
     meslekler: [

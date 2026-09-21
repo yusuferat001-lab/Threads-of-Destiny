@@ -4,7 +4,7 @@
 
 ## 0. Oyun Nedir
 
-**Kader Çarkı**, Türkçe, metin tabanlı, tarihi bir hayat simülasyonudur. Oyuncu bir **çağ** (Orta Çağ ya da Sanayi Devrimi), bir **bölge/ülke** ve bir **yerleşim tipi** seçer; ailesi, kişiliği ve dini rastgele belirlenir. 15 yaşında bir **meslek** (Asker/Tüccar/Din Adamı) seçilir ve karakter, her turda sunulan bir olay + 2-4 seçenek arasından seçim yaparak yaşar. Zar atılır, sonuç uygulanır, yıllar ilerler; **ölüm kalıcıdır**. Oyun başında (yerleşim seçiminden sonra) oyuncudan bir **isim** istenir — boş bırakılırsa seçilen ülkeye uygun rastgele bir isim atanır; bu isim oyun boyunca sol üstte görünür ve ölümde skor **otomatik olarak** bu isimle liderlik tablosuna kaydedilir (§18). **Soy sürdürme ("hanedan modu") 2026-09'da tamamen kaldırıldı** — ölüm kesin sondur, yeniden başlamak yeni bir karakter oluşturur.
+**Kader Çarkı**, Türkçe, metin tabanlı, tarihi bir hayat simülasyonudur. Oyuncu bir **çağ** (Orta Çağ ya da Sanayi Devrimi), bir **bölge/ülke** ve bir **yerleşim tipi** seçer; ailesi, kişiliği ve dini rastgele belirlenir. 15 yaşında bir **meslek** (Asker/Tüccar/Din Adamı/Zanaatkâr — 2026-09 sonunda eklenen 4. meslek) seçilir ve karakter, her turda sunulan bir olay + 2-4 seçenek arasından seçim yaparak yaşar. Zar atılır, sonuç uygulanır, yıllar ilerler; **ölüm kalıcıdır**. Oyun başında (yerleşim seçiminden sonra) oyuncudan bir **isim** istenir — boş bırakılırsa seçilen ülkeye uygun rastgele bir isim atanır; bu isim oyun boyunca sol üstte görünür ve ölümde skor **otomatik olarak** bu isimle liderlik tablosuna kaydedilir (§18). **Soy sürdürme ("hanedan modu") 2026-09'da tamamen kaldırıldı** — ölüm kesin sondur, yeniden başlamak yeni bir karakter oluşturur.
 
 ## 1. Depo Yapısı & Komutlar
 
@@ -47,7 +47,7 @@ Taban: `/api/game` (oyun) ve `/api/scores` (liderlik tablosu).
 
 | Metot & Yol | Body | Ne yapar |
 |---|---|---|
-| GET `/meslekler` | – | `["Asker","Tüccar","Din Adamı"]` |
+| GET `/meslekler` | – | `["Asker","Tüccar","Din Adamı","Zanaatkâr"]` (2026-09 sonu: Zanaatkâr eklendi) |
 | GET `/bolgeler` | – | Çağ→bölge listesi |
 | GET `/yerlesimler` | – | 4 yerleşim tanımı (yeni nötr `kasaba` + eski 3) — **seçim ekranı 2026-09'da kaldırıldı; endpoint yalnız Finans yaşam maliyeti/geri uyum için duruyor** |
 | GET `/konutlar` | – | 6 konut kademesi + taşınma maliyeti |
@@ -127,7 +127,7 @@ Kaynak: [server/src/types.ts](server/src/types.ts). Tek kaynak — client `types
 ### Meslek & rütbe
 | Alan | Tip | Açıklama |
 |---|---|---|
-| `meslek` | string | `"Asker"\|"Tüccar"\|"Din Adamı"`, 15 yaşında seçilir |
+| `meslek` | string | `"Asker"\|"Tüccar"\|"Din Adamı"\|"Zanaatkâr"`, 15 yaşında seçilir (Zanaatkâr 2026-09 sonunda eklendi) |
 | `rutbe` | string | Güncel unvan (§14) |
 | `rutbe_seviye` | 1-5 | **RATCHET — asla düşmez** (2026-08 reformu, §14). `kariyer_puani` + mesleğe özgü stat eşiğiyle + cooldown'la artar |
 | `kariyer_puani` | number (monoton, ≥0) | Rütbeyi belirleyen tek sayaç: yıllık kıdem +3 · meslek-kategori başarısı +3 · rakip hedefleyen karanlık iş başarısı +2..+6 (§13/§14). "Kendi işine yatırım +12" kaynağı 2026-09'da kaldırıldı |
@@ -163,6 +163,7 @@ Kaynak: [server/src/types.ts](server/src/types.ts). Tek kaynak — client `types
 | `ordu_techizat_seviyesi` | Asker | 0-100, saldırı gücünü çarpar |
 | `ticaret_sermaye` | Tüccar | Ticaret kazançlarını çarpar |
 | `nufuz` | Din Adamı | Dini kazançları çarpar |
+| `uretim_kapasitesi` | Zanaatkâr *(2026-09 sonu)* | 0-100, `SonucEtkisi.uretim_kapasitesi_artis` ile dolar. **Bilinçli olarak placeholder** — `meslekMetrikCarpani` bu meslek için `×1` sabit döner, maaşa/oyun içi hiçbir etkisi yok; dengesi sonraya bırakıldı |
 
 ### İlişkiler & aile
 | Alan | Açıklama |
@@ -276,7 +277,7 @@ Kaynak: [server/src/data/olaylar/types.ts](server/src/data/olaylar/types.ts). Ye
 
 ### `OlayTanimi` (bir olay)
 ```
-id, kategori: Kategori ("savas"|"ticaret"|"din"|"siyaset"|"saglik"|"sosyal"),
+id, kategori: Kategori ("savas"|"ticaret"|"din"|"siyaset"|"saglik"|"sosyal"|"zanaat" — "zanaat" 2026-09 sonunda Zanaatkâr mesleğiyle eklendi),
 baslik, metin, secenekler: OlaySecenegi[],
 gorsel?  (yoksa kategoriye göre emoji, bkz. olaySecici.ts KATEGORI_GORSEL)
 ```
@@ -303,11 +304,11 @@ Olay/seçenek metninde ve sonuç `mesaj`/`detay`'ında kullanılabilir: `{bolge}
 
 ## 7. Olay Bankası Dosya Haritası
 
-`data/olaylar/index.ts` tüm alt listeleri `OLAY_BANKASI: OlayTanimi[]` içinde birleştirir. **Toplam ~1460 olay** (id sayımıyla, 2026-09 sonu itibarıyla güncellendi — önceki "~1340" sayımı `komikGaripOlaylar.ts` eklendikten sonra güncellenmemişti). Belirli bir olayı bulmak için `grep -n "id: \"<olay_id>\"" server/src/data/olaylar/*.ts` kullan — dosyayı baştan sona okuma.
+`data/olaylar/index.ts` tüm alt listeleri `OLAY_BANKASI: OlayTanimi[]` içinde birleştirir. **Toplam 1520 olay** (id sayımıyla, 2026-09 sonu itibarıyla güncellendi — 4. meslek Zanaatkâr'ın 130 olayı + `genel.ts`'e eklenen `sehir_yonetim_zanaatkar_baslangic` giriş olayı sonrası gerçek sayı, `npx tsx -e "import{OLAY_BANKASI}from './src/data/olaylar';console.log(OLAY_BANKASI.length)"` ile doğrulanabilir). Belirli bir olayı bulmak için `grep -n "id: \"<olay_id>\"" server/src/data/olaylar/*.ts` kullan — dosyayı baştan sona okuma.
 
 | Dosya | ~Olay Sayısı | Satır | İçerik |
 |---|---|---|---|
-| `genel.ts` | 199 | 10442 | Meslek/çağdan bağımsız evrensel olaylar (sağlık, sosyal, hizip başlangıcı vb.) |
+| `genel.ts` | 200 | ~10500 | Meslek/çağdan bağımsız evrensel olaylar (sağlık, sosyal, hizip başlangıcı vb.) — 2026-09 sonunda `sehir_yonetim_zanaatkar_baslangic` (§11 kural 4, §15) eklendi |
 | `ortaCagAskerYollari.ts` | 105 | 5723 | Orta Çağ Asker **kariyer yolu** dallanması (§16 "yol:asker:*") |
 | `yolculuk.ts` | 129 | 8058 | "Büyük yolculuk" zincirleri (Haçlı Seferi, Hac, Keşif, vb. — §17) |
 | `ortaCagDinAdamiYollari.ts` | 85 | 4546 | Orta Çağ Din Adamı kariyer yolu dallanması ("yol:din:*") |
@@ -315,6 +316,10 @@ Olay/seçenek metninde ve sonuç `mesaj`/`detay`'ında kullanılabilir: `{bolge}
 | `sanayiAskerYollari.ts` | 45 | ~2000 | **(2026-09 yeni)** Sanayi Devrimi Asker kariyer yolu dallanması ("yol:asker:sadik/reformcu/zalim/firari", §16) |
 | `sanayiTuccarYollari.ts` | 45 | ~2000 | **(2026-09 yeni)** Sanayi Devrimi Tüccar kariyer yolu dallanması ("yol:tuccar:adil/somurucu/spekulator/hayirsever", §16) |
 | `sanayiDinAdamiYollari.ts` | 45 | ~2000 | **(2026-09 yeni)** Sanayi Devrimi Din Adamı kariyer yolu dallanması ("yol:din:durust/fanatik/sosyal/yozlasmis", §16) |
+| `ortaCagZanaatkarYollari.ts` | 45 | ~1400 | **(2026-09 yeni — 4. meslek Zanaatkâr)** Orta Çağ Zanaatkâr kariyer yolu dallanması (1 giriş + "yol:zanaatkar:lonca_sadik/yenilikci/hileci/sanatkar" × 11, §16) |
+| `sanayiZanaatkarYollari.ts` | 45 | ~1450 | **(2026-09 yeni — 4. meslek Zanaatkâr)** Sanayi Devrimi Zanaatkâr kariyer yolu dallanması (1 giriş + "yol:zanaatkar:makineci/gelenekci/sendikaci/girisimci" × 11, §16) |
+| `ortaCagZanaatkar.ts` | 20 | ~330 | **(2026-09 yeni)** Orta Çağ Zanaatkâr'a özel (yol-öncesi/yol-bağımsız standalone havuz) |
+| `sanayiZanaatkar.ts` | 20 | ~340 | **(2026-09 yeni)** Sanayi Devrimi Zanaatkâr'a özel (yol-öncesi/yol-bağımsız standalone havuz) |
 | `sosyallesme.ts` | 73 | 2752 | Sosyalleşme mekân olayları — 2026-09'dan beri sadece 6 mekân id'sine bağlı (pazar_meydani, meyhane, pub, ordugah_cadiri, dini_meclis, lonca_meclisi; hamam/kahvehane/kervansaray→pazar_meydani, salon→meyhane remap edildi). Normal havuzdan tamamen dışlanır, sadece `POST /:id/sosyallesme` ile zorlanır (§25). Tur-harcamayan içki/deli/sadaka/kulak/ısmarla/fal aksiyonları ayrı: [sosyallesmeAksiyonlari.ts](server/src/data/sosyallesmeAksiyonlari.ts) |
 | `hizip.ts` | 70 | 3416 | Hizip (faction) sistemi olayları (§16) |
 | `evlilikVeAile.ts` | 66 | 3154 | Evlilik yolu + aile devamı olayları |
@@ -415,7 +420,7 @@ Bir seçeneğin `onTepki` alanı varsa: seçilince **zar atılmaz**, zaman ilerl
 1. **Tarihi savaş ilanı** — savaşta değil, yaş≤55, `tarihiSavasKontrol(bolge,yil,cag)` bir rakip döndürüyor ve `tarihi_savas_gordu:<rakip>` etiketi yoksa → `dunya_savas_ilani_asker` (Asker) / `dunya_savas_ilani` (diğer); etiket eklenir.
 2. **Kariyer yolu girişi** (2026-09'dan beri **6 çağ×meslek kombinasyonunun hepsi**, `gameEngine.ts`'teki `YOL_SISTEMLERI` tablosundan okunur — eskiden sadece Orta Çağ Asker/Din Adamı'ydı) — yaş≥18, ilgili `yol:asker:*`/`yol:din:*`/`yol:tuccar:*` etiketi henüz yok, giriş olayı daha önce görülmemiş → Orta Çağ Asker `oc_asker_yol_ilk_emir` / Orta Çağ Din Adamı `oc_din_yol_ilk_sinav` / Orta Çağ Tüccar `oc_tuccar_yol_ilk_anlasma` / Sanayi Devrimi Asker `sd_asker_yol_ilk_gorev` / Sanayi Devrimi Tüccar `sd_tuccar_yol_ilk_karar` / Sanayi Devrimi Din Adamı `sd_din_yol_ilk_vaaz`.
 3. **Evlilik teklifi garantisi** — yaş≥29, evli değil, ne `iliski_evlilik_teklifi` ne `iliski_ikinci_teklif` hiç görülmemiş → `iliski_evlilik_teklifi`.
-4. **Şehir yönetimi girişi** — `rutbe_seviye>=4` (2026-08 rütbe reformuyla eski `>=3`'ten yükseltildi, §14), `sehir_yonetimi_basladi` etiketi yok → mesleğe göre `sehir_yonetim_{tuccar|dinadami|asker}_baslangic`.
+4. **Şehir yönetimi girişi** — `rutbe_seviye>=4` (2026-08 rütbe reformuyla eski `>=3`'ten yükseltildi, §14), `sehir_yonetimi_basladi` etiketi yok → mesleğe göre `sehir_yonetim_{tuccar|dinadami|asker|zanaatkar}_baslangic` (Zanaatkâr 2026-09 sonunda eklendi, §15).
 5. **Evcil hayvan teklifi** — 20≤yaş<25, evcil hayvanı yok, teklif olayı görülmemiş → çağa göre `evcilhayvan_sahiplenme_teklifi_{sanayi|ortacag}`.
 6. **Evcil hayvan takip garantisi** — evcil hayvanı var, 45≤yaş<50, `EVCIL_HAYVAN_TAKIP_OLAY_IDLERI`'den <2 görülmüş → `EVCIL_HAYVAN_GENEL_TAKIP_OLAY_IDLERI` havuzundan (öncelik görülmemişlerde) rastgele.
 7. **Gizemli eşya takip garantisi** — 38≤yaş<46, sahip olunan her `esya:`/`envanter:` etiketi için `GIZEMLI_ESYA_TAKIP_HAVUZU[esyaId]`'den hiç görülmemişse → o havuzdan rastgele (ilk eşleşen eşya kazanır).
@@ -470,7 +475,7 @@ Kaynak: [stateManager.ts](server/src/game/stateManager.ts), [gameEngine.ts](serv
 
 **Maaş formülü** (`hesaplaMaasYillik`):
 ```
-temel[meslek] (Asker 10.35 / Tüccar 11.5 / DinAdamı 9.85 — özgün 9/10/8 tabanına 2026-08'de +%10, 2026-09'da (yama #2) +%5 → toplam ×1.15; 2026-09 ekonomi dengesindeki üçüncü +%10 zam ekonomi sıkılaştırma turunda GERİ ALINDI. Din Adamı tabanı ayrıca 9.2→9.85: diğer iki mesleğe yaklaşsın, pragmatik din adamı geride kalmasın)
+temel[meslek] (Asker 10.35 / Tüccar 11.5 / DinAdamı 9.85 / Zanaatkâr 10.0 — özgün 9/10/8 tabanına 2026-08'de +%10, 2026-09'da (yama #2) +%5 → toplam ×1.15; 2026-09 ekonomi dengesindeki üçüncü +%10 zam ekonomi sıkılaştırma turunda GERİ ALINDI. Din Adamı tabanı ayrıca 9.2→9.85: diğer iki mesleğe yaklaşsın, pragmatik din adamı geride kalmasın. Zanaatkâr (2026-09 sonu, 4. meslek) 10.0 ile Asker/Tüccar arasına yerleştirildi)
 × (1 + itibarToplam/100)   // "İTİBARIN" (2026-09, yama #2'de yumuşatıldı + stata göre ayrıştı): itibarDegerYuzdesi(mutluluk)+itibarUnYuzdesi(un)+itibarDegerYuzdesi(ahlak). Mutluluk/Ahlak bant: ≤25→−4 · ≤40→−2 · ≤60→0 · ≤78→+2 · >78→+4 (nötr bant 40-60). Şöhret bant: ≤8→−4 · ≤16→−2 · ≤50→0 · ≤75→+2 · >75→+4 (nötr bant DÜŞÜKTEN başlar — mütevazı karakter az tanınıyor diye cezalanmasın). TOPLANIR, tavan/taban YOK → üçü dipteyse −%12, üçü zirvedeyse +%12.
 × (1 + min(tur_sayisi+8,40)*0.0025)   // KIDEM: ekonomi sıkılaştırma turunda +%0.25/tur, tavan +%10 @tur~32'ye geri çekildi (2026-09 ekonomi dengesinde kısaca +%0.375/tur, tavan +%15 idi). Taze karakter ~+%2 alır.
 × maasCarpani (kalıcı, birikimli etiket — ekonomi sıkılaştırma turunda TAVAN tekrar düşürüldü: toplam ∈ [0.60, 1.20], bkz. maasCarpaniUygula aşağıda)
@@ -488,7 +493,7 @@ Formül tek yerde: `hesaplaMaasYillik` ile `maasKirilimHesapla` (aynı dosya) or
 
 **Olay para ödülleri (`OLAY_PARA_PRIMI`, gameEngine.ts):** Pozitif `etki.para` `× 0.85` ile ölçeklenir — büyük denge turunda 1.055'ten düşürüldü ("olaylardan gelen para ödüllerini %20 düşür"; eski +%5.5 primi de yutuldu). YALNIZ pozitif para'ya; kayıplara değil. Meslek/yolculuk/suç çarpanları bunun üstünde çalışır.
 
-**Meslek metrik çarpanı** (sadece kendi kategorisinde, sadece pozitif para'ya): Asker `1+saldiriGucu/200` (`saldiriGucu=ordu_mevcudu*(1+techizat/100)`); Tüccar `1+ticaret_sermaye/180`; Din Adamı `1+nufuz/180` (2026-08'de Tüccar/Din `/300`'den `/180`'e sertleştirildi — yatırımın geri dönüşünü hızlandırmak için).
+**Meslek metrik çarpanı** (sadece kendi kategorisinde, sadece pozitif para'ya): Asker `1+saldiriGucu/200` (`saldiriGucu=ordu_mevcudu*(1+techizat/100)`); Tüccar `1+ticaret_sermaye/180`; Din Adamı `1+nufuz/180` (2026-08'de Tüccar/Din `/300`'den `/180`'e sertleştirildi — yatırımın geri dönüşünü hızlandırmak için); **Zanaatkâr `×1` sabit** (2026-09 sonu, bilinçli olarak etkisiz bırakıldı — `uretim_kapasitesi` sayacı dolar ama dengesi henüz yapılmadı, §4).
 
 **Ordu kaybı** (savaş kategorisi seçimlerinde, Asker): `yuzde = (basarili?0.03:0.10) × (savasta?1:0.2) × (0.5+rastgele(0-1))`; `mevcut -= round(mevcut*yuzde)`.
 
@@ -561,7 +566,7 @@ Kaynak: [rutbeler.ts](server/src/data/rutbeler.ts). **Eski 3-kademeli, `para` e�
 
 **Tek monoton sayaç `kariyer_puani`** (CharacterState, asla azalmaz) rütbeyi belirler. Kaynakları ([rutbeler.ts](server/src/data/rutbeler.ts) sabitleri):
 - `KARIYER_PUANI_YILLIK = 3` (2026-09'da 2 → 3; kaldırılan "kendi işine yatırım +8" kaynağının telafisi) → hayatta geçen her yıl (pasif kıdem; `sonucuUygulaVeIlerlet` yıl bloğunda `× yasArtisi`).
-- `KARIYER_PUANI_KATEGORI_BASARI = 3` → mesleğine uygun kategoride (`MESLEK_KATEGORI`: Asker→savas, Tüccar→ticaret, Din Adamı→din) **başarılı** olunan her olay.
+- `KARIYER_PUANI_KATEGORI_BASARI = 3` → mesleğine uygun kategoride (`MESLEK_KATEGORI`: Asker→savas, Tüccar→ticaret, Din Adamı→din, Zanaatkâr→zanaat) **başarılı** olunan her olay.
 - Rakip hedefleyen karanlık iş başarısı → `+2..+6 kariyer_puani` (`kotuIsler.ts` `basarili.kariyer_puani`, §13).
 - `SonucEtkisi.kariyer_puani_artis` → kilit taşı olaylar doğrudan puan verebilir (şu an kullanan olay yok, altyapı hazır).
 - **`KARIYER_PUANI_YATIRIM` KALDIRILDI** — "kendi işine yatırım" özelliği tümüyle silindi (§13).
@@ -573,10 +578,11 @@ Kaynak: [rutbeler.ts](server/src/data/rutbeler.ts). **Eski 3-kademeli, `para` e�
 | Asker | Er→Onbaşı→Silahşor→Kumandan→Serdar / Er→Onbaşı→Çavuş→Yüzbaşı→Binbaşı | kp 10, ün 20 | kp 24, ün 32 | kp 44, ün 42 | **kp 210, ün 72** |
 | Tüccar | Çırak Tüccar→Seyyar Satıcı→Pazarcı→Lonca Ustası→Lonca Reisi / Kâtip Çırak→Tezgâhtar→Şirket Ortağı→Fabrika Patronu→Sanayi Baronu | kp 10, ün 10 | kp 24, ün 17 | kp 44, ün 25 | **kp 210, ün 50** |
 | Din Adamı | Acemi Rahip→Rahip→Vaiz→Başrahip→Piskopos / Papaz Yrd.→Papaz→Vaiz→Başpapaz→Piskopos | kp 10, ahlak 44 | kp 24, ahlak 50 | kp 44, ahlak 58 | **kp 210, ahlak 78** |
+| Zanaatkâr *(2026-09 sonu, 4. meslek)* | Çırak→Kalfa→Usta→Baş Usta→Loncabaşı / Amele→Vasıflı İşçi→Ustabaşı→Atölye Şefi→Fabrika Müdürü | kp 10, ün 8 | kp 24, ün 14 | kp 44, ün 20 | **kp 210, ün 42** |
 
 *Sünni İslam din_kultur: `Medrese Talebesi→Müezzin→Vaiz→İmam→Baş İmam` (her iki çağ, eşikler aynı).*
 
-Her kademe **hem** `kariyer_puani` **hem** mesleğe özgü statı ister (`esikKarsilaniyorMu`): Asker & Tüccar **ün** (her kademede), Din Adamı **ahlak**. `para` koşulu KASITLI OLARAK YOK (sürekli harcanan nakde bağlı bir eşik sessiz rütbe kaybına yol açıyordu). S4→S5 sıçraması bilinçli olarak büyük (kp 44→**210**; 2026-09 ekonomi dengesinde 160'tan yükseltildi — ömürler ~20 yıl uzayınca S5 %2.4→%12.8'e fırlamıştı, 210 onu tekrar "nadir zirve"ye çekti). **S5 nadir bir zirvedir; 2026-09 simülasyonunda genel oran ~%0.4, Para-odaklı bot dolu ömürde ~%4, diğer kişilikler ≈%0** (bkz. §22 `simulateKisilikler`).
+Her kademe **hem** `kariyer_puani` **hem** mesleğe özgü statı ister (`esikKarsilaniyorMu`): Asker, Tüccar & Zanaatkâr **ün** (her kademede), Din Adamı **ahlak**. `para` koşulu KASITLI OLARAK YOK (sürekli harcanan nakde bağlı bir eşik sessiz rütbe kaybına yol açıyordu). S4→S5 sıçraması bilinçli olarak büyük (kp 44→**210**; 2026-09 ekonomi dengesinde 160'tan yükseltildi — ömürler ~20 yıl uzayınca S5 %2.4→%12.8'e fırlamıştı, 210 onu tekrar "nadir zirve"ye çekti). **S5 nadir bir zirvedir; 2026-09 simülasyonunda genel oran ~%0.4, Para-odaklı bot dolu ömürde ~%4, diğer kişilikler ≈%0** (bkz. §22 `simulateKisilikler`). Zanaatkâr'ın ün eşikleri Tüccar'dan biraz alçak tutuldu (esnaf itibarı, tüccarın "herkes tanır" şöhretinden daha mütevazı).
 
 **Terfi cooldown'u** (`TERFI_COOLDOWN = {2:0, 3:2, 4:2, 5:8}`): bir sonraki kademeye çıkmak için son terfiden bu kadar oyun yılı geçmiş olmalı (`state.yil - state.son_terfi_yili >= cooldown`). `rutbeGuncelle` ayrıca **çağrı başına en fazla +1 kademe** ilerletir — üst üste terfi olmaz.
 
@@ -599,6 +605,9 @@ Her kademe **hem** `kariyer_puani` **hem** mesleğe özgü statı ister (`esikKa
 | Asker | Bölge Komutanı | Ordu Generali | Savaş Konseyi Üyesi | Krallığın Kalkanı | "Krallığın Kalkanı (Seviye N)" |
 | Tüccar | Ticaret Baronu | Lonca Reisi | Şehrin Hazine Nazırı | Ticaret İmparatoru | "Ticaret İmparatoru (Seviye N)" |
 | Din Adamı | Piskopos Vekili | Baş Piskopos | Kutsal Meclis Üyesi | Ruhani Önder | "Ruhani Önder (Seviye N)" |
+| Zanaatkâr | Zanaat Şurası Üyesi | Loncalar Birliği Başkanı | Şehrin Baş Mimarı | Sanayi Piri | "Sanayi Piri (Seviye N)" |
+
+Zanaatkâr'ın giriş-zorlama olayı (`sehir_yonetim_zanaatkar_baslangic`, `genel.ts`) 2026-09 sonunda eklendi — `gameEngine.ts`'teki `if` zincirine bir `"Zanaatkâr"` kolu bağlandı, artık diğer 3 meslekle tam simetrik (§11 kural 4).
 
 **Maaş etkisi:** Şehir yönetimine **bir kez girmek** maaşa kalıcı, **SABİT +%3** katar (`sehirYonetimMaasCarpani = seviye>=1 ? 1.03 : 1`). Eskiden `1 + seviye*0.08` (tavansız, seviyeyle büyüyen), sonra sabit +%8 idi; artık +%3 ve seviye/unvan **yalnız prestij içindir**, maaşa ek katkısı yoktur.
 
@@ -634,7 +643,7 @@ Kaynak: [aileler.ts](server/src/data/aileler.ts). Her satır: para/sağlık/ün/
 | fabrika_iscisi | Sanayi | – | -12 | -14 | -6 | +14 | -6 |
 | tuccar | – | Tüccar | +20 | -4 | +12 | -14 | +4 |
 | din_adami | – | Din Adamı | -10 | -3 | +14 | +20 | +6 |
-| zanaatkar | Orta Çağ | – | +12 | +8 | -8 | +6 | +4 |
+| zanaatkar | Orta Çağ | Zanaatkâr *(2026-09 sonu)* | +12 | +8 | -8 | +6 | +4 |
 | hekim | Orta Çağ | – | -14 | +14 | +8 | +6 | -2 |
 | denizci | Sanayi | – | +12 | +10 | -4 | -14 | -2 |
 | madenci | Sanayi | – | +18 | -16 | -6 | +10 | -8 |
@@ -647,7 +656,7 @@ Kaynak: [aileler.ts](server/src/data/aileler.ts). Her satır: para/sağlık/ün/
 | sovalye | Orta Çağ | Asker | +10 | +6 | +20 | +10 | -4 |
 | haci | Orta Çağ | – | -12 | -4 | +6 | +14 | +6 |
 | soytari *(komik)* | Orta Çağ | – | -14 | +4 | -6 | +6 | +10 |
-| muhendis | Sanayi | – | +16 | -6 | +8 | +6 | +2 |
+| muhendis | Sanayi | Zanaatkâr *(2026-09 sonu)* | +16 | -6 | +8 | +6 | +2 |
 | gazeteci | Sanayi | – | -12 | -4 | +20 | +8 | +2 |
 | sirk_ailesi *(komik)* | Sanayi | – | -16 | +12 | +12 | -6 | +10 |
 | define_avcisi *(komik)* | – | – | -18 | -4 | -8 | +4 | +6 |
@@ -751,7 +760,7 @@ Kaynak: [gizemliEsyalar.ts](server/src/data/gizemliEsyalar.ts) (garanti havuzu) 
 | Tüccar | Liman Loncası | Pazar Birliği |
 | Din Adamı | Gelenekçiler | Yenilikçiler |
 
-### Kariyer Yolları (§11 kural 2 ile girilir — 2026-09'dan beri **6 çağ×meslek kombinasyonunun hepsinde** var, eskiden sadece Orta Çağ Asker/Din Adamı'ydı)
+### Kariyer Yolları (§11 kural 2 ile girilir — 2026-09'dan beri **8 çağ×meslek kombinasyonunun hepsinde** var (4. meslek Zanaatkâr eklenince 6→8), eskiden sadece Orta Çağ Asker/Din Adamı'ydı)
 
 Mekanik: giriş olayının seçenekleri, hem `basariliSonuc` hem `basarisizSonuc`'ta doğrudan kalıcı bir `yol:<meslek>:<dal>` etiketi ekler (Orta Çağ Asker/Din Adamı'daki gibi ayrı bir "eğilim → ikinci olay → kesin kilit" iki-adımlı zincir değil, tek adımda kilitlenir). Kilitlenen etiket bir daha değişmez; o dala özel olaylar `gerekliEtiketler:["yol:<meslek>:<dal>"]` taşıdığı için karşı dalların içeriği otomatik kapalı kalır. Aynı meslek farklı çağlarda aynı `yol:<meslek>:` önekini paylaşabilir (ör. hem Orta Çağ hem Sanayi Devrimi Asker'i `yol:asker:`) — çakışma yoktur çünkü her olay `cag` filtresi taşır.
 
@@ -761,8 +770,10 @@ Mekanik: giriş olayının seçenekleri, hem `basariliSonuc` hem `basarisizSonuc
 - **Sanayi Devrimi Asker** *(2026-09 yeni)* (`yol:asker:*`): sadik, reformcu, zalim, firari — [sanayiAskerYollari.ts](server/src/data/olaylar/sanayiAskerYollari.ts) (45 olay). Giriş: `sd_asker_yol_ilk_gorev`.
 - **Sanayi Devrimi Tüccar** *(2026-09 yeni)* (`yol:tuccar:*`): adil, somurucu, spekulator, hayirsever — [sanayiTuccarYollari.ts](server/src/data/olaylar/sanayiTuccarYollari.ts) (45 olay). Giriş: `sd_tuccar_yol_ilk_karar`.
 - **Sanayi Devrimi Din Adamı** *(2026-09 yeni)* (`yol:din:*`): durust, fanatik, sosyal, yozlasmis — [sanayiDinAdamiYollari.ts](server/src/data/olaylar/sanayiDinAdamiYollari.ts) (45 olay). Giriş: `sd_din_yol_ilk_vaaz`.
+- **Orta Çağ Zanaatkâr** *(2026-09 sonu yeni — 4. meslek)* (`yol:zanaatkar:*`): lonca_sadik, yenilikci, hileci, sanatkar — [ortaCagZanaatkarYollari.ts](server/src/data/olaylar/ortaCagZanaatkarYollari.ts) (45 olay). Giriş: `oc_zanaatkar_yol_ilk_siparis`.
+- **Sanayi Devrimi Zanaatkâr** *(2026-09 sonu yeni — 4. meslek)* (`yol:zanaatkar:*`): makineci, gelenekci, sendikaci, girisimci — [sanayiZanaatkarYollari.ts](server/src/data/olaylar/sanayiZanaatkarYollari.ts) (45 olay). Giriş: `sd_zanaatkar_yol_ilk_makine`.
 
-Bu 6 dosya (özellikle ilk ikisi) devasa dallanan havuzlardır — belirli bir dalın içeriği gerekmedikçe okuma, `grep "yol:asker:kahraman"` gibi hedefli ara. Giriş olayının kendisi `gameEngine.ts`'teki `YOL_SISTEMLERI` tablosunda kayıtlıdır (§11 kural 2); yeni bir çağ×meslek kombinasyonu eklenecekse hem yeni dosya+giriş olayı hem de bu tabloya bir satır gerekir.
+Bu dosyalar (özellikle ilk ikisi) devasa dallanan havuzlardır — belirli bir dalın içeriği gerekmedikçe okuma, `grep "yol:asker:kahraman"` gibi hedefli ara. Giriş olayının kendisi `gameEngine.ts`'teki `YOL_SISTEMLERI` tablosunda kayıtlıdır (§11 kural 2); yeni bir çağ×meslek kombinasyonu eklenecekse hem yeni dosya+giriş olayı hem de bu tabloya bir satır gerekir.
 
 ### Evlilik Yolları (`evlilik_yolu:*`)
 `ask` (aşk evliliği), `mantik_soylu` (statü/asalet güdümlü), `mantik_ticari` (çıkar/ticaret güdümlü) — evlilik teklifi olayındaki seçime göre atanır, sonraki evlilik olaylarının tonunu belirler.
@@ -848,7 +859,7 @@ React 19 + Vite, **state kütüphanesi yok** (saf `useState`, `App.tsx` ~2640 sa
 ```
 giris → cag_sec (çağ + bölge/bayrak TEK sayfada) → isim_sec → acilis → oyun
    (2026-09: yerlesim_sec kaldırıldı; meslek seçimi ARTIK ayrı sayfa değil, `acilis` ekranına gömülü —
-    açılış anlatısı + kişilik + 3 meslek kartı aynı sayfada, "Devam Et" yok. `acilis` artık `ekran-kurulum`
+    açılış anlatısı + kişilik + meslek kartları (2026-09 sonu itibarıyla 4: Asker/Tüccar/Din Adamı/Zanaatkâr) aynı sayfada, "Devam Et" yok. `acilis` artık `ekran-kurulum`
     sınıfı + KaderYollari arka planıyla önceki kurulum sayfalarıyla aynı zemini kullanır. Restore: `!state.meslek → acilis`.)
                                                               ↓
               (yan ekranlar, tam sayfa navigasyon: aile / gorev / finans / yatirim / sosyallesme / magaza)
@@ -971,7 +982,7 @@ model GeriBildirim {          // §29 — "Görüş & Öneri" formu kayıtları 
 
 ## 22. Test & Analiz Araçları
 
-`server/tests/` — Vitest, `gameFlow, tepki, konut, kotuIsler (karanlık işler paneli, §13 — eski `yatirim.test.ts` bu özellik kaldırılınca silindi), miniOyunlar (Hazard/Üç Kağıtçı/Bilek Güreşi, §13), mulkVeSucSistemi, hapishane, yolculuk, hizipOlaylari, saray, sehirYonetimi, evcilHayvan, gizemliEsyalar, astVeAile, meslekMetrikleri, moderation, persistence, tagMotoru, tonalDenge (ağır/hafif ton dengesi), donemselOlaylar, dinOlaylari, askerDinAdamiYollari, derinlikMekanikleri, basarimlar, aranmaSeviyesi, sosyallesme, magaza, donemselDunyaOlaylari (enflasyon + savaş/veba/kriz/bağış, §27), sucKazanci (suç işleyerek para kazanma motor kuralı, §9 adım 3.5), yaslanma (pasif regen tavanı + ileri yaş ecel riski, §13), rutbe (5 kademeli rütbe reformu, §14), istatistik (metrik özeti toplama + ziyaret olayı doğrulayıcısı, §32), evlilik (olay-dışı evlenme akışı, §16), aileEkrani (eş/çocuk etkileşimi + `aileYillikUygula` decay/talep, §33), yonetimBaglari (Kariyer sayfası yönetim etkileşim/istek/talep + `yonetimYillikUygula` decay/talep, §35), olayKapsami (§12 uygunMu üst-sınır kapsama matrisi + havuz-kilit alt sistem boyutları, "az olay var" turu Faz 1), tekrarOnleme (`sonKTekrarOnlemeHesapla` + hapis havuzunda gerçek tekrar sıklığı, Faz 2)`. Bir mekanik değiştirilirken **ilgili test dosyasını çalıştır**, tüm 48K satırlık veriyi elle doğrulamaya çalışma.
+`server/tests/` — Vitest, `gameFlow, tepki, konut, kotuIsler (karanlık işler paneli, §13 — eski `yatirim.test.ts` bu özellik kaldırılınca silindi), miniOyunlar (Hazard/Üç Kağıtçı/Bilek Güreşi, §13), mulkVeSucSistemi, hapishane, yolculuk, hizipOlaylari, saray, sehirYonetimi, evcilHayvan, gizemliEsyalar, astVeAile, meslekMetrikleri, moderation, persistence, tagMotoru, tonalDenge (ağır/hafif ton dengesi), donemselOlaylar, dinOlaylari, askerDinAdamiYollari, derinlikMekanikleri, basarimlar, aranmaSeviyesi, sosyallesme, magaza, donemselDunyaOlaylari (enflasyon + savaş/veba/kriz/bağış, §27), sucKazanci (suç işleyerek para kazanma motor kuralı, §9 adım 3.5), yaslanma (pasif regen tavanı + ileri yaş ecel riski, §13), rutbe (5 kademeli rütbe reformu, §14), istatistik (metrik özeti toplama + ziyaret olayı doğrulayıcısı, §32), evlilik (olay-dışı evlenme akışı, §16), aileEkrani (eş/çocuk etkileşimi + `aileYillikUygula` decay/talep, §33), yonetimBaglari (Kariyer sayfası yönetim etkileşim/istek/talep + `yonetimYillikUygula` decay/talep, §35), olayKapsami (§12 uygunMu üst-sınır kapsama matrisi + havuz-kilit alt sistem boyutları, "az olay var" turu Faz 1), tekrarOnleme (`sonKTekrarOnlemeHesapla` + hapis havuzunda gerçek tekrar sıklığı, Faz 2), zanaatkarOlayFrekansi (4. meslek Zanaatkâr'ın 130 olaylık özel havuzunun — 45+45 kariyer yolu + 20+20 standalone — bir ömürde ortalama kaç kez tetiklendiğini gerçek `senaryoUret`/`secimUygula` ile 120 ömürlük Monte Carlo simülasyonuyla ölçer; sonuç: Orta Çağ'da ortalama ~4.7, Sanayi Devrimi'nde ~3.7 olay/ömür — ortalama ölüm yaşı ~45-50 olduğundan 130'luk havuzun tamamı tek ömürde görülmez, beklenen davranış)`. Bir mekanik değiştirilirken **ilgili test dosyasını çalıştır**, tüm 48K satırlık veriyi elle doğrulamaya çalışma.
 
 > **Sim script'leri (2026-09 "kendi işine yatırım" kaldırılınca):** `scripts/simulate5YilOrtalama.ts`, `simulateBazTarzlar.ts`, `simulateEkonomiAnaliz.ts`, `simulateFullPlaythroughs.ts`, `simulateKisilikler.ts` tekrar çalışır durumda — silinmiş `yatirimYap`/`yatirimConfigGetir` çağrıları `scripts/_yatirimShim.ts` (no-op: sonsuz maliyet → yatırım adımı sessizce atlanır, ilgili sayaçlar 0 kalır) üzerinden karşılanıyor. İleride bu adımı gerçek bir mekaniğe bağlamak istenirse çağrıları `gameEngine.kotuIsYap`/`kotuIsConfigGetir`'e taşıyıp shim'i silin. `simulateFullPlaythroughs.ts` artık `_simPrismaStub`'ı import ediyor (eski `DATABASE_URL="file:./simulation.db"` yolu Postgres'e taşınınca çalışmıyordu). `npm test` bunlardan etkilenmez (script'ler tsc/test kapsamında değil).
 
@@ -1270,7 +1281,7 @@ Eski **"Görevin"** (`GorevEkrani`) ekranı **"Kariyer"** (`KariyerEkrani`, ekra
 
 **İki ilişki hattı** (`state.yonetim_iliski` + `state.patron_iliski`, 0-100, başlangıç 40, `clampStats`'te clamp, `eskiKayitGocu` backfill). **Kural (2026-09 ikinci tur): "kralı etkilemek aşırı pahalı ve zor" — `yonetici` hattı çok daha sert, `patron` (işle ilgili kişi) aynı kaldı:**
 - **yonetici** — şehri yöneten kişi. `state.hukumdar` varsa o (`K(...,"Hükümdar")`); yoksa çağa göre "Vali"/"Bölge Beyi" + `state.id`'den deterministik isim (`yonetimDeterministikIsim`).
-- **patron** — mesleğe göre: Asker → Ordu Kumandanı/Karargâh Komutanı · Tüccar → Lonca Reisi/Fabrika Patronu · Din Adamı → Başrahip/Başpiskopos (Sünni İslam → Kadı).
+- **patron** — mesleğe göre: Asker → Ordu Kumandanı/Karargâh Komutanı · Tüccar → Lonca Reisi/Fabrika Patronu · Din Adamı → Başrahip/Başpiskopos (Sünni İslam → Kadı) · Zanaatkâr *(2026-09 sonu)* → Loncabaşı/Atölye Sahibi.
 
 **Etkileşimler** (`YONETIM_ETKILESIMLERI: Record<hat, ...>` — artık HAT'a göre ayrı; cooldown anahtarı `${hat}:${id}`; `%80 tam / %20 yarım` zar). **Bağış + hediye TEK "bagis"te birleşti; oyuncu tutarı seçer** (`bagisKademeleri`, enflasyonlu; body `{etkilesimId, kademe}`), ilişki kazancı = `round(kademe / bagisBolen × carpan)`:
 | id | patron | yonetici (kral) |

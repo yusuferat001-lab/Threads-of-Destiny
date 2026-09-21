@@ -25,6 +25,7 @@ describe("şehir yönetimi (en üst rütbe sonrası sonsuz ilerleme)", () => {
       Asker: "sehir_yonetim_asker_baslangic",
       Tüccar: "sehir_yonetim_tuccar_baslangic",
       "Din Adamı": "sehir_yonetim_dinadami_baslangic",
+      Zanaatkâr: "sehir_yonetim_zanaatkar_baslangic",
     };
     for (const [meslek, beklenenId] of Object.entries(beklenenler)) {
       const state = createCharacter("Orta Çağ", "Fransa", "sehir_merkezi");
@@ -44,6 +45,13 @@ describe("şehir yönetimi (en üst rütbe sonrası sonsuz ilerleme)", () => {
       Asker: "sehir_yonetim_asker_baslangic",
       Tüccar: "sehir_yonetim_tuccar_baslangic",
       "Din Adamı": "sehir_yonetim_dinadami_baslangic",
+      Zanaatkâr: "sehir_yonetim_zanaatkar_baslangic",
+    };
+    const beklenenBaslik: Record<string, string> = {
+      sehir_yonetim_asker_baslangic: "Ordunun Üstünde Bir Güç",
+      sehir_yonetim_tuccar_baslangic: "Loncanın Ötesinde",
+      sehir_yonetim_dinadami_baslangic: "Kürsünün Ötesinde",
+      sehir_yonetim_zanaatkar_baslangic: "Loncanın Ötesinde",
     };
     for (const [meslek, beklenenId] of Object.entries(beklenenler)) {
       const state = await yeniOyun("Orta Çağ", "Fransa", "sehir_merkezi");
@@ -53,13 +61,7 @@ describe("şehir yönetimi (en üst rütbe sonrası sonsuz ilerleme)", () => {
       state.ulke.savasta = true;
       state.rutbe_seviye = 4;
       const senaryo = await senaryoUret(state.id);
-      expect(senaryo.olay_basligi).toBe(
-        beklenenId === "sehir_yonetim_asker_baslangic"
-          ? "Ordunun Üstünde Bir Güç"
-          : beklenenId === "sehir_yonetim_tuccar_baslangic"
-            ? "Loncanın Ötesinde"
-            : "Kürsünün Ötesinde"
-      );
+      expect(senaryo.olay_basligi).toBe(beklenenBaslik[beklenenId]);
     }
   });
 

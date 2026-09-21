@@ -36,13 +36,14 @@ import { tarihiSavasKontrol, gelecekSavasKontrol } from "../data/tarihiSavaslar"
 import { mulkTanimiGetir } from "../data/mulkler";
 import { MagazaEsyasiTanimi, magazaEsyasiTanimiGetir } from "../data/magazaEsyalari";
 
-const KATEGORILER: Kategori[] = ["savas", "ticaret", "din", "siyaset", "saglik", "sosyal"];
+const KATEGORILER: Kategori[] = ["savas", "ticaret", "din", "siyaset", "saglik", "sosyal", "zanaat"];
 
 /** Meslek adlarının hangi yatkınlık kategorisine karşılık geldiği. */
 export const MESLEK_KATEGORI: Record<string, Kategori> = {
   Asker: "savas",
   Tüccar: "ticaret",
   "Din Adamı": "din",
+  Zanaatkâr: "zanaat",
 };
 
 /**
@@ -224,7 +225,7 @@ function paraBirimiGetir(cag: Cag, bolge: string): string {
 // (rütbe/enflasyon/itibar zaten ayrı çarpan kalemleri).
 // Din Adamı tabanı 9.2 → 9.85: diğer iki mesleğin efektif tabanına yaklaşsın
 // (pragmatik din adamı düşük-orta rütbelerde çok geride kalıyordu).
-const TEMEL_MAAS: Record<string, number> = { Asker: 10.35, Tüccar: 11.5, "Din Adamı": 9.85 };
+const TEMEL_MAAS: Record<string, number> = { Asker: 10.35, Tüccar: 11.5, "Din Adamı": 9.85, Zanaatkâr: 10.0 };
 
 /**
  * "İtibarın" maaş düzenleyicisi: mutluluk + şöhret(un) + ahlak'ı TEK bir kaleme
@@ -356,6 +357,7 @@ const SEHIR_YONETIM_UNVANLARI: Record<string, string[]> = {
   Asker: ["Bölge Komutanı", "Ordu Generali", "Savaş Konseyi Üyesi", "Krallığın Kalkanı"],
   Tüccar: ["Ticaret Baronu", "Lonca Reisi", "Şehrin Hazine Nazırı", "Ticaret İmparatoru"],
   "Din Adamı": ["Piskopos Vekili", "Baş Piskopos", "Kutsal Meclis Üyesi", "Ruhani Önder"],
+  Zanaatkâr: ["Zanaat Şurası Üyesi", "Loncalar Birliği Başkanı", "Şehrin Baş Mimarı", "Sanayi Piri"],
 };
 
 export function sehirYonetimUnvanGetir(meslek: string, seviye: number): string | null {
@@ -520,6 +522,9 @@ export function meslekMetrikCarpani(state: CharacterState, kategori: Kategori): 
   if (state.meslek === "Asker") return 1 + saldiriGucuHesapla(state) / 200;
   if (state.meslek === "Tüccar") return 1 + state.ticaret_sermaye / 180;
   if (state.meslek === "Din Adamı") return 1 + state.nufuz / 180;
+  // Zanaatkâr: uretim_kapasitesi şimdilik BİLİNÇLİ OLARAK etkisiz (×1) —
+  // dengesi sonraya bırakıldı (kullanıcı isteği). Olaylar sayacı doldursun,
+  // aktive edilmek istendiğinde tek satır: `1 + state.uretim_kapasitesi / N`.
   return 1;
 }
 
@@ -547,7 +552,7 @@ export function orduBuyumesiDene(state: CharacterState, yasArtisi: number): void
 }
 
 
-export const MESLEKLER = ["Asker", "Tüccar", "Din Adamı"];
+export const MESLEKLER = ["Asker", "Tüccar", "Din Adamı", "Zanaatkâr"];
 
 function pickRandom<T>(items: T[]): T {
   return items[Math.floor(Math.random() * items.length)];
@@ -650,6 +655,7 @@ export function createCharacter(
     ordu_techizat_seviyesi: 0,
     ticaret_sermaye: 0,
     nufuz: 0,
+    uretim_kapasitesi: 0,
     suc_seviyesi: 0,
     hapis_ceza_kalan: 0,
     hapis_ceza_toplam: 0,
@@ -888,6 +894,8 @@ export function eskiKayitGocu(state: CharacterState): void {
   if (state.son_rakip_soygun_yili === undefined) state.son_rakip_soygun_yili = null;
   // Ömürde bir kez borç yardımı sonradan eklendi; eski kayıtlar bunu hiç almadı sayılır (yeniden alınabilsin).
   if (typeof state.borc_yardimi_alindi !== "boolean") state.borc_yardimi_alindi = false;
+  // Zanaatkâr mesleği (uretim_kapasitesi) sonradan eklendi; diğer mesleklerdeki eski kayıtlarda 0 kalır.
+  if (typeof state.uretim_kapasitesi !== "number") state.uretim_kapasitesi = 0;
   // Hapis ceza süresi sonradan eklendi; hapisteki eski kayıtlara makul bir kalan süre ver.
   if (typeof state.hapis_ceza_kalan !== "number") {
     state.hapis_ceza_kalan = state.etiketler.includes("hapiste") ? 4 : 0;
