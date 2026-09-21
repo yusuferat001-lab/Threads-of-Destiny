@@ -719,15 +719,6 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
           mesaj: "You joined, but the noble general has already put your name on the blacklist.",
         },
       },
-      {
-        metin: "A soldier does not do politics. Stay neutral.",
-        basariliSonuc: {
-          mesaj: "You said 'my sword is only for the homeland'. Both sides respected you.",
-        },
-        basarisizSonuc: {
-          mesaj: "Neutrality means getting caught between two warring sides and beaten. Both factions shut you out.",
-        },
-      },
     ],
   },
   hizip_tuccar_saflasma: {
@@ -752,15 +743,6 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
           mesaj: "You joined, but the nobility slapped heavy customs duties on your goods.",
         },
       },
-      {
-        metin: "I only look after my own profit. Stay neutral.",
-        basariliSonuc: {
-          mesaj: "By trading under the table with both sides, you put your cunning to work.",
-        },
-        basarisizSonuc: {
-          mesaj: "Because you stayed neutral, both guilds put an embargo on you!",
-        },
-      },
     ],
   },
   hizip_din_saflasma: {
@@ -783,15 +765,6 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
         },
         basarisizSonuc: {
           mesaj: "The Inquisition / High Council is threatening to accuse you of heresy.",
-        },
-      },
-      {
-        metin: "Religion cannot be a tool of politics. Do not choose a side.",
-        basariliSonuc: {
-          mesaj: "There is only peace in your sermons. People come to you not for politics but to be cleansed.",
-        },
-        basarisizSonuc: {
-          mesaj: "Because you did not choose a side, both groups began to stop taking your pulpit seriously.",
         },
       },
     ],

@@ -173,6 +173,22 @@ const YOL_SISTEMLERI: Record<string, { yolOnEki: string; girisId: string }> = {
 };
 
 /**
+ * Hizip sistemi 3 meslekte var (Zanaatkâr'ın hizbi yok). 2026-09 (kullanıcı
+ * isteği: "hizibe katılma S2 olunca zorunlu tetiklensin, reddetme olmasın,
+ * birini seçmek zorunda"): giriş olayı artık kariyer yolu girişiyle aynı
+ * kaskad desenini kullanıyor — rütbe S2'ye ulaşan bir karakter, henüz hizip
+ * seçmemişse bu olayı zorla görür (bkz. senaryoUret §11). Olayların kendisi
+ * de (genel.ts, hizip_asker_saflasma/hizip_tuccar_saflasma/hizip_din_saflasma)
+ * artık yalnızca iki hizip seçeneği sunuyor — eski "tarafsız kal" kaçış
+ * şıkkı kaldırıldı, biri seçilmek ZORUNDA.
+ */
+const HIZIP_GIRIS_OLAYLARI: Record<string, string> = {
+  Asker: "hizip_asker_saflasma",
+  Tüccar: "hizip_tuccar_saflasma",
+  "Din Adamı": "hizip_din_saflasma",
+};
+
+/**
  * Yol dalı takip garantisinin (§11 kural 2b) kümülatif hedefleri: her yaş
  * eşiğine ulaşınca, o ana kadar o dala özel havuzdan görülmüş olay sayısı
  * en az `hedef` olmalı (yoksa biri zorla tetiklenir). Eski/büyük havuzlar
@@ -354,15 +370,20 @@ function standaloneHavuzDurumu(tanim: StandaloneHavuzTanimi, state: CharacterSta
  *    kalmasını azaltmak için) — hedef sayıları (kapsam oranı) DEĞİŞMEDİ,
  *    yalnızca hangi yaşta kontrol edildiği değişti.
  */
+// 6. tur (kullanıcı isteği "genel sayısını düşür"): hedefler ~%40 küçültüldü
+// (92 yaştaki tavan 12→7) — genel.ts, `standaloneHavuzDurumu`'nun "oransal en
+// geride kalan" seçiminde her zaman en büyük havuz olduğu için diğer küçük
+// havuzların (iliskiler/aile/komikGarip vb.) önüne geçmeye eğilimliydi; yaşlar
+// (5. turda kaydırılan) DEĞİŞMEDİ, yalnızca hedef sayıları küçüldü.
 const GENEL_HAVUZ_KONTROL_NOKTALARI: { yas: number; hedef: number }[] = [
   { yas: 22, hedef: 1 },
   { yas: 32, hedef: 2 },
-  { yas: 42, hedef: 3 },
-  { yas: 52, hedef: 4 },
-  { yas: 62, hedef: 6 },
-  { yas: 72, hedef: 8 },
-  { yas: 82, hedef: 10 },
-  { yas: 92, hedef: 12 },
+  { yas: 42, hedef: 2 },
+  { yas: 52, hedef: 3 },
+  { yas: 62, hedef: 4 },
+  { yas: 72, hedef: 5 },
+  { yas: 82, hedef: 6 },
+  { yas: 92, hedef: 7 },
 ];
 
 /**
@@ -909,11 +930,11 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
   // yol:din:*/yol:tuccar:* etiketi yok), o kombinasyonun giriş olayı zorla
   // tetiklenir — böylece her karakter mutlaka bir yola (itaatkâr/isyancı/
   // kahraman/... ya da dürüst/yozlaşmış/tarikat/... ya da durust/acgozlu/
-  // kacakci/hayirsever/...) kilitlenir; şansa bırakılmış hizip sisteminin
-  // aksine bu garanti bir kaskad. Aynı meslek farklı çağlarda aynı
-  // "yol:X:" önekini paylaşabilir (ör. Orta Çağ ve Sanayi Devrimi Asker'i
-  // ikisi de "yol:asker:") — çakışma yoktur çünkü her olay `cag` filtresi
-  // taşır ve bir karakter yalnız bir çağda yaşar.
+  // kacakci/hayirsever/...) kilitlenir; giriş olayının HİÇBİR seçeneği
+  // "seçme" ile kaçmayı sunmaz, biri seçilmek zorundadır. Aynı meslek farklı
+  // çağlarda aynı "yol:X:" önekini paylaşabilir (ör. Orta Çağ ve Sanayi
+  // Devrimi Asker'i ikisi de "yol:asker:") — çakışma yoktur çünkü her olay
+  // `cag` filtresi taşır ve bir karakter yalnız bir çağda yaşar.
   if (!zorlananId && !milestoneKilitli && oturum.state.yas >= 18) {
     const sistem = YOL_SISTEMLERI[`${oturum.state.cag}|${oturum.state.meslek}`];
     if (sistem) {
@@ -921,6 +942,28 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
       if (!zatenYolda && !oturum.state.gecmis_olaylar.includes(sistem.girisId)) {
         zorlananId = sistem.girisId;
       }
+    }
+  }
+  // Hizip girişi (2026-09'da kariyer yoluyla aynı desene taşındı, bkz.
+  // HIZIP_GIRIS_OLAYLARI tanımı): 17+ yaşında (olayın kendi minYas'ıyla
+  // tutarlı) rütbe S2'ye (kademeli merdivenin ilk gerçek terfisi — genelde
+  // 18-22 yaş civarı, kariyer yolu kilidinin hemen ardından) ulaşan ve henüz
+  // hizip seçmemiş bir karakter, mesleğine uygun giriş olayını zorla görür.
+  // Olayın kendisi artık iki hizip seçeneğinden birine kilitlemek zorunda
+  // bırakır (tarafsız kalma şıkkı kaldırıldı). Yaş kontrolü bilhassa şehir
+  // yönetimi girişi (kural 4, yalnızca rutbe_seviye>=4 bakar) gibi rütbeyi
+  // testte/erken oyunda doğrudan yüksek bir değere sabitleyen durumlarda bu
+  // kuralın önüne geçmesini önler.
+  if (
+    !zorlananId &&
+    !milestoneKilitli &&
+    oturum.state.yas >= 17 &&
+    oturum.state.rutbe_seviye >= 2 &&
+    !oturum.state.etiketler.includes("hizip_secildi")
+  ) {
+    const girisId = HIZIP_GIRIS_OLAYLARI[oturum.state.meslek];
+    if (girisId && !oturum.state.gecmis_olaylar.includes(girisId)) {
+      zorlananId = girisId;
     }
   }
   // 29 yaşına kadar hiç evlenmemiş ve evlilik teklifiyle hiç karşılaşmamışsa

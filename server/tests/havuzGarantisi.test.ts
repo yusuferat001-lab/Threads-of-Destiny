@@ -156,3 +156,44 @@ describe("mülk olayı garantisi (satın alımdan 5-15 yıl içinde)", () => {
     expect(senaryo.olay_basligi).toBeTruthy();
   });
 });
+
+/**
+ * Hizip zorunlu girişi (§11, 2026-09 — kullanıcı isteği: "hizibe katılma S2
+ * olunca zorunlu tetiklensin, reddetme olmasın, birini seçmek zorunda").
+ */
+describe("hizip zorunlu girişi", () => {
+  it("rütbe S2'ye ulaşan, henüz hizip seçmemiş bir Tüccar hizip giriş olayını zorla görür", async () => {
+    const state = await izoleKarakterOlustur("Tüccar");
+    state.yas = 25;
+    state.rutbe_seviye = 2;
+    const senaryo = await senaryoUret(state.id);
+    expect(senaryo.olay_basligi).toBe("Pazarın Hakimi Kim?");
+  });
+
+  it("hizip giriş olayında artık 'tarafsız kal' kaçış şıkkı yok — yalnızca 2 seçenek, ikisi de bir hizbe kilitler", async () => {
+    const state = await izoleKarakterOlustur("Asker");
+    state.yas = 25;
+    state.rutbe_seviye = 2;
+    const senaryo = await senaryoUret(state.id);
+    expect(senaryo.olay_basligi).toBe("Kışlada Bölünme");
+    expect(senaryo.secenekler.length).toBe(2);
+  });
+
+  it("rütbe S1'deyken (henüz S2 değil) hizip zorla tetiklenmez", async () => {
+    const state = await izoleKarakterOlustur("Din Adamı");
+    state.yas = 25;
+    expect(state.rutbe_seviye).toBe(1);
+    const senaryo = await senaryoUret(state.id);
+    expect(senaryo.olay_basligi).not.toBe("Kutsal Bölünme");
+  });
+
+  it("zaten hizip seçmiş bir karakterde giriş olayı bir daha zorlanmaz", async () => {
+    const state = await izoleKarakterOlustur("Tüccar");
+    state.yas = 25;
+    state.rutbe_seviye = 2;
+    etiketEkle(state, ["hizip_secildi"]);
+    state.hizip = "Liman Loncası";
+    const senaryo = await senaryoUret(state.id);
+    expect(senaryo.olay_basligi).not.toBe("Pazarın Hakimi Kim?");
+  });
+});
