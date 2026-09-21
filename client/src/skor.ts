@@ -6,7 +6,7 @@
  */
 import type { CharacterState } from './types';
 
-const SKOR_RUTBE_PUANI = [1250, 3000, 5250, 8000, 11250] as const;
+const SKOR_RUTBE_PUANI = [625, 1500, 2625, 4000, 5625] as const;
 const SKOR_TIK_PUANI = 3000;
 const SKOR_SOHRET_CARPAN = 300;
 const SKOR_AHLAK_CARPAN = 200;

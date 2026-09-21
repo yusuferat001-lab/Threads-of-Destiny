@@ -560,7 +560,7 @@ servetPuanı   = servet>0 ? round(servet × (yaş/2)) : 0
 şöhretPuanı   = round(şöhret(un) × 300)
 ahlakPuanı    = round(ahlak × 200)
 mutlulukPuanı = round(mutluluk × 100)
-rütbePuanı    = [1.250, 3.000, 5.250, 8.000, 11.250][rutbe_seviye-1]   // S1..S5
+rütbePuanı    = [625, 1.500, 2.625, 4.000, 5.625][rutbe_seviye-1]   // S1..S5
 tikPuanı      = 3.000 × (sarayda + yolculuk_tamamlandi + gizemli-eşya-sahipliği)  // TOPLAMSAL, çarpımsal değil
 
 temelToplam = servetPuanı+şöhretPuanı+ahlakPuanı+mutlulukPuanı+rütbePuanı+tikPuanı
