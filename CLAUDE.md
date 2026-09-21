@@ -575,7 +575,7 @@ temelToplam = servetPuanı+şöhretPuanı+ahlakPuanı+mutlulukPuanı+rütbePuan�
 amaçÇarpanı = max(1, Σ tamamlanan hayat amacı bonusları)   // değişmedi, ×1..×5
 skor = round(temelToplam × amaçÇarpanı)
 ```
-900 ömürlük simülasyonda (`scripts/simulateKisilikler.ts`) medyan ~42-91k aralığında (sabitlere göre değişir), eski formüle göre çok daha erişilebilir (≥10.000 oranı %21→%96) ve top skorların ahlak dağılımı belirgin iyileşti. Ölüm ekranında `📊 Skorun Nasıl Hesaplandı?` bloğu (`App.tsx`, `.skor-kirilimi` CSS) her ekseni + tik'leri + amaç çarpanını ayrı ayrı gösterir.
+900 ömürlük simülasyonda (`scripts/simulateKisilikler.ts`) medyan ~42-91k aralığında (sabitlere göre değişir), eski formüle göre çok daha erişilebilir (≥10.000 oranı %21→%96) ve top skorların ahlak dağılımı belirgin iyileşti. Ölüm ekranında `📊 Skorun Nasıl Hesaplandı?` bloğu (`App.tsx`, `.skor-kirilimi` CSS) her ekseni + tik'leri + amaç çarpanını ayrı ayrı gösterir; satırlar `@keyframes skorSatirBelir` ile yukarıdan aşağıya sırayla (`nth-child` gecikmeli, `prefers-reduced-motion` saygılı) belirir. Bu blok ve `HayatHikayesi` (bu hayatın olay zaman çizelgesi) ölüm ekranında **aynı anda değil**, `olumSekme` state'iyle yönetilen iki sekme (`.ekran-sekmeleri.olum-sekmeleri`, paylaşılan `.ekran-sekme`/`.ekran-sekme-aktif` sınıfları) arasında geçişle gösterilir — varsayılan sekme "Skor Tablosu".
 
 ## 14. Rütbe / Kariyer Sistemi (2026-08 reformu — 5 kademe)
 
