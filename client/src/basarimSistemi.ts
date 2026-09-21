@@ -21,6 +21,7 @@
 import type { CharacterState } from './types';
 import type { Dil } from './ayarlar';
 import { basarimlariGetir } from './basarimlar';
+import { hesaplaSkor } from './skor';
 
 const ACILAN_ANAHTAR = 'kader_carki_basarimlar_v2';
 const ISTATISTIK_ANAHTAR = 'kader_carki_oyun_istatistik';
@@ -881,14 +882,6 @@ export function koleksiyonSayilari(): KoleksiyonSayilari {
   return { olumSayisi: new Set(olumler).size, unvanSayisi: new Set(unvanlar).size };
 }
 
-/** hesaplaSkor (sunucu, yama #1) ile aynı: yas × max(un,1) × servetFaktoru, amaç tamamlandıysa ×5. */
-function skorHesapla(s: CharacterState): number {
-  const servet = s.para; // istemcide gayrimenkul değeri yok; nakit yeterince iyi bir yaklaşım
-  const servetFaktoru = servet > 0 ? 1 + Math.log10(1 + servet) : Math.max(0.15, 1 + servet / 400);
-  const taban = Math.round(s.yas * Math.max(s.un, 1) * servetFaktoru);
-  return s.hayat_amaci?.tamamlandi ? taban * 5 : taban;
-}
-
 function istatistigiGuncelle(state: CharacterState, skor: number): OyunIstatistigi {
   const ist = oyunIstatistigiGetir();
   if (!ist.caglar.includes(state.cag)) ist.caglar = [...ist.caglar, state.cag];
@@ -941,7 +934,7 @@ export interface BasarimDegerlendirmeSonucu {
  * Aynı karakter için ikinci çağrı istatistiği tekrar artırmaz (idempotent koruma).
  */
 export function basarimlariDegerlendir(state: CharacterState): BasarimDegerlendirmeSonucu {
-  const skor = skorHesapla(state);
+  const skor = hesaplaSkor(state);
   const kol = koleksiyonSayilari();
   const degerlendirilen = okuSet(DEGERLENDIRILEN_ANAHTAR);
   const tekrar = degerlendirilen.has(state.id);

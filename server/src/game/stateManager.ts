@@ -2019,29 +2019,90 @@ export function sansOlayiDene(state: CharacterState): string | null {
 }
 
 /**
- * Skor: yaş × şöhret × servet-faktörü × (hayat amacı tamamlandıysa ×5).
- * - Servet = nakit + gayrimenkul (madde 23): mülke servet bağlayan oyuncu
- *   cezalanmasın.
- * - Servet-faktörü LOG-ölçekli (madde 24): eski `max(para,1)` çarpanı tek bir
- *   zengin ömrü milyonlara fırlatıp liderlik tablosunu domine ediyor, ayrıca
- *   tüm borçlu bitişleri 1'e ezip ayırt edilemez kılıyordu.
- *     servet > 0 → 1 + log10(1 + servet)        (100→~3.0, 500→~3.7, 8M→~7.9)
- *     servet ≤ 0 → 1 + servet/400, taban 0.15   (borç küçük ama gerçek bir ceza)
+ * Skor: her eksen KENDİ puanını bağımsız üretir, hepsi TOPLANIR, sonra tik'ler
+ * (saray/yolculuk/gizemli-eşya) ve hayat amacı çarpanı uygulanır (2026-09 reformu —
+ * eski çarpımsal `yaş×şöhret×servetFaktörü×amaçÇarpanı` formülünün yerini aldı; o
+ * formülde ahlak/mutluluk/rütbe hiç kullanılmıyordu ve tek bir zayıf eksen (ör.
+ * şöhret=0) skoru neredeyse sıfırlıyordu). Toplamsal yapı oyuncuya EKSEN EKSEN
+ * kırılım göstermeyi de mümkün kılıyor (`hesaplaSkorKirilimi`, ölüm ekranı).
+ *
+ * - servetPuanı  = servet × (yaş/2)   — servet = nakit+gayrimenkul (madde 23);
+ *   borçta (servet≤0) katkı 0. Yaşla çarpılması "ömür boyu biriktirilen servet"
+ *   hissi verir, ayrıca yaş pratikte ~85'te tavanlandığı için kendiliğinden sınırlı.
+ * - şöhretPuanı  = şöhret(un) × 300
+ * - ahlakPuanı   = ahlak × 200
+ * - mutlulukPuanı= mutluluk × 100
+ * - rütbePuanı   = sabit tablo, S1..S5: 1.250 / 3.000 / 5.250 / 8.000 / 11.250
+ * - tikPuanı     = 3.000 × (sarayda + yolculuk_tamamlandi + gizemli eşya sahipliği)
+ *   — her biri TOPLAMSAL (çarpımsal değil), birbirini büyütmesin diye.
+ * - amaçÇarpanı  = max(1, Σ tamamlanan hayat amacı bonusları) — değişmedi, ×1..×5.
  */
-export function hesaplaSkor(state: CharacterState): number {
+const SKOR_RUTBE_PUANI = [1250, 3000, 5250, 8000, 11250] as const;
+const SKOR_TIK_PUANI = 3000;
+const SKOR_SOHRET_CARPAN = 300;
+const SKOR_AHLAK_CARPAN = 200;
+const SKOR_MUTLULUK_CARPAN = 100;
+
+export interface SkorKirilimi {
+  servetPuani: number;
+  sohretPuani: number;
+  ahlakPuani: number;
+  mutlulukPuani: number;
+  rutbePuani: number;
+  tikPuani: number;
+  tikSayisi: number;
+  sarayda: boolean;
+  yolculukTamamlandi: boolean;
+  gizemliEsyaSahibi: boolean;
+  temelToplam: number;
+  amacCarpani: number;
+  skor: number;
+}
+
+/** Skoru eksen eksen kırar — ölüm ekranında oyuncuya gösterilir. */
+export function hesaplaSkorKirilimi(state: CharacterState): SkorKirilimi {
   const servet = state.para + gayrimenkulDegeriHesapla(state);
-  const servetFaktoru =
-    servet > 0 ? 1 + Math.log10(1 + servet) : Math.max(0.15, 1 + servet / 400);
-  const taban = state.yas * Math.max(state.un, 1) * servetFaktoru;
-  // Yeni sistem: skorCarpani = max(1, Σ tamamlanan amaç bonusları) (normal 1.5 · zor 2 → tavan ×5).
+  const servetPuani = servet > 0 ? Math.round(servet * (state.yas / 2)) : 0;
+  const sohretPuani = Math.round(Math.max(state.un, 0) * SKOR_SOHRET_CARPAN);
+  const ahlakPuani = Math.round(Math.max(state.ahlak, 0) * SKOR_AHLAK_CARPAN);
+  const mutlulukPuani = Math.round(Math.max(state.mutluluk, 0) * SKOR_MUTLULUK_CARPAN);
+  const rutbeIndeks = Math.min(Math.max(state.rutbe_seviye, 1), 5) - 1;
+  const rutbePuani = SKOR_RUTBE_PUANI[rutbeIndeks];
+  const sarayda = state.etiketler.includes("sarayda");
+  const yolculukTamamlandi = state.etiketler.includes("yolculuk_tamamlandi");
+  const gizemliEsyaSahibi = state.etiketler.some(
+    (e) => e.startsWith("envanter:") || e.startsWith("esya:")
+  );
+  const tikSayisi = (sarayda ? 1 : 0) + (yolculukTamamlandi ? 1 : 0) + (gizemliEsyaSahibi ? 1 : 0);
+  const tikPuani = tikSayisi * SKOR_TIK_PUANI;
+  const temelToplam = servetPuani + sohretPuani + ahlakPuani + mutlulukPuani + rutbePuani + tikPuani;
   // Eski kayıt/test (hayat_amaclari boş, tekil hayat_amaci dolu) için ×5 fallback korunur.
-  const carpan =
+  const amacCarpani =
     (state.hayat_amaclari?.length ?? 0) > 0
       ? amacSkorCarpani(state)
       : state.hayat_amaci?.tamamlandi
         ? 5
         : 1;
-  return Math.round(taban * carpan);
+  const skor = Math.round(temelToplam * amacCarpani);
+  return {
+    servetPuani,
+    sohretPuani,
+    ahlakPuani,
+    mutlulukPuani,
+    rutbePuani,
+    tikPuani,
+    tikSayisi,
+    sarayda,
+    yolculukTamamlandi,
+    gizemliEsyaSahibi,
+    temelToplam,
+    amacCarpani,
+    skor,
+  };
+}
+
+export function hesaplaSkor(state: CharacterState): number {
+  return hesaplaSkorKirilimi(state).skor;
 }
 
 /** state.hayat_amaci'nin hedefine ulaşılıp ulaşılmadığını kontrol eder; ulaşıldıysa tamamlandi=true yapıp hayat hikayesine ekler. */

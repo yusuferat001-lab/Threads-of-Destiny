@@ -553,7 +553,21 @@ Ayrıca her mülk türünün kendine özel, normal havuzdan tamamen dışlanmı�
 
 **Konut/yaşam tarzı:** Turu tüketmez. Konutta **daha pahalıya** geçişte `TASINMA_MALIYETI=3` tek seferlik ücret (ucuza geri çekilme ücretsiz); yaşam tarzı değişimi her zaman ücretsiz/anlık. Yeni karakter varsayılanı 2026-09 ekonomi dengesinde **`normal_ev` + `normal_ye`** — ikisi de sağlık/ün açısından TAMAMEN NÖTR: ev/sofra ekranını hiç açmayan sıradan oyuncu ilk 15-20 yıl boyunca sessizce sağlık/itibar kaybetmesin. **Başlangıç parası (2026-09 ikinci denge turu): `Math.max(5, Math.min(40, 10 + aile.para + yerlesim.para))`** — taban 12→10, aile etkisi artık dar bir ~±20 bandında (eskiden +80/-25 gibi aşırı uçlar vardı), sonuç [5, 40]'a kırpılır (taban 5'te sabit kalıyor — en fakir kökende bile temel bir aksiyonu karşılayacak kadar para). En ucuz 2 konut/sofra kademesinin cezası da yumuşatıldı: -4/-3 → **-2/yıl** (§16).
 
-**Skor** (yama #1'de yeniden yazıldı): `servet = para + gayrimenkulDegeriHesapla(state)`; `servetFaktoru = servet>0 ? 1+log10(1+servet) : max(0.15, 1+servet/400)`; `skor = round(yas × max(un,1) × servetFaktoru)`, hayat amacı tamamlandıysa **×5**. Eski `× max(para,1)` çarpanı tek zengin ömrü milyonlara fırlatıp liderlik tablosunu domine ediyordu + borçlu bitişleri 1'e ezip ayırt edilemez kılıyordu; log-ölçek ikisini de çözdü (servet 100→~3.0, 500→~3.7, 8M→~7.9; borç küçük ama gerçek bir ceza).
+**Skor** (2026-09 ikinci reform — toplamsal formüle geçildi, `hesaplaSkorKirilimi`/`hesaplaSkor`, [stateManager.ts](server/src/game/stateManager.ts); istemci aynası [client/src/skor.ts](client/src/skor.ts)): Eski çarpımsal `yaş×şöhret×servetFaktörü×amaçÇarpanı` formülü (yama #1) ahlak/mutluluk/rütbe'yi hiç kullanmıyordu ve tek bir zayıf eksen (ör. şöhret=0) skoru neredeyse sıfırlıyordu — gerçek liderlik tablosu verisiyle doğrulandı (top-15'in TAMAMI düşük-ahlaklı ama şöhret=100 karakterlerdi). Yeni model: her eksen **kendi puanını bağımsız üretir, hepsi TOPLANIR**, sonra tik'ler ve amaç çarpanı uygulanır — bu sayede oyuncuya ölüm ekranında **eksen eksen kırılım** gösterilebiliyor.
+```
+servet = para + gayrimenkulDegeriHesapla(state)   // istemcide gayrimenkul yok, servet≈nakit
+servetPuanı   = servet>0 ? round(servet × (yaş/2)) : 0
+şöhretPuanı   = round(şöhret(un) × 300)
+ahlakPuanı    = round(ahlak × 200)
+mutlulukPuanı = round(mutluluk × 100)
+rütbePuanı    = [1.250, 3.000, 5.250, 8.000, 11.250][rutbe_seviye-1]   // S1..S5
+tikPuanı      = 3.000 × (sarayda + yolculuk_tamamlandi + gizemli-eşya-sahipliği)  // TOPLAMSAL, çarpımsal değil
+
+temelToplam = servetPuanı+şöhretPuanı+ahlakPuanı+mutlulukPuanı+rütbePuanı+tikPuanı
+amaçÇarpanı = max(1, Σ tamamlanan hayat amacı bonusları)   // değişmedi, ×1..×5
+skor = round(temelToplam × amaçÇarpanı)
+```
+900 ömürlük simülasyonda (`scripts/simulateKisilikler.ts`) medyan ~42-91k aralığında (sabitlere göre değişir), eski formüle göre çok daha erişilebilir (≥10.000 oranı %21→%96) ve top skorların ahlak dağılımı belirgin iyileşti. Ölüm ekranında `📊 Skorun Nasıl Hesaplandı?` bloğu (`App.tsx`, `.skor-kirilimi` CSS) her ekseni + tik'leri + amaç çarpanını ayrı ayrı gösterir.
 
 ## 14. Rütbe / Kariyer Sistemi (2026-08 reformu — 5 kademe)
 
