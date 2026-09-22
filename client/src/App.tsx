@@ -2480,26 +2480,25 @@ function App() {
       {ekran === 'olum' && karakter && (
         <div className="ekran ekran-olum buyuk-an-olum">
           <BolgeSahnesi cag={karakter.cag} bolge={karakter.bolge} yerlesim={karakter.yerlesim} ulke={karakter.ulke} un={karakter.un} />
-          <span className="sonuc-ikon">💀</span>
-          <h2>{m.oldun}</h2>
-          <p className="sonuc-hikaye">{karakter.olum_nedeni}</p>
-          <p className="olum-ozet">
-            {bic(
-              m.olumOzet,
-              karakter.yil,
-              karakter.yas,
-              kt(karakter.rutbe),
-              kt(karakter.meslek),
-              kt(karakter.bolge),
-              kt(karakter.aile_meslegi)
+          <div className="olum-ust-blok">
+            <span className="sonuc-ikon">💀</span>
+            <h2>{m.oldun}</h2>
+            <p className="sonuc-hikaye">{karakter.olum_nedeni}</p>
+            <p className="olum-ozet">
+              {bic(
+                m.olumOzet,
+                karakter.yil,
+                karakter.yas,
+                kt(karakter.rutbe),
+                kt(karakter.meslek),
+                kt(karakter.bolge),
+                kt(karakter.aile_meslegi)
+              )}
+            </p>
+            {GUNLUK_KOZMETIK_GOLD_GORUNUR && olumGoldKazanci !== null && (
+              <p className="olum-gold-kazanc">🪙 {bic(m.olumGoldKazandi, olumGoldKazanci)}</p>
             )}
-          </p>
-          <p className="olum-ozet">
-            {formatPara(karakter.para)} {karakter.para_birimi} · {m.sohret}: {unUnvani(karakter.un, dil)}
-          </p>
-          {GUNLUK_KOZMETIK_GOLD_GORUNUR && olumGoldKazanci !== null && (
-            <p className="olum-gold-kazanc">🪙 {bic(m.olumGoldKazandi, olumGoldKazanci)}</p>
-          )}
+          </div>
 
           {(buOmurBasarimlar.length > 0 || karakter.unvanlar.length > 0 || karakter.efsanevi_olum) && (
             <div className="olum-yeni-basarimlar">
@@ -2532,6 +2531,7 @@ function App() {
           <AmacPaneli durum={amaclar} varyant="olum" />
           <GecmisGrafik gecmis={karakter.gecmis} paraBirimi={karakter.para_birimi} />
 
+          <div className="olum-skor-hikaye-blok">
           <div className="ekran-sekmeleri olum-sekmeleri">
             <button
               type="button"
@@ -2617,24 +2617,27 @@ function App() {
               );
             })()
           )}
+          </div>
 
-          {kaydedildi ? (
-            <p>{m.skorKaydedildi}</p>
-          ) : otoKayitBasarisiz ? (
-            <div className="isim-form">
-              <input
-                value={isim}
-                onChange={(e) => setIsim(e.target.value)}
-                placeholder={m.isimGir}
-                maxLength={40}
-              />
-              <button disabled={yukleniyor || !isim.trim()} onClick={skorunuKaydet}>
-                {m.btnSkoruKaydet}
-              </button>
-            </div>
-          ) : (
-            <p className="olum-ozet">{m.skorKaydediliyor}</p>
-          )}
+          <div className="olum-kayit-blok">
+            {kaydedildi ? (
+              <p>{m.skorKaydedildi}</p>
+            ) : otoKayitBasarisiz ? (
+              <div className="isim-form">
+                <input
+                  value={isim}
+                  onChange={(e) => setIsim(e.target.value)}
+                  placeholder={m.isimGir}
+                  maxLength={40}
+                />
+                <button disabled={yukleniyor || !isim.trim()} onClick={skorunuKaydet}>
+                  {m.btnSkoruKaydet}
+                </button>
+              </div>
+            ) : (
+              <p className="olum-ozet">{m.skorKaydediliyor}</p>
+            )}
+          </div>
 
           <div className="olum-butonlari">
             <button onClick={() => liderligiAc('genel')}>{m.btnLiderlikTablosu}</button>
@@ -2702,7 +2705,7 @@ function App() {
                     <strong>{kayit.isim}</strong>
                     {kayit.hayat_amaci_tamamlandi && (
                       <span className="liderlik-rozet liderlik-rozet-amac" title={m.amacTamamladiTitle}>
-                        🎯 x5
+                        🎯{kayit.amac_carpani ? ` ×${kayit.amac_carpani % 1 === 0 ? kayit.amac_carpani : kayit.amac_carpani.toFixed(1)}` : ''}
                       </span>
                     )}
                     {' '}— {kayit.skor} {m.puan} ({kayit.rutbe ? `${kt(kayit.rutbe)}, ` : ''}

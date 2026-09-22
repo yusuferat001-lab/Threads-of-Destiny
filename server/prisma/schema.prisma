@@ -35,8 +35,10 @@ model Score {
   unvanlar    String   @default("")
   /** Nadir/komik bir ölümse başlığı (ör. "Kendi Kazdığı Kuyuya Düşen"); boşsa sıradan bir ölüm. */
   efsanevi_olum String @default("")
-  /** Hayat amacı tamamlanmış mı (skor zaten x5 uygulanmış olarak kaydedilir, bu sadece rozet için). */
+  /** Hayat amacı tamamlanmış mı (skor zaten gerçek çarpanla uygulanmış olarak kaydedilir, bu sadece rozet için). */
   hayat_amaci_tamamlandi Boolean @default(false)
+  /** Gerçek skor çarpanı (ör. 1.5/2/3/3.5/5) — liderlik tablosunda "🎯 ×N" rozeti bunu gösterir. Eski kayıtlarda null. */
+  amac_carpani Float?
   createdAt   DateTime @default(now())
 }
 

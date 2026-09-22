@@ -27,11 +27,11 @@ const BOLUMLER: Bolum[] = [
     },
     maddeler: {
       tr: [
-        'Doğuşta gizli bir hayat amacın olur; ölürken onu tamamladıysan skorun ciddi artar.',
+        '15 yaşında meslek seçince, biri zor olmak üzere 3 kişisel hayat amacın belirlenir; gizli değildir, sağ panelden ilerlemeni her an takip edebilirsin. Tamamladıkça skorun katlanarak artar.',
         'Olay bankası 1500\'ü aşkın olaydan oluşur ve düzenli olarak yenileri eklenir.',
       ],
       en: [
-        'At birth you get a hidden life goal; completing it before you die boosts your score a lot.',
+        'When you pick a profession at 15, you get three personal life goals (one of them hard) — they are not hidden, you can track your progress in the side panel at any time. Completing them multiplies your score.',
         'The event bank has over 1,500 events, and new ones are added regularly.',
       ],
     },

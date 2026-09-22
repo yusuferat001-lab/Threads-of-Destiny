@@ -712,6 +712,12 @@ button.ikincil {
   justify-content: center;
 }
 
+/* Kullanıcı isteği: bu hayatın kazanımları biraz daha büyük/okunaklı görünsün. */
+.olum-kazanim-rozetler .liderlik-rozet {
+  font-size: 0.86rem;
+  padding: 0.22rem 0.65rem;
+}
+
 .olum-rozet-yeni {
   box-shadow: 0 0 0 2px rgba(201, 150, 46, 0.6);
 }
@@ -5096,6 +5102,20 @@ button.ikincil {
   text-align: center;
 }
 
+/* Ölüm ekranının üst bloğu (ikon+başlık+ölüm nedeni+özet) ve skor/hikaye
+   sekme çifti — kendi içlerinde eski dikey boşluğu korumaları için birer
+   flex-column kapsayıcı; mobilde CSS `order` ile yeniden sıralanabilsinler
+   diye .ekran-olum'un doğrudan çocukları olarak gruplanıyorlar. */
+.olum-ust-blok,
+.olum-skor-hikaye-blok,
+.olum-kayit-blok {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
 .sonuc-ikon {
   font-size: 3.5rem;
 }
@@ -6459,6 +6479,24 @@ button.ikincil {
    Mobil (≤767px) — bu turdaki değişikliklerin telefon uyumu
    ============================================================ */
 @media (max-width: 767px) {
+  /* Amaç kartlarında (sağ panel + ölüm ekranı) isim satırı yer kaplıyor —
+     mobilde sadece içerik (açıklama) kalsın, ikon + bonus rozeti korunur. */
+  .amac-paneli .amac-baslik {
+    display: none;
+  }
+
+  /* Ölüm ekranı mobil sıralaması (kullanıcı isteği): ölüm metni → skor/hikaye
+     sekme çifti → hayat amaçların → geçmiş yıllar servetin (grafik) → en
+     sonda bu hayatın kazanımları → kayıt durumu → butonlar. Masaüstünde bu
+     kurallar devreye girmez, DOM sırası (ve dolayısıyla görünüm) aynı kalır. */
+  .ekran-olum > .olum-ust-blok { order: 1; }
+  .ekran-olum > .olum-skor-hikaye-blok { order: 2; }
+  .ekran-olum > .amac-paneli-olum { order: 3; }
+  .ekran-olum > .gecmis-grafik { order: 4; }
+  .ekran-olum > .olum-yeni-basarimlar { order: 5; }
+  .ekran-olum > .olum-kayit-blok { order: 6; }
+  .ekran-olum > .olum-butonlari { order: 7; }
+
   .merkez-sahne > .amac-serit {
     top: 0.25rem;
     left: 0.25rem;
@@ -6610,12 +6648,10 @@ button.ikincil {
     font-weight: 700;
     font-size: 0.6rem;
     letter-spacing: 0.03em;
-    color: #eec8ff;
-    text-shadow:
-      0 0 4px #d16bff,
-      0 0 9px #b026ff,
-      0 0 18px #a020f0,
-      0 0 32px #7b1fa2;
+    /* Mat mor (kullanıcı isteği): eski canlı neon-glow (çok katmanlı parlak
+       text-shadow) yerine düz, koyu bir mor ton + tek yumuşak gölge. */
+    color: #9c6fc9;
+    text-shadow: 0 0 3px rgba(87, 47, 122, 0.55);
     white-space: nowrap;
     pointer-events: none;
     user-select: none;

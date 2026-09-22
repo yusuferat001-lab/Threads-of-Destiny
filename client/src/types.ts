@@ -820,5 +820,7 @@ export interface ScoreKaydi {
   unvanlar: string;
   efsanevi_olum: string;
   hayat_amaci_tamamlandi: boolean;
+  /** Gerçek skor çarpanı (ör. 1.5/2/3/3.5/5) — eski kayıtlarda null. */
+  amac_carpani: number | null;
   createdAt: string;
 }

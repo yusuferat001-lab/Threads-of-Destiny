@@ -1,9 +1,9 @@
 import { prisma } from "./prismaClient";
 import { CharacterState } from "../types";
-import { hesaplaSkor, gayrimenkulDegeriHesapla, paraYuvarla } from "../game/stateManager";
+import { hesaplaSkorKirilimi, gayrimenkulDegeriHesapla, paraYuvarla } from "../game/stateManager";
 
 export async function skorKaydet(state: CharacterState, isim: string) {
-  const skor = hesaplaSkor(state);
+  const kirilim = hesaplaSkorKirilimi(state);
   // "en_zengin" sıralaması net serveti ödüllendirsin (madde 25): Score.para
   // artık salt nakit değil, nakit + gayrimenkul değeri — mülke servet bağlamış
   // bir oyuncu liderlik tablosunda cezalanmasın.
@@ -11,7 +11,10 @@ export async function skorKaydet(state: CharacterState, isim: string) {
   return prisma.score.create({
     data: {
       isim,
-      skor,
+      skor: kirilim.skor,
+      // Liderlik tablosundaki "🎯 ×N" rozeti gerçek çarpanı göstersin diye
+      // (eskiden sabit "x5" yazan bir bug vardı, §7 kullanıcı isteği).
+      amac_carpani: kirilim.amacCarpani > 1 ? kirilim.amacCarpani : null,
       meslek: state.meslek,
       rutbe: state.rutbe,
       cag: state.cag,
