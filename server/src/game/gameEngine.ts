@@ -29,7 +29,6 @@ import {
   MAAS_CARPANI_TAVAN,
   rutbeGuncelle,
   sansOlayiDene,
-  ecelDenemesi,
   gecmisKaydet,
   yaslanmaUygula,
   hayatOlayiEkle,
@@ -353,16 +352,23 @@ function standaloneHavuzDurumu(tanim: StandaloneHavuzTanimi, state: CharacterSta
  *    gelip `standaloneHavuzDurumu`'nun oransal seçiminde rastgele kararsız
  *    kalmasını azaltmak için) — hedef sayıları (kapsam oranı) DEĞİŞMEDİ,
  *    yalnızca hangi yaşta kontrol edildiği değişti.
+ * 6. tur (kullanıcı isteği — "genel olayların zorunlu tetiklenme sayısını
+ *    düşür"): genel.ts diğer 6 standalone tablodan (hedef tavanı 4-6) çok
+ *    daha büyük bir kümülatif hedef (12) taşıyordu — havuzun oransal payını
+ *    ("en geride kalan" seçiminde) sistematik olarak şişirip diğer küçük
+ *    havuzları (iliskiler/aile/evlilikVeAile/komikGarip/komikOlum) geride
+ *    bırakıyordu. Hedefler kabaca YARIYA indirildi (yaşlar aynı kaldı) —
+ *    genel.ts artık meslek-standalone'a daha yakın bir tavana (92→6) sahip.
  */
 const GENEL_HAVUZ_KONTROL_NOKTALARI: { yas: number; hedef: number }[] = [
   { yas: 22, hedef: 1 },
-  { yas: 32, hedef: 2 },
-  { yas: 42, hedef: 3 },
-  { yas: 52, hedef: 4 },
-  { yas: 62, hedef: 6 },
-  { yas: 72, hedef: 8 },
-  { yas: 82, hedef: 10 },
-  { yas: 92, hedef: 12 },
+  { yas: 32, hedef: 1 },
+  { yas: 42, hedef: 2 },
+  { yas: 52, hedef: 2 },
+  { yas: 62, hedef: 3 },
+  { yas: 72, hedef: 4 },
+  { yas: 82, hedef: 5 },
+  { yas: 92, hedef: 6 },
 ];
 
 /**
@@ -1833,12 +1839,6 @@ async function sonucuUygulaVeIlerlet(
           if (state.saglik <= 0) {
             checkDeath(state, true, "Uzun süredir çöken ruh hali bedenini de tüketti.");
           }
-        }
-        if (state.aktif) {
-          // İleri yaş "ecel" riski: 70+ her yıl artan doğal ölüm ihtimali,
-          // can/servet ne olursa olsun (pahalı ev + iyi yemek "ölümsüzlüğünü" sınırlar).
-          const ecelMesaji = ecelDenemesi(state, yasArtisi);
-          if (ecelMesaji) checkDeath(state, true, ecelMesaji);
         }
         if (state.aktif) {
           zamanAnlatimi = zamanAnlatimiUret(state, yasArtisi, ekonomi);
