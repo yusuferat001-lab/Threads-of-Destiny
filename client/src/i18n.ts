@@ -234,7 +234,7 @@ const TR = {
   sekmeEnUnlu: 'En Çok Tanınanlar',
   sekmeEnUzunYasayan: 'En Uzun Yaşayanlar',
   kayitYok: 'Henüz kayıt yok.',
-  amacTamamladiTitle: 'Hayat amacını tamamladı (x5 skor)',
+  amacTamamladiTitle: 'Hayat amacını tamamladı — skoru bu çarpanla çarpıldı',
 
   // ---- UstSerit ----
   usAraniyorsun: '▲ aranıyorsun',
@@ -941,7 +941,7 @@ const EN: Metinler = {
   sekmeEnUnlu: 'Most Renowned',
   sekmeEnUzunYasayan: 'Longest-Lived',
   kayitYok: 'No records yet.',
-  amacTamamladiTitle: 'Completed their life goal (x5 score)',
+  amacTamamladiTitle: 'Completed their life goal — score was multiplied by this much',
 
   // ---- UstSerit ----
   usAraniyorsun: '▲ wanted',

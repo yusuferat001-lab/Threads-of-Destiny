@@ -2487,7 +2487,7 @@ function App() {
           </div>
 
           <div className="tam-govde-3col tam-govde-3col-olum">
-            {/* Sol sütun: kimlik + özet + kazanımlar + kaydet/butonlar */}
+            {/* Sol sütun: kimlik + özet + kaydet/butonlar */}
             <div className="tam-sutun olum-sutun-kimlik">
               <BolgeSahnesi
                 cag={karakter.cag}
@@ -2507,39 +2507,8 @@ function App() {
                   kt(karakter.aile_meslegi)
                 )}
               </p>
-              <p className="olum-ozet">
-                {formatPara(karakter.para)} {karakter.para_birimi} · {m.sohret}: {unUnvani(karakter.un, dil)}
-              </p>
               {GUNLUK_KOZMETIK_GOLD_GORUNUR && olumGoldKazanci !== null && (
                 <p className="olum-gold-kazanc">🪙 {bic(m.olumGoldKazandi, olumGoldKazanci)}</p>
-              )}
-
-              {(buOmurBasarimlar.length > 0 || karakter.unvanlar.length > 0 || karakter.efsanevi_olum) && (
-                <div className="olum-yeni-basarimlar">
-                  <h3 className="olum-kazanim-baslik">🏆 {m.olumKazanimBaslik}</h3>
-                  <div className="olum-kazanim-rozetler">
-                    {karakter.unvanlar.map((u) => (
-                      <span key={`u-${u}`} className="liderlik-rozet liderlik-rozet-unvan">
-                        🏵️ {kt(u)}
-                      </span>
-                    ))}
-                    {karakter.efsanevi_olum && (
-                      <span className="liderlik-rozet liderlik-rozet-olum">💀 {karakter.efsanevi_olum}</span>
-                    )}
-                    {buOmurBasarimlar.map((b) => {
-                      const yeni = yeniBasarimlar.some((y) => y.id === b.id);
-                      return (
-                        <span
-                          key={`b-${b.id}`}
-                          className={`liderlik-rozet liderlik-rozet-unvan${yeni ? ' olum-rozet-yeni' : ''}`}
-                        >
-                          {b.ikon} {b.ad[dil]}
-                          {yeni && <em className="olum-rozet-yeni-etiket"> · {m.bgYeniRozet}</em>}
-                        </span>
-                      );
-                    })}
-                  </div>
-                </div>
               )}
 
               {kaydedildi ? (
@@ -2642,6 +2611,36 @@ function App() {
               <HayatHikayesi hikaye={karakter.hayat_hikayesi} />
             </div>
           </div>
+
+          {/* En sonda: sadece bu hayatın kazanımları (kullanıcı isteği — daha
+              büyük fontla, ekranın en altında ayrı bir bölüm olarak). */}
+          {(buOmurBasarimlar.length > 0 || karakter.unvanlar.length > 0 || karakter.efsanevi_olum) && (
+            <div className="olum-yeni-basarimlar olum-kazanim-alt">
+              <h3 className="olum-kazanim-baslik">🏆 {m.olumKazanimBaslik}</h3>
+              <div className="olum-kazanim-rozetler">
+                {karakter.unvanlar.map((u) => (
+                  <span key={`u-${u}`} className="liderlik-rozet liderlik-rozet-unvan">
+                    🏵️ {kt(u)}
+                  </span>
+                ))}
+                {karakter.efsanevi_olum && (
+                  <span className="liderlik-rozet liderlik-rozet-olum">💀 {karakter.efsanevi_olum}</span>
+                )}
+                {buOmurBasarimlar.map((b) => {
+                  const yeni = yeniBasarimlar.some((y) => y.id === b.id);
+                  return (
+                    <span
+                      key={`b-${b.id}`}
+                      className={`liderlik-rozet liderlik-rozet-unvan${yeni ? ' olum-rozet-yeni' : ''}`}
+                    >
+                      {b.ikon} {b.ad[dil]}
+                      {yeni && <em className="olum-rozet-yeni-etiket"> · {m.bgYeniRozet}</em>}
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -2702,7 +2701,7 @@ function App() {
                     <strong>{kayit.isim}</strong>
                     {kayit.hayat_amaci_tamamlandi && (
                       <span className="liderlik-rozet liderlik-rozet-amac" title={m.amacTamamladiTitle}>
-                        🎯 x5
+                        🎯{kayit.amac_carpani ? ` ×${kayit.amac_carpani % 1 === 0 ? kayit.amac_carpani : kayit.amac_carpani.toFixed(1)}` : ''}
                       </span>
                     )}
                     {' '}— {kayit.skor} {m.puan} ({kayit.rutbe ? `${kt(kayit.rutbe)}, ` : ''}

@@ -1,16 +1,55 @@
 /**
  * hesaplaSkorKirilimi (sunucu, server/src/game/stateManager.ts) ile birebir aynı formül —
- * elle senkronize edilen kopya (§24 deseni). İstemcide gayrimenkul değeri hesaplanmadığı
- * için servet ≈ nakit (state.para) kullanılır; diğer tüm eksenler (ahlak/şöhret/mutluluk/
- * rütbe/etiketler) state'te zaten tam olarak mevcut, sunucuyla birebir aynı sonucu üretir.
+ * elle senkronize edilen kopya (§24 deseni). Servet = nakit + gayrimenkul değeri; mülk
+ * kataloğu (taban fiyatlar) ve enflasyon formülü de burada küçük, bağımsız bir kopya
+ * olarak tutuluyor (server/src/data/mulkler.ts + stateManager.ts enflasyonCarpani ile
+ * birebir aynı sabitler) — diğer tüm eksenler (ahlak/şöhret/mutluluk/rütbe/etiketler)
+ * state'te zaten tam olarak mevcut, sunucuyla birebir aynı sonucu üretir.
  */
-import type { CharacterState } from './types';
+import type { CharacterState, MulkTuru } from './types';
 
 const SKOR_RUTBE_PUANI = [625, 1500, 2625, 4000, 5625] as const;
 const SKOR_TIK_PUANI = 3000;
 const SKOR_SOHRET_CARPAN = 300;
 const SKOR_AHLAK_CARPAN = 200;
 const SKOR_MUTLULUK_CARPAN = 100;
+
+// server/src/data/mulkler.ts — taban_maliyet değerleriyle birebir aynı.
+const MULK_TABAN_MALIYET: Record<MulkTuru, number> = {
+  kucuk_tarla: 50,
+  ciftlik: 80,
+  demirci: 130,
+  han: 170,
+  kervan: 220,
+  karaborsa: 320,
+};
+
+// server/src/game/stateManager.ts ENFLASYON_ORANI_YILLIK ile birebir aynı.
+const ENFLASYON_ORANI_YILLIK: Record<CharacterState['cag'], number> = {
+  'Orta Çağ': 0.01,
+  'Sanayi Devrimi': 0.02,
+};
+
+function paraYuvarla(x: number): number {
+  return Math.round(x * 100) / 100;
+}
+
+function enflasyonCarpani(state: CharacterState): number {
+  const gecenYil = Math.max(0, state.yil - state.baslangic_yili);
+  const oran = ENFLASYON_ORANI_YILLIK[state.cag] ?? 0.01;
+  return Math.pow(1 + oran, gecenYil);
+}
+
+/** gayrimenkulDegeriHesapla (sunucu) ile birebir aynı: sahip olunan mülklerin taban
+ * fiyatlarının o anki enflasyonla ölçeklenmiş toplamı. */
+function gayrimenkulDegeriHesapla(state: CharacterState): number {
+  if (!state.mulkler || state.mulkler.length === 0) return 0;
+  const enflasyon = enflasyonCarpani(state);
+  return state.mulkler.reduce(
+    (toplam, tur) => toplam + paraYuvarla((MULK_TABAN_MALIYET[tur] ?? 0) * enflasyon),
+    0
+  );
+}
 
 export interface SkorKirilimi {
   servetPuani: number;
@@ -37,7 +76,7 @@ function amacCarpaniHesapla(state: CharacterState): number {
 }
 
 export function hesaplaSkorKirilimi(state: CharacterState): SkorKirilimi {
-  const servet = state.para; // istemcide gayrimenkul değeri yok; nakit yeterince iyi bir yaklaşım
+  const servet = state.para + gayrimenkulDegeriHesapla(state);
   const servetPuani = servet > 0 ? Math.round(servet * (state.yas / 2)) : 0;
   const sohretPuani = Math.round(Math.max(state.un, 0) * SKOR_SOHRET_CARPAN);
   const ahlakPuani = Math.round(Math.max(state.ahlak, 0) * SKOR_AHLAK_CARPAN);
