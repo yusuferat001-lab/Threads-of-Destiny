@@ -729,6 +729,7 @@ export function createCharacter(
     yonetim_yakin_etkilesim: 0,
     yonetim_talep: null,
     yonetim_talep_sonraki_yil: yil + 6,
+    gecikmis_takipler: [],
     tur_sayisi: 0,
     gecmis_olaylar: [],
     istemci_gecmis_olaylar: istemciGecmisOlaylar ?? [],
@@ -982,6 +983,8 @@ export function eskiKayitGocu(state: CharacterState): void {
   // Çapraz-hayat tekrar önleme (istemci_id bazlı) sonradan eklendi.
   if (!Array.isArray(state.istemci_gecmis_olaylar)) state.istemci_gecmis_olaylar = [];
   if (state.istemci_id === undefined) state.istemci_id = null;
+  // "Gecikmiş takip" havuzu sonradan eklendi.
+  if (!Array.isArray(state.gecikmis_takipler)) state.gecikmis_takipler = [];
 }
 
 /** Oyuncu mesleğini seçtikten sonra çağrılır: miras bonusunu ve maaşı uygular. */
@@ -1175,9 +1178,9 @@ export function ilerletYas(state: CharacterState, minYil = 1, maxYil = 3): numbe
  * yaş -16→-10'a yumuşatıldı; orta oyun nefes alsın). Hiçbir konut/servet/rütbe
  * bu eşikleri değiştirmez. Konut + yaşam tarzının yıllık sağlık bonusu olay
  * hasarından toparlanmaya yardım eder ama pasifRegenEtkisi yumuşak tavanı (80)
- * yüzünden karakteri 100 canda sabitleyip yaşlanmayı yok saymaya yetmez; üstüne
- * 70+ yaşta ecelDenemesi doğal ölüm riski biner. Bir turda birden fazla yıl
- * atlanırsa (yasArtisi > 1) her yıl kendi eşiğine göre ayrı ayrı hesaplanır.
+ * yüzünden karakteri 100 canda sabitleyip yaşlanmayı yok saymaya yetmez. Bir
+ * turda birden fazla yıl atlanırsa (yasArtisi > 1) her yıl kendi eşiğine göre
+ * ayrı ayrı hesaplanır.
  */
 export function yaslanmaUygula(state: CharacterState, yasArtisi: number): number {
   if (yasArtisi <= 0) return 0;
@@ -1490,22 +1493,6 @@ const PASIF_REGEN_TAVAN_USTU_ORAN = 0.25;
 const PASIF_REGEN_LIMITSIZ_ESIK = 45;
 
 /**
- * İleri yaş "ecel" riski: 70 yaşından itibaren, can/servet ne olursa olsun her yıl
- * artan bir doğal ölüm ihtimali. sans% = (yas - ECEL_REFERANS_YAS) * ECEL_YILLIK_KATSAYI
- * (70'te ~%1.7, 76'da ~%5, 88'de ~%12, 95'te ~%16). Turda birden fazla yıl geçerse
- * her yıl ayrı ayrı denenir.
- */
-const ECEL_BASLANGIC_YASI = 70;
-const ECEL_REFERANS_YAS = 67;
-const ECEL_YILLIK_KATSAYI = 0.58;
-const ECEL_MESAJLARI = [
-  "Yaşlılığın getirdiği yorgunlukla bir sabah uyanmadın; huzurlu bir ölümdü.",
-  "Yılların yükü bedenini yendi; sevdiklerinin arasında, sakince son nefesini verdin.",
-  "İleri yaşın sessiz eceli bir gece seni de buldu.",
-  "Uzun bir ömrün ardından bedenin artık dayanmadı; yatağında huzurla göçtün.",
-];
-
-/**
  * Konut/yaşam tarzı gibi pasif bir kaynaktan gelen sağlık/mutluluk değişimini,
  * yumuşak tavan kuralına göre efektif değere çevirir (bkz. PASIF_REGEN_TAVANI).
  * delta <= 0 ise (hasar) olduğu gibi döner.
@@ -1518,24 +1505,6 @@ export function pasifRegenEtkisi(mevcut: number, delta: number): number {
   const tamKisim = Math.min(delta, tavanAltiBosluk);
   const tavanUstuKisim = (delta - tamKisim) * PASIF_REGEN_TAVAN_USTU_ORAN;
   return tamKisim + tavanUstuKisim;
-}
-
-/**
- * İleri yaş ecel kontrolü: tetiklenirse checkDeath ile kullanılacak mesajı döner,
- * aksi halde null. Her yıl ayrı denenir (orduBuyumesiDene deseni).
- */
-export function ecelDenemesi(state: CharacterState, yasArtisi: number): string | null {
-  if (yasArtisi <= 0) return null;
-  let yas = state.yas - yasArtisi;
-  for (let i = 0; i < yasArtisi; i++) {
-    yas += 1;
-    if (yas < ECEL_BASLANGIC_YASI) continue;
-    const sans = (yas - ECEL_REFERANS_YAS) * ECEL_YILLIK_KATSAYI;
-    if (Math.random() * 100 < sans) {
-      return T(state.dil, ECEL_MESAJLARI[Math.floor(Math.random() * ECEL_MESAJLARI.length)]);
-    }
-  }
-  return null;
 }
 
 /**

@@ -4184,6 +4184,15 @@ button.ikincil {
 }
 
 @media (max-width: 767px) {
+  .aile-blok .aile-ozet-paneli {
+    display: none;
+  }
+  .aile-gor-buton {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 767px) {
   .aile-etkilesim-satir {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -5102,18 +5111,96 @@ button.ikincil {
   text-align: center;
 }
 
-/* Ölüm ekranının üst bloğu (ikon+başlık+ölüm nedeni+özet) ve skor/hikaye
-   sekme çifti — kendi içlerinde eski dikey boşluğu korumaları için birer
-   flex-column kapsayıcı; mobilde CSS `order` ile yeniden sıralanabilsinler
-   diye .ekran-olum'un doğrudan çocukları olarak gruplanıyorlar. */
-.olum-ust-blok,
-.olum-skor-hikaye-blok,
-.olum-kayit-blok {
+/* Ölüm ekranı (2026-09 sonu) diğer tam-sayfa ekranlarla (Yatırım/Gelir&Gider vb.) aynı
+   iskeleti kullanır — 1920x1080 masaüstünde sayfa hiç kaymaz, tüm genişliği/yüksekliği
+   dolduran 3 sütuna ayrılır: sol kimlik+özet+kaydet/butonlar, orta skor hesaplaması (her
+   eksen + amaç çarpanı kırılımı + amaçlar), sağ geçmiş önemli olaylar (grafik+hayat
+   hikayesi) alt alta. En altta, 3 sütunun DIŞINDA, tam genişlikte "bu hayatın kazanımları"
+   bölümü (`.olum-kazanim-alt`) — kullanıcı isteği: kazanımlar sayfanın en sonunda olsun.
+   Üstteki `.ekran-olum{align-items:center;text-align:center}` dar/tek-sütunlu eski
+   görünüm için kalır (kullanılmıyor artık ama zararsız); tam-sayfa varyant bunu geçersiz
+   kılar. */
+.ekran-olum.ekran-tam-sayfa {
+  align-items: stretch;
+  text-align: left;
+}
+
+.olum-ust-serit {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: 0.9rem;
+  flex-shrink: 0;
+}
+
+.olum-ust-serit .sonuc-ikon {
+  font-size: 2.6rem;
+  line-height: 1;
+}
+
+.olum-ust-metin h2 {
+  margin: 0 0 0.15rem;
+  font-size: 1.55rem;
+  color: #d17b5a;
+}
+
+.olum-ust-metin .sonuc-hikaye {
+  margin: 0;
+  max-width: none;
+  font-size: 0.92rem;
+  opacity: 0.85;
+}
+
+.tam-govde-3col-olum {
+  grid-template-columns: 1fr 1.15fr 1.15fr;
+}
+
+.olum-sutun-kimlik,
+.olum-sutun-skor,
+.olum-sutun-hikaye {
+  align-items: stretch;
+}
+
+.olum-sutun-kimlik .merkez-sahne,
+.olum-sutun-kimlik .bolge-sahnesi {
+  flex-shrink: 0;
+  max-height: 200px;
+}
+
+.olum-sutun-kimlik .olum-butonlari,
+.olum-sutun-kimlik .isim-form {
+  max-width: none;
+  margin-top: auto;
+}
+
+.olum-sutun-skor .skor-kirilimi,
+.olum-sutun-skor .amac-paneli {
+  max-width: none;
   width: 100%;
+  margin: 0;
+}
+
+.olum-sutun-hikaye .gecmis-grafik,
+.olum-sutun-hikaye .hayat-hikayesi {
+  max-width: none;
+  width: 100%;
+  margin-top: 0;
+}
+
+/* En sondaki kazanım bölümü — 3 sütunun dışında, tam genişlik, biraz üst boşluk. */
+.olum-kazanim-alt {
+  width: 100%;
+  max-width: none;
+  margin: 1rem 0 0;
+  flex-shrink: 0;
+}
+
+@media (max-width: 767px) {
+  .olum-ust-serit {
+    text-align: left;
+  }
+  .olum-sutun-kimlik .bolge-sahnesi {
+    max-height: 160px;
+  }
 }
 
 .sonuc-ikon {

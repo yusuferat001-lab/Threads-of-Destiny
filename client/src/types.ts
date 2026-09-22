@@ -271,6 +271,9 @@ export interface CharacterState {
   yonetim_talep: YonetimTalep | null;
   yonetim_talep_sonraki_yil: number;
 
+  /** Bekleyen "gecikmiş takip" geri dönüşleri (bir seçimin 15-20 yıl sonraki karşılığı) — client mantığı kullanmaz, sunucu-içi zamanlama. */
+  gecikmis_takipler: GecikmisTakip[];
+
   tur_sayisi: number;
   gecmis_olaylar: string[];
   /** Cihazın önceki hayatlarında görülen olaylar (sunucu-içi tekrar önleme için) — client mantığı kullanmaz. */
@@ -345,6 +348,13 @@ export interface YonetimTalep {
 }
 
 export type YonetimHat = 'yonetici' | 'patron';
+
+/** Bir seçimin 15-20 yıl sonraki geri dönüşünü bekleyen kayıt (bkz. SonucEtkisi.gecikmis_takip, server §36-benzeri). */
+export interface GecikmisTakip {
+  id: string;
+  olayId: string;
+  tetiklenmeYili: number;
+}
 
 /** GET /:id/yonetim yanıtı — Kariyer sayfasının "Yönetim" bölümü. §35. */
 export interface YonetimDurumu {
@@ -499,6 +509,8 @@ export interface SonucEtkisi {
   efsanevi_olum?: string;
   sehir_yonetim_artis?: number;
   kariyer_puani_artis?: number;
+  /** 15-20 yıl sonrasına bu id'deki geri dönüş olayını zamanlar (server §36-benzeri). Client bunu kullanmaz, salt tip aynası. */
+  gecikmis_takip?: string;
 }
 
 export interface BelirsizAralik {

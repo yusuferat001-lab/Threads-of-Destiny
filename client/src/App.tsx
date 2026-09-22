@@ -223,6 +223,7 @@ const TAM_EKRAN_GRUBU: Ekran[] = [
   'magaza',
   'evlilik',
   'aile',
+  'olum',
 ];
 
 /** Geri bildirim mesajlarına eklenen uygulama sürümü — bir hata raporunun hangi build'e
@@ -324,7 +325,6 @@ function App() {
   // Otomatik skor kaydı denendi ve başarısız oldu → ölüm ekranında elle kayıt formunu yedek olarak göster.
   const [otoKayitBasarisiz, setOtoKayitBasarisiz] = useState(false);
   // Ölüm ekranı: Skor Tablosu / Hayat Hikayesi sekmeleri arasında geçiş.
-  const [olumSekme, setOlumSekme] = useState<'skor' | 'hikaye'>('skor');
 
   const [liderlikTuru, setLiderlikTuru] = useState<SiralamaTuru>('genel');
   const [liderlikDonemi, setLiderlikDonemi] = useState<SiralamaDonemi>('tumZaman');
@@ -1433,7 +1433,6 @@ function App() {
     otoSkorKaydiRef.current = null;
     olumGoldOdenenRef.current = null;
     setOlumGoldKazanci(null);
-    setOlumSekme('skor');
     setSecilenCag(null);
     setSecilenBolge(null);
     setSecilenYerlesim(null);
@@ -2478,30 +2477,145 @@ function App() {
       )}
 
       {ekran === 'olum' && karakter && (
-        <div className="ekran ekran-olum buyuk-an-olum">
-          <BolgeSahnesi cag={karakter.cag} bolge={karakter.bolge} yerlesim={karakter.yerlesim} ulke={karakter.ulke} un={karakter.un} />
-          <div className="olum-ust-blok">
+        <div className="ekran ekran-olum ekran-tam-sayfa">
+          <div className="olum-ust-serit">
             <span className="sonuc-ikon">💀</span>
-            <h2>{m.oldun}</h2>
-            <p className="sonuc-hikaye">{karakter.olum_nedeni}</p>
-            <p className="olum-ozet">
-              {bic(
-                m.olumOzet,
-                karakter.yil,
-                karakter.yas,
-                kt(karakter.rutbe),
-                kt(karakter.meslek),
-                kt(karakter.bolge),
-                kt(karakter.aile_meslegi)
-              )}
-            </p>
-            {GUNLUK_KOZMETIK_GOLD_GORUNUR && olumGoldKazanci !== null && (
-              <p className="olum-gold-kazanc">🪙 {bic(m.olumGoldKazandi, olumGoldKazanci)}</p>
-            )}
+            <div className="olum-ust-metin">
+              <h2>{m.oldun}</h2>
+              <p className="sonuc-hikaye">{karakter.olum_nedeni}</p>
+            </div>
           </div>
 
+          <div className="tam-govde-3col tam-govde-3col-olum">
+            {/* Sol sütun: kimlik + özet + kaydet/butonlar */}
+            <div className="tam-sutun olum-sutun-kimlik">
+              <BolgeSahnesi
+                cag={karakter.cag}
+                bolge={karakter.bolge}
+                yerlesim={karakter.yerlesim}
+                ulke={karakter.ulke}
+                un={karakter.un}
+              />
+              <p className="olum-ozet">
+                {bic(
+                  m.olumOzet,
+                  karakter.yil,
+                  karakter.yas,
+                  kt(karakter.rutbe),
+                  kt(karakter.meslek),
+                  kt(karakter.bolge),
+                  kt(karakter.aile_meslegi)
+                )}
+              </p>
+              {GUNLUK_KOZMETIK_GOLD_GORUNUR && olumGoldKazanci !== null && (
+                <p className="olum-gold-kazanc">🪙 {bic(m.olumGoldKazandi, olumGoldKazanci)}</p>
+              )}
+
+              {kaydedildi ? (
+                <p>{m.skorKaydedildi}</p>
+              ) : otoKayitBasarisiz ? (
+                <div className="isim-form">
+                  <input
+                    value={isim}
+                    onChange={(e) => setIsim(e.target.value)}
+                    placeholder={m.isimGir}
+                    maxLength={40}
+                  />
+                  <button disabled={yukleniyor || !isim.trim()} onClick={skorunuKaydet}>
+                    {m.btnSkoruKaydet}
+                  </button>
+                </div>
+              ) : (
+                <p className="olum-ozet">{m.skorKaydediliyor}</p>
+              )}
+
+              <div className="olum-butonlari">
+                <button onClick={() => liderligiAc('genel')}>{m.btnLiderlikTablosu}</button>
+                <button className="ikincil" onClick={bastanBasla}>
+                  {m.yenidenBasla}
+                </button>
+              </div>
+            </div>
+
+            {/* Orta sütun: skor hesaplaması — her eksen + amaç çarpanı kırılımı */}
+            <div className="tam-sutun olum-sutun-skor">
+              {(() => {
+                const kirilim = hesaplaSkorKirilimi(karakter);
+                const locale = dil === 'en' ? 'en-US' : 'tr-TR';
+                const say = (n: number) => n.toLocaleString(locale);
+                return (
+                  <div className="skor-kirilimi">
+                    <h3 className="skor-kirilimi-baslik">📊 {m.skorKirilimBaslik}</h3>
+                    <ul className="skor-kirilimi-liste">
+                      <li>
+                        <span>{m.skorKirilimServet}</span>
+                        <span>{say(kirilim.servetPuani)}</span>
+                      </li>
+                      <li>
+                        <span>{m.skorKirilimSohret}</span>
+                        <span>{say(kirilim.sohretPuani)}</span>
+                      </li>
+                      <li>
+                        <span>{m.skorKirilimAhlak}</span>
+                        <span>{say(kirilim.ahlakPuani)}</span>
+                      </li>
+                      <li>
+                        <span>{m.skorKirilimMutluluk}</span>
+                        <span>{say(kirilim.mutlulukPuani)}</span>
+                      </li>
+                      <li>
+                        <span>{m.skorKirilimRutbe}</span>
+                        <span>{say(kirilim.rutbePuani)}</span>
+                      </li>
+                      {kirilim.sarayda && (
+                        <li className="skor-kirilimi-tik">
+                          <span>{m.skorKirilimTikSaray}</span>
+                          <span>+{say(3000)}</span>
+                        </li>
+                      )}
+                      {kirilim.yolculukTamamlandi && (
+                        <li className="skor-kirilimi-tik">
+                          <span>{m.skorKirilimTikYolculuk}</span>
+                          <span>+{say(3000)}</span>
+                        </li>
+                      )}
+                      {kirilim.gizemliEsyaSahibi && (
+                        <li className="skor-kirilimi-tik">
+                          <span>{m.skorKirilimTikGizemli}</span>
+                          <span>+{say(3000)}</span>
+                        </li>
+                      )}
+                    </ul>
+                    <div className="skor-kirilimi-toplam">
+                      <span>{m.skorKirilimToplam}</span>
+                      <span>{say(kirilim.temelToplam)}</span>
+                    </div>
+                    <div className="skor-kirilimi-carpan">
+                      <span>× {m.skorKirilimAmac}</span>
+                      <span>×{kirilim.amacCarpani}</span>
+                    </div>
+                    <div className="skor-kirilimi-sonuc">
+                      <span>{m.skorKirilimSonuc}</span>
+                      <span>{say(kirilim.skor)}</span>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              <AmacPaneli durum={amaclar} varyant="olum" />
+            </div>
+
+            {/* Sağ sütun: geçmiş önemli olaylar (hayat hikayesi), alt alta */}
+            <div className="tam-sutun olum-sutun-hikaye">
+              <GecmisGrafik gecmis={karakter.gecmis} paraBirimi={karakter.para_birimi} />
+              <HayatHikayesi hikaye={karakter.hayat_hikayesi} />
+            </div>
+          </div>
+
+          {/* En sonda: sadece bu hayatın kazanımları (kullanıcı isteği — daha
+              büyük fontla, ekranın en altında ayrı bir bölüm olarak). */}
           {(buOmurBasarimlar.length > 0 || karakter.unvanlar.length > 0 || karakter.efsanevi_olum) && (
-            <div className="olum-yeni-basarimlar">
+            <div className="olum-yeni-basarimlar olum-kazanim-alt">
               <h3 className="olum-kazanim-baslik">🏆 {m.olumKazanimBaslik}</h3>
               <div className="olum-kazanim-rozetler">
                 {karakter.unvanlar.map((u) => (
@@ -2527,124 +2641,6 @@ function App() {
               </div>
             </div>
           )}
-
-          <AmacPaneli durum={amaclar} varyant="olum" />
-          <GecmisGrafik gecmis={karakter.gecmis} paraBirimi={karakter.para_birimi} />
-
-          <div className="olum-skor-hikaye-blok">
-          <div className="ekran-sekmeleri olum-sekmeleri">
-            <button
-              type="button"
-              className={`ekran-sekme${olumSekme === 'skor' ? ' ekran-sekme-aktif' : ''}`}
-              onClick={() => setOlumSekme('skor')}
-            >
-              📊 {m.skorKirilimSekmeBaslik}
-            </button>
-            <button
-              type="button"
-              className={`ekran-sekme${olumSekme === 'hikaye' ? ' ekran-sekme-aktif' : ''}`}
-              onClick={() => setOlumSekme('hikaye')}
-            >
-              📜 {m.hhBaslik}
-            </button>
-          </div>
-
-          {olumSekme === 'hikaye' ? (
-            <HayatHikayesi hikaye={karakter.hayat_hikayesi} />
-          ) : (
-            (() => {
-              const kirilim = hesaplaSkorKirilimi(karakter);
-              const locale = dil === 'en' ? 'en-US' : 'tr-TR';
-              const say = (n: number) => n.toLocaleString(locale);
-              return (
-                <div className="skor-kirilimi">
-                  <h3 className="skor-kirilimi-baslik">📊 {m.skorKirilimBaslik}</h3>
-                  <ul className="skor-kirilimi-liste">
-                    <li>
-                      <span>{m.skorKirilimServet}</span>
-                      <span>{say(kirilim.servetPuani)}</span>
-                    </li>
-                    <li>
-                      <span>{m.skorKirilimSohret}</span>
-                      <span>{say(kirilim.sohretPuani)}</span>
-                    </li>
-                    <li>
-                      <span>{m.skorKirilimAhlak}</span>
-                      <span>{say(kirilim.ahlakPuani)}</span>
-                    </li>
-                    <li>
-                      <span>{m.skorKirilimMutluluk}</span>
-                      <span>{say(kirilim.mutlulukPuani)}</span>
-                    </li>
-                    <li>
-                      <span>{m.skorKirilimRutbe}</span>
-                      <span>{say(kirilim.rutbePuani)}</span>
-                    </li>
-                    {kirilim.sarayda && (
-                      <li className="skor-kirilimi-tik">
-                        <span>{m.skorKirilimTikSaray}</span>
-                        <span>+{say(3000)}</span>
-                      </li>
-                    )}
-                    {kirilim.yolculukTamamlandi && (
-                      <li className="skor-kirilimi-tik">
-                        <span>{m.skorKirilimTikYolculuk}</span>
-                        <span>+{say(3000)}</span>
-                      </li>
-                    )}
-                    {kirilim.gizemliEsyaSahibi && (
-                      <li className="skor-kirilimi-tik">
-                        <span>{m.skorKirilimTikGizemli}</span>
-                        <span>+{say(3000)}</span>
-                      </li>
-                    )}
-                  </ul>
-                  <div className="skor-kirilimi-toplam">
-                    <span>{m.skorKirilimToplam}</span>
-                    <span>{say(kirilim.temelToplam)}</span>
-                  </div>
-                  {kirilim.amacCarpani > 1 && (
-                    <div className="skor-kirilimi-carpan">
-                      <span>× {m.skorKirilimAmac}</span>
-                      <span>×{kirilim.amacCarpani}</span>
-                    </div>
-                  )}
-                  <div className="skor-kirilimi-sonuc">
-                    <span>{m.skorKirilimSonuc}</span>
-                    <span>{say(kirilim.skor)}</span>
-                  </div>
-                </div>
-              );
-            })()
-          )}
-          </div>
-
-          <div className="olum-kayit-blok">
-            {kaydedildi ? (
-              <p>{m.skorKaydedildi}</p>
-            ) : otoKayitBasarisiz ? (
-              <div className="isim-form">
-                <input
-                  value={isim}
-                  onChange={(e) => setIsim(e.target.value)}
-                  placeholder={m.isimGir}
-                  maxLength={40}
-                />
-                <button disabled={yukleniyor || !isim.trim()} onClick={skorunuKaydet}>
-                  {m.btnSkoruKaydet}
-                </button>
-              </div>
-            ) : (
-              <p className="olum-ozet">{m.skorKaydediliyor}</p>
-            )}
-          </div>
-
-          <div className="olum-butonlari">
-            <button onClick={() => liderligiAc('genel')}>{m.btnLiderlikTablosu}</button>
-            <button className="ikincil" onClick={bastanBasla}>
-              {m.yenidenBasla}
-            </button>
-          </div>
         </div>
       )}
 
