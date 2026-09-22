@@ -601,4 +601,266 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
       },
     ],
   },
+
+  oc_tuccar_rakip_lonca_sabotaj: {
+    baslik: "Rival Sabotage",
+    metin:
+      "Someone broke into your warehouse and deliberately spoiled part of your goods; the signs point to a rival trader who's been undercutting you all along. You could strike back the same way, or gather evidence and file a complaint with the guild.",
+    secenekler: [
+      {
+        metin: "Strike back the same way, sabotage his goods too.",
+        basariliSonuc: {
+          mesaj:
+            "You broke into his warehouse the same way; your losses were covered, but something inside you was tainted.",
+          detay: "You can't even admit to yourself that what you gained is nothing but theft.",
+        },
+        basarisizSonuc: {
+          mesaj: "You were caught at the door; your rival exposed you in front of the whole market.",
+          detay:
+            "While hiding your own dirty deed you cleaned up his; now you're the 'thieving trader'.",
+        },
+      },
+      {
+        metin: "Gather evidence, file an official complaint with the guild.",
+        basariliSonuc: {
+          mesaj: "The guild's investigation found your rival guilty; your losses were compensated.",
+          detay: "This victory won by legitimate means also earned you the market's trust.",
+        },
+        basarisizSonuc: {
+          mesaj: "Your evidence was deemed 'insufficient'; the cost of the complaint went to waste.",
+          detay: "Choosing the right path doesn't always bring results; at least your conscience is clean.",
+        },
+      },
+    ],
+  },
+
+  oc_tuccar_enkaz_hak_iddiasi: {
+    baslik: "Cargo from the Wreck",
+    metin:
+      "You found valuable goods in a shipwreck washed up on shore. A surviving sailor says they came from his ship, and this cargo would free his family from debt.",
+    secenekler: [
+      {
+        metin: "Claim all the goods for yourself; what you found is yours.",
+        basariliSonuc: {
+          mesaj:
+            "You carried the goods to your warehouse; the sailor stood there in despair, but legally, what's found on shore is yours.",
+          detay: "Your purse filled, but that look will stay with you a while.",
+        },
+        basarisizSonuc: {
+          mesaj: "The sailor told the story around town; your greed became the talk of the tongues.",
+          detay: "You sold some of the goods, but now they call you the 'wreck crow'.",
+        },
+      },
+      {
+        metin: "Split the cargo with the sailor, strike a fair deal.",
+        basariliSonuc: {
+          mesaj: "You split the cargo in two; the sailor shook your hand in gratitude.",
+          detay: "Your gain shrank, but someone who remembers this deal may help you one day.",
+        },
+        basarisizSonuc: {
+          mesaj: "The sailor wasn't satisfied with his share, an argument broke out; the deal barely closed, at a loss to you.",
+          detay: "Your good will didn't satisfy everyone, but your conscience is at ease.",
+        },
+      },
+      {
+        metin: "Return all the goods to the sailor.",
+        basariliSonuc: {
+          mesaj: "You even covered the cost of transport and delivered the cargo to the sailor in full.",
+          detay: "The man couldn't hold back tears; this story will be told at the harbor for a long time.",
+        },
+        basarisizSonuc: {
+          mesaj: "While returning it, the boat you carried it in capsized, and part of the goods went back into the sea.",
+          detay: "Doing the right thing sometimes demands an extra price.",
+        },
+      },
+    ],
+  },
+
+  oc_tuccar_cirak_hirsizlik: {
+    baslik: "The Apprentice's Betrayal",
+    metin:
+      "You learned that the apprentice who's worked beside you for years has been stealing money from the till. The young man begs, saying his family is starving.",
+    secenekler: [
+      {
+        metin: "Report him to the guild, let him be punished.",
+        basariliSonuc: {
+          mesaj: "Part of the stolen money was recovered; the apprentice was brought before the guild court.",
+          detay: "You secured justice, but the boy's crying face won't leave your sight.",
+        },
+        basarisizSonuc: {
+          mesaj: "The guild turned down your complaint, saying 'the evidence is weak, the penalty too harsh'.",
+          detay: "You came out of this ahead in neither money nor reputation.",
+        },
+      },
+      {
+        metin: "Forgive him, cover the money yourself, help his family.",
+        basariliSonuc: {
+          mesaj:
+            "You forgave the apprentice and sent supplies to his family; the young man stayed loyal to you for life.",
+          detay: "Some investments come back with something far more lasting than gold.",
+        },
+        basarisizSonuc: {
+          mesaj: "You forgave him, but the apprentice still vanished quietly one night.",
+          detay: "Your kindness went unrewarded; it made you wary of trusting people for a while.",
+        },
+      },
+    ],
+  },
+
+  oc_tuccar_tekelci_teklif: {
+    baslik: "The Monopoly Deal",
+    metin:
+      "A trader from distant lands offers you a monopoly on the spice trade on condition you become his sole supplier; but you'd have to cut ties with all your other suppliers.",
+    secenekler: [
+      {
+        metin: "Accept the offer, put all your eggs in one basket.",
+        basariliSonuc: {
+          mesaj: "The deal held; all the spice trade in the city is now in your hands.",
+          detay: "Your rivals watch helplessly; being this dependent on a single route unsettles even you.",
+        },
+        basarisizSonuc: {
+          mesaj:
+            "The distant trader was lost on the road, the goods never arrived; your old suppliers no longer want you either.",
+          detay: "All the eggs you put in one basket broke at once.",
+        },
+      },
+      {
+        metin: "Refuse, keep working with a variety of suppliers.",
+        basariliSonuc: {
+          mesaj: "You kept your old arrangement; your gains are modest but safe.",
+          detay: "You may have missed the big opportunity, but you're beholden to no supplier.",
+        },
+        basarisizSonuc: {
+          mesaj: "Another trader snapped up the monopoly you refused; you watched him grow rich from a distance.",
+          detay: "Caution sometimes leaves behind a regret tinged with envy.",
+        },
+      },
+    ],
+  },
+
+  oc_tuccar_sehir_berati_rusveti: {
+    baslik: "The Marketplace Charter",
+    metin:
+      "A stall spot is opening at the busiest corner of the city. The town clerk wants a bribe to grant you the charter; there's a legal route too, but the queue is long and your odds of winning are slim.",
+    secenekler: [
+      {
+        metin: "Pay the bribe, secure the spot.",
+        basariliSonuc: {
+          mesaj: "The best corner became yours; the clerk pocketed the money quietly.",
+          detay: "You know you got this spot not because you earned it, but because your purse was thick.",
+        },
+        basarisizSonuc: {
+          mesaj: "Your bribe offer was overheard by an inspector; the scandal swept through the whole market.",
+          detay: "You lost the money, the spot, and years of built reputation in a single afternoon.",
+        },
+      },
+      {
+        metin: "Apply through the legal channel, join the queue, trust the draw.",
+        basariliSonuc: {
+          mesaj: "The draw fell in your favor; the town council praised the outcome for its transparency.",
+          detay: "The waiting was hard, but there's no secret behind the spot you won.",
+        },
+        basarisizSonuc: {
+          mesaj: "The draw didn't go your way; the best corner went to another trader who paid the bribe.",
+          detay: "Honesty went unrewarded, but at least your conscience is clear.",
+        },
+      },
+    ],
+  },
+
+  oc_tuccar_borclu_soylu: {
+    baslik: "The Noble Who Won't Pay",
+    metin:
+      "A noble has gone months without paying for the goods he bought from you. You need to remind him of the debt, but traders who speak too boldly to nobles sometimes lose their heads.",
+    secenekler: [
+      {
+        metin: "Say it to his face directly, demand the money.",
+        basariliSonuc: {
+          mesaj: "The noble was embarrassed and paid the debt in cash; the other nobles heard of it.",
+          detay: "Your courage paid off this time, but you won't always be this lucky.",
+        },
+        basarisizSonuc: {
+          mesaj: "The noble accused you of insolence and threw you out; the debt was struck off as if it never existed.",
+          detay: "Raising your voice at some doors carries a heavy price.",
+        },
+      },
+      {
+        metin: "Wait patiently, send politely worded reminder letters.",
+        basariliSonuc: {
+          mesaj: "Months later the noble sent part of his debt.",
+          detay: "Your patience paid off; not all of it came back, but some did.",
+        },
+        basarisizSonuc: {
+          mesaj:
+            "The noble died, and his heirs said they didn't recognize the debt; the whole claim was wiped out.",
+          detay: "Your politeness didn't speak for you; some debts never come back.",
+        },
+      },
+    ],
+  },
+
+  oc_tuccar_fiyat_sabitleme_karteli: {
+    baslik: "The Secret Arrangement",
+    metin:
+      "The city's big traders meet in secret and offer to raise grain prices together, forming a cartel. If you join, your profit is guaranteed, but the people's hunger deepens.",
+    secenekler: [
+      {
+        metin: "Join, take your share of the cartel.",
+        basariliSonuc: {
+          mesaj: "Prices were raised together; your profit was guaranteed, but the bread lines grew longer.",
+          detay:
+            "As your purse fills, you strain not to hear that children in the next neighborhood are going to bed hungry.",
+        },
+        basarisizSonuc: {
+          mesaj: "The cartel was exposed; an angry crowd stormed your shop.",
+          detay: "Secret arrangements always come to light eventually; you paid the price before anyone else.",
+        },
+      },
+      {
+        metin: "Refuse, report the matter to the city council.",
+        basariliSonuc: {
+          mesaj:
+            "Your report broke up the cartel attempt; the people called you 'the guardian of our bread'.",
+          detay: "The other big traders will never forgive you, but the people's trust is worth more than that.",
+        },
+        basarisizSonuc: {
+          mesaj: "Your report was found baseless; the other traders shut you out and boycotted your goods.",
+          detay: "You did the right thing and paid the price for it alone.",
+        },
+      },
+    ],
+  },
+
+  oc_tuccar_korsan_fidyesi: {
+    baslik: "The Pirate's Ransom",
+    metin:
+      "A pirate ship has seized your caravan vessel in the Mediterranean; they're holding your crew hostage and demanding ransom. If you don't pay, the crew will be sold in the slave market.",
+    secenekler: [
+      {
+        metin: "Pay the ransom, save the crew.",
+        basariliSonuc: {
+          mesaj:
+            "The ransom was paid, the crew stayed free; your men will be loyal to you for life.",
+          detay: "Your purse grew lighter, but your conscience has never been this much at ease.",
+        },
+        basarisizSonuc: {
+          mesaj: "The pirates took the money but broke their word and killed one of the crew anyway.",
+          detay: "Even paying ransom sometimes offers no guarantee; this news kept you sleepless for a long time.",
+        },
+      },
+      {
+        metin: "Don't pay, leave the crew to their fate.",
+        basariliSonuc: {
+          mesaj:
+            "You didn't pay the ransom; you made up for the ship and goods another way, but your crew was sold in the slave market.",
+          detay: "Your purse was spared, but there are faces that now haunt your dreams.",
+        },
+        basarisizSonuc: {
+          mesaj:
+            "The news spread through the harbor; no sailor wants to board your ship anymore, and it rotted crewless.",
+          detay: "Shirking sacrifice has a price too; this time you paid it.",
+        },
+      },
+    ],
+  },
 };

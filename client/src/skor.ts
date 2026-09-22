@@ -68,10 +68,16 @@ export interface SkorKirilimi {
 }
 
 function amacCarpaniHesapla(state: CharacterState): number {
-  const toplam = (state.hayat_amaclari ?? [])
-    .filter((a) => a.tamamlandi)
-    .reduce((s, a) => s + (a.bonus ?? 0), 0);
-  if (toplam > 0) return Math.max(1, toplam);
+  // server/src/game/stateManager.ts hesaplaSkorKirilimi ile birebir aynı ayrım:
+  // hangi sistemin kullanılacağı `hayat_amaclari` dizisinin VARLIĞINA göre seçilir
+  // (tamamlanan amaç sayısına göre değil) — aksi halde "amaçları var ama hiçbiri
+  // henüz tamamlanmadı" durumunda yanlışlıkla eski tekil hayat_amaci fallback'ine düşülebilir.
+  if ((state.hayat_amaclari?.length ?? 0) > 0) {
+    const toplam = state.hayat_amaclari
+      .filter((a) => a.tamamlandi)
+      .reduce((s, a) => s + (a.bonus ?? 0), 0);
+    return Math.max(1, toplam);
+  }
   return state.hayat_amaci?.tamamlandi ? 5 : 1; // eski kayıt fallback
 }
 

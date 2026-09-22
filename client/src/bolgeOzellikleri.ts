@@ -11,8 +11,8 @@ const BOLGE_OZET: Record<string, { tr: string; en: string }> = {
     en: "🌾 Strong trade & social life · ⚔️ border skirmishes wear on health",
   },
   "Orta Çağ|Kutsal Roma": {
-    tr: "🔨 Zanaat dengeli · 👑 parçalı beylikler otoriteyi zorlar",
-    en: "🔨 Balanced craftsmanship · 👑 fractured princedoms strain authority",
+    tr: "🛒 Ticaret canlı, beden dinç · 👑 parçalı beylikler otoriteyi ve vicdanı zorlar",
+    en: "🛒 Lively trade, robust health · 👑 fractured princedoms strain authority and conscience",
   },
   "Orta Çağ|Bizans": {
     tr: "💰 Zengin başlangıç, tanınırsın · 🏙️ kalabalık şehir sağlığı yorar",

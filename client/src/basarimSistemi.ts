@@ -498,7 +498,11 @@ export const BASARIMLAR: BasarimTanimi[] = [
       tr: 'Kutsal bir emanet seni ölümden bir kez döndürsün.',
       en: 'Have a holy relic pull you back from death once.',
     },
-    kosul: (o) => o.state.hayat_hikayesi.some((h) => /kutsal|relic|holy/i.test(h.baslik)),
+    // relik_can_kurtardi kalıcı bir bayrak (checkDeath'te set edilir) — eskiden
+    // burada `hayat_hikayesi`'nde (en fazla 10 kayıtla sınırlı, FIFO) regex ile
+    // aranıyordu; relik erken tetiklenip karakter 10+ olay daha yaşarsa kayıt
+    // sessizce düşüyor, başarım kaçırılıyordu.
+    kosul: (o) => o.state.relik_can_kurtardi === true,
   },
   {
     id: 'gizemli_kader',

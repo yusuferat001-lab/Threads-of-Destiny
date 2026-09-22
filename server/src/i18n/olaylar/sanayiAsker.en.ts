@@ -427,4 +427,278 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
       },
     ],
   },
+
+  sd_asker_savas_muhabiri_gomulu: {
+    baslik: "The Embedded Correspondent",
+    metin:
+      "A war correspondent from a major newspaper has been embedded with your battalion at the front, writing down your every move. It's your call how much you open up to him.",
+    secenekler: [
+      {
+        metin: "Give him full access, speak to him candidly.",
+        basariliSonuc: {
+          mesaj: "What he wrote reached wide audiences; your name was spoken of with respect in the papers.",
+          detay:
+            "It cost you hospitality and time, but in return thousands saw a war through your eyes.",
+        },
+        basarisizSonuc: {
+          mesaj: "He twisted your words to his own slant; the article troubled your superiors.",
+          detay: "Candor, it turns out, also means losing control of your own words.",
+        },
+      },
+      {
+        metin: "Keep your distance, give only official information.",
+        basariliSonuc: {
+          mesaj: "The correspondent wrote a dry report; no one was praised, no one blamed.",
+          detay: "You stayed safe, but someone else became the hero of the story.",
+        },
+        basarisizSonuc: {
+          mesaj: "He read your distance as 'having something to hide' and wrote it that way.",
+          detay: "Silence sometimes raises more questions than speaking would have.",
+        },
+      },
+    ],
+  },
+
+  sd_asker_divani_harp: {
+    baslik: "The Court-Martial",
+    metin:
+      "You sit on the tribunal judging a private who defied orders and pulled back from the front. Whether it was fear or a genuine tactical necessity is unclear; the verdict you give will decide a life.",
+    secenekler: [
+      {
+        metin: "Hand down a harsh sentence, make an example of discipline.",
+        basariliSonuc: {
+          mesaj: "The sentence was made an example; discipline was restored, command praised you.",
+          detay: "You can't help thinking about what will be written to that private's family.",
+        },
+        basarisizSonuc: {
+          mesaj: "The verdict caused an uproar at the front; the soldiers found you merciless.",
+          detay: "Being harsh made you neither more respected nor more at ease.",
+        },
+      },
+      {
+        metin: "Weigh the mitigating circumstances, give a lighter sentence.",
+        basariliSonuc: {
+          mesaj: "Your verdict was found just; the private got a second chance and earned it.",
+          detay: "Justice sometimes takes courage; this time it paid off.",
+        },
+        basarisizSonuc: {
+          mesaj: "Your superiors called your decision 'softness' and hit you with a disciplinary penalty.",
+          detay: "Your mercy remained a stain on your own record.",
+        },
+      },
+    ],
+  },
+
+  sd_asker_hastane_reformu: {
+    baslik: "The Field Hospital Reform",
+    metin:
+      "Conditions at the field hospital are dreadful: filthy bandages, too few staff, a high death rate. A team of civilian nurses wants to change how things are run, but the top brass calls it 'needless expense'.",
+    secenekler: [
+      {
+        metin: "Back the reform, contribute from your own resources.",
+        basariliSonuc: {
+          mesaj: "The reform went ahead; the hospital's death rate dropped noticeably.",
+          detay: "The money out of your own pocket changed how many soldiers made it home alive.",
+        },
+        basarisizSonuc: {
+          mesaj: "The funds weren't enough, the reform was left half-done; the nurses gave up and left.",
+          detay: "Good will alone doesn't make bandages.",
+        },
+      },
+      {
+        metin: "Stick with the old way, reserve the funds for the war.",
+        basariliSonuc: {
+          mesaj: "The budget was preserved for the war; the hospital deaths remained just a statistic.",
+          detay: "The numbers look fine, but you know the names behind those numbers.",
+        },
+        basarisizSonuc: {
+          mesaj: "The filthy conditions turned into an outbreak at the hospital; you fell ill too.",
+          detay: "Every coin you saved came back from somewhere else in the end.",
+        },
+      },
+    ],
+  },
+
+  sd_asker_maas_isyani: {
+    baslik: "Unpaid Wages",
+    metin:
+      "The soldiers' pay hasn't come for months; whispers of mutiny circle the barracks. The men come to you — either be their voice, or show your loyalty to your superiors.",
+    secenekler: [
+      {
+        metin: "Carry the soldiers' demand up to your superiors, be their voice.",
+        basariliSonuc: {
+          mesaj:
+            "Your demand was heard, wages were partly paid; you even gave some soldiers advances from your own pocket.",
+          detay: "Speaking for them cost you dearly, but now the barracks trusts you.",
+        },
+        basarisizSonuc: {
+          mesaj: "Your demand was labeled 'incitement'; a penalty was docked from your own pay.",
+          detay: "Raising a rightful voice came out of your own pocket.",
+        },
+      },
+      {
+        metin: "Stay silent, call for obedience.",
+        basariliSonuc: {
+          mesaj:
+            "Your superiors were pleased with your loyalty; among the soldiers you became known as 'not one of their own'.",
+          detay: "Silence brought you a reward, and a loneliness.",
+        },
+        basarisizSonuc: {
+          mesaj: "The whispers turned into a mutiny; you were wounded in the chaos that broke out.",
+          detay: "Staying silent didn't stop the storm — it just left you inside it.",
+        },
+      },
+    ],
+  },
+
+  sd_asker_silah_kacakciligi: {
+    baslik: "The Black Market Arms Offer",
+    metin:
+      "A trader proposes that you sell rifles 'gone missing' from the armory to rebels and take a cut. There's a lot of money in it; but those weapons could one day be pointed at your own comrades.",
+    secenekler: [
+      {
+        metin: "Accept the offer, smuggle the weapons.",
+        basariliSonuc: {
+          mesaj: "The weapons were delivered without a hitch; your pocket grew heavy overnight.",
+          detay: "You'll never know whether one of your comrades will be shot with those very weapons.",
+        },
+        basarisizSonuc: {
+          mesaj:
+            "You were caught in the act of smuggling; at the front you faced interrogation and the threat of execution.",
+          detay: "The scent of money arrived at the same time as the scent of death.",
+        },
+      },
+      {
+        metin: "Refuse the offer, report it to your superiors.",
+        basariliSonuc: {
+          mesaj: "Your report brought down the smuggling ring; the trader was arrested.",
+          detay: "Some opportunities are worth more for being refused.",
+        },
+        basarisizSonuc: {
+          mesaj: "Your report couldn't be proven; the trader slandered you and damaged your reputation.",
+          detay: "You did the right thing and still ended up the accused.",
+        },
+      },
+    ],
+  },
+
+  sd_asker_top_atisi_hatasi: {
+    baslik: "A Fatal Mistake",
+    metin:
+      "An officer's miscalculated artillery coordinates hit your own position; several soldiers died. The officer wants you to alter the report and stay silent.",
+    secenekler: [
+      {
+        metin: "Report the truth, expose the mistake.",
+        basariliSonuc: {
+          mesaj:
+            "The truth was reported; the families of the dead soldiers at least learned what really happened.",
+          detay: "Some officers never sat you at their table again, but your conscience is clear.",
+        },
+        basarisizSonuc: {
+          mesaj: "The report was dismissed as 'an unproven accusation'; the officer's friends shut you out.",
+          detay: "Telling the truth doesn't always mean the truth wins.",
+        },
+      },
+      {
+        metin: "Stay silent, alter the report together.",
+        basariliSonuc: {
+          mesaj: "You stayed silent; the officer was grateful, your name went on the promotion list.",
+          detay: "When the promotion came, you also remembered the names of those who died.",
+        },
+        basarisizSonuc: {
+          mesaj: "The truth came out from another witness; you were accused of falsification.",
+          detay: "The truth you hid burst open, and pulled you in with it.",
+        },
+      },
+    ],
+  },
+
+  sd_asker_gazi_emekli_maasi: {
+    baslik: "The Fight Over a Veteran's Pension",
+    metin:
+      "An old comrade who lost an arm in the war has had his pension lost in the bureaucracy. You could push his file to the front of the line, but it would delay another veteran waiting his turn.",
+    secenekler: [
+      {
+        metin: "Push your comrade's file to the front.",
+        basariliSonuc: {
+          mesaj: "Your comrade got his pension; his gratitude toward you never faded.",
+          detay: "You paid off a debt, but you also learned the name of the veteran who lost his place in line.",
+        },
+        basarisizSonuc: {
+          mesaj: "The bureaucracy turned you down as an 'irregular request'; your comrade is still waiting.",
+          detay: "Your good will was no match for the paperwork.",
+        },
+      },
+      {
+        metin: "Follow the queue, wait your turn fairly for everyone.",
+        basariliSonuc: {
+          mesaj: "You were fair; your comrade waited for months, but the system worked for everyone.",
+          detay: "Doing the right thing sometimes means upsetting someone you care about.",
+        },
+        basarisizSonuc: {
+          mesaj: "Your comrade never forgot that you stayed quiet while he needed your help.",
+          detay: "You stayed loyal to fairness and lost a friendship for it.",
+        },
+      },
+    ],
+  },
+
+  sd_asker_topcu_denemesi: {
+    baslik: "The New Cannon Trial",
+    metin:
+      "A factory is counting on your favorable report to get a new cannon approved by the army. The gun is powerful, but the trials showed some cracks in the barrel.",
+    secenekler: [
+      {
+        metin: "Give the cannon a favorable report, back a fast approval.",
+        basariliSonuc: {
+          mesaj: "The cannon was approved quickly; the factory paid you a generous sum.",
+          detay: "You didn't mention the cracks in your report; you know this silence will cost something.",
+        },
+        basarisizSonuc: {
+          mesaj: "During a training shot a cannon barrel burst; several soldiers were wounded.",
+          detay: "The crack you overlooked showed itself at the worst possible moment.",
+        },
+      },
+      {
+        metin: "Ask for additional tests, delay the approval.",
+        basariliSonuc: {
+          mesaj: "The additional tests found the flaw; the corrected cannon entered service safely.",
+          detay: "You'll never fully know how many lives your patience will save down the line.",
+        },
+        basarisizSonuc: {
+          mesaj: "The delay angered your superiors; the factory complained that you were 'slowing things down'.",
+          detay: "Caution is sometimes mistaken for laziness.",
+        },
+      },
+    ],
+  },
+
+  sd_asker_casus_teklifi: {
+    baslik: "A Foreign Offer",
+    metin:
+      "An agent of a foreign power promises you a fortune in exchange for the army's movement plans. If you're caught, you'll be shot for treason.",
+    secenekler: [
+      {
+        metin: "Accept the offer, sell the information.",
+        basariliSonuc: {
+          mesaj: "You handed over the information; in return you gained a fortune that would change your life.",
+          detay: "Every night you feel like you hear a footstep at the door.",
+        },
+        basarisizSonuc: {
+          mesaj: "Your espionage came to light; you were shot for treason.",
+        },
+      },
+      {
+        metin: "Refuse the offer, report it to your superiors.",
+        basariliSonuc: {
+          mesaj: "You had the agent caught; your loyalty was praised throughout the army.",
+          detay: "Some betrayals turn into honor for you, for having been refused.",
+        },
+        basarisizSonuc: {
+          mesaj: "Your report couldn't be proven; the agent got away, and your superiors eyed you with suspicion.",
+          detay: "You did the right thing and still weren't fully trusted.",
+        },
+      },
+    ],
+  },
 };

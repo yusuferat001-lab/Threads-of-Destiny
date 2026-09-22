@@ -630,4 +630,262 @@ export const OLAYLAR_ORTACAG_ASKER_EN: Record<string, OlayCeviri> = {
       },
     ],
   },
+
+  oc_asker_firari_yoldas: {
+    baslik: "The Comrade Planning to Flee",
+    metin:
+      "You learned that a young comrade, unable to bear the war's horrors any longer, is planning to slip away at night. If he's caught he'll be executed; if you know and say nothing, the charge of treason could fall on you too.",
+    secenekler: [
+      {
+        metin: "Report him to the commander, do your duty.",
+        basariliSonuc: {
+          mesaj:
+            "Your comrade was caught before he could flee and was punished; the commander called you a 'loyal soldier.'",
+          detay: "You did your duty, but you can't forget the fear in his eyes.",
+        },
+        basarisizSonuc: {
+          mesaj:
+            "Your report came too late; your comrade had already fled, and you were interrogated over 'why didn't you speak sooner.'",
+          detay: "You neither saved him nor eased your own conscience.",
+        },
+      },
+      {
+        metin: "Stay silent, secretly help him get away.",
+        basariliSonuc: {
+          mesaj: "Your comrade escaped safe and sound; no one suspected you.",
+          detay: "Knowing you saved someone's life gives a peace no medal ever could.",
+        },
+        basarisizSonuc: {
+          mesaj: "Your help came to light; you were accused of treason and narrowly escaped the gallows.",
+          detay: "You did what you believed was right, and it nearly cost you your life.",
+        },
+      },
+    ],
+  },
+
+  oc_asker_yagma_vicdani: {
+    baslik: "The Plundered City",
+    metin:
+      "The soldiers were given three days' free rein in the conquered city. In one house you found a precious family heirloom; you can keep it for yourself or hand it over to the commander.",
+    secenekler: [
+      {
+        metin: "Keep it, hide it where no one can see.",
+        basariliSonuc: {
+          mesaj: "You slipped the heirloom into your pack unseen; no one noticed.",
+          detay: "Your purse grew heavier, but the faces of that household won't leave your mind.",
+        },
+        basarisizSonuc: {
+          mesaj:
+            "An officer found the item on you; you were branded a 'looter' and it was confiscated.",
+          detay: "You couldn't manage to hide it, and this time you paid dearly for it.",
+        },
+      },
+      {
+        metin: "Hand it to the commander, add it to the official spoils.",
+        basariliSonuc: {
+          mesaj:
+            "You turned the heirloom in; the commander praised your honesty and gave you a small share.",
+          detay: "Your gain was small, but there's not a stain on your conscience.",
+        },
+        basarisizSonuc: {
+          mesaj: "What you handed over was deemed 'worthless,' not even a word of thanks came.",
+          detay: "Sometimes honesty passes by unnoticed.",
+        },
+      },
+    ],
+  },
+
+  oc_asker_paravan_kacakcilik: {
+    baslik: "The Offer at the Watchtower",
+    metin:
+      "While standing guard at the border outpost, a smuggler offers you a regular 'monthly cut' to let his goods pass unchecked.",
+    secenekler: [
+      {
+        metin: "Accept the offer, look the other way.",
+        basariliSonuc: {
+          mesaj:
+            "The smuggler's loads passed unchecked; you gained a small but steady income.",
+          detay: "Every load that passes the watchtower adds one more weight to your conscience.",
+        },
+        basarisizSonuc: {
+          mesaj:
+            "An inspection team caught you looking the other way; a disciplinary penalty and a fine came together.",
+          detay: "You risked your career for a small monthly cut, and lost.",
+        },
+      },
+      {
+        metin: "Refuse, catch the smuggler.",
+        basariliSonuc: {
+          mesaj:
+            "You caught the smuggler; the commander rewarded you, and you became known at the outpost as the 'honest sentry.'",
+          detay: "Turning down easy money made you stronger in the long run.",
+        },
+        basarisizSonuc: {
+          mesaj: "The smuggler resisted, a brief scuffle broke out; he got away, and you were left wounded.",
+          detay: "Doing the right thing doesn't always end easily.",
+        },
+      },
+    ],
+  },
+
+  oc_asker_parali_asker_teklifi: {
+    baslik: "The Mercenary Offer",
+    metin:
+      "While on campaign, the captain of an enemy mercenary company offers to have you switch sides for far greater pay. That means serving the enemy of the land you were born to.",
+    secenekler: [
+      {
+        metin: "Accept the offer, switch sides.",
+        basariliSonuc: {
+          mesaj:
+            "You began a rich new life in your new ranks; but your old comrades are now your enemies.",
+          detay: "Your purse filled, and your past passed through a door with no way back.",
+        },
+        basarisizSonuc: {
+          mesaj: "Your old commander learned of the plan and set an ambush for you.",
+          detay: "Your betrayal was punished by the very side you betrayed to.",
+        },
+      },
+      {
+        metin: "Refuse, stay loyal.",
+        basariliSonuc: {
+          mesaj: "You refused the offer; your comrades never learned of it, but you're proud of yourself.",
+          detay: "Some riches aren't worth your conscience's peace.",
+        },
+        basarisizSonuc: {
+          mesaj:
+            "The captain, learning you'd refused, informed on you; your commander eyed you with suspicion for a while.",
+          detay: "Even doing the right thing can sometimes leave a stain on you.",
+        },
+      },
+    ],
+  },
+
+  oc_asker_ac_sehir_kusatmasi: {
+    baslik: "The Starving of the Besieged City",
+    metin:
+      "Word comes that civilians behind the walls of the city you're besieging are dying of starvation. Whether a food caravan is allowed through under a truce flag is your call to make.",
+    secenekler: [
+      {
+        metin: "Let the caravan through.",
+        basariliSonuc: {
+          mesaj:
+            "The civilians got a little relief; your commander is far from pleased the siege will drag on.",
+          detay: "This time the humanity in you outweighed military calculation.",
+        },
+        basarisizSonuc: {
+          mesaj:
+            "Enemy soldiers had been hidden inside the caravan you allowed through; they attacked your outpost.",
+          detay: "Your good will turned into a trap; still, you have no regrets.",
+        },
+      },
+      {
+        metin: "Refuse it, count on hunger to hasten surrender.",
+        basariliSonuc: {
+          mesaj:
+            "The city surrendered within days; but the civilian deaths were talked about in the barracks for a long time.",
+          detay: "Victory came, but it didn't come clean.",
+        },
+        basarisizSonuc: {
+          mesaj: "The city still didn't surrender; more people simply died for nothing.",
+          detay: "This time cruelty didn't even bring a military gain.",
+        },
+      },
+    ],
+  },
+
+  oc_asker_haksiz_infaz_emri: {
+    baslik: "A Questionable Execution Order",
+    metin:
+      "The commander wants you to carry out the execution of a young soldier caught deserting. But the look in the man's eyes makes you think he was picked as a scapegoat, innocent.",
+    secenekler: [
+      {
+        metin: "Carry out the order without question.",
+        basariliSonuc: {
+          mesaj: "You carried out the order; the commander was satisfied, the unit watched in silence.",
+          detay: "You kept your discipline, but that morning's memory will never leave you.",
+        },
+        basarisizSonuc: {
+          mesaj: "Your hand shook, it took too long; everyone watching waited in horror.",
+          detay: "Some orders, even carried out, hollow a person out from within.",
+        },
+      },
+      {
+        metin: "Delay the execution, investigate the evidence.",
+        basariliSonuc: {
+          mesaj: "Your investigation found the real deserter; the young soldier was cleared at the last moment.",
+          detay:
+            "You paid for defying the order with the commander's wrath, but a life was saved.",
+        },
+        basarisizSonuc: {
+          mesaj:
+            "No evidence was found; you were harshly punished for the delay, and the execution took place after all.",
+          detay: "You tried to do right and still couldn't stop it; the two together hurt all the more.",
+        },
+      },
+    ],
+  },
+
+  oc_asker_yarali_yoldas_tasima: {
+    baslik: "During the Retreat",
+    metin:
+      "As the routed unit scatters, a badly wounded comrade drags at you; if you carry him your own chance of escape drops.",
+    secenekler: [
+      {
+        metin: "Take him on your back, flee together.",
+        basariliSonuc: {
+          mesaj:
+            "You carried him to safety on your back; your breath is ragged, but he's alive.",
+          detay: "Some burdens are heavy, but worth carrying.",
+        },
+        basarisizSonuc: {
+          mesaj:
+            "You were both caught by enemy cavalry; you barely survived, badly wounded.",
+          detay: "Your sacrifice brought you down too, but you never gave up on him.",
+        },
+      },
+      {
+        metin: "Leave him, save your own life.",
+        basariliSonuc: {
+          mesaj:
+            "You fled fast and reached safety; the scream you left behind still rings in your ears.",
+          detay: "You survived, but you'll never forget this night.",
+        },
+        basarisizSonuc: {
+          mesaj: "Even fleeing didn't save you from the enemy; you lost your comrade and got wounded besides.",
+          detay: "This time your selfishness brought you no gain either.",
+        },
+      },
+    ],
+  },
+
+  oc_asker_madalya_yalani: {
+    baslik: "The Wrong Hero",
+    metin:
+      "You've been nominated for a medal for the courage you showed in battle, but another private performed the real act of heroism unnoticed. If you stay silent, the medal is yours.",
+    secenekler: [
+      {
+        metin: "Stay silent, accept the medal.",
+        basariliSonuc: {
+          mesaj:
+            "You pinned the medal to your chest; applause embraced you while the real hero watched silently from the crowd.",
+          detay: "You gained fame, but you know it isn't yours.",
+        },
+        basarisizSonuc: {
+          mesaj: "The real hero came forward; your deceit was exposed in front of the whole unit.",
+          detay: "Losing a fame you never earned hurt far more than never having it.",
+        },
+      },
+      {
+        metin: "Tell the truth, direct the medal to its rightful owner.",
+        basariliSonuc: {
+          mesaj: "You told the truth; the private got the medal and never forgot your gratitude.",
+          detay: "The fame you lost was small next to the peace of your conscience.",
+        },
+        basarisizSonuc: {
+          mesaj: "Telling the truth was read as 'a display of false modesty.'",
+          detay: "Sometimes even honesty can be misread.",
+        },
+      },
+    ],
+  },
 };

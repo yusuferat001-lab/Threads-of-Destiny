@@ -6572,17 +6572,23 @@ button.ikincil {
     display: none;
   }
 
-  /* Ölüm ekranı mobil sıralaması (kullanıcı isteği): ölüm metni → skor/hikaye
-     sekme çifti → hayat amaçların → geçmiş yıllar servetin (grafik) → en
-     sonda bu hayatın kazanımları → kayıt durumu → butonlar. Masaüstünde bu
-     kurallar devreye girmez, DOM sırası (ve dolayısıyla görünüm) aynı kalır. */
-  .ekran-olum > .olum-ust-blok { order: 1; }
-  .ekran-olum > .olum-skor-hikaye-blok { order: 2; }
-  .ekran-olum > .amac-paneli-olum { order: 3; }
-  .ekran-olum > .gecmis-grafik { order: 4; }
-  .ekran-olum > .olum-yeni-basarimlar { order: 5; }
-  .ekran-olum > .olum-kayit-blok { order: 6; }
-  .ekran-olum > .olum-butonlari { order: 7; }
+  /* BUG (found in audit, removed as dead code): a previous "mobile ölüm ekranı
+     sıralaması" rule set here used `.ekran-olum > .olum-ust-blok` /
+     `.olum-skor-hikaye-blok` / `.amac-paneli-olum` / `.gecmis-grafik` /
+     `.olum-kayit-blok` / `.olum-butonlari` with `order:N`, but none of those
+     class names are direct children of `.ekran-olum` in the actual JSX (the
+     death screen uses `.olum-sutun-kimlik`/`.olum-sutun-skor`/
+     `.olum-sutun-hikaye` nested two levels deep inside `.tam-govde-3col-olum`)
+     — the selectors never matched. Even `.olum-yeni-basarimlar`, which *is* a
+     direct child, got no visible effect because `.ekran-tam-sayfa{display:block}`
+     on mobile (a few lines above) turns off flex, so `order` is a no-op anyway.
+     Net effect: mobile has always silently fallen back to plain DOM order
+     (ölüm metni → kimlik/özet/kaydet/butonlar → skor kırılımı/amaçlar →
+     grafik/hayat hikayesi → kazanımlar) instead of the intended order
+     described in commit 77c0f11's message. Restoring the intended order needs
+     an actual JSX restructure (wrap the death-screen sections in one real
+     flex container with matching class names) — left for a human decision,
+     not applied here. */
 
   .merkez-sahne > .amac-serit {
     top: 0.25rem;

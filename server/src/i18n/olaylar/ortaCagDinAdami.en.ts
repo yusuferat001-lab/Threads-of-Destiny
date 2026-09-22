@@ -497,4 +497,244 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
       },
     ],
   },
+
+  oc_din_sapkin_sigintisi: {
+    baslik: "The Fugitive Accused of Heresy",
+    metin:
+      "A man knocks on your door at midnight; he's wanted for views that defy official doctrine, and he's asking you for sanctuary. Sheltering him puts you in danger too.",
+    secenekler: [
+      {
+        metin: "Shelter him in secret, help him reach safety.",
+        basariliSonuc: {
+          mesaj: "You quietly delivered the man to a distant congregation; no one found a trace.",
+          detay: "You'll never be able to tell anyone of this courage, but you know it.",
+        },
+        basarisizSonuc: {
+          mesaj: "What you hid came to light; you too were questioned for complicity.",
+          detay: "Your good will placed you among the suspects as well.",
+        },
+      },
+      {
+        metin: "Hand him over, follow the rules.",
+        basariliSonuc: {
+          mesaj: "The authorities were satisfied; the man was taken away.",
+          detay: "You followed the rules; you can't forget the look in his eyes.",
+        },
+        basarisizSonuc: {
+          mesaj: "The man you handed over escaped along the way; you angered both the authorities and your own conscience.",
+          detay: "You neither applied the rule correctly nor eased your conscience.",
+        },
+      },
+    ],
+  },
+
+  oc_din_yazma_atolyesi: {
+    baslik: "The Scriptorium",
+    metin:
+      "You discovered a gifted scribe at the house of worship; producing an illuminated copy of an ancient sacred text could bring the congregation great fame, but it demands months of labor and money for materials.",
+    secenekler: [
+      {
+        metin: "Set aside resources for the project, support the scribe.",
+        basariliSonuc: {
+          mesaj: "The work was completed; its fame reached distant cities.",
+          detay: "The scribe's patience and your resources gave birth to a lasting work.",
+        },
+        basarisizSonuc: {
+          mesaj: "The work was left unfinished; the scribe fell ill and had to give it up.",
+          detay: "The labor and money spent remained on an incomplete page.",
+        },
+      },
+      {
+        metin: "Direct the resources to daily needs, refuse the project.",
+        basariliSonuc: {
+          mesaj: "Daily needs were met; the work was never made.",
+          detay: "You fulfilled your duty, but you chased no opportunity.",
+        },
+        basarisizSonuc: {
+          mesaj: "The scribe went to another monastery and earned fame there instead.",
+          detay: "It's hard to watch a chance you passed up shine in someone else's hands.",
+        },
+      },
+    ],
+  },
+
+  oc_din_komsu_manastir_toprak_davasi: {
+    baslik: "The Land Dispute",
+    metin:
+      "The neighboring monastery claims that a field your congregation has long worked actually belongs to them. The case can go to the lord's court, or you can settle it between yourselves.",
+    secenekler: [
+      {
+        metin: "Take it to court, defend your right to the end.",
+        basariliSonuc: {
+          mesaj: "The land stayed with your congregation; the court ruled in your favor.",
+          detay: "You won, but the bitterness of the case burned the bridge to the neighboring monastery.",
+        },
+        basarisizSonuc: {
+          mesaj: "The case was lost; you lost both the land and the court costs.",
+          detay: "You sought your right and were left with even less.",
+        },
+      },
+      {
+        metin: "Settle with the neighboring monastery, share the land.",
+        basariliSonuc: {
+          mesaj: "Peace was reached between the two monasteries; a shared-use agreement was made.",
+          detay: "A small sacrifice averted a long feud.",
+        },
+        basarisizSonuc: {
+          mesaj: "The agreement fell apart; the neighboring monastery broke its word and took most of the land.",
+          detay: "Your good will went unrewarded.",
+        },
+      },
+    ],
+  },
+
+  oc_din_ac_koylu_ondaligi: {
+    baslik: "The Starving Peasant's Tithe",
+    metin:
+      "In this famine year the peasants have no means to pay their tithe. The higher authorities want collection to continue uninterrupted; you feel as if you'd be taking the peasants' last sack of wheat.",
+    secenekler: [
+      {
+        metin: "Collect the tithe in full.",
+        basariliSonuc: {
+          mesaj: "The taxes were collected in full; the higher authorities are pleased, but the peasants curse your name.",
+          detay: "The weight of the purse in your pocket does not erase the despair in their eyes.",
+        },
+        basarisizSonuc: {
+          mesaj: "During collection one family lost even its last food; your name turned bad in the village.",
+          detay: "You carried out the order and left a family to starve.",
+        },
+      },
+      {
+        metin: "Forgive the tithe this year, answer to the higher authorities yourself.",
+        basariliSonuc: {
+          mesaj: "The peasants never forgot you; the higher authorities were displeased but stayed silent.",
+          detay: "You gave up authority, not your own pocket — and you believe it was right.",
+        },
+        basarisizSonuc: {
+          mesaj: "The higher authorities threatened to remove you for 'tax evasion'.",
+          detay: "Mercy had a price; you paid it, not the peasants.",
+        },
+      },
+    ],
+  },
+
+  oc_din_veba_son_ayin_yuku: {
+    baslik: "The Burden of Last Rites",
+    metin:
+      "The plague is knocking on doors one by one; keeping up with last rites for the dying grows more impossible by the day. You may have to refuse some calls that come in the dead of night.",
+    secenekler: [
+      {
+        metin: "Answer every call, spare yourself nothing.",
+        basariliSonuc: {
+          mesaj: "You made it to everyone in time; the congregation remembers you as a saint.",
+          detay: "Your body is spent, but you left no one alone.",
+        },
+        basarisizSonuc: {
+          mesaj: "You wore yourself out; going door to door, the disease caught you too.",
+          detay: "Trying to save everyone, you forgot yourself.",
+        },
+      },
+      {
+        metin: "Prioritize, preserve your strength.",
+        basariliSonuc: {
+          mesaj: "You left some people alone, but by protecting yourself you could keep serving.",
+          detay: "You survived so you could reach more people — that's what you tell yourself.",
+        },
+        basarisizSonuc: {
+          mesaj: "Your priorities proved wrong; one family never forgave you.",
+          detay: "The calculation you made cost someone their final moments spent alone.",
+        },
+      },
+    ],
+  },
+
+  oc_din_ofkeli_kalabalik: {
+    baslik: "The Angry Mob",
+    metin:
+      "Accusations over the famine and the plague have turned an angry mob against a small minority community in the city. Some families want to take shelter at your house of worship; letting them in could make you a target of the mob too.",
+    secenekler: [
+      {
+        metin: "Open your door, protect them.",
+        basariliSonuc: {
+          mesaj: "The families stayed safe; this courage is still told of years later.",
+          detay: "The night you opened your door, you thought not of who was who, but of who was human.",
+        },
+        basarisizSonuc: {
+          mesaj: "The mob broke down the door of the house of worship too; you took a beating as well.",
+          detay: "You did the right thing and paid for it with your own body.",
+        },
+      },
+      {
+        metin: "Shut your door, choose not to get involved.",
+        basariliSonuc: {
+          mesaj: "You stayed silent; the mob's anger found another outlet elsewhere.",
+          detay: "You're safe, but you still hear the screams of that night.",
+        },
+        basarisizSonuc: {
+          mesaj: "You carried the price of your silence in your conscience for a long time.",
+          detay: "Not getting involved is itself a choice sometimes, the heaviest kind.",
+        },
+      },
+    ],
+  },
+
+  oc_din_aforoz_emri: {
+    baslik: "The Order of Excommunication",
+    metin:
+      "The higher authorities order you to excommunicate an elderly congregant who has long been faithful to the doctrine — solely because he fell into a dispute with a noble. There's no evidence, only politics.",
+    secenekler: [
+      {
+        metin: "Carry out the order, excommunicate the man.",
+        basariliSonuc: {
+          mesaj: "The order was carried out; the higher authorities were pleased.",
+          detay: "Watching the man's collapse before the congregation, you knew you hadn't done right.",
+        },
+        basarisizSonuc: {
+          mesaj: "The injustice didn't escape the congregation's notice; their trust in you was shaken.",
+          detay: "You carried out the order and still satisfied no one.",
+        },
+      },
+      {
+        metin: "Refuse the order, defend the man.",
+        basariliSonuc: {
+          mesaj: "The higher authorities backed down; the man was cleared.",
+          detay: "Some victories really are worth the risk you took.",
+        },
+        basarisizSonuc: {
+          mesaj: "The higher authorities began questioning you too; your own position is now at risk.",
+          detay: "You defended the truth, and now you're the one in trouble.",
+        },
+      },
+    ],
+  },
+
+  oc_din_soylu_itirafi_gayrimesru_varis: {
+    baslik: "The Noble's Last Secret",
+    metin:
+      "A dying lord, while confessing his sins, admits he has an illegitimate son and that the inheritance will be stolen from the true heir; he asks you to seal this secret away, or to see that it reaches the true heir.",
+    secenekler: [
+      {
+        metin: "Seal the secret, tell no one.",
+        basariliSonuc: {
+          mesaj: "You stayed silent; the official heir took the inheritance, and the family made a grateful donation.",
+          detay: "Every time you count that donation, you remember where it came from.",
+        },
+        basarisizSonuc: {
+          mesaj: "The truth came out another way; once your silence was known, you lost trust.",
+          detay: "The secret you kept burst open, and pulled you in with it.",
+        },
+      },
+      {
+        metin: "Find the true heir, see that it reaches him.",
+        basariliSonuc: {
+          mesaj: "The true heir was found; justice — slow as it was — found its way.",
+          detay: "Doing the right thing was worth the travel costs and the sleepless nights.",
+        },
+        basarisizSonuc: {
+          mesaj: "Your search caught the noble family's attention; they accused you of 'stirring up trouble'.",
+          detay: "Searching for justice, you found yourself in the middle of a dispute.",
+        },
+      },
+    ],
+  },
 };

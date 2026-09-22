@@ -74,6 +74,17 @@ describe("gecikmiş takip havuzu — içerik", () => {
     const idler = OLAY_GECIKMIS_TAKIP.map((o) => o.id);
     expect(new Set(idler).size).toBe(idler.length);
   });
+
+  it("her tetikleyici seçildiğinde kendi 'çözüldü' etiketini ekler ve o etiketle bir daha uygun değildir (aynı tema iki kez tetiklenemez)", () => {
+    const tetikleyiciler = OLAY_GECIKMIS_TAKIP.filter((o) => o.gecikmisTakipOlayi);
+    for (const t of tetikleyiciler) {
+      const cozuldeEtiketi = `${t.id}_cozuldu`;
+      expect(t.yasakliEtiketler).toContain(cozuldeEtiketi);
+      for (const s of t.secenekler) {
+        expect(s.basariliSonuc.etiket_ekle).toContain(cozuldeEtiketi);
+      }
+    }
+  });
 });
 
 describe("gecikmiş takip havuzu — uçtan uca motor akışı", () => {

@@ -700,6 +700,7 @@ export function createCharacter(
     omur_hediye_sayisi: 0,
     omur_riskli_basari: 0,
     efsanevi_olum: null,
+    relik_can_kurtardi: false,
     etiketler: [...(aile.etiketler ?? []), ...yerlesim.etiketler],
     durumlar: (aile.durumlar ?? []).map((d) => ({ ...d })),
     ulke: { savasta: false, vebada: false, ekonomi: "normal", kriz: null, nufusDurumu: "normal" },
@@ -985,6 +986,10 @@ export function eskiKayitGocu(state: CharacterState): void {
   if (state.istemci_id === undefined) state.istemci_id = null;
   // "Gecikmiş takip" havuzu sonradan eklendi.
   if (!Array.isArray(state.gecikmis_takipler)) state.gecikmis_takipler = [];
+  // "Yedi Canlı" başarımının kalıcı bayrağı sonradan eklendi; eski kayıtlarda
+  // bilinmiyor sayılır (retroaktif olarak kazandırılmaz — bir sonraki relik
+  // tetiklenmesinde zaten normal yoldan set edilir).
+  if (typeof state.relik_can_kurtardi !== "boolean") state.relik_can_kurtardi = false;
 }
 
 /** Oyuncu mesleğini seçtikten sonra çağrılır: miras bonusunu ve maaşı uygular. */
@@ -1120,6 +1125,7 @@ export function checkDeath(state: CharacterState, zorunluOlum: boolean, mesaj?: 
     if (state.etiketler.includes(KORUYUCU_MUSKA_ETIKETI)) {
       etiketSil(state, [KORUYUCU_MUSKA_ETIKETI]);
       state.saglik = Math.max(state.saglik, 15);
+      state.relik_can_kurtardi = true;
       hayatOlayiEkle(state, "✨", T(state.dil, "Kutsal bir emanet sayesinde ölümden döndü"));
       return;
     }

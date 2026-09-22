@@ -4834,6 +4834,35 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
       },
     ],
   },
+  sehir_yonetim_zanaatkar_baslangic: {
+    baslik: "Beyond the Guild",
+    metin:
+      "Mastery is no longer a ceiling for you, but a start. A seat has opened on the city's craft council; a rival master is after the very same seat. If you win, you'll oversee not just your own workshop, but a part of the city's craft order.",
+    secenekler: [
+      {
+        metin: "Enter the contest, aim for the seat.",
+        basariliSonuc: {
+          mesaj: "You left the rival master behind; you now have a voice on the city's craft council.",
+          detay: "Mastery is no longer an end, but the start of a new race.",
+        },
+        basarisizSonuc: {
+          mesaj: "The rival master won this round, but the race isn't over; your name is known on the council now.",
+          detay: "Your first try failed but you're in the game now.",
+        },
+      },
+      {
+        metin: "Refuse, be content with your workshop.",
+        basariliSonuc: {
+          mesaj: "You turned the offer down; you chose to be content with your current position.",
+          detay: "Maybe another day you'll change your mind.",
+        },
+        basarisizSonuc: {
+          mesaj: "You regretted your refusal a little; the rival master took the seat without you.",
+          detay: "Some opportunities don't come again the same way.",
+        },
+      },
+    ],
+  },
   sehir_yonetim_asker_savunma_butcesi: {
     baslik: "The Defense Budget Fight",
     metin: "This year's split of the city's defense budget is up for review again; the rival general is doing all he can to enlarge his share.",
