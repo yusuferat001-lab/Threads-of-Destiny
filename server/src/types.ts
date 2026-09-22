@@ -378,6 +378,9 @@ export interface CharacterState {
   /** Bir sonraki yönetim talebinin üretilebileceği en erken yıl (yaratılışta baslangic_yili + 6). */
   yonetim_talep_sonraki_yil: number;
 
+  /** Bekleyen "gecikmiş takip" geri dönüşleri (§36-benzeri) — bkz. GecikmisTakip. Boş dizi = bekleyen yok. */
+  gecikmis_takipler: GecikmisTakip[];
+
   tur_sayisi: number;
   gecmis_olaylar: string[];
   /** Bu hayatı oluşturan cihazın (istemci_id) ÖNCEKİ hayatlarında görülen olay id'leri — yaratılışta bir kerelik doldurulur, hayat boyunca değişmez. Yalnız `olaySec`'teki tekrar-önleme penceresini (§12) genişletmek için kullanılır; "ömürde bir kez" milestone kontrolleri (§11) hâlâ yalnız `gecmis_olaylar`'a bakar, bundan etkilenmez. */
@@ -623,6 +626,29 @@ export interface SonucEtkisi {
   sehir_yonetim_artis?: number;
   /** Kilit taşı olaylar için: kariyer_puani'ni doğrudan artırır (rütbe ilerlemesini hızlandırır). */
   kariyer_puani_artis?: number;
+  /**
+   * Belirtilirse, bu seçimin bir "gecikmiş takip" (§36-benzeri yeni sistem)
+   * geri dönüşünü olacağını zamanla — 15-20 yıl sonra (gecikmisTakip.ts,
+   * `GECIKMIS_TAKIP_YIL_MIN/MAX`) bu id'deki olay zorlanan olay olarak
+   * karşına çıkar. Değer, o an için ilgili "olumlu"/"olumsuz" sonuç olayının
+   * id'sidir; hangi dal (başarılı/başarısız) hangi id'yi taşıdığı olayın
+   * kendi tanımında belirlenir. Hedef olay `gecikmisSonucOlayi:true` taşımalı
+   * (normal rastgele havuzdan dışlanır, olaySecici.ts uygunMu).
+   */
+  gecikmis_takip?: string;
+}
+
+/**
+ * Bir seçimin 15-20 yıl sonraki geri dönüşünü bekleyen kayıt (bkz.
+ * SonucEtkisi.gecikmis_takip). `senaryoUret`, `tetiklenmeYili`ye ulaşılmış en
+ * eski kaydı zorlanan olay olarak kuyruğa alır ve listeden çıkarır.
+ */
+export interface GecikmisTakip {
+  id: string;
+  /** Zorlanacak olayın id'si (gecikmisSonucOlayi:true taşıyan bir OlayTanimi). */
+  olayId: string;
+  /** Bu yıla (veya sonrasına) ulaşılınca tetiklenir. */
+  tetiklenmeYili: number;
 }
 
 /** Oyuncuya gösterilen bulanık şans aralığı; gerçek basari_sansi hep gizli kalır. */

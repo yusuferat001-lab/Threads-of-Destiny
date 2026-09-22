@@ -95,9 +95,14 @@ export function temelUygunMu(olay: OlayTanimi, state: CharacterState): boolean {
   return true;
 }
 
-/** Normal rastgele havuz için: sosyalleşme mekânı ve mülk-bağlantılı olaylar burada her zaman dışlanır — ilki sosyallesmeIcinOlaySec, ikincisi gameEngine.ts'teki mülk-olayı kaskadı tarafından zorlanan olay olarak getirilir. */
+/** Normal rastgele havuz için: sosyalleşme mekânı, mülk-bağlantılı ve gecikmiş-takip SONUÇ olayları burada her zaman dışlanır — sırasıyla sosyallesmeIcinOlaySec, gameEngine.ts'teki mülk-olayı kaskadı ve gecikmiş-takip kaskadı tarafından zorlanan olay olarak getirilirler. */
 function uygunMu(olay: OlayTanimi, state: CharacterState): boolean {
-  return temelUygunMu(olay, state) && olay.sosyallesmeYeri === undefined && olay.mulkOlayi === undefined;
+  return (
+    temelUygunMu(olay, state) &&
+    olay.sosyallesmeYeri === undefined &&
+    olay.mulkOlayi === undefined &&
+    !olay.gecikmisSonucOlayi
+  );
 }
 
 function rastgeleYasayanCocukAdi(state: CharacterState): string {

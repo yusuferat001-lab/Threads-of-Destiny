@@ -529,6 +529,14 @@ const MULK_OLAYI_PENCERE_BASLANGIC_YIL = 5;
 /** ...ve bu kadar yıl içinde (satın alımdan itibaren) en az bir olay kesin tetiklenir. */
 const MULK_OLAYI_PENCERE_BITIS_YIL = 15;
 
+/**
+ * "Gecikmiş takip" havuzu (gecikmisTakip.ts, 2026-09 sonu): bir seçimin geri
+ * dönüşü, seçimden bu kadar yıl sonra (rastgele bu aralıkta) zorlanan olay
+ * olarak sunulur — bkz. SonucEtkisi.gecikmis_takip + state.gecikmis_takipler.
+ */
+const GECIKMIS_TAKIP_YIL_MIN = 15;
+const GECIKMIS_TAKIP_YIL_MAX = 20;
+
 // Aranma yeniden dengeleme turu (4 bant: 0-25/25-50/50-75/75-100, bkz.
 // aranmaSeviyesi.ts): hapse yeni girişte, tutuklama anındaki suc_seviyesi
 // bandına göre ceza süresi doğrudan bir aralıktan rastgele seçilir — hangi
@@ -902,6 +910,22 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
         etiketEkle(oturum.state, [izlemeEtiketi]);
         etiketDegisti = true;
       }
+    }
+  }
+  // Gecikmiş takip (§36-benzeri, 2026-09 sonu): geçmişte yapılan bir seçimin
+  // 15-20 yıl sonraki geri dönüşü zamanı geldiyse (tetiklenmeYili <= yil),
+  // en eskisi zorlanan olay olarak sunulur ve kuyruktan çıkarılır. Havuz
+  // kilidi altındaysa (hapiste/yolculukta/kacak/veba_hastasi) beklemeye devam
+  // eder — bir sonraki uygun senaryoUret çağrısında tekrar denenir.
+  if (!zorlananId && !milestoneKilitli && oturum.state.gecikmis_takipler?.length > 0) {
+    const suAnkiYil = oturum.state.yil;
+    const hazirOlanlar = oturum.state.gecikmis_takipler
+      .filter((g) => g.tetiklenmeYili <= suAnkiYil)
+      .sort((a, b) => a.tetiklenmeYili - b.tetiklenmeYili);
+    if (hazirOlanlar.length > 0) {
+      const hazirOlan = hazirOlanlar[0];
+      zorlananId = hazirOlan.olayId;
+      oturum.state.gecikmis_takipler = oturum.state.gecikmis_takipler.filter((g) => g.id !== hazirOlan.id);
     }
   }
   // Her çağ×meslek kombinasyonunun kendi dallanan kariyer yolu var: 18
@@ -1759,6 +1783,18 @@ async function sonucuUygulaVeIlerlet(
     oturum.zorlananOlayId = zorunluSonrakiHavuzdanSec(etki.zorunlu_sonraki_havuzu, state.gecmis_olaylar);
   } else if (etki.zorunlu_sonraki) {
     oturum.zorlananOlayId = etki.zorunlu_sonraki;
+  }
+  // Gecikmiş takip (§36-benzeri, 2026-09 sonu): bu seçim 15-20 yıl sonrasına bir
+  // geri dönüş olayı zamanlıyorsa kuyruğa alınır — senaryoUret kaskadı zamanı
+  // gelince (tetiklenmeYili <= state.yil) bunu zorlanan olay olarak sunar.
+  if (etki.gecikmis_takip) {
+    if (!Array.isArray(state.gecikmis_takipler)) state.gecikmis_takipler = [];
+    const gecikmeYil = GECIKMIS_TAKIP_YIL_MIN + Math.floor(Math.random() * (GECIKMIS_TAKIP_YIL_MAX - GECIKMIS_TAKIP_YIL_MIN + 1));
+    state.gecikmis_takipler.push({
+      id: randomUUID(),
+      olayId: etki.gecikmis_takip,
+      tetiklenmeYili: state.yil + gecikmeYil,
+    });
   }
 
   let sonucAnlatimi = sonucAnlatimiUret(state, etki, basarili);

@@ -134,6 +134,20 @@ export interface OlayTanimi {
    * kaskadı tarafından zorlanan olay olarak sunulur.
    */
   mulkOlayi?: MulkTuru;
+  /**
+   * true ise bu olay gecikmisTakip.ts havuzunun bir TETİKLEYİCİ olayıdır — normal
+   * rastgele havuzda çıkabilir (dışlanmaz), yalnız salt iç kategorizasyon/test
+   * amaçlıdır. Seçeneklerinden biri (ya da her ikisi) `SonucEtkisi.gecikmis_takip`
+   * ile 15-20 yıl sonrasına bir geri dönüş olayı zamanlar.
+   */
+  gecikmisTakipOlayi?: boolean;
+  /**
+   * true ise bu olay bir "gecikmiş takip" GERİ DÖNÜŞ (sonuç) olayıdır: normal
+   * rastgele havuzdan TAMAMEN dışlanır (bkz. olaySecici.ts uygunMu, sosyallesmeYeri/
+   * mulkOlayi ile aynı desen) — yalnız `state.gecikmis_takipler`de zamanı gelmiş bir
+   * kayıt varken, `senaryoUret`'teki kaskad tarafından zorlanan olay olarak sunulur.
+   */
+  gecikmisSonucOlayi?: boolean;
   agirlik?: number;
   sureYilMin?: number;
   sureYilMax?: number;
