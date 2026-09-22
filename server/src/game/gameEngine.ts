@@ -115,6 +115,7 @@ import { OLAY_AILE } from "../data/olaylar/aile";
 import { OLAY_EVLILIK_AILE } from "../data/olaylar/evlilikVeAile";
 import { OLAY_KOMIK_GARIP } from "../data/olaylar/komikGaripOlaylar";
 import { OLAY_KOMIK_OLUM } from "../data/olaylar/komikOlumler";
+import { OLAY_GECIKMIS_TAKIP } from "../data/olaylar/gecikmisTakip";
 import {
   SOSYALLESME_YERLERI,
   SosyallesmeYeri,
@@ -428,7 +429,28 @@ const KOMIK_OLUM_HAVUZ_KONTROL_NOKTALARI: { yas: number; hedef: number }[] = [
   { yas: 64, hedef: 2 },
 ];
 
-/** Meslekten bağımsız standalone havuz garantileri — sabit liste, çağrı başına yeniden oluşturulmaz. */
+/**
+ * Gecikmiş takip TETİKLEYİCİ garantisi (2026-09 sonu, kullanıcı isteği): 24
+ * yaşına kadar en az 1, 37 yaşına kadar en az 2 "gecikmiş takip" tetikleyici
+ * olayı (gecikmisTakip.ts) görülmüş olmalı — aksi halde bu havuz hiç düşük
+ * ağırlıklı normal havuzdan çıkmadan bir ömür geçebilirdi. Yalnız
+ * `gecikmisTakipOlayi:true` (tetikleyici) olaylar dahil edilir — sonuç
+ * olayları (`gecikmisSonucOlayi:true`) BURADAN zorlanmaz, onlar yalnız
+ * gecikmiş-takip kaskadıyla (state.gecikmis_takipler) gelir.
+ */
+const GECIKMIS_TAKIP_TETIKLEYICI_KONTROL_NOKTALARI: { yas: number; hedef: number }[] = [
+  { yas: 24, hedef: 1 },
+  { yas: 37, hedef: 2 },
+];
+
+/**
+ * Meslekten bağımsız standalone havuz garantileri — sabit liste, çağrı başına
+ * yeniden oluşturulmaz. Gecikmiş takip tetikleyici havuzu bilerek EN SONA
+ * eklendi: aynı yaşta eşit derecede geride kalan (gerideKalmaOrani eşit)
+ * başka bir havuzla karşılaşırsa `standaloneHavuzDurumu`'nun sıralı taraması
+ * (strict `>`) ilk bulduğunu korur — mevcut testlerin varsaydığı genel.ts/
+ * meslek-standalone önceliği bozulmasın diye.
+ */
 const STANDALONE_HAVUZ_GARANTILERI: StandaloneHavuzTanimi[] = [
   { havuz: OLAY_GENEL, kontrolNoktalari: GENEL_HAVUZ_KONTROL_NOKTALARI },
   { havuz: OLAY_ILISKILER, kontrolNoktalari: ILISKILER_HAVUZ_KONTROL_NOKTALARI },
@@ -436,6 +458,10 @@ const STANDALONE_HAVUZ_GARANTILERI: StandaloneHavuzTanimi[] = [
   { havuz: OLAY_EVLILIK_AILE, kontrolNoktalari: EVLILIK_AILE_HAVUZ_KONTROL_NOKTALARI },
   { havuz: OLAY_KOMIK_GARIP, kontrolNoktalari: KOMIK_GARIP_HAVUZ_KONTROL_NOKTALARI },
   { havuz: OLAY_KOMIK_OLUM, kontrolNoktalari: KOMIK_OLUM_HAVUZ_KONTROL_NOKTALARI },
+  {
+    havuz: OLAY_GECIKMIS_TAKIP.filter((o) => o.gecikmisTakipOlayi),
+    kontrolNoktalari: GECIKMIS_TAKIP_TETIKLEYICI_KONTROL_NOKTALARI,
+  },
 ];
 
 /**
@@ -534,6 +560,14 @@ const MULK_OLAYI_IHTIMALI = 0.12;
 const MULK_OLAYI_PENCERE_BASLANGIC_YIL = 5;
 /** ...ve bu kadar yıl içinde (satın alımdan itibaren) en az bir olay kesin tetiklenir. */
 const MULK_OLAYI_PENCERE_BITIS_YIL = 15;
+
+/**
+ * "Gecikmiş takip" havuzu (gecikmisTakip.ts, 2026-09 sonu): bir seçimin geri
+ * dönüşü, seçimden bu kadar yıl sonra (rastgele bu aralıkta) zorlanan olay
+ * olarak sunulur — bkz. SonucEtkisi.gecikmis_takip + state.gecikmis_takipler.
+ */
+const GECIKMIS_TAKIP_YIL_MIN = 15;
+const GECIKMIS_TAKIP_YIL_MAX = 20;
 
 // Aranma yeniden dengeleme turu (4 bant: 0-25/25-50/50-75/75-100, bkz.
 // aranmaSeviyesi.ts): hapse yeni girişte, tutuklama anındaki suc_seviyesi
@@ -908,6 +942,22 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
         etiketEkle(oturum.state, [izlemeEtiketi]);
         etiketDegisti = true;
       }
+    }
+  }
+  // Gecikmiş takip (§36-benzeri, 2026-09 sonu): geçmişte yapılan bir seçimin
+  // 15-20 yıl sonraki geri dönüşü zamanı geldiyse (tetiklenmeYili <= yil),
+  // en eskisi zorlanan olay olarak sunulur ve kuyruktan çıkarılır. Havuz
+  // kilidi altındaysa (hapiste/yolculukta/kacak/veba_hastasi) beklemeye devam
+  // eder — bir sonraki uygun senaryoUret çağrısında tekrar denenir.
+  if (!zorlananId && !milestoneKilitli && oturum.state.gecikmis_takipler?.length > 0) {
+    const suAnkiYil = oturum.state.yil;
+    const hazirOlanlar = oturum.state.gecikmis_takipler
+      .filter((g) => g.tetiklenmeYili <= suAnkiYil)
+      .sort((a, b) => a.tetiklenmeYili - b.tetiklenmeYili);
+    if (hazirOlanlar.length > 0) {
+      const hazirOlan = hazirOlanlar[0];
+      zorlananId = hazirOlan.olayId;
+      oturum.state.gecikmis_takipler = oturum.state.gecikmis_takipler.filter((g) => g.id !== hazirOlan.id);
     }
   }
   // Her çağ×meslek kombinasyonunun kendi dallanan kariyer yolu var: 18
@@ -1765,6 +1815,18 @@ async function sonucuUygulaVeIlerlet(
     oturum.zorlananOlayId = zorunluSonrakiHavuzdanSec(etki.zorunlu_sonraki_havuzu, state.gecmis_olaylar);
   } else if (etki.zorunlu_sonraki) {
     oturum.zorlananOlayId = etki.zorunlu_sonraki;
+  }
+  // Gecikmiş takip (§36-benzeri, 2026-09 sonu): bu seçim 15-20 yıl sonrasına bir
+  // geri dönüş olayı zamanlıyorsa kuyruğa alınır — senaryoUret kaskadı zamanı
+  // gelince (tetiklenmeYili <= state.yil) bunu zorlanan olay olarak sunar.
+  if (etki.gecikmis_takip) {
+    if (!Array.isArray(state.gecikmis_takipler)) state.gecikmis_takipler = [];
+    const gecikmeYil = GECIKMIS_TAKIP_YIL_MIN + Math.floor(Math.random() * (GECIKMIS_TAKIP_YIL_MAX - GECIKMIS_TAKIP_YIL_MIN + 1));
+    state.gecikmis_takipler.push({
+      id: randomUUID(),
+      olayId: etki.gecikmis_takip,
+      tetiklenmeYili: state.yil + gecikmeYil,
+    });
   }
 
   let sonucAnlatimi = sonucAnlatimiUret(state, etki, basarili);

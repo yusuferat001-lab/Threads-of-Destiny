@@ -729,6 +729,7 @@ export function createCharacter(
     yonetim_yakin_etkilesim: 0,
     yonetim_talep: null,
     yonetim_talep_sonraki_yil: yil + 6,
+    gecikmis_takipler: [],
     tur_sayisi: 0,
     gecmis_olaylar: [],
     istemci_gecmis_olaylar: istemciGecmisOlaylar ?? [],
@@ -982,6 +983,8 @@ export function eskiKayitGocu(state: CharacterState): void {
   // Çapraz-hayat tekrar önleme (istemci_id bazlı) sonradan eklendi.
   if (!Array.isArray(state.istemci_gecmis_olaylar)) state.istemci_gecmis_olaylar = [];
   if (state.istemci_id === undefined) state.istemci_id = null;
+  // "Gecikmiş takip" havuzu sonradan eklendi.
+  if (!Array.isArray(state.gecikmis_takipler)) state.gecikmis_takipler = [];
 }
 
 /** Oyuncu mesleğini seçtikten sonra çağrılır: miras bonusunu ve maaşı uygular. */
