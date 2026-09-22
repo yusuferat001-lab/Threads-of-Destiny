@@ -4178,6 +4178,15 @@ button.ikincil {
 }
 
 @media (max-width: 767px) {
+  .aile-blok .aile-ozet-paneli {
+    display: none;
+  }
+  .aile-gor-buton {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 767px) {
   .aile-etkilesim-satir {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
