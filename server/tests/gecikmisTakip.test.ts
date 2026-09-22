@@ -54,6 +54,22 @@ describe("gecikmiş takip havuzu — içerik", () => {
     }
   });
 
+  it("olumlu sonuç olaylarında az para alan seçenek, daha çok mutluluk+ahlak taşır (gerçek bir takas — kullanıcı isteği)", () => {
+    const olumluSonuclar = OLAY_GECIKMIS_TAKIP.filter((o) => o.gecikmisSonucOlayi && o.id.endsWith("_iyi"));
+    expect(olumluSonuclar.length).toBe(30);
+    for (const o of olumluSonuclar) {
+      expect(o.secenekler.length).toBe(2);
+      const [a, b] = o.secenekler;
+      const paraA = a.basariliSonuc.para ?? 0;
+      const paraB = b.basariliSonuc.para ?? 0;
+      if (paraA === paraB) continue; // para farkı yoksa takas kıyaslaması anlamsız (ör. oc09 fal uyarısı)
+      const [cokParaSecenegi, azParaSecenegi] = paraA > paraB ? [a, b] : [b, a];
+      const cokParaManevi = (cokParaSecenegi.basariliSonuc.mutluluk ?? 0) + (cokParaSecenegi.basariliSonuc.ahlak ?? 0);
+      const azParaManevi = (azParaSecenegi.basariliSonuc.mutluluk ?? 0) + (azParaSecenegi.basariliSonuc.ahlak ?? 0);
+      expect(azParaManevi, `${o.id}: az para alan seçenek daha çok mutluluk+ahlak vermeli`).toBeGreaterThan(cokParaManevi);
+    }
+  });
+
   it("id'ler benzersizdir", () => {
     const idler = OLAY_GECIKMIS_TAKIP.map((o) => o.id);
     expect(new Set(idler).size).toBe(idler.length);
