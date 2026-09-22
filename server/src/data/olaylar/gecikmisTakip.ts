@@ -126,8 +126,8 @@ const TEMALAR: TakipTema[] = [
       metin: "Yıllar önce pazarda para verdiğin dilenci, üstü başı temiz, at sırtında kapına geldi. Şehrin en zengin tüccarlarından biri olmuş — o gün verdiğin sadakayı asla unutmamış.",
       gorsel: "💰",
       secenekler: [
-        { metin: "Minnetini içtenlikle kabul et.", sonuc: { para: 38, mutluluk: 8, dost_puani: 5, mesaj: "Adam kesesini önüne boşalttı: \"O gün bana insan gibi davrandın, borcumu şimdi ödüyorum.\"" } },
-        { metin: "Alçakgönüllülükle küçük bir hediye kabul et.", sonuc: { para: 16, mutluluk: 4, ahlak: 2, mesaj: "Büyük bir armağanı reddedip küçük bir hediyeyle yetindin; adam bu alçakgönüllülüğe hayran kaldı." } },
+        { metin: "Minnetini içtenlikle kabul et.", sonuc: { para: 38, mutluluk: 4, dost_puani: 3, mesaj: "Adam kesesini önüne boşalttı: \"O gün bana insan gibi davrandın, borcumu şimdi ödüyorum.\"" } },
+        { metin: "Alçakgönüllülükle küçük bir hediye kabul et.", sonuc: { para: 14, mutluluk: 9, ahlak: 5, mesaj: "Büyük bir armağanı reddedip küçük bir hediyeyle yetindin; adam bu alçakgönüllülüğe hayran kaldı." } },
       ],
     },
     olumsuz: {
@@ -160,8 +160,8 @@ const TEMALAR: TakipTema[] = [
       metin: "O gün yaralarını sardığın yolcu, şimdi bölgenin saygın bir hekimi olmuş. Kapına gelip senin ve ailenin sağlığıyla bizzat ilgileneceğini söylüyor.",
       gorsel: "🧑‍⚕️",
       secenekler: [
-        { metin: "Teklifini memnuniyetle kabul et.", sonuc: { saglik: 10, mutluluk: 6, mesaj: "Hekim seni baştan aşağı muayene edip değerli ilaçlar bıraktı; kendini yıllardır olmadığın kadar dinç hissettin." } },
-        { metin: "Sadece sohbet et, tedaviyi başkasına sakla.", sonuc: { mutluluk: 4, dost_puani: 4, mesaj: "Tedaviyi daha muhtaç birine yönlendirdin; hekim bu inceliğe hayran kaldı, dostluğunuz pekişti." } },
+        { metin: "Teklifini memnuniyetle kabul et.", sonuc: { saglik: 10, mutluluk: 3, mesaj: "Hekim seni baştan aşağı muayene edip değerli ilaçlar bıraktı; kendini yıllardır olmadığın kadar dinç hissettin." } },
+        { metin: "Sadece sohbet et, tedaviyi başkasına sakla.", sonuc: { mutluluk: 8, ahlak: 3, dost_puani: 4, mesaj: "Tedaviyi daha muhtaç birine yönlendirdin; hekim bu inceliğe hayran kaldı, dostluğunuz pekişti." } },
       ],
     },
     olumsuz: {
@@ -194,8 +194,8 @@ const TEMALAR: TakipTema[] = [
       metin: "Yıllar önce nehirden kurtardığın çocuk, şimdi bölgenin saygın bir komutanı/lonca ustası olmuş. Seni unutmadığını, her ihtiyacında yanında olacağını söylüyor.",
       gorsel: "🎖️",
       secenekler: [
-        { metin: "Onun himayesini seve seve kabul et.", sonuc: { un: 6, dost_puani: 6, mutluluk: 7, mesaj: "Nüfuzlu bir dost kazandın; adın şehirde saygıyla anılmaya başladı." } },
-        { metin: "Yalnızca minnetini kabul et, fazlasını isteme.", sonuc: { mutluluk: 5, ahlak: 3, mesaj: "Fazladan bir şey istemedin, sadece o günü birlikte andınız; içinde derin bir huzur hissettin." } },
+        { metin: "Onun himayesini seve seve kabul et.", sonuc: { un: 6, dost_puani: 4, mutluluk: 4, mesaj: "Nüfuzlu bir dost kazandın; adın şehirde saygıyla anılmaya başladı." } },
+        { metin: "Yalnızca minnetini kabul et, fazlasını isteme.", sonuc: { mutluluk: 9, ahlak: 6, mesaj: "Fazladan bir şey istemedin, sadece o günü birlikte andınız; içinde derin bir huzur hissettin." } },
       ],
     },
     olumsuz: {
@@ -228,8 +228,8 @@ const TEMALAR: TakipTema[] = [
       metin: "O gün borç verdiğin genç tüccar, şimdi kervanları şehirler arası dolaşan zengin bir adam olmuş. Verdiğin borcu fazlasıyla, faiziyle geri getirdi.",
       gorsel: "🐫",
       secenekler: [
-        { metin: "Fazlasıyla geri ödemeyi kabul et.", sonuc: { para: 32, un: 3, mutluluk: 6, mesaj: "Borcunu üç katıyla geri ödedi: \"Sensiz o günü atlatamazdım.\" dedi." } },
-        { metin: "Sadece anaparayı al, gerisini reddet.", sonuc: { para: 14, ahlak: 4, dost_puani: 5, mesaj: "Fazlasını istemedin; adam bu tavrına hayran kalıp ömür boyu dostun oldu." } },
+        { metin: "Fazlasıyla geri ödemeyi kabul et.", sonuc: { para: 32, un: 2, mutluluk: 3, mesaj: "Borcunu üç katıyla geri ödedi: \"Sensiz o günü atlatamazdım.\" dedi." } },
+        { metin: "Sadece anaparayı al, gerisini reddet.", sonuc: { para: 10, ahlak: 6, dost_puani: 5, mutluluk: 4, mesaj: "Fazlasını istemedin; adam bu tavrına hayran kalıp ömür boyu dostun oldu." } },
       ],
     },
     olumsuz: {
@@ -262,8 +262,8 @@ const TEMALAR: TakipTema[] = [
       metin: "Yıllar önce himayene aldığın yetim, şimdi kendi ayakları üstünde duran, saygın bir zanaatkâr/asker olmuş. Seni ziyarete geldi, elinde özenle hazırlanmış bir hediye var.",
       gorsel: "🎁",
       secenekler: [
-        { metin: "Onu evine buyur et, birlikte kutla.", sonuc: { mutluluk: 9, dost_puani: 6, mesaj: "Onunla birlikte eski günleri andınız; evladın gibi gururlandın." } },
-        { metin: "Yardımını isteme, sadece görmekten mutlu ol.", sonuc: { mutluluk: 6, ahlak: 3, mesaj: "Hiçbir karşılık istemedin; sadece iyi biri olarak yetiştiğini görmek sana yetti." } },
+        { metin: "Onu evine buyur et, birlikte kutla.", sonuc: { mutluluk: 5, dost_puani: 4, mesaj: "Onunla birlikte eski günleri andınız; evladın gibi gururlandın." } },
+        { metin: "Yardımını isteme, sadece görmekten mutlu ol.", sonuc: { mutluluk: 10, ahlak: 6, mesaj: "Hiçbir karşılık istemedin; sadece iyi biri olarak yetiştiğini görmek sana yetti." } },
       ],
     },
     olumsuz: {
@@ -296,8 +296,8 @@ const TEMALAR: TakipTema[] = [
       metin: "O gün merhamet ettiğin çocuk, büyüyüp düşman tarafında önemli bir lider olmuş. Şimdi elçiler aracılığıyla sana bir şükran armağanı ve barış teklifi gönderiyor.",
       gorsel: "🕊️",
       secenekler: [
-        { metin: "Armağanı ve barış elini kabul et.", sonuc: { para: 24, un: 5, mutluluk: 7, mesaj: "Armağanı kabul ettin; iki taraf arasında senin sayende ufak bir barış köprüsü kuruldu." } },
-        { metin: "Yalnızca dostluk mesajını kabul et.", sonuc: { dost_puani: 6, ahlak: 3, mesaj: "Maddi armağanı geri çevirip yalnız dostluğu kabul ettin; bu tavrın her iki tarafta da saygı gördü." } },
+        { metin: "Armağanı ve barış elini kabul et.", sonuc: { para: 24, un: 3, mutluluk: 3, mesaj: "Armağanı kabul ettin; iki taraf arasında senin sayende ufak bir barış köprüsü kuruldu." } },
+        { metin: "Yalnızca dostluk mesajını kabul et.", sonuc: { dost_puani: 6, ahlak: 6, mutluluk: 5, mesaj: "Maddi armağanı geri çevirip yalnız dostluğu kabul ettin; bu tavrın her iki tarafta da saygı gördü." } },
       ],
     },
     olumsuz: {
@@ -330,8 +330,8 @@ const TEMALAR: TakipTema[] = [
       metin: "O gün doyurduğun genç keşiş, şimdi etkili bir manastırın başrahibi olmuş. Manastırın sana her zaman kapılarının açık olduğunu, ihtiyacında yardım edeceğini bildiriyor.",
       gorsel: "🙏",
       secenekler: [
-        { metin: "Manastırın himayesini kabul et.", sonuc: { ahlak: 4, un: 4, mutluluk: 6, mesaj: "Manastır seni himayesine aldı; halk arasında dürüst ve hayırsever biri olarak anılmaya başladın." } },
-        { metin: "Sadece dostluğunu kabul et, himaye isteme.", sonuc: { dost_puani: 5, mutluluk: 4, mesaj: "Himaye istemeden sadece dostluğunu kabul ettin; aranızdaki bağ yıllar boyu sürdü." } },
+        { metin: "Manastırın himayesini kabul et.", sonuc: { ahlak: 2, un: 3, mutluluk: 3, mesaj: "Manastır seni himayesine aldı; halk arasında dürüst ve hayırsever biri olarak anılmaya başladın." } },
+        { metin: "Sadece dostluğunu kabul et, himaye isteme.", sonuc: { dost_puani: 5, mutluluk: 8, ahlak: 4, mesaj: "Himaye istemeden sadece dostluğunu kabul ettin; aranızdaki bağ yıllar boyu sürdü." } },
       ],
     },
     olumsuz: {
@@ -364,8 +364,8 @@ const TEMALAR: TakipTema[] = [
       metin: "O gün bakımını üstlendiğin yabancı aslında saygın bir asilzademiş. Şimdi sana bir mektupla, sarayında seni ağırlamak istediğini bildiriyor.",
       gorsel: "📜",
       secenekler: [
-        { metin: "Daveti kabul et, sarayına git.", sonuc: { para: 26, un: 6, mutluluk: 5, mesaj: "Daveti kabul ettin; seni cömertçe ağırladı ve adını çevresinde övgüyle andı." } },
-        { metin: "Nazikçe teşekkür et, gitme.", sonuc: { dost_puani: 5, ahlak: 3, mesaj: "Gitmeyi tercih etmedin ama mektupla sıcak bir dostluk kurdunuz." } },
+        { metin: "Daveti kabul et, sarayına git.", sonuc: { para: 26, un: 4, mutluluk: 3, mesaj: "Daveti kabul ettin; seni cömertçe ağırladı ve adını çevresinde övgüyle andı." } },
+        { metin: "Nazikçe teşekkür et, gitme.", sonuc: { dost_puani: 5, ahlak: 6, mutluluk: 6, mesaj: "Gitmeyi tercih etmedin ama mektupla sıcak bir dostluk kurdunuz." } },
       ],
     },
     olumsuz: {
@@ -432,8 +432,8 @@ const TEMALAR: TakipTema[] = [
       metin: "O gün fırsat verdiğin çocuk, şimdi bölgenin en aranan ustalarından biri olmuş. Sana elleriyle yaptığı özel, değerli bir eser hediye ediyor.",
       gorsel: "🏺",
       secenekler: [
-        { metin: "Hediyeyi gururla kabul et.", sonuc: { para: 20, un: 4, mutluluk: 7, mesaj: "Hediyeyi gururla kabul ettin; eserin değeri kadar, arkasındaki hikaye de seni duygulandırdı." } },
-        { metin: "Onunla birlikte çalışmayı teklif et.", sonuc: { kariyer_puani_artis: 10, dost_puani: 5, mesaj: "Birlikte çalışma teklifini kabul etti; ortaklığınız her ikinize de itibar kazandırdı." } },
+        { metin: "Hediyeyi gururla kabul et.", sonuc: { para: 20, un: 2, mutluluk: 3, mesaj: "Hediyeyi gururla kabul ettin; eserin değeri kadar, arkasındaki hikaye de seni duygulandırdı." } },
+        { metin: "Onunla birlikte çalışmayı teklif et.", sonuc: { kariyer_puani_artis: 10, dost_puani: 5, mutluluk: 5, ahlak: 3, mesaj: "Birlikte çalışma teklifini kabul etti; ortaklığınız her ikinize de itibar kazandırdı." } },
       ],
     },
     olumsuz: {
@@ -466,8 +466,8 @@ const TEMALAR: TakipTema[] = [
       metin: "O gün serbest bıraktığın genç asker, şimdi kendi ordusunda saygın bir komutan olmuş. Seni bulup borcunu ödemek istiyor.",
       gorsel: "🛡️",
       secenekler: [
-        { metin: "Değerli bir yardım teklifini kabul et.", sonuc: { para: 22, un: 5, mesaj: "Sana değerli bir yardım sundu: \"Hayatımı bağışladın, borcumu böyle öderim.\" dedi." } },
-        { metin: "Yalnızca askeri bir istihbarat/uyarı iste.", sonuc: { saglik: 6, mutluluk: 4, mesaj: "Ondan yalnız değerli bir uyarı istedin; bu, ileride seni büyük bir tehlikeden korudu." } },
+        { metin: "Değerli bir yardım teklifini kabul et.", sonuc: { para: 22, un: 3, mutluluk: 2, mesaj: "Sana değerli bir yardım sundu: \"Hayatımı bağışladın, borcumu böyle öderim.\" dedi." } },
+        { metin: "Yalnızca askeri bir istihbarat/uyarı iste.", sonuc: { saglik: 6, mutluluk: 8, ahlak: 4, mesaj: "Ondan yalnız değerli bir uyarı istedin; bu, ileride seni büyük bir tehlikeden korudu." } },
       ],
     },
     olumsuz: {
@@ -500,8 +500,8 @@ const TEMALAR: TakipTema[] = [
       metin: "O kıtlık yılında yardım ettiğin komşu, şimdi bölgenin en zengin çiftçilerinden biri olmuş. Sana her yıl bereketinden bir pay ayırıyor.",
       gorsel: "🌻",
       secenekler: [
-        { metin: "Yıllık payı sevinerek kabul et.", sonuc: { para: 18, mutluluk: 6, dost_puani: 4, mesaj: "Yıllık payını getirdi: \"O gün bize hayat verdin, biz de seni asla unutmadık.\" dedi." } },
-        { metin: "Payı reddet, dostluğu yeter de.", sonuc: { ahlak: 3, dost_puani: 6, mesaj: "Payı reddettin, sadece dostluğunuzu istedin; bu incelik aranızdaki bağı daha da güçlendirdi." } },
+        { metin: "Yıllık payı sevinerek kabul et.", sonuc: { para: 18, mutluluk: 3, dost_puani: 2, mesaj: "Yıllık payını getirdi: \"O gün bize hayat verdin, biz de seni asla unutmadık.\" dedi." } },
+        { metin: "Payı reddet, dostluğu yeter de.", sonuc: { ahlak: 6, dost_puani: 6, mutluluk: 6, mesaj: "Payı reddettin, sadece dostluğunuzu istedin; bu incelik aranızdaki bağı daha da güçlendirdi." } },
       ],
     },
     olumsuz: {
@@ -534,8 +534,8 @@ const TEMALAR: TakipTema[] = [
       metin: "O gün kurtardığın gemici, şimdi kendi gemisinin kaptanı olmuş; zengin bir tüccar filosuyla limana demir attı. Seni bulup teşekkür ediyor.",
       gorsel: "⚓",
       secenekler: [
-        { metin: "Onunla ticarete gir.", sonuc: { para: 28, ticaret_sermaye_artis: 8, mesaj: "Onunla küçük bir ticarete girdin; kazancın hatırı sayılır bir şekilde arttı." } },
-        { metin: "Sadece dostluğunu kabul et.", sonuc: { dost_puani: 6, mutluluk: 5, mesaj: "Ticarete girmedin, sadece dostluğunu kabul ettin; limana her uğradığında seni ziyaret etti." } },
+        { metin: "Onunla ticarete gir.", sonuc: { para: 28, ticaret_sermaye_artis: 8, mutluluk: 2, mesaj: "Onunla küçük bir ticarete girdin; kazancın hatırı sayılır bir şekilde arttı." } },
+        { metin: "Sadece dostluğunu kabul et.", sonuc: { dost_puani: 6, mutluluk: 9, ahlak: 4, mesaj: "Ticarete girmedin, sadece dostluğunu kabul ettin; limana her uğradığında seni ziyaret etti." } },
       ],
     },
     olumsuz: {
@@ -568,8 +568,8 @@ const TEMALAR: TakipTema[] = [
       metin: "O gün çeyizine yardım ettiğin kız, şimdi saygın ve zengin bir aileye gelin gitmiş. Kayınpederi, sana bir şükran ziyareti için geldi.",
       gorsel: "👰",
       secenekler: [
-        { metin: "Ziyaretini ve hediyesini kabul et.", sonuc: { para: 20, un: 4, mutluluk: 5, mesaj: "Kayınpeder değerli bir hediyeyle geldi: \"Kızımıza gösterdiğin iyiliği hiç unutmadık.\" dedi." } },
-        { metin: "Sadece iyi dileklerini kabul et.", sonuc: { ahlak: 3, dost_puani: 4, mesaj: "Hediyeyi kabul etmedin, sadece dostane ziyaretlerini kabul ettin; aile seni hep hatırladı." } },
+        { metin: "Ziyaretini ve hediyesini kabul et.", sonuc: { para: 20, un: 2, mutluluk: 2, mesaj: "Kayınpeder değerli bir hediyeyle geldi: \"Kızımıza gösterdiğin iyiliği hiç unutmadık.\" dedi." } },
+        { metin: "Sadece iyi dileklerini kabul et.", sonuc: { ahlak: 6, dost_puani: 5, mutluluk: 6, mesaj: "Hediyeyi kabul etmedin, sadece dostane ziyaretlerini kabul ettin; aile seni hep hatırladı." } },
       ],
     },
     olumsuz: {
@@ -602,8 +602,8 @@ const TEMALAR: TakipTema[] = [
       metin: "O gece gizlice yardım ettiğin kaçak, aslında haksız yere suçlanmış biriymiş. Şimdi adı temizlenmiş, saygın bir konuma gelmiş ve sana borcunu ödemek istiyor.",
       gorsel: "🕯️",
       secenekler: [
-        { metin: "Yardımını kabul et.", sonuc: { para: 24, kariyer_puani_artis: 8, mesaj: "Nüfuzunu kullanarak sana önemli bir kapı araladı; \"O gece bana inandın, ben de sana inanıyorum.\" dedi." } },
-        { metin: "Sadece dostluğunu kabul et.", sonuc: { dost_puani: 6, mutluluk: 5, mesaj: "Maddi bir şey istemedin; yılların ötesinden gelen bu dostluk seni derinden duygulandırdı." } },
+        { metin: "Yardımını kabul et.", sonuc: { para: 24, kariyer_puani_artis: 8, mutluluk: 2, mesaj: "Nüfuzunu kullanarak sana önemli bir kapı araladı; \"O gece bana inandın, ben de sana inanıyorum.\" dedi." } },
+        { metin: "Sadece dostluğunu kabul et.", sonuc: { dost_puani: 6, mutluluk: 9, ahlak: 5, mesaj: "Maddi bir şey istemedin; yılların ötesinden gelen bu dostluk seni derinden duygulandırdı." } },
       ],
     },
     olumsuz: {
@@ -640,8 +640,8 @@ const TEMALAR: TakipTema[] = [
       metin: "O gün küçük bir iş verdiğin çocuk, şimdi kendi fabrikasının sahibi olmuş. Seni o günkü iyiliğin için bulmaya gelmiş.",
       gorsel: "🏭",
       secenekler: [
-        { metin: "Onunla iş ortaklığı kur.", sonuc: { para: 30, kariyer_puani_artis: 8, mesaj: "Onunla küçük bir iş ortaklığı kurdun; kazancınız ikinizi de memnun etti." } },
-        { metin: "Ortaklık isteme, sadece tebrik et.", sonuc: { mutluluk: 6, dost_puani: 5, mesaj: "Hiçbir çıkar gözetmeden sadece tebrik ettin; onun gözünde daha da değerli oldun." } },
+        { metin: "Onunla iş ortaklığı kur.", sonuc: { para: 30, kariyer_puani_artis: 8, mutluluk: 2, mesaj: "Onunla küçük bir iş ortaklığı kurdun; kazancınız ikinizi de memnun etti." } },
+        { metin: "Ortaklık isteme, sadece tebrik et.", sonuc: { mutluluk: 10, dost_puani: 5, ahlak: 4, mesaj: "Hiçbir çıkar gözetmeden sadece tebrik ettin; onun gözünde daha da değerli oldun." } },
       ],
     },
     olumsuz: {
@@ -674,8 +674,8 @@ const TEMALAR: TakipTema[] = [
       metin: "O gün destek olduğun genç işçi, şimdi güçlü bir sendikanın lideri olmuş. Seni bulup, ihtiyacın olduğunda arkanda duracağını söylüyor.",
       gorsel: "🤝",
       secenekler: [
-        { metin: "İşçi hattından destek al.", sonuc: { kariyer_puani_artis: 10, un: 4, mesaj: "Sendikadan aldığın destek, işlerinde beklenmedik kapılar açtı." } },
-        { metin: "Sadece dostluğunu kabul et.", sonuc: { dost_puani: 6, mutluluk: 5, mesaj: "Herhangi bir çıkar gözetmeden dostluğunu kabul ettin; yıllar sonra bile seni unutmadı." } },
+        { metin: "İşçi hattından destek al.", sonuc: { kariyer_puani_artis: 10, un: 2, mutluluk: 2, mesaj: "Sendikadan aldığın destek, işlerinde beklenmedik kapılar açtı." } },
+        { metin: "Sadece dostluğunu kabul et.", sonuc: { dost_puani: 6, mutluluk: 9, ahlak: 4, mesaj: "Herhangi bir çıkar gözetmeden dostluğunu kabul ettin; yıllar sonra bile seni unutmadı." } },
       ],
     },
     olumsuz: {
@@ -708,8 +708,8 @@ const TEMALAR: TakipTema[] = [
       metin: "O gün sermaye verdiğin genç mucit, icadıyla zengin bir sanayici olmuş. Şimdi seni ortağı yapmak istiyor.",
       gorsel: "🏗️",
       secenekler: [
-        { metin: "Ortaklığı kabul et.", sonuc: { para: 34, ticaret_sermaye_artis: 10, mesaj: "Ortaklığı kabul ettin; sanayisinin bir parçası olarak kazancın kayda değer arttı." } },
-        { metin: "Yalnız yatırımının karşılığını al.", sonuc: { para: 20, mutluluk: 5, mesaj: "Ortaklığa girmedin, sadece yatırımının karşılığını fazlasıyla aldın." } },
+        { metin: "Ortaklığı kabul et.", sonuc: { para: 34, ticaret_sermaye_artis: 10, mutluluk: 2, mesaj: "Ortaklığı kabul ettin; sanayisinin bir parçası olarak kazancın kayda değer arttı." } },
+        { metin: "Yalnız yatırımının karşılığını al.", sonuc: { para: 14, mutluluk: 9, ahlak: 4, mesaj: "Ortaklığa girmedin, sadece yatırımının karşılığını fazlasıyla aldın." } },
       ],
     },
     olumsuz: {
@@ -742,8 +742,8 @@ const TEMALAR: TakipTema[] = [
       metin: "O gün bağışının kurtardığı yetimhanede büyüyen bir kız, şimdi şehrin saygın bir doktoru/öğretmeni olmuş. Seni ziyarete geldi.",
       gorsel: "🩺",
       secenekler: [
-        { metin: "Onun tıbbi/eğitim yardımını kabul et.", sonuc: { saglik: 8, mutluluk: 6, mesaj: "Sana ücretsiz bakım/danışmanlık sundu: \"O yetimhane olmasaydı bugün burada olamazdım.\" dedi." } },
-        { metin: "Sadece gurur duy, yardım isteme.", sonuc: { mutluluk: 6, ahlak: 3, mesaj: "Hiçbir şey istemedin; sadece iyi biri olduğunu görmek sana yetti." } },
+        { metin: "Onun tıbbi/eğitim yardımını kabul et.", sonuc: { saglik: 8, mutluluk: 3, mesaj: "Sana ücretsiz bakım/danışmanlık sundu: \"O yetimhane olmasaydı bugün burada olamazdım.\" dedi." } },
+        { metin: "Sadece gurur duy, yardım isteme.", sonuc: { mutluluk: 9, ahlak: 6, mesaj: "Hiçbir şey istemedin; sadece iyi biri olduğunu görmek sana yetti." } },
       ],
     },
     olumsuz: {
@@ -776,8 +776,8 @@ const TEMALAR: TakipTema[] = [
       metin: "O gün yardım ettiğin genç gazeteci, şimdi şehrin en okunan yazarlarından biri olmuş. Yazılarında seni örnek bir vatandaş olarak övüyor.",
       gorsel: "🖋️",
       secenekler: [
-        { metin: "Övgüyü ve gelen ilgiyi kabul et.", sonuc: { un: 8, mutluluk: 6, mesaj: "Yazısı büyük ilgi gördü; adın kısa sürede olumlu anlamda konuşulur oldu." } },
-        { metin: "Mütevazı kal, ilgiyi reddet.", sonuc: { ahlak: 3, dost_puani: 5, mesaj: "İlgiyi reddedip mütevazı kaldın; bu tavrın gazetecinin gözünde seni daha da değerli kıldı." } },
+        { metin: "Övgüyü ve gelen ilgiyi kabul et.", sonuc: { un: 5, mutluluk: 3, mesaj: "Yazısı büyük ilgi gördü; adın kısa sürede olumlu anlamda konuşulur oldu." } },
+        { metin: "Mütevazı kal, ilgiyi reddet.", sonuc: { ahlak: 6, dost_puani: 5, mutluluk: 6, mesaj: "İlgiyi reddedip mütevazı kaldın; bu tavrın gazetecinin gözünde seni daha da değerli kıldı." } },
       ],
     },
     olumsuz: {
@@ -810,8 +810,8 @@ const TEMALAR: TakipTema[] = [
       metin: "O gün barındırdığın ailenin reisi, şimdi kendi işini kurmuş, iyi para kazanan bir esnaf olmuş. Sana bir minnet ziyaretine geldi.",
       gorsel: "🛍️",
       secenekler: [
-        { metin: "İşine küçük bir ortak ol.", sonuc: { para: 24, ticaret_sermaye_artis: 6, mesaj: "İşine küçük bir ortak oldun; kazancınız her iki tarafı da memnun etti." } },
-        { metin: "Sadece ziyaretini kabul et.", sonuc: { dost_puani: 6, mutluluk: 5, mesaj: "Ortaklık istemedin, sadece dostane ziyaretini kabul ettin." } },
+        { metin: "İşine küçük bir ortak ol.", sonuc: { para: 24, ticaret_sermaye_artis: 6, mutluluk: 2, mesaj: "İşine küçük bir ortak oldun; kazancınız her iki tarafı da memnun etti." } },
+        { metin: "Sadece ziyaretini kabul et.", sonuc: { dost_puani: 6, mutluluk: 9, ahlak: 4, mesaj: "Ortaklık istemedin, sadece dostane ziyaretini kabul ettin." } },
       ],
     },
     olumsuz: {
@@ -844,8 +844,8 @@ const TEMALAR: TakipTema[] = [
       metin: "O gün ilaç parasını karşıladığın işçi tamamen iyileşmiş, şimdi ustabaşı olmuş. Sana her zaman sadık kalacağını söylüyor.",
       gorsel: "🔧",
       secenekler: [
-        { metin: "Onu yakın çalışanın yap.", sonuc: { kariyer_puani_artis: 8, mutluluk: 5, mesaj: "Onu yanına aldın; sadakati ve becerisi işlerine hızla katkı sağladı." } },
-        { metin: "Sadece dostluğunu kabul et.", sonuc: { dost_puani: 6, ahlak: 2, mesaj: "İş teklif etmedin, sadece dostluğunu kabul ettin; bu bağ yıllarca sürdü." } },
+        { metin: "Onu yakın çalışanın yap.", sonuc: { kariyer_puani_artis: 8, mutluluk: 3, mesaj: "Onu yanına aldın; sadakati ve becerisi işlerine hızla katkı sağladı." } },
+        { metin: "Sadece dostluğunu kabul et.", sonuc: { dost_puani: 6, ahlak: 5, mutluluk: 6, mesaj: "İş teklif etmedin, sadece dostluğunu kabul ettin; bu bağ yıllarca sürdü." } },
       ],
     },
     olumsuz: {
@@ -878,8 +878,8 @@ const TEMALAR: TakipTema[] = [
       metin: "O gün eğitimine destek olduğun kadın, şimdi saygın bir öğretmen/yazar olmuş. Sana açık bir teşekkür mektubu ve küçük bir armağan gönderdi.",
       gorsel: "🖋️",
       secenekler: [
-        { metin: "Armağanı ve teşekkürü kabul et.", sonuc: { un: 6, mutluluk: 6, mesaj: "Mektubu çok kişi okudu; adın toplumda olumlu bir şekilde anılmaya başladı." } },
-        { metin: "Mütevazı kal, sadece gurur duy.", sonuc: { ahlak: 3, mutluluk: 4, mesaj: "İlgiyi büyütmeden mütevazı kaldın; ama içten içe büyük bir gurur duydun." } },
+        { metin: "Armağanı ve teşekkürü kabul et.", sonuc: { un: 3, mutluluk: 3, mesaj: "Mektubu çok kişi okudu; adın toplumda olumlu bir şekilde anılmaya başladı." } },
+        { metin: "Mütevazı kal, sadece gurur duy.", sonuc: { ahlak: 6, mutluluk: 8, mesaj: "İlgiyi büyütmeden mütevazı kaldın; ama içten içe büyük bir gurur duydun." } },
       ],
     },
     olumsuz: {
@@ -912,8 +912,8 @@ const TEMALAR: TakipTema[] = [
       metin: "O gün desteklediğin esnaf, işini toparlamış ve şimdi birkaç şubesi olan bir tüccar olmuş. Borcunu fazlasıyla ödemeye geldi.",
       gorsel: "🏬",
       secenekler: [
-        { metin: "Fazlasını kabul et.", sonuc: { para: 32, mutluluk: 6, mesaj: "Borcunu üç katıyla geri ödedi: \"O gün beni kurtardın.\" dedi." } },
-        { metin: "Yalnızca anaparayı al.", sonuc: { para: 14, ahlak: 3, dost_puani: 5, mesaj: "Fazlasını istemedin; bu tavrın adamın gözünde seni daha da değerli kıldı." } },
+        { metin: "Fazlasını kabul et.", sonuc: { para: 32, mutluluk: 3, mesaj: "Borcunu üç katıyla geri ödedi: \"O gün beni kurtardın.\" dedi." } },
+        { metin: "Yalnızca anaparayı al.", sonuc: { para: 10, ahlak: 6, dost_puani: 5, mutluluk: 4, mesaj: "Fazlasını istemedin; bu tavrın adamın gözünde seni daha da değerli kıldı." } },
       ],
     },
     olumsuz: {
@@ -946,8 +946,8 @@ const TEMALAR: TakipTema[] = [
       metin: "O gün iş verdiğin gazi, yıllardır sana en sadık çalışanlardan biri olmuş. Şimdi sana özel bir hizmetle karşılık vermek istiyor.",
       gorsel: "🤲",
       secenekler: [
-        { metin: "Hizmetini kabul et.", sonuc: { kariyer_puani_artis: 10, mutluluk: 5, mesaj: "Sadakati ve deneyimiyle işlerine değerli bir katkı sağladı." } },
-        { metin: "Sadece dostluğunu kabul et.", sonuc: { dost_puani: 6, ahlak: 2, mesaj: "Fazladan bir şey istemedin, sadece dostluğunu kabul ettin; bağınız yıllarca sürdü." } },
+        { metin: "Hizmetini kabul et.", sonuc: { kariyer_puani_artis: 10, mutluluk: 3, mesaj: "Sadakati ve deneyimiyle işlerine değerli bir katkı sağladı." } },
+        { metin: "Sadece dostluğunu kabul et.", sonuc: { dost_puani: 6, ahlak: 5, mutluluk: 6, mesaj: "Fazladan bir şey istemedin, sadece dostluğunu kabul ettin; bağınız yıllarca sürdü." } },
       ],
     },
     olumsuz: {
@@ -980,8 +980,8 @@ const TEMALAR: TakipTema[] = [
       metin: "O gün desteklediğin genç işçi, şimdi güvenilir ve başarılı bir ustabaşı olmuş. Yıllardır seni yukarı taşıyan sadık bir sağ kolun oldu.",
       gorsel: "🏅",
       secenekler: [
-        { metin: "Onunla birlikte işini büyüt.", sonuc: { para: 22, uretim_kapasitesi_artis: 12, mesaj: "Birlikte işi büyüttünüz; onun becerisi kazancına doğrudan yansıdı." } },
-        { metin: "Sadece güvenini takdir et.", sonuc: { mutluluk: 6, dost_puani: 5, mesaj: "Fazladan bir şey istemedin; sadece sadakatinin kıymetini bildin." } },
+        { metin: "Onunla birlikte işini büyüt.", sonuc: { para: 22, uretim_kapasitesi_artis: 12, mutluluk: 2, mesaj: "Birlikte işi büyüttünüz; onun becerisi kazancına doğrudan yansıdı." } },
+        { metin: "Sadece güvenini takdir et.", sonuc: { mutluluk: 10, dost_puani: 5, ahlak: 4, mesaj: "Fazladan bir şey istemedin; sadece sadakatinin kıymetini bildin." } },
       ],
     },
     olumsuz: {
@@ -1014,8 +1014,8 @@ const TEMALAR: TakipTema[] = [
       metin: "O gün desteklediğin mühendis, geliştirdiği makineyle büyük bir başarı kazanmış. Seni ilk yatırımcısı olarak anıp payını vermek istiyor.",
       gorsel: "⚡",
       secenekler: [
-        { metin: "Payını kabul et.", sonuc: { para: 36, ticaret_sermaye_artis: 10, mesaj: "İlk yatırımcısı olarak payını fazlasıyla aldın; kazancın hatırı sayılır arttı." } },
-        { metin: "Yalnızca yatırımının karşılığını al.", sonuc: { para: 18, mutluluk: 5, mesaj: "Fazlasını istemedin, yalnızca yatırımının karşılığını aldın." } },
+        { metin: "Payını kabul et.", sonuc: { para: 36, ticaret_sermaye_artis: 10, mutluluk: 2, mesaj: "İlk yatırımcısı olarak payını fazlasıyla aldın; kazancın hatırı sayılır arttı." } },
+        { metin: "Yalnızca yatırımının karşılığını al.", sonuc: { para: 12, mutluluk: 9, ahlak: 4, mesaj: "Fazlasını istemedin, yalnızca yatırımının karşılığını aldın." } },
       ],
     },
     olumsuz: {
@@ -1048,8 +1048,8 @@ const TEMALAR: TakipTema[] = [
       metin: "O gün okula gönderdiğin çocuk, şimdi saygın bir doktor/mühendis olmuş. Seni bulup teşekkür ediyor, sana özel bir yardımda bulunmak istiyor.",
       gorsel: "🎓",
       secenekler: [
-        { metin: "Yardımını kabul et.", sonuc: { saglik: 8, kariyer_puani_artis: 8, mesaj: "Yardımını kabul ettin; hem sağlığın hem işlerin ondan fayda gördü." } },
-        { metin: "Sadece gurur duy.", sonuc: { mutluluk: 7, ahlak: 3, mesaj: "Hiçbir karşılık istemedin; onun bugünkü halini görmek sana yetti." } },
+        { metin: "Yardımını kabul et.", sonuc: { saglik: 8, kariyer_puani_artis: 8, mutluluk: 2, mesaj: "Yardımını kabul ettin; hem sağlığın hem işlerin ondan fayda gördü." } },
+        { metin: "Sadece gurur duy.", sonuc: { mutluluk: 9, ahlak: 6, mesaj: "Hiçbir karşılık istemedin; onun bugünkü halini görmek sana yetti." } },
       ],
     },
     olumsuz: {
@@ -1082,8 +1082,8 @@ const TEMALAR: TakipTema[] = [
       metin: "O gün yardım ettiğin komşu aile, şimdi kendi işini kurmuş, toparlanmış. Sana her zaman minnettar olduklarını gösteren bir jest yapıyorlar.",
       gorsel: "🏡",
       secenekler: [
-        { metin: "Jestlerini kabul et.", sonuc: { para: 20, mutluluk: 6, mesaj: "Küçük ama anlamlı bir hediyeyle geldiler: \"O gün bize hayat verdiniz.\" dediler." } },
-        { metin: "Sadece komşuluğu sürdür.", sonuc: { dost_puani: 6, ahlak: 2, mesaj: "Hediye istemedin, sadece iyi komşuluğu sürdürdün; bu bağ yıllarca sıcak kaldı." } },
+        { metin: "Jestlerini kabul et.", sonuc: { para: 20, mutluluk: 3, mesaj: "Küçük ama anlamlı bir hediyeyle geldiler: \"O gün bize hayat verdiniz.\" dediler." } },
+        { metin: "Sadece komşuluğu sürdür.", sonuc: { dost_puani: 6, ahlak: 5, mutluluk: 6, mesaj: "Hediye istemedin, sadece iyi komşuluğu sürdürdün; bu bağ yıllarca sıcak kaldı." } },
       ],
     },
     olumsuz: {
@@ -1116,8 +1116,8 @@ const TEMALAR: TakipTema[] = [
       metin: "O gün enstrümanını kurtardığın genç müzisyen, şimdi şehrin en ünlü sanatçılarından biri olmuş. Seni özel bir konserine davet ediyor ve sahneden onurlandırıyor.",
       gorsel: "🎼",
       secenekler: [
-        { metin: "Daveti kabul et, onurlandırılmayı yaşa.", sonuc: { un: 8, mutluluk: 8, mesaj: "Konserde sahneden adını andı; salon ayakta seni alkışladı." } },
-        { metin: "Sessizce izle, öne çıkma.", sonuc: { mutluluk: 6, ahlak: 2, mesaj: "Öne çıkmadan sessizce izledin; ama içindeki gurur hiç eksilmedi." } },
+        { metin: "Daveti kabul et, onurlandırılmayı yaşa.", sonuc: { un: 5, mutluluk: 4, mesaj: "Konserde sahneden adını andı; salon ayakta seni alkışladı." } },
+        { metin: "Sessizce izle, öne çıkma.", sonuc: { mutluluk: 9, ahlak: 5, mesaj: "Öne çıkmadan sessizce izledin; ama içindeki gurur hiç eksilmedi." } },
       ],
     },
     olumsuz: {
