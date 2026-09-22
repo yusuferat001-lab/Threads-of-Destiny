@@ -116,6 +116,7 @@ import { OLAY_AILE } from "../data/olaylar/aile";
 import { OLAY_EVLILIK_AILE } from "../data/olaylar/evlilikVeAile";
 import { OLAY_KOMIK_GARIP } from "../data/olaylar/komikGaripOlaylar";
 import { OLAY_KOMIK_OLUM } from "../data/olaylar/komikOlumler";
+import { OLAY_GECIKMIS_TAKIP } from "../data/olaylar/gecikmisTakip";
 import {
   SOSYALLESME_YERLERI,
   SosyallesmeYeri,
@@ -422,7 +423,28 @@ const KOMIK_OLUM_HAVUZ_KONTROL_NOKTALARI: { yas: number; hedef: number }[] = [
   { yas: 64, hedef: 2 },
 ];
 
-/** Meslekten bağımsız standalone havuz garantileri — sabit liste, çağrı başına yeniden oluşturulmaz. */
+/**
+ * Gecikmiş takip TETİKLEYİCİ garantisi (2026-09 sonu, kullanıcı isteği): 24
+ * yaşına kadar en az 1, 37 yaşına kadar en az 2 "gecikmiş takip" tetikleyici
+ * olayı (gecikmisTakip.ts) görülmüş olmalı — aksi halde bu havuz hiç düşük
+ * ağırlıklı normal havuzdan çıkmadan bir ömür geçebilirdi. Yalnız
+ * `gecikmisTakipOlayi:true` (tetikleyici) olaylar dahil edilir — sonuç
+ * olayları (`gecikmisSonucOlayi:true`) BURADAN zorlanmaz, onlar yalnız
+ * gecikmiş-takip kaskadıyla (state.gecikmis_takipler) gelir.
+ */
+const GECIKMIS_TAKIP_TETIKLEYICI_KONTROL_NOKTALARI: { yas: number; hedef: number }[] = [
+  { yas: 24, hedef: 1 },
+  { yas: 37, hedef: 2 },
+];
+
+/**
+ * Meslekten bağımsız standalone havuz garantileri — sabit liste, çağrı başına
+ * yeniden oluşturulmaz. Gecikmiş takip tetikleyici havuzu bilerek EN SONA
+ * eklendi: aynı yaşta eşit derecede geride kalan (gerideKalmaOrani eşit)
+ * başka bir havuzla karşılaşırsa `standaloneHavuzDurumu`'nun sıralı taraması
+ * (strict `>`) ilk bulduğunu korur — mevcut testlerin varsaydığı genel.ts/
+ * meslek-standalone önceliği bozulmasın diye.
+ */
 const STANDALONE_HAVUZ_GARANTILERI: StandaloneHavuzTanimi[] = [
   { havuz: OLAY_GENEL, kontrolNoktalari: GENEL_HAVUZ_KONTROL_NOKTALARI },
   { havuz: OLAY_ILISKILER, kontrolNoktalari: ILISKILER_HAVUZ_KONTROL_NOKTALARI },
@@ -430,6 +452,10 @@ const STANDALONE_HAVUZ_GARANTILERI: StandaloneHavuzTanimi[] = [
   { havuz: OLAY_EVLILIK_AILE, kontrolNoktalari: EVLILIK_AILE_HAVUZ_KONTROL_NOKTALARI },
   { havuz: OLAY_KOMIK_GARIP, kontrolNoktalari: KOMIK_GARIP_HAVUZ_KONTROL_NOKTALARI },
   { havuz: OLAY_KOMIK_OLUM, kontrolNoktalari: KOMIK_OLUM_HAVUZ_KONTROL_NOKTALARI },
+  {
+    havuz: OLAY_GECIKMIS_TAKIP.filter((o) => o.gecikmisTakipOlayi),
+    kontrolNoktalari: GECIKMIS_TAKIP_TETIKLEYICI_KONTROL_NOKTALARI,
+  },
 ];
 
 /**

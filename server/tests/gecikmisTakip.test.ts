@@ -1,6 +1,13 @@
 import { describe, it, expect } from "vitest";
 import { OLAY_BANKASI } from "../src/data/olaylar";
 import { OLAY_GECIKMIS_TAKIP } from "../src/data/olaylar/gecikmisTakip";
+import { OLAY_GENEL } from "../src/data/olaylar/genel";
+import { OLAY_ORTACAG_TUCCAR } from "../src/data/olaylar/ortaCagTuccar";
+import { OLAY_ILISKILER } from "../src/data/olaylar/iliskiler";
+import { OLAY_AILE } from "../src/data/olaylar/aile";
+import { OLAY_EVLILIK_AILE } from "../src/data/olaylar/evlilikVeAile";
+import { OLAY_KOMIK_GARIP } from "../src/data/olaylar/komikGaripOlaylar";
+import { OLAY_KOMIK_OLUM } from "../src/data/olaylar/komikOlumler";
 import { yeniOyun, mesleğiAta, senaryoUret, stateGetir } from "../src/game/gameEngine";
 import { secimUygulaVeCoz } from "./testUtils";
 
@@ -122,5 +129,93 @@ describe("gecikmiş takip havuzu — uçtan uca motor akışı", () => {
     state.yil = baslangicYil + 17;
     const senaryo = await senaryoUret(yeni.id);
     expect(senaryo.olay_basligi).toBe("Dilenci Geri Döndü");
+  });
+
+  /**
+   * Age-jump testlerinde, gecikmiş-takip tetikleyici garantisinden (§11'e
+   * eklenen yeni kural) ÖNCE gelen milestone kaskadlarının (tarihi savaş,
+   * kariyer yolu girişi, evlilik teklifi, evcil hayvan teklifi, büyük
+   * yolculuk garantisi — hepsi bu testteki yaşlarda koşulu sağlıyor)
+   * araya girmesini engeller; her biri kendi id/etiketiyle "zaten
+   * karşılandı" sayılacak şekilde işaretlenir. Yol dalı takip garantisi
+   * (§11 kural 12) bilerek bir "yol:" etiketi ADDIRILMADAN atlanır — zaten
+   * hiç yol etiketi yoksa o kural devre dışı kalır.
+   *
+   * Gecikmiş takip tetikleyici havuzu artık AYRI bir öncelikli kural değil —
+   * "standalone havuz garantisi"nin (§11 kural 15, `STANDALONE_HAVUZ_GARANTILERI`)
+   * SON adayı olarak, diğer standalone havuzlarla (genel.ts, meslek-standalone,
+   * iliskiler/aile/evlilikAile/komikGarip/komikOlum) aynı "en geride kalan
+   * kazanır" yarışına giriyor. Bu yüzden o havuzların hedeflerini de (her
+   * birinden rastgele bir id'yi gecmis_olaylar'a yazarak) "zaten karşılandı"
+   * sayıp bizim havuzumuzun rekabetsiz kalmasını sağlıyoruz — aksi halde eşit
+   * "gerideKalmaOrani" durumunda dizide daha önce gelen (genel.ts vb.) kazanır.
+   */
+  function digerKaskadlariDevreDisiBirak(state: Awaited<ReturnType<typeof stateGetir>>) {
+    state.ulke.savasta = true; // §11 kural 1 (tarihi savaş ilanı)
+    state.gecmis_olaylar.push("oc_tuccar_yol_ilk_anlasma"); // §11 kural 2 (kariyer yolu girişi)
+    state.gecmis_olaylar.push("iliski_evlilik_teklifi"); // §11 kural 3 (evlilik teklifi garantisi)
+    state.gecmis_olaylar.push("evcilhayvan_sahiplenme_teklifi_ortacag"); // §11 kural 5 (evcil hayvan teklifi)
+    state.etiketler.push("yolculuk_tamamlandi"); // §11 kural 11 (büyük yolculuk garantisi)
+    state.gecmis_olaylar.push("gizem_ejderha_tilsimi"); // §11 kural 13 (mistik garanti, 25-45 yaş)
+    // §11 kural 15'in diğer standalone havuz adayları — hedeflerini önceden
+    // karşılanmış say ki gecikmiş-takip havuzuyla "en geride kalan" yarışına
+    // girmesinler (bkz. yukarıdaki açıklama).
+    state.gecmis_olaylar.push(OLAY_ORTACAG_TUCCAR[0].id);
+    // genel.ts hedefi 32 yaşında 2'ye çıkıyor (37 yaş testinde devrede) — iki
+    // farklı id gerekiyor, tek id yeterli olmuyor.
+    state.gecmis_olaylar.push(OLAY_GENEL[0].id, OLAY_GENEL[1].id);
+    state.gecmis_olaylar.push(OLAY_ILISKILER[0].id);
+    state.gecmis_olaylar.push(OLAY_AILE[0].id);
+    state.gecmis_olaylar.push(OLAY_EVLILIK_AILE[0].id);
+    state.gecmis_olaylar.push(OLAY_KOMIK_GARIP[0].id);
+    state.gecmis_olaylar.push(OLAY_KOMIK_OLUM[0].id);
+  }
+
+  it("tetikleyici garantisi: 24 yaşına kadar en az 1 tetikleyici olay zorlanır", async () => {
+    const yeni = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
+    await mesleğiAta(yeni.id, "Tüccar");
+    const state = await stateGetir(yeni.id);
+    digerKaskadlariDevreDisiBirak(state);
+    state.yas = 24;
+    const senaryo = await senaryoUret(yeni.id);
+    // senaryoUret henüz secimUygula çağrılmadığı için gecmis_olaylar'a
+    // yazmaz; bu yüzden dönen olayın kimliğini başlığından doğrularız.
+    const baslikSeti = new Set(
+      OLAY_GECIKMIS_TAKIP.filter((o) => o.gecikmisTakipOlayi && o.cag === "Orta Çağ").map((o) => o.baslik)
+    );
+    expect(baslikSeti.has(senaryo.olay_basligi)).toBe(true);
+  });
+
+  it("tetikleyici garantisi: 37 yaşına kadar en az 2 farklı tetikleyici olay görülmüş olur", async () => {
+    const yeni = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
+    await mesleğiAta(yeni.id, "Tüccar");
+    const state = await stateGetir(yeni.id);
+    digerKaskadlariDevreDisiBirak(state);
+    // Zaten bir tetikleyici görülmüş kabul edip (24 yaş noktası tamamlanmış),
+    // ikinci kontrol noktasının (37 yaş, hedef 2) yeni bir tetikleyici daha
+    // zorladığını doğrula.
+    state.gecmis_olaylar.push("gt_oc01_dilenci");
+    state.yas = 37;
+    const senaryo = await senaryoUret(yeni.id);
+    const ikinciTetikleyiciBaslikSeti = new Set(
+      OLAY_GECIKMIS_TAKIP.filter((o) => o.gecikmisTakipOlayi && o.cag === "Orta Çağ" && o.id !== "gt_oc01_dilenci").map(
+        (o) => o.baslik
+      )
+    );
+    expect(ikinciTetikleyiciBaslikSeti.has(senaryo.olay_basligi)).toBe(true);
+  });
+
+  it("hedefe zaten ulaşılmışsa tetikleyici garantisi zorlanmaz", async () => {
+    const yeni = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
+    await mesleğiAta(yeni.id, "Tüccar");
+    const state = await stateGetir(yeni.id);
+    digerKaskadlariDevreDisiBirak(state);
+    state.yas = 24;
+    state.gecmis_olaylar.push("gt_oc01_dilenci"); // hedef (1) zaten karşılanmış
+    const senaryo = await senaryoUret(yeni.id);
+    const tetikleyiciBaslikSeti = new Set(
+      OLAY_GECIKMIS_TAKIP.filter((o) => o.gecikmisTakipOlayi && o.cag === "Orta Çağ").map((o) => o.baslik)
+    );
+    expect(tetikleyiciBaslikSeti.has(senaryo.olay_basligi)).toBe(false);
   });
 });
