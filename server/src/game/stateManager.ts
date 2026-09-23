@@ -46,6 +46,9 @@ export const MESLEK_KATEGORI: Record<string, Kategori> = {
   Zanaatkâr: "zanaat",
 };
 
+/** Aile mesleği + bölgenin baskın kategorisi örtüşünce yatkınlığa eklenen sinerji bonusu. */
+const SINERJI_BONUSU = 13;
+
 /**
  * Yatkınlıkları kişilik özelliklerinden ve aile geçmişinden hesaplar; her
  * kategoriye küçük bir rastgele oynama (-5..+5) eklenir. Kaynak listesi
@@ -92,6 +95,28 @@ function yatkinlikHesapla(
     for (const [kategori, deger] of Object.entries(bolgeOzellik.yatkinlikEtkisi) as [Kategori, number][]) {
       yatkinliklar[kategori] += deger;
       kaynaklar.push({ kaynak: bolgeAdi, kategori, deger });
+    }
+  }
+
+  // Sinerji bonusu: aile mesleği bölgenin baskın (en yüksek meslek-kategori) etkisiyle
+  // örtüşüyorsa +13 — "bu bölgede bu aile mesleğinden gelmek" doğal bir avantaj versin.
+  if (aile.devamMeslegi && bolgeOzellik?.yatkinlikEtkisi) {
+    const aileKategori = MESLEK_KATEGORI[aile.devamMeslegi];
+    if (aileKategori) {
+      const MESLEK_KATEGORILERI: Kategori[] = ["savas", "ticaret", "din", "zanaat"];
+      let bolgeBaskinKategori: Kategori | null = null;
+      let bolgeBaskinDeger = -Infinity;
+      for (const kategori of MESLEK_KATEGORILERI) {
+        const deger = bolgeOzellik.yatkinlikEtkisi[kategori] ?? 0;
+        if (deger > bolgeBaskinDeger) {
+          bolgeBaskinDeger = deger;
+          bolgeBaskinKategori = kategori;
+        }
+      }
+      if (bolgeBaskinKategori === aileKategori && bolgeBaskinDeger > 0) {
+        yatkinliklar[aileKategori] += SINERJI_BONUSU;
+        kaynaklar.push({ kaynak: `${bolgeAdi} + ${aile.ad} sinerjisi`, kategori: aileKategori, deger: SINERJI_BONUSU });
+      }
     }
   }
 
