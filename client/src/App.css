@@ -5198,7 +5198,8 @@ button.ikincil {
   .olum-ust-serit {
     text-align: left;
   }
-  .olum-sutun-kimlik .bolge-sahnesi {
+  .olum-sutun-kimlik .bolge-sahnesi,
+  .olum-mobil-govde .bolge-sahnesi {
     max-height: 160px;
   }
 }
@@ -6572,23 +6573,34 @@ button.ikincil {
     display: none;
   }
 
-  /* BUG (found in audit, removed as dead code): a previous "mobile ölüm ekranı
-     sıralaması" rule set here used `.ekran-olum > .olum-ust-blok` /
-     `.olum-skor-hikaye-blok` / `.amac-paneli-olum` / `.gecmis-grafik` /
-     `.olum-kayit-blok` / `.olum-butonlari` with `order:N`, but none of those
-     class names are direct children of `.ekran-olum` in the actual JSX (the
-     death screen uses `.olum-sutun-kimlik`/`.olum-sutun-skor`/
-     `.olum-sutun-hikaye` nested two levels deep inside `.tam-govde-3col-olum`)
-     — the selectors never matched. Even `.olum-yeni-basarimlar`, which *is* a
-     direct child, got no visible effect because `.ekran-tam-sayfa{display:block}`
-     on mobile (a few lines above) turns off flex, so `order` is a no-op anyway.
-     Net effect: mobile has always silently fallen back to plain DOM order
-     (ölüm metni → kimlik/özet/kaydet/butonlar → skor kırılımı/amaçlar →
-     grafik/hayat hikayesi → kazanımlar) instead of the intended order
-     described in commit 77c0f11's message. Restoring the intended order needs
-     an actual JSX restructure (wrap the death-screen sections in one real
-     flex container with matching class names) — left for a human decision,
-     not applied here. */
+  /* Ölüm ekranının mobil sıralaması (2026-09 denetim turu — gerçek düzeltme):
+     eskiden burada DOM'da var olmayan sınıfları hedefleyen ölü `order` kuralları
+     duruyordu (ayrıntı: git tarihi). Gerçek düzeltme App.tsx'te — masaüstünde
+     3 sütuna (`.tam-govde-3col-olum`) dağılan parçalar (özet/kayıt/butonlar,
+     skor kırılımı/amaçlar, grafik/hikaye) mobilde JS tarafından TEK bir
+     `.olum-mobil-govde` içinde istenen sırada (özet → skor → amaçlar →
+     grafik+hikaye → kazanımlar → kayıt → butonlar) yeniden gruplanıyor —
+     CSS `order` yalnız KARDEŞ elemanları sıralayabildiği için, farklı
+     sütunların içindeki elemanları karıştırmak JS'siz mümkün değildi. */
+  .olum-mobil-govde {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 0 0.75rem 1.5rem;
+  }
+  /* Masaüstünde bu bileşenler `.olum-sutun-*` seçicileriyle max-width:none/
+     width:100% alıyordu (kendi varsayılan kart genişlikleri oyunun normal
+     kullanım bağlamı için); mobilde `.olum-sutun-*` sınıfları hiç yok (bkz.
+     App.tsx), aynı genişlik davranışını burada genel olarak sağla. */
+  .olum-mobil-govde > * {
+    max-width: none;
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .olum-mobil-govde .olum-butonlari {
+    margin-top: 0.5rem;
+  }
 
   .merkez-sahne > .amac-serit {
     top: 0.25rem;

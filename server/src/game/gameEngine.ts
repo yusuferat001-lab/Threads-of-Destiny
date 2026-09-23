@@ -116,6 +116,8 @@ import { OLAY_EVLILIK_AILE } from "../data/olaylar/evlilikVeAile";
 import { OLAY_KOMIK_GARIP } from "../data/olaylar/komikGaripOlaylar";
 import { OLAY_KOMIK_OLUM } from "../data/olaylar/komikOlumler";
 import { OLAY_GECIKMIS_TAKIP } from "../data/olaylar/gecikmisTakip";
+import { OLAY_BOLGESEL_ORTACAG } from "../data/olaylar/bolgeselOrtaCag";
+import { OLAY_BOLGESEL_SANAYI } from "../data/olaylar/bolgeselSanayi";
 import {
   SOSYALLESME_YERLERI,
   SosyallesmeYeri,
@@ -309,7 +311,10 @@ interface StandaloneHavuzTanimi {
  * çıkıyor, kalan serbest turlar diğerlerine (özellikle genel.ts'e) daha adil
  * dağılıyor.
  */
-function standaloneHavuzDurumu(tanim: StandaloneHavuzTanimi, state: CharacterState): { id: string; gerideKalmaOrani: number } | null {
+function standaloneHavuzDurumu(
+  tanim: StandaloneHavuzTanimi,
+  state: CharacterState
+): { adaylar: string[]; gerideKalmaOrani: number } | null {
   const suAnkiHedef = tanim.kontrolNoktalari.reduce(
     (maks, nokta) => (state.yas >= nokta.yas ? Math.max(maks, nokta.hedef) : maks),
     0
@@ -321,8 +326,16 @@ function standaloneHavuzDurumu(tanim: StandaloneHavuzTanimi, state: CharacterSta
   if (uygunlar.length === 0) return null;
   const gorulmemis = uygunlar.filter((o) => !state.gecmis_olaylar.includes(o.id));
   const adaylar = gorulmemis.length > 0 ? gorulmemis : uygunlar;
-  const id = adaylar[Math.floor(Math.random() * adaylar.length)].id;
-  return { id, gerideKalmaOrani: (suAnkiHedef - gorulenSayisi) / suAnkiHedef };
+  // Rastgele seçim BİLEREK burada YAPILMAZ (2026-09 denetim düzeltmesi) — bu
+  // fonksiyon, "en geride kalan" kazananı bulmak için çağıran döngüde TÜM
+  // adaylar için sırayla çağrılıyordu ve öncesinde her aday havuzu (kazanıp
+  // kazanmayacağından bağımsız) bir `Math.random()` tüketiyordu. Bu, testler
+  // gibi paylaşılan/seed'siz RNG akışına duyarlı çağıranlarda, yeni bir aday
+  // havuzu eklenince (ör. §38 bölgesel havuz) sonraki, ilgisiz testlerin
+  // rastgele sonuçlarını kaydırıp gereksiz kırılganlığa yol açıyordu. Artık
+  // yalnız aday id listesi + geride kalma oranı döner; asıl rastgele seçim
+  // çağıran döngüde SADECE kazanan havuz için bir kez yapılır.
+  return { adaylar: adaylar.map((o) => o.id), gerideKalmaOrani: (suAnkiHedef - gorulenSayisi) / suAnkiHedef };
 }
 
 /**
@@ -444,6 +457,24 @@ const GECIKMIS_TAKIP_TETIKLEYICI_KONTROL_NOKTALARI: { yas: number; hedef: number
 ];
 
 /**
+ * Bölgesel olay garantisi (2026-09 denetim turu — kullanıcı isteği: "80
+ * bölgesel olay için yaşa bağlı tetikleyici ekle"). Havuz her iki çağın
+ * TÜMÜ (80 olay, 40+40) olarak verilir ama `standaloneHavuzDurumu`'nun
+ * `temelUygunMu` filtresi karakterin `cag`'ına uymayan 40'ı VE `bolgeler`
+ * filtresi kendi bölgesi dışındaki 30'u otomatik eler — pratikte her
+ * karakter yalnızca kendi 10 olaylık bölge alt-havuzuyla karşılaşır, ayrı
+ * bir çağ/bölge dallanması yazmaya gerek yok. Hedefler diğer küçük (~10
+ * olaylık) havuzlarla (SARAY/EVCIL_HAYVAN) aynı ölçekte tutuldu; yaşlar
+ * diğer standalone tablolarla çakışmasın diye 5. turdaki "hiçbir yaş iki
+ * tabloda tekrar etmesin" kuralına uyularak seçildi (28/47/68 boştaydı).
+ */
+const BOLGESEL_HAVUZ_KONTROL_NOKTALARI: { yas: number; hedef: number }[] = [
+  { yas: 28, hedef: 1 },
+  { yas: 47, hedef: 2 },
+  { yas: 68, hedef: 3 },
+];
+
+/**
  * Meslekten bağımsız standalone havuz garantileri — sabit liste, çağrı başına
  * yeniden oluşturulmaz. Gecikmiş takip tetikleyici havuzu bilerek EN SONA
  * eklendi: aynı yaşta eşit derecede geride kalan (gerideKalmaOrani eşit)
@@ -461,6 +492,10 @@ const STANDALONE_HAVUZ_GARANTILERI: StandaloneHavuzTanimi[] = [
   {
     havuz: OLAY_GECIKMIS_TAKIP.filter((o) => o.gecikmisTakipOlayi),
     kontrolNoktalari: GECIKMIS_TAKIP_TETIKLEYICI_KONTROL_NOKTALARI,
+  },
+  {
+    havuz: [...OLAY_BOLGESEL_ORTACAG, ...OLAY_BOLGESEL_SANAYI],
+    kontrolNoktalari: BOLGESEL_HAVUZ_KONTROL_NOKTALARI,
   },
 ];
 
@@ -1240,14 +1275,14 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
     const adaylar = meslekHavuzu
       ? [{ havuz: meslekHavuzu, kontrolNoktalari: MESLEK_STANDALONE_KONTROL_NOKTALARI }, ...STANDALONE_HAVUZ_GARANTILERI]
       : STANDALONE_HAVUZ_GARANTILERI;
-    let enGeride: { id: string; gerideKalmaOrani: number } | null = null;
+    let enGeride: { adaylar: string[]; gerideKalmaOrani: number } | null = null;
     for (const tanim of adaylar) {
       const durum = standaloneHavuzDurumu(tanim, oturum.state);
       if (durum && (!enGeride || durum.gerideKalmaOrani > enGeride.gerideKalmaOrani)) {
         enGeride = durum;
       }
     }
-    if (enGeride) zorlananId = enGeride.id;
+    if (enGeride) zorlananId = enGeride.adaylar[Math.floor(Math.random() * enGeride.adaylar.length)];
   }
 
   const { olay, senaryo } = olaySec(oturum.state, zorlananId, oturum.sonTon);
