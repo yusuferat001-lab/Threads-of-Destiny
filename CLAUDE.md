@@ -704,7 +704,11 @@ Kaynak: [kisilikler.ts](server/src/data/kisilikler.ts). Her özellik `KATEGORI` 
 Ayrıca iki uçlu **kişilik eksenleri** (`kisilik_eksenleri`, seçenek gating için kullanılır, §12): `fevrilik` (0=planlayıcı, 100=fevri) ve `merhamet` (0=zalim, 100=barışçıl). Taban `50 + rastgele(-10..+10)`, sonra seçilen 2 özelliğin `FEVRILIK_ETKI`/`MERHAMET_ETKI` katkısı eklenir (ör. Sinirli fevrilik+20, Sakin fevrilik-20, Yumuşak Başlı merhamet+18, Kibirli merhamet-15), 0-100 clamp.
 
 ### Yatkınlık (`yatkinliklar`, -30..30, kategori başına başarı şansı bonusu)
-Kaynak: her kategoride taban `rastgele(-5..+5)`, + seçilen 2 kişilik özelliğinin `etkiler`i + aile'nin `yatkinlikEtkisi`'si + yerleşimin `yatkinlikEtkisi`'si, toplanıp -30..30'a clamp'lenir. `yatkinlik_kaynaklari` bu katkıların dökümünü oyuncuya gösterir.
+Kaynak: her kategoride taban `rastgele(-5..+5)`, + seçilen 2 kişilik özelliğinin `etkiler`i + aile'nin `yatkinlikEtkisi`'si + yerleşimin `yatkinlikEtkisi`'si + **bölgenin `yatkinlikEtkisi`'si** ([bolgeOzellikleri.ts](server/src/data/bolgeOzellikleri.ts), `bolgeOzellikleriGetir(cag,bolge)`), toplanıp -30..30'a clamp'lenir. `yatkinlik_kaynaklari` bu katkıların dökümünü oyuncuya gösterir.
+
+**Bölge etkileri (2026-09, Faz 1):** Her 8 bölge artık **4 meslek kategorisinin (savas/ticaret/din/zanaat) hepsinde** bir etki taşır (eskiden bölge başına 1-3 kategoriyle sınırlıydı) — birincil ±10-12, ikincil ±4-6, üçüncül -2..-5, dördüncü küçük bir denge değeri. `siyaset`/`sosyal` gibi meslek-dışı kategorilerdeki etkiler ayrıca durur, sinerji hesabına girmez.
+
+**Sinerji bonusu (2026-09, Faz 2, `SINERJI_BONUSU=13`):** `yatkinlikHesapla` içinde, doğan karakterin ailesinin `devamMeslegi`'si (varsa) `MESLEK_KATEGORI` ile bir kategoriye çevrilir; bölgenin 4 meslek kategorisi arasındaki **en yüksek değerli (baskın) kategori** bulunur. İkisi eşleşiyorsa (ör. Selçuklu'da `din_adami` ailesi, bölgenin baskın kategorisi de `din`) o kategoriye ek **+13** eklenir, `yatkinlik_kaynaklari`'na `"<bölge> + <aile> sinerjisi"` kaydı düşer — "bu bölgede bu aile mesleğinden gelmek" doğal bir avantaj olsun diye. `devamMeslegi`'i olmayan ailelerde (kölecilik, soylu, kumarbaz vb.) tetiklenmez.
 
 ### Konut (6 kademe, `konut_id`, turu tüketmeden değiştirilebilir) — 2026-09 ekonomi dengesi + ekonomi sıkılaştırma turu
 | id (varsayılan→**normal_ev**) | Kira/yıl | Sağlık/yıl | Mutluluk/yıl | Ün/yıl |
