@@ -45,9 +45,15 @@ app.use(
   })
 );
 
+// client/vite.config.ts dev sunucusunu 5180'e sabitliyor (5173 Vite'ın genel
+// varsayılanı ama bu projede hiç kullanılmıyor) — CORS_ORIGIN boşsa gerçek
+// yerel istemci portuna düş. Normal `npm run dev` akışında istemci relative
+// "/api/..." istekleri Vite'ın kendi proxy'sinden geçirdiği için bu değer
+// tarayıcı-CORS'unu hiç tetiklemez; yalnız API'ye Vite proxy'si DIŞINDAN
+// (ör. doğrudan curl/fetch, farklı bir dev port override'ı) erişilirse devreye girer.
 const izinliOrijinler = process.env.CORS_ORIGIN
   ? process.env.CORS_ORIGIN.split(",").map((o) => o.trim())
-  : ["http://localhost:5173"];
+  : ["http://localhost:5180"];
 app.use(cors({ origin: izinliOrijinler }));
 app.use(express.json());
 

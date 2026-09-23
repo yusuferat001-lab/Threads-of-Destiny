@@ -318,6 +318,14 @@ export interface CharacterState {
   omur_riskli_basari: number;
   /** Ölüm nadir/komik bir şekilde gerçekleştiyse (ör. "Kendi Kazdığı Kuyuya Düşen") burada saklanır; liderlik tablosunda rozet olarak gösterilir. */
   efsanevi_olum: string | null;
+  /**
+   * Kutsal Emanet relik'i (KORUYUCU_MUSKA_ETIKETI) bu hayatta EN AZ bir kez ölümü
+   * iptal ettiyse true — kalıcı, ömür boyu geçerli (checkDeath'te bir kez set edilir,
+   * bir daha değişmez). "Yedi Canlı" başarımı eskiden bunu `hayat_hikayesi`'nde
+   * (en fazla 10 kayıtla sınırlı, FIFO) regex ile arıyordu — relik erken tetiklenip
+   * karakter 10+ olay daha yaşarsa kayıt sessizce düşüyor, başarım kaçırılıyordu.
+   */
+  relik_can_kurtardi: boolean;
 
   etiketler: string[];
   durumlar: Durum[];

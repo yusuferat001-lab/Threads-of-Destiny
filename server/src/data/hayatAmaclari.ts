@@ -263,8 +263,10 @@ export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
   {
     id: "bas_belasi", zorluk: "zor", kontrolAni: "herhangi", meslekler: ["Asker"],
     baslik: { tr: "Baş Belası", en: "The Scourge" },
-    aciklama: { tr: "İki isimli rakibini de tamamen alt et; bunu güçlü bir orduyla (teçhizat 70+) başar.", en: "Utterly defeat both of your named rivals — with a well-equipped army (equipment 70+) behind you." },
-    kosul: (s) => yenilenRakip(s) >= 2 && s.ordu_techizat_seviyesi >= 70,
+    // 2026-09: karakterin artık tek bir isimli rakibi var (eskiden 2 idi) — hedef
+    // buna göre 1'e indirildi, aksi halde bu amaç hiçbir zaman tamamlanamazdı.
+    aciklama: { tr: "İsimli rakibini tamamen alt et; bunu güçlü bir orduyla (teçhizat 70+) başar.", en: "Utterly defeat your named rival — with a well-equipped army (equipment 70+) behind you." },
+    kosul: (s) => yenilenRakip(s) >= 1 && s.ordu_techizat_seviyesi >= 70,
   },
   {
     id: "ordu_kurucusu", zorluk: "zor", kontrolAni: "herhangi", meslekler: ["Asker"],
@@ -554,7 +556,7 @@ export const AMAC_ILERLEME: Record<
   madalyali: { hedef: 3, metrik: (s) => s.unvanlar?.length ?? 0 },
   serdar: { hedef: 5, metrik: (s) => s.rutbe_seviye },
   sehir_kalkani: { hedef: 5, metrik: (s) => s.sehir_yonetim_seviyesi },
-  bas_belasi: { hedef: 2, metrik: (s) => (s.rakipler ?? []).filter((r) => r.yenildi).length },
+  bas_belasi: { hedef: 1, metrik: (s) => (s.rakipler ?? []).filter((r) => r.yenildi).length },
   ordu_kurucusu: { hedef: 280, metrik: (s) => s.ordu_mevcudu },
   lonca_ustasi: { hedef: 4, metrik: (s) => s.rutbe_seviye },
   uc_kepenk: { hedef: 3, metrik: (s) => s.mulkler?.length ?? 0 },
@@ -582,6 +584,9 @@ export const AMAC_ILERLEME: Record<
   loncabasi: { hedef: 5, metrik: (s) => s.rutbe_seviye },
   atolye_imparatorlugu: { hedef: 100, metrik: (s) => s.uretim_kapasitesi ?? 0 },
   zanaat_rekabeti: { hedef: 1, metrik: (s) => yenilenRakip(s) },
+  usta_eli: { hedef: 70, metrik: (s) => s.uretim_kapasitesi ?? 0 },
+  loncanin_guveni: { hedef: 4, metrik: (s) => s.rutbe_seviye },
+  tanidik_zanaatkar: { hedef: 65, metrik: (s) => s.un },
 };
 
 /** Ölüm anında TÜM tamamlanmamış amaçlara son bir kez bakar (olumde + kaçmış herhangi). */

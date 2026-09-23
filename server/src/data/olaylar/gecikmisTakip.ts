@@ -40,11 +40,11 @@ interface TakipTema {
   olumsuz: { baslik: string; metin: string; gorsel: string; secenekler: [TakipDali, TakipDali] };
 }
 
-function secenekUret(dal: TakipDali, gecikmisTakipId: string): OlaySecenegi {
+function secenekUret(dal: TakipDali, gecikmisTakipId: string, cozuldeEtiketi: string): OlaySecenegi {
   return {
     metin: dal.metin,
     baseBasariSansi: 100,
-    basariliSonuc: { ...dal.sonuc, gecikmis_takip: gecikmisTakipId },
+    basariliSonuc: { ...dal.sonuc, gecikmis_takip: gecikmisTakipId, etiket_ekle: [cozuldeEtiketi] },
     basarisizSonuc: OLMAYAN_DAL,
   };
 }
@@ -62,16 +62,22 @@ function temaUret(t: TakipTema): OlayTanimi[] {
   const tetikleyiciId = `gt_${t.anahtar}`;
   const olumluId = `gt_${t.anahtar}_iyi`;
   const olumsuzId = `gt_${t.anahtar}_kotu`;
+  // Bu temanın bir daha tetiklenmemesi için "çözüldü" etiketi — aksi halde
+  // (K-tekrar-onleme yalnızca son birkaç olayı hatırladığından, kalıcı bir
+  // koruma olmadan) aynı tema, uzun bir hayatta ikinci kez tetiklenip aynı
+  // "yıllar sonra geri döndü" hikayesini tekrarlayabiliyordu.
+  const cozuldeEtiketi = `${tetikleyiciId}_cozuldu`;
 
   const tetikleyici: OlayTanimi = {
     id: tetikleyiciId,
     kategori: t.kategori,
     cag: t.cag,
     gecikmisTakipOlayi: true,
+    yasakliEtiketler: [cozuldeEtiketi],
     gorsel: t.gorsel,
     baslik: t.baslik,
     metin: t.metin,
-    secenekler: [secenekUret(t.yardim, olumluId), secenekUret(t.reddet, olumsuzId)],
+    secenekler: [secenekUret(t.yardim, olumluId, cozuldeEtiketi), secenekUret(t.reddet, olumsuzId, cozuldeEtiketi)],
   };
 
   const olumluOlay: OlayTanimi = {

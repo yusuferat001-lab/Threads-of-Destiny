@@ -5198,7 +5198,8 @@ button.ikincil {
   .olum-ust-serit {
     text-align: left;
   }
-  .olum-sutun-kimlik .bolge-sahnesi {
+  .olum-sutun-kimlik .bolge-sahnesi,
+  .olum-mobil-govde .bolge-sahnesi {
     max-height: 160px;
   }
 }
@@ -6572,17 +6573,34 @@ button.ikincil {
     display: none;
   }
 
-  /* Ölüm ekranı mobil sıralaması (kullanıcı isteği): ölüm metni → skor/hikaye
-     sekme çifti → hayat amaçların → geçmiş yıllar servetin (grafik) → en
-     sonda bu hayatın kazanımları → kayıt durumu → butonlar. Masaüstünde bu
-     kurallar devreye girmez, DOM sırası (ve dolayısıyla görünüm) aynı kalır. */
-  .ekran-olum > .olum-ust-blok { order: 1; }
-  .ekran-olum > .olum-skor-hikaye-blok { order: 2; }
-  .ekran-olum > .amac-paneli-olum { order: 3; }
-  .ekran-olum > .gecmis-grafik { order: 4; }
-  .ekran-olum > .olum-yeni-basarimlar { order: 5; }
-  .ekran-olum > .olum-kayit-blok { order: 6; }
-  .ekran-olum > .olum-butonlari { order: 7; }
+  /* Ölüm ekranının mobil sıralaması (2026-09 denetim turu — gerçek düzeltme):
+     eskiden burada DOM'da var olmayan sınıfları hedefleyen ölü `order` kuralları
+     duruyordu (ayrıntı: git tarihi). Gerçek düzeltme App.tsx'te — masaüstünde
+     3 sütuna (`.tam-govde-3col-olum`) dağılan parçalar (özet/kayıt/butonlar,
+     skor kırılımı/amaçlar, grafik/hikaye) mobilde JS tarafından TEK bir
+     `.olum-mobil-govde` içinde istenen sırada (özet → skor → amaçlar →
+     grafik+hikaye → kazanımlar → kayıt → butonlar) yeniden gruplanıyor —
+     CSS `order` yalnız KARDEŞ elemanları sıralayabildiği için, farklı
+     sütunların içindeki elemanları karıştırmak JS'siz mümkün değildi. */
+  .olum-mobil-govde {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 0 0.75rem 1.5rem;
+  }
+  /* Masaüstünde bu bileşenler `.olum-sutun-*` seçicileriyle max-width:none/
+     width:100% alıyordu (kendi varsayılan kart genişlikleri oyunun normal
+     kullanım bağlamı için); mobilde `.olum-sutun-*` sınıfları hiç yok (bkz.
+     App.tsx), aynı genişlik davranışını burada genel olarak sağla. */
+  .olum-mobil-govde > * {
+    max-width: none;
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .olum-mobil-govde .olum-butonlari {
+    margin-top: 0.5rem;
+  }
 
   .merkez-sahne > .amac-serit {
     top: 0.25rem;

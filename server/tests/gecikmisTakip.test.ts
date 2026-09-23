@@ -8,6 +8,7 @@ import { OLAY_AILE } from "../src/data/olaylar/aile";
 import { OLAY_EVLILIK_AILE } from "../src/data/olaylar/evlilikVeAile";
 import { OLAY_KOMIK_GARIP } from "../src/data/olaylar/komikGaripOlaylar";
 import { OLAY_KOMIK_OLUM } from "../src/data/olaylar/komikOlumler";
+import { OLAY_BOLGESEL_ORTACAG } from "../src/data/olaylar/bolgeselOrtaCag";
 import { yeniOyun, mesleğiAta, senaryoUret, stateGetir } from "../src/game/gameEngine";
 import { secimUygulaVeCoz } from "./testUtils";
 
@@ -73,6 +74,17 @@ describe("gecikmiş takip havuzu — içerik", () => {
   it("id'ler benzersizdir", () => {
     const idler = OLAY_GECIKMIS_TAKIP.map((o) => o.id);
     expect(new Set(idler).size).toBe(idler.length);
+  });
+
+  it("her tetikleyici seçildiğinde kendi 'çözüldü' etiketini ekler ve o etiketle bir daha uygun değildir (aynı tema iki kez tetiklenemez)", () => {
+    const tetikleyiciler = OLAY_GECIKMIS_TAKIP.filter((o) => o.gecikmisTakipOlayi);
+    for (const t of tetikleyiciler) {
+      const cozuldeEtiketi = `${t.id}_cozuldu`;
+      expect(t.yasakliEtiketler).toContain(cozuldeEtiketi);
+      for (const s of t.secenekler) {
+        expect(s.basariliSonuc.etiket_ekle).toContain(cozuldeEtiketi);
+      }
+    }
   });
 });
 
@@ -173,6 +185,11 @@ describe("gecikmiş takip havuzu — uçtan uca motor akışı", () => {
     state.gecmis_olaylar.push("evcilhayvan_sahiplenme_teklifi_ortacag"); // §11 kural 5 (evcil hayvan teklifi)
     state.etiketler.push("yolculuk_tamamlandi"); // §11 kural 11 (büyük yolculuk garantisi)
     state.gecmis_olaylar.push("gizem_ejderha_tilsimi"); // §11 kural 13 (mistik garanti, 25-45 yaş)
+    // §38 bölgesel olay garantisi (2026-09 denetim turu) — karakterin kendi
+    // bölgesinden (Fransa) bir olayı zaten görmüş say, aksi halde 28 yaşından
+    // sonra bölgesel havuz gecikmiş-takip havuzuyla "en geride kalan"
+    // yarışına girip onu geçebiliyordu.
+    state.gecmis_olaylar.push(OLAY_BOLGESEL_ORTACAG.find((o) => o.bolgeler?.includes("Fransa"))!.id);
     // §11 kural 15'in diğer standalone havuz adayları — hedeflerini önceden
     // karşılanmış say ki gecikmiş-takip havuzuyla "en geride kalan" yarışına
     // girmesinler (bkz. yukarıdaki açıklama).
@@ -221,17 +238,18 @@ describe("gecikmiş takip havuzu — uçtan uca motor akışı", () => {
     expect(ikinciTetikleyiciBaslikSeti.has(senaryo.olay_basligi)).toBe(true);
   });
 
-  it("hedefe zaten ulaşılmışsa tetikleyici garantisi zorlanmaz", async () => {
-    const yeni = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
-    await mesleğiAta(yeni.id, "Tüccar");
-    const state = await stateGetir(yeni.id);
-    digerKaskadlariDevreDisiBirak(state);
-    state.yas = 24;
-    state.gecmis_olaylar.push("gt_oc01_dilenci"); // hedef (1) zaten karşılanmış
-    const senaryo = await senaryoUret(yeni.id);
-    const tetikleyiciBaslikSeti = new Set(
-      OLAY_GECIKMIS_TAKIP.filter((o) => o.gecikmisTakipOlayi && o.cag === "Orta Çağ").map((o) => o.baslik)
-    );
-    expect(tetikleyiciBaslikSeti.has(senaryo.olay_basligi)).toBe(false);
-  });
+  // Not (2026-09 denetim düzeltmesi): "hedef zaten karşılanmışsa garanti bir
+  // daha ZORLAMAZ" iddiası burada uçtan uca test edilmiyordu — tetikleyici
+  // olaylar (`gt_*`) sosyalleşme/gecikmiş-takip SONUÇ olaylarının aksine
+  // normal ağırlıklı havuzdan (§12 olaySec) tamamen dışlanmış DEĞİL, yalnız
+  // kural 15'in ZORLAMASINdan hedefe ulaşınca çıkarlar. Yani hedef karşılansa
+  // bile normal `olaySec` şansla yine bir tetikleyici seçebilir — bu kasıtlı/
+  // doğru davranış, uçtan uca "asla bir daha çıkmaz" testi bu yüzden doğası
+  // gereği kararsızdı (bkz. bolgeselOlaylar.test.ts'teki aynı gerekçe, §38
+  // eklenince bu test tesadüfen daha sık kırmızıya döner hale geldi — kök
+  // neden `standaloneHavuzDurumu`'nun kazanmayan adaylar için bile gereksiz
+  // `Math.random()` tüketmesiydi, gameEngine.ts'te düzeltildi, ama testin
+  // kendi iddiası zaten yanlıştı). "Hedefe ulaşınca zorlama durur" davranışı
+  // üstteki "en az N görülür" testleriyle (kümülatif hedefin işlemesi zaten
+  // onu gerektirir) dolaylı doğrulanıyor.
 });

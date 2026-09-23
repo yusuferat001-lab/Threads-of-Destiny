@@ -9,11 +9,14 @@
  *  - Kaç olay/dize çevrildi (kapsam yüzdesi).
  */
 import { OLAY_BANKASI } from "../src/data/olaylar";
-import { OLAY_SOSYALLESME } from "../src/data/olaylar/sosyallesme";
 import { olayCevirisiGetir, tumCeviriIdleri } from "../src/i18n/olaylar";
 
 const full = process.argv.includes("--full");
-const tumOlaylar = [...OLAY_BANKASI, ...OLAY_SOSYALLESME];
+// OLAY_BANKASI zaten OLAY_SOSYALLESME'yi de içeriyor (bkz. data/olaylar/index.ts) —
+// eskiden burada ayrıca eklenmesi 73 sosyalleşme olayının toplam/kapsam
+// sayaçlarına ÇİFT girmesine yol açıyordu (gerçek toplam 1690 iken 1763
+// gösteriliyordu). Tek kaynak olarak OLAY_BANKASI yeterli.
+const tumOlaylar = OLAY_BANKASI;
 const olayById = new Map(tumOlaylar.map((o) => [o.id, o]));
 
 // Toplam çevrilebilir dize sayısı (kaynak).

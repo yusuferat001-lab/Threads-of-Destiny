@@ -2,7 +2,7 @@
 
 Çağını, ülkeni ve mesleğini sen seç; ailen ve kişiliğin rastgele belirlensin. Gerisini kaderin ve kararların belirlesin. Ölüm kalıcıdır.
 
-Metin tabanlı, tarihi bir hayat simülasyonu. Orta Çağ veya Sanayi Devrimi'nde, Asker/Tüccar/Din Adamı olarak yüzlerce farklı olayla örülü bir hayat yaşarsın.
+Metin tabanlı, tarihi bir hayat simülasyonu. Orta Çağ veya Sanayi Devrimi'nde, Asker/Tüccar/Din Adamı/Zanaatkâr olarak binlerce farklı olayla örülü bir hayat yaşarsın.
 
 ## Gereksinimler
 

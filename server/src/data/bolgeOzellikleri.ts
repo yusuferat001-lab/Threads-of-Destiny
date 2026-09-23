@@ -34,8 +34,8 @@ const BOLGE_OZELLIKLERI: Record<string, BolgeOzellikleri> = {
     ahlak: -6,
     yatkinlikEtkisi: { zanaat: 11, siyaset: -8, ticaret: 4, savas: 2, din: -3 },
     ozet: {
-      tr: "🔨 Zanaat dengeli · 👑 parçalı beylikler otoriteyi zorlar",
-      en: "🔨 Balanced craftsmanship · 👑 fractured princedoms strain authority",
+      tr: "🛒 Ticaret canlı, beden dinç · 👑 parçalı beylikler otoriteyi ve vicdanı zorlar",
+      en: "🛒 Lively trade, robust health · 👑 fractured princedoms strain authority and conscience",
     },
   },
   "Orta Çağ|Bizans": {

@@ -230,6 +230,8 @@ export interface CharacterState {
   omur_hediye_sayisi: number;
   omur_riskli_basari: number;
   efsanevi_olum: string | null;
+  /** Kutsal Emanet relik'i bu hayatta en az bir kez ölümü iptal ettiyse true (kalıcı). */
+  relik_can_kurtardi: boolean;
 
   etiketler: string[];
   durumlar: Durum[];

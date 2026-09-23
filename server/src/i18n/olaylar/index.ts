@@ -77,6 +77,11 @@ import { OLAYLAR_ORTACAG_TUCCAR_YOLLARI_EN } from "./ortaCagTuccarYollari.en";
 import { OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN } from "./sanayiTuccarYollari.en";
 import { OLAYLAR_BOLGESEL_ORTACAG_EN } from "./bolgeselOrtaCag.en";
 import { OLAYLAR_BOLGESEL_SANAYI_EN } from "./bolgeselSanayi.en";
+import { OLAYLAR_ORTACAG_ZANAATKAR_EN } from "./ortaCagZanaatkar.en";
+import { OLAYLAR_ORTACAG_ZANAATKAR_YOLLARI_EN } from "./ortaCagZanaatkarYollari.en";
+import { OLAYLAR_SANAYI_ZANAATKAR_EN } from "./sanayiZanaatkar.en";
+import { OLAYLAR_SANAYI_ZANAATKAR_YOLLARI_EN } from "./sanayiZanaatkarYollari.en";
+import { OLAYLAR_GECIKMIS_TAKIP_EN } from "./gecikmisTakip.en";
 
 const KAYIT: Record<string, OlayCeviri>[] = [
   OLAYLAR_KOMIK_OLUM_EN,
@@ -111,6 +116,11 @@ const KAYIT: Record<string, OlayCeviri>[] = [
   OLAYLAR_GENEL_EN,
   OLAYLAR_BOLGESEL_ORTACAG_EN,
   OLAYLAR_BOLGESEL_SANAYI_EN,
+  OLAYLAR_ORTACAG_ZANAATKAR_EN,
+  OLAYLAR_ORTACAG_ZANAATKAR_YOLLARI_EN,
+  OLAYLAR_SANAYI_ZANAATKAR_EN,
+  OLAYLAR_SANAYI_ZANAATKAR_YOLLARI_EN,
+  OLAYLAR_GECIKMIS_TAKIP_EN,
 ];
 
 const CEVIRI_INDEKSI: Record<string, OlayCeviri> = Object.assign({}, ...KAYIT);
