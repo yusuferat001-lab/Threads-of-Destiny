@@ -12,45 +12,22 @@ function grupla(kaynaklar: YatkinlikKaynagi[]): Map<string, YatkinlikKaynagi[]> 
   return grup;
 }
 
-function EksenGostergesi({
-  solEtiket,
-  sagEtiket,
-  deger,
-}: {
-  solEtiket: string;
-  sagEtiket: string;
-  deger: number;
-}) {
-  return (
-    <div className="eksen-gostergesi">
-      <div className="eksen-gostergesi-uclar">
-        <span>{solEtiket}</span>
-        <span>{sagEtiket}</span>
-      </div>
-      <div
-        className="eksen-gostergesi-govde"
-        role="progressbar"
-        aria-label={solEtiket + ' – ' + sagEtiket}
-        aria-valuenow={deger}
-        aria-valuemin={0}
-        aria-valuemax={100}
-      >
-        <div className="eksen-gostergesi-isaretci" style={{ left: `${deger}%` }} />
-      </div>
-    </div>
-  );
-}
-
 export function KisilikPaneli({
   kisilik,
   aileMeslegi,
   kaynaklar,
-  eksenler,
 }: {
   kisilik: [string, string];
   aileMeslegi: string;
   kaynaklar: YatkinlikKaynagi[];
-  eksenler: KisilikEksenleri;
+  /** Faz 7 (2026-09 sonu, kullanıcı isteği): iki uçlu fevrilik/merhamet çubukları
+   * UI'dan kaldırıldı — oyuncuya "gizli" bir istatistik gösterip kafa
+   * karıştırıyordu, ayrıca kişilik kartlarındaki asıl bilgiyle (kategori
+   * etkileri) neredeyse aynı şeyi tekrarlıyordu. Motor tarafındaki
+   * `kisilik_eksenleri` (seçenek gating için `gerekliEksen`) TAMAMEN
+   * DOKUNULMADI — yalnız bu görsel çubuk kaldırıldı. Prop hâlâ isteğe bağlı
+   * kabul edilir (çağıran taraf değişmesin diye) ama artık kullanılmıyor. */
+  eksenler?: KisilikEksenleri;
 }) {
   const { m, kt, dil } = useDil();
   const grup = grupla(kaynaklar);
@@ -58,8 +35,6 @@ export function KisilikPaneli({
   return (
     <div className="kisilik-paneli">
       <h3>{m.kpBaslikTam}</h3>
-      <EksenGostergesi solEtiket={m.kpPlanlayici} sagEtiket={m.kpFevri} deger={eksenler.fevrilik} />
-      <EksenGostergesi solEtiket={m.kpZalim} sagEtiket={m.kpBarisci} deger={eksenler.merhamet} />
       {[...kisilik, aileMeslegi].map((kaynakAdi) => {
         const etkiler = grup.get(kaynakAdi) ?? [];
         const aileMi = kaynakAdi === aileMeslegi;

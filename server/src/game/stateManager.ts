@@ -133,6 +133,8 @@ const FEVRILIK_ETKI: Record<string, number> = {
   Rekabetçi: 10,
   Cesur: 10,
   "Sivri Dilli": 8,
+  Palavracı: 10,
+  Obur: 5,
   Sakin: -20,
   Vicdanlı: -8,
   İçedönük: -8,
@@ -142,11 +144,13 @@ const MERHAMET_ETKI: Record<string, number> = {
   "Yumuşak Başlı": 18,
   Vicdanlı: 15,
   Umutlu: 8,
+  Obur: 4,
   Hüzünlü: 6,
   Kibirli: -15,
   Alaycı: -12,
   "Sivri Dilli": -10,
   Hırslı: -8,
+  Palavracı: -4,
   Rekabetçi: -6,
 };
 
