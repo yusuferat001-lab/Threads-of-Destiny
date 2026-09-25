@@ -1486,6 +1486,64 @@ export const OLAY_GENEL: OlayTanimi[] = [
     ],
   },
   {
+    id: "hizip_zanaatkar_saflasma",
+    kategori: "zanaat",
+    meslekler: [
+      "Zanaatkâr",
+    ],
+    yasakliEtiketler: [
+      "hizip_secildi",
+    ],
+    minRutbeSeviye: 2,
+    gorsel: "🔨",
+    baslik: "Loncanın İçi Karıştı",
+    metin: "Kalfalığa erişince atölyenin gerçek bölünmesini gördün: Lonca Meclisi eski usulleri, sıkı denetimi ve sabit fiyatları savunuyor; Serbest Ustalar ise loncanın elinden kurtulup kendi fiyatını kendin koy diyor. Artık bir tarafta durmalısın.",
+    secenekler: [
+      {
+        metin: "Düzen ve zanaat şerefi! Lonca Meclisi'ne katıl.",
+        baseBasariSansi: 90,
+        basariliSonuc: {
+          hizip_ata: "Lonca Meclisi",
+          ahlak: 10,
+          un: 8,
+          etiket_ekle: [
+            "hizip_secildi",
+          ],
+          mesaj: "Usta ustabaşılar seni bağrına bastı. Loncanın koruması artık senin de arkanda.",
+        },
+        basarisizSonuc: {
+          hizip_ata: "Lonca Meclisi",
+          etiket_ekle: [
+            "hizip_secildi",
+          ],
+          mesaj: "Katıldın ama genç kalfalar seni tutucu diye dışladı.",
+        },
+      },
+      {
+        metin: "Emeğimin hakkı bana ait! Serbest Ustalar'a katıl.",
+        baseBasariSansi: 90,
+        basariliSonuc: {
+          hizip_ata: "Serbest Ustalar",
+          para: 15,
+          un: 6,
+          ahlak: -5,
+          etiket_ekle: [
+            "hizip_secildi",
+          ],
+          mesaj: "Kendi fiyatını kendin koymaya başladın; ilk haftadan cebin şişti.",
+        },
+        basarisizSonuc: {
+          hizip_ata: "Serbest Ustalar",
+          para: -10,
+          etiket_ekle: [
+            "hizip_secildi",
+          ],
+          mesaj: "Katıldın ama lonca seni malzeme tedarikinden dışladı, ilk aylar zorlu geçti.",
+        },
+      },
+    ],
+  },
+  {
     id: "dunya_savas_biter",
     kategori: "siyaset",
     gerekliUlke: {

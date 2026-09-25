@@ -10,6 +10,7 @@ import { OLAY_KOMIK_GARIP } from "../src/data/olaylar/komikGaripOlaylar";
 import { OLAY_KOMIK_OLUM } from "../src/data/olaylar/komikOlumler";
 import { OLAY_BOLGESEL_ORTACAG } from "../src/data/olaylar/bolgeselOrtaCag";
 import { yeniOyun, mesleğiAta, senaryoUret, stateGetir } from "../src/game/gameEngine";
+import { etiketEkle } from "../src/game/stateManager";
 import { secimUygulaVeCoz } from "./testUtils";
 
 /**
@@ -92,6 +93,7 @@ describe("gecikmiş takip havuzu — uçtan uca motor akışı", () => {
   it("bir tetikleyici seçildiğinde 15-20 yıl sonrasına bir kayıt zamanlanır, ve o yıla ulaşınca zorlanan olay olarak gelir", async () => {
     const yeni = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(yeni.id, "Tüccar");
+    etiketEkle(yeni, ["hizip_secildi"]); // hizip zorunlu seçim kaskadını bu testte atla (2026-09 sonu)
 
     // Doğrudan sahneyi kur: mevcut senaryoyu bilinen bir tetikleyiciye zorla.
     const state = await stateGetir(yeni.id);
@@ -128,6 +130,7 @@ describe("gecikmiş takip havuzu — uçtan uca motor akışı", () => {
   it("henüz zamanı gelmemiş bir kayıt zorlanmaz, normal havuzdan bir olay gelir", async () => {
     const yeni = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(yeni.id, "Tüccar");
+    etiketEkle(yeni, ["hizip_secildi"]); // hizip zorunlu seçim kaskadını bu testte atla (2026-09 sonu)
     const state = await stateGetir(yeni.id);
     state.ulke.savasta = true;
     state.gecikmis_takipler.push({ id: "test-2", olayId: "gt_oc01_dilenci_iyi", tetiklenmeYili: state.yil + 15 });
@@ -139,6 +142,7 @@ describe("gecikmiş takip havuzu — uçtan uca motor akışı", () => {
   it("bir seçim gecikmis_takip taşıyorsa secimUygula sonrası state.gecikmis_takipler'e 15-20 yıl sonrası için bir kayıt eklenir", async () => {
     const yeni = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(yeni.id, "Tüccar");
+    etiketEkle(yeni, ["hizip_secildi"]); // hizip zorunlu seçim kaskadını bu testte atla (2026-09 sonu)
     const state = await stateGetir(yeni.id);
     const baslangicYil = state.yil;
 
@@ -207,6 +211,7 @@ describe("gecikmiş takip havuzu — uçtan uca motor akışı", () => {
   it("tetikleyici garantisi: 24 yaşına kadar en az 1 tetikleyici olay zorlanır", async () => {
     const yeni = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(yeni.id, "Tüccar");
+    etiketEkle(yeni, ["hizip_secildi"]); // hizip zorunlu seçim kaskadını bu testte atla (2026-09 sonu)
     const state = await stateGetir(yeni.id);
     digerKaskadlariDevreDisiBirak(state);
     state.yas = 24;
@@ -222,6 +227,7 @@ describe("gecikmiş takip havuzu — uçtan uca motor akışı", () => {
   it("tetikleyici garantisi: 37 yaşına kadar en az 2 farklı tetikleyici olay görülmüş olur", async () => {
     const yeni = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(yeni.id, "Tüccar");
+    etiketEkle(yeni, ["hizip_secildi"]); // hizip zorunlu seçim kaskadını bu testte atla (2026-09 sonu)
     const state = await stateGetir(yeni.id);
     digerKaskadlariDevreDisiBirak(state);
     // Zaten bir tetikleyici görülmüş kabul edip (24 yaş noktası tamamlanmış),

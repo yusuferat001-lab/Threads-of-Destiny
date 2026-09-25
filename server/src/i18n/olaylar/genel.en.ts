@@ -769,6 +769,31 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
       },
     ],
   },
+
+  hizip_zanaatkar_saflasma: {
+    baslik: "The Guild Is Torn Apart",
+    metin: "Reaching journeyman rank, you saw the workshop's real divide: the Guild Council defends the old ways, strict oversight and fixed prices; the Free Masters say break free of the guild and set your own price. You have to pick a side now.",
+    secenekler: [
+      {
+        metin: "Order and the honor of the craft! Join the Guild Council.",
+        basariliSonuc: {
+          mesaj: "The master foremen took you in. The guild's protection is behind you now too.",
+        },
+        basarisizSonuc: {
+          mesaj: "You joined, but the younger journeymen shut you out as an old fogey.",
+        },
+      },
+      {
+        metin: "My labor's worth is mine to set! Join the Free Masters.",
+        basariliSonuc: {
+          mesaj: "You started setting your own prices; your purse swelled within the first week.",
+        },
+        basarisizSonuc: {
+          mesaj: "You joined, but the guild cut you off from supplies — the first months were rough.",
+        },
+      },
+    ],
+  },
   dunya_savas_biter: {
     baslik: "The End of the Bloody Mud",
     metin: "With the treaty signed in {yil}, the war finally ended. Comrades returning from the front missing limbs and with vacant stares are looking for work. The treasury is bone dry, the streets are full of veterans. Where will your place be in the new world order?",

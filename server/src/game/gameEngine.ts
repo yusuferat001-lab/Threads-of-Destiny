@@ -178,6 +178,24 @@ const YOL_SISTEMLERI: Record<string, { yolOnEki: string; girisId: string }> = {
 };
 
 /**
+ * Hizip zorunlu seçim (2026-09 sonu, kullanıcı isteği: "hizip zorunlu çıkacak,
+ * birini seçicen"). Eskiden hizbe katılmak tamamen şansa bağlıydı — genel.ts'teki
+ * "saflaşma" olayı normal havuzdan rastgele çıkabiliyordu, hiç çıkmayabilirdi de,
+ * ve bir "Tarafsız kal" seçeneği vardı (o seçenek ayrı bir PR'da kaldırıldı).
+ * Artık meslek başına giriş olayı §11 kural 2 (kariyer yolu) ile AYNI kaskad
+ * mantığında garantilenir: Asker/Tüccar/Din Adamı için 18 yaşından itibaren,
+ * Zanaatkâr için (yeni hizip çifti, kariyer yolundan bağımsız bir eksen) yaş
+ * yerine kıdemle — rütbe seviye 2'ye (kalfalık) ulaşınca. Tetiklenince oyuncu
+ * iki taraftan birini seçmek ZORUNDA kalır (nötr seçenek yok).
+ */
+const HIZIP_GIRIS_OLAYLARI: Record<string, string> = {
+  Asker: "hizip_asker_saflasma",
+  Tüccar: "hizip_tuccar_saflasma",
+  "Din Adamı": "hizip_din_saflasma",
+  Zanaatkâr: "hizip_zanaatkar_saflasma",
+};
+
+/**
  * Yol dalı takip garantisinin (§11 kural 2b) kümülatif hedefleri: her yaş
  * eşiğine ulaşınca, o ana kadar o dala özel havuzdan görülmüş olay sayısı
  * en az `hedef` olmalı (yoksa biri zorla tetiklenir). Eski/büyük havuzlar
@@ -1016,6 +1034,17 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
       if (!zatenYolda && !oturum.state.gecmis_olaylar.includes(sistem.girisId)) {
         zorlananId = sistem.girisId;
       }
+    }
+  }
+  // Hizip zorunlu seçim (bkz. HIZIP_GIRIS_OLAYLARI tanımı yukarıda) — henüz
+  // hizip seçmemiş bir karakter, mesleğine uygun eşiğe (yaş ya da rütbe
+  // seviyesi) ulaşınca giriş olayını garanti görür.
+  if (!zorlananId && !milestoneKilitli && !oturum.state.etiketler.includes("hizip_secildi")) {
+    const hizipGirisId = HIZIP_GIRIS_OLAYLARI[oturum.state.meslek];
+    if (hizipGirisId && !oturum.state.gecmis_olaylar.includes(hizipGirisId)) {
+      const esikTutuyor =
+        oturum.state.meslek === "Zanaatkâr" ? oturum.state.rutbe_seviye >= 2 : oturum.state.yas >= 18;
+      if (esikTutuyor) zorlananId = hizipGirisId;
     }
   }
   // 29 yaşına kadar hiç evlenmemiş ve evlilik teklifiyle hiç karşılaşmamışsa

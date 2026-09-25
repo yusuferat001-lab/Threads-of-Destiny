@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { olaySec } from "../src/game/olaySecici";
-import { createCharacter, mesleğiSec } from "../src/game/stateManager";
+import { createCharacter, mesleğiSec, etiketEkle } from "../src/game/stateManager";
+import { yeniOyun, mesleğiAta, senaryoUret } from "../src/game/gameEngine";
 
 function hizbeKatil(state: ReturnType<typeof createCharacter>, hizip: string) {
   state.hizip = hizip;
@@ -113,5 +114,82 @@ describe("bekarlık olayları", () => {
       }
     }
     expect(gorundu).toBe(true);
+  });
+});
+
+/**
+ * Hizip zorunlu seçim (2026-09 sonu, kullanıcı isteği: "hizip zorunlu çıkacak,
+ * birini seçicen"). `senaryoUret` kaskadını (§11 kural 2'nin hemen ardı)
+ * gerçek `yeniOyun`/`mesleğiAta` akışıyla test eder — `izoleKarakterOlustur`
+ * (havuzGarantisi.test.ts) ile aynı desende, kariyer yolu girişini (daha
+ * yüksek öncelikli bir kaskad kuralı) uydurma bir `yol:` etiketiyle atlıyoruz
+ * ki hizip kuralı gözlemlenebilsin.
+ */
+describe("hizip zorunlu seçim (2026-09 sonu)", () => {
+  const MESLEK_BEKLENEN: Record<string, { yolOnEki: string; baslik: string }> = {
+    Asker: { yolOnEki: "yol:asker:", baslik: "Kışlada Bölünme" },
+    Tüccar: { yolOnEki: "yol:tuccar:", baslik: "Pazarın Hakimi Kim?" },
+    "Din Adamı": { yolOnEki: "yol:din:", baslik: "Kutsal Bölünme" },
+  };
+
+  for (const meslek of Object.keys(MESLEK_BEKLENEN)) {
+    it(`${meslek}: 18 yaşında henüz hizip seçmemiş karakter saflaşma olayına zorlanır (nötr şık yok)`, async () => {
+      const { yolOnEki, baslik } = MESLEK_BEKLENEN[meslek];
+      const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
+      await mesleğiAta(state.id, meslek);
+      state.ulke.savasta = true; // tarihi savaş ilanı kuralını atla
+      etiketEkle(state, [`${yolOnEki}__test_dal__`]); // kariyer yolu girişini atla
+      state.yas = 20;
+      const senaryo = await senaryoUret(state.id);
+      expect(senaryo.olay_basligi).toBe(baslik);
+      expect(senaryo.secenekler).toHaveLength(2); // "Tarafsız kal" yok, yalnız iki taraf
+    });
+  }
+
+  it("Asker/Tüccar/Din Adamı: 18 yaşından önce zorlanmaz", async () => {
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
+    await mesleğiAta(state.id, "Asker");
+    state.ulke.savasta = true;
+    etiketEkle(state, ["yol:asker:__test_dal__"]);
+    state.yas = 16;
+    const senaryo = await senaryoUret(state.id);
+    expect(senaryo.olay_basligi).not.toBe("Kışlada Bölünme");
+  });
+
+  it("hizip zaten seçilmişse bir daha zorlanmaz", async () => {
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
+    await mesleğiAta(state.id, "Asker");
+    state.ulke.savasta = true;
+    etiketEkle(state, ["yol:asker:__test_dal__", "hizip_secildi"]);
+    state.yas = 20;
+    const senaryo = await senaryoUret(state.id);
+    expect(senaryo.olay_basligi).not.toBe("Kışlada Bölünme");
+  });
+
+  it("Zanaatkâr: S1'de (rütbe seviye 1) zorlanmaz", async () => {
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
+    await mesleğiAta(state.id, "Zanaatkâr");
+    state.ulke.savasta = true;
+    etiketEkle(state, ["yol:zanaatkar:__test_dal__"]);
+    state.yas = 40;
+    state.rutbe_seviye = 1;
+    const senaryo = await senaryoUret(state.id);
+    expect(senaryo.olay_basligi).not.toBe("Loncanın İçi Karıştı");
+  });
+
+  it("Zanaatkâr: rütbe seviye 2'ye (kalfalık) ulaşınca zorlanır (nötr şık yok)", async () => {
+    // senaryoUret bir oturumda mevcut senaryoyu çözülene kadar önbelleğe alıyor
+    // (bkz. §10) — bu yüzden S1→S2 geçişini AYNI karakterde ikinci bir
+    // senaryoUret çağrısıyla test edemeyiz; ayrı, doğrudan S2'de yaratılan bir
+    // karakter kullanıyoruz (diğer eşik testleriyle aynı desen).
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
+    await mesleğiAta(state.id, "Zanaatkâr");
+    state.ulke.savasta = true;
+    etiketEkle(state, ["yol:zanaatkar:__test_dal__"]);
+    state.yas = 40;
+    state.rutbe_seviye = 2;
+    const senaryo = await senaryoUret(state.id);
+    expect(senaryo.olay_basligi).toBe("Loncanın İçi Karıştı");
+    expect(senaryo.secenekler).toHaveLength(2);
   });
 });
