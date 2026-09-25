@@ -4992,6 +4992,25 @@ button.ikincil {
   width: 100%;
 }
 
+/* --- Hükümdar bağış/sadakat talebi: ayrı, dikkat çeken açılır pencere
+   (2026-09 sonu — "param yok" yalanı yok, sadece Öde/Kaç) --- */
+.kariyer-hukumdar-talep-modal {
+  border-left-color: #c9a24a;
+}
+.kariyer-hukumdar-talep-modal strong {
+  display: block;
+  font-size: 1.05rem;
+  margin-bottom: 0.3rem;
+}
+.kariyer-hukumdar-talep-uyari {
+  font-size: 0.78rem;
+  opacity: 0.8;
+  font-style: italic;
+}
+.kariyer-hukumdar-talep-modal .kariyer-talep-butonlar button {
+  width: auto;
+}
+
 /* --- Karanlık İşler: ayrı, geniş, kaydırılabilir açılır pencere --- */
 .kariyer-karanlik-modal {
   max-width: 640px;

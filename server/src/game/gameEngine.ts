@@ -2871,11 +2871,11 @@ function yonetimBagisKademeleri(state: CharacterState, hat: YonetimHat): number[
   return (taban?.bagisKademeleri ?? []).map((k) => Math.max(1, paraYuvarla(k * enf)));
 }
 
-function yonetimIstekSansi(tanim: YonetimIstekTanimi, iliski: number, yalan: boolean): number {
+function yonetimIstekSansi(tanim: YonetimIstekTanimi, iliski: number): number {
   // Yönetici (kral) hattında ilişki avantajı çok daha yavaş şansa dönüşür ve tavan düşük.
   const egim = tanim.hat === "yonetici" ? 0.4 : 1;
   const tavan = tanim.hat === "yonetici" ? 72 : 90;
-  const bonus = (iliski - tanim.minIliski) * egim + (yalan ? 18 : 0);
+  const bonus = (iliski - tanim.minIliski) * egim;
   return Math.round(Math.min(tavan, Math.max(15, tanim.tabanSans + bonus)));
 }
 
@@ -2938,7 +2938,7 @@ export async function yonetimDurumGetir(id: string): Promise<YonetimDurumu> {
       minIliski: tanim.minIliski,
       acik: yonetimIstekAcikMi(state, tanim),
       iliskiBedeli: tanim.iliskiBedeli,
-      tahminiSans: yonetimIstekSansi(tanim, yonetimIliskiOku(state, tanim.hat), false),
+      tahminiSans: yonetimIstekSansi(tanim, yonetimIliskiOku(state, tanim.hat)),
     })),
     kilitler: { ...state.yonetim_etkilesim_kilit },
     bikkinlik: state.yonetim_yakin_etkilesim ?? 0,
@@ -3057,12 +3057,13 @@ interface YonetimIstekSonucu {
   mesaj: string;
 }
 
-/** İlişki yüksekken açılan bir "istek" (iyilik) — ilişki harcar, zarlıdır. Turu TÜKETMEZ. */
-export async function yonetimIstekYap(
-  id: string,
-  istekId: string,
-  opts: { yalan?: boolean } = {}
-): Promise<YonetimIstekSonucu> {
+/**
+ * İlişki yüksekken açılan bir "istek" (iyilik) — ilişki harcar, zarlıdır. Turu
+ * TÜKETMEZ. 2026-09 sonu sadeleştirmesi: eski "yalanla destekle" seçeneği
+ * (şansı artırıp ahlak/mutluluk düşüren + ifşa riskli dal) kaldırıldı — tek
+ * ve sade bir akış: iste, zar at, sonucu gör.
+ */
+export async function yonetimIstekYap(id: string, istekId: string): Promise<YonetimIstekSonucu> {
   const oturum = await oturumGetir(id);
   const { state } = oturum;
   if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
@@ -3084,23 +3085,9 @@ export async function yonetimIstekYap(
   }
 
   const enflasyon = enflasyonCarpani(state);
-  const yalan = opts.yalan === true;
   const iliskiOncesi = yonetimIliskiOku(state, tanim.hat);
-  const sans = yonetimIstekSansi(tanim, iliskiOncesi, yalan);
-
-  if (yalan) {
-    state.ahlak -= 5;
-    state.mutluluk -= 3;
-  }
-
-  let basarili = rollSuccess(sans);
-  let ifsaOldu = false;
-  if (yalan && Math.random() < 0.22) {
-    ifsaOldu = true;
-    basarili = false;
-    yonetimIliskiYaz(state, tanim.hat, yonetimIliskiOku(state, tanim.hat) - 20);
-    state.un -= 5;
-  }
+  const sans = yonetimIstekSansi(tanim, iliskiOncesi);
+  const basarili = rollSuccess(sans);
 
   // İlişki bedeli: başarıda tam, başarısızda yarım.
   const bedel = basarili ? tanim.iliskiBedeli : Math.round(tanim.iliskiBedeli / 2);
@@ -3113,16 +3100,9 @@ export async function yonetimIstekYap(
   state.yonetim_yakin_etkilesim = (state.yonetim_yakin_etkilesim ?? 0) + 1;
 
   const kimAdi = tanim.hat === "yonetici" ? yoneticiBilgisi(state).ad : patronBilgisi(state).ad;
-  let mesaj: string;
-  if (ifsaOldu) {
-    mesaj = T(state.dil, "Yalanın ortaya çıktı; {0} sana sırtını döndü ve isteğin geri çevrildi.", [
-      kimAdi,
-    ]);
-  } else if (basarili) {
-    mesaj = T(state.dil, "{0} isteğini yerine getirdi.", [kimAdi]);
-  } else {
-    mesaj = T(state.dil, "{0} bu sefer isteğini geri çevirdi.", [kimAdi]);
-  }
+  const mesaj = basarili
+    ? T(state.dil, "{0} isteğini yerine getirdi.", [kimAdi])
+    : T(state.dil, "{0} bu sefer isteğini geri çevirdi.", [kimAdi]);
 
   await oturumKaydet(state);
   return { state, basarili, mesaj };
@@ -3145,6 +3125,9 @@ export async function yonetimTalebiKararlastir(
   const talep = state.yonetim_talep;
   if (!talep) throw new Error("Bekleyen bir talep yok.");
   if (karar !== "kabul" && karar !== "ret" && karar !== "yalan") throw new Error("Geçersiz karar.");
+  if (talep.kimden === "yonetici" && karar === "yalan") {
+    throw new Error("Hükümdara yalan söyleyemezsin — sadece öde ya da kaç.");
+  }
 
   const hat = talep.kimden;
   let mesaj: string;
@@ -3161,7 +3144,15 @@ export async function yonetimTalebiKararlastir(
     yonetimIliskiYaz(state, hat, yonetimIliskiOku(state, hat) - 16);
     state.mutluluk -= 4;
     state.un -= 3;
-    mesaj = T(state.dil, "{0} talebini geri çevirdin; arası soğudu.", [talep.kimAdi]);
+    if (hat === "yonetici") {
+      // Kral için "reddetmek" yalnızca soğuk bir ilişki değil, kaçmaktır —
+      // aranma seviyesini bir bandı atlatacak kadar ciddi artırır (2026-09 sonu).
+      const artis = 25 + Math.floor(Math.random() * 11); // 25-35
+      state.suc_seviyesi = Math.min(100, state.suc_seviyesi + artis);
+      mesaj = T(state.dil, "Hükümdarın talebini reddedip kaçtın; muhafızlar peşine düştü, artık aranıyorsun.", []);
+    } else {
+      mesaj = T(state.dil, "{0} talebini geri çevirdin; arası soğudu.", [talep.kimAdi]);
+    }
   } else {
     state.ahlak -= 5;
     state.mutluluk -= 4;

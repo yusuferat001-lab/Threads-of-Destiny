@@ -27,7 +27,7 @@ interface KariyerEkraniProps {
   islemMesaji: string | null;
   yonetimDurum: YonetimDurumu | null;
   onEtkilesim: (etkilesimId: string, kademe?: number) => void;
-  onIstek: (istekId: string, yalan: boolean) => void;
+  onIstek: (istekId: string) => void;
   onTalep: (karar: 'kabul' | 'ret' | 'yalan') => void;
   onEkipCikar: (ekipId: string) => void;
   onKotuIs: (id: string, opts?: { hedefRakipAd?: string; vekil?: boolean }) => void;
@@ -238,7 +238,7 @@ function HatKarti({
   durum: YonetimDurumu;
   yukleniyor: boolean;
   onEtkilesim: (id: string, kademe?: number) => void;
-  onIstek: (id: string, yalan: boolean) => void;
+  onIstek: (id: string) => void;
 }) {
   const { dil } = useDil();
   const en = dil === 'en';
@@ -363,21 +363,15 @@ function IstekAksiyon({
 }: {
   istek: YonetimDurumu['istekler'][number];
   yukleniyor: boolean;
-  onIstek: (id: string, yalan: boolean) => void;
+  onIstek: (id: string) => void;
   en: boolean;
 }) {
-  const [yalan, setYalan] = useState(false);
   return (
     <div className="kariyer-istek-aksiyon">
       <span className="kariyer-istek-maliyet">
         −{istek.iliskiBedeli} {en ? 'rel.' : 'ilişki'} · ~%{istek.tahminiSans}
-        {yalan ? ' +' : ''}
       </span>
-      <label className="kariyer-istek-yalan">
-        <input type="checkbox" checked={yalan} disabled={yukleniyor} onChange={(e) => setYalan(e.target.checked)} />
-        {en ? 'back it with a lie' : 'yalanla destekle'}
-      </label>
-      <button className="ikincil" disabled={yukleniyor} onClick={() => onIstek(istek.id, yalan)}>
+      <button className="ikincil" disabled={yukleniyor} onClick={() => onIstek(istek.id)}>
         {en ? 'Ask' : 'İste'}
       </button>
     </div>
@@ -469,6 +463,36 @@ export function KariyerEkrani({
         </div>
       )}
 
+      {/* Hükümdar bağış/sadakat talebi — kralın huzurunda "param yok" yalanına yer
+          yok; sadece öde ya da kaç (kaçmak aranmanı ciddi artırır, bkz. onTalep('ret')
+          için gameEngine.ts'teki hat==='yonetici' özel dalı). Kral için sade,
+          "bekleyen banner" yerine ayrı ve dikkat çeken bir açılır pencere. */}
+      {talep && talep.kimden === 'yonetici' && (
+        <div className="kariyer-sonuc-katman">
+          <div className="kariyer-sonuc-modal kariyer-hukumdar-talep-modal">
+            <strong>👑 {talep.kimAdi}</strong>
+            <p>
+              {talep.tur === 'bagis'
+                ? `${talep.kalem} — ${formatPara(talep.tutar)} ${paraBirimi} ${en ? 'demanded.' : 'istiyor.'}`
+                : `${talep.kalem} ${en ? 'awaited.' : 'bekliyor.'}`}
+            </p>
+            <p className="kariyer-hukumdar-talep-uyari">
+              {en
+                ? "Fleeing a king's demand is a crime — your wanted level will rise sharply."
+                : 'Hükümdarın talebinden kaçmak suçtur — aranma seviyen ciddi şekilde artar.'}
+            </p>
+            <div className="kariyer-talep-butonlar">
+              <button disabled={yukleniyor} onClick={() => onTalep('kabul')}>
+                {talep.tur === 'bagis' ? (en ? 'Pay' : 'Öde') : en ? 'Swear it' : 'Kabul et'}
+              </button>
+              <button className="ikincil" disabled={yukleniyor} onClick={() => onTalep('ret')}>
+                {en ? 'Flee' : 'Kaç'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {hapiste && (
         <div className="aile-koken-karti gorev-hapis-karti">
           <span className="iliski-rozet">
@@ -499,7 +523,7 @@ export function KariyerEkrani({
           {/* ===== YÖNETİMLE BAĞLAR ===== */}
           {yonetimDurum && (
             <section className="kariyer-bolum kariyer-yonetim">
-              {talep && (
+              {talep && talep.kimden === 'patron' && (
                 <div className="kariyer-talep-afisi">
                   <strong>📜 {talep.kimAdi}</strong>
                   <p>
