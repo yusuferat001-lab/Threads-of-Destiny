@@ -134,6 +134,22 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
           detay: "Kusursuzluk nadiren gerçektir.",
         },
       },
+      {
+        metin: "Küçük eksikleri gizlice düzelt, denetimden önce hazırlan.",
+        baseBasariSansi: 55,
+        basariliSonuc: {
+          para: -4,
+          un: 4,
+          mesaj: "Son anda düzelttiğin eksikler fark edilmedi, denetim pürüzsüz geçti.",
+          detay: "Bazı hazırlıklar gizli kalır.",
+        },
+        basarisizSonuc: {
+          un: -8,
+          ahlak: -3,
+          mesaj: "Gizleme çaban fark edildi, 'hileli' diye damgalandın.",
+          detay: "Saklamak bazen daha çok göze batar.",
+        },
+      },
     ],
   },
   {
@@ -177,6 +193,20 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
         basariliSonuc: { para: -6, un: 10, ahlak: 5, mesaj: "Hazırladığın standart lonca genelinde benimsendi.", detay: "Kurallar, kalitenin garantisidir." },
         basarisizSonuc: { para: -6, mutluluk: -3, mesaj: "Kitabın karmaşık bulundu, geri gönderildi.", detay: "Her çaba ilk seferinde tutmaz." },
       },
+      {
+        metin: "Basit, hızlı bir taslak hazırla, fazla uğraşma.",
+        baseBasariSansi: 75,
+        basariliSonuc: {
+          para: 2,
+          mesaj: "Basit taslağın kabul gördü, az emekle işini bitirdin.",
+          detay: "Bazen sade olan yeterlidir.",
+        },
+        basarisizSonuc: {
+          un: -4,
+          mesaj: "Taslağın yetersiz bulundu, seni tembellikle suçladılar.",
+          detay: "Az emek bazen fark edilir.",
+        },
+      },
     ],
   },
   {
@@ -194,6 +224,20 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 75,
         basariliSonuc: { ahlak: 8, dost_puani: 6, mutluluk: 3, mesaj: "Yaşlı usta minnettar kaldı, loncada saygın bir adın oldu.", detay: "İyilik, en kalıcı yatırımdır." },
         basarisizSonuc: { para: -4, mesaj: "Yardımın yeterli olmadı ama çaban takdir edildi.", detay: "Niyet bazen sonuçtan önemlidir." },
+      },
+      {
+        metin: "Kendi işine odaklan, yardımı reddet.",
+        baseBasariSansi: 80,
+        basariliSonuc: {
+          para: 4,
+          mesaj: "Kendi işine odaklandın, kazancın arttı ama içinde bir pişmanlık kaldı.",
+          detay: "Bazı kazançlar tatsız gelir.",
+        },
+        basarisizSonuc: {
+          un: -6,
+          mesaj: "Reddin loncada 'kalpsiz' diye konuşuldu.",
+          detay: "Yardımı esirgemenin bir bedeli olur.",
+        },
       },
     ],
   },
@@ -213,6 +257,21 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
         basariliSonuc: { para: 10, un: 6, uretim_kapasitesi_artis: 4, mesaj: "Payını zamanında teslim ettin; ortak iş sorunsuz tamamlandı.", detay: "Güvenilirlik, en değerli sermayendir." },
         basarisizSonuc: { para: -6, un: -4, mesaj: "Payın gecikti, diğer ustalar hoşnutsuz kaldı.", detay: "Ortak işlerde herkesin payı önemlidir." },
       },
+      {
+        metin: "Payını asgari düzeyde, aceleyle tamamla.",
+        baseBasariSansi: 60,
+        basariliSonuc: {
+          para: 4,
+          mesaj: "Ucundan tamamladın, kimse fazla sorgulamadı.",
+          detay: "Bazen az emek de yeter.",
+        },
+        basarisizSonuc: {
+          un: -8,
+          dost_puani: -4,
+          mesaj: "Aceleci işin göze battı, ortakların seni eleştirdi.",
+          detay: "Acele iş, çoğu zaman göze batar.",
+        },
+      },
     ],
   },
   {
@@ -230,6 +289,19 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 62,
         basariliSonuc: { ahlak: 7, un: 5, dost_puani: 4, mesaj: "İkisini de razı eden bir çözüm buldun; adın 'adil usta' diye anıldı.", detay: "Adalet, güveni büyütür." },
         basarisizSonuc: { mutluluk: -3, dost_puani: -3, mesaj: "Çözümün ikisini de tatmin etmedi, aranızda soğukluk oluştu.", detay: "Her anlaşmazlık kolay çözülmez." },
+      },
+      {
+        metin: "Görevi reddet, karışma.",
+        baseBasariSansi: 85,
+        basariliSonuc: {
+          mesaj: "Karışmadın, huzurun bozulmadı ama ikisi de kendi başına çözemedi.",
+          detay: "Her mesele senin sorunun olmak zorunda değil.",
+        },
+        basarisizSonuc: {
+          dost_puani: -4,
+          mesaj: "Reddin 'ilgisizlik' olarak yorumlandı.",
+          detay: "Uzak durmak da bir bedel taşır.",
+        },
       },
     ],
   },
@@ -249,6 +321,23 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
         basariliSonuc: { un: 8, mesaj: "Denetim sorunsuz geçti; adın kraliyet kayıtlarına düzenli bir usta olarak geçti.", detay: "Düzen, güvenin temelidir." },
         basarisizSonuc: { para: -8, mutluluk: -3, mesaj: "Küçük bir eksik bulundu, para cezası kesildi.", detay: "Bürokrasi bazen acımasızdır." },
       },
+      {
+        metin: "Memurlara küçük bir hediye sun, işleri kolaylaştır.",
+        baseBasariSansi: 55,
+        basariliSonuc: {
+          para: -6,
+          un: 4,
+          mesaj: "Hediye işleri yumuşattı, denetim hızla ve sorunsuz bitti.",
+          detay: "Bazı kapılar küçük bir jestle açılır.",
+        },
+        basarisizSonuc: {
+          para: -6,
+          un: -10,
+          suc_artis: 6,
+          mesaj: "Hediye rüşvet sayıldı, ciddi bir soruşturma açıldı.",
+          detay: "Bazı jestler suça dönüşür.",
+        },
+      },
     ],
   },
   {
@@ -266,6 +355,19 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 66,
         basariliSonuc: { un: 12, ahlak: 4, mesaj: "Konseyde sesin duyulmaya başladı; loncadaki itibarın büyüdü.", detay: "Sorumluluk, saygıyı beraberinde getirir." },
         basarisizSonuc: { mutluluk: -3, mesaj: "Konseydeki tartışmalar yorucu geçti, pek katkı sunamadın.", detay: "Her toplantı verimli geçmez." },
+      },
+      {
+        metin: "Daveti nazikçe reddet, kendi işine odaklan.",
+        baseBasariSansi: 85,
+        basariliSonuc: {
+          mesaj: "Reddin kimseyi kızdırmadı, işine sakince devam ettin.",
+          detay: "Her sorumluluk kabul edilmek zorunda değil.",
+        },
+        basarisizSonuc: {
+          un: -6,
+          mesaj: "Reddin 'hırssızlık' olarak yorumlandı.",
+          detay: "Bazı reddedişler yanlış anlaşılır.",
+        },
       },
     ],
   },
@@ -286,6 +388,20 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
         basariliSonuc: { para: -10, ahlak: 8, dost_puani: 6, mesaj: "Çırak borcunu zamanla ödedi; sana minnettar kaldı.", detay: "Güven, bazen risk gerektirir." },
         basarisizSonuc: { para: -10, mutluluk: -4, mesaj: "Çırak borcunu ödeyemedi, kefalet parası cebinden gitti.", detay: "Her iyilik geri dönmez." },
       },
+      {
+        metin: "Kefil olmayı reddet, riski alma.",
+        baseBasariSansi: 85,
+        basariliSonuc: {
+          mesaj: "Riske girmedin, çırak loncadan atıldı ama sen zarar görmedin.",
+          detay: "Bazen mesafe koymak en güvenlisidir.",
+        },
+        basarisizSonuc: {
+          dost_puani: -6,
+          un: -4,
+          mesaj: "Reddin acımasız bulundu, loncada senden soğuyanlar oldu.",
+          detay: "Riskten kaçmanın da bir bedeli olur.",
+        },
+      },
     ],
   },
   {
@@ -303,6 +419,21 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 85,
         basariliSonuc: { un: 14, ahlak: 5, mutluluk: 5, mesaj: "Lonca seni 'örnek usta' ilan etti; adın nesiller boyu anılacak.", detay: "Sadakatin karşılığı bazen bir ömür sonra gelir." },
         basarisizSonuc: { mutluluk: -2, mesaj: "Tören sırasında ufak bir aksaklık oldu ama onurun gölgelenmedi.", detay: "Küçük pürüzler büyük onuru gölgelemez." },
+      },
+      {
+        metin: "Alçakgönüllülükle töreni reddet, sessiz kalmayı tercih et.",
+        baseBasariSansi: 70,
+        basariliSonuc: {
+          ahlak: 6,
+          mutluluk: 3,
+          mesaj: "Alçakgönüllülüğün, onaydan bile daha çok saygı kazandırdı.",
+          detay: "Bazı onurlar sessizce daha büyük olur.",
+        },
+        basarisizSonuc: {
+          un: -4,
+          mesaj: "Reddin bazılarınca 'kibir' sayıldı, tuhaf bir tepki gördü.",
+          detay: "Alçakgönüllülük her zaman öyle anlaşılmaz.",
+        },
       },
     ],
   },
@@ -331,6 +462,20 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
           mutluluk: -2,
           mesaj: "Çırak yeteneksiz çıktı, sabrın boşa gitti gibi hissettin.",
           detay: "Her tohum filizlenmez.",
+        },
+      },
+      {
+        metin: "Çırağı kendi haline bırak, fazla vakit ayırma.",
+        baseBasariSansi: 65,
+        basariliSonuc: {
+          mesaj: "Çırak kendi kendine öğrendi, senden fazla vakit almadı.",
+          detay: "Bazı öğrenciler kendi yolunu bulur.",
+        },
+        basarisizSonuc: {
+          un: -6,
+          dost_puani: -4,
+          mesaj: "İhmalin fark edildi, 'kötü usta' diye anıldın.",
+          detay: "İlgisizlik bazen fark edilir.",
         },
       },
     ],
@@ -365,6 +510,19 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
           detay: "Her yenilik bir başarısızlıkla başlar.",
         },
       },
+      {
+        metin: "Riske girme, geleneksel yöntemle devam et.",
+        baseBasariSansi: 80,
+        basariliSonuc: {
+          mesaj: "Güvenli yolu seçtin, fikrin rafta kaldı ama hiçbir şey kaybetmedin.",
+          detay: "Bazı fikirler beklemeyi hak eder.",
+        },
+        basarisizSonuc: {
+          mutluluk: -3,
+          mesaj: "Fikrini gerçekleştirmediğine hep pişman oldun.",
+          detay: "Denenmemiş fikirler bazen içini kemirir.",
+        },
+      },
     ],
   },
   {
@@ -393,6 +551,20 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
           detay: "Geleneği zorlamanın bir bedeli var.",
         },
       },
+      {
+        metin: "Geri adım at, loncanın isteğine uy.",
+        baseBasariSansi: 80,
+        basariliSonuc: {
+          ahlak: 4,
+          mesaj: "Geri adım attın, lonca seni tekrar bağrına bastı ama içindeki ateş biraz söndü.",
+          detay: "Bazı barışlar bir ateşi söndürür.",
+        },
+        basarisizSonuc: {
+          mutluluk: -4,
+          mesaj: "Geri adımın bazı gençler tarafından 'teslimiyet' sayıldı.",
+          detay: "Uzlaşma her zaman takdir edilmez.",
+        },
+      },
     ],
   },
 
@@ -412,6 +584,19 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
         basariliSonuc: { para: 12, uretim_kapasitesi_artis: 8, mesaj: "Kalıp işe yaradı; aynı sürede iki kat ürün çıkardın.", detay: "Tekrarlanabilirlik, zanaatin gizli gücüdür." },
         basarisizSonuc: { para: -8, mesaj: "Kalıp bozuk çıktı, birkaç parti mala yazık oldu.", detay: "Her deneme bir bedel taşır." },
       },
+      {
+        metin: "Riske girme, elle üretime devam et.",
+        baseBasariSansi: 85,
+        basariliSonuc: {
+          mesaj: "Alışıldık yöntemle güvenle devam ettin.",
+          detay: "Bazen bilinen yol yeterlidir.",
+        },
+        basarisizSonuc: {
+          mutluluk: -2,
+          mesaj: "Rakiplerin kalıpla seni geçince için burkuldu.",
+          detay: "Güvenli kalmanın da bir bedeli olabilir.",
+        },
+      },
     ],
   },
   {
@@ -430,6 +615,19 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
         maliyet: 8,
         basariliSonuc: { para: -8, uretim_kapasitesi_artis: 10, un: 4, mesaj: "Yeni teknik ufkunu genişletti; işlerin farklı bir hava kazandı.", detay: "Bilgi, en uzak yoldan bile gelebilir." },
         basarisizSonuc: { para: -8, mesaj: "Tekniği tam kavrayamadın, para boşa gitti.", detay: "Her öğrenme kolay olmaz." },
+      },
+      {
+        metin: "Teklifi reddet, yabancıya güvenme.",
+        baseBasariSansi: 85,
+        basariliSonuc: {
+          mesaj: "Reddin seni olası bir dolandırıcılıktan korudu, tedbirli davrandın.",
+          detay: "Bazen şüphe en iyi korumadır.",
+        },
+        basarisizSonuc: {
+          mutluluk: -2,
+          mesaj: "Sonradan tekniğin gerçekten değerli olduğunu öğrenince içerledin.",
+          detay: "Tedbir bazen fırsatı da kaçırır.",
+        },
       },
     ],
   },
@@ -474,6 +672,20 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
         basariliSonuc: { para: -10, uretim_kapasitesi_artis: 12, mesaj: "İkinci deneme başarılı oldu; sabrın karşılığını buldu.", detay: "Başarısızlık, öğrenmenin bir parçasıdır." },
         basarisizSonuc: { para: -10, mutluluk: -5, mesaj: "İkinci deneme de tutmadı, moralin bozuldu.", detay: "Bazı yollar iki kez de tıkanabilir." },
       },
+      {
+        metin: "Vazgeç, başka bir fikre yönel.",
+        baseBasariSansi: 80,
+        basariliSonuc: {
+          mutluluk: 2,
+          mesaj: "Vazgeçmek rahatlattı, yeni bir fikre enerji ayırdın.",
+          detay: "Bazen bırakmak da bir karardır.",
+        },
+        basarisizSonuc: {
+          un: -4,
+          mesaj: "Vazgeçişin 'pes etti' diye yorumlandı.",
+          detay: "Vazgeçmenin de bir bedeli olabilir.",
+        },
+      },
     ],
   },
   {
@@ -491,6 +703,20 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 65,
         basariliSonuc: { para: 14, un: 10, mesaj: "Soylu etkilendi, seni himayesine aldı.", detay: "Doğru göz, doğru anda bulunabilir." },
         basarisizSonuc: { mutluluk: -3, mesaj: "Soylu ilgisiz kaldı, ziyaret boşa gitti.", detay: "Her fırsat meyve vermez." },
+      },
+      {
+        metin: "Mütevazı davran, mübalağa yapma.",
+        baseBasariSansi: 70,
+        basariliSonuc: {
+          dost_puani: 4,
+          mesaj: "Dürüst tavrın soyluyu şaşırtıp etkiledi.",
+          detay: "Bazen sadelik en etkili sunumdur.",
+        },
+        basarisizSonuc: {
+          mutluluk: -3,
+          mesaj: "Soylu yeterince etkilenmedi, sıradan bulundu.",
+          detay: "Mütevazılık her zaman fark edilmez.",
+        },
       },
     ],
   },
@@ -510,6 +736,19 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
         basariliSonuc: { para: 18, uretim_kapasitesi_artis: 14, mesaj: "Deney başarılı oldu, büyük bir sıçrama yaptın.", detay: "Büyük ödül, büyük risk ister." },
         basarisizSonuc: { saglik: -8, para: -10, mesaj: "Deney ters gitti, yaralandın ve malzeme kaybettin.", detay: "Sınırları zorlamak bazen acı verir." },
       },
+      {
+        metin: "Riske girme, deneyi erteleyip güvenli yöntemle devam et.",
+        baseBasariSansi: 85,
+        basariliSonuc: {
+          mesaj: "Güvenli kaldın ama fırsatı kaçırdığını biliyordun.",
+          detay: "Güvenlik bazen pişmanlıkla gelir.",
+        },
+        basarisizSonuc: {
+          mutluluk: -3,
+          mesaj: "Ertelemen seni huzursuz etti, kafanda hep o deney vardı.",
+          detay: "Ertelenen merak da bir yük olabilir.",
+        },
+      },
     ],
   },
   {
@@ -527,6 +766,20 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 70,
         basariliSonuc: { un: 16, uretim_kapasitesi_artis: 6, mutluluk: 5, mesaj: "Tarzın artık senin adınla anılıyor; genç zanaatkârlar seni örnek alıyor.", detay: "Öncülük etmek, kalıcı bir iz bırakmaktır." },
         basarisizSonuc: { mutluluk: -3, mesaj: "Girişimin beklediğin ilgiyi görmedi.", detay: "Her miras hemen tanınmaz." },
+      },
+      {
+        metin: "Mirasını resmileştirme, sessizce çalışmaya devam et.",
+        baseBasariSansi: 80,
+        basariliSonuc: {
+          mutluluk: 2,
+          mesaj: "Sessiz kalman huzurunu korudu ama adın öyle geniş bilinmedi.",
+          detay: "Bazı huzurlar şöhretten daha değerlidir.",
+        },
+        basarisizSonuc: {
+          un: -4,
+          mesaj: "Sessizliğin, çabalarının unutulmasına yol açtı.",
+          detay: "Sessizlik bazen unutulmakla sonuçlanır.",
+        },
       },
     ],
   },
@@ -548,6 +801,19 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
         basariliSonuc: { para: -12, uretim_kapasitesi_artis: 16, mesaj: "Rüzgâr düzeneği işe yaradı; artık daha az yorulup daha çok üretiyorsun.", detay: "Doğanın gücünü kullanmak, en akıllıca yeniliktir." },
         basarisizSonuc: { para: -12, mesaj: "Düzenek ilk rüzgârda parçalandı.", detay: "Doğa bazen kontrol edilemez." },
       },
+      {
+        metin: "Riske girme, elle çevirmeye devam et.",
+        baseBasariSansi: 85,
+        basariliSonuc: {
+          mesaj: "Güvenli, yorucu ama tanıdık yöntemle devam ettin.",
+          detay: "Bilinen yorgunluk, bilinmeyen riskten iyidir.",
+        },
+        basarisizSonuc: {
+          mutluluk: -2,
+          mesaj: "Rakiplerinin rüzgâr gücüyle seni geçtiğini görünce içine bir kaygı düştü.",
+          detay: "Durağanlık bazen geride bırakır.",
+        },
+      },
     ],
   },
   {
@@ -565,6 +831,22 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 58,
         basariliSonuc: { un: 16, uretim_kapasitesi_artis: 8, mesaj: "Lonca sonunda yöntemlerini resmen tanıdı; adın bir çağın öncüsü olarak anılacak.", detay: "Zamanla haklı çıkmak, en tatlı zaferdir." },
         basarisizSonuc: { un: -10, mutluluk: -5, mesaj: "Lonca reddetti; yalnız bir yolda devam etmek zorunda kaldın.", detay: "Bazı öncüler hayatları boyunca yalnız kalır." },
+      },
+      {
+        metin: "Loncadan bağımsız, kendi başına devam etmeyi seç.",
+        baseBasariSansi: 60,
+        basariliSonuc: {
+          para: 10,
+          un: 6,
+          mesaj: "Bağımsızlığın sana özgürlük getirdi; kendi müşteri çevreni kurdun.",
+          detay: "Bazen yalnız yürümek özgürleştirir.",
+        },
+        basarisizSonuc: {
+          para: -10,
+          un: -6,
+          mesaj: "Loncasız kalman güven sorunu yarattı, işlerin bir süre azaldı.",
+          detay: "Bağımsızlığın da bir bedeli vardır.",
+        },
       },
     ],
   },
@@ -599,6 +881,21 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
           detay: "Hile er ya da geç ortaya çıkar.",
         },
       },
+      {
+        metin: "Dürüst kal, kaliteli malzemeyi kullan.",
+        baseBasariSansi: 78,
+        basariliSonuc: {
+          ahlak: 6,
+          un: 4,
+          mesaj: "Kaliteli iş müşterinin güvenini pekiştirdi, kâr az ama vicdanın rahat.",
+          detay: "Dürüstlük yavaş ama sağlam kazandırır.",
+        },
+        basarisizSonuc: {
+          para: -6,
+          mesaj: "Kaliteli malzeme bütçeni zorladı, kâr marjın erimeye başladı.",
+          detay: "Dürüstlüğün de bir maliyeti olabilir.",
+        },
+      },
     ],
   },
   {
@@ -629,6 +926,20 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
           detay: "İftira çoğu zaman sahibine döner.",
         },
       },
+      {
+        metin: "Dedikodu yayma, dürüst rekabetle kazanmaya çalış.",
+        baseBasariSansi: 65,
+        basariliSonuc: {
+          un: 5,
+          mesaj: "Dürüst çabaların takdir gördü, birkaç müşteri kendiliğinden geldi.",
+          detay: "Kalite, en sağlam rekabettir.",
+        },
+        basarisizSonuc: {
+          para: -4,
+          mesaj: "Rakibin sana rağmen öne geçti, biraz müşteri kaybettin.",
+          detay: "Dürüst rekabet her zaman kazandırmaz.",
+        },
+      },
     ],
   },
 
@@ -648,6 +959,21 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
         basariliSonuc: { para: 10, ahlak: -8, suc_artis: 6, mesaj: "Kimse fark etmedi; küçük ama sürekli bir kazanç elde ettin.", detay: "Küçük hileler büyük alışkanlığa dönüşür." },
         basarisizSonuc: { para: -6, un: -8, ahlak: -6, suc_artis: 10, mesaj: "Bir müşteri tartını denetletti, hile ortaya çıktı.", detay: "Küçük hileler bazen büyük skandal olur." },
       },
+      {
+        metin: "Tartıyı dürüstçe kullan.",
+        baseBasariSansi: 85,
+        basariliSonuc: {
+          ahlak: 4,
+          dost_puani: 3,
+          mesaj: "Dürüstlüğün müşterilerin güvenini kazandırdı.",
+          detay: "Doğru tartı, uzun vadede kazandırır.",
+        },
+        basarisizSonuc: {
+          para: -2,
+          mesaj: "Dürüst tartı biraz daha az kâr demekti.",
+          detay: "Dürüstlüğün küçük bir bedeli olabilir.",
+        },
+      },
     ],
   },
   {
@@ -665,6 +991,21 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 48,
         basariliSonuc: { para: 24, ahlak: -14, suc_artis: 12, mesaj: "Sahte damga işe yaradı, tatlı bir kâr elde ettin.", detay: "Sahtekârlık kısa vadede tatlıdır." },
         basarisizSonuc: { para: -10, un: -16, ahlak: -10, suc_artis: 18, mesaj: "Gerçek usta durumu öğrendi, davayı loncaya taşıdı.", detay: "Büyük bir isim taklit edilmez, sahiplenilir." },
+      },
+      {
+        metin: "Kendi imzanla, dürüstçe sat.",
+        baseBasariSansi: 70,
+        basariliSonuc: {
+          para: 8,
+          un: 4,
+          mesaj: "Kendi adınla sattığın iş yavaş ama sağlam bir itibar kazandırdı.",
+          detay: "Kendi adın, sahte bir isimden daha değerlidir.",
+        },
+        basarisizSonuc: {
+          para: -4,
+          mesaj: "Ünlü ustanın gölgesinde kendi adın yeterince ilgi görmedi.",
+          detay: "Kendi adınla yükselmek zaman ister.",
+        },
       },
     ],
   },
@@ -685,6 +1026,21 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
         basariliSonuc: { para: -8, ahlak: -10, suc_artis: 8, mesaj: "Denetçi sorunları görmezden geldi; işine devam ettin.", detay: "Rüşvet, geçici bir çözümdür." },
         basarisizSonuc: { para: -8, un: -14, ahlak: -8, suc_artis: 14, mesaj: "Denetçi rüşveti reddetti ve durumu üstlerine bildirdi.", detay: "Her rüşvet teklifi kabul görmez." },
       },
+      {
+        metin: "Denetime dürüstçe hazırlan, sorunları kendin çöz.",
+        baseBasariSansi: 60,
+        basariliSonuc: {
+          para: -6,
+          ahlak: 6,
+          mesaj: "Sorunları önceden çözdün, denetim temiz ve sorunsuz geçti.",
+          detay: "Hazırlık, rüşvetten daha ucuza gelir.",
+        },
+        basarisizSonuc: {
+          para: -10,
+          mesaj: "Yetiştiremediğin eksikler için ceza ödedin.",
+          detay: "Bazı hazırlıklar yetersiz kalır.",
+        },
+      },
     ],
   },
   {
@@ -702,6 +1058,21 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 56,
         basariliSonuc: { para: 16, ahlak: -12, suc_artis: 7, mesaj: "Ortağın hiçbir şey fark etmedi; fazladan kazandın.", detay: "Güven suistimal edilebilir bir sermayedir." },
         basarisizSonuc: { para: -8, dost_puani: -10, ahlak: -8, suc_artis: 10, mesaj: "Ortağın hileyi fark etti, aranız tamamen bozuldu.", detay: "Güveni kaybetmek, parayı kaybetmekten daha ağırdır." },
+      },
+      {
+        metin: "Kârı dürüstçe paylaş.",
+        baseBasariSansi: 80,
+        basariliSonuc: {
+          dost_puani: 6,
+          ahlak: 5,
+          mesaj: "Dürüstlüğün ortaklığınızı güçlendirdi.",
+          detay: "Adil paylaşım, uzun ortaklıkların temelidir.",
+        },
+        basarisizSonuc: {
+          para: -4,
+          mesaj: "Paylaşım beklediğinden azdı, biraz içerledin.",
+          detay: "Dürüstlük her zaman tatmin etmez.",
+        },
       },
     ],
   },
@@ -745,6 +1116,21 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
         basariliSonuc: { para: 30, ahlak: -18, suc_artis: 16, mesaj: "Tüccar hiçbir şey fark etmedi; büyük bir vurgun yaptın.", detay: "Büyük hileler büyük risk taşır." },
         basarisizSonuc: { para: -14, un: -20, ahlak: -14, suc_artis: 22, mesaj: "Tüccar eseri uzmana gösterdi, sahtekârlığın tüm şehre yayıldı.", detay: "Açgözlülük çoğu zaman batırır." },
       },
+      {
+        metin: "Vurgundan vazgeç, eseri gerçek değeriyle sat.",
+        baseBasariSansi: 75,
+        basariliSonuc: {
+          para: 8,
+          ahlak: 4,
+          mesaj: "Dürüst satış küçük ama temiz bir kâr getirdi.",
+          detay: "Küçük ve temiz, büyük ve kirliden iyidir.",
+        },
+        basarisizSonuc: {
+          para: -4,
+          mesaj: "Gerçek değeriyle satmak beklediğin ilgiyi görmedi.",
+          detay: "Dürüstlük her zaman ilgi çekmez.",
+        },
+      },
     ],
   },
   {
@@ -764,6 +1150,21 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
         basariliSonuc: { para: -20, ahlak: -8, mesaj: "Sorun para ile çözüldü; loncada kalmayı başardın.", detay: "Bazı sorunlar sadece ertelenir." },
         basarisizSonuc: { para: -20, un: -20, ahlak: -10, mesaj: "Rüşvet işe yaramadı, loncadan ihraç edildin.", detay: "Bazı itibar kayıpları geri alınamaz." },
       },
+      {
+        metin: "Suçunu itiraf et, affı dile.",
+        baseBasariSansi: 40,
+        basariliSonuc: {
+          ahlak: 10,
+          un: -8,
+          mesaj: "İtirafın bazı ustaları etkiledi; ağır ama hafifletilmiş bir cezayla loncada kaldın.",
+          detay: "İtiraf bazen tam bir çöküşü önler.",
+        },
+        basarisizSonuc: {
+          un: -18,
+          mesaj: "İtirafın işe yaramadı, aynı şekilde ihraç edildin ama en azından vicdanın rahat.",
+          detay: "Dürüstlük bazen kaderi değiştirmez.",
+        },
+      },
     ],
   },
 
@@ -782,6 +1183,20 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 50,
         basariliSonuc: { para: 20, ahlak: -12, suc_artis: 14, mesaj: "Ortaklık işe yaradı, ikiniz de kazandınız.", detay: "Karanlık işler bazen ortaklık gerektirir." },
         basarisizSonuc: { para: -12, un: -12, ahlak: -10, suc_artis: 16, mesaj: "Ortağın seni ele verdi, kendini kurtarmaya çalıştı.", detay: "Karanlıkta güven nadir bulunur." },
+      },
+      {
+        metin: "Planı bırak, tek başına dürüst devam et.",
+        baseBasariSansi: 85,
+        basariliSonuc: {
+          ahlak: 4,
+          mesaj: "Planı bıraktın, tehlikeli bir ortaklıktan kendini korudun.",
+          detay: "Bazen en iyi ortak, hiç ortak olmamaktır.",
+        },
+        basarisizSonuc: {
+          mutluluk: -2,
+          mesaj: "Kaçırdığın fırsatı düşünüp içerledin.",
+          detay: "Vazgeçmenin de bir bedeli olabilir.",
+        },
       },
     ],
   },
@@ -840,6 +1255,19 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
           detay: "Sanatın yolu hayal kırıklıklarıyla döşelidir.",
         },
       },
+      {
+        metin: "Riske girme, planı rafa kaldır.",
+        baseBasariSansi: 80,
+        basariliSonuc: {
+          mesaj: "Fikri erteledin, param cepte kaldı ama içindeki huzursuzluk sürdü.",
+          detay: "Ertelenen fikirler bazen içini kemirir.",
+        },
+        basarisizSonuc: {
+          mutluluk: -3,
+          mesaj: "Ertelemek, seni daha da tatminsiz bıraktı.",
+          detay: "Bazı erteler asla telafi edilmez.",
+        },
+      },
     ],
   },
   {
@@ -868,6 +1296,22 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
           detay: "Her ret bir bedel getirir.",
         },
       },
+      {
+        metin: "Tarzından ödün ver, siparişi kabul et.",
+        baseBasariSansi: 75,
+        basariliSonuc: {
+          para: 14,
+          mutluluk: -3,
+          mesaj: "Ruhsuz eseri teslim ettin, kesen doldu ama içinde bir şey eksildi.",
+          detay: "Para bazen ruhun bedelidir.",
+        },
+        basarisizSonuc: {
+          para: -4,
+          un: -4,
+          mesaj: "Gönülsüz yaptığın iş de beğenilmedi, hem parayı hem itibarı kaybettin.",
+          detay: "Yarım gönülle yapılan iş nadiren tutar.",
+        },
+      },
     ],
   },
   {
@@ -887,6 +1331,20 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
         basariliSonuc: { para: -8, mutluluk: 6, un: 6, mesaj: "Yolculuk zihnini tazeledi; döndüğünde yeni fikirlerle doluydun.", detay: "Bazen uzaklaşmak, en yakın çözümdür." },
         basarisizSonuc: { para: -8, mutluluk: -3, mesaj: "Yolculuk beklediğin ilhamı getirmedi.", detay: "İlham davetle gelmez." },
       },
+      {
+        metin: "Zorla, masaya otur ve üretmeye devam et.",
+        baseBasariSansi: 45,
+        basariliSonuc: {
+          uretim_kapasitesi_artis: 4,
+          mesaj: "Zorlayarak ürettiğin iş beklenenden iyi çıktı.",
+          detay: "Bazen ilham, çalışırken gelir.",
+        },
+        basarisizSonuc: {
+          mutluluk: -5,
+          mesaj: "Zorlama işe yaramadı, hayal kırıklığın büyüdü.",
+          detay: "İlhamsız çalışmak bazen boşa gider.",
+        },
+      },
     ],
   },
   {
@@ -904,6 +1362,19 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 68,
         basariliSonuc: { un: 8, dost_puani: 6, mutluluk: 4, mesaj: "Öğrencin yeteneğini geliştirdi; adın bir üslubun kurucusu olarak anılmaya başladı.", detay: "Öğretmek, sanatı ölümsüzleştirir." },
         basarisizSonuc: { mutluluk: -3, mesaj: "Öğrencin ilgisiz çıktı, sabrın boşa gitti.", detay: "Her tohum aynı toprakta filizlenmez." },
+      },
+      {
+        metin: "Nazikçe reddet, yalnız çalışmayı tercih et.",
+        baseBasariSansi: 80,
+        basariliSonuc: {
+          mesaj: "Yalnızlığını korudun, sanatın kesintisiz aktı.",
+          detay: "Bazı sanatçılar yalnız çalışmayı sever.",
+        },
+        basarisizSonuc: {
+          mutluluk: -2,
+          mesaj: "Reddin gencin gözünde seni biraz soğuk gösterdi.",
+          detay: "Yalnızlığın da bir bedeli olabilir.",
+        },
       },
     ],
   },
@@ -923,6 +1394,20 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
         basariliSonuc: { un: 8, ahlak: 4, mesaj: "Lonca hakkını teslim etti; taklitçi uyarıldı.", detay: "Adalet bazen zaman alır ama gelir." },
         basarisizSonuc: { mutluluk: -4, dost_puani: -3, mesaj: "Lonca yeterli kanıt bulamadı, şikâyetin sonuçsuz kaldı.", detay: "Her haksızlık kanıtlanamaz." },
       },
+      {
+        metin: "Görmezden gel, kendi sanatına odaklan.",
+        baseBasariSansi: 75,
+        basariliSonuc: {
+          mutluluk: 2,
+          mesaj: "Görmezden gelmen huzurunu korudu, enerjini yeni esere verdin.",
+          detay: "Bazı savaşlar savaşılmaya değmez.",
+        },
+        basarisizSonuc: {
+          un: -4,
+          mesaj: "Taklit yayıldıkça, gerçek eserin gölgede kaldı.",
+          detay: "Sessizlik bazen bir bedel ister.",
+        },
+      },
     ],
   },
   {
@@ -941,6 +1426,21 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
         maliyet: 10,
         basariliSonuc: { para: -10, un: 14, ahlak: 6, mesaj: "Eserin manastırda kutsal bir emanet gibi saklandı; adın uzak diyarlara ulaştı.", detay: "İnanç için yapılan iş, farklı bir anlam taşır." },
         basarisizSonuc: { para: -10, mutluluk: -4, mesaj: "Eser istenen ruhu yansıtmadı, keşişler hayal kırıklığına uğradı.", detay: "Kutsal bir iş, sıradan bir işten daha zordur." },
+      },
+      {
+        metin: "Standart, hızlı bir iş çıkar, fazla ruh katma.",
+        baseBasariSansi: 70,
+        basariliSonuc: {
+          para: -6,
+          un: 4,
+          mesaj: "Standart iş de kabul gördü, keşişler memnun kaldı.",
+          detay: "Her iş büyük bir ruh gerektirmez.",
+        },
+        basarisizSonuc: {
+          para: -6,
+          mesaj: "Sıradan iş beklenen etkiyi yaratmadı.",
+          detay: "Bazı sipariş sahipleri fazlasını bekler.",
+        },
       },
     ],
   },
@@ -985,6 +1485,21 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
         basariliSonuc: { para: -18, un: 24, mutluluk: 6, mesaj: "Eser tamamlandığında şehir onu görmeye akın etti; adın efsaneleşti.", detay: "Bazı eserler ustasından uzun yaşar." },
         basarisizSonuc: { para: -18, mutluluk: -6, mesaj: "Eser yarım kaldı, hem malzeme hem umut tükendi.", detay: "Büyük hayaller bazen büyük hayal kırıklığı getirir." },
       },
+      {
+        metin: "Hırsını törpüle, daha küçük ve güvenli bir eserle yetin.",
+        baseBasariSansi: 80,
+        basariliSonuc: {
+          para: 4,
+          mutluluk: 2,
+          mesaj: "Küçük eser de güzel oldu, güvenli bir tatmin yaşadın.",
+          detay: "Küçük bir eser bile bir eserdir.",
+        },
+        basarisizSonuc: {
+          mutluluk: -3,
+          mesaj: "Küçük eser bile beklediğin tatmini vermedi.",
+          detay: "Bazen küçük hedefler de tatmin etmez.",
+        },
+      },
     ],
   },
   {
@@ -1002,6 +1517,20 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 70,
         basariliSonuc: { un: 18, mutluluk: 6, mesaj: "Koleksiyonun nesiller boyu sergilenecek; adın sanat tarihine geçti.", detay: "Gerçek bir usta, öldükten sonra da öğretmeye devam eder." },
         basarisizSonuc: { mutluluk: -3, mesaj: "Koleksiyonun beklediğin ilgiyi görmedi.", detay: "Her miras hemen takdir edilmez." },
+      },
+      {
+        metin: "Eserlerini sat, geleceğe bırakma.",
+        baseBasariSansi: 80,
+        basariliSonuc: {
+          para: 16,
+          mesaj: "Eserlerin para getirdi ama mirasın kimseye kalmadı.",
+          detay: "Bazı seçimler geleceği değil, bugünü düşünür.",
+        },
+        basarisizSonuc: {
+          mutluluk: -3,
+          mesaj: "Sattığın eserler beklediğin değeri bulmadı.",
+          detay: "Satış her zaman düşündüğün gibi gitmez.",
+        },
       },
     ],
   },
@@ -1021,6 +1550,21 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
         basariliSonuc: { un: 12, ahlak: 4, mesaj: "Eserlerin kendi adına konuştu; halk senin tarzını daha çok sevdi.", detay: "En iyi cevap bazen sessizce üretmektir." },
         basarisizSonuc: { mutluluk: -3, mesaj: "Rakibin ilgisi bir süre daha üstünde kaldı.", detay: "Her rekabet hemen kazanılmaz." },
       },
+      {
+        metin: "Onunla tartışmaya gir, tarzını savun.",
+        baseBasariSansi: 50,
+        basariliSonuc: {
+          un: 6,
+          mesaj: "Tartışmayı kazandın, halk senin tarafını tuttu.",
+          detay: "Bazen sözle savunmak da gerekir.",
+        },
+        basarisizSonuc: {
+          mutluluk: -5,
+          un: -4,
+          mesaj: "Tartışma seni küçük düşürdü, rakibin daha da güçlendi.",
+          detay: "Her tartışma kazanılmaz.",
+        },
+      },
     ],
   },
   {
@@ -1039,6 +1583,20 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
         maliyet: 20,
         basariliSonuc: { para: -20, un: 26, mutluluk: 8, mesaj: "Eser tamamlandığında herkes hayran kaldı; adın sanat tarihine altın harflerle yazıldı.", detay: "Bazı ömürler, tek bir eserle özetlenir." },
         basarisizSonuc: { para: -20, mutluluk: -6, mesaj: "Eser tamamlanamadan gücün tükendi; yarım kalan hayalin seni üzdü.", detay: "Her büyük hayal gerçekleşmez, ama yine de anlamlıdır." },
+      },
+      {
+        metin: "Riske girme, birikimini koru, sakin bir emeklilik seç.",
+        baseBasariSansi: 85,
+        basariliSonuc: {
+          mutluluk: 3,
+          mesaj: "Sakin bir emeklilik seçtin, huzurluydun ama 'büyük eser' hep bir hayal kaldı.",
+          detay: "Huzur da bir çeşit zaferdir.",
+        },
+        basarisizSonuc: {
+          mutluluk: -4,
+          mesaj: "Riske girmediğine hep pişman oldun.",
+          detay: "Bazı pişmanlıklar hayat boyu sürer.",
+        },
       },
     ],
   },

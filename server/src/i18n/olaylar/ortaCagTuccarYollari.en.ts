@@ -361,6 +361,17 @@ export const OLAYLAR_ORTACAG_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
           detay: "Not every seed sprouts in the same soil.",
         },
       },
+      {
+        metin: "Forget the wisdom — hand him a small purse and go on your way.",
+        basariliSonuc: {
+          mesaj: "You handed him a small purse and went on your way; practical, but a farewell without warmth.",
+          detay: "Sometimes copper is chosen over wisdom.",
+        },
+        basarisizSonuc: {
+          mesaj: "The young man refused the money; you never quite forgot the disappointment in his eyes.",
+          detay: "Some people want an answer, not alms.",
+        },
+      },
     ],
   },
 
@@ -1311,6 +1322,17 @@ export const OLAYLAR_ORTACAG_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
         basarisizSonuc: {
           mesaj: "Your health no longer lets you give as much, but your intention is still the same, and the city knows it.",
           detay: "Even a tired hand can still stay open.",
+        },
+      },
+      {
+        metin: "Enough — spend your last years on your own comfort, keep your purse shut.",
+        basariliSonuc: {
+          mesaj: "You kept your purse shut tight; a comfortable retirement, but your legend faded a little in people's mouths.",
+          detay: "Every story falls silent someday.",
+        },
+        basarisizSonuc: {
+          mesaj: "The city still expected something from you; your silence created a strange disappointment.",
+          detay: "Legends don't like retiring.",
         },
       },
     ],

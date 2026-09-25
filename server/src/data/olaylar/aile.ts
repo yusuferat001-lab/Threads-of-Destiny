@@ -196,6 +196,21 @@ export const OLAY_AILE: OlayTanimi[] = [
           mesaj: "Kullanılmadı.",
         },
       },
+      {
+        metin: "Heyecanlanma, önce nabzını kontrol et, sonra sevin.",
+        baseBasariSansi: 100,
+        basariliSonuc: {
+          saglik: 8,
+          mutluluk: 6,
+          etiket_sil: [
+            "cocuk_saglik_zamani:iyi",
+          ],
+          mesaj: "Elini alnına koyup ateşin gerçekten düştüğünden emin oldun; sonra rahatlayıp gülümsedin. Çocuğun yaşıyor!",
+        },
+        basarisizSonuc: {
+          mesaj: "Kullanılmadı.",
+        },
+      },
     ],
   },
   {

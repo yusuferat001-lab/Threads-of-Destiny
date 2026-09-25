@@ -322,6 +322,21 @@ export const OLAY_SANAYI_ASKER_YOLLARI: OlayTanimi[] = [
           detay: "Gizli görevler bazen sır olarak kalmaz.",
         },
       },
+      {
+        metin: "Görevi nazikçe reddet; bu türden işlere karışmak istemediğini söyle.",
+        baseBasariSansi: 65,
+        basariliSonuc: {
+          mutluluk: 4,
+          mesaj: "Reddini kimse sorun etmedi; en azından geceler rahat geçti.",
+          detay: "Her görev kabul edilmek zorunda değildir.",
+        },
+        basarisizSonuc: {
+          un: -6,
+          mutluluk: -3,
+          mesaj: "Üst komuta reddini 'güvenilmezlik' diye kaydetti; bazı kapılar artık sana kapalı.",
+          detay: "Bazı hayırlar bir bedel ister.",
+        },
+      },
     ],
   },
   {
@@ -400,6 +415,22 @@ export const OLAY_SANAYI_ASKER_YOLLARI: OlayTanimi[] = [
           detay: "Sokaklar her zaman itaat etmez.",
         },
       },
+      {
+        metin: "Zor kullanmadan, konuşarak yatıştırmayı dene.",
+        baseBasariSansi: 55,
+        basariliSonuc: {
+          ahlak: 8,
+          mutluluk: 4,
+          mesaj: "Sabrın işe yaradı, kalabalık kendiliğinden dağıldı; ama üst komuta 'yumuşaklığından' pek hoşlanmadı.",
+          detay: "Bazı zaferler alkışlanmaz.",
+        },
+        basarisizSonuc: {
+          saglik: -6,
+          ahlak: 2,
+          mesaj: "Sabrın yetmedi, kalabalık taşkınlık yaptı; hem yara aldın hem sonuç alamadın.",
+          detay: "İyi niyet her zaman yeterli değildir.",
+        },
+      },
     ],
   },
   {
@@ -430,6 +461,21 @@ export const OLAY_SANAYI_ASKER_YOLLARI: OlayTanimi[] = [
           detay: "Bazen itaat de eleştirilir.",
         },
       },
+      {
+        metin: "Dürüst ol: bazı emirleri içten içe sorguladığını da itiraf et.",
+        baseBasariSansi: 45,
+        basariliSonuc: {
+          ahlak: 10,
+          un: 4,
+          mesaj: "Heyetten biri dürüstlüğünü takdir etti; terfi yavaş geldi ama saygınlığın arttı.",
+          detay: "Bazı zaferler yavaş gelir.",
+        },
+        basarisizSonuc: {
+          un: -8,
+          mesaj: "Heyet bunu 'güvenilmezlik' saydı, terfi listesinden adın silindi.",
+          detay: "Dürüstlük her zaman ödüllendirilmez.",
+        },
+      },
     ],
   },
   {
@@ -458,6 +504,22 @@ export const OLAY_SANAYI_ASKER_YOLLARI: OlayTanimi[] = [
           ahlak: -4,
           mesaj: "Kalabalık kapıyı zorladı, itişme çıktı; görevini tamamlayamadın, üstlerin hayal kırıklığına uğradı.",
           detay: "Bazı kapılar kalabalığın öfkesine dayanmaz.",
+        },
+      },
+      {
+        metin: "Kapıyı azıcık aralayıp birkaç işçi temsilcisinin patronla konuşmasına izin ver.",
+        baseBasariSansi: 50,
+        basariliSonuc: {
+          ahlak: 10,
+          dost_puani: 6,
+          mesaj: "Temsilcilerle patron arasında kısa bir görüşme sağladın; gerginlik biraz yatıştı.",
+          detay: "Bazen kapıyı azıcık aralamak yeter.",
+        },
+        basarisizSonuc: {
+          un: -8,
+          ahlak: 2,
+          mesaj: "Üstlerin bunu emre itaatsizlik saydı, azar işittin; işçiler de sana pek güvenmedi.",
+          detay: "Ortayı bulmak herkesi kızdırabilir.",
         },
       },
     ],
@@ -534,6 +596,22 @@ export const OLAY_SANAYI_ASKER_YOLLARI: OlayTanimi[] = [
           un: 6,
           mesaj: "Sözlerin genç subayı etkiledi ama kendi kulağına boş geldi; yıllardır bastırdığın bir soru yeniden kapıyı çaldı.",
           detay: "Zafer bazen içeride yankısını bulamaz.",
+        },
+      },
+      {
+        metin: "İçini dök: bu kadar itaatin de bir bedeli olduğunu anlat.",
+        baseBasariSansi: 60,
+        basariliSonuc: {
+          ahlak: 8,
+          mutluluk: 6,
+          mesaj: "Genç subay bu dürüstlüğü takdir etti; sen de yıllardır ilk kez rahat bir nefes aldın.",
+          detay: "Bazı itiraflar yükü hafifletir.",
+        },
+        basarisizSonuc: {
+          un: -5,
+          mutluluk: -2,
+          mesaj: "Genç subay hayal kırıklığına uğradı; bakışları 'idolüm bu muydu' der gibiydi.",
+          detay: "Gerçek her zaman ilham vermez.",
         },
       },
     ],
@@ -757,6 +835,21 @@ export const OLAY_SANAYI_ASKER_YOLLARI: OlayTanimi[] = [
           detay: "Siyasetin içine girmek bazen geri dönüşü zor bir adımdır.",
         },
       },
+      {
+        metin: "Nazikçe reddet; ordu içinde tarafsız kalmayı tercih et.",
+        baseBasariSansi: 75,
+        basariliSonuc: {
+          un: 2,
+          mutluluk: 3,
+          mesaj: "Tarafsız kalman kimseyi kızdırmadı ama reform hareketine de bir katkın olmadı.",
+          detay: "Bazen hiçbir taraf olmamak da bir tercihtir.",
+        },
+        basarisizSonuc: {
+          un: -4,
+          mesaj: "Siyasetçi reddini soğuk karşıladı; reformcu çevrelerde adın biraz sönükleşti.",
+          detay: "Tarafsızlık bazen ikisini de küstürür.",
+        },
+      },
     ],
   },
   {
@@ -926,6 +1019,21 @@ export const OLAY_SANAYI_ASKER_YOLLARI: OlayTanimi[] = [
           detay: "Merhamet bazen otoritenin gözünde zaaf sayılır.",
         },
       },
+      {
+        metin: "Sessiz kal, otoriteyle ters düşme.",
+        baseBasariSansi: 85,
+        basariliSonuc: {
+          mutluluk: -6,
+          mesaj: "Cezayı seyrettin, hiçbir şey demedin; vicdanın seni gece boyu rahat bırakmadı.",
+          detay: "Sessizlik bazen en ağır bedeldir.",
+        },
+        basarisizSonuc: {
+          mutluluk: -10,
+          ahlak: -4,
+          mesaj: "Sessiz kalman bile fark edildi, erler arasında 'duyarsız' diye anıldın.",
+          detay: "Bazen sessizlik de bir tercih sayılır.",
+        },
+      },
     ],
   },
   {
@@ -954,6 +1062,21 @@ export const OLAY_SANAYI_ASKER_YOLLARI: OlayTanimi[] = [
           mutluluk: -2,
           mesaj: "General sözlerini nazikçe dinledi ama pek önemsemedi; yine de içinde bir huzur var.",
           detay: "Her miras hemen fark edilmez.",
+        },
+      },
+      {
+        metin: "Alçakgönüllülükle, öğrenecek daha çok şeyin olduğunu söyle.",
+        baseBasariSansi: 88,
+        basariliSonuc: {
+          mutluluk: 5,
+          dost_puani: 4,
+          mesaj: "Alçakgönüllülüğün generali daha da etkiledi; sohbetiniz saatlerce sürdü.",
+          detay: "Bazı bilgelikler kibirsiz gelir.",
+        },
+        basarisizSonuc: {
+          mutluluk: -2,
+          mesaj: "General bu tevazuyu kaçamak cevap sandı, biraz hayal kırıklığına uğradı.",
+          detay: "Alçakgönüllülük bazen yanlış anlaşılır.",
         },
       },
     ],
@@ -1039,6 +1162,22 @@ export const OLAY_SANAYI_ASKER_YOLLARI: OlayTanimi[] = [
           detay: "Zorbalık her zaman kazandırmaz.",
         },
       },
+      {
+        metin: "Sert olmadan, göstermelik bir düzen kurmayı dene.",
+        baseBasariSansi: 50,
+        basariliSonuc: {
+          ahlak: 10,
+          un: -6,
+          mesaj: "Kansız bir düzen kurdun; üst komuta senden 'daha sert' bekliyordu ama vicdanın rahat.",
+          detay: "Bazı zaferler kan istemez.",
+        },
+        basarisizSonuc: {
+          un: -10,
+          saglik: -6,
+          mesaj: "Yumuşak yaklaşımın zayıflık sayıldı, direniş cesaretlendi; hem sonuç alamadın hem itibar kaybettin.",
+          detay: "Merhamet bazı yerlerde bedel ister.",
+        },
+      },
     ],
   },
   {
@@ -1118,6 +1257,22 @@ export const OLAY_SANAYI_ASKER_YOLLARI: OlayTanimi[] = [
           un: -8,
           mesaj: "Köylüler son anda direndi, çatışma büyüdü; kayıplar verdin, ama köy yine de yıkıldı.",
           detay: "Yıkım bazen planlandığından fazla can alır.",
+        },
+      },
+      {
+        metin: "Köyü yakma; sadece uyar ve geri çekil.",
+        baseBasariSansi: 45,
+        basariliSonuc: {
+          ahlak: 14,
+          un: -8,
+          mesaj: "Köyü kurtardın ama üst komuta bunu 'görevi savsaklamak' saydı; adın 'yumuşak' diye anılmaya başladı.",
+          detay: "Vicdanının rahat olması bazen bir bedel ister.",
+        },
+        basarisizSonuc: {
+          un: -14,
+          mutluluk: -4,
+          mesaj: "Emri açıkça reddettiğin için disiplin kuruluna sevk edildin; üstlerin seni asla affetmedi.",
+          detay: "Bazı reddedişlerin bedeli ağır olur.",
         },
       },
     ],
@@ -1247,6 +1402,22 @@ export const OLAY_SANAYI_ASKER_YOLLARI: OlayTanimi[] = [
           detay: "Zulüm bazen hiçbir şey kazandırmadan sona erer.",
         },
       },
+      {
+        metin: "Sorguyu insani yöntemlerle, sabırla sürdür.",
+        baseBasariSansi: 40,
+        basariliSonuc: {
+          ahlak: 12,
+          un: -4,
+          mesaj: "Sabırlı yaklaşımın sonunda işe yaradı, elebaşı gönüllü konuştu; üstlerin şaşkın ama memnun.",
+          detay: "Bazen sabır kılıçtan keskindir.",
+        },
+        basarisizSonuc: {
+          un: -10,
+          mutluluk: -5,
+          mesaj: "Vakit kaybettin, saldırı önlenemedi; üstlerin seni 'yumuşaklıkla' suçladı.",
+          detay: "İnsaflı olmanın da bir bedeli vardır.",
+        },
+      },
     ],
   },
   {
@@ -1277,6 +1448,23 @@ export const OLAY_SANAYI_ASKER_YOLLARI: OlayTanimi[] = [
           mutluluk: -6,
           mesaj: "Tören sırasında bir gazetecinin sorusu seni köşeye sıkıştırdı; ödül gölgede kaldı.",
           detay: "Bazı geçmişler törenlerle örtülmez.",
+        },
+      },
+      {
+        metin: "Ödülü nazikçe reddet, sessizce çekil.",
+        baseBasariSansi: 70,
+        basariliSonuc: {
+          ahlak: 10,
+          mutluluk: 4,
+          un: -10,
+          mesaj: "Ödülü reddetmen komuta kademesini şaşırttı; ama içindeki ağırlık biraz hafifledi.",
+          detay: "Bazı ödüller taşınmaya değmez.",
+        },
+        basarisizSonuc: {
+          un: -14,
+          mutluluk: -2,
+          mesaj: "Reddin 'nankörlük' olarak yorumlandı, seni dışladılar.",
+          detay: "Vicdan bazen yalnızlık getirir.",
         },
       },
     ],
@@ -1312,6 +1500,22 @@ export const OLAY_SANAYI_ASKER_YOLLARI: OlayTanimi[] = [
           detay: "Zulümle kurulan düzen, bir gün geri döner.",
         },
       },
+      {
+        metin: "Müzakere teklif et; kan dökülmeden bir anlaşma ara.",
+        baseBasariSansi: 40,
+        basariliSonuc: {
+          ahlak: 14,
+          un: -6,
+          mesaj: "Beklenmedik biçimde bir anlaşma sağladın; kimse ölmedi ama üstlerin seni 'zayıf' buldu.",
+          detay: "Barış bazen zafer sayılmaz.",
+        },
+        basarisizSonuc: {
+          saglik: -14,
+          un: -10,
+          mesaj: "Müzakere girişimin pusu sayıldı, saldırıya uğradın; ağır kayıplar verdin.",
+          detay: "Bazı eller barışa açılmaz.",
+        },
+      },
     ],
   },
   {
@@ -1342,6 +1546,22 @@ export const OLAY_SANAYI_ASKER_YOLLARI: OlayTanimi[] = [
           rakip_puani: -10,
           mesaj: "Lider teslim olmak yerine daha sert bir karşılık verdi; rehin girişimi bölgeyi ayaklandırdı.",
           detay: "Zulüm bazen beklenmedik bir öfkeyle geri döner.",
+        },
+      },
+      {
+        metin: "Bu yönteme karşı çık; doğrudan bir kuşatma öner.",
+        baseBasariSansi: 45,
+        basariliSonuc: {
+          ahlak: 16,
+          un: -6,
+          mesaj: "Ailenin dokunulmazlığını savundun; kuşatma zorlu geçti ama vicdanın temiz kaldı.",
+          detay: "Bazı zaferler yavaş ama temiz gelir.",
+        },
+        basarisizSonuc: {
+          saglik: -12,
+          un: -10,
+          mesaj: "Kuşatma uzadı, direniş güçlendi; üstlerin seni 'kararsızlıkla' suçladı.",
+          detay: "Vicdan bazen savaşı uzatır.",
         },
       },
     ],
@@ -1708,6 +1928,21 @@ export const OLAY_SANAYI_ASKER_YOLLARI: OlayTanimi[] = [
           detay: "Deniz bazen kaçışı bile geri çevirir.",
         },
       },
+      {
+        metin: "Riske girme; terhis için resmi bir dilekçe hazırlamayı dene.",
+        baseBasariSansi: 45,
+        basariliSonuc: {
+          mutluluk: 5,
+          mesaj: "Dilekçen kabul gördü; birkaç ay içinde onurlu bir terhis alacaksın.",
+          detay: "Bazı özgürlükler kağıt üzerinde kazanılır.",
+        },
+        basarisizSonuc: {
+          mutluluk: -5,
+          un: -3,
+          mesaj: "Dilekçen geri çevrildi; üstlerin seni artık şüpheyle izliyor.",
+          detay: "Her kaçış hayali kağıda dökülmez.",
+        },
+      },
     ],
   },
   {
@@ -1738,6 +1973,24 @@ export const OLAY_SANAYI_ASKER_YOLLARI: OlayTanimi[] = [
           etiket_ekle: ["hapiste"],
           mesaj: "Sınır devriyesi seni karanlıkta yakaladı; sınır ihlali suçlamasıyla gözaltına alındın.",
           detay: "Karanlık her zaman iyi bir örtü olmaz.",
+        },
+      },
+      {
+        metin: "Sahte belgelerle, resmi geçiş noktasından sıradan bir gezgin gibi geç.",
+        baseBasariSansi: 40,
+        basariliSonuc: {
+          para: -10,
+          mutluluk: 6,
+          etiket_ekle: ["sd_firari_sinir_disi"],
+          mesaj: "Sahte belgeler işe yaradı, nöbetçiler seni sıradan bir gezgin sandı.",
+          detay: "Bazı kaçışlar cesaretten çok kağıt ister.",
+        },
+        basarisizSonuc: {
+          para: -10,
+          suc_artis: 10,
+          etiket_ekle: ["hapiste"],
+          mesaj: "Sahte belgelerin sahteliği anlaşıldı; daha karanlık bir suçlamayla içeri atıldın.",
+          detay: "Sahtekarlık bazen gerçek suçtan ağır cezalandırılır.",
         },
       },
     ],

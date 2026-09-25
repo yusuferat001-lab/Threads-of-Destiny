@@ -1228,6 +1228,23 @@ export const OLAY_GENEL: OlayTanimi[] = [
           detay: "Yardımcın bir korkaktı. Hem paranı hem sağlığını kaybettin.",
         },
       },
+      {
+        metin: "Korumana güvenme, kendin de bıçağını çek.",
+        baseBasariSansi: 45,
+        basariliSonuc: {
+          un: 10,
+          saglik: -6,
+          mesaj: "İkiniz birlikte serserileri püskürttünüz; yara aldın ama ayaktasın.",
+          detay: "Bazen kendi işini kimseye bırakmamak gerekir.",
+        },
+        basarisizSonuc: {
+          saglik: -25,
+          para: -15,
+          olum_sansi: 5,
+          mesaj: "Serseriler ikinizi de yendi; ağır yaralı ve parasız kaldın.",
+          detay: "Cesaret her zaman yetmez.",
+        },
+      },
     ],
   },
   {
@@ -1309,6 +1326,21 @@ export const OLAY_GENEL: OlayTanimi[] = [
           ekip_sil: "Muhasebeci",
           mesaj: "Kasa bomboş! Yaverin tüm nakdini alıp gece yarısı bir gemiyle kaçmış.",
           detay: "İşe yaramaz bir hırsıza güvenmenin bedelini ödedin.",
+        },
+      },
+      {
+        metin: "Hesapları kontrol etme, ona güven, dinlenmeye bak.",
+        baseBasariSansi: 70,
+        basariliSonuc: {
+          mutluluk: 8,
+          para: 10,
+          mesaj: "Dinlenmen iyi geldi; döndüğünde kasanın gerçekten iyi durumda olduğunu gördün.",
+          detay: "Bazen güvenmek de bir tercih, hatta bir dinlenmedir.",
+        },
+        basarisizSonuc: {
+          para: -30,
+          mesaj: "Güvenin kötüye kullanıldı; yaverin parayı alıp kayıplara karıştı.",
+          detay: "Kontrolsüz güven bazen pahalıya patlar.",
         },
       },
     ],
