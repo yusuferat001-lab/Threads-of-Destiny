@@ -646,12 +646,13 @@ const YOLCULUK_KAZANC_CARPANI = 1.2;
 
 /**
  * Her olay seçiminden gelen pozitif paraya uygulanan sabit çarpan. Büyük denge
- * turunda 1.055'ten 0.85'e çekildi: kullanıcı "olaylardan gelen para ödüllerini
- * %20 düşür" dedi — eski +%5.5 primi de yutularak net ≈ −%20. YALNIZ pozitif
- * para'ya biner (kayıplara değil). Meslek/yolculuk/suç çarpanlarının hepsinin
- * altında, ilk sırada uygulanır.
+ * turunda 1.055'ten 0.85'e çekilmişti (kullanıcı "olaylardan gelen para
+ * ödüllerini %20 düşür" demişti). 2026-09 sonu: kullanıcı isteğiyle bu değer
+ * tekrar +%5 artırıldı (0.85 × 1.05). YALNIZ pozitif para'ya biner (kayıplara
+ * değil). Meslek/yolculuk/suç çarpanlarının hepsinin altında, ilk sırada
+ * uygulanır.
  */
-const OLAY_PARA_PRIMI = 0.85;
+const OLAY_PARA_PRIMI = 0.8925;
 
 type SucKazanciSonucu = "yok" | "suc" | "ciddi";
 

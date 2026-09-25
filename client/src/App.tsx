@@ -353,7 +353,6 @@ function App() {
   const [nasilOynanirAcik, setNasilOynanirAcik] = useState(false);
   const [yenilikAcik, setYenilikAcik] = useState(false);
   const [yeniBasarimlar, setYeniBasarimlar] = useState<BasarimTanimi[]>([]);
-  const [buOmurBasarimlar, setBuOmurBasarimlar] = useState<BasarimTanimi[]>([]);
   const [dil, setDil] = useState<Dil>(() => ayarlariGetir().dil);
   const [basarimlar, setBasarimlar] = useState(() => basarimlariGetir());
   const [basarimlarAcik, setBasarimlarAcik] = useState(false);
@@ -365,6 +364,9 @@ function App() {
   const [goldBakiye, setGoldBakiye] = useState(() => goldBakiyeGetir());
   const [kozmetikMagazaAcik, setKozmetikMagazaAcik] = useState(false);
   const [giyilenKozmetikler, setGiyilenKozmetikler] = useState<GiyilenKozmetikler>(() => kozmetikGiyilenlerGetir());
+  // Gold/kozmetik dolabı arayüzü şu an gizli (GUNLUK_KOZMETIK_GOLD_GORUNUR=false) — daha önce
+  // giyilmiş bir eşya kalmışsa bile oyuncuya avatarda GÖRÜNMESİN.
+  const avatarKozmetikleri = GUNLUK_KOZMETIK_GOLD_GORUNUR ? giyilenKozmetikler : undefined;
   const [bolgeBilgiAcik, setBolgeBilgiAcik] = useState(false);
   // Kişilik & Miras artık sol panelde sabit değil — portreye/isme tıklayınca açılan pencere.
   const [kisilikModalAcik, setKisilikModalAcik] = useState(false);
@@ -547,9 +549,8 @@ function App() {
       gecmisHayatKaydet(karakter);
       setGecmisHayatlar(gecmisHayatlariGetir());
       setIsim((mevcut) => mevcut || karakter.isim || '');
-      const { yeniAcilanlar, buOmurKazanilanlar, skor } = basarimlariDegerlendir(karakter);
+      const { yeniAcilanlar, skor } = basarimlariDegerlendir(karakter);
       setYeniBasarimlar(yeniAcilanlar);
-      setBuOmurBasarimlar(buOmurKazanilanlar);
       // Gold — ölümde kazanılan skorun küçük bir oranı (amaç ×5 çarpanı zaten skora yansımış).
       if (olumGoldOdenenRef.current !== karakter.id) {
         olumGoldOdenenRef.current = karakter.id;
@@ -1439,7 +1440,6 @@ function App() {
     setOyuncuIsmi('');
     setSecilenGecmisHayat(null);
     setYeniBasarimlar([]);
-    setBuOmurBasarimlar([]);
     setEkran('giris');
   }
 
@@ -1901,7 +1901,7 @@ function App() {
              taşmıyor. */}
           <div className="acilis-sahne">
             <aside className="acilis-kimlik">
-              <KarakterAvatari kisilik={karakter.kisilik} giyilenKozmetikler={giyilenKozmetikler} />
+              <KarakterAvatari kisilik={karakter.kisilik} giyilenKozmetikler={avatarKozmetikleri} />
               <h2 className="acilis-kimlik-ad">
                 {karakter.isim && <strong>{karakter.isim}</strong>}
                 <span className="acilis-kimlik-alt">{bic(m.acilisAileCocugu, kt(karakter.aile_meslegi))}</span>
@@ -1969,7 +1969,6 @@ function App() {
                   );
                 })}
               </div>
-              <p className="acilis-skor-ipucu">💡 {m.acilisSkorIpucu}</p>
               {yukleniyor && <p className="giris-aciklama">{m.yukleniyor}</p>}
             </div>
           </div>
@@ -2005,7 +2004,7 @@ function App() {
                   meslek={karakter.meslek}
                   kisilik={karakter.kisilik}
                   rutbeSeviye={karakter.rutbe_seviye}
-                  giyilenKozmetikler={giyilenKozmetikler}
+                  giyilenKozmetikler={avatarKozmetikleri}
                 />
                 <div className="sol-panel-baslik">
                   {karakter.isim && <span className="sol-panel-isim">{karakter.isim}</span>}
@@ -2613,7 +2612,7 @@ function App() {
           </>
         );
 
-        const kazanimBlok = (buOmurBasarimlar.length > 0 || karakter.unvanlar.length > 0 || karakter.efsanevi_olum) && (
+        const kazanimBlok = (yeniBasarimlar.length > 0 || karakter.unvanlar.length > 0 || karakter.efsanevi_olum) && (
           <div className="olum-yeni-basarimlar olum-kazanim-alt">
             <h3 className="olum-kazanim-baslik">🏆 {m.olumKazanimBaslik}</h3>
             <div className="olum-kazanim-rozetler">
@@ -2625,18 +2624,13 @@ function App() {
               {karakter.efsanevi_olum && (
                 <span className="liderlik-rozet liderlik-rozet-olum">💀 {karakter.efsanevi_olum}</span>
               )}
-              {buOmurBasarimlar.map((b) => {
-                const yeni = yeniBasarimlar.some((y) => y.id === b.id);
-                return (
-                  <span
-                    key={`b-${b.id}`}
-                    className={`liderlik-rozet liderlik-rozet-unvan${yeni ? ' olum-rozet-yeni' : ''}`}
-                  >
-                    {b.ikon} {b.ad[dil]}
-                    {yeni && <em className="olum-rozet-yeni-etiket"> · {m.bgYeniRozet}</em>}
-                  </span>
-                );
-              })}
+              {/* Sadece bu ölümde İLK KEZ açılan (daha önce hiç kazanılmamış) başarımlar gösterilir. */}
+              {yeniBasarimlar.map((b) => (
+                <span key={`b-${b.id}`} className="liderlik-rozet liderlik-rozet-unvan olum-rozet-yeni">
+                  {b.ikon} {b.ad[dil]}
+                  <em className="olum-rozet-yeni-etiket"> · {m.bgYeniRozet}</em>
+                </span>
+              ))}
             </div>
           </div>
         );
