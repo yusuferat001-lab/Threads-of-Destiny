@@ -4,11 +4,19 @@ import { useDil } from '../DilContext';
 import { formatPara } from '../format';
 import { bic, type Metinler } from '../i18n';
 import type { Dil } from '../ayarlar';
+import { rutbeIlerlemeHesapla } from '../rutbeIlerleme';
 
 interface KariyerEkraniProps {
   meslek: string;
   rutbe: string;
   rutbeSeviye: number;
+  cag: string;
+  dinKultur: string | null;
+  kariyerPuani: number;
+  un: number;
+  ahlak: number;
+  yil: number;
+  sonTerfiYili: number;
   ekip: EkipUyesi[];
   rakipler: Rakip[];
   orduMevcudu: number;
@@ -389,6 +397,13 @@ export function KariyerEkrani({
   meslek,
   rutbe,
   rutbeSeviye,
+  cag,
+  dinKultur,
+  kariyerPuani,
+  un,
+  ahlak,
+  yil,
+  sonTerfiYili,
   ekip,
   rakipler,
   orduMevcudu,
@@ -440,6 +455,20 @@ export function KariyerEkrani({
   const talep = yonetimDurum?.talep ?? null;
   const bikkin = (yonetimDurum?.bikkinlik ?? 0) >= 3;
 
+  const ilerleme = rutbeIlerlemeHesapla(
+    meslek,
+    cag,
+    dinKultur,
+    rutbeSeviye,
+    kariyerPuani,
+    un,
+    ahlak,
+    yil,
+    sonTerfiYili
+  );
+  const statEtiket = (adi: 'un' | 'ahlak' | null) =>
+    adi === 'ahlak' ? m.skorKirilimAhlak.replace(/^[^\s]+\s/, '') : m.skorKirilimSohret.replace(/^[^\s]+\s/, '');
+
   return (
     <div className="ekran ekran-aile ekran-kariyer">
       <h2>{m.geBaslik}</h2>
@@ -453,6 +482,57 @@ export function KariyerEkrani({
           ))}
         </span>
       </div>
+
+      {/* Rütbe/tecrübe ilerleme çubuğu (Faz 6, 2026-09 sonu) — bir sonraki
+          kademeye ne kadar kaldığını (kariyer puanı + mesleğe özgü stat) gösterir. */}
+      {ilerleme.gecerli && (
+        <div className="kariyer-ilerleme-blok">
+          {ilerleme.enUstMu ? (
+            <p className="kariyer-ilerleme-ust">
+              {en ? '🏆 You have reached the highest rank.' : '🏆 En üst kademeye ulaştın.'}
+            </p>
+          ) : (
+            <>
+              <div className="kariyer-ilerleme-baslik">
+                <span>{en ? 'Progress to' : 'Sıradaki kademe:'} <strong>{kt(ilerleme.sonrakiUnvan ?? '')}</strong></span>
+                {ilerleme.cooldownBekliyor && (
+                  <span className="kariyer-ilerleme-cooldown">
+                    {en
+                      ? `Eligible — ${ilerleme.cooldownKalanYil}y until promotion`
+                      : `Hak ettin — terfiye ~${ilerleme.cooldownKalanYil} yıl kaldı`}
+                  </span>
+                )}
+              </div>
+              <div className="kariyer-ilerleme-cubuk-satiri">
+                <span className="kariyer-ilerleme-etiket">{en ? 'Career XP' : 'Kariyer Puanı'}</span>
+                <div className="kariyer-ilerleme-cubuk">
+                  <div
+                    className="kariyer-ilerleme-cubuk-dolu"
+                    style={{ width: `${ilerleme.kariyerPuaniYuzde}%` }}
+                  />
+                </div>
+                <span className="kariyer-ilerleme-deger">
+                  {ilerleme.kariyerPuaniMevcut}/{ilerleme.kariyerPuaniGerekli}
+                </span>
+              </div>
+              {ilerleme.statAdi && (
+                <div className="kariyer-ilerleme-cubuk-satiri">
+                  <span className="kariyer-ilerleme-etiket">{statEtiket(ilerleme.statAdi)}</span>
+                  <div className="kariyer-ilerleme-cubuk">
+                    <div
+                      className="kariyer-ilerleme-cubuk-dolu"
+                      style={{ width: `${ilerleme.statYuzde}%` }}
+                    />
+                  </div>
+                  <span className="kariyer-ilerleme-deger">
+                    {ilerleme.statMevcut}/{ilerleme.statGerekli}
+                  </span>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      )}
 
       {modalMesaj && (
         <div className="kariyer-sonuc-katman" onClick={() => setModalMesaj(null)}>

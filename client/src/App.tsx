@@ -2447,6 +2447,13 @@ function App() {
           meslek={karakter.meslek}
           rutbe={karakter.rutbe}
           rutbeSeviye={karakter.rutbe_seviye}
+          cag={karakter.cag}
+          dinKultur={karakter.din_kultur}
+          kariyerPuani={karakter.kariyer_puani}
+          un={karakter.un}
+          ahlak={karakter.ahlak}
+          yil={karakter.yil}
+          sonTerfiYili={karakter.son_terfi_yili}
           ekip={karakter.ekip}
           rakipler={karakter.rakipler}
           orduMevcudu={karakter.ordu_mevcudu}

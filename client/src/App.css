@@ -5078,6 +5078,13 @@ button.ikincil {
   .ekran-kariyer .aile-cocuklar-karti {
     padding: 0.6rem 0.7rem;
   }
+  .kariyer-ilerleme-blok {
+    padding: 0.5rem 0.6rem;
+  }
+  .kariyer-ilerleme-cubuk-satiri {
+    grid-template-columns: 4.5rem 1fr auto;
+    font-size: 0.72rem;
+  }
   .kariyer-hatlar {
     grid-template-columns: 1fr;
     gap: 0.6rem;
@@ -6559,6 +6566,60 @@ button.ikincil {
 }
 .kariyer-kademe-noktalar .kademe-nokta-dolu {
   background: var(--renk-altin);
+}
+
+/* --- Faz 6 (2026-09 sonu): rütbe/tecrübe ilerleme çubuğu --- */
+.kariyer-ilerleme-blok {
+  margin: 0 0 1rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  background: rgba(120, 85, 30, 0.08);
+  border: 1px solid rgba(120, 85, 30, 0.2);
+}
+.kariyer-ilerleme-ust {
+  margin: 0;
+  font-weight: 600;
+}
+.kariyer-ilerleme-baslik {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  margin-bottom: 0.4rem;
+}
+.kariyer-ilerleme-cooldown {
+  font-size: 0.78rem;
+  opacity: 0.8;
+  font-style: italic;
+}
+.kariyer-ilerleme-cubuk-satiri {
+  display: grid;
+  grid-template-columns: 6.5rem 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  margin-bottom: 0.3rem;
+}
+.kariyer-ilerleme-etiket {
+  opacity: 0.85;
+}
+.kariyer-ilerleme-cubuk {
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(120, 85, 30, 0.18);
+  overflow: hidden;
+}
+.kariyer-ilerleme-cubuk-dolu {
+  height: 100%;
+  background: var(--renk-altin);
+  transition: width 0.3s ease;
+}
+.kariyer-ilerleme-deger {
+  font-variant-numeric: tabular-nums;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 
 /* --- Task 13/15: aile ekranı evlilik butonu + evcil hayvan kartı --- */

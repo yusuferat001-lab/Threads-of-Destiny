@@ -298,8 +298,12 @@ export function maasCarpaniGetir(state: CharacterState): number {
   return Number.isFinite(deger) && deger > 0 ? deger : 1;
 }
 
-/** Kalıcı maaş çarpanının toplam üst/alt sınırı: olay + aile + ekip + yatırım bonusları hep bu bandın içinde kalır. */
-export const MAAS_CARPANI_TAVAN = 1.2;
+/**
+ * Kalıcı maaş çarpanının toplam üst/alt sınırı: olay + aile + ekip + yatırım
+ * bonusları hep bu bandın içinde kalır. Faz 6 ekonomi rebalansı (2026-09 sonu,
+ * kullanıcı isteği: "kalıcı maaş bonuslarını azalt"): tavan 1.20 → 1.15.
+ */
+export const MAAS_CARPANI_TAVAN = 1.15;
 export const MAAS_CARPANI_TABAN = 0.6;
 
 /**
@@ -2867,16 +2871,16 @@ export function vebaBitisKontrolEt(state: CharacterState): string | null {
 }
 
 // Yıllık getiri oranları (taban maliyetin yüzdesi olarak); enflasyonCarpani ile ölçeklenen
-// taban_maliyet üzerine uygulanır. Gelir/gider dengesi turu (kullanıcı: "bakımı düşür,
-// geliri artır"): oranlar yukarı çekildi + bakım oranı ayrıca yarıya indirildi (aşağıda,
-// MULK_BAKIM_ORANI). NORMAL brüt ~%9, bakımın amortize maliyeti ~%1.7/yıl olduğu için net
-// akış artık belirgin pozitif (eskiden ~+%3 net idi, bakım da yarıya inince ~+%7'ye çıktı).
-// simulateGayrimenkul.ts ile doğrulanabilir.
-const MULK_GETIRI_NORMAL = 0.09;
-const MULK_GETIRI_AVANTAJLI = 0.12;
-const MULK_GETIRI_DEZAVANTAJLI = -0.015;
+// taban_maliyet üzerine uygulanır.
+// Faz 6 ekonomi rebalansı (2026-09 sonu, kullanıcı isteği: "gayrimenkul getirilerini
+// ~1-1.5 puan düşür"): NORMAL %9→%7.5, AVANTAJLI %12→%10.5, tavan %17→%15 — gelir/gider
+// dengesi turunun yükselttiği oranlar biraz geri çekildi (bakım oranı/aralığına dokunulmadı,
+// net akış hâlâ pozitif ama daha ölçülü). simulateGayrimenkul.ts ile doğrulanabilir.
+const MULK_GETIRI_NORMAL = 0.075;
+const MULK_GETIRI_AVANTAJLI = 0.105;
+const MULK_GETIRI_DEZAVANTAJLI = -0.02;
 /** Tüm mülk getiri oranlarının (çarpanlar uygulandıktan sonra) mutlak tavanı — "bir anda çok getirip çok götürmesin". */
-const MULK_GETIRI_TAVAN = 0.17;
+const MULK_GETIRI_TAVAN = 0.15;
 const MULK_DEMIRCI_SAVAS_CARPANI = 2.5;
 const KERVAN_BATMA_IHTIMALI_YILLIK = 0.25;
 // Aranma yeniden dengeleme turu: 3→2 — pasif/ambient bir kaynak olduğu için
@@ -2884,12 +2888,15 @@ const KERVAN_BATMA_IHTIMALI_YILLIK = 0.25;
 // (şiddet/soygun) listesiyle aynı hızda birikmesin (kullanıcı isteği).
 const KARABORSA_SUC_ARTISI_YILLIK = 2;
 const KARABORSA_AHLAK_ASINMASI_YILLIK = 0.3;
-// Küçük Tarla — büyük denge turunda "en garanti" mülk yapıldı (kullanıcı: "bir tane uygun
-// gayrimenkul olsun 50'ye alabileceği daha garanti bir şey"): getirisi küçük ama kıtlıkta
-// bile kaybı çok az. taban_maliyet 40→50 (bkz. mulkler.ts).
-const MULK_GETIRI_KUCUK_TARLA_NORMAL = 0.09;
-const MULK_GETIRI_KUCUK_TARLA_AVANTAJLI = 0.105;
-const MULK_GETIRI_KUCUK_TARLA_DEZAVANTAJLI = -0.003;
+// Küçük Tarla vs Çiftlik — Faz 6 ekonomi rebalansı (kullanıcı isteği: "ikisini birbirinden
+// belirgin biçimde ayır"): eskiden ikisi neredeyse aynı getiriyi taşıyordu (yalnız
+// dezavantajlı bantta ufak bir fark vardı). Artık Küçük Tarla AÇIKÇA daha düşük getirili
+// ama neredeyse risksiz ("güvenli liman" — kıtlıkta bile kaybı simgesel); Çiftlik ise temel
+// MULK_GETIRI_* sabitlerini (üstteki, Faz 6'da yükseltilmiş potansiyel + belirgin kıtlık
+// riski) doğrudan kullanarak Küçük Tarla'dan hem daha yüksek ödül hem daha gerçek risk taşır.
+const MULK_GETIRI_KUCUK_TARLA_NORMAL = 0.055;
+const MULK_GETIRI_KUCUK_TARLA_AVANTAJLI = 0.07;
+const MULK_GETIRI_KUCUK_TARLA_DEZAVANTAJLI = -0.002;
 
 /** Her mülk 7-11 yılda bir periyodik bir bakım/vergi masrafı çıkarır (tıpkı "luks" mağaza eşyaları gibi). */
 const MULK_BAKIM_ARALIGI_MIN_YIL = 7;
