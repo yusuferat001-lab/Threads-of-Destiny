@@ -130,6 +130,9 @@ import {
   sosyalAksiyonTanimiGetir,
   SOSYAL_AKSIYONLAR,
   AKSIYON_COOLDOWN,
+  AKSIYON_ROTASYON_HAVUZU,
+  AKSIYON_ROTASYON_GOSTERIM,
+  AKSIYON_ROTASYON_PERIYODU_YIL,
 } from "../data/sosyallesmeAksiyonlari";
 import { rastgeleBirIsimSec, rastgeleOyuncuIsmiSec, rastgeleCinsiyetliIsimSec } from "../data/npcIsimleri";
 import { rastgeleKisilikCifti, kisilikGetir } from "../data/kisilikler";
@@ -4034,6 +4037,44 @@ function aksiyonKalanYil(state: CharacterState, anahtar: string): number {
   return Math.max(0, cd - (state.yil - son));
 }
 
+/** Basit, hızlı ve deterministik bir string hash (djb2 varyantı) — rastgele rotasyon tohumu için. */
+function basitHash(s: string): number {
+  let h = 5381;
+  for (let i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0;
+  return h >>> 0;
+}
+
+/** Tohumlu, hızlı bir PRNG (mulberry32) — Math.random() yerine deterministik rotasyon için. */
+function mulberry32(seed: number): () => number {
+  let a = seed >>> 0;
+  return function () {
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/**
+ * Sosyalleş ekranının tur-harcamayan aksiyon havuzu (9 aksiyon) her zaman
+ * TAMAMEN gösterilmez — "her tur değişsin, hep aynı şeyler olmasın" isteğiyle
+ * her karakter için `AKSIYON_ROTASYON_PERIYODU_YIL` yıl boyunca sabit kalan,
+ * o karaktere özgü (state.id ile tohumlanmış) rastgele bir 3'lü seçilir.
+ * Aynı karakter aynı yıl aralığında tutarlı bir liste görür (sayfayı her
+ * yenilediğinde değişmez), ama birkaç yıl geçince ya da başka bir karakterde
+ * farklı bir 3'lü çıkar.
+ */
+export function aktifAksiyonRotasyonu(state: CharacterState): Set<string> {
+  const donem = Math.floor(state.yil / AKSIYON_ROTASYON_PERIYODU_YIL);
+  const rnd = mulberry32(basitHash(state.id) ^ donem);
+  const havuz = [...AKSIYON_ROTASYON_HAVUZU];
+  for (let i = havuz.length - 1; i > 0; i--) {
+    const j = Math.floor(rnd() * (i + 1));
+    [havuz[i], havuz[j]] = [havuz[j], havuz[i]];
+  }
+  return new Set<string>(havuz.slice(0, AKSIYON_ROTASYON_GOSTERIM));
+}
+
 /** Sosyalleş ekranının tur-harcamayan aksiyon panelinin canlı hâlini döner. */
 export async function sosyallesmeAksiyonConfigGetir(id: string): Promise<SosyalAksiyonConfig> {
   const oturum = await oturumGetir(id);
@@ -4075,7 +4116,8 @@ export async function sosyallesmeAksiyonConfigGetir(id: string): Promise<SosyalA
     };
   });
 
-  const aksiyonlar: SosyalAksiyonKarti[] = SOSYAL_AKSIYONLAR.map((a) => {
+  const rotasyon = aktifAksiyonRotasyonu(state);
+  const aksiyonlar: SosyalAksiyonKarti[] = SOSYAL_AKSIYONLAR.filter((a) => rotasyon.has(a.id)).map((a) => {
     const bekleyen = aksiyonKalanYil(state, a.id);
     const fiyat = a.tabanFiyat === 0 ? 0 : Math.max(1, paraYuvarla(a.tabanFiyat * enfl));
     const mekanEngeli = a.alkolluMekanGerekir === true && !alkolluMekanVar;
@@ -4160,6 +4202,7 @@ export async function sosyallesmeAksiyonYap(
 
   const tanim = sosyalAksiyonTanimiGetir(aksiyonId);
   if (!tanim) throw new Error("Böyle bir aksiyon yok.");
+  if (!aktifAksiyonRotasyonu(state).has(aksiyonId)) throw new Error("Bu aksiyon şu an mevcut değil.");
   if (aksiyonKalanYil(state, aksiyonId) > 0) throw new Error("Bunu yakında tekrar yapamazsın.");
 
   if (aksiyonId === "deli") {
@@ -4248,6 +4291,65 @@ export async function sosyallesmeAksiyonYap(
     } else {
       etiketEkle(state, ["istihbarat_var"]);
       mesaj = T(state.dil, "Falcı ürkütücü bir kesinlikle sıradaki işini tarif etti. Ensende bir ürperti.");
+    }
+  } else if (aksiyonId === "hikaye_anlat") {
+    const fiyat = Math.max(1, paraYuvarla(6 * enfl));
+    if (state.para < fiyat) throw new Error(`Yeterli paran yok (${fiyat} ${birim} gerekli).`);
+    state.para = paraYuvarla(state.para - fiyat);
+    const r = Math.random();
+    if (r < 0.5) {
+      state.un += 5;
+      state.mutluluk += 3;
+      mesaj = T(state.dil, "Anlattığın hikaye ağızdan ağıza dolaştı; birkaç gün senden bahsedildi.");
+    } else if (r < 0.8) {
+      state.un += 2;
+      state.mutluluk += 1;
+      mesaj = T(state.dil, "Hikayeni sabırla dinlediler, kibarca gülümsediler. Fena değildi.");
+    } else {
+      state.un -= 1;
+      state.mutluluk -= 3;
+      mesaj = T(state.dil, "Hikayeni beğenmediler, arkandan kıkırdadılar.");
+    }
+  } else if (aksiyonId === "muzik_dinle") {
+    const fiyat = Math.max(1, paraYuvarla(3 * enfl));
+    if (state.para < fiyat) throw new Error(`Yeterli paran yok (${fiyat} ${birim} gerekli).`);
+    state.para = paraYuvarla(state.para - fiyat);
+    state.mutluluk += 5;
+    state.saglik += 1;
+    mesaj = T(state.dil, "Gezgin ozanın türküsü içini ısıttı; bir an her şeyi unuttun.");
+  } else if (aksiyonId === "yerliye_sor") {
+    const fiyat = Math.max(1, paraYuvarla(6 * enfl));
+    if (state.para < fiyat) throw new Error(`Yeterli paran yok (${fiyat} ${birim} gerekli).`);
+    state.para = paraYuvarla(state.para - fiyat);
+    const r = Math.random();
+    if (r < 0.45) {
+      etiketEkle(state, ["istihbarat_var"]);
+      state.mutluluk += 1;
+      mesaj = T(state.dil, "Yerli biri sana açık konuştu, kafanda bölgenin tam bir haritasını çizdi.");
+    } else if (r < 0.8) {
+      const haberler = haberleriUret(state);
+      mesaj =
+        haberler[Math.floor(Math.random() * haberler.length)] ??
+        T(state.dil, "Bölge hakkında sıradan, malum şeyler anlattı.");
+      state.mutluluk += 1;
+    } else {
+      state.mutluluk -= 2;
+      mesaj = T(state.dil, "Seni yanlış yönlendirdi — bir süre boşuna dolaştın, sinirin bozuldu.");
+    }
+  } else if (aksiyonId === "bahis_izle") {
+    const fiyat = Math.max(1, paraYuvarla(5 * enfl));
+    if (state.para < fiyat) throw new Error(`Yeterli paran yok (${fiyat} ${birim} gerekli).`);
+    state.para = paraYuvarla(state.para - fiyat);
+    state.suc_seviyesi = Math.min(100, state.suc_seviyesi + 2);
+    if (Math.random() < 0.45) {
+      state.para = paraYuvarla(state.para + fiyat * 2);
+      state.mutluluk += 4;
+      state.omur_kumar_net = (state.omur_kumar_net ?? 0) + fiyat;
+      mesaj = T(state.dil, "Bahsi kazandın! Kalabalık seninle birlikte bağırdı, kesen ağırlaştı.");
+    } else {
+      state.mutluluk -= 3;
+      state.omur_kumar_net = (state.omur_kumar_net ?? 0) - fiyat;
+      mesaj = T(state.dil, "Bahsi kaybettin; parana yazık oldu ama en azından dövüş/koşu heyecanlıydı.");
     }
   } else {
     throw new Error("Böyle bir aksiyon yok.");
