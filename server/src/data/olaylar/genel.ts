@@ -1367,25 +1367,6 @@ export const OLAY_GENEL: OlayTanimi[] = [
           mesaj: "Katıldın ama soylu general adını kara listeye aldı bile.",
         },
       },
-      {
-        metin: "Asker siyasete girmez. Tarafsız kal.",
-        baseBasariSansi: 75,
-        basariliSonuc: {
-          ahlak: 15,
-          etiket_ekle: [
-            "hizip_secildi",
-            "tarafsiz_asker",
-          ],
-          mesaj: "Kılıcım sadece vatan içindir dedin. Her iki taraf da sana saygı duydu.",
-        },
-        basarisizSonuc: {
-          etiket_ekle: [
-            "hizip_secildi",
-          ],
-          saglik: -10,
-          mesaj: "Tarafsızlık, savaşan iki tarafın arasında kalıp dayak yemek demektir. İki hizip de seni dışladı.",
-        },
-      },
     ],
   },
   {
@@ -1441,24 +1422,6 @@ export const OLAY_GENEL: OlayTanimi[] = [
             "hizip_secildi",
           ],
           mesaj: "Katıldın ama asilzadeler mallarına ağır gümrük vergileri koydu.",
-        },
-      },
-      {
-        metin: "Ben sadece kendi kârıma bakarım. Tarafsız kal.",
-        baseBasariSansi: 80,
-        basariliSonuc: {
-          para: 10,
-          etiket_ekle: [
-            "hizip_secildi",
-          ],
-          mesaj: "Her iki tarafla da el altından ticaret yaparak kurnazlığını konuşturuyorsun.",
-        },
-        basarisizSonuc: {
-          para: -25,
-          etiket_ekle: [
-            "hizip_secildi",
-          ],
-          mesaj: "Tarafsız kaldığın için her iki lonca da sana ambargo uyguladı!",
         },
       },
     ],
@@ -1518,24 +1481,6 @@ export const OLAY_GENEL: OlayTanimi[] = [
             "hizip_secildi",
           ],
           mesaj: "Engizisyon / Üst Kurul seni kafirlikle suçlamakla tehdit ediyor.",
-        },
-      },
-      {
-        metin: "Din siyasete alet edilemez. Taraf seçme.",
-        baseBasariSansi: 95,
-        basariliSonuc: {
-          ahlak: 20,
-          etiket_ekle: [
-            "hizip_secildi",
-          ],
-          mesaj: "Vaazlarında sadece huzur var. İnsanlar senin yanına politika için değil, arınmak için geliyor.",
-        },
-        basarisizSonuc: {
-          un: -15,
-          etiket_ekle: [
-            "hizip_secildi",
-          ],
-          mesaj: "Taraf seçmediğin için iki grup da senin kürsünü ciddiye almamaya başladı.",
         },
       },
     ],
