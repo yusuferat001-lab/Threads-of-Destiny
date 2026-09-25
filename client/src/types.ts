@@ -229,6 +229,10 @@ export interface CharacterState {
   omur_sadaka_sayisi: number;
   omur_hediye_sayisi: number;
   omur_riskli_basari: number;
+  /** komikOlumler.ts'in riskli şıkkını seçip hayatta kaldıysa true (bir kereliğine, skor bonusu). */
+  komik_olum_basarili_risk: boolean;
+  /** komikOlumler.ts'in riskli şıkkını seçip bu yüzden öldüyse true (bir kereliğine, skor bonusu). */
+  komik_olum_ile_oldu: boolean;
   efsanevi_olum: string | null;
   /** Kutsal Emanet relik'i bu hayatta en az bir kez ölümü iptal ettiyse true (kalıcı). */
   relik_can_kurtardi: boolean;
@@ -247,6 +251,10 @@ export interface CharacterState {
   son_veba_bitis_yili: number | null;
   /** Vebayı bizzat kaptıysa ("veba_hastasi" etiketi) o anki ölüm riski % (0-100). Hasta değilken 0. */
   veba_olum_riski: number;
+  /** Bizzat kaptığı vebayı atlatıp iyileştiyse true (bir kereliğine, skor bonusu). */
+  veba_hayatta_kaldi: boolean;
+  /** Hapisten fiziksel bir kaçışla (rüşvet/af değil) çıktıysa true (bir kereliğine, skor bonusu). */
+  hapis_basarili_kacis: boolean;
   kucuk_kriz_sonraki_yil: number;
   gida_fiyat_sok_bitis_yili: number | null;
   /** Ömürde bir kez borçtayken alınan kilise/eş dost yardımı kullanıldı mı. */

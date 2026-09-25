@@ -2586,6 +2586,36 @@ function App() {
                     <span>+{say(3000)}</span>
                   </li>
                 )}
+                {karakter.komik_olum_basarili_risk && (
+                  <li className="skor-kirilimi-tik">
+                    <span>{m.skorKirilimTikKomikRisk}</span>
+                    <span>+{say(3000)}</span>
+                  </li>
+                )}
+                {!karakter.komik_olum_basarili_risk && karakter.komik_olum_ile_oldu && (
+                  <li className="skor-kirilimi-tik">
+                    <span>{m.skorKirilimTikKomikOlum}</span>
+                    <span>+{say(2000)}</span>
+                  </li>
+                )}
+                {kirilim.yolculukTamamlandi && (
+                  <li className="skor-kirilimi-tik">
+                    <span>{m.skorKirilimTikYolculukBonus}</span>
+                    <span>+{say(2000)}</span>
+                  </li>
+                )}
+                {karakter.veba_hayatta_kaldi && (
+                  <li className="skor-kirilimi-tik">
+                    <span>{m.skorKirilimTikVeba}</span>
+                    <span>+{say(2000)}</span>
+                  </li>
+                )}
+                {karakter.hapis_basarili_kacis && (
+                  <li className="skor-kirilimi-tik">
+                    <span>{m.skorKirilimTikHapisKacis}</span>
+                    <span>+{say(2000)}</span>
+                  </li>
+                )}
               </ul>
               <div className="skor-kirilimi-toplam">
                 <span>{m.skorKirilimToplam}</span>

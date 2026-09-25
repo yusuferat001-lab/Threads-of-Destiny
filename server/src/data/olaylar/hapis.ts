@@ -71,6 +71,7 @@ export const OLAY_HAPIS: OlayTanimi[] = [
           etiket_sil: [
             "hapiste",
           ],
+          hapis_basarili_kacis: true,
           saglik: -10,
           un: 15,
           mesaj: "Gece yarısı tünelden sıvışıp şehrin dışına kaçmayı başardın; artık özgürsün.",
@@ -621,13 +622,13 @@ export const OLAY_HAPIS: OlayTanimi[] = [
         baseBasariSansi: 45,
         basariliSonuc: {
         saglik: 2,
- etiket_sil: ["hapiste"], un: 15, mesaj: "Tünelden sıyrılıp şehrin karanlığına karıştın; artık özgürsün.", detay: "Tek başına başardın — bu hikaye efsaneye dönüşecek." },
+ etiket_sil: ["hapiste"], hapis_basarili_kacis: true, un: 15, mesaj: "Tünelden sıyrılıp şehrin karanlığına karıştın; artık özgürsün.", detay: "Tek başına başardın — bu hikaye efsaneye dönüşecek." },
         basarisizSonuc: { saglik: -20, olum_sansi: 12, etiket_ekle: ["hapiste"], mesaj: "Tam çıkışta bir devriyeye yakalandın; sıkı bir dövülme sonrası tekrar hücreye atıldın.", detay: "Özgürlük bu kadar yakınken kaybetmek en acısı." },
       },
       {
         metin: "Sabret, en sakin saati bekle.",
         baseBasariSansi: 65,
-        basariliSonuc: { etiket_sil: ["hapiste"], un: 10, mesaj: "En sessiz saati bekleyip fark edilmeden çıktın.", detay: "Sabrın işe yaradı." },
+        basariliSonuc: { etiket_sil: ["hapiste"], hapis_basarili_kacis: true, un: 10, mesaj: "En sessiz saati bekleyip fark edilmeden çıktın.", detay: "Sabrın işe yaradı." },
         basarisizSonuc: { saglik: -15, olum_sansi: 8, etiket_ekle: ["hapiste"], mesaj: "Beklerken tünelin çökme tehlikesi baş gösterdi, güçlükle geri döndün ve yakalandın.", detay: "Toprak da senin düşmanın oldu." },
       },
     ],
@@ -704,6 +705,7 @@ export const OLAY_HAPIS: OlayTanimi[] = [
         basariliSonuc: {
           saglik: 2,
           etiket_sil: ["hapiste"],
+          hapis_basarili_kacis: true,
           un: 20,
           dost_puani: 10,
           mesaj: "Hep birlikte karanlığa daldınız; nöbetçiler kalabalığı fark ettiğinde çoğunuz çoktan uzaklaşmıştı.",
@@ -720,7 +722,7 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Teker teker, aralıklarla çıkın.",
         baseBasariSansi: 60,
-        basariliSonuc: { etiket_sil: ["hapiste"], un: 15, mesaj: "Tek tek, sessizce süzüldünüz; sabah sayım yapılana kadar kimse fark etmedi.", detay: "Sabır ve düzen, kalabalığı görünmez kıldı." },
+        basariliSonuc: { etiket_sil: ["hapiste"], hapis_basarili_kacis: true, un: 15, mesaj: "Tek tek, sessizce süzüldünüz; sabah sayım yapılana kadar kimse fark etmedi.", detay: "Sabır ve düzen, kalabalığı görünmez kıldı." },
         basarisizSonuc: {
           saglik: -18,
           olum_sansi: 10,
@@ -899,7 +901,7 @@ export const OLAY_HAPIS: OlayTanimi[] = [
       {
         metin: "Hızla koş, en yakın çıkışı dene.",
         baseBasariSansi: 55,
-        basariliSonuc: { etiket_sil: ["hapiste"], un: 20, mesaj: "Karanlık koridorlarda koşarak dışarı çıkmayı başardın; artık özgürsün.", detay: "Bu cüretkar kaçış efsaneye dönüşecek." },
+        basariliSonuc: { etiket_sil: ["hapiste"], hapis_basarili_kacis: true, un: 20, mesaj: "Karanlık koridorlarda koşarak dışarı çıkmayı başardın; artık özgürsün.", detay: "Bu cüretkar kaçış efsaneye dönüşecek." },
         basarisizSonuc: {
           saglik: -25,
           olum_sansi: 18,
@@ -913,7 +915,7 @@ export const OLAY_HAPIS: OlayTanimi[] = [
         baseBasariSansi: 45,
         basariliSonuc: {
         saglik: 1,
- etiket_sil: ["hapiste"], un: 25, mesaj: "Gardiyanın üniformasını üstüne geçirip sakince ana kapıdan yürüyerek çıktın.", detay: "Cüretin, gücünden daha etkili çıktı." },
+ etiket_sil: ["hapiste"], hapis_basarili_kacis: true, un: 25, mesaj: "Gardiyanın üniformasını üstüne geçirip sakince ana kapıdan yürüyerek çıktın.", detay: "Cüretin, gücünden daha etkili çıktı." },
         basarisizSonuc: {
           saglik: -28,
           olum_sansi: 20,
@@ -1454,6 +1456,7 @@ export const OLAY_HAPIS: OlayTanimi[] = [
         baseBasariSansi: 32,
         basariliSonuc: {
           etiket_sil: ["hapiste"],
+          hapis_basarili_kacis: true,
           saglik: -8,
           un: 12,
           mesaj: "Harç elinde ufalandı ama tutundun; duvarın öbür yüzünden tarlalara atlayıp koşmaya başladın. Özgürsün.",
@@ -1500,6 +1503,7 @@ export const OLAY_HAPIS: OlayTanimi[] = [
         baseBasariSansi: 38,
         basariliSonuc: {
           etiket_sil: ["hapiste"],
+          hapis_basarili_kacis: true,
           saglik: -4,
           un: 8,
           mesaj: "Araba kapıdan geçerken nefesini tuttun; birkaç sokak sonra kumaşların arasından çıkıp kalabalığa karıştın. Özgürsün.",
@@ -1546,6 +1550,7 @@ export const OLAY_HAPIS: OlayTanimi[] = [
         baseBasariSansi: 30,
         basariliSonuc: {
           etiket_sil: ["hapiste"],
+          hapis_basarili_kacis: true,
           saglik: -6,
           un: 15,
           mesaj: "Kimse dönüp bakmadı; kapıdan çıkıp sisin içinde kayboldun. Bu kaçış koğuşta efsane olacak.",

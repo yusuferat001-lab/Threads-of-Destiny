@@ -463,6 +463,10 @@ const KOMIK_OLUM_HAVUZ_KONTROL_NOKTALARI: { yas: number; hedef: number }[] = [
   { yas: 64, hedef: 2 },
 ];
 
+/** komikOlumler.ts olay id'leri — Faz 5 skor bonusu: bu havuzdaki "aptalca olanı yap" riskli
+ * şıkkını seçip hayatta kalmak/ölmek tek seferlik bir skor bonusu tetikler (bkz. hesaplaSkorKirilimi). */
+const KOMIK_OLUM_ID_SETI = new Set(OLAY_KOMIK_OLUM.map((o) => o.id));
+
 /**
  * Gecikmiş takip TETİKLEYİCİ garantisi (2026-09 sonu, kullanıcı isteği): 24
  * yaşına kadar en az 1, 37 yaşına kadar en az 2 "gecikmiş takip" tetikleyici
@@ -1496,7 +1500,12 @@ export async function secimUygula(id: string, secenekIndex: number): Promise<Sec
   // (olay/seçenek metninde olduğu gibi) burada da dolduruluyor.
   etki.mesaj = doldur(etki.mesaj, state);
   if (etki.detay) etki.detay = doldur(etki.detay, state);
-  return sonucuUygulaVeIlerlet(oturum, mevcutOlay, etki, basarili, eskiRutbeSeviye);
+  // Faz 5 skor bonusu: komikOlumler.ts'in riskli ("aptalca olanı yap") şıkkı seçildi mi?
+  // (havuz + başarısız dalın ölümcül olma potansiyeli ile tanınır, hangi dal çıktığından bağımsız).
+  const komikOlumRiskliSecenekMi =
+    KOMIK_OLUM_ID_SETI.has(mevcutOlay.id) &&
+    (basarisizDal.olum === true || (basarisizDal.olum_sansi ?? 0) > 0);
+  return sonucuUygulaVeIlerlet(oturum, mevcutOlay, etki, basarili, eskiRutbeSeviye, komikOlumRiskliSecenekMi);
 }
 
 /** Doğum denemesi cooldown'u (yıl) — bu kadar yıl geçmeden yeni çocuk olmaz
@@ -1570,7 +1579,8 @@ async function sonucuUygulaVeIlerlet(
   mevcutOlay: OlayTanimi,
   etki: SonucEtkisi,
   basarili: boolean,
-  eskiRutbeSeviye: number
+  eskiRutbeSeviye: number,
+  komikOlumRiskliSecenekMi: boolean = false
 ): Promise<SecimSonucu> {
   const { state } = oturum;
   // Nakit akışı defteri: turun sonunda Σ(alanlar) == state.para'daki net değişim olacak
@@ -1869,6 +1879,11 @@ async function sonucuUygulaVeIlerlet(
   if (hapistenCiktiBuEtki) state.hapis_ceza_toplam = 0;
   // Bir olay seçimiyle serbest kalındıysa (rüşvet/af/başarılı kaçış) sayaç sıfırlanır.
   if (hapistenCiktiBuEtki) state.hapis_ceza_kalan = 0;
+  // Faz 5 skor bonusu: FİZİKSEL bir kaçışla (rüşvet/af DEĞİL) hapisten çıkmak
+  // bir ömürde bir kereliğine ödüllendirilir (bkz. hesaplaSkorKirilimi).
+  if (etki.hapis_basarili_kacis && !state.hapis_basarili_kacis) {
+    state.hapis_basarili_kacis = true;
+  }
   // Bir olay (veba dönemi bulaşma olayı) vebayı bulaştırdıysa kişisel hastalığı
   // başlat: ~%70 ölüm riski + vebaHastasiOlayi havuzuna geç.
   if (etki.etiket_ekle?.includes("veba_hastasi")) vebaHastaligiBaslatEt(state);
@@ -1917,6 +1932,16 @@ async function sonucuUygulaVeIlerlet(
   // yaşamadığı bir "efsanevi ölüm" damgasını taşımasın.
   if (etki.efsanevi_olum && !state.aktif) {
     state.efsanevi_olum = etki.efsanevi_olum;
+  }
+  // Faz 5 skor bonusu: komikOlumler.ts'in riskli şıkkını seçip hayatta kalmak/ölmek
+  // bir kereliğine ödüllendirilir (bkz. hesaplaSkorKirilimi). Relik ölümü iptal
+  // ederse (state.aktif hâlâ true) bu "hayatta kaldı" sayılır.
+  if (komikOlumRiskliSecenekMi) {
+    if (state.aktif) {
+      if (!state.komik_olum_basarili_risk) state.komik_olum_basarili_risk = true;
+    } else if (!state.komik_olum_ile_oldu) {
+      state.komik_olum_ile_oldu = true;
+    }
   }
 
   let yasArtisi = 0;
@@ -2151,6 +2176,9 @@ async function sonucuUygulaVeIlerlet(
             }
             if (hastalikSonucu.karakterOldu) {
               checkDeath(state, true, "Veba direncini kırdı; hastalıktan kurtulamadın.");
+            } else if (hastalikSonucu.iyilesti && !state.veba_hayatta_kaldi) {
+              // Faz 5 skor bonusu: bizzat vebayı kapıp atlatmak bir kereliğine ödüllendirilir.
+              state.veba_hayatta_kaldi = true;
             }
           }
           if (state.aktif) {

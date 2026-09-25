@@ -13,6 +13,12 @@ const SKOR_TIK_PUANI = 3000;
 const SKOR_SOHRET_CARPAN = 300;
 const SKOR_AHLAK_CARPAN = 200;
 const SKOR_MUTLULUK_CARPAN = 100;
+// Faz 5 (2026-09 sonu) — tek seferlik başarı-olayı bonusları, server/stateManager.ts ile birebir aynı.
+const SKOR_KOMIK_OLUM_BASARILI_RISK_PUANI = 3000;
+const SKOR_KOMIK_OLUM_ILE_OLDU_PUANI = 2000;
+const SKOR_YOLCULUK_TAMAMLAMA_BONUS_PUANI = 2000;
+const SKOR_VEBA_HAYATTA_KALMA_PUANI = 2000;
+const SKOR_HAPIS_BASARILI_KACIS_PUANI = 2000;
 
 // server/src/data/mulkler.ts — taban_maliyet değerleriyle birebir aynı.
 const MULK_TABAN_MALIYET: Record<MulkTuru, number> = {
@@ -62,6 +68,7 @@ export interface SkorKirilimi {
   sarayda: boolean;
   yolculukTamamlandi: boolean;
   gizemliEsyaSahibi: boolean;
+  basariOlayiPuani: number;
   temelToplam: number;
   amacCarpani: number;
   skor: number;
@@ -94,7 +101,14 @@ export function hesaplaSkorKirilimi(state: CharacterState): SkorKirilimi {
   const gizemliEsyaSahibi = state.etiketler.some((e) => e.startsWith('envanter:') || e.startsWith('esya:'));
   const tikSayisi = (sarayda ? 1 : 0) + (yolculukTamamlandi ? 1 : 0) + (gizemliEsyaSahibi ? 1 : 0);
   const tikPuani = tikSayisi * SKOR_TIK_PUANI;
-  const temelToplam = servetPuani + sohretPuani + ahlakPuani + mutlulukPuani + rutbePuani + tikPuani;
+  const basariOlayiPuani =
+    (state.komik_olum_basarili_risk ? SKOR_KOMIK_OLUM_BASARILI_RISK_PUANI : 0) +
+    (!state.komik_olum_basarili_risk && state.komik_olum_ile_oldu ? SKOR_KOMIK_OLUM_ILE_OLDU_PUANI : 0) +
+    (yolculukTamamlandi ? SKOR_YOLCULUK_TAMAMLAMA_BONUS_PUANI : 0) +
+    (state.veba_hayatta_kaldi ? SKOR_VEBA_HAYATTA_KALMA_PUANI : 0) +
+    (state.hapis_basarili_kacis ? SKOR_HAPIS_BASARILI_KACIS_PUANI : 0);
+  const temelToplam =
+    servetPuani + sohretPuani + ahlakPuani + mutlulukPuani + rutbePuani + tikPuani + basariOlayiPuani;
   const amacCarpani = amacCarpaniHesapla(state);
   const skor = Math.round(temelToplam * amacCarpani);
   return {
@@ -108,6 +122,7 @@ export function hesaplaSkorKirilimi(state: CharacterState): SkorKirilimi {
     sarayda,
     yolculukTamamlandi,
     gizemliEsyaSahibi,
+    basariOlayiPuani,
     temelToplam,
     amacCarpani,
     skor,

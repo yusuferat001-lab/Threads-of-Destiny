@@ -724,6 +724,8 @@ export function createCharacter(
     omur_sadaka_sayisi: 0,
     omur_hediye_sayisi: 0,
     omur_riskli_basari: 0,
+    komik_olum_basarili_risk: false,
+    komik_olum_ile_oldu: false,
     efsanevi_olum: null,
     relik_can_kurtardi: false,
     etiketler: [...(aile.etiketler ?? []), ...yerlesim.etiketler],
@@ -738,6 +740,8 @@ export function createCharacter(
     veba_gecirdi: false,
     son_veba_bitis_yili: null,
     veba_olum_riski: 0,
+    veba_hayatta_kaldi: false,
+    hapis_basarili_kacis: false,
     kucuk_kriz_sonraki_yil: yil + 5 + Math.floor(Math.random() * 3), // 5-7 yıl sonra ilk eşik
     gida_fiyat_sok_bitis_yili: null,
     borc_yardimi_alindi: false,
@@ -964,6 +968,11 @@ export function eskiKayitGocu(state: CharacterState): void {
   if (typeof state.omur_sadaka_sayisi !== "number") state.omur_sadaka_sayisi = 0;
   if (typeof state.omur_hediye_sayisi !== "number") state.omur_hediye_sayisi = 0;
   if (typeof state.omur_riskli_basari !== "number") state.omur_riskli_basari = 0;
+  // Faz 5 tek seferlik skor bonusu bayrakları sonradan eklendi.
+  if (typeof state.komik_olum_basarili_risk !== "boolean") state.komik_olum_basarili_risk = false;
+  if (typeof state.komik_olum_ile_oldu !== "boolean") state.komik_olum_ile_oldu = false;
+  if (typeof state.veba_hayatta_kaldi !== "boolean") state.veba_hayatta_kaldi = false;
+  if (typeof state.hapis_basarili_kacis !== "boolean") state.hapis_basarili_kacis = false;
   // Dil alanı sonradan eklendi; eski kayıtlar her zaman Türkçe oynanmıştı.
   if (state.dil !== "en") state.dil = "tr";
   // Aile ekranı (eş/çocuk ilişkisi + etkileşim + talep) sonradan eklendi (§33).
@@ -2024,6 +2033,19 @@ const SKOR_TIK_PUANI = 3000;
 const SKOR_SOHRET_CARPAN = 300;
 const SKOR_AHLAK_CARPAN = 200;
 const SKOR_MUTLULUK_CARPAN = 100;
+/**
+ * Faz 5 (2026-09 sonu) — tek seferlik "başarı olayı" skor bonusları. Her biri
+ * TOPLAMSAL (tikPuani gibi diğer eksenlerin üstüne biner, çarpımsal değil) ve
+ * bir ömürde en fazla bir kez sayılır (ilgili CharacterState bayrağı state
+ * boyunca en fazla bir kez true'ya döner, bkz. gameEngine.ts). Yolculuk
+ * tamamlama zaten tikPuani'nin bir parçasıdır (+3000) — buradaki +2000 ayrı,
+ * ek bir bonustur (kullanıcı isteği: "yolculuğu tamamlama" ayrıca ödüllendirilsin.
+ */
+const SKOR_KOMIK_OLUM_BASARILI_RISK_PUANI = 3000;
+const SKOR_KOMIK_OLUM_ILE_OLDU_PUANI = 2000;
+const SKOR_YOLCULUK_TAMAMLAMA_BONUS_PUANI = 2000;
+const SKOR_VEBA_HAYATTA_KALMA_PUANI = 2000;
+const SKOR_HAPIS_BASARILI_KACIS_PUANI = 2000;
 
 export interface SkorKirilimi {
   servetPuani: number;
@@ -2036,6 +2058,8 @@ export interface SkorKirilimi {
   sarayda: boolean;
   yolculukTamamlandi: boolean;
   gizemliEsyaSahibi: boolean;
+  /** Faz 5 tek seferlik başarı-olayı bonuslarının toplamı (komik ölüm risk/ölüm, yolculuk, veba, hapis kaçışı). */
+  basariOlayiPuani: number;
   temelToplam: number;
   amacCarpani: number;
   skor: number;
@@ -2057,7 +2081,14 @@ export function hesaplaSkorKirilimi(state: CharacterState): SkorKirilimi {
   );
   const tikSayisi = (sarayda ? 1 : 0) + (yolculukTamamlandi ? 1 : 0) + (gizemliEsyaSahibi ? 1 : 0);
   const tikPuani = tikSayisi * SKOR_TIK_PUANI;
-  const temelToplam = servetPuani + sohretPuani + ahlakPuani + mutlulukPuani + rutbePuani + tikPuani;
+  const basariOlayiPuani =
+    (state.komik_olum_basarili_risk ? SKOR_KOMIK_OLUM_BASARILI_RISK_PUANI : 0) +
+    (!state.komik_olum_basarili_risk && state.komik_olum_ile_oldu ? SKOR_KOMIK_OLUM_ILE_OLDU_PUANI : 0) +
+    (yolculukTamamlandi ? SKOR_YOLCULUK_TAMAMLAMA_BONUS_PUANI : 0) +
+    (state.veba_hayatta_kaldi ? SKOR_VEBA_HAYATTA_KALMA_PUANI : 0) +
+    (state.hapis_basarili_kacis ? SKOR_HAPIS_BASARILI_KACIS_PUANI : 0);
+  const temelToplam =
+    servetPuani + sohretPuani + ahlakPuani + mutlulukPuani + rutbePuani + tikPuani + basariOlayiPuani;
   // Eski kayıt/test (hayat_amaclari boş, tekil hayat_amaci dolu) için ×5 fallback korunur.
   const amacCarpani =
     (state.hayat_amaclari?.length ?? 0) > 0
@@ -2077,6 +2108,7 @@ export function hesaplaSkorKirilimi(state: CharacterState): SkorKirilimi {
     sarayda,
     yolculukTamamlandi,
     gizemliEsyaSahibi,
+    basariOlayiPuani,
     temelToplam,
     amacCarpani,
     skor,
