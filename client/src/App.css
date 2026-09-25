@@ -1246,21 +1246,16 @@ button.ikincil {
   overflow-y: auto;
 }
 
-/* Seçim SONUCU ekranında kart sahnenin altına daha az taşar: sahne artık arka
-   planda kaldığı için kartın okunurluğu > sabit sahne payı. Uzun sonuç metni
-   ilk satırından itibaren tam görünür, sahne/hotspot'la iç içe girmez. */
-.merkez-alt-sonuc {
-  margin-top: clamp(-0.8rem, -1.4vh, -0.4rem);
-  /* Olay kartının aksine (sabit %52 payı — sahnenin her tıklamada zıplamaması için)
-     sonuç kartının payı İÇERİĞE göre büyüyüp küçülür: kısa sonuçlarda kutu boş yere
-     devasa kalmaz, uzun sonuçlarda (mesaj + zaman anlatımı + etki çipleri) belirgin
-     bir üst sınıra kadar büyüyüp tam metni gösterir, ancak onu da aşarsa kendi içinde
-     kayar. Sonuç ekranında sahne zaten arka planda kaldığı için bu geçiş rahatsız
-     edici bir "zıplama" hissi yaratmaz (bkz. sahnenin flex:1 ile kalanı doldurması). */
-  flex: 0 1 auto;
-  max-height: min(72vh, 620px);
-  width: min(760px, 92%);
-}
+/* Seçim SONUCU ekranında kart — 2026-09 sonu düzeltmesi (kullanıcı: "pc'de olay
+   ekranı sabit değil, arkaplan sürekli değişiyor"). Eskiden bu kartın payı
+   İÇERİĞE göre büyüyüp küçülüyordu (flex:0 1 auto + max-height) — sonuç mesajı
+   kısa/uzun oldukça sahnenin (flex:1 ile kalanı dolduran) kapladığı alan da her
+   seçimde değişiyor, bölge görseli yeniden kadrajlanıp "arka plan değişti" hissi
+   veriyordu. Artık soru kartıyla (.merkez-alt) BİREBİR AYNI sabit payı kullanır —
+   sahne, soru⇄sonuç geçişinde artık asla boyut değiştirmez. Kısa sonuçlarda
+   kutuda boşluk kalabilir; uzun sonuçlarda (.merkez-alt'tan miras) overflow-y:auto
+   ile kendi içinde kayar (bkz. ::after fade ipucu, aşağıda). Artık .merkez-alt'tan
+   fazladan hiçbir boyut/margin override'ı yok — sınıf yalnız ::after ipucu için var. */
 /* İçerik taşıyorsa kaydırılabilir olduğunu belli eden alt kenar gölgesi —
    layout'ta yer kaplamaz (negatif üst margin ile içeriğin üstüne biner). */
 .merkez-alt-sonuc::after {
