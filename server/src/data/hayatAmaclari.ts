@@ -27,6 +27,8 @@ export const AMAC_BONUS: Record<AmacZorluk, number> = { normal: 1.5, zor: 2 };
 export const RISKLI_OLUM_SANSI_ESIK = 25;
 
 const TEMIZ_EL_SUC_ESIGI = 40;
+/** `konut_sahibi` amacının süreklilik şartı — nitelikli bantta (Taş Ev+) kesintisiz kaç yıl. */
+const KONUT_SAHIBI_SURE_YIL = 5;
 
 export interface AmacTanimi {
   id: string;
@@ -67,10 +69,6 @@ const ortalamaEkipSadakati = (s: CharacterState) => {
 };
 const krediYonetimiBasarili = (s: CharacterState) =>
   !!s.kredi && s.kredi.pazarlikYapildi && s.kredi.odenmeyenTaksit === 0;
-/** `konut_sahibi` ilerleme çubuğu için — konutlar.ts'teki kademe sırasıyla aynı. */
-const KONUT_KADEME_INDEKS: Record<string, number> = {
-  basit_barinak: 0, ahsap_ev: 1, normal_ev: 2, tas_ev: 3, konak: 4, sato: 5,
-};
 
 export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
   // ============================ ORTAK — NORMAL ============================
@@ -148,10 +146,18 @@ export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
     kosul: (s) => s.patron_iliski >= 58,
   },
   {
+    // Sadece "bir an" taş eve taşınmak yetmiyor — orada KESİNTİSİZ 5 yıl yaşamış
+    // olman gerekiyor (state.konut_surekli_yasadigi_yil, stateManager.konutDegistir'de
+    // takip edilir; daha ucuz bir konuta geri çekilince sayaç sıfırlanır).
     id: "konut_sahibi", zorluk: "normal", kontrolAni: "herhangi",
     baslik: { tr: "Bir Çatı Altı", en: "A Roof of Your Own" },
-    aciklama: { tr: "Taş bir eve ya da daha üstüne taşın.", en: "Move into a stone house or better." },
-    kosul: (s) => ["tas_ev", "konak", "sato"].includes(s.konut_id),
+    aciklama: {
+      tr: `Taş bir eve ya da daha üstüne taşın ve orada en az ${KONUT_SAHIBI_SURE_YIL} yıl kesintisiz yaşa.`,
+      en: `Move into a stone house or better — and live there for at least ${KONUT_SAHIBI_SURE_YIL} years without moving down.`,
+    },
+    kosul: (s) =>
+      s.konut_surekli_yasadigi_yil != null &&
+      s.yil - s.konut_surekli_yasadigi_yil >= KONUT_SAHIBI_SURE_YIL,
   },
   {
     // 2026-09 hayat amacı dengesi: eşik 75→60 + `ekipSadakatYillikUygula` pasif
@@ -567,7 +573,13 @@ export const AMAC_ILERLEME: Record<
   sansli_el: { hedef: 95, metrik: (s) => Math.max(0, s.omur_kumar_net ?? 0) },
   sadik_dost: { hedef: 60, metrik: (s) => (s.evcil_hayvan ? s.mutluluk : 0) },
   patronun_gozdesi: { hedef: 58, metrik: (s) => s.patron_iliski },
-  konut_sahibi: { hedef: 3, metrik: (s) => KONUT_KADEME_INDEKS[s.konut_id] ?? 0 },
+  konut_sahibi: {
+    hedef: KONUT_SAHIBI_SURE_YIL,
+    metrik: (s) =>
+      s.konut_surekli_yasadigi_yil != null
+        ? Math.min(KONUT_SAHIBI_SURE_YIL, s.yil - s.konut_surekli_yasadigi_yil)
+        : 0,
+  },
   guvenilir_ekip: { hedef: 60, metrik: (s) => ortalamaEkipSadakati(s) },
   servet_zirvesi: { hedef: 700, metrik: (_s, servet) => servet },
   yasayan_efsane: { hedef: 95, metrik: (s) => s.un },

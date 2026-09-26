@@ -171,6 +171,14 @@ export interface CharacterState {
   yerlesim: string;
   din_kultur: string;
   konut_id: string;
+  /**
+   * Taş Ev ve üstü bir kademede KESİNTİSİZ yaşamaya başladığın oyun yılı; o bandın
+   * dışına çıkınca (daha ucuz bir konuta taşınınca) null'a sıfırlanır. Bandın
+   * içinde yükselmek (Taş Ev→Konak gibi) sayacı bozmaz. "konut_sahibi" hayat
+   * amacının (§18) süreklilik şartı bunu kullanır — null iken henüz nitelikli
+   * bir kademede değilsin demektir.
+   */
+  konut_surekli_yasadigi_yil: number | null;
   /** Yaşam tarzı seçimi (yasamSecenekleri.ts); yıllık yaşam giderini ve sağlık/mutluluk etkisini belirler. */
   yasam_secimi_id: string;
   /** Hazard (zar) mini-oyununda oynanan toplam el sayısı — "rakip bıçak çekti" periyodu için. */

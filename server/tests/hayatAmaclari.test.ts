@@ -92,6 +92,34 @@ describe("amacSkorCarpani", () => {
   });
 });
 
+describe("konut_sahibi (süreklilik şartı)", () => {
+  it("nitelikli banda yeni girmişse (sayaç henüz yeterince eski değil) tamamlanmaz", () => {
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
+    mesleğiSec(state, "Tüccar");
+    const tanim = amacTanimiGetir("konut_sahibi")!;
+    state.konut_id = "tas_ev";
+    state.konut_surekli_yasadigi_yil = state.yil - 2; // henüz 5 yıl dolmadı
+    expect(tanim.kosul(state, 0)).toBe(false);
+  });
+
+  it("nitelikli bantta yeterince uzun kalınca tamamlanır", () => {
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
+    mesleğiSec(state, "Tüccar");
+    const tanim = amacTanimiGetir("konut_sahibi")!;
+    state.konut_id = "sato";
+    state.konut_surekli_yasadigi_yil = state.yil - 5;
+    expect(tanim.kosul(state, 0)).toBe(true);
+  });
+
+  it("sayaç null iken (hiç nitelikli bantta yaşamamış) tamamlanmaz", () => {
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
+    mesleğiSec(state, "Tüccar");
+    const tanim = amacTanimiGetir("konut_sahibi")!;
+    expect(state.konut_surekli_yasadigi_yil).toBeNull();
+    expect(tanim.kosul(state, 0)).toBe(false);
+  });
+});
+
 describe("kontrolAni: herhangi vs olumde", () => {
   it("olumde amacı yaşarken tamamlanmaz, ölüm kontrolünde tamamlanır", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
