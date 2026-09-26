@@ -10,7 +10,7 @@ import {
 } from "../src/game/stateManager";
 import { olaySec, temelUygunMu } from "../src/game/olaySecici";
 import { OLAY_MESLEK_YATKINLIK } from "../src/data/olaylar/meslekYatkinlikOlaylari";
-import { aileGetir } from "../src/data/aileler";
+import type { AileTanimi } from "../src/data/aileler";
 import { yerlesimGetir } from "../src/data/yerlesimler";
 import { BolgeOzellikleri } from "../src/data/bolgeOzellikleri";
 import {
@@ -191,17 +191,26 @@ describe("Mesleğe Yatkınlık Kademeleri (2026-09 sonu)", () => {
   it("yatkınlık kaynak limitleri: kişilik/aile katkısı kendi sınırını, bölge katkısı kendi sınırını aşmaz", () => {
     const yerlesim = yerlesimGetir("kasaba")!;
     // Hırslı: ticaret+12, siyaset+10 (limit öncesi) — ikisi de KISILIK_YATKINLIK_LIMIT'i aşıyor.
-    const aile = aileGetir("asker")!; // savas: 15 (aşıyor), sosyal: -5 (aşmıyor)
+    // Gerçek aile verisi artık zaten ±8 tavanında durduğu için (§40, "her aile
+    // her mesleğe" düzenlemesi) kırpmayı gerçekten kanıtlamak üzere kasıtlı
+    // aşırı değerli sentetik bir aile/bölge kullanılıyor.
+    const asiriAile: AileTanimi = {
+      id: "test_asiri_aile",
+      ad: "TestAile",
+      agirlik: 1,
+      anlati: "test",
+      yatkinlikEtkisi: { savas: 50, sosyal: -50 },
+    };
     const asiriBolge: BolgeOzellikleri = {
       ozet: { tr: "test", en: "test" },
       yatkinlikEtkisi: { zanaat: 40, siyaset: -40 },
     };
-    const { kaynaklar } = yatkinlikHesapla(["Hırslı", "Sakin"], aile, yerlesim, asiriBolge, "TestBölge");
+    const { kaynaklar } = yatkinlikHesapla(["Hırslı", "Sakin"], asiriAile, yerlesim, asiriBolge, "TestBölge");
 
     for (const kaynak of kaynaklar) {
       if (kaynak.kaynak === "Hırslı" || kaynak.kaynak === "Sakin") {
         expect(Math.abs(kaynak.deger)).toBeLessThanOrEqual(KISILIK_YATKINLIK_LIMIT);
-      } else if (kaynak.kaynak === aile.ad) {
+      } else if (kaynak.kaynak === asiriAile.ad) {
         expect(Math.abs(kaynak.deger)).toBeLessThanOrEqual(AILE_YATKINLIK_LIMIT);
       } else if (kaynak.kaynak === "TestBölge") {
         expect(Math.abs(kaynak.deger)).toBeLessThanOrEqual(BOLGE_YATKINLIK_LIMIT);
@@ -210,12 +219,30 @@ describe("Mesleğe Yatkınlık Kademeleri (2026-09 sonu)", () => {
     // Uç değerlerin gerçekten kırpıldığını (limit öncesi ham değerlere eşit KALMADIĞINI) doğrula.
     const hirsliTicaret = kaynaklar.find((k) => k.kaynak === "Hırslı" && k.kategori === "ticaret");
     expect(hirsliTicaret?.deger).toBe(KISILIK_YATKINLIK_LIMIT); // ham +12 → +8'e kırpıldı
-    const askerSavas = kaynaklar.find((k) => k.kaynak === aile.ad && k.kategori === "savas");
-    expect(askerSavas?.deger).toBe(AILE_YATKINLIK_LIMIT); // ham +15 → +8'e kırpıldı
+    const aileSavas = kaynaklar.find((k) => k.kaynak === asiriAile.ad && k.kategori === "savas");
+    expect(aileSavas?.deger).toBe(AILE_YATKINLIK_LIMIT); // ham +50 → +8'e kırpıldı
     const bolgeZanaat = kaynaklar.find((k) => k.kaynak === "TestBölge" && k.kategori === "zanaat");
     expect(bolgeZanaat?.deger).toBe(BOLGE_YATKINLIK_LIMIT); // ham +40 → +6'ya kırpıldı
     const bolgeSiyaset = kaynaklar.find((k) => k.kaynak === "TestBölge" && k.kategori === "siyaset");
     expect(bolgeSiyaset?.deger).toBe(-BOLGE_YATKINLIK_LIMIT); // ham -40 → -6'ya kırpıldı
+  });
+
+  it("her ailenin yatkinlikEtkisi'si artık tüm 4 meslek kategorisini (savas/ticaret/din/zanaat) kapsıyor ve ±8 sınırı içinde", async () => {
+    const { AILELER } = await import("../src/data/aileler");
+    for (const aile of AILELER) {
+      expect(aile.yatkinlikEtkisi).toBeTruthy();
+      for (const kategori of ["savas", "ticaret", "din", "zanaat"] as const) {
+        expect(aile.yatkinlikEtkisi?.[kategori]).toBeDefined();
+        expect(Math.abs(aile.yatkinlikEtkisi![kategori]!)).toBeLessThanOrEqual(AILE_YATKINLIK_LIMIT);
+      }
+      // devamMeslegi varsa, en güçlü uyum (tavan) her zaman o mesleğin kategorisi olmalı.
+      if (aile.devamMeslegi) {
+        const kategoriDevam = { Asker: "savas", Tüccar: "ticaret", "Din Adamı": "din", "Zanaatkâr": "zanaat" }[
+          aile.devamMeslegi
+        ] as "savas" | "ticaret" | "din" | "zanaat" | undefined;
+        if (kategoriDevam) expect(aile.yatkinlikEtkisi![kategoriDevam]).toBe(AILE_YATKINLIK_LIMIT);
+      }
+    }
   });
 
   it("gerçek bolgeOzellikleri.ts verisi artık her kalemde ±6 sınırının içinde", async () => {
