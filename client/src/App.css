@@ -5645,6 +5645,12 @@ button.ikincil {
     font-size: 0.92rem;
   }
 
+  /* Yıl modülünün ikonu (📅) mobilde kaldırıldı — kullanıcı isteği; yıl zaten
+     sayı olarak okunuyor, ikon dar sütunda gereksiz yer kaplıyordu. */
+  .ust-serit-modul-yil .ust-serit-modul-ikon {
+    display: none;
+  }
+
   /* İkon + değer yeter; sözel etiket ("Sağlık" vb.) mobilde gizli — 7 modül tek satıra sığsın. */
   .ust-serit-modul-etiket {
     display: none;
