@@ -1041,14 +1041,14 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
     }
   }
   // Hizip zorunlu seçim (bkz. HIZIP_GIRIS_OLAYLARI tanımı yukarıda) — henüz
-  // hizip seçmemiş bir karakter, mesleğine uygun eşiğe (yaş ya da rütbe
-  // seviyesi) ulaşınca giriş olayını garanti görür.
+  // hizip seçmemiş bir karakter, mesleğinden bağımsız olarak 23 yaşına
+  // ulaşınca giriş olayını garanti görür (kullanıcı isteği: "her meslekte
+  // 23 yaşında tetiklensin" — eskiden 3 meslek yaş 18'de, Zanaatkâr ise
+  // rütbe seviyesi 2'de tetikleniyordu; artık hepsi aynı, tek eşiği paylaşıyor).
   if (!zorlananId && !milestoneKilitli && !oturum.state.etiketler.includes("hizip_secildi")) {
     const hizipGirisId = HIZIP_GIRIS_OLAYLARI[oturum.state.meslek];
-    if (hizipGirisId && !oturum.state.gecmis_olaylar.includes(hizipGirisId)) {
-      const esikTutuyor =
-        oturum.state.meslek === "Zanaatkâr" ? oturum.state.rutbe_seviye >= 2 : oturum.state.yas >= 18;
-      if (esikTutuyor) zorlananId = hizipGirisId;
+    if (hizipGirisId && !oturum.state.gecmis_olaylar.includes(hizipGirisId) && oturum.state.yas >= 23) {
+      zorlananId = hizipGirisId;
     }
   }
   // 29 yaşına kadar hiç evlenmemiş ve evlilik teklifiyle hiç karşılaşmamışsa

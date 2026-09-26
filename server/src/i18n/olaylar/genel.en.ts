@@ -772,7 +772,7 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
 
   hizip_zanaatkar_saflasma: {
     baslik: "The Guild Is Torn Apart",
-    metin: "Reaching journeyman rank, you saw the workshop's real divide: the Guild Council defends the old ways, strict oversight and fixed prices; the Free Masters say break free of the guild and set your own price. You have to pick a side now.",
+    metin: "After years at the workshop, you saw the guild's real divide: the Guild Council defends the old ways, strict oversight and fixed prices; the Free Masters say break free of the guild and set your own price. You have to pick a side now.",
     secenekler: [
       {
         metin: "Order and the honor of the craft! Join the Guild Council.",

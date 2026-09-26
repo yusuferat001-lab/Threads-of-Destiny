@@ -1526,10 +1526,9 @@ export const OLAY_GENEL: OlayTanimi[] = [
     yasakliEtiketler: [
       "hizip_secildi",
     ],
-    minRutbeSeviye: 2,
     gorsel: "🔨",
     baslik: "Loncanın İçi Karıştı",
-    metin: "Kalfalığa erişince atölyenin gerçek bölünmesini gördün: Lonca Meclisi eski usulleri, sıkı denetimi ve sabit fiyatları savunuyor; Serbest Ustalar ise loncanın elinden kurtulup kendi fiyatını kendin koy diyor. Artık bir tarafta durmalısın.",
+    metin: "Atölyede geçirdiğin yıllar boyunca loncanın gerçek bölünmesini gördün: Lonca Meclisi eski usulleri, sıkı denetimi ve sabit fiyatları savunuyor; Serbest Ustalar ise loncanın elinden kurtulup kendi fiyatını kendin koy diyor. Artık bir tarafta durmalısın.",
     secenekler: [
       {
         metin: "Düzen ve zanaat şerefi! Lonca Meclisi'ne katıl.",
