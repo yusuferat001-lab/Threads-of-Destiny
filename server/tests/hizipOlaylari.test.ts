@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { olaySec } from "../src/game/olaySecici";
-import { createCharacter, mesleğiSec } from "../src/game/stateManager";
+import { createCharacter, mesleğiSec, etiketEkle } from "../src/game/stateManager";
+import { yeniOyun, mesleğiAta, senaryoUret } from "../src/game/gameEngine";
 
 function hizbeKatil(state: ReturnType<typeof createCharacter>, hizip: string) {
   state.hizip = hizip;
@@ -113,5 +114,59 @@ describe("bekarlık olayları", () => {
       }
     }
     expect(gorundu).toBe(true);
+  });
+});
+
+/**
+ * Hizip zorunlu seçim (2026-09 sonu, kullanıcı isteği: "hizip zorunlu çıkacak,
+ * birini seçicen"). `senaryoUret` kaskadını (§11 kural 2'nin hemen ardı)
+ * gerçek `yeniOyun`/`mesleğiAta` akışıyla test eder — `izoleKarakterOlustur`
+ * (havuzGarantisi.test.ts) ile aynı desende, kariyer yolu girişini (daha
+ * yüksek öncelikli bir kaskad kuralı) uydurma bir `yol:` etiketiyle atlıyoruz
+ * ki hizip kuralı gözlemlenebilsin.
+ */
+describe("hizip zorunlu seçim (2026-09 sonu — 4 meslek de aynı yaş eşiğini paylaşır)", () => {
+  const MESLEK_BEKLENEN: Record<string, { yolOnEki: string; baslik: string }> = {
+    Asker: { yolOnEki: "yol:asker:", baslik: "Kışlada Bölünme" },
+    Tüccar: { yolOnEki: "yol:tuccar:", baslik: "Pazarın Hakimi Kim?" },
+    "Din Adamı": { yolOnEki: "yol:din:", baslik: "Kutsal Bölünme" },
+    Zanaatkâr: { yolOnEki: "yol:zanaatkar:", baslik: "Loncanın İçi Karıştı" },
+  };
+
+  for (const meslek of Object.keys(MESLEK_BEKLENEN)) {
+    it(`${meslek}: 23 yaşında henüz hizip seçmemiş karakter saflaşma olayına zorlanır (nötr şık yok)`, async () => {
+      const { yolOnEki, baslik } = MESLEK_BEKLENEN[meslek];
+      const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
+      await mesleğiAta(state.id, meslek);
+      state.ulke.savasta = true; // tarihi savaş ilanı kuralını atla
+      etiketEkle(state, [`${yolOnEki}__test_dal__`]); // kariyer yolu girişini atla
+      state.yas = 23;
+      const senaryo = await senaryoUret(state.id);
+      expect(senaryo.olay_basligi).toBe(baslik);
+      expect(senaryo.secenekler).toHaveLength(2); // "Tarafsız kal" yok, yalnız iki taraf
+    });
+  }
+
+  it("hiçbir meslek 23 yaşından önce zorlanmaz", async () => {
+    for (const meslek of Object.keys(MESLEK_BEKLENEN)) {
+      const { yolOnEki, baslik } = MESLEK_BEKLENEN[meslek];
+      const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
+      await mesleğiAta(state.id, meslek);
+      state.ulke.savasta = true;
+      etiketEkle(state, [`${yolOnEki}__test_dal__`]);
+      state.yas = 22;
+      const senaryo = await senaryoUret(state.id);
+      expect(senaryo.olay_basligi).not.toBe(baslik);
+    }
+  });
+
+  it("hizip zaten seçilmişse bir daha zorlanmaz", async () => {
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
+    await mesleğiAta(state.id, "Asker");
+    state.ulke.savasta = true;
+    etiketEkle(state, ["yol:asker:__test_dal__", "hizip_secildi"]);
+    state.yas = 23;
+    const senaryo = await senaryoUret(state.id);
+    expect(senaryo.olay_basligi).not.toBe("Kışlada Bölünme");
   });
 });

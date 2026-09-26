@@ -63,6 +63,8 @@ const KATALOG_EN: Record<string, string> = {
   "Rekabetçi": "Competitive",
   "Hırslı": "Ambitious",
   "Vicdanlı": "Conscientious",
+  "Palavracı": "Braggart",
+  "Obur": "Glutton",
 
   // Ekip üyesi kişilik etiketleri (kozmetik)
   "Sadık": "Loyal",

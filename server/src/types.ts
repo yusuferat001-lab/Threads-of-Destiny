@@ -316,6 +316,10 @@ export interface CharacterState {
   omur_hediye_sayisi: number;
   /** Başarısızlığında ölüm/`olum_sansi` ≥ 25 olan bir seçimi başarıyla atlatma sayısı ("korkusuz"/"ölümle dans" amaçları). */
   omur_riskli_basari: number;
+  /** komikOlumler.ts'in riskli ("aptalca olanı yap") şıkkını seçip HAYATTA KALDIYSA true (bir kereliğine, skor bonusu — bkz. hesaplaSkorKirilimi). */
+  komik_olum_basarili_risk: boolean;
+  /** komikOlumler.ts'in riskli şıkkını seçip bu yüzden ÖLDÜYSE true (bir kereliğine, skor bonusu). */
+  komik_olum_ile_oldu: boolean;
   /** Ölüm nadir/komik bir şekilde gerçekleştiyse (ör. "Kendi Kazdığı Kuyuya Düşen") burada saklanır; liderlik tablosunda rozet olarak gösterilir. */
   efsanevi_olum: string | null;
   /**
@@ -355,6 +359,10 @@ export interface CharacterState {
    * Hasta değilken 0.
    */
   veba_olum_riski: number;
+  /** Bizzat kaptığı vebayı (veba_hastasi) atlatıp iyileştiyse true (bir kereliğine, skor bonusu — bkz. hesaplaSkorKirilimi). */
+  veba_hayatta_kaldi: boolean;
+  /** Hapisten FİZİKSEL bir kaçışla (tünel/duvar/çamaşır arabası/gardiyan bayıltma vb. — rüşvet/af DEĞİL) çıktıysa true (bir kereliğine, skor bonusu). */
+  hapis_basarili_kacis: boolean;
   /** Bir sonraki küçük krizin (kıtlık/haydut baskını) tetikleneceği yıl eşiği. */
   kucuk_kriz_sonraki_yil: number;
   /** Küçük kriz tetiklendiğinde SADECE bu yıla kadar geçerli olan ×2 gıda fiyat şoku; null = şok yok. */
@@ -608,6 +616,8 @@ export interface SonucEtkisi {
   suc_seviyesi_ayarla?: number;
   /** Hapiste kalan ceza süresini (state.hapis_ceza_kalan) yıl olarak uzatır — riskli kaçış girişimi başarısız olunca kullanılır. Yalnız "hapiste" etiketi varken anlamlıdır. */
   hapis_ceza_artis?: number;
+  /** true ise, bu sonuç hapishaneden FİZİKSEL bir kaçışla (tünel/duvar/çamaşır arabası/gardiyan bayıltma vb.) çıkışı temsil eder — rüşvet/af ile parayla çıkış SAYILMAZ. Bir ömürde ilk kez gerçekleştiğinde skor formülüne tek seferlik bir bonus ekler (bkz. hesaplaSkorKirilimi). */
+  hapis_basarili_kacis?: true;
   /** true ise para, mevcut değerden bağımsız kesin olarak sıfırlanır (el koyma/müsadere gibi durumlar için; normal para deltası yetmez çünkü paranın alt sınırı yoktur). */
   para_sifirla?: boolean;
   /** true ise şöhret (un), mevcut değerden bağımsız kesin olarak sıfırlanır (itibar kaybı/teşhir cezası gibi durumlar için). */

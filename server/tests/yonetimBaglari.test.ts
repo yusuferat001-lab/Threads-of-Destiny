@@ -114,14 +114,6 @@ describe("yonetimIstekYap", () => {
     );
   });
 
-  it("yalanla desteklemek ahlakı düşürür", async () => {
-    vi.spyOn(Math, "random").mockReturnValue(0.5); // ifşa yok (0.5 > 0.22), rollSuccess ~geçer
-    const state = await oturum();
-    state.patron_iliski = 80;
-    const oncekiAhlak = state.ahlak;
-    const sonuc = await yonetimIstekYap(state.id, "zam", { yalan: true });
-    expect(sonuc.state.ahlak).toBeLessThan(oncekiAhlak);
-  });
 });
 
 describe("yonetimTalebiKararlastir", () => {
@@ -137,6 +129,18 @@ describe("yonetimTalebiKararlastir", () => {
     };
   }
 
+  function patronBagisTalebiEkle(state: CharacterState) {
+    state.yonetim_talep = {
+      id: "t2",
+      kimden: "patron",
+      kimAdi: "Usta",
+      tur: "bagis",
+      tutar: 40,
+      kalem: "atölye masrafı için katkı",
+      sonYil: state.yil + 3,
+    };
+  }
+
   it("kabul: bağış parası düşer, ilişki artar, talep temizlenir", async () => {
     const state = await oturum();
     bagisTalebiEkle(state);
@@ -148,20 +152,37 @@ describe("yonetimTalebiKararlastir", () => {
     expect(sonuc.state.yonetim_talep).toBeNull();
   });
 
-  it("ret: ilişki ve şöhret düşer, talep temizlenir", async () => {
+  it("ret (hükümdar = kaç): ilişki ve şöhret düşer, aranma ciddi artar, talep temizlenir", async () => {
     const state = await oturum();
     state.un = 50;
+    state.suc_seviyesi = 10;
     bagisTalebiEkle(state);
     const sonuc = await yonetimTalebiKararlastir(state.id, "ret");
     expect(sonuc.state.yonetim_iliski).toBeLessThan(40);
     expect(sonuc.state.un).toBeLessThan(50);
     expect(sonuc.state.yonetim_talep).toBeNull();
+    // Hükümdardan kaçmak yalnızca ilişki sorunu değil, ciddi bir suç artışıdır (2026-09 sonu).
+    expect(sonuc.state.suc_seviyesi).toBeGreaterThanOrEqual(35);
   });
 
-  it("yalan: ahlak/mutluluk düşer; temiz kaçış dalı parayı korur", async () => {
-    vi.spyOn(Math, "random").mockReturnValue(0.9); // 0.9 > 0.3 → temiz kaçış
+  it("ret (patron): aranmaya dokunmaz, sadece ilişki/şöhret düşer", async () => {
+    const state = await oturum();
+    state.suc_seviyesi = 10;
+    patronBagisTalebiEkle(state);
+    const sonuc = await yonetimTalebiKararlastir(state.id, "ret");
+    expect(sonuc.state.suc_seviyesi).toBe(10);
+  });
+
+  it("hükümdara 'yalan' kararı reddedilir — sadece öde ya da kaç var", async () => {
     const state = await oturum();
     bagisTalebiEkle(state);
+    await expect(yonetimTalebiKararlastir(state.id, "yalan")).rejects.toThrow();
+  });
+
+  it("yalan (patron): ahlak/mutluluk düşer; temiz kaçış dalı parayı korur", async () => {
+    vi.spyOn(Math, "random").mockReturnValue(0.9); // 0.9 > 0.3 → temiz kaçış
+    const state = await oturum();
+    patronBagisTalebiEkle(state);
     const oncekiPara = state.para;
     const sonuc = await yonetimTalebiKararlastir(state.id, "yalan");
     expect(sonuc.state.ahlak).toBeLessThan(50);
@@ -169,10 +190,10 @@ describe("yonetimTalebiKararlastir", () => {
     expect(sonuc.state.yonetim_talep).toBeNull();
   });
 
-  it("yalan: ifşa dalında hem para hem itibar gider", async () => {
+  it("yalan (patron): ifşa dalında hem para hem itibar gider", async () => {
     vi.spyOn(Math, "random").mockReturnValue(0.1); // 0.1 < 0.3 → ifşa
     const state = await oturum();
-    bagisTalebiEkle(state);
+    patronBagisTalebiEkle(state);
     const sonuc = await yonetimTalebiKararlastir(state.id, "yalan");
     expect(sonuc.state.para).toBe(460); // bağış yine de düşer
     expect(sonuc.state.yonetim_talep).toBeNull();

@@ -25,6 +25,12 @@ export const KISILIKLER: KisilikTanimi[] = [
   { ad: "Rekabetçi", celisenler: [], etkiler: { ticaret: 10, savas: 8, siyaset: 5 } },
   { ad: "Hırslı", celisenler: ["Umutsuz", "Depresif"], etkiler: { ticaret: 12, siyaset: 10, sosyal: -5 } },
   { ad: "Vicdanlı", celisenler: ["Kibirli"], etkiler: { din: 12, saglik: 5, ticaret: -8 } },
+  // Faz 7 (2026-09 sonu, kullanıcı isteği: "kişilikleri daha komik/belirgin
+  // yap"): var olan 16 özellik ciddi/dramatik eksenlere (öfke/umut/kibir vb.)
+  // yoğunlaşmıştı — komedi/flavor tarafında hiçbiri yoktu. İki yeni, mekanik
+  // olarak da belirgin (farklı kategorilerde etki) komik özellik eklendi.
+  { ad: "Palavracı", celisenler: ["Vicdanlı"], etkiler: { sosyal: 10, siyaset: -6, ticaret: 6 } },
+  { ad: "Obur", celisenler: [], etkiler: { sosyal: 8, saglik: -8, ticaret: -5 } },
 ];
 
 function pickRandom<T>(items: T[]): T {

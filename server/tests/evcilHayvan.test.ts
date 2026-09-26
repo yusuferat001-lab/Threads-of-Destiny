@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { olaySec } from "../src/game/olaySecici";
-import { createCharacter, mesleğiSec, giderKalemleriHesapla } from "../src/game/stateManager";
+import { createCharacter, mesleğiSec, giderKalemleriHesapla, etiketEkle } from "../src/game/stateManager";
 import { yeniOyun, mesleğiAta, senaryoUret, secimUygula } from "../src/game/gameEngine";
 import { secimUygulaVeCoz } from "./testUtils";
 
@@ -52,6 +52,7 @@ describe("evcil hayvan sistemi", () => {
       state.yas = 20;
       state.para = 200;
       await mesleğiAta(state.id, "Tüccar");
+      etiketEkle(state, ["hizip_secildi"]); // hizip zorunlu seçim kaskadını bu testte atla (2026-09 sonu)
 
       while (!bulundu && kalanButce > 0 && state.aktif) {
         kalanButce--;
@@ -96,6 +97,7 @@ describe("evcil hayvan sistemi", () => {
   it("20-25 yaş arası, evcil hayvanı olmayan bir karaktere garantili sahiplenme teklifi zorla çıkar", async () => {
     const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
+    etiketEkle(state, ["hizip_secildi"]); // hizip zorunlu seçim kaskadını bu testte atla (2026-09 sonu)
     digerZorunluOlaylariGecistir(state);
     state.yas = 20;
     const senaryo = await senaryoUret(state.id);
@@ -106,6 +108,7 @@ describe("evcil hayvan sistemi", () => {
   it("garantili sahiplenme teklifini reddetmek evcil hayvan atamaz ve olay bir daha zorlanmaz", async () => {
     const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
+    etiketEkle(state, ["hizip_secildi"]); // hizip zorunlu seçim kaskadını bu testte atla (2026-09 sonu)
     digerZorunluOlaylariGecistir(state);
     state.yas = 20;
     const senaryo = await senaryoUret(state.id);
@@ -127,6 +130,7 @@ describe("evcil hayvan sistemi", () => {
   it("evcil hayvanı olan ve 45-50 yaşında iken hiç takip olayı yaşamamış karaktere garanti olay zorlanır", async () => {
     const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
+    etiketEkle(state, ["hizip_secildi"]); // hizip zorunlu seçim kaskadını bu testte atla (2026-09 sonu)
     digerZorunluOlaylariGecistir(state);
     state.evcil_hayvan = { tur: "Kedi", isim: "Boncuk" };
     state.etiketler.push("evcil_hayvan_var", "evcil_hayvan_tur:Kedi");

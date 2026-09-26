@@ -130,6 +130,9 @@ import {
   sosyalAksiyonTanimiGetir,
   SOSYAL_AKSIYONLAR,
   AKSIYON_COOLDOWN,
+  AKSIYON_ROTASYON_HAVUZU,
+  AKSIYON_ROTASYON_GOSTERIM,
+  AKSIYON_ROTASYON_PERIYODU_YIL,
 } from "../data/sosyallesmeAksiyonlari";
 import { rastgeleBirIsimSec, rastgeleOyuncuIsmiSec, rastgeleCinsiyetliIsimSec } from "../data/npcIsimleri";
 import { rastgeleKisilikCifti, kisilikGetir } from "../data/kisilikler";
@@ -172,6 +175,24 @@ const YOL_SISTEMLERI: Record<string, { yolOnEki: string; girisId: string }> = {
   "Sanayi Devrimi|Din Adamı": { yolOnEki: "yol:din:", girisId: "sd_din_yol_ilk_vaaz" },
   "Orta Çağ|Zanaatkâr": { yolOnEki: "yol:zanaatkar:", girisId: "oc_zanaatkar_yol_ilk_siparis" },
   "Sanayi Devrimi|Zanaatkâr": { yolOnEki: "yol:zanaatkar:", girisId: "sd_zanaatkar_yol_ilk_makine" },
+};
+
+/**
+ * Hizip zorunlu seçim (2026-09 sonu, kullanıcı isteği: "hizip zorunlu çıkacak,
+ * birini seçicen"). Eskiden hizbe katılmak tamamen şansa bağlıydı — genel.ts'teki
+ * "saflaşma" olayı normal havuzdan rastgele çıkabiliyordu, hiç çıkmayabilirdi de,
+ * ve bir "Tarafsız kal" seçeneği vardı (o seçenek ayrı bir PR'da kaldırıldı).
+ * Artık meslek başına giriş olayı §11 kural 2 (kariyer yolu) ile AYNI kaskad
+ * mantığında garantilenir: Asker/Tüccar/Din Adamı için 18 yaşından itibaren,
+ * Zanaatkâr için (yeni hizip çifti, kariyer yolundan bağımsız bir eksen) yaş
+ * yerine kıdemle — rütbe seviye 2'ye (kalfalık) ulaşınca. Tetiklenince oyuncu
+ * iki taraftan birini seçmek ZORUNDA kalır (nötr seçenek yok).
+ */
+const HIZIP_GIRIS_OLAYLARI: Record<string, string> = {
+  Asker: "hizip_asker_saflasma",
+  Tüccar: "hizip_tuccar_saflasma",
+  "Din Adamı": "hizip_din_saflasma",
+  Zanaatkâr: "hizip_zanaatkar_saflasma",
 };
 
 /**
@@ -442,6 +463,10 @@ const KOMIK_OLUM_HAVUZ_KONTROL_NOKTALARI: { yas: number; hedef: number }[] = [
   { yas: 64, hedef: 2 },
 ];
 
+/** komikOlumler.ts olay id'leri — Faz 5 skor bonusu: bu havuzdaki "aptalca olanı yap" riskli
+ * şıkkını seçip hayatta kalmak/ölmek tek seferlik bir skor bonusu tetikler (bkz. hesaplaSkorKirilimi). */
+const KOMIK_OLUM_ID_SETI = new Set(OLAY_KOMIK_OLUM.map((o) => o.id));
+
 /**
  * Gecikmiş takip TETİKLEYİCİ garantisi (2026-09 sonu, kullanıcı isteği): 24
  * yaşına kadar en az 1, 37 yaşına kadar en az 2 "gecikmiş takip" tetikleyici
@@ -646,12 +671,13 @@ const YOLCULUK_KAZANC_CARPANI = 1.2;
 
 /**
  * Her olay seçiminden gelen pozitif paraya uygulanan sabit çarpan. Büyük denge
- * turunda 1.055'ten 0.85'e çekildi: kullanıcı "olaylardan gelen para ödüllerini
- * %20 düşür" dedi — eski +%5.5 primi de yutularak net ≈ −%20. YALNIZ pozitif
- * para'ya biner (kayıplara değil). Meslek/yolculuk/suç çarpanlarının hepsinin
- * altında, ilk sırada uygulanır.
+ * turunda 1.055'ten 0.85'e çekilmişti (kullanıcı "olaylardan gelen para
+ * ödüllerini %20 düşür" demişti). 2026-09 sonu: kullanıcı isteğiyle bu değer
+ * tekrar +%5 artırıldı (0.85 × 1.05). YALNIZ pozitif para'ya biner (kayıplara
+ * değil). Meslek/yolculuk/suç çarpanlarının hepsinin altında, ilk sırada
+ * uygulanır.
  */
-const OLAY_PARA_PRIMI = 0.85;
+const OLAY_PARA_PRIMI = 0.8925;
 
 type SucKazanciSonucu = "yok" | "suc" | "ciddi";
 
@@ -1012,6 +1038,17 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
       if (!zatenYolda && !oturum.state.gecmis_olaylar.includes(sistem.girisId)) {
         zorlananId = sistem.girisId;
       }
+    }
+  }
+  // Hizip zorunlu seçim (bkz. HIZIP_GIRIS_OLAYLARI tanımı yukarıda) — henüz
+  // hizip seçmemiş bir karakter, mesleğinden bağımsız olarak 23 yaşına
+  // ulaşınca giriş olayını garanti görür (kullanıcı isteği: "her meslekte
+  // 23 yaşında tetiklensin" — eskiden 3 meslek yaş 18'de, Zanaatkâr ise
+  // rütbe seviyesi 2'de tetikleniyordu; artık hepsi aynı, tek eşiği paylaşıyor).
+  if (!zorlananId && !milestoneKilitli && !oturum.state.etiketler.includes("hizip_secildi")) {
+    const hizipGirisId = HIZIP_GIRIS_OLAYLARI[oturum.state.meslek];
+    if (hizipGirisId && !oturum.state.gecmis_olaylar.includes(hizipGirisId) && oturum.state.yas >= 23) {
+      zorlananId = hizipGirisId;
     }
   }
   // 29 yaşına kadar hiç evlenmemiş ve evlilik teklifiyle hiç karşılaşmamışsa
@@ -1463,7 +1500,12 @@ export async function secimUygula(id: string, secenekIndex: number): Promise<Sec
   // (olay/seçenek metninde olduğu gibi) burada da dolduruluyor.
   etki.mesaj = doldur(etki.mesaj, state);
   if (etki.detay) etki.detay = doldur(etki.detay, state);
-  return sonucuUygulaVeIlerlet(oturum, mevcutOlay, etki, basarili, eskiRutbeSeviye);
+  // Faz 5 skor bonusu: komikOlumler.ts'in riskli ("aptalca olanı yap") şıkkı seçildi mi?
+  // (havuz + başarısız dalın ölümcül olma potansiyeli ile tanınır, hangi dal çıktığından bağımsız).
+  const komikOlumRiskliSecenekMi =
+    KOMIK_OLUM_ID_SETI.has(mevcutOlay.id) &&
+    (basarisizDal.olum === true || (basarisizDal.olum_sansi ?? 0) > 0);
+  return sonucuUygulaVeIlerlet(oturum, mevcutOlay, etki, basarili, eskiRutbeSeviye, komikOlumRiskliSecenekMi);
 }
 
 /** Doğum denemesi cooldown'u (yıl) — bu kadar yıl geçmeden yeni çocuk olmaz
@@ -1537,7 +1579,8 @@ async function sonucuUygulaVeIlerlet(
   mevcutOlay: OlayTanimi,
   etki: SonucEtkisi,
   basarili: boolean,
-  eskiRutbeSeviye: number
+  eskiRutbeSeviye: number,
+  komikOlumRiskliSecenekMi: boolean = false
 ): Promise<SecimSonucu> {
   const { state } = oturum;
   // Nakit akışı defteri: turun sonunda Σ(alanlar) == state.para'daki net değişim olacak
@@ -1836,6 +1879,11 @@ async function sonucuUygulaVeIlerlet(
   if (hapistenCiktiBuEtki) state.hapis_ceza_toplam = 0;
   // Bir olay seçimiyle serbest kalındıysa (rüşvet/af/başarılı kaçış) sayaç sıfırlanır.
   if (hapistenCiktiBuEtki) state.hapis_ceza_kalan = 0;
+  // Faz 5 skor bonusu: FİZİKSEL bir kaçışla (rüşvet/af DEĞİL) hapisten çıkmak
+  // bir ömürde bir kereliğine ödüllendirilir (bkz. hesaplaSkorKirilimi).
+  if (etki.hapis_basarili_kacis && !state.hapis_basarili_kacis) {
+    state.hapis_basarili_kacis = true;
+  }
   // Bir olay (veba dönemi bulaşma olayı) vebayı bulaştırdıysa kişisel hastalığı
   // başlat: ~%70 ölüm riski + vebaHastasiOlayi havuzuna geç.
   if (etki.etiket_ekle?.includes("veba_hastasi")) vebaHastaligiBaslatEt(state);
@@ -1884,6 +1932,16 @@ async function sonucuUygulaVeIlerlet(
   // yaşamadığı bir "efsanevi ölüm" damgasını taşımasın.
   if (etki.efsanevi_olum && !state.aktif) {
     state.efsanevi_olum = etki.efsanevi_olum;
+  }
+  // Faz 5 skor bonusu: komikOlumler.ts'in riskli şıkkını seçip hayatta kalmak/ölmek
+  // bir kereliğine ödüllendirilir (bkz. hesaplaSkorKirilimi). Relik ölümü iptal
+  // ederse (state.aktif hâlâ true) bu "hayatta kaldı" sayılır.
+  if (komikOlumRiskliSecenekMi) {
+    if (state.aktif) {
+      if (!state.komik_olum_basarili_risk) state.komik_olum_basarili_risk = true;
+    } else if (!state.komik_olum_ile_oldu) {
+      state.komik_olum_ile_oldu = true;
+    }
   }
 
   let yasArtisi = 0;
@@ -2118,6 +2176,9 @@ async function sonucuUygulaVeIlerlet(
             }
             if (hastalikSonucu.karakterOldu) {
               checkDeath(state, true, "Veba direncini kırdı; hastalıktan kurtulamadın.");
+            } else if (hastalikSonucu.iyilesti && !state.veba_hayatta_kaldi) {
+              // Faz 5 skor bonusu: bizzat vebayı kapıp atlatmak bir kereliğine ödüllendirilir.
+              state.veba_hayatta_kaldi = true;
             }
           }
           if (state.aktif) {
@@ -2838,11 +2899,11 @@ function yonetimBagisKademeleri(state: CharacterState, hat: YonetimHat): number[
   return (taban?.bagisKademeleri ?? []).map((k) => Math.max(1, paraYuvarla(k * enf)));
 }
 
-function yonetimIstekSansi(tanim: YonetimIstekTanimi, iliski: number, yalan: boolean): number {
+function yonetimIstekSansi(tanim: YonetimIstekTanimi, iliski: number): number {
   // Yönetici (kral) hattında ilişki avantajı çok daha yavaş şansa dönüşür ve tavan düşük.
   const egim = tanim.hat === "yonetici" ? 0.4 : 1;
   const tavan = tanim.hat === "yonetici" ? 72 : 90;
-  const bonus = (iliski - tanim.minIliski) * egim + (yalan ? 18 : 0);
+  const bonus = (iliski - tanim.minIliski) * egim;
   return Math.round(Math.min(tavan, Math.max(15, tanim.tabanSans + bonus)));
 }
 
@@ -2905,7 +2966,7 @@ export async function yonetimDurumGetir(id: string): Promise<YonetimDurumu> {
       minIliski: tanim.minIliski,
       acik: yonetimIstekAcikMi(state, tanim),
       iliskiBedeli: tanim.iliskiBedeli,
-      tahminiSans: yonetimIstekSansi(tanim, yonetimIliskiOku(state, tanim.hat), false),
+      tahminiSans: yonetimIstekSansi(tanim, yonetimIliskiOku(state, tanim.hat)),
     })),
     kilitler: { ...state.yonetim_etkilesim_kilit },
     bikkinlik: state.yonetim_yakin_etkilesim ?? 0,
@@ -3024,12 +3085,13 @@ interface YonetimIstekSonucu {
   mesaj: string;
 }
 
-/** İlişki yüksekken açılan bir "istek" (iyilik) — ilişki harcar, zarlıdır. Turu TÜKETMEZ. */
-export async function yonetimIstekYap(
-  id: string,
-  istekId: string,
-  opts: { yalan?: boolean } = {}
-): Promise<YonetimIstekSonucu> {
+/**
+ * İlişki yüksekken açılan bir "istek" (iyilik) — ilişki harcar, zarlıdır. Turu
+ * TÜKETMEZ. 2026-09 sonu sadeleştirmesi: eski "yalanla destekle" seçeneği
+ * (şansı artırıp ahlak/mutluluk düşüren + ifşa riskli dal) kaldırıldı — tek
+ * ve sade bir akış: iste, zar at, sonucu gör.
+ */
+export async function yonetimIstekYap(id: string, istekId: string): Promise<YonetimIstekSonucu> {
   const oturum = await oturumGetir(id);
   const { state } = oturum;
   if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
@@ -3051,23 +3113,9 @@ export async function yonetimIstekYap(
   }
 
   const enflasyon = enflasyonCarpani(state);
-  const yalan = opts.yalan === true;
   const iliskiOncesi = yonetimIliskiOku(state, tanim.hat);
-  const sans = yonetimIstekSansi(tanim, iliskiOncesi, yalan);
-
-  if (yalan) {
-    state.ahlak -= 5;
-    state.mutluluk -= 3;
-  }
-
-  let basarili = rollSuccess(sans);
-  let ifsaOldu = false;
-  if (yalan && Math.random() < 0.22) {
-    ifsaOldu = true;
-    basarili = false;
-    yonetimIliskiYaz(state, tanim.hat, yonetimIliskiOku(state, tanim.hat) - 20);
-    state.un -= 5;
-  }
+  const sans = yonetimIstekSansi(tanim, iliskiOncesi);
+  const basarili = rollSuccess(sans);
 
   // İlişki bedeli: başarıda tam, başarısızda yarım.
   const bedel = basarili ? tanim.iliskiBedeli : Math.round(tanim.iliskiBedeli / 2);
@@ -3080,16 +3128,9 @@ export async function yonetimIstekYap(
   state.yonetim_yakin_etkilesim = (state.yonetim_yakin_etkilesim ?? 0) + 1;
 
   const kimAdi = tanim.hat === "yonetici" ? yoneticiBilgisi(state).ad : patronBilgisi(state).ad;
-  let mesaj: string;
-  if (ifsaOldu) {
-    mesaj = T(state.dil, "Yalanın ortaya çıktı; {0} sana sırtını döndü ve isteğin geri çevrildi.", [
-      kimAdi,
-    ]);
-  } else if (basarili) {
-    mesaj = T(state.dil, "{0} isteğini yerine getirdi.", [kimAdi]);
-  } else {
-    mesaj = T(state.dil, "{0} bu sefer isteğini geri çevirdi.", [kimAdi]);
-  }
+  const mesaj = basarili
+    ? T(state.dil, "{0} isteğini yerine getirdi.", [kimAdi])
+    : T(state.dil, "{0} bu sefer isteğini geri çevirdi.", [kimAdi]);
 
   await oturumKaydet(state);
   return { state, basarili, mesaj };
@@ -3112,6 +3153,9 @@ export async function yonetimTalebiKararlastir(
   const talep = state.yonetim_talep;
   if (!talep) throw new Error("Bekleyen bir talep yok.");
   if (karar !== "kabul" && karar !== "ret" && karar !== "yalan") throw new Error("Geçersiz karar.");
+  if (talep.kimden === "yonetici" && karar === "yalan") {
+    throw new Error("Hükümdara yalan söyleyemezsin — sadece öde ya da kaç.");
+  }
 
   const hat = talep.kimden;
   let mesaj: string;
@@ -3128,7 +3172,15 @@ export async function yonetimTalebiKararlastir(
     yonetimIliskiYaz(state, hat, yonetimIliskiOku(state, hat) - 16);
     state.mutluluk -= 4;
     state.un -= 3;
-    mesaj = T(state.dil, "{0} talebini geri çevirdin; arası soğudu.", [talep.kimAdi]);
+    if (hat === "yonetici") {
+      // Kral için "reddetmek" yalnızca soğuk bir ilişki değil, kaçmaktır —
+      // aranma seviyesini bir bandı atlatacak kadar ciddi artırır (2026-09 sonu).
+      const artis = 25 + Math.floor(Math.random() * 11); // 25-35
+      state.suc_seviyesi = Math.min(100, state.suc_seviyesi + artis);
+      mesaj = T(state.dil, "Hükümdarın talebini reddedip kaçtın; muhafızlar peşine düştü, artık aranıyorsun.", []);
+    } else {
+      mesaj = T(state.dil, "{0} talebini geri çevirdin; arası soğudu.", [talep.kimAdi]);
+    }
   } else {
     state.ahlak -= 5;
     state.mutluluk -= 4;
@@ -4033,6 +4085,44 @@ function aksiyonKalanYil(state: CharacterState, anahtar: string): number {
   return Math.max(0, cd - (state.yil - son));
 }
 
+/** Basit, hızlı ve deterministik bir string hash (djb2 varyantı) — rastgele rotasyon tohumu için. */
+function basitHash(s: string): number {
+  let h = 5381;
+  for (let i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0;
+  return h >>> 0;
+}
+
+/** Tohumlu, hızlı bir PRNG (mulberry32) — Math.random() yerine deterministik rotasyon için. */
+function mulberry32(seed: number): () => number {
+  let a = seed >>> 0;
+  return function () {
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/**
+ * Sosyalleş ekranının tur-harcamayan aksiyon havuzu (9 aksiyon) her zaman
+ * TAMAMEN gösterilmez — "her tur değişsin, hep aynı şeyler olmasın" isteğiyle
+ * her karakter için `AKSIYON_ROTASYON_PERIYODU_YIL` yıl boyunca sabit kalan,
+ * o karaktere özgü (state.id ile tohumlanmış) rastgele bir 3'lü seçilir.
+ * Aynı karakter aynı yıl aralığında tutarlı bir liste görür (sayfayı her
+ * yenilediğinde değişmez), ama birkaç yıl geçince ya da başka bir karakterde
+ * farklı bir 3'lü çıkar.
+ */
+export function aktifAksiyonRotasyonu(state: CharacterState): Set<string> {
+  const donem = Math.floor(state.yil / AKSIYON_ROTASYON_PERIYODU_YIL);
+  const rnd = mulberry32(basitHash(state.id) ^ donem);
+  const havuz = [...AKSIYON_ROTASYON_HAVUZU];
+  for (let i = havuz.length - 1; i > 0; i--) {
+    const j = Math.floor(rnd() * (i + 1));
+    [havuz[i], havuz[j]] = [havuz[j], havuz[i]];
+  }
+  return new Set<string>(havuz.slice(0, AKSIYON_ROTASYON_GOSTERIM));
+}
+
 /** Sosyalleş ekranının tur-harcamayan aksiyon panelinin canlı hâlini döner. */
 export async function sosyallesmeAksiyonConfigGetir(id: string): Promise<SosyalAksiyonConfig> {
   const oturum = await oturumGetir(id);
@@ -4074,7 +4164,8 @@ export async function sosyallesmeAksiyonConfigGetir(id: string): Promise<SosyalA
     };
   });
 
-  const aksiyonlar: SosyalAksiyonKarti[] = SOSYAL_AKSIYONLAR.map((a) => {
+  const rotasyon = aktifAksiyonRotasyonu(state);
+  const aksiyonlar: SosyalAksiyonKarti[] = SOSYAL_AKSIYONLAR.filter((a) => rotasyon.has(a.id)).map((a) => {
     const bekleyen = aksiyonKalanYil(state, a.id);
     const fiyat = a.tabanFiyat === 0 ? 0 : Math.max(1, paraYuvarla(a.tabanFiyat * enfl));
     const mekanEngeli = a.alkolluMekanGerekir === true && !alkolluMekanVar;
@@ -4159,6 +4250,7 @@ export async function sosyallesmeAksiyonYap(
 
   const tanim = sosyalAksiyonTanimiGetir(aksiyonId);
   if (!tanim) throw new Error("Böyle bir aksiyon yok.");
+  if (!aktifAksiyonRotasyonu(state).has(aksiyonId)) throw new Error("Bu aksiyon şu an mevcut değil.");
   if (aksiyonKalanYil(state, aksiyonId) > 0) throw new Error("Bunu yakında tekrar yapamazsın.");
 
   if (aksiyonId === "deli") {
@@ -4247,6 +4339,65 @@ export async function sosyallesmeAksiyonYap(
     } else {
       etiketEkle(state, ["istihbarat_var"]);
       mesaj = T(state.dil, "Falcı ürkütücü bir kesinlikle sıradaki işini tarif etti. Ensende bir ürperti.");
+    }
+  } else if (aksiyonId === "hikaye_anlat") {
+    const fiyat = Math.max(1, paraYuvarla(6 * enfl));
+    if (state.para < fiyat) throw new Error(`Yeterli paran yok (${fiyat} ${birim} gerekli).`);
+    state.para = paraYuvarla(state.para - fiyat);
+    const r = Math.random();
+    if (r < 0.5) {
+      state.un += 5;
+      state.mutluluk += 3;
+      mesaj = T(state.dil, "Anlattığın hikaye ağızdan ağıza dolaştı; birkaç gün senden bahsedildi.");
+    } else if (r < 0.8) {
+      state.un += 2;
+      state.mutluluk += 1;
+      mesaj = T(state.dil, "Hikayeni sabırla dinlediler, kibarca gülümsediler. Fena değildi.");
+    } else {
+      state.un -= 1;
+      state.mutluluk -= 3;
+      mesaj = T(state.dil, "Hikayeni beğenmediler, arkandan kıkırdadılar.");
+    }
+  } else if (aksiyonId === "muzik_dinle") {
+    const fiyat = Math.max(1, paraYuvarla(3 * enfl));
+    if (state.para < fiyat) throw new Error(`Yeterli paran yok (${fiyat} ${birim} gerekli).`);
+    state.para = paraYuvarla(state.para - fiyat);
+    state.mutluluk += 5;
+    state.saglik += 1;
+    mesaj = T(state.dil, "Gezgin ozanın türküsü içini ısıttı; bir an her şeyi unuttun.");
+  } else if (aksiyonId === "yerliye_sor") {
+    const fiyat = Math.max(1, paraYuvarla(6 * enfl));
+    if (state.para < fiyat) throw new Error(`Yeterli paran yok (${fiyat} ${birim} gerekli).`);
+    state.para = paraYuvarla(state.para - fiyat);
+    const r = Math.random();
+    if (r < 0.45) {
+      etiketEkle(state, ["istihbarat_var"]);
+      state.mutluluk += 1;
+      mesaj = T(state.dil, "Yerli biri sana açık konuştu, kafanda bölgenin tam bir haritasını çizdi.");
+    } else if (r < 0.8) {
+      const haberler = haberleriUret(state);
+      mesaj =
+        haberler[Math.floor(Math.random() * haberler.length)] ??
+        T(state.dil, "Bölge hakkında sıradan, malum şeyler anlattı.");
+      state.mutluluk += 1;
+    } else {
+      state.mutluluk -= 2;
+      mesaj = T(state.dil, "Seni yanlış yönlendirdi — bir süre boşuna dolaştın, sinirin bozuldu.");
+    }
+  } else if (aksiyonId === "bahis_izle") {
+    const fiyat = Math.max(1, paraYuvarla(5 * enfl));
+    if (state.para < fiyat) throw new Error(`Yeterli paran yok (${fiyat} ${birim} gerekli).`);
+    state.para = paraYuvarla(state.para - fiyat);
+    state.suc_seviyesi = Math.min(100, state.suc_seviyesi + 2);
+    if (Math.random() < 0.45) {
+      state.para = paraYuvarla(state.para + fiyat * 2);
+      state.mutluluk += 4;
+      state.omur_kumar_net = (state.omur_kumar_net ?? 0) + fiyat;
+      mesaj = T(state.dil, "Bahsi kazandın! Kalabalık seninle birlikte bağırdı, kesen ağırlaştı.");
+    } else {
+      state.mutluluk -= 3;
+      state.omur_kumar_net = (state.omur_kumar_net ?? 0) - fiyat;
+      mesaj = T(state.dil, "Bahsi kaybettin; parana yazık oldu ama en azından dövüş/koşu heyecanlıydı.");
     }
   } else {
     throw new Error("Böyle bir aksiyon yok.");

@@ -34,11 +34,12 @@ export const TERFI_COOLDOWN: Record<number, number> = { 2: 0, 3: 2, 4: 2, 5: 8 }
  * Seviye 1..5 için maaşa çarpımsal, kalıcı rütbe primi (hesaplaMaasYillik içinde
  * TEK bir çarpan kalemi olarak girer — kıdem/itibar/enflasyonla da çarpılır).
  * BİLEŞİK: her kademe bir öncekinin üstüne kademeye özgü bir yüzde bindirir.
- * Kademe artışları sırasıyla %15 · %12 · %12 · %11 · %10 (… diye devam eder) —
- * yani S2 = S1 ×1.15, S3 = S2 ×1.12, S4 = S3 ×1.12, S5 = S4 ×1.11. S1..S5
- * sonuçları ≈ ×1.00 / ×1.15 / ×1.29 / ×1.44 / ×1.60.
+ * Faz 6 ekonomi rebalansı (2026-09 sonu, kullanıcı isteği: "kalıcı maaş
+ * bonuslarını azalt"): kademe artışları %15/%12/%12/%11/%10'dan %12/%10/%9/%8/%7'ye
+ * düşürüldü — S2 = S1 ×1.12, S3 = S2 ×1.10, S4 = S3 ×1.09, S5 = S4 ×1.08.
+ * S1..S5 sonuçları ≈ ×1.00 / ×1.12 / ×1.23 / ×1.34 / ×1.45 (eski: ×1.00/×1.15/×1.29/×1.44/×1.60).
  */
-const RUTBE_MAAS_ARTIS_ORANLARI = [0.15, 0.12, 0.12, 0.11, 0.1];
+const RUTBE_MAAS_ARTIS_ORANLARI = [0.12, 0.1, 0.09, 0.08, 0.07];
 export const RUTBE_MAAS_CARPANI: [number, number, number, number, number] = (() => {
   const carpanlar: number[] = [1];
   for (let i = 1; i < 5; i++) {
@@ -62,6 +63,12 @@ export const KARIYER_PUANI_KATEGORI_BASARI = 3;
  * (yalnız unvan metinleri çağa göre değişir). Ortalama başarılı bir kariyerin
  * seviye 4'te bitmesi, seviye 5'in nadir kalması hedeflenir; sayılar
  * scripts/simulateKisilikler.ts ile ayarlanır.
+ *
+ * Faz 6 ekonomi rebalansı (2026-09 sonu, kullanıcı isteği: "S3/S4/S5
+ * ilerlemesini yavaşlat"): S2 eşiği (10 kariyer_puani, erken oyunun hemen
+ * ilk kademesi) BİLEREK dokunulmadı — yalnız S3/S4/S5 eşikleri yukarı çekildi
+ * (kariyer_puani: 24→32, 44→64, 210→260) + her mesleğin S3/S4/S5 stat eşiği de
+ * orantılı olarak biraz yükseltildi (S2 stat eşiği aynı kaldı).
  */
 export const RUTBELER: Record<string, Record<Cag, RutbeTanimi>> = {
   Asker: {
@@ -69,18 +76,18 @@ export const RUTBELER: Record<string, Record<Cag, RutbeTanimi>> = {
       unvanlar: ["Er", "Onbaşı", "Silahşor", "Kumandan", "Serdar"],
       esikler: [
         { kariyer_puani: 10, un: 20 },
-        { kariyer_puani: 24, un: 32 },
-        { kariyer_puani: 44, un: 42 },
-        { kariyer_puani: 210, un: 72 },
+        { kariyer_puani: 32, un: 36 },
+        { kariyer_puani: 64, un: 48 },
+        { kariyer_puani: 260, un: 78 },
       ],
     },
     "Sanayi Devrimi": {
       unvanlar: ["Er", "Onbaşı", "Çavuş", "Yüzbaşı", "Binbaşı"],
       esikler: [
         { kariyer_puani: 10, un: 20 },
-        { kariyer_puani: 24, un: 32 },
-        { kariyer_puani: 44, un: 42 },
-        { kariyer_puani: 210, un: 72 },
+        { kariyer_puani: 32, un: 36 },
+        { kariyer_puani: 64, un: 48 },
+        { kariyer_puani: 260, un: 78 },
       ],
     },
   },
@@ -89,18 +96,18 @@ export const RUTBELER: Record<string, Record<Cag, RutbeTanimi>> = {
       unvanlar: ["Çırak Tüccar", "Seyyar Satıcı", "Pazarcı", "Lonca Ustası", "Lonca Reisi"],
       esikler: [
         { kariyer_puani: 10, un: 10 },
-        { kariyer_puani: 24, un: 17 },
-        { kariyer_puani: 44, un: 25 },
-        { kariyer_puani: 210, un: 50 },
+        { kariyer_puani: 32, un: 19 },
+        { kariyer_puani: 64, un: 28 },
+        { kariyer_puani: 260, un: 54 },
       ],
     },
     "Sanayi Devrimi": {
       unvanlar: ["Kâtip Çırak", "Tezgâhtar", "Şirket Ortağı", "Fabrika Patronu", "Sanayi Baronu"],
       esikler: [
         { kariyer_puani: 10, un: 10 },
-        { kariyer_puani: 24, un: 17 },
-        { kariyer_puani: 44, un: 25 },
-        { kariyer_puani: 210, un: 50 },
+        { kariyer_puani: 32, un: 19 },
+        { kariyer_puani: 64, un: 28 },
+        { kariyer_puani: 260, un: 54 },
       ],
     },
   },
@@ -111,9 +118,9 @@ export const RUTBELER: Record<string, Record<Cag, RutbeTanimi>> = {
       // olmayan) bir din adamı düşük-orta rütbeleri de tırmanabilsin.
       esikler: [
         { kariyer_puani: 10, ahlak: 44 },
-        { kariyer_puani: 24, ahlak: 50 },
-        { kariyer_puani: 44, ahlak: 58 },
-        { kariyer_puani: 210, ahlak: 78 },
+        { kariyer_puani: 32, ahlak: 52 },
+        { kariyer_puani: 64, ahlak: 62 },
+        { kariyer_puani: 260, ahlak: 80 },
       ],
     },
     "Sanayi Devrimi": {
@@ -122,9 +129,9 @@ export const RUTBELER: Record<string, Record<Cag, RutbeTanimi>> = {
       // olmayan) bir din adamı düşük-orta rütbeleri de tırmanabilsin.
       esikler: [
         { kariyer_puani: 10, ahlak: 44 },
-        { kariyer_puani: 24, ahlak: 50 },
-        { kariyer_puani: 44, ahlak: 58 },
-        { kariyer_puani: 210, ahlak: 78 },
+        { kariyer_puani: 32, ahlak: 52 },
+        { kariyer_puani: 64, ahlak: 62 },
+        { kariyer_puani: 260, ahlak: 80 },
       ],
     },
   },
@@ -135,18 +142,18 @@ export const RUTBELER: Record<string, Record<Cag, RutbeTanimi>> = {
       unvanlar: ["Çırak", "Kalfa", "Usta", "Baş Usta", "Loncabaşı"],
       esikler: [
         { kariyer_puani: 10, un: 8 },
-        { kariyer_puani: 24, un: 14 },
-        { kariyer_puani: 44, un: 20 },
-        { kariyer_puani: 210, un: 42 },
+        { kariyer_puani: 32, un: 16 },
+        { kariyer_puani: 64, un: 22 },
+        { kariyer_puani: 260, un: 44 },
       ],
     },
     "Sanayi Devrimi": {
       unvanlar: ["Amele", "Vasıflı İşçi", "Ustabaşı", "Atölye Şefi", "Fabrika Müdürü"],
       esikler: [
         { kariyer_puani: 10, un: 8 },
-        { kariyer_puani: 24, un: 14 },
-        { kariyer_puani: 44, un: 20 },
-        { kariyer_puani: 210, un: 42 },
+        { kariyer_puani: 32, un: 16 },
+        { kariyer_puani: 64, un: 22 },
+        { kariyer_puani: 260, un: 44 },
       ],
     },
   },

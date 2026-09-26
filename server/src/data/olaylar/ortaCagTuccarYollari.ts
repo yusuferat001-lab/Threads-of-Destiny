@@ -594,6 +594,22 @@ export const OLAY_ORTACAG_TUCCAR_YOLLARI: OlayTanimi[] = [
           detay: "Her tohum aynı toprakta filizlenmez.",
         },
       },
+      {
+        metin: "Sözü boş ver, cebinden küçük bir kese uzat ve yoluna devam et.",
+        baseBasariSansi: 70,
+        basariliSonuc: {
+          para: 8,
+          mutluluk: -2,
+          mesaj: "Ona küçük bir kese uzatıp yoluna devam ettin; pratikti ama sıcaklıktan yoksun bir vedaydı.",
+          detay: "Bazen bilgelik yerine bakır tercih edilir.",
+        },
+        basarisizSonuc: {
+          mutluluk: -5,
+          dost_puani: -3,
+          mesaj: "Genç adam parayı reddetti; gözlerindeki hayal kırıklığını uzun süre unutamadın.",
+          detay: "Bazı insanlar cevap ister, sadaka değil.",
+        },
+      },
     ],
   },
 
@@ -2147,6 +2163,23 @@ export const OLAY_ORTACAG_TUCCAR_YOLLARI: OlayTanimi[] = [
           mutluluk: 2,
           mesaj: "Sağlığın eskisi kadar el vermene izin vermiyor ama niyetin hâlâ aynı, ve şehir bunu biliyor.",
           detay: "Yorgun bir el bile hâlâ açık olabilir.",
+        },
+      },
+      {
+        metin: "Yeter artık — son yıllarında kendi rahatına bak, kesenin ağzını kapa.",
+        baseBasariSansi: 80,
+        basariliSonuc: {
+          para: 12,
+          mutluluk: -3,
+          un: -4,
+          mesaj: "Kesenin ağzını sıkı tuttun; rahat bir emeklilik oldu ama efsanen halkın dilinde biraz soldu.",
+          detay: "Her hikaye bir gün susar.",
+        },
+        basarisizSonuc: {
+          mutluluk: -6,
+          un: -6,
+          mesaj: "Şehir halkı senden hâlâ bir şeyler bekliyordu; suskunluğun garip bir hayal kırıklığı yarattı.",
+          detay: "Efsaneler emekli olmayı sevmez.",
         },
       },
     ],

@@ -267,7 +267,6 @@ button.ikincil {
   opacity: 0.9;
 }
 
-.acilis-skor-ipucu,
 .liderlik-skor-ipucu {
   margin-top: 0.6rem;
   padding: 0.5rem 0.7rem;
@@ -1247,21 +1246,16 @@ button.ikincil {
   overflow-y: auto;
 }
 
-/* Seçim SONUCU ekranında kart sahnenin altına daha az taşar: sahne artık arka
-   planda kaldığı için kartın okunurluğu > sabit sahne payı. Uzun sonuç metni
-   ilk satırından itibaren tam görünür, sahne/hotspot'la iç içe girmez. */
-.merkez-alt-sonuc {
-  margin-top: clamp(-0.8rem, -1.4vh, -0.4rem);
-  /* Olay kartının aksine (sabit %52 payı — sahnenin her tıklamada zıplamaması için)
-     sonuç kartının payı İÇERİĞE göre büyüyüp küçülür: kısa sonuçlarda kutu boş yere
-     devasa kalmaz, uzun sonuçlarda (mesaj + zaman anlatımı + etki çipleri) belirgin
-     bir üst sınıra kadar büyüyüp tam metni gösterir, ancak onu da aşarsa kendi içinde
-     kayar. Sonuç ekranında sahne zaten arka planda kaldığı için bu geçiş rahatsız
-     edici bir "zıplama" hissi yaratmaz (bkz. sahnenin flex:1 ile kalanı doldurması). */
-  flex: 0 1 auto;
-  max-height: min(72vh, 620px);
-  width: min(760px, 92%);
-}
+/* Seçim SONUCU ekranında kart — 2026-09 sonu düzeltmesi (kullanıcı: "pc'de olay
+   ekranı sabit değil, arkaplan sürekli değişiyor"). Eskiden bu kartın payı
+   İÇERİĞE göre büyüyüp küçülüyordu (flex:0 1 auto + max-height) — sonuç mesajı
+   kısa/uzun oldukça sahnenin (flex:1 ile kalanı dolduran) kapladığı alan da her
+   seçimde değişiyor, bölge görseli yeniden kadrajlanıp "arka plan değişti" hissi
+   veriyordu. Artık soru kartıyla (.merkez-alt) BİREBİR AYNI sabit payı kullanır —
+   sahne, soru⇄sonuç geçişinde artık asla boyut değiştirmez. Kısa sonuçlarda
+   kutuda boşluk kalabilir; uzun sonuçlarda (.merkez-alt'tan miras) overflow-y:auto
+   ile kendi içinde kayar (bkz. ::after fade ipucu, aşağıda). Artık .merkez-alt'tan
+   fazladan hiçbir boyut/margin override'ı yok — sınıf yalnız ::after ipucu için var. */
 /* İçerik taşıyorsa kaydırılabilir olduğunu belli eden alt kenar gölgesi —
    layout'ta yer kaplamaz (negatif üst margin ile içeriğin üstüne biner). */
 .merkez-alt-sonuc::after {
@@ -4998,6 +4992,25 @@ button.ikincil {
   width: 100%;
 }
 
+/* --- Hükümdar bağış/sadakat talebi: ayrı, dikkat çeken açılır pencere
+   (2026-09 sonu — "param yok" yalanı yok, sadece Öde/Kaç) --- */
+.kariyer-hukumdar-talep-modal {
+  border-left-color: #c9a24a;
+}
+.kariyer-hukumdar-talep-modal strong {
+  display: block;
+  font-size: 1.05rem;
+  margin-bottom: 0.3rem;
+}
+.kariyer-hukumdar-talep-uyari {
+  font-size: 0.78rem;
+  opacity: 0.8;
+  font-style: italic;
+}
+.kariyer-hukumdar-talep-modal .kariyer-talep-butonlar button {
+  width: auto;
+}
+
 /* --- Karanlık İşler: ayrı, geniş, kaydırılabilir açılır pencere --- */
 .kariyer-karanlik-modal {
   max-width: 640px;
@@ -5064,6 +5077,13 @@ button.ikincil {
   .ekran-kariyer .aile-koken-karti,
   .ekran-kariyer .aile-cocuklar-karti {
     padding: 0.6rem 0.7rem;
+  }
+  .kariyer-ilerleme-blok {
+    padding: 0.5rem 0.6rem;
+  }
+  .kariyer-ilerleme-cubuk-satiri {
+    grid-template-columns: 4.5rem 1fr auto;
+    font-size: 0.72rem;
   }
   .kariyer-hatlar {
     grid-template-columns: 1fr;
@@ -5623,6 +5643,12 @@ button.ikincil {
 
   .ust-serit-modul-ikon {
     font-size: 0.92rem;
+  }
+
+  /* Yıl modülünün ikonu (📅) mobilde kaldırıldı — kullanıcı isteği; yıl zaten
+     sayı olarak okunuyor, ikon dar sütunda gereksiz yer kaplıyordu. */
+  .ust-serit-modul-yil .ust-serit-modul-ikon {
+    display: none;
   }
 
   /* İkon + değer yeter; sözel etiket ("Sağlık" vb.) mobilde gizli — 7 modül tek satıra sığsın. */
@@ -6491,11 +6517,11 @@ button.ikincil {
   color: var(--renk-altin-parlak);
 }
 .amac-serit-baslik {
+  /* Masaüstünde metin artık kırpılmaz (kullanıcı isteği: "kutular serbest kalsın,
+     kaç satırsa o kadar uzasın") — kutunun genişliği (max-width, üstteki
+     .amac-serit-oge) sabit kalır, yalnız yüksekliği içeriğe göre büyür. */
   flex: 1 1 auto;
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   font-weight: 700;
   letter-spacing: 0.01em;
 }
@@ -6506,9 +6532,6 @@ button.ikincil {
 }
 .amac-serit-aciklama {
   display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   opacity: 0.82;
   font-size: 0.92em;
 }
@@ -6549,6 +6572,60 @@ button.ikincil {
 }
 .kariyer-kademe-noktalar .kademe-nokta-dolu {
   background: var(--renk-altin);
+}
+
+/* --- Faz 6 (2026-09 sonu): rütbe/tecrübe ilerleme çubuğu --- */
+.kariyer-ilerleme-blok {
+  margin: 0 0 1rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  background: rgba(120, 85, 30, 0.08);
+  border: 1px solid rgba(120, 85, 30, 0.2);
+}
+.kariyer-ilerleme-ust {
+  margin: 0;
+  font-weight: 600;
+}
+.kariyer-ilerleme-baslik {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  margin-bottom: 0.4rem;
+}
+.kariyer-ilerleme-cooldown {
+  font-size: 0.78rem;
+  opacity: 0.8;
+  font-style: italic;
+}
+.kariyer-ilerleme-cubuk-satiri {
+  display: grid;
+  grid-template-columns: 6.5rem 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  margin-bottom: 0.3rem;
+}
+.kariyer-ilerleme-etiket {
+  opacity: 0.85;
+}
+.kariyer-ilerleme-cubuk {
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(120, 85, 30, 0.18);
+  overflow: hidden;
+}
+.kariyer-ilerleme-cubuk-dolu {
+  height: 100%;
+  background: var(--renk-altin);
+  transition: width 0.3s ease;
+}
+.kariyer-ilerleme-deger {
+  font-variant-numeric: tabular-nums;
+  opacity: 0.85;
+  white-space: nowrap;
 }
 
 /* --- Task 13/15: aile ekranı evlilik butonu + evcil hayvan kartı --- */

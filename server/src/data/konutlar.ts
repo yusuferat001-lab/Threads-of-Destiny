@@ -23,6 +23,15 @@ export interface KonutTanimi {
  * ileri/başarılı aşamalarında karşılanabilir olsun diye), buna karşılık sağlık/
  * mutluluk/ün getirisi kademeli ve her seviyede farklıdır — sağlık en yavaş,
  * mutluluk ve ün en belirgin büyüyen eksenlerdir.
+ *
+ * Faz 8 ekonomi rebalansı (2026-09 sonu, kullanıcı isteği: "konut fiyatlarını
+ * dengele"): eski kira eğrisi (1/3/5/10/19/32) kademe başına oransal olarak
+ * düzensizdi (×3 / ×1.67 / ×2.0 / ×1.9 / ×1.68 — ortada ani bir sıçrama,
+ * üstte iki güçlü sıçrama vardı) VE Faz 6'nın maaş/mülk geliri kısıtlamasından
+ * SONRA en üst iki kademe orantısız pahalı kalıyordu. Taş Ev/Konak/Şato
+ * kiraları hafifçe aşağı çekilip eğri geometrik ilerlemeye yaklaştırıldı
+ * (1/3/5/9/15/24 — oranlar ×3/×1.67/×1.8/×1.67/×1.6, çok daha düz);
+ * sağlık/mutluluk/ün etkileri (niteliksel "his", fiyatla ilgisiz) DOKUNULMADI.
  */
 export const KONUTLAR: KonutTanimi[] = [
   {
@@ -61,7 +70,7 @@ export const KONUTLAR: KonutTanimi[] = [
     simge: "🧱",
     aciklama:
       "Sağlam duvarları ve ayrı odalarıyla gerçek bir konfor sunar; komşuların arasında adın biraz daha anılır. Sofranı da bu seviyeye yakın tutmak (Normal ya da İyi Ye) genelde daha tutarlı bir hayat demek.",
-    kiraYillik: 10,
+    kiraYillik: 9,
     saglikEtkisiYillik: 1,
     mutlulukEtkisiYillik: 1,
     unEtkisiYillik: 2,
@@ -72,7 +81,7 @@ export const KONUTLAR: KonutTanimi[] = [
     simge: "🏛️",
     aciklama:
       "Pahalı ama gösterişli; halk arasındaki tanınırlığını, rahatını ve sağlığını yıllar içinde büyütür. Böyle bir çatının altında çöpten geçinmek konu komşuya tuhaf gelir — sofran da haneni yansıtsın.",
-    kiraYillik: 19,
+    kiraYillik: 15,
     saglikEtkisiYillik: 2,
     mutlulukEtkisiYillik: 2,
     unEtkisiYillik: 4,
@@ -83,7 +92,7 @@ export const KONUTLAR: KonutTanimi[] = [
     simge: "🏰",
     aciklama:
       "Bölgenin konuştuğu, gerçekten pahalı bir yaşam; duvarları kadar adın da büyür, günlerin çok daha huzurlu ve sağlıklı geçer. Bu kapılardan girip ucuza/çöpten geçinmeye çalışmak inandırıcı olmaz — ancak en iyi sofralarla bir bütün oluşturur.",
-    kiraYillik: 32,
+    kiraYillik: 24,
     saglikEtkisiYillik: 3,
     mutlulukEtkisiYillik: 4,
     unEtkisiYillik: 6,

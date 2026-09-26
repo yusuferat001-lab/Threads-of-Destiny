@@ -4,11 +4,19 @@ import { useDil } from '../DilContext';
 import { formatPara } from '../format';
 import { bic, type Metinler } from '../i18n';
 import type { Dil } from '../ayarlar';
+import { rutbeIlerlemeHesapla } from '../rutbeIlerleme';
 
 interface KariyerEkraniProps {
   meslek: string;
   rutbe: string;
   rutbeSeviye: number;
+  cag: string;
+  dinKultur: string | null;
+  kariyerPuani: number;
+  un: number;
+  ahlak: number;
+  yil: number;
+  sonTerfiYili: number;
   ekip: EkipUyesi[];
   rakipler: Rakip[];
   orduMevcudu: number;
@@ -27,7 +35,7 @@ interface KariyerEkraniProps {
   islemMesaji: string | null;
   yonetimDurum: YonetimDurumu | null;
   onEtkilesim: (etkilesimId: string, kademe?: number) => void;
-  onIstek: (istekId: string, yalan: boolean) => void;
+  onIstek: (istekId: string) => void;
   onTalep: (karar: 'kabul' | 'ret' | 'yalan') => void;
   onEkipCikar: (ekipId: string) => void;
   onKotuIs: (id: string, opts?: { hedefRakipAd?: string; vekil?: boolean }) => void;
@@ -238,7 +246,7 @@ function HatKarti({
   durum: YonetimDurumu;
   yukleniyor: boolean;
   onEtkilesim: (id: string, kademe?: number) => void;
-  onIstek: (id: string, yalan: boolean) => void;
+  onIstek: (id: string) => void;
 }) {
   const { dil } = useDil();
   const en = dil === 'en';
@@ -363,21 +371,15 @@ function IstekAksiyon({
 }: {
   istek: YonetimDurumu['istekler'][number];
   yukleniyor: boolean;
-  onIstek: (id: string, yalan: boolean) => void;
+  onIstek: (id: string) => void;
   en: boolean;
 }) {
-  const [yalan, setYalan] = useState(false);
   return (
     <div className="kariyer-istek-aksiyon">
       <span className="kariyer-istek-maliyet">
         −{istek.iliskiBedeli} {en ? 'rel.' : 'ilişki'} · ~%{istek.tahminiSans}
-        {yalan ? ' +' : ''}
       </span>
-      <label className="kariyer-istek-yalan">
-        <input type="checkbox" checked={yalan} disabled={yukleniyor} onChange={(e) => setYalan(e.target.checked)} />
-        {en ? 'back it with a lie' : 'yalanla destekle'}
-      </label>
-      <button className="ikincil" disabled={yukleniyor} onClick={() => onIstek(istek.id, yalan)}>
+      <button className="ikincil" disabled={yukleniyor} onClick={() => onIstek(istek.id)}>
         {en ? 'Ask' : 'İste'}
       </button>
     </div>
@@ -395,6 +397,13 @@ export function KariyerEkrani({
   meslek,
   rutbe,
   rutbeSeviye,
+  cag,
+  dinKultur,
+  kariyerPuani,
+  un,
+  ahlak,
+  yil,
+  sonTerfiYili,
   ekip,
   rakipler,
   orduMevcudu,
@@ -446,6 +455,20 @@ export function KariyerEkrani({
   const talep = yonetimDurum?.talep ?? null;
   const bikkin = (yonetimDurum?.bikkinlik ?? 0) >= 3;
 
+  const ilerleme = rutbeIlerlemeHesapla(
+    meslek,
+    cag,
+    dinKultur,
+    rutbeSeviye,
+    kariyerPuani,
+    un,
+    ahlak,
+    yil,
+    sonTerfiYili
+  );
+  const statEtiket = (adi: 'un' | 'ahlak' | null) =>
+    adi === 'ahlak' ? m.skorKirilimAhlak.replace(/^[^\s]+\s/, '') : m.skorKirilimSohret.replace(/^[^\s]+\s/, '');
+
   return (
     <div className="ekran ekran-aile ekran-kariyer">
       <h2>{m.geBaslik}</h2>
@@ -460,11 +483,92 @@ export function KariyerEkrani({
         </span>
       </div>
 
+      {/* Rütbe/tecrübe ilerleme çubuğu (Faz 6, 2026-09 sonu) — bir sonraki
+          kademeye ne kadar kaldığını (kariyer puanı + mesleğe özgü stat) gösterir. */}
+      {ilerleme.gecerli && (
+        <div className="kariyer-ilerleme-blok">
+          {ilerleme.enUstMu ? (
+            <p className="kariyer-ilerleme-ust">
+              {en ? '🏆 You have reached the highest rank.' : '🏆 En üst kademeye ulaştın.'}
+            </p>
+          ) : (
+            <>
+              <div className="kariyer-ilerleme-baslik">
+                <span>{en ? 'Progress to' : 'Sıradaki kademe:'} <strong>{kt(ilerleme.sonrakiUnvan ?? '')}</strong></span>
+                {ilerleme.cooldownBekliyor && (
+                  <span className="kariyer-ilerleme-cooldown">
+                    {en
+                      ? `Eligible — ${ilerleme.cooldownKalanYil}y until promotion`
+                      : `Hak ettin — terfiye ~${ilerleme.cooldownKalanYil} yıl kaldı`}
+                  </span>
+                )}
+              </div>
+              <div className="kariyer-ilerleme-cubuk-satiri">
+                <span className="kariyer-ilerleme-etiket">{en ? 'Career XP' : 'Kariyer Puanı'}</span>
+                <div className="kariyer-ilerleme-cubuk">
+                  <div
+                    className="kariyer-ilerleme-cubuk-dolu"
+                    style={{ width: `${ilerleme.kariyerPuaniYuzde}%` }}
+                  />
+                </div>
+                <span className="kariyer-ilerleme-deger">
+                  {ilerleme.kariyerPuaniMevcut}/{ilerleme.kariyerPuaniGerekli}
+                </span>
+              </div>
+              {ilerleme.statAdi && (
+                <div className="kariyer-ilerleme-cubuk-satiri">
+                  <span className="kariyer-ilerleme-etiket">{statEtiket(ilerleme.statAdi)}</span>
+                  <div className="kariyer-ilerleme-cubuk">
+                    <div
+                      className="kariyer-ilerleme-cubuk-dolu"
+                      style={{ width: `${ilerleme.statYuzde}%` }}
+                    />
+                  </div>
+                  <span className="kariyer-ilerleme-deger">
+                    {ilerleme.statMevcut}/{ilerleme.statGerekli}
+                  </span>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      )}
+
       {modalMesaj && (
         <div className="kariyer-sonuc-katman" onClick={() => setModalMesaj(null)}>
           <div className="kariyer-sonuc-modal" onClick={(e) => e.stopPropagation()}>
             <p>{modalMesaj}</p>
             <button onClick={() => setModalMesaj(null)}>{en ? 'OK' : 'Tamam'}</button>
+          </div>
+        </div>
+      )}
+
+      {/* Hükümdar bağış/sadakat talebi — kralın huzurunda "param yok" yalanına yer
+          yok; sadece öde ya da kaç (kaçmak aranmanı ciddi artırır, bkz. onTalep('ret')
+          için gameEngine.ts'teki hat==='yonetici' özel dalı). Kral için sade,
+          "bekleyen banner" yerine ayrı ve dikkat çeken bir açılır pencere. */}
+      {talep && talep.kimden === 'yonetici' && (
+        <div className="kariyer-sonuc-katman">
+          <div className="kariyer-sonuc-modal kariyer-hukumdar-talep-modal">
+            <strong>👑 {talep.kimAdi}</strong>
+            <p>
+              {talep.tur === 'bagis'
+                ? `${talep.kalem} — ${formatPara(talep.tutar)} ${paraBirimi} ${en ? 'demanded.' : 'istiyor.'}`
+                : `${talep.kalem} ${en ? 'awaited.' : 'bekliyor.'}`}
+            </p>
+            <p className="kariyer-hukumdar-talep-uyari">
+              {en
+                ? "Fleeing a king's demand is a crime — your wanted level will rise sharply."
+                : 'Hükümdarın talebinden kaçmak suçtur — aranma seviyen ciddi şekilde artar.'}
+            </p>
+            <div className="kariyer-talep-butonlar">
+              <button disabled={yukleniyor} onClick={() => onTalep('kabul')}>
+                {talep.tur === 'bagis' ? (en ? 'Pay' : 'Öde') : en ? 'Swear it' : 'Kabul et'}
+              </button>
+              <button className="ikincil" disabled={yukleniyor} onClick={() => onTalep('ret')}>
+                {en ? 'Flee' : 'Kaç'}
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -499,7 +603,7 @@ export function KariyerEkrani({
           {/* ===== YÖNETİMLE BAĞLAR ===== */}
           {yonetimDurum && (
             <section className="kariyer-bolum kariyer-yonetim">
-              {talep && (
+              {talep && talep.kimden === 'patron' && (
                 <div className="kariyer-talep-afisi">
                   <strong>📜 {talep.kimAdi}</strong>
                   <p>

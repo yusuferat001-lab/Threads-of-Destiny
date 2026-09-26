@@ -9,6 +9,7 @@ import { OLAY_EVLILIK_AILE } from "../src/data/olaylar/evlilikVeAile";
 import { OLAY_KOMIK_GARIP } from "../src/data/olaylar/komikGaripOlaylar";
 import { OLAY_KOMIK_OLUM } from "../src/data/olaylar/komikOlumler";
 import { yeniOyun, mesleğiAta, senaryoUret, stateGetir } from "../src/game/gameEngine";
+import { etiketEkle } from "../src/game/stateManager";
 
 /**
  * §38'deki bölgesel olay havuzu (80 olay, 10/bölge) artık §11 kural 15'in
@@ -38,6 +39,7 @@ describe("bölgesel olay havuzu — standalone havuz garantisi", () => {
   it("28 yaşına kadar oyuncunun kendi bölgesinden en az 1 bölgesel olay zorlanır", async () => {
     const yeni = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(yeni.id, "Tüccar");
+    etiketEkle(yeni, ["hizip_secildi"]); // hizip zorunlu seçim kaskadını bu testte atla (2026-09 sonu)
     const state = await stateGetir(yeni.id);
     digerKaskadlariDevreDisiBirak(state);
     state.yas = 28;
@@ -50,6 +52,7 @@ describe("bölgesel olay havuzu — standalone havuz garantisi", () => {
   it("başka bir bölgenin/çağın olayı ASLA zorlanmaz — yalnız karakterin kendi bölgesi", async () => {
     const yeni = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(yeni.id, "Tüccar");
+    etiketEkle(yeni, ["hizip_secildi"]); // hizip zorunlu seçim kaskadını bu testte atla (2026-09 sonu)
     const state = await stateGetir(yeni.id);
     digerKaskadlariDevreDisiBirak(state);
     state.yas = 28;

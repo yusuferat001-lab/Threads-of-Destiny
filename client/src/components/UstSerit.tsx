@@ -69,6 +69,7 @@ function StatModulu({
   tehlike,
   takip,
   takipBirim,
+  sinifEk,
 }: {
   ikon: string;
   etiket: string;
@@ -77,11 +78,13 @@ function StatModulu({
   /** Verilirse: bu sayı değiştikçe değer kutusu yanıp söner + bir delta rozeti uçar. */
   takip?: number;
   takipBirim?: string;
+  /** Modüle özel ek sınıf (ör. mobilde yalnız Yıl modülünün ikonunu gizlemek için). */
+  sinifEk?: string;
 }) {
   const { delta, nonce } = useGecisDeltasi(takip ?? 0);
   const yon = takip === undefined || nonce === 0 ? '' : delta > 0 ? ' ust-serit-modul-deger-artis' : ' ust-serit-modul-deger-azalis';
   return (
-    <div className="ust-serit-modul">
+    <div className={`ust-serit-modul${sinifEk ? ` ${sinifEk}` : ''}`}>
       {takip !== undefined && <DeltaRozeti key={nonce} deger={delta} nonce={nonce} birim={takipBirim} />}
       <span className="ust-serit-modul-ikon" aria-hidden="true">
         {ikon}
@@ -162,7 +165,7 @@ export function UstSerit({
   return (
     <header className="ust-serit">
       <div className="ust-serit-moduller">
-        <StatModulu ikon="📅" etiket={m.usYil} deger={yil} />
+        <StatModulu ikon="📅" etiket={m.usYil} deger={yil} sinifEk="ust-serit-modul-yil" />
         <StatModulu ikon="🎂" etiket={m.usYas} deger={yas} />
         <StatModulu ikon="❤️" etiket={m.usCan} deger={Math.round(saglik)} tehlike={saglik <= 30} takip={Math.round(saglik)} />
         <StatModulu

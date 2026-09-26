@@ -10,9 +10,31 @@ import {
   sosyallesmeAksiyonConfigGetir,
   sosyallesmeAksiyonYap,
   sosyallesmeOlayCoz,
+  aktifAksiyonRotasyonu,
 } from "../src/game/gameEngine";
 import { OLAY_SOSYALLESME } from "../src/data/olaylar/sosyallesme";
 import { SOSYALLESME_YERLERI } from "../src/data/sosyallesmeYerleri";
+import { AKSIYON_ROTASYON_HAVUZU, AKSIYON_ROTASYON_GOSTERIM } from "../src/data/sosyallesmeAksiyonlari";
+import type { CharacterState } from "../src/types";
+
+/**
+ * Aksiyon havuzu artık rotasyonlu (2026-09 sonu) — hangi 3 aksiyonun aktif
+ * olduğu `state.id`'ye (rastgele UUID) bağlı. Belirli bir aksiyonun mekaniğini
+ * test etmek için, o aksiyon aktif olana kadar yeni bir karakter üretir.
+ */
+async function karakterAksiyonuAktifOlanKarakter(
+  cag: "Orta Çağ" | "Sanayi Devrimi",
+  bolge: string,
+  meslek: string,
+  aksiyonId: string
+): Promise<CharacterState> {
+  for (let deneme = 0; deneme < 40; deneme++) {
+    const state = await yeniOyun(cag, bolge, "kasaba");
+    await mesleğiAta(state.id, meslek);
+    if (aktifAksiyonRotasyonu(state).has(aksiyonId)) return state;
+  }
+  throw new Error(`${aksiyonId} 40 denemede rotasyona hiç girmedi.`);
+}
 
 describe("sosyalleşme olay bankası — veri bütünlüğü", () => {
   it("en az 70 olay içerir (görev gereksinimi)", () => {
@@ -228,13 +250,25 @@ describe("ayyaşlık mekaniği (3 alkollü ziyaret eşiği)", () => {
 });
 
 describe("sosyalleşme ekranı — tur harcamayan aksiyonlar (içki / deli / sadaka / kulak / ısmarla / fal)", () => {
-  it("config bölge/çağa uygun isimli içecekler + 5 aksiyon döner", async () => {
+  it("config bölge/çağa uygun isimli içecekler + rotasyonlu 3 aksiyon döner", async () => {
     const state = await yeniOyun("Sanayi Devrimi", "Rusya", "kasaba");
     await mesleğiAta(state.id, "Asker");
     const cfg = await sosyallesmeAksiyonConfigGetir(state.id);
     expect(cfg.icecekler.map((i) => i.id)).toContain("icki:votka");
-    expect(cfg.aksiyonlar.map((a) => a.id).sort()).toEqual(["deli", "fal", "ismarla", "kulak", "sadaka"]);
+    // Havuzda 9 aksiyon var, ama her zaman yalnız AKSIYON_ROTASYON_GOSTERIM (3) tanesi gösterilir.
+    expect(cfg.aksiyonlar).toHaveLength(AKSIYON_ROTASYON_GOSTERIM);
+    const idler = cfg.aksiyonlar.map((a) => a.id);
+    expect(new Set(idler).size).toBe(idler.length); // tekrar yok
+    for (const id of idler) expect(AKSIYON_ROTASYON_HAVUZU).toContain(id);
     expect(cfg.alkolluMekanVar).toBe(true); // Asker → ordugâh çadırı alkollü
+  });
+
+  it("aynı karakter aynı yıl aralığında her zaman aynı 3 aksiyonu görür", async () => {
+    const state = await yeniOyun("Sanayi Devrimi", "Rusya", "kasaba");
+    await mesleğiAta(state.id, "Asker");
+    const cfg1 = await sosyallesmeAksiyonConfigGetir(state.id);
+    const cfg2 = await sosyallesmeAksiyonConfigGetir(state.id);
+    expect(cfg2.aksiyonlar.map((a) => a.id).sort()).toEqual(cfg1.aksiyonlar.map((a) => a.id).sort());
   });
 
   it("alkollü içki içmek mutluluğu artırır, sağlığı düşürür, parayı azaltır ve turu tüketmez", async () => {
@@ -256,8 +290,20 @@ describe("sosyalleşme ekranı — tur harcamayan aksiyonlar (içki / deli / sad
     const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     state.para = 500;
-    await sosyallesmeAksiyonYap(state.id, "fal");
-    await expect(sosyallesmeAksiyonYap(state.id, "fal")).rejects.toThrow();
+    const cfg = await sosyallesmeAksiyonConfigGetir(state.id);
+    const aksiyonId = cfg.aksiyonlar[0].id; // hangisi aktifse (rotasyona bağlı), cooldown mantığı genel
+    await sosyallesmeAksiyonYap(state.id, aksiyonId);
+    await expect(sosyallesmeAksiyonYap(state.id, aksiyonId)).rejects.toThrow();
+  });
+
+  it("rotasyonda olmayan bir aksiyon çağrılamaz", async () => {
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
+    await mesleğiAta(state.id, "Tüccar");
+    state.para = 500;
+    const aktif = aktifAksiyonRotasyonu(state);
+    const disarida = AKSIYON_ROTASYON_HAVUZU.find((id) => !aktif.has(id));
+    expect(disarida).toBeDefined();
+    await expect(sosyallesmeAksiyonYap(state.id, disarida!)).rejects.toThrow();
   });
 
   it("İslam bölgesinde 'gizli' içki ahlak ve şöhret cezası uygular", async () => {
@@ -272,8 +318,7 @@ describe("sosyalleşme ekranı — tur harcamayan aksiyonlar (içki / deli / sad
   });
 
   it("sadaka ahlakı artırır", async () => {
-    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
-    await mesleğiAta(state.id, "Din Adamı");
+    const state = await karakterAksiyonuAktifOlanKarakter("Orta Çağ", "Fransa", "Din Adamı", "sadaka");
     state.para = 500;
     state.ahlak = 50;
     const sonuc = await sosyallesmeAksiyonYap(state.id, "sadaka");

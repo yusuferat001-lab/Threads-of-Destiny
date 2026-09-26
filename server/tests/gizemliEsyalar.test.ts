@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { olaySec } from "../src/game/olaySecici";
-import { createCharacter, mesleğiSec } from "../src/game/stateManager";
+import { createCharacter, mesleğiSec, etiketEkle } from "../src/game/stateManager";
 import { yeniOyun, mesleğiAta, senaryoUret } from "../src/game/gameEngine";
 import { GIZEMLI_ESYA_TAKIP_HAVUZU } from "../src/data/gizemliEsyalar";
 import { OLAY_BANKASI } from "../src/data/olaylar";
@@ -50,6 +50,7 @@ describe("gizemli eşya sistemi", () => {
   it("bir eşyaya sahip olup 38-46 yaşındayken hiç takip olayı yaşamamış karaktere garanti olay zorlanır", async () => {
     const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
+    etiketEkle(state, ["hizip_secildi"]); // hizip zorunlu seçim kaskadını bu testte atla (2026-09 sonu)
     digerZorunluOlaylariGecistir(state);
     state.etiketler.push("esya:fisildayan_tas");
     state.yas = 40;
@@ -61,6 +62,7 @@ describe("gizemli eşya sistemi", () => {
   it("takip olaylarından biri zaten görülmüşse garanti tekrar zorlanmaz", async () => {
     const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
+    etiketEkle(state, ["hizip_secildi"]); // hizip zorunlu seçim kaskadını bu testte atla (2026-09 sonu)
     digerZorunluOlaylariGecistir(state);
     state.etiketler.push("esya:eski_ayna");
     state.gecmis_olaylar.push(GIZEMLI_ESYA_TAKIP_HAVUZU["eski_ayna"][0], GIZEMLI_ESYA_TAKIP_HAVUZU["eski_ayna"][1]);

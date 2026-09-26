@@ -6,6 +6,7 @@ import {
   hesaplaMaasYillik,
   sehirYonetimUnvanGetir,
   sehirYonetimMaasCarpani,
+  etiketEkle,
 } from "../src/game/stateManager";
 import { yeniOyun, mesleğiAta, senaryoUret } from "../src/game/gameEngine";
 
@@ -56,6 +57,7 @@ describe("şehir yönetimi (en üst rütbe sonrası sonsuz ilerleme)", () => {
     for (const [meslek, beklenenId] of Object.entries(beklenenler)) {
       const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
       await mesleğiAta(state.id, meslek);
+      etiketEkle(state, ["hizip_secildi"]); // hizip zorunlu seçim kaskadını bu testte atla (2026-09 sonu)
       state.hayat_amaci = { id: "x", ad: "x", aciklama: "x", hedefTuru: "para", hedefDeger: 999999, tamamlandi: false };
       state.gecmis_olaylar.push("hayat_amaci_secimi", "iliski_evlilik_teklifi", "iliski_ikinci_teklif");
       state.ulke.savasta = true;

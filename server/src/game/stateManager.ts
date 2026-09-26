@@ -133,6 +133,8 @@ const FEVRILIK_ETKI: Record<string, number> = {
   Rekabetçi: 10,
   Cesur: 10,
   "Sivri Dilli": 8,
+  Palavracı: 10,
+  Obur: 5,
   Sakin: -20,
   Vicdanlı: -8,
   İçedönük: -8,
@@ -142,11 +144,13 @@ const MERHAMET_ETKI: Record<string, number> = {
   "Yumuşak Başlı": 18,
   Vicdanlı: 15,
   Umutlu: 8,
+  Obur: 4,
   Hüzünlü: 6,
   Kibirli: -15,
   Alaycı: -12,
   "Sivri Dilli": -10,
   Hırslı: -8,
+  Palavracı: -4,
   Rekabetçi: -6,
 };
 
@@ -298,8 +302,12 @@ export function maasCarpaniGetir(state: CharacterState): number {
   return Number.isFinite(deger) && deger > 0 ? deger : 1;
 }
 
-/** Kalıcı maaş çarpanının toplam üst/alt sınırı: olay + aile + ekip + yatırım bonusları hep bu bandın içinde kalır. */
-export const MAAS_CARPANI_TAVAN = 1.2;
+/**
+ * Kalıcı maaş çarpanının toplam üst/alt sınırı: olay + aile + ekip + yatırım
+ * bonusları hep bu bandın içinde kalır. Faz 6 ekonomi rebalansı (2026-09 sonu,
+ * kullanıcı isteği: "kalıcı maaş bonuslarını azalt"): tavan 1.20 → 1.15.
+ */
+export const MAAS_CARPANI_TAVAN = 1.15;
 export const MAAS_CARPANI_TABAN = 0.6;
 
 /**
@@ -724,6 +732,8 @@ export function createCharacter(
     omur_sadaka_sayisi: 0,
     omur_hediye_sayisi: 0,
     omur_riskli_basari: 0,
+    komik_olum_basarili_risk: false,
+    komik_olum_ile_oldu: false,
     efsanevi_olum: null,
     relik_can_kurtardi: false,
     etiketler: [...(aile.etiketler ?? []), ...yerlesim.etiketler],
@@ -738,6 +748,8 @@ export function createCharacter(
     veba_gecirdi: false,
     son_veba_bitis_yili: null,
     veba_olum_riski: 0,
+    veba_hayatta_kaldi: false,
+    hapis_basarili_kacis: false,
     kucuk_kriz_sonraki_yil: yil + 5 + Math.floor(Math.random() * 3), // 5-7 yıl sonra ilk eşik
     gida_fiyat_sok_bitis_yili: null,
     borc_yardimi_alindi: false,
@@ -964,6 +976,11 @@ export function eskiKayitGocu(state: CharacterState): void {
   if (typeof state.omur_sadaka_sayisi !== "number") state.omur_sadaka_sayisi = 0;
   if (typeof state.omur_hediye_sayisi !== "number") state.omur_hediye_sayisi = 0;
   if (typeof state.omur_riskli_basari !== "number") state.omur_riskli_basari = 0;
+  // Faz 5 tek seferlik skor bonusu bayrakları sonradan eklendi.
+  if (typeof state.komik_olum_basarili_risk !== "boolean") state.komik_olum_basarili_risk = false;
+  if (typeof state.komik_olum_ile_oldu !== "boolean") state.komik_olum_ile_oldu = false;
+  if (typeof state.veba_hayatta_kaldi !== "boolean") state.veba_hayatta_kaldi = false;
+  if (typeof state.hapis_basarili_kacis !== "boolean") state.hapis_basarili_kacis = false;
   // Dil alanı sonradan eklendi; eski kayıtlar her zaman Türkçe oynanmıştı.
   if (state.dil !== "en") state.dil = "tr";
   // Aile ekranı (eş/çocuk ilişkisi + etkileşim + talep) sonradan eklendi (§33).
@@ -2024,6 +2041,19 @@ const SKOR_TIK_PUANI = 3000;
 const SKOR_SOHRET_CARPAN = 300;
 const SKOR_AHLAK_CARPAN = 200;
 const SKOR_MUTLULUK_CARPAN = 100;
+/**
+ * Faz 5 (2026-09 sonu) — tek seferlik "başarı olayı" skor bonusları. Her biri
+ * TOPLAMSAL (tikPuani gibi diğer eksenlerin üstüne biner, çarpımsal değil) ve
+ * bir ömürde en fazla bir kez sayılır (ilgili CharacterState bayrağı state
+ * boyunca en fazla bir kez true'ya döner, bkz. gameEngine.ts). Yolculuk
+ * tamamlama zaten tikPuani'nin bir parçasıdır (+3000) — buradaki +2000 ayrı,
+ * ek bir bonustur (kullanıcı isteği: "yolculuğu tamamlama" ayrıca ödüllendirilsin.
+ */
+const SKOR_KOMIK_OLUM_BASARILI_RISK_PUANI = 3000;
+const SKOR_KOMIK_OLUM_ILE_OLDU_PUANI = 2000;
+const SKOR_YOLCULUK_TAMAMLAMA_BONUS_PUANI = 2000;
+const SKOR_VEBA_HAYATTA_KALMA_PUANI = 2000;
+const SKOR_HAPIS_BASARILI_KACIS_PUANI = 2000;
 
 export interface SkorKirilimi {
   servetPuani: number;
@@ -2036,6 +2066,8 @@ export interface SkorKirilimi {
   sarayda: boolean;
   yolculukTamamlandi: boolean;
   gizemliEsyaSahibi: boolean;
+  /** Faz 5 tek seferlik başarı-olayı bonuslarının toplamı (komik ölüm risk/ölüm, yolculuk, veba, hapis kaçışı). */
+  basariOlayiPuani: number;
   temelToplam: number;
   amacCarpani: number;
   skor: number;
@@ -2057,7 +2089,14 @@ export function hesaplaSkorKirilimi(state: CharacterState): SkorKirilimi {
   );
   const tikSayisi = (sarayda ? 1 : 0) + (yolculukTamamlandi ? 1 : 0) + (gizemliEsyaSahibi ? 1 : 0);
   const tikPuani = tikSayisi * SKOR_TIK_PUANI;
-  const temelToplam = servetPuani + sohretPuani + ahlakPuani + mutlulukPuani + rutbePuani + tikPuani;
+  const basariOlayiPuani =
+    (state.komik_olum_basarili_risk ? SKOR_KOMIK_OLUM_BASARILI_RISK_PUANI : 0) +
+    (!state.komik_olum_basarili_risk && state.komik_olum_ile_oldu ? SKOR_KOMIK_OLUM_ILE_OLDU_PUANI : 0) +
+    (yolculukTamamlandi ? SKOR_YOLCULUK_TAMAMLAMA_BONUS_PUANI : 0) +
+    (state.veba_hayatta_kaldi ? SKOR_VEBA_HAYATTA_KALMA_PUANI : 0) +
+    (state.hapis_basarili_kacis ? SKOR_HAPIS_BASARILI_KACIS_PUANI : 0);
+  const temelToplam =
+    servetPuani + sohretPuani + ahlakPuani + mutlulukPuani + rutbePuani + tikPuani + basariOlayiPuani;
   // Eski kayıt/test (hayat_amaclari boş, tekil hayat_amaci dolu) için ×5 fallback korunur.
   const amacCarpani =
     (state.hayat_amaclari?.length ?? 0) > 0
@@ -2077,6 +2116,7 @@ export function hesaplaSkorKirilimi(state: CharacterState): SkorKirilimi {
     sarayda,
     yolculukTamamlandi,
     gizemliEsyaSahibi,
+    basariOlayiPuani,
     temelToplam,
     amacCarpani,
     skor,
@@ -2835,16 +2875,16 @@ export function vebaBitisKontrolEt(state: CharacterState): string | null {
 }
 
 // Yıllık getiri oranları (taban maliyetin yüzdesi olarak); enflasyonCarpani ile ölçeklenen
-// taban_maliyet üzerine uygulanır. Gelir/gider dengesi turu (kullanıcı: "bakımı düşür,
-// geliri artır"): oranlar yukarı çekildi + bakım oranı ayrıca yarıya indirildi (aşağıda,
-// MULK_BAKIM_ORANI). NORMAL brüt ~%9, bakımın amortize maliyeti ~%1.7/yıl olduğu için net
-// akış artık belirgin pozitif (eskiden ~+%3 net idi, bakım da yarıya inince ~+%7'ye çıktı).
-// simulateGayrimenkul.ts ile doğrulanabilir.
-const MULK_GETIRI_NORMAL = 0.09;
-const MULK_GETIRI_AVANTAJLI = 0.12;
-const MULK_GETIRI_DEZAVANTAJLI = -0.015;
+// taban_maliyet üzerine uygulanır.
+// Faz 6 ekonomi rebalansı (2026-09 sonu, kullanıcı isteği: "gayrimenkul getirilerini
+// ~1-1.5 puan düşür"): NORMAL %9→%7.5, AVANTAJLI %12→%10.5, tavan %17→%15 — gelir/gider
+// dengesi turunun yükselttiği oranlar biraz geri çekildi (bakım oranı/aralığına dokunulmadı,
+// net akış hâlâ pozitif ama daha ölçülü). simulateGayrimenkul.ts ile doğrulanabilir.
+const MULK_GETIRI_NORMAL = 0.075;
+const MULK_GETIRI_AVANTAJLI = 0.105;
+const MULK_GETIRI_DEZAVANTAJLI = -0.02;
 /** Tüm mülk getiri oranlarının (çarpanlar uygulandıktan sonra) mutlak tavanı — "bir anda çok getirip çok götürmesin". */
-const MULK_GETIRI_TAVAN = 0.17;
+const MULK_GETIRI_TAVAN = 0.15;
 const MULK_DEMIRCI_SAVAS_CARPANI = 2.5;
 const KERVAN_BATMA_IHTIMALI_YILLIK = 0.25;
 // Aranma yeniden dengeleme turu: 3→2 — pasif/ambient bir kaynak olduğu için
@@ -2852,12 +2892,15 @@ const KERVAN_BATMA_IHTIMALI_YILLIK = 0.25;
 // (şiddet/soygun) listesiyle aynı hızda birikmesin (kullanıcı isteği).
 const KARABORSA_SUC_ARTISI_YILLIK = 2;
 const KARABORSA_AHLAK_ASINMASI_YILLIK = 0.3;
-// Küçük Tarla — büyük denge turunda "en garanti" mülk yapıldı (kullanıcı: "bir tane uygun
-// gayrimenkul olsun 50'ye alabileceği daha garanti bir şey"): getirisi küçük ama kıtlıkta
-// bile kaybı çok az. taban_maliyet 40→50 (bkz. mulkler.ts).
-const MULK_GETIRI_KUCUK_TARLA_NORMAL = 0.09;
-const MULK_GETIRI_KUCUK_TARLA_AVANTAJLI = 0.105;
-const MULK_GETIRI_KUCUK_TARLA_DEZAVANTAJLI = -0.003;
+// Küçük Tarla vs Çiftlik — Faz 6 ekonomi rebalansı (kullanıcı isteği: "ikisini birbirinden
+// belirgin biçimde ayır"): eskiden ikisi neredeyse aynı getiriyi taşıyordu (yalnız
+// dezavantajlı bantta ufak bir fark vardı). Artık Küçük Tarla AÇIKÇA daha düşük getirili
+// ama neredeyse risksiz ("güvenli liman" — kıtlıkta bile kaybı simgesel); Çiftlik ise temel
+// MULK_GETIRI_* sabitlerini (üstteki, Faz 6'da yükseltilmiş potansiyel + belirgin kıtlık
+// riski) doğrudan kullanarak Küçük Tarla'dan hem daha yüksek ödül hem daha gerçek risk taşır.
+const MULK_GETIRI_KUCUK_TARLA_NORMAL = 0.055;
+const MULK_GETIRI_KUCUK_TARLA_AVANTAJLI = 0.07;
+const MULK_GETIRI_KUCUK_TARLA_DEZAVANTAJLI = -0.002;
 
 /** Her mülk 7-11 yılda bir periyodik bir bakım/vergi masrafı çıkarır (tıpkı "luks" mağaza eşyaları gibi). */
 const MULK_BAKIM_ARALIGI_MIN_YIL = 7;

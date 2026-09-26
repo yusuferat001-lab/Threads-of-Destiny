@@ -1228,6 +1228,23 @@ export const OLAY_GENEL: OlayTanimi[] = [
           detay: "Yardımcın bir korkaktı. Hem paranı hem sağlığını kaybettin.",
         },
       },
+      {
+        metin: "Korumana güvenme, kendin de bıçağını çek.",
+        baseBasariSansi: 45,
+        basariliSonuc: {
+          un: 10,
+          saglik: -6,
+          mesaj: "İkiniz birlikte serserileri püskürttünüz; yara aldın ama ayaktasın.",
+          detay: "Bazen kendi işini kimseye bırakmamak gerekir.",
+        },
+        basarisizSonuc: {
+          saglik: -25,
+          para: -15,
+          olum_sansi: 5,
+          mesaj: "Serseriler ikinizi de yendi; ağır yaralı ve parasız kaldın.",
+          detay: "Cesaret her zaman yetmez.",
+        },
+      },
     ],
   },
   {
@@ -1309,6 +1326,21 @@ export const OLAY_GENEL: OlayTanimi[] = [
           ekip_sil: "Muhasebeci",
           mesaj: "Kasa bomboş! Yaverin tüm nakdini alıp gece yarısı bir gemiyle kaçmış.",
           detay: "İşe yaramaz bir hırsıza güvenmenin bedelini ödedin.",
+        },
+      },
+      {
+        metin: "Hesapları kontrol etme, ona güven, dinlenmeye bak.",
+        baseBasariSansi: 70,
+        basariliSonuc: {
+          mutluluk: 8,
+          para: 10,
+          mesaj: "Dinlenmen iyi geldi; döndüğünde kasanın gerçekten iyi durumda olduğunu gördün.",
+          detay: "Bazen güvenmek de bir tercih, hatta bir dinlenmedir.",
+        },
+        basarisizSonuc: {
+          para: -30,
+          mesaj: "Güvenin kötüye kullanıldı; yaverin parayı alıp kayıplara karıştı.",
+          detay: "Kontrolsüz güven bazen pahalıya patlar.",
         },
       },
     ],
@@ -1481,6 +1513,63 @@ export const OLAY_GENEL: OlayTanimi[] = [
             "hizip_secildi",
           ],
           mesaj: "Engizisyon / Üst Kurul seni kafirlikle suçlamakla tehdit ediyor.",
+        },
+      },
+    ],
+  },
+  {
+    id: "hizip_zanaatkar_saflasma",
+    kategori: "zanaat",
+    meslekler: [
+      "Zanaatkâr",
+    ],
+    yasakliEtiketler: [
+      "hizip_secildi",
+    ],
+    gorsel: "🔨",
+    baslik: "Loncanın İçi Karıştı",
+    metin: "Atölyede geçirdiğin yıllar boyunca loncanın gerçek bölünmesini gördün: Lonca Meclisi eski usulleri, sıkı denetimi ve sabit fiyatları savunuyor; Serbest Ustalar ise loncanın elinden kurtulup kendi fiyatını kendin koy diyor. Artık bir tarafta durmalısın.",
+    secenekler: [
+      {
+        metin: "Düzen ve zanaat şerefi! Lonca Meclisi'ne katıl.",
+        baseBasariSansi: 90,
+        basariliSonuc: {
+          hizip_ata: "Lonca Meclisi",
+          ahlak: 10,
+          un: 8,
+          etiket_ekle: [
+            "hizip_secildi",
+          ],
+          mesaj: "Usta ustabaşılar seni bağrına bastı. Loncanın koruması artık senin de arkanda.",
+        },
+        basarisizSonuc: {
+          hizip_ata: "Lonca Meclisi",
+          etiket_ekle: [
+            "hizip_secildi",
+          ],
+          mesaj: "Katıldın ama genç kalfalar seni tutucu diye dışladı.",
+        },
+      },
+      {
+        metin: "Emeğimin hakkı bana ait! Serbest Ustalar'a katıl.",
+        baseBasariSansi: 90,
+        basariliSonuc: {
+          hizip_ata: "Serbest Ustalar",
+          para: 15,
+          un: 6,
+          ahlak: -5,
+          etiket_ekle: [
+            "hizip_secildi",
+          ],
+          mesaj: "Kendi fiyatını kendin koymaya başladın; ilk haftadan cebin şişti.",
+        },
+        basarisizSonuc: {
+          hizip_ata: "Serbest Ustalar",
+          para: -10,
+          etiket_ekle: [
+            "hizip_secildi",
+          ],
+          mesaj: "Katıldın ama lonca seni malzeme tedarikinden dışladı, ilk aylar zorlu geçti.",
         },
       },
     ],

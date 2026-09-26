@@ -480,12 +480,12 @@ gameRouter.post("/:id/yonetim/etkilesim", async (req, res) => {
 });
 
 gameRouter.post("/:id/yonetim/istek", async (req, res) => {
-  const { istekId, yalan } = req.body ?? {};
+  const { istekId } = req.body ?? {};
   if (typeof istekId !== "string") {
     return res.status(400).json({ hata: "Geçersiz istek." });
   }
   try {
-    const sonuc = await yonetimIstekYap(req.params.id, istekId, { yalan: yalan === true });
+    const sonuc = await yonetimIstekYap(req.params.id, istekId);
     res.json(sonuc);
   } catch (err) {
     res.status(400).json({ hata: String(err) });

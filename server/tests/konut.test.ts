@@ -24,7 +24,7 @@ describe("konut sistemi (stateManager)", () => {
     state.para = 1000;
     konutDegistir(state, "konak");
     const gider = giderKalemleriHesapla(state);
-    expect(gider.konut).toBe(19); // konak kirası 19; başlangıçta enflasyon 1 → çarpansız
+    expect(gider.konut).toBe(15); // konak kirası 15 (Faz 8 rebalansı); başlangıçta enflasyon 1 → çarpansız
   });
 
   it("basit barınakta sağlık zamanla azalır", () => {

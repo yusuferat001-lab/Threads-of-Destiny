@@ -80,17 +80,53 @@ export function icecekTanimiGetir(cag: Cag, bolge: string, id: string): IcecekTa
 }
 
 /** Tur-harcamayan aksiyon türleri (içki hariç — o `icki:<id>` biçimindedir). */
-export type SosyalAksiyonTuru = "deli" | "sadaka" | "kulak" | "ismarla" | "fal";
+export type SosyalAksiyonTuru =
+  | "deli"
+  | "sadaka"
+  | "kulak"
+  | "ismarla"
+  | "fal"
+  | "hikaye_anlat"
+  | "muzik_dinle"
+  | "yerliye_sor"
+  | "bahis_izle";
 
 /** Cooldown = bu aksiyondan sonra kaç oyun yılı geçmeden tekrar yapılamayacağı. Anahtar "icki" tüm içecekler için ortaktır. */
 export const AKSIYON_COOLDOWN: Record<string, number> = {
   icki: 1,
   kulak: 1,
   sadaka: 2,
+  yerliye_sor: 2,
+  muzik_dinle: 2,
   deli: 3,
   ismarla: 3,
+  hikaye_anlat: 3,
+  bahis_izle: 3,
   fal: 4,
 };
+
+/**
+ * Havuz-rotasyonu (2026-09 sonu, kullanıcı isteği: "her tur değişsin hep aynı
+ * şeyler olmasın, sayısını arttır, aynı anda 3 etkinlik olsun"). 9 aksiyonun
+ * hepsi burada tanımlı ama oyuncuya HER ZAMAN yalnız `AKSIYON_ROTASYON_GOSTERIM`
+ * (3) tanesi gösterilir — hangi 3'ünün gösterildiği karaktere ve oyun yılına
+ * göre değişen, deterministik bir rotasyondur (bkz. gameEngine.ts
+ * `aktifAksiyonRotasyonu`). Aynı karakter için `AKSIYON_ROTASYON_PERIYODU_YIL`
+ * yıl boyunca sabit kalır, sonra havuzdan yeni bir 3'lü seçilir.
+ */
+export const AKSIYON_ROTASYON_HAVUZU: SosyalAksiyonTuru[] = [
+  "deli",
+  "sadaka",
+  "kulak",
+  "ismarla",
+  "fal",
+  "hikaye_anlat",
+  "muzik_dinle",
+  "yerliye_sor",
+  "bahis_izle",
+];
+export const AKSIYON_ROTASYON_GOSTERIM = 3;
+export const AKSIYON_ROTASYON_PERIYODU_YIL = 4;
 
 export interface SosyalAksiyonTanimi {
   id: SosyalAksiyonTuru;
@@ -150,6 +186,42 @@ export const SOSYAL_AKSIYONLAR: SosyalAksiyonTanimi[] = [
     adEn: "Have your fortune told",
     aciklama: "Falcıya avucunu aç; kaderinden bir kırıntı duy.",
     aciklamaEn: "Open your palm to the fortune teller; hear a scrap of your fate.",
+    tabanFiyat: 5,
+  },
+  {
+    id: "hikaye_anlat",
+    simge: "📖",
+    ad: "Hikaye anlat",
+    adEn: "Tell a story",
+    aciklama: "Meydandakilere kendi başından geçen (ya da uydurduğun) bir hikaye anlat.",
+    aciklamaEn: "Tell the crowd a story from your own life — or one you make up.",
+    tabanFiyat: 6,
+  },
+  {
+    id: "muzik_dinle",
+    simge: "🎻",
+    ad: "Ozanı dinle",
+    adEn: "Listen to the minstrel",
+    aciklama: "Gezgin bir ozanın türküsüne kulak ver, bir an her şeyi unut.",
+    aciklamaEn: "Listen to a wandering minstrel's tune and forget everything for a moment.",
+    tabanFiyat: 3,
+  },
+  {
+    id: "yerliye_sor",
+    simge: "🗺️",
+    ad: "Yerliye bölgeyi sor",
+    adEn: "Ask a local about the region",
+    aciklama: "Yerlilerden birine küçük bir bahşiş verip bölgeyi, dedikoduları sor.",
+    aciklamaEn: "Slip a local a small tip and ask about the region and its gossip.",
+    tabanFiyat: 6,
+  },
+  {
+    id: "bahis_izle",
+    simge: "🥊",
+    ad: "Sokak dövüşüne bahis oyna",
+    adEn: "Bet on a street brawl",
+    aciklama: "Meydandaki dövüşe/koşuya küçük bir bahis koy. Kaçak ama eğlenceli.",
+    aciklamaEn: "Place a small bet on the brawl or race in the square. Illicit but fun.",
     tabanFiyat: 5,
   },
 ];
