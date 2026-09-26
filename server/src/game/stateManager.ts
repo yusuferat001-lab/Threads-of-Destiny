@@ -1406,6 +1406,21 @@ export function aileTalebiUret(state: CharacterState): AileTalep | null {
   };
 }
 
+// ===== Ekip: sadakat pasif sürüklenmesi (2026-09 hayat amacı dengesi) =====
+// Sadakat eskiden yalnız hediyeEt (§34.3) ile artıyordu — çoğu oyuncu o sistemi hiç
+// keşfetmediğinden "guvenilir_ekip" amacı neredeyse hiç tamamlanmıyordu. Aile/evlilik
+// moraliyle aynı felsefede, küçük ve sessiz bir pasif artış: borçta değilken sadakat
+// yavaşça yükselir (hediye hâlâ daha hızlı bir yol).
+const EKIP_SADAKAT_PASIF_ARTIS_YILLIK = 0.25;
+
+/** Yıllık pasif: borçta değilken her ekip üyesinin sadakati yavaşça yükselir. */
+export function ekipSadakatYillikUygula(state: CharacterState, yasArtisi: number): void {
+  if (state.para < 0 || state.ekip.length === 0) return;
+  for (const uye of state.ekip) {
+    uye.sadakat = Math.min(100, uye.sadakat + EKIP_SADAKAT_PASIF_ARTIS_YILLIK * yasArtisi);
+  }
+}
+
 // ===== Kariyer sayfası: yönetimle bağlar pasif sürüklenmesi + dayatılan talep (§35) =====
 // Aile ekranıyla aynı felsefe: ilgilenmezsen ilişki soğur; yüksek ilişki küçük bir
 // sessiz perk verir; bazen yönetici/patron dayatılan bir bağış ya da sadakat yemini ister.

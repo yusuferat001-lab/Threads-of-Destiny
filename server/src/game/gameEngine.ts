@@ -84,6 +84,7 @@ import {
   MESLEK_KATEGORI,
   eskiKayitGocu,
   aileYillikUygula,
+  ekipSadakatYillikUygula,
   yonetimYillikUygula,
   havuzKilidiVar,
   rakipGucKir,
@@ -2064,6 +2065,7 @@ async function sonucuUygulaVeIlerlet(
           nakitAkisi.mulkNet = mulkSonucu.toplamNet;
           nakitAkisi.bilgiMulkBakim = mulkSonucu.bakimOdemeleri.reduce((a, b) => a + b.miktar, 0);
           sucSeviyesiUygula(state, yasArtisi);
+          ekipSadakatYillikUygula(state, yasArtisi);
           // Aile ekranı: eş/çocuk ilişkisi soğuması + düşük ilişki moral cezası +
           // bekleyen para talebinin süresi dolması / yeni talep üretimi (§33).
           const aileMesaji = aileYillikUygula(state, yasArtisi);

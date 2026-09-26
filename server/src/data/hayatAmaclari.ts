@@ -67,6 +67,10 @@ const ortalamaEkipSadakati = (s: CharacterState) => {
 };
 const krediYonetimiBasarili = (s: CharacterState) =>
   !!s.kredi && s.kredi.pazarlikYapildi && s.kredi.odenmeyenTaksit === 0;
+/** `konut_sahibi` ilerleme çubuğu için — konutlar.ts'teki kademe sırasıyla aynı. */
+const KONUT_KADEME_INDEKS: Record<string, number> = {
+  basit_barinak: 0, ahsap_ev: 1, normal_ev: 2, tas_ev: 3, konak: 4, sato: 5,
+};
 
 export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
   // ============================ ORTAK — NORMAL ============================
@@ -83,10 +87,13 @@ export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
     kosul: (s) => s.un >= 72,
   },
   {
+    // 2026-09 hayat amacı dengesi: eşik 75→65. Sistemin kendi ölüm yaşı verisi
+    // (§11.15 bot-simülasyonu: medyan ~62, %75 persentil ~68) 75'i "normal" tier
+    // için fazla iddialı kılıyordu — oyuncuların çoğu bu yaşa hiç ulaşamıyordu.
     id: "dinc_ihtiyar", zorluk: "normal", kontrolAni: "herhangi",
     baslik: { tr: "Dinç İhtiyar", en: "A Hale Elder" },
-    aciklama: { tr: "75 yaşını gör.", en: "Live to see 75." },
-    kosul: (s) => s.yas >= 75,
+    aciklama: { tr: "65 yaşını gör.", en: "Live to see 65." },
+    kosul: (s) => s.yas >= 65,
   },
   {
     id: "ocak_sahibi", zorluk: "normal", kontrolAni: "herhangi",
@@ -95,10 +102,11 @@ export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
     kosul: (s) => evliMi(s) && yasayanCocuk(s) >= 3,
   },
   {
+    // 2026-09 hayat amacı dengesi: yaş eşiği 58→50 (aynı sebep — dinc_ihtiyar notu).
     id: "saglam_omur", zorluk: "normal", kontrolAni: "herhangi",
     baslik: { tr: "Sağlam Ömür", en: "A Sound Body" },
-    aciklama: { tr: "58 yaşından sonra sağlığını 68'in üzerinde tut.", en: "Keep your health above 68 past the age of 58." },
-    kosul: (s) => s.yas >= 58 && s.saglik >= 68,
+    aciklama: { tr: "50 yaşından sonra sağlığını 68'in üzerinde tut.", en: "Keep your health above 68 past the age of 50." },
+    kosul: (s) => s.yas >= 50 && s.saglik >= 68,
   },
   {
     id: "meyhane_mudavimi", zorluk: "normal", kontrolAni: "herhangi",
@@ -131,22 +139,28 @@ export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
     kosul: (s) => !!s.evcil_hayvan && s.mutluluk >= 60,
   },
   {
+    // 2026-09 hayat amacı dengesi: eşik 70→58. patron_iliski 40'tan başlıyor ve
+    // Kariyer ekranı (eski "Görevin") üzerinden ilerliyor — o ekrana hiç uğramayan
+    // oyuncu için 70 fazla yüksek kalıyordu.
     id: "patronun_gozdesi", zorluk: "normal", kontrolAni: "herhangi",
     baslik: { tr: "Patronun Gözdesi", en: "The Boss's Favorite" },
-    aciklama: { tr: "İş çevrendeki patronunla (lonca reisi/komutan/başrahip) ilişkini 70'e taşı.", en: "Raise your bond with your workplace superior (guild chief/commander/high clergy) to 70." },
-    kosul: (s) => s.patron_iliski >= 70,
+    aciklama: { tr: "İş çevrendeki patronunla (lonca reisi/komutan/başrahip) ilişkini 58'e taşı.", en: "Raise your bond with your workplace superior (guild chief/commander/high clergy) to 58." },
+    kosul: (s) => s.patron_iliski >= 58,
   },
   {
-    id: "akilli_borclanma", zorluk: "normal", kontrolAni: "herhangi",
-    baslik: { tr: "Akıllı Borçlanma", en: "Savvy Borrowing" },
-    aciklama: { tr: "Tefeciden kredi al, faizini pazarlıkla düşür ve hiç taksit kaçırma.", en: "Take a loan from the moneylender, haggle down the interest, and never miss a payment." },
-    kosul: (s) => krediYonetimiBasarili(s),
+    id: "konut_sahibi", zorluk: "normal", kontrolAni: "herhangi",
+    baslik: { tr: "Bir Çatı Altı", en: "A Roof of Your Own" },
+    aciklama: { tr: "Taş bir eve ya da daha üstüne taşın.", en: "Move into a stone house or better." },
+    kosul: (s) => ["tas_ev", "konak", "sato"].includes(s.konut_id),
   },
   {
+    // 2026-09 hayat amacı dengesi: eşik 75→60 + `ekipSadakatYillikUygula` pasif
+    // artışı eklendi (stateManager.ts) — eskiden TEK yol hediyeEt (§34.3) idi,
+    // o sistemi keşfetmeyen oyuncu için amaç neredeyse hiç tamamlanmıyordu.
     id: "guvenilir_ekip", zorluk: "normal", kontrolAni: "herhangi",
     baslik: { tr: "Güvenilir Ekip", en: "A Trusted Crew" },
-    aciklama: { tr: "En az bir ekip üyesi edin ve ortalama sadakatlerini 75'in üzerinde tut.", en: "Hire at least one crew member and keep their average loyalty above 75." },
-    kosul: (s) => (s.ekip ?? []).length >= 1 && ortalamaEkipSadakati(s) >= 75,
+    aciklama: { tr: "En az bir ekip üyesi edin ve ortalama sadakatlerini 60'ın üzerinde tut.", en: "Hire at least one crew member and keep their average loyalty above 60." },
+    kosul: (s) => (s.ekip ?? []).length >= 1 && ortalamaEkipSadakati(s) >= 60,
   },
 
   // ============================ ORTAK — ZOR ============================
@@ -216,6 +230,15 @@ export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
     aciklama: { tr: "En az bir isimli rakibini tamamen alt et ve şöhretini 72'nin üzerine çıkar.", en: "Utterly defeat at least one named rival and raise your renown past 72." },
     kosul: (s) => yenilenRakip(s) >= 1 && s.un >= 72,
   },
+  {
+    // 2026-09 hayat amacı dengesi: normal→zor. Şartı ("bilerek ihtiyacın olmayan bir
+    // krediyi al, pazarlık yap, hiç taksit kaçırma") doğal oynanışta hiç tetiklenmeyen,
+    // bilinçli bir meta-hedef — "normal" tier'ın beklediği erişilebilirlikle uyuşmuyordu.
+    id: "akilli_borclanma", zorluk: "zor", kontrolAni: "herhangi",
+    baslik: { tr: "Akıllı Borçlanma", en: "Savvy Borrowing" },
+    aciklama: { tr: "Tefeciden kredi al, faizini pazarlıkla düşür ve hiç taksit kaçırma.", en: "Take a loan from the moneylender, haggle down the interest, and never miss a payment." },
+    kosul: (s) => krediYonetimiBasarili(s),
+  },
 
   // ============================ ASKER ============================
   {
@@ -225,10 +248,15 @@ export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
     kosul: (s) => s.rutbe_seviye >= 4,
   },
   {
+    // 2026-09 hayat amacı dengesi: eşik 2→1. `tarihi_savas_gordu:<rakip>` etiketi
+    // yalnız §11 kural 1'deki tek seferlik tarihi-savaş kaskadından geliyor; bölge
+    // başına birkaç savaş penceresi olsa da bunlar genelde onlarca yıl arayla ve
+    // kural yaş≤55 iken tetikleniyor — bir ömürde ikisine de denk gelmek çoğu
+    // bölgede yapısal olarak neredeyse imkansızdı.
     id: "cephe_gazisi", zorluk: "normal", kontrolAni: "herhangi", meslekler: ["Asker"],
     baslik: { tr: "Cephe Gazisi", en: "Front-Line Veteran" },
-    aciklama: { tr: "En az iki tarihi savaşa katıl ve sağ kal.", en: "Fight in at least two historic wars and survive." },
-    kosul: (s) => tarihiSavasSayisi(s) >= 2,
+    aciklama: { tr: "Tarihi bir savaşa katıl ve sağ kal.", en: "Fight in a historic war and survive." },
+    kosul: (s) => tarihiSavasSayisi(s) >= 1,
   },
   {
     id: "guclu_ordu", zorluk: "normal", kontrolAni: "herhangi", meslekler: ["Asker"],
@@ -532,14 +560,15 @@ export const AMAC_ILERLEME: Record<
 > = {
   denk_kasa: { hedef: 230, metrik: (_s, servet) => servet },
   taninan_yuz: { hedef: 72, metrik: (s) => s.un },
-  dinc_ihtiyar: { hedef: 75, metrik: (s) => s.yas },
+  dinc_ihtiyar: { hedef: 65, metrik: (s) => s.yas },
   ocak_sahibi: { hedef: 3, metrik: (s) => (s.cocuklar ?? []).filter((c) => c.yasiyor).length },
-  saglam_omur: { hedef: 68, metrik: (s) => (s.yas >= 58 ? s.saglik : 0) },
+  saglam_omur: { hedef: 68, metrik: (s) => (s.yas >= 50 ? s.saglik : 0) },
   meyhane_mudavimi: { hedef: 3, metrik: (s) => s.alkol_ziyaret_sayisi ?? 0 },
   sansli_el: { hedef: 95, metrik: (s) => Math.max(0, s.omur_kumar_net ?? 0) },
   sadik_dost: { hedef: 60, metrik: (s) => (s.evcil_hayvan ? s.mutluluk : 0) },
-  patronun_gozdesi: { hedef: 70, metrik: (s) => s.patron_iliski },
-  guvenilir_ekip: { hedef: 75, metrik: (s) => ortalamaEkipSadakati(s) },
+  patronun_gozdesi: { hedef: 58, metrik: (s) => s.patron_iliski },
+  konut_sahibi: { hedef: 3, metrik: (s) => KONUT_KADEME_INDEKS[s.konut_id] ?? 0 },
+  guvenilir_ekip: { hedef: 60, metrik: (s) => ortalamaEkipSadakati(s) },
   servet_zirvesi: { hedef: 700, metrik: (_s, servet) => servet },
   yasayan_efsane: { hedef: 95, metrik: (s) => s.un },
   kalabalik_soy: { hedef: 6, metrik: (s) => (s.cocuklar ?? []).filter((c) => c.yasiyor).length },
@@ -550,7 +579,7 @@ export const AMAC_ILERLEME: Record<
   zevk_sahibi: { hedef: 3, metrik: (s) => luksEsyaSayisi(s) },
   rakip_ustunlugu: { hedef: 1, metrik: (s) => yenilenRakip(s) },
   komuta: { hedef: 4, metrik: (s) => s.rutbe_seviye },
-  cephe_gazisi: { hedef: 2, metrik: (s) => s.etiketler.filter((e) => e.startsWith("tarihi_savas_gordu:")).length },
+  cephe_gazisi: { hedef: 1, metrik: (s) => s.etiketler.filter((e) => e.startsWith("tarihi_savas_gordu:")).length },
   guclu_ordu: { hedef: 150, metrik: (s) => s.ordu_mevcudu },
   tam_donanim: { hedef: 80, metrik: (s) => s.ordu_techizat_seviyesi },
   madalyali: { hedef: 3, metrik: (s) => s.unvanlar?.length ?? 0 },
