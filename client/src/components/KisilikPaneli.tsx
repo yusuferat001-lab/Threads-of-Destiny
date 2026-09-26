@@ -12,10 +12,17 @@ function grupla(kaynaklar: YatkinlikKaynagi[]): Map<string, YatkinlikKaynagi[]> 
   return grup;
 }
 
+const fmtYuzde = (v: number): string => `${v > 0 ? '+' : ''}${Math.round(v * 100)}%`;
+
 export function KisilikPaneli({
   kisilik,
   aileMeslegi,
   kaynaklar,
+  meslekYatkinlikUnvani,
+  meslekYatkinlikSeviyesi,
+  meslekZarBonusu,
+  meslekMaasCarpani,
+  meslekTecrubeHizi,
 }: {
   kisilik: [string, string];
   aileMeslegi: string;
@@ -28,6 +35,12 @@ export function KisilikPaneli({
    * DOKUNULMADI — yalnız bu görsel çubuk kaldırıldı. Prop hâlâ isteğe bağlı
    * kabul edilir (çağıran taraf değişmesin diye) ama artık kullanılmıyor. */
   eksenler?: KisilikEksenleri;
+  /** Mesleğe yatkınlık kademesi (2026-09 sonu) — meslek seçilmediyse tümü undefined/null gelir, rozet hiç gösterilmez. Nötr kademede (seviye 2) de gösterilmez (kullanıcı isteği: "ekranda metin yazmayacak"). */
+  meslekYatkinlikUnvani?: string | null;
+  meslekYatkinlikSeviyesi?: 1 | 2 | 3 | 4 | null;
+  meslekZarBonusu?: number;
+  meslekMaasCarpani?: number;
+  meslekTecrubeHizi?: number;
 }) {
   const { m, kt, dil } = useDil();
   const grup = grupla(kaynaklar);
@@ -35,6 +48,15 @@ export function KisilikPaneli({
   return (
     <div className="kisilik-paneli">
       <h3>{m.kpBaslikTam}</h3>
+      {meslekYatkinlikUnvani && meslekYatkinlikSeviyesi != null && meslekYatkinlikSeviyesi !== 2 && (
+        <div className="kisilik-rozet kisilik-rozet-meslek-yatkinlik">
+          <span className="kisilik-rozet-ad">🎯 {kt(meslekYatkinlikUnvani)}</span>
+          <span className="kisilik-rozet-etki">
+            {m.kpYatkinlikZar} {fmtYuzde(meslekZarBonusu ?? 0)} · {m.kpYatkinlikMaas} {fmtYuzde(meslekMaasCarpani ?? 0)} ·{' '}
+            {m.kpYatkinlikTecrube} {fmtYuzde(meslekTecrubeHizi ?? 0)}
+          </span>
+        </div>
+      )}
       {[...kisilik, aileMeslegi].map((kaynakAdi) => {
         const etkiler = grup.get(kaynakAdi) ?? [];
         const aileMi = kaynakAdi === aileMeslegi;

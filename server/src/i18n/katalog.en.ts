@@ -45,6 +45,44 @@ export const KATALOG_EN: Record<string, string> = {
   "sosyal": "social",
 
   // ---------------------------------------------------------------------------
+  // Mesleğe yatkınlık kademesi unvanları (2026-09 sonu) — bkz. data/meslekYatkinlik.ts
+  // ---------------------------------------------------------------------------
+  // Orta Çağ
+  "Savaş Korkusu": "Fear of Battle",
+  "Acemi Çaylak": "Green Recruit",
+  "Kılıca Yatkın": "Natural with a Blade",
+  "Doğuştan Savaşçı": "Born Warrior",
+  "Pazarlıktan Anlamaz": "Hopeless Haggler",
+  "Sıradan Satıcı": "Ordinary Peddler",
+  "Ticari Zekası Parlak": "Sharp Trading Mind",
+  "Şeytan Tüyü": "Touch of the Devil",
+  "Tam Bir Günahkâr": "Utter Sinner",
+  "Arada Kalmış": "Wavering Faith",
+  "İnancı Sağlam": "Steadfast Believer",
+  "Seçilmiş Kişi": "The Chosen One",
+  "Malzeme İsrafı": "Wastes Every Material",
+  "Sıradan Çırak": "Ordinary Apprentice",
+  "Eli Becerikli": "Skilled Hands",
+  "Hünerli Eller (Doğuştan Mucit)": "Gifted Hands (Born Inventor)",
+  // Sanayi Devrimi
+  "Cepheden Kaçan": "Deserter at Heart",
+  "Sıradan Er": "Ordinary Private",
+  "Silaha Yatkın": "Natural with a Rifle",
+  "Doğuştan Komutan": "Born Commander",
+  "İşten Anlamaz": "Hopeless Businessman",
+  "Vasat Esnaf": "Average Shopkeeper",
+  "Keskin İş Adamı": "Sharp Businessman",
+  "Doğuştan Sermayedar": "Born Tycoon",
+  "İnancı Sarsılmış": "Faith Shaken",
+  "Sıradan Vaiz": "Ordinary Preacher",
+  "Vicdanı Güçlü": "Strong of Conscience",
+  "Kutsanmış Ruh": "Blessed Soul",
+  "Elinden İş Gelmez": "All Thumbs",
+  "Vasat İşçi": "Average Worker",
+  "Usta İşi": "Master's Touch",
+  "Doğuştan Mühendis": "Born Engineer",
+
+  // ---------------------------------------------------------------------------
   // Kişilik özellikleri (16)
   // ---------------------------------------------------------------------------
   "Sinirli": "Hot-Tempered",

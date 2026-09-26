@@ -35,6 +35,13 @@ import {
 import { tarihiSavasKontrol, gelecekSavasKontrol } from "../data/tarihiSavaslar";
 import { mulkTanimiGetir } from "../data/mulkler";
 import { MagazaEsyasiTanimi, magazaEsyasiTanimiGetir } from "../data/magazaEsyalari";
+import {
+  YATKINLIK_TIER_ETKILERI,
+  YATKINLIK_TIER_SEVIYE,
+  YATKINLIK_MUKEMMEL_UN_BONUSU,
+  yatkinlikTierBelirle,
+  meslekYatkinlikUnvaniGetir,
+} from "../data/meslekYatkinlik";
 
 const KATEGORILER: Kategori[] = ["savas", "ticaret", "din", "siyaset", "saglik", "sosyal", "zanaat"];
 
@@ -50,11 +57,27 @@ export const MESLEK_KATEGORI: Record<string, Kategori> = {
 const SINERJI_BONUSU = 13;
 
 /**
+ * Yatkınlık kaynaklarının TEKİL katkı üst/alt sınırı (2026-09 sonu, kullanıcı
+ * isteği: "ülkeler max ±6, aileye de bi üst alt limit koy, kişilikte etkilicek
+ * ona da altüst limit koy"). Eskiden bölge tek kalemde ±10-12'ye, aile/kişilik
+ * ise tek kalemde ±15-20'ye kadar çıkabiliyordu — bu sınır her KAYNAK×KATEGORİ
+ * katkısına ayrı ayrı uygulanır (iki kişilik özelliği aynı kategoriyi
+ * etkiliyorsa ikisi de kendi payında sınırlanır, toplamları sınırlanmaz;
+ * sinerji bonusu ve taban rastgele oynama bu sınırların dışındadır).
+ * Bölge için ayrıca `bolgeOzellikleri.ts`'teki ham veri de bu sınırın içinde
+ * yeniden yazıldı (küçük, 8 satırlık bir tablo); aile (28 satır) ve kişilik
+ * (18 satır) verisi elle dokunulmadı — sınır burada, çalışma anında uygulanır.
+ */
+export const BOLGE_YATKINLIK_LIMIT = 6;
+export const AILE_YATKINLIK_LIMIT = 8;
+export const KISILIK_YATKINLIK_LIMIT = 8;
+
+/**
  * Yatkınlıkları kişilik özelliklerinden ve aile geçmişinden hesaplar; her
  * kategoriye küçük bir rastgele oynama (-5..+5) eklenir. Kaynak listesi
  * oyuncuya "neden bu mesleğe yatkınsın" açıklaması için döndürülür.
  */
-function yatkinlikHesapla(
+export function yatkinlikHesapla(
   kisilik: [string, string],
   aile: AileTanimi,
   yerlesim: YerlesimTanimi,
@@ -72,15 +95,17 @@ function yatkinlikHesapla(
     const ozellik = kisilikGetir(ozellikAdi);
     if (!ozellik) continue;
     for (const [kategori, deger] of Object.entries(ozellik.etkiler) as [Kategori, number][]) {
-      yatkinliklar[kategori] += deger;
-      kaynaklar.push({ kaynak: ozellikAdi, kategori, deger });
+      const sinirliDeger = clamp(deger, -KISILIK_YATKINLIK_LIMIT, KISILIK_YATKINLIK_LIMIT);
+      yatkinliklar[kategori] += sinirliDeger;
+      kaynaklar.push({ kaynak: ozellikAdi, kategori, deger: sinirliDeger });
     }
   }
 
   if (aile.yatkinlikEtkisi) {
     for (const [kategori, deger] of Object.entries(aile.yatkinlikEtkisi) as [Kategori, number][]) {
-      yatkinliklar[kategori] += deger;
-      kaynaklar.push({ kaynak: aile.ad, kategori, deger });
+      const sinirliDeger = clamp(deger, -AILE_YATKINLIK_LIMIT, AILE_YATKINLIK_LIMIT);
+      yatkinliklar[kategori] += sinirliDeger;
+      kaynaklar.push({ kaynak: aile.ad, kategori, deger: sinirliDeger });
     }
   }
 
@@ -93,8 +118,9 @@ function yatkinlikHesapla(
 
   if (bolgeOzellik?.yatkinlikEtkisi) {
     for (const [kategori, deger] of Object.entries(bolgeOzellik.yatkinlikEtkisi) as [Kategori, number][]) {
-      yatkinliklar[kategori] += deger;
-      kaynaklar.push({ kaynak: bolgeAdi, kategori, deger });
+      const sinirliDeger = clamp(deger, -BOLGE_YATKINLIK_LIMIT, BOLGE_YATKINLIK_LIMIT);
+      yatkinliklar[kategori] += sinirliDeger;
+      kaynaklar.push({ kaynak: bolgeAdi, kategori, deger: sinirliDeger });
     }
   }
 
@@ -457,6 +483,7 @@ function maasCarpanKalemleri(state: CharacterState): { tabanMaas: number; kaleml
       { ad: T(dil, "Kıdem"), carpan: 1 + kariyerYili * 0.0025, grup: "kariyer" },
       { ad: T(dil, "Şehir yönetimi"), carpan: sehirYonetimMaasCarpani(state.sehir_yonetim_seviyesi), grup: "kariyer" },
       { ad: T(dil, "Kalıcı ödüller (köken + olaylar)"), carpan: maasCarpaniGetir(state), grup: "kariyer" },
+      { ad: T(dil, "Mesleğe yatkınlığın"), carpan: 1 + (state.meslek_maas_carpani ?? 0), grup: "kariyer" },
       { ad: T(dil, "İtibarın (mutluluk·şöhret·ahlak)"), carpan: 1 + itibarToplam / 100, grup: "itibar" },
       { ad: T(dil, "Enflasyon"), carpan: enflasyonCarpani(state), grup: "donemsel" },
       { ad: ekonomiAd, carpan: ekonomiCarpani, grup: "donemsel" },
@@ -644,6 +671,12 @@ export function createCharacter(
     rutbe_seviye: 1,
     kariyer_puani: 0,
     son_terfi_yili: yil,
+    // Meslek 15 yaşında seçilir; mesleğiSec bunları o an bir kez doldurur.
+    meslek_yatkinlik_seviyesi: null,
+    meslek_yatkinlik_unvani: null,
+    meslek_zar_bonusu: 0,
+    meslek_maas_carpani: 0,
+    meslek_tecrube_hizi: 0,
     sehir_yonetim_seviyesi: 0,
     sehir_yonetim_unvan: null,
     cag,
@@ -1032,6 +1065,28 @@ export function eskiKayitGocu(state: CharacterState): void {
   // bilinmiyor sayılır (retroaktif olarak kazandırılmaz — bir sonraki relik
   // tetiklenmesinde zaten normal yoldan set edilir).
   if (typeof state.relik_can_kurtardi !== "boolean") state.relik_can_kurtardi = false;
+  // Mesleğe yatkınlık kademeleri (2026-09 sonu) sonradan eklendi. Meslek zaten
+  // seçilmişse mevcut yatkinliklar'dan kademeyi geriye dönük türet (mükemmel
+  // kademenin tek seferlik şöhret bonusu RETROAKTİF verilmez — o yalnız ilk
+  // seçim anının bir ödülüdür); meslek henüz seçilmemişse null/0 kalır.
+  if (state.meslek_yatkinlik_seviyesi === undefined) {
+    const meslekKategorisiEski = state.meslek ? MESLEK_KATEGORI[state.meslek] : undefined;
+    if (meslekKategorisiEski) {
+      const tierEski = yatkinlikTierBelirle(state.yatkinliklar?.[meslekKategorisiEski] ?? 0);
+      const etkiEski = YATKINLIK_TIER_ETKILERI[tierEski];
+      state.meslek_yatkinlik_seviyesi = YATKINLIK_TIER_SEVIYE[tierEski];
+      state.meslek_yatkinlik_unvani = meslekYatkinlikUnvaniGetir(state.cag, state.meslek, tierEski);
+      state.meslek_zar_bonusu = etkiEski.zarBonusu;
+      state.meslek_maas_carpani = etkiEski.maasCarpani;
+      state.meslek_tecrube_hizi = etkiEski.tecrubeHizi;
+    } else {
+      state.meslek_yatkinlik_seviyesi = null;
+      state.meslek_yatkinlik_unvani = null;
+      state.meslek_zar_bonusu = 0;
+      state.meslek_maas_carpani = 0;
+      state.meslek_tecrube_hizi = 0;
+    }
+  }
 }
 
 /** Oyuncu mesleğini seçtikten sonra çağrılır: miras bonusunu ve maaşı uygular. */
@@ -1042,6 +1097,31 @@ export function mesleğiSec(state: CharacterState, meslek: string): void {
 
   state.meslek = meslek;
   state.aile_mirasi_surduruldu = mirasSurduruldu;
+
+  // Mesleğe yatkınlık kademesi (2026-09 sonu): meslekle örtüşen kategorideki
+  // (savas/ticaret/din/zanaat) TOPLAM yatkınlık, BİR KEZ 4 kademeden birine
+  // yerleştirilir; kalıcı unvan + zar/maaş/tecrübe çarpanları bir daha
+  // değişmez (yatkinliklar sonradan oynasa bile) — bkz. data/meslekYatkinlik.ts.
+  const meslekKategorisi = MESLEK_KATEGORI[meslek];
+  if (meslekKategorisi) {
+    const tier = yatkinlikTierBelirle(state.yatkinliklar[meslekKategorisi] ?? 0);
+    const etki = YATKINLIK_TIER_ETKILERI[tier];
+    state.meslek_yatkinlik_seviyesi = YATKINLIK_TIER_SEVIYE[tier];
+    state.meslek_yatkinlik_unvani = meslekYatkinlikUnvaniGetir(state.cag, meslek, tier);
+    state.meslek_zar_bonusu = etki.zarBonusu;
+    state.meslek_maas_carpani = etki.maasCarpani;
+    state.meslek_tecrube_hizi = etki.tecrubeHizi;
+    if (tier === "mukemmel") {
+      state.un += YATKINLIK_MUKEMMEL_UN_BONUSU;
+      if (state.meslek_yatkinlik_unvani) {
+        hayatOlayiEkle(
+          state,
+          "🌟",
+          T(state.dil, "Doğuştan yeteneğin fark edildi: {0}", [K(state.dil, state.meslek_yatkinlik_unvani)])
+        );
+      }
+    }
+  }
 
   // 3 kişisel hayat amacı: havuzdan (ortak + meslek + çağ) 2 normal + 1 zor çekilir (§18).
   if (!state.hayat_amaclari || state.hayat_amaclari.length === 0) {

@@ -33,6 +33,15 @@ export interface OlaySecenegi {
   /** Belirtilirse bu seçenek sadece kişilik ekseninde belirli bir aralıkta olan karakterlere gösterilir. */
   gerekliEksen?: { eksen: "fevrilik" | "merhamet"; min?: number; max?: number };
   /**
+   * Belirtilirse bu seçenek yalnız `state.meslek_yatkinlik_seviyesi` bu değere (veya
+   * üstüne) ulaşmış karakterlere açıktır (1=kötü, 2=nötr, 3=iyi, 4=mükemmel — bkz.
+   * data/meslekYatkinlik.ts). Meslek seçilmemiş (seviyesi null) karakterlerde her
+   * zaman kilitli sayılır. Kilitlenirse `kilitAciklamasi` gösterilir.
+   */
+  minMeslekYatkinlikSeviye?: 1 | 2 | 3 | 4;
+  /** Belirtilirse bu seçenek yalnız `state.meslek_yatkinlik_seviyesi` bu değerin (veya altında) olan karakterlere açıktır — ör. "acemi" bir şıkkı yalnız gerçekten acemi olana göster. */
+  maxMeslekYatkinlikSeviye?: 1 | 2 | 3 | 4;
+  /**
    * Belirtilirse bu seçenek seçildiğinde zar atılmaz; önce onTepki.metin gösterilir,
    * oyuncu geri çekilme/ısrar etme arasında seçim yapar, zaman o seçimde ilerler.
    * baseBasariSansi/basariliSonuc/basarisizSonuc bu durumda hiç kullanılmaz.
@@ -81,6 +90,15 @@ export interface OlayTanimi {
   gerekliDin?: string;
   /** Belirtilirse olay sadece bu rütbe seviyesine (veya üstüne) ulaşmış karakterlere çıkar. */
   minRutbeSeviye?: number;
+  /**
+   * Belirtilirse olay yalnız `state.meslek_yatkinlik_seviyesi` bu değere (veya üstüne)
+   * ulaşmış karakterlere çıkar (1=kötü, 2=nötr, 3=iyi, 4=mükemmel — bkz.
+   * data/meslekYatkinlik.ts). Meslek seçilmemiş (seviyesi null) karakterlere hiç çıkmaz.
+   * "Yüksek yatkınlıkta özel fırsatlar açılsın" için kullanılır.
+   */
+  minMeslekYatkinlikSeviye?: 1 | 2 | 3 | 4;
+  /** Belirtilirse olay yalnız `state.meslek_yatkinlik_seviyesi` bu değerin (veya altında) olan karakterlere çıkar — "yetersiz yatkınlığın başına dert açtı" tarzı olaylar için. */
+  maxMeslekYatkinlikSeviye?: 1 | 2 | 3 | 4;
   /** Belirtilirse olay sadece suç/aranma seviyesi (suc_seviyesi, 0-100) bu eşiğe (veya üstüne) ulaşmış karakterlere çıkar. Aranma kademesi bantları: 20 / 40 / 60 / 80. */
   minSucSeviyesi?: number;
   /** Belirtilirse olay sadece suc_seviyesi bu eşiğin (veya altına) altında kalmış karakterlere çıkar; min ile birlikte bir aranma kademesine (ör. 20-39) kilitlemek için kullanılır. */
