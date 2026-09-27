@@ -366,7 +366,6 @@ function App() {
   const [yeniBasarimlar, setYeniBasarimlar] = useState<BasarimTanimi[]>([]);
   const [dil, setDil] = useState<Dil>(() => ayarlariGetir().dil);
   const [basarimlar, setBasarimlar] = useState(() => basarimlariGetir());
-  const [basarimlarAcik, setBasarimlarAcik] = useState(false);
   const [gecmisHayatlar, setGecmisHayatlar] = useState<GecmisHayat[]>(() => gecmisHayatlariGetir());
   const [secilenGecmisHayat, setSecilenGecmisHayat] = useState<GecmisHayat | null>(null);
   const [liderlikOnizleme, setLiderlikOnizleme] = useState<ScoreKaydi[]>([]);
@@ -1562,7 +1561,9 @@ function App() {
           }}
         />
       )}
-      {basarimGaleriAcik && <BasarimGaleri dil={dil} onKapat={() => setBasarimGaleriAcik(false)} />}
+      {basarimGaleriAcik && (
+        <BasarimGaleri dil={dil} basarimlar={basarimlar} onKapat={() => setBasarimGaleriAcik(false)} />
+      )}
       {GUNLUK_KOZMETIK_GOLD_GORUNUR && kozmetikMagazaAcik && (
         <KozmetikMagaza
           dil={dil}
@@ -1735,32 +1736,6 @@ function App() {
                 </ol>
               )}
             </div>
-
-            {(basarimlar.unvanlar.length > 0 || basarimlar.olumler.length > 0) && (
-              <div className="giris-panel">
-                <button
-                  className="ikincil basarimlar-baslik-buton"
-                  onClick={() => setBasarimlarAcik((a) => !a)}
-                >
-                  {m.panelBasarimlar} ({basarimlar.unvanlar.length + basarimlar.olumler.length}){' '}
-                  {basarimlarAcik ? '▲' : '▼'}
-                </button>
-                {basarimlarAcik && (
-                  <div className="basarimlar-listesi">
-                    {basarimlar.unvanlar.map((u) => (
-                      <span key={u} className="liderlik-rozet liderlik-rozet-unvan">
-                        🏵️ {u}
-                      </span>
-                    ))}
-                    {basarimlar.olumler.map((o) => (
-                      <span key={o} className="liderlik-rozet liderlik-rozet-olum">
-                        💀 {o}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
 
           </div>
 
