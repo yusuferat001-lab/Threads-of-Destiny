@@ -3,14 +3,16 @@ import type { OlayTanimi } from "./types";
 /**
  * SAĞLIK KRİTİK EŞİKLERİ (2026-09 sonu, kullanıcı isteği).
  *
- * `saglikToparlanma.ts`'teki 8 olay normal ağırlıklı havuzda `maxSaglik:45`
- * ile rekabet eder — sağlık dibe vurduğunda öne çıkarlar ama garantili
- * değildirler, aynı ömürde defalarca (ya da hiç) çıkabilirler. Bu dosyadaki
- * iki havuz FARKLI bir mekanik: her biri bir hayatta YALNIZCA BİR KEZ,
- * karakterin sağlığı İLK KEZ ilgili eşiğin altına indiği anda `senaryoUret`
- * kaskadı tarafından ZORLA tetiklenir (bkz. gameEngine.ts, `saglik_esik_25_
- * gorundu`/`saglik_esik_10_gorundu` etiketleri) — normal rastgele havuzdan
- * tamamen dışlanırlar (`saglikEsikOlayi`, olaySecici.ts uygunMu).
+ * Eski `saglikToparlanma.ts` (8 olay, `maxSaglik:45`, normal ağırlıklı
+ * havuzda rekabet eden, garantisiz/tekrarlanabilen bir toparlanma havuzuydu)
+ * bu iki havuzla ÇAKIŞTIĞI için tamamen KALDIRILDI (kullanıcı isteği:
+ * "sağlık toparlama havuzunu bu iki yeni havuza aktarıp 45'te tetiklenmesin").
+ * Artık düşük sağlıkta TEK yol bu dosya: her havuz bir hayatta YALNIZCA BİR
+ * KEZ, karakterin sağlığı İLK KEZ ilgili eşiğin altına indiği anda
+ * `senaryoUret` kaskadı tarafından ZORLA tetiklenir (bkz. gameEngine.ts,
+ * `saglik_esik_25_gorundu`/`saglik_esik_10_gorundu` etiketleri) — normal
+ * rastgele havuzdan tamamen dışlanırlar (`saglikEsikOlayi`, olaySecici.ts
+ * uygunMu).
  *
  * - `OLAY_SAGLIK_ESIK_25` (15 olay): sağlık ilk kez 25'in altına indiğinde —
  *   "sağlık krizi" tonunda, ölüm riski YOK, yalnız sağlık/mutluluk/para etkisi.
