@@ -37,6 +37,7 @@ import { OLAY_BUYULU } from "./buyuluOlaylar";
 import { OLAY_BOLGESEL_ORTACAG } from "./bolgeselOrtaCag";
 import { OLAY_BOLGESEL_SANAYI } from "./bolgeselSanayi";
 import { OLAY_GECIKMIS_TAKIP } from "./gecikmisTakip";
+import { OLAY_SAGLIK_ESIK_25, OLAY_SAGLIK_ESIK_10 } from "./saglikKritik";
 
 export const OLAY_BANKASI: OlayTanimi[] = [
   ...OLAY_HAPIS,
@@ -51,6 +52,8 @@ export const OLAY_BANKASI: OlayTanimi[] = [
   ...OLAY_BOLGESEL_ORTACAG,
   ...OLAY_BOLGESEL_SANAYI,
   ...OLAY_GECIKMIS_TAKIP,
+  ...OLAY_SAGLIK_ESIK_25,
+  ...OLAY_SAGLIK_ESIK_10,
   ...OLAY_YOLCULUK,
   ...OLAY_HIZIP,
   ...OLAY_ORTACAG_ASKER,
