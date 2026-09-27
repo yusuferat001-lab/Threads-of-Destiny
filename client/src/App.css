@@ -4446,6 +4446,16 @@ button.ikincil {
   opacity: 0.75;
 }
 
+.kisilik-rozet-meslek-yatkinlik {
+  background: rgba(180, 140, 60, 0.28);
+  border: 1px solid rgba(212, 175, 100, 0.4);
+}
+
+.kisilik-rozet-sinerji {
+  background: rgba(90, 140, 180, 0.22);
+  border: 1px solid rgba(120, 170, 210, 0.35);
+}
+
 .meslek-yatkinlik {
   font-size: clamp(0.75rem, 0.3vw + 0.6rem, 1.05rem);
   opacity: 0.85;

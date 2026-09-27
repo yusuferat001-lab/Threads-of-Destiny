@@ -559,6 +559,10 @@ const TR = {
   kpBarisci: 'Barışçıl',
   kpEksenAria: '{0} ile {1} arası eksen',
   kpAilesi: ' Ailesi',
+  kpYatkinlikZar: 'Zar',
+  kpYatkinlikMaas: 'Maaş',
+  kpYatkinlikTecrube: 'Tecrübe',
+  kpSinerji: 'sinerjisi',
 
   // ---- AileOzetPaneli (ek) ----
   aoBaslik: 'Aile',
@@ -1271,6 +1275,10 @@ const EN: Metinler = {
   kpBarisci: 'Peaceable',
   kpEksenAria: 'axis between {0} and {1}',
   kpAilesi: ' Family',
+  kpYatkinlikZar: 'Dice',
+  kpYatkinlikMaas: 'Pay',
+  kpYatkinlikTecrube: 'Pace',
+  kpSinerji: 'synergy',
 
   // ---- AileOzetPaneli ----
   aoBaslik: 'Family',
