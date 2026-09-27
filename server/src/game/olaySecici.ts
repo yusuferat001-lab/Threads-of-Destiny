@@ -108,13 +108,14 @@ export function temelUygunMu(olay: OlayTanimi, state: CharacterState): boolean {
   return true;
 }
 
-/** Normal rastgele havuz için: sosyalleşme mekânı, mülk-bağlantılı ve gecikmiş-takip SONUÇ olayları burada her zaman dışlanır — sırasıyla sosyallesmeIcinOlaySec, gameEngine.ts'teki mülk-olayı kaskadı ve gecikmiş-takip kaskadı tarafından zorlanan olay olarak getirilirler. */
+/** Normal rastgele havuz için: sosyalleşme mekânı, mülk-bağlantılı, gecikmiş-takip SONUÇ ve sağlık-kritik-eşiği olayları burada her zaman dışlanır — sırasıyla sosyallesmeIcinOlaySec, gameEngine.ts'teki mülk-olayı kaskadı, gecikmiş-takip kaskadı ve sağlık-kritik-eşiği kaskadı tarafından zorlanan olay olarak getirilirler. */
 function uygunMu(olay: OlayTanimi, state: CharacterState): boolean {
   return (
     temelUygunMu(olay, state) &&
     olay.sosyallesmeYeri === undefined &&
     olay.mulkOlayi === undefined &&
-    !olay.gecikmisSonucOlayi
+    !olay.gecikmisSonucOlayi &&
+    olay.saglikEsikOlayi === undefined
   );
 }
 

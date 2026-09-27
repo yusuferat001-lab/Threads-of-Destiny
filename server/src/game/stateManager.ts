@@ -697,10 +697,12 @@ export function createCharacter(
     hukumdar: liderGetir(bolge, yil, cag),
     bolge_bilgi: bolgeIstatistigiGetir(cag, bolge) ?? null,
     haberler: [],
-    // 2026-09 denge turu (kullanıcı isteği): sağlık tabanı 100→80 (aile
-    // artık her yönde ~±16 oynatabiliyor, ama 80 tabanla bile 100 tavanını
-    // aşmıyor); yerleşim etkisi hâlâ ekleniyor.
-    saglik: 80 + (aile.saglik ?? 0) + (yerlesim.saglik ?? 0) + (bolgeOzellik?.saglik ?? 0),
+    // 2026-09 denge turu (kullanıcı isteği): sağlık tabanı 100→80→85→90
+    // (aile etkisi artık dar bir ~±10 bandında, §aileler.ts — 90 tabanla
+    // bile 100 tavanını aşmıyor); yerleşim etkisi hâlâ ekleniyor. Bölge
+    // (ülke) etkisi sağlıkta KALDIRILDI — bolgeOzellik.saglik artık
+    // başlangıç sağlığına katılmıyor.
+    saglik: 90 + (aile.saglik ?? 0) + (yerlesim.saglik ?? 0),
     // Başlangıç statları (aile bonusları hariç): mutluluk 50 (nötr), ahlak
     // 45 (itibar bandında hâlâ nötr, 40-60 arası — sadece taban biraz aşağı
     // çekildi), şöhret 20 (taze bir karakter az tanınır ama şöhretin nötr
@@ -1346,8 +1348,8 @@ export function yaslanmaUygula(state: CharacterState, yasArtisi: number): number
   let yas = state.yas - yasArtisi;
   for (let i = 0; i < yasArtisi; i++) {
     yas += 1;
-    if (yas >= 80) toplamKayip += 7;
-    else if (yas >= 70) toplamKayip += 5;
+    if (yas >= 80) toplamKayip += 8;
+    else if (yas >= 70) toplamKayip += 6;
     else if (yas >= 60) toplamKayip += 4;
     else if (yas >= 50) toplamKayip += 1;
   }
