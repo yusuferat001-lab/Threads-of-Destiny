@@ -2853,6 +2853,12 @@ const YONETIM_ISTEKLERI: YonetimIstekTanimi[] = [
         state.ticaret_sermaye += Math.round(15 * enflasyon);
       } else if (state.meslek === "Din Adamı") {
         state.nufuz += 8;
+      } else if (state.meslek === "Zanaatkâr") {
+        // Diğer 3 meslek için var olan bu istek Zanaatkâr'da hiçbir dalı
+        // eşleşmediği için sessizce etkisizdi — oyuncu ilişki bedelini ödeyip
+        // hiçbir şey almıyordu. uretim_kapasitesi zaten olay kaynaklı çok kıt
+        // (bkz. hayatAmaclari.ts "usta_eli" notu); buraya da bağlandı.
+        state.uretim_kapasitesi = Math.min(100, (state.uretim_kapasitesi ?? 0) + 10);
       }
     },
   },

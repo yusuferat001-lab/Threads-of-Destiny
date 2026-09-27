@@ -453,10 +453,21 @@ export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
 
   // ============================ ZANAATKÂR (2026-09 yeni meslek, iskelet) ============================
   {
+    // 2026-09 hayat amacı dengesi: eşik 70→25. `uretim_kapasitesi` yalnız 38
+    // olayla besleniyor (130'luk Zanaatkâr havuzunun geri kalanı etkisiz) ve
+    // bir ömürde ortalama ~4-5 kez görülüyor — greedy bot simülasyonunda (her
+    // zaman en yüksek artışı seçen "en iyimser" oyuncu) ortalama sonuç 11,
+    // p95 26, 150 ömürlük örneklemde gözlenen maksimum 32 idi. 70 bu verilere
+    // göre yapısal olarak neredeyse erişilemezdi (bkz. atolye_imparatorlugu/
+    // sahesinde_efsane/zanaat_rekabeti notları — aynı kök sorun). Ayrıca
+    // Kariyer sayfasının "sermaye_destegi" isteği (gameEngine.ts) Asker/
+    // Tüccar/Din Adamı'na kendi metriğini veriyordu ama Zanaatkâr'da hiçbir
+    // dalı eşleşmiyordu (oyuncu ilişki bedelini ödeyip karşılığında hiçbir şey
+    // almıyordu) — o boşluk da dolduruldu, artık +10 üretim kapasitesi veriyor.
     id: "usta_eli", zorluk: "normal", kontrolAni: "herhangi", meslekler: ["Zanaatkâr"],
     baslik: { tr: "Usta Eli", en: "The Master's Hand" },
-    aciklama: { tr: "Üretim kapasiteni 70'e çıkar.", en: "Raise your production capacity to 70." },
-    kosul: (s) => (s.uretim_kapasitesi ?? 0) >= 70,
+    aciklama: { tr: "Üretim kapasiteni 25'e çıkar.", en: "Raise your production capacity to 25." },
+    kosul: (s) => (s.uretim_kapasitesi ?? 0) >= 25,
   },
   {
     id: "loncanin_guveni", zorluk: "normal", kontrolAni: "herhangi", meslekler: ["Zanaatkâr"],
@@ -471,10 +482,13 @@ export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
     kosul: (s) => s.un >= 65,
   },
   {
+    // 2026-09 hayat amacı dengesi: uretim_kapasitesi eşiği 95→55 (bkz. usta_eli
+    // notu — 95 yapısal olarak erişilemezdi). ün≥95 zaten tek başına aşırı
+    // zor olduğu için amaç yine de "zor" tier'ın en üstünde kalıyor.
     id: "sahesinde_efsane", zorluk: "zor", kontrolAni: "herhangi", meslekler: ["Zanaatkâr"],
     baslik: { tr: "Alanında Efsane", en: "A Legend of the Craft" },
-    aciklama: { tr: "Şöhretin 95'i, üretim kapasiten 95'i geçsin; loncabaşınla ilişkin de güçlü kalsın (55+).", en: "Reach fame above 95 with production capacity above 95 — and stay in your guildmaster's good graces (bond 55+)." },
-    kosul: (s) => s.un >= 95 && (s.uretim_kapasitesi ?? 0) >= 95 && s.patron_iliski >= 55,
+    aciklama: { tr: "Şöhretin 95'i, üretim kapasiten 55'i geçsin; loncabaşınla ilişkin de güçlü kalsın (55+).", en: "Reach fame above 95 with production capacity above 55 — and stay in your guildmaster's good graces (bond 55+)." },
+    kosul: (s) => s.un >= 95 && (s.uretim_kapasitesi ?? 0) >= 55 && s.patron_iliski >= 55,
   },
   {
     id: "loncabasi", zorluk: "zor", kontrolAni: "herhangi", meslekler: ["Zanaatkâr"],
@@ -483,16 +497,20 @@ export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
     kosul: (s) => s.rutbe_seviye >= 5 && s.yonetim_iliski >= 50,
   },
   {
+    // 2026-09 hayat amacı dengesi: uretim_kapasitesi eşiği 100 (tavan)→65 —
+    // gerçek tavan olay+kariyer kaynaklarıyla neredeyse hiç görülmüyordu
+    // (bkz. usta_eli notu). 2+ mülk + borçsuz şartları hâlâ ayrıca zor.
     id: "atolye_imparatorlugu", zorluk: "zor", kontrolAni: "herhangi", meslekler: ["Zanaatkâr"],
     baslik: { tr: "Atölye İmparatorluğu", en: "Workshop Empire" },
-    aciklama: { tr: "Üretim kapasiteni tavana (100) çıkar ve en az 2 piyasa mülkü işlet — hiç tefeciye muhtaç kalmadan.", en: "Max out your production capacity (100) and run at least 2 market properties — without ever needing the moneylender." },
-    kosul: (s) => (s.uretim_kapasitesi ?? 0) >= 100 && (s.mulkler?.length ?? 0) >= 2 && borcsuz(s),
+    aciklama: { tr: "Üretim kapasiteni 65'e çıkar ve en az 2 piyasa mülkü işlet — hiç tefeciye muhtaç kalmadan.", en: "Raise your production capacity to 65 and run at least 2 market properties — without ever needing the moneylender." },
+    kosul: (s) => (s.uretim_kapasitesi ?? 0) >= 65 && (s.mulkler?.length ?? 0) >= 2 && borcsuz(s),
   },
   {
+    // 2026-09 hayat amacı dengesi: uretim_kapasitesi eşiği 70→45 (bkz. usta_eli notu).
     id: "zanaat_rekabeti", zorluk: "zor", kontrolAni: "herhangi", meslekler: ["Zanaatkâr"],
     baslik: { tr: "Rakipsiz Usta", en: "The Unrivaled Master" },
-    aciklama: { tr: "Bir rakip zanaatkârı pazardan sil; bunu üretim kapasiten 70+, şöhretin 70+ iken başar.", en: "Wipe a rival craftsman off the market — with production capacity 70+ and fame 70+." },
-    kosul: (s) => yenilenRakip(s) >= 1 && (s.uretim_kapasitesi ?? 0) >= 70 && s.un >= 70,
+    aciklama: { tr: "Bir rakip zanaatkârı pazardan sil; bunu üretim kapasiten 45+, şöhretin 70+ iken başar.", en: "Wipe a rival craftsman off the market — with production capacity 45+ and fame 70+." },
+    kosul: (s) => yenilenRakip(s) >= 1 && (s.uretim_kapasitesi ?? 0) >= 45 && s.un >= 70,
   },
 ];
 
@@ -625,9 +643,9 @@ export const AMAC_ILERLEME: Record<
   sarhos_ama_ayakta: { hedef: 67, metrik: (s) => s.yas },
   sahesinde_efsane: { hedef: 95, metrik: (s) => s.un },
   loncabasi: { hedef: 5, metrik: (s) => s.rutbe_seviye },
-  atolye_imparatorlugu: { hedef: 100, metrik: (s) => s.uretim_kapasitesi ?? 0 },
+  atolye_imparatorlugu: { hedef: 65, metrik: (s) => s.uretim_kapasitesi ?? 0 },
   zanaat_rekabeti: { hedef: 1, metrik: (s) => yenilenRakip(s) },
-  usta_eli: { hedef: 70, metrik: (s) => s.uretim_kapasitesi ?? 0 },
+  usta_eli: { hedef: 25, metrik: (s) => s.uretim_kapasitesi ?? 0 },
   loncanin_guveni: { hedef: 4, metrik: (s) => s.rutbe_seviye },
   tanidik_zanaatkar: { hedef: 65, metrik: (s) => s.un },
 };
