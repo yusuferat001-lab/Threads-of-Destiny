@@ -248,10 +248,14 @@ describe("Mesleğe Yatkınlık Kademeleri (2026-09 sonu)", () => {
     // yapıp Vicdanlı+Hırslı çıkana kadar üretmek yerine, motorun gerçek akışını
     // (createCharacter → kişilik ataması + bonus uygulaması) `Math.random`
     // sabitlemeden doğrudan gözlemlemek için yardımcı bir döngü kullanıyoruz.
+    // "Obur" da gayrimenkulBonusu taşır (-0.02) — Vicdanlı ile eşleşirse birbirini
+    // götürüp testi rastgele başarısız kılabilir (§41 kişilik eşleşme kanıtlanmış
+    // sorunu, tıpkı createCharacter'da gözlemlenen Vicdanlı+Obur=0 birleşimi gibi);
+    // bu eşleşmeyi eleyerek testi deterministik kılıyoruz.
     let bulundu: typeof stateBonus | null = null;
     for (let i = 0; i < 500 && !bulundu; i++) {
       const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
-      if (s.kisilik.includes("Vicdanlı")) bulundu = s;
+      if (s.kisilik.includes("Vicdanlı") && !s.kisilik.includes("Obur")) bulundu = s;
     }
     expect(bulundu).toBeTruthy();
     expect(bulundu!.gayrimenkul_getiri_bonusu).toBeGreaterThanOrEqual(0.02);
@@ -264,10 +268,14 @@ describe("Mesleğe Yatkınlık Kademeleri (2026-09 sonu)", () => {
     expect(hirsliState).toBeTruthy();
     expect(hirsliState!.etiketler.some((e) => e.startsWith("maas_carpani:"))).toBe(true);
 
+    // "Sivri Dilli" de patron ilişkisini etkiler (-5) — Sosyal ile eşleşirse
+    // (40+5-5=40) toplam etkiyi tam iptal edip testi rastgele başarısız kılabilir;
+    // bu eşleşmeyi eleyerek deterministik kılıyoruz (yukarıdaki Vicdanlı/Obur ile
+    // aynı kök sebep: iki kişilik özelliği aynı hedefi zıt yönde etkileyebiliyor).
     let sosyalState: typeof stateBonus | null = null;
     for (let i = 0; i < 500 && !sosyalState; i++) {
       const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
-      if (s.kisilik.includes("Sosyal")) sosyalState = s;
+      if (s.kisilik.includes("Sosyal") && !s.kisilik.includes("Sivri Dilli")) sosyalState = s;
     }
     expect(sosyalState).toBeTruthy();
     expect(sosyalState!.patron_iliski).toBeGreaterThan(40); // taban 40 + Sosyal'in +5'i
