@@ -369,7 +369,9 @@ export function olaySec(
   };
 
   const kisilikUygunSecenekler = olay.secenekler.filter(
-    (secenek) => !secenek.gerekliKisilik || state.kisilik.includes(secenek.gerekliKisilik)
+    (secenek) =>
+      (!secenek.gerekliKisilik || state.kisilik.includes(secenek.gerekliKisilik)) &&
+      (!secenek.gizliEgerYok || kilitNedeni(secenek, state) === null)
   );
   const eksenUygunSecenekler = kisilikUygunSecenekler.filter(secenekEksenUygunMu);
   // Güvenlik: eksen filtresi oyuncuyu seçeneksiz bırakırsa (iki uçlu koşullar örtüşmezse), filtre yok sayılır.
@@ -403,6 +405,7 @@ export function olaySec(
         basarisiz_sonuc: secenek.basarisizSonuc,
         kilitli: neden !== null,
         kilit_nedeni: neden ?? undefined,
+        hafif: secenek.hafifSecenek || undefined,
       };
     });
 

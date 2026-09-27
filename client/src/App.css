@@ -2218,6 +2218,34 @@ button.ikincil {
   font-style: italic;
 }
 
+/* Risksiz "vazgeç" tarzı çekilme şıkları (OlaySecenegi.hafifSecenek) — asıl 3 seçime
+   görsel öncelik verilsin diye mühür rozeti ve şans/etki çipleri olmadan, daha
+   sade/soluk bir ikincil bağlantı gibi gösterilir (2026-09 sonu, "4 şıklıları
+   3'e düşürelim" turu). */
+.secenek.secenek-hafif {
+  padding-left: 0.9rem;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: transparent;
+  border-style: dashed;
+  border-color: rgba(216, 201, 163, 0.35);
+  box-shadow: none;
+  opacity: 0.72;
+}
+.secenek.secenek-hafif::before {
+  display: none;
+}
+.secenek.secenek-hafif:hover:not(:disabled),
+.secenek.secenek-hafif:focus-visible {
+  opacity: 1;
+  border-color: var(--renk-altin);
+  transform: none;
+}
+.secenek.secenek-hafif .secenek-metin {
+  font-size: 0.85rem;
+}
+
 .haberler-paneli {
   margin-bottom: 1rem;
 }
@@ -5600,14 +5628,30 @@ button.ikincil {
  * sadece telefonu ayrı tutuyor. Telefonda tek sütuna inilir ve sayfa doğal olarak kayabilir
  * (üç panelin tüm içeriğini bir telefon ekranına sığdırmak, kaydırmadan, gerçekçi değil). */
 @media (max-width: 767px) {
-  /* Mobil tek-ekran (100vh) dönüşümü: mobil artık masaüstünün zaten kullandığı
-     kilitli-viewport modelini birebir devralıyor (height:100dvh; overflow:hidden,
-     bkz. yukarıdaki masaüstü kuralı) — sayfa asla dikey kaymıyor, "olay sonucunda
-     ekranın zıplaması" sorunu buradan çözülüyor. Eskiden burada height:auto/
-     overflow:visible/display:block ile bu kilit bilerek gevşetiliyordu; artık
-     yalnızca padding'i mobile göre küçültüyoruz. */
+  /* Mobil tek-ekran (100vh) dönüşümü: SADECE Oyun/Sonuç (`.oyun-kapsayici-tam-kilitli`,
+     App.tsx'te ekran==='oyun'||'sonuc' iken eklenir) masaüstünün zaten kullandığı
+     kilitli-viewport modelini devralır (height:100dvh; overflow:hidden) — sayfa asla
+     dikey kaymıyor, "olay sonucunda ekranın zıplaması" sorunu buradan çözülüyor.
+     TAM_EKRAN_GRUBU'nun diğer üyeleri (Yatırım/Gelir&Gider/Sosyalleş/Mağaza/Aile/
+     Evlilik) BU kilidi almıyor — onlar mobilde doğal sayfa kayması gerektiriyor
+     (`.ekran-tam-sayfa`/`.tam-sutun`/`.tam-kaydirilan` zaten kendi mobil kurallarında
+     height:auto/overflow:visible'a gevşiyor, ama dıştaki `.oyun-kapsayici-tam` kilitli
+     kalırsa bu gevşeme boşa gidiyor, taşan içerik kırpılıp hiç kaydırılamıyordu —
+     "aile/yatırım'da aşağı kayma çalışmıyor" bugu buradan geliyordu). Bu yüzden temel
+     sınıf gevşek (height:auto/overflow:visible/display:block), yalnız `-kilitli` üye
+     tekrar sıkılaştırıyor. */
   .oyun-kapsayici-tam {
     padding: 0.4rem 0.4rem 0;
+    height: auto;
+    overflow: visible;
+    display: block;
+  }
+
+  .oyun-kapsayici-tam-kilitli {
+    height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
 
   .oyun-ekrani {
@@ -5989,6 +6033,45 @@ button.ikincil {
     .canli-skor-rozeti {
       animation: none;
     }
+  }
+
+  /* ---- Alt ekranlarda (Yatırım/Gelir&Gider/Sosyalleş/Mağaza/Aile/Kariyer/Evlilik)
+     büyük ✕ ile Oyun'a dönüş (kullanıcı isteği: "ana ekrana dönüş kolay olsun") ----
+     Üst-sağ köşenin en belirgin yerini alır (ayar dişlisinin daha önce durduğu tam
+     nokta); ayar dişlisi + para rozeti bunun altına, bir satır aşağı kayar ("para
+     ayarlar gibi kaysın aşağıya") — ikisi çakışmadan aynı köşeyi paylaşır. */
+  .ekran-kapat-buton {
+    position: fixed;
+    top: 0.28rem;
+    right: 0.3rem;
+    z-index: 45;
+    width: 2.15rem;
+    height: 2.15rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    font-size: 1.2rem;
+    line-height: 1;
+    color: #f0e6d2;
+    background: rgba(20, 15, 10, 0.72);
+    border: 1px solid var(--renk-kahve-kenar);
+    border-radius: 50%;
+    box-shadow: var(--golge-derin);
+  }
+  .ekran-kapat-buton:hover:not(:disabled),
+  .ekran-kapat-buton:focus-visible {
+    background: rgba(43, 29, 19, 0.92);
+    border-color: var(--renk-kahve-vurgu);
+    transform: none;
+  }
+
+  .oyun-kapsayici:has(.ekran-kapat-buton) > .ayar-ac-buton {
+    top: 2.7rem;
+    right: 0.35rem;
+  }
+  .oyun-kapsayici:has(.ekran-kapat-buton) > .oyun-para-rozeti {
+    top: 2.75rem;
   }
 
   /* ---- Alt gezinme çubuğu (AltGezinme.tsx) ---- */

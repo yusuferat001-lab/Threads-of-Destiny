@@ -709,6 +709,8 @@ export interface Secenek {
   basarisiz_sonuc: SonucEtkisi;
   kilitli: boolean;
   kilit_nedeni?: string;
+  /** Bkz. OlaySecenegi.hafifSecenek — istemci bu şıkkı küçük/ikincil bir bağlantı olarak gösterir. */
+  hafif?: boolean;
 }
 
 export interface SenaryoResponse {

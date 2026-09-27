@@ -245,6 +245,12 @@ const ALT_GEZINME_EKRANLARI: Ekran[] = [
   'evlilik',
 ];
 
+/** Alt gezinme çubuğundan (ya da "Diğer" sheet'inden) açılan 7 alt ekran — Oyun/Sonuç
+ * hariç ALT_GEZINME_EKRANLARI. Sabit para rozeti ZATEN bu ekranlarda görünüyordu (aşağıda);
+ * mobilde büyük ✕ kapatma butonu da (kullanıcı isteği: "ana ekrana dönüş kolay olsun")
+ * aynı listeyi kullanıyor — her birinin "Geri Dön" butonuyla birebir aynı işi yapar. */
+const ALT_EKRAN_GRUBU: Ekran[] = ['yatirim', 'sosyallesme', 'magaza', 'aile', 'kariyer', 'finans', 'evlilik'];
+
 /** Geri bildirim mesajlarına eklenen uygulama sürümü — bir hata raporunun hangi build'e
  * ait olduğunu ayırt etmek için. Yeni bir sürüm çıkınca elle güncelle. */
 const APP_SURUM = '1.0.0';
@@ -1453,6 +1459,12 @@ function App() {
       className={[
         'oyun-kapsayici',
         TAM_EKRAN_GRUBU.includes(ekran) ? 'oyun-kapsayici-tam' : null,
+        // Yalnız Oyun/Sonuç tek-ekran (100vh, hiç kaymaz) kilidini kullanır. Diğer
+        // TAM_EKRAN_GRUBU ekranları (Yatırım/Gelir&Gider/Sosyalleş/Mağaza/Aile/Evlilik)
+        // mobilde DOĞAL sayfa kayması gerektiriyor — App.css'teki mobil override bu
+        // sınıfa bakarak ikisini ayırıyor (aksi halde dıştaki kilit onların içindeki
+        // "kendi içinde kay" gevşetmesini boşa çıkarıp aşağı kaymayı tamamen engelliyordu).
+        ekran === 'oyun' || ekran === 'sonuc' ? 'oyun-kapsayici-tam-kilitli' : null,
         // Çağa göre vurgu rengi (§ CLAUDE.md "Seçenek 2"): Sanayi Devrimi'nde
         // vurgu paleti soğuk pirinç/turkuaza kayar (App.css `.tema-sanayi`).
         // Orta Çağ ve henüz çağ seçilmemiş ekranlar (giriş menüsü) varsayılan
@@ -1474,14 +1486,29 @@ function App() {
       {/* Oyun-içi yan ekranlarda (Yatırım/Sosyalleş/Mağaza/Aile/Kariyer/Gelir&Gider/Evlilik)
          paranın her zaman görünür olması için sabit bir rozet. Ana oyun/sonuç ekranında
          zaten UstSerit'te para modülü var, orada tekrar göstermeyiz. */}
-      {karakter &&
-        (['yatirim', 'sosyallesme', 'magaza', 'aile', 'kariyer', 'finans', 'evlilik'] as Ekran[]).includes(
-          ekran,
-        ) && (
-          <div className="oyun-para-rozeti" aria-label={m.iyKendiParan}>
-            💰 {formatPara(karakter.para)} {karakter.para_birimi}
-          </div>
-        )}
+      {karakter && ALT_EKRAN_GRUBU.includes(ekran) && (
+        <div className="oyun-para-rozeti" aria-label={m.iyKendiParan}>
+          💰 {formatPara(karakter.para)} {karakter.para_birimi}
+        </div>
+      )}
+      {/* Alt gezinme çubuğundan açılan ekranlarda ana ekrana dönüş kolay olsun diye büyük
+         bir ✕ (mobil, kullanıcı isteği) — her ekranın kendi "Geri Dön" butonuyla birebir
+         aynı işi yapar, sadece her zaman aynı köşede ve tek dokunuşla erişilir. Bu köşeyi
+         alması için ayar dişlisi + para rozeti aşağı kayar (App.css, aynı istek). */}
+      {mobil && karakter && ALT_EKRAN_GRUBU.includes(ekran) && (
+        <button
+          type="button"
+          className="ekran-kapat-buton"
+          onClick={() => {
+            setIslemMesaji(null);
+            setEkran('oyun');
+          }}
+          aria-label={m.agKapat}
+          title={m.agKapat}
+        >
+          ✕
+        </button>
+      )}
       {mobil && karakter && ALT_GEZINME_EKRANLARI.includes(ekran) && (
         <AltGezinme
           ekran={ekran}
@@ -2238,7 +2265,13 @@ function App() {
                       return (
                         <button
                           key={i}
-                          className={secenek.kilitli ? 'secenek kilitli' : 'secenek'}
+                          className={[
+                            'secenek',
+                            secenek.kilitli ? 'kilitli' : null,
+                            secenek.hafif && !secenek.kilitli ? 'secenek-hafif' : null,
+                          ]
+                            .filter(Boolean)
+                            .join(' ')}
                           disabled={yukleniyor || secenek.kilitli}
                           onClick={() => secenekSec(i)}
                         >
@@ -2246,7 +2279,7 @@ function App() {
                             {secenek.kilitli ? '🔒 ' : ''}
                             {secenek.metin}
                           </span>
-                          {!secenek.kilitli && !tepkiModu && (
+                          {!secenek.kilitli && !tepkiModu && !secenek.hafif && (
                             <span className="secenek-meta">
                               <TahminOzeti tahminler={tahminler} />
                             </span>
@@ -2457,7 +2490,13 @@ function App() {
                       return (
                         <button
                           key={i}
-                          className={secenek.kilitli ? 'secenek kilitli' : 'secenek'}
+                          className={[
+                            'secenek',
+                            secenek.kilitli ? 'kilitli' : null,
+                            secenek.hafif && !secenek.kilitli ? 'secenek-hafif' : null,
+                          ]
+                            .filter(Boolean)
+                            .join(' ')}
                           disabled={yukleniyor || secenek.kilitli}
                           onClick={() => sosyalOlaySecim(i)}
                         >
@@ -2465,7 +2504,7 @@ function App() {
                             {secenek.kilitli ? '🔒 ' : ''}
                             {secenek.metin}
                           </span>
-                          {!secenek.kilitli && !sosyalOlayTepkiModu && (
+                          {!secenek.kilitli && !sosyalOlayTepkiModu && !secenek.hafif && (
                             <span className="secenek-meta">
                               <TahminOzeti tahminler={tahminler} />
                             </span>
