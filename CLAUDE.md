@@ -198,8 +198,8 @@ Kaynak: [server/src/types.ts](server/src/types.ts). Tek kaynak — client `types
 ### Ev/yaşam/finans
 | Alan | Açıklama |
 |---|---|
-| `konut_id` | Varsayılan `basit_barinak` (§16) |
-| `yasam_secimi_id` | Varsayılan `ucuza_ye` (§16) |
+| `konut_id` | Varsayılan `mutevazi_yuva` (§16) |
+| `yasam_secimi_id` | Varsayılan `sade_sofra` (§16) |
 | `hazard_el_sayisi` | Hazard (zar) mini-oyununda oynanan toplam el; her 4 elde bir %45 "rakip bıçak çekti" için (§13) |
 | `uc_kagitci_oyun_sayisi` | Üç Kağıtçı mini-oyununda oynanan toplam el (istatistik) |
 | `mulkler: MulkTuru[]` | Sahip olunan piyasa mülkleri (her türden en fazla 1) — `"ciftlik"\|"han"\|"demirci"\|"kervan"\|"karaborsa"` |
@@ -570,7 +570,7 @@ Ayrıca her mülk türünün kendine özel, normal havuzdan tamamen dışlanmı�
 
 **Kriz/Altın Çağ** (`kriz_baslat` ile başlar, `bitisYili`'ye kadar her yıl): Kıtlık → sağlık **-1**/yıl (yama #1'de -2→-1; `dunyaFinansEtkileri` metni de -1'e güncellendi); İsyan → para-3/yıl, un-1/yıl; Altın Çağ → para+4/yıl, mutluluk+1/yıl. Küçük kriz süresi de kısaldı: 2-3 → **1-2 yıl** (`KUCUK_KRIZ_SURE_MIN_YIL=1`).
 
-**Konut/yaşam tarzı:** Turu tüketmez. Konutta **daha pahalıya** geçişte `TASINMA_MALIYETI=3` tek seferlik ücret (ucuza geri çekilme ücretsiz); yaşam tarzı değişimi her zaman ücretsiz/anlık. Yeni karakter varsayılanı 2026-09 ekonomi dengesinde **`normal_ev` + `normal_ye`** — ikisi de sağlık/ün açısından TAMAMEN NÖTR: ev/sofra ekranını hiç açmayan sıradan oyuncu ilk 15-20 yıl boyunca sessizce sağlık/itibar kaybetmesin. **Başlangıç parası (2026-09 ikinci denge turu): `Math.max(5, Math.min(40, 10 + aile.para + yerlesim.para))`** — taban 12→10, aile etkisi artık dar bir ~±20 bandında (eskiden +80/-25 gibi aşırı uçlar vardı), sonuç [5, 40]'a kırpılır (taban 5'te sabit kalıyor — en fakir kökende bile temel bir aksiyonu karşılayacak kadar para). En ucuz 2 konut/sofra kademesinin cezası da yumuşatıldı: -4/-3 → **-2/yıl** (§16).
+**Konut/yaşam tarzı:** Turu tüketmez. Konutta **daha pahalıya** geçişte `TASINMA_MALIYETI=3` tek seferlik ücret (ucuza geri çekilme ücretsiz); yaşam tarzı değişimi her zaman ücretsiz/anlık. Yeni karakter varsayılanı **`mutevazi_yuva` + `sade_sofra`** — ikisi de sağlık/ün açısından TAMAMEN NÖTR: ev/sofra ekranını hiç açmayan sıradan oyuncu ilk 15-20 yıl boyunca sessizce sağlık/itibar kaybetmesin. **Başlangıç parası (2026-09 ikinci denge turu): `Math.max(5, Math.min(40, 10 + aile.para + yerlesim.para))`** — taban 12→10, aile etkisi artık dar bir ~±20 bandında (eskiden +80/-25 gibi aşırı uçlar vardı), sonuç [5, 40]'a kırpılır (taban 5'te sabit kalıyor — en fakir kökende bile temel bir aksiyonu karşılayacak kadar para). **Faz 9 (2026-09 sonu, kullanıcı isteği "ev/yaşamları bir adet azalt, her kademe kendi kişiliğini taşısın"):** her iki sistem 6 kademeden **5**'e indirildi (eski iki dip kademe tek bir "dip" kademede birleşti) ve her kademeye kendine has bir kişilik verildi — bkz. §16 için tam tablo ve isimlendirme (kademe başına bir "birincil" stat + ±3'ü geçmeyen iki "ikincil" stat; şöhret bilinçli olarak cimri tutuldu, yalnız en tepedeki tek kademede büyük bir sıçrama yapar). Görüntülenen ad/simge artık yalnız çağa değil **çağ+ülkeye** göre de değişir (`bolgeTema.ts` `konutGoruntusuGetir`/`yasamGoruntusuGetir`, §19).
 
 **Skor** (2026-09 ikinci reform — toplamsal formüle geçildi, `hesaplaSkorKirilimi`/`hesaplaSkor`, [stateManager.ts](server/src/game/stateManager.ts); istemci aynası [client/src/skor.ts](client/src/skor.ts)): Eski çarpımsal `yaş×şöhret×servetFaktörü×amaçÇarpanı` formülü (yama #1) ahlak/mutluluk/rütbe'yi hiç kullanmıyordu ve tek bir zayıf eksen (ör. şöhret=0) skoru neredeyse sıfırlıyordu — gerçek liderlik tablosu verisiyle doğrulandı (top-15'in TAMAMI düşük-ahlaklı ama şöhret=100 karakterlerdi). Yeni model: her eksen **kendi puanını bağımsız üretir, hepsi TOPLANIR**, sonra tik'ler ve amaç çarpanı uygulanır — bu sayede oyuncuya ölüm ekranında **eksen eksen kırılım** gösterilebiliyor.
 ```
@@ -723,28 +723,34 @@ Kaynak: her kategoride taban `rastgele(-5..+5)`, + seçilen 2 kişilik özelliğ
 
 **Sinerji bonusu (2026-09, Faz 2, `SINERJI_BONUSU=13`):** `yatkinlikHesapla` içinde, doğan karakterin ailesinin `devamMeslegi`'si (varsa) `MESLEK_KATEGORI` ile bir kategoriye çevrilir; bölgenin 4 meslek kategorisi arasındaki **en yüksek değerli (baskın) kategori** bulunur. İkisi eşleşiyorsa (ör. Selçuklu'da `din_adami` ailesi, bölgenin baskın kategorisi de `din`) o kategoriye ek **+13** eklenir, `yatkinlik_kaynaklari`'na `"<bölge> + <aile> sinerjisi"` kaydı düşer — "bu bölgede bu aile mesleğinden gelmek" doğal bir avantaj olsun diye. `devamMeslegi`'i olmayan ailelerde (kölecilik, soylu, kumarbaz vb.) tetiklenmez.
 
-### Konut (6 kademe, `konut_id`, turu tüketmeden değiştirilebilir) — 2026-09 ekonomi dengesi + ekonomi sıkılaştırma turu
-| id (varsayılan→**normal_ev**) | Kira/yıl | Sağlık/yıl | Mutluluk/yıl | Ün/yıl |
-|---|---|---|---|---|
-| basit_barinak | 1 | **-2** | **-2** | **-2** |
-| ahsap_ev | 3 | **-1** | **+1** | **-1** |
-| normal_ev *(varsayılan)* | 5 | – | +1 | – |
-| tas_ev | 10 | +1 | +1 | +2 |
-| konak | 19 | +2 | +2 | +4 |
-| sato | 32 | +3 | +4 | +6 |
+### Konut (5 kademe, `konut_id`, turu tüketmeden değiştirilebilir) — Faz 9 (2026-09 sonu)
 
-Taşınma ücreti (sadece daha pahalıya geçişte): **3**. `normal_ev` bilinçli olarak nötr (varsayılan) bırakıldı; `ahsap_ev` ekonomi sıkılaştırma turunda tek-yönlü kötüden gerçek bir **takasa** çevrildi (ucuz + mutlu ama sağlık/statüden ödün ver) — "hangisini seçsem?" gerçek bir karar olsun diye (kullanıcı isteği).
+**Faz 9 (kullanıcı isteği: "ev/yaşamları bir adet azalt, her kademe kendi kişiliğini taşısın"):** eski 6 kademe (Basit Barınak/Ahşap Ev/Normal Ev/Taş Ev/Konak/Şato) hep ÜÇ statı BİRLİKTE aynı yönde büyütüp küçültüyordu — hiçbir kademenin kendine has bir kimliği yoktu. 5 kademeye indirildi: eski en alttaki iki kademe TEK bir "dip" kademede birleşti, üstteki üç kademe artık birbirinden gerçekten farklı bir kişilik taşıyor. Birkaç turluk kullanıcı geri bildirimiyle kalibre edildi: sağlık/mutluluk ucuza kazanılabilirken (orta kademede bile +1..+3), **şöhret bilinçli olarak cimri tutuldu** — üst-orta kademede en fazla +1, yalnız en pahalı TEK kademede (+5) gerçek bir sıçrama yapıyor; ucuz şöhret yok, zirve şöhret pahalı ve nadir. Her kademenin ikincil (baskın olmayan) etkileri ±3'ü hiç geçmez.
 
-### Yaşam Tarzı (6 kademe, `yasam_secimi_id`, ücretsiz/anlık değiştirilebilir) — 2026-09 ekonomi dengesi
-`YasamSecenegiTanimi`'ye `unEtkisiYillik` eklendi (`pasifEkonomiUygula`'da konut ünüyle aynı satırda uygulanır).
-| id (varsayılan→**normal_ye**) | Maliyet/yıl | Sağlık/yıl | Mutluluk/yıl | Ün/yıl |
+| id | Kira/yıl | Sağlık/yıl | Mutluluk/yıl | Şöhret/yıl |
 |---|---|---|---|---|
-| copten_topla | 0 | **-2** | **-2** | **-2** |
-| ucuza_ye | 2.5 | **-2** | **-2** | **-2** |
-| normal_ye *(varsayılan)* | 5 | – | – | – |
-| iyi_ye | 8 | +2 | +1 | – |
-| kaliteli_ye | 13 | +3 | +2 | – |
-| ziyafet_gibi_ye | 20 | +3 | +4 | +1 |
+| nemli_baraka | 1 | **-4** | **-3** | **-1** |
+| mutevazi_yuva *(varsayılan)* | 4 | – | +1 | – |
+| sicak_ocak | 8 | +1 | +2 | +1 |
+| saglam_konut | 14 | +3 | +2 | +1 |
+| gorkemli_konak | 23 | +3 | +3 | +5 |
+
+Taşınma ücreti (sadece daha pahalıya geçişte): **3**. `mutevazi_yuva` bilinçli olarak nötr (varsayılan) bırakıldı — ev ekranını hiç açmayan oyuncu ilk 15-20 yıl sessizce sağlık/itibar kaybetmesin. `KONUT_SAHIBI_MIN_KADEME=2` (Sıcak Ocak ve üstü "sahiden yerleşmiş" sayılır, `konut_sahibi` hayat amacı §18). Eski canlı oturumlardaki 6 kademeli id'ler `eskiKayitGocu` ile buradaki en yakın karşılığa taşınır (basit_barinak/ahsap_ev→nemli_baraka, normal_ev→mutevazi_yuva, tas_ev→sicak_ocak, konak→saglam_konut, sato→gorkemli_konak; bkz. stateManager.ts).
+
+**Görüntülenen ad/simge çağ VE bölgeye göre değişir** (`client/src/bolgeTema.ts` `KONUT_TEMALARI`/`konutGoruntusuGetir`, §19'daki desenle aynı — anahtar `` `${cag}|${bolge}` ``, `server/src/data/sosyallesmeAksiyonlari.ts` `BOLGE_ICECEKLERI` ile aynı kalıp): yukarıdaki tablo yalnız MEKANİK (kira/etki) taban değeri + jenerik yedek ad; oyuncuya gösterilen gerçek isim döneme özgüdür — ör. `gorkemli_konak` Orta Çağ Fransa'da "Loire Şatosu", Sanayi Devrimi Osmanlı'da "Boğaziçi Yalısı", Orta Çağ Selçuklu'da "Sırçalı Köşk" olarak görünür; `sicak_ocak` Sanayi Devrimi Rusya'da "Oymalı İzba", Orta Çağ Kutsal Roma'da "Çinili Sobalı Ev" olur. 9 bölge×çağ kombinasyonunun (8 güncel + `Eyyubiler`, eski kayıt uyumu) her biri 5 kademenin hepsi için ayrı bir isim taşır.
+
+### Yaşam Tarzı (5 kademe, `yasam_secimi_id`, ücretsiz/anlık değiştirilebilir) — Faz 9 (2026-09 sonu)
+Konutla AYNI turda, aynı felsefeyle yeniden tasarlandı: Keyifli Sofra doyurucu değil NEŞELİ (yüksek mutluluk, düşük şöhret), Dengeli Sofra besleyici/SAĞLIKLI, Şölen Sofrası hem en pahalı hem tartışmasız en iyisi. `YasamSecenegiTanimi`'ye `unEtkisiYillik` (`pasifEkonomiUygula`'da konut ünüyle aynı satırda uygulanır).
+
+| id | Maliyet/yıl | Sağlık/yıl | Mutluluk/yıl | Şöhret/yıl |
+|---|---|---|---|---|
+| bayat_artik | 0 | **-4** | **-3** | **-1** |
+| sade_sofra *(varsayılan)* | 5 | – | – | – |
+| keyifli_sofra | 9 | +1 | +3 | – |
+| dengeli_sofra | 14 | +3 | +2 | +1 |
+| solen_sofrasi | 21 | +3 | +3 | +4 |
+
+Eski canlı oturumlardaki id'ler `eskiKayitGocu` ile taşınır (copten_topla/ucuza_ye→bayat_artik, normal_ye→sade_sofra, iyi_ye→keyifli_sofra, kaliteli_ye→dengeli_sofra, ziyafet_gibi_ye→solen_sofrasi). **Görüntülenen ad/simge de konut gibi çağ+bölgeye göre değişir** (`YASAM_TEMALARI`/`yasamGoruntusuGetir`, aynı dosya) — ör. `keyifli_sofra` Orta Çağ Fransa'da "Şaraplı Güveç", Sanayi Devrimi İngiltere'de "Çay Saati Tatlıları"; `solen_sofrasi` Orta Çağ Selçuklu'da "Sultan Sofrası", Sanayi Devrimi Rusya'da "Çariçe Sofrası" olur.
 
 **Başlangıç statları** (`createCharacter`, aile/yerleşim bonusları ayrıca eklenir — **2026-09 ikinci denge turu**, kullanıcı isteği): mutluluk **50** + aile etkisi (yeni: her aile artık mutluluğu da ~±12 bandında etkiler, eskiden hiçbiri etkilemiyordu), ahlak **45** (eski 50) + aile etkisi (~±20 bandı, eski uçlar +25/-30'du), şöhret(un) **20** + aile etkisi (~±20 bandı, eski uçlar +40/-25'ti), sağlık **80** (eski 100) + aile etkisi (~±16 bandı) + yerleşim etkisi, para **`max(5, min(40, 10 + aile.para + yerlesim.para))`** (eski taban 12/tavan 35; aile etkisi artık ~±20 bandı, eski uçlar +80/-25'ti). Tüm aile etkileri artık ortak, dar bantlarda tutuluyor (§16) — hiçbir aile aşırı uçta durmuyor ama hiçbiri de etkisiz kalmıyor.
 
@@ -946,7 +952,7 @@ Mobil (`max-width:767px`) için bu üç sınıfın (`.ekran-tam-sayfa`/`.tam-gov
 | `skor.ts` | Sunucudaki toplamsal skor formülünün (§18) istemci aynası — `hesaplaSkorKirilimi`/`hesaplaSkor`. `gecmisHayatlar.ts`, `basarimSistemi.ts` ve ölüm ekranındaki eksen kırılım paneli (`App.tsx`) buradan besleniyor — tek bir yerde tutulup 3 ayrı kopyanın birbirinden sapmasının önüne geçildi |
 | `envanter.ts` | Gizemli eşya etiketi → görüntülenecek ad/ikon/açıklama (`magaza_envanteri` için ayrıca §26) |
 | `format.ts` | `formatPara()` — para tutarlarını (enflasyon artık ondalık üretebildiği için) en fazla 2 ondalıkla, gereksiz sıfırlar kırpılarak gösterir (§13/§27) |
-| `bolgeTema.ts` | Bölgeye göre görsel tema; ayrıca `unUnvani` (ün → 8 kademeli ünvan), `aranmaYildiz` (suç seviyesi → 0-4 yıldız), `konutGoruntusuGetir` (konut kademesi+çağ → dönemsel ad/emoji) ve `meslekBinasiGetir` (meslek+çağ(+din_kultur) → sahnedeki işyeri binası ad/emoji) gibi sayı/id→gösterim dönüştürücüleri |
+| `bolgeTema.ts` | Bölgeye göre görsel tema; ayrıca `unUnvani` (ün → 8 kademeli ünvan), `aranmaYildiz` (suç seviyesi → 0-4 yıldız), `konutGoruntusuGetir`/`yasamGoruntusuGetir` (konut/sofra kademesi + çağ + bölge → dönemsel ad/emoji, Faz 9'da bölge boyutu eklendi, §16) ve `meslekBinasiGetir` (meslek+çağ(+din_kultur) → sahnedeki işyeri binası ad/emoji) gibi sayı/id→gösterim dönüştürücüleri |
 | `public/assets/sahne/<cag>/<tip>/{arka-plan,on-plan}.webp` | Opsiyonel bölge sahnesi görsel katmanları — `BolgeSahnesi` bunları önce arar, 404'te otomatik eski prosedürel SVG'ye döner (bkz. `public/assets/sahne/README.md`) |
 | `ses.ts` | Kısa sentezlenmiş geri bildirim sesleri (Web Audio, dosya kullanmaz) — seçim sonucunda çalar |
 | `muzik.ts` | Arka plan müziği denetleyicisi — `public/assets/muzik/` altındaki `.mp3`/`.ogg` dosyalarını mod bazlı (`menu`/`ortacag`/`sanayi`/`olum`) döngüde çalar, mod değişince yumuşak fade. Dosya yoksa (404) o parça sessizce atlanır. `App.tsx`'te bir `useEffect` [`ekran`, `karakter?.cag`, `muzikAcik`] değiştikçe `muzikModunuAyarla`'yı çağırır; Ayarlar → 🎵 Müzik toggle'ı `ayarlar.ts` `{muzik}` + `muzikSessizAyarla`. Parça dosyaları repoda (13 parça: menu×3, ortacag×3, sanayi×6, olum×1 — **hepsi kamu malı / CC0**, oyunda künye gerektirmez; hepsi ~96 kbps OGG + -16 LUFS, klasör ~34 MB); `public/assets/muzik/indir.sh` bunları Wikimedia Commons'tan (ABD askeri bando + Musopen PD Mark) yeniden çeker ve ffmpeg varsa aynı hedefe küçültür, `README.md`/`künye.txt` kaynakları listeler |

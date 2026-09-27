@@ -54,7 +54,7 @@ function rastgele<T>(arr: T[]): T {
 
 /**
  * tabanIndex: aramanın başlayacağı (ve asla altına inilmeyecek) kademe — gerçek bir oyuncu,
- * oyunun kendi varsayılanından (ör. "ucuza_ye") DAHA KÖTÜ bir kademeye (ör. "copten_topla")
+ * oyunun kendi varsayılanından (ör. "sade_sofra") DAHA KÖTÜ bir kademeye (ör. "bayat_artik")
  * bilerek geçmez; sadece borçluyken bilinçli olarak oraya çekilir (ayrı dal, aşağıda).
  */
 function enIyiKademe<T>(
@@ -126,12 +126,12 @@ async function yanEylemler(id: string, state: CharacterState, sayaclar: Sayaclar
   // 1) Konut & yaşam tarzı — servete göre her turda yeniden değerlendirilir.
   try {
     if (state.para < 0) {
-      if (state.konut_id !== "basit_barinak") await konutDegistir(id, "basit_barinak");
-      if (state.yasam_secimi_id !== "copten_topla") await yasamSecimiDegistir(id, "ucuza_ye");
+      if (state.konut_id !== "nemli_baraka") await konutDegistir(id, "nemli_baraka");
+      if (state.yasam_secimi_id !== "bayat_artik") await yasamSecimiDegistir(id, "bayat_artik");
     } else {
       const hedefKonut = enIyiKademe<KonutTanimi>(KONUTLAR, maasYillik, 0.18, (k) => k.kiraYillik, 0);
-      // tabanIndex:1 -> "copten_topla" (index 0) hiç düşünülmez; oyunun varsayılanı olan
-      // "ucuza_ye" (index 1) her zaman taban kabul edilir, bilerek daha kötüsüne inilmez.
+      // tabanIndex:1 -> "bayat_artik" (index 0) hiç düşünülmez; oyunun varsayılanı olan
+      // "sade_sofra" (index 1) her zaman taban kabul edilir, bilerek daha kötüsüne inilmez.
       const hedefYasam = enIyiKademe<YasamSecenegiTanimi>(YASAM_SECENEKLERI, maasYillik, 0.14, (y) => y.maliyetYillik, 1);
       if (hedefKonut.id !== state.konut_id) await konutDegistir(id, hedefKonut.id);
       if (hedefYasam.id !== state.yasam_secimi_id) await yasamSecimiDegistir(id, hedefYasam.id);

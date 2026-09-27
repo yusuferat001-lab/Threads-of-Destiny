@@ -1,8 +1,8 @@
 /**
  * "Temel ev + temel yemek" sabitken farklı OYUN TARZLARININ 5'er yıllık gelişimi.
  *
- * Kullanıcı isteği: oyunu en düşük konut (basit_barinak) + en düşük satın-alınan
- * yemek (ucuza_ye) kademesine KİLİTLEYEREK defalarca oyna; her tarz için tüm oyun
+ * Kullanıcı isteği: oyunu en düşük konut (nemli_baraka) + en düşük satın-alınan
+ * yemek (bayat_artik) kademesine KİLİTLEYEREK defalarca oyna; her tarz için tüm oyun
  * içi dinamikleri (şifa/mağaza, sosyalleşme, gayrimenkul+kendi işi, yeraltı zarı,
  * suç) kullan; sonra HER 5 YILDA BİR, tüm ömürlerin ortalamasını al: can, şöhret,
  * servet (para + gayrimenkul), ahlak, aranma, mutluluk, rütbe + hayatta kalma oranı.
@@ -13,7 +13,7 @@
  * Kullanım:  npx tsx scripts/simulateBazTarzlar.ts
  *   SIM_N=200          -> her (tarz × çağ × meslek) için ömür sayısı (varsayılan 120)
  *   SIM_TARZ=kumar,suc -> yalnız bu tarzlar
- *   SIM_KONUT=ahsap_ev / SIM_YASAM=copten_topla -> kilit kademelerini değiştir
+ *   SIM_KONUT=mutevazi_yuva / SIM_YASAM=sade_sofra -> kilit kademelerini değiştir
  * Çıktı: scripts/simulateBazTarzlar.sonuc.json (ham ömürler)
  *        scripts/simulateBazTarzlar.analiz.json (5'er yıl ortalama tablosu)
  *        + konsola özet tablo
@@ -52,8 +52,8 @@ import { CharacterState, Cag, Secenek } from "../src/types";
 
 const N_PER_GROUP = Number(process.env.SIM_N ?? 120);
 const MAX_TUR_GUARD = 400;
-const KILIT_KONUT = process.env.SIM_KONUT ?? "basit_barinak";
-const KILIT_YASAM = process.env.SIM_YASAM ?? "ucuza_ye";
+const KILIT_KONUT = process.env.SIM_KONUT ?? "nemli_baraka";
+const KILIT_YASAM = process.env.SIM_YASAM ?? "bayat_artik";
 
 // 5'er yıllık anlık-görüntü sınırları.
 const YAS_KILOMETRELER: number[] = [];

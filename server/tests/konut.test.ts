@@ -12,47 +12,47 @@ import { VARSAYILAN_KONUT_ID, TASINMA_MALIYETI } from "../src/data/konutlar";
 import { VARSAYILAN_YASAM_SECIMI_ID } from "../src/data/yasamSecenekleri";
 
 describe("konut sistemi (stateManager)", () => {
-  it("yeni karakter varsayılan konutta (Normal Ev) başlar", () => {
+  it("yeni karakter varsayılan konutta (Mütevazı Yuva) başlar", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     expect(state.konut_id).toBe(VARSAYILAN_KONUT_ID);
-    expect(VARSAYILAN_KONUT_ID).toBe("normal_ev"); // 2026-09: sağlık/ün açısından nötr varsayılan
+    expect(VARSAYILAN_KONUT_ID).toBe("mutevazi_yuva"); // 2026-09 Faz 9: sağlık/ün açısından nötr varsayılan
   });
 
   it("giderKalemleriHesapla konut kirasını döker", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.para = 1000;
-    konutDegistir(state, "konak");
+    konutDegistir(state, "gorkemli_konak");
     const gider = giderKalemleriHesapla(state);
-    expect(gider.konut).toBe(15); // konak kirası 15 (Faz 8 rebalansı); başlangıçta enflasyon 1 → çarpansız
+    expect(gider.konut).toBe(23); // görkemli konak kirası 23 (Faz 9 ladder'ı); başlangıçta enflasyon 1 → çarpansız
   });
 
-  it("basit barınakta sağlık zamanla azalır", () => {
+  it("nemli barakada sağlık zamanla azalır", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.para = 1000;
-    konutDegistir(state, "basit_barinak"); // en dibi açıkça seç
+    konutDegistir(state, "nemli_baraka"); // en dibi açıkça seç
     state.saglik = 80;
     pasifEkonomiUygula(state, 5);
-    expect(state.saglik).toBe(80 - 2 * 5); // 2026-09: dip kademe cezası -2/yıl
+    expect(state.saglik).toBe(80 - 4 * 5); // Faz 9: dip kademe cezası -4/yıl
   });
 
-  it("konakta ün zamanla artar", () => {
+  it("görkemli konakta ün zamanla artar", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.para = 1000;
-    konutDegistir(state, "konak");
+    konutDegistir(state, "gorkemli_konak");
     const oncekiUn = state.un;
     pasifEkonomiUygula(state, 5);
     expect(state.un).toBeGreaterThan(oncekiUn);
   });
 
-  it("normal evde sağlık/ün pasif etkisi yok", () => {
+  it("mütevazı yuvada sağlık/ün pasif etkisi yok", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.para = 1000;
-    state.yasam_secimi_id = "normal_ye"; // sağlık/mutluluk etkisi olmayan yaşam tarzı; sadece konut etkisini izole eder
-    // normal_ev artık varsayılan — ekstra konutDegistir gerekmez
+    state.yasam_secimi_id = "sade_sofra"; // sağlık/mutluluk etkisi olmayan yaşam tarzı; sadece konut etkisini izole eder
+    // mutevazi_yuva artık varsayılan — ekstra konutDegistir gerekmez
     const oncekiUn = state.un;
     const oncekiSaglik = state.saglik;
     pasifEkonomiUygula(state, 5);
@@ -68,7 +68,7 @@ describe("konut sistemi (stateManager)", () => {
   it("yetersiz parada taşınma hata fırlatır", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     state.para = 0;
-    expect(() => konutDegistir(state, "konak")).toThrow();
+    expect(() => konutDegistir(state, "gorkemli_konak")).toThrow();
   });
 
   it("geçersiz konut id'si hata fırlatır", () => {
@@ -80,46 +80,46 @@ describe("konut sistemi (stateManager)", () => {
   it("taşınma nakliye maliyetini düşer", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     state.para = 100;
-    konutDegistir(state, "tas_ev"); // normal_ev'den (varsayılan) daha pahalı kademe → nakliye ücreti biner
+    konutDegistir(state, "sicak_ocak"); // mutevazi_yuva'dan (varsayılan) daha pahalı kademe → nakliye ücreti biner
     expect(state.para).toBe(100 - TASINMA_MALIYETI);
-    expect(state.konut_id).toBe("tas_ev");
+    expect(state.konut_id).toBe("sicak_ocak");
   });
 
   describe("konut_surekli_yasadigi_yil (konut_sahibi amacı için süreklilik takibi)", () => {
-    it("yeni karakterde null'dır (normal_ev nitelikli banda girmez)", () => {
+    it("yeni karakterde null'dır (mutevazi_yuva nitelikli banda girmez)", () => {
       const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
       expect(state.konut_surekli_yasadigi_yil).toBeNull();
     });
 
-    it("nitelikli banda (Taş Ev+) girince sayaç o yıldan başlar", () => {
+    it("nitelikli banda (Sıcak Ocak+) girince sayaç o yıldan başlar", () => {
       const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
       state.para = 1000;
       state.yil = 1150;
-      konutDegistir(state, "tas_ev");
+      konutDegistir(state, "sicak_ocak");
       expect(state.konut_surekli_yasadigi_yil).toBe(1150);
     });
 
-    it("nitelikli bant İÇİNDE yükselmek (Taş Ev→Konak) sayacı bozmaz", () => {
+    it("nitelikli bant İÇİNDE yükselmek (Sıcak Ocak→Sağlam Konut) sayacı bozmaz", () => {
       const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
       state.para = 1000;
       state.yil = 1150;
-      konutDegistir(state, "tas_ev");
+      konutDegistir(state, "sicak_ocak");
       state.yil = 1153;
-      konutDegistir(state, "konak");
+      konutDegistir(state, "saglam_konut");
       expect(state.konut_surekli_yasadigi_yil).toBe(1150); // korunuyor, 1153 değil
     });
 
-    it("nitelikli bandın dışına (Normal Ev'e geri) çıkınca sayaç sıfırlanır", () => {
+    it("nitelikli bandın dışına (Mütevazı Yuva'ya geri) çıkınca sayaç sıfırlanır", () => {
       const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
       state.para = 1000;
       state.yil = 1150;
-      konutDegistir(state, "tas_ev");
+      konutDegistir(state, "sicak_ocak");
       state.yil = 1152;
-      konutDegistir(state, "normal_ev");
+      konutDegistir(state, "mutevazi_yuva");
       expect(state.konut_surekli_yasadigi_yil).toBeNull();
-      // tekrar taş eve dönünce sayaç YENİDEN başlar, eski yıl korunmaz
+      // tekrar sıcak ocağa dönünce sayaç YENİDEN başlar, eski yıl korunmaz
       state.yil = 1160;
-      konutDegistir(state, "tas_ev");
+      konutDegistir(state, "sicak_ocak");
       expect(state.konut_surekli_yasadigi_yil).toBe(1160);
     });
   });
@@ -130,8 +130,8 @@ describe("konut sistemi (gameEngine, uçtan uca)", () => {
     const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     const oncekiYil = state.yil;
     state.para = 200;
-    const sonuc = await konutDegistirEngine(state.id, "konak");
-    expect(sonuc.state.konut_id).toBe("konak");
+    const sonuc = await konutDegistirEngine(state.id, "gorkemli_konak");
+    expect(sonuc.state.konut_id).toBe("gorkemli_konak");
     expect(sonuc.state.yil).toBe(oncekiYil);
     expect(sonuc.mesaj).toContain("Konak");
   });
@@ -143,39 +143,39 @@ describe("yaşam tarzı seçimi sistemi", () => {
     expect(state.yasam_secimi_id).toBe(VARSAYILAN_YASAM_SECIMI_ID);
   });
 
-  it("çöpten toplamak bedavadır ama sağlığı aşındırır", () => {
+  it("bayat artık bedavadır ama sağlığı aşındırır", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.para = 1000; // borç cezası devreye girmesin
     state.saglik = 90;
-    yasamSecimiDegistir(state, "copten_topla");
+    yasamSecimiDegistir(state, "bayat_artik");
     const gider = giderKalemleriHesapla(state);
     expect(gider.yasam).toBe(0);
     pasifEkonomiUygula(state, 3);
-    expect(state.saglik).toBe(90 - 2 * 3); // 2026-09: dip sofra cezası -2/yıl
+    expect(state.saglik).toBe(90 - 4 * 3); // Faz 9: dip sofra cezası -4/yıl
   });
 
-  it("kaliteli yemek pahalıdır ama sağlık ve mutluluk katar", () => {
+  it("dengeli sofra pahalıdır ama sağlık ve mutluluk katar", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
-    state.saglik = 50; // pasif regen yumuşak tavanının (70) altında, tam oranında işlesin
+    state.saglik = 50; // pasif regen yumuşak tavanının (80) altında, tam oranında işlesin
     state.mutluluk = 40;
     state.para = 1000; // borç faizi/sağlık cezası devreye girmesin (rastgele aile başlangıçta negatif para verebilir)
-    state.konut_id = "normal_ev"; // konutun sağlık etkisi olmasın, sadece yaşam tarzı etkisini izole eder
-    yasamSecimiDegistir(state, "kaliteli_ye");
+    state.konut_id = "mutevazi_yuva"; // konutun sağlık etkisi olmasın, sadece yaşam tarzı etkisini izole eder
+    yasamSecimiDegistir(state, "dengeli_sofra");
     pasifEkonomiUygula(state, 3);
     expect(state.saglik).toBeGreaterThan(50);
     expect(state.mutluluk).toBeGreaterThan(40);
   });
 
   it("pasif regen yumuşak tavanı: 80 canın üstünde ev+yemek kazancı ciddi şekilde kısılır", () => {
-    // Tavan altı: 55 candan başlayınca şato(+3)+ziyafet(+3) = +6/yıl tam işler.
+    // Tavan altı: 55 candan başlayınca görkemli konak(+3)+şölen(+3) = +6/yıl tam işler.
     const altta = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(altta, "Tüccar");
     altta.para = 100000;
     altta.saglik = 55;
-    altta.konut_id = "sato";
-    altta.yasam_secimi_id = "ziyafet_gibi_ye";
+    altta.konut_id = "gorkemli_konak";
+    altta.yasam_secimi_id = "solen_sofrasi";
     pasifEkonomiUygula(altta, 1);
     const alttaKazanc = altta.saglik - 55;
 
@@ -184,8 +184,8 @@ describe("yaşam tarzı seçimi sistemi", () => {
     mesleğiSec(ustte, "Tüccar");
     ustte.para = 100000;
     ustte.saglik = 90;
-    ustte.konut_id = "sato";
-    ustte.yasam_secimi_id = "ziyafet_gibi_ye";
+    ustte.konut_id = "gorkemli_konak";
+    ustte.yasam_secimi_id = "solen_sofrasi";
     pasifEkonomiUygula(ustte, 1);
     const usttteKazanc = ustte.saglik - 90;
 
@@ -211,5 +211,43 @@ describe("konfor sistemi kaldırıldı", () => {
     mesleğiSec(state, "Tüccar");
     const gider = giderKalemleriHesapla(state);
     expect((gider as Record<string, unknown>).konfor).toBeUndefined();
+  });
+});
+
+describe("konut/yaşam id göçü (Faz 9, eski canlı oturumlar)", () => {
+  it("eski konut id'leri en yakın yeni karşılığa taşınır", async () => {
+    const { eskiKayitGocu } = await import("../src/game/stateManager");
+    const eski: Record<string, string> = {
+      basit_barinak: "nemli_baraka",
+      ahsap_ev: "nemli_baraka",
+      normal_ev: "mutevazi_yuva",
+      tas_ev: "sicak_ocak",
+      konak: "saglam_konut",
+      sato: "gorkemli_konak",
+    };
+    for (const [eskiId, yeniId] of Object.entries(eski)) {
+      const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
+      state.konut_id = eskiId;
+      eskiKayitGocu(state);
+      expect(state.konut_id).toBe(yeniId);
+    }
+  });
+
+  it("eski yaşam tarzı id'leri en yakın yeni karşılığa taşınır", async () => {
+    const { eskiKayitGocu } = await import("../src/game/stateManager");
+    const eski: Record<string, string> = {
+      copten_topla: "bayat_artik",
+      ucuza_ye: "bayat_artik",
+      normal_ye: "sade_sofra",
+      iyi_ye: "keyifli_sofra",
+      kaliteli_ye: "dengeli_sofra",
+      ziyafet_gibi_ye: "solen_sofrasi",
+    };
+    for (const [eskiId, yeniId] of Object.entries(eski)) {
+      const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
+      state.yasam_secimi_id = eskiId;
+      eskiKayitGocu(state);
+      expect(state.yasam_secimi_id).toBe(yeniId);
+    }
   });
 });

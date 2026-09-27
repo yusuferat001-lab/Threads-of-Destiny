@@ -72,8 +72,8 @@ const SAYISAL_ALANLAR = [
   "en_yuksek_para",
 ];
 
-const KONUT_SIRA = ["basit_barinak", "ahsap_ev", "normal_ev", "tas_ev", "konak", "sato"];
-const YASAM_SIRA = ["copten_topla", "ucuza_ye", "normal_ye", "iyi_ye", "kaliteli_ye", "ziyafet_gibi_ye"];
+const KONUT_SIRA = ["nemli_baraka", "mutevazi_yuva", "sicak_ocak", "saglam_konut", "gorkemli_konak"];
+const YASAM_SIRA = ["bayat_artik", "sade_sofra", "keyifli_sofra", "dengeli_sofra", "solen_sofrasi"];
 
 function grupOzeti(kayit: any[]) {
   const n = kayit.length;

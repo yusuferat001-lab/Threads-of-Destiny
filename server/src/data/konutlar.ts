@@ -16,96 +16,93 @@ export interface KonutTanimi {
 /**
  * Yerleşimden (şehir/sınır/dağ) bağımsız, oyuncunun istediği an değiştirebileceği
  * ekonomik/sosyal bir eksen: ne kadar konforlu bir evde yaşıyorsun. Varsayılan
- * (createCharacter) her zaman en ucuz kademedir, böylece bu sistemi hiç
- * kullanmayan bir oyuncu için mevcut ekonomi dengesi değişmez.
+ * (createCharacter) her zaman sağlık/ün açısından nötr, mutlulukta hafif pozitif
+ * olan "Mütevazı Yuva" kademesidir, böylece bu sistemi hiç kullanmayan bir oyuncu
+ * için mevcut ekonomi dengesi değişmez.
  *
- * Kademeler arttıkça kira giderek daha dik büyür (üst kademeler oyunun ancak
- * ileri/başarılı aşamalarında karşılanabilir olsun diye), buna karşılık sağlık/
- * mutluluk/ün getirisi kademeli ve her seviyede farklıdır — sağlık en yavaş,
- * mutluluk ve ün en belirgin büyüyen eksenlerdir.
+ * Faz 9 (2026-09 sonu, kullanıcı isteği: "ev ve yaşamları bir adet azalt, her
+ * kademe kendi kişiliğini taşısın"): eski 6 kademe (Basit Barınak/Ahşap Ev/Normal
+ * Ev/Taş Ev/Konak/Şato) hep ÜÇ statı BİRLİKTE, aynı yönde büyütüp küçültüyordu —
+ * hiçbir kademenin kendine has bir "kimliği" yoktu. 5 kademeye indirildi: en alttaki
+ * iki eski kademe TEK bir "dip" kademede birleşti, üstteki üç kademe artık birbirinden
+ * gerçekten farklı bir kişilik taşıyor (Sıcak Ocak = sıcak/mütevazı, Sağlam Konut =
+ * bedeni koruyan sağlam bir ev, Görkemli Konak = hem en pahalı hem tartışmasız en
+ * iyisi). Birkaç tur kullanıcı geri bildirimiyle kalibre edildi: sağlık/mutluluk
+ * ucuza (orta kademelerde bile +1..+3) kazanılabilirken, şöhret bilinçli olarak
+ * cimri tutuldu (üst-orta kademede en fazla +1) ve yalnız en tepedeki tek kademede
+ * (+5) gerçek bir sıçrama yapıyor — ucuz şöhret yok, zirve şöhret pahalı ve nadir.
+ * Her kademenin İKİNCİL (baskın olmayan) etkileri ±3'ü hiç geçmez; birincil etki
+ * (öne çıkan kimlik statı) daha büyük olabilir. Eski canlı oturumlardaki id'ler
+ * `eskiKayitGocu` ile buradaki en yakın karşılığa taşınır (bkz. stateManager.ts).
  *
- * Faz 8 ekonomi rebalansı (2026-09 sonu, kullanıcı isteği: "konut fiyatlarını
- * dengele"): eski kira eğrisi (1/3/5/10/19/32) kademe başına oransal olarak
- * düzensizdi (×3 / ×1.67 / ×2.0 / ×1.9 / ×1.68 — ortada ani bir sıçrama,
- * üstte iki güçlü sıçrama vardı) VE Faz 6'nın maaş/mülk geliri kısıtlamasından
- * SONRA en üst iki kademe orantısız pahalı kalıyordu. Taş Ev/Konak/Şato
- * kiraları hafifçe aşağı çekilip eğri geometrik ilerlemeye yaklaştırıldı
- * (1/3/5/9/15/24 — oranlar ×3/×1.67/×1.8/×1.67/×1.6, çok daha düz);
- * sağlık/mutluluk/ün etkileri (niteliksel "his", fiyatla ilgisiz) DOKUNULMADI.
+ * Görüntülenen ad/simge, döneme VE ülkeye göre ayrıca değişir — bkz.
+ * client/src/bolgeTema.ts KONUT_TEMALARI + konutGoruntusuGetir. Buradaki
+ * ad/simge/aciklama, o eşleşme bulunamazsa kullanılan JENERİK yedektir; ayrıca
+ * `T()`/`K()` ile üretilen kısa oyun-içi mesajlarda ("...'e taşındın.") hep bu
+ * jenerik ad kullanılır (bölgesel ad yalnız kart/sahne GÖSTERİMİNDE devreye girer).
  */
 export const KONUTLAR: KonutTanimi[] = [
   {
-    id: "basit_barinak",
-    ad: "Basit Barınak",
+    id: "nemli_baraka",
+    ad: "Nemli Baraka",
     simge: "🛖",
     aciklama:
-      "Neredeyse bedava ama nemli, soğuk ve sağlıksız; burada sürekli yaşamak bedenini, moralini ve itibarını yıpratır. Sadece geçici bir dip.",
+      "Rüzgârın duvarlardan geçtiği, sürekli nemli ve soğuk bir barınak; burada yaşamak bedenini ağır şekilde yıpratır, moralini ve az da olsa adını düşürür. Sadece geçici bir dip.",
     kiraYillik: 1,
-    saglikEtkisiYillik: -2,
-    mutlulukEtkisiYillik: -2,
-    unEtkisiYillik: -2,
-  },
-  {
-    id: "ahsap_ev",
-    ad: "Ahşap Ev",
-    simge: "🪵",
-    aciklama:
-      "Ucuz ve gösterişsiz ama kendi tempon var; komşularla iç içe, dar ve bakımsız bir çatı sağlığını ve adını biraz aşındırsa da, kimseye hesap vermeyen bu sade hayat sana huzur veriyor.",
-    kiraYillik: 3,
-    saglikEtkisiYillik: -1,
-    mutlulukEtkisiYillik: 1,
+    saglikEtkisiYillik: -4,
+    mutlulukEtkisiYillik: -3,
     unEtkisiYillik: -1,
   },
   {
-    id: "normal_ev",
-    ad: "Normal Ev",
+    id: "mutevazi_yuva",
+    ad: "Mütevazı Yuva",
     simge: "🏠",
     aciklama: "Sıradan ama gerçek bir yuva; kendi dört duvarının verdiği küçük bir huzur var. Artık ev seni yıpratmıyor.",
-    kiraYillik: 5,
+    kiraYillik: 4,
     mutlulukEtkisiYillik: 1,
   },
   {
-    id: "tas_ev",
-    ad: "Taş Ev",
+    id: "sicak_ocak",
+    ad: "Sıcak Ocak",
+    simge: "🔥",
+    aciklama:
+      "Küçük ama sımsıcak, içi sevgiyle döşenmiş bir ev; gösterişten çok huzur ve neşe sunuyor, komşuların arasında da adından iyi söz ettiriyor.",
+    kiraYillik: 8,
+    saglikEtkisiYillik: 1,
+    mutlulukEtkisiYillik: 2,
+    unEtkisiYillik: 1,
+  },
+  {
+    id: "saglam_konut",
+    ad: "Sağlam Konut",
     simge: "🧱",
     aciklama:
-      "Sağlam duvarları ve ayrı odalarıyla gerçek bir konfor sunar; komşuların arasında adın biraz daha anılır. Sofranı da bu seviyeye yakın tutmak (Normal ya da İyi Ye) genelde daha tutarlı bir hayat demek.",
-    kiraYillik: 9,
-    saglikEtkisiYillik: 1,
-    mutlulukEtkisiYillik: 1,
-    unEtkisiYillik: 2,
+      "Kalın duvarları, iyi havalandırması ve temiz suyuyla bedenini gerçekten koruyan, sağlam ve konforlu bir ev.",
+    kiraYillik: 14,
+    saglikEtkisiYillik: 3,
+    mutlulukEtkisiYillik: 2,
+    unEtkisiYillik: 1,
   },
   {
-    id: "konak",
-    ad: "Konak",
+    id: "gorkemli_konak",
+    ad: "Görkemli Konak",
     simge: "🏛️",
     aciklama:
-      "Pahalı ama gösterişli; halk arasındaki tanınırlığını, rahatını ve sağlığını yıllar içinde büyütür. Böyle bir çatının altında çöpten geçinmek konu komşuya tuhaf gelir — sofran da haneni yansıtsın.",
-    kiraYillik: 15,
-    saglikEtkisiYillik: 2,
-    mutlulukEtkisiYillik: 2,
-    unEtkisiYillik: 4,
-  },
-  {
-    id: "sato",
-    ad: "Şato",
-    simge: "🏰",
-    aciklama:
-      "Bölgenin konuştuğu, gerçekten pahalı bir yaşam; duvarları kadar adın da büyür, günlerin çok daha huzurlu ve sağlıklı geçer. Bu kapılardan girip ucuza/çöpten geçinmeye çalışmak inandırıcı olmaz — ancak en iyi sofralarla bir bütün oluşturur.",
-    kiraYillik: 24,
+      "Bölgenin konuştuğu, gerçekten görkemli bir çatı; hem bedenin hem ruhun bu konforda rahat eder, adın da kapılarından çok öteye taşınır.",
+    kiraYillik: 23,
     saglikEtkisiYillik: 3,
-    mutlulukEtkisiYillik: 4,
-    unEtkisiYillik: 6,
+    mutlulukEtkisiYillik: 3,
+    unEtkisiYillik: 5,
   },
 ];
 
 /**
- * Yeni karakter, sağlık/mutluluk/ün açısından TAMAMEN NÖTR olan "Normal Ev"de
- * başlar (2026-09 ekonomi dengesi): ev ekranını hiç açmayan sıradan bir oyuncu,
- * ilk 15-20 yıl boyunca sessizce sağlık/itibar kaybetmesin diye. Ucuz kademeler
- * (Basit Barınak / Ahşap Ev) hâlâ ceza taşır ama artık daha hafif (-2/yıl).
+ * Yeni karakter, sağlık/ün açısından TAMAMEN NÖTR olan "Mütevazı Yuva"da başlar
+ * (2026-09 ekonomi dengesi + Faz 9): ev ekranını hiç açmayan sıradan bir oyuncu,
+ * ilk 15-20 yıl boyunca sessizce sağlık/itibar kaybetmesin diye. En dip kademe
+ * (Nemli Baraka) hâlâ ceza taşır.
  */
-export const VARSAYILAN_KONUT_ID = "normal_ev";
+export const VARSAYILAN_KONUT_ID = "mutevazi_yuva";
 
 /** Bir konuttan diğerine taşınmanın bir kerelik nakliye maliyeti. */
 export const TASINMA_MALIYETI = 3;
@@ -114,14 +111,15 @@ export function konutGetir(id: string): KonutTanimi | undefined {
   return KONUTLAR.find((k) => k.id === id);
 }
 
-/** Konutun KONUTLAR dizisindeki sırası (0=Basit Barınak..5=Şato); bulunamazsa -1. */
+/** Konutun KONUTLAR dizisindeki sırası (0=Nemli Baraka..4=Görkemli Konak); bulunamazsa -1. */
 export function konutKademeIndeksi(id: string): number {
   return KONUTLAR.findIndex((k) => k.id === id);
 }
 
 /**
  * "konut_sahibi" hayat amacının (hayatAmaclari.ts) ve konut-süreklilik
- * takibinin (stateManager.konutDegistir) kullandığı eşik: Taş Ev ve üstü
- * "sahiden yerleşmiş" sayılır.
+ * takibinin (stateManager.konutDegistir) kullandığı eşik: Sıcak Ocak ve üstü
+ * "sahiden yerleşmiş" sayılır (Faz 9'da 5 kademeli yeni ladder'a göre 3'ten
+ * 2'ye çekildi — eski "Taş Ev ve üstü" ile aynı göreli konum).
  */
-export const KONUT_SAHIBI_MIN_KADEME = 3;
+export const KONUT_SAHIBI_MIN_KADEME = 2;

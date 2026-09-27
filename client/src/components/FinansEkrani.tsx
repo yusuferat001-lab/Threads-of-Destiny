@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { FinansOzeti, GecmisNoktasi, KonutTanimi, YasamSecenegiTanimi } from '../types';
 import { GecmisGrafik } from './GecmisGrafik';
-import { konutGoruntusuGetir } from '../bolgeTema';
+import { konutGoruntusuGetir, yasamGoruntusuGetir } from '../bolgeTema';
 import { formatPara } from '../format';
 import { bic, type Metinler } from '../i18n';
 import { useDil } from '../DilContext';
@@ -40,6 +40,7 @@ interface FinansEkraniProps {
   paraBirimi: string;
   para: number;
   cag: string;
+  bolge: string;
   gecmis: GecmisNoktasi[];
   konutlar: KonutTanimi[];
   guncelKonutId: string;
@@ -58,6 +59,7 @@ export function FinansEkrani({
   paraBirimi,
   para,
   cag,
+  bolge,
   gecmis,
   konutlar,
   guncelKonutId,
@@ -229,6 +231,7 @@ export function FinansEkrani({
             {yasamSecenekleri.map((secenek) => {
               const guncel = secenek.id === guncelYasamSecimiId;
               const etkiSatiri = etkiSatiriGetir(m, secenek);
+              const gorunum = yasamGoruntusuGetir(secenek.id, secenek.ad, secenek.simge, cag, bolge, dil);
               return (
                 <button
                   key={secenek.id}
@@ -237,9 +240,9 @@ export function FinansEkrani({
                   onClick={() => onYasamSecimiDegistir(secenek.id)}
                   title={kt(secenek.aciklama)}
                 >
-                  <span className="meslek-simge">{secenek.simge}</span>
+                  <span className="meslek-simge">{gorunum.simge}</span>
                   <strong>
-                    {kt(secenek.ad)}
+                    {gorunum.ad}
                     {guncel ? ' ✓' : ''}
                   </strong>
                   <span className="meslek-aciklama">
@@ -262,7 +265,7 @@ export function FinansEkrani({
               const guncelKira = konutlar.find((k) => k.id === guncelKonutId)?.kiraYillik ?? 0;
               const geriCekilme = guncelKira > konut.kiraYillik;
               const tasinamaz = !guncel && !geriCekilme && para < tasinmaMaliyeti;
-              const gorunum = konutGoruntusuGetir(konut.id, konut.ad, konut.simge, cag, dil);
+              const gorunum = konutGoruntusuGetir(konut.id, konut.ad, konut.simge, cag, bolge, dil);
               const etkiSatiri = etkiSatiriGetir(m, konut);
               return (
                 <button

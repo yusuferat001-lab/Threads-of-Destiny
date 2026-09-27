@@ -428,12 +428,12 @@ async function yanEylemler(
       if (!ky.konutRastgele) {
         const kIdxSimdi = KONUTLAR.findIndex((k) => k.id === state.konut_id);
         const yIdxSimdi = YASAM_SECENEKLERI.findIndex((y) => y.id === state.yasam_secimi_id);
-        if (kIdxSimdi > 2) {
-          await harcamaOlc(d, state, "tasinma", () => konutDegistir(id, "normal_ev"));
+        if (kIdxSimdi > 1) {
+          await harcamaOlc(d, state, "tasinma", () => konutDegistir(id, "mutevazi_yuva"));
           sayaclar.konutDegisimSayisi++;
         }
-        if (yIdxSimdi > 2) {
-          await yasamSecimiDegistir(id, "normal_ye");
+        if (yIdxSimdi > 1) {
+          await yasamSecimiDegistir(id, "sade_sofra");
           sayaclar.yasamDegisimSayisi++;
         }
       }
