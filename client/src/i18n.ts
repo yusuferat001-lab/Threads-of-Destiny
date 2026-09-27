@@ -325,6 +325,15 @@ const TR = {
   shKariyer: 'Kariyer',
   shEvinKisa: 'Evin',
   shEvFallback: 'Ev',
+
+  // ---- Mobil alt gezinme çubuğu ----
+  agBaslik: 'Alt gezinme',
+  agDiger: 'Diğer',
+  agAile: 'Aile',
+
+  // ---- Mobil canlı skor rozeti + detay modalı ----
+  skorDetayBaslik: 'Canlı Skor',
+  skorDetayPlaceholder: 'Skor Hesaplama Detayları',
   shIsyeriTitle: '{0} — Yatırım',
   shEvTitle: '{0} — Gelir & Gider',
 
@@ -1037,6 +1046,15 @@ const EN: Metinler = {
   shKariyer: 'Career',
   shEvinKisa: 'Home',
   shEvFallback: 'Home',
+
+  // ---- Mobile bottom navigation ----
+  agBaslik: 'Bottom navigation',
+  agDiger: 'More',
+  agAile: 'Family',
+
+  // ---- Mobile live score badge + detail modal ----
+  skorDetayBaslik: 'Live Score',
+  skorDetayPlaceholder: 'Score Calculation Details',
   shIsyeriTitle: '{0} — Investments',
   shEvTitle: '{0} — Income & Expenses',
 
