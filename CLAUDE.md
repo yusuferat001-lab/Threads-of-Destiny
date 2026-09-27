@@ -461,7 +461,7 @@ Kaynak: [stateManager.ts](server/src/game/stateManager.ts), [gameEngine.ts](serv
 
 **Zaman:** Tur başına 1 yıl (%60) / 2 yıl (%40) — ortalama ~1.4 yıl/tur (2026-09 sonu, kullanıcı isteği: eski %40/%60 oranı ~1.6y/tur veriyordu); yolculuk adımı her zaman 1 yıl. `MAKS_YAS=100` (kesin tavan).
 
-**Yaşlanma (`yaslanmaUygula`, turdaki HER yıl ayrı hesaplanır):** yaş≥80 → -7 sağlık/yıl; yaş≥70 → -5/yıl; yaş≥60 → -4/yıl; yaş≥50 → -1/yıl; altı → 0. *(2026-09 sonu denetimi: bu bölüm eskiden 75/-10 · 65/-7 · 55/-4 olarak yazıyordu — kodla eşleşmiyordu, gerçek eşik/değerlerle güncellendi. Hiçbir test bu sabitleri kilitlemiyor, bkz. §22.)*
+**Yaşlanma (`yaslanmaUygula`, turdaki HER yıl ayrı hesaplanır):** yaş≥80 → -8 sağlık/yıl; yaş≥70 → -6/yıl; yaş≥60 → -4/yıl; yaş≥50 → -1/yıl; altı → 0. *(2026-09 sonu, kullanıcı isteği: 70-79 bandı -5→-6, 80+ bandı -7→-8 yükseltildi — önceki tur bu bölümü eski 75/-10·65/-7·55/-4 dokümantasyon hatasından kodla eşleşecek şekilde 80/-7·70/-5 olarak düzeltmişti. Hiçbir test bu sabitleri kilitlemiyor, bkz. §22.)*
 
 **Pasif regen yumuşak tavanı (`pasifRegenEtkisi`, `PASIF_REGEN_TAVANI=80`, `PASIF_REGEN_TAVAN_USTU_ORAN=0.25`, `PASIF_REGEN_LIMITSIZ_ESIK=45`):** Konut + yaşam tarzının yıllık POZİTİF sağlık/mutluluk etkisi: ilgili stat **45'in altındayken hiç kısıtlanmaz** (dipteki karakter tam hızda toparlansın), 45–80 arası tam işler, 80'in üstüne taşan kısım ×0.25'e kısılır. Negatif pasif etkiler tam işler. (Yama #2: tavan 70→80, dip-limitsiz eşik eklendi.)
 
