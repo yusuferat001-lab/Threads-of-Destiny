@@ -4,8 +4,8 @@
  * Karar mantığı simulateKisilikler.ts'teki "para" (Maks Para Odaklı) kişiliğinden alınır:
  *  - Olaylarda seçeneğin GERÇEK basarili/basarisiz etkilerine bakıp beklenen parayı
  *    maksimize eden şıkkı seçer ("olaylarda parayı seç").
- *  - Ev/sofra kademesi ASLA oyunun nötr varsayılanının (normal_ev / normal_ye, 0 hasar)
- *    altına inmez; borçtayken bile dip ceza kademelerine düşmez.
+ *  - Ev/sofra kademesi ASLA oyunun nötr varsayılanının (mutevazi_yuva / sade_sofra, 0 hasar)
+ *    altına inmez; borçtayken bile dip ceza kademesine düşmez.
  *  - Agresif kendi-işi yatırımı + tüm kârlı piyasa mülkleri; parayı biriktirir.
  *
  * Her turdan sonra anlık durum kaydedilir, sonra 15,20,25,...,100 yaş kovalarında
@@ -172,10 +172,10 @@ function tepkiSec(state: CharacterState): number {
 
 /**
  * min gerçek bir tabandır — para yetmese bile bu kademenin altına düşülmez.
- * "para" kişiliği: konut [2..3] (normal_ev..tas_ev), sofra [2..3] (normal_ye..iyi_ye).
+ * "para" kişiliği: konut [1..2] (mutevazi_yuva..sicak_ocak), sofra [1..2] (sade_sofra..keyifli_sofra).
  */
-const KONUT_MIN = 2, KONUT_MAX = 3, KONUT_ORAN = 0.35;
-const YASAM_MIN = 2, YASAM_MAX = 3, YASAM_ORAN = 0.3;
+const KONUT_MIN = 1, KONUT_MAX = 2, KONUT_ORAN = 0.35;
+const YASAM_MIN = 1, YASAM_MAX = 2, YASAM_ORAN = 0.3;
 const KONUT_MALIYET = KONUTLAR.map((k) => k.kiraYillik);
 const YASAM_MALIYET = YASAM_SECENEKLERI.map((y) => y.maliyetYillik);
 
@@ -227,13 +227,13 @@ async function yanEylemler(id: string, state: CharacterState, sayaclar: Sayaclar
     /* yok say */
   }
 
-  // 1) Konut & sofra — nötr tabanın (index 2) ALTINA asla inme.
+  // 1) Konut & sofra — nötr tabanın (index 1) ALTINA asla inme.
   try {
     if (state.para < 0) {
       const kIdx = KONUTLAR.findIndex((k) => k.id === state.konut_id);
       const yIdx = YASAM_SECENEKLERI.findIndex((y) => y.id === state.yasam_secimi_id);
-      if (kIdx > 2) await konutDegistir(id, "normal_ev");
-      if (yIdx > 2) await yasamSecimiDegistir(id, "normal_ye");
+      if (kIdx > 1) await konutDegistir(id, "mutevazi_yuva");
+      if (yIdx > 1) await yasamSecimiDegistir(id, "sade_sofra");
     } else {
       const kIdx = hedefKademe(KONUT_MALIYET, maasYillik, state.para, KONUT_ORAN, KONUT_MIN, KONUT_MAX);
       const yIdx = hedefKademe(YASAM_MALIYET, maasYillik, state.para, YASAM_ORAN, YASAM_MIN, YASAM_MAX);

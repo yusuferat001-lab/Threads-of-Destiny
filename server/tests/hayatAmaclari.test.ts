@@ -97,7 +97,7 @@ describe("konut_sahibi (süreklilik şartı)", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     const tanim = amacTanimiGetir("konut_sahibi")!;
-    state.konut_id = "tas_ev";
+    state.konut_id = "sicak_ocak";
     state.konut_surekli_yasadigi_yil = state.yil - 2; // henüz 5 yıl dolmadı
     expect(tanim.kosul(state, 0)).toBe(false);
   });
@@ -106,7 +106,7 @@ describe("konut_sahibi (süreklilik şartı)", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     const tanim = amacTanimiGetir("konut_sahibi")!;
-    state.konut_id = "sato";
+    state.konut_id = "gorkemli_konak";
     state.konut_surekli_yasadigi_yil = state.yil - 5;
     expect(tanim.kosul(state, 0)).toBe(true);
   });

@@ -42,10 +42,10 @@ const N_PER_GROUP = Number(process.env.SIM_N ?? 100);
 const MAX_TUR_GUARD = 400;
 // "0 hasarlı" kademe: sağlık/mutluluk cezası OLMAYAN en ucuz kademe (yükseltme yok, ceza da yok).
 const DIP_KONUT =
-  KONUTLAR.find((k) => (k.saglikEtkisiYillik ?? 0) >= 0 && (k.mutlulukEtkisiYillik ?? 0) >= 0)?.id ?? "normal_ev";
+  KONUTLAR.find((k) => (k.saglikEtkisiYillik ?? 0) >= 0 && (k.mutlulukEtkisiYillik ?? 0) >= 0)?.id ?? "mutevazi_yuva";
 const DIP_YASAM =
   YASAM_SECENEKLERI.find((y) => (y.saglikEtkisiYillik ?? 0) >= 0 && (y.mutlulukEtkisiYillik ?? 0) >= 0)?.id ??
-  "normal_ye";
+  "sade_sofra";
 
 function rastgele<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];

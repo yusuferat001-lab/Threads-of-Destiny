@@ -1007,6 +1007,41 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
       }
     }
   }
+  // Sağlık kritik eşikleri (2026-09 sonu, kullanıcı isteği): bir hayatta İLK
+  // KEZ sağlık 10'un altına düşünce "ölüme ramak kaldı" tonunda bir olay,
+  // İLK KEZ (henüz 10'a düşmediyse) 25'in altına düşünce ayrı bir "sağlık
+  // krizi" olayı — her biri kendi 15 olayluk havuzundan (saglikKritik.ts)
+  // rastgele seçilip yalnızca bir kez (hayat boyu) zorlanır. 10-eşiği daha
+  // acil olduğu için önce kontrol edilir (health 25 altına inmeden 10'un
+  // altına düşen nadir bir ani kayıpta 25-eşiği atlanabilir — kabul edilmiş
+  // bir kenar durum). Havuz kilidi altındayken (hapiste/yolculukta/kacak/
+  // veba_hastasi) diğer milestone'lar gibi ertelenir.
+  if (
+    !zorlananId &&
+    !milestoneKilitli &&
+    oturum.state.saglik < 10 &&
+    !oturum.state.etiketler.includes("saglik_esik_10_gorundu")
+  ) {
+    const havuz = OLAY_BANKASI.filter((o) => o.saglikEsikOlayi === "esik10");
+    if (havuz.length > 0) {
+      zorlananId = havuz[Math.floor(Math.random() * havuz.length)].id;
+      etiketEkle(oturum.state, ["saglik_esik_10_gorundu"]);
+      etiketDegisti = true;
+    }
+  }
+  if (
+    !zorlananId &&
+    !milestoneKilitli &&
+    oturum.state.saglik < 25 &&
+    !oturum.state.etiketler.includes("saglik_esik_25_gorundu")
+  ) {
+    const havuz = OLAY_BANKASI.filter((o) => o.saglikEsikOlayi === "esik25");
+    if (havuz.length > 0) {
+      zorlananId = havuz[Math.floor(Math.random() * havuz.length)].id;
+      etiketEkle(oturum.state, ["saglik_esik_25_gorundu"]);
+      etiketDegisti = true;
+    }
+  }
   // Gecikmiş takip (§36-benzeri, 2026-09 sonu): geçmişte yapılan bir seçimin
   // 15-20 yıl sonraki geri dönüşü zamanı geldiyse (tetiklenmeYili <= yil),
   // en eskisi zorlanan olay olarak sunulur ve kuyruktan çıkarılır. Havuz
@@ -1955,12 +1990,13 @@ async function sonucuUygulaVeIlerlet(
   if (state.aktif) {
     // Olay bazlı süre alanları (sureYilMin/Max) kasıtlı olarak yok sayılıyor: 367 olayın
     // çoğunda sabit "1 yıl" tanımlı olduğundan ortalama turu hedeften epey altına çekiyordu.
-    // Bunun yerine her turda 1 ya da 2 yıl ilerlenir; %40 ihtimalle 1, %60 ihtimalle 2 yıl
-    // seçilerek ortalama ~1.6 yıl/tur (yani bir olay ortalama 1-2 yılda bir çıkar) hedeflenir.
+    // Bunun yerine her turda 1 ya da 2 yıl ilerlenir; %60 ihtimalle 1, %40 ihtimalle 2 yıl
+    // seçilerek ortalama ~1.4 yıl/tur (yani bir olay ortalama ~1.4 yılda bir çıkar) hedeflenir
+    // (2026-09 sonu, kullanıcı isteği: eski oran %40/%60 ~1.6 yıl veriyordu).
     // Tek istisna: yolculuk zinciri adımları (yolculukOlayi:true), 4-5 yıllık bir yolculukta
     // 5-10 adımın sığması için sabit 1 yıl ilerler.
     const eskiHukumdar = state.hukumdar;
-    const turSuresi = Math.random() < 0.4 ? 1 : 2;
+    const turSuresi = Math.random() < 0.6 ? 1 : 2;
     yasArtisi = mevcutOlay.yolculukOlayi ? ilerletYas(state, 1, 1) : ilerletYas(state, turSuresi, turSuresi);
     // Pasif kıdem: hayatta geçen her yıl kariyer puanını biraz büyütür (yatırım yapmayan
     // bir karakter de zamanla rütbe atlar; yatırım sadece bunu hızlandırır). Mesleğe

@@ -27,7 +27,7 @@ export const AMAC_BONUS: Record<AmacZorluk, number> = { normal: 1.5, zor: 2 };
 export const RISKLI_OLUM_SANSI_ESIK = 25;
 
 const TEMIZ_EL_SUC_ESIGI = 40;
-/** `konut_sahibi` amacının süreklilik şartı — nitelikli bantta (Taş Ev+) kesintisiz kaç yıl. */
+/** `konut_sahibi` amacının süreklilik şartı — nitelikli bantta (Sıcak Ocak+) kesintisiz kaç yıl. */
 const KONUT_SAHIBI_SURE_YIL = 5;
 
 export interface AmacTanimi {
@@ -154,8 +154,8 @@ export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
     id: "konut_sahibi", zorluk: "normal", kontrolAni: "herhangi",
     baslik: { tr: "Bir Çatı Altı", en: "A Roof of Your Own" },
     aciklama: {
-      tr: `Taş bir eve ya da daha üstüne taşın ve orada en az ${KONUT_SAHIBI_SURE_YIL} yıl kesintisiz yaşa.`,
-      en: `Move into a stone house or better — and live there for at least ${KONUT_SAHIBI_SURE_YIL} years without moving down.`,
+      tr: `Sıcak bir ocağa ya da daha üstüne taşın ve orada en az ${KONUT_SAHIBI_SURE_YIL} yıl kesintisiz yaşa.`,
+      en: `Move into a warm hearth or better — and live there for at least ${KONUT_SAHIBI_SURE_YIL} years without moving down.`,
     },
     kosul: (s) =>
       s.konut_surekli_yasadigi_yil != null &&

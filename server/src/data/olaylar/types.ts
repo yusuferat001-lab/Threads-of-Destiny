@@ -183,6 +183,17 @@ export interface OlayTanimi {
    * kayıt varken, `senaryoUret`'teki kaskad tarafından zorlanan olay olarak sunulur.
    */
   gecikmisSonucOlayi?: boolean;
+  /**
+   * Belirtilirse bu olay bir "sağlık kritik eşiği" olayıdır (saglikKritik.ts,
+   * 2026-09 sonu): normal rastgele havuzdan TAMAMEN dışlanır (bkz. olaySecici.ts
+   * uygunMu, sosyallesmeYeri/mulkOlayi/gecikmisSonucOlayi ile aynı desen) —
+   * yalnız `senaryoUret`'teki kaskad tarafından, karakterin sağlığı bir hayatta
+   * İLK KEZ ilgili eşiğin (25 ya da 10) altına indiğinde, o eşiğin 15 olayluk
+   * havuzundan rastgele seçilip zorlanan olay olarak sunulur. Her eşik bir
+   * hayatta yalnızca bir kez tetiklenir (`saglik_esik_25_gorundu`/
+   * `saglik_esik_10_gorundu` etiketleriyle).
+   */
+  saglikEsikOlayi?: "esik25" | "esik10";
   agirlik?: number;
   sureYilMin?: number;
   sureYilMax?: number;
