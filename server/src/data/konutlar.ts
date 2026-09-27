@@ -113,3 +113,15 @@ export const TASINMA_MALIYETI = 3;
 export function konutGetir(id: string): KonutTanimi | undefined {
   return KONUTLAR.find((k) => k.id === id);
 }
+
+/** Konutun KONUTLAR dizisindeki sırası (0=Basit Barınak..5=Şato); bulunamazsa -1. */
+export function konutKademeIndeksi(id: string): number {
+  return KONUTLAR.findIndex((k) => k.id === id);
+}
+
+/**
+ * "konut_sahibi" hayat amacının (hayatAmaclari.ts) ve konut-süreklilik
+ * takibinin (stateManager.konutDegistir) kullandığı eşik: Taş Ev ve üstü
+ * "sahiden yerleşmiş" sayılır.
+ */
+export const KONUT_SAHIBI_MIN_KADEME = 3;

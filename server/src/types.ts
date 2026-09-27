@@ -162,6 +162,24 @@ export interface CharacterState {
   kariyer_puani: number;
   /** Son terfinin gerçekleştiği oyun yılı; bir sonraki terfinin cooldown'u bunu referans alır. Yaratılışta baslangic_yili. */
   son_terfi_yili: number;
+  /**
+   * Mesleğe yatkınlık kademesi (2026-09 sonu) — meslek seçilirken (`mesleğiSec`)
+   * BİR KEZ, o mesleğin kendi kategorisindeki (savas/ticaret/din/zanaat) toplam
+   * `yatkinliklar` puanından hesaplanır ve bir daha ASLA değişmez (doğuştan
+   * gelen bir yetenek damgası). 1=kötü, 2=nötr, 3=iyi, 4=mükemmel — bkz.
+   * data/meslekYatkinlik.ts. Meslek henüz seçilmediyse null.
+   */
+  meslek_yatkinlik_seviyesi: 1 | 2 | 3 | 4 | null;
+  /** Kademeden türeyen kanonik (TÜRKÇE) unvan — ör. "Kılıca Yatkın"; client `kt()` ile çevirir. Meslek seçilmediyse null. */
+  meslek_yatkinlik_unvani: string | null;
+  /** Kademeden türeyen kalıcı oransal bonus/malus (ör. -0.15 → olay şansı ×0.85); nötr kademede 0. */
+  meslek_zar_bonusu: number;
+  /** Kademeden türeyen kalıcı maaş oransal katkısı (maasCarpanKalemleri "kariyer" grubuna eklenir); nötr kademede 0. */
+  meslek_maas_carpani: number;
+  /** Kademeden türeyen kalıcı kariyer_puani kazanç hızı oransal katkısı; nötr kademede 0. */
+  meslek_tecrube_hizi: number;
+  /** Kişilik özelliklerinden gelen kalıcı gayrimenkul (mülk getiri oranı) bonusu/malusu (§41, ör. ±0.02). Nötr karakterlerde 0. */
+  gayrimenkul_getiri_bonusu: number;
   /** En üst rütbeye (4+) ulaştıktan sonra açılan, üst sınırı olmayan ikinci bir ilerleme ekseni: şehir ekonomisini yönetmek için rakiplerle rekabet. 0 = henüz başlamadı. */
   sehir_yonetim_seviyesi: number;
   /** sehir_yonetim_seviyesi'nden türetilen unvan; seviye 0'ken null. */
@@ -171,6 +189,14 @@ export interface CharacterState {
   yerlesim: string;
   din_kultur: string;
   konut_id: string;
+  /**
+   * Taş Ev ve üstü bir kademede KESİNTİSİZ yaşamaya başladığın oyun yılı; o bandın
+   * dışına çıkınca (daha ucuz bir konuta taşınınca) null'a sıfırlanır. Bandın
+   * içinde yükselmek (Taş Ev→Konak gibi) sayacı bozmaz. "konut_sahibi" hayat
+   * amacının (§18) süreklilik şartı bunu kullanır — null iken henüz nitelikli
+   * bir kademede değilsin demektir.
+   */
+  konut_surekli_yasadigi_yil: number | null;
   /** Yaşam tarzı seçimi (yasamSecenekleri.ts); yıllık yaşam giderini ve sağlık/mutluluk etkisini belirler. */
   yasam_secimi_id: string;
   /** Hazard (zar) mini-oyununda oynanan toplam el sayısı — "rakip bıçak çekti" periyodu için. */

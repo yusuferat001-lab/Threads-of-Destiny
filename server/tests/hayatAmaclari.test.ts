@@ -92,6 +92,58 @@ describe("amacSkorCarpani", () => {
   });
 });
 
+describe("konut_sahibi (süreklilik şartı)", () => {
+  it("nitelikli banda yeni girmişse (sayaç henüz yeterince eski değil) tamamlanmaz", () => {
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
+    mesleğiSec(state, "Tüccar");
+    const tanim = amacTanimiGetir("konut_sahibi")!;
+    state.konut_id = "tas_ev";
+    state.konut_surekli_yasadigi_yil = state.yil - 2; // henüz 5 yıl dolmadı
+    expect(tanim.kosul(state, 0)).toBe(false);
+  });
+
+  it("nitelikli bantta yeterince uzun kalınca tamamlanır", () => {
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
+    mesleğiSec(state, "Tüccar");
+    const tanim = amacTanimiGetir("konut_sahibi")!;
+    state.konut_id = "sato";
+    state.konut_surekli_yasadigi_yil = state.yil - 5;
+    expect(tanim.kosul(state, 0)).toBe(true);
+  });
+
+  it("sayaç null iken (hiç nitelikli bantta yaşamamış) tamamlanmaz", () => {
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
+    mesleğiSec(state, "Tüccar");
+    const tanim = amacTanimiGetir("konut_sahibi")!;
+    expect(state.konut_surekli_yasadigi_yil).toBeNull();
+    expect(tanim.kosul(state, 0)).toBe(false);
+  });
+});
+
+describe("Zanaatkâr üretim kapasitesi eşikleri (2026-09 dengesi)", () => {
+  // Eski eşikler (usta_eli 70, sahesinde_efsane/atolye_imparatorlugu/zanaat_rekabeti
+  // 70-100) greedy bot simülasyonunda (bkz. commit notları) yapısal olarak
+  // erişilemezdi — ortalama ~11-18, p95 ~26-44, gözlenen maksimum ~32-67 idi.
+  it("usta_eli 25'te tamamlanır, 24'te tamamlanmaz", () => {
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
+    mesleğiSec(state, "Zanaatkâr");
+    const tanim = amacTanimiGetir("usta_eli")!;
+    state.uretim_kapasitesi = 24;
+    expect(tanim.kosul(state, 0)).toBe(false);
+    state.uretim_kapasitesi = 25;
+    expect(tanim.kosul(state, 0)).toBe(true);
+  });
+
+  it("atolye_imparatorlugu artık tavanı (100) değil 65'i ister", () => {
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
+    mesleğiSec(state, "Zanaatkâr");
+    state.mulkler = ["kucuk_tarla", "ciftlik"] as any;
+    const tanim = amacTanimiGetir("atolye_imparatorlugu")!;
+    state.uretim_kapasitesi = 65;
+    expect(tanim.kosul(state, 0)).toBe(true);
+  });
+});
+
 describe("kontrolAni: herhangi vs olumde", () => {
   it("olumde amacı yaşarken tamamlanmaz, ölüm kontrolünde tamamlanır", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "kasaba");

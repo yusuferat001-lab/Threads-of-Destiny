@@ -14,7 +14,7 @@ import {
   KARIYER_PUANI_YILLIK,
 } from "../data/rutbeler";
 import { YerlesimTanimi, yerlesimGetir, yerlesimIdByAd } from "../data/yerlesimler";
-import { konutGetir, VARSAYILAN_KONUT_ID, TASINMA_MALIYETI } from "../data/konutlar";
+import { konutGetir, VARSAYILAN_KONUT_ID, TASINMA_MALIYETI, konutKademeIndeksi, KONUT_SAHIBI_MIN_KADEME } from "../data/konutlar";
 import { yasamSecenegiGetir, VARSAYILAN_YASAM_SECIMI_ID } from "../data/yasamSecenekleri";
 import { rastgeleIkiIsimSec, rastgeleBirIsimSec, rastgeleCinsiyetliIsimSec } from "../data/npcIsimleri";
 import { liderGetir, komsuGucSec } from "../data/liderler";
@@ -35,6 +35,13 @@ import {
 import { tarihiSavasKontrol, gelecekSavasKontrol } from "../data/tarihiSavaslar";
 import { mulkTanimiGetir } from "../data/mulkler";
 import { MagazaEsyasiTanimi, magazaEsyasiTanimiGetir } from "../data/magazaEsyalari";
+import {
+  YATKINLIK_TIER_ETKILERI,
+  YATKINLIK_TIER_SEVIYE,
+  YATKINLIK_MUKEMMEL_UN_BONUSU,
+  yatkinlikTierBelirle,
+  meslekYatkinlikUnvaniGetir,
+} from "../data/meslekYatkinlik";
 
 const KATEGORILER: Kategori[] = ["savas", "ticaret", "din", "siyaset", "saglik", "sosyal", "zanaat"];
 
@@ -50,11 +57,27 @@ export const MESLEK_KATEGORI: Record<string, Kategori> = {
 const SINERJI_BONUSU = 13;
 
 /**
+ * Yatkınlık kaynaklarının TEKİL katkı üst/alt sınırı (2026-09 sonu, kullanıcı
+ * isteği: "ülkeler max ±6, aileye de bi üst alt limit koy, kişilikte etkilicek
+ * ona da altüst limit koy"). Eskiden bölge tek kalemde ±10-12'ye, aile/kişilik
+ * ise tek kalemde ±15-20'ye kadar çıkabiliyordu — bu sınır her KAYNAK×KATEGORİ
+ * katkısına ayrı ayrı uygulanır (iki kişilik özelliği aynı kategoriyi
+ * etkiliyorsa ikisi de kendi payında sınırlanır, toplamları sınırlanmaz;
+ * sinerji bonusu ve taban rastgele oynama bu sınırların dışındadır).
+ * Bölge için ayrıca `bolgeOzellikleri.ts`'teki ham veri de bu sınırın içinde
+ * yeniden yazıldı (küçük, 8 satırlık bir tablo); aile (28 satır) ve kişilik
+ * (18 satır) verisi elle dokunulmadı — sınır burada, çalışma anında uygulanır.
+ */
+export const BOLGE_YATKINLIK_LIMIT = 6;
+export const AILE_YATKINLIK_LIMIT = 8;
+export const KISILIK_YATKINLIK_LIMIT = 8;
+
+/**
  * Yatkınlıkları kişilik özelliklerinden ve aile geçmişinden hesaplar; her
  * kategoriye küçük bir rastgele oynama (-5..+5) eklenir. Kaynak listesi
  * oyuncuya "neden bu mesleğe yatkınsın" açıklaması için döndürülür.
  */
-function yatkinlikHesapla(
+export function yatkinlikHesapla(
   kisilik: [string, string],
   aile: AileTanimi,
   yerlesim: YerlesimTanimi,
@@ -72,15 +95,17 @@ function yatkinlikHesapla(
     const ozellik = kisilikGetir(ozellikAdi);
     if (!ozellik) continue;
     for (const [kategori, deger] of Object.entries(ozellik.etkiler) as [Kategori, number][]) {
-      yatkinliklar[kategori] += deger;
-      kaynaklar.push({ kaynak: ozellikAdi, kategori, deger });
+      const sinirliDeger = clamp(deger, -KISILIK_YATKINLIK_LIMIT, KISILIK_YATKINLIK_LIMIT);
+      yatkinliklar[kategori] += sinirliDeger;
+      kaynaklar.push({ kaynak: ozellikAdi, kategori, deger: sinirliDeger });
     }
   }
 
   if (aile.yatkinlikEtkisi) {
     for (const [kategori, deger] of Object.entries(aile.yatkinlikEtkisi) as [Kategori, number][]) {
-      yatkinliklar[kategori] += deger;
-      kaynaklar.push({ kaynak: aile.ad, kategori, deger });
+      const sinirliDeger = clamp(deger, -AILE_YATKINLIK_LIMIT, AILE_YATKINLIK_LIMIT);
+      yatkinliklar[kategori] += sinirliDeger;
+      kaynaklar.push({ kaynak: aile.ad, kategori, deger: sinirliDeger });
     }
   }
 
@@ -93,8 +118,9 @@ function yatkinlikHesapla(
 
   if (bolgeOzellik?.yatkinlikEtkisi) {
     for (const [kategori, deger] of Object.entries(bolgeOzellik.yatkinlikEtkisi) as [Kategori, number][]) {
-      yatkinliklar[kategori] += deger;
-      kaynaklar.push({ kaynak: bolgeAdi, kategori, deger });
+      const sinirliDeger = clamp(deger, -BOLGE_YATKINLIK_LIMIT, BOLGE_YATKINLIK_LIMIT);
+      yatkinliklar[kategori] += sinirliDeger;
+      kaynaklar.push({ kaynak: bolgeAdi, kategori, deger: sinirliDeger });
     }
   }
 
@@ -457,6 +483,7 @@ function maasCarpanKalemleri(state: CharacterState): { tabanMaas: number; kaleml
       { ad: T(dil, "Kıdem"), carpan: 1 + kariyerYili * 0.0025, grup: "kariyer" },
       { ad: T(dil, "Şehir yönetimi"), carpan: sehirYonetimMaasCarpani(state.sehir_yonetim_seviyesi), grup: "kariyer" },
       { ad: T(dil, "Kalıcı ödüller (köken + olaylar)"), carpan: maasCarpaniGetir(state), grup: "kariyer" },
+      { ad: T(dil, "Mesleğe yatkınlığın"), carpan: 1 + (state.meslek_maas_carpani ?? 0), grup: "kariyer" },
       { ad: T(dil, "İtibarın (mutluluk·şöhret·ahlak)"), carpan: 1 + itibarToplam / 100, grup: "itibar" },
       { ad: T(dil, "Enflasyon"), carpan: enflasyonCarpani(state), grup: "donemsel" },
       { ad: ekonomiAd, carpan: ekonomiCarpani, grup: "donemsel" },
@@ -644,6 +671,13 @@ export function createCharacter(
     rutbe_seviye: 1,
     kariyer_puani: 0,
     son_terfi_yili: yil,
+    // Meslek 15 yaşında seçilir; mesleğiSec bunları o an bir kez doldurur.
+    meslek_yatkinlik_seviyesi: null,
+    meslek_yatkinlik_unvani: null,
+    meslek_zar_bonusu: 0,
+    meslek_maas_carpani: 0,
+    meslek_tecrube_hizi: 0,
+    gayrimenkul_getiri_bonusu: 0,
     sehir_yonetim_seviyesi: 0,
     sehir_yonetim_unvan: null,
     cag,
@@ -651,6 +685,7 @@ export function createCharacter(
     yerlesim: yerlesim.ad,
     din_kultur: DIN_KULTUR_BY_BOLGE[bolge] ?? "Bilinmiyor",
     konut_id: VARSAYILAN_KONUT_ID,
+    konut_surekli_yasadigi_yil: null,
     yasam_secimi_id: VARSAYILAN_YASAM_SECIMI_ID,
     hazard_el_sayisi: 0,
     uc_kagitci_oyun_sayisi: 0,
@@ -783,6 +818,24 @@ export function createCharacter(
   if (aile.maasCarpani) maasCarpaniUygula(state, aile.maasCarpani, true);
   if (yerlesim.maasCarpani) maasCarpaniUygula(state, yerlesim.maasCarpani, true);
 
+  // Kişilik özelliklerinin çeşitlendirilmiş doğuş bonusları (2026-09 sonu, §41):
+  // maaş çarpanı / gayrimenkul getiri bonusu / üstlerle ilişki bonusu — yatkınlığın
+  // (yukarıda yatkinlikHesapla ile zaten hesaplandı) DIŞINDA, isteğe bağlı ekstra
+  // ödüller. Her ikisi de aile/yerleşim ile aynı desende (ham=true) uygulanır.
+  for (const ozellikAdi of kisilik) {
+    const tanim = kisilikGetir(ozellikAdi);
+    if (!tanim) continue;
+    if (tanim.maasCarpani) maasCarpaniUygula(state, tanim.maasCarpani, true);
+    if (tanim.gayrimenkulBonusu) state.gayrimenkul_getiri_bonusu += tanim.gayrimenkulBonusu;
+    if (tanim.iliskiBonusu) {
+      const { hat, deger } = tanim.iliskiBonusu;
+      if (hat !== "patron") state.yonetim_iliski += deger;
+      if (hat !== "yonetici") state.patron_iliski += deger;
+    }
+  }
+  state.yonetim_iliski = clamp(state.yonetim_iliski, 0, 100);
+  state.patron_iliski = clamp(state.patron_iliski, 0, 100);
+
   clampStats(state);
   state.acilis_anlatimi = acilisAnlatimiUret(state, aile, yerlesim);
   state.haberler = haberleriUret(state);
@@ -904,6 +957,14 @@ export function eskiKayitGocu(state: CharacterState): void {
   }
   if (typeof state.son_terfi_yili !== "number") {
     state.son_terfi_yili = state.baslangic_yili ?? state.yil;
+  }
+  // "konut_sahibi" hayat amacının süreklilik sayacı sonradan eklendi. Zaten
+  // nitelikli bir kademedeyse (Taş Ev+) sayacı şimdi başlatıyoruz (geçmişte ne
+  // kadar orada kaldığını bilmiyoruz — geriye dönük bedava tamamlama vermemek
+  // için muhafazakâr davranıyoruz, oyuncu buradan itibaren süreyi doldurur).
+  if (state.konut_surekli_yasadigi_yil === undefined) {
+    state.konut_surekli_yasadigi_yil =
+      konutKademeIndeksi(state.konut_id) >= KONUT_SAHIBI_MIN_KADEME ? state.yil : null;
   }
   // "mulkler"/"baslangic_yili" gibi sonradan eklenen alanlar eski kayıtlarda undefined
   // kalıyor; gayrimenkul değeri/geliri ve enflasyon hesabı bunlara doğrudan .length /
@@ -1032,6 +1093,30 @@ export function eskiKayitGocu(state: CharacterState): void {
   // bilinmiyor sayılır (retroaktif olarak kazandırılmaz — bir sonraki relik
   // tetiklenmesinde zaten normal yoldan set edilir).
   if (typeof state.relik_can_kurtardi !== "boolean") state.relik_can_kurtardi = false;
+  // Kişilik kaynaklı gayrimenkul getiri bonusu (§41) sonradan eklendi; eski kayıtlarda etkisiz (0) sayılır.
+  if (typeof state.gayrimenkul_getiri_bonusu !== "number") state.gayrimenkul_getiri_bonusu = 0;
+  // Mesleğe yatkınlık kademeleri (2026-09 sonu) sonradan eklendi. Meslek zaten
+  // seçilmişse mevcut yatkinliklar'dan kademeyi geriye dönük türet (mükemmel
+  // kademenin tek seferlik şöhret bonusu RETROAKTİF verilmez — o yalnız ilk
+  // seçim anının bir ödülüdür); meslek henüz seçilmemişse null/0 kalır.
+  if (state.meslek_yatkinlik_seviyesi === undefined) {
+    const meslekKategorisiEski = state.meslek ? MESLEK_KATEGORI[state.meslek] : undefined;
+    if (meslekKategorisiEski) {
+      const tierEski = yatkinlikTierBelirle(state.yatkinliklar?.[meslekKategorisiEski] ?? 0);
+      const etkiEski = YATKINLIK_TIER_ETKILERI[tierEski];
+      state.meslek_yatkinlik_seviyesi = YATKINLIK_TIER_SEVIYE[tierEski];
+      state.meslek_yatkinlik_unvani = meslekYatkinlikUnvaniGetir(state.cag, state.meslek, tierEski);
+      state.meslek_zar_bonusu = etkiEski.zarBonusu;
+      state.meslek_maas_carpani = etkiEski.maasCarpani;
+      state.meslek_tecrube_hizi = etkiEski.tecrubeHizi;
+    } else {
+      state.meslek_yatkinlik_seviyesi = null;
+      state.meslek_yatkinlik_unvani = null;
+      state.meslek_zar_bonusu = 0;
+      state.meslek_maas_carpani = 0;
+      state.meslek_tecrube_hizi = 0;
+    }
+  }
 }
 
 /** Oyuncu mesleğini seçtikten sonra çağrılır: miras bonusunu ve maaşı uygular. */
@@ -1042,6 +1127,31 @@ export function mesleğiSec(state: CharacterState, meslek: string): void {
 
   state.meslek = meslek;
   state.aile_mirasi_surduruldu = mirasSurduruldu;
+
+  // Mesleğe yatkınlık kademesi (2026-09 sonu): meslekle örtüşen kategorideki
+  // (savas/ticaret/din/zanaat) TOPLAM yatkınlık, BİR KEZ 4 kademeden birine
+  // yerleştirilir; kalıcı unvan + zar/maaş/tecrübe çarpanları bir daha
+  // değişmez (yatkinliklar sonradan oynasa bile) — bkz. data/meslekYatkinlik.ts.
+  const meslekKategorisi = MESLEK_KATEGORI[meslek];
+  if (meslekKategorisi) {
+    const tier = yatkinlikTierBelirle(state.yatkinliklar[meslekKategorisi] ?? 0);
+    const etki = YATKINLIK_TIER_ETKILERI[tier];
+    state.meslek_yatkinlik_seviyesi = YATKINLIK_TIER_SEVIYE[tier];
+    state.meslek_yatkinlik_unvani = meslekYatkinlikUnvaniGetir(state.cag, meslek, tier);
+    state.meslek_zar_bonusu = etki.zarBonusu;
+    state.meslek_maas_carpani = etki.maasCarpani;
+    state.meslek_tecrube_hizi = etki.tecrubeHizi;
+    if (tier === "mukemmel") {
+      state.un += YATKINLIK_MUKEMMEL_UN_BONUSU;
+      if (state.meslek_yatkinlik_unvani) {
+        hayatOlayiEkle(
+          state,
+          "🌟",
+          T(state.dil, "Doğuştan yeteneğin fark edildi: {0}", [K(state.dil, state.meslek_yatkinlik_unvani)])
+        );
+      }
+    }
+  }
 
   // 3 kişisel hayat amacı: havuzdan (ortak + meslek + çağ) 2 normal + 1 zor çekilir (§18).
   if (!state.hayat_amaclari || state.hayat_amaclari.length === 0) {
@@ -1404,6 +1514,21 @@ export function aileTalebiUret(state: CharacterState): AileTalep | null {
     kalem,
     sonYil,
   };
+}
+
+// ===== Ekip: sadakat pasif sürüklenmesi (2026-09 hayat amacı dengesi) =====
+// Sadakat eskiden yalnız hediyeEt (§34.3) ile artıyordu — çoğu oyuncu o sistemi hiç
+// keşfetmediğinden "guvenilir_ekip" amacı neredeyse hiç tamamlanmıyordu. Aile/evlilik
+// moraliyle aynı felsefede, küçük ve sessiz bir pasif artış: borçta değilken sadakat
+// yavaşça yükselir (hediye hâlâ daha hızlı bir yol).
+const EKIP_SADAKAT_PASIF_ARTIS_YILLIK = 0.25;
+
+/** Yıllık pasif: borçta değilken her ekip üyesinin sadakati yavaşça yükselir. */
+export function ekipSadakatYillikUygula(state: CharacterState, yasArtisi: number): void {
+  if (state.para < 0 || state.ekip.length === 0) return;
+  for (const uye of state.ekip) {
+    uye.sadakat = Math.min(100, uye.sadakat + EKIP_SADAKAT_PASIF_ARTIS_YILLIK * yasArtisi);
+  }
 }
 
 // ===== Kariyer sayfası: yönetimle bağlar pasif sürüklenmesi + dayatılan talep (§35) =====
@@ -1840,6 +1965,17 @@ export function konutDegistir(state: CharacterState, konutId: string): string {
     throw new Error(`Taşınmak için yeterli paran yok (${TASINMA_MALIYETI} ${state.para_birimi} gerekli).`);
   }
   if (!geriCekilme) state.para -= TASINMA_MALIYETI;
+  // "konut_sahibi" hayat amacı (§18) bir kademeye taşınmayı değil, orada BİR
+  // SÜRE kesintisiz yaşamayı ister: nitelikli banda (Taş Ev+) yeni giriliyorsa
+  // sayaç başlar, bandın dışına çıkılınca sıfırlanır; bandın İÇİNDE yükselmek
+  // (Taş Ev→Konak gibi) sayacı bozmaz.
+  const eskiNitelikli = konutKademeIndeksi(state.konut_id) >= KONUT_SAHIBI_MIN_KADEME;
+  const yeniNitelikli = konutKademeIndeksi(konutId) >= KONUT_SAHIBI_MIN_KADEME;
+  if (yeniNitelikli && !eskiNitelikli) {
+    state.konut_surekli_yasadigi_yil = state.yil;
+  } else if (!yeniNitelikli) {
+    state.konut_surekli_yasadigi_yil = null;
+  }
   state.konut_id = konutId;
   clampStats(state);
   return T(state.dil, "{0}'e taşındın.", [K(state.dil, yeniKonut.ad)]);
@@ -2956,7 +3092,7 @@ export function gayrimenkulYillikGelirHesapla(state: CharacterState): number {
   return paraYuvarla(
     state.mulkler.reduce((toplam, tur) => {
       const taban = mulkTanimiGetir(tur).taban_maliyet * enflasyon;
-      return toplam + paraYuvarla(taban * mulkGetiriOraniHesapla(tur, state.ulke));
+      return toplam + paraYuvarla(taban * mulkGetiriOraniKisisel(state, tur));
     }, 0)
   );
 }
@@ -3062,12 +3198,24 @@ function hamMulkGetiriOrani(tur: MulkTuru, ulke: CharacterState["ulke"]): number
 /**
  * Mülkün güncel yıllık getiri oranı — hamMulkGetiriOrani'nın çıktısını ±MULK_GETIRI_TAVAN
  * (%8) bandına kırpar: demirci/kervan/karaborsa durum çarpanları uçları taşısa bile
- * "bir anda çok getirip çok götürmesin" (kullanıcı isteği). mulkGelirleriUygula ve
- * gameEngine.mulkConfigGetir bunu kullanır.
+ * "bir anda çok getirip çok götürmesin" (kullanıcı isteği). Bu, dünya-durumuna göre
+ * DÜNYA GEZEGENİ oranıdır (kişiye özel değil) — `mulkPiyasaSinyali`'nin "normal" karşılaştırması
+ * ve testler hâlâ bunu kullanır. Karaktere özel çağrılar `mulkGetiriOraniKisisel` kullanmalı.
  */
 export function mulkGetiriOraniHesapla(tur: MulkTuru, ulke: CharacterState["ulke"]): number {
   const ham = hamMulkGetiriOrani(tur, ulke);
   return Math.max(-MULK_GETIRI_TAVAN, Math.min(MULK_GETIRI_TAVAN, ham));
+}
+
+/**
+ * `mulkGetiriOraniHesapla`'nın karaktere özel hâli (2026-09 sonu, §41): dünya-durumu
+ * oranına, kişilik kaynaklı kalıcı `gayrimenkul_getiri_bonusu`yu (±%2 gibi küçük bir
+ * katkı) ekler. Gerçek gelir akışını etkileyen TÜM üretim çağrıları (yıllık tik +
+ * Finans/Yatırım önizlemeleri) bunu kullanır; ±MULK_GETIRI_TAVAN kırpmasından SONRA
+ * eklenir, küçük büyüklüğü yüzünden ayrıca kırpılmaz.
+ */
+export function mulkGetiriOraniKisisel(state: CharacterState, tur: MulkTuru): number {
+  return mulkGetiriOraniHesapla(tur, state.ulke) + (state.gayrimenkul_getiri_bonusu ?? 0);
 }
 
 /**
@@ -3087,7 +3235,7 @@ export function mulkGelirleriUygula(state: CharacterState, yasArtisi: number): M
 
   for (const tur of [...state.mulkler]) {
     const taban = mulkTanimiGetir(tur).taban_maliyet * enflasyon;
-    const oran = mulkGetiriOraniHesapla(tur, ulke);
+    const oran = mulkGetiriOraniKisisel(state, tur);
 
     if (tur === "kervan" && ulke.savasta && Math.random() < KERVAN_BATMA_IHTIMALI_YILLIK * yasArtisi) {
       state.mulkler = state.mulkler.filter((m) => m !== "kervan");

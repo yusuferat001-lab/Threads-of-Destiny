@@ -84,6 +84,45 @@ describe("konut sistemi (stateManager)", () => {
     expect(state.para).toBe(100 - TASINMA_MALIYETI);
     expect(state.konut_id).toBe("tas_ev");
   });
+
+  describe("konut_surekli_yasadigi_yil (konut_sahibi amacı için süreklilik takibi)", () => {
+    it("yeni karakterde null'dır (normal_ev nitelikli banda girmez)", () => {
+      const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
+      expect(state.konut_surekli_yasadigi_yil).toBeNull();
+    });
+
+    it("nitelikli banda (Taş Ev+) girince sayaç o yıldan başlar", () => {
+      const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
+      state.para = 1000;
+      state.yil = 1150;
+      konutDegistir(state, "tas_ev");
+      expect(state.konut_surekli_yasadigi_yil).toBe(1150);
+    });
+
+    it("nitelikli bant İÇİNDE yükselmek (Taş Ev→Konak) sayacı bozmaz", () => {
+      const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
+      state.para = 1000;
+      state.yil = 1150;
+      konutDegistir(state, "tas_ev");
+      state.yil = 1153;
+      konutDegistir(state, "konak");
+      expect(state.konut_surekli_yasadigi_yil).toBe(1150); // korunuyor, 1153 değil
+    });
+
+    it("nitelikli bandın dışına (Normal Ev'e geri) çıkınca sayaç sıfırlanır", () => {
+      const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
+      state.para = 1000;
+      state.yil = 1150;
+      konutDegistir(state, "tas_ev");
+      state.yil = 1152;
+      konutDegistir(state, "normal_ev");
+      expect(state.konut_surekli_yasadigi_yil).toBeNull();
+      // tekrar taş eve dönünce sayaç YENİDEN başlar, eski yıl korunmaz
+      state.yil = 1160;
+      konutDegistir(state, "tas_ev");
+      expect(state.konut_surekli_yasadigi_yil).toBe(1160);
+    });
+  });
 });
 
 describe("konut sistemi (gameEngine, uçtan uca)", () => {

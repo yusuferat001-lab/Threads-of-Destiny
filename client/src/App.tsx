@@ -1951,8 +1951,14 @@ function App() {
               <KisilikPaneli
                 kisilik={karakter.kisilik}
                 aileMeslegi={karakter.aile_meslegi}
+                bolge={karakter.bolge}
                 kaynaklar={karakter.yatkinlik_kaynaklari}
                 eksenler={karakter.kisilik_eksenleri}
+                meslekYatkinlikUnvani={karakter.meslek_yatkinlik_unvani}
+                meslekYatkinlikSeviyesi={karakter.meslek_yatkinlik_seviyesi}
+                meslekZarBonusu={karakter.meslek_zar_bonusu}
+                meslekMaasCarpani={karakter.meslek_maas_carpani}
+                meslekTecrubeHizi={karakter.meslek_tecrube_hizi}
               />
             </aside>
 
@@ -2317,8 +2323,14 @@ function App() {
                 <KisilikPaneli
                   kisilik={karakter.kisilik}
                   aileMeslegi={karakter.aile_meslegi}
+                  bolge={karakter.bolge}
                   kaynaklar={karakter.yatkinlik_kaynaklari}
                   eksenler={karakter.kisilik_eksenleri}
+                  meslekYatkinlikUnvani={karakter.meslek_yatkinlik_unvani}
+                  meslekYatkinlikSeviyesi={karakter.meslek_yatkinlik_seviyesi}
+                  meslekZarBonusu={karakter.meslek_zar_bonusu}
+                  meslekMaasCarpani={karakter.meslek_maas_carpani}
+                  meslekTecrubeHizi={karakter.meslek_tecrube_hizi}
                 />
               </div>
             </div>

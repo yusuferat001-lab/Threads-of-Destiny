@@ -114,6 +114,18 @@ describe("yonetimIstekYap", () => {
     );
   });
 
+  it("sermaye_destegi Zanaatkâr'da üretim kapasitesini artırır (2026-09 dengesi öncesi hiçbir etkisi yoktu)", async () => {
+    vi.spyOn(Math, "random").mockReturnValue(0.1); // rollSuccess geçer
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
+    await mesleğiAta(state.id, "Zanaatkâr");
+    state.para = 500;
+    state.patron_iliski = 90;
+    const oncekiUretim = state.uretim_kapasitesi ?? 0;
+
+    const sonuc = await yonetimIstekYap(state.id, "sermaye_destegi");
+    expect(sonuc.basarili).toBe(true);
+    expect(sonuc.state.uretim_kapasitesi).toBe(oncekiUretim + 10);
+  });
 });
 
 describe("yonetimTalebiKararlastir", () => {

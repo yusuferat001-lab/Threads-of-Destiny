@@ -55,6 +55,7 @@ import {
   enflasyonCarpani,
   mulkGelirleriUygula,
   mulkGetiriOraniHesapla,
+  mulkGetiriOraniKisisel,
   rastgeleMulkBakimAraligi,
   mulkYillikBakimTahmini,
   gayrimenkulDegeriHesapla,
@@ -84,6 +85,7 @@ import {
   MESLEK_KATEGORI,
   eskiKayitGocu,
   aileYillikUygula,
+  ekipSadakatYillikUygula,
   yonetimYillikUygula,
   havuzKilidiVar,
   rakipGucKir,
@@ -1658,8 +1660,10 @@ async function sonucuUygulaVeIlerlet(
   }
   // Kariyer puanı: mesleğine uygun kategoride (savas/ticaret/din) başarılı olmak
   // seni rütbede ilerletir; kilit taşı olaylar ayrıca doğrudan puan verebilir.
+  // Mesleğe yatkınlık kademesinin "tecrübe hızı" bonusu/malusu (±%7..±%15) bu
+  // kazanca da biner (bkz. data/meslekYatkinlik.ts).
   if (basarili && MESLEK_KATEGORI[state.meslek] === mevcutOlay.kategori) {
-    state.kariyer_puani += KARIYER_PUANI_KATEGORI_BASARI;
+    state.kariyer_puani += KARIYER_PUANI_KATEGORI_BASARI * (1 + (state.meslek_tecrube_hizi ?? 0));
     // Din Adamı, din kategorisinde başarılı olduğu her olayda biraz nüfuz kazanır
     // (pasif un +0.4/yıl sürüklenmesinin eşi) — nüfuz → maaş metrik çarpanı.
     if (state.meslek === "Din Adamı") state.nufuz += 1.5;
@@ -1959,8 +1963,9 @@ async function sonucuUygulaVeIlerlet(
     const turSuresi = Math.random() < 0.4 ? 1 : 2;
     yasArtisi = mevcutOlay.yolculukOlayi ? ilerletYas(state, 1, 1) : ilerletYas(state, turSuresi, turSuresi);
     // Pasif kıdem: hayatta geçen her yıl kariyer puanını biraz büyütür (yatırım yapmayan
-    // bir karakter de zamanla rütbe atlar; yatırım sadece bunu hızlandırır).
-    state.kariyer_puani += KARIYER_PUANI_YILLIK * yasArtisi;
+    // bir karakter de zamanla rütbe atlar; yatırım sadece bunu hızlandırır). Mesleğe
+    // yatkınlık kademesinin "tecrübe hızı" bonusu/malusu buna da biner.
+    state.kariyer_puani += KARIYER_PUANI_YILLIK * yasArtisi * (1 + (state.meslek_tecrube_hizi ?? 0));
     if (eskiHukumdar && state.hukumdar && state.hukumdar !== eskiHukumdar) {
       const haber = hukumdarDegisimHaberiUret(
         Khukumdar(state.dil, eskiHukumdar),
@@ -2064,6 +2069,7 @@ async function sonucuUygulaVeIlerlet(
           nakitAkisi.mulkNet = mulkSonucu.toplamNet;
           nakitAkisi.bilgiMulkBakim = mulkSonucu.bakimOdemeleri.reduce((a, b) => a + b.miktar, 0);
           sucSeviyesiUygula(state, yasArtisi);
+          ekipSadakatYillikUygula(state, yasArtisi);
           // Aile ekranı: eş/çocuk ilişkisi soğuması + düşük ilişki moral cezası +
           // bekleyen para talebinin süresi dolması / yeni talep üretimi (§33).
           const aileMesaji = aileYillikUygula(state, yasArtisi);
@@ -2851,6 +2857,12 @@ const YONETIM_ISTEKLERI: YonetimIstekTanimi[] = [
         state.ticaret_sermaye += Math.round(15 * enflasyon);
       } else if (state.meslek === "Din Adamı") {
         state.nufuz += 8;
+      } else if (state.meslek === "Zanaatkâr") {
+        // Diğer 3 meslek için var olan bu istek Zanaatkâr'da hiçbir dalı
+        // eşleşmediği için sessizce etkisizdi — oyuncu ilişki bedelini ödeyip
+        // hiçbir şey almıyordu. uretim_kapasitesi zaten olay kaynaklı çok kıt
+        // (bkz. hayatAmaclari.ts "usta_eli" notu); buraya da bağlandı.
+        state.uretim_kapasitesi = Math.min(100, (state.uretim_kapasitesi ?? 0) + 10);
       }
     },
   },
@@ -3539,7 +3551,7 @@ export async function mulkConfigGetir(id: string): Promise<MulkKartBilgisi[]> {
   const { state } = oturum;
   const enflasyon = enflasyonCarpani(state);
   return MULK_TANIMLARI.map((tanim) => {
-    const oran = mulkGetiriOraniHesapla(tanim.tur, state.ulke);
+    const oran = mulkGetiriOraniKisisel(state, tanim.tur);
     const tabanDegeri = tanim.taban_maliyet * enflasyon;
     return {
       tur: tanim.tur,
@@ -3951,7 +3963,7 @@ export async function sosyallesmeOlayCoz(id: string, secenekIndex: number): Prom
     state.uretim_kapasitesi = Math.min(100, Math.max(0, state.uretim_kapasitesi + etki.uretim_kapasitesi_artis));
   }
   if (basarili && MESLEK_KATEGORI[state.meslek] === mevcutOlay.kategori) {
-    state.kariyer_puani += KARIYER_PUANI_KATEGORI_BASARI;
+    state.kariyer_puani += KARIYER_PUANI_KATEGORI_BASARI * (1 + (state.meslek_tecrube_hizi ?? 0));
     if (state.meslek === "Din Adamı") state.nufuz += 1.5;
   }
   if (etki.kariyer_puani_artis) state.kariyer_puani += etki.kariyer_puani_artis;
