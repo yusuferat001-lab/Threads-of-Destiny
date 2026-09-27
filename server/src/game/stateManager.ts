@@ -14,7 +14,7 @@ import {
   KARIYER_PUANI_YILLIK,
 } from "../data/rutbeler";
 import { YerlesimTanimi, yerlesimGetir, yerlesimIdByAd } from "../data/yerlesimler";
-import { konutGetir, VARSAYILAN_KONUT_ID, TASINMA_MALIYETI } from "../data/konutlar";
+import { konutGetir, VARSAYILAN_KONUT_ID, TASINMA_MALIYETI, konutKademeIndeksi, KONUT_SAHIBI_MIN_KADEME } from "../data/konutlar";
 import { yasamSecenegiGetir, VARSAYILAN_YASAM_SECIMI_ID } from "../data/yasamSecenekleri";
 import { rastgeleIkiIsimSec, rastgeleBirIsimSec, rastgeleCinsiyetliIsimSec } from "../data/npcIsimleri";
 import { liderGetir, komsuGucSec } from "../data/liderler";
@@ -651,6 +651,7 @@ export function createCharacter(
     yerlesim: yerlesim.ad,
     din_kultur: DIN_KULTUR_BY_BOLGE[bolge] ?? "Bilinmiyor",
     konut_id: VARSAYILAN_KONUT_ID,
+    konut_surekli_yasadigi_yil: null,
     yasam_secimi_id: VARSAYILAN_YASAM_SECIMI_ID,
     hazard_el_sayisi: 0,
     uc_kagitci_oyun_sayisi: 0,
@@ -904,6 +905,14 @@ export function eskiKayitGocu(state: CharacterState): void {
   }
   if (typeof state.son_terfi_yili !== "number") {
     state.son_terfi_yili = state.baslangic_yili ?? state.yil;
+  }
+  // "konut_sahibi" hayat amacının süreklilik sayacı sonradan eklendi. Zaten
+  // nitelikli bir kademedeyse (Taş Ev+) sayacı şimdi başlatıyoruz (geçmişte ne
+  // kadar orada kaldığını bilmiyoruz — geriye dönük bedava tamamlama vermemek
+  // için muhafazakâr davranıyoruz, oyuncu buradan itibaren süreyi doldurur).
+  if (state.konut_surekli_yasadigi_yil === undefined) {
+    state.konut_surekli_yasadigi_yil =
+      konutKademeIndeksi(state.konut_id) >= KONUT_SAHIBI_MIN_KADEME ? state.yil : null;
   }
   // "mulkler"/"baslangic_yili" gibi sonradan eklenen alanlar eski kayıtlarda undefined
   // kalıyor; gayrimenkul değeri/geliri ve enflasyon hesabı bunlara doğrudan .length /
@@ -1406,6 +1415,21 @@ export function aileTalebiUret(state: CharacterState): AileTalep | null {
   };
 }
 
+// ===== Ekip: sadakat pasif sürüklenmesi (2026-09 hayat amacı dengesi) =====
+// Sadakat eskiden yalnız hediyeEt (§34.3) ile artıyordu — çoğu oyuncu o sistemi hiç
+// keşfetmediğinden "guvenilir_ekip" amacı neredeyse hiç tamamlanmıyordu. Aile/evlilik
+// moraliyle aynı felsefede, küçük ve sessiz bir pasif artış: borçta değilken sadakat
+// yavaşça yükselir (hediye hâlâ daha hızlı bir yol).
+const EKIP_SADAKAT_PASIF_ARTIS_YILLIK = 0.25;
+
+/** Yıllık pasif: borçta değilken her ekip üyesinin sadakati yavaşça yükselir. */
+export function ekipSadakatYillikUygula(state: CharacterState, yasArtisi: number): void {
+  if (state.para < 0 || state.ekip.length === 0) return;
+  for (const uye of state.ekip) {
+    uye.sadakat = Math.min(100, uye.sadakat + EKIP_SADAKAT_PASIF_ARTIS_YILLIK * yasArtisi);
+  }
+}
+
 // ===== Kariyer sayfası: yönetimle bağlar pasif sürüklenmesi + dayatılan talep (§35) =====
 // Aile ekranıyla aynı felsefe: ilgilenmezsen ilişki soğur; yüksek ilişki küçük bir
 // sessiz perk verir; bazen yönetici/patron dayatılan bir bağış ya da sadakat yemini ister.
@@ -1840,6 +1864,17 @@ export function konutDegistir(state: CharacterState, konutId: string): string {
     throw new Error(`Taşınmak için yeterli paran yok (${TASINMA_MALIYETI} ${state.para_birimi} gerekli).`);
   }
   if (!geriCekilme) state.para -= TASINMA_MALIYETI;
+  // "konut_sahibi" hayat amacı (§18) bir kademeye taşınmayı değil, orada BİR
+  // SÜRE kesintisiz yaşamayı ister: nitelikli banda (Taş Ev+) yeni giriliyorsa
+  // sayaç başlar, bandın dışına çıkılınca sıfırlanır; bandın İÇİNDE yükselmek
+  // (Taş Ev→Konak gibi) sayacı bozmaz.
+  const eskiNitelikli = konutKademeIndeksi(state.konut_id) >= KONUT_SAHIBI_MIN_KADEME;
+  const yeniNitelikli = konutKademeIndeksi(konutId) >= KONUT_SAHIBI_MIN_KADEME;
+  if (yeniNitelikli && !eskiNitelikli) {
+    state.konut_surekli_yasadigi_yil = state.yil;
+  } else if (!yeniNitelikli) {
+    state.konut_surekli_yasadigi_yil = null;
+  }
   state.konut_id = konutId;
   clampStats(state);
   return T(state.dil, "{0}'e taşındın.", [K(state.dil, yeniKonut.ad)]);

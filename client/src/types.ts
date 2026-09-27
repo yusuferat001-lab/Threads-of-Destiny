@@ -148,6 +148,7 @@ export interface CharacterState {
   yerlesim: string;
   din_kultur: string;
   konut_id: string;
+  konut_surekli_yasadigi_yil: number | null;
   yasam_secimi_id: string;
   hazard_el_sayisi: number;
   uc_kagitci_oyun_sayisi: number;
