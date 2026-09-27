@@ -677,6 +677,7 @@ export function createCharacter(
     meslek_zar_bonusu: 0,
     meslek_maas_carpani: 0,
     meslek_tecrube_hizi: 0,
+    gayrimenkul_getiri_bonusu: 0,
     sehir_yonetim_seviyesi: 0,
     sehir_yonetim_unvan: null,
     cag,
@@ -815,6 +816,24 @@ export function createCharacter(
   // Doğuş kimliği ödülleri: yarıya indirme uygulanmadan (ham) verilir.
   if (aile.maasCarpani) maasCarpaniUygula(state, aile.maasCarpani, true);
   if (yerlesim.maasCarpani) maasCarpaniUygula(state, yerlesim.maasCarpani, true);
+
+  // Kişilik özelliklerinin çeşitlendirilmiş doğuş bonusları (2026-09 sonu, §41):
+  // maaş çarpanı / gayrimenkul getiri bonusu / üstlerle ilişki bonusu — yatkınlığın
+  // (yukarıda yatkinlikHesapla ile zaten hesaplandı) DIŞINDA, isteğe bağlı ekstra
+  // ödüller. Her ikisi de aile/yerleşim ile aynı desende (ham=true) uygulanır.
+  for (const ozellikAdi of kisilik) {
+    const tanim = kisilikGetir(ozellikAdi);
+    if (!tanim) continue;
+    if (tanim.maasCarpani) maasCarpaniUygula(state, tanim.maasCarpani, true);
+    if (tanim.gayrimenkulBonusu) state.gayrimenkul_getiri_bonusu += tanim.gayrimenkulBonusu;
+    if (tanim.iliskiBonusu) {
+      const { hat, deger } = tanim.iliskiBonusu;
+      if (hat !== "patron") state.yonetim_iliski += deger;
+      if (hat !== "yonetici") state.patron_iliski += deger;
+    }
+  }
+  state.yonetim_iliski = clamp(state.yonetim_iliski, 0, 100);
+  state.patron_iliski = clamp(state.patron_iliski, 0, 100);
 
   clampStats(state);
   state.acilis_anlatimi = acilisAnlatimiUret(state, aile, yerlesim);
@@ -1065,6 +1084,8 @@ export function eskiKayitGocu(state: CharacterState): void {
   // bilinmiyor sayılır (retroaktif olarak kazandırılmaz — bir sonraki relik
   // tetiklenmesinde zaten normal yoldan set edilir).
   if (typeof state.relik_can_kurtardi !== "boolean") state.relik_can_kurtardi = false;
+  // Kişilik kaynaklı gayrimenkul getiri bonusu (§41) sonradan eklendi; eski kayıtlarda etkisiz (0) sayılır.
+  if (typeof state.gayrimenkul_getiri_bonusu !== "number") state.gayrimenkul_getiri_bonusu = 0;
   // Mesleğe yatkınlık kademeleri (2026-09 sonu) sonradan eklendi. Meslek zaten
   // seçilmişse mevcut yatkinliklar'dan kademeyi geriye dönük türet (mükemmel
   // kademenin tek seferlik şöhret bonusu RETROAKTİF verilmez — o yalnız ilk
@@ -3036,7 +3057,7 @@ export function gayrimenkulYillikGelirHesapla(state: CharacterState): number {
   return paraYuvarla(
     state.mulkler.reduce((toplam, tur) => {
       const taban = mulkTanimiGetir(tur).taban_maliyet * enflasyon;
-      return toplam + paraYuvarla(taban * mulkGetiriOraniHesapla(tur, state.ulke));
+      return toplam + paraYuvarla(taban * mulkGetiriOraniKisisel(state, tur));
     }, 0)
   );
 }
@@ -3142,12 +3163,24 @@ function hamMulkGetiriOrani(tur: MulkTuru, ulke: CharacterState["ulke"]): number
 /**
  * Mülkün güncel yıllık getiri oranı — hamMulkGetiriOrani'nın çıktısını ±MULK_GETIRI_TAVAN
  * (%8) bandına kırpar: demirci/kervan/karaborsa durum çarpanları uçları taşısa bile
- * "bir anda çok getirip çok götürmesin" (kullanıcı isteği). mulkGelirleriUygula ve
- * gameEngine.mulkConfigGetir bunu kullanır.
+ * "bir anda çok getirip çok götürmesin" (kullanıcı isteği). Bu, dünya-durumuna göre
+ * DÜNYA GEZEGENİ oranıdır (kişiye özel değil) — `mulkPiyasaSinyali`'nin "normal" karşılaştırması
+ * ve testler hâlâ bunu kullanır. Karaktere özel çağrılar `mulkGetiriOraniKisisel` kullanmalı.
  */
 export function mulkGetiriOraniHesapla(tur: MulkTuru, ulke: CharacterState["ulke"]): number {
   const ham = hamMulkGetiriOrani(tur, ulke);
   return Math.max(-MULK_GETIRI_TAVAN, Math.min(MULK_GETIRI_TAVAN, ham));
+}
+
+/**
+ * `mulkGetiriOraniHesapla`'nın karaktere özel hâli (2026-09 sonu, §41): dünya-durumu
+ * oranına, kişilik kaynaklı kalıcı `gayrimenkul_getiri_bonusu`yu (±%2 gibi küçük bir
+ * katkı) ekler. Gerçek gelir akışını etkileyen TÜM üretim çağrıları (yıllık tik +
+ * Finans/Yatırım önizlemeleri) bunu kullanır; ±MULK_GETIRI_TAVAN kırpmasından SONRA
+ * eklenir, küçük büyüklüğü yüzünden ayrıca kırpılmaz.
+ */
+export function mulkGetiriOraniKisisel(state: CharacterState, tur: MulkTuru): number {
+  return mulkGetiriOraniHesapla(tur, state.ulke) + (state.gayrimenkul_getiri_bonusu ?? 0);
 }
 
 /**
@@ -3167,7 +3200,7 @@ export function mulkGelirleriUygula(state: CharacterState, yasArtisi: number): M
 
   for (const tur of [...state.mulkler]) {
     const taban = mulkTanimiGetir(tur).taban_maliyet * enflasyon;
-    const oran = mulkGetiriOraniHesapla(tur, ulke);
+    const oran = mulkGetiriOraniKisisel(state, tur);
 
     if (tur === "kervan" && ulke.savasta && Math.random() < KERVAN_BATMA_IHTIMALI_YILLIK * yasArtisi) {
       state.mulkler = state.mulkler.filter((m) => m !== "kervan");

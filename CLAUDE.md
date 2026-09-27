@@ -308,7 +308,7 @@ Olay/seçenek metninde ve sonuç `mesaj`/`detay`'ında kullanılabilir: `{bolge}
 
 ## 7. Olay Bankası Dosya Haritası
 
-`data/olaylar/index.ts` tüm alt listeleri `OLAY_BANKASI: OlayTanimi[]` içinde birleştirir. **Toplam 1694 olay** (id sayımıyla — 4. meslek Zanaatkâr'ın 130 olayı, `genel.ts`'e eklenen `sehir_yonetim_zanaatkar_baslangic` giriş olayı, 80 bölgesel olay (§16'ya bakın, `bolgeselOrtaCag.ts`/`bolgeselSanayi.ts`), 90 olaylık "gecikmiş takip" havuzu (§37) ve mesleğe yatkınlık kademesi gating'ini örnekleyen 4 olayın (§40, `meslekYatkinlikOlaylari.ts`) eklenmesi sonrası gerçek sayı, `npx tsx -e "import{OLAY_BANKASI}from './src/data/olaylar';console.log(OLAY_BANKASI.length)"` ile doğrulanabilir). Belirli bir olayı bulmak için `grep -n "id: \"<olay_id>\"" server/src/data/olaylar/*.ts` kullan — dosyayı baştan sona okuma.
+`data/olaylar/index.ts` tüm alt listeleri `OLAY_BANKASI: OlayTanimi[]` içinde birleştirir. **Toplam 1703 olay** (id sayımıyla — 4. meslek Zanaatkâr'ın 130 olayı, `genel.ts`'e eklenen `sehir_yonetim_zanaatkar_baslangic` giriş olayı, 80 bölgesel olay (§16'ya bakın, `bolgeselOrtaCag.ts`/`bolgeselSanayi.ts`), 90 olaylık "gecikmiş takip" havuzu (§37), mesleğe yatkınlık kademesi gating'ini örnekleyen 4 olay (§40) ve Mükemmel kademeye özel 8 yeni olayın (§41, `meslekYatkinlikOlaylari.ts`, toplam 12) eklenmesi sonrası gerçek sayı, `npx tsx -e "import{OLAY_BANKASI}from './src/data/olaylar';console.log(OLAY_BANKASI.length)"` ile doğrulanabilir). Belirli bir olayı bulmak için `grep -n "id: \"<olay_id>\"" server/src/data/olaylar/*.ts` kullan — dosyayı baştan sona okuma.
 
 | Dosya | ~Olay Sayısı | Satır | İçerik |
 |---|---|---|---|
@@ -348,7 +348,7 @@ Olay/seçenek metninde ve sonuç `mesaj`/`detay`'ında kullanılabilir: `{bolge}
 | `gecikmisTakip.ts` | 90 | ~1140 | **(2026-09 sonu, önceki CLAUDE.md sürümünde bu tabloya hiç eklenmemişti — §37)** "Gecikmiş takip": bir seçimin 15-20 yıl sonraki geri dönüşü, 30 tema × (1 tetikleyici + 2 sonuç olayı) |
 | `bolgeselOrtaCag.ts` | 40 | ~930 | **(2026-09, önceki CLAUDE.md sürümünde bu tabloya hiç eklenmemişti — §38)** 8 çağ×bölge bonus/malus paketinin Orta Çağ yarısını yansıtan flavor olaylar (10/bölge × 4 bölge) |
 | `bolgeselSanayi.ts` | 40 | ~920 | **(2026-09, önceki CLAUDE.md sürümünde bu tabloya hiç eklenmemişti — §38)** Aynısı Sanayi Devrimi 4 bölgesi için |
-| `meslekYatkinlikOlaylari.ts` | 4 | ~200 | **(2026-09 sonu, §40)** Mesleğe yatkınlık kademesi (§40) gating'ini örnekleyen temsili havuz — Asker/Tüccar/Din Adamı/Zanaatkâr birer olay, hem `OlayTanimi` hem `OlaySecenegi` seviyesinde `min/maxMeslekYatkinlikSeviye` kullanır |
+| `meslekYatkinlikOlaylari.ts` | 12 | ~700 | **(2026-09 sonu, §40+§41)** Mesleğe yatkınlık kademesi gating'ini örnekleyen 4 temsili olay (Asker/Tüccar/Din Adamı/Zanaatkâr birer tane, hem `OlayTanimi` hem `OlaySecenegi` seviyesinde `min/maxMeslekYatkinlikSeviye` kullanır) + Mükemmel kademeye (20+) özel 8 yeni olay (meslek başına 2, §41) |
 
 `types.ts` (162 satır, şemalar) ve `index.ts` (79 satır, birleştirme) bu sayıma dahil değil.
 
@@ -686,27 +686,31 @@ Kaynak: [aileler.ts](server/src/data/aileler.ts). Her satır: para/sağlık/ün/
 
 (`fabrika_iscisi` ayrıca kalıcı `Durum` verir: "Tozlu Ciğerler" `tur_basi_saglik:-1`.)
 
-### Kişilik Özellikleri (16 sabit, doğuşta çelişmeyen 2 tanesi seçilir)
-Kaynak: [kisilikler.ts](server/src/data/kisilikler.ts). Her özellik `KATEGORI` bazlı yatkınlık etkisi + `celisenler` (aynı karakterde asla birlikte olmaz) taşır:
+### Kişilik Özellikleri (18 sabit, doğuşta çelişmeyen 2 tanesi seçilir)
+Kaynak: [kisilikler.ts](server/src/data/kisilikler.ts). **2026-09 sonu yeniden tasarımı (§41):** her özelliğin `etkiler`i artık YALNIZ 4 meslek kategorisini (savas/ticaret/din/zanaat) kullanır — eski siyaset/sosyal/sağlık etkileri tamamen kaldırıldı (aileler.ts/bolgeOzellikleri.ts'teki §40 disipliniyle tutarlı). Ayrıca "bonus çeşitliliğini artır" isteğiyle 9 özellik artık saf yatkınlığın DIŞINDA bir bonus/malus da taşıyor: kalıcı **maaş çarpanı** (`maasCarpani`, doğuşta ham uygulanır — `aile.maasCarpani`/`yerlesim.maasCarpani` ile aynı desen), kalıcı **gayrimenkul (mülk getirisi) bonusu** (`gayrimenkulBonusu`, `state.gayrimenkul_getiri_bonusu`'na eklenir, §13'teki `mulkGetiriOraniKisisel`'de kullanılır) veya doğuşta tek seferlik **üstlerle ilişki bonusu** (`iliskiBonusu: {hat, deger}`, `yonetim_iliski`/`patron_iliski`'ye eklenir — §35). `celisenler` (aynı karakterde asla birlikte olmaz) davranışı değişmedi:
 
-| Özellik | Çelişir | Etkiler |
-|---|---|---|
-| Sinirli | Sakin | savaş+8, sosyal-10, sağlık-5 |
-| Sakin | Sinirli | sağlık+8, siyaset+5, savaş-5 |
-| Kibirli | Vicdanlı | siyaset+10, sosyal-8, din-8 |
-| Alaycı | Yumuşak Başlı | siyaset+5, sosyal-5, din-10 |
-| Umutlu | Umutsuz, Depresif, Hüzünlü | sağlık+8, sosyal+8 |
-| Umutsuz | Umutlu, Hırslı | sağlık-10, sosyal-5 |
-| Depresif | Umutlu, Hırslı | sağlık-15, sosyal-10 |
-| Cesur | – | savaş+15, siyaset+5 |
-| Hüzünlü | Umutlu | din+8, sosyal-8 |
-| Sosyal | İçedönük | sosyal+15, ticaret+8 |
-| İçedönük | Sosyal | sosyal-15, din+8 |
-| Sivri Dilli | Yumuşak Başlı | sosyal-10, siyaset+8 |
-| Yumuşak Başlı | Sivri Dilli, Alaycı | din+8, savaş-10, sosyal+5 |
-| Rekabetçi | – | ticaret+10, savaş+8, siyaset+5 |
-| Hırslı | Umutsuz, Depresif | ticaret+12, siyaset+10, sosyal-5 |
-| Vicdanlı | Kibirli | din+12, sağlık+5, ticaret-8 |
+| Özellik | Çelişir | Yatkınlık Etkileri | Ekstra Bonus |
+|---|---|---|---|
+| Sinirli | Sakin | savas+8, zanaat-4 | – |
+| Sakin | Sinirli | din+5, savas-5 | Gayrimenkul +0.02 |
+| Kibirli | Vicdanlı | ticaret+6, din-6 | – |
+| Alaycı | Yumuşak Başlı | ticaret+4, din-8 | – |
+| Umutlu | Umutsuz, Depresif, Hüzünlü | din+6, zanaat+4 | – |
+| Umutsuz | Umutlu, Hırslı | ticaret-4, zanaat-6 | Maaş ham ×0.96 |
+| Depresif | Umutlu, Hırslı | savas-4, zanaat-8 | – |
+| Cesur *(bilinçli olarak limit-üstü, kırpma testi için)* | – | savas+10, ticaret+4 | – |
+| Hüzünlü | Umutlu | din+6, ticaret-6 | – |
+| Sosyal | İçedönük | ticaret+8, zanaat-4 | İlişki: patron +5 |
+| İçedönük | Sosyal | zanaat+8, ticaret-6 | – |
+| Sivri Dilli | Yumuşak Başlı | ticaret+6, din-6 | İlişki: patron −5 |
+| Yumuşak Başlı | Sivri Dilli, Alaycı | din+8, savas-8 | İlişki: ikisi +6 |
+| Rekabetçi | – | ticaret+6, savas+6 | Maaş ham ×1.04 |
+| Hırslı | Umutsuz, Depresif | ticaret+8, din-4 | Maaş ham ×1.05 |
+| Vicdanlı | Kibirli | din+8, ticaret-6 | Gayrimenkul +0.02 |
+| Palavracı *(Faz 7 komik özellik)* | Vicdanlı | ticaret+6, zanaat-4 | – |
+| Obur *(Faz 7 komik özellik)* | – | savas-6, ticaret+4, zanaat-4 | Gayrimenkul −0.02 |
+
+Tasarım kuralı: her özellik en fazla 2 kategoride yatkınlık etkiler; olumsuz karakterli özellikler (Umutsuz, Sivri Dilli, Obur) yeni bonuslarında da olumsuz — "bedelsiz bonus yok" felsefesiyle tutarlı. `FEVRILIK_ETKI`/`MERHAMET_ETKI` (aşağıdaki kişilik eksenleri) bu düzenlemeden etkilenmeyen tamamen ayrı bir mekanizmadır.
 
 Ayrıca iki uçlu **kişilik eksenleri** (`kisilik_eksenleri`, seçenek gating için kullanılır, §12): `fevrilik` (0=planlayıcı, 100=fevri) ve `merhamet` (0=zalim, 100=barışçıl). Taban `50 + rastgele(-10..+10)`, sonra seçilen 2 özelliğin `FEVRILIK_ETKI`/`MERHAMET_ETKI` katkısı eklenir (ör. Sinirli fevrilik+20, Sakin fevrilik-20, Yumuşak Başlı merhamet+18, Kibirli merhamet-15), 0-100 clamp.
 
@@ -1413,3 +1417,81 @@ Kullanıcı isteğiyle üç ayrı ama ilişkili değişiklik: (1) bölge/aile/ki
 **Eski kayıt uyumu:** `eskiKayitGocu` meslek zaten seçilmiş eski oturumlar için kademeyi mevcut `yatkinliklar`'dan geriye dönük türetir (mükemmel kademenin tek seferlik şöhret bonusu RETROAKTİF verilmez — o yalnız ilk seçim anının ödülüdür); meslek henüz seçilmemişse `null`/`0` kalır.
 
 **Test:** [meslekYatkinlik.test.ts](server/tests/meslekYatkinlik.test.ts) — kademe eşikleri, unvan tablosu (OÇ≠SD), `mesleğiSec` kalıcılığı (yatkınlık sonradan değişse de kademe sabit kalır), maaş kırılımı entegrasyonu, yeni olay-şansı formülü (eski toplama davranışının artık üretilmediği doğrulanır), olay/şık gating, ve kaynak limitlerinin (bölge/aile/kişilik) gerçekten kırpıldığı.
+
+## 41. Kişilik Yatkınlığı Çeşitlendirmesi + Bölge/Sinerji Görünürlüğü + Mükemmel Kademe İçeriği (2026-09 sonu)
+
+Kullanıcı isteğiyle §40'ın disiplinini (kaynak başına 4 meslek kategorisi + üst-alt limit) **kişilik özelliklerine** de uygulayan, üstüne kişilik bonuslarını çeşitlendiren ve iki eksik görünürlük sorununu kapatan bir tur: (1) `kisilikler.ts`'teki `etkiler` artık YALNIZ savas/ticaret/din/zanaat kullanıyor — siyaset/sosyal/sağlık tamamen kaldırıldı; (2) 18 özelliğin 9'u artık saf yatkınlığın dışında bir bonus da taşıyor (maaş çarpanı / gayrimenkul getiri bonusu / üstlerle ilişki bonusu); (3) `KisilikPaneli.tsx`'te daha önce hesaplanıp hiç gösterilmeyen **bölge** ve **bölge+aile sinerjisi** yatkınlık katkıları artık rozet olarak görünüyor; (4) Mükemmel kademeye (20+) özel 8 yeni olay eklendi.
+
+### `KisilikTanimi` şeması (server/src/data/kisilikler.ts)
+
+```ts
+export type MeslekKategorisi = "savas" | "ticaret" | "din" | "zanaat";
+export interface KisilikTanimi {
+  ad: string;
+  celisenler: string[];
+  etkiler: Partial<Record<MeslekKategorisi, number>>;
+  maasCarpani?: number;               // doğuşta bir kez, ham uygulanır (maasCarpaniUygula ham=true)
+  gayrimenkulBonusu?: number;         // state.gayrimenkul_getiri_bonusu'na eklenir (ör. ±0.02)
+  iliskiBonusu?: { hat: "yonetici" | "patron" | "ikisi"; deger: number };  // doğuşta tek seferlik
+}
+```
+
+Yeni tablo §16'daki "Kişilik Özellikleri" tablosunda güncellendi (18 satır, `savas/ticaret/din/zanaat` + varsa ekstra bonus sütunu). `KISILIK_YATKINLIK_LIMIT=8` çalışma-anı kırpması (§40) değişmeden kalır. **Cesur** bilinçli olarak `savas:10` (limit-üstü) bırakıldı — kırpma testinin (eskiden "Hırslı ticaret+12" kullanan) hâlâ gerçek bir kanıtı olsun diye; Hırslı'nın yeni değeri (`ticaret:8`) artık zaten limitte durduğu için kanıt olamazdı.
+
+### `createCharacter` entegrasyonu (stateManager.ts)
+
+Aile/yerleşim maaş bonusu uygulamasının hemen ardına (clampStats'tan önce) yeni bir döngü eklendi — seçilen 2 kişilik özelliğinin `maasCarpani`/`gayrimenkulBonusu`/`iliskiBonusu`'unu doğuşta bir kez uygular:
+```ts
+for (const ozellikAdi of kisilik) {
+  const tanim = kisilikGetir(ozellikAdi);
+  if (!tanim) continue;
+  if (tanim.maasCarpani) maasCarpaniUygula(state, tanim.maasCarpani, true);
+  if (tanim.gayrimenkulBonusu) state.gayrimenkul_getiri_bonusu += tanim.gayrimenkulBonusu;
+  if (tanim.iliskiBonusu) {
+    const { hat, deger } = tanim.iliskiBonusu;
+    if (hat !== "patron") state.yonetim_iliski += deger;
+    if (hat !== "yonetici") state.patron_iliski += deger;
+  }
+}
+state.yonetim_iliski = clamp(state.yonetim_iliski, 0, 100);
+state.patron_iliski = clamp(state.patron_iliski, 0, 100);
+```
+Yeni `CharacterState` alanı: `gayrimenkul_getiri_bonusu: number` (server + client `types.ts`, `eskiKayitGocu`'da `0` backfill). `hat:"ikisi"` her iki hatta da uygulanır (Yumuşak Başlı); `hat:"patron"`/`"yonetici"` yalnız kendi hattına.
+
+### Mülk getirisi kişiselleştirmesi — imza değişikliği DEĞİL, sarmalayıcı fonksiyon
+
+Plan aşamasında `mulkGetiriOraniHesapla(tur, ulke)`'nin imzasını `(state, tur)`'a çevirmek düşünüldü, ama uygulama sırasında bunun `gameEngine.ts`'teki `mulkPiyasaSinyali`'ni kıracağı görüldü — o fonksiyon "şimdi al / bekle" sinyali için aynı formülü hem `state.ulke` hem **sentetik, `CharacterState` OLMAYAN** bir `NOTR_ULKE` nesnesiyle iki kez çağırıyor (§34.6). İmza değişseydi bu karşılaştırma bozulurdu, üstelik `mulkVeSucSistemi.test.ts`'te 8 doğrudan çağrı `(tur, ulke)` imzasını kullanıyordu. Bunun yerine **`mulkGetiriOraniHesapla` HİÇ DEĞİŞMEDEN** korundu (yalnız doc-comment güncellendi) ve yeni, ayrı bir fonksiyon eklendi:
+```ts
+export function mulkGetiriOraniKisisel(state: CharacterState, tur: MulkTuru): number {
+  return mulkGetiriOraniHesapla(tur, state.ulke) + (state.gayrimenkul_getiri_bonusu ?? 0);
+}
+```
+Yalnızca gerçek üretim çağrı noktaları buna geçirildi: `gayrimenkulYillikGelirHesapla`, `mulkGelirleriUygula` (stateManager.ts) ve `mulkConfigGetir`'in önizlemesi (gameEngine.ts). `mulkPiyasaSinyali`'nin `NOTR_ULKE` karşılaştırması ve mevcut testler **kasıtlı olarak dokunulmadı** — kişisel bonus yalnız gerçek gelir hesaplarına yansır, "şimdi al / bekle" sinyaline karışmaz (sinyal zaten dünya durumuna göre, kişiden bağımsız bir zamanlama tavsiyesidir).
+
+### Bölge + sinerji görünürlüğü (client)
+
+Araştırmada bulundu ki `state.yatkinlik_kaynaklari` bölgenin kendi katkısını (`kaynak: state.bolge`) ve varsa sinerji kaydını (`kaynak: "<bölge> + <aile> sinerjisi"`, §16) zaten içeriyordu, ama `KisilikPaneli.tsx` yalnızca kişilik+aile rozetlerini render ediyordu — bölge/sinerji hiç görünmüyordu (oyuncu ülke bonusunu asla göremiyordu). Düzeltme:
+- `KisilikPaneli` yeni bir zorunlu prop alır: `bolge: string`. Render listesi `[...kisilik, aileMeslegi]` → `[...kisilik, aileMeslegi, bolge]` oldu (🌍 ikonu, mevcut 🎭/🏠 desenine benzer).
+- Sinerji kaydı sunucuda hep birleşik bir TR dizesi olarak geldiği için (`kt()` ile çevrilemez), `kaynaklar.find(k => k.kaynak.endsWith(" sinerjisi"))` ile tespit edilip ayrı bir ✨ rozet olarak, parçalarından (`kt(bolge)` + `kt(aileMeslegi)` + yeni `m.kpSinerji` son-eki) yeniden kurulan bir etiketle gösterilir.
+- `App.tsx`'teki iki `<KisilikPaneli .../>` çağrısına (`acilis` ekranı + "Kişilik" modalı) `bolge={karakter.bolge}` eklendi. `i18n.ts`'e `kpSinerji: 'sinerjisi'`/`'synergy'` eklendi.
+
+### Mükemmel kademe (20+) için 8 yeni olay
+
+`meslekYatkinlikOlaylari.ts`'e meslek başına 2 olay eklendi (toplam 8), hepsi olay-seviyesinde `minMeslekYatkinlikSeviye: 4` ile kilitli (yalnız Mükemmel kademedeki karaktere çıkar), çağdan bağımsız, `agirlik: 1.2` (nadir kademeye ulaşan oyuncu gerçekten görsün diye hafif yükseltilmiş), her biri "riskli ama ödüllü kabul et" (gerçek `baseBasariSansi`, iki yönlü sonuç) vs. "güvenli reddet" (`baseBasariSansi:100`, §24'teki "erişilemez dal" deseni) iki seçenekli:
+
+| Meslek | Olay ID | Tema |
+|---|---|---|
+| Asker | `myk_asker_muhafiz_teklifi` | Kralın şahsi muhafızı olma teklifi |
+| Asker | `myk_asker_efsanevi_duello` | Rakip bir şampiyondan düello daveti |
+| Tüccar | `myk_tuccar_bas_tedarikci` | Krallığın baş tedarikçisi olma teklifi |
+| Tüccar | `myk_tuccar_rakip_kiskancligi` | Rakiplerin sabotaj/iftira kampanyası |
+| Din Adamı | `myk_din_kutsal_gorev` | Kutsal bir emaneti koruma göreviyle seçilmek |
+| Din Adamı | `myk_din_mucize_soylentisi` | Etrafında yayılan mucize söylentisi |
+| Zanaatkâr | `myk_zanaatkar_saray_daveti` | Sarayın baş zanaatkârı olma daveti |
+| Zanaatkâr | `myk_zanaatkar_taklitciler` | Adını kullanan sahtekârlarla yüzleşme |
+
+Normal ağırlıklı havuzda kalırlar (yeni bir kaskad/garanti kuralı eklenmedi — Mükemmel zaten nadir bir kademe olduğu için ekstra garanti şart görülmedi). EN çevirileri [meslekYatkinlikOlaylari.en.ts](server/src/i18n/olaylar/meslekYatkinlikOlaylari.en.ts)'e eklendi; `ceviriDurumu.ts` sürüklenme sıfır.
+
+### Test
+
+[meslekYatkinlik.test.ts](server/tests/meslekYatkinlik.test.ts)'e eklenenler: `KISILIKLER`'in tüm `etkiler` anahtarlarının 4 kategoriyle sınırlı olduğunu doğrulayan döngü testi; `createCharacter`'ın kişilik bonuslarını (maaş etiketi, gayrimenkul bonusu, patron/yönetici ilişki artışı) doğru uyguladığını doğrulayan testler; `mulkGetiriOraniKisisel`'in `gayrimenkul_getiri_bonusu`'nu doğru yansıttığını doğrulayan test. Kırpma kanıtı testi `Hırslı` yerine `Cesur` kullanacak şekilde güncellendi.

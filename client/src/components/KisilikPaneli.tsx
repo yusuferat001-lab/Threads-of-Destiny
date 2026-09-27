@@ -17,6 +17,7 @@ const fmtYuzde = (v: number): string => `${v > 0 ? '+' : ''}${Math.round(v * 100
 export function KisilikPaneli({
   kisilik,
   aileMeslegi,
+  bolge,
   kaynaklar,
   meslekYatkinlikUnvani,
   meslekYatkinlikSeviyesi,
@@ -26,6 +27,8 @@ export function KisilikPaneli({
 }: {
   kisilik: [string, string];
   aileMeslegi: string;
+  /** Ülke/bölge bonusu da görünsün (2026-09 sonu, §41) — bölgenin kendi yatkınlık katkısı + varsa bölge+aile sinerji bonusu artık burada gösteriliyor (eskiden yatkinlik_kaynaklari'nda vardı ama hiç render edilmiyordu). */
+  bolge: string;
   kaynaklar: YatkinlikKaynagi[];
   /** Faz 7 (2026-09 sonu, kullanıcı isteği): iki uçlu fevrilik/merhamet çubukları
    * UI'dan kaldırıldı — oyuncuya "gizli" bir istatistik gösterip kafa
@@ -44,6 +47,10 @@ export function KisilikPaneli({
 }) {
   const { m, kt, dil } = useDil();
   const grup = grupla(kaynaklar);
+  // Sinerji kaynağı sunucuda hep "<bölge> + <aile> sinerjisi" (kanonik TR) biçiminde
+  // gelir — tek bir bileşik kaynak dizesi olduğu için kt() ile çevrilemez, bu yüzden
+  // yalnızca varlığını (kategori/değerini) tespit edip etiketi kendimiz kuruyoruz.
+  const sinerjiKaynak = kaynaklar.find((k) => k.kaynak.endsWith(' sinerjisi'));
 
   return (
     <div className="kisilik-paneli">
@@ -57,15 +64,18 @@ export function KisilikPaneli({
           </span>
         </div>
       )}
-      {[...kisilik, aileMeslegi].map((kaynakAdi) => {
+      {[...kisilik, aileMeslegi, bolge].map((kaynakAdi) => {
         const etkiler = grup.get(kaynakAdi) ?? [];
         const aileMi = kaynakAdi === aileMeslegi;
+        const bolgeMi = kaynakAdi === bolge;
+        const ikon = bolgeMi ? '🌍 ' : aileMi ? '🏠 ' : '🎭 ';
+        const ek = aileMi ? m.kpAilesi : '';
         return (
           <div key={kaynakAdi} className="kisilik-rozet">
             <span className="kisilik-rozet-ad">
-              {aileMi ? '🏠 ' : '🎭 '}
+              {ikon}
               {kt(kaynakAdi)}
-              {aileMi ? m.kpAilesi : ''}
+              {ek}
             </span>
             {etkiler.length > 0 && (
               <span className="kisilik-rozet-etki">
@@ -77,6 +87,17 @@ export function KisilikPaneli({
           </div>
         );
       })}
+      {sinerjiKaynak && (
+        <div className="kisilik-rozet kisilik-rozet-sinerji">
+          <span className="kisilik-rozet-ad">
+            ✨ {kt(bolge)} + {kt(aileMeslegi)} {m.kpSinerji}
+          </span>
+          <span className="kisilik-rozet-etki">
+            {kategoriAdi(sinerjiKaynak.kategori, dil)} {sinerjiKaynak.deger > 0 ? '+' : ''}
+            {sinerjiKaynak.deger}
+          </span>
+        </div>
+      )}
     </div>
   );
 }

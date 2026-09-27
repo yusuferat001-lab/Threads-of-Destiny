@@ -148,6 +148,8 @@ export interface CharacterState {
   meslek_zar_bonusu: number;
   meslek_maas_carpani: number;
   meslek_tecrube_hizi: number;
+  /** Kişilik özelliklerinden gelen kalıcı gayrimenkul bonusu/malusu (§41). */
+  gayrimenkul_getiri_bonusu: number;
   sehir_yonetim_seviyesi: number;
   sehir_yonetim_unvan: string | null;
   cag: string;

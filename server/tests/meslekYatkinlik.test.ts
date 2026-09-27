@@ -190,7 +190,8 @@ describe("Mesleğe Yatkınlık Kademeleri (2026-09 sonu)", () => {
 
   it("yatkınlık kaynak limitleri: kişilik/aile katkısı kendi sınırını, bölge katkısı kendi sınırını aşmaz", () => {
     const yerlesim = yerlesimGetir("kasaba")!;
-    // Hırslı: ticaret+12, siyaset+10 (limit öncesi) — ikisi de KISILIK_YATKINLIK_LIMIT'i aşıyor.
+    // Cesur: savas+10 (limit öncesi) — bilinçli olarak KISILIK_YATKINLIK_LIMIT'i (8) aşıyor
+    // (§41 yeniden tasarımında kırpmayı kanıtlamak için tek istisna bırakıldı).
     // Gerçek aile verisi artık zaten ±8 tavanında durduğu için (§40, "her aile
     // her mesleğe" düzenlemesi) kırpmayı gerçekten kanıtlamak üzere kasıtlı
     // aşırı değerli sentetik bir aile/bölge kullanılıyor.
@@ -199,16 +200,16 @@ describe("Mesleğe Yatkınlık Kademeleri (2026-09 sonu)", () => {
       ad: "TestAile",
       agirlik: 1,
       anlati: "test",
-      yatkinlikEtkisi: { savas: 50, sosyal: -50 },
+      yatkinlikEtkisi: { savas: 50, ticaret: -50 },
     };
     const asiriBolge: BolgeOzellikleri = {
       ozet: { tr: "test", en: "test" },
-      yatkinlikEtkisi: { zanaat: 40, siyaset: -40 },
+      yatkinlikEtkisi: { zanaat: 40, din: -40 },
     };
-    const { kaynaklar } = yatkinlikHesapla(["Hırslı", "Sakin"], asiriAile, yerlesim, asiriBolge, "TestBölge");
+    const { kaynaklar } = yatkinlikHesapla(["Cesur", "Sakin"], asiriAile, yerlesim, asiriBolge, "TestBölge");
 
     for (const kaynak of kaynaklar) {
-      if (kaynak.kaynak === "Hırslı" || kaynak.kaynak === "Sakin") {
+      if (kaynak.kaynak === "Cesur" || kaynak.kaynak === "Sakin") {
         expect(Math.abs(kaynak.deger)).toBeLessThanOrEqual(KISILIK_YATKINLIK_LIMIT);
       } else if (kaynak.kaynak === asiriAile.ad) {
         expect(Math.abs(kaynak.deger)).toBeLessThanOrEqual(AILE_YATKINLIK_LIMIT);
@@ -217,14 +218,71 @@ describe("Mesleğe Yatkınlık Kademeleri (2026-09 sonu)", () => {
       }
     }
     // Uç değerlerin gerçekten kırpıldığını (limit öncesi ham değerlere eşit KALMADIĞINI) doğrula.
-    const hirsliTicaret = kaynaklar.find((k) => k.kaynak === "Hırslı" && k.kategori === "ticaret");
-    expect(hirsliTicaret?.deger).toBe(KISILIK_YATKINLIK_LIMIT); // ham +12 → +8'e kırpıldı
+    const cesurSavas = kaynaklar.find((k) => k.kaynak === "Cesur" && k.kategori === "savas");
+    expect(cesurSavas?.deger).toBe(KISILIK_YATKINLIK_LIMIT); // ham +10 → +8'e kırpıldı
     const aileSavas = kaynaklar.find((k) => k.kaynak === asiriAile.ad && k.kategori === "savas");
     expect(aileSavas?.deger).toBe(AILE_YATKINLIK_LIMIT); // ham +50 → +8'e kırpıldı
     const bolgeZanaat = kaynaklar.find((k) => k.kaynak === "TestBölge" && k.kategori === "zanaat");
     expect(bolgeZanaat?.deger).toBe(BOLGE_YATKINLIK_LIMIT); // ham +40 → +6'ya kırpıldı
-    const bolgeSiyaset = kaynaklar.find((k) => k.kaynak === "TestBölge" && k.kategori === "siyaset");
-    expect(bolgeSiyaset?.deger).toBe(-BOLGE_YATKINLIK_LIMIT); // ham -40 → -6'ya kırpıldı
+    const bolgeDin = kaynaklar.find((k) => k.kaynak === "TestBölge" && k.kategori === "din");
+    expect(bolgeDin?.deger).toBe(-BOLGE_YATKINLIK_LIMIT); // ham -40 → -6'ya kırpıldı
+  });
+
+  it("KISILIKLER içindeki tüm etkiler yalnızca 4 meslek kategorisini (savas/ticaret/din/zanaat) kullanır", async () => {
+    const { KISILIKLER } = await import("../src/data/kisilikler");
+    const izinliKategoriler = new Set(["savas", "ticaret", "din", "zanaat"]);
+    for (const ozellik of KISILIKLER) {
+      for (const kategori of Object.keys(ozellik.etkiler)) {
+        expect(izinliKategoriler.has(kategori)).toBe(true);
+      }
+    }
+  });
+
+  it("createCharacter kişilik özelliklerinin maaş/gayrimenkul/ilişki bonuslarını doğuşta uygular", () => {
+    // Vicdanlı: gayrimenkulBonusu +0.02. Hırslı: maasCarpani ×1.05 (ham).
+    const stateBonus = createCharacter("Orta Çağ", "Fransa", "kasaba");
+    stateBonus.kisilik = ["Vicdanlı", "Hırslı"];
+    // yatkinlikHesapla zaten createCharacter içinde çağrıldığı için burada state'i
+    // yeniden yaratmak yerine doğrudan üretim mantığını taklit eden gerçek bir
+    // karakter yaratıp kişiliğe göre filtreleyeceğiz — bu yüzden birkaç deneme
+    // yapıp Vicdanlı+Hırslı çıkana kadar üretmek yerine, motorun gerçek akışını
+    // (createCharacter → kişilik ataması + bonus uygulaması) `Math.random`
+    // sabitlemeden doğrudan gözlemlemek için yardımcı bir döngü kullanıyoruz.
+    let bulundu: typeof stateBonus | null = null;
+    for (let i = 0; i < 500 && !bulundu; i++) {
+      const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
+      if (s.kisilik.includes("Vicdanlı")) bulundu = s;
+    }
+    expect(bulundu).toBeTruthy();
+    expect(bulundu!.gayrimenkul_getiri_bonusu).toBeGreaterThanOrEqual(0.02);
+
+    let hirsliState: typeof stateBonus | null = null;
+    for (let i = 0; i < 500 && !hirsliState; i++) {
+      const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
+      if (s.kisilik.includes("Hırslı")) hirsliState = s;
+    }
+    expect(hirsliState).toBeTruthy();
+    expect(hirsliState!.etiketler.some((e) => e.startsWith("maas_carpani:"))).toBe(true);
+
+    let sosyalState: typeof stateBonus | null = null;
+    for (let i = 0; i < 500 && !sosyalState; i++) {
+      const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
+      if (s.kisilik.includes("Sosyal")) sosyalState = s;
+    }
+    expect(sosyalState).toBeTruthy();
+    expect(sosyalState!.patron_iliski).toBeGreaterThan(40); // taban 40 + Sosyal'in +5'i
+  });
+
+  it("mulkGetiriOraniKisisel, gayrimenkul_getiri_bonusu'nu getiri oranına ekler", async () => {
+    const { mulkGetiriOraniKisisel, mulkGetiriOraniHesapla } = await import("../src/game/stateManager");
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
+    state.gayrimenkul_getiri_bonusu = 0;
+    const taban = mulkGetiriOraniKisisel(state, "ciftlik");
+    expect(taban).toBeCloseTo(mulkGetiriOraniHesapla("ciftlik", state.ulke));
+
+    state.gayrimenkul_getiri_bonusu = 0.02;
+    const bonuslu = mulkGetiriOraniKisisel(state, "ciftlik");
+    expect(bonuslu).toBeCloseTo(taban + 0.02);
   });
 
   it("her ailenin yatkinlikEtkisi'si artık tüm 4 meslek kategorisini (savas/ticaret/din/zanaat) kapsıyor ve ±8 sınırı içinde", async () => {

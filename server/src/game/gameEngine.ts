@@ -55,6 +55,7 @@ import {
   enflasyonCarpani,
   mulkGelirleriUygula,
   mulkGetiriOraniHesapla,
+  mulkGetiriOraniKisisel,
   rastgeleMulkBakimAraligi,
   mulkYillikBakimTahmini,
   gayrimenkulDegeriHesapla,
@@ -3542,7 +3543,7 @@ export async function mulkConfigGetir(id: string): Promise<MulkKartBilgisi[]> {
   const { state } = oturum;
   const enflasyon = enflasyonCarpani(state);
   return MULK_TANIMLARI.map((tanim) => {
-    const oran = mulkGetiriOraniHesapla(tanim.tur, state.ulke);
+    const oran = mulkGetiriOraniKisisel(state, tanim.tur);
     const tabanDegeri = tanim.taban_maliyet * enflasyon;
     return {
       tur: tanim.tur,

@@ -1932,6 +1932,7 @@ function App() {
               <KisilikPaneli
                 kisilik={karakter.kisilik}
                 aileMeslegi={karakter.aile_meslegi}
+                bolge={karakter.bolge}
                 kaynaklar={karakter.yatkinlik_kaynaklari}
                 eksenler={karakter.kisilik_eksenleri}
                 meslekYatkinlikUnvani={karakter.meslek_yatkinlik_unvani}
@@ -2253,6 +2254,7 @@ function App() {
                 <KisilikPaneli
                   kisilik={karakter.kisilik}
                   aileMeslegi={karakter.aile_meslegi}
+                  bolge={karakter.bolge}
                   kaynaklar={karakter.yatkinlik_kaynaklari}
                   eksenler={karakter.kisilik_eksenleri}
                   meslekYatkinlikUnvani={karakter.meslek_yatkinlik_unvani}

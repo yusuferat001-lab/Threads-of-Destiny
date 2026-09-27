@@ -112,4 +112,196 @@ export const OLAYLAR_MESLEK_YATKINLIK_EN: Record<string, OlayCeviri> = {
       },
     ],
   },
+
+  myk_asker_muhafiz_teklifi: {
+    baslik: "An Offer to Join the King's Personal Guard",
+    metin:
+      "Word of your battlefield skill has reached the ruler's own ears. A messenger from the court invites you to a trial to join the personal guard.",
+    secenekler: [
+      {
+        metin: "Accept the offer, take the trial.",
+        basariliSonuc: {
+          mesaj: "You passed the trial with ease; you now stand at the ruler's own side.",
+        },
+        basarisizSonuc: {
+          mesaj: "You failed the trial; the court sent you back politely, and the camp talked about it for a while.",
+        },
+      },
+      {
+        metin: "Politely decline, stay with your army.",
+        basariliSonuc: {
+          mesaj: "Your refusal made you even more valued in the eyes of your comrades in arms.",
+        },
+        basarisizSonuc: { mesaj: "Not used." },
+      },
+    ],
+  },
+
+  myk_asker_efsanevi_duello: {
+    baslik: "An Invitation to a Legendary Duel",
+    metin:
+      "Your reputation has reached a rival champion's ears. He challenges you to a single-strike duel in front of everyone.",
+    secenekler: [
+      {
+        metin: "Accept the challenge.",
+        basariliSonuc: {
+          mesaj: "Your blade flashed and your rival fell to his knees — your name became a legend.",
+        },
+        basarisizSonuc: {
+          mesaj: "You left the field badly wounded; news of the defeat spread quickly through the camp.",
+        },
+      },
+      {
+        metin: "Decline with honor, no excuse needed.",
+        basariliSonuc: {
+          mesaj: "You declined; some will call you a coward, but you know you acted wisely.",
+        },
+        basarisizSonuc: { mesaj: "Not used." },
+      },
+    ],
+  },
+
+  myk_tuccar_bas_tedarikci: {
+    baslik: "An Offer to Become the Kingdom's Chief Supplier",
+    metin:
+      "The court steward has heard of your sharp trading instinct. He summons you to a major meeting to become the kingdom's chief supplier.",
+    secenekler: [
+      {
+        metin: "Sign the big contract.",
+        basariliSonuc: {
+          mesaj: "The contract was signed; both your coffers and your name grew considerably.",
+        },
+        basarisizSonuc: {
+          mesaj: "The terms were harsher than they looked; the deal cost you dearly.",
+        },
+      },
+      {
+        metin: "Don't take the risk, stick to your smaller deals.",
+        basariliSonuc: {
+          mesaj: "You carried on with your smaller, safer business.",
+        },
+        basarisizSonuc: { mesaj: "Not used." },
+      },
+    ],
+  },
+
+  myk_tuccar_rakip_kiskancligi: {
+    baslik: "The Envy of Rivals",
+    metin:
+      "Your success has drawn eyes. Rival traders are spreading dark rumors about you, and even trying to sabotage your goods.",
+    secenekler: [
+      {
+        metin: "Gather evidence, defend your reputation.",
+        basariliSonuc: {
+          mesaj: "You found the source of the rumors; once the truth came out, everyone sided with you.",
+        },
+        basarisizSonuc: {
+          mesaj: "You found no evidence; the rumors grew and hurt your business for a while.",
+        },
+      },
+      {
+        metin: "Ignore it, focus on your work.",
+        basariliSonuc: {
+          mesaj: "You ignored the rumors; some kept believing them, but they faded over time.",
+        },
+        basarisizSonuc: { mesaj: "Not used." },
+      },
+    ],
+  },
+
+  myk_din_kutsal_gorev: {
+    baslik: "Chosen for a Holy Task",
+    metin:
+      "Your superiors, hearing of the depth of your faith, have chosen you to guard a special, holy relic. It's a rare honor within the congregation.",
+    secenekler: [
+      {
+        metin: "Accept the task.",
+        basariliSonuc: {
+          mesaj: "You completed the task successfully; the congregation now holds you in far greater respect.",
+        },
+        basarisizSonuc: {
+          mesaj: "You made a grave mistake during the task; it shook you deeply.",
+        },
+      },
+      {
+        metin: "Humbly decline, say you're not worthy.",
+        basariliSonuc: {
+          mesaj: "Your humility earned quiet admiration within the congregation.",
+        },
+        basarisizSonuc: { mesaj: "Not used." },
+      },
+    ],
+  },
+
+  myk_din_mucize_soylentisi: {
+    baslik: "Rumors of a Miracle",
+    metin:
+      "A rumor is spreading about someone who was healed or found peace through your hands. Crowds are showing up at your door, hopeful.",
+    secenekler: [
+      {
+        metin: "Confirm the rumor, receive the people.",
+        basariliSonuc: {
+          mesaj: "The rumor turned you into the most respected name in the region.",
+        },
+        basarisizSonuc: {
+          mesaj: "You couldn't meet their expectations; disappointment spread quickly.",
+        },
+      },
+      {
+        metin: "Reject the rumor, stay humble.",
+        basariliSonuc: {
+          mesaj: "You rejected the claims of a miracle; some kept believing regardless, but you kept your peace.",
+        },
+        basarisizSonuc: { mesaj: "Not used." },
+      },
+    ],
+  },
+
+  myk_zanaatkar_saray_daveti: {
+    baslik: "An Invitation to Become the Court's Chief Craftsman",
+    metin:
+      "The mastery of your hands has reached the court. You're commissioned to create a special, magnificent piece for the palace.",
+    secenekler: [
+      {
+        metin: "Accept the commission, produce your best work.",
+        basariliSonuc: {
+          mesaj: "Your piece was received with admiration at court; your name is now spoken among the nobility too.",
+        },
+        basarisizSonuc: {
+          mesaj: "The piece didn't meet expectations; the court didn't hide its disappointment.",
+        },
+      },
+      {
+        metin: "Don't take the risk, stick to your ordinary orders.",
+        basariliSonuc: {
+          mesaj: "You carried on with your smaller, safer orders.",
+        },
+        basarisizSonuc: { mesaj: "Not used." },
+      },
+    ],
+  },
+
+  myk_zanaatkar_taklitciler: {
+    baslik: "Imitators and Frauds",
+    metin:
+      "As your name grew in value, frauds selling copies of your work under your signature have appeared. Your customers are confused.",
+    secenekler: [
+      {
+        metin: "Track them down, expose the frauds.",
+        basariliSonuc: {
+          mesaj: "You exposed the frauds; true craftsmanship was talked about again.",
+        },
+        basarisizSonuc: {
+          mesaj: "You couldn't find the frauds; your reputation took a hit for a while.",
+        },
+      },
+      {
+        metin: "Add a distinguishing seal to your own work.",
+        basariliSonuc: {
+          mesaj: "Your new seal started setting your work apart; it cost a little, but it worked.",
+        },
+        basarisizSonuc: { mesaj: "Not used." },
+      },
+    ],
+  },
 };

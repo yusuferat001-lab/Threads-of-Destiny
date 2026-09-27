@@ -178,6 +178,8 @@ export interface CharacterState {
   meslek_maas_carpani: number;
   /** Kademeden türeyen kalıcı kariyer_puani kazanç hızı oransal katkısı; nötr kademede 0. */
   meslek_tecrube_hizi: number;
+  /** Kişilik özelliklerinden gelen kalıcı gayrimenkul (mülk getiri oranı) bonusu/malusu (§41, ör. ±0.02). Nötr karakterlerde 0. */
+  gayrimenkul_getiri_bonusu: number;
   /** En üst rütbeye (4+) ulaştıktan sonra açılan, üst sınırı olmayan ikinci bir ilerleme ekseni: şehir ekonomisini yönetmek için rakiplerle rekabet. 0 = henüz başlamadı. */
   sehir_yonetim_seviyesi: number;
   /** sehir_yonetim_seviyesi'nden türetilen unvan; seviye 0'ken null. */

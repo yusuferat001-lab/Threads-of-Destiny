@@ -562,6 +562,7 @@ const TR = {
   kpYatkinlikZar: 'Zar',
   kpYatkinlikMaas: 'Maaş',
   kpYatkinlikTecrube: 'Tecrübe',
+  kpSinerji: 'sinerjisi',
 
   // ---- AileOzetPaneli (ek) ----
   aoBaslik: 'Aile',
@@ -1277,6 +1278,7 @@ const EN: Metinler = {
   kpYatkinlikZar: 'Dice',
   kpYatkinlikMaas: 'Pay',
   kpYatkinlikTecrube: 'Pace',
+  kpSinerji: 'synergy',
 
   // ---- AileOzetPaneli ----
   aoBaslik: 'Family',
