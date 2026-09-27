@@ -322,10 +322,10 @@ export const BASARIMLAR: BasarimTanimi[] = [
     nadirlik: 'efsanevi',
     ad: { tr: 'Yoktan Var Eden', en: 'From Nothing' },
     aciklama: {
-      tr: 'Köle ya da sürgün bir aileden doğ, şato/malikâne konutunda öl.',
-      en: 'Be born to a slave or exile family and die living in a castle.',
+      tr: 'Köle ya da sürgün bir aileden doğ, görkemli bir konakta öl.',
+      en: 'Be born to a slave or exile family and die living in a grand manor.',
     },
-    kosul: (o) => etiketBiri(o.state, 'aile:kole', 'aile:surgun') && o.state.konut_id === 'sato',
+    kosul: (o) => etiketBiri(o.state, 'aile:kole', 'aile:surgun') && o.state.konut_id === 'gorkemli_konak',
   },
   {
     id: 'evli_barkli',
@@ -384,10 +384,10 @@ export const BASARIMLAR: BasarimTanimi[] = [
     nadirlik: 'nadir',
     ad: { tr: 'Soylu Kanı', en: 'Noble Blood' },
     aciklama: {
-      tr: 'Soylu bir aileden doğ, şatoda ve şöhretin 80\'in üstündeyken öl.',
-      en: 'Be born noble and die in a castle with fame above 80.',
+      tr: 'Soylu bir aileden doğ, görkemli bir konakta ve şöhretin 80\'in üstündeyken öl.',
+      en: 'Be born noble and die in a grand manor with fame above 80.',
     },
-    kosul: (o) => etiketVar(o.state, 'aile:soylu') && o.state.konut_id === 'sato' && o.state.un >= 80,
+    kosul: (o) => etiketVar(o.state, 'aile:soylu') && o.state.konut_id === 'gorkemli_konak' && o.state.un >= 80,
   },
   {
     id: 'sevilen_baba',

@@ -461,21 +461,21 @@ async function yanEylemler(id: string, state: CharacterState, ky: YanEylemAyari,
   // 1) Konut & yaşam tarzı.
   try {
     if (state.para < 0) {
-      // Borçta: harcamayı kıs ama SAĞLIK-CEZALI dip kademelere İNME. En ucuz 2
-      // konut/sofra kademesi (2026-09 dengesi) -3..-6 sağlık/yıl veriyor; borçtaki
-      // bir karakteri o kademeye atmak, borç faizinin -2/yıl'ına eklenince kesin
-      // ölüm sarmalı oluyordu (kaotik bu daldan muaf olduğu için ~10 yıl fazla
-      // yaşıyordu — yani asıl sorun buydu). Tavan: cezasız orta kademe (normal_ev
-      // / normal_ye); zaten daha düşükteyse dokunma.
+      // Borçta: harcamayı kıs ama SAĞLIK-CEZALI dip kademeye (index 0) İNME. En
+      // ucuz kademe (Faz 9 dengesi) -4 sağlık/yıl veriyor; borçtaki bir karakteri
+      // o kademeye atmak, borç faizinin -1/yıl'ına eklenince kesin ölüm sarmalı
+      // oluyordu (kaotik bu daldan muaf olduğu için fazla yaşıyordu — yani asıl
+      // sorun buydu). Tavan: cezasız nötr kademe (mutevazi_yuva / sade_sofra,
+      // index 1); zaten daha düşükteyse dokunma.
       if (!ky.konutRastgele) {
         const kIdxSimdi = KONUTLAR.findIndex((k) => k.id === state.konut_id);
         const yIdxSimdi = YASAM_SECENEKLERI.findIndex((y) => y.id === state.yasam_secimi_id);
-        if (kIdxSimdi > 2) {
-          await konutDegistir(id, "normal_ev");
+        if (kIdxSimdi > 1) {
+          await konutDegistir(id, "mutevazi_yuva");
           sayaclar.konutDegisimSayisi++;
         }
-        if (yIdxSimdi > 2) {
-          await yasamSecimiDegistir(id, "normal_ye");
+        if (yIdxSimdi > 1) {
+          await yasamSecimiDegistir(id, "sade_sofra");
           sayaclar.yasamDegisimSayisi++;
         }
       }

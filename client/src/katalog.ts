@@ -232,48 +232,42 @@ const KATALOG_EN: Record<string, string> = {
   "Kasaba": "Town",
 
   // ---------------------------------------------------------------------------
-  // Konutlar
+  // Konutlar (Faz 9, 2026-09 sonu: 6 kademeden 5'e indirildi, isimler yenilendi)
   // ---------------------------------------------------------------------------
-  "Basit Barınak": "Simple Shelter",
-  "Ahşap Ev": "Wooden House",
-  "Normal Ev": "Ordinary House",
-  "Taş Ev": "Stone House",
-  "Konak": "Manor",
-  "Şato": "Castle",
-  "Neredeyse bedava ama nemli, soğuk ve sağlıksız; burada sürekli yaşamak bedenini, moralini ve itibarını yıpratır. Sadece geçici bir dip.":
-    "Almost free, but damp, cold and unhealthy; living here for long wears down your body, your spirits and your reputation. Only a temporary low point.",
-  "Sağlam sayılmaz ama bir çatı; yine de bakımsız ve dar — sağlığını, moralini ve adını yavaş yavaş aşındırır. İlk fırsatta gerçek bir eve geçmek gerekir.":
-    "Hardly sturdy, but a roof; still, it is run-down and cramped — it slowly erodes your health, your spirits and your name. Move to a real house at the first chance.",
+  "Nemli Baraka": "Damp Shack",
+  "Mütevazı Yuva": "Modest Home",
+  "Sıcak Ocak": "Warm Hearth",
+  "Sağlam Konut": "Sturdy House",
+  "Görkemli Konak": "Grand Manor",
+  "Rüzgârın duvarlardan geçtiği, sürekli nemli ve soğuk bir barınak; burada yaşamak bedenini ağır şekilde yıpratır, moralini ve az da olsa adını düşürür. Sadece geçici bir dip.":
+    "A shelter so drafty the wind cuts straight through the walls, damp and cold all year round; living here wears your body down heavily and dents your spirits, and your name a little too. Only a temporary low point.",
   "Sıradan ama gerçek bir yuva; kendi dört duvarının verdiği küçük bir huzur var. Artık ev seni yıpratmıyor.":
     "Plain but a real home; there is a small peace in having your own four walls. The house no longer wears you down.",
-  "Sağlam duvarları ve ayrı odalarıyla gerçek bir konfor sunar; komşuların arasında adın biraz daha anılır. Sofranı da bu seviyeye yakın tutmak (Normal ya da İyi Ye) genelde daha tutarlı bir hayat demek.":
-    "With solid walls and separate rooms it offers real comfort; your name is spoken a little more among the neighbors. Keeping your table near this level (Eat Normally or Eat Well) usually means a more consistent life.",
-  "Pahalı ama gösterişli; halk arasındaki tanınırlığını, rahatını ve sağlığını yıllar içinde büyütür. Böyle bir çatının altında çöpten geçinmek konu komşuya tuhaf gelir — sofran da haneni yansıtsın.":
-    "Expensive but grand; over the years it grows your public renown, your comfort and your health. Scavenging for food under a roof like this looks strange to the neighbors — let your table reflect your household.",
-  "Bölgenin konuştuğu, gerçekten pahalı bir yaşam; duvarları kadar adın da büyür, günlerin çok daha huzurlu ve sağlıklı geçer. Bu kapılardan girip ucuza/çöpten geçinmeye çalışmak inandırıcı olmaz — ancak en iyi sofralarla bir bütün oluşturur.":
-    "A truly expensive life that the whole region talks about; your name grows as much as its walls, and your days pass far more peaceful and healthy. Trying to scrape by cheaply or off scraps behind these gates is not convincing — it only holds together with the finest tables.",
+  "Küçük ama sımsıcak, içi sevgiyle döşenmiş bir ev; gösterişten çok huzur ve neşe sunuyor, komşuların arasında da adından iyi söz ettiriyor.":
+    "Small but warm, a home furnished with love; it offers peace and joy more than show, and still gets your name spoken well of among the neighbors.",
+  "Kalın duvarları, iyi havalandırması ve temiz suyuyla bedenini gerçekten koruyan, sağlam ve konforlu bir ev.":
+    "A sturdy, comfortable house whose thick walls, good ventilation and clean water genuinely protect your body.",
+  "Bölgenin konuştuğu, gerçekten görkemli bir çatı; hem bedenin hem ruhun bu konforda rahat eder, adın da kapılarından çok öteye taşınır.":
+    "A truly magnificent roof that the whole region talks about; both body and soul rest easy in this comfort, and your name travels far beyond its gates.",
 
   // ---------------------------------------------------------------------------
-  // Yaşam tarzları
+  // Yaşam tarzları (Faz 9, 2026-09 sonu: 6 kademeden 5'e indirildi, isimler yenilendi)
   // ---------------------------------------------------------------------------
-  "Çöpten Topla": "Scavenge",
-  "Ucuza Ye": "Eat Cheap",
-  "Normal Ye": "Eat Normally",
-  "İyi Ye": "Eat Well",
-  "Kaliteli Ye": "Eat Finely",
-  "Ziyafet Gibi Ye": "Feast Every Day",
-  "Bedava ama sağlığını, moralini ve itibarını hızla aşındırır; kimsenin gözünde saygın kalamazsın. Sadece çaresizlikten seçilecek bir dip.":
-    "Free, but it quickly erodes your health, your spirits and your reputation; no one holds you in respect. A low point chosen only out of desperation.",
-  "Ucuz ve doyurucu ama kalitesiz; sağlığını, moralini ve adını yavaş yavaş aşındırır. İlk fırsatta normal bir sofraya geçmek gerekir.":
-    "Cheap and filling but poor quality; it slowly erodes your health, your spirits and your name. Move to a normal table at the first chance.",
+  "Bayat Artık": "Stale Scraps",
+  "Sade Sofra": "Plain Table",
+  "Keyifli Sofra": "Cozy Table",
+  "Dengeli Sofra": "Balanced Table",
+  "Şölen Sofrası": "Feast Table",
+  "Küflenmeye yüz tutmuş artıklar ve bayat kırıntılar; karnını doyurur ama bedenini ağır şekilde yıpratır, moralini ve az da olsa adını düşürür. Sadece çaresizlikten seçilecek bir dip.":
+    "Half-moldy leftovers and stale crumbs; it fills your stomach but wears your body down heavily and dents your spirits, and your name a little too. A low point chosen only out of desperation.",
   "Dengeli bir sofra; ne artısı ne eksisi var. Artık yemek seni yıpratmıyor.":
     "A balanced table; neither plus nor minus. Food no longer wears you down.",
-  "Ortalamanın üstünde bir sofra; hem bünyeni hem moralini gözle görülür biçimde besler.":
-    "An above-average table; it visibly nourishes both your constitution and your spirits.",
-  "Pahalı ama sağlığını ve moralini gözle görülür biçimde besler.":
-    "Expensive, but it visibly nourishes your health and your spirits.",
-  "Her akşam sanki bir şölenmiş gibi yersin; gerçekten pahalı ama hem bedenin hem ruhun hem de itibarın bunu fazlasıyla hisseder.":
-    "Every evening you eat as if at a feast; truly expensive, but your body, your soul and your reputation all feel it richly.",
+  "Şatafatsız ama lezzetli, canını sıcacık hissettiren bir sofra; sağlıktan çok keyif ve moral için yenir.":
+    "An unpretentious but tasty table that leaves you feeling warm inside; you eat it for joy and spirits more than for health.",
+  "Taze ve besleyici, bedenini gerçekten güçlendiren dengeli bir beslenme düzeni.":
+    "A fresh, nourishing, well-balanced diet that genuinely strengthens your body.",
+  "Her akşam sanki bir şölenmiş gibi yersin; gerçekten pahalı ama bu sofradan kalkanlar hem doyar hem de senden söz eder.":
+    "Every evening you eat as if at a feast; truly expensive, but those who rise from this table both leave full and talk about you.",
 
   // ---------------------------------------------------------------------------
   // Mağaza eşyaları

@@ -2115,6 +2115,7 @@ function App() {
               const hotspotlar = (
                 <SahneHotspotlari
                   cag={karakter.cag}
+                  bolge={karakter.bolge}
                   meslek={karakter.meslek}
                   dinKultur={karakter.din_kultur}
                   konutId={karakter.konut_id}
@@ -2366,6 +2367,7 @@ function App() {
           paraBirimi={karakter.para_birimi}
           para={karakter.para}
           cag={karakter.cag}
+          bolge={karakter.bolge}
           gecmis={karakter.gecmis}
           konutlar={konutlar}
           guncelKonutId={karakter.konut_id}

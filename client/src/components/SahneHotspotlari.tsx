@@ -6,6 +6,7 @@ import { useDil } from '../DilContext';
 
 interface SahneHotspotlariProps {
   cag: string;
+  bolge: string;
   meslek: string;
   dinKultur: string;
   konutId: string;
@@ -39,6 +40,7 @@ const VARSAYILAN_ORAN = 1920 / 815; // Orta Çağ
 
 export function SahneHotspotlari({
   cag,
+  bolge,
   meslek,
   dinKultur,
   konutId,
@@ -53,7 +55,7 @@ export function SahneHotspotlari({
   const { m, dil } = useDil();
   const konutTanimi = konutlar.find((k) => k.id === konutId);
   const konutGorunum = konutTanimi
-    ? konutGoruntusuGetir(konutTanimi.id, konutTanimi.ad, konutTanimi.simge, cag, dil)
+    ? konutGoruntusuGetir(konutTanimi.id, konutTanimi.ad, konutTanimi.simge, cag, bolge, dil)
     : { ad: m.shEvFallback, simge: '🏠' };
   const tierIndex = Math.max(0, konutlar.findIndex((k) => k.id === konutId));
   const evBuyuklugu = 1.6 + tierIndex * 0.28;

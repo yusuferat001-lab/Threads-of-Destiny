@@ -247,35 +247,86 @@ export function etkiTahminiGetir(
   return tahminler;
 }
 
+interface DonemselTema {
+  ad: string;
+  adEn: string;
+  simge: string;
+}
+
 /**
- * Konut kademelerinin (basit_barinak/ahsap_ev/normal_ev/tas_ev/konak/sato) çağa
- * göre dönemsel görünen adı ve simgesi. Sunucudaki kira/etki değerleri
- * değişmez, sadece oyuncuya gösterilen isim/simge döneme uygun hale gelir.
+ * Konut kademelerinin (nemli_baraka/mutevazi_yuva/sicak_ocak/saglam_konut/
+ * gorkemli_konak — bkz. server/src/data/konutlar.ts) çağ VE bölgeye göre
+ * dönemsel görünen adı ve simgesi (Faz 9, 2026-09 sonu — eskiden yalnız çağa
+ * göre değişiyordu, ülke ayrımı yoktu). Sunucudaki kira/etki değerleri
+ * değişmez, sadece oyuncuya gösterilen isim/simge döneme VE ülkeye uygun hale
+ * gelir. Anahtar `${cag}|${bolge}` — server/src/data/sosyallesmeAksiyonlari.ts
+ * BOLGE_ICECEKLERI ile aynı desen (Eyyubiler dahil, eski kayıt uyumu için).
+ * Eşleşme bulunamazsa çağıranın verdiği jenerik ad/simgeye (konutlar.ts'teki
+ * taban değerler) düşülür.
  */
-const KONUT_TEMALARI: Record<string, Partial<Record<string, { ad: string; adEn: string; simge: string }>>> = {
-  basit_barinak: {
-    'Orta Çağ': { ad: 'Saz Kulübe', adEn: 'Thatched Hut', simge: '🛖' },
-    'Sanayi Devrimi': { ad: 'İşçi Barakası', adEn: 'Worker Barracks', simge: '🏚️' },
+const KONUT_TEMALARI: Record<string, Record<string, DonemselTema>> = {
+  'Orta Çağ|Fransa': {
+    nemli_baraka: { ad: 'Samanlı Kulübe', adEn: 'Thatched Hovel', simge: '🛖' },
+    mutevazi_yuva: { ad: 'Bağ Evi', adEn: 'Vineyard Cottage', simge: '🏠' },
+    sicak_ocak: { ad: 'Şömineli Köy Evi', adEn: 'Cottage with a Hearth', simge: '🔥' },
+    saglam_konut: { ad: 'Taşra Malikânesi', adEn: 'Provincial Manor', simge: '🏡' },
+    gorkemli_konak: { ad: 'Loire Şatosu', adEn: 'Loire Château', simge: '🏰' },
   },
-  ahsap_ev: {
-    'Orta Çağ': { ad: 'Ahşap Ev', adEn: 'Wooden House', simge: '🪵' },
-    'Sanayi Devrimi': { ad: 'Kiralık Daire', adEn: 'Rented Flat', simge: '🏘️' },
+  'Orta Çağ|Kutsal Roma': {
+    nemli_baraka: { ad: 'Kerpiç Baraka', adEn: 'Mudbrick Shack', simge: '🛖' },
+    mutevazi_yuva: { ad: 'Yarım Ahşap Ev', adEn: 'Timber-Framed House', simge: '🏠' },
+    sicak_ocak: { ad: 'Çinili Sobalı Ev', adEn: 'Tiled-Stove House', simge: '🔥' },
+    saglam_konut: { ad: 'Dağ Eteği Çiftliği', adEn: 'Foothill Farmstead', simge: '🏡' },
+    gorkemli_konak: { ad: 'Ren Şatosu', adEn: 'Rhine Castle', simge: '🏰' },
   },
-  normal_ev: {
-    'Orta Çağ': { ad: 'Taş Şehir Evi', adEn: 'Stone Townhouse', simge: '🏠' },
-    'Sanayi Devrimi': { ad: 'Apartman Dairesi', adEn: 'Apartment', simge: '🏢' },
+  'Orta Çağ|Bizans': {
+    nemli_baraka: { ad: 'Liman Kenarı Baraka', adEn: 'Harborside Shack', simge: '🛖' },
+    mutevazi_yuva: { ad: 'Taş Avlulu Ev', adEn: 'Stone Courtyard House', simge: '🏠' },
+    sicak_ocak: { ad: 'Bahçeli Avlu Evi', adEn: 'Garden Courtyard House', simge: '🌿' },
+    saglam_konut: { ad: 'Mermer Serinlikli Konak', adEn: 'Marble-Cooled Manor', simge: '🏛️' },
+    gorkemli_konak: { ad: 'Altın Boynuz Sarayı', adEn: 'Golden Horn Palace', simge: '🏰' },
   },
-  tas_ev: {
-    'Orta Çağ': { ad: 'Zanaatkâr Evi', adEn: "Craftsman's House", simge: '🧱' },
-    'Sanayi Devrimi': { ad: 'Burjuva Dairesi', adEn: 'Bourgeois Flat', simge: '🧱' },
+  'Orta Çağ|Selçuklu': {
+    nemli_baraka: { ad: 'Kerpiç Dam', adEn: 'Mudbrick Hut', simge: '🛖' },
+    mutevazi_yuva: { ad: 'Kerpiç Avlu Evi', adEn: 'Mudbrick Courtyard House', simge: '🏠' },
+    sicak_ocak: { ad: 'Fıskiyeli Avlu Evi', adEn: 'Fountain Courtyard House', simge: '💧' },
+    saglam_konut: { ad: 'Hamamlı Konak', adEn: 'Manor with a Bathhouse', simge: '🛁' },
+    gorkemli_konak: { ad: 'Sırçalı Köşk', adEn: 'Glazed Pavilion', simge: '🕌' },
   },
-  konak: {
-    'Orta Çağ': { ad: 'Malikane', adEn: 'Manor House', simge: '🏛️' },
-    'Sanayi Devrimi': { ad: 'Villa', adEn: 'Villa', simge: '🏛️' },
+  'Orta Çağ|Eyyubiler': {
+    nemli_baraka: { ad: 'Çamur Damlı Ev', adEn: 'Mud-Roofed House', simge: '🛖' },
+    mutevazi_yuva: { ad: 'Taş Avlu Evi', adEn: 'Stone Courtyard House', simge: '🏠' },
+    sicak_ocak: { ad: 'Fıskiyeli Şam Evi', adEn: 'Damascene Fountain House', simge: '💧' },
+    saglam_konut: { ad: 'Hamamlı Ev', adEn: 'House with a Bathhouse', simge: '🛁' },
+    gorkemli_konak: { ad: 'Kale Eteği Konağı', adEn: 'Citadel-Foot Mansion', simge: '🏯' },
   },
-  sato: {
-    'Orta Çağ': { ad: 'Şato', adEn: 'Castle', simge: '🏰' },
-    'Sanayi Devrimi': { ad: 'Köşk', adEn: 'Mansion', simge: '🏰' },
+  'Sanayi Devrimi|İngiltere': {
+    nemli_baraka: { ad: 'Rıhtım Gecekondusu', adEn: 'Dockside Slum', simge: '🏚️' },
+    mutevazi_yuva: { ad: 'Tuğla Sıra Ev', adEn: 'Brick Terrace House', simge: '🏘️' },
+    sicak_ocak: { ad: 'Bahçeli Kır Evi', adEn: 'Country Cottage with a Garden', simge: '🌷' },
+    saglam_konut: { ad: 'Deniz Kenarı Villası', adEn: 'Seaside Villa', simge: '🏖️' },
+    gorkemli_konak: { ad: 'Viktorya Konağı', adEn: 'Victorian Manor', simge: '🏛️' },
+  },
+  'Sanayi Devrimi|Fransa': {
+    nemli_baraka: { ad: 'Tavan Arası Odası', adEn: 'Garret Room', simge: '🏚️' },
+    mutevazi_yuva: { ad: 'Kiracı Apartmanı', adEn: 'Tenant Apartment', simge: '🏢' },
+    sicak_ocak: { ad: 'Balkonlu Paris Dairesi', adEn: 'Parisian Flat with a Balcony', simge: '🌸' },
+    saglam_konut: { ad: 'Bahçeli Banliyö Evi', adEn: 'Garden Suburb House', simge: '🏡' },
+    gorkemli_konak: { ad: 'Haussmann Konağı', adEn: 'Haussmann Townhouse', simge: '🏛️' },
+  },
+  'Sanayi Devrimi|Osmanlı': {
+    nemli_baraka: { ad: 'Rutubetli Gecekondu', adEn: 'Damp Shantyhouse', simge: '🏚️' },
+    mutevazi_yuva: { ad: 'Bağdadi Ahşap Ev', adEn: 'Bağdadi-Style Wooden House', simge: '🏠' },
+    sicak_ocak: { ad: 'Cumbalı Ahşap Ev', adEn: 'Wooden House with a Bay Window', simge: '🏠' },
+    saglam_konut: { ad: 'Çamlıca Köşkü', adEn: 'Çamlıca Hillside Pavilion', simge: '🏡' },
+    gorkemli_konak: { ad: 'Boğaziçi Yalısı', adEn: 'Bosphorus Yalı Mansion', simge: '🏯' },
+  },
+  'Sanayi Devrimi|Rusya': {
+    nemli_baraka: { ad: 'Köhne İzba', adEn: 'Decrepit Izba', simge: '🛖' },
+    mutevazi_yuva: { ad: 'Ahşap İzba', adEn: 'Wooden Izba', simge: '🏠' },
+    sicak_ocak: { ad: 'Oymalı İzba', adEn: 'Carved Izba', simge: '🏠' },
+    saglam_konut: { ad: 'Kır Dachası', adEn: 'Country Dacha', simge: '🏡' },
+    gorkemli_konak: { ad: 'Neva Kıyısı Sarayı', adEn: 'Neva-side Palace', simge: '🏰' },
   },
 };
 
@@ -284,9 +335,95 @@ export function konutGoruntusuGetir(
   varsayilanAd: string,
   varsayilanSimge: string,
   cag: string,
+  bolge: string,
   dil: Dil = 'tr'
 ): { ad: string; simge: string } {
-  const tema = KONUT_TEMALARI[konutId]?.[cag];
+  const tema = KONUT_TEMALARI[`${cag}|${bolge}`]?.[konutId];
+  if (!tema) return { ad: varsayilanAd, simge: varsayilanSimge };
+  return { ad: dil === 'en' ? tema.adEn : tema.ad, simge: tema.simge };
+}
+
+/**
+ * yasamSecenekleri.ts kademelerinin (bayat_artik/sade_sofra/keyifli_sofra/
+ * dengeli_sofra/solen_sofrasi) çağ + bölgeye göre dönemsel görünen adı ve
+ * simgesi — konutGoruntusuGetir'in sofra karşılığı (Faz 9, 2026-09 sonu; eskiden
+ * yaşam tarzı kartlarının hiç bölgesel/dönemsel bir adı yoktu).
+ */
+const YASAM_TEMALARI: Record<string, Record<string, DonemselTema>> = {
+  'Orta Çağ|Fransa': {
+    bayat_artik: { ad: 'Bayat Ekmek Kırıntısı', adEn: 'Stale Bread Scraps', simge: '🍞' },
+    sade_sofra: { ad: 'Sade Çorba ve Ekmek', adEn: 'Plain Soup and Bread', simge: '🍲' },
+    keyifli_sofra: { ad: 'Şaraplı Güveç', adEn: 'Wine-Braised Stew', simge: '🍷' },
+    dengeli_sofra: { ad: 'Taze Sebze ve Peynir', adEn: 'Fresh Vegetables and Cheese', simge: '🧀' },
+    solen_sofrasi: { ad: 'Kraliyet Ziyafeti', adEn: 'Royal Feast', simge: '🍖' },
+  },
+  'Orta Çağ|Kutsal Roma': {
+    bayat_artik: { ad: 'Küf Kokan Yulaf Lapası', adEn: 'Moldy Oat Gruel', simge: '🥣' },
+    sade_sofra: { ad: 'Siyah Ekmek ve Turp', adEn: 'Black Bread and Radish', simge: '🍞' },
+    keyifli_sofra: { ad: 'Bal Şerbetli Sofra', adEn: 'Honey-Mead Spread', simge: '🍯' },
+    dengeli_sofra: { ad: 'Lahana Turşusu ve Sosis', adEn: 'Sauerkraut and Sausage', simge: '🥬' },
+    solen_sofrasi: { ad: 'Domuz Kızartması Şöleni', adEn: 'Roast Boar Feast', simge: '🐗' },
+  },
+  'Orta Çağ|Bizans': {
+    bayat_artik: { ad: 'Bayat Arpa Ekmeği', adEn: 'Stale Barley Bread', simge: '🍞' },
+    sade_sofra: { ad: 'Zeytin ve Peynirli Sofra', adEn: 'Olives and Cheese', simge: '🫒' },
+    keyifli_sofra: { ad: 'Ballı Fıstıklı Tatlı Sofra', adEn: 'Honey-Pistachio Sweets', simge: '🍯' },
+    dengeli_sofra: { ad: 'Balık ve Zeytinyağlı Sebze', adEn: 'Fish and Olive-Oil Vegetables', simge: '🐟' },
+    solen_sofrasi: { ad: 'İmparatorluk Sofrası', adEn: 'Imperial Table', simge: '👑' },
+  },
+  'Orta Çağ|Selçuklu': {
+    bayat_artik: { ad: 'Kuru Bulgur Lapası', adEn: 'Dry Bulgur Mush', simge: '🥣' },
+    sade_sofra: { ad: 'Yoğurtlu Çorba ve Pide', adEn: 'Yogurt Soup and Flatbread', simge: '🍲' },
+    keyifli_sofra: { ad: 'Baklavalı Şerbetli Sofra', adEn: 'Baklava and Sherbet Spread', simge: '🍯' },
+    dengeli_sofra: { ad: 'Etli Sebze Yahnisi', adEn: 'Meat and Vegetable Stew', simge: '🍛' },
+    solen_sofrasi: { ad: 'Sultan Sofrası', adEn: "Sultan's Table", simge: '👑' },
+  },
+  'Orta Çağ|Eyyubiler': {
+    bayat_artik: { ad: 'Kuru Nohut Lapası', adEn: 'Dry Chickpea Mush', simge: '🥣' },
+    sade_sofra: { ad: 'Mercimek Çorbası ve Pide', adEn: 'Lentil Soup and Flatbread', simge: '🍲' },
+    keyifli_sofra: { ad: 'Hurmalı Şerbetli Sofra', adEn: 'Date and Sherbet Spread', simge: '🌴' },
+    dengeli_sofra: { ad: 'Sebzeli Kuzu Yahnisi', adEn: 'Lamb and Vegetable Stew', simge: '🍖' },
+    solen_sofrasi: { ad: 'Emir Sofrası', adEn: "Emir's Table", simge: '👑' },
+  },
+  'Sanayi Devrimi|İngiltere': {
+    bayat_artik: { ad: 'Su Katılmış Lapa', adEn: 'Watered-Down Gruel', simge: '🥣' },
+    sade_sofra: { ad: 'Ekmek ve Peynir Tabağı', adEn: 'Bread and Cheese Plate', simge: '🧀' },
+    keyifli_sofra: { ad: 'Çay Saati Tatlıları', adEn: 'Afternoon Tea Sweets', simge: '🫖' },
+    dengeli_sofra: { ad: 'Sebzeli Et Yahnisi', adEn: 'Meat and Vegetable Stew', simge: '🍲' },
+    solen_sofrasi: { ad: 'Lord Sofrası: Rosto', adEn: "Lord's Table: Roast Dinner", simge: '🍖' },
+  },
+  'Sanayi Devrimi|Fransa': {
+    bayat_artik: { ad: 'Sulu Lahana Çorbası', adEn: 'Watery Cabbage Soup', simge: '🥣' },
+    sade_sofra: { ad: 'Baget ve Peynir', adEn: 'Baguette and Cheese', simge: '🥖' },
+    keyifli_sofra: { ad: 'Kruvasan ve Kahve', adEn: 'Croissant and Coffee', simge: '☕' },
+    dengeli_sofra: { ad: 'Sebze Ragusu', adEn: 'Vegetable Ragout', simge: '🥕' },
+    solen_sofrasi: { ad: 'Haute Cuisine Sofrası', adEn: 'Haute Cuisine Table', simge: '🍷' },
+  },
+  'Sanayi Devrimi|Osmanlı': {
+    bayat_artik: { ad: 'Kuru Bulgur ve Soğan', adEn: 'Dry Bulgur and Onion', simge: '🧅' },
+    sade_sofra: { ad: 'Zeytinyağlı Sofra', adEn: 'Olive-Oil Dishes', simge: '🫒' },
+    keyifli_sofra: { ad: 'Muhallebici Tatlı Sofrası', adEn: 'Milk-Pudding Sweets', simge: '🍮' },
+    dengeli_sofra: { ad: 'Sebzeli Et Yemeği', adEn: 'Meat and Vegetable Dish', simge: '🍛' },
+    solen_sofrasi: { ad: 'Paşa Sofrası', adEn: "Pasha's Table", simge: '👑' },
+  },
+  'Sanayi Devrimi|Rusya': {
+    bayat_artik: { ad: 'Sulu Lahana Aşı', adEn: 'Watery Shchi', simge: '🥣' },
+    sade_sofra: { ad: 'Kara Ekmek ve Pancar Çorbası', adEn: 'Black Bread and Borscht', simge: '🍲' },
+    keyifli_sofra: { ad: 'Semaver Başı Çay Sofrası', adEn: 'Samovar Tea Table', simge: '🫖' },
+    dengeli_sofra: { ad: 'Balık ve Lahana Sofrası', adEn: 'Fish and Cabbage Table', simge: '🐟' },
+    solen_sofrasi: { ad: 'Çariçe Sofrası', adEn: "Tsarina's Table", simge: '👑' },
+  },
+};
+
+export function yasamGoruntusuGetir(
+  secenekId: string,
+  varsayilanAd: string,
+  varsayilanSimge: string,
+  cag: string,
+  bolge: string,
+  dil: Dil = 'tr'
+): { ad: string; simge: string } {
+  const tema = YASAM_TEMALARI[`${cag}|${bolge}`]?.[secenekId];
   if (!tema) return { ad: varsayilanAd, simge: varsayilanSimge };
   return { ad: dil === 'en' ? tema.adEn : tema.ad, simge: tema.simge };
 }
