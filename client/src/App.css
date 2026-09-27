@@ -5600,17 +5600,17 @@ button.ikincil {
  * sadece telefonu ayrı tutuyor. Telefonda tek sütuna inilir ve sayfa doğal olarak kayabilir
  * (üç panelin tüm içeriğini bir telefon ekranına sığdırmak, kaydırmadan, gerçekçi değil). */
 @media (max-width: 767px) {
+  /* Mobil tek-ekran (100vh) dönüşümü: mobil artık masaüstünün zaten kullandığı
+     kilitli-viewport modelini birebir devralıyor (height:100dvh; overflow:hidden,
+     bkz. yukarıdaki masaüstü kuralı) — sayfa asla dikey kaymıyor, "olay sonucunda
+     ekranın zıplaması" sorunu buradan çözülüyor. Eskiden burada height:auto/
+     overflow:visible/display:block ile bu kilit bilerek gevşetiliyordu; artık
+     yalnızca padding'i mobile göre küçültüyoruz. */
   .oyun-kapsayici-tam {
-    height: auto;
-    min-height: 100dvh;
-    display: block;
-    overflow: visible;
-    padding: 0.4rem 0.5rem 1.25rem;
+    padding: 0.4rem 0.4rem 0;
   }
 
   .oyun-ekrani {
-    display: block;
-    height: auto;
     gap: 0.4rem;
   }
 
@@ -5703,30 +5703,17 @@ button.ikincil {
     display: none;
   }
 
-  /* Kişisel Hayat + Dünya & Siyaset panelleri mobilde merkez olayın ALTINDA
-     YAN YANA (2 sütun) ve açık durur — dikeyde çok daha az yer kaplar. */
+  /* Mobil tek-ekran dönüşümü (kullanıcı kararı §1): sol/sağ panel içeriği oyun/sonuç
+     ekranında artık HİÇ render edilmiyor (avatar/envanter Mağaza'ya, gelir-gider/aile/
+     kariyer bilgisi ilgili alt ekrana taşındı, bkz. AltGezinme). .oyun-govde tek
+     çocuklu (.merkez-panel) basit bir flex sütunu — eski 2 satırlı sol/sağ grid'e
+     gerek kalmadı, merkez alan tam genişlik + tam yükseklik. */
   .oyun-govde {
-    margin-top: 0.4rem;
-    display: grid;
-    grid-template-areas:
-      'merkez merkez'
-      'sol sag';
-    grid-template-columns: 1fr 1fr;
-    /* Sol ve sağ sütun aynı satırda: 'stretch' ikisini de o satırın en uzun
-       içeriğine eşitler (kullanıcı isteği — iki kutu her zaman aynı boyda). */
-    align-items: stretch;
-    flex: none;
-    column-gap: 0.4rem;
-    row-gap: 0.5rem;
-  }
-
-  .oyun-govde > .sol-panel,
-  .oyun-govde > .sag-panel {
-    min-width: 0; /* grid item taşmasını engelle — içerik sarsın */
-    gap: 0.5rem;
-  }
-  .oyun-govde > .sol-panel {
-    align-items: stretch;
+    margin-top: 0;
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
   }
 
   .panel-parsomen {
@@ -5783,79 +5770,42 @@ button.ikincil {
   }
 
   .merkez-panel {
-    height: auto;
+    flex: 1 1 auto;
     min-height: 0;
   }
 
-  /* Sahne mobilde sadece atmosfer — daha kısa bir şerit; hotspot'lar artık üstünde değil. */
+  /* Sahne mobilde sadece atmosfer — daha kısa bir şerit. Hotspot'lar artık burada
+     HİÇ render edilmiyor (eski "Paket 2" alt-grid'i kaldırıldı) — dört hedefi de
+     (Kariyer/Yatırım/Evin/Sosyalleş) sabit alt gezinme çubuğunda, bkz. AltGezinme. */
   .merkez-sahne {
     flex: none;
     min-height: 0;
     aspect-ratio: 21 / 8;
   }
 
-  /* ---- Paket 2: hotspot'lar sahnenin üstünden alınıp altında etiketli aksiyon satırına ----
-   * Büyük dokunma hedefi, net etiket, kaza dokunması yok. .sahne-hotspotlar artık sahne
-   * içinde mutlak konumlu bir overlay değil, merkez-panel içinde normal akışta bir grid. */
-  .merkez-panel .sahne-hotspotlar {
-    position: static;
-    inset: auto;
-    width: 100%;
-    height: auto;
-    margin: 0;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0.3rem;
-    padding: 0.4rem;
-    background: rgba(0, 0, 0, 0.28);
-    border-top: 1px solid var(--renk-ahsap-kenar);
-    pointer-events: auto;
+  /* Sahnenin alt kısmına, altındaki olay kartıyla yumuşakça birleşsin diye bir
+     gradyan (kullanıcı isteği — "siyah/kahverengi gradyan"). */
+  .merkez-sahne-gradyan {
+    position: absolute;
+    inset: auto 0 0 0;
+    height: clamp(36px, 45%, 70px);
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(to top, var(--renk-ahsap-koyu) 0%, rgba(20, 15, 10, 0.55) 55%, transparent 100%);
   }
 
-  .merkez-panel .sahne-hotspot {
-    position: static;
-    inset: auto;
-    left: auto;
-    right: auto;
-    bottom: auto;
-    transform: none;
-    flex-direction: column;
-    gap: 0.15rem;
-    min-height: 46px;
-    padding: 0.35rem 0.2rem;
-    background: rgba(0, 0, 0, 0.35);
-    border: 1px solid var(--renk-ahsap-kenar);
-    border-radius: 8px;
-  }
-
-  .merkez-panel .sahne-hotspot:hover:not(:disabled),
-  .merkez-panel .sahne-hotspot:focus-visible:not(:disabled) {
-    transform: none;
-    border-color: var(--renk-altin);
-  }
-
-  .merkez-panel .sahne-hotspot .sahne-hotspot-ikon,
-  .merkez-panel .sahne-hotspot-kariyer .sahne-hotspot-ikon,
-  .merkez-panel .sahne-hotspot-sosyallesme .sahne-hotspot-ikon {
-    font-size: 1.3rem !important;
-  }
-
-  .merkez-panel .sahne-hotspot-etiket {
-    font-size: 0.55rem;
-    background: none;
-    border: none;
-    padding: 0;
-    color: var(--renk-altin-parlak);
-  }
-
+  /* Kilit sayesinde (bkz. .oyun-kapsayici-tam) sayfa artık hiç kaymıyor — kartın
+     kendisi de artık kendi payını (flex:1) alıp GEREKİRSE (en kötü senaryo: uzun
+     metin + çok seçenek aynı anda) kendi içinde kayabiliyor (güvenlik ağı; normal
+     durumda her şey sığdığı için görünür bir fark yaratmaz). Padding yarıya indi
+     (kullanıcı isteği). */
   .merkez-alt {
-    flex: none;
-    overflow-y: visible;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
     width: 100%;
     margin-top: 0;
-    padding: 0.55rem 0.7rem 0.7rem;
-    /* scrollIntoView sonrası yapışkan üst şerit kartın ilk satırını örtmesin. */
-    scroll-margin-top: 3.4rem;
+    padding: 0.3rem 0.4rem 0.4rem;
   }
 
   .merkez-alt-sonuc {
@@ -5863,6 +5813,19 @@ button.ikincil {
   }
   .merkez-alt-sonuc::after {
     display: none;
+  }
+
+  .olay-karti {
+    padding: 0.3rem 0.5rem;
+  }
+
+  /* Olay metni (ve sonuç ekranındaki EtkiCipleri+özet) kendi kutusunda kayar —
+     başlık ve seçenekler/Devam Et butonu bu kutunun DIŞINDA, HER ZAMAN görünür
+     kalır. Uzun bir olay artık sayfayı asla aşağı itmiyor. */
+  .olay-metni-govde {
+    max-height: 30vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .tur-ozeti {
@@ -5874,14 +5837,21 @@ button.ikincil {
   .secenekler {
     grid-template-columns: 1fr;
     grid-auto-rows: auto;
-    gap: 0.4rem;
+    gap: 0.3rem;
   }
 
+  /* Padding yarıya indi (kullanıcı isteği — daha sıkı/kompakt seçenek butonları). */
   .secenek {
     height: auto;
+    padding: 0.3rem 0.5rem 0.3rem clamp(2rem, 0.6vw + 1.7rem, 2.4rem);
+  }
+  .secenek::before {
+    top: 0.35rem;
+    width: clamp(16px, 0.6vw + 13px, 20px);
+    height: clamp(16px, 0.6vw + 13px, 20px);
   }
   .secenek-meta {
-    margin-top: 0.15rem;
+    margin-top: 0.1rem;
   }
 
   /* ---- Paket 5: yan paneller mobilde katlanır <details> ----
@@ -5912,6 +5882,268 @@ button.ikincil {
 
   .banner-rozetler {
     margin-left: 0;
+  }
+}
+
+/* ============================================================
+   Mobil Tek-Ekran (100vh) UI Dönüşümü — üst çubuk-altı satır
+   (avatar rozeti + amaç şeridi + canlı skor), alt gezinme çubuğu,
+   canlı skor detay modalı. Hepsi SADECE mobilde render edilir
+   (App.tsx `mobil` koşulu) — masaüstü DOM'u bu bloklardan etkilenmez.
+   ============================================================ */
+@media (max-width: 767px) {
+  :root {
+    --alt-gezinme-yukseklik: 58px;
+  }
+
+  .ust-mobil-rozet-satiri {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.4rem 0;
+    flex: 0 0 auto;
+  }
+
+  .ust-avatar-rozeti {
+    flex: none;
+    width: auto;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    background: none;
+    border: 2px solid var(--renk-altin);
+    border-radius: 50%;
+    overflow: hidden;
+    line-height: 0;
+  }
+  .ust-avatar-rozeti .karakter-avatari {
+    width: 30px;
+    height: 30px;
+    margin: 0;
+  }
+
+  .ust-amac-serit-satiri {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  /* .amac-serit'in taşıyıcısı değişti (eskiden sahnenin ÜSTÜNDE mutlak konumlu bir
+     overlay'di, bkz. base `.merkez-sahne > .amac-serit`) — burada normal akışta,
+     3 sütunluk bir grid (.ust-serit-moduller'in 7 sütun için kullandığı aynı teknik)
+     ki 3 badge 375px'lik bir ekranda bile taşmadan/wrap olmadan tek satıra sığsın. */
+  .ust-amac-serit-satiri .amac-serit {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.25rem;
+    position: static;
+    top: auto;
+    left: auto;
+    right: auto;
+    z-index: auto;
+    padding: 0;
+    pointer-events: auto;
+  }
+  .ust-amac-serit-satiri .amac-serit-oge {
+    max-width: none;
+    padding: 0.16rem 0.35rem;
+    font-size: 0.6rem;
+  }
+  .ust-amac-serit-satiri .amac-serit-aciklama {
+    display: none; /* tam metin title'da kalır */
+  }
+
+  .canli-skor-rozeti {
+    flex: none;
+    width: auto;
+    max-width: none;
+    margin: 0;
+    padding: 0.3rem 0.65rem;
+    border-radius: 999px;
+    background: var(--altin-gradyan);
+    border: 1px solid var(--renk-altin-parlak);
+    box-shadow: var(--yaldiz-parilti);
+    color: var(--renk-parsomen-metin);
+    font-weight: 700;
+    font-size: 0.78rem;
+    white-space: nowrap;
+  }
+  .canli-skor-rozeti:hover:not(:disabled),
+  .canli-skor-rozeti:focus-visible {
+    box-shadow: var(--yaldiz-parilti);
+    transform: none;
+  }
+  @keyframes canliSkorParla {
+    0% {
+      box-shadow: var(--yaldiz-parilti);
+    }
+    30% {
+      box-shadow: 0 0 22px 6px rgba(224, 199, 137, 0.65);
+    }
+    100% {
+      box-shadow: var(--yaldiz-parilti);
+    }
+  }
+  .canli-skor-rozeti {
+    animation: canliSkorParla 1.4s ease-out;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .canli-skor-rozeti {
+      animation: none;
+    }
+  }
+
+  /* ---- Alt gezinme çubuğu (AltGezinme.tsx) ---- */
+  .alt-gezinme {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 50;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    background: linear-gradient(180deg, #2b2016 0%, #1c140d 100%);
+    border-top: 2px solid var(--renk-ahsap-kenar);
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+
+  .alt-gezinme-buton {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.15rem;
+    min-height: var(--alt-gezinme-yukseklik);
+    background: none;
+    border: none;
+    border-radius: 0;
+    padding: 0.3rem 0.1rem;
+    color: #d8c9a3;
+    box-shadow: none;
+  }
+  .alt-gezinme-buton:hover:not(:disabled),
+  .alt-gezinme-buton:focus-visible {
+    background: #3a2b20;
+    transform: none;
+    box-shadow: none;
+  }
+  .alt-gezinme-buton-aktif {
+    background: #332616;
+    border-top: 2px solid #c9a86a;
+    color: var(--renk-altin-parlak);
+    font-weight: 600;
+  }
+  .alt-gezinme-ikon {
+    font-size: 1.15rem;
+    line-height: 1;
+  }
+  .alt-gezinme-etiket {
+    font-size: 0.6rem;
+    white-space: nowrap;
+  }
+  .alt-gezinme-nokta {
+    position: absolute;
+    top: 0.35rem;
+    right: 22%;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--muhur-kirmizi-parlak);
+  }
+
+  .alt-gezinme-diger-katman {
+    position: fixed;
+    inset: 0;
+    z-index: 55;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.55);
+    padding-bottom: calc(var(--alt-gezinme-yukseklik) + env(safe-area-inset-bottom, 0));
+  }
+  .alt-gezinme-diger-sheet {
+    width: 100%;
+    max-width: 420px;
+    margin: 0 0.6rem;
+    background: linear-gradient(180deg, var(--panel-ust), var(--panel-alt));
+    border: 1px solid #7a5a36;
+    border-radius: 12px;
+    padding: 0.5rem;
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.6);
+  }
+  .alt-gezinme-diger-satir {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 46px;
+    background: none;
+    border: none;
+    box-shadow: none;
+    text-align: left;
+    font-size: 0.95rem;
+  }
+  .alt-gezinme-diger-satir:hover:not(:disabled) {
+    background: rgba(224, 199, 137, 0.12);
+    transform: none;
+  }
+
+  /* Alt gezinme çubuğu göründüğü her ekranın en alt içeriği çubuğun arkasında
+     kalmasın — Kariyer gibi doğal kayan ekranlarda gerekli (kilitli ekranlarda
+     zararsız). */
+  .ekran-kariyer,
+  .ekran-tam-sayfa {
+    padding-bottom: calc(var(--alt-gezinme-yukseklik) + env(safe-area-inset-bottom, 0));
+  }
+
+  /* ---- Canlı skor detay modalı (yer tutucu — içerik kullanıcı tarafından doldurulacak) ---- */
+  .skor-detay-katman {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.2rem;
+    background: rgba(0, 0, 0, 0.6);
+  }
+  .skor-detay-modal {
+    width: 100%;
+    max-width: 380px;
+    background: linear-gradient(180deg, var(--panel-ust), var(--panel-alt));
+    border: 1px solid #7a5a36;
+    border-radius: 12px;
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+  }
+  .skor-detay-modal-ust {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.8rem 0.9rem;
+    border-bottom: 1px solid var(--renk-kahve-kenar);
+    background: rgba(0, 0, 0, 0.25);
+  }
+  .skor-detay-modal-ust h2 {
+    margin: 0;
+    font-size: 1.05rem;
+    color: var(--renk-altin-parlak);
+  }
+  .skor-detay-kapat {
+    width: auto;
+    max-width: none;
+    margin: 0;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+  }
+  .skor-detay-govde {
+    padding: 1rem 0.9rem;
+    text-align: center;
+    opacity: 0.85;
+  }
+  .skor-detay-govde p {
+    margin: 0;
   }
 }
 

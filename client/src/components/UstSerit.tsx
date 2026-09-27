@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
 import { bolgeTemasiGetir, aranmaYildiz, ahlakEtiketi } from '../bolgeTema';
 import { formatPara } from '../format';
 import { bic } from '../i18n';
 import { useDil } from '../DilContext';
+import { useGecisDeltasi } from '../hooks';
 
 interface UlkeDurumu {
   savasta: boolean;
@@ -24,24 +24,6 @@ interface UstSeritProps {
   hukumdar?: string | null;
   /** Verilirse ülke adı kutusu tıklanabilir olur ve bu geri çağrı çalışır (ülke bilgisi modalını açar). */
   onBolgeTikla?: () => void;
-}
-
-/**
- * Bir sayısal değer her değiştiğinde, değişimin miktarını (delta) ve her seferinde
- * artan bir "nonce" döndürür. Nonce, animasyonu tekrar oynatmak için React key
- * olarak kullanılır. İlk render'da tetiklenmez.
- */
-function useGecisDeltasi(deger: number): { delta: number; nonce: number } {
-  const oncekiRef = useRef(deger);
-  const [durum, setDurum] = useState({ delta: 0, nonce: 0 });
-  useEffect(() => {
-    const fark = deger - oncekiRef.current;
-    oncekiRef.current = deger;
-    if (Math.abs(fark) >= 0.01) {
-      setDurum((d) => ({ delta: fark, nonce: d.nonce + 1 }));
-    }
-  }, [deger]);
-  return durum;
 }
 
 function DeltaRozeti({ deger, nonce, birim }: { deger: number; nonce: number; birim?: string }) {
