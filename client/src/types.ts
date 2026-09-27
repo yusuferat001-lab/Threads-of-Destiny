@@ -546,6 +546,8 @@ export interface Secenek {
   basarisiz_sonuc: SonucEtkisi;
   kilitli: boolean;
   kilit_nedeni?: string;
+  /** Sunucudaki OlaySecenegi.hafifSecenek — küçük/ikincil "vazgeç" bağlantısı olarak gösterilir. */
+  hafif?: boolean;
 }
 
 export interface SenaryoResponse {

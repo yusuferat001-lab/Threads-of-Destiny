@@ -269,6 +269,7 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Hayır, tek başıma daha rahatım.",
         baseBasariSansi: 100,
+        hafifSecenek: true,
         basariliSonuc: {
           saglik: 2,
           mutluluk: -2,
@@ -345,6 +346,7 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
       {
         metin: "Hayır, tek başıma daha rahatım.",
         baseBasariSansi: 100,
+        hafifSecenek: true,
         basariliSonuc: {
           saglik: 2,
           mutluluk: -2,

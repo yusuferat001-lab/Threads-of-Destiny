@@ -2443,6 +2443,10 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         gerekliEtiketler: [
           "envanter:golge_sikke",
         ],
+        // Gölge Sikkesi'ni olmayan (çoğunluk) oyuncu için bu şık tamamen gizlenir —
+        // kalıcı kilitli bir 4. buton göstermek yerine olay onlar için doğal
+        // olarak 3 şıklı kalır (2026-09 sonu, "4 şıklıları 3'e düşürelim" turu).
+        gizliEgerYok: true,
         basariliSonuc: {
           etiket_ekle: [
             "sarayda",

@@ -289,17 +289,6 @@ button.ikincil {
   text-align: center;
 }
 
-.basarimlar-paneli {
-  width: 100%;
-  max-width: 320px;
-  margin-top: 0.5rem;
-}
-
-.basarimlar-baslik-buton {
-  width: 100%;
-  text-align: center;
-}
-
 .basarimlar-listesi {
   display: flex;
   flex-wrap: wrap;
@@ -509,6 +498,24 @@ button.ikincil {
 .basarim-galeri-grup-baslik span {
   font-weight: 400;
   color: var(--renk-parsomen-metin-soluk);
+}
+
+/* Koleksiyon grubunun altına gömülü ham unvan/efsanevi-ölüm listesi (2026-09 sonu,
+   eski giriş-ekranı panelinin buraya taşınmasıyla eklendi — §31'deki tek galeri
+   birleşimi: gruplu kartlar + ham metin listesi artık aynı modalde). */
+.basarim-galeri-ham-liste {
+  margin-top: 0.7rem;
+  padding-top: 0.6rem;
+  border-top: 1px dashed var(--renk-ekru-kenar);
+}
+.basarim-galeri-ham-baslik {
+  font-size: 0.85rem;
+  margin: 0 0 0.2rem;
+  color: #4a2f1c;
+  text-align: center;
+}
+.basarim-galeri-ham-liste .basarimlar-listesi {
+  max-width: none;
 }
 
 .basarim-karti {
@@ -1513,11 +1520,32 @@ button.ikincil {
     text-shadow: none;
   }
 }
+/* Bu efekt salt dekoratif değil — hangi statın ne kadar değiştiğini gösteren
+   temel oyun geri bildirimi, motion tercihiyle birlikte KAYBOLMAMALI. Eskiden
+   burada üçü de animation-duration:0.01ms'ye çekilip pratikte görünmez
+   oluyordu (canlı testte doğrulandı — mobil cihazda reduced-motion açıkken
+   rozet/renk hiç fark edilmiyordu). Düzeltme: `.ust-serit-modul-deger-artis/
+   -azalis` zaten salt renk/text-shadow geçişi (transform/hareket YOK) —
+   vestibüler rahatsızlık açısından "hareket" sayılmaz, süresine hiç dokunma.
+   Sadece `.ust-serit-delta` gerçek hareket taşıyor (uçma/ölçeklenme) — ona
+   hareketsiz, sadece opacity ile beliren/kaybolan ayrı bir keyframe ver. */
 @media (prefers-reduced-motion: reduce) {
-  .ust-serit-delta,
-  .ust-serit-modul-deger-artis,
-  .ust-serit-modul-deger-azalis {
-    animation-duration: 0.01ms;
+  .ust-serit-delta {
+    animation: ust-serit-delta-sabit 1.6s ease-out forwards;
+  }
+}
+@keyframes ust-serit-delta-sabit {
+  0% {
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
   }
 }
 
@@ -2216,6 +2244,34 @@ button.ikincil {
   font-size: clamp(0.75rem, 0.3vw + 0.6rem, 1.05rem);
   color: #d99a9a;
   font-style: italic;
+}
+
+/* Risksiz "vazgeç" tarzı çekilme şıkları (OlaySecenegi.hafifSecenek) — asıl 3 seçime
+   görsel öncelik verilsin diye mühür rozeti ve şans/etki çipleri olmadan, daha
+   sade/soluk bir ikincil bağlantı gibi gösterilir (2026-09 sonu, "4 şıklıları
+   3'e düşürelim" turu). */
+.secenek.secenek-hafif {
+  padding-left: 0.9rem;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background: transparent;
+  border-style: dashed;
+  border-color: rgba(216, 201, 163, 0.35);
+  box-shadow: none;
+  opacity: 0.72;
+}
+.secenek.secenek-hafif::before {
+  display: none;
+}
+.secenek.secenek-hafif:hover:not(:disabled),
+.secenek.secenek-hafif:focus-visible {
+  opacity: 1;
+  border-color: var(--renk-altin);
+  transform: none;
+}
+.secenek.secenek-hafif .secenek-metin {
+  font-size: 0.85rem;
 }
 
 .haberler-paneli {
@@ -5600,14 +5656,30 @@ button.ikincil {
  * sadece telefonu ayrı tutuyor. Telefonda tek sütuna inilir ve sayfa doğal olarak kayabilir
  * (üç panelin tüm içeriğini bir telefon ekranına sığdırmak, kaydırmadan, gerçekçi değil). */
 @media (max-width: 767px) {
-  /* Mobil tek-ekran (100vh) dönüşümü: mobil artık masaüstünün zaten kullandığı
-     kilitli-viewport modelini birebir devralıyor (height:100dvh; overflow:hidden,
-     bkz. yukarıdaki masaüstü kuralı) — sayfa asla dikey kaymıyor, "olay sonucunda
-     ekranın zıplaması" sorunu buradan çözülüyor. Eskiden burada height:auto/
-     overflow:visible/display:block ile bu kilit bilerek gevşetiliyordu; artık
-     yalnızca padding'i mobile göre küçültüyoruz. */
+  /* Mobil tek-ekran (100vh) dönüşümü: SADECE Oyun/Sonuç (`.oyun-kapsayici-tam-kilitli`,
+     App.tsx'te ekran==='oyun'||'sonuc' iken eklenir) masaüstünün zaten kullandığı
+     kilitli-viewport modelini devralır (height:100dvh; overflow:hidden) — sayfa asla
+     dikey kaymıyor, "olay sonucunda ekranın zıplaması" sorunu buradan çözülüyor.
+     TAM_EKRAN_GRUBU'nun diğer üyeleri (Yatırım/Gelir&Gider/Sosyalleş/Mağaza/Aile/
+     Evlilik) BU kilidi almıyor — onlar mobilde doğal sayfa kayması gerektiriyor
+     (`.ekran-tam-sayfa`/`.tam-sutun`/`.tam-kaydirilan` zaten kendi mobil kurallarında
+     height:auto/overflow:visible'a gevşiyor, ama dıştaki `.oyun-kapsayici-tam` kilitli
+     kalırsa bu gevşeme boşa gidiyor, taşan içerik kırpılıp hiç kaydırılamıyordu —
+     "aile/yatırım'da aşağı kayma çalışmıyor" bugu buradan geliyordu). Bu yüzden temel
+     sınıf gevşek (height:auto/overflow:visible/display:block), yalnız `-kilitli` üye
+     tekrar sıkılaştırıyor. */
   .oyun-kapsayici-tam {
     padding: 0.4rem 0.4rem 0;
+    height: auto;
+    overflow: visible;
+    display: block;
+  }
+
+  .oyun-kapsayici-tam-kilitli {
+    height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
 
   .oyun-ekrani {
@@ -5989,6 +6061,45 @@ button.ikincil {
     .canli-skor-rozeti {
       animation: none;
     }
+  }
+
+  /* ---- Alt ekranlarda (Yatırım/Gelir&Gider/Sosyalleş/Mağaza/Aile/Kariyer/Evlilik)
+     büyük ✕ ile Oyun'a dönüş (kullanıcı isteği: "ana ekrana dönüş kolay olsun") ----
+     Üst-sağ köşenin en belirgin yerini alır (ayar dişlisinin daha önce durduğu tam
+     nokta); ayar dişlisi + para rozeti bunun altına, bir satır aşağı kayar ("para
+     ayarlar gibi kaysın aşağıya") — ikisi çakışmadan aynı köşeyi paylaşır. */
+  .ekran-kapat-buton {
+    position: fixed;
+    top: 0.28rem;
+    right: 0.3rem;
+    z-index: 45;
+    width: 2.15rem;
+    height: 2.15rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    font-size: 1.2rem;
+    line-height: 1;
+    color: #f0e6d2;
+    background: rgba(20, 15, 10, 0.72);
+    border: 1px solid var(--renk-kahve-kenar);
+    border-radius: 50%;
+    box-shadow: var(--golge-derin);
+  }
+  .ekran-kapat-buton:hover:not(:disabled),
+  .ekran-kapat-buton:focus-visible {
+    background: rgba(43, 29, 19, 0.92);
+    border-color: var(--renk-kahve-vurgu);
+    transform: none;
+  }
+
+  .oyun-kapsayici:has(.ekran-kapat-buton) > .ayar-ac-buton {
+    top: 2.7rem;
+    right: 0.35rem;
+  }
+  .oyun-kapsayici:has(.ekran-kapat-buton) > .oyun-para-rozeti {
+    top: 2.75rem;
   }
 
   /* ---- Alt gezinme çubuğu (AltGezinme.tsx) ---- */
@@ -7156,29 +7267,34 @@ button.ikincil {
 }
 
 @media (max-width: 767px) {
-  /* Çağ kartları ve bölge bayrakları grid'de (2'li) kaldığı için width
-     yerine yalnız yükseklik/padding/font mobilde daraltılıyor. */
+  /* NOT: `.cag-kartlari .meslek-kart` boyutu burada değil — çağ kartları her zaman
+     `.cag-kartlari-sutun`'u da taşıyor (App.tsx) ve o sınıf (giris.css, sonradan
+     yüklenir) aynı özgüllükte kazanıp width/min-height/padding'i belirliyor; bkz.
+     giris.css `.ekran-adim-cag .cag-kartlari-sutun .meslek-kart`. Burada yalnız
+     `-sutun` sınıfının dokunmadığı kapsayıcı boşluğu (gap/max-width) kalıyor. */
   .ekran-adim-cag .cag-kartlari {
     max-width: 100%;
     gap: 0.6rem;
   }
-  .ekran-adim-cag .cag-kartlari .meslek-kart {
-    width: auto;
-    min-height: 150px;
-    padding: 0.9rem 0.5rem;
-  }
+  /* Bölge kartları tek sütun yerine 2 sütuna iner (kullanıcı isteği: "kutular çok
+     geniş, sıkıştırarak alan açarız") — açıklama metni kaldırılmaz (yalnız yazı
+     boyutu bir tık küçülür), sadece kart genişliği yarıya iner ve gerekirse
+     içerik kendi içinde satır kırar; toplam sayfa yüksekliği de küçülür. */
   .ekran-kurulum .meslek-kartlari.bolge-bayrak-kartlari {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     max-width: 100%;
-    gap: 0.55rem;
+    gap: 0.5rem;
   }
   .ekran-kurulum .meslek-kart.bolge-bayrak-kart {
     width: auto;
-    min-height: 84px;
-    padding: 0.6rem 0.4rem;
+    min-height: 0;
+    padding: 0.55rem 0.45rem;
   }
   .bolge-bayrak-kart strong {
-    font-size: 0.82rem;
+    font-size: 0.78rem;
+  }
+  .bolge-bayrak-ozet {
+    font-size: 0.58rem;
   }
 
   /* İsim ekranında "Bu isimle başla" ile "Geri" çok yakındı */

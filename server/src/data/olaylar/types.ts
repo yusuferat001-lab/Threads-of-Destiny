@@ -53,6 +53,23 @@ export interface OlaySecenegi {
    * olarak gösterilir). Olayda gerekliEkipRolu ile aynı rol kullanılmalı.
    */
   ekipKalitesiZarBelirler?: string;
+  /**
+   * true ise, kilit koşulu (bugün yalnız gerekliEtiketler ile birlikte kullanılır)
+   * karşılanmadığında bu seçenek `gerekliKisilik` gibi TAMAMEN GİZLENİR — kilitli/
+   * gri bir buton olarak gösterilmez. Nadir bir gizemli eşyaya (envanter:/esya:)
+   * bağlı, "sahip olmayan asla ulaşamaz" türü bonus şıklar için: aksi halde olay
+   * her oyuncuya kalıcı olarak kilitli bir 4. buton gösterir (2026-09 sonu, "4
+   * şıklı olayları 3'e düşürelim" turu — eşyayı olmayan çoğunluk 3 buton görür,
+   * eşyayı olan azınlık bu 4.'yü de görür).
+   */
+  gizliEgerYok?: boolean;
+  /**
+   * true ise bu seçenek istemcide daha küçük/ikincil bir "vazgeç" bağlantısı olarak
+   * gösterilir (tam boy buton değil) — risksiz, sonucu genelde nötr bir çekilme
+   * şıkkı için (2026-09 sonu, "4 şıklıları 3'e düşürelim" turu): görsel olarak asıl
+   * 3 seçime öncelik verir, çekilme seçeneği ekranda ağırlık almaz ama kaybolmaz.
+   */
+  hafifSecenek?: boolean;
 }
 
 export interface OlayTanimi {

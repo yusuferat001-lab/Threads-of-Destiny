@@ -330,6 +330,7 @@ const TR = {
   agBaslik: 'Alt gezinme',
   agDiger: 'Diğer',
   agAile: 'Aile',
+  agKapat: 'Kapat, Oyuna dön',
 
   // ---- Mobil canlı skor rozeti + detay modalı ----
   skorDetayBaslik: 'Canlı Skor',
@@ -1055,6 +1056,7 @@ const EN: Metinler = {
   agBaslik: 'Bottom navigation',
   agDiger: 'More',
   agAile: 'Family',
+  agKapat: 'Close, back to game',
 
   // ---- Mobile live score badge + detail modal ----
   skorDetayBaslik: 'Live Score',

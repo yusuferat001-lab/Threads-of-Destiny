@@ -13,10 +13,12 @@ import {
 
 interface Props {
   dil: Dil;
+  /** Ham unvan/efsanevi-ölüm koleksiyonu (basarimlar.ts) — koleksiyon grubunda listelenir. */
+  basarimlar: { unvanlar: string[]; olumler: string[] };
   onKapat: () => void;
 }
 
-export function BasarimGaleri({ dil, onKapat }: Props) {
+export function BasarimGaleri({ dil, basarimlar, onKapat }: Props) {
   const M = metinler(dil);
   const acilan = acilanBasarimIdleri();
   const baglam: IlerlemeBaglami = {
@@ -109,6 +111,25 @@ export function BasarimGaleri({ dil, onKapat }: Props) {
                     );
                   })}
                 </div>
+                {grup === 'koleksiyon' && (basarimlar.unvanlar.length > 0 || basarimlar.olumler.length > 0) && (
+                  <div className="basarim-galeri-ham-liste">
+                    <h4 className="basarim-galeri-ham-baslik">
+                      {M.panelBasarimlar} ({basarimlar.unvanlar.length + basarimlar.olumler.length})
+                    </h4>
+                    <div className="basarimlar-listesi">
+                      {basarimlar.unvanlar.map((u) => (
+                        <span key={u} className="liderlik-rozet liderlik-rozet-unvan">
+                          🏵️ {u}
+                        </span>
+                      ))}
+                      {basarimlar.olumler.map((o) => (
+                        <span key={o} className="liderlik-rozet liderlik-rozet-olum">
+                          💀 {o}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </section>
             );
           })}
