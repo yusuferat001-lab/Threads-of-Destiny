@@ -95,6 +95,7 @@ import { FinansEkrani } from './components/FinansEkrani';
 import { SosyallesmePaneli } from './components/SosyallesmePaneli';
 import { EvlilikPaneli } from './components/EvlilikPaneli';
 import { MagazaPaneli } from './components/MagazaPaneli';
+import { AltGezinme } from './components/AltGezinme';
 import { IsYatirimEkrani } from './components/IsYatirimEkrani';
 import { SonucEfekti } from './components/SonucEfekti';
 import { AyarlarModal } from './components/AyarlarModal';
@@ -124,6 +125,7 @@ import { bic } from './i18n';
 import { DilContext, dilCtxYap } from './DilContext';
 import { CarkLogo, KoseTezhibi, MuhurAyrac, AdimGostergesi, KaderYollari } from './components/Suslemeler';
 import { CagAmblemi, BolgeAmblemi } from './components/Amblemler';
+import { useMobilEkran, useGecisDeltasi } from './hooks';
 import './App.css';
 import './giris.css';
 
@@ -226,6 +228,23 @@ const TAM_EKRAN_GRUBU: Ekran[] = [
   'olum',
 ];
 
+/** Mobil tek-ekran tasarımının sabit alt gezinme çubuğu (§ "Mobil Tek-Ekran (100vh) UI
+ * Dönüşümü") bu ekranların hepsinde görünür — ana oyun ekranı + 6 alt ekranın hepsi
+ * (Kariyer/Yatırım/Evin=finans/Sosyalleş/Mağaza/Aile) + Evlilik. `AltGezinme`
+ * kendi başına ekranlar arası hızlı atlama sağlar; her alt ekranın kendi "Geri Dön"
+ * butonu (mevcut `onGeriDon`) hâlâ Oyun'a dönüşü sağlıyor, kaldırılmadı. */
+const ALT_GEZINME_EKRANLARI: Ekran[] = [
+  'oyun',
+  'sonuc',
+  'kariyer',
+  'yatirim',
+  'finans',
+  'sosyallesme',
+  'magaza',
+  'aile',
+  'evlilik',
+];
+
 /** Geri bildirim mesajlarına eklenen uygulama sürümü — bir hata raporunun hangi build'e
  * ait olduğunu ayırt etmek için. Yeni bir sürüm çıkınca elle güncelle. */
 const APP_SURUM = '1.0.0';
@@ -234,20 +253,6 @@ const APP_SURUM = '1.0.0';
 function temizHata(err: unknown): string {
   const ham = err instanceof Error ? err.message : String(err);
   return ham.replace(/^(Error:\s*)+/i, '');
-}
-
-/** Ekran telefon genişliğinde mi? (oyun ekranı düzeni için tek kırılım noktası, ≤767px) */
-function useMobil() {
-  const [mobil, setMobil] = useState(
-    typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches,
-  );
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 767px)');
-    const dinle = () => setMobil(mq.matches);
-    mq.addEventListener('change', dinle);
-    return () => mq.removeEventListener('change', dinle);
-  }, []);
-  return mobil;
 }
 
 /**
@@ -374,15 +379,19 @@ function App() {
   const dilCtx = dilCtxYap(dil);
   const { m, kt } = dilCtx;
 
-  // Mobilde: her tur / her sonuç ekranında merkez paneli (olay + seçenekler) görünür alana
-  // kaydırır — oyuncu üst şeridi/sol paneli geçip aramak zorunda kalmasın.
-  const merkezAltRef = useRef<HTMLDivElement | null>(null);
+  // Mobil tek-ekran tasarımı: canlı skor rozetinin detay modalı (yalnız placeholder — §5).
+  const [skorDetayAcik, setSkorDetayAcik] = useState(false);
   // Ölümde skorun otomatik kaydedilmesi denendi mi (oturum id başına tek sefer) —
   // StrictMode çift-render'ında ve tekrar render'larda ikinci bir POST /api/scores atmamak için.
   const otoSkorKaydiRef = useRef<string | null>(null);
   const olumGoldOdenenRef = useRef<string | null>(null);
   const [olumGoldKazanci, setOlumGoldKazanci] = useState<number | null>(null);
-  const mobil = useMobil();
+  const mobil = useMobilEkran();
+  // Mobil canlı skor rozeti (§6) — sunucudaki toplamsal formülün istemci aynası, ücretsiz/senkron.
+  // Skor değiştikçe `skorGecisi.nonce` artar; rozet bunu React `key` olarak kullanıp kısa bir
+  // altın parlama animasyonunu (bkz. App.css .canli-skor-rozeti) yeniden oynatır.
+  const canliSkor = karakter ? hesaplaSkorKirilimi(karakter).skor : 0;
+  const skorGecisi = useGecisDeltasi(canliSkor);
 
   function sesToggle() {
     setSesKapali((onceki) => {
@@ -531,15 +540,10 @@ function App() {
     };
   }, [karakter?.id, karakter?.tur_sayisi, karakter?.meslek, ekran]);
 
-  // Mobilde olay/sonuç değişince merkez paneli ekrana getir (masaüstünde sayfa zaten kaymıyor).
-  useEffect(() => {
-    if (ekran !== 'oyun' && ekran !== 'sonuc') return;
-    if (typeof window === 'undefined' || !window.matchMedia('(max-width: 767px)').matches) return;
-    const t = setTimeout(() => {
-      merkezAltRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 60);
-    return () => clearTimeout(t);
-  }, [ekran, senaryo?.olay_basligi, sonEtki]);
+  // Not: eskiden burada mobilde "merkez-alt"ı ekrana kaydıran bir scrollIntoView
+  // efekti vardı. Mobil artık masaüstüyle aynı kilitli-viewport modelini kullandığı
+  // için (bkz. .oyun-kapsayici-tam mobil override'ının kaldırılması, App.css) sayfa
+  // hiç kaymıyor — bu efekte gerek kalmadı, kaldırıldı.
 
   // Karakter öldüğünde kazandığı ünvanları/efsanevi ölümü tarayıcının kalıcı başarım koleksiyonuna ekler.
   useEffect(() => {
@@ -1478,6 +1482,21 @@ function App() {
             💰 {formatPara(karakter.para)} {karakter.para_birimi}
           </div>
         )}
+      {mobil && karakter && ALT_GEZINME_EKRANLARI.includes(ekran) && (
+        <AltGezinme
+          ekran={ekran}
+          devreDisi={yukleniyor}
+          kariyerTalepVar={!!karakter.yonetim_talep}
+          aileTalepVar={!!karakter.aile_talep}
+          aileEvlilikRozeti={!karakter.es_adi && karakter.yas >= 18}
+          onKariyer={kariyerEkraniniAc}
+          onYatirim={yatirimEkraniniAc}
+          onEv={finansEkraniniAc}
+          onSosyallesme={sosyallesmeEkraniniAc}
+          onMagaza={magazaEkraniniAc}
+          onAile={aileEkraniniAc}
+        />
+      )}
       {hata && <div className="hata-kutusu">{hata}</div>}
 
       {ayarlarAcik && (
@@ -1932,8 +1951,14 @@ function App() {
               <KisilikPaneli
                 kisilik={karakter.kisilik}
                 aileMeslegi={karakter.aile_meslegi}
+                bolge={karakter.bolge}
                 kaynaklar={karakter.yatkinlik_kaynaklari}
                 eksenler={karakter.kisilik_eksenleri}
+                meslekYatkinlikUnvani={karakter.meslek_yatkinlik_unvani}
+                meslekYatkinlikSeviyesi={karakter.meslek_yatkinlik_seviyesi}
+                meslekZarBonusu={karakter.meslek_zar_bonusu}
+                meslekMaasCarpani={karakter.meslek_maas_carpani}
+                meslekTecrubeHizi={karakter.meslek_tecrube_hizi}
               />
             </aside>
 
@@ -1991,7 +2016,41 @@ function App() {
             hukumdar={karakter.hukumdar}
             onBolgeTikla={() => setBolgeBilgiAcik(true)}
           />
+          {mobil && (
+            // Mobil tek-ekran tasarımı: sol/sağ panel kaldırılınca kaybolan iki tek-butonluk
+            // erişimin (Kişilik & Miras modalı, canlı skor) yerini alan üst şerit-altı satır.
+            // Amaç şeridi de buraya taşındı (eskiden sahnenin üstünde bir overlay'di).
+            <div className="ust-mobil-rozet-satiri">
+              <button
+                type="button"
+                className="ust-avatar-rozeti"
+                onClick={() => setKisilikModalAcik(true)}
+                aria-haspopup="dialog"
+                title={kt(karakter.rutbe)}
+              >
+                <KarakterAvatari
+                  meslek={karakter.meslek}
+                  kisilik={karakter.kisilik}
+                  rutbeSeviye={karakter.rutbe_seviye}
+                  giyilenKozmetikler={avatarKozmetikleri}
+                />
+              </button>
+              <div className="ust-amac-serit-satiri">
+                <AmacPaneli durum={amaclar} varyant="serit" />
+              </div>
+              <button
+                key={skorGecisi.nonce}
+                type="button"
+                className="canli-skor-rozeti"
+                onClick={() => setSkorDetayAcik(true)}
+                title={m.skorDetayBaslik}
+              >
+                🏆 {canliSkor.toLocaleString(dil === 'en' ? 'en-US' : 'tr-TR')}
+              </button>
+            </div>
+          )}
           <div className="oyun-govde">
+            {!mobil && (
             <YanPanel className="sol-panel panel-parsomen" baslik="" mobil={mobil}>
               {/* Portre ya da isme dokununca Kişilik & Miras penceresi açılır (default kapalı). */}
               <button
@@ -2050,6 +2109,7 @@ function App() {
                 onHediye={hediyeHandler}
               />
             </YanPanel>
+            )}
 
             {(() => {
               const hotspotlar = (
@@ -2080,16 +2140,22 @@ function App() {
                     tamYukseklik
                   />
                 </div>
-                {/* Amaçlar arka plan görselinin ÜSTÜNDE ince bir şerit — her amaç
-                    çok kısa açıklamasıyla (kullanıcı isteği). */}
-                <AmacPaneli durum={amaclar} varyant="serit" />
-                {/* Masaüstünde hotspot'lar sahnenin ÜSTÜNDE (cqw/cqh ile görsele yapışık);
-                    mobilde sahnenin ALTINDA ayrı bir aksiyon satırı olarak (bkz. Paket 2). */}
-                {!mobil && hotspotlar}
+                {mobil && <div className="merkez-sahne-gradyan" aria-hidden="true" />}
+                {!mobil && (
+                  <>
+                    {/* Amaçlar arka plan görselinin ÜSTÜNDE ince bir şerit — her amaç
+                        çok kısa açıklamasıyla (kullanıcı isteği). Mobilde bu şerit
+                        üst çubuğun altına taşındı (bkz. .ust-amac-serit-satiri). */}
+                    <AmacPaneli durum={amaclar} varyant="serit" />
+                    {/* Hotspot'lar sahnenin ÜSTÜNDE (cqw/cqh ile görsele yapışık) — mobilde
+                        artık hiç render edilmiyor, dört hedefinin hepsi alt gezinme
+                        çubuğunda (bkz. AltGezinme). */}
+                    {hotspotlar}
+                  </>
+                )}
               </div>
-              {mobil && hotspotlar}
 
-              <div ref={merkezAltRef} className={`merkez-alt${ekran === 'sonuc' ? ' merkez-alt-sonuc' : ''}`}>
+              <div className={`merkez-alt${ekran === 'sonuc' ? ' merkez-alt-sonuc' : ''}`}>
                 {ekran === 'sonuc' && sonEtki ? (
                   <div className="olay-karti olay-karti-sonuc">
                     <div className="sonuc-efekti-kapsayici">
@@ -2117,8 +2183,13 @@ function App() {
                       </span>
                       <div className="olay-karti-metin-blok">
                         <h2>{senaryo.olay_basligi}</h2>
-                        {tepkiModu && <p className="tepki-notu">{m.tepkiNotu}</p>}
-                        <p className="olay-metni">{senaryo.olay_metni}</p>
+                        {/* Başlık dışarıda kalır (hep görünür); metin kendi kutusunda kayar —
+                            mobilde max-h-30vh, seçenekler bu kutunun DIŞINDA olduğu için
+                            uzun metin sayfayı asla itmez (bkz. App.css .olay-metni-govde). */}
+                        <div className="olay-metni-govde">
+                          {tepkiModu && <p className="tepki-notu">{m.tepkiNotu}</p>}
+                          <p className="olay-metni">{senaryo.olay_metni}</p>
+                        </div>
                       </div>
                       <span
                         className={`olay-gorseli olay-gorseli-sag${yukleniyor ? ' olay-gorseli-yukleniyor' : ''}`}
@@ -2132,20 +2203,22 @@ function App() {
 
                 {ekran === 'sonuc' && sonEtki ? (
                   <div className="secenekler sonuc-detay-panel">
-                    <EtkiCipleri etki={sonEtki.etki} paraBirimi={sonEtki.paraBirimi} />
-                    {(() => {
-                      // Tek metin: olay mesajı + (varsa) turun tek durumsal cümlesi.
-                      // Sayısal deltalar EtkiCipleri'nde; zamanAnlatimi/sonucAnlatimi
-                      // artık çoğu turda boş döner, o zaman yalnız mesaj görünür.
-                      const ozet = [sonEtki.etki.mesaj, sonEtki.zamanAnlatimi ?? sonEtki.sonucAnlatimi]
-                        .filter((s): s is string => !!s && s.trim() !== '')
-                        .join(' ');
-                      return ozet ? (
-                        <p className="tur-ozeti" title={ozet}>
-                          {ozet}
-                        </p>
-                      ) : null;
-                    })()}
+                    <div className="olay-metni-govde">
+                      <EtkiCipleri etki={sonEtki.etki} paraBirimi={sonEtki.paraBirimi} />
+                      {(() => {
+                        // Tek metin: olay mesajı + (varsa) turun tek durumsal cümlesi.
+                        // Sayısal deltalar EtkiCipleri'nde; zamanAnlatimi/sonucAnlatimi
+                        // artık çoğu turda boş döner, o zaman yalnız mesaj görünür.
+                        const ozet = [sonEtki.etki.mesaj, sonEtki.zamanAnlatimi ?? sonEtki.sonucAnlatimi]
+                          .filter((s): s is string => !!s && s.trim() !== '')
+                          .join(' ');
+                        return ozet ? (
+                          <p className="tur-ozeti" title={ozet}>
+                            {ozet}
+                          </p>
+                        ) : null;
+                      })()}
+                    </div>
                     <button disabled={yukleniyor} onClick={devamEt}>
                       {yukleniyor ? m.yukleniyor : m.devamEt}
                     </button>
@@ -2189,6 +2262,7 @@ function App() {
               );
             })()}
 
+            {!mobil && (
             <YanPanel className="sag-panel panel-parsomen" baslik="" mobil={mobil}>
               <SiyasetPaneli cag={karakter.cag} hizip={karakter.hizip} />
               <HaberlerPaneli haberler={karakter.haberler} />
@@ -2217,6 +2291,7 @@ function App() {
                 </button>
               </div>
             </YanPanel>
+            )}
           </div>
 
           {bolgeBilgiAcik && (
@@ -2248,9 +2323,37 @@ function App() {
                 <KisilikPaneli
                   kisilik={karakter.kisilik}
                   aileMeslegi={karakter.aile_meslegi}
+                  bolge={karakter.bolge}
                   kaynaklar={karakter.yatkinlik_kaynaklari}
                   eksenler={karakter.kisilik_eksenleri}
+                  meslekYatkinlikUnvani={karakter.meslek_yatkinlik_unvani}
+                  meslekYatkinlikSeviyesi={karakter.meslek_yatkinlik_seviyesi}
+                  meslekZarBonusu={karakter.meslek_zar_bonusu}
+                  meslekMaasCarpani={karakter.meslek_maas_carpani}
+                  meslekTecrubeHizi={karakter.meslek_tecrube_hizi}
                 />
+              </div>
+            </div>
+          )}
+
+          {skorDetayAcik && (
+            <div className="skor-detay-katman" onClick={() => setSkorDetayAcik(false)}>
+              <div
+                className="skor-detay-modal"
+                role="dialog"
+                aria-modal="true"
+                aria-label={m.skorDetayBaslik}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="skor-detay-modal-ust">
+                  <h2>🏆 {m.skorDetayBaslik}</h2>
+                  <button className="ikincil skor-detay-kapat" onClick={() => setSkorDetayAcik(false)}>
+                    {m.kapatX}
+                  </button>
+                </div>
+                <div className="skor-detay-govde">
+                  <p>{m.skorDetayPlaceholder}</p>
+                </div>
               </div>
             </div>
           )}
@@ -2411,6 +2514,14 @@ function App() {
           yukleniyor={yukleniyor}
           islemMesaji={islemMesaji}
           onSatinAl={magazaSatinAlHandler}
+          envanterEtiketler={karakter.etiketler}
+          envanterMagazaEnvanteri={karakter.magaza_envanteri}
+          envanterEvli={!!karakter.es_adi}
+          envanterYasayanCocuklar={karakter.cocuklar.filter((c) => c.yasiyor).map((c) => c.isim)}
+          envanterEkip={karakter.ekip.map((u) => ({ id: u.id, isim: u.isim, rol: u.rol }))}
+          envanterDostAdi={karakter.dost_adi}
+          onEnvanterKullan={envanterKullanHandler}
+          onEnvanterHediye={hediyeHandler}
           onGeriDon={() => {
             setIslemMesaji(null);
             setEkran('oyun');

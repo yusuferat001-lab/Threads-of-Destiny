@@ -1,11 +1,15 @@
 import { Cag, Kategori } from "../types";
 
 /**
- * Çağ+bölge kombinasyonu başına küçük, dar bantlı (aileler.ts/yerlesimler.ts ile
- * aynı ölçekte, ~±15) başlangıç bonus/malus paketi. Her bölgenin hem bir artısı
- * hem bir eksisi olacak şekilde tasarlandı — hiçbiri net "en iyi seçim" değil.
- * `createCharacter`'da aile+yerleşim bonuslarının yanına ÜÇÜNCÜ bir katman
- * olarak eklenir; `yatkinlikHesapla`'ya da aynı desende bir kaynak olarak girer.
+ * Çağ+bölge kombinasyonu başına küçük, dar bantlı başlangıç bonus/malus paketi.
+ * Her bölgenin hem bir artısı hem bir eksisi olacak şekilde tasarlandı — hiçbiri
+ * net "en iyi seçim" değil. `createCharacter`'da aile+yerleşim bonuslarının
+ * yanına ÜÇÜNCÜ bir katman olarak eklenir; `yatkinlikHesapla`'ya da aynı desende
+ * bir kaynak olarak girer. para/saglik/un/ahlak/mutluluk hâlâ ~±15 bandında;
+ * `yatkinlikEtkisi` ise 2026-09 sonu itibarıyla (kullanıcı isteği: "ülkeler max
+ * ±6") her kalemde en fazla ±6'ya çekildi — `stateManager.ts`'teki
+ * `BOLGE_YATKINLIK_LIMIT` bunu ayrıca çalışma anında da zorlar (buradaki
+ * değerler zaten sınırın içinde, o clamp yalnız bir güvenlik ağı).
  */
 export interface BolgeOzellikleri {
   para?: number;
@@ -23,7 +27,7 @@ const BOLGE_OZELLIKLERI: Record<string, BolgeOzellikleri> = {
     para: 6,
     saglik: -6,
     mutluluk: 4,
-    yatkinlikEtkisi: { ticaret: 10, sosyal: 5, savas: -4, din: 2, zanaat: 3 },
+    yatkinlikEtkisi: { ticaret: 6, sosyal: 4, savas: -3, din: 2, zanaat: 2 },
     ozet: {
       tr: "🌾 Ticaret ve sosyal yaşam güçlü · ⚔️ sınır çatışmaları can yorar",
       en: "🌾 Strong trade & social life · ⚔️ border skirmishes wear on health",
@@ -32,7 +36,7 @@ const BOLGE_OZELLIKLERI: Record<string, BolgeOzellikleri> = {
   "Orta Çağ|Kutsal Roma": {
     saglik: 4,
     ahlak: -6,
-    yatkinlikEtkisi: { zanaat: 11, siyaset: -8, ticaret: 4, savas: 2, din: -3 },
+    yatkinlikEtkisi: { zanaat: 6, siyaset: -5, ticaret: 3, savas: 2, din: -2 },
     ozet: {
       tr: "🛒 Ticaret canlı, beden dinç · 👑 parçalı beylikler otoriteyi ve vicdanı zorlar",
       en: "🛒 Lively trade, robust health · 👑 fractured princedoms strain authority and conscience",
@@ -44,7 +48,7 @@ const BOLGE_OZELLIKLERI: Record<string, BolgeOzellikleri> = {
     un: 10,
     ahlak: -4,
     mutluluk: -2,
-    yatkinlikEtkisi: { ticaret: 10, sosyal: 6, zanaat: 3, din: -3, savas: -2 },
+    yatkinlikEtkisi: { ticaret: 6, sosyal: 4, zanaat: 2, din: -2, savas: -1 },
     ozet: {
       tr: "💰 Zengin başlangıç, tanınırsın · 🏙️ kalabalık şehir sağlığı yorar",
       en: "💰 Wealthy start, well known · 🏙️ the crowded city wears on health",
@@ -53,7 +57,7 @@ const BOLGE_OZELLIKLERI: Record<string, BolgeOzellikleri> = {
   "Orta Çağ|Selçuklu": {
     para: -4,
     ahlak: 8,
-    yatkinlikEtkisi: { din: 12, savas: 9, ticaret: -5, zanaat: 2 },
+    yatkinlikEtkisi: { din: 6, savas: 5, ticaret: -3, zanaat: 1 },
     ozet: {
       tr: "🕌 Din ve savaş yatkınlığı güçlü · 🛒 ticaret biraz geride",
       en: "🕌 Strong faith & war aptitude · 🛒 trade lags behind",
@@ -64,7 +68,7 @@ const BOLGE_OZELLIKLERI: Record<string, BolgeOzellikleri> = {
     saglik: -4,
     un: 4,
     mutluluk: -8,
-    yatkinlikEtkisi: { ticaret: 11, siyaset: 4, zanaat: 5, din: -5, savas: -2 },
+    yatkinlikEtkisi: { ticaret: 6, siyaset: 3, zanaat: 3, din: -3, savas: -1 },
     ozet: {
       tr: "🏭 Sanayi kazancı yüksek · 😔 fabrika dumanı moral kırar",
       en: "🏭 High industrial earnings · 😔 factory smoke breaks morale",
@@ -74,7 +78,7 @@ const BOLGE_OZELLIKLERI: Record<string, BolgeOzellikleri> = {
     para: -8,
     un: 6,
     mutluluk: 2,
-    yatkinlikEtkisi: { siyaset: 10, sosyal: 6, ticaret: 4, zanaat: 2, din: -3 },
+    yatkinlikEtkisi: { siyaset: 6, sosyal: 4, ticaret: 3, zanaat: 1, din: -2 },
     ozet: {
       tr: "🗣️ Sosyal/siyasi güç · 💸 devrim sonrası bütçe zayıf başlar",
       en: "🗣️ Social & political clout · 💸 post-revolution budget starts weak",
@@ -84,7 +88,7 @@ const BOLGE_OZELLIKLERI: Record<string, BolgeOzellikleri> = {
     para: -6,
     ahlak: 10,
     mutluluk: 4,
-    yatkinlikEtkisi: { din: 12, ticaret: -5, zanaat: 3, savas: 3 },
+    yatkinlikEtkisi: { din: 6, ticaret: -3, zanaat: 2, savas: 2 },
     ozet: {
       tr: "🕌 Din/ahlak temeli güçlü · 🏭 sanayi geride, ticaret zor",
       en: "🕌 Strong faith & morals · 🏭 industry lags, trade is harder",
@@ -94,7 +98,7 @@ const BOLGE_OZELLIKLERI: Record<string, BolgeOzellikleri> = {
     saglik: 8,
     un: -10,
     mutluluk: -4,
-    yatkinlikEtkisi: { savas: 12, zanaat: 4, siyaset: -4, ticaret: -2, din: 1 },
+    yatkinlikEtkisi: { savas: 6, zanaat: 3, siyaset: -2, ticaret: -1, din: 1 },
     ozet: {
       tr: "🛡️ Asker ve dayanıklılık güçlü · 🌍 itibarın dışarıda zayıf başlar",
       en: "🛡️ Strong soldiering & endurance · 🌍 your standing abroad starts weak",

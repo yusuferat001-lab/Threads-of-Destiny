@@ -6,6 +6,7 @@ import { tarihiSavasKontrol } from "../data/tarihiSavaslar";
 import { K, T } from "../i18n";
 import { olayCevirisiUygula } from "../i18n/olaylar";
 import { HAVUZ_KILIT_ETIKETLERI as HAVUZ_KILIT_LISTESI, hapisErkenCikisMumkunMu } from "./stateManager";
+import { yatkinlikZarBonusOrani } from "../data/meslekYatkinlik";
 
 /**
  * Normal olay havuzunu tamamen kapatıp kendi özel havuzuna geçiren etiketler
@@ -54,6 +55,18 @@ export function temelUygunMu(olay: OlayTanimi, state: CharacterState): boolean {
   if (olay.gerekliKisilik && !state.kisilik.includes(olay.gerekliKisilik)) return false;
   if (olay.gerekliDin && olay.gerekliDin !== state.din_kultur) return false;
   if (olay.minRutbeSeviye !== undefined && state.rutbe_seviye < olay.minRutbeSeviye) return false;
+  // Mesleğe yatkınlık kademesi gating (2026-09 sonu): meslek seçilmemiş (seviye null)
+  // bir karakter minMeslekYatkinlikSeviye taşıyan hiçbir olayı görmez.
+  if (olay.minMeslekYatkinlikSeviye !== undefined) {
+    if (state.meslek_yatkinlik_seviyesi === null || state.meslek_yatkinlik_seviyesi < olay.minMeslekYatkinlikSeviye) {
+      return false;
+    }
+  }
+  if (olay.maxMeslekYatkinlikSeviye !== undefined) {
+    if (state.meslek_yatkinlik_seviyesi === null || state.meslek_yatkinlik_seviyesi > olay.maxMeslekYatkinlikSeviye) {
+      return false;
+    }
+  }
   if (olay.minSucSeviyesi !== undefined && state.suc_seviyesi < olay.minSucSeviyesi) return false;
   if (olay.maxSucSeviyesi !== undefined && state.suc_seviyesi > olay.maxSucSeviyesi) return false;
   if (olay.gerekliEkip && state.ekip.length === 0) return false;
@@ -237,6 +250,18 @@ function kilitNedeni(secenek: OlaySecenegi, state: CharacterState): string | nul
   if (secenek.yasakliEtiketler && secenek.yasakliEtiketler.some((e) => state.etiketler.includes(e))) {
     return secenek.kilitAciklamasi ?? "Artık bunu yapamıyorsun";
   }
+  if (
+    secenek.minMeslekYatkinlikSeviye !== undefined &&
+    (state.meslek_yatkinlik_seviyesi === null || state.meslek_yatkinlik_seviyesi < secenek.minMeslekYatkinlikSeviye)
+  ) {
+    return secenek.kilitAciklamasi ?? "Bu iş için yeterince yetenekli değilsin";
+  }
+  if (
+    secenek.maxMeslekYatkinlikSeviye !== undefined &&
+    (state.meslek_yatkinlik_seviyesi === null || state.meslek_yatkinlik_seviyesi > secenek.maxMeslekYatkinlikSeviye)
+  ) {
+    return secenek.kilitAciklamasi ?? "Bu, senin gibi yetenekli biri için fazla basit/riskli görünüyor";
+  }
   // Borçluyken cepten para gerektiren seçenekler kapanır.
   const paraCikisi = Math.min(secenek.basariliSonuc.para ?? 0, secenek.basarisizSonuc.para ?? 0);
   if (state.para < 0 && paraCikisi < 0) {
@@ -357,7 +382,12 @@ export function olaySec(
 
   const secenekler: Secenek[] = kullanilacakSecenekler.map((secenek) => {
       const neden = kilitNedeni(secenek, state);
-      const yatkinlikBonus = state.yatkinliklar[olay.kategori] ?? 0;
+      // 2026-09 sonu: yatkınlık artık baseBasariSansi'ye doğrudan TOPLANMAZ (eskiden
+      // ±30 puana kadar çıkabiliyordu) — oyuncu bu ham sayıyı hiç görmediği için
+      // (yatkınlık dökümü yalnız kaynak başına küçük deltalar gösterir) şansı bu
+      // kadar oynatması "görünmez ama hissedilen" bir haksızlıktı. Artık yalnızca
+      // küçük, kademeli bir ORAN uygular (bkz. data/meslekYatkinlik.ts).
+      const yatkinlikOrani = yatkinlikZarBonusOrani(state, olay.kategori);
       // Ekip üyesinin gizli kalitesi başarı şansını belirliyorsa, karakterin kendi
       // yatkınlığı devre dışı kalır; şans doğrudan üyenin gercekKalite'sine eşitlenir.
       const zarBelirleyenUye = secenek.ekipKalitesiZarBelirler
@@ -365,7 +395,7 @@ export function olaySec(
         : undefined;
       const basariSansi = zarBelirleyenUye
         ? zarBelirleyenUye.gercekKalite
-        : clampSans(secenek.baseBasariSansi + yatkinlikBonus);
+        : clampSans(Math.round(secenek.baseBasariSansi * (1 + yatkinlikOrani)));
       return {
         metin: doldur(secenek.metin, state),
         basari_sansi: basariSansi,

@@ -33,6 +33,15 @@ export interface AileTanimi {
  * korundu), mutluluk ~±12. HER aile artık mutluluğu da etkiler (eskiden
  * hiçbiri etkilemiyordu). Net etki hâlâ kabaca dengeli: bir alanda
  * kazandıran aile başka bir alanda mutlaka bedel öder.
+ *
+ * 2026-09 sonu (kullanıcı isteği — "her bir ailenin her mesleğe yatkınlığını
+ * düzenle"): `yatkinlikEtkisi` artık HER ailede TAM 4 meslek kategorisini
+ * (savas/ticaret/din/zanaat — bölgelerdeki aynı desen, §40) kapsıyor; eski
+ * karışık siyaset/sosyal/saglik etkileri kaldırıldı. Sabit bir kademe: en
+ * güçlü uyum **8** (`AILE_YATKINLIK_LIMIT` tavanı — `devamMeslegi` olan
+ * ailelerde bu her zaman o mesleğin kategorisidir), ikincil **4**, üçüncül/
+ * taban **2** (kullanıcının "baz puan" önerisi), en zayıf uyum **-3** (hafif
+ * bir ceza — hiçbir aile bir meslekte tamamen "etkisiz" bırakılmadı).
  */
 export const AILELER: AileTanimi[] = [
   {
@@ -47,7 +56,7 @@ export const AILELER: AileTanimi[] = [
     un: -8,
     ahlak: 8,
     mutluluk: 6,
-    yatkinlikEtkisi: { saglik: 10, ticaret: -5 },
+    yatkinlikEtkisi: { zanaat: 8, din: 4, savas: 2, ticaret: -3 },
   },
   {
     id: "asker",
@@ -62,7 +71,7 @@ export const AILELER: AileTanimi[] = [
     un: 10,
     ahlak: -12,
     mutluluk: -4,
-    yatkinlikEtkisi: { savas: 15, sosyal: -5 },
+    yatkinlikEtkisi: { savas: 8, zanaat: 4, din: 2, ticaret: -3 },
   },
   {
     id: "kole",
@@ -77,7 +86,7 @@ export const AILELER: AileTanimi[] = [
     un: -18,
     ahlak: 18,
     mutluluk: -10,
-    yatkinlikEtkisi: { sosyal: 8, siyaset: -10, zanaat: 6 },
+    yatkinlikEtkisi: { zanaat: 8, ticaret: 4, din: 2, savas: -3 },
   },
   {
     id: "soylu",
@@ -91,7 +100,7 @@ export const AILELER: AileTanimi[] = [
     un: 20,
     ahlak: -20,
     mutluluk: -8,
-    yatkinlikEtkisi: { siyaset: 15, ticaret: 8, din: -8, zanaat: -8 },
+    yatkinlikEtkisi: { ticaret: 8, savas: 4, din: 2, zanaat: -3 },
   },
   {
     id: "sanatci",
@@ -105,7 +114,7 @@ export const AILELER: AileTanimi[] = [
     un: 14,
     ahlak: 5,
     mutluluk: 8,
-    yatkinlikEtkisi: { sosyal: 12, siyaset: -5, zanaat: 14 },
+    yatkinlikEtkisi: { zanaat: 8, ticaret: 4, din: 2, savas: -3 },
   },
   {
     id: "fabrika_iscisi",
@@ -121,7 +130,7 @@ export const AILELER: AileTanimi[] = [
     ahlak: 14,
     mutluluk: -6,
     durumlar: [{ id: "fabrika_ciger", ad: "Tozlu Ciğerler", tur: "kalici", tur_basi_saglik: -1 }],
-    yatkinlikEtkisi: { saglik: -10, ticaret: -5, zanaat: 12 },
+    yatkinlikEtkisi: { zanaat: 8, savas: 4, din: 2, ticaret: -3 },
   },
   {
     id: "tuccar",
@@ -136,7 +145,7 @@ export const AILELER: AileTanimi[] = [
     un: 12,
     ahlak: -14,
     mutluluk: 4,
-    yatkinlikEtkisi: { ticaret: 18, din: -5 },
+    yatkinlikEtkisi: { ticaret: 8, zanaat: 4, savas: 2, din: -3 },
   },
   {
     id: "din_adami",
@@ -151,7 +160,7 @@ export const AILELER: AileTanimi[] = [
     un: 14,
     ahlak: 20,
     mutluluk: 6,
-    yatkinlikEtkisi: { din: 18, savas: -8 },
+    yatkinlikEtkisi: { din: 8, ticaret: 4, zanaat: 2, savas: -3 },
   },
   {
     id: "zanaatkar",
@@ -167,7 +176,7 @@ export const AILELER: AileTanimi[] = [
     un: -8,
     ahlak: 6,
     mutluluk: 4,
-    yatkinlikEtkisi: { ticaret: 8, saglik: 5, zanaat: 15 },
+    yatkinlikEtkisi: { zanaat: 8, ticaret: 4, din: 2, savas: -3 },
   },
   {
     id: "hekim",
@@ -182,7 +191,7 @@ export const AILELER: AileTanimi[] = [
     un: 8,
     ahlak: 6,
     mutluluk: -2,
-    yatkinlikEtkisi: { saglik: 15, din: 5, zanaat: 6 },
+    yatkinlikEtkisi: { zanaat: 8, din: 4, ticaret: 2, savas: -3 },
   },
   {
     id: "denizci",
@@ -197,7 +206,7 @@ export const AILELER: AileTanimi[] = [
     un: -4,
     ahlak: -14,
     mutluluk: -2,
-    yatkinlikEtkisi: { ticaret: 8, sosyal: 5, din: -5 },
+    yatkinlikEtkisi: { ticaret: 8, savas: 4, zanaat: 2, din: -3 },
   },
   {
     id: "madenci",
@@ -212,7 +221,7 @@ export const AILELER: AileTanimi[] = [
     un: -6,
     ahlak: 10,
     mutluluk: -8,
-    yatkinlikEtkisi: { saglik: -10, savas: 5, zanaat: 8 },
+    yatkinlikEtkisi: { zanaat: 8, savas: 4, ticaret: 2, din: -3 },
   },
   {
     id: "kacakci",
@@ -226,7 +235,7 @@ export const AILELER: AileTanimi[] = [
     un: -18,
     ahlak: -16,
     mutluluk: -6,
-    yatkinlikEtkisi: { ticaret: 10, siyaset: -8, din: -10 },
+    yatkinlikEtkisi: { ticaret: 8, savas: 4, zanaat: 2, din: -3 },
   },
   {
     id: "tefeci",
@@ -240,7 +249,7 @@ export const AILELER: AileTanimi[] = [
     un: -16,
     ahlak: -20,
     mutluluk: -10,
-    yatkinlikEtkisi: { ticaret: 15, sosyal: -10 },
+    yatkinlikEtkisi: { ticaret: 8, zanaat: 4, savas: 2, din: -3 },
   },
   {
     id: "katip",
@@ -255,7 +264,7 @@ export const AILELER: AileTanimi[] = [
     un: 14,
     ahlak: 12,
     mutluluk: -4,
-    yatkinlikEtkisi: { siyaset: 10, din: 5, zanaat: 5 },
+    yatkinlikEtkisi: { ticaret: 8, din: 4, zanaat: 2, savas: -3 },
   },
   {
     id: "cellat",
@@ -269,7 +278,7 @@ export const AILELER: AileTanimi[] = [
     un: -20,
     ahlak: -14,
     mutluluk: -10,
-    yatkinlikEtkisi: { savas: 10, sosyal: -15 },
+    yatkinlikEtkisi: { savas: 8, zanaat: 4, ticaret: 2, din: -3 },
   },
   {
     id: "saray_hizmetkari",
@@ -283,7 +292,7 @@ export const AILELER: AileTanimi[] = [
     un: 14,
     ahlak: -10,
     mutluluk: -2,
-    yatkinlikEtkisi: { siyaset: 12, sosyal: 5, zanaat: 5 },
+    yatkinlikEtkisi: { ticaret: 8, zanaat: 4, din: 2, savas: -3 },
   },
   {
     id: "surgun",
@@ -297,7 +306,7 @@ export const AILELER: AileTanimi[] = [
     un: -18,
     ahlak: 14,
     mutluluk: -8,
-    yatkinlikEtkisi: { siyaset: -10, saglik: 5, sosyal: -5 },
+    yatkinlikEtkisi: { savas: 8, zanaat: 4, ticaret: 2, din: -3 },
   },
   // --- Orta Çağ'a özel aileler ---
   {
@@ -314,7 +323,7 @@ export const AILELER: AileTanimi[] = [
     un: 20,
     ahlak: 10,
     mutluluk: -4,
-    yatkinlikEtkisi: { savas: 12, siyaset: 5 },
+    yatkinlikEtkisi: { savas: 8, din: 4, ticaret: 2, zanaat: -3 },
   },
   {
     id: "haci",
@@ -329,7 +338,7 @@ export const AILELER: AileTanimi[] = [
     un: 6,
     ahlak: 14,
     mutluluk: 6,
-    yatkinlikEtkisi: { din: 10, sosyal: 5 },
+    yatkinlikEtkisi: { din: 8, ticaret: 4, zanaat: 2, savas: -3 },
   },
   {
     id: "soytari",
@@ -344,7 +353,7 @@ export const AILELER: AileTanimi[] = [
     un: -6,
     ahlak: 6,
     mutluluk: 10,
-    yatkinlikEtkisi: { sosyal: 15, siyaset: -10 },
+    yatkinlikEtkisi: { ticaret: 8, zanaat: 4, savas: 2, din: -3 },
   },
   // --- Sanayi Devrimi'ne özel aileler ---
   {
@@ -361,7 +370,7 @@ export const AILELER: AileTanimi[] = [
     un: 8,
     ahlak: 6,
     mutluluk: 2,
-    yatkinlikEtkisi: { ticaret: 10, siyaset: 5, zanaat: 15 },
+    yatkinlikEtkisi: { zanaat: 8, ticaret: 4, din: 2, savas: -3 },
   },
   {
     id: "gazeteci",
@@ -376,7 +385,7 @@ export const AILELER: AileTanimi[] = [
     un: 20,
     ahlak: 8,
     mutluluk: 2,
-    yatkinlikEtkisi: { siyaset: 12, sosyal: 8, din: -5 },
+    yatkinlikEtkisi: { ticaret: 8, zanaat: 4, savas: 2, din: -3 },
   },
   {
     id: "sirk_ailesi",
@@ -391,7 +400,7 @@ export const AILELER: AileTanimi[] = [
     un: 12,
     ahlak: -6,
     mutluluk: 10,
-    yatkinlikEtkisi: { sosyal: 18, savas: -8 },
+    yatkinlikEtkisi: { zanaat: 8, ticaret: 4, din: 2, savas: -3 },
   },
   // --- Her iki çağda da görülebilen komik/absürt aileler ---
   {
@@ -406,7 +415,7 @@ export const AILELER: AileTanimi[] = [
     un: -8,
     ahlak: 4,
     mutluluk: 6,
-    yatkinlikEtkisi: { ticaret: -8, savas: 5 },
+    yatkinlikEtkisi: { savas: 8, zanaat: 4, din: 2, ticaret: -3 },
   },
   {
     id: "falci",
@@ -420,7 +429,7 @@ export const AILELER: AileTanimi[] = [
     un: -4,
     ahlak: -6,
     mutluluk: 4,
-    yatkinlikEtkisi: { din: -8, sosyal: 10 },
+    yatkinlikEtkisi: { ticaret: 8, zanaat: 4, savas: 2, din: -3 },
   },
   {
     id: "kumarbaz",
@@ -434,7 +443,7 @@ export const AILELER: AileTanimi[] = [
     un: -10,
     ahlak: -12,
     mutluluk: -6,
-    yatkinlikEtkisi: { ticaret: 5, siyaset: -8 },
+    yatkinlikEtkisi: { ticaret: 8, savas: 4, zanaat: 2, din: -3 },
   },
   {
     id: "tavuk_hirsizi",
@@ -448,7 +457,7 @@ export const AILELER: AileTanimi[] = [
     un: -14,
     ahlak: -8,
     mutluluk: 6,
-    yatkinlikEtkisi: { sosyal: -5, ticaret: 5 },
+    yatkinlikEtkisi: { ticaret: 8, savas: 4, zanaat: 2, din: -3 },
   },
 ];
 

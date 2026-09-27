@@ -325,6 +325,15 @@ const TR = {
   shKariyer: 'Kariyer',
   shEvinKisa: 'Evin',
   shEvFallback: 'Ev',
+
+  // ---- Mobil alt gezinme çubuğu ----
+  agBaslik: 'Alt gezinme',
+  agDiger: 'Diğer',
+  agAile: 'Aile',
+
+  // ---- Mobil canlı skor rozeti + detay modalı ----
+  skorDetayBaslik: 'Canlı Skor',
+  skorDetayPlaceholder: 'Skor Hesaplama Detayları',
   shIsyeriTitle: '{0} — Yatırım',
   shEvTitle: '{0} — Gelir & Gider',
 
@@ -559,6 +568,10 @@ const TR = {
   kpBarisci: 'Barışçıl',
   kpEksenAria: '{0} ile {1} arası eksen',
   kpAilesi: ' Ailesi',
+  kpYatkinlikZar: 'Zar',
+  kpYatkinlikMaas: 'Maaş',
+  kpYatkinlikTecrube: 'Tecrübe',
+  kpSinerji: 'sinerjisi',
 
   // ---- AileOzetPaneli (ek) ----
   aoBaslik: 'Aile',
@@ -1037,6 +1050,15 @@ const EN: Metinler = {
   shKariyer: 'Career',
   shEvinKisa: 'Home',
   shEvFallback: 'Home',
+
+  // ---- Mobile bottom navigation ----
+  agBaslik: 'Bottom navigation',
+  agDiger: 'More',
+  agAile: 'Family',
+
+  // ---- Mobile live score badge + detail modal ----
+  skorDetayBaslik: 'Live Score',
+  skorDetayPlaceholder: 'Score Calculation Details',
   shIsyeriTitle: '{0} — Investments',
   shEvTitle: '{0} — Income & Expenses',
 
@@ -1271,6 +1293,10 @@ const EN: Metinler = {
   kpBarisci: 'Peaceable',
   kpEksenAria: 'axis between {0} and {1}',
   kpAilesi: ' Family',
+  kpYatkinlikZar: 'Dice',
+  kpYatkinlikMaas: 'Pay',
+  kpYatkinlikTecrube: 'Pace',
+  kpSinerji: 'synergy',
 
   // ---- AileOzetPaneli ----
   aoBaslik: 'Family',

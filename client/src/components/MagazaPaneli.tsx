@@ -1,8 +1,15 @@
 import { useState } from 'react';
-import type { MagazaEsyaKarti, MagazaEsyaKategori } from '../types';
+import type { MagazaEsyaKarti, MagazaEsyaKategori, SahipOlunanEsya } from '../types';
 import { formatPara } from '../format';
 import { bic } from '../i18n';
 import { useDil } from '../DilContext';
+import { useMobilEkran } from '../hooks';
+import { EnvanterPaneli } from './EnvanterPaneli';
+
+/** Şifa/Lüks sekmelerinin yanına, SADECE mobilde eklenen 3. sekme — sol panel
+ * kaldırılınca EnvanterPaneli'nin (envanter/hediye) yeni evi (§4). Masaüstünde
+ * bu sekme hiç render edilmez, EnvanterPaneli hâlâ sol panelde. */
+type MagazaSekme = MagazaEsyaKategori | 'envanter';
 
 interface MagazaPaneliProps {
   para: number;
@@ -12,16 +19,51 @@ interface MagazaPaneliProps {
   islemMesaji: string | null;
   onSatinAl: (katalogId: string) => void;
   onGeriDon: () => void;
+  // Mobilde 3. sekme olarak EnvanterPaneli'yi mount etmek için — hepsi opsiyonel,
+  // verilmezse (masaüstünde onEnvanterKullan/onEnvanterHediye geçirilmez) sekme
+  // hiç görünmez.
+  envanterEtiketler?: string[];
+  envanterMagazaEnvanteri?: SahipOlunanEsya[];
+  envanterEvli?: boolean;
+  envanterYasayanCocuklar?: string[];
+  envanterEkip?: { id: string; isim: string; rol: string }[];
+  envanterDostAdi?: string;
+  onEnvanterKullan?: (esyaId: string) => void;
+  onEnvanterHediye?: (
+    esyaId: string,
+    hedef: 'es' | 'cocuk' | 'ekip' | 'dost',
+    opts?: { cocukIndex?: number; ekipId?: string },
+  ) => void;
 }
 
-export function MagazaPaneli({ para, paraBirimi, katalog, yukleniyor, islemMesaji, onSatinAl, onGeriDon }: MagazaPaneliProps) {
+export function MagazaPaneli({
+  para,
+  paraBirimi,
+  katalog,
+  yukleniyor,
+  islemMesaji,
+  onSatinAl,
+  onGeriDon,
+  envanterEtiketler,
+  envanterMagazaEnvanteri,
+  envanterEvli,
+  envanterYasayanCocuklar,
+  envanterEkip,
+  envanterDostAdi,
+  onEnvanterKullan,
+  onEnvanterHediye,
+}: MagazaPaneliProps) {
   const { m, kt } = useDil();
-  const [sekme, setSekme] = useState<MagazaEsyaKategori>('sifa');
-  const gosterilenler = katalog.filter((esya) => esya.kategori === sekme);
+  const mobil = useMobilEkran();
+  const [sekme, setSekme] = useState<MagazaSekme>('sifa');
+  const envanterSekmesiVar = mobil && !!envanterMagazaEnvanteri;
+  const gosterilenler =
+    sekme === 'envanter' ? [] : katalog.filter((esya) => esya.kategori === sekme);
   const kilitAciklamasi = gosterilenler.find((e) => e.kilitli)?.kilitAciklamasi;
 
-  const sekmeBaslik = (kat: MagazaEsyaKategori) => (kat === 'sifa' ? m.mpSekmeSifa : m.mpSekmeLuks);
-  const sekmeAciklama = sekme === 'sifa' ? m.mpSifaAciklama : m.mpLuksAciklama;
+  const sekmeBaslik = (kat: MagazaSekme) =>
+    kat === 'sifa' ? m.mpSekmeSifa : kat === 'luks' ? m.mpSekmeLuks : m.enBaslikTam;
+  const sekmeAciklama = sekme === 'sifa' ? m.mpSifaAciklama : sekme === 'luks' ? m.mpLuksAciklama : '';
 
   return (
     <div className="ekran ekran-tam-sayfa ekran-magaza">
@@ -29,26 +71,47 @@ export function MagazaPaneli({ para, paraBirimi, katalog, yukleniyor, islemMesaj
       <p className="giris-aciklama">{bic(m.mpAciklama, formatPara(para), paraBirimi)}</p>
 
       <div className="magaza-sekmeleri">
-        {(['sifa', 'luks'] as MagazaEsyaKategori[]).map((kategori) => (
-          <button
-            key={kategori}
-            className={`magaza-sekme${sekme === kategori ? ' magaza-sekme-aktif' : ''}`}
-            disabled={yukleniyor}
-            onClick={() => setSekme(kategori)}
-          >
-            {kategori === 'sifa' ? '🌿' : '💎'} {sekmeBaslik(kategori)}
-          </button>
-        ))}
+        {(['sifa', 'luks', ...(envanterSekmesiVar ? (['envanter'] as const) : [])] as MagazaSekme[]).map(
+          (kategori) => (
+            <button
+              key={kategori}
+              className={`magaza-sekme${sekme === kategori ? ' magaza-sekme-aktif' : ''}`}
+              disabled={yukleniyor}
+              onClick={() => setSekme(kategori)}
+            >
+              {kategori === 'sifa' ? '🌿' : kategori === 'luks' ? '💎' : '🎒'} {sekmeBaslik(kategori)}
+            </button>
+          ),
+        )}
       </div>
-      <p className="giris-aciklama magaza-sekme-aciklama tam-yardimci-metin">{sekmeAciklama}</p>
+      {sekme !== 'envanter' && (
+        <p className="giris-aciklama magaza-sekme-aciklama tam-yardimci-metin">{sekmeAciklama}</p>
+      )}
 
       {islemMesaji && <p className="yatirim-islem-mesaji">{islemMesaji}</p>}
-      {kilitAciklamasi && <p className="yatirim-islem-mesaji magaza-kilit-mesaji">{bic(m.mpKilitli, kilitAciklamasi)}</p>}
+      {sekme !== 'envanter' && kilitAciklamasi && (
+        <p className="yatirim-islem-mesaji magaza-kilit-mesaji">{bic(m.mpKilitli, kilitAciklamasi)}</p>
+      )}
 
-      {gosterilenler.length === 0 && (
+      {sekme !== 'envanter' && gosterilenler.length === 0 && (
         <p className="yatirim-islem-mesaji">{m.mpKategoriBos}</p>
       )}
 
+      {sekme === 'envanter' ? (
+        <div className="tam-kaydirilan">
+          <EnvanterPaneli
+            etiketler={envanterEtiketler ?? []}
+            magazaEnvanteri={envanterMagazaEnvanteri ?? []}
+            evli={envanterEvli}
+            yasayanCocuklar={envanterYasayanCocuklar}
+            ekip={envanterEkip}
+            dostAdi={envanterDostAdi}
+            yukleniyor={yukleniyor}
+            onKullan={onEnvanterKullan}
+            onHediye={onEnvanterHediye}
+          />
+        </div>
+      ) : (
       <div className="tam-kaydirilan">
         <div className="yatirim-kartlari yatirim-mulk-kartlari">
           {gosterilenler.map((esya) => {
@@ -88,6 +151,7 @@ export function MagazaPaneli({ para, paraBirimi, katalog, yukleniyor, islemMesaj
           })}
         </div>
       </div>
+      )}
 
       <button className="ikincil tam-geri-buton" disabled={yukleniyor} onClick={onGeriDon}>
         {m.geriDon}
