@@ -100,11 +100,13 @@ export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
     kosul: (s) => evliMi(s) && yasayanCocuk(s) >= 3,
   },
   {
-    // 2026-09 hayat amacı dengesi: yaş eşiği 58→50 (aynı sebep — dinc_ihtiyar notu).
+    // 2026-09 hayat amacı dengesi: yaş eşiği 58→50, sağlık eşiği 68→50 —
+    // yaslanmaUygula'nın 55+ kademeli düşüşü (§13) karşısında 68'i sürekli
+    // tutmak fazla iddialıydı; 50 hâlâ "sağlıklı" ama gerçekçi bir bar.
     id: "saglam_omur", zorluk: "normal", kontrolAni: "herhangi",
     baslik: { tr: "Sağlam Ömür", en: "A Sound Body" },
-    aciklama: { tr: "50 yaşından sonra sağlığını 68'in üzerinde tut.", en: "Keep your health above 68 past the age of 50." },
-    kosul: (s) => s.yas >= 50 && s.saglik >= 68,
+    aciklama: { tr: "50 yaşından sonra sağlığını 50'nin üzerinde tut.", en: "Keep your health above 50 past the age of 50." },
+    kosul: (s) => s.yas >= 50 && s.saglik >= 50,
   },
   {
     id: "meyhane_mudavimi", zorluk: "normal", kontrolAni: "herhangi",
@@ -568,7 +570,7 @@ export const AMAC_ILERLEME: Record<
   taninan_yuz: { hedef: 72, metrik: (s) => s.un },
   dinc_ihtiyar: { hedef: 65, metrik: (s) => s.yas },
   ocak_sahibi: { hedef: 3, metrik: (s) => (s.cocuklar ?? []).filter((c) => c.yasiyor).length },
-  saglam_omur: { hedef: 68, metrik: (s) => (s.yas >= 50 ? s.saglik : 0) },
+  saglam_omur: { hedef: 50, metrik: (s) => (s.yas >= 50 ? s.saglik : 0) },
   meyhane_mudavimi: { hedef: 3, metrik: (s) => s.alkol_ziyaret_sayisi ?? 0 },
   sansli_el: { hedef: 95, metrik: (s) => Math.max(0, s.omur_kumar_net ?? 0) },
   sadik_dost: { hedef: 60, metrik: (s) => (s.evcil_hayvan ? s.mutluluk : 0) },
