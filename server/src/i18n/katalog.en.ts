@@ -534,4 +534,42 @@ export const KATALOG_EN: Record<string, string> = {
   "korumaci": "bodyguard",
   "gözcü": "lookout",
   "aşçı": "cook",
+
+  // Faz 7 / çağa özel ek aileler (ad + açılış anlatısı)
+  "Şövalye": "Knight",
+  "Hacı Ailesi": "Pilgrim Family",
+  "Soytarı": "Jester",
+  "Mühendis": "Engineer",
+  "Gazeteci": "Journalist",
+  "Sirk Ailesi": "Circus Family",
+  "Define Avcısı": "Treasure Hunter",
+  "Falcı Ailesi": "Fortune-Teller Family",
+  "Kumarbaz Aile": "Gambler Family",
+  "Tavuk Hırsızı Ailesi": "Chicken-Thief Family",
+  "Baban {bolge} limanlarından kalkan buharlı gemilerde yıllarca çalıştı, bir seferden hiç dönmedi. Sen liman meyhanelerinde büyüdün; yabancı dilleri, hileli zarları ve fırtınadan önceki sessizliği tanırsın.":
+    "Your father worked for years on the steamships leaving the ports of {bolge}, and one voyage he never came back. You grew up in harbor taverns; you know foreign tongues, loaded dice, and the silence before a storm.",
+  "Baban {bolge}'nin yeni demiryolu şirketinde defter tutar, kimin kime ne borçlu olduğunu aynı sayfalara yazardı. Okuma yazmayı ve rakamları erken öğrendin. Kalem tutan eller güçlüdür ama fabrika patronunun öfkesine karşı hiçbir zaman yeterli değildir.":
+    "Your father kept the ledgers at the new railway company of {bolge}, writing down who owed what to whom on the same pages. You learned to read, write and reckon early. Hands that hold a pen are strong — but never strong enough against a factory owner's temper.",
+  "Ailen kuşaklardır {bolge} beyliğine kılıç borçlu bir şövalye hanedanı. Zırh kuşanmayı, yemin etmeyi ve yeminini tutmayı öğrendin — soylulardan farklı olarak sizde onur satılık değildi. Ama savaş meydanları hep aç, hep açtı.":
+    "For generations your family has been a knightly house sworn by the sword to the lords of {bolge}. You learned to don armor, to swear an oath and to keep it — unlike the nobles, honor was never for sale in your house. But the battlefields were always hungry, always open.",
+  "Ailen nesillerdir hac yollarına düşer; kervanları, tehlikeli geçitleri ve yabancı şehirlerin pazarlarını tanır. Evde her zaman uzak diyarlardan getirilmiş bir tespih ya da bir hikaye vardı, ama kesenizde nadiren para kalırdı.":
+    "For generations your family has taken to the pilgrim roads; they know the caravans, the dangerous passes and the markets of foreign cities. There was always a string of prayer beads or a tale from distant lands at home — but rarely any money left in the purse.",
+  "Baban {bolge} sarayında soytarılık yaptı; kralı güldürmek karnını doyururdu, ama kimse bir soytarının sözüne itibar etmezdi. Sen de kahkaha atmayı ve kimsenin ciddiye almadığı bir ailenin çocuğu olmayı öğrendin.":
+    "Your father was a jester at the court of {bolge}; making the king laugh put food on the table, but no one ever trusted a jester's word. You learned to laugh too — and what it means to be the child of a family nobody takes seriously.",
+  "Baban {bolge}'nin yeni fabrikalarına buhar makineleri kurdu, evinizde her zaman bir plan kağıdı açık dururdu. Çarkların nasıl döndüğünü, bir hesabın nasıl tutmadığını erken yaşta öğrendin — ama makineler bazen ellerini de yerdi.":
+    "Your father installed steam engines in the new factories of {bolge}; there was always a blueprint spread open in your house. You learned early how gears turn and how a calculation can fail — but sometimes the machines took a man's hands too.",
+  "Annen {bolge} gazetelerine haber yetiştirirdi; evinizde mürekkep kokusu ve dedikodu eksik olmazdı. Kimin ne yaptığını bilmeyi ve bunu nasıl anlatacağını erken öğrendin — ama bazı yazılar bazı kapıları sonsuza dek kapattı.":
+    "Your mother chased stories for the newspapers of {bolge}; your house never lacked the smell of ink or a bit of gossip. You learned early to know who did what and how to tell it — but some articles closed some doors forever.",
+  "Ailen çadırdan çadıra dolaşan bir sirk topluluğuydu; ip cambazlığı, hayvan terbiyesi ve alkış senin ninnindi. Her kasabada bir gece tanınıp sabah unutulmayı, hiçbir yere kök salamamayı öğrendin.":
+    "Your family was a circus troupe wandering from tent to tent; tightrope walking, animal taming and applause were your lullabies. You learned to be famous in every town for one night and forgotten by morning, never putting down roots anywhere.",
+  "Ailen kuşaklardır {bolge} çevresindeki her 'gömülü hazine' söylentisinin peşine düştü; yarım köyü kazdılar, tek bulduğu şey borç ve söndürülemeyen bir umuttu. Sen de her eski haritaya bir çift parlak gözle bakarsın.":
+    "For generations your family has chased every 'buried treasure' rumor around {bolge}; they dug up half the village, and all they ever found was debt and a hope that would not die. You too look at every old map with shining eyes.",
+  "Ailen nesillerdir {bolge} pazarında fincan ve el falına bakar; herkesin geleceğini bilirmiş gibi görünürler, kendi ceplerinin geleceğini hiç kestiremezler. Sen de insanların yüzünü okumayı, ama kendi kaderine şaşırmayı öğrendin.":
+    "For generations your family has read coffee cups and palms in the market of {bolge}; they seem to know everyone's future but can never foresee the future of their own purse. You learned to read people's faces — and to be surprised by your own fate.",
+  "Deden bir atı zarda kaybetti, baban evi masaya sürdü; sen sayıları koyunları saymadan önce zarlarda saymayı öğrendin. Evinizde şans hep bir sonraki elin içindeydi — bir türlü gelmeyen bir sonraki elin.":
+    "Your grandfather lost a horse at dice, your father staked the house on the table; you learned to count on dice before you ever counted sheep. In your house luck was always in the next hand — the next hand that never came.",
+  "Ailen {bolge} köylerinde kümes kümes gezen, kimsenin tam olarak yakalayamadığı küçük hırsızlardı. Karnınız hep tavuklu doydu ama komşu köylerin hiçbirine rahatça giremezdiniz. Hızlı koşmayı ve daha hızlı yalan söylemeyi öğrendin.":
+    "Your family were petty thieves who went from henhouse to henhouse in the villages of {bolge}, never quite caught by anyone. Your bellies were always full of chicken, but you could never walk easily into any neighboring village. You learned to run fast and to lie even faster.",
+  "Palavracı": "Braggart",
+  "Obur": "Glutton",
 };

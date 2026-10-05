@@ -74,6 +74,10 @@ describe("mini oyunlar", () => {
     expect(s.un).toBeGreaterThan(onceUn);
     expect(s.tur_sayisi).toBe(onceTur);
 
+    // Aynı oyun yılında ikinci kez güreşilemez (sınırsız şöhret/para kasılmasını önleyen cooldown).
+    await expect(bilekGuresiSonuc(state.id, true)).rejects.toThrow(/bilek güreşebilirsin/);
+    s.yil += 1;
+
     const onceSaglik = s.saglik;
     await bilekGuresiSonuc(state.id, false);
     s = await stateGetir(state.id);

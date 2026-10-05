@@ -4,6 +4,7 @@ import { OLAY_SOSYALLESME } from "../data/olaylar/sosyallesme";
 import { komsuGucSec } from "../data/liderler";
 import { tarihiSavasKontrol } from "../data/tarihiSavaslar";
 import { K, T } from "../i18n";
+import { ekliYerTutuculariDoldur } from "../i18n/ekler";
 import { olayCevirisiUygula } from "../i18n/olaylar";
 import { HAVUZ_KILIT_ETIKETLERI as HAVUZ_KILIT_LISTESI, hapisErkenCikisMumkunMu } from "./stateManager";
 import { yatkinlikZarBonusOrani } from "../data/meslekYatkinlik";
@@ -132,6 +133,41 @@ function rastgeleEkipAdi(state: CharacterState): string {
 
 export function doldur(metin: string, state: CharacterState): string {
   const dil = state.dil;
+  // Türkçe metinlerde "{es}'in", "{dost}'a", "{hayvan}'ı" gibi kesmeli ekler, yer
+  // tutucuya gelen gerçek isme göre uyumlanır ("Theodora'nın", "Maria'ya"...);
+  // kalıp yazılırken ismin ne olacağı bilinmediği için ek çoğu zaman yanlıştı.
+  // {cocuk}/{ekip} her çağrıda rastgele bir isim seçtiği için burada sabitlenir ki
+  // ekli kullanım ile düz kullanım aynı kişiyi göstersin.
+  const cocukAdi = metin.includes("{cocuk}") ? rastgeleYasayanCocukAdi(state) : "";
+  const ekipAdi = metin.includes("{ekip}") ? rastgeleEkipAdi(state) : "";
+  if (dil !== "en") {
+    metin = ekliYerTutuculariDoldur(metin, /\{(dost|rakip|es|anne|baba|amir|hayvan|cocuk|ekip|bolge|komsu)\}'([a-zçğıöşü]+)/g, (anahtar) => {
+      switch (anahtar) {
+        case "dost":
+          return state.dost_adi;
+        case "rakip":
+          return state.rakip_adi;
+        case "es":
+          return state.es_adi ?? undefined;
+        case "anne":
+          return state.anne_adi;
+        case "baba":
+          return state.baba_adi;
+        case "amir":
+          return state.amir_adi ? `${K(dil, state.amir_rutbe)} ${state.amir_adi}` : undefined;
+        case "hayvan":
+          return state.evcil_hayvan?.isim ?? undefined;
+        case "cocuk":
+          return state.cocuklar.some((c) => c.yasiyor) ? cocukAdi : undefined;
+        case "ekip":
+          return state.ekip.length > 0 ? ekipAdi : undefined;
+        case "bolge":
+          return K(dil, state.bolge);
+        default:
+          return undefined;
+      }
+    });
+  }
   return metin
     .replace(/\{bolge\}/g, K(dil, state.bolge))
     .replace(/\{meslek\}/g, K(dil, state.meslek))
@@ -145,8 +181,8 @@ export function doldur(metin: string, state: CharacterState): string {
     .replace(/\{baba\}/g, state.baba_adi)
     .replace(/\{amir\}/g, state.amir_adi ? `${K(dil, state.amir_rutbe)} ${state.amir_adi}` : T(dil, "amirin"))
     .replace(/\{hayvan\}/g, state.evcil_hayvan?.isim ?? T(dil, "hayvanın"))
-    .replace(/\{cocuk\}/g, rastgeleYasayanCocukAdi(state))
-    .replace(/\{ekip\}/g, rastgeleEkipAdi(state))
+    .replace(/\{cocuk\}/g, () => cocukAdi || rastgeleYasayanCocukAdi(state))
+    .replace(/\{ekip\}/g, () => ekipAdi || rastgeleEkipAdi(state))
     .replace(
       /\{komsu\}/g,
       K(dil, tarihiSavasKontrol(state.bolge, state.yil, state.cag) ?? komsuGucSec(state.bolge))
@@ -232,40 +268,41 @@ export function sonKTekrarOnlemeHesapla(havuzBuyuklugu: number): number {
 /** Bir seçeneğin neden seçilemediğini döndürür; seçilebiliyorsa null. */
 function kilitNedeni(secenek: OlaySecenegi, state: CharacterState): string | null {
   if (secenek.maliyet !== undefined && state.para < secenek.maliyet) {
-    return `Yeterli paran yok (${secenek.maliyet} ${state.para_birimi} gerekli)`;
+    return T(state.dil, "Yeterli paran yok ({0} {1} gerekli)", [secenek.maliyet, state.para_birimi]);
   }
   if (secenek.minUn !== undefined && state.un < secenek.minUn) {
-    const gerekenYildiz = (secenek.minUn / 20).toFixed(1);
-    return `Şöhretin yetersiz (${gerekenYildiz} yıldız gerekli)`;
+    // Şöhret artık yıldızla değil ünvanla gösteriliyor — eski "X yıldız gerekli" ifadesi
+    // oyuncuya hiçbir şey anlatmıyordu; gereken şöhret puanı doğrudan yazılır.
+    return T(state.dil, "Şöhretin yetersiz (en az {0} şöhret gerekli)", [secenek.minUn]);
   }
   if (secenek.minAhlak !== undefined && state.ahlak < secenek.minAhlak) {
-    return "Böyle bir teklif için kimse sana güvenmiyor";
+    return T(state.dil, "Böyle bir teklif için kimse sana güvenmiyor");
   }
   if (secenek.maxAhlak !== undefined && state.ahlak > secenek.maxAhlak) {
-    return "Vicdanın buna izin vermiyor";
+    return T(state.dil, "Vicdanın buna izin vermiyor");
   }
   if (secenek.gerekliEtiketler && !secenek.gerekliEtiketler.every((e) => state.etiketler.includes(e))) {
-    return secenek.kilitAciklamasi ?? "Bunun için gerekli bağlantılara sahip değilsin";
+    return secenek.kilitAciklamasi ?? T(state.dil, "Bunun için gerekli bağlantılara sahip değilsin");
   }
   if (secenek.yasakliEtiketler && secenek.yasakliEtiketler.some((e) => state.etiketler.includes(e))) {
-    return secenek.kilitAciklamasi ?? "Artık bunu yapamıyorsun";
+    return secenek.kilitAciklamasi ?? T(state.dil, "Artık bunu yapamıyorsun");
   }
   if (
     secenek.minMeslekYatkinlikSeviye !== undefined &&
     (state.meslek_yatkinlik_seviyesi === null || state.meslek_yatkinlik_seviyesi < secenek.minMeslekYatkinlikSeviye)
   ) {
-    return secenek.kilitAciklamasi ?? "Bu iş için yeterince yetenekli değilsin";
+    return secenek.kilitAciklamasi ?? T(state.dil, "Bu iş için yeterince yetenekli değilsin");
   }
   if (
     secenek.maxMeslekYatkinlikSeviye !== undefined &&
     (state.meslek_yatkinlik_seviyesi === null || state.meslek_yatkinlik_seviyesi > secenek.maxMeslekYatkinlikSeviye)
   ) {
-    return secenek.kilitAciklamasi ?? "Bu, senin gibi yetenekli biri için fazla basit/riskli görünüyor";
+    return secenek.kilitAciklamasi ?? T(state.dil, "Bu, senin gibi yetenekli biri için fazla basit/riskli görünüyor");
   }
   // Borçluyken cepten para gerektiren seçenekler kapanır.
   const paraCikisi = Math.min(secenek.basariliSonuc.para ?? 0, secenek.basarisizSonuc.para ?? 0);
   if (state.para < 0 && paraCikisi < 0) {
-    return "Borçlusun, cebinden para çıkacak bir işe giremezsin";
+    return T(state.dil, "Borçlusun, cebinden para çıkacak bir işe giremezsin");
   }
   return null;
 }
@@ -407,6 +444,7 @@ export function olaySec(
         kilitli: neden !== null,
         kilit_nedeni: neden ?? undefined,
         hafif: secenek.hafifSecenek || undefined,
+        ham_index: olay.secenekler.indexOf(secenek),
       };
     });
 

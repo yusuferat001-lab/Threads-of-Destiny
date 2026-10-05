@@ -246,6 +246,7 @@ export const OLAY_ARANMA_SEVIYESI: OlayTanimi[] = [
   {
     id: "aranma_1_isyeri_cezasi",
     kategori: "ticaret",
+    minYas: 18,
     maxSucSeviyesi: 25,
     agirlik: 3,
     gorsel: "🏷️",

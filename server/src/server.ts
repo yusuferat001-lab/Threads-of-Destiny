@@ -57,13 +57,21 @@ const izinliOrijinler = process.env.CORS_ORIGIN
 app.use(cors({ origin: izinliOrijinler }));
 app.use(express.json());
 
-// Oyun akışı (senaryo/seçim) için genel bir limit: normal oynanışta bir tur
-// en fazla birkaç istek gerektirir, botla hızlı skor çiftlemeyi zorlaştırır.
+// Limit aşıldığında da istemcinin okuyabildiği JSON hata gövdesi dönsün (varsayılan
+// düz metin yanıt istemcide "geçerli bir yanıt alınamadı (durum: 429)" diye görünüyordu).
+const limitMesaji = (hata: string) => ({ hata });
+
+// Oyun akışı (senaryo/seçim + yan ekranlar) için genel bir limit. Bir tur ~4-5 istek
+// (seçim + senaryo + finans/amaç tazelemesi), yan ekranlardaki her işlem 2-3 istek
+// tutuyor; eski 60/dk sınırı hızlı oynayan TEK bir oyuncuyu bile kesiyordu (aynı
+// NAT/mobil operatör IP'sini paylaşan oyuncular da aynı kotayı bölüşüyor). 240/dk
+// normal oynanışı rahat geçirir, botla skor çiftlemeyi yine sınırlar.
 const oyunLimiti = rateLimit({
   windowMs: 60 * 1000,
-  limit: 60,
+  limit: 240,
   standardHeaders: true,
   legacyHeaders: false,
+  message: limitMesaji("Çok hızlı işlem yapıyorsun; birkaç saniye bekleyip tekrar dene."),
 });
 
 // Skor kaydı daha nadir olması gereken bir işlem; daha sıkı sınırlanır.
@@ -72,6 +80,7 @@ const skorLimiti = rateLimit({
   limit: 10,
   standardHeaders: true,
   legacyHeaders: false,
+  message: limitMesaji("Çok fazla istek gönderildi; biraz bekleyip tekrar dene."),
 });
 
 // Geri bildirim nadir bir işlem; skordan da sıkı sınırlanır (spam / bot koruması).
@@ -80,6 +89,7 @@ const geriBildirimLimiti = rateLimit({
   limit: 5,
   standardHeaders: true,
   legacyHeaders: false,
+  message: limitMesaji("Çok fazla istek gönderildi; biraz bekleyip tekrar dene."),
 });
 
 // İstatistik: client yalnız "ziyaret" olayı yazar (günde bir); okuma anahtarlıdır.
@@ -89,6 +99,7 @@ const istatistikLimiti = rateLimit({
   limit: 20,
   standardHeaders: true,
   legacyHeaders: false,
+  message: limitMesaji("Çok fazla istek gönderildi; biraz bekleyip tekrar dene."),
 });
 
 app.use("/api/game", oyunLimiti, gameRouter);

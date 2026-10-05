@@ -751,6 +751,8 @@ export interface SosyallesmeYeri {
   kilitli?: boolean;
   /** Kilidin açılmasına kalan oyun yılı. */
   kalanYil?: number;
+  /** Mekâna girerken peşin düşülecek ücret (enflasyonla ölçekli). */
+  girisUcreti?: number;
 }
 
 export interface SosyallesmeSonucu {
@@ -778,6 +780,8 @@ export interface SosyalAksiyonConfig {
   icecekler: SosyalAksiyonKarti[];
   aksiyonlar: SosyalAksiyonKarti[];
   alkolluMekanVar: boolean;
+  /** Bilek güreşi (Kumar & Meydan) tekrar açılana kadar kalan oyun yılı (0 = hazır). */
+  bilekGuresiKalanYil?: number;
 }
 
 export interface SosyalAksiyonSonucu {

@@ -429,6 +429,15 @@ export interface CharacterState {
   istemci_gecmis_olaylar: string[];
   /** Bu hayatı yaratan tarayıcının rastgele istemci kimliği (varsa) — ölümde bu hayatın `gecmis_olaylar`'ını istemci geçmişine yazmak için kullanılır. Yoksa null. */
   istemci_id: string | null;
+  /**
+   * Sunucu belleğinde tutulan oyun akışının (cevaplanmamış olay, zorunlu_sonraki
+   * zinciri, bekleyen onTepki, Sosyalleş'e giderken kenara ayrılan ana olay) kalıcı
+   * kopyası. Sunucu yeniden başlarsa (Render uykusu / deploy) bu olmadan oyuncu
+   * ekrandaki olayda "Önce bir senaryo üretilmeli" hatasıyla kilitli kalıyor,
+   * yolculuk/hapis zincirleri kopuyordu. Yalnız sunucu okur/yazar; istemci kullanmaz.
+   * Eski kayıtlarda yok (undefined) — o durumda akış boş başlar.
+   */
+  oturum_akisi?: OturumAkisiKaydi | null;
   gecmis: GecmisNoktasi[];
   hayat_hikayesi: HayatOlayi[];
   aktif: boolean;
@@ -711,6 +720,23 @@ export interface Secenek {
   kilit_nedeni?: string;
   /** Bkz. OlaySecenegi.hafifSecenek — istemci bu şıkkı küçük/ikincil bir bağlantı olarak gösterir. */
   hafif?: boolean;
+  /**
+   * Bu şıkkın olay tanımındaki (OlayTanimi.secenekler) ASIL sırası. Kişilik/eksen
+   * filtresi aradaki bir şıkkı gizlediğinde senaryo sırası ile ham sıra kayar;
+   * sunucu onTepki/ölüm-riski gibi ham alanları bu index'le bulur.
+   */
+  ham_index?: number;
+}
+
+/** Bkz. CharacterState.oturum_akisi. */
+export interface OturumAkisiKaydi {
+  olayId: string | null;
+  senaryo: SenaryoResponse | null;
+  zorlananOlayId: string | null;
+  sonTon: "agir" | "hafif" | null;
+  /** Bekleyen onTepki: hangi ham seçenekten geldiği + o anki rütbe (terfi kutlaması için). */
+  tepki: { hamIndex: number; eskiRutbeSeviye: number } | null;
+  sakli: { olayId: string; senaryo: SenaryoResponse } | null;
 }
 
 export interface SenaryoResponse {

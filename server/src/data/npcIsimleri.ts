@@ -152,8 +152,10 @@ function tumIsimler(havuz: BolgeIsimleri): string[] {
 }
 
 /** Karakterin doğuşunda atanan dost ve rakip için birbirinden farklı iki isim döndürür (cinsiyet gözetmez). */
-export function rastgeleIkiIsimSec(cag: Cag, bolge: string): [string, string] {
-  const havuz = tumIsimler(bolgeHavuzuGetir(cag, bolge));
+export function rastgeleIkiIsimSec(cag: Cag, bolge: string, haric: string[] = []): [string, string] {
+  const tumHavuz = tumIsimler(bolgeHavuzuGetir(cag, bolge));
+  const filtreli = tumHavuz.filter((isim) => !haric.includes(isim));
+  const havuz = filtreli.length >= 2 ? filtreli : tumHavuz;
   const kopya = [...havuz];
   const birinci = kopya.splice(Math.floor(Math.random() * kopya.length), 1)[0];
   const ikinci = kopya.splice(Math.floor(Math.random() * kopya.length), 1)[0];

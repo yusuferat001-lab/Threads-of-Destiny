@@ -2,6 +2,7 @@ import { Router } from "express";
 import { skorTablosuGetir, SiralamaTuru, SiralamaDonemi } from "../db/scoreRepository";
 import { liderlikTablosunaKaydet } from "../game/gameEngine";
 import { uygunsuzMu } from "../moderasyon/kufurFiltresi";
+import { hataMetni } from "./hata";
 
 export const scoreRouter = Router();
 
@@ -18,7 +19,7 @@ scoreRouter.post("/", async (req, res) => {
     const kayit = await liderlikTablosunaKaydet(stateId, temizIsim);
     res.json({ kayit });
   } catch (err) {
-    res.status(400).json({ hata: String(err) });
+    res.status(400).json({ hata: hataMetni(err, typeof req.body?.stateId === "string" ? req.body.stateId : undefined) });
   }
 });
 
