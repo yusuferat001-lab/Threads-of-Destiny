@@ -146,3 +146,15 @@ describe("Faz 5 — hapisten fiziksel kaçış skor bonusu", () => {
     expect(sonuc.state.hapis_basarili_kacis).toBe(false);
   });
 });
+
+describe("büyük yolculuk skoru (çifte sayım düzeltmesi)", () => {
+  it("yolculuğu tamamlamak skora yalnız +2000 katar, tik puanına girmez", async () => {
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
+    const once = hesaplaSkorKirilimi(state);
+    etiketEkle(state, ["yolculuk_tamamlandi"]);
+    const sonra = hesaplaSkorKirilimi(state);
+    expect(sonra.tikPuani).toBe(once.tikPuani);
+    expect(sonra.basariOlayiPuani - once.basariOlayiPuani).toBe(2000);
+    expect(sonra.temelToplam - once.temelToplam).toBe(2000);
+  });
+});

@@ -2218,7 +2218,8 @@ export function sansOlayiDene(state: CharacterState): string | null {
  * - ahlakPuanı   = ahlak × 200
  * - mutlulukPuanı= mutluluk × 100
  * - rütbePuanı   = sabit tablo, S1..S5: 1.250 / 3.000 / 5.250 / 8.000 / 11.250
- * - tikPuanı     = 3.000 × (sarayda + yolculuk_tamamlandi + gizemli eşya sahipliği)
+ * - tikPuanı     = 3.000 × (sarayda + gizemli eşya sahipliği) — yolculuk artık burada
+ *   değil, yalnız aşağıdaki +2.000 tamamlama bonusuyla sayılır (çifte sayılıyordu).
  *   — her biri TOPLAMSAL (çarpımsal değil), birbirini büyütmesin diye.
  * - amaçÇarpanı  = max(1, Σ tamamlanan hayat amacı bonusları) — değişmedi, ×1..×5.
  */
@@ -2231,9 +2232,9 @@ const SKOR_MUTLULUK_CARPAN = 100;
  * Faz 5 (2026-09 sonu) — tek seferlik "başarı olayı" skor bonusları. Her biri
  * TOPLAMSAL (tikPuani gibi diğer eksenlerin üstüne biner, çarpımsal değil) ve
  * bir ömürde en fazla bir kez sayılır (ilgili CharacterState bayrağı state
- * boyunca en fazla bir kez true'ya döner, bkz. gameEngine.ts). Yolculuk
- * tamamlama zaten tikPuani'nin bir parçasıdır (+3000) — buradaki +2000 ayrı,
- * ek bir bonustur (kullanıcı isteği: "yolculuğu tamamlama" ayrıca ödüllendirilsin.
+ * boyunca en fazla bir kez true'ya döner, bkz. gameEngine.ts). Büyük yolculuğu
+ * başarıyla tamamlamak YALNIZ buradaki +2000 ile ödüllendirilir (2026-10: eskiden
+ * ayrıca tikPuani'na +3000 olarak da giriyordu — aynı başarı iki kez sayılıyordu).
  */
 const SKOR_KOMIK_OLUM_BASARILI_RISK_PUANI = 3000;
 const SKOR_KOMIK_OLUM_ILE_OLDU_PUANI = 2000;
@@ -2273,7 +2274,7 @@ export function hesaplaSkorKirilimi(state: CharacterState): SkorKirilimi {
   const gizemliEsyaSahibi = state.etiketler.some(
     (e) => e.startsWith("envanter:") || e.startsWith("esya:")
   );
-  const tikSayisi = (sarayda ? 1 : 0) + (yolculukTamamlandi ? 1 : 0) + (gizemliEsyaSahibi ? 1 : 0);
+  const tikSayisi = (sarayda ? 1 : 0) + (gizemliEsyaSahibi ? 1 : 0);
   const tikPuani = tikSayisi * SKOR_TIK_PUANI;
   const basariOlayiPuani =
     (state.komik_olum_basarili_risk ? SKOR_KOMIK_OLUM_BASARILI_RISK_PUANI : 0) +

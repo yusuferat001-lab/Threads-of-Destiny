@@ -582,9 +582,10 @@ servetPuanı   = servet>0 ? round(servet × (yaş/2)) : 0
 ahlakPuanı    = round(ahlak × 200)
 mutlulukPuanı = round(mutluluk × 100)
 rütbePuanı    = [625, 1.500, 2.625, 4.000, 5.625][rutbe_seviye-1]   // S1..S5
-tikPuanı      = 3.000 × (sarayda + yolculuk_tamamlandi + gizemli-eşya-sahipliği)  // TOPLAMSAL, çarpımsal değil
+tikPuanı      = 3.000 × (sarayda + gizemli-eşya-sahipliği)  // TOPLAMSAL, çarpımsal değil
+basariOlayiPuanı = büyük yolculuğu tamamlama +2.000 (2026-10: yalnız bu; eskiden ayrıca tik'e +3.000 giriyordu, çifte sayımdı) + komik ölüm riski +3.000/+2.000 + veba atlatma +2.000 + hapisten başarılı kaçış +2.000
 
-temelToplam = servetPuanı+şöhretPuanı+ahlakPuanı+mutlulukPuanı+rütbePuanı+tikPuanı
+temelToplam = servetPuanı+şöhretPuanı+ahlakPuanı+mutlulukPuanı+rütbePuanı+tikPuanı+basariOlayiPuanı
 amaçÇarpanı = max(1, Σ tamamlanan hayat amacı bonusları)   // değişmedi, ×1..×5
 skor = round(temelToplam × amaçÇarpanı)
 ```
