@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
-import { CharacterState, Cag, Dil, Kategori, SonucEtkisi, YatkinlikKaynagi, KisilikEksenleri, UlkeKrizi, MulkTuru, SahipOlunanEsya, AileTalep, YonetimTalep } from "../types";
-import { T, K } from "../i18n";
+import { CharacterState, Cag, Dil, Kategori, SonucEtkisi, YatkinlikKaynagi, KisilikEksenleri, UlkeKrizi, MulkTuru, SahipOlunanEsya, AileTalep, YonetimTalep, IkiDilMetin } from "../types";
+import { T, K, ikiDilT } from "../i18n";
 import { amaclariUret, amacSkorCarpani, amaclariOlumdeKontrol, amacTanimiGetir } from "../data/hayatAmaclari";
 import { AILELER, AileTanimi } from "../data/aileler";
 import { BolgeOzellikleri, bolgeOzellikleriGetir } from "../data/bolgeOzellikleri";
@@ -1307,7 +1307,12 @@ export function clampStats(state: CharacterState): void {
 /** Kutsal kalıntı gibi mistik eşyaların tek seferlik ölümden koruma etiketi. */
 export const KORUYUCU_MUSKA_ETIKETI = "esya:kutsal_kalinti";
 
-export function checkDeath(state: CharacterState, zorunluOlum: boolean, mesaj?: string): void {
+/**
+ * `neden`: düz metin (oyuncunun dilinde; eski çağrılar/testler) ya da iki dilli bir
+ * metin. İki dilli verilirse state.olum_nedeni oyuncunun diline göre seçilir ve iki
+ * dil de olum_nedeni_ceviri'de saklanır (liderlik tablosu bunu kullanır).
+ */
+export function checkDeath(state: CharacterState, zorunluOlum: boolean, neden?: string | IkiDilMetin): void {
   if (state.saglik <= 0 || zorunluOlum) {
     if (state.etiketler.includes(KORUYUCU_MUSKA_ETIKETI)) {
       etiketSil(state, [KORUYUCU_MUSKA_ETIKETI]);
@@ -1317,8 +1322,14 @@ export function checkDeath(state: CharacterState, zorunluOlum: boolean, mesaj?: 
       return;
     }
     state.aktif = false;
-    state.olum_nedeni =
-      mesaj ?? (state.saglik <= 0 ? T(state.dil, "Sağlık kaybı") : T(state.dil, "Bilinmeyen sebep"));
+    const ceviri: IkiDilMetin =
+      neden === undefined
+        ? ikiDilT(state.saglik <= 0 ? "Sağlık kaybı" : "Bilinmeyen sebep")
+        : typeof neden === "string"
+          ? { tr: neden, en: neden }
+          : neden;
+    state.olum_nedeni = state.dil === "en" ? ceviri.en : ceviri.tr;
+    state.olum_nedeni_ceviri = ceviri;
     // Ölüm anında tüm tamamlanmamış amaçlara son bir kez bak ("olumde" koşulları +
     // son turda kaçmış olabilecek "herhangi" koşulları). Skor yazımından önce kilitlenir.
     for (const a of amaclariOlumdeKontrol(state, state.para + gayrimenkulDegeriHesapla(state))) {
@@ -1359,7 +1370,7 @@ export function ilerletYas(state: CharacterState, minYil = 1, maxYil = 3): numbe
   state.tur_sayisi += 1;
   state.hukumdar = liderGetir(state.bolge, state.yil, state.cag);
   if (state.yas >= MAKS_YAS) {
-    checkDeath(state, true, T(state.dil, "Yüz yaşını doldurdun; huzurlu bir ihtiyar olarak, uykunda son nefesini verdin."));
+    checkDeath(state, true, ikiDilT("Yüz yaşını doldurdun; huzurlu bir ihtiyar olarak, uykunda son nefesini verdin."));
   }
   return artis;
 }
@@ -1799,14 +1810,17 @@ export function durumEkle(state: CharacterState, yeniDurum?: CharacterState["dur
   state.durumlar.push({ ...yeniDurum });
 }
 
-export function durumlariUygula(state: CharacterState): string | null {
-  let olumculDurum: string | null = null;
+export function durumlariUygula(state: CharacterState): IkiDilMetin | null {
+  let olumculDurum: IkiDilMetin | null = null;
 
   for (const durum of state.durumlar) {
     if (durum.tur_basi_saglik) {
       state.saglik += durum.tur_basi_saglik;
       if (state.saglik <= 0 && !olumculDurum) {
-        olumculDurum = T(state.dil, "{0} yüzünden hayatını kaybetti.", [K(state.dil, durum.ad)]);
+        olumculDurum = {
+          tr: T("tr", "{0} yüzünden hayatını kaybetti.", [durum.ad]),
+          en: T("en", "{0} yüzünden hayatını kaybetti.", [K("en", durum.ad)]),
+        };
       }
     }
     if (durum.tur_basi_para) {

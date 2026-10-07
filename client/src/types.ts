@@ -303,6 +303,8 @@ export interface CharacterState {
   hayat_hikayesi: HayatOlayi[];
   aktif: boolean;
   olum_nedeni: string | null;
+  /** Ölüm nedeninin iki dildeki hâli (sunucu checkDeath'te yazar). */
+  olum_nedeni_ceviri?: { tr: string; en: string } | null;
   skoru_kaydedildi: boolean;
 }
 
@@ -851,7 +853,10 @@ export interface ScoreKaydi {
   bolge: string;
   yerlesim: string;
   kisilik: string;
+  /** Türkçe ölüm nedeni (eski kayıtlarda oyuncunun o anki dilinde). */
   olum_nedeni: string;
+  /** İngilizce ölüm nedeni — eski kayıtlarda boş. */
+  olum_nedeni_en?: string;
   yas: number;
   para: number;
   un: number;

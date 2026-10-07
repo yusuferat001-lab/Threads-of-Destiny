@@ -775,4 +775,9 @@ export const ANLATIM_EN: Record<string, string> = {
   "Oyun henüz bitmedi.": "The game isn't over yet.",
   "Salgın çoktan başladı; artık hazırlık yapamazsın.": "The plague has already begun; it's too late to prepare.",
   "Bu korunma kademesine zaten sahipsin.": "You already have this level of protection.",
+
+  // Ölüm nedenleri (önceden çevrilmeden saklanıyordu)
+  "İleri yaşın getirdiği yorgunlukla huzur içinde vefat etti.": "Passed away peacefully, worn out by old age.",
+  "Uzun süredir çöken ruh hali bedenini de tüketti.": "A spirit long in collapse finally wore the body down too.",
+  "Veba direncini kırdı; hastalıktan kurtulamadın.": "The plague broke your resistance; you did not survive the illness.",
 };

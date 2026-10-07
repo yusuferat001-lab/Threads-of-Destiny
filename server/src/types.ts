@@ -442,6 +442,9 @@ export interface CharacterState {
   hayat_hikayesi: HayatOlayi[];
   aktif: boolean;
   olum_nedeni: string | null;
+  /** Ölüm nedeninin iki dildeki hâli — liderlik tablosu oyuncunun o anki dilinden bağımsız
+   * olarak her iki dilde gösterebilsin diye (olum_nedeni oyuncunun dilindeki kopyadır). */
+  olum_nedeni_ceviri?: IkiDilMetin | null;
   /** true olduğunda bu oturum için liderlik tablosuna zaten bir skor kaydedildi; aynı oyunun tekrar tekrar (farklı isimlerle) gönderilmesini engeller. */
   skoru_kaydedildi: boolean;
 }
@@ -756,4 +759,10 @@ export interface TepkiSonucu {
   olay_basligi: string;
   olay_metni: string;
   secenekler: [{ metin: string }, { metin: string }];
+}
+
+/** Aynı metnin Türkçe ve İngilizce hâli (ör. ölüm nedeni). */
+export interface IkiDilMetin {
+  tr: string;
+  en: string;
 }

@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
-import { CharacterState, Cag, SenaryoResponse, SonucEtkisi, TepkiSonucu, MulkTuru, EvlilikAdayi, OturumAkisiKaydi } from "../types";
-import { T, K, Khukumdar } from "../i18n";
+import { CharacterState, Cag, SenaryoResponse, SonucEtkisi, TepkiSonucu, MulkTuru, EvlilikAdayi, OturumAkisiKaydi, IkiDilMetin } from "../types";
+import { T, K, Khukumdar, ikiDilT } from "../i18n";
 import { olayCevirisiUygula } from "../i18n/olaylar";
 import { skorKaydet as skoruDbyeYaz } from "../db/scoreRepository";
 import {
@@ -1545,6 +1545,42 @@ function netEtkiOlumluMu(etki: SonucEtkisi): boolean {
   return toplam >= 0;
 }
 
+type SonucDali = "basarili" | "basarisiz" | "geriCekil" | "devam";
+
+/**
+ * Bir olay sonucunun mesajını iki dilde üretir — ölüm nedeni liderlik tablosunda
+ * her iki dilde gösterilebilsin diye. Oyuncunun kendi dilindeki hâl, ona zaten
+ * gösterilen metnin aynısıdır (`gosterilen`); öbür dil ham olaydan yeniden doldurulur.
+ */
+function olaySonucMesajiIkiDil(
+  state: CharacterState,
+  olayId: string,
+  hamIndex: number,
+  dal: SonucDali,
+  gosterilen: string
+): IkiDilMetin {
+  const ham = OLAY_BANKASI.find((o) => o.id === olayId);
+  const mesajBul = (o: OlayTanimi | undefined): string | undefined => {
+    const sec = o?.secenekler[hamIndex];
+    if (!sec) return undefined;
+    const e =
+      dal === "basarili"
+        ? sec.basariliSonuc
+        : dal === "basarisiz"
+          ? sec.basarisizSonuc
+          : dal === "geriCekil"
+            ? sec.onTepki?.geriCekilSonucu
+            : sec.onTepki?.devamSonucu;
+    return e?.mesaj;
+  };
+  const trHam = mesajBul(ham);
+  const enHam = ham ? mesajBul(olayCevirisiUygula(ham, "en")) : undefined;
+  return {
+    tr: state.dil === "en" ? (trHam ? doldur(trHam, { ...state, dil: "tr" }) : gosterilen) : gosterilen,
+    en: state.dil === "en" ? gosterilen : enHam ? doldur(enHam, { ...state, dil: "en" }) : gosterilen,
+  };
+}
+
 export async function secimUygula(id: string, secenekIndex: number): Promise<SecimSonucu | TepkiSonucu> {
   const oturum = await oturumGetir(id);
   const { state } = oturum;
@@ -1559,9 +1595,11 @@ export async function secimUygula(id: string, secenekIndex: number): Promise<Sec
     const etki = jitterUygula(secenekIndex === 0 ? onTepki.geriCekilSonucu : onTepki.devamSonucu);
     etki.mesaj = doldur(etki.mesaj, state);
     if (etki.detay) etki.detay = doldur(etki.detay, state);
+    const tepkiHamIndex = mevcutOlay.secenekler.findIndex((s) => s.onTepki === onTepki);
+    const tepkiCeviri = olaySonucMesajiIkiDil(state, mevcutOlay.id, tepkiHamIndex, secenekIndex === 0 ? "geriCekil" : "devam", etki.mesaj);
     // Burada zar yok; "basarili" bayrağı sonuç ekranındaki görsel/ses efektinin doğru
     // (kutlama ya da düşüş) yönde çalması için etkinin net iyi/kötü olduğuna bakılarak belirlenir.
-    return sonucuUygulaVeIlerlet(oturum, mevcutOlay, etki, netEtkiOlumluMu(etki), eskiRutbeSeviye);
+    return sonucuUygulaVeIlerlet(oturum, mevcutOlay, etki, netEtkiOlumluMu(etki), eskiRutbeSeviye, false, tepkiCeviri);
   }
 
   // Oyuncu bir mekân olayını (Sosyalleş) yanıtlamadan "Geri Dön" ile ana ekrana
@@ -1620,7 +1658,14 @@ export async function secimUygula(id: string, secenekIndex: number): Promise<Sec
   const komikOlumRiskliSecenekMi =
     KOMIK_OLUM_ID_SETI.has(mevcutOlay.id) &&
     (basarisizDal.olum === true || (basarisizDal.olum_sansi ?? 0) > 0);
-  return sonucuUygulaVeIlerlet(oturum, mevcutOlay, etki, basarili, eskiRutbeSeviye, komikOlumRiskliSecenekMi);
+  const mesajCeviri = olaySonucMesajiIkiDil(
+    state,
+    mevcutOlay.id,
+    secenek.ham_index ?? secenekIndex,
+    basarili ? "basarili" : "basarisiz",
+    etki.mesaj
+  );
+  return sonucuUygulaVeIlerlet(oturum, mevcutOlay, etki, basarili, eskiRutbeSeviye, komikOlumRiskliSecenekMi, mesajCeviri);
 }
 
 /** Doğum denemesi cooldown'u (yıl) — bu kadar yıl geçmeden yeni çocuk olmaz
@@ -1696,7 +1741,9 @@ async function sonucuUygulaVeIlerlet(
   etki: SonucEtkisi,
   basarili: boolean,
   eskiRutbeSeviye: number,
-  komikOlumRiskliSecenekMi: boolean = false
+  komikOlumRiskliSecenekMi: boolean = false,
+  /** Seçim mesajının iki dilli hâli — seçim öldürürse ölüm nedeni olarak saklanır. */
+  mesajCeviri?: IkiDilMetin
 ): Promise<SecimSonucu> {
   const { state } = oturum;
   // Nakit akışı defteri: turun sonunda Σ(alanlar) == state.para'daki net değişim olacak
@@ -2046,7 +2093,7 @@ async function sonucuUygulaVeIlerlet(
     const sans = efektifOlumSansi(etki.olum_sansi, state.saglik);
     if (Math.random() * 100 < sans) olumTetiklendi = true;
   }
-  checkDeath(state, olumTetiklendi, etki.mesaj);
+  checkDeath(state, olumTetiklendi, mesajCeviri ?? etki.mesaj);
   // efsanevi_olum rozeti YALNIZCA ölüm gerçekten gerçekleştiyse atanır: Kutsal
   // Emanet relik'i ölümü iptal ederse (checkDeath) hayatta kalan karakter,
   // yaşamadığı bir "efsanevi ölüm" damgasını taşımasın.
@@ -2109,12 +2156,12 @@ async function sonucuUygulaVeIlerlet(
       if (state.aktif) {
         const yaslanmaKaybi = yaslanmaUygula(state, yasArtisi);
         if (state.saglik <= 0) {
-          checkDeath(state, true, "İleri yaşın getirdiği yorgunlukla huzur içinde vefat etti.");
+          checkDeath(state, true, ikiDilT("İleri yaşın getirdiği yorgunlukla huzur içinde vefat etti."));
         }
         if (state.aktif) {
           capraz = capraletkiUygula(state, yasArtisi);
           if (state.saglik <= 0) {
-            checkDeath(state, true, "Uzun süredir çöken ruh hali bedenini de tüketti.");
+            checkDeath(state, true, ikiDilT("Uzun süredir çöken ruh hali bedenini de tüketti."));
           }
         }
         if (state.aktif) {
@@ -2169,7 +2216,7 @@ async function sonucuUygulaVeIlerlet(
           orduBuyumesiDene(state, yasArtisi);
           const krizBitisMesaji = krizEtkisiUygula(state, yasArtisi);
           if (state.saglik <= 0) {
-            checkDeath(state, true, T(state.dil, "Kıtlığın getirdiği yoksunlukla tükendi."));
+            checkDeath(state, true, ikiDilT("Kıtlığın getirdiği yoksunlukla tükendi."));
           }
           const mulkSonucu = mulkGelirleriUygula(state, yasArtisi);
           if (mulkSonucu.kervanBatti) {
@@ -2298,7 +2345,7 @@ async function sonucuUygulaVeIlerlet(
               zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${hm}` : hm;
             }
             if (hastalikSonucu.karakterOldu) {
-              checkDeath(state, true, "Veba direncini kırdı; hastalıktan kurtulamadın.");
+              checkDeath(state, true, ikiDilT("Veba direncini kırdı; hastalıktan kurtulamadın."));
             } else if (hastalikSonucu.iyilesti && !state.veba_hayatta_kaldi) {
               // Faz 5 skor bonusu: bizzat vebayı kapıp atlatmak bir kereliğine ödüllendirilir.
               state.veba_hayatta_kaldi = true;
@@ -2329,7 +2376,8 @@ async function sonucuUygulaVeIlerlet(
           }
         }
       } else {
-        state.olum_nedeni = T(state.dil, "Borç ve yoksulluk içinde tükendi.");
+        state.olum_nedeni_ceviri = ikiDilT("Borç ve yoksulluk içinde tükendi.");
+        state.olum_nedeni = state.dil === "en" ? state.olum_nedeni_ceviri.en : state.olum_nedeni_ceviri.tr;
       }
     }
   }
@@ -3594,7 +3642,7 @@ export async function kotuIsYap(id: string, tur: string, secenek: KotuIsSecenek 
   }
   if (!kazandi && dal.olum_sansi && Math.random() * 100 < efektifOlumSansi(dal.olum_sansi, state.saglik)) {
     clampStats(state);
-    checkDeath(state, true, T(dil, "Çevirdiği karanlık bir iş sırasında öldü."));
+    checkDeath(state, true, ikiDilT("Çevirdiği karanlık bir iş sırasında öldü."));
   }
 
   if (kazandi && dal.para) {
@@ -3743,7 +3791,9 @@ const ZAR_SUC_ARTISI = 3;
 // Hazard: her kaç elde bir "rakip bıçak çekti" tetiklenmeyi denesin ve ihtimali.
 const HAZARD_BICAK_HER_KAC_EL = 4;
 const HAZARD_BICAK_IHTIMAL = 0.45;
-const UC_KAGITCI_KAZANMA_SANSI = 0.34;
+// Kazanç bahis×3: 0.34 şansla beklenen getiri +%2'ydi (oyuncu lehine, sınırsız kâr kapısı).
+// 0.32 ile beklenen getiri −%4 — hâlâ cazip ama kumarın kasası kazanır.
+const UC_KAGITCI_KAZANMA_SANSI = 0.32;
 // Aranma yeniden dengeleme turu: 4→2 (aynı gerekçe, §ZAR_SUC_ARTISI).
 const UC_KAGITCI_SUC_ARTISI = 2;
 const BILEK_GURESI_ODUL_TABAN = 4;
@@ -3823,7 +3873,7 @@ export async function zarAt(id: string, tutar: number): Promise<HazardSonucu> {
     mesaj += " " + T(state.dil, "Sonra masa karıştı — biri bıçak çekti; sıyrık ve morlukla zar zor kaçtın.");
     clampStats(state);
     if (state.saglik <= 0 || Math.random() * 100 < efektifOlumSansi(6, state.saglik)) {
-      checkDeath(state, true, T(state.dil, "Zar masasındaki bıçaklı bir kavgada öldü."));
+      checkDeath(state, true, ikiDilT("Zar masasındaki bıçaklı bir kavgada öldü."));
     }
   }
 
@@ -3841,7 +3891,7 @@ interface UcKagitciSonucu {
 
 /**
  * Üç Kağıtçı (bul karayı al parayı): 3 bardak, birinin altında para. Kazanma
- * şansı SABİT ~%34 — bardak seçimi kozmetiktir: sunucu önce kazanıp kazanmadığını
+ * şansı SABİT ~%32 — bardak seçimi kozmetiktir: sunucu önce kazanıp kazanmadığını
  * belirler, sonra "doğru bardağı" (kazandıysa seçilen, kaybettiyse başka bir)
  * bardağa koyar; istemci animasyonu bu sonuca göre biter. Kaybedince bahis gider,
  * kazanınca ×3 (net +2 kat bahis). Sokak dolandırıcılığı → küçük suç/aranma artışı. Turu tüketmez.
@@ -4136,10 +4186,17 @@ export async function sosyallesmeOlayCoz(id: string, secenekIndex: number): Prom
   clampStats(state);
 
   // Zaman ilerlemese de olay öldürebilir (meyhane bıçağı vb.).
+  const mekanMesajCeviri = olaySonucMesajiIkiDil(
+    state,
+    mevcutOlay.id,
+    secenek.ham_index ?? secenekIndex,
+    basarili ? "basarili" : "basarisiz",
+    etki.mesaj
+  );
   if (etki.olum === true) {
-    checkDeath(state, true, etki.mesaj);
+    checkDeath(state, true, mekanMesajCeviri);
   } else if (etki.olum_sansi && Math.random() * 100 < efektifOlumSansi(etki.olum_sansi, state.saglik)) {
-    checkDeath(state, true, etki.mesaj);
+    checkDeath(state, true, mekanMesajCeviri);
   }
   if (!state.aktif && etki.efsanevi_olum && !state.efsanevi_olum) {
     state.efsanevi_olum = etki.efsanevi_olum;

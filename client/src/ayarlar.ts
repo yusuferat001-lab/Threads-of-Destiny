@@ -12,19 +12,36 @@ export interface Ayarlar {
 }
 
 const ANAHTAR = 'kader-carki-ayarlar';
-const VARSAYILAN: Ayarlar = { dil: 'tr', muzik: true };
+
+/**
+ * Kayıtlı bir dil tercihi yoksa tarayıcının dilinden başla: tercih listesinde Türkçe
+ * varsa Türkçe, yoksa İngilizce (oyunun yalnız bu iki dili var). Oyuncu Ayarlar'dan
+ * seçince o kayıt her zaman önceliklidir.
+ */
+function tarayiciDili(): Dil {
+  try {
+    const diller = navigator.languages?.length ? navigator.languages : [navigator.language];
+    return diller.some((d) => typeof d === 'string' && d.toLowerCase().startsWith('tr')) ? 'tr' : 'en';
+  } catch {
+    return 'tr';
+  }
+}
+
+function varsayilan(): Ayarlar {
+  return { dil: tarayiciDili(), muzik: true };
+}
 
 export function ayarlariGetir(): Ayarlar {
   try {
     const ham = localStorage.getItem(ANAHTAR);
-    if (!ham) return { ...VARSAYILAN };
+    if (!ham) return varsayilan();
     const cozulmus = JSON.parse(ham) as Partial<Ayarlar>;
     return {
-      dil: cozulmus.dil === 'en' ? 'en' : 'tr',
+      dil: cozulmus.dil === 'en' || cozulmus.dil === 'tr' ? cozulmus.dil : tarayiciDili(),
       muzik: cozulmus.muzik !== false,
     };
   } catch {
-    return { ...VARSAYILAN };
+    return varsayilan();
   }
 }
 

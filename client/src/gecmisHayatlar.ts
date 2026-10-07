@@ -24,6 +24,8 @@ export interface GecmisHayat {
   paraBirimi: string;
   un: number;
   olumNedeni: string;
+  /** Ölüm nedeninin iki dildeki hâli; eski kayıtlarda yok. */
+  olumNedeniCeviri?: { tr: string; en: string } | null;
   efsaneviOlum: string | null;
   unvanlar: string[];
   amacTamamlandi: boolean;
@@ -74,6 +76,7 @@ export function gecmisHayatKaydet(state: CharacterState): void {
     paraBirimi: state.para_birimi,
     un: state.un,
     olumNedeni: state.olum_nedeni ?? 'Bilinmiyor',
+    olumNedeniCeviri: state.olum_nedeni_ceviri ?? null,
     efsaneviOlum: state.efsanevi_olum,
     unvanlar: state.unvanlar,
     amacTamamlandi:
@@ -85,6 +88,11 @@ export function gecmisHayatKaydet(state: CharacterState): void {
   };
 
   yaz([kayit, ...mevcut].slice(0, MAKS_KAYIT));
+}
+
+/** Geçmiş hayatın ölüm nedenini seçili dilde döner (eski kayıtlarda kaydedildiği dilde). */
+export function gecmisOlumNedeni(h: GecmisHayat, dil: 'tr' | 'en'): string {
+  return h.olumNedeniCeviri?.[dil] ?? h.olumNedeni;
 }
 
 export function gecmisHayatlariGetir(): GecmisHayat[] {

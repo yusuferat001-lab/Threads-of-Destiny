@@ -21,7 +21,10 @@ export async function skorKaydet(state: CharacterState, isim: string) {
       bolge: state.bolge,
       yerlesim: state.yerlesim,
       kisilik: state.kisilik.join(", "),
-      olum_nedeni: state.olum_nedeni ?? "Bilinmiyor",
+      // Ölüm nedeni iki dilde: liderlik tablosu hangi dilde açılırsa o dilde gösterilsin
+      // (eskiden oyuncunun o anki dilinde tek bir metin yazılıyor, tablo karışık görünüyordu).
+      olum_nedeni: state.olum_nedeni_ceviri?.tr ?? state.olum_nedeni ?? "Bilinmiyor",
+      olum_nedeni_en: state.olum_nedeni_ceviri?.en ?? (state.dil === "en" ? state.olum_nedeni ?? "" : ""),
       yas: state.yas,
       para: netServet,
       un: state.un,

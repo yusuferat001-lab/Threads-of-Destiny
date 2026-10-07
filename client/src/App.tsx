@@ -106,7 +106,7 @@ import { sesKapaliMi, sesTercihiKaydet } from './ses';
 import { muzikModunuAyarla, muzikDurdur, muzikSessizAyarla, type MuzikModu } from './muzik';
 import { aktifOturumIdGetir, aktifOturumIdKaydet, aktifOturumIdSil } from './oturum';
 import { basarimlariKaydet, basarimlariGetir } from './basarimlar';
-import { gecmisHayatKaydet, gecmisHayatlariGetir, gecmisHayatlariTemizle, gecmisHayatSil, type GecmisHayat } from './gecmisHayatlar';
+import { gecmisHayatKaydet, gecmisHayatlariGetir, gecmisHayatlariTemizle, gecmisHayatSil, type GecmisHayat, gecmisOlumNedeni } from './gecmisHayatlar';
 import { YAPIMCI } from './yapimci';
 import { basarimlariDegerlendir, type BasarimTanimi } from './basarimSistemi';
 import { hesaplaSkorKirilimi } from './skor';
@@ -1758,7 +1758,7 @@ function App() {
                           <span className="gecmis-hayat-skor">{h.skor.toLocaleString(dil === 'en' ? 'en-US' : 'tr-TR')} {m.puan}</span>
                         </span>
                         <span className="gecmis-hayat-alt">
-                          {h.yas} {m.yasinda} · {kt(h.meslek)} · {kt(h.bolge)} · {h.olumNedeni}
+                          {h.yas} {m.yasinda} · {kt(h.meslek)} · {kt(h.bolge)} · {gecmisOlumNedeni(h, dil)}
                         </span>
                       </button>
                       <button
@@ -1855,7 +1855,7 @@ function App() {
                   {(secilenGecmisHayat.amacCarpani ?? (secilenGecmisHayat.amacTamamlandi ? 5 : 1)) > 1 &&
                     ` · 🎯 ×${(secilenGecmisHayat.amacCarpani ?? 5).toLocaleString(dil === 'en' ? 'en-US' : 'tr-TR')}`}
                 </p>
-                <p className="sonuc-hikaye">{secilenGecmisHayat.olumNedeni}</p>
+                <p className="sonuc-hikaye">{gecmisOlumNedeni(secilenGecmisHayat, dil)}</p>
                 {(secilenGecmisHayat.unvanlar.length > 0 || secilenGecmisHayat.efsaneviOlum) && (
                   <div className="basarimlar-listesi">
                     {secilenGecmisHayat.unvanlar.map((u) => (
@@ -2692,7 +2692,7 @@ function App() {
             <span className="sonuc-ikon">💀</span>
             <div className="olum-ust-metin">
               <h2>{m.oldun}</h2>
-              <p className="sonuc-hikaye">{karakter.olum_nedeni}</p>
+              <p className="sonuc-hikaye">{karakter.olum_nedeni_ceviri?.[dil] ?? karakter.olum_nedeni}</p>
             </div>
           </div>
         );
@@ -2887,7 +2887,7 @@ function App() {
                       </span>
                     )}
                     {' '}— {Math.round(kayit.skor).toLocaleString(dil === 'en' ? 'en-US' : 'tr-TR')} {m.puan} ({kayit.rutbe ? `${kt(kayit.rutbe)}, ` : ''}
-                    {kt(kayit.cag)}, {bic(m.yasSonek, kayit.yas)}, {kayit.olum_nedeni})
+                    {kt(kayit.cag)}, {bic(m.yasSonek, kayit.yas)}, {dil === 'en' && kayit.olum_nedeni_en ? kayit.olum_nedeni_en : kayit.olum_nedeni})
                   </div>
                   {(kayit.unvanlar || kayit.efsanevi_olum) && (
                     <div className="liderlik-detay">

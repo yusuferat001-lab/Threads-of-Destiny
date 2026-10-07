@@ -92,6 +92,11 @@ export function Khukumdar(dil: Dil, hukumdar: string | null | undefined): string
   return `${KATALOG_EN[onek] ?? onek} ${hukumdar.slice(bosluk + 1)}`;
 }
 
+/** Bir motor cümlesini iki dilde birden üretir (ör. her iki dilde saklanan ölüm nedeni). */
+export function ikiDilT(tr: string, params?: (string | number)[]): { tr: string; en: string } {
+  return { tr: T("tr", tr, params), en: T("en", tr, params) };
+}
+
 /** dil === "en" ise İngilizce, değilse Türkçe değeri döndüren kısa yardımcı. */
 export function ikiDil<T>(dil: Dil, tr: T, en: T): T {
   return dil === "en" ? en : tr;
