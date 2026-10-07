@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import type { EkipUyesi, Rakip, KotuIsKarti, YonetimDurumu, YonetimHat } from '../types';
+import type { EkipUyesi, Rakip, KotuIsKarti, YonetimDurumu, YonetimHat, PazarDurumu } from '../types';
 import { useDil } from '../DilContext';
 import { formatPara, formatYuzde, formatYuzdeAralik } from '../format';
 import { bic, type Metinler } from '../i18n';
@@ -34,6 +34,8 @@ interface KariyerEkraniProps {
   /** Son işlem/hata metni — ekrana açılır sonuç penceresinde gösterilir. */
   islemMesaji: string | null;
   yonetimDurum: YonetimDurumu | null;
+  /** Meslek pazarı (GET /:id/pazar): güçler, paylar, maaş etkisi, rütbe şartı. */
+  pazarDurum: PazarDurumu | null;
   onEtkilesim: (etkilesimId: string, kademe?: number) => void;
   onIstek: (istekId: string) => void;
   onTalep: (karar: 'kabul' | 'ret' | 'yalan') => void;
@@ -236,6 +238,62 @@ function iliskiKademe(v: number, en: boolean): string {
   return en ? 'cold' : 'soğuk';
 }
 
+/**
+ * Meslek pazarı kartı: oyuncunun gücü, rakiplerin gücü ve pazar payları tek bir
+ * yığılmış çubukta; altında maaşa etkisi, yıllık kariyer puanı katkısı ve
+ * (varsa) sıradaki rütbenin pazar şartı.
+ */
+function PazarKarti({ pazar }: { pazar: PazarDurumu }) {
+  const { dil } = useDil();
+  const en = dil === 'en';
+  const yuzde = (v: number) => formatYuzde(dil, v);
+  const isaretli = (v: number) => (v > 0 ? '+' : v < 0 ? '−' : '') + formatYuzde(dil, Math.abs(v));
+  return (
+    <div className="aile-koken-karti pazar-karti">
+      <h3>
+        {pazar.simge} {pazar.pazarAdi}
+      </h3>
+      <div className="pazar-cubuk" role="img" aria-label={`${pazar.pazarAdi}: ${yuzde(pazar.pazarPayi)}`}>
+        <span className="pazar-cubuk-sen" style={{ width: `${pazar.pazarPayi}%` }} title={en ? 'You' : 'Sen'} />
+        {pazar.rakipler.map((r) => (
+          <span key={r.ad} className="pazar-cubuk-rakip" style={{ width: `${r.pay}%` }} title={r.ad} />
+        ))}
+        <span className="pazar-cubuk-diger" style={{ width: `${pazar.digerPay}%` }} title={en ? 'Others' : 'Diğerleri'} />
+      </div>
+      <ul className="pazar-satirlari">
+        <li>
+          <span className="pazar-nokta pazar-nokta-sen" /> {en ? 'You' : 'Sen'} — {pazar.gucAdi} {pazar.oyuncuGucu} ·{' '}
+          <strong>{yuzde(pazar.pazarPayi)}</strong>
+        </li>
+        {pazar.rakipler.map((r) => (
+          <li key={r.ad}>
+            <span className="pazar-nokta pazar-nokta-rakip" /> {r.ad} — {pazar.gucAdi} {r.guc} · {yuzde(r.pay)}
+          </li>
+        ))}
+        <li>
+          <span className="pazar-nokta pazar-nokta-diger" /> {en ? 'Small players' : 'Küçük oyuncular'} · {yuzde(pazar.digerPay)}
+        </li>
+      </ul>
+      <p className="pazar-etki">
+        💰 {en ? 'Salary effect' : 'Maaşa etkisi'}: <strong>{isaretli(pazar.maasEtkisi)}</strong> · 🎖️{' '}
+        {en ? 'Career XP' : 'Kariyer puanı'} +{pazar.yillikKariyerPuani}/{en ? 'yr' : 'yıl'}
+      </p>
+      {pazar.rakipler.length === 0 && pazar.yeniRakipKalanYil !== null && (
+        <p className="pazar-etki">
+          ♟️ {en
+            ? `No rival for now — a newcomer will appear in ~${pazar.yeniRakipKalanYil}y.`
+            : `Şimdilik rakibin yok — ~${pazar.yeniRakipKalanYil} yıl içinde yenisi çıkar.`}
+        </p>
+      )}
+      <p className="pazar-ipucu">
+        {en
+          ? 'Your power grows with successes in your trade; every blow to a rival hands you their customers.'
+          : 'Gücün mesleğindeki başarılarla büyür; rakibe indirdiğin her darbe onun müşterisini sana geçirir.'}
+      </p>
+    </div>
+  );
+}
+
 /** Tek bir yönetim hattı kartı (Yönetici ya da Patron). */
 function HatKarti({
   hat,
@@ -422,6 +480,7 @@ export function KariyerEkrani({
   yukleniyor,
   islemMesaji,
   yonetimDurum,
+  pazarDurum,
   onEtkilesim,
   onIstek,
   onTalep,
@@ -504,7 +563,7 @@ export function KariyerEkrani({
             <>
               <div className="kariyer-ilerleme-baslik">
                 <span>{en ? 'Progress to' : 'Sıradaki kademe:'} <strong>{kt(ilerleme.sonrakiUnvan ?? '')}</strong></span>
-                {ilerleme.cooldownBekliyor && (
+                {ilerleme.cooldownBekliyor && (pazarDurum?.rutbeSarti?.karsilaniyor ?? true) && (
                   <span className="kariyer-ilerleme-cooldown">
                     {en
                       ? `Eligible — ${ilerleme.cooldownKalanYil}y until promotion`
@@ -537,6 +596,23 @@ export function KariyerEkrani({
                   <span className="kariyer-ilerleme-deger">
                     {ilerleme.statMevcut}/{ilerleme.statGerekli}
                     {ilerleme.statGerekli !== null && ilerleme.statMevcut >= ilerleme.statGerekli && ' ✓'}
+                  </span>
+                </div>
+              )}
+              {pazarDurum?.rutbeSarti && pazarDurum.rutbeSarti.seviye === rutbeSeviye + 1 && (
+                <div className="kariyer-ilerleme-cubuk-satiri">
+                  <span className="kariyer-ilerleme-etiket">{pazarDurum.pazarAdi}</span>
+                  <div className="kariyer-ilerleme-cubuk">
+                    <div
+                      className="kariyer-ilerleme-cubuk-dolu"
+                      style={{
+                        width: `${Math.min(100, Math.round((pazarDurum.pazarPayi / pazarDurum.rutbeSarti.gerekliPay) * 100))}%`,
+                      }}
+                    />
+                  </div>
+                  <span className="kariyer-ilerleme-deger">
+                    {formatYuzde(dil, pazarDurum.pazarPayi)}/{formatYuzde(dil, pazarDurum.rutbeSarti.gerekliPay)}
+                    {pazarDurum.rutbeSarti.karsilaniyor && ' ✓'}
                   </span>
                 </div>
               )}
@@ -702,6 +778,7 @@ export function KariyerEkrani({
         </div>
 
         <aside className="kariyer-yan-sutun">
+          {pazarDurum?.aktif && <PazarKarti pazar={pazarDurum} />}
           {meslekGucSatirlari.length > 0 && (
             <div className="aile-koken-karti">
               <h3>{m.geMeslekGucu}</h3>

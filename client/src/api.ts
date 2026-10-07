@@ -33,6 +33,7 @@ import type {
   AileDurumu,
   YonetimDurumu,
   RakipKarti,
+  PazarDurumu,
   AmaclarDurumu,
   SalginKorunmaKarti,
   KrediConfig,
@@ -182,6 +183,10 @@ export function kotuIsYap(
 
 export function rakiplerGetir(stateId: string) {
   return istek<{ rakipler: RakipKarti[] }>(`/api/game/${stateId}/rakipler`);
+}
+
+export function pazarGetir(stateId: string) {
+  return istek<PazarDurumu>(`/api/game/${stateId}/pazar`);
 }
 
 export function amaclarGetir(stateId: string) {

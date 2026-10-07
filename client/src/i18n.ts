@@ -730,7 +730,8 @@ const TR = {
   kaAria: 'Karakter görseli',
 
   // ---- Sadeleştirilmiş / kısaltılmış metinler ----
-  feKirilimLejant: '🎖️ 📈 kalıcı · 🤝 🌍 dünya durumuna göre değişir',
+  feKirilimLejant: '🎖️ 📈 kalıcı · 🤝 🏪 🌍 duruma göre değişir',
+  fePazarNot: 'rakibin güçlendikçe düşer, sen güçlendikçe artar',
   feTasinNotKisa: 'Tur harcamaz. Pahalıya geçiş bir kerelik {0} {1}.',
   feTasinmaKisa: ' · +{0} {1} taşınma',
   iyNetKisa: '💰 Kazanç ~{0}{1} {2}/yıl ({3}%)',
@@ -1453,7 +1454,8 @@ const EN: Metinler = {
   kaAria: 'Character portrait',
 
   // ---- Simplified / shortened text ----
-  feKirilimLejant: '🎖️ 📈 permanent · 🤝 🌍 vary with world conditions',
+  feKirilimLejant: '🎖️ 📈 permanent · 🤝 🏪 🌍 vary with circumstances',
+  fePazarNot: 'falls as your rival grows, rises as you grow',
   feTasinNotKisa: 'Costs no turn. Upgrading costs a one-time {0} {1}.',
   feTasinmaKisa: ' · +{0} {1} to move',
   iyNetKisa: '💰 Return ~{0}{1} {2}/yr ({3}%)',

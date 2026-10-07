@@ -184,6 +184,8 @@ export interface CharacterState {
   ticaret_sermaye: number;
   nufuz: number;
   uretim_kapasitesi: number;
+  /** Meslek pazarındaki güç (0-100). Pazar payı bundan + rakip gücünden türetilir (sunucu: data/pazar.ts). */
+  meslek_gucu: number;
 
   suc_seviyesi: number;
   /** Hapiste kalan ceza süresi (yıl); 0'a inince otomatik serbest kalınır. Hapiste değilken 0. */
@@ -211,6 +213,8 @@ export interface CharacterState {
   dost_puani: number;
   rakip_puani: number;
   rakipler: Rakip[];
+  /** Yenilen rakibin yerine yenisinin geleceği oyun yılı (yoksa null). */
+  rakip_yeni_yil: number | null;
 
   es_adi: string | null;
   es_puani: number;
@@ -421,6 +425,32 @@ export interface RakipKarti {
   guc: number;
   husumet: number;
   yenildi: boolean;
+}
+
+export interface PazarRakipSatiri {
+  ad: string;
+  guc: number;
+  /** 0-100 yüzde. */
+  pay: number;
+  husumet: number;
+}
+
+/** Kariyer ekranı "Pazar" bölümü (GET /:id/pazar). */
+export interface PazarDurumu {
+  aktif: boolean;
+  pazarAdi: string;
+  gucAdi: string;
+  simge: string;
+  oyuncuGucu: number;
+  /** 0-100 yüzde. */
+  pazarPayi: number;
+  rakipler: PazarRakipSatiri[];
+  digerPay: number;
+  /** Pazar payının maaşa etkisi (±yüzde). */
+  maasEtkisi: number;
+  yillikKariyerPuani: number;
+  rutbeSarti: { seviye: number; gerekliPay: number; karsilaniyor: boolean } | null;
+  yeniRakipKalanYil: number | null;
 }
 
 /** Kalıcı salgından korunma yatırımı (§27). */
@@ -636,6 +666,12 @@ export interface MaasKirilim {
   /** "İtibarın": mutluluk + şöhret + ahlak bant yüzdelerinin toplamı (±). Değişken. */
   itibarYuzde: number;
   itibarKalemler: MaasKirilimKalemi[];
+  /** Meslek pazarı: pazar payının maaşa yüzde etkisi (±). Değişken. */
+  pazarYuzde: number;
+  /** Güncel pazar payı (0-100). */
+  pazarPayiYuzde: number;
+  /** Pazarın görünen adı (oyuncunun dilinde); meslek yoksa boş. */
+  pazarAdi: string;
   /** Enflasyon + ekonomi + savaş + salgın + geçici durumların birleşik yüzdesi. Dönemsel — dünya değiştikçe değişir. */
   donemselYuzde: number;
   donemselKalemler: MaasKirilimKalemi[];

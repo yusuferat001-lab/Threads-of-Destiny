@@ -228,6 +228,11 @@ export interface CharacterState {
   nufuz: number;
   /** Zanaatkâr'a özel derinlik metriği (0-100). Şimdilik maaşa/oyun içi hiçbir etkisi yok — meslekMetrikCarpani için placeholder (dengelemesi sonraya bırakıldı). */
   uretim_kapasitesi: number;
+  /**
+   * Meslek pazarındaki gücün (0-100, bkz. data/pazar.ts). Pazar payı bundan ve
+   * rakiplerin gücünden türetilir; maaşı ve rütbeyi etkiler. Meslek seçilmeden 0.
+   */
+  meslek_gucu: number;
 
   /**
    * TEK suç/aranma ekseni (0-100, üst şeritteki yıldız göstergesi bunu okur).
@@ -303,6 +308,8 @@ export interface CharacterState {
   rakip_puani: number;
   /** Derin rakip ilişkileri (§13): isimli rakipler + güç/husumet. rakipler[0].ad === rakip_adi. Eski kayıtlarda eskiKayitGocu üretir. */
   rakipler: Rakip[];
+  /** Bir rakip yenildiyse pazara yeni bir rakibin gireceği oyun yılı (yoksa null). Yenilen rakipler listede `yenildi:true` kalır. */
+  rakip_yeni_yil: number | null;
 
   es_adi: string | null;
   es_puani: number;

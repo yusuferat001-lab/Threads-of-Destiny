@@ -662,4 +662,13 @@ export const KATALOG_EN: Record<string, string> = {
   "Kan Davası — Beklemede": "Blood Feud — Pending",
   "Afyon Bağımlılığı": "Opium Addiction",
   "Unutulmuş Bir İyilik": "A Forgotten Kindness",
+  // Meslek pazarı (2026-10)
+  "Pazar Payı": "Market Share",
+  "Ticari Güç": "Trade Power",
+  "Cemaat Payı": "Congregation Share",
+  "Ruhani Güç": "Spiritual Power",
+  "Üretim Payı": "Production Share",
+  "Zanaat Gücü": "Craft Power",
+  "Bölge Hâkimiyeti": "District Control",
+  "Askeri Güç": "Military Power",
 };

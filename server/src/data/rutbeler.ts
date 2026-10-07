@@ -31,6 +31,13 @@ export interface RutbeTanimi {
 export const TERFI_COOLDOWN: Record<number, number> = { 2: 0, 3: 2, 4: 2, 5: 8 };
 
 /**
+ * Meslek pazarı (2026-10, data/pazar.ts): üst kademeler ayrıca en az bu pazar
+ * payını ister — mesleğinde söz sahibi olmadan zirveye çıkılmaz. Anahtar HEDEF
+ * kademe. Meslek ve çağdan bağımsız.
+ */
+export const RUTBE_PAZAR_PAYI_ESIGI: Record<number, number> = { 4: 0.18, 5: 0.35 };
+
+/**
  * Seviye 1..5 için maaşa çarpımsal, kalıcı rütbe primi (hesaplaMaasYillik içinde
  * TEK bir çarpan kalemi olarak girer — kıdem/itibar/enflasyonla da çarpılır).
  * BİLEŞİK: her kademe bir öncekinin üstüne kademeye özgü bir yüzde bindirir.

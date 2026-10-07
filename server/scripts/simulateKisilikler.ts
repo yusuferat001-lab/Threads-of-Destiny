@@ -26,6 +26,7 @@
  *   SIM_KISILIK=suclu,para  -> yalnız bu kişilikleri çalıştır (virgülle).
  * Çıktı: scripts/simulateKisilikler.sonuc.json + konsola ilerleme.
  */
+import { pazarPayiHesapla } from "../src/data/pazar";
 import "./_simPrismaStub";
 
 import fs from "fs";
@@ -679,6 +680,9 @@ interface OyunKaydi {
   hayat_amaci_tamamlandi: boolean;
   rutbe: string;
   rutbe_seviye: number;
+  /** Ölüm anındaki meslek pazarı payı (0-100). */
+  pazar_payi: number;
+  meslek_gucu: number;
   sehir_yonetim_seviyesi: number;
   tur_sayisi: number;
   cocuk_sayisi: number;
@@ -798,6 +802,8 @@ async function birOyunSimuleEt(kisilik: Kisilik, cag: Cag, meslek: string): Prom
     hayat_amaci_tamamlandi: son.hayat_amaci?.tamamlandi ?? false,
     rutbe: son.rutbe,
     rutbe_seviye: son.rutbe_seviye,
+    pazar_payi: Math.round(pazarPayiHesapla(son) * 100),
+    meslek_gucu: Math.round(son.meslek_gucu ?? 0),
     sehir_yonetim_seviyesi: son.sehir_yonetim_seviyesi,
     tur_sayisi: son.tur_sayisi,
     cocuk_sayisi: son.cocuk_sayisi,

@@ -11,6 +11,7 @@ import {
   RutbeTanimi,
   TERFI_COOLDOWN,
   rutbeMaasCarpani,
+  RUTBE_PAZAR_PAYI_ESIGI,
   KARIYER_PUANI_YILLIK,
 } from "../data/rutbeler";
 import { YerlesimTanimi, yerlesimGetir, yerlesimIdByAd } from "../data/yerlesimler";
@@ -36,6 +37,20 @@ import {
 import { tarihiSavasKontrol, gelecekSavasKontrol } from "../data/tarihiSavaslar";
 import { mulkTanimiGetir } from "../data/mulkler";
 import { MagazaEsyasiTanimi, magazaEsyasiTanimiGetir } from "../data/magazaEsyalari";
+import {
+  pazarPayiHesapla,
+  pazarMaasCarpani,
+  pazarAdlariGetir,
+  baslangicMeslekGucu,
+  MESLEK_GUCU_TAVAN,
+  MESLEK_GUCU_YILLIK_TABAN,
+  MESLEK_GUCU_YILLIK_RUTBE,
+  MESLEK_GUCU_YOKLUK_KAYBI,
+  PAZAR_KARIYER_PUANI_YILLIK,
+  YENI_RAKIP_MIN_YIL,
+  YENI_RAKIP_MAX_YIL,
+  RAKIP_KIRMA_GUC_AKTARIMI,
+} from "../data/pazar";
 import {
   YATKINLIK_TIER_ETKILERI,
   YATKINLIK_TIER_SEVIYE,
@@ -453,7 +468,7 @@ export function sehirYonetimGuncelle(state: CharacterState): void {
  * "donemsel" → enflasyon/ekonomi/savaş/salgın/geçici durumlar (dünya durumu
  * değiştikçe değişen, kalıcı olmayan etkiler).
  */
-type MaasCarpanGrubu = "rutbe" | "kariyer" | "itibar" | "donemsel";
+type MaasCarpanGrubu = "rutbe" | "kariyer" | "itibar" | "pazar" | "donemsel";
 interface MaasCarpanKalemi {
   ad: string;
   carpan: number;
@@ -486,6 +501,8 @@ function maasCarpanKalemleri(state: CharacterState): { tabanMaas: number; kaleml
       { ad: T(dil, "Kalıcı ödüller (köken + olaylar)"), carpan: maasCarpaniGetir(state), grup: "kariyer" },
       { ad: T(dil, "Mesleğe yatkınlığın"), carpan: 1 + (state.meslek_maas_carpani ?? 0), grup: "kariyer" },
       { ad: T(dil, "İtibarın (mutluluk·şöhret·ahlak)"), carpan: 1 + itibarToplam / 100, grup: "itibar" },
+      // Meslek pazarı (data/pazar.ts): pazar payın rakiplerin güçlendikçe düşer, sen güçlendikçe artar.
+      { ad: T(dil, "Pazar payın"), carpan: pazarAdlariGetir(state.meslek) ? pazarMaasCarpani(pazarPayiHesapla(state)) : 1, grup: "pazar" },
       { ad: T(dil, "Enflasyon"), carpan: enflasyonCarpani(state), grup: "donemsel" },
       { ad: ekonomiAd, carpan: ekonomiCarpani, grup: "donemsel" },
       { ad: T(dil, "Savaş"), carpan: state.ulke.savasta ? 0.85 : 1, grup: "donemsel" },
@@ -523,6 +540,12 @@ export interface MaasKirilim {
   /** "İtibarın": mutluluk + şöhret + ahlak bant yüzdelerinin TOPLAMI (±). DEĞİŞKEN — statlar oynadıkça oynar. */
   itibarYuzde: number;
   itibarKalemler: MaasKirilimKalemi[];
+  /** Meslek pazarı: pazar payının maaşa yüzde etkisi (±). DEĞİŞKEN — rakip güçlendikçe düşer. */
+  pazarYuzde: number;
+  /** Güncel pazar payı (0-100, tam sayı yüzde). */
+  pazarPayiYuzde: number;
+  /** Mesleğe göre pazarın görünen adı ("Pazar Payı", "Cemaat Payı"...), oyuncunun dilinde. Meslek yoksa boş. */
+  pazarAdi: string;
   /** Ekonomi + savaş + salgın + geçici durumların birleşik yüzdesi (enflasyon HARİÇ — o oyuncuya gizli). DÖNEMSEL — dünya durumu değiştikçe değişir. Gösterilen kalemlerle uyumludur. */
   donemselYuzde: number;
   donemselKalemler: MaasKirilimKalemi[];
@@ -562,6 +585,9 @@ export function maasKirilimHesapla(state: CharacterState): MaasKirilim {
     kariyerKalemler: grupKalemler("kariyer"),
     itibarYuzde: itibar.toplam,
     itibarKalemler: itibar.kalemler, // üçü de gösterilir (0 olanlar dahil)
+    pazarYuzde: carpanYuzdesi(grupCarpani("pazar")),
+    pazarPayiYuzde: Math.round(pazarPayiHesapla(state) * 100),
+    pazarAdi: K(state.dil, pazarAdlariGetir(state.meslek)?.pazar ?? ""),
     donemselYuzde: carpanYuzdesi(grupCarpani("donemsel")),
     donemselKalemler: grupKalemler("donemsel"),
   };
@@ -729,6 +755,7 @@ export function createCharacter(
     ticaret_sermaye: 0,
     nufuz: 0,
     uretim_kapasitesi: 0,
+    meslek_gucu: 0,
     suc_seviyesi: 0,
     hapis_ceza_kalan: 0,
     hapis_ceza_toplam: 0,
@@ -748,6 +775,7 @@ export function createCharacter(
     rakip_puani: 50,
     // rakipler meslek seçilince (mesleğiSec) doldurulur — rakip_adi ilk rakip olur.
     rakipler: [],
+    rakip_yeni_yil: null,
 
     es_adi: null,
     es_puani: 0,
@@ -847,11 +875,13 @@ export function createCharacter(
   return state;
 }
 
-function esikKarsilaniyorMu(esik: RutbeEsigi, state: CharacterState): boolean {
+function esikKarsilaniyorMu(esik: RutbeEsigi, state: CharacterState, hedefSeviye: number): boolean {
+  const gerekliPay = RUTBE_PAZAR_PAYI_ESIGI[hedefSeviye];
   return (
     (state.kariyer_puani ?? 0) >= esik.kariyer_puani &&
     (esik.un === undefined || state.un >= esik.un) &&
-    (esik.ahlak === undefined || state.ahlak >= esik.ahlak)
+    (esik.ahlak === undefined || state.ahlak >= esik.ahlak) &&
+    (gerekliPay === undefined || pazarPayiHesapla(state) >= gerekliPay)
   );
 }
 
@@ -923,7 +953,7 @@ export function rutbeGuncelle(state: CharacterState): void {
   // Hak edilen en yüksek kademe (1-5): eşikleri ilk karşılanmayanda dur.
   let hakEdilen = 1;
   for (let i = 0; i < tanim.esikler.length; i++) {
-    if (esikKarsilaniyorMu(tanim.esikler[i], state)) hakEdilen = i + 2;
+    if (esikKarsilaniyorMu(tanim.esikler[i], state, i + 2)) hakEdilen = i + 2;
     else break;
   }
 
@@ -1097,9 +1127,25 @@ export function eskiKayitGocu(state: CharacterState): void {
     } else {
       state.rakipler = [];
     }
-  } else if (state.rakipler.length > 1) {
-    // Eski kayıtlarda iki rakip olabilir — tekil rakip kuralına indir.
-    state.rakipler = [state.rakipler[0]];
+  } else {
+    // Eski kayıtlarda iki AKTİF rakip olabilir — tek aktif rakip kuralına indir.
+    // Meslek pazarı (2026-10) yenilen rakipleri listede tutar (yenildi:true) ve
+    // yerlerine yenisi gelir; aktif olan her zaman rakipler[0]'dadır.
+    const aktifler = state.rakipler.filter((r) => !r.yenildi);
+    const yenilenler = state.rakipler.filter((r) => r.yenildi);
+    state.rakipler = [...aktifler.slice(0, 1), ...yenilenler];
+  }
+  if (state.rakip_yeni_yil === undefined) state.rakip_yeni_yil = null;
+  // Meslek pazarı (2026-10): eski kayıtlarda güç yok — başlangıç gücü + rütbe kadar ilerleme ver.
+  if (typeof state.meslek_gucu !== "number") {
+    state.meslek_gucu =
+      state.meslek && MESLEKLER.includes(state.meslek)
+        ? Math.min(
+            MESLEK_GUCU_TAVAN,
+            baslangicMeslekGucu(state.meslek_yatkinlik_seviyesi ?? null, !!state.aile_mirasi_surduruldu) +
+              4 * Math.max(0, (state.rutbe_seviye ?? 1) - 1)
+          )
+        : 0;
   }
   if (state.salgin_korunma_yatirimi === undefined) state.salgin_korunma_yatirimi = null;
   if (state.kredi === undefined) state.kredi = null;
@@ -1208,6 +1254,11 @@ export function mesleğiSec(state: CharacterState, meslek: string): void {
 
   if (meslek === "Asker") state.ordu_mevcudu = 10;
 
+  // Meslek pazarı (data/pazar.ts): taban güç + yatkınlık kademesi + aile mirası.
+  if (!state.meslek_gucu) {
+    state.meslek_gucu = baslangicMeslekGucu(state.meslek_yatkinlik_seviyesi, mirasSurduruldu);
+  }
+
   if (mirasSurduruldu && !state.etiketler.includes("aile_mirasi_surduruldu")) {
     state.un += 10;
     state.para += 15;
@@ -1294,6 +1345,9 @@ export function clampStats(state: CharacterState): void {
   // Nüfuz pasif olarak kesirli birikir (+0.3/yıl); tam sayıda tutulur ki
   // arayüzde ve maaş kırılımında "12.6" gibi değerler görünmesin.
   state.nufuz = Math.round(Math.max(0, state.nufuz));
+  // Meslek gücü kesirli birikir; bir ondalığa yuvarlanır (gösterimde tam sayı).
+  state.meslek_gucu = Math.round(clamp(state.meslek_gucu ?? 0, 0, MESLEK_GUCU_TAVAN) * 10) / 10;
+  for (const r of state.rakipler ?? []) r.guc = Math.round(clamp(r.guc, 0, 100) * 10) / 10;
   if (state.es_adi) state.es_puani = clamp(state.es_puani, 0, 100);
   state.yonetim_iliski = clamp(state.yonetim_iliski ?? 40, 0, 100);
   state.patron_iliski = clamp(state.patron_iliski ?? 40, 0, 100);
@@ -2607,6 +2661,9 @@ export function rakipGucKir(
   state.para = paraYuvarla(state.para + pazarPayi);
   state.kariyer_puani += kariyerKazanci;
 
+  // Meslek pazarı: kırılan gücün bir kısmı müşteri olarak sana geçer.
+  meslekGucuEkle(state, kirilan * RAKIP_KIRMA_GUC_AKTARIMI);
+
   let yenildiMi = false;
   if (rakip.guc <= 10) {
     rakip.yenildi = true;
@@ -2614,6 +2671,11 @@ export function rakipGucKir(
     state.kariyer_puani += 10;
     state.un = Math.min(100, state.un + 4);
     hayatOlayiEkle(state, "♟️", T(state.dil, "{0} rekabeti tamamen bırakmak zorunda kaldı", [rakipAd]));
+    // Boşluk uzun sürmez: birkaç yıl sonra pazara yeni bir rakip girer.
+    if (state.rakip_yeni_yil == null) {
+      state.rakip_yeni_yil =
+        state.yil + YENI_RAKIP_MIN_YIL + Math.floor(Math.random() * (YENI_RAKIP_MAX_YIL - YENI_RAKIP_MIN_YIL + 1));
+    }
   }
 
   const mesaj = yenildiMi
@@ -2626,6 +2688,55 @@ export function rakipGucKir(
         pazarPayi,
       ]).replace(/\{birim\}/g, state.para_birimi);
   return { kirilan, pazarPayi, kariyerKazanci, yenildiMi, mesaj };
+}
+
+// ---------------------------------------------------------------------------
+// Meslek pazarı (data/pazar.ts): oyuncunun gücü + rakiplerin gücü → pazar payı.
+// ---------------------------------------------------------------------------
+
+/** Oyuncunun meslek gücünü değiştirir (0-100 clamp). Meslek seçilmemişse etkisiz. */
+export function meslekGucuEkle(state: CharacterState, delta: number): void {
+  if (!pazarAdlariGetir(state.meslek) || !delta) return;
+  state.meslek_gucu = clamp((state.meslek_gucu ?? 0) + delta, 0, MESLEK_GUCU_TAVAN);
+}
+
+/**
+ * Yıllık pazar akışı: pasif güç kazancı (taban + rütbe), hapiste/yolculuktayken
+ * pazardan uzak kalma kaybı, pazar payına orantılı kariyer puanı ve — bir rakip
+ * yenildiyse — vakti gelince pazara yeni bir rakibin girmesi. Bir anlatı cümlesi
+ * döndürebilir (yeni rakip haberi).
+ */
+export function pazarYillikUygula(state: CharacterState, yasArtisi: number): string | null {
+  if (yasArtisi <= 0 || !pazarAdlariGetir(state.meslek)) return null;
+  const uzakta = state.etiketler.includes("hapiste") || state.etiketler.includes("yolculukta");
+  if (uzakta) {
+    meslekGucuEkle(state, -MESLEK_GUCU_YOKLUK_KAYBI * yasArtisi);
+  } else {
+    meslekGucuEkle(state, (MESLEK_GUCU_YILLIK_TABAN + MESLEK_GUCU_YILLIK_RUTBE * (state.rutbe_seviye ?? 1)) * yasArtisi);
+  }
+  state.kariyer_puani += pazarPayiHesapla(state) * PAZAR_KARIYER_PUANI_YILLIK * yasArtisi;
+
+  if (state.rakip_yeni_yil != null && state.yil >= state.rakip_yeni_yil) {
+    state.rakip_yeni_yil = null;
+    if (state.rakipler.some((r) => !r.yenildi)) return null;
+    const ad = rastgeleBirIsimSec(state.cag, state.bolge, [
+      state.isim ?? "",
+      state.dost_adi,
+      state.es_adi ?? "",
+      ...state.rakipler.map((r) => r.ad),
+    ]);
+    state.rakipler.unshift({
+      ad,
+      meslek: state.meslek,
+      guc: 32 + Math.floor(Math.random() * 16),
+      husumet: 25 + Math.floor(Math.random() * 11),
+      yenildi: false,
+    });
+    state.rakip_adi = ad;
+    hayatOlayiEkle(state, "♟️", T(state.dil, "Pazara yeni bir rakip girdi: {0}", [ad]));
+    return T(state.dil, "♟️ Boşluğu fark eden {0} pazara girdi; artık yeni rakibin o.", [ad]);
+  }
+  return null;
 }
 
 /** Yıllık: yenilmemiş rakiplerin gücü yavaşça büyür, husumet yavaşça soğur. */

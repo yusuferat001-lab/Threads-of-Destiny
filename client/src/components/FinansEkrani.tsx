@@ -132,6 +132,11 @@ export function FinansEkrani({
                 <span className={maasKirilim.itibarYuzde <= -8 ? 'finans-net-negatif' : undefined}>
                   🤝 {yuzdeMetni(maasKirilim.itibarYuzde, dil)}
                 </span>
+                {maasKirilim.pazarAdi && (
+                  <span className={maasKirilim.pazarYuzde < 0 ? 'finans-net-negatif' : undefined}>
+                    🏪 {yuzdeMetni(maasKirilim.pazarYuzde, dil)}
+                  </span>
+                )}
                 <span>🌍 {yuzdeMetni(maasKirilim.donemselYuzde, dil)}</span>
               </summary>
               <div className="finans-kirilim-detay">
@@ -148,6 +153,12 @@ export function FinansEkrani({
                 {kirilimKalem(maasKirilim.itibarKalemler)}
                 {maasKirilim.itibarYuzde <= -8 ? ` — ${m.feItibarUyari}` : ''}
               </div>
+              {maasKirilim.pazarAdi && (
+                <div className={`finans-kirilim-detay${maasKirilim.pazarYuzde < 0 ? ' finans-net-negatif' : ''}`}>
+                  🏪 {maasKirilim.pazarAdi} %{maasKirilim.pazarPayiYuzde}: {yuzdeMetni(maasKirilim.pazarYuzde, dil)} ·{' '}
+                  {m.feDegisebilir} — {m.fePazarNot}
+                </div>
+              )}
               <div className="finans-kirilim-detay">
                 🌍 {m.feDonemselEtkiler}: {yuzdeMetni(maasKirilim.donemselYuzde, dil)} · {m.feDegisebilir}
                 {kirilimKalem(maasKirilim.donemselKalemler.filter((k) => k.ad !== 'Enflasyon'))}

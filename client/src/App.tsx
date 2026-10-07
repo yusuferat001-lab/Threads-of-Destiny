@@ -20,6 +20,7 @@ import type {
   MagazaEsyaKarti,
   AileDurumu,
   YonetimDurumu,
+  PazarDurumu,
 } from './types';
 import {
   mesleklerGetir,
@@ -68,6 +69,7 @@ import {
   aileEtkilesimYap,
   aileTalebiKararlastir,
   yonetimDurumGetir,
+  pazarGetir,
   yonetimEtkilesimYap,
   yonetimIstekYap,
   yonetimTalebiKararlastir,
@@ -347,6 +349,7 @@ function App() {
   const [amaclar, setAmaclar] = useState<AmaclarDurumu | null>(null);
   const [aileDurum, setAileDurum] = useState<AileDurumu | null>(null);
   const [yonetimDurum, setYonetimDurum] = useState<YonetimDurumu | null>(null);
+  const [pazarDurum, setPazarDurum] = useState<PazarDurumu | null>(null);
   const [kotuIsler, setKotuIsler] = useState<KotuIsKarti[]>([]);
   const [krediConfig, setKrediConfig] = useState<KrediConfig | null>(null);
   const [dedikodular, setDedikodular] = useState<string[]>([]);
@@ -934,12 +937,14 @@ function App() {
     setHata(null);
     setYukleniyor(true);
     try {
-      const [durum, { config }] = await Promise.all([
+      const [durum, { config }, pazar] = await Promise.all([
         yonetimDurumGetir(karakter.id),
         kotuIsConfigGetir(karakter.id),
+        pazarGetir(karakter.id),
       ]);
       setYonetimDurum(durum);
       setKotuIsler(config);
+      setPazarDurum(pazar);
       setIslemMesaji(null);
       setEkran('kariyer');
     } catch (err) {
@@ -959,8 +964,9 @@ function App() {
 
   async function kariyerKaranlikIslerTazele(id: string) {
     try {
-      const { config } = await kotuIsConfigGetir(id);
+      const [{ config }, pazar] = await Promise.all([kotuIsConfigGetir(id), pazarGetir(id)]);
       setKotuIsler(config);
+      setPazarDurum(pazar);
     } catch {
       /* durum yenilenemezse eldeki kalır */
     }
@@ -2668,6 +2674,7 @@ function App() {
           yukleniyor={yukleniyor}
           islemMesaji={islemMesaji}
           yonetimDurum={yonetimDurum}
+          pazarDurum={pazarDurum}
           onEtkilesim={yonetimEtkilesimHandler}
           onIstek={yonetimIstekHandler}
           onTalep={yonetimTalepHandler}

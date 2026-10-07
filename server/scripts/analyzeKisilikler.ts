@@ -52,6 +52,8 @@ const SAYISAL_ALANLAR = [
   "mulk_sayisi",
   "unvan_sayisi",
   "rutbe_seviye",
+  "pazar_payi",
+  "meslek_gucu",
   "sehir_yonetim_seviyesi",
   "borclu_tur_sayisi",
   "yatirimSayisi",
@@ -310,6 +312,15 @@ for (const metrik of KONSOL_METRIKLER) {
   }
   console.log(satir.join(""));
 }
+console.log("\nMeslek pazarı — ölümde pazar payı (ort / medyan / ≥%35 oranı) · ort güç:");
+for (const [kisilik, arr] of Object.entries(kayitlar.reduce((acc: Record<string, any[]>, k: any) => {
+  (acc[k.kisilikAdi ?? k.kisilik] ??= []).push(k);
+  return acc;
+}, {}))) {
+  const paylar = (arr as any[]).map((k) => k.pazar_payi ?? 0);
+  console.log(`  ${String(kisilik).padEnd(20)} ort ${ort(paylar).toFixed(1).padStart(5)} · med ${medyan(paylar).toFixed(0).padStart(3)} · ≥35: %${yuzde(paylar.filter((p) => p >= 35).length, paylar.length)} · güç ${ort((arr as any[]).map((k) => k.meslek_gucu ?? 0)).toFixed(0)}`);
+}
+
 console.log("\nRütbe dağılımı — TÜM ömürler (S1..S5 %) | dolu ömür (yaş≥55) medyan & S1..S5 %:");
 for (const kid of mevcutKisilikler) {
   const hepsi = kayitlar.filter((k) => k.kisilik === kid);

@@ -91,6 +91,8 @@ import {
   rakipGucKir,
   rakipMisillemesiDene,
   rakiplerGuncelle,
+  meslekGucuEkle,
+  pazarYillikUygula,
   RAKIP_KOTU_IS_HEDEFLERI,
   krediAl,
   krediPazarlik,
@@ -99,7 +101,16 @@ import {
   krediFaizTeklifi,
   krediKademeleri,
 } from "./stateManager";
-import { rutbeTanimiGetir, KARIYER_PUANI_YILLIK, KARIYER_PUANI_KATEGORI_BASARI } from "../data/rutbeler";
+import { rutbeTanimiGetir, KARIYER_PUANI_YILLIK, KARIYER_PUANI_KATEGORI_BASARI, RUTBE_PAZAR_PAYI_ESIGI } from "../data/rutbeler";
+import {
+  MESLEK_GUCU_KATEGORI_BASARI,
+  PAZAR_DIGER_GUC,
+  PAZAR_KARIYER_PUANI_YILLIK,
+  pazarAdlariGetir,
+  pazarPayiHesapla,
+  pazarMaasCarpani,
+  rakipPayiHesapla,
+} from "../data/pazar";
 import { yoneticiBilgisi, patronBilgisi } from "./yonetimKisileri";
 import { KOTU_ISLER, kotuIsTanimiGetir, KotuIsEtki } from "../data/kotuIsler";
 import { rollSuccess } from "./diceRoll";
@@ -1819,12 +1830,15 @@ async function sonucuUygulaVeIlerlet(
   if (etki.uretim_kapasitesi_artis) {
     state.uretim_kapasitesi = Math.min(100, Math.max(0, state.uretim_kapasitesi + etki.uretim_kapasitesi_artis));
   }
+  metrikGucKatkisiUygula(state, etki);
   // Kariyer puanı: mesleğine uygun kategoride (savas/ticaret/din) başarılı olmak
   // seni rütbede ilerletir; kilit taşı olaylar ayrıca doğrudan puan verebilir.
   // Mesleğe yatkınlık kademesinin "tecrübe hızı" bonusu/malusu (±%7..±%15) bu
   // kazanca da biner (bkz. data/meslekYatkinlik.ts).
   if (basarili && MESLEK_KATEGORI[state.meslek] === mevcutOlay.kategori) {
     state.kariyer_puani += KARIYER_PUANI_KATEGORI_BASARI * (1 + (state.meslek_tecrube_hizi ?? 0));
+    // Meslek pazarı: mesleğinde başarılı her iş pazardaki gücünü artırır.
+    meslekGucuEkle(state, MESLEK_GUCU_KATEGORI_BASARI * (1 + (state.meslek_tecrube_hizi ?? 0)));
     // Din Adamı, din kategorisinde başarılı olduğu her olayda biraz nüfuz kazanır
     // (pasif un +0.4/yıl sürüklenmesinin eşi) — nüfuz → maaş metrik çarpanı.
     if (state.meslek === "Din Adamı") state.nufuz += 1.5;
@@ -2304,6 +2318,11 @@ async function sonucuUygulaVeIlerlet(
           // Derin rakip ilişkileri: rakiplerin gücü yavaşça büyür; husumeti
           // yüksek bir rakip düşük ihtimalle misilleme yapar (§13).
           rakiplerGuncelle(state, yasArtisi);
+          // Meslek pazarı: pasif güç, pazar payına bağlı kariyer puanı, yeni rakip girişi.
+          const pazarMesaji = pazarYillikUygula(state, yasArtisi);
+          if (pazarMesaji) {
+            zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${pazarMesaji}` : pazarMesaji;
+          }
           const rakipMisillemeSonucu = rakipMisillemesiDene(state, yasArtisi);
           if (rakipMisillemeSonucu) {
             zamanAnlatimi = zamanAnlatimi
@@ -3487,6 +3506,76 @@ export async function rakiplerGetir(id: string): Promise<RakipKarti[]> {
   }));
 }
 
+export interface PazarRakipSatiri {
+  ad: string;
+  guc: number;
+  /** 0-100 tam sayı yüzde. */
+  pay: number;
+  husumet: number;
+}
+
+/** Kariyer ekranı "Pazar" bölümü: güçler, paylar, maaş etkisi, sıradaki rütbenin pazar şartı. */
+export interface PazarDurumu {
+  /** Meslek seçilmemişse false (diğer alanlar boş/0). */
+  aktif: boolean;
+  pazarAdi: string;
+  gucAdi: string;
+  simge: string;
+  oyuncuGucu: number;
+  /** Oyuncunun pazar payı, 0-100 tam sayı yüzde. */
+  pazarPayi: number;
+  rakipler: PazarRakipSatiri[];
+  /** İsimsiz küçük oyuncuların payı (0-100). */
+  digerPay: number;
+  /** Pazar payının maaşa etkisi (±yüzde). */
+  maasEtkisi: number;
+  /** Pazar payına bağlı yıllık kariyer puanı katkısı. */
+  yillikKariyerPuani: number;
+  /** Sıradaki rütbe bir pazar payı istiyorsa: hedef kademe + gereken yüzde; yoksa null. */
+  rutbeSarti: { seviye: number; gerekliPay: number; karsilaniyor: boolean } | null;
+  /** Yenilen rakibin yerine yenisinin geleceği yıla kalan süre (yoksa null). */
+  yeniRakipKalanYil: number | null;
+}
+
+export async function pazarDurumGetir(id: string): Promise<PazarDurumu> {
+  const { state } = await oturumGetir(id);
+  return pazarDurumuHesapla(state);
+}
+
+export function pazarDurumuHesapla(state: CharacterState): PazarDurumu {
+  const adlar = pazarAdlariGetir(state.meslek);
+  const dil = state.dil;
+  if (!adlar) {
+    return {
+      aktif: false, pazarAdi: "", gucAdi: "", simge: "", oyuncuGucu: 0, pazarPayi: 0, rakipler: [],
+      digerPay: 0, maasEtkisi: 0, yillikKariyerPuani: 0, rutbeSarti: null, yeniRakipKalanYil: null,
+    };
+  }
+  const pay = pazarPayiHesapla(state);
+  const rakipler = state.rakipler
+    .filter((r) => !r.yenildi)
+    .map((r) => ({ ad: r.ad, guc: Math.round(r.guc), pay: Math.round(rakipPayiHesapla(state, r.guc) * 100), husumet: Math.round(r.husumet) }));
+  const sonraki = state.rutbe_seviye + 1;
+  const gerekli = RUTBE_PAZAR_PAYI_ESIGI[sonraki];
+  return {
+    aktif: true,
+    pazarAdi: K(dil, adlar.pazar),
+    gucAdi: K(dil, adlar.guc),
+    simge: adlar.simge,
+    oyuncuGucu: Math.round(state.meslek_gucu ?? 0),
+    pazarPayi: Math.round(pay * 100),
+    rakipler,
+    digerPay: Math.round(rakipPayiHesapla(state, PAZAR_DIGER_GUC) * 100),
+    maasEtkisi: Math.round((pazarMaasCarpani(pay) - 1) * 100),
+    yillikKariyerPuani: Math.round(pay * PAZAR_KARIYER_PUANI_YILLIK * 10) / 10,
+    rutbeSarti:
+      gerekli !== undefined && sonraki <= 5
+        ? { seviye: sonraki, gerekliPay: Math.round(gerekli * 100), karsilaniyor: pay >= gerekli }
+        : null,
+    yeniRakipKalanYil: state.rakip_yeni_yil != null ? Math.max(0, state.rakip_yeni_yil - state.yil) : null,
+  };
+}
+
 export interface AmacKarti {
   id: string;
   baslik: string;
@@ -3535,6 +3624,23 @@ interface KotuIsSonucu {
   state: CharacterState;
   kazandi: boolean;
   mesaj: string;
+}
+
+/**
+ * Meslek pazarı: mesleğin kendi derinlik metriğini büyüten olay etkileri (Asker
+ * teçhizat, Tüccar sermaye, Din Adamı nüfuz, Zanaatkâr üretim) pazardaki gücü de
+ * artırır — artışın %25'i kadar. Yalnız pozitif artış, yalnız kendi meslek metriği.
+ */
+const MESLEK_METRIK_ALANI: Record<string, keyof SonucEtkisi> = {
+  Asker: "ordu_techizat_artis",
+  Tüccar: "ticaret_sermaye_artis",
+  "Din Adamı": "nufuz_artis",
+  Zanaatkâr: "uretim_kapasitesi_artis",
+};
+function metrikGucKatkisiUygula(state: CharacterState, etki: SonucEtkisi): void {
+  const alan = MESLEK_METRIK_ALANI[state.meslek];
+  const artis = alan ? (etki[alan] as number | undefined) : undefined;
+  if (artis && artis > 0) meslekGucuEkle(state, artis * 0.25);
 }
 
 /** Bir KotuIsEtki dalını doğrudan state'e uygular (jitter yok, olay hattından geçmez). */
@@ -4140,8 +4246,11 @@ export async function sosyallesmeOlayCoz(id: string, secenekIndex: number): Prom
   if (etki.uretim_kapasitesi_artis) {
     state.uretim_kapasitesi = Math.min(100, Math.max(0, state.uretim_kapasitesi + etki.uretim_kapasitesi_artis));
   }
+  metrikGucKatkisiUygula(state, etki);
   if (basarili && MESLEK_KATEGORI[state.meslek] === mevcutOlay.kategori) {
     state.kariyer_puani += KARIYER_PUANI_KATEGORI_BASARI * (1 + (state.meslek_tecrube_hizi ?? 0));
+    // Meslek pazarı: mesleğinde başarılı her iş pazardaki gücünü artırır.
+    meslekGucuEkle(state, MESLEK_GUCU_KATEGORI_BASARI * (1 + (state.meslek_tecrube_hizi ?? 0)));
     if (state.meslek === "Din Adamı") state.nufuz += 1.5;
   }
   if (etki.kariyer_puani_artis) state.kariyer_puani += etki.kariyer_puani_artis;

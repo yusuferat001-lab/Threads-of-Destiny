@@ -38,6 +38,7 @@ import {
   yonetimTalebiKararlastir,
   oturumDiliAyarla,
   rakiplerGetir,
+  pazarDurumGetir,
   amaclarGetir,
   hediyeEt,
   salginKorunmaConfigGetir,
@@ -557,6 +558,14 @@ gameRouter.get("/:id/rakipler", async (req, res) => {
   try {
     const rakipler = await rakiplerGetir(req.params.id);
     res.json({ rakipler });
+  } catch (err) {
+    res.status(404).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.get("/:id/pazar", async (req, res) => {
+  try {
+    res.json(await pazarDurumGetir(req.params.id));
   } catch (err) {
     res.status(404).json({ hata: hataMetni(err, req.params.id) });
   }

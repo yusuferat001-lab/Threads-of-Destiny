@@ -64,6 +64,7 @@ Taban: `/api/game` (oyun) ve `/api/scores` (liderlik tablosu).
 | GET `/:id/finans` | – | Salt-okunur gelir/gider dökümü (turu tüketmez) — `maasYillik`, `giderKalemleri`, `netYillik` (= maaş − gider), `enflasyonYuzdesi`, `gayrimenkulDegeri`, `maasKirilim` (maaşın rütbe/kariyer/dönemsel kırılımı, §13), `gayrimenkulYillikGelir` (mülklerden yıllık tahmini net gelir; maaşın DIŞINDA ayrı akış — istemci "eline kalan"a ekler) ve `dunyaEtkileri` (`{ikon,metin}[]` — şu an bütçeyi/sağlığı etkileyen dünya durumlarının insan-okunur listesi: ekonomi ±%, savaş/büyük savaş, salgın aktif/iz, kıtlık/isyan/altın çağ, gıda şoku, enflasyon, **artık zorunlu bağış eşiğini göstermez** — ekonomi sıkılaştırma turunda o satır kasıtlı olarak kaldırıldı, mekanik (servet > 350 → kral sessizce bağış alabilir, §27) hâlâ arka planda çalışıyor; `dunyaFinansEtkileri(state)`, formülü açıklar HESAPLAMAZ) |
 | GET `/:id/kotu-is-config` | – | "Karanlık işler" listesi: 5 illegal aksiyonun canlı başarı şansı + tahmini kazanç (§13) |
 | POST `/:id/kotu-is` | `{tur, hedefRakipAd?, vekil?}` | Bir karanlık iş çevirir (`rakibi_korkut`/`adam_dov`/`rakibi_dov`/`birini_soy`/`isyeri_yak`) — zarlı, turu tüketmez; başarısızlıkta hapis/ölüm riski (§13). `hedefRakipAd` + `vekil` = derin rakip ilişkileri (§34.2) |
+| GET `/:id/pazar` | – | Meslek pazarı özeti (§43): `{aktif, pazarAdi, gucAdi, simge, oyuncuGucu, pazarPayi, rakipler[{ad,guc,pay,husumet}], digerPay, maasEtkisi, yillikKariyerPuani, rutbeSarti, yeniRakipKalanYil}`. Turu tüketmez |
 | GET `/:id/rakipler` | – | İsimli rakiplerin listesi (`{ad,meslek,guc,husumet,yenildi}`) — Görevin ekranı + karanlık iş hedef seçimi (§34.2) |
 | GET `/:id/amaclar` | – | 3 kişisel hayat amacının durumu: `{amaclar: AmacKarti[], carpan}` — sağ panel canlı ilerleme kartı + ölüm ekranı (§18). Turu tüketmez |
 | GET/POST `/:id/salgin-korunma` | POST: `{kademe:1\|2}` | Kalıcı salgından korunma yatırımı: veba gelmeden önce bir sonraki dalganın taban korunmasını yükselt (§34.4). Turu tüketmez |
@@ -168,6 +169,7 @@ Kaynak: [server/src/types.ts](server/src/types.ts). Tek kaynak — client `types
 | `ordu_techizat_seviyesi` | Asker | 0-100, saldırı gücünü çarpar |
 | `ticaret_sermaye` | Tüccar | Ticaret kazançlarını çarpar |
 | `nufuz` | Din Adamı | Dini kazançları çarpar |
+| `meslek_gucu` | Hepsi *(2026-10)* | 0-100, meslek pazarındaki gücün. Pazar payı bundan + rakiplerin gücünden türetilir, maaşı ve rütbeyi etkiler (§43) |
 | `uretim_kapasitesi` | Zanaatkâr *(2026-09 sonu)* | 0-100, `SonucEtkisi.uretim_kapasitesi_artis` ile dolar. **Bilinçli olarak placeholder** — `meslekMetrikCarpani` bu meslek için `×1` sabit döner, maaşa/oyun içi hiçbir etkisi yok; dengesi sonraya bırakıldı |
 
 ### İlişkiler & aile
@@ -1521,4 +1523,21 @@ Tüm ekranlar (masaüstü 1440px + mobil 390px, TR + EN) Playwright ile gezildi,
 - **İki dilli ölüm nedeni**: `checkDeath(state, zorunlu, neden?: string | IkiDilMetin)` — iki dilli verilirse `state.olum_nedeni` oyuncunun diline göre seçilir, ikisi de `state.olum_nedeni_ceviri = {tr,en}`'de saklanır. Motor cümleleri `ikiDilT(trKalip, params)` ([i18n/index.ts](server/src/i18n/index.ts)) ile, olay seçiminden gelen ölümler `gameEngine.olaySonucMesajiIkiDil` ile (oyuncunun dilindeki hâl ona gösterilen metnin aynısı, öbür dil ham olaydan yeniden doldurulur) üretilir; `durumlariUygula` da iki dilli döner. `Score.olum_nedeni` artık Türkçe (kanonik), yeni `Score.olum_nedeni_en` İngilizce (migration `20261007_score_olum_nedeni_en`); istemci liderlik tablosu, ölüm ekranı ve geçmiş hayatlar seçili dilde gösterir. Eski skor kayıtları yazıldıkları dilde kalır. Önceden hiç çevrilmeyen 3 ölüm cümlesi (ileri yaş, çöken ruh hali, veba) de İngilizceye eklendi. Test: [olumNedeni.test.ts](server/tests/olumNedeni.test.ts). **Yeni bir ölüm yolu eklerken `checkDeath`'e düz `T(state.dil, ...)` değil `ikiDilT(...)` ver.**
 - **Üç Kağıtçı şansı 0.34 → 0.32** (§13): ×3 ödemeyle beklenen getiri +%2'den −%4'e.
 - **İlk açılışta dil tarayıcıdan** ([ayarlar.ts](client/src/ayarlar.ts) `tarayiciDili`): kayıtlı dil ayarı yoksa `navigator.languages`'ta Türkçe varsa TR, yoksa EN. Ayarlar'dan yapılan seçim her zaman önceliklidir.
+
+## 43. Meslek Pazarı + Mesleğe Özel Pis İşler (2026-10)
+
+Kullanıcı isteği: "bir pazar olsun, oyuncu oradaki payını artırmaya çalışsın; pay maaşı ve rütbeyi etkilesin; bizim de rakibin de sayısal bir gücü olsun, rakibin gücü düştükçe bizim payımız artsın — dört meslekte de." Fazlar sırayla eklendi (Faz 0 pazar, Faz 1 pis işler, Faz 2 ajanlar, Faz 3 durum kataloğu, Faz 4 rakip AI, Faz 5 zirve).
+
+### Faz 0 — Pazar
+Kaynak: [data/pazar.ts](server/src/data/pazar.ts) (saf, bağımlılıksız — stateManager buradan okur) + stateManager `meslekGucuEkle`/`pazarYillikUygula`.
+- **Güçler:** oyuncunun `state.meslek_gucu` (0-100) ve her rakibin `Rakip.guc` (0-100). **Pazar payı SAKLANMAZ, türetilir:** `pay = G / (G + Σ yenilmemiş rakip gücü + PAZAR_DIGER_GUC=40)`. 40 = isimsiz küçük oyuncular (rakip tamamen yok olsa bile pay %100 olmaz; tavanda ~%71).
+- **Meslek adları** (`PAZAR_ADLARI`, KATALOG_EN'de çevrili): Tüccar "Pazar Payı"/"Ticari Güç" ⚖️ · Din Adamı "Cemaat Payı"/"Ruhani Güç" 🕯️ · Zanaatkâr "Üretim Payı"/"Zanaat Gücü" 🔨 · Asker "Bölge Hâkimiyeti"/"Askeri Güç" 🛡️.
+- **Başlangıç gücü** (`mesleğiSec`, `baslangicMeslekGucu`): 10 + yatkınlık kademesi (kötü +0 / nötr +2 / iyi +5 / mükemmel +10) + aile mirası +4. Rakip 48-69 ile başladığından taze pay ~%11.
+- **Güç kaynakları:** mesleğine uygun kategoride başarılı olay +1.2 (×tecrübe hızı; `secimUygula` + `sosyallesmeOlayCoz`); kendi meslek metriğini artıran olay etkisi (Asker `ordu_techizat_artis`, Tüccar `ticaret_sermaye_artis`, Din `nufuz_artis`, Zanaatkâr `uretim_kapasitesi_artis`) artışın %25'i (`metrikGucKatkisiUygula`); yıllık pasif `0.2 + 0.05×rütbe`; rakibin kırılan gücünün %30'u (`rakipGucKir` → `RAKIP_KIRMA_GUC_AKTARIMI`). Hapiste/yolculukta yılda −1 (pazardan uzak).
+- **Maaş:** `maasCarpanKalemleri`'nde yeni grup `"pazar"` — `pazarMaasCarpani(pay) = 0.94 + pay×0.55` (taze ~nötr, %35'te ~+%13, %60'ta ~+%27). `MaasKirilim.pazarYuzde/pazarPayiYuzde/pazarAdi`; Gelir & Gider kırılımında 🏪 çipi.
+- **Rütbe:** `RUTBE_PAZAR_PAYI_ESIGI = {4: 0.18, 5: 0.35}` (rutbeler.ts) — S4 ve S5 ayrıca bu pazar payını ister (`esikKarsilaniyorMu(esik, state, hedefSeviye)`). Ayrıca yıllık `kariyer_puani += pay × 6` (`PAZAR_KARIYER_PUANI_YILLIK`). Ratchet değişmedi: pay sonradan düşse rütbe düşmez.
+- **Yenilen rakip & yenisi:** rakip yenilince listede `yenildi:true` kalır (eskiden `eskiKayitGocu` listeyi tek elemana kırpıyordu; artık yalnız AKTİF rakip teke iner, yenilenler korunur) ve `state.rakip_yeni_yil = yil + 8..12` yazılır. O yıl gelince `pazarYillikUygula` başa (`rakipler[0]`) yeni bir rakip ekler (güç 32-47), `rakip_adi` da ona geçer (olaylardaki `{rakip}` hep aktif rakip).
+- **Arayüz:** Kariyer ekranı sağ sütunda `PazarKarti` (yığılmış pay çubuğu: sen / rakip / küçük oyuncular + maaş etkisi + yıllık kariyer puanı); rütbe ilerleme bloğunda sıradaki kademe pazar şartı istiyorsa ayrı bir çubuk satırı ("Hak ettin" yazısı pazar şartı karşılanmadan çıkmaz).
+- **Denge:** `simulateKisilikler` (N=25) — ölümde ortalama pay ~%24-26, S4/S5 dağılımı reform öncesine yakın. Sim çıktısına `pazar_payi`/`meslek_gucu` eklendi, `analyzeKisilikler` "Meslek pazarı" tablosunu basar.
+- **Test:** [pazar.test.ts](server/tests/pazar.test.ts); [rutbe.test.ts](server/tests/rutbe.test.ts) pazar şartı testi.
 

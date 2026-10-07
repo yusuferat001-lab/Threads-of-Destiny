@@ -780,4 +780,8 @@ export const ANLATIM_EN: Record<string, string> = {
   "İleri yaşın getirdiği yorgunlukla huzur içinde vefat etti.": "Passed away peacefully, worn out by old age.",
   "Uzun süredir çöken ruh hali bedenini de tüketti.": "A spirit long in collapse finally wore the body down too.",
   "Veba direncini kırdı; hastalıktan kurtulamadın.": "The plague broke your resistance; you did not survive the illness.",
+  // Meslek pazarı (2026-10)
+  "Pazar payın": "Your market share",
+  "Pazara yeni bir rakip girdi: {0}": "A new rival entered the market: {0}",
+  "♟️ Boşluğu fark eden {0} pazara girdi; artık yeni rakibin o.": "♟️ Seeing the gap, {0} entered the market; they are your new rival now.",
 };

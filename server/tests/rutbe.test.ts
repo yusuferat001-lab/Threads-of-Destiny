@@ -9,6 +9,7 @@ function terfiEttir(state: ReturnType<typeof createCharacter>, hedef: number): v
     state.kariyer_puani = 999;
     state.un = 100;
     state.ahlak = 100;
+    state.meslek_gucu = 100; // pazar payı şartı (S4 %18, S5 %35)
     state.yil += 10;
     rutbeGuncelle(state);
   }
@@ -115,6 +116,25 @@ describe("rütbe reformu — 5 kademe, ratchet, cooldown, kariyer puanı", () =>
     s.un = 50;
     rutbeGuncelle(s);
     expect(s.rutbe_seviye).toBe(2);
+  });
+
+  it("S4 ve S5 ayrıca pazar payı ister — pazarda zayıfken terfi durur", () => {
+    const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
+    mesleğiSec(s, "Tüccar");
+    terfiEttir(s, 3);
+    expect(s.rutbe_seviye).toBe(3);
+    s.meslek_gucu = 5; // pay ≈ %5 < %18
+    s.kariyer_puani = 999;
+    s.un = 100;
+    s.yil += 10;
+    rutbeGuncelle(s);
+    expect(s.rutbe_seviye).toBe(3);
+    s.meslek_gucu = 40; // pay ≈ %29 ≥ %18 ama < %35
+    rutbeGuncelle(s);
+    expect(s.rutbe_seviye).toBe(4);
+    s.yil += 10;
+    rutbeGuncelle(s);
+    expect(s.rutbe_seviye).toBe(4);
   });
 
   it("maaş rütbe yükseldikçe kalıcı olarak artar", () => {
