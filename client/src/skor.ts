@@ -99,7 +99,8 @@ export function hesaplaSkorKirilimi(state: CharacterState): SkorKirilimi {
   const sarayda = state.etiketler.includes('sarayda');
   const yolculukTamamlandi = state.etiketler.includes('yolculuk_tamamlandi');
   const gizemliEsyaSahibi = state.etiketler.some((e) => e.startsWith('envanter:') || e.startsWith('esya:'));
-  const tikSayisi = (sarayda ? 1 : 0) + (yolculukTamamlandi ? 1 : 0) + (gizemliEsyaSahibi ? 1 : 0);
+  // Yolculuk yalnız +2000 tamamlama bonusuyla sayılır (sunucuyla aynı, çifte sayılmasın).
+  const tikSayisi = (sarayda ? 1 : 0) + (gizemliEsyaSahibi ? 1 : 0);
   const tikPuani = tikSayisi * SKOR_TIK_PUANI;
   const basariOlayiPuani =
     (state.komik_olum_basarili_risk ? SKOR_KOMIK_OLUM_BASARILI_RISK_PUANI : 0) +
