@@ -80,6 +80,7 @@ import { AmacPaneli } from './components/AmacPaneli';
 import { EtkiCipleri } from './components/EtkiCipleri';
 import { KisilikPaneli } from './components/KisilikPaneli';
 import { BolgeSahnesi } from './components/BolgeSahnesi';
+import { OlayArkaplani } from './components/OlayArkaplani';
 import { KarakterAvatari } from './components/KarakterAvatari';
 import { IsyeriPaneli } from './components/IsyeriPaneli';
 import { GecmisGrafik } from './components/GecmisGrafik';
@@ -2236,6 +2237,9 @@ function App() {
                     un={karakter.un}
                     tamYukseklik
                   />
+                  {senaryo?.kategori && (
+                    <OlayArkaplani cag={karakter.cag} kategori={senaryo.kategori} />
+                  )}
                 </div>
                 {mobil && <div className="merkez-sahne-gradyan" aria-hidden="true" />}
                 {!mobil && (
