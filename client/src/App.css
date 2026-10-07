@@ -2288,7 +2288,7 @@ button.ikincil {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* Paket 4: şans + etki çipleri artık tek kompakt satır (alt alta yığılmıyor).
+/* Paket 4: etki çipleri tek kompakt satır (alt alta yığılmıyor).
    `display: contents` ile .secenek-tahmin çipleri de bu satırın parçası olur. */
 .secenek-meta {
   display: flex;
@@ -4636,11 +4636,6 @@ button.ikincil {
 .meslek-yatkinlik {
   font-size: clamp(0.75rem, 0.3vw + 0.6rem, 1.05rem);
   opacity: 0.85;
-}
-
-.secenek-sans {
-  font-size: clamp(0.75rem, 0.3vw + 0.6rem, 1.05rem);
-  opacity: 0.65;
 }
 
 .secenek-tahminler {
