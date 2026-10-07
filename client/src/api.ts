@@ -37,6 +37,12 @@ import type {
   SalginKorunmaKarti,
   KrediConfig,
 } from './types';
+import { ayarlariGetir } from './ayarlar';
+
+/** İstemcinin kendi ürettiği (sunucudan gelmeyen) hata mesajları — oyuncunun diline göre. */
+function istemciHatasi(tr: string, en: string): Error {
+  return new Error(ayarlariGetir().dil === 'en' ? en : tr);
+}
 
 async function istek<T>(url: string, init?: RequestInit): Promise<T> {
   let res: Response;
@@ -46,16 +52,28 @@ async function istek<T>(url: string, init?: RequestInit): Promise<T> {
       ...init,
     });
   } catch {
-    throw new Error('Sunucuya ulaşılamadı. İnternet bağlantını ve sunucunun çalıştığını kontrol et.');
+    throw istemciHatasi(
+      'Sunucuya ulaşılamadı. İnternet bağlantını kontrol et; sunucu uykudan uyanıyor olabilir, birkaç saniye sonra tekrar dene.',
+      "Couldn't reach the server. Check your connection; the server may be waking up — try again in a few seconds."
+    );
   }
   let veri: any;
   try {
     veri = await res.json();
   } catch {
-    throw new Error(`Sunucudan geçerli bir yanıt alınamadı (durum: ${res.status}). Lütfen tekrar dene.`);
+    if (res.status === 429) {
+      throw istemciHatasi('Çok hızlı işlem yapıyorsun; birkaç saniye bekleyip tekrar dene.', "You're going too fast; wait a few seconds and try again.");
+    }
+    if (res.status === 502 || res.status === 503 || res.status === 504) {
+      throw istemciHatasi('Sunucu şu an uyanıyor; birkaç saniye sonra tekrar dene.', 'The server is waking up; try again in a few seconds.');
+    }
+    throw istemciHatasi(
+      `Sunucudan geçerli bir yanıt alınamadı (durum: ${res.status}). Lütfen tekrar dene.`,
+      `The server returned an invalid response (status: ${res.status}). Please try again.`
+    );
   }
   if (!res.ok) {
-    throw new Error(veri.hata ?? `İstek başarısız: ${res.status}`);
+    throw new Error(veri.hata ?? (ayarlariGetir().dil === 'en' ? `Request failed: ${res.status}` : `İstek başarısız: ${res.status}`));
   }
   return veri;
 }

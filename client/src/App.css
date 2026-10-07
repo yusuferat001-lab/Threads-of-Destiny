@@ -219,12 +219,98 @@ button.ikincil {
   border: 1px solid #6b4f2a;
 }
 
+/* Hata bildirimi: eskiden sayfanın en üstünde satır içi bir kutuydu; tam ekran
+   kilitli düzenlerde (oyun, yan ekranlar) görünmüyor, oyuncu bir işlemin neden
+   olmadığını anlamıyordu. Artık ekranın altında sabit, kapatılabilir bir bildirim. */
 .hata-kutusu {
+  position: fixed;
+  left: 50%;
+  bottom: calc(1.1rem + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  z-index: 300;
+  width: max-content;
+  max-width: min(92vw, 560px);
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
   background: #4a1f1f;
-  border: 1px solid #8b2c2c;
-  padding: 0.75rem;
-  border-radius: 6px;
-  margin-bottom: 1rem;
+  border: 1px solid #b04141;
+  color: #f6e7d6;
+  padding: 0.65rem 0.6rem 0.65rem 0.95rem;
+  border-radius: 8px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55);
+  text-align: left;
+  line-height: 1.4;
+  animation: hataBelir 0.22s ease-out;
+}
+/* Aynı kutu, nötr renkte: ana ekranda bir işlemin (envanter Kullan/Hediye) sonucu. */
+.bilgi-kutusu {
+  position: fixed;
+  left: 50%;
+  bottom: calc(1.1rem + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  z-index: 290;
+  width: max-content;
+  max-width: min(92vw, 560px);
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  background: #2b2016;
+  border: 1px solid var(--renk-altin);
+  color: #f6e7d6;
+  padding: 0.65rem 0.6rem 0.65rem 0.95rem;
+  border-radius: 8px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55);
+  text-align: left;
+  line-height: 1.4;
+  animation: hataBelir 0.22s ease-out;
+}
+.hata-kutusu-metin {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.hata-kutusu-kapat {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 0;
+  padding: 0 0.35rem;
+  margin: 0;
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 1rem;
+  line-height: 1.3;
+  opacity: 0.8;
+  cursor: pointer;
+  box-shadow: none;
+}
+.hata-kutusu-kapat:hover:not(:disabled) {
+  opacity: 1;
+  background: none;
+  transform: none;
+}
+@keyframes hataBelir {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+@media (max-width: 767px) {
+  /* Alt gezinme çubuğunun üstünde dursun. */
+  .hata-kutusu,
+  .bilgi-kutusu {
+    bottom: calc(4.6rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hata-kutusu,
+  .bilgi-kutusu {
+    animation: none;
+  }
 }
 
 /* ---- Genel ekran (giriş / sonuç / ölüm / liderlik) ---- */
@@ -1417,6 +1503,14 @@ button.ikincil {
   padding: clamp(0.4rem, 0.2vw + 0.32rem, 0.65rem) clamp(0.85rem, 0.4vw + 0.7rem, 1.3rem);
   margin-top: 0;
   box-shadow: var(--golge-derin);
+}
+
+/* Masaüstünde sabit ayar dişlisi (sağ üst) şeridin sağ ucundaki bölge/ℹ düğmesinin
+   üstüne biniyordu — şeridin sağında dişliye yer aç. Mobilde ayrı kural var. */
+@media (min-width: 768px) {
+  .oyun-ekrani > .ust-serit {
+    padding-right: calc(clamp(0.85rem, 0.4vw + 0.7rem, 1.3rem) + 2.6rem);
+  }
 }
 
 /* 7 stat modülü (aranma seviyesi dahil) her zaman eşit genişlikte bir grid — bar küçülüp
@@ -3847,6 +3941,13 @@ button.ikincil {
   opacity: 0.7;
 }
 
+/* Mekân kartındaki giriş ücreti (gitmeden önce bilinsin). */
+.sosyal-aksiyon-fiyat {
+  font-size: 0.78rem;
+  color: var(--renk-altin-parlak);
+  opacity: 0.9;
+}
+
 /* Mekân olayının ekrandan çıkmadan çözüldüğü inline kart */
 .sosyal-olay-katman {
   display: flex;
@@ -4183,6 +4284,22 @@ button.ikincil {
   opacity: 0.5;
 }
 
+/* Kariyer → Ekibin satırı: ad, ayrıntı ve "Kov" yan yana bitişik akıyordu ("Basilmuhafız"). */
+.gorev-ekip-satiri {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem 0.7rem;
+}
+.gorev-ekip-satiri .aile-cocuk-detay {
+  flex: 1 1 220px;
+  min-width: 0;
+}
+.gorev-ekip-satiri .gorev-ekip-kov {
+  width: auto;
+  margin-left: auto;
+}
+
 .aile-cocuk-ust {
   display: flex;
   justify-content: space-between;
@@ -4203,7 +4320,11 @@ button.ikincil {
 /* Bekleyen talep kartı — dikkat çekici */
 .aile-talep-karti {
   border-color: rgba(232, 165, 59, 0.6);
-  background: rgba(232, 165, 59, 0.12);
+  /* Yarı saydam altın zemin, odanın sıcak duvarıyla birleşip altın başlığı
+     okunmaz yapıyordu; diğer kartlar gibi koyu zemin + altın vurgu kenarı. */
+  background:
+    linear-gradient(180deg, rgba(232, 165, 59, 0.14), rgba(232, 165, 59, 0.04)),
+    linear-gradient(180deg, var(--panel-ust), var(--panel-alt));
 }
 
 .aile-talep-metin {
@@ -4832,9 +4953,9 @@ button.ikincil {
 .kariyer-hat-kademe[data-kademe='favored'] {
   color: #7ecb92;
 }
-.kariyer-hat-kademe[data-kademe='düşman'],
-.kariyer-hat-kademe[data-kademe='hostile'] {
-  color: #e58b8b;
+.kariyer-hat-kademe[data-kademe='soğuk'],
+.kariyer-hat-kademe[data-kademe='cold'] {
+  color: #9fb3c8;
 }
 
 .kariyer-iliski-bar {
@@ -4855,8 +4976,8 @@ button.ikincil {
   background: linear-gradient(90deg, var(--renk-ikincil), var(--renk-ikincil-parlak));
   transition: width 0.35s ease;
 }
-.kariyer-iliski-bar-dolgu[data-kademe='düşman'],
-.kariyer-iliski-bar-dolgu[data-kademe='hostile'],
+.kariyer-iliski-bar-dolgu[data-kademe='soğuk'],
+.kariyer-iliski-bar-dolgu[data-kademe='cold'],
 .kariyer-iliski-bar-dolgu[data-kademe='mesafeli'],
 .kariyer-iliski-bar-dolgu[data-kademe='distant'] {
   background: linear-gradient(90deg, #7c3b34, #c0473c);
@@ -5031,12 +5152,17 @@ button.ikincil {
 .kariyer-sonuc-katman {
   position: fixed;
   inset: 0;
-  z-index: 40;
+  /* Alt gezinme (50), para rozeti (60) ve ✕/⚙️ düğmelerinin üstünde dursun. */
+  z-index: 70;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 1.2rem;
   background: rgba(0, 0, 0, 0.55);
+}
+/* Sonuç/hata penceresi, açık olan diğer bir pencerenin (karanlık işler, kral talebi) üstünde. */
+.kariyer-sonuc-katman-ust {
+  z-index: 80;
 }
 .kariyer-sonuc-modal {
   max-width: 420px;
@@ -5096,8 +5222,11 @@ button.ikincil {
   color: var(--renk-altin-parlak);
   letter-spacing: 0.04em;
 }
-.kariyer-karanlik-kapat {
+.kariyer-karanlik-kapat,
+.kariyer-sonuc-modal .kariyer-karanlik-kapat {
+  /* .kariyer-sonuc-modal button { width:100% } kuralı ✕'yi başlık boyunca uzatıyordu. */
   width: auto;
+  flex: 0 0 auto;
   min-height: 34px;
   padding: 0.25rem 0.6rem;
 }
@@ -5749,6 +5878,20 @@ button.ikincil {
     max-width: 12vw;
     text-align: center;
   }
+  /* Para birimi adı ("Hiperpiron") dar sütunda sayıyı kesiyordu ("3000 H…"):
+     mobilde yalnız sayı; birim tam metin olarak title'da. */
+  .ust-serit-modul-birim {
+    display: none;
+  }
+  /* Ahlak sözel bir etiket ("Yüksek Onurlu"): kesmek yerine iki satıra sar. */
+  .ust-serit-modul-ahlak .ust-serit-modul-deger {
+    white-space: normal;
+    overflow: visible;
+    font-size: 0.6rem;
+    line-height: 1.05;
+    word-break: normal;
+    overflow-wrap: anywhere;
+  }
 
   /* Uçan delta rozeti (ör. "-0.08 Livre") 7 dar mobil sütuna göre çok geniş
      oluyor ve sağa yaslı + nowrap olduğundan komşu modülün üstüne taşıp
@@ -6100,6 +6243,12 @@ button.ikincil {
   }
   .oyun-kapsayici:has(.ekran-kapat-buton) > .oyun-para-rozeti {
     top: 2.75rem;
+  }
+  /* Aile ve Kariyer ekranlarının başlığı içeriğin en tepesinde duruyor; sabit para
+     rozeti (solda) ve ayar dişlisi (sağda) onun üstüne biniyordu. Başlığı bu iki
+     sabit öğenin altına it. (Diğer alt ekranların başlığı zaten daha aşağıda.) */
+  .oyun-kapsayici:has(.ekran-kapat-buton) > .ekran-aile {
+    padding-top: 3.4rem;
   }
 
   /* ---- Alt gezinme çubuğu (AltGezinme.tsx) ---- */
@@ -6678,6 +6827,20 @@ button.ikincil {
   margin: 1rem auto;
   text-align: left;
 }
+/* Kart parşömen panel (açık zemin) için tasarlandı; ölüm ekranının koyu zemininde
+   başlık (koyu mürekkep) görünmüyor, yarı saydam beyaz satırlar griye dönüyordu. */
+.amac-paneli-olum .amac-paneli-baslik {
+  color: var(--renk-altin-parlak);
+  letter-spacing: 0.04em;
+}
+.amac-paneli-olum .amac-satir {
+  background: rgba(0, 0, 0, 0.28);
+  border-color: rgba(201, 162, 74, 0.25);
+  color: #ecdcc0;
+}
+.amac-paneli-olum .amac-satir.amac-tamam {
+  background: rgba(60, 110, 50, 0.22);
+}
 
 /* Sağ paneldeki "Amaçların" kartı kompakt — açıklama satırı title'a taşındı,
    boşluklar daraltıldı (kullanıcı: kapladığı alanı küçült). Ölüm ekranı varyantı
@@ -6768,6 +6931,16 @@ button.ikincil {
 .sol-panel-kimlik-buton:hover:not(:disabled),
 .sol-panel-kimlik-buton:focus-visible {
   background: rgba(120, 85, 30, 0.12);
+}
+/* Buton, global `button` rengini (altın butonlar için açık ekru) miras alıyordu:
+   "Asker · 25 yaşında" satırı açık parşömen üstünde neredeyse görünmüyordu. */
+.sol-panel-kimlik-buton {
+  color: var(--renk-parsomen-metin);
+}
+.sol-panel-baslik span:not(.sol-panel-isim) {
+  color: var(--renk-parsomen-metin-soluk);
+  opacity: 1;
+  font-weight: 600;
 }
 .kisilik-modal {
   max-width: 460px;

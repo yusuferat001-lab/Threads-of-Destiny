@@ -27,7 +27,10 @@ model Score {
   bolge       String
   yerlesim    String   @default("")
   kisilik     String   @default("")
+  /** Ölüm nedeni — Türkçe (kanonik) metin. Eski kayıtlarda oyuncunun o anki dilinde. */
   olum_nedeni String
+  /** Ölüm nedeninin İngilizcesi; İngilizce liderlik tablosu bunu gösterir. Eski kayıtlarda boş. */
+  olum_nedeni_en String @default("")
   yas         Int
   para        Float
   un          Int

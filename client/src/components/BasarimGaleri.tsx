@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import type { Dil } from '../ayarlar';
 import { metinler } from '../i18n';
+import { kt as ktRaw } from '../katalog';
 import {
   BASARIMLAR,
   GRUP_SIRA,
@@ -20,6 +21,7 @@ interface Props {
 
 export function BasarimGaleri({ dil, basarimlar, onKapat }: Props) {
   const M = metinler(dil);
+  const kt = (tr: string) => ktRaw(dil, tr);
   const acilan = acilanBasarimIdleri();
   const baglam: IlerlemeBaglami = {
     istatistik: oyunIstatistigiGetir(),
@@ -119,12 +121,12 @@ export function BasarimGaleri({ dil, basarimlar, onKapat }: Props) {
                     <div className="basarimlar-listesi">
                       {basarimlar.unvanlar.map((u) => (
                         <span key={u} className="liderlik-rozet liderlik-rozet-unvan">
-                          🏵️ {u}
+                          🏵️ {kt(u)}
                         </span>
                       ))}
                       {basarimlar.olumler.map((o) => (
                         <span key={o} className="liderlik-rozet liderlik-rozet-olum">
-                          💀 {o}
+                          💀 {kt(o)}
                         </span>
                       ))}
                     </div>

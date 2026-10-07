@@ -53,7 +53,7 @@ describe("mini oyunlar", () => {
     }
     s = await stateGetir(state.id);
     expect(s.uc_kagitci_oyun_sayisi).toBe(40);
-    expect(herhangiKazandi).toBe(true); // ~%34, 40 denemede neredeyse kesin
+    expect(herhangiKazandi).toBe(true); // ~%32, 40 denemede neredeyse kesin
   });
 
   it("Üç Kağıtçı: geçersiz bardak indeksi hata fırlatır", async () => {
@@ -73,6 +73,10 @@ describe("mini oyunlar", () => {
     s = await stateGetir(state.id);
     expect(s.un).toBeGreaterThan(onceUn);
     expect(s.tur_sayisi).toBe(onceTur);
+
+    // Aynı oyun yılında ikinci kez güreşilemez (sınırsız şöhret/para kasılmasını önleyen cooldown).
+    await expect(bilekGuresiSonuc(state.id, true)).rejects.toThrow(/bilek güreşebilirsin/);
+    s.yil += 1;
 
     const onceSaglik = s.saglik;
     await bilekGuresiSonuc(state.id, false);

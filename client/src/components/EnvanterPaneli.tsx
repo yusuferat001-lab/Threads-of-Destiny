@@ -51,7 +51,7 @@ export function EnvanterPaneli({
     hediyeSecenekleri.push({ deger: `cocuk:${i}`, etiket: ad, hedef: 'cocuk', cocukIndex: i }),
   );
   ekip.forEach((u) =>
-    hediyeSecenekleri.push({ deger: `ekip:${u.id}`, etiket: `${u.isim} (${u.rol})`, hedef: 'ekip', ekipId: u.id }),
+    hediyeSecenekleri.push({ deger: `ekip:${u.id}`, etiket: `${u.isim} (${kt(u.rol)})`, hedef: 'ekip', ekipId: u.id }),
   );
   hediyeSecenekleri.push({ deger: 'dost', etiket: dostAdi ?? (en ? 'Friend' : 'Dost'), hedef: 'dost' });
 
@@ -90,7 +90,7 @@ export function EnvanterPaneli({
                 <select
                   className="envanter-hediye-secim"
                   disabled={yukleniyor}
-                  defaultValue={hediyeSecenekleri[0]?.deger}
+                  defaultValue=""
                   onChange={(e) => {
                     const s = hediyeSecenekleri.find((x) => x.deger === e.target.value);
                     if (!s) return;

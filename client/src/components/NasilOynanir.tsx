@@ -22,8 +22,8 @@ const BOLUMLER: Bolum[] = [
     ikon: '🎯',
     baslik: { tr: 'Amaç', en: 'Goal' },
     metin: {
-      tr: 'Bir çağ, ülke ve yerleşim seçersin; ailen, kişiliğin ve dinin rastgele gelir. 15 yaşında bir meslek seçer, sonra her turda karşına çıkan olaylarda karar vererek bir ömür yaşarsın. Ölüm kalıcıdır.',
-      en: 'You pick an era, a country and a settlement; your family, personality and faith come at random. At 15 you choose a profession, then live out a life by deciding on the events you meet each turn. Death is permanent.',
+      tr: 'Bir çağ ve ülke seçip adını koyarsın; ailen, kişiliğin ve dinin rastgele gelir. 15 yaşında bir meslek seçer, sonra her turda karşına çıkan olaylarda karar vererek bir ömür yaşarsın. Ölüm kalıcıdır.',
+      en: 'You pick an era and a country and choose your name; your family, personality and faith come at random. At 15 you choose a profession, then live out a life by deciding on the events you meet each turn. Death is permanent.',
     },
     maddeler: {
       tr: [
@@ -70,8 +70,8 @@ const BOLUMLER: Bolum[] = [
     ikon: '🎖️',
     baslik: { tr: 'Meslek & İlerleme', en: 'Profession & Progress' },
     metin: {
-      tr: 'Asker, Tüccar, Din Adamı ya da Zanaatkâr olursun — dördü de kendi kariyer yoluna ve olaylarına sahip. Kendi alanında başarılı oldukça, kıdem kazandıkça ve işine yatırım yaptıkça rütben yükselir. Rütbe bir daha düşmez; ileride şehir yönetimi gibi ek bir yol da açılır.',
-      en: 'You become a Soldier, Merchant, Clergyman or Artisan — all four with their own career path and events. Your rank rises as you succeed in your field, gain seniority and invest in your work. Rank never drops; later an extra track like city governance opens.',
+      tr: 'Asker, Tüccar, Din Adamı ya da Zanaatkâr olursun — dördü de kendi kariyer yoluna ve olaylarına sahip. Kendi alanında başarılı oldukça ve kıdem kazandıkça rütben yükselir. Rütbe bir daha düşmez; ileride şehir yönetimi gibi ek bir yol da açılır.',
+      en: 'You become a Soldier, Merchant, Clergyman or Artisan — all four with their own career path and events. Your rank rises as you succeed in your field and gain seniority. Rank never drops; later an extra track like city governance opens.',
     },
     maddeler: {
       tr: ['Zanaatkâr çırak\'lıktan loncabaşına uzanan yeni bir zanaat kariyeri sunar.'],
@@ -90,12 +90,12 @@ const BOLUMLER: Bolum[] = [
     ikon: '🌍',
     baslik: { tr: 'Dünya & Ekonomi', en: 'World & Economy' },
     metin: {
-      tr: 'Her yıl maaş alır, ev ve yemek gideri ödersin. Savaş, veba, kıtlık gibi dünya olayları gelirini ve sağlığını etkiler. Mülk ve kendi işine yatırım yavaş ama uzun vadeli gelirdir.',
-      en: 'Each year you earn a salary and pay for housing and food. World events like war, plague and famine hit your income and health. Property and investing in your own trade are slow but long-term income.',
+      tr: 'Her yıl maaş alır, ev ve yemek gideri ödersin. Savaş, veba, kıtlık gibi dünya olayları gelirini ve sağlığını etkiler. Mülkler yavaş ama uzun vadeli bir gelir sağlar.',
+      en: 'Each year you earn a salary and pay for housing and food. World events like war, plague and famine hit your income and health. Property brings slow but long-term income.',
     },
     maddeler: {
-      tr: ['Sahnedeki ikonlardan açılan İş & Yatırım, Gelir & Gider, Mağaza ve Sosyalleşme ekranları tur harcamaz.'],
-      en: ['The Work & Investment, Income & Expenses, Shop and Socialise screens (from the scene icons) cost no turn.'],
+      tr: ['Sahnedeki Kariyer, Yatırım, Gelir & Gider ve Sosyalleş ekranları ile sol paneldeki Mağaza tur harcamaz.'],
+      en: ['The Career, Investments, Income & Expenses and Socialise screens on the scene, and the Shop in the side panel, cost no turn.'],
     },
   },
   {
@@ -110,8 +110,8 @@ const BOLUMLER: Bolum[] = [
     ikon: '🏆',
     baslik: { tr: 'Ölüm & Skor', en: 'Death & Score' },
     metin: {
-      tr: 'Öldüğünde servetin, şöhretin, ahlakın, mutluluğun ve rütbenin toplamından bir skor çıkar; hayat amacını tamamladıysan çok daha yüksek olur. Ölüm ekranında skorunun eksen eksen nasıl hesaplandığını görebilirsin. Skorunu liderlik tablosuna yazabilirsin. Kazandığın ünvanlar ve başarımlar cihazında kalır.',
-      en: 'On death a score is built from the sum of your wealth, fame, morality, happiness and rank; it is far higher if you completed your life goal. The death screen shows you exactly how each axis added up. You can submit it to the leaderboard. Titles and achievements you earn stay on your device.',
+      tr: 'Öldüğünde servetin, şöhretin, ahlakın, mutluluğun ve rütbenin toplamından bir skor çıkar; hayat amaçlarını tamamladıkça katlanır. Ölüm ekranında skorunun eksen eksen nasıl hesaplandığını görebilirsin; skorun liderlik tablosuna otomatik kaydedilir. Kazandığın ünvanlar ve başarımlar cihazında kalır.',
+      en: 'On death a score is built from the sum of your wealth, fame, morality, happiness and rank; it multiplies with every life goal you complete. The death screen shows you exactly how each axis added up, and your score is recorded on the leaderboard automatically. Titles and achievements you earn stay on your device.',
     },
   },
   {

@@ -53,6 +53,7 @@ import { YASAM_SECENEKLERI } from "../data/yasamSecenekleri";
 import { MULK_TANIMLARI } from "../data/mulkler";
 import { uygunsuzMu } from "../moderasyon/kufurFiltresi";
 import { Cag, MulkTuru } from "../types";
+import { hataMetni } from "./hata";
 
 export const gameRouter = Router();
 
@@ -122,7 +123,7 @@ gameRouter.post("/new", async (req, res) => {
     );
     res.json({ state });
   } catch (err) {
-    res.status(400).json({ hata: String(err) });
+    res.status(400).json({ hata: hataMetni(err, undefined, dil === "en" ? "en" : "tr") });
   }
 });
 
@@ -135,7 +136,7 @@ gameRouter.post("/:id/meslek", async (req, res) => {
     const state = await mesleğiAta(req.params.id, meslek);
     res.json({ state });
   } catch (err) {
-    res.status(400).json({ hata: String(err) });
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -145,7 +146,7 @@ gameRouter.post("/:id/dil", async (req, res) => {
     const state = await oturumDiliAyarla(req.params.id, dil === "en" ? "en" : "tr");
     res.json({ state });
   } catch (err) {
-    res.status(400).json({ hata: String(err) });
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -154,7 +155,7 @@ gameRouter.get("/:id/state", async (req, res) => {
     const state = await stateGetir(req.params.id);
     res.json({ state });
   } catch (err) {
-    res.status(404).json({ hata: String(err) });
+    res.status(404).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -163,7 +164,7 @@ gameRouter.post("/:id/scenario", async (req, res) => {
     const senaryo = await senaryoUret(req.params.id);
     res.json({ senaryo });
   } catch (err) {
-    res.status(400).json({ hata: String(err) });
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -176,7 +177,7 @@ gameRouter.post("/:id/choice", async (req, res) => {
     const sonuc = await secimUygula(req.params.id, secenekIndex);
     res.json(sonuc);
   } catch (err) {
-    res.status(400).json({ hata: String(err) });
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -185,7 +186,7 @@ gameRouter.get("/:id/finans", async (req, res) => {
     const finans = await finansGetir(req.params.id);
     res.json({ finans });
   } catch (err) {
-    res.status(404).json({ hata: String(err) });
+    res.status(404).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -194,7 +195,7 @@ gameRouter.get("/:id/kotu-is-config", async (req, res) => {
     const config = await kotuIsConfigGetir(req.params.id);
     res.json({ config });
   } catch (err) {
-    res.status(404).json({ hata: String(err) });
+    res.status(404).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -210,7 +211,7 @@ gameRouter.post("/:id/kotu-is", async (req, res) => {
     });
     res.json(sonuc);
   } catch (err) {
-    res.status(400).json({ hata: String(err) });
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -221,7 +222,7 @@ gameRouter.get("/:id/mulk-config", async (req, res) => {
     const config = await mulkConfigGetir(req.params.id);
     res.json({ config });
   } catch (err) {
-    res.status(404).json({ hata: String(err) });
+    res.status(404).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -234,7 +235,7 @@ gameRouter.post("/:id/mulk", async (req, res) => {
     const sonuc = await mulkSatinAl(req.params.id, tur as MulkTuru);
     res.json(sonuc);
   } catch (err) {
-    res.status(400).json({ hata: String(err) });
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -243,7 +244,7 @@ gameRouter.get("/:id/dedikodu", async (req, res) => {
     const dedikodular = await dedikoduGetir(req.params.id);
     res.json({ dedikodular });
   } catch (err) {
-    res.status(404).json({ hata: String(err) });
+    res.status(404).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -252,7 +253,7 @@ gameRouter.get("/:id/zar-kademeleri", async (req, res) => {
     const kademeler = await zarKademeleriGetir(req.params.id);
     res.json({ kademeler });
   } catch (err) {
-    res.status(404).json({ hata: String(err) });
+    res.status(404).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -265,7 +266,7 @@ gameRouter.post("/:id/zar", async (req, res) => {
     const sonuc = await zarAt(req.params.id, tutar);
     res.json(sonuc);
   } catch (err) {
-    res.status(400).json({ hata: String(err) });
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -278,7 +279,7 @@ gameRouter.post("/:id/uc-kagitci", async (req, res) => {
     const sonuc = await ucKagitciOyna(req.params.id, tutar, secim);
     res.json(sonuc);
   } catch (err) {
-    res.status(400).json({ hata: String(err) });
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -291,7 +292,7 @@ gameRouter.post("/:id/bilek-guresi", async (req, res) => {
     const sonuc = await bilekGuresiSonuc(req.params.id, basarili);
     res.json(sonuc);
   } catch (err) {
-    res.status(400).json({ hata: String(err) });
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -304,7 +305,7 @@ gameRouter.post("/:id/konut", async (req, res) => {
     const sonuc = await konutDegistir(req.params.id, konutId);
     res.json(sonuc);
   } catch (err) {
-    res.status(400).json({ hata: String(err) });
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -317,7 +318,7 @@ gameRouter.post("/:id/yasam", async (req, res) => {
     const sonuc = await yasamSecimiDegistir(req.params.id, secimId);
     res.json(sonuc);
   } catch (err) {
-    res.status(400).json({ hata: String(err) });
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -326,7 +327,7 @@ gameRouter.post("/:id/ekip/:ekipId/cikar", async (req, res) => {
     const sonuc = await ekipCikar(req.params.id, req.params.ekipId);
     res.json(sonuc);
   } catch (err) {
-    res.status(400).json({ hata: String(err) });
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -335,7 +336,7 @@ gameRouter.get("/:id/sosyallesme-yerleri", async (req, res) => {
     const yerler = await sosyallesmeYerleriGetir(req.params.id);
     res.json({ yerler });
   } catch (err) {
-    res.status(404).json({ hata: String(err) });
+    res.status(404).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -348,7 +349,7 @@ gameRouter.post("/:id/sosyallesme", async (req, res) => {
     const sonuc = await sosyallesmeYerineGit(req.params.id, yerId);
     res.json(sonuc);
   } catch (err) {
-    res.status(400).json({ hata: String(err) });
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -361,7 +362,7 @@ gameRouter.post("/:id/sosyallesme-olay", async (req, res) => {
     const sonuc = await sosyallesmeOlayCoz(req.params.id, secenekIndex);
     res.json(sonuc);
   } catch (err) {
-    res.status(400).json({ hata: String(err) });
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -370,7 +371,7 @@ gameRouter.get("/:id/sosyallesme-aksiyonlar", async (req, res) => {
     const config = await sosyallesmeAksiyonConfigGetir(req.params.id);
     res.json(config);
   } catch (err) {
-    res.status(404).json({ hata: String(err) });
+    res.status(404).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -387,7 +388,7 @@ gameRouter.post("/:id/sosyallesme-aksiyon", async (req, res) => {
     );
     res.json(sonuc);
   } catch (err) {
-    res.status(400).json({ hata: String(err) });
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -396,7 +397,7 @@ gameRouter.get("/:id/evlilik-adaylari", async (req, res) => {
     const adaylar = await evlilikAdaylariGetir(req.params.id);
     res.json({ adaylar });
   } catch (err) {
-    res.status(400).json({ hata: String(err) });
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -409,7 +410,7 @@ gameRouter.post("/:id/evlilik-teklifi", async (req, res) => {
     const sonuc = await evlilikTeklifEt(req.params.id, aday);
     res.json(sonuc);
   } catch (err) {
-    res.status(400).json({ hata: String(err) });
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -418,7 +419,7 @@ gameRouter.get("/:id/aile", async (req, res) => {
     const durum = await aileDurumGetir(req.params.id);
     res.json(durum);
   } catch (err) {
-    res.status(404).json({ hata: String(err) });
+    res.status(404).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -435,7 +436,7 @@ gameRouter.post("/:id/aile/etkilesim", async (req, res) => {
     );
     res.json(sonuc);
   } catch (err) {
-    res.status(400).json({ hata: String(err) });
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -448,7 +449,7 @@ gameRouter.post("/:id/aile/talep", async (req, res) => {
     const sonuc = await aileTalebiKararlastir(req.params.id, karar);
     res.json(sonuc);
   } catch (err) {
-    res.status(400).json({ hata: String(err) });
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -458,7 +459,7 @@ gameRouter.get("/:id/yonetim", async (req, res) => {
     const durum = await yonetimDurumGetir(req.params.id);
     res.json(durum);
   } catch (err) {
-    res.status(404).json({ hata: String(err) });
+    res.status(404).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -475,7 +476,7 @@ gameRouter.post("/:id/yonetim/etkilesim", async (req, res) => {
     );
     res.json(sonuc);
   } catch (err) {
-    res.status(400).json({ hata: String(err) });
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -488,7 +489,7 @@ gameRouter.post("/:id/yonetim/istek", async (req, res) => {
     const sonuc = await yonetimIstekYap(req.params.id, istekId);
     res.json(sonuc);
   } catch (err) {
-    res.status(400).json({ hata: String(err) });
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -501,7 +502,7 @@ gameRouter.post("/:id/yonetim/talep", async (req, res) => {
     const sonuc = await yonetimTalebiKararlastir(req.params.id, karar);
     res.json(sonuc);
   } catch (err) {
-    res.status(400).json({ hata: String(err) });
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -510,7 +511,7 @@ gameRouter.get("/:id/magaza", async (req, res) => {
     const katalog = await magazaConfigGetir(req.params.id);
     res.json({ katalog });
   } catch (err) {
-    res.status(404).json({ hata: String(err) });
+    res.status(404).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -523,7 +524,7 @@ gameRouter.post("/:id/magaza/satin-al", async (req, res) => {
     const sonuc = await magazadanSatinAl(req.params.id, katalogId);
     res.json(sonuc);
   } catch (err) {
-    res.status(400).json({ hata: String(err) });
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -532,7 +533,7 @@ gameRouter.post("/:id/envanter/:esyaId/kullan", async (req, res) => {
     const sonuc = await envanterEsyasiKullan(req.params.id, req.params.esyaId);
     res.json(sonuc);
   } catch (err) {
-    res.status(400).json({ hata: String(err) });
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -548,7 +549,7 @@ gameRouter.post("/:id/envanter/:esyaId/hediye", async (req, res) => {
     });
     res.json(sonuc);
   } catch (err) {
-    res.status(400).json({ hata: String(err) });
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -557,7 +558,7 @@ gameRouter.get("/:id/rakipler", async (req, res) => {
     const rakipler = await rakiplerGetir(req.params.id);
     res.json({ rakipler });
   } catch (err) {
-    res.status(404).json({ hata: String(err) });
+    res.status(404).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -565,7 +566,7 @@ gameRouter.get("/:id/amaclar", async (req, res) => {
   try {
     res.json(await amaclarGetir(req.params.id));
   } catch (err) {
-    res.status(404).json({ hata: String(err) });
+    res.status(404).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -573,7 +574,7 @@ gameRouter.get("/:id/salgin-korunma", async (req, res) => {
   try {
     res.json(await salginKorunmaConfigGetir(req.params.id));
   } catch (err) {
-    res.status(404).json({ hata: String(err) });
+    res.status(404).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -585,7 +586,7 @@ gameRouter.post("/:id/salgin-korunma", async (req, res) => {
   try {
     res.json(await salginKorunmaYatirimiYap(req.params.id, kademe));
   } catch (err) {
-    res.status(400).json({ hata: String(err) });
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -593,7 +594,7 @@ gameRouter.get("/:id/kredi", async (req, res) => {
   try {
     res.json(await krediConfigGetir(req.params.id));
   } catch (err) {
-    res.status(404).json({ hata: String(err) });
+    res.status(404).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -605,7 +606,7 @@ gameRouter.post("/:id/kredi/al", async (req, res) => {
   try {
     res.json(await krediAlEndpoint(req.params.id, tutar));
   } catch (err) {
-    res.status(400).json({ hata: String(err) });
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
@@ -613,6 +614,6 @@ gameRouter.post("/:id/kredi/pazarlik", async (req, res) => {
   try {
     res.json(await krediPazarlikEndpoint(req.params.id));
   } catch (err) {
-    res.status(400).json({ hata: String(err) });
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
 });

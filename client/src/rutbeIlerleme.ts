@@ -166,7 +166,7 @@ export function rutbeIlerlemeHesapla(
       seviye,
       enUstMu: seviye >= 5,
       sonrakiUnvan: null,
-      kariyerPuaniMevcut: kariyerPuani,
+      kariyerPuaniMevcut: Math.floor(kariyerPuani),
       kariyerPuaniGerekli: null,
       kariyerPuaniYuzde: 0,
       statAdi: null,
@@ -183,7 +183,7 @@ export function rutbeIlerlemeHesapla(
       seviye,
       enUstMu: true,
       sonrakiUnvan: null,
-      kariyerPuaniMevcut: kariyerPuani,
+      kariyerPuaniMevcut: Math.floor(kariyerPuani),
       kariyerPuaniGerekli: null,
       kariyerPuaniYuzde: 100,
       statAdi: null,
@@ -208,7 +208,9 @@ export function rutbeIlerlemeHesapla(
     seviye,
     enUstMu: false,
     sonrakiUnvan: tanim.unvanlar[seviye],
-    kariyerPuaniMevcut: kariyerPuani,
+    // kariyer_puani tecrübe hızı çarpanıyla kesirli birikir (28.050000000000004) — aşağı yuvarla
+    // ki çubuk "32/32" gösterip hâlâ eşiğin altında kalmasın.
+    kariyerPuaniMevcut: Math.floor(kariyerPuani),
     kariyerPuaniGerekli: esik.kariyer_puani,
     kariyerPuaniYuzde,
     statAdi,

@@ -895,8 +895,10 @@ function istatistigiGuncelle(state: CharacterState, skor: number): OyunIstatisti
   ist.toplamOlum += 1;
   ist.toplamYilYasandi += Math.max(0, state.yas - 15);
   ist.enTekOmurServet = Math.max(ist.enTekOmurServet, state.para);
-  if (state.olum_nedeni && !ist.gorulenOlumNedenleri.includes(state.olum_nedeni)) {
-    ist.gorulenOlumNedenleri = [...ist.gorulenOlumNedenleri, state.olum_nedeni];
+  // Aynı ölüm iki dilde iki ayrı "görülen neden" sayılmasın: varsa kanonik Türkçe metin.
+  const olumNedeniAnahtar = state.olum_nedeni_ceviri?.tr ?? state.olum_nedeni;
+  if (olumNedeniAnahtar && !ist.gorulenOlumNedenleri.includes(olumNedeniAnahtar)) {
+    ist.gorulenOlumNedenleri = [...ist.gorulenOlumNedenleri, olumNedeniAnahtar];
   }
   if (state.hayat_amaci?.tamamlandi && !ist.tamamlananAmaclar.includes(state.hayat_amaci.hedefTuru)) {
     ist.tamamlananAmaclar = [...ist.tamamlananAmaclar, state.hayat_amaci.hedefTuru];

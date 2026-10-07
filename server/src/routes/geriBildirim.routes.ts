@@ -98,7 +98,7 @@ geriBildirimRouter.post("/", async (req, res) => {
 
     res.json({ ok: true });
   } catch (err) {
-    res.status(400).json({ hata: String(err) });
+    res.status(400).json({ hata: err instanceof Error ? err.message : String(err) });
   }
 });
 

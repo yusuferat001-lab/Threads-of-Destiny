@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
-import { CharacterState, Cag, SenaryoResponse, SonucEtkisi, TepkiSonucu, MulkTuru, EvlilikAdayi } from "../types";
-import { T, K, Khukumdar } from "../i18n";
+import { CharacterState, Cag, SenaryoResponse, SonucEtkisi, TepkiSonucu, MulkTuru, EvlilikAdayi, OturumAkisiKaydi, IkiDilMetin } from "../types";
+import { T, K, Khukumdar, ikiDilT } from "../i18n";
 import { olayCevirisiUygula } from "../i18n/olaylar";
 import { skorKaydet as skoruDbyeYaz } from "../db/scoreRepository";
 import {
@@ -100,6 +100,7 @@ import {
   krediKademeleri,
 } from "./stateManager";
 import { rutbeTanimiGetir, KARIYER_PUANI_YILLIK, KARIYER_PUANI_KATEGORI_BASARI } from "../data/rutbeler";
+import { yoneticiBilgisi, patronBilgisi } from "./yonetimKisileri";
 import { KOTU_ISLER, kotuIsTanimiGetir, KotuIsEtki } from "../data/kotuIsler";
 import { rollSuccess } from "./diceRoll";
 import { olaySec, doldur, temelUygunMu, sosyallesmeIcinOlaySec } from "./olaySecici";
@@ -147,7 +148,7 @@ import {
 import { tarihiSavasKontrol } from "../data/tarihiSavaslar";
 import { GIZEMLI_ESYA_TAKIP_HAVUZU } from "../data/gizemliEsyalar";
 import { yerlesimGetir } from "../data/yerlesimler";
-import { oturumKaydet, oturumYukle, aktifOturumlariYukle, bitmisOturumlariYukle, oturumYasiSaniye } from "../db/sessionRepository";
+import { oturumKaydet as oturumuDbyeYaz, oturumYukle, aktifOturumlariYukle, bitmisOturumlariYukle, oturumYasiSaniye } from "../db/sessionRepository";
 import { uygunsuzMu } from "../moderasyon/kufurFiltresi";
 import { metrikYaz } from "../db/metrikRepository";
 import { istemciGecmisiOku, istemciGecmisiGuncelle } from "../db/istemciGecmisRepository";
@@ -783,9 +784,74 @@ interface Oturum {
    * mekân/ana olay tekrar üretilince buradan geri yüklenir/temizlenir.
    */
   sakliOlay: { olay: OlayTanimi; senaryo: SenaryoResponse } | null;
+  /** Son GET /evlilik-adaylari ile üretilen adaylar — teklif bunlardan biri olmalı (uyum istemciden alınmaz). */
+  evlilikAdaylari?: EvlilikAdayi[];
 }
 
 const oturumlar = new Map<string, Oturum>();
+
+/** Bellekteki akışın (mevcut olay, zorunlu zincir, onTepki, saklı olay) kalıcı kopyasını üretir. */
+function akisKaydiOlustur(oturum: Oturum): OturumAkisiKaydi | null {
+  const tepkiHamIndex =
+    oturum.bekleyenTepki && oturum.mevcutOlay
+      ? oturum.mevcutOlay.secenekler.findIndex((s) => s.onTepki === oturum.bekleyenTepki?.onTepki)
+      : -1;
+  const kayit: OturumAkisiKaydi = {
+    olayId: oturum.mevcutOlay && oturum.mevcutSenaryo ? oturum.mevcutOlay.id : null,
+    senaryo: oturum.mevcutOlay && oturum.mevcutSenaryo ? oturum.mevcutSenaryo : null,
+    zorlananOlayId: oturum.zorlananOlayId,
+    sonTon: oturum.sonTon,
+    tepki:
+      oturum.bekleyenTepki && tepkiHamIndex >= 0
+        ? { hamIndex: tepkiHamIndex, eskiRutbeSeviye: oturum.bekleyenTepki.eskiRutbeSeviye }
+        : null,
+    sakli: oturum.sakliOlay ? { olayId: oturum.sakliOlay.olay.id, senaryo: oturum.sakliOlay.senaryo } : null,
+  };
+  const bos = !kayit.olayId && !kayit.zorlananOlayId && !kayit.sakli && !kayit.sonTon;
+  return bos ? null : kayit;
+}
+
+/** OLAY_BANKASI'ndan id ile bulunan olayı oyuncunun diline çevrilmiş haliyle döner. */
+function kayitliOlayBul(id: string | null | undefined, state: CharacterState): OlayTanimi | null {
+  if (!id) return null;
+  const olay = OLAY_BANKASI.find((o) => o.id === id);
+  return olay ? olayCevirisiUygula(olay, state.dil) : null;
+}
+
+/** DB'den gelen bir state için bellek oturumunu, kalıcı akış kaydından geri kurar. */
+function oturumOlustur(state: CharacterState): Oturum {
+  const kayit = state.oturum_akisi ?? null;
+  const mevcutOlay = kayitliOlayBul(kayit?.olayId, state);
+  const mevcutSenaryo = mevcutOlay && kayit?.senaryo ? kayit.senaryo : null;
+  const tepkiSecenegi = mevcutOlay && kayit?.tepki ? mevcutOlay.secenekler[kayit.tepki.hamIndex] : undefined;
+  const sakliOlay = kayit?.sakli ? kayitliOlayBul(kayit.sakli.olayId, state) : null;
+  return {
+    state,
+    mevcutSenaryo,
+    mevcutOlay: mevcutSenaryo ? mevcutOlay : null,
+    zorlananOlayId:
+      kayit?.zorlananOlayId && OLAY_BANKASI.some((o) => o.id === kayit.zorlananOlayId) ? kayit.zorlananOlayId : null,
+    sonErisim: Date.now(),
+    sonTon: kayit?.sonTon ?? null,
+    bekleyenTepki:
+      mevcutOlay && mevcutSenaryo && tepkiSecenegi?.onTepki && kayit?.tepki
+        ? { onTepki: tepkiSecenegi.onTepki, mevcutOlay, eskiRutbeSeviye: kayit.tepki.eskiRutbeSeviye }
+        : null,
+    sakliOlay: sakliOlay && kayit?.sakli ? { olay: sakliOlay, senaryo: kayit.sakli.senaryo } : null,
+  };
+}
+
+/**
+ * State'i DB'ye yazar — yazmadan önce bu state'in bellek oturumundaki akışı
+ * (`oturum_akisi`) state'e işler; böylece sunucu yeniden başlasa bile oyuncu
+ * ekrandaki olaydan kaldığı yerden devam eder. Motorun her yerindeki eski
+ * `oturumKaydet(state)` çağrıları bu sarmalayıcıdan geçer.
+ */
+async function oturumKaydet(state: CharacterState): Promise<void> {
+  const oturum = oturumlar.get(state.id);
+  if (oturum && oturum.state === state) state.oturum_akisi = akisKaydiOlustur(oturum);
+  await oturumuDbyeYaz(state);
+}
 
 /**
  * Server açılışında DB'deki aktif oturumları in-memory önbelleğe yükler; bir
@@ -795,16 +861,7 @@ export async function oturumlariYukle(): Promise<number> {
   const stateler = await aktifOturumlariYukle();
   for (const state of stateler) {
     eskiKayitGocu(state);
-    oturumlar.set(state.id, {
-      state,
-      mevcutSenaryo: null,
-      mevcutOlay: null,
-      zorlananOlayId: null,
-      sonErisim: Date.now(),
-      sonTon: null,
-      bekleyenTepki: null,
-      sakliOlay: null,
-    });
+    oturumlar.set(state.id, oturumOlustur(state));
   }
   return stateler.length;
 }
@@ -863,16 +920,7 @@ async function oturumGetir(id: string): Promise<Oturum> {
   const state = await oturumYukle(id);
   if (!state) throw new Error("Oyun oturumu bulunamadı.");
   eskiKayitGocu(state);
-  const oturum: Oturum = {
-    state,
-    mevcutSenaryo: null,
-    mevcutOlay: null,
-    zorlananOlayId: null,
-    sonErisim: Date.now(),
-    sonTon: null,
-    bekleyenTepki: null,
-    sakliOlay: null,
-  };
+  const oturum = oturumOlustur(state);
   oturumlar.set(id, oturum);
   return oturum;
 }
@@ -892,6 +940,11 @@ export function oturumlariBellektenTemizle(graceMs: number): number {
     }
   }
   return silinen;
+}
+
+/** Hata mesajlarını çevirmek için oturumun dili (bellekte yoksa Türkçe). */
+export function oturumDiliGetir(id: string): "tr" | "en" {
+  return oturumlar.get(id)?.state.dil === "en" ? "en" : "tr";
 }
 
 export function aktifOturumSayisi(): number {
@@ -981,7 +1034,24 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
   // oyuncunun az önce gördüğü olayı sessizce başka bir rastgele olayla
   // değiştiriyordu ("ekran yenilenince olay değişiyor" hatası).
   if (oturum.mevcutOlay && oturum.mevcutSenaryo) {
-    oturum.bekleyenTepki = null;
+    // Oyuncu bir mekân olayını (Sosyalleş) çözmeden ana oyuna döndü ve istemci
+    // senaryoyu yeniden istedi (sayfa yenileme / "Ana Menü → Oyuna Devam Et"):
+    // ana ekranda mekân olayı DEĞİL, kenara ayrılmış asıl olay gösterilmeli —
+    // aksi halde istemci mekân olayını gösterir, secimUygula ise seçimi saklı
+    // ana olaya uygulardı (ekrandaki şık ile uygulanan şık uyuşmazdı). Mekân
+    // olayı terk edilir (giriş ücreti iade edilmez, mekân kilitlenmez).
+    if (oturum.mevcutOlay.sosyallesmeYeri && oturum.sakliOlay) {
+      oturum.mevcutOlay = oturum.sakliOlay.olay;
+      oturum.mevcutSenaryo = oturum.sakliOlay.senaryo;
+      oturum.sakliOlay = null;
+      oturum.bekleyenTepki = null;
+      await oturumKaydet(oturum.state);
+      return oturum.mevcutSenaryo;
+    }
+    if (oturum.bekleyenTepki) {
+      oturum.bekleyenTepki = null;
+      await oturumKaydet(oturum.state);
+    }
     return oturum.mevcutSenaryo;
   }
 
@@ -1374,7 +1444,10 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
     etiketSil(oturum.state, ["istihbarat_var"]);
     etiketDegisti = true;
   }
-  if (etiketDegisti) await oturumKaydet(oturum.state);
+  // Yeni senaryo her zaman kaydedilir (yalnız etiket değişince değil): sunucu
+  // yeniden başlarsa oyuncunun ekranındaki olay `oturum_akisi`ndan geri kurulur.
+  void etiketDegisti;
+  await oturumKaydet(oturum.state);
   return senaryo;
 }
 
@@ -1472,6 +1545,42 @@ function netEtkiOlumluMu(etki: SonucEtkisi): boolean {
   return toplam >= 0;
 }
 
+type SonucDali = "basarili" | "basarisiz" | "geriCekil" | "devam";
+
+/**
+ * Bir olay sonucunun mesajını iki dilde üretir — ölüm nedeni liderlik tablosunda
+ * her iki dilde gösterilebilsin diye. Oyuncunun kendi dilindeki hâl, ona zaten
+ * gösterilen metnin aynısıdır (`gosterilen`); öbür dil ham olaydan yeniden doldurulur.
+ */
+function olaySonucMesajiIkiDil(
+  state: CharacterState,
+  olayId: string,
+  hamIndex: number,
+  dal: SonucDali,
+  gosterilen: string
+): IkiDilMetin {
+  const ham = OLAY_BANKASI.find((o) => o.id === olayId);
+  const mesajBul = (o: OlayTanimi | undefined): string | undefined => {
+    const sec = o?.secenekler[hamIndex];
+    if (!sec) return undefined;
+    const e =
+      dal === "basarili"
+        ? sec.basariliSonuc
+        : dal === "basarisiz"
+          ? sec.basarisizSonuc
+          : dal === "geriCekil"
+            ? sec.onTepki?.geriCekilSonucu
+            : sec.onTepki?.devamSonucu;
+    return e?.mesaj;
+  };
+  const trHam = mesajBul(ham);
+  const enHam = ham ? mesajBul(olayCevirisiUygula(ham, "en")) : undefined;
+  return {
+    tr: state.dil === "en" ? (trHam ? doldur(trHam, { ...state, dil: "tr" }) : gosterilen) : gosterilen,
+    en: state.dil === "en" ? gosterilen : enHam ? doldur(enHam, { ...state, dil: "en" }) : gosterilen,
+  };
+}
+
 export async function secimUygula(id: string, secenekIndex: number): Promise<SecimSonucu | TepkiSonucu> {
   const oturum = await oturumGetir(id);
   const { state } = oturum;
@@ -1486,9 +1595,11 @@ export async function secimUygula(id: string, secenekIndex: number): Promise<Sec
     const etki = jitterUygula(secenekIndex === 0 ? onTepki.geriCekilSonucu : onTepki.devamSonucu);
     etki.mesaj = doldur(etki.mesaj, state);
     if (etki.detay) etki.detay = doldur(etki.detay, state);
+    const tepkiHamIndex = mevcutOlay.secenekler.findIndex((s) => s.onTepki === onTepki);
+    const tepkiCeviri = olaySonucMesajiIkiDil(state, mevcutOlay.id, tepkiHamIndex, secenekIndex === 0 ? "geriCekil" : "devam", etki.mesaj);
     // Burada zar yok; "basarili" bayrağı sonuç ekranındaki görsel/ses efektinin doğru
     // (kutlama ya da düşüş) yönde çalması için etkinin net iyi/kötü olduğuna bakılarak belirlenir.
-    return sonucuUygulaVeIlerlet(oturum, mevcutOlay, etki, netEtkiOlumluMu(etki), eskiRutbeSeviye);
+    return sonucuUygulaVeIlerlet(oturum, mevcutOlay, etki, netEtkiOlumluMu(etki), eskiRutbeSeviye, false, tepkiCeviri);
   }
 
   // Oyuncu bir mekân olayını (Sosyalleş) yanıtlamadan "Geri Dön" ile ana ekrana
@@ -1506,7 +1617,7 @@ export async function secimUygula(id: string, secenekIndex: number): Promise<Sec
   if (!mevcutSenaryo || !mevcutOlay) throw new Error("Önce bir senaryo üretilmeli.");
 
   const secenek = mevcutSenaryo.secenekler[secenekIndex];
-  const hamSecenek = mevcutOlay.secenekler[secenekIndex];
+  const hamSecenek = secenek ? mevcutOlay.secenekler[secenek.ham_index ?? secenekIndex] : undefined;
   if (!secenek || !hamSecenek) throw new Error("Geçersiz seçenek index'i.");
   if (secenek.kilitli) throw new Error(secenek.kilit_nedeni ?? "Bu seçenek şu an seçilemez.");
 
@@ -1514,10 +1625,15 @@ export async function secimUygula(id: string, secenekIndex: number): Promise<Sec
     oturum.bekleyenTepki = { onTepki: hamSecenek.onTepki, mevcutOlay, eskiRutbeSeviye: state.rutbe_seviye };
     const tepki: TepkiSonucu = {
       ara_tepki: true,
-      olay_basligi: "Bir An Duraksadın",
+      olay_basligi: T(state.dil, "Bir An Duraksadın"),
       olay_metni: doldur(hamSecenek.onTepki.metin, state),
-      secenekler: [{ metin: hamSecenek.onTepki.geriCekilMetni }, { metin: hamSecenek.onTepki.devamMetni }],
+      secenekler: [
+        { metin: doldur(hamSecenek.onTepki.geriCekilMetni, state) },
+        { metin: doldur(hamSecenek.onTepki.devamMetni, state) },
+      ],
     };
+    // Ara-ekran da kalıcı olsun: sunucu yeniden başlarsa ikinci tıklama kaybolmasın.
+    await oturumKaydet(state);
     return tepki;
   }
 
@@ -1542,7 +1658,14 @@ export async function secimUygula(id: string, secenekIndex: number): Promise<Sec
   const komikOlumRiskliSecenekMi =
     KOMIK_OLUM_ID_SETI.has(mevcutOlay.id) &&
     (basarisizDal.olum === true || (basarisizDal.olum_sansi ?? 0) > 0);
-  return sonucuUygulaVeIlerlet(oturum, mevcutOlay, etki, basarili, eskiRutbeSeviye, komikOlumRiskliSecenekMi);
+  const mesajCeviri = olaySonucMesajiIkiDil(
+    state,
+    mevcutOlay.id,
+    secenek.ham_index ?? secenekIndex,
+    basarili ? "basarili" : "basarisiz",
+    etki.mesaj
+  );
+  return sonucuUygulaVeIlerlet(oturum, mevcutOlay, etki, basarili, eskiRutbeSeviye, komikOlumRiskliSecenekMi, mesajCeviri);
 }
 
 /** Doğum denemesi cooldown'u (yıl) — bu kadar yıl geçmeden yeni çocuk olmaz
@@ -1601,6 +1724,7 @@ function dogumDenemesiUygula(state: CharacterState, yasArtisi: number): string |
     state.dost_adi,
     state.rakip_adi,
     state.es_adi ?? "",
+    state.isim ?? "",
     ...state.cocuklar.map((c) => c.isim),
   ]);
   state.cocuklar.push({ isim, dogum_yili: state.yil, yasiyor: true, iliski: 65 });
@@ -1617,7 +1741,9 @@ async function sonucuUygulaVeIlerlet(
   etki: SonucEtkisi,
   basarili: boolean,
   eskiRutbeSeviye: number,
-  komikOlumRiskliSecenekMi: boolean = false
+  komikOlumRiskliSecenekMi: boolean = false,
+  /** Seçim mesajının iki dilli hâli — seçim öldürürse ölüm nedeni olarak saklanır. */
+  mesajCeviri?: IkiDilMetin
 ): Promise<SecimSonucu> {
   const { state } = oturum;
   // Nakit akışı defteri: turun sonunda Σ(alanlar) == state.para'daki net değişim olacak
@@ -1752,7 +1878,7 @@ async function sonucuUygulaVeIlerlet(
 
   if (etki.es_ata) {
     // Oyuncu karakteri erkek — eş her zaman kadın isim havuzundan seçilir.
-    state.es_adi = rastgeleCinsiyetliIsimSec(state.cag, state.bolge, "kadin", [state.dost_adi, state.rakip_adi]);
+    state.es_adi = rastgeleCinsiyetliIsimSec(state.cag, state.bolge, "kadin", [state.dost_adi, state.rakip_adi, state.isim ?? ""]);
     state.es_puani = 60;
     state.es_meslek = MESLEKLER[Math.floor(Math.random() * MESLEKLER.length)];
     const esRutbeTanimi = rutbeTanimiGetir(state.es_meslek, state.cag, state.din_kultur);
@@ -1778,6 +1904,7 @@ async function sonucuUygulaVeIlerlet(
         state.dost_adi,
         state.rakip_adi,
         state.es_adi ?? "",
+        state.isim ?? "",
         ...state.cocuklar.map((c) => c.isim),
       ]);
       state.cocuklar.push({ isim, dogum_yili: state.yil, yasiyor: true, iliski: 65 });
@@ -1809,6 +1936,7 @@ async function sonucuUygulaVeIlerlet(
       state.dost_adi,
       state.rakip_adi,
       state.es_adi ?? "",
+      state.isim ?? "",
       ...state.ekip.map((e) => e.isim),
     ]);
     // Üç zar ortalaması: uçlar (çok kötü/çok iyi) nadir, ortalama tutulmak daha olası — "bazen hasta, bazen aşırı başarılı" hissi.
@@ -1965,7 +2093,7 @@ async function sonucuUygulaVeIlerlet(
     const sans = efektifOlumSansi(etki.olum_sansi, state.saglik);
     if (Math.random() * 100 < sans) olumTetiklendi = true;
   }
-  checkDeath(state, olumTetiklendi, etki.mesaj);
+  checkDeath(state, olumTetiklendi, mesajCeviri ?? etki.mesaj);
   // efsanevi_olum rozeti YALNIZCA ölüm gerçekten gerçekleştiyse atanır: Kutsal
   // Emanet relik'i ölümü iptal ederse (checkDeath) hayatta kalan karakter,
   // yaşamadığı bir "efsanevi ölüm" damgasını taşımasın.
@@ -2028,12 +2156,12 @@ async function sonucuUygulaVeIlerlet(
       if (state.aktif) {
         const yaslanmaKaybi = yaslanmaUygula(state, yasArtisi);
         if (state.saglik <= 0) {
-          checkDeath(state, true, "İleri yaşın getirdiği yorgunlukla huzur içinde vefat etti.");
+          checkDeath(state, true, ikiDilT("İleri yaşın getirdiği yorgunlukla huzur içinde vefat etti."));
         }
         if (state.aktif) {
           capraz = capraletkiUygula(state, yasArtisi);
           if (state.saglik <= 0) {
-            checkDeath(state, true, "Uzun süredir çöken ruh hali bedenini de tüketti.");
+            checkDeath(state, true, ikiDilT("Uzun süredir çöken ruh hali bedenini de tüketti."));
           }
         }
         if (state.aktif) {
@@ -2088,7 +2216,7 @@ async function sonucuUygulaVeIlerlet(
           orduBuyumesiDene(state, yasArtisi);
           const krizBitisMesaji = krizEtkisiUygula(state, yasArtisi);
           if (state.saglik <= 0) {
-            checkDeath(state, true, T(state.dil, "Kıtlığın getirdiği yoksunlukla tükendi."));
+            checkDeath(state, true, ikiDilT("Kıtlığın getirdiği yoksunlukla tükendi."));
           }
           const mulkSonucu = mulkGelirleriUygula(state, yasArtisi);
           if (mulkSonucu.kervanBatti) {
@@ -2217,7 +2345,7 @@ async function sonucuUygulaVeIlerlet(
               zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${hm}` : hm;
             }
             if (hastalikSonucu.karakterOldu) {
-              checkDeath(state, true, "Veba direncini kırdı; hastalıktan kurtulamadın.");
+              checkDeath(state, true, ikiDilT("Veba direncini kırdı; hastalıktan kurtulamadın."));
             } else if (hastalikSonucu.iyilesti && !state.veba_hayatta_kaldi) {
               // Faz 5 skor bonusu: bizzat vebayı kapıp atlatmak bir kereliğine ödüllendirilir.
               state.veba_hayatta_kaldi = true;
@@ -2248,7 +2376,8 @@ async function sonucuUygulaVeIlerlet(
           }
         }
       } else {
-        state.olum_nedeni = T(state.dil, "Borç ve yoksulluk içinde tükendi.");
+        state.olum_nedeni_ceviri = ikiDilT("Borç ve yoksulluk içinde tükendi.");
+        state.olum_nedeni = state.dil === "en" ? state.olum_nedeni_ceviri.en : state.olum_nedeni_ceviri.tr;
       }
     }
   }
@@ -2435,7 +2564,7 @@ function rastgeleEvlilikAdayiUret(state: CharacterState): EvlilikAdayi {
     ? rutbeTanimi.unvanlar[Math.floor(Math.random() * rutbeTanimi.unvanlar.length)]
     : meslek;
   const kisilik = rastgeleKisilikCifti();
-  const disariBirak = [state.dost_adi, state.rakip_adi, state.es_adi].filter((a): a is string => Boolean(a));
+  const disariBirak = [state.dost_adi, state.rakip_adi, state.es_adi, state.isim].filter((a): a is string => Boolean(a));
   // Oyuncu karakteri erkek — evlilik adayları her zaman kadın isim havuzundan.
   const isim = rastgeleCinsiyetliIsimSec(state.cag, state.bolge, "kadin", disariBirak);
   return { isim, meslek, rutbe, kisilik, uyumYuzdesi: evlilikUyumHesapla(state, kisilik) };
@@ -2446,7 +2575,9 @@ export async function evlilikAdaylariGetir(id: string): Promise<EvlilikAdayi[]> 
   const oturum = await oturumGetir(id);
   const { state } = oturum;
   evlilikUygunlukKontrolEt(state);
-  return [rastgeleEvlilikAdayiUret(state), rastgeleEvlilikAdayiUret(state)];
+  const adaylar = [rastgeleEvlilikAdayiUret(state), rastgeleEvlilikAdayiUret(state)];
+  oturum.evlilikAdaylari = adaylar;
+  return adaylar;
 }
 
 interface EvlilikTeklifSonucu {
@@ -2474,7 +2605,33 @@ export async function evlilikTeklifEt(id: string, aday: EvlilikAdayi): Promise<E
   ) {
     throw new Error("Geçersiz evlilik adayı.");
   }
-  const uyum = Math.max(5, Math.min(95, Math.round(aday.uyumYuzdesi ?? 50)));
+  // Aday sunucunun ürettiği listeden olmalı; uyum yüzdesi istemciden ALINMAZ
+  // (istemci uyumYuzdesi: 95 gönderip teklifi garantileyebiliyordu). Liste bellekte
+  // yoksa (sunucu yeniden başladı) alanlar doğrulanıp uyum yeniden hesaplanır.
+  const kayitli = oturum.evlilikAdaylari?.find(
+    (a) =>
+      a.isim === aday.isim &&
+      a.meslek === aday.meslek &&
+      a.rutbe === aday.rutbe &&
+      a.kisilik[0] === aday.kisilik[0] &&
+      a.kisilik[1] === aday.kisilik[1]
+  );
+  if (!kayitli) {
+    const isimTemiz = aday.isim.trim();
+    if (
+      !isimTemiz ||
+      isimTemiz.length > 40 ||
+      uygunsuzMu(isimTemiz) ||
+      !MESLEKLER.includes(aday.meslek) ||
+      aday.rutbe.length > 60 ||
+      !aday.kisilik.every((k) => typeof k === "string" && kisilikGetir(k) !== undefined)
+    ) {
+      throw new Error("Geçersiz evlilik adayı.");
+    }
+  }
+  const uyum = kayitli
+    ? kayitli.uyumYuzdesi
+    : evlilikUyumHesapla(state, [aday.kisilik[0], aday.kisilik[1]] as [string, string]);
   const sans = Math.max(
     10,
     Math.min(90, uyum + Math.round((state.mutluluk - 50) / 5) + Math.round((state.un - 20) / 10))
@@ -2496,6 +2653,10 @@ export async function evlilikTeklifEt(id: string, aday: EvlilikAdayi): Promise<E
       ])
     );
     clampStats(state);
+  }
+  // Reddeden aday listeden düşer (aynı adaya tekrar tekrar teklif edilemesin; yeni adaylar istenebilir).
+  if (oturum.evlilikAdaylari) {
+    oturum.evlilikAdaylari = basarili ? [] : oturum.evlilikAdaylari.filter((a) => a !== kayitli);
   }
   const mesaj = basarili
     ? T(state.dil, "{0} teklifini kabul etti! Artık evlisin.", [aday.isim])
@@ -2741,42 +2902,6 @@ function yonetimIliskiYaz(state: CharacterState, hat: YonetimHat, deger: number)
   else state.patron_iliski = v;
 }
 
-const YONETIM_ISIM_HAVUZU = [
-  "Cezmi",
-  "Bertrand",
-  "Konrad",
-  "Halil",
-  "Théodore",
-  "Marcus",
-  "Yakup",
-  "Anselm",
-  "Rüstem",
-  "Gregor",
-];
-function yonetimDeterministikIsim(seed: string, tuz: number): string {
-  let h = tuz >>> 0;
-  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
-  return YONETIM_ISIM_HAVUZU[h % YONETIM_ISIM_HAVUZU.length];
-}
-
-function yoneticiBilgisi(state: CharacterState): { unvan: string; ad: string } {
-  if (state.hukumdar) return { unvan: K(state.dil, "Hükümdar"), ad: state.hukumdar };
-  const unvan = state.cag === "Sanayi Devrimi" ? "Vali" : "Bölge Beyi";
-  return { unvan: K(state.dil, unvan), ad: yonetimDeterministikIsim(state.id, 7) };
-}
-
-function patronBilgisi(state: CharacterState): { unvan: string; ad: string } {
-  const sanayi = state.cag === "Sanayi Devrimi";
-  let unvan: string;
-  if (state.meslek === "Asker") unvan = sanayi ? "Karargâh Komutanı" : "Ordu Kumandanı";
-  else if (state.meslek === "Tüccar") unvan = sanayi ? "Fabrika Patronu" : "Lonca Reisi";
-  else if (state.meslek === "Din Adamı") {
-    unvan = state.din_kultur === "Sünni İslam" ? "Kadı" : sanayi ? "Başpiskopos" : "Başrahip";
-  } else if (state.meslek === "Zanaatkâr") unvan = sanayi ? "Atölye Sahibi" : "Loncabaşı";
-  else unvan = sanayi ? "Patron" : "Usta";
-  return { unvan: K(state.dil, unvan), ad: yonetimDeterministikIsim(state.id, 19) };
-}
-
 interface YonetimEtkilesimTabani {
   id: "bagis" | "yalan" | "hizmet";
   ikon: string;
@@ -3019,7 +3144,11 @@ export async function yonetimDurumGetir(id: string): Promise<YonetimDurumu> {
     kilitler: { ...state.yonetim_etkilesim_kilit },
     bikkinlik: state.yonetim_yakin_etkilesim ?? 0,
     talep: state.yonetim_talep
-      ? { ...state.yonetim_talep, kimAdi: state.yonetim_talep.kimden === "yonetici" ? yon.ad : pat.ad }
+      ? {
+          ...state.yonetim_talep,
+          kimAdi: state.yonetim_talep.kimden === "yonetici" ? yon.ad : pat.ad,
+          kalem: T(state.dil, state.yonetim_talep.kalem),
+        }
       : null,
     guncelYil: state.yil,
     para: state.para,
@@ -3206,6 +3335,9 @@ export async function yonetimTalebiKararlastir(
   }
 
   const hat = talep.kimden;
+  // Mesajlarda talebin üretildiği andaki ad değil, ŞU ANKİ kişi kullanılır (hükümdar
+  // o arada değişmiş olabilir; eski kayıtlarda kimAdi "patronun" gibi jenerik bir söz).
+  const kimAdi = hat === "yonetici" ? yoneticiBilgisi(state).ad : patronBilgisi(state).ad;
   let mesaj: string;
 
   if (karar === "kabul") {
@@ -3215,7 +3347,7 @@ export async function yonetimTalebiKararlastir(
     }
     yonetimIliskiYaz(state, hat, yonetimIliskiOku(state, hat) + 12);
     state.mutluluk -= 2;
-    mesaj = T(state.dil, "{0} talebini yerine getirdin; aranız pekişti.", [talep.kimAdi]);
+    mesaj = T(state.dil, "{0}'in talebini yerine getirdin; aranız pekişti.", [kimAdi]);
   } else if (karar === "ret") {
     yonetimIliskiYaz(state, hat, yonetimIliskiOku(state, hat) - 16);
     state.mutluluk -= 4;
@@ -3227,7 +3359,7 @@ export async function yonetimTalebiKararlastir(
       state.suc_seviyesi = Math.min(100, state.suc_seviyesi + artis);
       mesaj = T(state.dil, "Hükümdarın talebini reddedip kaçtın; muhafızlar peşine düştü, artık aranıyorsun.", []);
     } else {
-      mesaj = T(state.dil, "{0} talebini geri çevirdin; arası soğudu.", [talep.kimAdi]);
+      mesaj = T(state.dil, "{0}'in talebini geri çevirdin; aranız soğudu.", [kimAdi]);
     }
   } else {
     state.ahlak -= 5;
@@ -3236,10 +3368,10 @@ export async function yonetimTalebiKararlastir(
       yonetimIliskiYaz(state, hat, yonetimIliskiOku(state, hat) - 22);
       state.un -= 6;
       if (talep.tur === "bagis") state.para = paraYuvarla(state.para - talep.tutar);
-      mesaj = T(state.dil, "{0} yalanını yakaladı; hem parayı verdin hem itibarını.", [talep.kimAdi]);
+      mesaj = T(state.dil, "{0} yalanını yakaladı; hem parayı verdin hem itibarını.", [kimAdi]);
     } else {
       yonetimIliskiYaz(state, hat, yonetimIliskiOku(state, hat) - 4);
-      mesaj = T(state.dil, "\"Elim darda\" dedin; {0} homurdanarak kabul etti.", [talep.kimAdi]);
+      mesaj = T(state.dil, "\"Elim darda\" dedin; {0} homurdanarak kabul etti.", [kimAdi]);
     }
   }
 
@@ -3510,7 +3642,7 @@ export async function kotuIsYap(id: string, tur: string, secenek: KotuIsSecenek 
   }
   if (!kazandi && dal.olum_sansi && Math.random() * 100 < efektifOlumSansi(dal.olum_sansi, state.saglik)) {
     clampStats(state);
-    checkDeath(state, true, T(dil, "Çevirdiği karanlık bir iş sırasında öldü."));
+    checkDeath(state, true, ikiDilT("Çevirdiği karanlık bir iş sırasında öldü."));
   }
 
   if (kazandi && dal.para) {
@@ -3659,7 +3791,9 @@ const ZAR_SUC_ARTISI = 3;
 // Hazard: her kaç elde bir "rakip bıçak çekti" tetiklenmeyi denesin ve ihtimali.
 const HAZARD_BICAK_HER_KAC_EL = 4;
 const HAZARD_BICAK_IHTIMAL = 0.45;
-const UC_KAGITCI_KAZANMA_SANSI = 0.34;
+// Kazanç bahis×3: 0.34 şansla beklenen getiri +%2'ydi (oyuncu lehine, sınırsız kâr kapısı).
+// 0.32 ile beklenen getiri −%4 — hâlâ cazip ama kumarın kasası kazanır.
+const UC_KAGITCI_KAZANMA_SANSI = 0.32;
 // Aranma yeniden dengeleme turu: 4→2 (aynı gerekçe, §ZAR_SUC_ARTISI).
 const UC_KAGITCI_SUC_ARTISI = 2;
 const BILEK_GURESI_ODUL_TABAN = 4;
@@ -3739,7 +3873,7 @@ export async function zarAt(id: string, tutar: number): Promise<HazardSonucu> {
     mesaj += " " + T(state.dil, "Sonra masa karıştı — biri bıçak çekti; sıyrık ve morlukla zar zor kaçtın.");
     clampStats(state);
     if (state.saglik <= 0 || Math.random() * 100 < efektifOlumSansi(6, state.saglik)) {
-      checkDeath(state, true, T(state.dil, "Zar masasındaki bıçaklı bir kavgada öldü."));
+      checkDeath(state, true, ikiDilT("Zar masasındaki bıçaklı bir kavgada öldü."));
     }
   }
 
@@ -3757,7 +3891,7 @@ interface UcKagitciSonucu {
 
 /**
  * Üç Kağıtçı (bul karayı al parayı): 3 bardak, birinin altında para. Kazanma
- * şansı SABİT ~%34 — bardak seçimi kozmetiktir: sunucu önce kazanıp kazanmadığını
+ * şansı SABİT ~%32 — bardak seçimi kozmetiktir: sunucu önce kazanıp kazanmadığını
  * belirler, sonra "doğru bardağı" (kazandıysa seçilen, kaybettiyse başka bir)
  * bardağa koyar; istemci animasyonu bu sonuca göre biter. Kaybedince bahis gider,
  * kazanınca ×3 (net +2 kat bahis). Sokak dolandırıcılığı → küçük suç/aranma artışı. Turu tüketmez.
@@ -3813,6 +3947,11 @@ export async function bilekGuresiSonuc(id: string, basarili: boolean): Promise<B
   if (state.etiketler.includes("hapiste") || state.etiketler.includes("yolculukta")) {
     throw new Error("Şu an bilek güreşi yapamazsın.");
   }
+  const bekleyen = aksiyonKalanYil(state, "bilek");
+  if (bekleyen > 0) {
+    throw new Error(T(state.dil, "Kolun hâlâ ağrıyor; {0} yıl sonra yeniden bilek güreşebilirsin.", [bekleyen]));
+  }
+  state.sosyallesme_aksiyon_kilit["bilek"] = state.yil;
   const birim = state.para_birimi;
   let mesaj: string;
   if (basarili) {
@@ -3845,6 +3984,8 @@ export interface SosyallesmeYeriKarti extends SosyallesmeYeri {
   kilitli?: boolean;
   /** Kilidin açılmasına kalan oyun yılı (0 = hazır). */
   kalanYil?: number;
+  /** Mekâna girerken peşin düşülecek ücret (enflasyonla ölçekli) — kartta gösterilir. */
+  girisUcreti?: number;
 }
 
 /** Bir sosyalleşme mekânının cooldown'unun bitmesine kalan oyun yılı. */
@@ -3875,6 +4016,7 @@ export async function sosyallesmeYerleriGetir(id: string): Promise<SosyallesmeYe
       ziyaretSayisi: yer.alkolluMu ? state.alkol_ziyaret_sayisi : undefined,
       kilitli: kalanYil > 0,
       kalanYil,
+      girisUcreti: paraYuvarla(SOSYALLESME_GIRIS_UCRETI * enflasyonCarpani(state)),
     };
   });
 }
@@ -3958,7 +4100,7 @@ export async function sosyallesmeOlayCoz(id: string, secenekIndex: number): Prom
     throw new Error("Ortada çözülecek bir mekân olayı yok.");
   }
   const secenek = mevcutSenaryo.secenekler[secenekIndex];
-  const hamSecenek = mevcutOlay.secenekler[secenekIndex];
+  const hamSecenek = secenek ? mevcutOlay.secenekler[secenek.ham_index ?? secenekIndex] : undefined;
   if (!secenek || !hamSecenek) throw new Error("Geçersiz seçenek index'i.");
   if (secenek.kilitli) throw new Error(secenek.kilit_nedeni ?? "Bu seçenek şu an seçilemez.");
   if (hamSecenek.onTepki) throw new Error("Bu seçim burada çözülemez.");
@@ -4009,7 +4151,7 @@ export async function sosyallesmeOlayCoz(id: string, secenekIndex: number): Prom
   // Sosyalleşme olaylarının kullandığı seyrek alanlar (banka denetimi: ekip_ekle 1×, unvan_kazan 2×).
   if (etki.ekip_ekle) {
     const isim = rastgeleBirIsimSec(state.cag, state.bolge, [
-      state.dost_adi, state.rakip_adi, state.es_adi ?? "", ...state.ekip.map((e) => e.isim),
+      state.dost_adi, state.rakip_adi, state.es_adi ?? "", state.isim ?? "", ...state.ekip.map((e) => e.isim),
     ]);
     const gercekKalite = Math.round((Math.random() * 100 + Math.random() * 100 + Math.random() * 100) / 3);
     const genislik = etki.ekip_ekle.tahminGenisligi;
@@ -4044,10 +4186,17 @@ export async function sosyallesmeOlayCoz(id: string, secenekIndex: number): Prom
   clampStats(state);
 
   // Zaman ilerlemese de olay öldürebilir (meyhane bıçağı vb.).
+  const mekanMesajCeviri = olaySonucMesajiIkiDil(
+    state,
+    mevcutOlay.id,
+    secenek.ham_index ?? secenekIndex,
+    basarili ? "basarili" : "basarisiz",
+    etki.mesaj
+  );
   if (etki.olum === true) {
-    checkDeath(state, true, etki.mesaj);
+    checkDeath(state, true, mekanMesajCeviri);
   } else if (etki.olum_sansi && Math.random() * 100 < efektifOlumSansi(etki.olum_sansi, state.saglik)) {
-    checkDeath(state, true, etki.mesaj);
+    checkDeath(state, true, mekanMesajCeviri);
   }
   if (!state.aktif && etki.efsanevi_olum && !state.efsanevi_olum) {
     state.efsanevi_olum = etki.efsanevi_olum;
@@ -4124,6 +4273,8 @@ export interface SosyalAksiyonConfig {
   icecekler: SosyalAksiyonKarti[];
   aksiyonlar: SosyalAksiyonKarti[];
   alkolluMekanVar: boolean;
+  /** Bilek güreşi mini oyununun tekrar oynanabilmesine kalan oyun yılı (0 = hazır). */
+  bilekGuresiKalanYil: number;
 }
 
 function aksiyonKalanYil(state: CharacterState, anahtar: string): number {
@@ -4175,7 +4326,7 @@ export function aktifAksiyonRotasyonu(state: CharacterState): Set<string> {
 export async function sosyallesmeAksiyonConfigGetir(id: string): Promise<SosyalAksiyonConfig> {
   const oturum = await oturumGetir(id);
   const { state } = oturum;
-  const bos: SosyalAksiyonConfig = { icecekler: [], aksiyonlar: [], alkolluMekanVar: false };
+  const bos: SosyalAksiyonConfig = { icecekler: [], aksiyonlar: [], alkolluMekanVar: false, bilekGuresiKalanYil: 0 };
   if (state.etiketler.includes("hapiste") || state.etiketler.includes("yolculukta")) return bos;
 
   const en = state.dil === "en";
@@ -4238,7 +4389,7 @@ export async function sosyallesmeAksiyonConfigGetir(id: string): Promise<SosyalA
     };
   });
 
-  return { icecekler, aksiyonlar, alkolluMekanVar };
+  return { icecekler, aksiyonlar, alkolluMekanVar, bilekGuresiKalanYil: aksiyonKalanYil(state, "bilek") };
 }
 
 export interface SosyalAksiyonSonucu {
@@ -4293,6 +4444,8 @@ export async function sosyallesmeAksiyonYap(
     state.sosyallesme_aksiyon_kilit["icki"] = state.yil;
     clampStats(state);
     await oturumKaydet(state);
+    // İçki adları küçük harfle başlıyor ("bir sürahi şarap..."); cümle başı büyük olsun.
+    mesaj = mesaj.charAt(0).toLocaleUpperCase(state.dil === "en" ? "en" : "tr") + mesaj.slice(1);
     return { state, mesaj };
   }
 

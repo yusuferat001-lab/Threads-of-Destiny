@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
-import { CharacterState, Cag, Dil, Kategori, SonucEtkisi, YatkinlikKaynagi, KisilikEksenleri, UlkeKrizi, MulkTuru, SahipOlunanEsya, AileTalep, YonetimTalep } from "../types";
-import { T, K } from "../i18n";
+import { CharacterState, Cag, Dil, Kategori, SonucEtkisi, YatkinlikKaynagi, KisilikEksenleri, UlkeKrizi, MulkTuru, SahipOlunanEsya, AileTalep, YonetimTalep, IkiDilMetin } from "../types";
+import { T, K, ikiDilT } from "../i18n";
 import { amaclariUret, amacSkorCarpani, amaclariOlumdeKontrol, amacTanimiGetir } from "../data/hayatAmaclari";
 import { AILELER, AileTanimi } from "../data/aileler";
 import { BolgeOzellikleri, bolgeOzellikleriGetir } from "../data/bolgeOzellikleri";
@@ -17,6 +17,7 @@ import { YerlesimTanimi, yerlesimGetir, yerlesimIdByAd } from "../data/yerlesiml
 import { konutGetir, VARSAYILAN_KONUT_ID, TASINMA_MALIYETI, konutKademeIndeksi, KONUT_SAHIBI_MIN_KADEME } from "../data/konutlar";
 import { yasamSecenegiGetir, VARSAYILAN_YASAM_SECIMI_ID } from "../data/yasamSecenekleri";
 import { rastgeleIkiIsimSec, rastgeleBirIsimSec, rastgeleCinsiyetliIsimSec } from "../data/npcIsimleri";
+import { yoneticiBilgisi, patronBilgisi } from "./yonetimKisileri";
 import { liderGetir, komsuGucSec } from "../data/liderler";
 import { bolgeIstatistigiGetir } from "../data/bolgeIstatistikleri";
 import {
@@ -655,9 +656,11 @@ export function createCharacter(
   const kisilik = rastgeleKisilikCifti();
   const bolgeOzellik = bolgeOzellikleriGetir(cag, bolge);
   const { yatkinliklar, kaynaklar } = yatkinlikHesapla(kisilik, aile, yerlesim, bolgeOzellik, bolge);
-  const [dostAdi, rakipAdi] = rastgeleIkiIsimSec(cag, bolge);
-  const anneAdi = rastgeleCinsiyetliIsimSec(cag, bolge, "kadin", [dostAdi, rakipAdi]);
-  const babaAdi = rastgeleCinsiyetliIsimSec(cag, bolge, "erkek", [dostAdi, rakipAdi, anneAdi]);
+  // NPC isimleri oyuncunun kendi adıyla çakışmasın (ör. "Étienne"in dostu da "Étienne" olmasın).
+  const oyuncuAdi = oyuncuIsmi?.trim() ? oyuncuIsmi.trim().slice(0, 40) : "";
+  const [dostAdi, rakipAdi] = rastgeleIkiIsimSec(cag, bolge, [oyuncuAdi]);
+  const anneAdi = rastgeleCinsiyetliIsimSec(cag, bolge, "kadin", [dostAdi, rakipAdi, oyuncuAdi]);
+  const babaAdi = rastgeleCinsiyetliIsimSec(cag, bolge, "erkek", [dostAdi, rakipAdi, anneAdi, oyuncuAdi]);
 
   const state: CharacterState = {
     id: randomUUID(),
@@ -865,6 +868,7 @@ function amirGuncelle(state: CharacterState, tanim: RutbeTanimi, seviye: number)
       state.dost_adi,
       state.rakip_adi,
       state.es_adi ?? "",
+      state.isim ?? "",
     ]);
     state.amir_rutbe = ustUnvan;
   }
@@ -888,6 +892,7 @@ function astlariGuncelle(state: CharacterState, tanim: RutbeTanimi, seviye: numb
       state.amir_adi ?? "",
       state.anne_adi,
       state.baba_adi,
+      state.isim ?? "",
       ...state.astlar.map((a) => a.isim),
     ]);
     state.astlar.push({ isim, rutbe });
@@ -1247,10 +1252,15 @@ function acilisAnlatimiUret(
   const o1 = K(dil, ozellik1).toLocaleLowerCase(dil === "en" ? "en" : "tr");
   const o2 = K(dil, ozellik2).toLocaleLowerCase(dil === "en" ? "en" : "tr");
   const kisilikCumlesi = T(dil, "Çocukluğundan beri etrafındakiler seni {0} ve {1} biri olarak tanır.", [o1, o2]);
-  const yerlesimCumlesi = T(dil, "Ailen {0} topraklarının {1} kısmına yerleşmiş; sen de hayata burada gözlerini açtın.", [
-    bolgeAd,
-    K(dil, yerlesim.ad).toLocaleLowerCase(dil === "en" ? "en" : "tr"),
-  ]);
+  // Tek yerleşim artık nötr "Kasaba" — "Fransa topraklarının kasaba kısmına" gibi
+  // tuhaf bir cümle kurmasın diye ona özel doğal bir kalıp kullanılır.
+  const yerlesimCumlesi =
+    yerlesim.id === "kasaba"
+      ? T(dil, "Ailen {0} topraklarında küçük bir kasabaya yerleşmiş; sen de hayata orada gözlerini açtın.", [bolgeAd])
+      : T(dil, "Ailen {0} topraklarının {1} kısmına yerleşmiş; sen de hayata burada gözlerini açtın.", [
+          bolgeAd,
+          K(dil, yerlesim.ad).toLocaleLowerCase(dil === "en" ? "en" : "tr"),
+        ]);
 
   return [
     T(dil, "{0} yılı, {1} toprakları.", [state.yil, bolgeAd]),
@@ -1297,7 +1307,12 @@ export function clampStats(state: CharacterState): void {
 /** Kutsal kalıntı gibi mistik eşyaların tek seferlik ölümden koruma etiketi. */
 export const KORUYUCU_MUSKA_ETIKETI = "esya:kutsal_kalinti";
 
-export function checkDeath(state: CharacterState, zorunluOlum: boolean, mesaj?: string): void {
+/**
+ * `neden`: düz metin (oyuncunun dilinde; eski çağrılar/testler) ya da iki dilli bir
+ * metin. İki dilli verilirse state.olum_nedeni oyuncunun diline göre seçilir ve iki
+ * dil de olum_nedeni_ceviri'de saklanır (liderlik tablosu bunu kullanır).
+ */
+export function checkDeath(state: CharacterState, zorunluOlum: boolean, neden?: string | IkiDilMetin): void {
   if (state.saglik <= 0 || zorunluOlum) {
     if (state.etiketler.includes(KORUYUCU_MUSKA_ETIKETI)) {
       etiketSil(state, [KORUYUCU_MUSKA_ETIKETI]);
@@ -1307,8 +1322,14 @@ export function checkDeath(state: CharacterState, zorunluOlum: boolean, mesaj?: 
       return;
     }
     state.aktif = false;
-    state.olum_nedeni =
-      mesaj ?? (state.saglik <= 0 ? T(state.dil, "Sağlık kaybı") : T(state.dil, "Bilinmeyen sebep"));
+    const ceviri: IkiDilMetin =
+      neden === undefined
+        ? ikiDilT(state.saglik <= 0 ? "Sağlık kaybı" : "Bilinmeyen sebep")
+        : typeof neden === "string"
+          ? { tr: neden, en: neden }
+          : neden;
+    state.olum_nedeni = state.dil === "en" ? ceviri.en : ceviri.tr;
+    state.olum_nedeni_ceviri = ceviri;
     // Ölüm anında tüm tamamlanmamış amaçlara son bir kez bak ("olumde" koşulları +
     // son turda kaçmış olabilecek "herhangi" koşulları). Skor yazımından önce kilitlenir.
     for (const a of amaclariOlumdeKontrol(state, state.para + gayrimenkulDegeriHesapla(state))) {
@@ -1349,7 +1370,7 @@ export function ilerletYas(state: CharacterState, minYil = 1, maxYil = 3): numbe
   state.tur_sayisi += 1;
   state.hukumdar = liderGetir(state.bolge, state.yil, state.cag);
   if (state.yas >= MAKS_YAS) {
-    checkDeath(state, true, T(state.dil, "Yüz yaşını doldurdun; huzurlu bir ihtiyar olarak, uykunda son nefesini verdin."));
+    checkDeath(state, true, ikiDilT("Yüz yaşını doldurdun; huzurlu bir ihtiyar olarak, uykunda son nefesini verdin."));
   }
   return artis;
 }
@@ -1579,17 +1600,20 @@ const YONETIM_TALEP_KALEMLERI: Record<"yonetici" | "patron", { bagis: string[]; 
       "muhaliflerden uzak durma taahhüdü",
     ],
   },
+  // Patron her meslekte farklı biri (ordu kumandanı, lonca reisi, başrahip, atölye
+  // sahibi...) — gerekçeler mesleğe özgü kalıplar (lonca, grev) yerine herkese uyan
+  // genel ifadeler olmalı; aksi halde bir askerin kumandanı "lonca sandığına katkı" istiyordu.
   patron: {
     bagis: [
-      "lonca sandığına katkı",
-      "atölye borcunun kapatılması için pay",
+      "ortak sandığa katkı",
+      "patronunun borcunu kapatmak için pay",
       "ortak yatırım için sermaye",
       "patronun kızının çeyizine katkı",
-      "grev tazminatı için bağış",
+      "zor geçen bir yılın açığını kapatmak için bağış",
     ],
     sadakat: [
-      "loncaya bağlılık yemini",
-      "rakip loncayla iş yapmama sözü",
+      "patronuna bağlılık yemini",
+      "rakiplerle iş yapmama sözü",
       "patronun adamlarını kollama taahhüdü",
     ],
   },
@@ -1607,10 +1631,7 @@ export function yonetimTalebiUret(state: CharacterState): YonetimTalep {
   return {
     id: randomUUID(),
     kimden,
-    kimAdi:
-      kimden === "yonetici"
-        ? state.hukumdar ?? T(state.dil, "şehri yöneten kişi")
-        : T(state.dil, "patronun"),
+    kimAdi: kimden === "yonetici" ? yoneticiBilgisi(state).ad : patronBilgisi(state).ad,
     tur,
     tutar,
     kalem: havuz[Math.floor(Math.random() * havuz.length)],
@@ -1652,7 +1673,8 @@ export function yonetimYillikUygula(state: CharacterState, yasArtisi: number): s
       state.patron_iliski = Math.max(0, state.patron_iliski - YONETIM_TALEP_SURESI_DOLMA_CEZA);
     }
     state.mutluluk -= 4;
-    not = T(state.dil, "{0} talebini görmezden geldin; arası açıldı.", [t.kimAdi]);
+    const kimAdi = t.kimden === "yonetici" ? yoneticiBilgisi(state).ad : patronBilgisi(state).ad;
+    not = T(state.dil, "{0}'in talebini görmezden geldin; aranız açıldı.", [kimAdi]);
     state.yonetim_talep = null;
   }
 
@@ -1788,14 +1810,17 @@ export function durumEkle(state: CharacterState, yeniDurum?: CharacterState["dur
   state.durumlar.push({ ...yeniDurum });
 }
 
-export function durumlariUygula(state: CharacterState): string | null {
-  let olumculDurum: string | null = null;
+export function durumlariUygula(state: CharacterState): IkiDilMetin | null {
+  let olumculDurum: IkiDilMetin | null = null;
 
   for (const durum of state.durumlar) {
     if (durum.tur_basi_saglik) {
       state.saglik += durum.tur_basi_saglik;
       if (state.saglik <= 0 && !olumculDurum) {
-        olumculDurum = T(state.dil, "{0} yüzünden hayatını kaybetti.", [K(state.dil, durum.ad)]);
+        olumculDurum = {
+          tr: T("tr", "{0} yüzünden hayatını kaybetti.", [durum.ad]),
+          en: T("en", "{0} yüzünden hayatını kaybetti.", [K("en", durum.ad)]),
+        };
       }
     }
     if (durum.tur_basi_para) {

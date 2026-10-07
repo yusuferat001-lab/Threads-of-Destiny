@@ -103,6 +103,9 @@ export const AKSIYON_COOLDOWN: Record<string, number> = {
   hikaye_anlat: 3,
   bahis_izle: 3,
   fal: 4,
+  // Bilek güreşi (mini oyun) — sunucu istemcinin "başarılı" bayrağına güvendiği ve
+  // tur harcamadığı için cooldown'suzken sınırsız şöhret/mutluluk/para kasılabiliyordu.
+  bilek: 1,
 };
 
 /**

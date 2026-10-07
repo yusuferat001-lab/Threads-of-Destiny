@@ -215,18 +215,27 @@ type BilekAsama = 'hazir' | 'oynaniyor' | 'sonuc';
 
 export function BilekGuresiWidget({
   yukleniyor,
+  kalanYil = 0,
   onBilekGuresi,
 }: {
   yukleniyor: boolean;
+  /** Bilek güreşi tekrar açılana kadar kalan oyun yılı (0 = hazır). */
+  kalanYil?: number;
   onBilekGuresi: (basarili: boolean) => Promise<BilekGuresiSonucu | null>;
 }) {
-  const { m } = useDil();
+  const { m, dil } = useDil();
   const [asama, setAsama] = useState<BilekAsama>('hazir');
   const [tik, setTik] = useState(0);
   const [kalanMs, setKalanMs] = useState(BILEK_SURE_MS);
   const [sonuc, setSonuc] = useState<BilekGuresiSonucu | null>(null);
   const tikRef = useRef(0);
   const bitisRef = useRef(0);
+  // Üst bileşen her render'da yeni bir handler veriyor; zamanlayıcı efekti ona bağlı
+  // olunca oyun sırasında gelen her yeniden çizimde 5 saniyelik sayaç baştan başlıyordu.
+  const cbRef = useRef(onBilekGuresi);
+  useEffect(() => {
+    cbRef.current = onBilekGuresi;
+  });
 
   useEffect(() => {
     if (asama !== 'oynaniyor') return;
@@ -237,16 +246,17 @@ export function BilekGuresiWidget({
       if (kalan <= 0) {
         clearInterval(t);
         const basardi = tikRef.current >= BILEK_HEDEF;
-        const r = await onBilekGuresi(basardi);
+        const r = await cbRef.current(basardi);
         setSonuc(r);
-        setAsama('sonuc');
+        // Sunucu reddettiyse (ör. bekleme süresi) hata bildirimi zaten gösterilir; başa dön.
+        setAsama(r ? 'sonuc' : 'hazir');
       }
     }, 100);
     return () => clearInterval(t);
-  }, [asama, onBilekGuresi]);
+  }, [asama]);
 
   function basla() {
-    if (yukleniyor) return;
+    if (yukleniyor || kalanYil > 0) return;
     tikRef.current = 0;
     setTik(0);
     setKalanMs(BILEK_SURE_MS);
@@ -285,8 +295,14 @@ export function BilekGuresiWidget({
           {m.moBilekIt}
         </button>
       ) : (
-        <button className="mini-oyun-buton" disabled={yukleniyor} onClick={basla}>
-          {asama === 'sonuc' ? m.moTekrar : m.moBilekBasla}
+        <button className="mini-oyun-buton" disabled={yukleniyor || kalanYil > 0} onClick={basla}>
+          {kalanYil > 0
+            ? dil === 'en'
+              ? `Your arm aches · ~${kalanYil} yr`
+              : `Kolun ağrıyor · ~${kalanYil} yıl`
+            : asama === 'sonuc'
+              ? m.moTekrar
+              : m.moBilekBasla}
         </button>
       )}
     </div>

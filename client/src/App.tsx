@@ -106,7 +106,7 @@ import { sesKapaliMi, sesTercihiKaydet } from './ses';
 import { muzikModunuAyarla, muzikDurdur, muzikSessizAyarla, type MuzikModu } from './muzik';
 import { aktifOturumIdGetir, aktifOturumIdKaydet, aktifOturumIdSil } from './oturum';
 import { basarimlariKaydet, basarimlariGetir } from './basarimlar';
-import { gecmisHayatKaydet, gecmisHayatlariGetir, gecmisHayatlariTemizle, gecmisHayatSil, type GecmisHayat } from './gecmisHayatlar';
+import { gecmisHayatKaydet, gecmisHayatlariGetir, gecmisHayatlariTemizle, gecmisHayatSil, type GecmisHayat, gecmisOlumNedeni } from './gecmisHayatlar';
 import { YAPIMCI } from './yapimci';
 import { basarimlariDegerlendir, type BasarimTanimi } from './basarimSistemi';
 import { hesaplaSkorKirilimi } from './skor';
@@ -123,6 +123,8 @@ import { sonucIkonuGetir, unUnvani, MESLEK_KATEGORI, yatkinlikEtiketi, etkiTahmi
 import { formatPara } from './format';
 import { bic } from './i18n';
 import { DilContext, dilCtxYap } from './DilContext';
+import { aileKokAdi, enTanimlik } from './aileAdi';
+import { SkorKirilimiPaneli } from './components/SkorKirilimiPaneli';
 import { CarkLogo, KoseTezhibi, MuhurAyrac, AdimGostergesi, KaderYollari } from './components/Suslemeler';
 import { CagAmblemi, BolgeAmblemi } from './components/Amblemler';
 import { useMobilEkran, useGecisDeltasi } from './hooks';
@@ -442,6 +444,27 @@ function App() {
     muzikModunuAyarla(mod);
   }, [ekran, karakter?.cag, muzikAcik]);
 
+  // Ana ekranda (envanterden Kullan/Hediye) gösterilen işlem sonucu da kendiliğinden kapanır.
+  useEffect(() => {
+    if (!islemMesaji || (ekran !== 'oyun' && ekran !== 'sonuc')) return;
+    const t = window.setTimeout(() => setIslemMesaji(null), 7000);
+    return () => window.clearTimeout(t);
+  }, [islemMesaji, ekran]);
+
+  // Hata bildirimi sabit (fixed) bir kutu; birkaç saniye sonra kendiliğinden kapanır.
+  useEffect(() => {
+    if (!hata) return;
+    const t = window.setTimeout(() => setHata(null), 9000);
+    return () => window.clearTimeout(t);
+  }, [hata]);
+
+  // Belge dili + sekme başlığı aktif dile göre: CSS `text-transform: uppercase`,
+  // <html lang="en"> iken Türkçe "i"yi "I" yapıyordu ("GEÇMIŞ HAYATLAR").
+  useEffect(() => {
+    document.documentElement.lang = dil;
+    document.title = m.oyunAdi;
+  }, [dil, m.oyunAdi]);
+
   function dilDegistir(yeni: Dil) {
     setDil(yeni);
     ayarlariKaydet({ dil: yeni });
@@ -529,6 +552,9 @@ function App() {
   }, [karakter?.id, karakter?.tur_sayisi, karakter?.meslek]);
 
   // "🎯 Amaçların" kartı (sağ panel + Görevin + ölüm ekranı) — her tur tazelenir.
+  // Ekran değişiminde de tazelenir ama yalnız ekran GRUBU değişince (oyun↔sonuç
+  // geçişi her turda iki fazladan istek atıp hız sınırını zorluyordu).
+  const amacEkranGrubu = ekran === 'olum' ? 'olum' : ekran === 'oyun' || ekran === 'sonuc' ? 'oyun' : 'diger';
   useEffect(() => {
     if (!karakter || !karakter.meslek) {
       setAmaclar(null);
@@ -543,7 +569,7 @@ function App() {
     return () => {
       iptal = true;
     };
-  }, [karakter?.id, karakter?.tur_sayisi, karakter?.meslek, ekran]);
+  }, [karakter?.id, karakter?.tur_sayisi, karakter?.meslek, amacEkranGrubu]);
 
   // Not: eskiden burada mobilde "merkez-alt"ı ekrana kaydıran bir scrollIntoView
   // efekti vardı. Mobil artık masaüstüyle aynı kilitli-viewport modelini kullandığı
@@ -659,7 +685,7 @@ function App() {
       const { isim } = await isimOnerisiGetir(cag, bolge);
       setOyuncuIsmi(isim);
     } catch (err) {
-      setHata(String(err));
+      setHata(temizHata(err));
     }
   }
 
@@ -692,7 +718,7 @@ function App() {
       aktifOturumIdKaydet(state.id);
       setEkran('acilis');
     } catch (err) {
-      setHata(String(err));
+      setHata(temizHata(err));
     } finally {
       setYukleniyor(false);
     }
@@ -710,7 +736,7 @@ function App() {
       setTepkiModu(false);
       setEkran('oyun');
     } catch (err) {
-      setHata(String(err));
+      setHata(temizHata(err));
     } finally {
       setYukleniyor(false);
     }
@@ -759,7 +785,7 @@ function App() {
       });
       setEkran(sonuc.state.aktif ? 'sonuc' : 'olum');
     } catch (err) {
-      setHata(String(err));
+      setHata(temizHata(err));
     } finally {
       setYukleniyor(false);
     }
@@ -775,7 +801,7 @@ function App() {
       setTepkiModu(false);
       setEkran('oyun');
     } catch (err) {
-      setHata(String(err));
+      setHata(temizHata(err));
     } finally {
       setYukleniyor(false);
     }
@@ -788,7 +814,7 @@ function App() {
       await skorKaydet(karakter.id, isim.trim());
       setKaydedildi(true);
     } catch (err) {
-      setHata(String(err));
+      setHata(temizHata(err));
     } finally {
       setYukleniyor(false);
     }
@@ -804,7 +830,7 @@ function App() {
       setLiderlik(tablo);
       setEkran('liderlik');
     } catch (err) {
-      setHata(String(err));
+      setHata(temizHata(err));
     } finally {
       setYukleniyor(false);
     }
@@ -838,7 +864,7 @@ function App() {
       setIslemMesaji(null);
       setEkran('finans');
     } catch (err) {
-      setHata(String(err));
+      setHata(temizHata(err));
     } finally {
       setYukleniyor(false);
     }
@@ -854,7 +880,7 @@ function App() {
       setIslemMesaji(null);
       setEkran('aile');
     } catch (err) {
-      setHata(String(err));
+      setHata(temizHata(err));
     } finally {
       setYukleniyor(false);
     }
@@ -863,6 +889,7 @@ function App() {
   async function aileEtkilesimHandler(etkilesimId: string, cocukIndex?: number) {
     if (!karakter) return;
     setHata(null);
+    setIslemMesaji(null);
     setYukleniyor(true);
     try {
       const sonuc = await aileEtkilesimYap(karakter.id, etkilesimId, cocukIndex);
@@ -874,7 +901,7 @@ function App() {
         /* durum yenilenemezse eldeki kalır */
       }
     } catch (err) {
-      setHata(String(err));
+      setHata(temizHata(err));
     } finally {
       setYukleniyor(false);
     }
@@ -883,6 +910,7 @@ function App() {
   async function aileTalepHandler(karar: 'kabul' | 'ret') {
     if (!karakter) return;
     setHata(null);
+    setIslemMesaji(null);
     setYukleniyor(true);
     try {
       const sonuc = await aileTalebiKararlastir(karakter.id, karar);
@@ -894,7 +922,7 @@ function App() {
         /* durum yenilenemezse eldeki kalır */
       }
     } catch (err) {
-      setHata(String(err));
+      setHata(temizHata(err));
     } finally {
       setYukleniyor(false);
     }
@@ -915,7 +943,7 @@ function App() {
       setIslemMesaji(null);
       setEkran('kariyer');
     } catch (err) {
-      setHata(String(err));
+      setHata(temizHata(err));
     } finally {
       setYukleniyor(false);
     }
@@ -944,6 +972,7 @@ function App() {
   async function yonetimEtkilesimHandler(etkilesimId: string, kademe?: number) {
     if (!karakter) return;
     setHata(null);
+    setIslemMesaji(null);
     setYukleniyor(true);
     try {
       const sonuc = await yonetimEtkilesimYap(karakter.id, etkilesimId, kademe);
@@ -960,6 +989,7 @@ function App() {
   async function yonetimIstekHandler(istekId: string) {
     if (!karakter) return;
     setHata(null);
+    setIslemMesaji(null);
     setYukleniyor(true);
     try {
       const sonuc = await yonetimIstekYap(karakter.id, istekId);
@@ -976,6 +1006,7 @@ function App() {
   async function yonetimTalepHandler(karar: 'kabul' | 'ret' | 'yalan') {
     if (!karakter) return;
     setHata(null);
+    setIslemMesaji(null);
     setYukleniyor(true);
     try {
       const sonuc = await yonetimTalebiKararlastir(karakter.id, karar);
@@ -1007,7 +1038,7 @@ function App() {
       setIslemMesaji(null);
       setEkran('yatirim');
     } catch (err) {
-      setHata(String(err));
+      setHata(temizHata(err));
     } finally {
       setYukleniyor(false);
     }
@@ -1026,6 +1057,7 @@ function App() {
     if (!karakter) return;
     // Kullanıcı isteği: suç işlerken onay sorma; sonuç açılır pencerede gösterilir.
     setHata(null);
+    setIslemMesaji(null);
     setYukleniyor(true);
     try {
       const sonuc = await kotuIsYap(karakter.id, tur, opts);
@@ -1035,7 +1067,7 @@ function App() {
       setFinans(finans);
       await kariyerKaranlikIslerTazele(sonuc.state.id);
     } catch (err) {
-      setHata(String(err));
+      setHata(temizHata(err));
     } finally {
       setYukleniyor(false);
     }
@@ -1044,6 +1076,7 @@ function App() {
   async function krediAlHandler(tutar: number) {
     if (!karakter) return;
     setHata(null);
+    setIslemMesaji(null);
     setYukleniyor(true);
     try {
       const sonuc = await krediAl(karakter.id, tutar);
@@ -1053,7 +1086,7 @@ function App() {
       setFinans(finans);
       await yatirimEkraniniYenile(sonuc.state.id);
     } catch (err) {
-      setHata(String(err));
+      setHata(temizHata(err));
     } finally {
       setYukleniyor(false);
     }
@@ -1062,6 +1095,7 @@ function App() {
   async function krediPazarlikHandler() {
     if (!karakter) return;
     setHata(null);
+    setIslemMesaji(null);
     setYukleniyor(true);
     try {
       const sonuc = await krediPazarlik(karakter.id);
@@ -1069,7 +1103,7 @@ function App() {
       setIslemMesaji(sonuc.mesaj);
       await yatirimEkraniniYenile(sonuc.state.id);
     } catch (err) {
-      setHata(String(err));
+      setHata(temizHata(err));
     } finally {
       setYukleniyor(false);
     }
@@ -1082,13 +1116,14 @@ function App() {
   ) {
     if (!karakter) return;
     setHata(null);
+    setIslemMesaji(null);
     setYukleniyor(true);
     try {
       const sonuc = await hediyeEt(karakter.id, esyaId, hedef, opts);
       setKarakter(sonuc.state);
       setIslemMesaji(sonuc.mesaj);
     } catch (err) {
-      setHata(String(err));
+      setHata(temizHata(err));
     } finally {
       setYukleniyor(false);
     }
@@ -1097,6 +1132,7 @@ function App() {
   async function mulkSatinAlHandler(tur: MulkTuru) {
     if (!karakter) return;
     setHata(null);
+    setIslemMesaji(null);
     setYukleniyor(true);
     try {
       const sonuc = await mulkSatinAl(karakter.id, tur);
@@ -1104,7 +1140,7 @@ function App() {
       setIslemMesaji(sonuc.mesaj);
       await yatirimEkraniniYenile(sonuc.state.id);
     } catch (err) {
-      setHata(String(err));
+      setHata(temizHata(err));
     } finally {
       setYukleniyor(false);
     }
@@ -1113,6 +1149,7 @@ function App() {
   async function zarAtHandler(tutar: number) {
     if (!karakter) return null;
     setHata(null);
+    setIslemMesaji(null);
     setYukleniyor(true);
     try {
       const sonuc = await zarAt(karakter.id, tutar);
@@ -1120,7 +1157,7 @@ function App() {
       setIslemMesaji(sonuc.mesaj);
       return sonuc;
     } catch (err) {
-      setHata(String(err));
+      setHata(temizHata(err));
       return null;
     } finally {
       setYukleniyor(false);
@@ -1130,6 +1167,7 @@ function App() {
   async function ucKagitciHandler(tutar: number, secim: number) {
     if (!karakter) return null;
     setHata(null);
+    setIslemMesaji(null);
     setYukleniyor(true);
     try {
       const sonuc = await ucKagitciOyna(karakter.id, tutar, secim);
@@ -1137,7 +1175,7 @@ function App() {
       setIslemMesaji(sonuc.mesaj);
       return sonuc;
     } catch (err) {
-      setHata(String(err));
+      setHata(temizHata(err));
       return null;
     } finally {
       setYukleniyor(false);
@@ -1147,14 +1185,21 @@ function App() {
   async function bilekGuresiHandler(basarili: boolean) {
     if (!karakter) return null;
     setHata(null);
+    setIslemMesaji(null);
     setYukleniyor(true);
     try {
       const sonuc = await bilekGuresiSonuc(karakter.id, basarili);
       setKarakter(sonuc.state);
       setIslemMesaji(sonuc.mesaj);
+      // Bilek güreşinin artık bir bekleme süresi var — paneldeki kilit göstergesi tazelensin.
+      try {
+        setSosyalAksiyonConfig(await sosyallesmeAksiyonConfigGetir(karakter.id));
+      } catch {
+        /* config yenilenemezse eldeki kalır */
+      }
       return sonuc;
     } catch (err) {
-      setHata(String(err));
+      setHata(temizHata(err));
       return null;
     } finally {
       setYukleniyor(false);
@@ -1177,9 +1222,10 @@ function App() {
       setSosyalOlay(null);
       setSosyalOlaySonuc(null);
       setSosyalOlayTepkiModu(false);
+      setIslemMesaji(null);
       setEkran('sosyallesme');
     } catch (err) {
-      setHata(String(err));
+      setHata(temizHata(err));
     } finally {
       setYukleniyor(false);
     }
@@ -1199,7 +1245,7 @@ function App() {
       }
       return sonuc;
     } catch (err) {
-      setHata(String(err));
+      setHata(temizHata(err));
       return null;
     }
   }
@@ -1217,7 +1263,7 @@ function App() {
       setSosyalOlaySonuc(null);
       setSosyalOlayTepkiModu(false);
     } catch (err) {
-      setHata(String(err));
+      setHata(temizHata(err));
     } finally {
       setYukleniyor(false);
     }
@@ -1253,7 +1299,7 @@ function App() {
       }
       setSosyalOlaySonuc(etki);
     } catch (err) {
-      setHata(String(err));
+      setHata(temizHata(err));
     } finally {
       setYukleniyor(false);
     }
@@ -1275,7 +1321,7 @@ function App() {
       setSosyallesmeYerleri(yerler);
       setSosyalAksiyonConfig(aksiyonConfig);
     } catch (err) {
-      setHata(String(err));
+      setHata(temizHata(err));
     } finally {
       setYukleniyor(false);
     }
@@ -1291,7 +1337,7 @@ function App() {
       setIslemMesaji(null);
       setEkran('magaza');
     } catch (err) {
-      setHata(String(err));
+      setHata(temizHata(err));
     } finally {
       setYukleniyor(false);
     }
@@ -1300,6 +1346,7 @@ function App() {
   async function magazaSatinAlHandler(katalogId: string) {
     if (!karakter) return;
     setHata(null);
+    setIslemMesaji(null);
     setYukleniyor(true);
     try {
       const sonuc = await magazadanSatinAl(karakter.id, katalogId);
@@ -1308,7 +1355,7 @@ function App() {
       const { katalog } = await magazaKatalogGetir(sonuc.state.id);
       setMagazaKatalogu(katalog);
     } catch (err) {
-      setHata(String(err));
+      setHata(temizHata(err));
     } finally {
       setYukleniyor(false);
     }
@@ -1324,7 +1371,7 @@ function App() {
       setIslemMesaji(null);
       setEkran('evlilik');
     } catch (err) {
-      setHata(String(err));
+      setHata(temizHata(err));
     } finally {
       setYukleniyor(false);
     }
@@ -1338,7 +1385,7 @@ function App() {
       const { adaylar } = await evlilikAdaylariGetir(karakter.id);
       setEvlilikAdaylari(adaylar);
     } catch (err) {
-      setHata(String(err));
+      setHata(temizHata(err));
     } finally {
       setYukleniyor(false);
     }
@@ -1347,6 +1394,7 @@ function App() {
   async function evlilikTeklifEtHandler(aday: EvlilikAdayi) {
     if (!karakter) return;
     setHata(null);
+    setIslemMesaji(null);
     setYukleniyor(true);
     try {
       const sonuc = await evlilikTeklifEt(karakter.id, aday);
@@ -1359,7 +1407,7 @@ function App() {
         setEvlilikAdaylari([]);
       }
     } catch (err) {
-      setHata(String(err));
+      setHata(temizHata(err));
     } finally {
       setYukleniyor(false);
     }
@@ -1368,13 +1416,14 @@ function App() {
   async function envanterKullanHandler(esyaId: string) {
     if (!karakter) return;
     setHata(null);
+    setIslemMesaji(null);
     setYukleniyor(true);
     try {
       const sonuc = await envanterEsyasiKullan(karakter.id, esyaId);
       setKarakter(sonuc.state);
       setIslemMesaji(sonuc.mesaj);
     } catch (err) {
-      setHata(String(err));
+      setHata(temizHata(err));
     } finally {
       setYukleniyor(false);
     }
@@ -1383,6 +1432,7 @@ function App() {
   async function konutDegistirHandler(konutId: string) {
     if (!karakter) return;
     setHata(null);
+    setIslemMesaji(null);
     setYukleniyor(true);
     try {
       const sonuc = await konutDegistir(karakter.id, konutId);
@@ -1391,7 +1441,7 @@ function App() {
       const { finans } = await finansGetir(sonuc.state.id);
       setFinans(finans);
     } catch (err) {
-      setHata(String(err));
+      setHata(temizHata(err));
     } finally {
       setYukleniyor(false);
     }
@@ -1400,6 +1450,7 @@ function App() {
   async function yasamSecimiDegistirHandler(secimId: string) {
     if (!karakter) return;
     setHata(null);
+    setIslemMesaji(null);
     setYukleniyor(true);
     try {
       const sonuc = await yasamSecimiDegistir(karakter.id, secimId);
@@ -1408,7 +1459,7 @@ function App() {
       const { finans } = await finansGetir(sonuc.state.id);
       setFinans(finans);
     } catch (err) {
-      setHata(String(err));
+      setHata(temizHata(err));
     } finally {
       setYukleniyor(false);
     }
@@ -1417,6 +1468,7 @@ function App() {
   async function ekipCikarHandler(ekipId: string) {
     if (!karakter) return;
     setHata(null);
+    setIslemMesaji(null);
     setYukleniyor(true);
     try {
       const sonuc = await ekipCikar(karakter.id, ekipId);
@@ -1425,7 +1477,7 @@ function App() {
       const { finans } = await finansGetir(sonuc.state.id);
       setFinans(finans);
     } catch (err) {
-      setHata(String(err));
+      setHata(temizHata(err));
     } finally {
       setYukleniyor(false);
     }
@@ -1523,7 +1575,22 @@ function App() {
           onAile={aileEkraniniAc}
         />
       )}
-      {hata && <div className="hata-kutusu">{hata}</div>}
+      {islemMesaji && (ekran === 'oyun' || ekran === 'sonuc') && (
+        <div className="bilgi-kutusu" role="status">
+          <span className="hata-kutusu-metin">{islemMesaji}</span>
+          <button type="button" className="hata-kutusu-kapat" onClick={() => setIslemMesaji(null)} aria-label={m.kapat} title={m.kapat}>
+            ✕
+          </button>
+        </div>
+      )}
+      {hata && (
+        <div className="hata-kutusu" role="alert">
+          <span className="hata-kutusu-metin">{hata}</span>
+          <button type="button" className="hata-kutusu-kapat" onClick={() => setHata(null)} aria-label={m.kapat} title={m.kapat}>
+            ✕
+          </button>
+        </div>
+      )}
 
       {ayarlarAcik && (
         <AyarlarModal
@@ -1691,7 +1758,7 @@ function App() {
                           <span className="gecmis-hayat-skor">{h.skor.toLocaleString(dil === 'en' ? 'en-US' : 'tr-TR')} {m.puan}</span>
                         </span>
                         <span className="gecmis-hayat-alt">
-                          {h.yas} {m.yasinda} · {kt(h.meslek)} · {kt(h.bolge)} · {h.olumNedeni}
+                          {h.yas} {m.yasinda} · {kt(h.meslek)} · {kt(h.bolge)} · {gecmisOlumNedeni(h, dil)}
                         </span>
                       </button>
                       <button
@@ -1785,19 +1852,20 @@ function App() {
                   {formatPara(secilenGecmisHayat.para)} {secilenGecmisHayat.paraBirimi} · {m.sohret}:{' '}
                   {unUnvani(secilenGecmisHayat.un, dil)} ·{' '}
                   {secilenGecmisHayat.skor.toLocaleString(dil === 'en' ? 'en-US' : 'tr-TR')} {m.puan}
-                  {secilenGecmisHayat.amacTamamlandi && ' · 🎯 x5'}
+                  {(secilenGecmisHayat.amacCarpani ?? (secilenGecmisHayat.amacTamamlandi ? 5 : 1)) > 1 &&
+                    ` · 🎯 ×${(secilenGecmisHayat.amacCarpani ?? 5).toLocaleString(dil === 'en' ? 'en-US' : 'tr-TR')}`}
                 </p>
-                <p className="sonuc-hikaye">{secilenGecmisHayat.olumNedeni}</p>
+                <p className="sonuc-hikaye">{gecmisOlumNedeni(secilenGecmisHayat, dil)}</p>
                 {(secilenGecmisHayat.unvanlar.length > 0 || secilenGecmisHayat.efsaneviOlum) && (
                   <div className="basarimlar-listesi">
                     {secilenGecmisHayat.unvanlar.map((u) => (
                       <span key={u} className="liderlik-rozet liderlik-rozet-unvan">
-                        🏵️ {u}
+                        🏵️ {kt(u)}
                       </span>
                     ))}
                     {secilenGecmisHayat.efsaneviOlum && (
                       <span className="liderlik-rozet liderlik-rozet-olum">
-                        💀 {secilenGecmisHayat.efsaneviOlum}
+                        💀 {kt(secilenGecmisHayat.efsaneviOlum)}
                       </span>
                     )}
                   </div>
@@ -1865,7 +1933,7 @@ function App() {
                   </div>
                 </>
               ) : (
-                <p className="giris-aciklama bolge-secim-bos">{m.cagSecAlt}</p>
+                <p className="giris-aciklama bolge-secim-bos">{m.cagSecBolgeBos}</p>
               )}
             </div>
           </div>
@@ -1925,7 +1993,9 @@ function App() {
               <KarakterAvatari kisilik={karakter.kisilik} giyilenKozmetikler={avatarKozmetikleri} />
               <h2 className="acilis-kimlik-ad">
                 {karakter.isim && <strong>{karakter.isim}</strong>}
-                <span className="acilis-kimlik-alt">{bic(m.acilisAileCocugu, kt(karakter.aile_meslegi))}</span>
+                <span className="acilis-kimlik-alt">
+                  {bic(m.acilisAileCocugu, aileKokAdi(kt(karakter.aile_meslegi)), enTanimlik(aileKokAdi(kt(karakter.aile_meslegi))))}
+                </span>
               </h2>
               <Banner
                 cag={karakter.cag}
@@ -2361,7 +2431,7 @@ function App() {
                   </button>
                 </div>
                 <div className="skor-detay-govde">
-                  <p>{m.skorDetayPlaceholder}</p>
+                  {karakter && <SkorKirilimiPaneli karakter={karakter} baslikGoster={false} />}
                 </div>
               </div>
             </div>
@@ -2513,6 +2583,7 @@ function App() {
           adaylar={evlilikAdaylari}
           yukleniyor={yukleniyor}
           islemMesaji={islemMesaji}
+          evli={!!karakter?.es_adi}
           onTeklifEt={evlilikTeklifEtHandler}
           onYeniAdaylar={evlilikYeniAdaylarHandler}
           onGeriDon={() => {
@@ -2621,7 +2692,7 @@ function App() {
             <span className="sonuc-ikon">💀</span>
             <div className="olum-ust-metin">
               <h2>{m.oldun}</h2>
-              <p className="sonuc-hikaye">{karakter.olum_nedeni}</p>
+              <p className="sonuc-hikaye">{karakter.olum_nedeni_ceviri?.[dil] ?? karakter.olum_nedeni}</p>
             </div>
           </div>
         );
@@ -2643,7 +2714,8 @@ function App() {
                 kt(karakter.rutbe),
                 kt(karakter.meslek),
                 kt(karakter.bolge),
-                kt(karakter.aile_meslegi)
+                aileKokAdi(kt(karakter.aile_meslegi)),
+                enTanimlik(aileKokAdi(kt(karakter.aile_meslegi)))
               )}
             </p>
             {GUNLUK_KOZMETIK_GOLD_GORUNUR && olumGoldKazanci !== null && (
@@ -2674,98 +2746,7 @@ function App() {
           </div>
         );
 
-        const skorKirilimiBlok = (() => {
-          const kirilim = hesaplaSkorKirilimi(karakter);
-          const locale = dil === 'en' ? 'en-US' : 'tr-TR';
-          const say = (n: number) => n.toLocaleString(locale);
-          return (
-            <div className="skor-kirilimi">
-              <h3 className="skor-kirilimi-baslik">📊 {m.skorKirilimBaslik}</h3>
-              <ul className="skor-kirilimi-liste">
-                <li>
-                  <span>{m.skorKirilimServet}</span>
-                  <span>{say(kirilim.servetPuani)}</span>
-                </li>
-                <li>
-                  <span>{m.skorKirilimSohret}</span>
-                  <span>{say(kirilim.sohretPuani)}</span>
-                </li>
-                <li>
-                  <span>{m.skorKirilimAhlak}</span>
-                  <span>{say(kirilim.ahlakPuani)}</span>
-                </li>
-                <li>
-                  <span>{m.skorKirilimMutluluk}</span>
-                  <span>{say(kirilim.mutlulukPuani)}</span>
-                </li>
-                <li>
-                  <span>{m.skorKirilimRutbe}</span>
-                  <span>{say(kirilim.rutbePuani)}</span>
-                </li>
-                {kirilim.sarayda && (
-                  <li className="skor-kirilimi-tik">
-                    <span>{m.skorKirilimTikSaray}</span>
-                    <span>+{say(3000)}</span>
-                  </li>
-                )}
-                {kirilim.yolculukTamamlandi && (
-                  <li className="skor-kirilimi-tik">
-                    <span>{m.skorKirilimTikYolculuk}</span>
-                    <span>+{say(3000)}</span>
-                  </li>
-                )}
-                {kirilim.gizemliEsyaSahibi && (
-                  <li className="skor-kirilimi-tik">
-                    <span>{m.skorKirilimTikGizemli}</span>
-                    <span>+{say(3000)}</span>
-                  </li>
-                )}
-                {karakter.komik_olum_basarili_risk && (
-                  <li className="skor-kirilimi-tik">
-                    <span>{m.skorKirilimTikKomikRisk}</span>
-                    <span>+{say(3000)}</span>
-                  </li>
-                )}
-                {!karakter.komik_olum_basarili_risk && karakter.komik_olum_ile_oldu && (
-                  <li className="skor-kirilimi-tik">
-                    <span>{m.skorKirilimTikKomikOlum}</span>
-                    <span>+{say(2000)}</span>
-                  </li>
-                )}
-                {kirilim.yolculukTamamlandi && (
-                  <li className="skor-kirilimi-tik">
-                    <span>{m.skorKirilimTikYolculukBonus}</span>
-                    <span>+{say(2000)}</span>
-                  </li>
-                )}
-                {karakter.veba_hayatta_kaldi && (
-                  <li className="skor-kirilimi-tik">
-                    <span>{m.skorKirilimTikVeba}</span>
-                    <span>+{say(2000)}</span>
-                  </li>
-                )}
-                {karakter.hapis_basarili_kacis && (
-                  <li className="skor-kirilimi-tik">
-                    <span>{m.skorKirilimTikHapisKacis}</span>
-                    <span>+{say(2000)}</span>
-                  </li>
-                )}
-              </ul>
-              <div className="skor-kirilimi-toplam">
-                <span>{m.skorKirilimToplam}</span>
-                <span>{say(kirilim.temelToplam)}</span>
-              </div>
-              <div className="skor-kirilimi-carpan">
-                <span>× {m.skorKirilimAmac}</span>
-                <span>×{kirilim.amacCarpani}</span>
-              </div>
-              <div className="skor-kirilimi-sonuc">
-                <span>{m.skorKirilimSonuc}</span>
-                <span>{say(kirilim.skor)}</span>
-              </div>
-            </div>
-          );
-        })();
+        const skorKirilimiBlok = <SkorKirilimiPaneli karakter={karakter} />;
 
         const amacBlok = <AmacPaneli durum={amaclar} varyant="olum" />;
 
@@ -2786,7 +2767,7 @@ function App() {
                 </span>
               ))}
               {karakter.efsanevi_olum && (
-                <span className="liderlik-rozet liderlik-rozet-olum">💀 {karakter.efsanevi_olum}</span>
+                <span className="liderlik-rozet liderlik-rozet-olum">💀 {kt(karakter.efsanevi_olum)}</span>
               )}
               {/* Sadece bu ölümde İLK KEZ açılan (daha önce hiç kazanılmamış) başarımlar gösterilir. */}
               {yeniBasarimlar.map((b) => (
@@ -2905,8 +2886,8 @@ function App() {
                         🎯{kayit.amac_carpani ? ` ×${kayit.amac_carpani % 1 === 0 ? kayit.amac_carpani : kayit.amac_carpani.toFixed(1)}` : ''}
                       </span>
                     )}
-                    {' '}— {kayit.skor} {m.puan} ({kayit.rutbe ? `${kt(kayit.rutbe)}, ` : ''}
-                    {kt(kayit.cag)}, {bic(m.yasSonek, kayit.yas)}, {kayit.olum_nedeni})
+                    {' '}— {Math.round(kayit.skor).toLocaleString(dil === 'en' ? 'en-US' : 'tr-TR')} {m.puan} ({kayit.rutbe ? `${kt(kayit.rutbe)}, ` : ''}
+                    {kt(kayit.cag)}, {bic(m.yasSonek, kayit.yas)}, {dil === 'en' && kayit.olum_nedeni_en ? kayit.olum_nedeni_en : kayit.olum_nedeni})
                   </div>
                   {(kayit.unvanlar || kayit.efsanevi_olum) && (
                     <div className="liderlik-detay">
@@ -2917,7 +2898,7 @@ function App() {
                           </span>
                         ))}
                       {kayit.efsanevi_olum && (
-                        <span className="liderlik-rozet liderlik-rozet-olum">💀 {kayit.efsanevi_olum}</span>
+                        <span className="liderlik-rozet liderlik-rozet-olum">💀 {kt(kayit.efsanevi_olum)}</span>
                       )}
                     </div>
                   )}
@@ -2925,7 +2906,9 @@ function App() {
               ))}
             </ol>
           )}
-          <button className="ikincil" onClick={bastanBasla}>
+          {/* Oyun sürerken liderliğe bakıp dönen oyuncunun kaydı silinmesin: yalnız
+              karakter öldüyse sıfırla, yaşıyorsa giriş ekranına dön ("Oyuna Devam Et" kalır). */}
+          <button className="ikincil" onClick={() => (karakter?.aktif ? setEkran('giris') : bastanBasla())}>
             {m.anaMenu}
           </button>
         </div>
