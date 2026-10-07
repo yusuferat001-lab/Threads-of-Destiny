@@ -671,4 +671,17 @@ export const KATALOG_EN: Record<string, string> = {
   "Zanaat Gücü": "Craft Power",
   "Bölge Hâkimiyeti": "District Control",
   "Askeri Güç": "Military Power",
+  // Mesleğe özel karanlık işler (2026-10)
+  "Rakibin Kervanını Yağmalat": "Have Your Rival's Caravan Raided",
+  "Karaborsa Yarat": "Rig the Black Market",
+  "Gümrüğe Rüşvet": "Bribe the Customs House",
+  "Sahte Mucize": "Stage a False Miracle",
+  "Rakibi Aforoz Ettir": "Have Your Rival Excommunicated",
+  "Valiye Şantaj": "Blackmail the Governor",
+  "Rakibin Formülünü Çal": "Steal Your Rival's Formula",
+  "Hammaddeyi Kapat": "Corner the Raw Materials",
+  "Lonca Kararını Çarpıt": "Rig the Guild Vote",
+  "Kaos Çıkar, Koruma Sat": "Stir Chaos, Sell Protection",
+  "Kaza Süsü Verilmiş Düello": "A Duel Dressed Up as an Accident",
+  "Kervan Baskını": "Caravan Raid",
 };

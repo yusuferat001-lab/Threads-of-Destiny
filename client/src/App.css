@@ -7554,3 +7554,16 @@ button.ikincil {
   opacity: 0.75;
   margin: 0.3rem 0 0;
 }
+
+/* Karanlık işler: mesleğe özel / genel gruplar + bekleme süresi (§43 Faz 1) */
+.karanlik-grup + .karanlik-grup {
+  margin-top: 0.8rem;
+}
+.karanlik-grup-baslik {
+  margin: 0.2rem 0 0.4rem;
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
+.yatirim-kart.karanlik-bekliyor {
+  opacity: 0.6;
+}

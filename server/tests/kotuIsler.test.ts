@@ -2,11 +2,14 @@ import { describe, it, expect } from "vitest";
 import { yeniOyun, mesleğiAta, kotuIsYap, kotuIsConfigGetir, stateGetir, hapisCezaSuresiHesapla } from "../src/game/gameEngine";
 
 describe("karanlık işler (illegal işler paneli)", () => {
-  it("kotuIsConfigGetir 5 aksiyonu şans/kazanç önizlemesiyle döner", async () => {
+  it("kotuIsConfigGetir 4 genel + 3 mesleğe özel aksiyonu şans/kazanç önizlemesiyle döner", async () => {
     const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     const config = await kotuIsConfigGetir(state.id);
-    expect(config).toHaveLength(5);
+    expect(config).toHaveLength(7);
+    expect(config.filter((k) => k.meslegeOzel).map((k) => k.id).sort()).toEqual(
+      ["gumruk_rusvet", "karaborsa_yarat", "kervan_yagmalat"]
+    );
     for (const kart of config) {
       expect(kart.basariSansi).toBeGreaterThanOrEqual(5);
       expect(kart.basariSansi).toBeLessThanOrEqual(95);
@@ -50,6 +53,7 @@ describe("karanlık işler (illegal işler paneli)", () => {
     for (let i = 0; i < 60; i++) {
       s = await stateGetir(state.id);
       if (s.etiketler.includes("hapiste")) break;
+      s.kotu_is_kilit = {}; // bekleme süresini test için sıfırla
       await kotuIsYap(state.id, "rakibi_korkut");
     }
     s = await stateGetir(state.id);
@@ -87,11 +91,71 @@ describe("karanlık işler (illegal işler paneli)", () => {
     s.para = 1000; // birini_soy'un maliyet kontrolüne takılmasın (ölüm riski yok, güvenle döngüye sokulabilir)
     let tutuklandi = false;
     for (let i = 0; i < 60 && !tutuklandi; i++) {
+      s.kotu_is_kilit = {}; // bekleme süresini test için sıfırla
       await kotuIsYap(state.id, "birini_soy");
       if (s.etiketler.includes("hapiste")) tutuklandi = true;
     }
     expect(tutuklandi).toBe(true);
     expect(s.hapis_ceza_kalan).toBeGreaterThanOrEqual(2);
     expect(s.hapis_ceza_toplam).toBe(s.hapis_ceza_kalan);
+  });
+
+  it("her iş çevrildikten sonra kendi bekleme süresi kadar kilitlenir", async () => {
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
+    await mesleğiAta(state.id, "Asker");
+    await kotuIsYap(state.id, "adam_dov");
+    const s = await stateGetir(state.id);
+    if (s.etiketler.includes("hapiste")) s.etiketler = s.etiketler.filter((e) => e !== "hapiste");
+    await expect(kotuIsYap(state.id, "adam_dov")).rejects.toThrow(/sakinleşmedi/);
+    const kart = (await kotuIsConfigGetir(state.id)).find((k) => k.id === "adam_dov");
+    expect(kart?.kalanYil).toBeGreaterThan(0);
+    s.yil += 1;
+    expect((await kotuIsConfigGetir(state.id)).find((k) => k.id === "adam_dov")?.kalanYil).toBe(0);
+  });
+
+  it("başka mesleğin özel işi çevrilemez, kendi mesleğininki görünür", async () => {
+    const state = await yeniOyun("Sanayi Devrimi", "İngiltere", "kasaba");
+    await mesleğiAta(state.id, "Din Adamı");
+    const idler = (await kotuIsConfigGetir(state.id)).map((k) => k.id);
+    expect(idler).toContain("sahte_mucize");
+    expect(idler).not.toContain("kervan_yagmalat");
+    await expect(kotuIsYap(state.id, "kervan_yagmalat")).rejects.toThrow();
+  });
+
+  it("mesleğe özel iş başarılı olunca meslek pazarındaki güç artar", async () => {
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
+    await mesleğiAta(state.id, "Zanaatkâr");
+    const s = await stateGetir(state.id);
+    let arttiMi = false;
+    for (let i = 0; i < 40 && !arttiMi; i++) {
+      s.kotu_is_kilit = {};
+      s.etiketler = s.etiketler.filter((e) => e !== "hapiste");
+      s.ahlak = 50;
+      const once = s.meslek_gucu;
+      const { kazandi } = await kotuIsYap(state.id, "lonca_manipule");
+      if (kazandi) arttiMi = s.meslek_gucu > once;
+    }
+    expect(arttiMi).toBe(true);
+  });
+
+  it("kaza süsü düello başarılı olursa rakip saf dışı kalır", async () => {
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
+    await mesleğiAta(state.id, "Asker");
+    const s = await stateGetir(state.id);
+    const rakipAd = s.rakipler[0].ad;
+    for (let i = 0; i < 60 && !s.rakipler.find((r) => r.ad === rakipAd)?.yenildi && s.aktif; i++) {
+      s.kotu_is_kilit = {};
+      s.saglik = 100;
+      await kotuIsYap(state.id, "kaza_duello", { hedefRakipAd: rakipAd });
+    }
+    expect(s.rakipler.find((r) => r.ad === rakipAd)?.yenildi).toBe(true);
+  });
+
+  it("peşin maliyeti olan işte para yetmezse hata verir", async () => {
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
+    await mesleğiAta(state.id, "Tüccar");
+    const s = await stateGetir(state.id);
+    s.para = 0;
+    await expect(kotuIsYap(state.id, "gumruk_rusvet")).rejects.toThrow(/Yeterli paran yok/);
   });
 });

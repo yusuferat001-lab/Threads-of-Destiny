@@ -784,4 +784,7 @@ export const ANLATIM_EN: Record<string, string> = {
   "Pazar payın": "Your market share",
   "Pazara yeni bir rakip girdi: {0}": "A new rival entered the market: {0}",
   "♟️ Boşluğu fark eden {0} pazara girdi; artık yeni rakibin o.": "♟️ Seeing the gap, {0} entered the market; they are your new rival now.",
+  // Mesleğe özel karanlık işler (2026-10)
+  "Ambarları sen boşalttın; şehirde kıtlık başladı.": "You emptied the granaries; famine has struck the city.",
+  "Sokaklar karıştı; şehirde isyan çıktı.": "The streets boiled over; a revolt broke out in the city.",
 };

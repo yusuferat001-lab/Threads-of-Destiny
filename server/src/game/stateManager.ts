@@ -824,6 +824,7 @@ export function createCharacter(
     salgin_korunma_yatirimi: null,
     kredi: null,
     aile_etkilesim_kilit: {},
+    kotu_is_kilit: {},
     aile_talep: null,
     aile_talep_sonraki_yil: yil + 4,
     // Kral/yönetici ile başlangıçta neredeyse hiç ilişki yok (kullanıcı isteği);
@@ -1108,6 +1109,8 @@ export function eskiKayitGocu(state: CharacterState): void {
   if (!state.aile_etkilesim_kilit || typeof state.aile_etkilesim_kilit !== "object") {
     state.aile_etkilesim_kilit = {};
   }
+  // Karanlık işlerin bekleme süreleri (2026-10, §43 Faz 1) sonradan eklendi.
+  if (!state.kotu_is_kilit || typeof state.kotu_is_kilit !== "object") state.kotu_is_kilit = {};
   // Sosyalleşme ekranı tur-harcamayan aksiyonları (içki/deli/sadaka/kulak/ısmarla/fal) sonradan eklendi.
   if (!state.sosyallesme_aksiyon_kilit || typeof state.sosyallesme_aksiyon_kilit !== "object") {
     state.sosyallesme_aksiyon_kilit = {};
@@ -2621,13 +2624,6 @@ export function rakipSoygunKontrolEt(state: CharacterState, yasArtisi: number): 
 // kırılan güç pazar payı (para + kariyer) olarak sana döner; husumet yükselince
 // rakip misilleme yapar. Rakip "yenildi" olunca sistemden çıkar.
 // ---------------------------------------------------------------------------
-
-/** Hangi karanlık işler bir rakibi hedefleyebilir + o iş rakip gücünü ne kadar kırar. */
-export const RAKIP_KOTU_IS_HEDEFLERI: Record<string, number> = {
-  rakibi_korkut: 8,
-  rakibi_dov: 15,
-  isyeri_yak: 26,
-};
 
 export interface RakipGucKirSonucu {
   kirilan: number;

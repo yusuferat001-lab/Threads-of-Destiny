@@ -409,6 +409,8 @@ export interface CharacterState {
 
   /** Aile ekranı etkileşim cooldown'ları: anahtar (ör. "es:hediye", "cocuk:2:oyna") → tekrar açılacağı oyun yılı. */
   aile_etkilesim_kilit: Record<string, number>;
+  /** Karanlık işlerin bekleme süreleri: iş id'si → yeniden çevrilebileceği oyun yılı (§43 Faz 1). */
+  kotu_is_kilit: Record<string, number>;
   /** Eş/çocuğun bekleyen para talebi; yoksa null (§33). */
   aile_talep: AileTalep | null;
   /** Bir sonraki aile talebinin üretilebileceği en erken yıl (yaratılışta baslangic_yili + 4). */

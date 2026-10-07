@@ -72,6 +72,7 @@ const HATA_KALIPLARI: [RegExp, (m: RegExpMatchArray) => string][] = [
   [/^En az (.+?) (\S+) kredi alabilirsin\.$/, (m) => `The minimum loan is ${m[1]} ${m[2]}.`],
   [/^Cebinde bu mekâna gidecek kadar para yok \(~(.+?) (\S+) giriş ücreti\)\.$/, (m) => `You can't afford this place (~${m[1]} ${m[2]} entry fee).`],
   [/^Yakın zamanda temel ürün aldın; (\d+) yıl sonra tekrar alışveriş yapabilirsin\.$/, (m) => `You bought basic goods recently; you can shop again in ${m[1]} years.`],
+  [/^Bu iş için ortalık henüz sakinleşmedi; (\d+) yıl sonra yeniden deneyebilirsin\.$/, (m) => `Things haven't cooled down for this job yet; try again in ${m[1]} year(s).`],
   [/^Kolun hâlâ ağrıyor; (\d+) yıl sonra yeniden bilek güreşebilirsin\.$/, (m) => `Your arm still aches; you can arm-wrestle again in ${m[1]} year(s).`],
 ];
 

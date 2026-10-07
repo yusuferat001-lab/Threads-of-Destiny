@@ -93,7 +93,6 @@ import {
   rakiplerGuncelle,
   meslekGucuEkle,
   pazarYillikUygula,
-  RAKIP_KOTU_IS_HEDEFLERI,
   krediAl,
   krediPazarlik,
   krediYillikUygula,
@@ -112,7 +111,8 @@ import {
   rakipPayiHesapla,
 } from "../data/pazar";
 import { yoneticiBilgisi, patronBilgisi } from "./yonetimKisileri";
-import { KOTU_ISLER, kotuIsTanimiGetir, KotuIsEtki } from "../data/kotuIsler";
+import { kotuIsTanimiGetir, uygunKotuIsler, KOTU_IS_ADLARI, KotuIsEtki, KotuIsTanimi } from "../data/kotuIsler";
+import { yatkinlikZarBonusOrani } from "../data/meslekYatkinlik";
 import { rollSuccess } from "./diceRoll";
 import { olaySec, doldur, temelUygunMu, sosyallesmeIcinOlaySec } from "./olaySecici";
 import { OlayTanimi, OnTepki, OLAY_BANKASI } from "../data/olaylar";
@@ -3456,33 +3456,55 @@ interface YatirimSonucu {
 export interface KotuIsKarti {
   id: string;
   simge: string;
-  /** Yatkınlık eklendikten sonra oyuncuya gösterilen başarı şansı (5-95). */
+  /** Yatkınlık kademesi uygulandıktan sonra oyuncuya gösterilen başarı şansı (5-95). */
   basariSansi: number;
   /** Bu aksiyonun başarılı dalının verebileceği yaklaşık para (enflasyonlu, taban); 0 ise para getirisi yok. */
   tahminiKazanc: number;
+  /** Peşin maliyet (enflasyonlu); 0 ise yok. */
+  maliyet: number;
   /** Rakip hedefliyor mu (etiket/anlatı için). */
   rakibeYonelik: boolean;
-  /** İsimli bir rakibin gücünü kırabilir mi (RAKIP_KOTU_IS_HEDEFLERI). 0 ise kıramaz. */
+  /** İsimli bir rakibin gücünü ne kadar kırar (rakipYenilt ise 100). 0 ise kıramaz. */
   rakipKirmaGucu: number;
+  /** Başarıda meslek pazarındaki gücüne eklenen miktar (0 ise yok). */
+  meslekGucuKazanci: number;
+  /** Mesleğe özel iş mi (genel değil). */
+  meslegeOzel: boolean;
+  /** Bekleme süresi: tekrar çevrilebilmesine kalan oyun yılı (0 = hazır). */
+  kalanYil: number;
 }
 
-function kotuIsBasariSansi(state: CharacterState, tanim: (typeof KOTU_ISLER)[number]): number {
-  const yatkinlik = state.yatkinliklar[tanim.yatkinlik] ?? 0;
-  return Math.round(Math.min(95, Math.max(5, tanim.basariSansi + yatkinlik)));
+/**
+ * Karanlık işin başarı şansı: §40'taki kademe formülü (taban × (1 + yatkınlık
+ * kademesinin zar oranı)). Kategori verilmemişse oyuncunun meslek kategorisi.
+ */
+function kotuIsBasariSansi(state: CharacterState, tanim: KotuIsTanimi): number {
+  const kategori = tanim.yatkinlik ?? MESLEK_KATEGORI[state.meslek] ?? "sosyal";
+  const oran = yatkinlikZarBonusOrani(state, kategori);
+  return Math.round(Math.min(95, Math.max(5, tanim.basariSansi * (1 + oran))));
 }
 
-/** İşin & Yatırımların ekranındaki "Karanlık İşler" listesi için canlı şans/kazanç önizlemesi. */
+function kotuIsKalanYil(state: CharacterState, id: string): number {
+  const acilis = (state.kotu_is_kilit ?? {})[id];
+  return acilis !== undefined ? Math.max(0, acilis - state.yil) : 0;
+}
+
+/** Kariyer ekranındaki "Karanlık İşler" listesi için canlı şans/kazanç/bekleme önizlemesi. */
 export async function kotuIsConfigGetir(id: string): Promise<KotuIsKarti[]> {
   const oturum = await oturumGetir(id);
   const { state } = oturum;
   const enflasyon = enflasyonCarpani(state);
-  return KOTU_ISLER.map((tanim) => ({
+  return uygunKotuIsler(state.meslek, state.cag).map((tanim) => ({
     id: tanim.id,
     simge: tanim.simge,
     basariSansi: kotuIsBasariSansi(state, tanim),
     tahminiKazanc: tanim.basarili.para ? Math.max(1, paraYuvarla(tanim.basarili.para * enflasyon)) : 0,
-    rakibeYonelik: (tanim.basarili.rakip_puani ?? 0) < 0,
-    rakipKirmaGucu: RAKIP_KOTU_IS_HEDEFLERI[tanim.id] ?? 0,
+    maliyet: tanim.maliyet ? Math.max(1, paraYuvarla(tanim.maliyet * enflasyon)) : 0,
+    rakibeYonelik: !!(tanim.rakipKirma || tanim.rakipYenilt),
+    rakipKirmaGucu: tanim.rakipYenilt ? 100 : tanim.rakipKirma ?? 0,
+    meslekGucuKazanci: tanim.basarili.meslek_gucu ?? 0,
+    meslegeOzel: !!tanim.meslekler,
+    kalanYil: kotuIsKalanYil(state, tanim.id),
   }));
 }
 
@@ -3643,8 +3665,8 @@ function metrikGucKatkisiUygula(state: CharacterState, etki: SonucEtkisi): void 
   if (artis && artis > 0) meslekGucuEkle(state, artis * 0.25);
 }
 
-/** Bir KotuIsEtki dalını doğrudan state'e uygular (jitter yok, olay hattından geçmez). */
-function kotuIsEtkiUygula(state: CharacterState, etki: KotuIsEtki, enflasyon: number): void {
+/** Bir KotuIsEtki dalını doğrudan state'e uygular (jitter yok, olay hattından geçmez). Bir anlatı eki döndürebilir. */
+function kotuIsEtkiUygula(state: CharacterState, etki: KotuIsEtki, enflasyon: number): string | null {
   if (etki.para) state.para = paraYuvarla(state.para + etki.para * enflasyon);
   if (etki.un) state.un += etki.un;
   if (etki.ahlak) state.ahlak += etki.ahlak;
@@ -3653,15 +3675,34 @@ function kotuIsEtkiUygula(state: CharacterState, etki: KotuIsEtki, enflasyon: nu
   if (etki.rakip_puani) state.rakip_puani += etki.rakip_puani;
   if (etki.suc_artis) state.suc_seviyesi = Math.min(100, Math.max(0, state.suc_seviyesi + etki.suc_artis));
   if (etki.kariyer_puani) state.kariyer_puani += etki.kariyer_puani;
+  if (etki.meslek_gucu) meslekGucuEkle(state, etki.meslek_gucu);
+  if (etki.ticaret_sermaye && state.meslek === "Tüccar") state.ticaret_sermaye += etki.ticaret_sermaye;
+  if (etki.nufuz && state.meslek === "Din Adamı") state.nufuz += etki.nufuz;
+  if (etki.uretim_kapasitesi && state.meslek === "Zanaatkâr") {
+    state.uretim_kapasitesi = Math.min(100, Math.max(0, state.uretim_kapasitesi + etki.uretim_kapasitesi));
+  }
+  if (etki.ordu_techizat && state.meslek === "Asker") {
+    state.ordu_techizat_seviyesi = Math.min(100, Math.max(0, state.ordu_techizat_seviyesi + etki.ordu_techizat));
+  }
+  if (etki.yonetim_iliski) state.yonetim_iliski += etki.yonetim_iliski;
+  if (etki.patron_iliski) state.patron_iliski += etki.patron_iliski;
+  if (etki.kriz && !state.ulke.kriz) {
+    state.ulke.kriz = { tur: etki.kriz.tur, bitisYili: state.yil + etki.kriz.sureYil };
+    return etki.kriz.tur === "kitlik"
+      ? T(state.dil, "Ambarları sen boşalttın; şehirde kıtlık başladı.")
+      : T(state.dil, "Sokaklar karıştı; şehirde isyan çıktı.");
+  }
+  return null;
 }
 
 /**
  * Olay beklemeden tetiklenen karanlık iş aksiyonu (turu TÜKETMEZ). Zar atılır,
  * başarı/başarısız dalın etkileri doğrudan uygulanır. Başarısız dalda hapis
- * ("ortaya çıktın") ve nadiren ölüm riski vardır.
+ * ("ortaya çıktın") ve nadiren ölüm riski vardır. Her işin kendi bekleme süresi
+ * vardır (state.kotu_is_kilit).
  */
 interface KotuIsSecenek {
-  /** Rakip hedefleyen işlerde (rakibi_korkut/rakibi_dov/isyeri_yak) hedef rakibin adı. */
+  /** Rakip hedefleyen işlerde hedef rakibin adı. */
   hedefRakipAd?: string;
   /** "Adamına yaptır": ücret öde, kişisel ahlak/hapis riskini azalt — ama "ortaya çıkma" riski. */
   vekil?: boolean;
@@ -3675,26 +3716,29 @@ export async function kotuIsYap(id: string, tur: string, secenek: KotuIsSecenek 
   if (state.etiketler.includes("hapiste")) throw new Error("Hapisteyken bu işi çeviremezsin.");
   if (state.etiketler.includes("yolculukta")) throw new Error("Yolculuktayken bu işi çeviremezsin.");
   const tanim = kotuIsTanimiGetir(tur);
-  if (!tanim) throw new Error("Geçersiz iş.");
+  if (!tanim || !uygunKotuIsler(state.meslek, state.cag).includes(tanim)) throw new Error("Geçersiz iş.");
+  const kalan = kotuIsKalanYil(state, tanim.id);
+  if (kalan > 0) throw new Error(`Bu iş için ortalık henüz sakinleşmedi; ${kalan} yıl sonra yeniden deneyebilirsin.`);
 
   const enflasyon = enflasyonCarpani(state);
   const dil = state.dil;
   const birim = state.para_birimi;
 
-  // Rakip hedefleme: yalnız rakip kıran işlerde ve geçerli/yenilmemiş bir rakip için.
-  const hedefRakip =
-    secenek.hedefRakipAd && tur in RAKIP_KOTU_IS_HEDEFLERI
-      ? state.rakipler.find((r) => r.ad === secenek.hedefRakipAd && !r.yenildi)
-      : undefined;
-
-  // "Adamına yaptır": peşin ücret; kişisel risk (ahlak/hapis) yarıya iner.
+  const maliyet = tanim.maliyet ? Math.max(1, paraYuvarla(tanim.maliyet * enflasyon)) : 0;
   const vekil = secenek.vekil === true;
-  let vekilUcret = 0;
-  if (vekil) {
-    vekilUcret = Math.max(3, paraYuvarla(10 * enflasyon));
-    if (state.para < vekilUcret) throw new Error("Adam tutacak paran yok.");
-    state.para = paraYuvarla(state.para - vekilUcret);
+  const vekilUcret = vekil ? Math.max(3, paraYuvarla(10 * enflasyon)) : 0;
+  if (state.para < maliyet + vekilUcret) {
+    throw new Error(`Yeterli paran yok (${maliyet + vekilUcret} ${birim} gerekli).`);
   }
+
+  // Rakip hedefleme: yalnız rakip kıran işlerde ve geçerli/yenilmemiş bir rakip için.
+  const rakipHedefli = !!(tanim.rakipKirma || tanim.rakipYenilt);
+  const hedefRakip = rakipHedefli
+    ? state.rakipler.find((r) => r.ad === secenek.hedefRakipAd && !r.yenildi) ?? state.rakipler.find((r) => !r.yenildi)
+    : undefined;
+
+  state.para = paraYuvarla(state.para - maliyet - vekilUcret);
+  state.kotu_is_kilit = { ...(state.kotu_is_kilit ?? {}), [tanim.id]: state.yil + tanim.cooldownYil };
 
   const sans = kotuIsBasariSansi(state, tanim);
   const kazandi = rollSuccess(sans);
@@ -3709,16 +3753,16 @@ export async function kotuIsYap(id: string, tur: string, secenek: KotuIsSecenek 
         suc_artis: hamDal.suc_artis ? Math.round(hamDal.suc_artis * 0.6) : hamDal.suc_artis,
       }
     : hamDal;
-  kotuIsEtkiUygula(state, dal, enflasyon);
+  const krizMesaji = kotuIsEtkiUygula(state, dal, enflasyon);
 
   const adi = K(dil, KOTU_IS_ADLARI[tur] ?? tur);
-  let mesaj = kazandi
-    ? T(dil, "{0}: işini gördün.", [adi])
-    : T(dil, "{0}: işler ters gitti.", [adi]);
+  let mesaj = kazandi ? T(dil, "{0}: işini gördün.", [adi]) : T(dil, "{0}: işler ters gitti.", [adi]);
+  if (krizMesaji) mesaj += " " + krizMesaji;
 
-  // Rakip gücü kır: başarılı dalda hedef rakibin gücünü düşür, pazar payını al.
+  // Rakip gücü kır / rakibi saf dışı bırak: başarılı dalda hedef rakip.
   if (kazandi && hedefRakip) {
-    const kirSonucu = rakipGucKir(state, hedefRakip.ad, RAKIP_KOTU_IS_HEDEFLERI[tur], enflasyon);
+    const kirma = tanim.rakipYenilt ? Math.max(0, hedefRakip.guc) + 1 : tanim.rakipKirma ?? 0;
+    const kirSonucu = rakipGucKir(state, hedefRakip.ad, kirma, enflasyon);
     if (kirSonucu) mesaj += " " + kirSonucu.mesaj;
   } else if (hedefRakip) {
     // Başarısız da olsa rakip senin peşinde olduğunu anlar.
@@ -3751,8 +3795,12 @@ export async function kotuIsYap(id: string, tur: string, secenek: KotuIsSecenek 
     checkDeath(state, true, ikiDilT("Çevirdiği karanlık bir iş sırasında öldü."));
   }
 
-  if (kazandi && dal.para) {
+  if (kazandi && dal.para && dal.para > 0) {
     mesaj += " " + T(dil, "Kazanç: +{0} {birim}", [Math.max(1, paraYuvarla(dal.para * enflasyon))]).replace(/\{birim\}/g, birim);
+  }
+  if (kazandi && dal.meslek_gucu && dal.meslek_gucu > 0) {
+    const adlar = pazarAdlariGetir(state.meslek);
+    if (adlar) mesaj += " " + T(dil, "{0} +{1}.", [K(dil, adlar.guc), dal.meslek_gucu]);
   }
 
   clampStats(state);
@@ -3760,13 +3808,6 @@ export async function kotuIsYap(id: string, tur: string, secenek: KotuIsSecenek 
   return { state, kazandi, mesaj };
 }
 
-const KOTU_IS_ADLARI: Record<string, string> = {
-  rakibi_korkut: "Rakibini Korkut",
-  adam_dov: "Zevkine Adam Döv",
-  rakibi_dov: "Rakibini Dövdür",
-  birini_soy: "Birini Soy",
-  isyeri_yak: "Rakibin İş Yerini Yak",
-};
 
 // ---------------------------------------------------------------------------
 // Piyasa mülkleri + dedikodular + yeraltı zar masası

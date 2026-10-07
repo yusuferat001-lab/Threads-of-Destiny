@@ -280,6 +280,8 @@ export interface CharacterState {
 
   /** Aile ekranı etkileşim cooldown'ları: anahtar → tekrar açılacağı oyun yılı (§33). */
   aile_etkilesim_kilit: Record<string, number>;
+  /** Karanlık işlerin bekleme süreleri: iş id'si → yeniden çevrilebileceği yıl. */
+  kotu_is_kilit: Record<string, number>;
   /** Eş/çocuğun bekleyen para talebi; yoksa null. */
   aile_talep: AileTalep | null;
   aile_talep_sonraki_yil: number;
@@ -711,9 +713,17 @@ export interface KotuIsKarti {
   basariSansi: number;
   /** Başarılı dalın verebileceği yaklaşık para (enflasyonlu); 0 ise para getirisi yok. */
   tahminiKazanc: number;
+  /** Peşin maliyet (enflasyonlu); 0 ise yok. */
+  maliyet: number;
   rakibeYonelik: boolean;
-  /** İsimli bir rakibin gücünü kırabilir mi (>0 ise kırar). */
+  /** İsimli bir rakibin gücünü ne kadar kırar (>0 ise kırar; 100 = saf dışı bırakır). */
   rakipKirmaGucu: number;
+  /** Başarıda meslek pazarındaki gücüne eklenen miktar (0 ise yok). */
+  meslekGucuKazanci: number;
+  /** Mesleğe özel iş mi. */
+  meslegeOzel: boolean;
+  /** Tekrar çevrilebilmesine kalan oyun yılı (0 = hazır). */
+  kalanYil: number;
 }
 
 export interface KotuIsSonucu {
