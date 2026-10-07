@@ -119,8 +119,8 @@ import { yenilikGosterilmeliMi, yenilikGorulduIsaretle } from './yenilikler';
 import { istemciId, ziyaretBildir } from './istemci';
 import { gunlukSeriKontrolEt, gunlukSeriGetir, type GunlukSeriSonuc } from './gunlukSeri';
 import { goldBakiyeGetir, olumGoldHesapla, goldEkle } from './gold';
-import { sonucIkonuGetir, unUnvani, MESLEK_KATEGORI, yatkinlikEtiketi, etkiTahminiGetir, type EtkiTahmini } from './bolgeTema';
-import { formatPara } from './format';
+import { sonucIkonuGetir, unUnvani, MESLEK_KATEGORI, yatkinlikEtiketi, meslekYatkinlikOnizleme, etkiTahminiGetir, type EtkiTahmini } from './bolgeTema';
+import { formatPara, formatYuzde } from './format';
 import { bic } from './i18n';
 import { DilContext, dilCtxYap } from './DilContext';
 import { aileKokAdi, enTanimlik } from './aileAdi';
@@ -2045,6 +2045,8 @@ function App() {
                   const kategori = MESLEK_KATEGORI[meslek];
                   const puan = kategori ? karakter?.yatkinliklar[kategori] ?? 0 : 0;
                   const { etiket, simge } = yatkinlikEtiketi(puan, dil);
+                  const onizleme = meslekYatkinlikOnizleme(puan);
+                  const yuzde = (v: number) => formatYuzde(dil, v, true);
                   return (
                     <button
                       key={meslek}
@@ -2058,6 +2060,17 @@ function App() {
                       <span className="meslek-yatkinlik">
                         {simge} {etiket} ({puan > 0 ? '+' : ''}
                         {puan})
+                      </span>
+                      <span
+                        className={`meslek-yatkinlik-bonus${
+                          onizleme.seviye === 1 ? ' meslek-yatkinlik-malus' : onizleme.seviye === 2 ? ' meslek-yatkinlik-yok' : ''
+                        }`}
+                      >
+                        {onizleme.seviye === 2
+                          ? m.kpYatkinlikYok
+                          : `🎯 ${m.kpYatkinlikZar} ${yuzde(onizleme.zar)} · ${m.kpYatkinlikMaas} ${yuzde(onizleme.maas)} · ${m.kpYatkinlikTecrube} ${yuzde(onizleme.tecrube)}${
+                              onizleme.sohret > 0 ? ` · ${m.kpYatkinlikSohret} +${onizleme.sohret}` : ''
+                            }`}
                       </span>
                       {karakter.aile_meslegi === meslek && (
                         <span className="meslek-miras-ipucu">{m.meslekMirasIpucu}</span>
@@ -2159,6 +2172,17 @@ function App() {
                     <strong>{unUnvani(karakter.un, dil)}</strong>
                   </div>
                 </div>
+                {/* Masaüstü canlı skor — mobildeki üst şerit rozetinin karşılığı; aynı döküm penceresini açar. */}
+                <button
+                  key={skorGecisi.nonce}
+                  type="button"
+                  className="canli-skor-rozeti canli-skor-rozeti-panel"
+                  onClick={() => setSkorDetayAcik(true)}
+                  title={m.skorDetayBaslik}
+                >
+                  <span className="canli-skor-etiket">🏆 {m.skorDetayBaslik}</span>
+                  <strong>{canliSkor.toLocaleString(dil === 'en' ? 'en-US' : 'tr-TR')}</strong>
+                </button>
               </div>
 
               <FinansOzetPaneli finans={finans} maasYillikYedek={karakter.maas_yillik} paraBirimi={karakter.para_birimi} />

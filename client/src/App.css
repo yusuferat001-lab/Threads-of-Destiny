@@ -6354,57 +6354,6 @@ button.ikincil {
   .ekran-tam-sayfa {
     padding-bottom: calc(var(--alt-gezinme-yukseklik) + env(safe-area-inset-bottom, 0));
   }
-
-  /* ---- Canlı skor detay modalı (yer tutucu — içerik kullanıcı tarafından doldurulacak) ---- */
-  .skor-detay-katman {
-    position: fixed;
-    inset: 0;
-    z-index: 60;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1.2rem;
-    background: rgba(0, 0, 0, 0.6);
-  }
-  .skor-detay-modal {
-    width: 100%;
-    max-width: 380px;
-    background: linear-gradient(180deg, var(--panel-ust), var(--panel-alt));
-    border: 1px solid #7a5a36;
-    border-radius: 12px;
-    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.6);
-    overflow: hidden;
-  }
-  .skor-detay-modal-ust {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-    padding: 0.8rem 0.9rem;
-    border-bottom: 1px solid var(--renk-kahve-kenar);
-    background: rgba(0, 0, 0, 0.25);
-  }
-  .skor-detay-modal-ust h2 {
-    margin: 0;
-    font-size: 1.05rem;
-    color: var(--renk-altin-parlak);
-  }
-  .skor-detay-kapat {
-    width: auto;
-    max-width: none;
-    margin: 0;
-    padding: 0.3rem 0.6rem;
-    font-size: 0.8rem;
-    flex-shrink: 0;
-  }
-  .skor-detay-govde {
-    padding: 1rem 0.9rem;
-    text-align: center;
-    opacity: 0.85;
-  }
-  .skor-detay-govde p {
-    margin: 0;
-  }
 }
 
 /* ============================================================
@@ -7500,3 +7449,87 @@ button.ikincil {
     padding: 0.4rem 0.3rem;
   }
 }
+
+/* ---- Canlı skor detay modalı (masaüstü + mobil) ---- */
+.skor-detay-katman {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.2rem;
+  background: rgba(0, 0, 0, 0.6);
+}
+.skor-detay-modal {
+  width: 100%;
+  max-width: 420px;
+  background: linear-gradient(180deg, var(--panel-ust), var(--panel-alt));
+  border: 1px solid #7a5a36;
+  border-radius: 12px;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+}
+.skor-detay-modal-ust {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.8rem 0.9rem;
+  border-bottom: 1px solid var(--renk-kahve-kenar);
+  background: rgba(0, 0, 0, 0.25);
+}
+.skor-detay-modal-ust h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--renk-altin-parlak);
+}
+.skor-detay-kapat {
+  width: auto;
+  max-width: none;
+  margin: 0;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+.skor-detay-govde {
+  padding: 1rem 0.9rem;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+.skor-detay-govde p {
+  margin: 0;
+}
+
+/* Masaüstü sol panel canlı skor rozeti (mobilde üst şeritteki hap rozet kullanılır) */
+.canli-skor-rozeti-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  margin: 0.45rem 0 0;
+  padding: 0.4rem 0.65rem;
+  border-radius: 8px;
+  background: var(--altin-gradyan);
+  border: 1px solid var(--renk-altin-parlak);
+  box-shadow: var(--yaldiz-parilti);
+  color: var(--renk-parsomen-metin);
+  font-size: clamp(0.72rem, 0.3vw + 0.58rem, 0.95rem);
+  cursor: pointer;
+}
+.canli-skor-rozeti-panel strong {
+  font-family: var(--font-baslik);
+  font-size: clamp(0.9rem, 0.4vw + 0.7rem, 1.25rem);
+}
+@media (max-width: 767px) {
+  .canli-skor-rozeti-panel { display: none; }
+}
+
+.meslek-yatkinlik-bonus {
+  font-size: clamp(0.72rem, 0.3vw + 0.58rem, 0.98rem);
+  color: #e9d9a6;
+  font-weight: 600;
+}
+.meslek-yatkinlik-bonus.meslek-yatkinlik-malus { color: #e8a39a; }
+.meslek-yatkinlik-bonus.meslek-yatkinlik-yok { color: #cfc6ad; font-weight: 400; opacity: 0.8; }
