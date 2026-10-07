@@ -6946,6 +6946,23 @@ button.ikincil {
   transform: rotate(16deg);
 }
 
+/* Olay illüstrasyonu (public/assets/olay): emoji yerine kartın solunda küçük bir resim. */
+.olay-resmi {
+  display: none;
+  flex: 0 0 auto;
+  align-self: center;
+  width: clamp(104px, 11vw, 168px);
+  aspect-ratio: 1190 / 615;
+  object-fit: cover;
+  border: 1px solid var(--renk-ahsap-kenar);
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+  user-select: none;
+}
+.olay-resmi-hazir {
+  display: block;
+}
+
 /* --- Amaçlar: arka plan görselinin ÜSTÜNDE ince overlay şerit (kullanıcı isteği) --- */
 .merkez-sahne > .amac-serit {
   position: absolute;
@@ -7194,6 +7211,9 @@ button.ikincil {
   }
   .olay-gorseli-sag {
     display: none;
+  }
+  .olay-resmi {
+    width: 76px;
   }
 
   .kisilik-modal {

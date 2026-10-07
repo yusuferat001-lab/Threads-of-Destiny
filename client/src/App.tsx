@@ -80,6 +80,7 @@ import { AmacPaneli } from './components/AmacPaneli';
 import { EtkiCipleri } from './components/EtkiCipleri';
 import { KisilikPaneli } from './components/KisilikPaneli';
 import { BolgeSahnesi } from './components/BolgeSahnesi';
+import { OlayKartiGovdesi } from './components/OlayKartiGovdesi';
 import { KarakterAvatari } from './components/KarakterAvatari';
 import { IsyeriPaneli } from './components/IsyeriPaneli';
 import { GecmisGrafik } from './components/GecmisGrafik';
@@ -2271,13 +2272,12 @@ function App() {
                   <div className="olay-karti">
                     {/* Emoji artık ortada üstte değil; metnin sol ve sağında çapraz
                         duruyor — böylece başlık/metin yatayda daralmıyor. */}
-                    <div className="olay-karti-govde">
-                      <span
-                        className={`olay-gorseli olay-gorseli-sol${yukleniyor ? ' olay-gorseli-yukleniyor' : ''}`}
-                        aria-hidden="true"
-                      >
-                        {senaryo.gorsel}
-                      </span>
+                    <OlayKartiGovdesi
+                      cag={karakter.cag}
+                      kategori={senaryo.kategori}
+                      gorsel={senaryo.gorsel}
+                      yukleniyor={yukleniyor}
+                    >
                       <div className="olay-karti-metin-blok">
                         <h2>{senaryo.olay_basligi}</h2>
                         {/* Başlık dışarıda kalır (hep görünür); metin kendi kutusunda kayar —
@@ -2288,13 +2288,7 @@ function App() {
                           <p className="olay-metni">{senaryo.olay_metni}</p>
                         </div>
                       </div>
-                      <span
-                        className={`olay-gorseli olay-gorseli-sag${yukleniyor ? ' olay-gorseli-yukleniyor' : ''}`}
-                        aria-hidden="true"
-                      >
-                        {senaryo.gorsel}
-                      </span>
-                    </div>
+                    </OlayKartiGovdesi>
                   </div>
                 )}
 
