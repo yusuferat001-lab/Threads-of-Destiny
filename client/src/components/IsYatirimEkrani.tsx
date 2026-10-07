@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { MulkKartBilgisi, MulkTuru, KrediConfig } from '../types';
-import { formatPara } from '../format';
+import { formatPara, formatYuzde } from '../format';
 import { bic } from '../i18n';
 import { useDil } from '../DilContext';
 import { useMobilEkran } from '../hooks';
@@ -139,7 +139,7 @@ export function IsYatirimEkrani({
             {meslek === 'Asker' && (
               <>
                 <StatKarosu ikon="⚔️" etiket={m.iyOrduMevcudu} deger={`${orduMevcudu} ${m.ksAsker}`} />
-                <StatKarosu ikon="🛡️" etiket={m.iyTechizat} deger={`%${orduTechizatSeviyesi}`} />
+                <StatKarosu ikon="🛡️" etiket={m.iyTechizat} deger={formatYuzde(dil, orduTechizatSeviyesi)} />
                 <StatKarosu ikon="💥" etiket={m.iySaldiriGucu} deger={`${saldiriGucu}`} />
               </>
             )}
@@ -181,7 +181,7 @@ export function IsYatirimEkrani({
             <div className="dedikodu-panosu">
               <p className="giris-aciklama">
                 {en
-                  ? `Interest ~%${Math.round(krediConfig.faizTeklifi * 100)}. Miss three instalments and the moneylender seizes a property.`
+                  ? `Interest ~${Math.round(krediConfig.faizTeklifi * 100)}%. Miss three instalments and the moneylender seizes a property.`
                   : `~%${Math.round(krediConfig.faizTeklifi * 100)} faizle. Üst üste üç taksit kaçırırsan tefeci bir mülküne el koyar.`}
               </p>
               <div className="kariyer-bagis-kademeler">

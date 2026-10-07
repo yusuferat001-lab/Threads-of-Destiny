@@ -4,7 +4,7 @@
  * `basarimlar.ts` ile aynı sessiz try/catch deseni kullanılır.
  */
 import type { CharacterState, HayatOlayi, GecmisNoktasi } from './types';
-import { hesaplaSkor } from './skor';
+import { hesaplaSkorKirilimi } from './skor';
 
 const ANAHTAR = 'kader_carki_gecmis_hayatlar';
 const MAKS_KAYIT = 20;
@@ -27,6 +27,8 @@ export interface GecmisHayat {
   efsaneviOlum: string | null;
   unvanlar: string[];
   amacTamamlandi: boolean;
+  /** Hayat amaçlarından gelen skor çarpanı (×1..×5). Eski kayıtlarda yok — o zaman amacTamamlandi'ye bakılır. */
+  amacCarpani?: number;
   skor: number;
   hayatHikayesi: HayatOlayi[];
   gecmis: GecmisNoktasi[];
@@ -56,6 +58,7 @@ export function gecmisHayatKaydet(state: CharacterState): void {
   const mevcut = oku();
   if (mevcut.some((h) => h.id === state.id)) return;
 
+  const kirilim = hesaplaSkorKirilimi(state);
   const kayit: GecmisHayat = {
     id: state.id,
     tarih: Date.now(),
@@ -75,7 +78,8 @@ export function gecmisHayatKaydet(state: CharacterState): void {
     unvanlar: state.unvanlar,
     amacTamamlandi:
       (state.hayat_amaclari ?? []).some((a) => a.tamamlandi) || (state.hayat_amaci?.tamamlandi ?? false),
-    skor: hesaplaSkor(state),
+    amacCarpani: kirilim.amacCarpani,
+    skor: kirilim.skor,
     hayatHikayesi: state.hayat_hikayesi,
     gecmis: state.gecmis,
   };

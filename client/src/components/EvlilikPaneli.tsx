@@ -6,18 +6,20 @@ interface EvlilikPaneliProps {
   adaylar: EvlilikAdayi[];
   yukleniyor: boolean;
   islemMesaji: string | null;
+  /** Teklif kabul edildiyse (artık evli) aday listesi ve "farklı adaylar" gizlenir. */
+  evli?: boolean;
   onTeklifEt: (aday: EvlilikAdayi) => void;
   onYeniAdaylar: () => void;
   onGeriDon: () => void;
 }
 
-export function EvlilikPaneli({ adaylar, yukleniyor, islemMesaji, onTeklifEt, onYeniAdaylar, onGeriDon }: EvlilikPaneliProps) {
+export function EvlilikPaneli({ adaylar, yukleniyor, islemMesaji, evli = false, onTeklifEt, onYeniAdaylar, onGeriDon }: EvlilikPaneliProps) {
   const { m, kt } = useDil();
 
   return (
     <div className="ekran ekran-tam-sayfa ekran-evlilik">
       <h2>{m.evBaslik}</h2>
-      <p className="giris-aciklama">{m.evIntro}</p>
+      {!evli && <p className="giris-aciklama">{m.evIntro}</p>}
 
       {islemMesaji && <p className="yatirim-islem-mesaji">{islemMesaji}</p>}
 
@@ -43,9 +45,11 @@ export function EvlilikPaneli({ adaylar, yukleniyor, islemMesaji, onTeklifEt, on
         </div>
       </div>
 
-      <button className="ikincil" disabled={yukleniyor} onClick={onYeniAdaylar}>
-        {m.evYeniAdaylar}
-      </button>
+      {!evli && (
+        <button className="ikincil" disabled={yukleniyor} onClick={onYeniAdaylar}>
+          {m.evYeniAdaylar}
+        </button>
+      )}
       <button className="ikincil tam-geri-buton" disabled={yukleniyor} onClick={onGeriDon}>
         {m.geriDon}
       </button>

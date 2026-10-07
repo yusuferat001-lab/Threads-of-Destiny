@@ -52,10 +52,13 @@ function StatModulu({
   takip,
   takipBirim,
   sinifEk,
+  degerBirim,
 }: {
   ikon: string;
   etiket: string;
   deger: string | number;
+  /** Değerin yanındaki birim (ör. para birimi) — dar mobil şeritte gizlenir, sayı kesilmesin. */
+  degerBirim?: string;
   tehlike?: boolean;
   /** Verilirse: bu sayı değiştikçe değer kutusu yanıp söner + bir delta rozeti uçar. */
   takip?: number;
@@ -76,9 +79,10 @@ function StatModulu({
         <span
           key={`${etiket}-${nonce}`}
           className={`ust-serit-modul-deger${tehlike ? ' ust-serit-modul-deger-tehlike' : ''}${yon}`}
-          title={typeof deger === 'string' ? deger : undefined}
+          title={degerBirim ? `${deger} ${degerBirim}` : typeof deger === 'string' ? deger : undefined}
         >
           {deger}
+          {degerBirim && <span className="ust-serit-modul-birim"> {degerBirim}</span>}
         </span>
       </div>
     </div>
@@ -153,12 +157,19 @@ export function UstSerit({
         <StatModulu
           ikon="💰"
           etiket={m.usPara}
-          deger={`${formatPara(para)} ${paraBirimi}`}
+          deger={Math.abs(para) >= 1000 ? String(Math.round(para)) : formatPara(para)}
+          degerBirim={paraBirimi}
           tehlike={para < 0}
           takip={para}
           takipBirim={paraBirimi}
         />
-        <StatModulu ikon="⚖️" etiket={m.usAhlak} deger={ahlakEtiketi(ahlak, dil)} takip={Math.round(ahlak)} />
+        <StatModulu
+          ikon="⚖️"
+          etiket={m.usAhlak}
+          deger={ahlakEtiketi(ahlak, dil)}
+          takip={Math.round(ahlak)}
+          sinifEk="ust-serit-modul-ahlak"
+        />
         <StatModulu ikon="🙂" etiket={m.usMutluluk} deger={Math.round(mutluluk)} takip={Math.round(mutluluk)} />
         <AranmaModulu sucSeviyesi={sucSeviyesi} />
       </div>

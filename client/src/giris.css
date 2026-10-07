@@ -1239,9 +1239,12 @@ a.giris-imza-isim:hover {
   .ekran-acilis .kisilik-paneli .eksen-gostergesi {
     margin-bottom: 0.3rem;
   }
-  /* Açılışta kişilik detay rozetleri gizli — eksen çubukları + "Kişilik & Miras"
-     başlığı yeterli; tam döküm oyun-içi sol panelde. */
-  .ekran-acilis .kisilik-paneli .kisilik-rozet {
+  /* Açılışta kişilik detay rozetleri gizli (tam döküm oyunda portreye dokununca).
+     Eksen çubukları da kaldırıldığı için tek başına kalan "Kişilik & Miras"
+     başlığı boş bir başlık gibi görünüyordu — o da gizlenir; mesleğe yatkınlık
+     rozeti (meslek seçildikten sonra) görünür kalır. */
+  .ekran-acilis .kisilik-paneli .kisilik-rozet:not(.kisilik-rozet-meslek-yatkinlik),
+  .ekran-acilis .kisilik-paneli h3 {
     display: none;
   }
   .ekran-acilis .acilis-ozet {

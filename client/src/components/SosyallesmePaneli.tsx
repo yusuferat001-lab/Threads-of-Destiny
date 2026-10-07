@@ -171,7 +171,11 @@ export function SosyallesmePaneli({
               yukleniyor={yukleniyor}
               onUcKagitci={onUcKagitci}
             />
-            <BilekGuresiWidget yukleniyor={yukleniyor} onBilekGuresi={onBilekGuresi} />
+            <BilekGuresiWidget
+              yukleniyor={yukleniyor}
+              kalanYil={aksiyonConfig?.bilekGuresiKalanYil ?? 0}
+              onBilekGuresi={onBilekGuresi}
+            />
           </div>
         </section>
         )}
@@ -194,8 +198,14 @@ export function SosyallesmePaneli({
                 >
                   <span className="meslek-simge">{yer.simge}</span>
                   <strong>{kt(yer.ad)}</strong>
-                  {yer.kilitli && (
+                  {yer.kilitli ? (
                     <span className="sosyal-aksiyon-neden">{bic(m.spMekanKilitli, yer.kalanYil ?? 0)}</span>
+                  ) : (
+                    typeof yer.girisUcreti === 'number' && (
+                      <span className="sosyal-aksiyon-fiyat">
+                        🚪 {formatPara(yer.girisUcreti)} {paraBirimi}
+                      </span>
+                    )
                   )}
                 </button>
               ))}

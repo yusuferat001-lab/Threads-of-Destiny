@@ -146,6 +146,7 @@ const TR = {
   // ---- Çağ seçimi ----
   cagSecBaslik: 'Çağını Seç',
   cagSecAlt: 'Hangi tarihi dönemde yaşamak istersin?',
+  cagSecBolgeBos: 'Önce bir çağ seç — o dönemin ülkeleri burada belirecek.',
   cagAciklamaOrtacag: 'Haçlı seferleri, veba, şövalyeler, kervanlar. 11.-13. yüzyıl.',
   cagAciklamaSanayi: 'Fabrikalaşma, sömürgecilik, yeni icatlar. 19. yüzyıl.',
 
@@ -872,6 +873,7 @@ const EN: Metinler = {
   // ---- Era selection ----
   cagSecBaslik: 'Choose Your Era',
   cagSecAlt: 'Which historical period do you want to live in?',
+  cagSecBolgeBos: "Pick an era first — that period's countries will appear here.",
   cagAciklamaOrtacag: 'Crusades, plague, knights, caravans. 11th–13th century.',
   cagAciklamaSanayi: 'Industrialization, colonialism, new inventions. 19th century.',
 
@@ -905,7 +907,7 @@ const EN: Metinler = {
   meslekAciklamaZanaatkar: 'Craftsmanship, mastery and guild. A patient but honorable path.',
 
   // ---- Opening ----
-  acilisAileCocugu: 'Child of a {0} Family',
+  acilisAileCocugu: 'Child of {1} {0} Family',
   acilisDurum: 'Your condition from birth: {0}',
   statSaglik: 'Health',
   statMutluluk: 'Happiness',
@@ -923,7 +925,7 @@ const EN: Metinler = {
   // ---- Death ----
   oldun: 'You have died.',
   olumOzet:
-    'The year {0}. Died at {1}, as {2} ({3}), in the lands of {4}. They were the child of a {5} family.',
+    'The year {0}. Died at {1}, as {2} ({3}), in the lands of {4}. They were the child of {6} {5} family.',
   isimGir: 'Enter your name',
   btnSkoruKaydet: 'Save Score',
   skorKaydedildi: 'Your score has been saved to the leaderboard.',

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { EkipUyesi, Rakip, KotuIsKarti, YonetimDurumu, YonetimHat } from '../types';
 import { useDil } from '../DilContext';
-import { formatPara } from '../format';
+import { formatPara, formatYuzde, formatYuzdeAralik } from '../format';
 import { bic, type Metinler } from '../i18n';
 import type { Dil } from '../ayarlar';
 import { rutbeIlerlemeHesapla } from '../rutbeIlerleme';
@@ -107,7 +107,7 @@ function KaranlikIsKart({
   return (
     <div className="yatirim-kart isyatirim-kendi-is-kart" title={metin.aciklama}>
       <span className="meslek-simge">{is.simge}</span>
-      <strong>{metin.ad}</strong>
+      <strong>{metin.ad.replace(/^\p{Extended_Pictographic}\uFE0F?\s*/u, '')}</strong>
       <span className="meslek-aciklama">
         {bic(m.iyKaranlikSans, is.basariSansi)}
         {is.tahminiKazanc > 0 && ` · ${bic(m.iyKaranlikKazanc, formatPara(is.tahminiKazanc), paraBirimi)}`}
@@ -131,7 +131,7 @@ function KaranlikIsKart({
           </select>
           <label className="karanlik-vekil-etiket">
             <input type="checkbox" checked={vekil} disabled={yukleniyor} onChange={(e) => setVekil(e.target.checked)} />
-            {en ? 'Send a hired hand (ücret; kişisel risk düşer, ifşa riski var)' : 'Adamına yaptır (ücret; risk düşer, ifşa riski)'}
+            {en ? 'Send a hired hand (fee; lower personal risk, may be exposed)' : 'Adamına yaptır (ücret; risk düşer, ifşa riski)'}
           </label>
         </div>
       )}
@@ -231,7 +231,9 @@ function iliskiKademe(v: number, en: boolean): string {
   if (v >= 60) return en ? 'trusted' : 'güvenilir';
   if (v >= 40) return en ? 'acquainted' : 'tanıdık';
   if (v >= 20) return en ? 'distant' : 'mesafeli';
-  return en ? 'hostile' : 'düşman';
+  // Kralla ilişki yeni karakterde ~5'ten başlıyor: "düşman" yanıltıcıydı (kral seni
+  // tanımıyor bile). Düşük ilişki hem bu "tanınmamışlık" hem bir kırgınlık için "soğuk".
+  return en ? 'cold' : 'soğuk';
 }
 
 /** Tek bir yönetim hattı kartı (Yönetici ya da Patron). */
@@ -445,7 +447,7 @@ export function KariyerEkrani({
   const meslekGucSatirlari: [string, string][] = [];
   if (meslek === 'Asker') {
     meslekGucSatirlari.push([m.iyOrduMevcudu, String(orduMevcudu)]);
-    meslekGucSatirlari.push([m.iyTechizat, `%${orduTechizatSeviyesi}`]);
+    meslekGucSatirlari.push([m.iyTechizat, formatYuzde(dil, orduTechizatSeviyesi)]);
   } else if (meslek === 'Tüccar' && ticaretSermaye > 0) {
     meslekGucSatirlari.push([m.iyTicaretSermayesi, String(ticaretSermaye)]);
   } else if (meslek === 'Din Adamı' && nufuz > 0) {
@@ -454,6 +456,13 @@ export function KariyerEkrani({
 
   const talep = yonetimDurum?.talep ?? null;
   const bikkin = (yonetimDurum?.bikkinlik ?? 0) >= 3;
+  // Talep bağışsa ve nakit yetmiyorsa "Öde" kapalı (sunucu zaten reddediyor; buton
+  // tıklanabilir görünüp hata vermesin).
+  const talepParasiYok = !!talep && talep.tur === 'bagis' && talep.tutar > (yonetimDurum?.para ?? Infinity);
+  // Kral talebi penceresi ekranı tamamen kilitliyordu; oyuncu "sonra" deyip ekranı
+  // kullanabilsin (talebin zaten bir son yılı var, sonra karar verebilir).
+  const [hukumdarTalebiErtelendi, setHukumdarTalebiErtelendi] = useState<string | null>(null);
+  const hukumdarModalAcik = !!talep && talep.kimden === 'yonetici' && hukumdarTalebiErtelendi !== talep.id;
 
   const ilerleme = rutbeIlerlemeHesapla(
     meslek,
@@ -513,6 +522,7 @@ export function KariyerEkrani({
                 </div>
                 <span className="kariyer-ilerleme-deger">
                   {ilerleme.kariyerPuaniMevcut}/{ilerleme.kariyerPuaniGerekli}
+                  {ilerleme.kariyerPuaniGerekli !== null && ilerleme.kariyerPuaniMevcut >= ilerleme.kariyerPuaniGerekli && ' ✓'}
                 </span>
               </div>
               {ilerleme.statAdi && (
@@ -526,6 +536,7 @@ export function KariyerEkrani({
                   </div>
                   <span className="kariyer-ilerleme-deger">
                     {ilerleme.statMevcut}/{ilerleme.statGerekli}
+                    {ilerleme.statGerekli !== null && ilerleme.statMevcut >= ilerleme.statGerekli && ' ✓'}
                   </span>
                 </div>
               )}
@@ -534,20 +545,11 @@ export function KariyerEkrani({
         </div>
       )}
 
-      {modalMesaj && (
-        <div className="kariyer-sonuc-katman" onClick={() => setModalMesaj(null)}>
-          <div className="kariyer-sonuc-modal" onClick={(e) => e.stopPropagation()}>
-            <p>{modalMesaj}</p>
-            <button onClick={() => setModalMesaj(null)}>{en ? 'OK' : 'Tamam'}</button>
-          </div>
-        </div>
-      )}
-
       {/* Hükümdar bağış/sadakat talebi — kralın huzurunda "param yok" yalanına yer
           yok; sadece öde ya da kaç (kaçmak aranmanı ciddi artırır, bkz. onTalep('ret')
           için gameEngine.ts'teki hat==='yonetici' özel dalı). Kral için sade,
           "bekleyen banner" yerine ayrı ve dikkat çeken bir açılır pencere. */}
-      {talep && talep.kimden === 'yonetici' && (
+      {talep && hukumdarModalAcik && (
         <div className="kariyer-sonuc-katman">
           <div className="kariyer-sonuc-modal kariyer-hukumdar-talep-modal">
             <strong>👑 {talep.kimAdi}</strong>
@@ -561,12 +563,20 @@ export function KariyerEkrani({
                 ? "Fleeing a king's demand is a crime — your wanted level will rise sharply."
                 : 'Hükümdarın talebinden kaçmak suçtur — aranma seviyen ciddi şekilde artar.'}
             </p>
+            {talepParasiYok && (
+              <p className="kariyer-hukumdar-talep-uyari">
+                {en ? "You don't have enough money to pay right now." : 'Şu an ödeyecek kadar paran yok.'}
+              </p>
+            )}
             <div className="kariyer-talep-butonlar">
-              <button disabled={yukleniyor} onClick={() => onTalep('kabul')}>
+              <button disabled={yukleniyor || talepParasiYok} onClick={() => onTalep('kabul')}>
                 {talep.tur === 'bagis' ? (en ? 'Pay' : 'Öde') : en ? 'Swear it' : 'Kabul et'}
               </button>
               <button className="ikincil" disabled={yukleniyor} onClick={() => onTalep('ret')}>
                 {en ? 'Flee' : 'Kaç'}
+              </button>
+              <button className="ikincil" disabled={yukleniyor} onClick={() => setHukumdarTalebiErtelendi(talep.id)}>
+                {en ? 'Decide later' : 'Sonra karar ver'}
               </button>
             </div>
           </div>
@@ -589,7 +599,7 @@ export function KariyerEkrani({
           <span className="iliski-rozet">
             🦠 {m.geVebaHastasi}
             {typeof vebaOlumRiski === 'number' && vebaOlumRiski > 0
-              ? ` · ${m.geVebaHayatta} ~%${Math.max(0, Math.round(100 - vebaOlumRiski))}`
+              ? ` · ${m.geVebaHayatta} ~${formatYuzde(dil, Math.max(0, Math.round(100 - vebaOlumRiski)))}`
               : ''}
           </span>
         </div>
@@ -603,6 +613,25 @@ export function KariyerEkrani({
           {/* ===== YÖNETİMLE BAĞLAR ===== */}
           {yonetimDurum && (
             <section className="kariyer-bolum kariyer-yonetim">
+              {talep && talep.kimden === 'yonetici' && !hukumdarModalAcik && (
+                <div className="kariyer-talep-afisi">
+                  <strong>👑 {talep.kimAdi}</strong>
+                  <p>
+                    {talep.tur === 'bagis'
+                      ? `${talep.kalem} — ${formatPara(talep.tutar)} ${paraBirimi} ${en ? 'demanded.' : 'istiyor.'}`
+                      : `${talep.kalem} ${en ? 'awaited.' : 'bekliyor.'}`}
+                  </p>
+                  <div className="kariyer-talep-butonlar">
+                    <button disabled={yukleniyor || talepParasiYok} onClick={() => onTalep('kabul')}>
+                      {talep.tur === 'bagis' ? (en ? 'Pay' : 'Öde') : en ? 'Swear it' : 'Kabul et'}
+                    </button>
+                    <button className="ikincil" disabled={yukleniyor} onClick={() => onTalep('ret')}>
+                      {en ? 'Flee' : 'Kaç'}
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {talep && talep.kimden === 'patron' && (
                 <div className="kariyer-talep-afisi">
                   <strong>📜 {talep.kimAdi}</strong>
@@ -612,7 +641,7 @@ export function KariyerEkrani({
                       : `${talep.kalem} ${en ? 'awaited.' : 'bekliyor.'}`}
                   </p>
                   <div className="kariyer-talep-butonlar">
-                    <button disabled={yukleniyor} onClick={() => onTalep('kabul')}>
+                    <button disabled={yukleniyor || talepParasiYok} onClick={() => onTalep('kabul')}>
                       {talep.tur === 'bagis' ? (en ? 'Pay' : 'Öde') : en ? 'Swear it' : 'Kabul et'}
                     </button>
                     <button className="ikincil" disabled={yukleniyor} onClick={() => onTalep('ret')}>
@@ -651,8 +680,9 @@ export function KariyerEkrani({
                   <li key={uye.id} className="aile-cocuk-satiri gorev-ekip-satiri">
                     <span className="aile-cocuk-ad">🧑 {uye.isim}</span>
                     <span className="aile-cocuk-detay">
-                      {kt(uye.rol)} · {uye.maas} {paraBirimi}/{m.ksYilBasi} · 🎭 {kt(uye.kisilik)} · 🤝 %{uye.sadakat} ·{' '}
-                      {m.ksKalite} %{uye.tahminiMin}-{uye.tahminiMax}
+                      {kt(uye.rol)} · {uye.maas} {paraBirimi}/{m.ksYilBasi} · 🎭 {kt(uye.kisilik)} · 🤝{' '}
+                      {formatYuzde(dil, Math.round(uye.sadakat))} · {m.ksKalite}{' '}
+                      {formatYuzdeAralik(dil, uye.tahminiMin, uye.tahminiMax)}
                     </span>
                     <button className="ikincil gorev-ekip-kov" disabled={yukleniyor} onClick={() => onEkipCikar(uye.id)}>
                       {m.ksKov}
@@ -745,9 +775,20 @@ export function KariyerEkrani({
         </div>
       )}
 
-      <button className="ikincil" onClick={onGeriDon}>
+      <button className="ikincil tam-geri-buton" onClick={onGeriDon}>
         {m.geriDon}
       </button>
+
+      {/* Sonuç/hata penceresi en sonda ve bir üst katmanda: karanlık işler ya da kral
+          talebi penceresi açıkken sonucu onların ARKASINDA göstermesin. */}
+      {modalMesaj && (
+        <div className="kariyer-sonuc-katman kariyer-sonuc-katman-ust" onClick={() => setModalMesaj(null)}>
+          <div className="kariyer-sonuc-modal" role="alertdialog" onClick={(e) => e.stopPropagation()}>
+            <p>{modalMesaj}</p>
+            <button onClick={() => setModalMesaj(null)}>{en ? 'OK' : 'Tamam'}</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

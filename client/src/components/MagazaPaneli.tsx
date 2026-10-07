@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { MagazaEsyaKarti, MagazaEsyaKategori, SahipOlunanEsya } from '../types';
-import { formatPara } from '../format';
+import { formatPara, formatYuzdeAralik } from '../format';
 import { bic } from '../i18n';
 import { useDil } from '../DilContext';
 import { useMobilEkran } from '../hooks';
@@ -53,7 +53,7 @@ export function MagazaPaneli({
   onEnvanterKullan,
   onEnvanterHediye,
 }: MagazaPaneliProps) {
-  const { m, kt } = useDil();
+  const { m, kt, dil } = useDil();
   const mobil = useMobilEkran();
   const [sekme, setSekme] = useState<MagazaSekme>('sifa');
   const envanterSekmesiVar = mobil && !!envanterMagazaEnvanteri;
@@ -137,7 +137,7 @@ export function MagazaPaneli({
                   {esya.mutlulukEtkisi ? `😊 +${esya.mutlulukEtkisi} ` : ''}
                   {esya.unEtkisi ? `⭐ +${esya.unEtkisi} ` : ''}
                   {esya.sifaFaydaAralik
-                    ? `· %${esya.sifaFaydaAralik.min}-${esya.sifaFaydaAralik.max} ${m.mpFayda}`
+                    ? `· ${formatYuzdeAralik(dil, esya.sifaFaydaAralik.min, esya.sifaFaydaAralik.max)} ${m.mpFayda}`
                     : ''}
                   {esya.omurYil && !esya.sahipMi ? ` · ${bic(m.mpRafKisa, esya.omurYil)}` : ''}
                 </span>

@@ -1,6 +1,8 @@
 import type { YatkinlikKaynagi, KisilikEksenleri } from '../types';
 import { kategoriAdi } from '../bolgeTema';
 import { useDil } from '../DilContext';
+import { aileKokAdi } from '../aileAdi';
+import { formatYuzde } from '../format';
 
 function grupla(kaynaklar: YatkinlikKaynagi[]): Map<string, YatkinlikKaynagi[]> {
   const grup = new Map<string, YatkinlikKaynagi[]>();
@@ -12,7 +14,6 @@ function grupla(kaynaklar: YatkinlikKaynagi[]): Map<string, YatkinlikKaynagi[]> 
   return grup;
 }
 
-const fmtYuzde = (v: number): string => `${v > 0 ? '+' : ''}${Math.round(v * 100)}%`;
 
 export function KisilikPaneli({
   kisilik,
@@ -46,6 +47,7 @@ export function KisilikPaneli({
   meslekTecrubeHizi?: number;
 }) {
   const { m, kt, dil } = useDil();
+  const fmtYuzde = (v: number): string => formatYuzde(dil, Math.round(v * 100), true);
   const grup = grupla(kaynaklar);
   // Sinerji kaynağı sunucuda hep "<bölge> + <aile> sinerjisi" (kanonik TR) biçiminde
   // gelir — tek bir bileşik kaynak dizesi olduğu için kt() ile çevrilemez, bu yüzden
@@ -74,7 +76,7 @@ export function KisilikPaneli({
           <div key={kaynakAdi} className="kisilik-rozet">
             <span className="kisilik-rozet-ad">
               {ikon}
-              {kt(kaynakAdi)}
+              {aileMi ? aileKokAdi(kt(kaynakAdi)) : kt(kaynakAdi)}
               {ek}
             </span>
             {etkiler.length > 0 && (
