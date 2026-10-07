@@ -147,6 +147,20 @@ export function yatkinlikEtiketi(deger: number, dil: Dil = 'tr'): { etiket: stri
   return { etiket: dil === 'en' ? 'Very Apt' : 'Çok Yatkın', simge: '🔥' };
 }
 
+/**
+ * Meslek seçiminde gösterilen yatkınlık bonus önizlemesi — sunucudaki
+ * meslekYatkinlik.ts kademe eşikleri/oranlarının aynası (<=-5 kötü, -4..4 nötr,
+ * 5..19 iyi, >=20 mükemmel). Oranlar yüzde olarak; mükemmelde tek seferlik şöhret de var.
+ */
+export function meslekYatkinlikOnizleme(
+  puan: number,
+): { seviye: 1 | 2 | 3 | 4; zar: number; maas: number; tecrube: number; sohret: number } {
+  if (puan <= -5) return { seviye: 1, zar: -15, maas: -10, tecrube: -15, sohret: 0 };
+  if (puan >= 20) return { seviye: 4, zar: 20, maas: 10, tecrube: 15, sohret: 8 };
+  if (puan >= 5) return { seviye: 3, zar: 10, maas: 5, tecrube: 7, sohret: 0 };
+  return { seviye: 2, zar: 0, maas: 0, tecrube: 0, sohret: 0 };
+}
+
 export interface EtkiTahmini {
   simge: string;
   metin: string;

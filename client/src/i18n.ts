@@ -572,6 +572,8 @@ const TR = {
   kpYatkinlikZar: 'Zar',
   kpYatkinlikMaas: 'Maaş',
   kpYatkinlikTecrube: 'Tecrübe',
+  kpYatkinlikSohret: 'Şöhret',
+  kpYatkinlikYok: 'Yatkınlık bonusu yok',
   kpSinerji: 'sinerjisi',
 
   // ---- AileOzetPaneli (ek) ----
@@ -1298,6 +1300,8 @@ const EN: Metinler = {
   kpYatkinlikZar: 'Dice',
   kpYatkinlikMaas: 'Pay',
   kpYatkinlikTecrube: 'Pace',
+  kpYatkinlikSohret: 'Fame',
+  kpYatkinlikYok: 'No aptitude bonus',
   kpSinerji: 'synergy',
 
   // ---- AileOzetPaneli ----

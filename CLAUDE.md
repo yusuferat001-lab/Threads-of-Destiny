@@ -970,6 +970,8 @@ Mobil (`max-width:767px`) için bu üç sınıfın (`.ekran-tam-sayfa`/`.tam-gov
 - **Meslek kartı renk bug'ı düzeltildi**: `.ekran-acilis button:not(.ikincil)` altın-gradyan kuralı meslek kartlarına biniyordu (soluk altın başlık + altın zemin = okunmaz). Kural `:not(.meslek-kart)` ile hariç tutuldu → kartlar `.ekran-kurulum .meslek-kart` koyu stilini korur; başlık/açıklama/yatkınlık metin renkleri kontrastı artırıldı (`.acilis-meslek-kartlari` + `.ekran-acilis` seçicileri, App.css).
 - **`AmacPaneli` panel açıklaması**: tamamen gizli DEĞİL — 0.68rem, 2 satıra `-webkit-line-clamp`, tam metin `title`'da.
 
+- **Masaüstü canlı skor + meslek kartı bonus satırı (2026-10):** mobildeki üst şerit `🏆 skor` rozetinin karşılığı olarak masaüstünde sol panelde (Şöhret rozetinin altında) `.canli-skor-rozeti-panel` düğmesi var; aynı `skorDetayAcik` penceresini (`SkorKirilimiPaneli`) açar — pencere CSS'i artık mobil `@media` bloğunun dışında. Açılış ekranındaki her meslek kartı, o mesleğin kategorisindeki yatkınlık kademesinin bonusunu tek satırda gösterir (`bolgeTema.meslekYatkinlikOnizleme`, sunucudaki §40 eşik/oranlarının aynası: Zar/Maaş/Tecrübe % + Mükemmelde Şöhret +8; nötrde "Yatkınlık bonusu yok"). Sunucudaki §40 oranları değişirse bu fonksiyon da güncellenmeli.
+
 ## 20. Veritabanı Şeması
 
 PostgreSQL + Prisma ([schema.prisma](server/prisma/schema.prisma)) — `Score.skor` ve `Score.para` `Float`:
