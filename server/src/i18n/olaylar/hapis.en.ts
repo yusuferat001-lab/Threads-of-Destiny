@@ -5,27 +5,27 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_tutuklanma: {
     baslik: "Guards at the Door",
     metin:
-      "Your past dark deeds have finally caught up with you: the guards at your door carry an arrest warrant. Your name in the city was already tarnished; now the time has come to pay the price.",
+      "Your dark deeds caught up with you: guards at your door with a warrant. Time to pay.",
     secenekler: [
       {
-        metin: "Try to escape through the back door.",
+        metin: "Flee through the back door.",
         basariliSonuc: {
-          mesaj: "You leapt across the rooftops and shook off the guards; you ended up gasping for breath at the far end of the city, but you are free.",
-          detay: "This escape story will be passed from mouth to mouth for a while.",
+          mesaj: "You leapt across rooftops and lost the guards; you're free.",
+          detay: "Your escape will be the talk of town.",
         },
         basarisizSonuc: {
-          mesaj: "You were caught; your escape attempt made you look even more dangerous in the guards' eyes.",
-          detay: "You are behind bars now, and a prisoner with a bad reputation at that.",
+          mesaj: "Caught; your escape attempt made you look more dangerous.",
+          detay: "Now a prisoner with a bad name.",
         },
       },
       {
         metin: "Don't resist, surrender.",
         basariliSonuc: {
-          mesaj: "You surrendered without resisting; you were chained and taken to prison.",
-          detay: "You are a prisoner now. You'll need to find a way out of here.",
+          mesaj: "You surrendered; chained and taken to prison.",
+          detay: "A prisoner now. Find a way out.",
         },
         basarisizSonuc: {
-          mesaj: "Despite staying calm, a guard shoved you roughly; you entered prison wounded.",
+          mesaj: "A guard shoved you hard; you entered prison wounded.",
           detay: "Justice is not gentle here.",
         },
       },
@@ -35,28 +35,28 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_kacis_girisimi: {
     baslik: "The Escape Plan",
     metin:
-      "Your cellmates noticed the earth beneath the cell is loose. When the night guards change shift a window of opportunity could open.",
+      "Your cellmates found the earth beneath the cell loose. The night shift change could open a window.",
     secenekler: [
       {
-        metin: "Start digging the tunnel, take the risk.",
+        metin: "Dig the tunnel, risk it.",
         basariliSonuc: {
-          mesaj: "At midnight you slipped through the tunnel and made it out of the city; you're free now.",
-          detay: "This escape story of yours will turn into a legend.",
+          mesaj: "You slipped out the tunnel at night and fled the city; free.",
+          detay: "Your escape will become legend.",
         },
         basarisizSonuc: {
-          mesaj: "The guards caught you in the middle of the tunnel; you were thrown into the punishment cell.",
+          mesaj: "Caught in the tunnel; thrown into the punishment cell.",
           detay:
-            "You have no choice but to wait for the next chance. One of the guards nearly threw a spear; lucky for you, you only took a beating.",
+            "Only a beating, not a spear.",
         },
       },
       {
-        metin: "Wait, watch for a safer moment.",
+        metin: "Wait for a safer moment.",
         basariliSonuc: {
-          mesaj: "You chose to spend today quietly; the chance may come another day.",
-          detay: "Patience is sometimes your only weapon.",
+          mesaj: "You let today pass quietly; another chance may come.",
+          detay: "Patience can be your only weapon.",
         },
         basarisizSonuc: {
-          mesaj: "The waiting broke your spirit; the walls felt like they were closing in more and more.",
+          mesaj: "Waiting sank your spirits; the walls seem to close in.",
           detay: "Time flows differently in prison.",
         },
       },
@@ -66,28 +66,28 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_rusvet_girisimi: {
     baslik: "The Power of Gold",
     metin:
-      "One of the guards approached quietly and whispered, 'Every lock has a price.' With the little money you have, you could try to buy your way out.",
+      "A guard whispers, 'Every lock has a price.' You could try buying a way out with your little money.",
     secenekler: [
       {
-        metin: "Offer the money you have as a bribe.",
+        metin: "Offer a bribe.",
         basariliSonuc: {
-          mesaj: "The guard pocketed the money and 'accidentally' left the door open that night.",
-          detay: "Justice sometimes smiles on the highest bidder.",
+          mesaj: "The guard took the money and 'forgot' the door open.",
+          detay: "Justice smiles on the highest bidder.",
         },
         basarisizSonuc: {
-          mesaj: "The guard took the money but reported you to his commander; you are both broke and out of favor.",
-          detay: "Some guards refuse to sell both their money and their conscience — they just take the money.",
+          mesaj: "The guard took the money and reported you to his commander.",
+          detay: "Conscience unsold, money gone.",
         },
       },
       {
-        metin: "Don't take the risk, don't trust your money.",
+        metin: "Don't risk it.",
         basariliSonuc: {
-          mesaj: "You turned the offer down; at least your money stayed in your pocket.",
-          detay: "Not trusting some opportunities is the wiser choice.",
+          mesaj: "You turned it down; your money stayed in your pocket.",
+          detay: "Distrusting some chances is wiser.",
         },
         basarisizSonuc: {
           mesaj: "You resented missing the chance.",
-          detay: "You kept thinking 'if only I'd taken the risk'.",
+          detay: "'If only I'd risked it.'",
         },
       },
     ],
@@ -96,41 +96,41 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_isyan_firsati: {
     baslik: "Chaos in the Ward",
     metin:
-      "The anger building among the prisoners suddenly exploded; the ward turned into a riot and the guards have lost control. In this chaos a way out might be found — but as the riot is put down, no one knows who lives and who dies.",
+      "The ward is in riot; the guards lost control. The chaos may offer a way out, but who survives is anyone's guess.",
     secenekler: [
       {
-        metin: "Draw the Black Sword and bring the whole ward to heel!",
+        metin: "Draw the Black Sword, cow the ward!",
         basariliSonuc: {
           mesaj:
-            "When you drew the Black Sword the cells ran with blood. Neither prisoners nor guards could stand against you. You run this prison now.",
-          detay: "The sword didn't set you free, but it made the cage a golden throne for you.",
+            "Your blade bloodied the cells; the prison is yours now.",
+          detay: "The cage became a golden throne.",
         },
         basarisizSonuc: {
           mesaj:
-            "You swung the sword, but the riot was a flood — they came down on you from three sides at once. The blade slipped from your hand and they left you under their boots.",
-          detay: "Chaos bowed to no steel, however sharp.",
+            "The riot was a flood; your blade fell and you were trampled.",
+          detay: "Chaos bowed to no steel.",
         },
       },
       {
-        metin: "Take advantage of the chaos and run for the door.",
+        metin: "Run for the door in the chaos.",
         basariliSonuc: {
-          mesaj: "In the middle of the chaos no one noticed you; you slipped out the door and reached freedom.",
-          detay: "The screams you left behind won't leave your ears for a long time.",
+          mesaj: "Nobody noticed; you slipped out the door and got free.",
+          detay: "The screams will stay with you.",
         },
         basarisizSonuc: {
-          mesaj: "In the middle of the chaos a guard's club laid you flat; you were counted a rioter.",
-          detay: "When the ward calmed down, you took the heaviest punishment.",
+          mesaj: "A guard clubbed you down; you were counted a rioter.",
+          detay: "You took the heaviest punishment.",
         },
       },
       {
-        metin: "Withdraw to your cell, stay out of the chaos.",
+        metin: "Retreat to your cell, stay out.",
         basariliSonuc: {
-          mesaj: "You waited quietly in the corner; no one touched you until the riot was put down.",
+          mesaj: "You waited quietly; no one touched you until it was over.",
           detay: "Some fights are not yours.",
         },
         basarisizSonuc: {
-          mesaj: "During the chaos a kick landed on you at random; you were wounded though innocent.",
-          detay: "Sometimes just being there makes you pay a price.",
+          mesaj: "A stray kick landed on you; wounded though innocent.",
+          detay: "Just being there costs you.",
         },
       },
     ],
@@ -139,28 +139,28 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_yeni_tanidik: {
     baslik: "A Friend Behind Bars",
     metin:
-      "Your cellmate {dost} told you their own story; perhaps they were the first person to make you feel you aren't alone here.",
+      "Your cellmate {dost} told you their story; the first to make you feel less alone here.",
     secenekler: [
       {
-        metin: "Trust them, grow the friendship.",
+        metin: "Trust them; build the bond.",
         basariliSonuc: {
-          mesaj: "A real bond formed between you and {dost}; you aren't alone here anymore.",
-          detay: "Some friendships are born in the darkest places.",
+          mesaj: "A real bond formed with {dost}; you're not alone anymore.",
+          detay: "Friendship is born in the dark.",
         },
         basarisizSonuc: {
-          mesaj: "What you told them reached the wrong ears; you regretted it a little.",
-          detay: "Trust can cost you dearly in prison.",
+          mesaj: "Your words reached the wrong ears; you regret it.",
+          detay: "Trust can cost dearly in prison.",
         },
       },
       {
-        metin: "Keep your distance, trust no one.",
+        metin: "Keep distance, trust no one.",
         basariliSonuc: {
-          mesaj: "You kept your distance; at least no one could use you.",
+          mesaj: "You kept your distance; no one could use you.",
           detay: "Trust is a luxury here.",
         },
         basarisizSonuc: {
-          mesaj: "Your loneliness grows heavier by the day.",
-          detay: "Keeping everyone at arm's length has a price too.",
+          mesaj: "Your loneliness grows heavier.",
+          detay: "Keeping away has a price too.",
         },
       },
     ],
@@ -168,28 +168,28 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
 
   hapis_gardiyan_zulmu: {
     baslik: "A Ruthless Guard",
-    metin: "The guard on this shift is especially angry today; he's trying to punish you for no reason.",
+    metin: "Today's guard is in a foul mood and tries to punish you for nothing.",
     secenekler: [
       {
         metin: "Object, defend your rights.",
         basariliSonuc: {
-          mesaj: "The other prisoners cheered you on; the guard backed down.",
+          mesaj: "The prisoners cheered you; the guard backed down.",
           detay: "Sometimes resistance works.",
         },
         basarisizSonuc: {
-          mesaj: "You paid for it harshly; you spent a few days in pain.",
-          detay: "Here, might is always on the side of the right.",
+          mesaj: "You paid harshly; days of pain followed.",
+          detay: "Here, right belongs to might.",
         },
       },
       {
         metin: "Bow your head, stay silent.",
         basariliSonuc: {
-          mesaj: "You endured it silently; another bad day is behind you.",
-          detay: "Surviving sometimes requires bowing your head.",
+          mesaj: "You endured silently; another bad day gone.",
+          detay: "Survival sometimes means bowing.",
         },
         basarisizSonuc: {
-          mesaj: "You filled with anger inside but managed not to show it.",
-          detay: "This anger could explode one day.",
+          mesaj: "Anger filled you, but you hid it.",
+          detay: "This anger may explode someday.",
         },
       },
     ],
@@ -198,28 +198,28 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_cezasi_doldu: {
     baslik: "The End of the Sentence",
     metin:
-      "The guard opened your cell: 'Your sentence is up, don't drag it out, off to freedom.' The sunlight at the door dazzled your eyes.",
+      "The guard opened your cell: 'Sentence served. Out.' Sunlight dazzled your eyes.",
     secenekler: [
       {
-        metin: "Step outside, turn a new page.",
+        metin: "Step out, turn a new page.",
         basariliSonuc: {
-          mesaj: "You completed your sentence and stepped outside a free person.",
-          detay: "You've decided to leave your past behind.",
+          mesaj: "You served your sentence and walked out free.",
+          detay: "You'll leave the past behind.",
         },
         basarisizSonuc: {
-          mesaj: "You're free, but the weight inside you didn't lift right away.",
+          mesaj: "You're free, but the weight didn't lift at once.",
           detay: "Some marks fade with time.",
         },
       },
       {
-        metin: "Leave the city entirely, leave no trace.",
+        metin: "Leave the city, leave no trace.",
         basariliSonuc: {
-          mesaj: "You left the city without being seen by anyone; your name will slowly be forgotten.",
-          detay: "Sometimes the best beginning is a quiet escape.",
+          mesaj: "You left unseen; your name will fade.",
+          detay: "The best start is a quiet exit.",
         },
         basarisizSonuc: {
-          mesaj: "You left the city but left a few curious glances behind you.",
-          detay: "It's hard to leave without a single trace.",
+          mesaj: "You left, but curious eyes watched you go.",
+          detay: "Leaving no trace is hard.",
         },
       },
     ],
@@ -228,28 +228,28 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_hirsizlik_yakalanma: {
     baslik: "The Moment Your Hand Went to the Purse",
     metin:
-      "In a crowded market, as you reached for a merchant's purse, your wrist was seized hard. The cry 'Thief!' filled the square, and the crowd closed in around you.",
+      "Reaching for a merchant's purse in the market, your wrist was seized. 'Thief!' rang out and the crowd closed in.",
     secenekler: [
       {
         metin: "Push through the crowd and run.",
         basariliSonuc: {
-          mesaj: "You slipped free amid the shoving and ran; with your heart pounding you ducked into a side street.",
-          detay: "You got away with it this time.",
+          mesaj: "You broke free in the crush and ducked into an alley.",
+          detay: "You got away this time.",
         },
         basarisizSonuc: {
-          mesaj: "You were caught; the guards stepped in before the crowd could lynch you.",
+          mesaj: "Caught; guards stepped in before the mob could lynch you.",
           detay: "You're behind bars now.",
         },
       },
       {
-        metin: "Accept that you're caught, don't resist.",
+        metin: "Accept it, don't resist.",
         basariliSonuc: {
           mesaj: "You didn't resist; the guards took you quietly.",
           detay: "At least you weren't beaten.",
         },
         basarisizSonuc: {
-          mesaj: "Someone from the crowd threw a punch at you; the guards had trouble pulling them off.",
-          detay: "The crowd's anger is sometimes faster than justice.",
+          mesaj: "Someone punched you; the guards barely pulled them off.",
+          detay: "The mob is faster than justice.",
         },
       },
     ],
@@ -258,28 +258,28 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_asilzade_husumeti: {
     baslik: "The Lord's Wrath",
     metin:
-      "You said an unfortunate word in front of a powerful lord of the region, or stuck your nose into the wrong person's business. His men are at your door; because you are a nobody, no one will shield you.",
+      "You crossed a powerful lord with a word or by meddling. His men are at your door; no one will shield you.",
     secenekler: [
       {
         metin: "Apologize, beg for mercy.",
         basariliSonuc: {
-          mesaj: "Your humble apology soothed the lord's temper a little; you were only banished.",
-          detay: "Your pride is broken but you're free.",
+          mesaj: "Your apology soothed the lord; you were only banished.",
+          detay: "Pride broken, but you're free.",
         },
         basarisizSonuc: {
-          mesaj: "Your apology was taken for 'weakness'; the lord had you jailed to make an example of you.",
-          detay: "Bowing before the powerful sometimes isn't enough.",
+          mesaj: "Your apology read as weakness; the lord had you jailed.",
+          detay: "Bowing isn't always enough.",
         },
       },
       {
-        metin: "Defend yourself, say you were in the right.",
+        metin: "Defend yourself, claim you're right.",
         basariliSonuc: {
-          mesaj: "Your courage won respect in some circles; the lord backed down this time.",
+          mesaj: "Your courage won respect; the lord backed down.",
           detay: "Rarely, a nobody can win.",
         },
         basarisizSonuc: {
-          mesaj: "The lord couldn't tolerate your insolence; his men beat you and threw you in the dungeon.",
-          detay: "Defying the powerful came at a heavy price.",
+          mesaj: "The lord wouldn't tolerate insolence; beaten and jailed.",
+          detay: "Defying the powerful cost dearly.",
         },
       },
     ],
@@ -288,28 +288,28 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_kacakcilik_baskini: {
     baslik: "The Raid",
     metin:
-      "A patrol raided the warehouse where you hid contraband. As the door is broken down you have only seconds in your hands.",
+      "A patrol raided the warehouse where you hide contraband. As the door breaks, you have seconds.",
     secenekler: [
       {
-        metin: "Burn the goods to destroy the evidence, then try to run.",
+        metin: "Burn the evidence and run.",
         basariliSonuc: {
-          mesaj: "You set the goods ablaze and escaped in the smoke; no evidence was left.",
-          detay: "Your capital turned to ash but you're free.",
+          mesaj: "You burned the goods and fled in the smoke.",
+          detay: "Capital in ashes, but you're free.",
         },
         basarisizSonuc: {
-          mesaj: "You were caught in the smoke, red-handed.",
-          detay: "Even destroying the evidence couldn't save you.",
+          mesaj: "Caught red-handed in the smoke.",
+          detay: "Burning the evidence didn't save you.",
         },
       },
       {
         metin: "Surrender quietly, hire a lawyer.",
         basariliSonuc: {
-          mesaj: "Thanks to the lawyer you hired, you got off with a small fine.",
+          mesaj: "Your lawyer got you off with a small fine.",
           detay: "Money worked here too.",
         },
         basarisizSonuc: {
-          mesaj: "Despite your lawyer's efforts, the judge threw you inside.",
-          detay: "Some crimes don't close even with a lawyer.",
+          mesaj: "Despite your lawyer, the judge jailed you.",
+          detay: "Some crimes even lawyers can't close.",
         },
       },
     ],
@@ -318,28 +318,28 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_ayaklanma_tutuklamasi: {
     baslik: "The Crushed Uprising",
     metin:
-      "An uprising you joined (or happened to be at, in the wrong place at the wrong time) was crushed by the soldiers. You're lined up and questioned one by one; now it's your turn.",
+      "The uprising you joined (or just stood near) was crushed. Questioning reaches your turn.",
     secenekler: [
       {
-        metin: "Blend into the crowd and try to hide your identity.",
+        metin: "Blend into the crowd, hide.",
         basariliSonuc: {
-          mesaj: "You acted like an ordinary bystander, and the soldiers let you go.",
-          detay: "Luck was on your side this time.",
+          mesaj: "You played a bystander; the soldiers let you go.",
+          detay: "Luck favored you this time.",
         },
         basarisizSonuc: {
-          mesaj: "An informer pointed you out; you were arrested as 'one of the agitators'.",
-          detay: "Hiding even in the crowd wasn't enough.",
+          mesaj: "An informer pointed you out; arrested as an 'agitator'.",
+          detay: "Hiding in the crowd wasn't enough.",
         },
       },
       {
-        metin: "State your cause openly, stand behind it.",
+        metin: "State your cause, stand by it.",
         basariliSonuc: {
-          mesaj: "Your courage won the respect of even some soldiers, but you were arrested all the same.",
-          detay: "Your conscience is at ease, your cell is narrow.",
+          mesaj: "Your courage won respect, but you were arrested anyway.",
+          detay: "Easy conscience, narrow cell.",
         },
         basarisizSonuc: {
-          mesaj: "Your words enraged the soldiers; you were beaten and thrown in prison.",
-          detay: "The price of speaking the truth was heavy this time.",
+          mesaj: "Your words enraged the soldiers; beaten and jailed.",
+          detay: "Telling the truth cost you dearly.",
         },
       },
     ],
@@ -348,39 +348,39 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_zar_masasi_baskini: {
     baslik: "The Dice Table Raid",
     metin:
-      "The gendarmes raided the tavern where the underground dice table was held. The doors were broken, the players scattered in every direction; you know your name is spoken as 'one of the regulars there'.",
+      "Gendarmes raided the tavern with the underground dice table. Everyone scatters; you're known as 'one of the regulars'.",
     secenekler: [
       {
-        metin: "Try to slip out the back door.",
+        metin: "Slip out the back door.",
         basariliSonuc: {
-          mesaj: "Taking advantage of the smoke and chaos, you slipped out the back door.",
-          detay: "This time you escaped both the table and prison.",
+          mesaj: "You slipped out the back in the smoke and chaos.",
+          detay: "You escaped both the table and prison.",
         },
         basarisizSonuc: {
-          mesaj: "They caught you at the door; your resistance was useless.",
-          detay: "The end of the gambling table is rarely pretty.",
+          mesaj: "Caught at the door; resisting was useless.",
+          detay: "Gambling rarely ends well.",
         },
       },
       {
-        metin: "Offer the guard a bribe, leave quietly.",
+        metin: "Bribe the guard and leave quietly.",
         basariliSonuc: {
-          mesaj: "The guard pocketed the purse and looked the other way.",
+          mesaj: "The guard pocketed the purse and looked away.",
           detay: "Some doors open with gold.",
         },
         basarisizSonuc: {
-          mesaj: "Your bribe offer didn't escape another guard's eye; you lost your money and got locked up.",
+          mesaj: "Another guard saw; you lost your money and got locked up.",
           detay: "You trusted the wrong guard.",
         },
       },
       {
         metin: "Don't resist, surrender.",
         basariliSonuc: {
-          mesaj: "You surrendered calmly; at least you weren't beaten.",
-          detay: "The cell is cold but at least your ribs are intact.",
+          mesaj: "You surrendered calmly; at least no beating.",
+          detay: "Cell is cold, but ribs are intact.",
         },
         basarisizSonuc: {
-          mesaj: "Despite staying calm, a guard took his temper out on you.",
-          detay: "Sometimes even silence isn't enough.",
+          mesaj: "Though calm, a guard took his temper out on you.",
+          detay: "Sometimes silence isn't enough.",
         },
       },
     ],
@@ -389,39 +389,39 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_karaborsa_baskini: {
     baslik: "The Black Market Raid",
     metin:
-      "The guards who have been watching you for months finally broke down the door of your black-market warehouse. The goods inside are the clearest proof that you made money off famine and plague; you have nowhere much to run.",
+      "Guards stormed your black-market warehouse. The goods prove you profited from famine and plague; few ways out.",
     secenekler: [
       {
-        metin: "Escape through the warehouse's back exit.",
+        metin: "Flee by the back exit.",
         basariliSonuc: {
-          mesaj: "You slipped out the back of the warehouse; your goods were seized but at least you weren't jailed.",
-          detay: "Your fortune is gone, your freedom remains.",
+          mesaj: "You slipped out the back; goods seized, but no jail.",
+          detay: "Fortune gone, freedom kept.",
         },
         basarisizSonuc: {
-          mesaj: "You were caught escaping; both your warehouse was seized and you found yourself behind bars.",
-          detay: "The bill for immoral wealth came due heavily.",
+          mesaj: "Caught fleeing; warehouse seized and you're locked up.",
+          detay: "Dirty wealth's bill came due.",
         },
       },
       {
-        metin: "Try to close the case with a hefty bribe.",
+        metin: "Close the case with a hefty bribe.",
         basariliSonuc: {
-          mesaj: "The bribe worked; the case was dropped and you kept your warehouse too.",
-          detay: "This time the power of gold covered your crime.",
+          mesaj: "The bribe worked; case dropped, warehouse kept.",
+          detay: "This time gold covered your crime.",
         },
         basarisizSonuc: {
-          mesaj: "Your bribe was refused; you lost your money, your warehouse was seized, and you were locked up.",
+          mesaj: "Bribe refused; you lost money, warehouse and freedom.",
           detay: "Sometimes even money isn't enough.",
         },
       },
       {
         metin: "Don't resist, surrender.",
         basariliSonuc: {
-          mesaj: "You surrendered calmly; your entire warehouse was seized.",
-          detay: "Your dark earnings ended in a dark way.",
+          mesaj: "You surrendered calmly; the whole warehouse was seized.",
+          detay: "Dark earnings, dark ending.",
         },
         basarisizSonuc: {
-          mesaj: "Even though you surrendered, a guard took out his anger on you.",
-          detay: "What you earned off others' backs for years was taken from you today.",
+          mesaj: "Though you surrendered, a guard took his anger out on you.",
+          detay: "Years of earnings, taken today.",
         },
       },
     ],
@@ -430,28 +430,28 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_tunel_karar: {
     baslik: "The Decision to Dig",
     metin:
-      "The stone in the corner of your cell is loose; if you dig beneath it a tunnel could open. Should you go quietly alone, or bring a few trusted prisoners into the job?",
+      "The corner stone is loose; a tunnel could be dug beneath. Alone, or with a few trusted prisoners?",
     secenekler: [
       {
         metin: "Dig alone, trust no one.",
         basariliSonuc: {
-          mesaj: "Late at night you started digging alone. You take care to make no sound.",
-          detay: "Being alone is slow but safe.",
+          mesaj: "You began digging alone at night, quietly.",
+          detay: "Alone is slow but safe.",
         },
         basarisizSonuc: {
-          mesaj: "The first night, while lifting the stone, you cut your hand and lost some blood, but no one heard.",
-          detay: "A small mishap, not worth making a fuss over.",
+          mesaj: "You cut your hand on the stone and bled; no one heard.",
+          detay: "A small mishap.",
         },
       },
       {
-        metin: "Form a team with a few trusted prisoners.",
+        metin: "Team up with trusted prisoners.",
         basariliSonuc: {
-          mesaj: "You made a quiet deal with three prisoners; you started digging in shifts.",
-          detay: "A team is faster but the secret gets harder to keep.",
+          mesaj: "You struck a deal with three prisoners and dig in shifts.",
+          detay: "A team is faster, but secrets slip.",
         },
         basarisizSonuc: {
-          mesaj: "Forming a team was harder than you thought; building trust took time.",
-          detay: "Still, the plan began to move.",
+          mesaj: "Building a team was hard; trust took time.",
+          detay: "Still, the plan moved forward.",
         },
       },
     ],
@@ -460,29 +460,29 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_tunel_tek_1: {
     baslik: "The Silent Dig",
     metin:
-      "You advance night by night; the sound of the earth sometimes comes out too loud, and a guard's footsteps seem to be approaching.",
+      "You advance night by night; the digging grows loud, and a guard's footsteps seem to near.",
     secenekler: [
       {
-        metin: "Keep digging, take the risk.",
+        metin: "Keep digging, risk it.",
         basariliSonuc: {
-          mesaj: "The guard walked off in another direction; the tunnel advanced quite a bit.",
-          detay: "Luck was on your side.",
+          mesaj: "The guard walked away; the tunnel advanced well.",
+          detay: "Luck was with you.",
         },
         basarisizSonuc: {
           mesaj:
-            "The guard heard the sound and searched your cell but didn't notice the loose stone; still, the tension left you exhausted.",
+            "The guard searched but missed the stone; you're drained.",
           detay: "You got off cheap this time.",
         },
       },
       {
         metin: "Stop, wait quietly.",
         basariliSonuc: {
-          mesaj: "The guard passed by; you lost a few hours but you're safe.",
-          detay: "Patience is part of this job.",
+          mesaj: "The guard passed; you lost hours but you're safe.",
+          detay: "Patience is part of the job.",
         },
         basarisizSonuc: {
-          mesaj: "The wait dragged on and your spirits sank.",
-          detay: "Underground, time flows even slower.",
+          mesaj: "The wait dragged on; your spirits sank.",
+          detay: "Underground, time crawls.",
         },
       },
     ],
@@ -490,28 +490,28 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
 
   hapis_tunel_tek_2: {
     baslik: "Out Into the Light",
-    metin: "The tunnel is finally finished. It's midnight — time to crawl out and step into freedom.",
+    metin: "The tunnel is done. At midnight, time to crawl out into freedom.",
     secenekler: [
       {
-        metin: "Crawl out right away, run.",
+        metin: "Crawl out now and run.",
         basariliSonuc: {
-          mesaj: "You slipped through the tunnel and melted into the city's darkness; you're free now.",
-          detay: "You did it alone — this story will become a legend.",
+          mesaj: "You slipped out and melted into the dark; you're free.",
+          detay: "You did it alone; a legend now.",
         },
         basarisizSonuc: {
-          mesaj: "Right at the exit you were caught by a patrol; after a hard beating you were thrown back in the cell.",
-          detay: "Losing freedom when it's this close is the most bitter of all.",
+          mesaj: "A patrol caught you at the exit; beaten and thrown back in.",
+          detay: "Freedom slipped away so close.",
         },
       },
       {
-        metin: "Be patient, wait for the calmest hour.",
+        metin: "Be patient, wait for the calm hour.",
         basariliSonuc: {
-          mesaj: "You waited for the quietest hour and got out unnoticed.",
-          detay: "Your patience paid off.",
+          mesaj: "You waited for the quietest hour and slipped out.",
+          detay: "Patience paid off.",
         },
         basarisizSonuc: {
-          mesaj: "While waiting, the tunnel threatened to collapse; you barely made it back and were caught.",
-          detay: "The earth became your enemy too.",
+          mesaj: "The tunnel nearly collapsed; you barely returned, caught.",
+          detay: "The earth turned on you too.",
         },
       },
     ],
@@ -520,29 +520,29 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_tunel_ekip_1: {
     baslik: "A Test of Trust",
     metin:
-      "One of the team raised a suspicion that they might be thinking of leaking information to the guards in exchange for the dig. Do you keep trusting them, or hide the plan from them?",
+      "One of the team may be leaking to the guards. Keep trusting them, or hide the plan?",
     secenekler: [
       {
         metin: "Keep trusting them.",
         basariliSonuc: {
-          mesaj: "Your suspicion was unfounded; they wanted freedom as much as you did.",
-          detay: "Your trust was repaid.",
+          mesaj: "Your suspicion was wrong; they want freedom as much as you.",
+          detay: "Trust was repaid.",
         },
         basarisizSonuc: {
           mesaj:
-            "Your suspicion was partly right: a small hint leaked to the guards, but the tunnel hasn't been discovered yet.",
-          detay: "You slipped past the edge of danger.",
+            "A hint leaked to the guards, but the tunnel is undiscovered.",
+          detay: "You slipped past danger.",
         },
       },
       {
-        metin: "Hide the plan from them, continue only with the others.",
+        metin: "Hide the plan from them.",
         basariliSonuc: {
-          mesaj: "You cut the suspicious prisoner out of the plan; the dig continued quietly.",
+          mesaj: "You cut the suspect out; the dig went on quietly.",
           detay: "Caution worked this time.",
         },
         basarisizSonuc: {
-          mesaj: "The excluded prisoner noticed, and tension arose between you.",
-          detay: "Mistrust sometimes feeds itself.",
+          mesaj: "The excluded prisoner noticed; tension grew between you.",
+          detay: "Mistrust feeds itself.",
         },
       },
     ],
@@ -550,28 +550,28 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
 
   hapis_tunel_ekip_2: {
     baslik: "The Joint Dig",
-    metin: "The team digs in shifts; the tunnel advances fast but the sounds of the earth are growing too.",
+    metin: "The team digs in shifts; the tunnel advances fast, but so does the noise.",
     secenekler: [
       {
-        metin: "Speed it up, take the risk.",
+        metin: "Speed up, risk it.",
         basariliSonuc: {
-          mesaj: "Working fast paid off; the tunnel was finished earlier than expected.",
+          mesaj: "Working fast paid off; the tunnel finished early.",
           detay: "Team spirit made the difference.",
         },
         basarisizSonuc: {
-          mesaj: "A guard noticed the sounds but couldn't find their source; the team froze.",
+          mesaj: "A guard heard noise but found no source; the team froze.",
           detay: "You got off cheap.",
         },
       },
       {
-        metin: "Advance slowly and quietly.",
+        metin: "Go slow and quiet.",
         basariliSonuc: {
           mesaj: "Thanks to the patient pace, no one noticed.",
           detay: "Slow but sure steps.",
         },
         basarisizSonuc: {
-          mesaj: "The slow pace hurt morale; unrest began in the team.",
-          detay: "Some are growing impatient.",
+          mesaj: "The slow pace hurt morale; the team grew restless.",
+          detay: "Some grow impatient.",
         },
       },
     ],
@@ -580,30 +580,30 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_tunel_ekip_3: {
     baslik: "The Mass Escape",
     metin:
-      "The tunnel is finished. Time to slip out one row at a time — but a large group raises the risk of being noticed.",
+      "The tunnel is ready. Time to slip out, but a big group raises the risk of notice.",
     secenekler: [
       {
         metin: "Get out all together, quickly.",
         basariliSonuc: {
           mesaj:
-            "You all plunged into the darkness together; by the time the guards noticed the crowd, most of you were long gone.",
-          detay: "This mass escape went down in prison history.",
+            "You plunged into the dark; most were gone before the alarm.",
+          detay: "It went down in prison history.",
         },
         basarisizSonuc: {
           mesaj:
-            "The crowd's noise woke the guards; most of you were caught again, and some barely escaped being shot while fleeing.",
-          detay: "Numbers were a disadvantage this time, not an advantage.",
+            "The noise woke the guards; most of you were recaptured.",
+          detay: "Numbers were a handicap this time.",
         },
       },
       {
-        metin: "Get out one by one, at intervals.",
+        metin: "One by one, at intervals.",
         basariliSonuc: {
-          mesaj: "You slipped out one by one, quietly; no one noticed until the morning count.",
-          detay: "Patience and order made the crowd invisible.",
+          mesaj: "You slipped out one by one; no one knew until morning count.",
+          detay: "Patience made the crowd invisible.",
         },
         basarisizSonuc: {
-          mesaj: "When it was your turn a guard appeared; you were caught, the others had already melted into the dark.",
-          detay: "Bad timing in the queue gave you away.",
+          mesaj: "A guard showed on your turn; you were caught, the rest fled.",
+          detay: "Bad timing gave you away.",
         },
       },
     ],
@@ -612,27 +612,27 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_rusvet_muhbir_bulma: {
     baslik: "Finding the Weak Link",
     metin:
-      "You're looking among the guards for someone who can be swayed with money; a young sentry said to have gambling debts caught your eye.",
+      "You look for a guard who can be bought; a young sentry with rumored gambling debts catches your eye.",
     secenekler: [
       {
-        metin: "Approach him, carefully start a conversation.",
+        metin: "Approach him, strike up talk.",
         basariliSonuc: {
-          mesaj: "The young guard started talking about his debts; exactly the person you're looking for.",
-          detay: "Weaknesses are sometimes the best key.",
+          mesaj: "The young guard spoke of his debts; just your man.",
+          detay: "Weakness is the best key.",
         },
         basarisizSonuc: {
-          mesaj: "The guard stayed distant; winning his trust is harder than you expected.",
-          detay: "Not everyone opens up easily.",
+          mesaj: "The guard stayed distant; his trust is hard to win.",
+          detay: "Not everyone opens easily.",
         },
       },
       {
-        metin: "Gather information from other prisoners, find a solid name.",
+        metin: "Ask prisoners for a solid name.",
         basariliSonuc: {
-          mesaj: "For a small 'thank you' you got a reliable name.",
-          detay: "Information is worth money even in prison.",
+          mesaj: "A small 'thank you' bought a reliable name.",
+          detay: "Even in prison, information pays.",
         },
         basarisizSonuc: {
-          mesaj: "The name you were given was useless; your money was wasted.",
+          mesaj: "The name was useless; your money was wasted.",
           detay: "Not every tip pans out.",
         },
       },
@@ -641,29 +641,29 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
 
   hapis_rusvet_pazarlik_derin: {
     baslik: "Haggling Over the Price",
-    metin: "The guard named his price — higher than you expected. Should you haggle, or give him what he wants?",
+    metin: "The guard named his price, higher than expected. Haggle, or pay it?",
     secenekler: [
       {
-        metin: "Haggle insistently.",
+        metin: "Haggle hard.",
         basariliSonuc: {
-          mesaj: "Your haggling worked; you brought the price down quite a bit.",
-          detay: "Your purse is a little less wounded.",
+          mesaj: "Haggling worked; you cut the price quite a bit.",
+          detay: "Your purse is less wounded.",
         },
         basarisizSonuc: {
           mesaj:
-            "Your insistence offended the guard; the deal nearly fell apart, but at the last moment he accepted.",
+            "Your pushing offended him; he accepted at the last moment.",
           detay: "Going cheap is a risky game.",
         },
       },
       {
-        metin: "Give him what he wants, accept without arguing.",
+        metin: "Pay what he wants.",
         basariliSonuc: {
-          mesaj: "The deal was done quickly and smoothly.",
-          detay: "Sometimes time is worth more than money.",
+          mesaj: "The deal closed quickly and smoothly.",
+          detay: "Time can be worth more than money.",
         },
         basarisizSonuc: {
-          mesaj: "You reached a deal but the guard had to delay the plan a bit.",
-          detay: "Not every deal goes the way it's promised.",
+          mesaj: "You agreed, but the guard had to delay the plan.",
+          detay: "Not every deal goes as promised.",
         },
       },
     ],
@@ -672,27 +672,27 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_rusvet_uygulama: {
     baslik: "The Night the Door Opened",
     metin:
-      "The night the deal is to be carried out has come. The guard will be waiting for you at the agreed hour — or he may be setting a trap.",
+      "The night of the deal is here. The guard will be waiting at the agreed hour, or it's a trap.",
     secenekler: [
       {
-        metin: "Trust the plan, go at the agreed hour.",
+        metin: "Trust the plan, go on time.",
         basariliSonuc: {
-          mesaj: "The guard kept his word; the door really was left 'accidentally' open.",
-          detay: "The power of gold was proven once more.",
+          mesaj: "The guard kept his word; the door was 'accidentally' open.",
+          detay: "Gold proved its power again.",
         },
         basarisizSonuc: {
-          mesaj: "It was a trap! The guard reported you to his commander; you faced a heavy punishment.",
-          detay: "Some deals were rotten from the start.",
+          mesaj: "A trap! The guard reported you; harsh punishment.",
+          detay: "Some deals are rotten from the start.",
         },
       },
       {
-        metin: "Grow suspicious at the last moment, cancel the plan.",
+        metin: "Get suspicious, call it off.",
         basariliSonuc: {
-          mesaj: "You trusted your instincts and pulled back; later you learned it was the right hunch.",
+          mesaj: "You trusted your gut and pulled back; it was right.",
           detay: "Sometimes avoiding is a victory too.",
         },
         basarisizSonuc: {
-          mesaj: "You backed out but couldn't get back the advance you'd paid.",
+          mesaj: "You backed out but lost the advance you'd paid.",
           detay: "Your mistrust had a price.",
         },
       },
@@ -702,28 +702,28 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_bayiltma_plan: {
     baslik: "Watching for the Chance",
     metin:
-      "You've noticed that the lone guard on night watch sometimes grows careless as he passes the cells. Knocking him out for a moment could open a window for escape.",
+      "The lone night guard grows careless as he passes the cells. Disabling him could open an escape.",
     secenekler: [
       {
-        metin: "Prepare for a hard blow (hide a stone/piece of bone).",
+        metin: "Hide something hard to strike with.",
         basariliSonuc: {
-          mesaj: "You hid a hard object within reach; the plan is taking shape.",
-          detay: "Preparation is the foundation of every plan.",
+          mesaj: "You hid a hard object; the plan takes shape.",
+          detay: "Preparation is the plan's foundation.",
         },
         basarisizSonuc: {
-          mesaj: "Finding something useful was harder than you thought, but you found something that'll do.",
+          mesaj: "Finding one was hard, but you found something workable.",
           detay: "Not perfect, but enough.",
         },
       },
       {
-        metin: "Prepare a story/lie to keep him occupied, distract him.",
+        metin: "Prepare a lie to distract him.",
         basariliSonuc: {
-          mesaj: "You crafted a convincing story; it'll catch the guard's attention.",
+          mesaj: "You crafted a convincing story; it'll hold the guard.",
           detay: "Sometimes the best weapon is words.",
         },
         basarisizSonuc: {
-          mesaj: "Your story came out a bit weak, but you're brave enough to try it.",
-          detay: "There's no such thing as a flawless plan.",
+          mesaj: "Your story is weak, but you're bold enough to try.",
+          detay: "No plan is flawless.",
         },
       },
     ],
@@ -732,28 +732,28 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_bayiltma_saldiri: {
     baslik: "The Moment Has Come",
     metin:
-      "The guard is passing in front of the cell. Now or never — you need to attack him and knock him out. This is one of the gravest crimes you can commit in prison.",
+      "The guard passes your cell. Now or never, but attacking a guard is among the gravest crimes.",
     secenekler: [
       {
-        metin: "Attack with a sudden move, knock him out.",
+        metin: "Strike suddenly, knock him out.",
         basariliSonuc: {
-          mesaj: "The blow landed square; the guard crumpled silently to the floor. You took the keys.",
-          detay: "Your heart is about to leap out of your chest, but you did it.",
+          mesaj: "The blow landed; he crumpled and you took the keys.",
+          detay: "Your heart pounds, but you did it.",
         },
         basarisizSonuc: {
           mesaj:
-            "The guard turned at the last moment, a fight broke out; the other sentries arrived. Your attempt at violence will be punished in the harshest way.",
-          detay: "The price of attacking a guard is very heavy.",
+            "He turned in time; a brawl, then harsh punishment.",
+          detay: "Attacking a guard costs dearly.",
         },
       },
       {
-        metin: "Give up at the last moment, pull back.",
+        metin: "Give up at the last moment.",
         basariliSonuc: {
-          mesaj: "You trusted your instincts and cancelled the plan; maybe another chance will come.",
+          mesaj: "You called it off; another chance may come.",
           detay: "Sometimes stepping back takes courage.",
         },
         basarisizSonuc: {
-          mesaj: "You gave up, but the guard nearly noticed while you were hiding the object.",
+          mesaj: "You gave up, but the guard nearly saw the object.",
           detay: "Your heart is still pounding.",
         },
       },
@@ -763,28 +763,28 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_bayiltma_kacis: {
     baslik: "Escape With the Keys",
     metin:
-      "The guard's keys are in your hand; the cell door is in front of you. But the corridors are long and the way out is unclear.",
+      "The keys are in your hand, the door before you. But the corridors are long, the exit unclear.",
     secenekler: [
       {
-        metin: "Run fast, try the nearest exit.",
+        metin: "Run for the nearest exit.",
         basariliSonuc: {
-          mesaj: "You managed to run out through the dark corridors; you're free now.",
-          detay: "This daring escape will become a legend.",
+          mesaj: "You ran through dark corridors and got out; you're free.",
+          detay: "This daring escape will be legend.",
         },
         basarisizSonuc: {
-          mesaj: "You ran into another sentry; luck wasn't on your side this time, and you were subdued harshly.",
-          detay: "The price of attacking a guard and getting caught is the heaviest of all.",
+          mesaj: "You ran into another sentry and were harshly subdued.",
+          detay: "Attack and capture cost the most.",
         },
       },
       {
-        metin: "Stay calm, put on the guard's disguise and walk out as if it's normal.",
+        metin: "Wear his uniform, walk out calmly.",
         basariliSonuc: {
-          mesaj: "You pulled the guard's uniform on and calmly walked out the main gate.",
-          detay: "Your daring proved more effective than force.",
+          mesaj: "In the guard's uniform you walked calmly out the main gate.",
+          detay: "Daring beat force.",
         },
         basarisizSonuc: {
-          mesaj: "The uniform didn't fit; an officer spotted you at once, and this time you were subdued mercilessly.",
-          detay: "Your disguise plan didn't work.",
+          mesaj: "An officer spotted you and subdued you harshly.",
+          detay: "The disguise plan failed.",
         },
       },
     ],
@@ -793,28 +793,28 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_iyi_hal_karar: {
     baslik: "The Decision to Behave",
     metin:
-      "One of the guards said that prisoners who show exemplary behavior are sometimes considered for early release. You could behave well and try to earn trust.",
+      "A guard says exemplary prisoners are sometimes considered for early release. You could behave and earn trust.",
     secenekler: [
       {
-        metin: "Follow the rules fully, be hardworking and quiet.",
+        metin: "Follow the rules, work quietly.",
         basariliSonuc: {
-          mesaj: "Your behavior drew the positive attention of the guards and the administration.",
-          detay: "Patience became a strategy here.",
+          mesaj: "Your conduct drew the guards' favorable notice.",
+          detay: "Patience became strategy here.",
         },
         basarisizSonuc: {
-          mesaj: "Your efforts went mostly unnoticed; no one cared.",
-          detay: "Sometimes goodness stays invisible.",
+          mesaj: "Your efforts went unnoticed; no one cared.",
+          detay: "Goodness sometimes goes unseen.",
         },
       },
       {
-        metin: "Do small favors for the guards, get in their good graces.",
+        metin: "Do small favors for the guards.",
         basariliSonuc: {
-          mesaj: "Your small favors worked; a guard has already started mentioning you.",
-          detay: "Sometimes small kindnesses open big doors.",
+          mesaj: "Your favors worked; a guard has begun mentioning you.",
+          detay: "Small kindnesses open big doors.",
         },
         basarisizSonuc: {
-          mesaj: "The other prisoners branded you a 'bootlicker'; your standing in the ward was shaken.",
-          detay: "No strategy is without cost.",
+          mesaj: "Prisoners called you a 'bootlicker'; your standing shook.",
+          detay: "No strategy is free.",
         },
       },
     ],
@@ -823,27 +823,27 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_iyi_hal_degerlendirme: {
     baslik: "The Board's Decision",
     metin:
-      "The prison administration gathered to review your file for early release. Their decision could change your life.",
+      "The administration met to review your file for early release. Their decision could change your life.",
     secenekler: [
       {
-        metin: "Give a sincere speech of remorse before the board.",
+        metin: "Give a sincere speech of remorse.",
         basariliSonuc: {
-          mesaj: "Your words moved the board; your sentence ended early.",
-          detay: "Sometimes honesty is the strongest defense.",
+          mesaj: "Your words moved the board; sentence cut short.",
+          detay: "Honesty is the strongest defense.",
         },
         basarisizSonuc: {
-          mesaj: "The board wasn't convinced, your release was denied; you must serve the rest of your sentence.",
-          detay: "Not every effort is rewarded right away.",
+          mesaj: "The board wasn't convinced; release denied.",
+          detay: "Effort isn't always rewarded at once.",
         },
       },
       {
-        metin: "Settle for a short, formal petition.",
+        metin: "Settle for a short petition.",
         basariliSonuc: {
-          mesaj: "Your formal petition was accepted; you were released quietly, without ceremony.",
-          detay: "Some victories are won without fanfare.",
+          mesaj: "Your petition was accepted; you were quietly released.",
+          detay: "Some victories are quiet.",
         },
         basarisizSonuc: {
-          mesaj: "Your petition was found insufficient; you have to wait until the next review.",
+          mesaj: "Your petition fell short; wait for the next review.",
           detay: "Bureaucracy is slow here too.",
         },
       },
@@ -853,28 +853,28 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_isyan_hazirlik: {
     baslik: "Among the Whispers",
     metin:
-      "Whispers of a riot in the making are going around the ward; anger is building, about to explode. You need to decide whom to trust — if this information reaches the wrong ear, you're in deep trouble.",
+      "Whispers of a riot spread through the ward; anger is about to burst. Choose whom to trust; the wrong ear means trouble.",
     secenekler: [
       {
-        metin: "Join the plan with a few prisoners you trust.",
+        metin: "Join the plan with trusted men.",
         basariliSonuc: {
-          mesaj: "You quietly came to an understanding with prisoners you trust; when the riot breaks out you'll be ready.",
+          mesaj: "You made a quiet pact; you'll be ready when it breaks.",
           detay: "Some alliances are made in the dark.",
         },
         basarisizSonuc: {
-          mesaj: "Deciding whom to trust was harder than you thought; you wait in tension.",
-          detay: "Uncertainty is the most exhausting thing.",
+          mesaj: "Choosing whom to trust was hard; you wait on edge.",
+          detay: "Uncertainty wears most.",
         },
       },
       {
-        metin: "Trust no one, just watch.",
+        metin: "Trust no one, only watch.",
         basariliSonuc: {
-          mesaj: "You chose to watch quietly; you said nothing to anyone.",
-          detay: "Information is sometimes the safest weapon — by not using it.",
+          mesaj: "You watched silently and told no one anything.",
+          detay: "Not using information is safest.",
         },
         basarisizSonuc: {
-          mesaj: "Even watching kept you on edge; you can't guess what will happen.",
-          detay: "Waiting is sometimes more exhausting than action.",
+          mesaj: "Even watching kept you tense; you can't tell what comes.",
+          detay: "Waiting can wear more than action.",
         },
       },
     ],
@@ -883,27 +883,27 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_hastalik: {
     baslik: "Damp Cell Sickness",
     metin:
-      "A sickness is spreading in the damp, dark ward; coughing breaks the silence of the night. The little clean water you have is enough for only you or the sick prisoner beside you.",
+      "Sickness spreads in the damp ward. The little clean water suffices for you or the sick prisoner beside you.",
     secenekler: [
       {
-        metin: "Share the water with the sick prisoner.",
+        metin: "Share the water with the sick man.",
         basariliSonuc: {
-          mesaj: "You shared your water; the prisoner slowly recovered and stayed grateful to you.",
-          detay: "Some kindnesses are done without expecting anything in return.",
+          mesaj: "You shared the water; he recovered and stayed grateful.",
+          detay: "Kindness expects nothing in return.",
         },
         basarisizSonuc: {
-          mesaj: "The water you shared wasn't enough; you both grew weak.",
+          mesaj: "It wasn't enough; you both grew weak.",
           detay: "Good intentions aren't always enough.",
         },
       },
       {
-        metin: "Keep the water for yourself, protect your health.",
+        metin: "Keep the water; protect yourself.",
         basariliSonuc: {
-          mesaj: "You kept the water for yourself; your health held up, but the prisoner beside you coughed harder.",
-          detay: "Survival sometimes demands selfishness.",
+          mesaj: "You kept your health, but his cough worsened.",
+          detay: "Survival demands selfishness.",
         },
         basarisizSonuc: {
-          mesaj: "Despite the water you saved, you fell a little ill too; and your conscience isn't at ease.",
+          mesaj: "Despite the water, you fell ill too; your conscience aches.",
           detay: "Some choices have no winner.",
         },
       },
@@ -913,28 +913,28 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_aclik_grevi: {
     baslik: "A Call for a Hunger Strike",
     metin:
-      "The prisoners are starting a collective hunger strike to improve conditions. Joining shows solidarity, but your body has its limits too.",
+      "The prisoners start a hunger strike for better conditions. Joining shows solidarity, but your body has limits.",
     secenekler: [
       {
-        metin: "Join the strike, show solidarity.",
+        metin: "Join the strike.",
         basariliSonuc: {
-          mesaj: "The strike stirred the administration to act; conditions improved a little, and you were part of that victory.",
-          detay: "Going hungry was a price, but it was worth it.",
+          mesaj: "The strike worked; conditions improved a little.",
+          detay: "Hunger was the price, but worth it.",
         },
         basarisizSonuc: {
-          mesaj: "The strike came to nothing, the administration didn't care; you only grew weak from hunger.",
+          mesaj: "The strike achieved nothing; you only grew weak.",
           detay: "Not every resistance wins.",
         },
       },
       {
-        metin: "Don't join, eat your own share.",
+        metin: "Don't join, eat your share.",
         basariliSonuc: {
-          mesaj: "You protected your health but the other prisoners shunned you as 'without solidarity'.",
+          mesaj: "You kept your health; the prisoners shunned you.",
           detay: "Some choices isolate you.",
         },
         basarisizSonuc: {
-          mesaj: "You didn't join but a guilt stayed in you.",
-          detay: "Standing on the sidelines is a choice too.",
+          mesaj: "You stayed out, but guilt lingers.",
+          detay: "Standing aside is a choice too.",
         },
       },
     ],
@@ -943,27 +943,27 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_kacak_mektup: {
     baslik: "The Smuggled Letter",
     metin:
-      "A guard (for a bribe) gave you a letter smuggled in from outside: from {dost}. You hold it without knowing whether it carries hope or bad news.",
+      "A bribed guard hands you a smuggled letter from {dost}. Hope or bad news inside, you can't tell.",
     secenekler: [
       {
-        metin: "Open it right away, read it.",
+        metin: "Open it and read.",
         basariliSonuc: {
-          mesaj: "{dost} wrote that they're still waiting for you; the hope inside you flared up again.",
-          detay: "Even behind walls, having someone think of you is priceless.",
+          mesaj: "{dost} wrote that they're waiting; your hope revived.",
+          detay: "Being thought of is priceless.",
         },
         basarisizSonuc: {
-          mesaj: "The letter carried bitter news; you withdrew into yourself for days.",
-          detay: "Some news makes the walls close in even more.",
+          mesaj: "The letter held bitter news; you withdrew for days.",
+          detay: "Some news closes the walls in.",
         },
       },
       {
-        metin: "Keep it hidden, wait for the right time.",
+        metin: "Keep it, wait for the right time.",
         basariliSonuc: {
-          mesaj: "You hid the letter under your pillow; even the idea of reading it gives you strength.",
-          detay: "Sometimes postponing hope is a strategy too.",
+          mesaj: "You hid it; the thought of reading it gives strength.",
+          detay: "Postponing hope is strategy too.",
         },
         basarisizSonuc: {
-          mesaj: "Your curiosity ate away at you; in the end you couldn't resist and read it; the moment you were waiting for never came.",
+          mesaj: "Curiosity won and you read it; the right moment never came.",
           detay: "Patience isn't always rewarded.",
         },
       },
@@ -973,28 +973,28 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_zayif_mahkum_korumasi: {
     baslik: "A Weak Prisoner",
     metin:
-      "The strong prisoners of the ward keep tormenting a weak, old prisoner, taking his food. Stepping in is risky but your conscience pushes you.",
+      "Strong prisoners torment a weak old prisoner and take his food. Stepping in is risky, but your conscience pushes.",
     secenekler: [
       {
-        metin: "Step in, protect the weak prisoner.",
+        metin: "Step in, protect the weak.",
         basariliSonuc: {
-          mesaj: "Your courage worked; the strong ones backed off, and the old prisoner is grateful to you.",
-          detay: "Sometimes even one person can make a difference.",
+          mesaj: "The strong backed off; the old man is grateful.",
+          detay: "One person can make a difference.",
         },
         basarisizSonuc: {
-          mesaj: "You stepped in but got beaten; still, the old prisoner was left alone for a while.",
-          detay: "Your courage cost you dearly but it wasn't wasted.",
+          mesaj: "You were beaten, yet the old man was left in peace a while.",
+          detay: "It cost you, but wasn't wasted.",
         },
       },
       {
-        metin: "Don't get involved, mind your own business.",
+        metin: "Stay out, mind your business.",
         basariliSonuc: {
-          mesaj: "You didn't get involved; at least your own safety is intact.",
-          detay: "Some pangs of conscience are carried silently.",
+          mesaj: "You stayed out; at least you're safe.",
+          detay: "Some pangs are carried silently.",
         },
         basarisizSonuc: {
-          mesaj: "Not getting involved bothered you too; the old prisoner's screams won't leave your mind at night.",
-          detay: "Staying silent has a price too.",
+          mesaj: "The old man's screams haunt your nights.",
+          detay: "Silence has a price too.",
         },
       },
     ],
@@ -1003,28 +1003,28 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_gardiyan_yozlastirma: {
     baslik: "A Small Privilege",
     metin:
-      "A guard hints that, in exchange for small regular 'gifts', he could get you extra food and a better cell corner.",
+      "A guard hints that for small regular 'gifts' he can get you extra food and a better corner.",
     secenekler: [
       {
-        metin: "Agree, make small regular payments.",
+        metin: "Agree, pay regularly.",
         basariliSonuc: {
-          mesaj: "The deal worked; your conditions noticeably improved.",
-          detay: "Small sums make a big difference here.",
+          mesaj: "The deal worked; your conditions improved.",
+          detay: "Small sums make a big difference.",
         },
         basarisizSonuc: {
-          mesaj: "Despite your payment, the guard didn't really keep his word.",
-          detay: "Some deals stay one-sided.",
+          mesaj: "Despite your payments, the guard broke his word.",
+          detay: "Some deals are one-sided.",
         },
       },
       {
-        metin: "Refuse, owe no one anything.",
+        metin: "Refuse, owe no one.",
         basariliSonuc: {
-          mesaj: "You refused; at least you don't depend on anyone.",
-          detay: "Independence has a price too — comfort doesn't.",
+          mesaj: "You refused; at least you depend on no one.",
+          detay: "Independence costs comfort.",
         },
         basarisizSonuc: {
-          mesaj: "Your refusal offended the guard; he was cold to you for a few more days.",
-          detay: "Every no can carry a price.",
+          mesaj: "Your refusal offended him; he was cold for days.",
+          detay: "Every no can cost.",
         },
       },
     ],
@@ -1033,29 +1033,29 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_zanaat_ogrenme: {
     baslik: "Keeping the Hands Busy",
     metin:
-      "An old prisoner has been carving small wooden objects in his cell for years. He offers to teach you the craft too — a way to kill time.",
+      "An old prisoner carves wood in his cell. He offers to teach you the craft, a way to kill time.",
     secenekler: [
       {
         metin: "Learn it, practice patiently.",
         basariliSonuc: {
           mesaj:
-            "You learned the craft; the small carved pieces in your hands give you both peace and a small pride.",
+            "You learned the craft; the carvings bring peace and pride.",
           detay: "Some skills are born behind walls.",
         },
         basarisizSonuc: {
-          mesaj: "Your hands weren't very suited to it, but even trying was pleasant.",
-          detay: "Not every skill is learned easily.",
+          mesaj: "Your hands weren't suited, but trying was pleasant.",
+          detay: "Not every skill comes easily.",
         },
       },
       {
-        metin: "Not interested, spend your time another way.",
+        metin: "Decline, pass time another way.",
         basariliSonuc: {
-          mesaj: "You politely declined the offer; you preferred your own silence.",
+          mesaj: "You declined politely and chose your own silence.",
           detay: "Everyone passes time differently.",
         },
         basarisizSonuc: {
-          mesaj: "The days passed alike, and the boredom grew heavier.",
-          detay: "Idleness is the greatest enemy here.",
+          mesaj: "The days blurred together; boredom grew heavy.",
+          detay: "Idleness is the enemy here.",
         },
       },
     ],
@@ -1063,28 +1063,28 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
 
   hapis_dini_arinma: {
     baslik: "Turning Inward",
-    metin: "A clergyman came to visit the prison; he wants to talk with you, perhaps hear your sins.",
+    metin: "A clergyman visits the prison; he wants to talk with you, perhaps hear your sins.",
     secenekler: [
       {
-        metin: "Pour your heart out, be sincere.",
+        metin: "Pour your heart out.",
         basariliSonuc: {
-          mesaj: "Pouring your heart out lifted a great weight; you went back to your cell at peace.",
-          detay: "Some burdens only lighten when shared.",
+          mesaj: "Confessing lifted a great weight; you returned at peace.",
+          detay: "Some burdens lighten when shared.",
         },
         basarisizSonuc: {
-          mesaj: "It wasn't as easy to speak as you wanted; the words knotted in your throat.",
+          mesaj: "Speaking wasn't easy; the words knotted in your throat.",
           detay: "Some openings take time.",
         },
       },
       {
-        metin: "Keep your distance, listen only out of courtesy.",
+        metin: "Keep distance, listen politely.",
         basariliSonuc: {
-          mesaj: "You listened politely but didn't open up; still, the visit was a small comfort.",
-          detay: "Not everyone has to open up the same way.",
+          mesaj: "You listened but didn't open up; still, a small comfort.",
+          detay: "Not everyone opens up the same way.",
         },
         basarisizSonuc: {
-          mesaj: "Your distance saddened the clergyman a little; the visit ended early.",
-          detay: "Some doors choose to stay closed.",
+          mesaj: "Your distance saddened him; the visit ended early.",
+          detay: "Some doors choose to stay shut.",
         },
       },
     ],
@@ -1093,28 +1093,28 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_kumar: {
     baslik: "The Ward Gamble",
     metin:
-      "Dice are played secretly in the ward; the losers give up their food shares, the winners raise their standing. Do you want to join?",
+      "Dice are played secretly in the ward; losers give up their food, winners gain standing. Join in?",
     secenekler: [
       {
         metin: "Try a hand.",
         basariliSonuc: {
-          mesaj: "Luck was on your side; your name started being spoken as 'the lucky one' in the ward.",
-          detay: "Even a small victory carries great meaning here.",
+          mesaj: "Luck was yours; the ward now calls you 'the lucky one'.",
+          detay: "A small win means much here.",
         },
         basarisizSonuc: {
-          mesaj: "You lost, but the taste of the thrill stayed with you; you want to play again.",
-          detay: "Even here, addiction waits at the door.",
+          mesaj: "You lost, but the thrill lingers; you want to play again.",
+          detay: "Even here, addiction waits.",
         },
       },
       {
-        metin: "Don't join, watch from the side.",
+        metin: "Stay out, watch from the side.",
         basariliSonuc: {
-          mesaj: "You settled for watching from the side; at least your share stayed in your hand.",
-          detay: "Sometimes watching is entertainment enough.",
+          mesaj: "You only watched; at least your share stayed yours.",
+          detay: "Sometimes watching is enough fun.",
         },
         basarisizSonuc: {
-          mesaj: "Even watching made you a little envious.",
-          detay: "Some temptations are felt even from the outside.",
+          mesaj: "Even watching made you a bit envious.",
+          detay: "Temptation is felt even from outside.",
         },
       },
     ],
@@ -1123,28 +1123,28 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_muhbirlik_teklifi: {
     baslik: "An Informant Offer",
     metin:
-      "The administration offers you small privileges in exchange for giving information about another prisoner in the ward. If you accept, your life gets easier but you carry the weight of a betrayal.",
+      "The administration offers privileges for informing on another prisoner. Life gets easier, but you carry the betrayal.",
     secenekler: [
       {
-        metin: "Accept the offer, give the information.",
+        metin: "Accept it, inform.",
         basariliSonuc: {
-          mesaj: "You gave the information; your conditions improved but now you look away when you meet anyone's eyes.",
+          mesaj: "Your conditions improved, but you can't meet anyone's eyes.",
           detay: "Your comfort came off someone's back.",
         },
         basarisizSonuc: {
-          mesaj: "It became known that you're an informant; no one in the ward trusts you anymore.",
-          detay: "The price of betrayal outweighed its benefit.",
+          mesaj: "You were outed as an informant; no one trusts you.",
+          detay: "Betrayal cost more than it gave.",
         },
       },
       {
-        metin: "Refuse, keep your loyalty.",
+        metin: "Refuse, stay loyal.",
         basariliSonuc: {
-          mesaj: "You refused; among the other prisoners you started being called 'reliable'.",
-          detay: "Some principles aren't up for negotiation.",
+          mesaj: "You refused; prisoners now call you 'reliable'.",
+          detay: "Some principles aren't negotiable.",
         },
         basarisizSonuc: {
-          mesaj: "Your refusal angered the administration; you faced a small punishment.",
-          detay: "Doing the right thing had a price.",
+          mesaj: "Your refusal angered the administration; small punishment.",
+          detay: "Doing right had a price.",
         },
       },
     ],
@@ -1153,28 +1153,28 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_ziyaretci: {
     baslik: "A Face Between the Bars",
     metin:
-      "{dost} came to visit you after a long journey. In your eyes meeting through the bars there is much left unsaid.",
+      "{dost} came a long way to visit you. Through the bars, your eyes hold much unsaid.",
     secenekler: [
       {
         metin: "Hide your feelings, look strong.",
         basariliSonuc: {
-          mesaj: "Your strong bearing reassured them; you did everything you could so they wouldn't worry.",
-          detay: "Sometimes protecting your loved ones means hiding yourself.",
+          mesaj: "Your strength reassured them; they worried less.",
+          detay: "Protecting loved ones can mean hiding.",
         },
         basarisizSonuc: {
-          mesaj: "Even as you tried to look strong, your voice trembled.",
+          mesaj: "You tried to look strong, but your voice shook.",
           detay: "Some feelings can't be hidden.",
         },
       },
       {
         metin: "Share your feelings openly.",
         basariliSonuc: {
-          mesaj: "Your sincerity strengthened the bond between you; you both felt a little lighter.",
-          detay: "Sometimes showing weakness is the greatest strength.",
+          mesaj: "Your honesty strengthened the bond; you both felt lighter.",
+          detay: "Showing weakness is strength.",
         },
         basarisizSonuc: {
-          mesaj: "Sharing your feelings wore you out more than you expected.",
-          detay: "Some moments both heal and exhaust.",
+          mesaj: "Sharing your feelings wore you out more than expected.",
+          detay: "Some moments heal and exhaust.",
         },
       },
     ],
@@ -1183,27 +1183,27 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_kis_soguk: {
     baslik: "The Cruelty of Winter",
     metin:
-      "Winter fell mercilessly on the cells; there's only one blanket, and the old prisoner beside you is shivering.",
+      "Winter fell mercilessly on the cells; one blanket, and the old prisoner beside you shivers.",
     secenekler: [
       {
         metin: "Share your blanket.",
         basariliSonuc: {
-          mesaj: "You shared your blanket; you both got cold but you weren't alone.",
-          detay: "Warmth sometimes multiplies when shared.",
+          mesaj: "You shared the blanket; cold, but not alone.",
+          detay: "Warmth multiplies when shared.",
         },
         basarisizSonuc: {
-          mesaj: "The sharing wasn't enough; you both had a hard night.",
+          mesaj: "Sharing wasn't enough; you both had a hard night.",
           detay: "Winter here has no mercy.",
         },
       },
       {
-        metin: "Keep the blanket for yourself.",
+        metin: "Keep the blanket.",
         basariliSonuc: {
-          mesaj: "You stayed warm but it was hard not to hear the prisoner beside you shivering.",
-          detay: "Survival sometimes demands selfishness.",
+          mesaj: "You stayed warm, but his shivering was hard to ignore.",
+          detay: "Survival demands selfishness.",
         },
         basarisizSonuc: {
-          mesaj: "Despite the blanket you kept, the cold seeped in from everywhere.",
+          mesaj: "Despite the blanket, the cold seeped in everywhere.",
           detay: "Some winters spare no one.",
         },
       },
@@ -1213,28 +1213,28 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_yeni_mahkum: {
     baslik: "The Newcomer",
     metin:
-      "A young, frightened prisoner just arrived in the ward; he doesn't know what to do, and everyone is sizing him up.",
+      "A young, frightened prisoner arrives; he doesn't know what to do and everyone sizes him up.",
     secenekler: [
       {
         metin: "Mentor him, teach him the rules.",
         basariliSonuc: {
-          mesaj: "The young prisoner stayed grateful to you; you taught him how the ward works before anyone else could.",
-          detay: "Some leadership begins with a small favor.",
+          mesaj: "The young prisoner is grateful; you taught him the ward.",
+          detay: "Leadership starts with small help.",
         },
         basarisizSonuc: {
-          mesaj: "Your advice wasn't fully understood; the young prisoner still had to fend for himself.",
-          detay: "Not every piece of advice is understood right away.",
+          mesaj: "Your advice wasn't understood; he fended for himself.",
+          detay: "Advice isn't always grasped at once.",
         },
       },
       {
-        metin: "Leave him to himself.",
+        metin: "Leave him be.",
         basariliSonuc: {
-          mesaj: "You didn't get involved; the young prisoner started learning the hard way.",
-          detay: "Everyone finds their own path, sooner or later.",
+          mesaj: "You stayed out; he began learning the hard way.",
+          detay: "Everyone finds a way eventually.",
         },
         basarisizSonuc: {
-          mesaj: "Seeing the young prisoner struggle stung you a little.",
-          detay: "Conscience sometimes criticizes quietly.",
+          mesaj: "Seeing him struggle stung you a little.",
+          detay: "Conscience criticizes quietly.",
         },
       },
     ],
@@ -1243,24 +1243,24 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_yolsuzluk_tanikligi: {
     baslik: "The Corruption You Witnessed",
     metin:
-      "You witnessed a guard regularly stealing from the food parcels sent to the prisoners. Reporting it is risky, but staying silent touches your conscience too.",
+      "You saw a guard regularly stealing from prisoners' food parcels. Reporting is risky; silence weighs on your conscience.",
     secenekler: [
       {
-        metin: "Report it to the prison warden.",
+        metin: "Report it to the warden.",
         basariliSonuc: {
-          mesaj: "Your report was taken seriously, the guard was removed from duty; your name was spoken as 'fair' in the ward.",
-          detay: "Speaking the truth worked this time.",
+          mesaj: "The guard was removed; the ward calls you 'fair'.",
+          detay: "Speaking the truth worked.",
         },
         basarisizSonuc: {
-          mesaj: "Your report reached the guard's other friends, and you faced retaliation.",
+          mesaj: "Your report leaked to his friends; you faced retaliation.",
           detay: "Speaking the truth had a price.",
         },
       },
       {
-        metin: "Stay silent, don't get involved.",
+        metin: "Stay silent, stay out.",
         basariliSonuc: {
-          mesaj: "You stayed silent; at least you stayed out of trouble.",
-          detay: "Some silences are safe but uncomfortable.",
+          mesaj: "You stayed silent; at least you avoided trouble.",
+          detay: "Safe silence, but uncomfortable.",
         },
         basarisizSonuc: {
           mesaj: "Your silence keeps gnawing at you.",
@@ -1273,28 +1273,28 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_saglik_kontrolu: {
     baslik: "The Doctor's Visit",
     metin:
-      "The prison doctor came for a routine check. If you describe your real condition you can get treatment, but looking weak is risky here; if you look strong you might miss the treatment.",
+      "The prison doctor does a routine check. Tell the truth and you get treated, but looking weak is risky here.",
     secenekler: [
       {
-        metin: "Describe your condition as it is.",
+        metin: "Describe your condition honestly.",
         basariliSonuc: {
-          mesaj: "The doctor took your complaints seriously and gave you a simple but effective treatment.",
+          mesaj: "The doctor took you seriously and treated you well.",
           detay: "Honesty worked here too.",
         },
         basarisizSonuc: {
-          mesaj: "The doctor cared but his means were limited; the treatment was left half-done.",
-          detay: "There isn't always a cure for every ill.",
+          mesaj: "The doctor cared, but his means were limited; half a cure.",
+          detay: "Not every ill has a cure.",
         },
       },
       {
-        metin: "Look strong, act as if nothing's wrong.",
+        metin: "Act as if nothing's wrong.",
         basariliSonuc: {
-          mesaj: "Your sturdy appearance got you spoken of as 'tough' in the ward.",
-          detay: "Sometimes image comes before health — but it has a price.",
+          mesaj: "Your tough look made you 'hardy' in the ward.",
+          detay: "Sometimes image comes before health.",
         },
         basarisizSonuc: {
           mesaj: "The ailment you hid grew much worse days later.",
-          detay: "Ignored troubles come back bigger.",
+          detay: "Ignored troubles return bigger.",
         },
       },
     ],
@@ -1303,28 +1303,28 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_firsatci_tuccar: {
     baslik: "The Ward's Merchant",
     metin:
-      "One of the prisoners sells small luxuries smuggled in from outside (soap, tobacco, paper) at high prices. With the little money you have, you could buy a small comfort.",
+      "A prisoner sells smuggled luxuries (soap, tobacco, paper) dear. With your little money you could buy some comfort.",
     secenekler: [
       {
-        metin: "Buy something, even at an exorbitant price.",
+        metin: "Buy something, however dear.",
         basariliSonuc: {
-          mesaj: "Even a small piece of soap felt like a great luxury here.",
-          detay: "Some small joys are worth the expense.",
+          mesaj: "Even a bit of soap felt like luxury here.",
+          detay: "Small joys are worth the price.",
         },
         basarisizSonuc: {
-          mesaj: "What you bought wasn't as good as you'd hoped, but it was still a small change.",
-          detay: "Not every purchase meets expectations.",
+          mesaj: "It wasn't as good as hoped, but it was a change.",
+          detay: "Not every purchase delivers.",
         },
       },
       {
-        metin: "Trust your money, don't shop.",
+        metin: "Don't shop, keep your money.",
         basariliSonuc: {
-          mesaj: "You didn't spend the money; it may serve you better later.",
+          mesaj: "You kept your money; it may help more later.",
           detay: "Thrift is a virtue here too.",
         },
         basarisizSonuc: {
-          mesaj: "Watching the others' small luxuries saddened you a little.",
-          detay: "Some deprivations are small but felt.",
+          mesaj: "Watching the others' small luxuries saddened you.",
+          detay: "Small deprivations are felt.",
         },
       },
     ],
@@ -1333,27 +1333,27 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_avlu_duvari: {
     baslik: "The Yard Wall",
     metin:
-      "During the daily exercise you noticed the mortar crumbling from the wall in the north corner of the yard. The watchtower can't quite see that corner. Climbing it takes a few seconds — but if you fall or get spotted, the price is steep.",
+      "The yard's north wall is crumbling where the tower can't see. A quick climb, but a fall or a sighting costs dearly.",
     secenekler: [
       {
-        metin: "Climb the wall as exercise ends and drop over.",
+        metin: "Climb the wall, drop over.",
         basariliSonuc: {
-          mesaj: "The mortar crumbled in your hands but you held on; you dropped to the fields on the far side and started running. You're free.",
+          mesaj: "You held on, dropped over and ran. You're free.",
           detay: "You ran without looking back.",
         },
         basarisizSonuc: {
-          mesaj: "Right at the top a guard shouted; you tumbled down, were met with clubs, and an 'escape attempt' was added to your sentence.",
-          detay: "Next time you'll have to wait longer.",
+          mesaj: "A guard shouted; you fell, got clubbed, sentence extended.",
+          detay: "Next time, wait longer.",
         },
       },
       {
-        metin: "Give it up, go back in line.",
+        metin: "Give up, get back in line.",
         basariliSonuc: {
-          mesaj: "You couldn't take the risk; you slipped back among the others quietly.",
+          mesaj: "You couldn't risk it; you slipped back among the others.",
           detay: "Maybe another day, another wall.",
         },
         basarisizSonuc: {
-          mesaj: "Your hesitation on the way back caught a guard's eye; you were watched closely for a few extra days.",
+          mesaj: "A guard noticed your hesitation; you were watched for days.",
           detay: "Eyes on you.",
         },
       },
@@ -1363,27 +1363,27 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_camasir_arabasi: {
     baslik: "The Laundry Cart",
     metin:
-      "Once a week the dirty laundry is hauled out on a big horse cart. The driver is old and absent-minded. You could bury yourself under the soiled cloth and ride out through the gate that way.",
+      "The weekly laundry cart leaves the gate; the driver is old and absent-minded. You could bury yourself under the cloth.",
     secenekler: [
       {
-        metin: "Hide under the laundry, slip out with the cart.",
+        metin: "Hide under the laundry.",
         basariliSonuc: {
-          mesaj: "You held your breath as the cart passed the gate; a few streets on you climbed out of the cloth and melted into the crowd. You're free.",
-          detay: "No one looked at that laundry cart the same way again.",
+          mesaj: "Past the gate, you melted into the crowd. Free.",
+          detay: "Nobody looked at that cart the same.",
         },
         basarisizSonuc: {
-          mesaj: "The gate guard routinely jabbed his bayonet into the pile; your scream gave you away. You were dragged back and your sentence extended.",
-          detay: "You hadn't counted on that routine jab.",
+          mesaj: "A bayonet jab into the pile; your scream gave you away. Sentence extended.",
+          detay: "You hadn't counted on the routine jab.",
         },
       },
       {
-        metin: "Too risky; don't try it this week.",
+        metin: "Risky; skip this week.",
         basariliSonuc: {
-          mesaj: "You watched the cart and memorised the timing, but didn't jump in this time.",
-          detay: "Knowledge is piling up.",
+          mesaj: "You memorised the timing but didn't jump.",
+          detay: "Knowledge piles up.",
         },
         basarisizSonuc: {
-          mesaj: "The waiting wore your spirits down a little more.",
+          mesaj: "Waiting wore your spirits down a bit more.",
           detay: "The walls are patient.",
         },
       },
@@ -1393,28 +1393,28 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_sayim_karisikligi: {
     baslik: "Confusion at Roll Call",
     metin:
-      "A fight broke out at the evening roll call and the guards scattered. In the foggy yard, someone walking calmly toward the main gate might go unnoticed. Your heart is pounding.",
+      "A roll-call brawl scatters the guards. Strolling calmly to the gate through the foggy yard might go unnoticed.",
     secenekler: [
       {
-        metin: "Use the chaos, walk toward the gate.",
+        metin: "Use the chaos, walk to the gate.",
         basariliSonuc: {
-          mesaj: "No one turned to look; you walked out the gate and vanished into the fog. This escape will become legend in the ward.",
+          mesaj: "No one looked; you vanished into the fog.",
           detay: "Sometimes the best plan is no plan.",
         },
         basarisizSonuc: {
-          mesaj: "Ten steps from the gate a guard grabbed your collar. A savage beating and a markedly longer sentence — it cost you dearly.",
-          detay: "They've marked you a 'flight risk' now.",
+          mesaj: "Ten steps from the gate you were caught: beating, longer sentence.",
+          detay: "You're marked a 'flight risk' now.",
         },
       },
       {
         metin: "Stay put, wait out the count.",
         basariliSonuc: {
-          mesaj: "You stood still; the fight was put down and the count finished.",
-          detay: "The chance is gone, but your ribs are intact.",
+          mesaj: "You stood still; the brawl ended, the count finished.",
+          detay: "Chance gone, but ribs intact.",
         },
         basarisizSonuc: {
-          mesaj: "Caught in the middle of the brawl, you took a few elbows.",
-          detay: "Standing in the wrong spot takes skill too.",
+          mesaj: "Caught in the brawl, you took a few elbows.",
+          detay: "Standing in the wrong spot takes skill.",
         },
       },
     ],

@@ -85,7 +85,10 @@ function dilKontrol(
     const k = kaynak?.get(yol);
     if (!k) return `${dil}.${yol}: kaynakta yok`;
     if (k.metin !== eski && k.metin !== yeni) return `${dil}.${yol}: bayat (kaynak değişmiş)`;
-    if (yeni.length > eski.length) return `${dil}.${yol}: eskisinden uzun (${eski.length}→${yeni.length})`;
+    if (yeni.length > eski.length) {
+      cikti[yol] = eski; // zaten kısa metin: ajan uzatmış → eskisi korunur (olay reddedilmez)
+      continue;
+    }
     if (yerTutucular(eski).join("¦") !== yerTutucular(yeni).join("¦")) return `${dil}.${yol}: placeholder değişmiş`;
     if (dil === "tr" && DONDURULMUS_SIK_OLAYLARI.has(id) && /^s\d+\.metin$/.test(yol) && yeni !== eski) {
       return `${dil}.${yol}: dondurulmuş şık`;

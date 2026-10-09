@@ -5,27 +5,27 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
   aranma_giris_devriye_durdurmasi: {
     baslik: "A Patrol Stopped You",
     metin:
-      "A patrol waiting on the street corner stopped you and wants to search you. They have no clear reason, it's just a routine check — but your manner made them curious.",
+      "A corner patrol wants to search you. No cause, just routine — but your manner made them curious.",
     secenekler: [
       {
-        metin: "Stay calm, answer their questions properly.",
+        metin: "Stay calm, answer their questions.",
         basariliSonuc: {
-          mesaj: "Your calm worked; after a brief check they sent you on your way.",
-          detay: "Sometimes the best defense is having nothing to hide.",
+          mesaj: "After a brief check they sent you on your way.",
+          detay: "Nothing to hide, nothing to fear.",
         },
         basarisizSonuc: {
-          mesaj: "Despite staying calm, one of them grew suspicious of something; they wrote your name in a ledger.",
+          mesaj: "One grew suspicious; they wrote your name in a ledger.",
           detay: "Their eyes are on you now.",
         },
       },
       {
-        metin: "Blend into the crowd and slip away before the search.",
+        metin: "Slip into the crowd and vanish.",
         basariliSonuc: {
-          mesaj: "You became invisible in the crowd; the patrol couldn't find you.",
-          detay: "Luck was on your side for today.",
+          mesaj: "You vanished in the crowd; the patrol lost you.",
+          detay: "Luck was on your side today.",
         },
         basarisizSonuc: {
-          mesaj: "You were grabbed by the shoulder; running did exactly the thing they'd suspect.",
+          mesaj: "Grabbed by the shoulder; running confirmed their suspicion.",
           detay: "Now you're officially wanted.",
         },
       },
@@ -35,28 +35,28 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
   aranma_giris_meyhane_kavgasi: {
     baslik: "A Brawl in the Tavern",
     metin:
-      "The man you'd been clinking cups with suddenly started hurling insults; tables were overturned, fists fly through the air. You must decide before things fall completely apart.",
+      "The man you were drinking with starts insulting you; tables overturn, fists fly. Time to decide.",
     secenekler: [
       {
         metin: "Pull back, slip outside.",
         basariliSonuc: {
-          mesaj: "You slipped out the door without getting drawn into the fight.",
-          detay: "Sometimes the best victory is not fighting at all.",
+          mesaj: "You slipped out without joining the fight.",
+          detay: "The best victory is not fighting.",
         },
         basarisizSonuc: {
-          mesaj: "As you headed for the exit a flying chair knocked you down too.",
-          detay: "No one comes out of a crowded brawl completely unscathed.",
+          mesaj: "A flying chair knocked you down on your way out.",
+          detay: "No one leaves a brawl unscathed.",
         },
       },
       {
-        metin: "Throw the man one last punch, give him what he's owed.",
+        metin: "Throw the man one last punch.",
         basariliSonuc: {
-          mesaj: "You laid the man out; the tavern cheered, but the noise caught the eye of the patrol in the street.",
+          mesaj: "You laid him out; the tavern cheered, but the patrol heard.",
           detay: "Victory sometimes isn't free.",
         },
         basarisizSonuc: {
-          mesaj: "The man turned out stronger than you; the fight spilled into the street and the patrol noted you both down.",
-          detay: "Now you're both wounded and in a file.",
+          mesaj: "He was stronger; the fight spilled out, patrol noted you both.",
+          detay: "Wounded and now on file.",
         },
       },
     ],
@@ -65,28 +65,28 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
   aranma_giris_vergi_direnci: {
     baslik: "Standing Up to the Tax Collector",
     metin:
-      "The tax collector showed up at your door; the amount he wants is more than your due this year, and he shows no proof either. Objecting is tempting, but tax collectors have long memories.",
+      "The tax collector is at your door; he wants more than you owe, with no proof. Objecting tempts, but collectors remember.",
     secenekler: [
       {
-        metin: "Pay without a word, it's not worth arguing.",
+        metin: "Pay, it's not worth arguing.",
         basariliSonuc: {
-          mesaj: "You paid, though grumbling; the collector had already forgotten you.",
+          mesaj: "You paid, grumbling; the collector forgot you.",
           detay: "Some battles are lost from the start.",
         },
         basarisizSonuc: {
-          mesaj: "You paid, but the collector slipped in a scornful remark on top of it.",
-          detay: "He took your money, and your pride too.",
+          mesaj: "You paid, but he added a scornful remark.",
+          detay: "He took your money and your pride.",
         },
       },
       {
-        metin: "Question the account to his face, refuse to pay.",
+        metin: "Question the account, refuse to pay.",
         basariliSonuc: {
-          mesaj: "You caught the inconsistency in the figures; the collector withdrew, abashed.",
-          detay: "This time you were the one in the right.",
+          mesaj: "You caught the figures' inconsistency; he withdrew, abashed.",
+          detay: "This time you were right.",
         },
         basarisizSonuc: {
-          mesaj: "The collector recorded your objection as 'defying the state' in his ledger.",
-          detay: "Your name is in the official records now.",
+          mesaj: "Your objection went in the ledger as 'defying the state'.",
+          detay: "Your name is in the official records.",
         },
       },
     ],
@@ -95,28 +95,28 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
   aranma_giris_karanlik_teklif: {
     baslik: "A Dark Offer",
     metin:
-      "In a dark alley someone approaches and offers work that pays well and fast but is plainly illegal. As he waits for your answer, his eyes keep scanning the surroundings.",
+      "In a dark alley someone offers quick money for plainly illegal work, eyes scanning the street.",
     secenekler: [
       {
-        metin: "Turn the offer down, go on your way.",
+        metin: "Turn it down, walk on.",
         basariliSonuc: {
-          mesaj: "You refused the offer and walked off with quick steps.",
+          mesaj: "You refused and walked off quickly.",
           detay: "Some doors should stay closed.",
         },
         basarisizSonuc: {
-          mesaj: "You refused, but the man's last look sent a chill through you.",
-          detay: "In this city, even a 'no' sometimes has a price.",
+          mesaj: "You refused, but his last look chilled you.",
+          detay: "Here, even 'no' has a price.",
         },
       },
       {
-        metin: "Accept the job, pocket the money.",
+        metin: "Take the job, pocket the money.",
         basariliSonuc: {
-          mesaj: "The job went smoothly; a nice sum went into your pocket.",
-          detay: "Your conscience ached a little but your purse got heavier.",
+          mesaj: "The job went smoothly; good money in your pocket.",
+          detay: "Conscience ached, purse grew heavy.",
         },
         basarisizSonuc: {
-          mesaj: "The job was left half done, and on top of that the lookouts noticed you.",
-          detay: "Now your name is known in this circle — not in a good way at all.",
+          mesaj: "The job ended half done, and lookouts noticed you.",
+          detay: "Your name is known now — badly.",
         },
       },
     ],
@@ -125,28 +125,28 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
   aranma_1_rutin_sorgu: {
     baslik: "A Routine Questioning",
     metin:
-      "You heard your name went onto a small suspects list; an officer stops you and asks a few questions. Nothing serious — yet.",
+      "Your name is on a small suspects list; an officer stops you with a few questions. Nothing serious — yet.",
     secenekler: [
       {
-        metin: "Slip the officer a small 'understanding fee'. (Penance: 12)",
+        metin: "Slip him a 'fee'. (Penance: 18)",
         basariliSonuc: {
-          mesaj: "The few coins you pressed into the officer's hand were enough to strike your name off the list.",
-          detay: "Small sums can solve big troubles.",
+          mesaj: "A few coins got your name struck off the list.",
+          detay: "Small sums solve big troubles.",
         },
         basarisizSonuc: {
-          mesaj: "He took the money but wouldn't change the list; at least he left you alone for today.",
-          detay: "Some officers are greedy but cautious.",
+          mesaj: "He took it, left the list alone; spared you today.",
+          detay: "Greedy, but cautious.",
         },
       },
       {
-        metin: "Politely deflect his questions, give no money.",
+        metin: "Deflect politely, pay nothing.",
         basariliSonuc: {
-          mesaj: "Your polite manner worked; the officer shrugged and left.",
-          detay: "Sometimes all it takes is a little calm.",
+          mesaj: "Your politeness worked; the officer shrugged and left.",
+          detay: "Sometimes calm is all it takes.",
         },
         basarisizSonuc: {
-          mesaj: "Your answers didn't satisfy him; your name is now officially flagged.",
-          detay: "The suspicion has grown considerably.",
+          mesaj: "Your answers fell short; your name is now flagged.",
+          detay: "Suspicion grew considerably.",
         },
       },
     ],
@@ -155,28 +155,28 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
   aranma_1_isyeri_cezasi: {
     baslik: "A Fine on the Business",
     metin:
-      "An inspector dropped by the business and wrote you a small fine on the pretext of an 'irregularity'. Paying is annoying, but objecting could be even more annoying.",
+      "An inspector wrote your business a small fine over an 'irregularity'. Paying annoys; objecting could annoy more.",
     secenekler: [
       {
-        metin: "Pay the fine at once, be done with it. (Penance: 15)",
+        metin: "Pay the fine now. (Penance: 24)",
         basariliSonuc: {
-          mesaj: "You paid the fine and got the receipt; the inspector closed your file.",
-          detay: "Sometimes the cheapest way is the fastest.",
+          mesaj: "You paid; the inspector closed your file.",
+          detay: "The cheapest way is the fastest.",
         },
         basarisizSonuc: {
-          mesaj: "You paid, but the inspector left threatening 'keep your eyes open next time'.",
-          detay: "The money didn't end it, only postponed it.",
+          mesaj: "You paid, but he left warning 'eyes open next time'.",
+          detay: "Money only postponed it.",
         },
       },
       {
-        metin: "Object, say the fine is unjust.",
+        metin: "Object, call the fine unjust.",
         basariliSonuc: {
-          mesaj: "You proved you were right; the inspector had to withdraw the fine.",
+          mesaj: "You proved your case; the fine was withdrawn.",
           detay: "Rarely, objecting works.",
         },
         basarisizSonuc: {
-          mesaj: "The inspector reported your stubbornness to a higher office as 'refusing to cooperate'.",
-          detay: "Now you're watched more closely than before.",
+          mesaj: "He reported your stubbornness as 'refusing to cooperate'.",
+          detay: "You're watched more closely now.",
         },
       },
     ],
@@ -185,28 +185,28 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
   aranma_1_rusvetci_nobetci: {
     baslik: "A Bribable Sentry",
     metin:
-      "A sentry you know whispered, avoiding your eyes, 'For a small gesture I could overlook your file.' Do you pay his full price, or try to haggle?",
+      "A sentry whispers: 'For a small gesture I could overlook your file.' Pay in full, or haggle?",
     secenekler: [
       {
-        metin: "Pay the full amount he wants. (Penance: 16)",
+        metin: "Pay the full amount. (Penance: 25)",
         basariliSonuc: {
-          mesaj: "The sentry pocketed the money and really did lose your file.",
-          detay: "Some men's word comes with the money.",
+          mesaj: "The sentry pocketed the money and really lost your file.",
+          detay: "Some men's word comes with money.",
         },
         basarisizSonuc: {
-          mesaj: "He took the money but didn't dare 'forget' the file; at least he stayed quiet for today.",
-          detay: "Even a cowardly sentry is sometimes useful.",
+          mesaj: "He took it but didn't dare lose the file; stayed quiet.",
+          detay: "Even a coward sentry has uses.",
         },
       },
       {
-        metin: "Try to haggle for half price. (Penance: 8)",
+        metin: "Haggle for half. (Penance: 13)",
         basariliSonuc: {
-          mesaj: "Surprisingly he accepted the haggle; you got the same result for half price.",
+          mesaj: "Surprisingly he accepted; same result for half price.",
           detay: "Sometimes courage earns money.",
         },
         basarisizSonuc: {
-          mesaj: "He took the low sum as an insult and refused it; the coins you gave were wasted and your file is still in place.",
-          detay: "A cheap offer sometimes ends worse than no offer at all.",
+          mesaj: "He scorned the low sum; coins wasted, file still there.",
+          detay: "A cheap offer can be worse than none.",
         },
       },
     ],
@@ -215,27 +215,27 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
   aranma_1_mahalle_dedikodusu: {
     baslik: "Gossip in the Neighborhood",
     metin:
-      "An uneasy rumor about you is going around among the neighbors; a few more words and it could reach the wrong ears.",
+      "An uneasy rumor about you circulates among neighbors; spread further, it may reach wrong ears.",
     secenekler: [
       {
-        metin: "Make a small 'donation' to the neighborhood headman, shut it down. (Penance: 14)",
+        metin: "Donate to the headman. (Penance: 21)",
         basariliSonuc: {
-          mesaj: "Your donation bound the headman's tongue; the gossip died out in a day.",
-          detay: "Generosity is sometimes the best silencer.",
+          mesaj: "The donation silenced the headman; gossip died in a day.",
+          detay: "Generosity is the best silencer.",
         },
         basarisizSonuc: {
-          mesaj: "He accepted the donation, but the gossip had already spread too far; at least the headman started defending you.",
+          mesaj: "The gossip had spread; the headman at least defended you.",
           detay: "Some words can't be taken back.",
         },
       },
       {
-        metin: "Ignore it, it'll die out on its own.",
+        metin: "Ignore it, it'll die out.",
         basariliSonuc: {
-          mesaj: "You were right; within a few days the gossip moved on to another incident.",
-          detay: "Sometimes patience is the cheapest solution.",
+          mesaj: "You were right; gossip moved on within days.",
+          detay: "Patience is the cheapest fix.",
         },
         basarisizSonuc: {
-          mesaj: "Your silence strengthened the impression that the gossip was true; the rumor reached official ears.",
+          mesaj: "Your silence confirmed the gossip; it reached official ears.",
           detay: "Now they really are looking for you.",
         },
       },
@@ -245,29 +245,29 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
   aranma_2_ev_arastirmasi_tehdidi: {
     baslik: "Threat of a House Search",
     metin:
-      "An officer hints that he could get an official permit to search your home/business. If you come to terms now, the paper will never be written.",
+      "An officer hints he could get an official permit to search your home/business. Deal now and the paper is never written.",
     secenekler: [
       {
-        metin: "Pay for the permit to 'get lost'. (Penance: 28)",
+        metin: "Lose the permit. (Penance: 43)",
         basariliSonuc: {
-          mesaj: "The paper really was never seen again.",
-          detay: "Bureaucracy is sometimes the machine that runs fastest on money.",
+          mesaj: "The paper was never seen again.",
+          detay: "Bureaucracy runs fastest on money.",
         },
         basarisizSonuc: {
           mesaj:
-            "He took the money but one of his superiors stepped in; the paper was held up anyway, at least they won't come today.",
+            "His superior stepped in; paper held up, they won't come today.",
           detay: "Not every bribe is guaranteed.",
         },
       },
       {
-        metin: "Look calm, say you have nothing to hide.",
+        metin: "Stay calm, say you've nothing to hide.",
         basariliSonuc: {
-          mesaj: "Your firm manner convinced the officer; he withdrew his threat.",
-          detay: "Sometimes composure is worth more than money.",
+          mesaj: "Your firm manner convinced him; he withdrew the threat.",
+          detay: "Composure beats money.",
         },
         basarisizSonuc: {
-          mesaj: "The officer saw through your bluff and really did issue the search order; the house was turned upside down.",
-          detay: "Now your file has swelled considerably.",
+          mesaj: "He saw through the bluff; the house was ransacked, you were arrested.",
+          detay: "4-7 years inside; try escaping.",
         },
       },
     ],
@@ -276,28 +276,28 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
   aranma_2_ihbarci_tehdidi: {
     baslik: "An Informer",
     metin:
-      "Someone you know is threatening to turn you in; he wants a price for his silence. Do you give him exactly what he wants, or try to get by with half?",
+      "Someone you know threatens to turn you in unless paid for silence. Give it all, or try with half?",
     secenekler: [
       {
-        metin: "Give him the full money he wants. (Penance: 30)",
+        metin: "Give the full sum. (Penance: 46)",
         basariliSonuc: {
-          mesaj: "Once he got the money he really did fall silent; the tip-off never went out.",
-          detay: "Greedy, but at least he kept his word.",
+          mesaj: "He took the money and kept quiet; no tip-off went out.",
+          detay: "Greedy, but he kept his word.",
         },
         basarisizSonuc: {
-          mesaj: "He took the money but had already let something slip to someone; the damage was partly done.",
-          detay: "Some secrets can't be fully taken back.",
+          mesaj: "He'd already let something slip; the damage was partial.",
+          detay: "Some secrets can't be fully recalled.",
         },
       },
       {
-        metin: "Offer half, refuse the rest. (Penance: 15)",
+        metin: "Offer half. (Penance: 24)",
         basariliSonuc: {
-          mesaj: "Unexpectedly he accepted; it seems he never thought he'd get the money at all.",
-          detay: "Sometimes even a little is more than enough.",
+          mesaj: "He unexpectedly accepted; never expected the money.",
+          detay: "Sometimes a little is plenty.",
         },
         basarisizSonuc: {
-          mesaj: "He took your offer as an insult and left in a fury — and went straight to the authorities.",
-          detay: "Stinginess cost you dearly this time.",
+          mesaj: "He took it as an insult and had you arrested.",
+          detay: "Stinginess cost you 4-7 years.",
         },
       },
     ],
@@ -306,28 +306,28 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
   aranma_2_pazar_ceza_ikinci: {
     baslik: "A Second Fine",
     metin:
-      "The fines officer at the marketplace, seeing the earlier record in your file, doubled your fine. You have the right to object, but so does the officer's patience have limits.",
+      "The market fines officer saw your old record and doubled your fine. You may object, but his patience is limited.",
     secenekler: [
       {
-        metin: "Quietly pay the higher fine. (Penance: 32)",
+        metin: "Pay quietly. (Penance: 49)",
         basariliSonuc: {
-          mesaj: "You paid; the officer lightened your file by one grade.",
-          detay: "Sometimes shutting up and paying is the smartest way.",
+          mesaj: "You paid; he lightened your file by one grade.",
+          detay: "Sometimes paying quietly is wisest.",
         },
         basarisizSonuc: {
-          mesaj: "You paid, but he said he 'lost' the receipt and kept you on the list anyway.",
-          detay: "Bureaucracy's memory isn't easily erased.",
+          mesaj: "He 'lost' the receipt and kept you on the list anyway.",
+          detay: "Bureaucracy doesn't forget easily.",
         },
       },
       {
-        metin: "Object to the fine, argue your earlier record was unjust.",
+        metin: "Object, call the old record unjust.",
         basariliSonuc: {
-          mesaj: "Your defense seemed reasonable; the officer cancelled the fine.",
+          mesaj: "Your defense seemed reasonable; the fine was cancelled.",
           detay: "Rare, but not impossible.",
         },
         basarisizSonuc: {
-          mesaj: "Your objection was taken as 'insolence'; another note was added to your file.",
-          detay: "Now you're watched even more closely than before.",
+          mesaj: "Your objection counted as 'insolence'; another note on file.",
+          detay: "Now you're watched more closely.",
         },
       },
     ],
@@ -336,29 +336,29 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
   aranma_2_gece_baskin_uyarisi: {
     baslik: "Warning of a Night Raid",
     metin:
-      "A trusted acquaintance whispered that a small night inspection in your name is planned within a few days. It's possible to act ahead of it.",
+      "A friend whispers: a small night inspection in your name is planned in days. You can act ahead.",
     secenekler: [
       {
-        metin: "Buy off the officer who'll do the inspection in advance. (Penance: 35)",
+        metin: "Buy off the inspector. (Penance: 55)",
         basariliSonuc: {
-          mesaj: "The officer wrote 'clean' on the inspection report and signed it.",
+          mesaj: "The officer signed the report 'clean'.",
           detay: "Some papers are written in gold.",
         },
         basarisizSonuc: {
           mesaj:
-            "He took the money but at the last moment his superiors joined the inspection too; the report was still written cautiously, at least it wasn't made worse.",
+            "His superiors joined too; the report was cautious but not harsh.",
           detay: "Full control is never guaranteed.",
         },
       },
       {
-        metin: "Tidy up, erase the traces, wait for the inspection.",
+        metin: "Tidy up, erase traces, wait.",
         basariliSonuc: {
-          mesaj: "You toiled all night and left everything spotless; the inspection passed without a trace.",
+          mesaj: "You cleaned all night; inspection found nothing.",
           detay: "Sometimes all it takes is labor.",
         },
         basarisizSonuc: {
-          mesaj: "Despite your effort you missed one detail; the inspection proved them right.",
-          detay: "The officers now count you as an official threat.",
+          mesaj: "You missed one detail; the inspection proved them right.",
+          detay: "Now you count as an official threat.",
         },
       },
     ],
@@ -367,28 +367,28 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
   aranma_3_tutuklama_ekibi: {
     baslik: "An Arrest Team in the Streets",
     metin:
-      "It's no longer suspicion but certainty: a special arrest team is looking for you. You look over your shoulder even while walking the street.",
+      "No longer suspicion but certainty: a special arrest team hunts you. You look over your shoulder in the street.",
     secenekler: [
       {
-        metin: "Buy off the man leading the team with a large penance. (Penance: 55)",
+        metin: "Buy off the team leader. (Penance: 85)",
         basariliSonuc: {
-          mesaj: "The man leading the team took the money and wrote his report as 'no trace found'.",
-          detay: "Even the high-ranking can turn out to be for sale.",
+          mesaj: "The leader took the money and wrote 'no trace found'.",
+          detay: "Even the high-ranking can be bought.",
         },
         basarisizSonuc: {
-          mesaj: "The man took the money but handed you over anyway — you're left both broke and behind bars.",
-          detay: "Some men sell both the gold and you.",
+          mesaj: "He took the money but handed you over: broke and jailed.",
+          detay: "Some men sell both gold and you.",
         },
       },
       {
-        metin: "Hide quietly for one last night before leaving the city.",
+        metin: "Hide one last night before leaving.",
         basariliSonuc: {
-          mesaj: "You hid in an acquaintance's barn and watched the team comb the city; you dodged it for now.",
+          mesaj: "Hidden in a barn, you slipped the sweep — for now.",
           detay: "But they're as patient as you.",
         },
         basarisizSonuc: {
-          mesaj: "The barn you were hiding in was searched; you had nowhere left to run.",
-          detay: "Your luck ran out this time.",
+          mesaj: "They searched the barn; you had nowhere to run.",
+          detay: "Your luck ran out.",
         },
       },
     ],
@@ -397,29 +397,29 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
   aranma_3_muhbir_agi: {
     baslik: "The Informer Network",
     metin:
-      "The authorities are handing out money to informers in the neighborhood to reach you. Now even your closest neighbor could turn you in.",
+      "Authorities are paying neighborhood informers to find you. Even your closest neighbor could turn you in.",
     secenekler: [
       {
-        metin: "Be the one who pays the informer boss a bigger sum. (Penance: 60)",
+        metin: "Pay the informer boss. (Penance: 92)",
         basariliSonuc: {
-          mesaj: "When the head of the informer network saw your money he changed course; the network is now looking for someone else, not you.",
-          detay: "In the dark economy, the highest bidder wins.",
+          mesaj: "The boss changed course; the network now hunts someone else.",
+          detay: "The highest bidder wins.",
         },
         basarisizSonuc: {
           mesaj:
-            "He took the money but the network had already grown too big; he admitted he couldn't control it; at least no more money was added against you.",
+            "The network was beyond him; at least no extra cost.",
           detay: "Sometimes even money isn't enough.",
         },
       },
       {
-        metin: "For half the price, silence only the informers in your own neighborhood. (Penance: 28)",
+        metin: "Silence your quarter. (Penance: 43)",
         basariliSonuc: {
-          mesaj: "The informers in your neighborhood fell silent; by luck the real danger was there too.",
-          detay: "Sometimes a small investment is enough.",
+          mesaj: "Local informers fell silent; the real danger was there.",
+          detay: "A small investment can suffice.",
         },
         basarisizSonuc: {
-          mesaj: "Even after you silenced your neighborhood the tip-off came from another quarter; and you'd spent money on top of it.",
-          detay: "Narrow solutions stay narrow.",
+          mesaj: "The tip-off came from another quarter; money wasted.",
+          detay: "Narrow fixes stay narrow.",
         },
       },
     ],
@@ -428,28 +428,28 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
   aranma_3_sokak_baskini: {
     baslik: "A Raid in Broad Daylight",
     metin:
-      "The moment you turn the corner, two officers block your way and ask for your identity; they have a paper with your description on it. You have very little time to run.",
+      "Rounding the corner, two officers demand your ID; they hold a paper with your description. Little time to run.",
     secenekler: [
       {
         metin: "Dive into the crowd and run.",
         basariliSonuc: {
-          mesaj: "You passed between the market stalls and took shelter, gasping, in a side street.",
+          mesaj: "Between the stalls, you ducked gasping into a side street.",
           detay: "Your heart is still pounding.",
         },
         basarisizSonuc: {
-          mesaj: "Your foot caught on a basket; the moment you hit the ground they were on top of you.",
-          detay: "This escape did not end heroically.",
+          mesaj: "Your foot caught a basket; they were on you as you fell.",
+          detay: "The escape wasn't heroic.",
         },
       },
       {
-        metin: "Look calm, claim they've got the wrong person. (Penance: 50)",
+        metin: "Claim 'wrong person'. (Penance: 77)",
         basariliSonuc: {
-          mesaj: "You 'accidentally dropped' part of the money in your pocket; the officers chose to forget the description.",
-          detay: "Some identity checks are solved with gold.",
+          mesaj: "You 'dropped' some money; they forgot the description.",
+          detay: "Some ID checks are solved with gold.",
         },
         basarisizSonuc: {
-          mesaj: "They weren't convinced; you lost your money and got handcuffed.",
-          detay: "This time nothing worked.",
+          mesaj: "They weren't convinced; you lost your money and got cuffed.",
+          detay: "Nothing worked.",
         },
       },
     ],
@@ -458,28 +458,28 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
   aranma_3_kefaret_odemesi: {
     baslik: "An Official Penance Payment",
     metin:
-      "A go-between with indirect access to the region's judge says he can officially lighten your file — for an appropriate 'penance', of course.",
+      "A go-between with indirect access to the judge says he can officially lighten your file — for a fitting 'penance'.",
     secenekler: [
       {
-        metin: "Pay the penance the go-between wants. (Penance: 65)",
+        metin: "Pay the penance. (Penance: 101)",
         basariliSonuc: {
-          mesaj: "The penance reached the authorities; your file was officially lightened by one grade.",
-          detay: "Justice sometimes bills for its work.",
+          mesaj: "The penance worked; your file lightened one grade.",
+          detay: "Justice sometimes sends a bill.",
         },
         basarisizSonuc: {
-          mesaj: "The go-between said he sent the money but nothing changed; maybe he pocketed it.",
-          detay: "Trusting go-betweens is always risky.",
+          mesaj: "Nothing changed; the go-between may have pocketed it.",
+          detay: "Trusting go-betweens is risky.",
         },
       },
       {
-        metin: "Don't trust the go-between, fend for yourself.",
+        metin: "Don't trust him, fend for yourself.",
         basariliSonuc: {
-          mesaj: "You turned the go-between away; at least you weren't deceived by trusting anyone.",
-          detay: "Sometimes doing nothing is the safest.",
+          mesaj: "You turned him away; at least you weren't deceived.",
+          detay: "Doing nothing is safest.",
         },
         basarisizSonuc: {
-          mesaj: "You refused, but the question 'what if it really would have worked' is eating away at you.",
-          detay: "Sometimes hesitation is the greatest enemy.",
+          mesaj: "You refused, but 'what if it worked' eats at you.",
+          detay: "Hesitation is the greatest enemy.",
         },
       },
     ],
@@ -488,28 +488,28 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
   aranma_4_azami_takip: {
     baslik: "Maximum Pursuit",
     metin:
-      "A special unit has now been set up just for you; there's an eye at every street corner, a question at every inn door. This is a level where escape is nearly impossible.",
+      "A special unit now exists just for you: an eye on every street, a question at every inn. Escape is nearly impossible.",
     secenekler: [
       {
-        metin: "Pour everything you have into a large penance. (Penance: 100)",
+        metin: "Spend it all. (Penance: 154)",
         basariliSonuc: {
-          mesaj: "The hefty penance reached the highest offices; the pursuit unit was officially scaled down.",
+          mesaj: "The penance reached the top; the pursuit unit was scaled down.",
           detay: "Your fortune bought your life.",
         },
         basarisizSonuc: {
-          mesaj: "They ignored even that much money and caught you; now you have no cash either.",
-          detay: "At some levels even money isn't enough.",
+          mesaj: "They caught you despite the money; now you're broke too.",
+          detay: "Money isn't enough: 9-12 years.",
         },
       },
       {
-        metin: "Try to leave the city entirely, leave no trace.",
+        metin: "Leave the city entirely, no trace.",
         basariliSonuc: {
-          mesaj: "You moved through back roads for days and got completely beyond the city's sphere of influence.",
-          detay: "The pursuit unit is smart enough not to look for you beyond the border.",
+          mesaj: "Days on back roads took you beyond their reach.",
+          detay: "They won't search beyond the border.",
         },
         basarisizSonuc: {
-          mesaj: "They were waiting for you at the city gate; the escape ended before it began.",
-          detay: "At this level every exit is watched.",
+          mesaj: "They waited at the gate; escape ended before it began.",
+          detay: "Every exit is watched; 9-12 years.",
         },
       },
     ],
@@ -518,28 +518,28 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
   aranma_4_odul_avcilari: {
     baslik: "Bounty Hunters",
     metin:
-      "The bounty on your head has stirred even independent bounty hunters into action. Now you have to hide not only from official agents but from ordinary people who smell money.",
+      "The bounty on your head moved even independent hunters. You must hide from anyone who smells money.",
     secenekler: [
       {
-        metin: "Try to bring a bounty hunter over to your side. (Penance: 90)",
+        metin: "Win a hunter over. (Penance: 139)",
         basariliSonuc: {
-          mesaj: "The bounty hunter found your offer more tempting than the reward; he backed off and even threw the others off your scent.",
-          detay: "Sometimes the hunter makes the best ally.",
+          mesaj: "He preferred your offer to the bounty and misled the others.",
+          detay: "Sometimes the hunter is the best ally.",
         },
         basarisizSonuc: {
-          mesaj: "The hunter handed you over right after taking the money; you're left both broke and wounded.",
-          detay: "Bounty hunters can't be trusted.",
+          mesaj: "He took the money and handed you over: broke and wounded.",
+          detay: "Can't trust hunters; 9-12 years.",
         },
       },
       {
-        metin: "Change your identity completely and disappear.",
+        metin: "Change your identity, vanish.",
         basariliSonuc: {
-          mesaj: "You changed your hair, your clothes, even your walk; your old description is useless now.",
-          detay: "You lost a bit of your old standing, but at least you're alive.",
+          mesaj: "New look, clothes, walk; your old description is useless.",
+          detay: "Lost some standing, but alive.",
         },
         basarisizSonuc: {
-          mesaj: "Your disguise didn't escape one hunter's eye; he recognized you and caught you.",
-          detay: "Some eyes are fooled by no mask.",
+          mesaj: "A hunter saw through the disguise, recognized and caught you.",
+          detay: "No mask fools them; 9-12 years.",
         },
       },
     ],
@@ -548,28 +548,28 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
   aranma_4_son_sans_kefareti: {
     baslik: "A Last-Chance Penance",
     metin:
-      "An influential go-between says he can intercede on your behalf with the highest offices — but a pardon at this level requires an unthinkable penance.",
+      "An influential go-between offers to intercede with the highest offices — at an unthinkable penance.",
     secenekler: [
       {
-        metin: "Pay the enormous penance demanded. (Penance: 130)",
+        metin: "Pay the huge penance. (Penance: 200)",
         basariliSonuc: {
-          mesaj: "The intercession really worked; your file was returned to an almost spotless page.",
-          detay: "Some debts are cleared only with very large sums.",
+          mesaj: "The intercession worked; your file is almost spotless.",
+          detay: "Big debts clear only with big sums.",
         },
         basarisizSonuc: {
-          mesaj: "The intercession attempt failed, and a significant part of the money you gave never came back, under the name of 'expenses'.",
-          detay: "The biggest gambles can bring the biggest losses.",
+          mesaj: "It failed, and most of your money went to 'expenses'.",
+          detay: "Big gambles bring big losses.",
         },
       },
       {
-        metin: "Don't take that much risk, trust your money.",
+        metin: "Don't risk it, keep your money.",
         basariliSonuc: {
-          mesaj: "You turned the offer down; at least the last money in your pocket stayed yours.",
-          detay: "Sometimes not playing at all is the smartest move.",
+          mesaj: "You refused; at least your last money stayed yours.",
+          detay: "Sometimes not playing is smartest.",
         },
         basarisizSonuc: {
-          mesaj: "You refused, but the thought 'what if it really would have saved me' kept you awake for nights.",
-          detay: "At this level every decision weighs heavy.",
+          mesaj: "You refused, but 'what if it saved me' kept you awake.",
+          detay: "At this level every decision weighs.",
         },
       },
     ],
@@ -578,28 +578,28 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
   aranma_4_gece_yarisi_baskini: {
     baslik: "A Knock at the Door at Midnight",
     metin:
-      "Your door is being pounded violently at midnight; there are torchlights and angry voices outside. This isn't the big raid itself, but a small advance raid very close to it.",
+      "Midnight pounding at your door; torches and angry voices outside. Not the big raid, but a small precursor.",
     secenekler: [
       {
-        metin: "Leap from the window to the roof and run.",
+        metin: "Leap to the roof and run.",
         basariliSonuc: {
-          mesaj: "You jumped to the neighboring roof, even sliding on the tiles; you left shouting behind you.",
-          detay: "Tonight was the fastest run of your life.",
+          mesaj: "You slid across tiles to the next roof; shouts fell behind.",
+          detay: "The fastest run of your life.",
         },
         basarisizSonuc: {
-          mesaj: "You fell from the roof, and the moment you fell they were on top of you.",
-          detay: "Nothing went the way you planned tonight.",
+          mesaj: "You fell from the roof and they were on you.",
+          detay: "Nothing went to plan; 9-12 years ahead.",
         },
       },
       {
-        metin: "Open the door, try to stall them with the money you have. (Penance: 95)",
+        metin: "Stall them with money. (Penance: 147)",
         basariliSonuc: {
-          mesaj: "You shoved everything you had into the commander's hand at the door; the man hesitated for a moment and withdrew, saying 'wrong house'.",
+          mesaj: "You shoved the money at him; 'wrong house,' he said, and left.",
           detay: "Tonight greed saved your life.",
         },
         basarisizSonuc: {
-          mesaj: "The commander refused the money and signaled his men; the door was broken down.",
-          detay: "This time no offer was enough.",
+          mesaj: "The commander refused the money; the door was broken down.",
+          detay: "Offers failed; 9-12 years.",
         },
       },
     ],
@@ -608,40 +608,40 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
   aranma_baskin_ortacag: {
     baslik: "House Raid",
     metin:
-      "Your door was broken down before dawn. Armored guards poured into your home/business with a search order; the paper bearing the lord's seal declares that your name is now a wanted one in these lands. You have three ways, and all three carry a price.",
+      "Your door was smashed before dawn. Armored guards burst in with the lord's sealed warrant. Three ways out, all costly.",
     secenekler: [
       {
         metin: "Surrender, don't resist.",
         basariliSonuc: {
-          mesaj: "You raised your hands and surrendered; the guards plundered your home from top to bottom and put you in chains.",
-          detay: "Your fortune and your name were the first things taken from you this morning. Now you'll answer for it in prison.",
+          mesaj: "You surrendered; your home was plundered, you were chained.",
+          detay: "At least 7 years; penance won't cut it.",
         },
         basarisizSonuc: {
-          mesaj: "Even though you surrendered, a guard slammed you hard to the ground; the shackles closed with pain.",
-          detay: "Not even not resisting could spare you a beating this morning.",
+          mesaj: "Though you surrendered, they slammed you down; shackles bit.",
+          detay: "Not resisting didn't spare you.",
         },
       },
       {
-        metin: "Bribe them with your fortune, try to buy your way out. (Requires at least 50)",
+        metin: "Bribe them. (At least 77 needed)",
         basariliSonuc: {
-          mesaj: "The man leading the guards looked away when he saw the gold you piled before him; he pulled his men back, saying 'wrong house'.",
-          detay: "Most of your fortune was gone this morning, but at least you're free. Your name is still noted somewhere.",
+          mesaj: "The captain saw the gold, said 'wrong house' and withdrew.",
+          detay: "Fortune gone, but free; still on file.",
         },
         basarisizSonuc: {
-          mesaj: "The man pocketed the gold the moment he took it and pointed at you anyway; you lost your fortune and got handcuffed.",
-          detay: "Some men sell both the money and you.",
+          mesaj: "He took the gold and gave you up anyway: broke and cuffed.",
+          detay: "Some men sell both gold and you.",
         },
       },
       {
-        metin: "Attempt a hard escape through the back door.",
+        metin: "Try a hard escape out the back.",
         basariliSonuc: {
           mesaj:
-            "You jumped from the back window, climbed the garden wall and vanished in the twilight of dawn; after days of walking you took shelter in a lonely cave on a mountaintop.",
-          detay: "Your old life is behind you. Now you're a fugitive the city doesn't know, hidden by the mountains.",
+            "You climbed the wall, vanished; days later, a mountain cave.",
+          detay: "Now you're a fugitive the mountains hide.",
         },
         basarisizSonuc: {
-          mesaj: "Before you could get over the garden wall, a guard's hand seized your wrist; resisting only got you a beating.",
-          detay: "Your escape attempt ended with a beating you wouldn't have taken if you'd surrendered — and you were thrown in the dungeon anyway.",
+          mesaj: "They grabbed you at the wall; resisting earned only a beating.",
+          detay: "Beaten, and still in the dungeon.",
         },
       },
     ],
@@ -650,40 +650,40 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
   aranma_baskin_sanayi: {
     baslik: "Workplace Raid",
     metin:
-      "In the early hours of the morning, uniformed officers raided your workplace/home with an official order. The arrest paper in their hands shows your name is now on the state's watch list. You have three ways, and all three carry a price.",
+      "Uniformed officers raid at dawn on an official order; your name is on the watch list. Three ways, all costly.",
     secenekler: [
       {
         metin: "Surrender, don't resist.",
         basariliSonuc: {
-          mesaj: "You calmly held out your hands; the officers searched the workplace thoroughly, seized your till, and took you away in iron shackles.",
-          detay: "Your fortune and reputation went into the records this morning as 'seized'. Now you'll answer for it in prison.",
+          mesaj: "You surrendered; they seized your till and shackled you.",
+          detay: "At least 7 years; penance won't cut it.",
         },
         basarisizSonuc: {
-          mesaj: "Even though you surrendered, an officer pressed you hard against the wall; the shackles closed with pain.",
-          detay: "Not even not resisting could spare you the rough treatment this morning.",
+          mesaj: "You surrendered, yet were slammed to the wall; shackles bit.",
+          detay: "Not resisting didn't spare you.",
         },
       },
       {
-        metin: "Bribe them with your fortune, try to buy your way out. (Requires at least 50)",
+        metin: "Bribe them. (At least 77 needed)",
         basariliSonuc: {
-          mesaj: "The bundle of banknotes you quietly left in the drawer of the chief's desk was enough for the arrest paper to be quietly folded and put in a pocket.",
-          detay: "Most of your fortune was gone this morning, but at least you're free. Your file is still waiting somewhere.",
+          mesaj: "The wad in his drawer got the warrant quietly pocketed.",
+          detay: "Fortune gone, but free; file waits.",
         },
         basarisizSonuc: {
-          mesaj: "The chief pocketed the money the moment he took it and carried out the arrest order anyway; you lost your fortune and got handcuffed.",
-          detay: "Some officials will take both the bribe and you.",
+          mesaj: "He took the money and arrested you anyway: broke and cuffed.",
+          detay: "They take both bribe and you.",
         },
       },
       {
-        metin: "Attempt a hard escape through the back door.",
+        metin: "Try a hard escape out the back.",
         basariliSonuc: {
           mesaj:
-            "You jumped from the back courtyard and ducked into the back streets; after an escape of days, by train and on foot, you caught your breath at the foot of a distant mountain village.",
-          detay: "Your old life is behind you. Now you're a fugitive the city is starting to forget, hidden by the mountains.",
+            "You fled over the courtyard; days later, a mountain village.",
+          detay: "Now you're a fugitive the mountains hide.",
         },
         basarisizSonuc: {
-          mesaj: "In the back street a whistle blew and two officers cut off your path; resisting only got you a beating.",
-          detay: "Your escape attempt ended with a beating you wouldn't have taken if you'd surrendered — and you were thrown in the dungeon anyway.",
+          mesaj: "A whistle; two officers blocked you; resisting earned a beating.",
+          detay: "Beaten, and still in the dungeon.",
         },
       },
     ],
@@ -692,28 +692,28 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
   aranma_kacak_ilk_geceler: {
     baslik: "The First Nights on the Mountain",
     metin:
-      "The cold of the cave cuts to your bones; you have neither a roof nor a trustworthy friend. To survive you have to learn fast.",
+      "The cave's cold cuts to your bones; no roof, no trustworthy friend. To survive, learn fast.",
     secenekler: [
       {
-        metin: "Buy provisions from a shepherd with your last coins.",
+        metin: "Buy provisions from a shepherd.",
         basariliSonuc: {
-          mesaj: "The shepherd sold you bread and cheese without asking questions.",
-          detay: "Mountain folk don't ask the city's questions.",
+          mesaj: "The shepherd sold you bread and cheese, no questions.",
+          detay: "Mountain folk don't ask questions.",
         },
         basarisizSonuc: {
-          mesaj: "The shepherd took the money but didn't give as much provision as he'd promised.",
-          detay: "Fugitives can't always haggle well.",
+          mesaj: "The shepherd took the coins but shorted the provisions.",
+          detay: "Fugitives haggle poorly.",
         },
       },
       {
-        metin: "Forage from nature on your own.",
+        metin: "Forage on your own.",
         basariliSonuc: {
-          mesaj: "You found wild fruit and roots and filled your stomach.",
-          detay: "The mountain gives something to those who are patient.",
+          mesaj: "You found wild fruit and roots and ate your fill.",
+          detay: "The mountain rewards patience.",
         },
         basarisizSonuc: {
           mesaj: "You ate the wrong plant and spent the night writhing.",
-          detay: "Not every gift of the mountain is safe.",
+          detay: "Not every mountain gift is safe.",
         },
       },
     ],
@@ -722,28 +722,28 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
   aranma_kacak_diger_kacaklar: {
     baslik: "Other Fugitives",
     metin:
-      "In a valley, a small group fleeing the law like you sits around a lit fire. They offer to let you join them.",
+      "In a valley, a small group fleeing the law sits around a fire. They invite you to join.",
     secenekler: [
       {
-        metin: "Join the group, survive together.",
+        metin: "Join them, survive together.",
         basariliSonuc: {
-          mesaj: "You sat by the fire and told your story; the group accepted you among them.",
-          detay: "Loneliness is the heaviest burden on the mountain — it's a little lighter now.",
+          mesaj: "You told your story by the fire; they took you in.",
+          detay: "Your loneliness lightens a bit.",
         },
         basarisizSonuc: {
-          mesaj: "You sensed mistrust among them and chose to spend the night alone, a little apart.",
-          detay: "Not every fugitive trusts another fugitive.",
+          mesaj: "Sensing mistrust, you spent the night apart, alone.",
+          detay: "Fugitives don't trust fugitives.",
         },
       },
       {
-        metin: "Keep your distance, prefer to stay alone.",
+        metin: "Keep your distance, stay alone.",
         basariliSonuc: {
-          mesaj: "You greeted the group and went on your way; your solitude puts you at less risk.",
-          detay: "Some solitudes are a choice, not a fate.",
+          mesaj: "You greeted them and moved on; solitude is less risky.",
+          detay: "Solitude can be a choice.",
         },
         basarisizSonuc: {
-          mesaj: "As you left them behind, a loneliness came over you.",
-          detay: "Being alone on the mountain is a heavy price.",
+          mesaj: "Leaving them behind, loneliness settled over you.",
+          detay: "Being alone up here is costly.",
         },
       },
     ],
@@ -752,28 +752,28 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
   aranma_kacak_yasli_cift: {
     baslik: "A Lonely Hut",
     metin:
-      "At the foot of the mountain an old couple offered you shelter before they realized who you were. They don't ask your identity, but there's a curiosity in their eyes.",
+      "An old couple at the foot of the mountain offered you shelter. They don't ask who you are, but their eyes are curious.",
     secenekler: [
       {
-        metin: "Help them repair their hut.",
+        metin: "Help repair their hut.",
         basariliSonuc: {
-          mesaj: "You spent your days mending their roof and chopping wood; the old couple treated you like their own child.",
-          detay: "Some families are formed without blood ties.",
+          mesaj: "You mended their roof; they treated you like their own.",
+          detay: "Some families need no blood.",
         },
         basarisizSonuc: {
-          mesaj: "You did what you could, but your city hands weren't much suited to mountain work.",
-          detay: "Still, your intention was appreciated.",
+          mesaj: "Your city hands weren't suited to mountain work.",
+          detay: "Still, your intent was appreciated.",
         },
       },
       {
-        metin: "Steal their provisions at midnight and leave quietly.",
+        metin: "Steal their food, slip away.",
         basariliSonuc: {
-          mesaj: "With the provisions you took from their pantry you quietly headed back up the mountain.",
-          detay: "Survival sometimes requires leaving your conscience behind.",
+          mesaj: "With their provisions you quietly went back up.",
+          detay: "Survival sometimes costs conscience.",
         },
         basarisizSonuc: {
-          mesaj: "The old man caught you just as you were leaving; the disappointment on his face weighed heavier than any words.",
-          detay: "Shame sometimes hurts more than hunger.",
+          mesaj: "The old man caught you; his disappointment outweighed words.",
+          detay: "Shame can hurt more than hunger.",
         },
       },
     ],
@@ -782,28 +782,28 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
   aranma_kacak_iz_surenler: {
     baslik: "The Trackers",
     metin:
-      "The sound of dogs barking and horseshoes coming from afar froze your blood; someone might still be tracking you.",
+      "Distant barking dogs and hoofbeats froze your blood; someone may still be tracking you.",
     secenekler: [
       {
-        metin: "Strike camp at once and move to another valley.",
+        metin: "Break camp, move to another valley.",
         basariliSonuc: {
-          mesaj: "At midnight you packed everything and walked for hours; the new valley looks safer.",
-          detay: "Constant movement is a fugitive's best friend.",
+          mesaj: "You walked for hours at night; the new valley seems safer.",
+          detay: "Motion is a fugitive's friend.",
         },
         basarisizSonuc: {
-          mesaj: "Walking in the dark you fell off a crag; still, you managed to put distance between you.",
-          detay: "This escape was not easy at all.",
+          mesaj: "You fell off a crag in the dark, but still gained distance.",
+          detay: "This escape wasn't easy.",
         },
       },
       {
-        metin: "Wait calmly to observe the sounds.",
+        metin: "Wait calmly and watch.",
         basariliSonuc: {
-          mesaj: "The sounds were just a hunting party, they weren't after you; you panicked for nothing.",
-          detay: "Not every sound on the mountain is a threat.",
+          mesaj: "Just hunters, not after you; you panicked for nothing.",
+          detay: "Not every sound is a threat.",
         },
         basarisizSonuc: {
-          mesaj: "It really was a tracking party; they spotted you and started a short chase, and you barely got away.",
-          detay: "Luck wasn't much on your side this time.",
+          mesaj: "Trackers; they spotted and chased you, you barely escaped.",
+          detay: "Luck wasn't with you this time.",
         },
       },
     ],
@@ -812,28 +812,28 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
   aranma_kacak_kervan_baskini: {
     baslik: "You Came Upon a Lone Caravan",
     metin:
-      "You noticed a small merchant caravan passing alone through the mountain pass. You need provisions to survive; robbing them is an option.",
+      "You spot a small merchant caravan passing the pass alone. You need provisions; robbing them is an option.",
     secenekler: [
       {
-        metin: "Set an ambush and raid the caravan.",
+        metin: "Ambush the caravan.",
         basariliSonuc: {
-          mesaj: "The raid worked; you took enough provisions and a few coins from the caravan.",
-          detay: "The law of the mountain works differently from the law of the city now.",
+          mesaj: "The raid worked; you took provisions and a few coins.",
+          detay: "Mountain law differs from the city's.",
         },
         basarisizSonuc: {
-          mesaj: "The caravan men were better armed than you expected; you took heavy blows while fleeing.",
-          detay: "Not every ambush goes as planned.",
+          mesaj: "The caravan men were better armed; you took heavy blows fleeing.",
+          detay: "Not every ambush goes to plan.",
         },
       },
       {
-        metin: "Approach the caravan and offer an honest trade.",
+        metin: "Offer an honest trade.",
         basariliSonuc: {
-          mesaj: "You traded a few of your belongings for provisions; the caravan leader asked nothing.",
-          detay: "Some merchants care only about trade.",
+          mesaj: "You traded belongings for provisions; he asked nothing.",
+          detay: "Merchants care about trade.",
         },
         basarisizSonuc: {
-          mesaj: "The caravan leader recognized your description and refused to do business with you; you came away empty-handed.",
-          detay: "The shadow of your reputation has reached even the mountain roads.",
+          mesaj: "He recognized you and refused; you left empty-handed.",
+          detay: "Your name reached the mountain roads.",
         },
       },
     ],
@@ -842,28 +842,28 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
   aranma_kacak_soguk_kis: {
     baslik: "A Merciless Winter",
     metin:
-      "The first winter you spend on the mountain is merciless; the snowstorm doesn't let up for days, and your provisions are about to run out.",
+      "Your first winter on the mountain is merciless; the blizzard rages for days and your food runs low.",
     secenekler: [
       {
-        metin: "Spend everything you have on fire and shelter.",
+        metin: "Spend it all on fire and shelter.",
         basariliSonuc: {
-          mesaj: "You barely rode out the storm; a few of your fingers came back from the edge of frostbite.",
-          detay: "This winter showed you the true face of the mountain.",
+          mesaj: "You barely survived; your fingers narrowly escaped frostbite.",
+          detay: "It showed the mountain's true face.",
         },
         basarisizSonuc: {
-          mesaj: "The storm tore down your shelter; you spent days in the open, shivering and trying to survive.",
+          mesaj: "The storm wrecked your shelter; you shivered outdoors for days.",
           detay: "Some winters are nearly impossible.",
         },
       },
       {
-        metin: "Risk descending to a lower, deserted valley.",
+        metin: "Risk descending to a lower valley.",
         basariliSonuc: {
-          mesaj: "An abandoned hut you found on the way down protected you from the storm.",
-          detay: "Sometimes taking a risk is the only way to survive.",
+          mesaj: "An abandoned hut on the way down sheltered you.",
+          detay: "Sometimes risk is the only way.",
         },
         basarisizSonuc: {
-          mesaj: "On the way down you got caught in the middle of the storm and couldn't find your bearings for hours.",
-          detay: "The mountain can be as merciless as it is generous.",
+          mesaj: "Caught in the storm on the descent, you were lost for hours.",
+          detay: "As merciless as it is generous.",
         },
       },
     ],
@@ -872,28 +872,28 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
   aranma_kacak_yeni_kimlik: {
     baslik: "A New Identity",
     metin:
-      "In a distant mountain village you met a mysterious man who can forge identity papers. With enough money, you could erase your past entirely and start over.",
+      "In a remote mountain village a mysterious man forges identity papers. With enough money you could erase your past.",
     secenekler: [
       {
-        metin: "Buy a new identity, leave your past behind. (Requires at least 40)",
+        metin: "Buy an identity. (At least 40 needed)",
         basariliSonuc: {
-          mesaj: "With your new papers your old name was left behind too; no one recognizes you now, no one is looking for you.",
-          detay: "The traces of your old life are erased, but you're still alive — that counts as a victory.",
+          mesaj: "Your old name is gone; no one knows or seeks you.",
+          detay: "Traces erased, but you're alive.",
         },
         basarisizSonuc: {
-          mesaj: "The man took the money but the papers were so badly forged that they'd be spotted at the first check; you gave up using them.",
-          detay: "Some 'masters' are only masters at taking your money.",
+          mesaj: "The papers were such bad forgeries you gave up using them.",
+          detay: "Some 'masters' just master your money.",
         },
       },
       {
-        metin: "Don't trust him, go on your own way.",
+        metin: "Don't trust him, go your own way.",
         basariliSonuc: {
-          mesaj: "You turned the offer down and kept walking into the depths of the mountain.",
-          detay: "Not trusting is sometimes the safest choice.",
+          mesaj: "You refused and walked deeper into the mountains.",
+          detay: "Distrust is sometimes safest.",
         },
         basarisizSonuc: {
-          mesaj: "You refused, but for days after the offer you kept thinking 'what if I'd accepted'.",
-          detay: "Some chances never come again.",
+          mesaj: "You refused, but for days wondered 'what if I'd accepted'.",
+          detay: "Some chances never return.",
         },
       },
     ],
@@ -902,28 +902,28 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
   aranma_kacak_iz_soguyor: {
     baslik: "When the Trail Goes Cold",
     metin:
-      "Years have passed. Travelers crossing the mountain now carry not your story but other gossip. Maybe no one is after you anymore.",
+      "Years passed. Travelers now carry other gossip, not your story. Maybe no one is after you anymore.",
     secenekler: [
       {
-        metin: "Try to return to the city, to your old life, with cautious steps.",
+        metin: "Return to the city cautiously.",
         basariliSonuc: {
-          mesaj: "When you entered the city no one even turned to look; your name really has been forgotten.",
-          detay: "For the first time in years, you walked the street unafraid.",
+          mesaj: "No one even looked at you entering; your name is forgotten.",
+          detay: "First fearless walk in years.",
         },
         basarisizSonuc: {
-          mesaj: "Just as you entered the city a familiar face noticed you; you had to flee back to the mountains at once.",
-          detay: "Some pasts have longer memories than you'd think.",
+          mesaj: "A familiar face spotted you at the gate; you fled back.",
+          detay: "Some pasts have long memories.",
         },
       },
       {
-        metin: "Don't take the risk, stay in the safety of the mountains.",
+        metin: "Stay safe in the mountains.",
         basariliSonuc: {
-          mesaj: "You decided to leave the city behind forever; the mountain is your true home now.",
-          detay: "In the city below, your name has turned into a legend, almost a fairy tale.",
+          mesaj: "You left the city forever; the mountain is home now.",
+          detay: "Your name became a fairy tale.",
         },
         basarisizSonuc: {
-          mesaj: "You couldn't be sure of your decision; you spent a restless night.",
-          detay: "Some decisions unsettle you even after they're made.",
+          mesaj: "Unsure of your decision, you spent a restless night.",
+          detay: "Some decisions unsettle you afterward.",
         },
       },
     ],
@@ -932,27 +932,27 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
   aranma_kacak_dagli_koyu_ticaret: {
     baslik: "A Distant Mountain Village",
     metin:
-      "You came upon a small mountain village hard to find even on maps. The villagers are wary of outsiders but not hostile; maybe there's a trade to be made between you.",
+      "You stumble on a tiny mountain village hard to find on maps. The villagers are wary but not hostile; trade is possible.",
     secenekler: [
       {
-        metin: "Sell the goods you've hunted/foraged in the village.",
+        metin: "Sell your hunted/foraged goods.",
         basariliSonuc: {
-          mesaj: "The villagers gave a good price for what you brought; a little money went into your pocket.",
-          detay: "Rare goods are valuable in mountain villages.",
+          mesaj: "The villagers paid well; a little money in your pocket.",
+          detay: "Rare goods are valuable up here.",
         },
         basarisizSonuc: {
-          mesaj: "The villagers pushed you too hard in the haggling; you earned far less than you expected.",
-          detay: "Mountain villages haggle by their own rules too.",
+          mesaj: "The villagers pushed hard; you earned far less than expected.",
+          detay: "Villages haggle their own way.",
         },
       },
       {
-        metin: "Stay a night at the village inn and rest.",
+        metin: "Stay a night at the inn and rest.",
         basariliSonuc: {
-          mesaj: "The night you spent by a warm hearth was enough for you to sleep soundly for the first time in weeks.",
-          detay: "Sometimes all you need is four walls and a fire.",
+          mesaj: "Warm hearth, your first sound sleep in weeks.",
+          detay: "Four walls and a fire suffice.",
         },
         basarisizSonuc: {
-          mesaj: "Warm as the hearth was, the worries in your mind wouldn't let you sleep.",
+          mesaj: "Warm hearth, but your worries wouldn't let you sleep.",
           detay: "A fugitive's mind never fully rests.",
         },
       },
@@ -962,28 +962,28 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
   aranma_kacak_vahsi_hayvan: {
     baslik: "A Wild Animal in Your Path",
     metin:
-      "On a narrow mountain path a large wild animal suddenly appeared in front of you; neither is it backing off nor can you easily pass.",
+      "On a narrow mountain path a large wild beast blocks your way; it won't back off and you can't pass.",
     secenekler: [
       {
-        metin: "Retreat slowly, without any sudden moves.",
+        metin: "Retreat slowly, no sudden moves.",
         basariliSonuc: {
-          mesaj: "You retreated step by step and went around by another path; the animal didn't even notice you.",
-          detay: "On the mountain, patience is a more valuable weapon than a sword.",
+          mesaj: "You backed away and took another path; it never noticed.",
+          detay: "Patience beats a sword up here.",
         },
         basarisizSonuc: {
-          mesaj: "While retreating you caught on a branch and fell; the noise startled the animal into attacking.",
-          detay: "Even the smallest mistake can cost you dearly on the mountain.",
+          mesaj: "Retreating, you tripped on a branch; the noise made it attack.",
+          detay: "The smallest mistake costs dearly.",
         },
       },
       {
-        metin: "Defend yourself, fighting with whatever you have.",
+        metin: "Fight back with whatever you have.",
         basariliSonuc: {
-          mesaj: "After a hard struggle you drove the animal off; even its pelt could be useful to you.",
-          detay: "Surviving on this mountain sometimes requires fighting.",
+          mesaj: "After a hard struggle you drove it off; its pelt may be useful.",
+          detay: "Survival sometimes means fighting.",
         },
         basarisizSonuc: {
-          mesaj: "The animal turned out far stronger than you; its claws left deep marks.",
-          detay: "Some fights are lost from the very start.",
+          mesaj: "The beast was far stronger; its claws left deep marks.",
+          detay: "Some fights are lost from the start.",
         },
       },
     ],

@@ -5,25 +5,25 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
   komik_fici_selale: {
     baslik: "Barrel Down the Falls",
     metin:
-      "You made a bet at the tavern: no one dares climb into an empty wine barrel and ride it down the little waterfall. Everyone is watching. The barrel is ready.",
+      "In a tavern bet, no one dares ride an empty wine barrel down the waterfall. All eyes are on you.",
     secenekler: [
       {
-        metin: "Get in the barrel and wait to be pushed off.",
+        metin: "Get in the barrel; be pushed.",
         basariliSonuc: {
-          mesaj: "The barrel tumbled down, and you came out soaked but alive. The tavern spoke your name for weeks.",
+          mesaj: "Soaked but alive; the tavern talked of you for weeks.",
           detay: "Some stupidities pay off.",
         },
         basarisizSonuc: {
-          mesaj: "The barrel shattered on the first rock. The crowd laughed first, then fell silent; when they pulled you from the water you were barely breathing.",
+          mesaj: "The barrel shattered on the first rock; you were barely breathing.",
         },
       },
       {
-        metin: "Turn down the bet, order another drink.",
+        metin: "Decline; order another drink.",
         basariliSonuc: {
-          mesaj: "You shrugged. A few called you a coward, but by morning they'd forgotten.",
+          mesaj: "You shrugged; the 'coward' jibes were forgotten by morning.",
         },
         basarisizSonuc: {
-          mesaj: "Your retreat was a bit too hurried; for days you were 'the one afraid of barrels'.",
+          mesaj: "You retreated in a flap; for days you were 'the barrel-fearer'.",
         },
       },
     ],
@@ -31,24 +31,24 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
   komik_en_aci_biber: {
     baslik: "The Hottest Pepper",
     metin:
-      "A peddler opened a basket of 'dragon's breath' peppers from distant lands. 'Whoever eats a whole one raw gets the basket free,' he says. A crowd gathered.",
+      "A peddler offers 'dragon's breath' peppers: 'Eat one whole, raw, and the basket is free.' A crowd gathers.",
     secenekler: [
       {
-        metin: "Into the mouth, chew, swallow. Don't blink.",
+        metin: "Chew, swallow, don't blink.",
         basariliSonuc: {
-          mesaj: "Your face went purple, tears burst from your eyes, but you swallowed it. The peddler handed over the basket with a grin.",
+          mesaj: "Eyes streaming, you swallowed it; the peddler grinned and handed over the basket.",
         },
         basarisizSonuc: {
-          mesaj: "Your breath caught and your face went purple; you spent days in bed while the doctor kept muttering 'I've never seen anything like it.'",
+          mesaj: "You choked and lay in bed for days; the doctor had never seen the like.",
         },
       },
       {
-        metin: "Just taste a slice, leave the rest.",
+        metin: "Taste a slice; leave the rest.",
         basariliSonuc: {
-          mesaj: "One slice was more than enough. Your mouth burned, but you lived long enough to tell the tale.",
+          mesaj: "One slice was plenty; your mouth burned, but you live.",
         },
         basarisizSonuc: {
-          mesaj: "Even that one slice was too much; you couldn't eat for two days.",
+          mesaj: "Even one slice was too much; you couldn't eat for two days.",
         },
       },
     ],
@@ -56,24 +56,24 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
   komik_heykel_boyama: {
     baslik: "The Statue in the Square",
     metin:
-      "Your friends are goading you to paint a funny moustache on the ruler's statue in the square at night. The ladder is ready, the paint is ready, the guards are just over there.",
+      "Your friends dare you to paint a moustache on the ruler's statue at night. Ladder and paint ready; guards nearby.",
     secenekler: [
       {
-        metin: "Climb the ladder, paint the moustache.",
+        metin: "Climb up and paint the moustache.",
         basariliSonuc: {
-          mesaj: "The moustache came out perfect. The city was in stitches by morning, and no one gave you up.",
+          mesaj: "The moustache was perfect; the city roared and no one betrayed you.",
         },
         basarisizSonuc: {
-          mesaj: "The ladder slipped and you slammed hard onto the stone. You kept mumbling 'almost had it' for days.",
+          mesaj: "The ladder slipped and you hit the stone. 'Almost done,' you mumbled.",
         },
       },
       {
-        metin: "Give the paint to your friend, you keep watch.",
+        metin: "Hand over the paint; keep watch.",
         basariliSonuc: {
-          mesaj: "You kept watch, the job got done, no one was caught. Your friend was the hero, but you laughed too.",
+          mesaj: "The job was done, no one caught; your friend was the hero.",
         },
         basarisizSonuc: {
-          mesaj: "The patrol came early; running, you tripped over a cart and rolled. At least you weren't recognized.",
+          mesaj: "The patrol came; you tripped over a cart but weren't recognized.",
         },
       },
     ],
@@ -81,24 +81,24 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
   komik_ari_kovani: {
     baslik: "Free Honey",
     metin:
-      "There's a huge beehive up in the tree, full of honey. From below it looks 'worth a few stings.'",
+      "A huge beehive full of honey sits atop the tree. From below, it looks 'worth a few stings.'",
     secenekler: [
       {
-        metin: "Climb the tree, poke the hive with a stick.",
+        metin: "Climb up and poke the hive.",
         basariliSonuc: {
-          mesaj: "You got stung in a few places but brought down a bucket of honey. You treated everyone for days.",
+          mesaj: "A few stings, but you brought down a bucket of honey.",
         },
         basarisizSonuc: {
-          mesaj: "The swarm made its opinion very clear. No one quite saw how you got down from the tree.",
+          mesaj: "The swarm made its view clear; no one saw how you got down.",
         },
       },
       {
-        metin: "Tell a beekeeper, ask for a share.",
+        metin: "Tell a beekeeper; ask a share.",
         basariliSonuc: {
-          mesaj: "The beekeeper did it right, and a jar came your way. Not a single sting.",
+          mesaj: "The beekeeper did it right; you got a jar, not one sting.",
         },
         basarisizSonuc: {
-          mesaj: "The beekeeper said 'not my hive' and left. The honey stayed in the tree, and you on the ground.",
+          mesaj: "The beekeeper said 'not my hive' and left; the honey stayed up.",
         },
       },
     ],
@@ -106,24 +106,24 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
   komik_nefes_tutma: {
     baslik: "I Can Hold My Breath the Longest",
     metin:
-      "One word led to another at the bathhouse / tavern: who can hold their breath the longest? A wager was laid. Someone has already started counting.",
+      "At the bathhouse / tavern talk turns to who can hold their breath longest. Bets are down; someone is already counting.",
     secenekler: [
       {
-        metin: "Fill your lungs, close your eyes, hold on.",
+        metin: "Hold your breath; endure.",
         basariliSonuc: {
-          mesaj: "Your face reddened, your veins throbbed, but you were the last one holding. You took the pot.",
+          mesaj: "Red-faced, you outlasted everyone and took the pot.",
         },
         basarisizSonuc: {
-          mesaj: "You held, and held... then slumped onto the table. You didn't get up.",
+          mesaj: "You held and held... then slumped on the table and stayed down.",
         },
       },
       {
-        metin: "Say 'I'll count' and stay out of the bet.",
+        metin: "Say 'I'll count'; stay out.",
         basariliSonuc: {
-          mesaj: "You counted, laughed, slipped aside unnoticed. You were the healthiest man of the evening.",
+          mesaj: "You counted, laughed, slipped away: the soundest man of the evening.",
         },
         basarisizSonuc: {
-          mesaj: "You lost count, everyone got annoyed with you. You didn't die, but your standing took a knock.",
+          mesaj: "You lost count and everyone grumbled; your standing took a knock.",
         },
       },
     ],
@@ -131,24 +131,24 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
   komik_dev_kabak: {
     baslik: "The Giant Pumpkin Contest",
     metin:
-      "A contest in the market square: whoever brings the heaviest pumpkin wins the prize. There's a monster in your neighbor's field — whether one person can lift it, who knows.",
+      "Market contest: the heaviest pumpkin wins a prize. Your neighbor's field has a monster; can one person lift it?",
     secenekler: [
       {
-        metin: "Hoist it on your back, carry it to the square.",
+        metin: "Hoist it on your back.",
         basariliSonuc: {
-          mesaj: "You came back from the brink of a slipped disc, but you got the pumpkin there and came first.",
+          mesaj: "Your back barely held, but you came first.",
         },
         basarisizSonuc: {
-          mesaj: "The pumpkin slid off your shoulder, and you under it. You won the title of 'heaviest pumpkin' — but couldn't collect it.",
+          mesaj: "The pumpkin slid and pinned you; no prize.",
         },
       },
       {
-        metin: "Rent a handcart, carry it that way.",
+        metin: "Rent a handcart for it.",
         basariliSonuc: {
-          mesaj: "You brought it easily on the handcart. You didn't come first, but a healthy third place isn't bad.",
+          mesaj: "You carried it easily; third place, not bad.",
         },
         basarisizSonuc: {
-          mesaj: "The handcart's wheel couldn't bear the pumpkin's weight; it burst in the middle of the road.",
+          mesaj: "The handcart wheel gave way; the pumpkin burst in the road.",
         },
       },
     ],
@@ -156,24 +156,24 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
   komik_buz_golu: {
     baslik: "The Frozen Lake",
     metin:
-      "Midwinter. The lake looks frozen. The children on the bank are afraid to slide; one is taunting, 'would a grown man be scared?'",
+      "Midwinter; the lake looks frozen. The children fear sliding; one taunts, 'would a grown man be scared?'",
     secenekler: [
       {
-        metin: "Run toward the middle of the ice and slide.",
+        metin: "Run to the middle and slide.",
         basariliSonuc: {
-          mesaj: "The ice held, you slid to the middle, the children applauded. A legend was born.",
+          mesaj: "The ice held; you slid to the middle and the children cheered.",
         },
         basarisizSonuc: {
-          mesaj: "Right in the middle you heard the crack. That was the last sound you heard.",
+          mesaj: "Mid-lake you heard the crack. It was the last thing you heard.",
         },
       },
       {
-        metin: "Take a turn near the bank, in the shallows.",
+        metin: "Take a turn in the shallows.",
         basariliSonuc: {
-          mesaj: "You took a few turns by the bank, laughed, went home dry. The children were happy anyway.",
+          mesaj: "A few turns by the bank, home dry.",
         },
         basarisizSonuc: {
-          mesaj: "Even in the shallows the ice broke; you went in to the knee in icy water and ran home shivering.",
+          mesaj: "Even the shallow ice broke; knee-deep, you ran home shivering.",
         },
       },
     ],
@@ -181,24 +181,24 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
   komik_gulle_yaris: {
     baslik: "The Cannonball Carry",
     metin:
-      "The soldiers / townsfolk invented a game: whoever carries the heaviest cannonball the farthest picks the evening meal. Your turn.",
+      "Soldiers / townsfolk set up a game: whoever carries the heaviest cannonball farthest picks supper. Your turn.",
     secenekler: [
       {
-        metin: "Hug the biggest one and walk.",
+        metin: "Hug the biggest and walk.",
         basariliSonuc: {
-          mesaj: "Your face was crimson, your veins near bursting, but you carried it the farthest. The feast that night was yours.",
+          mesaj: "You carried it farthest; the feast was yours.",
         },
         basarisizSonuc: {
-          mesaj: "The ball slipped from your hands; where it landed is painful to say. The bleeding didn't stop.",
+          mesaj: "The ball slipped from your hands; the bleeding wouldn't stop.",
         },
       },
       {
-        metin: "Pick a medium one, play it safe.",
+        metin: "Pick a medium one; play safe.",
         basariliSonuc: {
-          mesaj: "A reasonable ball, a reasonable distance. You came second, feet intact.",
+          mesaj: "A fair ball, a fair distance: second place, feet intact.",
         },
         basarisizSonuc: {
-          mesaj: "Even the medium one was heavy; you dropped it after a few steps, everyone laughed.",
+          mesaj: "Even the medium ball was heavy; you dropped it and all laughed.",
         },
       },
     ],
@@ -206,24 +206,24 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
   komik_degirmen_kanadi: {
     baslik: "The Windmill's Sail",
     metin:
-      "The village mill's sails turn in the wind. Someone dares you to grab a sail and ride it round once. From below it looks easy.",
+      "The mill's sails turn in the wind. Someone dares you to cling to one for a full turn. It looks easy from below.",
     secenekler: [
       {
-        metin: "Jump onto a sail, hold on tight.",
+        metin: "Jump on a sail; hold tight.",
         basariliSonuc: {
-          mesaj: "You went a full turn round, shouted 'I left my stomach up there' at the top, then came down safe and sound. The village is talking about you.",
+          mesaj: "A full turn, a safe landing; the village is talking about you.",
         },
         basarisizSonuc: {
-          mesaj: "At the top your hands came loose. The landing didn't go as planned; you lay unable to move for days.",
+          mesaj: "Your hands let go at the top; you lay immobile for days.",
         },
       },
       {
-        metin: "Touch the bottom tip of the sail, step back.",
+        metin: "Touch a sail tip; step back.",
         basariliSonuc: {
-          mesaj: "You touched the sail, everyone said 'we saw, we saw.' Brave enough, still in one piece.",
+          mesaj: "You touched it, everyone saw; brave enough, still in one piece.",
         },
         basarisizSonuc: {
-          mesaj: "Your timing was off; the sail struck your hand and flung you to the ground. A sprained wrist, and pride.",
+          mesaj: "The sail struck your hand and flung you down; wrist and pride, both twisted.",
         },
       },
     ],
@@ -231,24 +231,24 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
   komik_yaban_domuz_yaris: {
     baslik: "Racing a Boar",
     metin:
-      "At the fair a man has a wild boar on a rope: 'a prize to whoever beats the boar over a hundred paces.' The boar looks bad-tempered.",
+      "At the fair a man holds a wild boar on a rope: 'Prize to whoever beats it over a hundred paces.' It looks ill-tempered.",
     secenekler: [
       {
-        metin: "Untie the rope, race the boar.",
+        metin: "Untie it; race the boar.",
         basariliSonuc: {
-          mesaj: "The boar was startled, you ran, you crossed the line first. You took the prize, and the boar bolted into a field.",
+          mesaj: "You crossed the line first and took the prize; the boar bolted into a field.",
         },
         basarisizSonuc: {
           mesaj: "The boar took the race seriously. You didn't. That was the difference.",
         },
       },
       {
-        metin: "Bargain with the man, just watch the boar.",
+        metin: "Haggle; just watch the boar.",
         basariliSonuc: {
-          mesaj: "You watched from the side, someone else ran, you laughed. You went home safe and sound.",
+          mesaj: "You watched and laughed from the side; home safe and sound.",
         },
         basarisizSonuc: {
-          mesaj: "The boar snapped its rope, the crowd scattered; you were among the ones running.",
+          mesaj: "The boar snapped its rope and scattered the crowd; you ran too.",
         },
       },
     ],
@@ -256,24 +256,24 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
   komik_kule_zipla: {
     baslik: "Flight on Cloth Wings",
     metin:
-      "An eager inventor has sewn two cloth wings; 'jump from the tower and you'll glide,' he says. The wings look a bit loosely stitched.",
+      "An inventor has sewn two cloth wings: 'Jump from the tower and you'll glide.' They look loosely stitched.",
     secenekler: [
       {
-        metin: "Strap on the wings, jump from the tower.",
+        metin: "Strap on the wings; jump.",
         basariliSonuc: {
-          mesaj: "For a few seconds you really did glide — then buried yourself in a haystack. But you flew. Everyone saw you fly.",
+          mesaj: "You glided a few seconds, then landed in hay. But you flew!",
         },
         basarisizSonuc: {
-          mesaj: "The wings opened, then folded. The haystack wasn't where it should have been this time; you hit the ground and stayed down.",
+          mesaj: "The wings folded; the hay was gone and you hit the ground.",
         },
       },
       {
-        metin: "Throw a sack of stones first, test the wings.",
+        metin: "Test with a sack of stones first.",
         basariliSonuc: {
-          mesaj: "The sack dropped like a stone. 'Maybe another day,' you said. The inventor was cross, but you're alive.",
+          mesaj: "The sack fell like a stone; the inventor sulked, but you live.",
         },
         basarisizSonuc: {
-          mesaj: "Throwing the sack, you lost your balance and nearly fell yourself. That 'nearly' saved your life.",
+          mesaj: "You nearly fell throwing the sack; that near miss saved your life.",
         },
       },
     ],
@@ -281,24 +281,24 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
   komik_curuk_kopru: {
     baslik: "The Rotten Bridge",
     metin:
-      "Half of the old wooden bridge over the stream is rotten. Instead of the long way round, they say 'if you cross fast it'll hold.'",
+      "Half of the old bridge over the stream is rotten. Instead of the long way, they say 'cross fast and it'll hold.'",
     secenekler: [
       {
-        metin: "Cross at a run, don't look back.",
+        metin: "Run across; don't look back.",
         basariliSonuc: {
-          mesaj: "The planks creaked, but you were already on the other bank. You saved half a day off the winding road.",
+          mesaj: "The planks creaked, but you were across; half a day saved.",
         },
         basarisizSonuc: {
-          mesaj: "Right in the middle the planks gave up. The stream was shallow but the rocks were not.",
+          mesaj: "The planks gave way mid-bridge; the stream was shallow, the rocks weren't.",
         },
       },
       {
-        metin: "Take the long way round.",
+        metin: "Take the long way.",
         basariliSonuc: {
-          mesaj: "You walked half a day extra, your feet swelled, but you were the one sitting by the fire that night.",
+          mesaj: "Your feet swelled, but by evening you were by the fire.",
         },
         basarisizSonuc: {
-          mesaj: "You twisted your ankle on the long road; still better than the bridge.",
+          mesaj: "You twisted an ankle on the long road, still better than the bridge.",
         },
       },
     ],
@@ -306,24 +306,24 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
   komik_yildirim_tepe: {
     baslik: "The Hill in the Storm",
     metin:
-      "Thunder rumbles, everyone runs inside. Someone makes a claim: 'the bravest is whoever stands longest on the highest hill holding an iron rod.'",
+      "Thunder rolls, everyone flees indoors. Someone claims: 'Whoever stands longest on the hill with an iron rod is bravest.'",
     secenekler: [
       {
-        metin: "Grab the iron rod, climb the hill.",
+        metin: "Grab the iron rod; climb the hill.",
         basariliSonuc: {
-          mesaj: "The storm passed and you were still standing. They said 'mad but brave'; both were true.",
+          mesaj: "The storm passed and you still stood: 'mad but brave,' they said.",
         },
         basarisizSonuc: {
-          mesaj: "The sky answered your claim with a roar; the blast knocked you tumbling off the hilltop, hair reeking of soot.",
+          mesaj: "Lightning struck; you tumbled off the hill, hair reeking of soot.",
         },
       },
       {
-        metin: "Shelter under the lean-to with everyone else.",
+        metin: "Shelter under the lean-to.",
         basariliSonuc: {
-          mesaj: "You waited dry under the lean-to. The fools were outside, you were in.",
+          mesaj: "You stayed dry; fools were outside, you were in.",
         },
         basarisizSonuc: {
-          mesaj: "The lean-to's tiles dripped, you got a little wet. That was the bill.",
+          mesaj: "The tiles dripped and you got a bit wet. That was the bill.",
         },
       },
     ],
@@ -331,24 +331,24 @@ export const OLAYLAR_KOMIK_OLUM_EN: Record<string, OlayCeviri> = {
   komik_buhar_makinesi: {
     baslik: "A Matter of Pressure",
     metin:
-      "The new steam boiler's valve is jammed at the factory. The foreman says 'give it one knock with a hammer, it'll open,' but the boiler is hissing dangerously.",
+      "The new boiler's valve is jammed. The foreman says 'knock it with a hammer,' but the boiler hisses dangerously.",
     secenekler: [
       {
-        metin: "Take the hammer, give the valve a hard knock.",
+        metin: "Take the hammer; strike the valve.",
         basariliSonuc: {
-          mesaj: "The valve went 'psst' and opened, the pressure dropped. The foreman patted your back, the overseer wrote you a bonus.",
+          mesaj: "The valve opened, pressure fell; the overseer wrote you a bonus.",
         },
         basarisizSonuc: {
-          mesaj: "The boiler gave its answer. Half the factory got the day off.",
+          mesaj: "The boiler answered; half the factory got the day off.",
         },
       },
       {
-        metin: "Put out the fire, let the boiler cool, then check.",
+        metin: "Douse the fire; check once cool.",
         basariliSonuc: {
-          mesaj: "You lost a shift, but once the boiler cooled the valve cleaned out easily. No one got burned.",
+          mesaj: "A shift lost, but the valve cleared; no one burned.",
         },
         basarisizSonuc: {
-          mesaj: "You lightly scalded your hand putting out the fire; still the right call.",
+          mesaj: "You lightly scalded your hand; still the right call.",
         },
       },
     ],
