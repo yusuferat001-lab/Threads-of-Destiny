@@ -5,50 +5,50 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_ilk_karar: {
     baslik: "The First Big Decision",
     metin:
-      "The small business you inherited from your father (or your master) is about to grow; to draw your first big loan from the bank you need to present a business plan. This plan will also determine what kind of industrialist you become.",
+      "Your small business is growing. The bank wants a plan for your first big loan, and it shapes the industrialist you become.",
     secenekler: [
       {
-        metin: "Present a plan with a reasonable profit margin and fair wages.",
+        metin: "Present a fair-wage, modest-profit plan.",
         basariliSonuc: {
-          mesaj: "The bank found your plan trustworthy; the loan was approved, your first workers look at you with confidence.",
-          detay: "Some foundations are laid slowly but never crack.",
+          mesaj: "Loan approved; both bank and workers trust you.",
+          detay: "Solid foundations are laid slowly.",
         },
         basarisizSonuc: {
-          mesaj: "The bank found your plan 'lacking ambition', the loan shrank, but it was still a start.",
-          detay: "Honesty sometimes opens doors slowly.",
+          mesaj: "The plan seemed dull; the loan shrank, but it's a start.",
+          detay: "Honesty opens doors slowly.",
         },
       },
       {
-        metin: "Present the most aggressive profit plan, one that drives wages to the bottom.",
+        metin: "Present the harshest plan, slashing wages.",
         basariliSonuc: {
-          mesaj: "The bank liked the numbers, the loan came generously; but your workers' looks toward you turned cold.",
-          detay: "Some growth stories have a cost written in fine print.",
+          mesaj: "The loan came big; workers turned cold.",
+          detay: "Growth has a fine-print cost.",
         },
         basarisizSonuc: {
-          mesaj: "The plan was approved but word leaked; you started being known in the city as the 'ruthless boss'.",
-          detay: "Cruelty sometimes leaves a name behind before it turns its back.",
+          mesaj: "Plan approved, but word leaked: you're the 'ruthless boss'.",
+          detay: "Cruelty leaves a name first.",
         },
       },
       {
-        metin: "Take the loan but try to grow the money on the stock market.",
+        metin: "Try to grow the loan on the stock market.",
         basariliSonuc: {
-          mesaj: "The risky move paid off; the loan doubled overnight, the business grew almost for free.",
-          detay: "Some industrialists grow not with a factory, but with nerve.",
+          mesaj: "It paid off; the loan doubled overnight.",
+          detay: "Some grow on nerve.",
         },
         basarisizSonuc: {
-          mesaj: "The investment sank; to pay back the loan you had to sell half the business.",
-          detay: "At the gambling table, the loser always learns last.",
+          mesaj: "The bet sank; you sold half the business to repay.",
+          detay: "At the table, the loser learns last.",
         },
       },
       {
-        metin: "Set aside part of the profit for worker training and city charity work.",
+        metin: "Set aside profit for worker training and charity.",
         basariliSonuc: {
-          mesaj: "The city papers praised your plan; you became known as 'the boss who invests in the future'.",
-          detay: "Some industrialists grow not through machinery, but through people.",
+          mesaj: "Papers praised you as the boss who invests in the future.",
+          detay: "Some grow through people.",
         },
         basarisizSonuc: {
-          mesaj: "Your charitable work stayed in the shadows for now, but your intent is already being talked about in the city.",
-          detay: "Good deeds are sometimes planted quietly, then one day bear fruit.",
+          mesaj: "Your charity went unseen, but your intent is talked about.",
+          detay: "Kindness is sown quietly, then bears fruit.",
         },
       },
     ],
@@ -58,28 +58,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_adil_sendika_masasi: {
     baslik: "The Union Table",
     metin:
-      "The newly formed workers' union wants to sit down with you and discuss wages. Other factories throw them out the door; you could sit at the table and negotiate.",
+      "The new workers' union wants to talk wages. Other factories threw them out; you could sit down.",
     secenekler: [
       {
-        metin: "Sit at the table, negotiate honestly.",
+        metin: "Sit down and bargain honestly.",
         basariliSonuc: {
-          mesaj: "The workers' representatives left the negotiation satisfied; the first strike threat at your factory died down this way.",
-          detay: "A small raise, in {birim}, became the price of a loyalty that would last for years.",
+          mesaj: "Delegates left satisfied; the strike threat faded.",
+          detay: "A few {birim} more bought years of loyalty.",
         },
         basarisizSonuc: {
-          mesaj: "You couldn't reach an agreement but the talks ended respectfully; the workers said 'at least he listened'.",
-          detay: "Not every table ends with a deal, some are just a beginning.",
+          mesaj: "No deal, but the talks ended respectfully.",
+          detay: "Some tables are only a beginning.",
         },
       },
       {
-        metin: "Refuse the meeting, shut the door.",
+        metin: "Refuse to talk.",
         basariliSonuc: {
-          mesaj: "Your profit rose for today, but in the factory corridors your name is no longer 'the fair boss'.",
-          detay: "Rumor spreads fast; the door you closed today will meet you tomorrow as a different problem.",
+          mesaj: "Profit rose, but you're no longer the 'fair boss'.",
+          detay: "The door you shut returns as another problem.",
         },
         basarisizSonuc: {
-          mesaj: "The workers responded with a brief work slowdown; production came to a near standstill.",
-          detay: "The door you closed left behind an anger.",
+          mesaj: "Workers slowed down; production nearly stopped.",
+          detay: "The closed door left anger behind.",
         },
       },
     ],
@@ -87,28 +87,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_adil_sagligi_klinik: {
     baslik: "Factory Clinic",
     metin:
-      "A doctor tells you most of the workers have no access to treatment and suggests opening a small clinic at the factory. It has a cost, but could reduce workforce loss from illness.",
+      "A doctor says workers can't get treatment and proposes a factory clinic. Costly, but it cuts lost labor.",
     secenekler: [
       {
         metin: "Build the clinic, hire the doctor.",
         basariliSonuc: {
-          mesaj: "The clinic opened; workers now get treated when they fall ill instead of being fired.",
-          detay: "The factory's absence rate quietly started dropping.",
+          mesaj: "Clinic opened; the sick are treated, not fired.",
+          detay: "Absenteeism quietly fell.",
         },
         basarisizSonuc: {
-          mesaj: "The clinic opened but the doctor turned out to be inadequate; the intention was good, the result mediocre.",
-          detay: "Some good decisions don't bear fruit in their first year.",
+          mesaj: "Clinic opened but the doctor was weak; good intent, mediocre result.",
+          detay: "Good decisions rarely pay in year one.",
         },
       },
       {
-        metin: "Postpone it for now and put the money into production.",
+        metin: "Postpone; put the money into production.",
         basariliSonuc: {
-          mesaj: "Production sped up but a small stone remained in your conscience.",
-          detay: "The things you say 'I'll do later' sometimes never happen.",
+          mesaj: "Output rose, but a stone sits on your conscience.",
+          detay: "'Later' often never comes.",
         },
         basarisizSonuc: {
-          mesaj: "Because of the postponed clinic, an outbreak brought the factory to a week-long standstill.",
-          detay: "The money you saved was small next to the production you lost.",
+          mesaj: "An outbreak halted the factory for a week.",
+          detay: "Your savings were small next to the lost output.",
         },
       },
     ],
@@ -116,28 +116,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_adil_kirli_teklif: {
     baslik: "A Dirty Offer",
     metin:
-      "A merchant offers to sell you cheap, suspiciously sourced raw material of colonial origin, well below market price. Your profit margin would double, but you need to ask questions.",
+      "A merchant offers dubious cheap colonial raw material. Profit doubles, but you'd have to ask questions.",
     secenekler: [
       {
-        metin: "Refuse the offer, stay loyal to your clean sources.",
+        metin: "Refuse; stay with clean suppliers.",
         basariliSonuc: {
-          mesaj: "You turned the offer down; a few months later it came out that raw material was produced under conditions of slavery.",
-          detay: "The moments you say 'good thing' are usually noticed too late — you noticed early.",
+          mesaj: "You refused; later the goods proved slave-made.",
+          detay: "'Thank God' comes late; you acted early.",
         },
         basarisizSonuc: {
-          mesaj: "You refused, but your rivals grabbed the offer and undercut you on price.",
-          detay: "What's right isn't always what's most profitable.",
+          mesaj: "You refused, but rivals took it and undercut you.",
+          detay: "Right isn't always profitable.",
         },
       },
       {
-        metin: "Just this once, take it without asking questions.",
+        metin: "Just this once, buy without asking.",
         basariliSonuc: {
-          mesaj: "The profit went into your pocket, but at night you can't help thinking about where that material came from.",
-          detay: "One exception shows how solid a principle really is.",
+          mesaj: "Profit came in, but nights are haunted by its source.",
+          detay: "An exception shows how firm a principle is.",
         },
         basarisizSonuc: {
-          mesaj: "The source leaked to the papers; your 'fair boss' image was questioned overnight.",
-          detay: "One deviation cast a shadow over years of built reputation.",
+          mesaj: "The source leaked; your 'fair boss' image cracked.",
+          detay: "One lapse clouded years of reputation.",
         },
       },
     ],
@@ -145,28 +145,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_adil_kalite_yarisi: {
     baslik: "Competing on Quality",
     metin:
-      "Rival factories are driving prices to the bottom; you decided to compete on quality instead of cutting materials. This is a more expensive path.",
+      "Rivals crash prices; you choose quality over cutting corners. The costlier road.",
     secenekler: [
       {
-        metin: "Invest in quality production, emphasize 'honest craftsmanship' in marketing.",
+        metin: "Invest in quality; sell 'honest craft'.",
         basariliSonuc: {
-          mesaj: "Customers were tired of cheap, short-lived goods; your products made a difference.",
-          detay: "'{aile}' being known for quality is worth more than an ad campaign on its own.",
+          mesaj: "Customers tired of cheap goods; yours stood out.",
+          detay: "'{aile}' now means quality.",
         },
         basarisizSonuc: {
-          mesaj: "The quality was recognized but the market wasn't ready yet; sales stayed below expectations.",
-          detay: "The right idea sometimes comes at the wrong time.",
+          mesaj: "Quality was noticed, but the market wasn't ready; sales fell short.",
+          detay: "Right idea, wrong time.",
         },
       },
       {
-        metin: "Join the price war a bit, keep the balance.",
+        metin: "Join the price war a little.",
         basariliSonuc: {
-          mesaj: "You cut prices a little, sales rose, but some old customers said 'you've changed'.",
-          detay: "A middle path never fully satisfies anyone.",
+          mesaj: "You cut prices and sold more; old customers say you've changed.",
+          detay: "The middle road satisfies no one fully.",
         },
         basarisizSonuc: {
-          mesaj: "You neither won the price war nor kept your quality; you lost customers from both sides.",
-          detay: "Whoever chases two rabbits may catch neither.",
+          mesaj: "You won neither the price war nor on quality; customers left.",
+          detay: "Chase two hares, catch neither.",
         },
       },
     ],
@@ -174,28 +174,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_adil_grev_tehdidi: {
     baslik: "The Wind of Strike",
     metin:
-      "A big strike broke out at other factories in the city. Your workers are calling for a day of work stoppage in support of the strike; you're known in this city as a fair boss.",
+      "A big strike erupted in the city. Your workers want a day off in support; you're known as a fair boss.",
     secenekler: [
       {
-        metin: "Openly say you support your workers, count the day as leave.",
+        metin: "Back them openly; grant the day off.",
         basariliSonuc: {
-          mesaj: "Your workers were grateful; in the city you became known as 'the boss who shielded his own factory from the strike'.",
-          detay: "Trust is a more lasting capital than a day's production.",
+          mesaj: "Workers are grateful; you're known as the boss who prevented a strike.",
+          detay: "Trust outlasts a day's output.",
         },
         basarisizSonuc: {
-          mesaj: "Your support drew the wrath of other bosses; a few supply deals cooled off.",
-          detay: "Standing on the right side sometimes means standing alone.",
+          mesaj: "Other bosses resented it; some supply deals cooled.",
+          detay: "Standing right can mean standing alone.",
         },
       },
       {
-        metin: "Stay neutral, keep the factory running normally.",
+        metin: "Stay neutral; keep the factory running.",
         basariliSonuc: {
-          mesaj: "The factory ran normally but part of your workers were quietly disappointed.",
-          detay: "Neutrality sometimes has as much consequence as choosing a side.",
+          mesaj: "The factory ran, but some workers were let down.",
+          detay: "Neutrality is also a choice.",
         },
         basarisizSonuc: {
-          mesaj: "Some workers joined anyway without permission; production was disrupted and they called you 'the indecisive boss'.",
-          detay: "Trying to stand in the middle sometimes loses you both sides.",
+          mesaj: "Some joined anyway; output slipped and you were called indecisive.",
+          detay: "Standing in the middle can lose both sides.",
         },
       },
     ],
@@ -203,28 +203,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_adil_ornek_fabrika: {
     baslik: "Model Factory",
     metin:
-      "A government commission wants to examine your factory as a 'model workplace' in the industrial district. You could lead the way in turning your standards into a legal framework.",
+      "A government commission wants to inspect your factory as a 'model workplace'. You could lead the standards.",
     secenekler: [
       {
-        metin: "Give the commission full support, open all your records.",
+        metin: "Cooperate fully; open the books.",
         basariliSonuc: {
-          mesaj: "Your report became a benchmark for other factories; your name is spoken of with respect in industrial circles.",
-          detay: "Some standards are born from a single example.",
+          mesaj: "Your report became a benchmark; industry speaks of you with respect.",
+          detay: "Some standards spring from one example.",
         },
         basarisizSonuc: {
-          mesaj: "Small shortcomings were found in the review; it wasn't shameful, but it hurt your pride.",
-          detay: "Claiming perfection requires flawlessness — you're merely good.",
+          mesaj: "Minor faults were found; no shame, but a dent in pride.",
+          detay: "You're not flawless, just good.",
         },
       },
       {
-        metin: "Politely decline, keep the business private.",
+        metin: "Decline politely; keep it private.",
         basariliSonuc: {
-          mesaj: "The examination didn't happen, things continued as usual.",
-          detay: "Some opportunities never come again, but some peace is just as precious.",
+          mesaj: "No inspection; business went on as usual.",
+          detay: "Some peace is worth as much as an opportunity.",
         },
         basarisizSonuc: {
-          mesaj: "Your refusal led to rumors of 'what is he hiding' — even though there was nothing to hide.",
-          detay: "Being transparent is sometimes safer than not being transparent.",
+          mesaj: "Your refusal sparked 'what is he hiding?' gossip.",
+          detay: "Openness is safer than hiding.",
         },
       },
     ],
@@ -232,28 +232,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_adil_rakip_iflasi: {
     baslik: "The Rival's Collapse",
     metin:
-      "{rakip} is close to bankruptcy from union pressure and a boycott over exploiting his workers. You could snap up his company cheaply, but you'd also leave his workers out on the street.",
+      "{rakip} is sinking under union pressure and boycott. You could buy the firm cheaply, but its workers face the street.",
     secenekler: [
       {
-        metin: "Take over the company, rehire the workers on your own terms.",
+        metin: "Take over; rehire workers on your terms.",
         basariliSonuc: {
-          mesaj: "You saved dozens of workers; the city papers declared you 'the rescuer boss'.",
-          detay: "Sometimes the biggest business move happens at the same moment as an act of humanity.",
+          mesaj: "You saved dozens of jobs; papers called you a savior boss.",
+          detay: "The best deal can be a humane one.",
         },
         basarisizSonuc: {
-          mesaj: "The takeover wasn't as easy as you hoped; old debts and broken machines burned your pocket.",
-          detay: "Good intentions sometimes come with a bad balance sheet.",
+          mesaj: "The takeover was rough; old debts and broken machines burned you.",
+          detay: "Good intent can come with a bad ledger.",
         },
       },
       {
-        metin: "Don't get involved, just take the market share that opens up.",
+        metin: "Stay out; just take the vacated market.",
         basariliSonuc: {
-          mesaj: "Your rival's customers came to you; your business grew but the fate of his old workers bothers you.",
-          detay: "You don't have to take every opportunity, but this one was tempting.",
+          mesaj: "Customers came over, but the workers' fate troubles you.",
+          detay: "It was too tempting.",
         },
         basarisizSonuc: {
-          mesaj: "The market share came in less than you expected; other merchants saw the same opportunity.",
-          detay: "Opportunities sometimes get crowded.",
+          mesaj: "Market share fell short; others saw the chance too.",
+          detay: "Opportunities get crowded.",
         },
       },
     ],
@@ -261,28 +261,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_adil_cirak_okulu: {
     baslik: "Apprentice School",
     metin:
-      "You want to build an apprentice school teaching literacy and craft in the evenings for the young people working at your factory. It will take time and money.",
+      "You want an evening apprentice school teaching youths reading and trade skills. It takes time and money.",
     secenekler: [
       {
-        metin: "Build the school, hire a teacher.",
+        metin: "Found the school; hire a teacher.",
         basariliSonuc: {
-          mesaj: "The first graduates became foremen; your factory no longer needs to look for outside masters.",
-          detay: "The knowledge you invested returns with interest.",
+          mesaj: "First graduates became foremen; you no longer hire masters from outside.",
+          detay: "Knowledge pays interest.",
         },
         basarisizSonuc: {
-          mesaj: "The school opened but interest was low; most of the young people were too tired to come to classes.",
-          detay: "A good idea moves slowly without the right conditions.",
+          mesaj: "The school opened, but few came; the youths were too tired.",
+          detay: "Good ideas crawl without the right conditions.",
         },
       },
       {
-        metin: "Give it up for now, redirect the resources to production.",
+        metin: "Drop it; put resources into production.",
         basariliSonuc: {
-          mesaj: "Production rose, but the factory's future need for foremen still went unmet.",
-          detay: "Saving today sometimes postpones tomorrow.",
+          mesaj: "Output rose, but the foreman shortage remains.",
+          detay: "Saving today postpones tomorrow.",
         },
         basarisizSonuc: {
-          mesaj: "A machine was mishandled due to unskilled labor, causing minor damage.",
-          detay: "Untrained hands present cheapness's hidden bill later.",
+          mesaj: "An unskilled hand misused a machine; minor damage.",
+          detay: "Untrained hands bill you for the savings.",
         },
       },
     ],
@@ -290,28 +290,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_adil_konut_projesi: {
     baslik: "Workers' Neighborhood",
     metin:
-      "Most of your workers live in damp, crowded slums. You're considering building decent, cheap rental homes next to the factory — the 'model village' idea sounds ambitious.",
+      "Your workers live in damp, crowded shacks. You consider building decent, cheap rental homes beside the factory.",
     secenekler: [
       {
-        metin: "Launch the project, rent at reasonable rates.",
+        metin: "Start the project; charge fair rent.",
         basariliSonuc: {
-          mesaj: "The first families moved into the new homes; the factory's absence rate dropped visibly.",
-          detay: "People who sleep well work well — no one seemed to remember such a simple truth.",
+          mesaj: "First families moved in; absenteeism visibly dropped.",
+          detay: "Well-rested workers work well.",
         },
         basarisizSonuc: {
-          mesaj: "The construction went over budget; the project was completed but at a much higher cost than expected.",
-          detay: "Even well-intentioned projects collide with engineering realities.",
+          mesaj: "Construction overran; the project cost far more.",
+          detay: "Good intent meets engineering reality.",
         },
       },
       {
-        metin: "Postpone it for now, give a small rent subsidy.",
+        metin: "Postpone; give small rent aid.",
         basariliSonuc: {
-          mesaj: "The rent subsidy was small but the workers were grateful; people say you 'care'.",
-          detay: "Even a small gesture is better than no gesture at all.",
+          mesaj: "The aid is small but workers are grateful: 'he cares'.",
+          detay: "A small gesture beats none.",
         },
         basarisizSonuc: {
-          mesaj: "The help made no difference, most workers still live in hard conditions.",
-          detay: "Symbolic steps sometimes remain just symbolic.",
+          mesaj: "The aid changed little; workers still struggle.",
+          detay: "Symbolic steps stay symbolic.",
         },
       },
     ],
@@ -319,28 +319,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_adil_gazeteci_ziyareti: {
     baslik: "The Journalist's Visit",
     metin:
-      "A journalist researching industrial conditions wants to visit your factory looking for a 'good example'. The interview could boost your reputation, but every question could be uncomfortable.",
+      "A journalist seeking a 'good example' wants to visit. The interview could lift your name, but the questions may sting.",
     secenekler: [
       {
-        metin: "Accept the interview, give sincere answers.",
+        metin: "Accept; answer frankly.",
         basariliSonuc: {
-          mesaj: "The piece was published under the headline 'A light in the dark industrial age'; your name was heard outside the city too.",
-          detay: "Honesty is the best strategy even in front of a camera.",
+          mesaj: "The piece, 'a light in a dark age', spread your name beyond the city.",
+          detay: "Honesty works in front of the camera too.",
         },
         basarisizSonuc: {
-          mesaj: "The journalist blew a shortcoming out of proportion; you expected praise, you got criticism.",
-          detay: "Transparency is sometimes exactly what leaves you most open to criticism.",
+          mesaj: "He inflated a flaw; you expected praise and got criticism.",
+          detay: "Openness invites criticism.",
         },
       },
       {
         metin: "Politely refuse, protect your privacy.",
         basariliSonuc: {
-          mesaj: "The interview didn't happen; your peace of mind stayed intact but your reputation gained nothing.",
-          detay: "Not everyone needs to know; some good deeds are done quietly.",
+          mesaj: "No interview; peace kept, no fame gained.",
+          detay: "Some good is done quietly.",
         },
         basarisizSonuc: {
-          mesaj: "The journalist read your refusal as 'hiding something'; it planted a small seed of suspicion.",
-          detay: "Silence sometimes produces its own story.",
+          mesaj: "He read your refusal as hiding; a seed of doubt.",
+          detay: "Silence writes its own story.",
         },
       },
     ],
@@ -348,28 +348,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_adil_kariyer_onuru: {
     baslik: "The Conscience of Industry",
     metin:
-      "Years have passed; young industrialists in the city now come to you for advice. The chamber of commerce proposes to call you 'the conscience of industry'.",
+      "Years passed; young industrialists seek your advice. The chamber of commerce offers you the title 'conscience of industry'.",
     secenekler: [
       {
-        metin: "Accept the title, guide the young industrialists.",
+        metin: "Accept the title; mentor the young.",
         basariliSonuc: {
-          mesaj: "Now the city's youngest bosses sit at your table to learn.",
-          detay: "The reputation you built over a lifetime finally turned into a title.",
+          mesaj: "The city's young bosses now sit at your table to learn.",
+          detay: "A lifetime's repute became a title.",
         },
         basarisizSonuc: {
-          mesaj: "The title was given but some young industrialists found you 'old-fashioned' and didn't heed your advice.",
-          detay: "Every generation wants to learn from its own mistakes.",
+          mesaj: "You got the title, but some youths found you old-fashioned.",
+          detay: "Every generation learns by its own mistakes.",
         },
       },
       {
-        metin: "Stay humble, decline the title.",
+        metin: "Stay humble; decline the title.",
         basariliSonuc: {
-          mesaj: "You said 'I don't need a title, my work is enough'; even this attitude earned you respect.",
-          detay: "Some people wear a bigger crown by refusing one.",
+          mesaj: "'I want no title, my work suffices'; that earned respect.",
+          detay: "Refuse the crown, wear more of them.",
         },
         basarisizSonuc: {
-          mesaj: "Your refusal was interpreted by some as 'showing off'; your intent was misread.",
-          detay: "Even humility is sometimes read wrong.",
+          mesaj: "Your refusal was read as showing off; your intent misread.",
+          detay: "Even modesty gets misread.",
         },
       },
     ],
@@ -379,28 +379,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_somurucu_cocuk_isci: {
     baslik: "Small Hands",
     metin:
-      "Your foreman tells you children can slip between the machines more easily than adults, and their wages are lower too. He suggests hiring a few child workers.",
+      "Your foreman says children slip between machines easily and cost less. He suggests hiring a few.",
     secenekler: [
       {
-        metin: "Accept, hire a few children.",
+        metin: "Agree; hire a few children.",
         basariliSonuc: {
-          mesaj: "Your production cost dropped; small shadows now wander between the machines.",
-          detay: "Some decisions keep you awake at night — but come morning you go to the factory again.",
+          mesaj: "Costs fell; small shadows move between the machines.",
+          detay: "It haunts nights, yet you go back each morning.",
         },
         basarisizSonuc: {
-          mesaj: "A child worker was injured by a machine; the incident was covered up but you couldn't forget it.",
-          detay: "Cheapness has a cost, and sometimes someone else pays it.",
+          mesaj: "A child was hurt by a machine; hushed up, but you can't forget.",
+          detay: "Someone else sometimes pays for cheapness.",
         },
       },
       {
-        metin: "Refuse, hire only adult workers.",
+        metin: "Refuse; hire only adults.",
         basariliSonuc: {
-          mesaj: "Cost rose a little, but at least you feel at ease about this.",
-          detay: "Even on the exploitative path, you don't have to make the same choice every time.",
+          mesaj: "Costs rose a bit, but your conscience is easier.",
+          detay: "Even on a ruthless road, you choose each time.",
         },
         basarisizSonuc: {
-          mesaj: "Rival factories undercut you on price with cheap labor.",
-          detay: "On this path even your conscience sometimes puts you at a bargaining disadvantage.",
+          mesaj: "Rivals with cheap labor undercut you.",
+          detay: "Conscience can cost you in bargaining.",
         },
       },
     ],
@@ -408,28 +408,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_somurucu_ucret_kesme: {
     baslik: "Recession-Time Cuts",
     metin:
-      "The market is shrinking; you're considering cutting workers' wages to protect your profit. The foreman warns 'they're already starving, don't anger them more'.",
+      "The market is shrinking; you consider cutting wages to protect profit. The foreman warns: 'They're already hungry, don't anger them.'",
     secenekler: [
       {
-        metin: "Cut the wages, protect your profit margin.",
+        metin: "Cut wages; protect profit.",
         basariliSonuc: {
-          mesaj: "Your profit margin was protected; a silent anger is building up at the factory.",
-          detay: "The numbers look good, the atmosphere doesn't.",
+          mesaj: "Profit held; quiet anger builds in the factory.",
+          detay: "The numbers look fine, the mood doesn't.",
         },
         basarisizSonuc: {
-          mesaj: "News of the cut spread through the city; the nickname 'the boss who starves you' stuck.",
-          detay: "Some savings cost more than your reputation.",
+          mesaj: "The cut spread through town; you got the nickname 'starving boss'.",
+          detay: "Some savings cost more than reputation.",
         },
       },
       {
-        metin: "Give up the cuts, save elsewhere.",
+        metin: "Drop it; save elsewhere.",
         basariliSonuc: {
-          mesaj: "You didn't touch the wages; the workers relaxed but your profit margin narrowed.",
-          detay: "Even on the exploitative path, sometimes stepping back is sensible.",
+          mesaj: "You spared wages; workers relaxed, margins narrowed.",
+          detay: "Sometimes retreating is wise.",
         },
         basarisizSonuc: {
-          mesaj: "The cuts you made elsewhere lowered production quality, orders came back returned.",
-          detay: "Avoiding one hole can drop you into another.",
+          mesaj: "Cuts elsewhere lowered quality; orders came back.",
+          detay: "Dodge one hole, fall into another.",
         },
       },
     ],
@@ -437,28 +437,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_somurucu_sendikaci: {
     baslik: "Crushing the Organizer",
     metin:
-      "A worker at your factory is secretly trying to form a union. You could fire him to make an example for the others, or turn a blind eye and talk before the problem grows.",
+      "A worker is secretly forming a union. You can fire him as a warning or look away and talk.",
     secenekler: [
       {
-        metin: "Fire him, in front of everyone as an example.",
+        metin: "Fire him publicly as an example.",
         basariliSonuc: {
-          mesaj: "The other workers fell silent, but the look in their eyes is different now.",
-          detay: "Silence built with fear postpones the explosion, doesn't prevent it.",
+          mesaj: "The workers fell silent, but their looks have changed.",
+          detay: "Fear-bought silence delays the blast, not prevents it.",
         },
         basarisizSonuc: {
-          mesaj: "The fired worker went to the papers; the affair caused a big stir in the city.",
-          detay: "Some attempts to silence someone produce the exact opposite result.",
+          mesaj: "The fired worker went to the press; the city buzzed.",
+          detay: "Silencing sometimes backfires.",
         },
       },
       {
-        metin: "Ignore it, don't draw attention to it.",
+        metin: "Ignore it.",
         basariliSonuc: {
-          mesaj: "The organizing attempt died down on its own, for now.",
-          detay: "Not every storm has to burst.",
+          mesaj: "The organizing fizzled out, for now.",
+          detay: "Not every storm breaks.",
         },
         basarisizSonuc: {
-          mesaj: "The organizing grew, you faced a work slowdown that lasted a week.",
-          detay: "Ignoring is sometimes just another way of letting the problem grow.",
+          mesaj: "The movement grew; you faced a week-long slowdown.",
+          detay: "Ignoring a problem can grow it.",
         },
       },
     ],
@@ -466,28 +466,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_somurucu_guvenlik_kesme: {
     baslik: "Cutting Corners on Safety",
     metin:
-      "The engineer says the machines' protective cages are costly, and removing them would speed up production. Accident risk would rise, but so would profit.",
+      "The engineer says machine guards are costly; remove them and output speeds up. Accident risk rises, and so does profit.",
     secenekler: [
       {
-        metin: "Remove the protective cages, increase the speed.",
+        metin: "Remove the guards; speed up.",
         basariliSonuc: {
-          mesaj: "Production sped up, profit rose — no accident has happened yet.",
-          detay: "The bill for risk doesn't always come right away.",
+          mesaj: "Output and profit rose; no accidents yet.",
+          detay: "Risk's bill doesn't come at once.",
         },
         basarisizSonuc: {
-          mesaj: "A worker lost his hand; the incident caused an uproar in the city, the compensation burned your pocket.",
-          detay: "Every cut safety measure eventually finds payment in someone's body.",
+          mesaj: "A worker lost a hand; outrage was big and compensation burned you.",
+          detay: "Every skimped safeguard is paid in someone's body.",
         },
       },
       {
-        metin: "Keep the protective cages, sacrifice some production.",
+        metin: "Keep the guards; sacrifice output.",
         basariliSonuc: {
-          mesaj: "Production stayed slow but so far there hasn't been a serious accident at your factory.",
-          detay: "Even on the exploitative path, it's possible to protect some boundaries — you're still one of them.",
+          mesaj: "Output stayed slow, but no serious accident occurred.",
+          detay: "Some limits can still be kept.",
         },
         basarisizSonuc: {
-          mesaj: "Because of slow production, a big order went to a rival.",
-          detay: "Safety sometimes carries an opportunity cost.",
+          mesaj: "Slow output sent a big order to a rival.",
+          detay: "Safety has an opportunity cost.",
         },
       },
     ],
@@ -495,28 +495,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_somurucu_siyasi_rusvet: {
     baslik: "Silencing the Inspector",
     metin:
-      "A new labor law will inspect your factory. If you leave a small 'gift' for the local council member, you could delay the inspection, maybe never have it happen at all.",
+      "A new labor law will inspect your factory. A small 'gift' to a council member could delay the inspection.",
     secenekler: [
       {
-        metin: "Pay the bribe, delay the inspection.",
+        metin: "Pay the bribe; delay the inspection.",
         basariliSonuc: {
-          mesaj: "The inspection was delayed a year; the council member is in your pocket now.",
-          detay: "Some problems aren't solved with money, only postponed with it.",
+          mesaj: "Inspection postponed a year; the councilman is in your pocket.",
+          detay: "Some problems are only delayed by money.",
         },
         basarisizSonuc: {
-          mesaj: "Your bribery offer was refused and reported; your name entered an investigation file.",
-          detay: "Some gambles come back doubled when lost.",
+          mesaj: "The bribe was refused and reported; your name entered an investigation.",
+          detay: "A lost gamble returns doubled.",
         },
       },
       {
-        metin: "Allow the inspection, quickly 'fix up' the factory.",
+        metin: "Allow the inspection; quickly 'fix' the factory.",
         basariliSonuc: {
-          mesaj: "Last-minute cosmetic fixes got you through the inspection — by the skin of your teeth.",
-          detay: "Sometimes changing the appearance is easier than changing the truth.",
+          mesaj: "Last-minute cosmetics barely passed inspection.",
+          detay: "Changing appearances is easier than reality.",
         },
         basarisizSonuc: {
-          mesaj: "The inspection found serious violations; a fine and bad press awaited you.",
-          detay: "Cosmetic fixes don't escape a careful eye.",
+          mesaj: "Inspectors found serious violations; fines and bad press followed.",
+          detay: "Cosmetics don't fool a careful eye.",
         },
       },
     ],
@@ -524,28 +524,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_somurucu_gazeteci_arastirmasi: {
     baslik: "The Reporter on Your Trail",
     metin:
-      "A journalist is investigating the conditions at your factory; he's even spoken with your former workers. You could try to silence him or take the risk of the story going out.",
+      "A journalist is probing your factory and has even spoken to former workers. You can silence him or risk the story.",
     secenekler: [
       {
-        metin: "Have your lawyers silence the journalist with the threat of a lawsuit.",
+        metin: "Silence him with a lawsuit threat.",
         basariliSonuc: {
-          mesaj: "The journalist backed off; but the matter continues to be whispered about in small circles.",
-          detay: "Silencing one voice doesn't erase it entirely.",
+          mesaj: "The journalist backed off, but whispers persist.",
+          detay: "Silencing isn't erasing.",
         },
         basarisizSonuc: {
-          mesaj: "The threat itself became the story; 'the boss trying to censor' hit the headlines.",
-          detay: "Trying to suppress a voice sometimes turns it into a megaphone.",
+          mesaj: "The threat became the story; 'censoring boss' made headlines.",
+          detay: "A muffled voice can become a megaphone.",
         },
       },
       {
-        metin: "Ignore it, let the story come out.",
+        metin: "Ignore it; let the story run.",
         basariliSonuc: {
-          mesaj: "The story came out, it was talked about for a few weeks, then forgotten.",
-          detay: "Some storms pass fastest when you let them go without reacting.",
+          mesaj: "The story ran, was talked about for weeks, then forgotten.",
+          detay: "Non-reaction calms some storms.",
         },
         basarisizSonuc: {
-          mesaj: "The story caused a big stir; some customers stopped doing business with you.",
-          detay: "Some storms don't pass even if you ignore them.",
+          mesaj: "The story resonated; some customers cut ties.",
+          detay: "Some storms don't pass when ignored.",
         },
       },
     ],
@@ -553,28 +553,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_somurucu_vardiya_uzatma: {
     baslik: "Extending the Shift",
     metin:
-      "For a big order you're considering extending your workers' shifts with mandatory overtime — without extra pay.",
+      "For a big order, you consider extending shifts with forced overtime, unpaid.",
     secenekler: [
       {
-        metin: "Force the shifts longer, don't give extra pay.",
+        metin: "Force longer shifts, no extra pay.",
         basariliSonuc: {
-          mesaj: "The order was met on time; your workers' eyes are sunken, but you're profiting.",
-          detay: "Some victories are built on other people's exhaustion.",
+          mesaj: "The order shipped; workers look hollow-eyed, but you profit.",
+          detay: "Some wins are built on others' exhaustion.",
         },
         basarisizSonuc: {
-          mesaj: "A tired worker made a mistake, a whole batch of goods was damaged.",
-          detay: "People are not machines; forgetting that came at a cost.",
+          mesaj: "An exhausted worker erred; a whole batch was ruined.",
+          detay: "People aren't machines.",
         },
       },
       {
-        metin: "Pay a small extra for the overtime.",
+        metin: "Pay a small extra for overtime.",
         basariliSonuc: {
-          mesaj: "The workers are still tired, but at least somewhat satisfied.",
-          detay: "Even exploitation has its own degrees.",
+          mesaj: "Workers are tired but somewhat appeased.",
+          detay: "Exploitation has degrees too.",
         },
         basarisizSonuc: {
-          mesaj: "Despite the extra pay some workers slowed down; the order was delayed.",
-          detay: "A small gesture is sometimes not seen as enough.",
+          mesaj: "Despite the bonus, some slowed down; the order was late.",
+          detay: "A small gesture sometimes isn't enough.",
         },
       },
     ],
@@ -582,28 +582,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_somurucu_reform_baskisi: {
     baslik: "The Reformer's Pressure",
     metin:
-      "A reformist MP in parliament wants to legally limit working hours. Other industrialists are calling you to join their lobbying campaign.",
+      "A reformist MP wants to limit working hours by law. Other industrialists invite you to lobby.",
     secenekler: [
       {
-        metin: "Join the lobby, try to block the law.",
+        metin: "Join the lobby; block the law.",
         basariliSonuc: {
-          mesaj: "The lobbying campaign delayed the law for a while; among industrialists your name became 'a solid man'.",
-          detay: "Some victories are won in the shadow of a broad front.",
+          mesaj: "The law was delayed; among industrialists you're a solid man.",
+          detay: "Some wins come in a wide front's shadow.",
         },
         basarisizSonuc: {
-          mesaj: "The lobbying attempt leaked to the public; the reformer held you up as an example of bad intent.",
-          detay: "Some fights are lost more the more money you spend on them.",
+          mesaj: "The lobbying leaked; the reformer held you up as bad faith.",
+          detay: "Some fights are lost the more you spend.",
         },
       },
       {
-        metin: "Don't get involved, let the law take its own course.",
+        metin: "Stay out; let the law take its course.",
         basariliSonuc: {
-          mesaj: "The debate over the law continues, but you chose to stay on the sidelines.",
-          detay: "You don't have to join every fight.",
+          mesaj: "The debate goes on; you stayed on the sidelines.",
+          detay: "You needn't join every fight.",
         },
         basarisizSonuc: {
-          mesaj: "The law passed, working hours shortened; your production plans were thrown into disarray.",
-          detay: "Standing aside keeps you from influencing the outcome.",
+          mesaj: "The law passed, hours shrank; your production plans collapsed.",
+          detay: "Standing aside keeps you from shaping the outcome.",
         },
       },
     ],
@@ -611,28 +611,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_somurucu_kaza_ortbas: {
     baslik: "The Boiler Blew",
     metin:
-      "A steam boiler whose maintenance kept being postponed exploded; several workers were injured. You could quietly cover it up, or take responsibility and pay compensation.",
+      "A boiler with endlessly postponed maintenance exploded; some workers were hurt. You can cover it up or take responsibility and pay.",
     secenekler: [
       {
-        metin: "Cover up the incident, silence the officials.",
+        metin: "Cover it up; silence the officials.",
         basariliSonuc: {
-          mesaj: "The incident was covered up for now, but carrying this secret weighs heavily on you.",
-          detay: "Some secrets slowly consume the one carrying them too.",
+          mesaj: "The incident was buried, but carrying the secret weighs on you.",
+          detay: "Secrets slowly consume their keeper.",
         },
         basarisizSonuc: {
-          mesaj: "The cover-up attempt was exposed; the city started openly calling you 'the murderer boss'.",
-          detay: "Some truths surface no matter how deep they're buried.",
+          mesaj: "The cover-up came out; the city calls you the 'killer boss'.",
+          detay: "Truth surfaces however deep it is buried.",
         },
       },
       {
-        metin: "Take responsibility, pay compensation to the injured.",
+        metin: "Take responsibility; pay compensation.",
         basariliSonuc: {
-          mesaj: "You paid the compensation; your reputation took a hit but at least there's some peace in your conscience.",
-          detay: "Even on this path, some moments keep you from losing yourself completely.",
+          mesaj: "You paid; your name suffered, but your conscience eased a little.",
+          detay: "Some moments keep you from being wholly lost.",
         },
         basarisizSonuc: {
-          mesaj: "You paid the compensation but the boiler's lack of maintenance leaked to the press; your reputation took a hit anyway.",
-          detay: "Honesty isn't always a complete shield.",
+          mesaj: "You paid, but the neglect leaked; your name suffered anyway.",
+          detay: "Honesty isn't always a shield.",
         },
       },
     ],
@@ -640,28 +640,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_somurucu_isci_ayaklanmasi: {
     baslik: "Workers' Uprising",
     metin:
-      "Years of accumulated anger exploded; some of your workers stood at the factory gates, shouting their demands. You could call the gendarmerie to crush it, or sit down at the table.",
+      "Years of anger erupted; workers storm the gates shouting demands. You can crush it with gendarmes or sit down.",
     secenekler: [
       {
-        metin: "Call the gendarmerie, crush the uprising harshly.",
+        metin: "Call the gendarmes; crush the revolt.",
         basariliSonuc: {
-          mesaj: "The uprising was crushed, the factory is running again — but some workers will never forget.",
-          detay: "Silence bought with harshness comes back one day in another form.",
+          mesaj: "The revolt was crushed and work resumed; some will never forget.",
+          detay: "Silence won by force returns in another form.",
         },
         basarisizSonuc: {
-          mesaj: "The intervention turned violent, several people were injured; the incident stirred up the whole city.",
-          detay: "Some sparks grow the more you try to smother them.",
+          mesaj: "The crackdown turned violent, people were hurt; the city rose up.",
+          detay: "A suppressed spark grows.",
         },
       },
       {
-        metin: "Open the gate, listen to their demands.",
+        metin: "Open the gate; hear their demands.",
         basariliSonuc: {
-          mesaj: "You accepted some of their demands; the anger didn't fully die down but at least a door opened.",
-          detay: "Even a late apology is better than none at all.",
+          mesaj: "You granted some demands; anger lingers, but a door opened.",
+          detay: "A late apology beats none.",
         },
         basarisizSonuc: {
-          mesaj: "The negotiation didn't calm the anger; the workers said 'it's too late now'.",
-          detay: "Some losses of trust aren't repaired by a single conversation.",
+          mesaj: "Talks didn't calm them; workers said 'too late'.",
+          detay: "Lost trust isn't mended in one meeting.",
         },
       },
     ],
@@ -669,28 +669,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_somurucu_hesaplasma: {
     baslik: "The Reckoning of a Lifetime",
     metin:
-      "You're getting old; looking back you see not just the fortune you accumulated, but the anger you accumulated too. You're considering fixing something in your will.",
+      "You're aging; looking back, you see your fortune beside the anger you gathered. You think of making amends in your will.",
     secenekler: [
       {
-        metin: "Leave part of your fortune to your old workers/their families.",
+        metin: "Leave part of your fortune to former workers.",
         basariliSonuc: {
-          mesaj: "When word of your will spread, some old workers forgave you — not all, but some.",
-          detay: "Even a late redress is better than none at all.",
+          mesaj: "When the will was known, some former workers forgave you, not all.",
+          detay: "Late amends beat none.",
         },
         basarisizSonuc: {
-          mesaj: "The gesture wasn't well received; those saying 'it's too late now' were the majority.",
-          detay: "Some wounds aren't closed by any will.",
+          mesaj: "The gesture fell flat; most said 'too late'.",
+          detay: "No will closes some wounds.",
         },
       },
       {
-        metin: "Keep your fortune as is, leave the past behind.",
+        metin: "Keep your fortune; leave the past behind.",
         basariliSonuc: {
-          mesaj: "Your fortune stayed intact; but your nights are still full of those old faces.",
-          detay: "Some decisions, however sensible, don't bring peace.",
+          mesaj: "Your fortune is intact, but nights are still full of old faces.",
+          detay: "A sensible choice may bring no peace.",
         },
         basarisizSonuc: {
-          mesaj: "Before your death, an old accident came back up; your name was tarnished once more.",
-          detay: "The past can be waiting for you right where you thought you'd left it.",
+          mesaj: "Before your end an old accident resurfaced; your name was stained.",
+          detay: "The past waits where you left it behind.",
         },
       },
     ],
@@ -700,28 +700,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_spek_demiryolu_hissesi: {
     baslik: "Railway Frenzy",
     metin:
-      "Shares of the newly opened railway companies are on everyone's lips in the city. A broker whispers an 'inside' tip to you: a small line company is about to explode.",
+      "New railway shares are the talk of the city. A broker whispers an insider tip: a small line is ready to boom.",
     secenekler: [
       {
-        metin: "Invest most of your cash in the shares.",
+        metin: "Put most of your cash in shares.",
         basariliSonuc: {
-          mesaj: "The line company really did explode; your shares doubled in a week.",
-          detay: "Some gambles sit on the right side of history.",
+          mesaj: "The line boomed; your shares doubled in a week.",
+          detay: "Some gambles sit on history's right side.",
         },
         basarisizSonuc: {
-          mesaj: "The line company lost its funding, the shares became worthless.",
-          detay: "Not every whisper is worth its weight in gold.",
+          mesaj: "The line lost financing; the shares turned worthless.",
+          detay: "Not every whisper is gold.",
         },
       },
       {
-        metin: "Invest just a small amount, be cautious.",
+        metin: "Invest a little; stay cautious.",
         basariliSonuc: {
-          mesaj: "Your small investment brought a small but real profit.",
-          detay: "Even a cautious speculator is still a speculator.",
+          mesaj: "The small stake brought a small but real profit.",
+          detay: "A cautious speculator is still a speculator.",
         },
         basarisizSonuc: {
-          mesaj: "Your small investment melted away too, but at least it wasn't ruin.",
-          detay: "Small losses are the cheap price of big lessons.",
+          mesaj: "The small stake melted too, but it was no ruin.",
+          detay: "A small loss is the cheap price of a big lesson.",
         },
       },
     ],
@@ -729,28 +729,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_spek_doviz_arbitraji: {
     baslik: "The Exchange Gap",
     metin:
-      "You've discovered a small gap in the currency exchange rates between two cities. You could benefit from this gap by quickly buying and selling large amounts of goods — but the market could close fast.",
+      "You found a small exchange-rate gap between two cities. Fast, large trades could exploit it, but the market may close quickly.",
     secenekler: [
       {
         metin: "Make a big arbitrage move.",
         basariliSonuc: {
-          mesaj: "You completed the trade before the gap closed; the net profit went into your pocket.",
-          detay: "Some opportunities only open for the fast.",
+          mesaj: "You finished before the gap closed; net profit pocketed.",
+          detay: "Some chances open only to the quick.",
         },
         basarisizSonuc: {
-          mesaj: "The exchange gap closed before you; you left the table with a big loss.",
-          detay: "The market taught you to wait — an expensive lesson.",
+          mesaj: "The gap closed before you; you left with a heavy loss.",
+          detay: "An expensive lesson in waiting.",
         },
       },
       {
-        metin: "Observe the opportunity, don't act.",
+        metin: "Watch the chance; don't move.",
         basariliSonuc: {
-          mesaj: "You missed the opportunity, but at least your capital stayed whole.",
-          detay: "Sometimes the best move is no move — a speculator rarely accepts that.",
+          mesaj: "You missed it, but your capital is whole.",
+          detay: "Sometimes the best move is none.",
         },
         basarisizSonuc: {
-          mesaj: "Realizing you missed the opportunity filled you with regret.",
-          detay: "A gambler's soul is disturbed even by an empty table.",
+          mesaj: "Realizing the missed chance, regret filled you.",
+          detay: "A gambler's soul frets even at an empty table.",
         },
       },
     ],
@@ -758,28 +758,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_spek_icerden_bilgi: {
     baslik: "A Secret Overheard",
     metin:
-      "A bank clerk, drunk, let slip a government decision to be announced tomorrow. You could take a position ahead of time with this information — illegal but tempting.",
+      "A drunk bank clerk let slip tomorrow's government decision. You could take a position early: illegal, but tempting.",
     secenekler: [
       {
-        metin: "Use the information, quickly take a large position.",
+        metin: "Use the tip; take a big position.",
         basariliSonuc: {
-          mesaj: "When the decision was announced your position brought a big profit; no one suspected, for now.",
-          detay: "Some gains carry a quietly growing risk behind them.",
+          mesaj: "The decision broke and you profited big; no one suspects, for now.",
+          detay: "Some gains carry a silent risk.",
         },
         basarisizSonuc: {
-          mesaj: "Your move drew attention; the exchange commissioners started examining your trades.",
-          detay: "A dirty secret sometimes drags you into a dirty investigation.",
+          mesaj: "Your move drew attention; exchange commissioners are examining your trades.",
+          detay: "A dirty secret invites a dirty inquiry.",
         },
       },
       {
-        metin: "Don't use the information, stay clean.",
+        metin: "Don't use it; stay clean.",
         basariliSonuc: {
-          mesaj: "You missed the opportunity, but at least you didn't stay a step ahead of the law.",
-          detay: "Even some speculators know how to draw a line.",
+          mesaj: "You missed the chance, but didn't cross the law.",
+          detay: "Even speculators know where to draw a line.",
         },
         basarisizSonuc: {
-          mesaj: "Others made fortunes with that information; you suffered the pain of being left on the sidelines.",
-          detay: "Doing the right thing is sometimes a reward only unto itself.",
+          mesaj: "Others made fortunes on it; you felt the sting of standing aside.",
+          detay: "Doing right is sometimes its own reward.",
         },
       },
     ],
@@ -787,28 +787,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_spek_banka_paniginde: {
     baslik: "Bank Panic",
     metin:
-      "A bank in the city collapsed, panic is spreading; everyone is rushing to withdraw their deposits. You have two paths: withdraw your own money immediately, or gather cheap assets from the panic selling.",
+      "A city bank collapsed and panic spreads; everyone rushes to withdraw. Pull your own money out, or buy cheap assets from panic sales.",
     secenekler: [
       {
-        metin: "Take advantage of the panic, gather assets going cheap.",
+        metin: "Exploit the panic; collect cheap assets.",
         basariliSonuc: {
-          mesaj: "When the panic subsided, the assets you bought cheap reached three times their value.",
-          detay: "Buying where blood runs in the streets is the work of the coldest-blooded speculators.",
+          mesaj: "When the panic eased, your cheap buys tripled in value.",
+          detay: "Buying amid blood takes a cool head.",
         },
         basarisizSonuc: {
-          mesaj: "The crisis went deeper than you expected; the assets you bought also became worthless.",
-          detay: "Sometimes what you think is the bottom is just a step before the next bottom.",
+          mesaj: "The crisis ran deeper than expected; your buys lost value too.",
+          detay: "The 'bottom' may be a step to the next one.",
         },
       },
       {
-        metin: "Withdraw your own money, secure it.",
+        metin: "Withdraw your money; secure it.",
         basariliSonuc: {
-          mesaj: "You withdrew your money in time; you were safe while the panic grew.",
-          detay: "Some victories are simply about surviving.",
+          mesaj: "You withdrew in time; safe while panic grew.",
+          detay: "Some victories are mere survival.",
         },
         basarisizSonuc: {
-          mesaj: "You waited in the crowd, made it just before the bank shut its doors — but with a small loss.",
-          detay: "In a moment of panic, everyone rushes to the same door.",
+          mesaj: "After queuing you made it before the doors closed, at a small loss.",
+          detay: "In panic, everyone rushes the same door.",
         },
       },
     ],
@@ -816,28 +816,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_spek_rakibe_karsi_bahis: {
     baslik: "Betting Against a Rival",
     metin:
-      "You think {rakip}'s company will collapse soon. You could take a big 'short-selling' position against his shares — if you win, both of you will know it was your doing.",
+      "You think {rakip}'s firm will soon sink. You could short its shares heavily; if you win, you both know it was your doing.",
     secenekler: [
       {
-        metin: "Take a large short-selling position.",
+        metin: "Take a big short position.",
         basariliSonuc: {
-          mesaj: "Your prediction proved right; {rakip} collapsed, you walked away with profit.",
-          detay: "Some victories are built on someone else's ruin.",
+          mesaj: "Your call was right; {rakip} fell and you profited.",
+          detay: "Some wins are built on another's ruin.",
         },
         basarisizSonuc: {
-          mesaj: "{rakip} made an unexpected recovery; your position closed with a big loss.",
-          detay: "Betting against someone sometimes means betting against yourself.",
+          mesaj: "{rakip} rebounded unexpectedly; your position closed at a big loss.",
+          detay: "Betting against others can backfire.",
         },
       },
       {
-        metin: "Don't take the risk, focus on your normal trade.",
+        metin: "Skip the risk; stick to normal trade.",
         basariliSonuc: {
-          mesaj: "You focused on your normal business; you don't regret not gambling.",
-          detay: "Some opportunities deserve to be missed.",
+          mesaj: "You focused on business; no regrets about not gambling.",
+          detay: "Some chances deserve to be missed.",
         },
         basarisizSonuc: {
-          mesaj: "{rakip} really did go bankrupt; you realized the size of the opportunity you missed.",
-          detay: "Avoiding risk sometimes carries a cost too — the pain of a missed opportunity.",
+          mesaj: "{rakip} really sank; you saw how big the missed chance was.",
+          detay: "Avoiding risk has a price too.",
         },
       },
     ],
@@ -845,27 +845,27 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_spek_kolonyal_emtia: {
     baslik: "Colonial Commodity",
     metin:
-      "You've received intelligence that cotton prices from a distant colony are about to soar due to a short-term harvest shortage. You could sign a big futures contract.",
+      "You hear that cotton from a distant colony will spike on a short harvest shortage. You could sign a large forward contract.",
     secenekler: [
       {
-        metin: "Enter into the large futures contract.",
+        metin: "Sign the large forward contract.",
         basariliSonuc: {
-          mesaj: "The shortage happened, prices soared; your contract turned into a small fortune.",
-          detay: "Sometimes a harvest on the other side of the world decides the fortune in your own city.",
+          mesaj: "The shortage hit, prices soared; your contract became a small fortune.",
+          detay: "A harvest across the world sets your fortune.",
         },
         basarisizSonuc: {
-          mesaj: "The harvest turned out better than expected, prices fell; your contract took a big loss.",
-          detay: "An overseas gamble is, more often than not, outside your control.",
+          mesaj: "The harvest was good, prices fell; the contract lost heavily.",
+          detay: "An overseas gamble is beyond your control.",
         },
       },
       {
         metin: "Take a small, balanced position.",
         basariliSonuc: {
-          mesaj: "Your small position brought a modest profit.",
-          detay: "Even a disciplined speculator wins sometimes.",
+          mesaj: "The small position earned a modest profit.",
+          detay: "Disciplined speculators win too.",
         },
         basarisizSonuc: {
-          mesaj: "Your small position closed with a small loss.",
+          mesaj: "The small position closed at a small loss.",
           detay: "Measured gambles bring measured losses.",
         },
       },
@@ -874,28 +874,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_spek_kabarcik_patliyor: {
     baslik: "The Bubble Bursts",
     metin:
-      "A railway stock bubble that had been inflating for years collapsed overnight. Your entire fortune is tied up in these shares; now you either have to sell and salvage what you can, or wait for a recovery.",
+      "The railway share bubble, swelling for years, burst overnight. Your fortune is tied up in it: sell now and salvage, or wait for a rebound.",
     secenekler: [
       {
-        metin: "Sell immediately, salvage what you can.",
+        metin: "Sell now; salvage what you can.",
         basariliSonuc: {
-          mesaj: "You sold early; you lost a large part of it but you weren't wiped out entirely.",
-          detay: "Some victories are just about surviving.",
+          mesaj: "You sold early; lost most, but not everything.",
+          detay: "Some victories are mere survival.",
         },
         basarisizSonuc: {
-          mesaj: "The line to sell was too long; by the time it was your turn the price was already near zero.",
-          detay: "In a moment of panic, everyone rushes to the same door, and the door isn't enough for everyone.",
+          mesaj: "The queue to sell was long; by your turn the price was near zero.",
+          detay: "The door doesn't fit everyone.",
         },
       },
       {
-        metin: "Wait for a recovery, hold on to the shares.",
+        metin: "Wait for a rebound; hold the shares.",
         basariliSonuc: {
-          mesaj: "Unexpectedly, the market recovered within the year; your shares regained their value.",
-          detay: "Some waits get rewarded even though they seem impossible.",
+          mesaj: "The market recovered within the year; your shares regained value.",
+          detay: "Seemingly hopeless waiting can pay off.",
         },
         basarisizSonuc: {
-          mesaj: "The bubble never reinflated; the shares became worthless entirely, most of your fortune vanished into thin air.",
-          detay: "Some gambles aren't won even with patience.",
+          mesaj: "The bubble never reinflated; shares turned worthless, your fortune evaporated.",
+          detay: "Some gambles aren't won even by patience.",
         },
       },
     ],
@@ -903,28 +903,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_spek_yeniden_kurma: {
     baslik: "Rising From the Ashes",
     metin:
-      "You lost most of your fortune once again. You could try building from scratch again, this time more cautiously — or go back to your old, more careful profession.",
+      "You lost most of your fortune again. You could rebuild from zero, more carefully, or return to the old cautious trade.",
     secenekler: [
       {
-        metin: "Throw yourself into risky trade again, make up for the loss.",
+        metin: "Dive back into risky trade; recoup the loss.",
         basariliSonuc: {
-          mesaj: "A new series of moves worked out; you made up for part of your losses.",
-          detay: "Some souls want to come back all the more, the more they lose.",
+          mesaj: "A new run of moves worked; you recouped part of your losses.",
+          detay: "A losing spirit wants to return.",
         },
         basarisizSonuc: {
-          mesaj: "The new venture didn't work out either; the hole got a little deeper.",
-          detay: "Walking through the same fire twice burns harder the second time.",
+          mesaj: "The new venture failed too; the hole deepened.",
+          detay: "The same fire burns worse the second time.",
         },
       },
       {
         metin: "Return to careful, ordinary trade.",
         basariliSonuc: {
           mesaj: "Ordinary trade brought a slow but solid recovery.",
-          detay: "Sometimes the greatest maturity is choosing calm after the fire.",
+          detay: "Calm after the fire is maturity.",
         },
         basarisizSonuc: {
-          mesaj: "The recovery went slower than you hoped, but at least the hole didn't deepen.",
-          detay: "Patience sometimes only manages to stop the losses.",
+          mesaj: "Recovery was slow, but the hole didn't deepen.",
+          detay: "Patience sometimes only stops the losses.",
         },
       },
     ],
@@ -932,28 +932,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_spek_komisyoncu_ortakligi: {
     baslik: "Broker Partnership",
     metin:
-      "The boldest stock broker in the city offers you a partnership: combine your capital to take bigger, riskier positions. Profit and loss both double.",
+      "The city's boldest broker proposes a partnership: pool capital for bigger, riskier positions. Profit and loss both double.",
     secenekler: [
       {
         metin: "Accept the partnership.",
         basariliSonuc: {
-          mesaj: "The partnership paid off nicely in its first year; the two of you are known in the city as 'the bold pair'.",
-          detay: "Some partnerships grow through two gamblers emboldening each other.",
+          mesaj: "The partnership paid well in year one; you're the city's 'bold duo'.",
+          detay: "Two gamblers embolden each other.",
         },
         basarisizSonuc: {
-          mesaj: "Your shared positions collapsed together; the partnership broke apart in a bitter argument.",
-          detay: "Shared risk sometimes turns into shared regret.",
+          mesaj: "The positions sank together; the partnership ended in bitter quarrel.",
+          detay: "Shared risk turns into shared regret.",
         },
       },
       {
         metin: "Refuse, keep working alone.",
         basariliSonuc: {
-          mesaj: "You stayed independent; your gain is smaller but entirely your own.",
-          detay: "Even some speculators avoid the dependency that comes with partnership.",
+          mesaj: "You stayed independent; smaller gains, wholly yours.",
+          detay: "Some avoid a partnership's dependence.",
         },
         basarisizSonuc: {
-          mesaj: "The broker partnered with someone else and they made big gains; watching the missed opportunity wore on you.",
-          detay: "Sometimes even the right decision hurts when you see the opportunity slip away before your eyes.",
+          mesaj: "The broker partnered with another and won big; the missed chance wore on you.",
+          detay: "Even a right choice stings beside a missed chance.",
         },
       },
     ],
@@ -961,28 +961,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_spek_sigorta_kumari: {
     baslik: "The Marine Insurance Gamble",
     metin:
-      "You've received an offer to join a consortium insuring a risky sea voyage: if the ship arrives safely the premium stays in your pocket, if it sinks you pay a huge compensation.",
+      "You're offered a place in a consortium insuring a risky voyage: if the ship arrives the premium is yours, if it sinks you pay heavily.",
     secenekler: [
       {
-        metin: "Join the consortium, take the premium.",
+        metin: "Join the consortium; take the premium.",
         basariliSonuc: {
-          mesaj: "The ship weathered the storm and reached port; the premium stayed entirely yours.",
-          detay: "Some gambles are betting on a captain's skill.",
+          mesaj: "The ship weathered the storm and reached port; the premium is yours.",
+          detay: "This gamble bets on a captain's skill.",
         },
         basarisizSonuc: {
-          mesaj: "The ship sank in a storm; paying the compensation burned your pocket badly.",
-          detay: "The sea makes no promises to any insurer.",
+          mesaj: "The ship sank in a storm; the payout burned you badly.",
+          detay: "The sea promises no insurer anything.",
         },
       },
       {
-        metin: "Refuse the offer, protect your capital.",
+        metin: "Decline; protect your capital.",
         basariliSonuc: {
-          mesaj: "You didn't join; the ship sank, and you were relieved you refused.",
+          mesaj: "You stayed out; the ship sank and you were relieved.",
           detay: "Sometimes avoidance is the best gamble.",
         },
         basarisizSonuc: {
-          mesaj: "The ship arrived safely and the consortium earned a lot; the premium you missed upset you.",
-          detay: "Avoiding risk sometimes comes with a regret too.",
+          mesaj: "The ship arrived safe and the consortium won; the missed premium stung.",
+          detay: "Avoiding risk can bring regret too.",
         },
       },
     ],
@@ -990,28 +990,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_spek_efsanevi_servet: {
     baslik: "One Last Big Gamble",
     metin:
-      "You're getting old; maybe it's time for the last big gamble of your career. You could put your entire savings into one massive railway-coal monopoly venture, or retire cautiously.",
+      "You're aging; perhaps it's time for one last great gamble. Stake everything on a railway-coal monopoly venture, or retire cautiously.",
     secenekler: [
       {
-        metin: "Play the last big gamble, put everything on the line.",
+        metin: "Play the last gamble; stake everything.",
         basariliSonuc: {
-          mesaj: "The venture turned into a massive success; your name will be spoken of for years as 'the man who won that last big gamble'.",
-          detay: "Some lives turn into legend with a single bold move.",
+          mesaj: "The venture was a triumph; you'll be 'the man who won the last gamble'.",
+          detay: "One bold move makes a legend.",
         },
         basarisizSonuc: {
-          mesaj: "The venture collapsed; most of the fortune you built over a lifetime melted away overnight.",
-          detay: "A gambler's soul can't help playing the last card — sometimes that's the most expensive lesson.",
+          mesaj: "The venture collapsed; most of your lifetime fortune melted overnight.",
+          detay: "A gambler can't stop before the last card.",
         },
       },
       {
-        metin: "Give up gambling, move to a cautious retirement.",
+        metin: "Quit gambling; retire cautiously.",
         basariliSonuc: {
-          mesaj: "You decided to spend your last years in peace; your fortune is safe, your sleep is calm.",
-          detay: "Some gamblers show their greatest maturity by refusing the last gamble.",
+          mesaj: "You'll spend your last years in peace; fortune safe, sleep easy.",
+          detay: "Refusing the last gamble is maturity.",
         },
         basarisizSonuc: {
-          mesaj: "You retired, but reading about that monopoly you missed in the paper filled you with sorrow.",
-          detay: "Some 'what ifs' don't let go until you die.",
+          mesaj: "You retired, but reading of the monopoly you missed saddened you.",
+          detay: "Some 'what ifs' haunt you till death.",
         },
       },
     ],
@@ -1021,28 +1021,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_hayir_hastane_bagisi: {
     baslik: "City Hospital",
     metin:
-      "The city's only hospital is falling short; big donors are being sought to build a new wing. You're offered to have your name given to a hospital wing.",
+      "The city's only hospital falls short; big donors are sought for a new wing, to bear your name.",
     secenekler: [
       {
-        metin: "Make the large donation.",
+        metin: "Make the big donation.",
         basariliSonuc: {
-          mesaj: "When the new wing opened, your name was written on its door; the city will remember you for years.",
-          detay: "Some names become immortal by being carved into stone.",
+          mesaj: "The wing opened with your name on its door; the city will remember you.",
+          detay: "Names live on carved in stone.",
         },
         basarisizSonuc: {
-          mesaj: "The donation was made but construction was delayed; for now it remained only a pledge.",
-          detay: "Good deeds sometimes require patience.",
+          mesaj: "You donated, but construction lagged; it's only a pledge for now.",
+          detay: "Goodness requires patience.",
         },
       },
       {
-        metin: "Make a small, measured donation.",
+        metin: "Make a small, modest donation.",
         basariliSonuc: {
-          mesaj: "Your donation was small but received sincerely.",
-          detay: "Every drop makes the ocean bigger.",
+          mesaj: "Your gift was small but warmly received.",
+          detay: "Every drop swells the sea.",
         },
         basarisizSonuc: {
-          mesaj: "Your donation made no difference, the hospital is still struggling.",
-          detay: "Sometimes small kindnesses stay dim beside a great need.",
+          mesaj: "The gift changed nothing; the hospital still struggles.",
+          detay: "Small kindness pales beside great need.",
         },
       },
     ],
@@ -1050,28 +1050,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_hayir_okul_kurma: {
     baslik: "Free School",
     metin:
-      "Most of the children in the poor neighborhoods never go to school at all. You're considering founding a free school with your own money — a big investment, but a legacy that would last for years.",
+      "Most children in poor districts never attend school. You consider founding a free school with your money: a big investment, a lasting legacy.",
     secenekler: [
       {
-        metin: "Build the school, pay the teachers yourself.",
+        metin: "Found the school; pay the teachers.",
         basariliSonuc: {
-          mesaj: "When the school's first graduates came out, the city started calling you 'the father of education'.",
-          detay: "Investing in a child's future is the most lasting capital there is.",
+          mesaj: "When the first graduates came out, the city called you 'father of education'.",
+          detay: "A child's future is the most lasting capital.",
         },
         basarisizSonuc: {
-          mesaj: "The school opened but not enough teachers could be found; the start was rocky.",
-          detay: "Big dreams sometimes move forward in small steps.",
+          mesaj: "The school opened but teachers were scarce; the start was painful.",
+          detay: "Big dreams advance in small steps.",
         },
       },
       {
-        metin: "Donate to an existing school instead of founding your own.",
+        metin: "Donate to an existing school.",
         basariliSonuc: {
-          mesaj: "Your donation increased the existing school's capacity; a quiet but real contribution.",
-          detay: "Not every contribution has to become a story.",
+          mesaj: "The gift raised the school's capacity: a quiet but real contribution.",
+          detay: "Not every gift has to be a story.",
         },
         basarisizSonuc: {
-          mesaj: "The donation went to administrative expenses, its direct impact was small.",
-          detay: "Good intentions sometimes get caught up in bureaucracy.",
+          mesaj: "The gift went to admin costs; its effect was small.",
+          detay: "Good intent snags on bureaucracy.",
         },
       },
     ],
@@ -1079,27 +1079,27 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_hayir_muhendis_mentorlugu: {
     baslik: "The Young Inventor",
     metin:
-      "A poor young man came to your door with the prototype of a machine he designed himself; he has no money, only an idea. You could support him.",
+      "A poor youth comes to your door with a prototype he designed; no money, only an idea. You could back him.",
     secenekler: [
       {
-        metin: "Give the young inventor capital and workshop support.",
+        metin: "Give the inventor capital and a workshop.",
         basariliSonuc: {
-          mesaj: "The machine worked; the two of you patented it together, the gain was enough for both.",
-          detay: "Some investments fill both your pocket and your heart.",
+          mesaj: "The machine worked; you patented it together, and the profit sufficed for both.",
+          detay: "Some investments fill both pocket and heart.",
         },
         basarisizSonuc: {
-          mesaj: "The machine didn't quite work, but the young inventor found the courage to keep trying.",
-          detay: "Every failed attempt is the seed of the next discovery.",
+          mesaj: "The machine didn't fully work, but the youth found courage to keep trying.",
+          detay: "Every failed try seeds a discovery.",
         },
       },
       {
-        metin: "Give a small gift, let him go on his way.",
+        metin: "Give a small gift; send him on his way.",
         basariliSonuc: {
-          mesaj: "The small gift meant a great deal in the young man's eyes.",
-          detay: "Sometimes a handful of money changes a life.",
+          mesaj: "The small gift meant a great deal to the youth.",
+          detay: "A handful of coins can change a life.",
         },
         basarisizSonuc: {
-          mesaj: "The young inventor got a less fortunate response at another door; you never learned how it ended.",
+          mesaj: "The youth met a poor answer at another door; you never learned how it ended.",
           detay: "Some stories stay unfinished.",
         },
       },
@@ -1108,28 +1108,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_hayir_hissedar_baskisi: {
     baslik: "Shareholder Pressure",
     metin:
-      "Your business partners say your donations are eating into the profit margin; either you'll cut back on your charity work or bear the pressure they're putting on you.",
+      "Your partners say your donations eat the profit margin: cut your charity, or stand up to their pressure.",
     secenekler: [
       {
-        metin: "Continue the charity work, resist the shareholders.",
+        metin: "Keep giving; resist the shareholders.",
         basariliSonuc: {
-          mesaj: "Your stance angered some partners, but your standing in the public eye rose.",
-          detay: "Some principles are worth more than a partnership.",
+          mesaj: "Some partners were angry, but the public respects you more.",
+          detay: "Some principles outweigh partnership.",
         },
         basarisizSonuc: {
-          mesaj: "One of your partners withdrew his shares; the company experienced a temporary capital shortage.",
+          mesaj: "A partner withdrew his stake; the firm had a brief capital squeeze.",
           detay: "Principles sometimes have a price.",
         },
       },
       {
-        metin: "Cut the charity budget, appease your partners.",
+        metin: "Trim the charity budget; placate the partners.",
         basariliSonuc: {
-          mesaj: "The partnership was appeased, but as your donations shrank a discontent settled inside you.",
-          detay: "Some compromises cost you something even when you come out ahead.",
+          mesaj: "The partnership calmed, but shrunken gifts leave you uneasy.",
+          detay: "Every compromise costs something.",
         },
         basarisizSonuc: {
-          mesaj: "News of the cuts leaked; you were criticized as 'the philanthropist who gave up his principles'.",
-          detay: "Reputation sometimes shakes the moment you lose your consistency.",
+          mesaj: "The cut leaked; you were attacked as a philanthropist who dropped his principles.",
+          detay: "Reputation shakes when consistency is lost.",
         },
       },
     ],
@@ -1137,28 +1137,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_hayir_bilimsel_destek: {
     baslik: "The Scientist's Request",
     metin:
-      "A local scientist is seeking funding for his experiments; no one believes in him but his findings sound interesting. He comes to you because you're known as 'the risk-taking donor'.",
+      "A local scientist seeks funds for his experiments; no one believes in him, but his findings intrigue. He came to you, the risk-taking donor.",
     secenekler: [
       {
         metin: "Fund the research.",
         basariliSonuc: {
-          mesaj: "The scientist's discovery turned into a new method used in industry; your name is spoken of along with the invention.",
-          detay: "Some investments are about buying the future today.",
+          mesaj: "The discovery became a new industrial method; your name is tied to it.",
+          detay: "Some investments buy the future today.",
         },
         basarisizSonuc: {
-          mesaj: "The research came to nothing; the money is gone but the scientist's gratitude remains.",
-          detay: "Not every scientific effort ends in a discovery.",
+          mesaj: "The research failed; the money is gone, the scientist's gratitude remains.",
+          detay: "Not every effort ends in discovery.",
         },
       },
       {
-        metin: "Give a small symbolic support, don't take the risk.",
+        metin: "Give small symbolic support; avoid risk.",
         basariliSonuc: {
-          mesaj: "Your small support still gave the scientist's work a bit of breathing room.",
-          detay: "Even a small contribution sometimes keeps a door ajar.",
+          mesaj: "The small support still gave his work some breathing room.",
+          detay: "A small gift keeps a door ajar.",
         },
         basarisizSonuc: {
-          mesaj: "The support wasn't enough, the research kept looking for another donor.",
-          detay: "Some dreams don't wait for just one hand.",
+          mesaj: "The support fell short; the research kept seeking another donor.",
+          detay: "Some dreams don't wait on a single hand.",
         },
       },
     ],
@@ -1166,28 +1166,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_hayir_kitliktan_koruma: {
     baslik: "Famine-Time Soup Kitchen",
     metin:
-      "A bad harvest season struck the city; hunger has begun in the poor neighborhoods. You could open a soup kitchen from your own storehouse, or stay quiet to protect your business.",
+      "A bad harvest hit the city; hunger started in poor districts. Open a soup kitchen from your granary, or stay silent to protect your business.",
     secenekler: [
       {
-        metin: "Open a soup kitchen, distribute provisions from your storehouse.",
+        metin: "Open a soup kitchen from your granary.",
         basariliSonuc: {
-          mesaj: "Hundreds of people fed at the soup kitchen; the city remembers you like a hero.",
-          detay: "Some kindnesses become immortal in the memory of a winter.",
+          mesaj: "Hundreds were fed; the city remembers you as a hero.",
+          detay: "Some kindness lives in a winter's memory.",
         },
         basarisizSonuc: {
-          mesaj: "The provisions weren't enough for the famine, but it was far better than doing nothing at all.",
-          detay: "Sometimes doing what you can is meaningful even if it isn't enough.",
+          mesaj: "The grain didn't cover the famine, but beat doing nothing.",
+          detay: "Doing your best means something even if it falls short.",
         },
       },
       {
-        metin: "Stay quiet, protect your own business.",
+        metin: "Stay silent; protect your business.",
         basariliSonuc: {
-          mesaj: "Your business stayed safe but ignoring the famine unsettled you.",
-          detay: "For a charitable heart, some silences are the loudest regret.",
+          mesaj: "Your business is safe, but ignoring the famine troubles you.",
+          detay: "Some silences are the loudest regret.",
         },
         basarisizSonuc: {
-          mesaj: "Your silence was noticed; people started saying 'the philanthropist who vanished in hard times'.",
-          detay: "An image is tested most in the moment it's needed most.",
+          mesaj: "Your silence was noticed; you're now the philanthropist who vanishes in hard times.",
+          detay: "An image is tested when need is greatest.",
         },
       },
     ],
@@ -1195,28 +1195,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_hayir_kraliyet_nisani: {
     baslik: "An Offer of Honors",
     metin:
-      "Word of your years of charity has reached the palace; you're offered an official honor/title. Accepting opens the door to a grand ceremony, and afterward to social expectations.",
+      "Your charity reached the palace; you're offered an official decoration. Accepting means a grand ceremony and social expectations.",
     secenekler: [
       {
         metin: "Accept the honor, make the ceremony grand.",
         basariliSonuc: {
-          mesaj: "The ceremony became the talk of the city; your name is now recorded officially with charity too.",
-          detay: "Some titles also bring expectations that last for years.",
+          mesaj: "The ceremony was the talk of the city; official records now cite your charity.",
+          detay: "Titles bring expectations too.",
         },
         basarisizSonuc: {
-          mesaj: "The ceremony was modest but the title still went into the record.",
-          detay: "Not every honor needs to be crowned with a grand ceremony.",
+          mesaj: "The ceremony was plain, but the title was recorded.",
+          detay: "Not every honor needs a grand crown.",
         },
       },
       {
-        metin: "Stay humble, politely refuse the honor.",
+        metin: "Stay humble; politely decline.",
         basariliSonuc: {
-          mesaj: "You said 'what I've done is its own reward'; this attitude made the public love you even more.",
-          detay: "Some people earn a bigger title by refusing one.",
+          mesaj: "'My deeds are their own reward,' you said; the people loved you more.",
+          detay: "Refusing a title can earn a greater one.",
         },
         basarisizSonuc: {
-          mesaj: "Your refusal created mild disappointment at the palace, but the public still appreciated you.",
-          detay: "Not every humility is received where it's expected.",
+          mesaj: "Your refusal slightly disappointed the palace, but the people applauded.",
+          detay: "Not all humility is rewarded where expected.",
         },
       },
     ],
@@ -1224,28 +1224,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_hayir_deprem_yardimi: {
     baslik: "The Neighboring City's Disaster",
     metin:
-      "A great fire disaster struck a neighboring city; hundreds of families are left homeless. You could organize a relief caravan from your own city.",
+      "A great fire hit a neighboring city; hundreds of families are homeless. You could organize a relief caravan.",
     secenekler: [
       {
-        metin: "Organize the caravan, add your own supplies too.",
+        metin: "Organize the caravan; add your own supplies.",
         basariliSonuc: {
-          mesaj: "When the caravan reached the neighboring city, the people welcomed you in tears.",
-          detay: "Some kindnesses cross city borders and turn into a legend.",
+          mesaj: "When the caravan arrived, people greeted you in tears.",
+          detay: "Some kindness crosses borders into legend.",
         },
         basarisizSonuc: {
-          mesaj: "The caravan was delayed on the road, the aid arrived late but still made a difference.",
+          mesaj: "The caravan was delayed; aid came late but still helped.",
           detay: "Your intent is valuable regardless of timing.",
         },
       },
       {
-        metin: "Send a small cash donation, don't join the caravan.",
+        metin: "Send a small cash donation.",
         basariliSonuc: {
-          mesaj: "Your donation was sent; it wasn't a grand gesture but it was a real contribution.",
-          detay: "Not every contribution requires a caravan.",
+          mesaj: "The donation went out: no grand gesture, but a real help.",
+          detay: "Not every gift needs a caravan.",
         },
         basarisizSonuc: {
-          mesaj: "Your donation got lost among thousands of others, no one noticed.",
-          detay: "Some kindnesses are done quietly and unnoticed — that too is a kind of value.",
+          mesaj: "The donation was lost among thousands; no one noticed.",
+          detay: "Unnoticed kindness has value too.",
         },
       },
     ],
@@ -1253,28 +1253,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_hayir_sanat_koruyuculugu: {
     baslik: "Patronage of the Arts",
     metin:
-      "A poor painter can't paint because he can't afford canvas and paint. You could give him a studio and a regular salary, letting him continue his art.",
+      "A poor painter can't afford canvas and paint. You could give him a studio and a regular wage.",
     secenekler: [
       {
-        metin: "Give the painter a studio and a salary.",
+        metin: "Give the painter a studio and wage.",
         basariliSonuc: {
-          mesaj: "The painter's works became known in the city; some paintings entered your own collection, their value multiplied.",
-          detay: "An investment in art sometimes turns out to be not only beautiful, but profitable too.",
+          mesaj: "His work became known; some paintings joined your collection and rose in value.",
+          detay: "Art can be beautiful and profitable.",
         },
         basarisizSonuc: {
-          mesaj: "The painter's style wasn't well received but at least he could keep making art.",
-          detay: "Not every patronage ends in a masterpiece.",
+          mesaj: "His style wasn't liked, but he kept his art alive.",
+          detay: "Not every patronage yields a masterpiece.",
         },
       },
       {
         metin: "Give a one-time small gift.",
         basariliSonuc: {
-          mesaj: "Your small help kept the painter afloat for a few months.",
-          detay: "Sometimes a small gesture means postponing a great promise.",
+          mesaj: "The small aid kept the painter afloat a few months.",
+          detay: "A small gesture postpones a great promise.",
         },
         basarisizSonuc: {
-          mesaj: "The help wasn't enough, the painter eventually had to give up his art.",
-          detay: "Some dreams fade without finding enough support.",
+          mesaj: "The aid fell short; the painter had to give up art.",
+          detay: "Some dreams fade without support.",
         },
       },
     ],
@@ -1282,28 +1282,28 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_hayir_miras_vakfi: {
     baslik: "A Lasting Foundation",
     metin:
-      "You're getting old; you're considering founding a lasting foundation that will continue after your death — a structure devoting part of your fortune to charity forever.",
+      "You're aging; you consider founding a lasting trust that devotes part of your fortune to charity forever.",
     secenekler: [
       {
-        metin: "Found a large foundation, set aside a significant part of your fortune.",
+        metin: "Found a large trust; set aside much of your fortune.",
         basariliSonuc: {
-          mesaj: "Your foundation was established; it will reach those in need for generations after you.",
-          detay: "Some names keep doing good even after their owner has died.",
+          mesaj: "The trust was founded; it will reach the needy for generations.",
+          detay: "Some names keep doing good after death.",
         },
         basarisizSonuc: {
-          mesaj: "The foundation was established but its management turned out weak; it couldn't show the expected impact in its early years.",
-          detay: "A good intention can remain unfinished without good management.",
+          mesaj: "The trust was founded but weakly managed; its early years had little effect.",
+          detay: "Good intent falls short with poor management.",
         },
       },
       {
-        metin: "Leave your fortune to your family, make do with small donations.",
+        metin: "Leave your fortune to family; give small gifts.",
         basariliSonuc: {
-          mesaj: "Your family is secure; your charity continues, even at a small scale.",
-          detay: "Not every legacy has to be a great foundation.",
+          mesaj: "Your family is secure; your charity continues on a small scale.",
+          detay: "Not every legacy must be a trust.",
         },
         basarisizSonuc: {
-          mesaj: "After your death your family consumed part of the fortune quickly; the charitable legacy stayed weak.",
-          detay: "The fate of some legacies is shaped by the hands that come after the owner.",
+          mesaj: "After your death your family quickly spent the fortune; your charitable legacy was weak.",
+          detay: "Later hands shape a legacy's fate.",
         },
       },
     ],
@@ -1311,27 +1311,27 @@ export const OLAYLAR_SANAYI_TUCCAR_YOLLARI_EN: Record<string, OlayCeviri> = {
   sd_tuccar_yol_hayir_kolera_salgini: {
     baslik: "Cholera and Clean Water",
     metin:
-      "A cholera outbreak is spreading in the city; doctors blame the dirty well water. Laying a clean water aqueduct to the neighborhood around your factory is a big expense but could save lives.",
+      "Cholera spreads in the city; doctors blame dirty well water. A clean-water aqueduct for the factory district is costly but could save lives.",
     secenekler: [
       {
-        metin: "Fund the aqueduct from your own budget.",
+        metin: "Fund the aqueduct yourself.",
         basariliSonuc: {
-          mesaj: "When the aqueduct was completed, the number of cases in the neighborhood visibly dropped; the doctors held you up as an example.",
-          detay: "Some acts of charity leave not just a name, but a life.",
+          mesaj: "Once built, cases visibly dropped; doctors held you up as an example.",
+          detay: "Some charity leaves lives, not just a name.",
         },
         basarisizSonuc: {
-          mesaj: "The aqueduct was completed late, the outbreak continued a while longer but eventually made a difference.",
-          detay: "Good deeds sometimes race against time and lose — still not worthless.",
+          mesaj: "The aqueduct finished late and the outbreak lingered, but it finally helped.",
+          detay: "Kindness losing to time is still worthy.",
         },
       },
       {
-        metin: "Only distribute boiled water and medicine, avoid a lasting investment.",
+        metin: "Hand out boiled water and medicine.",
         basariliSonuc: {
-          mesaj: "The distributed water and medicine eased the outbreak's worst weeks.",
-          detay: "Even a temporary solution is better than no solution at all.",
+          mesaj: "The water and medicine eased the epidemic's worst weeks.",
+          detay: "A stopgap beats nothing.",
         },
         basarisizSonuc: {
-          mesaj: "The distribution fell short; the outbreak continued in the neighborhood a few more weeks.",
+          mesaj: "The distribution fell short; the outbreak lasted weeks longer.",
           detay: "Some crises don't bow to half measures.",
         },
       },
