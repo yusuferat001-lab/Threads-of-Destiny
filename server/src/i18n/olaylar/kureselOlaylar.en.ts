@@ -5,41 +5,41 @@ export const OLAYLAR_KURESEL_EN: Record<string, OlayCeviri> = {
   kuresel_veba_baslangici: {
     baslik: "Plague at the Door",
     metin:
-      "Death carts have begun to roam the streets of {bolge}. The news from distant towns says one thing: the sickness spreads fast and spares no one. For years to come you will live in the shadow of this plague. How will you protect yourself?",
+      "Death carts roam the streets of {bolge}. The plague spreads fast and spares no one. How will you protect yourself?",
     secenekler: [
       {
-        metin: "Use your wealth: leave the city, rent a place in the countryside, isolate yourself completely",
-        kilitAciklamasi: "You don't have the money to retreat to the countryside and live for months.",
+        metin: "Retreat to the country and isolate.",
+        kilitAciklamasi: "You can't afford to retreat to the countryside.",
         basariliSonuc: {
           mesaj:
-            "You will never forget the faces you left behind as you passed through the city gates. But far away, in clean air, your chances of surviving the plague's worst years are far higher.",
+            "You left the city; in clean air, survival is likelier.",
         },
         basarisizSonuc: {
           mesaj:
-            "You set out, but the sickness was faster than you; along the road you met caravans of the sick. Still, it's better than staying in the city — you are partly protected.",
+            "You met sick caravans on the road. Still partly protected.",
         },
       },
       {
-        metin: "Strict quarantine at home: wall up your door, stockpile provisions, let no one in",
-        kilitAciklamasi: "You don't have the money to stockpile provisions to last months.",
+        metin: "Wall up your door and quarantine.",
+        kilitAciklamasi: "You can't afford to stockpile provisions.",
         basariliSonuc: {
           mesaj:
-            "You lived for months within four walls, listening to the screams outside. It was dull and stifling, but it worked.",
+            "Months within four walls, stifling, but it worked.",
         },
         basarisizSonuc: {
           mesaj:
-            "At some point your quarantine was breached — a delivery, a neighbor, a relative... It got inside without your noticing. You have little protection left now.",
+            "Quarantine breached; you're barely protected now.",
         },
       },
       {
-        metin: "Carry on with your life as normal: there's nowhere to run, whatever fate has written",
+        metin: "Carry on as normal; let fate decide.",
         basariliSonuc: {
           mesaj:
-            "No one can shame you for hiding. The plague has gripped {bolge}; you share the same fate as everyone else.",
+            "The plague gripped {bolge}; you share everyone's fate.",
         },
         basarisizSonuc: {
           mesaj:
-            "One day spent at the market in the first weeks was enough. You woke with a mild fever — you got through it this time, but the plague is only just beginning.",
+            "One market day was enough; you woke feverish but survived.",
         },
       },
     ],
@@ -48,24 +48,24 @@ export const OLAYLAR_KURESEL_EN: Record<string, OlayCeviri> = {
   veba_kapiyi_calan: {
     baslik: "The One at Your Door",
     metin:
-      "There's a knock at your door at midnight. A distant relative stands trembling on the threshold, burning with fever. He has nowhere left to go in the city. If you let him in, you may bring the sickness into your home; if you don't, you leave him to die.",
+      "At midnight a feverish relative trembles at your door. Let him in and you risk the plague; refuse and he dies.",
     secenekler: [
       {
         metin: "Let him in, do what you can",
         basariliSonuc: {
-          mesaj: "You watched over him for days. He recovered. The neighbors talked about it — you were known as a merciful person.",
+          mesaj: "You nursed him for days; he recovered. Your mercy was noted.",
         },
         basarisizSonuc: {
-          mesaj: "You lost him, and on top of it the sickness passed to you too. You wrestled with fever for weeks.",
+          mesaj: "You lost him, and the plague passed to you. You're sick now.",
         },
       },
       {
-        metin: "Don't open the door, tell him to move on",
+        metin: "Keep the door shut, send him away.",
         basariliSonuc: {
-          mesaj: "That voice cut off behind the door will not leave your mind for years. But the sickness did not enter the house.",
+          mesaj: "That voice will haunt you, but the sickness stayed out.",
         },
         basarisizSonuc: {
-          mesaj: "Even talking through the crack of the door you got too close; you waited uneasily for a few days.",
+          mesaj: "You got too close; a few uneasy days followed.",
         },
       },
     ],
@@ -74,24 +74,24 @@ export const OLAYLAR_KURESEL_EN: Record<string, OlayCeviri> = {
   veba_cenaze: {
     baslik: "A Funeral in the Plague",
     metin:
-      "Someone close to you died of the plague. The funeral is today. Going to a crowded funeral in the days of the plague is dangerous, but not going is counted as faithlessness.",
+      "Someone close died of the plague; the funeral is today. A crowd is dangerous, but staying away is disloyal.",
     secenekler: [
       {
-        metin: "Go to the funeral, perform your last duty",
+        metin: "Attend the funeral, pay respects.",
         basariliSonuc: {
-          mesaj: "You witnessed them laid to rest. Your heart eased a little; people saw that you were there.",
+          mesaj: "You saw them laid to rest; people saw you there.",
         },
         basarisizSonuc: {
-          mesaj: "You caught it from someone you stood shoulder to shoulder with at the funeral. The following days were hard.",
+          mesaj: "You caught it from someone beside you. You have the plague.",
         },
       },
       {
-        metin: "Pray from afar, don't join the crowd",
+        metin: "Pray from afar, avoid the crowd.",
         basariliSonuc: {
-          mesaj: "You prayed quietly from your home. Not being able to go pained you, but you protected your health.",
+          mesaj: "You prayed at home. It hurt, but you kept your health.",
         },
         basarisizSonuc: {
-          mesaj: "Watching from the edge of the graveyard was still counted as getting too close; you looked after yourself for days.",
+          mesaj: "Even from afar you got too close; days of unease.",
         },
       },
     ],
@@ -100,25 +100,25 @@ export const OLAYLAR_KURESEL_EN: Record<string, OlayCeviri> = {
   veba_pazarda_temas: {
     baslik: "A Contact at the Market",
     metin:
-      "While buying provisions, someone coughing, their face flushed, bumped into you and disappeared into the crowd. Maybe there was nothing wrong with them. Maybe they carried the sickness. What will you do?",
+      "A coughing, flushed stranger bumped into you at the market and vanished. Maybe sick. What will you do?",
     secenekler: [
       {
-        metin: "Stay calm, go straight home, wash thoroughly and wait",
+        metin: "Stay calm, go home, wash and wait.",
         basariliSonuc: {
-          mesaj: "You waited uneasily for a few days, but no symptom appeared. You were lucky.",
+          mesaj: "You waited uneasily; no symptoms came. Lucky.",
         },
         basarisizSonuc: {
-          mesaj: "On the third day your fever came. You got through it lightly but stayed in bed for a while.",
+          mesaj: "Fever came on day three; you got through it, bedridden.",
         },
       },
       {
-        metin: "Run to a healer at once, get incense and salve",
-        kilitAciklamasi: "You don't have the money to pay the healer.",
+        metin: "Rush to a healer for incense, salve.",
+        kilitAciklamasi: "You can't afford the healer.",
         basariliSonuc: {
-          mesaj: "The healer's treatments may not have helped medically, but they helped your spirit; you breathed easier.",
+          mesaj: "Not medicine, but it soothed your spirit.",
         },
         basarisizSonuc: {
-          mesaj: "The healer's incense did no good; a few days later you fell ill anyway.",
+          mesaj: "The incense failed; you fell ill days later.",
         },
       },
     ],
@@ -127,24 +127,24 @@ export const OLAYLAR_KURESEL_EN: Record<string, OlayCeviri> = {
   veba_hasta_bakiciligi: {
     baslik: "An Offer of Nursing the Sick",
     metin:
-      "A wealthy household is looking for someone to tend their plague-stricken relatives and carry away their dead. The pay is high — because no one will take the job. If you accept, you get both money and a great risk of infection.",
+      "A rich household seeks someone to tend plague victims and carry out the dead. Pay is high, infection risk great.",
     secenekler: [
       {
         metin: "Take the job, tend the sick",
         basariliSonuc: {
-          mesaj: "You worked amid death for months and came out alive. Your pocket filled, your name was spoken as 'brave'.",
+          mesaj: "Months amid death, and you survived. Your purse filled.",
         },
         basarisizSonuc: {
-          mesaj: "One of the sick you tended passed it to you. This time the sickness put you in bed too.",
+          mesaj: "One of the sick infected you. You have the plague.",
         },
       },
       {
-        metin: "Refuse — this job means death",
+        metin: "Refuse: this job means death",
         basariliSonuc: {
-          mesaj: "You turned down the money. Hungry, but alive.",
+          mesaj: "You refused the money. Hungry, but alive.",
         },
         basarisizSonuc: {
-          mesaj: "You refused, but talked too closely with the man who brought the offer; a few uneasy days passed.",
+          mesaj: "You talked too close with the messenger; uneasy days.",
         },
       },
     ],
