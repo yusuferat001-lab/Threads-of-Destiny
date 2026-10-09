@@ -22,18 +22,18 @@ export const OLAY_MESLEK_YATKINLIK: OlayTanimi[] = [
     gorsel: "⚔️",
     baslik: "Meydan Okuma",
     metin:
-      "Ordugâhta can sıkıntısından bir meydan okuma başladı: silah ustalığını herkesin önünde kanıtlama şansı. Kalabalık seni izliyor.",
+      "Ordugâhta sıkıntıdan bir meydan okuma başladı: silah ustalığını herkesin önünde kanıtla. Kalabalık seni izliyor.",
     secenekler: [
       {
-        metin: "Ustaca bir hamleyle rakibini yere ser.",
+        metin: "Ustaca bir hamleyle rakibi ser.",
         baseBasariSansi: 55,
         minMeslekYatkinlikSeviye: 3,
-        kilitAciklamasi: "Bu hamle için yeterince yetenekli değilsin — daha temkinli bir şey dene.",
+        kilitAciklamasi: "Yeterince yetenekli değilsin; temkinli ol.",
         basariliSonuc: {
           un: 6,
           mutluluk: 3,
           para: 4,
-          mesaj: "Kalabalığın gözü önünde rakibini alt ettin; adın ordugâhta bir süre konuşuldu.",
+          mesaj: "Kalabalığın önünde rakibi alt ettin; adın bir süre konuşuldu.",
         },
         basarisizSonuc: {
           saglik: -6,
@@ -42,11 +42,11 @@ export const OLAY_MESLEK_YATKINLIK: OlayTanimi[] = [
         },
       },
       {
-        metin: "Temkinli oyna, sadece savunmada kal.",
+        metin: "Temkinli ol, savunmada kal.",
         baseBasariSansi: 78,
         basariliSonuc: {
           mutluluk: 2,
-          mesaj: "Kimseyi etkilemedin ama kimseye de malzeme olmadın; iş bitti.",
+          mesaj: "Kimseyi etkilemedin ama malzeme de olmadın.",
         },
         basarisizSonuc: {
           saglik: -3,
@@ -55,7 +55,7 @@ export const OLAY_MESLEK_YATKINLIK: OlayTanimi[] = [
         },
       },
       {
-        metin: "Meydan okumaya hiç girme.",
+        metin: "Hiç girme.",
         baseBasariSansi: 100,
         basariliSonuc: {
           mutluluk: -1,
@@ -75,29 +75,29 @@ export const OLAY_MESLEK_YATKINLIK: OlayTanimi[] = [
     gorsel: "🤝",
     baslik: "Sadece Sana Özel",
     metin:
-      "Piyasadaki keskin gözün fark edildi. Tanımadığın bir tüccar, düşük riskli ama kazançlı bir ortaklık teklifiyle geldi — herkese açılmayan, senin gibi keskin bir göz için ayrılmış bir fırsat bu.",
+      "Keskin gözün fark edildi. Tanımadığın bir tüccar, düşük riskli ama kazançlı bir ortaklık öneriyor; herkese açılmayan bir fırsat.",
     secenekler: [
       {
-        metin: "Teklifi kabul et, sermayeni ortaya koy.",
+        metin: "Kabul et, sermayeni koy.",
         baseBasariSansi: 68,
         maliyet: 10,
         basariliSonuc: {
           para: 22,
           un: 2,
           ticaret_sermaye_artis: 6,
-          mesaj: "Sezgin haklı çıktı; ortaklık beklediğinden de kazançlı oldu.",
+          mesaj: "Sezgin haklı çıktı; ortaklık beklediğinden kazançlı oldu.",
         },
         basarisizSonuc: {
           para: -10,
           mutluluk: -3,
-          mesaj: "Ortaklık göründüğü kadar parlak değilmiş; sermayenin bir kısmını geri alamadın.",
+          mesaj: "Ortaklık parlak çıkmadı; sermayenin bir kısmı gitti.",
         },
       },
       {
-        metin: "Kibarca reddet, riske girme.",
+        metin: "Kibarca reddet.",
         baseBasariSansi: 100,
         basariliSonuc: {
-          mesaj: "Fırsatı geri çevirdin. İçinden 'ya tutsaydı' diye geçirdin ama para cebinde kaldı.",
+          mesaj: "Fırsatı geri çevirdin; \"ya tutsaydı\" dedin ama para cebinde kaldı.",
         },
         basarisizSonuc: { mesaj: "Kullanılmadı." },
       },
@@ -114,35 +114,35 @@ export const OLAY_MESLEK_YATKINLIK: OlayTanimi[] = [
     gorsel: "😔",
     baslik: "Cemaatin Şüphesi",
     metin:
-      "Vaazların sana hiç yakışmıyor; kendi içindeki çelişkiler kürsüden dökülüyor. Cemaatten yaşlı bir adam seni bir kenara çekip açıkça soruyor: 'Sen buna gerçekten inanıyor musun evlat?'",
+      "Vaazların sana yakışmıyor; içindeki çelişkiler kürsüden dökülüyor. Yaşlı bir cemaat üyesi soruyor: 'Buna gerçekten inanıyor musun evlat?'",
     secenekler: [
       {
-        metin: "Dürüst ol, şüphelerini paylaş.",
+        metin: "Dürüst ol, şüphelerini söyle.",
         baseBasariSansi: 60,
         basariliSonuc: {
           ahlak: 5,
           un: -3,
           mutluluk: 2,
-          mesaj: "Dürüstlüğün onu şaşırttı ama saygısını kazandın; en azından yalan söylemiyorsun.",
+          mesaj: "Dürüstlüğün onu şaşırttı ama saygısını kazandın.",
         },
         basarisizSonuc: {
           un: -6,
           mutluluk: -3,
-          mesaj: "Sözlerin cemaat arasında hızla yayıldı; sana bakışları değişti.",
+          mesaj: "Sözlerin cemaatte yayıldı; bakışlar değişti.",
         },
       },
       {
-        metin: "Rolüne sarıl, inançlıymış gibi davran.",
+        metin: "Rolüne sarıl, inançlı görün.",
         baseBasariSansi: 65,
         basariliSonuc: {
           un: 3,
           ahlak: -3,
-          mesaj: "İnandırıcı davrandın; adam ikna oldu ve gitti. İçin biraz daha boşaldı.",
+          mesaj: "İnandırıcıydın, adam ikna oldu. İçin biraz daha boşaldı.",
         },
         basarisizSonuc: {
           ahlak: -4,
           mutluluk: -4,
-          mesaj: "Sahteliğin gözünden okundu; adam başını sallayıp uzaklaştı.",
+          mesaj: "Sahteliğin okundu; adam başını sallayıp gitti.",
         },
       },
     ],
@@ -156,35 +156,35 @@ export const OLAY_MESLEK_YATKINLIK: OlayTanimi[] = [
     gorsel: "🔨",
     baslik: "Ustalık Sınavı",
     metin:
-      "Lonca, atölyene alışılmadık bir sipariş bıraktı: sıradan bir onarımın yanı sıra, isteyen ustalar için tamamen yeni bir teknik deneme şansı da tanınıyor. Risk büyük, ama başarırsan adın yıllarca anılır.",
+      "Lonca atölyene sıra dışı bir sipariş bıraktı: sıradan onarım ya da tamamen yeni bir teknik deneme şansı. Başarırsan adın yıllarca anılır.",
     secenekler: [
       {
-        metin: "Tamamen yeni bir teknik icat etmeyi dene.",
+        metin: "Yepyeni bir teknik icat etmeyi dene.",
         baseBasariSansi: 45,
         minMeslekYatkinlikSeviye: 4,
-        kilitAciklamasi: "Bunu denemek için elin henüz yeterince usta değil.",
+        kilitAciklamasi: "Elin henüz yeterince usta değil.",
         basariliSonuc: {
           un: 8,
           para: 6,
           unvan_kazan: "Yenilikçi Usta",
-          mesaj: "Denemen tuttu! Loncanın en usta elleri bile senin buluşunu konuşuyor.",
+          mesaj: "Denemen tuttu! Loncanın ustaları buluşunu konuşuyor.",
         },
         basarisizSonuc: {
           para: -8,
           mutluluk: -3,
-          mesaj: "Malzemeyi ziyan ettin; teknik daha olgunlaşmamış. Yine de kimse çabana kızmadı.",
+          mesaj: "Malzemeyi ziyan ettin; teknik olgunlaşmamış. Kimse kızmadı.",
         },
       },
       {
-        metin: "Güvenli yoldan git, sıradan onarımı yap.",
+        metin: "Güvenli git, sıradan onarımı yap.",
         baseBasariSansi: 85,
         basariliSonuc: {
           para: 5,
-          mesaj: "İş sorunsuz bitti; kimse hayal kırıklığına uğramadı, kimse de hayrete düşmedi.",
+          mesaj: "İş sorunsuz bitti; kimse hayal kırıklığına uğramadı, kimse şaşırmadı.",
         },
         basarisizSonuc: {
           para: -3,
-          mesaj: "Basit işte bile ufak bir aksilik çıktı; loncaya küçük bir tazminat ödedin.",
+          mesaj: "Basit işte bile aksilik çıktı; loncaya küçük tazminat ödedin.",
         },
       },
     ],
@@ -205,31 +205,31 @@ export const OLAY_MESLEK_YATKINLIK: OlayTanimi[] = [
     gorsel: "🛡️",
     baslik: "Kralın Şahsi Muhafızı Teklifi",
     metin:
-      "Savaş meydanındaki ustalığının haberi hükümdarın kulağına kadar gitti. Saraydan bir haberci, seni şahsi muhafız birliğine katılman için sınava davet ediyor.",
+      "Savaş meydanındaki ustalığın hükümdarın kulağına gitti. Saray, seni şahsi muhafız sınavına çağırıyor.",
     secenekler: [
       {
-        metin: "Teklifi kabul et, sınava gir.",
+        metin: "Kabul et, sınava gir.",
         baseBasariSansi: 60,
         basariliSonuc: {
           un: 10,
           para: 10,
           unvan_kazan: "Kraliyet Muhafızı",
           etiket_ekle: ["itibar:kraliyet_muhafizi"],
-          mesaj: "Sınavı fazlasıyla geçtin; artık hükümdarın en yakınında duruyorsun.",
+          mesaj: "Sınavı fazlasıyla geçtin; artık hükümdarın yanındasın.",
         },
         basarisizSonuc: {
           un: -3,
           mutluluk: -5,
-          mesaj: "Sınavı geçemedin; saray seni nazikçe geri gönderdi, ordugâhta bir süre dedikodusu konuşuldu.",
+          mesaj: "Sınavı geçemedin; saray nazikçe geri gönderdi, ordugâh dedikodu yaptı.",
         },
       },
       {
-        metin: "Nazikçe reddet, ordunla kal.",
+        metin: "Nazikçe reddet, ordunda kal.",
         baseBasariSansi: 100,
         basariliSonuc: {
           mutluluk: 3,
           dost_puani: 3,
-          mesaj: "Reddin, ordudaki arkadaşlarının gözünde seni daha da değerli kıldı.",
+          mesaj: "Reddin seni ordu arkadaşlarının gözünde değerli kıldı.",
         },
         basarisizSonuc: { mesaj: "Kullanılmadı." },
       },
@@ -245,7 +245,7 @@ export const OLAY_MESLEK_YATKINLIK: OlayTanimi[] = [
     gorsel: "⚔️",
     baslik: "Efsanevi Düello Daveti",
     metin:
-      "Ünün bir rakip şampiyonun kulağına gitmiş. Herkesin önünde, tek vuruşluk bir düelloyla seni meydan okumaya çağırıyor.",
+      "Ününü duyan rakip bir şampiyon, herkesin önünde tek vuruşluk düelloya çağırıyor.",
     secenekler: [
       {
         metin: "Meydan okumayı kabul et.",
@@ -254,21 +254,21 @@ export const OLAY_MESLEK_YATKINLIK: OlayTanimi[] = [
           un: 12,
           para: 8,
           unvan_kazan: "Yenilmez Şampiyon",
-          mesaj: "Kılıcın havada parladı, rakibin diz çöktü — adın bir efsaneye dönüştü.",
+          mesaj: "Kılıcın parladı, rakibin diz çöktü; adın efsane oldu.",
         },
         basarisizSonuc: {
           saglik: -14,
           un: -5,
           mutluluk: -6,
-          mesaj: "Ağır yaralı ayrıldın meydandan; yenilgi haberi ordugâhta hızla yayıldı.",
+          mesaj: "Ağır yaralı ayrıldın; yenilgi ordugâhta hızla yayıldı.",
         },
       },
       {
-        metin: "Onurunla reddet, bahaneye gerek yok.",
+        metin: "Onurla reddet.",
         baseBasariSansi: 100,
         basariliSonuc: {
           mutluluk: -2,
-          mesaj: "Reddettin; bazıları korkak sanacak ama sağduyulu davrandığını biliyorsun.",
+          mesaj: "Reddettin; kimi korkak sanacak ama sağduyulu davrandığını biliyorsun.",
         },
         basarisizSonuc: { mesaj: "Kullanılmadı." },
       },
@@ -284,7 +284,7 @@ export const OLAY_MESLEK_YATKINLIK: OlayTanimi[] = [
     gorsel: "📜",
     baslik: "Krallığın Baş Tedarikçisi Teklifi",
     metin:
-      "Saray kâhyası, keskin ticari zekânı duymuş. Seni krallığın baş tedarikçisi olman için büyük bir görüşmeye çağırıyor.",
+      "Saray kâhyası ticari zekânı duymuş. Seni krallığın baş tedarikçisi olmak için büyük bir görüşmeye çağırıyor.",
     secenekler: [
       {
         metin: "Büyük sözleşmeyi imzala.",
@@ -294,16 +294,16 @@ export const OLAY_MESLEK_YATKINLIK: OlayTanimi[] = [
           un: 6,
           maas_carpani: 1.06,
           unvan_kazan: "Kraliyet Tedarikçisi",
-          mesaj: "Sözleşme imzalandı; hem kasan hem adın büyük ölçüde büyüdü.",
+          mesaj: "Sözleşme imzalandı; kasan da adın da büyüdü.",
         },
         basarisizSonuc: {
           para: -14,
           mutluluk: -4,
-          mesaj: "Şartlar göründüğünden ağırdı; anlaşma seni zarara soktu.",
+          mesaj: "Şartlar göründüğünden ağırdı; anlaşma zarara soktu.",
         },
       },
       {
-        metin: "Riske girme, küçük işlerine devam et.",
+        metin: "Riske girme, küçük işine devam et.",
         baseBasariSansi: 100,
         basariliSonuc: {
           mutluluk: 2,
@@ -323,7 +323,7 @@ export const OLAY_MESLEK_YATKINLIK: OlayTanimi[] = [
     gorsel: "🐍",
     baslik: "Rakiplerin Kıskançlığı",
     metin:
-      "Başarın gözleri üzerine çekti. Rakip tüccarlar aleyhinde karanlık söylentiler yayıyor, hatta mallarını sabote etmeye çalışıyor.",
+      "Başarın gözleri çekti. Rakip tüccarlar aleyhine karanlık söylentiler yayıyor, mallarını sabote etmeye çalışıyor.",
     secenekler: [
       {
         metin: "Kanıt topla, itibarını savun.",
@@ -331,21 +331,21 @@ export const OLAY_MESLEK_YATKINLIK: OlayTanimi[] = [
         basariliSonuc: {
           un: 8,
           rakip_puani: -10,
-          mesaj: "Söylentilerin kaynağını buldun; gerçek ortaya çıkınca herkes senden yana döndü.",
+          mesaj: "Kaynağı buldun; gerçek çıkınca herkes senden yana döndü.",
         },
         basarisizSonuc: {
           un: -6,
           para: -10,
           mutluluk: -5,
-          mesaj: "Kanıt bulamadın; söylentiler daha da büyüyerek işlerini bir süre etkiledi.",
+          mesaj: "Kanıt bulamadın; söylentiler büyüyüp işini bir süre vurdu.",
         },
       },
       {
-        metin: "Görmezden gel, işine odaklan.",
+        metin: "Görmezden gel, işine bak.",
         baseBasariSansi: 100,
         basariliSonuc: {
           mutluluk: -2,
-          mesaj: "Söylentileri yok saydın; bazıları inanmaya devam etse de zamanla söndü.",
+          mesaj: "Söylentileri yok saydın; kimi inansa da zamanla söndü.",
         },
         basarisizSonuc: { mesaj: "Kullanılmadı." },
       },
@@ -361,7 +361,7 @@ export const OLAY_MESLEK_YATKINLIK: OlayTanimi[] = [
     gorsel: "✨",
     baslik: "Kutsal Bir Görev İçin Seçilmek",
     metin:
-      "Üstlerin, inancının derinliğini duyup seni özel, kutsal bir emaneti korumak için seçti. Bu, cemaat içinde nadir verilen bir onur.",
+      "Üstlerin, inancının derinliğini bilip seni kutsal bir emaneti korumak için seçti. Cemaatte nadir bir onur.",
     secenekler: [
       {
         metin: "Görevi kabul et.",
@@ -370,20 +370,20 @@ export const OLAY_MESLEK_YATKINLIK: OlayTanimi[] = [
           ahlak: 8,
           un: 6,
           unvan_kazan: "Kutsal Emanetin Bekçisi",
-          mesaj: "Görevi başarıyla tamamladın; cemaat sana çok daha büyük bir saygıyla bakıyor artık.",
+          mesaj: "Görevi tamamladın; cemaat sana büyük saygıyla bakıyor.",
         },
         basarisizSonuc: {
           ahlak: -6,
           mutluluk: -5,
-          mesaj: "Görev sırasında ağır bir hataya düştün; bu seni derinden sarstı.",
+          mesaj: "Görevde ağır bir hataya düştün; derinden sarsıldın.",
         },
       },
       {
-        metin: "Alçakgönüllülükle reddet, layık olmadığını söyle.",
+        metin: "Layık değilim diyerek reddet.",
         baseBasariSansi: 100,
         basariliSonuc: {
           ahlak: 3,
-          mesaj: "Alçakgönüllülüğün cemaat arasında sessiz bir takdirle karşılandı.",
+          mesaj: "Alçakgönüllülüğün cemaatte sessiz takdir gördü.",
         },
         basarisizSonuc: { mesaj: "Kullanılmadı." },
       },
@@ -399,7 +399,7 @@ export const OLAY_MESLEK_YATKINLIK: OlayTanimi[] = [
     gorsel: "🕊️",
     baslik: "Mucize Söylentisi",
     metin:
-      "Ellerinle iyileşen ya da huzur bulan biri hakkında bir mucize söylentisi yayılıyor. Kalabalıklar umutla kapına dayanıyor.",
+      "Ellerinle iyileşen ya da huzur bulan biri hakkında mucize söylentisi yayılıyor. Kalabalıklar umutla kapına dayanıyor.",
     secenekler: [
       {
         metin: "Söylentiyi doğrula, insanları kabul et.",
@@ -407,22 +407,22 @@ export const OLAY_MESLEK_YATKINLIK: OlayTanimi[] = [
         basariliSonuc: {
           un: 14,
           para: 8,
-          mesaj: "Söylenti seni bölgenin en saygın ismine dönüştürdü.",
+          mesaj: "Söylenti seni bölgenin en saygın ismi yaptı.",
         },
         basarisizSonuc: {
           un: -8,
           mutluluk: -6,
           ahlak: -3,
-          mesaj: "Beklentileri karşılayamadın; hayal kırıklığı hızla yayıldı.",
+          mesaj: "Beklentileri karşılayamadın; hayal kırıklığı yayıldı.",
         },
       },
       {
-        metin: "Söylentiyi reddet, mütevazı kal.",
+        metin: "Reddet, mütevazı kal.",
         baseBasariSansi: 100,
         basariliSonuc: {
           ahlak: 3,
           mutluluk: -1,
-          mesaj: "Mucize iddialarını reddettin; bazıları inatla inanmaya devam etse de huzurunu korudun.",
+          mesaj: "Mucizeyi reddettin; kimi inansa da huzurunu korudun.",
         },
         basarisizSonuc: { mesaj: "Kullanılmadı." },
       },
@@ -438,16 +438,16 @@ export const OLAY_MESLEK_YATKINLIK: OlayTanimi[] = [
     gorsel: "👑",
     baslik: "Sarayın Baş Zanaatkârı Daveti",
     metin:
-      "Ellerinin ustalığı sarayın kulağına gitti. Senden saray için özel, görkemli bir eser sipariş ediliyor.",
+      "Ellerinin ustalığı saraya ulaştı. Saray için özel, görkemli bir eser sipariş ediliyor.",
     secenekler: [
       {
-        metin: "Siparişi kabul et, en iyi işini çıkar.",
+        metin: "Kabul et, en iyi işini çıkar.",
         baseBasariSansi: 58,
         basariliSonuc: {
           para: 20,
           un: 8,
           unvan_kazan: "Sarayın Baş Zanaatkârı",
-          mesaj: "Eserin sarayda hayranlıkla karşılandı; adın artık soylular arasında da anılıyor.",
+          mesaj: "Eserin sarayda hayranlıkla karşılandı; adın soylular arasında da anılıyor.",
         },
         basarisizSonuc: {
           para: -12,
@@ -456,11 +456,11 @@ export const OLAY_MESLEK_YATKINLIK: OlayTanimi[] = [
         },
       },
       {
-        metin: "Riske girme, sıradan siparişlerine devam et.",
+        metin: "Riske girme, sıradan işe devam et.",
         baseBasariSansi: 100,
         basariliSonuc: {
           mutluluk: 2,
-          mesaj: "Küçük ama güvenli siparişlerinle yoluna devam ettin.",
+          mesaj: "Küçük ama güvenli siparişlerinle devam ettin.",
         },
         basarisizSonuc: { mesaj: "Kullanılmadı." },
       },
@@ -476,15 +476,15 @@ export const OLAY_MESLEK_YATKINLIK: OlayTanimi[] = [
     gorsel: "🎭",
     baslik: "Taklitçiler ve Sahtekârlar",
     metin:
-      "Adının değeri arttıkça, işini taklit edip senin imzanla satan sahtekârlar türedi. Müşterilerin kafası karışıyor.",
+      "Adın değer kazandıkça işini taklit edip senin imzanla satan sahtekârlar türedi. Müşteriler şaşkın.",
     secenekler: [
       {
-        metin: "Peşlerine düş, sahtekârları teşhir et.",
+        metin: "Peşlerine düş, teşhir et.",
         baseBasariSansi: 55,
         basariliSonuc: {
           un: 8,
           rakip_puani: -6,
-          mesaj: "Sahtekârları teşhir ettin; gerçek ustalık yeniden konuşulur oldu.",
+          mesaj: "Sahtekârları teşhir ettin; gerçek ustalık yeniden konuşuldu.",
         },
         basarisizSonuc: {
           un: -6,
@@ -494,12 +494,12 @@ export const OLAY_MESLEK_YATKINLIK: OlayTanimi[] = [
         },
       },
       {
-        metin: "Kendi işine ayırt edici bir mühür ekle.",
+        metin: "İşine ayırt edici mühür ekle.",
         baseBasariSansi: 100,
         basariliSonuc: {
           un: 2,
           para: -3,
-          mesaj: "Yeni mührünle işlerini ayırt etmeye başladın; küçük bir masraf oldu ama işe yaradı.",
+          mesaj: "Yeni mühür işlerini ayırdı; küçük masraf, işe yaradı.",
         },
         basarisizSonuc: { mesaj: "Kullanılmadı." },
       },
