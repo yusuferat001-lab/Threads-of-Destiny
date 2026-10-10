@@ -4,137 +4,137 @@ import type { OlayCeviri } from "./index";
 export const OLAYLAR_ORTACAG_ZANAATKAR_EN: Record<string, OlayCeviri> = {
   oc_zanaatkar_musteri_pazarligi: {
     baslik: "A Hard Bargain",
-    metin: "A customer is trying to get your labor for almost half its worth.",
+    metin: "A customer tries to buy your labor at half price.",
     secenekler: [
       {
-        metin: "Hold your price, even if it costs you the sale.",
+        metin: "Hold your price; risk the sale.",
         basariliSonuc: {
-          mesaj: "The customer finally accepted your price; you knew the worth of your labor.",
-          detay: "One who knows their own worth makes others know it too.",
+          mesaj: "The customer accepted your price; you knew your worth.",
+          detay: "Know your worth, and others will.",
         },
         basarisizSonuc: {
-          mesaj: "The customer gave up and went to another craftsman.",
+          mesaj: "The customer went to another craftsman.",
           detay: "Not every bargain is won.",
         },
       },
       {
-        metin: "Lower the price, don't lose the work.",
+        metin: "Drop the price; keep the job.",
         basariliSonuc: {
-          mesaj: "You got the job, but didn't get the full worth of your labor.",
-          detay: "Sometimes earning little is better than earning nothing.",
+          mesaj: "You got the job but not its full worth.",
+          detay: "Earning little beats earning nothing.",
         },
         basarisizSonuc: {
-          mesaj: "Despite the discount, the customer still backed out.",
-          detay: "Some customers can't be convinced at any price.",
+          mesaj: "Despite the discount, the customer backed out.",
+          detay: "Some can't be satisfied at any price.",
         },
       },
     ],
   },
   oc_zanaatkar_malzeme_kitligi: {
     baslik: "Material Shortage",
-    metin: "The raw materials you use have grown scarce; merchants have doubled their prices.",
+    metin: "Raw material grew scarce; merchants doubled their prices.",
     secenekler: [
       {
-        metin: "Buy the material even at the high price — don't let your work fall behind.",
+        metin: "Buy the material at any price.",
         basariliSonuc: {
-          mesaj: "Your work didn't fall behind, your customers stayed satisfied.",
-          detay: "Consistency is the sturdiest foundation of reputation.",
+          mesaj: "Your work didn't stall; customers stayed happy.",
+          detay: "Consistency is reputation's foundation.",
         },
         basarisizSonuc: {
-          mesaj: "The material turned out to be poor quality; your money was wasted.",
-          detay: "Not everyone turns opportunist in a shortage, but some do.",
+          mesaj: "The material was poor; your money was wasted.",
+          detay: "In shortages, some turn opportunist.",
         },
       },
       {
-        metin: "Make do with an alternative, lower-quality material.",
+        metin: "Make do with cheaper material.",
         basariliSonuc: {
           mesaj: "You made do; no one noticed.",
-          detay: "Sometimes creativity is born of hardship.",
+          detay: "Creativity is born of hardship.",
         },
         basarisizSonuc: {
-          mesaj: "The drop in quality was noticed; a few customers took offense.",
-          detay: "Every stopgap measure has its price.",
+          mesaj: "The poor quality showed; some customers left.",
+          detay: "Every stopgap has its price.",
         },
       },
     ],
   },
   oc_zanaatkar_rakip_usta: {
     baslik: "The Rival Master's Shadow",
-    metin: "A newly opened workshop in the marketplace has started drawing away some of your customers.",
+    metin: "A new workshop in the market is drawing away your customers.",
     secenekler: [
       {
-        metin: "Set yourself apart with better service and quality.",
+        metin: "Stand out with better service and quality.",
         basariliSonuc: {
-          mesaj: "You competed on quality; your old customers came back.",
+          mesaj: "You won on quality; old customers returned.",
           detay: "Goodness is the most lasting advertisement.",
         },
         basarisizSonuc: {
-          mesaj: "Your efforts weren't enough; you lost a few customers.",
-          detay: "Competition can be merciless sometimes.",
+          mesaj: "Your effort fell short; you lost a few customers.",
+          detay: "Competition can be merciless.",
         },
       },
     ],
   },
   oc_zanaatkar_yangin_riski: {
     baslik: "A Spark from the Forge",
-    metin: "A spark leaping from your workshop's forge landed on a pile of straw.",
+    metin: "A spark from your forge landed on a pile of straw.",
     secenekler: [
       {
-        metin: "Act immediately.",
+        metin: "Act at once.",
         basariliSonuc: {
-          mesaj: "You put out the fire quickly, escaping with a small burn.",
-          detay: "Quick reflexes sometimes save everything.",
+          mesaj: "You doused the fire with only a small burn.",
+          detay: "Quick reflexes can save everything.",
         },
         basarisizSonuc: {
-          mesaj: "A corner of your workshop burned; the repairs cost dearly.",
-          detay: "For one who works with fire, fire remains the greatest enemy.",
+          mesaj: "A corner of the workshop burned; repairs were costly.",
+          detay: "Fire is a fire-worker's greatest enemy.",
         },
       },
     ],
   },
   oc_zanaatkar_soylu_hedive: {
     baslik: "The Noble's Gift",
-    metin: "A local noble, impressed by your work, wants to commission a special gift from you.",
+    metin: "A local noble, impressed by your work, wants to commission a special gift.",
     secenekler: [
       {
-        metin: "Do the very best you can.",
+        metin: "Do your very best.",
         basariliSonuc: {
-          mesaj: "The noble was thrilled with your work; your name reached all the way to the palace.",
+          mesaj: "The noble was thrilled; your name reached the palace.",
           detay: "Impressing the right person opens doors.",
         },
         basarisizSonuc: {
-          mesaj: "The noble didn't like the work, and delayed payment on top of it.",
-          detay: "High expectations can bring high disappointment.",
+          mesaj: "The noble disliked the piece and delayed payment.",
+          detay: "High expectations bring high disappointment.",
         },
       },
     ],
   },
   oc_zanaatkar_ekip_hirsizligi: {
     baslik: "The Missing Material",
-    metin: "A valuable material has gone missing from your workshop; suspicion falls on one of your workers.",
+    metin: "A valuable material vanished from your workshop; suspicion falls on a worker.",
     secenekler: [
       {
-        metin: "Investigate quietly, don't accuse anyone outright.",
+        metin: "Investigate quietly; don't accuse.",
         basariliSonuc: {
-          mesaj: "You found the material in a corner; you solved the problem without accusing anyone.",
-          detay: "A patient investigation usually works.",
+          mesaj: "You found it in a corner and accused no one.",
+          detay: "Patient inquiry usually works.",
         },
         basarisizSonuc: {
-          mesaj: "You couldn't find the material; an air of distrust settled over your workshop.",
-          detay: "Suspicion slowly gnaws away at friendship.",
+          mesaj: "The material stayed missing; distrust took hold.",
+          detay: "Suspicion gnaws at friendship.",
         },
       },
     ],
   },
   oc_zanaatkar_pazar_gunu: {
     baslik: "Market Day Crowds",
-    metin: "You've set up your stall on market day; the crowd is big but so are the rival stalls everywhere.",
+    metin: "You set up your stall on market day; big crowd, but rival stalls everywhere.",
     secenekler: [
       {
-        metin: "Call out and promote your work loudly.",
+        metin: "Promote your work loudly.",
         basariliSonuc: {
-          mesaj: "Your voice drew attention; you gained a few new customers.",
-          detay: "Sometimes making noise pays off.",
+          mesaj: "Your voice drew attention; a few new customers came.",
+          detay: "Sometimes noise pays off.",
         },
         basarisizSonuc: {
           mesaj: "The crowd stayed indifferent; the day passed quietly.",
@@ -145,140 +145,140 @@ export const OLAYLAR_ORTACAG_ZANAATKAR_EN: Record<string, OlayCeviri> = {
   },
   oc_zanaatkar_alet_calinmasi: {
     baslik: "Your Tools Were Stolen",
-    metin: "Someone broke into your workshop overnight and stole your most valuable tools.",
+    metin: "Someone broke into your workshop overnight and stole your best tools.",
     secenekler: [
       {
-        metin: "Borrow money to buy new tools.",
+        metin: "Borrow money for new tools.",
         basariliSonuc: {
-          mesaj: "With new tools, you picked your work back up where you left off.",
-          detay: "Every loss is a chance to start anew.",
+          mesaj: "With new tools, you resumed your work.",
+          detay: "Every loss is a fresh start.",
         },
         basarisizSonuc: {
-          mesaj: "Finding a loan was harder than you thought; your work fell behind for a while.",
-          detay: "Losses sometimes come in a chain.",
+          mesaj: "Finding a loan was hard; work stalled for a while.",
+          detay: "Losses sometimes come in chains.",
         },
       },
     ],
   },
   oc_zanaatkar_hava_kotu: {
     baslik: "Bad Weather",
-    metin: "Relentless rain is hurting both material supply and customer traffic.",
+    metin: "Relentless rain disrupts material supply and customer traffic.",
     secenekler: [
       {
-        metin: "Wait it out patiently, keep working.",
+        metin: "Wait patiently and keep working.",
         basariliSonuc: {
-          mesaj: "You made do until the weather cleared, without any great loss.",
-          detay: "Patience is the cheapest solution.",
+          mesaj: "You made do until the weather cleared; no great loss.",
+          detay: "Patience is the cheapest fix.",
         },
         basarisizSonuc: {
-          mesaj: "The long spell of bad weather set your work back considerably.",
-          detay: "Nature can be merciless at times.",
+          mesaj: "The long bad weather set your work back.",
+          detay: "Nature can be merciless.",
         },
       },
     ],
   },
   oc_zanaatkar_komsu_atolye_yangini: {
     baslik: "Fire in the Neighboring Workshop",
-    metin: "A fire breaking out in the workshop next door could quickly spread to yours too.",
+    metin: "A fire in the next workshop could quickly spread to yours.",
     secenekler: [
       {
         metin: "Help put out the fire.",
         basariliSonuc: {
-          mesaj: "Your help kept the fire from spreading; your neighbors were grateful.",
-          detay: "Standing by someone in hard times builds lasting friendships.",
+          mesaj: "Your help stopped the spread; neighbors are grateful.",
+          detay: "Standing by others builds friendships.",
         },
         basarisizSonuc: {
-          mesaj: "The fire spread to your workshop too, causing a little damage.",
-          detay: "Fire sometimes strikes its neighbors too.",
+          mesaj: "The fire reached your workshop; minor damage.",
+          detay: "Fire strikes neighbors too.",
         },
       },
     ],
   },
   oc_zanaatkar_dedikodu_hedefi: {
     baslik: "Gossip in the Marketplace",
-    metin: "A baseless rumor about your work has started circulating in the marketplace.",
+    metin: "A baseless rumor about your work is circulating in the market.",
     secenekler: [
       {
-        metin: "Ignore the gossip, focus on your work.",
+        metin: "Ignore the gossip; focus on work.",
         basariliSonuc: {
-          mesaj: "The gossip died down on its own; your business was unaffected.",
-          detay: "Sometimes the best answer is silence.",
+          mesaj: "The gossip died on its own; business unaffected.",
+          detay: "Sometimes silence is the best answer.",
         },
         basarisizSonuc: {
-          mesaj: "The gossip spread; a few customers questioned you about it.",
-          detay: "Rumor sometimes travels truly fast.",
+          mesaj: "The gossip spread; some customers questioned you.",
+          detay: "Rumor travels fast.",
         },
       },
       {
-        metin: "Find who started the gossip, confront them.",
+        metin: "Find who started it and confront them.",
         basariliSonuc: {
-          mesaj: "You found the source and confronted them; the gossip stopped.",
+          mesaj: "You found the source and confronted them; it stopped.",
           detay: "Some problems are solved head-on.",
         },
         basarisizSonuc: {
-          mesaj: "You accused the wrong person; the matter grew even bigger.",
-          detay: "Acting in anger sometimes makes things worse.",
+          mesaj: "You accused the wrong person; it grew worse.",
+          detay: "Anger makes things worse.",
         },
       },
     ],
   },
   oc_zanaatkar_yabanci_tuccar: {
     baslik: "A Merchant from Distant Lands",
-    metin: "A merchant from a distant land offers to buy your goods wholesale and sell them in his own country.",
+    metin: "A merchant from a far land offers to buy your goods wholesale and sell them abroad.",
     secenekler: [
       {
         metin: "Accept the deal.",
         basariliSonuc: {
-          mesaj: "The deal went well; your work is now known in distant lands too.",
-          detay: "Some opportunities come from very far away.",
+          mesaj: "The deal went well; your work is known in distant lands.",
+          detay: "Some opportunities come from far away.",
         },
         basarisizSonuc: {
-          mesaj: "The merchant didn't keep his word; he delayed payment.",
-          detay: "Deals made with distant partners are risky.",
+          mesaj: "The merchant broke his word and delayed payment.",
+          detay: "Distant deals are risky.",
         },
       },
     ],
   },
   oc_zanaatkar_dini_bagis_talebi: {
     baslik: "The Church's Call for Donations",
-    metin: "The local house of worship is asking craftsmen for donations toward its repair.",
+    metin: "The local house of worship asks craftsmen for repair donations.",
     secenekler: [
       {
         metin: "Give generously.",
         basariliSonuc: {
-          mesaj: "Your donation earned praise; you were spoken of well among the congregation.",
+          mesaj: "Your donation earned praise; the congregation spoke well of you.",
           detay: "Sharing nourishes reputation.",
         },
         basarisizSonuc: {
-          mesaj: "Your donation was thought modest, but appreciated all the same.",
-          detay: "Every contribution carries meaning.",
+          mesaj: "Your donation seemed modest but was appreciated.",
+          detay: "Every contribution means something.",
         },
       },
       {
         metin: "Don't donate; say you have no money.",
         basariliSonuc: {
-          mesaj: "You didn't donate; the money stayed in your pocket.",
+          mesaj: "You gave nothing; the money stayed in your pocket.",
           detay: "Everyone sets their own priorities.",
         },
         basarisizSonuc: {
-          mesaj: "Your stinginess became the talk of the marketplace.",
-          detay: "Some silences are heard all the same.",
+          mesaj: "Your stinginess became market talk.",
+          detay: "Some silences are heard.",
         },
       },
     ],
   },
   oc_zanaatkar_kiskanc_esnaf: {
     baslik: "A Jealous Shopkeeper",
-    metin: "The shopkeeper at the neighboring stall, jealous of your success, is trying to steal your customers.",
+    metin: "The neighboring shopkeeper, jealous of your success, is poaching your customers.",
     secenekler: [
       {
-        metin: "Stay calm, focus on your work.",
+        metin: "Stay calm; focus on your work.",
         basariliSonuc: {
-          mesaj: "Your patience paid off; your customers stayed loyal to you.",
+          mesaj: "Your patience paid off; customers stayed loyal.",
           detay: "Jealousy is silenced by quality.",
         },
         basarisizSonuc: {
-          mesaj: "You noticed some customers really had drifted away.",
+          mesaj: "You noticed some customers had drifted away.",
           detay: "Competition can be merciless.",
         },
       },
@@ -286,61 +286,61 @@ export const OLAYLAR_ORTACAG_ZANAATKAR_EN: Record<string, OlayCeviri> = {
   },
   oc_zanaatkar_deprem_hasari: {
     baslik: "A Small Earthquake",
-    metin: "A small earthquake shaking the city caused some damage to your workshop.",
+    metin: "A small earthquake shook the city and damaged your workshop.",
     secenekler: [
       {
-        metin: "Repair the damage right away.",
+        metin: "Repair the damage at once.",
         basariliSonuc: {
-          mesaj: "The repair was finished without trouble; you picked your work back up where you'd left it.",
-          detay: "A quick response limits the loss.",
+          mesaj: "The repair went smoothly; you resumed your work.",
+          detay: "Quick response limits the loss.",
         },
         basarisizSonuc: {
           mesaj: "A minor accident happened during the repair.",
-          detay: "Not everything is easy after ruin.",
+          detay: "Nothing is easy after ruin.",
         },
       },
     ],
   },
   oc_zanaatkar_ogrenci_ayrilik: {
     baslik: "Your Apprentice's Departure",
-    metin: "Your apprentice, who's worked at your side for a long time, wants to leave and open his own workshop.",
+    metin: "Your long-time apprentice wants to leave and open his own workshop.",
     secenekler: [
       {
         metin: "See him off with a clear conscience.",
         basariliSonuc: {
-          mesaj: "Your apprentice left grateful; the bond between you endured.",
+          mesaj: "Your apprentice left grateful; the bond endured.",
           detay: "A good master lets his student fly.",
         },
         basarisizSonuc: {
-          mesaj: "The parting saddened you a little; filling the gap took time.",
-          detay: "Every parting leaves an emptiness.",
+          mesaj: "The parting saddened you; filling the gap took time.",
+          detay: "Every parting leaves a void.",
         },
       },
     ],
   },
   oc_zanaatkar_zengin_bekleyen_musteri: {
     baslik: "An Impatient Wealthy Customer",
-    metin: "A wealthy customer wants their work done first, without waiting their turn.",
+    metin: "A wealthy customer wants their work done first, skipping the queue.",
     secenekler: [
       {
-        metin: "Break the queue, prioritize them.",
+        metin: "Break the queue; put them first.",
         basariliSonuc: {
-          mesaj: "The customer was pleased and left a generous tip.",
-          detay: "Sometimes flexibility pays off.",
+          mesaj: "The customer was pleased and tipped generously.",
+          detay: "Flexibility sometimes pays.",
         },
         basarisizSonuc: {
-          mesaj: "The other customers felt they'd been wronged.",
-          detay: "Privilege, in others' eyes, is injustice.",
+          mesaj: "Other customers felt wronged.",
+          detay: "Privilege looks like injustice to others.",
         },
       },
       {
-        metin: "Make them wait their turn, be fair.",
+        metin: "Make them wait their turn; be fair.",
         basariliSonuc: {
-          mesaj: "Your fair conduct earned the trust of your other customers.",
-          detay: "Fairness pays off more in the long run.",
+          mesaj: "Your fairness won your other customers' trust.",
+          detay: "Fairness pays more in the long run.",
         },
         basarisizSonuc: {
-          mesaj: "The wealthy customer took offense and gave the work to another craftsman.",
+          mesaj: "The rich customer took offense and went elsewhere.",
           detay: "Some customers want special treatment.",
         },
       },
@@ -348,51 +348,51 @@ export const OLAYLAR_ORTACAG_ZANAATKAR_EN: Record<string, OlayCeviri> = {
   },
   oc_zanaatkar_uzun_kis: {
     baslik: "A Long Winter",
-    metin: "This year's winter is dragging on longer and harsher than usual; material and customers are both scarce.",
+    metin: "This winter is longer and harsher than usual; material and customers are scarce.",
     secenekler: [
       {
-        metin: "Use your savings to get through the winter.",
+        metin: "Use your savings to survive the winter.",
         basariliSonuc: {
-          mesaj: "You got through the winter without hardship; your business recovered by spring.",
+          mesaj: "You weathered the winter; business recovered by spring.",
           detay: "Saving is a shield for hard times.",
         },
         basarisizSonuc: {
-          mesaj: "The winter was harsher than expected; your health suffered a little.",
-          detay: "Nature can be merciless at times.",
+          mesaj: "The winter was harsh; your health suffered a little.",
+          detay: "Nature can be merciless.",
         },
       },
     ],
   },
   oc_zanaatkar_hirsizlik_ithami: {
     baslik: "An Unjust Accusation",
-    metin: "A customer accuses you of theft, claiming he never received the piece he paid for.",
+    metin: "A customer accuses you of theft, claiming he never got the piece he paid for.",
     secenekler: [
       {
         metin: "Defend yourself with your witnesses.",
         basariliSonuc: {
-          mesaj: "Your witnesses proved you right; the slander came to nothing.",
+          mesaj: "Your witnesses proved you right; the slander failed.",
           detay: "Honesty is the best defense.",
         },
         basarisizSonuc: {
-          mesaj: "The claim couldn't be proven, but a shadow fell on your name all the same.",
-          detay: "Some stains never fully wash out.",
+          mesaj: "The claim went unproven, but your name was shadowed.",
+          detay: "Some stains never wash out.",
         },
       },
     ],
   },
   oc_zanaatkar_kutlama_siparisi: {
     baslik: "A Wedding Order",
-    metin: "Special decorations have been commissioned for a grand wedding in the city; they need to be finished quickly.",
+    metin: "Special decorations were ordered for a grand city wedding; they're needed fast.",
     secenekler: [
       {
-        metin: "Work day and night to finish in time.",
+        metin: "Work day and night to finish.",
         basariliSonuc: {
-          mesaj: "You finished the order on time; your work was praised at the wedding.",
-          detay: "Exhaustion is sometimes rewarded with great success.",
+          mesaj: "You finished on time; your work was praised at the wedding.",
+          detay: "Exhaustion is sometimes rewarded.",
         },
         basarisizSonuc: {
-          mesaj: "You couldn't finish in time; you lost both money and reputation.",
-          detay: "Not every race is finished on time.",
+          mesaj: "You couldn't finish; lost money and reputation.",
+          detay: "Not every race is finished in time.",
         },
       },
     ],
