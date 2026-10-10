@@ -5,27 +5,27 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
   iliski_evlilik_teklifi: {
     baslik: "An Influential Bond",
     metin:
-      "{dost} introduced you to a member of a family with fairly powerful connections in the city. A cold but respectful bond formed between you. This marriage won't be full of love, but it could open great doors for you.",
+      "{dost} introduced you to someone from a powerful city family. The marriage would be loveless but open great doors.",
     secenekler: [
       {
         metin: "Accept the marriage of convenience.",
         basariliSonuc: {
           mesaj:
-            "The ceremony was quite grand. You are now part of a powerful family, but the only thing you feel when you get into bed is cold.",
+            "A grand ceremony. You belong to a powerful family, yet bed feels cold.",
         },
         basarisizSonuc: {
-          mesaj: "At the last moment the family found your status insufficient and cancelled the wedding. You became a laughingstock in the city.",
+          mesaj: "The family found you lacking and cancelled the wedding. The city mocks you.",
         },
       },
       {
-        metin: "Say you need love, and turn the offer down.",
+        metin: "Say you want love, refuse.",
         basariliSonuc: {
           mesaj:
-            "You brushed aside influence and money. Everyone calls you mad, but your conscience is very much at ease.",
+            "You spurned influence and money. All call you mad, but your conscience is clear.",
         },
         basarisizSonuc: {
           mesaj:
-            "You refused the offer, but when you got into bed alone at night you couldn't help wondering 'did I make a mistake'.",
+            "You refused, but alone at night you wondered if you erred.",
         },
       },
     ],
@@ -34,28 +34,28 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
   iliski_cocuk_mujdesi: {
     baslik: "An Heir Is Coming",
     metin:
-      "{es} gives you news: your family will grow! But the doctors say {es}'s constitution is weak and the birth could be very risky.",
+      "{es} brings news: the family will grow! But {es}'s constitution is weak; the birth is very risky.",
     secenekler: [
       {
-        metin: "Hire the most expensive midwife and doctor (reduce the risks).",
+        metin: "Hire the best midwife and doctor.",
         basariliSonuc: {
           mesaj:
-            "You didn't spare the money and, with the doctors' help, both {es} and your child came through safely! There is a festive air in the house.",
+            "You spared no coin; {es} and the child came through! The house celebrates.",
         },
         basarisizSonuc: {
           mesaj:
-            "No matter how much money you poured out, fate did not change. Your child was born, but {es} drew their last breath on the birthing bed.",
+            "Money couldn't change fate. The child was born but {es} died in childbed.",
         },
       },
       {
-        metin: "I have no money; we'll trust the village's old midwife.",
+        metin: "No money; trust the village midwife.",
         basariliSonuc: {
           mesaj:
-            "A blessing! With no expense at all, purely by chance, a healthy child was born.",
+            "A blessing! At no cost, by pure luck, a healthy child was born.",
         },
         basarisizSonuc: {
           mesaj:
-            "The cheap midwife couldn't stop the bleeding. On the darkest night of your life you lost both {es} and your unborn baby.",
+            "The cheap midwife couldn't stop the bleeding. You lost {es} and the baby.",
         },
       },
     ],
@@ -64,28 +64,28 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
   soylu_saray_entrikasi: {
     baslik: "The Whisper of Dark Corridors",
     metin:
-      "In the dark corridors of the palace you heard a whisper with your name in it: one of your cousins (or a powerful rival) is unhappy with your rise. The strange taste in your cup, the men waiting in the shadows... Your noble blood has made you a target.",
+      "You heard your name whispered at court: a cousin or powerful rival resents your rise. A strange taste in your cup, men in shadow...",
     secenekler: [
       {
-        metin: "Ignore the threat, increase your guard.",
+        metin: "Ignore it, double your guard.",
         basariliSonuc: {
           mesaj:
-            "You kept your composure. Seeing you unafraid, your enemies backed off; your name is spoken with respect at the palace.",
+            "You kept calm. Your enemies backed off; your name is respected at court.",
         },
         basarisizSonuc: {
           mesaj:
-            "One night a poisoned dagger from the shadows found you. You barely survived, but your wound will never fully heal.",
+            "A poisoned dagger came from the shadows. You barely lived; the wound never fully heals.",
         },
       },
       {
-        metin: "Hire dark men, be the first to eliminate the one you suspect.",
+        metin: "Hire dark men, strike first.",
         basariliSonuc: {
           mesaj:
-            "Your cousin/rival died in 'an unfortunate riding accident'. You are safe. But now when you look in the mirror you see a killer.",
+            "Your cousin died in 'a riding accident'. You're safe, but see a killer in the mirror.",
         },
         basarisizSonuc: {
           mesaj:
-            "The men you hired proved incompetent and talked, giving your name! The retaliation was harsh and nearly cost you your life.",
+            "The hired men were inept and named you! The retaliation nearly killed you.",
         },
       },
     ],
@@ -93,12 +93,12 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
 
   cocuk_hastalik_sonucu_iyi: {
     baslik: "They Found Healing",
-    metin: "Your child finally opened their eyes, the fever broke, and they asked you for water.",
+    metin: "Your child opened their eyes, the fever broke, and they asked for water.",
     secenekler: [
       {
-        metin: "Share your joy, give thanks to God.",
+        metin: "Rejoice, thank God.",
         basariliSonuc: {
-          mesaj: "The vast fear that filled you gave way to tears. Your child is alive!",
+          mesaj: "Fear gave way to tears. Your child lives!",
         },
         basarisizSonuc: { mesaj: "Not used." },
       },
@@ -108,23 +108,23 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
   cocuk_hastalik_sonucu_kotu: {
     baslik: "A Small Coffin",
     metin:
-      "The dreaded thing happened. The fever never broke. Your child's small body began to grow cold in the bed. Even the physicians leave the room in silence.",
+      "The dreaded came. The fever never broke; the small body grew cold. Even the physicians leave silently.",
     secenekler: [
       {
-        metin: "With one last hope, hold them and beg them to wake.",
+        metin: "Hold them, beg them to wake.",
         basariliSonuc: {
           mesaj:
-            "As you wept your tears fell on their face. Suddenly they coughed and drew breath! They weren't dead, only in a deep coma!",
+            "Your tears fell on their face; they coughed and breathed! Only a deep coma!",
         },
         basarisizSonuc: {
           mesaj:
-            "No matter how you cried out, those small eyes never opened again. You buried them with your own hands.",
+            "However you cried, those eyes never opened. You buried them yourself.",
         },
       },
       {
-        metin: "Accept the truth, cover them and prepare the funeral.",
+        metin: "Accept it, prepare the funeral.",
         basariliSonuc: {
-          mesaj: "You don't even have the strength to cry. A part of you was buried with that coffin.",
+          mesaj: "No strength even to weep. A part of you was buried with that coffin.",
         },
         basarisizSonuc: { mesaj: "Not used." },
       },
@@ -134,38 +134,38 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
   cocuk_suctustu: {
     baslik: "Caught in the Act",
     metin:
-      "A shout went up in the market. A cloth merchant is dragging your child by the collar: 'This little thief stole my goods!' The guards are about to close in.",
+      "A shout rose in the market: a cloth merchant drags your child by the collar, crying 'Thief!' Guards approach.",
     secenekler: [
       {
-        metin: "Secretly bribe the guards and the merchant (silence it).",
+        metin: "Bribe the guards and the merchant.",
         basariliSonuc: {
           mesaj:
-            "You pressed purses into their hands. The merchant said 'it was a misunderstanding'. Your child, seeing that justice could be bought with money, smiled a nasty smile.",
+            "You pressed purses on them; 'a misunderstanding,' he said. Your child saw justice sold.",
         },
         basarisizSonuc: {
           mesaj:
-            "Even though they took the bribe, they branded your child a thief in front of everyone. Your family name was tarnished.",
+            "They took the bribe but still branded your child a thief publicly. Your name is stained.",
         },
       },
       {
-        metin: "Take the blame yourself! Say 'if they stole, they stole on my orders.'",
+        metin: "Take the blame: 'On my orders.'",
         basariliSonuc: {
           mesaj:
-            "You pushed your child aside and held out your hands. As the guards chained you and dragged you to the dungeon, your child cried behind you.",
+            "You pushed your child aside, hands out. Chained, you heard them cry behind you.",
         },
         basarisizSonuc: {
           mesaj:
-            "The guards smirked: 'We'll throw you both in.' Your child and you were both chained; their record is stained now.",
+            "'We'll take you both,' they smirked. Both chained; their record is stained.",
         },
       },
       {
-        metin: "Slap the child in front of everyone and hand them over.",
+        metin: "Slap them publicly, hand them over.",
         basariliSonuc: {
           mesaj:
-            "You slapped them and handed them over to justice. The market crowd appreciated your honesty, but you will never forget the hatred your child threw at you as they were led to the guardhouse.",
+            "You slapped and surrendered them. The crowd praised you; you won't forget their hatred.",
         },
         basarisizSonuc: {
-          mesaj: "You struck the child but the merchant still wasn't satisfied. They humiliated you both in the middle of the street.",
+          mesaj: "You struck them, yet the merchant wasn't satisfied. You were both shamed in the street.",
         },
       },
     ],
@@ -174,24 +174,24 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
   cocuk_evlilik: {
     baslik: "Your Child's Wedding",
     metin:
-      "Your child has grown and will now build their own home. The family expects a big wedding, but things haven't been going well lately.",
+      "Your child is to wed. The family expects a grand wedding, but times have been hard.",
     secenekler: [
       {
-        metin: "Go into debt and throw a wedding that shakes the city.",
+        metin: "Go into debt for a city-shaking wedding.",
         basariliSonuc: {
-          mesaj: "It was a wedding talked about for weeks! The smile on your child's face was worth everything.",
+          mesaj: "A wedding talked of for weeks! Your child's smile was worth it all.",
         },
         basarisizSonuc: {
-          mesaj: "You spent a lot but it rained, the guests were miserable. The money was completely wasted.",
+          mesaj: "Great expense, but rain ruined it and the guests grumbled. The money was wasted.",
         },
       },
       {
-        metin: "A plain ceremony is enough; there's no need for show.",
+        metin: "A plain ceremony will do.",
         basariliSonuc: {
-          mesaj: "You sent them off with a small but warm ceremony. You are at peace.",
+          mesaj: "A small, warm ceremony sent them off. You're at peace.",
         },
         basarisizSonuc: {
-          mesaj: "The other family saw this plainness as 'stinginess' and grumbled throughout the ceremony.",
+          mesaj: "The other family called the plainness 'stinginess' and grumbled throughout.",
         },
       },
     ],
@@ -200,25 +200,25 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
   cocuk_meslek_secimi: {
     baslik: "Passing On the Legacy",
     metin:
-      "Your child has reached the age to choose a trade. You want to hand over the business you built, but they want to set sail and take to adventure.",
+      "Your child is old enough to choose a trade. You want to pass on your business, but they long for the sea and adventure.",
     secenekler: [
       {
-        metin: "Object, insist: 'You will take over my business!'",
+        metin: "Insist: 'You'll take over my business!'",
         basariliSonuc: {
-          mesaj: "Even if by force, they listened to you. Now they help you, and the business earns more.",
+          mesaj: "They obeyed, however unwillingly. Now they help you and earnings rose.",
         },
         basarisizSonuc: {
-          mesaj: "You quarreled. They packed their things and ran from home. You were left with the business and your tears on your pillow.",
+          mesaj: "You quarreled; they packed and fled. You kept the business, your pillow the tears.",
         },
       },
       {
-        metin: "Let them choose their own path, give them an allowance.",
+        metin: "Let them choose, give an allowance.",
         basariliSonuc: {
           mesaj:
-            "They hugged you as they boarded the ship. You feel the pride of having raised a child who follows their dreams.",
+            "They hugged you as they boarded. You're proud of a child chasing dreams.",
         },
         basarisizSonuc: {
-          mesaj: "You heard nothing for months. Maybe they died in a pirate attack... The worry eats away at you.",
+          mesaj: "Months without word. Perhaps pirates took them... Worry gnaws at you.",
         },
       },
     ],
@@ -227,21 +227,21 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
   cocuk_ziyaret: {
     baslik: "Old Age and Grandchildren",
     metin:
-      "Years later your child came to visit you with your grandchildren. The house filled with children's voices for the first time in a long while.",
+      "Years later your child visits with your grandchildren. The house rings with children's voices again.",
     secenekler: [
       {
         metin: "Give them your whole day, play games.",
         basariliSonuc: {
-          mesaj: "Playing with your grandchildren made you 10 years younger. This, you say, is the real meaning of life.",
+          mesaj: "Playing with the grandchildren made you ten years younger. This is life's meaning.",
         },
         basarisizSonuc: {
-          mesaj: "You hurt your back while playing, but it was worth it anyway.",
+          mesaj: "You hurt your back playing, but it was worth it.",
         },
       },
       {
-        metin: "Your old body can't take it; settle for a short chat.",
+        metin: "Too frail; settle for a short chat.",
         basariliSonuc: {
-          mesaj: "You tired quickly of the noise and withdrew to your room. Solitude suits you better.",
+          mesaj: "The noise tired you and you withdrew to your room. Solitude suits you.",
         },
         basarisizSonuc: { mesaj: "Not used." },
       },
@@ -251,26 +251,26 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
   aile_tuccar_musteri: {
     baslik: "Your Father's Old Friend",
     metin:
-      "A very old, ruthless and unbelievably rich merchant came. 'Your father and I did business for years. I could leave you this vast trade network — but on one condition: you will marry your child to my crippled and cruel heir.'",
+      "A very old, ruthless, rich merchant came: 'I traded with your father. I'll leave you my network, but your child must wed my crippled, cruel heir.'",
     secenekler: [
       {
-        metin: "My child's life is not for sale! Refuse the offer.",
+        metin: "My child isn't for sale! Refuse.",
         basariliSonuc: {
           mesaj:
-            "You threw the old man out of your shop. Your child hugged you with tearful eyes. You are not rich, but you are a wonderful parent.",
+            "You threw him out. Your child hugged you in tears. Not rich, but a wonderful parent.",
         },
         basarisizSonuc: {
-          mesaj: "The man was furious and turned all your father's old partners against you. Your trade took a heavy wound.",
+          mesaj: "He turned your father's old partners against you. Your trade took a heavy blow.",
         },
       },
       {
-        metin: "Business is business. Marry your child off by force and take the network.",
+        metin: "Business is business. Marry them off, take the network.",
         basariliSonuc: {
           mesaj:
-            "You signed the contract. You took the helm of a trade empire. Your child didn't even look at you on the wedding day and erased you from their life.",
+            "You signed; the empire is yours. Your child ignored you at the wedding and erased you.",
         },
         basarisizSonuc: {
-          mesaj: "Your child fled the house on the wedding night! You got neither the trade nor your child ever again.",
+          mesaj: "Your child fled on the wedding night! You lost both the trade and your child.",
         },
       },
     ],
@@ -279,27 +279,27 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
   aile_soylu_davet: {
     baslik: "The Test of Noble Blood",
     metin:
-      "The council of lords, your kin, called you to a secret meeting. They are planning a new and very cruel tax on the peasants. Will you stand by your blood, or by the people?",
+      "Your kin, the lords, summoned you to a secret meeting: a cruel new tax on peasants. Will you stand by blood or the people?",
     secenekler: [
       {
-        metin: "I won't sell out my own blood! Approve the tax.",
+        metin: "I won't betray my blood. Approve.",
         basariliSonuc: {
           mesaj:
-            "You stamped your seal. You became the most respected member of the family. While the peasants die of hunger on the roads, gold rains on your castle.",
+            "You stamped your seal, the family's most respected. Peasants starve; your castle gleams.",
         },
         basarisizSonuc: {
-          mesaj: "When the peasants heard the decision they revolted and stoned your carriage. You barely escaped, covered in blood.",
+          mesaj: "Peasants revolted and stoned your carriage. You escaped bloodied.",
         },
       },
       {
-        metin: "This is tyranny! Oppose it and protect the people.",
+        metin: "This is tyranny! Oppose it.",
         basariliSonuc: {
           mesaj:
-            "You overturned the table! They stripped you of your noble title, but as you walk the streets thousands of peasants pray for you.",
+            "You overturned the table! Stripped of title, but thousands of peasants pray for you.",
         },
         basarisizSonuc: {
           mesaj:
-            "Your family beat you and threw you out of the council, and seized your property. And the people never learned what you did.",
+            "Your family beat and expelled you, seizing your property. The people never knew.",
         },
       },
     ],
@@ -308,28 +308,28 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
   aile_asker_yoldas: {
     baslik: "Your Father's Bloody Sword",
     metin:
-      "In the barracks a scar-faced old officer pulled you aside: 'Your father and I were in the same trench. He died bravely; he'd want me to keep you safe.' He offers to move you to the palace guard.",
+      "In the barracks a scarred old officer took you aside: 'Your father and I shared a trench. He'd want you safe.' He offers a palace guard post.",
     secenekler: [
       {
-        metin: "Become a Palace Guard. A warm bed and safe pay.",
+        metin: "Become a Palace Guard: warm bed, safe pay.",
         basariliSonuc: {
           mesaj:
-            "Using your father's name you slipped into the palace. While your friends fight in the mud, you drink wine.",
+            "Your father's name got you into the palace. Friends fight in mud while you drink wine.",
         },
         basarisizSonuc: {
           mesaj:
-            "The palace commander realized you'd been pulled in by favor and gave you the worst sewer watches. Your reputation reset to zero.",
+            "The commander saw you were a favorite and gave you sewer duty. Your reputation reset.",
         },
       },
       {
-        metin: "Insist on joining your father's old regiment (the Death Battalion).",
+        metin: "Insist on your father's regiment (the Death Battalion).",
         basariliSonuc: {
           mesaj:
-            "You joined the Death Battalion! When the soldiers saw you they said your father's spirit had returned. Your standing is of legendary proportions.",
+            "You joined the Death Battalion! Soldiers said your father's spirit returned.",
         },
         basarisizSonuc: {
           mesaj:
-            "You pushed yourself too hard to step out of your father's shadow and were ambushed. Your courage nearly cost you your life.",
+            "Pushing to leave your father's shadow, you were ambushed. Courage nearly cost your life.",
         },
       },
     ],
@@ -338,26 +338,26 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
   aile_kole_gecmis: {
     baslik: "The Mark of Chains",
     metin:
-      "The son of the cruel master who once owned your father saw you in a tavern. Laughing, saying 'Isn't this our slave's child?', he throws you a purse of gold to kiss his foot.",
+      "The son of the cruel master who once owned your father spotted you in a tavern. 'Our slave's brat?' he laughed, tossing gold to kiss his foot.",
     secenekler: [
       {
-        metin: "Take the gold and kiss his foot. Pride doesn't fill a belly.",
+        metin: "Take the gold, kiss his foot. Pride feeds no one.",
         basariliSonuc: {
           mesaj:
-            "You kissed his foot. You were humiliated in front of everyone in the tavern. Your purse filled, but your soul stayed crushed on that floor.",
+            "You kissed his foot, shamed before all. Your purse filled; your soul stayed crushed.",
         },
         basarisizSonuc: {
-          mesaj: "As you bent down he kicked you in the face! You didn't get the full gold and your reputation was destroyed.",
+          mesaj: "He kicked your face as you bent! You got little gold and lost your standing.",
         },
       },
       {
-        metin: "Overturn the table and show him you are no slave!",
+        metin: "Overturn the table, show you're no slave!",
         basariliSonuc: {
           mesaj:
-            "The punch you landed on his face knocked the man to the floor. The crowd admired your courage. No one can mock your past now!",
+            "Your punch floored him. The crowd admired your courage. None can mock your past now!",
         },
         basarisizSonuc: {
-          mesaj: "His guards beat you until you passed out. But everyone understood you were an unbowing lion.",
+          mesaj: "His guards beat you senseless. But all saw you were an unbowed lion.",
         },
       },
     ],
@@ -366,27 +366,27 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
   aile_isci_grev: {
     baslik: "The Fire of Revolt",
     metin:
-      "The workers rose up at the factory where your father worked in blood and sweat for years and sickened and died. They are about to burn the factory down. The union wants to see you as their leader.",
+      "Workers rose at the factory where your father toiled, sickened and died; they mean to burn it. The union wants you as leader.",
     secenekler: [
       {
-        metin: "Take up the torch! 'You will pay for what you did to my father!'",
+        metin: "Take the torch: 'You'll pay for my father!'",
         basariliSonuc: {
           mesaj:
-            "You turned the strike into a revolution! The bosses knelt. You avenged your father and became the people's idol.",
+            "Strike became revolution! Bosses knelt. Father avenged, you're the people's idol.",
         },
         basarisizSonuc: {
           mesaj:
-            "The gendarmes showed no mercy. You were trampled under truncheons and horses. Branded a traitor, you were thrown in the dungeon.",
+            "Gendarmes showed no mercy; truncheons and horses crushed you. Branded traitor, jailed.",
         },
       },
       {
-        metin: "Meet secretly with the boss and sell out the revolt from within.",
+        metin: "Meet the boss secretly, sell out the revolt.",
         basariliSonuc: {
           mesaj:
-            "You gave the boss the leaders' names. The revolt was put down. The boss made you a manager, but your own neighborhood spits in your face now.",
+            "You named the leaders; the revolt fell. Made manager, but your street spits on you.",
         },
         basarisizSonuc: {
-          mesaj: "The workers saw you leaving the boss's office! Thanks to the guards you were saved from a lynching by seconds.",
+          mesaj: "Workers saw you leave the boss's office! Guards saved you from lynching by seconds.",
         },
       },
     ],
@@ -395,26 +395,26 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
   aile_cellat_soyad: {
     baslik: "The Son of the Severing Blade",
     metin:
-      "The family of the person you love with all your heart learned your past: 'We do not give our daughter/son to the seed of an executioner!' Either you disown your surname, or you live without them.",
+      "The family of your beloved learned your past: 'We won't give our child to an executioner's seed!' Disown your name or live without them.",
     secenekler: [
       {
-        metin: "Say 'I am ashamed of my father! I'm changing my surname.'",
+        metin: "I'm ashamed of my father; I'll change my name.",
         basariliSonuc: {
           mesaj:
-            "You denied your past. You married, but your father's sad eyes and this life built on a lie eat away at you.",
+            "You denied your past and wed. Your father's sad eyes and a life of lies eat at you.",
         },
         basarisizSonuc: {
-          mesaj: "You both denied it and they didn't believe you. Saying 'there's death in your blood', they threw you out.",
+          mesaj: "They didn't believe you. 'Death is in your blood,' they said, throwing you out.",
         },
       },
       {
-        metin: "I will use your fears! Become the chief dungeon-keeper.",
+        metin: "I'll use your fears: become chief jailer.",
         basariliSonuc: {
           mesaj:
-            "You forgot about love. You became the state's most feared dungeon-keeper. That family who wouldn't give you their daughter now trembles in fear of you.",
+            "You forgot love and became the state's most feared jailer. That family now trembles.",
         },
         basarisizSonuc: {
-          mesaj: "You tried to intimidate, but the nobles crushed a lowlife like you instantly. You were left jobless and alone.",
+          mesaj: "You tried to intimidate, but nobles crushed you at once. Jobless and alone.",
         },
       },
     ],
@@ -423,28 +423,28 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
   aile_hekim_hasta: {
     baslik: "The Price of Healing",
     metin:
-      "An epidemic has broken out in the region. Your own child/spouse is burning with fever, and at the same moment 10 children in the neighborhood orphanage are dying. The herbs your mother left you are enough for only 1 person or 1 group.",
+      "An epidemic broke out. Your child/spouse burns with fever, ten orphans are dying too. Your mother's herbs suffice for one person or group.",
     secenekler: [
       {
-        metin: "Give it only to my own family (my child); I don't care about the others.",
+        metin: "Only my family; I care not for others.",
         basariliSonuc: {
           mesaj:
-            "You saved your own family. When morning came and 10 small corpses were carried from the orphanage, you shut your window tight.",
+            "Your family lived. At dawn ten small corpses left the orphanage; you shut your window.",
         },
         basarisizSonuc: {
           mesaj:
-            "The medicine didn't fully work on your family, but at least they're alive. And the curse of those dead children is on you.",
+            "The medicine didn't fully work, but they live. The dead children's curse is on you.",
         },
       },
       {
-        metin: "These herbs are everyone's right! Go to the orphanage.",
+        metin: "Herbs belong to all! Go to the orphanage.",
         basariliSonuc: {
           mesaj:
-            "You saved the orphans! As a blessing, your own child gained immunity too. The city is grateful enough to raise a statue in your name.",
+            "You saved the orphans! Your child gained immunity too. The city will raise your statue.",
         },
         basarisizSonuc: {
           mesaj:
-            "The orphans lived... But when you got home you found your own child already cold. You became a hero, but your soul died.",
+            "The orphans lived... but you found your own child cold. A hero, with a dead soul.",
         },
       },
     ],
@@ -453,27 +453,27 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
   aile_kacakci_teklif: {
     baslik: "Bloody Gold",
     metin:
-      "Your father's old underworld partners came. They want to use your tunnels to smuggle the royal jewels they stole from the palace treasury out of the city.",
+      "Your father's old underworld partners came: they want your tunnels to smuggle royal jewels stolen from the palace treasury out of the city.",
     secenekler: [
       {
-        metin: "Smuggle the jewels! This is my father's legacy.",
+        metin: "Smuggle the jewels, it's my father's legacy.",
         basariliSonuc: {
           mesaj:
-            "You smuggled the jewels out! The king went mad, but overnight you reached unimaginable wealth.",
+            "You smuggled them out! The king raged, but you grew fabulously rich overnight.",
         },
         basarisizSonuc: {
           mesaj:
-            "You were reported! The guards raided the tunnel. They took your fortune and threw you in the dungeons.",
+            "You were betrayed! Guards raided the tunnel, took your fortune and jailed you.",
         },
       },
       {
-        metin: "I will not be a criminal like my father! Report them.",
+        metin: "I won't be a criminal like my father! Report them.",
         basariliSonuc: {
-          mesaj: "You sold the men to the king! The king rewarded you and cleared your family's name.",
+          mesaj: "You sold them to the king! He rewarded you and cleared your family's name.",
         },
         basarisizSonuc: {
           mesaj:
-            "They learned of your report. They raided your house at night and put you to the sword. You paid for your honesty in blood.",
+            "They learned of your report and put you to the sword at night. Honesty cost blood.",
         },
       },
     ],
@@ -482,24 +482,24 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
   aile_ciftci_kitlik: {
     baslik: "A Cry From the Village",
     metin:
-      "There's a letter from your village: famine has struck, your siblings and mother are eating tree bark. They ask you to send your entire salary and savings. But you have a family in the city to provide for too.",
+      "A letter from your village: famine; your siblings and mother eat bark and ask for all your savings. You have a family to feed in the city too.",
     secenekler: [
       {
-        metin: "Cut my own child's/spouse's provisions and send it to the village.",
+        metin: "Cut my child's food, send it to the village.",
         basariliSonuc: {
           mesaj:
-            "Your siblings in the village survived on your money. But your own child slept hungry for weeks and looked at you with hatred.",
+            "The village lived on your money. Your child slept hungry for weeks, hating you.",
         },
         basarisizSonuc: {
           mesaj:
-            "You sent the money but bandits took it on the road. Both your own family went hungry and those in the village died without help.",
+            "Bandits took the money on the road. Your family starved and the village died unaided.",
         },
       },
       {
-        metin: "This is my home. Those in the village can fend for themselves.",
+        metin: "This is my home. The village must fend for itself.",
         basariliSonuc: {
           mesaj:
-            "You kept your money for yourself. Your own children slept full. Months later, the only news from the village was that your mother had died.",
+            "You kept your money; your children slept full. Months later: news your mother had died.",
         },
         basarisizSonuc: { mesaj: "Not used." },
       },
@@ -509,28 +509,28 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
   genel_kayip_cocuk_arama: {
     baslik: "The Missing Child",
     metin:
-      "A child has gone missing in the neighborhood; darkness is falling and everyone is gathering volunteers for the search.",
+      "A child is missing in the neighborhood; darkness falls and everyone gathers volunteers.",
     secenekler: [
       {
         metin: "Join the search.",
         basariliSonuc: {
-          mesaj: "You found the child in an old mill; the family was grateful to you.",
-          detay: "Every step you took that night was worth it; the mother's tears are still on your mind.",
+          mesaj: "You found the child in an old mill; the family is grateful.",
+          detay: "Every step that night was worth it.",
         },
         basarisizSonuc: {
-          mesaj: "You searched all night, and another group found the child.",
-          detay: "You did what you could; it didn't change the outcome but it didn't make your effort worthless.",
+          mesaj: "You searched all night; another group found the child.",
+          detay: "The outcome stood, but your effort counted.",
         },
       },
       {
-        metin: "Stay home, don't get involved.",
+        metin: "Stay home, stay out.",
         basariliSonuc: {
-          mesaj: "You stayed home; the child turned up on their own toward morning.",
-          detay: "It ended well, but there's a slight guilt in you for not joining.",
+          mesaj: "You stayed home; the child turned up by dawn.",
+          detay: "It ended well, but guilt lingers.",
         },
         basarisizSonuc: {
-          mesaj: "Your neighbors asked, 'everyone searched, where were you?'",
-          detay: "Sometimes not joining carries a price too.",
+          mesaj: "Neighbors asked: 'Everyone searched, where were you?'",
+          detay: "Staying out has a price too.",
         },
       },
     ],
@@ -539,28 +539,28 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
   orgut_cocuk_katilimi: {
     baslik: "A Dark Legacy",
     metin:
-      "The leaders of the secret organization you belong to met with you privately. They say they have been watching your own child for years and want to bring them into the organization too. This could bury your child's life in darkness forever.",
+      "Your secret order's leaders say they've watched your child for years and want them to join. This could bury your child's life in darkness.",
     secenekler: [
       {
-        metin: "Take my child in too. Let my legacy continue.",
+        metin: "Take my child too; let my legacy live.",
         basariliSonuc: {
-          mesaj: "Your child took the oath and melted into the shadows. Within the organization your family's place became legendary.",
-          detay: "You are very powerful. But now at dinner you see the innocence in your child's eyes has died.",
+          mesaj: "Your child swore the oath and vanished into shadow. Your family became legend there.",
+          detay: "You're mighty, but your child's innocence died.",
         },
         basarisizSonuc: {
-          mesaj: "Your child grew frightened during the ritual and tried to run. The organization punished them.",
-          detay: "You broke your child's heart and the organization marked you an incompetent parent.",
+          mesaj: "Your child panicked at the ritual and tried to flee. The order punished them.",
+          detay: "You broke your child, and the order marked you inept.",
         },
       },
       {
-        metin: "Never! My child will not touch this filthy business.",
+        metin: "Never! My child won't touch this.",
         basariliSonuc: {
-          mesaj: "You drew your weapon and defied the leaders. They excommunicated you from the organization, but you saved your child.",
-          detay: "You are an ordinary person now, and in danger, but you are proud of your parenting.",
+          mesaj: "You drew steel and defied the leaders. Expelled, but you saved your child.",
+          detay: "Ordinary and endangered, yet proud of your parenting.",
         },
         basarisizSonuc: {
-          mesaj: "The moment you refused you were attacked! Badly wounded, you barely fled the city with your child.",
-          detay: "You left everything behind. You are in poverty, but you are together.",
+          mesaj: "You were attacked on the spot! Badly hurt, you barely fled with your child.",
+          detay: "You left everything. Poor, but together.",
         },
       },
     ],
@@ -569,28 +569,28 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
   aile_ikilem_cocugun_egitimi: {
     baslik: "Your Child's Future",
     metin:
-      "{cocuk} wants to train under a skilled master, but it will swallow most of the money you've saved. You either invest in this chance or keep the money for your own future.",
+      "{cocuk} wants to train under a skilled master, but it would swallow most of your savings. Invest in them, or in your own future?",
     secenekler: [
       {
-        metin: "Spend the money, invest in {cocuk}'s education.",
+        metin: "Spend it on {cocuk}'s education.",
         basariliSonuc: {
-          mesaj: "{cocuk} began their training; the excitement in their eyes was worth every coin.",
-          detay: "The fruit of some investments is harvested years later.",
+          mesaj: "{cocuk} began training; the eagerness in their eyes was worth every coin.",
+          detay: "Some investments bear fruit years later.",
         },
         basarisizSonuc: {
-          mesaj: "The training began but {cocuk} struggled; still, they're doing their best.",
-          detay: "Not every investment bears fruit at once.",
+          mesaj: "Training began but {cocuk} struggles; still, they try.",
+          detay: "Not every investment pays at once.",
         },
       },
       {
-        metin: "Keep the money, secure your own future.",
+        metin: "Keep the money, secure your future.",
         basariliSonuc: {
-          mesaj: "You kept the money; {cocuk} was disappointed but your finances are safe.",
-          detay: "Some securities are traded for the dreams of those you love.",
+          mesaj: "You kept it; {cocuk} was crushed but your purse is safe.",
+          detay: "Security is sometimes bought with a loved one's dream.",
         },
         basarisizSonuc: {
-          mesaj: "{cocuk} never forgot this decision; a silent distance formed between you.",
-          detay: "The price of some decisions is paid for years.",
+          mesaj: "{cocuk} never forgot this; a silent distance grew between you.",
+          detay: "Some choices are paid for years.",
         },
       },
     ],
@@ -599,29 +599,29 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
   aile_ikilem_yasli_ebeveyn_bakimi: {
     baslik: "Aging Hands",
     metin:
-      "{baba} and {anne} are no longer as strong as before; both need regular care, perhaps a helper. It will take both your money and your time — but they are the ones who raised you.",
+      "{baba} and {anne} are frail now; both need regular care, perhaps a helper. It costs money and time — but they raised you.",
     secenekler: [
       {
-        metin: "Set aside money for regular care, visit often.",
+        metin: "Fund regular care, visit often.",
         basariliSonuc: {
-          mesaj: "{anne} and {baba} are more comfortable now; the gratitude on their faces was worth every coin.",
-          detay: "Some debts are paid not with money but with time.",
+          mesaj: "{anne} and {baba} are comfortable; their gratitude was worth every coin.",
+          detay: "Some debts are paid in time.",
         },
         basarisizSonuc: {
-          mesaj: "You did what you could but the troubles of old age never end.",
-          detay: "Some burdens never lighten, they are only shared.",
+          mesaj: "You did your best, but old age's troubles never end.",
+          detay: "Some burdens never lighten, only shared.",
         },
       },
       {
-        metin: "Focus on your own work and family, drop by now and then.",
+        metin: "Focus on work and family, visit sometimes.",
         basariliSonuc: {
-          mesaj: "You focused on your work; {anne} and {baba} get by, but you notice the sadness in their voices.",
-          detay: "Time is the one thing you can't get back.",
+          mesaj: "You focused on work; {anne} and {baba} manage, but their voices sound sad.",
+          detay: "Time can't be won back.",
         },
         basarisizSonuc: {
           mesaj:
-            "The neighbors began to talk of you as 'one who doesn't look after his family'; {baba} never said it to you, but you know he was hurt.",
-          detay: "Silent hurts are the deepest.",
+            "Neighbors called you neglectful; {baba} said nothing, but you know it hurt.",
+          detay: "Silent hurts run deepest.",
         },
       },
     ],
@@ -630,28 +630,28 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
   aile_ikilem_esin_hayali: {
     baslik: "Your Spouse's Dream",
     metin:
-      "{es} wants to realize a dream they've held for years: to start their own business. For this they need a significant part of the family's savings. It's risky, but you see the light in their eyes.",
+      "{es} has long dreamed of starting a business, needing much of your savings. Risky, but you see the light in their eyes.",
     secenekler: [
       {
-        metin: "Give the savings, support their dream.",
+        metin: "Give the savings, back the dream.",
         basariliSonuc: {
-          mesaj: "{es} started their business; the excitement in their eyes was brighter than it had been in years.",
-          detay: "Some investments show up not on the balance sheet but in the relationship.",
+          mesaj: "{es} launched the business; their eyes shone as in years.",
+          detay: "Some investments show in the marriage.",
         },
         basarisizSonuc: {
-          mesaj: "The venture didn't go as hoped; the money is gone but {es} is grateful, at least, that you tried.",
-          detay: "Sometimes it's not the result but the support that matters.",
+          mesaj: "The venture failed, the money's gone, but {es} is grateful you tried.",
+          detay: "Sometimes support matters more than results.",
         },
       },
       {
-        metin: "Say no, keep the savings safe.",
+        metin: "Say no, keep the savings.",
         basariliSonuc: {
-          mesaj: "You refused; {es} took it with understanding, but the light in their eyes dimmed a little.",
-          detay: "Safety is sometimes bought at the price of a dream.",
+          mesaj: "You refused; {es} understood, but the light in their eyes dimmed.",
+          detay: "Safety is sometimes bought with a dream.",
         },
         basarisizSonuc: {
-          mesaj: "{es} never forgot this refusal; an unspoken hurt formed between you.",
-          detay: "Some no's leave a mark on a marriage.",
+          mesaj: "{es} never forgot the refusal; an unspoken hurt grew between you.",
+          detay: "Some no's scar a marriage.",
         },
       },
     ],
@@ -660,28 +660,28 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
   aile_ikilem_kardesin_borcu: {
     baslik: "A Gambling Debt",
     metin:
-      "A relative showed up at your door: they've fallen into a large gambling debt, the creditors are threatening. They ask you to clear the debt, or they won't even say 'what might happen'.",
+      "A relative is at your door: deep in gambling debt, creditors threatening. Unless you pay, they can't even say 'what might happen'.",
     secenekler: [
       {
-        metin: "Pay the debt, keep the family peace.",
+        metin: "Pay the debt, keep family peace.",
         basariliSonuc: {
-          mesaj: "You cleared the debt; your relative thanked you in tears and swore 'never again'.",
-          detay: "You've lost count of how many times you've heard 'never again', but you did it anyway.",
+          mesaj: "You paid; your relative swore 'never again' in tears.",
+          detay: "You've heard that vow often, yet paid.",
         },
         basarisizSonuc: {
-          mesaj: "You cleared the debt but your relative was back at your door a month later.",
-          detay: "Some habits don't end in one go.",
+          mesaj: "You paid, but they were back at your door a month later.",
+          detay: "Habits don't end in one go.",
         },
       },
       {
-        metin: "Refuse, let them solve their own problem.",
+        metin: "Refuse; let them solve it.",
         basariliSonuc: {
-          mesaj: "You refused; your relative left in anger but solved the problem on their own.",
-          detay: "Sometimes tough love is the right thing.",
+          mesaj: "You refused; they left angry but solved it alone.",
+          detay: "Sometimes tough love is right.",
         },
         basarisizSonuc: {
-          mesaj: "The creditors escalated the matter and the family name was tarnished in the neighborhood.",
-          detay: "A refusal sometimes comes back at a greater cost.",
+          mesaj: "Creditors escalated and the family name was tarnished locally.",
+          detay: "Refusal may cost more later.",
         },
       },
     ],
@@ -690,28 +690,28 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
   aile_ikilem_cocugun_secimi: {
     baslik: "A Different Path",
     metin:
-      "{cocuk} announced they want to choose not your trade but an art society doesn't much respect (traveling theater, street music). Hearing their decision, you feel both pride and fear.",
+      "{cocuk} wants not your trade but an art society scorns (traveling theater, street music). You feel pride and fear.",
     secenekler: [
       {
-        metin: "Support their decision, clear the way for them.",
+        metin: "Support them, clear their way.",
         basariliSonuc: {
-          mesaj: "{cocuk} hugged you with tearful eyes. There's some gossip in the neighborhood, but your conscience is at peace.",
-          detay: "Some pride shines not in society's eyes but within the home.",
+          mesaj: "{cocuk} hugged you, eyes brimming. Neighbors gossip, but your conscience is calm.",
+          detay: "Some pride shines inside the home.",
         },
         basarisizSonuc: {
-          mesaj: "Your support pleased them but the neighbors criticized you as 'unable to control your child'.",
-          detay: "Not every support is met with applause.",
+          mesaj: "They were glad, but neighbors called you 'unable to rein in your child'.",
+          detay: "Not all support is applauded.",
         },
       },
       {
-        metin: "Insistently steer them toward the family trade.",
+        metin: "Insist on the family trade.",
         basariliSonuc: {
-          mesaj: "{cocuk} chose your path, however reluctantly; the light in their eyes never came back as it was.",
-          detay: "Some victories are no different from losing.",
+          mesaj: "{cocuk} reluctantly took your path; the light in their eyes never returned.",
+          detay: "Some victories are losses.",
         },
         basarisizSonuc: {
-          mesaj: "{cocuk} left home; you heard nothing for years.",
-          detay: "Insisting sometimes loses you what you had.",
+          mesaj: "{cocuk} left home; years without word.",
+          detay: "Insisting can lose what you had.",
         },
       },
     ],
@@ -720,28 +720,28 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
   aile_ikilem_miras_kavgasi: {
     baslik: "A Share of the Inheritance",
     metin:
-      "A distant relative died and an ugly fight over the property they left broke out among the relatives. You can defend your share to the last, or withdraw for the sake of peace.",
+      "A distant relative died; relatives brawl ugly over the estate. You can defend your share fully or withdraw for peace.",
     secenekler: [
       {
-        metin: "Hire a lawyer, pursue your rights to the end.",
+        metin: "Hire a lawyer, fight to the end.",
         basariliSonuc: {
-          mesaj: "The court ruled in your favor; you got your share but your relative never contacted you again.",
-          detay: "You can't tell whether the gold you won outweighed the kinship you lost.",
+          mesaj: "The court ruled for you; you got your share, but the relative never called again.",
+          detay: "Did the gold outweigh the kin lost?",
         },
         basarisizSonuc: {
-          mesaj: "You lost the case; both the costs came out of your pocket and you made an enemy within the family.",
-          detay: "In some fights no one wins.",
+          mesaj: "You lost; costs came from your pocket and you made a family enemy.",
+          detay: "Some fights have no winner.",
         },
       },
       {
-        metin: "Give up your share, choose family peace.",
+        metin: "Give up your share, choose peace.",
         basariliSonuc: {
-          mesaj: "You gave up your share; your relative thanked you in surprise, and your family bonds grew stronger.",
-          detay: "Some riches aren't measured in gold.",
+          mesaj: "You yielded; the relative thanked you, stunned, and family bonds strengthened.",
+          detay: "Some riches aren't gold.",
         },
         basarisizSonuc: {
-          mesaj: "You gave it up but the other relatives read it as 'weakness' and took you lightly.",
-          detay: "Kindness is not always appreciated.",
+          mesaj: "You yielded, but relatives called it 'weakness' and scorned you.",
+          detay: "Kindness isn't always valued.",
         },
       },
     ],
@@ -750,28 +750,28 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
   aile_ikilem_ikisi_bir_arada: {
     baslik: "Two Invitations, One Day",
     metin:
-      "{dost}'s most important day and the meeting for the greatest business opportunity of your life fell on exactly the same day. You can't make it to both.",
+      "{dost}'s most important day and your life's biggest business meeting fall on the same day. You can't do both.",
     secenekler: [
       {
         metin: "Be there for {dost}.",
         basariliSonuc: {
-          mesaj: "You were there for {dost}; the happiness in their eyes was worth the opportunity you missed.",
-          detay: "Some moments never come back, just like missed opportunities.",
+          mesaj: "You were there for {dost}; their joy outweighed the lost chance.",
+          detay: "Some moments, like chances, never return.",
         },
         basarisizSonuc: {
-          mesaj: "You were there, but a regret stayed in you for missing the opportunity.",
-          detay: "Even the right choice sometimes stings a little.",
+          mesaj: "You were there, but regret for the lost chance lingers.",
+          detay: "Even the right choice stings.",
         },
       },
       {
         metin: "Go to the business meeting.",
         basariliSonuc: {
-          mesaj: "The meeting went wonderfully, you seized a great opportunity. {dost}, though, never contacted you like before.",
-          detay: "Your career rose but there's an empty chair at your table now.",
+          mesaj: "The meeting went superbly; you seized the chance. {dost} never called like before.",
+          detay: "Career up, but one chair empty at your table.",
         },
         basarisizSonuc: {
-          mesaj: "The meeting didn't go as hoped either, and on top of it you hurt {dost}.",
-          detay: "Some days lose you both business and heart.",
+          mesaj: "The meeting flopped, and you hurt {dost} too.",
+          detay: "Some days cost both business and heart.",
         },
       },
     ],
@@ -780,29 +780,29 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
   aile_koken_kole_onyargi: {
     baslik: "An Old Shadow",
     metin:
-      "The master of the guild you wanted to join refused your membership, recalling your family's slave past: 'No one of your line comes under this roof,' he said. His words still ring in your ears.",
+      "The guild master refused you, citing your family's slave past: 'None of your line under this roof.' His words still ring.",
     secenekler: [
       {
-        metin: "Defy him in front of everyone, defend your rights.",
+        metin: "Defy him before everyone.",
         basariliSonuc: {
-          mesaj: "Your words echoed within the guild; some members quietly showed their support.",
-          detay: "Some challenges bear fruit with time.",
+          mesaj: "Your words echoed through the guild; some members quietly backed you.",
+          detay: "Some challenges bear fruit in time.",
         },
         basarisizSonuc: {
-          mesaj: "The master declared you 'insolent' and shut the guild doors to you forever.",
+          mesaj: "The master called you 'insolent' and shut the guild to you forever.",
           detay: "Not every challenge is won.",
         },
       },
       {
-        metin: "Withdraw quietly, work twice as hard and prove yourself another way.",
+        metin: "Withdraw quietly, work twice as hard.",
         basariliSonuc: {
           mesaj:
-            "Over the years your independent work grew so renowned that the guild now wants you in its ranks.",
-          detay: "Patience is sometimes the sharpest answer.",
+            "Years on, your solo work grew so famed the guild now wants you.",
+          detay: "Patience is the sharpest answer.",
         },
         basarisizSonuc: {
-          mesaj: "Your efforts moved slowly; the prejudice was not easily broken.",
-          detay: "Some walls don't come down alone.",
+          mesaj: "Progress was slow; the prejudice held.",
+          detay: "Some walls don't fall alone.",
         },
       },
     ],
@@ -811,27 +811,27 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
   aile_koken_soylu_ayricalik: {
     baslik: "An Old Debt",
     metin:
-      "An old farmer came to your door: he says your great-grandfather unjustly took his land and the debt is still on his family's back. He has an old, yellowed document in his hand.",
+      "An old farmer came: your great-grandfather unjustly took his land, he says, and the debt still burdens his family. He holds a yellowed document.",
     secenekler: [
       {
-        metin: "Examine the document; if he's right, pay compensation.",
+        metin: "Examine it; if he's right, compensate.",
         basariliSonuc: {
-          mesaj: "The document was genuine; you paid the compensation and the old man thanked you in tears.",
-          detay: "Some debts deserve to be paid even generations later.",
+          mesaj: "The document was real; you paid and the old man thanked you in tears.",
+          detay: "Some debts deserve paying across generations.",
         },
         basarisizSonuc: {
-          mesaj: "You paid, but the man still couldn't fully get over his hurt.",
-          detay: "Some wounds don't fully close with money.",
+          mesaj: "You paid, but the man never fully healed.",
+          detay: "Money can't close some wounds.",
         },
       },
       {
-        metin: "Use your noble influence to drive the man from your door.",
+        metin: "Use noble influence to drive him off.",
         basariliSonuc: {
-          mesaj: "You had the man thrown out; no one could stand against you, but something bothered you inside.",
-          detay: "Privilege sometimes silences the conscience, but does not kill it.",
+          mesaj: "You had him thrown out; none opposed you, but something nags inside.",
+          detay: "Privilege mutes conscience, never kills it.",
         },
         basarisizSonuc: {
-          mesaj: "The man's story spread through the neighborhood; rumors of a 'cruel noble' began to follow you.",
+          mesaj: "His story spread; rumors of a 'cruel noble' dog you.",
           detay: "Some truths can't be silenced.",
         },
       },
@@ -841,28 +841,28 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
   aile_koken_tefeci_borc_defteri: {
     baslik: "Your Father's Ledger",
     metin:
-      "Going through the old debt ledger your father left, you saw dozens of names still unpaid — some now old, poor, helpless. The ledger still means a collectible fortune.",
+      "In your father's old ledger you found dozens of unpaid names, some now old, poor, helpless. It's still a collectible fortune.",
     secenekler: [
       {
-        metin: "Ruthlessly collect every debt in the ledger.",
+        metin: "Collect every debt ruthlessly.",
         basariliSonuc: {
-          mesaj: "You collected the debts one by one; your coffer filled, but your father's nickname stuck to you too in the neighborhood.",
-          detay: "Some inheritances carry as much hatred as wealth.",
+          mesaj: "You collected; your coffer filled, but your father's nickname stuck to you.",
+          detay: "Some legacies carry hatred with gold.",
         },
         basarisizSonuc: {
-          mesaj: "Some debtors cursed you openly, one even threatened you.",
-          detay: "Ruthless collection sometimes stockpiles enemies.",
+          mesaj: "Some debtors openly cursed you; one even threatened you.",
+          detay: "Ruthless collecting breeds enemies.",
         },
       },
       {
-        metin: "Burn the ledger, free everyone of their debt.",
+        metin: "Burn the ledger, free everyone.",
         basariliSonuc: {
           mesaj:
-            "News that you threw the ledger in the fire spread fast in the neighborhood; your father's tainted name was cleared a little thanks to you.",
+            "News of the burning spread; your father's stained name was cleared a little.",
           detay: "Some riches are worth burning.",
         },
         basarisizSonuc: {
-          mesaj: "You burned the ledger but some old debtors thought it a trick and still keep their distance.",
+          mesaj: "You burned it, but some debtors think it a trick and keep away.",
           detay: "Trust isn't built in a day.",
         },
       },
@@ -872,28 +872,28 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
   aile_koken_kacakci_eski_baglanti: {
     baslik: "An Old Face",
     metin:
-      "In a dark street, your father's old smuggling partner appeared before you. He wants to move a valuable but forbidden good from across the border through you, no questions asked.",
+      "In a dark street your father's old smuggling partner appeared. He wants a valuable forbidden cargo from across the border moved through you, no questions.",
     secenekler: [
       {
-        metin: "Accept the offer, return to the family trade.",
+        metin: "Accept, return to the family trade.",
         basariliSonuc: {
-          mesaj: "The goods passed through without trouble; your coffer filled, but you noticed you were walking in your father's footsteps.",
-          detay: "Some blood just won't change.",
+          mesaj: "The cargo passed cleanly; your coffer filled, but you saw your father's steps in yours.",
+          detay: "Some blood never changes.",
         },
         basarisizSonuc: {
-          mesaj: "A patrol caught you at the last moment; you barely fled but lost the goods and the money.",
-          detay: "Old lives sometimes draw you into a trap.",
+          mesaj: "A patrol caught you; you barely fled, losing goods and money.",
+          detay: "Old lives lure you into traps.",
         },
       },
       {
-        metin: "Refuse, remind him you left that life behind.",
+        metin: "Refuse, say you've left that life.",
         basariliSonuc: {
-          mesaj: "You refused the offer; the man shrugged and melted into the dark, and you felt lighter.",
-          detay: "Refusing the past is a kind of courage too.",
+          mesaj: "You refused; he shrugged and vanished into the dark, and you felt lighter.",
+          detay: "Refusing the past takes courage too.",
         },
         basarisizSonuc: {
-          mesaj: "Word of your refusal went round the old circle as 'he's not one of us anymore'.",
-          detay: "Some doors, once closed, don't open again.",
+          mesaj: "Word of your refusal spread: 'He's no longer one of us.'",
+          detay: "A closed door stays closed.",
         },
       },
     ],
@@ -902,28 +902,28 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
   aile_koken_cellat_damgasi: {
     baslik: "A Duty Called By Blood",
     metin:
-      "The local authorities, knowing your father's old trade, want you to carry out an execution personally: 'This is already in your blood,' they say. Refusing will be seen as strange, but accepting will brand you forever.",
+      "Officials, knowing your father's trade, want you to carry out an execution: 'It's in your blood.' Refusing looks odd; accepting brands you forever.",
     secenekler: [
       {
-        metin: "Refuse, say this fate is not yours.",
+        metin: "Refuse, this fate isn't mine.",
         basariliSonuc: {
-          mesaj: "You refused; the authorities found someone else, and you stepped one more pace out of your father's shadow.",
-          detay: "Fate is sometimes waiting to be refused.",
+          mesaj: "You refused; another was found, and you stepped from your father's shadow.",
+          detay: "Fate sometimes awaits refusal.",
         },
         basarisizSonuc: {
-          mesaj: "Your refusal became a story of 'one who fled his family's duty', and some doors closed.",
-          detay: "Fleeing the past has a price too.",
+          mesaj: "Your refusal became 'one who fled family duty'; doors closed.",
+          detay: "Fleeing the past costs too.",
         },
       },
       {
-        metin: "Accept, be the continuation of the family trade.",
+        metin: "Accept, continue the family trade.",
         basariliSonuc: {
-          mesaj: "You carried out the duty; the authorities are pleased, but now even children who see you on the street whisper.",
-          detay: "Some inheritances label you forever.",
+          mesaj: "You did the duty; officials are pleased, but even children whisper on the street.",
+          detay: "Some legacies brand you forever.",
         },
         basarisizSonuc: {
-          mesaj: "You barely finished the duty; since that night your sleep has been uneasy.",
-          detay: "Even if it's in your blood, this weight is not light.",
+          mesaj: "You barely finished; your sleep has been uneasy since.",
+          detay: "In your blood or not, the weight is heavy.",
         },
       },
     ],
@@ -932,29 +932,29 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
   aile_koken_saray_sirlari: {
     baslik: "A Secret Your Mother Knew",
     metin:
-      "You remembered a secret from your mother's old palace days: a shameful past of an influential noble. This knowledge could give you a great advantage, or it might deserve to be quietly buried.",
+      "You recalled a secret from your mother's palace days: a powerful noble's shameful past. It could be a great advantage, or deserve burial.",
     secenekler: [
       {
-        metin: "Use the secret to wring an advantage from the noble.",
+        metin: "Use the secret to extract favors.",
         basariliSonuc: {
           mesaj:
-            "The noble, afraid of the secret coming out, gave you what you wanted; you won, but you broke the principle of loyalty your mother taught.",
+            "The noble, fearing exposure, yielded; you won but broke your mother's loyalty.",
           detay: "Some gains are built on an oath.",
         },
         basarisizSonuc: {
-          mesaj: "Instead of bowing to the blackmail, the noble chose to discredit you.",
+          mesaj: "The noble refused the blackmail and discredited you instead.",
           detay: "Some gambles backfire.",
         },
       },
       {
-        metin: "Keep the secret forever, stay true to your mother's oath of loyalty.",
+        metin: "Keep the secret, honor your mother's oath.",
         basariliSonuc: {
-          mesaj: "You never used the secret; you kept alive that old palace loyalty your mother taught.",
-          detay: "Some inheritances are worth more than gold.",
+          mesaj: "You never used it; you kept alive the palace loyalty your mother taught.",
+          detay: "Some legacies outvalue gold.",
         },
         basarisizSonuc: {
-          mesaj: "You gained nothing for your silence, only kept your peace.",
-          detay: "Virtue's reward is not always concrete.",
+          mesaj: "Your silence gained nothing; you only kept your peace.",
+          detay: "Virtue's reward isn't always tangible.",
         },
       },
     ],
@@ -963,30 +963,30 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
   aile_koken_surgun_geri_donus: {
     baslik: "A Forgiven Line",
     metin:
-      "The grandchild of the ruler who exiled your family issued an official pardon for your family, to make up for the mistakes of the past. You can return to your ancestors' lands and reclaim your legacy — but you'll have to leave your present life here.",
+      "The ruler who exiled your family has a grandchild who issued a pardon. You may reclaim your ancestral land and legacy — leaving your present life.",
     secenekler: [
       {
-        metin: "Leave everything, return to your ancestors' lands.",
+        metin: "Leave all, return to ancestral land.",
         basariliSonuc: {
           mesaj:
-            "When you first set foot on your ancestors' lands your eyes filled; a longing carried for generations was finally soothed.",
-          detay: "Some journeys are measured not in money but in soul.",
+            "Stepping on ancestral soil, your eyes filled; a generations-old longing eased.",
+          detay: "Some journeys are measured in soul.",
         },
         basarisizSonuc: {
           mesaj:
-            "The return wasn't as you'd hoped; the old lands weren't familiar anymore, and you felt lost between two worlds.",
-          detay: "Some homecomings end in disappointment.",
+            "The return disappointed; the land felt foreign, and you felt lost between two worlds.",
+          detay: "Some homecomings disappoint.",
         },
       },
       {
-        metin: "Stay here, protect the life you built.",
+        metin: "Stay here, keep the life you built.",
         basariliSonuc: {
           mesaj:
-            "You didn't accept the pardon; your life went on here, but never having seen your ancestors' land left a slight emptiness in you.",
-          detay: "Some doors deserve to stay closed too.",
+            "You declined the pardon; life went on, but never seeing ancestral land left an ache.",
+          detay: "Some doors deserve to stay shut.",
         },
         basarisizSonuc: {
-          mesaj: "The more you questioned your decision, the more the unease inside you grew.",
+          mesaj: "The more you doubted your choice, the more unease grew.",
           detay: "Some questions stay unanswered for years.",
         },
       },
@@ -996,28 +996,28 @@ export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
   aile_koken_madenci_cokme_anisi: {
     baslik: "News From Underground",
     metin:
-      "Like that old mine your uncle was buried in, a nearby mine collapsed; dozens of workers are trapped. You can volunteer for the rescue team or donate money from a safe distance.",
+      "Like the mine that took your uncle, a nearby mine collapsed; dozens of workers trapped. You may join the rescue or donate from afar.",
     secenekler: [
       {
-        metin: "Join the rescue team yourself.",
+        metin: "Join the rescue team.",
         basariliSonuc: {
           mesaj:
-            "You worked for hours in the dark tunnels; when you brought a few workers out alive you couldn't hold back your tears.",
-          detay: "The help your uncle never got, you brought to others.",
+            "You toiled for hours in dark tunnels; hauling workers out alive, you wept.",
+          detay: "You gave others the help your uncle never got.",
         },
         basarisizSonuc: {
-          mesaj: "The tunnel began to collapse on you too; you were brought out with difficulty, badly wounded.",
-          detay: "The underground tested your family once more.",
+          mesaj: "The tunnel began caving on you too; you were dragged out badly hurt.",
+          detay: "The underground tested your family again.",
         },
       },
       {
-        metin: "Make a generous donation from a safe distance.",
+        metin: "Donate generously from afar.",
         basariliSonuc: {
-          mesaj: "Your donation strengthened the rescue team's equipment; many workers were saved thanks to you.",
-          detay: "Not every act of heroism happens underground.",
+          mesaj: "Your donation armed the rescuers; many workers were saved thanks to you.",
+          detay: "Not all heroism happens underground.",
         },
         basarisizSonuc: {
-          mesaj: "Despite your donation the rescue fell short; you felt your uncle's story repeat once more.",
+          mesaj: "The rescue fell short despite your gift; your uncle's story repeated.",
           detay: "Some pains repeat through history.",
         },
       },
