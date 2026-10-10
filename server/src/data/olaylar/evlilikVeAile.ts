@@ -3611,7 +3611,7 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
     metin: "Büyük çocuğun evleniyor. Bütün gözler sende: nasıl bir düğün olacak?",
     secenekler: [
       {
-        metin: "Görkemli bir düğün yap, kese ağzına kadar açılsın.",
+        metin: "Görkemli bir düğün yap.",
         baseBasariSansi: 80,
         maliyet: 25,
         basariliSonuc: {
@@ -3619,12 +3619,12 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
           cocuk_iliski: 12,
           un: 6,
           mutluluk: 5,
-          mesaj: "Üç gün üç gece sürdü. Çocuğun gözyaşları içinde sarıldı sana: 'her şeyi borçluyum.'",
+          mesaj: "Üç gün üç gece sürdü. Çocuğun sarıldı: 'Her şeyi sana borçluyum.'",
         },
         basarisizSonuc: {
           para: -25,
           cocuk_iliski: 5,
-          mesaj: "Masraf büyüktü ama yağmur bastırdı, yarısı yarıda kaldı.",
+          mesaj: "Masraf büyüktü ama yağmur bastırdı, düğün yarıda kaldı.",
         },
       },
       {
@@ -3635,7 +3635,7 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
           para: -8,
           cocuk_iliski: 6,
           mutluluk: 2,
-          mesaj: "Küçük ama içten bir gündü. Çocuğun 'gösterişe gerek yoktu zaten' dedi.",
+          mesaj: "Küçük ama içten bir gündü. Çocuğun 'gösterişe gerek yoktu' dedi.",
         },
         basarisizSonuc: {
           para: -8,
@@ -3649,12 +3649,12 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
         basariliSonuc: {
           cocuk_iliski: -14,
           un: -4,
-          mesaj: "Düğüne çağrıldın ama en arkada oturdun. Aradaki mesafe o gün kalıcı oldu.",
+          mesaj: "Düğünde en arkada oturdun. Aradaki mesafe kalıcı oldu.",
         },
         basarisizSonuc: {
           cocuk_iliski: -18,
           mutluluk: -4,
-          mesaj: "Dünür ailesi 'nasıl bir baba bu' diye konuştu; çocuğun senin adına kızardı.",
+          mesaj: "Dünürler 'nasıl baba bu' diye konuştu; çocuğun senin adına kızardı.",
         },
       },
     ],
@@ -3665,22 +3665,22 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
     gerekliEtiketler: ["cocuk_var"],
     gorsel: "🎻",
     baslik: "Bir Kıvılcım",
-    metin: "Çocuklardan biri bir şeye çok yatkın: eli resme mi yatıyor, sesi güzel mi, sayılarla mı arası iyi... Ama bu yeteneği beslemek para ve zaman ister.",
+    metin: "Çocuklardan birinde belirgin bir yetenek var: resim, ses, sayılar... Ama beslemek para ve zaman ister.",
     secenekler: [
       {
-        metin: "Bir usta bul, yeteneğini beslet.",
+        metin: "Bir usta bul, yeteneği besle.",
         baseBasariSansi: 70,
         maliyet: 15,
         basariliSonuc: {
           para: -15,
           cocuk_iliski: 12,
           un: 3,
-          mesaj: "Çocuk çalıştıkça parladı. 'Beni gördüğün için sağ ol baba' dedi bir gün.",
+          mesaj: "Çocuk çalıştıkça parladı. 'Beni gördüğün için sağ ol baba' dedi.",
         },
         basarisizSonuc: {
           para: -15,
           cocuk_iliski: 4,
-          mesaj: "Usta pahalıydı, ilerleme yavaştı; yine de çocuk denendiğini hissetti.",
+          mesaj: "Usta pahalıydı, ilerleme yavaş; yine de çocuk denendiğini hissetti.",
         },
       },
       {
@@ -3689,11 +3689,11 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
         basariliSonuc: {
           cocuk_iliski: 6,
           mutluluk: 2,
-          mesaj: "Alkışın, ilgin yetti; çocuk her akşam sana yeni bir şey gösteriyor.",
+          mesaj: "İlgin yetti; çocuk her akşam sana yeni bir şey gösteriyor.",
         },
         basarisizSonuc: {
           cocuk_iliski: 1,
-          mesaj: "İyi niyetliydin ama yeterince zaman ayıramadın; kıvılcım sönmeye yüz tuttu.",
+          mesaj: "İyi niyetliydin ama zaman ayıramadın; kıvılcım sönmeye yüz tuttu.",
         },
       },
       {
@@ -3702,12 +3702,12 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
         basariliSonuc: {
           cocuk_iliski: -12,
           ahlak: -3,
-          mesaj: "Çocuk aletini bir kenara koydu. Bir daha da eline almadı.",
+          mesaj: "Çocuk aletini bir kenara koydu, bir daha almadı.",
         },
         basarisizSonuc: {
           cocuk_iliski: -16,
           mutluluk: -3,
-          mesaj: "Yıllar sonra bile 'sen izin verseydin' diye bakıyor sana.",
+          mesaj: "Yıllar sonra bile 'izin verseydin' diye bakıyor sana.",
         },
       },
     ],
@@ -3718,7 +3718,7 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
     gerekliEtiketler: ["cocuk_var"],
     gorsel: "🏞️",
     baslik: "Birlikte Bir Kaçamak",
-    metin: "Ev işten, işten eve... Aylardır aile bir arada doğru dürüst vakit geçirmedi. {es} 'hep birlikte bir yere gitsek' diyor.",
+    metin: "Aylardır aile bir arada doğru dürüst vakit geçirmedi. {es} 'hep birlikte bir yere gitsek' diyor.",
     secenekler: [
       {
         metin: "Uzun bir aile gezisine çık.",
@@ -3730,16 +3730,16 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
           cocuk_iliski: 9,
           mutluluk: 6,
           saglik: 2,
-          mesaj: "Günlerce güldünüz, yürüdünüz, hiçbir şey yapmadınız. Yıllar sonra hâlâ 'o gezi' diye anılacak.",
+          mesaj: "Günlerce güldünüz, yürüdünüz. Yıllar sonra hâlâ 'o gezi' diye anılacak.",
         },
         basarisizSonuc: {
           para: -16,
           mutluluk: 1,
-          mesaj: "Yolda yağmur, hanlarda pire... Yine de eve dönerken herkes birbirine sokulmuştu.",
+          mesaj: "Yolda yağmur, hanlarda pire... Yine de dönerken herkes birbirine sokulmuştu.",
         },
       },
       {
-        metin: "Yakında kısa bir gün gezisi yeter.",
+        metin: "Kısa bir gün gezisi yeter.",
         baseBasariSansi: 88,
         maliyet: 5,
         basariliSonuc: {
@@ -3763,7 +3763,7 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
           es_puani: -8,
           cocuk_iliski: -6,
           mutluluk: -3,
-          mesaj: "Kasan biraz doldu. Ama akşam eve döndüğünde kimse başını kaldırıp bakmadı.",
+          mesaj: "Kasan doldu ama akşam eve döndüğünde kimse başını kaldırmadı.",
         },
         basarisizSonuc: {
           mesaj: "Kullanılmadı.",

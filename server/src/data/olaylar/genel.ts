@@ -7,7 +7,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
     agirlik: 0.6,
     gorsel: "🏃",
     baslik: "Sınırları Zorlamak",
-    metin: "Son zamanlarda zayıf düştüğünü hissediyorsun. Vücudunu eski direncine kavuşturmak için sınırlarını sonuna kadar zorlayacağın ağır bir idman ritüeline başlayabilirsin. Ancak yaşın ve bedenin bunu kaldırabilir mi?",
+    metin: "Son zamanlarda zayıf düştün. Eski direncine kavuşmak için sınırlarını zorlayan ağır bir idmana başlayabilirsin. Ama bedenin kaldırır mı?",
     secenekler: [
       {
         metin: "Acıya dayan, sınırlarını aş.",
@@ -18,7 +18,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           etiket_ekle: [
             "fiziksel:guc_sembolu",
           ],
-          mesaj: "Kasların çeliğe dönüştü. Vücudun artık en ağır darbelere bile dayanacak kadar sağlam.",
+          mesaj: "Kasların çeliğe döndü. Bedenin en ağır darbelere bile dayanır oldu.",
         },
         basarisizSonuc: {
           saglik: -10,
@@ -31,15 +31,15 @@ export const OLAY_GENEL: OlayTanimi[] = [
             tur: "kalici",
             tur_basi_saglik: -1,
           },
-          mesaj: "Bedenin bu yükü kaldıramadı. Dizindeki lifler koptu; artık yağmurlu havalarda bile sızlayan kalıcı bir ağrın var.",
+          mesaj: "Beden yükü kaldıramadı. Dizin yırtıldı; yağmurda sızlayan kalıcı bir ağrın var.",
         },
       },
       {
-        metin: "Riske girme, hafif yürüyüşlerle yetin.",
+        metin: "Riske girme, hafif yürüyüşle yetin.",
         baseBasariSansi: 90,
         basariliSonuc: {
           saglik: 5,
-          mesaj: "Güvenli olanı seçtin. Terlemedin ama sakatlanmadın da.",
+          mesaj: "Güvenli yolu seçtin. Terlemedin ama sakatlanmadın da.",
         },
         basarisizSonuc: {
           mutluluk: -2,
@@ -54,10 +54,10 @@ export const OLAY_GENEL: OlayTanimi[] = [
     agirlik: 0.6,
     gorsel: "📖",
     baslik: "Mühürlü Kitap",
-    metin: "Pazarda tuhaf giyimli bir yabancı sana deri kaplı, mühürlü bir kitap sattı. Kitabın içindeki yazıların yerel otoriteler (veya kilise) tarafından yasaklandığı çok açık. İçinde tehlikeli sırlar olabilir.",
+    metin: "Pazarda tuhaf giyimli bir yabancı sana mühürlü, deri kaplı bir kitap sattı. İçindekiler yetkililerce yasaklı; tehlikeli sırlar olabilir.",
     secenekler: [
       {
-        metin: "Mührü kır ve karanlık ilmi oku.",
+        metin: "Mührü kır, karanlık ilmi oku.",
         baseBasariSansi: 70,
         basariliSonuc: {
           mutluluk: 5,
@@ -65,25 +65,25 @@ export const OLAY_GENEL: OlayTanimi[] = [
           etiket_ekle: [
             "bilgi:yasak_ilim",
           ],
-          mesaj: "Kitabın anlattıkları dünyaya bakışını değiştirdi. Artık sıradan insanların bilmediği şeyleri biliyorsun.",
+          mesaj: "Kitap dünyaya bakışını değiştirdi. Sıradan insanların bilmediğini biliyorsun.",
         },
         basarisizSonuc: {
           un: -20,
           ahlak: -20,
-          mesaj: "Sayfaları çevirirken bir komşun seni pencereden gördü ve şikayet etti. İtibarın yerle bir oldu.",
+          mesaj: "Okurken komşun seni pencereden görüp şikâyet etti. İtibarın yerle bir.",
         },
       },
       {
-        metin: "Kitabı okumadan yetkililere (veya kiliseye) teslim et.",
+        metin: "Kitabı okumadan yetkililere ver.",
         baseBasariSansi: 85,
         basariliSonuc: {
           ahlak: 15,
           un: 10,
-          mesaj: "Kitabı teslim ettin. Otoriteler sadakatini ve inancını takdir etti.",
+          mesaj: "Kitabı teslim ettin. Yetkililer sadakatini ve inancını takdir etti.",
         },
         basarisizSonuc: {
           mutluluk: -5,
-          mesaj: "Kitabı verdin ama içinde ne yazdığı hayatın boyunca içinde bir merak olarak kaldı.",
+          mesaj: "Kitabı verdin ama içinde ne yazdığı ömür boyu merak olarak kaldı.",
         },
       },
     ],
@@ -94,10 +94,10 @@ export const OLAY_GENEL: OlayTanimi[] = [
     agirlik: 0.6,
     gorsel: "🍻",
     baslik: "Gece Yarısı Fısıltıları",
-    metin: "{dost} seni şehrin en izbe meyhanesine götürdü. İlerleyen saatlerde herkes sarhoş olmaya başlarken, yan masadaki şüpheli adamların çok değerli ticari/siyasi sırlar konuştuğunu fark ettin.",
+    metin: "{dost} seni şehrin en izbe meyhanesine götürdü. Yan masadaki şüpheli adamların değerli ticari/siyasi sırlar konuştuğunu fark ettin.",
     secenekler: [
       {
-        metin: "Onlara içki ısmarla ve ağızlarını ara.",
+        metin: "İçki ısmarla, ağızlarını ara.",
         baseBasariSansi: 55,
         maliyet: 15,
         basariliSonuc: {
@@ -106,16 +106,16 @@ export const OLAY_GENEL: OlayTanimi[] = [
           etiket_ekle: [
             "istihbarat_var",
           ],
-          mesaj: "Adamlar içkinin etkisiyle döküldü. Şehrin geleceğiyle ilgili harika bir istihbarat aldın; artık hamlelerini körü körüne yapmayacaksın.",
+          mesaj: "Adamlar içkiyle döküldü. Şehrin geleceğine dair değerli bilgi aldın.",
         },
         basarisizSonuc: {
           para: -15,
           saglik: -10,
-          mesaj: "Adamlar niyetini anladı. Seni meyhanenin arkasına çekip iyice hırpaladılar.",
+          mesaj: "Adamlar niyetini anladı. Seni meyhanenin arkasında iyice hırpaladılar.",
         },
       },
       {
-        metin: "Masana odaklan, sadece {dost} ile iç.",
+        metin: "Masana bak, sadece {dost} ile iç.",
         baseBasariSansi: 70,
         basariliSonuc: {
           dost_puani: 10,
@@ -123,11 +123,11 @@ export const OLAY_GENEL: OlayTanimi[] = [
           etiket_ekle: [
             "bagimlilik:alkol_meyil",
           ],
-          mesaj: "Sadece içtiniz ve eğlendiniz. Ancak kadehin dibini sıyırırken bu hayata biraz fazla alıştığını fark ediyorsun.",
+          mesaj: "İçip eğlendiniz. Ama bu hayata biraz fazla alıştığını fark ediyorsun.",
         },
         basarisizSonuc: {
           dost_puani: -5,
-          mesaj: "Aklın yan masada kaldığı için {dost} ile sohbetin çok yavan geçti.",
+          mesaj: "Aklın yan masada kaldığı için {dost} ile sohbet yavan geçti.",
         },
       },
     ],
@@ -141,7 +141,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
     minYas: 17,
     gorsel: "🏦",
     baslik: "Kardeşin Dükkânı",
-    metin: "Ailenden biri (kardeşin veya yakın kuzenin) sana gelip kuracağı yeni demirci/dokumacı dükkânı için sermayene ortak olmayı teklif ediyor. Büyük kazandırmaz ama paranın yabancıya gitmeyeceğini söylüyor.",
+    metin: "Bir akraban, kuracağı demirci/dokumacı dükkânı için sermayene ortak olmak istiyor. Büyük kazandırmaz ama para yabancıya gitmez.",
     secenekler: [
       {
         metin: "Aileye destek ol, sermayeyi ver.",
@@ -159,12 +159,12 @@ export const OLAY_GENEL: OlayTanimi[] = [
             tur: "kalici",
             tur_basi_para: 4,
           },
-          mesaj: "Sermayeyi verdin. Dükkân tıkır tıkır işliyor, ailenden her yıl düzenli ve helal bir pay alıyorsun.",
+          mesaj: "Dükkân tıkır tıkır işliyor; her yıl düzenli, helal bir pay alıyorsun.",
         },
         basarisizSonuc: {
           para: -40,
           mutluluk: -5,
-          mesaj: "Dükkân beklediğiniz gibi iş yapmadı. Aile yemeklerinde bu konu açılınca herkesin yüzü asılıyor.",
+          mesaj: "Dükkân beklenen işi yapmadı. Aile yemeğinde konu açılınca yüzler asılıyor.",
         },
       },
       {
@@ -174,11 +174,11 @@ export const OLAY_GENEL: OlayTanimi[] = [
           saglik: 2,
           ahlak: 1,
           mutluluk: -1,
-          mesaj: "Paranı cebinde tuttun. Kardeşin biraz bozuldu ama en azından risk almadın.",
+          mesaj: "Paran cebinde kaldı. Kardeşin biraz bozuldu ama risk almadın.",
         },
         basarisizSonuc: {
           mutluluk: -5,
-          mesaj: "Kardeşin başkasından borç bulup dükkânı açtı ve çok başarılı oldu. Şimdi içten içe pişmansın.",
+          mesaj: "Kardeşin borç bulup dükkânı açtı ve çok kazandı. Şimdi içten içe pişmansın.",
         },
       },
     ],
@@ -192,10 +192,10 @@ export const OLAY_GENEL: OlayTanimi[] = [
     minYas: 18,
     gorsel: "🪙",
     baslik: "Çaresiz Dost",
-    metin: "Çok eski ve çaresiz bir dostun dükkânını kaybetmemek için senden borç istiyor. Ancak sana çok yüksek bir faizle ödemeyi teklif ediyor. Bu teklif hem kârlı hem de ahlaken tartışmalı.",
+    metin: "Eski, çaresiz bir dostun dükkânını kurtarmak için borç istiyor ve çok yüksek faiz öneriyor. Teklif hem kârlı hem ahlaken tartışmalı.",
     secenekler: [
       {
-        metin: "Ahlakı boş ver, yüksek faizle borcu ver.",
+        metin: "Ahlakı boş ver, yüksek faizle borç ver.",
         baseBasariSansi: 90,
         maliyet: 35,
         basariliSonuc: {
@@ -212,7 +212,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
             kalan_tur: 2,
             bitince_etiket: "yatirim:tefeci_zamani",
           },
-          mesaj: "Dostuna faizle borç verdin. Parayı alırken yüzündeki o minnet ve nefret karışımı ifadeyi unutamıyorsun.",
+          mesaj: "Dostuna faizle borç verdin. Yüzündeki minnet ve nefreti unutamıyorsun.",
         },
         basarisizSonuc: {
           para: -35,
@@ -228,7 +228,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
             kalan_tur: 2,
             bitince_etiket: "yatirim:tefeci_zamani",
           },
-          mesaj: "Sözleşmeyi imzalattın ama dostluğun tamamen bittiği çok açık.",
+          mesaj: "Sözleşmeyi imzalattın ama dostluğun bittiği çok açık.",
         },
       },
       {
@@ -236,7 +236,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 95,
         basariliSonuc: {
           ahlak: 5,
-          mesaj: "Dostuna faizle borç vermeyi reddettin. Dükkânı battı ama senin vicdanın ve paran yerinde.",
+          mesaj: "Faizle borç vermedin. Dükkânı battı ama vicdanın ve paran yerinde.",
         },
         basarisizSonuc: {
           dost_puani: -10,
@@ -253,10 +253,10 @@ export const OLAY_GENEL: OlayTanimi[] = [
     ],
     gorsel: "⚖️",
     baslik: "Vade Doldu",
-    metin: "Eski dostuna verdiğin borcun vadesi doldu. Gidip kapısına dayandın ancak ağlayarak işlerin kötü gittiğini ve parası olmadığını söylüyor. İki seçeneğin var.",
+    metin: "Eski dostuna verdiğin borcun vadesi doldu. Kapısına dayandın; ağlayarak işlerin kötü gittiğini, parası olmadığını söylüyor.",
     secenekler: [
       {
-        metin: "Adam tut, dükkânına el koy ve onu sokağa at.",
+        metin: "Adam tut, dükkâna el koy, onu sokağa at.",
         baseBasariSansi: 95,
         basariliSonuc: {
           para: 60,
@@ -268,7 +268,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           etiket_ekle: [
             "itibar:acimasiz_tefeci",
           ],
-          mesaj: "Adamlarını gönderdin. Dostunun ailesi sokakta ağlarken dükkânın anahtarlarını aldın. Sen kazandın.",
+          mesaj: "Adamlarını gönderdin. Dostunun ailesi ağlarken dükkânın anahtarını aldın.",
         },
         basarisizSonuc: {
           para: 40,
@@ -278,11 +278,11 @@ export const OLAY_GENEL: OlayTanimi[] = [
             "yatirim:tefecide",
             "yatirim:tefeci_zamani",
           ],
-          mesaj: "Dükkânı zorla aldın ama mahalleli seni yuhaladı. Artık arkandan 'kan emici' diyorlar.",
+          mesaj: "Dükkânı zorla aldın ama mahalleli seni yuhaladı. Arkandan 'kan emici' diyorlar.",
         },
       },
       {
-        metin: "Eski günlerin hatırına borcu sil, onu affet.",
+        metin: "Eski günlerin hatırına borcu sil.",
         baseBasariSansi: 88,
         basariliSonuc: {
           ahlak: 35,
@@ -294,7 +294,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           etiket_ekle: [
             "itibar:merhametli",
           ],
-          mesaj: "Senetleri gözünün önünde yırttın. Dostun ayaklarına kapandı. Paranı kaybettin ama ruhunu geri kazandın.",
+          mesaj: "Senetleri gözünün önünde yırttın. Dostun ayağına kapandı. Para gitti, ruh kaldı.",
         },
         basarisizSonuc: {
           ahlak: 25,
@@ -302,7 +302,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
             "yatirim:tefecide",
             "yatirim:tefeci_zamani",
           ],
-          mesaj: "Borcu sildin. İçin rahat ama akşam eve dönerken o paraya ne kadar ihtiyacın olduğunu hatırladın.",
+          mesaj: "Borcu sildin. İçin rahat ama eve dönerken o paraya muhtaç olduğunu hatırladın.",
         },
       },
     ],
@@ -315,39 +315,39 @@ export const OLAY_GENEL: OlayTanimi[] = [
     },
     gorsel: "📉",
     baslik: "Krizin Acı Yüzü",
-    metin: "Ekonomik kriz evine ulaştı: kilerde erzak kalmadı, dükkânın da iflasın eşiğinde. Son sermayeni ya karaborsadan yiyeceğe ya da işini kurtarmaya harcayabilirsin.",
+    metin: "Kriz evine ulaştı: kilerde erzak yok, dükkân iflasın eşiğinde. Son sermayeni ya yiyeceğe ya da işini kurtarmaya harcayabilirsin.",
     secenekler: [
       {
-        metin: "İşi boşver, son paramla aileme erzak al.",
+        metin: "İşi boşver, son paramla erzak al.",
         baseBasariSansi: 85,
         basariliSonuc: {
           para: -30,
           saglik: 5,
           ahlak: 15,
           un: -15,
-          mesaj: "Tezgâhı kapattın. İflas ettin, itibarın sıfırlandı ama akşam sofrada çocukların/ailen sıcak çorba içiyor.",
+          mesaj: "Tezgâhı kapattın. İflas ettin ama akşam sofrada ailen sıcak çorba içiyor.",
         },
         basarisizSonuc: {
           para: -40,
           mutluluk: -10,
-          mesaj: "Sermayeyi erzağa verdin ama karaborsacı seni dolandırdı. Hem iflas ettin hem de yarı aç kaldınız.",
+          mesaj: "Sermayeyi erzağa verdin ama karaborsacı seni dolandırdı. İflas ettin, aç kaldın.",
         },
       },
       {
-        metin: "Ailem dişini sıksın, parayı işime kurtarmaya harca.",
+        metin: "Aile dişini sıksın, parayı işime harca.",
         baseBasariSansi: 50,
         basariliSonuc: {
           para: 50,
           saglik: -25,
           ahlak: -20,
           un: 15,
-          mesaj: "Herkes batarken sen ayakta kaldın ve zenginleştin! Ancak eve döndüğünde ailenin yetersiz beslenmeden eridiğini gördün.",
+          mesaj: "Herkes batarken sen zenginleştin! Ama ailen yetersiz beslenmeden eriyor.",
         },
         basarisizSonuc: {
           para: -40,
           saglik: -30,
           mutluluk: -25,
-          mesaj: "Risk aldın ve kaybettin. Kriz seni de vurdu. Hem son paran gitti hem de ailen açlıktan hastanelik oldu.",
+          mesaj: "Risk aldın ve kaybettin. Son paran gitti, ailen açlıktan hastanelik oldu.",
         },
       },
     ],
@@ -358,10 +358,10 @@ export const OLAY_GENEL: OlayTanimi[] = [
     minYas: 16,
     gorsel: "📜",
     baslik: "Sinsi Tahsildar",
-    metin: "Asık suratlı vergi tahsildarı kapına dayandı ve defterindeki yüklü rakamı okuyor. Ancak göz ucuyla etrafa bakıp, 'Belki de deftere yanlış yazmışımdır, küçük bir hata düzeltilebilir' diye mırıldanıyor.",
+    metin: "Asık suratlı vergi tahsildarı kapında, yüklü rakamı okuyor. Sonra etrafa bakıp mırıldanıyor: 'Belki yanlış yazmışımdır, düzelir.'",
     secenekler: [
       {
-        metin: "Seni anladım de ve masanın altından ona rüşvet ver.",
+        metin: "Anladım de, masanın altından rüşvet ver.",
         baseBasariSansi: 50,
         basariliSonuc: {
           mesaj: "Kullanılmadı",
@@ -370,15 +370,15 @@ export const OLAY_GENEL: OlayTanimi[] = [
           mesaj: "Kullanılmadı",
         },
         onTepki: {
-          metin: "Tahsildar uzattığın keseyi alırken gülümsüyor. 'Çok akıllısın... Ama bu miktar sadece bu ay için defteri temizler. Anlıyorsun değil mi?' Açgözlü adam seni haraca bağlamaya çalışıyor!",
-          geriCekilMetni: "Sinirlen ve onu dükkândan kov! (Rüşvetten dön)",
+          metin: "Tahsildar keseyi aldı: 'Bu sadece bu ay.'",
+          geriCekilMetni: "Sinirlen, onu kov! (Rüşvetten dön)",
           geriCekilSonucu: {
             para: -25,
             un: 5,
             ahlak: 10,
-            mesaj: "Adama bağırıp onu kovdun! Sonra gidip vergini dürüstçe devlet kasasına ödedin. Paran gitti ama onurun kurtuldu.",
+            mesaj: "Adamı bağırıp kovdun, vergini dürüstçe ödedin. Paran gitti, onurun kaldı.",
           },
-          devamMetni: "Sessizce kabul et, rüşvet çarkına gir.",
+          devamMetni: "Sessizce kabul et, çarka gir.",
           devamSonucu: {
             para: 15,
             ahlak: -20,
@@ -390,7 +390,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         },
       },
       {
-        metin: "Devletin vergisini tam ve eksiksiz öde.",
+        metin: "Vergiyi tam öde.",
         baseBasariSansi: 95,
         maliyet: 30,
         basariliSonuc: {
@@ -399,11 +399,11 @@ export const OLAY_GENEL: OlayTanimi[] = [
           etiket_ekle: [
             "itibar:durust_mukellef",
           ],
-          mesaj: "Tahsildar somurtarak tam vergiyi aldı. Cebin delindi ama kimseye boyun eğmedin.",
+          mesaj: "Tahsildar somurtarak tüm vergiyi aldı. Cebin delindi ama kimseye boyun eğmedin.",
         },
         basarisizSonuc: {
           para: -30,
-          mesaj: "Vergini ödedin ama tahsildar seni mimledi. Helal kazancın bile şüpheli gösterilecek.",
+          mesaj: "Vergiyi ödedin ama tahsildar seni mimledi. Helal kazancın bile şüpheli.",
         },
       },
     ],
@@ -415,10 +415,10 @@ export const OLAY_GENEL: OlayTanimi[] = [
     minUn: 20,
     gorsel: "💰",
     baslik: "Şeytanın Kesesi",
-    metin: "Şehrin en zengin ama en karanlık adamlarından biri, yasal olmayan bir malı depolarında saklaman karşılığında sana ağzı tıka basa altın dolu bir kese uzatıyor.",
+    metin: "Şehrin en zengin ve en karanlık adamlarından biri, yasadışı bir malı depolarında saklaman karşılığında dolu bir altın kesesi uzatıyor.",
     secenekler: [
       {
-        metin: "Altınları al ve malı sakla.",
+        metin: "Altını al, malı sakla.",
         baseBasariSansi: 80,
         basariliSonuc: {
           para: 45,
@@ -426,17 +426,17 @@ export const OLAY_GENEL: OlayTanimi[] = [
           etiket_ekle: [
             "sir:karanlik_ortak",
           ],
-          mesaj: "Keseyi cübbene sakladın. Zenginleştin ama artık geceleri kapı her çalındığında kalbin gümleyecek.",
+          mesaj: "Keseyi cübbene sakladın. Zenginleştin ama gece kapı çalınca kalbin gümleyecek.",
         },
         basarisizSonuc: {
           para: -20,
           ahlak: -25,
           un: -30,
-          mesaj: "Malları saklarken çıraklarından biri seni gördü! İhbar edildin, para cezası yedin ve itibarın lekelendi.",
+          mesaj: "Çıraklarından biri seni gördü! İhbar edildin, ceza yedin, itibarın lekelendi.",
         },
       },
       {
-        metin: "Hiddetle reddet ve adamı kov.",
+        metin: "Hiddetle reddet, adamı kov.",
         baseBasariSansi: 90,
         basariliSonuc: {
           ahlak: 20,
@@ -444,12 +444,12 @@ export const OLAY_GENEL: OlayTanimi[] = [
           etiket_ekle: [
             "itibar:satinalinamaz",
           ],
-          mesaj: "Adamı dükkânından kovdun! Halk senin bu cesaretini konuşuyor, sen 'Satılamaz Adam'sın.",
+          mesaj: "Adamı dükkânından kovdun! Halk cesaretini konuşuyor; 'Satılamaz Adam'sın.",
         },
         basarisizSonuc: {
           mutluluk: -10,
           rakip_puani: 20,
-          mesaj: "Adam keseyi geri alırken gözlerini kıstı. O günden itibaren senin en büyük ve karanlık düşmanın oldu.",
+          mesaj: "Adam keseyi alırken gözlerini kıstı. O günden beri en karanlık düşmanın.",
         },
       },
     ],
@@ -463,7 +463,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
     minRutbeSeviye: 3,
     gorsel: "⚔️",
     baslik: "Komutanın İkilemi",
-    metin: "Düşman hatları önündesin. Eğer saldırı emri verirsen zafer kazanma ihtimalin yüksek ama emrindeki gencecik askerlerin çoğu ölecek. Beklersen askerlerin yaşar ama savaş kaybedilebilir.",
+    metin: "Düşman hatları önünde. Saldırırsan zafer yakın ama gencecik askerlerin çoğu ölecek. Beklersen askerler yaşar, savaş kaybedilebilir.",
     secenekler: [
       {
         metin: "Ölüme yürüyoruz! Saldırı emri ver.",
@@ -473,14 +473,14 @@ export const OLAY_GENEL: OlayTanimi[] = [
           para: 20,
           ahlak: -25,
           unvan_kazan: "Kanlı Kumandan",
-          mesaj: "Düşmanı ezip geçtiniz! Savaşın kahramanı oldun ama savaş alanındaki o genç cesetler rüyalarına girmeye başladı.",
+          mesaj: "Düşmanı ezdin! Savaşın kahramanısın ama o genç cesetler rüyalarına giriyor.",
         },
         basarisizSonuc: {
           saglik: -25,
           un: -20,
           ahlak: -20,
           olum_sansi: 15,
-          mesaj: "Saldırı büyük bir kıyıma dönüştü. Hem askerlerini kaybettin hem de mağlup oldun.",
+          mesaj: "Saldırı kıyıma döndü. Hem askerlerini kaybettin hem yenildin.",
         },
       },
       {
@@ -490,11 +490,11 @@ export const OLAY_GENEL: OlayTanimi[] = [
           ahlak: 25,
           un: -15,
           unvan_kazan: "Merhametli Komutan",
-          mesaj: "Düşman ilerledi, savaşı kaybettiniz gibi görünüyor. Ama askerlerin sana minnettar, onların hayatını kurtardın.",
+          mesaj: "Düşman ilerledi, savaş kayıp. Ama askerlerin sana minnettar, canları kurtuldu.",
         },
         basarisizSonuc: {
           un: -25,
-          mesaj: "Kral seni korkak ilan etti. Rütbelerin sökülme tehlikesiyle karşı karşıya.",
+          mesaj: "Kral seni korkak ilan etti. Rütbelerin sökülme tehlikesinde.",
         },
       },
     ],
@@ -508,36 +508,36 @@ export const OLAY_GENEL: OlayTanimi[] = [
     minRutbeSeviye: 3,
     gorsel: "🏛️",
     baslik: "Lonca Ustasının Gücü",
-    metin: "Artık şehrin ticaret hakimi sensin. Piyasaya giren tüm mallara tekel koyup küçük esnafı ezebilir ya da malları onlarla paylaşıp halkın adamı olabilirsin.",
+    metin: "Artık şehrin ticaret hâkimisin. Tüm mallara tekel koyup küçük esnafı ezebilir ya da malları paylaşıp halkın adamı olabilirsin.",
     secenekler: [
       {
-        metin: "Tekel kur, tüm malları kendi depolarına çek.",
+        metin: "Tekel kur, malları kendi depolarına çek.",
         baseBasariSansi: 65,
         basariliSonuc: {
           para: 60,
           ahlak: -30,
           unvan_kazan: "Açgözlü Baron",
-          mesaj: "Piyasadaki her şeyi sömürdün. Küçük esnaf iflas ederken sen altından kuleler inşa ediyorsun.",
+          mesaj: "Piyasayı sömürdün. Esnaf iflas ederken sen altından kuleler kuruyorsun.",
         },
         basarisizSonuc: {
           para: -20,
           mutluluk: -15,
-          mesaj: "Küçük esnaf isyan edip depolarını yaktı! Açgözlülük büyük bir yangınla son buldu.",
+          mesaj: "Esnaf isyan edip depolarını yaktı! Açgözlülük büyük bir yangınla bitti.",
         },
       },
       {
-        metin: "Malları adil dağıt, küçük esnafı koru.",
+        metin: "Malları adil dağıt, esnafı koru.",
         baseBasariSansi: 90,
         basariliSonuc: {
           ahlak: 30,
           un: 20,
           para: -10,
           unvan_kazan: "Halkın Tüccarı",
-          mesaj: "Şehirdeki tüm esnaf sana dua ediyor. Zenginleşmedin ama şehrin en sevilen ve sayılan adamı oldun.",
+          mesaj: "Şehrin esnafı sana dua ediyor. Zenginleşmedin ama şehrin en sevilen adamı oldun.",
         },
         basarisizSonuc: {
           para: -10,
-          mesaj: "Adil olmaya çalıştın ama diğer büyük tüccarlar seni aralarından dışladı.",
+          mesaj: "Adil olmaya çalıştın ama büyük tüccarlar seni aralarından dışladı.",
         },
       },
     ],
@@ -551,10 +551,10 @@ export const OLAY_GENEL: OlayTanimi[] = [
     minRutbeSeviye: 3,
     gorsel: "📿",
     baslik: "İlahî Adalet",
-    metin: "Şehrin en zengin soylusu tapınağında büyük bir cinayet işledi. Onu aforoz edip idama gönderebilirsin ya da yüklü bir 'kilise bağışı' karşılığı günahını affedebilirsin.",
+    metin: "Şehrin en zengin soylusu tapınağında cinayet işledi. Aforoz edip idama gönderebilir ya da yüklü bir 'bağış' karşılığı affedebilirsin.",
     secenekler: [
       {
-        metin: "Tanrı'nın adaleti satılmaz! Onu aforoz et.",
+        metin: "Tanrı'nın adaleti satılmaz! Aforoz et.",
         baseBasariSansi: 50,
         basariliSonuc: {
           ahlak: 40,
@@ -562,16 +562,16 @@ export const OLAY_GENEL: OlayTanimi[] = [
           etiket_ekle: [
             "itibar:adalet_kilici",
           ],
-          mesaj: "Soylu şok içinde zincirlere vuruldu. Halk cesaretini ayakta alkışlıyor!",
+          mesaj: "Soylu şok içinde zincire vuruldu. Halk cesaretini ayakta alkışlıyor!",
         },
         basarisizSonuc: {
           dost_puani: -20,
           olum_sansi: 20,
-          mesaj: "Soylu ailesi bunu kabullenmedi. Bir gece tapınağına silahlı adamlar gönderdiler. Hayatın tehlikede!",
+          mesaj: "Soylunun ailesi bir gece tapınağına silahlı adamlar gönderdi. Canın tehlikede!",
         },
       },
       {
-        metin: "Sessizce bağışı kabul et ve günahını temizle.",
+        metin: "Bağışı sessizce al, günahını temizle.",
         baseBasariSansi: 90,
         basariliSonuc: {
           para: 50,
@@ -580,7 +580,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           etiket_ekle: [
             "sir:gunah_satici",
           ],
-          mesaj: "Altın sandıkları mahzenine taşındı. Soylu serbest. Halk sana nefretle bakıyor ve sen de aynada kendine bakamıyorsun.",
+          mesaj: "Altınlar mahzenine girdi, soylu serbest. Halk nefret ediyor, aynaya bakamazsın.",
         },
         basarisizSonuc: {
           un: -30,
@@ -601,10 +601,10 @@ export const OLAY_GENEL: OlayTanimi[] = [
     ],
     gorsel: "🎯",
     baslik: "Birliğin Kumanyası",
-    metin: "Sana birliğinin kışlık erzağı ve kılıçları için altın tahsis edildi. Ya bu parayı gerçekten askerlere harcarsın ya da sahte kayıtlarla parayı cebe indirirsin.",
+    metin: "Birliğin kışlık erzağı ve kılıçları için altın tahsis edildi. Parayı gerçekten askere harcayabilir ya da sahte kayıtlarla cebe atabilirsin.",
     secenekler: [
       {
-        metin: "Tüm parayı askerlerin eğitimine ve midesine harca.",
+        metin: "Tüm parayı askerin eğitimine ve karnına harca.",
         baseBasariSansi: 85,
         basariliSonuc: {
           para: -10,
@@ -619,7 +619,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
             tur_basi_saglik: 1,
           },
           ordu_techizat_artis: 20,
-          mesaj: "Askerlerin tok, kılıçları keskin. Savaşta arkanda bir duvar gibi duracaklar.",
+          mesaj: "Askerlerin tok, kılıçları keskin. Savaşta arkanda duvar gibi duracaklar.",
         },
         basarisizSonuc: {
           para: -15,
@@ -627,7 +627,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         },
       },
       {
-        metin: "Kaydı değiştir ve altını kendine sakla.",
+        metin: "Kaydı değiştir, altını sakla.",
         baseBasariSansi: 50,
         basariliSonuc: {
           para: 35,
@@ -635,13 +635,13 @@ export const OLAY_GENEL: OlayTanimi[] = [
           etiket_ekle: [
             "sir:ordu_hirsizi",
           ],
-          mesaj: "Altınları yatağının altına zulaladın. Askerlerin paslı kılıçlarla talim yapıyor, umrunda değil.",
+          mesaj: "Altınları zulaladın. Askerler paslı kılıçla talim yapıyor, umurunda değil.",
         },
         basarisizSonuc: {
           para: -10,
           un: -30,
           ahlak: -20,
-          mesaj: "Müfettiş sahte kayıtları buldu! Divanı harbe verildin ve itibarın yerle bir oldu.",
+          mesaj: "Müfettiş sahte kayıtları buldu! Divanıharbe verildin, itibarın yerle bir.",
         },
       },
     ],
@@ -653,10 +653,10 @@ export const OLAY_GENEL: OlayTanimi[] = [
     agirlik: 0.7,
     gorsel: "🐐",
     baslik: "Şeytani Keçi",
-    metin: "Komşunun gözleri garip bakan o psikopat keçisi ipini kopardı ve direkt senin bahçene, çamaşırlarının arasına daldı. Bütün mahalle camlara çıkmış seni izliyor.",
+    metin: "Komşunun gözleri garip bakan o deli keçisi ipini koparıp bahçene, çamaşırlarının arasına daldı. Bütün mahalle camlarda seni izliyor.",
     secenekler: [
       {
-        metin: "Savaş narası atıp keçinin üstüne atla!",
+        metin: "Savaş narası at, keçiye atla!",
         baseBasariSansi: 60,
         basariliSonuc: {
           mutluluk: 8,
@@ -665,27 +665,27 @@ export const OLAY_GENEL: OlayTanimi[] = [
           etiket_ekle: [
             "unvan:Keçi Fatihi",
           ],
-          mesaj: "Havada süzülüp keçiyi boynuzlarından yere mıhladın! Mahalleli seni çılgınca alkışlıyor.",
+          mesaj: "Havada süzülüp keçiyi boynuzlarından mıhladın! Mahalle seni çılgınca alkışlıyor.",
         },
         basarisizSonuc: {
           mutluluk: -10,
           un: -10,
           saglik: -5,
-          mesaj: "Keçi mükemmel bir çalımla seni çamur birikintisine uçurdu. Üstüne bir de pantolonunu yedi.",
+          mesaj: "Keçi seni çamur birikintisine uçurdu. Üstüne pantolonunu da yedi.",
         },
       },
       {
-        metin: "Hiç bulaşma, içeri kaçıp kapıyı kilitle.",
+        metin: "Bulaşma, içeri kaç, kapıyı kilitle.",
         baseBasariSansi: 90,
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
           mutluluk: -1,
-          mesaj: "Keçi biraz çamaşırlarını çiğnedi sonra sıkılıp gitti. Gururun incindi ama sağlamsın.",
+          mesaj: "Keçi çamaşırları biraz çiğneyip sıkılarak gitti. Gururun incindi ama sağlamsın.",
         },
         basarisizSonuc: {
           mutluluk: -5,
-          mesaj: "Keçi bahçeyi mahvetti, üstüne camı boynuzlayarak kırdı.",
+          mesaj: "Keçi bahçeyi mahvetti, üstüne boynuzuyla camı kırdı.",
         },
       },
     ],
@@ -698,35 +698,35 @@ export const OLAY_GENEL: OlayTanimi[] = [
     minYas: 16,
     gorsel: "👻",
     baslik: "Uyumayan Geceler",
-    metin: "Günlerdir uyuyamıyorsun. Göz kapakların ağırlaştınca duvarda olmayan şekiller, ölmüş eski dostların (veya düşmanların) yüzleri beliriyor.",
+    metin: "Günlerdir uyuyamıyorsun. Göz kapakların ağırlaşınca duvarda olmayan şekiller, ölmüş dostların (veya düşmanların) yüzleri beliriyor.",
     secenekler: [
       {
-        metin: "Rahiplere/Hocalara gidip dua ve muska iste.",
+        metin: "Rahibe/hocaya git, dua ve muska iste.",
         baseBasariSansi: 60,
         maliyet: 10,
         basariliSonuc: {
           mutluluk: 6,
           saglik: 8,
           para: -10,
-          mesaj: "Dualar ve tütsüler işe yaradı. Nihayet deliksiz bir uyku çektin.",
+          mesaj: "Dualar ve tütsü işe yaradı. Sonunda deliksiz uyudun.",
         },
         basarisizSonuc: {
           para: -10,
           mutluluk: -5,
-          mesaj: "Muskalar işe yaramadı, hayaletler duvarlardan sana gülmeye devam etti.",
+          mesaj: "Muskalar işe yaramadı, hayaletler duvardan sana gülmeye devam etti.",
         },
       },
       {
-        metin: "Aklımı kaçırıyorum! Kendi kendime idare etmeliyim.",
+        metin: "Aklımı kaçırıyorum! Kendim çözmeliyim.",
         baseBasariSansi: 55,
         basariliSonuc: {
           mutluluk: 3,
-          mesaj: "Zamanla yorgunluktan bayıldın ve beynin kendini sıfırladı.",
+          mesaj: "Yorgunluktan bayıldın, beynin kendini sıfırladı.",
         },
         basarisizSonuc: {
           saglik: -15,
           mutluluk: -8,
-          mesaj: "Uykusuzluk yüzünden merdivenlerden düştün. Bitkinlik seni fiziksel olarak da parçalıyor.",
+          mesaj: "Uykusuzluktan merdivenden düştün. Bitkinlik bedenini de yıpratıyor.",
         },
       },
     ],
@@ -738,35 +738,35 @@ export const OLAY_GENEL: OlayTanimi[] = [
     minYas: 15,
     gorsel: "🗯️",
     baslik: "Halkın Nefreti",
-    metin: "İtibarın ve ahlakın yerlerde. Sokakta yürürken insanlar sana tükürüyor, esnaf sana mal satmak istemiyor.",
+    metin: "İtibarın ve ahlakın yerlerde. Sokakta insanlar sana tükürüyor, esnaf mal satmak istemiyor.",
     secenekler: [
       {
-        metin: "İtibarını düzeltmek için meydanda bedava erzak dağıt.",
+        metin: "İtibarın için meydanda bedava erzak dağıt.",
         baseBasariSansi: 50,
         maliyet: 25,
         basariliSonuc: {
           ahlak: 20,
           un: 15,
           para: -25,
-          mesaj: "Cömertliğin insanların midesine dokundu. Eskiden tükürenler şimdi sana 'hayırsever' diyor.",
+          mesaj: "Cömertliğin mideye dokundu. Tükürenler şimdi sana 'hayırsever' diyor.",
         },
         basarisizSonuc: {
           para: -25,
           mutluluk: -10,
-          mesaj: "Halk erzağı aldı ama yine de arkandan küfretmeye devam etti. Paran boşa gitti.",
+          mesaj: "Halk erzağı aldı ama arkandan küfretmeye devam etti. Para boşa gitti.",
         },
       },
       {
-        metin: "Başını dik tut, bu sürüyü umursama.",
+        metin: "Başını dik tut, sürüyü umursama.",
         baseBasariSansi: 60,
         basariliSonuc: {
           mutluluk: 3,
-          mesaj: "Onların ne düşündüğü umurunda değil. Sert ve acımasız yoluna devam ettin.",
+          mesaj: "Ne düşündükleri umurunda değil. Sert ve acımasız yoluna devam ettin.",
         },
         basarisizSonuc: {
           mutluluk: -10,
           saglik: -5,
-          mesaj: "Umursamıyormuş gibi yapsan da atılan bir çürük domates kafana isabet etti. İçten içe çöküyorsun.",
+          mesaj: "Umursamaz görünsen de kafana çürük domates isabet etti. İçten içe çöküyorsun.",
         },
       },
     ],
@@ -778,26 +778,26 @@ export const OLAY_GENEL: OlayTanimi[] = [
     minYas: 16,
     gorsel: "🙈",
     baslik: "Görünmez Adam",
-    metin: "Yıllardır bu topraklardasın ama hâlâ bir hayalet muamelesi görüyorsun. Devlet kapıları yüzüne kapanıyor, pazarlıklar aleyhine sonuçlanıyor.",
+    metin: "Yıllardır buradasın ama hâlâ hayalet muamelesi görüyorsun. Devlet kapıları yüzüne kapanıyor, pazarlıklar aleyhine bitiyor.",
     secenekler: [
       {
-        metin: "Büyük bir festivalde ortaya çık ve dikkatleri üzerine çek.",
+        metin: "Büyük festivalde ortaya çık, dikkat çek.",
         baseBasariSansi: 50,
         maliyet: 10,
         basariliSonuc: {
           para: -10,
           un: 20,
           mutluluk: 3,
-          mesaj: "Gösterişli kıyafetlerin ve cömertliğin sayesinde sonunda bazı insanlar adını öğrendi!",
+          mesaj: "Gösterişli kıyafetin ve cömertliğin sayesinde bazıları sonunda adını öğrendi!",
         },
         basarisizSonuc: {
           para: -10,
           mutluluk: -6,
-          mesaj: "Çabaların fark edilmedi. Kalabalığın içinde sadece cüzdanı hafiflemiş bir hiçkimsesin.",
+          mesaj: "Çabaların fark edilmedi. Kalabalıkta cüzdanı hafiflemiş bir hiçkimsesin.",
         },
       },
       {
-        metin: "Görünmezliğin tadını çıkar, sessizce işini yap.",
+        metin: "Görünmezliğin tadını çıkar, sessizce çalış.",
         baseBasariSansi: 90,
         basariliSonuc: {
           saglik: 2,
@@ -807,7 +807,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         },
         basarisizSonuc: {
           mutluluk: -5,
-          mesaj: "Görmezden gelinmek, gün geçtikçe ruhunu ezen ağır bir yüke dönüştü.",
+          mesaj: "Görmezden gelinmek, günden güne ruhunu ezen bir yüke dönüştü.",
         },
       },
     ],
@@ -821,10 +821,10 @@ export const OLAY_GENEL: OlayTanimi[] = [
     minYas: 18,
     gorsel: "🔍",
     baslik: "Karanlık Sokakların Gözü",
-    metin: "Sokaklarda her şeyi duyan, kimin kiminle yattığını, kimin ne kadara mal sattığını bilen keskin gözlü (ama tehlikeli) bir muhbir sana çalışmayı teklif ediyor.",
+    metin: "Sokaklarda her şeyi duyan, kimin ne kadara mal sattığını bilen keskin gözlü (ama tehlikeli) bir muhbir sana çalışmayı teklif ediyor.",
     secenekler: [
       {
-        metin: "Onu işe al, şehrin sırları senin olsun.",
+        metin: "İşe al, şehrin sırları senin olsun.",
         baseBasariSansi: 75,
         maliyet: 35,
         basariliSonuc: {
@@ -832,25 +832,25 @@ export const OLAY_GENEL: OlayTanimi[] = [
           etiket_ekle: [
             "gozlemci_var",
           ],
-          mesaj: "Muhbiri işe aldın. Artık atacağın adımlarda rakiplerinin ne yapacağını önceden kestirebiliyorsun.",
+          mesaj: "Muhbiri tuttun. Artık rakiplerinin hamlesini önceden kestirebiliyorsun.",
         },
         basarisizSonuc: {
           para: -35,
-          mesaj: "Adam parayı aldı ve ertesi gün sırra kadem bastı. Dolandırıldın.",
+          mesaj: "Adam parayı alıp ertesi gün sırra kadem bastı. Dolandırıldın.",
         },
       },
       {
-        metin: "Kendi sezgilerim bana yeter, reddet.",
+        metin: "Sezgilerim yeter, reddet.",
         baseBasariSansi: 95,
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
           mutluluk: -1,
-          mesaj: "Bu tür karanlık tiplere güvenmemekte haklıydın. İşine kendi aklınla devam ettin.",
+          mesaj: "Bu karanlık tiplere güvenmemekte haklıydın. İşine kendi aklınla devam ettin.",
         },
         basarisizSonuc: {
           mutluluk: -2,
-          mesaj: "Sonradan bir ihalede körü körüne kaybettiğinde keşke o adamı tutsaydım dedin.",
+          mesaj: "Sonra bir ihaleyi körü körüne kaybedince 'keşke o adamı tutsaydım' dedin.",
         },
       },
     ],
@@ -861,7 +861,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
     minYas: 16,
     gorsel: "⚡",
     baslik: "Gecikmeye Gelmez",
-    metin: "Valinin konağında şüpheli bir yangın çıktı ve içeride devasa bir altın sandığı savunmasız duruyor. Birkaç dakika içinde çatı çökecek. Düşünmeye vakit yok!",
+    metin: "Valinin konağında şüpheli bir yangın çıktı; içeride devasa bir altın sandığı savunmasız. Çatı dakikalar içinde çökecek. Düşünmeye vakit yok!",
     secenekler: [
       {
         metin: "İçeri dal ve o sandığı kap!",
@@ -879,7 +879,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         basarisizSonuc: {
           saglik: -35,
           olum_sansi: 10,
-          mesaj: "Kiriş kafana çöktü! Seni dışarı ölü gibi çıkardılar, günlerce komada kaldın.",
+          mesaj: "Kiriş kafana çöktü! Seni ölü gibi çıkardılar, günlerce komada kaldın.",
         },
       },
       {
@@ -891,7 +891,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         },
         basariliSonuc: {
           ahlak: 5,
-          mesaj: "Bina gözlerinin önünde çökerken 'İyi ki girmemişim' dedin. Canından kıymetli değil.",
+          mesaj: "Bina gözünün önünde çökerken 'İyi ki girmemişim' dedin. Canından kıymetli değil.",
         },
         basarisizSonuc: {
           mesaj: "Kullanılmadı.",
@@ -905,10 +905,10 @@ export const OLAY_GENEL: OlayTanimi[] = [
     minYas: 16,
     gorsel: "🗡️",
     baslik: "Boynu Bükük Düşman",
-    metin: "Yıllarca sana kan kusturan o adam şimdi tamamen iflas etmiş, dizlerinin üzerine çökmüş senden bir parça merhamet dileniyor. Kılıcını çekebilir veya ona ekmek verebilirsin.",
+    metin: "Yıllarca sana kan kusturan adam şimdi iflas etmiş, dizlerinin üstünde merhamet dileniyor. Kılıcını çekebilir veya ona ekmek verebilirsin.",
     secenekler: [
       {
-        metin: "Ona acı, cebine altın koy ve gitmesini söyle.",
+        metin: "Acı, cebine altın koy, git de.",
         baseBasariSansi: 85,
         gerekliEksen: {
           eksen: "merhamet",
@@ -917,12 +917,12 @@ export const OLAY_GENEL: OlayTanimi[] = [
         basariliSonuc: {
           ahlak: 25,
           mutluluk: 8,
-          mesaj: "İntikam zehrini içmeyi reddettin. Düşmanın ağlayarak ellerini öptü ve şehri terk etti.",
+          mesaj: "İntikam zehrini içmedin. Düşmanın ağlayarak ellerini öptü ve şehri terk etti.",
         },
         basarisizSonuc: {
           ahlak: 15,
           saglik: -20,
-          mesaj: "Ona arkanı döndüğün an sırtına hançer sapladı! Merhametin az kalsın seni öldürüyordu.",
+          mesaj: "Arkanı dönünce sırtına hançer sapladı! Merhametin az kalsın seni öldürüyordu.",
         },
       },
       {
@@ -935,12 +935,12 @@ export const OLAY_GENEL: OlayTanimi[] = [
         basariliSonuc: {
           un: 25,
           ahlak: -25,
-          mesaj: "Acımadın ve onu zindanlara/ölüme yolladın. Şehirde kimse artık senin adını anmaya bile cesaret edemiyor.",
+          mesaj: "Acımadın, onu zindana/ölüme yolladın. Kimse adını anmaya cesaret edemiyor.",
         },
         basarisizSonuc: {
           un: -10,
           ahlak: -15,
-          mesaj: "Zalimliğin halkı isyan ettirdi, seni durdurup adamı elinden aldılar.",
+          mesaj: "Zulmün halkı ayaklandırdı; seni durdurup adamı elinden aldılar.",
         },
       },
     ],
@@ -951,10 +951,10 @@ export const OLAY_GENEL: OlayTanimi[] = [
     minYas: 18,
     gorsel: "🤝",
     baslik: "Usta Kılıçşör",
-    metin: "Savaş tecrübesi olan, yüzü yara bere içinde bir usta kılıçşör/koruma senin emrine girmeyi teklif ediyor. İstediği peşinat oldukça tuzlu ama seni her şeyden koruyacağına yemin ediyor.",
+    metin: "Yüzü yara bere içinde, savaş görmüş usta bir kılıçşör emrine girmek istiyor. Peşinatı tuzlu ama seni her şeyden koruyacağına yemin ediyor.",
     secenekler: [
       {
-        metin: "Seni işe alıyorum, gölgem ol.",
+        metin: "Seni tutuyorum, gölgem ol.",
         baseBasariSansi: 85,
         maliyet: 60,
         basariliSonuc: {
@@ -963,26 +963,26 @@ export const OLAY_GENEL: OlayTanimi[] = [
             rol: "Korumalı Yardımcı",
             tahminGenisligi: 16,
           },
-          mesaj: "Adam işe başladı. Sadece varlığı bile etrafındaki çakalları senden uzak tutmaya yetti.",
+          mesaj: "Adam işe başladı. Varlığı bile etrafındaki çakalları uzak tutmaya yetti.",
         },
         basarisizSonuc: {
           para: -60,
-          mesaj: "Adam peşinatı aldığı gece sarhoş olup kumarda kaybetti ve şehirden kaçtı!",
+          mesaj: "Peşinatı aldığı gece sarhoş olup kumarda kaybetti ve şehirden kaçtı!",
         },
       },
       {
-        metin: "Çok pahalısın, benim korumaya ihtiyacım yok.",
+        metin: "Çok pahalısın, korumaya ihtiyacım yok.",
         baseBasariSansi: 88,
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
           mutluluk: -1,
-          mesaj: "Teklifi reddettin. Paranı cebinde tutup yalnız başına dolaşmaya devam ediyorsun.",
+          mesaj: "Teklifi reddettin. Paran cebinde, yalnız dolaşmaya devam ediyorsun.",
         },
         basarisizSonuc: {
           para: -8,
-          mesaj: "Adam gittikten kısa süre sonra iki serseri seni köşeye sıkıştırdı; 'korumasız olduğun belliydi' diye sırıttılar.",
-          detay: "Bazen bir gölgenin caydırıcılığı, ödediğin paraya değer.",
+          mesaj: "Adam gidince iki serseri seni köşeye sıkıştırdı; 'korumasızsın' diye sırıttılar.",
+          detay: "Gölgenin caydırıcılığı ödediğin paraya değer.",
         },
       },
     ],
@@ -993,7 +993,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
     minYas: 18,
     gorsel: "🎲",
     baslik: "Sokaktaki Yetim",
-    metin: "Sokaklarda büyümüş, zayıf ama cin gibi bakan bir genç paçana yapıştı. 'Bana bir tas çorba ver, senin için her işi yaparım' diyor. İçinde bir yetenek mi var yoksa sadece bir hırsız mı belli değil.",
+    metin: "Sokakta büyümüş, zayıf ama cin gibi bir genç paçana yapıştı: 'Bir tas çorba ver, her işini yaparım.' Yetenekli mi, hırsız mı belli değil.",
     secenekler: [
       {
         metin: "Gel bakalım, şansını dene.",
@@ -1005,19 +1005,19 @@ export const OLAY_GENEL: OlayTanimi[] = [
             rol: "Sokak Çocuğu",
             tahminGenisligi: 50,
           },
-          mesaj: "Çocuğu yanına aldın. İlk günlerinde sana çok sadık görünüyor, gerçek yeteneğini zaman gösterecek.",
+          mesaj: "Çocuğu aldın. İlk günlerde sadık görünüyor; yeteneğini zaman gösterecek.",
         },
         basarisizSonuc: {
           para: -10,
-          mesaj: "Çocuk ilk günden kasandan 10 altın çalıp sırra kadem bastı.",
+          mesaj: "Çocuk ilk gün kasandan 10 altın çalıp sırra kadem bastı.",
         },
       },
       {
-        metin: "Sokak faresi! Uzak dur benden.",
+        metin: "Sokak faresi! Uzak dur.",
         baseBasariSansi: 95,
         basariliSonuc: {
           ahlak: -5,
-          mesaj: "Çocuğu itip yoluna devam ettin. Vicdanın çok hafif sızladı.",
+          mesaj: "Çocuğu itip yoluna devam ettin. Vicdanın hafifçe sızladı.",
         },
         basarisizSonuc: {
           para: -5,
@@ -1032,7 +1032,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
     minYas: 16,
     gorsel: "🧳",
     baslik: "Yol Arkadaşı",
-    metin: "Yolculuk sırasında bir handa tanıştığın gezgin, senin hedeflerinden çok etkilendi. Seninle aynı yolu yürümek istiyor. Bilgili biri ama geçmişini saklıyor.",
+    metin: "Yolculukta handa tanıştığın bir gezgin hedeflerinden etkilendi, seninle yürümek istiyor. Bilgili biri ama geçmişini saklıyor.",
     secenekler: [
       {
         metin: "Yanımda yürüyebilirsin.",
@@ -1044,7 +1044,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
             rol: "Gezgin Yoldaş",
             tahminGenisligi: 35,
           },
-          mesaj: "Sırt çantasını alıp peşine takıldı. Onun anlattığı hikayeler yolculuğunu çok daha çekilir kılıyor.",
+          mesaj: "Sırt çantasını alıp peşine takıldı. Hikâyeleri yolculuğu çekilir kılıyor.",
         },
         basarisizSonuc: {
           para: -20,
@@ -1058,12 +1058,12 @@ export const OLAY_GENEL: OlayTanimi[] = [
           saglik: 2,
           ahlak: 1,
           mutluluk: -1,
-          mesaj: "Handa yollarınızı ayırdınız. Yalnız yürümek her zaman en güvenlisidir.",
+          mesaj: "Handa yollarınızı ayırdınız. Yalnız yürümek en güvenlisi.",
         },
         basarisizSonuc: {
           mutluluk: -5,
-          mesaj: "Yolun geri kalanı sessiz ve uzun geçti; gezginin anlatacağı hikayeleri kaçırdığını düşünmeden edemedin.",
-          detay: "Yalnızlık bazen sandığından ağır basıyor.",
+          mesaj: "Yolun kalanı sessiz ve uzun geçti; gezginin hikâyelerini kaçırdığını düşündün.",
+          detay: "Yalnızlık bazen sandığından ağır basar.",
         },
       },
     ],
@@ -1074,20 +1074,20 @@ export const OLAY_GENEL: OlayTanimi[] = [
     gerekliEkip: true,
     gorsel: "🐫",
     baslik: "Uçurum Geçidi",
-    metin: "Çok değerli bir kargoyu 'Uçurum Geçidi'nden geçirmek zorundasınız. O geçit haydutların ve yırtıcıların meskeni. Ekibini mi riske atacaksın, yoksa başa sen mi geçeceksin?",
+    metin: "Çok değerli bir kargoyu 'Uçurum Geçidi'nden geçirmelisiniz. Orası haydut yuvası. Ekibi mi riske atacaksın, yoksa başa sen mi geçeceksin?",
     secenekler: [
       {
-        metin: "Bu riski ben alırım! Kervanın başına geç.",
+        metin: "Riski ben alırım! Kervanın başına geç.",
         baseBasariSansi: 50,
         basariliSonuc: {
           para: 55,
           un: 20,
-          mesaj: "Kılıcın ve cesaretinle kervanı uçurumdan geçirdin! Kazanç muazzam.",
+          mesaj: "Kılıcın ve cesaretinle kervanı geçirdin! Kazanç muazzam.",
         },
         basarisizSonuc: {
           saglik: -35,
           olum_sansi: 20,
-          mesaj: "Haydutlar sizi pusuya düşürdü! Karnından okla vuruldun, mallar yağmalandı.",
+          mesaj: "Haydutlar pusu kurdu! Karnından okla vuruldun, mallar yağmalandı.",
         },
       },
       {
@@ -1097,13 +1097,13 @@ export const OLAY_GENEL: OlayTanimi[] = [
           mutluluk: -11,
           para: 35,
           un: 3,
-          mesaj: "Ekibin kan ter içinde ama başarılı bir şekilde malları getirdi. Liderlik budur.",
+          mesaj: "Ekibin kan ter içinde ama başarıyla malları getirdi. Liderlik budur.",
         },
         basarisizSonuc: {
           ekip_kaybi: true,
           para: -20,
           mutluluk: -19,
-          mesaj: "Günler geçti... Ne {ekip} döndü ne de kargo. Vahşi doğa onları yuttu.",
+          mesaj: "Günler geçti... Ne {ekip} döndü ne kargo. Vahşi doğa onları yuttu.",
         },
       },
     ],
@@ -1114,7 +1114,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
     gerekliEkip: true,
     gorsel: "🗺️",
     baslik: "Zehrin Kuryesi",
-    metin: "Saraydan gelen gizemli bir adam sana mühürlü bir mektup uzattı. 'Bunu karşı kaleye ulaştır. Yakalanırsan seni tanımayız.' dedi. Çok tehlikeli bir görev.",
+    metin: "Saraydan gelen gizemli bir adam mühürlü bir mektup uzattı: 'Karşı kaleye ulaştır. Yakalanırsan seni tanımayız.' Çok tehlikeli bir görev.",
     secenekler: [
       {
         metin: "Sırrı ben taşırım. Bizzat git.",
@@ -1125,7 +1125,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           etiket_ekle: [
             "itibar:sarayin_adami",
           ],
-          mesaj: "Gecenin karanlığında mektubu teslim ettin. Saray artık sana çok şey borçlu.",
+          mesaj: "Gecenin karanlığında mektubu teslim ettin. Saray sana çok şey borçlu.",
         },
         basarisizSonuc: {
           saglik: -40,
@@ -1134,19 +1134,19 @@ export const OLAY_GENEL: OlayTanimi[] = [
         },
       },
       {
-        metin: "Gölgeler içinde halledilsin, {ekip}'i yolla.",
+        metin: "Gölgelerde halledilsin, {ekip}'i yolla.",
         baseBasariSansi: 55,
         basariliSonuc: {
           mutluluk: -8,
           para: 20,
           un: 5,
-          mesaj: "{ekip} görevi senin adına tamamladı ve güvenle geri döndü.",
+          mesaj: "{ekip} görevi senin adına tamamlayıp sağ döndü.",
         },
         basarisizSonuc: {
           mutluluk: -4,
           para: -20,
           ekip_kaybi: true,
-          mesaj: "Gönderdiğin yardımcı sınırda yakalandı ve asıldı! Kanı senin ellerinde.",
+          mesaj: "Gönderdiğin yardımcı sınırda yakalanıp asıldı! Kanı senin ellerinde.",
         },
       },
     ],
@@ -1159,10 +1159,10 @@ export const OLAY_GENEL: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Karanlık Bir Gölgelik",
-    metin: "Şehirde düşmanların artıyor. Hanın köşesinde, yüzü yara bere içinde bir paralı asker sana hizmetlerini sunuyor. Kendini çok övüyor ama gerçekte ne kadar yetenekli olduğunu sadece zaman gösterecek.",
+    metin: "Şehirde düşmanların artıyor. Handa yüzü yaralı bir paralı asker hizmetini sunuyor. Kendini övüyor; ne kadar iyi olduğunu zaman gösterir.",
     secenekler: [
       {
-        metin: "Onu koruman olarak işe al.",
+        metin: "Koruman olarak tut.",
         baseBasariSansi: 85,
         maliyet: 15,
         basariliSonuc: {
@@ -1171,13 +1171,13 @@ export const OLAY_GENEL: OlayTanimi[] = [
             rol: "Koruma",
             tahminGenisligi: 70,
           },
-          mesaj: "Parayı ödedin. Artık gölgen gibi seni takip ediyor.",
-          detay: "Onun gerçek sadakatini ve yeteneğini bir kavgada öğreneceksin.",
+          mesaj: "Parayı ödedin. Artık gölgen gibi seni izliyor.",
+          detay: "Gerçek sadakatini bir kavgada öğreneceksin.",
         },
         basarisizSonuc: {
           para: -15,
           mesaj: "Parayı verdin ama adam gece yarısı ortadan kayboldu.",
-          detay: "Han köşelerinden adam kiralarken dikkatli olmalıydın.",
+          detay: "Han köşesinden adam tutarken dikkatli olmalıydın.",
         },
       },
       {
@@ -1193,8 +1193,8 @@ export const OLAY_GENEL: OlayTanimi[] = [
         basarisizSonuc: {
           saglik: -8,
           para: -10,
-          mesaj: "Reddettiğin adam çıkışta seni bekleyen üç kişiye fısıldamış gibiydi; karanlık bir sokakta pusuya düştün.",
-          detay: "Şehirdeki düşmanların, korumasız olduğunu senden önce öğrendi.",
+          mesaj: "Reddettiğin adam çıkışta bekleyenlere fısıldamış gibiydi; pusuya düştün.",
+          detay: "Düşmanların korumasız olduğunu önce öğrendi.",
         },
       },
     ],
@@ -1209,7 +1209,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Sadakat Sınavı",
-    metin: "Gece sokağında üç serseri yolunu kesti. Bıçakları parlıyor. Korumana geri çekilip işi halletmesini emrettin. Şimdi onun gizli yeteneğini görme vakti.",
+    metin: "Gece sokağında üç serseri yolunu kesti, bıçakları parlıyor. Korumana geri çekilip işi halletmesini emrettin. Gizli yeteneğini görme vakti.",
     secenekler: [
       {
         metin: "Korumanın savaşmasını bekle.",
@@ -1217,25 +1217,25 @@ export const OLAY_GENEL: OlayTanimi[] = [
         ekipKalitesiZarBelirler: "Koruma",
         basariliSonuc: {
           un: 15,
-          mesaj: "Koruman bir şimşek gibi hareket edip üçünü de yere serdi! İşe aldığın adam tam bir ölüm makinesiymiş.",
+          mesaj: "Koruman şimşek gibi üçünü de yere serdi! Tuttuğun adam tam bir ölüm makinesi.",
           detay: "Verdiğin her kuruşa değdi.",
         },
         basarisizSonuc: {
           saglik: -30,
           para: -20,
           ekip_sil: "Koruma",
-          mesaj: "Koruman bıçakları görünce korkup kaçtı! Serseriler seni feci şekilde dövüp paranı aldılar.",
-          detay: "Yardımcın bir korkaktı. Hem paranı hem sağlığını kaybettin.",
+          mesaj: "Koruman bıçakları görünce korkup kaçtı! Serseriler seni dövüp paranı aldı.",
+          detay: "Yardımcın korkaktı. Para ve sağlık gitti.",
         },
       },
       {
-        metin: "Korumana güvenme, kendin de bıçağını çek.",
+        metin: "Korumaya güvenme, bıçağını sen de çek.",
         baseBasariSansi: 45,
         basariliSonuc: {
           un: 10,
           saglik: -6,
-          mesaj: "İkiniz birlikte serserileri püskürttünüz; yara aldın ama ayaktasın.",
-          detay: "Bazen kendi işini kimseye bırakmamak gerekir.",
+          mesaj: "İkiniz serserileri püskürttünüz; yara aldın ama ayaktasın.",
+          detay: "Bazen işi kimseye bırakmamak gerek.",
         },
         basarisizSonuc: {
           saglik: -25,
@@ -1258,10 +1258,10 @@ export const OLAY_GENEL: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Zeki Bir Çırak",
-    metin: "İşlerin büyüyor ve hesapları tutması için zeki görünümlü bir genci yaver olarak işe almayı düşünüyorsun. Sana büyük paralar kazandırabilir ya da kasanı boşaltabilir.",
+    metin: "İşlerin büyüyor; hesapları tutması için zeki görünümlü bir genci yaver almayı düşünüyorsun. Sana ya büyük kazanç ya da boş kasa getirebilir.",
     secenekler: [
       {
-        metin: "Onu muhasebecin yap.",
+        metin: "Muhasebecin yap.",
         baseBasariSansi: 80,
         maliyet: 10,
         basariliSonuc: {
@@ -1270,13 +1270,13 @@ export const OLAY_GENEL: OlayTanimi[] = [
             rol: "Muhasebeci",
             tahminGenisligi: 85,
           },
-          mesaj: "Genç, masasına oturdu ve defterleri düzenlemeye başladı.",
-          detay: "Umarım matematiği dürüstlüğü kadar kuvvetlidir.",
+          mesaj: "Genç masasına oturup defterleri düzenlemeye başladı.",
+          detay: "Umarım matematiği dürüstlüğü kadar güçlüdür.",
         },
         basarisizSonuc: {
           para: -10,
           un: -5,
-          mesaj: "Genç, ilk haftanın ücretini alır almaz ortadan kayboldu. Defterlerden birkaç sayfa da onunla gitti.",
+          mesaj: "Genç ilk haftanın ücretini alıp kayboldu. Defterlerden sayfalar da onunla gitti.",
           detay: "Zekiydi, evet — ama yanlış işlerde.",
         },
       },
@@ -1285,14 +1285,14 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 90,
         basariliSonuc: {
           saglik: -5,
-          mesaj: "İş yükü sağlığını biraz yordu ama en azından kasanın anahtarı sende.",
+          mesaj: "İş yükü sağlığını yordu ama kasanın anahtarı sende.",
           detay: "Güven pahalı bir lükstür.",
         },
         basarisizSonuc: {
           saglik: -12,
           mutluluk: -8,
-          mesaj: "Defterlere gömülü geçen bir kış seni iyice yıprattı; gözlerin bulanık, sırtın tutuk.",
-          detay: "Her şeyi tek başına taşımanın da bir bedeli var.",
+          mesaj: "Defterlere gömülü bir kış seni yıprattı; gözlerin bulanık, sırtın tutuk.",
+          detay: "Her şeyi tek başına taşımanın da bedeli var.",
         },
       },
     ],
@@ -1309,7 +1309,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Büyük Sevkiyat",
-    metin: "Şehir dışındayken büyük bir mal sevkiyatının yönetimi muhasebecine kaldı. Döndüğünde kasanın durumuna bakıyorsun.",
+    metin: "Sen şehir dışındayken büyük bir sevkiyatın yönetimi muhasebecine kaldı. Döndüğünde kasaya bakıyorsun.",
     secenekler: [
       {
         metin: "Hesapları kontrol et.",
@@ -1318,29 +1318,29 @@ export const OLAY_GENEL: OlayTanimi[] = [
         basariliSonuc: {
           para: 60,
           maas_carpani: 1.1,
-          mesaj: "Gözlerine inanamadın! Yaverin pazar açıklarını harika değerlendirmiş ve kârını ikiye katlamış.",
+          mesaj: "İnanamadın! Yaverin pazar açıklarını değerlendirip kârı ikiye katlamış.",
           detay: "Muazzam bir yetenek bulmuşsun.",
         },
         basarisizSonuc: {
           para: -40,
           ekip_sil: "Muhasebeci",
-          mesaj: "Kasa bomboş! Yaverin tüm nakdini alıp gece yarısı bir gemiyle kaçmış.",
-          detay: "İşe yaramaz bir hırsıza güvenmenin bedelini ödedin.",
+          mesaj: "Kasa bomboş! Yaverin nakdi alıp gece yarısı gemiyle kaçmış.",
+          detay: "Bir hırsıza güvenmenin bedelini ödedin.",
         },
       },
       {
-        metin: "Hesapları kontrol etme, ona güven, dinlenmeye bak.",
+        metin: "Kontrol etme, güven, dinlen.",
         baseBasariSansi: 70,
         basariliSonuc: {
           mutluluk: 8,
           para: 10,
-          mesaj: "Dinlenmen iyi geldi; döndüğünde kasanın gerçekten iyi durumda olduğunu gördün.",
-          detay: "Bazen güvenmek de bir tercih, hatta bir dinlenmedir.",
+          mesaj: "Dinlenmek iyi geldi; döndüğünde kasa gerçekten iyi durumdaydı.",
+          detay: "Bazen güvenmek de bir dinlenmedir.",
         },
         basarisizSonuc: {
           para: -30,
-          mesaj: "Güvenin kötüye kullanıldı; yaverin parayı alıp kayıplara karıştı.",
-          detay: "Kontrolsüz güven bazen pahalıya patlar.",
+          mesaj: "Güvenin kötüye kullanıldı; yaverin parayı alıp kayboldu.",
+          detay: "Kontrolsüz güven pahalıya patlar.",
         },
       },
     ],
@@ -1357,10 +1357,10 @@ export const OLAY_GENEL: OlayTanimi[] = [
     minYas: 17,
     gorsel: "⚔️",
     baslik: "Kışlada Bölünme",
-    metin: "Ordunun içi kaynıyor. 'Eski Muhafızlar' generalin katı ve soylu kurallarını savunurken, 'Yeni Nizam' liyakata dayalı köklü bir reform istiyor. Silahlar yakında birbirine dönebilir.",
+    metin: "Ordu kaynıyor. 'Eski Muhafızlar' generalin soylu kurallarını, 'Yeni Nizam' liyakata dayalı reformu savunuyor. Silahlar birbirine dönebilir.",
     secenekler: [
       {
-        metin: "Geleneklerimiz bizi yaşatır! Eski Muhafızlar'a katıl.",
+        metin: "Gelenek bizi yaşatır! Eski Muhafızlar'a katıl.",
         baseBasariSansi: 90,
         basariliSonuc: {
           hizip_ata: "Eski Muhafızlar",
@@ -1380,7 +1380,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         },
       },
       {
-        metin: "Bu çürümüş düzen değişmeli! Yeni Nizam'a katıl.",
+        metin: "Çürümüş düzen değişmeli! Yeni Nizam'a katıl.",
         baseBasariSansi: 90,
         basariliSonuc: {
           hizip_ata: "Yeni Nizam",
@@ -1389,14 +1389,14 @@ export const OLAY_GENEL: OlayTanimi[] = [
           etiket_ekle: [
             "hizip_secildi",
           ],
-          mesaj: "Reformcuların arasına genç bir aslan gibi girdin. Değişim rüzgarları esiyor!",
+          mesaj: "Reformcuların arasına genç bir aslan gibi girdin. Değişim rüzgârı esiyor!",
         },
         basarisizSonuc: {
           hizip_ata: "Yeni Nizam",
           etiket_ekle: [
             "hizip_secildi",
           ],
-          mesaj: "Katıldın ama soylu general adını kara listeye aldı bile.",
+          mesaj: "Katıldın ama soylu general adını kara listeye aldı.",
         },
       },
     ],
@@ -1413,7 +1413,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
     minYas: 17,
     gorsel: "⚖️",
     baslik: "Pazarın Hakimi Kim?",
-    metin: "Ticaret odası ikiye bölündü. Liman Loncası asilzadelerin desteğiyle tekelciliği savunuyor; Pazar Birliği ise küçük esnafın serbest rekabet hakkını. Tarafını seçmezsen iflas edebilirsin.",
+    metin: "Ticaret odası bölündü. Liman Loncası tekeli, Pazar Birliği serbest rekabeti savunuyor. Taraf seçmezsen iflas edebilirsin.",
     secenekler: [
       {
         metin: "Zenginlik ve güç! Liman Loncası'na katıl.",
@@ -1425,14 +1425,14 @@ export const OLAY_GENEL: OlayTanimi[] = [
           etiket_ekle: [
             "hizip_secildi",
           ],
-          mesaj: "Soylu tüccarlar seni aralarına aldı. Vergi indirimleri anında başladı.",
+          mesaj: "Soylu tüccarlar seni aralarına aldı. Vergi indirimleri hemen başladı.",
         },
         basarisizSonuc: {
           hizip_ata: "Liman Loncası",
           etiket_ekle: [
             "hizip_secildi",
           ],
-          mesaj: "Katıldın ama küçük esnaf sana sırtını döndü.",
+          mesaj: "Katıldın ama küçük esnaf sana sırt çevirdi.",
         },
       },
       {
@@ -1445,7 +1445,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           etiket_ekle: [
             "hizip_secildi",
           ],
-          mesaj: "Esnafın kahramanı oldun. Sokaktaki adam artık senin tezgâhından alışveriş yapıyor.",
+          mesaj: "Esnafın kahramanı oldun. Sokaktaki adam artık senin tezgâhından alıyor.",
         },
         basarisizSonuc: {
           hizip_ata: "Pazar Birliği",
@@ -1453,7 +1453,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           etiket_ekle: [
             "hizip_secildi",
           ],
-          mesaj: "Katıldın ama asilzadeler mallarına ağır gümrük vergileri koydu.",
+          mesaj: "Katıldın ama asilzadeler mallarına ağır gümrük koydu.",
         },
       },
     ],
@@ -1470,10 +1470,10 @@ export const OLAY_GENEL: OlayTanimi[] = [
     minYas: 17,
     gorsel: "📿",
     baslik: "Kutsal Bölünme",
-    metin: "İnanç merkezleri ikiye yarıldı. Gelenekçiler kadim ve katı yasaları geri getirmek isterken, Yenilikçiler dini halkın diline çevirip aydınlanma talep ediyor. Hangi saftasın?",
+    metin: "İnanç merkezleri ikiye yarıldı. Gelenekçiler kadim, katı yasaları istiyor; Yenilikçiler dini halkın diline çevirmek. Hangi saftasın?",
     secenekler: [
       {
-        metin: "Kurallar esnetilemez! Gelenekçiler'e katıl.",
+        metin: "Kurallar esnemez! Gelenekçiler'e katıl.",
         baseBasariSansi: 90,
         basariliSonuc: {
           hizip_ata: "Gelenekçiler",
@@ -1490,7 +1490,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           etiket_ekle: [
             "hizip_secildi",
           ],
-          mesaj: "Genç cemaat seni yobazlıkla suçlayarak tapınağı terk etti.",
+          mesaj: "Genç cemaat seni yobazlıkla suçlayıp tapınağı terk etti.",
         },
       },
       {
@@ -1503,7 +1503,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           etiket_ekle: [
             "hizip_secildi",
           ],
-          mesaj: "Meydanlar seni dinlemek için dolup taşıyor. Yeni çağın sesi oldun.",
+          mesaj: "Meydanlar seni dinlemeye akıyor. Yeni çağın sesi oldun.",
         },
         basarisizSonuc: {
           hizip_ata: "Yenilikçiler",
@@ -1528,7 +1528,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
     ],
     gorsel: "🔨",
     baslik: "Loncanın İçi Karıştı",
-    metin: "Atölyede geçirdiğin yıllar boyunca loncanın gerçek bölünmesini gördün: Lonca Meclisi eski usulleri, sıkı denetimi ve sabit fiyatları savunuyor; Serbest Ustalar ise loncanın elinden kurtulup kendi fiyatını kendin koy diyor. Artık bir tarafta durmalısın.",
+    metin: "Lonca bölündü: Lonca Meclisi eski usul, denetim ve sabit fiyatı; Serbest Ustalar kendi fiyatını koymayı savunuyor. Taraf seçmelisin.",
     secenekler: [
       {
         metin: "Düzen ve zanaat şerefi! Lonca Meclisi'ne katıl.",
@@ -1540,7 +1540,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           etiket_ekle: [
             "hizip_secildi",
           ],
-          mesaj: "Usta ustabaşılar seni bağrına bastı. Loncanın koruması artık senin de arkanda.",
+          mesaj: "Usta ustabaşılar seni bağrına bastı. Loncanın koruması artık arkanda.",
         },
         basarisizSonuc: {
           hizip_ata: "Lonca Meclisi",
@@ -1551,7 +1551,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         },
       },
       {
-        metin: "Emeğimin hakkı bana ait! Serbest Ustalar'a katıl.",
+        metin: "Emeğin hakkı bana ait! Serbest Ustalar'a katıl.",
         baseBasariSansi: 90,
         basariliSonuc: {
           hizip_ata: "Serbest Ustalar",
@@ -1561,7 +1561,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           etiket_ekle: [
             "hizip_secildi",
           ],
-          mesaj: "Kendi fiyatını kendin koymaya başladın; ilk haftadan cebin şişti.",
+          mesaj: "Kendi fiyatını koymaya başladın; ilk haftadan cebin şişti.",
         },
         basarisizSonuc: {
           hizip_ata: "Serbest Ustalar",
@@ -1569,7 +1569,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           etiket_ekle: [
             "hizip_secildi",
           ],
-          mesaj: "Katıldın ama lonca seni malzeme tedarikinden dışladı, ilk aylar zorlu geçti.",
+          mesaj: "Katıldın ama lonca seni malzeme tedarikinden dışladı; ilk aylar zor geçti.",
         },
       },
     ],
@@ -1585,10 +1585,10 @@ export const OLAY_GENEL: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 2,
     baslik: "Kanlı Çamurun Sonu",
-    metin: "{yil} yılında imzalanan antlaşmayla savaş nihayet sona erdi. Cepheden eksik uzuvlar ve boş bakışlarla dönen yoldaşların iş arıyor. Hazine tamtakır, sokaklar gazi dolu. Yeni dünya düzeninde yerin neresi olacak?",
+    metin: "{yil} antlaşmasıyla savaş bitti. Cepheden dönen yoldaşların iş arıyor. Hazine tamtakır, sokaklar gazi dolu. Yeni düzende yerin neresi?",
     secenekler: [
       {
-        metin: "Eski yoldaşlarını topla, gaziler için bir dayanışma ağı kur.",
+        metin: "Eski yoldaşları topla, gazilere dayanışma ağı kur.",
         baseBasariSansi: 60,
         basariliSonuc: {
           un: 25,
@@ -1601,8 +1601,8 @@ export const OLAY_GENEL: OlayTanimi[] = [
             "gaziler_agi",
             "itibar:gazi_babasi",
           ],
-          mesaj: "Yüzlerce gaziye iş ve aş buldun. Şehirde sana kendi babalarından daha çok sadık kocaman bir gayriresmi ordun var.",
-          detay: "Bu adamların çoğu okuma yazma bilmiyor ama senin için canlarını verirler.",
+          mesaj: "Yüzlerce gaziye iş ve aş buldun. Sana babalarından çok sadık bir ordun var.",
+          detay: "Çoğu okuma bilmez ama senin için canını verir.",
         },
         basarisizSonuc: {
           para: -25,
@@ -1610,12 +1610,12 @@ export const OLAY_GENEL: OlayTanimi[] = [
           ulke_etkisi: {
             savasta: false,
           },
-          mesaj: "Söz verdiğin işleri bulamadın. Eski silah arkadaşların kapına dayanıp seni 'hayal tacirliğiyle' suçladı.",
-          detay: "Bir daha hiçbir askerin yüzüne bakamayacaksın.",
+          mesaj: "Söz verdiğin işleri bulamadın. Eski arkadaşların seni 'hayalperest' dedi.",
+          detay: "Bir daha hiçbir askerin yüzüne bakamazsın.",
         },
       },
       {
-        metin: "Fırsat bu fırsat! Savaşta sahipsiz kalan arazileri yok pahasına kapat.",
+        metin: "Fırsat! Sahipsiz arazileri yok pahasına kapat.",
         baseBasariSansi: 55,
         maliyet: 25,
         basariliSonuc: {
@@ -1625,20 +1625,20 @@ export const OLAY_GENEL: OlayTanimi[] = [
           ulke_etkisi: {
             savasta: false,
           },
-          mesaj: "Şehit düşenlerin tarlalarını üç kuruşa satın alıp tapularına el koydun. Savaş bitti ve sen bir toprak ağasısın.",
-          detay: "Önceki sahiplerin dulları bazen pazarda yüzüne tükürüyor, sen ise o sırada altınlarını sayıyorsun.",
+          mesaj: "Şehitlerin tarlalarını üç kuruşa alıp tapularına el koydun. Toprak ağasısın.",
+          detay: "Dullar pazarda tükürüyor; sen altın sayıyorsun.",
         },
         basarisizSonuc: {
           para: -30,
           ulke_etkisi: {
             savasta: false,
           },
-          mesaj: "Aldığın arazilerin çoğunun gerçek varisleri ortaya çıktı. Mahkeme tapularını iptal etti.",
+          mesaj: "Aldığın arazilerin gerçek varisleri çıktı. Mahkeme tapularını iptal etti.",
           detay: "Ölülerin malı sana yar olmadı.",
         },
       },
       {
-        metin: "İsyan edebilecek eski askerlerin isimlerini yeni hükümete sat.",
+        metin: "İsyan edebilecek eski askerleri hükümete ihbar et.",
         baseBasariSansi: 80,
         maxAhlak: 40,
         basariliSonuc: {
@@ -1651,7 +1651,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           etiket_ekle: [
             "sir:yoldas_satan",
           ],
-          mesaj: "Listeyi verdin. O gece şehirde onlarca eski yoldaşın yataklarından alınıp zindanlara atıldı. Kesen doldu ama ellerin kanlı.",
+          mesaj: "Listeyi verdin. O gece onlarca yoldaşın zindana atıldı. Kesen dolu, elin kanlı.",
           detay: "Artık yeni devletin gizli bir köpeğisin.",
         },
         basarisizSonuc: {
@@ -1664,8 +1664,8 @@ export const OLAY_GENEL: OlayTanimi[] = [
           etiket_ekle: [
             "sir:yoldas_satan",
           ],
-          mesaj: "Liste yeni hükümete ulaşmadan sızdı. Eski yoldaşların kimin ihbar ettiğini öğrendi; artık her gölgeden korkuyorsun ve devletten beş kuruş alamadın.",
-          detay: "İhanet açığa çıkınca hem parayı hem güvenliği kaybettin.",
+          mesaj: "Liste sızdı. Yoldaşların ihbarcıyı öğrendi; her gölgeden korkuyorsun, kuruş yok.",
+          detay: "İhanet açığa çıkınca para da güvenlik de gitti.",
         },
       },
     ],
@@ -1683,7 +1683,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 3,
     baslik: "Ölüm Emri",
-    metin: "Savaş en kanlı evresine girdi. Alayın doğrudan ölüm kokan bir tabyaya sürülüyor. Komutan gece yarısı çadırında görev dağıtımı yapıyor. Gözleri senin üzerinde.",
+    metin: "Savaş en kanlı evresinde. Alayın ölüm kokan bir tabyaya sürülüyor. Komutan gece yarısı görev dağıtıyor; gözleri senin üzerinde.",
     secenekler: [
       {
         metin: "Ölüme ilk ben giderim! Taarruz koluna yazıl.",
@@ -1697,8 +1697,8 @@ export const OLAY_GENEL: OlayTanimi[] = [
             "kahraman_asker",
           ],
           unvan_kazan: "Tabya Fatihi",
-          mesaj: "Tabyayı kan banyosuna çevirip ilk sen düştün içine! Göğsüne bizzat general madalya taktı.",
-          detay: "O gün boğazladığın düşmanların yüzlerini unutamıyorsun ama tarih kitapları adını altın harflerle yazacak.",
+          mesaj: "Tabyayı kan gölüne çevirip içine ilk sen düştün! Göğsüne general madalya taktı.",
+          detay: "Düşman yüzlerini unutamıyorsun; tarih adını yazar.",
         },
         basarisizSonuc: {
           saglik: -50,
@@ -1709,25 +1709,25 @@ export const OLAY_GENEL: OlayTanimi[] = [
             tur: "kalici",
             tur_basi_saglik: -2,
           },
-          mesaj: "Bir top mermisi seni havaya uçurdu. Günlerce cesetlerin arasında ölü yattın sanılıp bırakıldın.",
-          detay: "Uyandığında bedeninin bir parçasının eksik olduğunu fark ettin.",
+          mesaj: "Bir gülle seni havaya uçurdu. Günlerce cesetler arasında ölü sanılıp bırakıldın.",
+          detay: "Uyandığında bedeninden bir parça eksikti.",
         },
       },
       {
-        metin: "Beni ikmal hattına, cephe gerisine verin komutanım.",
+        metin: "Beni ikmal hattına verin komutanım.",
         baseBasariSansi: 75,
         basariliSonuc: {
           para: 15,
           un: -20,
           saglik: -5,
-          mesaj: "Erzak çuvallarının arkasında saklanarak savaşı sağ salim atlattın.",
-          detay: "Dönen silah arkadaşların artık seninle aynı masaya oturmuyor. Yüzündeki o utanç ömür boyu sürecek.",
+          mesaj: "Erzak çuvallarının ardında saklanıp savaşı sağ atlattın.",
+          detay: "Dönen yoldaşların seninle oturmuyor. Utanç kalıcı.",
         },
         basarisizSonuc: {
           para: -15,
           un: -25,
-          mesaj: "İkmal hattına sızan düşman süvarileri sizi kılıçtan geçirdi. Korkaklığın seni koruyamadı.",
-          detay: "Hem kaçtın hem de esir düşmekten zor kurtuldun.",
+          mesaj: "İkmal hattına sızan düşman süvarisi sizi kılıçtan geçirdi. Korkaklık korumadı.",
+          detay: "Hem kaçtın hem esir düşmekten zor kurtuldun.",
         },
       },
     ],
@@ -1743,10 +1743,10 @@ export const OLAY_GENEL: OlayTanimi[] = [
     },
     gorsel: "💸",
     baslik: "Aç Askerler",
-    metin: "Savaş uzadıkça hazine suyunu çekti. Üç aydır tek bir gümüş bile ödenmedi. Askerlerin botları delik, mideleri boş. Kışlada isyan fısıltıları dolaşıyor.",
+    metin: "Savaş uzadıkça hazine tükendi. Üç aydır tek gümüş ödenmedi. Botlar delik, mideler boş. Kışlada isyan fısıltıları dolaşıyor.",
     secenekler: [
       {
-        metin: "Elebaşı ol! Dilekçeyi alıp generalin çadırına dayan.",
+        metin: "Elebaşı ol! Dilekçeyle generalin çadırına dayan.",
         baseBasariSansi: 50,
         basariliSonuc: {
           para: 15,
@@ -1755,19 +1755,19 @@ export const OLAY_GENEL: OlayTanimi[] = [
           etiket_ekle: [
             "asker_sozcusu",
           ],
-          mesaj: "Yumruğunu masaya vurdun. General isyandan korkup hazinedeki son parayı size dağıttı. Sen bir efsanesin!",
-          detay: "Ancak üst komuta seni 'tehlikeli asi' olarak fişledi.",
+          mesaj: "Yumruğunu masaya vurdun. General isyandan korkup son parayı dağıttı. Efsanesin!",
+          detay: "Ama üst komuta seni 'tehlikeli asi' diye fişledi.",
         },
         basarisizSonuc: {
           un: -25,
           saglik: -20,
           olum_sansi: 15,
-          mesaj: "General seni dinlemedi bile. İsyana teşvikten kırbaç cezasına çarptırıldın ve zindana atıldın.",
-          detay: "Arkandaki askerler korkup seni sattı. Yalnız kaldın.",
+          mesaj: "General seni dinlemedi bile. İsyana teşvikten kırbaç yedin ve zindana atıldın.",
+          detay: "Arkandaki askerler korkup seni sattı.",
         },
       },
       {
-        metin: "Haklısınız de, ama çevre köyleri yağmalamaya ikna et.",
+        metin: "Haklısınız de, ama köyleri yağmalamaya ikna et.",
         baseBasariSansi: 65,
         basariliSonuc: {
           para: 45,
@@ -1776,16 +1776,16 @@ export const OLAY_GENEL: OlayTanimi[] = [
           etiket_ekle: [
             "sir:koy_yagmaci",
           ],
-          mesaj: "Aç askerlerle gece vakti savunmasız köylere daldınız. Altın ve yiyecekle döndünüz ama gökyüzü o gece kıpkırmızıydı.",
-          detay: "Ağlayan o köylü kadının yüzü artık kabuslarında.",
+          mesaj: "Aç askerlerle geceleyin köylere daldınız. Altınla döndünüz; gökyüzü kızıldı.",
+          detay: "Ağlayan köylü kadının yüzü kabuslarında.",
         },
         basarisizSonuc: {
           saglik: -30,
           ahlak: -25,
           un: -20,
           olum_sansi: 10,
-          mesaj: "Köylüler beklediğinizden dişli çıktı. Tırpan ve baltalarla askerleri pusuya düşürdüler, karnından ağır yaralandın.",
-          detay: "Yağmacılık yaparken köylüden dayak yemek, itibarını sonsuza dek bitirdi.",
+          mesaj: "Köylüler tırpan ve baltayla pusu kurdu; karnından ağır yaralandın.",
+          detay: "Yağma yaparken köylüden dayak itibarını bitirdi.",
         },
       },
     ],
@@ -1801,10 +1801,10 @@ export const OLAY_GENEL: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 2,
     baslik: "Ölümün Çekilişi",
-    metin: "Aylar süren dehşetin ardından veba geri çekiliyor. Nüfusun üçte biri yok oldu. Sahipsiz kalan evler, dükkânlar ve sokaklarda aç gezen yetimler var. Şehir yeniden doğuyor.",
+    metin: "Aylar süren dehşetten sonra veba çekiliyor. Nüfusun üçte biri yok. Sahipsiz evler, dükkânlar, aç yetimler var. Şehir yeniden doğuyor.",
     secenekler: [
       {
-        metin: "Sahipsiz mülklere sahte tapular düzenleyerek el koy.",
+        metin: "Sahipsiz mülklere sahte tapuyla el koy.",
         baseBasariSansi: 60,
         maliyet: 15,
         basariliSonuc: {
@@ -1815,7 +1815,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           ulke_etkisi: {
             vebada: false,
           },
-          mesaj: "Ölülerin yatakları daha soğumadan evlerine çöktün. Dev bir emlak imparatorluğu kurdun ama kâbuslarında o yüzleri görüyorsun.",
+          mesaj: "Ölülerin evlerine çöktün. Dev emlak imparatorluğu kurdun; kâbuslarında o yüzler.",
         },
         basarisizSonuc: {
           para: -25,
@@ -1824,11 +1824,11 @@ export const OLAY_GENEL: OlayTanimi[] = [
           ulke_etkisi: {
             vebada: false,
           },
-          mesaj: "Gerçek varisler kasabaya geri döndü. Sahtekârlıktan yargılandın, halk seni linç etmeye kalktı.",
+          mesaj: "Gerçek varisler döndü. Sahtekârlıktan yargılandın, halk seni linç etmeye kalktı.",
         },
       },
       {
-        metin: "Vebadan kurtulan yetimleri topla ve onlara bir yurt kur.",
+        metin: "Vebadan kurtulan yetimleri topla, yurt kur.",
         baseBasariSansi: 75,
         maliyet: 20,
         basariliSonuc: {
@@ -1843,8 +1843,8 @@ export const OLAY_GENEL: OlayTanimi[] = [
           ulke_etkisi: {
             vebada: false,
           },
-          mesaj: "Yetimler senin elinde büyüdü. Onlar artık sadece çırak değil, senin en sadık evlatların.",
-          detay: "Yıllar sonra o çocuklar senin iş imparatorluğunu sırtlayacak.",
+          mesaj: "Yetimler senin elinde büyüdü. Artık sadece çırak değil, en sadık evlatlarınsın.",
+          detay: "O çocuklar yıllar sonra işini sırtlayacak.",
         },
         basarisizSonuc: {
           para: -30,
@@ -1852,7 +1852,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           ulke_etkisi: {
             vebada: false,
           },
-          mesaj: "Çocukların bakımı seni maddi olarak tüketti. Bazıları hırsızlık yapıp kaçtı ama yine de vicdanın rahat.",
+          mesaj: "Çocukların bakımı seni tüketti. Bazıları çalıp kaçtı ama vicdanın rahat.",
         },
       },
     ],
@@ -1868,10 +1868,10 @@ export const OLAY_GENEL: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 2,
     baslik: "Yeni Dönem",
-    metin: "Devlet yeni para bastı, yollar açıldı. Krizin o ağır tozu kalkıyor. İlk cesur hamleyi yapan piyasanın kaymağını yiyecek.",
+    metin: "Devlet yeni para bastı, yollar açıldı. Krizin tozu kalkıyor. İlk cesur hamleyi yapan piyasanın kaymağını yer.",
     secenekler: [
       {
-        metin: "Borç batağına gir, tüm malları topla! Agresif büyü.",
+        metin: "Borca gir, tüm malları topla! Agresif büyü.",
         baseBasariSansi: 50,
         basariliSonuc: {
           para: 50,
@@ -1880,7 +1880,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           ulke_etkisi: {
             ekonomi: "iyi",
           },
-          mesaj: "Rakiplerin hala korkudan titrerken sen depoları doldurdun. Toparlanma dalgasını yakaladın, servetin uçtu!",
+          mesaj: "Rakipler titrerken sen depoları doldurdun. Toparlanma dalgasını yakaladın!",
         },
         basarisizSonuc: {
           mutluluk: -4,
@@ -1889,18 +1889,18 @@ export const OLAY_GENEL: OlayTanimi[] = [
           ulke_etkisi: {
             ekonomi: "normal",
           },
-          mesaj: "Çok acele ettin. Fiyatlar bir kez daha dibe vurduğunda borçlar boynunu sıktı. Elindeki her şeyi kaybettin.",
+          mesaj: "Acele ettin. Fiyatlar yeniden dibe vurunca borçlar boğdu. Her şeyi kaybettin.",
         },
       },
       {
-        metin: "Temkinli ol, ufak ufak alım yap.",
+        metin: "Temkinli ol, azar azar al.",
         baseBasariSansi: 85,
         basariliSonuc: {
           para: 20,
           ulke_etkisi: {
             ekonomi: "normal",
           },
-          mesaj: "Risksiz ve sağlam adımlarla ilerledin. Zengin olmadın ama ayakların yere çok sağlam basıyor.",
+          mesaj: "Risksiz, sağlam adımlarla ilerledin. Zengin olmadın ama ayakların yere basıyor.",
         },
         basarisizSonuc: {
           mutluluk: -4,
@@ -1909,7 +1909,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           ulke_etkisi: {
             ekonomi: "normal",
           },
-          mesaj: "Çok bekledin; sen piyasaya girene kadar büyük kurtlar tüm ihaleleri kapmıştı bile.",
+          mesaj: "Çok bekledin; sen girene kadar büyük kurtlar tüm ihaleleri kapmıştı.",
         },
       },
     ],
@@ -1921,7 +1921,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
     gorsel: "🤫",
     agirlik: 1,
     baslik: "Sana Gelen Teklif",
-    metin: "Artık sözü geçen biri olduğun için ilk kez rüşvet teklif edilen taraf sensin. Bir müteahhit, sen bir yere iki kelime edersen ihalenin kendisine kalacağını söylüyor. Kese masada.",
+    metin: "İlk kez sana rüşvet teklif ediliyor. Bir müteahhit, bir yerde iki kelime edersen ihalenin ona kalacağını söylüyor. Kese masada.",
     secenekler: [
       {
         metin: "Keseyi al, iki kelimeyi et.",
@@ -1933,18 +1933,18 @@ export const OLAY_GENEL: OlayTanimi[] = [
             "rusvet_agi",
           ],
           mesaj: "İhale ona kaldı, kese sana. Kimse bir şey sormadı.",
-          detay: "Ne kadar kolay olduğu seni ürküttü. Bir hafta sonra ikinci bir kese geldi ve sen artık 'hayır' demenin ne zaman imkânsızlaştığını düşünüyorsun.",
+          detay: "Ne kolay olduğu ürküttü. İkinci kese gelecek.",
         },
         basarisizSonuc: {
           para: -20,
           un: -30,
           ahlak: -22,
           mesaj: "Müteahhit yakalandı ve ilk iş senin adını verdi.",
-          detay: "İtibarın çöktü. Yıllarca kurduğun ne varsa bir ifadeyle dağıldı; en acısı da doğru olduğu için itiraz bile edememen.",
+          detay: "İtibarın çöktü; doğru, itiraz edemezsin.",
         },
       },
       {
-        metin: "Reddet ve teklifi kayda geçir.",
+        metin: "Reddet, teklifi kayda geçir.",
         baseBasariSansi: 55,
         basariliSonuc: {
           un: 24,
@@ -1952,35 +1952,35 @@ export const OLAY_GENEL: OlayTanimi[] = [
           etiket_ekle: [
             "durust_bilinen",
           ],
-          mesaj: "Teklifi belgeledin; müteahhit yargılandı, senin adın temizlendi.",
-          detay: "Artık dürüstlüğün bir sermaye. İnsanlar sana hassas işleri emanet ediyor. Bir de arkanda, seni asla affetmeyecek bir adam var.",
+          mesaj: "Teklifi belgeledin; müteahhit yargılandı, adın temize çıktı.",
+          detay: "Dürüstlüğün sermaye oldu. Biri seni affetmeyecek.",
         },
         basarisizSonuc: {
           para: -22,
           un: -12,
           ahlak: 20,
           mesaj: "Reddettin; müteahhit önce iftira attı, sonra işlerini baltaladı.",
-          detay: "Kimse teklifin varlığına inanmadı, herkes senin husumetine inandı. Doğru olanı yaptın ve bedelini tek başına ödüyorsun.",
+          detay: "Kimse teklife inanmadı. Bedeli yalnız ödüyorsun.",
         },
       },
       {
-        metin: "Ne al ne reddet — belgelerle şantaj yapıp ihaleyi kendine al.",
+        metin: "Ne al ne reddet: şantajla ihaleyi kap.",
         baseBasariSansi: 45,
         maxAhlak: 40,
         basariliSonuc: {
           para: 60,
           un: 15,
           ahlak: -30,
-          mesaj: "Müteahhidi tehdit ederek çekilmesini sağladın ve ihaleyi bizzat sen aldın.",
-          detay: "Rüşvet almadın, sadece zayıflığı paraya çevirdin. Artık bu oyunun kurallarını sen yazıyorsun.",
+          mesaj: "Müteahhidi tehditle çektirip ihaleyi bizzat aldın.",
+          detay: "Zayıflığı paraya çevirdin. Kural artık senin.",
         },
         basarisizSonuc: {
           para: -25,
           un: -28,
           ahlak: -22,
           olum_sansi: 10,
-          mesaj: "Müteahhit şantajına boyun eğmedi ve evine kiralık katiller gönderdi.",
-          detay: "Kurnazlık oynamak isterken az kalsın canından oluyordun. Tüm bağlantıların kesildi.",
+          mesaj: "Müteahhit şantaja boyun eğmedi, evine kiralık katiller gönderdi.",
+          detay: "Kurnazlık canına mal olacaktı. Bağlantılar koptu.",
         },
       },
     ],
@@ -1991,25 +1991,25 @@ export const OLAY_GENEL: OlayTanimi[] = [
     minYas: 22,
     gorsel: "⚖️",
     baslik: "Mahkeme Kapısında",
-    metin: "Haksız yere açılmış bir davada sanıksın. Avukatın kulağına eğildi: 'Yargıcın kâtibiyle konuştum. Belli bir meblağ, belli bir karar demek. Ya da mahkemeye güvenip bekleyeceğiz.'",
+    metin: "Haksız bir davada sanıksın. Avukatın fısıldadı: 'Yargıcın kâtibiyle konuştum. Belli meblağ, belli karar. Ya da mahkemeye güvenip bekleriz.'",
     secenekler: [
       {
-        metin: "Kâtibe ödeme yap, kararı garantiye al.",
+        metin: "Kâtibe öde, kararı garantile.",
         baseBasariSansi: 75,
         maliyet: 30,
         basariliSonuc: {
           para: -30,
           ahlak: -20,
-          mesaj: "Karar lehine çıktı; suçsuz olduğun zaten doğruydu ama bunu para ile aldın.",
-          detay: "Haklıydın ve haklılığını satın almak zorunda kaldın. Adalete olan inancın o gün mahkeme salonunda kaldı.",
+          mesaj: "Karar lehine çıktı; zaten suçsuzdun ama bunu parayla aldın.",
+          detay: "Haklılığını satın aldın. Adalete inancın kalmadı.",
         },
         basarisizSonuc: {
           para: -30,
           un: -25,
           ahlak: -18,
           saglik: -10,
-          mesaj: "Kâtip parayı aldı, yargıç haberdar değildi; hem para gitti hem ceza aldın.",
-          detay: "Dolandırıldın ve şikâyet bile edemedin — çünkü şikâyet, rüşvet vermeye çalıştığını itiraf etmek olurdu.",
+          mesaj: "Kâtip parayı aldı, yargıç habersizdi; hem para gitti hem ceza aldın.",
+          detay: "Dolandırıldın; şikâyet, rüşvet itirafı olurdu.",
         },
       },
       {
@@ -2018,8 +2018,8 @@ export const OLAY_GENEL: OlayTanimi[] = [
         basariliSonuc: {
           un: 20,
           ahlak: 20,
-          mesaj: "Kendi savunmanı yaptın ve beraat ettin; salon seni alkışladı.",
-          detay: "Yargıç kararında 'sanığın dürüstlüğü' diye bir cümle kullandı. O cümle şehirde seni yıllarca öne çıkaracak.",
+          mesaj: "Kendi savunmanı yapıp beraat ettin; salon alkışladı.",
+          detay: "Kararda 'dürüstlük' yazdı. Yıllarca öne çıkaracak.",
         },
         basarisizSonuc: {
           para: -25,
@@ -2027,7 +2027,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           saglik: -12,
           ahlak: 15,
           mesaj: "Suçsuzdun ama mahkûm oldun; birkaç ay hapis ve ağır para cezası.",
-          detay: "Hapiste geçen aylar sağlığını ve işini bitirdi. Dışarı çıktığında dükkânın kapalıydı ve kimse seni işe almak istemedi.",
+          detay: "Hapis sağlığını ve işini bitirdi. Kimse almadı.",
         },
       },
     ],
@@ -2044,7 +2044,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 2,
     baslik: "Yol Ayrımı",
-    metin: "Bulunduğun yerde işler durgun. İki seçenek var: kuzeydeki rüzgârlı liman kenti — hareketli, riskli, kazançlı. Ya da güneydeki büyük pazar şehri — kalabalık, rekabetçi, istikrarlı.",
+    metin: "Burada işler durgun. Kuzeyde rüzgârlı liman kenti: hareketli, riskli, kazançlı. Güneyde büyük pazar şehri: kalabalık, rekabetçi, istikrarlı.",
     secenekler: [
       {
         metin: "Liman kentine taşın.",
@@ -2058,7 +2058,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           ],
           maas_carpani: 1.15,
           mesaj: "Limanda hızla iş buldun; deniz ticareti kazandırıyor.",
-          detay: "Liman hiç uyumuyor: gemiler, kaçak mallar, yabancı diller. Burada para hızlı kazanılıyor ve hızlı kaybediliyor.",
+          detay: "Liman uyumaz. Para hızlı gelir, hızlı gider.",
         },
         basarisizSonuc: {
           para: -18,
@@ -2066,8 +2066,8 @@ export const OLAY_GENEL: OlayTanimi[] = [
           etiket_ekle: [
             "sehir_liman",
           ],
-          mesaj: "Limanda tutunmak sandığından zor oldu; ilk yılın kayıpla geçti.",
-          detay: "Herkesin bir ağı vardı ve seninki yoktu. Ucuz bir odada, rutubet ve gürültü içinde başladın.",
+          mesaj: "Limanda tutunmak zordu; ilk yılın kayıpla geçti.",
+          detay: "Ağın yoktu. Rutubetli odada başladın.",
         },
       },
       {
@@ -2082,7 +2082,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           ],
           maas_carpani: 1.1,
           mesaj: "Pazar şehrinde düzenli bir tezgâh kurdun; işler yavaş ama sağlam.",
-          detay: "Burada herkes birbirini tanıyor ve itibar her şeyden değerli. Yavaş ilerliyorsun ama sağlam basıyorsun.",
+          detay: "Herkes tanışır, itibar her şey. Yavaş ama sağlam.",
         },
         basarisizSonuc: {
           mutluluk: -4,
@@ -2091,8 +2091,8 @@ export const OLAY_GENEL: OlayTanimi[] = [
           etiket_ekle: [
             "sehir_pazar",
           ],
-          mesaj: "Pazar doluydu; yer bulmak aylar aldı ve birikimini yedi.",
-          detay: "Her köşe başı tutulmuştu. Kalabalık bir şehirde görünmez olmanın ne demek olduğunu ilk yılında öğrendin.",
+          mesaj: "Pazar doluydu; yer bulmak aylar sürdü, birikimin yendi.",
+          detay: "Her köşe tutuluydu. Kalabalıkta görünmez kaldın.",
         },
       },
     ],
