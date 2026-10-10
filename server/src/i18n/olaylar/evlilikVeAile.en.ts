@@ -1146,28 +1146,28 @@ export const OLAYLAR_EVLILIK_AILE_EN: Record<string, OlayCeviri> = {
   evl_ask_moral_destegi: {
     baslik: "The Light Beside You",
     metin:
-      "You're in a period where things are going badly, your spirits are low. But every evening when you come home {es} greets you with such warmth that the next day you can get back on your feet.",
+      "Business is bad and your spirits are low. But every evening {es} greets you so warmly that you rise again next day.",
     secenekler: [
       {
-        metin: "Lean on this support, get strong again.",
+        metin: "Lean on their support, regain strength.",
         basariliSonuc: {
-          mesaj: "With {es}'s support you refocused; before long your affairs started to recover.",
-          detay: "Some loves give returns more valuable than any investment.",
+          mesaj: "With {es}'s support you refocused; your affairs began to recover.",
+          detay: "Some loves out-earn any investment.",
         },
         basarisizSonuc: {
-          mesaj: "The support was wonderful but things haven't recovered yet; at least you're not alone.",
-          detay: "Some support doesn't give immediate results but it gives strength.",
+          mesaj: "Support was lovely but things haven't mended; at least you're not alone.",
+          detay: "Some support gives strength, not results.",
         },
       },
       {
-        metin: "Hide your feelings so as not to burden them.",
+        metin: "Hide your feelings to spare them.",
         basariliSonuc: {
-          mesaj: "You hid your feelings; {es} noticed and was a little saddened: 'You can rely on me,' they said.",
-          detay: "Some protection actually creates a distance.",
+          mesaj: "{es} noticed and was saddened: 'You can rely on me.'",
+          detay: "Some protection creates distance.",
         },
         basarisizSonuc: {
-          mesaj: "The burden you hid grew inside you, you felt even more alone.",
-          detay: "Unshared burdens are carried heavier.",
+          mesaj: "The hidden burden grew; you felt even more alone.",
+          detay: "Unshared burdens weigh more.",
         },
       },
     ],
@@ -1176,29 +1176,29 @@ export const OLAYLAR_EVLILIK_AILE_EN: Record<string, OlayCeviri> = {
   evl_ask_hastalikta_fedakarlik: {
     baslik: "By Your Side",
     metin:
-      "You fell gravely ill. Because you have no money you can't hire a good physician, but {es} is ready to spend even their last coin for you, to keep vigil at your side for nights.",
+      "You fell gravely ill and can't afford a physician. {es} is ready to spend their last coin and keep vigil for nights.",
     secenekler: [
       {
-        metin: "Accept this sacrifice, show your gratitude.",
+        metin: "Accept the sacrifice, show gratitude.",
         basariliSonuc: {
           mesaj:
-            "{es}'s devotion and love proved more effective than the most expensive physician. You recovered and your bond grew stronger.",
-          detay: "Some healing comes not from gold but from love.",
+            "{es}'s love beat the costliest physician; you recovered and grew closer.",
+          detay: "Some healing comes from love.",
         },
         basarisizSonuc: {
-          mesaj: "You didn't fully recover but even {es}'s presence by your side was a comfort.",
-          detay: "Not every effort brings a miracle but it always carries meaning.",
+          mesaj: "You didn't fully recover, but {es}'s presence comforted you.",
+          detay: "Every effort means something.",
         },
       },
       {
-        metin: "Refuse them, you don't want them to spend their own money.",
+        metin: "Refuse, don't let them spend their money.",
         basariliSonuc: {
-          mesaj: "You refused; {es} was hurt: 'Count me as part of this marriage too,' they said.",
-          detay: "Some protection actually feels like a rejection.",
+          mesaj: "You refused; {es} was hurt: 'Count me in this marriage too.'",
+          detay: "Some protection feels like rejection.",
         },
         basarisizSonuc: {
-          mesaj: "Your refusal blocked their help and your recovery took even longer.",
-          detay: "Some pride delays healing.",
+          mesaj: "Your refusal blocked their help; recovery dragged on.",
+          detay: "Pride delays healing.",
         },
       },
     ],
@@ -1207,28 +1207,28 @@ export const OLAYLAR_EVLILIK_AILE_EN: Record<string, OlayCeviri> = {
   evl_ask_es_trip_atma: {
     baslik: "The Theater of Jealousy",
     metin:
-      "Because a neighbor praised you, {es} suddenly staged a dramatic scene saying 'So I'm not good enough!': they pushed the plate off the table and shut themselves in the room, then cracked the door and shouted 'Don't you even wonder about me?!'",
+      "A neighbor praised you, and {es} stormed off crying 'So I'm not enough!', then cracked the door: 'Don't you care?!'",
     secenekler: [
       {
-        metin: "Go after them smiling, calm them down with humor.",
+        metin: "Follow smiling, soothe them with a joke.",
         basariliSonuc: {
-          mesaj: "You cracked the door and said, laughing, 'You're my only shortcoming.' You both started laughing.",
+          mesaj: "'You're my only shortcoming,' you said; you both laughed.",
           detay: "Some fits melt with a laugh.",
         },
         basarisizSonuc: {
-          mesaj: "Your joke didn't quite land, it made them sulk a bit more but it didn't last long.",
-          detay: "Some jokes are late by the timing they need.",
+          mesaj: "The joke fell flat and they sulked a bit, briefly.",
+          detay: "Some jokes come late.",
         },
       },
       {
-        metin: "Leave them be, wait for it to pass.",
+        metin: "Leave them be, let it pass.",
         basariliSonuc: {
-          mesaj: "You left them be; half an hour later they came out the door and went back to the table as if nothing had happened.",
-          detay: "Some storms die down at their own pace.",
+          mesaj: "Half an hour later they returned to the table as if nothing happened.",
+          detay: "Some storms die at their own pace.",
         },
         basarisizSonuc: {
-          mesaj: "Your indifference provoked them further: 'So you don't even care,' they said.",
-          detay: "Some non-reactions are misunderstood.",
+          mesaj: "Your indifference provoked them: 'You don't even care.'",
+          detay: "Non-reactions get misread.",
         },
       },
     ],
@@ -1237,28 +1237,28 @@ export const OLAYLAR_EVLILIK_AILE_EN: Record<string, OlayCeviri> = {
   evl_ask_zenginlik_testi: {
     baslik: "The Changing Wind",
     metin:
-      "For the first time in years you came into real wealth. You remember your old days of poverty; now you wonder: will {es} change along with this change?",
+      "You've come into real wealth for the first time in years. You recall your poor days and wonder: will {es} change?",
     secenekler: [
       {
-        metin: "Recall your old days, celebrate together.",
+        metin: "Recall old days, celebrate together.",
         basariliSonuc: {
-          mesaj: "You celebrated recalling your old days; {es} hasn't changed at all, still looks at you with the same love.",
-          detay: "Some loves are tested by wealth and come out stronger than wealth.",
+          mesaj: "You celebrated old days; {es} hasn't changed, same love in their eyes.",
+          detay: "Some loves outlast wealth.",
         },
         basarisizSonuc: {
-          mesaj: "{es} seemed to have changed a bit; someone who enjoys their new status emerged.",
-          detay: "Some changes become visible slowly.",
+          mesaj: "{es} seemed changed; they enjoy the new status.",
+          detay: "Some changes show slowly.",
         },
       },
       {
-        metin: "Watch quietly, see their real character.",
+        metin: "Watch quietly, see their true self.",
         basariliSonuc: {
-          mesaj: "You watched; {es} acted with their old humility, caring nothing for the money. You were relieved.",
-          detay: "Some tests bring an unexpected trust.",
+          mesaj: "{es} stayed humble, ignoring the money. You were relieved.",
+          detay: "Some tests bring trust.",
         },
         basarisizSonuc: {
-          mesaj: "{es} started boasting of your new wealth and looking down on old friends. This disappointed you.",
-          detay: "Some tests bring bitter truths to light.",
+          mesaj: "{es} boasted of the wealth and scorned old friends. You were disappointed.",
+          detay: "Some tests reveal bitter truths.",
         },
       },
     ],
@@ -1267,28 +1267,28 @@ export const OLAYLAR_EVLILIK_AILE_EN: Record<string, OlayCeviri> = {
   evl_ask_bosanma_riski: {
     baslik: "The Ash of a Dying Love",
     metin:
-      "The two of you who once held each other through everything have now grown strangers under the weight of poverty. {es} is aloud questioning whether this marriage was a mistake.",
+      "You two who once clung together through everything have grown strangers in poverty. {es} questions whether this marriage was a mistake.",
     secenekler: [
       {
-        metin: "Remind them of your love, fight one last time.",
+        metin: "Remind them of your love, fight once more.",
         basariliSonuc: {
-          mesaj: "You recalled your old days, your first meeting. {es} cried: 'You're right, let's not give up,' they said.",
-          detay: "Some loves still carry an ember beneath their ashes.",
+          mesaj: "You recalled your first meeting. {es} cried: 'You're right, let's not give up.'",
+          detay: "Some loves keep an ember under ash.",
         },
         basarisizSonuc: {
-          mesaj: "Your effort wasn't enough. {es} left the house saying 'Love doesn't fill a belly, I was right.'",
-          detay: "Some loves, however real, lose to poverty.",
+          mesaj: "It wasn't enough. {es} left, saying 'Love doesn't fill a belly.'",
+          detay: "Some loves lose to poverty.",
         },
       },
       {
-        metin: "Accept it, separate with dignity.",
+        metin: "Accept it, part with dignity.",
         basariliSonuc: {
-          mesaj: "Without fighting, you hugged one last time and separated. It hurts but at least the good memories weren't tainted.",
-          detay: "Some endings, however sad, end with respect.",
+          mesaj: "You parted with a last hug, no fight. It hurts, but the memories stay clean.",
+          detay: "Some endings end with respect.",
         },
         basarisizSonuc: {
-          mesaj: "You tried to end it calmly but old resentments erupted; you separated bitterly.",
-          detay: "Some separations flare up however calmly they're planned.",
+          mesaj: "Old resentments erupted; you parted bitterly.",
+          detay: "Even calm partings can flare.",
         },
       },
     ],
@@ -1297,28 +1297,28 @@ export const OLAYLAR_EVLILIK_AILE_EN: Record<string, OlayCeviri> = {
   evl_ask_eski_ask_geri_donuyor: {
     baslik: "A Letter From the Past",
     metin:
-      "{es}'s old love from before the marriage came back to the city and sent them a letter. {es} didn't hide it from you but the hesitation in their eyes frightens you.",
+      "{es}'s old love returned to the city and wrote them a letter. {es} didn't hide it, but the hesitation in their eyes frightens you.",
     secenekler: [
       {
-        metin: "Trust them, let them make their own decision.",
+        metin: "Trust them, let them decide.",
         basariliSonuc: {
-          mesaj: "{es} tore up the letter: 'I made my choice long ago,' they said. Your trust was repaid.",
-          detay: "Some trust brings a relationship out stronger than its limit.",
+          mesaj: "{es} tore up the letter: 'I chose long ago.' Your trust was repaid.",
+          detay: "Some trust strengthens a bond.",
         },
         basarisizSonuc: {
-          mesaj: "{es} went to meet their old love and never came back. Your trust wasn't repaid this time.",
-          detay: "Some trust, however justified, comes to nothing.",
+          mesaj: "{es} went to meet their old love and never returned. Trust unrewarded.",
+          detay: "Even justified trust can come to nothing.",
         },
       },
       {
-        metin: "Say your worry openly, question the letter.",
+        metin: "Voice your worry, question the letter.",
         basariliSonuc: {
-          mesaj: "You shared your worry; {es} understood and did everything they could to reassure you.",
+          mesaj: "You shared your worry; {es} understood and reassured you.",
           detay: "Some fears shrink when shared.",
         },
         basarisizSonuc: {
-          mesaj: "{es} was hurt: 'Don't you trust me?' This mistrust opened a wound between you.",
-          detay: "Some questions create a distance just by being asked.",
+          mesaj: "{es} was hurt: 'Don't you trust me?' A wound opened between you.",
+          detay: "Some questions create distance.",
         },
       },
     ],
@@ -1327,28 +1327,28 @@ export const OLAYLAR_EVLILIK_AILE_EN: Record<string, OlayCeviri> = {
   evl_ask_cocuk_yoksullugu: {
     baslik: "What They Can't Have",
     metin:
-      "{cocuk} saw a simple toy the neighbor children have and quietly envied it, but never even asked — because they've already learned you have no money.",
+      "{cocuk} quietly envied a simple toy the neighbor children have, but never asked — they've learned you have no money.",
     secenekler: [
       {
-        metin: "Whatever it takes, buy that toy for them.",
+        metin: "Whatever it takes, buy the toy.",
         basariliSonuc: {
-          mesaj: "The light in {cocuk}'s eyes was worth everything. {es} quietly appreciated this small sacrifice too.",
-          detay: "Some happinesses are small but priceless.",
+          mesaj: "{cocuk}'s shining eyes were worth it. {es} quietly appreciated it too.",
+          detay: "Small joys are priceless.",
         },
         basarisizSonuc: {
-          mesaj: "You bought the toy but {cocuk} broke it soon after; still, that smile in the moment was real.",
-          detay: "Some happinesses are real even if short-lived.",
+          mesaj: "You bought it, {cocuk} soon broke it; the smile was still real.",
+          detay: "Short-lived joy is still real.",
         },
       },
       {
-        metin: "Explain the truth to them, teach them to be patient.",
+        metin: "Explain the truth, teach patience.",
         basariliSonuc: {
-          mesaj: "{cocuk} understood, even tried to comfort you: 'It's okay, Dad/Mum.' This maturity made you both proud and sad.",
-          detay: "Some children grow up early with poverty.",
+          mesaj: "{cocuk} understood: 'It's okay, Dad/Mum.' You felt proud and sad.",
+          detay: "Poverty makes children grow early.",
         },
         basarisizSonuc: {
-          mesaj: "{cocuk} didn't understand, went to their room sulking. That scene wouldn't leave your mind for a long time.",
-          detay: "Some truths come too early for a child.",
+          mesaj: "{cocuk} didn't understand and sulked off. The scene lingered.",
+          detay: "Some truths come too early.",
         },
       },
     ],
@@ -1357,27 +1357,27 @@ export const OLAYLAR_EVLILIK_AILE_EN: Record<string, OlayCeviri> = {
   evl_ask_sans_eseri_miras: {
     baslik: "An Unexpected Inheritance",
     metin:
-      "A distant relative of {es}, one you'd never known, passed away and left a small but real inheritance. For the first time your home, which has known years of poverty, got a real breathing space.",
+      "A distant relative of {es}, never known to you, died leaving a small but real inheritance. Your poor home finally gets breathing room.",
     secenekler: [
       {
-        metin: "Use the money sensibly, invest in the future.",
+        metin: "Spend wisely, invest in the future.",
         basariliSonuc: {
-          mesaj: "You used the money wisely; you don't wake at night with money worries anymore.",
-          detay: "Some luck, well managed, turns into lasting peace.",
+          mesaj: "You used it wisely; no more waking at night over money.",
+          detay: "Well-managed luck becomes lasting peace.",
         },
         basarisizSonuc: {
-          mesaj: "While spending the money you missed some opportunities but it was still a relief.",
-          detay: "Not every stroke of luck can be used to best effect.",
+          mesaj: "You missed some opportunities, but it was still a relief.",
+          detay: "Not all luck is used best.",
         },
       },
       {
-        metin: "Live for today, do the things you've long missed.",
+        metin: "Live for today, do what you've missed.",
         basariliSonuc: {
-          mesaj: "A nice meal, new clothes for each of you, an unforgettable day... The money melted away but the memories stayed.",
-          detay: "Some spending is actually an investment: in happiness.",
+          mesaj: "A good meal, new clothes, an unforgettable day... Money melted, memories stayed.",
+          detay: "Some spending invests in happiness.",
         },
         basarisizSonuc: {
-          mesaj: "You overspent a little but none of you will forget that day's laughter.",
+          mesaj: "You overspent a bit, but no one will forget that day's laughter.",
           detay: "Some regrets are worth a laugh.",
         },
       },
@@ -1387,29 +1387,29 @@ export const OLAYLAR_EVLILIK_AILE_EN: Record<string, OlayCeviri> = {
   evl_ask_yillar_sonra_hala_asik: {
     baslik: "The Same Look, Still",
     metin:
-      "The years passed, your hair went gray, your pockets are still not very full. But under the evening sun when {es} looks at you, you still see that light in their eyes from the first day.",
+      "Your hair has grayed, your pockets are still thin. Yet when {es} looks at you in the evening sun, you see that first-day light.",
     secenekler: [
       {
-        metin: "Take their hand, silently give thanks for this moment.",
+        metin: "Take their hand, give silent thanks.",
         basariliSonuc: {
-          mesaj: "You took their hand without saying anything. Some things need no words; this love that has lasted for years is your greatest wealth.",
-          detay: "Some wealth is measured not in gold but in years.",
+          mesaj: "You took their hand silently. This lasting love is your greatest wealth.",
+          detay: "Some wealth is measured in years.",
         },
         basarisizSonuc: {
-          mesaj: "You lived the moment but your mind was still on daily troubles; still, a warmth stayed in you.",
-          detay: "Some peace is felt even when we can't fully surrender to it.",
+          mesaj: "Your mind was on daily worries; still, a warmth remained.",
+          detay: "Peace is felt even half-surrendered.",
         },
       },
       {
-        metin: "Tell them why, after all these years, you still love them.",
+        metin: "Tell them why you still love them.",
         basariliSonuc: {
           mesaj:
-            "Your words made them cry, in a good way. 'Even though these years passed penniless, I'd live every day with you again,' you said, and you both truly felt it.",
-          detay: "Some confessions leave even a wedding vow behind.",
+            "'Even penniless, I'd relive every day with you,' you said; they wept happily.",
+          detay: "Some confessions outdo vows.",
         },
         basarisizSonuc: {
-          mesaj: "Your words didn't come out quite right but they understood what you meant.",
-          detay: "Some feelings reach their mark even when expressed imperfectly.",
+          mesaj: "The words came out clumsily, but they understood.",
+          detay: "Imperfect words still reach.",
         },
       },
     ],
@@ -1418,28 +1418,28 @@ export const OLAYLAR_EVLILIK_AILE_EN: Record<string, OlayCeviri> = {
   aile2_evlatlik_verme: {
     baslik: "A Rich Family's Offer",
     metin:
-      "Famine is ravaging the city, even bread is hard to find at home. A rich, childless family offers to adopt {cocuk} and give them a life you could never provide.",
+      "Famine grips the city, there's no bread at home. A rich, childless family offers to adopt {cocuk} and give a life you never could.",
     secenekler: [
       {
         metin: "Accept, let {cocuk} have a better life.",
         basariliSonuc: {
-          mesaj: "Your hand trembled as you put {cocuk} in the rich family's carriage. Knowing they won't go hungry didn't fill the emptiness.",
-          detay: "Some sacrifices require letting go of the one you love most.",
+          mesaj: "Your hand shook as {cocuk} boarded the carriage. A full belly didn't fill the void.",
+          detay: "Some sacrifices mean losing the dearest.",
         },
         basarisizSonuc: {
-          mesaj: "The family didn't keep their word; years later you learned {cocuk} lived in that house like a servant.",
-          detay: "Some well-meaning decisions can go bad beyond your control.",
+          mesaj: "The family broke its word; {cocuk} lived there like a servant, you later learned.",
+          detay: "Good intentions can go wrong.",
         },
       },
       {
-        metin: "Refuse, stay together even if you go hungry.",
+        metin: "Refuse, stay together though hungry.",
         basariliSonuc: {
-          mesaj: "You had hard days but {cocuk} woke by your side every morning. That was worth going hungry for.",
-          detay: "Some wealth is just staying together.",
+          mesaj: "Days were hard, but {cocuk} woke by your side each morning. Worth the hunger.",
+          detay: "Some wealth is staying together.",
         },
         basarisizSonuc: {
-          mesaj: "The famine was harsh, you all grew weak but you stayed together.",
-          detay: "Some prices are heavy but bring no regret.",
+          mesaj: "The famine was harsh, you all weakened, but stayed together.",
+          detay: "Some prices are heavy but regretless.",
         },
       },
     ],
@@ -1448,28 +1448,28 @@ export const OLAYLAR_EVLILIK_AILE_EN: Record<string, OlayCeviri> = {
   aile2_iki_cocuk_tek_ilac: {
     baslik: "A Single Bottle of Medicine",
     metin:
-      "The epidemic struck the neighborhood. {cocuk} is burning with fever; at the same moment the small child the neighbor left orphaned was brought to your door, also on the edge of death. The last bottle of medicine you have is only enough to save one.",
+      "An epidemic hit. {cocuk} burns with fever; the neighbor's orphan is brought to your door, also near death. The last medicine saves only one.",
     secenekler: [
       {
-        metin: "Give the medicine to {cocuk}, your own child comes first.",
+        metin: "Give it to {cocuk}, your child first.",
         basariliSonuc: {
-          mesaj: "{cocuk} recovered. But while burying the cooling body of the neighbor's child, your joy turned into guilt.",
-          detay: "Some choices, even right ones, never leave your conscience at ease.",
+          mesaj: "{cocuk} recovered. But burying the neighbor's child turned your joy to guilt.",
+          detay: "Even right choices unsettle the conscience.",
         },
         basarisizSonuc: {
-          mesaj: "The medicine wasn't enough; neither survived. This became the darkest night of your life.",
-          detay: "Sometimes no choice is enough to save anything.",
+          mesaj: "The medicine wasn't enough; neither survived. The darkest night of your life.",
+          detay: "Sometimes no choice is enough.",
         },
       },
       {
-        metin: "Give the medicine to the orphan, because they have no one.",
+        metin: "Give it to the orphan, who has no one.",
         basariliSonuc: {
-          mesaj: "The orphan lived, the neighborhood never forgot it. But {cocuk}'s condition worsened; you slept praying every night.",
-          detay: "Some consciences require risking the one you love most.",
+          mesaj: "The orphan lived. But {cocuk}'s condition worsened; you prayed nightly.",
+          detay: "Some consciences risk the dearest.",
         },
         basarisizSonuc: {
-          mesaj: "The orphan was saved but {cocuk} drew their last breath that night. You believe you did the right thing but your heart is in pieces.",
-          detay: "Some right things demand the heaviest price.",
+          mesaj: "The orphan lived but {cocuk} died that night. You did right; your heart is in pieces.",
+          detay: "Some rights demand the heaviest price.",
         },
       },
     ],
@@ -1478,28 +1478,28 @@ export const OLAYLAR_EVLILIK_AILE_EN: Record<string, OlayCeviri> = {
   aile2_uvey_evlat_ayrimi: {
     baslik: "Two Separate Hearts",
     metin:
-      "You noticed you've started, without realizing it, to make a distinction between {es}'s child from a previous marriage and your own child. Your stepchild senses it quietly.",
+      "You've noticed you favor your own child over {es}'s child from a previous marriage. Your stepchild quietly senses it.",
     secenekler: [
       {
-        metin: "Make a conscious effort, treat them both equally.",
+        metin: "Make a real effort, treat both equally.",
         basariliSonuc: {
-          mesaj: "Your efforts bore fruit; your stepchild called you 'Dad/Mum' for real for the first time. {es} couldn't hold back their tears.",
-          detay: "Some bonds are built not with blood but with effort.",
+          mesaj: "Your stepchild called you 'Dad/Mum' for the first time. {es} wept.",
+          detay: "Some bonds are built by effort, not blood.",
         },
         basarisizSonuc: {
-          mesaj: "You tried but old habits sometimes came back; still, your direction was right.",
-          detay: "Some changes aren't completed in one day.",
+          mesaj: "Old habits sometimes returned; still, your direction was right.",
+          detay: "Change isn't done in a day.",
         },
       },
       {
-        metin: "Accept it, admit you feel a bit closer to your own child.",
+        metin: "Admit you feel closer to your own.",
         basariliSonuc: {
-          mesaj: "You were honest but {es} never forgave this confession: 'They're my child too,' they said, hurt.",
-          detay: "Some honesty, even if right, hurts.",
+          mesaj: "You were honest, but {es} never forgave it: 'They're my child too.'",
+          detay: "Some honesty is right but hurts.",
         },
         basarisizSonuc: {
-          mesaj: "Your stepchild noticed this difference too and never trusted you the same way again.",
-          detay: "Some children remember actions more than words.",
+          mesaj: "Your stepchild noticed too and never trusted you the same.",
+          detay: "Children recall actions over words.",
         },
       },
     ],
@@ -1508,28 +1508,28 @@ export const OLAYLAR_EVLILIK_AILE_EN: Record<string, OlayCeviri> = {
   aile2_ebeveyn_son_istek_baris: {
     baslik: "A Will at the Bedside",
     metin:
-      "{baba} is on his deathbed, in a weak voice telling a last wish: he wants you to make peace with {rakip}, whom he's been estranged from for years. 'I don't want to leave this grudge to you as an inheritance,' he says.",
+      "{baba} lies dying, asking you to make peace with {rakip}, whom he's long been estranged from: 'I don't want to leave you this grudge.'",
     secenekler: [
       {
         metin: "Keep your word, make peace with {rakip}.",
         basariliSonuc: {
-          mesaj: "{baba} drew his last breath with a smile of peace on his face. The grudge between you and {rakip} was buried with him.",
-          detay: "Some reconciliations become even more valuable at a deathbed.",
+          mesaj: "{baba} died at peace. The grudge with {rakip} was buried with him.",
+          detay: "Deathbed peace is worth more.",
         },
         basarisizSonuc: {
-          mesaj: "You tried to make peace but {rakip} wasn't ready; still, you were able to tell {baba} your intent.",
-          detay: "Some reconciliations aren't complete with one side's effort.",
+          mesaj: "{rakip} wasn't ready; still, you told {baba} your intent.",
+          detay: "Peace needs both sides.",
         },
       },
       {
-        metin: "Refuse, you find that grudge justified.",
+        metin: "Refuse, the grudge is justified.",
         basariliSonuc: {
-          mesaj: "{baba} closed his eyes with disappointment. You respect your decision but you won't forget that look.",
-          detay: "Some pride won't back down even at a deathbed.",
+          mesaj: "{baba} closed his eyes in disappointment. You'll never forget that look.",
+          detay: "Some pride won't bend even at a deathbed.",
         },
         basarisizSonuc: {
-          mesaj: "Your refusal deeply saddened {baba}; among his last words he spoke your name with sorrow.",
-          detay: "The price of some refusals is paid for years.",
+          mesaj: "Your refusal grieved {baba}; he spoke your name sadly at the end.",
+          detay: "Some refusals are paid for years.",
         },
       },
     ],
@@ -1538,28 +1538,28 @@ export const OLAYLAR_EVLILIK_AILE_EN: Record<string, OlayCeviri> = {
   aile2_cocuk_agir_suc: {
     baslik: "The Confession at the Door",
     metin:
-      "{cocuk} came home at midnight covered in blood: they badly wounded someone in a fight. The guards are searching door to door until morning. Will you hide them, or hand them over to justice?",
+      "{cocuk} came home bloodied: they badly wounded someone in a fight. Guards search door to door. Hide them, or hand them over?",
     secenekler: [
       {
-        metin: "Hide them, find a way to get them out of the city.",
+        metin: "Hide them, smuggle them out of town.",
         basariliSonuc: {
-          mesaj: "You secretly got {cocuk} out of the city. They're safe but now you fear the knock at the door every night.",
-          detay: "Some protection turns into a fear that lasts a lifetime.",
+          mesaj: "You smuggled {cocuk} out. They're safe, but you fear every knock at night.",
+          detay: "Protection can become lifelong fear.",
         },
         basarisizSonuc: {
-          mesaj: "The guards caught you while hiding them. {cocuk} escaped but you were thrown in the dungeon in their place.",
-          detay: "Some sacrifices make you pay the price yourself.",
+          mesaj: "Guards caught you. {cocuk} escaped; you were jailed in their place.",
+          detay: "Some sacrifices make you pay yourself.",
         },
       },
       {
         metin: "Persuade them to turn themselves in.",
         basariliSonuc: {
-          mesaj: "{cocuk} turned themselves in and was sentenced. You know you did the right thing but your heart breaks every time you go to visit them.",
-          detay: "Some right things require being parted from the one you love most.",
+          mesaj: "{cocuk} surrendered and was sentenced. Right, yet your heart breaks at each visit.",
+          detay: "Some rights require parting.",
         },
         basarisizSonuc: {
-          mesaj: "{cocuk} refused to turn themselves in and fled alone. You never heard from them again.",
-          detay: "Some advice goes unheeded, and that is the most bitter.",
+          mesaj: "{cocuk} refused to surrender and fled alone. You never heard from them again.",
+          detay: "Unheeded advice is the bitterest.",
         },
       },
     ],
@@ -1568,28 +1568,28 @@ export const OLAYLAR_EVLILIK_AILE_EN: Record<string, OlayCeviri> = {
   aile2_esin_sirri: {
     baslik: "What the Years Hid",
     metin:
-      "{es}, in tears, confessed a great secret: before they met you, they had a secret marriage and a child from that marriage. They've hidden this from you for years.",
+      "{es} tearfully confessed: before you met, they had a secret marriage and a child. They've hidden it for years.",
     secenekler: [
       {
-        metin: "Forgive them, say their past won't change you.",
+        metin: "Forgive them, the past doesn't matter.",
         basariliSonuc: {
-          mesaj: "'Your past is your past,' you said. {es} was relieved, and the bond between you came out stronger than this storm.",
-          detay: "Some acts of forgiveness rebuild a marriage.",
+          mesaj: "'Your past is your past,' you said. {es} was relieved; the bond came out stronger.",
+          detay: "Some forgiveness rebuilds a marriage.",
         },
         basarisizSonuc: {
-          mesaj: "You said you forgave them but the hurt inside you sat silently at the table for days.",
-          detay: "Some forgiveness is easy in words, hard in the heart.",
+          mesaj: "You said you forgave, but the hurt sat silently at the table for days.",
+          detay: "Forgiveness: easy in words, hard in heart.",
         },
       },
       {
-        metin: "Say your trust is shaken, put up a distance.",
+        metin: "Say your trust is shaken, keep distance.",
         basariliSonuc: {
-          mesaj: "You put up a distance; {es} accepted they deserved it but the house stayed ice-cold for weeks.",
-          detay: "Some losses of trust take time.",
+          mesaj: "{es} accepted they deserved it, but the house stayed icy for weeks.",
+          detay: "Lost trust takes time.",
         },
         basarisizSonuc: {
-          mesaj: "The distance turned into a chasm; {es} couldn't stand this mistrust and left the house.",
-          detay: "Some secrets, even when confessed, can't save a relationship.",
+          mesaj: "The distance became a chasm; {es} couldn't bear it and left.",
+          detay: "Some secrets can't be saved by confession.",
         },
       },
     ],
@@ -1598,27 +1598,27 @@ export const OLAYLAR_EVLILIK_AILE_EN: Record<string, OlayCeviri> = {
   aile2_kardes_miras_davasi: {
     baslik: "Your Sibling's Lawsuit",
     metin:
-      "Your sibling took you to court over the family's small property, claiming your share as their own too. Your blood tie is suffering from this fight.",
+      "Your sibling sued you over the family's small property, claiming your share too. Your blood tie suffers.",
     secenekler: [
       {
-        metin: "Defend it to the end, pursue your rights in court.",
+        metin: "Defend it to the end, claim your right.",
         basariliSonuc: {
-          mesaj: "You won the case, you got your share. But your sibling hasn't said a word to you since that day.",
-          detay: "Some victories tear a family apart.",
+          mesaj: "You won and got your share. But your sibling hasn't spoken to you since.",
+          detay: "Some victories shatter families.",
         },
         basarisizSonuc: {
-          mesaj: "You lost the case, you lost both the costs and your sibling.",
-          detay: "In some fights no one really wins.",
+          mesaj: "You lost the case: the costs and your sibling both.",
+          detay: "In some fights no one wins.",
         },
       },
       {
-        metin: "Give up your share, protect the family bond.",
+        metin: "Give up your share, keep the bond.",
         basariliSonuc: {
-          mesaj: "You gave it up. Your sibling was surprised at first, then hugged you, ashamed. Blood ties outweighed money.",
+          mesaj: "You gave up. Your sibling, stunned then ashamed, hugged you. Blood beat money.",
           detay: "Some wealth isn't measured in gold.",
         },
         basarisizSonuc: {
-          mesaj: "You gave it up but your sibling thought they deserved it and didn't even thank you.",
+          mesaj: "You gave up, but your sibling thought they deserved it and never thanked you.",
           detay: "Kindness isn't always repaid.",
         },
       },
@@ -1628,28 +1628,28 @@ export const OLAYLAR_EVLILIK_AILE_EN: Record<string, OlayCeviri> = {
   aile2_cocugun_es_secimi: {
     baslik: "A Choice You Don't Approve Of",
     metin:
-      "{cocuk} announced they want to marry someone you don't trust at all, someone with a suspicious past. You don't want to break their heart but your instincts are shouting.",
+      "{cocuk} wants to marry someone you distrust, with a suspicious past. You don't want to break their heart, but your instincts shout.",
     secenekler: [
       {
-        metin: "Object, try to prevent the marriage.",
+        metin: "Object, try to stop the marriage.",
         basariliSonuc: {
-          mesaj: "You prevented it. Years later it came out that that person really was trouble; {cocuk} is hurt at you but knows you were right.",
-          detay: "Some vindications come bitterly.",
+          mesaj: "You stopped it. That person proved trouble; {cocuk} is hurt but sees you were right.",
+          detay: "Some vindication comes bitterly.",
         },
         basarisizSonuc: {
-          mesaj: "Your objection didn't work; {cocuk} ran off and married and you didn't hear from them for years.",
-          detay: "Some obstruction produces the exact opposite of what you wanted.",
+          mesaj: "Your objection failed; {cocuk} eloped and you heard nothing for years.",
+          detay: "Obstruction can backfire.",
         },
       },
       {
-        metin: "Accept it, show your trust, be there for them.",
+        metin: "Accept, show trust, stand by them.",
         basariliSonuc: {
-          mesaj: "You set aside your doubts. {cocuk} never forgot this trust; the marriage went better than you'd expected too.",
-          detay: "Some trust turns out to be right.",
+          mesaj: "You set doubts aside. {cocuk} never forgot; the marriage went better than expected.",
+          detay: "Some trust proves right.",
         },
         basarisizSonuc: {
-          mesaj: "You were right in your worries; the marriage went badly and {cocuk} had hard times, then came back to you.",
-          detay: "Some instincts turn out right, but seeing it hurts too.",
+          mesaj: "Your worries were right; the marriage failed and {cocuk} came back to you.",
+          detay: "Being right hurts too.",
         },
       },
     ],
@@ -1658,28 +1658,28 @@ export const OLAYLAR_EVLILIK_AILE_EN: Record<string, OlayCeviri> = {
   aile2_ebeveyn_es_gecinmeme: {
     baslik: "War Under One Roof",
     metin:
-      "{anne} came to live with you but she and {es} just can't get along; the house is a battlefield now. You're asked to choose one of them.",
+      "{anne} moved in but can't get along with {es}; the house is a battlefield. You're made to choose.",
     secenekler: [
       {
-        metin: "Be on your spouse's side, find a separate place for your parent.",
+        metin: "Side with spouse, rehouse your parent.",
         basariliSonuc: {
-          mesaj: "You rented a separate house for {anne}. {es} was relieved but you won't forget the disappointment in your mother's eyes.",
-          detay: "Some peace is bought with someone else's sorrow.",
+          mesaj: "You rented {anne} a separate house. {es} was relieved; you won't forget her look.",
+          detay: "Some peace costs another's sorrow.",
         },
         basarisizSonuc: {
-          mesaj: "Despite the separate house the fights didn't end; everyone stayed angry at you.",
-          detay: "Some solutions only move the problem, they don't solve it.",
+          mesaj: "Despite the separate house the fights went on; everyone was angry at you.",
+          detay: "Some fixes only move the problem.",
         },
       },
       {
-        metin: "Be on your parent's side, ask your spouse for patience.",
+        metin: "Side with your parent, ask patience.",
         basariliSonuc: {
-          mesaj: "You kept your mother in the house. Even though {es} said they understood, the tension between you didn't ease for a long time.",
-          detay: "Some loyalties demand a price.",
+          mesaj: "You kept your mother home. {es} said they understood, but tension lingered.",
+          detay: "Some loyalties have a price.",
         },
         basarisizSonuc: {
-          mesaj: "{es} said 'Her or me,' you chose your mother, and {es} left the house.",
-          detay: "Some choices end a relationship.",
+          mesaj: "{es} said 'Her or me.' You chose your mother and {es} left.",
+          detay: "Some choices end a marriage.",
         },
       },
     ],
@@ -1688,28 +1688,28 @@ export const OLAYLAR_EVLILIK_AILE_EN: Record<string, OlayCeviri> = {
   aile2_cocuk_tehlikeli_yolculuk: {
     baslik: "The Call of the Horizon",
     metin:
-      "{cocuk} said they want to join a dangerous, long journey (a caravan heading to distant lands, or the army). There's excitement in their eyes but only fear in you.",
+      "{cocuk} wants to join a dangerous, long journey (a caravan or the army). Excitement in their eyes, only fear in you.",
     secenekler: [
       {
-        metin: "Give permission, let them follow their dream.",
+        metin: "Allow it, let them chase their dream.",
         basariliSonuc: {
-          mesaj: "It was a hard goodbye but you gave permission. As their letters come, you feel you made the right decision.",
-          detay: "Some love is proven by knowing how to let go.",
+          mesaj: "A hard goodbye, but you allowed it. As letters come, it feels right.",
+          detay: "Love means knowing how to let go.",
         },
         basarisizSonuc: {
-          mesaj: "Bad news came from the journey. Learning something happened to {cocuk} became the greatest pain of your life.",
-          detay: "Some freedoms come back at a heavy price.",
+          mesaj: "Bad news came. What befell {cocuk} became your greatest pain.",
+          detay: "Some freedoms return at a heavy price.",
         },
       },
       {
-        metin: "Object, insist they stay home.",
+        metin: "Object, insist they stay.",
         basariliSonuc: {
-          mesaj: "Your insistence worked, they stayed home — but that excitement in their eyes faded, and they didn't forgive you for a while.",
-          detay: "Some protection buries a dream along with it.",
+          mesaj: "They stayed, but their excitement faded; they didn't forgive you for a while.",
+          detay: "Protection buries the dream too.",
         },
         basarisizSonuc: {
-          mesaj: "Your objection didn't work, {cocuk} left without permission and stayed estranged from you for a long time.",
-          detay: "Some young people grow more determined the more they're obstructed.",
+          mesaj: "Your objection failed; {cocuk} left without leave and stayed estranged.",
+          detay: "Obstructed youths grow more determined.",
         },
       },
     ],
@@ -1718,28 +1718,28 @@ export const OLAYLAR_EVLILIK_AILE_EN: Record<string, OlayCeviri> = {
   aile2_es_koklerinden_koparma: {
     baslik: "A New Land",
     metin:
-      "A great opportunity for your career awaits in a distant city. But it means {es} being completely torn from their own family, friends and entire life.",
+      "A great career opportunity awaits in a distant city. But it means {es} being torn from their family and friends.",
     secenekler: [
       {
-        metin: "Insist on moving, don't miss the opportunity.",
+        metin: "Insist on moving, don't miss it.",
         basariliSonuc: {
-          mesaj: "You moved; your career took off but {es} wandered the new city alone and sad for months.",
-          detay: "Only one side pays the price of some gains.",
+          mesaj: "You moved; your career soared, but {es} spent months lonely and sad.",
+          detay: "One side pays for some gains.",
         },
         basarisizSonuc: {
-          mesaj: "The opportunity didn't turn out as you'd hoped, and on top of that {es} never found their footing in the new city; you're both sorry.",
+          mesaj: "The opportunity disappointed and {es} never settled in; you both regret it.",
           detay: "Some risks wear down both sides.",
         },
       },
       {
-        metin: "Refuse the opportunity, respect your spouse's roots.",
+        metin: "Refuse, respect your spouse's roots.",
         basariliSonuc: {
-          mesaj: "You refused. {es} never forgot this sacrifice: 'You cared about me more than anything,' they said.",
+          mesaj: "You refused. {es} never forgot: 'You cared about me above all.'",
           detay: "Some opportunities aren't worth a love.",
         },
         basarisizSonuc: {
-          mesaj: "You refused but the 'what if' question always stayed in you.",
-          detay: "Even the right choice sometimes stings a little.",
+          mesaj: "You refused, but the 'what if' always stayed with you.",
+          detay: "Even the right choice stings a little.",
         },
       },
     ],
@@ -1748,28 +1748,28 @@ export const OLAYLAR_EVLILIK_AILE_EN: Record<string, OlayCeviri> = {
   aile2_yetim_evlat_alma: {
     baslik: "A Heart With No One",
     metin:
-      "A small child, left behind by a distant relative in a plague/epidemic, now has no one at all. You're asked to adopt them — an extra mouth, an extra responsibility, but maybe a chance to save a life.",
+      "A plague left a distant relative's small child with no one. You're asked to adopt them: an extra mouth, perhaps a saved life.",
     secenekler: [
       {
-        metin: "Adopt them, make them part of your family.",
+        metin: "Adopt them, make them family.",
         basariliSonuc: {
-          mesaj: "You took them into your home. When you saw their first smile, you understood this was one of the best decisions of your life.",
-          detay: "Some families are built not with blood but with choice.",
+          mesaj: "At their first smile you knew this was one of your best decisions.",
+          detay: "Some families are built by choice.",
         },
         basarisizSonuc: {
-          mesaj: "You took them into your home but the adjustment was hard; still, you didn't give up.",
-          detay: "Some kindnesses aren't easy but are valuable anyway.",
+          mesaj: "Adjusting was hard; still, you didn't give up.",
+          detay: "Some kindnesses are hard but valuable.",
         },
       },
       {
-        metin: "Refuse, you can't even keep up with your own family.",
+        metin: "Refuse, you can't even keep up already.",
         basariliSonuc: {
-          mesaj: "You refused. The child was given to another family; you were relieved but a small stone stayed in you.",
-          detay: "Some comfort comes with a debt of conscience.",
+          mesaj: "The child went to another family; you were relieved, but a small stone stayed.",
+          detay: "Some comfort carries a debt of conscience.",
         },
         basarisizSonuc: {
-          mesaj: "You refused but you never learned what became of the child; this uncertainty bothered you for a long time.",
-          detay: "Some questions weigh more when they go unanswered.",
+          mesaj: "You never learned the child's fate; the uncertainty wore on you.",
+          detay: "Unanswered questions weigh more.",
         },
       },
     ],
@@ -1778,28 +1778,28 @@ export const OLAYLAR_EVLILIK_AILE_EN: Record<string, OlayCeviri> = {
   aile2_cocuk_din_degistirme: {
     baslik: "A Different Faith",
     metin:
-      "{cocuk} announced they've turned to a faith completely different from yours and your family's, and want to walk that path. In this era, this carries both religious and social danger.",
+      "{cocuk} has turned to a faith wholly different from your family's. In this era, that is a religious and social danger.",
     secenekler: [
       {
         metin: "Respect their decision, protect them.",
         basariliSonuc: {
-          mesaj: "You respected their decision. {cocuk} stayed grateful to you always, and you became a real parent in their eyes.",
-          detay: "Some love is beyond a faith.",
+          mesaj: "You showed respect. {cocuk} stayed grateful; you became a true parent to them.",
+          detay: "Some love goes beyond faith.",
         },
         basarisizSonuc: {
-          mesaj: "When the neighborhood heard, they shunned your family; a hard period began.",
-          detay: "Some tolerance demands a price.",
+          mesaj: "The neighborhood shunned your family; a hard period began.",
+          detay: "Tolerance has a price.",
         },
       },
       {
-        metin: "Object, insist on the family's faith.",
+        metin: "Object, insist on the family faith.",
         basariliSonuc: {
-          mesaj: "Your insistence worked but {cocuk} grew distant inside; you never saw that old warmth in their eyes again.",
-          detay: "Some victories are no different from losing.",
+          mesaj: "Your insistence worked, but {cocuk} drifted inwardly; the old warmth never returned.",
+          detay: "Some victories equal losing.",
         },
         basarisizSonuc: {
-          mesaj: "{cocuk} left the house and went their own way. You didn't hear from them for years.",
-          detay: "Some insistence loses you what you have too.",
+          mesaj: "{cocuk} left home and went their own way. Years without news.",
+          detay: "Some insistence costs what you have.",
         },
       },
     ],
@@ -1808,27 +1808,27 @@ export const OLAYLAR_EVLILIK_AILE_EN: Record<string, OlayCeviri> = {
   aile2_es_olum_dosegi_dilek: {
     baslik: "A Last Wish",
     metin:
-      "{es} is gravely ill, their days are numbered now. They have one last wish: to be taken one last time to the land where they were born, now a very distant and dangerous road.",
+      "{es} is gravely ill, days numbered. Their last wish: one more trip to the land of their birth, now far away and dangerous.",
     secenekler: [
       {
         metin: "Take them there, whatever it costs.",
         basariliSonuc: {
-          mesaj: "The journey was hard but {es} saw the land of their birth one last time and closed their eyes looking at it. They were at peace.",
-          detay: "Some journeys become the most beautiful form of a goodbye.",
+          mesaj: "The journey was hard, but {es} saw their homeland once more and died at peace.",
+          detay: "Some journeys are the finest goodbye.",
         },
         basarisizSonuc: {
-          mesaj: "The journey used up {es}'s last strength; they closed their eyes on the road before reaching it.",
-          detay: "Some well-meaning efforts are left bitterly unfinished.",
+          mesaj: "The journey sapped {es}'s last strength; they died on the road.",
+          detay: "Some efforts are left unfinished.",
         },
       },
       {
         metin: "Keep them home, comfortable and safe.",
         basariliSonuc: {
-          mesaj: "At home, in their warm bed, holding your hand, they drew their last breath. Their wish wasn't fulfilled but they weren't alone.",
-          detay: "Some peace comes not from a journey but from a hand held.",
+          mesaj: "They died at home holding your hand. Wish unfulfilled, but not alone.",
+          detay: "Some peace comes from a held hand.",
         },
         basarisizSonuc: {
-          mesaj: "The thought 'I wish I'd taken them there' kept gnawing at you even after {es} was gone.",
+          mesaj: "'I wish I'd taken them' kept gnawing at you after {es} was gone.",
           detay: "Some regrets last a lifetime.",
         },
       },
@@ -1838,28 +1838,28 @@ export const OLAYLAR_EVLILIK_AILE_EN: Record<string, OlayCeviri> = {
   aile2_ebeveyn_gizli_gunah: {
     baslik: "The Father's Hidden Sin",
     metin:
-      "Organizing your old belongings, you learned of a grave injustice {baba} committed in the past that no one knows about: he made an unjust gain off an innocent person. That person still lives in poverty.",
+      "Sorting old belongings, you learned {baba} profited unjustly from an innocent person, who still lives in poverty.",
     secenekler: [
       {
-        metin: "Bring the truth to light, pay compensation to the wronged person.",
+        metin: "Reveal the truth, compensate the victim.",
         basariliSonuc: {
-          mesaj: "You brought the truth to light and paid the compensation. Your family's name was stained for a while but your conscience had never been so light.",
-          detay: "Some debts deserve to be paid even a generation later.",
+          mesaj: "You revealed it and paid. The name was stained, but your conscience was never lighter.",
+          detay: "Some debts are worth paying later.",
         },
         basarisizSonuc: {
-          mesaj: "Your disclosure turned into a big scandal; your family's name suffered far more than you expected.",
-          detay: "Some truths get out of control once they come to light.",
+          mesaj: "The disclosure became a scandal; the family name suffered far more than expected.",
+          detay: "Some truths slip out of control.",
         },
       },
       {
-        metin: "Leave the secret buried, protect the family's honor.",
+        metin: "Leave the secret buried, protect honor.",
         basariliSonuc: {
-          mesaj: "You kept the secret. Your family's name stayed clean but something aches in you every time you see that poor person's face.",
-          detay: "Some silences are carried for a lifetime.",
+          mesaj: "You kept it. The name stayed clean, but seeing that poor person aches in you.",
+          detay: "Some silences last a lifetime.",
         },
         basarisizSonuc: {
-          mesaj: "The secret was already half known; when they learned you were hiding it, your reputation took a share of that too.",
-          detay: "Some secrets never stay fully buried.",
+          mesaj: "The secret was half known; learning you hid it hurt your reputation too.",
+          detay: "Some secrets never stay buried.",
         },
       },
     ],
@@ -1868,27 +1868,27 @@ export const OLAYLAR_EVLILIK_AILE_EN: Record<string, OlayCeviri> = {
   aile2_engelli_cocuk: {
     baslik: "A Different Child",
     metin:
-      "{cocuk} was born with a disability, and in this era society treats such children cruelly. Will you try to hide and protect them from the world, or bring them out into society with your head held high?",
+      "{cocuk} was born disabled, and this era is cruel to such children. Hide and protect them, or bring them into society, head high?",
     secenekler: [
       {
-        metin: "Keep your head high, don't hide them from society.",
+        metin: "Hold your head high, don't hide them.",
         basariliSonuc: {
-          mesaj: "{cocuk} walked with their head high everywhere — the market, the church. There were some rude looks but over time the neighborhood accepted them as they are.",
-          detay: "Some courage even changes society over time.",
+          mesaj: "{cocuk} walked head high. Some rude looks, but the neighborhood came to accept them.",
+          detay: "Courage changes society over time.",
         },
         basarisizSonuc: {
-          mesaj: "Society's cruelty deeply wounded {cocuk}; some words are never forgotten.",
-          detay: "The price of some courage can be very heavy.",
+          mesaj: "Society's cruelty deeply wounded {cocuk}.",
+          detay: "The price of courage can be heavy.",
         },
       },
       {
-        metin: "Protect them at home, keep them away from the outside world.",
+        metin: "Keep them home, shielded from the world.",
         basariliSonuc: {
-          mesaj: "They grew up safe at home, saw no bullying. But sometimes, watching the children outside through the window, you see the longing in their eyes.",
-          detay: "Some protection can resemble a prison too.",
+          mesaj: "They grew up safe, unbullied. But at the window, their eyes are full of longing.",
+          detay: "Some protection resembles a prison.",
         },
         basarisizSonuc: {
-          mesaj: "Keeping them home isolated them; they withdrew, spoke little even with you.",
+          mesaj: "Keeping them home isolated them; they withdrew, even from you.",
           detay: "Some protection harms unintentionally.",
         },
       },
@@ -1898,28 +1898,28 @@ export const OLAYLAR_EVLILIK_AILE_EN: Record<string, OlayCeviri> = {
   aile2_es_ortak_servet: {
     baslik: "A Joint Coffer",
     metin:
-      "{es} wants all your wealth — yours and theirs — combined into a single joint coffer, in full trust. This is a great step of trust but also a risk.",
+      "{es} wants all your wealth pooled into one joint coffer, in full trust. A great step of trust, but a risk too.",
     secenekler: [
       {
-        metin: "Accept, fully pool everything.",
+        metin: "Accept, pool everything fully.",
         basariliSonuc: {
-          mesaj: "You combined the coffers. {es} saw it as a sign of trust and respect; the marriage had never felt so solid.",
+          mesaj: "You pooled the coffers. {es} saw trust; the marriage had never felt so solid.",
           detay: "Some trust turns a marriage to steel.",
         },
         basarisizSonuc: {
-          mesaj: "You pooled it but small disagreements arose over some spending; still, the intent was good.",
+          mesaj: "You pooled it but small spending quarrels arose; the intent was good.",
           detay: "Not every good intention runs smoothly.",
         },
       },
       {
-        metin: "Keep your own security separate, be cautious.",
+        metin: "Keep your security apart, be cautious.",
         basariliSonuc: {
-          mesaj: "You kept part of it separate. {es} saw it as a sign of mistrust and was hurt.",
-          detay: "Some caution makes a love get questioned.",
+          mesaj: "You kept part separate. {es} saw mistrust and was hurt.",
+          detay: "Some caution makes love questioned.",
         },
         basarisizSonuc: {
-          mesaj: "'So you don't fully trust me,' {es} said, and that sentence hung between you for a long time.",
-          detay: "Some caution, when misunderstood, leaves deep marks.",
+          mesaj: "'So you don't fully trust me,' {es} said, and it hung between you for long.",
+          detay: "Misread caution leaves deep marks.",
         },
       },
     ],
@@ -1928,28 +1928,28 @@ export const OLAYLAR_EVLILIK_AILE_EN: Record<string, OlayCeviri> = {
   aile2_cocugu_uzak_diyara_gonderme: {
     baslik: "Under a Distant Master",
     metin:
-      "One of the master craftsmen in a distant city offered to take {cocuk} as an apprentice. A great opportunity but for years, maybe forever, you'll never see them again.",
+      "A master craftsman in a distant city offered to take {cocuk} as apprentice. A great chance, but you may never see them again.",
     secenekler: [
       {
-        metin: "Send them, make the sacrifice for their future.",
+        metin: "Send them, sacrifice for their future.",
         basariliSonuc: {
-          mesaj: "You saw {cocuk} off in tears. The letters that came years later tell of their progress and happiness.",
-          detay: "Some love is proven by being able to let go.",
+          mesaj: "You saw {cocuk} off in tears. Their letters later tell of progress and happiness.",
+          detay: "Love is proven by letting go.",
         },
         basarisizSonuc: {
-          mesaj: "You sent them but the news grew sparse; for years you heard very little from them, and this uncertainty wore you out.",
-          detay: "Some sacrifices leave a question mark for a lifetime.",
+          mesaj: "News grew sparse; for years you heard little, and the uncertainty wore you out.",
+          detay: "Some sacrifices leave a lifelong question.",
         },
       },
       {
-        metin: "Refuse, keep them close to you.",
+        metin: "Refuse, keep them close.",
         basariliSonuc: {
-          mesaj: "You refused; {cocuk} grew up by your side. Maybe a less brilliant future but you can see them every day.",
-          detay: "Some closeness is more valuable than an opportunity.",
+          mesaj: "{cocuk} grew up by your side. A duller future maybe, but you see them daily.",
+          detay: "Closeness outweighs opportunity.",
         },
         basarisizSonuc: {
-          mesaj: "You refused but years later {cocuk} was hurt at you for missing this opportunity.",
-          detay: "Some protection plants a seed of regret.",
+          mesaj: "Years later {cocuk} resented you for missing this chance.",
+          detay: "Some protection plants regret.",
         },
       },
     ],
@@ -1958,28 +1958,28 @@ export const OLAYLAR_EVLILIK_AILE_EN: Record<string, OlayCeviri> = {
   aile2_dul_ebeveyn_yeniden_evlenme: {
     baslik: "Your Mother's New Suitor",
     metin:
-      "The widowed {anne} came to your door and, bashfully, gave you news: a widower in the neighborhood is courting her, and she feels something close to a 'maybe' too. She's waiting for your approval, as if you were still a little child.",
+      "Widowed {anne} bashfully tells you a neighborhood widower is courting her, and she isn't indifferent. She awaits your approval.",
     secenekler: [
       {
-        metin: "Support her, be glad she's happy.",
+        metin: "Support her, be glad for her.",
         basariliSonuc: {
-          mesaj: "'If you're happy, I'm happy, Mother,' you said. {anne} blushed like a young girl and hugged you.",
-          detay: "Some late-coming happinesses are the sweetest.",
+          mesaj: "'If you're happy, I'm happy, Mother,' you said. {anne} blushed and hugged you.",
+          detay: "Late happiness is the sweetest.",
         },
         basarisizSonuc: {
-          mesaj: "You gave your support but you couldn't shake a strange feeling of oddness inside.",
-          detay: "Some support, even if sincere, takes time to get used to.",
+          mesaj: "You gave support, but couldn't shake an odd feeling inside.",
+          detay: "Even sincere support takes getting used to.",
         },
       },
       {
-        metin: "Unable to hide your shock, object.",
+        metin: "Can't hide your shock, object.",
         basariliSonuc: {
-          mesaj: "'Mother, are you... serious?' you said in shock. She laughed: 'You'll understand one day too.' In the end you both started laughing.",
-          detay: "Some awkward moments turn into a nice memory in the end.",
+          mesaj: "'Mother, seriously?' you said. 'You'll understand one day,' she laughed; you both did.",
+          detay: "Awkward moments become sweet memories.",
         },
         basarisizSonuc: {
-          mesaj: "Your objection really hurt {anne}: 'So I don't deserve to be happy,' she said, sulking.",
-          detay: "Some shocks can be hurtful when they're spoken aloud.",
+          mesaj: "Your objection hurt {anne}: 'So I don't deserve happiness.'",
+          detay: "Shock spoken aloud can wound.",
         },
       },
     ],
@@ -1988,28 +1988,28 @@ export const OLAYLAR_EVLILIK_AILE_EN: Record<string, OlayCeviri> = {
   aile2_kitlikta_komsuyla_paylasma: {
     baslik: "The Last Bread",
     metin:
-      "The famine is harsh, even the last loaf you have left is numbered. The neighbor family at your door says their children haven't eaten anything for days. Your own family is hungry too.",
+      "Famine bites; one last loaf remains. A neighbor says their children haven't eaten in days. Your family is hungry too.",
     secenekler: [
       {
-        metin: "Share the bread, give some to your neighbor.",
+        metin: "Share the bread with your neighbor.",
         basariliSonuc: {
-          mesaj: "You broke the bread. That night everyone went to bed a little hungry but no one was alone.",
-          detay: "Some sharing doesn't fill a belly but it fills the soul.",
+          mesaj: "You broke the bread. Everyone slept a little hungry, but no one alone.",
+          detay: "Sharing fills the soul, not the belly.",
         },
         basarisizSonuc: {
-          mesaj: "You shared it but the hunger deeply wore down you both.",
-          detay: "Some kindnesses aren't without a price.",
+          mesaj: "You shared it, but hunger wore you both down.",
+          detay: "Some kindness has a price.",
         },
       },
       {
         metin: "Refuse, your own family comes first.",
         basariliSonuc: {
-          mesaj: "You closed your door. Your own family went to bed full that night but you couldn't forget the look in the neighbor's children's eyes.",
-          detay: "Some survival decisions leave a debt of conscience.",
+          mesaj: "You shut the door. Your family ate, but the neighbor children's eyes haunted you.",
+          detay: "Survival leaves a debt of conscience.",
         },
         basarisizSonuc: {
-          mesaj: "When your neighbors heard this, they started calling you 'heartless'; you became isolated in the neighborhood.",
-          detay: "Some decisions carry a price even if you survive.",
+          mesaj: "Neighbors started calling you 'heartless'; you became isolated.",
+          detay: "Survival still carries a price.",
         },
       },
     ],
@@ -2018,148 +2018,148 @@ export const OLAYLAR_EVLILIK_AILE_EN: Record<string, OlayCeviri> = {
   // ==================== NEW SET: DETAILED SPOUSE/CHILD DECISIONS (§33) ====================
   evl_kiskanclik: {
     baslik: "The Shadow of Jealousy",
-    metin: "{es} heard you were talking a little too warmly with someone else. At supper their face is closed, their voice trembles.",
+    metin: "{es} heard you were too warm with someone else. At supper their face is closed, voice trembling.",
     secenekler: [
       {
-        metin: "Explain calmly, reassure them, take their hand.",
+        metin: "Explain calmly, take their hand.",
         basariliSonuc: {
-          mesaj: "{es} didn't want to listen at first, then leaned on your shoulder. The storm passed.",
-          detay: "Jealousy is often just another word for thinking you go unseen.",
+          mesaj: "{es} resisted at first, then leaned on your shoulder. The storm passed.",
+          detay: "Jealousy is the fear of going unseen.",
         },
-        basarisizSonuc: { mesaj: "Nothing you said convinced them; that night they turned their back to you." },
+        basarisizSonuc: { mesaj: "Nothing convinced them; that night they turned their back." },
       },
       {
-        metin: "Brush it off, say 'don't be ridiculous' and move on.",
-        basariliSonuc: { mesaj: "The argument ended but a worm had entered {es}'s heart." },
-        basarisizSonuc: { mesaj: "'You never take me seriously,' they wept; things stayed icy for days." },
+        metin: "Brush it off: 'don't be ridiculous.'",
+        basariliSonuc: { mesaj: "The argument ended but a worm entered {es}'s heart." },
+        basarisizSonuc: { mesaj: "'You never take me seriously,' they wept; icy for days." },
       },
       {
         metin: "Hit back, dig into their past.",
-        basariliSonuc: { mesaj: "The fight grew, then you both fell silent from exhaustion. Nobody won." },
-        basarisizSonuc: { mesaj: "The words said weren't taken back; that night {es} went to their mother's." },
+        basariliSonuc: { mesaj: "The fight grew, then exhaustion silenced you. Nobody won." },
+        basarisizSonuc: { mesaj: "Words weren't taken back; {es} went to their mother's that night." },
       },
     ],
   },
   evl_para_talebi_es: {
     baslik: "Your Spouse's Wish",
-    metin: "{es} had wanted something for a long time: a costly cloth, finer than the neighbor's. There's hope in their eyes.",
+    metin: "{es} had long wanted a costly cloth, finer than the neighbor's. Hope shines in their eyes.",
     secenekler: [
       {
         metin: "Buy it, they deserve it.",
-        basariliSonuc: { mesaj: "When {es} saw the cloth they were delighted like a child; talked about it for days." },
-        basarisizSonuc: { mesaj: "You bought it but the merchant cheated you; the cloth turned out plainer than expected." },
+        basariliSonuc: { mesaj: "{es} was delighted like a child; talked about it for days." },
+        basarisizSonuc: { mesaj: "The merchant cheated you; the cloth was plain." },
       },
       {
         metin: "Haggle, find a cheaper one.",
-        basariliSonuc: { mesaj: "You bought a more modest cloth; {es} made do but their eye was still on the other one." },
-        basarisizSonuc: { mesaj: "'You always think the cheapest is good enough for me,' they said, and sulked." },
+        basariliSonuc: { mesaj: "You bought a modest cloth; {es} made do, eyeing the other." },
+        basarisizSonuc: { mesaj: "'You always think the cheapest will do for me,' they sulked." },
       },
       {
-        metin: "Refuse, it's no time for luxury.",
-        basariliSonuc: { mesaj: "{es} said nothing but no one spoke at supper that evening." },
-        basarisizSonuc: { mesaj: "They sulked for days; you heard them complain to the neighbors that you were tight-fisted." },
+        metin: "Refuse, no time for luxury.",
+        basariliSonuc: { mesaj: "{es} said nothing, but no one spoke at supper." },
+        basarisizSonuc: { mesaj: "They sulked for days; you heard them call you tight-fisted." },
       },
     ],
   },
   evl_kayinvalide: {
     baslik: "Mother-in-law at the Door",
-    metin: "{es}'s mother has grown old and cannot live alone. {es} wants to take her into the house.",
+    metin: "{es}'s mother is old and can't live alone. {es} wants to take her in.",
     secenekler: [
       {
-        metin: "Accept, set aside a room for her.",
-        basariliSonuc: { mesaj: "{es} embraced you. The old woman is cranky but in {es}'s eyes you're a hero now." },
-        basarisizSonuc: { mesaj: "You accepted, but the woman's nagging turned the house into a hell." },
+        metin: "Accept, set aside a room.",
+        basariliSonuc: { mesaj: "{es} embraced you. The old woman is cranky, but you're {es}'s hero." },
+        basarisizSonuc: { mesaj: "Her nagging turned the house into hell." },
       },
       {
-        metin: "Hire a servant so she can stay in her own home.",
-        basariliSonuc: { mesaj: "It wasn't quite what {es} wanted, but seeing their mother cared for, they softened." },
-        basarisizSonuc: { mesaj: "The servant proved unreliable; {es} reproached you: 'you left my mother to strangers.'" },
+        metin: "Hire a servant, she stays home.",
+        basariliSonuc: { mesaj: "Not what {es} wanted, but seeing her mother cared for, they softened." },
+        basarisizSonuc: { mesaj: "The servant proved unreliable; {es}: 'You left my mother to strangers.'" },
       },
       {
         metin: "Refuse firmly, this is your house.",
-        basariliSonuc: { mesaj: "{es} couldn't say anything but the hurt in their eyes lingered a long time." },
-        basarisizSonuc: { mesaj: "{es} cried out 'without you my mother would be on the street'; you didn't speak for days." },
+        basariliSonuc: { mesaj: "{es} said nothing, but the hurt in their eyes lingered." },
+        basarisizSonuc: { mesaj: "{es} cried 'My mother would be on the street!' You didn't speak for days." },
       },
     ],
   },
   evl_krizi: {
     baslik: "Breaking Point",
-    metin: "Things with {es} have gone truly sour. One morning at the table they said 'this can't go on.' The moment of decision.",
+    metin: "Things with {es} have gone truly sour. One morning they said 'this can't go on.' Time to decide.",
     secenekler: [
       {
-        metin: "Hire a mediator/counselor, try to save the marriage.",
+        metin: "Hire a mediator, try to save it.",
         basariliSonuc: {
-          mesaj: "It took weeks but you can look at each other again. An ember remained under the ash.",
+          mesaj: "It took weeks but you can look at each other again. An ember under the ash.",
         },
-        basarisizSonuc: { mesaj: "The effort went unanswered; {es} said 'we tried, it didn't work.'" },
+        basarisizSonuc: { mesaj: "The effort went unanswered; {es}: 'We tried, it didn't work.'" },
       },
       {
-        metin: "Endure in silence, let the marriage go on like this.",
-        basariliSonuc: { mesaj: "You got used to living under one roof like two strangers." },
-        basarisizSonuc: { mesaj: "The anger you buried gnawed at you; you can't sleep at night." },
+        metin: "Endure in silence, carry on.",
+        basariliSonuc: { mesaj: "You grew used to living as two strangers under one roof." },
+        basarisizSonuc: { mesaj: "The buried anger gnawed at you; you can't sleep." },
       },
       {
-        metin: "Separate, everyone to their own road.",
+        metin: "Separate, each to their own road.",
         basariliSonuc: {
-          mesaj: "It was a short, cold farewell. The first days heavy, then a strange lightness.",
-          detay: "Untying some bonds is a kind of mercy too.",
+          mesaj: "A short, cold farewell. Heavy first days, then a strange lightness.",
+          detay: "Untying some bonds is mercy.",
         },
         basarisizSonuc: {
-          mesaj: "The separation turned ugly; court, gossip, relatives taking sides. Everyone came out wounded.",
+          mesaj: "The split turned ugly: court, gossip, relatives taking sides. All were wounded.",
         },
       },
     ],
   },
   evl_yildonumu: {
     baslik: "Wedding Anniversary",
-    metin: "This year is your wedding anniversary. {es} pretends to expect nothing but their eye is on the door.",
+    metin: "It's your wedding anniversary. {es} pretends to expect nothing, but watches the door.",
     secenekler: [
       {
         metin: "Prepare a grand celebration.",
-        basariliSonuc: { mesaj: "{es}'s eyes filled. 'I thought you'd forgotten,' they said, and laughed." },
-        basarisizSonuc: { mesaj: "The preparations went wrong, guests came late; the intent was good but the evening was a mess." },
+        basariliSonuc: { mesaj: "{es}'s eyes filled: 'I thought you'd forgotten.' They laughed." },
+        basarisizSonuc: { mesaj: "Preparations went wrong, guests came late; well-meant, but the evening was a mess." },
       },
       {
         metin: "A modest but heartfelt supper.",
-        basariliSonuc: { mesaj: "Two plates, one candle. {es} said 'this is enough for me' and took your hand." },
-        basarisizSonuc: { mesaj: "The meal was ordinary but at least you remembered the day." },
+        basariliSonuc: { mesaj: "Two plates, one candle. {es}: 'This is enough for me,' and took your hand." },
+        basarisizSonuc: { mesaj: "An ordinary meal, but at least you remembered." },
       },
       {
-        metin: "Forget it, spend it like an ordinary day.",
-        basariliSonuc: { mesaj: "{es} said nothing. In the morning there was a wet trace on the pillow." },
+        metin: "Forget it, treat it as any day.",
+        basariliSonuc: { mesaj: "{es} said nothing. By morning there was a wet mark on the pillow." },
         basarisizSonuc: { mesaj: "Unused." },
       },
     ],
   },
   evl_es_hastalik: {
     baslik: "Your Spouse Fell Ill",
-    metin: "{es} has been feverish for days, can't get out of bed. Their gaze is locked on you.",
+    metin: "{es} has been feverish for days, unable to rise. Their gaze is fixed on you.",
     secenekler: [
       {
-        metin: "Call the best physician in the city.",
-        basariliSonuc: { mesaj: "The physician's medicine worked. {es} was on their feet a week later, grateful to you." },
-        basarisizSonuc: { mesaj: "The physician did his best but the recovery was long; still, they saw you stayed by their side." },
+        metin: "Call the city's best physician.",
+        basariliSonuc: { mesaj: "The medicine worked. {es} was up in a week, grateful to you." },
+        basarisizSonuc: { mesaj: "The physician tried; recovery was long, but they saw you stayed by them." },
       },
       {
-        metin: "Keep watch yourself, nurse them at home.",
-        basariliSonuc: { mesaj: "You kept watch for nights. The fever broke; when {es} opened their eyes they saw you first." },
-        basarisizSonuc: { mesaj: "The illness worsened and you burned out too. {es} whispered 'you should have called a physician.'" },
+        metin: "Nurse them yourself.",
+        basariliSonuc: { mesaj: "You kept watch for nights. The fever broke; {es} saw you first." },
+        basarisizSonuc: { mesaj: "The illness worsened and you burned out. {es}: 'You should've called a physician.'" },
       },
       {
-        metin: "Mind your own work, it'll pass anyway.",
-        basariliSonuc: { mesaj: "{es} recovered on their own but never forgot that you didn't even pass by the door." },
-        basarisizSonuc: { mesaj: "The illness dragged on, the house fell apart; even the children asked 'where was father.'" },
+        metin: "Mind your work, it'll pass.",
+        basariliSonuc: { mesaj: "{es} recovered alone but never forgot you didn't even pass by the door." },
+        basarisizSonuc: { mesaj: "The illness dragged on, the house fell apart; even the children asked 'where were you.'" },
       },
     ],
   },
   cocuk_okul_secimi: {
     baslik: "Your Child's Education",
-    metin: "Your children are growing. Time to build them a future: an artisan's apprenticeship, a church/madrasa school, or the field beside you?",
+    metin: "Your children are growing. Time to plan their future: apprenticeship, church/madrasa school, or the field beside you?",
     secenekler: [
       {
-        metin: "Send them to an expensive school/tutor, demand the best.",
-        basariliSonuc: { mesaj: "Your child learned their letters, does sums. The neighbors say 'your boy is educated.'" },
-        basarisizSonuc: { mesaj: "The money went but the tutor was lax; the child learned things by halves." },
+        metin: "Send them to a costly school/tutor.",
+        basariliSonuc: { mesaj: "Your child learned letters and sums. Neighbors say 'your boy is educated.'" },
+        basarisizSonuc: { mesaj: "Money gone, the tutor was lax; the child learned by halves." },
       },
       {
         metin: "Apprentice them to a craftsman.",
@@ -2167,51 +2167,51 @@ export const OLAYLAR_EVLILIK_AILE_EN: Record<string, OlayCeviri> = {
         basarisizSonuc: { mesaj: "The master was harsh; the child complained of being taught by beatings." },
       },
       {
-        metin: "No need for school, put them to work beside you.",
+        metin: "No school, put them to work with you.",
         basariliSonuc: { mesaj: "An extra pair of hands helped, but a door closed in the child's eyes." },
-        basarisizSonuc: { mesaj: "One day the child said 'you never cared about me'; that sentence won't leave your mind." },
+        basarisizSonuc: { mesaj: "One day the child said 'you never cared about me'; it won't leave your mind." },
       },
     ],
   },
   cocuk_para_talebi: {
     baslik: "Your Child's Wish",
-    metin: "Your child has been after something for days: a toy, a pair of shoes their friends have. Shyly, they opened up to you.",
+    metin: "Your child has wanted something for days: a toy or shoes their friends have. Shyly, they asked you.",
     secenekler: [
       {
-        metin: "Buy it, childhood happens only once.",
-        basariliSonuc: { mesaj: "Your child toured the whole neighborhood with joy. That evening they fell asleep hugging your neck." },
-        basarisizSonuc: { mesaj: "You bought it but it wasn't the one they liked; still they said 'thanks, father.'" },
+        metin: "Buy it, childhood comes once.",
+        basariliSonuc: { mesaj: "Your child toured the neighborhood with joy and fell asleep hugging you." },
+        basarisizSonuc: { mesaj: "You bought it, but it wasn't the one they liked; still 'thanks, father.'" },
       },
       {
         metin: "Patiently explain why not now.",
-        basariliSonuc: { mesaj: "They pouted but listened. 'Okay,' they said at last, seeming a bit grown." },
-        basarisizSonuc: { mesaj: "'Always excuses,' they cried, and shut themselves in their room." },
+        basariliSonuc: { mesaj: "They pouted but listened. 'Okay,' they said, seeming a bit grown." },
+        basarisizSonuc: { mesaj: "'Always excuses,' they cried, and shut themselves in." },
       },
       {
-        metin: "Scold them, say 'does money grow on trees.'",
-        basariliSonuc: { mesaj: "They never asked you for anything again. Nothing. That's a kind of loss too." },
+        metin: "Scold: 'does money grow on trees?'",
+        basariliSonuc: { mesaj: "They never asked you for anything again. That's a loss too." },
         basarisizSonuc: { mesaj: "The child kept saying 'the neighbor's father is better'; it stung." },
       },
     ],
   },
   cocuk_ergenlik: {
     baslik: "The Rebel Years",
-    metin: "Your eldest child no longer listens: comes home late, speaks rudely, doesn't recognize your authority.",
+    metin: "Your eldest no longer listens: comes home late, speaks rudely, ignores your authority.",
     secenekler: [
       {
-        metin: "Be patient, listen, give trust.",
-        basariliSonuc: { mesaj: "It took months. One night they came to you themselves, you talked. The wall cracked." },
-        basarisizSonuc: { mesaj: "Whatever you did wasn't enough; they slammed the door in your face and left." },
+        metin: "Be patient, listen, trust them.",
+        basariliSonuc: { mesaj: "It took months. One night they came to you and talked. The wall cracked." },
+        basarisizSonuc: { mesaj: "Nothing was enough; they slammed the door and left." },
       },
       {
-        metin: "Strict discipline, set rules, punish.",
-        basariliSonuc: { mesaj: "Silence rules the house now. There's obedience but the light in their eyes is gone." },
-        basarisizSonuc: { mesaj: "The child rebelled, one night never came home. Found two days later — blood came between you." },
+        metin: "Strict discipline, rules, punishment.",
+        basariliSonuc: { mesaj: "Silence rules the house. Obedience, but the light in their eyes is gone." },
+        basarisizSonuc: { mesaj: "They rebelled and vanished a night. Found two days later; blood came between you." },
       },
       {
-        metin: "Ignore it, let it pass on its own.",
-        basariliSonuc: { mesaj: "The storm died down on its own but they tell you nothing anymore." },
-        basarisizSonuc: { mesaj: "They filled your indifference with bad friends; their name got mixed up in trouble." },
+        metin: "Ignore it, let it pass.",
+        basariliSonuc: { mesaj: "The storm passed on its own, but they tell you nothing now." },
+        basarisizSonuc: { mesaj: "They filled your indifference with bad friends; their name got tangled in trouble." },
       },
     ],
   },
