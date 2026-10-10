@@ -3262,16 +3262,16 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
     ton: "agir",
     gorsel: "🎭",
     baslik: "Sana Yöneltilen Şüphe",
-    metin: "{rakip}, kurum içindeki nüfuzunu kullanarak seni hedef aldı: senin bazı yöntemlerinin 'kilisenin öğretisinden saptığını', hatta gizlice yasak metinler okuduğunu iddia ediyor. İroni acı: bu, tam senin kullandığın türden bir suçlama.",
+    metin: "{rakip}, nüfuzunu kullanıp seni hedef aldı: yöntemlerinin 'öğretiden saptığını', gizlice yasak metin okuduğunu söylüyor. Tam senin silahın.",
     secenekler: [
       {
-        metin: "Kendi yöntemlerinle savun, kanıtları çürüt, {rakip}'i geri püskürt.",
+        metin: "Kendi yöntemlerinle savun, {rakip}'i püskürt.",
         baseBasariSansi: 50,
         basariliSonuc: {
           un: 25,
           ahlak: -15,
-          mesaj: "Suçlamayı paramparça ettin, {rakip}'in kendisi şüpheli ilan edildi; kendi silahının sana geri döndüğünü görmek acı ama tatmin ediciydi.",
-          detay: "Kurduğun sistem, seni de yiyebilirdi — bu sefer yemedi.",
+          mesaj: "Suçlamayı çürüttün, {rakip}'in kendisi şüpheli ilan edildi.",
+          detay: "Kurduğun sistem seni de yiyebilirdi.",
         },
         basarisizSonuc: {
           un: -25,
@@ -3286,21 +3286,21 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
             tur_basi_saglik: -3,
           },
           mesaj: "Suçlama tam çürütülemedi; resmen aklandın ama artık her hareketin izleniyor.",
-          detay: "Kendi yöntemlerinin bir kurbanı olma ihtimaliyle ilk kez bu kadar yakından yüzleştin.",
+          detay: "Kendi yöntemlerinin kurbanı olmaya yaklaştın.",
         },
       },
       {
-        metin: "{amir} ile görüşüp arka planda destek iste, açık çatışmadan kaçın.",
+        metin: "{amir}'den gizlice destek iste, açık çatışmadan kaçın.",
         baseBasariSansi: 65,
         basariliSonuc: {
           un: 10,
           ahlak: -10,
-          mesaj: "{amir} senin arkanda durdu, suçlama sessizce düştü; ama artık ona daha da bağımlısın.",
-          detay: "Bazı kurtuluşlar, yeni bir zincirin ilk halkasıdır.",
+          mesaj: "{amir} arkanda durdu, suçlama düştü; ama ona bağımlısın.",
+          detay: "Bazı kurtuluşlar yeni zincirin ilk halkasıdır.",
         },
         basarisizSonuc: {
           un: -15,
-          mesaj: "{amir} bu kez araya girmek istemedi; 'kendi başının çaresine bak' dedi, seni yalnız bıraktı.",
+          mesaj: "{amir} araya girmedi: 'Kendi başının çaresine bak' dedi.",
           detay: "Güç ittifakları, ihtiyaç anında sınanıyor.",
         },
       },
@@ -4008,7 +4008,7 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
     gerekliEtiketler: ["yol:din:tarikat"],
     gorsel: "🔥",
     baslik: "Genç Bir Ses",
-    metin: "İç halkandan genç bir mürit kendi vaazlarını vermeye başladı. Bazı takipçiler onun ateşli sözlerine kayıyor; liderliğin ilk kez sorgulanıyor.",
+    metin: "İç halkandan genç bir mürit kendi vaazlarını vermeye başladı. Takipçiler ateşli sözlerine kayıyor; liderliğin sorgulanıyor.",
     secenekler: [
       {
         metin: "Açıkça yüzleş, liderliğini kanıtla.",

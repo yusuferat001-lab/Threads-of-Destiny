@@ -2132,27 +2132,27 @@ export const OLAYLAR_ORTACAG_DINADAMI_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_din_fanatik_19: {
     baslik: "A Suspicion Aimed at You",
     metin:
-      "{rakip}, using his influence within the institution, targeted you: he claims some of your methods 'deviate from church doctrine', even that you secretly read forbidden texts. The irony is bitter: this is exactly the kind of accusation you use.",
+      "{rakip} used his influence to target you: he claims your methods 'deviate from doctrine' and that you secretly read forbidden texts. Your own weapon.",
     secenekler: [
       {
-        metin: "Defend yourself with your own methods, refute the evidence, drive {rakip} back.",
+        metin: "Defend with your own methods, drive {rakip} back.",
         basariliSonuc: {
-          mesaj: "You tore the accusation to pieces, {rakip} himself was declared a suspect; seeing your own weapon turn back on you was bitter but satisfying.",
-          detay: "The system you built could have eaten you too — it didn't this time.",
+          mesaj: "You refuted the charge; {rakip} himself became a suspect.",
+          detay: "Your own system could have eaten you too.",
         },
         basarisizSonuc: {
           mesaj: "The accusation couldn't be fully refuted; you were formally cleared but your every move is watched now.",
-          detay: "For the first time you faced this closely the possibility of becoming a victim of your own methods.",
+          detay: "You came close to being your methods' victim.",
         },
       },
       {
-        metin: "Meet with {amir} and ask for backing behind the scenes, avoid an open fight.",
+        metin: "Ask {amir} for quiet backing, avoid open conflict.",
         basariliSonuc: {
-          mesaj: "{amir} stood behind you, the accusation quietly dropped; but you're even more dependent on him now.",
-          detay: "Some rescues are the first link of a new chain.",
+          mesaj: "{amir} backed you, the charge dropped; but you depend on him now.",
+          detay: "Some rescues are a new chain's first link.",
         },
         basarisizSonuc: {
-          mesaj: "{amir} didn't want to step in this time; 'fend for yourself,' he said, and left you alone.",
+          mesaj: "{amir} stayed out: 'Fend for yourself,' he said.",
           detay: "Power alliances are tested in the hour of need.",
         },
       },

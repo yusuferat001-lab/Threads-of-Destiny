@@ -21,7 +21,7 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
     yasakliEtiketler: ["zanaatkar_yolu_secildi"],
     gorsel: "🔨",
     baslik: "İlk Sipariş",
-    metin: "Ustan seni ilk kez yalnız bırakıyor: yerel beyin adamları bir haftada bitmesi imkânsız bir sipariş istiyor. Bu işi nasıl çevirdiğin, nasıl zanaatkâr olacağını belirler.",
+    metin: "Ustan seni ilk kez yalnız bırakıyor: beyin adamları bir haftada bitmez bir sipariş istiyor. Nasıl çevirdiğin, nasıl zanaatkâr olacağını belirler.",
     secenekler: [
       {
         metin: "Kurallara uy, süreyi uzat, kusursuz teslim et.",
@@ -1234,10 +1234,10 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
     gerekliEtiketler: ["yol:zanaatkar:sanatkar"],
     gorsel: "🔨",
     baslik: "Yeni Bir Eser",
-    metin: "İçinde uzun zamandır beklettiğin bir eser fikri var; yapımı aylar sürecek ve kâr getirmeyecek.",
+    metin: "Uzun zamandır bir eser fikri taşıyorsun; yapımı aylar sürecek, kâr getirmeyecek.",
     secenekler: [
       {
-        metin: "Zamanını ve parasını eserine ada.",
+        metin: "Zamanını ve parasını esere ada.",
         baseBasariSansi: 60,
         maliyet: 16,
         basariliSonuc: {
@@ -1245,27 +1245,27 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
           un: 22,
           mutluluk: 6,
           uretim_kapasitesi_artis: 8,
-          mesaj: "Eser tamamlandığında herkes hayran kaldı; adın artık şehirde biliniyor.",
-          detay: "Bazı işler kâr için değil, kalıcılık için yapılır.",
+          mesaj: "Eser bitince herkes hayran kaldı; adın şehirde biliniyor.",
+          detay: "Bazı işler kalıcılık içindir.",
         },
         basarisizSonuc: {
           para: -16,
           mutluluk: -6,
-          mesaj: "Eser hayalindeki gibi çıkmadı; aylarca emeğin boşa gitti hissi kalbini yaktı.",
-          detay: "Sanatın yolu hayal kırıklıklarıyla döşelidir.",
+          mesaj: "Eser hayalindeki gibi olmadı; aylarca emek boşa gitti.",
+          detay: "Sanatın yolu hayal kırıklığıyla döşelidir.",
         },
       },
       {
         metin: "Riske girme, planı rafa kaldır.",
         baseBasariSansi: 80,
         basariliSonuc: {
-          mesaj: "Fikri erteledin, param cepte kaldı ama içindeki huzursuzluk sürdü.",
-          detay: "Ertelenen fikirler bazen içini kemirir.",
+          mesaj: "Fikri erteledin, para cepte kaldı ama huzursuzluk sürdü.",
+          detay: "Ertelenen fikir içini kemirir.",
         },
         basarisizSonuc: {
           mutluluk: -3,
-          mesaj: "Ertelemek, seni daha da tatminsiz bıraktı.",
-          detay: "Bazı erteler asla telafi edilmez.",
+          mesaj: "Erteleme seni daha tatminsiz bıraktı.",
+          detay: "Bazı ertelemeler telafi edilmez.",
         },
       },
     ],
