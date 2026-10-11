@@ -81,6 +81,7 @@ import { EtkiCipleri } from './components/EtkiCipleri';
 import { KisilikPaneli } from './components/KisilikPaneli';
 import { BolgeSahnesi } from './components/BolgeSahnesi';
 import { OlayKartiGovdesi } from './components/OlayKartiGovdesi';
+import { MobilOlayKutusu, type MobilSonuc } from './components/MobilOlayKutusu';
 import { KarakterAvatari } from './components/KarakterAvatari';
 import { IsyeriPaneli } from './components/IsyeriPaneli';
 import { GecmisGrafik } from './components/GecmisGrafik';
@@ -131,6 +132,8 @@ import { CagAmblemi, BolgeAmblemi } from './components/Amblemler';
 import { useMobilEkran, useGecisDeltasi } from './hooks';
 import './App.css';
 import './giris.css';
+// Mobil oyun ekranı (tam sayfa arka plan + kadife olay kutusu) — App.css'ten SONRA, aynı özgüllükte kazansın.
+import './mobil-oyun.css';
 
 // Geçici olarak kapatıldı (2026-09): günlük giriş serisi/ödülü, gold bakiyesi ve kozmetik dolabı
 // oyuncuya gösterilmiyor. Alttaki mekanik/veri katmanına dokunulmadı — yeniden açmak için bunu
@@ -2087,7 +2090,25 @@ function App() {
       )}
 
       {(ekran === 'oyun' || ekran === 'sonuc') && karakter && senaryo && (
-        <div className={`oyun-ekrani${ekran === 'sonuc' && sonEtki?.terfiOldu ? ' buyuk-an-terfi' : ''}`}>
+        <>
+        {mobil && (
+          // Mobil: sahne artık bir şerit değil, TÜM sayfanın arkasını kaplayan portre katman.
+          // `.oyun-ekrani`nın dışında durur — onun `ekranBelir` transform animasyonu `fixed`
+          // çocuğu kaydırırdı (bkz. mobil-oyun.css).
+          <div className="oyun-arka-sahne" aria-hidden="true">
+            <BolgeSahnesi
+              mod="sayfa"
+              cag={karakter.cag}
+              bolge={karakter.bolge}
+              yerlesim={karakter.yerlesim}
+              ulke={karakter.ulke}
+              un={karakter.un}
+            />
+          </div>
+        )}
+        <div
+          className={`oyun-ekrani${mobil ? ' oyun-ekrani-mobil' : ''}${ekran === 'sonuc' && sonEtki?.terfiOldu ? ' buyuk-an-terfi' : ''}`}
+        >
           <UstSerit
             bolge={karakter.bolge}
             yil={karakter.yil}
@@ -2225,8 +2246,42 @@ function App() {
                   talepVar={!!karakter.yonetim_talep}
                 />
               );
+              // Mobil olay kutusunun sonuç hâli: tek metin = olay mesajı + (varsa) turun tek
+              // durumsal cümlesi (masaüstündeki `.tur-ozeti` ile aynı birleştirme).
+              const mobilSonuc: MobilSonuc | null =
+                ekran === 'sonuc' && sonEtki
+                  ? {
+                      etki: sonEtki.etki,
+                      basarili: sonEtki.basarili,
+                      kategori: sonEtki.kategori,
+                      paraBirimi: sonEtki.paraBirimi,
+                      terfiOldu: sonEtki.terfiOldu,
+                      ozet: [sonEtki.etki.mesaj, sonEtki.zamanAnlatimi ?? sonEtki.sonucAnlatimi]
+                        .filter((s): s is string => !!s && s.trim() !== '')
+                        .join(' '),
+                      ikon: sonEtki.terfiOldu ? '🎖️' : sonucIkonuGetir(sonEtki.basarili, false, sonEtki.kategori),
+                    }
+                  : null;
               return (
-            <div className="merkez-panel">
+            <div className={mobil ? 'merkez-panel merkez-panel-mobil' : 'merkez-panel'}>
+              {mobil && (
+                // Mobil: sahne sayfa-düzeyi arka plan olarak yukarıda (`.oyun-arka-sahne`),
+                // olay + şıklar ayrı kadife kutuda — masaüstü `.merkez-sahne`/`.merkez-alt` düzeni
+                // aşağıda aynen duruyor ve mobilde render edilmiyor.
+                <MobilOlayKutusu
+                  cag={karakter.cag}
+                  yerlesim={karakter.yerlesim}
+                  ulke={karakter.ulke}
+                  senaryo={senaryo}
+                  sonuc={mobilSonuc}
+                  tepkiModu={tepkiModu}
+                  yukleniyor={yukleniyor}
+                  sesKapali={sesKapali}
+                  onSecenek={secenekSec}
+                  onDevam={devamEt}
+                />
+              )}
+              {!mobil && (
               <div className="merkez-sahne">
                 <div className="merkez-sahne-arkaplan">
                   <BolgeSahnesi
@@ -2238,21 +2293,18 @@ function App() {
                     tamYukseklik
                   />
                 </div>
-                {mobil && <div className="merkez-sahne-gradyan" aria-hidden="true" />}
-                {!mobil && (
-                  <>
-                    {/* Amaçlar arka plan görselinin ÜSTÜNDE ince bir şerit — her amaç
-                        çok kısa açıklamasıyla (kullanıcı isteği). Mobilde bu şerit
-                        üst çubuğun altına taşındı (bkz. .ust-amac-serit-satiri). */}
-                    <AmacPaneli durum={amaclar} varyant="serit" />
-                    {/* Hotspot'lar sahnenin ÜSTÜNDE (cqw/cqh ile görsele yapışık) — mobilde
-                        artık hiç render edilmiyor, dört hedefinin hepsi alt gezinme
-                        çubuğunda (bkz. AltGezinme). */}
-                    {hotspotlar}
-                  </>
-                )}
+                {/* Amaçlar arka plan görselinin ÜSTÜNDE ince bir şerit — her amaç
+                    çok kısa açıklamasıyla (kullanıcı isteği). Mobilde bu şerit
+                    üst çubuğun altına taşındı (bkz. .ust-amac-serit-satiri). */}
+                <AmacPaneli durum={amaclar} varyant="serit" />
+                {/* Hotspot'lar sahnenin ÜSTÜNDE (cqw/cqh ile görsele yapışık) — mobilde
+                    hiç render edilmiyor, dört hedefinin hepsi alt gezinme çubuğunda
+                    (bkz. AltGezinme). */}
+                {hotspotlar}
               </div>
+              )}
 
+              {!mobil && (
               <div className={`merkez-alt${ekran === 'sonuc' ? ' merkez-alt-sonuc' : ''}`}>
                 {ekran === 'sonuc' && sonEtki ? (
                   <div className="olay-karti olay-karti-sonuc">
@@ -2355,6 +2407,7 @@ function App() {
                   </div>
                 )}
               </div>
+              )}
             </div>
               );
             })()}
@@ -2455,6 +2508,7 @@ function App() {
             </div>
           )}
         </div>
+        </>
       )}
 
       {ekran === 'finans' && finans && karakter && (

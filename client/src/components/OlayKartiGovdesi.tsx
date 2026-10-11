@@ -1,4 +1,5 @@
 import { useState, type ReactNode } from 'react';
+import { OLAY_RESMI_BILINEN, olayResmiSrc, type OlayResmiDurumu } from '../olayResmi';
 
 interface OlayKartiGovdesiProps {
   cag: string;
@@ -10,21 +11,16 @@ interface OlayKartiGovdesiProps {
   children: ReactNode;
 }
 
-type Durum = 'bekliyor' | 'hazir' | 'yok';
-
-/** Aynı resim için her olayda tekrar emoji→resim titremesi olmasın diye bilinen sonuçlar. */
-const BILINEN = new Map<string, Durum>();
-
-function cagSlugCikar(cag: string): 'orta-cag' | 'sanayi' {
-  return cag === 'Sanayi Devrimi' ? 'sanayi' : 'orta-cag';
-}
+type Durum = OlayResmiDurumu;
+// Mobil olay kutusu (`MobilOlayKutusu`) aynı "bilinen sonuç" önbelleğini paylaşır.
+const BILINEN = OLAY_RESMI_BILINEN;
 
 /**
  * Olay kartının gövdesi: solda emoji yerine `public/assets/olay/<kategori>-<cag>.webp`
  * illüstrasyonu, ortada olay metni. Dosya yoksa eski düzen (metnin iki yanında emoji) aynen kalır.
  */
 export function OlayKartiGovdesi({ cag, kategori, gorsel, yukleniyor, children }: OlayKartiGovdesiProps) {
-  const src = `/assets/olay/${kategori}-${cagSlugCikar(cag)}.webp`;
+  const src = olayResmiSrc(kategori, cag);
   return (
     <Govde key={src} src={src} gorsel={gorsel} yukleniyor={yukleniyor}>
       {children}

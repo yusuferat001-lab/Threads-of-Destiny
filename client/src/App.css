@@ -5989,59 +5989,9 @@ button.ikincil {
     min-height: 0;
   }
 
-  /* Sahne mobilde sadece atmosfer — daha kısa bir şerit. Hotspot'lar artık burada
-     HİÇ render edilmiyor (eski "Paket 2" alt-grid'i kaldırıldı) — dört hedefi de
-     (Kariyer/Yatırım/Evin/Sosyalleş) sabit alt gezinme çubuğunda, bkz. AltGezinme. */
-  .merkez-sahne {
-    flex: none;
-    min-height: 0;
-    aspect-ratio: 21 / 8;
-  }
-
-  /* Sahnenin alt kısmına, altındaki olay kartıyla yumuşakça birleşsin diye bir
-     gradyan (kullanıcı isteği — "siyah/kahverengi gradyan"). */
-  .merkez-sahne-gradyan {
-    position: absolute;
-    inset: auto 0 0 0;
-    height: clamp(36px, 45%, 70px);
-    z-index: 1;
-    pointer-events: none;
-    background: linear-gradient(to top, var(--renk-ahsap-koyu) 0%, rgba(20, 15, 10, 0.55) 55%, transparent 100%);
-  }
-
-  /* Kilit sayesinde (bkz. .oyun-kapsayici-tam) sayfa artık hiç kaymıyor — kartın
-     kendisi de artık kendi payını (flex:1) alıp GEREKİRSE (en kötü senaryo: uzun
-     metin + çok seçenek aynı anda) kendi içinde kayabiliyor (güvenlik ağı; normal
-     durumda her şey sığdığı için görünür bir fark yaratmaz). Padding yarıya indi
-     (kullanıcı isteği). */
-  .merkez-alt {
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow-y: auto;
-    width: 100%;
-    margin-top: 0;
-    padding: 0.3rem 0.4rem 0.4rem;
-  }
-
-  .merkez-alt-sonuc {
-    margin-top: 0;
-  }
-  .merkez-alt-sonuc::after {
-    display: none;
-  }
-
-  .olay-karti {
-    padding: 0.3rem 0.5rem;
-  }
-
-  /* Olay metni (ve sonuç ekranındaki EtkiCipleri+özet) kendi kutusunda kayar —
-     başlık ve seçenekler/Devam Et butonu bu kutunun DIŞINDA, HER ZAMAN görünür
-     kalır. Uzun bir olay artık sayfayı asla aşağı itmiyor. */
-  .olay-metni-govde {
-    max-height: 30vh;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
+  /* Mobil oyun/sonuç ekranının sahnesi + olay kutusu (`.merkez-sahne`, `.merkez-alt`, `.olay-karti`,
+     `.olay-metni-govde`) artık hiç render edilmiyor: tam sayfa portre arka plan + kadife olay kutusu
+     mobil-oyun.css'te (`.oyun-arka-sahne`, `.olay-kutusu*`). Bu sınıflar yalnız masaüstü düzeninde. */
 
   .tur-ozeti {
     display: block;
@@ -7171,12 +7121,6 @@ button.ikincil {
     margin-top: 0.5rem;
   }
 
-  .merkez-sahne > .amac-serit {
-    top: 0.25rem;
-    left: 0.25rem;
-    right: 0.25rem;
-    gap: 0.2rem;
-  }
   .amac-serit-oge {
     max-width: none;
     padding: 0.16rem 0.4rem;
@@ -7200,20 +7144,6 @@ button.ikincil {
     overflow: hidden;
     white-space: normal;
     font-size: 0.9em;
-  }
-
-  .olay-karti-govde {
-    gap: 0.2rem;
-  }
-  .olay-gorseli-sol,
-  .olay-gorseli-sag {
-    font-size: 1.5rem;
-  }
-  .olay-gorseli-sag {
-    display: none;
-  }
-  .olay-resmi {
-    width: 76px;
   }
 
   .kisilik-modal {
