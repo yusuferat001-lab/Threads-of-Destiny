@@ -7605,3 +7605,33 @@ button.ikincil {
     min-height: 2.6rem;
   }
 }
+
+/* Mobil rozet satırındaki küçük Şöhret düğmesi (masaüstünde sol paneldeki rozet kullanılır). */
+.ust-sohret-rozeti {
+  display: none;
+}
+@media (max-width: 767px) {
+  .ust-sohret-rozeti {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    max-width: none;
+    height: 26px;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    font-size: 0.9rem;
+    line-height: 1;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--renk-ahsap-kenar);
+    border-radius: 50%;
+    box-shadow: none;
+    cursor: pointer;
+  }
+  .ust-sohret-rozeti:focus-visible {
+    border-color: var(--renk-altin-parlak);
+    outline: none;
+  }
+}

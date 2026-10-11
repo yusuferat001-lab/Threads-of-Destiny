@@ -2161,6 +2161,16 @@ function App() {
                 <AmacPaneli durum={amaclar} varyant="serit" />
               </div>
               <button
+                type="button"
+                className="ust-sohret-rozeti"
+                onClick={() => setGostergeAcik('sohret')}
+                aria-haspopup="dialog"
+                aria-label={`${m.sohret} — ${unUnvani(karakter.un, dil)}`}
+                title={`${m.sohret} — ${unUnvani(karakter.un, dil)}`}
+              >
+                🏅
+              </button>
+              <button
                 key={skorGecisi.nonce}
                 type="button"
                 className="canli-skor-rozeti"
