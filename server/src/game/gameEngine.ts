@@ -2168,7 +2168,11 @@ async function sonucuUygulaVeIlerlet(
     // Pasif kıdem: hayatta geçen her yıl kariyer puanını biraz büyütür (yatırım yapmayan
     // bir karakter de zamanla rütbe atlar; yatırım sadece bunu hızlandırır). Mesleğe
     // yatkınlık kademesinin "tecrübe hızı" bonusu/malusu buna da biner.
-    state.kariyer_puani += KARIYER_PUANI_YILLIK * yasArtisi * (1 + (state.meslek_tecrube_hizi ?? 0));
+    // (100 yaş tavanı ilerletYas içinde ölüme yol açmış olabilir: ölüden sonra hiçbir yıl
+    // etkisi uygulanmaz — para/sağlık/kariyer ölüm anından sonra oynamasın.)
+    if (state.aktif) {
+      state.kariyer_puani += KARIYER_PUANI_YILLIK * yasArtisi * (1 + (state.meslek_tecrube_hizi ?? 0));
+    }
     if (eskiHukumdar && state.hukumdar && state.hukumdar !== eskiHukumdar) {
       const haber = hukumdarDegisimHaberiUret(
         Khukumdar(state.dil, eskiHukumdar),
@@ -2178,7 +2182,7 @@ async function sonucuUygulaVeIlerlet(
       hukumdarDegisimHaberi = haber;
       hayatOlayiEkle(state, "👑", T(state.dil, "Hükümdar değişti: {0}", [Khukumdar(state.dil, state.hukumdar)]));
     }
-    const durumOlumMesaji = durumlariUygula(state);
+    const durumOlumMesaji = state.aktif ? durumlariUygula(state) : null;
     if (durumOlumMesaji) {
       checkDeath(state, true, durumOlumMesaji);
     }
@@ -2192,7 +2196,7 @@ async function sonucuUygulaVeIlerlet(
       nakitAkisi.savasVergisi = ekonomi.giderKalemleri.savasVergisi * yasArtisi;
       nakitAkisi.faiz = ekonomi.faiz;
       checkDeath(state, false); // borç stresiyle sağlık 0'a inmiş olabilir
-      if (state.aktif) {
+      yilSonuBlogu: if (state.aktif) {
         const yaslanmaKaybi = yaslanmaUygula(state, yasArtisi);
         if (state.saglik <= 0) {
           checkDeath(state, true, ikiDilT("İleri yaşın getirdiği yorgunlukla huzur içinde vefat etti."));
@@ -2257,6 +2261,10 @@ async function sonucuUygulaVeIlerlet(
           if (state.saglik <= 0) {
             checkDeath(state, true, ikiDilT("Kıtlığın getirdiği yoksunlukla tükendi."));
           }
+          // Kıtlık bu turun içinde öldürdüyse kalan yıl-sonu adımları (mülk geliri, kredi el
+          // koyma, bağış, doğum, savaş/veba...) ÖLÜ karakter üzerinde çalışmasın: servet/skor
+          // ölüm anından sonra oynanmasın.
+          if (!state.aktif) break yilSonuBlogu;
           const mulkSonucu = mulkGelirleriUygula(state, yasArtisi);
           if (mulkSonucu.kervanBatti) {
             const kervanMesaji = T(state.dil, "🌊 Ticaret kervanın savaşın kaosunda kayboldu; yatırımından geriye bir şey kalmadı.");

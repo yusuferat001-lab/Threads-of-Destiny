@@ -1313,6 +1313,8 @@ export const KORUYUCU_MUSKA_ETIKETI = "esya:kutsal_kalinti";
  * dil de olum_nedeni_ceviri'de saklanır (liderlik tablosu bunu kullanır).
  */
 export function checkDeath(state: CharacterState, zorunluOlum: boolean, neden?: string | IkiDilMetin): void {
+  // Idempotent: zaten ölmüş karakterde ölüm nedenini/amaç kilidini yeniden yazma (ilk neden kalır).
+  if (!state.aktif) return;
   if (state.saglik <= 0 || zorunluOlum) {
     if (state.etiketler.includes(KORUYUCU_MUSKA_ETIKETI)) {
       etiketSil(state, [KORUYUCU_MUSKA_ETIKETI]);
