@@ -557,6 +557,8 @@ export interface SenaryoResponse {
   olay_metni: string;
   kategori: string;
   gorsel: string;
+  /** Özel havuz illüstrasyonu anahtarı (ör. "hapis", "yolculuk-hac"); yoksa kategori resmi kullanılır. */
+  resim?: string;
   secenekler: Secenek[];
 }
 
