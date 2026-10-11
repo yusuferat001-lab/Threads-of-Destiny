@@ -1386,35 +1386,41 @@ export function ilerletYas(state: CharacterState, minYil = 1, maxYil = 3): numbe
  * turda birden fazla yıl atlanırsa (yasArtisi > 1) her yıl kendi eşiğine göre
  * ayrı ayrı hesaplanır.
  */
+/** Verilen yaştaki YILLIK yaşlanma sağlık kaybı (yaslanmaUygula + gösterge detayı ortak kullanır). */
+export function yaslanmaYillikKayip(yas: number): number {
+  if (yas >= 80) return 8;
+  if (yas >= 70) return 6;
+  if (yas >= 60) return 4;
+  if (yas >= 50) return 1;
+  return 0;
+}
+
 export function yaslanmaUygula(state: CharacterState, yasArtisi: number): number {
   if (yasArtisi <= 0) return 0;
   let toplamKayip = 0;
   let yas = state.yas - yasArtisi;
   for (let i = 0; i < yasArtisi; i++) {
     yas += 1;
-    if (yas >= 80) toplamKayip += 8;
-    else if (yas >= 70) toplamKayip += 6;
-    else if (yas >= 60) toplamKayip += 4;
-    else if (yas >= 50) toplamKayip += 1;
+    toplamKayip += yaslanmaYillikKayip(yas);
   }
   state.saglik -= toplamKayip;
   return toplamKayip;
 }
 
-const KRONIK_SAGLIK_ESIGI = 30;
-const KRONIK_MUTLULUK_ESIGI = 25;
+export const KRONIK_SAGLIK_ESIGI = 30;
+export const KRONIK_MUTLULUK_ESIGI = 25;
 
 // Evlilik ↔ mutluluk pasif sürüklenmesi (kullanıcı isteği: "evli olmamak mutluluk
 // düşürsün, eşle kavga etmek de düşürsün"). pasifEkonomiUygula'da yıllık işler,
 // yalnız EVLILIK_MORAL_YAS ve üstünde. Yalnızlık ile kötü evlilik moral aşındırır,
 // iyi evlilik moral verir — böylece evlilik gerçek bir moral ekseni olur.
-const EVLILIK_MORAL_YAS = 26;
-const YALNIZLIK_MUTLULUK_YILLIK = 0.7; // bekar/dul, 26+ → -0.7/yıl
-const KOTU_EVLILIK_ESIGI = 35; // es_puani bunun altındaysa "sürekli kavga"
+export const EVLILIK_MORAL_YAS = 26;
+export const YALNIZLIK_MUTLULUK_YILLIK = 0.7; // bekar/dul, 26+ → -0.7/yıl
+export const KOTU_EVLILIK_ESIGI = 35; // es_puani bunun altındaysa "sürekli kavga"
 const KOTU_EVLILIK_MUTLULUK_YILLIK_MIN = 0.8; // es_puani ~35'te ceza
 const KOTU_EVLILIK_MUTLULUK_YILLIK_EK = 1.2; // es_puani 0'da toplam -2.0/yıl
-const IYI_EVLILIK_ESIGI = 70; // es_puani bunun üstündeyse mutlu evlilik
-const IYI_EVLILIK_MUTLULUK_YILLIK = 0.5; // +0.5/yıl
+export const IYI_EVLILIK_ESIGI = 70; // es_puani bunun üstündeyse mutlu evlilik
+export const IYI_EVLILIK_MUTLULUK_YILLIK = 0.5; // +0.5/yıl
 
 // ===== Aile ekranı: eş/çocuk ilişkisi pasif sürüklenmesi + para talebi (§33) =====
 // Felsefe evlilik moraliyle aynı: ilgilenmezsen ilişki soğur, düşük ilişki moral
@@ -1707,10 +1713,10 @@ export function yonetimYillikUygula(state: CharacterState, yasArtisi: number): s
  * yaşlanmayı (48+/65+/80+ eşikleri) tamamen yok saymana izin vermez. NEGATİF pasif
  * etkiler (çöpten topla -4, basit barınak -1 vb.) bu tavandan etkilenmez, tam işler.
  */
-const PASIF_REGEN_TAVANI = 80;
+export const PASIF_REGEN_TAVANI = 80;
 const PASIF_REGEN_TAVAN_USTU_ORAN = 0.25;
 /** Bu değerin ALTINDA hiç yumuşak tavan uygulanmaz: dipteki bir karakter iyi ev+sofra ile tam hızda toparlanabilsin. */
-const PASIF_REGEN_LIMITSIZ_ESIK = 45;
+export const PASIF_REGEN_LIMITSIZ_ESIK = 45;
 
 /**
  * Konut/yaşam tarzı gibi pasif bir kaynaktan gelen sağlık/mutluluk değişimini,
@@ -2363,7 +2369,7 @@ export function kucukKrizKontrolEt(state: CharacterState, yasArtisi: number): st
   return T(state.dil, KUCUK_KRIZ_FLAVOR[Math.floor(Math.random() * KUCUK_KRIZ_FLAVOR.length)]);
 }
 
-const KRIZ_ETKI: Record<UlkeKrizi["tur"], { saglik?: number; para?: number; un?: number; mutluluk?: number }> = {
+export const KRIZ_ETKI: Record<UlkeKrizi["tur"], { saglik?: number; para?: number; un?: number; mutluluk?: number }> = {
   kitlik: { saglik: -1 }, // -2 → -1: kıtlık artık ölüm sarmalını tek başına döndürmüyor
   isyan: { para: -3, un: -1 },
   altin_cag: { para: 4, mutluluk: 1 },
@@ -2398,7 +2404,7 @@ export function krizEtkisiUygula(state: CharacterState, yasArtisi: number): stri
 // gerçekçi bir ömürde en fazla bir-iki bandı aşağı çeker). Ana düşüş yolu hâlâ
 // aranmaSeviyesi.ts'teki kefaret/rüşvet seçenekleri (suc_artis negatif) ve büyük
 // baskının suc_seviyesi_ayarla'sıdır — bu sadece küçük bir pasif "unutulma" payı.
-const SUC_SEVIYESI_PASIF_AZALMA_YILLIK = 0.15;
+export const SUC_SEVIYESI_PASIF_AZALMA_YILLIK = 0.15;
 
 export function sucSeviyesiUygula(state: CharacterState, yasArtisi: number): void {
   if (yasArtisi <= 0) return;
@@ -3077,8 +3083,8 @@ const KERVAN_BATMA_IHTIMALI_YILLIK = 0.25;
 // Aranma yeniden dengeleme turu: 3→2 — pasif/ambient bir kaynak olduğu için
 // (yıl başına otomatik işler, oyuncu aksiyonu gerektirmez) karanlık işler
 // (şiddet/soygun) listesiyle aynı hızda birikmesin (kullanıcı isteği).
-const KARABORSA_SUC_ARTISI_YILLIK = 2;
-const KARABORSA_AHLAK_ASINMASI_YILLIK = 0.3;
+export const KARABORSA_SUC_ARTISI_YILLIK = 2;
+export const KARABORSA_AHLAK_ASINMASI_YILLIK = 0.3;
 // Küçük Tarla vs Çiftlik — Faz 6 ekonomi rebalansı (kullanıcı isteği: "ikisini birbirinden
 // belirgin biçimde ayır"): eskiden ikisi neredeyse aynı getiriyi taşıyordu (yalnız
 // dezavantajlı bantta ufak bir fark vardı). Artık Küçük Tarla AÇIKÇA daha düşük getirili

@@ -652,6 +652,8 @@ export interface SonucEtkisi {
   suc_artis?: number;
   /** suc_seviyesi'ni mevcut değerden bağımsız, doğrudan belirtilen değere (0-100) sabitler — ör. büyük baskın sonrası "temize çıkar / kademe 1'e in" gibi kesin hedefler için; genel yükseliş/düşüş için bunun yerine suc_artis kullanılmalı. */
   suc_seviyesi_ayarla?: number;
+  /** SADECE motor yazar (uygulananEtki'de): bu seçimin aranma (suc_seviyesi) üzerindeki GERÇEK net değişimi — suc_artis, suç-kazancı motor kuralı ve suc_seviyesi_ayarla, 0-100 kelepçesi sonrası. Sonuç ekranı çipi bunu gösterir. */
+  suc_degisim?: number;
   /** Hapiste kalan ceza süresini (state.hapis_ceza_kalan) yıl olarak uzatır — riskli kaçış girişimi başarısız olunca kullanılır. Yalnız "hapiste" etiketi varken anlamlıdır. */
   hapis_ceza_artis?: number;
   /** true ise, bu sonuç hapishaneden FİZİKSEL bir kaçışla (tünel/duvar/çamaşır arabası/gardiyan bayıltma vb.) çıkışı temsil eder — rüşvet/af ile parayla çıkış SAYILMAZ. Bir ömürde ilk kez gerçekleştiğinde skor formülüne tek seferlik bir bonus ekler (bkz. hesaplaSkorKirilimi). */

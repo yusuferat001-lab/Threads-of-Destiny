@@ -103,7 +103,7 @@ import { SonucEfekti } from './components/SonucEfekti';
 import { AyarlarModal } from './components/AyarlarModal';
 import { ayarlariGetir, ayarlariKaydet, type Dil } from './ayarlar';
 import { bolgeOzetiGetir } from './bolgeOzellikleri';
-import type { GeriBildirimGirdi, EvlilikAdayi } from './types';
+import type { GeriBildirimGirdi, EvlilikAdayi, GostergeStat } from './types';
 import { sesKapaliMi, sesTercihiKaydet } from './ses';
 import { muzikModunuAyarla, muzikDurdur, muzikSessizAyarla, type MuzikModu } from './muzik';
 import { aktifOturumIdGetir, aktifOturumIdKaydet, aktifOturumIdSil } from './oturum';
@@ -127,6 +127,7 @@ import { bic } from './i18n';
 import { DilContext, dilCtxYap } from './DilContext';
 import { aileKokAdi, enTanimlik } from './aileAdi';
 import { SkorKirilimiPaneli } from './components/SkorKirilimiPaneli';
+import { GostergeModal } from './components/GostergeModal';
 import { CarkLogo, KoseTezhibi, MuhurAyrac, AdimGostergesi, KaderYollari } from './components/Suslemeler';
 import { CagAmblemi, BolgeAmblemi } from './components/Amblemler';
 import { useMobilEkran, useGecisDeltasi } from './hooks';
@@ -392,6 +393,7 @@ function App() {
 
   // Mobil tek-ekran tasarımı: canlı skor rozetinin detay modalı (yalnız placeholder — §5).
   const [skorDetayAcik, setSkorDetayAcik] = useState(false);
+  const [gostergeAcik, setGostergeAcik] = useState<GostergeStat | null>(null);
   // Ölümde skorun otomatik kaydedilmesi denendi mi (oturum id başına tek sefer) —
   // StrictMode çift-render'ında ve tekrar render'larda ikinci bir POST /api/scores atmamak için.
   const otoSkorKaydiRef = useRef<string | null>(null);
@@ -2122,6 +2124,7 @@ function App() {
             ulke={karakter.ulke}
             hukumdar={karakter.hukumdar}
             onBolgeTikla={() => setBolgeBilgiAcik(true)}
+            onGostergeTikla={setGostergeAcik}
           />
           {mobil && (
             // Mobil tek-ekran tasarımı: sol/sağ panel kaldırılınca kaybolan iki tek-butonluk
@@ -2185,7 +2188,13 @@ function App() {
               </button>
 
               <div className="sol-panel-mini-barlar">
-                <div className="un-rozeti">
+                <button
+                  type="button"
+                  className="un-rozeti un-rozeti-tikla"
+                  onClick={() => setGostergeAcik('sohret')}
+                  aria-haspopup="dialog"
+                  title={`${m.sohret} — ${m.gmDokun}`}
+                >
                   <span className="un-rozeti-ikon" aria-hidden="true">
                     🏅
                   </span>
@@ -2193,7 +2202,7 @@ function App() {
                     <span className="un-rozeti-etiket">{m.sohret}</span>
                     <strong>{unUnvani(karakter.un, dil)}</strong>
                   </div>
-                </div>
+                </button>
                 {/* Masaüstü canlı skor — mobildeki üst şerit rozetinin karşılığı; aynı döküm penceresini açar. */}
                 <button
                   key={skorGecisi.nonce}
@@ -2484,6 +2493,10 @@ function App() {
                 />
               </div>
             </div>
+          )}
+
+          {gostergeAcik && karakter && (
+            <GostergeModal karakter={karakter} stat={gostergeAcik} onKapat={() => setGostergeAcik(null)} />
           )}
 
           {skorDetayAcik && (

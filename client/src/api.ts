@@ -9,6 +9,8 @@ import type {
   KonutTanimi,
   YasamSecenegiTanimi,
   FinansOzeti,
+  GostergeStat,
+  GostergeDetayi,
   YatirimSonucu,
   KotuIsKarti,
   KotuIsSonucu,
@@ -163,6 +165,10 @@ export function skorTablosuGetir(tur: SiralamaTuru = 'genel', donem: SiralamaDon
 
 export function finansGetir(stateId: string) {
   return istek<{ finans: FinansOzeti }>(`/api/game/${stateId}/finans`);
+}
+
+export function gostergeGetir(stateId: string, stat: GostergeStat) {
+  return istek<{ gosterge: GostergeDetayi }>(`/api/game/${stateId}/gosterge/${stat}`);
 }
 
 export function kotuIsConfigGetir(stateId: string) {

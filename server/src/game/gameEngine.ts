@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto";
+import { gostergeDetayiUret, gostergeStatiMi, GostergeDetayi } from "./gostergeDetay";
 import { CharacterState, Cag, SenaryoResponse, SonucEtkisi, TepkiSonucu, MulkTuru, EvlilikAdayi, OturumAkisiKaydi, IkiDilMetin } from "../types";
 import { T, K, Khukumdar, ikiDilT } from "../i18n";
 import { olayCevirisiUygula } from "../i18n/olaylar";
@@ -706,6 +707,17 @@ export function sucKazanciUygula(etki: SonucEtkisi): SucKazanciSonucu {
   etki.suc_artis = (etki.suc_artis ?? 0) + artis;
 
   return ciddi ? "ciddi" : "suc";
+}
+
+/**
+ * Bir seçimin aranma (suc_seviyesi) üzerindeki GERÇEK net değişimi: önce/sonra
+ * değerleri 0-100'e kelepçelenip farkı alınır, böylece suc_artis, suç-kazancı
+ * motor kuralı ve mutlak `suc_seviyesi_ayarla` tek sayıda birleşir. Sonuç
+ * ekranı çipinin (EtkiCipleri) kaynağıdır.
+ */
+export function sucDegisimiHesapla(once: number, sonra: number): number {
+  const kelepce = (v: number) => Math.max(0, Math.min(100, v));
+  return Math.round((kelepce(sonra) - kelepce(once)) * 10) / 10;
 }
 
 /** Din_kultur değerinden ilgili Hac yolculuğu teklif olayına eşleme. */
@@ -1830,6 +1842,7 @@ async function sonucuUygulaVeIlerlet(
     if (state.meslek === "Din Adamı") state.nufuz += 1.5;
   }
   if (etki.kariyer_puani_artis) state.kariyer_puani += etki.kariyer_puani_artis;
+  const sucOnce = state.suc_seviyesi;
   if (etki.suc_artis) state.suc_seviyesi += etki.suc_artis;
   // Tutuklanma anındaki GERÇEK suç seviyesi — hapis cezası bandı bundan hesaplanır
   // (aşağıda). `suc_seviyesi_ayarla` (ör. büyük baskının "teslim ol" dalının suçu
@@ -1839,6 +1852,7 @@ async function sonucuUygulaVeIlerlet(
   // bir tutuklamayı bile kısa cezaya indirirdi.
   const sucSeviyesiTutuklanmaAni = state.suc_seviyesi;
   if (etki.suc_seviyesi_ayarla !== undefined) state.suc_seviyesi = etki.suc_seviyesi_ayarla;
+  etki.suc_degisim = sucDegisimiHesapla(sucOnce, state.suc_seviyesi);
   // Veba hastalığı ölüm riski: yalnız hastayken (veba_hastasi) anlamlı; olay
   // seçimi bu turdaki ölüm zarından ÖNCE uygulanır (vebaHastaligiKontrol).
   if (etki.veba_olum_riski_artis && state.etiketler.includes("veba_hastasi")) {
@@ -2483,6 +2497,13 @@ export interface FinansOzeti {
 }
 
 /** Bir sonraki turu beklemeden, güncel gelir/gider dökümünü salt-okunur olarak hesaplar; para değiştirmez. */
+/** Üst şerit göstergesi detay penceresi: bu değer neyden etkileniyor, nasıl değişir? (salt-okunur, tur tüketmez) */
+export async function gostergeGetir(id: string, stat: string): Promise<GostergeDetayi> {
+  const oturum = await oturumGetir(id);
+  if (!gostergeStatiMi(stat)) throw new Error("Geçersiz gösterge.");
+  return gostergeDetayiUret(oturum.state, stat);
+}
+
 export async function finansGetir(id: string): Promise<FinansOzeti> {
   const oturum = await oturumGetir(id);
   const { state } = oturum;
@@ -4145,8 +4166,10 @@ export async function sosyallesmeOlayCoz(id: string, secenekIndex: number): Prom
     if (state.meslek === "Din Adamı") state.nufuz += 1.5;
   }
   if (etki.kariyer_puani_artis) state.kariyer_puani += etki.kariyer_puani_artis;
+  const sucOnce = state.suc_seviyesi;
   if (etki.suc_artis) state.suc_seviyesi += etki.suc_artis;
   if (etki.suc_seviyesi_ayarla !== undefined) state.suc_seviyesi = etki.suc_seviyesi_ayarla;
+  etki.suc_degisim = sucDegisimiHesapla(sucOnce, state.suc_seviyesi);
 
   // Sosyalleşme olaylarının kullandığı seyrek alanlar (banka denetimi: ekip_ekle 1×, unvan_kazan 2×).
   if (etki.ekip_ekle) {

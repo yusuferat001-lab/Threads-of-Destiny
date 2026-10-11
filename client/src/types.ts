@@ -512,6 +512,8 @@ export interface SonucEtkisi {
   uretim_kapasitesi_artis?: number;
   suc_artis?: number;
   suc_seviyesi_ayarla?: number;
+  /** Sunucunun yazdığı: bu seçimin aranma üzerindeki gerçek net değişimi (kelepçe sonrası). */
+  suc_degisim?: number;
   /** Hapis ceza süresini yıl olarak uzatır (başarısız riskli kaçış girişimi). */
   hapis_ceza_artis?: number;
   para_sifirla?: boolean;
@@ -866,4 +868,22 @@ export interface ScoreKaydi {
   /** Gerçek skor çarpanı (ör. 1.5/2/3/3.5/5) — eski kayıtlarda null. */
   amac_carpani: number | null;
   createdAt: string;
+}
+
+/** Üst şerit gösterge detay penceresi (GET /:id/gosterge/:stat). */
+export type GostergeStat = 'saglik' | 'para' | 'mutluluk' | 'ahlak' | 'aranma' | 'sohret';
+
+export interface GostergeEtken {
+  ikon: string;
+  metin: string;
+  /** iyi = değeri yükseltir, kotu = düşürür, notr = bilgi. */
+  yon: 'iyi' | 'kotu' | 'notr';
+}
+
+export interface GostergeDetayi {
+  stat: GostergeStat;
+  deger: number;
+  etkenler: GostergeEtken[];
+  yukselt: string[];
+  dusur: string[];
 }
