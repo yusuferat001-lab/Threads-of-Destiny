@@ -75,3 +75,39 @@ export function olumGoldHesapla(skor: number): number {
   const kademe = 4 + Math.round((s - 10000) / 5000);
   return Math.min(OLUM_GOLD_TAVANI, kademe);
 }
+
+// ---------------------------------------------------------------------------
+// Ölüm ödülünün tekrar ödenmesini önleme
+// ---------------------------------------------------------------------------
+// Ölüm ekranında sayfa yenilenirse (oturum id'si localStorage'da kaldığı için ölü karakter
+// yeniden yüklenir) bellek-içi bir ref'e güvenen koruma sıfırlanıyor ve ödül tekrar tekrar
+// veriliyordu. Ödenen oyun kimlikleri kalıcı tutulur (son 40, basarimSistemi'ndeki
+// `degerlendirilen` kümesiyle aynı desen).
+const ODENEN_ANAHTAR = 'kader_carki_gold_odenen_oyunlar';
+const ODENEN_MAKS = 40;
+
+function odenenleriOku(): string[] {
+  try {
+    const ham = localStorage.getItem(ODENEN_ANAHTAR);
+    const liste = ham ? JSON.parse(ham) : [];
+    return Array.isArray(liste) ? liste.filter((x): x is string => typeof x === 'string') : [];
+  } catch {
+    return [];
+  }
+}
+
+/** Bu oyunun ölüm gold'u daha önce ödendi mi? */
+export function olumGoldOdendiMi(oyunId: string): boolean {
+  return odenenleriOku().includes(oyunId);
+}
+
+/** Bu oyunun ölüm gold'unu ödenmiş olarak işaretler (ödemeden ÖNCE çağır: eşzamanlı efektler çift ödemesin). */
+export function olumGoldOdendiIsaretle(oyunId: string): void {
+  try {
+    const liste = odenenleriOku().filter((x) => x !== oyunId);
+    liste.push(oyunId);
+    localStorage.setItem(ODENEN_ANAHTAR, JSON.stringify(liste.slice(-ODENEN_MAKS)));
+  } catch {
+    // localStorage kullanılamıyorsa sessizce yok say
+  }
+}

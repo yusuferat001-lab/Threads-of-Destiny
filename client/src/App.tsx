@@ -26,6 +26,7 @@ import {
   bolgelerGetir,
   konutlarGetir,
   yasamSecenekleriGetir,
+  ApiHatasi,
   yeniOyunBaslat,
   meslekAta,
   stateGetir,
@@ -120,7 +121,7 @@ import { YenilikModal } from './components/YenilikModal';
 import { yenilikGosterilmeliMi, yenilikGorulduIsaretle } from './yenilikler';
 import { istemciId, ziyaretBildir } from './istemci';
 import { gunlukSeriKontrolEt, gunlukSeriGetir, type GunlukSeriSonuc } from './gunlukSeri';
-import { goldBakiyeGetir, olumGoldHesapla, goldEkle } from './gold';
+import { goldBakiyeGetir, olumGoldHesapla, goldEkle, olumGoldOdendiMi, olumGoldOdendiIsaretle } from './gold';
 import { sonucIkonuGetir, unUnvani, MESLEK_KATEGORI, yatkinlikEtiketi, meslekYatkinlikOnizleme, etkiTahminiGetir, type EtkiTahmini } from './bolgeTema';
 import { formatPara, formatYuzde } from './format';
 import { bic } from './i18n';
@@ -397,7 +398,10 @@ function App() {
   // Ölümde skorun otomatik kaydedilmesi denendi mi (oturum id başına tek sefer) —
   // StrictMode çift-render'ında ve tekrar render'larda ikinci bir POST /api/scores atmamak için.
   const otoSkorKaydiRef = useRef<string | null>(null);
-  const olumGoldOdenenRef = useRef<string | null>(null);
+  // Şu an ekranda olan karakterin id'si: uçuştaki otomatik skor kaydı bittiğinde eski bir oyunun
+  // sonucunu yeni oyuna yazmamak için (her render'da güncellenir).
+  const karakterIdRef = useRef<string | null>(null);
+  karakterIdRef.current = karakter?.id ?? null;
   const [olumGoldKazanci, setOlumGoldKazanci] = useState<number | null>(null);
   const mobil = useMobilEkran();
   // Mobil canlı skor rozeti (§6) — sunucudaki toplamsal formülün istemci aynası, ücretsiz/senkron.
@@ -591,10 +595,13 @@ function App() {
       setGecmisHayatlar(gecmisHayatlariGetir());
       setIsim((mevcut) => mevcut || karakter.isim || '');
       const { yeniAcilanlar, skor } = basarimlariDegerlendir(karakter);
-      setYeniBasarimlar(yeniAcilanlar);
+      // Efekt ekrana her dönüşte yeniden çalışır; ikinci çalışmada "yeni açılan" boş döner —
+      // ilk listeyi ezmesin.
+      if (yeniAcilanlar.length > 0) setYeniBasarimlar(yeniAcilanlar);
       // Gold — ölümde kazanılan skorun küçük bir oranı (amaç ×5 çarpanı zaten skora yansımış).
-      if (olumGoldOdenenRef.current !== karakter.id) {
-        olumGoldOdenenRef.current = karakter.id;
+      // Ödenen oyun kimlikleri kalıcı tutulur: sayfa yenilenince ölü karakter yeniden yüklenir.
+      if (!olumGoldOdendiMi(karakter.id)) {
+        olumGoldOdendiIsaretle(karakter.id);
         const kazanc = olumGoldHesapla(skor);
         setGoldBakiye(goldEkle(kazanc));
         setOlumGoldKazanci(kazanc);
@@ -616,19 +623,19 @@ function App() {
     if (otoSkorKaydiRef.current === karakter.id) return;
     otoSkorKaydiRef.current = karakter.id;
     const ad = (karakter.isim || '').trim() || (dil === 'en' ? 'Nameless' : 'İsimsiz');
-    let iptal = false;
+    const oyunId = karakter.id;
+    // Not: istek sürerken ekran/dil değişip efekt yeniden çalışsa bile sonuç YUTULMAZ (eskiden
+    // cleanup bayrağı sonucu atıyor, ref yeniden denemeyi engelliyor ve ölüm ekranı sonsuza dek
+    // "kaydediliyor" kalıyordu). Yalnız aradan başka bir oyun başladıysa sonuç yok sayılır.
     (async () => {
       try {
-        await skorKaydet(karakter.id, ad);
-        if (!iptal) setKaydedildi(true);
+        await skorKaydet(oyunId, ad);
+        if (karakterIdRef.current === oyunId) setKaydedildi(true);
       } catch {
         // Otomatik kayıt tutmadı (ağ/hız sınırı) → elle kayıt formunu yedek olarak aç.
-        if (!iptal) setOtoKayitBasarisiz(true);
+        if (karakterIdRef.current === oyunId) setOtoKayitBasarisiz(true);
       }
     })();
-    return () => {
-      iptal = true;
-    };
   }, [ekran, karakter, kaydedildi, dil]);
 
   // Sayfa yenilenince (ya da sekme kapatılıp geri açılınca) kaldığı yerden devam etmeyi dener;
@@ -654,9 +661,15 @@ function App() {
           setTepkiModu(false);
           setEkran('oyun');
         }
-      } catch {
-        // Oturum artık bulunamıyor; sessizce ana menüde kal.
-        aktifOturumIdSil();
+      } catch (err) {
+        // Yalnız oturum gerçekten yoksa (404) kayıtlı bağlantıyı unut; geçici ağ/sunucu
+        // hatasında (uyanan Render, kopuk bağlantı) oyun sunucuda duruyor — id kalsın,
+        // oyuncu sayfayı yenileyip devam edebilsin.
+        if (err instanceof ApiHatasi && err.durum === 404) {
+          aktifOturumIdSil();
+        } else if (!iptal) {
+          setHata(temizHata(err));
+        }
       } finally {
         if (!iptal) setYukleniyor(false);
       }
@@ -1499,7 +1512,6 @@ function App() {
     setKaydedildi(false);
     setOtoKayitBasarisiz(false);
     otoSkorKaydiRef.current = null;
-    olumGoldOdenenRef.current = null;
     setOlumGoldKazanci(null);
     setSecilenCag(null);
     setSecilenBolge(null);

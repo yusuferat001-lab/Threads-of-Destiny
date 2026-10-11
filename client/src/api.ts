@@ -46,6 +46,16 @@ function istemciHatasi(tr: string, en: string): Error {
   return new Error(ayarlariGetir().dil === 'en' ? en : tr);
 }
 
+/** Sunucudan gelen (HTTP durumu bilinen) hata; çağıran 404 gibi durumları ayırt edebilsin. */
+export class ApiHatasi extends Error {
+  durum: number;
+  constructor(mesaj: string, durum: number) {
+    super(mesaj);
+    this.name = 'ApiHatasi';
+    this.durum = durum;
+  }
+}
+
 async function istek<T>(url: string, init?: RequestInit): Promise<T> {
   let res: Response;
   try {
@@ -75,7 +85,10 @@ async function istek<T>(url: string, init?: RequestInit): Promise<T> {
     );
   }
   if (!res.ok) {
-    throw new Error(veri.hata ?? (ayarlariGetir().dil === 'en' ? `Request failed: ${res.status}` : `İstek başarısız: ${res.status}`));
+    throw new ApiHatasi(
+      veri.hata ?? (ayarlariGetir().dil === 'en' ? `Request failed: ${res.status}` : `İstek başarısız: ${res.status}`),
+      res.status
+    );
   }
   return veri;
 }
