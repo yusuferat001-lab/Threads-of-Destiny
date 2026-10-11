@@ -2823,7 +2823,7 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
   },
   yerlesim_sehir_salgin_kalabaligi: {
     baslik: "The Crowded Bazaar",
-    metin: "The bazaar in the city center is packed as always; but this month cases of feverish illness are rising fast. Standing in the crowd is risky, staying away means missing opportunities.",
+    metin: "The town bazaar is packed as always; but this month cases of feverish illness are rising fast. Standing in the crowd is risky, staying away means missing opportunities.",
     secenekler: [
       {
         metin: "Mingle in the bazaar, make the most of opportunities.",
@@ -2963,7 +2963,7 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
   },
   sanayi_gaz_lambasi_sokaklari: {
     baslik: "The Gaslit Streets",
-    metin: "The city streets, lit by gas lamps, take on a new life at night: coffeehouses, gambling dens, salons where society gathers. You heard that {rakip} is out tonight too.",
+    metin: "The streets, lit by gas lamps, take on a new life at night: coffeehouses, gambling dens, salons where society gathers. You heard that {rakip} is out tonight too.",
     secenekler: [
       {
         metin: "Mingle in society too, make new connections.",

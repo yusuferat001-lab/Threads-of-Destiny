@@ -894,7 +894,7 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
   yerlesim_dag_ayi_karsilasmasi: {
     baslik: "The Master of the Mountain",
     metin:
-      "Returning to your home on the mountaintop, you came eye to eye with a huge, hungry bear on the narrow path. Neither it moves nor do you. If you're unarmed, you're face to face with death.",
+      "Returning home along a mountain trail, you came eye to eye with a huge, hungry bear on the narrow path. Neither it moves nor do you. If you're unarmed, you're face to face with death.",
     secenekler: [
       {
         metin: "Draw the Black Sword and advance on the bear!",

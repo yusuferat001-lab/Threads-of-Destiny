@@ -1635,14 +1635,11 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
   {
     id: "yerlesim_dag_ayi_karsilasmasi",
     kategori: "saglik",
-    gerekliEtiketler: [
-      "yerlesim:dag",
-    ],
     gorsel: "🐻",
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Dağın Sahibi",
-    metin: "Dağ başındaki evine dönerken dar patikada devasa, aç bir ayıyla göz göze geldin. Ne o kıpırdıyor ne sen. Silahsızsan ölümle burun burunasın.",
+    metin: "Dağ yolundan evine dönerken dar patikada devasa, aç bir ayıyla göz göze geldin. Ne o kıpırdıyor ne sen. Silahsızsan ölümle burun burunasın.",
     secenekler: [
       {
         metin: "Kara Kılıcı çek ve ayının üzerine yürü!",

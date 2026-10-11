@@ -5259,14 +5259,11 @@ export const OLAY_GENEL: OlayTanimi[] = [
   {
     id: "yerlesim_sinir_baskini",
     kategori: "savas",
-    gerekliEtiketler: [
-      "yerlesim:sinir",
-    ],
     gorsel: "🗡️",
     sureYilMin: 1,
     sureYilMax: 2,
     baslik: "Sınırda Baskın",
-    metin: "Gece yarısı sınır boyundaki köyünüze küçük bir akıncı grubu baskın düzenledi. Silah sesleri, yanan evler ve çığlıklarla uyandın.",
+    metin: "Gece yarısı sınıra yakın köyünüze küçük bir akıncı grubu baskın düzenledi. Silah sesleri, yanan evler ve çığlıklarla uyandın.",
     secenekler: [
       {
         metin: "Elindeki silahla köyün savunmasına koş.",
@@ -5311,14 +5308,11 @@ export const OLAY_GENEL: OlayTanimi[] = [
   {
     id: "yerlesim_sehir_salgin_kalabaligi",
     kategori: "sosyal",
-    gerekliEtiketler: [
-      "yerlesim:sehir",
-    ],
     gorsel: "🤧",
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Kalabalık Çarşı",
-    metin: "Şehir merkezindeki çarşı her zamanki gibi tıklım tıklım; ama bu ay ateşli hastalık vakaları da hızla artıyor. Kalabalıkta durmak riskli, uzak durmaksa fırsatları kaçırmak demek.",
+    metin: "Kasabanın çarşısı her zamanki gibi tıklım tıklım; ama bu ay ateşli hastalık vakaları da hızla artıyor. Kalabalıkta durmak riskli, uzak durmaksa fırsatları kaçırmak demek.",
     secenekler: [
       {
         metin: "Çarşıya karış, fırsatları değerlendir.",
@@ -5542,14 +5536,11 @@ export const OLAY_GENEL: OlayTanimi[] = [
     id: "sanayi_gaz_lambasi_sokaklari",
     kategori: "sosyal",
     cag: "Sanayi Devrimi",
-    gerekliEtiketler: [
-      "yerlesim:sehir",
-    ],
     gorsel: "🏮",
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Gaz Lambası Sokakları",
-    metin: "Gaz lambalarıyla aydınlanan şehir sokakları geceleri yeni bir hayata bürünüyor: kahvehaneler, kumarhaneler, sosyetenin buluştuğu salonlar. {rakip}'in de bu gece dışarıda olduğunu duydun.",
+    metin: "Gaz lambalarıyla aydınlanan sokaklar geceleri yeni bir hayata bürünüyor: kahvehaneler, kumarhaneler, sosyetenin buluştuğu salonlar. {rakip}'in de bu gece dışarıda olduğunu duydun.",
     secenekler: [
       {
         metin: "Sen de sosyeteye karış, yeni bağlantılar kur.",
