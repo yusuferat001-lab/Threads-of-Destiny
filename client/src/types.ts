@@ -475,6 +475,8 @@ export interface Ast {
 }
 
 export interface SonucEtkisi {
+  /** Hapisten FİZİKSEL kaçışı temsil eder (sunucu skor bonusu için kullanır). */
+  hapis_basarili_kacis?: true;
   para?: number;
   un?: number;
   ahlak?: number;
@@ -552,6 +554,8 @@ export interface Secenek {
   kilit_nedeni?: string;
   /** Sunucudaki OlaySecenegi.hafifSecenek — küçük/ikincil "vazgeç" bağlantısı olarak gösterilir. */
   hafif?: boolean;
+  /** Olay tanımındaki ASIL şık sırası (kişilik filtresi sırayı kaydırabilir); sunucu kullanır, istemci yalnız taşır. */
+  ham_index?: number;
 }
 
 export interface SenaryoResponse {

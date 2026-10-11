@@ -56,11 +56,18 @@ export class ApiHatasi extends Error {
   }
 }
 
+const ISTEK_ZAMAN_ASIMI_MS = 60_000;
+
 async function istek<T>(url: string, init?: RequestInit): Promise<T> {
   let res: Response;
+  // Zaman aşımı: askıda kalan istek arayüzü sonsuza dek kilitlemesin. Render uykudan uyanırken
+  // ilk istek ~50 sn sürebildiği için süre cömert tutuldu.
+  const kontrol = new AbortController();
+  const zamanAsimi = setTimeout(() => kontrol.abort(), ISTEK_ZAMAN_ASIMI_MS);
   try {
     res = await fetch(url, {
       headers: { 'Content-Type': 'application/json' },
+      signal: kontrol.signal,
       ...init,
     });
   } catch {
@@ -68,6 +75,8 @@ async function istek<T>(url: string, init?: RequestInit): Promise<T> {
       'Sunucuya ulaşılamadı. İnternet bağlantını kontrol et; sunucu uykudan uyanıyor olabilir, birkaç saniye sonra tekrar dene.',
       "Couldn't reach the server. Check your connection; the server may be waking up — try again in a few seconds."
     );
+  } finally {
+    clearTimeout(zamanAsimi);
   }
   let veri: any;
   try {

@@ -766,7 +766,7 @@ function okuSet(key: string): Set<string> {
   try {
     const ham = localStorage.getItem(key);
     const veri = ham ? JSON.parse(ham) : [];
-    return new Set(Array.isArray(veri) ? veri : []);
+    return new Set(Array.isArray(veri) ? veri.filter((x): x is string => typeof x === 'string') : []);
   } catch {
     return new Set();
   }

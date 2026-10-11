@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { anahtarEslesiyor } from "../utils/anahtar";
 import { randomUUID } from "node:crypto";
 import {
   geriBildirimYaz,
@@ -106,8 +107,7 @@ geriBildirimRouter.post("/", async (req, res) => {
 });
 
 function yetkili(req: { query: Record<string, unknown> }): boolean {
-  const anahtar = process.env.GERI_BILDIRIM_ANAHTARI;
-  return !!anahtar && req.query.key === anahtar;
+  return anahtarEslesiyor(process.env.GERI_BILDIRIM_ANAHTARI, req.query.key);
 }
 
 // Geliştiricinin kayıtları okuması için — `GERI_BILDIRIM_ANAHTARI` env değeriyle korunur.

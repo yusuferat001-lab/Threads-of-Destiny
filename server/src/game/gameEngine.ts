@@ -1030,6 +1030,7 @@ export function isimOnerisiGetir(cag: Cag, bolge: string): string {
 
 export async function mesleğiAta(id: string, meslek: string): Promise<CharacterState> {
   const oturum = await oturumGetir(id);
+  if (!oturum.state.aktif) throw new Error("Oyun zaten bitmiş.");
   if (oturum.state.meslek) throw new Error("Meslek zaten seçildi.");
   mesleğiSec(oturum.state, meslek);
   await oturumKaydet(oturum.state);
@@ -1064,6 +1065,7 @@ export async function oturumDiliAyarla(id: string, dil: "tr" | "en"): Promise<Ch
 export async function senaryoUret(id: string): Promise<SenaryoResponse> {
   const oturum = await oturumGetir(id);
   if (!oturum.state.aktif) throw new Error("Oyun zaten bitmiş.");
+  if (!oturum.state.meslek) throw new Error("Önce bir meslek seçmelisin.");
 
   // Zaten cevaplanmamış bir olay varsa (sayfa yenilendi, sekme yeniden açıldı,
   // istemci /scenario'yu tekrar çağırdı) YENİDEN ZAR ATILMAZ — aynı olay aynen
@@ -1622,6 +1624,7 @@ export async function secimUygula(id: string, secenekIndex: number): Promise<Sec
   const oturum = await oturumGetir(id);
   const { state } = oturum;
   if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  if (!state.meslek) throw new Error("Önce bir meslek seçmelisin.");
 
   // Bir önceki çağrıda onTepki'li bir seçenek seçilmişse, bu çağrı zar atmadan
   // doğrudan geri çekil (0) / ısrar et (1) sonucunu uygular; zaman burada ilerler.
@@ -2571,6 +2574,7 @@ export async function konutDegistir(id: string, konutId: string): Promise<KonutS
   const oturum = await oturumGetir(id);
   const { state } = oturum;
   if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  hapisYolculukEngeli(state, "taşınamazsın");
   const mesaj = konutDegistirState(state, konutId);
   await oturumKaydet(state);
   return { state, mesaj };
@@ -3849,6 +3853,7 @@ export async function mulkSatinAl(id: string, tur: MulkTuru): Promise<MulkSatinA
   const oturum = await oturumGetir(id);
   const { state } = oturum;
   if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  hapisYolculukEngeli(state, "mülk alamazsın");
   if (state.mulkler.includes(tur)) throw new Error("Bu mülke zaten sahipsin.");
   const tanim = mulkTanimiGetir(tur);
   const maliyet = Math.max(1, paraYuvarla(tanim.taban_maliyet * enflasyonCarpani(state)));
@@ -3927,10 +3932,17 @@ interface HazardSonucu {
  * seçim ekranı değil, oyunun içinde çözülen sert bir sonuç (sağlık/aranma cezası,
  * küçük ölüm riski).
  */
+/** Hapisteyken ya da yolculuktayken "dışarıda" yapılan işlemleri (kumar, borç, mülk, taşınma) engeller. */
+function hapisYolculukEngeli(state: CharacterState, ne: string): void {
+  if (state.etiketler.includes("hapiste")) throw new Error(`Hapistesin; şu an ${ne}.`);
+  if (state.etiketler.includes("yolculukta")) throw new Error(`Yoldasın; şu an ${ne}.`);
+}
+
 export async function zarAt(id: string, tutar: number): Promise<HazardSonucu> {
   const oturum = await oturumGetir(id);
   const { state } = oturum;
   if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  hapisYolculukEngeli(state, "zar oynayamazsın");
   const kademeler = ZAR_KADEMELERI.map((k) => Math.max(1, paraYuvarla(k * enflasyonCarpani(state))));
   if (!kademeler.includes(tutar)) throw new Error("Geçersiz bahis tutarı.");
   if (state.para < tutar) throw new Error(`Yeterli paran yok (${tutar} ${state.para_birimi} gerekli).`);
@@ -4010,6 +4022,7 @@ export async function ucKagitciOyna(id: string, tutar: number, secim: number): P
   const oturum = await oturumGetir(id);
   const { state } = oturum;
   if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  hapisYolculukEngeli(state, "üç kâğıt oynayamazsın");
   const kademeler = ZAR_KADEMELERI.map((k) => Math.max(1, paraYuvarla(k * enflasyonCarpani(state))));
   if (!kademeler.includes(tutar)) throw new Error("Geçersiz bahis tutarı.");
   if (secim !== 0 && secim !== 1 && secim !== 2) throw new Error("Geçersiz bardak.");
@@ -5057,6 +5070,7 @@ export async function krediAlEndpoint(id: string, tutar: number): Promise<{ stat
   const oturum = await oturumGetir(id);
   const { state } = oturum;
   if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  hapisYolculukEngeli(state, "tefeciyle iş göremezsin");
   const mesaj = krediAl(state, tutar);
   clampStats(state);
   await oturumKaydet(state);
@@ -5067,6 +5081,7 @@ export async function krediPazarlikEndpoint(id: string): Promise<{ state: Charac
   const oturum = await oturumGetir(id);
   const { state } = oturum;
   if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  hapisYolculukEngeli(state, "tefeciyle pazarlık edemezsin");
   const mesaj = krediPazarlik(state);
   await oturumKaydet(state);
   return { state, mesaj };

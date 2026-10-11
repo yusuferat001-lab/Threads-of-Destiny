@@ -40,7 +40,7 @@ function oku(): GecmisHayat[] {
   try {
     const ham = localStorage.getItem(ANAHTAR);
     const veri = ham ? JSON.parse(ham) : [];
-    return Array.isArray(veri) ? veri : [];
+    return Array.isArray(veri) ? veri.filter((x) => x && typeof x === 'object') : [];
   } catch {
     return [];
   }
