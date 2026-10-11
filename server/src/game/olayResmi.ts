@@ -31,7 +31,13 @@ const AILE_OLAYLARI = new Set([
 const BOLGE_RESIMLERI: ReadonlyArray<readonly [onek: string, anahtar: string]> = [
   ["bolge_fransa_oc_", "bolge-fransa"],
   ["bolge_kutsalroma_", "bolge-kutsal-roma"],
+  ["bolge_bizans_", "bolge-bizans"],
+  ["bolge_selcuklu_", "bolge-selcuklu"],
 ];
+
+/** Evcil hayvan olayları: takip/teklif havuzu (`evcil_hayvan_*`, `evcilhayvan_*`) + vahşi kurt yavrusu. */
+const EVCIL_HAYVAN_ONEKLERI = ["evcil_hayvan_", "evcilhayvan_"];
+const EVCIL_HAYVAN_OLAYLARI = new Set(["vahsi_kurt_yavrusu_bulma"]);
 
 /**
  * Olay illüstrasyonunun "havuz anahtarı" (`client/public/assets/olay/<anahtar>-<orta-cag|sanayi>.webp`).
@@ -41,8 +47,8 @@ const BOLGE_RESIMLERI: ReadonlyArray<readonly [onek: string, anahtar: string]> =
  * yolculuklar `din`/`savas`/`ticaret`), bu yüzden kendi resimleri vardır. Burada anahtar dönerse
  * istemci önce onu dener, dosya yoksa kategori resmine, o da yoksa emojiye düşer.
  *
- * Öncelik: sağlık krizi > hapis > veba > kaçak > baskın > evlilik > hizip > aile > bölge > yolculuk >
- * gizemli (özel olan genel olanı yener). Yalnız resmi OLAN havuzlar eşlenir — yeni bir havuz resmi
+ * Öncelik: sağlık krizi > hapis > veba > kaçak > baskın > evlilik > hizip > aile > bölge > evcil hayvan >
+ * yolculuk > gizemli (özel olan genel olanı yener). Yalnız resmi OLAN havuzlar eşlenir — yeni bir havuz resmi
  * eklenince buraya bir kural eklenir.
  */
 export function olayResimAnahtari(
@@ -68,6 +74,9 @@ export function olayResimAnahtari(
   if (AILE_OLAYLARI.has(olay.id) || AILE_ONEKLERI.some((onek) => olay.id.startsWith(onek))) return "aile";
   const bolge = BOLGE_RESIMLERI.find(([onek]) => olay.id.startsWith(onek));
   if (bolge) return bolge[1];
+  if (EVCIL_HAYVAN_OLAYLARI.has(olay.id) || EVCIL_HAYVAN_ONEKLERI.some((onek) => olay.id.startsWith(onek))) {
+    return "evcil-hayvan";
+  }
   if (!olay.yolculukOlayi) return olay.gizemli ? "gizem" : undefined;
 
   const id = olay.id;
