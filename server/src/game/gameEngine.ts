@@ -4157,12 +4157,22 @@ export async function sosyallesmeYerineGit(id: string, yerId: string): Promise<S
   if (mekanKalanYil(state, yerId) > 0) {
     throw new Error("Bu mekâna bu yıl zaten gittin; biraz zaman geçmeli.");
   }
+  // Sırada bekleyen zorunlu bir olay (zincir adımı, veba başlangıcı...) varsa mekâna girmek
+  // onu EZİP silerdi (zorlananOlayId tek slot). Mekân olayları hariç — terk edilmiş bir
+  // mekân olayının üzerine başka bir mekâna gitmek serbest kalır.
+  if (oturum.zorlananOlayId) {
+    const bekleyen = OLAY_BANKASI.find((o) => o.id === oturum.zorlananOlayId);
+    if (!bekleyen?.sosyallesmeYeri) {
+      throw new Error("Önce önündeki olayı çöz; sonra mekâna gidebilirsin.");
+    }
+  }
   const girisUcreti = paraYuvarla(SOSYALLESME_GIRIS_UCRETI * enflasyonCarpani(state));
   if (state.para < girisUcreti) {
     throw new Error(`Cebinde bu mekâna gidecek kadar para yok (~${girisUcreti} ${state.para_birimi} giriş ücreti).`);
   }
-  state.para = paraYuvarla(state.para - girisUcreti);
+  // Önce olayı seç (uygun olay yoksa fırlatır), parayı SONRA düş: hata durumunda ücret kaybolmasın.
   const olay = sosyallesmeIcinOlaySec(state, yerId);
+  state.para = paraYuvarla(state.para - girisUcreti);
   oturum.zorlananOlayId = olay.id;
   // Ana oyun ekranında henüz cevaplanmamış bir senaryo (mevcutOlay/mevcutSenaryo)
   // duruyor olabilir (oyuncu olayı yanıtlamadan sahne hotspot'undan Sosyalleş'e
@@ -4315,6 +4325,9 @@ export async function sosyallesmeOlayCoz(id: string, secenekIndex: number): Prom
   }
 
   state.sosyallesme_aksiyon_kilit[`mekan:${mevcutOlay.sosyallesmeYeri}`] = state.yil;
+  // Çözülen mekân olayını geçmişe yaz: sosyallesmeIcinOlaySec "hiç görülmemiş > en eski" önceliğini
+  // gecmis_olaylar'a göre yapar; yazılmazsa aynı olay tekrar tekrar çıkabiliyordu.
+  state.gecmis_olaylar.push(mevcutOlay.id);
   oturum.zorlananOlayId = null;
 
   // Mekân olayı bitti — sosyallesmeYerineGit'te kenara ayrılmış ana oyun olayı
