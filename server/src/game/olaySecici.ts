@@ -8,6 +8,7 @@ import { ekliYerTutuculariDoldur } from "../i18n/ekler";
 import { olayCevirisiUygula } from "../i18n/olaylar";
 import { HAVUZ_KILIT_ETIKETLERI as HAVUZ_KILIT_LISTESI, hapisErkenCikisMumkunMu } from "./stateManager";
 import { yatkinlikZarBonusOrani } from "../data/meslekYatkinlik";
+import { olayResimAnahtari } from "./olayResmi";
 
 /**
  * Normal olay havuzunu tamamen kapatıp kendi özel havuzuna geçiren etiketler
@@ -463,6 +464,7 @@ export function olaySec(
       olay_metni: doldur(olay.metin, state),
       kategori: olay.kategori,
       gorsel: olay.gorsel ?? KATEGORI_GORSEL[olay.kategori] ?? "📜",
+      resim: olayResimAnahtari(olay),
       secenekler,
     },
   };
