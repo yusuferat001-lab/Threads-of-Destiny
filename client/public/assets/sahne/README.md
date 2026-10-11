@@ -52,7 +52,7 @@ Bunları resme ÇİZME — bunlar canlı oyun durumuna göre kod tarafından ür
 ## Şu an mevcut olan dosyalar
 
 - `orta-cag/arka-plan.png` ✅
-- `sanayi/arka-plan.png` ✅
+- `sanayi/arka-plan.webp` ✅ (1376×768, ~180 KB)
 - `on-plan.*` katmanları henüz yok (opsiyonel, siluet derinliği için ileride eklenebilir)
 
 ## Mobil (portre) arka plan — `arka-plan-mobil.webp`
@@ -67,7 +67,7 @@ client/public/assets/sahne/<cag>/arka-plan-mobil.webp      (<cag>: orta-cag | sa
 - **Aday sırası:** `arka-plan-mobil.webp` → `arka-plan.webp` → `arka-plan.png` → bölge gradyanı. Yani portre dosya
   yokken yatay görsel `object-fit: cover` ile (kırpılarak) geçici kullanılır; dosyayı koyduğun an kod değişmeden devreye girer.
 - **Boyut:** ~1080×2400 (≈9:20). 9:16 ile 9:21 arası ekranlara `cover` ile kadrajlanır. Tercihen ≤350 KB (WebP).
-  Sanayi için şu an yalnız 2 MB'lık yatay PNG var — mobilde ilk açılışı yavaşlatır, portre WebP bunu da çözer.
+  Şu an iki çağın da yalnız yatay WebP'si var; portre dosya gelince mobilde daha iyi kadrajlanır.
 - **Güvenli alan (önemli):** olay kutusu ekranın **alt ~%55'ini** örter; görsel `object-position: 50% 0` ile
   üstten hizalanır. Asıl sahne (kale/şehir/ufuk) **üst ~%40'ta** ve kutunun iki yanındaki **%7'lik yan şeritlerde**
   okunmalı; alt kısım doku/gradyan olabilir. Üst ~%14'te üst şerit + amaç satırı durur — orası sakin/koyu kalmalı.
