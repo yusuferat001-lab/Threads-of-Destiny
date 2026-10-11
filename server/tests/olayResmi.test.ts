@@ -83,18 +83,36 @@ describe("olay illüstrasyonu havuz anahtarı", () => {
     expect(anahtar("veba_hasta_aile_bakimi")).toBe("veba");
   });
 
-  it("bölgeye özel Orta Çağ olayları kendi bölge resmini alır (resmi olmayan bölgeler almaz)", () => {
+  it("bölgeye özel Orta Çağ olayları kendi bölge resmini alır (Sanayi bölgeleri henüz almaz)", () => {
     const bolge = (onek: string) => OLAY_BANKASI.filter((o) => o.id.startsWith(onek));
-    const fransa = bolge("bolge_fransa_oc_");
-    const roma = bolge("bolge_kutsalroma_");
-    expect(fransa.length).toBe(10);
-    expect(roma.length).toBe(10);
-    for (const o of fransa) expect(olayResimAnahtari(o), o.id).toBe("bolge-fransa");
-    for (const o of roma) expect(olayResimAnahtari(o), o.id).toBe("bolge-kutsal-roma");
-    // Resmi henüz olmayan bölgeler ve Sanayi Devrimi bölgeleri kategori resmine düşer.
-    for (const o of [...bolge("bolge_bizans_"), ...bolge("bolge_selcuklu_"), ...bolge("bolge_fransa_sd_"), ...bolge("bolge_ingiltere_")]) {
+    const beklenen: Array<[string, string]> = [
+      ["bolge_fransa_oc_", "bolge-fransa"],
+      ["bolge_kutsalroma_", "bolge-kutsal-roma"],
+      ["bolge_bizans_", "bolge-bizans"],
+      ["bolge_selcuklu_", "bolge-selcuklu"],
+    ];
+    for (const [onek, anahtar] of beklenen) {
+      const olaylar = bolge(onek);
+      expect(olaylar.length, onek).toBe(10);
+      for (const o of olaylar) expect(olayResimAnahtari(o), o.id).toBe(anahtar);
+    }
+    // Sanayi Devrimi bölgelerinin resmi henüz yok → kategori resmine düşer.
+    for (const o of [...bolge("bolge_fransa_sd_"), ...bolge("bolge_ingiltere_")]) {
       expect(olayResimAnahtari(o), o.id).toBeUndefined();
     }
+  });
+
+  it("evcil hayvan olayları 'evcil-hayvan' anahtarını alır; vahşi/sirk hayvanı olayları almaz", () => {
+    const anahtar = (id: string) => olayResimAnahtari({ id });
+    expect(anahtar("evcil_hayvan_sahin_av")).toBe("evcil-hayvan");
+    expect(anahtar("evcil_hayvan_kedi_yikim")).toBe("evcil-hayvan");
+    expect(anahtar("evcil_hayvan_kurt_vahsi_icgudu")).toBe("evcil-hayvan");
+    expect(anahtar("evcilhayvan_sahiplenme_teklifi_ortacag")).toBe("evcil-hayvan");
+    expect(anahtar("vahsi_kurt_yavrusu_bulma")).toBe("evcil-hayvan");
+    expect(anahtar("komik_sd_sirkten_kacan_hayvan")).toBeUndefined();
+    expect(olayResimAnahtari({ id: "aranma_kacak_vahsi_hayvan", kacakOlayi: true })).toBe("kacak");
+    const sayi = OLAY_BANKASI.filter((o) => olayResimAnahtari(o) === "evcil-hayvan").length;
+    expect(sayi).toBe(28);
   });
 
   it("havuz dışı olaylar ve eşlenmeyen yolculuklar anahtar almaz (kategori resmine düşer)", () => {
