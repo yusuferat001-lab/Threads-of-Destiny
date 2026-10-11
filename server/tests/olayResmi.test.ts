@@ -28,6 +28,22 @@ describe("olay illüstrasyonu havuz anahtarı", () => {
     expect(anahtar("yolculuk_kesif_deniz_1")).toBe("yolculuk-deniz");
   });
 
+  it("veba, kaçak, baskın, evlilik ve gizemli havuzları kendi resmini alır", () => {
+    const anahtar = (o: Parameters<typeof olayResimAnahtari>[0]) => olayResimAnahtari(o);
+    expect(anahtar({ id: "veba_hasta_hekim", vebaHastasiOlayi: true })).toBe("veba");
+    expect(anahtar({ id: "veba_cenaze" })).toBe("veba");
+    expect(anahtar({ id: "kuresel_veba_baslangici" })).toBe("veba");
+    expect(anahtar({ id: "kacak_kis", kacakOlayi: true })).toBe("kacak");
+    expect(anahtar({ id: "aranma_baskin_ortacag" })).toBe("baskin");
+    expect(anahtar({ id: "iliski_evlilik_teklifi" })).toBe("evlilik");
+    expect(anahtar({ id: "cocuk_dugun_masrafi" })).toBe("evlilik");
+    expect(anahtar({ id: "buyu_kristal_kure", gizemli: true })).toBe("gizem");
+    // Özel havuz genel olanı yener: gizemli ama hapis olayı → hapis.
+    expect(anahtar({ id: "x", hapisOlayi: true, gizemli: true })).toBe("hapis");
+    // Evlilik içi çatışma olayı düğün resmini almaz.
+    expect(anahtar({ id: "evl_mt_ev_ici_kavga" })).toBeUndefined();
+  });
+
   it("havuz dışı olaylar ve eşlenmeyen yolculuklar anahtar almaz (kategori resmine düşer)", () => {
     expect(olayResimAnahtari({ id: "genel_pazar_gunu" })).toBeUndefined();
     expect(olayResimAnahtari({ id: "yolculuk_ozlemi", yolculukOlayi: true })).toBeUndefined();
