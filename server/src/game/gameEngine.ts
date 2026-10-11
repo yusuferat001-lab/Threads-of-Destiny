@@ -60,6 +60,7 @@ import {
   rastgeleMulkBakimAraligi,
   mulkYillikBakimTahmini,
   gayrimenkulDegeriHesapla,
+  netServetHesapla,
   hesaplaSkor,
   dunyaFinansEtkileri,
   DunyaFinansEtkisi,
@@ -2411,7 +2412,7 @@ async function sonucuUygulaVeIlerlet(
       hayatOlayiEkle(state, "🎖️", T(state.dil, "{0} rütbesine terfi etti", [K(state.dil, state.rutbe)]));
     }
     hayatAmaciKontrolEt(state); // eski tekil amaç (yalnız test/eski kayıt)
-    for (const a of amaclariHerhangiKontrol(state, state.para + gayrimenkulDegeriHesapla(state))) {
+    for (const a of amaclariHerhangiKontrol(state, netServetHesapla(state))) {
       const tanim = amacTanimiGetir(a.id);
       const ad = tanim ? tanim.baslik[state.dil === "en" ? "en" : "tr"] : a.id;
       hayatOlayiEkle(state, "🎯", T(state.dil, "Hayat amacını tamamladı: {0}", [ad]));
@@ -2464,7 +2465,7 @@ async function sonucuUygulaVeIlerlet(
       meslek: state.meslek,
       yas: state.yas,
       tur_sayisi: state.tur_sayisi,
-      servet: paraYuvarla(state.para + gayrimenkulDegeriHesapla(state)),
+      servet: paraYuvarla(netServetHesapla(state)),
       skor: hesaplaSkor(state),
       olum_nedeni: state.olum_nedeni ?? "",
       oturum_sn: oturumSn,
@@ -3199,7 +3200,9 @@ export async function yonetimEtkilesimYap(
   if (state.etiketler.includes("hapiste")) throw new Error("Hapisteyken bununla ilgilenemezsin.");
   if (state.etiketler.includes("yolculukta")) throw new Error("Yolculuktayken bununla ilgilenemezsin.");
 
-  const [hatRaw, tabanId] = etkilesimId.split(":");
+  const parcalar = etkilesimId.split(":");
+  if (parcalar.length !== 2) throw new Error("Böyle bir etkileşim yok.");
+  const [hatRaw, tabanId] = parcalar;
   const hat = hatRaw as YonetimHat;
   if (hat !== "yonetici" && hat !== "patron") throw new Error("Geçersiz hat.");
   const taban = yonetimEtkilesimBul(hat, tabanId);
@@ -3466,6 +3469,8 @@ export interface KotuIsKarti {
   rakibeYonelik: boolean;
   /** İsimli bir rakibin gücünü kırabilir mi (RAKIP_KOTU_IS_HEDEFLERI). 0 ise kıramaz. */
   rakipKirmaGucu: number;
+  /** Bu işin tekrar çevrilebilmesine kalan oyun yılı (0 = hazır). */
+  kalanYil: number;
 }
 
 function kotuIsBasariSansi(state: CharacterState, tanim: (typeof KOTU_ISLER)[number]): number {
@@ -3473,7 +3478,23 @@ function kotuIsBasariSansi(state: CharacterState, tanim: (typeof KOTU_ISLER)[num
   return Math.round(Math.min(95, Math.max(5, tanim.basariSansi + yatkinlik)));
 }
 
-/** İşin & Yatırımların ekranındaki "Karanlık İşler" listesi için canlı şans/kazanç önizlemesi. */
+/** Karanlık iş türü başına bekleme (oyun yılı): şiddet/riskli işler daha uzun soğur. */
+const KOTU_IS_BEKLEME_YIL: Record<string, number> = {
+  rakibi_korkut: 2,
+  adam_dov: 2,
+  rakibi_dov: 3,
+  birini_soy: 3,
+  isyeri_yak: 5,
+};
+
+function kotuIsKalanYil(state: CharacterState, tur: string): number {
+  const bekleme = KOTU_IS_BEKLEME_YIL[tur] ?? 2;
+  const son = state.sosyallesme_aksiyon_kilit[`kotu:${tur}`];
+  if (son === undefined) return 0;
+  return Math.max(0, bekleme - (state.yil - son));
+}
+
+/** Kariyer ekranındaki "Karanlık İşler" listesi için canlı şans/kazanç/bekleme önizlemesi. */
 export async function kotuIsConfigGetir(id: string): Promise<KotuIsKarti[]> {
   const oturum = await oturumGetir(id);
   const { state } = oturum;
@@ -3485,6 +3506,7 @@ export async function kotuIsConfigGetir(id: string): Promise<KotuIsKarti[]> {
     tahminiKazanc: tanim.basarili.para ? Math.max(1, paraYuvarla(tanim.basarili.para * enflasyon)) : 0,
     rakibeYonelik: (tanim.basarili.rakip_puani ?? 0) < 0,
     rakipKirmaGucu: RAKIP_KOTU_IS_HEDEFLERI[tanim.id] ?? 0,
+    kalanYil: kotuIsKalanYil(state, tanim.id),
   }));
 }
 
@@ -3532,7 +3554,7 @@ export interface AmaclarDurumu {
 export async function amaclarGetir(id: string): Promise<AmaclarDurumu> {
   const { state } = await oturumGetir(id);
   const dil = state.dil === "en" ? "en" : "tr";
-  const servet = state.para + gayrimenkulDegeriHesapla(state);
+  const servet = netServetHesapla(state);
   const amaclar: AmacKarti[] = (state.hayat_amaclari ?? []).map((a) => {
     const tanim = amacTanimiGetir(a.id);
     const ilerleme = AMAC_ILERLEME[a.id];
@@ -3592,6 +3614,13 @@ export async function kotuIsYap(id: string, tur: string, secenek: KotuIsSecenek 
   const tanim = kotuIsTanimiGetir(tur);
   if (!tanim) throw new Error("Geçersiz iş.");
 
+  // Bekleme süresi: tur harcamayan ve zarlı olduğu için süresiz tekrarlanırsa para/kariyer
+  // kasılırdı. İş türü başına yıl cinsinden kilit (sosyalleşme aksiyonlarıyla aynı depo).
+  const kotuKalan = kotuIsKalanYil(state, tur);
+  if (kotuKalan > 0) {
+    throw new Error(T(state.dil, "Bu işi yakın zamanda çevirdin; ortalık sakinleşsin (~{0} yıl).", [kotuKalan]));
+  }
+
   const enflasyon = enflasyonCarpani(state);
   const dil = state.dil;
   const birim = state.para_birimi;
@@ -3610,6 +3639,8 @@ export async function kotuIsYap(id: string, tur: string, secenek: KotuIsSecenek 
     if (state.para < vekilUcret) throw new Error("Adam tutacak paran yok.");
     state.para = paraYuvarla(state.para - vekilUcret);
   }
+
+  state.sosyallesme_aksiyon_kilit[`kotu:${tur}`] = state.yil;
 
   const sans = kotuIsBasariSansi(state, tanim);
   const kazandi = rollSuccess(sans);
@@ -3809,6 +3840,8 @@ const ZAR_KADEMELERI = [10, 50, 100] as const;
 // hâlâ suç sayılır ama karanlık işler (şiddet/soygun) listesiyle tekrar
 // yarışmasın.
 const ZAR_SUC_ARTISI = 3;
+/** Bir oyun yılında oynanabilecek en fazla zar eli (tur harcamayan kumar, sınırsız kasılmasın). */
+const ZAR_YILLIK_EL_LIMITI = 5;
 // Hazard: her kaç elde bir "rakip bıçak çekti" tetiklenmeyi denesin ve ihtimali.
 const HAZARD_BICAK_HER_KAC_EL = 4;
 const HAZARD_BICAK_IHTIMAL = 0.45;
@@ -3856,6 +3889,17 @@ export async function zarAt(id: string, tutar: number): Promise<HazardSonucu> {
   const kademeler = ZAR_KADEMELERI.map((k) => Math.max(1, paraYuvarla(k * enflasyonCarpani(state))));
   if (!kademeler.includes(tutar)) throw new Error("Geçersiz bahis tutarı.");
   if (state.para < tutar) throw new Error(`Yeterli paran yok (${tutar} ${state.para_birimi} gerekli).`);
+
+  // Yıllık el limiti: sayaç `sosyallesme_aksiyon_kilit` içinde ("zar_yil" = sayacın ait olduğu
+  // oyun yılı, "zar_el" = o yıl oynanan el); yıl değişince sıfırlanır.
+  if (state.sosyallesme_aksiyon_kilit["zar_yil"] !== state.yil) {
+    state.sosyallesme_aksiyon_kilit["zar_yil"] = state.yil;
+    state.sosyallesme_aksiyon_kilit["zar_el"] = 0;
+  }
+  if ((state.sosyallesme_aksiyon_kilit["zar_el"] ?? 0) >= ZAR_YILLIK_EL_LIMITI) {
+    throw new Error("Bu yıl zar masasında yeterince oynadın; yıl dönünce yine gelirsin.");
+  }
+  state.sosyallesme_aksiyon_kilit["zar_el"] = (state.sosyallesme_aksiyon_kilit["zar_el"] ?? 0) + 1;
 
   const birim = state.para_birimi;
   state.para = paraYuvarla(state.para - tutar);
@@ -4824,6 +4868,9 @@ export async function hediyeEt(
   if (index === -1) throw new Error("Envanterinde böyle bir eşya yok.");
   const esya = state.magaza_envanteri[index];
   const tanim = magazaEsyasiTanimiGetir(esya.katalogId);
+  // Lüks eşya koleksiyon parçasıdır (şöhret verir, türünden bir tane tutulur): hediye edilirse
+  // aynısı yeniden alınıp ilişki/şöhret kasılabilirdi — yalnız tüketim ("sifa") eşyası hediye edilir.
+  if (esya.kategori === "luks") throw new Error("Lüks eşyalar koleksiyon parçasıdır; hediye edilemez.");
   const artis = Math.max(3, Math.min(14, Math.round((tanim?.tabanFiyat ?? 20) / 12)));
   const dil = state.dil;
   let mesaj: string;

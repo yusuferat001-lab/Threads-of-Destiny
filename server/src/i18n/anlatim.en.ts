@@ -937,4 +937,10 @@ export const ANLATIM_EN: Record<string, string> = {
     "Invalid indicator.",
   "Şu an seni etkileyen belirgin bir yıllık etken yok; bu değer ağırlıkla seçimlerinle değişir.":
     "Nothing in particular is affecting you year to year right now; this value mostly changes through your choices.",
+  "Bu işi yakın zamanda çevirdin; ortalık sakinleşsin (~{0} yıl).":
+    "You pulled this job recently; let things cool down (~{0} yrs).",
+  "Bu yıl zar masasında yeterince oynadın; yıl dönünce yine gelirsin.":
+    "You've played enough at the dice table this year; come back when the year turns.",
+  "Lüks eşyalar koleksiyon parçasıdır; hediye edilemez.":
+    "Luxury goods are collector's pieces; they can't be given as gifts.",
 };

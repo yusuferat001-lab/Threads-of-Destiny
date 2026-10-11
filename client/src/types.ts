@@ -680,6 +680,8 @@ export interface KotuIsKarti {
   rakibeYonelik: boolean;
   /** İsimli bir rakibin gücünü kırabilir mi (>0 ise kırar). */
   rakipKirmaGucu: number;
+  /** Bu işin tekrar çevrilebilmesine kalan oyun yılı (0 = hazır). */
+  kalanYil: number;
 }
 
 export interface KotuIsSonucu {

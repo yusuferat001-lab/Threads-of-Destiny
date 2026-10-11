@@ -1332,7 +1332,7 @@ export function checkDeath(state: CharacterState, zorunluOlum: boolean, neden?: 
     state.olum_nedeni_ceviri = ceviri;
     // Ölüm anında tüm tamamlanmamış amaçlara son bir kez bak ("olumde" koşulları +
     // son turda kaçmış olabilecek "herhangi" koşulları). Skor yazımından önce kilitlenir.
-    for (const a of amaclariOlumdeKontrol(state, state.para + gayrimenkulDegeriHesapla(state))) {
+    for (const a of amaclariOlumdeKontrol(state, netServetHesapla(state))) {
       const tanim = amacTanimiGetir(a.id);
       const ad = tanim ? tanim.baslik[state.dil === "en" ? "en" : "tr"] : a.id;
       hayatOlayiEkle(state, "🎯", T(state.dil, "Hayat amacını tamamladı: {0}", [ad]));
@@ -2268,7 +2268,7 @@ export interface SkorKirilimi {
 
 /** Skoru eksen eksen kırar — ölüm ekranında oyuncuya gösterilir. */
 export function hesaplaSkorKirilimi(state: CharacterState): SkorKirilimi {
-  const servet = state.para + gayrimenkulDegeriHesapla(state);
+  const servet = netServetHesapla(state);
   const servetPuani = servet > 0 ? Math.round(servet * (state.yas / 2)) : 0;
   const sohretPuani = Math.round(Math.max(state.un, 0) * SKOR_SOHRET_CARPAN);
   const ahlakPuani = Math.round(Math.max(state.ahlak, 0) * SKOR_AHLAK_CARPAN);
@@ -3123,6 +3123,16 @@ interface MulkGelirSonucu {
   kervanBatti: boolean;
   /** Bu turda periyodik bakım/vergi masrafı tetiklenen mülkler ve ödenen tutar (mülk SİLİNMEZ). */
   bakimOdemeleri: { ad: string; miktar: number }[];
+}
+
+/**
+ * Net servet = nakit + gayrimenkul değeri − aktif tefeci borcu. Çekilen kredi nakde
+ * girdiği için borç düşülmezse skor/amaç hesabında "bedava servet" olur ve temerrütte
+ * el koyma yalnız eldeki kadarını alınca borç silinir; bu yüzden skor, amaç ve
+ * liderlik servet sütunu bunu kullanır.
+ */
+export function netServetHesapla(state: CharacterState): number {
+  return state.para + gayrimenkulDegeriHesapla(state) - (state.kredi?.kalanBorc ?? 0);
 }
 
 /**
