@@ -1774,6 +1774,13 @@ export function etiketEkle(state: CharacterState, etiketler?: string[]): void {
     // Bir havuz-kilit etiketi eklenirken, çakışan diğer havuz kilitlerini kaldır
     // (karşılıklı dışlama invariant'ı). Yeni eklenen kilit "kazanır".
     if ((HAVUZ_KILIT_ETIKETLERI as readonly string[]).includes(etiket)) {
+      // Başka bir kilit "hapiste"yi devralırsa (ör. firari "kacak" olur) ceza sayaçları bayat
+      // kalmasın: sonraki tutuklamada `hapis_ceza_kalan <= 0` koşulu sağlanıp ceza yeniden hesaplansın.
+      if (etiket !== "hapiste" && state.etiketler.includes("hapiste")) {
+        state.hapis_ceza_kalan = 0;
+        state.hapis_ceza_toplam = 0;
+        state.hapis_tur_sayaci = 0;
+      }
       state.etiketler = state.etiketler.filter(
         (e) => e === etiket || !(HAVUZ_KILIT_ETIKETLERI as readonly string[]).includes(e)
       );
@@ -2888,7 +2895,15 @@ export function vebaBaslamaliMi(state: CharacterState, yasArtisi: number): boole
   ) {
     return false;
   }
-  if (state.etiketler.includes("hapiste") || state.etiketler.includes("yolculukta")) return false;
+  // `kacak` da bir havuz kilididir: kaçak karaktere veba başlangıcı zorlanırsa (etiketEkle'nin
+  // "yeni kilit kazanır" kuralı yüzünden) kaçak durumu sessizce silinirdi — bekle.
+  if (
+    state.etiketler.includes("hapiste") ||
+    state.etiketler.includes("yolculukta") ||
+    state.etiketler.includes("kacak")
+  ) {
+    return false;
+  }
   for (let i = 0; i < yasArtisi; i++) {
     if (Math.random() < VEBA_YILLIK_IHTIMAL) return true;
   }
