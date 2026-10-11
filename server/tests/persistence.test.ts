@@ -8,7 +8,7 @@ import {
   oturumlariBellektenTemizle,
   aktifOturumSayisi,
 } from "../src/game/gameEngine";
-import { oturumYukle, eskiOturumlariTemizle } from "../src/db/sessionRepository";
+import { oturumYukle, oturumKaydet, eskiOturumlariTemizle } from "../src/db/sessionRepository";
 import { secimUygulaVeCoz } from "./testUtils";
 
 describe("oturum kalıcılığı", () => {
@@ -71,7 +71,7 @@ describe("oturum kalıcılığı", () => {
   it("eskiOturumlariTemizle eski bitmiş kayıtları DB'den siler, aktif olanı silmez", async () => {
     const bitmis = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     bitmis.aktif = false;
-    await mesleğiAta(bitmis.id, "Tüccar"); // state.aktif=false hâliyle DB'ye yazılmasını sağlar
+    await oturumKaydet(bitmis); // state.aktif=false hâliyle DB'ye yazılmasını sağlar
 
     const aktif = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
 
@@ -81,4 +81,11 @@ describe("oturum kalıcılığı", () => {
     expect(await oturumYukle(bitmis.id)).toBeNull();
     expect(await oturumYukle(aktif.id)).not.toBeNull();
   });
+  it("eskiOturumlariTemizle aktifEsik verilirse terk edilmiş aktif oturumları da siler", async () => {
+    const terkEdilmis = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
+    const gelecekTarih = new Date(Date.now() + 1000 * 60 * 60);
+    await eskiOturumlariTemizle(gelecekTarih, gelecekTarih);
+    expect(await oturumYukle(terkEdilmis.id)).toBeNull();
+  });
+
 });

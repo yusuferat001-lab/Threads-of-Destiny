@@ -7,6 +7,7 @@ import {
   stateGetir,
   isimOnerisiGetir,
   finansGetir,
+  gostergeGetir,
   kotuIsYap,
   kotuIsConfigGetir,
   konutDegistir,
@@ -185,6 +186,15 @@ gameRouter.get("/:id/finans", async (req, res) => {
   try {
     const finans = await finansGetir(req.params.id);
     res.json({ finans });
+  } catch (err) {
+    res.status(404).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.get("/:id/gosterge/:stat", async (req, res) => {
+  try {
+    const gosterge = await gostergeGetir(req.params.id, req.params.stat);
+    res.json({ gosterge });
   } catch (err) {
     res.status(404).json({ hata: hataMetni(err, req.params.id) });
   }

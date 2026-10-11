@@ -279,8 +279,10 @@ export function ozetHesapla(satirlar: MetrikSatiri[]): IstatistikOzeti {
 }
 
 export async function istatistikOzeti(): Promise<IstatistikOzeti> {
-  const satirlar = (await prisma.metrik.findMany({
-    orderBy: { id: "asc" },
+  // En YENİ OKUMA_CAP satır alınır (eskiden en eski 60k alınıyordu: tablo dolunca panel yeni
+  // olayları hiç görmüyor, "son 30 gün" boşalıyordu); ozetHesapla eski→yeni sırayı bekler.
+  const yeniler = (await prisma.metrik.findMany({
+    orderBy: { id: "desc" },
     take: OKUMA_CAP,
     select: {
       tur: true,
@@ -298,5 +300,6 @@ export async function istatistikOzeti(): Promise<IstatistikOzeti> {
       createdAt: true,
     },
   })) as MetrikSatiri[];
+  const satirlar = yeniler.reverse();
   return ozetHesapla(satirlar);
 }

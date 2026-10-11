@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto";
+import { gostergeDetayiUret, etkenGunluguNotEt, gostergeStatiMi, GostergeDetayi } from "./gostergeDetay";
 import { CharacterState, Cag, SenaryoResponse, SonucEtkisi, TepkiSonucu, MulkTuru, EvlilikAdayi, OturumAkisiKaydi, IkiDilMetin } from "../types";
 import { T, K, Khukumdar, ikiDilT } from "../i18n";
 import { olayCevirisiUygula } from "../i18n/olaylar";
@@ -59,6 +60,7 @@ import {
   rastgeleMulkBakimAraligi,
   mulkYillikBakimTahmini,
   gayrimenkulDegeriHesapla,
+  netServetHesapla,
   hesaplaSkor,
   dunyaFinansEtkileri,
   DunyaFinansEtkisi,
@@ -708,6 +710,17 @@ export function sucKazanciUygula(etki: SonucEtkisi): SucKazanciSonucu {
   return ciddi ? "ciddi" : "suc";
 }
 
+/**
+ * Bir seçimin aranma (suc_seviyesi) üzerindeki GERÇEK net değişimi: önce/sonra
+ * değerleri 0-100'e kelepçelenip farkı alınır, böylece suc_artis, suç-kazancı
+ * motor kuralı ve mutlak `suc_seviyesi_ayarla` tek sayıda birleşir. Sonuç
+ * ekranı çipinin (EtkiCipleri) kaynağıdır.
+ */
+export function sucDegisimiHesapla(once: number, sonra: number): number {
+  const kelepce = (v: number) => Math.max(0, Math.min(100, v));
+  return Math.round((kelepce(sonra) - kelepce(once)) * 10) / 10;
+}
+
 /** Din_kultur değerinden ilgili Hac yolculuğu teklif olayına eşleme. */
 const DIN_HAC_TEKLIF_IDLERI: Record<string, string> = {
   "Sünni İslam": "hac_sunni_karar",
@@ -859,11 +872,18 @@ async function oturumKaydet(state: CharacterState): Promise<void> {
  */
 export async function oturumlariYukle(): Promise<number> {
   const stateler = await aktifOturumlariYukle();
+  let yuklenen = 0;
   for (const state of stateler) {
-    eskiKayitGocu(state);
-    oturumlar.set(state.id, oturumOlustur(state));
+    // Tek bozuk kayıt tüm sunucunun açılışını (ve Render'da çökme döngüsünü) bozmasın.
+    try {
+      eskiKayitGocu(state);
+      oturumlar.set(state.id, oturumOlustur(state));
+      yuklenen++;
+    } catch (err) {
+      console.error(`Oturum yüklenemedi, atlandı (${state?.id}):`, err);
+    }
   }
-  return stateler.length;
+  return yuklenen;
 }
 
 /**
@@ -917,24 +937,41 @@ async function oturumGetir(id: string): Promise<Oturum> {
     varOlan.sonErisim = Date.now();
     return varOlan;
   }
-  const state = await oturumYukle(id);
-  if (!state) throw new Error("Oyun oturumu bulunamadı.");
-  eskiKayitGocu(state);
-  const oturum = oturumOlustur(state);
-  oturumlar.set(id, oturum);
-  return oturum;
+  // Aynı id için eşzamanlı iki soğuk yükleme iki ayrı Oturum nesnesi yaratıp birinin
+  // değişikliğini kaybettirirdi: yüklemeyi id başına tek bir Promise'e indir.
+  let bekleyen = oturumYuklemeleri.get(id);
+  if (!bekleyen) {
+    bekleyen = (async () => {
+      const state = await oturumYukle(id);
+      if (!state) throw new Error("Oyun oturumu bulunamadı.");
+      eskiKayitGocu(state);
+      const oturum = oturumOlustur(state);
+      oturumlar.set(id, oturum);
+      return oturum;
+    })().finally(() => oturumYuklemeleri.delete(id));
+    oturumYuklemeleri.set(id, bekleyen);
+  }
+  return bekleyen;
 }
+
+const oturumYuklemeleri = new Map<string, Promise<Oturum>>();
 
 /**
  * Bitmiş (aktif:false) ve bir süredir erişilmemiş oturumları in-memory
  * önbellekten siler; DB'deki kaydı etkilemez, tekrar gerekirse oradan
  * yüklenir. Sürekli çalışan bir sunucuda sınırsız RAM büyümesini önler.
  */
-export function oturumlariBellektenTemizle(graceMs: number): number {
+export function oturumlariBellektenTemizle(graceMs: number, aktifGraceMs?: number): number {
   const esik = Date.now() - graceMs;
+  const aktifEsik = aktifGraceMs !== undefined ? Date.now() - aktifGraceMs : undefined;
   let silinen = 0;
   for (const [id, oturum] of oturumlar) {
-    if (!oturum.state.aktif && oturum.sonErisim < esik) {
+    // Aktif oturumlar da her mutasyonda DB'ye yazıldığı için uzun süre boşta kalanlar
+    // güvenle bellekten atılır; oturumGetir gerektiğinde DB'den geri yükler (terk edilmiş
+    // oyunlar RAM'i şişirmesin).
+    const bitmisVeBosta = !oturum.state.aktif && oturum.sonErisim < esik;
+    const aktifVeUzunBosta = oturum.state.aktif && aktifEsik !== undefined && oturum.sonErisim < aktifEsik;
+    if (bitmisVeBosta || aktifVeUzunBosta) {
       oturumlar.delete(id);
       silinen++;
     }
@@ -993,6 +1030,7 @@ export function isimOnerisiGetir(cag: Cag, bolge: string): string {
 
 export async function mesleğiAta(id: string, meslek: string): Promise<CharacterState> {
   const oturum = await oturumGetir(id);
+  if (!oturum.state.aktif) throw new Error("Oyun zaten bitmiş.");
   if (oturum.state.meslek) throw new Error("Meslek zaten seçildi.");
   mesleğiSec(oturum.state, meslek);
   await oturumKaydet(oturum.state);
@@ -1027,6 +1065,7 @@ export async function oturumDiliAyarla(id: string, dil: "tr" | "en"): Promise<Ch
 export async function senaryoUret(id: string): Promise<SenaryoResponse> {
   const oturum = await oturumGetir(id);
   if (!oturum.state.aktif) throw new Error("Oyun zaten bitmiş.");
+  if (!oturum.state.meslek) throw new Error("Önce bir meslek seçmelisin.");
 
   // Zaten cevaplanmamış bir olay varsa (sayfa yenilendi, sekme yeniden açıldı,
   // istemci /scenario'yu tekrar çağırdı) YENİDEN ZAR ATILMAZ — aynı olay aynen
@@ -1585,6 +1624,7 @@ export async function secimUygula(id: string, secenekIndex: number): Promise<Sec
   const oturum = await oturumGetir(id);
   const { state } = oturum;
   if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  if (!state.meslek) throw new Error("Önce bir meslek seçmelisin.");
 
   // Bir önceki çağrıda onTepki'li bir seçenek seçilmişse, bu çağrı zar atmadan
   // doğrudan geri çekil (0) / ısrar et (1) sonucunu uygular; zaman burada ilerler.
@@ -1830,6 +1870,7 @@ async function sonucuUygulaVeIlerlet(
     if (state.meslek === "Din Adamı") state.nufuz += 1.5;
   }
   if (etki.kariyer_puani_artis) state.kariyer_puani += etki.kariyer_puani_artis;
+  const sucOnce = state.suc_seviyesi;
   if (etki.suc_artis) state.suc_seviyesi += etki.suc_artis;
   // Tutuklanma anındaki GERÇEK suç seviyesi — hapis cezası bandı bundan hesaplanır
   // (aşağıda). `suc_seviyesi_ayarla` (ör. büyük baskının "teslim ol" dalının suçu
@@ -1839,6 +1880,8 @@ async function sonucuUygulaVeIlerlet(
   // bir tutuklamayı bile kısa cezaya indirirdi.
   const sucSeviyesiTutuklanmaAni = state.suc_seviyesi;
   if (etki.suc_seviyesi_ayarla !== undefined) state.suc_seviyesi = etki.suc_seviyesi_ayarla;
+  etki.suc_degisim = sucDegisimiHesapla(sucOnce, state.suc_seviyesi);
+  etkenGunluguNotEt(state, mevcutOlay.baslik, etki);
   // Veba hastalığı ölüm riski: yalnız hastayken (veba_hastasi) anlamlı; olay
   // seçimi bu turdaki ölüm zarından ÖNCE uygulanır (vebaHastaligiKontrol).
   if (etki.veba_olum_riski_artis && state.etiketler.includes("veba_hastasi")) {
@@ -2129,7 +2172,11 @@ async function sonucuUygulaVeIlerlet(
     // Pasif kıdem: hayatta geçen her yıl kariyer puanını biraz büyütür (yatırım yapmayan
     // bir karakter de zamanla rütbe atlar; yatırım sadece bunu hızlandırır). Mesleğe
     // yatkınlık kademesinin "tecrübe hızı" bonusu/malusu buna da biner.
-    state.kariyer_puani += KARIYER_PUANI_YILLIK * yasArtisi * (1 + (state.meslek_tecrube_hizi ?? 0));
+    // (100 yaş tavanı ilerletYas içinde ölüme yol açmış olabilir: ölüden sonra hiçbir yıl
+    // etkisi uygulanmaz — para/sağlık/kariyer ölüm anından sonra oynamasın.)
+    if (state.aktif) {
+      state.kariyer_puani += KARIYER_PUANI_YILLIK * yasArtisi * (1 + (state.meslek_tecrube_hizi ?? 0));
+    }
     if (eskiHukumdar && state.hukumdar && state.hukumdar !== eskiHukumdar) {
       const haber = hukumdarDegisimHaberiUret(
         Khukumdar(state.dil, eskiHukumdar),
@@ -2139,7 +2186,7 @@ async function sonucuUygulaVeIlerlet(
       hukumdarDegisimHaberi = haber;
       hayatOlayiEkle(state, "👑", T(state.dil, "Hükümdar değişti: {0}", [Khukumdar(state.dil, state.hukumdar)]));
     }
-    const durumOlumMesaji = durumlariUygula(state);
+    const durumOlumMesaji = state.aktif ? durumlariUygula(state) : null;
     if (durumOlumMesaji) {
       checkDeath(state, true, durumOlumMesaji);
     }
@@ -2153,7 +2200,7 @@ async function sonucuUygulaVeIlerlet(
       nakitAkisi.savasVergisi = ekonomi.giderKalemleri.savasVergisi * yasArtisi;
       nakitAkisi.faiz = ekonomi.faiz;
       checkDeath(state, false); // borç stresiyle sağlık 0'a inmiş olabilir
-      if (state.aktif) {
+      yilSonuBlogu: if (state.aktif) {
         const yaslanmaKaybi = yaslanmaUygula(state, yasArtisi);
         if (state.saglik <= 0) {
           checkDeath(state, true, ikiDilT("İleri yaşın getirdiği yorgunlukla huzur içinde vefat etti."));
@@ -2218,6 +2265,10 @@ async function sonucuUygulaVeIlerlet(
           if (state.saglik <= 0) {
             checkDeath(state, true, ikiDilT("Kıtlığın getirdiği yoksunlukla tükendi."));
           }
+          // Kıtlık bu turun içinde öldürdüyse kalan yıl-sonu adımları (mülk geliri, kredi el
+          // koyma, bağış, doğum, savaş/veba...) ÖLÜ karakter üzerinde çalışmasın: servet/skor
+          // ölüm anından sonra oynanmasın.
+          if (!state.aktif) break yilSonuBlogu;
           const mulkSonucu = mulkGelirleriUygula(state, yasArtisi);
           if (mulkSonucu.kervanBatti) {
             const kervanMesaji = T(state.dil, "🌊 Ticaret kervanın savaşın kaosunda kayboldu; yatırımından geriye bir şey kalmadı.");
@@ -2397,7 +2448,7 @@ async function sonucuUygulaVeIlerlet(
       hayatOlayiEkle(state, "🎖️", T(state.dil, "{0} rütbesine terfi etti", [K(state.dil, state.rutbe)]));
     }
     hayatAmaciKontrolEt(state); // eski tekil amaç (yalnız test/eski kayıt)
-    for (const a of amaclariHerhangiKontrol(state, state.para + gayrimenkulDegeriHesapla(state))) {
+    for (const a of amaclariHerhangiKontrol(state, netServetHesapla(state))) {
       const tanim = amacTanimiGetir(a.id);
       const ad = tanim ? tanim.baslik[state.dil === "en" ? "en" : "tr"] : a.id;
       hayatOlayiEkle(state, "🎯", T(state.dil, "Hayat amacını tamamladı: {0}", [ad]));
@@ -2450,7 +2501,7 @@ async function sonucuUygulaVeIlerlet(
       meslek: state.meslek,
       yas: state.yas,
       tur_sayisi: state.tur_sayisi,
-      servet: paraYuvarla(state.para + gayrimenkulDegeriHesapla(state)),
+      servet: paraYuvarla(netServetHesapla(state)),
       skor: hesaplaSkor(state),
       olum_nedeni: state.olum_nedeni ?? "",
       oturum_sn: oturumSn,
@@ -2483,6 +2534,13 @@ export interface FinansOzeti {
 }
 
 /** Bir sonraki turu beklemeden, güncel gelir/gider dökümünü salt-okunur olarak hesaplar; para değiştirmez. */
+/** Üst şerit göstergesi detay penceresi: bu değer neyden etkileniyor, nasıl değişir? (salt-okunur, tur tüketmez) */
+export async function gostergeGetir(id: string, stat: string): Promise<GostergeDetayi> {
+  const oturum = await oturumGetir(id);
+  if (!gostergeStatiMi(stat)) throw new Error("Geçersiz gösterge.");
+  return gostergeDetayiUret(oturum.state, stat);
+}
+
 export async function finansGetir(id: string): Promise<FinansOzeti> {
   const oturum = await oturumGetir(id);
   const { state } = oturum;
@@ -2517,6 +2575,7 @@ export async function konutDegistir(id: string, konutId: string): Promise<KonutS
   const oturum = await oturumGetir(id);
   const { state } = oturum;
   if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  hapisYolculukEngeli(state, "taşınamazsın");
   const mesaj = konutDegistirState(state, konutId);
   await oturumKaydet(state);
   return { state, mesaj };
@@ -3178,7 +3237,9 @@ export async function yonetimEtkilesimYap(
   if (state.etiketler.includes("hapiste")) throw new Error("Hapisteyken bununla ilgilenemezsin.");
   if (state.etiketler.includes("yolculukta")) throw new Error("Yolculuktayken bununla ilgilenemezsin.");
 
-  const [hatRaw, tabanId] = etkilesimId.split(":");
+  const parcalar = etkilesimId.split(":");
+  if (parcalar.length !== 2) throw new Error("Böyle bir etkileşim yok.");
+  const [hatRaw, tabanId] = parcalar;
   const hat = hatRaw as YonetimHat;
   if (hat !== "yonetici" && hat !== "patron") throw new Error("Geçersiz hat.");
   const taban = yonetimEtkilesimBul(hat, tabanId);
@@ -3410,9 +3471,22 @@ export async function liderlikTablosunaKaydet(id: string, isim: string) {
   const { state } = oturum;
   if (state.aktif) throw new Error("Oyun henüz bitmedi.");
   if (state.skoru_kaydedildi) throw new Error("Bu oyun için skor zaten kaydedildi.");
-  const kayit = await skoruDbyeYaz(state, isim);
+  // Bayrağı `await`'ten ÖNCE kur: aynı oyun için paralel iki istek (farklı isimlerle) ikisi de
+  // kontrolü geçip tabloya çift kayıt yazabiliyordu. Yazım başarısız olursa geri al.
   state.skoru_kaydedildi = true;
-  await oturumKaydet(state);
+  let kayit;
+  try {
+    kayit = await skoruDbyeYaz(state, isim);
+  } catch (err) {
+    state.skoru_kaydedildi = false;
+    throw err;
+  }
+  // Skor yazıldı; oturum kaydı patlarsa isteği başarısız saymayalım (istemci tekrar denemesin).
+  try {
+    await oturumKaydet(state);
+  } catch (err) {
+    console.error(`Skor sonrası oturum kaydı yazılamadı (${id}):`, err);
+  }
   void metrikYaz({
     tur: "skor_kaydi",
     oturum_id: id,
@@ -3445,6 +3519,8 @@ export interface KotuIsKarti {
   rakibeYonelik: boolean;
   /** İsimli bir rakibin gücünü kırabilir mi (RAKIP_KOTU_IS_HEDEFLERI). 0 ise kıramaz. */
   rakipKirmaGucu: number;
+  /** Bu işin tekrar çevrilebilmesine kalan oyun yılı (0 = hazır). */
+  kalanYil: number;
 }
 
 function kotuIsBasariSansi(state: CharacterState, tanim: (typeof KOTU_ISLER)[number]): number {
@@ -3452,7 +3528,23 @@ function kotuIsBasariSansi(state: CharacterState, tanim: (typeof KOTU_ISLER)[num
   return Math.round(Math.min(95, Math.max(5, tanim.basariSansi + yatkinlik)));
 }
 
-/** İşin & Yatırımların ekranındaki "Karanlık İşler" listesi için canlı şans/kazanç önizlemesi. */
+/** Karanlık iş türü başına bekleme (oyun yılı): şiddet/riskli işler daha uzun soğur. */
+const KOTU_IS_BEKLEME_YIL: Record<string, number> = {
+  rakibi_korkut: 2,
+  adam_dov: 2,
+  rakibi_dov: 3,
+  birini_soy: 3,
+  isyeri_yak: 5,
+};
+
+function kotuIsKalanYil(state: CharacterState, tur: string): number {
+  const bekleme = KOTU_IS_BEKLEME_YIL[tur] ?? 2;
+  const son = state.sosyallesme_aksiyon_kilit[`kotu:${tur}`];
+  if (son === undefined) return 0;
+  return Math.max(0, bekleme - (state.yil - son));
+}
+
+/** Kariyer ekranındaki "Karanlık İşler" listesi için canlı şans/kazanç/bekleme önizlemesi. */
 export async function kotuIsConfigGetir(id: string): Promise<KotuIsKarti[]> {
   const oturum = await oturumGetir(id);
   const { state } = oturum;
@@ -3464,6 +3556,7 @@ export async function kotuIsConfigGetir(id: string): Promise<KotuIsKarti[]> {
     tahminiKazanc: tanim.basarili.para ? Math.max(1, paraYuvarla(tanim.basarili.para * enflasyon)) : 0,
     rakibeYonelik: (tanim.basarili.rakip_puani ?? 0) < 0,
     rakipKirmaGucu: RAKIP_KOTU_IS_HEDEFLERI[tanim.id] ?? 0,
+    kalanYil: kotuIsKalanYil(state, tanim.id),
   }));
 }
 
@@ -3511,7 +3604,7 @@ export interface AmaclarDurumu {
 export async function amaclarGetir(id: string): Promise<AmaclarDurumu> {
   const { state } = await oturumGetir(id);
   const dil = state.dil === "en" ? "en" : "tr";
-  const servet = state.para + gayrimenkulDegeriHesapla(state);
+  const servet = netServetHesapla(state);
   const amaclar: AmacKarti[] = (state.hayat_amaclari ?? []).map((a) => {
     const tanim = amacTanimiGetir(a.id);
     const ilerleme = AMAC_ILERLEME[a.id];
@@ -3571,6 +3664,13 @@ export async function kotuIsYap(id: string, tur: string, secenek: KotuIsSecenek 
   const tanim = kotuIsTanimiGetir(tur);
   if (!tanim) throw new Error("Geçersiz iş.");
 
+  // Bekleme süresi: tur harcamayan ve zarlı olduğu için süresiz tekrarlanırsa para/kariyer
+  // kasılırdı. İş türü başına yıl cinsinden kilit (sosyalleşme aksiyonlarıyla aynı depo).
+  const kotuKalan = kotuIsKalanYil(state, tur);
+  if (kotuKalan > 0) {
+    throw new Error(T(state.dil, "Bu işi yakın zamanda çevirdin; ortalık sakinleşsin (~{0} yıl).", [kotuKalan]));
+  }
+
   const enflasyon = enflasyonCarpani(state);
   const dil = state.dil;
   const birim = state.para_birimi;
@@ -3589,6 +3689,8 @@ export async function kotuIsYap(id: string, tur: string, secenek: KotuIsSecenek 
     if (state.para < vekilUcret) throw new Error("Adam tutacak paran yok.");
     state.para = paraYuvarla(state.para - vekilUcret);
   }
+
+  state.sosyallesme_aksiyon_kilit[`kotu:${tur}`] = state.yil;
 
   const sans = kotuIsBasariSansi(state, tanim);
   const kazandi = rollSuccess(sans);
@@ -3752,6 +3854,7 @@ export async function mulkSatinAl(id: string, tur: MulkTuru): Promise<MulkSatinA
   const oturum = await oturumGetir(id);
   const { state } = oturum;
   if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  hapisYolculukEngeli(state, "mülk alamazsın");
   if (state.mulkler.includes(tur)) throw new Error("Bu mülke zaten sahipsin.");
   const tanim = mulkTanimiGetir(tur);
   const maliyet = Math.max(1, paraYuvarla(tanim.taban_maliyet * enflasyonCarpani(state)));
@@ -3788,6 +3891,8 @@ const ZAR_KADEMELERI = [10, 50, 100] as const;
 // hâlâ suç sayılır ama karanlık işler (şiddet/soygun) listesiyle tekrar
 // yarışmasın.
 const ZAR_SUC_ARTISI = 3;
+/** Bir oyun yılında oynanabilecek en fazla zar eli (tur harcamayan kumar, sınırsız kasılmasın). */
+const ZAR_YILLIK_EL_LIMITI = 5;
 // Hazard: her kaç elde bir "rakip bıçak çekti" tetiklenmeyi denesin ve ihtimali.
 const HAZARD_BICAK_HER_KAC_EL = 4;
 const HAZARD_BICAK_IHTIMAL = 0.45;
@@ -3828,13 +3933,31 @@ interface HazardSonucu {
  * seçim ekranı değil, oyunun içinde çözülen sert bir sonuç (sağlık/aranma cezası,
  * küçük ölüm riski).
  */
+/** Hapisteyken ya da yolculuktayken "dışarıda" yapılan işlemleri (kumar, borç, mülk, taşınma) engeller. */
+function hapisYolculukEngeli(state: CharacterState, ne: string): void {
+  if (state.etiketler.includes("hapiste")) throw new Error(`Hapistesin; şu an ${ne}.`);
+  if (state.etiketler.includes("yolculukta")) throw new Error(`Yoldasın; şu an ${ne}.`);
+}
+
 export async function zarAt(id: string, tutar: number): Promise<HazardSonucu> {
   const oturum = await oturumGetir(id);
   const { state } = oturum;
   if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  hapisYolculukEngeli(state, "zar oynayamazsın");
   const kademeler = ZAR_KADEMELERI.map((k) => Math.max(1, paraYuvarla(k * enflasyonCarpani(state))));
   if (!kademeler.includes(tutar)) throw new Error("Geçersiz bahis tutarı.");
   if (state.para < tutar) throw new Error(`Yeterli paran yok (${tutar} ${state.para_birimi} gerekli).`);
+
+  // Yıllık el limiti: sayaç `sosyallesme_aksiyon_kilit` içinde ("zar_yil" = sayacın ait olduğu
+  // oyun yılı, "zar_el" = o yıl oynanan el); yıl değişince sıfırlanır.
+  if (state.sosyallesme_aksiyon_kilit["zar_yil"] !== state.yil) {
+    state.sosyallesme_aksiyon_kilit["zar_yil"] = state.yil;
+    state.sosyallesme_aksiyon_kilit["zar_el"] = 0;
+  }
+  if ((state.sosyallesme_aksiyon_kilit["zar_el"] ?? 0) >= ZAR_YILLIK_EL_LIMITI) {
+    throw new Error("Bu yıl zar masasında yeterince oynadın; yıl dönünce yine gelirsin.");
+  }
+  state.sosyallesme_aksiyon_kilit["zar_el"] = (state.sosyallesme_aksiyon_kilit["zar_el"] ?? 0) + 1;
 
   const birim = state.para_birimi;
   state.para = paraYuvarla(state.para - tutar);
@@ -3900,6 +4023,7 @@ export async function ucKagitciOyna(id: string, tutar: number, secim: number): P
   const oturum = await oturumGetir(id);
   const { state } = oturum;
   if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  hapisYolculukEngeli(state, "üç kâğıt oynayamazsın");
   const kademeler = ZAR_KADEMELERI.map((k) => Math.max(1, paraYuvarla(k * enflasyonCarpani(state))));
   if (!kademeler.includes(tutar)) throw new Error("Geçersiz bahis tutarı.");
   if (secim !== 0 && secim !== 1 && secim !== 2) throw new Error("Geçersiz bardak.");
@@ -4047,12 +4171,22 @@ export async function sosyallesmeYerineGit(id: string, yerId: string): Promise<S
   if (mekanKalanYil(state, yerId) > 0) {
     throw new Error("Bu mekâna bu yıl zaten gittin; biraz zaman geçmeli.");
   }
+  // Sırada bekleyen zorunlu bir olay (zincir adımı, veba başlangıcı...) varsa mekâna girmek
+  // onu EZİP silerdi (zorlananOlayId tek slot). Mekân olayları hariç — terk edilmiş bir
+  // mekân olayının üzerine başka bir mekâna gitmek serbest kalır.
+  if (oturum.zorlananOlayId) {
+    const bekleyen = OLAY_BANKASI.find((o) => o.id === oturum.zorlananOlayId);
+    if (!bekleyen?.sosyallesmeYeri) {
+      throw new Error("Önce önündeki olayı çöz; sonra mekâna gidebilirsin.");
+    }
+  }
   const girisUcreti = paraYuvarla(SOSYALLESME_GIRIS_UCRETI * enflasyonCarpani(state));
   if (state.para < girisUcreti) {
     throw new Error(`Cebinde bu mekâna gidecek kadar para yok (~${girisUcreti} ${state.para_birimi} giriş ücreti).`);
   }
-  state.para = paraYuvarla(state.para - girisUcreti);
+  // Önce olayı seç (uygun olay yoksa fırlatır), parayı SONRA düş: hata durumunda ücret kaybolmasın.
   const olay = sosyallesmeIcinOlaySec(state, yerId);
+  state.para = paraYuvarla(state.para - girisUcreti);
   oturum.zorlananOlayId = olay.id;
   // Ana oyun ekranında henüz cevaplanmamış bir senaryo (mevcutOlay/mevcutSenaryo)
   // duruyor olabilir (oyuncu olayı yanıtlamadan sahne hotspot'undan Sosyalleş'e
@@ -4145,8 +4279,11 @@ export async function sosyallesmeOlayCoz(id: string, secenekIndex: number): Prom
     if (state.meslek === "Din Adamı") state.nufuz += 1.5;
   }
   if (etki.kariyer_puani_artis) state.kariyer_puani += etki.kariyer_puani_artis;
+  const sucOnce = state.suc_seviyesi;
   if (etki.suc_artis) state.suc_seviyesi += etki.suc_artis;
   if (etki.suc_seviyesi_ayarla !== undefined) state.suc_seviyesi = etki.suc_seviyesi_ayarla;
+  etki.suc_degisim = sucDegisimiHesapla(sucOnce, state.suc_seviyesi);
+  etkenGunluguNotEt(state, mevcutOlay.baslik, etki);
 
   // Sosyalleşme olaylarının kullandığı seyrek alanlar (banka denetimi: ekip_ekle 1×, unvan_kazan 2×).
   if (etki.ekip_ekle) {
@@ -4203,6 +4340,9 @@ export async function sosyallesmeOlayCoz(id: string, secenekIndex: number): Prom
   }
 
   state.sosyallesme_aksiyon_kilit[`mekan:${mevcutOlay.sosyallesmeYeri}`] = state.yil;
+  // Çözülen mekân olayını geçmişe yaz: sosyallesmeIcinOlaySec "hiç görülmemiş > en eski" önceliğini
+  // gecmis_olaylar'a göre yapar; yazılmazsa aynı olay tekrar tekrar çıkabiliyordu.
+  state.gecmis_olaylar.push(mevcutOlay.id);
   oturum.zorlananOlayId = null;
 
   // Mekân olayı bitti — sosyallesmeYerineGit'te kenara ayrılmış ana oyun olayı
@@ -4801,6 +4941,9 @@ export async function hediyeEt(
   if (index === -1) throw new Error("Envanterinde böyle bir eşya yok.");
   const esya = state.magaza_envanteri[index];
   const tanim = magazaEsyasiTanimiGetir(esya.katalogId);
+  // Lüks eşya koleksiyon parçasıdır (şöhret verir, türünden bir tane tutulur): hediye edilirse
+  // aynısı yeniden alınıp ilişki/şöhret kasılabilirdi — yalnız tüketim ("sifa") eşyası hediye edilir.
+  if (esya.kategori === "luks") throw new Error("Lüks eşyalar koleksiyon parçasıdır; hediye edilemez.");
   const artis = Math.max(3, Math.min(14, Math.round((tanim?.tabanFiyat ?? 20) / 12)));
   const dil = state.dil;
   let mesaj: string;
@@ -4929,6 +5072,7 @@ export async function krediAlEndpoint(id: string, tutar: number): Promise<{ stat
   const oturum = await oturumGetir(id);
   const { state } = oturum;
   if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  hapisYolculukEngeli(state, "tefeciyle iş göremezsin");
   const mesaj = krediAl(state, tutar);
   clampStats(state);
   await oturumKaydet(state);
@@ -4939,6 +5083,7 @@ export async function krediPazarlikEndpoint(id: string): Promise<{ state: Charac
   const oturum = await oturumGetir(id);
   const { state } = oturum;
   if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  hapisYolculukEngeli(state, "tefeciyle pazarlık edemezsin");
   const mesaj = krediPazarlik(state);
   await oturumKaydet(state);
   return { state, mesaj };

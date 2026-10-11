@@ -9,6 +9,8 @@ import type {
   KonutTanimi,
   YasamSecenegiTanimi,
   FinansOzeti,
+  GostergeStat,
+  GostergeDetayi,
   YatirimSonucu,
   KotuIsKarti,
   KotuIsSonucu,
@@ -44,11 +46,28 @@ function istemciHatasi(tr: string, en: string): Error {
   return new Error(ayarlariGetir().dil === 'en' ? en : tr);
 }
 
+/** Sunucudan gelen (HTTP durumu bilinen) hata; çağıran 404 gibi durumları ayırt edebilsin. */
+export class ApiHatasi extends Error {
+  durum: number;
+  constructor(mesaj: string, durum: number) {
+    super(mesaj);
+    this.name = 'ApiHatasi';
+    this.durum = durum;
+  }
+}
+
+const ISTEK_ZAMAN_ASIMI_MS = 60_000;
+
 async function istek<T>(url: string, init?: RequestInit): Promise<T> {
   let res: Response;
+  // Zaman aşımı: askıda kalan istek arayüzü sonsuza dek kilitlemesin. Render uykudan uyanırken
+  // ilk istek ~50 sn sürebildiği için süre cömert tutuldu.
+  const kontrol = new AbortController();
+  const zamanAsimi = setTimeout(() => kontrol.abort(), ISTEK_ZAMAN_ASIMI_MS);
   try {
     res = await fetch(url, {
       headers: { 'Content-Type': 'application/json' },
+      signal: kontrol.signal,
       ...init,
     });
   } catch {
@@ -56,6 +75,8 @@ async function istek<T>(url: string, init?: RequestInit): Promise<T> {
       'Sunucuya ulaşılamadı. İnternet bağlantını kontrol et; sunucu uykudan uyanıyor olabilir, birkaç saniye sonra tekrar dene.',
       "Couldn't reach the server. Check your connection; the server may be waking up — try again in a few seconds."
     );
+  } finally {
+    clearTimeout(zamanAsimi);
   }
   let veri: any;
   try {
@@ -73,7 +94,10 @@ async function istek<T>(url: string, init?: RequestInit): Promise<T> {
     );
   }
   if (!res.ok) {
-    throw new Error(veri.hata ?? (ayarlariGetir().dil === 'en' ? `Request failed: ${res.status}` : `İstek başarısız: ${res.status}`));
+    throw new ApiHatasi(
+      veri.hata ?? (ayarlariGetir().dil === 'en' ? `Request failed: ${res.status}` : `İstek başarısız: ${res.status}`),
+      res.status
+    );
   }
   return veri;
 }
@@ -163,6 +187,10 @@ export function skorTablosuGetir(tur: SiralamaTuru = 'genel', donem: SiralamaDon
 
 export function finansGetir(stateId: string) {
   return istek<{ finans: FinansOzeti }>(`/api/game/${stateId}/finans`);
+}
+
+export function gostergeGetir(stateId: string, stat: GostergeStat) {
+  return istek<{ gosterge: GostergeDetayi }>(`/api/game/${stateId}/gosterge/${stat}`);
 }
 
 export function kotuIsConfigGetir(stateId: string) {

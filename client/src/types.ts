@@ -299,6 +299,8 @@ export interface CharacterState {
   /** Cihazın önceki hayatlarında görülen olaylar (sunucu-içi tekrar önleme için) — client mantığı kullanmaz. */
   istemci_gecmis_olaylar: string[];
   istemci_id: string | null;
+  /** Son seçimlerin gösterge etkisi günlüğü (gösterge penceresi sunucudan okur). */
+  etken_gunlugu?: { yil: number; kaynak: string; stat: GostergeStat; delta: number }[];
   gecmis: GecmisNoktasi[];
   hayat_hikayesi: HayatOlayi[];
   aktif: boolean;
@@ -475,6 +477,8 @@ export interface Ast {
 }
 
 export interface SonucEtkisi {
+  /** Hapisten FİZİKSEL kaçışı temsil eder (sunucu skor bonusu için kullanır). */
+  hapis_basarili_kacis?: true;
   para?: number;
   un?: number;
   ahlak?: number;
@@ -512,6 +516,8 @@ export interface SonucEtkisi {
   uretim_kapasitesi_artis?: number;
   suc_artis?: number;
   suc_seviyesi_ayarla?: number;
+  /** Sunucunun yazdığı: bu seçimin aranma üzerindeki gerçek net değişimi (kelepçe sonrası). */
+  suc_degisim?: number;
   /** Hapis ceza süresini yıl olarak uzatır (başarısız riskli kaçış girişimi). */
   hapis_ceza_artis?: number;
   para_sifirla?: boolean;
@@ -550,6 +556,8 @@ export interface Secenek {
   kilit_nedeni?: string;
   /** Sunucudaki OlaySecenegi.hafifSecenek — küçük/ikincil "vazgeç" bağlantısı olarak gösterilir. */
   hafif?: boolean;
+  /** Olay tanımındaki ASIL şık sırası (kişilik filtresi sırayı kaydırabilir); sunucu kullanır, istemci yalnız taşır. */
+  ham_index?: number;
 }
 
 export interface SenaryoResponse {
@@ -680,6 +688,8 @@ export interface KotuIsKarti {
   rakibeYonelik: boolean;
   /** İsimli bir rakibin gücünü kırabilir mi (>0 ise kırar). */
   rakipKirmaGucu: number;
+  /** Bu işin tekrar çevrilebilmesine kalan oyun yılı (0 = hazır). */
+  kalanYil: number;
 }
 
 export interface KotuIsSonucu {
@@ -868,4 +878,24 @@ export interface ScoreKaydi {
   /** Gerçek skor çarpanı (ör. 1.5/2/3/3.5/5) — eski kayıtlarda null. */
   amac_carpani: number | null;
   createdAt: string;
+}
+
+/** Üst şerit gösterge detay penceresi (GET /:id/gosterge/:stat). */
+export type GostergeStat = 'saglik' | 'para' | 'mutluluk' | 'ahlak' | 'aranma' | 'sohret';
+
+export interface GostergeEtken {
+  ikon: string;
+  metin: string;
+  /** iyi = değeri yükseltir, kotu = düşürür, notr = bilgi. */
+  yon: 'iyi' | 'kotu' | 'notr';
+}
+
+export interface GostergeDetayi {
+  stat: GostergeStat;
+  deger: number;
+  etkenler: GostergeEtken[];
+  yukselt: string[];
+  dusur: string[];
+  /** Son seçimlerin bu göstergeye etkisi, en yeni üstte. */
+  gecmis: { yil: number; kaynak: string; delta: number }[];
 }

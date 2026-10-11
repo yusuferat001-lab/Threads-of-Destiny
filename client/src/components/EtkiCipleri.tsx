@@ -41,6 +41,18 @@ export function EtkiCipleri({ etki, paraBirimi }: EtkiCipleriProps) {
   statCip('⚖️', m.ecAhlak, etki.ahlak);
   statCip('🏅', m.ecSohret, etki.un);
 
+  // Aranma: artış KÖTÜ (kırmızı), düşüş iyi (yeşil) — diğer çiplerin tersi.
+  // Sunucunun hesapladığı net değişim (kelepçe + mutlak ayarlama dahil) kullanılır.
+  const sucDegisim = etki.suc_degisim ?? etki.suc_artis ?? 0;
+  if (Math.abs(sucDegisim) >= 0.5) {
+    const arttı = sucDegisim > 0;
+    cipler.push({
+      simge: '🚨',
+      metin: `${m.ecAranma} ${arttı ? '+' : '−'}${Math.round(Math.abs(sucDegisim))}`,
+      pozitif: !arttı,
+    });
+  }
+
   if (etki.es_ata) cipler.push({ simge: '💍', metin: m.ecEvlendin, pozitif: true });
   if (etki.es_kaybet) cipler.push({ simge: '💔', metin: m.ecEsKaybi, pozitif: false });
   if (etki.cocuk_ekle) cipler.push({ simge: '👶', metin: bic(m.ecCocukEkle, etki.cocuk_ekle), pozitif: true });

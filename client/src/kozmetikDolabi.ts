@@ -17,7 +17,8 @@ export interface GiyilenKozmetikler {
 function sahipOkuSet(): Set<string> {
   try {
     const ham = localStorage.getItem(SAHIP_ANAHTAR);
-    return ham ? new Set(JSON.parse(ham)) : new Set();
+    const veri = ham ? JSON.parse(ham) : [];
+    return new Set(Array.isArray(veri) ? veri.filter((x): x is string => typeof x === 'string') : []);
   } catch {
     return new Set();
   }
@@ -34,7 +35,8 @@ function sahipYaz(s: Set<string>) {
 function giyilenOku(): GiyilenKozmetikler {
   try {
     const ham = localStorage.getItem(GIYILEN_ANAHTAR);
-    return ham ? JSON.parse(ham) : {};
+    const veri = ham ? JSON.parse(ham) : {};
+    return veri && typeof veri === 'object' && !Array.isArray(veri) ? veri : {};
   } catch {
     return {};
   }

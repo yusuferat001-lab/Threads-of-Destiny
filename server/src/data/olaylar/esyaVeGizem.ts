@@ -1635,9 +1635,6 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
   {
     id: "yerlesim_dag_ayi_karsilasmasi",
     kategori: "saglik",
-    gerekliEtiketler: [
-      "yerlesim:dag",
-    ],
     gorsel: "🐻",
     sureYilMin: 1,
     sureYilMax: 1,

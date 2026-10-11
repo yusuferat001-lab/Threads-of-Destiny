@@ -43,6 +43,9 @@ model Score {
   /** Gerçek skor çarpanı (ör. 1.5/2/3/3.5/5) — liderlik tablosunda "🎯 ×N" rozeti bunu gösterir. Eski kayıtlarda null. */
   amac_carpani Float?
   createdAt   DateTime @default(now())
+
+  @@index([skor])
+  @@index([createdAt])
 }
 
 /// Toplu oyun metriği — append-only olay günlüğü (§32). Kalıcı (Neon), Render free

@@ -5259,9 +5259,6 @@ export const OLAY_GENEL: OlayTanimi[] = [
   {
     id: "yerlesim_sinir_baskini",
     kategori: "savas",
-    gerekliEtiketler: [
-      "yerlesim:sinir",
-    ],
     gorsel: "🗡️",
     sureYilMin: 1,
     sureYilMax: 2,
@@ -5311,9 +5308,6 @@ export const OLAY_GENEL: OlayTanimi[] = [
   {
     id: "yerlesim_sehir_salgin_kalabaligi",
     kategori: "sosyal",
-    gerekliEtiketler: [
-      "yerlesim:sehir",
-    ],
     gorsel: "🤧",
     sureYilMin: 1,
     sureYilMax: 1,
@@ -5542,9 +5536,6 @@ export const OLAY_GENEL: OlayTanimi[] = [
     id: "sanayi_gaz_lambasi_sokaklari",
     kategori: "sosyal",
     cag: "Sanayi Devrimi",
-    gerekliEtiketler: [
-      "yerlesim:sehir",
-    ],
     gorsel: "🏮",
     sureYilMin: 1,
     sureYilMax: 1,

@@ -103,6 +103,7 @@ function KaranlikIsKart({
   const rakipHedefli = is.rakipKirmaGucu > 0 && aktifRakipler.length > 0;
   const [hedef, setHedef] = useState<string>(aktifRakipler[0]?.ad ?? '');
   const [vekil, setVekil] = useState(false);
+  const beklemede = (is.kalanYil ?? 0) > 0;
 
   return (
     <div className="yatirim-kart isyatirim-kendi-is-kart" title={metin.aciklama}>
@@ -138,7 +139,7 @@ function KaranlikIsKart({
 
       <button
         className="ikincil karanlik-cevir-buton"
-        disabled={yukleniyor}
+        disabled={yukleniyor || beklemede}
         onClick={() =>
           onKotuIs(is.id, {
             hedefRakipAd: rakipHedefli ? hedef : undefined,
@@ -146,7 +147,13 @@ function KaranlikIsKart({
           })
         }
       >
-        {en ? 'Do it' : 'Çevir'}
+        {beklemede
+          ? en
+            ? `Lying low · ~${Math.ceil(is.kalanYil)} yr`
+            : `Ortalık sakin · ~${Math.ceil(is.kalanYil)} yıl`
+          : en
+            ? 'Do it'
+            : 'Çevir'}
       </button>
     </div>
   );

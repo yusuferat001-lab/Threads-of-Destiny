@@ -26,6 +26,7 @@ import {
   bolgelerGetir,
   konutlarGetir,
   yasamSecenekleriGetir,
+  ApiHatasi,
   yeniOyunBaslat,
   meslekAta,
   stateGetir,
@@ -103,7 +104,7 @@ import { SonucEfekti } from './components/SonucEfekti';
 import { AyarlarModal } from './components/AyarlarModal';
 import { ayarlariGetir, ayarlariKaydet, type Dil } from './ayarlar';
 import { bolgeOzetiGetir } from './bolgeOzellikleri';
-import type { GeriBildirimGirdi, EvlilikAdayi } from './types';
+import type { GeriBildirimGirdi, EvlilikAdayi, GostergeStat } from './types';
 import { sesKapaliMi, sesTercihiKaydet } from './ses';
 import { muzikModunuAyarla, muzikDurdur, muzikSessizAyarla, type MuzikModu } from './muzik';
 import { aktifOturumIdGetir, aktifOturumIdKaydet, aktifOturumIdSil } from './oturum';
@@ -120,13 +121,14 @@ import { YenilikModal } from './components/YenilikModal';
 import { yenilikGosterilmeliMi, yenilikGorulduIsaretle } from './yenilikler';
 import { istemciId, ziyaretBildir } from './istemci';
 import { gunlukSeriKontrolEt, gunlukSeriGetir, type GunlukSeriSonuc } from './gunlukSeri';
-import { goldBakiyeGetir, olumGoldHesapla, goldEkle } from './gold';
+import { goldBakiyeGetir, olumGoldHesapla, goldEkle, olumGoldOdendiMi, olumGoldOdendiIsaretle } from './gold';
 import { sonucIkonuGetir, unUnvani, MESLEK_KATEGORI, yatkinlikEtiketi, meslekYatkinlikOnizleme, etkiTahminiGetir, type EtkiTahmini } from './bolgeTema';
 import { formatPara, formatYuzde } from './format';
 import { bic } from './i18n';
 import { DilContext, dilCtxYap } from './DilContext';
 import { aileKokAdi, enTanimlik } from './aileAdi';
 import { SkorKirilimiPaneli } from './components/SkorKirilimiPaneli';
+import { GostergeModal } from './components/GostergeModal';
 import { CarkLogo, KoseTezhibi, MuhurAyrac, AdimGostergesi, KaderYollari } from './components/Suslemeler';
 import { CagAmblemi, BolgeAmblemi } from './components/Amblemler';
 import { useMobilEkran, useGecisDeltasi } from './hooks';
@@ -392,10 +394,14 @@ function App() {
 
   // Mobil tek-ekran tasarımı: canlı skor rozetinin detay modalı (yalnız placeholder — §5).
   const [skorDetayAcik, setSkorDetayAcik] = useState(false);
+  const [gostergeAcik, setGostergeAcik] = useState<GostergeStat | null>(null);
   // Ölümde skorun otomatik kaydedilmesi denendi mi (oturum id başına tek sefer) —
   // StrictMode çift-render'ında ve tekrar render'larda ikinci bir POST /api/scores atmamak için.
   const otoSkorKaydiRef = useRef<string | null>(null);
-  const olumGoldOdenenRef = useRef<string | null>(null);
+  // Şu an ekranda olan karakterin id'si: uçuştaki otomatik skor kaydı bittiğinde eski bir oyunun
+  // sonucunu yeni oyuna yazmamak için (her render'da güncellenir).
+  const karakterIdRef = useRef<string | null>(null);
+  karakterIdRef.current = karakter?.id ?? null;
   const [olumGoldKazanci, setOlumGoldKazanci] = useState<number | null>(null);
   const mobil = useMobilEkran();
   // Mobil canlı skor rozeti (§6) — sunucudaki toplamsal formülün istemci aynası, ücretsiz/senkron.
@@ -489,7 +495,6 @@ function App() {
     await geriBildirimGonder({
       ...girdi,
       baglam: {
-        stateId: karakter?.id ?? null,
         ekran,
         cag: karakter?.cag ?? secilenCag ?? null,
         bolge: karakter?.bolge ?? secilenBolge ?? null,
@@ -589,10 +594,13 @@ function App() {
       setGecmisHayatlar(gecmisHayatlariGetir());
       setIsim((mevcut) => mevcut || karakter.isim || '');
       const { yeniAcilanlar, skor } = basarimlariDegerlendir(karakter);
-      setYeniBasarimlar(yeniAcilanlar);
+      // Efekt ekrana her dönüşte yeniden çalışır; ikinci çalışmada "yeni açılan" boş döner —
+      // ilk listeyi ezmesin.
+      if (yeniAcilanlar.length > 0) setYeniBasarimlar(yeniAcilanlar);
       // Gold — ölümde kazanılan skorun küçük bir oranı (amaç ×5 çarpanı zaten skora yansımış).
-      if (olumGoldOdenenRef.current !== karakter.id) {
-        olumGoldOdenenRef.current = karakter.id;
+      // Ödenen oyun kimlikleri kalıcı tutulur: sayfa yenilenince ölü karakter yeniden yüklenir.
+      if (!olumGoldOdendiMi(karakter.id)) {
+        olumGoldOdendiIsaretle(karakter.id);
         const kazanc = olumGoldHesapla(skor);
         setGoldBakiye(goldEkle(kazanc));
         setOlumGoldKazanci(kazanc);
@@ -614,19 +622,19 @@ function App() {
     if (otoSkorKaydiRef.current === karakter.id) return;
     otoSkorKaydiRef.current = karakter.id;
     const ad = (karakter.isim || '').trim() || (dil === 'en' ? 'Nameless' : 'İsimsiz');
-    let iptal = false;
+    const oyunId = karakter.id;
+    // Not: istek sürerken ekran/dil değişip efekt yeniden çalışsa bile sonuç YUTULMAZ (eskiden
+    // cleanup bayrağı sonucu atıyor, ref yeniden denemeyi engelliyor ve ölüm ekranı sonsuza dek
+    // "kaydediliyor" kalıyordu). Yalnız aradan başka bir oyun başladıysa sonuç yok sayılır.
     (async () => {
       try {
-        await skorKaydet(karakter.id, ad);
-        if (!iptal) setKaydedildi(true);
+        await skorKaydet(oyunId, ad);
+        if (karakterIdRef.current === oyunId) setKaydedildi(true);
       } catch {
         // Otomatik kayıt tutmadı (ağ/hız sınırı) → elle kayıt formunu yedek olarak aç.
-        if (!iptal) setOtoKayitBasarisiz(true);
+        if (karakterIdRef.current === oyunId) setOtoKayitBasarisiz(true);
       }
     })();
-    return () => {
-      iptal = true;
-    };
   }, [ekran, karakter, kaydedildi, dil]);
 
   // Sayfa yenilenince (ya da sekme kapatılıp geri açılınca) kaldığı yerden devam etmeyi dener;
@@ -652,9 +660,15 @@ function App() {
           setTepkiModu(false);
           setEkran('oyun');
         }
-      } catch {
-        // Oturum artık bulunamıyor; sessizce ana menüde kal.
-        aktifOturumIdSil();
+      } catch (err) {
+        // Yalnız oturum gerçekten yoksa (404) kayıtlı bağlantıyı unut; geçici ağ/sunucu
+        // hatasında (uyanan Render, kopuk bağlantı) oyun sunucuda duruyor — id kalsın,
+        // oyuncu sayfayı yenileyip devam edebilsin.
+        if (err instanceof ApiHatasi && err.durum === 404) {
+          aktifOturumIdSil();
+        } else if (!iptal) {
+          setHata(temizHata(err));
+        }
       } finally {
         if (!iptal) setYukleniyor(false);
       }
@@ -1497,7 +1511,6 @@ function App() {
     setKaydedildi(false);
     setOtoKayitBasarisiz(false);
     otoSkorKaydiRef.current = null;
-    olumGoldOdenenRef.current = null;
     setOlumGoldKazanci(null);
     setSecilenCag(null);
     setSecilenBolge(null);
@@ -2122,6 +2135,7 @@ function App() {
             ulke={karakter.ulke}
             hukumdar={karakter.hukumdar}
             onBolgeTikla={() => setBolgeBilgiAcik(true)}
+            onGostergeTikla={setGostergeAcik}
           />
           {mobil && (
             // Mobil tek-ekran tasarımı: sol/sağ panel kaldırılınca kaybolan iki tek-butonluk
@@ -2145,6 +2159,16 @@ function App() {
               <div className="ust-amac-serit-satiri">
                 <AmacPaneli durum={amaclar} varyant="serit" />
               </div>
+              <button
+                type="button"
+                className="ust-sohret-rozeti"
+                onClick={() => setGostergeAcik('sohret')}
+                aria-haspopup="dialog"
+                aria-label={`${m.sohret} — ${unUnvani(karakter.un, dil)}`}
+                title={`${m.sohret} — ${unUnvani(karakter.un, dil)}`}
+              >
+                🏅
+              </button>
               <button
                 key={skorGecisi.nonce}
                 type="button"
@@ -2185,7 +2209,13 @@ function App() {
               </button>
 
               <div className="sol-panel-mini-barlar">
-                <div className="un-rozeti">
+                <button
+                  type="button"
+                  className="un-rozeti un-rozeti-tikla"
+                  onClick={() => setGostergeAcik('sohret')}
+                  aria-haspopup="dialog"
+                  title={`${m.sohret} — ${m.gmDokun}`}
+                >
                   <span className="un-rozeti-ikon" aria-hidden="true">
                     🏅
                   </span>
@@ -2193,7 +2223,7 @@ function App() {
                     <span className="un-rozeti-etiket">{m.sohret}</span>
                     <strong>{unUnvani(karakter.un, dil)}</strong>
                   </div>
-                </div>
+                </button>
                 {/* Masaüstü canlı skor — mobildeki üst şerit rozetinin karşılığı; aynı döküm penceresini açar. */}
                 <button
                   key={skorGecisi.nonce}
@@ -2484,6 +2514,10 @@ function App() {
                 />
               </div>
             </div>
+          )}
+
+          {gostergeAcik && karakter && (
+            <GostergeModal karakter={karakter} stat={gostergeAcik} onKapat={() => setGostergeAcik(null)} />
           )}
 
           {skorDetayAcik && (

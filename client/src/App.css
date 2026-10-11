@@ -7479,6 +7479,158 @@ button.ikincil {
 .meslek-yatkinlik-bonus.meslek-yatkinlik-malus { color: #e8a39a; }
 .meslek-yatkinlik-bonus.meslek-yatkinlik-yok { color: #cfc6ad; font-weight: 400; opacity: 0.8; }
 
+/* ── Gösterge detay penceresi: tıklanabilir üst şerit modülleri + modal içeriği ── */
+.ust-serit-moduller .ust-serit-modul.ust-serit-modul-tikla,
+.sol-panel-mini-barlar button.un-rozeti.un-rozeti-tikla {
+  /* Genel button stillerini (gradyan, tam genişlik, gölge) sıfırla: görünüm div'li hâliyle aynı kalsın. */
+  width: auto;
+  max-width: none;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  text-align: inherit;
+  text-shadow: none;
+  box-shadow: none;
+  letter-spacing: inherit;
+  text-transform: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.ust-serit-moduller .ust-serit-modul.ust-serit-modul-tikla {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--renk-ahsap-kenar);
+  border-radius: 8px;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.ust-serit-moduller .ust-serit-modul.ust-serit-modul-tikla:hover,
+.ust-serit-moduller .ust-serit-modul.ust-serit-modul-tikla:focus-visible {
+  background: rgba(0, 0, 0, 0.4);
+  border-color: var(--renk-altin-parlak);
+  outline: none;
+}
+/* Uçan +N/−N rozeti tıklamayı yutmasın. */
+.ust-serit-delta {
+  pointer-events: none;
+}
+.sol-panel-mini-barlar button.un-rozeti.un-rozeti-tikla {
+  width: 100%;
+  background: none;
+  border: 0;
+  padding: 0.15rem 0;
+  border-radius: 6px;
+}
+.sol-panel-mini-barlar button.un-rozeti.un-rozeti-tikla:hover,
+.sol-panel-mini-barlar button.un-rozeti.un-rozeti-tikla:focus-visible {
+  background: rgba(255, 255, 255, 0.06);
+  outline: none;
+}
+.sol-panel-mini-barlar button.un-rozeti .un-rozeti-metin {
+  text-align: left;
+}
+
+.gosterge-katman {
+  z-index: 65;
+}
+.gosterge-modal {
+  max-width: 460px;
+}
+.gosterge-deger {
+  margin: 0 0 0.6rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--renk-altin-parlak);
+  text-align: center;
+}
+.gosterge-bilgi {
+  text-align: center;
+  opacity: 0.8;
+}
+.gosterge-baslik {
+  margin: 0.9rem 0 0.35rem;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+  color: var(--renk-altin-parlak);
+}
+.gosterge-liste {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.gosterge-liste li {
+  font-size: 0.86rem;
+  line-height: 1.35;
+}
+.gosterge-etken {
+  display: flex;
+  gap: 0.45rem;
+  align-items: flex-start;
+  padding: 0.35rem 0.5rem;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border-left: 3px solid rgba(255, 255, 255, 0.25);
+}
+.gosterge-etken-iyi {
+  border-left-color: #5fae6a;
+}
+.gosterge-etken-kotu {
+  border-left-color: #c9574a;
+}
+.gosterge-etken-ikon {
+  flex-shrink: 0;
+}
+.gosterge-ipuclari li {
+  position: relative;
+  padding-left: 1rem;
+}
+.gosterge-ipuclari li::before {
+  content: '•';
+  position: absolute;
+  left: 0.2rem;
+  color: var(--renk-altin-parlak);
+}
+@media (max-width: 767px) {
+  .gosterge-govde {
+    max-height: 72vh;
+  }
+  .ust-serit-moduller .ust-serit-modul.ust-serit-modul-tikla {
+    min-height: 2.6rem;
+  }
+}
+
+/* Mobil rozet satırındaki küçük Şöhret düğmesi (masaüstünde sol paneldeki rozet kullanılır). */
+.ust-sohret-rozeti {
+  display: none;
+}
+@media (max-width: 767px) {
+  .ust-sohret-rozeti {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    max-width: none;
+    height: 26px;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    font-size: 0.9rem;
+    line-height: 1;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--renk-ahsap-kenar);
+    border-radius: 50%;
+    box-shadow: none;
+    cursor: pointer;
+  }
+  .ust-sohret-rozeti:focus-visible {
+    border-color: var(--renk-altin-parlak);
+    outline: none;
+  }
+}
+
 /* --- Amaç detay penceresi: bir amaca tıklayınca ne yapılacağı --- */
 .amac-serit-oge {
   /* Şerit artık tıklanır (button): tarayıcı varsayılanlarını sıfırla, overlay'in pointer-events:none'ını aş. */

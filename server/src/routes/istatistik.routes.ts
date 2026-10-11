@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { anahtarEslesiyor } from "../utils/anahtar";
 import { metrikYaz, istatistikOzeti } from "../db/metrikRepository";
 import { istatistikPaneliHtml } from "../utils/istatistikPanel";
 
@@ -34,8 +35,7 @@ istatistikRouter.post("/olay", (req, res) => {
 
 /** Anahtar kontrolü — env yoksa ya da eşleşmezse 403 (geri bildirim ucundaki desen). */
 function yetkili(req: { query: Record<string, unknown> }): boolean {
-  const anahtar = process.env.ISTATISTIK_ANAHTARI;
-  return !!anahtar && req.query.key === anahtar;
+  return anahtarEslesiyor(process.env.ISTATISTIK_ANAHTARI, req.query.key);
 }
 
 istatistikRouter.get("/", async (req, res) => {

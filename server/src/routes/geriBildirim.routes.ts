@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { anahtarEslesiyor } from "../utils/anahtar";
 import { randomUUID } from "node:crypto";
 import {
   geriBildirimYaz,
@@ -47,6 +48,9 @@ export function geriBildirimTemizle(govde: unknown): TemizlemeSonucu {
     g.baglam && typeof g.baglam === "object" && !Array.isArray(g.baglam)
       ? Object.fromEntries(
           Object.entries(g.baglam as Record<string, unknown>)
+            // Oturum kimliği (UUID = oyunun tek yetkilendirme belirteci) webhook'a/panele
+            // düz metin gitmesin: eski istemciler gönderse bile düşür.
+            .filter(([k]) => k !== "stateId")
             .slice(0, 20)
             .map(([k, v]) => [
               k.slice(0, 40),
@@ -103,8 +107,7 @@ geriBildirimRouter.post("/", async (req, res) => {
 });
 
 function yetkili(req: { query: Record<string, unknown> }): boolean {
-  const anahtar = process.env.GERI_BILDIRIM_ANAHTARI;
-  return !!anahtar && req.query.key === anahtar;
+  return anahtarEslesiyor(process.env.GERI_BILDIRIM_ANAHTARI, req.query.key);
 }
 
 // Geliştiricinin kayıtları okuması için — `GERI_BILDIRIM_ANAHTARI` env değeriyle korunur.
