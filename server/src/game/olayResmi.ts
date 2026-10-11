@@ -13,6 +13,27 @@ const EVLILIK_OLAYLARI = new Set([
 ]);
 
 /**
+ * Evde/ailenin içinde geçen olaylar: aile ikilemleri, çocuk ve evlilik-içi olayları. Aile mesleği
+ * KÖKENİ olayları (`aile_koken_*`, `aile_tuccar_musteri`, `aile_isci_grev` vb.) bilerek dışarıda —
+ * onlar evden çok ailenin mesleği/geçmişiyle ilgili, kategori resmini alırlar.
+ */
+const AILE_ONEKLERI = ["aile_ikilem_", "aile2_", "cocuk_", "evl_"];
+const AILE_OLAYLARI = new Set([
+  "aile_tatil_karari",
+  "iliski_ev_ici_kavga",
+  "iliski_es_gizli_talep",
+  "iliski_bosanma_esigi",
+  "iliski_es_hastalik",
+  "iliski_cocuk_mujdesi",
+]);
+
+/** Bölgeye özel olaylar: olay id öneki → resim anahtarı (çağ soneki istemcide eklenir). */
+const BOLGE_RESIMLERI: ReadonlyArray<readonly [onek: string, anahtar: string]> = [
+  ["bolge_fransa_oc_", "bolge-fransa"],
+  ["bolge_kutsalroma_", "bolge-kutsal-roma"],
+];
+
+/**
  * Olay illüstrasyonunun "havuz anahtarı" (`client/public/assets/olay/<anahtar>-<orta-cag|sanayi>.webp`).
  *
  * Genel kural kategori×çağ resmidir (savas/ticaret/...); ama hapis ve büyük yolculuk gibi özel
@@ -20,17 +41,33 @@ const EVLILIK_OLAYLARI = new Set([
  * yolculuklar `din`/`savas`/`ticaret`), bu yüzden kendi resimleri vardır. Burada anahtar dönerse
  * istemci önce onu dener, dosya yoksa kategori resmine, o da yoksa emojiye düşer.
  *
- * Öncelik: hapis > veba > kaçak > baskın > evlilik > yolculuk > gizemli (özel olan genel olanı yener).
- * Yalnız resmi OLAN havuzlar eşlenir — yeni bir havuz resmi eklenince buraya bir kural eklenir.
+ * Öncelik: sağlık krizi > hapis > veba > kaçak > baskın > evlilik > hizip > aile > bölge > yolculuk >
+ * gizemli (özel olan genel olanı yener). Yalnız resmi OLAN havuzlar eşlenir — yeni bir havuz resmi
+ * eklenince buraya bir kural eklenir.
  */
 export function olayResimAnahtari(
-  olay: Pick<OlayTanimi, "id" | "hapisOlayi" | "yolculukOlayi" | "kacakOlayi" | "vebaHastasiOlayi" | "gizemli">
+  olay: Pick<
+    OlayTanimi,
+    | "id"
+    | "hapisOlayi"
+    | "yolculukOlayi"
+    | "kacakOlayi"
+    | "vebaHastasiOlayi"
+    | "gizemli"
+    | "saglikEsikOlayi"
+    | "gerekliHizip"
+  >
 ): string | undefined {
+  if (olay.saglikEsikOlayi) return "saglik-kriz";
   if (olay.hapisOlayi) return "hapis";
   if (olay.vebaHastasiOlayi || olay.id === "kuresel_veba_baslangici" || olay.id.startsWith("veba_")) return "veba";
   if (olay.kacakOlayi) return "kacak";
   if (BASKIN_OLAYLARI.has(olay.id)) return "baskin";
   if (EVLILIK_OLAYLARI.has(olay.id)) return "evlilik";
+  if (olay.gerekliHizip || olay.id.startsWith("hizip_")) return "hizip";
+  if (AILE_OLAYLARI.has(olay.id) || AILE_ONEKLERI.some((onek) => olay.id.startsWith(onek))) return "aile";
+  const bolge = BOLGE_RESIMLERI.find(([onek]) => olay.id.startsWith(onek));
+  if (bolge) return bolge[1];
   if (!olay.yolculukOlayi) return olay.gizemli ? "gizem" : undefined;
 
   const id = olay.id;

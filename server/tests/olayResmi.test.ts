@@ -40,8 +40,61 @@ describe("olay illüstrasyonu havuz anahtarı", () => {
     expect(anahtar({ id: "buyu_kristal_kure", gizemli: true })).toBe("gizem");
     // Özel havuz genel olanı yener: gizemli ama hapis olayı → hapis.
     expect(anahtar({ id: "x", hapisOlayi: true, gizemli: true })).toBe("hapis");
-    // Evlilik içi çatışma olayı düğün resmini almaz.
-    expect(anahtar({ id: "evl_mt_ev_ici_kavga" })).toBeUndefined();
+    // Evlilik içi çatışma olayı düğün resmini değil aile resmini alır.
+    expect(anahtar({ id: "evl_mt_ev_ici_kavga" })).toBe("aile");
+  });
+
+  it("sağlık kritik eşik havuzunun tüm olayları 'saglik-kriz' anahtarını alır", () => {
+    const esik = OLAY_BANKASI.filter((o) => o.saglikEsikOlayi);
+    expect(esik.length).toBe(30);
+    for (const o of esik) expect(olayResimAnahtari(o), o.id).toBe("saglik-kriz");
+  });
+
+  it("hizip olayları 'hizip' anahtarını alır (hizbe özel, saflaşma ve tepki olayları dahil)", () => {
+    const hizip = OLAY_BANKASI.filter((o) => o.gerekliHizip || o.id.startsWith("hizip_"));
+    expect(hizip.length).toBeGreaterThan(60);
+    for (const o of hizip) expect(olayResimAnahtari(o), o.id).toBe("hizip");
+    expect(olayResimAnahtari({ id: "hizip_asker_saflasma" })).toBe("hizip");
+    expect(olayResimAnahtari({ id: "x", gerekliHizip: true })).toBe("hizip");
+  });
+
+  it("aile olayları 'aile' anahtarını alır; aile mesleği kökeni olayları ve evlilik/düğün olayları almaz", () => {
+    const anahtar = (id: string) => olayResimAnahtari({ id });
+    expect(anahtar("evl_ms_sogukluk")).toBe("aile");
+    expect(anahtar("evl_ask_cocuk_yoksullugu")).toBe("aile");
+    expect(anahtar("evl_krizi")).toBe("aile");
+    expect(anahtar("cocuk_okul_secimi")).toBe("aile");
+    expect(anahtar("cocuk_hastalik_baslangic")).toBe("aile");
+    expect(anahtar("aile_ikilem_miras_kavgasi")).toBe("aile");
+    expect(anahtar("aile2_evlatlik_verme")).toBe("aile");
+    expect(anahtar("aile_tatil_karari")).toBe("aile");
+    expect(anahtar("iliski_ev_ici_kavga")).toBe("aile");
+    expect(anahtar("iliski_cocuk_mujdesi")).toBe("aile");
+    // Aile mesleği kökeni olayları kategori resmine düşer.
+    expect(anahtar("aile_koken_cellat_damgasi")).toBeUndefined();
+    expect(anahtar("aile_isci_grev")).toBeUndefined();
+    expect(anahtar("aile_tuccar_musteri")).toBeUndefined();
+    // Dost/rakip ilişkileri aile değil.
+    expect(anahtar("iliski_dost_zor_durumda")).toBeUndefined();
+    // Evlilik/düğün aileden önce gelir; hizip/veba/hapis de.
+    expect(anahtar("cocuk_evlilik")).toBe("evlilik");
+    expect(anahtar("cocuk_dugun_masrafi")).toBe("evlilik");
+    expect(anahtar("hizip_eski_muhafizlar_aile_miras_silah")).toBe("hizip");
+    expect(anahtar("veba_hasta_aile_bakimi")).toBe("veba");
+  });
+
+  it("bölgeye özel Orta Çağ olayları kendi bölge resmini alır (resmi olmayan bölgeler almaz)", () => {
+    const bolge = (onek: string) => OLAY_BANKASI.filter((o) => o.id.startsWith(onek));
+    const fransa = bolge("bolge_fransa_oc_");
+    const roma = bolge("bolge_kutsalroma_");
+    expect(fransa.length).toBe(10);
+    expect(roma.length).toBe(10);
+    for (const o of fransa) expect(olayResimAnahtari(o), o.id).toBe("bolge-fransa");
+    for (const o of roma) expect(olayResimAnahtari(o), o.id).toBe("bolge-kutsal-roma");
+    // Resmi henüz olmayan bölgeler ve Sanayi Devrimi bölgeleri kategori resmine düşer.
+    for (const o of [...bolge("bolge_bizans_"), ...bolge("bolge_selcuklu_"), ...bolge("bolge_fransa_sd_"), ...bolge("bolge_ingiltere_")]) {
+      expect(olayResimAnahtari(o), o.id).toBeUndefined();
+    }
   });
 
   it("havuz dışı olaylar ve eşlenmeyen yolculuklar anahtar almaz (kategori resmine düşer)", () => {
