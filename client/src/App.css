@@ -7483,3 +7483,55 @@ button.ikincil {
 }
 .meslek-yatkinlik-bonus.meslek-yatkinlik-malus { color: #e8a39a; }
 .meslek-yatkinlik-bonus.meslek-yatkinlik-yok { color: #cfc6ad; font-weight: 400; opacity: 0.8; }
+
+/* --- Amaç detay penceresi: bir amaca tıklayınca ne yapılacağı --- */
+.amac-serit-oge {
+  /* Şerit artık tıklanır (button): tarayıcı varsayılanlarını sıfırla, overlay'in pointer-events:none'ını aş. */
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.amac-tiklanir {
+  cursor: pointer;
+}
+.amac-detay-modal {
+  max-width: 380px;
+}
+.amac-detay-modal.amac-zor {
+  border-left-color: #d8a94a;
+}
+.amac-detay-etiket {
+  font-size: 0.78rem;
+  opacity: 0.8;
+  margin: 0 0 0.6rem;
+}
+.amac-detay-alt-baslik {
+  margin: 0 0 0.25rem;
+  font-size: 0.82rem;
+  color: var(--renk-altin-parlak);
+  letter-spacing: 0.04em;
+}
+.amac-detay-ilerleme {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin: 0 0 0.8rem;
+  font-size: 0.85rem;
+}
+.amac-detay-ipucu {
+  font-size: 0.78rem;
+  opacity: 0.8;
+  font-style: italic;
+}
+.amac-serit-oge {
+  box-shadow: none;
+}
+button.amac-serit-oge:hover:not(:disabled) {
+  background: rgba(34, 22, 10, 0.85);
+  transform: none;
+  box-shadow: none;
+}
+button.amac-serit-oge.amac-serit-tamam:hover:not(:disabled) {
+  background: rgba(40, 90, 45, 0.85);
+}
