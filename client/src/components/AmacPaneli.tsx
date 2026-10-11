@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useDil } from '../DilContext';
 import type { AmaclarDurumu, AmacKarti } from '../types';
 
@@ -18,6 +20,13 @@ const TR = {
   olumde: 'ölümde bakılır',
   yok: 'Meslek seçince belirlenecek.',
   ozetBaslik: 'Hayat Amaçların',
+  neYapmali: 'Ne yapmalısın?',
+  ilerleme: 'İlerleme',
+  bonusEtiketi: 'Skor bonusu',
+  herhangi: 'Hedefe bir an bile ulaşman yeter; ulaştığın an kalıcı olarak kilitlenir.',
+  olumdeIpucu: 'Yalnızca öldüğün andaki duruma bakılır: hayatının sonunda bu koşulu sağlıyor olmalısın.',
+  tamamIpucu: 'Bu amacı tamamladın.',
+  kapat: 'Kapat',
 };
 const EN: typeof TR = {
   baslik: '🎯 Your Goals',
@@ -29,6 +38,13 @@ const EN: typeof TR = {
   olumde: 'checked at death',
   yok: 'Set when you choose a profession.',
   ozetBaslik: 'Your Life Goals',
+  neYapmali: 'What to do',
+  ilerleme: 'Progress',
+  bonusEtiketi: 'Score bonus',
+  herhangi: 'Reaching the target even for a moment is enough; it locks in permanently.',
+  olumdeIpucu: 'Only your state at the moment of death counts: you must meet this condition at the end of your life.',
+  tamamIpucu: 'You completed this goal.',
+  kapat: 'Close',
 };
 
 function yuzde(a: AmacKarti): number {
@@ -40,6 +56,56 @@ function yuzde(a: AmacKarti): number {
 export function AmacPaneli({ durum, varyant = 'panel' }: AmacPaneliProps) {
   const { dil } = useDil();
   const t = dil === 'en' ? EN : TR;
+  const [secili, setSecili] = useState<string | null>(null);
+  const seciliAmac = durum?.amaclar.find((a) => a.id === secili) ?? null;
+
+  const detayPenceresi =
+    seciliAmac &&
+    createPortal(
+      <div className="kariyer-sonuc-katman" onClick={() => setSecili(null)}>
+        <div
+          className={`kariyer-sonuc-modal amac-detay-modal amac-${seciliAmac.zorluk}`}
+          role="dialog"
+          aria-modal="true"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="kariyer-karanlik-modal-baslik">
+            <h3>
+              {seciliAmac.tamamlandi ? '✓' : seciliAmac.zorluk === 'zor' ? '★' : '◆'} {seciliAmac.baslik}
+            </h3>
+            <button type="button" className="kariyer-karanlik-kapat" aria-label={t.kapat} onClick={() => setSecili(null)}>
+              ✕
+            </button>
+          </div>
+          <p className="amac-detay-etiket">
+            {seciliAmac.zorluk === 'zor' ? t.zor : t.normal} · {t.bonusEtiketi} {t.bonus(seciliAmac.bonus)}
+          </p>
+          <h4 className="amac-detay-alt-baslik">{t.neYapmali}</h4>
+          <p>{seciliAmac.aciklama}</p>
+          {seciliAmac.mevcut != null && seciliAmac.hedef != null && (
+            <div className="amac-detay-ilerleme">
+              <span>
+                {t.ilerleme}: {seciliAmac.mevcut} / {seciliAmac.hedef}
+              </span>
+              <div className="amac-bar" role="progressbar" aria-valuenow={yuzde(seciliAmac)} aria-valuemin={0} aria-valuemax={100}>
+                <div className="amac-bar-dolu" style={{ width: `${yuzde(seciliAmac)}%` }} />
+              </div>
+            </div>
+          )}
+          <p className="amac-detay-ipucu">
+            {seciliAmac.tamamlandi
+              ? `${t.tamamIpucu}${seciliAmac.tamamlanmaYili ? ` (${seciliAmac.tamamlanmaYili})` : ''}`
+              : seciliAmac.kontrolAni === 'olumde'
+                ? t.olumdeIpucu
+                : t.herhangi}
+          </p>
+          <button type="button" onClick={() => setSecili(null)}>
+            {t.kapat}
+          </button>
+        </div>
+      </div>,
+      document.body,
+    );
 
   // ---- İnce yatay şerit — arka plan görselinin ÜSTÜNDE (oyun sahnesi overlay'i) ----
   if (varyant === 'serit') {
@@ -49,9 +115,11 @@ export function AmacPaneli({ durum, varyant = 'panel' }: AmacPaneliProps) {
         {durum.amaclar.map((a) => {
           const p = yuzde(a);
           return (
-            <span
+            <button
               key={a.id}
+              type="button"
               role="listitem"
+              onClick={() => setSecili(a.id)}
               className={`amac-serit-oge${a.tamamlandi ? ' amac-serit-tamam' : ''} amac-${a.zorluk}`}
               title={`${a.baslik} — ${a.aciklama}${
                 a.mevcut != null && a.hedef != null ? ` (${a.mevcut}/${a.hedef})` : ''
@@ -73,9 +141,10 @@ export function AmacPaneli({ durum, varyant = 'panel' }: AmacPaneliProps) {
               <span className="amac-serit-bar" aria-hidden="true">
                 <span className="amac-serit-bar-dolu" style={{ width: `${p}%` }} />
               </span>
-            </span>
+            </button>
           );
         })}
+        {detayPenceresi}
       </div>
     );
   }
@@ -99,8 +168,17 @@ export function AmacPaneli({ durum, varyant = 'panel' }: AmacPaneliProps) {
           return (
             <li
               key={a.id}
-              className={`amac-satir${a.tamamlandi ? ' amac-tamam' : ''} amac-${a.zorluk}`}
+              className={`amac-satir amac-tiklanir${a.tamamlandi ? ' amac-tamam' : ''} amac-${a.zorluk}`}
               title={a.aciklama}
+              role="button"
+              tabIndex={0}
+              onClick={() => setSecili(a.id)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setSecili(a.id);
+                }
+              }}
             >
               <div className="amac-ust">
                 <span className="amac-ikon">{a.tamamlandi ? '✓' : a.zorluk === 'zor' ? '★' : '◆'}</span>
@@ -129,6 +207,7 @@ export function AmacPaneli({ durum, varyant = 'panel' }: AmacPaneliProps) {
           );
         })}
       </ul>
+      {detayPenceresi}
     </div>
   );
 }

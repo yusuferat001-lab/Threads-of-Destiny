@@ -1,10 +1,10 @@
-import { useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
+import { useLayoutEffect, useRef, type ReactNode, type RefObject } from 'react';
 import type { SenaryoResponse, SonucEtkisi } from '../types';
 import { useDil } from '../DilContext';
 import { EtkiCipleri } from './EtkiCipleri';
 import { SonucEfekti } from './SonucEfekti';
 import { KoseTezhibi } from './Suslemeler';
-import { OLAY_RESMI_BILINEN, olayResmiSrc, type OlayResmiDurumu } from '../olayResmi';
+import { olayResmiAdaylari, useOlayResmi } from '../olayResmi';
 
 /** Seçim sonrası gösterilecek her şey — App.tsx `SonEtki`'den türetilir (`ozet` önceden birleştirilmiş). */
 export interface MobilSonuc {
@@ -21,7 +21,6 @@ export interface MobilSonuc {
 
 interface MobilOlayKutusuProps {
   cag: string;
-  yerlesim: string;
   ulke?: { savasta: boolean; vebada: boolean; ekonomi: string };
   senaryo: SenaryoResponse;
   /** null → soru durumu (başlık + metin + şıklar); dolu → sonuç durumu (çipler + özet + Devam Et). */
@@ -69,7 +68,6 @@ function useKaydirmaIpucu(ref: RefObject<HTMLElement | null>, icerikAnahtari: st
  */
 export function MobilOlayKutusu({
   cag,
-  yerlesim,
   ulke,
   senaryo,
   sonuc,
@@ -79,8 +77,8 @@ export function MobilOlayKutusu({
   onSecenek,
   onDevam,
 }: MobilOlayKutusuProps) {
-  const { m, kt } = useDil();
-  const src = olayResmiSrc(senaryo.kategori, cag);
+  const { m } = useDil();
+  const adaylar = olayResmiAdaylari(senaryo.kategori, cag, senaryo.resim);
   const govdeRef = useRef<HTMLDivElement>(null);
   useKaydirmaIpucu(govdeRef, `${sonuc ? 's' : 'q'}|${tepkiModu ? 't' : ''}|${senaryo.olay_basligi}|${sonuc?.ozet ?? ''}`);
   // Yoğun içerik: dar 2 sütunlu hücrelerde ~17 karakter/satır sığar. 4 şık ya da uzun şık metni
@@ -98,12 +96,11 @@ export function MobilOlayKutusu({
   return (
     <section className={`olay-kutusu${sonuc ? ' olay-kutusu-sonuc' : ''}${yogun ? ' olay-kutusu-yogun' : ''}`}>
       <div className="olay-kutusu-etiketler">
-        {yerlesim && <span className="bolge-sahnesi-etiket">{kt(yerlesim)}</span>}
         {ulke?.savasta && <span className="bolge-sahnesi-etiket bolge-sahnesi-tehlike">{m.usSavasta}</span>}
         {ulke?.vebada && <span className="bolge-sahnesi-etiket bolge-sahnesi-tehlike">{m.usSalgin}</span>}
       </div>
 
-      <OlayCercevesi key={src} src={src} emoji={senaryo.gorsel} yukleniyor={yukleniyor}>
+      <OlayCercevesi key={adaylar.join('|')} adaylar={adaylar} emoji={senaryo.gorsel} yukleniyor={yukleniyor}>
         {sonuc && (
           <>
             <div className="sonuc-efekti-kapsayici olay-cercevesi-efekt">
@@ -195,21 +192,17 @@ export function MobilOlayKutusu({
  * gösterilir — böylece resim gelip gidince ya da kategori değişince düzen hiç oynamaz.
  */
 function OlayCercevesi({
-  src,
+  adaylar,
   emoji,
   yukleniyor,
   children,
 }: {
-  src: string;
+  adaylar: string[];
   emoji: string;
   yukleniyor: boolean;
   children?: ReactNode;
 }) {
-  const [durum, setDurumState] = useState<OlayResmiDurumu>(OLAY_RESMI_BILINEN.get(src) ?? 'bekliyor');
-  const setDurum = (d: OlayResmiDurumu) => {
-    OLAY_RESMI_BILINEN.set(src, d);
-    setDurumState(d);
-  };
+  const { src, durum, onLoad, onError } = useOlayResmi(adaylar);
   const hazir = durum === 'hazir';
   return (
     <div className="olay-cercevesi">
@@ -219,7 +212,7 @@ function OlayCercevesi({
             {emoji}
           </span>
         )}
-        {durum !== 'yok' && (
+        {src !== null && (
           <img
             className={`olay-cercevesi-resim${hazir ? ' olay-cercevesi-resim-hazir' : ''}`}
             src={src}
@@ -227,8 +220,8 @@ function OlayCercevesi({
             aria-hidden="true"
             decoding="async"
             draggable={false}
-            onLoad={() => setDurum('hazir')}
-            onError={() => setDurum('yok')}
+            onLoad={onLoad}
+            onError={onError}
           />
         )}
       </div>

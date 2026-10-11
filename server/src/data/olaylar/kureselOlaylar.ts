@@ -25,13 +25,13 @@ export const OLAY_KURESEL: OlayTanimi[] = [
     gorsel: "☠️",
     baslik: "Salgın Kapıda",
     metin:
-      "{bolge} sokaklarında ölüm arabaları dolaşmaya başladı. Uzak kasabalardan gelen haberler tek şeyi söylüyor: hastalık hızla yayılıyor ve kimseyi ayırt etmiyor. Önümüzdeki yıllar boyunca bu salgının gölgesinde yaşayacaksın. Kendini nasıl koruyacaksın?",
+      "{bolge} sokaklarında ölüm arabaları geziyor. Salgın hızla yayılıyor, kimseyi ayırmıyor. Nasıl korunacaksın?",
     secenekler: [
       {
-        metin: "Servetini kullan: şehri terk et, kırsalda bir yer kirala, çevreni tamamen izole et",
+        metin: "Kırsala çekil, kendini izole et.",
         baseBasariSansi: 80,
         maliyet: 15,
-        kilitAciklamasi: "Kırsala çekilip aylarca geçinecek paran yok.",
+        kilitAciklamasi: "Kırsalda geçinecek paran yok.",
         basariliSonuc: {
           ulke_etkisi: { vebada: true },
           veba_koruma: 2,
@@ -39,7 +39,7 @@ export const OLAY_KURESEL: OlayTanimi[] = [
           mutluluk: -10,
           un: -4,
           mesaj:
-            "Şehrin kapılarından çıkarken arkanda bıraktığın yüzleri unutamayacaksın. Ama uzakta, temiz havada, salgının en ağır yıllarını atlatma şansın çok daha yüksek.",
+            "Şehri bıraktın; temiz havada kurtulma şansın yüksek.",
         },
         basarisizSonuc: {
           ulke_etkisi: { vebada: true },
@@ -48,21 +48,21 @@ export const OLAY_KURESEL: OlayTanimi[] = [
           mutluluk: -12,
           saglik: -6,
           mesaj:
-            "Yola çıktın ama hastalık senden hızlıydı; yol boyunca hasta kervanlarına denk geldin. Yine de şehirde kalmaktan iyidir — kısmen korunuyorsun.",
+            "Yolda hasta kervanlara denk geldin. Yine de kısmen korunuyorsun.",
         },
       },
       {
-        metin: "Evde sıkı karantina: kapını ördür, erzak stokla, kimseyi içeri alma",
+        metin: "Kapıyı ördür, karantinaya gir.",
         baseBasariSansi: 85,
         maliyet: 6,
-        kilitAciklamasi: "Aylarca yetecek erzağı stoklayacak paran yok.",
+        kilitAciklamasi: "Erzak stoklayacak paran yok.",
         basariliSonuc: {
           ulke_etkisi: { vebada: true },
           veba_koruma: 1,
           para: -6,
           mutluluk: -6,
           mesaj:
-            "Aylarca dört duvar arasında, dışarıdaki çığlıkları dinleyerek yaşadın. Sıkıcı ve boğucuydu ama işe yaradı.",
+            "Aylarca dört duvar arasında kaldın; işe yaradı.",
         },
         basarisizSonuc: {
           ulke_etkisi: { vebada: true },
@@ -71,25 +71,25 @@ export const OLAY_KURESEL: OlayTanimi[] = [
           mutluluk: -8,
           saglik: -4,
           mesaj:
-            "Bir noktada karantinan delindi — teslimat, komşu, bir akraba... Fark etmeden içeri girdi. Artık pek bir korunman kalmadı.",
+            "Karantina delindi; korunman neredeyse kalmadı.",
         },
       },
       {
-        metin: "Hayatına normal devam et: kaçacak yer yok, kader ne yazdıysa",
+        metin: "Normal devam et, kaderine boyun eğ.",
         baseBasariSansi: 60,
         basariliSonuc: {
           ulke_etkisi: { vebada: true },
           veba_koruma: 0,
           un: 2,
           mesaj:
-            "Kimse seni saklandığın için ayıplayamaz. Salgın {bolge}'yi sardı; sen de herkesle aynı kaderi paylaşıyorsun.",
+            "Salgın {bolge}'yi sardı; herkesle aynı kaderi paylaşıyorsun.",
         },
         basarisizSonuc: {
           ulke_etkisi: { vebada: true },
           veba_koruma: 0,
           saglik: -10,
           mesaj:
-            "İlk haftalarda çarşıda geçirdiğin bir gün yetti. Hafif bir ateşle uyandın — bu sefer atlattın, ama salgın daha yeni başlıyor.",
+            "Çarşıda bir gün yetti; ateşle uyandın ama atlattın.",
         },
       },
     ],
@@ -105,7 +105,7 @@ export const OLAY_KURESEL: OlayTanimi[] = [
     gorsel: "🚪",
     baslik: "Kapını Çalan",
     metin:
-      "Gece yarısı kapın çalınıyor. Uzaktan bir akraban, titreyerek, ateşler içinde eşikte duruyor. Şehirde gidecek yeri kalmamış. İçeri alırsan hastalığı eve sokabilirsin; almazsan onu ölüme terk edersin.",
+      "Gece yarısı kapında ateşler içinde bir akraban titriyor. Alırsan hastalık girebilir, almazsan ölür.",
     secenekler: [
       {
         metin: "İçeri al, elinden geleni yap",
@@ -114,27 +114,27 @@ export const OLAY_KURESEL: OlayTanimi[] = [
           ahlak: 8,
           mutluluk: 5,
           un: 3,
-          mesaj: "Günlerce başında bekledin. İyileşti. Komşular bunu konuştu — merhametli biri olduğun bilindi.",
+          mesaj: "Günlerce başında bekledin, iyileşti. Merhametin duyuldu.",
         },
         basarisizSonuc: {
           saglik: -18,
           ahlak: 5,
           etiket_ekle: ["veba_hastasi"],
-          mesaj: "Onu kaybettin, üstüne hastalık sana da bulaştı. Ateşin çıktı — artık sen de vebalısın.",
+          mesaj: "Onu kaybettin, hastalık sana da bulaştı. Artık vebalısın.",
         },
       },
       {
-        metin: "Kapıyı açma, uzaklaşmasını söyle",
+        metin: "Kapıyı açma, uzaklaştır.",
         baseBasariSansi: 90,
         basariliSonuc: {
           ahlak: -6,
           mutluluk: -5,
-          mesaj: "Kapının ardında kesilen o ses yıllarca aklından çıkmayacak. Ama eve hastalık girmedi.",
+          mesaj: "O ses aklından çıkmayacak ama hastalık girmedi.",
         },
         basarisizSonuc: {
           saglik: -4,
           mutluluk: -4,
-          mesaj: "Kapı aralığından konuşurken bile fazla yaklaştın; birkaç gün tedirgin bekledin.",
+          mesaj: "Fazla yaklaştın; birkaç gün tedirgin bekledin.",
         },
       },
     ],
@@ -150,33 +150,33 @@ export const OLAY_KURESEL: OlayTanimi[] = [
     gorsel: "⚰️",
     baslik: "Salgında Bir Cenaze",
     metin:
-      "Yakın tanıdığın biri vebadan öldü. Cenazesi bugün. Salgın günlerinde kalabalık bir cenazeye gitmek tehlikeli, ama gitmemek de vefasızlık sayılır.",
+      "Yakının vebadan öldü, cenaze bugün. Kalabalığa girmek tehlikeli, gitmemek vefasızlık.",
     secenekler: [
       {
-        metin: "Cenazeye git, son görevini yap",
+        metin: "Cenazeye git, vefanı göster.",
         baseBasariSansi: 50,
         basariliSonuc: {
           mutluluk: 4,
           ahlak: 4,
           un: 2,
-          mesaj: "Toprağa verilişine tanık oldun. İçin biraz olsun rahatladı; insanlar orada olduğunu gördü.",
+          mesaj: "Onu toprağa verdin; için rahatladı, insanlar seni gördü.",
         },
         basarisizSonuc: {
           saglik: -14,
           etiket_ekle: ["veba_hastasi"],
-          mesaj: "Cenazede omuz omuza durduğun birinden kaptın. Birkaç gün sonra ateşin çıktı — vebayı kaptın.",
+          mesaj: "Cenazede yanındakinden kaptın. Ateşin çıktı; vebalısın.",
         },
       },
       {
-        metin: "Uzaktan dua et, kalabalığa karışma",
+        metin: "Uzaktan dua et, kalabalığa girme.",
         baseBasariSansi: 92,
         basariliSonuc: {
           mutluluk: -3,
-          mesaj: "Evinden, alçak sesle dua ettin. Gidememek içini burktu ama sağlığını korudun.",
+          mesaj: "Evden dua ettin. Gidememek yaktı ama sağlığını korudun.",
         },
         basarisizSonuc: {
           saglik: -3,
-          mesaj: "Mezarlığın kenarından izlerken bile fazla yaklaştın sayıldı; günlerce kendini kolladın.",
+          mesaj: "Uzaktan bile fazla yaklaştın; günlerce kendini kolladın.",
         },
       },
     ],
@@ -191,24 +191,24 @@ export const OLAY_KURESEL: OlayTanimi[] = [
     gorsel: "😷",
     baslik: "Çarşıda Bir Temas",
     metin:
-      "Erzak alırken öksüren, yüzü kızarmış biri sana çarptı ve kalabalığa karıştı. Belki bir şeyi yoktu. Belki de hastalığı taşıyordu. Ne yapacaksın?",
+      "Çarşıda öksüren, yüzü kızarmış biri sana çarpıp kalabalığa karıştı. Hasta olabilir. Ne yapacaksın?",
     secenekler: [
       {
-        metin: "Sakin ol, doğruca eve git, iyice yıkan ve bekle",
+        metin: "Sakin ol, eve git, yıkan ve bekle.",
         baseBasariSansi: 80,
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
           mutluluk: -3,
-          mesaj: "Birkaç gün huzursuz bekledin ama bir belirti çıkmadı. Şanslıydın.",
+          mesaj: "Günlerce huzursuz bekledin, belirti çıkmadı. Şanslıydın.",
         },
         basarisizSonuc: {
           saglik: -12,
-          mesaj: "Üçüncü gün ateşin çıktı. Hafif atlattın ama bir süre yatakta kaldın.",
+          mesaj: "Üçüncü gün ateşin çıktı; hafif atlattın ama yattın.",
         },
       },
       {
-        metin: "Hemen bir şifacıya koş, tütsü ve merhem yaptır",
+        metin: "Şifacıya koş, tütsü ve merhem yaptır.",
         baseBasariSansi: 66,
         maliyet: 3,
         kilitAciklamasi: "Şifacıya verecek paran yok.",
@@ -216,12 +216,12 @@ export const OLAY_KURESEL: OlayTanimi[] = [
           para: -3,
           saglik: 2,
           mutluluk: 2,
-          mesaj: "Şifacının işlemleri belki tıbben değil ama ruhen iyi geldi; rahat bir nefes aldın.",
+          mesaj: "Şifacı tıbben değil ama ruhen iyi geldi.",
         },
         basarisizSonuc: {
           para: -3,
           saglik: -8,
-          mesaj: "Şifacının tütsüsü fayda etmedi; birkaç gün sonra yine de hastalandın.",
+          mesaj: "Tütsü fayda etmedi; birkaç gün sonra hastalandın.",
         },
       },
     ],
@@ -237,22 +237,22 @@ export const OLAY_KURESEL: OlayTanimi[] = [
     gorsel: "🕯️",
     baslik: "Hasta Bakıcılığı Teklifi",
     metin:
-      "Zengin bir hane, vebalı yakınlarına bakacak, ölülerini kaldıracak birini arıyor. Ücret yüksek — çünkü bu işe kimse yanaşmıyor. Kabul edersen hem para hem de büyük bir bulaşma riski.",
+      "Zengin bir hane vebalılara bakacak, ölüleri kaldıracak birini arıyor. Ücret yüksek ama bulaşma riski büyük.",
     secenekler: [
       {
-        metin: "İşi kabul et, hastalara bak",
+        metin: "Kabul et, hastalara bak.",
         baseBasariSansi: 40,
         basariliSonuc: {
           mutluluk: -10,
           para: 25,
           ahlak: 3,
           un: 2,
-          mesaj: "Aylarca ölümün içinde çalıştın ve sağ çıktın. Cebin doldu, adın 'cesur' diye anıldı.",
+          mesaj: "Aylarca ölümün içinde çalışıp sağ çıktın. Cebin doldu.",
         },
         basarisizSonuc: {
           saglik: -20,
           etiket_ekle: ["veba_hastasi"],
-          mesaj: "Baktığın hastalardan biri sana da bulaştırdı. Bu kez hastalık seni de yatağa düşürdü — vebalısın.",
+          mesaj: "Hastalardan biri sana bulaştırdı; vebalısın.",
         },
       },
       {
@@ -262,11 +262,11 @@ export const OLAY_KURESEL: OlayTanimi[] = [
           saglik: 2,
           ahlak: 1,
           mutluluk: -1,
-          mesaj: "Parayı geri çevirdin. Aç ama sağ kaldın.",
+          mesaj: "Parayı reddettin. Aç ama sağsın.",
         },
         basarisizSonuc: {
           para: -2,
-          mesaj: "Reddettin ama teklifi getiren adamla fazla yakın konuştun; birkaç gün tedirgin geçti.",
+          mesaj: "Teklifçiyle fazla yakın konuştun; birkaç gün tedirgin geçti.",
         },
       },
     ],

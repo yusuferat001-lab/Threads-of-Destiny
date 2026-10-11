@@ -5,44 +5,44 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
   oc_tuccar_kervan: {
     baslik: "The Caravan Road",
     metin:
-      "You send your caravan, loaded with valuable goods, on its way. There are three routes: the short, dangerous desert road; the long, safe mountain road; or the main road with paid guards.",
+      "Your caravan of valuable goods sets out. Three routes: the short desert road, the long safe mountain road, or the guarded main road.",
     secenekler: [
       {
-        metin: "Take the desert road — short, cheap, dangerous.",
+        metin: "Desert road: short, cheap, risky.",
         basariliSonuc: {
-          mesaj: "You crossed the desert in ten days; the goods reached the market before anyone else.",
+          mesaj: "You crossed the desert in ten days and beat everyone to market.",
           detay:
-            "You were there while prices were at their peak. Your lips cracked from thirst, but your coffer filled.",
+            "Prices peaked; your coffer filled.",
         },
         basarisizSonuc: {
-          mesaj: "Bandits raided the caravan; they took the goods and left you half dead.",
+          mesaj: "Bandits raided the caravan, took the goods, left you half dead.",
           detay:
-            "You walked two days in the desert without water. If a Bedouin party hadn't found you, you'd have stayed out there; the goods are gone, the debt remains.",
+            "Two days without water; the goods are gone.",
         },
       },
       {
-        metin: "Take the mountain road — long, tiring, safe.",
+        metin: "Mountain road: long, tiring, safe.",
         basariliSonuc: {
-          mesaj: "The mountain road was long but the caravan arrived intact.",
-          detay: "By the time you arrived the best prices were gone, but you still made a profit. A dull success is a success too.",
+          mesaj: "The road was long, but the caravan arrived intact.",
+          detay: "Prices had dropped, yet you profited.",
         },
         basarisizSonuc: {
-          mesaj: "Early snow closed the road; the goods waited and some spoiled.",
+          mesaj: "Early snow closed the pass; goods waited and spoiled.",
           detay:
-            "The safe road betrays you sometimes too. You were stuck in the pass for three weeks; spoiled goods and eaten provisions grew the loss.",
+            "Stuck in the pass for three weeks.",
         },
       },
       {
         metin: "Hire guards, take the main road.",
         basariliSonuc: {
-          mesaj: "Thanks to the guards, not a single bandit could get close.",
+          mesaj: "Thanks to the guards, no bandit came near.",
           detay:
-            "After paying their fees the remaining profit was small but certain. The guard captain said 'a discount next time', and that too is a connection.",
+            "After fees the profit was small but sure.",
         },
         basarisizSonuc: {
-          mesaj: "The guards you hired were in league with the bandits; they split the goods.",
+          mesaj: "The guards were in league with bandits and split the goods.",
           detay:
-            "Your own protection robbed you. You can't tell anyone, because the mark of 'a merchant who can't even pick his guards' would end your trade.",
+            "Robbed by your own guards; you stay silent.",
         },
       },
     ],
@@ -51,32 +51,32 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
   oc_tuccar_lonca: {
     baslik: "Guild Membership",
     metin:
-      "The city's merchant guild has invited you to join. Membership is expensive and requires following the guild's rules; but non-members cannot bid on the big contracts.",
+      "The merchant guild offers membership. It's costly and bound by rules, but non-members can't bid on big contracts.",
     secenekler: [
       {
-        metin: "Join, follow the guild's rules.",
+        metin: "Join, follow the rules.",
         basariliSonuc: {
-          mesaj: "You were admitted to the guild; you can now bid on the big contracts.",
+          mesaj: "You joined the guild; you can now bid on big contracts.",
           detay:
-            "The guild sets prices, decides who sells where. Your earnings rose, your freedom fell, and this is the trade most merchants make.",
+            "More earnings, less freedom.",
         },
         basarisizSonuc: {
-          mesaj: "You paid the dues but the old members shut you out as an 'upstart'.",
+          mesaj: "You paid the dues but old members shut you out.",
           detay:
-            "You are invited to the meetings, but the decisions are made before you arrive. You keep paying the dues because leaving would look worse.",
+            "Decisions are made before you arrive.",
         },
       },
       {
-        metin: "Don't join, work independent and unregulated.",
+        metin: "Stay out, work independently.",
         basariliSonuc: {
-          mesaj: "You undercut the guild's prices; customers poured in.",
+          mesaj: "You undercut guild prices; customers poured in.",
           detay:
-            "You don't care about the guild's anger because the customer looks at who sells cheap. But you are never invited to the big contracts.",
+            "But you're never invited to big contracts.",
         },
         basarisizSonuc: {
-          mesaj: "The guild pressured the suppliers; no one will sell you goods.",
+          mesaj: "The guild pressured suppliers; no one sells to you.",
           detay:
-            "Standing alone was a good idea until everyone united against you. Your warehouses are empty, your customers at another door.",
+            "Empty warehouses, customers elsewhere.",
         },
       },
     ],
@@ -85,42 +85,42 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
   oc_tuccar_sahte_mal: {
     baslik: "A Cheap Supplier",
     metin:
-      "A supplier offers you cheap cloth you could sell as silk. The difference is hard to see by eye, but an expert buyer would notice at once.",
+      "A supplier offers cheap cloth you could pass off as silk. Hard to spot, but an expert would notice at once.",
     secenekler: [
       {
-        metin: "Buy it and sell it as silk.",
+        metin: "Buy it, sell it as silk.",
         basariliSonuc: {
-          mesaj: "No one noticed the difference; your profit margin tripled.",
+          mesaj: "No one noticed; your margin tripled.",
           detay:
-            "As you counted the money, you remembered the customer saying 'what fine cloth'. And you know you'll do it again.",
+            "You know you'll do it again.",
         },
         basarisizSonuc: {
-          mesaj: "A noble's tailor tested the cloth; the scandal spread through the market.",
-          detay: "A sign reading 'fraud' was hung outside your shop. The trust you built over years went with one bolt of cloth.",
+          mesaj: "A noble's tailor tested the cloth; the scandal spread.",
+          detay: "A 'fraud' sign hung on your shop.",
         },
       },
       {
-        metin: "Buy it but sell it under its real name, as cheap cloth.",
+        metin: "Buy it, sell it honestly as cheap cloth.",
         basariliSonuc: {
-          mesaj: "You sold the cheap cloth honestly; you got a steady clientele from the poor quarters.",
+          mesaj: "You sold honestly; the poor quarters became steady customers.",
           detay:
-            "The rich don't buy silk from you, but tradesmen and craftsmen always come. The sum of your small profits came out large.",
+            "Small profits added up.",
         },
         basarisizSonuc: {
-          mesaj: "No buyer came for the cheap cloth either; it sat in your warehouse.",
-          detay: "Honesty is no guarantee of a sale. You unloaded the goods at a loss and never worked with that supplier again.",
+          mesaj: "Not even the cheap cloth sold; it sat in the warehouse.",
+          detay: "You dumped the goods at a loss.",
         },
       },
       {
-        metin: "Refuse, report the supplier to the guild.",
+        metin: "Refuse and report the supplier.",
         basariliSonuc: {
-          mesaj: "Thanks to your report the fraud ring was broken; your name became that of an honest merchant.",
+          mesaj: "Your report broke the fraud ring; you're known as honest.",
           detay:
-            "The guild rewarded you, the tradesmen congratulated you. And there is a man who had to flee the city, and he knows your name.",
+            "The man who fled knows your name.",
         },
         basarisizSonuc: {
           mesaj: "The supplier's men raided your shop at night.",
-          detay: "Windows broken, goods scattered, and you were beaten. The guild said 'insufficient evidence' and closed the file.",
+          detay: "You were beaten; the guild cited no evidence.",
         },
       },
     ],
@@ -129,28 +129,28 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
   oc_tuccar_sahte_altin: {
     baslik: "Suspicious Coins",
     metin:
-      "You received a large payment, but some of the coins feel light; they may be counterfeit. If you spend them, no one may notice, or you could land in serious trouble.",
+      "A large payment came in, but some coins feel light; maybe fake. Spend them unnoticed, or land in trouble.",
     secenekler: [
       {
-        metin: "Quietly keep spending the coins.",
+        metin: "Quietly spend the coins.",
         basariliSonuc: {
-          mesaj: "The coins passed unnoticed; your loss was made good.",
-          detay: "You told no one; this became your little secret.",
+          mesaj: "The coins passed unnoticed; your loss is recovered.",
+          detay: "Your little secret.",
         },
         basarisizSonuc: {
-          mesaj: "A tradesman noticed the counterfeit coin and accused you of fraud.",
-          detay: "You hadn't done the forging, but now your name is mixed up in it.",
+          mesaj: "A tradesman spotted a fake coin and accused you.",
+          detay: "Not your forgery, but your name is in it.",
         },
       },
       {
-        metin: "Take the coins back to the person you got them from.",
+        metin: "Take the coins back to the giver.",
         basariliSonuc: {
-          mesaj: "The man was embarrassed, changed the coins, and apologized to you.",
-          detay: "Your honesty was talked about in the market; some merchants now do business with you more easily.",
+          mesaj: "The man, embarrassed, swapped the coins and apologized.",
+          detay: "Your honesty was talked about.",
         },
         basarisizSonuc: {
-          mesaj: "The man denied the coins were counterfeit; you didn't get your money back.",
-          detay: "You tried to do the right thing and the loss stayed with you.",
+          mesaj: "He denied they were fake; you got no refund.",
+          detay: "You did right and bore the loss.",
         },
       },
     ],
@@ -159,28 +159,28 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
   oc_tuccar_kervansaray_yangini: {
     baslik: "The Caravanserai Fire",
     metin:
-      "A fire broke out at the caravanserai where you were spending the night. Your goods are in a storeroom, your animals in the stable. You don't have time to save both.",
+      "Fire breaks out at your caravanserai. Goods are in the storeroom, animals in the stable; you can't save both.",
     secenekler: [
       {
         metin: "Save the goods.",
         basariliSonuc: {
-          mesaj: "You saved most of the goods through the smoke; your animals were lost.",
-          detay: "Your capital stayed intact, but finding new animals will take time.",
+          mesaj: "You saved most goods; the animals were lost.",
+          detay: "Capital intact; new animals take time.",
         },
         basarisizSonuc: {
-          mesaj: "The smoke made you faint; both goods and animals burned.",
-          detay: "You barely threw yourself outside; nothing of yours remained among the ashes of the caravanserai.",
+          mesaj: "Smoke knocked you out; goods and animals burned.",
+          detay: "You barely escaped; only ashes remain.",
         },
       },
       {
         metin: "Save the animals.",
         basariliSonuc: {
-          mesaj: "You saved the horses and camels; at least you can carry on the road.",
-          detay: "The goods burned but having the animals is enough for a new start.",
+          mesaj: "You saved the horses and camels; you can still travel.",
+          detay: "Goods burned, but you can start anew.",
         },
         basarisizSonuc: {
-          mesaj: "The animals bolted in panic and you were choked by the smoke; you lost everything.",
-          detay: "This became one of those nights that starts you from nothing.",
+          mesaj: "The animals bolted, smoke choked you; you lost everything.",
+          detay: "A night that restarts you from zero.",
         },
       },
     ],
@@ -189,39 +189,39 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
   oc_tuccar_cifte_defter: {
     baslik: "The Double Ledger",
     metin:
-      "Your partner suggests keeping a false ledger to show the tax officers; only a fraction of your real earnings would be recorded, the rest staying in your pockets.",
+      "Your partner proposes a false ledger for the tax men; little of your real earnings recorded, the rest pocketed.",
     secenekler: [
       {
-        metin: "Sell your partner to the guild, seize the whole shop!",
+        metin: "Betray your partner, seize the shop!",
         basariliSonuc: {
           mesaj:
-            "You reported your partner to the treasury! The man was thrown in the dungeon, and you, as an 'honest citizen', bought up all his shares cheap.",
-          detay: "You grew rich but the man's family will never forgive you.",
+            "You reported him; he's jailed, his shares are yours.",
+          detay: "Richer, but his family won't forgive you.",
         },
         basarisizSonuc: {
-          mesaj: "The inspectors found you both guilty. The game backfired; all your goods were seized.",
+          mesaj: "Inspectors found you both guilty; your goods were seized.",
         },
       },
       {
-        metin: "Accept the suggestion.",
+        metin: "Accept the offer.",
         basariliSonuc: {
-          mesaj: "You evaded tax for years; your earnings stayed far above their recorded value.",
-          detay: "Even your acquaintances in the state office don't know about it; you keep this secret tight.",
+          mesaj: "You evaded tax for years; your earnings soared.",
+          detay: "You keep the secret tight.",
         },
         basarisizSonuc: {
-          mesaj: "The audit team found the double ledger; a heavy tax penalty and your shop was seized.",
-          detay: "Everything you'd saved over years was taken from you in one afternoon.",
+          mesaj: "Auditors found the double ledger; heavy fine, shop seized.",
+          detay: "Years of savings gone in one afternoon.",
         },
       },
       {
-        metin: "Refuse, keep a single honest ledger.",
+        metin: "Refuse, keep one honest ledger.",
         basariliSonuc: {
-          mesaj: "You stayed honest; audits never worry you at all.",
-          detay: "Your partner finds you 'too cautious', but you sleep easy at night.",
+          mesaj: "You stayed honest; audits don't worry you.",
+          detay: "Called too cautious; you sleep easy.",
         },
         basarisizSonuc: {
-          mesaj: "Your partner didn't accept your refusal and dissolved the partnership on his own.",
-          detay: "Your honesty cost you the partnership but did not touch your conscience.",
+          mesaj: "Your partner wouldn't accept it and dissolved the firm.",
+          detay: "It cost the partnership, not your conscience.",
         },
       },
     ],
@@ -230,28 +230,28 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
   oc_tuccar_kizinin_cehizi: {
     baslik: "Your Daughter's Dowry",
     metin:
-      "Your daughter has reached marrying age and a suitor from a good family has come forward. But the dowry asked is nearly your entire savings.",
+      "Your daughter is of age and a good family asks for her. But the dowry takes nearly all your savings.",
     secenekler: [
       {
-        metin: "Spend all your savings on the dowry, secure a good marriage.",
+        metin: "Spend all savings on the dowry.",
         basariliSonuc: {
-          mesaj: "The dowry was approved, the wedding was grand; your daughter began a happy life.",
-          detay: "You wiped out your capital, but the happiness in your daughter's eyes was worth it.",
+          mesaj: "The wedding was grand; your daughter began a happy life.",
+          detay: "Capital gone, but her joy was worth it.",
         },
         basarisizSonuc: {
-          mesaj: "The dowry was given but the groom's family still turned up their noses.",
-          detay: "You did all you could; being found insufficient wore you out.",
+          mesaj: "The dowry was paid, yet the groom's family sneered.",
+          detay: "You did your best; it wasn't enough.",
         },
       },
       {
         metin: "Offer a more modest dowry.",
         basariliSonuc: {
-          mesaj: "The family accepted the modest offer; the wedding was plain but warm.",
-          detay: "Your daughter said she was proud not of the money but of you.",
+          mesaj: "They accepted; the wedding was plain but warm.",
+          detay: "Your daughter said she's proud of you.",
         },
         basarisizSonuc: {
-          mesaj: "The family found the offer insufficient and the marriage fell through.",
-          detay: "Your daughter's disappointment weighed far heavier than the money you lost.",
+          mesaj: "The family found it too little; the match fell through.",
+          detay: "Her disappointment outweighed the money.",
         },
       },
     ],
@@ -260,38 +260,38 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
   oc_tuccar_yabanci_dil_bilgini: {
     baslik: "A Merchant From a Distant Land",
     metin:
-      "A merchant caravan speaking a language you've never heard has come to the city. No one can communicate, but it's clear their goods are very valuable.",
+      "A caravan whose language you don't know arrives. No one can communicate, but their goods are clearly valuable.",
     secenekler: [
       {
-        metin: "Break the ice using your pet parrot's talent for mimicry.",
+        metin: "Break the ice with your parrot's mimicry.",
         basariliSonuc: {
           mesaj:
-            "When your parrot mimicked the strangers' odd sounds, the whole caravan burst out laughing. A wonderful bond formed between you and you struck a deal at the best price!",
+            "Your parrot's mimicry cracked up the caravan; best price struck!",
         },
         basarisizSonuc: {
           mesaj: "Not used.",
         },
       },
       {
-        metin: "Hire an interpreter, bargain directly.",
+        metin: "Hire an interpreter and bargain.",
         basariliSonuc: {
-          mesaj: "Thanks to the interpreter you bought the best goods at the best price.",
-          detay: "These merchants come the same season every year; they are your customers now.",
+          mesaj: "With the interpreter you got the best goods at the best price.",
+          detay: "These merchants are your customers now.",
         },
         basarisizSonuc: {
-          mesaj: "The interpreter you hired mistranslated the prices; you traded at a loss.",
-          detay: "A failure to communicate sometimes costs more than money.",
+          mesaj: "The interpreter mistranslated prices; you bought at a loss.",
+          detay: "Miscommunication can cost more than money.",
         },
       },
       {
-        metin: "Try to deal with signs, don't take the risk.",
+        metin: "Try dealing by signs.",
         basariliSonuc: {
-          mesaj: "With hand gestures you made a small but profitable trade.",
-          detay: "The caravan leader laughed and shook your hand; language may not have been shared, but trade was.",
+          mesaj: "By gestures you made a small, profitable trade.",
+          detay: "No shared language, but shared trade.",
         },
         basarisizSonuc: {
-          mesaj: "Because of a misunderstanding you had to buy a good you didn't want.",
-          detay: "Sometimes silence leads to more misunderstanding than an agreement does.",
+          mesaj: "A misunderstanding left you with a good you didn't want.",
+          detay: "Silence led to misunderstanding.",
         },
       },
     ],
@@ -300,28 +300,28 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
   oc_tuccar_deniz_firtinasi: {
     baslik: "The Ship in the Storm",
     metin:
-      "The ship you chartered was caught in a great storm. The captain sent word: unless they throw part of the cargo overboard, the ship could sink.",
+      "Your chartered ship is caught in a great storm. The captain says it may sink unless part of the cargo goes overboard.",
     secenekler: [
       {
-        metin: "Give the captain permission to throw half the cargo.",
+        metin: "Let him throw half the cargo.",
         basariliSonuc: {
-          mesaj: "The ship and your remaining cargo weathered the storm.",
-          detay: "The loss was great but you didn't lose everything; the captain said you made the right call.",
+          mesaj: "The ship and remaining cargo weathered the storm.",
+          detay: "Heavy loss, but not everything.",
         },
         basarisizSonuc: {
-          mesaj: "What they threw was not enough; the ship still took heavy damage.",
-          detay: "Both your cargo is gone and the ship's repair came out of your pocket.",
+          mesaj: "The jettisoned cargo wasn't enough; the ship was badly damaged.",
+          detay: "Cargo gone, repairs on you.",
         },
       },
       {
-        metin: "Let nothing be thrown, take the risk.",
+        metin: "Throw nothing; take the risk.",
         basariliSonuc: {
-          mesaj: "The ship miraculously weathered the storm with the cargo intact.",
-          detay: "The captain said he'd never work with you again, but this time you won.",
+          mesaj: "The ship miraculously survived with all its cargo.",
+          detay: "The captain won't sail with you again, but you won.",
         },
         basarisizSonuc: {
-          mesaj: "The ship sank; your cargo, part of the crew and your whole investment were lost.",
-          detay: "This became one of the worst weeks of your trading life.",
+          mesaj: "The ship sank; cargo, some crew and your investment lost.",
+          detay: "One of your worst weeks in trade.",
         },
       },
     ],
@@ -330,28 +330,28 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
   "oc_tuccar_haraç_talebi": {
     baslik: "The Toll-Taking Lordling",
     metin:
-      "A minor lordling whose lands you crossed demands an arbitrary levy under the name of a 'passage toll'. It is not legal, but he has armed men.",
+      "A lordling whose lands you cross demands an arbitrary 'toll'. It's illegal, but he has armed men.",
     secenekler: [
       {
-        metin: "Pay, carry on your way.",
+        metin: "Pay and move on.",
         basariliSonuc: {
-          mesaj: "You paid the levy and passed without trouble.",
-          detay: "You know he'll be here again next time, and it bothers you.",
+          mesaj: "You paid and passed without trouble.",
+          detay: "He'll be here again next time.",
         },
         basarisizSonuc: {
-          mesaj: "The lordling doubled the levy, claiming you had 'forgotten' it.",
-          detay: "You have no bargaining room against arbitrary power.",
+          mesaj: "The lordling doubled the levy, saying you 'forgot' it.",
+          detay: "No bargaining against arbitrary power.",
         },
       },
       {
-        metin: "Refuse to pay, complain to the higher authority.",
+        metin: "Refuse, complain to the authorities.",
         basariliSonuc: {
-          mesaj: "Your complaint was heeded; the lordling was warned and the levy lifted.",
-          detay: "Other merchants thanked you; this road is safer to travel now.",
+          mesaj: "Your complaint worked; the lordling was warned, the levy lifted.",
+          detay: "Other merchants thanked you.",
         },
         basarisizSonuc: {
-          mesaj: "The lordling's men stopped you on the road and 'taught you a lesson'.",
-          detay: "You trusted the authorities and the authorities came far too late.",
+          mesaj: "The lordling's men 'taught you a lesson' on the road.",
+          detay: "The authorities came too late.",
         },
       },
     ],
@@ -360,28 +360,28 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
   oc_tuccar_kalp_para_uretimi: {
     baslik: "Striking Counterfeit Coin",
     metin:
-      "A goldsmith you know says he can strike counterfeit coins indistinguishable from the real thing. If you partner up you could both be rich — or you could both be hanged.",
+      "A goldsmith says he can strike perfect counterfeit coins. Partner up and you get rich, or hanged.",
     secenekler: [
       {
         metin: "Accept the partnership.",
         basariliSonuc: {
-          mesaj: "The counterfeit coins circulated without trouble; your fortune multiplied.",
-          detay: "The life you built with this money carries a lie at its foundation, and you know it.",
+          mesaj: "The fakes circulated freely; your fortune multiplied.",
+          detay: "Your wealth rests on a lie.",
         },
         basarisizSonuc: {
           mesaj:
-            "The craftsmen's guild detected the counterfeit coins and the trail found you. Coining was counted among the gravest crimes and you were executed.",
+            "The guild traced the fakes to you; you were executed for coining.",
         },
       },
       {
-        metin: "Refuse the offer, report the goldsmith.",
+        metin: "Refuse, report the goldsmith.",
         basariliSonuc: {
-          mesaj: "Thanks to your report the counterfeiting ring was broken.",
-          detay: "The guild rewarded you, but the goldsmith's relatives will never forgive you.",
+          mesaj: "Your report broke the counterfeiting ring.",
+          detay: "His relatives will never forgive you.",
         },
         basarisizSonuc: {
-          mesaj: "Your report was found unproven; the goldsmith accused you of slander.",
-          detay: "You told the truth and no one believed it.",
+          mesaj: "Your report lacked proof; he accused you of slander.",
+          detay: "You told the truth; no one believed it.",
         },
       },
     ],
@@ -390,28 +390,28 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
   oc_tuccar_kervan_rehberi_ihanet: {
     baslik: "Your Guide's Suspicious Route",
     metin:
-      "The caravan guide you hired suggests taking a deserted shortcut instead of the known main road. It saves time, but you don't know why he insists so much.",
+      "Your guide urges a deserted shortcut over the main road. It saves time, but you don't know why he insists.",
     secenekler: [
       {
         metin: "Trust the guide, take the shortcut.",
         basariliSonuc: {
-          mesaj: "The shortcut really worked; you reached the market ahead of your rivals.",
-          detay: "The guide smiled to himself; maybe he was just a good guide.",
+          mesaj: "The shortcut worked; you beat your rivals to market.",
+          detay: "Maybe he was simply a good guide.",
         },
         basarisizSonuc: {
-          mesaj: "The shortcut was a bandit trap; the guide was in league with them.",
-          detay: "Your goods are gone, the guide vanished; you learned this lesson the hard way.",
+          mesaj: "The shortcut was a trap; the guide was in league with bandits.",
+          detay: "Goods gone, guide vanished.",
         },
       },
       {
-        metin: "Take the main road despite his insistence.",
+        metin: "Take the main road anyway.",
         basariliSonuc: {
-          mesaj: "You arrived safely by the main road; the guide sulked but there was no trouble.",
-          detay: "Trusting your instincts is sometimes the best trade strategy.",
+          mesaj: "You arrived safely; the guide sulked.",
+          detay: "Trusting your instincts paid off.",
         },
         basarisizSonuc: {
-          mesaj: "The main road was blocked too; the delay cost you some customers.",
-          detay: "Even being cautious sometimes carries a price.",
+          mesaj: "The main road was blocked too; delay cost you customers.",
+          detay: "Caution has a price too.",
         },
       },
     ],
@@ -420,28 +420,28 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
   oc_tuccar_zanaatkar_cirak_kapma: {
     baslik: "A Talented Apprentice",
     metin:
-      "You noticed an extraordinarily talented apprentice working for a rival master. You could pull him onto your side, but that means making an enemy of his master.",
+      "You spot an exceptionally gifted apprentice working for a rival master. Poaching him makes an enemy of his master.",
     secenekler: [
       {
-        metin: "Secretly make the apprentice a better offer.",
+        metin: "Secretly offer the apprentice more.",
         basariliSonuc: {
-          mesaj: "The apprentice accepted your offer; the quality of your work rose visibly.",
-          detay: "His old master doesn't speak to you anymore, but your new apprentice more than makes up for it.",
+          mesaj: "He accepted; your work's quality rose.",
+          detay: "His old master sulks; he's worth it.",
         },
         basarisizSonuc: {
-          mesaj: "The apprentice told his master about the offer; you were branded an 'unscrupulous rival'.",
-          detay: "This kind of 'poaching' is not welcomed in the guild.",
+          mesaj: "He told his master; you're branded an unscrupulous rival.",
+          detay: "The guild frowns on poaching.",
         },
       },
       {
-        metin: "Stay honest, train your own apprentice.",
+        metin: "Stay honest, train your own.",
         basariliSonuc: {
-          mesaj: "You trained your own apprentice from scratch; it took time but his loyalty was total.",
-          detay: "They say slow-growing trees put down deeper roots; so it was with your business.",
+          mesaj: "You trained your own; slow, but fully loyal.",
+          detay: "Slow-growing trees root deepest.",
         },
         basarisizSonuc: {
-          mesaj: "The apprentice you trained turned out to have no talent; your time was wasted.",
-          detay: "Not every investment pays off; this time you were unlucky.",
+          mesaj: "Your apprentice proved untalented; time wasted.",
+          detay: "Not every investment pays off.",
         },
       },
     ],
@@ -450,28 +450,28 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
   oc_tuccar_dilenci_gercek_kimlik: {
     baslik: "A Noble in Disguise",
     metin:
-      "You gave alms to a beggar who came to your shop; it turned out he was a noble in disguise. He roams the city secretly, testing the honesty of the tradesmen.",
+      "You gave alms to a beggar; he was a noble in disguise, testing tradesmen's honesty.",
     secenekler: [
       {
         metin: "Be modest, accept the reward.",
         basariliSonuc: {
-          mesaj: "The noble rewarded your honesty; your name spread through the city at once.",
-          detay: "The tale of 'the merchant who treats even a beggar with respect' was told for months.",
+          mesaj: "The noble rewarded your honesty; your name spread.",
+          detay: "Your tale was told for months.",
         },
         basarisizSonuc: {
-          mesaj: "The noble was pleased but the reward was smaller than you thought.",
-          detay: "Your expectations were high; still, it wasn't a bad outcome.",
+          mesaj: "The noble was pleased, but the reward was small.",
+          detay: "You hoped for more; not bad.",
         },
       },
       {
-        metin: "Turn it into an opportunity, ask the noble for a contract.",
+        metin: "Seize the chance, ask him for business.",
         basariliSonuc: {
-          mesaj: "The noble liked your frankness and made you a supplier to the palace.",
-          detay: "Your boldness was more than repaid; you now sell to the palace kitchen too.",
+          mesaj: "He liked your frankness and made you palace supplier.",
+          detay: "Now you sell to the palace kitchen too.",
         },
         basarisizSonuc: {
-          mesaj: "The noble counted it 'insolence' and quietly left.",
-          detay: "Pushing an opportunity sometimes loses you what you had.",
+          mesaj: "The noble called it insolence and left quietly.",
+          detay: "Pushing a chance can lose what you have.",
         },
       },
     ],
@@ -480,28 +480,28 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
   oc_tuccar_kutu_pazarlik_yarismasi: {
     baslik: "The Bargaining Contest",
     metin:
-      "A 'best bargainer' contest is being held for fun at the city festival; the loser is made a laughingstock but the winner becomes famous across the whole city.",
+      "The festival hosts a 'best bargainer' contest; the loser is mocked, the winner famed citywide.",
     secenekler: [
       {
         metin: "Enter the contest.",
         basariliSonuc: {
-          mesaj: "You got your rival to sell a goat for two worthless stones; the crowd laughed and applauded.",
-          detay: "In the city you are now known as 'the master of the bargain'.",
+          mesaj: "You made your rival sell a goat for two stones; the crowd cheered.",
+          detay: "Now you're 'master of the bargain'.",
         },
         basarisizSonuc: {
-          mesaj: "Your rival got the better of you; the crowd laughed at your expense.",
-          detay: "You became the subject of the festival jokes, but at least you had the courage to enter.",
+          mesaj: "Your rival beat you; the crowd laughed at you.",
+          detay: "You're the joke, but you had courage.",
         },
       },
       {
         metin: "Stay a spectator.",
         basariliSonuc: {
-          mesaj: "You watched from the side, enjoyed it, risked nothing.",
-          detay: "Some days just watching is enough.",
+          mesaj: "You watched, enjoyed it, risked nothing.",
+          detay: "Sometimes watching is enough.",
         },
         basarisizSonuc: {
-          mesaj: "While watching the contest a pickpocket lightened your purse.",
-          detay: "Even watching sometimes carries a penalty for inattention.",
+          mesaj: "A pickpocket lightened your purse during the show.",
+          detay: "Even watching needs attention.",
         },
       },
     ],
@@ -510,29 +510,29 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
   oc_tuccar_kalpazan_teklifi: {
     baslik: "A Counterfeit Coin Offer",
     metin:
-      "A shady acquaintance offers you a share in the business of pushing expertly struck counterfeit coins into circulation. The gain is dizzying, but if caught the penalty is execution.",
+      "A shady acquaintance offers a share in pushing counterfeit coins. Dizzying gain, but execution if caught.",
     secenekler: [
       {
-        metin: "Accept the offer, take a share in the business.",
+        metin: "Accept, join the venture.",
         basariliSonuc: {
-          mesaj: "The counterfeit coins entered circulation unnoticed; your coffer filled unbelievably.",
-          detay: "Some riches come with a dangerous secret.",
+          mesaj: "The fakes went unnoticed; your coffer overflowed.",
+          detay: "Some riches come with dangerous secrets.",
         },
         basarisizSonuc: {
-          mesaj: "The city guards raided the mint! You barely escaped, but traces of the affair stayed on you.",
-          detay: "Coining always comes out one day.",
+          mesaj: "Guards raided the mint! You fled, but traces cling.",
+          detay: "Coining always comes out.",
         },
       },
       {
-        metin: "Refuse the offer, report the matter to the tradesmen's guild.",
+        metin: "Refuse, tell the tradesmen's guild.",
         basariliSonuc: {
           mesaj:
-            "Your report broke the counterfeiting ring; you began to be spoken of within the guild as an 'honest merchant'.",
-          detay: "Your honesty was rewarded in the guild.",
+            "Your report broke the ring; the guild calls you honest.",
+          detay: "Honesty paid off in the guild.",
         },
         basarisizSonuc: {
-          mesaj: "Your report was not taken seriously, but at least your conscience is at ease.",
-          detay: "Not every right step is rewarded at once.",
+          mesaj: "Your report was ignored, but your conscience is clear.",
+          detay: "Not every right step is rewarded.",
         },
       },
     ],
@@ -541,29 +541,29 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
   oc_tuccar_veba_firsatciligi: {
     baslik: "Prices in Time of Plague",
     metin:
-      "While the plague ravages the city, the medicinal herbs and grain stocks in your hands are worth gold. You could raise prices tenfold, or keep them at a level the people can pay.",
+      "As plague ravages the city, your herbs and grain are worth gold. Raise prices tenfold or keep them fair.",
     secenekler: [
       {
         metin: "Raise prices as high as possible.",
         basariliSonuc: {
-          mesaj: "The panicked people agreed to any price; your coffer filled as it never had.",
-          detay: "Some gains are built on other people's desperation.",
+          mesaj: "The panicked paid any price; your coffer never filled so full.",
+          detay: "Your gain rests on desperation.",
         },
         basarisizSonuc: {
-          mesaj: "When your exorbitant prices got out, an angry crowd looted your shop.",
-          detay: "Greed sometimes finds its own punishment.",
+          mesaj: "Word of your prices spread; an angry mob looted the shop.",
+          detay: "Greed finds its punishment.",
         },
       },
       {
-        metin: "Keep prices fair, even give discounts to those in need.",
+        metin: "Keep prices fair; discount the needy.",
         basariliSonuc: {
           mesaj:
-            "Your fair prices were talked about in the city; when the plague passed, your name became an example of honesty remembered for generations.",
-          detay: "Some riches are far more lasting than money.",
+            "Your fair prices became a byword for honesty for generations.",
+          detay: "Some riches outlast money.",
         },
         basarisizSonuc: {
-          mesaj: "With low prices your stocks ran out fast; nothing was left even for your own family.",
-          detay: "Kindness is sometimes paid out of your own pocket.",
+          mesaj: "Stocks ran out fast; nothing left even for your family.",
+          detay: "Kindness is sometimes paid from your own pocket.",
         },
       },
     ],
@@ -572,31 +572,31 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
   oc_tuccar_yabanci_ortak: {
     baslik: "A Partnership From a Distant Land",
     metin:
-      "A merchant of a different language and a different faith offers you a profitable but long-term partnership. Some local tradesmen will not welcome your doing business with the 'other'.",
+      "A merchant of another tongue and faith offers a profitable long-term partnership. Some local tradesmen will resent dealing with the 'other'.",
     secenekler: [
       {
         metin: "Accept the partnership.",
         basariliSonuc: {
           mesaj:
-            "The partnership proved even more profitable than expected; you opened to new markets, while some local tradesmen condemned you.",
-          detay: "Some bridges make you rich while closing some doors.",
+            "It proved profitable; new markets opened, some tradesmen condemned you.",
+          detay: "Some bridges enrich you and close doors.",
         },
         basarisizSonuc: {
           mesaj:
-            "The partnership was contentious over differences of language and custom and did not bring the gain you hoped.",
-          detay: "Not every bridge holds firm the first time.",
+            "Language and custom clashes soured the deal; little gain.",
+          detay: "Not every bridge holds at first.",
         },
       },
       {
-        metin: "Refuse, work only with local tradesmen.",
+        metin: "Refuse, work only with locals.",
         basariliSonuc: {
-          mesaj: "You refused; the local tradesmen appreciated you as 'one of us'.",
-          detay: "Some assurances come from familiarity.",
+          mesaj: "You refused; locals cheered you as 'one of us'.",
+          detay: "Some security comes from familiarity.",
         },
         basarisizSonuc: {
           mesaj:
-            "After refusing, you had to watch from afar as that partnership made your rival rich.",
-          detay: "Missed opportunities sometimes hurt more from a distance.",
+            "You watched that partnership enrich your rival.",
+          detay: "Missed chances hurt more from afar.",
         },
       },
     ],
@@ -605,30 +605,30 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
   oc_tuccar_rakip_lonca_sabotaj: {
     baslik: "Rival Sabotage",
     metin:
-      "Someone broke into your warehouse and deliberately spoiled part of your goods; the signs point to a rival trader who's been undercutting you all along. You could strike back the same way, or gather evidence and file a complaint with the guild.",
+      "Someone spoiled goods in your warehouse; traces point to a rival. Retaliate, or gather evidence for the guild.",
     secenekler: [
       {
-        metin: "Strike back the same way, sabotage his goods too.",
+        metin: "Retaliate, sabotage his goods.",
         basariliSonuc: {
           mesaj:
-            "You broke into his warehouse the same way; your losses were covered, but something inside you was tainted.",
-          detay: "You can't even admit to yourself that what you gained is nothing but theft.",
+            "You did the same to him; losses recovered, conscience stained.",
+          detay: "It's nothing but theft.",
         },
         basarisizSonuc: {
-          mesaj: "You were caught at the door; your rival exposed you in front of the whole market.",
+          mesaj: "Caught at the door; your rival exposed you in the market.",
           detay:
-            "While hiding your own dirty deed you cleaned up his; now you're the 'thieving trader'.",
+            "Now you're the 'thieving trader'.",
         },
       },
       {
-        metin: "Gather evidence, file an official complaint with the guild.",
+        metin: "Gather evidence, complain to the guild.",
         basariliSonuc: {
-          mesaj: "The guild's investigation found your rival guilty; your losses were compensated.",
-          detay: "This victory won by legitimate means also earned you the market's trust.",
+          mesaj: "The guild found the rival guilty; losses compensated.",
+          detay: "A clean win earned the market's trust.",
         },
         basarisizSonuc: {
-          mesaj: "Your evidence was deemed 'insufficient'; the cost of the complaint went to waste.",
-          detay: "Choosing the right path doesn't always bring results; at least your conscience is clean.",
+          mesaj: "Evidence was insufficient; the complaint's cost was wasted.",
+          detay: "Right path, no result; clear conscience.",
         },
       },
     ],
@@ -637,40 +637,40 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
   oc_tuccar_enkaz_hak_iddiasi: {
     baslik: "Cargo from the Wreck",
     metin:
-      "You found valuable goods in a shipwreck washed up on shore. A surviving sailor says they came from his ship, and this cargo would free his family from debt.",
+      "You find valuable goods in a beached wreck. A surviving sailor says they're from his ship and would free his family from debt.",
     secenekler: [
       {
-        metin: "Claim all the goods for yourself; what you found is yours.",
+        metin: "Claim it all; finders keepers.",
         basariliSonuc: {
           mesaj:
-            "You carried the goods to your warehouse; the sailor stood there in despair, but legally, what's found on shore is yours.",
-          detay: "Your purse filled, but that look will stay with you a while.",
+            "You took the goods; legally, what's found ashore is yours.",
+          detay: "Purse full; that look lingers.",
         },
         basarisizSonuc: {
-          mesaj: "The sailor told the story around town; your greed became the talk of the tongues.",
-          detay: "You sold some of the goods, but now they call you the 'wreck crow'.",
+          mesaj: "The sailor told the tale; your greed became town talk.",
+          detay: "They now call you the 'wreck crow'.",
         },
       },
       {
-        metin: "Split the cargo with the sailor, strike a fair deal.",
+        metin: "Split the cargo fairly with him.",
         basariliSonuc: {
-          mesaj: "You split the cargo in two; the sailor shook your hand in gratitude.",
-          detay: "Your gain shrank, but someone who remembers this deal may help you one day.",
+          mesaj: "You split the cargo; the sailor shook your hand gratefully.",
+          detay: "This deal may help you someday.",
         },
         basarisizSonuc: {
-          mesaj: "The sailor wasn't satisfied with his share, an argument broke out; the deal barely closed, at a loss to you.",
-          detay: "Your good will didn't satisfy everyone, but your conscience is at ease.",
+          mesaj: "The sailor balked at his share; the deal closed at your loss.",
+          detay: "You couldn't please all; conscience clear.",
         },
       },
       {
-        metin: "Return all the goods to the sailor.",
+        metin: "Return everything to the sailor.",
         basariliSonuc: {
-          mesaj: "You even covered the cost of transport and delivered the cargo to the sailor in full.",
-          detay: "The man couldn't hold back tears; this story will be told at the harbor for a long time.",
+          mesaj: "You even paid transport and delivered it all.",
+          detay: "He wept; the harbor will tell this tale.",
         },
         basarisizSonuc: {
-          mesaj: "While returning it, the boat you carried it in capsized, and part of the goods went back into the sea.",
-          detay: "Doing the right thing sometimes demands an extra price.",
+          mesaj: "The boat capsized; part of the goods returned to the sea.",
+          detay: "Doing right sometimes costs extra.",
         },
       },
     ],
@@ -679,29 +679,29 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
   oc_tuccar_cirak_hirsizlik: {
     baslik: "The Apprentice's Betrayal",
     metin:
-      "You learned that the apprentice who's worked beside you for years has been stealing money from the till. The young man begs, saying his family is starving.",
+      "You learn your longtime apprentice has stolen from the till. He begs, saying his family is starving.",
     secenekler: [
       {
-        metin: "Report him to the guild, let him be punished.",
+        metin: "Report him to the guild.",
         basariliSonuc: {
-          mesaj: "Part of the stolen money was recovered; the apprentice was brought before the guild court.",
-          detay: "You secured justice, but the boy's crying face won't leave your sight.",
+          mesaj: "Some money recovered; he was sent to the guild court.",
+          detay: "Justice done, but his face haunts you.",
         },
         basarisizSonuc: {
-          mesaj: "The guild turned down your complaint, saying 'the evidence is weak, the penalty too harsh'.",
-          detay: "You came out of this ahead in neither money nor reputation.",
+          mesaj: "The guild refused: 'weak evidence, harsh penalty'.",
+          detay: "You gained neither money nor standing.",
         },
       },
       {
-        metin: "Forgive him, cover the money yourself, help his family.",
+        metin: "Forgive him, cover the money, help his family.",
         basariliSonuc: {
           mesaj:
-            "You forgave the apprentice and sent supplies to his family; the young man stayed loyal to you for life.",
-          detay: "Some investments come back with something far more lasting than gold.",
+            "You forgave him and fed his family; he stayed loyal for life.",
+          detay: "Some investments return more lasting than gold.",
         },
         basarisizSonuc: {
-          mesaj: "You forgave him, but the apprentice still vanished quietly one night.",
-          detay: "Your kindness went unrewarded; it made you wary of trusting people for a while.",
+          mesaj: "You forgave him, yet he vanished one night anyway.",
+          detay: "Your kindness went unrewarded.",
         },
       },
     ],
@@ -710,29 +710,29 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
   oc_tuccar_tekelci_teklif: {
     baslik: "The Monopoly Deal",
     metin:
-      "A trader from distant lands offers you a monopoly on the spice trade on condition you become his sole supplier; but you'd have to cut ties with all your other suppliers.",
+      "A distant trader offers a spice monopoly if you become his sole supplier, dropping all other suppliers.",
     secenekler: [
       {
-        metin: "Accept the offer, put all your eggs in one basket.",
+        metin: "Accept, put all eggs in one basket.",
         basariliSonuc: {
-          mesaj: "The deal held; all the spice trade in the city is now in your hands.",
-          detay: "Your rivals watch helplessly; being this dependent on a single route unsettles even you.",
+          mesaj: "The deal held; the city's spice trade is yours.",
+          detay: "Dependence on one route unsettles you.",
         },
         basarisizSonuc: {
           mesaj:
-            "The distant trader was lost on the road, the goods never arrived; your old suppliers no longer want you either.",
-          detay: "All the eggs you put in one basket broke at once.",
+            "The trader vanished; your old suppliers turned away too.",
+          detay: "All the eggs broke at once.",
         },
       },
       {
-        metin: "Refuse, keep working with a variety of suppliers.",
+        metin: "Refuse, keep varied suppliers.",
         basariliSonuc: {
-          mesaj: "You kept your old arrangement; your gains are modest but safe.",
-          detay: "You may have missed the big opportunity, but you're beholden to no supplier.",
+          mesaj: "You kept the old way; modest but safe gains.",
+          detay: "You depend on no single supplier.",
         },
         basarisizSonuc: {
-          mesaj: "Another trader snapped up the monopoly you refused; you watched him grow rich from a distance.",
-          detay: "Caution sometimes leaves behind a regret tinged with envy.",
+          mesaj: "Another trader took the monopoly; you watched him get rich.",
+          detay: "Caution can leave envious regret.",
         },
       },
     ],
@@ -741,28 +741,28 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
   oc_tuccar_sehir_berati_rusveti: {
     baslik: "The Marketplace Charter",
     metin:
-      "A stall spot is opening at the busiest corner of the city. The town clerk wants a bribe to grant you the charter; there's a legal route too, but the queue is long and your odds of winning are slim.",
+      "A stall spot opens at the city's busiest corner. The clerk wants a bribe for the charter; the legal route has a long queue and slim odds.",
     secenekler: [
       {
-        metin: "Pay the bribe, secure the spot.",
+        metin: "Pay the bribe, take the spot.",
         basariliSonuc: {
-          mesaj: "The best corner became yours; the clerk pocketed the money quietly.",
-          detay: "You know you got this spot not because you earned it, but because your purse was thick.",
+          mesaj: "The best corner is yours; the clerk pocketed the bribe.",
+          detay: "You know money won it, not merit.",
         },
         basarisizSonuc: {
-          mesaj: "Your bribe offer was overheard by an inspector; the scandal swept through the whole market.",
-          detay: "You lost the money, the spot, and years of built reputation in a single afternoon.",
+          mesaj: "An inspector overheard the bribe; scandal swept the market.",
+          detay: "Money, spot and name gone in one afternoon.",
         },
       },
       {
-        metin: "Apply through the legal channel, join the queue, trust the draw.",
+        metin: "Apply legally, trust the draw.",
         basariliSonuc: {
-          mesaj: "The draw fell in your favor; the town council praised the outcome for its transparency.",
-          detay: "The waiting was hard, but there's no secret behind the spot you won.",
+          mesaj: "The draw favored you; the council praised its fairness.",
+          detay: "Waiting was hard, but no secrets behind it.",
         },
         basarisizSonuc: {
-          mesaj: "The draw didn't go your way; the best corner went to another trader who paid the bribe.",
-          detay: "Honesty went unrewarded, but at least your conscience is clear.",
+          mesaj: "The draw failed; the corner went to a bribing trader.",
+          detay: "Honesty unrewarded, but conscience clear.",
         },
       },
     ],
@@ -771,29 +771,29 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
   oc_tuccar_borclu_soylu: {
     baslik: "The Noble Who Won't Pay",
     metin:
-      "A noble has gone months without paying for the goods he bought from you. You need to remind him of the debt, but traders who speak too boldly to nobles sometimes lose their heads.",
+      "A noble hasn't paid for goods in months. You must remind him, but merchants who speak boldly to nobles can lose their heads.",
     secenekler: [
       {
-        metin: "Say it to his face directly, demand the money.",
+        metin: "Tell him to his face, demand payment.",
         basariliSonuc: {
-          mesaj: "The noble was embarrassed and paid the debt in cash; the other nobles heard of it.",
-          detay: "Your courage paid off this time, but you won't always be this lucky.",
+          mesaj: "The noble, shamed, paid in cash; other nobles heard.",
+          detay: "You were lucky this time.",
         },
         basarisizSonuc: {
-          mesaj: "The noble accused you of insolence and threw you out; the debt was struck off as if it never existed.",
-          detay: "Raising your voice at some doors carries a heavy price.",
+          mesaj: "The noble called you insolent and threw you out; the debt is lost.",
+          detay: "Raising your voice is costly at some doors.",
         },
       },
       {
-        metin: "Wait patiently, send politely worded reminder letters.",
+        metin: "Wait, send polite reminders.",
         basariliSonuc: {
-          mesaj: "Months later the noble sent part of his debt.",
-          detay: "Your patience paid off; not all of it came back, but some did.",
+          mesaj: "Months later the noble sent part of the debt.",
+          detay: "Patience partly paid off.",
         },
         basarisizSonuc: {
           mesaj:
-            "The noble died, and his heirs said they didn't recognize the debt; the whole claim was wiped out.",
-          detay: "Your politeness didn't speak for you; some debts never come back.",
+            "The noble died; heirs denied the debt, wiping out your claim.",
+          detay: "Some debts never come back.",
         },
       },
     ],
@@ -802,30 +802,30 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
   oc_tuccar_fiyat_sabitleme_karteli: {
     baslik: "The Secret Arrangement",
     metin:
-      "The city's big traders meet in secret and offer to raise grain prices together, forming a cartel. If you join, your profit is guaranteed, but the people's hunger deepens.",
+      "The big traders propose secretly raising grain prices together as a cartel. Your profit is sure, but the people go hungrier.",
     secenekler: [
       {
-        metin: "Join, take your share of the cartel.",
+        metin: "Join, take your cartel share.",
         basariliSonuc: {
-          mesaj: "Prices were raised together; your profit was guaranteed, but the bread lines grew longer.",
+          mesaj: "Prices rose together; profit secured, bread lines grew.",
           detay:
-            "As your purse fills, you strain not to hear that children in the next neighborhood are going to bed hungry.",
+            "You try not to hear the hungry children.",
         },
         basarisizSonuc: {
-          mesaj: "The cartel was exposed; an angry crowd stormed your shop.",
-          detay: "Secret arrangements always come to light eventually; you paid the price before anyone else.",
+          mesaj: "The cartel was exposed; an angry mob stormed your shop.",
+          detay: "Secrets surface; you paid first.",
         },
       },
       {
-        metin: "Refuse, report the matter to the city council.",
+        metin: "Refuse, report to the council.",
         basariliSonuc: {
           mesaj:
-            "Your report broke up the cartel attempt; the people called you 'the guardian of our bread'.",
-          detay: "The other big traders will never forgive you, but the people's trust is worth more than that.",
+            "Your report broke the cartel; the people call you 'bread's guardian'.",
+          detay: "The people's trust beats the traders' pardon.",
         },
         basarisizSonuc: {
-          mesaj: "Your report was found baseless; the other traders shut you out and boycotted your goods.",
-          detay: "You did the right thing and paid the price for it alone.",
+          mesaj: "Report deemed baseless; the traders shunned and boycotted you.",
+          detay: "You did right and paid alone.",
         },
       },
     ],
@@ -834,31 +834,31 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
   oc_tuccar_korsan_fidyesi: {
     baslik: "The Pirate's Ransom",
     metin:
-      "A pirate ship has seized your caravan vessel in the Mediterranean; they're holding your crew hostage and demanding ransom. If you don't pay, the crew will be sold in the slave market.",
+      "Pirates seize your ship in the Mediterranean and hold your crew for ransom. Unpaid, they'll be sold as slaves.",
     secenekler: [
       {
-        metin: "Pay the ransom, save the crew.",
+        metin: "Pay the ransom, free the crew.",
         basariliSonuc: {
           mesaj:
-            "The ransom was paid, the crew stayed free; your men will be loyal to you for life.",
-          detay: "Your purse grew lighter, but your conscience has never been this much at ease.",
+            "Ransom paid, crew freed; your men are loyal for life.",
+          detay: "Lighter purse, easier conscience.",
         },
         basarisizSonuc: {
-          mesaj: "The pirates took the money but broke their word and killed one of the crew anyway.",
-          detay: "Even paying ransom sometimes offers no guarantee; this news kept you sleepless for a long time.",
+          mesaj: "Pirates took the money, broke their word, and killed a sailor.",
+          detay: "Even ransom guarantees nothing.",
         },
       },
       {
-        metin: "Don't pay, leave the crew to their fate.",
+        metin: "Don't pay; leave the crew to fate.",
         basariliSonuc: {
           mesaj:
-            "You didn't pay the ransom; you made up for the ship and goods another way, but your crew was sold in the slave market.",
-          detay: "Your purse was spared, but there are faces that now haunt your dreams.",
+            "You skipped the ransom and recouped elsewhere, but the crew was sold.",
+          detay: "Your purse is spared; faces haunt your dreams.",
         },
         basarisizSonuc: {
           mesaj:
-            "The news spread through the harbor; no sailor wants to board your ship anymore, and it rotted crewless.",
-          detay: "Shirking sacrifice has a price too; this time you paid it.",
+            "Word spread; no sailor boards your ship, which rots crewless.",
+          detay: "Shirking sacrifice has a price.",
         },
       },
     ],

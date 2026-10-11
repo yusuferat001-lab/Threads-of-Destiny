@@ -23,34 +23,34 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     minYas: 18,
     gorsel: "💪",
     baslik: "Bilek Güreşi Bahsi",
-    metin: "Meyhanenin en gürültülü köşesinde bir bilek güreşi turnuvası dönüyor. Kazanana gecenin tüm içkisi bedava, kaybedene kahkahalar armağan.",
+    metin: "Meyhanede bilek güreşi turnuvası var. Kazanana içki bedava, kaybedene kahkaha.",
     secenekler: [
       {
-        metin: "Meydan oku, masaya otur.",
+        metin: "Meydan oku.",
         baseBasariSansi: 50,
         basariliSonuc: {
           un: 12,
           mutluluk: 5,
-          mesaj: "Rakibinin kolunu masaya çaktın! Meyhane senin şerefine tezahürat yaptı, gecenin kadehleri bedavaydı.",
-          detay: "Ertesi gün kolun sızlasa da, sokakta seni tanıyanların sayısı bir gecede arttı.",
+          mesaj: "Rakibi yendin! Meyhane alkışladı, içkiler bedava.",
+          detay: "Kolun sızladı, adın yayıldı.",
         },
         basarisizSonuc: {
           saglik: -6,
           mutluluk: -8,
-          mesaj: "Kolun gümbür gümbür masaya çakıldı, etraftaki kahkahalar kulaklarında çınladı.",
+          mesaj: "Kolun masaya çakıldı; kahkahalar çınladı.",
         },
       },
       {
-        metin: "Kenardan izle, kazanana bahis oyna.",
+        metin: "İzle, kazanana bahis oyna.",
         baseBasariSansi: 45,
         maliyet: 5,
         basariliSonuc: {
           para: 10,
-          mesaj: "Doğru pehlivana oynadın; cebine birkaç {birim} girdi.",
+          mesaj: "Doğru pehlivanı seçtin; cebine {birim} girdi.",
         },
         basarisizSonuc: {
           para: -5,
-          mesaj: "Yanlış pehlivana oynadın, bahis parasın meyhaneci cebe indirdi.",
+          mesaj: "Yanlış pehlivan; paranı meyhaneci aldı.",
         },
       },
     ],
@@ -62,33 +62,33 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     minYas: 18,
     gorsel: "🫴",
     baslik: "Çevik Parmaklar",
-    metin: "Kalabalığın arasında ince parmaklı bir çocuğun elinin kesene doğru süzüldüğünü fark ettin.",
+    metin: "Kalabalıkta ince parmaklı bir çocuğun elinin kesene uzandığını fark ettin.",
     secenekler: [
       {
-        metin: "Bileğini kavra, üstüne git.",
+        metin: "Bileğini kavra.",
         baseBasariSansi: 65,
         basariliSonuc: {
           ahlak: 3,
-          mesaj: "Bileğini son anda kavradın; çocuk korkuyla özür mırıldanıp karanlığa karıştı.",
-          detay: "Meyhaneci sana bir kadeh ısmarladı: 'Gözün her zaman açık olsun evlat.'",
+          mesaj: "Bileğini yakaladın; çocuk özür mırıldanıp kaçtı.",
+          detay: "Meyhaneci kadeh ısmarladı.",
         },
         basarisizSonuc: {
           para: -8,
-          mesaj: "Çocuk elini kurtardı, kesenden birkaç {birim} ile birlikte kalabalığa karıştı.",
+          mesaj: "Çocuk kurtuldu, kesenden birkaç {birim} aldı.",
         },
       },
       {
-        metin: "Görmezden gel, zaten pek bir şeyin yok.",
+        metin: "Görmezden gel.",
         baseBasariSansi: 90,
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
           mutluluk: 1,
-          mesaj: "Görmezden geldin; belli ki daha aç birine denk geldi zavallı çocuk.",
+          mesaj: "Görmezden geldin; çocuk daha aç birini buldu.",
         },
         basarisizSonuc: {
           para: -3,
-          mesaj: "Görmezden gelirken bir yandan da cüzdanın hafifçe hafiflemiş.",
+          mesaj: "Görmezden gelirken cüzdanın hafifledi.",
         },
       },
     ],
@@ -101,33 +101,33 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     gizemli: true,
     gorsel: "🎭",
     baslik: "Kukuletalı Yabancı",
-    metin: "Köşe masada oturan kukuletalı bir yabancı seni yanına çağırıyor. Yüzü karanlıkta, sesi tuhaf bir aksanla konuşuyor: 'Senin gibi birine ihtiyacım var.'",
+    metin: "Köşedeki kukuletalı yabancı seni çağırıyor: 'Senin gibi birine ihtiyacım var.'",
     secenekler: [
       {
-        metin: "Yanına otur, ne istediğini dinle.",
+        metin: "Yanına otur, dinle.",
         baseBasariSansi: 60,
         basariliSonuc: {
           mutluluk: 3,
-          mesaj: "Yabancı, uzak bir diyarın hikâyelerini fısıldadı; ayrılırken sana tuhaf bir sembol çizili bir madeni para bıraktı.",
-          detay: "Kim olduğunu hâlâ bilmiyorsun ama dünyanın sandığından büyük olduğunu bir kez daha hissettin.",
+          mesaj: "Yabancı diyarlardan söz etti, tuhaf bir sikke bıraktı.",
+          detay: "Dünya sandığından büyükmüş.",
         },
         basarisizSonuc: {
           mutluluk: -4,
-          mesaj: "Anlattıkları sadece sarhoş bir denizcinin abartılı masallarıydı. Vaktini boşa harcadın.",
+          mesaj: "Sarhoş denizcinin masallarıydı; vakit kaybı.",
         },
       },
       {
-        metin: "Nazikçe reddet, kendi masana dön.",
+        metin: "Nazikçe reddet.",
         baseBasariSansi: 95,
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
           mutluluk: -1,
-          mesaj: "Tedbiri elden bırakmadın. Yabancı omuz silkti ve karanlığa geri çekildi.",
+          mesaj: "Temkinli davrandın; yabancı karanlığa çekildi.",
         },
         basarisizSonuc: {
           mutluluk: -2,
-          mesaj: "Reddetmene rağmen adam arkandan tuhaf bir kahkaha attı; içine bir tedirginlik oturdu.",
+          mesaj: "Arkandan tuhaf bir kahkaha attı; tedirgin oldun.",
         },
       },
     ],
@@ -140,33 +140,33 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     ton: "hafif",
     gorsel: "🎶",
     baslik: "Türkü Yarışması",
-    metin: "Ozan masaya çıkıp kimin daha güzel/yüksek sesle şarkı söyleyebileceğine dair bir yarışma açıyor. Kalabalık zaten kadehini kaldırmış, sırada sen varsın.",
+    metin: "Ozan şarkı yarışması açıyor. Kalabalık kadeh kaldırdı, sıra sende.",
     secenekler: [
       {
-        metin: "Sahneye çık, elinden geleni yap.",
+        metin: "Sahneye çık, söyle.",
         baseBasariSansi: 50,
         basariliSonuc: {
           un: 15,
           mutluluk: 6,
-          mesaj: "Sesin meyhaneyi ayağa kaldırdı! Herkes nakaratı seninle birlikte söyledi.",
-          detay: "Bu geceden sonra sokakta 'işte şu türkücü' diye fısıldandığını duyar oldun.",
+          mesaj: "Sesin meyhaneyi ayağa kaldırdı! Herkes seninle söyledi.",
+          detay: "'Şu türkücü' diye fısıldanıyor.",
         },
         basarisizSonuc: {
           un: -8,
           mutluluk: -6,
-          mesaj: "Sesin bir kedi bağırtısına benzedi; kalabalık gülmekten kırıldı, sen de kızararak masana çöktün.",
+          mesaj: "Sesin kedi bağırtısına benzedi; kızararak oturdun.",
         },
       },
       {
-        metin: "Katılma, sadece izle ve alkışla.",
+        metin: "Sadece izle, alkışla.",
         baseBasariSansi: 90,
         basariliSonuc: {
           mutluluk: 3,
-          mesaj: "Güzel bir gece geçirdin, hem de rezil olma riski taşımadan.",
+          mesaj: "Güzel bir gece geçirdin, rezil olmadan.",
         },
         basarisizSonuc: {
           mutluluk: -1,
-          mesaj: "Sıradan, unutulası bir gece oldu.",
+          mesaj: "Sıradan bir geceydi.",
         },
       },
     ],
@@ -179,34 +179,34 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     ton: "hafif",
     gorsel: "🪑",
     baslik: "Devrilen Masa",
-    metin: "İki sarhoş, kimin daha çok içtiği konusunda tartışmaya başladı; tartışma hızla bir masa devirme yarışına dönüştü. Yumruklar havada uçuşuyor.",
+    metin: "İki sarhoş kim daha çok içti diye tartışırken masa devirmeye başladı. Yumruklar uçuşuyor.",
     secenekler: [
       {
-        metin: "Araya gir, kavgayı ayır.",
+        metin: "Araya gir, ayır.",
         baseBasariSansi: 55,
         basariliSonuc: {
           un: 8,
           ahlak: 4,
-          mesaj: "İki kavgacıyı ayırmayı başardın; meyhane sana minnetle bakıyor.",
+          mesaj: "İkisini ayırdın; meyhane sana minnetle baktı.",
         },
         basarisizSonuc: {
           saglik: -12,
-          mesaj: "Araya girerken sana da bir yumruk isabet etti. Kimden geldiğini bile anlamadın.",
+          mesaj: "Araya girerken yumruk yedin, kimden geldiğini görmedin.",
         },
       },
       {
-        metin: "Masanı al, köşeye çekil.",
+        metin: "Köşeye çekil.",
         baseBasariSansi: 85,
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
           mutluluk: -1,
-          mesaj: "Sağduyulu davrandın, kavgayı uzaktan izleyip kadehini kurtardın.",
+          mesaj: "Uzaktan izleyip kadehini kurtardın.",
         },
         basarisizSonuc: {
           saglik: -5,
           para: -3,
-          mesaj: "Devrilen bir masa tam üstüne geldi; hem sırtın ağrıdı hem kadehin kırıldı.",
+          mesaj: "Masa üstüne devrildi; sırtın ağrıdı, kadehin kırıldı.",
         },
       },
     ],
@@ -218,22 +218,22 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     minYas: 18,
     gorsel: "🃏",
     baslik: "Masa Altı Kâğıt Oyunu",
-    metin: "Arka masada gözlerden ırak, yasak bir kâğıt oyunu dönüyor. Sana da bir sandalye gösteriyorlar.",
+    metin: "Arka masada yasak bir kâğıt oyunu dönüyor. Sana da sandalye çekiyorlar.",
     secenekler: [
       {
-        metin: "Otur, oyuna katıl.",
+        metin: "Otur, oyna.",
         baseBasariSansi: 45,
         maliyet: 8,
         basariliSonuc: {
           para: 16,
           suc_artis: 3,
-          mesaj: "Kâğıtlar senden yana geldi; masadan cebin dolu kalktın.",
+          mesaj: "Kâğıtlar senden yana geldi; cebin dolu kalktın.",
         },
         basarisizSonuc: {
           mutluluk: -4,
           para: -8,
           suc_artis: 3,
-          mesaj: "Kötü bir el aldın, masadan eli boş kalktın. En azından muhafızlar gelmedi.",
+          mesaj: "Kötü el geldi; eli boş kalktın, muhafız gelmedi.",
         },
       },
       {
@@ -242,11 +242,11 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         basariliSonuc: {
           ahlak: 3,
           mutluluk: -1,
-          mesaj: "Aklını başında tuttun; parana ve sicil temizliğine dokunmadın.",
+          mesaj: "Akıllı davrandın; para ve sicilin sağlam.",
         },
         basarisizSonuc: {
           mutluluk: -2,
-          mesaj: "Masadakiler seni korkak diye takıldı ama umurunda olmadı.",
+          mesaj: "Seni korkak diye çekiştirdiler, umursamadın.",
         },
       },
     ],
@@ -258,7 +258,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     minYas: 18,
     gorsel: "🗝️",
     baslik: "Meyhanecinin Fısıltısı",
-    metin: "Meyhaneci, kadehini doldururken sesini alçaltıp {rakip} hakkında ilginç bir şey duyduğunu söylüyor.",
+    metin: "Meyhaneci kadehini doldururken fısıldıyor: {rakip} hakkında ilginç bir şey duymuş.",
     secenekler: [
       {
         metin: "Kulak ver, bir tur ısmarla.",
@@ -267,11 +267,11 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         basariliSonuc: {
           para: -4,
           rakip_puani: -6,
-          mesaj: "Anlattıkları işine yarayacak cinstendi; {rakip} hakkında artık senin de bir koz var.",
+          mesaj: "İşe yarar bilgi; {rakip} hakkında artık kozun var.",
         },
         basarisizSonuc: {
           para: -6,
-          mesaj: "Anlattığı şey eski, herkesin zaten bildiği bir dedikoduydu. Paran boşa gitti.",
+          mesaj: "Eski, herkesin bildiği bir dedikoduydu. Para boşa gitti.",
         },
       },
       {
@@ -281,11 +281,11 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
           saglik: 2,
           ahlak: 1,
           mutluluk: -1,
-          mesaj: "Dedikodunun peşinden koşmadın; meyhaneci omuz silkip başka birine döndü.",
+          mesaj: "Dedikoduya koşmadın; meyhaneci başkasına döndü.",
         },
         basarisizSonuc: {
           mutluluk: -1,
-          mesaj: "İlgisiz görünsen de merakın seni bütün gece kemirdi.",
+          mesaj: "İlgisiz görünsen de merak seni gece boyu kemirdi.",
         },
       },
     ],
@@ -298,7 +298,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     ton: "hafif",
     gorsel: "🍷",
     baslik: "Sarhoş Filozof",
-    metin: "Masasında tek başına oturan yaşlı bir adam, kimseye sormadan hayatın anlamı üzerine kesintisiz bir nutuk çekmeye başlıyor. Kimse dinlemiyor, sen dinliyorsun.",
+    metin: "Yalnız oturan yaşlı bir adam hayatın anlamı üzerine nutuk çekiyor. Kimse dinlemiyor, sen dinliyorsun.",
     secenekler: [
       {
         metin: "Otur, ciddiye al.",
@@ -306,12 +306,12 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         basariliSonuc: {
           ahlak: 6,
           mutluluk: 3,
-          mesaj: "Söyledikleri arasında, sarhoşluğun ardında gerçek bir bilgelik parıltısı buldun.",
-          detay: "'Herkes bir gün ölür ama az kişi gerçekten yaşar' dedi ve kadehini kaldırdı; bu cümle aklından çıkmadı.",
+          mesaj: "Sarhoşluğun ardında gerçek bir bilgelik buldun.",
+          detay: "'Az kişi gerçekten yaşar' dedi.",
         },
         basarisizSonuc: {
           mutluluk: -3,
-          mesaj: "Bir saat sonunda anladın ki adam sadece kendi sesini seviyormuş.",
+          mesaj: "Anladın ki adam yalnız kendi sesini seviyor.",
         },
       },
       {
@@ -321,11 +321,11 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
           saglik: 2,
           ahlak: 1,
           mutluluk: -1,
-          mesaj: "Nazikçe uzaklaştın, gecenin geri kalanını huzur içinde geçirdin.",
+          mesaj: "Nazikçe uzaklaşıp geceyi huzurla geçirdin.",
         },
         basarisizSonuc: {
           mutluluk: -1,
-          mesaj: "Uzaklaşırken bile arkandan bağırarak nutkuna devam etti.",
+          mesaj: "Giderken bile arkandan nutka devam etti.",
         },
       },
     ],
@@ -338,38 +338,38 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     ton: "hafif",
     gorsel: "🏆",
     baslik: "Efsanevi İçki İddiası",
-    metin: "Meyhanenin kabadayısı, kim önce masaya yığılırsa diye bir iddiaya giriyor; ödül gecenin tüm hasılatı ve bir de unvan.",
+    metin: "Meyhanenin kabadayısı kim önce yığılır diye iddiaya giriyor; ödül gecenin hasılatı ve bir unvan.",
     secenekler: [
       {
-        metin: "İddiayı kabul et, sonuna kadar git.",
+        metin: "İddiayı kabul et.",
         baseBasariSansi: 35,
         basariliSonuc: {
           para: 22,
           un: 14,
           unvan_kazan: "Kadeh Kralı",
-          mesaj: "Rakibin masaya yığıldı, sen hâlâ ayaktasın! Meyhane senin şerefine çığlık attı.",
-          detay: "Ertesi gün başın çatlasa da, artık bu meyhanede efsanevi bir isimsin.",
+          mesaj: "Rakibin yığıldı, sen ayaktasın! Meyhane çıldırdı.",
+          detay: "Başın çatlasa da artık efsanesin.",
         },
         basarisizSonuc: {
           olum_sansi: 4,
           saglik: -20,
           mutluluk: -8,
-          mesaj: "Onuncu kadehten sonra masaya yığıldın; günler süren bir baş ağrısıyla uyandın.",
-          detay: "Meyhaneciler seni haftalarca 'dünkü çocuk' diye andı.",
+          mesaj: "Onuncu kadehte yığıldın; günlerce başın çatladı.",
+          detay: "Haftalarca 'dünkü çocuk' dendin.",
         },
       },
       {
-        metin: "Aklını kullan, iddiayı reddet.",
+        metin: "İddiayı reddet.",
         baseBasariSansi: 95,
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
           mutluluk: -1,
-          mesaj: "Sağlığını riske atmadın; kabadayı seni 'akıllı ama sıkıcı' diye etiketledi, sen de umursamadın.",
+          mesaj: "Sağlığını korudun; kabadayı 'sıkıcı' dedi, umursamadın.",
         },
         basarisizSonuc: {
           un: -3,
-          mesaj: "Reddetmen bazı çevrelerde korkaklık olarak yorumlandı.",
+          mesaj: "Reddetmen bazı çevrelerde korkaklık sayıldı.",
         },
       },
     ],
@@ -381,33 +381,33 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     minYas: 18,
     gorsel: "🤝",
     baslik: "Masanın Öbür Ucundaki Yüz",
-    metin: "Sarhoş bir adam masana yaklaşıp seninle uzun uzun sohbet ediyor. Konuştukça anlıyorsun ki hem becerikli hem de iş arıyor.",
+    metin: "Sarhoş bir adam masana gelip uzun sohbet ediyor. Becerikli biri ve iş arıyor.",
     secenekler: [
       {
-        metin: "Ona bir teklif yap, ekibine kat.",
+        metin: "Ekibine teklif et.",
         baseBasariSansi: 60,
         maliyet: 4,
         basariliSonuc: {
           para: -4,
           ekip_ekle: { rol: "Yardımcı", tahminGenisligi: 30 },
-          mesaj: "Teklifini kabul etti; sarhoşluğun ardında gerçekten işine yarayacak biri varmış.",
+          mesaj: "Kabul etti; işine yarar biri çıktı.",
         },
         basarisizSonuc: {
           para: -4,
-          mesaj: "Teklifini gülerek reddetti: 'Yarın beni hatırlamayacaksın bile.' Haklı çıktı, sen de hatırlamadın.",
+          mesaj: "Güldü: 'Yarın beni hatırlamazsın bile.' Haklı çıktı.",
         },
       },
       {
-        metin: "Sadece sohbet et, iş teklif etme.",
+        metin: "Sadece sohbet et.",
         baseBasariSansi: 90,
         basariliSonuc: {
           dost_puani: 4,
           mutluluk: 3,
-          mesaj: "Keyifli bir sohbet geçirdiniz, hiçbir yükümlülük olmadan.",
+          mesaj: "Yükümlülüksüz, keyifli bir sohbet geçirdiniz.",
         },
         basarisizSonuc: {
           mutluluk: -1,
-          mesaj: "Sohbet dağınıktı, ne konuştuğunuzu sabah pek hatırlamadın.",
+          mesaj: "Sohbet dağınıktı; sabaha pek bir şey hatırlamadın.",
         },
       },
     ],
@@ -419,34 +419,34 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     minYas: 18,
     gorsel: "😤",
     baslik: "Karşı Masadaki Bakışlar",
-    metin: "{rakip} karşı masada oturuyor, gözünü senden ayırmıyor. Kadehini kaldırıp alaycı bir şekilde sana doğru sallıyor.",
+    metin: "{rakip} karşı masada gözünü senden ayırmıyor, kadehini alayla sana kaldırıyor.",
     secenekler: [
       {
-        metin: "Kadehini kaldır, meydan oku.",
+        metin: "Kadeh kaldır, meydan oku.",
         baseBasariSansi: 50,
         basariliSonuc: {
           un: 8,
           rakip_puani: -8,
-          mesaj: "Sözlü düellonun galibi sendin; kalabalık senin tarafını tuttu, {rakip} öfkeyle dışarı çıktı.",
+          mesaj: "Sözlü düelloyu kazandın; {rakip} öfkeyle çıktı.",
         },
         basarisizSonuc: {
           un: -6,
           mutluluk: -5,
-          mesaj: "{rakip}'in keskin dili seni susturdu; herkesin önünde küçük düştün.",
+          mesaj: "{rakip}'in dili seni susturdu; rezil oldun.",
         },
       },
       {
-        metin: "Görmezden gel, sırtını dön.",
+        metin: "Görmezden gel.",
         baseBasariSansi: 90,
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
           mutluluk: -1,
-          mesaj: "Provokasyona gelmedin; {rakip} bir süre sonra ilgisini kaybetti.",
+          mesaj: "Tahrike gelmedin; {rakip} ilgisini kaybetti.",
         },
         basarisizSonuc: {
           mutluluk: -3,
-          mesaj: "Görmezden gelmen bile {rakip}'i daha da azdırdı, gece boyu laf attı.",
+          mesaj: "Görmezden gelmen {rakip}'i azdırdı, gece boyu laf attı.",
         },
       },
     ],
@@ -459,7 +459,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     ton: "agir",
     gorsel: "⚔️",
     baslik: "Onur Meselesi",
-    metin: "Sarhoş bir yabancı, tesadüfen döktüğün içkiyi bahane edip seni dışarıda hesaplaşmaya çağırıyor. Kalabalık çoktan bahis oynamaya başladı bile.",
+    metin: "Sarhoş bir yabancı, döktüğün içkiyi bahane edip seni dışarı çağırıyor. Kalabalık bahse bile girdi.",
     secenekler: [
       {
         metin: "Kabul et, dışarı çık.",
@@ -467,26 +467,26 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         basariliSonuc: {
           un: 14,
           saglik: -8,
-          mesaj: "Kısa ama sert bir kavganın ardından yabancı yerde kaldı; meyhane seni omuzlarında taşıdı.",
+          mesaj: "Yabancıyı yere serdin; meyhane seni omuzlarda taşıdı.",
         },
         basarisizSonuc: {
           olum_sansi: 5,
           saglik: -22,
-          mesaj: "Yabancının yumrukları beklediğinden ağırdı; günlerce yataktan kalkamadın.",
+          mesaj: "Yumrukları ağırdı; günlerce yataktan kalkamadın.",
         },
       },
       {
-        metin: "Özür dile, tırnağını gösterme.",
+        metin: "Özür dile.",
         baseBasariSansi: 90,
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
           mutluluk: -1,
-          mesaj: "Gururunu bir kenara bırakıp özür diledin; adam homurdanarak masasına döndü.",
+          mesaj: "Gururunu bırakıp özür diledin; adam homurdanıp döndü.",
         },
         basarisizSonuc: {
           un: -8,
-          mesaj: "Özrün kabul edilse de meyhane seni 'korkak' diye anmaya başladı.",
+          mesaj: "Özrün kabul edildi; meyhane seni 'korkak' bildi.",
         },
       },
     ],
@@ -500,10 +500,10 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     ton: "agir",
     gorsel: "🌅",
     baslik: "Aynadaki Yabancı",
-    metin: "Yine aynı meyhane, yine aynı tabure. Kadehin elinde dururken, meyhanenin kirli aynasında kendini görüyorsun ve tanıyamıyorsun. Bir an için her şeyi bırakmayı düşünüyorsun.",
+    metin: "Yine aynı meyhane, aynı tabure. Kirli aynada kendini tanıyamıyorsun; her şeyi bırakmayı düşünüyorsun.",
     secenekler: [
       {
-        metin: "Kadehi masaya bırak, kendini toparlamaya çalış.",
+        metin: "Kadehi bırak, toparlan.",
         baseBasariSansi: 45,
         basariliSonuc: {
           ahlak: 12,
@@ -512,26 +512,26 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
           etiket_sil: ["bagimlilik:ayyas"],
           durum_sil: ["ayyaslik"],
           maas_carpani: 1.05,
-          mesaj: "Kadehi geri ittin ve o gece meyhaneden eli boş ama başı dik çıktın. Aylar sürse de, yeniden kendine benzemeye başladın.",
-          detay: "Herkes senin hakkında konuşmaya devam etse de, artık haklı çıkmalarına izin vermiyorsun.",
+          mesaj: "Kadehi ittin; başın dik çıktın, kendine dönüyorsun.",
+          detay: "Artık haklı çıkmalarına izin yok.",
         },
         basarisizSonuc: {
           saglik: -6,
           mutluluk: -8,
-          mesaj: "Denedin ama kadeh elinden düşmedi. Ertesi sabah aynı taburede, aynı baş ağrısıyla uyandın.",
+          mesaj: "Kadeh elinden düşmedi; aynı baş ağrısıyla uyandın.",
         },
       },
       {
-        metin: "Bu düşünceyi kadehle birlikte yudumla.",
+        metin: "Düşünceyi kadehle bastır.",
         baseBasariSansi: 95,
         basariliSonuc: {
           mutluluk: 2,
           saglik: -3,
-          mesaj: "Düşünceyi kadehle birlikte bastırdın. Yarın da aynı yerde olacaksın, biliyorsun.",
+          mesaj: "Düşünceyi bastırdın. Yarın yine buradasın, biliyorsun.",
         },
         basarisizSonuc: {
           saglik: -5,
-          mesaj: "İçmeye devam ettin; sabah her zamankinden de kötü hissettin.",
+          mesaj: "İçtin; sabah her zamankinden kötü hissettin.",
         },
       },
     ],
@@ -548,31 +548,31 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     ton: "hafif",
     gorsel: "🎯",
     baslik: "Dart Turnuvası",
-    metin: "Duvardaki dart tahtasının önünde ufak bir turnuva kurulmuş. Bira bardakları tahtanın etrafında sıralanmış, herkes sırasını bekliyor.",
+    metin: "Duvardaki dart tahtasında küçük bir turnuva var. Herkes sırasını bekliyor.",
     secenekler: [
       {
-        metin: "Sıraya gir, atışını yap.",
+        metin: "Sıraya gir, at.",
         baseBasariSansi: 55,
         basariliSonuc: {
           un: 10,
           mutluluk: 4,
-          mesaj: "Oku tam da onluğa sapladın! Bar senin şerefine bardak kaldırdı.",
+          mesaj: "Oku tam onluğa sapladın! Bar kadeh kaldırdı.",
         },
         basarisizSonuc: {
           mutluluk: -4,
-          mesaj: "Ok duvara değil, tavana saplandı. Bütün pub gülmekten kırıldı.",
+          mesaj: "Ok tavana saplandı. Bütün pub gülmekten kırıldı.",
         },
       },
       {
-        metin: "Kenardan bira yudumlayarak izle.",
+        metin: "Bira yudumlayıp izle.",
         baseBasariSansi: 90,
         basariliSonuc: {
           mutluluk: 3,
-          mesaj: "Sakin bir akşam geçirdin, rezil olma riskine girmeden.",
+          mesaj: "Sakin bir akşam geçirdin, rezil olmadan.",
         },
         basarisizSonuc: {
           mutluluk: -1,
-          mesaj: "Sıradan bir akşamdı, hatırlanacak bir şey olmadı.",
+          mesaj: "Sıradan bir akşamdı.",
         },
       },
     ],
@@ -584,33 +584,33 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     minYas: 18,
     gorsel: "🏭",
     baslik: "Fabrika İşçilerinin Sofrası",
-    metin: "Yan masadaki bir grup fabrika işçisi, çalışma saatleri ve ücretler hakkında öfkeyle konuşuyor. Biri sana dönüp fikrini soruyor.",
+    metin: "Yan masadaki fabrika işçileri çalışma saatlerine ve ücretlere öfkeleniyor. Biri fikrini soruyor.",
     secenekler: [
       {
-        metin: "Onlardan yana konuş, dertlerini dinle.",
+        metin: "Onlardan yana konuş.",
         baseBasariSansi: 70,
         basariliSonuc: {
           ahlak: 6,
           un: 6,
           dost_puani: 4,
-          mesaj: "Sözlerin işçilerin hoşuna gitti; sana bir bira ısmarladılar ve dertlerini uzun uzun anlattılar.",
+          mesaj: "Sözlerin hoşlarına gitti; sana bira ısmarladılar.",
         },
         basarisizSonuc: {
           mutluluk: -3,
-          mesaj: "Söylediklerin yanlış anlaşıldı, kısa bir tartışmaya döndü. Masanı değiştirmek zorunda kaldın.",
+          mesaj: "Yanlış anlaşıldın, tartışma çıktı; masa değiştirdin.",
         },
       },
       {
-        metin: "Tarafsız kal, sadece dinle.",
+        metin: "Tarafsız kal, dinle.",
         baseBasariSansi: 95,
         basariliSonuc: {
           saglik: 2,
           mutluluk: -2,
-          mesaj: "Sessizce dinledin, şehrin nabzını tuttun.",
+          mesaj: "Sessizce dinleyip şehrin nabzını tuttun.",
         },
         basarisizSonuc: {
           mutluluk: -2,
-          mesaj: "Sessizliğin bazılarına 'kibirli' göründü ama önemli değildi.",
+          mesaj: "Sessizliğin bazılarına kibir gibi göründü.",
         },
       },
     ],
@@ -623,20 +623,20 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     gizemli: true,
     gorsel: "🎩",
     baslik: "Silindir Şapkalı Adam",
-    metin: "Şık giyimli, pub'a hiç yakışmayan bir adam yanına oturuyor. Kartvizit gibi bir kağıt uzatıp gizemli bir yatırım fırsatından bahsediyor.",
+    metin: "Pub'a yakışmayan şık bir adam, kartvizit uzatıp gizemli bir yatırım fırsatından söz ediyor.",
     secenekler: [
       {
-        metin: "Teklifi dinle, biraz yatırım yap.",
+        metin: "Dinle, yatırım yap.",
         baseBasariSansi: 50,
         maliyet: 12,
         basariliSonuc: {
           para: 20,
-          mesaj: "Adamın sözü doğru çıktı; birkaç hafta sonra kapına gönderdiği zarfta fazlasıyla kârın vardı.",
+          mesaj: "Adam doğru çıktı; zarfta fazlasıyla kâr geldi.",
         },
         basarisizSonuc: {
           mutluluk: -4,
           para: -12,
-          mesaj: "Adam bir daha görünmedi. Kartvizitindeki isim bile sahteydi.",
+          mesaj: "Adam kayboldu; kartvizitteki isim bile sahteydi.",
         },
       },
       {
@@ -645,11 +645,11 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         basariliSonuc: {
           ahlak: 3,
           mutluluk: -1,
-          mesaj: "İçgüdülerine güvendin; adam omuz silkip başka bir masaya geçti.",
+          mesaj: "İçgüdüne güvendin; adam başka masaya geçti.",
         },
         basarisizSonuc: {
           mutluluk: -1,
-          mesaj: "Reddetmene rağmen adamın bakışları içini ürpertti.",
+          mesaj: "Adamın bakışları içini ürpertti.",
         },
       },
     ],
@@ -662,7 +662,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     ton: "hafif",
     gorsel: "🎱",
     baslik: "Bilardo Masası",
-    metin: "Köşedeki bilardo masasında bir yer açılmış. Yerel şampiyon sana meydan okuyor, etrafta küçük bahisler dönüyor.",
+    metin: "Bilardo masasında yer açıldı. Yerel şampiyon meydan okuyor, küçük bahisler dönüyor.",
     secenekler: [
       {
         metin: "Oyna, yeteneğini göster.",
@@ -671,12 +671,12 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         basariliSonuc: {
           para: 14,
           un: 6,
-          mesaj: "Son topu köşe cebe soktun! Masa senin adına alkış tuttu.",
+          mesaj: "Son topu cebe soktun! Masa alkışladı.",
         },
         basarisizSonuc: {
           mutluluk: -4,
           para: -5,
-          mesaj: "Elin titredi, top köşeyi ıskaladı. Şampiyon unvanını korudu.",
+          mesaj: "Elin titredi, top ıskaladı. Şampiyon unvanını korudu.",
         },
       },
       {
@@ -684,10 +684,10 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         baseBasariSansi: 95,
         basariliSonuc: {
           mutluluk: 3,
-          mesaj: "İyi bir maç izledin, cebindeki parayı riske atmadan.",
+          mesaj: "İyi bir maç izledin, paran riske girmeden.",
         },
         basarisizSonuc: {
-          mesaj: "Sıkıcı geçen bir maçtı, sonunu bile beklemedin.",
+          mesaj: "Maç sıkıcıydı, sonunu beklemedin.",
         },
       },
     ],
@@ -700,23 +700,23 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     ton: "hafif",
     gorsel: "🎵",
     baslik: "Ocak Başı Korosu",
-    metin: "Piyanist eski bir halk şarkısına başlayınca bütün pub tek ağızdan söylemeye başlıyor. Sesler birbirine karışıyor, kimse kusursuz değil ama kimsenin de umurunda değil.",
+    metin: "Piyanist eski bir halk şarkısına başlayınca bütün pub koro oluyor. Kimsenin umurunda değil.",
     secenekler: [
       {
-        metin: "Kendini bırak, koroya katıl.",
+        metin: "Koroya katıl.",
         baseBasariSansi: 85,
         basariliSonuc: {
           mutluluk: 6,
           dost_puani: 3,
-          mesaj: "Sesini yükselttin, bir an için tüm dertlerini unuttun. Yabancılarla omuz omuza şarkı söylemek iyi hissettirdi.",
+          mesaj: "Sesini yükselttin, dertlerini unuttun.",
         },
         basarisizSonuc: {
           mutluluk: -4,
-          mesaj: "Sözleri pek bilmesen de eğlendin, kimse fark etmedi bile.",
+          mesaj: "Sözleri bilmesen de eğlendin, kimse fark etmedi.",
         },
       },
       {
-        metin: "Kenarda otur, sadece izle.",
+        metin: "Kenarda otur, izle.",
         baseBasariSansi: 95,
         basariliSonuc: {
           mutluluk: 3,
@@ -724,7 +724,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         },
         basarisizSonuc: {
           mutluluk: -1,
-          mesaj: "Gürültüden başın ağrımaya başladı.",
+          mesaj: "Gürültüden başın ağrıdı.",
         },
       },
     ],
@@ -736,33 +736,33 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     minYas: 18,
     gorsel: "🥊",
     baslik: "Sokak Kapısındaki Anlaşmazlık",
-    metin: "Kapıdan çıkarken iki müşteri arasında çıkan bir tartışma hızla yumruklaşmaya dönüyor; sen tam ortasında kaldın.",
+    metin: "Kapıdan çıkarken iki müşterinin tartışması yumruklaşmaya dönüyor; tam ortasında kaldın.",
     secenekler: [
       {
-        metin: "Aralarına gir, ayır.",
+        metin: "Araya gir, ayır.",
         baseBasariSansi: 50,
         basariliSonuc: {
           un: 7,
           ahlak: 5,
-          mesaj: "İkisini de zor bela ayırdın; pub sahibi sana minnetle bir bira ısmarladı.",
+          mesaj: "İkisini zor ayırdın; pub sahibi bir bira ısmarladı.",
         },
         basarisizSonuc: {
           saglik: -10,
-          mesaj: "Araya girerken kaçak bir yumruk tam suratına isabet etti.",
+          mesaj: "Araya girerken kaçak bir yumruk suratına geldi.",
         },
       },
       {
-        metin: "Kenardan sıyrıl, karışma.",
+        metin: "Sıyrıl, karışma.",
         baseBasariSansi: 90,
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
           mutluluk: -1,
-          mesaj: "Akıllıca davrandın; kavga polis gelmeden kendiliğinden bitti.",
+          mesaj: "Akıllıca davrandın; kavga kendiliğinden bitti.",
         },
         basarisizSonuc: {
           para: -4,
-          mesaj: "Kaçarken cebindeki bozuklukların bir kısmı yere döküldü, kalabalıkta kayboldu.",
+          mesaj: "Kaçarken bozuklukların bir kısmı kalabalıkta kayboldu.",
         },
       },
     ],
@@ -777,30 +777,30 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     sosyallesmeYeri: "pazar_meydani",
     gorsel: "🗞️",
     baslik: "Buharın Ardındaki Fısıltılar",
-    metin: "Sıcak taşların üzerinde uzanırken, birkaç adım ötende iki kadın/erkek şehrin en taze dedikodularını fısıldıyor. Sesleri buharda net duyuluyor.",
+    metin: "Sıcak taşta uzanırken yakınındaki iki kişi şehrin taze dedikodularını fısıldıyor.",
     secenekler: [
       {
-        metin: "Sessizce dinle, kulak kabart.",
+        metin: "Sessizce kulak kabart.",
         baseBasariSansi: 75,
         basariliSonuc: {
           etiket_ekle: ["istihbarat_var"],
-          mesaj: "Duyduğun bilgi tam da işine yarayacak cinstendi; bir sonraki adımını daha net atacaksın.",
+          mesaj: "İşine yarar bir şey duydun; adımını netleştirdin.",
         },
         basarisizSonuc: {
           mutluluk: -1,
-          mesaj: "Konuştukları sadece sıradan bir düğün hazırlığıydı, hiçbir işe yaramadı.",
+          mesaj: "Yalnızca sıradan bir düğün hazırlığıydı, işe yaramadı.",
         },
       },
       {
-        metin: "Kendi huzuruna odaklan, dinleme.",
+        metin: "Kendi huzuruna bak.",
         baseBasariSansi: 95,
         basariliSonuc: {
           saglik: 4,
           mutluluk: 3,
-          mesaj: "Sıcaklığın ve buharın tadını çıkardın, zihnin dinlendi.",
+          mesaj: "Sıcağın ve buharın tadını çıkardın, zihnin dinlendi.",
         },
         basarisizSonuc: {
-          mesaj: "Rahatlamaya çalışsan da etraftaki gürültü seni biraz geriyor.",
+          mesaj: "Gürültü rahatlamanı biraz bozdu.",
         },
       },
     ],
@@ -813,7 +813,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     ton: "hafif",
     gorsel: "💦",
     baslik: "Soğuk Su Meydan Okuması",
-    metin: "Genç bir grup, kim daha uzun süre buz gibi soğutma havuzunda kalacağına dair birbirine meydan okuyor. Sıra sana geldi.",
+    metin: "Gençler kim soğuk havuzda daha uzun kalacak diye iddialaşıyor. Sıra sende.",
     secenekler: [
       {
         metin: "Havuza atla, dayan.",
@@ -821,11 +821,11 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         basariliSonuc: {
           un: 8,
           saglik: 3,
-          mesaj: "Herkesten uzun dayandın; sudan çıktığında alkışlarla karşılandın.",
+          mesaj: "Herkesten uzun dayandın; sudan alkışlarla çıktın.",
         },
         basarisizSonuc: {
           saglik: -6,
-          mesaj: "Daha on saniye geçmeden titreyerek sudan fırladın, gençler seninle dalga geçti.",
+          mesaj: "On saniyede titreyerek fırladın; gençler dalga geçti.",
         },
       },
       {
@@ -835,11 +835,11 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
           saglik: 2,
           ahlak: 1,
           mutluluk: -1,
-          mesaj: "Aptalca bir meydan okumaya kapılmadın.",
+          mesaj: "Aptalca meydan okumaya kapılmadın.",
         },
         basarisizSonuc: {
           mutluluk: -1,
-          mesaj: "'Korkak' diye takıldılar ama umurunda olmadı.",
+          mesaj: "'Korkak' diye takıldılar, umursamadın.",
         },
       },
     ],
@@ -852,27 +852,27 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     yasakliEtiketler: ["medeni:evli"],
     gorsel: "💌",
     baslik: "Görücü Usulü Fısıltılar",
-    metin: "Yaşlı bir hanım/bey, seni süzüp süzüp yanındakine bir şeyler fısıldıyor. Belli ki uygun bir eş adayı arıyor ve gözü sende.",
+    metin: "Yaşlı biri seni süzüp yanındakine fısıldıyor; uygun bir eş adayı arıyor, gözü sende.",
     secenekler: [
       {
-        metin: "Yaklaş, kiminle ilgilendiğini sor.",
+        metin: "Yaklaş, kimden söz ettiğini sor.",
         baseBasariSansi: 70,
         basariliSonuc: {
           mutluluk: 3,
-          mesaj: "Sana ailesi köklü bir hane halkından biriyle ilgili birkaç isim fısıldadı; ilginç bir olasılık kapıda bekliyor.",
+          mesaj: "Köklü bir aileden adaylar fısıldadı; ilginç ihtimal.",
         },
         basarisizSonuc: {
           mutluluk: -2,
-          mesaj: "Yaşlı hanım seni beğenmedi, yüzünü buruşturup yanındakine döndü.",
+          mesaj: "Yaşlı kişi seni beğenmedi, yüzünü buruşturdu.",
         },
       },
       {
-        metin: "Gülümse, ilgilenmediğini belirt.",
+        metin: "Gülümse, ilgilenmediğini söyle.",
         baseBasariSansi: 95,
         basariliSonuc: {
           saglik: 2,
           mutluluk: -2,
-          mesaj: "Görücülük işine karışmadın, huzurunu bozmadın.",
+          mesaj: "Görücülüğe karışmadın, huzurun bozulmadı.",
         },
         basarisizSonuc: {
           mutluluk: -2,
@@ -887,30 +887,30 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     sosyallesmeYeri: "pazar_meydani",
     gorsel: "🧴",
     baslik: "Tellağın Elleri",
-    metin: "Deneyimli tellak/natır, günlerdir sırtında taşıdığın yorgunluğu fark edip uzun bir masaj öneriyor.",
+    metin: "Tellak yorgunluğunu fark edip uzun bir masaj öneriyor.",
     secenekler: [
       {
-        metin: "Kabul et, parasını öde.",
+        metin: "Kabul et, öde.",
         baseBasariSansi: 90,
         maliyet: 6,
         basariliSonuc: {
           para: -6,
           saglik: 8,
           mutluluk: 3,
-          mesaj: "Ellerinin altında haftaların yorgunluğu eridi; hamamdan yeni doğmuş gibi çıktın.",
+          mesaj: "Haftalık yorgunluk eridi; yeniden doğmuş gibi çıktın.",
         },
         basarisizSonuc: {
           para: -6,
           saglik: 2,
-          mesaj: "Biraz sert davrandı ama yine de iyi geldi.",
+          mesaj: "Biraz sertti ama iyi geldi.",
         },
       },
       {
-        metin: "Teşekkür et, kendi başına yıkan.",
+        metin: "Teşekkür et, kendin yıka.",
         baseBasariSansi: 95,
         basariliSonuc: {
           saglik: 3,
-          mesaj: "Sade ama yeterince dinlendirici bir yıkanma oldu.",
+          mesaj: "Sade ama dinlendirici bir yıkanma.",
         },
         basarisizSonuc: {
           mesaj: "Aceleyle yıkandın, pek bir şey hissetmedin.",
@@ -924,31 +924,31 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     sosyallesmeYeri: "pazar_meydani",
     gorsel: "🧺",
     baslik: "Boş Sepet",
-    metin: "Yıkanmadan çıkıp eşyalarının olduğu sepete döndüğünde, kesenin bir köşesinin hafiflediğini fark ediyorsun.",
+    metin: "Yıkanıp sepetine dönünce kesenin hafiflediğini fark ediyorsun.",
     secenekler: [
       {
-        metin: "Hamam görevlisine sor, araştır.",
+        metin: "Görevliye sor, araştır.",
         baseBasariSansi: 55,
         basariliSonuc: {
           para: 5,
-          mesaj: "Görevli, başka bir müşterinin sepetleri karıştırdığını hatırladı; kaybolan parandan bir kısmını geri aldın.",
+          mesaj: "Sepetleri karıştıranı buldun; parayı kısmen geri aldın.",
         },
         basarisizSonuc: {
           para: -6,
-          mesaj: "Kimse bir şey görmedi ya da görmüş gibi yapmadı. Kayıp senin oldu.",
+          mesaj: "Kimse bir şey görmedi. Kayıp senin oldu.",
         },
       },
       {
-        metin: "Boş ver, önemli değil.",
+        metin: "Boş ver.",
         baseBasariSansi: 95,
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
-          mesaj: "Kaybını sineye çektin, günün geri kalanını huzurla geçirdin.",
+          mesaj: "Kaybı sineye çektin, günü huzurla geçirdin.",
         },
         basarisizSonuc: {
           mutluluk: -2,
-          mesaj: "Boş vermeye çalışsan da içinden bir türlü atamadın.",
+          mesaj: "Boş versen de içinden atamadın.",
         },
       },
     ],
@@ -959,28 +959,28 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     sosyallesmeYeri: "pazar_meydani",
     gorsel: "🌍",
     baslik: "Uzak Diyarların Tüccarı",
-    metin: "Yanındaki taşta oturan, tuhaf bir aksanla konuşan bir tüccar, kervanının getirdiği egzotik mallardan bahsediyor.",
+    metin: "Yanındaki tuhaf aksanlı bir tüccar, kervanının getirdiği egzotik mallardan söz ediyor.",
     secenekler: [
       {
         metin: "Sohbete gir, bağlantı kur.",
         baseBasariSansi: 65,
         basariliSonuc: {
           para: 8,
-          mesaj: "Sohbetiniz uzun sürdü; ayrılırken sana küçük ama değerli bir hediye bıraktı ve gelecekte iş yapma sözü verdi.",
+          mesaj: "Uzun sohbet ettiniz; hediye bırakıp iş sözü verdi.",
         },
         basarisizSonuc: {
-          mesaj: "Dil engeli yüzünden birbirinizi pek anlayamadınız, yine de tuhaf bir sıcaklık vardı sohbetinizde.",
+          mesaj: "Dil engeli yüzünden zor anlaştınız ama sohbet sıcaktı.",
         },
       },
       {
-        metin: "Kendi huzuruna dön, sohbeti uzatma.",
+        metin: "Sohbeti uzatma.",
         baseBasariSansi: 95,
         basariliSonuc: {
           saglik: 3,
-          mesaj: "Yıkanmanın tadını çıkardın, yeni bir tanışıklığa vakit ayırmadın.",
+          mesaj: "Yıkanmanın tadını çıkardın.",
         },
         basarisizSonuc: {
-          mesaj: "Sıradan bir yıkanma oldu.",
+          mesaj: "Sıradan bir yıkanma.",
         },
       },
     ],
@@ -992,35 +992,35 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     ton: "hafif",
     gorsel: "🥵",
     baslik: "Göz Kararması",
-    metin: "Sıcak odada fazla oyalandın; başın dönmeye, gözlerin kararmaya başladı.",
+    metin: "Sıcak odada fazla kaldın; başın dönüyor, gözlerin kararıyor.",
     secenekler: [
       {
-        metin: "Kendini zorla, biraz daha kal.",
+        metin: "Zorla, biraz daha kal.",
         baseBasariSansi: 40,
         basariliSonuc: {
           ahlak: 1,
           mutluluk: -1,
           saglik: 6,
-          mesaj: "Zorlasan da toparlandın, gerçekten iyi bir ısınma oldu.",
+          mesaj: "Zorladın ama toparlandın; iyi bir ısınma oldu.",
         },
         basarisizSonuc: {
           saglik: -10,
           mutluluk: -5,
-          mesaj: "Bayılıp yere yığıldın; seni soğuk suyla ayılttılar, herkesin önünde utandın.",
+          mesaj: "Bayılıp yığıldın; soğuk suyla ayılttılar, utandın.",
         },
       },
       {
-        metin: "Hemen serin bölüme geç.",
+        metin: "Serin bölüme geç.",
         baseBasariSansi: 90,
         basariliSonuc: {
           ahlak: 1,
           mutluluk: -1,
           saglik: 4,
-          mesaj: "Zamanında müdahale ettin, kendini toparladın.",
+          mesaj: "Zamanında müdahale edip toparlandın.",
         },
         basarisizSonuc: {
           saglik: -3,
-          mesaj: "Yine de biraz baş dönmesiyle günü geçirdin.",
+          mesaj: "Yine de günü baş dönmesiyle geçirdin.",
         },
       },
     ],
@@ -1034,33 +1034,33 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     ton: "agir",
     gorsel: "🕵️",
     baslik: "Buhar Arkasındaki Meclis",
-    metin: "En içteki sıcak odada birkaç kişinin alçak sesle, ciddi bir tavırla konuştuğunu görüyorsun. Sözlerinden şehrin yönetimiyle ilgili tehlikeli bir plan sezinliyorsun.",
+    metin: "İç odada birkaç kişi alçak sesle konuşuyor; şehir yönetimine dair tehlikeli bir plan sezinliyorsun.",
     secenekler: [
       {
-        metin: "Yaklaş, ne konuştuklarını dinlemeye çalış.",
+        metin: "Yaklaş, dinlemeye çalış.",
         baseBasariSansi: 45,
         basariliSonuc: {
           etiket_ekle: ["istihbarat_var"],
-          mesaj: "Duyduklarını kimseye söylemeden cebine attın; ileride işine yarayacağından eminsin.",
+          mesaj: "Duyduklarını sakladın; ileride işine yarar.",
         },
         basarisizSonuc: {
           mutluluk: -6,
           rakip_puani: 5,
-          mesaj: "Fark edildin. Adamlardan biri seni tehditkâr bir bakışla süzdü; oradan hızla uzaklaştın.",
+          mesaj: "Fark edildin; biri tehditkâr baktı, hızla uzaklaştın.",
         },
       },
       {
-        metin: "Görmezden gel, kendi işine bak.",
+        metin: "Görmezden gel.",
         baseBasariSansi: 95,
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
           mutluluk: -1,
-          mesaj: "Başını belaya sokmadın, sakin bir şekilde yıkanmana devam ettin.",
+          mesaj: "Belaya karışmadın, sakince yıkanmaya devam ettin.",
         },
         basarisizSonuc: {
           mutluluk: -1,
-          mesaj: "Duyduğun birkaç kelime aklından çıkmadı, tedirginlik içinde eve döndün.",
+          mesaj: "Birkaç kelime aklından çıkmadı; tedirgin döndün.",
         },
       },
     ],
@@ -1076,14 +1076,14 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     ton: "hafif",
     gorsel: "📖",
     baslik: "Meddahın Hikâyesi",
-    metin: "Meddah sopasını yere vurup anlatmaya başlıyor: 'Bir varmış, bir yokmuş...' Kahvehane derin bir sessizliğe gömülüyor, herkes onu dinliyor.",
+    metin: "Meddah sopasını vurup başlıyor: 'Bir varmış, bir yokmuş...' Kahvehane sessizliğe gömülüyor.",
     secenekler: [
       {
-        metin: "Öne otur, hikâyeye kendini kaptır.",
+        metin: "Öne otur, kendini kaptır.",
         baseBasariSansi: 90,
         basariliSonuc: {
           mutluluk: 5,
-          mesaj: "Hikâye seni başka bir dünyaya götürdü; saatler nasıl geçti anlamadın.",
+          mesaj: "Hikâye seni başka dünyaya götürdü; saatler geçti.",
         },
         basarisizSonuc: {
           mutluluk: -3,
@@ -1091,14 +1091,14 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         },
       },
       {
-        metin: "Kahveni yudumla, yarı kulak ver.",
+        metin: "Kahveni yudumla, yarım dinle.",
         baseBasariSansi: 95,
         basariliSonuc: {
           mutluluk: 3,
           mesaj: "Sakin bir akşam geçirdin.",
         },
         basarisizSonuc: {
-          mesaj: "Sıradan bir akşam oldu.",
+          mesaj: "Sıradan bir akşam.",
         },
       },
     ],
@@ -1110,7 +1110,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     ton: "hafif",
     gorsel: "🎲",
     baslik: "Tavla Şakırtısı",
-    metin: "Köşedeki masada birileri seni tavlaya davet ediyor. Zarlar hazır, taşlar dizilmiş, etraf sessizce izlemeye başlamış bile.",
+    metin: "Köşedeki masada seni tavlaya çağırıyorlar. Zarlar hazır, etraf izlemeye başlamış.",
     secenekler: [
       {
         metin: "Otur, oyna.",
@@ -1119,11 +1119,11 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         basariliSonuc: {
           para: 7,
           mutluluk: 3,
-          mesaj: "Zarlar senden yana geldi, oyunu kazandın. İzleyenler seni tebrik etti.",
+          mesaj: "Zarlar yüzüne güldü, kazandın. İzleyenler tebrik etti.",
         },
         basarisizSonuc: {
           para: -3,
-          mesaj: "Zarlar bu sefer yardımcı olmadı, oyunu kaybettin.",
+          mesaj: "Zarlar bu sefer yardım etmedi, kaybettin.",
         },
       },
       {
@@ -1137,7 +1137,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         },
         basarisizSonuc: {
           mutluluk: -2,
-          mesaj: "Fazla bir şey olmadı.",
+          mesaj: "Pek bir şey olmadı.",
         },
       },
     ],
@@ -1149,19 +1149,19 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     gizemli: true,
     gorsel: "☕",
     baslik: "Telvedeki Şekiller",
-    metin: "Kahveni bitirince yanındaki yaşlı kadın fincanını istiyor: 'Telvene bakayım evladım.' Fincanı çevirip bekliyorsunuz.",
+    metin: "Yaşlı kadın fincanını istiyor: 'Telvene bakayım evladım.' Fincanı çevirip bekliyorsunuz.",
     secenekler: [
       {
-        metin: "Fincanı uzat, falına baktır.",
+        metin: "Fincanı uzat, baktır.",
         baseBasariSansi: 80,
         basariliSonuc: {
           mutluluk: 4,
-          mesaj: "Kadın fincanda 'uzun bir yol ve beklenmedik bir kazanç' görüyor; söyledikleri içini tuhaf bir umutla dolduruyor.",
-          detay: "Doğru mu yanlış mı bilmiyorsun ama o günden sonra adımların biraz daha hafif.",
+          mesaj: "Fincanda 'uzun yol ve beklenmedik kazanç' var.",
+          detay: "Adımların biraz hafifledi.",
         },
         basarisizSonuc: {
           mutluluk: -4,
-          mesaj: "Kadın yüzünü buruşturup 'bugün söylemesem daha iyi' diyor; merakın seni bütün gün rahatsız ediyor.",
+          mesaj: "Kadın 'söylemesem daha iyi' dedi; merak seni kemirdi.",
         },
       },
       {
@@ -1174,7 +1174,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         },
         basarisizSonuc: {
           mutluluk: -2,
-          mesaj: "Kadın biraz gücenmiş göründü ama önemli değil.",
+          mesaj: "Kadın biraz gücendi ama önemli değil.",
         },
       },
     ],
@@ -1186,29 +1186,29 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     ton: "agir",
     gorsel: "📰",
     baslik: "Gazete Etrafında Tartışma",
-    metin: "Elden ele dolaşan bir gazete kahvehanede sert bir tartışma başlatıyor. Herkes fikrini bağırarak savunuyor, senden de görüş bekleniyor.",
+    metin: "Elden ele dolaşan bir gazete kahvehanede sert tartışma başlatıyor. Senden de görüş bekleniyor.",
     secenekler: [
       {
-        metin: "Fikrini açıkça söyle.",
+        metin: "Fikrini söyle.",
         baseBasariSansi: 55,
         basariliSonuc: {
           un: 8,
           rakip_puani: 4,
-          mesaj: "Sözlerin masada yankı buldu; bazıları seni alkışladı, bazıları küfretti — ama artık tanınıyorsun.",
+          mesaj: "Kimi alkışladı, kimi küfretti; ama artık tanınıyorsun.",
         },
         basarisizSonuc: {
           ahlak: -3,
           mutluluk: -4,
-          mesaj: "Tartışma büyüdü, neredeyse yumruklaşmaya dönecekti. Kahveci araya girip herkesi sakinleştirmek zorunda kaldı.",
+          mesaj: "Tartışma yumruğa varacaktı; kahveci araya girdi.",
         },
       },
       {
-        metin: "Tarafsız kal, sadece dinle.",
+        metin: "Tarafsız kal, dinle.",
         baseBasariSansi: 90,
         basariliSonuc: {
           saglik: 2,
           mutluluk: -2,
-          mesaj: "Fikrini kimseye açmadan, farklı görüşleri dinleyip zihninde tarttın.",
+          mesaj: "Fikrini saklayıp görüşleri zihninde tarttın.",
         },
         basarisizSonuc: {
           mutluluk: -2,
@@ -1223,29 +1223,29 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     sosyallesmeYeri: "pazar_meydani",
     gorsel: "📦",
     baslik: "Duyulan Fırsat",
-    metin: "Yan masadaki tüccarlar, yeni gelen bir mal partisinden ve iyi bir fiyat fırsatından bahsediyor. Kulak misafiri oldun.",
+    metin: "Yan masadaki tüccarlar yeni gelen bir mal partisinden ve iyi fiyattan söz ediyor. Kulak misafiri oldun.",
     secenekler: [
       {
-        metin: "Sohbete katıl, fırsatı değerlendir.",
+        metin: "Katıl, fırsatı değerlendir.",
         baseBasariSansi: 60,
         maliyet: 10,
         basariliSonuc: {
           para: 16,
-          mesaj: "Fırsat gerçekten iyiymiş; birkaç gün içinde yatırdığının fazlasını geri aldın.",
+          mesaj: "Fırsat iyiymiş; yatırdığından fazlasını geri aldın.",
         },
         basarisizSonuc: {
           mutluluk: -4,
           para: -10,
-          mesaj: "Mal partisi beklendiği gibi çıkmadı, yatırdığın parayı geri alamadın.",
+          mesaj: "Mal beklenmedik çıktı; yatırımın boşa gitti.",
         },
       },
       {
-        metin: "Sadece dinle, katılma.",
+        metin: "Sadece dinle.",
         baseBasariSansi: 95,
         basariliSonuc: {
           ahlak: 3,
           mutluluk: -2,
-          mesaj: "Riske girmeden kahveni yudumlamaya devam ettin.",
+          mesaj: "Riske girmeden kahveni yudumladın.",
         },
         basarisizSonuc: {
           mutluluk: -2,
@@ -1261,7 +1261,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     ton: "hafif",
     gorsel: "💨",
     baslik: "Paylaşılan Nargile",
-    metin: "Yalnız oturan yaşlı bir adam nargilesini sana doğru itip 'buyur' diyor. Sohbet, dumanın halkalar hâlinde yükselişiyle birlikte ağırlaşıyor.",
+    metin: "Yalnız yaşlı bir adam nargilesini sana uzatıp 'buyur' diyor. Sohbet dumanla birlikte koyulaşıyor.",
     secenekler: [
       {
         metin: "Otur, sohbete katıl.",
@@ -1269,25 +1269,25 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         basariliSonuc: {
           dost_puani: 5,
           mutluluk: 4,
-          mesaj: "Saatlerce konuştunuz; adamın hayat hikâyesi sende derin bir iz bıraktı.",
+          mesaj: "Saatlerce konuştunuz; adamın hikâyesi sende iz bıraktı.",
         },
         basarisizSonuc: {
           mutluluk: -2,
-          mesaj: "Sohbet kısa sürdü ama yine de hoştu.",
+          mesaj: "Sohbet kısa sürdü ama hoştu.",
         },
       },
       {
-        metin: "Teşekkür et, kendi masana dön.",
+        metin: "Teşekkür et, masana dön.",
         baseBasariSansi: 95,
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
           mutluluk: -1,
-          mesaj: "Yalnız başına sakin bir akşam geçirdin.",
+          mesaj: "Tek başına sakin bir akşam geçirdin.",
         },
         basarisizSonuc: {
           mutluluk: -1,
-          mesaj: "Adamın hayal kırıklığına uğramış yüzü aklından çıkmadı.",
+          mesaj: "Adamın hayal kırıklığı aklından çıkmadı.",
         },
       },
     ],
@@ -1298,7 +1298,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     sosyallesmeYeri: "pazar_meydani",
     gorsel: "📯",
     baslik: "Kapıdan Gelen Haber",
-    metin: "Kahvehaneye giren biri soluk soluğa uzak bir mahalledeki bir olayı anlatıyor; herkes başını çevirip dinliyor, sen de meraklısın.",
+    metin: "Biri soluk soluğa uzak bir mahalledeki olayı anlatıyor; herkes dinliyor, sen de meraklısın.",
     secenekler: [
       {
         metin: "Yaklaş, detayları öğren.",
@@ -1307,20 +1307,20 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
           saglik: 2,
           ahlak: 1,
           mutluluk: -1,
-          mesaj: "Anlatılanlar şehrin nabzını tutmana yardım etti; artık bir sonraki adımını daha bilinçli atacaksın.",
+          mesaj: "Şehrin nabzını tuttun; adımın daha bilinçli olacak.",
         },
         basarisizSonuc: {
           mutluluk: -2,
-          mesaj: "Haber çoktan abartılmıştı; gerçek çok daha sıradandı.",
+          mesaj: "Haber çoktan abartılmıştı; gerçek sıradandı.",
         },
       },
       {
-        metin: "Kendi işine bak, ilgilenme.",
+        metin: "Kendi işine bak.",
         baseBasariSansi: 95,
         basariliSonuc: {
           saglik: 2,
           mutluluk: -2,
-          mesaj: "Dedikodunun peşine düşmedin.",
+          mesaj: "Dedikoduya kapılmadın.",
         },
         basarisizSonuc: {
           mutluluk: -2,
@@ -1339,7 +1339,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     sosyallesmeYeri: "pazar_meydani",
     gorsel: "🏮",
     baslik: "İpek Yolu Tüccarı",
-    metin: "Avluda mallarını sergileyen bir tüccar, aylardır aştığı çölleri ve dağları anlatıyor. Denklerinde göz kamaştırıcı kumaşlar var.",
+    metin: "Avluda mal sergileyen tüccar, aylardır aştığı çölleri anlatıyor. Denklerinde göz kamaştırıcı kumaşlar var.",
     secenekler: [
       {
         metin: "Pazarlığa gir, mal al.",
@@ -1347,16 +1347,16 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         maliyet: 14,
         basariliSonuc: {
           para: 22,
-          mesaj: "Sert bir pazarlığın ardından anlaştınız; aldığın kumaşları şehirde iyi bir fiyata elden çıkardın.",
+          mesaj: "Pazarlıkla aldın, kumaşları şehirde iyi fiyata sattın.",
         },
         basarisizSonuc: {
           mutluluk: -4,
           para: -14,
-          mesaj: "Pazarlıkta üstün geldiğini sandın ama malın kalitesi göründüğü gibi değilmiş.",
+          mesaj: "Pazarlığı kazandın sandın; mal göründüğü gibi çıkmadı.",
         },
       },
       {
-        metin: "Sadece sohbet et, hikâyelerini dinle.",
+        metin: "Sohbet et, hikâyelerini dinle.",
         baseBasariSansi: 90,
         basariliSonuc: {
           ahlak: 3,
@@ -1377,29 +1377,29 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     gizemli: true,
     gorsel: "🧭",
     baslik: "Yollarda Yaşlanmış Adam",
-    metin: "Ateşin başında oturan yaşlı bir gezgin, gördüğü garip diyarları ve tanıştığı tuhaf insanları anlatmaya başlıyor. Sesi hipnotize edici.",
+    metin: "Ateş başında yaşlı bir gezgin, gördüğü garip diyarları anlatıyor. Sesi büyüleyici.",
     secenekler: [
       {
         metin: "Ateşin başına otur, dinle.",
         baseBasariSansi: 85,
         basariliSonuc: {
           mutluluk: 3,
-          mesaj: "Anlattıkları arasında gerçekle efsanenin sınırı kayboldu; dünyanın ne kadar büyük olduğunu bir kez daha hissettin.",
+          mesaj: "Gerçekle efsane birbirine karıştı; dünya büyükmüş.",
         },
         basarisizSonuc: {
           mutluluk: -1,
-          mesaj: "Hikâyeler uzadıkça uzadı, sonunda uykuya yenik düştün.",
+          mesaj: "Hikâyeler uzadı, sonunda uykuya yenik düştün.",
         },
       },
       {
-        metin: "Erken yat, uzun yolun için dinlen.",
+        metin: "Erken yat, dinlen.",
         baseBasariSansi: 95,
         basariliSonuc: {
           saglik: 4,
-          mesaj: "İyi bir uyku çektin.",
+          mesaj: "İyi uyudun.",
         },
         basarisizSonuc: {
-          mesaj: "Kervansarayın gürültüsü seni pek uyutmadı.",
+          mesaj: "Kervansarayın gürültüsü uyutmadı.",
         },
       },
     ],
@@ -1410,7 +1410,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     sosyallesmeYeri: "pazar_meydani",
     gorsel: "🛡️",
     baslik: "Kervan Koruma Teklifi",
-    metin: "Bir kervan reisi, sabah yola çıkacak kafilesine eskort/koruma olarak katılıp katılamayacağını soruyor. Ödül cazip ama yol tehlikeli.",
+    metin: "Bir kervan reisi sabah yola çıkacak kafilesine eskort olup olamayacağını soruyor. Ödül cazip, yol tehlikeli.",
     secenekler: [
       {
         metin: "Teklifi kabul et.",
@@ -1419,13 +1419,13 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
           mutluluk: -7,
           para: 18,
           un: 3,
-          mesaj: "Kervan güvenle şehre ulaştı; reis sana söz verdiğinden fazlasını ödedi.",
+          mesaj: "Kervan sağ ulaştı; reis vaadinden fazlasını ödedi.",
         },
         basarisizSonuc: {
           mutluluk: -4,
           saglik: -10,
           para: 6,
-          mesaj: "Yolda küçük bir eşkıya baskınına uğradınız; kervanı korudun ama yara almadan olmadı.",
+          mesaj: "Eşkıya baskınında kervanı korudun ama yara aldın.",
         },
       },
       {
@@ -1434,11 +1434,11 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         basariliSonuc: {
           ahlak: 3,
           mutluluk: -1,
-          mesaj: "Rahat bir gece geçirmeyi tercih ettin.",
+          mesaj: "Rahat bir gece geçirmeyi seçtin.",
         },
         basarisizSonuc: {
           un: -2,
-          mesaj: "Reis biraz hayal kırıklığına uğramış göründü.",
+          mesaj: "Reis biraz hayal kırıklığına uğradı.",
         },
       },
     ],
@@ -1449,7 +1449,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     sosyallesmeYeri: "pazar_meydani",
     gorsel: "🎒",
     baslik: "Karanlıkta Bir Gölge",
-    metin: "Gece yarısı, denklerin arasında dolaşan bir gölge fark ediyorsun. Kimsenin olmadığı bu avluda tek başınasın.",
+    metin: "Gece yarısı denklerin arasında dolaşan bir gölge fark ediyorsun. Avluda tek başınasın.",
     secenekler: [
       {
         metin: "Üstüne yürü, seslen.",
@@ -1457,25 +1457,25 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         basariliSonuc: {
           para: 8,
           un: 5,
-          mesaj: "Hırsız korkup kaçtı, çaldıklarını geride bıraktı. Sabah kervansaray sahibi sana teşekkür etti.",
+          mesaj: "Hırsız çaldıklarını bırakıp kaçtı; sahibi teşekkür etti.",
         },
         basarisizSonuc: {
           para: -10,
-          mesaj: "Gölge çoktan gitmişti; sabah bazı eşyaların eksik olduğunu fark ettin.",
+          mesaj: "Gölge çoktan gitmişti; sabah bazı eşyalar eksikti.",
         },
       },
       {
-        metin: "Görmezden gel, kapını sıkı kilitle.",
+        metin: "Görmezden gel, kapını kilitle.",
         baseBasariSansi: 90,
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
           mutluluk: -1,
-          mesaj: "Kendi eşyanı korudun, başkasının derdine karışmadın.",
+          mesaj: "Kendi eşyanı koruyup karışmadın.",
         },
         basarisizSonuc: {
           mutluluk: -2,
-          mesaj: "Gece boyu uyuyamadın, her sesi hırsız sandın.",
+          mesaj: "Her sesi hırsız sanıp gece boyu uyuyamadın.",
         },
       },
     ],
@@ -1486,23 +1486,23 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     sosyallesmeYeri: "pazar_meydani",
     gorsel: "🗣️",
     baslik: "Ortak Dil Aramak",
-    metin: "Hiçbir ortak dili konuşamadığın bir tüccarla el kol hareketleri ve gülüşmelerle anlaşmaya çalışıyorsun.",
+    metin: "Ortak dil bilmediğin bir tüccarla el kol hareketleri ve gülüşmelerle anlaşmaya çalışıyorsun.",
     secenekler: [
       {
-        metin: "Israrla pazarlığa devam et.",
+        metin: "Israrla pazarlık et.",
         baseBasariSansi: 60,
         maliyet: 8,
         basariliSonuc: {
           para: 4,
-          mesaj: "Sonunda anlaştınız, hatta iyi bir fiyata da anlaştınız! İkiniz de kahkahalarla tokalaştınız.",
+          mesaj: "İyi fiyata anlaştınız, kahkahayla tokalaştınız!",
         },
         basarisizSonuc: {
           para: -8,
-          mesaj: "Anlaşma tam oturmadı ama süreç boyunca çok güldünüz, en azından kültürel bir deneyim oldu.",
+          mesaj: "Anlaşma olmadı ama çok güldünüz.",
         },
       },
       {
-        metin: "Vazgeç, başka bir tezgâha git.",
+        metin: "Vazgeç, başka tezgâha git.",
         baseBasariSansi: 95,
         basariliSonuc: {
           saglik: 2,
@@ -1523,7 +1523,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     ton: "hafif",
     gorsel: "🐫",
     baslik: "Avluda Deve Yarışı",
-    metin: "Sıkılan kervan üyeleri, avluda küçük bir deve yarışı düzenlemiş. Bahisler açık, kazanana gecenin en iyi yemeği vaat ediliyor.",
+    metin: "Sıkılan kervan üyeleri avluda deve yarışı düzenlemiş. Bahisler açık, kazanana gecenin en iyi yemeği.",
     secenekler: [
       {
         metin: "Bahis oyna, deveni seç.",
@@ -1532,23 +1532,23 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         basariliSonuc: {
           para: 10,
           mutluluk: 3,
-          mesaj: "Seçtiğin deve tozu dumana kattı! Gecenin en iyi yemeğini sen kazandın.",
+          mesaj: "Seçtiğin deve tozu dumana kattı! En iyi yemek senin.",
         },
         basarisizSonuc: {
           para: -5,
           mutluluk: -2,
-          mesaj: "Deven yarı yolda inatla oturdu ama yine de çok güldün.",
+          mesaj: "Deven yarı yolda oturdu ama çok güldün.",
         },
       },
       {
-        metin: "Kenardan izle, gülümse.",
+        metin: "İzle, gülümse.",
         baseBasariSansi: 95,
         basariliSonuc: {
           mutluluk: 3,
-          mesaj: "Eğlenceli bir manzaraydı, hiçbir şey kaybetmeden güldün.",
+          mesaj: "Hiçbir şey kaybetmeden güldün.",
         },
         basarisizSonuc: {
-          mesaj: "Sıradan bir akşamdı.",
+          mesaj: "Sıradan bir akşam.",
         },
       },
     ],
@@ -1565,7 +1565,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     ton: "hafif",
     gorsel: "💪",
     baslik: "Ateş Başında Meydan Okuma",
-    metin: "Nöbet aralarında askerler ateşin etrafında toplanmış, bilek güreşi turnuvası düzenliyor. Sıra sana geldiğinde, en güçlü asker seni işaret ediyor.",
+    metin: "Nöbet arasında askerler ateş başında bilek güreşi yapıyor. En güçlü asker seni işaret ediyor.",
     secenekler: [
       {
         metin: "Meydan oku, gücünü göster.",
@@ -1573,22 +1573,22 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         basariliSonuc: {
           un: 10,
           dost_puani: 5,
-          mesaj: "Kolunu masaya çaktın! Birlik seni omuzlarına aldı, artık aralarında sözü geçen biri oldun.",
+          mesaj: "Rakibi yendin! Birlik seni omuzladı, saygı kazandın.",
         },
         basarisizSonuc: {
           mutluluk: -4,
-          mesaj: "Yenildin ama iyi bir mücadele verdin; askerler yine de sırtını sıvazladı.",
+          mesaj: "Yenildin ama iyi dövüştün; askerler sırtını sıvazladı.",
         },
       },
       {
-        metin: "Kenardan izle, tezahürat et.",
+        metin: "İzle, tezahürat et.",
         baseBasariSansi: 95,
         basariliSonuc: {
           dost_puani: 2,
           mesaj: "Keyifli bir akşam geçirdin.",
         },
         basarisizSonuc: {
-          mesaj: "Sıradan bir akşamdı.",
+          mesaj: "Sıradan bir akşam.",
         },
       },
     ],
@@ -1600,7 +1600,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     minYas: 18,
     gorsel: "🃏",
     baslik: "Nöbet Arası Kâğıt",
-    metin: "Çadırda birkaç asker maaşlarını masaya koyup kâğıt oynuyor. Sana da yer açıyorlar.",
+    metin: "Çadırda birkaç asker maaşını masaya koyup kâğıt oynuyor. Sana da yer açıyorlar.",
     secenekler: [
       {
         metin: "Otur, oyna.",
@@ -1609,13 +1609,13 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         basariliSonuc: {
           para: 14,
           suc_artis: 2,
-          mesaj: "Kâğıtlar senden yana geldi, çadırdaki herkesin cebinden bir şeyler çıktı.",
+          mesaj: "Kâğıtlar senden yana geldi, herkesin parasını topladın.",
         },
         basarisizSonuc: {
           mutluluk: -4,
           para: -6,
           suc_artis: 2,
-          mesaj: "Kötü bir gece geçirdin, maaşının bir kısmı diğer askerlerin cebinde kaldı.",
+          mesaj: "Kötü gece; maaşının bir kısmı onlarda kaldı.",
         },
       },
       {
@@ -1628,7 +1628,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         },
         basarisizSonuc: {
           mutluluk: -2,
-          mesaj: "Askerler seni biraz takıldı ama önemli değildi.",
+          mesaj: "Askerler biraz takıldı, önemsemedin.",
         },
       },
     ],
@@ -1641,19 +1641,19 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     ton: "hafif",
     gorsel: "🔥",
     baslik: "Abartılan Savaş Hikâyeleri",
-    metin: "Kadeh döndükçe herkesin savaş hikâyesi biraz daha büyüyor. Sıra sana geldiğinde bütün gözler üzerinde.",
+    metin: "Kadeh döndükçe savaş hikâyeleri büyüyor. Sıra sana gelince bütün gözler üzerinde.",
     secenekler: [
       {
-        metin: "Kendi hikâyeni büyüterek anlat.",
+        metin: "Hikâyeni büyüterek anlat.",
         baseBasariSansi: 55,
         basariliSonuc: {
           un: 10,
           mutluluk: 3,
-          mesaj: "Hikâyen o kadar sürükleyiciydi ki çadır sessizliğe büründü, sonunda kadeh kaldırdılar.",
+          mesaj: "Hikâyen çadırı susturdu; sonunda kadeh kaldırdılar.",
         },
         basarisizSonuc: {
           un: -6,
-          mesaj: "Abarttığın detay eski bir silah arkadaşının anlattığıyla çelişince herkes gülmeye başladı.",
+          mesaj: "Abartın, silah arkadaşının anlattığıyla çelişti; herkes güldü.",
         },
       },
       {
@@ -1664,7 +1664,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
           mesaj: "Sade anlatımın samimi bulundu.",
         },
         basarisizSonuc: {
-          mesaj: "Fazla sıkıcı bulundu ama önemli değil.",
+          mesaj: "Sıkıcı bulundun ama önemli değil.",
         },
       },
     ],
@@ -1676,7 +1676,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     minYas: 18,
     gorsel: "🍶",
     baslik: "Çadırın Dibindeki Testi",
-    metin: "Bir asker çadırın dibinden gizlice sakladığı bir testi çıkarıyor; kurallara aykırı ama kimse görmeyecek gibi.",
+    metin: "Bir asker çadırın dibinden gizli bir testi çıkarıyor; kurallara aykırı ama kimse görmez gibi.",
     secenekler: [
       {
         metin: "Kadehini uzat, katıl.",
@@ -1685,12 +1685,12 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
           dost_puani: 6,
           mutluluk: 3,
           suc_artis: 2,
-          mesaj: "Kimse görmedi, gece iyi geçti; birlik içindeki bağların biraz daha güçlendi.",
+          mesaj: "Kimse görmedi; birlikle bağların güçlendi.",
         },
         basarisizSonuc: {
           suc_artis: 6,
           un: -5,
-          mesaj: "Nöbetçi subay tam da o an içeri girdi. Adın disiplin defterine yazıldı.",
+          mesaj: "Nöbetçi subay girdi; adın disiplin defterine yazıldı.",
         },
       },
       {
@@ -1703,7 +1703,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         },
         basarisizSonuc: {
           dost_puani: -3,
-          mesaj: "Diğer askerler seni 'kuralcı' diye takıldı.",
+          mesaj: "Diğer askerler 'kuralcı' diye takıldı.",
         },
       },
     ],
@@ -1716,7 +1716,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     ton: "hafif",
     gorsel: "😈",
     baslik: "Nöbetçiye Şaka",
-    metin: "Arkadaşların, en ciddi nöbetçiye şaka yapmayı planlıyor; senden de yardım istiyorlar.",
+    metin: "Arkadaşların en ciddi nöbetçiye şaka yapmayı planlıyor; senden yardım istiyorlar.",
     secenekler: [
       {
         metin: "Plana katıl, şakayı yap.",
@@ -1724,12 +1724,12 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         basariliSonuc: {
           mutluluk: 5,
           dost_puani: 6,
-          mesaj: "Şaka mükemmel işledi! Nöbetçinin çığlığı bütün kampı güldürdü, gece boyu bundan bahsedildi.",
+          mesaj: "Şaka mükemmel işledi! Nöbetçinin çığlığı kampı güldürdü.",
         },
         basarisizSonuc: {
           un: -6,
           saglik: -3,
-          mesaj: "Nöbetçi seni yakaladı ve öfkeyle üzerine geldi. Ceza olarak ekstra nöbete kaldın.",
+          mesaj: "Nöbetçi seni yakaladı; ceza olarak ekstra nöbet tuttun.",
         },
       },
       {
@@ -1739,11 +1739,11 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
           saglik: 2,
           ahlak: 1,
           mutluluk: -1,
-          mesaj: "İyi bir uyku çektin.",
+          mesaj: "İyi uyudun.",
         },
         basarisizSonuc: {
           dost_puani: -2,
-          mesaj: "Arkadaşların seni 'eğlenceyi bilmez' diye takıldı.",
+          mesaj: "Arkadaşların 'eğlenceyi bilmez' diye takıldı.",
         },
       },
     ],
@@ -1757,18 +1757,18 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     ton: "agir",
     gorsel: "🕊️",
     baslik: "Ateşkes Gecesi",
-    metin: "Kısa süreliğine ilan edilen ateşkes gecesinde, karşı taraftan bir asker de ateşe yaklaşıp elindeki içkiyi paylaşmak istiyor. Komutanların bilse hoşlanmayacağı bir an.",
+    metin: "Ateşkes gecesi karşı taraftan bir asker ateşe yaklaşıp içkisini paylaşmak istiyor. Komutanlar sevmezdi.",
     secenekler: [
       {
         metin: "Kadehini paylaş, konuş.",
         baseBasariSansi: 75,
         basariliSonuc: {
           ahlak: 8,
-          mesaj: "Yarın belki birbirinize kılıç çekeceksiniz ama bu gece sadece iki insandınız. O konuşma seni bir daha savaşa hiç eskisi gibi bakmaz hâle getirdi.",
+          mesaj: "Bu gece iki insandınız; savaşa bakışın değişti.",
         },
         basarisizSonuc: {
           mutluluk: -4,
-          mesaj: "Konuşma garip bir sessizlikte tıkandı; ikiniz de kendi ateşinize döndünüz.",
+          mesaj: "Konuşma tıkandı; ikiniz de kendi ateşinize döndünüz.",
         },
       },
       {
@@ -1782,7 +1782,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         },
         basarisizSonuc: {
           mutluluk: -2,
-          mesaj: "Uzaklaşırken bile o askerin gözlerindeki yorgunluğu unutamadın.",
+          mesaj: "O askerin yorgun gözlerini unutamadın.",
         },
       },
     ],
@@ -1795,32 +1795,32 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     gizemli: true,
     gorsel: "🔮",
     baslik: "Ordugâhın Falcısı",
-    metin: "Birliklerin arasında dolaşan yaşlı bir falcı, ateş ışığında avucuna baktığı her askere bir kehanet fısıldıyor. Sıra sana geldi.",
+    metin: "Birlikler arasında dolaşan yaşlı falcı, avucuna baktığı her askere kehanet fısıldıyor. Sıra sende.",
     secenekler: [
       {
-        metin: "Avucunu uzat, kehaneti dinle.",
+        metin: "Avucunu uzat, dinle.",
         baseBasariSansi: 80,
         basariliSonuc: {
           mutluluk: 4,
           un: 4,
-          mesaj: "'Adın bu topraklarda uzun süre anılacak' dedi kadın; söylediği söz sana beklenmedik bir güven verdi.",
+          mesaj: "'Adın uzun anılacak' dedi; içine güven doldu.",
         },
         basarisizSonuc: {
           mutluluk: -5,
-          mesaj: "Kadın avucuna baktı, yüzü asıldı ve tek kelime etmeden elini bıraktı. O geceki uykun kaçtı.",
+          mesaj: "Kadın avucuna baktı, yüzü asıldı; uykun kaçtı.",
         },
       },
       {
-        metin: "Boş inançlara vaktin yok, reddet.",
+        metin: "Boş inanca vaktin yok, reddet.",
         baseBasariSansi: 95,
         basariliSonuc: {
           saglik: 2,
           mutluluk: -2,
-          mesaj: "Kaderine falcıların değil kendi kılıcının karar vereceğini düşünüyorsun.",
+          mesaj: "Kaderine falcı değil kendi kılıcın karar verir.",
         },
         basarisizSonuc: {
           mutluluk: -2,
-          mesaj: "Yine de diğer askerlerin fısıltıları kulağına çalındı.",
+          mesaj: "Yine de askerlerin fısıltıları kulağına çalındı.",
         },
       },
     ],
@@ -1832,7 +1832,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     minYas: 18,
     gorsel: "🤞",
     baslik: "Kardeşlik Yemini",
-    metin: "Kadehler kaldırılırken birkaç silah arkadaşın, birbirinize her ne olursa olsun sahip çıkma yemini etmeyi öneriyor.",
+    metin: "Kadehler kalkarken silah arkadaşların birbirinize her koşulda sahip çıkma yemini öneriyor.",
     secenekler: [
       {
         metin: "Kadehini kaldır, yemin et.",
@@ -1840,25 +1840,25 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         basariliSonuc: {
           dost_puani: 10,
           mutluluk: 4,
-          mesaj: "Kadehler tokuşturuldu, sözler ciddiydi. Bu geceden sonra aranızdaki bağ savaş meydanında bile sarsılmayacak.",
+          mesaj: "Kadehler tokuştu, sözler ciddiydi; bağınız sarsılmaz.",
         },
         basarisizSonuc: {
           mutluluk: -3,
-          mesaj: "Yemin biraz dağınık geçse de niyet güzeldi.",
+          mesaj: "Yemin dağınık geçti ama niyet güzeldi.",
         },
       },
       {
-        metin: "Kadehini kaldırma, gülümseyerek izle.",
+        metin: "Gülümseyerek izle.",
         baseBasariSansi: 95,
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
           mutluluk: -1,
-          mesaj: "Büyük sözler yerine sessiz bir saygıyı tercih ettin.",
+          mesaj: "Büyük sözlere sessiz saygıyı tercih ettin.",
         },
         basarisizSonuc: {
           dost_puani: -2,
-          mesaj: "Diğerleri biraz gücenmiş göründü.",
+          mesaj: "Diğerleri biraz gücendi.",
         },
       },
     ],
@@ -1873,19 +1873,19 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     sosyallesmeYeri: "dini_meclis",
     gorsel: "🕯️",
     baslik: "Sofra Sonrası İtiraf",
-    metin: "Yemek bittikten sonra genç bir meslektaşın sana yaklaşıp, kimseye söylemediği bir günahını itiraf etmek istiyor.",
+    metin: "Yemekten sonra genç bir meslektaşın, kimseye söylemediği bir günahını itiraf etmek istiyor.",
     secenekler: [
       {
-        metin: "Onu dinle, öğüt ver.",
+        metin: "Dinle, öğüt ver.",
         baseBasariSansi: 80,
         basariliSonuc: {
           ahlak: 6,
           nufuz_artis: 8,
-          mesaj: "Sözlerin ona huzur verdi; bu küçük an, cemaat içindeki saygınlığını sessizce büyüttü.",
+          mesaj: "Sözlerin huzur verdi; cemaatte saygınlığın büyüdü.",
         },
         basarisizSonuc: {
           mutluluk: -2,
-          mesaj: "Doğru kelimeleri bulamadın, adam daha da huzursuz ayrıldı.",
+          mesaj: "Doğru kelimeleri bulamadın; adam daha huzursuz ayrıldı.",
         },
       },
       {
@@ -1899,7 +1899,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         },
         basarisizSonuc: {
           ahlak: -2,
-          mesaj: "Genç meslektaşın hayal kırıklığını gizleyemedi.",
+          mesaj: "Genç meslektaş hayal kırıklığını gizleyemedi.",
         },
       },
     ],
@@ -1910,21 +1910,21 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     sosyallesmeYeri: "dini_meclis",
     gorsel: "🤲",
     baslik: "Zengin Bir Bağışçı",
-    metin: "Sofrada oturan zengin bir hayırsever, yeni bir hayır işine ortak olmak isteyip istemediğini soruyor.",
+    metin: "Sofradaki zengin bir hayırsever yeni bir hayır işine ortak olmak ister misin diye soruyor.",
     secenekler: [
       {
-        metin: "Teklifi kabul et, katkı ver.",
+        metin: "Kabul et, katkı ver.",
         baseBasariSansi: 70,
         maliyet: 10,
         basariliSonuc: {
           para: -10,
           un: 12,
           ahlak: 6,
-          mesaj: "Bağışın hemen konuşuldu; cemaat içinde adın cömertlikle anılmaya başladı.",
+          mesaj: "Bağışın konuşuldu; cemaatte cömert diye anıldın.",
         },
         basarisizSonuc: {
           para: -10,
-          mesaj: "Bağışın toplandı ama beklediğin kadar dikkat çekmedi.",
+          mesaj: "Bağışın toplandı ama beklediğin ilgiyi görmedi.",
         },
       },
       {
@@ -1934,11 +1934,11 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
           saglik: 2,
           ahlak: 1,
           mutluluk: -1,
-          mesaj: "Parana dokunmadın, sade bir akşam geçirdin.",
+          mesaj: "Paranı korudun, sade bir akşam geçirdin.",
         },
         basarisizSonuc: {
           un: -2,
-          mesaj: "Hayırsever biraz hayal kırıklığına uğradı.",
+          mesaj: "Hayırsever biraz kırıldı.",
         },
       },
     ],
@@ -1949,7 +1949,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     sosyallesmeYeri: "dini_meclis",
     gorsel: "⚖️",
     baslik: "Doktrin Tartışması",
-    metin: "Başka bir bölgeden gelen bir vaiz, sofrada seninkinden farklı bir yorum savunmaya başlıyor. Tartışma giderek ciddileşiyor.",
+    metin: "Başka bölgeden gelen bir vaiz sofrada seninkinden farklı bir yorum savunuyor. Tartışma ciddileşiyor.",
     secenekler: [
       {
         metin: "Görüşünü kararlılıkla savun.",
@@ -1957,25 +1957,25 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         basariliSonuc: {
           nufuz_artis: 10,
           un: 6,
-          mesaj: "Argümanların sofradakileri ikna etti; rakip vaiz sessizce başını eğdi.",
+          mesaj: "Argümanların herkesi ikna etti; rakip vaiz başını eğdi.",
         },
         basarisizSonuc: {
           ahlak: -3,
           un: -4,
-          mesaj: "Tartışmayı kaybettin, bazı meslektaşların bakışlarında hayal kırıklığı gördün.",
+          mesaj: "Tartışmayı kaybettin; bakışlarda hayal kırıklığı vardı.",
         },
       },
       {
-        metin: "Tartışmayı büyütme, konuyu değiştir.",
+        metin: "Konuyu değiştir.",
         baseBasariSansi: 90,
         basariliSonuc: {
           saglik: 2,
           mutluluk: -2,
-          mesaj: "Gereksiz bir çatışmadan kaçındın.",
+          mesaj: "Gereksiz çatışmadan kaçındın.",
         },
         basarisizSonuc: {
           mutluluk: -2,
-          mesaj: "Bazıları kaçtığını düşündü ama önemli değildi.",
+          mesaj: "Bazıları kaçtığını düşündü; önemli değil.",
         },
       },
     ],
@@ -1987,14 +1987,14 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     gizemli: true,
     gorsel: "📜",
     baslik: "Tozlu Bir El Yazması",
-    metin: "Sofranın kenarındaki eski bir sandıkta, kimsenin fark etmediği tozlu bir el yazması buluyorsun. Sayfalar eski ve kırılgan.",
+    metin: "Sofra kenarındaki eski sandıkta kimsenin fark etmediği tozlu bir el yazması buluyorsun. Sayfalar kırılgan.",
     secenekler: [
       {
         metin: "Dikkatle incele, oku.",
         baseBasariSansi: 65,
         basariliSonuc: {
           nufuz_artis: 5,
-          mesaj: "Yazmadaki satırlar, unutulmuş bir öğretiye ışık tutuyor; bu bilgi seni meslektaşların arasında farklı kılacak.",
+          mesaj: "Yazma unutulmuş bir öğretiye ışık tuttu.",
         },
         basarisizSonuc: {
           mutluluk: -2,
@@ -2007,11 +2007,11 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         basariliSonuc: {
           saglik: 2,
           mutluluk: -2,
-          mesaj: "Merakını bastırdın, sofraya geri döndün.",
+          mesaj: "Merakını bastırıp sofraya döndün.",
         },
         basarisizSonuc: {
           mutluluk: -2,
-          mesaj: "Sandığın ne sakladığını hiç öğrenemeyeceksin.",
+          mesaj: "Sandığın sakladığını hiç öğrenemeyeceksin.",
         },
       },
     ],
@@ -2022,7 +2022,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     sosyallesmeYeri: "dini_meclis",
     gorsel: "🗣️",
     baslik: "Sofra Dedikodusu",
-    metin: "Yemek biterken meslektaşların, cemaatten birkaç ailenin arasındaki bir anlaşmazlığı konuşmaya başlıyor. Senden de fikir isteniyor.",
+    metin: "Meslektaşların, cemaatten birkaç ailenin anlaşmazlığını konuşuyor; senden de fikir istiyorlar.",
     secenekler: [
       {
         metin: "Arabuluculuk teklif et.",
@@ -2030,25 +2030,25 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         basariliSonuc: {
           un: 8,
           ahlak: 4,
-          mesaj: "İki aile arasında köprü kurdun; cemaat seni bilge bir arabulucu olarak anmaya başladı.",
+          mesaj: "İki aile arasında köprü kurdun; cemaat seni bilge saydı.",
         },
         basarisizSonuc: {
           mutluluk: -3,
-          mesaj: "Araya girmen işleri daha da karıştırdı; her iki taraf da senden biraz uzaklaştı.",
+          mesaj: "Araya girmen işi karıştırdı; iki taraf da uzaklaştı.",
         },
       },
       {
-        metin: "Karışma, kendi işine bak.",
+        metin: "Karışma.",
         baseBasariSansi: 95,
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
           mutluluk: -1,
-          mesaj: "Cemaat içi meselelere bulaşmadın.",
+          mesaj: "Cemaat meselesine bulaşmadın.",
         },
         basarisizSonuc: {
           un: -2,
-          mesaj: "Bazıları senden daha fazla ilgi bekliyordu.",
+          mesaj: "Bazıları daha fazla ilgi bekliyordu.",
         },
       },
     ],
@@ -2060,33 +2060,33 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     ton: "hafif",
     gorsel: "✨",
     baslik: "Mucize Söylentisi",
-    metin: "Bir meslektaşın heyecanla, senin geçen ay okuduğun bir duanın ardından hasta bir çocuğun iyileştiğini, bunun bir mucize olduğunu anlatıyor.",
+    metin: "Bir meslektaşın heyecanla anlatıyor: senin duandan sonra hasta bir çocuk iyileşmiş, mucizeymiş.",
     secenekler: [
       {
-        metin: "Söylentiyi düzeltme, alçakgönüllü kal.",
+        metin: "Alçakgönüllü kal, düzeltme.",
         baseBasariSansi: 80,
         basariliSonuc: {
           ahlak: 6,
           un: 5,
-          mesaj: "'Bu benim değil, Tanrı'nın işiydi' dedin; alçakgönüllülüğün, söylentinin kendisinden daha çok konuşuldu.",
+          mesaj: "'Tanrı'nın işi' dedin; tevazun söylentiyi aştı.",
         },
         basarisizSonuc: {
           un: 3,
-          mesaj: "Söylenti yayılmaya devam etti, sen de rahatsız hissettin.",
+          mesaj: "Söylenti sürdü, sen rahatsız hissettin.",
         },
       },
       {
-        metin: "Söylentinin büyümesine izin ver.",
+        metin: "Söylenti büyüsün.",
         baseBasariSansi: 55,
         basariliSonuc: {
           ahlak: 3,
           un: 14,
-          mesaj: "Söylenti hızla yayıldı; artık senin adına 'mucizevi' sıfatı ekleniyor.",
+          mesaj: "Söylenti yayıldı; adına 'mucizevi' sıfatı eklendi.",
         },
         basarisizSonuc: {
           ahlak: -8,
           un: -6,
-          mesaj: "Çocuğun ailesi gerçeği anlattı, sadece tesadüf olduğu ortaya çıktı. Şişirilen söylenti geri tepti.",
+          mesaj: "Aile gerçeği anlattı; şişen söylenti geri tepti.",
         },
       },
     ],
@@ -2101,7 +2101,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     sosyallesmeYeri: "lonca_meclisi",
     gorsel: "📊",
     baslik: "Fiyat Anlaşmazlığı",
-    metin: "Lonca toplantısında, bazı esnaf fiyatları ortak bir tabana bağlamayı öneriyor; bazıları buna şiddetle karşı çıkıyor. Oyun sende.",
+    metin: "Lonca toplantısında bazı esnaf fiyatlara ortak taban öneriyor, bazıları şiddetle karşı. Karar sende.",
     secenekler: [
       {
         metin: "Ortak fiyat tabanını destekle.",
@@ -2109,11 +2109,11 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         basariliSonuc: {
           ticaret_sermaye_artis: 10,
           dost_puani: 3,
-          mesaj: "Öneri kabul edildi; loncadaki istikrar sayesinde işlerin daha öngörülebilir hâle geldi.",
+          mesaj: "Öneri kabul edildi; işler daha öngörülebilir.",
         },
         basarisizSonuc: {
           rakip_puani: 5,
-          mesaj: "Öneri reddedildi, bazı esnaf seni 'rekabetten korkan' diye eleştirdi.",
+          mesaj: "Öneri reddedildi; seni 'rekabetten korkan' dediler.",
         },
       },
       {
@@ -2121,11 +2121,11 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         baseBasariSansi: 60,
         basariliSonuc: {
           ticaret_sermaye_artis: 14,
-          mesaj: "Serbest rekabet kazandı; senin gibi cesur esnaf için kapılar daha da açıldı.",
+          mesaj: "Serbest rekabet kazandı; cesur esnafa kapılar açıldı.",
         },
         basarisizSonuc: {
           ahlak: -3,
-          mesaj: "Bazı küçük esnaf senin yüzünden zarar gördüğünü söyleyip küstü.",
+          mesaj: "Küçük esnaf zarar gördüğünü söyleyip küstü.",
         },
       },
     ],
@@ -2136,10 +2136,10 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     sosyallesmeYeri: "lonca_meclisi",
     gorsel: "🤝",
     baslik: "Ortaklık Teklifi",
-    metin: "Loncanın saygın isimlerinden biri, seninle ortak bir iş kurmayı teklif ediyor. Kâr paylaşımlı ama riskli bir anlaşma.",
+    metin: "Loncanın saygın isimlerinden biri ortak iş kurmayı teklif ediyor. Kâr paylaşımlı ama riskli.",
     secenekler: [
       {
-        metin: "Teklifi kabul et, imzala.",
+        metin: "Kabul et, imzala.",
         baseBasariSansi: 55,
         maliyet: 15,
         basariliSonuc: {
@@ -2147,16 +2147,16 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
           un: -2,
           para: 26,
           ticaret_sermaye_artis: 8,
-          mesaj: "Ortaklık ilk aydan itibaren kâr getirdi; loncadaki itibarın da bir kademe yükseldi.",
+          mesaj: "Ortaklık ilk aydan kâr getirdi; itibarın yükseldi.",
         },
         basarisizSonuc: {
           mutluluk: -4,
           para: -15,
-          mesaj: "Ortaklık beklenen kârı getirmedi, yatırdığın sermaye eridi.",
+          mesaj: "Beklenen kâr gelmedi; sermayen eridi.",
         },
       },
       {
-        metin: "Şimdilik reddet, düşünmek istediğini söyle.",
+        metin: "Reddet, düşüneceğini söyle.",
         baseBasariSansi: 95,
         basariliSonuc: {
           ahlak: 3,
@@ -2165,7 +2165,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         },
         basarisizSonuc: {
           mutluluk: -2,
-          mesaj: "Adam başka bir ortak bulup güzel bir kâr elde etti; içinden bir pişmanlık geçti.",
+          mesaj: "Adam başka ortakla kâr etti; içinde pişmanlık kaldı.",
         },
       },
     ],
@@ -2176,20 +2176,20 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     sosyallesmeYeri: "lonca_meclisi",
     gorsel: "😠",
     baslik: "Rakibin Suçlaması",
-    metin: "{rakip}, toplantı ortasında herkesin önünde seni haksız rekabetle suçluyor. Bütün gözler üzerinde.",
+    metin: "{rakip}, toplantıda herkesin önünde seni haksız rekabetle suçluyor. Bütün gözler üzerinde.",
     secenekler: [
       {
-        metin: "Kendini savun, delillerini göster.",
+        metin: "Savun, delillerini göster.",
         baseBasariSansi: 55,
         basariliSonuc: {
           un: 8,
           rakip_puani: -8,
-          mesaj: "Delillerin suçlamayı çürüttü; {rakip} loncanın önünde küçük düştü.",
+          mesaj: "Delillerin suçlamayı çürüttü; {rakip} küçüldü.",
         },
         basarisizSonuc: {
           un: -10,
           ahlak: -4,
-          mesaj: "Savunman ikna edici bulunmadı; lonca içinde adın bir süre lekeli kaldı.",
+          mesaj: "Savunman ikna etmedi; adın loncada bir süre lekelendi.",
         },
       },
       {
@@ -2197,11 +2197,11 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         baseBasariSansi: 80,
         basariliSonuc: {
           ahlak: 4,
-          mesaj: "Sükûnetin, suçlamadan daha ikna edici oldu; kimse ciddiye almadı.",
+          mesaj: "Sükûnetin ikna edici oldu; kimse ciddiye almadı.",
         },
         basarisizSonuc: {
           un: -4,
-          mesaj: "Sessizliğin bazılarınca kabullenme olarak yorumlandı.",
+          mesaj: "Sessizliğin kabullenme sayıldı.",
         },
       },
     ],
@@ -2213,24 +2213,24 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     gizemli: true,
     gorsel: "🗺️",
     baslik: "Fısıldanan Yeni Yol",
-    metin: "Güvendiğin bir esnaf, kimsenin bilmediği yeni bir ticaret yolundan bahsediyor; ama bu bilgiyi paylaşmak için karşılığında bir şey istiyor.",
+    metin: "Bir esnaf, kimsenin bilmediği yeni bir ticaret yolunu biliyor ama bedel istiyor.",
     secenekler: [
       {
-        metin: "Bedelini öde, bilgiyi al.",
+        metin: "Bedeli öde, bilgiyi al.",
         baseBasariSansi: 65,
         maliyet: 12,
         basariliSonuc: {
           para: -8,
           ticaret_sermaye_artis: 12,
-          mesaj: "Bilgi doğruydu; yeni yol sayesinde mallarını çok daha ucuza getirmeye başladın.",
+          mesaj: "Bilgi doğruydu; mallar artık çok daha ucuza geliyor.",
         },
         basarisizSonuc: {
           para: -12,
-          mesaj: "Yol ya hiç yoktu ya da çoktan herkes tarafından biliniyordu. Paranı boşa harcadın.",
+          mesaj: "Yol yoktu ya da herkes biliyordu; para boşa gitti.",
         },
       },
       {
-        metin: "Şüpheyle yaklaş, reddet.",
+        metin: "Şüpheyle reddet.",
         baseBasariSansi: 95,
         basariliSonuc: {
           saglik: 2,
@@ -2239,7 +2239,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         },
         basarisizSonuc: {
           mutluluk: -2,
-          mesaj: "Belki de gerçekten değerli bir fırsatı kaçırdın.",
+          mesaj: "Belki değerli bir fırsatı kaçırdın.",
         },
       },
     ],
@@ -2251,7 +2251,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     ton: "agir",
     gorsel: "⚠️",
     baslik: "Sahtecilik İddiası",
-    metin: "Bir müşterinin şikâyeti loncaya kadar geldi: sattığın mallardan birinin sahte olduğu iddia ediliyor. Meclis senden açıklama bekliyor.",
+    metin: "Bir müşteri loncaya şikâyet etti: sattığın mallardan biri sahteymiş. Meclis açıklama bekliyor.",
     secenekler: [
       {
         metin: "Gerçeği söyle, hatanı kabul et.",
@@ -2259,27 +2259,27 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         basariliSonuc: {
           ahlak: 8,
           un: -4,
-          mesaj: "Hatanı kabul ettin ve müşteriye tazminat ödedin; lonca dürüstlüğünü takdir etti.",
+          mesaj: "Hatayı kabul edip tazminat ödedin; lonca takdir etti.",
         },
         basarisizSonuc: {
           para: -10,
           un: -6,
-          mesaj: "İtirafına rağmen bazı esnaf seni bir daha hiç aynı gözle görmedi.",
+          mesaj: "İtirafa rağmen bazı esnaf seni eskisi gibi görmedi.",
         },
       },
       {
-        metin: "İnkâr et, suçu tedarikçine at.",
+        metin: "İnkâr et, suçu tedarikçiye at.",
         baseBasariSansi: 50,
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
           mutluluk: -1,
-          mesaj: "İddia kanıtlanamadı, olay kapandı. İçten içe rahatsız olsan da itibarın sağlam kaldı.",
+          mesaj: "İddia kanıtlanamadı; için sızlasa da itibarın sağlam.",
         },
         basarisizSonuc: {
           ahlak: -12,
           un: -14,
-          mesaj: "Yalanın ortaya çıktı. Lonca içindeki güvenilirliğin ciddi bir darbe aldı.",
+          mesaj: "Yalanın ortaya çıktı; loncadaki güvenin ciddi sarsıldı.",
         },
       },
     ],
@@ -2291,22 +2291,22 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     minUn: 30,
     gorsel: "🏛️",
     baslik: "Başkanlık Sözü",
-    metin: "Loncanın yaşlı başkanı emekliye ayrılmayı düşünüyor ve birkaç isim arasında senin adın da geçiyor. Aday olmak ister misin?",
+    metin: "Loncanın yaşlı başkanı emekliliği düşünüyor; aday isimler arasında seninki de var. Aday olur musun?",
     secenekler: [
       {
-        metin: "Adaylığını koy, kampanya yap.",
+        metin: "Aday ol, kampanya yap.",
         baseBasariSansi: 50,
         maliyet: 10,
         basariliSonuc: {
           un: 16,
           para: -10,
           nufuz_artis: 0,
-          mesaj: "Oy çoğunluğunu kazandın! Artık loncanın en sözü geçen isimlerinden birisin.",
+          mesaj: "Seçimi kazandın! Loncanın sözü geçenlerindensin.",
         },
         basarisizSonuc: {
           para: -10,
           un: -4,
-          mesaj: "Seçimi kaybettin; harcadığın para ve emek boşa gitti, biraz da gururun kırıldı.",
+          mesaj: "Seçimi kaybettin; para ve emek boşa gitti.",
         },
       },
       {
@@ -2319,7 +2319,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         },
         basarisizSonuc: {
           mutluluk: -2,
-          mesaj: "Bazıları bu fırsatı kaçırdığını düşünüyor.",
+          mesaj: "Bazıları fırsatı kaçırdığını düşünüyor.",
         },
       },
     ],
@@ -2335,7 +2335,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     ton: "hafif",
     gorsel: "🤡",
     baslik: "Meydan Soytarısı",
-    metin: "Meydanın ortasında bir soytarı akrobatik gösterisiyle kalabalığı topluyor; en sonunda seyircilerden birini gösterisine dahil etmek istiyor.",
+    metin: "Meydanda bir soytarı akrobasiyle kalabalığı topluyor; sonunda seyirciden birini gösterisine katmak istiyor.",
     secenekler: [
       {
         metin: "Gönüllü ol, sahneye çık.",
@@ -2343,15 +2343,15 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         basariliSonuc: {
           mutluluk: 5,
           un: 6,
-          mesaj: "Soytarıyla birlikte kalabalığı güldürmeyi başardın; meydan seni alkışladı.",
+          mesaj: "Soytarıyla kalabalığı güldürdün; meydan alkışladı.",
         },
         basarisizSonuc: {
           mutluluk: -4,
-          mesaj: "Gösteri sırasında sakarlığın herkesi güldürdü, ama seninle değil sana gülerek.",
+          mesaj: "Sakarlığın herkesi güldürdü ama seninle değil, sana.",
         },
       },
       {
-        metin: "Kalabalıkta kal, sadece izle.",
+        metin: "Kalabalıkta kal, izle.",
         baseBasariSansi: 95,
         basariliSonuc: {
           mutluluk: 3,
@@ -2369,19 +2369,19 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     sosyallesmeYeri: "pazar_meydani",
     gorsel: "🧒",
     baslik: "Kalabalıkta Kaybolan Çocuk",
-    metin: "Ağlayarak dolaşan küçük bir çocuk, annesini/babasını kaybettiğini söylüyor. Kimse durup yardım etmiyor.",
+    metin: "Ağlayan küçük bir çocuk annesini/babasını kaybettiğini söylüyor. Kimse yardım etmiyor.",
     secenekler: [
       {
-        metin: "Elinden tut, ailesini bulmaya yardım et.",
+        metin: "Ailesini bulmasına yardım et.",
         baseBasariSansi: 80,
         basariliSonuc: {
           ahlak: 8,
           un: 6,
-          mesaj: "Uzun aramanın ardından ailesini buldun; minnettar anne/baba seni gözyaşlarıyla kucakladı.",
+          mesaj: "Ailesini buldun; minnettar ebeveyni seni kucakladı.",
         },
         basarisizSonuc: {
           mutluluk: -3,
-          mesaj: "Ailesini bulamadın ama sonunda çocuğu meydan bekçisine emanet ettin.",
+          mesaj: "Ailesini bulamadın; çocuğu bekçiye emanet ettin.",
         },
       },
       {
@@ -2407,7 +2407,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     ton: "hafif",
     gorsel: "🏃",
     baslik: "Meydanda Kovalamaca",
-    metin: "Bir yankesici, yaşlı bir tüccarın kesesini kapıp meydanın içinden koşmaya başlıyor. 'Tutun onu!' diye bağırışlar yükseliyor.",
+    metin: "Bir yankesici yaşlı tüccarın kesesini kapıp koşuyor. 'Tutun onu!' diye bağırışlar yükseliyor.",
     secenekler: [
       {
         metin: "Peşinden koş, yakala.",
@@ -2415,15 +2415,15 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         basariliSonuc: {
           un: 12,
           ahlak: 5,
-          mesaj: "Onu bir tezgâhın arkasında sıkıştırıp yakaladın! Meydan seni kahraman ilan etti.",
+          mesaj: "Onu yakaladın! Meydan seni kahraman ilan etti.",
         },
         basarisizSonuc: {
           mutluluk: -3,
-          mesaj: "Kalabalığın arasında kayboldu; nefes nefese kalakaldın, herkes seninle güldü.",
+          mesaj: "Kalabalıkta kayboldu; nefes nefese kaldın, herkes güldü.",
         },
       },
       {
-        metin: "Karışma, kendi işine bak.",
+        metin: "Karışma.",
         baseBasariSansi: 95,
         basariliSonuc: {
           saglik: 2,
@@ -2432,7 +2432,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         },
         basarisizSonuc: {
           mutluluk: -2,
-          mesaj: "Bazıları senin de yardım edebileceğini düşündü.",
+          mesaj: "Bazıları yardım edebileceğini düşündü.",
         },
       },
     ],
@@ -2444,7 +2444,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     ton: "hafif",
     gorsel: "🧪",
     baslik: "Mucize İksir Satıcısı",
-    metin: "Rengarenk bir arabanın üzerinden bağıran bir şarlatan, her derde deva bir 'mucize iksir' satıyor. Sözleri fazlasıyla ikna edici.",
+    metin: "Rengârenk bir arabadan bağıran şarlatan her derde deva 'mucize iksir' satıyor. Çok ikna edici.",
     secenekler: [
       {
         metin: "Bir şişe al, dene.",
@@ -2452,12 +2452,12 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         maliyet: 6,
         basariliSonuc: {
           saglik: 10,
-          mesaj: "İnanılmaz ama gerçekten işe yaradı! Kendini günlerdir olmadığın kadar zinde hissediyorsun.",
+          mesaj: "İşe yaradı, inanılmaz! Çok zinde hissediyorsun.",
         },
         basarisizSonuc: {
           para: -6,
           saglik: -3,
-          mesaj: "İksir tadı berbat, boğazını yaktı ve hiçbir işe yaramadı. Şarlatan çoktan başka bir mahalleye taşınmıştı.",
+          mesaj: "İksir boğazını yaktı, işe yaramadı; şarlatan kaybolmuş.",
         },
       },
       {
@@ -2470,7 +2470,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         },
         basarisizSonuc: {
           mutluluk: -2,
-          mesaj: "Belki de gerçekten kaçırdığın bir fırsattı.",
+          mesaj: "Belki gerçekten kaçırdığın bir fırsattı.",
         },
       },
     ],
@@ -2482,24 +2482,24 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     ton: "hafif",
     gorsel: "🎻",
     baslik: "Gezgin Ozan",
-    metin: "Meydanın kenarında bir ozan, senin bölgenle ilgili tuhaf ve komik bir türkü söylüyor; kalabalık kahkahalarla katılıyor.",
+    metin: "Meydanda bir ozan bölgenle ilgili komik bir türkü söylüyor; kalabalık gülerek eşlik ediyor.",
     secenekler: [
       {
-        metin: "Ozana bahşiş ver, isteğinde bulun.",
+        metin: "Bahşiş ver, istekte bulun.",
         baseBasariSansi: 85,
         maliyet: 4,
         basariliSonuc: {
           para: -4,
           mutluluk: 4,
-          mesaj: "Ozan senin için özel bir dörtlük besteledi; meydan sana gülümseyerek baktı.",
+          mesaj: "Ozan sana özel bir dörtlük besteledi; meydan gülümsedi.",
         },
         basarisizSonuc: {
           para: -4,
-          mesaj: "Ozan isteğini yanlış anladı, garip bir şarkı söyledi. Yine de eğlenceliydi.",
+          mesaj: "Ozan isteği yanlış anladı; garip ama eğlenceli oldu.",
         },
       },
       {
-        metin: "Uzaktan dinle, para verme.",
+        metin: "Uzaktan dinle.",
         baseBasariSansi: 95,
         basariliSonuc: {
           mutluluk: 3,
@@ -2518,18 +2518,18 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     gizemli: true,
     gorsel: "🌙",
     baslik: "Kalabalıktaki Kâhin",
-    metin: "Meydanın kenarında oturan gizemli bir kadın seni işaret ediyor: 'Sana bir şey görüyorum evlat, gel otur.' Kimse onun kim olduğunu bilmiyor.",
+    metin: "Meydanda oturan esrarengiz bir kadın seni işaret ediyor: 'Sana bir şey görüyorum evlat, gel.'",
     secenekler: [
       {
         metin: "Yanına git, otur.",
         baseBasariSansi: 75,
         basariliSonuc: {
           mutluluk: 3,
-          mesaj: "Sana geleceğinle ilgili muğlak ama umut verici bir şey söyledi. Ne demek istediğini tam çözemesen de için ısındı.",
+          mesaj: "Muğlak ama umut verici bir şey söyledi; için ısındı.",
         },
         basarisizSonuc: {
           mutluluk: -5,
-          mesaj: "Söyledikleri seni derinden tedirgin etti; geceleri bir süre bu sözler aklından çıkmadı.",
+          mesaj: "Sözleri seni tedirgin etti; geceleri aklından çıkmadı.",
         },
       },
       {
@@ -2538,7 +2538,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         basariliSonuc: {
           saglik: 2,
           mutluluk: -2,
-          mesaj: "Kaderini bir yabancının sözlerine emanet etmedin.",
+          mesaj: "Kaderini bir yabancıya emanet etmedin.",
         },
         basarisizSonuc: {
           mutluluk: -2,
@@ -2553,19 +2553,19 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     sosyallesmeYeri: "pazar_meydani",
     gorsel: "🥊",
     baslik: "Tezgâhlar Arası Kavga",
-    metin: "İki tezgâh sahibi arasında çıkan bir anlaşmazlık hızla itiş kakışa dönüyor; meyveler ve sebzeler havada uçuşuyor.",
+    metin: "İki tezgâh sahibinin kavgası itiş kakışa dönüyor; meyve sebze havada uçuşuyor.",
     secenekler: [
       {
-        metin: "Araya gir, sakinleştir.",
+        metin: "Araya gir, ayır.",
         baseBasariSansi: 60,
         basariliSonuc: {
           un: 8,
           ahlak: 4,
-          mesaj: "İkisini de sakinleştirmeyi başardın; meydan halkı seni alkışladı.",
+          mesaj: "İkisini yatıştırdın; meydan seni alkışladı.",
         },
         basarisizSonuc: {
           saglik: -8,
-          mesaj: "Uçuşan bir lahana tam suratına çarptı, araya girmen faydasız oldu.",
+          mesaj: "Uçan bir lahana suratına çarptı; boşuna araya girdin.",
         },
       },
       {
@@ -2573,10 +2573,10 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         baseBasariSansi: 90,
         basariliSonuc: {
           mutluluk: 3,
-          mesaj: "Komik bir manzaraydı, güvenli bir mesafeden izledin.",
+          mesaj: "Komik bir manzaraydı; güvenle izledin.",
         },
         basarisizSonuc: {
-          mesaj: "Kavga kısa sürede kendiliğinden bitti.",
+          mesaj: "Kavga kendiliğinden bitti.",
         },
       },
     ],
@@ -2593,22 +2593,22 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     gizemli: true,
     gorsel: "🕯️",
     baslik: "Perde Arkasındaki Fısıltı",
-    metin: "Salonun en loş köşesinde iki soylu, elindeki kadehi hiç bırakmadan alçak sesle bir entrikadan bahsediyor. Sözleri seni de ilgilendiriyor olabilir.",
+    metin: "Salonun loş köşesinde iki soylu alçak sesle entrika çeviriyor. Seni de ilgilendirebilir.",
     secenekler: [
       {
-        metin: "Yaklaş, kulak misafiri ol.",
+        metin: "Yaklaş, dinle.",
         baseBasariSansi: 55,
         basariliSonuc: {
           etiket_ekle: ["istihbarat_var"],
-          mesaj: "Duyduğun birkaç cümle, salondaki güç dengesini anlamana yardımcı oldu.",
+          mesaj: "Duyduklarınla salondaki güç dengesini kavradın.",
         },
         basarisizSonuc: {
           un: -4,
-          mesaj: "Fark edildin; 'kulak misafiri' olarak anılman hoş bir şey değil.",
+          mesaj: "Fark edildin; 'kulak misafiri' diye anılmak hoş değil.",
         },
       },
       {
-        metin: "Kendi sohbetine devam et.",
+        metin: "Sohbetine devam et.",
         baseBasariSansi: 95,
         basariliSonuc: {
           saglik: 2,
@@ -2630,23 +2630,23 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     ton: "hafif",
     gorsel: "💃",
     baslik: "Dans Pisti Daveti",
-    metin: "Orkestra bir vals çalmaya başlarken, göz alıcı biri sana doğru elini uzatıp dansa davet ediyor.",
+    metin: "Orkestra vals çalarken göz alıcı biri elini uzatıp seni dansa davet ediyor.",
     secenekler: [
       {
-        metin: "Elini tut, dans pistine çık.",
+        metin: "Elini tut, pistte dans et.",
         baseBasariSansi: 65,
         basariliSonuc: {
           mutluluk: 5,
           un: 6,
-          mesaj: "Adımların şaşırtıcı derecede akıcıydı; salon sizi izlemeye başladı.",
+          mesaj: "Adımların akıcıydı; salon sizi izlemeye başladı.",
         },
         basarisizSonuc: {
           mutluluk: -5,
-          mesaj: "Ayağına bastın, ritmi hiç tutturamadın. Salon nazikçe gülümsemeye çalıştı.",
+          mesaj: "Ayağına bastın, ritmi tutturamadın; salon nazikçe gülümsedi.",
         },
       },
       {
-        metin: "Nazikçe reddet, kenarda kal.",
+        metin: "Nazikçe reddet.",
         baseBasariSansi: 95,
         basariliSonuc: {
           saglik: 2,
@@ -2656,7 +2656,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         },
         basarisizSonuc: {
           mutluluk: -1,
-          mesaj: "Biraz utanç verici bir sessizlik oldu.",
+          mesaj: "Utanç verici bir sessizlik oldu.",
         },
       },
     ],
@@ -2668,7 +2668,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     minYas: 18,
     gorsel: "♠️",
     baslik: "Kristal Kadehler Arasında Kumar",
-    metin: "Salonun bir köşesinde yüksek bahisli bir kart oyunu dönüyor. Soylular gülümseyerek, ama gözleri hesap kitap yaparak kâğıtlarını açıyor.",
+    metin: "Salonun köşesinde yüksek bahisli kart oyunu dönüyor. Soylular gülümsüyor ama gözleri hesap yapıyor.",
     secenekler: [
       {
         metin: "Masaya otur, oyna.",
@@ -2678,16 +2678,16 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
           mutluluk: -5,
           para: 30,
           un: 3,
-          mesaj: "Kâğıtlar senden yandaydı; masadan kalkarken salon senin adını fısıldıyordu.",
+          mesaj: "Kâğıtlar senden yanaydı; salon adını fısıldadı.",
         },
         basarisizSonuc: {
           mutluluk: -4,
           para: -18,
-          mesaj: "Kötü bir el aldın, kaybın büyüktü. Gülümsemeye devam etmek zorunda kaldın.",
+          mesaj: "Kötü el geldi, kaybın büyüktü; gülümsemeye devam ettin.",
         },
       },
       {
-        metin: "İzleyici kal, katılma.",
+        metin: "İzle, katılma.",
         baseBasariSansi: 95,
         basariliSonuc: {
           ahlak: 3,
@@ -2696,7 +2696,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         },
         basarisizSonuc: {
           mutluluk: -2,
-          mesaj: "Sıkıcı bulundun ama önemli değildi.",
+          mesaj: "Sıkıcı bulundun ama önemi yok.",
         },
       },
     ],
@@ -2709,19 +2709,19 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     ton: "agir",
     gorsel: "📯",
     baslik: "Hakkında Çıkan Söylenti",
-    metin: "Salona girer girmez fark ediyorsun: birkaç kişi sana bakıp fısıldaşıyor. Hakkında tuhaf bir söylenti yayılmış.",
+    metin: "Salona girince fark ediyorsun: bakıp fısıldaşıyorlar. Hakkında bir söylenti yayılmış.",
     secenekler: [
       {
-        metin: "Doğrudan yüzleş, söylentiyi çürüt.",
+        metin: "Yüzleş, söylentiyi çürüt.",
         baseBasariSansi: 55,
         basariliSonuc: {
           un: 6,
-          mesaj: "Sakin ve net açıklaman söylentiyi söndürdü; salon sana hak verdi.",
+          mesaj: "Sakin açıklaman söylentiyi söndürdü.",
         },
         basarisizSonuc: {
           un: -12,
           mutluluk: -6,
-          mesaj: "Savunman tam tersi etki yarattı, söylenti daha da büyüdü. Gece boyu fısıltılardan kaçamadın.",
+          mesaj: "Savunman ters tepti; söylenti büyüdü.",
         },
       },
       {
@@ -2729,11 +2729,11 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         baseBasariSansi: 75,
         basariliSonuc: {
           ahlak: 4,
-          mesaj: "Umursamaz tavrın, söylentinin kendiliğinden sönmesini sağladı.",
+          mesaj: "Umursamazlığın söylentiyi kendiliğinden söndürdü.",
         },
         basarisizSonuc: {
           un: -6,
-          mesaj: "Sessizliğin bazılarınca itiraf gibi algılandı.",
+          mesaj: "Sessizliğin bazılarınca itiraf sayıldı.",
         },
       },
     ],
@@ -2744,20 +2744,20 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     sosyallesmeYeri: "meyhane",
     gorsel: "🎨",
     baslik: "Keşfedilmemiş Yetenek",
-    metin: "Salonun köşesinde kimsenin dikkatini çekmeyen genç bir ressam/müzisyen, sessizce eserini sergiliyor. Senin gözün ondan başka bir şey görmüyor.",
+    metin: "Köşede kimsenin ilgilenmediği genç bir ressam/müzisyen eserini sessizce sergiliyor. Gözün ondan ayrılmıyor.",
     secenekler: [
       {
-        metin: "Yanına git, eserini övüp destek ol.",
+        metin: "Eserini öv, destek ol.",
         baseBasariSansi: 80,
         maliyet: 6,
         basariliSonuc: {
           para: -6,
           mutluluk: 3,
-          mesaj: "Desteğin sanatçının gözlerini parlattı; yıllar sonra adının anıldığını duyduğunda gurur duyacaksın.",
+          mesaj: "Desteğin sanatçıyı sevindirdi; ileride gurur duyacaksın.",
         },
         basarisizSonuc: {
           para: -6,
-          mesaj: "Nazik davransan da eser pek ilgini çekmedi.",
+          mesaj: "Nazik davrandın ama eser ilgini çekmedi.",
         },
       },
       {
@@ -2766,11 +2766,11 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
         basariliSonuc: {
           saglik: 2,
           mutluluk: -2,
-          mesaj: "Salonun kalabalığına karıştın.",
+          mesaj: "Kalabalığa karıştın.",
         },
         basarisizSonuc: {
           mutluluk: -2,
-          mesaj: "Belki de gerçek bir yeteneği kaçırdın.",
+          mesaj: "Belki gerçek bir yeteneği kaçırdın.",
         },
       },
     ],
@@ -2783,32 +2783,32 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
     ton: "agir",
     gorsel: "🎭",
     baslik: "Onur Kırıcı Bir Söz",
-    metin: "Kadehler tokuşturulurken, kıskanç bir soylu herkesin önünde ailene hakaret dolu bir söz sarf ediyor. Salon nefesini tutmuş bekliyor.",
+    metin: "Kadehler tokuşurken kıskanç bir soylu herkesin önünde ailene hakaret ediyor. Salon nefesini tutmuş.",
     secenekler: [
       {
-        metin: "Onuru için düelloya çağır.",
+        metin: "Onu düelloya çağır.",
         baseBasariSansi: 50,
         basariliSonuc: {
           un: 18,
           unvan_kazan: "Salonun Onurlu Kılıcı",
-          mesaj: "Kısa ve gösterişli bir düellonun ardından rakibin özür diledi. Salon senin adını fısıldayarak konuştu.",
+          mesaj: "Kısa düelloda rakibin özür diledi; salon adını fısıldadı.",
         },
         basarisizSonuc: {
           olum_sansi: 6,
           saglik: -18,
-          mesaj: "Düello beklediğin gibi gitmedi; ağır yaralı bir şekilde salondan taşındın.",
+          mesaj: "Düello kötü gitti; salondan ağır yaralı taşındın.",
         },
       },
       {
-        metin: "Sükûnetini koru, cevap verme.",
+        metin: "Sakin kal, cevap verme.",
         baseBasariSansi: 90,
         basariliSonuc: {
           ahlak: 5,
-          mesaj: "Onurunu kılıçla değil sabrınla korudun; bazı soylular bunu takdir etti.",
+          mesaj: "Onurunu sabırla korudun; bazıları takdir etti.",
         },
         basarisizSonuc: {
           un: -8,
-          mesaj: "Sessizliğin bazı çevrelerde korkaklık olarak yorumlandı.",
+          mesaj: "Sessizliğin bazı çevrelerde korkaklık sayıldı.",
         },
       },
     ],

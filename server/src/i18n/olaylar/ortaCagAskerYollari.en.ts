@@ -5,50 +5,50 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_yol_ilk_emir: {
     baslik: "The First Order",
     metin:
-      "Your corporal orders you to have a few youths forcibly conscripted from the village whipped on the pretext of 'insubordination' — though their only crime is being late. This is the first moment of your military life that truly tests you; how you react will shape the years ahead.",
+      "Your corporal orders you to have conscripted village youths whipped for 'insubordination'. Their only crime: being late.",
     secenekler: [
       {
-        metin: "Carry out the order to the letter, don't question it.",
+        metin: "Obey without question.",
         basariliSonuc: {
-          mesaj: "You carried out the order without hesitation; your corporal is pleased, and the youths never looked at you the same way again.",
-          detay: "Some soldiers obey without thinking; you'll decide in time whether that's a virtue or a flaw.",
+          mesaj: "You obeyed; the corporal is pleased, the youths turned away.",
+          detay: "Virtue or flaw? Time will tell.",
         },
         basarisizSonuc: {
-          mesaj: "Your hand grew heavy, the whip came down harder than needed; even your corporal was uneasy with you.",
-          detay: "Obedience can sometimes go too far.",
+          mesaj: "The whip fell too hard; even the corporal was uneasy.",
+          detay: "Obedience can go too far.",
         },
       },
       {
-        metin: "Object, refuse to carry out the order together with the other soldiers.",
+        metin: "Object; refuse with the other soldiers.",
         basariliSonuc: {
-          mesaj: "Your words emboldened the other soldiers too; your corporal backed down but wrote you into his notebook.",
-          detay: "Saying no to injustice sometimes means striking a spark.",
+          mesaj: "The men found courage; the corporal backed down but noted you.",
+          detay: "Saying no to injustice strikes a spark.",
         },
         basarisizSonuc: {
-          mesaj: "Your objection went unheard, and you were beaten for it too; still, you know you said something to save the youths.",
-          detay: "Some resistances are lost but not forgotten.",
+          mesaj: "Your objection went unheard; you were beaten too.",
+          detay: "Some resistance is never forgotten.",
         },
       },
       {
-        metin: "Take the punishment on yourself to protect the youths.",
+        metin: "Take the punishment yourself; shield the youths.",
         basariliSonuc: {
-          mesaj: "You took the punishment on your own back; the whip came down on you but the youths were let go. Your name spread fast through the barracks.",
-          detay: "Some men become leaders by throwing themselves forward.",
+          mesaj: "The whip fell on you, the youths were spared; your name spread.",
+          detay: "Some lead by stepping forward.",
         },
         basarisizSonuc: {
-          mesaj: "Your sacrifice didn't soften the corporal; both you and the youths were punished.",
+          mesaj: "Your sacrifice softened no one; all of you were punished.",
           detay: "Courage isn't always rewarded.",
         },
       },
       {
-        metin: "Watch silently, assess the situation without being seen.",
+        metin: "Watch in silence; stay unseen.",
         basariliSonuc: {
-          mesaj: "You neither questioned the order nor objected; you just watched. You started learning very well who does what in this barracks.",
-          detay: "Sometimes the most dangerous person is the one who takes no side.",
+          mesaj: "You stayed silent and learned who is who in the barracks.",
+          detay: "The one who takes no side is most dangerous.",
         },
         basarisizSonuc: {
-          mesaj: "Your silence was noticed; you started being called 'someone whose thoughts you can't read'.",
-          detay: "Neutrality sometimes draws suspicion.",
+          mesaj: "Your silence was noticed; they call you 'the unreadable one'.",
+          detay: "Neutrality draws suspicion.",
         },
       },
     ],
@@ -57,28 +57,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_yol_sadakat_sinavi: {
     baslik: "A Test of Loyalty",
     metin:
-      "The commander gives you a personal task: to cover up a senior officer's corruption you have to sign a false report. Refusing means falling from your commander's favor; signing means surrendering one more piece of your conscience.",
+      "Your commander wants you to sign a false report covering a senior officer's corruption. Refuse and lose favor; sign and lose a piece of conscience.",
     secenekler: [
       {
-        metin: "Sign it, stay loyal to your commander to the end.",
+        metin: "Sign; stay loyal to your commander.",
         basariliSonuc: {
-          mesaj: "You signed it; your commander now trusts you blindly. You're a truly loyal soldier of this army now.",
-          detay: "Obedience became your identity — without question, always.",
+          mesaj: "You signed; your commander now trusts you blindly.",
+          detay: "Obedience became your identity.",
         },
         basarisizSonuc: {
-          mesaj: "The report got caught in review and your name was dragged in; still, your commander protected you.",
-          detay: "Your loyalty sometimes puts you at risk too.",
+          mesaj: "The report was investigated and your name surfaced; your commander shielded you.",
+          detay: "Loyalty puts you at risk too.",
         },
       },
       {
-        metin: "Refuse but stay silent, show your loyalty another way.",
+        metin: "Refuse, but keep quiet.",
         basariliSonuc: {
-          mesaj: "You didn't sign but you told no one either; your commander read it as a silent loyalty.",
-          detay: "Being loyal doesn't always mean blind obedience.",
+          mesaj: "You didn't sign or tell; your commander read it as quiet loyalty.",
+          detay: "Loyalty isn't blind obedience.",
         },
         basarisizSonuc: {
-          mesaj: "Your refusal angered your commander; still, he didn't dismiss you, just treated you coldly for a long time.",
-          detay: "You kept your conscience, and it had a price.",
+          mesaj: "Your refusal angered him; he kept you but stayed cold for long.",
+          detay: "You kept your conscience; it cost you.",
         },
       },
     ],
@@ -87,28 +87,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_yol_gizli_toplanti: {
     baslik: "A Secret Meeting",
     metin:
-      "At midnight a soldier you trust calls you behind the stables: a group of soldiers tired of the commanders' arbitrary punishments has secretly organized and wants you to join them. Even if you don't join, knowing this secret puts you in danger.",
+      "At night a trusted soldier calls you behind the stable: men fed up with arbitrary punishment are organizing and want you in.",
     secenekler: [
       {
-        metin: "Join, become part of the mutiny.",
+        metin: "Join; become part of the revolt.",
         basariliSonuc: {
-          mesaj: "You took the oath; you're part of this secret brotherhood now. You're not alone against injustice, but there's no turning back now either.",
-          detay: "Once a mutiny begins, it carries you to the end.",
+          mesaj: "You swore the oath; you belong to the brotherhood, no way back.",
+          detay: "Once begun, revolt carries you on.",
         },
         basarisizSonuc: {
-          mesaj: "During the meeting a sentry nearly caught you; you scattered in panic but you'll have to be more careful now.",
-          detay: "The first step is always the most dangerous.",
+          mesaj: "A sentry nearly caught you; you scattered, now more careful.",
+          detay: "The first step is the riskiest.",
         },
       },
       {
-        metin: "Report it, tell the commander about the situation.",
+        metin: "Report it to your commander.",
         basariliSonuc: {
-          mesaj: "The commander rewarded your report; but there are people in the barracks who call you 'informer' now.",
-          detay: "Loyalty has a price, you're learning that now.",
+          mesaj: "The commander rewarded you; but some in the barracks call you 'informer'.",
+          detay: "Loyalty has a price.",
         },
         basarisizSonuc: {
-          mesaj: "Your report wasn't taken seriously but it leaked; both the mutineers and the commander distrust you now.",
-          detay: "Sometimes even your honesty gets no return.",
+          mesaj: "The report was ignored yet leaked; nobody trusts you now.",
+          detay: "Honesty sometimes goes unrewarded.",
         },
       },
     ],
@@ -117,28 +117,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_yol_cesaretin_bedeli: {
     baslik: "The Price of Courage",
     metin:
-      "In a small clash your unit was ambushed; your commander is dead, the command vacuum is turning into panic. You have to do something — either throw yourself forward and take the risk, or look for a calculated, safe way out.",
+      "In an ambush your commander died and the unit panics. Charge forward and risk it, or seek a calculated way out.",
     secenekler: [
       {
-        metin: "Break the enemy line alone, try to save the unit.",
+        metin: "Charge the line alone; save the unit.",
         basariliSonuc: {
-          mesaj: "With a wild move you broke the enemy line; your unit was saved thanks to you. Your name is turning into a legend in the barracks now.",
-          detay: "Some moments turn a soldier into a hero — you lived that moment.",
+          mesaj: "You broke their line; the unit was saved, your name becomes legend.",
+          detay: "Some moments make a soldier a hero.",
         },
         basarisizSonuc: {
-          mesaj: "Your move didn't work; an enemy patrol found you unconscious. When you opened your eyes you were in a prison camp.",
-          detay: "Courage sometimes robs you of your freedom.",
+          mesaj: "Your charge failed; captured unconscious, you woke in a prison camp.",
+          detay: "Courage sometimes costs freedom.",
         },
       },
       {
-        metin: "Pull the unit back in a calculated way, reduce the losses.",
+        metin: "Withdraw the unit with care.",
         basariliSonuc: {
-          mesaj: "Your composure saved the unit; no one died and everyone owes you. Heroism isn't always being reckless.",
+          mesaj: "Your calm saved the unit; no one died, all owe you.",
           detay: "Calculated courage is courage too.",
         },
         basarisizSonuc: {
-          mesaj: "During the retreat you lost a few men but the panic didn't grow; still, your conscience isn't at ease.",
-          detay: "Even the best decisions sometimes aren't enough.",
+          mesaj: "You lost a few men in the retreat, but panic didn't spread.",
+          detay: "Even the best decision may fall short.",
         },
       },
     ],
@@ -147,28 +147,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_yol_dusmanla_temas: {
     baslik: "Contact With the Enemy",
     metin:
-      "During a night watch, someone from the enemy side emerges from the shadows and approaches you. In exchange for the garrison's defense plans he offers enough gold to live comfortably your whole life and a safe refuge when the war ends.",
+      "On night watch an enemy agent steps from the shadows, offering lifelong gold and a safe haven for the defense plans.",
     secenekler: [
       {
-        metin: "Accept the offer, sell the information.",
+        metin: "Accept; sell the information.",
         basariliSonuc: {
-          mesaj: "You gave the information, the gold is in your purse; you live between two worlds now. Your conscience will never look at you the same way again.",
-          detay: "Some decisions can't be taken back; this is one of them.",
+          mesaj: "You sold it, gold in hand; your conscience will never look at you the same.",
+          detay: "Some choices can't be undone.",
         },
         basarisizSonuc: {
-          mesaj: "The deal leaked, and you were interrogated too; the money came but now you fear every shadow.",
-          detay: "The price of betrayal goes on being paid even after you've paid it.",
+          mesaj: "The deal leaked and you were interrogated; paid, but you fear every shadow.",
+          detay: "Treason's price keeps on charging.",
         },
       },
       {
-        metin: "Refuse, try to catch the man.",
+        metin: "Refuse; try to catch the man.",
         basariliSonuc: {
-          mesaj: "You caught the man; your commander rewarded you. No one will know how close you came to being seduced.",
+          mesaj: "You caught him; your commander rewarded you.",
           detay: "Some tests are passed quietly.",
         },
         basarisizSonuc: {
-          mesaj: "The man got away, and you were beaten on top of it; at least your conscience is at ease.",
-          detay: "Doing the right thing isn't always easy.",
+          mesaj: "He escaped and you were beaten; at least your conscience is clear.",
+          detay: "Doing right isn't always easy.",
         },
       },
     ],
@@ -177,28 +177,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_sadik_01: {
     baslik: "The Night Watch",
     metin:
-      "You haven't slept for two days, but your name is on the watch roster. Your superior {amir} forbade you from handing your watch to someone else on the excuse of illness; rules are rules.",
+      "You haven't slept in two days, yet you're on the watch roster. Your superior {amir} forbade swapping shifts.",
     secenekler: [
       {
-        metin: "Take the watch without questioning the order.",
+        metin: "Take the watch without question.",
         basariliSonuc: {
-          mesaj: "You forced your eyes to stay open until morning; no one suspected you.",
-          detay: "The next day {amir} quietly touched your shoulder, and even that was enough for you.",
+          mesaj: "You stayed up till dawn; nobody suspected a thing.",
+          detay: "Next day {amir} tapped your shoulder.",
         },
         basarisizSonuc: {
-          mesaj: "Near dawn you fell asleep standing; a patrol found you like that.",
-          detay: "You weren't punished but the shame weighed heavier than a whip.",
+          mesaj: "Near dawn you dozed standing; the patrol found you.",
+          detay: "No punishment, but shame outweighs the lash.",
         },
       },
       {
         metin: "Secretly swap the watch with a comrade.",
         basariliSonuc: {
-          mesaj: "No one noticed, you rested.",
-          detay: "But you know you broke the order; next time you may not be so lucky.",
+          mesaj: "Nobody noticed; you rested.",
+          detay: "You bent the order; next time you may not be lucky.",
         },
         basarisizSonuc: {
-          mesaj: "Your superior learned of the swap; he scolded you both in the square.",
-          detay: "Your word doesn't carry as much weight anymore.",
+          mesaj: "Your superior found out and berated you both in public.",
+          detay: "Your word carries less weight now.",
         },
       },
     ],
@@ -207,39 +207,39 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_sadik_02: {
     baslik: "An Innocent Arrest",
     metin:
-      "Your superior ordered you to arrest an old carpenter who couldn't pay his tax debt. In the man's eyes there's no crime, only helplessness; but an order is an order.",
+      "Your superior orders you to arrest an old carpenter who can't pay his tax. His eyes show despair, not guilt; but orders are orders.",
     secenekler: [
       {
-        metin: "Carry out the order to the letter, hand the man over.",
+        metin: "Follow the order; hand him over.",
         basariliSonuc: {
           mesaj: "You chained the carpenter and handed him to the garrison.",
-          detay: "Your superior praised you; you couldn't forget the man's face at night.",
+          detay: "He praised you; you can't forget the man's face.",
         },
         basarisizSonuc: {
-          mesaj: "The man tried to run, in the confusion you got tangled and lost him.",
-          detay: "You lost a little of your superior's trust.",
+          mesaj: "The man tried to flee and in the chaos you lost him.",
+          detay: "Your superior's trust wavered.",
         },
       },
       {
-        metin: "Pay the debt from your own pocket, try to have the arrest postponed.",
+        metin: "Pay the debt from your own pocket.",
         basariliSonuc: {
-          mesaj: "You cleared the debt, the man was released.",
-          detay: "You know your superior wouldn't be happy if he found out, but you slept easy that night.",
+          mesaj: "You settled the debt; the man went free.",
+          detay: "Your superior won't like it, but you slept well.",
         },
         basarisizSonuc: {
-          mesaj: "You paid your money but the creditor wouldn't accept it, and they took the man anyway.",
-          detay: "Your pocket emptied and nothing changed.",
+          mesaj: "You paid but the creditor refused; they took him anyway.",
+          detay: "Your purse emptied and nothing changed.",
         },
       },
       {
-        metin: "Carry out the order but write a report and flag the situation.",
+        metin: "Obey, but file a report.",
         basariliSonuc: {
-          mesaj: "Your report reached your superior's superior, and the man's sentence was lightened.",
-          detay: "You saw you could change something by staying within the rules.",
+          mesaj: "Your report reached higher up; the man's sentence was eased.",
+          detay: "You can change things within the rules.",
         },
         basarisizSonuc: {
-          mesaj: "Your report was thrown aside unread, the man served his sentence.",
-          detay: "You tried the right way, the system didn't hear you.",
+          mesaj: "Your report was tossed unread; the man served his sentence.",
+          detay: "You tried the proper way; the system didn't listen.",
         },
       },
     ],
@@ -248,28 +248,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_sadik_03: {
     baslik: "A Bribe at the Gate",
     metin:
-      "On watch at the city gate a merchant secretly held out a purse of gold in exchange for a load not entered in the customs record. No one saw, no one will know — maybe.",
+      "At the city gate a merchant slips you a purse of gold to ignore an unregistered load. Nobody saw.",
     secenekler: [
       {
-        metin: "Refuse the bribe, report the merchant.",
+        metin: "Refuse the bribe; report the merchant.",
         basariliSonuc: {
-          mesaj: "You had the merchant caught, your superior held up your honesty as an example.",
-          detay: "But the merchant's men know your face now.",
+          mesaj: "You had the merchant caught; your superior held you up as an example.",
+          detay: "But his men now know your face.",
         },
         basarisizSonuc: {
-          mesaj: "The merchant got away, all you were left with was an empty purse.",
-          detay: "No one blamed you but something felt missing inside, as if a reward had slipped away.",
+          mesaj: "The merchant fled, leaving you an empty purse.",
+          detay: "Something inside feels lost, like a missed reward.",
         },
       },
       {
-        metin: "Take the gold, ignore the load.",
+        metin: "Take the gold; ignore the load.",
         basariliSonuc: {
-          mesaj: "The purse went into your pocket, the load entered the city quietly.",
-          detay: "Before you slept that night you told yourself 'just this once'.",
+          mesaj: "The purse went into your pocket; the load slipped in quietly.",
+          detay: "At night you told yourself 'just this once'.",
         },
         basarisizSonuc: {
-          mesaj: "Another sentry saw you, you had to answer for it before your superior.",
-          detay: "You had to beg not to lose your rank.",
+          mesaj: "Another guard saw you; you answered to your superior.",
+          detay: "You had to beg to keep your rank.",
         },
       },
     ],
@@ -278,28 +278,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_sadik_04: {
     baslik: "An Order to an Old Friend",
     metin:
-      "You rose to the rank of man-at-arms and your first job was to send your childhood friend, still a private, to a harsh corvée. You saw the disappointment in his eyes before he turned his back.",
+      "Now a swordsman, your first act is sending your childhood friend, still a private, to heavy labor. You saw his disappointment.",
     secenekler: [
       {
-        metin: "Give the order unchanged, show no favoritism.",
+        metin: "Don't change the order; no favoritism.",
         basariliSonuc: {
-          mesaj: "You gave the order, {dost} accepted it in silence.",
-          detay: "You know you were fair but he doesn't laugh with you the way he used to.",
+          mesaj: "You gave the order; {dost} accepted in silence.",
+          detay: "You were fair, but he no longer smiles at you.",
         },
         basarisizSonuc: {
-          mesaj: "{dost} openly rebelled, accused you of favoritism in front of everyone — though you'd shown none.",
-          detay: "You paid the price of doing the right thing alone.",
+          mesaj: "{dost} rebelled and accused you of favoritism before everyone.",
+          detay: "You paid for doing right alone.",
         },
       },
       {
-        metin: "Lighten the duty, but let no one see it.",
+        metin: "Ease the duty, quietly.",
         basariliSonuc: {
-          mesaj: "No one noticed, {dost} stayed grateful to you.",
-          detay: "Deep down, you know you crossed the line with your very first order.",
+          mesaj: "Nobody noticed; {dost} is grateful.",
+          detay: "With the first order you had already crossed the line.",
         },
         basarisizSonuc: {
-          mesaj: "The other soldiers noticed the inequality, your superior warned you.",
-          detay: "Your rank is new, your trust newer — both were shaken.",
+          mesaj: "The men noticed the unfairness; your superior warned you.",
+          detay: "Your rank is new, your standing newer.",
         },
       },
     ],
@@ -308,28 +308,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_sadik_05: {
     baslik: "A Summons on the Wedding Night",
     metin:
-      "Your wedding preparations were finished when an urgent call came from the border post; every sentry must return to duty. {es} is trying to hold back tears, the guests wait at the door.",
+      "The wedding is ready when an urgent call comes from the border post. {es} holds back tears; guests wait at the door.",
     secenekler: [
       {
-        metin: "Leave the ceremony at once, rush to duty.",
+        metin: "Leave the ceremony; rush to duty.",
         basariliSonuc: {
-          mesaj: "You leapt on your horse and reached the post; your superior never forgot your loyalty.",
-          detay: "{es} forgave you, but there's always a memory missing, like a wedding portrait.",
+          mesaj: "You reached the post; your superior never forgot your loyalty.",
+          detay: "{es} forgave you, but the memory stays incomplete.",
         },
         basarisizSonuc: {
-          mesaj: "You got caught in a storm halfway, reached the post late.",
-          detay: "Your intent wasn't enough, only the effort counted.",
+          mesaj: "A storm caught you; you reached the post late.",
+          detay: "Intent wasn't enough; only effort counted.",
         },
       },
       {
-        metin: "Finish the ceremony, set off at first light.",
+        metin: "Finish the ceremony; leave at dawn.",
         basariliSonuc: {
-          mesaj: "You completed your wedding, {es} never let go of your hand.",
-          detay: "When you reached the garrison you answered for the delay, but you weren't sorry.",
+          mesaj: "You finished the wedding; {es} never let go of your hand.",
+          detay: "You answered for the delay and don't regret it.",
         },
         basarisizSonuc: {
-          mesaj: "Because you were late your superior scolded you in front of everyone.",
-          detay: "Your happiness lasted one night, its stain much longer.",
+          mesaj: "For arriving late, your superior scolded you before everyone.",
+          detay: "Joy lasted a night; the stain much longer.",
         },
       },
     ],
@@ -338,39 +338,39 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_sadik_06: {
     baslik: "The Shaky-Handed Recruit",
     metin:
-      "A newly joined private can't even hold his sword right, and the others mock him. No one gave you an order, but training him is in your hands now.",
+      "A new recruit can't even hold a sword right, and everyone mocks him. No one ordered it, but training him is up to you.",
     secenekler: [
       {
-        metin: "Set aside extra time in the evenings and train him.",
+        metin: "Train him extra in the evenings.",
         basariliSonuc: {
-          mesaj: "The young private came together quickly, and stayed grateful to you.",
-          detay: "If one day you see him training someone too, you'll know this effort wasn't wasted.",
+          mesaj: "The recruit recovered and is grateful.",
+          detay: "If he trains someone one day, the effort wasn't wasted.",
         },
         basarisizSonuc: {
-          mesaj: "Your effort wasn't enough, the boy is still clumsy; some thought you'd wasted your time.",
-          detay: "Still, you didn't give up trying.",
+          mesaj: "Your effort wasn't enough; he's still clumsy, and some call it wasted time.",
+          detay: "You didn't give up anyway.",
         },
       },
       {
-        metin: "Leave him be, let discipline change him.",
+        metin: "Leave him to himself.",
         basariliSonuc: {
-          mesaj: "The boy toughened up and learned on his own.",
-          detay: "But he trusts no one now, not even you.",
+          mesaj: "The boy hardened and learned on his own.",
+          detay: "But he trusts no one now, you included.",
         },
         basarisizSonuc: {
-          mesaj: "The young private was badly hurt in a drill; maybe a little attention would have helped.",
-          detay: "His pain left a share on your conscience too.",
+          mesaj: "The recruit was badly hurt in drill; some care might have helped.",
+          detay: "His pain left a share on your conscience.",
         },
       },
       {
-        metin: "Report the situation to the official trainer, don't spend your own time.",
+        metin: "Report it to the official trainer.",
         basariliSonuc: {
-          mesaj: "The trainer took over, the boy came together in time.",
-          detay: "You did your duty but no bond was ever formed between you.",
+          mesaj: "The trainer took over; the boy recovered in time.",
+          detay: "You did your duty, but no bond formed.",
         },
         basarisizSonuc: {
-          mesaj: "The trainer took little interest, the boy was left alone, and you never grew close.",
-          detay: "Leaving responsibility to someone else sometimes does no one any good.",
+          mesaj: "The trainer didn't care; the boy was left alone, and you drifted apart.",
+          detay: "Passing off responsibility helps nobody.",
         },
       },
     ],
@@ -379,27 +379,27 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_sadik_07: {
     baslik: "An Unjust Punishment",
     metin:
-      "Your superior punished you in front of everyone for a mistake you didn't make. The real culprit is another soldier, one of the superior's favorites. You have the right to object but it will have a price.",
+      "Your superior punished you publicly for a fault you didn't commit; the real culprit is his favorite. You may object, at a price.",
     secenekler: [
       {
-        metin: "Take your punishment in silence, show your obedience.",
+        metin: "Take your punishment quietly.",
         basariliSonuc: {
-          mesaj: "You took your punishment without a word; your superior mistook your silence for discipline.",
-          detay: "But you didn't forget the injustice, you only learned to swallow it.",
+          mesaj: "You took it without a word; your superior mistook silence for discipline.",
+          detay: "You forgot nothing; you just learned to swallow it.",
         },
         basarisizSonuc: {
-          mesaj: "The anger inside you gave you away, the expression on your face during the punishment was noticed.",
+          mesaj: "Your anger gave you away; your expression was noticed.",
           detay: "You obeyed, but your reluctance was recorded.",
         },
       },
       {
-        metin: "Quietly tell your superior's superior about the situation.",
+        metin: "Quietly tell your superior's superior.",
         basariliSonuc: {
-          mesaj: "The senior officer found the real culprit, your name was cleared.",
-          detay: "But your superior will never see you the same way again.",
+          mesaj: "The higher officer found the culprit; your name was cleared.",
+          detay: "But your superior will never see you the same.",
         },
         basarisizSonuc: {
-          mesaj: "Your complaint backfired, you got called 'a soldier who skips the chain of command'.",
+          mesaj: "The complaint backfired; you became 'the soldier who skipped the chain'.",
           detay: "Being right sometimes isn't enough.",
         },
       },
@@ -409,28 +409,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_sadik_08: {
     baslik: "The Commander's Instinct",
     metin:
-      "{amir} gave a strange order: the unit will spend the night in the swamp, though a safe hill stands right nearby. Trust the order, or trust your own head?",
+      "{amir} gives an odd order: camp in the swamp though a safe hill is nearby. Trust the order or your own mind?",
     secenekler: [
       {
-        metin: "Carry out the order without questioning.",
+        metin: "Obey without question.",
         basariliSonuc: {
-          mesaj: "In the morning it turned out the hill was an ambush; {amir}'s instinct saved your lives.",
-          detay: "You never forgot how valuable your obedience was that time.",
+          mesaj: "The hill was an ambush; {amir}'s instinct saved your lives.",
+          detay: "You never forgot what obedience was worth.",
         },
         basarisizSonuc: {
-          mesaj: "The night in the swamp brought sickness, there was no danger on the hill at all.",
-          detay: "Sometimes obedience just means sharing in the bad luck.",
+          mesaj: "The swamp brought sickness; the hill held no danger.",
+          detay: "Sometimes obedience just shares the bad luck.",
         },
       },
       {
-        metin: "Voice your reservations to your superior gently.",
+        metin: "Politely voice your doubts.",
         basariliSonuc: {
-          mesaj: "{amir} listened to you, changed the plan a little, you were both proven right.",
-          detay: "You learned that making yourself heard isn't insubordination.",
+          mesaj: "{amir} listened and adjusted the plan; you were both right.",
+          detay: "Speaking up isn't insubordination.",
         },
         basarisizSonuc: {
-          mesaj: "{amir} cut you off and scolded you, carried out his order unchanged.",
-          detay: "This time you learned it would have been wiser to stay silent.",
+          mesaj: "{amir} cut you off, scolded you, and kept the order.",
+          detay: "Silence would have been wiser this time.",
         },
       },
     ],
@@ -439,38 +439,38 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_sadik_09: {
     baslik: "The Burden of the Model Soldier",
     metin:
-      "As a man-at-arms your name is held up as an example at every drill. While this raises you in your superiors' eyes, you notice some of your comrades in the barracks are isolating you.",
+      "As a swordsman you're held up in every drill. Superiors raise you, yet your comrades in the barracks drift away.",
     secenekler: [
       {
-        metin: "Accept the praise quietly, focus on your work.",
+        metin: "Accept the praise quietly.",
         basariliSonuc: {
-          mesaj: "Your superiors appreciated you more; but fewer people sat next to you at the evening table.",
-          detay: "Being respected and being liked aren't the same, you learned.",
+          mesaj: "Your superiors approved; fewer sit beside you.",
+          detay: "Being respected isn't being loved.",
         },
         basarisizSonuc: {
-          mesaj: "The jealousy turned to gossip, a few comrades openly shunned you.",
-          detay: "You felt that even flawlessness has a price.",
+          mesaj: "Envy turned to gossip; some openly shunned you.",
+          detay: "Perfection has its price too.",
         },
       },
       {
-        metin: "Share your successes with your comrades, put them forward too.",
+        metin: "Share your success with comrades.",
         basariliSonuc: {
-          mesaj: "Your comrades appreciated you, the coldness between you dispersed.",
-          detay: "Instead of rising alone you chose to walk together.",
+          mesaj: "Your comrades appreciated you; the chill melted.",
+          detay: "You chose to walk together, not rise alone.",
         },
         basarisizSonuc: {
-          mesaj: "They mistook your humility for weakness, your standing was shaken a bit.",
-          detay: "Good intentions aren't always read right.",
+          mesaj: "Your modesty was read as weakness; your standing shook.",
+          detay: "Good intent isn't always read right.",
         },
       },
       {
-        metin: "Ignore the jealousy, go your own way.",
+        metin: "Ignore the envy; keep your course.",
         basariliSonuc: {
-          mesaj: "You didn't care about the jealousy, it died down in time.",
-          detay: "You learned you don't have to please everyone.",
+          mesaj: "You ignored the envy and it faded.",
+          detay: "You needn't please everyone.",
         },
         basarisizSonuc: {
-          mesaj: "The tension you ignored turned into an open fight during a drill.",
+          mesaj: "The tension you ignored became a brawl in drill.",
           detay: "Some problems don't pass on their own.",
         },
       },
@@ -480,28 +480,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_sadik_10: {
     baslik: "A Half-Healed Wound",
     metin:
-      "The wound you took in a drill hadn't fully healed when the unit was called on campaign again. The physician says rest, your superior won't give you up.",
+      "Before your wound healed, the unit is called to campaign again. The healer says rest; your superior won't let go.",
     secenekler: [
       {
-        metin: "Join the campaign despite your wound.",
+        metin: "Join the campaign despite the wound.",
         basariliSonuc: {
-          mesaj: "You gritted your teeth and joined the campaign, no one saw your weakness.",
-          detay: "Your superior was proud of you; you were just trying to stay on your feet.",
+          mesaj: "You gritted your teeth and marched; no one saw weakness.",
+          detay: "Your superior was proud; you just stayed upright.",
         },
         basarisizSonuc: {
-          mesaj: "Your wound reopened during the campaign, they carried you back on a stretcher.",
-          detay: "You paid the price of your stubbornness with your body.",
+          mesaj: "The wound reopened on campaign; you were carried back on a stretcher.",
+          detay: "Your stubbornness cost your body.",
         },
       },
       {
-        metin: "Listen to the physician, ask for leave.",
+        metin: "Heed the healer; ask for leave.",
         basariliSonuc: {
-          mesaj: "Leave was granted, you fully recovered.",
-          detay: "Your superior showed understanding but you noticed the slight disappointment in his eyes.",
+          mesaj: "Leave granted; you healed fully.",
+          detay: "He understood, but disappointment lingered in his eyes.",
         },
         basarisizSonuc: {
-          mesaj: "Your leave request was taken for an 'excuse', your reputation was shaken.",
-          detay: "Your body rested but your name was spoken as 'lazy' for a while.",
+          mesaj: "Your leave was called an excuse; your standing shook.",
+          detay: "You rested, but earned the name 'lazy'.",
         },
       },
     ],
@@ -510,39 +510,39 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_sadik_11: {
     baslik: "Suspicion at the Border Post",
     metin:
-      "At the post on the {bolge} border you're searching a caravan's load; there seem to be traces of weapons hidden under the bales of cloth. The caravan leader begs you to look the other way — he says his family will starve.",
+      "Searching a caravan on the {bolge} border, you spot weapon traces under cloth bales. The driver begs; his family will starve.",
     secenekler: [
       {
-        metin: "Have the load searched properly, apply the rule.",
+        metin: "Search the load by the book.",
         basariliSonuc: {
           mesaj: "You found the weapons, arrested the caravan; your superior rewarded you.",
-          detay: "The caravan leader's begging voice didn't leave your ears for a long time.",
+          detay: "The driver's pleading stayed in your ears.",
         },
         basarisizSonuc: {
-          mesaj: "During the search a bale toppled, the weapons were smuggled off by another route.",
-          detay: "All you were left with was an empty suspicion.",
+          mesaj: "A bale toppled; the weapons were smuggled another way.",
+          detay: "You were left with empty suspicion.",
         },
       },
       {
-        metin: "Look the other way, let the caravan through.",
+        metin: "Look away; let the caravan pass.",
         basariliSonuc: {
-          mesaj: "You let the caravan through, the caravan leader thanked you in tears.",
-          detay: "But the lie you wrote in the post's ledger is part of you now.",
+          mesaj: "You let it pass; the driver thanked you in tears.",
+          detay: "The lie in the ledger is now part of you.",
         },
         basarisizSonuc: {
-          mesaj: "The weapons were seized at another post, and it came out the caravan you let through carried them.",
-          detay: "You paid the price of your conscience with your rank.",
+          mesaj: "The weapons turned up elsewhere; it was your caravan.",
+          detay: "You paid for your conscience with rank.",
         },
       },
       {
-        metin: "Apply the rule but help the caravan leader's family from your own pocket.",
+        metin: "Follow the rule; aid his family yourself.",
         basariliSonuc: {
-          mesaj: "You handed over the weapons, but secretly left money with the caravan leader's family.",
-          detay: "Without breaking the rule you didn't fully ignore your conscience either.",
+          mesaj: "You handed over the arms and secretly left money for the family.",
+          detay: "You kept the rule without ignoring your conscience.",
         },
         basarisizSonuc: {
-          mesaj: "Your help was noticed, your superior recorded it as 'needless mercy'.",
-          detay: "Your good intentions weren't appreciated this time.",
+          mesaj: "Your aid was noticed; your superior logged 'needless mercy'.",
+          detay: "Good intent went unappreciated this time.",
         },
       },
     ],
@@ -551,28 +551,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_sadik_12: {
     baslik: "The Priest's Request",
     metin:
-      "The garrison priest wants you to make confession before going to war and then take a holy oath — an oath that contains a conscience clause that could force you to question some of your superior's orders.",
+      "The camp priest asks you to confess before battle and swear a sacred oath that may make you question your superior's orders.",
     secenekler: [
       {
-        metin: "Take the oath, bind your conscience to God.",
+        metin: "Swear; bind your conscience to God.",
         basariliSonuc: {
-          mesaj: "You took the oath, felt a strange peace inside.",
-          detay: "But you'll have to think twice about every order now.",
+          mesaj: "You swore, and felt a strange peace.",
+          detay: "Now you'll weigh every order twice.",
         },
         basarisizSonuc: {
-          mesaj: "During the oath the words knotted in your throat, the priest let you go with understanding.",
-          detay: "Both you and he felt you weren't ready.",
+          mesaj: "The words knotted in your throat; the priest let you go kindly.",
+          detay: "You both sensed you weren't ready.",
         },
       },
       {
-        metin: "Make only confession, gently refuse the oath.",
+        metin: "Confess; politely decline the oath.",
         basariliSonuc: {
-          mesaj: "You made your confession, and turned down the oath saying 'as a soldier I'm bound to my superior'.",
-          detay: "The priest nodded, not without objection but with respect.",
+          mesaj: "You confessed and declined the oath: 'I serve my superior'.",
+          detay: "The priest objected, yet respected you.",
         },
         basarisizSonuc: {
-          mesaj: "Your refusal offended the priest, you were spoken of coldly among the congregation.",
-          detay: "You saw once more that you can't please everyone.",
+          mesaj: "Your refusal offended the priest; the flock spoke coldly of you.",
+          detay: "You can't please everyone.",
         },
       },
     ],
@@ -581,28 +581,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_sadik_13: {
     baslik: "The Burden of Command",
     metin:
-      "You're a Commander now. Your first order isn't one you chose but one {amir} left you — you have to give a task you dislike to men you like. Rank means responsibility, not the freedom to choose, you understand now.",
+      "You're a Commander now. Your first order comes from {amir}: you must give a hated duty to men you like. Rank means responsibility.",
     secenekler: [
       {
-        metin: "Pass the order along unchanged, carry the weight of command.",
+        metin: "Pass the order on unchanged.",
         basariliSonuc: {
-          mesaj: "You gave the order, no one objected but a coldness hung in the air.",
-          detay: "You learned the price of being a commander from the first day.",
+          mesaj: "You gave the order; none objected, but a chill remained.",
+          detay: "You learned the cost of command on day one.",
         },
         basarisizSonuc: {
-          mesaj: "Your men openly grumbled, your authority was tested from the first day.",
-          detay: "Your rank is new, your respect not yet earned.",
+          mesaj: "Your men grumbled; your authority was tested on day one.",
+          detay: "New rank, respect not yet earned.",
         },
       },
       {
-        metin: "Take the task on yourself, spare your men.",
+        metin: "Take the duty yourself; spare your men.",
         basariliSonuc: {
-          mesaj: "You did the task yourself, your men looked at you with devotion.",
-          detay: "But {amir} thinks a commander shouldn't dirty his own hands.",
+          mesaj: "You did it yourself; your men grew loyal.",
+          detay: "But {amir} says commanders keep clean hands.",
         },
         basarisizSonuc: {
-          mesaj: "You were wounded during the task, and {amir} criticized it as 'needless heroics'.",
-          detay: "Your good intentions were counted as naivety in authority's eyes.",
+          mesaj: "You were hurt, and {amir} called it 'needless heroics'.",
+          detay: "Your good intent was taken as naivety.",
         },
       },
     ],
@@ -611,28 +611,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_sadik_14: {
     baslik: "The Prisoner's Eyes",
     metin:
-      "{amir} ordered the execution without trial of a captured young enemy soldier — by the rules this is forbidden but in wartime the rules are bent. The young man won't take his eyes off you.",
+      "{amir} orders a captured young enemy soldier executed without trial. Rules forbid it, but war bends them. The boy won't look away.",
     secenekler: [
       {
-        metin: "Carry out the order, show your obedience.",
+        metin: "Carry out the order; show obedience.",
         basariliSonuc: {
-          mesaj: "You carried out the order; {amir} nodded without a word.",
-          detay: "The eyes you saw that night never left your dreams, even years later.",
+          mesaj: "You did it; {amir} nodded without a word.",
+          detay: "Those eyes haunted your dreams for years.",
         },
         basarisizSonuc: {
-          mesaj: "Your hand trembled, the job wasn't done as ordered; {amir} looked at you with contempt.",
-          detay: "You neither fully obeyed nor saved your conscience.",
+          mesaj: "Your hand shook and the job was botched; {amir} despised you.",
+          detay: "You neither obeyed nor saved your conscience.",
         },
       },
       {
-        metin: "Delay the order, look for a way to keep the prisoner alive.",
+        metin: "Stall the order; try to keep him alive.",
         basariliSonuc: {
-          mesaj: "You managed to have the prisoner secretly recorded on the exchange list; {amir} was furious but your order was effectively changed.",
-          detay: "You saved a life but you're an untrustworthy man in {amir}'s eyes now.",
+          mesaj: "You got him onto the exchange list; {amir} raged, but the order was effectively dead.",
+          detay: "Life saved; {amir}'s trust is gone.",
         },
         basarisizSonuc: {
-          mesaj: "Your attempt came to light, {amir} humiliated you in front of everyone, and the prisoner was killed anyway.",
-          detay: "You could neither save the prisoner nor keep your obedient name.",
+          mesaj: "Your scheme surfaced; {amir} shamed you publicly, and the prisoner died anyway.",
+          detay: "You neither saved him nor kept your obedient name.",
         },
       },
     ],
@@ -641,28 +641,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_sadik_15: {
     baslik: "An Epidemic in the Barracks",
     metin:
-      "A feverish illness is spreading in the barracks. Your superior orders you to lock a few soldiers suspected of being sick into a tent out in the open, away from the barracks — no one cares for them, they're just isolated.",
+      "A fever spreads in the barracks. Your superior orders suspected sick men sealed in a distant tent; no one will tend them.",
     secenekler: [
       {
-        metin: "Carry out the order, keep the quarantine strict.",
+        metin: "Enforce the quarantine strictly.",
         basariliSonuc: {
-          mesaj: "The quarantine worked, the rest of the barracks stayed healthy.",
-          detay: "The sound of coughing from the tent is still in your ears at night.",
+          mesaj: "The quarantine worked; the barracks stayed healthy.",
+          detay: "The coughs from the tent still ring in your ears.",
         },
         basarisizSonuc: {
-          mesaj: "The illness spread anyway, the quarantine fell short.",
-          detay: "You carried out the order but the outcome didn't change, only your conscience grew heavier.",
+          mesaj: "The quarantine fell short; the disease spread anyway.",
+          detay: "Orders done, conscience heavier.",
         },
       },
       {
-        metin: "Secretly bring food and blankets to those in quarantine.",
+        metin: "Secretly bring food and blankets.",
         basariliSonuc: {
-          mesaj: "What you brought made a few lives easier, no one noticed.",
-          detay: "You chose to follow the spirit of some orders, not the letter.",
+          mesaj: "Your supplies eased a few lives; no one noticed.",
+          detay: "You chose the spirit over the letter.",
         },
         basarisizSonuc: {
-          mesaj: "A sentry caught you, your superior punished you for breaking the order.",
-          detay: "Your kindness cost you dearly this time.",
+          mesaj: "A guard caught you; your superior punished the breach.",
+          detay: "Your kindness proved costly.",
         },
       },
     ],
@@ -671,28 +671,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_sadik_16: {
     baslik: "The Young Private's Mistake",
     metin:
-      "In the small detachment you command, a young private fell asleep on watch and let a thief slip into the fortress. The rules are clear: this offense demands a heavy punishment. But the boy is only sixteen.",
+      "A young soldier in your detachment slept on watch and let a thief into the fort. The offense is grave, but he's sixteen.",
     secenekler: [
       {
-        metin: "Apply the rule, report the offense to your superiors.",
+        metin: "Apply the rule; report to superiors.",
         basariliSonuc: {
-          mesaj: "You filed your report, the young private was hit with a heavy punishment.",
-          detay: "You stayed true to the rules; the face of staying true is sometimes bitter.",
+          mesaj: "You reported; the young soldier got a heavy sentence.",
+          detay: "Faithfulness sometimes wears a bitter face.",
         },
         basarisizSonuc: {
-          mesaj: "The other soldiers found you merciless, the trust between you was shaken.",
-          detay: "You believe you did the right thing, but you were left alone.",
+          mesaj: "The men found you ruthless; trust shook.",
+          detay: "You did right, but you're alone.",
         },
       },
       {
-        metin: "Lighten the punishment with your own authority, don't blow it up.",
+        metin: "Soften the penalty yourself; keep it small.",
         basariliSonuc: {
-          mesaj: "You punished the young private with your own authority, didn't escalate it to your superiors.",
-          detay: "The boy never made the same mistake again, and stayed grateful to you for life.",
+          mesaj: "You punished him yourself and kept it quiet.",
+          detay: "He never erred again, grateful for life.",
         },
         basarisizSonuc: {
-          mesaj: "The matter reached your superiors by another route; you were questioned for both trying to hide the punishment and abusing your authority.",
-          detay: "Your good intentions carried no weight against the rule.",
+          mesaj: "It reached your superiors; you were questioned for hiding it and abusing authority.",
+          detay: "Good intent weighed nothing against the rule.",
         },
       },
     ],
@@ -701,28 +701,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_sadik_17: {
     baslik: "The Order to Close the Gate",
     metin:
-      "You command a besieged fortress; provisions are running out. The order from {amir} is clear: close the gates, don't let the peasants left outside in — there's no room or food for them. Families with children wait before the gate.",
+      "Your besieged fort runs out of food. The order from {amir} is plain: shut the gates to the peasants outside. Families with children wait there.",
     secenekler: [
       {
-        metin: "Carry out the order, close the gates.",
+        metin: "Obey; close the gates.",
         basariliSonuc: {
-          mesaj: "You closed the gates; those inside the fortress survived.",
-          detay: "The screams of those left outside stayed with you always, as part of the victory you won.",
+          mesaj: "You shut the gates; those inside survived.",
+          detay: "The cries outside became part of your victory.",
         },
         basarisizSonuc: {
-          mesaj: "The crowd forced the gate, in the confusion some of your soldiers were hurt, you barely restored order.",
-          detay: "Even carrying out the order demanded a price from you.",
+          mesaj: "The crowd forced the gate; some men were hurt and order barely held.",
+          detay: "Even obeying exacted a price.",
         },
       },
       {
-        metin: "Secretly let a small number of children and elderly in.",
+        metin: "Quietly admit a few children and elders.",
         basariliSonuc: {
-          mesaj: "You let a few children and elderly in through a hidden gate; {amir} was furious when he found out but couldn't undo it.",
-          detay: "You knowingly took the first big stain on your command, and you're not sorry.",
+          mesaj: "You let a few in by a hidden gate; {amir} raged but couldn't undo it.",
+          detay: "You knew the stain and don't regret it.",
         },
         basarisizSonuc: {
-          mesaj: "Your attempt was noticed, {amir} openly accused you of disregarding his authority.",
-          detay: "Your conscience is at ease but your command took a big wound.",
+          mesaj: "Your act was noticed; {amir} accused you of defying authority.",
+          detay: "Conscience clear, command wounded.",
         },
       },
     ],
@@ -731,39 +731,39 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_sadik_18: {
     baslik: "Aching Shoulders",
     metin:
-      "The armor you've worn for years no longer sits on your shoulders like it used to. The young privates call you 'old wolf', with respect but a bit of pity too. The thought of retirement crosses your mind for real for the first time.",
+      "Your armor no longer sits right. Young soldiers call you 'old wolf', with respect and a little pity. Retirement crosses your mind.",
     secenekler: [
       {
-        metin: "Stay in service, give what strength you have left.",
+        metin: "Serve on with your last strength.",
         basariliSonuc: {
-          mesaj: "You stayed in service, the young privates kept learning from you.",
-          detay: "Your honor is intact but your body reminds you of the price every morning.",
+          mesaj: "You served on; the young soldiers kept learning from you.",
+          detay: "Your honor holds; your body bills you each morning.",
         },
         basarisizSonuc: {
-          mesaj: "You lost your balance in a drill, your fall was in front of everyone.",
-          detay: "You can't hide anymore that age has caught up with you.",
+          mesaj: "You lost your balance in drill and fell before everyone.",
+          detay: "You can't hide that age has caught you.",
         },
       },
       {
-        metin: "File for retirement, focus on passing your experience to the young privates.",
+        metin: "File for retirement; pass on your knowledge.",
         basariliSonuc: {
-          mesaj: "Your petition was accepted, you stay in the barracks as a trainer now.",
-          detay: "You set down your sword but not what you know.",
+          mesaj: "Your request was accepted; you stay as a trainer.",
+          detay: "You dropped the sword, not your knowledge.",
         },
         basarisizSonuc: {
-          mesaj: "Your petition was turned down as 'too early', you were asked to stay at the front a while longer.",
-          detay: "Even if your body isn't ready, the system won't let you go yet.",
+          mesaj: "Your request was refused as 'too early'; you must stay at the front.",
+          detay: "Your body is ready; the system won't let go.",
         },
       },
       {
-        metin: "Test your limits by sparring with a young private.",
+        metin: "Spar with a young soldier.",
         basariliSonuc: {
-          mesaj: "You showed you could still beat a young private, your standing in the barracks rose.",
-          detay: "But when you got up the next morning you felt it was not a victory but a reminder.",
+          mesaj: "You still beat the youngster; your standing grew.",
+          detay: "Next morning it felt like a reminder, not a victory.",
         },
         basarisizSonuc: {
-          mesaj: "The young private beat you, and in front of everyone you felt your age for real for the first time.",
-          detay: "Your pride was wounded worse than your body.",
+          mesaj: "The youngster beat you; you felt your age before everyone.",
+          detay: "Your pride was hurt worse than your body.",
         },
       },
     ],
@@ -772,28 +772,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_sadik_19: {
     baslik: "Your Father's Last Wish",
     metin:
-      "The news from the village is heavy: your father is on his deathbed and wants to see you. That same week your unit was called to an important drill, and a soldier who leaves without permission is severely punished.",
+      "Your father lies dying and wants to see you. The same week your unit is called to a major drill; deserters face severe punishment.",
     secenekler: [
       {
-        metin: "Ask for leave, don't set off until you have an answer.",
+        metin: "Request leave; wait for the answer.",
         basariliSonuc: {
-          mesaj: "Your leave was approved at the last moment, you made it to your father's last breath.",
-          detay: "Staying bound to the rules didn't make you sorry this time.",
+          mesaj: "Leave came at the last moment; you reached his final breath.",
+          detay: "Following the rules didn't cost you.",
         },
         basarisizSonuc: {
-          mesaj: "The leave answer came late, you lost your father without seeing him one last time.",
-          detay: "Your obedience didn't take you to the right place, it just made you late.",
+          mesaj: "Leave came late; you lost your father unseen.",
+          detay: "Obedience only brought you late.",
         },
       },
       {
-        metin: "Go without permission, take the punishment.",
+        metin: "Go without leave; risk the penalty.",
         basariliSonuc: {
-          mesaj: "You got to hold your father's hand one last time, but a heavy punishment waited for you when you returned.",
-          detay: "You're not sorry; some things are worth more than rank.",
+          mesaj: "You held your father's hand, but heavy punishment awaited your return.",
+          detay: "Some things are worth more than rank.",
         },
         basarisizSonuc: {
-          mesaj: "You made it but your unauthorized departure got out, your model-soldier standing was shaken overnight.",
-          detay: "Your heart did the right thing, your record didn't forgive it.",
+          mesaj: "You made it, but your leaving was reported; your model-soldier name crumbled overnight.",
+          detay: "Your heart did right; your record won't forgive.",
         },
       },
     ],
@@ -802,28 +802,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_sadik_20: {
     baslik: "The Legacy of Your Last Watch",
     metin:
-      "You've reached the end of the obedient service you kept up for years. A young private asks you 'Did you ever have any regrets?' Your answer will decide the name you leave behind.",
+      "Your obedient service ends. A young soldier asks, 'Did you ever regret it?' Your answer will shape the name you leave.",
     secenekler: [
       {
-        metin: "Tell it honestly: obedience both saved you and cost you sleep some nights.",
+        metin: "Be honest: obedience saved and haunted you.",
         basariliSonuc: {
-          mesaj: "The young private listened in silence, started speaking of you as 'a real soldier'.",
-          detay: "Admitting you weren't flawless made you more respected still.",
+          mesaj: "The recruit listened quietly and called you a 'true soldier'.",
+          detay: "Admitting flaws raised your standing.",
         },
         basarisizSonuc: {
-          mesaj: "Your words were misunderstood, some thought you doubted your own obedience.",
-          detay: "Honesty is sometimes heard wrong.",
+          mesaj: "Your words were misread as doubting your own obedience.",
+          detay: "Honesty is sometimes misheard.",
         },
       },
       {
-        metin: "Just say 'staying true to orders is always right', don't confuse the boy.",
+        metin: "Say 'Following orders is always right.'",
         basariliSonuc: {
-          mesaj: "The young private memorized your words, swore to become like you.",
-          detay: "You didn't tell him the whole truth, but maybe that was the greatest kindness you could do for him.",
+          mesaj: "The recruit memorized your words and vowed to be like you.",
+          detay: "You withheld the whole truth; perhaps that was kindest.",
         },
         basarisizSonuc: {
-          mesaj: "The young private sensed the gap in your words, started asking you more questions.",
-          detay: "Simple answers don't satisfy a curious mind.",
+          mesaj: "The recruit sensed the gap in your words and asked more.",
+          detay: "Simple answers don't satisfy curious minds.",
         },
       },
     ],
@@ -832,35 +832,35 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_isyanci_01: {
     baslik: "The Watch Roster",
     metin:
-      "The organization wants its first real task of you: you have to copy the watch roster in the command tent so safe hours for secret meetings are known. Entering the tent without permission is forbidden — if you're caught you could be accused of theft.",
+      "The cell gives your first task: copy the guard roster in the command tent. Entry is forbidden; if caught, you're a thief.",
     secenekler: [
       {
-        metin: "Distract the sentry, slip into the tent.",
+        metin: "Distract the guard; sneak into the tent.",
         basariliSonuc: {
-          mesaj: "You copied the roster, no one noticed; the organization trusts you more now.",
-          detay: "You passed your first test quietly.",
+          mesaj: "You copied the roster unseen; the cell trusts you more.",
+          detay: "You passed the first test quietly.",
         },
         basarisizSonuc: {
-          mesaj: "The sentry noticed you, you barely got away; eyes are on you in the barracks now.",
-          detay: "The first step is sometimes the most dangerous.",
+          mesaj: "The guard noticed; you barely escaped, and eyes are on you.",
+          detay: "The first step is the riskiest.",
         },
       },
       {
-        metin: "Refuse the task, say it's too risky.",
+        metin: "Refuse; call it too risky.",
         basariliSonuc: {
-          mesaj: "You refused; your comrades understood but didn't hide the disappointment in their eyes.",
+          mesaj: "You refused; your comrades understood but showed disappointment.",
         },
         basarisizSonuc: {
-          mesaj: "Your refusal led to whispers of 'unreliable' within the organization.",
+          mesaj: "Your refusal sparked whispers of 'unreliable'.",
         },
       },
       {
-        metin: "Persuade another comrade to take on the risk.",
+        metin: "Persuade another comrade to take the risk.",
         basariliSonuc: {
-          mesaj: "Your comrade took on the task and succeeded; but you know you put him in danger.",
+          mesaj: "Your comrade succeeded, but you know you put him at risk.",
         },
         basarisizSonuc: {
-          mesaj: "Your comrade was caught, he didn't give your name but the way he looked at you was never the same again.",
+          mesaj: "Your comrade was caught; he didn't name you, but his look has changed.",
           detay: "Some debts are never paid.",
         },
       },
@@ -870,35 +870,35 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_isyanci_02: {
     baslik: "A Newcomer at the Meeting",
     metin:
-      "A newly joined soldier shows interest in the organization's meetings; his words are just right, and the questions he asks are too just right. Your comrades suspect him but there's no proof; they're waiting for a decision from you.",
+      "A new soldier shows interest in the meetings; his words fit, his questions too well. Comrades suspect him, no proof; it's your call.",
     secenekler: [
       {
-        metin: "Test him, with a piece of dangerous information.",
+        metin: "Test him with dangerous information.",
         basariliSonuc: {
-          mesaj: "The false information you gave reached the commander's ear a day later; the man really was an informer, you warned the organization in time.",
-          detay: "Suspicion is sometimes a weapon in itself.",
+          mesaj: "The false tip reached the commander; he was an informer, and you warned the cell.",
+          detay: "Suspicion is sometimes a weapon.",
         },
         basarisizSonuc: {
-          mesaj: "The man you tested was innocent; your suspicion deeply hurt him, the trust between you was never the same.",
+          mesaj: "The man was innocent; your suspicion hurt him and trust broke.",
         },
       },
       {
-        metin: "Quietly ease him out of the organization, give no reason.",
+        metin: "Quietly ease him out.",
         basariliSonuc: {
-          mesaj: "The man quietly drifted away, no one reacted; the danger — maybe — was removed.",
+          mesaj: "He drifted away quietly; the danger may be gone.",
         },
         basarisizSonuc: {
-          mesaj: "The man was angered at being shunned and went to the commander; they started asking strange questions about you.",
+          mesaj: "Angry at the snub, he went to the commander; they started asking about you.",
         },
       },
       {
-        metin: "Trust him, bring him fully into your ranks.",
+        metin: "Trust him; take him in.",
         basariliSonuc: {
-          mesaj: "The man really was your comrade in the cause; the organization grew stronger by one.",
+          mesaj: "He was a true ally; the cell grew stronger.",
         },
         basarisizSonuc: {
-          mesaj: "The man really was an agent; two of your comrades were arrested, you feel the guilt.",
-          detay: "Trust sometimes exacts the highest price.",
+          mesaj: "He was an agent; two comrades were arrested, and you blame yourself.",
+          detay: "Trust can charge the highest price.",
         },
       },
     ],
@@ -907,24 +907,24 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_isyanci_03: {
     baslik: "The Notch and the Cipher",
     metin:
-      "You learn that the secret sign the organization uses — a small notch in the barracks wall — is starting to be noticed. Either a new, more complex method must be found or the meetings must be stopped for a while.",
+      "The cell's secret mark, a small notch on the barracks wall, is being noticed. Find a new method or halt meetings.",
     secenekler: [
       {
-        metin: "Develop a new sign system, take the risk.",
+        metin: "Devise a new signal system.",
         basariliSonuc: {
-          mesaj: "The new signs worked; communication is far safer than before.",
+          mesaj: "The new signals worked; communication is far safer.",
         },
         basarisizSonuc: {
-          mesaj: "While testing the new method a sentry grew suspicious; you barely got past it.",
+          mesaj: "A sentry grew suspicious during the trial; you barely fended him off.",
         },
       },
       {
-        metin: "Stop the meetings for a while, propose waiting.",
+        metin: "Halt meetings; propose waiting.",
         basariliSonuc: {
-          mesaj: "Nothing happened during the silent period; but some comrades started to grow impatient.",
+          mesaj: "Nothing happened in the lull, but some comrades grew restless.",
         },
         basarisizSonuc: {
-          mesaj: "Even while waiting some comrades got careless; a small mistake nearly exposed everything.",
+          mesaj: "Some grew careless while waiting; a small slip nearly exposed everything.",
         },
       },
     ],
@@ -933,34 +933,34 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_isyanci_04: {
     baslik: "The Granary Raid",
     metin:
-      "The village near the barracks is struggling with hunger from heavy taxes. The organization plans to secretly get a quantity of provisions from the barracks granary to the village; if you're caught it's not theft but a mutiny charge that awaits you.",
+      "The village near the barracks starves under heavy taxes. The cell plans to smuggle grain from the depot to it; if caught, the charge is rebellion.",
     secenekler: [
       {
-        metin: "Carry the provisions at midnight, take them to the village yourself.",
+        metin: "Carry the grain to the village yourself.",
         basariliSonuc: {
-          mesaj: "The provisions reached the village; the women thanked you in tears, the organization's name started being whispered in the village.",
-          detay: "The people's love sometimes outweighs a sword.",
+          mesaj: "The grain arrived; the women wept in thanks, and the cell's name was whispered.",
+          detay: "The people's love can outweigh a sword.",
         },
         basarisizSonuc: {
-          mesaj: "A patrol caught you; you had to drop the provisions, the whip burned your back.",
+          mesaj: "A patrol caught you; you dropped the grain, and the lash burned your back.",
         },
       },
       {
-        metin: "Hand the task to another comrade, you keep watch.",
+        metin: "Hand the task off; stand lookout.",
         basariliSonuc: {
-          mesaj: "Your lookout work paid off, the provisions arrived without trouble; but someone else got the people's gratitude.",
+          mesaj: "Your watch worked and the grain arrived; another took the thanks.",
         },
         basarisizSonuc: {
-          mesaj: "You were late on lookout and your comrade was nearly caught; he threw you angry looks.",
+          mesaj: "You were late on watch and your comrade nearly got caught; he glared at you.",
         },
       },
       {
-        metin: "Cancel the plan, say it's too risky.",
+        metin: "Cancel the plan; call it too risky.",
         basariliSonuc: {
-          mesaj: "You stopped the plan; the village went hungry but the organization dodged another danger.",
+          mesaj: "You stopped it; the village stayed hungry but the cell dodged danger.",
         },
         basarisizSonuc: {
-          mesaj: "Your decision to cancel angered some comrades; whispers of 'coward' reached your ears.",
+          mesaj: "The cancellation angered some; you heard 'coward' whispers.",
         },
       },
     ],
@@ -969,33 +969,33 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_isyanci_05: {
     baslik: "A Fork in the Road",
     metin:
-      "The organization is splitting in two: one group wants to punish the commanders immediately, with violence; the other argues for patiently organizing the people and forcing change over time. You have to take a side between them.",
+      "The cell splits: one side wants to punish commanders now, violently; the other would patiently organize the people. Pick a side.",
     secenekler: [
       {
-        metin: "Support the violent, fast action.",
+        metin: "Back swift, violent action.",
         basariliSonuc: {
-          mesaj: "Your words emboldened the fast-action camp; the organization is a sharper knife now.",
+          mesaj: "Your words emboldened the hardliners; the cell is sharper now.",
         },
         basarisizSonuc: {
-          mesaj: "The harshness you argued for scared some comrades; a few left the organization.",
+          mesaj: "Your harshness scared some comrades; a few left.",
         },
       },
       {
-        metin: "Support the patient, organizing approach.",
+        metin: "Back the patient, organizing path.",
         basariliSonuc: {
-          mesaj: "Your words convinced the majority; the organization gave up hasty moves and decided to grow patiently.",
+          mesaj: "You swayed the majority; the cell chose patient growth over haste.",
         },
         basarisizSonuc: {
-          mesaj: "Some comrades mistook patience for cowardice; an invisible line formed between you.",
+          mesaj: "Some mistook patience for cowardice; an invisible line formed between you.",
         },
       },
       {
-        metin: "Stay neutral, try to reconcile the two.",
+        metin: "Stay neutral; try to reconcile them.",
         basariliSonuc: {
-          mesaj: "Your conciliatory words worked; both groups listened to you, the organization stood without splitting.",
+          mesaj: "Your mediation worked; both sides listened and the cell held together.",
         },
         basarisizSonuc: {
-          mesaj: "Your efforts to reconcile offended both sides; no one fully trusts you now.",
+          mesaj: "You offended both sides; no one fully trusts you.",
         },
       },
     ],
@@ -1004,34 +1004,34 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_isyanci_06: {
     baslik: "Fallen Into a Sentry's Hands",
     metin:
-      "One of your comrades was found suspicious by a night patrol and arrested. The corridor they're taking him to prison down is narrow and the sentries are few; but a rescue attempt could expose the whole organization.",
+      "A comrade is arrested by the night patrol. The corridor is narrow, guards few; but a rescue could expose the whole cell.",
     secenekler: [
       {
-        metin: "Stage a raid, free him by force.",
+        metin: "Raid and free him by force.",
         basariliSonuc: {
-          mesaj: "The raid worked, you spirited your comrade off into the dark; your hearts are still pounding.",
-          detay: "Some nights show you the price of friendship.",
+          mesaj: "The raid worked; you spirited your comrade into the dark.",
+          detay: "Some nights show friendship's price.",
         },
         basarisizSonuc: {
-          mesaj: "The raid fell apart, two more were caught; the organization took a heavy wound tonight.",
+          mesaj: "The raid fell apart and two more were caught; the cell was badly hurt.",
         },
       },
       {
-        metin: "Stay silent, leave him to his fate.",
+        metin: "Stay silent; leave him to fate.",
         basariliSonuc: {
-          mesaj: "You did nothing; your comrade was taken to interrogation, the organization survived to the next day.",
+          mesaj: "You did nothing; your comrade was taken for questioning, and the cell survived.",
         },
         basarisizSonuc: {
-          mesaj: "Your silence branded you a coward in some comrades' eyes.",
+          mesaj: "Your silence branded you a coward in some eyes.",
         },
       },
       {
-        metin: "Try to persuade the sentry with a bribe.",
+        metin: "Bribe the guard.",
         basariliSonuc: {
-          mesaj: "The sentry pocketed the gold and closed his eyes; your comrade slipped away down the corridor.",
+          mesaj: "The guard took the gold and looked away; your comrade slipped out.",
         },
         basarisizSonuc: {
-          mesaj: "The sentry took the gold but didn't keep his word, and reported it to his superiors on top of that.",
+          mesaj: "The guard took the gold, broke his word, and told his superiors.",
         },
       },
     ],
@@ -1040,36 +1040,36 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_isyanci_07: {
     baslik: "The Iron Room",
     metin:
-      "On an informer's denunciation you're taken for interrogation. In the cold stone room the interrogation officer wants to learn who the organization is, who's in it; every silence of yours has a price.",
+      "Denounced by an informer, you are questioned in a cold stone room. The officer demands the cell's names; every silence has a price.",
     secenekler: [
       {
-        metin: "Grit your teeth, give no names.",
+        metin: "Grit your teeth; name no one.",
         basariliSonuc: {
-          mesaj: "You didn't say a word; in the end they let you go, but your body didn't heal for weeks.",
-          detay: "Your silence was stronger than any word you could have said.",
+          mesaj: "You said nothing; they freed you, but you healed for weeks.",
+          detay: "Silence was stronger than any word.",
         },
         basarisizSonuc: {
-          mesaj: "You couldn't hold on and fainted; you don't remember what you said, only that you woke in a cell.",
-          detay: "You'll never fully learn what you said while unconscious.",
+          mesaj: "You blacked out; you recall nothing and woke in a cell.",
+          detay: "You'll never know what you said.",
         },
       },
       {
-        metin: "Give a small, unimportant name, protect the real organization.",
+        metin: "Give a minor name; protect the cell.",
         basariliSonuc: {
-          mesaj: "The false name you gave worked; the interrogators were satisfied, the organization stayed safe once more.",
-          detay: "You got out but you'll always remember whose name you sacrificed.",
+          mesaj: "The false name worked; the interrogators were satisfied and the cell stayed safe.",
+          detay: "You'll always remember whose name you sacrificed.",
         },
         basarisizSonuc: {
-          mesaj: "The name you gave turned out to be a real comrade; they arrested him because of you.",
+          mesaj: "The name belonged to a real comrade; he was arrested because of you.",
         },
       },
       {
-        metin: "Try to escape, seize the gap between interrogations.",
+        metin: "Try to escape during a lull.",
         basariliSonuc: {
-          mesaj: "You seized a sentry's momentary lapse and melted into the dark.",
+          mesaj: "You exploited a guard's lapse and melted into the dark.",
         },
         basarisizSonuc: {
-          mesaj: "Your escape attempt was noticed at the first step; the chains are tighter this time.",
+          mesaj: "Your escape was spotted at once; the chains are tighter.",
         },
       },
     ],
@@ -1078,34 +1078,34 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_isyanci_08: {
     baslik: "An Organization Left Without a Head",
     metin:
-      "The man who founded the organization was badly wounded and had to go into hiding; no one dares take his place. Your comrades' eyes turn to you — maybe it's your turn.",
+      "The cell's founder is badly wounded and hiding; no one dares replace him. Comrades look to you; perhaps it's your turn.",
     secenekler: [
       {
-        metin: "Take on the leadership, rally the organization.",
+        metin: "Take the lead; rally the cell.",
         basariliSonuc: {
-          mesaj: "Your comrades accepted you as leader; the organization went on without falling apart.",
-          detay: "Every decision of yours affects many lives now.",
+          mesaj: "Comrades accepted you as leader; the cell carried on.",
+          detay: "Every decision now affects many lives.",
         },
         basarisizSonuc: {
-          mesaj: "Your leadership caused disputes, some comrades broke away.",
+          mesaj: "Your leadership caused disputes; some broke away.",
         },
       },
       {
-        metin: "Stay back, support another experienced comrade.",
+        metin: "Step back; back an experienced comrade.",
         basariliSonuc: {
-          mesaj: "The comrade you supported took the leadership, the organization went on unshaken.",
+          mesaj: "Your candidate took over and the cell carried on steady.",
         },
         basarisizSonuc: {
-          mesaj: "The man you supported wasn't ready for leadership; the organization drifted in indecision for weeks.",
+          mesaj: "He wasn't ready; the cell drifted indecisive for weeks.",
         },
       },
       {
-        metin: "Break the organization into small, independent cells, give up the single center.",
+        metin: "Split the cell into independent cells.",
         basariliSonuc: {
-          mesaj: "Splitting into cells worked; even if one cell is caught, the others stay safe.",
+          mesaj: "The split worked; if one cell falls, the rest stay safe.",
         },
         basarisizSonuc: {
-          mesaj: "The split caused confusion; some cells didn't even recognize each other anymore.",
+          mesaj: "The split caused confusion; some cells lost contact with each other.",
         },
       },
     ],
@@ -1114,25 +1114,25 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_isyanci_09: {
     baslik: "An Encounter",
     metin:
-      "{dost}, someone you once slept in the same tent with, is now a corporal who has risen among the loyal soldiers. Your eyes meet in the barracks courtyard; in his look there's both the old friendship and a deep suspicion.",
+      "{dost}, who once shared your tent, is now a loyalist corporal. Your eyes meet in the yard; his gaze holds friendship and suspicion.",
     secenekler: [
       {
-        metin: "Talk to him, open up trusting the old friendship.",
+        metin: "Talk to him; open up, trusting the friendship.",
         basariliSonuc: {
-          mesaj: "{dost} listened to you, remembered the old days; he swore he'd say nothing to anyone.",
+          mesaj: "{dost} listened, recalled old days, and swore to tell no one.",
         },
         basarisizSonuc: {
-          mesaj: "After hearing you out, {dost} walked away in silence; the next day your superiors summoned you.",
-          detay: "Some friendships are crushed under the weight of loyalty.",
+          mesaj: "{dost} listened, left quietly; next day your superiors summoned you.",
+          detay: "Some friendships are crushed under loyalty.",
         },
       },
       {
-        metin: "Act distant, give nothing away.",
+        metin: "Keep distance; show nothing.",
         basariliSonuc: {
-          mesaj: "You passed with a cold greeting; {dost} seemed to sense something but didn't dwell on it.",
+          mesaj: "You passed with a cold greeting; {dost} sensed something but let it go.",
         },
         basarisizSonuc: {
-          mesaj: "Your distance was too obvious; {dost} suspects you now.",
+          mesaj: "Your distance was obvious; {dost} now suspects you.",
         },
       },
     ],
@@ -1141,33 +1141,33 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_isyanci_10: {
     baslik: "Contraband Swords",
     metin:
-      "A weapons merchant you know outside the barracks whispers he could secretly sell the organization cheap swords and shields — for an extra fee, of course, and an oath of silence.",
+      "An arms dealer outside the barracks whispers he can secretly sell the cell cheap swords and shields, for an extra fee and an oath of silence.",
     secenekler: [
       {
-        metin: "Make a large purchase from the organization's common purse.",
+        metin: "Make a large purchase from the common purse.",
         basariliSonuc: {
-          mesaj: "The weapons were delivered secretly at midnight; the organization has the means to defend itself now.",
+          mesaj: "The arms came in secretly at midnight; the cell can now defend itself.",
         },
         basarisizSonuc: {
-          mesaj: "During the delivery a sentry nearly saw you; you had to abandon half the weapons.",
+          mesaj: "A sentry nearly spotted you; you had to abandon half the arms.",
         },
       },
       {
-        metin: "Buy a small, inconspicuous quantity.",
+        metin: "Buy a small, unnoticeable amount.",
         basariliSonuc: {
-          mesaj: "The small batch came without trouble; inadequate but at least a start.",
+          mesaj: "The small lot arrived safely; too little, but a start.",
         },
         basarisizSonuc: {
-          mesaj: "The merchant took the money but most of the goods were poor quality; you realized you'd been cheated.",
+          mesaj: "The dealer took the money, the goods were poor; you were cheated.",
         },
       },
       {
-        metin: "Refuse the offer, don't trust the merchant.",
+        metin: "Decline; don't trust the dealer.",
         basariliSonuc: {
-          mesaj: "You turned the offer down; the merchant shrugged and left, the organization a little more unarmed but safe.",
+          mesaj: "You declined; the cell stays unarmed but safe.",
         },
         basarisizSonuc: {
-          mesaj: "Your refusal disappointed some comrades; they grumbled 'we missed the chance'.",
+          mesaj: "Your refusal let some down; they muttered 'we missed our chance'.",
         },
       },
     ],
@@ -1176,25 +1176,25 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_isyanci_11: {
     baslik: "Words on the Wall",
     metin:
-      "The organization wants the people to hear the truth too: you have the idea of hanging a text on the market square wall telling of the commanders' arbitrary punishments. Risky but the most direct way to win the people's support.",
+      "The cell wants the people to know the truth: posting a notice on the market wall about the commanders' arbitrary punishments is risky but direct.",
     secenekler: [
       {
         metin: "Hang the text yourself before dawn.",
         basariliSonuc: {
-          mesaj: "In the morning you saw people gathered around the text in the market square; your words reached beyond the barracks for the first time.",
-          detay: "Some words reach farther than a sword.",
+          mesaj: "At dawn you saw people gathered around it; your words reached beyond the barracks.",
+          detay: "Words travel farther than swords.",
         },
         basarisizSonuc: {
-          mesaj: "The sentries caught you hanging the text; the blows you took while fleeing didn't heal for days.",
+          mesaj: "Guards caught you posting it; the blows you took fleeing lasted days.",
         },
       },
       {
-        metin: "Have a trusted peasant do the job.",
+        metin: "Have a trusted villager post it.",
         basariliSonuc: {
-          mesaj: "The peasant hung the text, no one suspected; the words reached the people anyway.",
+          mesaj: "The villager posted it unsuspected; the words reached the people.",
         },
         basarisizSonuc: {
-          mesaj: "The peasant was caught, he never gave your name but you put him in that danger.",
+          mesaj: "The villager was caught and named no one, but you put him in danger.",
         },
       },
     ],
@@ -1203,33 +1203,33 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_isyanci_12: {
     baslik: "A Drunk Mouth",
     metin:
-      "In a tavern, a young soldier from the organization drank too much and is letting the organization's name slip. You don't know who the man at the next table is — an ordinary drunk, or an agent?",
+      "In a tavern a young cell member drinks too much and lets the cell's name slip. Who is the man at the next table, drunk or agent?",
     secenekler: [
       {
-        metin: "Quietly get the young soldier outside, cover it up.",
+        metin: "Quietly lead the lad outside.",
         basariliSonuc: {
-          mesaj: "You got the soldier out, the noise in the tavern seemed to have drowned the talk.",
+          mesaj: "You got him out; the tavern din drowned the talk.",
         },
         basarisizSonuc: {
-          mesaj: "Your exit drew attention; the stranger watched you leave, sizing you up.",
+          mesaj: "Your exit drew notice; the stranger watched you closely.",
         },
       },
       {
-        metin: "Follow the stranger, find out who he is.",
+        metin: "Follow the stranger; learn who he is.",
         basariliSonuc: {
-          mesaj: "You learned the man was an ordinary peddler; you felt a bit relieved.",
+          mesaj: "He was just a peddler; you felt relieved.",
         },
         basarisizSonuc: {
-          mesaj: "Your tailing was noticed; the man concealed his identity and disappeared, and you drew even more attention.",
+          mesaj: "He noticed; the man vanished, and you drew more attention.",
         },
       },
       {
-        metin: "Cut the young soldier off from the organization entirely, never trust him again.",
+        metin: "Cut the young man off from the cell.",
         basariliSonuc: {
-          mesaj: "You cut the young man off from the organization; he left sad but the organization took one more precaution.",
+          mesaj: "He left sadly, but the cell took one more precaution.",
         },
         basarisizSonuc: {
-          mesaj: "The young man, angered at being shunned, made threatening remarks; now you fear him too.",
+          mesaj: "Enraged at the exclusion, he made threats; now you fear him too.",
         },
       },
     ],
@@ -1238,26 +1238,26 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_isyanci_13: {
     baslik: "Confession",
     metin:
-      "The barracks priest watches you carefully during confession; among his words you sense a subtle hint asking where you go at night. You don't know the priest's intent — will he report you, or is he as angry at injustice as you?",
+      "The barracks priest eyes you at confession, hinting at your night trips. Will he inform, or does he hate injustice too?",
     secenekler: [
       {
-        metin: "Open up to him partly, try to feel out his side.",
+        metin: "Open up partly; probe his side.",
         basariliSonuc: {
-          mesaj: "The priest whispered that he shared your anger; the church now offers the organization a secret refuge.",
-          detay: "Some allies wear unexpected robes.",
+          mesaj: "The priest whispered he shares your anger; the church offers the cell a hideout.",
+          detay: "Some allies wear robes.",
         },
         basarisizSonuc: {
-          mesaj: "The priest reported your opening to his superiors; they watch your every step now.",
-          detay: "Someone whose conscience you trusted gave you away.",
+          mesaj: "The priest reported you; your steps are watched.",
+          detay: "Someone you trusted betrayed you.",
         },
       },
       {
-        metin: "Say nothing, pass over your sins in general terms.",
+        metin: "Say nothing; confess generally.",
         basariliSonuc: {
-          mesaj: "It was an ordinary confession; you left before the priest could learn anything.",
+          mesaj: "An ordinary confession; the priest learned nothing.",
         },
         basarisizSonuc: {
-          mesaj: "The priest grew suspicious of your silence; he became uneasy around you.",
+          mesaj: "The priest suspected your silence and grew wary.",
         },
       },
     ],
@@ -1266,25 +1266,25 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_isyanci_14: {
     baslik: "An Ambush in the Dark",
     metin:
-      "The organization plans to seize one of the commanders who most oppresses the people at midnight and try him by its own justice. A bloody revenge, or a mistake that puts the organization in far greater danger — you can't tell.",
+      "The cell plans to seize one of the cruelest commanders at night and judge him. Righteous vengeance or grave mistake, you can't tell.",
     secenekler: [
       {
-        metin: "Join the plan, take part in the attempt to seize the commander.",
+        metin: "Join the plan; take part in the abduction.",
         basariliSonuc: {
-          mesaj: "The commander was quietly taken from the barracks and his crimes read before the people; this time it was the superiors who felt the fear.",
+          mesaj: "The commander was taken and tried before the people; this time officers felt fear.",
           detay: "Justice sometimes waits for night.",
         },
         basarisizSonuc: {
-          mesaj: "The plan fell apart, the guards came at you; those who could ran, and there's little hope for those left behind.",
+          mesaj: "The plan collapsed, guards swarmed; little hope for those left behind.",
         },
       },
       {
-        metin: "Try to stop the plan, argue it's too risky.",
+        metin: "Argue it's too risky; try to stop it.",
         basariliSonuc: {
-          mesaj: "Your words convinced the majority, the plan was postponed; still, some accused you of a lack of courage.",
+          mesaj: "The majority agreed and the plan was postponed; some still called you a coward.",
         },
         basarisizSonuc: {
-          mesaj: "They didn't listen to you, the plan went ahead without your approval; you were held responsible for the outcome too.",
+          mesaj: "They ignored you and went ahead; you were blamed for the outcome too.",
         },
       },
     ],
@@ -1293,25 +1293,25 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_isyanci_15: {
     baslik: "Sleepless Nights",
     metin:
-      "In recent weeks you jump at every shadow, you seem to hear your own name in every whisper. You struggle to meet even your comrades' eyes; your paranoia is taking your sleep now.",
+      "These weeks you flinch at every shadow and hear your name in every whisper. You can't meet comrades' eyes; paranoia steals your sleep.",
     secenekler: [
       {
-        metin: "Open up to a trusted comrade, share the burden.",
+        metin: "Confide in a trusted comrade.",
         basariliSonuc: {
-          mesaj: "Your comrade listened, reminded you that you weren't alone; the weight on your shoulders eased a little.",
+          mesaj: "Your comrade listened and reminded you you're not alone; the burden eased.",
         },
         basarisizSonuc: {
-          mesaj: "The comrade you opened up to admitted he was as scared as you; you both left even more on edge.",
+          mesaj: "He admitted he was scared too; you both left more uneasy.",
         },
       },
       {
-        metin: "Grit your teeth, give nothing away, carry it alone.",
+        metin: "Grit your teeth; bear it alone.",
         basariliSonuc: {
-          mesaj: "You gave nothing away; the organization stayed safe but the darkness inside you grew.",
-          detay: "Some burdens are carried without ever being shared.",
+          mesaj: "You showed nothing; the cell is safe but your inner darkness grew.",
+          detay: "Some burdens are carried unshared.",
         },
         basarisizSonuc: {
-          mesaj: "One night on watch your hand trembled, your superiors noticed; they started asking 'are you ill?'",
+          mesaj: "Your hand shook on watch and superiors noticed; they asked 'are you ill?'",
         },
       },
     ],
@@ -1320,34 +1320,34 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_isyanci_16: {
     baslik: "The Lost List",
     metin:
-      "You learn that the command has drawn up a secret list of names of those being watched on suspicion of mutiny — if you get to it you can learn who's in danger and warn them. But getting close could mean getting your own name written on it.",
+      "Command keeps a secret list of suspected rebels; reach it and you can warn them. But approaching may put your name on it.",
     secenekler: [
       {
-        metin: "Sneak into the command tent, steal the list.",
+        metin: "Sneak into the tent; steal the list.",
         basariliSonuc: {
-          mesaj: "You got the list; you warned everyone named in time, the organization was saved from a great blow.",
-          detay: "Sometimes a scrap of paper means a dozen lives.",
+          mesaj: "You took the list and warned everyone in time; the cell escaped a great blow.",
+          detay: "A scrap of paper can be a dozen lives.",
         },
         basarisizSonuc: {
-          mesaj: "You were caught leaving the tent; you're the top name on the list now.",
+          mesaj: "Caught leaving; you are now the top name on the list.",
         },
       },
       {
-        metin: "Get a clerk in the tent talking with a bribe.",
+        metin: "Bribe the clerk in the tent.",
         basariliSonuc: {
-          mesaj: "The clerk whispered a few names; at least you could warn those in most danger.",
+          mesaj: "The clerk whispered some names; you warned those most at risk.",
         },
         basarisizSonuc: {
-          mesaj: "The clerk took the money but what he said was a lie; you warned the wrong names and lost time.",
+          mesaj: "The clerk took the money and lied; you warned the wrong names and lost time.",
         },
       },
       {
-        metin: "Ignore the list, let fate bring what it will.",
+        metin: "Ignore the list; let fate decide.",
         basariliSonuc: {
-          mesaj: "You did nothing; a few weeks later two names on the list were arrested, you were left untouched.",
+          mesaj: "You did nothing; weeks later two names were arrested, and you were spared.",
         },
         basarisizSonuc: {
-          mesaj: "Your passivity got out; some comrades no longer see you as part of the organization.",
+          mesaj: "Your passivity got out; some no longer count you in the cell.",
         },
       },
     ],
@@ -1356,25 +1356,25 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_isyanci_17: {
     baslik: "A Poisoned Promotion",
     metin:
-      "{amir} says he's thinking of promoting you to Commander — but this means a post that will tear you from the organization and make you a full 'man of the order'. The organization, though, wants you to use this chance as an ear on the inside.",
+      "{amir} wants to promote you to Command, which would cut you from the cell. The cell wants you as an inside ear.",
     secenekler: [
       {
-        metin: "Accept the promotion, become the organization's secret eye.",
+        metin: "Accept; become the cell's hidden eye.",
         basariliSonuc: {
-          mesaj: "The promotion was accepted; you live in two worlds now, but thanks to you the organization is a step ahead.",
-          detay: "Power sometimes takes the most dangerous disguise.",
+          mesaj: "You were promoted; you live in two worlds, but the cell is a step ahead thanks to you.",
+          detay: "Power wears dangerous disguises.",
         },
         basarisizSonuc: {
-          mesaj: "Your promotion came but the information you leaked was noticed before long; your comrades don't look at you the way they used to.",
+          mesaj: "Promoted, but your leak was noticed; comrades look at you differently now.",
         },
       },
       {
-        metin: "Politely refuse the promotion, stay with the organization.",
+        metin: "Politely decline; stay with the cell.",
         basariliSonuc: {
-          mesaj: "Your refusal surprised {amir} but he didn't push; deep down you were relieved, your place in the organization stayed solid.",
+          mesaj: "Your refusal surprised {amir}, who didn't push; your place in the cell holds.",
         },
         basarisizSonuc: {
-          mesaj: "Your refusal raised questions of 'why does he want to stay an ordinary private'; you're watched more closely now.",
+          mesaj: "Your refusal raised 'why stay a private?'; you're watched more closely.",
         },
       },
     ],
@@ -1383,35 +1383,35 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_isyanci_18: {
     baslik: "The Night of the Uprising",
     metin:
-      "After months of preparation the organization moves: an uprising begins to seize the barracks armory and topple the unjust commanders. Tonight either the change awaited comes, or the organization is silenced forever.",
+      "After months of preparation the cell strikes: an uprising to seize the armory and topple the commanders. Tonight, change or silence.",
     secenekler: [
       {
-        metin: "Take the front ranks, lead the uprising.",
+        metin: "Lead the uprising from the front.",
         basariliSonuc: {
-          mesaj: "The armory was seized, the unjust commanders stripped of their ranks; your name is a word of hope in the barracks now.",
-          detay: "This night will be told even years from now.",
+          mesaj: "The armory fell and the commanders were toppled; in the barracks your name means hope.",
+          detay: "This night will be told for years.",
         },
         basarisizSonuc: {
-          mesaj: "The uprising was crushed; many of your comrades either died or were chained, and you survived by a miracle.",
+          mesaj: "The uprising was crushed; comrades died or were chained, and you barely escaped.",
           detay: "Some nights are never forgotten.",
         },
       },
       {
-        metin: "Stay back, provide only support and communication.",
+        metin: "Stay back; provide support and messaging.",
         basariliSonuc: {
-          mesaj: "The information you gave made the front group's job easier; the uprising succeeded, you stayed in the shadows.",
+          mesaj: "Your intel helped the vanguard; the uprising succeeded, and you stayed unseen.",
         },
         basarisizSonuc: {
-          mesaj: "As the uprising was crushed you had to flee too; you survived but had to watch the organization's collapse from a distance.",
+          mesaj: "You fled as it was crushed; alive, but you watched the cell collapse from afar.",
         },
       },
       {
-        metin: "Pull back at the last moment, think the plan is too early.",
+        metin: "Withdraw at the last moment; it's too early.",
         basariliSonuc: {
-          mesaj: "You pulled back; the uprising went on without you and was crushed in blood, your survival weighed on you like guilt.",
+          mesaj: "You withdrew; the uprising was bloodily crushed without you, and survival became guilt.",
         },
         basarisizSonuc: {
-          mesaj: "Your pulling back was noticed; in the eyes of the surviving comrades you were a traitor now.",
+          mesaj: "Your withdrawal was noticed; to surviving comrades you are a traitor.",
         },
       },
     ],
@@ -1420,35 +1420,35 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_isyanci_19: {
     baslik: "The Escape Tunnel",
     metin:
-      "After the uprising the barracks hunt you like hounds. You know an old smuggler's tunnel that runs underground; but the tunnel may have collapsed and you don't know who waits at the exit.",
+      "After the uprising the barracks hunts you like hounds. You know an old smugglers' tunnel; it may have collapsed, and who waits outside is unknown.",
     secenekler: [
       {
-        metin: "Try the tunnel, escape whatever it takes.",
+        metin: "Try the tunnel; flee whatever happens.",
         basariliSonuc: {
-          mesaj: "You slipped under the fence and dove into the dark, swallowing the earth's breath; you came out into freedom with everything you left behind.",
-          detay: "Freedom feels heavy even at the first breath.",
+          mesaj: "You crawled through the tunnel and emerged free, leaving everything behind.",
+          detay: "Freedom is sometimes just escape.",
         },
         basarisizSonuc: {
-          mesaj: "The tunnel collapsed halfway; when you struggled out from under the rubble the guards had surrounded you.",
+          mesaj: "The tunnel collapsed halfway; when you dug out, guards surrounded you.",
         },
       },
       {
-        metin: "Blend into the city and hide by concealing your identity.",
+        metin: "Melt into the city; hide your identity.",
         basariliSonuc: {
-          mesaj: "You lived for months like an ordinary craftsman; those looking for you finally forgot you, but nothing was left of your old life.",
+          mesaj: "You lived as a craftsman for months; the hunters forgot you, your old life gone.",
         },
         basarisizSonuc: {
-          mesaj: "A neighbor grew suspicious and reported you; you were caught just as you tried to flee.",
+          mesaj: "A neighbor grew suspicious and informed; you gave yourself away fleeing.",
         },
       },
       {
-        metin: "Surrender, at least beg mercy for your comrades.",
+        metin: "Surrender; beg mercy for your comrades.",
         basariliSonuc: {
-          mesaj: "You surrendered; your words saved some comrades' lives but your own freedom is no longer yours.",
-          detay: "Some victories are won from behind chains.",
+          mesaj: "You surrendered; your plea saved some comrades, but your freedom is gone.",
+          detay: "Some victories come behind chains.",
         },
         basarisizSonuc: {
-          mesaj: "Your submission got no mercy; you were taken back to the interrogation room, harsher this time.",
+          mesaj: "Surrender earned no mercy; back to the interrogation room, harsher now.",
         },
       },
     ],
@@ -1457,35 +1457,35 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_isyanci_20: {
     baslik: "A New Dawn",
     metin:
-      "After years of struggle the organization has reached a turning point: the command had to accept a new regulation lightening the punishments. But this victory is fragile; one wrong step could return everything to the old darkness.",
+      "After years of struggle, command accepted a rule easing punishments. The win is fragile; one misstep could undo it all.",
     secenekler: [
       {
-        metin: "Protect the gain, quietly disband the organization, let no one suspect.",
+        metin: "Protect the gain; quietly disband the cell.",
         basariliSonuc: {
-          mesaj: "The organization quietly disbanded; the injustice eased a little, no one ever learned the names behind it.",
+          mesaj: "The cell dissolved quietly; injustice eased, and no one learned the names.",
           detay: "Some victories are won without applause.",
         },
         basarisizSonuc: {
-          mesaj: "Some secrets leaked during the disbanding; the gain held but a few comrades' names are still on the suspect list.",
+          mesaj: "Secrets leaked during the breakup; the gain stayed, but some comrades remain suspects.",
         },
       },
       {
-        metin: "Announce the gain, tell the people the organization's name and cause.",
+        metin: "Proclaim the victory; tell the people.",
         basariliSonuc: {
-          mesaj: "The people learned the story of those who resisted injustice; your name is spoken outside the barracks now.",
-          detay: "Some names live longer than chains.",
+          mesaj: "The people learned the resisters' story; your name is known beyond the barracks.",
+          detay: "Some names outlive chains.",
         },
         basarisizSonuc: {
-          mesaj: "Your announcement drew the command's wrath; you barely escaped arrest, the organization had to withdraw into the shadows again.",
+          mesaj: "The proclamation enraged command; you barely dodged arrest, and the cell hid.",
         },
       },
       {
-        metin: "Keep fighting, don't count this small victory as enough.",
+        metin: "Keep fighting; don't settle.",
         basariliSonuc: {
-          mesaj: "The organization set new goals; the small victory became just the first step of a bigger struggle.",
+          mesaj: "The cell set new goals; the win was only the first step of a bigger fight.",
         },
         basarisizSonuc: {
-          mesaj: "Excessive ambition wore out the organization, some comrades left saying 'enough already'; even the victory won was overshadowed.",
+          mesaj: "Excess ambition wore the cell down; some said 'enough' and left, dimming the win.",
         },
       },
     ],
@@ -1494,28 +1494,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_kahraman_01: {
     baslik: "The Birth of a Legend",
     metin:
-      "When the unit you saved from the ambush returned to the barracks, a new title had been added before your name: hero. Your comrades exaggerate the story endlessly, and you still don't fully know why you dove into the enemy line.",
+      "The unit you saved returned with 'hero' attached to your name. Comrades exaggerate; you still don't know why you charged.",
     secenekler: [
       {
-        metin: "Correct what's being told, describe what happened as it was.",
+        metin: "Correct the tale; tell what happened.",
         basariliSonuc: {
-          mesaj: "You told the truth; no one embellished the story as much anymore but they trusted you more.",
-          detay: "Some heroism needs not exaggeration but honesty.",
+          mesaj: "You told the truth; the tale lost its gloss but they trust you more.",
+          detay: "Some heroism needs honesty, not exaggeration.",
         },
         basarisizSonuc: {
-          mesaj: "No one believed you; the real story fell flat beside the invented one.",
-          detay: "Sometimes the truth is less loved than the interesting thing.",
+          mesaj: "No one believed you; the truth paled beside the legend.",
+          detay: "The true is loved less than the interesting.",
         },
       },
       {
-        metin: "Let the story grow, stay silent.",
+        metin: "Let the tale grow; stay silent.",
         basariliSonuc: {
-          mesaj: "The legend grew on its own, you just watched.",
-          detay: "The story everyone loves was a little different from the one you lived.",
+          mesaj: "The legend grew on its own; you just watched.",
+          detay: "The beloved story differed from what you lived.",
         },
         basarisizSonuc: {
-          mesaj: "The exaggerated story shrank you in some comrades' eyes; they whispered 'how much of it is real'.",
-          detay: "The shadow of fame sometimes falls on your own comrades.",
+          mesaj: "The exaggeration shrank you in some eyes; they whispered 'how much is true?'",
+          detay: "Fame's shadow falls on comrades too.",
         },
       },
     ],
@@ -1524,39 +1524,39 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_kahraman_02: {
     baslik: "Barracks Ballads",
     metin:
-      "A wandering bard stopped by the barracks and made a ballad of your escape from the ambush. Now the soldiers hum that ballad even at meals, and your name reaches the villages before you do.",
+      "A wandering bard turned your ambush escape into a song. Soldiers hum it even at meals; your name reaches villages before you.",
     secenekler: [
       {
-        metin: "Host the bard, let him spread the ballad further.",
+        metin: "Host the bard; let the song spread.",
         basariliSonuc: {
-          mesaj: "The ballad was sung in inns and markets; your name isn't yours anymore, it belongs to the people.",
-          detay: "This made you proud, but part of you was uneasy — everything you do now will be compared to that ballad.",
+          mesaj: "The song is sung in inns and markets; your name now belongs to the people.",
+          detay: "Proud, yet you'll always be compared to the song.",
         },
         basarisizSonuc: {
-          mesaj: "The bard took the money but twisted the ballad to his own advantage; there are things in your story you never did now.",
-          detay: "Once a legend leaves the mouth it escapes its owner's hands.",
+          mesaj: "The bard took the coin and twisted the song; it holds deeds you never did.",
+          detay: "A legend, once spoken, escapes its owner.",
         },
       },
       {
-        metin: "Send the bard off, protect your privacy.",
+        metin: "Drive the bard off; keep your privacy.",
         basariliSonuc: {
-          mesaj: "The bard left the barracks, you got some peace for a while.",
-          detay: "Being a name everyone knows is tiring sometimes.",
+          mesaj: "The bard left; you found peace for a while.",
+          detay: "Being known by all is tiring.",
         },
         basarisizSonuc: {
-          mesaj: "The bard left but he'd already learned the ballad; even sending him off turned into a story of its own.",
-          detay: "Fleeing fame is sometimes no different from growing it.",
+          mesaj: "The bard left, song learned; his expulsion became a tale too.",
+          detay: "Fleeing fame can feed it.",
         },
       },
       {
-        metin: "Don't care, mind your own business.",
+        metin: "Ignore it; mind your duty.",
         basariliSonuc: {
-          mesaj: "The ballad spread on its own, you carried on with your watch.",
-          detay: "Not trying to change some things is a choice too.",
+          mesaj: "The song spread on its own while you kept your watch.",
+          detay: "Not interfering is also a choice.",
         },
         basarisizSonuc: {
-          mesaj: "Even your indifference was read as 'the humble hero'; your fame grows without you.",
-          detay: "Sometimes staying silent is the loudest answer.",
+          mesaj: "Your indifference read as 'humble hero'; your fame keeps growing.",
+          detay: "Silence can be the loudest answer.",
         },
       },
     ],
@@ -1565,39 +1565,39 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_kahraman_03: {
     baslik: "Jealous Eyes",
     metin:
-      "An officer senior to you started saying that the person who saved the unit wasn't you but his own strategy. The soldiers are confused about whose word to believe.",
+      "A senior officer claims his strategy, not you, saved the unit. The soldiers don't know whom to believe.",
     secenekler: [
       {
-        metin: "Confront him openly, say the truth in front of everyone.",
+        metin: "Confront him openly; tell everyone the truth.",
         basariliSonuc: {
-          mesaj: "The truth came out, the soldiers took your side.",
-          detay: "But the hatred in the officer's eyes isn't hidden anymore.",
+          mesaj: "The truth emerged; the soldiers sided with you.",
+          detay: "But the officer's hatred is no longer hidden.",
         },
         basarisizSonuc: {
-          mesaj: "The confrontation got ugly, your superiors scolded you both.",
-          detay: "Nothing was gained, only an enemy grew.",
+          mesaj: "The confrontation turned ugly; superiors scolded you both.",
+          detay: "No gain, only a bigger enemy.",
         },
       },
       {
-        metin: "Stay silent, trust that time will show the truth.",
+        metin: "Stay silent; trust time to show the truth.",
         basariliSonuc: {
-          mesaj: "Your silence was seen as maturity, the other soldiers already knew the truth.",
-          detay: "Some battles are won by staying silent.",
+          mesaj: "Your silence was seen as maturity; the soldiers already knew.",
+          detay: "Some battles are won by silence.",
         },
         basarisizSonuc: {
-          mesaj: "Your silence was mistaken for weakness, the officer's lie went around for a while longer.",
-          detay: "When the truth is late, the lie strengthens its position.",
+          mesaj: "Your silence read as weakness; the officer's lie circulated a while.",
+          detay: "Late truth lets a lie settle.",
         },
       },
       {
-        metin: "Complain to {amir}, make it official.",
+        metin: "Complain to {amir}; make it official.",
         basariliSonuc: {
-          mesaj: "{amir} took your side, the officer was humiliated in front of his superiors.",
-          detay: "The justice you won came at the price of a permanent hostility.",
+          mesaj: "{amir} backed you; the officer was humbled before superiors.",
+          detay: "Justice cost a lasting enemy.",
         },
         basarisizSonuc: {
-          mesaj: "{amir} said 'don't quarrel like two children' and punished you both.",
-          detay: "You sought justice, you found only shame.",
+          mesaj: "{amir} said 'stop squabbling like children' and punished you both.",
+          detay: "You sought justice and found shame.",
         },
       },
     ],
@@ -1606,28 +1606,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_kahraman_04: {
     baslik: "A Young Admirer",
     metin:
-      "A sixteen-year-old recruit came up to you with trembling hands just for having seen you. He told you he ran from his village and enlisted to become like you.",
+      "A sixteen-year-old recruit approaches you, hands trembling. He fled his village and enlisted to be like you.",
     secenekler: [
       {
-        metin: "Make time for him, tell him what real war is.",
+        metin: "Tell him what war really is.",
         basariliSonuc: {
-          mesaj: "The light in the boy's eyes dimmed a little but something more solid came in its place: knowing the truth.",
-          detay: "Maybe your greatest heroism was breaking someone's dream to keep him alive.",
+          mesaj: "The light in his eyes dimmed, replaced by knowing the truth.",
+          detay: "Heroism: breaking his dream to keep him alive.",
         },
         basarisizSonuc: {
-          mesaj: "Your words didn't reach him, he still thinks he'll be unbeatable like you.",
-          detay: "Some lessons are learned only by living them.",
+          mesaj: "Your words missed; he still thinks he'll be invincible like you.",
+          detay: "Some lessons are learned by living.",
         },
       },
       {
-        metin: "Pat his head briefly, get back to your work.",
+        metin: "Pat his head; return to work.",
         basariliSonuc: {
-          mesaj: "The boy went off without being disappointed.",
-          detay: "You can't make time for everyone, you know that.",
+          mesaj: "The boy left without disappointment.",
+          detay: "You can't make time for everyone.",
         },
         basarisizSonuc: {
-          mesaj: "The recruit read your indifference as coldness and started keeping his distance from you.",
-          detay: "Some admiration turns to disappointment at the first cold shoulder.",
+          mesaj: "The recruit read it as coldness and began avoiding you.",
+          detay: "Some admiration dies at the first chill.",
         },
       },
     ],
@@ -1636,28 +1636,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_kahraman_05: {
     baslik: "Waking in the Shadows",
     metin:
-      "You woke at midnight drenched in sweat; the screams of your ambushed comrades were still in your ears from the dream. You sat until morning without letting go of your sword.",
+      "You woke at midnight in a sweat, hearing your ambushed comrades scream. You sat with your sword till dawn.",
     secenekler: [
       {
-        metin: "Tell no one, carry it in silence.",
+        metin: "Tell no one; bear it quietly.",
         basariliSonuc: {
-          mesaj: "No one noticed, and you went on living the same battle again every night.",
-          detay: "Some wounds stay hidden under the armor.",
+          mesaj: "No one noticed; you relived the same battle each night.",
+          detay: "Some wounds hide under armor.",
         },
         basarisizSonuc: {
-          mesaj: "The sleeplessness started making your hand tremble, your comrades noticed but you denied it.",
-          detay: "Shadows grow the more they're ignored.",
+          mesaj: "Sleeplessness shook your hand; comrades noticed, and you denied it.",
+          detay: "Shadows grow when ignored.",
         },
       },
       {
-        metin: "Tell an old comrade-in-arms, share the burden.",
+        metin: "Tell an old comrade-in-arms.",
         basariliSonuc: {
           mesaj: "{dost} listened, fixed nothing, but sat beside you.",
-          detay: "Some wounds close not with a sword but with words.",
+          detay: "Some wounds close with words.",
         },
         basarisizSonuc: {
-          mesaj: "What you told unsettled {dost} too; you couldn't comfort each other.",
-          detay: "Some shared burdens don't split in two, they double.",
+          mesaj: "Your story unsettled {dost} too; neither could comfort the other.",
+          detay: "Some burdens double instead of halving.",
         },
       },
     ],
@@ -1666,39 +1666,39 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_kahraman_06: {
     baslik: "The Man-at-Arms Warrant",
     metin:
-      "The commander summoned you to his presence; for the unit you saved from the ambush and the fame that has followed since, he granted you the rank of man-at-arms. The mark you carry on your shoulder now is under everyone's eyes.",
+      "The commander summons you and grants the rank of Swordsman for your ambush deed and fame. The badge on your shoulder draws every eye.",
     secenekler: [
       {
-        metin: "Accept the rank with humility, stay silent at the ceremony.",
+        metin: "Accept humbly; stay silent at the ceremony.",
         basariliSonuc: {
           mesaj: "Your words were few but the soldiers read it as strength.",
-          detay: "Some men are more respected the less they speak.",
+          detay: "Some earn respect by staying silent.",
         },
         basarisizSonuc: {
-          mesaj: "At the ceremony your eyes drifted, some mistook it for arrogance.",
+          mesaj: "You drifted off at the ceremony; some took it for arrogance.",
           detay: "Silence isn't always read right.",
         },
       },
       {
-        metin: "Accept the rank, give a speech at once.",
+        metin: "Accept and give a speech at once.",
         basariliSonuc: {
-          mesaj: "Your words got the soldiers on their feet, but some officers found you too ambitious.",
-          detay: "Applause doesn't always come from everyone.",
+          mesaj: "Your speech raised the soldiers; some officers found you too ambitious.",
+          detay: "Not everyone applauds.",
         },
         basarisizSonuc: {
-          mesaj: "Your words stuck in your throat, the silence stretched embarrassingly.",
-          detay: "Being a hero doesn't guarantee eloquence.",
+          mesaj: "The words stuck in your throat; the silence stretched shamefully.",
+          detay: "Heroism doesn't guarantee eloquence.",
         },
       },
       {
-        metin: "Don't accept the rank, say you owe more to the soldiers first.",
+        metin: "Decline; say you owe the soldiers first.",
         basariliSonuc: {
-          mesaj: "Though the commander was surprised, this stance made you even greater; he declared the rank a joint victory of the unit.",
-          detay: "Sometimes refusing the crown makes you the one who most deserves it.",
+          mesaj: "The commander was surprised, but it raised you; he declared the rank a shared victory.",
+          detay: "Refusing the crown shows you deserve it most.",
         },
         basarisizSonuc: {
-          mesaj: "The commander mistook your stance for disrespect, gave you the rank anyway but coldly.",
-          detay: "Good intentions aren't always understood right.",
+          mesaj: "The commander took it as disrespect; he gave the rank coldly.",
+          detay: "Good intent isn't always understood.",
         },
       },
     ],
@@ -1707,28 +1707,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_kahraman_07: {
     baslik: "At the Head of the Vanguard",
     metin:
-      "As the {bolge} army enters a great battle, the commander entrusted the vanguard to you. The soldiers want to walk not behind you but with you — you can't let that trust down.",
+      "As the {bolge} army enters a great battle, the commander gives you the vanguard. The soldiers want to march with you, not behind you.",
     secenekler: [
       {
-        metin: "Push forward, break the line together.",
+        metin: "Step forward; break the line together.",
         basariliSonuc: {
-          mesaj: "The line broke, the enemy scattered; but three soldiers beside you never rose again.",
-          detay: "As the victory ballads were written you tried not to forget their names.",
+          mesaj: "The line broke and the enemy scattered; three beside you never rose again.",
+          detay: "While victory songs were written, you kept their names.",
         },
         basarisizSonuc: {
-          mesaj: "The line didn't hold, you gave the order to retreat; some heard it from you for the first time.",
-          detay: "Being a hero doesn't mean winning every battle.",
+          mesaj: "The line failed and you ordered retreat; they'd never heard that from you.",
+          detay: "Heroism isn't winning every battle.",
         },
       },
       {
-        metin: "Advance cautiously, send scouts first.",
+        metin: "Advance carefully; send scouts first.",
         basariliSonuc: {
-          mesaj: "You advanced with few losses, the victory wasn't brilliant but it was solid.",
-          detay: "Calculated courage is a courage without display but real.",
+          mesaj: "You advanced with few losses; the win was dull but solid.",
+          detay: "Calculated courage is plain but real.",
         },
         basarisizSonuc: {
-          mesaj: "Your caution looked like a missed chance, some soldiers grumbled 'where's the old hero'.",
-          detay: "Some will always expect the same recklessness from you.",
+          mesaj: "Caution seemed to waste the chance; some muttered 'where's the old hero?'",
+          detay: "Some will always expect the same recklessness.",
         },
       },
     ],
@@ -1737,39 +1737,39 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_kahraman_08: {
     baslik: "A Challenge",
     metin:
-      "A knight who made himself out to be a giant stepped from the enemy ranks and offered to fight you alone instead of the armies. Both sides held their breath, because this is now not your battle but everyone's on the line.",
+      "A giant knight from the enemy ranks offers to fight you alone instead of the armies. Both sides hold their breath.",
     secenekler: [
       {
         metin: "Accept the challenge.",
         basariliSonuc: {
-          mesaj: "The duel was short; when the knight fell to his knees your own army roared your name.",
-          detay: "Even in the enemy ranks a few nodded their heads.",
+          mesaj: "The duel was short; as the knight fell, your army shouted your name.",
+          detay: "Even some in the enemy ranks nodded.",
         },
         basarisizSonuc: {
-          mesaj: "The knight's blow laid you flat, you barely saved your life with your shield.",
-          detay: "News of the defeat spread faster than you.",
+          mesaj: "The knight's blow felled you; your shield barely saved you.",
+          detay: "News of defeat outran you.",
         },
       },
       {
-        metin: "Refuse, say it could be a trap.",
+        metin: "Refuse; say it may be a trap.",
         basariliSonuc: {
-          mesaj: "The commander backed your decision, the battle went on its normal course.",
-          detay: "You don't have to accept every challenge.",
+          mesaj: "The commander backed your decision; the battle ran its course.",
+          detay: "You needn't accept every challenge.",
         },
         basarisizSonuc: {
-          mesaj: "Whispers of 'the hero got scared' started among the soldiers, and no matter how you explained it wouldn't die.",
-          detay: "A legend, once made, doesn't forgive a step back.",
+          mesaj: "Whispers of 'the hero was afraid' began and wouldn't die.",
+          detay: "A legend forgives no step back.",
         },
       },
       {
-        metin: "Propose a young soldier in your place, give him a chance.",
+        metin: "Propose a young soldier in your place.",
         basariliSonuc: {
-          mesaj: "The young soldier won with an unexpected courage, and you stood proudly behind him.",
-          detay: "Sometimes the greatest heroism is giving the stage to someone else.",
+          mesaj: "The young soldier won with unexpected courage; you stood proudly behind him.",
+          detay: "Sometimes heroism is yielding the stage.",
         },
         basarisizSonuc: {
-          mesaj: "The young soldier didn't come back from the duel; some questioned your decision, you most of all.",
-          detay: "You could have gone in his place, and the thought won't leave you.",
+          mesaj: "The young soldier didn't return; some questioned your choice, you most of all.",
+          detay: "You could have gone in his place.",
         },
       },
     ],
@@ -1778,28 +1778,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_kahraman_09: {
     baslik: "A Needless Risk",
     metin:
-      "To save a besieged tower you're thinking of climbing the walls alone though there's no need; you feel like everyone expects it of you, even though there's a safer way too.",
+      "You consider climbing the walls alone to relieve a besieged tower; everyone expects it, yet a safer way exists.",
     secenekler: [
       {
-        metin: "Climb the walls alone, confirm your image.",
+        metin: "Climb alone; live up to your image.",
         basariliSonuc: {
-          mesaj: "You reached the walls, opened the gate from inside; while the unit cheered you, you just gave thanks you were still standing.",
-          detay: "You told no one but you know you won't be this lucky again.",
+          mesaj: "You opened the gate from inside; the unit cheered, and you thanked luck you stood.",
+          detay: "You know you won't be this lucky again.",
         },
         basarisizSonuc: {
-          mesaj: "During the climb an arrow pierced your shoulder, you fell.",
-          detay: "Your survival was counted a miracle, but your arm isn't what it was.",
+          mesaj: "An arrow pierced your shoulder mid-climb and you fell.",
+          detay: "Surviving was a miracle; your arm isn't the same.",
         },
       },
       {
-        metin: "Follow the safe way planned with the team.",
+        metin: "Take the safe, team-planned route.",
         basariliSonuc: {
-          mesaj: "The tower was taken, no one was harmed but no one shouted your name either.",
-          detay: "A smart victory sometimes gets no applause.",
+          mesaj: "The tower fell, no one was hurt, but no one shouted your name.",
+          detay: "A wise victory sometimes goes unapplauded.",
         },
         basarisizSonuc: {
-          mesaj: "Some soldiers said you were 'not as brave as before'; those words wounded you more than you expected.",
-          detay: "Your legend sometimes wants more of you than you want of yourself.",
+          mesaj: "Some said 'not as brave as before'; it hurt more than you thought.",
+          detay: "Your legend demands more than you do.",
         },
       },
     ],
@@ -1808,28 +1808,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_kahraman_10: {
     baslik: "A Comrade's Price",
     metin:
-      "In a clash the young soldier beside you met a blow aimed at you with his own body. Now his blood is still on your armor, and you're alive, not him.",
+      "In a clash the young soldier beside you took a blow meant for you. His blood is still on your armor; you live, he doesn't.",
     secenekler: [
       {
-        metin: "Carry the news to his family with your own hand.",
+        metin: "Carry the news to his family yourself.",
         basariliSonuc: {
-          mesaj: "You'll never forget the look in his mother's eyes, but you didn't lie.",
+          mesaj: "You'll never forget his mother's look, but you didn't lie.",
           detay: "Some burdens aren't shared, only carried.",
         },
         basarisizSonuc: {
-          mesaj: "You went as far as the door but couldn't go in; the words stuck in your throat, you left a letter and turned back.",
-          detay: "Courage sometimes ends not at the enemy line but at a doorstep.",
+          mesaj: "You reached the door but couldn't enter; you left a letter and turned back.",
+          detay: "Courage sometimes ends at a doorstep.",
         },
       },
       {
-        metin: "Suppress the pain, carry on with duty.",
+        metin: "Suppress the pain; carry on.",
         basariliSonuc: {
-          mesaj: "The soldiers admired your resilience, no one saw the emptiness in your eyes.",
-          detay: "The hero everyone saw carried a burden no one saw.",
+          mesaj: "The soldiers admired your endurance; none saw the emptiness in your eyes.",
+          detay: "The hero bore a burden no one saw.",
         },
         basarisizSonuc: {
-          mesaj: "The pain you suppressed kept you up at night, your hand trembled even holding a sword.",
-          detay: "Nothing suppressed is really lost.",
+          mesaj: "The pain you buried kept you up at night; your sword hand shook.",
+          detay: "Nothing buried truly vanishes.",
         },
       },
     ],
@@ -1838,39 +1838,39 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_kahraman_11: {
     baslik: "The Loneliness of a Hero",
     metin:
-      "Your old comrades-in-arms don't joke with you the way they used to; they look at you like at a legend. Even sitting around the fire there's an invisible distance between you.",
+      "Old comrades no longer joke with you; they look at you like a legend. Even by the fire, a distance lies between you.",
     secenekler: [
       {
-        metin: "Insist on acting like the old days, try to close the gap.",
+        metin: "Act as in the old days; persist.",
         basariliSonuc: {
-          mesaj: "You laughed together for a night, the distance melted for a moment.",
-          detay: "Some bonds are worth insisting on being remembered.",
+          mesaj: "You laughed together one night; the distance melted for a moment.",
+          detay: "Some bonds are worth insisting on.",
         },
         basarisizSonuc: {
-          mesaj: "Your efforts were kind but useless, they don't see you as one of them anymore.",
-          detay: "Fame sometimes opens a door with no way back.",
+          mesaj: "Your efforts were kind but futile; they no longer count you as one of them.",
+          detay: "Fame opens a door with no way back.",
         },
       },
       {
-        metin: "Accept the distance, get used to your loneliness.",
+        metin: "Accept the distance; get used to solitude.",
         basariliSonuc: {
-          mesaj: "You withdrew to your tent without talking to anyone; your fame became a crown and a wall at once.",
-          detay: "Someone everyone knows can be the loneliest person.",
+          mesaj: "You withdrew to your tent; fame became both crown and wall.",
+          detay: "The best-known can be the loneliest.",
         },
         basarisizSonuc: {
-          mesaj: "The loneliness weighed heavier than you'd thought, the nights stretched on and on.",
+          mesaj: "Loneliness weighed more than you thought; nights dragged on.",
           detay: "Saying you need no one doesn't make it true.",
         },
       },
       {
-        metin: "Spend time with the new recruits, they don't judge you.",
+        metin: "Spend time with the new recruits.",
         basariliSonuc: {
-          mesaj: "You could breathe a little among the young, even though they still see you only with admiring eyes.",
-          detay: "A new bond, though it doesn't replace the old, is something.",
+          mesaj: "Among the young you caught your breath, though they still gaze in awe.",
+          detay: "A new bond doesn't replace the old, but it's something.",
         },
         basarisizSonuc: {
-          mesaj: "The young idealize you so much that even among them you felt alone.",
-          detay: "Sometimes admiration can't replace friendship.",
+          mesaj: "The young idealize you so much you felt alone even among them.",
+          detay: "Admiration can't replace friendship.",
         },
       },
     ],
@@ -1879,28 +1879,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_kahraman_12: {
     baslik: "The Tower Alone",
     metin:
-      "The garrison defending a small fortress scattered in a night raid; the only one who can hold the gate is you. As the number of enemies at the foot of the stairs grows, only two wounded soldiers are left behind you.",
+      "A small fort's garrison scattered in a night raid; you alone can hold the gate. Only two wounded stand behind you.",
     secenekler: [
       {
-        metin: "Hold the narrow passage alone, wait for reinforcements.",
+        metin: "Hold the narrow pass alone.",
         basariliSonuc: {
-          mesaj: "You held until dawn; when the reinforcements came the passage was still yours.",
-          detay: "Even years later you couldn't quite explain how you survived that night.",
+          mesaj: "You held till dawn; when reinforcements came, the pass was still yours.",
+          detay: "You could never explain how you survived that night.",
         },
         basarisizSonuc: {
-          mesaj: "Their numbers beat you, you had to pull back from the passage.",
-          detay: "Your wounds are deep but the deepest is the account of the two soldiers you left behind.",
+          mesaj: "Numbers beat you; you fell back from the pass.",
+          detay: "The deepest wound is the two men you left.",
         },
       },
       {
-        metin: "Abandon the passage, leave the fortress and retreat.",
+        metin: "Abandon the pass; leave the fort.",
         basariliSonuc: {
-          mesaj: "You lived, but the fortress fell; the nickname 'hero' started being said for the first time in a mocking tone.",
-          detay: "Surviving is sometimes a harder choice than victory.",
+          mesaj: "You lived but the fort fell; 'hero' began to be said mockingly.",
+          detay: "Survival is sometimes harder than victory.",
         },
         basarisizSonuc: {
-          mesaj: "You were caught even while retreating; the fortress fell and you were wounded fleeing.",
-          detay: "Tonight was the kind of night the ballads will never tell.",
+          mesaj: "Caught while retreating; the fort fell and you were wounded.",
+          detay: "A night the songs will never tell.",
         },
       },
     ],
@@ -1909,28 +1909,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_kahraman_13: {
     baslik: "The Villagers' Hope",
     metin:
-      "The people of a village worn out by famine and enemy raids want you to camp near their borders just because you're there. As if your presence alone is a shield.",
+      "A village worn by famine and raids begs you to camp at its edge, just so you're there. Your presence is a shield.",
     secenekler: [
       {
-        metin: "Accept their request, stay in the village a few days.",
+        metin: "Agree; stay a few days in the village.",
         basariliSonuc: {
-          mesaj: "The villagers slept easy, the children smiled even watching you from a distance.",
-          detay: "Sometimes heroism protects something without swinging a sword.",
+          mesaj: "The villagers slept soundly; children smiled when they saw you.",
+          detay: "Heroism can protect without swinging a sword.",
         },
         basarisizSonuc: {
-          mesaj: "There were no attacks the whole time you stayed, but your superiors were displeased that you fell behind on your real duty.",
-          detay: "Protecting one place means neglecting another.",
+          mesaj: "No attack came, but you neglected your post, and superiors were displeased.",
+          detay: "Guarding one place, you neglected another.",
         },
       },
       {
-        metin: "Politely refuse, say your real duty is waiting for you.",
+        metin: "Decline kindly; say duty awaits.",
         basariliSonuc: {
-          mesaj: "The villagers were disappointed but understood; you're a person, you can't be everywhere at once.",
-          detay: "Even a legend can't be in two places at once.",
+          mesaj: "The villagers were let down but understood; you can't be everywhere.",
+          detay: "Even a legend can't be in two places.",
         },
         basarisizSonuc: {
-          mesaj: "The village elders grumbled after you 'so even a legend gets tired', and the words reached your ears.",
-          detay: "Expectations are sometimes unjust, but they still weigh.",
+          mesaj: "Elders grumbled 'so legends tire too'; the words reached you.",
+          detay: "Expectations are unfair yet heavy.",
         },
       },
     ],
@@ -1939,39 +1939,39 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_kahraman_14: {
     baslik: "The Shadow of Slander",
     metin:
-      "A jealous officer spread a rumor that you escaped the ambush alone by actually sacrificing your comrades. The rumor is already going around the barracks.",
+      "A jealous officer spread a rumor that you escaped the ambush by sacrificing comrades. It already circulates in the barracks.",
     secenekler: [
       {
-        metin: "Go to your superiors with evidence and witnesses.",
+        metin: "Go to superiors with proof and witnesses.",
         basariliSonuc: {
-          mesaj: "The testimonies cleared you, the officer who spread the slander got a sharp warning.",
-          detay: "The truth won but the hostility became permanent.",
+          mesaj: "Witnesses cleared you; the slanderer got a harsh warning.",
+          detay: "Truth won; the enmity stayed.",
         },
         basarisizSonuc: {
-          mesaj: "Some evidence was found insufficient, the doubt didn't fully lift; a few eyes still look at you differently.",
-          detay: "A suspicion once cast may never fully lift.",
+          mesaj: "The proof was deemed insufficient; suspicion never fully lifted.",
+          detay: "Fallen suspicion may never fully lift.",
         },
       },
       {
-        metin: "Ignore the rumor, answer with your conduct.",
+        metin: "Ignore it; answer with your conduct.",
         basariliSonuc: {
-          mesaj: "In time the rumor died on its own, your conduct proved stronger than words.",
-          detay: "Some answers are given by silence.",
+          mesaj: "The rumor faded; your conduct proved stronger than words.",
+          detay: "Some answers are given in silence.",
         },
         basarisizSonuc: {
-          mesaj: "Your silence was mistaken for acceptance, the slander didn't let go for a long time.",
-          detay: "Sometimes staying silent isn't enough.",
+          mesaj: "Your silence read as admission; the slander clung to you.",
+          detay: "Silence sometimes isn't enough.",
         },
       },
       {
-        metin: "Threaten the officer privately, silence him.",
+        metin: "Threaten the officer privately.",
         basariliSonuc: {
-          mesaj: "The officer got scared and took back the rumor, but he really hates you now.",
-          detay: "A silenced enemy is more dangerous than a talking one.",
+          mesaj: "The officer took back the rumor in fear, but now truly hates you.",
+          detay: "A silenced enemy is more dangerous.",
         },
         basarisizSonuc: {
-          mesaj: "Your threat was overheard by others; your 'hero' image really cracked for the first time.",
-          detay: "Legends can decay by their own methods.",
+          mesaj: "Your threat was overheard; your hero image cracked for the first time.",
+          detay: "Legends can rot by their own means.",
         },
       },
     ],
@@ -1980,28 +1980,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_kahraman_15: {
     baslik: "A Wound That Won't Heal",
     metin:
-      "An old war wound of yours reopened; the physician says if you keep fighting like this you could lose your arm entirely. But the army needs you right now.",
+      "An old wound reopened; the healer says fighting on may cost your arm. But the army needs you right now.",
     secenekler: [
       {
-        metin: "Listen to the physician's warning, rest.",
+        metin: "Heed the healer; rest.",
         basariliSonuc: {
-          mesaj: "Your wound closed, but because 'the hero' stayed away from the front for a while, gossip started.",
-          detay: "Protecting your body sometimes risks your reputation.",
+          mesaj: "Your wound closed, but your absence from the front sparked gossip.",
+          detay: "Protecting your body risks your reputation.",
         },
         basarisizSonuc: {
-          mesaj: "Your rest fell short, your impatience took you back to the front early.",
-          detay: "Some wounds don't close until they've taken all the patience they demand.",
+          mesaj: "Rest wasn't enough; impatience sent you back early.",
+          detay: "Wounds close only when patience is paid.",
         },
       },
       {
-        metin: "Ignore the warning, keep fighting.",
+        metin: "Ignore the warning; keep fighting.",
         basariliSonuc: {
-          mesaj: "You stayed at the front, the soldiers' morale rose but your arm aches more every day.",
-          detay: "The price of heroism is sometimes paid slowly, quietly.",
+          mesaj: "You stayed at the front; morale rose, but your arm aches more each day.",
+          detay: "Heroism's price is paid slowly.",
         },
         basarisizSonuc: {
-          mesaj: "The arm gave out in the middle of a battle, your sword fell from your hand.",
-          detay: "The physician being proven right never hurt this much.",
+          mesaj: "Your arm failed mid-battle and the sword fell from your hand.",
+          detay: "The healer was never so painfully right.",
         },
       },
     ],
@@ -2010,39 +2010,39 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_kahraman_16: {
     baslik: "The Commander's Seal",
     metin:
-      "After years of courage and battles won, the Commander seal is presented to you in the lord's presence. The hall is full, everyone expects a speech — but you wonder whether you can carry the responsibility of lives under your command.",
+      "After years of valor, the lord presents you the Commander's seal in a packed hall. You wonder whether you can bear the responsibility.",
     secenekler: [
       {
-        metin: "Accept the seal, swear an oath of loyalty to your soldiers.",
+        metin: "Take the seal; swear loyalty to your soldiers.",
         basariliSonuc: {
-          mesaj: "Your oath shook the hall; you're not just a hero now, you're a commander.",
-          detay: "From that day, every decision carries not just your life but the lives of those under your command.",
+          mesaj: "Your oath shook the hall; you're no longer just a hero, but a commander.",
+          detay: "Every decision now carries your soldiers' lives.",
         },
         basarisizSonuc: {
-          mesaj: "Your oath was found ordinary, a few old officers muttered 'words are easy, war is hard'.",
-          detay: "Words prove nothing until they're tested on the battlefield.",
+          mesaj: "The oath seemed ordinary; old officers muttered 'words are easy, war is hard'.",
+          detay: "Words prove nothing untested on the field.",
         },
       },
       {
-        metin: "Accept the seal, propose a new campaign at once.",
+        metin: "Take the seal; propose a new campaign.",
         basariliSonuc: {
-          mesaj: "Your proposal was accepted, but some senior officers found you too green and too ambitious.",
-          detay: "With your new rank came new enemies too.",
+          mesaj: "Your proposal was accepted, but seniors found you green and ambitious.",
+          detay: "New rank brought new enemies.",
         },
         basarisizSonuc: {
-          mesaj: "Your proposal was rejected, you felt humiliated during the ceremony.",
-          detay: "Rank raises you but doesn't always protect you.",
+          mesaj: "Your proposal was rejected; you felt humiliated at the ceremony.",
+          detay: "Rank elevates but doesn't protect.",
         },
       },
       {
-        metin: "Accept the seal quietly, return to your duty at once.",
+        metin: "Take the seal quietly; return to duty.",
         basariliSonuc: {
-          mesaj: "Even your slipping away from the ceremony turned into a legend: 'Even as a Commander, he chose the war over the ceremony.'",
-          detay: "Some people win more respect in the moments they run.",
+          mesaj: "Slipping from the ceremony became legend: 'Even as commander, he chose war.'",
+          detay: "Some earn respect in the moments they flee.",
         },
         basarisizSonuc: {
-          mesaj: "Your hasty exit was counted as disrespect by some.",
-          detay: "Not every silence is read as humility.",
+          mesaj: "Your hasty exit was seen as disrespect by some.",
+          detay: "Not every silence reads as humility.",
         },
       },
     ],
@@ -2051,28 +2051,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_kahraman_17: {
     baslik: "One Who Wants to Be Like You",
     metin:
-      "A young soldier under your command confessed he plans to dive into the enemy line alone the way you did — he wants to create his own legend. If you don't stop him he'll probably die.",
+      "A young soldier admits he plans to charge the enemy line alone, as you did. If you don't stop him, he'll likely die.",
     secenekler: [
       {
-        metin: "Pull him aside, tell him the real price.",
+        metin: "Take him aside; tell him the true cost.",
         basariliSonuc: {
-          mesaj: "The young soldier listened to you, the fire in his eyes dimmed a little but his sense returned.",
-          detay: "The one thing you didn't tell him was that you haven't slept the same since that night either.",
+          mesaj: "The youth listened; the fire in his eyes dimmed, but his mind cleared.",
+          detay: "You haven't slept the same since that night either.",
         },
         basarisizSonuc: {
-          mesaj: "Your words didn't reach him; he still wants to be like you, he just learned to hide it from you.",
-          detay: "Some fires go out not by warning but only by burning.",
+          mesaj: "Your words missed; he still wants to be like you, and learned to hide it.",
+          detay: "Some fires die only by burning.",
         },
       },
       {
-        metin: "Don't get involved, say everyone has the right to chart their own path.",
+        metin: "Stay out; everyone picks their own path.",
         basariliSonuc: {
-          mesaj: "You didn't get involved, the soldier made his own decision; you'll see the outcome in time.",
-          detay: "You can't make every decision, you know that, but it still gnaws at you.",
+          mesaj: "You stayed out; he made his choice, and time will show the result.",
+          detay: "You can't decide everything, yet it gnaws at you.",
         },
         basarisizSonuc: {
-          mesaj: "The young soldier followed your example and fell into an ambush; by the time they found him it was too late.",
-          detay: "At his funeral no one asked what you felt — they all thought they already knew.",
+          mesaj: "The youth followed your path into an ambush; they found him too late.",
+          detay: "At the funeral no one asked how you felt.",
         },
       },
     ],
@@ -2081,39 +2081,39 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_kahraman_18: {
     baslik: "Commander of the Great Battle",
     metin:
-      "The {bolge} army prepares for the biggest battle it has awaited for years; command of the right wing has been given entirely to you. Walking the ranks you see the soldiers no longer want an order but to hear your voice.",
+      "The {bolge} army readies for its greatest battle in years; you command the right wing. The soldiers want your voice, not orders.",
     secenekler: [
       {
-        metin: "Lead the front personally, fight at the very front.",
+        metin: "Lead from the front; fight foremost.",
         basariliSonuc: {
-          mesaj: "The right wing scattered the enemy, the victory was spoken of with your name.",
-          detay: "But at the victory celebrations you're aware of the missing voices too.",
+          mesaj: "The right wing scattered the enemy; victory carried your name.",
+          detay: "Amid the celebration you noticed the missing voices.",
         },
         basarisizSonuc: {
-          mesaj: "Your wing fell apart, you were pulled from the front badly wounded.",
-          detay: "The defeat overshadowed in an instant every victory you'd won.",
+          mesaj: "Your wing broke and you withdrew badly wounded.",
+          detay: "Defeat overshadowed every victory.",
         },
       },
       {
-        metin: "Command from the rear, trust your soldiers, spread the risk.",
+        metin: "Command from behind; trust your soldiers.",
         basariliSonuc: {
-          mesaj: "The wing advanced in order, the losses were few; the victory wasn't brilliant but it was solid.",
-          detay: "Being a commander demands more now than running at the front.",
+          mesaj: "The wing advanced steadily with few losses; victory was dull but solid.",
+          detay: "Command is more than running in front.",
         },
         basarisizSonuc: {
-          mesaj: "Some officers read your commanding from the rear as 'the old hero doesn't fight at the front anymore'.",
-          detay: "As your rank grows, what's expected of you contradicts itself strangely.",
+          mesaj: "Some officers said 'the old hero no longer fights in front'.",
+          detay: "As rank grows, expectations conflict.",
         },
       },
       {
-        metin: "Strike the enemy from the flank with a risky maneuver, surprise the commanders.",
+        metin: "Strike the enemy's flank in a risky maneuver.",
         basariliSonuc: {
-          mesaj: "The maneuver worked, you split the enemy ranks in two; it became a move for the history books.",
-          detay: "Even years later this maneuver will be told in the barracks.",
+          mesaj: "The maneuver worked and split the enemy; a move for the history books.",
+          detay: "Barracks will tell of this maneuver for years.",
         },
         basarisizSonuc: {
-          mesaj: "The maneuver had been foreseen by the enemy, your wing took heavy losses.",
-          detay: "Boldness isn't always rewarded.",
+          mesaj: "The enemy foresaw the maneuver; your wing suffered heavy losses.",
+          detay: "Daring isn't always rewarded.",
         },
       },
     ],
@@ -2122,28 +2122,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_kahraman_19: {
     baslik: "The Weight of the Legacy",
     metin:
-      "You visit the graves of the comrades you lost over the years; while the people immortalize you in songs, you try to remember their names one by one. As the legend grows, the real memories seem to shrink.",
+      "You visit the graves of comrades lost over the years; while the people immortalize you in songs, you struggle to recall their names.",
     secenekler: [
       {
-        metin: "Visit each grave one by one, speak their names aloud.",
+        metin: "Visit every grave; speak each name aloud.",
         basariliSonuc: {
-          mesaj: "You spoke each name, the wind took your words but you made a place for them inside you.",
-          detay: "The legend may belong to the people, but the memories were still only yours.",
+          mesaj: "You spoke each name; the wind took the words, and you made room for them within.",
+          detay: "The legend is the people's; the memories remain yours.",
         },
         basarisizSonuc: {
-          mesaj: "You couldn't remember some of the names; that hurt more than any sword stroke.",
-          detay: "Forgetting is a thing too, as much as remembering.",
+          mesaj: "You couldn't recall some names; it hurt more than any blade.",
+          detay: "Forgetting is a weight too.",
         },
       },
       {
-        metin: "Leave the past behind, focus only on today.",
+        metin: "Leave the past; focus on today.",
         basariliSonuc: {
-          mesaj: "You looked forward, your shoulders lightened; but at night some names still come back.",
-          detay: "Looking forward doesn't mean forgetting what's behind entirely.",
+          mesaj: "You looked ahead and felt lighter; some names still return at night.",
+          detay: "Looking ahead isn't forgetting behind.",
         },
         basarisizSonuc: {
-          mesaj: "Trying to forget didn't work, the past wouldn't let go.",
-          detay: "Some accounts refuse to be closed.",
+          mesaj: "Trying to forget failed; the past wouldn't let go.",
+          detay: "Some accounts refuse to close.",
         },
       },
     ],
@@ -2152,39 +2152,39 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_kahraman_20: {
     baslik: "A Name Carved in Stone",
     metin:
-      "By the lord's order a monument bearing your name is raised in the barracks courtyard; future soldiers passing this stone will learn your story. Standing before it, you feel that though the name is yours, the story is bigger than you now.",
+      "By the lord's order a monument bearing your name rises in the barracks yard. The name is yours, but the story has outgrown you.",
     secenekler: [
       {
-        metin: "Speak at the ceremony, tell the story to future generations with your own voice.",
+        metin: "Speak at the ceremony; tell the story yourself.",
         basariliSonuc: {
-          mesaj: "Your words left a mark more lasting than the stone; there was a real fire in the young soldiers' eyes as they listened.",
-          detay: "Maybe the greatest legacy you leave isn't the stone but the fire in those eyes.",
+          mesaj: "Your words left a mark more lasting than stone; the young soldiers' eyes burned.",
+          detay: "Perhaps the legacy was that fire, not the stone.",
         },
         basarisizSonuc: {
-          mesaj: "Your words couldn't match the grandeur of the stone, the ceremony stayed a cold ceremony.",
-          detay: "Some stories want something beyond words.",
+          mesaj: "Your words couldn't match the stone's grandeur; the ceremony stayed cold.",
+          detay: "Some stories need more than words.",
         },
       },
       {
-        metin: "Stay silent before the monument, just watch.",
+        metin: "Stand silent before the monument.",
         basariliSonuc: {
-          mesaj: "Your silence said more than words; everyone bowed before the stone with respect.",
-          detay: "Some moments are completed without speaking.",
+          mesaj: "Your silence said more than words; all bowed in respect.",
+          detay: "Some moments complete without words.",
         },
         basarisizSonuc: {
-          mesaj: "Your silence was mistaken for arrogance by some, they whispered 'he thinks too highly of himself'.",
-          detay: "Even in the stone's shadow, there are those who read you wrong.",
+          mesaj: "Your silence read as pride; they whispered 'thinks too much of himself'.",
+          detay: "Even in the stone's shadow you're misread.",
         },
       },
       {
-        metin: "Refuse the monument, ask that your name be carved not in stone but in the soldiers' memory.",
+        metin: "Refuse the monument; let your name live in memory.",
         basariliSonuc: {
-          mesaj: "The lord was surprised at first, then appreciated your stance; the monument was raised anyway but your words echoed more among the soldiers.",
-          detay: "You know your real legacy lives not in stone but in the memory of those who stood shoulder to shoulder with you.",
+          mesaj: "The lord was surprised, then approved; the monument rose, but your words echoed louder.",
+          detay: "Your legacy lives in memory, not in stone.",
         },
         basarisizSonuc: {
-          mesaj: "Your refusal was counted as disrespect, the lord was offended; the monument was raised anyway, but you weren't invited to the ceremony.",
-          detay: "Sometimes even humility can be misunderstood.",
+          mesaj: "Your refusal was seen as disrespect; the monument rose, but you weren't invited.",
+          detay: "Even humility can be misunderstood.",
         },
       },
     ],
@@ -2193,39 +2193,39 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_firari_01: {
     baslik: "The Prison Camp",
     metin:
-      "When you opened your eyes there were rust-crusted chains on your wrists and a roof of mud above you. The sentries shout in a language you don't understand, and even the prisoners beside you size you up. A moment ago you were on a battlefield; now your only concern is making it to morning.",
+      "Rusted chains on your wrists, a mud roof overhead. Sentries shout in a foreign tongue. Your only goal: reach morning.",
     secenekler: [
       {
-        metin: "Bow your head, observe without being seen.",
+        metin: "Keep your head down, watch.",
         basariliSonuc: {
-          mesaj: "You got through the day without drawing anyone's attention; the sentries can't even tell you apart from an ordinary prisoner.",
-          detay: "Surviving sometimes means learning to be invisible.",
+          mesaj: "You got through the day unnoticed.",
+          detay: "Survival is invisibility.",
         },
         basarisizSonuc: {
-          mesaj: "Even your silence wasn't enough; a sentry whipped you for an arbitrary reason.",
-          detay: "There's no justice sought here, only the sentry's mood that day.",
+          mesaj: "Silence wasn't enough; a sentry whipped you for nothing.",
+          detay: "No justice here, only moods.",
         },
       },
       {
-        metin: "Quietly build solidarity with the prisoners beside you.",
+        metin: "Quietly bond with the prisoners.",
         basariliSonuc: {
-          mesaj: "A quiet trust grew between you and the prisoners you whispered with on empty stomachs.",
-          detay: "Shared hunger is lighter than hunger borne alone.",
+          mesaj: "A quiet trust grew among the prisoners you whispered with.",
+          detay: "Shared hunger weighs less.",
         },
         basarisizSonuc: {
-          mesaj: "Your whispering drew a sentry's attention; you were all punished together.",
-          detay: "Even trust costs dearly here.",
+          mesaj: "Your whispers were caught; you were all punished.",
+          detay: "Trust is costly here.",
         },
       },
       {
-        metin: "Do small services for a sentry, try to gain a privilege.",
+        metin: "Serve a sentry, win a privilege.",
         basariliSonuc: {
-          mesaj: "You made yourself useful to the sentry; in return you got an extra crust of bread and a little respect.",
-          detay: "The other prisoners look at you differently now.",
+          mesaj: "You proved useful; you won extra bread and some respect.",
+          detay: "The prisoners look at you differently now.",
         },
         basarisizSonuc: {
-          mesaj: "The sentry didn't like your offer, and the other prisoners thought you a collaborator.",
-          detay: "You neither gained nor lost anything, you just became isolated.",
+          mesaj: "The sentry refused, and the prisoners took you for a collaborator.",
+          detay: "You gained nothing, only isolation.",
         },
       },
     ],
@@ -2234,28 +2234,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_firari_02: {
     baslik: "The Escape Plan",
     metin:
-      "As the weeks passed you memorized the camp's routine: the watch-change hours, a loose fence post, the supply carts that come once a month. An escape is on your mind now — but will you act alone, or with a few prisoners you trust?",
+      "You've memorized the camp: watch changes, a loose fence post, supply carts. Plan alone, or with fellow prisoners?",
     secenekler: [
       {
-        metin: "Make the plan alone, tell no one.",
+        metin: "Plan alone.",
         basariliSonuc: {
-          mesaj: "You quietly worked out an escape route on your own; no one knows, no one can betray you.",
-          detay: "Loneliness is sometimes the most trustworthy confidant.",
+          mesaj: "You mapped your own escape; no one can betray you.",
+          detay: "Solitude keeps secrets best.",
         },
         basarisizSonuc: {
-          mesaj: "While examining the fence you caught a sentry's eye; you're watched with suspicion now.",
-          detay: "Planning alone can also mean making a mistake alone.",
+          mesaj: "A sentry saw you studying the fence; you're under suspicion.",
+          detay: "Plan alone, err alone.",
         },
       },
       {
-        metin: "Make a joint plan with a few prisoners you trust.",
+        metin: "Plan with prisoners you trust.",
         basariliSonuc: {
-          mesaj: "You secretly agreed with three prisoners; each of you has a separate task now.",
-          detay: "A shared hope weighs less than one carried alone.",
+          mesaj: "Three prisoners agreed; each has a task.",
+          detay: "Shared hope weighs less.",
         },
         basarisizSonuc: {
-          mesaj: "One of you whispered the plan to the sentries for an extra ration.",
-          detay: "Trust here sometimes turns into the costliest mistake.",
+          mesaj: "One of you sold the plan to the sentries for extra rations.",
+          detay: "Trust can be the costliest mistake.",
         },
       },
     ],
@@ -2264,28 +2264,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_firari_03: {
     baslik: "The Escape Attempt",
     metin:
-      "No moon, the sky pitch black; the noise of the supply cart has drawn the sentries' attention. The night you've waited for has finally come. With your heart pounding like a drum in your chest, you crawl toward the loose spot in the fence.",
+      "No moon; the supply cart's racket distracts the sentries. The night has come. Heart drumming, you crawl toward the loose fence.",
     secenekler: [
       {
-        metin: "Move now, take the risk.",
+        metin: "Go now, risk it.",
         basariliSonuc: {
-          mesaj: "You slipped under the fence and dove into the dark; the camp lights behind you grew smaller and smaller.",
-          detay: "Freedom feels heavy even at the first breath.",
+          mesaj: "You slipped under the fence into the dark.",
+          detay: "Freedom is heavy even at first breath.",
         },
         basarisizSonuc: {
-          mesaj: "A dog's bark gave you away; you were caught, and your chains are heavier this time.",
-          detay: "Some nights don't take you where you want to go.",
+          mesaj: "A dog's bark betrayed you; caught, your chains grow heavier.",
+          detay: "Some nights lead nowhere.",
         },
       },
       {
-        metin: "Give it up, wait for a safer chance.",
+        metin: "Give up, wait for a safer chance.",
         basariliSonuc: {
-          mesaj: "You pulled back; 'not tonight' you told yourself, and still the fire in you didn't go out.",
-          detay: "Patience is sometimes a harder choice than courage.",
+          mesaj: "You pulled back; the fire inside still burns.",
+          detay: "Patience is harder than courage.",
         },
         basarisizSonuc: {
-          mesaj: "Even while waiting your unease was noticed; the sentries watch you more closely now.",
-          detay: "Sometimes even doing nothing has a price.",
+          mesaj: "Your unease was noticed; the sentries watch you closely.",
+          detay: "Even doing nothing has a price.",
         },
       },
     ],
@@ -2294,39 +2294,39 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_firari_04: {
     baslik: "In Foreign Lands",
     metin:
-      "You left the camp behind but the danger isn't over. Your clothes give you away, your speech carries a foreign accent. When you reach a border village you have to decide what to tell those who ask who you are.",
+      "You've left the camp but danger remains. Your clothes and accent give you away. At a border village, what will you say you are?",
     secenekler: [
       {
-        metin: "Take on the identity of a dead traveling merchant.",
+        metin: "Take a dead merchant's identity.",
         basariliSonuc: {
-          mesaj: "You took the papers off a body you found on the road; you're someone else now.",
-          detay: "Setting your own name aside was easier than you thought.",
+          mesaj: "You took a corpse's papers on the road; you're someone else now.",
+          detay: "Dropping your name was easy.",
         },
         basarisizSonuc: {
-          mesaj: "The papers weren't enough for the questioning; the villagers turned you away with suspicion.",
-          detay: "However good the lie, sometimes there's no one to believe it.",
+          mesaj: "The papers failed under questioning; villagers drove you out.",
+          detay: "Even a good lie may find no believer.",
         },
       },
       {
-        metin: "Hide your real past, say only 'a traveler fleeing the war'.",
+        metin: "Just say 'a traveler fleeing war'.",
         basariliSonuc: {
-          mesaj: "The villagers gave you shelter for a night without questioning; no one asked too many questions.",
-          detay: "In the war years, fugitives like you are not few.",
+          mesaj: "Villagers gave you a night's shelter, no questions.",
+          detay: "Fugitives like you are common.",
         },
         basarisizSonuc: {
-          mesaj: "You were met with suspicion, they didn't even let you stay one night; you went on hungry and tired.",
+          mesaj: "Met with suspicion, you went on hungry and tired.",
           detay: "Not everyone trusts a fugitive.",
         },
       },
       {
-        metin: "Knock on a monastery door, ask for sanctuary.",
+        metin: "Knock at a monastery, ask sanctuary.",
         basariliSonuc: {
-          mesaj: "The monks took you in without questions; you rested in a warm bed for a few days.",
-          detay: "Some doors open without asking your past.",
+          mesaj: "Monks took you in unquestioned; you rested days in a warm bed.",
+          detay: "Some doors don't ask your past.",
         },
         basarisizSonuc: {
-          mesaj: "The monastery turned you away on the grounds it was full; you took to the roads again.",
-          detay: "Not every door opens for you.",
+          mesaj: "The monastery, claiming to be full, turned you away.",
+          detay: "Not every door opens.",
         },
       },
     ],
@@ -2335,28 +2335,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_firari_05: {
     baslik: "A New Name",
     metin:
-      "You've been on the roads for months; you seem to have forgotten your old name. In a port town a foreman who doesn't question your identity offers you cargo-hauling work — the wage is low but so are the questions.",
+      "Months on the road, you've nearly forgotten your name. At a port a foreman asks no questions and offers hauling work: low pay, no questions.",
     secenekler: [
       {
         metin: "Take the job, work quietly.",
         basariliSonuc: {
-          mesaj: "Days passed with sacks on your back; no one looked at you and thought you were a soldier.",
-          detay: "Callused hands were the best thing to hide your past.",
+          mesaj: "Days hauling sacks; no one saw a soldier in you.",
+          detay: "Callused hands hide a past.",
         },
         basarisizSonuc: {
-          mesaj: "A heavy load hurt your back; the foreman still paid you short.",
-          detay: "Even your labor doesn't get its full worth here.",
+          mesaj: "A heavy load hurt your back; he still shorted your pay.",
+          detay: "Labor goes underpaid here.",
         },
       },
       {
-        metin: "Bargain for a better wage.",
+        metin: "Bargain for better pay.",
         basariliSonuc: {
-          mesaj: "Your insistence worked; the foreman paid you more than you expected.",
-          detay: "Sometimes surviving takes a little boldness too.",
+          mesaj: "Your insistence worked; he paid more than expected.",
+          detay: "Survival takes some nerve.",
         },
         basarisizSonuc: {
-          mesaj: "Your bargaining angered the foreman; he fired you and hired someone else.",
-          detay: "Drawing too much attention is a luxury for a fugitive.",
+          mesaj: "Bargaining angered him; he fired you and hired another.",
+          detay: "A fugitive can't afford attention.",
         },
       },
     ],
@@ -2365,28 +2365,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_firari_06: {
     baslik: "Sword for Hire",
     metin:
-      "A caravan owner realized from the calluses on your hands that you're a soldier; he wants to hire you as an escort. Girding on a weapon means one step closer to your old life — but hunger is just as real.",
+      "A caravan owner read the soldier in your calluses and wants you as escort. Arms mean your old life; hunger is real too.",
     secenekler: [
       {
-        metin: "Accept the offer, take up your sword again.",
+        metin: "Accept, strap on your sword.",
         basariliSonuc: {
-          mesaj: "You protected the caravan from bandits; however foreign the sword felt in your hand, it did its job.",
-          detay: "Arms that once belonged to an army now serve a merchant.",
+          mesaj: "You guarded the caravan from bandits; the sword felt foreign but worked.",
+          detay: "Arms once an army's now serve a merchant.",
         },
         basarisizSonuc: {
-          mesaj: "You were badly wounded in a raid; still, the caravan owner didn't abandon you on the road.",
-          detay: "Fighting weighs the same even without a uniform.",
+          mesaj: "Badly wounded in the raid, the owner still stood by you.",
+          detay: "War weighs the same without a uniform.",
         },
       },
       {
-        metin: "Refuse, look for unarmed work.",
+        metin: "Refuse, seek unarmed work.",
         basariliSonuc: {
-          mesaj: "You didn't touch a weapon; instead you found small work in the warehouses.",
-          detay: "Sometimes the greatest victory is being able to choose not to fight.",
+          mesaj: "You shunned weapons and found small work in the warehouses.",
+          detay: "The greatest victory is not fighting.",
         },
         basarisizSonuc: {
-          mesaj: "You couldn't find work and went hungry for a few days; your stomach paid for setting down your sword.",
-          detay: "Your principles don't always feed you.",
+          mesaj: "No work; you went hungry for days.",
+          detay: "Principles don't feed you.",
         },
       },
     ],
@@ -2395,28 +2395,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_firari_07: {
     baslik: "A Messenger",
     metin:
-      "In a market you find a merchant heading to your homeland. You could send your family a few lines telling them you're alive — but every letter can also leave a trail for those looking for you.",
+      "At a market you find a merchant bound for home. You could tell your family you live, but every letter may leave a trail for your hunters.",
     secenekler: [
       {
-        metin: "Send the letter, take the risk.",
+        metin: "Send the letter, risk it.",
         basariliSonuc: {
-          mesaj: "The letter reached your family; for the first time in years you could say 'I'm alive' to someone who wasn't hunting you.",
-          detay: "Some words feel lighter than the heaviest chains.",
+          mesaj: "The letter reached your family; for the first time in years you said 'I live'.",
+          detay: "Some words are lighter than chains.",
         },
         basarisizSonuc: {
-          mesaj: "The merchant let it slip; a few weeks later strangers asking about you appeared in the village, and you had to move at once.",
-          detay: "Even love sometimes gives you away.",
+          mesaj: "The merchant talked; strangers came asking and you had to move.",
+          detay: "Even love can betray you.",
         },
       },
       {
-        metin: "Give it up, keep your silence.",
+        metin: "Give up, stay silent.",
         basariliSonuc: {
-          mesaj: "You tore up the letter without writing it; your safety outweighed your longing.",
-          detay: "Some silences are born not of love but of fear.",
+          mesaj: "You tore up the letter unwritten; safety outweighed longing.",
+          detay: "Some silence comes from fear.",
         },
         basarisizSonuc: {
-          mesaj: "Your indecision ate at you for days; in the end you did nothing, only your regret grew.",
-          detay: "Sometimes the worst choice is making no choice.",
+          mesaj: "Indecision gnawed at you; you did nothing, and regret grew.",
+          detay: "The worst choice is none.",
         },
       },
     ],
@@ -2425,39 +2425,39 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_firari_08: {
     baslik: "A Suspicious Favor",
     metin:
-      "Your forged papers don't get past a border guard's eye; the man pulls you aside and asks for money 'to avoid trouble'. You have to trust this man who is neither the law nor a friend.",
+      "A border guard spotted your forged papers and wants money to 'avoid trouble'. You must trust a man who is neither lawman nor friend.",
     secenekler: [
       {
-        metin: "Give him the money he wants, pass quietly.",
+        metin: "Pay him, slip through quietly.",
         basariliSonuc: {
-          mesaj: "You gave the money, the man winked and let you through; it was a cheap price.",
-          detay: "Some doors open only with silver.",
+          mesaj: "You paid, he waved you on; a cheap price.",
+          detay: "Some doors open only for silver.",
         },
         basarisizSonuc: {
-          mesaj: "He took the money but had you caught anyway; he'd told another guard more.",
-          detay: "A bribe sometimes just sets the price of the next demand.",
+          mesaj: "He took the money and had you caught anyway.",
+          detay: "A bribe just sets the next price.",
         },
       },
       {
-        metin: "Bargain with him, pay only half.",
+        metin: "Haggle, pay half.",
         basariliSonuc: {
-          mesaj: "You bargained, the man agreed though grumbling; you kept a little money.",
-          detay: "Sometimes boldness is worth more than thrift.",
+          mesaj: "He grumbled but agreed; you kept some coin.",
+          detay: "Boldness can beat thrift.",
         },
         basarisizSonuc: {
-          mesaj: "Your bargaining angered the man; he took the money by force and had you beaten well.",
-          detay: "You don't bargain with some men.",
+          mesaj: "Haggling enraged him; he took the money and had you beaten.",
+          detay: "Some men don't haggle.",
         },
       },
       {
-        metin: "Refuse, try to escape by blending into the crowd.",
+        metin: "Refuse, vanish into the crowd.",
         basariliSonuc: {
-          mesaj: "You blended into the crowd; even if the man kept after you, he lost you.",
-          detay: "Sometimes the only way out is your quick legs.",
+          mesaj: "You melted into the crowd; he lost you.",
+          detay: "Sometimes fast legs are the way out.",
         },
         basarisizSonuc: {
-          mesaj: "You were caught, beaten and stripped of everything on you; still you barely saved your life.",
-          detay: "Your pride is sometimes a price your body pays.",
+          mesaj: "Caught, beaten and robbed, you barely escaped alive.",
+          detay: "Pride is paid in flesh.",
         },
       },
     ],
@@ -2466,28 +2466,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_firari_09: {
     baslik: "Bounty Hunters",
     metin:
-      "In an inn you see a poster shouting your name and description: deserter, reward. Two men at the same inn are sizing you up too carefully — maybe coincidence, maybe not.",
+      "A notice in the inn cries your name and description: deserter, reward. Two men there study you too closely.",
     secenekler: [
       {
-        metin: "Quietly leave the inn, disappear without a trace.",
+        metin: "Slip out quietly, leave no trace.",
         basariliSonuc: {
-          mesaj: "You left your meal half-finished and slipped out the back door; you left the city before the two men noticed you.",
-          detay: "Sometimes the best fight is the one you never enter.",
+          mesaj: "You slipped out the back; you left town unnoticed.",
+          detay: "The best fight is the one avoided.",
         },
         basarisizSonuc: {
-          mesaj: "You were caught before reaching the door; after a short but hard fight you barely got away.",
-          detay: "Even fleeing sometimes demands a price.",
+          mesaj: "Caught before the door; you barely survived a hard scuffle.",
+          detay: "Even fleeing has a price.",
         },
       },
       {
-        metin: "Watch the men and deal with them first.",
+        metin: "Shadow them, strike first.",
         basariliSonuc: {
-          mesaj: "You finished it in a dark street; the bounty hunters will never hunt anyone again.",
-          detay: "Surviving turns you into someone you didn't want to be.",
+          mesaj: "You finished it in a dark alley; the hunters will hunt no more.",
+          detay: "Survival changes you.",
         },
         basarisizSonuc: {
-          mesaj: "The plan went wrong, one of them wounded you; you barely saved your life and fled the city.",
-          detay: "Not every calculation adds up.",
+          mesaj: "The plan failed; wounded, you barely escaped.",
+          detay: "Not every plan holds.",
         },
       },
     ],
@@ -2496,28 +2496,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_firari_10: {
     baslik: "A Reckoning in a Hut",
     metin:
-      "Fleeing a storm, you take shelter in a monk's hut. As the old man gives you food he asks: 'Did you flee, or did you survive?' You can't even give yourself the answer.",
+      "Fleeing a storm, you shelter in a hermit's hut. The old man asks: 'Did you flee, or merely survive?' You can't answer even yourself.",
     secenekler: [
       {
-        metin: "Tell him the truth, pour your heart out.",
+        metin: "Tell the truth, unburden.",
         basariliSonuc: {
-          mesaj: "The monk listened without judging you; 'surviving is not a sin,' he said.",
-          detay: "Some words lighten a burden you've carried for years.",
+          mesaj: "The hermit listened without judging: 'Survival is no sin.'",
+          detay: "Some words lighten the load.",
         },
         basarisizSonuc: {
-          mesaj: "What you told unsettled the monk; he didn't say he believed you, just nodded in silence.",
-          detay: "Not every confession brings the peace you seek.",
+          mesaj: "Your tale unsettled him; he only nodded in silence.",
+          detay: "Confession doesn't always bring peace.",
         },
       },
       {
-        metin: "Stay silent, leave his question unanswered.",
+        metin: "Stay silent, leave it unanswered.",
         basariliSonuc: {
-          mesaj: "You only nodded; the monk didn't press, held out another bowl of hot soup.",
-          detay: "Some questions deserve to stay unanswered.",
+          mesaj: "He didn't press; he handed you hot soup.",
+          detay: "Some questions deserve no answer.",
         },
         basarisizSonuc: {
-          mesaj: "Your silence said more than words; you turned your head away so as not to see the pity in the monk's eyes.",
-          detay: "Sometimes silence speaks heavier than a confession.",
+          mesaj: "Your silence said more than words; you looked away from his pity.",
+          detay: "Silence can speak louder than confession.",
         },
       },
     ],
@@ -2526,28 +2526,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_firari_11: {
     baslik: "The Old Commander",
     metin:
-      "In a market square, among the crowd, a face catches your eye: your old commander, who survived the battle where you were taken prisoner. His eyes meet yours — you can't tell if he recognized you or not.",
+      "In a market square a face catches you: your old commander, who survived the battle where you were taken. Your eyes meet; did he recognize you?",
     secenekler: [
       {
-        metin: "Go up to him, explain yourself.",
+        metin: "Approach, explain yourself.",
         basariliSonuc: {
-          mesaj: "Your commander heard you out; he said being taken prisoner wasn't cowardice, that he was there that day.",
-          detay: "Sometimes one person's belief lightens a shame you've carried for years.",
+          mesaj: "He heard you out: being captured was no cowardice.",
+          detay: "One person's faith can ease long shame.",
         },
         basarisizSonuc: {
-          mesaj: "Your commander declared you a deserter and called the guards; you barely got away.",
-          detay: "The past sometimes doesn't forgive.",
+          mesaj: "He branded you a deserter and called guards; you barely fled.",
+          detay: "The past doesn't forgive.",
         },
       },
       {
-        metin: "Ignore him, blend into the crowd.",
+        metin: "Ignore him, melt into the crowd.",
         basariliSonuc: {
-          mesaj: "You turned your head and walked off; your commander didn't notice you, or pretended not to.",
-          detay: "Not facing some ghosts is a choice too.",
+          mesaj: "You walked away; he didn't notice, or pretended not to.",
+          detay: "Not facing ghosts is a choice too.",
         },
         basarisizSonuc: {
-          mesaj: "Even walking away you noticed you kept glancing at him from the corner of your eye; you didn't sleep at all that night.",
-          detay: "What you flee sometimes only grows in your own mind.",
+          mesaj: "Leaving, you felt his gaze; you couldn't sleep that night.",
+          detay: "What you flee grows in your mind.",
         },
       },
     ],
@@ -2556,28 +2556,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_firari_12: {
     baslik: "Eyes That Recognize You",
     metin:
-      "In a port city you come face to face with one of the sentries who beat you in the prison camp — he's out of uniform now too, clearly someone who fled that side as well. You each carry the other's secret.",
+      "In a port city you meet one of the guards who beat you in the camp, now out of uniform, a fugitive too. Each of you holds the other's secret.",
     secenekler: [
       {
-        metin: "Talk to him, propose a kind of truce.",
+        metin: "Talk, propose a truce.",
         basariliSonuc: {
-          mesaj: "You came to an understanding in a strange silence: you both pretended not to have seen each other.",
-          detay: "Sometimes the hardest peace is the one never spoken.",
+          mesaj: "You struck a silent deal: neither saw the other.",
+          detay: "The hardest peace goes unspoken.",
         },
         basarisizSonuc: {
-          mesaj: "Your talking raised the tension; the man walked off angry, and you don't know if he'll report you.",
-          detay: "The past sometimes doesn't want to make peace.",
+          mesaj: "He stormed off; you don't know if he'll inform.",
+          detay: "The past won't make peace.",
         },
       },
       {
-        metin: "Walk away without being noticed.",
+        metin: "Slip away unnoticed.",
         basariliSonuc: {
-          mesaj: "You blended into the crowd and vanished; still your heart raced for hours.",
-          detay: "The past sometimes just waits for you to turn a corner.",
+          mesaj: "You vanished into the crowd; your heart raced for hours.",
+          detay: "The past waits around the corner.",
         },
         basarisizSonuc: {
-          mesaj: "The man recognized you and ran after you; you barely slipped free.",
-          detay: "Some faces find you even years later.",
+          mesaj: "He recognized you and gave chase; you barely escaped.",
+          detay: "Some faces find you.",
         },
       },
     ],
@@ -2586,28 +2586,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_firari_13: {
     baslik: "Forged Papers",
     metin:
-      "At a city gate the guards ask everyone's identity; when your turn comes you'll see how sturdy the forged papers in your pocket are.",
+      "At the city gate guards check everyone's papers. Your turn comes, and your forgeries get tested.",
     secenekler: [
       {
-        metin: "Look calm, hand them over with confidence.",
+        metin: "Stay calm, present them boldly.",
         basariliSonuc: {
-          mesaj: "The guard glanced over the papers and let you go; even you were surprised your hands didn't tremble.",
-          detay: "Sometimes the best weapon is the calm on your face.",
+          mesaj: "The guard skimmed them and let you pass; your hands never shook.",
+          detay: "Calm is the best weapon.",
         },
         basarisizSonuc: {
-          mesaj: "The guard found an inconsistency in the papers; they took you for questioning, but you got out with a bribe.",
-          detay: "A lie can't always escape careful eyes.",
+          mesaj: "The guard found a flaw; only a bribe freed you.",
+          detay: "Lies don't always fool careful eyes.",
         },
       },
       {
-        metin: "Blend into the crowd and slip out unnoticed.",
+        metin: "Slip away through the crowd.",
         basariliSonuc: {
-          mesaj: "With a carter's help you slipped through the back streets; it's as if you never went through the gate.",
-          detay: "Sometimes the safest way is never being seen at all.",
+          mesaj: "With a carter's help you slipped through back streets.",
+          detay: "The safest path is staying unseen.",
         },
         basarisizSonuc: {
-          mesaj: "You were caught fleeing; you were beaten and stripped of your money, but at least not thrown in the dungeon.",
-          detay: "Trying to run is sometimes more dangerous than staying.",
+          mesaj: "Caught fleeing, beaten and robbed, but spared the dungeon.",
+          detay: "Fleeing can be riskier than staying.",
         },
       },
     ],
@@ -2616,39 +2616,39 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_firari_14: {
     baslik: "A New Flag",
     metin:
-      "The army of a foreign lord is looking for experienced fighters; they don't question your identity, they only ask if you know how to use a sword. You don't know whether you can forget that you once fought under another flag.",
+      "A foreign lord seeks seasoned fighters; he doesn't ask who you are, only if you can wield a sword. Can you forget fighting under another banner?",
     secenekler: [
       {
-        metin: "Join, become a mercenary.",
+        metin: "Join as a mercenary.",
         basariliSonuc: {
-          mesaj: "You fought under a new flag; the pay is good, but in every battle you remembered your old oath.",
-          detay: "For a soldier the flag can change, the conscience doesn't.",
+          mesaj: "You fought under a new flag; pay was good, but you recalled your old oath.",
+          detay: "Flags change, conscience doesn't.",
         },
         basarisizSonuc: {
-          mesaj: "You were badly wounded in the first clash; the foreign lord left you on the field without paying.",
-          detay: "A disloyal army demands a disloyal price.",
+          mesaj: "Badly wounded in the first clash, you were left unpaid.",
+          detay: "A disloyal army exacts a disloyal price.",
         },
       },
       {
-        metin: "Refuse, never raise your weapon for anyone again.",
+        metin: "Refuse, never draw for anyone again.",
         basariliSonuc: {
-          mesaj: "You turned the offer down; you may go hungry but at least you betrayed no one.",
-          detay: "Some lines even hunger can't erode.",
+          mesaj: "You refused; you may starve, but you betrayed no one.",
+          detay: "Hunger can't erode some limits.",
         },
         basarisizSonuc: {
-          mesaj: "Because you refused you couldn't find other work either; you spent your days begging.",
-          detay: "Having principles doesn't fill your belly.",
+          mesaj: "No other work came; you spent your days begging for loans.",
+          detay: "Principles don't fill the belly.",
         },
       },
       {
-        metin: "Join only briefly, for a single one-off mission.",
+        metin: "Join for one job only.",
         basariliSonuc: {
-          mesaj: "You completed the one-off mission, took your pay and left at once.",
-          detay: "Sometimes the smartest choice is not committing.",
+          mesaj: "You finished the job, took the pay and left.",
+          detay: "Not committing can be wise.",
         },
         basarisizSonuc: {
-          mesaj: "You were lightly wounded during the mission, and on top of that you got only half the promised pay.",
-          detay: "Even short missions sometimes end heavy.",
+          mesaj: "Lightly wounded, you got half the promised pay.",
+          detay: "Even short jobs end hard.",
         },
       },
     ],
@@ -2657,28 +2657,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_firari_15: {
     baslik: "Road Fever",
     metin:
-      "You've been walking in the rain for days; your body can't take it anymore, your fever is rising. You reach a village but you're short of money and a physician is hard to find — you have to ask for help without explaining who you are.",
+      "Days of rain have worn you down; fever climbs. In a village with little coin, you must seek help without saying who you are.",
     secenekler: [
       {
-        metin: "Take the risk, go to a healer.",
+        metin: "Risk it, see a healer.",
         basariliSonuc: {
-          mesaj: "The healer woman cured you without asking questions, she just took the last of your money.",
-          detay: "Some people care not about a stranger's past but only about his state right now.",
+          mesaj: "A healer treated you without questions and took your last coins.",
+          detay: "Some see your state, not your past.",
         },
         basarisizSonuc: {
-          mesaj: "The healer asked questions as if she'd report you rather than give medicine; you took your money and hurried off.",
-          detay: "Trusting is always a gamble here.",
+          mesaj: "The healer probed you with suspicious questions; you paid and hurried off.",
+          detay: "Trust here is a gamble.",
         },
       },
       {
-        metin: "Wait to heal on your own, hide.",
+        metin: "Hide, wait to heal alone.",
         basariliSonuc: {
-          mesaj: "You shivered for days in an abandoned barn; the fever slowly broke but your body is still weak.",
-          detay: "Falling ill alone is the coldest loneliness.",
+          mesaj: "Shivering days in an abandoned barn, the fever fell but you're weak.",
+          detay: "Sickness alone is the coldest solitude.",
         },
         basarisizSonuc: {
-          mesaj: "Your fever worsened, you lay unconscious for days; a shepherd found you and brought you back to life.",
-          detay: "You came back from the edge of death by chance.",
+          mesaj: "The fever worsened and you lay senseless until a shepherd found you.",
+          detay: "Chance pulled you from death's edge.",
         },
       },
     ],
@@ -2687,28 +2687,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_firari_16: {
     baslik: "A Chance to Clear Your Name",
     metin:
-      "An innkeeper tells you that the ambush that got you captured that day was actually the betrayal of an officer in your unit; now that officer is being tried for another crime and your testimony could sink him — but it would expose you too.",
+      "An innkeeper says an officer of your own unit set the ambush that took you. He's on trial; your testimony could sink him but expose you.",
     secenekler: [
       {
-        metin: "Go to the court, testify.",
+        metin: "Go to court, testify.",
         basariliSonuc: {
-          mesaj: "Your testimony brought the officer's betrayal to light; your name was spoken as 'victim', not 'fugitive'.",
-          detay: "For the first time in years, you could make peace with your past.",
+          mesaj: "Your testimony exposed the officer; you're a 'victim', not a 'fugitive'.",
+          detay: "After years, you made peace with your past.",
         },
         basarisizSonuc: {
-          mesaj: "The court didn't hear your testimony, and arrested you as a deserter on top of it; you barely got away.",
-          detay: "Sometimes speaking the truth pushes you into a deeper pit.",
+          mesaj: "The court ignored you and arrested you as a deserter; you barely fled.",
+          detay: "Truth can push you deeper in.",
         },
       },
       {
-        metin: "Stay silent, protect your safety.",
+        metin: "Stay silent, stay safe.",
         basariliSonuc: {
-          mesaj: "You told the innkeeper you'd heard nothing and walked away; the chance slipped through your fingers.",
-          detay: "Some chances never knock on your door again.",
+          mesaj: "You told him you heard nothing; the chance slipped away.",
+          detay: "Some chances don't return.",
         },
         basarisizSonuc: {
-          mesaj: "Your silence ate at you; you still think about that officer's name at night.",
-          detay: "Words you don't say carry a weight too.",
+          mesaj: "Silence consumed you; at night you still think of that officer.",
+          detay: "Unspoken words weigh too.",
         },
       },
     ],
@@ -2717,28 +2717,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_firari_17: {
     baslik: "A Secret Visit",
     metin:
-      "Years later you pass along a road near your homeland. A detour of just a few hours would be enough to see your family one more time — but there could still be someone in your village who knows you.",
+      "Years later, you pass near home. A few hours' detour could reach your family, but someone in the village may recognize you.",
     secenekler: [
       {
-        metin: "Go home secretly at night.",
+        metin: "Sneak home by night.",
         basariliSonuc: {
-          mesaj: "When you knocked, the astonishment in your mother's eyes was worth everything you'd carried for years.",
-          detay: "Some moments forgive a whole life of fleeing.",
+          mesaj: "Your mother's astonished eyes were worth everything you carried.",
+          detay: "Some moments redeem a life on the run.",
         },
         basarisizSonuc: {
-          mesaj: "A neighbor noticed you and shouted; you had to flee into the dark without a word to your family.",
-          detay: "Sometimes the moment you're closest to love is the most dangerous.",
+          mesaj: "A neighbor cried out; you fled into the dark without a word.",
+          detay: "Closest to love, closest to danger.",
         },
       },
       {
-        metin: "Give it up, settle for looking from a distance.",
+        metin: "Give up, settle for watching from afar.",
         basariliSonuc: {
-          mesaj: "From the hill you watched the smoke rising from your home's chimney, then quietly turned back.",
-          detay: "Sometimes loving is accepting watching from a distance.",
+          mesaj: "From a hill you watched your home's chimney smoke, then turned back.",
+          detay: "Sometimes loving means watching from afar.",
         },
         basarisizSonuc: {
-          mesaj: "Even looking from a distance tore you apart; for days you couldn't touch anything.",
-          detay: "Distance doesn't always provide protection.",
+          mesaj: "Even looking from afar tore you apart.",
+          detay: "Distance doesn't always protect.",
         },
       },
     ],
@@ -2747,39 +2747,39 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_firari_18: {
     baslik: "A New Life",
     metin:
-      "In a small town they accepted you without asking about your past. With your savings you could open a small shop, build a rooted life under your false name — maybe you really are that man now.",
+      "A small town took you in, no questions. You could open a shop with your savings and live under a false name; maybe you truly are him now.",
     secenekler: [
       {
-        metin: "Open the shop, settle in the town.",
+        metin: "Open the shop, settle in town.",
         basariliSonuc: {
-          mesaj: "The shop opened, the townsfolk knew you as 'a quiet but honest man'.",
-          detay: "Maybe identity isn't in the name you were born with but in the life you live.",
+          mesaj: "The shop opened; the town knew you as 'quiet but honest'.",
+          detay: "Identity lies in the life you live.",
         },
         basarisizSonuc: {
-          mesaj: "The first months were hard, you had to close the shop for lack of customers.",
-          detay: "Building a new life costs more than you thought.",
+          mesaj: "Hard first months; no customers, you closed the shop.",
+          detay: "A new life costs dearly.",
         },
       },
       {
         metin: "Don't settle, keep moving.",
         basariliSonuc: {
-          mesaj: "A week later you threw your bag over your shoulder again; putting down roots still feels dangerous to you.",
+          mesaj: "A week later you shouldered your pack again; roots still feel dangerous.",
           detay: "Some fugitives forget how to stop.",
         },
         basarisizSonuc: {
-          mesaj: "The constant moving wore you out; you no longer knew what you were fleeing or what you were looking for.",
-          detay: "Walking without stopping is a kind of prison too.",
+          mesaj: "Constant motion wore you out; you no longer know what you flee or seek.",
+          detay: "Walking nonstop is a prison too.",
         },
       },
       {
-        metin: "Half-settle in the town but always keep your escape plan ready.",
+        metin: "Half settle, keep an escape ready.",
         basariliSonuc: {
-          mesaj: "You chose to live half-rooted, half-ready; neither fully at peace nor fully on edge, but you found your balance.",
-          detay: "For some people safety always means leaving an escape door.",
+          mesaj: "Half rooted, half ready, you've found your balance.",
+          detay: "Safety sometimes means an exit door.",
         },
         basarisizSonuc: {
-          mesaj: "Being always on alert wore you out; you neither fully blended into the town nor counted as truly ready.",
-          detay: "Being caught between two states is sometimes the most exhausting.",
+          mesaj: "Constant vigilance wore you down; neither settled nor ready.",
+          detay: "Being caught between is exhausting.",
         },
       },
     ],
@@ -2788,28 +2788,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_firari_19: {
     baslik: "Caravan Guide",
     metin:
-      "Your experience makes you one of the rare people who know the dangerous mountain passes. A merchant caravan is looking for a safe guide; the pay offered is good but on the road you'll face bandits, harsh nature, and your own past.",
+      "You're one of the few who know the mountain passes. A caravan wants a guide; pay is good, but you'll face bandits, nature and your past.",
     secenekler: [
       {
-        metin: "Accept the guiding job.",
+        metin: "Accept the guide job.",
         basariliSonuc: {
-          mesaj: "You brought the caravan safely through the pass; the merchant is grateful, your name spread along the road.",
-          detay: "The one thing left from your army years turned out to be knowing these mountains like the back of your hand.",
+          mesaj: "You led the caravan safely through; the merchant is grateful and your name spreads.",
+          detay: "All the army left you is knowing these mountains.",
         },
         basarisizSonuc: {
-          mesaj: "An avalanche buried half the caravan; those you saved thanked you but your conscience isn't at ease.",
-          detay: "Nature doesn't care who's a fugitive and who isn't.",
+          mesaj: "An avalanche buried half the caravan; your conscience is uneasy.",
+          detay: "Nature doesn't care who's a fugitive.",
         },
       },
       {
-        metin: "Refuse, look for calmer work.",
+        metin: "Refuse, seek calmer work.",
         basariliSonuc: {
-          mesaj: "You turned down the guiding job and found calmer work at the harbor.",
-          detay: "Sometimes not seeking adventure is a form of courage too.",
+          mesaj: "You declined and found calmer work at the port.",
+          detay: "Not seeking adventure is courage too.",
         },
         basarisizSonuc: {
-          mesaj: "The calm work didn't pan out either; you were left empty-handed for a few days.",
-          detay: "Roads that look safe sometimes give you away too.",
+          mesaj: "No calm work either; you sat idle for days.",
+          detay: "Safe-looking roads can betray you too.",
         },
       },
     ],
@@ -2818,28 +2818,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_firari_20: {
     baslik: "The Final Decision",
     metin:
-      "With the 'deserter' mark you've carried on your shoulders for years, you're alone with a question you never stopped asking yourself: was fleeing that night cowardice, or the instinct to survive? Maybe the answer no longer matters as much as the question itself.",
+      "Years under the 'fugitive' brand: was fleeing that night cowardice or the will to live? Perhaps the answer matters less than the question.",
     secenekler: [
       {
-        metin: "Leave your past entirely behind, accept this new name as your real identity.",
+        metin: "Leave the past, make the new name your own.",
         basariliSonuc: {
-          mesaj: "You don't wake with your old name at night anymore; this life became your real life.",
-          detay: "Some people carry not the identity they lost but the new one they built.",
+          mesaj: "You no longer wake at night to your old name; this life is real.",
+          detay: "Some carry the identity they built.",
         },
         basarisizSonuc: {
-          mesaj: "You tried to accept it but you still wake with your old name at night; some pasts refuse to be forgotten.",
-          detay: "Peace doesn't always come with a decision.",
+          mesaj: "You tried to accept it but still wake to your old name.",
+          detay: "Peace doesn't come by decree.",
         },
       },
       {
-        metin: "Face your past, look for a way to take up your real identity once more.",
+        metin: "Face your past, reclaim your true identity.",
         basariliSonuc: {
-          mesaj: "You decided to carry your old name again; you're ready to pay the price for it now.",
-          detay: "Some people stop fleeing and choose to return where they came from.",
+          mesaj: "You chose to bear your old name again, ready for the cost.",
+          detay: "Some stop fleeing and return.",
         },
         basarisizSonuc: {
-          mesaj: "Calling your past back also woke those who wanted to forget; you paid a heavy price.",
-          detay: "Some doors close never to open again.",
+          mesaj: "Calling back the past woke those who wished to forget; you paid dearly.",
+          detay: "Some doors never reopen.",
         },
       },
     ],
@@ -2848,39 +2848,39 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_hain_01: {
     baslik: "A Code Name",
     metin:
-      "The enemy agent finds you a second time. This time it's not a one-off exchange; he teaches you a code name, a method of communicating with a stone sign, and a phrase to say in an emergency. You're part of a system now.",
+      "The enemy agent finds you again. This time he teaches you a code name, stone-mark signals and a danger phrase. You're part of a system now.",
     secenekler: [
       {
-        metin: "Learn the system, follow the rules meticulously.",
+        metin: "Learn the system, obey the rules.",
         basariliSonuc: {
-          mesaj: "You memorized the instructions; the agent left satisfied. You're not on the side of this business now, you're part of it.",
-          detay: "Being a cog in a machine makes getting free of it harder too.",
+          mesaj: "You memorized the instructions; the agent left pleased.",
+          detay: "Escaping a system's cog is hard.",
         },
         basarisizSonuc: {
-          mesaj: "You mixed up the signs, the agent grew impatient; he told you to be more careful.",
-          detay: "There's no margin for error in this work, you're learning that now.",
+          mesaj: "You mixed up the signs; the agent lost patience.",
+          detay: "No room for error here.",
         },
       },
       {
-        metin: "Learn the system but keep an escape plan in mind too.",
+        metin: "Learn it, but plan an escape in your mind.",
         basariliSonuc: {
-          mesaj: "You took the instructions, but always kept an escape route hidden in a corner of your mind.",
-          detay: "Maybe the spies who survive are the ones who never fully trust.",
+          mesaj: "You took the instructions but kept an escape route in mind.",
+          detay: "Surviving spies never trust fully.",
         },
         basarisizSonuc: {
-          mesaj: "Your distraction was noticed; the agent left suspicious of you.",
-          detay: "Mistrust is a knife that cuts both ways.",
+          mesaj: "Your distraction was noticed; the agent left suspicious.",
+          detay: "Distrust cuts both ways.",
         },
       },
       {
-        metin: "Learn the danger but make no further commitment, keep your distance.",
+        metin: "Learn, but keep distance, no commitments.",
         basariliSonuc: {
-          mesaj: "You learned the system but didn't fully hand yourself over; the agent sensed it, a cautious distance stayed between you.",
-          detay: "A half commitment may be the smartest way to survive.",
+          mesaj: "You didn't surrender fully; the agent sensed it and kept a wary distance.",
+          detay: "Half loyalty may be wisest.",
         },
         basarisizSonuc: {
-          mesaj: "Your distance looked like mistrust to the agent; your relationship started tense from the very beginning.",
-          detay: "Caution sometimes raises as much suspicion as betrayal itself.",
+          mesaj: "Your distance looked like distrust; the bond started strained.",
+          detay: "Caution breeds suspicion as betrayal does.",
         },
       },
     ],
@@ -2889,27 +2889,27 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_hain_02: {
     baslik: "Hidden Gold",
     metin:
-      "The gold you took sits like a crime growing heavier under your pillow. If you spend it, they'll ask where you found money many times a private's monthly wage; if you don't spend it, this weight keeps you awake at night.",
+      "The gold under your pillow weighs like a crime. Spend it and they'll ask where it came from; keep it and you can't sleep.",
     secenekler: [
       {
-        metin: "Bury the money in the ground, be patient.",
+        metin: "Bury it, be patient.",
         basariliSonuc: {
-          mesaj: "You buried the gold one night in a place no one knows; at least it's safe for now.",
-          detay: "Your wealth means nothing as long as you can't touch it.",
+          mesaj: "You buried the gold at night where no one knows; safe for now.",
+          detay: "Untouchable wealth means nothing.",
         },
         basarisizSonuc: {
-          mesaj: "A flock of sheep trampled the spot you buried it; you dug up the earth and lost some of it.",
-          detay: "Even the safest hiding place is at the mercy of luck.",
+          mesaj: "Flocks trampled the spot; you lost some.",
+          detay: "Even the safest spot needs luck.",
         },
       },
       {
-        metin: "Spend it in small amounts, say you won it at gambling.",
+        metin: "Spend in small amounts, claim gambling winnings.",
         basariliSonuc: {
-          mesaj: "You said you won it at the dice table and spent a few coins; no one questioned it.",
-          detay: "A small lie can cover a big secret — for now.",
+          mesaj: "You claimed dice winnings and spent a few coins; no one asked.",
+          detay: "A small lie covers a big secret, for now.",
         },
         basarisizSonuc: {
-          mesaj: "A private said loudly that he'd never seen you gamble; the others laughed but you shuddered.",
+          mesaj: "A soldier loudly noted you never play dice; you shuddered.",
           detay: "Every lie has a witness.",
         },
       },
@@ -2919,39 +2919,39 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_hain_03: {
     baslik: "The First Doubt",
     metin:
-      "{dost} has noticed you've been distracted lately, that you vanish when the night watch ends. When he asks he looks straight into your eyes; someone who's known you for years catches your lie at once.",
+      "{dost} has noticed you've been distracted and vanish after watch. He looks you in the eye; someone who has known you for years sees through lies.",
     secenekler: [
       {
-        metin: "Tell him a partial truth, invent a love story.",
+        metin: "Tell half-truth, invent a love story.",
         basariliSonuc: {
-          mesaj: "{dost} believed you were meeting a secret lover and smiled; he swore he'd tell no one your secret.",
-          detay: "A lie is sometimes more convincing than the truth.",
+          mesaj: "{dost} believed in a secret lover and swore to keep quiet.",
+          detay: "A lie can beat the truth.",
         },
         basarisizSonuc: {
-          mesaj: "{dost} didn't believe your story; 'you're lying to me,' he said, and walked off.",
-          detay: "An old friend's suspicion is heavier than an enemy's.",
+          mesaj: "{dost} didn't buy it: 'You're lying to me,' and walked off.",
+          detay: "A friend's doubt outweighs an enemy's.",
         },
       },
       {
-        metin: "Come out hard, tell him not to meddle in your private life.",
+        metin: "Snap at him, tell him to stay out.",
         basariliSonuc: {
-          mesaj: "Your words forced {dost} to back off; he never asked again but he doesn't look at you the way he used to.",
+          mesaj: "{dost} backed off and never asked again, but looks at you differently.",
           detay: "Some bonds are cut to protect them.",
         },
         basarisizSonuc: {
-          mesaj: "Your anger made {dost} even more suspicious; you feel he's watching you now.",
-          detay: "A defensive anger is often guilt itself.",
+          mesaj: "Your anger made {dost} more suspicious; he watches you now.",
+          detay: "Defensive anger looks like guilt.",
         },
       },
       {
-        metin: "Ask him for help too, share the danger.",
+        metin: "Ask his help, share the danger.",
         basariliSonuc: {
-          mesaj: "{dost} listened in shock but didn't give you away; you both carry this secret now.",
-          detay: "Sharing a secret sometimes lightens it, sometimes doubles it.",
+          mesaj: "{dost} was stunned but didn't expose you; you both carry the secret.",
+          detay: "A shared secret lightens or doubles.",
         },
         basarisizSonuc: {
-          mesaj: "{dost} was horrified, torn between reporting you and staying loyal to you — and went to the commander.",
-          detay: "Some secrets are too heavy to be shared.",
+          mesaj: "{dost} was torn between reporting you and loyalty, and went to the commander.",
+          detay: "Some secrets can't be shared.",
         },
       },
     ],
@@ -2960,28 +2960,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_hain_04: {
     baslik: "A False Trail",
     metin:
-      "The enemy agent wants one more thing: to make an innocent private look like the traitor to cover the leak. With a few forged letters and a little nerve, you could steer the suspicion onto someone else.",
+      "The agent wants one more thing: frame an innocent soldier as the traitor to cover the leak. With forged letters you can shift suspicion.",
     secenekler: [
       {
-        metin: "Plant the false evidence, sacrifice the innocent private.",
+        metin: "Plant the forgery, sacrifice the innocent.",
         basariliSonuc: {
-          mesaj: "The letters were found; the innocent private was sent to the gallows, and you were cleared of all suspicion.",
-          detay: "Your conscience will never forget this night, but your neck is still on your shoulders.",
+          mesaj: "The letters were found; the innocent was hanged and you were cleared.",
+          detay: "Your conscience won't forget this night.",
         },
         basarisizSonuc: {
-          mesaj: "The evidence was found weak, the inquiry widened; the private who couldn't prove his innocence died looking at you with suspicion.",
-          detay: "A bullet wasn't wasted but it fell on your conscience.",
+          mesaj: "Weak evidence widened the inquiry; the soldier died eyeing you with suspicion.",
+          detay: "One more weight on your conscience.",
         },
       },
       {
-        metin: "Destroy the evidence, make up an excuse for the agent.",
+        metin: "Destroy the evidence, invent an excuse.",
         basariliSonuc: {
-          mesaj: "You threw the evidence in the fire; you lied to the agent, saying 'no one suspects anything'.",
-          detay: "Saving a person doesn't make you one step less a traitor but it makes you a little less soiled.",
+          mesaj: "You burned the evidence and told the agent no one suspects.",
+          detay: "Saving one man stains you a little less.",
         },
         basarisizSonuc: {
-          mesaj: "The agent caught your lie; you lost his trust and got a threat in return.",
-          detay: "Giving neither side trust means making enemies of both.",
+          mesaj: "The agent saw through the lie; you lost his trust and got a threat.",
+          detay: "Trusted by neither means enemies on both sides.",
         },
       },
     ],
@@ -2990,28 +2990,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_hain_05: {
     baslik: "A Caravan Route",
     metin:
-      "This time the information asked for is more concrete: the route a supply caravan will take next week. This information means not just gold but perhaps the lives of the carters who will die on the road.",
+      "This time the intel is concrete: next week's supply caravan route. It means gold, and perhaps the lives of drivers who'll die on the road.",
     secenekler: [
       {
-        metin: "Give the route, take the big payment in return.",
+        metin: "Give the route, take the big payment.",
         basariliSonuc: {
-          mesaj: "You gave the information; the caravan fell into an ambush, and you took your biggest payment yet.",
-          detay: "You never heard the carters scream but you can't stop imagining it.",
+          mesaj: "You gave the route; the caravan was ambushed and you got your biggest payment.",
+          detay: "You imagine the drivers' screams.",
         },
         basarisizSonuc: {
-          mesaj: "The caravan changed course at the last moment, the ambush came to nothing; the agent still paid but chewed you out sharply.",
-          detay: "Even a failed betrayal leaves a stain.",
+          mesaj: "The caravan turned at the last moment; the agent paid but snapped at you.",
+          detay: "Even failed treachery stains.",
         },
       },
       {
-        metin: "Distort the route, protect the caravan indirectly.",
+        metin: "Distort the route, shield the caravan.",
         basariliSonuc: {
-          mesaj: "The wrong information you gave accidentally saved the caravan; the agent thought it a mistake, and you breathed a quiet sigh of relief.",
-          detay: "Sometimes the best betrayal is no betrayal at all.",
+          mesaj: "Your false route saved the caravan; the agent blamed a mistake, and you exhaled.",
+          detay: "The best betrayal is none.",
         },
         basarisizSonuc: {
-          mesaj: "Your distortion was noticed; the agent suspected you'd misled him deliberately, your trust was shaken.",
-          detay: "Lying beneath a lie is like stringing a rope over a rope.",
+          mesaj: "Your distortion was noticed; the agent suspects you misled him on purpose.",
+          detay: "A lie atop a lie is a rope on a rope.",
         },
       },
     ],
@@ -3020,39 +3020,39 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_hain_06: {
     baslik: "A Night Interrogation",
     metin:
-      "A watch officer has heard that information is leaking from the garrison; he's summoning everyone one by one and interrogating them. When your turn comes, even a shifty glance in your eyes could give you away.",
+      "A duty officer has heard of a leak and questions everyone. Your turn comes; even a shifty glance could betray you.",
     secenekler: [
       {
-        metin: "Stay cold, answer the questions clearly.",
+        metin: "Stay cool, answer plainly.",
         basariliSonuc: {
-          mesaj: "Your voice didn't tremble, your answers were fluid; the officer took you off the list.",
-          detay: "Learning to hide fear is the most painful skill of this work.",
+          mesaj: "Your voice held; the officer struck you off the list.",
+          detay: "Hiding fear is a bitter skill.",
         },
         basarisizSonuc: {
-          mesaj: "A hesitation on one question caught the officer's attention; they detained you, the interrogation hardened.",
-          detay: "A single moment is enough to lose their trust.",
+          mesaj: "Hesitating on one question drew attention; you were detained.",
+          detay: "One moment is enough.",
         },
       },
       {
-        metin: "Steer the interrogation to another name, spread the suspicion.",
+        metin: "Point the inquiry at someone else.",
         basariliSonuc: {
-          mesaj: "You pointed to a private who'd acted strangely last week; the officer turned his attention to him.",
-          detay: "Hiding in someone else's shadow is the easiest escape.",
+          mesaj: "You pointed at an oddly behaving soldier; the officer turned to him.",
+          detay: "Hiding in another's shadow is easy.",
         },
         basarisizSonuc: {
-          mesaj: "The private you pointed to turned out innocent, the interrogation came back to you; you're watched twice as closely now.",
-          detay: "A lie backfires when you least expect it.",
+          mesaj: "The soldier you named was innocent; the inquiry returned to you.",
+          detay: "Lies rebound when least expected.",
         },
       },
       {
-        metin: "Confess a small, unimportant crime (e.g. a gambling debt), distract him.",
+        metin: "Confess a petty crime (gambling debt).",
         basariliSonuc: {
-          mesaj: "You confessed the gambling debt; the officer counted it a sufficient explanation and let you go.",
-          detay: "A small truth is sometimes what best hides a big lie.",
+          mesaj: "You confessed a gambling debt; the officer found it enough and let you go.",
+          detay: "A small truth hides a big lie.",
         },
         basarisizSonuc: {
-          mesaj: "The officer found your confession inadequate, dug deeper into the interrogation; questions about the real leak started coming.",
-          detay: "A small confession sometimes gives birth to bigger suspicions.",
+          mesaj: "The officer found it lacking and dug deeper.",
+          detay: "A small confession breeds bigger doubts.",
         },
       },
     ],
@@ -3061,28 +3061,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_hain_07: {
     baslik: "The Enemy's Table",
     metin:
-      "At the meeting point it's not the usual agent who greets you but someone in his place — young, sharp-eyed, as tired as you. Your conversation drifts quickly away from business.",
+      "At the meeting the usual agent is gone; in his place a young, sharp-eyed man as weary as you. Your talk drifts quickly from business.",
     secenekler: [
       {
-        metin: "Keep your distance, finish the business and leave.",
+        metin: "Keep distance, finish and leave.",
         basariliSonuc: {
-          mesaj: "You kept it short and left; you did what the work needed, allowed nothing more.",
-          detay: "In this life loneliness is sometimes the only safe refuge.",
+          mesaj: "You kept it short and left; no more than needed.",
+          detay: "Solitude is the safe refuge.",
         },
         basarisizSonuc: {
-          mesaj: "Your silence was found strange; the person across from you grew suspicious of you, the tension hung in the air.",
-          detay: "Even coldness sometimes draws too much attention.",
+          mesaj: "Your silence struck him as odd; he grew suspicious.",
+          detay: "Coldness draws notice too.",
         },
       },
       {
-        metin: "Let the conversation happen, trust him a little.",
+        metin: "Let him talk, trust a little.",
         basariliSonuc: {
-          mesaj: "You talked for hours; for the first time you shared with someone the loneliness of being stuck between two worlds.",
-          detay: "Talking with someone who carries the same darkness gives a strange peace.",
+          mesaj: "You talked for hours; for the first time you shared being caught between two worlds.",
+          detay: "Sharing the same darkness brings odd peace.",
         },
         basarisizSonuc: {
-          mesaj: "You opened up too much; the person across from you saw it as your weakness and tried to pry more information out of you.",
-          detay: "In this world even trust can be a weapon.",
+          mesaj: "You opened up too much; he took it for weakness and fished for more.",
+          detay: "Even trust can be a weapon.",
         },
       },
     ],
@@ -3091,28 +3091,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_hain_08: {
     baslik: "The Price of the Man-at-Arms",
     metin:
-      "The rank of man-at-arms cracked the door of the war council for you; the information you hear now isn't simple patrol routes but the whole plan of the coming campaign. The agent comes at you this time with a much bigger offer.",
+      "Your rank got you into the war council; you now hear the entire campaign plan. The agent returns with a far bigger offer.",
     secenekler: [
       {
-        metin: "Sell the entire campaign plan.",
+        metin: "Sell the whole campaign plan.",
         basariliSonuc: {
-          mesaj: "You gave the plan in full; the agent called you 'a valuable partner' this time.",
-          detay: "As your value rises, so does what you have to lose.",
+          mesaj: "You gave the full plan; the agent called you a 'valued partner'.",
+          detay: "The more you're worth, the more you can lose.",
         },
         basarisizSonuc: {
-          mesaj: "Someone entering the council meeting may have seen you taking notes at the door; you held your breath for days.",
-          detay: "The punishment for big information is big too.",
+          mesaj: "Someone may have seen you taking notes at the door; you held your breath for days.",
+          detay: "Big secrets carry big penalties.",
         },
       },
       {
-        metin: "Give only a part that looks unimportant.",
+        metin: "Give only an unimportant part.",
         basariliSonuc: {
-          mesaj: "The piece you gave meant nothing on its own; the agent was a bit disappointed but made do.",
-          detay: "Even small betrayals pile up somewhere.",
+          mesaj: "The piece meant little alone; the agent was disappointed but made do.",
+          detay: "Small betrayals add up.",
         },
         basarisizSonuc: {
-          mesaj: "The agent said the information you gave was useless and chewed you out sharply; your trust was shaken a bit.",
-          detay: "A half-done disloyalty pleases no side.",
+          mesaj: "The agent called it useless and snapped at you; trust frayed.",
+          detay: "Half-treachery pleases no one.",
         },
       },
     ],
@@ -3121,39 +3121,39 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_hain_09: {
     baslik: "An Unpaid Debt",
     metin:
-      "A moneylender checking the debt records going around the barracks notices you have no debt at all, yet don't look poor either. He asks you about the source of this 'hidden fortune'.",
+      "A moneylender checks the barracks' debt records and sees you have no debt, yet don't look poor. He asks the source of your 'hidden wealth'.",
     secenekler: [
       {
-        metin: "Give him hush money.",
+        metin: "Pay him hush money.",
         basariliSonuc: {
-          mesaj: "You gave the moneylender a small sum; he swallowed his questions.",
-          detay: "The price of silence is cheaper than the price of gossip.",
+          mesaj: "You gave him a small sum; he swallowed his questions.",
+          detay: "Silence is cheaper than gossip.",
         },
         basarisizSonuc: {
-          mesaj: "The hush money wasn't enough; the moneylender started spreading whispers about you.",
-          detay: "Some mouths don't close even with gold.",
+          mesaj: "The hush money wasn't enough; he began spreading whispers.",
+          detay: "Some mouths aren't shut by gold.",
         },
       },
       {
-        metin: "Threaten him, tell him he'll be sorry if he doesn't stay quiet.",
+        metin: "Threaten him: talk and you'll regret it.",
         basariliSonuc: {
-          mesaj: "Your threat worked; the moneylender wouldn't even come near you again.",
-          detay: "Fear sometimes creates a more reliable silence than loyalty.",
+          mesaj: "The threat worked; he never came near again.",
+          detay: "Fear buys steadier silence than loyalty.",
         },
         basarisizSonuc: {
-          mesaj: "The moneylender didn't bow to your threat, and went to the commander to complain about you on top of that.",
-          detay: "Showing strength sometimes gives away your weakness.",
+          mesaj: "He didn't yield and went to the commander to complain.",
+          detay: "A show of force exposes weakness.",
         },
       },
       {
-        metin: "Bring him in on your business, share your secret.",
+        metin: "Make him a partner, share the secret.",
         basariliSonuc: {
-          mesaj: "You brought the moneylender into your business; he answers some questions in your place now.",
-          detay: "Every new partner is both a shield and a new weak point.",
+          mesaj: "You brought him in; he now answers questions in your place.",
+          detay: "Each partner is a shield and a weak spot.",
         },
         basarisizSonuc: {
-          mesaj: "The moneylender turned greedy, threatened you and demanded more.",
-          detay: "Sharing a secret is sharing your control over it too.",
+          mesaj: "He turned greedy and threatened you for more.",
+          detay: "Sharing a secret shares control of it.",
         },
       },
     ],
@@ -3162,28 +3162,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_hain_10: {
     baslik: "An Offer to Come Back",
     metin:
-      "An old officer at the garrison pulls you aside: garrison intelligence suspects a leak but doesn't want to accuse anyone. If you help him and knowingly send the enemy false information, maybe you can protect your own army just this once.",
+      "An old officer at HQ pulls you aside: intelligence suspects a leak but wants to blame no one. Feed the enemy false intel and you may protect your army.",
     secenekler: [
       {
-        metin: "Knowingly give the enemy wrong information, protect your own army.",
+        metin: "Feed false intel, protect your army.",
         basariliSonuc: {
-          mesaj: "The false information you gave sent the enemy the wrong way; your own army was saved from a blow thanks to it.",
-          detay: "Traitor though you are, tonight you stood on your own side once more.",
+          mesaj: "The false intel sent the enemy astray; your army escaped a blow.",
+          detay: "Traitor or not, tonight you stood with your own.",
         },
         basarisizSonuc: {
-          mesaj: "The agent noticed the false information; he made you pay a heavy price, your trust was seriously shaken.",
-          detay: "Trying to fool both sides at once is the most dangerous game.",
+          mesaj: "The agent caught the falsehood and made you pay dearly; trust shattered.",
+          detay: "Deceiving both sides is the deadliest game.",
         },
       },
       {
-        metin: "Don't take the risk, carry on your business as usual.",
+        metin: "Take no risk, carry on as usual.",
         basariliSonuc: {
-          mesaj: "You didn't take the chance; business went on as usual, your purse filled.",
-          detay: "Some nights, even doing nothing is a choice.",
+          mesaj: "You passed on the chance; business went on and your purse filled.",
+          detay: "Doing nothing is also a choice.",
         },
         basarisizSonuc: {
-          mesaj: "The intelligence you gave that night really did cause heavy losses; this time your conscience never let you go.",
-          detay: "Staying silent has a price too.",
+          mesaj: "The intel you gave that night caused heavy losses; your conscience wouldn't let go.",
+          detay: "Silence has a price too.",
         },
       },
     ],
@@ -3192,39 +3192,39 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_hain_11: {
     baslik: "A Caught Courier",
     metin:
-      "The courier who carried messages between you and the agent was caught by a border patrol. There's nothing on him that he was bringing to you, but there's no telling what he'll say if interrogated. Saving him is risky, abandoning him is a quiet killing.",
+      "Your courier was caught by a border patrol. He carries nothing, but may talk. Rescue is risky; abandoning him is silent murder.",
     secenekler: [
       {
-        metin: "Bribe the patrol and save the courier.",
+        metin: "Bribe the patrol to free him.",
         basariliSonuc: {
-          mesaj: "You secretly paid the patrol commander; the courier was released, no one asked too many questions.",
-          detay: "In this work sometimes the only trustworthy tongue is money.",
+          mesaj: "You secretly paid the patrol commander; the courier was freed.",
+          detay: "Money is the one trusted language.",
         },
         basarisizSonuc: {
-          mesaj: "The bribe was refused, and your offer was noticed on top of it; they might call you in for questioning too now.",
-          detay: "Trying to save someone you can sink yourself too.",
+          mesaj: "The bribe was refused and noticed; you may be questioned too.",
+          detay: "Rescuing may sink you too.",
         },
       },
       {
-        metin: "Leave the courier to his fate, stay silent.",
+        metin: "Leave him to fate, keep quiet.",
         basariliSonuc: {
-          mesaj: "The courier came out of the interrogation without talking, you were saved by chance; but you'll never forget that you abandoned him.",
-          detay: "Some victories taste bitter even to the winner.",
+          mesaj: "The courier came out silent and you're safe, but you won't forget abandoning him.",
+          detay: "Some victories taste bitter.",
         },
         basarisizSonuc: {
-          mesaj: "Under pressure the courier gave your name; now you think they're coming for you at every footstep.",
-          detay: "Someone you abandon can drag you down with them.",
+          mesaj: "Under pressure the courier named you; you hear them in every footstep.",
+          detay: "Those you abandon drag you down.",
         },
       },
       {
-        metin: "Find the courier before the interrogation, tell him to stay silent.",
+        metin: "Find him before questioning, tell him to stay silent.",
         basariliSonuc: {
-          mesaj: "You met the courier in the dark and persuaded him; he swore he'd stay silent and kept his word.",
-          detay: "Sometimes the most dangerous way is the most honest one.",
+          mesaj: "You met him in the dark and persuaded him; he swore silence and kept it.",
+          detay: "Sometimes the riskiest path is the honest one.",
         },
         basarisizSonuc: {
-          mesaj: "Your meeting was noticed; now you and the courier are in the same interrogation room.",
-          detay: "Direct intervention can pull you into the very heart of the crime.",
+          mesaj: "The meeting was seen; you're both in the same interrogation room.",
+          detay: "Direct action pulls you into the crime.",
         },
       },
     ],
@@ -3233,28 +3233,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_hain_12: {
     baslik: "The Promotion Feast",
     metin:
-      "A small feast is being held in the barracks in honor of your promotion to man-at-arms; your commander praises you, your comrades-in-arms raise their cups. In the middle of this warmth, you realize just how alone you are.",
+      "A barracks feast honors your promotion; the commander praises you, comrades toast. In this warmth you realize how alone you are.",
     secenekler: [
       {
-        metin: "Live the moment, really feel like one of them.",
+        metin: "Live the moment, feel one of them.",
         basariliSonuc: {
-          mesaj: "You joined the laughter, raised a cup; for a moment you forgot you were a traitor.",
-          detay: "Sometimes the most dangerous moment is when you truly feel you belong.",
+          mesaj: "You joined the laughter; for a moment you forgot you were a traitor.",
+          detay: "Belonging is the most dangerous moment.",
         },
         basarisizSonuc: {
-          mesaj: "The drink loosened your tongue; you let slip something you shouldn't have, then covered it in a panic.",
-          detay: "Even joy can be a trap in this life.",
+          mesaj: "Drink loosened your tongue; you let something slip and covered in panic.",
+          detay: "Even cheer can be a trap.",
         },
       },
       {
-        metin: "Stay distant, don't drink much, stay alert.",
+        metin: "Stay distant, drink little, stay alert.",
         basariliSonuc: {
-          mesaj: "You raised your cup but your mind stayed alert; no one suspected you that night.",
-          detay: "Staying alert is a habit of this life that isn't free.",
+          mesaj: "You raised your cup but kept your mind alert; no one suspected.",
+          detay: "Vigilance is a habit with a cost.",
         },
         basarisizSonuc: {
-          mesaj: "Your coldness was noticed; they talked behind your back 'he isn't even glad of his own promotion'.",
-          detay: "Caution sometimes raises as much suspicion as joy.",
+          mesaj: "Your coldness was noticed: 'He doesn't even enjoy his own promotion.'",
+          detay: "Caution draws suspicion as joy does.",
         },
       },
     ],
@@ -3263,28 +3263,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_hain_13: {
     baslik: "An Unspoken Sin",
     metin:
-      "A wandering monk coming to the barracks listens to those who want to confess. You kneel, open your mouth — but saying your real sin is heavy enough to hang you. You just list small, unimportant sins.",
+      "A wandering monk hears confessions at the barracks. You kneel, but your true sin would hang you; you list only petty ones.",
     secenekler: [
       {
-        metin: "Confess without telling the truth, act relieved.",
+        metin: "Confess without the truth.",
         basariliSonuc: {
-          mesaj: "The monk blessed you, you felt lighter; but the real burden inside you never lifted.",
-          detay: "An unspoken sin is never really forgiven.",
+          mesaj: "The monk blessed you and you felt lighter, but the real burden remained.",
+          detay: "An unspoken sin is never forgiven.",
         },
         basarisizSonuc: {
-          mesaj: "The monk's look at you was strange; it was as if he sensed what you'd left out.",
-          detay: "Some eyes hear the unspoken too.",
+          mesaj: "The monk's look was odd, as if he sensed what you left out.",
+          detay: "Some eyes hear the unsaid.",
         },
       },
       {
-        metin: "Refuse to kneel, miss your turn at confession.",
+        metin: "Refuse to kneel, skip the line.",
         basariliSonuc: {
-          mesaj: "You didn't stand in line; at least you didn't tell one more lie.",
-          detay: "Some burdens must go on being carried.",
+          mesaj: "You skipped the line; at least you told no further lie.",
+          detay: "Some burdens must be carried.",
         },
         basarisizSonuc: {
           mesaj: "Your avoidance was noticed; some whispered 'faithless'.",
-          detay: "Everything you flee leaves a question mark behind you.",
+          detay: "Everything you dodge leaves a question.",
         },
       },
     ],
@@ -3293,39 +3293,39 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_hain_14: {
     baslik: "The Price of a Comrade-in-Arms",
     metin:
-      "The agent wants to know which unit will be sent to the area where the enemy plans a raid. You know the answer: your closest comrade-in-arms's unit. Saying it means sending him and dozens of men beside him to their deaths.",
+      "The agent asks which unit will meet the enemy raid: your closest comrade's. Telling sends them to death.",
     secenekler: [
       {
-        metin: "Give the information, put your own life first.",
+        metin: "Give it up, think of yourself.",
         basariliSonuc: {
-          mesaj: "You gave the information; the unit fell into an ambush, {dost} never came back to the barracks.",
-          detay: "Some nights are never forgotten, only suppressed.",
+          mesaj: "You gave it; the unit was ambushed and {dost} never returned.",
+          detay: "Some nights are never forgotten, only buried.",
         },
         basarisizSonuc: {
-          mesaj: "The information arrived late, the ambush was half-done; {dost} came back wounded but alive — and he looks at you with a strange gratitude.",
-          detay: "Knowing he survived shrinks you even more.",
+          mesaj: "The ambush half-failed; wounded {dost} returned, eyeing you with strange gratitude.",
+          detay: "His survival only shrinks you.",
         },
       },
       {
-        metin: "Give the information wrong, try to protect your friend.",
+        metin: "Give false intel, protect your friend.",
         basariliSonuc: {
-          mesaj: "The wrong information you gave worked; {dost} survived, and the agent didn't notice.",
-          detay: "Tonight you were at peace not because you're a traitor but because you couldn't stay one.",
+          mesaj: "The false intel worked; {dost} lived and the agent didn't notice.",
+          detay: "Peace came not from treachery but from failing at it.",
         },
         basarisizSonuc: {
-          mesaj: "The agent worked out your lie; he declared you 'unreliable' and left you facing a heavy threat.",
-          detay: "Even trying to do good isn't free in this game.",
+          mesaj: "The agent saw through the lie, called you 'untrustworthy' and threatened you gravely.",
+          detay: "Even kindness has a price here.",
         },
       },
       {
-        metin: "Give the information partly, manage both the agent and your friend.",
+        metin: "Give part, handle both agent and friend.",
         basariliSonuc: {
-          mesaj: "You gave the agent enough truth and {dost} enough of a hint; the unit moved carefully, the losses were fewer.",
-          detay: "Sometimes the best betrayal is not fully selling anyone.",
+          mesaj: "You gave the agent enough truth and {dost} enough warning; losses shrank.",
+          detay: "The best betrayal sells no one fully.",
         },
         basarisizSonuc: {
-          mesaj: "The balance didn't hold; the agent grew suspicious of the half-information and the unit was caught unprepared.",
-          detay: "Trying to stand on two horses at once usually drops you off both.",
+          mesaj: "The balance failed; the agent grew suspicious and the unit was caught unprepared.",
+          detay: "Ride two horses and fall from both.",
         },
       },
     ],
@@ -3334,28 +3334,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_hain_15: {
     baslik: "The Commander's Table",
     metin:
-      "Since you rose to Commander every map on the war table, every sealed order passes through your hands. The agent no longer sees you as an information source but as a piece that could change the course of the war.",
+      "Since your promotion to commander every map and sealed order passes your hands. The agent sees you not as a source but as a piece that could turn the war.",
     secenekler: [
       {
-        metin: "Hand over the whole war strategy, deliver the enemy a victory.",
+        metin: "Hand over the whole strategy, give the enemy victory.",
         basariliSonuc: {
-          mesaj: "You gave the strategy in full; the agent counts you now not a 'partner' but almost an equal.",
-          detay: "After rising this high, falling is that much deeper too.",
+          mesaj: "You gave the full strategy; the agent now treats you almost as an equal.",
+          detay: "The higher you climb, the deeper the fall.",
         },
         basarisizSonuc: {
-          mesaj: "Some among the commanders started suspecting a leak; every day that passes without them lifting a finger feels like a miracle.",
-          detay: "Every step at the summit brings you a little closer to the edge of the cliff.",
+          mesaj: "Some commanders suspect a leak; every quiet day is a miracle.",
+          detay: "Each step at the top nears the cliff.",
         },
       },
       {
-        metin: "Leak only the non-critical part of the strategy, keep the balance.",
+        metin: "Leak only the non-critical part, stay balanced.",
         basariliSonuc: {
-          mesaj: "The piece you gave was valuable but didn't change the fate of the war; the agent made do.",
-          detay: "Keeping the balance may be the only way to survive in this game.",
+          mesaj: "The piece was valuable but didn't change the war; the agent made do.",
+          detay: "Balance may be the only way to survive.",
         },
         basarisizSonuc: {
-          mesaj: "The agent expected more of you; he didn't hide his disappointment, left in a threat-laden silence.",
-          detay: "A half-done disloyalty satisfies no side.",
+          mesaj: "The agent expected more and left in threatening silence.",
+          detay: "Half-treachery satisfies no one.",
         },
       },
     ],
@@ -3364,28 +3364,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_hain_16: {
     baslik: "Sleepless Nights",
     metin:
-      "The price of living between two worlds for months is building up in your body; your hands tremble, your sleep goes, you flinch at the slightest sound. One night on watch you notice you're muttering something as if in delirium — you're not sure what you said.",
+      "Living between two worlds is wearing you down: shaking hands, no sleep. One night on watch you muttered in delirium, unsure what you said.",
     secenekler: [
       {
-        metin: "Ask the barracks physician for help, feign illness.",
+        metin: "Ask the surgeon for help, feign illness.",
         basariliSonuc: {
-          mesaj: "The physician gave you a mixture of roots; you slept easy for a few nights.",
-          detay: "Your body healed a little but your mind is still split two ways.",
+          mesaj: "The surgeon gave you a root mixture; you slept easy a few nights.",
+          detay: "Body mended, mind still split.",
         },
         basarisizSonuc: {
-          mesaj: "The physician sensed your state was more than ordinary fatigue; his questions made you sweat.",
-          detay: "Even asking for help isn't without risk in this life.",
+          mesaj: "The surgeon sensed more than mere fatigue; his questions made you sweat.",
+          detay: "Even asking for help is risky.",
         },
       },
       {
-        metin: "Show no one, hold on alone.",
+        metin: "Stay unseen, endure alone.",
         basariliSonuc: {
-          mesaj: "You held on in silence; no one noticed but getting up each morning got a little harder.",
-          detay: "Some burdens don't lighten unless shared, they just sink deeper.",
+          mesaj: "You endured quietly; no one noticed, but each morning grew harder.",
+          detay: "Unshared burdens just sink deeper.",
         },
         basarisizSonuc: {
-          mesaj: "You fainted during a watch; those who found you wonder what you said.",
-          detay: "The body will one day surely give back what the mind couldn't carry.",
+          mesaj: "You collapsed on watch; those who found you wonder what you said.",
+          detay: "The body returns what the mind can't carry.",
         },
       },
     ],
@@ -3394,39 +3394,39 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_hain_17: {
     baslik: "The Final Offer",
     metin:
-      "The agent no longer speaks in code: the enemy command offers a rank across the border, a piece of land, and a real name. All they want in return — one last betrayal that will end this war, and that you never come back.",
+      "The agent speaks openly now: the enemy command offers rank, land and a new name across the border. In return: one last betrayal and never returning.",
     secenekler: [
       {
-        metin: "Accept the offer, cross fully to the enemy side.",
+        metin: "Accept, cross to the enemy.",
         basariliSonuc: {
-          mesaj: "On a dark night you left the barracks; your name is spoken as 'traitor' in these lands now, but you live under a different sky with a new name.",
-          detay: "Ending one life and building another is a lonelier thing than you thought.",
+          mesaj: "You left the barracks by night; a 'traitor' here, under a new name beyond the border.",
+          detay: "Building a new life is lonelier than it sounds.",
         },
         basarisizSonuc: {
-          mesaj: "During your escape a border patrol noticed you; you barely saved your life, but now you're a suspect name to both sides.",
-          detay: "Escape plans can collapse just when you trust them most.",
+          mesaj: "A border patrol spotted you fleeing; you barely escaped, a suspect to both sides.",
+          detay: "Plans collapse when you trust them most.",
         },
       },
       {
-        metin: "Refuse, decide you've gone far enough now.",
+        metin: "Refuse, you've gone far enough.",
         basariliSonuc: {
-          mesaj: "You turned the offer down; the agent left in disappointment but didn't threaten you.",
-          detay: "To draw some lines you first have to see how far you've gone.",
+          mesaj: "You refused; the agent left disappointed but made no threat.",
+          detay: "To draw a line, see how far you've gone.",
         },
         basarisizSonuc: {
-          mesaj: "Your refusal angered the agent; 'someone who knows this much can't go free,' he said, threatening you.",
-          detay: "In this game even wanting to step away demands a price.",
+          mesaj: "Your refusal enraged the agent: 'Someone who knows this much can't go free.'",
+          detay: "Even withdrawing has a cost.",
         },
       },
       {
-        metin: "Try to buy time, give no firm answer.",
+        metin: "Stall, give no firm answer.",
         basariliSonuc: {
-          mesaj: "You told the agent you needed to think; he waited patiently but the trust in his eyes lessened.",
-          detay: "Buying time is sometimes not a solution, just a postponed reckoning.",
+          mesaj: "You said you need to think; the agent waited, trust fading.",
+          detay: "Stalling only postpones the reckoning.",
         },
         basarisizSonuc: {
-          mesaj: "Your indecision made the agent impatient; 'you're either with me or you're no one's,' he said and left.",
-          detay: "In this game even your indecision has a price.",
+          mesaj: "Your hesitation wore him out: 'Be with me or with no one.'",
+          detay: "Hesitation has a price too.",
         },
       },
     ],
@@ -3435,28 +3435,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_hain_18: {
     baslik: "An Innocent Man",
     metin:
-      "The private you accused years ago to shake off suspicion is still dragging a chain in a mine. His family petitioned the commander, the file is being reopened — and your name is among the witnesses.",
+      "The soldier you blamed years ago still drags shackles in a mine. His family's petition reopens the file; your name is among the witnesses.",
     secenekler: [
       {
         metin: "Use your influence to quietly close the file.",
         basariliSonuc: {
-          mesaj: "The file was closed, the man stayed in the mine; no one blamed you but your own conscience had long since passed its verdict.",
-          detay: "Some injustices multiply when you cover them up.",
+          mesaj: "The file closed, he stayed in the mine; no one accused you, but conscience judged.",
+          detay: "Injustice multiplies when covered up.",
         },
         basarisizSonuc: {
-          mesaj: "Your intervention was noticed; they started asking 'why are you so interested'.",
-          detay: "Trying to bury the past sometimes digs it up deeper.",
+          mesaj: "Your meddling was noticed; they began asking why you care so much.",
+          detay: "Burying the past can dig it deeper.",
         },
       },
       {
-        metin: "Bring the truth out with an anonymous letter, save the man.",
+        metin: "Expose the truth by anonymous letter, free the man.",
         basariliSonuc: {
-          mesaj: "Your letter had the file reopened; the man was freed, no one learned who the letter was from.",
-          detay: "Righting a wrong even years later eases something inside you.",
+          mesaj: "The letter reopened the file; the man was freed and the sender stayed unknown.",
+          detay: "Righting a wrong, even late, lightens you.",
         },
         basarisizSonuc: {
-          mesaj: "Your handwriting was recognized; now they're after both your old lie and your new confession.",
-          detay: "Trying to clear your conscience can drag you out of the very place you were hiding.",
+          mesaj: "Your handwriting was recognized; they pursue both your old lie and new confession.",
+          detay: "Clearing your conscience can drag you from hiding.",
         },
       },
     ],
@@ -3465,39 +3465,39 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_hain_19: {
     baslik: "The Hidden Chest",
     metin:
-      "A sudden search order came in the barracks; a senior officer is turning everyone's belongings inside out on suspicion of theft. At the bottom of your chest sit the gold you've hidden for years and a small seal the agent gave you.",
+      "A sudden barracks search: a senior officer ransacks belongings over a theft. Your chest holds hoarded gold and the agent's seal.",
     secenekler: [
       {
-        metin: "Secretly move the items elsewhere before the search.",
+        metin: "Move your things elsewhere before the search.",
         basariliSonuc: {
-          mesaj: "At the last moment you hid everything in a friend's saddlebag; the search passed you by entirely.",
-          detay: "Your heart was in your throat but once more you got off cheap.",
+          mesaj: "At the last moment you hid everything in a friend's saddlebag; the search passed you by.",
+          detay: "Heart in throat, but you got off cheap.",
         },
         basarisizSonuc: {
-          mesaj: "While moving them you came eye to eye with a sentry; now you have to explain where you got what's in your hands.",
-          detay: "Decisions made in panic leave the most traces.",
+          mesaj: "A sentry caught your eye as you carried it; now you must explain where it came from.",
+          detay: "Panicked choices leave tracks.",
         },
       },
       {
-        metin: "Don't take the risk, stay where you are, wait for the search.",
+        metin: "Take no risk, stay put, await the search.",
         basariliSonuc: {
-          mesaj: "The officer rummaged through your chest sloppily and didn't notice the cloth under the gold.",
-          detay: "Sometimes the best strategy is waiting without doing anything.",
+          mesaj: "The officer rummaged lazily and missed the cloth beneath the gold.",
+          detay: "Sometimes waiting is the best strategy.",
         },
         basarisizSonuc: {
-          mesaj: "The officer found the seal, his eyes hardened; now questions are being asked all the way up the command.",
-          detay: "A small object can bring years of secrecy out in an instant.",
+          mesaj: "The officer found the seal, eyes hardening; questions rise to HQ's top.",
+          detay: "One small object can unmask years of secrets.",
         },
       },
       {
-        metin: "Confess a small privacy to the officer, distract him.",
+        metin: "Confess a small private matter to the officer.",
         basariliSonuc: {
-          mesaj: "You said there was a private letter in the chest and stalled the officer; you got him to go over the real search only on the surface.",
-          detay: "Sometimes a small shame overshadows a big crime.",
+          mesaj: "You claimed a hidden letter in the chest; he searched only superficially.",
+          detay: "A small shame can eclipse a big crime.",
         },
         basarisizSonuc: {
-          mesaj: "The officer didn't believe your story and tightened the search further.",
-          detay: "Attempts to distract sometimes have the opposite effect.",
+          mesaj: "He didn't believe you and tightened the search.",
+          detay: "Distractions sometimes backfire.",
         },
       },
     ],
@@ -3506,28 +3506,28 @@ export const OLAYLAR_ORTACAG_ASKER_YOLLARI_EN: Record<string, OlayCeviri> = {
   oc_asker_hain_20: {
     baslik: "The Final Reckoning",
     metin:
-      "Your hair has gone gray, your sword isn't as light as it was. One night the weight of the double life you've carried since your youth settles over you — you'll either take this secret to the grave, or tell the truth just once.",
+      "Your hair has grayed, your sword grown heavy. One night the weight of a double life falls: take the secret to the grave, or speak the truth?",
     secenekler: [
       {
-        metin: "Stay silent, carry the secret to your grave.",
+        metin: "Stay silent, carry the secret to the grave.",
         basariliSonuc: {
-          mesaj: "You said nothing; you'll be remembered in the barracks as 'a loyal, silent soldier' — no one will know the truth.",
-          detay: "Some truths mix with the earth along with the one who carried them.",
+          mesaj: "You said nothing; the barracks will remember a 'loyal, silent soldier'.",
+          detay: "Some truths are buried with their bearer.",
         },
         basarisizSonuc: {
-          mesaj: "On your deathbed, delirious, you let a few words slip; those beside you put it down to fever ravings, one hopes so.",
-          detay: "As your body weakens, so does your secret.",
+          mesaj: "On your deathbed a few words slipped; those near blamed fever, hopefully so.",
+          detay: "As the body weakens, so does the secret.",
         },
       },
       {
-        metin: "Tell the truth one last time to someone you trust.",
+        metin: "Tell someone you trust the truth, one last time.",
         basariliSonuc: {
-          mesaj: "You finally shared the burden you'd carried for years; the one across from you just listened without judging you.",
-          detay: "Sometimes all you needed was for the truth to echo in another ear.",
+          mesaj: "You shared the burden of years; he listened without judging.",
+          detay: "Sometimes all you need is another ear.",
         },
         basarisizSonuc: {
-          mesaj: "Your confession spread faster than you'd thought; your name will go into history as 'traitor' now, but at least you died honest with yourself.",
-          detay: "The truth, even when it comes late, has a price sooner or later.",
+          mesaj: "The confession spread fast; history will call you 'traitor', but you died honest.",
+          detay: "Truth, though late, has its price.",
         },
       },
     ],

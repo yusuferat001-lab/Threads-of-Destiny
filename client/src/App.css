@@ -2288,7 +2288,7 @@ button.ikincil {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* Paket 4: şans + etki çipleri artık tek kompakt satır (alt alta yığılmıyor).
+/* Paket 4: etki çipleri tek kompakt satır (alt alta yığılmıyor).
    `display: contents` ile .secenek-tahmin çipleri de bu satırın parçası olur. */
 .secenek-meta {
   display: flex;
@@ -4636,11 +4636,6 @@ button.ikincil {
 .meslek-yatkinlik {
   font-size: clamp(0.75rem, 0.3vw + 0.6rem, 1.05rem);
   opacity: 0.85;
-}
-
-.secenek-sans {
-  font-size: clamp(0.75rem, 0.3vw + 0.6rem, 1.05rem);
-  opacity: 0.65;
 }
 
 .secenek-tahminler {
@@ -7634,4 +7629,56 @@ button.ikincil {
     border-color: var(--renk-altin-parlak);
     outline: none;
   }
+}
+
+/* --- Amaç detay penceresi: bir amaca tıklayınca ne yapılacağı --- */
+.amac-serit-oge {
+  /* Şerit artık tıklanır (button): tarayıcı varsayılanlarını sıfırla, overlay'in pointer-events:none'ını aş. */
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.amac-tiklanir {
+  cursor: pointer;
+}
+.amac-detay-modal {
+  max-width: 380px;
+}
+.amac-detay-modal.amac-zor {
+  border-left-color: #d8a94a;
+}
+.amac-detay-etiket {
+  font-size: 0.78rem;
+  opacity: 0.8;
+  margin: 0 0 0.6rem;
+}
+.amac-detay-alt-baslik {
+  margin: 0 0 0.25rem;
+  font-size: 0.82rem;
+  color: var(--renk-altin-parlak);
+  letter-spacing: 0.04em;
+}
+.amac-detay-ilerleme {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin: 0 0 0.8rem;
+  font-size: 0.85rem;
+}
+.amac-detay-ipucu {
+  font-size: 0.78rem;
+  opacity: 0.8;
+  font-style: italic;
+}
+.amac-serit-oge {
+  box-shadow: none;
+}
+button.amac-serit-oge:hover:not(:disabled) {
+  background: rgba(34, 22, 10, 0.85);
+  transform: none;
+  box-shadow: none;
+}
+button.amac-serit-oge.amac-serit-tamam:hover:not(:disabled) {
+  background: rgba(40, 90, 45, 0.85);
 }

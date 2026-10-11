@@ -22,36 +22,36 @@ export const OLAY_VEBA_HASTALIGI: OlayTanimi[] = [
     gorsel: "🩺",
     baslik: "Bir Hekim Getirt",
     metin:
-      "Ateşin düşmüyor, lekeler koltuk altına vurdu. Şehirde hâlâ ayakta kalan birkaç hekimden biri, ağır bir ücret karşılığı seninle ilgilenmeyi kabul ediyor.",
+      "Ateşin düşmüyor, lekeler koltuk altına vurdu. Kalan birkaç hekimden biri, ağır ücretle bakmayı kabul ediyor.",
     secenekler: [
       {
-        metin: "Ne isterse öde, hekim başında kalsın.",
+        metin: "Ne isterse öde, hekim kalsın.",
         baseBasariSansi: 75,
         maliyet: 18,
-        kilitAciklamasi: "Hekimin ücretini karşılayacak paran yok.",
+        kilitAciklamasi: "Hekim ücretine paran yetmiyor.",
         basariliSonuc: {
           para: -18,
           saglik: 4,
           veba_olum_riski_artis: -30,
-          mesaj: "Hekim günlerce yanından ayrılmadı; kan aldı, lapa yaptı, ateşini takip etti. Kriz yavaş yavaş geriledi.",
+          mesaj: "Hekim günlerce yanında kaldı; kriz yavaşça geriledi.",
           detay: "Doğru bakım her şeyi değiştirir.",
         },
         basarisizSonuc: {
           para: -18,
           veba_olum_riski_artis: -10,
-          mesaj: "Hekimin elinden geleni yaptı ama vaka ağırdı; yine de yalnız kalmaktan iyiydi.",
-          detay: "Bazen para bile yetmiyor.",
+          mesaj: "Hekim elinden geleni yaptı; vaka ağırdı ama yalnız değildin.",
+          detay: "Bazen para bile yetmez.",
         },
       },
       {
-        metin: "Parayı veremem; kendi başına atlatmaya çalış.",
+        metin: "Veremem; kendi başıma atlatırım.",
         baseBasariSansi: 90,
         basariliSonuc: {
-          mesaj: "Hekimi geri gönderdin. Yatağında ter içinde, kendi bedeninin savaşını izledin.",
+          mesaj: "Hekimi gönderdin; ter içinde kendi başına savaştın.",
         },
         basarisizSonuc: {
           mutluluk: -3,
-          mesaj: "Geceleri daha da kötüleşti; keşke o parayı verseydim diye düşündün.",
+          mesaj: "Geceler kötüleşti; parayı verseydim, diye düşündün.",
         },
       },
     ],
@@ -65,7 +65,7 @@ export const OLAY_VEBA_HASTALIGI: OlayTanimi[] = [
     gorsel: "🌿",
     baslik: "Şifacının Otları",
     metin:
-      "Mahallede bir şifacı kadın, vebalılara kaynatıp içirdiği acı bir ot karışımı satıyor. Kimi işe yaradığına yemin ediyor, kimi 'zehir' diyor.",
+      "Mahallede bir şifacı, vebalılara acı bir ot karışımı satıyor. Kimi işe yaradığına yemin ediyor, kimi 'zehir' diyor.",
     secenekler: [
       {
         metin: "Karışımı al, tarifine göre iç.",
@@ -75,24 +75,24 @@ export const OLAY_VEBA_HASTALIGI: OlayTanimi[] = [
         basariliSonuc: {
           para: -12,
           veba_olum_riski_artis: -22,
-          mesaj: "İçtiğin gece kan ter içinde kaldın, sabaha ateşin bir tık düşmüştü. Sonraki günler daha iyiydi.",
+          mesaj: "Gece kan ter içinde kaldın; sabaha ateşin düştü.",
         },
         basarisizSonuc: {
           para: -12,
           saglik: -6,
           veba_olum_riski_artis: 10,
-          mesaj: "Karışım miden kaldıramadı; günlerce kustun, hâlin daha da ağırlaştı.",
+          mesaj: "Karışım dokundu; günlerce kustun, hâlin ağırlaştı.",
         },
       },
       {
         metin: "Güvenmiyorum, almıyorum.",
         baseBasariSansi: 90,
         basariliSonuc: {
-          mesaj: "Şifacıyı geri çevirdin. Belki doğru karardı, belki bir şansı tepmiş oldun.",
+          mesaj: "Şifacıyı çevirdin. Belki doğru karardı, belki fırsat kaçtı.",
         },
         basarisizSonuc: {
           mutluluk: -2,
-          mesaj: "Reddettikten sonra 'ya işe yarayacaktıysa?' diye kara kara düşündün.",
+          mesaj: "'Ya işe yarayacaktıysa?' diye kara kara düşündün.",
         },
       },
     ],
@@ -107,34 +107,34 @@ export const OLAY_VEBA_HASTALIGI: OlayTanimi[] = [
     gorsel: "⛪",
     baslik: "Manastırın Merhemi",
     metin:
-      "Şehir dışındaki manastırın keşişleri, nesillerdir sakladıkları bir merhem ve dua kürü uyguluyor. Kabul ederlerse birkaç gün orada kalman gerekiyor.",
+      "Şehir dışındaki manastırın keşişleri eski bir merhem ve dua kürü uyguluyor. Birkaç gün orada kalmalısın.",
     secenekler: [
       {
         metin: "Manastıra git, kürü tamamla.",
         baseBasariSansi: 68,
         maliyet: 16,
-        kilitAciklamasi: "Manastıra bağış yapıp orada kalacak paran yok.",
+        kilitAciklamasi: "Bağış ve konaklama paran yok.",
         basariliSonuc: {
           para: -16,
           mutluluk: 4,
           veba_olum_riski_artis: -28,
-          mesaj: "Serin taş odalarda, ot kokusu ve ilahiler arasında dinlendin. Bedenin toparlanmaya başladı, için de.",
+          mesaj: "Taş odalarda ot kokusu ve ilahiler içinde toparlandın.",
         },
         basarisizSonuc: {
           para: -16,
           veba_olum_riski_artis: -8,
-          mesaj: "Merhem beklediğin mucizeyi yapmadı ama en azından temiz bir yatakta, bakılarak geçti günlerin.",
+          mesaj: "Merhem mucize yapmadı ama temiz yatakta bakıldın.",
         },
       },
       {
-        metin: "Bu hâlde yola çıkamam, evde kalıyorum.",
+        metin: "Yola çıkamam, evde kalırım.",
         baseBasariSansi: 88,
         basariliSonuc: {
-          mesaj: "Yolculuğu göze alamadın; evinde, kendi imkânlarınla direndin.",
+          mesaj: "Yolu göze alamadın; evde kendi imkânınla direndin.",
         },
         basarisizSonuc: {
           mutluluk: -2,
-          mesaj: "Evde yalnız kalmak ağır geldi; keşişlerin sözünü aklından çıkaramadın.",
+          mesaj: "Evde yalnızlık ağır geldi; keşişleri unutamadın.",
         },
       },
     ],
@@ -149,35 +149,35 @@ export const OLAY_VEBA_HASTALIGI: OlayTanimi[] = [
     gorsel: "💉",
     baslik: "Genç Doktorun Yöntemi",
     metin:
-      "Yeni açılan bir hastanede, salgını inceleyen genç bir doktor deneysel bir tedavi uyguluyor: düzenli müdahale, temiz oda, sıkı takip. Ücreti yüksek, sonucu belirsiz.",
+      "Yeni hastanede genç bir doktor deneysel tedavi uyguluyor: temiz oda, sıkı takip. Ücreti yüksek, sonucu belirsiz.",
     secenekler: [
       {
-        metin: "Hastaneye yatır kendini, tedaviyi dene.",
+        metin: "Hastaneye yat, tedaviyi dene.",
         baseBasariSansi: 60,
         maliyet: 24,
-        kilitAciklamasi: "Hastane ücretini ödeyecek paran yok.",
+        kilitAciklamasi: "Hastane ücretine paran yetmiyor.",
         basariliSonuc: {
           para: -24,
           saglik: 5,
           veba_olum_riski_artis: -34,
-          mesaj: "Beyaz bir odada, saat başı kontrol edilerek geçti günlerin. Doktorun yöntemi tuttu; krizi atlattın.",
+          mesaj: "Beyaz odada saat başı kontrolle krizi atlattın.",
         },
         basarisizSonuc: {
           para: -24,
           saglik: -8,
           veba_olum_riski_artis: 16,
-          mesaj: "Tedavi henüz oturmamıştı; müdahalelerin bir kısmı seni daha da yıprattı. Doktor not aldı, sen ağırlaştın.",
+          mesaj: "Tedavi oturmadı; müdahaleler seni daha çok yıprattı.",
         },
       },
       {
         metin: "Deney faresi olmam, evde kalırım.",
         baseBasariSansi: 88,
         basariliSonuc: {
-          mesaj: "Hastaneyi reddettin; kendi yatağında, bildiğin yöntemlerle direndin.",
+          mesaj: "Hastaneyi reddedip kendi yatağında direndin.",
         },
         basarisizSonuc: {
           mutluluk: -2,
-          mesaj: "Evde beklerken hastanedeki o temiz odayı düşünüp durdun.",
+          mesaj: "Evde beklerken o temiz odayı düşündün durdun.",
         },
       },
     ],
@@ -191,7 +191,7 @@ export const OLAY_VEBA_HASTALIGI: OlayTanimi[] = [
     gorsel: "🩸",
     baslik: "Kan Alma",
     metin:
-      "Dönemin yaygın inancı: hastalık 'kirli kanla' yayılır. Bir berber-cerrah, damarından bir miktar kan alıp 'zehri boşaltmayı' öneriyor. Bazen işe yarıyor, bazen hastayı daha da düşürüyor.",
+      "İnanışa göre hastalık 'kirli kandan'. Berber-cerrah 'zehri boşaltmayı' öneriyor; bazen işe yarar, bazen yıkar.",
     secenekler: [
       {
         metin: "Bırak kanını alsın.",
@@ -200,24 +200,24 @@ export const OLAY_VEBA_HASTALIGI: OlayTanimi[] = [
         basariliSonuc: {
           para: -6,
           veba_olum_riski_artis: -24,
-          mesaj: "İşlemden sonra tuhaf bir hafifleme hissettin; ateşin birkaç gün içinde kırıldı.",
+          mesaj: "İşlemden sonra hafifledin; ateşin birkaç günde kırıldı.",
         },
         basarisizSonuc: {
           para: -6,
           saglik: -10,
           veba_olum_riski_artis: 22,
-          mesaj: "Zaten güçsüz bedenin bir de kan kaybıyla sarsıldı; bayıldın, günlerce ayağa kalkamadın.",
+          mesaj: "Kan kaybıyla sarsıldın; bayıldın, günlerce kalkamadın.",
         },
       },
       {
-        metin: "Hayır, bu kadar kanım yok.",
+        metin: "Hayır, o kadar kanım yok.",
         baseBasariSansi: 92,
         basariliSonuc: {
-          mesaj: "Berber-cerrahı gönderdin. En azından olduğun yerde kaldın, daha kötüsü olmadı.",
+          mesaj: "Berber-cerrahı gönderdin; en azından kötüleşmedi.",
         },
         basarisizSonuc: {
           mutluluk: -1,
-          mesaj: "Reddettin ama komşular 'inatçılığı yüzünden' diye fısıldadı durdu.",
+          mesaj: "Reddettin; komşular 'inatçılığı yüzünden' diye fısıldadı.",
         },
       },
     ],
@@ -230,35 +230,35 @@ export const OLAY_VEBA_HASTALIGI: OlayTanimi[] = [
     gorsel: "🛏️",
     baslik: "Her Şeyi Bırak",
     metin:
-      "İş, borç, sorumluluk... hepsi bekleyebilir. Bedenin tek bir şey istiyor: kesintisiz dinlenme, sıcak çorba, sessizlik.",
+      "İş, borç, sorumluluk... hepsi bekleyebilir. Bedenin kesintisiz dinlenme, sıcak çorba, sessizlik istiyor.",
     secenekler: [
       {
-        metin: "İşi tamamen bırak, sadece dinlen.",
+        metin: "İşi bırak, sadece dinlen.",
         baseBasariSansi: 82,
         basariliSonuc: {
           para: -8,
           mutluluk: -2,
           veba_olum_riski_artis: -14,
-          mesaj: "Günlerce yatakta, uyuyarak ve terleyerek geçirdin. Kazancından oldun ama bedenin toparlandı.",
+          mesaj: "Günlerce yattın; kazancından oldun ama toparlandın.",
         },
         basarisizSonuc: {
           para: -8,
           veba_olum_riski_artis: -6,
-          mesaj: "Dinlenmeye çalıştın ama endişeden uyuyamadın; yine de yıpratıcı bir işten uzak kalmak iyi geldi.",
+          mesaj: "Endişeden uyuyamadın; yine de işten uzak kalmak iyi geldi.",
         },
       },
       {
-        metin: "Dinlenmeye lüksüm yok, ayakta kalmalıyım.",
+        metin: "Lüksüm yok, çalışmaya devam.",
         baseBasariSansi: 70,
         basariliSonuc: {
           para: 4,
           veba_olum_riski_artis: 2,
-          mesaj: "Dişini sıkıp işini gördün. Kazancın döndü ama akşamları kendini yerlerde buldun.",
+          mesaj: "Dişini sıkıp çalıştın; kazandın ama akşamları yığıldın.",
         },
         basarisizSonuc: {
           saglik: -10,
           veba_olum_riski_artis: 16,
-          mesaj: "Zorlamak pahalıya patladı; bir gün çarşının ortasında yığıldın, hastalığın azdı.",
+          mesaj: "Zorlamak pahalıya patladı; çarşıda yığıldın, hastalık azdı.",
         },
       },
     ],
@@ -272,7 +272,7 @@ export const OLAY_VEBA_HASTALIGI: OlayTanimi[] = [
     gorsel: "🧪",
     baslik: "Mucize İksir Satıcısı",
     metin:
-      "Kapına bir seyyar satıcı dayandı: elinde parlak şişeler, dilinde 'vebayı bir gecede keser' vaadi. Fiyatı fahiş, içindekiler meçhul.",
+      "Kapına bir seyyar satıcı geldi: parlak şişeler, 'vebayı bir gecede keser' vaadi. Fiyat fahiş, içindekiler meçhul.",
     secenekler: [
       {
         metin: "Umutsuzsun; şişeyi al, iç.",
@@ -281,24 +281,24 @@ export const OLAY_VEBA_HASTALIGI: OlayTanimi[] = [
         basariliSonuc: {
           para: -10,
           veba_olum_riski_artis: -26,
-          mesaj: "İçindeki her neyse, o gece rahat uyudun ve ateşin kırıldı. Şans mı, mucize mi — bilmiyorsun.",
+          mesaj: "O gece rahat uyudun, ateşin kırıldı. Şans mı, mucize mi?",
         },
         basarisizSonuc: {
           para: -10,
           saglik: -8,
           veba_olum_riski_artis: 20,
-          mesaj: "İksir mideni yaktı, başın döndü. Satıcı çoktan başka bir kapıdaydı. Hâlin ağırlaştı.",
+          mesaj: "İksir mideni yaktı; satıcı kaçtı, hâlin ağırlaştı.",
         },
       },
       {
         metin: "Dolandırıcıyı kov.",
         baseBasariSansi: 93,
         basariliSonuc: {
-          mesaj: "Kapıyı yüzüne kapattın. Paran cebinde kaldı, sahte umut da eşikte.",
+          mesaj: "Kapıyı kapattın; paran cebinde kaldı, sahte umut eşikte.",
         },
         basarisizSonuc: {
           mutluluk: -2,
-          mesaj: "Kovdun ama 'ya gerçekten işe yarasaydı' düşüncesi geceleri seni kemirdi.",
+          mesaj: "Kovdun ama 'ya işe yarasaydı?' geceleri seni kemirdi.",
         },
       },
     ],
@@ -311,7 +311,7 @@ export const OLAY_VEBA_HASTALIGI: OlayTanimi[] = [
     gorsel: "🕯️",
     baslik: "Başında Bekleyen",
     metin:
-      "Bir yakının, bulaşma riskini göze alıp başında beklemeye, seni beslemeye, temizlemeye razı. Sağ kalman büyük ölçüde bu bakıma bağlı olabilir — ama onu da tehlikeye atıyorsun.",
+      "Bir yakının bulaşmayı göze alıp başında beklemeye razı. Bakımı seni kurtarabilir; ama onu da tehlikeye atarsın.",
     secenekler: [
       {
         metin: "Kabul et, başında beklesin.",
@@ -319,12 +319,12 @@ export const OLAY_VEBA_HASTALIGI: OlayTanimi[] = [
         basariliSonuc: {
           mutluluk: 4,
           veba_olum_riski_artis: -18,
-          mesaj: "Günlerce elini bırakmadı. O sıcak ilgi, belki de ilacın kendisiydi; yavaş yavaş kendine geldin.",
+          mesaj: "Elini bırakmadı; o ilgi ilaç gibiydi, kendine geldin.",
         },
         basarisizSonuc: {
           mutluluk: -2,
           veba_olum_riski_artis: -8,
-          mesaj: "Elinden geleni yaptı ama vaka ağırdı. Yine de yalnız olmadığını bilmek güç verdi.",
+          mesaj: "Elinden geleni yaptı, vaka ağırdı; yalnız olmamak güç verdi.",
         },
       },
       {
@@ -333,12 +333,12 @@ export const OLAY_VEBA_HASTALIGI: OlayTanimi[] = [
         basariliSonuc: {
           ahlak: 4,
           veba_olum_riski_artis: 4,
-          mesaj: "Kapını kilitledin, kimseyi içeri almadın. Onları korudun ama bu savaşı tek başına verdin.",
+          mesaj: "Kapını kilitledin; onları korudun ama savaşı yalnız verdin.",
         },
         basarisizSonuc: {
           mutluluk: -4,
           veba_olum_riski_artis: 8,
-          mesaj: "Yalnızlık ve hastalık bir araya gelince ağırlaştın; sesini duyuracak kimse yoktu.",
+          mesaj: "Yalnızlık ve hastalık seni ağırlaştırdı; kimse duymadı.",
         },
       },
     ],
@@ -352,20 +352,20 @@ export const OLAY_VEBA_HASTALIGI: OlayTanimi[] = [
     gorsel: "🥵",
     baslik: "Ateş Zirvede",
     metin:
-      "Gece ateşin öyle yükseldi ki tavan üstüne geliyor sandın, olmayan sesler duydun. Bu, hastalığın en tehlikeli anı — bedenin ya bu geceyi döner ya dönemez.",
+      "Ateşin zirve yaptı; tavan üstüne geliyor, olmayan sesler duyuyorsun. Beden bu geceyi ya döner ya dönemez.",
     secenekler: [
       {
-        metin: "Son gücünle diren; su iç, ıslak bez, ayakta kal.",
+        metin: "Son gücünle diren, su iç.",
         baseBasariSansi: 55,
         basariliSonuc: {
           saglik: -4,
           veba_olum_riski_artis: -18,
-          mesaj: "Sabaha kadar kendini zorladın; şafakla birlikte ateş kırıldı. En kötüsü geride kaldı.",
+          mesaj: "Sabaha kadar direndin; şafakla ateş kırıldı.",
         },
         basarisizSonuc: {
           saglik: -8,
           veba_olum_riski_artis: 14,
-          mesaj: "Direnmeye çalıştın ama beden pes etti; sayıklayarak, terleyerek bir gece daha kaybettin.",
+          mesaj: "Beden pes etti; sayıklayarak bir gece daha kaybettin.",
         },
       },
       {
@@ -374,11 +374,11 @@ export const OLAY_VEBA_HASTALIGI: OlayTanimi[] = [
         basariliSonuc: {
           mutluluk: 3,
           veba_olum_riski_artis: 6,
-          mesaj: "Direnmeyi bıraktın, tuhaf bir sükûnet çöktü. Beden kendi bildiğince savaştı; sabah hâlâ oradaydın.",
+          mesaj: "Direnmeyi bıraktın, sükûn çöktü; sabah hâlâ oradaydın.",
         },
         basarisizSonuc: {
           veba_olum_riski_artis: 18,
-          mesaj: "Teslimiyet ağır bastı; ateşin içinde derin bir çukura kaydın, zar zor döndün.",
+          mesaj: "Teslimiyet ağır bastı; ateşin çukuruna kayıp zor döndün.",
         },
       },
     ],

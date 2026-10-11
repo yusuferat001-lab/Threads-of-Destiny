@@ -107,7 +107,7 @@ describe("tıbbi bağışıklık (immunity)", () => {
     state.ulke.vebada = true;
 
     const senaryo = olayZorla(state, "derinlik_veba_salgini_ikinci_dalga");
-    const secenek = senaryo.secenekler.find((s) => s.metin.includes("Bağışıklığına güvenerek"));
+    const secenek = senaryo.secenekler.find((s) => s.metin.includes("Bağışıklığına güvenip"));
     expect(secenek?.kilitli).toBe(true);
   });
 
@@ -118,7 +118,7 @@ describe("tıbbi bağışıklık (immunity)", () => {
     state.etiketler.push("tibbi:veba_bagisik");
 
     const senaryo = olayZorla(state, "derinlik_veba_salgini_ikinci_dalga");
-    const secenek = senaryo.secenekler.find((s) => s.metin.includes("Bağışıklığına güvenerek"));
+    const secenek = senaryo.secenekler.find((s) => s.metin.includes("Bağışıklığına güvenip"));
     expect(secenek?.kilitli).toBe(false);
   });
 });

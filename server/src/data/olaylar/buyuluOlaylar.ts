@@ -22,36 +22,36 @@ export const OLAY_BUYULU: OlayTanimi[] = [
     gorsel: "🔮",
     baslik: "Köyün Medyumu",
     metin:
-      "Kenar mahallede, boncuk perdeli bir kulübede fal bakan yaşlı bir kadının kapısındasın. İçeride tütsü kokusu ve alçak sesle mırıldanan dualar var. 'Kaderini görmek ister misin?' diyor.",
+      "Kenar mahallede boncuk perdeli bir kulübede yaşlı bir falcı seni çağırıyor. 'Kaderini görmek ister misin?'",
     secenekler: [
       {
-        metin: "Avucunu aç, ne diyecek dinle.",
+        metin: "Avucunu aç, dinle.",
         baseBasariSansi: 55,
         basariliSonuc: {
           mutluluk: -3,
           para: -2,
           mesaj:
-            "Çizgilerine uzun uzun baktı, sonra 'yakında bir kayıp' dedi ve sustu. Ne demek istediğini günlerce düşündün.",
+            "'Yakında bir kayıp' dedi ve sustu. Günlerce düşündün.",
         },
         basarisizSonuc: {
           mutluluk: -6,
           para: -3,
           mesaj:
-            "Yüzü karardı, elini bıraktı ve 'bugün olmaz' diyip seni kapı dışarı etti. İçin hiç rahat değil.",
+            "'Bugün olmaz' deyip seni kapı dışarı etti. İçin rahat değil.",
         },
       },
       {
-        metin: "Bu işlere inanmam, geç yanından.",
+        metin: "İnanmam, geç yanından.",
         baseBasariSansi: 80,
         basariliSonuc: {
           saglik: 2,
           mutluluk: -1,
           ahlak: 3,
-          mesaj: "Omuz silkip yürüdün. Batıl korkulara pabuç bırakmayan biri olmak da bir huzur.",
+          mesaj: "Omuz silkip yürüdün. Batıla pabuç bırakmamak da huzur.",
         },
         basarisizSonuc: {
           mutluluk: -2,
-          mesaj: "Arkandan bir şeyler mırıldandığını duydun. Kulakların çınlayarak uzaklaştın.",
+          mesaj: "Arkandan bir şeyler mırıldandı. Çınlayan kulaklarla uzaklaştın.",
         },
       },
     ],
@@ -65,7 +65,7 @@ export const OLAY_BUYULU: OlayTanimi[] = [
     gorsel: "🔮",
     baslik: "Kristal Kürede Bir Gölge",
     metin:
-      "Bir panayır çadırında, mor cübbeli bir kâhin kristal küresinin üstüne eğilmiş. 'Sende bir yük var,' diyor, 'onu görebilirim — bir bedeli var ama.'",
+      "Panayırda mor cübbeli bir kâhin küresine eğilmiş. 'Sende bir yük var, görebilirim — ama bedeli var.'",
     secenekler: [
       {
         metin: "Bedelini öde, küreye baktır.",
@@ -76,26 +76,26 @@ export const OLAY_BUYULU: OlayTanimi[] = [
           mutluluk: -4,
           etiket_ekle: ["bilgi:yasak_ilim"],
           mesaj:
-            "Kürenin içinde bir an kendi yüzünü, yıllar sonrasını gördün sandın. Gördüğün şey aklından çıkmıyor.",
+            "Kürede bir an yıllar sonraki yüzünü gördün sandın. Aklından çıkmıyor.",
         },
         basarisizSonuc: {
           para: -6,
           mutluluk: -5,
-          mesaj: "Küre buğulandı, kâhin 'bugün suskun' dedi. Paran gitti, elin boş.",
+          mesaj: "Küre buğulandı, kâhin 'bugün suskun' dedi. Paran gitti.",
         },
       },
       {
-        metin: "Dolandırıcının tekidir; reddet.",
+        metin: "Dolandırıcı bu, reddet.",
         baseBasariSansi: 75,
         basariliSonuc: {
           saglik: 2,
           mutluluk: -1,
           ahlak: 2,
-          mesaj: "Sırtını döndün. Arkandan söylenen 'pişman olacaksın' lafı sadece bir tezgâhtı.",
+          mesaj: "Sırtını döndün. 'Pişman olacaksın' lafı bir tezgâhtı.",
         },
         basarisizSonuc: {
           mutluluk: -3,
-          mesaj: "Yine de o gece uyurken kürede gördüğünü sandığın gölgeyi düşündün.",
+          mesaj: "O gece kürede gördüğünü sandığın gölgeyi düşündün.",
         },
       },
     ],
@@ -111,10 +111,10 @@ export const OLAY_BUYULU: OlayTanimi[] = [
     gorsel: "🧙‍♀️",
     baslik: "Ormandaki Kadın",
     metin:
-      "Köylülerin 'cadı' dediği, ormanın derininde yaşayan bir kadın seni çağırıyor. 'İstediğini verebilirim,' diyor, 'ama karşılığında bir söz isterim.'",
+      "Köylülerin 'cadı' dediği, ormandaki bir kadın seni çağırıyor. 'İstediğini veririm, karşılığında bir söz isterim.'",
     secenekler: [
       {
-        metin: "Ne istediğini sor ve pazarlık et.",
+        metin: "Ne istediğini sor, pazarlık et.",
         baseBasariSansi: 35,
         basariliSonuc: {
           para: 25,
@@ -122,7 +122,7 @@ export const OLAY_BUYULU: OlayTanimi[] = [
           mutluluk: -5,
           suc_artis: 10,
           mesaj:
-            "Bir kese altınla döndün ama verdiğin sözü hatırladıkça içine bir kurt düşüyor. Kimseye anlatamazsın.",
+            "Bir kese altınla döndün ama verdiğin söz içini kemiriyor. Kimseye anlatamazsın.",
         },
         basarisizSonuc: {
           saglik: -12,
@@ -130,7 +130,7 @@ export const OLAY_BUYULU: OlayTanimi[] = [
           etiket_ekle: ["kalici:kronik_agri"],
           durum_ekle: { id: "lanet", ad: "Üstündeki Gölge", tur: "kalici", tur_basi_saglik: -1 },
           mesaj:
-            "Kadın güldü, elini alnına koydu. O günden beri geceleri uyuyamıyorsun; bedenin de sanki lanetlendi.",
+            "Kadın güldü, alnına dokundu. Artık uyuyamıyorsun; beden lanetli gibi.",
         },
       },
       {
@@ -139,13 +139,13 @@ export const OLAY_BUYULU: OlayTanimi[] = [
         basariliSonuc: {
           un: 2,
           mutluluk: -2,
-          mesaj: "Duayla geri çekildin. Köye döndüğünde 'şeytana kanmadım' diye anlattın, seni dinlediler.",
+          mesaj: "Dua ederek çekildin. Köyde 'şeytana kanmadım' dedin, seni dinlediler.",
         },
         basarisizSonuc: {
           mutluluk: -6,
           suc_artis: 8,
           mesaj:
-            "Biri seni ormandan çıkarken gördü. Artık köyde 'onunla konuştu' diye fısıldıyorlar.",
+            "Biri seni ormandan çıkarken gördü. Köy 'onunla konuştu' diye fısıldıyor.",
         },
       },
     ],
@@ -159,7 +159,7 @@ export const OLAY_BUYULU: OlayTanimi[] = [
     gorsel: "🧿",
     baslik: "Bir Muska",
     metin:
-      "Yaşlı bir seyyar satıcı, deriden dikilmiş küçük bir muska uzatıyor. 'İçinde bir dua var,' diyor, 'nazardan korur, taşıyanı kollar.'",
+      "Yaşlı bir seyyar satıcı deri bir muska uzatıyor. 'İçinde dua var, nazardan korur.'",
     secenekler: [
       {
         metin: "Al, boynuna as.",
@@ -168,7 +168,7 @@ export const OLAY_BUYULU: OlayTanimi[] = [
         basariliSonuc: {
           para: -3,
           mutluluk: 4,
-          mesaj: "İşe yarar mı bilmiyorsun ama boynunda bir ağırlık hissetmek tuhaf bir şekilde içini rahatlattı.",
+          mesaj: "İşe yarar mı bilmiyorsun ama boynundaki ağırlık içini rahatlattı.",
         },
         basarisizSonuc: {
           para: -3,
@@ -183,11 +183,11 @@ export const OLAY_BUYULU: OlayTanimi[] = [
           saglik: 2,
           mutluluk: -1,
           ahlak: 3,
-          mesaj: "Satıcı bozuldu ama sen inancını bir deri parçasına bağlamayacak kadar sağlamsın.",
+          mesaj: "Satıcı bozuldu ama sen inancını deri parçasına bağlamazsın.",
         },
         basarisizSonuc: {
           mutluluk: -2,
-          mesaj: "O gece kötü bir rüya gördün ve 'keşke alsaydım' diye düşündün. Saçmalık, biliyorsun.",
+          mesaj: "O gece kötü rüya gördün, 'keşke alsaydım' dedin. Saçma, biliyorsun.",
         },
       },
     ],
@@ -202,7 +202,7 @@ export const OLAY_BUYULU: OlayTanimi[] = [
     gorsel: "🕯️",
     baslik: "Lanet Kaldırma Ayini",
     metin:
-      "Uykuların bölünüyor, işlerin ters gidiyor. Bir 'okuyucu', bir gecelik bir ayinle 'üstündekini' alacağını söylüyor. Mum, tuz ve uzun dualar.",
+      "Uykuların bölünüyor, işlerin ters gidiyor. Bir okuyucu, bir gecelik ayinle 'üstündekini' alacağını söylüyor.",
     secenekler: [
       {
         metin: "Ayine katıl, sabaha kadar otur.",
@@ -215,26 +215,26 @@ export const OLAY_BUYULU: OlayTanimi[] = [
           etiket_sil: ["bilgi:yasak_ilim"],
           durum_sil: ["lanet"],
           mesaj:
-            "Şafakta bittiğinde tükenmiştin ama omzundan bir ağırlık kalkmış gibiydi. İlk defa deliksiz uyudun.",
+            "Şafakta tükenmiştin ama omzundan bir yük kalkmıştı. İlk kez deliksiz uyudun.",
         },
         basarisizSonuc: {
           para: -8,
           saglik: -6,
           mutluluk: -6,
-          mesaj: "Mumlar söndü, okuyucu terledi, hiçbir şey değişmedi. Hem yoruldun hem paran gitti.",
+          mesaj: "Mumlar söndü, hiçbir şey değişmedi. Hem yoruldun hem paran gitti.",
         },
       },
       {
-        metin: "Kendi duanla, kendi başına dua et.",
+        metin: "Kendi başına dua et.",
         baseBasariSansi: 55,
         basariliSonuc: {
           mutluluk: 5,
           un: 1,
-          mesaj: "Sadelik işe yaradı sanki. Korkunu bir başkasına para ödemeden yendin.",
+          mesaj: "Sadelik işe yaradı. Korkunu kimseye para vermeden yendin.",
         },
         basarisizSonuc: {
           mutluluk: -4,
-          mesaj: "Dualar içini rahatlatmadı. Belki de mesele duada değildi.",
+          mesaj: "Dualar içini rahatlatmadı. Belki mesele dua değildi.",
         },
       },
     ],
@@ -249,30 +249,30 @@ export const OLAY_BUYULU: OlayTanimi[] = [
     gorsel: "👻",
     baslik: "Masanın Etrafında",
     metin:
-      "Birkaç kişi loş bir odada el ele tutuşmuş, ortadaki bardağı izliyor. 'Bir ruh çağıracağız,' diyorlar, 'sen de gel, halka eksik kalmasın.'",
+      "Loş bir odada birkaç kişi el ele bardağı izliyor. 'Ruh çağıracağız, sen de gel, halka eksik kalmasın.'",
     secenekler: [
       {
-        metin: "Halkaya gir, gözünü bardaktan ayırma.",
+        metin: "Halkaya gir, bardağa bak.",
         baseBasariSansi: 45,
         basariliSonuc: {
           mutluluk: -8,
           etiket_ekle: ["envanter:fisildayan_tas"],
           mesaj:
-            "Bardak masada kaydı — rüzgâr mıydı, el miydi bilmiyorsun. Ertesi gün cebinde tanımadığın küçük bir taş buldun.",
+            "Bardak kaydı, rüzgâr mı el mi bilinmez. Cebinde tanımadığın bir taş buldun.",
         },
         basarisizSonuc: {
           mutluluk: -6,
           saglik: -3,
-          mesaj: "Biri çığlık attı, mumlar devrildi. Odadan kaçarcasına çıktın, kalbin haftalarca yerine oturmadı.",
+          mesaj: "Biri çığlık attı, mumlar devrildi. Kaçtın; kalbin haftalarca yatışmadı.",
         },
       },
       {
-        metin: "'Bu oyun tehlikeli' deyip çık.",
+        metin: "'Tehlikeli' deyip çık.",
         baseBasariSansi: 78,
         basariliSonuc: {
           ahlak: 2,
           mutluluk: -1,
-          mesaj: "Kapıyı arkandan kapattın. İçeridekilerin ne gördüğünü hiç öğrenmek istemedin.",
+          mesaj: "Kapıyı kapattın. İçeridekilerin ne gördüğünü hiç öğrenmedin.",
         },
         basarisizSonuc: {
           mutluluk: -3,
@@ -290,10 +290,10 @@ export const OLAY_BUYULU: OlayTanimi[] = [
     gorsel: "⚗️",
     baslik: "Simyacının Çırağı",
     metin:
-      "Kükürt kokan bir bodrumda, gözleri yanık izleriyle dolu bir adam kurşunu altına çevirmeye çalıştığını söylüyor. 'Bir ortağa ihtiyacım var — sermaye koy, kârı paylaşalım.'",
+      "Kükürt kokan bir bodrumda yanık izli bir adam kurşunu altına çevirdiğini söylüyor. 'Sermaye koy, kârı bölüşelim.'",
     secenekler: [
       {
-        metin: "Biraz para koy, işi gör.",
+        metin: "Biraz para koy.",
         maliyet: 8,
         baseBasariSansi: 25,
         basariliSonuc: {
@@ -301,12 +301,12 @@ export const OLAY_BUYULU: OlayTanimi[] = [
           para: 30,
           mutluluk: -3,
           mesaj:
-            "Bir mucize mi, bir hile mi bilmiyorsun ama elinde gerçek altın var. Adam ertesi gün ortadan kayboldu.",
+            "Mucize mi hile mi bilmiyorsun ama elinde gerçek altın var. Adam kayboldu.",
         },
         basarisizSonuc: {
           para: -12,
           mutluluk: -9,
-          mesaj: "Deney patladı, kaşların yandı, adam 'yarın olur' dedi ve bir daha görünmedi. Paran duman oldu.",
+          mesaj: "Deney patladı, kaşların yandı, adam bir daha görünmedi. Paran duman oldu.",
         },
       },
       {
@@ -316,11 +316,11 @@ export const OLAY_BUYULU: OlayTanimi[] = [
           saglik: 2,
           ahlak: 1,
           mutluluk: -1,
-          mesaj: "Simya masalına kanmadın. Bodrumdan temiz havaya çıkmak bile iyi geldi.",
+          mesaj: "Simya masalına kanmadın. Temiz havaya çıkmak bile iyi geldi.",
         },
         basarisizSonuc: {
           mutluluk: -2,
-          mesaj: "Yıllar sonra 'ya gerçekten becerdiyse' diye bir kez daha düşündün. Aptalca.",
+          mesaj: "Yıllar sonra 'ya becerdiyse' diye düşündün. Aptalca.",
         },
       },
     ],
@@ -334,7 +334,7 @@ export const OLAY_BUYULU: OlayTanimi[] = [
     gorsel: "✨",
     baslik: "Yıldızlara Bakan Adam",
     metin:
-      "Gece yarısı, tepede bir adam bakır bir aletle gökyüzünü tarıyor. 'Doğduğun yılı söyle,' diyor, 'yıldızların sana ne yazdığını okuyayım.'",
+      "Gece yarısı tepede bir adam bakır aletle gökyüzünü tarıyor. 'Doğduğun yılı söyle, yıldızların yazdığını okuyayım.'",
     secenekler: [
       {
         metin: "Doğum yılını söyle, dinle.",
@@ -342,24 +342,24 @@ export const OLAY_BUYULU: OlayTanimi[] = [
         basariliSonuc: {
           mutluluk: 3,
           mesaj:
-            "'Uzun bir yol seni bekliyor' dedi, hepsi bu. Belirsizdi ama nedense içine bir umut düştü.",
+            "'Uzun bir yol seni bekliyor' dedi. Belirsizdi ama içine umut düştü.",
         },
         basarisizSonuc: {
           mutluluk: -4,
-          mesaj: "'Bu yıl dikkatli ol' dedi ve toplandı. Geri kalan geceyi bunu düşünerek geçirdin.",
+          mesaj: "'Bu yıl dikkatli ol' deyip toplandı. Gecenin kalanını düşünerek geçirdin.",
         },
       },
       {
-        metin: "Aletine bak, nasıl çalıştığını sor.",
+        metin: "Aletini sor, nasıl çalışır?",
         baseBasariSansi: 55,
         basariliSonuc: {
           un: 2,
           mutluluk: 2,
-          mesaj: "Adam usturlabı anlattı; fal değil, gökbilim. Yeni bir şey öğrenmek keyifliydi.",
+          mesaj: "Adam usturlabı anlattı; fal değil, gökbilim. Yeni bir şey öğrenmek güzeldi.",
         },
         basarisizSonuc: {
           mutluluk: -1,
-          mesaj: "Adam 'sırlarımı vermem' deyip ışığını söndürdü. Karanlıkta yolunu el yordamıyla buldun.",
+          mesaj: "Adam 'sırrımı vermem' deyip ışığını söndürdü. Yolunu karanlıkta buldun.",
         },
       },
     ],
@@ -373,21 +373,21 @@ export const OLAY_BUYULU: OlayTanimi[] = [
     gorsel: "🌙",
     baslik: "Rüya Tabircisi",
     metin:
-      "Günlerdir aynı rüyayı görüyorsun. Bir tabirci, 'anlat bana' diyor, 'her rüyanın bir haberi vardır.'",
+      "Günlerdir aynı rüyayı görüyorsun. Bir tabirci: 'Anlat, her rüyanın bir haberi vardır.'",
     secenekler: [
       {
-        metin: "Rüyanı anlat, yorumunu iste.",
+        metin: "Rüyanı anlat, yorum iste.",
         maliyet: 2,
         baseBasariSansi: 55,
         basariliSonuc: {
           para: -2,
           mutluluk: 6,
-          mesaj: "'Bir yükü bırakacaksın' dedi. Ne olduğunu bilmiyorsun ama o gece rüya tekrar etmedi.",
+          mesaj: "'Bir yükü bırakacaksın' dedi. Anlamadın ama rüya o gece tekrar etmedi.",
         },
         basarisizSonuc: {
           para: -2,
           mutluluk: -5,
-          mesaj: "'Bu iyiye alâmet değil' deyip sustu. Şimdi hem rüyandan hem yorumundan korkuyorsun.",
+          mesaj: "'İyiye alâmet değil' deyip sustu. Şimdi hem rüyadan hem yorumdan korkuyorsun.",
         },
       },
       {
@@ -396,11 +396,11 @@ export const OLAY_BUYULU: OlayTanimi[] = [
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
-          mesaj: "Üstünde durmadın. Birkaç gün sonra rüya kendiliğinden geçti.",
+          mesaj: "Üstünde durmadın. Birkaç günde rüya kendiliğinden geçti.",
         },
         basarisizSonuc: {
           mutluluk: -3,
-          mesaj: "Rüya geçmedi. Belki de birine anlatmalıydın.",
+          mesaj: "Rüya geçmedi. Belki birine anlatmalıydın.",
         },
       },
     ],
@@ -416,7 +416,7 @@ export const OLAY_BUYULU: OlayTanimi[] = [
     gorsel: "😈",
     baslik: "Dört Yol Ağzında",
     metin:
-      "Gece yarısı, dört yolun kesiştiği yerde bir yabancı bekliyor. Yüzünü göremiyorsun. 'Ne istersen,' diyor, 'sadece adını bir deftere yaz.'",
+      "Gece yarısı dört yol ağzında bir yabancı bekliyor, yüzü görünmüyor. 'Ne istersen,' diyor, 'adını bir deftere yaz.'",
     secenekler: [
       {
         metin: "Deftere adını yaz.",
@@ -428,12 +428,12 @@ export const OLAY_BUYULU: OlayTanimi[] = [
           suc_artis: 12,
           efsanevi_olum: "Dört yol ağzında verdiği sözün bedelini ödedi",
           mesaj:
-            "Cebin doldu, işlerin açıldı. Ama her dört yol ağzından geçerken içinden bir şey kopuyor artık.",
+            "Cebin doldu, işlerin açıldı. Ama her yol ağzında içinden bir şey kopuyor.",
         },
         basarisizSonuc: {
           saglik: -10,
           mutluluk: -12,
-          mesaj: "Kalem kâğıda değmeden yabancı kayboldu. Eve döndüğünde günlerce hastalandın.",
+          mesaj: "Kalem değmeden yabancı kayboldu. Eve dönünce günlerce hastalandın.",
         },
       },
       {
@@ -443,7 +443,7 @@ export const OLAY_BUYULU: OlayTanimi[] = [
           un: 3,
           mutluluk: -2,
           unvan_kazan: "Şeytanı Geri Çeviren",
-          mesaj: "Nefes nefese eve vardın. Bir daha o yoldan gece geçmedin ama vicdanın temiz.",
+          mesaj: "Nefes nefese eve vardın. O yoldan bir daha geçmedin ama vicdanın temiz.",
         },
         basarisizSonuc: {
           mutluluk: -6,
@@ -462,14 +462,14 @@ export const OLAY_BUYULU: OlayTanimi[] = [
     gorsel: "🐈‍⬛",
     baslik: "Yolunu Kesen Kedi",
     metin:
-      "Dar bir sokakta kapkara bir kedi tam önünde durdu, gözlerini sana dikti ve kıpırdamadı. Arkadan gelenler 'uğursuzluk' diye mırıldanıyor.",
+      "Dar sokakta kapkara bir kedi önünde durup gözlerini dikti. Arkadakiler 'uğursuzluk' diye mırıldanıyor.",
     secenekler: [
       {
         metin: "Eğil, kediyi sev.",
         baseBasariSansi: 65,
         basariliSonuc: {
           mutluluk: 4,
-          mesaj: "Kedi elini yaladı, sonra kuyruğunu dikip gitti. Kalabalık şaşkın baktı, sen güldün.",
+          mesaj: "Kedi elini yaladı, kuyruğunu dikip gitti. Kalabalık şaşırdı, sen güldün.",
         },
         basarisizSonuc: {
           saglik: -2,
@@ -484,11 +484,11 @@ export const OLAY_BUYULU: OlayTanimi[] = [
           saglik: 2,
           ahlak: 1,
           mutluluk: -2,
-          mesaj: "Uzun yoldan gittin. Bir kediden kaçtığın için kendine kızdın ama bir şey olmadı.",
+          mesaj: "Uzun yoldan gittin. Kediden kaçtığına kızdın ama bir şey olmadı.",
         },
         basarisizSonuc: {
           mutluluk: -3,
-          mesaj: "Dolaştığın sokakta ayağın burkuldu. 'Kedi yüzünden' demek bile saçma.",
+          mesaj: "Dolaştığın sokakta ayağın burkuldu. 'Kedi yüzünden' demek saçma.",
         },
       },
     ],
@@ -504,17 +504,17 @@ export const OLAY_BUYULU: OlayTanimi[] = [
     gorsel: "📜",
     baslik: "Meydandaki Kâhin",
     metin:
-      "Kalabalık bir meydanda, yarı çıplak bir kâhin senin adını haykırıyor: 'Sen! Yükseleceksin ama düşüşün de sert olacak!' Herkes sana bakıyor.",
+      "Kalabalık meydanda yarı çıplak bir kâhin adını haykırıyor: 'Yükseleceksin ama düşüşün sert olacak!' Herkes sana bakıyor.",
     secenekler: [
       {
-        metin: "Kâhini yanına çağır, ne demek istediğini sor.",
+        metin: "Kâhini çağır, ne demek istediğini sor.",
         baseBasariSansi: 45,
         basariliSonuc: {
           mutluluk: -6,
           un: 2,
           etiket_ekle: ["bilgi:yasak_ilim"],
           mesaj:
-            "Kulağına birkaç kelime fısıldadı ve kayboldu. O kelimeler kafandan hiç çıkmıyor.",
+            "Kulağına birkaç kelime fısıldayıp kayboldu. Kafandan çıkmıyor.",
         },
         basarisizSonuc: {
           un: -4,
@@ -523,17 +523,17 @@ export const OLAY_BUYULU: OlayTanimi[] = [
         },
       },
       {
-        metin: "Muhafızlara işaret et, götürsünler.",
+        metin: "Muhafızlar götürsün.",
         baseBasariSansi: 70,
         basariliSonuc: {
           un: 3,
           ahlak: -3,
-          mesaj: "Kâhini sürüklediler. Sağlam durdun ama söyledikleri kulaklarında çınlıyor.",
+          mesaj: "Kâhini sürüklediler. Sağlam durdun ama sözleri kulağında çınlıyor.",
         },
         basarisizSonuc: {
           un: -5,
           mutluluk: -4,
-          mesaj: "Kâhin muhafızların elinden kurtulup 'gördünüz mü, korkuyor!' diye bağırdı. Rezil oldun.",
+          mesaj: "Kâhin muhafızlardan kurtulup 'korkuyor!' diye bağırdı. Rezil oldun.",
         },
       },
     ],
@@ -547,7 +547,7 @@ export const OLAY_BUYULU: OlayTanimi[] = [
     gorsel: "🧪",
     baslik: "Şifa Şişesi Satıcısı",
     metin:
-      "Bir tezgâhta, rengârenk şişeler dizili. Satıcı bağırıyor: 'Her derde deva! Ağrıyı keser, ömrü uzatır, bahtı açar!' Bir şişe tutuşturuyor eline.",
+      "Tezgâhta rengârenk şişeler. Satıcı bağırıyor: 'Her derde deva!' Eline bir şişe tutuşturuyor.",
     secenekler: [
       {
         metin: "Bir şişe al, dene.",
@@ -557,27 +557,27 @@ export const OLAY_BUYULU: OlayTanimi[] = [
           para: -4,
           saglik: 3,
           mutluluk: 2,
-          mesaj: "Tadı berbattı ama ertesi gün kendini biraz daha iyi hissettin. Belki inandığın içindir.",
+          mesaj: "Tadı berbattı ama ertesi gün biraz daha iyiydin. Belki inandığın içindir.",
         },
         basarisizSonuc: {
           para: -4,
           saglik: -5,
           mutluluk: -4,
-          mesaj: "İçtiğin şey miden fesada uğrattı. Satıcı çoktan tezgâhını toplamıştı.",
+          mesaj: "İçtiğin şey midene dokundu. Satıcı tezgâhını çoktan toplamıştı.",
         },
       },
       {
-        metin: "'Zehir olmasın bu' deyip uzaklaş.",
+        metin: "'Zehirdir bu' deyip uzaklaş.",
         baseBasariSansi: 80,
         basariliSonuc: {
           saglik: 2,
           mutluluk: -1,
           ahlak: 2,
-          mesaj: "Renkli şişelere kanmadın. Bazen en iyi ilaç, hiçbir şey almamaktır.",
+          mesaj: "Renkli şişelere kanmadın. Bazen en iyi ilaç hiçbir şey almamaktır.",
         },
         basarisizSonuc: {
           mutluluk: -1,
-          mesaj: "Satıcı arkandan 'pişman olacaksın' diye bağırdı. Bir tezgâh lafıydı, hepsi bu.",
+          mesaj: "Satıcı arkandan 'pişman olacaksın' diye bağırdı. Tezgâh lafıydı.",
         },
       },
     ],
@@ -592,35 +592,35 @@ export const OLAY_BUYULU: OlayTanimi[] = [
     gorsel: "🕴️",
     baslik: "Köşedeki Gölge",
     metin:
-      "Birkaç gecedir aynı köşede, uzun paltolu bir adam duruyor. Yüzü hep karanlıkta. Bu gece sana doğru bir adım attı.",
+      "Birkaç gecedir aynı köşede uzun paltolu bir adam duruyor, yüzü karanlıkta. Bu gece sana bir adım attı.",
     secenekler: [
       {
         metin: "Üstüne yürü, kim olduğunu sor.",
         baseBasariSansi: 50,
         basariliSonuc: {
           mutluluk: 3,
-          mesaj: "Meğer yolunu şaşırmış yaşlı bir yolcuymuş. Güldünüz. Korkuların çoğu böyle işte.",
+          mesaj: "Yolunu şaşırmış yaşlı bir yolcuymuş. Güldünüz. Korkular çoğu zaman böyle.",
         },
         basarisizSonuc: {
           saglik: -4,
           mutluluk: -8,
           mesaj:
-            "Yaklaştığında bir anda yoktu. Rüzgâr mı, adım sesi mi belli değildi. O köşeden bir daha geçmedin.",
+            "Yaklaşınca bir anda yoktu. O köşeden bir daha geçmedin.",
         },
       },
       {
-        metin: "Görmezden gel, evine kapan.",
+        metin: "Görmezden gel, eve kapan.",
         baseBasariSansi: 70,
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
           mutluluk: -3,
-          mesaj: "Kapıyı sürgüledin. Birkaç gece sonra gölge kayboldu — ya da sen bakmayı bıraktın.",
+          mesaj: "Kapıyı sürgüledin. Birkaç gece sonra gölge kayboldu — ya da bakmayı bıraktın.",
         },
         basarisizSonuc: {
           mutluluk: -5,
           saglik: -2,
-          mesaj: "Perde aralığından her baktığında oradaydı. Uykuların bölündü.",
+          mesaj: "Perdeden her baktığında oradaydı. Uykuların bölündü.",
         },
       },
     ],
@@ -634,20 +634,20 @@ export const OLAY_BUYULU: OlayTanimi[] = [
     gorsel: "🌑",
     baslik: "Ay Kana Boyandı",
     metin:
-      "Gökte ay yavaşça kızıla döndü. Sokaklar boşaldı, kimi dua ediyor, kimi 'kıyamet' diye bağırıyor. Bir topluluk meydanda ateş yakıp ritüel başlatmış.",
+      "Ay yavaşça kızıla döndü. Kimi dua ediyor, kimi 'kıyamet' diye bağırıyor. Meydanda ateş yakılıp ritüel başlamış.",
     secenekler: [
       {
-        metin: "Ritüele katıl, sabaha kadar davul çal.",
+        metin: "Ritüele katıl, sabaha dek davul çal.",
         baseBasariSansi: 55,
         basariliSonuc: {
           mutluluk: 5,
           dost_puani: 4,
-          mesaj: "Ay yerine döndüğünde herkes birbirine sarıldı. Korkuyu paylaşmak tuhaf bir yakınlık kurdu.",
+          mesaj: "Ay yerine dönünce herkes sarıldı. Korkuyu paylaşmak tuhaf bir yakınlık kurdu.",
         },
         basarisizSonuc: {
           saglik: -3,
           mutluluk: -3,
-          mesaj: "Sabaha kadar ayakta kaldın, üşüdün, hasta oldun. Ay zaten kendiliğinden düzelirdi.",
+          mesaj: "Sabaha dek ayakta kaldın, üşüdün, hasta oldun. Ay zaten düzelirdi.",
         },
       },
       {
@@ -656,11 +656,11 @@ export const OLAY_BUYULU: OlayTanimi[] = [
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
-          mesaj: "Sabah kalktığında ay yerindeydi, dünya dönüyordu. Panik yapmamak da bir marifet.",
+          mesaj: "Sabah ay yerindeydi, dünya dönüyordu. Panik yapmamak da marifet.",
         },
         basarisizSonuc: {
           mutluluk: -3,
-          mesaj: "Uyuyamadın. Perdenin ardından sızan kızıl ışık bütün gece üstündeydi.",
+          mesaj: "Uyuyamadın. Perdeden sızan kızıl ışık bütün gece üstündeydi.",
         },
       },
     ],
@@ -675,26 +675,26 @@ export const OLAY_BUYULU: OlayTanimi[] = [
     gorsel: "🕯️",
     baslik: "Spiritüalist Salonu",
     metin:
-      "Şık bir evde, madam bir 'seans' düzenliyor. Perdeler çekili, masada bir zil, bir borazan. 'Öte taraftan biri sizinle konuşmak istiyor,' diyor sana dönerek.",
+      "Şık bir evde madam 'seans' düzenliyor; masada zil ve borazan. 'Öte taraftan biri seninle konuşmak istiyor,' diyor.",
     secenekler: [
       {
-        metin: "Masaya otur, 'mesajı' dinle.",
+        metin: "Otur, 'mesajı' dinle.",
         maliyet: 5,
         baseBasariSansi: 40,
         basariliSonuc: {
           para: -5,
           mutluluk: -4,
           mesaj:
-            "Masanın altında bir ip, madamın ayağında bir pedal gördün. Yine de söyledikleri bir an seni sarstı.",
+            "Masanın altında ip, ayakta pedal gördün. Yine de sözleri bir an seni sarstı.",
         },
         basarisizSonuc: {
           para: -7,
           mutluluk: -6,
-          mesaj: "Borazan yüzüne çarptı, mumlar söndü, madam bayılma numarası yaptı. Cüzdanın hafifledi.",
+          mesaj: "Borazan yüzüne çarptı, mumlar söndü, madam bayılma taklidi yaptı. Cebin boşaldı.",
         },
       },
       {
-        metin: "Işıkları aç, düzeneği herkese göster.",
+        metin: "Işıkları aç, düzeneği göster.",
         baseBasariSansi: 45,
         basariliSonuc: {
           un: 6,
@@ -705,7 +705,7 @@ export const OLAY_BUYULU: OlayTanimi[] = [
         basarisizSonuc: {
           un: -5,
           mutluluk: -4,
-          mesaj: "Lambayı devirdin, kimse bir şey görmedi, 'kabalık' diye seni dışarı attılar.",
+          mesaj: "Lambayı devirdin, kimse bir şey görmedi; 'kabalık' diye atıldın.",
         },
       },
     ],

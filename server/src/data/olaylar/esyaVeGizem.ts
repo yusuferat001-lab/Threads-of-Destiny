@@ -8,10 +8,10 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     agirlik: 0.6,
     gorsel: "🎨",
     baslik: "Eskicinin Çöpü",
-    metin: "Boş vaktinde bir eskici tezgahında, üzeri çamurla kaplı eski bir parşömen buldun. Altında bir harita çizgileri var gibi görünüyor.",
+    metin: "Eskici tezgâhında çamurlu bir parşömen buldun; altında harita çizgileri var gibi.",
     secenekler: [
       {
-        metin: "Gecelerini harcayıp haritayı restore et.",
+        metin: "Geceleri harcayıp haritayı onar.",
         baseBasariSansi: 45,
         basariliSonuc: {
           saglik: -5,
@@ -19,26 +19,26 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_ekle: [
             "envanter:gizemli_harita",
           ],
-          mesaj: "Gözlerin bozulana kadar çalıştın ama başardın! Bu sıradan bir parşömen değil, unutulmuş bir geçidin haritası. Bunu saklamalısın.",
+          mesaj: "Gözlerin bozuldu ama başardın: unutulmuş bir geçidin haritası!",
         },
         basarisizSonuc: {
           mutluluk: -5,
           saglik: -5,
-          mesaj: "Çamuru temizlerken parşömen yırtıldı ve tamamen yok oldu. Hem yoruldun hem de elin boş kaldı.",
+          mesaj: "Temizlerken parşömen yırtıldı; yorgun ve eli boşsun.",
         },
       },
       {
-        metin: "Bununla uğraşma, doğrudan bir asilzadeye 'antika' diye sat.",
+        metin: "Uğraşma, asilzadeye 'antika' diye sat.",
         baseBasariSansi: 75,
         basariliSonuc: {
           para: 20,
           ahlak: -10,
-          mesaj: "Süslü kelimelerle çamurlu parşömeni antika diye sattın. Cebin doldu ama kimi kandırdığını biliyorsun.",
+          mesaj: "Parşömeni antika diye sattın; cebin doldu, vicdanın sızladı.",
         },
         basarisizSonuc: {
           un: -10,
           ahlak: -5,
-          mesaj: "Asilzade bunun bir çöp olduğunu anladı ve seni kapı dışarı ettirdi.",
+          mesaj: "Asilzade çöp olduğunu anladı, seni kapı dışarı etti.",
         },
       },
     ],
@@ -51,36 +51,36 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     agirlik: 0.9,
     gorsel: "😅",
     baslik: "Yanlış Kapı",
-    metin: "Bir cenaze törenine katılmak için gittiğin evde bir şeyler tuhaf; meğer yanlış kapıyı çalmışsın, hiç tanımadığın bir ailenin yas törenindesin ve herkes başsağlığı için sana bakıyor.",
+    metin: "Cenazeye giderken yanlış kapıyı çaldın; tanımadığın ailenin yasındasın ve herkes başsağlığı için sana bakıyor.",
     secenekler: [
       {
-        metin: "Durumu açıkça itiraf et ve özür dile.",
+        metin: "Hemen itiraf et, özür dile.",
         baseBasariSansi: 85,
         basariliSonuc: {
           dost_puani: 4,
           mutluluk: 6,
-          mesaj: "İtirafın acılı aileyi güldürdü. Yas töreninde beklenmedik, sıcak bir anı oldun.",
+          mesaj: "İtirafın aileyi güldürdü; yasta sıcak bir anı oldun.",
         },
         basarisizSonuc: {
           mutluluk: -2,
-          mesaj: "Kimse gülmedi, seni 'saygısız' ilan edip kapı dışarı ettiler.",
+          mesaj: "Kimse gülmedi; 'saygısız' diye kapı dışarı edildin.",
         },
       },
       {
-        metin: "Fark etmemiş gibi davran, ağlıyormuş gibi yapıp sıvış.",
+        metin: "Fark etmemiş gibi ağlayıp sıvış.",
         baseBasariSansi: 65,
         basariliSonuc: {
           mutluluk: 5,
-          mesaj: "Gözyaşı siler gibi yapıp sessizce dışarı süzüldün. Bu hikayeyi yıllarca kahkahayla anlatacaksın.",
+          mesaj: "Gözyaşı silip sessizce süzüldün; yıllarca gülerek anlatacaksın.",
         },
         basarisizSonuc: {
           mutluluk: -3,
           un: -2,
-          mesaj: "Çıkışta ayakkabına takılıp ölünün tabutuna çarptın! Herkesin dehşet dolu bakışları arasında kaçtın.",
+          mesaj: "Çıkışta tabuta çarptın! Dehşetli bakışlar arasında kaçtın.",
         },
       },
       {
-        metin: "Ortalığın karışıklığından faydalanıp ölüden bir hatıra (!) çal.",
+        metin: "Karmaşada ölüden bir hatıra çal.",
         baseBasariSansi: 50,
         maxAhlak: 40,
         basariliSonuc: {
@@ -89,12 +89,12 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_ekle: [
             "envanter:olunun_yuzugu",
           ],
-          mesaj: "Kimse bakmazken ölünün parmağındaki altın yüzüğü cebine attın. Acımasızca, ama kârlı.",
+          mesaj: "Ölünün altın yüzüğünü cebe attın. Acımasız ama kârlı.",
         },
         basarisizSonuc: {
           un: -25,
           ahlak: -15,
-          mesaj: "Ölünün elini tutarken dul eşi seni gördü! 'Hırsız!' çığlıkları eşliğinde meydan dayağı yedin.",
+          mesaj: "Dul eş seni gördü! 'Hırsız!' çığlıklarıyla dayak yedin.",
         },
       },
     ],
@@ -106,10 +106,10 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     agirlik: 0.5,
     gorsel: "🧪",
     baslik: "Mucize İksir",
-    metin: "Gezici bir satıcı, şişedeki parlayan mor sıvının 'ölüyü dirilten, her derde deva bir mucize' olduğunu bağıra bağıra anlatıyor. Etraftakiler inanmıyor ama sıvı tuhaf bir şekilde cezbedici.",
+    metin: "Gezgin satıcı, parlayan mor sıvıyı 'ölüyü diriltir, her derde deva' diye bağırıyor. Kimse inanmıyor ama sıvı cezbedici.",
     secenekler: [
       {
-        metin: "Satıcıya güvenme, uzaklaş.",
+        metin: "Güvenme, uzaklaş.",
         baseBasariSansi: 95,
         basariliSonuc: {
           saglik: 2,
@@ -119,11 +119,11 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         },
         basarisizSonuc: {
           mutluluk: -1,
-          mesaj: "Meraklandın ama kendini tuttun; içinde hafif bir pişmanlık kaldı.",
+          mesaj: "Meraklandın ama kendini tuttun; biraz pişmansın.",
         },
       },
       {
-        metin: "Cebindeki altınları dök ve bir şişe satın al.",
+        metin: "Altınları dök, bir şişe al.",
         baseBasariSansi: 40,
         maliyet: 15,
         basariliSonuc: {
@@ -131,16 +131,16 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_ekle: [
             "envanter:sirli_iksir",
           ],
-          mesaj: "Parayı verdin ve iksiri çantana attın. Garip bir şekilde şişe ısınıyor gibi. Bir gün işe yarayabilir.",
+          mesaj: "İksiri aldın; şişe garip biçimde ısınıyor.",
         },
         basarisizSonuc: {
           para: -15,
           mutluluk: -3,
-          mesaj: "Sıvı tatsız bir keçi sütü çıktı! Geri döndüğünde satıcı çoktan tüymüştü.",
+          mesaj: "Sıvı tatsız keçi sütü çıktı! Satıcı çoktan tüymüştü.",
         },
       },
       {
-        metin: "Kalabalığı fırsat bil, tezgâhtan bir şişe çal.",
+        metin: "Kalabalıkta bir şişe çal.",
         baseBasariSansi: 60,
         maxAhlak: 35,
         basariliSonuc: {
@@ -148,13 +148,13 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_ekle: [
             "envanter:sirli_iksir",
           ],
-          mesaj: "El çabukluğuyla şişeyi cübbene sakladın. Hem paran cebinde kaldı hem de gizemli bir iksirin oldu.",
+          mesaj: "Şişeyi cübbene sakladın; paran da iksirin de sende.",
         },
         basarisizSonuc: {
           un: -15,
           ahlak: -10,
           para: -10,
-          mesaj: "Satıcı bileğinden yakaladı! Muhafızlara teslim edilmemek için cebindeki tüm parayı rüşvet olarak vermek zorunda kaldın.",
+          mesaj: "Yakalandın; muhafızdan kurtulmak için tüm paranı verdin.",
         },
       },
     ],
@@ -166,10 +166,10 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     agirlik: 0.2,
     gorsel: "🐉",
     baslik: "Doğulu Kör Büyücü",
-    metin: "Şehre gelen esrarengiz, gözleri bembeyaz bir tüccarın tezgahında tek eşya var: kadim rünlü, kan kırmızısı bir Ejderha Tılsımı. 'Sadece kaderi kanla yazılmış olanlar taşıyabilir' diye fısıldıyor.",
+    metin: "Gözleri bembeyaz bir tüccarın tezgâhında tek eşya var: kan kırmızısı Ejderha Tılsımı. 'Kaderi kanla yazılanlar taşır.'",
     secenekler: [
       {
-        metin: "İstediği uçuk bedeli öde ve tılsımı al.",
+        metin: "Uçuk bedeli öde, tılsımı al.",
         baseBasariSansi: 80,
         maliyet: 50,
         basariliSonuc: {
@@ -177,16 +177,16 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_ekle: [
             "envanter:ejderha_tilsimi",
           ],
-          mesaj: "Altınları önüne yığdın. Tılsımı boynuna taktığın an göğsünde sıcak bir güç hissettin. Bu sıradan bir eşya değil.",
+          mesaj: "Tılsımı taktın; göğsünde sıcak bir güç var.",
         },
         basarisizSonuc: {
           para: -50,
           saglik: -10,
-          mesaj: "Tılsımı aldın ama gece kabuslarla uyandın. Vücudun bu kadim enerjiyi reddediyor.",
+          mesaj: "Gece kabuslarla uyandın; bedenin bu enerjiyi reddediyor.",
         },
       },
       {
-        metin: "Körlüğünden faydalan, tılsımı sessizce çal.",
+        metin: "Körlüğünden yararlan, tılsımı çal.",
         baseBasariSansi: 40,
         maxAhlak: 35,
         basariliSonuc: {
@@ -195,27 +195,27 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
             "envanter:ejderha_tilsimi",
             "lanetli_ruh",
           ],
-          mesaj: "Tılsımı kaptığın gibi kaçtın! Kör adam arkandan 'Bedelini ruhunla ödeyeceksin!' diye bağırdı. Güç senin ama için titriyor.",
+          mesaj: "Tılsımla kaçtın; 'Ruhunla ödeyeceksin!' diye bağırdı.",
         },
         basarisizSonuc: {
           saglik: -30,
           olum_sansi: 10,
-          mesaj: "Elini uzattığın an kör adam bileğini yakaladı. Gözleri parladı ve sana dokunduğu yer alev gibi yandı. Çığlık atarak kaçtın.",
+          mesaj: "Kör adam bileğini yakaladı, yandın. Çığlıkla kaçtın.",
         },
       },
       {
-        metin: "Bu büyü işleri bana göre değil, hızla uzaklaş.",
+        metin: "Büyü bana göre değil, uzaklaş.",
         baseBasariSansi: 92,
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
           mutluluk: -1,
-          mesaj: "Bu tür mistik şeylerin sonu genelde kötü biter dedin ve evine döndün.",
+          mesaj: "Mistik şeylerin sonu kötü biter deyip eve döndün.",
         },
         basarisizSonuc: {
           mutluluk: -4,
-          mesaj: "Evine döndün ama o kan kırmızı tılsımın görüntüsü aklından çıkmadı. 'Ya gerçekten efsaneviydiyse?' diye düşünüp durdun.",
-          detay: "Bazı fırsatları kaçırmak, insanın içinde uzun süre kanar.",
+          mesaj: "Tılsım aklından çıkmadı. 'Ya gerçekten efsaneyse?'",
+          detay: "Kaçan fırsat içte uzun kanar.",
         },
       },
     ],
@@ -230,10 +230,10 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     agirlik: 0.2,
     gorsel: "🗡️",
     baslik: "Mezarlıktaki Kılıç",
-    metin: "Gecenin karanlığında ormanda devriye gezerken, eski bir mezarın üzerinde saplı duran kara bir kılıç buldun. Etrafındaki otlar çürümüş ama kılıcın kabzası elini adeta kendine çağırıyor.",
+    metin: "Gece ormanda devriyedeyken eski bir mezarda saplı kara bir kılıç buldun. Kabzası elini çağırıyor.",
     secenekler: [
       {
-        metin: "Kılıcı kabzasından tut ve mezardan çıkar.",
+        metin: "Kılıcı mezardan çek.",
         baseBasariSansi: 50,
         basariliSonuc: {
           un: 15,
@@ -242,24 +242,24 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_ekle: [
             "envanter:kara_kilic",
           ],
-          mesaj: "Kılıcı çektin! Çelik anında kanına uyum sağladı. Savaş meydanında yenilmez olacaksın ama kılıcın içindeki fısıltılar hiç susmuyor.",
+          mesaj: "Yenilmez oldun ama kılıcın fısıltıları susmuyor.",
         },
         basarisizSonuc: {
           saglik: -25,
           olum_sansi: 5,
-          mesaj: "Kılıcı tuttuğun an bedenine kara bir zehir yayıldı. Çığlık atarak bıraktın, günlerce komada yattın.",
+          mesaj: "Kara zehir yayıldı; günlerce komada yattın.",
         },
       },
       {
-        metin: "Kılıca dokunma, mezarın başında bir dua edip ayrıl.",
+        metin: "Dokunma, dua edip ayrıl.",
         baseBasariSansi: 90,
         basariliSonuc: {
           ahlak: 10,
-          mesaj: "Saygıyla eğildin ve uzaklaştın. Doğal olmayan şeylere bulaşmamak en iyisidir.",
+          mesaj: "Saygıyla eğilip uzaklaştın. Doğaüstüne bulaşmamak en iyisi.",
         },
         basarisizSonuc: {
           mutluluk: -5,
-          mesaj: "Kılıcı bıraktın ama o karanlık cazibe günlerce rüyalarına girdi.",
+          mesaj: "Kılıcı bıraktın ama karanlık cazibe günlerce rüyanda.",
         },
       },
     ],
@@ -274,49 +274,49 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     agirlik: 0.2,
     gorsel: "🪽",
     baslik: "Ölmek Üzere Olan Hacı",
-    metin: "Kilisenin/Caminin kapısına kanlar içinde bir hacı yığıldı. Son nefesini vermeden önce avucuna parlayan, bembeyaz bir tüy sıkıştırdı. 'Bunu bana gökten inen bir melek verdi, kötülüğü kovar' diye fısıldadı ve öldü.",
+    metin: "Kilise/Cami kapısında yaralı bir hacı yığıldı; avucuna beyaz bir tüy bırakıp 'Melek verdi, kötülüğü kovar' deyip öldü.",
     secenekler: [
       {
-        metin: "Tüyü kutsal bir emanet olarak sakla.",
+        metin: "Tüyü kutsal emanet olarak sakla.",
         baseBasariSansi: 80,
         basariliSonuc: {
           ahlak: 20,
           etiket_ekle: [
             "envanter:melek_tuyu",
           ],
-          mesaj: "Tüyü göğsüne sakladın. Ne zaman kalbin daralsa tüyün sıcaklığı sana huzur veriyor. Bu gerçek bir lütuf.",
+          mesaj: "Tüyün sıcaklığı sana huzur veriyor. Gerçek lütuf.",
         },
         basarisizSonuc: {
           un: -10,
-          mesaj: "Tüyü sakladın ama cemaat senin batıl inançlara kapıldığını düşünüp seni ayıpladı.",
+          mesaj: "Cemaat seni batıl inançlı bulup ayıpladı.",
         },
       },
       {
-        metin: "Zengin bir asilzadeye 'gerçek melek tüyü' olarak sat.",
+        metin: "Asilzadeye 'melek tüyü' diye sat.",
         baseBasariSansi: 65,
         maxAhlak: 45,
         basariliSonuc: {
           para: 80,
           ahlak: -30,
-          mesaj: "Asilzade bu hikayeye bayıldı ve sana bir servet ödedi. Cebin altın dolu ama ruhunu şeytana satmış gibi hissediyorsun.",
+          mesaj: "Asilzade hikâyeye bayılıp servet ödedi; ruhunu satmış gibisin.",
         },
         basarisizSonuc: {
           un: -30,
           ahlak: -20,
-          mesaj: "Asilzade seni sahtekarlıkla suçladı ve korumalarına dövdürttü. Tüy de rüzgarda uçup gitti.",
+          mesaj: "Asilzade sahtekârlıkla suçlayıp seni dövdürdü; tüy uçtu.",
         },
       },
       {
-        metin: "Bu bir sapkınlık! Tüyü ateşe at ve adamı göm.",
+        metin: "Sapkınlık! Tüyü yak, adamı göm.",
         baseBasariSansi: 90,
         basariliSonuc: {
           ahlak: 10,
           un: 5,
-          mesaj: "Hurafelere taviz vermedin. Tüy yanarken tuhaf bir çığlık sesi duyar gibi oldun ama aldırış etmedin.",
+          mesaj: "Tüyü yaktın; yanarken bir çığlık duyar gibi oldun.",
         },
         basarisizSonuc: {
           mutluluk: -5,
-          mesaj: "Tüyü yaktın ama 'acaba hata mı yaptım' hissi içini kemiriyor.",
+          mesaj: "Tüyü yaktın ama 'hata mı ettim' hissi kemiriyor.",
         },
       },
     ],
@@ -333,36 +333,36 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Beklenmedik Bir Şifa",
-    metin: "Cemaatten yaşlı bir kadın nefes almakta zorlanarak yere yığıldı, dudakları morarıyor. Cebindeki tüyün sıcaklığını hissettin. Belki gerçek, belki hurafe — ama elinde bir şans var.",
+    metin: "Yaşlı bir kadın nefes alamayıp yığıldı, dudakları mosmor. Cebindeki tüyün sıcaklığını hissettin; belki hurafe, belki şans.",
     secenekler: [
       {
-        metin: "Tüyü çıkar, alnına değdir ve dua et.",
+        metin: "Tüyü alnına değdir, dua et.",
         baseBasariSansi: 70,
         basariliSonuc: {
           ahlak: 15,
           un: 20,
           mutluluk: 10,
-          mesaj: "Tüy avucunda ısındı, neredeyse titredi. Kadının nefesi bir anda düzeldi, gözlerini açtı! Etraftaki herkes dehşet ve hayranlıkla sana bakıyor — artık bir 'mucize eli' olarak anılacaksın.",
-          detay: "Hacının son sözleri yalan değilmiş.",
+          mesaj: "Kadının nefesi düzeldi, gözlerini açtı! 'Mucize eli' oldun.",
+          detay: "Hacının sözleri yalan değilmiş.",
         },
         basarisizSonuc: {
           un: -10,
           mutluluk: -10,
-          mesaj: "Tüy elinde sessiz, sıradan bir tüy gibi kaldı. Kadın gözlerinin önünde can verdi. Cemaat seni boş umut dağıtmakla suçladı.",
-          detay: "Bazı efsaneler sadece efsane olarak kalıyor.",
+          mesaj: "Tüy sessiz kaldı; kadın can verdi, cemaat seni suçladı.",
+          detay: "Bazı efsaneler efsane kalır.",
         },
       },
       {
-        metin: "Buna karışma; ölüm de Tanrı'nın bir takdiridir.",
+        metin: "Karışma; ölüm de takdirdir.",
         baseBasariSansi: 90,
         basariliSonuc: {
           ahlak: 5,
-          mesaj: "Elini tutup dua ettin ama tüye dokunmadın. Kadın huzur içinde son nefesini verdi.",
-          detay: "Her mucize denenmeyi hak etmez; bazen kabullenmek de bir erdemdir.",
+          mesaj: "Elini tutup dua ettin; kadın huzurla öldü.",
+          detay: "Bazen kabullenmek de erdemdir.",
         },
         basarisizSonuc: {
           mutluluk: -8,
-          mesaj: "Kadın gözlerini son kez sana çevirdi. Denemediğin için yıllarca 'ya gerçekten işe yarasaydı' diye düşüneceksin.",
+          mesaj: "Kadın son kez sana baktı. 'Ya işe yarasaydı?' diyeceksin.",
         },
       },
     ],
@@ -379,48 +379,48 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Tüyün Peşindeki Adam",
-    metin: "Gece yarısı odana biri süzülmüş, doğruca göğsündeki tüyün saklı olduğu sandığa uzanıyor. 'O tüy benim de hakkım, hacı benim amcamdı!' diye fısıldıyor karanlıkta.",
+    metin: "Gece yarısı biri odana süzülüp tüyün saklı sandığa uzanıyor: 'Hacı amcamdı, tüyde benim de hakkım var!'",
     secenekler: [
       {
-        metin: "Sesini yükselt, adamı kovala.",
+        metin: "Bağır, adamı kov.",
         baseBasariSansi: 75,
         basariliSonuc: {
           mutluluk: 5,
           un: 5,
-          mesaj: "Bağırışına komşular koştu, adam karanlığa kaçtı. Tüy hâlâ senin ama gecen mahvoldu.",
+          mesaj: "Komşular koştu, adam kaçtı. Tüy senin ama gecen mahvoldu.",
         },
         basarisizSonuc: {
           saglik: -10,
-          mesaj: "Adam seni ite kaka kaçtı; tüyü kapmayı başaramadan pencereden atladı.",
-          detay: "Bazı geceler sadece korkuyla hatırlanır.",
+          mesaj: "Adam seni itip kaçtı; tüyü kapmadan pencereden atladı.",
+          detay: "Bazı geceler korkuyla anılır.",
         },
       },
       {
-        metin: "Sakinleştir, hikayesini dinle, tüyü paylaşmayı teklif et.",
+        metin: "Dinle, tüyü paylaşmayı öner.",
         baseBasariSansi: 80,
         basariliSonuc: {
           ahlak: 10,
           mutluluk: 5,
-          mesaj: "Adamla sabaha kadar konuştunuz; hikayesini dinledin, birlikte ağladınız. Tüyü paylaşmaya karar verdiniz — ikiniz de biraz daha hafiflediniz.",
+          mesaj: "Sabaha kadar konuşup ağladınız; tüyü paylaştınız, hafifledin.",
         },
         basarisizSonuc: {
           ahlak: -5,
           para: -10,
-          mesaj: "Adam sözlerine inanmadı, kavga çıktı; sakinleştirmek için cebindeki parayı da vermek zorunda kaldın.",
+          mesaj: "Adam inanmadı, kavga çıktı; paranı verip yatıştırdın.",
         },
       },
       {
-        metin: "Tüyü sıkıca kavra, asla vazgeçmeyeceğini söyle.",
+        metin: "Tüyü kavra, asla vermem de.",
         baseBasariSansi: 60,
         maxAhlak: 60,
         basariliSonuc: {
           ahlak: -5,
-          mesaj: "Kararlılığın karşısında adam geri çekildi. Tüy hâlâ senin, ama gözlerindeki hayal kırıklığını unutamayacaksın.",
+          mesaj: "Adam çekildi. Tüy senin ama o bakışı unutamazsın.",
         },
         basarisizSonuc: {
           saglik: -15,
           ahlak: -10,
-          mesaj: "Boğuşma çıktı, ikiniz de yaralı ayrıldınız. Tüy yerde, ikinizin de elinden kaymış.",
+          mesaj: "Boğuştunuz, ikiniz de yaralandı; tüy yere düştü.",
         },
       },
     ],
@@ -433,10 +433,10 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     minYas: 14,
     gorsel: "🌑",
     baslik: "Karanlığın Fısıltıları",
-    metin: "Son günlerde içindeki karanlık büyüyor. Geceleri olmayan sesler duyuyor, köşede durmayan gölgeler görüyorsun. Sanki bir şey seni ele geçirmeye çalışıyor.",
+    metin: "İçindeki karanlık büyüyor. Geceleri olmayan sesler duyuyor, gölgeler görüyorsun. Bir şey seni ele geçirmeye çalışıyor gibi.",
     secenekler: [
       {
-        metin: "Kara Kılıcın fısıltılarına cevap ver ve karanlığı kucakla.",
+        metin: "Kılıcın fısıltısına uy.",
         baseBasariSansi: 78,
         gerekliEtiketler: [
           "envanter:kara_kilic",
@@ -445,43 +445,43 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           mutluluk: 12,
           ahlak: -40,
           un: 20,
-          mesaj: "Seslerin kaynağı kılıçtı! Onun karanlığıyla birleştin. Artık korkmuyorsun, çünkü karanlığın kendisi sen oldun.",
+          mesaj: "Sesler kılıçtandı! Karanlıkla birleştin, artık korkmuyorsun.",
         },
         basarisizSonuc: {
           saglik: -10,
-          mesaj: "Kılıç seni tamamen delirtmek üzereydi, son anda kılıcı yere fırlatıp kurtuldun.",
+          mesaj: "Kılıç seni delirtecekti; son anda fırlatıp kurtuldun.",
         },
       },
       {
-        metin: "Kendini toparlamaya çalış, bir hekimden yardım iste.",
+        metin: "Toparlan, hekimden yardım iste.",
         baseBasariSansi: 55,
         maliyet: 10,
         basariliSonuc: {
           para: -10,
           mutluluk: 12,
           saglik: 5,
-          mesaj: "Hekimin verdiği afyonlu şuruplar içini hafifletti; gölgeler biraz dağıldı.",
+          mesaj: "Hekimin afyonlu şurupları rahatlattı; gölgeler dağıldı.",
         },
         basarisizSonuc: {
           para: -10,
           saglik: -8,
           mutluluk: -5,
-          mesaj: "Hekim seni deli zannetti. Verdiği ilaçlar mideni bulandırmaktan başka işe yaramadı.",
+          mesaj: "Hekim seni deli sandı; ilaçlar mideni bozdu.",
         },
       },
       {
-        metin: "Kendi başına, odana kapanarak direnmeye çalış.",
+        metin: "Odana kapanıp tek başına diren.",
         baseBasariSansi: 70,
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
           mutluluk: -1,
-          mesaj: "Nasılsa geçer diye düşündün ve kapıya kilit vurup günlerce bekledin. Bir süreliğine haklı çıktın.",
+          mesaj: "Kapıyı kilitleyip günlerce bekledin; bir süre haklı çıktın.",
         },
         basarisizSonuc: {
           saglik: -12,
           un: -15,
-          mesaj: "Halüsinasyonların arttı; sokağa yarı çıplak fırlayıp bağırmaya başladın. İtibarın yerle bir oldu.",
+          mesaj: "Yarı çıplak sokakta bağırdın; itibarın yerle bir.",
         },
       },
     ],
@@ -494,10 +494,10 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     ],
     gorsel: "🤒",
     baslik: "Yanan Ateş",
-    metin: "Evladın ateşler içinde kıvranıyor. Rengi solmuş ve zar zor nefes alıyor. Kasabadaki tek yetenekli hekim çok fazla altın istiyor.",
+    metin: "Evladın ateşler içinde, zor nefes alıyor. Kasabadaki tek yetenekli hekim çok altın istiyor.",
     secenekler: [
       {
-        metin: "Gizli İksiri kullan ve onu anında iyileştir!",
+        metin: "Gizli İksiri kullan!",
         baseBasariSansi: 100,
         gerekliEtiketler: [
           "envanter:sirli_iksir",
@@ -514,14 +514,14 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
             kalan_tur: 1,
             bitince_etiket: "cocuk_saglik_zamani:iyi",
           },
-          mesaj: "Sıvıyı çocuğunun dudaklarına damlattığın an ateşi düştü! Gözlerini açıp gülümsedi. O seyyar satıcı doğru söylüyormuş!",
+          mesaj: "İksirle ateş düştü, çocuk gülümsedi! Satıcı haklıymış.",
         },
         basarisizSonuc: {
           mesaj: "Kullanılmadı.",
         },
       },
       {
-        metin: "Hekimi çağırt ve tüm birikimini ona ver.",
+        metin: "Hekimi çağır, birikimini ver.",
         baseBasariSansi: 70,
         maliyet: 25,
         basariliSonuc: {
@@ -533,7 +533,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
             kalan_tur: 2,
             bitince_etiket: "cocuk_saglik_zamani:iyi",
           },
-          mesaj: "Hekim geldi, sülükler ve merhemlerle tedaviye başladı. Durum birkaç güne netleşecek.",
+          mesaj: "Hekim tedaviye başladı; birkaç güne belli olur.",
         },
         basarisizSonuc: {
           para: -25,
@@ -544,11 +544,11 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
             kalan_tur: 2,
             bitince_etiket: "cocuk_saglik_zamani:kotu",
           },
-          mesaj: "Hekim başını iki yana salladı, 'Durumu kritik, sadece dua edin' dedi.",
+          mesaj: "Hekim başını salladı: 'Durum kritik, dua edin.'",
         },
       },
       {
-        metin: "Param yok, ıslak bezle kendim tedavi edeceğim.",
+        metin: "Param yok, kendim bakarım.",
         baseBasariSansi: 30,
         basariliSonuc: {
           durum_ekle: {
@@ -558,7 +558,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
             kalan_tur: 2,
             bitince_etiket: "cocuk_saglik_zamani:iyi",
           },
-          mesaj: "Gece gündüz başucunda bekleyip ateşini düşürdün.",
+          mesaj: "Gece gündüz başında bekleyip ateşini düşürdün.",
         },
         basarisizSonuc: {
           durum_ekle: {
@@ -568,7 +568,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
             kalan_tur: 2,
             bitince_etiket: "cocuk_saglik_zamani:kotu",
           },
-          mesaj: "Ateş bir türlü düşmüyor, aksine çocuk havale geçirmeye başladı.",
+          mesaj: "Ateş düşmedi, çocuk havale geçirmeye başladı.",
         },
       },
     ],
@@ -590,10 +590,10 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 2,
     baslik: "Savaş Çanları",
-    metin: "{yil} yılı. {bolge} ile {komsu} arasında devasa bir savaş patlak verdi! Sınır köyleri yanıyor. Seferberlik tellalları meydanlarda bağırıyor: Her haneden eli silah tutan biri orduya katılacak!",
+    metin: "{yil} yılı. {bolge} ile {komsu} arasında büyük savaş çıktı! Sınır köyleri yanıyor; her haneden bir silahlı orduya katılacak.",
     secenekler: [
       {
-        metin: "Kara Kılıcı kuşanarak cepheye en önde git!",
+        metin: "Kara Kılıçla cephenin en önüne git!",
         baseBasariSansi: 100,
         gerekliEtiketler: [
           "envanter:kara_kilic",
@@ -609,14 +609,14 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_ekle: [
             "cephe_gordu",
           ],
-          mesaj: "Kara Kılıç elinde adeta kendi kendine dans etti. Düşmanlar senden dehşete düşüp kaçtı! Sen bir savaş tanrısı gibi anılıyorsun ama gece olduğunda kılıcın sana fısıldadığı o iğrenç şeyleri unutamıyorsun.",
+          mesaj: "Düşman kaçtı, savaş tanrısı sayıldın; gece fısıltılar sürüyor.",
         },
         basarisizSonuc: {
           mesaj: "Kullanılmadı.",
         },
       },
       {
-        metin: "Gönüllü yazıl, vatan için kanını akıt.",
+        metin: "Gönüllü yazıl, vatan için savaş.",
         baseBasariSansi: 55,
         basariliSonuc: {
           un: 25,
@@ -629,7 +629,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_ekle: [
             "cephe_gordu",
           ],
-          mesaj: "Aylarca siperlerde çamur ve kan içinde kaldın. Ama hayattasın, madalya aldın ve ganimetten payınla döndün.",
+          mesaj: "Aylarca siperde kaldın; sağ döndün, madalya ve ganimetle.",
         },
         basarisizSonuc: {
           saglik: -45,
@@ -644,11 +644,11 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
             tur: "kalici",
             tur_basi_saglik: -1,
           },
-          mesaj: "Top mermisi hemen yanına düştü. Uyandığında sahra hastanesindeydin. Bedenin parçalandı, artık eski gücün asla yerine gelmeyecek.",
+          mesaj: "Top mermisi yanına düştü; eski gücün dönmeyecek.",
         },
       },
       {
-        metin: "Çürük raporu ayarla ve savaştan kaç.",
+        metin: "Çürük raporu al, savaştan kaç.",
         baseBasariSansi: 60,
         maliyet: 35,
         basariliSonuc: {
@@ -661,7 +661,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_ekle: [
             "askerlikten_kacti",
           ],
-          mesaj: "Hekime rüşvet vererek kendini evde güvenceye aldın. Cepheden komşularının ölüm haberleri gelirken sen sıcak yatağındasın. İtibarın yerle bir.",
+          mesaj: "Rüşvetle evde kaldın; itibarın yerle bir.",
         },
         basarisizSonuc: {
           para: -35,
@@ -670,7 +670,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           ulke_etkisi: {
             savasta: true,
           },
-          mesaj: "Rüşvet verdiğin ortaya çıktı! Seni zorla en ön saflara, ölüme sürdüler. Hem onurunu hem paranı kaybettin.",
+          mesaj: "Rüşvet ortaya çıktı! Ön safa sürüldün, onur ve para gitti.",
         },
       },
     ],
@@ -689,10 +689,10 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 2,
     baslik: "Seferberlik",
-    metin: "{yil} yılı. {bolge} ile {komsu} arasında devasa bir savaş patlak verdi! Sınır köyleri yanıyor. Sen zaten orduya kayıtlısın; kimse sana katılıp katılmayacağını sormuyor, birliğin cepheye çağrılıyor. Tek soru, orada nasıl bir rol alacağın.",
+    metin: "{yil} yılı. {bolge} ile {komsu} arasında büyük savaş çıktı! Zaten ordudasın; birliğin cepheye çağrılıyor. Soru, nasıl bir rol alacağın.",
     secenekler: [
       {
-        metin: "Kara Kılıcı kuşanarak cepheye en önde git!",
+        metin: "Kara Kılıçla cephenin en önüne git!",
         baseBasariSansi: 100,
         gerekliEtiketler: [
           "envanter:kara_kilic",
@@ -708,14 +708,14 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_ekle: [
             "cephe_gordu",
           ],
-          mesaj: "Kara Kılıç elinde adeta kendi kendine dans etti. Düşmanlar senden dehşete düşüp kaçtı! Sen bir savaş tanrısı gibi anılıyorsun ama gece olduğunda kılıcın sana fısıldadığı o iğrenç şeyleri unutamıyorsun.",
+          mesaj: "Düşman kaçtı, savaş tanrısı sayıldın; gece fısıltılar sürüyor.",
         },
         basarisizSonuc: {
           mesaj: "Kullanılmadı.",
         },
       },
       {
-        metin: "En öndeki hücum birliğine katıl, kahramanca savaş.",
+        metin: "En öndeki hücum birliğine katıl.",
         baseBasariSansi: 55,
         basariliSonuc: {
           un: 25,
@@ -728,7 +728,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_ekle: [
             "cephe_gordu",
           ],
-          mesaj: "Aylarca siperlerde çamur ve kan içinde kaldın. Ama hayattasın, madalya aldın ve ganimetten payınla döndün.",
+          mesaj: "Aylarca siperde kaldın; sağ döndün, madalya ve ganimetle.",
         },
         basarisizSonuc: {
           saglik: -45,
@@ -743,11 +743,11 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
             tur: "kalici",
             tur_basi_saglik: -1,
           },
-          mesaj: "Top mermisi hemen yanına düştü. Uyandığında sahra hastanesindeydin. Bedenin parçalandı, artık eski gücün asla yerine gelmeyecek.",
+          mesaj: "Top mermisi yanına düştü; eski gücün dönmeyecek.",
         },
       },
       {
-        metin: "Geride, lojistik ve destek hattında görev al.",
+        metin: "Geride lojistik hattında görev al.",
         baseBasariSansi: 80,
         basariliSonuc: {
           un: 5,
@@ -756,8 +756,8 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           ulke_etkisi: {
             savasta: true,
           },
-          mesaj: "Cephe gerisinde erzak ve mühimmat akışını sağladın; kimse senin adını anmayacak ama ordu sensiz aç kalırdı.",
-          detay: "Kahramanlık her zaman en ön safta olmaz.",
+          mesaj: "Erzak ve mühimmat akışını sağladın; ordu sensiz aç kalırdı.",
+          detay: "Kahramanlık hep en önde olmaz.",
         },
         basarisizSonuc: {
           saglik: -15,
@@ -765,8 +765,8 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           ulke_etkisi: {
             savasta: true,
           },
-          mesaj: "Bir düşman akını lojistik hattına kadar ulaştı; yaralı ama hayatta kaldın.",
-          detay: "Geride kalmak da bazen tehlikeden azade değil.",
+          mesaj: "Düşman akını lojistik hattına ulaştı; yaralı kurtuldun.",
+          detay: "Geride kalmak da tehlikesiz değil.",
         },
       },
     ],
@@ -782,10 +782,10 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 2,
     baslik: "Kara Ölüm Kapıda",
-    metin: "Limanlara yanaşan son gemiyle şehre görünmez bir katil girdi. İnsanlar sokaklarda kan kusarak ölmeye başladı. Şehir kapıları kapatılmak üzere.",
+    metin: "Son gemiyle şehre görünmez bir katil girdi. İnsanlar sokakta kan kusarak ölüyor. Şehir kapıları kapanmak üzere.",
     secenekler: [
       {
-        metin: "Sırlı İksiri ailen ve kendin için kullan!",
+        metin: "Sırlı İksiri ailenle iç!",
         baseBasariSansi: 100,
         gerekliEtiketler: [
           "envanter:sirli_iksir",
@@ -803,15 +803,15 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           ulke_etkisi: {
             vebada: true,
           },
-          mesaj: "İksiri içtiniz. Damarlarında buz gibi bir his yayıldı. Çevrendeki herkes kırılırken sana ve ailene tek bir sinek bile dokunamadı!",
-          detay: "Sen mucizenin ta kendisi oldun.",
+          mesaj: "İksiri içtiniz; herkes yıkılırken size sinek bile dokunmadı!",
+          detay: "Mucizenin ta kendisi oldun.",
         },
         basarisizSonuc: {
           mesaj: "Kullanılmadı.",
         },
       },
       {
-        metin: "Tüm işi gücü bırak, aileyi alıp kırsala (dağlara) kaç.",
+        metin: "Her şeyi bırak, aileyle kırsala kaç.",
         baseBasariSansi: 70,
         maliyet: 20,
         basariliSonuc: {
@@ -821,8 +821,8 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
             vebada: true,
           },
           maas_carpani: 0.8,
-          mesaj: "Veba maskeliler kapıları tutmadan ormana kaçtınız. Soğukta ve sefalet içinde yaşadınız ama hayattasınız.",
-          detay: "Döndüğünde dükkanın/işin başkalarının eline geçmiş olacak.",
+          mesaj: "Kapılar tutulmadan ormana kaçtınız; sefil ama hayattasınız.",
+          detay: "Döndüğünde dükkânın/işin başkasında olacak.",
         },
         basarisizSonuc: {
           para: -20,
@@ -838,11 +838,11 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
             kalan_tur: 2,
             tur_basi_saglik: -15,
           },
-          mesaj: "Kaçış yolunda kervandaki birinden sana da bulaştı. Ormanın ortasında, çaresizce ateşler içinde yatıyorsun.",
+          mesaj: "Kervandan sana bulaştı; ormanda ateşler içindesin.",
         },
       },
       {
-        metin: "Şehirde kal! İlaç ve erzak karaborsacılığı yap.",
+        metin: "Şehirde kal, ilaç ve erzak karaborsası yap.",
         baseBasariSansi: 50,
         maliyet: 15,
         basariliSonuc: {
@@ -853,7 +853,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           ulke_etkisi: {
             vebada: true,
           },
-          mesaj: "Aspirinleri ve temiz suyu altın fiyatına sattın. İnsanlar inleyerek ölürken sen servetine servet kattın.",
+          mesaj: "İlaç ve suyu altına sattın; ölüm üstüne servet kurdun.",
         },
         basarisizSonuc: {
           saglik: -35,
@@ -869,7 +869,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
             kalan_tur: 3,
             tur_basi_saglik: -15,
           },
-          mesaj: "Müşterilerinden birinin kusmuğu yüzüne geldi. Altınların seni kurtaramadı, kara ölüm ciğerlerine işledi.",
+          mesaj: "Bir müşterinin kusmuğu yüzüne geldi; altın kurtarmadı.",
         },
       },
     ],
@@ -882,10 +882,10 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     },
     gorsel: "☠️",
     baslik: "Vebanın Tam Ortası",
-    metin: "Sokaklarda ceset arabaları dolaşıyor. 'Ölülerinizi dışarı çıkarın!' sesleri yankılanıyor. Mahalleli komşu evi ateşe vermeye hazırlanıyor, çünkü içeride can çekişen bir çocuk var.",
+    metin: "Sokaklarda ceset arabaları dolaşıyor. Mahalle, içinde can çekişen çocuk olan komşu evi yakmaya hazırlanıyor.",
     secenekler: [
       {
-        metin: "Manastır Kedisini eve sal, seni farelerden korusun.",
+        metin: "Manastır Kedisini eve sal.",
         baseBasariSansi: 100,
         gerekliEtiketler: [
           "esya:veba_koruyucu_kedi",
@@ -893,14 +893,14 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         basariliSonuc: {
           mutluluk: 12,
           saglik: 10,
-          mesaj: "O tuhaf kara kedi gece gündüz avlandı. Evin etrafına tek bir hastalıklı fare bile yaklaşamadı. Kedi senin ailenin koruyucu meleği oldu!",
+          mesaj: "Kedi eve hasta fare yaklaştırmadı. Ailenin koruyucusu!",
         },
         basarisizSonuc: {
           mesaj: "Kullanılmadı.",
         },
       },
       {
-        metin: "Kalabalığa kafa tut ve yanan eve girip o çocuğu kurtar!",
+        metin: "Kalabalığa karşı çık, çocuğu kurtar!",
         baseBasariSansi: 45,
         basariliSonuc: {
           un: 30,
@@ -909,8 +909,8 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_ekle: [
             "salgin_kahramani",
           ],
-          mesaj: "Kapıyı kırıp alevlerin içinden o çocuğu omuzlayarak çıkardın. Hastalığa yakalanmadın. Şehir seni peygamber gibi görüyor.",
-          detay: "Kurtardığın o can, bir ömür sana minnettar kalacak.",
+          mesaj: "Çocuğu alevlerden çıkardın; şehir seni peygamber sayıyor.",
+          detay: "Kurtardığın can sana ömür boyu minnettar.",
         },
         basarisizSonuc: {
           saglik: -35,
@@ -923,18 +923,18 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
             kalan_tur: 3,
             tur_basi_saglik: -15,
           },
-          mesaj: "Çocuğu çıkardın ama veba sana da geçti. Çocuğun nefesi yüzüne değdiği an sonun başlangıcı oldu.",
+          mesaj: "Çocuğu çıkardın ama veba sana da geçti.",
         },
       },
       {
-        metin: "Kapıları çivile, pencereleri tahtala. Kimseye acıma.",
+        metin: "Kapıları çivile, pencereleri tahtala.",
         baseBasariSansi: 85,
         basariliSonuc: {
           saglik: 10,
           ahlak: -25,
           un: -15,
-          mesaj: "Çocuğun çığlıkları kesilinceye kadar kulaklarını tıkadın. Kapıdan dışarı adım atmadın ve hayatta kaldın.",
-          detay: "O çığlıkları duyduğun o geceyi hiçbir zaman unutmayacaksın.",
+          mesaj: "Çığlıklar dinene dek kulak tıkadın; hayatta kaldın.",
+          detay: "O geceyi hiç unutmayacaksın.",
         },
         basarisizSonuc: {
           saglik: -20,
@@ -947,7 +947,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
             kalan_tur: 2,
             tur_basi_saglik: -15,
           },
-          mesaj: "Evini mezara çevirdin ama veba sulara çoktan karışmıştı. Dört duvar arasında ateşler içinde kıvranıyorsun.",
+          mesaj: "Evi mezar yaptın ama veba suya karışmıştı; ateşler içindesin.",
         },
       },
     ],
@@ -960,49 +960,49 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     },
     gorsel: "📉",
     baslik: "Krizin Pençesinde",
-    metin: "Ülke ekonomisi çöktü, paranın değeri bir avuç toprak bile etmiyor. {es} ve çocukların açlıkla savaşıyor. Dükkânı kurtarmak için paraya, aileyi kurtarmak için ekmeğe ihtiyacın var.",
+    metin: "Ekonomi çöktü, para toprak bile etmiyor. {es} ve çocukların aç. Dükkân için paraya, ailen için ekmeğe ihtiyacın var.",
     secenekler: [
       {
-        metin: "Son paramla karaborsadan çocuklara/aileme yiyecek alacağım.",
+        metin: "Son paramla karaborsadan yiyecek al.",
         baseBasariSansi: 85,
         gerekliEtiketler: [
           "cocuk_var",
         ],
-        kilitAciklamasi: "Aileni doyurmak için çocukların olmalı.",
+        kilitAciklamasi: "Çocuğun olmalı.",
         basariliSonuc: {
           para: -40,
           saglik: 10,
           mutluluk: 12,
           ahlak: 20,
           un: -15,
-          mesaj: "Dükkânın kepenklerini sonsuza dek kapattın. Ticaret bitti. Ama çocukların o akşam doya doya ekmek yedi. Ailenin kahramanısın.",
+          mesaj: "Dükkânı kapattın ama çocukların doyasıya ekmek yedi.",
         },
         basarisizSonuc: {
           para: -40,
           mutluluk: -15,
           saglik: -10,
-          mesaj: "Sermayeyi verdin ama karaborsacı malları çürük verdi. Hem iş battı hem çocuklar hasta oldu.",
+          mesaj: "Karaborsacı çürük mal verdi; iş battı, çocuklar hastalandı.",
         },
       },
       {
-        metin: "İşi kurtarmam lazım! Aile dişini sıksın, parayı dükkâna bas.",
+        metin: "İşi kurtar, aile dişini sıksın.",
         baseBasariSansi: 45,
         basariliSonuc: {
           para: 60,
           un: 15,
           ahlak: -30,
           mutluluk: -25,
-          mesaj: "Herkes batarken sen krizden imparatorluk çıkardın! Ancak eve döndüğünde zayıflıktan erimiş çocuklarının sana attığı o kırgın bakışı asla silemeyeceksin.",
+          mesaj: "Krizden imparatorluk kurdun; çocukların bakışı silinmez.",
         },
         basarisizSonuc: {
           para: -40,
           saglik: -20,
           mutluluk: -30,
-          mesaj: "Kriz seni de yuttu. Hem dükkân battı hem ailen açlıktan kırıldı. Tam bir felaket.",
+          mesaj: "Kriz seni de yuttu: dükkân battı, aile açlıktan kırıldı.",
         },
       },
       {
-        metin: "Ölü Yüzüğü tefeciye rehin bırakarak zaman kazan.",
+        metin: "Ölü Yüzüğü tefeciye rehin ver.",
         baseBasariSansi: 100,
         gerekliEtiketler: [
           "envanter:olunun_yuzugu",
@@ -1014,7 +1014,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_sil: [
             "envanter:olunun_yuzugu",
           ],
-          mesaj: "Mezardan/Tabuttan aşırdığın yüzüğü tefeciye fırlattın. Gözleri parladı ve sana borç yazmadı. Hem aileni hem işi kurtardın!",
+          mesaj: "Tefeci yüzüğe bakıp borç yazmadı; aile ve iş kurtuldu!",
         },
         basarisizSonuc: {
           mesaj: "Kullanılmadı.",
@@ -1029,10 +1029,10 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     agirlik: 0.2,
     gorsel: "🌒",
     baslik: "Var Olmayan Sokak",
-    metin: "Gece kayboldun, kendini haritalarda olmayan sisli bir sokakta buldun — tezgahlarda ruhlar ve sırlar satılıyor. Maskeli bir tüccar parlayan siyah bir sikke uzatıyor: 'Bunu almak için altını değil, anılarını vereceksin.'",
+    metin: "Sisli, haritasız bir sokakta ruh ve sır satılıyor. Maskeli tüccar siyah sikke uzatıyor: 'Bedeli anıların.'",
     secenekler: [
       {
-        metin: "Geçmişimdeki mutlu anıları verip sikkeyi al.",
+        metin: "Mutlu anılarını verip sikkeyi al.",
         baseBasariSansi: 90,
         basariliSonuc: {
           mutluluk: -30,
@@ -1040,26 +1040,26 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_ekle: [
             "envanter:golge_sikke",
           ],
-          mesaj: "Tüccar alnına dokundu. Çocukluk sevinçlerin, annenin yüzü... hepsi silindi. Elinde ise cehennem gibi soğuk bir 'Gölge Sikke' var.",
+          mesaj: "Anıların silindi; elinde buz gibi bir Gölge Sikke var.",
         },
         basarisizSonuc: {
           mutluluk: -30,
           ahlak: -10,
-          mesaj: "Tüccar anılarını aldı ama avucuna bıraktığı sikke bir sis gibi dağıldı. Sokak da yok oldu. Bedeli ödedin, elin boş kaldı.",
-          detay: "Bazı pazarlar sadece almak için kurulur.",
+          mesaj: "Tüccar anıları aldı, sikke sis gibi dağıldı, sokak yok oldu.",
+          detay: "Bazı pazarlar sadece almak içindir.",
         },
       },
       {
-        metin: "Ruhum satılık değil! Kaç buradan.",
+        metin: "Ruhum satılık değil! Kaç.",
         baseBasariSansi: 90,
         basariliSonuc: {
           ahlak: 15,
-          mesaj: "Arkanı dönüp koştun. Arkana baktığında o sokağın yerinde sadece taş bir duvar vardı. Ruhun güvende.",
+          mesaj: "Koştun; sokak yerinde taş duvar kaldı. Ruhun güvende.",
         },
         basarisizSonuc: {
           mutluluk: -15,
           saglik: -10,
-          mesaj: "Kaçarken sislerin içinden kollar seni tırmaladı. Sokaktan kurtuldun ama geceler boyu o maskeli yüzü göreceksin.",
+          mesaj: "Sisten kollar tırmaladı; o maskeli yüz peşini bırakmayacak.",
         },
       },
     ],
@@ -1073,10 +1073,10 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Düz, Gri Bir Taş",
-    metin: "Yol kenarında oturan yaşlı bir kadın, önündeki bezin üzerinde tek bir eşya sergiliyor: sıradan görünen, avuç içi büyüklüğünde gri bir taş. 'Ucuza veririm' diyor, 'ama dinlemeyi bilmek lazım. O da seni dinliyor zaten.'",
+    metin: "Yol kenarında yaşlı bir kadın tek eşya satıyor: avuç içi büyüklüğünde gri bir taş. 'Ucuz, ama dinlemesini bil. O da seni dinliyor.'",
     secenekler: [
       {
-        metin: "Gülümse, birkaç bakır sikkeyle taşı satın al.",
+        metin: "Birkaç bakıra taşı satın al.",
         baseBasariSansi: 95,
         maliyet: 5,
         basariliSonuc: {
@@ -1084,16 +1084,16 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_ekle: [
             "esya:fisildayan_tas",
           ],
-          mesaj: "Taşı avucuna aldın; ağırlığı tuhaf bir şekilde tam yerinde. Kadın gülümsedi: 'Şimdi o da senin bir parçan.' Cebine attığında hafif bir uğultu duyar gibi oldun.",
-          detay: "Belki hayal gücündür, belki değil.",
+          mesaj: "Taş tam avuç içi; cebinde hafif bir uğultu duydun.",
+          detay: "Belki hayaldir, belki değil.",
         },
         basarisizSonuc: {
           para: -5,
-          mesaj: "Taşı aldın ama sıradan bir çakıldan farksız çıktı, kadın da parayı alır almaz sırra kadem bastı.",
+          mesaj: "Taş sıradan çakıl çıktı, kadın parayı alıp kayboldu.",
         },
       },
       {
-        metin: "Kadını fırsattan yararlanıp taşı çal.",
+        metin: "Fırsatı kolla, taşı çal.",
         baseBasariSansi: 45,
         maxAhlak: 40,
         basariliSonuc: {
@@ -1101,28 +1101,28 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_ekle: [
             "esya:fisildayan_tas",
           ],
-          mesaj: "Kadın başka yöne bakarken taşı kaptığın gibi kaçtın. Arkandan bağırdığını duydun: 'O seni bulur, para vermeden de!'",
+          mesaj: "Taşı kapıp kaçtın; arkandan 'O seni bulur!' diye bağırdı.",
           detay: "Elinde şimdiden hafif bir uğultu var.",
         },
         basarisizSonuc: {
           un: -15,
           ahlak: -5,
-          mesaj: "Kadın bileğini demir gibi bir güçle yakaladı, yaşından beklenmeyecek bir çeviklikle seni meydanda rezil etti.",
+          mesaj: "Kadın bileğini demir gibi yakaladı, seni meydanda rezil etti.",
         },
       },
       {
-        metin: "Deli saçması de, yoluna devam et.",
+        metin: "Saçmalık de, yoluna devam et.",
         baseBasariSansi: 92,
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
           mutluluk: -1,
-          mesaj: "Omuz silkip yürüdün. Arkandan kadının kikirdediğini duydun ama aldırmadın.",
+          mesaj: "Omuz silkip yürüdün; arkandan kadının kikirdediğini duydun.",
         },
         basarisizSonuc: {
           mutluluk: -3,
-          mesaj: "Yürüdükçe kadının sözleri kafanda dönüp durdu: 'O da seni dinliyor zaten.' Geceleri bazen o taşı merak ediyorsun.",
-          detay: "Bazı meraklar, cevapsız kaldıkça büyüyor.",
+          mesaj: "Kadının sözleri kafanda döndü; geceleri o taşı merak ediyorsun.",
+          detay: "Cevapsız merak büyür.",
         },
       },
     ],
@@ -1139,35 +1139,35 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Taş Konuştu",
-    metin: "Gece yarısı, cebindeki taş aniden ısındı ve kulağına -gerçekten kulağına mı?- ince, kumlu bir ses fısıldadı: 'Yarın... güvendiğin biri... dikkatli ol.' Sonra sessizlik. Kalbin küt küt atıyor.",
+    metin: "Gece yarısı cebindeki taş ısındı, kulağına ince bir ses fısıldadı: 'Yarın... güvendiğin biri... dikkat et.' Kalbin küt küt atıyor.",
     secenekler: [
       {
-        metin: "Uyarıyı ciddiye al, ertesi gün temkinli davran.",
+        metin: "Uyarıyı ciddiye al, temkinli ol.",
         baseBasariSansi: 80,
         basariliSonuc: {
           ahlak: 5,
           mutluluk: -5,
-          mesaj: "Gün boyu tetikte gezdin; yakın bir dostunun sana söylemesi gereken kötü bir haberi son anda fark ettin, hazırlıksız yakalanmadın.",
-          detay: "Taş haklıymış — ya da sen kendi sezgini taşın sesi sandın.",
+          mesaj: "Tetikte gezdin; bir dostunun kötü haberini son anda fark ettin.",
+          detay: "Taş haklıymış, ya da sezgin.",
         },
         basarisizSonuc: {
           mutluluk: -8,
-          mesaj: "Bütün gün gölgelerden ürktün ama hiçbir şey olmadı; sadece uykusuz ve gergin bir gün geçirdin.",
+          mesaj: "Gölgelerden ürktün ama bir şey olmadı.",
         },
       },
       {
-        metin: "Bu bir rüyaydı, aldırma.",
+        metin: "Rüyaydı, aldırma.",
         baseBasariSansi: 90,
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
           mutluluk: -1,
-          mesaj: "Omuz silktin ve unuttun gitti. Belki de gerçekten sadece bir rüyaydı.",
+          mesaj: "Omuz silkip unuttun; belki gerçekten rüyaydı.",
         },
         basarisizSonuc: {
           mutluluk: -10,
           un: -5,
-          mesaj: "Aldırmadın ve gerçekten de güvendiğin biri seni küçük düşürecek bir dedikodu yaydı. Keşke dinleseydin.",
+          mesaj: "Aldırmadın; güvendiğin biri seni küçük düşüren dedikodu yaydı.",
         },
       },
     ],
@@ -1185,26 +1185,26 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Taşın İsteği",
-    metin: "Taş bu kez daha net konuştu: 'Bana bir isim ver. Sevdiğin birinin adını. Karşılığında sana yıllarca yetecek bir şans vereceğim.' Sesi artık kumlu değil, neredeyse insan gibi.",
+    metin: "Taş bu kez net konuştu: 'Bana sevdiğin birinin adını ver. Karşılığında yıllarca yetecek şans.' Sesi neredeyse insan gibi.",
     secenekler: [
       {
-        metin: "Rastgele, tanımadığın birinin adını uydur, kandır.",
+        metin: "Tanımadığın birinin adını uydur.",
         baseBasariSansi: 50,
         basariliSonuc: {
           mutluluk: -8,
           un: 8,
           para: 20,
-          mesaj: "Taş bir süre sessiz kaldı, sonra 'Kabul ettim' diye fısıldadı. İnandırıcı yalanın işe yaramış gibi görünüyor; önümüzdeki günler tuhaf bir şansla geçti.",
-          detay: "Ya da her şey sadece tesadüftü.",
+          mesaj: "Taş 'Kabul' dedi; günler tuhaf bir şansla geçti.",
+          detay: "Ya da hepsi tesadüf.",
         },
         basarisizSonuc: {
           mutluluk: -15,
           ahlak: -5,
-          mesaj: "'Yalan söyledin' diye tısladı taş, sesi öfkeyle titredi. O günden sonra cebinde taşımak bile seni ürpertiyor.",
+          mesaj: "'Yalan söyledin!' diye tısladı; artık taşımak bile ürpertiyor.",
         },
       },
       {
-        metin: "Kimsenin adını verme; taşı sessizce bir kuyuya at.",
+        metin: "Ad verme, taşı kuyuya at.",
         baseBasariSansi: 95,
         basariliSonuc: {
           ahlak: 10,
@@ -1212,19 +1212,19 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_sil: [
             "esya:fisildayan_tas",
           ],
-          mesaj: "Taşı kuyunun karanlığına bıraktın. Dipten hafif, hayal kırıklığına uğramış bir uğultu yükseldi, sonra hiç. İçin rahatladı.",
-          detay: "Bazı sırlar açığa çıkmadan gömülmeyi hak ediyor.",
+          mesaj: "Kuyudan kırgın bir uğultu geldi, sonra sessizlik.",
+          detay: "Bazı sırlar gömülmeyi hak eder.",
         },
         basarisizSonuc: {
           etiket_sil: [
             "esya:fisildayan_tas",
           ],
           mutluluk: -5,
-          mesaj: "Taşı attın ama kuyudan yükselen o son fısıltıyı -adını biliyordu- hiç unutamayacaksın.",
+          mesaj: "Taşı attın ama kuyudan gelen son fısıltı adını biliyordu.",
         },
       },
       {
-        metin: "Sevdiğin birinin adını gerçekten fısılda.",
+        metin: "Sevdiğin birinin adını fısılda.",
         baseBasariSansi: 88,
         maxAhlak: 70,
         basariliSonuc: {
@@ -1234,8 +1234,8 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_sil: [
             "esya:fisildayan_tas",
           ],
-          mesaj: "Adı fısıldadığın an taş buz gibi soğudu, sonra elinde toza dönüştü. Ertesi hafta işlerin inanılmaz bir şekilde açıldı — ama o ismi verdiğin kişiye her baktığında için ürperiyor.",
-          detay: "Şansın nereden geldiğini asla kimseye anlatamayacaksın.",
+          mesaj: "Taş toza döndü, işler açıldı; o kişiye bakınca ürperiyorsun.",
+          detay: "Şansın kaynağını kimseye anlatamazsın.",
         },
         basarisizSonuc: {
           ahlak: -20,
@@ -1244,8 +1244,8 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_sil: [
             "esya:fisildayan_tas",
           ],
-          mesaj: "Taş toza döndü ama karşılığında hiçbir kapı açılmadı. Sadece adını verdiğin kişi haftalar içinde hastalandı. Bedeli buymuş.",
-          detay: "Fısıltı hep bir şey alır; bu sefer sana hiçbir şey vermedi.",
+          mesaj: "Taş toza döndü, kapı açılmadı; adını verdiğin hastalandı.",
+          detay: "Fısıltı hep alır; bu kez vermedi.",
         },
       },
     ],
@@ -1259,7 +1259,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Terk Edilmiş Konağın Malları",
-    metin: "Şehir dışındaki terk edilmiş bir konağın eşyaları açık arttırmayla satılıyor. Çoğu eşya küf kokuyor ama köşede duran, gümüş kaplamalı bir ayna dikkatini çekiyor. Tuhaf olan şu: içinde yansıyan oda, durduğun yerden biraz farklı görünüyor.",
+    metin: "Terk edilmiş konağın eşyaları satılıyor. Köşedeki gümüş kaplı aynanın içindeki oda, durduğun yerden biraz farklı görünüyor.",
     secenekler: [
       {
         metin: "Aynayı satın al.",
@@ -1270,16 +1270,16 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_ekle: [
             "esya:eski_ayna",
           ],
-          mesaj: "Aynayı evine taşıdın. Duvara astığın an, içindeki yansıma bir an gecikip sana yetişti — sanki ayna da senin gibi ilk kez bu odayı görüyordu.",
-          detay: "Belki yorgunluktandır, belki değil.",
+          mesaj: "Aynayı astın; yansıma bir an gecikip sana yetişti.",
+          detay: "Belki yorgunluktandır.",
         },
         basarisizSonuc: {
           para: -20,
-          mesaj: "Aynayı aldın ama açık arttırma hilesiyle beklediğinden fazla ödedin.",
+          mesaj: "Açık arttırma hilesiyle beklediğinden fazla ödedin.",
         },
       },
       {
-        metin: "Kalabalığın karışıklığından yararlanıp aynayı gizlice al.",
+        metin: "Kalabalıkta aynayı gizlice al.",
         baseBasariSansi: 40,
         maxAhlak: 40,
         basariliSonuc: {
@@ -1287,27 +1287,27 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_ekle: [
             "esya:eski_ayna",
           ],
-          mesaj: "Kimse fark etmeden aynayı bir örtüye sarıp uzaklaştın. Ellerin, açıklayamadığın bir sebeple soğumuştu.",
+          mesaj: "Aynayı sarıp uzaklaştın; ellerin nedensiz soğudu.",
         },
         basarisizSonuc: {
           para: -15,
           un: -10,
-          mesaj: "Görevliler seni suçüstü yakaladı; hem cezayı ödedin hem de mahallede adın 'hırsız' diye anılmaya başladı.",
+          mesaj: "Suçüstü yakalandın; ceza ödedin, adın 'hırsız'a çıktı.",
         },
       },
       {
-        metin: "Tuhaf bir eşya bu, ilgilenme.",
+        metin: "Tuhaf, ilgilenme.",
         baseBasariSansi: 92,
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
           mutluluk: -1,
-          mesaj: "Aynaya son bir bakış attın ve arkanı döndün. İçindeki yansımanın da -bir an için- arkasını döndüğünü fark etmedin bile.",
+          mesaj: "Son kez baktın ve döndün; yansıma da döndü.",
         },
         basarisizSonuc: {
           mutluluk: -3,
-          mesaj: "Uzaklaşırken bile o bir anlık gecikmeyi düşünmeden edemedin. Bazı geceler, gözlerini kapatınca hâlâ o odayı görüyorsun.",
-          detay: "Görmezden gelinen şeyler bazen peşinden geliyor.",
+          mesaj: "O gecikmeyi unutamadın; bazı geceler hâlâ o odayı görüyorsun.",
+          detay: "Görmezden gelinen peşinden gelir.",
         },
       },
     ],
@@ -1325,31 +1325,31 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Yanlış Yansıma",
-    metin: "Gece bir su içmek için kalktın, aynanın önünden geçerken durdun. Yansımandaki sen, sen değildin — bir an gecikerek, farklı bir ifadeyle sana bakıyordu. Sonra her şey normale döndü.",
+    metin: "Gece su içmeye kalkıp aynanın önünde durdun. Yansıman bir an gecikerek, farklı bir ifadeyle sana baktı. Sonra normale döndü.",
     secenekler: [
       {
-        metin: "Aynaya yaklaş, dikkatlice incele.",
+        metin: "Yaklaş, dikkatle incele.",
         baseBasariSansi: 65,
         basariliSonuc: {
           mutluluk: -5,
-          mesaj: "Yüzünü camdan santimlerce uzağa götürdün. Yansıman gülümsedi — sen gülümsemeden. Ama tam o an geri çekildiğinde her şey yeniden senindi. Ne gördüğünü tam açıklayamıyorsun ama artık dünyaya biraz daha farklı bakıyorsun.",
-          detay: "Bazı deneyimler seni değiştirir, açıklayamasan bile.",
+          mesaj: "Yansıman sen gülmeden gülümsedi; artık farklı bakıyorsun.",
+          detay: "Bazı deneyimler açıklanamadan değiştirir.",
         },
         basarisizSonuc: {
           saglik: -10,
           mutluluk: -15,
-          mesaj: "Camda beliren şey sana doğru bir el uzattı! Çığlık atarak geri sıçradın, aynayı düşürecektin neredeyse. Günlerce gözlerini kapatınca o eli görüyorsun.",
+          mesaj: "Camdan bir el uzandı! Çığlıkla geri sıçradın.",
         },
       },
       {
-        metin: "Aynayı bir bezle ört, sabaha kadar açma.",
+        metin: "Aynayı örtüyle kapat.",
         baseBasariSansi: 95,
         basariliSonuc: {
-          mesaj: "Aynayı örttün ve sırtını dönüp yattın. Sabah her şey normaldi, ya da öyle görünüyordu.",
+          mesaj: "Aynayı örtüp yattın; sabah her şey normal görünüyordu.",
         },
         basarisizSonuc: {
           mutluluk: -5,
-          mesaj: "Örttün ama örtünün altından hafif bir tıkırtı duyduğunu yemin edebilirdin.",
+          mesaj: "Örttün ama örtünün altından tıkırtı duydun sandın.",
         },
       },
     ],
@@ -1366,34 +1366,34 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Aynadaki Uyarı",
-    metin: "Aynaya baktığında kendini görmedin: Tanıdık bir sokakta, üzerine devrilmek üzere olan bir yük arabası gördün, sonra her şey karardı. Görüntü o kadar netti ki hâlâ tüylerin diken diken.",
+    metin: "Aynada kendini görmedin: tanıdık sokakta üzerine devrilen yük arabası, sonra karanlık. Hâlâ tüylerin diken diken.",
     secenekler: [
       {
-        metin: "Gördüğün sokaktan birkaç gün uzak dur.",
+        metin: "O sokaktan birkaç gün uzak dur.",
         baseBasariSansi: 85,
         basariliSonuc: {
           mutluluk: -5,
-          mesaj: "Yolunu değiştirdin. Üç gün sonra o sokakta gerçekten bir yük arabası devrildiğini, birinin ağır yaralandığını duydun. Ayna yalan söylemiyormuş.",
-          detay: "Şimdi ona her baktığında hem minnettar hem tedirginsin.",
+          mesaj: "Sokakta gerçekten araba devrildi. Ayna yalan söylemiyor.",
+          detay: "Ona bakınca hem minnettar hem tedirginsin.",
         },
         basarisizSonuc: {
           mutluluk: -10,
-          mesaj: "Yolunu değiştirdin ama hiçbir şey olmadı; belki sadece kötü bir rüyaydı, kendini biraz aptal hissettin.",
+          mesaj: "Hiçbir şey olmadı; kendini biraz aptal hissettin.",
         },
       },
       {
-        metin: "Boş ver, kadere karışma; her zamanki gibi yaşa.",
+        metin: "Boşver, her zamanki gibi yaşa.",
         baseBasariSansi: 60,
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
           mutluluk: -1,
-          mesaj: "Görüntüyü unutmaya çalıştın. Günler sıradan geçti, ayna bir daha o sokaktan bahsetmedi.",
+          mesaj: "Görüntüyü unuttun; günler sıradan geçti.",
         },
         basarisizSonuc: {
           saglik: -25,
           olum_sansi: 8,
-          mesaj: "Tam o sokaktan geçerken bir yük arabası devrildi! Son anda kendini attın ama yine de ağır yaralandın. Ayna seni uyarmıştı.",
+          mesaj: "Tam o sokakta araba devrildi! Ağır yaralandın.",
         },
       },
     ],
@@ -1404,7 +1404,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     gorsel: "🪙",
     agirlik: 0.6,
     baslik: "Mühür ve Kese",
-    metin: "İşin için hayati olan ruhsat haftalardır masada bekliyor. Şişman memur, 'Buralar hep eksik, belki bir kese altın bu eksikleri tamamlar' diyerek sinsi sinsi sana gülümsüyor.",
+    metin: "Hayati ruhsat haftalardır masada. Şişman memur sinsice gülüyor: 'Bir kese altın eksikleri tamamlar.'",
     secenekler: [
       {
         metin: "Lanetli Yüzüğü rüşvet olarak ver.",
@@ -1418,7 +1418,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           ],
           para: 10,
           un: 10,
-          mesaj: "Tabuttan aşırdığın o soğuk yüzüğü memura verdin. Adam sevinçle mührü bastı. Üç gün sonra memurun aklını kaçırıp kendini nehre attığını duydun.",
+          mesaj: "Memur yüzüğe karşılık mührü bastı; üç gün sonra nehre atıldı.",
         },
         basarisizSonuc: {
           mesaj: "Kullanılmadı.",
@@ -1432,17 +1432,17 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           para: -18,
           ahlak: -20,
           maas_carpani: 1.12,
-          mesaj: "Altınları aldı ve saniyeler içinde işini halletti. Artık bu bozuk düzenin sadık bir parçasısın.",
+          mesaj: "Altını aldı, işi hemen halletti. Bozuk düzenin parçasısın.",
         },
         basarisizSonuc: {
           para: -18,
           un: -25,
           ahlak: -15,
-          mesaj: "Şanssızlık! Odaya tam o an müfettiş girdi. Rüşvet vermekten ceza yedin ve ruhsat iptal edildi.",
+          mesaj: "Tam o an müfettiş girdi! Rüşvetten ceza yedin, ruhsat iptal.",
         },
       },
       {
-        metin: "Ben rüşvet vermem! Üst makama şikayet et.",
+        metin: "Rüşvet vermem! Üst makama şikâyet et.",
         baseBasariSansi: 45,
         basariliSonuc: {
           un: 25,
@@ -1451,13 +1451,13 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_ekle: [
             "durust_bilinen",
           ],
-          mesaj: "Memuru şikayet edip kovdurttun! İşin halloldu ve dürüst esnaf seni omuzlarda taşıdı.",
+          mesaj: "Memuru kovdurttun! İşin halloldu, esnaf seni alkışladı.",
         },
         basarisizSonuc: {
           para: -20,
           un: -15,
           ahlak: 15,
-          mesaj: "Şikayet ettiğin kişi memurun dayısı çıktı! Dosyan sümen altı edildi ve aylar boyunca iş yapamadın.",
+          mesaj: "Şikâyet ettiğin memurun dayısı çıktı! Aylarca iş yapamadın.",
         },
       },
     ],
@@ -1477,10 +1477,10 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     agirlik: 2,
     gorsel: "🏆",
     baslik: "Sözleşmenin Sonu",
-    metin: "Yıllardır sürdürdüğün büyük tedarik anlaşması nihayet son teslimat aşamasına geldi. Ortağın hesapları kapatmak için seni çağırdı.",
+    metin: "Yıllardır süren büyük tedarik anlaşması son teslimata geldi. Ortağın hesapları kapatmak için seni çağırdı.",
     secenekler: [
       {
-        metin: "Gölge Sikkesi'ni masaya koy ve ortağının zihnini ele geçir.",
+        metin: "Gölge Sikkesi'ni koy, ortağı ele geçir.",
         baseBasariSansi: 100,
         gerekliEtiketler: [
           "envanter:golge_sikke",
@@ -1497,15 +1497,15 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
             "buyuk_siparis_surecinde",
             "envanter:golge_sikke",
           ],
-          mesaj: "Sikkeyi masaya koyduğunda ortağının gözleri boşluğa düştü. Şirket haklarının büyük bölümünü kendi elleriyle sana devretti.",
-          detay: "Ciddi bir servet ve kalıcı bir gelir kazandın. Adam ertesi gün delirdi, sen ise aynadaki yansımandan bile korkuyorsun.",
+          mesaj: "Ortağın gözleri boşaldı; şirket haklarını sana devretti.",
+          detay: "Servet kazandın; adam delirdi, sen ürküyorsun.",
         },
         basarisizSonuc: {
           mesaj: "Kullanılmadı.",
         },
       },
       {
-        metin: "Son teslimatı bizzat denetleyerek kapat.",
+        metin: "Son teslimatı bizzat denetle.",
         baseBasariSansi: 68,
         basariliSonuc: {
           para: 65,
@@ -1517,8 +1517,8 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_sil: [
             "buyuk_siparis_surecinde",
           ],
-          mesaj: "Anlaşma başarıyla tamamlandı; yıllarca süren emeğin karşılığını fazlasıyla aldın.",
-          detay: "Geriye dönüp baktığında bu anlaşmanın seni büyük ölçüde değiştirdiğini görüyorsun. Artık şehirdeki en tanınan tüccarlardan birisin.",
+          mesaj: "Anlaşma tamamlandı; yıllık emeğin karşılığını aldın.",
+          detay: "Artık şehrin tanınmış tüccarlarındansın.",
         },
         basarisizSonuc: {
           mutluluk: -4,
@@ -1530,12 +1530,12 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_sil: [
             "buyuk_siparis_surecinde",
           ],
-          mesaj: "Son teslimatta bir anlaşmazlık çıktı; anlaşma zararla kapandı.",
-          detay: "Yıllarca sürdürdüğün bu ilişki, umduğun ödülü vermeden bitti. Yine de tecrübe kazandın.",
+          mesaj: "Son teslimatta anlaşmazlık çıktı; anlaşma zararla kapandı.",
+          detay: "Beklediğin ödül gelmedi ama tecrübe kazandın.",
         },
       },
       {
-        metin: "Vekilini gönder, kendin uzak dur.",
+        metin: "Vekilini gönder.",
         baseBasariSansi: 75,
         basariliSonuc: {
           para: 35,
@@ -1546,8 +1546,8 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_sil: [
             "buyuk_siparis_surecinde",
           ],
-          mesaj: "Vekilin işi düzgünce hallettim; anlaşma sorunsuz kapandı.",
-          detay: "Bizzat orada olmadın ama sonuç gayet tatmin ediciydi. Bazen güvenmek yeterlidir.",
+          mesaj: "Vekilin işi düzgün halletti; anlaşma sorunsuz kapandı.",
+          detay: "Orada olmadın ama sonuç iyiydi. Güven yeter.",
         },
         basarisizSonuc: {
           mutluluk: -4,
@@ -1558,8 +1558,8 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_sil: [
             "buyuk_siparis_surecinde",
           ],
-          mesaj: "Vekilin son anda hesap hatası yaptı; anlaşma beklediğinden az kazandırdı.",
-          detay: "Belki bizzat orada olsaydın fark ederdin. Artık bu uzun hikaye kapandı.",
+          mesaj: "Vekilin son anda hesap hatası yaptı; kazanç az oldu.",
+          detay: "Belki orada olsan fark ederdin.",
         },
       },
     ],
@@ -1577,10 +1577,10 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Yolda Bir Sınav",
-    metin: "Görev yerine giden yolda, aç ve parasız bir grup mülteciyle karşılaştın. Yanındaki azıcık erzak ya onları ya seni idare eder.",
+    metin: "Görev yolunda aç ve parasız mültecilerle karşılaştın. Azıcık erzak ya onları ya seni idare eder.",
     secenekler: [
       {
-        metin: "Onlara Gizemli Harita'yı verip eski tapınağın yerini göster.",
+        metin: "Gizemli Harita'yı verip yolu göster.",
         baseBasariSansi: 100,
         gerekliEtiketler: [
           "envanter:gizemli_harita",
@@ -1591,43 +1591,43 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_sil: [
             "envanter:gizemli_harita",
           ],
-          mesaj: "Mültecilere eski haritayı verip gizli erzak deposunun yolunu tarif ettin. Gözyaşlarıyla ellerini öpüp yola koyuldular.",
-          detay: "Bir harita, bir aileyi açlıktan kurtardı. Vicdanın kuş gibi hafif.",
+          mesaj: "Haritayla erzak deposunu tarif ettin; ellerini öptüler.",
+          detay: "Bir harita aileyi kurtardı. Vicdanın hafif.",
         },
         basarisizSonuc: {
           mesaj: "Kullanılmadı.",
         },
       },
       {
-        metin: "Erzağının çoğunu onlarla paylaş.",
+        metin: "Erzağının çoğunu paylaş.",
         baseBasariSansi: 75,
         basariliSonuc: {
           ahlak: 22,
           saglik: -10,
-          mesaj: "Erzağını paylaştın; kalanıyla zorlanarak da olsa yoluna devam ettin.",
-          detay: "Aç kaldığın günler oldu ama o ailenin gözlerindeki minnet hâlâ aklında.",
+          mesaj: "Erzağı paylaştın; kalanla zorlanarak yola devam ettin.",
+          detay: "Aç kaldın ama o ailenin minneti aklında.",
         },
         basarisizSonuc: {
           saglik: -20,
           ahlak: 15,
-          mesaj: "Paylaştığın erzak yetersiz kaldı; kalan yolu aç ve zayıf düşerek tamamladın.",
-          detay: "İyilik yapmak seni de yordu ama pişman değilsin.",
+          mesaj: "Erzak yetmedi; yolu aç ve zayıf tamamladın.",
+          detay: "İyilik yordu ama pişman değilsin.",
         },
       },
       {
-        metin: "Kendi erzağını koru, yoluna devam et.",
+        metin: "Erzağını koru, yoluna devam et.",
         baseBasariSansi: 85,
         basariliSonuc: {
           saglik: 8,
           ahlak: -18,
-          mesaj: "Erzağını koruyup görev yerine sağlıklı vardın.",
-          detay: "O ailenin yüzünü zaman zaman hatırlıyorsun; kendine haklı sebepler sıralıyorsun.",
+          mesaj: "Erzağı koruyup görev yerine sağlıklı vardın.",
+          detay: "O yüzleri hatırlıyor, kendini avutuyorsun.",
         },
         basarisizSonuc: {
           ahlak: -20,
           saglik: -8,
-          mesaj: "Erzağını korudun ama yol yine de seni yıprattı; üstelik vicdanın hiç rahat değil.",
-          detay: "Hem zorlandın hem de o kararın seninle kaldı.",
+          mesaj: "Yol yine de yordu; vicdanın da hiç rahat değil.",
+          detay: "Hem zorlandın hem karar seninle kaldı.",
         },
       },
     ],
@@ -1639,10 +1639,10 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Dağın Sahibi",
-    metin: "Dağ yolundan evine dönerken dar patikada devasa, aç bir ayıyla göz göze geldin. Ne o kıpırdıyor ne sen. Silahsızsan ölümle burun burunasın.",
+    metin: "Dağ başındaki evine dönerken dar patikada devasa, aç bir ayıyla göz göze geldin. İkiniz de kıpırdamıyorsunuz.",
     secenekler: [
       {
-        metin: "Kara Kılıcı çek ve ayının üzerine yürü!",
+        metin: "Kara Kılıcı çek, üzerine yürü!",
         baseBasariSansi: 80,
         gerekliEtiketler: [
           "envanter:kara_kilic",
@@ -1651,45 +1651,45 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           un: 30,
           saglik: 5,
           ahlak: -15,
-          mesaj: "Kılıcı çektiğin an ayı sana değil, kılıçtan sızan karanlığa baktı ve korkuyla geri adım attı. Ama sen durmadın. Tek darbede canavarı yere serdin.",
-          detay: "Köyde sana 'Ayı Boğan' diyorlar ama sen kılıcın o an elinde nasıl kendi kendine titreştiğini unutamıyorsun.",
+          mesaj: "Ayı karanlıktan ürküp çekildi; tek darbede serdin.",
+          detay: "Sana 'Ayı Boğan' diyorlar; kılıç hâlâ titriyor.",
         },
         basarisizSonuc: {
           saglik: -35,
           olum_sansi: 15,
-          mesaj: "Kılıç karanlığını salmadan ayı üstüne çöktü. Pençeler omzunu, çeneni parçaladı; kılıcı kaldırmaya bile fırsatın olmadı.",
-          detay: "Efsanevi çeliğin de bir hız sınırı varmış.",
+          mesaj: "Ayı kılıç hazır olmadan çöktü; omzun, çenen parçalandı.",
+          detay: "Efsanevi çeliğin de hız sınırı varmış.",
         },
       },
       {
-        metin: "Yavaşça geri çekil, gürültü çıkarma.",
+        metin: "Yavaşça geri çekil, ses çıkarma.",
         baseBasariSansi: 65,
         basariliSonuc: {
           ahlak: 3,
           mutluluk: -1,
-          mesaj: "Ayı ilgisini kaybedip ormana döndü; sen de nefesini tutarak evine ulaştın.",
-          detay: "Dağda yaşamanın ilk kuralı sabırdır; bugün onu bir kez daha kanıtladın.",
+          mesaj: "Ayı ormana döndü; nefesini tutarak eve vardın.",
+          detay: "Dağda ilk kural sabırdır.",
         },
         basarisizSonuc: {
           saglik: -25,
           olum_sansi: 8,
-          mesaj: "Ayı ürktü ve üzerine geldi; kendini zar zor bir kayanın arkasına atarak kurtardın.",
-          detay: "Sırtındaki pençe izleri uzun süre iyileşmedi.",
+          mesaj: "Ayı ürküp saldırdı; zar zor bir kayanın arkasına attın.",
+          detay: "Sırtındaki izler uzun süre iyileşmedi.",
         },
       },
       {
-        metin: "Elindeki değneği sallayıp yüksek sesle bağır.",
+        metin: "Değneği sallayıp bağır.",
         baseBasariSansi: 45,
         basariliSonuc: {
           un: 15,
-          mesaj: "Ayı şaşırıp kaçtı; köye döndüğünde hikayeni anlata anlata bitiremedin.",
-          detay: "Dağ köylüleri arasında adın bir süre 'cesur' olarak anıldı.",
+          mesaj: "Ayı şaşırıp kaçtı; köyde hikâyeni anlata anlata bitiremedin.",
+          detay: "Köylüler arasında bir süre 'cesur' diye anıldın.",
         },
         basarisizSonuc: {
           saglik: -40,
           olum_sansi: 15,
-          mesaj: "Ayı saldırdı; kollarındaki ve göğsündeki derin yaralarla köye kanlar içinde ulaştın.",
-          detay: "O günden sonra ormana her girişinde o anı hatırlıyorsun.",
+          mesaj: "Ayı saldırdı; kol ve göğsünde derin yaralarla köye ulaştın.",
+          detay: "Ormana her girişinde o anı hatırlıyorsun.",
         },
       },
     ],
@@ -1709,36 +1709,36 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Manastırın Kara Kedisi",
-    metin: "Manastırın ambarında dolaşan yaşlı bir kara kedi var. Bazı keşişler onu uğursuz sayıyor, bazıları fare avındaki ustalığından dolayı kutsuyor.",
+    metin: "Manastır ambarında yaşlı bir kara kedi dolaşıyor. Kimi keşiş uğursuz sayıyor, kimi fare avından dolayı kutsuyor.",
     secenekler: [
       {
-        metin: "Kediye sahip çık, ambarda tut.",
+        metin: "Kediyi ambarda tut.",
         baseBasariSansi: 85,
         basariliSonuc: {
           ahlak: 5,
           etiket_ekle: [
             "esya:veba_koruyucu_kedi",
           ],
-          mesaj: "Kediyi ambarda tutmaya karar verdin; fareler azaldıkça ambar daha temiz kaldı.",
-          detay: "Bazen en sıradan bir yaratık, en büyük tehlikelere karşı sessiz bir kalkan olabiliyor.",
+          mesaj: "Kediyi tuttun; fareler azaldıkça ambar temiz kaldı.",
+          detay: "En sıradan yaratık sessiz bir kalkan olabilir.",
         },
         basarisizSonuc: {
-          mesaj: "Kimi keşişler buna karşı çıktı ama kedi yine de ambarda kaldı.",
-          detay: "Gelenek ile pratiklik arasında ince bir denge var.",
+          mesaj: "Kimi keşiş karşı çıktı ama kedi ambarda kaldı.",
+          detay: "Gelenek ile pratiklik arasında ince denge.",
         },
       },
       {
-        metin: "Uğursuzluk getirir diye kediyi kovun.",
+        metin: "Uğursuz diye kediyi kov.",
         baseBasariSansi: 90,
         basariliSonuc: {
           ahlak: -5,
           mesaj: "Kedi kovuldu; bazı keşişler rahatladı.",
-          detay: "Batıl inanç bazen pratik faydanın önüne geçiyor.",
+          detay: "Batıl inanç pratikten önce gelir.",
         },
         basarisizSonuc: {
           saglik: -5,
-          mesaj: "Kedinin gitmesiyle ambarda fareler hızla çoğaldı.",
-          detay: "Bazı kararların bedeli aylar sonra ortaya çıkıyor.",
+          mesaj: "Kedi gidince ambarda fareler hızla çoğaldı.",
+          detay: "Bazı kararların bedeli aylar sonra çıkar.",
         },
       },
     ],
@@ -1756,7 +1756,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Eski Bir Harita",
-    metin: "Bir eskici dükkânında, kenarları yanmış, eski bir harita buldun. Üzerinde şifreli işaretler ve bilinmeyen bir yerin krokisi var.",
+    metin: "Eskici dükkânında kenarı yanık eski bir harita buldun; şifreli işaretler ve bilinmeyen bir yerin krokisi var.",
     secenekler: [
       {
         metin: "Haritayı satın al.",
@@ -1767,29 +1767,29 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
             "envanter:hazine_haritasi",
           ],
           para: -6,
-          mesaj: "Haritayı aldın; belki sadece kağıt parçası, belki gerçek bir hazinenin anahtarı.",
-          detay: "Meraklı bir zihin için küçük bir bedel.",
+          mesaj: "Haritayı aldın; belki kâğıt, belki hazine anahtarı.",
+          detay: "Meraklı zihin için küçük bedel.",
         },
         basarisizSonuc: {
           para: -15,
-          mesaj: "Haritayı aldın ama eskici seni biraz kazıklamış gibi görünüyor.",
-          detay: "Her pazarlık kazançlı bitmiyor.",
+          mesaj: "Haritayı aldın ama eskici seni kazıklamış.",
+          detay: "Her pazarlık kazandırmaz.",
         },
       },
       {
-        metin: "İlgilenme, sıradan bir kağıt parçası de.",
+        metin: "İlgilenme, sıradan kâğıt de.",
         baseBasariSansi: 95,
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
           mutluluk: -1,
-          mesaj: "Haritayı görmezden geldin, yoluna devam ettin.",
-          detay: "Bazı fırsatlar gözden kaçırılmaya değer olabilir — ya da değmez, kim bilir.",
+          mesaj: "Haritayı görmezden gelip yürüdün.",
+          detay: "Kaçan fırsat değer miydi, kim bilir.",
         },
         basarisizSonuc: {
           mutluluk: -2,
-          mesaj: "Yürürken haritayı bir daha düşünmeden edemedin.",
-          detay: "Merak bazen peşini bırakmıyor.",
+          mesaj: "Yürürken haritayı yine düşündün.",
+          detay: "Merak bazen peşini bırakmaz.",
         },
       },
     ],
@@ -1808,10 +1808,10 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 2,
     baslik: "Haritanın İşaret Ettiği Yer",
-    metin: "Haritayı uzun süre inceledikten sonra, işaret ettiği yeri bulmayı başardın: terk edilmiş bir mağara girişi. Kazmaya değer mi?",
+    metin: "Haritayı inceleyip işaretli yeri buldun: terk edilmiş bir mağara girişi. Kazmaya değer mi?",
     secenekler: [
       {
-        metin: "Kazı yap, riski göze al.",
+        metin: "Kaz, riske gir.",
         baseBasariSansi: 40,
         maliyet: 15,
         basariliSonuc: {
@@ -1823,8 +1823,8 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_sil: [
             "envanter:hazine_haritasi",
           ],
-          mesaj: "Mağaranın derinliklerinde gerçekten bir hazine sandığı buldun!",
-          detay: "Bazen çocukça görünen bir merak, hayatının en büyük kazancına dönüşebiliyor.",
+          mesaj: "Mağarada gerçekten bir hazine sandığı buldun!",
+          detay: "Çocukça merak hayatının kazancı olabilir.",
         },
         basarisizSonuc: {
           saglik: -20,
@@ -1832,8 +1832,8 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_sil: [
             "envanter:hazine_haritasi",
           ],
-          mesaj: "Mağara çöktü, hazine falan yoktu; güçlükle dışarı çıktın.",
-          detay: "Harita sonunda sadece eski bir kağıt parçasıymış.",
+          mesaj: "Mağara çöktü, hazine yoktu; zor çıktın.",
+          detay: "Harita eski bir kâğıt parçasıymış.",
         },
       },
       {
@@ -1844,8 +1844,8 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_sil: [
             "envanter:hazine_haritasi",
           ],
-          mesaj: "Haritayı meraklı bir koleksiyoncuya sattın; küçük ama garanti bir kazanç.",
-          detay: "Bazen merakı başkasına devretmek en akıllıcasıdır.",
+          mesaj: "Haritayı koleksiyoncuya sattın; küçük ama garanti kazanç.",
+          detay: "Merakı devretmek bazen en akıllısı.",
         },
         basarisizSonuc: {
           mutluluk: -4,
@@ -1853,8 +1853,8 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_sil: [
             "envanter:hazine_haritasi",
           ],
-          mesaj: "Haritayı beklediğinden düşük bir fiyata sattın.",
-          detay: "Her pazarlık umduğun gibi sonuçlanmıyor.",
+          mesaj: "Haritayı beklediğinden ucuza sattın.",
+          detay: "Her pazarlık umduğun gibi bitmez.",
         },
       },
     ],
@@ -1871,7 +1871,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Kutsal Bir Emanet",
-    metin: "Yıkık bir şapelin altında, kim olduğu bilinmeyen bir azize ait olduğu söylenen küçük bir emanet buldun. Halk arasında ona dokunanın ölümden bir kez döneceği anlatılır.",
+    metin: "Yıkık şapelde adı bilinmeyen bir azizin emaneti buldun. Halk, ona dokunanın ölümden bir kez döneceğini anlatır.",
     secenekler: [
       {
         metin: "Emaneti yanında taşı.",
@@ -1881,25 +1881,25 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_ekle: [
             "esya:kutsal_kalinti",
           ],
-          mesaj: "Emaneti bir bez parçasına sarıp yanına aldın; belki sadece bir teselli, belki daha fazlası.",
-          detay: "İster inan ister inanma, artık boynunda hafif bir ağırlık taşıyorsun.",
+          mesaj: "Emaneti bezle sarıp aldın; belki teselli, belki fazlası.",
+          detay: "İnan ya da inanma, hafif bir ağırlık taşıyorsun.",
         },
         basarisizSonuc: {
-          mesaj: "Emaneti aldın ama taşıması seni tedirgin etti, kısa süre sonra bir tanıdığına verdin.",
+          mesaj: "Taşımak seni tedirgin etti; kısa sürede bir tanıdığa verdin.",
           detay: "Bazı sorumluluklar herkese göre değil.",
         },
       },
       {
-        metin: "Emanete dokunma, kilisenin yetkililerine bildir.",
+        metin: "Dokunma, kiliseye bildir.",
         baseBasariSansi: 90,
         basariliSonuc: {
           ahlak: 12,
-          mesaj: "Emaneti resmi makamlara teslim ettin; dürüstlüğün takdir topladı.",
-          detay: "Bazı hazineler kişisel değil, ortak mirastır.",
+          mesaj: "Emaneti yetkililere teslim ettin; dürüstlüğün takdir gördü.",
+          detay: "Bazı hazineler ortak mirastır.",
         },
         basarisizSonuc: {
           mesaj: "Bildirdin ama yetkililer pek ilgilenmedi.",
-          detay: "Her dürüstlük hak ettiği ilgiyi görmüyor.",
+          detay: "Dürüstlük hak ettiği ilgiyi görmez.",
         },
       },
     ],
@@ -1916,34 +1916,34 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Ölümün Eşiğinde",
-    metin: "Ani bir ateş seni yatağa düşürdü; nefesin daralıyor, çevrendekiler fısıltıyla vedalaşıyor sanki. Göğsündeki o eski emanet, tenine değdiği yerde tuhaf bir sıcaklık yayıyor.",
+    metin: "Ani bir ateş seni yatağa düşürdü; nefesin daralıyor, çevren vedalaşır gibi. Göğsündeki emanet tenine sıcaklık yayıyor.",
     secenekler: [
       {
-        metin: "Emaneti sıkıca tut, efsaneye güven.",
+        metin: "Emaneti sıkı tut, efsaneye güven.",
         baseBasariSansi: 100,
         basariliSonuc: {
           saglik: -5,
           etiket_sil: [
             "esya:kutsal_kalinti",
           ],
-          mesaj: "Emanet elinde parladı ve için bir anda ısındı. Ateşin kırıldı, nefesin açıldı — sanki bir şey seni geri çekti. Emanet ise elinde toza dönüştü; gücünü bu bir kerelik mucizede tüketti.",
-          detay: "Halk arasındaki söylenti doğruymuş: bu emanet, ölümden bir kez döndürür.",
+          mesaj: "Emanet parladı, ateşin düştü, sonra toza döndü.",
+          detay: "Söylenti doğruymuş: ölümden bir kez döndürür.",
         },
         basarisizSonuc: {
           mesaj: "Kullanılmadı.",
         },
       },
       {
-        metin: "Emanete güvenme, sadece hekime ve kadere güven.",
+        metin: "Emanete güvenme, hekim ve kadere güven.",
         baseBasariSansi: 55,
         basariliSonuc: {
           saglik: -5,
-          mesaj: "Vücudun kendi başına direndi, ateş yavaşça düştü. Emanet hâlâ boynunda, sırrını hiç öğrenemedin.",
+          mesaj: "Ateş kendiliğinden düştü; emanetin sırrını öğrenemedin.",
         },
         basarisizSonuc: {
           saglik: -30,
           olum_sansi: 15,
-          mesaj: "Ateş günlerce sürdü, bedenin ağır bir yara aldı. Emanete dokunmadın; belki haklıydın, belki büyük bir fırsatı kaçırdın.",
+          mesaj: "Ateş günlerce sürdü; emanete dokunmayışın doğru muydu?",
         },
       },
     ],
@@ -1960,38 +1960,38 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Emanetin Sırrı Duyuldu",
-    metin: "Taşıdığın emanetle ilgili söylenti mahalleye yayılmış. Bir grup hacı adayı kapına dayandı: 'Duyduk ki elinde kutsal bir emanet varmış, bize göster, dokunmamıza izin ver!'",
+    metin: "Emanetin söylentisi yayıldı. Bir grup hacı kapına dayandı: 'Göster, dokunalım!'",
     secenekler: [
       {
-        metin: "Emaneti göster, dokunmalarına izin ver.",
+        metin: "Göster, dokunmalarına izin ver.",
         baseBasariSansi: 85,
         basariliSonuc: {
           un: 15,
           ahlak: 10,
-          mesaj: "Hacılar sırayla emanete dokunup dua etti. Adın bölgede 'kutsal emanetin bekçisi' olarak anılmaya başladı.",
+          mesaj: "Hacılar dokunup dua etti. Adın 'emanetin bekçisi' diye anıldı.",
         },
         basarisizSonuc: {
           para: -10,
-          mesaj: "Kalabalık kontrolden çıktı, biri emaneti kapıp kaçmaya çalıştı; güçlükle geri aldın, bu kargaşada başka eşyaların da kayboldu.",
+          mesaj: "Kalabalık coştu, emanet kapılıyordu; geri aldın ama eşyaların kayboldu.",
         },
       },
       {
-        metin: "Emaneti sakla, kimseye göstermeyi reddet.",
+        metin: "Sakla, kimseye gösterme.",
         baseBasariSansi: 80,
         basariliSonuc: {
           saglik: 2,
           ahlak: 7,
           mutluluk: -1,
           un: 4,
-          mesaj: "Kapıyı kapattın. Bazıları hayal kırıklığına uğradı ama emanet güvende.",
+          mesaj: "Kapıyı kapattın. Bazıları küstü ama emanet güvende.",
         },
         basarisizSonuc: {
           un: -10,
-          mesaj: "'Demek ki gerçek değilmiş, yoksa saklamazdı' diyerek dedikodu yaymaya başladılar.",
+          mesaj: "'Gerçek olsa saklamazdı' diye dedikodu yaydılar.",
         },
       },
       {
-        metin: "Emaneti kiliseye/vakfa bağışla, kalabalıktan kurtul.",
+        metin: "Kiliseye bağışla, kurtul.",
         baseBasariSansi: 95,
         basariliSonuc: {
           ahlak: 20,
@@ -1999,14 +1999,14 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_sil: [
             "esya:kutsal_kalinti",
           ],
-          mesaj: "Emaneti resmi makama teslim ettin; omuzlarından ağır bir yük kalktı. Artık bekçisi değil, sadece bir tanığısın.",
+          mesaj: "Emaneti teslim ettin; yük kalktı. Artık sadece tanıksın.",
         },
         basarisizSonuc: {
           etiket_sil: [
             "esya:kutsal_kalinti",
           ],
           mutluluk: -5,
-          mesaj: "Bağışını kabul ettiler ama teşekkür bile etmediler; emanetsiz kaldın, karşılığında hiçbir şey almadın.",
+          mesaj: "Bağışı aldılar, teşekkür bile etmediler.",
         },
       },
     ],
@@ -2023,10 +2023,10 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Şüpheli Bir Define",
-    metin: "Bir kervansarayda, önceki sahibinin esrarengiz biçimde kaybolduğu söylenen bir altın kesesi satılığa çıktı. Ucuz ama etrafında tuhaf söylentiler dönüyor.",
+    metin: "Bir kervansarayda, sahibi esrarengiz biçimde kaybolmuş bir altın kesesi ucuza satılıyor. Etrafında tuhaf söylentiler var.",
     secenekler: [
       {
-        metin: "Altını satın al, söylentileri boş ver.",
+        metin: "Altını al, söylentileri boş ver.",
         baseBasariSansi: 90,
         maliyet: 10,
         basariliSonuc: {
@@ -2040,14 +2040,14 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
             tur: "kalici",
             tur_basi_saglik: -1,
           },
-          mesaj: "Altını aldın; cebin kabardı ama içinde tuhaf bir huzursuzluk var.",
-          detay: "Bazı kazançların, görünmeyen küçük bir bedeli oluyor.",
+          mesaj: "Altını aldın; cebin doldu ama içinde huzursuzluk var.",
+          detay: "Bazı kazançların görünmez bedeli olur.",
         },
         basarisizSonuc: {
           mutluluk: -4,
           para: -10,
-          mesaj: "Satıcı son anda vazgeçti, keseyi geri aldı.",
-          detay: "Bazı fırsatlar elinden kayıp gidiyor.",
+          mesaj: "Satıcı son anda vazgeçip keseyi geri aldı.",
+          detay: "Bazı fırsatlar kayıp gider.",
         },
       },
       {
@@ -2056,13 +2056,13 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         basariliSonuc: {
           ahlak: 3,
           mutluluk: -1,
-          mesaj: "Altına dokunmadın, yoluna devam ettin.",
-          detay: "Bazı fırsatlar, taşıdıkları riskle birlikte değerlendirilmeli.",
+          mesaj: "Altına dokunmadan yoluna devam ettin.",
+          detay: "Fırsat riskiyle tartılmalı.",
         },
         basarisizSonuc: {
           mutluluk: -2,
-          mesaj: "Uzak dursan da o altın kesesini uzun süre düşündün.",
-          detay: "Merak bazen en akıllı kararları bile gölgeliyor.",
+          mesaj: "Uzak durdun ama o keseyi uzun süre düşündün.",
+          detay: "Merak, aklı gölgeler.",
         },
       },
     ],
@@ -2080,10 +2080,10 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Önceki Sahibinin Rüyası",
-    metin: "Rüyanda sararmış, gözleri oyuk bir adam beliriyor her gece. 'O altın benimdi, beni de böyle tüketti' diyor, parmağıyla kesenin durduğu yeri işaret ediyor. Uyandığında terler içindesin.",
+    metin: "Her gece rüyanda gözleri oyuk bir adam beliriyor: 'O altın benimdi, beni tüketti' deyip keseyi gösteriyor. Terler içinde uyanıyorsun.",
     secenekler: [
       {
-        metin: "Bir rahibe/hocaya gidip laneti kırmasını iste.",
+        metin: "Bir rahibe laneti kırdır.",
         baseBasariSansi: 65,
         maliyet: 20,
         basariliSonuc: {
@@ -2091,17 +2091,17 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           durum_sil: [
             "lanet_golgesi",
           ],
-          mesaj: "Uzun bir ayin, tütsüler ve dualar sonunda içindeki o soğukluk dağıldı. Rüyalar durdu, altın artık sıradan bir keseden farksız.",
-          detay: "Bazı lanetler, doğru ellerle çözülebiliyormuş.",
+          mesaj: "Uzun bir ayinle soğukluk dağıldı. Rüyalar bitti, altın sıradan bir kese oldu.",
+          detay: "Bazı lanetler doğru ellerle çözülür.",
         },
         basarisizSonuc: {
           para: -20,
           saglik: -10,
-          mesaj: "Ayin işe yaramadı, hoca kesenin yanına bile yaklaşmak istemedi. 'Bu benim gücümü aşıyor' dedi ve kaçarcasına gitti.",
+          mesaj: "Ayin işe yaramadı; rahip 'gücümü aşıyor' deyip kaçtı.",
         },
       },
       {
-        metin: "Altını olduğu gibi, hiç açmadan birine bağışla.",
+        metin: "Altını açmadan birine bağışla.",
         baseBasariSansi: 90,
         basariliSonuc: {
           ahlak: -10,
@@ -2111,15 +2111,15 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_sil: [
             "esya:lanetli_altin",
           ],
-          mesaj: "Keseyi hiç açmadan bir dilenciye uzattın; gözlerindeki sevinci görünce içine bir ürperti düştü. Lanet artık senin değil.",
-          detay: "Rüyalar durdu ama vicdanın bu kararı asla unutmayacak.",
+          mesaj: "Keseyi açmadan bir dilenciye uzattın. Lanet artık senin değil.",
+          detay: "Rüyalar bitti, vicdanın unutmayacak.",
         },
         basarisizSonuc: {
-          mesaj: "Kimse bu 'hediyeyi' kabul etmek istemedi, herkes altının garipliğini seziyor gibiydi.",
+          mesaj: "Kimse bu 'hediyeyi' kabul etmedi; altındaki gariplik sezildi.",
         },
       },
       {
-        metin: "Rüyayı görmezden gel, altına sıkı sıkı sarıl.",
+        metin: "Rüyayı boşver, altına sarıl.",
         baseBasariSansi: 100,
         basariliSonuc: {
           para: 25,
@@ -2131,8 +2131,8 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
             tur: "kalici",
             tur_basi_saglik: -2,
           },
-          mesaj: "'Onu benden kimse alamaz' dedin rüyada hayalete. O gülümsedi ve kayboldu — ertesi sabah kesende beklenmedik bir miktar daha altın buldun. Ama içindeki soğukluk şimdi daha derin.",
-          detay: "Lanetin gölgesi büyüdü; artık her yıl biraz daha can alıyor.",
+          mesaj: "'Kimse alamaz' dedin. Hayalet kayboldu; kesede daha çok altın var.",
+          detay: "Lanet büyüdü; her yıl biraz daha can alacak.",
         },
         basarisizSonuc: {
           mesaj: "Kullanılmadı.",
@@ -2152,10 +2152,10 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Hevesli Bir Alıcı",
-    metin: "Kervansarayda tanımadığın zengin bir tüccar, elindeki o eski altın kesesini fark etti. Gözleri parladı: 'O keseyi tanıyorum, eski bir define. Sana piyasa fiyatının üç katını öderim!' Söylenceyi bilmiyor gibi.",
+    metin: "Kervansarayda zengin bir tüccar kesene bakıp parladı: 'Eski bir define bu! Piyasanın üç katını veririm.' Söylenceyi bilmiyor gibi.",
     secenekler: [
       {
-        metin: "Laneti anlatmadan sat, üç katı fiyata razı ol.",
+        metin: "Laneti söyleme, üç katına sat.",
         baseBasariSansi: 90,
         maxAhlak: 55,
         basariliSonuc: {
@@ -2167,17 +2167,17 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_sil: [
             "esya:lanetli_altin",
           ],
-          mesaj: "Parayı saydı, keseyi sevinçle aldı ve gitti. Cebin ağırlaştı ama o adama ne beklediğini düşünmeden edemiyorsun.",
-          detay: "Bazı kazançlar başkasının bilmediği bir bedelle geliyor.",
+          mesaj: "Parayı saydı, keseyi alıp gitti. Cebin ağırlaştı ama adamı düşünüyorsun.",
+          detay: "Bazı kazançların bedelini başkası öder.",
         },
         basarisizSonuc: {
           para: 90,
           ahlak: -15,
-          mesaj: "Parayı saydı ama keseyi açar açmaz içindeki tuhaf soğukluğu hissetti; 'Bu bende kalmaz' deyip parayı geri kesti, keseyi sana fırlattı.",
+          mesaj: "Keseyi açınca soğukluğu hissetti; parayı geri alıp keseyi sana fırlattı.",
         },
       },
       {
-        metin: "Dürüst ol, laneti anlat — yine de almak isterse sat.",
+        metin: "Laneti anlat; yine de alırsa sat.",
         baseBasariSansi: 60,
         basariliSonuc: {
           para: 50,
@@ -2188,24 +2188,24 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_sil: [
             "esya:lanetli_altin",
           ],
-          mesaj: "Şaşırtıcı biçimde gülümsedi: 'Ben de böyle şeylere meraklıyımdır.' Daha az parayla da olsa laneti bilerek satın aldı.",
+          mesaj: "Gülümsedi: 'Böyle şeylere meraklıyım.' Daha az parayla da olsa bilerek aldı.",
         },
         basarisizSonuc: {
           mutluluk: -4,
           para: -50,
-          mesaj: "Anlatınca yüzü asıldı, 'çıldırmışsın sen' deyip uzaklaştı. Kese hâlâ elinde, alıcı da gitti.",
+          mesaj: "'Çıldırmışsın' deyip gitti. Kese elinde, alıcı yok.",
         },
       },
       {
-        metin: "Satma; bu laneti kimseye layık görme.",
+        metin: "Satma; bu laneti kimseye yükleme.",
         baseBasariSansi: 95,
         basariliSonuc: {
           ahlak: 10,
-          mesaj: "Teklifi geri çevirdin. Adam şaşkın ayrıldı ama vicdanın rahat.",
+          mesaj: "Teklifi reddettin. Adam şaşkın ayrıldı ama vicdanın rahat.",
         },
         basarisizSonuc: {
           mutluluk: -5,
-          mesaj: "Reddettin ama o parayı düşünmeden edemedin; bazı geceler pişmanlık uykunu kaçırıyor.",
+          mesaj: "Reddettin ama o parayı düşünüp pişman oldun.",
         },
       },
     ],
@@ -2223,7 +2223,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Hanın Arka Odası",
-    metin: "Bir handa, kimliğini gizleyen bir adam seni arka odaya davet etti. Orada, gölgeler içinde toplanan bir grup insan var — hiçbirinin yüzünü tam göremiyorsun.",
+    metin: "Bir handa yüzünü gizleyen adam seni arka odaya çağırdı. İçeride gölgelerde toplanmış, yüzleri seçilmeyen bir grup var.",
     secenekler: [
       {
         metin: "Tapınak Şövalyeleri'ne katıl.",
@@ -2235,15 +2235,15 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
             "orgut:Tapınak Şövalyeleri",
             "orgut_secildi",
           ],
-          mesaj: "Yemin ettin; artık gölgede duran ama güçlü bir kardeşliğin parçasısın.",
-          detay: "Kardeşlik, disiplin ve sadakat karşılığında koruma ve güç vaat ediyor.",
+          mesaj: "Yemin ettin; gölgede duran güçlü bir kardeşliğin parçasısın.",
+          detay: "Sadakat karşılığı koruma ve güç.",
         },
         basarisizSonuc: {
           etiket_ekle: [
             "orgut:Tapınak Şövalyeleri",
             "orgut_secildi",
           ],
-          mesaj: "Katılımın gergin geçti ama sonunda kabul edildin.",
+          mesaj: "Katılımın gergin geçti ama kabul edildin.",
           detay: "Her başlangıç pürüzsüz olmuyor.",
         },
       },
@@ -2256,8 +2256,8 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
             "orgut:Gölgede Kardeşlik",
             "orgut_secildi",
           ],
-          mesaj: "Yemin ettin; artık şehrin görünmeyen ağlarına erişimin var.",
-          detay: "Bu kardeşlik güç değil, bilgi ve bağlantı üzerine kurulu.",
+          mesaj: "Yemin ettin; şehrin görünmez ağlarına erişimin var.",
+          detay: "Güç değil, bilgi ve bağlantı.",
         },
         basarisizSonuc: {
           mutluluk: -4,
@@ -2266,26 +2266,26 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
             "orgut:Gölgede Kardeşlik",
             "orgut_secildi",
           ],
-          mesaj: "Katılımın gergin geçti ama sonunda kabul edildin.",
-          detay: "Güven, zamanla inşa edilir.",
+          mesaj: "Katılımın gergin geçti ama kabul edildin.",
+          detay: "Güven zamanla kurulur.",
         },
       },
       {
-        metin: "Daveti reddet, odadan çık.",
+        metin: "Reddet, odadan çık.",
         baseBasariSansi: 95,
         basariliSonuc: {
           etiket_ekle: [
             "orgut_secildi",
           ],
-          mesaj: "Daveti nazikçe reddettin, kimse seni zorlamadı.",
-          detay: "Her gizemli kapı açılmayı hak etmiyor.",
+          mesaj: "Nazikçe reddettin, kimse zorlamadı.",
+          detay: "Her gizemli kapı açılmaz.",
         },
         basarisizSonuc: {
           etiket_ekle: [
             "orgut_secildi",
           ],
-          mesaj: "Reddin biraz gerginlik yarattı ama seni bırakıp gitmene izin verdiler.",
-          detay: "Bazı kapılar bir kez kapanınca bir daha açılmıyor.",
+          mesaj: "Ret gerginlik yarattı ama gitmene izin verdiler.",
+          detay: "Kapanan kapı bir daha açılmaz.",
         },
       },
     ],
@@ -2301,63 +2301,63 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Kardeşlikten Bir Görev",
-    metin: "Örgütünden biri, gece yarısı seninle temasa geçti: tehlikeli ama karşılığı yüksek, sadece güvenilir üyelere verilen gizli bir görev var.",
+    metin: "Örgütünden biri gece yarısı seni buldu: tehlikeli ama kazançlı, yalnızca güvenilirlere verilen gizli bir görev var.",
     secenekler: [
       {
-        metin: "Tapınak Şövalyeleri görevini kabul et.",
+        metin: "Tapınak Şövalyeleri görevini al.",
         baseBasariSansi: 55,
         gerekliEtiketler: [
           "orgut:Tapınak Şövalyeleri",
         ],
-        kilitAciklamasi: "Bu görev sadece Tapınak Şövalyeleri üyelerine açık.",
+        kilitAciklamasi: "Yalnızca Tapınak Şövalyeleri üyelerine açık.",
         basariliSonuc: {
           mutluluk: -10,
           un: 10,
           para: 25,
-          mesaj: "Görevi başarıyla tamamladın; kardeşlik içindeki itibarın büyüdü.",
+          mesaj: "Görevi tamamladın; kardeşlikteki itibarın büyüdü.",
           detay: "Sadakatinin karşılığını aldın.",
         },
         basarisizSonuc: {
           saglik: -25,
-          mesaj: "Görev planlandığı gibi gitmedi, güçlükle kurtuldun.",
-          detay: "Gizli görevler her zaman göründüğü kadar basit değil.",
+          mesaj: "Görev ters gitti, güçlükle kurtuldun.",
+          detay: "Gizli görev göründüğü kadar basit değil.",
         },
       },
       {
-        metin: "Gölgede Kardeşlik görevini kabul et.",
+        metin: "Gölgede Kardeşlik görevini al.",
         baseBasariSansi: 55,
         gerekliEtiketler: [
           "orgut:Gölgede Kardeşlik",
         ],
-        kilitAciklamasi: "Bu görev sadece Gölgede Kardeşlik üyelerine açık.",
+        kilitAciklamasi: "Yalnızca Gölgede Kardeşlik üyelerine açık.",
         basariliSonuc: {
           mutluluk: -11,
           un: -5,
           para: 45,
-          mesaj: "Görevi sorunsuz tamamladın; ağın genişledi.",
-          detay: "Bilgi ve bağlantı, altından daha değerli olabiliyor.",
+          mesaj: "Görev sorunsuz bitti; ağın genişledi.",
+          detay: "Bağlantı altından değerli olabilir.",
         },
         basarisizSonuc: {
           mutluluk: -4,
           para: -20,
           un: -8,
-          mesaj: "Görev sırasında fark edildin, küçük bir skandal çıktı.",
-          detay: "Gölgede kalmak her zaman mümkün olmuyor.",
+          mesaj: "Fark edildin, küçük bir skandal çıktı.",
+          detay: "Gölgede kalmak hep mümkün değil.",
         },
       },
       {
-        metin: "Görevi reddet, çok riskli bul.",
+        metin: "Reddet, çok riskli.",
         baseBasariSansi: 90,
         basariliSonuc: {
           ahlak: 3,
           mutluluk: -1,
           mesaj: "Görevi nazikçe reddettin.",
-          detay: "Her fırsatı kabul etmek zorunda değilsin.",
+          detay: "Her fırsatı almak zorunda değilsin.",
         },
         basarisizSonuc: {
           dost_puani: -8,
-          mesaj: "Reddin örgüt içinde biraz güven kaybına yol açtı.",
-          detay: "Her hayır bir bedel taşıyabilir.",
+          mesaj: "Ret, örgütte güven kaybettirdi.",
+          detay: "Her hayırın bir bedeli olabilir.",
         },
       },
     ],
@@ -2374,17 +2374,17 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Zar Masası",
-    metin: "Bir arkadaşın seni gizli bir kumar masasına davet etti. Kazanma ihtimali cazip ama bu tür yerler bağımlılık yapmasıyla ünlü.",
+    metin: "Bir arkadaşın seni gizli bir kumar masasına çağırdı. Kazanç cazip ama bu yerler bağımlılık yapar.",
     secenekler: [
       {
-        metin: "Bir el dene, heyecanın tadına bak.",
+        metin: "Bir el dene.",
         baseBasariSansi: 55,
         basariliSonuc: {
           mutluluk: -11,
           un: -4,
           para: 30,
-          mesaj: "Bu gece şanslıydın; cebin biraz kabardı.",
-          detay: "Kazanmanın verdiği heyecan, tehlikeli bir tada dönüşebilir.",
+          mesaj: "Bu gece şanslıydın; cebin kabardı.",
+          detay: "Kazanç heyecanı tehlikeli bir tada döner.",
         },
         basarisizSonuc: {
           mutluluk: -4,
@@ -2399,23 +2399,23 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
             tur: "kalici",
             tur_basi_para: -4,
           },
-          mesaj: "Kaybettin ama masadan kalkamadın; birkaç el daha oynadın. Artık bu masaya dönmemek zor.",
-          detay: "Kaybın seni durdurmak yerine daha da masaya bağladı.",
+          mesaj: "Kaybettin ama kalkamadın; birkaç el daha oynadın. Dönmemek zor.",
+          detay: "Kayıp seni masaya daha çok bağladı.",
         },
       },
       {
-        metin: "Nazikçe reddet, uzak dur.",
+        metin: "Nazikçe reddet.",
         baseBasariSansi: 90,
         basariliSonuc: {
           ahlak: 3,
           mutluluk: -1,
-          mesaj: "Daveti reddettin, gecen sakin geçti.",
-          detay: "Bazı heyecanlar, uzak durulmaya değer.",
+          mesaj: "Reddettin, gecen sakin geçti.",
+          detay: "Bazı heyecanlardan uzak durmalı.",
         },
         basarisizSonuc: {
           dost_puani: -5,
-          mesaj: "Reddin arkadaşını biraz hayal kırıklığına uğrattı.",
-          detay: "Her hayır bir küçük mesafe yaratabiliyor.",
+          mesaj: "Ret arkadaşını biraz küstürdü.",
+          detay: "Her hayır biraz mesafe açar.",
         },
       },
     ],
@@ -2432,10 +2432,10 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Sarayın Kapısında",
-    metin: "Saray kapıcıları herkesi içeri almıyor. Ama bazen bir kese altın, bazen de doğru bir isim anmak kapıyı aralayabiliyor.",
+    metin: "Saray kapıcıları herkesi almaz. Ama bazen bir kese altın, bazen doğru bir isim kapıyı aralar.",
     secenekler: [
       {
-        metin: "Gölge Sikkesi'ni avucunda göster.",
+        metin: "Gölge Sikkesi'ni göster.",
         baseBasariSansi: 100,
         gerekliEtiketler: [
           "envanter:golge_sikke",
@@ -2453,15 +2453,15 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           ],
           un: 15,
           ahlak: -10,
-          mesaj: "Sikkeyi gören muhafızların gözleri karardı. Tek kelime etmeden ağır kapıları sana ardına kadar açtılar.",
-          detay: "Sarayın içine bir hayalet gibi, efsanevi bir şekilde sızdın.",
+          mesaj: "Sikkeyi gören muhafızlar sessizce kapıları sonuna dek açtı.",
+          detay: "Saraya hayalet gibi sızdın.",
         },
         basarisizSonuc: {
           mesaj: "Kullanılmadı.",
         },
       },
       {
-        metin: "Kapı görevlisine rüşvet ver.",
+        metin: "Kapıcıya rüşvet ver.",
         baseBasariSansi: 40,
         maliyet: 30,
         basariliSonuc: {
@@ -2469,42 +2469,42 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
             "sarayda",
           ],
           un: 10,
-          mesaj: "Altınların konuştu; kapı sessizce aralandı ve seni içeri aldılar.",
-          detay: "Artık saray çevresinde tanınan bir yüzsün.",
+          mesaj: "Altınların konuştu; kapı sessizce aralandı.",
+          detay: "Artık saray çevresinde tanınıyorsun.",
         },
         basarisizSonuc: {
           para: -30,
           un: -5,
-          mesaj: "Rüşvet teklifin görevliyi kızdırdı; parasız ve rezil bir şekilde kapıdan kovuldun.",
-          detay: "Bazı kapılar parayla açılmıyor.",
+          mesaj: "Görevli kızdı; parasız ve rezil kovuldun.",
+          detay: "Bazı kapılar parayla açılmaz.",
         },
       },
       {
-        metin: "Saygınlığınla ve tanıdıklarınla iddia et.",
+        metin: "Saygınlığını ve tanıdıklarını öne sür.",
         baseBasariSansi: 35,
         minUn: 30,
-        kilitAciklamasi: "Yeterince tanınmıyorsun; önce adını duyurman gerek",
+        kilitAciklamasi: "Yeterince tanınmıyorsun; önce adını duyur",
         basariliSonuc: {
           etiket_ekle: [
             "sarayda",
           ],
           un: 8,
-          mesaj: "Adını duyan bir saray görevlisi seni içeri buyur etti.",
-          detay: "Şöhretin sana bir kapı daha açtı.",
+          mesaj: "Adını bilen bir görevli seni içeri aldı.",
+          detay: "Şöhretin bir kapı daha açtı.",
         },
         basarisizSonuc: {
           un: -8,
-          mesaj: "Adını hiç duymadıklarını söylediler; kapıda küçük düştün.",
-          detay: "Şöhretin sandığın kadar geniş yayılmamış.",
+          mesaj: "Adını duymadıklarını söyleyip seni küçük düşürdüler.",
+          detay: "Şöhretin sandığın kadar yayılmamış.",
         },
       },
       {
-        metin: "Vazgeç, başka bir gün dene.",
+        metin: "Vazgeç, başka gün dene.",
         baseBasariSansi: 100,
         basariliSonuc: {
           ahlak: 3,
           mutluluk: -2,
-          mesaj: "Bugün denemekten vazgeçtin.",
+          mesaj: "Bugünlük vazgeçtin.",
           detay: "Saray bir yere kaçmıyor.",
         },
         basarisizSonuc: {
@@ -2527,10 +2527,10 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Kapı Komşusu Hasta",
-    metin: "Yan komşun vebaya yakalandı; ailesi ondan kaçtı ama biri ona bakmazsa yalnız ölecek. Yardım etmek kendini de risk altına atmak demek.",
+    metin: "Komşun vebaya yakalandı; ailesi kaçtı, bakan olmazsa yalnız ölecek. Yardım etmek kendini riske atmak.",
     secenekler: [
       {
-        metin: "Manastır Kedisi'ni komşunun evine sal.",
+        metin: "Manastır Kedisi'ni komşuya sal.",
         baseBasariSansi: 100,
         gerekliEtiketler: [
           "esya:veba_koruyucu_kedi",
@@ -2538,8 +2538,8 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         basariliSonuc: {
           ahlak: 25,
           un: 15,
-          mesaj: "Kara kedi komşunun evine girdi ve vebayı yayan tüm fareleri avladı. Komşun iyileşti ve sana minnettar kaldı.",
-          detay: "Uğursuz denilen kedi aslında bir hayat kurtarıcıymış.",
+          mesaj: "Kara kedi veba taşıyan fareleri avladı. Komşun iyileşti, sana minnettar.",
+          detay: "Uğursuz denen kedi can kurtardı.",
         },
         basarisizSonuc: {
           mesaj: "Kullanılmadı",
@@ -2551,14 +2551,14 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         basariliSonuc: {
           ahlak: 20,
           un: 8,
-          mesaj: "Komşuna baktın, iyileşmesine yardımcı oldun; mahalle bu cesaretini asla unutmayacak.",
-          detay: "Bazı iyilikler ölüm kalım riskiyle yapılıyor.",
+          mesaj: "Komşuna baktın, iyileşti; mahalle cesaretini unutmayacak.",
+          detay: "Bazı iyilikler ölüm riskiyle yapılır.",
         },
         basarisizSonuc: {
           saglik: -30,
           olum_sansi: 12,
-          mesaj: "Komşuna bakarken sen de hastalığa yakalandın; günlerce ateşler içinde yattın.",
-          detay: "Merhametin ağır bir bedeli oldu.",
+          mesaj: "Sen de hastalandın; günlerce ateşler içinde yattın.",
+          detay: "Merhametin bedeli ağır oldu.",
         },
       },
       {
@@ -2568,14 +2568,14 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           saglik: 2,
           ahlak: 1,
           mutluluk: -1,
-          mesaj: "Uzak durdun; komşun yalnız başına mücadele etti.",
-          detay: "Kendini korumak da bir hayatta kalma stratejisi.",
+          mesaj: "Uzak durdun; komşun yalnız mücadele etti.",
+          detay: "Korunmak da bir hayatta kalma yolu.",
         },
         basarisizSonuc: {
           ahlak: -10,
           mutluluk: -5,
-          mesaj: "Komşun yalnız başına can verdi; bu sahne uzun süre aklından çıkmadı.",
-          detay: "Bazı sessizlikler vicdanı ağır yoruyor.",
+          mesaj: "Komşun yalnız öldü; o sahne aklından çıkmadı.",
+          detay: "Bazı sessizlikler vicdanı yorar.",
         },
       },
     ],
@@ -2592,10 +2592,10 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Koleksiyoncunun Ziyareti",
-    metin: "Gece yarısı kapın sertçe çalındı: dışarıda, yüzü gümüş bir maskeyle kapalı bir adam duruyor. Boynundaki Ejderha Tılsımı'nı hissetmiş — 'Onu sat, karşılığında bir ömür yetecek altın vereyim' diyor; sesi çürümüş toprak gibi kokuyor.",
+    metin: "Gece yarısı kapına gümüş maskeli bir adam geldi. Ejderha Tılsımı'nı sezmiş: 'Sat, bir ömürlük altın vereyim.' Sesi çürük toprak kokuyor.",
     secenekler: [
       {
-        metin: "Tılsımı ver ve altınları al.",
+        metin: "Tılsımı ver, altınları al.",
         baseBasariSansi: 88,
         basariliSonuc: {
           para: 80,
@@ -2603,8 +2603,8 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_sil: [
             "envanter:ejderha_tilsimi",
           ],
-          mesaj: "Tılsımı boynundan çıkardığın an adamın eline bıraktın. Karşılığında sana ağır bir altın kesesi verdi ve sise karıştı.",
-          detay: "Cebin epey doldu ama o kadim sıcaklık göğsünden gitti. Artık sıradan ve savunmasızsın.",
+          mesaj: "Tılsımı verdin. Adam ağır bir kese bırakıp sise karıştı.",
+          detay: "Cebin doldu ama kadim sıcaklık gitti.",
         },
         basarisizSonuc: {
           ahlak: -10,
@@ -2612,18 +2612,18 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_sil: [
             "envanter:ejderha_tilsimi",
           ],
-          mesaj: "Kese ağırdı ama sabah açtığında içi kuru yapraklarla doluydu. Maskeli adam da, tılsımın da gitti — elinde bir avuç çöp kaldı.",
-          detay: "Bazı alışverişlerin bedelini ancak ertesi sabah anlarsın.",
+          mesaj: "Sabah kese kuru yapraklarla doluydu. Adam da tılsım da gitmişti.",
+          detay: "Bazı alışverişin bedeli sabah anlaşılır.",
         },
       },
       {
-        metin: "Tılsım benimdir! Kılıcını çek ve maskeli adama saldır.",
+        metin: "Tılsım benim! Kılıcı çek, saldır.",
         baseBasariSansi: 40,
         basariliSonuc: {
           un: 35,
           saglik: -10,
-          mesaj: "Tılsım kılıcına güç verdi! Maskeli adama vurduğun an adam kara bir dumana dönüşerek yok oldu. Sadece maskesi geriye kaldı.",
-          detay: "Şeytani bir varlığı yendin. Tılsımın ne kadar güçlü olduğunu şimdi gerçekten anladın.",
+          mesaj: "Tılsım kılıcına güç verdi! Adam kara dumana dönüşüp yok oldu; maskesi kaldı.",
+          detay: "Şeytani varlığı yendin; tılsımın gücünü anladın.",
         },
         basarisizSonuc: {
           saglik: -40,
@@ -2631,8 +2631,8 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_sil: [
             "envanter:ejderha_tilsimi",
           ],
-          mesaj: "Adam sadece elini kaldırdı ve seni duvara fırlattı. Bilincini kaybederken tılsımı boynundan söküp aldığını hissettin.",
-          detay: "Zar zor hayatta kaldın. Tılsım gitti, bedenin kırık dökük.",
+          mesaj: "Adam elini kaldırıp seni duvara fırlattı. Tılsımın koparıldığını hissettin.",
+          detay: "Zor kurtuldun. Tılsım gitti, bedenin kırık.",
         },
       },
     ],
@@ -2649,36 +2649,36 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Kılıcın Fısıltısı",
-    metin: "Kara Kılıç, kemerinde dururken bile sana bir şeyler fısıldıyor gibi: yakınında haksızlık ettiğini düşündüğün birinin adını tekrar tekrar. Kılıcı çekip 'adaleti' kendi ellerinle sağlamak cazip geliyor.",
+    metin: "Kara Kılıç kemerinde bile haksızlık ettiğini düşündüğün birinin adını fısıldıyor. 'Adaleti' kendi ellerinle sağlamak cazip.",
     secenekler: [
       {
-        metin: "Fısıltıyı dinle, o kişiyle hesaplaş.",
+        metin: "Fısıltıyı dinle, hesaplaş.",
         baseBasariSansi: 50,
         basariliSonuc: {
           un: 12,
           ahlak: -25,
-          mesaj: "Kılıç elinde adeta kendi kendine hareket etti. İşin bittiğinde ne pişmanlık ne rahatlama hissettin, sadece boşluk.",
-          detay: "Kara Kılıç'ın gücü büyüyor, senin vicdanın küçülüyor.",
+          mesaj: "Kılıç kendi kendine hareket etti. Ne pişmanlık ne rahatlama; boşluk.",
+          detay: "Kılıcın gücü büyüyor, vicdanın küçülüyor.",
         },
         basarisizSonuc: {
           saglik: -20,
           un: -15,
-          mesaj: "Hesaplaşma umduğun gibi gitmedi; yarı yolda durup geri çekildin, üstelik yaralı.",
-          detay: "Kılıcın fısıltısına kulak vermek pahalıya patladı.",
+          mesaj: "Hesaplaşma ters gitti; yaralı geri çekildin.",
+          detay: "Fısıltıya uymak pahalıya patladı.",
         },
       },
       {
-        metin: "Kılıcı bir sandığa kilitle, fısıltıyı görmezden gel.",
+        metin: "Kılıcı sandığa kilitle.",
         baseBasariSansi: 85,
         basariliSonuc: {
           ahlak: 10,
-          mesaj: "Kılıcı derin bir sandığa kilitledin; geceleri artık daha rahat uyuyorsun.",
-          detay: "Bazı güçlerden uzak durmak da bir cesarettir.",
+          mesaj: "Kılıcı derin bir sandığa kilitledin; geceleri rahat uyuyorsun.",
+          detay: "Bazı güçten uzak durmak cesarettir.",
         },
         basarisizSonuc: {
           mutluluk: -4,
-          mesaj: "Kılıcı kilitledin ama fısıltı kulaklarından hâlâ silinmedi.",
-          detay: "Bazı sesler kilitle susmuyor.",
+          mesaj: "Kılıcı kilitledin ama fısıltı kulağından silinmedi.",
+          detay: "Bazı sesler kilitle susmaz.",
         },
       },
     ],
@@ -2696,7 +2696,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Son Şişe",
-    metin: "{dost} ağır hasta yatağa düştü, hekimler çaresiz. Yıllardır sakladığın o gizemli iksir belki gerçekten bir mucize, belki sadece renkli su — ama artık denemekten başka çare kalmadı gibi görünüyor.",
+    metin: "{dost} ağır hasta, hekimler çaresiz. Sakladığın gizemli iksir belki mucize, belki renkli su; denemekten başka çare yok gibi.",
     secenekler: [
       {
         metin: "İksiri {dost}'a içir.",
@@ -2707,20 +2707,20 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_sil: [
             "envanter:sirli_iksir",
           ],
-          mesaj: "Şişe boşaldığı an {dost}'un nefesi düzeldi; gözlerini açtığında ilk gördüğü sen oldun.",
-          detay: "Yıllarca sakladığın gizem, tam zamanında mucizeye dönüştü.",
+          mesaj: "Şişe boşalınca {dost}'un nefesi düzeldi; gözünü açınca ilk seni gördü.",
+          detay: "Sakladığın gizem tam zamanında mucize oldu.",
         },
         basarisizSonuc: {
           mutluluk: -15,
           etiket_sil: [
             "envanter:sirli_iksir",
           ],
-          mesaj: "İksir sıradan bir şurup gibi çıktı; hiçbir şey değişmedi, sadece son umudun da tükendi.",
-          detay: "Bazı efsaneler sadece efsane olarak kalıyor.",
+          mesaj: "İksir sıradan şurup çıktı; son umut da tükendi.",
+          detay: "Bazı efsaneler yalnız efsane kalır.",
         },
       },
       {
-        metin: "İksiri sakla, çok değerli bir koleksiyoncuya satmayı düşün.",
+        metin: "Sakla, koleksiyoncuya satmayı düşün.",
         baseBasariSansi: 80,
         basariliSonuc: {
           para: 45,
@@ -2729,8 +2729,8 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_sil: [
             "envanter:sirli_iksir",
           ],
-          mesaj: "İksiri sattın; kasan doldu ama {dost}'un yatağının başında bunu hiç söyleyemedin.",
-          detay: "Bazı kazançlar hayat boyu bir suçluluk gibi taşınır.",
+          mesaj: "İksiri sattın; kasan doldu ama {dost}'un başında söyleyemedin.",
+          detay: "Bazı kazançlar suçluluk gibi taşınır.",
         },
         basarisizSonuc: {
           para: 20,
@@ -2739,8 +2739,8 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_sil: [
             "envanter:sirli_iksir",
           ],
-          mesaj: "İksiri düşük bir fiyata elden çıkardın; hem vicdan azabı hem de az bir kazanç kaldı elinde.",
-          detay: "En kötü ihtimal: bedeli ödedin, karşılığını alamadın.",
+          mesaj: "İksiri ucuza sattın; hem vicdan azabı hem az kazanç kaldı.",
+          detay: "Bedeli ödedin, karşılığı yok.",
         },
       },
     ],
@@ -2758,32 +2758,32 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Kaderin Parası",
-    metin: "Gölge Sikke elinde tuhaf bir ağırlıkla duruyor; söylentiye göre bu sikke havaya atıldığında kaderin kendisini değiştirir. Büyük bir bahiste son kararını bu sikkeye bırakabilirsin.",
+    metin: "Gölge Sikke tuhaf bir ağırlıkla elinde; havaya atılınca kaderi değiştirdiği söylenir. Büyük bir bahiste kararı ona bırakabilirsin.",
     secenekler: [
       {
-        metin: "Sikkeyi büyük bir bahiste ortaya sür, kaderi zorla.",
+        metin: "Sikkeyi büyük bahse sür, kaderi zorla.",
         baseBasariSansi: 50,
         basariliSonuc: {
           un: -5,
           para: 60,
           mutluluk: 1,
-          mesaj: "Sikke havada üç kez döndü ve senin istediğin yüzü gösterdi! Masadakiler dehşetle izledi.",
-          detay: "Gölge Sikke'nin ünü seninle birlikte büyüdü.",
+          mesaj: "Sikke üç kez döndü, istediğin yüzü gösterdi! Masadakiler dehşetle izledi.",
+          detay: "Sikkenin ünü seninle büyüdü.",
         },
         basarisizSonuc: {
           para: -50,
           mutluluk: -16,
-          mesaj: "Sikke yere düşüp öteki yüzünü gösterdi. Elindeki her şeyi masada bıraktın.",
-          detay: "Kader bazen fısıldadığı gibi davranmıyor.",
+          mesaj: "Sikke öteki yüzünü gösterdi. Her şeyi masada bıraktın.",
+          detay: "Kader fısıldadığı gibi davranmaz.",
         },
       },
       {
-        metin: "Sikkeyi cebinde tut, sadece uğur olarak sakla.",
+        metin: "Sikkeyi uğur olarak sakla.",
         baseBasariSansi: 100,
         basariliSonuc: {
           mutluluk: 3,
-          mesaj: "Sikkeyi kullanmadan cebine geri koydun; gizemi merakınla birlikte yaşamaya devam ediyor.",
-          detay: "Bazı güçleri harcamadan taşımak da bir bilgelik.",
+          mesaj: "Sikkeyi kullanmadan cebine koydun; gizemi merakınla yaşıyor.",
+          detay: "Gücü harcamadan taşımak bilgelik.",
         },
         basarisizSonuc: {
           mesaj: "Kullanılmadı.",
@@ -2803,10 +2803,10 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 2,
     baslik: "Haritanın İkinci Yolu",
-    metin: "Gizemli Harita'yı yeniden incelerken fark ettin: aslında iki farklı işaret var. Biri tehlikeli, terk edilmiş bir geçide; diğeri sadece meraklı bir koleksiyoncunun kapısına götürüyor.",
+    metin: "Gizemli Harita'da iki işaret fark ettin: biri tehlikeli, terk edilmiş bir geçide; öbürü meraklı bir koleksiyoncunun kapısına gidiyor.",
     secenekler: [
       {
-        metin: "Tehlikeli geçidi bizzat keşfet.",
+        metin: "Tehlikeli geçidi keşfet.",
         baseBasariSansi: 40,
         basariliSonuc: {
           para: 55,
@@ -2814,28 +2814,28 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_sil: [
             "envanter:gizemli_harita",
           ],
-          mesaj: "Geçidin sonunda unutulmuş bir tapınağın hazinesini buldun! Adın kısa sürede yayıldı.",
-          detay: "Bazı riskler efsanevi hikayelere dönüşüyor.",
+          mesaj: "Geçidin sonunda unutulmuş tapınağın hazinesini buldun! Adın yayıldı.",
+          detay: "Bazı riskler efsaneye döner.",
         },
         basarisizSonuc: {
           saglik: -22,
           etiket_sil: [
             "envanter:gizemli_harita",
           ],
-          mesaj: "Geçit çöktü, güçlükle sağ çıktın; harita da enkazın altında kaldı.",
-          detay: "Her harita seni zenginliğe götürmüyor.",
+          mesaj: "Geçit çöktü, güçlükle çıktın; harita enkazda kaldı.",
+          detay: "Her harita zenginliğe çıkmaz.",
         },
       },
       {
-        metin: "Haritayı meraklı koleksiyoncuya sat.",
+        metin: "Haritayı koleksiyoncuya sat.",
         baseBasariSansi: 90,
         basariliSonuc: {
           para: 25,
           etiket_sil: [
             "envanter:gizemli_harita",
           ],
-          mesaj: "Koleksiyoncu haritayı iple çekiyordu; iyi bir fiyata elden çıkardın.",
-          detay: "Bazen merakı başkasına devretmek en akıllıcasıdır.",
+          mesaj: "Koleksiyoncu haritayı iple çekiyordu; iyi fiyata sattın.",
+          detay: "Merakı devretmek bazen akıllıcadır.",
         },
         basarisizSonuc: {
           mutluluk: -4,
@@ -2843,8 +2843,8 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_sil: [
             "envanter:gizemli_harita",
           ],
-          mesaj: "Koleksiyoncu pazarlıkta seni epey zorladı; umduğundan az kazandın.",
-          detay: "Her pazarlık umduğun gibi sonuçlanmıyor.",
+          mesaj: "Koleksiyoncu pazarlıkta zorladı; umduğundan az kazandın.",
+          detay: "Her pazarlık umduğu gibi bitmez.",
         },
       },
     ],
@@ -2861,24 +2861,24 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Ortaklık Teklifi",
-    metin: "Hazine Haritası'nı taşıdığını bir şekilde öğrenen deneyimli bir define avcısı, sana ortaklık teklif ediyor: birlikte kazsınlar, kazancı yarı yarıya paylaşsınlar. Tek başına gitmek daha kârlı ama daha tehlikeli.",
+    metin: "Hazine Haritası'nı taşıdığını öğrenen deneyimli bir define avcısı yarı yarıya ortaklık teklif ediyor. Tek başına kârlı ama tehlikeli.",
     secenekler: [
       {
-        metin: "Teklifi kabul et, riski paylaş.",
+        metin: "Kabul et, riski paylaş.",
         baseBasariSansi: 75,
         basariliSonuc: {
           mutluluk: -11,
           un: -5,
           para: 35,
           dost_puani: 8,
-          mesaj: "Deneyimli avcı sayesinde kazı güvenle ilerledi; hazineyi paylaştınız.",
-          detay: "Yarım kazanç, tam bir güven ilişkisinden ucuz değil.",
+          mesaj: "Avcı sayesinde kazı güvenle bitti; hazineyi paylaştınız.",
+          detay: "Yarım kazanç, güvenin bedeli.",
         },
         basarisizSonuc: {
           mutluluk: -4,
           para: -10,
-          mesaj: "Ortağın son anda vazgeçti, kazı yarım kaldı, masraf cebinden gitti.",
-          detay: "Her ortaklık umduğun gibi yürümüyor.",
+          mesaj: "Ortağın son anda vazgeçti; kazı yarım kaldı, masraf senin.",
+          detay: "Her ortaklık yürümez.",
         },
       },
       {
@@ -2888,14 +2888,14 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           mutluluk: -11,
           para: 70,
           un: 5,
-          mesaj: "Tek başına kazdın, tüm hazine senin oldu! Riske değdi.",
-          detay: "Bazen paylaşmamak en büyük zenginliği getiriyor.",
+          mesaj: "Tek başına kazdın, hazine senin! Riske değdi.",
+          detay: "Bazen paylaşmamak en zengin eder.",
         },
         basarisizSonuc: {
           saglik: -18,
           para: -10,
-          mesaj: "Kazı sırasında yalnız başına büyük zorluk yaşadın, elin boş ve yaralı döndün.",
-          detay: "Yalnız cesaret bazen yeterli olmuyor.",
+          mesaj: "Yalnız kazı zor geçti; eli boş ve yaralı döndün.",
+          detay: "Yalnız cesaret yetmeyebilir.",
         },
       },
     ],
@@ -2913,39 +2913,39 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Lanet Söylentisi",
-    metin: "Mahalledeki yaşlı bir kadın, parmağındaki o yüzüğü görünce dehşetle geri çekildi: 'Ölünün yüzüğü lanetlidir, kimin elinde kalırsa başına felaket gelir' dedi. Bir rahip küçük bir ücret karşılığı yüzüğü 'temizleyebileceğini' söylüyor.",
+    metin: "Yaşlı bir kadın yüzüğünü görünce dehşetle çekildi: 'Ölünün yüzüğü lanetlidir!' Bir rahip küçük ücretle 'temizleyebileceğini' söylüyor.",
     secenekler: [
       {
-        metin: "Rahibe ödeme yap, yüzüğü temizlet.",
+        metin: "Rahibe öde, yüzüğü temizlet.",
         baseBasariSansi: 90,
         maliyet: 10,
         basariliSonuc: {
           para: -10,
           mutluluk: 8,
-          mesaj: "Rahip uzun bir dua eşliğinde yüzüğü 'arındırdı'; için nedense gerçekten rahatladı.",
-          detay: "Bazen huzurun bedeli birkaç sikkeden ibarettir.",
+          mesaj: "Rahip duayla yüzüğü 'arındırdı'; içinin rahatladığını hissettin.",
+          detay: "Huzurun bedeli bazen birkaç sikke.",
         },
         basarisizSonuc: {
           para: -10,
-          mesaj: "Rahip töreni tamamladı ama içindeki tedirginlik pek geçmedi.",
-          detay: "Bazı korkular parayla da silinmiyor.",
+          mesaj: "Tören bitti ama tedirginlik geçmedi.",
+          detay: "Bazı korkular parayla silinmez.",
         },
       },
       {
-        metin: "Boş inançlara kulak asma, yüzüğü takmaya devam et.",
+        metin: "Boş inanç de, yüzüğü tak.",
         baseBasariSansi: 80,
         basariliSonuc: {
           saglik: 2,
           ahlak: 1,
           mutluluk: -1,
-          mesaj: "Yüzüğü takmaya devam ettin, hiçbir şey olmadı; boş inançlara güldün geçtin.",
-          detay: "Bazen korku sadece korkunun kendisidir.",
+          mesaj: "Yüzüğü takmayı sürdürdün, hiçbir şey olmadı; inanca güldün.",
+          detay: "Bazen korku sadece korkudur.",
         },
         basarisizSonuc: {
           saglik: -10,
           mutluluk: -6,
-          mesaj: "Peş peşe gelen ufak talihsizlikler yüzünden mahallede 'lanetli' diye anılmaya başladın.",
-          detay: "İnanmasan da söylenti seni bulur.",
+          mesaj: "Ardı ardına talihsizlikler yüzünden mahallede 'lanetli' dendin.",
+          detay: "İnanmasan da söylenti bulur.",
         },
       },
     ],
@@ -2962,18 +2962,18 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Ansızın Zenginin Sırtındaki Yük",
-    metin: "Bulduğun hazinenin haberi nasılsa yayıldı. Bir vergi tahsildarı kapına dayandı: ya 'bulunmuş servet vergisini' öde, ya da hazineyi nereden bulduğunu mahkemede ayrıntısıyla anlat.",
+    metin: "Bulduğun hazinenin haberi yayıldı. Tahsildar kapında: ya 'bulunmuş servet vergisini' öde ya da hazineyi nerede bulduğunu mahkemede anlat.",
     secenekler: [
       {
-        metin: "Vergiyi sessizce öde, işi kapat.",
+        metin: "Vergiyi sessizce öde.",
         baseBasariSansi: 90,
         basariliSonuc: {
           para: -30,
           etiket_sil: [
             "envanter:hazine_bulundu",
           ],
-          mesaj: "Vergiyi ödedin, tahsildar kaşlarını çatarak da olsa uzaklaştı.",
-          detay: "Zenginliğin bir bedeli de devletin payıdır.",
+          mesaj: "Vergiyi ödedin; tahsildar kaşlarını çatıp gitti.",
+          detay: "Zenginliğin bedeli devletin payıdır.",
         },
         basarisizSonuc: {
           para: -30,
@@ -2981,12 +2981,12 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_sil: [
             "envanter:hazine_bulundu",
           ],
-          mesaj: "Vergiyi ödedin ama tahsildar seni 'şüpheli zengin' diye not defterine yazdı.",
-          detay: "Bazen ödesen bile gözden düşüyorsun.",
+          mesaj: "Ödedin ama tahsildar seni 'şüpheli zengin' diye yazdı.",
+          detay: "Ödesen de gözden düşersin.",
         },
       },
       {
-        metin: "Tahsildarı küçük bir rüşvetle sustur.",
+        metin: "Tahsildarı küçük rüşvetle sustur.",
         baseBasariSansi: 55,
         basariliSonuc: {
           para: -12,
@@ -2994,8 +2994,8 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_sil: [
             "envanter:hazine_bulundu",
           ],
-          mesaj: "Tahsildar parayı cebine indirip gözünü kırptı; kayıtlarda hiçbir şey görünmeyecek.",
-          detay: "Bazı sorunlar altınla değil, ahlakla ödeniyor.",
+          mesaj: "Tahsildar parayı cebine atıp göz kırptı; kayıtlarda iz kalmayacak.",
+          detay: "Bazı sorunlar ahlakla ödenir.",
         },
         basarisizSonuc: {
           para: -45,
@@ -3004,8 +3004,8 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           etiket_sil: [
             "envanter:hazine_bulundu",
           ],
-          mesaj: "Rüşvet teklifin üstlerine bildirildi; hem cezai vergi hem de 'yozlaşmış' bir itibar kazandın.",
-          detay: "Kısa yoldan kaçmak bazen daha uzun sürüyor.",
+          mesaj: "Rüşvet üstlerine bildirildi; hem ceza hem 'yozlaşmış' ünü.",
+          detay: "Kestirme bazen uzun sürer.",
         },
       },
     ],
