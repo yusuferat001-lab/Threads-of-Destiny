@@ -4,28 +4,28 @@ import type { OlayCeviri } from "./index";
 export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
   evcil_hayvan_hastalik: {
     baslik: "A Sick Friend",
-    metin: "{hayvan} has had no appetite for a few days, is listless and not as cheerful as usual. You need to do something.",
+    metin: "{hayvan} has been listless and off its food for days. Do something.",
     secenekler: [
       {
-        metin: "Take them to an animal healer, whatever the cost.",
+        metin: "Take them to an animal healer.",
         basariliSonuc: {
-          mesaj: "With the treatment the healer gave, {hayvan} was back to their old cheerful self within a few days.",
-          detay: "Some expenses are made without hesitation.",
+          mesaj: "With treatment, {hayvan} was cheerful again in days.",
+          detay: "Some expenses aren't questioned.",
         },
         basarisizSonuc: {
-          mesaj: "The healer did everything they could, but {hayvan} still isn't their old self.",
-          detay: "Not every treatment gives results at once.",
+          mesaj: "The healer tried, but {hayvan} still isn't well.",
+          detay: "Not every treatment works at once.",
         },
       },
       {
-        metin: "Try to care for them at home with your own methods.",
+        metin: "Care for them at home yourself.",
         basariliSonuc: {
-          mesaj: "Your patient care worked; {hayvan} slowly recovered.",
-          detay: "Sometimes love and patience are more effective than money.",
+          mesaj: "Your patient care worked; {hayvan} recovered.",
+          detay: "Sometimes love beats money.",
         },
         basarisizSonuc: {
-          mesaj: "Their condition worsened and {hayvan} could not be saved.",
-          detay: "You won't forget the pain of this loss for a long time.",
+          mesaj: "They worsened; {hayvan} could not be saved.",
+          detay: "This pain will last.",
         },
       },
     ],
@@ -34,28 +34,28 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
   evcil_hayvan_sadakat_ani: {
     baslik: "A Silent Loyalty",
     metin:
-      "You came home tired after a hard day. {hayvan} was waiting for you at the door and nestled up to you as if they understood everything.",
+      "You came home tired. {hayvan} waited at the door and nestled up as if it understood everything.",
     secenekler: [
       {
-        metin: "Sit down with them, savor the moment.",
+        metin: "Sit with them, savor the moment.",
         basariliSonuc: {
-          mesaj: "That silent moment set aside all the weariness of the day.",
-          detay: "Sometimes the greatest comfort is the presence of a friend who doesn't speak.",
+          mesaj: "That quiet moment lifted the day's weariness.",
+          detay: "Sometimes the best comfort is silent.",
         },
         basarisizSonuc: {
-          mesaj: "For a short while at least, you felt a little relieved.",
-          detay: "Even small moments mean something.",
+          mesaj: "For a short while, you felt relieved.",
+          detay: "Small moments matter too.",
         },
       },
       {
-        metin: "Use your tiredness as an excuse, go straight to sleep.",
+        metin: "You're tired, go straight to sleep.",
         basariliSonuc: {
-          mesaj: "You got a good sleep; but you felt a little that you'd missed that moment.",
-          detay: "Rest is necessary too, but some moments don't come again.",
+          mesaj: "You slept well but missed that moment.",
+          detay: "Some moments don't come again.",
         },
         basarisizSonuc: {
-          mesaj: "Sleep wouldn't come, and you resented having ignored your pet.",
-          detay: "Some chances don't come back.",
+          mesaj: "Sleep wouldn't come; you resented ignoring your pet.",
+          detay: "Chances don't come back.",
         },
       },
     ],
@@ -63,41 +63,41 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
 
   evcil_hayvan_kaybolma: {
     baslik: "A Lost Friend",
-    metin: "{hayvan} has been gone for two days. The neighbors don't think they've seen them, but you could look.",
+    metin: "{hayvan} has been gone two days. The neighbors haven't seen them, but you could search.",
     secenekler: [
       {
-        metin: "Look to the sky and wait for your falcon.",
+        metin: "Watch the sky, wait for your falcon.",
         basariliSonuc: {
           mesaj:
-            "The falcon returned screeching on the morning of the third day. And in its talons is a valuable ruby necklace, probably snatched from some noble!",
-          detay: "It chose to return to you, not to freedom. And it didn't come back empty-handed.",
+            "The falcon returned on the third morning with a ruby necklace in its talons!",
+          detay: "It came back to you, and not empty-handed.",
         },
         basarisizSonuc: {
           mesaj:
-            "The falcon came back a week later, exhausted and empty-taloned. Safe — but days of worrying over it wore you down.",
+            "The falcon returned a week later, exhausted and empty-taloned.",
           detay: "This time the sky gave it nothing.",
         },
       },
       {
         metin: "Search street by street.",
         basariliSonuc: {
-          mesaj: "After hours of searching you found {hayvan} in a side street; you came home safe and sound.",
+          mesaj: "Hours later you found {hayvan} in a side street and went home.",
           detay: "Your persistence paid off.",
         },
         basarisizSonuc: {
-          mesaj: "No matter how you searched, you couldn't find {hayvan}; they were never seen again.",
-          detay: "Some losses don't close, they only lighten with time.",
+          mesaj: "No matter how you searched, you couldn't find {hayvan}.",
+          detay: "Some losses ease with time.",
         },
       },
       {
-        metin: "Hope they come back on their own.",
+        metin: "Hope they return on their own.",
         basariliSonuc: {
-          mesaj: "A few days later {hayvan} showed up at the door on their own.",
-          detay: "Sometimes patience works better than searching.",
+          mesaj: "A few days later {hayvan} showed up at the door.",
+          detay: "Sometimes patience beats searching.",
         },
         basarisizSonuc: {
           mesaj: "{hayvan} never came back.",
-          detay: "Some farewells happen silently.",
+          detay: "Some farewells are silent.",
         },
       },
     ],
@@ -106,28 +106,28 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
   evcil_hayvan_koruma_ani: {
     baslik: "A Loyal Watchman",
     metin:
-      "A sound woke you at midnight: {hayvan} is growling at the door. Maybe a thief, maybe just a shadow.",
+      "At midnight {hayvan} is growling at the door. Maybe a thief, maybe just a shadow.",
     secenekler: [
       {
         metin: "Get up, check outside.",
         basariliSonuc: {
-          mesaj: "There really was a thief; thanks to {hayvan}'s warning you chased them off.",
-          detay: "Tonight you understood the worth of a loyal friend once more.",
+          mesaj: "There was a thief; thanks to {hayvan}'s warning you chased them off.",
+          detay: "You again understood a loyal friend's worth.",
         },
         basarisizSonuc: {
-          mesaj: "You bumped into something in the dark and fell; the thief got away, and you were left empty-handed.",
-          detay: "Some nights don't go smoothly.",
+          mesaj: "You fell in the dark, and the thief escaped.",
+          detay: "Some nights go roughly.",
         },
       },
       {
         metin: "Ignore it, go back to sleep.",
         basariliSonuc: {
-          mesaj: "In the morning everything was in its place; maybe it really was just a shadow.",
-          detay: "Sometimes the worry was for nothing.",
+          mesaj: "By morning all was in place; it was just a shadow.",
+          detay: "Sometimes the worry is for nothing.",
         },
         basarisizSonuc: {
-          mesaj: "In the morning you noticed some things had been stolen from the storeroom.",
-          detay: "You should have listened to {hayvan}'s warning.",
+          mesaj: "In the morning you found things stolen from the storeroom.",
+          detay: "You should have heeded {hayvan}'s warning.",
         },
       },
     ],
@@ -136,46 +136,46 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
   evcilhayvan_sahiplenme_teklifi_ortacag: {
     baslik: "A Friend, or Loneliness?",
     metin:
-      "While wandering the market you noticed it: it might be time to add a small, loyal friend to your life. Or maybe you're more comfortable alone — the choice is yours.",
+      "At the market you thought: maybe it's time for a loyal friend. Or maybe you're better off alone.",
     secenekler: [
       {
         metin: "Get a puppy.",
         basariliSonuc: {
-          mesaj: "You took a little puppy home; it started following you around, wagging its tail.",
+          mesaj: "You took the puppy home; it followed you, tail wagging.",
           detay: "You're not alone anymore.",
         },
         basarisizSonuc: {
-          mesaj: "The pup disappeared the first night, never to be seen again.",
-          detay: "Some friendships end before they even begin.",
+          mesaj: "The pup vanished the first night, never seen again.",
+          detay: "Some friendships end before they begin.",
         },
       },
       {
         metin: "Get a cat.",
         basariliSonuc: {
-          mesaj: "A little cat settled into your home; it even makes ignoring you charming.",
-          detay: "There's another master in your house now — your cat.",
+          mesaj: "The cat settled in; even its ignoring you is charming.",
+          detay: "There's another master in the house now.",
         },
         basarisizSonuc: {
-          mesaj: "The cat left as quietly as it came one night, and never returned.",
-          detay: "Some friendships end before they even begin.",
+          mesaj: "The cat left quietly one night and never returned.",
+          detay: "Some friendships end before they begin.",
         },
       },
       {
         metin: "Get and train a falcon.",
         basariliSonuc: {
           mesaj:
-            "Your patient work paid off; the falcon now sits on your shoulder and everyone looks at you with admiration.",
-          detay: "Owning a falcon earns you a bit of respect in the streets.",
+            "Your effort paid off; the falcon sits on your shoulder, all admire.",
+          detay: "A falcon earns you respect.",
         },
         basarisizSonuc: {
-          mesaj: "The falcon scratched your hand deeply during training and flew off.",
-          detay: "Some animals hold freedom above captivity.",
+          mesaj: "The falcon scratched your hand and flew off.",
+          detay: "Some choose freedom.",
         },
       },
       {
-        metin: "No, I'm more comfortable alone.",
+        metin: "No, I'm better off alone.",
         basariliSonuc: {
-          mesaj: "You've made your decision: for now, you prefer to stay alone.",
+          mesaj: "For now, you chose to stay alone.",
           detay: "Maybe you'll change your mind later.",
         },
         basarisizSonuc: { mesaj: "Not used." },
@@ -186,45 +186,45 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
   evcilhayvan_sahiplenme_teklifi_sanayi: {
     baslik: "A Friend, or Loneliness?",
     metin:
-      "On your way out of the factory you saw a stall in the market selling small animals. It might be just the time to add a friend to your life — or you might prefer to stay alone.",
+      "Leaving the factory you saw a market stall selling animals. You could get a friend or stay alone.",
     secenekler: [
       {
         metin: "Get a puppy.",
         basariliSonuc: {
-          mesaj: "You took a little puppy home; it started following you around, wagging its tail.",
+          mesaj: "You took the puppy home; it followed you, tail wagging.",
           detay: "You're not alone anymore.",
         },
         basarisizSonuc: {
-          mesaj: "The pup disappeared the first night, never to be seen again.",
-          detay: "Some friendships end before they even begin.",
+          mesaj: "The pup vanished the first night, never seen again.",
+          detay: "Some friendships end before they begin.",
         },
       },
       {
         metin: "Get a cat.",
         basariliSonuc: {
-          mesaj: "A little cat settled into your home; it even makes ignoring you charming.",
-          detay: "There's another master in your house now — your cat.",
+          mesaj: "The cat settled in; even its ignoring you is charming.",
+          detay: "There's another master in the house now.",
         },
         basarisizSonuc: {
-          mesaj: "The cat left as quietly as it came one night, and never returned.",
-          detay: "Some friendships end before they even begin.",
+          mesaj: "The cat left quietly one night and never returned.",
+          detay: "Some friendships end before they begin.",
         },
       },
       {
         metin: "Buy a talking parrot.",
         basariliSonuc: {
-          mesaj: "You bought a colorful parrot; before you even got home it started memorizing your curses.",
-          detay: "With this bird, your life will never be quiet again.",
+          mesaj: "You got a parrot; it learned your curses before you got home.",
+          detay: "Life with this bird is never quiet.",
         },
         basarisizSonuc: {
-          mesaj: "The parrot flew off the stall and escaped, and you couldn't get your money back either.",
-          detay: "Some investments sprout wings and fly away.",
+          mesaj: "The parrot escaped, and your money with it.",
+          detay: "Some investments sprout wings.",
         },
       },
       {
-        metin: "No, I'm more comfortable alone.",
+        metin: "No, I'm better off alone.",
         basariliSonuc: {
-          mesaj: "You've made your decision: for now, you prefer to stay alone.",
+          mesaj: "For now, you chose to stay alone.",
           detay: "Maybe you'll change your mind later.",
         },
         basarisizSonuc: { mesaj: "Not used." },
@@ -235,28 +235,28 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
   evcil_hayvan_sahin_av: {
     baslik: "A Successful Hunt",
     metin:
-      "You went hunting with {hayvan}; your falcon's sharp eyes don't look like they'll disappoint you today.",
+      "You went hunting with {hayvan}; your falcon's keen eyes seem sure today.",
     secenekler: [
       {
         metin: "Keep hunting, take the risk.",
         basariliSonuc: {
-          mesaj: "{hayvan} caught two rabbits one after another; your table is rich this week.",
+          mesaj: "{hayvan} caught two rabbits in a row; your table is rich.",
           detay: "Training your falcon paid off.",
         },
         basarisizSonuc: {
-          mesaj: "{hayvan} clashed with an eagle; you both came back wounded.",
-          detay: "The sky is sometimes not for sharing.",
+          mesaj: "{hayvan} fought an eagle; you both came back wounded.",
+          detay: "The sky isn't always shared.",
         },
       },
       {
-        metin: "Return early, don't take the risk.",
+        metin: "Return early, avoid the risk.",
         basariliSonuc: {
-          mesaj: "You settled for a small catch, but you both came back safe and sound.",
-          detay: "Sometimes little but certain is better than a lot.",
+          mesaj: "You settled for a small catch; you both came back safe.",
+          detay: "Little but certain beats a lot.",
         },
         basarisizSonuc: {
-          mesaj: "You came back empty-handed, and {hayvan} looked as disappointed as you.",
-          detay: "Not every day is a good hunting day.",
+          mesaj: "You returned empty-handed; {hayvan} looked as disappointed as you.",
+          detay: "Not every day is a hunting day.",
         },
       },
     ],
@@ -265,23 +265,23 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
   evcil_hayvan_sahin_kacis: {
     baslik: "The Call of Freedom",
     metin:
-      "{hayvan} sprang off your arm today with a startling force and soared away into the distance; maybe just wandering, maybe never to return.",
+      "{hayvan} sprang off your arm and soared away; maybe just roaming, maybe gone for good.",
     secenekler: [
       {
-        metin: "Go after them, try to make yourself heard.",
+        metin: "Go after them, call out.",
         basariliSonuc: {
-          mesaj: "Hours later {hayvan} landed back on your wrist; you were both relieved.",
+          mesaj: "Hours later {hayvan} landed on your wrist; you were relieved.",
           detay: "Your bond was stronger than you thought.",
         },
         basarisizSonuc: {
-          mesaj: "You never saw {hayvan} again; the sky didn't give them back.",
-          detay: "Some friendships lose out to freedom.",
+          mesaj: "You never saw {hayvan} again.",
+          detay: "Some friendships lose to freedom.",
         },
       },
       {
-        metin: "Trust them, hope they return on their own.",
+        metin: "Trust them, hope they return.",
         basariliSonuc: {
-          mesaj: "Toward evening {hayvan} came back of their own accord.",
+          mesaj: "Toward evening {hayvan} came back on its own.",
           detay: "Sometimes waiting is enough.",
         },
         basarisizSonuc: {
@@ -295,28 +295,28 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
   evcil_hayvan_papagan_agiz_kacirma: {
     baslik: "A Secret That Slipped Out",
     metin:
-      "{hayvan} repeated a dark secret (or piece of gossip) you'd heard while visiting last week — right in front of exactly the wrong person! Everyone is looking at you now.",
+      "{hayvan} repeated a dark secret you heard on a visit, in front of exactly the wrong person! Everyone stares.",
     secenekler: [
       {
-        metin: "Laugh it off, say 'the bird talks'.",
+        metin: "Laugh it off: 'the bird talks'.",
         basariliSonuc: {
-          mesaj: "The room burst into laughter, the whole thing turned into a joke and was even found a bit endearing.",
-          detay: "Thanks to {hayvan} you were the favorite of the gathering, at least for today.",
+          mesaj: "The room burst into laughter; it turned into a joke.",
+          detay: "Thanks to {hayvan} you were the gathering's favorite.",
         },
         basarisizSonuc: {
-          mesaj: "No one laughed; the subject of the gossip reached for their weapon.",
-          detay: "You'll need to think twice before saying anything in front of {hayvan}.",
+          mesaj: "No one laughed; the gossip's subject reached for a weapon.",
+          detay: "Watch your words around {hayvan}.",
         },
       },
       {
-        metin: "Be embarrassed and apologize, close the subject.",
+        metin: "Be embarrassed, apologize.",
         basariliSonuc: {
-          mesaj: "A brief apology closed the matter; no one dwelt on it much.",
-          detay: "Sometimes the best defense is a quick apology.",
+          mesaj: "A brief apology closed the matter.",
+          detay: "A quick apology is good defense.",
         },
         basarisizSonuc: {
-          mesaj: "Your apology didn't sound very convincing; a few people still suspect you.",
-          detay: "{hayvan} is probably never going to learn to keep secrets.",
+          mesaj: "Your apology fell flat; some still suspect you.",
+          detay: "{hayvan} will never learn to keep secrets.",
         },
       },
     ],
@@ -325,27 +325,27 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
   evcil_hayvan_papagan_taklit_yetenegi: {
     baslik: "A Little Star",
     metin:
-      "{hayvan} started imitating the neighbors' voices so well that they gained a small fame in the street; some people are asking you for a show.",
+      "{hayvan} mimics the neighbors so well it became locally famous; everyone wants a show.",
     secenekler: [
       {
-        metin: "Put on a small show in the square.",
+        metin: "Put on a show in the square.",
         basariliSonuc: {
-          mesaj: "{hayvan} had everyone in stitches; the onlookers even left you tips.",
-          detay: "Who would have thought a bird would make you this famous.",
+          mesaj: "{hayvan} had everyone laughing; you even got tips.",
+          detay: "A bird made you famous.",
         },
         basarisizSonuc: {
-          mesaj: "{hayvan} stubbornly didn't say a word that day, and the crowd dispersed mocking you.",
-          detay: "Show animals sometimes get moody.",
+          mesaj: "{hayvan} said nothing; the crowd left jeering.",
+          detay: "Show animals get moody.",
         },
       },
       {
-        metin: "Turn the offer down, protect your privacy.",
+        metin: "Decline, protect your privacy.",
         basariliSonuc: {
-          mesaj: "You politely declined the show; life went on calmly.",
-          detay: "You don't have to chase every opportunity.",
+          mesaj: "You declined the show; life stayed calm.",
+          detay: "Don't chase every chance.",
         },
         basarisizSonuc: {
-          mesaj: "Some neighbors were insistent, and you felt a bit overwhelmed.",
+          mesaj: "Some neighbors insisted; you felt overwhelmed.",
           detay: "Fame sometimes comes uninvited.",
         },
       },
@@ -355,28 +355,28 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
   evcil_hayvan_kedi_yikim: {
     baslik: "By Accident, or on Purpose?",
     metin:
-      "When you got home you found {hayvan} among the shards of a valuable pot it had broken, looking straight at you without a hint of remorse.",
+      "Home again, you found {hayvan} by the shards of a valuable pot, looking at you unrepentant.",
     secenekler: [
       {
-        metin: "Don't get angry, clean it up and move on.",
+        metin: "Don't scold, clean up.",
         basariliSonuc: {
-          mesaj: "You gathered the broken pieces; {hayvan} seemed to enjoy watching what was going on.",
-          detay: "This is the price of living with cats, you told yourself.",
+          mesaj: "You gathered the pieces; {hayvan} watched happily.",
+          detay: "The price of living with cats, you said.",
         },
         basarisizSonuc: {
-          mesaj: "The pot really was valuable; having the break repaired cost money.",
+          mesaj: "The pot was valuable; mending it cost money.",
           detay: "{hayvan} doesn't even care.",
         },
       },
       {
-        metin: "Scold it, try to teach it a lesson.",
+        metin: "Scold it, teach a lesson.",
         basariliSonuc: {
-          mesaj: "{hayvan} behaved for a while when it heard your voice, at least that day.",
-          detay: "It counts as a small victory.",
+          mesaj: "{hayvan} behaved that day at your voice.",
+          detay: "A small victory.",
         },
         basarisizSonuc: {
-          mesaj: "{hayvan} ignored you completely and looked out the window.",
-          detay: "Cats listen to no one, and you knew that.",
+          mesaj: "{hayvan} ignored you and looked out the window.",
+          detay: "Cats listen to no one.",
         },
       },
     ],
@@ -385,28 +385,28 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
   evcil_hayvan_kopek_kahramanlik: {
     baslik: "An Unexpected Hero",
     metin:
-      "In the marketplace, {hayvan} chased down a thief who had snatched the bread from a child's hand, with a speed no one expected.",
+      "In the market, {hayvan} chased a thief who snatched a child's bread, with unexpected speed.",
     secenekler: [
       {
-        metin: "Run after them, set things right.",
+        metin: "Run after them, set it right.",
         basariliSonuc: {
-          mesaj: "{hayvan} cornered the thief, the bread went back to its owner; the crowd cheered.",
-          detay: "That day you were the favorite of the neighborhood — or rather it was {hayvan}.",
+          mesaj: "{hayvan} caught the thief, the bread came back; you were applauded.",
+          detay: "The real star was {hayvan}.",
         },
         basarisizSonuc: {
-          mesaj: "You bumped into a stall while running, and the thief got away.",
-          detay: "Good intentions sometimes end in clumsiness.",
+          mesaj: "You hit a stall while running; the thief escaped.",
+          detay: "Good intentions can end in clumsiness.",
         },
       },
       {
-        metin: "Don't get involved, mind your own business.",
+        metin: "Stay out, mind your business.",
         basariliSonuc: {
-          mesaj: "You settled for watching; {hayvan} came back to you after a while.",
-          detay: "Not every act of heroism has to be yours.",
+          mesaj: "You just watched; {hayvan} returned to you later.",
+          detay: "Not every heroism is yours.",
         },
         basarisizSonuc: {
-          mesaj: "Seeing the child cry, you felt a slight pang of conscience.",
-          detay: "Sometimes watching is a choice too.",
+          mesaj: "Seeing the child cry, your conscience stung.",
+          detay: "Watching is a choice too.",
         },
       },
     ],
@@ -415,28 +415,28 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
   evcil_hayvan_altin_kese: {
     baslik: "A Surprise in Its Mouth",
     metin:
-      "{hayvan} came into the house with a different air than usual; there was a small, jingling purse in its mouth. A few coins gleam inside.",
+      "{hayvan} brought a small jingling purse in its mouth. A few coins gleam inside.",
     secenekler: [
       {
-        metin: "Take the purse, don't wonder about the owner.",
+        metin: "Take the purse, don't ask whose.",
         basariliSonuc: {
-          mesaj: "You opened the purse; a few coins fell into your palm. {hayvan} wagged its tail (or wings) proudly.",
+          mesaj: "A few coins fell into your palm; {hayvan} looked proud.",
           detay: "You'll never learn where it found it.",
         },
         basarisizSonuc: {
-          mesaj: "The purse was empty; only a few pebbles came out of it.",
-          detay: "{hayvan} still looked very pleased with itself.",
+          mesaj: "The purse was empty, only pebbles inside.",
+          detay: "{hayvan} was pleased anyway.",
         },
       },
       {
-        metin: "Try to find the owner, give it back.",
+        metin: "Find the owner, return it.",
         basariliSonuc: {
-          mesaj: "You found the neighbor who lost the purse; their gratitude lasted a long time.",
-          detay: "Your honesty was talked about in the neighborhood.",
+          mesaj: "You found the neighbor who lost it; they were grateful.",
+          detay: "Your honesty was talked about.",
         },
         basarisizSonuc: {
-          mesaj: "You couldn't find the owner; you left the purse in a charity box.",
-          detay: "At least your conscience is at ease.",
+          mesaj: "No owner came; you left the purse in a charity box.",
+          detay: "At least your conscience is clear.",
         },
       },
     ],
@@ -445,28 +445,28 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
   evcil_hayvan_yeni_tanisiklik: {
     baslik: "An Encounter in the Park",
     metin:
-      "{hayvan} ran toward an animal that someone else in the square also loved; your smiling efforts to apologize turned into a conversation.",
+      "{hayvan} ran to someone else's beloved animal in the square; apologizing, you fell to chatting.",
     secenekler: [
       {
-        metin: "Extend the conversation, develop the acquaintance.",
+        metin: "Prolong the chat.",
         basariliSonuc: {
-          mesaj: "After a long conversation you made a new acquaintance; {hayvan} was the secret hero of this meeting.",
-          detay: "Sometimes the best introductions happen when an animal steps in.",
+          mesaj: "You made a new acquaintance; {hayvan} was the hidden hero.",
+          detay: "Animals make the best introductions.",
         },
         basarisizSonuc: {
-          mesaj: "You couldn't get past a brief greeting.",
-          detay: "Still, it was a nice moment.",
+          mesaj: "You never got past a brief greeting.",
+          detay: "Still, a nice moment.",
         },
       },
       {
-        metin: "Keep it short, go on your way.",
+        metin: "Cut it short, move on.",
         basariliSonuc: {
-          mesaj: "You said a polite goodbye and went on your way.",
-          detay: "Not every encounter has to turn into a friendship.",
+          mesaj: "You said a polite goodbye and walked on.",
+          detay: "Not every meeting is a friendship.",
         },
         basarisizSonuc: {
-          mesaj: "Afterward you thought you should have stayed a little longer.",
-          detay: "Some chances don't come again.",
+          mesaj: "Later you thought you should have stayed a bit.",
+          detay: "Some chances don't return.",
         },
       },
     ],
@@ -475,28 +475,28 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
   evcil_hayvan_kopek_ev_tahribati: {
     baslik: "The End of the Chair",
     metin:
-      "When you got home you found {hayvan} gnawing the leg of your favorite chair; sawdust was scattered everywhere.",
+      "Home again, you found {hayvan} gnawing your favorite chair's leg; sawdust everywhere.",
     secenekler: [
       {
-        metin: "Stay calm, have a new chair made.",
+        metin: "Stay calm, order a new chair.",
         basariliSonuc: {
-          mesaj: "You had a new chair made; this time {hayvan} didn't even touch the table.",
-          detay: "Some habits fade slowly.",
+          mesaj: "You ordered a new chair; {hayvan} left it alone this time.",
+          detay: "Habits fade slowly.",
         },
         basarisizSonuc: {
-          mesaj: "The new chair got notched within a few days too.",
+          mesaj: "The new chair got notched within days too.",
           detay: "Some dogs never stop chewing.",
         },
       },
       {
-        metin: "Get angry, try to train it.",
+        metin: "Scold it, try to train it.",
         basariliSonuc: {
-          mesaj: "Your patient training worked; {hayvan} no longer touches the furniture.",
+          mesaj: "Patient training worked; {hayvan} leaves the furniture alone.",
           detay: "Your persistence paid off.",
         },
         basarisizSonuc: {
-          mesaj: "{hayvan} wagged its tail and thought it was a game instead of listening to you.",
-          detay: "Some lessons aren't learned in one go.",
+          mesaj: "{hayvan} ignored you and took it as play.",
+          detay: "Some lessons aren't learned at once.",
         },
       },
     ],
@@ -505,28 +505,28 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
   evcil_hayvan_kedi_komsu_zarari: {
     baslik: "The Neighbor's Pigeons",
     metin:
-      "Your neighbor showed up at your door: {hayvan} chased one of the pigeons they carefully raise and plucked its feathers. The neighbor is quite angry.",
+      "Your neighbor is at the door: {hayvan} chased and plucked one of their pigeons. They're furious.",
     secenekler: [
       {
         metin: "Apologize, pay for the damage.",
         basariliSonuc: {
-          mesaj: "Your apology and small payment calmed your neighbor down.",
-          detay: "Good neighborliness is sometimes kept for a few coins.",
+          mesaj: "Your apology and small payment calmed the neighbor.",
+          detay: "Good neighbors cost a few coins.",
         },
         basarisizSonuc: {
-          mesaj: "Your apology was accepted but your neighbor was cold to you for a while.",
-          detay: "Some resentments pass slowly.",
+          mesaj: "Your apology was accepted but the neighbor stayed cold.",
+          detay: "Resentments pass slowly.",
         },
       },
       {
         metin: "It's a cat's nature, defend it.",
         basariliSonuc: {
-          mesaj: "Your neighbor let it go, though with some grumbling.",
-          detay: "Cats answer to no one, and you knew that.",
+          mesaj: "The neighbor grumbled and let it go.",
+          detay: "Cats answer to no one.",
         },
         basarisizSonuc: {
-          mesaj: "Your neighbor stopped talking to you.",
-          detay: "Some defenses make things worse.",
+          mesaj: "The neighbor stopped speaking to you.",
+          detay: "Some defenses make it worse.",
         },
       },
     ],
@@ -535,29 +535,29 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
   evcil_hayvan_kurt_vahsi_icgudu: {
     baslik: "Wild Instinct",
     metin:
-      "{hayvan} suddenly attacked one of the neighbor's small animals; its wild nature came back in an instant. You need to intervene before things escalate.",
+      "{hayvan} attacked a neighbor's small animal; its wild nature returned. You must step in fast.",
     secenekler: [
       {
         metin: "Step in, stop {hayvan}.",
         basariliSonuc: {
-          mesaj: "Your hand got a little hurt but you pulled {hayvan} back in time; no one was seriously harmed.",
-          detay: "This is sometimes the price of living with a wild animal.",
+          mesaj: "Your hand got hurt but you pulled {hayvan} back; no one was harmed.",
+          detay: "The price of living with a wild animal.",
         },
         basarisizSonuc: {
           mesaj:
-            "The matter escalated; you had to pay for the neighbor's loss and your name was spoken as 'dangerous' in the neighborhood.",
-          detay: "Some people still shun you because of it.",
+            "It escalated; you paid the loss and became 'dangerous'.",
+          detay: "Some still shun you.",
         },
       },
       {
-        metin: "Don't get involved, let it follow its nature.",
+        metin: "Stay out, let nature run.",
         basariliSonuc: {
-          mesaj: "You didn't get involved; {hayvan} calmed down on its own.",
-          detay: "Sometimes being a bystander is a choice too.",
+          mesaj: "You stayed out; {hayvan} calmed on its own.",
+          detay: "Bystanding is a choice too.",
         },
         basarisizSonuc: {
           mesaj: "They blamed you for not intervening.",
-          detay: "Staying silent has a price too.",
+          detay: "Silence has a price too.",
         },
       },
     ],
@@ -566,28 +566,28 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
   "evcil_hayvan_kurt_sürü_ozlemi": {
     baslik: "A Howl From Afar",
     metin:
-      "In response to a wolf's howl coming from far away in the night, {hayvan} howled long and hard too; there's a longing in its eyes you've never seen before.",
+      "A wolf howled far off; {hayvan} howled back long, with a new longing in its eyes.",
     secenekler: [
       {
-        metin: "Let it answer the call of its nature.",
+        metin: "Let it follow its nature.",
         basariliSonuc: {
-          mesaj: "The next morning {hayvan} was gone; you'd left the door open, and it chose its pack.",
-          detay: "You let it go because you loved it; that was a love harder than keeping it.",
+          mesaj: "By morning {hayvan} was gone; the door was open, it chose its pack.",
+          detay: "You let go out of love.",
         },
         basarisizSonuc: {
-          mesaj: "You left the door open but {hayvan} was by your side again in the morning.",
-          detay: "Maybe this is its home now too.",
+          mesaj: "You left the door open but {hayvan} was beside you by morning.",
+          detay: "Maybe this is its home now.",
         },
       },
       {
-        metin: "Go to it, calm it down.",
+        metin: "Go to it, calm it.",
         basariliSonuc: {
-          mesaj: "You sat beside it and stroked it; {hayvan} slowly calmed and laid its head on your shoulder.",
-          detay: "Some bonds overcome even wild nature.",
+          mesaj: "You stroked it; {hayvan} calmed and rested its head on your shoulder.",
+          detay: "Some bonds beat wildness.",
         },
         basarisizSonuc: {
-          mesaj: "{hayvan} paced restlessly all night, and you couldn't sleep a wink.",
-          detay: "Some longings don't pass in one night.",
+          mesaj: "{hayvan} paced all night; you couldn't sleep.",
+          detay: "Longing doesn't pass in a night.",
         },
       },
     ],
@@ -596,39 +596,39 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
   vahsi_kurt_yavrusu_bulma: {
     baslik: "Deep in the Forest",
     metin:
-      "You lost your way and plunged deep into the forest. Beside a dead she-wolf you found a single still-breathing cub. In its eyes there is neither fear of you nor trust in you — only the instinct to survive.",
+      "In the forest, beside a dead she-wolf, you found one breathing cub; in its eyes only the will to survive.",
     secenekler: [
       {
-        metin: "Take the cub, patiently try to tame it.",
+        metin: "Take the cub, tame it patiently.",
         basariliSonuc: {
-          mesaj: "The cub first growled, then accepted the meat from your hand. Weeks later it no longer leaves your side.",
-          detay: "Owning a tame wolf isn't easy, but its loyalty is unmatched.",
+          mesaj: "The cub growled, then took your meat; now it stays by you.",
+          detay: "Hard, but its loyalty is unmatched.",
         },
         basarisizSonuc: {
-          mesaj: "The cub bit you and fled into the darkness of the forest.",
-          detay: "Some wild spirits hold freedom above captivity.",
+          mesaj: "The cub bit you and fled into the forest.",
+          detay: "Some spirits choose freedom.",
         },
       },
       {
-        metin: "Count it as hunted for its pelt and teeth, prepare it for sale.",
+        metin: "Prepare it for sale, for its pelt.",
         basariliSonuc: {
-          mesaj: "You sold the cub to a furrier; you earned a few coins but a strange weight stayed in you.",
+          mesaj: "You sold the cub to a furrier; money earned, conscience heavy.",
           detay: "Some gains always taste bitter.",
         },
         basarisizSonuc: {
-          mesaj: "The furrier kept the price ridiculously low; your conscience ached and your pocket barely filled.",
-          detay: "The worst case: you paid the price and got nothing back.",
+          mesaj: "The furrier lowballed you; your conscience ached, your purse barely filled.",
+          detay: "You paid the price and got nothing back.",
         },
       },
       {
-        metin: "Leave it to nature, don't get involved.",
+        metin: "Leave it to nature, don't interfere.",
         basariliSonuc: {
-          mesaj: "You left the cub where it was; its fate is in its own hands.",
-          detay: "Not making a decision is a decision too.",
+          mesaj: "You left the cub; its fate is in its own hands.",
+          detay: "Not deciding is a decision.",
         },
         basarisizSonuc: {
-          mesaj: "You couldn't bring yourself to turn back and look; you still remember that gaze at night.",
-          detay: "Conscience sometimes torments you quietly.",
+          mesaj: "You couldn't look back; you remember that gaze at night.",
+          detay: "Conscience torments quietly.",
         },
       },
     ],
@@ -637,27 +637,27 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
   evcil_hayvan_kedi_hirsiz_hediyesi: {
     baslik: "The Cat's Loot",
     metin:
-      "{hayvan} proudly purred and left a 'gift' on your bed: a shiny ring. Probably 'borrowed' from one of the neighboring houses through an open window.",
+      "{hayvan} proudly left a shiny ring on your bed, probably 'borrowed' through a neighbor's open window.",
     secenekler: [
       {
         metin: "Keep the ring, ask no one.",
         basariliSonuc: {
-          mesaj: "You quietly kept the ring; no one even suspected {hayvan}.",
-          detay: "Cats have no conscience, and yours is now a little short too.",
+          mesaj: "You hid the ring; no one suspected {hayvan}.",
+          detay: "Cats have no conscience; yours shrank.",
         },
         basarisizSonuc: {
           mesaj: "The neighbor saw the ring in your house and accused you of theft!",
-          detay: "The cat's crime landed on your back.",
+          detay: "The cat's crime fell on you.",
         },
       },
       {
-        metin: "Go around the neighborhood, find the owner and return it.",
+        metin: "Find the owner, return it.",
         basariliSonuc: {
-          mesaj: "You found the ring's owner; the grateful neighbor gave you a small reward.",
-          detay: "Your honesty was talked about in the neighborhood.",
+          mesaj: "You found the owner; the grateful neighbor gave a small reward.",
+          detay: "Your honesty was talked about.",
         },
         basarisizSonuc: {
-          mesaj: "You couldn't find the owner; the ring was forgotten in your drawer.",
+          mesaj: "No owner appeared; the ring was forgotten in a drawer.",
           detay: "Some good intentions go unrewarded.",
         },
       },
@@ -667,28 +667,28 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
   evcil_hayvan_kedi_agactan_kurtarma: {
     baslik: "The Cat Stuck at the Top",
     metin:
-      "{hayvan} climbed to the highest branch in the garden and now can't get down; it keeps meowing desperately. The neighbors are watching from their windows.",
+      "{hayvan} climbed the garden's highest branch and can't get down, meowing desperately. Neighbors watch from windows.",
     secenekler: [
       {
         metin: "Climb up yourself, take the risk.",
         basariliSonuc: {
-          mesaj: "With difficulty you took {hayvan} into your arms; the neighborhood applauded you.",
-          detay: "Sometimes being a hero is as simple as climbing a tree.",
+          mesaj: "With effort you took {hayvan} in your arms; the neighborhood applauded.",
+          detay: "Heroism is sometimes just climbing a tree.",
         },
         basarisizSonuc: {
-          mesaj: "The branch broke and you crashed to the ground! {hayvan}, meanwhile, jumped down on its own.",
-          detay: "Your cat turned out far more capable than you.",
+          mesaj: "The branch broke, you crashed! {hayvan} jumped down on its own.",
+          detay: "Your cat proved more capable than you.",
         },
       },
       {
-        metin: "Give the neighbor's boy a few coins to climb up.",
+        metin: "Pay the neighbor's boy to climb.",
         basariliSonuc: {
-          mesaj: "The nimble boy got {hayvan} down within minutes.",
-          detay: "Leaving some jobs to an expert is wise.",
+          mesaj: "The nimble boy got {hayvan} down in minutes.",
+          detay: "Some jobs belong to experts.",
         },
         basarisizSonuc: {
-          mesaj: "The boy got scared too and came down halfway; {hayvan} stayed up there until evening.",
-          detay: "Sometimes even money isn't a solution.",
+          mesaj: "The boy panicked halfway; {hayvan} stayed up till evening.",
+          detay: "Sometimes even money doesn't help.",
         },
       },
     ],
@@ -697,28 +697,28 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
   evcil_hayvan_kopek_yarali_kahraman: {
     baslik: "The Watchman's Price",
     metin:
-      "While chasing a thief at night, {hayvan} was badly wounded. The best animal healer in the city is expensive but reliable; otherwise you have to leave it to heal naturally.",
+      "Chasing a thief, {hayvan} was badly wounded. The city's best animal healer is costly but reliable.",
     secenekler: [
       {
-        metin: "Get the best treatment, whatever it costs.",
+        metin: "Get the best treatment.",
         basariliSonuc: {
-          mesaj: "The healer worked for hours; {hayvan} was back on its feet within a few days.",
-          detay: "You didn't hesitate to repay its loyalty.",
+          mesaj: "The healer worked hard; {hayvan} was up within days.",
+          detay: "You repaid its loyalty.",
         },
         basarisizSonuc: {
-          mesaj: "Despite the best treatment the wounds were severe; {hayvan} barely healed, limping.",
-          detay: "Sometimes even money doesn't guarantee everything.",
+          mesaj: "The wounds were severe; {hayvan} healed slowly, limping.",
+          detay: "Money guarantees nothing.",
         },
       },
       {
-        metin: "Try to care for it at home with your own means.",
+        metin: "Try caring for it at home yourself.",
         basariliSonuc: {
-          mesaj: "You stayed by its side for nights; {hayvan} stubbornly healed.",
-          detay: "Sometimes love is a stronger medicine than gold.",
+          mesaj: "You kept vigil for nights; {hayvan} stubbornly healed.",
+          detay: "Love is sometimes stronger than gold.",
         },
         basarisizSonuc: {
-          mesaj: "The wounds were too deep; {hayvan} closed its eyes a few days later.",
-          detay: "You'll never forget the price it paid to protect you.",
+          mesaj: "{hayvan} closed its eyes a few days later.",
+          detay: "You'll never forget this price.",
         },
       },
     ],
@@ -727,29 +727,29 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
   evcil_hayvan_kopek_asil_kavgasi: {
     baslik: "Whose Dog Is in the Right?",
     metin:
-      "{hayvan} got into a fight in the square with the spoiled dog of an influential family. It's not clear who bit whom, but the family wants compensation from you, and they're raising their voices.",
+      "{hayvan} fought an influential family's dog. Who bit whom is unclear, but the family demands compensation.",
     secenekler: [
       {
-        metin: "Quietly pay the compensation, close the matter.",
+        metin: "Quietly pay the compensation.",
         basariliSonuc: {
-          mesaj: "You paid the money and the family left, though with grumbling.",
-          detay: "In some fights being right isn't enough — money talks.",
+          mesaj: "You paid; the family left grumbling.",
+          detay: "Sometimes being right isn't enough; money talks.",
         },
         basarisizSonuc: {
-          mesaj: "You paid the money but the incident turned into neighborhood gossip.",
+          mesaj: "You paid, but the incident became neighborhood gossip.",
           detay: "Silence sometimes isn't enough.",
         },
       },
       {
-        metin: "No, your dog was in the right — defend it to the end.",
+        metin: "Defend your dog to the end.",
         basariliSonuc: {
-          mesaj: "The witnesses took your side; the family backed down.",
-          detay: "Sometimes defending the truth works.",
+          mesaj: "Witnesses sided with you; the family backed down.",
+          detay: "Defending the truth sometimes works.",
         },
         basarisizSonuc: {
           mesaj:
-            "The influential family got its way; you ended up paying the compensation anyway and being called 'insolent'.",
-          detay: "Arguing with the powerful comes at a heavy price.",
+            "The family prevailed; you paid and were called 'insolent'.",
+          detay: "Arguing with the powerful costs dearly.",
         },
       },
     ],
@@ -758,28 +758,28 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
   evcil_hayvan_sahin_turnuva: {
     baslik: "The Falconry Contest",
     metin:
-      "The region's best falconers have gathered; entering {hayvan} in this grand tournament could be a great door to fame. But on the most dangerous hunting course, a falcon can easily be lost or wounded.",
+      "Falconers gathered for a tournament; {hayvan} could bring fame, but may be lost on the dangerous course.",
     secenekler: [
       {
-        metin: "Enter the toughest course, aim for great fame.",
+        metin: "Enter the hardest course.",
         basariliSonuc: {
-          mesaj: "{hayvan} left its rivals behind and reached the top! Your name began to be spoken with falconry in the region.",
-          detay: "Some risks pay off many times over.",
+          mesaj: "{hayvan} reached the top! Your name is tied to falconry.",
+          detay: "Some risks pay off hugely.",
         },
         basarisizSonuc: {
-          mesaj: "{hayvan} disappeared on the horizon chasing prey and never returned.",
-          detay: "Fame sometimes costs you a loyal friend.",
+          mesaj: "{hayvan} vanished on the horizon chasing prey, never returning.",
+          detay: "Fame sometimes costs a loyal friend.",
         },
       },
       {
-        metin: "Enter only an easy, modest demonstration.",
+        metin: "Enter only an easy demonstration.",
         basariliSonuc: {
-          mesaj: "The small demonstration won some praise; {hayvan} returned safely to your shoulder.",
-          detay: "Being cautious isn't always a bad thing.",
+          mesaj: "The small show was praised; {hayvan} returned safely to your shoulder.",
+          detay: "Caution isn't always bad.",
         },
         basarisizSonuc: {
-          mesaj: "The demonstration was dull, no one paid much attention.",
-          detay: "Some days aren't meant for shining.",
+          mesaj: "The show was dull; nobody cared.",
+          detay: "Some days aren't for shining.",
         },
       },
     ],
@@ -788,28 +788,28 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
   evcil_hayvan_sahin_dusman_mesaji: {
     baslik: "A Letter That Fell Into the Wrong Talon",
     metin:
-      "Returning from the hunt, {hayvan} brought in its talons a sealed letter that doesn't belong to it — it could be a secret correspondence someone lost or had stolen.",
+      "Back from the hunt, {hayvan} brought a sealed letter that isn't its own; maybe a secret correspondence.",
     secenekler: [
       {
-        metin: "Break the seal, learn the secret inside.",
+        metin: "Break the seal, learn the secret.",
         basariliSonuc: {
-          mesaj: "The secrets in the letter astonished you; this information could serve you later.",
-          detay: "Reading someone else's secret is a heavy burden, even if it's profitable.",
+          mesaj: "The secrets astonished you; they may serve you later.",
+          detay: "Another's secret is a heavy burden.",
         },
         basarisizSonuc: {
-          mesaj: "You were caught reading the letter; rumors of a 'spy' spread.",
-          detay: "Your curiosity left you in a tough spot.",
+          mesaj: "You were caught reading it; 'spy' rumors spread.",
+          detay: "Curiosity left you in a bind.",
         },
       },
       {
-        metin: "Without breaking the seal, find the owner and deliver it.",
+        metin: "Deliver it to the owner, seal intact.",
         basariliSonuc: {
-          mesaj: "You got the letter to its owner; the relief in the man's eyes was priceless.",
+          mesaj: "The letter reached its owner; his relief was priceless.",
           detay: "Your honesty was quietly rewarded.",
         },
         basarisizSonuc: {
-          mesaj: "You couldn't find the owner; the letter gathered dust in your drawer.",
-          detay: "Some good intentions don't reach their goal.",
+          mesaj: "No owner appeared; the letter gathered dust in a drawer.",
+          detay: "Some good intentions miss their goal.",
         },
       },
     ],
@@ -818,27 +818,27 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
   evcil_hayvan_papagan_taklit_dolandiriciligi: {
     baslik: "The Mimic's Beak",
     metin:
-      "You noticed {hayvan} can imitate your rival's voice almost perfectly. You could use this to pull a little scheme in the market, or leave the talent as mere entertainment.",
+      "You noticed {hayvan} mimics your rival's voice perfectly. You could scam the market or just have fun.",
     secenekler: [
       {
-        metin: "Have the parrot speak in your rival's voice and trick the customers.",
+        metin: "Fool customers in your rival's voice.",
         basariliSonuc: {
-          mesaj: "The customers fell for the strange offer coming from 'your rival's' mouth and headed to your stall!",
+          mesaj: "Customers fell for 'your rival's' odd offer and came to your stall!",
           detay: "You won, but you know it was a con.",
         },
         basarisizSonuc: {
-          mesaj: "Your rival caught on to the game and you were humiliated in the middle of the square.",
+          mesaj: "Your rival caught on; you were humiliated in the square.",
           detay: "Trusting a parrot cost you dearly.",
         },
       },
       {
-        metin: "Just put on a small show in the neighborhood for fun.",
+        metin: "Just put on a show for fun.",
         basariliSonuc: {
-          mesaj: "The children and neighbors watched, laughing; {hayvan} was the star of the day.",
-          detay: "Sometimes the best gain is just a laugh.",
+          mesaj: "Everyone watched laughing; {hayvan} was the day's star.",
+          detay: "Sometimes the best gain is a laugh.",
         },
         basarisizSonuc: {
-          mesaj: "The show didn't draw much interest, and {hayvan} sulked.",
+          mesaj: "The show drew no interest; {hayvan} sulked.",
           detay: "Not every trick gets applause.",
         },
       },
@@ -848,28 +848,28 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
   evcil_hayvan_papagan_hastalik_secimi: {
     baslik: "The Silent Beak",
     metin:
-      "{hayvan} has been silent for a few days with a strange cough; that noisy voice is no longer heard. An expensive exotic-animal doctor from distant lands could be the cure, or you could leave it to nature and hope.",
+      "{hayvan} has been silent with a cough for days. A costly exotic doctor may cure it, or leave it to nature and hope.",
     secenekler: [
       {
-        metin: "Take it to the exotic doctor, pay whatever it takes.",
+        metin: "Take it to the exotic doctor.",
         basariliSonuc: {
-          mesaj: "The drops the doctor gave worked; a few days later {hayvan} is making the whole house ring again.",
-          detay: "When its voice came back you realized how quiet the house had been.",
+          mesaj: "The drops worked; {hayvan} is ringing the house again.",
+          detay: "Its voice made you notice the quiet.",
         },
         basarisizSonuc: {
-          mesaj: "Despite the expensive treatment, {hayvan}'s voice never was the same again.",
-          detay: "Some things don't come back even with money.",
+          mesaj: "Despite treatment, {hayvan}'s voice was never the same.",
+          detay: "Some things money can't bring back.",
         },
       },
       {
-        metin: "Let it rest at home, wait for natural healing.",
+        metin: "Let it rest at home, wait.",
         basariliSonuc: {
-          mesaj: "Your patience worked; {hayvan} slowly returned to its old cheerful self.",
-          detay: "Sometimes time is the best medicine.",
+          mesaj: "Your patience worked; {hayvan} regained its cheer.",
+          detay: "Time is the best medicine.",
         },
         basarisizSonuc: {
-          mesaj: "{hayvan} was found motionless on its perch one morning.",
-          detay: "The silence of the house is no longer as pleasant as before.",
+          mesaj: "One morning {hayvan} was found motionless on its perch.",
+          detay: "The house's silence is no longer pleasant.",
         },
       },
     ],
@@ -878,27 +878,27 @@ export const OLAYLAR_EVCIL_HAYVAN_EN: Record<string, OlayCeviri> = {
   evcil_hayvan_kurt_ticaret_korkusu: {
     baslik: "The Gaze That Scares Off Customers",
     metin:
-      "While {hayvan} sits in front of your shop like a loyal guard, customers take fright at its yellow eyes and turn back before entering. Your earnings have dropped noticeably.",
+      "{hayvan} sits guard before your shop; customers fear its yellow eyes and turn back. Your earnings fell.",
     secenekler: [
       {
-        metin: "Tie it in the back garden, put your business first.",
+        metin: "Tie it in the back garden.",
         basariliSonuc: {
-          mesaj: "The customers came back and your till filled again. {hayvan}, meanwhile, keeps watching you from the window.",
-          detay: "Your business is saved but there's a thorn in your conscience.",
+          mesaj: "Customers returned, the till filled. {hayvan} watches you from the window.",
+          detay: "Business saved, but a thorn in your conscience.",
         },
         basarisizSonuc: {
-          mesaj: "The customers came back a little, but {hayvan}'s sad looks wrenched your heart.",
+          mesaj: "Some customers returned; {hayvan}'s gaze wrenched your heart.",
           detay: "Earnings sometimes demand a silent price.",
         },
       },
       {
-        metin: "Never leave its side, accept the loss of customers.",
+        metin: "Keep it by you, accept the loss.",
         basariliSonuc: {
-          mesaj: "{hayvan} kept staying by your side; your earnings dropped but your heart is at ease.",
-          detay: "Some friendships fit in no profit column.",
+          mesaj: "{hayvan} stayed by you; earnings fell, heart at ease.",
+          detay: "Some friendships fit no profit column.",
         },
         basarisizSonuc: {
-          mesaj: "The customers dwindled badly, but the head {hayvan} rubbed against you was worth everything.",
+          mesaj: "Customers dwindled; the head {hayvan} rubbed on you was worth it.",
           detay: "Your wallet got lighter, not your heart.",
         },
       },

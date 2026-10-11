@@ -8,178 +8,178 @@ import type { OlayCeviri } from "./index";
 export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
   kg_agir_idman: {
     baslik: "Pushing the Limits",
-    metin: "You have felt weak lately. To bring your body back to its old resilience you could begin a hard training ritual that pushes your limits to the very end. But can your age and your body take it?",
+    metin: "You've grown weak lately. A brutal training regimen could restore your old resilience. But can your body take it?",
     secenekler: [
       {
         metin: "Endure the pain, push past your limits.",
         basariliSonuc: {
-          mesaj: "Your muscles turned to steel. Your body is now solid enough to withstand even the heaviest blows.",
+          mesaj: "Your muscles turned to steel. Your body can now withstand the heaviest blows.",
         },
         basarisizSonuc: {
-          mesaj: "Your body could not take the strain. The fibers in your knee tore; you now have a lasting ache that throbs even in rainy weather.",
+          mesaj: "Your body broke under the strain. A torn knee leaves a lasting ache, even in the rain.",
         },
       },
       {
-        metin: "Do not risk it, settle for light walks.",
+        metin: "Don't risk it; settle for light walks.",
         basariliSonuc: {
-          mesaj: "You chose the safe path. You did not break a sweat, but you did not get hurt either.",
+          mesaj: "You chose safety. No sweat, but no injury either.",
         },
         basarisizSonuc: {
-          mesaj: "Even a light walk left you gasping for breath.",
+          mesaj: "Even a light walk left you gasping.",
         },
       },
     ],
   },
   kg_yasakli_kitap: {
     baslik: "The Sealed Book",
-    metin: "In the market a strangely dressed stranger sold you a leather-bound, sealed book. It is quite clear the writings inside were banned by the local authorities (or the church). It may hold dangerous secrets.",
+    metin: "A strangely dressed stranger sold you a sealed, leather-bound book. Its contents are banned by the authorities; it may hold dangerous secrets.",
     secenekler: [
       {
-        metin: "Break the seal and read the dark lore.",
+        metin: "Break the seal, read the dark lore.",
         basariliSonuc: {
-          mesaj: "What the book told changed how you see the world. You now know things ordinary people do not.",
+          mesaj: "The book changed how you see the world. You now know what ordinary people don't.",
         },
         basarisizSonuc: {
-          mesaj: "As you turned the pages a neighbor saw you through the window and reported you. Your reputation was destroyed.",
+          mesaj: "A neighbor saw you reading through the window and reported you. Reputation ruined.",
         },
       },
       {
-        metin: "Hand the book to the authorities (or the church) unread.",
+        metin: "Hand the book over unread.",
         basariliSonuc: {
-          mesaj: "You handed over the book. The authorities appreciated your loyalty and your faith.",
+          mesaj: "You handed it over. The authorities praised your loyalty and faith.",
         },
         basarisizSonuc: {
-          mesaj: "You gave up the book, but what was written in it stayed with you your whole life as a nagging curiosity.",
+          mesaj: "You gave it up, but what it said haunts you as lifelong curiosity.",
         },
       },
     ],
   },
   kg_meyhane_sirri: {
     baslik: "Whispers at Midnight",
-    metin: "{dost} took you to the seediest tavern in the city. Later in the night, as everyone gets drunk, you notice the suspicious men at the next table are discussing very valuable commercial/political secrets.",
+    metin: "{dost} took you to the seediest tavern in town. At the next table, shady men were discussing valuable commercial/political secrets.",
     secenekler: [
       {
-        metin: "Buy them drinks and pump them for information.",
+        metin: "Buy them drinks, pump them for secrets.",
         basariliSonuc: {
-          mesaj: "The drink loosened their tongues. You got wonderful intelligence about the city's future; you will not be making your moves blindly anymore.",
+          mesaj: "Drink loosened their tongues. You learned valuable things about the city's future.",
         },
         basarisizSonuc: {
-          mesaj: "The men saw through your intent. They dragged you behind the tavern and gave you a thorough beating.",
+          mesaj: "The men saw through you. They dragged you behind the tavern and beat you soundly.",
         },
       },
       {
-        metin: "Focus on your table, just drink with {dost}.",
+        metin: "Mind your table; drink only with {dost}.",
         basariliSonuc: {
-          mesaj: "You just drank and had fun. But as you scraped the bottom of your cup you notice you have grown a little too used to this life.",
+          mesaj: "You drank and had fun. But you realize you've grown a bit too used to this life.",
         },
         basarisizSonuc: {
-          mesaj: "Because your mind was at the next table, your conversation with {dost} was very flat.",
+          mesaj: "With your mind on the next table, talk with {dost} was flat.",
         },
       },
     ],
   },
   ekonomi_guvenli_yatirim: {
     baslik: "Your Sibling's Shop",
-    metin: "A relative (your sibling or a close cousin) comes to you and offers you a share in the capital of the new smithy/weaver's shop they are setting up. It will not make you rich, but they say your money will not go to a stranger.",
+    metin: "A relative (sibling or cousin) asks you to co-fund a new smithy/weaver's shop. It won't make you rich, but the money stays in the family.",
     secenekler: [
       {
-        metin: "Support the family, put up the capital.",
+        metin: "Back the family, put up the capital.",
         basariliSonuc: {
-          mesaj: "You put up the capital. The shop runs like clockwork; every year you take a regular, honest share from your family.",
+          mesaj: "The shop runs like clockwork; each year you draw a steady, honest share.",
         },
         basarisizSonuc: {
-          mesaj: "The shop did not do the business you hoped. Whenever the subject comes up at family dinners, everyone's face falls.",
+          mesaj: "The shop underperformed. Whenever it comes up at family dinners, faces fall.",
         },
       },
       {
-        metin: "Do not mix blood ties with business, refuse.",
+        metin: "Don't mix kin with business; refuse.",
         basariliSonuc: {
-          mesaj: "You kept your money in your pocket. Your sibling was a little put out, but at least you took no risk.",
+          mesaj: "Your money stayed in your pocket. Your sibling was put out, but you took no risk.",
         },
         basarisizSonuc: {
-          mesaj: "Your sibling borrowed from someone else, opened the shop, and did very well. Now you quietly regret it.",
+          mesaj: "Your sibling borrowed elsewhere, opened the shop, and thrived. You quietly regret it.",
         },
       },
     ],
   },
   ekonomi_tefecilik_teklifi: {
     baslik: "A Desperate Friend",
-    metin: "A very old and desperate friend asks you for a loan so as not to lose their shop. But they offer to repay you at a very high rate of interest. This offer is both profitable and morally questionable.",
+    metin: "A very old, desperate friend asks for a loan to save his shop, offering very high interest. The deal is profitable but morally dubious.",
     secenekler: [
       {
-        metin: "Forget your morals, give the loan at high interest.",
+        metin: "Forget morals; lend at high interest.",
         basariliSonuc: {
-          mesaj: "You lent your friend money at interest. As you took the money you could not forget that look of mixed gratitude and hatred on their face.",
+          mesaj: "You lent at interest. You can't forget the gratitude and hatred on his face.",
         },
         basarisizSonuc: {
-          mesaj: "You had the contract signed, but it is very clear the friendship is completely over.",
+          mesaj: "You had the contract signed, but the friendship is clearly over.",
         },
       },
       {
-        metin: "I do not do moneylending, let me keep my money.",
+        metin: "I'm no moneylender; I keep my money.",
         basariliSonuc: {
-          mesaj: "You refused to lend your friend money at interest. Their shop went under, but your conscience and your money are intact.",
+          mesaj: "You refused to lend at interest. His shop failed; your conscience and money are intact.",
         },
         basarisizSonuc: {
-          mesaj: "Your friend lost the shop and accused you of 'not being a friend in bad times'.",
+          mesaj: "Your friend lost the shop and accused you of abandoning him in bad times.",
         },
       },
     ],
   },
   ekonomi_tefecilik_sonucu: {
     baslik: "The Term Is Up",
-    metin: "The term of the loan you gave your old friend is up. You went and knocked on their door, but weeping, they say business has gone badly and they have no money. You have two choices.",
+    metin: "The loan to your old friend has come due. You went to his door; weeping, he says business is bad and he has no money.",
     secenekler: [
       {
-        metin: "Hire men, seize the shop and throw them out on the street.",
+        metin: "Hire men, seize the shop, throw him out.",
         basariliSonuc: {
-          mesaj: "You sent your men. While your friend's family wept on the street, you took the keys to the shop. You won.",
+          mesaj: "You sent your men. While his family wept in the street, you took the shop keys.",
         },
         basarisizSonuc: {
-          mesaj: "You seized the shop by force, but the neighborhood jeered at you. Now they call you a 'bloodsucker' behind your back.",
+          mesaj: "You seized the shop by force, but the neighborhood jeered. They call you 'bloodsucker'.",
         },
       },
       {
         metin: "Forgive the debt for old times' sake.",
         basariliSonuc: {
-          mesaj: "You tore up the notes before their eyes. Your friend fell at your feet. You lost your money but regained your soul.",
+          mesaj: "You tore up the notes before him. He fell at your feet. Money lost, soul regained.",
         },
         basarisizSonuc: {
-          mesaj: "You forgave the debt. Your conscience is at ease, but on the way home that evening you remembered how much you needed that money.",
+          mesaj: "Debt forgiven. Conscience clear, but on the way home you remembered needing that money.",
         },
       },
     ],
   },
   ekonomi_kriz_donemi: {
     baslik: "The Bitter Face of the Crisis",
-    metin: "The economic crisis has reached your home: there is no food left in the pantry, and your shop is on the edge of bankruptcy. You can spend your last capital on black-market food or on saving your business.",
+    metin: "The crisis has reached your home: the pantry is empty and your shop is near bankruptcy. Spend your last capital on food or on saving the business.",
     secenekler: [
       {
-        metin: "Forget the business, buy food for my family with my last money.",
+        metin: "Forget the business; buy food with my last money.",
         basariliSonuc: {
-          mesaj: "You closed the stall. You went bankrupt, your reputation reset to zero, but that evening your children/family are eating hot soup at the table.",
+          mesaj: "You closed the stall. Bankrupt, reputation gone, but your family eats hot soup tonight.",
         },
         basarisizSonuc: {
-          mesaj: "You spent your capital on food, but the black marketeer swindled you. You went bankrupt and stayed half-hungry.",
+          mesaj: "You spent your capital on food, but a black marketeer cheated you. Bankrupt, hungry.",
         },
       },
       {
-        metin: "Let my family grit their teeth, spend the money saving my business.",
+        metin: "Let my family grit their teeth; save my business.",
         basariliSonuc: {
-          mesaj: "While everyone else went under, you stayed on your feet and grew rich! But when you got home you saw your family wasting away from malnutrition.",
+          mesaj: "While everyone sank, you grew rich! But your family wastes away from hunger.",
         },
         basarisizSonuc: {
-          mesaj: "You took the risk and lost. The crisis hit you too. Your last money is gone and your family was hospitalized from hunger.",
+          mesaj: "You gambled and lost. Your last money is gone and your family fell ill from hunger.",
         },
       },
     ],
   },
   ekonomi_vergi_tahsildari: {
     baslik: "The Sly Collector",
-    metin: "The sour-faced tax collector knocked on your door and is reading out the heavy figure in his ledger. But glancing around, he mutters, 'Perhaps I wrote it down wrong; a small mistake can be corrected.'",
+    metin: "The sour-faced tax collector stands at your door reading a hefty sum. Glancing around, he mutters, 'Maybe I wrote it wrong; a small error can be fixed.'",
     secenekler: [
       {
-        metin: "Say 'I understand' and slip him a bribe under the table.",
+        metin: "Say 'I understand'; bribe him under the table.",
         basariliSonuc: {
           mesaj: "Not used.",
         },
@@ -187,285 +187,285 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
           mesaj: "Not used.",
         },
         onTepki: {
-          metin: "The collector smiles as he takes the purse you hold out. 'Very clever... But this amount only clears the ledger for this month. You understand, don't you?' The greedy man is trying to put you on a tribute.",
-          geriCekilMetni: "Get angry and throw him out of the shop! (Back out of the bribe)",
+          metin: "He took it: 'This covers only this month.'",
+          geriCekilMetni: "Get angry and throw him out! (Back out)",
           geriCekilSonucu: {
-            mesaj: "You shouted at the man and drove him out! Then you went and paid your tax honestly into the state coffers. Your money is gone but your honor is saved.",
+            mesaj: "You shouted him out and paid your tax honestly. Money gone, honor kept.",
           },
-          devamMetni: "Accept it quietly, get into the wheel of bribery.",
+          devamMetni: "Quietly accept; join the bribery wheel.",
           devamSonucu: {
-            mesaj: "You became the collector's man. You dodged the tax, but you are now a prisoner of this secret.",
+            mesaj: "You became his man. Tax dodged, but you're a prisoner of this secret.",
           },
         },
       },
       {
-        metin: "Pay the state's tax in full.",
+        metin: "Pay the tax in full.",
         basariliSonuc: {
-          mesaj: "The collector took the full tax with a scowl. Your pocket has a hole in it, but you did not bow to anyone.",
+          mesaj: "The collector scowled and took it all. Your pocket has a hole, but you bowed to no one.",
         },
         basarisizSonuc: {
-          mesaj: "You paid your tax, but the collector marked you. Even your honest earnings will be made to look suspect.",
+          mesaj: "You paid, but the collector marked you. Even your honest earnings will look suspect.",
         },
       },
     ],
   },
   ekonomi_rusvet_teklifi: {
     baslik: "The Devil's Purse",
-    metin: "One of the richest but darkest men in the city holds out a purse stuffed with gold in exchange for storing an illegal good in your warehouses.",
+    metin: "One of the city's richest and darkest men offers a purse stuffed with gold to store an illegal cargo in your warehouses.",
     secenekler: [
       {
-        metin: "Take the gold and store the goods.",
+        metin: "Take the gold; store the goods.",
         basariliSonuc: {
-          mesaj: "You hid the purse in your robe. You grew rich, but now every time there's a knock at the door at night your heart will pound.",
+          mesaj: "You hid the purse in your robe. Rich now, but every night knock makes your heart pound.",
         },
         basarisizSonuc: {
-          mesaj: "While hiding the goods one of your apprentices saw you! You were reported, fined, and your reputation was stained.",
+          mesaj: "An apprentice saw you hiding the goods! Reported, fined, reputation stained.",
         },
       },
       {
-        metin: "Refuse in anger and throw the man out.",
+        metin: "Refuse in anger; throw him out.",
         basariliSonuc: {
-          mesaj: "You drove the man out of your shop! The people are talking about your courage; you are the 'Man Who Cannot Be Bought'.",
+          mesaj: "You threw him out! The people praise your courage: the 'Man Who Cannot Be Bought'.",
         },
         basarisizSonuc: {
-          mesaj: "The man narrowed his eyes as he took back the purse. From that day on he became your greatest and darkest enemy.",
+          mesaj: "He narrowed his eyes taking back the purse. Since then he's your darkest enemy.",
         },
       },
     ],
   },
   rutbe_kumandan_karari: {
     baslik: "The Commander's Dilemma",
-    metin: "You stand before the enemy lines. If you give the order to attack your chance of victory is high, but most of the young soldiers under your command will die. If you wait your soldiers live but the battle may be lost.",
+    metin: "You face the enemy lines. Attack and victory is likely, but most of your young soldiers will die. Wait and they live, but the battle may be lost.",
     secenekler: [
       {
-        metin: "We march to death! Give the order to attack.",
+        metin: "We march to death! Order the attack.",
         basariliSonuc: {
-          mesaj: "You crushed the enemy! You became the hero of the battle, but those young corpses on the battlefield began to invade your dreams.",
+          mesaj: "You crushed the enemy! A hero, but those young corpses now haunt your dreams.",
         },
         basarisizSonuc: {
-          mesaj: "The attack turned into a massacre. You lost your soldiers and you were defeated.",
+          mesaj: "The attack became a massacre. You lost your soldiers and the battle.",
         },
       },
       {
-        metin: "Fall back! I cannot sacrifice my soldiers.",
+        metin: "Fall back! I won't sacrifice my men.",
         basariliSonuc: {
-          mesaj: "The enemy advanced; it looks like you lost the battle. But your soldiers are grateful to you; you saved their lives.",
+          mesaj: "The enemy advanced; the battle seems lost. But your soldiers owe you their lives.",
         },
         basarisizSonuc: {
-          mesaj: "The king declared you a coward. You are at risk of being stripped of your ranks.",
+          mesaj: "The king branded you a coward. Your ranks are at risk.",
         },
       },
     ],
   },
   rutbe_lonca_ustasi_karari: {
     baslik: "The Power of the Guild Master",
-    metin: "You are now the trade ruler of the city. You can put a monopoly on every good that enters the market and crush the small tradesmen, or share the goods with them and become the people's champion.",
+    metin: "You now rule the city's trade. You can monopolize every good and crush the small traders, or share the goods and become the people's champion.",
     secenekler: [
       {
-        metin: "Set up a monopoly, pull all goods into your own warehouses.",
+        metin: "Set up a monopoly; pull all goods into your warehouses.",
         basariliSonuc: {
-          mesaj: "You exploited everything in the market. While small tradesmen go bankrupt, you build towers of gold.",
+          mesaj: "You exploited the whole market. While small traders go bust, you build towers of gold.",
         },
         basarisizSonuc: {
-          mesaj: "The small tradesmen revolted and burned your warehouses! Greed ended in a great fire.",
+          mesaj: "The small traders revolted and burned your warehouses! Greed ended in a great fire.",
         },
       },
       {
-        metin: "Distribute the goods fairly, protect the small tradesmen.",
+        metin: "Distribute fairly; protect the small traders.",
         basariliSonuc: {
-          mesaj: "Every tradesman in the city prays for you. You did not grow rich, but you became the most loved and respected man in the city.",
+          mesaj: "The city's tradesmen pray for you. Not richer, but the most loved man in town.",
         },
         basarisizSonuc: {
-          mesaj: "You tried to be fair, but the other big merchants shut you out from among them.",
+          mesaj: "You tried to be fair, but the big merchants shut you out.",
         },
       },
     ],
   },
   rutbe_basrahip_hukmu: {
     baslik: "Divine Justice",
-    metin: "The richest noble in the city committed a great murder in your temple. You can excommunicate him and send him to execution, or forgive his sin in exchange for a hefty 'church donation'.",
+    metin: "The city's richest noble committed murder in your temple. Excommunicate him to execution, or pardon him for a hefty 'church donation'.",
     secenekler: [
       {
         metin: "God's justice is not for sale! Excommunicate him.",
         basariliSonuc: {
-          mesaj: "The noble was clapped in chains in shock. The people applaud your courage on their feet!",
+          mesaj: "The noble was chained in shock. The people give your courage a standing ovation!",
         },
         basarisizSonuc: {
-          mesaj: "The noble's family did not accept this. One night they sent armed men to your temple. Your life is in danger!",
+          mesaj: "The noble's family sent armed men to your temple one night. Your life is in danger!",
         },
       },
       {
-        metin: "Quietly accept the donation and cleanse his sin.",
+        metin: "Quietly take the donation; cleanse his sin.",
         basariliSonuc: {
-          mesaj: "Chests of gold were carried into your cellar. The noble is free. The people look at you with hatred, and you cannot look at yourself in the mirror.",
+          mesaj: "Gold filled your cellar; the noble walks free. People glare; you can't face the mirror.",
         },
         basarisizSonuc: {
-          mesaj: "It came out that you took a bribe. The other priests rose up, your title was shaken.",
+          mesaj: "Your bribe came out. The other priests rose up; your title is shaken.",
         },
       },
     ],
   },
   asker_birlik_kaynak: {
     baslik: "The Unit's Rations",
-    metin: "You were allotted gold for your unit's winter provisions and swords. You can either really spend this money on the soldiers, or pocket it with false records.",
+    metin: "Gold was allotted for your unit's winter provisions and swords. You can truly spend it on the troops, or pocket it with false records.",
     secenekler: [
       {
-        metin: "Spend all the money on the soldiers' training and their stomachs.",
+        metin: "Spend it all on training and rations.",
         basariliSonuc: {
-          mesaj: "Your soldiers are fed, their swords sharp. In battle they will stand behind you like a wall.",
+          mesaj: "Your soldiers are fed, their swords sharp. They'll stand behind you like a wall.",
         },
         basarisizSonuc: {
-          mesaj: "The merchants cheated you and the provisions came up short, but your intentions were good.",
+          mesaj: "Merchants cheated you and supplies came up short, but your intent was good.",
         },
       },
       {
-        metin: "Alter the record and keep the gold for yourself.",
+        metin: "Falsify the record; keep the gold.",
         basariliSonuc: {
-          mesaj: "You stashed the gold under your bed. Your soldiers drill with rusty swords; you don't care.",
+          mesaj: "You stashed the gold under your bed. Your men drill with rusty swords; you don't care.",
         },
         basarisizSonuc: {
-          mesaj: "The inspector found the false records! You were court-martialed and your reputation was destroyed.",
+          mesaj: "The inspector found the false records! Court-martialed, reputation destroyed.",
         },
       },
     ],
   },
   komik_kecinin_intikami: {
     baslik: "The Devilish Goat",
-    metin: "Your neighbor's psychopath goat with the strange stare snapped its rope and charged straight into your garden, right among your laundry. The whole neighborhood is at their windows watching you.",
+    metin: "Your neighbor's wild-eyed goat snapped its rope and charged into your garden, right through your laundry. The whole street watches from the windows.",
     secenekler: [
       {
-        metin: "Let out a war cry and leap onto the goat!",
+        metin: "Let out a war cry, leap on the goat!",
         basariliSonuc: {
-          mesaj: "You soared through the air and pinned the goat to the ground by its horns! The neighborhood applauds you wildly.",
+          mesaj: "You flew through the air and pinned the goat by its horns! The street applauds wildly.",
         },
         basarisizSonuc: {
-          mesaj: "The goat juked you with a perfect move and sent you flying into a mud puddle. On top of that it ate your trousers.",
+          mesaj: "The goat flung you into a mud puddle. Then it ate your trousers.",
         },
       },
       {
-        metin: "Don't get involved, run inside and lock the door.",
+        metin: "Stay out of it; run inside, lock the door.",
         basariliSonuc: {
-          mesaj: "The goat chewed on your laundry a bit, then got bored and left. Your pride is hurt but you are unharmed.",
+          mesaj: "The goat chewed your laundry, got bored, and left. Pride hurt, body fine.",
         },
         basarisizSonuc: {
-          mesaj: "The goat wrecked the garden, and on top of that broke a window with its horns.",
+          mesaj: "The goat wrecked the garden and broke a window with its horns.",
         },
       },
     ],
   },
   ruh_uykusuzluk_hayaletleri: {
     baslik: "Sleepless Nights",
-    metin: "You have not been able to sleep for days. When your eyelids grow heavy, shapes that are not there appear on the wall, the faces of dead old friends (or enemies).",
+    metin: "You haven't slept for days. When your eyelids droop, shapes appear on the wall: the faces of dead friends (or enemies).",
     secenekler: [
       {
-        metin: "Go to the priests/imams and ask for prayers and an amulet.",
+        metin: "Go to the priests/imams for prayers and an amulet.",
         basariliSonuc: {
-          mesaj: "The prayers and incense worked. At last you had an unbroken sleep.",
+          mesaj: "Prayers and incense worked. At last, unbroken sleep.",
         },
         basarisizSonuc: {
-          mesaj: "The amulets did not work; the ghosts kept smiling at you from the walls.",
+          mesaj: "The amulets failed; the ghosts kept grinning from the walls.",
         },
       },
       {
-        metin: "I'm losing my mind! I have to manage on my own.",
+        metin: "I'm losing my mind! I must cope alone.",
         basariliSonuc: {
-          mesaj: "In time you fainted from exhaustion and your brain reset itself.",
+          mesaj: "You passed out from exhaustion and your mind reset.",
         },
         basarisizSonuc: {
-          mesaj: "From sleeplessness you fell down the stairs. The exhaustion is tearing you apart physically too.",
+          mesaj: "Sleepless, you fell down the stairs. Exhaustion is wrecking your body too.",
         },
       },
     ],
   },
   halk_ahlaksiz_dedigodusu: {
     baslik: "The People's Hatred",
-    metin: "Your reputation and your morals are in the gutter. As you walk down the street people spit at you; the tradesmen don't want to sell you goods.",
+    metin: "Your reputation and morals are in the gutter. People spit at you in the street; tradesmen won't sell to you.",
     secenekler: [
       {
-        metin: "Hand out free provisions in the square to fix your reputation.",
+        metin: "Hand out free provisions in the square.",
         basariliSonuc: {
-          mesaj: "Your generosity reached people's stomachs. Those who used to spit now call you a 'benefactor'.",
+          mesaj: "Your generosity reached their stomachs. Those who spat now call you 'benefactor'.",
         },
         basarisizSonuc: {
-          mesaj: "The people took the provisions but still kept cursing you behind your back. Your money was wasted.",
+          mesaj: "They took the food but kept cursing you behind your back. Wasted money.",
         },
       },
       {
-        metin: "Hold your head high, don't care about this herd.",
+        metin: "Hold your head high; ignore the herd.",
         basariliSonuc: {
-          mesaj: "You don't care what they think. You went on your hard and merciless way.",
+          mesaj: "You don't care what they think. You carried on, hard and merciless.",
         },
         basarisizSonuc: {
-          mesaj: "Though you pretended not to care, a thrown rotten tomato hit you in the head. You are collapsing inside.",
+          mesaj: "Feigning indifference, you took a rotten tomato to the head. Inside, you're crumbling.",
         },
       },
     ],
   },
   "halk_tanınmayan_yabanci": {
     baslik: "The Invisible Man",
-    metin: "You have been in this land for years but you are still treated like a ghost. State doors close in your face, negotiations turn out against you.",
+    metin: "You've lived here for years but are still treated like a ghost. State doors close in your face, deals go against you.",
     secenekler: [
       {
-        metin: "Show up at a big festival and draw all eyes to yourself.",
+        metin: "Appear at a big festival; draw all eyes.",
         basariliSonuc: {
-          mesaj: "Thanks to your showy clothes and your generosity, some people finally learned your name!",
+          mesaj: "Thanks to your flashy clothes and generosity, people finally learned your name!",
         },
         basarisizSonuc: {
-          mesaj: "Your efforts went unnoticed. In the crowd you are just a nobody with a lighter purse.",
+          mesaj: "Your efforts went unnoticed. In the crowd you're a nobody with a lighter purse.",
         },
       },
       {
-        metin: "Enjoy the invisibility, do your work quietly.",
+        metin: "Enjoy the invisibility; work quietly.",
         basariliSonuc: {
-          mesaj: "Being invisible is staying out of trouble. No one asked you for tax or bribes.",
+          mesaj: "Being invisible means staying out of trouble. No one asked for tax or bribes.",
         },
         basarisizSonuc: {
-          mesaj: "Being ignored, day by day, turned into a heavy burden crushing your spirit.",
+          mesaj: "Being ignored became a weight that crushes your spirit day by day.",
         },
       },
     ],
   },
   sezgi_gozlemci_yardimci: {
     baslik: "The Eye of the Dark Streets",
-    metin: "A sharp-eyed (but dangerous) informant who hears everything on the streets, who knows who sleeps with whom and who sells goods for how much, offers to work for you.",
+    metin: "A sharp-eyed (but dangerous) informant who hears everything on the streets and knows who sells what for how much offers to work for you.",
     secenekler: [
       {
-        metin: "Hire him, let the city's secrets be yours.",
+        metin: "Hire him; make the city's secrets yours.",
         basariliSonuc: {
-          mesaj: "You hired the informant. Now you can predict in advance what your rivals will do on the moves you make.",
+          mesaj: "You hired the informant. Now you can anticipate your rivals' moves.",
         },
         basarisizSonuc: {
-          mesaj: "The man took the money and vanished the next day. You were swindled.",
+          mesaj: "The man took the money and vanished next day. Swindled.",
         },
       },
       {
-        metin: "My own instincts are enough for me, refuse.",
+        metin: "My instincts suffice; refuse.",
         basariliSonuc: {
-          mesaj: "You were right not to trust such dark types. You carried on your business with your own wits.",
+          mesaj: "You were right to distrust such types. You carried on by your own wits.",
         },
         basarisizSonuc: {
-          mesaj: "Later, when you lost a tender blindly, you said 'I wish I had hired that man'.",
+          mesaj: "Later, losing a tender blindly, you thought, 'I should have hired him.'",
         },
       },
     ],
   },
   eksen_ani_karar_ani: {
     baslik: "No Time to Delay",
-    metin: "A suspicious fire broke out at the governor's mansion, and inside a huge chest of gold sits undefended. The roof will collapse in a few minutes. No time to think!",
+    metin: "A suspicious fire broke out at the governor's mansion; a huge chest of gold sits defenseless inside. The roof will collapse in minutes. No time to think!",
     secenekler: [
       {
         metin: "Rush inside and grab that chest!",
         basariliSonuc: {
-          mesaj: "You came out through the flames with the chest! You have burns, but you added a fortune to your fortune.",
+          mesaj: "You emerged from the flames with the chest! Burned, but richer by a fortune.",
         },
         basarisizSonuc: {
-          mesaj: "A beam fell on your head! They carried you out like a corpse; you were in a coma for days.",
+          mesaj: "A beam fell on your head! They carried you out for dead; you lay in a coma for days.",
         },
       },
       {
         metin: "This is madness! Watch from a distance.",
         basariliSonuc: {
-          mesaj: "As the building collapsed before your eyes you said 'good thing I didn't go in'. It's not worth your life.",
+          mesaj: "As it collapsed you said, 'Good thing I stayed out.' Gold isn't worth your life.",
         },
         basarisizSonuc: {
           mesaj: "Not used.",
@@ -475,296 +475,296 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
   },
   eksen_dusmanin_insafina_kaldi: {
     baslik: "The Broken Enemy",
-    metin: "The man who tormented you for years is now completely bankrupt, on his knees, begging you for a scrap of mercy. You can draw your sword or give him bread.",
+    metin: "The man who tormented you for years is bankrupt now, on his knees begging mercy. You can draw your sword or give him bread.",
     secenekler: [
       {
-        metin: "Pity him, put gold in his pocket and tell him to go.",
+        metin: "Pity him; put gold in his pocket; send him off.",
         basariliSonuc: {
-          mesaj: "You refused to drink the poison of revenge. Your enemy kissed your hands weeping and left the city.",
+          mesaj: "You refused the poison of revenge. Weeping, he kissed your hands and left the city.",
         },
         basarisizSonuc: {
-          mesaj: "The moment you turned your back on him he stabbed a dagger into it! Your mercy nearly killed you.",
+          mesaj: "The moment you turned, he stabbed you in the back! Your mercy nearly killed you.",
         },
       },
       {
-        metin: "The price of the past is paid in blood! Punish him.",
+        metin: "The past is paid for in blood! Punish him.",
         basariliSonuc: {
-          mesaj: "You showed no mercy and sent him to the dungeons/death. No one in the city dares even speak your name anymore.",
+          mesaj: "You showed no mercy and sent him to the dungeon/death. No one dares speak your name.",
         },
         basarisizSonuc: {
-          mesaj: "Your cruelty made the people revolt; they stopped you and took the man from your hands.",
+          mesaj: "Your cruelty roused the people; they stopped you and took the man.",
         },
       },
     ],
   },
   ekip_referansli_yardimci: {
     baslik: "A Master Swordsman",
-    metin: "A master swordsman/bodyguard with battle experience and a scarred face offers to enter your service. The advance he wants is quite steep, but he swears to protect you from everything.",
+    metin: "A scarred, battle-hardened swordsman/bodyguard offers his service. His advance is steep, but he swears to protect you from everything.",
     secenekler: [
       {
-        metin: "I'm hiring you, be my shadow.",
+        metin: "You're hired; be my shadow.",
         basariliSonuc: {
-          mesaj: "The man started work. His presence alone was enough to keep the jackals around you away.",
+          mesaj: "He started work. His presence alone kept the jackals away.",
         },
         basarisizSonuc: {
-          mesaj: "The night he took the advance the man got drunk, lost it at gambling, and fled the city!",
+          mesaj: "The night he got the advance he got drunk, gambled it away, and fled the city!",
         },
       },
       {
-        metin: "You're too expensive, I don't need protection.",
+        metin: "Too expensive; I need no guard.",
         basariliSonuc: {
-          mesaj: "You refused the offer. You keep your money in your pocket and go on walking around alone.",
+          mesaj: "You refused. Money in your pocket, you keep walking alone.",
         },
         basarisizSonuc: {
-          mesaj: "Shortly after the man left, two thugs cornered you; 'it was obvious you had no guard,' they smirked.",
+          mesaj: "Right after he left, two thugs cornered you; 'clearly unguarded,' they smirked.",
         },
       },
     ],
   },
   ekip_ucuz_belirsiz_yardimci: {
     baslik: "The Street Orphan",
-    metin: "A youth raised on the streets, scrawny but with a sharp look, grabbed your leg. 'Give me a bowl of soup and I'll do any job for you,' he says. Whether there is a talent in him or just a thief is unclear.",
+    metin: "A scrawny, sharp-eyed street boy clings to your leg: 'A bowl of soup and I'll do any job.' Talent or thief, who knows.",
     secenekler: [
       {
         metin: "Come on then, try your luck.",
         basariliSonuc: {
-          mesaj: "You took the boy on. In his first days he seems very loyal to you; time will show his real talent.",
+          mesaj: "You took the boy in. He seems loyal at first; time will show his true talent.",
         },
         basarisizSonuc: {
-          mesaj: "On the very first day the boy stole 10 gold from your strongbox and vanished.",
+          mesaj: "On day one the boy stole 10 gold from your strongbox and vanished.",
         },
       },
       {
-        metin: "Street rat! Stay away from me.",
+        metin: "Street rat! Stay away.",
         basariliSonuc: {
-          mesaj: "You shoved the boy aside and went on your way. Your conscience stung a little.",
+          mesaj: "You shoved him aside and walked on. Your conscience stung a little.",
         },
         basarisizSonuc: {
-          mesaj: "While chasing the boy off you noticed he had lifted a few coins from your pocket with quick fingers.",
+          mesaj: "Chasing him off, you noticed he'd lifted a few coins from your pocket.",
         },
       },
     ],
   },
   ekip_yeni_taniski: {
     baslik: "A Traveling Companion",
-    metin: "A traveler you met at an inn during a journey was very impressed by your goals. He wants to walk the same road as you. He is knowledgeable but hides his past.",
+    metin: "A traveler you met at an inn is impressed by your goals and wants to walk with you. Knowledgeable, but hides his past.",
     secenekler: [
       {
-        metin: "You can walk beside me.",
+        metin: "You may walk beside me.",
         basariliSonuc: {
-          mesaj: "He picked up his pack and followed you. The stories he tells make your journey far more bearable.",
+          mesaj: "He shouldered his pack and followed. His stories make the road bearable.",
         },
         basarisizSonuc: {
-          mesaj: "While you slept at night you noticed the man packing his things and leaving quietly.",
+          mesaj: "While you slept, you noticed him packing and slipping away.",
         },
       },
       {
         metin: "I walk my road alone.",
         basariliSonuc: {
-          mesaj: "You parted ways at the inn. Walking alone is always the safest.",
+          mesaj: "You parted at the inn. Walking alone is safest.",
         },
         basarisizSonuc: {
-          mesaj: "The rest of the road was silent and long; you couldn't help thinking of the stories the traveler would have told.",
+          mesaj: "The rest of the road was long and silent; you missed the traveler's stories.",
         },
       },
     ],
   },
   ekip_tehlikeli_kervan_yolu: {
     baslik: "The Cliff Pass",
-    metin: "You have to bring a very valuable cargo through the 'Cliff Pass'. That pass is the haunt of bandits and predators. Will you risk your crew, or take the lead yourself?",
+    metin: "A very valuable cargo must cross 'Cliff Pass', haunt of bandits and predators. Risk your crew, or lead it yourself?",
     secenekler: [
       {
-        metin: "I'll take this risk! Lead the caravan.",
+        metin: "I'll take the risk! Lead the caravan.",
         basariliSonuc: {
-          mesaj: "With your sword and your courage you brought the caravan through the cliff! The gain is enormous.",
+          mesaj: "With sword and courage you brought the caravan through! Enormous profit.",
         },
         basarisizSonuc: {
-          mesaj: "The bandits ambushed you! You took an arrow in the belly, the goods were plundered.",
+          mesaj: "Bandits ambushed you! An arrow in the belly, the goods plundered.",
         },
       },
       {
-        metin: "Order {ekip}: 'Bring the cargo through safe and sound.'",
+        metin: "Order {ekip}: 'Bring the cargo through safe.'",
         basariliSonuc: {
-          mesaj: "Your crew was drenched in sweat but brought the goods through successfully. This is leadership.",
+          mesaj: "Your crew arrived drenched in sweat but successful. That is leadership.",
         },
         basarisizSonuc: {
-          mesaj: "Days passed... Neither {ekip} nor the cargo came back. The wilderness swallowed them.",
+          mesaj: "Days passed... neither {ekip} nor the cargo returned. The wilds swallowed them.",
         },
       },
     ],
   },
   ekip_riskli_gorev_teklifi: {
     baslik: "The Poison Courier",
-    metin: "A mysterious man from the palace handed you a sealed letter. 'Get this to the enemy fortress. If you're caught, we don't know you,' he said. A very dangerous mission.",
+    metin: "A mysterious man from the palace hands you a sealed letter: 'Deliver this to the enemy fortress. If caught, we don't know you.' A deadly mission.",
     secenekler: [
       {
         metin: "I carry the secret. Go yourself.",
         basariliSonuc: {
-          mesaj: "In the dark of night you delivered the letter. The palace now owes you a great deal.",
+          mesaj: "In the dead of night you delivered the letter. The palace owes you much.",
         },
         basarisizSonuc: {
-          mesaj: "The border guards caught you! You were tortured; you barely escaped with your life.",
+          mesaj: "Border guards caught you! Tortured, you barely escaped alive.",
         },
       },
       {
-        metin: "Let it be handled in the shadows, send {ekip}.",
+        metin: "Handle it in the shadows; send {ekip}.",
         basariliSonuc: {
-          mesaj: "{ekip} completed the mission in your name and returned safely.",
+          mesaj: "{ekip} completed the mission in your name and returned safe.",
         },
         basarisizSonuc: {
-          mesaj: "The helper you sent was caught at the border and hanged! Their blood is on your hands.",
+          mesaj: "Your man was caught at the border and hanged! His blood is on your hands.",
         },
       },
     ],
   },
   ekip_koruma_kiralama: {
     baslik: "A Dark Shadow",
-    metin: "Your enemies in the city are growing. In the corner of the inn, a mercenary with a scarred face offers you his services. He praises himself a lot, but only time will tell how skilled he really is.",
+    metin: "Your enemies in the city are multiplying. In a corner of the inn, a scarred mercenary offers his services. He boasts, but only time will show his skill.",
     secenekler: [
       {
         metin: "Hire him as your bodyguard.",
         basariliSonuc: {
-          mesaj: "You paid the money. Now he follows you like a shadow.",
+          mesaj: "You paid. Now he follows like a shadow.",
         },
         basarisizSonuc: {
-          mesaj: "You gave the money but the man vanished at midnight.",
+          mesaj: "You paid, but the man vanished at midnight.",
         },
       },
       {
-        metin: "Refuse, fend for yourself.",
+        metin: "Refuse; fend for yourself.",
         basariliSonuc: {
           mesaj: "You refused the offer.",
         },
         basarisizSonuc: {
-          mesaj: "It was as if the man you refused whispered to the three people waiting for you at the exit; you were ambushed in a dark alley.",
+          mesaj: "The man you refused seemed to tip off those waiting; you were ambushed in a dark alley.",
         },
       },
     ],
   },
   ekip_koruma_testi: {
     baslik: "The Test of Loyalty",
-    metin: "In a night alley three thugs blocked your way. Their knives glint. You ordered your bodyguard to step forward and handle it. Now it is time to see his hidden talent.",
+    metin: "Three thugs blocked your way in a night alley, knives gleaming. You told your bodyguard to step up and handle it. Time to see his hidden talent.",
     secenekler: [
       {
         metin: "Wait for your bodyguard to fight.",
         basariliSonuc: {
-          mesaj: "Your bodyguard moved like lightning and laid all three flat! The man you hired is a real killing machine.",
+          mesaj: "Your bodyguard moved like lightning and dropped all three! A real killing machine.",
         },
         basarisizSonuc: {
-          mesaj: "Your bodyguard saw the knives, took fright, and ran! The thugs beat you savagely and took your money.",
+          mesaj: "Your bodyguard saw the knives and fled! The thugs beat you and took your money.",
         },
       },
     ],
   },
   ekip_tuccar_yaveri: {
     baslik: "A Clever Apprentice",
-    metin: "Your business is growing and you are thinking of hiring a clever-looking youth as an assistant to keep the accounts. He could earn you great sums or empty your strongbox.",
+    metin: "Your business is growing; you consider hiring a clever-looking youth to keep accounts. He could earn you a fortune or empty your coffer.",
     secenekler: [
       {
         metin: "Make him your accountant.",
         basariliSonuc: {
-          mesaj: "The youth sat down at his desk and began organizing the ledgers.",
+          mesaj: "The youth sat at his desk and began sorting the ledgers.",
         },
         basarisizSonuc: {
-          mesaj: "The youth vanished the moment he collected his first week's wages. A few pages of the ledgers went with him.",
-          detay: "Clever, yes — but at the wrong things.",
+          mesaj: "The youth vanished with his first week's wages, and a few ledger pages with him.",
+          detay: "Clever, yes — at the wrong things.",
         },
       },
       {
         metin: "Keep doing the work yourself.",
         basariliSonuc: {
-          mesaj: "The workload wore on your health a bit, but at least the key to the strongbox is yours.",
+          mesaj: "The workload wore on you, but the strongbox key is yours.",
         },
         basarisizSonuc: {
-          mesaj: "A winter buried in the ledgers wore you down badly; your eyes are blurred, your back stiff.",
-          detay: "Carrying it all alone has its own price.",
+          mesaj: "A winter buried in ledgers wore you out; blurred eyes, stiff back.",
+          detay: "Carrying it all alone has a price.",
         },
       },
     ],
   },
   ekip_tuccar_yaveri_testi: {
     baslik: "A Big Shipment",
-    metin: "While you were out of town the management of a large shipment of goods fell to your accountant. When you got back you look at the state of the strongbox.",
+    metin: "While you were out of town, your accountant ran a big shipment. Back home, you look at the strongbox.",
     secenekler: [
       {
         metin: "Check the accounts.",
         basariliSonuc: {
-          mesaj: "You couldn't believe your eyes! Your assistant made brilliant use of market gaps and doubled your profit.",
+          mesaj: "Unbelievable! Your assistant exploited market gaps and doubled the profit.",
         },
         basarisizSonuc: {
-          mesaj: "The strongbox is bone empty! Your assistant took all the cash and fled at midnight on a ship.",
+          mesaj: "The strongbox is bare! Your assistant took the cash and fled by ship at midnight.",
         },
       },
     ],
   },
   hizip_asker_saflasma: {
     baslik: "A Split in the Barracks",
-    metin: "The army is seething inside. The 'Old Guard' defends the general's rigid and noble rules, while the 'New Order' wants a root reform based on merit. Soon the weapons may turn on each other.",
+    metin: "The army seethes. The 'Old Guard' defends the general's rigid, noble rules; the 'New Order' wants merit-based reform. Weapons may turn on each other.",
     secenekler: [
       {
-        metin: "Our traditions keep us alive! Join the Old Guard.",
+        metin: "Tradition keeps us alive! Join the Old Guard.",
         basariliSonuc: {
-          mesaj: "You took your place beside the noble commanders. The traditionalists embraced you.",
+          mesaj: "You sided with the noble commanders. The traditionalists embraced you.",
         },
         basarisizSonuc: {
-          mesaj: "You joined, but the young upstarts look at you as an enemy.",
+          mesaj: "You joined, but the young upstarts see you as an enemy.",
         },
       },
       {
-        metin: "This rotten order must change! Join the New Order.",
+        metin: "The rotten order must change! Join the New Order.",
         basariliSonuc: {
-          mesaj: "You entered the reformers' ranks like a young lion. The winds of change are blowing!",
+          mesaj: "You joined the reformers like a young lion. Winds of change blow!",
         },
         basarisizSonuc: {
-          mesaj: "You joined, but the noble general has already put your name on the blacklist.",
+          mesaj: "You joined, but the noble general blacklisted your name.",
         },
       },
     ],
   },
   hizip_tuccar_saflasma: {
     baslik: "Who Rules the Market?",
-    metin: "The chamber of commerce has split in two. The Harbor Guild, backed by the nobility, defends monopoly; the Market Union defends the small tradesmen's right to free competition. If you don't pick a side you could go bankrupt.",
+    metin: "Trade split in two. The noble-backed Harbor Guild defends monopoly; the Market Union, free competition. Pick no side and you may go bankrupt.",
     secenekler: [
       {
         metin: "Wealth and power! Join the Harbor Guild.",
         basariliSonuc: {
-          mesaj: "The noble merchants took you in among them. Tax cuts started at once.",
+          mesaj: "The noble merchants took you in. Tax cuts began at once.",
         },
         basarisizSonuc: {
-          mesaj: "You joined, but the small tradesmen turned their backs on you.",
+          mesaj: "You joined, but the small traders turned their backs.",
         },
       },
       {
         metin: "The people's power! Join the Market Union.",
         basariliSonuc: {
-          mesaj: "You became the tradesmen's champion. The man on the street now shops at your stall.",
+          mesaj: "You became the tradesmen's champion. The street now buys from your stall.",
         },
         basarisizSonuc: {
-          mesaj: "You joined, but the nobility slapped heavy customs duties on your goods.",
+          mesaj: "You joined, but the nobles slapped heavy duties on your goods.",
         },
       },
     ],
   },
   hizip_din_saflasma: {
     baslik: "The Holy Schism",
-    metin: "The centers of faith have split in two. The Traditionalists want to bring back the ancient and rigid laws, while the Reformists demand that religion be translated into the people's language and enlightenment. Which side are you on?",
+    metin: "Faith split in two. Traditionalists want the ancient, rigid laws; Reformists want religion in the people's tongue. Which side are you on?",
     secenekler: [
       {
-        metin: "The rules cannot be bent! Join the Traditionalists.",
+        metin: "Rules can't bend! Join the Traditionalists.",
         basariliSonuc: {
-          mesaj: "The old bishops appreciated you. You are the guardian of ancient knowledge.",
+          mesaj: "The old bishops approved. You guard ancient knowledge.",
         },
         basarisizSonuc: {
-          mesaj: "The young congregation accused you of bigotry and left the temple.",
+          mesaj: "The young congregation called you a bigot and left the temple.",
         },
       },
       {
         metin: "Time for enlightenment! Join the Reformists.",
         basariliSonuc: {
-          mesaj: "The squares overflow to hear you. You became the voice of the new age.",
+          mesaj: "Squares overflow to hear you. You became the voice of a new age.",
         },
         basarisizSonuc: {
-          mesaj: "The Inquisition / High Council is threatening to accuse you of heresy.",
+          mesaj: "The Inquisition / High Council threatens to charge you with heresy.",
         },
       },
     ],
@@ -772,330 +772,330 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
 
   hizip_zanaatkar_saflasma: {
     baslik: "The Guild Is Torn Apart",
-    metin: "After years at the workshop, you saw the guild's real divide: the Guild Council defends the old ways, strict oversight and fixed prices; the Free Masters say break free of the guild and set your own price. You have to pick a side now.",
+    metin: "The guild split: the Guild Council defends old ways and fixed prices; the Free Masters, setting your own. You must pick a side.",
     secenekler: [
       {
-        metin: "Order and the honor of the craft! Join the Guild Council.",
+        metin: "Order and craft honor! Join the Guild Council.",
         basariliSonuc: {
-          mesaj: "The master foremen took you in. The guild's protection is behind you now too.",
+          mesaj: "The master foremen embraced you. The guild's protection is behind you now.",
         },
         basarisizSonuc: {
-          mesaj: "You joined, but the younger journeymen shut you out as an old fogey.",
+          mesaj: "You joined, but the young journeymen shunned you as a fogey.",
         },
       },
       {
-        metin: "My labor's worth is mine to set! Join the Free Masters.",
+        metin: "My labor's worth is mine! Join the Free Masters.",
         basariliSonuc: {
-          mesaj: "You started setting your own prices; your purse swelled within the first week.",
+          mesaj: "You began setting your own prices; your purse swelled within a week.",
         },
         basarisizSonuc: {
-          mesaj: "You joined, but the guild cut you off from supplies — the first months were rough.",
+          mesaj: "You joined, but the guild cut your supplies; the first months were rough.",
         },
       },
     ],
   },
   dunya_savas_biter: {
     baslik: "The End of the Bloody Mud",
-    metin: "With the treaty signed in {yil}, the war finally ended. Comrades returning from the front missing limbs and with vacant stares are looking for work. The treasury is bone dry, the streets are full of veterans. Where will your place be in the new world order?",
+    metin: "The treaty of {yil} ended the war. Maimed comrades seek work. The treasury is dry, the streets full of veterans. Where is your place now?",
     secenekler: [
       {
-        metin: "Gather your old comrades, build a support network for veterans.",
+        metin: "Gather old comrades; build a veterans' support network.",
         basariliSonuc: {
-          mesaj: "You found work and food for hundreds of veterans. In the city you have a huge unofficial army more loyal to you than to their own fathers.",
-          detay: "Most of these men can't read or write, but they'd give their lives for you.",
+          mesaj: "You found work and bread for hundreds of veterans. Your army is loyal to the death.",
+          detay: "Most can't read, but they'd die for you.",
         },
         basarisizSonuc: {
-          mesaj: "You couldn't find the work you promised. Your old comrades-in-arms knocked on your door and accused you of 'peddling dreams'.",
-          detay: "You will never be able to look a soldier in the face again.",
+          mesaj: "You couldn't find the promised work. Old comrades accused you of 'peddling dreams'.",
+          detay: "You can never face a soldier again.",
         },
       },
       {
-        metin: "This is the chance! Snap up the ownerless lands left by the war for a pittance.",
+        metin: "Seize the chance! Snap up ownerless lands cheap.",
         basariliSonuc: {
-          mesaj: "You bought the fields of the fallen for a few coins and seized their deeds. The war is over and you are a landlord.",
-          detay: "The widows of the former owners sometimes spit in your face at the market, while you count your gold.",
+          mesaj: "You bought the fallen's fields for pennies and took their deeds. You're a landlord now.",
+          detay: "Widows spit at you in the market; you count gold.",
         },
         basarisizSonuc: {
-          mesaj: "The real heirs of most of the lands you bought turned up. The court annulled your deeds.",
-          detay: "The property of the dead did not bless you.",
+          mesaj: "The real heirs of the lands you bought appeared. The court annulled your deeds.",
+          detay: "The dead's property brought you no luck.",
         },
       },
       {
-        metin: "Sell the names of old soldiers who might revolt to the new government.",
+        metin: "Sell the names of possible rebel veterans to the state.",
         basariliSonuc: {
-          mesaj: "You handed over the list. That night dozens of your old comrades in the city were taken from their beds and thrown in the dungeons. Your purse is full but your hands are bloody.",
-          detay: "You are now a secret hound of the new state.",
+          mesaj: "You gave the list. That night dozens of comrades were jailed. Purse full, hands bloody.",
+          detay: "You're now the new state's secret hound.",
         },
         basarisizSonuc: {
-          mesaj: "The list leaked before it reached the new government. Your old comrades learned who informed on them; now you fear every shadow — and you got not a single coin from the state.",
-          detay: "Once the betrayal came out you lost both the money and your safety.",
+          mesaj: "The list leaked. Your comrades know who informed; you fear every shadow and got no coin.",
+          detay: "Once exposed, you lost money and safety.",
         },
       },
     ],
   },
   dunya_savas_cephe_cagrisi: {
     baslik: "The Death Order",
-    metin: "The war has entered its bloodiest phase. Your regiment is being driven straight into a redoubt that reeks of death. The commander is assigning duties in his tent at midnight. His eyes are on you.",
+    metin: "The war enters its bloodiest phase. Your regiment is sent into a death-reeking redoubt. The commander assigns duties at midnight, eyes on you.",
     secenekler: [
       {
-        metin: "I'll be first to march to death! Sign up for the assault column.",
+        metin: "I'll march to death first! Join the assault column.",
         basariliSonuc: {
-          mesaj: "You turned the redoubt into a bloodbath and were the first to fall into it! The general pinned a medal on your chest himself.",
-          detay: "You cannot forget the faces of the enemies you cut down that day, but the history books will write your name in gold letters.",
+          mesaj: "You made the redoubt a bloodbath, first man in! The general pinned a medal on you.",
+          detay: "You can't forget the faces; history notes your name.",
         },
         basarisizSonuc: {
-          mesaj: "A cannonball blew you into the air. For days you lay among the corpses, taken for dead and left there.",
-          detay: "When you woke you realized a part of your body was missing.",
+          mesaj: "A cannonball blew you skyward. For days you lay among corpses, left for dead.",
+          detay: "When you woke, part of your body was gone.",
         },
       },
       {
         metin: "Put me on the supply line, behind the front, commander.",
         basariliSonuc: {
-          mesaj: "Hiding behind the sacks of provisions, you got through the war safe and sound.",
-          detay: "Your returning comrades-in-arms no longer sit at the same table as you. That shame on your face will last your whole life.",
+          mesaj: "Hiding behind provision sacks, you survived the war unharmed.",
+          detay: "Returning comrades won't sit with you. Lifelong shame.",
         },
         basarisizSonuc: {
-          mesaj: "Enemy cavalry that broke through to the supply line put you to the sword. Your cowardice could not protect you.",
-          detay: "You both fled and barely escaped being taken prisoner.",
+          mesaj: "Enemy cavalry broke through the supply line and cut you down. Cowardice didn't save you.",
+          detay: "You fled and barely escaped capture.",
         },
       },
     ],
   },
   dunya_savas_maas_kesintisi: {
     baslik: "Hungry Soldiers",
-    metin: "As the war drags on the treasury has run dry. Not a single silver coin has been paid in three months. The soldiers' boots are holed, their bellies empty. Whispers of mutiny go around the barracks.",
+    metin: "As the war dragged on, the treasury ran dry. Not one silver coin in three months. Boots are holed, bellies empty. Whispers of mutiny roam the barracks.",
     secenekler: [
       {
-        metin: "Be the ringleader! Take the petition and march to the general's tent.",
+        metin: "Be the ringleader! Take the petition to the general.",
         basariliSonuc: {
-          mesaj: "You slammed your fist on the table. The general, fearing mutiny, distributed the treasury's last money to you all. You are a legend!",
-          detay: "But the high command has filed you as a 'dangerous rebel'.",
+          mesaj: "You slammed your fist down. Fearing mutiny, the general paid the last coin. A legend!",
+          detay: "But high command filed you as a 'dangerous rebel'.",
         },
         basarisizSonuc: {
-          mesaj: "The general didn't even listen to you. You were sentenced to the lash for inciting mutiny and thrown in the dungeon.",
-          detay: "The soldiers behind you took fright and sold you out. You were left alone.",
+          mesaj: "The general ignored you. Flogged for inciting mutiny, you were jailed.",
+          detay: "The men behind you took fright and sold you out.",
         },
       },
       {
-        metin: "Say 'you're right', but convince them to plunder the nearby villages.",
+        metin: "Say 'you're right', but urge them to plunder villages.",
         basariliSonuc: {
-          mesaj: "With the hungry soldiers you fell on the defenseless villages by night. You came back with gold and food, but the sky was blood-red that night.",
-          detay: "The face of that weeping village woman is in your nightmares now.",
+          mesaj: "With hungry soldiers you raided villages by night. Loot in hand, the sky burned red.",
+          detay: "The weeping village woman haunts your nightmares.",
         },
         basarisizSonuc: {
-          mesaj: "The villagers turned out tougher than you expected. With scythes and axes they ambushed the soldiers; you were badly wounded in the belly.",
-          detay: "Being beaten by villagers while plundering finished your reputation forever.",
+          mesaj: "The villagers proved tougher. Scythes and axes ambushed the soldiers; you were gutted.",
+          detay: "Being beaten by villagers ended your reputation.",
         },
       },
     ],
   },
   dunya_salgin_biter: {
     baslik: "The Retreat of Death",
-    metin: "After months of horror the plague is retreating. A third of the population is gone. There are ownerless houses, shops, and orphans wandering hungry in the streets. The city is being reborn.",
+    metin: "After months of horror the plague retreats. A third of the people are gone. Empty homes and shops, hungry orphans. The city is reborn.",
     secenekler: [
       {
         metin: "Seize the ownerless properties by forging deeds.",
         basariliSonuc: {
-          mesaj: "You moved into the dead's houses before their beds had cooled. You built a huge property empire, but in your nightmares you see those faces.",
+          mesaj: "You moved into the dead's homes. A vast empire; those faces haunt you.",
         },
         basarisizSonuc: {
-          mesaj: "The real heirs returned to town. You were tried for fraud, and the people tried to lynch you.",
+          mesaj: "The real heirs returned. You were tried for fraud and the mob tried to lynch you.",
         },
       },
       {
-        metin: "Gather the orphans who survived the plague and build them a home.",
+        metin: "Gather the plague orphans; build them a home.",
         basariliSonuc: {
-          mesaj: "The orphans grew up in your hands. They are no longer just apprentices but your most loyal children.",
-          detay: "Years later those children will carry your business empire on their backs.",
+          mesaj: "The orphans grew up in your hands: not just apprentices, but your loyal children.",
+          detay: "Years on, those children will carry your business.",
         },
         basarisizSonuc: {
-          mesaj: "Caring for the children drained you financially. Some stole and ran off, but still your conscience is at ease.",
+          mesaj: "Raising them drained you. Some stole and ran, but your conscience is clear.",
         },
       },
     ],
   },
   dunya_ekonomi_toparlanma: {
     baslik: "A New Era",
-    metin: "The state minted new money, the roads opened. The heavy dust of the crisis is lifting. Whoever makes the first bold move will skim the cream of the market.",
+    metin: "The state minted new coin, roads reopened. The crisis dust is settling. Whoever moves boldly first skims the cream.",
     secenekler: [
       {
-        metin: "Plunge into debt, buy up all the goods! Grow aggressively.",
+        metin: "Plunge into debt, buy up everything! Grow aggressively.",
         basariliSonuc: {
-          mesaj: "While your rivals still trembled with fear, you filled your warehouses. You caught the recovery wave and your fortune soared!",
+          mesaj: "While rivals trembled, you filled your warehouses. You caught the wave!",
         },
         basarisizSonuc: {
-          mesaj: "You rushed too much. When prices hit bottom once more, the debts throttled you. You lost everything you had.",
+          mesaj: "You rushed. When prices hit bottom again, the debts strangled you. You lost everything.",
         },
       },
       {
-        metin: "Be cautious, buy little by little.",
+        metin: "Be cautious; buy bit by bit.",
         basariliSonuc: {
-          mesaj: "You moved forward with risk-free, solid steps. You did not get rich, but your feet are planted firmly on the ground.",
+          mesaj: "You advanced with safe, solid steps. Not rich, but firmly planted.",
         },
         basarisizSonuc: {
-          mesaj: "You waited too long; by the time you entered the market the big wolves had snapped up every tender.",
+          mesaj: "You waited too long; by the time you entered, the big wolves had taken every tender.",
         },
       },
     ],
   },
   rusvet_teklif_geldi: {
     baslik: "The Offer Comes to You",
-    metin: "Now that you are someone whose word carries weight, for the first time you are the one being offered a bribe. A contractor says that if you put in a word somewhere, the tender will be his. The purse is on the table.",
+    metin: "As a man of influence, you're offered a bribe for the first time. A contractor says one word from you will win him the tender. The purse is on the table.",
     secenekler: [
       {
-        metin: "Take the purse, put in the word.",
+        metin: "Take the purse; put in the word.",
         basariliSonuc: {
-          mesaj: "The tender went to him, the purse to you. Nobody asked anything.",
-          detay: "How easy it was frightened you. A week later a second purse arrived, and you're thinking about when saying 'no' became impossible.",
+          mesaj: "The tender went to him, the purse to you. Nobody asked a thing.",
+          detay: "How easy it was scared you. A second purse will come.",
         },
         basarisizSonuc: {
-          mesaj: "The contractor was caught and the first thing he did was give your name.",
-          detay: "Your reputation collapsed. Everything you built over years fell apart with one statement; the bitterest part is that you can't even object, because it's true.",
+          mesaj: "The contractor was caught and named you first.",
+          detay: "Reputation collapsed; you can't object, it's true.",
         },
       },
       {
-        metin: "Refuse and put the offer on record.",
+        metin: "Refuse; put the offer on record.",
         basariliSonuc: {
-          mesaj: "You documented the offer; the contractor was tried, your name was cleared.",
-          detay: "Your honesty is capital now. People entrust you with sensitive work. And there's a man behind you who will never forgive you.",
+          mesaj: "You documented the offer; the contractor was tried, your name cleared.",
+          detay: "Honesty is capital now. One man will never forgive you.",
         },
         basarisizSonuc: {
-          mesaj: "You refused; the contractor first slandered you, then sabotaged your business.",
-          detay: "No one believed the offer existed, everyone believed in your feud. You did the right thing and you're paying for it alone.",
+          mesaj: "You refused; the contractor slandered you, then sabotaged your business.",
+          detay: "No one believed the offer. You did right, alone.",
         },
       },
       {
-        metin: "Neither take nor refuse — blackmail with the documents and take the tender for yourself.",
+        metin: "Neither: blackmail him and take the tender.",
         basariliSonuc: {
-          mesaj: "You threatened the contractor into withdrawing and took the tender yourself.",
-          detay: "You didn't take a bribe, you just turned weakness into money. Now you write the rules of this game.",
+          mesaj: "You threatened the contractor out and took the tender yourself.",
+          detay: "You turned weakness into money. You write the rules.",
         },
         basarisizSonuc: {
-          mesaj: "The contractor didn't bow to your blackmail and sent hired killers to your house.",
-          detay: "Trying to play cunning nearly cost you your life. All your connections were cut.",
+          mesaj: "The contractor defied your blackmail and sent hired killers to your house.",
+          detay: "Cunning nearly cost your life. Connections cut.",
         },
       },
     ],
   },
   rusvet_yargic: {
     baslik: "At the Courthouse Door",
-    metin: "You are a defendant in a case brought against you unjustly. Your lawyer leaned to your ear: 'I spoke with the judge's clerk. A certain sum means a certain verdict. Or we trust the court and wait.'",
+    metin: "You're a defendant in an unjust case. Your lawyer whispers: 'I spoke with the judge's clerk. A sum buys a verdict. Or we trust the court and wait.'",
     secenekler: [
       {
-        metin: "Pay the clerk, guarantee the verdict.",
+        metin: "Pay the clerk; secure the verdict.",
         basariliSonuc: {
-          mesaj: "The verdict came out in your favor; you were innocent anyway, but you bought it with money.",
-          detay: "You were in the right and you had to buy your rightness. Your faith in justice stayed behind in that courtroom.",
+          mesaj: "The verdict favored you; you were innocent anyway, but you bought it.",
+          detay: "You bought your rightness. Faith in justice died.",
         },
         basarisizSonuc: {
-          mesaj: "The clerk took the money, the judge knew nothing; you lost the money and got the sentence.",
-          detay: "You were swindled and couldn't even complain — because complaining would mean confessing you tried to bribe.",
+          mesaj: "The clerk took the money, the judge knew nothing; you lost money and got the sentence.",
+          detay: "Swindled; complaining would confess the bribe attempt.",
         },
       },
       {
-        metin: "Trust the court, defend yourself.",
+        metin: "Trust the court; defend yourself.",
         basariliSonuc: {
-          mesaj: "You made your own defense and were acquitted; the courtroom applauded you.",
-          detay: "The judge used the phrase 'the defendant's honesty' in the verdict. That phrase will make you stand out in the city for years.",
+          mesaj: "You defended yourself and were acquitted; the courtroom applauded.",
+          detay: "The verdict cites your honesty. It will help for years.",
         },
         basarisizSonuc: {
-          mesaj: "You were innocent but convicted; a few months in prison and a heavy fine.",
-          detay: "The months in prison finished your health and your business. When you got out your shop was closed and no one wanted to hire you.",
+          mesaj: "Innocent, yet convicted: months in prison and a heavy fine.",
+          detay: "Prison ruined health and trade. No one hired you.",
         },
       },
     ],
   },
   genel_sehir_secimi: {
     baslik: "The Crossroads",
-    metin: "Business is slow where you are. There are two options: the windy port city to the north — lively, risky, lucrative. Or the great market city to the south — crowded, competitive, stable.",
+    metin: "Business is slow here. North: a windy port city, lively, risky, lucrative. South: a great market city, crowded, competitive, stable.",
     secenekler: [
       {
         metin: "Move to the port city.",
         basariliSonuc: {
-          mesaj: "You found work quickly in the port; sea trade pays.",
-          detay: "The port never sleeps: ships, contraband goods, foreign tongues. Here money is made fast and lost fast.",
+          mesaj: "You found port work fast; sea trade pays.",
+          detay: "The port never sleeps. Money is made and lost fast.",
         },
         basarisizSonuc: {
-          mesaj: "Holding on in the port was harder than you thought; your first year passed at a loss.",
-          detay: "Everyone had a network and you had none. You started in a cheap room, amid damp and noise.",
+          mesaj: "Holding on in the port was hard; your first year ran at a loss.",
+          detay: "Everyone had a network; you didn't. A damp, cheap room.",
         },
       },
       {
         metin: "Move to the market city.",
         basariliSonuc: {
-          mesaj: "You set up a proper stall in the market city; business is slow but solid.",
-          detay: "Here everyone knows everyone and reputation is worth more than anything. You move slowly but you stand firm.",
+          mesaj: "You set up a steady stall in the market city; slow but solid.",
+          detay: "Everyone knows everyone; reputation is all. Slow, firm.",
         },
         basarisizSonuc: {
           mesaj: "The market was full; finding a spot took months and ate your savings.",
-          detay: "Every street corner was taken. In your first year you learned what it means to be invisible in a crowded city.",
+          detay: "Every corner was taken. You stayed invisible.",
         },
       },
     ],
   },
   liman_kacakcilik: {
     baslik: "A Night Cargo at the Harbor",
-    metin: "A ship's captain offers you a partnership for a cargo that won't go in the customs ledger. Half the harbor does this work, the other half watches those who get caught.",
+    metin: "A captain offers a partnership in cargo that skips the customs ledger. Half the harbor does it; half watches the caught.",
     secenekler: [
       {
-        metin: "Become a partner, unload the cargo together.",
+        metin: "Partner up, unload the cargo.",
         basariliSonuc: {
-          mesaj: "The cargo came in at night, was sold by morning; your share was bigger than you expected.",
-          detay: "You're now part of the harbor circle that does 'those jobs'. Doors are opening, but the door you go through is hard to come back out of.",
+          mesaj: "Cargo landed at night, sold by morning; your share was big.",
+          detay: "An easy door to enter, a hard one to leave.",
         },
         basarisizSonuc: {
-          mesaj: "Customs guards raided; the cargo was lost, your name went in the ledger.",
-          detay: "The captain fled with the ship, you were left on the quay. You covered the loss and now every cargo of yours is searched twice.",
+          mesaj: "Guards raided; cargo lost, your name in the ledger.",
+          detay: "Captain fled; your cargoes now get searched twice.",
         },
       },
       {
-        metin: "Refuse, try to get an official import license.",
+        metin: "Refuse, seek an official license.",
         basariliSonuc: {
-          mesaj: "The license came through; now you import in daylight and legally.",
-          detay: "Your profit margin is lower than a smuggler's, but every night when there's a knock at the door your heart doesn't leap into your mouth. Only those who have lived it know that difference.",
+          mesaj: "The license came; you now import legally, in daylight.",
+          detay: "Less profit, but no racing heart at every knock.",
         },
         basarisizSonuc: {
-          mesaj: "Your license application dragged on for months and was rejected.",
-          detay: "Fees were paid, files were lost. You wanted to go the right way and the system showed you the door.",
+          mesaj: "Your license application dragged on and was rejected.",
+          detay: "Fees gone, files lost.",
         },
       },
       {
-        metin: "Sell the captain to the guards, seize the goods!",
+        metin: "Sell the captain out, seize the goods!",
         basariliSonuc: {
-          mesaj: "You reported the captain and during the raid pulled half the goods into your own warehouse.",
-          detay: "While the captain rots in a dungeon you grew rich. You can't walk the harbor streets without looking over your shoulder anymore.",
+          mesaj: "You turned in the captain and took half the goods.",
+          detay: "Rich now, always looking over your shoulder.",
         },
         basarisizSonuc: {
-          mesaj: "The captain realized your betrayal! With his crew he cornered you on the quay and threw you in the sea.",
-          detay: "You barely swam free. The money is gone and a death warrant was written on you in the harbor.",
+          mesaj: "The captain learned of it; his crew threw you into the sea.",
+          detay: "You barely survived; money gone, death warrant out.",
         },
       },
     ],
   },
   pazar_tezgah_kavgasi: {
     baslik: "A Stall Fight",
-    metin: "The busiest corner of the market has come free. You and two rivals all want the same spot. The market boss says 'to the highest bidder' but the tradesmen say 'to whoever's turn it is'.",
+    metin: "The market's best corner is free; three want it. The boss says 'highest bid', the traders say 'next in line'.",
     secenekler: [
       {
-        metin: "Give the boss the highest bid, buy the spot.",
+        metin: "Bid highest, buy the spot.",
         basariliSonuc: {
           mesaj: "The corner is yours; foot traffic tripled.",
-          detay: "The spot is great, the earnings are great. The neighboring tradesmen don't greet you but the customers do, and in the end that's who stays in the market.",
+          detay: "Neighbors won't greet you; customers will.",
         },
         basarisizSonuc: {
-          mesaj: "A higher bid came in; you lost both the money and the spot.",
-          detay: "The boss told your rival your bid and he went one notch higher. The deposit didn't come back.",
+          mesaj: "A higher bid came; you lost money and spot.",
+          detay: "The boss leaked your bid; deposit not returned.",
         },
       },
       {
-        metin: "Follow tradesman tradition, wait your turn and gather support.",
+        metin: "Follow tradition, wait your turn, gather support.",
         basariliSonuc: {
-          mesaj: "The tradesmen stood behind you; the boss backed down and the corner was given to you.",
-          detay: "You won without paying money, through solidarity. Now if you have a problem in the market, thirty people stand behind you.",
+          mesaj: "Traders backed you; the boss yielded, corner yours.",
+          detay: "Won free; thirty people now back you.",
         },
         basarisizSonuc: {
-          mesaj: "The tradesmen supported you but the boss chose the money; the corner went to your rival.",
-          detay: "Tradition lost against money. You didn't get the spot but among the tradesmen you became 'the man who plays by the rules'.",
+          mesaj: "Traders backed you; the boss took money. Rival got it.",
+          detay: "No spot, but you're 'the man who plays fair'.",
         },
       },
       {
@@ -1107,16 +1107,16 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
           mesaj: "Not used.",
         },
         onTepki: {
-          metin: "You grabbed the boss by the collar. The guards behind him went for their swords. One more step and there will be blood in the marketplace.",
-          geriCekilMetni: "Let go, walk away in anger.",
+          metin: "You grabbed his collar; guards drew swords.",
+          geriCekilMetni: "Let go, storm off.",
           geriCekilSonucu: {
-            mesaj: "You backed off at the last moment. You lost the spot and were humiliated in front of the boss.",
-            detay: "Not being able to control your anger damaged your reputation.",
+            mesaj: "You backed off; lost the spot and were humiliated.",
+            detay: "Your temper hurt your reputation.",
           },
-          devamMetni: "Intimidate him: 'You WILL give me that spot!'",
+          devamMetni: "Threaten: 'You'll give me that spot!'",
           devamSonucu: {
-            mesaj: "The boss feared your madness. He signaled the guards to stop and left the spot to you.",
-            detay: "You won by bullying, but the market boss is your sworn enemy now.",
+            mesaj: "The boss flinched, called off his guards and ceded the spot.",
+            detay: "Won by bullying; now he's your sworn enemy.",
           },
         },
       },
@@ -1124,666 +1124,666 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
   },
   genel_saray_firsati: {
     baslik: "The Palace Gate",
-    metin: "A position has opened at the {bolge} palace. Your renown got you onto the shortlist. The palace means power and money; it is also a place where no one stays clean.",
+    metin: "A post opened at the {bolge} palace; your renown made the shortlist. Power and money, but no one stays clean.",
     secenekler: [
       {
-        metin: "Apply for the position, enter the palace world.",
+        metin: "Apply, enter the palace.",
         basariliSonuc: {
-          mesaj: "You were admitted to the palace; you are now in the rooms where decisions are made.",
-          detay: "In the first week you watched three people be finished off and said nothing. Staying silent is the first rule of survival here, and you've already started learning it.",
+          mesaj: "Admitted; you're now where decisions are made.",
+          detay: "You saw three ruined in week one and said nothing.",
         },
         basarisizSonuc: {
-          mesaj: "You were cut from the shortlist; the money and hope you spent went to waste.",
-          detay: "Someone less talented than you but with better relatives got the position. You learned the palace's first lesson without even walking through the door.",
+          mesaj: "Cut from the list; money and hope wasted.",
+          detay: "Someone with better relatives got it.",
         },
       },
       {
-        metin: "Do not apply, stay with your independent reputation.",
+        metin: "Don't apply; keep your independence.",
         basariliSonuc: {
-          mesaj: "You refused the palace; among the people you became 'the man who cannot be bought'.",
-          detay: "Those who entered the palace grew rich, some also disappeared. You became neither the first nor the second, and you sleep easy at night.",
+          mesaj: "You refused the palace; people call you 'unbuyable'.",
+          detay: "You sleep easy at night.",
         },
         basarisizSonuc: {
-          mesaj: "Your refusal was taken as 'insolence'; the palace circle turned its back on you.",
-          detay: "Apparently there's a rule that an invitation is not refused. No palace-connected work comes to you anymore, and that's more work than you thought.",
+          mesaj: "Your refusal was called insolence; the court turned away.",
+          detay: "No palace-linked work comes your way now.",
         },
       },
     ],
   },
   saray_entrika: {
     baslik: "Two Factions",
-    metin: "Two factions are at war in the palace: one the old nobility, the other the new rich. Both want you to pick a side, and neutrality is not counted as an option here.",
+    metin: "Two factions war in the palace: old nobles and new rich. Both want you to choose; neutrality isn't an option.",
     secenekler: [
       {
-        metin: "Go with the old nobility — deep-rooted but declining power.",
+        metin: "Back the old nobles: rooted but fading.",
         basariliSonuc: {
-          mesaj: "The nobility won; your loyalty was rewarded with a title.",
-          detay: "There's a title before your name now. You're in the last fortress of the old order, and the walls of this fortress crack a little more every year.",
+          mesaj: "The nobles won; your loyalty earned a title.",
+          detay: "Last fortress of the old order; its walls crack.",
         },
         basarisizSonuc: {
-          mesaj: "The nobility lost; along with them, you were purged.",
-          detay: "When the new rich entered the palace the first thing they did was clean out those in the old faction. Your room was emptied overnight.",
+          mesaj: "The nobles lost; you were purged with them.",
+          detay: "The new rich cleaned out the old faction first.",
         },
       },
       {
-        metin: "Go with the new rich — plenty of money, no roots.",
+        metin: "Back the new rich: wealthy but rootless.",
         basariliSonuc: {
-          mesaj: "The new rich won; you took a large share of the commercial privileges.",
-          detay: "The money flows but the old nobility still counts you a 'parvenu'. You're learning not to care, because there's no time left over from counting your money.",
+          mesaj: "The new rich won; you got a big share of privileges.",
+          detay: "Money flows; nobles call you a parvenu.",
         },
         basarisizSonuc: {
-          mesaj: "The new rich were dispersed; along with your partners, you fell too.",
-          detay: "You bet on the rising power and that power did not rise. Along with the money you invested you lost your place in the palace.",
+          mesaj: "The new rich were broken; you fell with them.",
+          detay: "You backed a power that never rose; all lost.",
         },
       },
       {
-        metin: "Sell information to both sides, play your own game.",
+        metin: "Sell information to both; play your own game.",
         basariliSonuc: {
-          mesaj: "You fed both factions against each other; you gained from both.",
-          detay: "No one knows who works for whom, except you. This is the most dangerous and most profitable position you can hold.",
+          mesaj: "You pitted both factions against each other and profited.",
+          detay: "Only you know who works for whom.",
         },
         basarisizSonuc: {
-          mesaj: "Both factions caught on to your game the same week. For those who play both sides at the palace there is only one solution, and it was carried out that night.",
+          mesaj: "Both factions caught on in one week; that night you paid.",
         },
       },
     ],
   },
   genel_yatirim: {
     baslik: "An Investment Opportunity",
-    metin: "There are three ways to make use of your savings: a high-risk partnership, a medium-risk purchase of goods, or low-yield but safe land/bonds.",
+    metin: "Three ways to use your savings: a risky partnership, a mid-risk goods purchase, or safe low-yield land/bonds.",
     secenekler: [
       {
-        metin: "Enter the high-risk partnership.",
+        metin: "Join the risky partnership.",
         basariliSonuc: {
-          mesaj: "The partnership worked out; you got back more than double what you put in.",
-          detay: "You took the risk and won. Now everyone asks 'how did you know'; you don't tell them you didn't.",
+          mesaj: "It paid off; you got back over double your stake.",
+          detay: "'How did you know?' You don't say you didn't.",
         },
         basarisizSonuc: {
-          mesaj: "Your partner fled; every coin you put in vanished.",
-          detay: "The contract you signed was worthless in any court. You lost your savings on a signature and a feeling of trust.",
+          mesaj: "Your partner fled; every coin vanished.",
+          detay: "The contract was worthless in any court.",
         },
       },
       {
-        metin: "Make a medium-risk purchase of goods.",
+        metin: "Buy goods at medium risk.",
         basariliSonuc: {
-          mesaj: "The goods you bought found a good price in season; you made a solid profit.",
-          detay: "Neither exciting nor a disaster. You did your sums, you were patient, and you got your reward; most of trade is just this.",
+          mesaj: "The goods sold well in season; solid profit.",
+          detay: "Sums, patience, reward: most of trade.",
         },
         basarisizSonuc: {
-          mesaj: "Prices fell; you sold off the goods at a loss.",
-          detay: "You read the market wrong. Not a great disaster, but this year's savings evaporated.",
+          mesaj: "Prices fell; you sold the goods at a loss.",
+          detay: "You misread the market; savings evaporated.",
         },
       },
       {
-        metin: "Buy land/bonds — low yield, high safety.",
+        metin: "Buy land/bonds: low yield, safe.",
         basariliSonuc: {
-          mesaj: "The land/bonds you bought started bringing in a regular income every year.",
-          detay: "It won't make you rich but it's an income that will never leave you hungry. As you age you'll understand its value more.",
+          mesaj: "The land/bonds began paying steady yearly income.",
+          detay: "Won't make you rich, won't leave you hungry.",
         },
         basarisizSonuc: {
-          mesaj: "There was a problem with the deed of the land you bought; you couldn't get your money back.",
-          detay: "Even the safest investment needs a document check. You learned that out of your own pocket.",
+          mesaj: "The land's deed had a problem; no refund.",
+          detay: "Even safe investments need document checks.",
         },
       },
     ],
   },
   genel_ikilem_aile: {
     baslik: "An Ailing Parent",
-    metin: "Your parent has fallen ill and needs care. Taking them in will eat your time and money; hiring a carer is expensive; doing nothing is a choice with no going back.",
+    metin: "Your parent fell ill and needs care. Taking them in costs time and money; a carer is pricey; doing nothing can't be undone.",
     secenekler: [
       {
-        metin: "Take them in, care for them yourself.",
+        metin: "Take them in, care yourself.",
         basariliSonuc: {
-          mesaj: "You were beside them in their last years; when they went, their hand was in yours.",
-          detay: "Your business faltered, your earnings dropped, and none of that matters now. This is one of the few decisions you can say 'thank goodness' about.",
+          mesaj: "You were with them at the end, hand in hand.",
+          detay: "Work suffered, but you have no regrets.",
         },
         basarisizSonuc: {
-          mesaj: "The burden of care made you ill too; still, you were beside them to the end.",
-          detay: "For months you barely slept. When you lost them you were grieving and exhausted and in debt.",
+          mesaj: "Caregiving made you ill too, yet you stayed to the end.",
+          detay: "Months without sleep; grieving, drained and in debt.",
         },
       },
       {
         metin: "Hire a carer, keep working.",
         basariliSonuc: {
-          mesaj: "You found a good carer; your business didn't falter and your parent wasn't left uncared for.",
-          detay: "You visit twice a month. The carer says 'they're asking about you' every time, and you say 'work is busy' every time.",
+          mesaj: "A good carer: your work held, your parent was looked after.",
+          detay: "Twice-monthly visits; always 'work is busy'.",
         },
         basarisizSonuc: {
-          mesaj: "The carer neglected them; your parent was in bad conditions and everyone blamed you for it.",
-          detay: "When you went to visit you saw the state of the room. What you thought you'd solved with money was only postponed, not solved.",
+          mesaj: "The carer neglected them; everyone blamed you.",
+          detay: "Money hadn't solved it, only postponed it.",
         },
       },
     ],
   },
   komik_domuz: {
     baslik: "The Runaway Pig",
-    metin: "A fat pig that got loose in the market square threw everything into chaos. The butcher promises a good reward and the crowd watches, laughing.",
+    metin: "A fat pig escaped in the market and threw it into chaos. The butcher offers a reward; the crowd laughs.",
     secenekler: [
       {
-        metin: "Try to catch the pig, grab the reward.",
+        metin: "Chase the pig, claim the reward.",
         basariliSonuc: {
-          mesaj: "You caught the pig at the last moment; the market crowd applauded you.",
-          detay: "The butcher kept his word and that day everyone in the market learned your name. Your title is comic but memorable.",
+          mesaj: "You caught the pig at the last second; the market cheered.",
+          detay: "The butcher paid up; everyone learned your name.",
         },
         basarisizSonuc: {
-          mesaj: "While running after the pig you tripped over a handcart and broke your neck. The city remembered you for years as 'the man who raced a pig and lost'.",
+          mesaj: "You tripped on a handcart and broke your neck: 'the man who lost to a pig'.",
         },
       },
       {
-        metin: "Step aside, cut off its escape and catch it quietly.",
+        metin: "Step aside, cut off its escape, catch it calmly.",
         basariliSonuc: {
-          mesaj: "You cut off the mouth of the alley; the pig fell into your lap.",
-          detay: "You handled it without running or sweating. As the butcher paid the reward he said 'you're a smart man'.",
+          mesaj: "You cut off the alley; the pig fell into your arms.",
+          detay: "No sweat; the butcher called you a smart man.",
         },
         basarisizSonuc: {
-          mesaj: "The pig didn't come down the alley you expected, it hit you from behind and knocked you over.",
-          detay: "You skinned your knee, tore your trousers, and someone else caught the pig. At least you're alive.",
+          mesaj: "The pig came from behind and knocked you down.",
+          detay: "Skinned knee, someone else got the pig. You live.",
         },
       },
     ],
   },
   komik_icki_bahsi: {
     baslik: "A Bet at the Tavern",
-    metin: "A drunk man loudly makes a bet in the tavern: whoever drinks more takes all the money on the table. The crowd cheers.",
+    metin: "A drunk loudly bets in the tavern: whoever drinks most takes all the money on the table. The crowd cheers.",
     secenekler: [
       {
-        metin: "Accept the bet, start drinking.",
+        metin: "Take the bet, start drinking.",
         basariliSonuc: {
-          mesaj: "You drank your opponent under the table; everyone in the tavern drank in your honor.",
-          detay: "The next day you couldn't get up until noon and your head was splitting. But you started to get addicted to that sweet feeling of raising a cup.",
+          mesaj: "You drank your rival under the table; all toasted you.",
+          detay: "Your head split, but you'd got a taste for the cup.",
         },
         basarisizSonuc: {
-          mesaj: "After the tenth jug you collapsed onto the table and never woke up. The tavern keepers started calling you 'the martyr of the mead'.",
+          mesaj: "After the tenth jug you collapsed and never woke: 'the martyr of the mead'.",
         },
       },
       {
-        metin: "Don't accept the bet but hold the stakes, act as bookmaker.",
+        metin: "Decline, but hold the stakes as bookmaker.",
         basariliSonuc: {
-          mesaj: "You collected the bets; whoever won, the commission was yours.",
-          detay: "The tavern shouted 'coward', you smiled while counting the commission. The next morning you were the only one without a headache.",
+          mesaj: "You collected the bets; the commission was yours either way.",
+          detay: "Only you woke up without a headache.",
         },
         basarisizSonuc: {
-          mesaj: "The losing side demanded their money back; the table was overturned, a brawl broke out.",
-          detay: "Being a bookmaker in a tavern is no easy job. You lost the money and split your lip.",
+          mesaj: "The loser wanted his money back; table overturned, brawl.",
+          detay: "Money gone, lip split.",
         },
       },
     ],
   },
   komik_balon: {
     baslik: "The Balloon Trial",
-    metin: "An inventor is holding a public flight trial with a hot-air balloon and is looking for a volunteer for good money. The crowd waits with bated breath.",
+    metin: "An inventor trials a hot-air balloon in public and seeks a paid volunteer. The crowd holds its breath.",
     secenekler: [
       {
-        metin: "Volunteer, get in the balloon.",
+        metin: "Volunteer, board the balloon.",
         basariliSonuc: {
-          mesaj: "The balloon soared; you became one of the first people to fly over the city.",
-          detay: "The people on the ground looked like ants and in that moment you feared nothing. The newspapers wrote your name and the inventor offered you a partnership.",
+          mesaj: "It rose; you were among the first to fly over the city.",
+          detay: "Papers printed your name; he offered partnership.",
         },
         basarisizSonuc: {
-          mesaj: "The burner set the basket alight; the inventor jumped at the last moment but you couldn't undo your harness. The newspapers wrote 'a whim for the sky ended in disaster'.",
+          mesaj: "The burner lit the basket; the inventor jumped, you couldn't unbuckle.",
         },
       },
       {
-        metin: "Don't fly but invest in the inventor.",
+        metin: "Don't fly; invest in the inventor.",
         basariliSonuc: {
-          mesaj: "The balloon flew; as his partner you took a share of the income too.",
-          detay: "Your feet never left the ground but your pocket filled. The best investment is one where someone else takes the risk.",
+          mesaj: "The balloon flew; as partner you took a share.",
+          detay: "Feet on the ground, pocket full.",
         },
         basarisizSonuc: {
-          mesaj: "The balloon caught fire before it lifted off! Because you were watching from close by, the sparks flew into your face.",
-          detay: "Standing over the wreckage, you were left with a permanent burn scar. At least you weren't in that basket.",
+          mesaj: "It caught fire before liftoff; sparks hit your face.",
+          detay: "You kept a burn scar; at least you weren't aboard.",
         },
       },
     ],
   },
   komik_sirk: {
     baslik: "The Traveling Circus",
-    metin: "At the circus that has come to town, the owner challenges the crowd: whoever gets closest to the lion cage wins good money. Everyone is looking at you.",
+    metin: "The circus owner dares the crowd: whoever nears the lion's cage wins good money. All eyes are on you.",
     secenekler: [
       {
-        metin: "Get close to the cage, take the reward.",
+        metin: "Approach the cage, claim the prize.",
         basariliSonuc: {
-          mesaj: "The lion stayed calm; the crowd was in awe of your courage.",
-          detay: "The tamer later whispered 'that lion has no teeth'. The crowd doesn't know this and you won't correct them.",
+          mesaj: "The lion stayed calm; the crowd admired your courage.",
+          detay: "The lion has no teeth; you won't correct them.",
         },
         basarisizSonuc: {
-          mesaj: "You acted as if you hadn't heard the tamer's warning 'don't put your hand in the cage'. The circus never forgot the memory of the 'curious spectator' after that day.",
+          mesaj: "You ignored the warning and reached in; the circus remembers 'the curious spectator'.",
         },
       },
       {
-        metin: "Make a deal with the circus, sell tickets to the show.",
+        metin: "Strike a deal, sell show tickets.",
         basariliSonuc: {
-          mesaj: "You took a commission on ticket sales; no one looked at you but no one ate you either.",
-          detay: "The circus owner said 'you know this business' and looks for you every time he comes to town. A small but recurring income.",
+          mesaj: "You earned ticket commission; no one stared, no one ate you.",
+          detay: "The owner seeks you out each time he's in town.",
         },
         basarisizSonuc: {
-          mesaj: "The show was cancelled by rain; you were left holding the tickets you had printed.",
-          detay: "The circus left town the next day and didn't pay your commission. It was safer than getting near the lion, but not profitable.",
+          mesaj: "Rain cancelled the show; the tickets stayed with you.",
+          detay: "The circus left next day, commission unpaid.",
         },
       },
     ],
   },
   tarihi_fransa_prusya_ilan: {
     baslik: "War Declared on Prussia",
-    metin: "The year {yil}. The tension between you and Prussia has finally turned into war. The newspapers write 'we'll be in Berlin in a few months'; the emperor will lead the army himself.",
+    metin: "{yil}. Tension with Prussia turned to war. Papers write 'Berlin in months'; the emperor will lead the army himself.",
     secenekler: [
       {
-        metin: "Sign up as a volunteer, go to the front.",
+        metin: "Volunteer, go to the front.",
         basariliSonuc: {
-          mesaj: "In the first clashes you stood out with your courage.",
-          detay: "The easy victory the newspapers promised is nowhere in sight yet, but your morale is high.",
+          mesaj: "You stood out for courage in the first clashes.",
+          detay: "No easy victory yet, but morale is high.",
         },
         basarisizSonuc: {
-          mesaj: "The Prussian artillery was far stronger than you expected; you were badly wounded.",
-          detay: "Lying in the field hospital you hear the officers' anxious whispers.",
+          mesaj: "Prussian artillery was far stronger; you were badly wounded.",
+          detay: "In the ward you hear officers whispering worriedly.",
         },
       },
       {
         metin: "Offer the army a supply contract.",
         basariliSonuc: {
-          mesaj: "The army gave you the order for provisions and boots; the first payment has already come.",
-          detay: "As the war goes on the order grows; for now you are both safe and profitable.",
+          mesaj: "Army orders for provisions and boots; first payment in.",
+          detay: "Orders grow as the war goes on.",
         },
         basarisizSonuc: {
-          mesaj: "The contract was signed but the state postponed payment until the war ends.",
-          detay: "You delivered the goods; the money came out of your own pocket, not the treasury's, for now.",
+          mesaj: "Contract signed, but the state delayed payment until war's end.",
+          detay: "You delivered; for now it's your pocket paying.",
         },
       },
       {
-        metin: "Cross the border into a neutral country.",
+        metin: "Cross into a neutral country.",
         basariliSonuc: {
-          mesaj: "You crossed the border without trouble; you'll follow the war from the newspapers.",
-          detay: "When your neighbors ask 'where is he', no one can give a clear answer.",
+          mesaj: "Border crossed easily; you'll follow the war in the papers.",
+          detay: "Neighbors ask where you are; nobody knows.",
         },
         basarisizSonuc: {
-          mesaj: "The border was closed; you were turned back as a mobilization deserter.",
-          detay: "Your name is on a list now; until the war ends this will take things from you.",
+          mesaj: "The border was shut; turned back as a draft dodger.",
+          detay: "Your name is on a list; it will cost you.",
         },
       },
     ],
   },
   tarihi_fransa_prusya_yenilgi: {
     baslik: "After Sedan",
-    metin: "The year {yil}. The emperor was captured at Sedan, the army fell apart. Prussian troops besieged Paris. The war is lost; bread is rationed, everyone's income visibly melted away.",
+    metin: "{yil}. The emperor was captured at Sedan, the army collapsed, Prussia besieged Paris. Bread is rationed; incomes melted.",
     secenekler: [
       {
-        metin: "Share the hardship like everyone else, get by honestly.",
+        metin: "Share the hardship, stay honest.",
         basariliSonuc: {
-          mesaj: "You waited in the same queue as your neighbors and shared the same bread.",
-          detay: "It was a hard winter but a shared pain; no one said 'he's one of us too', everyone was in the same boat.",
+          mesaj: "You queued with your neighbors and shared the same bread.",
+          detay: "Hard winter, but everyone was in the same boat.",
         },
         basarisizSonuc: {
-          mesaj: "Even the ration wasn't enough; you went hungry that winter.",
-          detay: "The famine spared no one; being honest didn't feed you.",
+          mesaj: "Even rations fell short; you went hungry that winter.",
+          detay: "Famine spared no one; honesty didn't feed you.",
         },
       },
       {
-        metin: "Hoard provisions in the famine, sell at a high price.",
+        metin: "Hoard provisions, sell dear in the famine.",
         basariliSonuc: {
-          mesaj: "You sold bread to hungry people at three times the price; your strongbox has never been so full.",
-          detay: "You saw a woman weep and still didn't lower the price. Part of your fortune comes from that winter's hunger.",
+          mesaj: "You sold bread at triple price; never been richer.",
+          detay: "You saw a woman weep and kept the price.",
         },
         basarisizSonuc: {
-          mesaj: "A hungry crowd stormed your warehouses; your goods are gone, you barely escaped a beating.",
-          detay: "The neighborhood now calls you 'the man who tried to get rich in the famine', and that isn't easily forgotten.",
+          mesaj: "A hungry mob stormed your stores; goods gone, you were beaten.",
+          detay: "The district calls you 'the famine profiteer'.",
         },
       },
       {
         metin: "Protect your family, wait quietly.",
         basariliSonuc: {
-          mesaj: "You shut your door, spent the winter at home; it was hard but you came out alive.",
-          detay: "You heard about what happened outside later, from neighbors; staying in wore you down but it protected you.",
+          mesaj: "You shut your door and wintered indoors; hard but alive.",
+          detay: "Staying in wore you down but protected you.",
         },
         basarisizSonuc: {
-          mesaj: "Staying home didn't protect you from hunger; your coal and provisions ran out.",
-          detay: "Sometimes waiting exacts a price too; you just pay it quietly.",
+          mesaj: "Staying home didn't spare you hunger; coal and food ran out.",
+          detay: "Waiting has a price too, paid quietly.",
         },
       },
     ],
   },
   tarihi_kirim_ilan_muttefik: {
     baslik: "Toward the Crimea",
-    metin: "The year {yil}. Together with your allies you have gone to war against Russia's expansionism. A great fleet is setting out for the Crimea.",
+    metin: "{yil}. With allies you went to war against Russia. A great fleet is setting out for the Crimea.",
     secenekler: [
       {
         metin: "Join the army/navy.",
         basariliSonuc: {
-          mesaj: "You took a post on the siege line; hard but proud service.",
-          detay: "The walls of Sevastopol still stand, but your morale is high; you believe you'll win.",
+          mesaj: "You served on the siege line; hard but proud.",
+          detay: "Sevastopol's walls hold, but morale is high.",
         },
         basarisizSonuc: {
-          mesaj: "Cholera spread in the trenches; you too were burning with fever.",
-          detay: "In this war disease kills more than bullets; the doctors can't keep up.",
+          mesaj: "Cholera spread in the trenches; you burned with fever.",
+          detay: "In this war disease kills more than bullets.",
         },
       },
       {
         metin: "Supply the fleet with provisions and coal.",
         basariliSonuc: {
-          mesaj: "Your contract was approved; as long as the war lasts, so does the profit.",
-          detay: "A new order every week at the harbor; war is a good business for some.",
+          mesaj: "Your contract was approved; profit lasts as long as the war.",
+          detay: "New orders at the harbor every week.",
         },
         basarisizSonuc: {
-          mesaj: "A rival supplier gave a lower price; you lost the contract.",
-          detay: "Your preparation costs were wasted; this time you didn't win from the war.",
+          mesaj: "A rival undercut you; you lost the contract.",
+          detay: "Your preparation costs were wasted.",
         },
       },
       {
         metin: "Keep working, stay out of the war.",
         basariliSonuc: {
-          mesaj: "You went on with your daily life; the war news comes from the newspapers.",
-          detay: "While everyone talks about the front, you're at your stall; that's a choice too.",
+          mesaj: "You carried on; war news comes from the papers.",
+          detay: "While all talk of the front, you mind your stall.",
         },
         basarisizSonuc: {
-          mesaj: "The war rush hit trade too; customers dwindled.",
-          detay: "Everyone's mind is at the front; your business took its share of that.",
+          mesaj: "War jitters hit trade too; customers dwindled.",
+          detay: "Minds are at the front; your business paid for it.",
         },
       },
     ],
   },
   tarihi_kirim_zafer: {
     baslik: "Sevastopol Has Fallen",
-    metin: "The year {yil}. Sevastopol has fallen, Russia sued for peace. When news of the victory arrived the streets turned into a festival. New trade routes opened, war reparations breathed life into the economy.",
+    metin: "{yil}. Sevastopol fell; Russia sued for peace. Streets turned festive, new trade routes opened, reparations fed the economy.",
     secenekler: [
       {
-        metin: "Throw yourself into the new trade opportunities the victory brought.",
+        metin: "Seize the new trade opportunities.",
         basariliSonuc: {
-          mesaj: "You were the first into the new markets that opened; your earnings rose permanently.",
-          detay: "The post-victory euphoria is still going and you turned that euphoria into money.",
+          mesaj: "You hit the new markets first; earnings rose for good.",
+          detay: "You turned victory's euphoria into money.",
         },
         basarisizSonuc: {
-          mesaj: "Everyone rushed to the same opportunity; the competition melted prices and put you at a loss.",
-          detay: "The victory gave everyone the same feeling and everyone ran to the same door; you got lost in the crowd.",
+          mesaj: "Everyone rushed in; competition ate prices, you lost.",
+          detay: "Everyone ran to the same door; you got lost.",
         },
       },
       {
-        metin: "Join the victory celebrations, make connections.",
+        metin: "Join the celebrations, network.",
         basariliSonuc: {
-          mesaj: "The names you met at the celebrations opened new doors for you.",
-          detay: "Victory's intoxication makes everyone generous; you took your share of that.",
+          mesaj: "Names you met at the celebrations opened doors.",
+          detay: "Victory makes everyone generous.",
         },
         basarisizSonuc: {
-          mesaj: "The celebrations cost a lot, and the connections you expected didn't pan out.",
-          detay: "Everyone raised a glass, no one talked business; only the bill was left to you.",
+          mesaj: "The celebrations cost a lot; the connections didn't pan out.",
+          detay: "Everyone toasted; you were left the bill.",
         },
       },
     ],
   },
   tarihi_kirim_ilan_rusya: {
     baslik: "Against the Allies",
-    metin: "The year {yil}. The alliance of the Ottomans, Britain and France landed troops in the Crimea. The Tsar demands sacrifice from the whole people.",
+    metin: "{yil}. The Ottoman-British-French alliance landed troops in the Crimea. The Tsar demands sacrifice from all.",
     secenekler: [
       {
         metin: "Join the army, defend Sevastopol.",
         basariliSonuc: {
-          mesaj: "You contributed to the resistance on the walls; the commanders held you up as an example.",
-          detay: "The siege grows heavier but for now the walls stand, and so do you.",
+          mesaj: "You held the walls; commanders held you up as an example.",
+          detay: "The siege weighs, but walls and you still stand.",
         },
         basarisizSonuc: {
-          mesaj: "Allied artillery pounded the line; you fell back badly wounded.",
-          detay: "You learned with your body that old tactics are no match for modern cannon.",
+          mesaj: "Allied guns pounded the line; you fell back badly wounded.",
+          detay: "Old tactics failed against modern cannon.",
         },
       },
       {
         metin: "Supply the army with horses and provisions.",
         basariliSonuc: {
-          mesaj: "You took a post on the supply line; for now you're making good money.",
-          detay: "Half the caravans going to the front don't come back, but your job is behind the front.",
+          mesaj: "You took a supply post; for now you earn well.",
+          detay: "Your job is behind the front.",
         },
         basarisizSonuc: {
-          mesaj: "Payments were postponed until the war ends; the cost came out of your pocket.",
-          detay: "The treasury is empty; the contract looks good on paper but the cash flow is zero.",
+          mesaj: "Payment postponed till war's end; you paid the costs.",
+          detay: "Treasury empty; contract good on paper, no cash.",
         },
       },
       {
-        metin: "Withdraw to the countryside, stay out of the war.",
+        metin: "Withdraw to the countryside, avoid the war.",
         basariliSonuc: {
-          mesaj: "You stayed calm in the countryside; the noise of war reached you from a distance.",
-          detay: "You became one of those who turned a deaf ear to the Tsar's call, and you told no one.",
+          mesaj: "Calm in the countryside; the war's noise stayed far.",
+          detay: "You ignored the Tsar's call and told no one.",
         },
         basarisizSonuc: {
-          mesaj: "It was noticed you dodged mobilization; you were shunned by the other families in your village.",
-          detay: "In some places not going to war is not a choice but a crime.",
+          mesaj: "Your draft dodging was noticed; the village shunned you.",
+          detay: "In some places, skipping war is a crime.",
         },
       },
     ],
   },
   tarihi_kirim_yenilgi_rusya: {
     baslik: "The Fall of Sevastopol",
-    metin: "The year {yil}. Sevastopol fell after a year-long siege. The Tsar was forced to sue for peace. The bill for the defeat is heavy: taxes rose, grain prices multiplied.",
+    metin: "{yil}. Sevastopol fell after a year-long siege; the Tsar sued for peace. Taxes rose, grain prices multiplied.",
     secenekler: [
       {
-        metin: "Share the hardship with the people, get by honestly.",
+        metin: "Share the hardship, stay honest.",
         basariliSonuc: {
-          mesaj: "You tightened your belt like everyone else; no one thought you were privileged.",
-          detay: "The defeat is bitter but a shared pain; at least you're not alone.",
+          mesaj: "You tightened your belt like everyone; no privilege.",
+          detay: "Defeat is bitter but shared; you're not alone.",
         },
         basarisizSonuc: {
-          mesaj: "The tax hike was heavier than you expected; you barely got through the winter.",
-          detay: "The bill for the defeat falls first on the poorest, and you were on that list.",
+          mesaj: "The tax hike was heavy; you barely survived winter.",
+          detay: "The bill hit the poor first; you were one.",
         },
       },
       {
-        metin: "Stockpile wheat and sell it at a high price during the crisis.",
+        metin: "Stockpile wheat, sell high in the crisis.",
         basariliSonuc: {
-          mesaj: "You sold wheat to hungry peasants at three times the price; your strongbox has never been so full.",
-          detay: "Some nights those faces cost you your sleep; you tell no one.",
+          mesaj: "You sold wheat at triple price; your strongbox never fuller.",
+          detay: "Some nights those faces cost you sleep.",
         },
         basarisizSonuc: {
-          mesaj: "An angry mob stormed your warehouse; your goods were plundered, you were beaten.",
-          detay: "They needed someone to take out the pain of the defeat on, and that person was you.",
+          mesaj: "A mob stormed your warehouse; goods looted, you beaten.",
+          detay: "They needed a scapegoat for the defeat: you.",
         },
       },
     ],
   },
   zincir_asker_baslangic: {
     baslik: "Joining the Regiment",
-    metin: "The first day you joined your regiment. At the barracks gate you changed clothes and fell into line; you are no longer a civilian, you are a soldier. The sergeant eyes the new arrivals coldly.",
+    metin: "First day in the regiment: you fell in line at the gate and are a soldier now. The sergeant eyes recruits coldly.",
     secenekler: [
       {
-        metin: "Look disciplined, follow the rules to the letter.",
+        metin: "Look disciplined, follow rules.",
         basariliSonuc: {
-          mesaj: "The sergeant took to you; you heard him say 'this one'll make a good soldier'.",
-          detay: "The first day went well. You fell into the barracks' rhythm in the very first week.",
+          mesaj: "The sergeant liked you: 'That one'll make a soldier.'",
+          detay: "You matched the barracks' rhythm in a week.",
         },
         basarisizSonuc: {
-          mesaj: "You looked clumsy in the first drill; the sergeant scolded you in front of everyone.",
-          detay: "A bad start, but there's no going back now; you're in the regiment.",
+          mesaj: "Clumsy at drill; the sergeant scolded you before all.",
+          detay: "A bad start, but no going back.",
         },
       },
       {
-        metin: "Adapt in your own way, don't push too hard.",
+        metin: "Fit in your own way.",
         basariliSonuc: {
-          mesaj: "You neither stood out nor fell behind; you blended quietly into the ranks.",
-          detay: "No one knows your name yet. In the barracks that's sometimes the safest place.",
+          mesaj: "Neither standout nor laggard; you blended into the ranks.",
+          detay: "No one knows your name; in barracks that's safe.",
         },
         basarisizSonuc: {
-          mesaj: "Your slackness was noticed; they said 'I've got my eye on you'.",
-          detay: "Getting on the watch list on the first day is not a good sign.",
+          mesaj: "Your slackness showed: 'I've got my eye on you.'",
+          detay: "Day-one watch list is no good sign.",
         },
       },
     ],
   },
   zincir_asker_pusu: {
     baslik: "The First Ambush",
-    metin: "In your first year of service, on a routine patrol, your unit was ambushed. In the chaos you have to decide what to do in seconds.",
+    metin: "In your first year, on routine patrol, your unit was ambushed. In the chaos you must decide in seconds.",
     secenekler: [
       {
-        metin: "Charge forward, answer fire with fire.",
+        metin: "Charge, answer fire with fire.",
         basariliSonuc: {
-          mesaj: "You helped beat back the attack; the commander noted your name.",
-          detay: "Everyone who survived that day looks at each other differently now; you got through something together.",
+          mesaj: "You helped repel the attack; the commander noted your name.",
+          detay: "Survivors look at each other differently now.",
         },
         basarisizSonuc: {
-          mesaj: "A bullet grazed your shoulder; they dragged you back covered in blood.",
-          detay: "Your first wound in your first year. The doctor said 'you're lucky'; you didn't quite feel it.",
+          mesaj: "A bullet grazed your shoulder; you were dragged back bloody.",
+          detay: "First wound, first year; 'you're lucky,' they said.",
         },
       },
       {
         metin: "Lead the retreat, gather the unit.",
         basariliSonuc: {
-          mesaj: "You managed an orderly retreat; no one was lost.",
-          detay: "It wasn't a brilliant victory, but everyone coming back alive was a success too.",
+          mesaj: "An orderly retreat; nobody was lost.",
+          detay: "No glory, but everyone came back alive.",
         },
         basarisizSonuc: {
-          mesaj: "The retreat fell apart; a few soldiers went missing and they pinned the blame on you.",
-          detay: "Some thought you panicked in your first test; that'll take time to live down.",
+          mesaj: "The retreat collapsed; men went missing, you took the blame.",
+          detay: "Some think you panicked in your first test.",
         },
       },
     ],
   },
   zincir_asker_terhis: {
     baslik: "The End of the Service Years",
-    metin: "After years of service the commander summoned you: 'Your duty is done, son. Now you can decide your own path.'",
+    metin: "After years of service the commander called you: 'Your duty is done, son. Choose your own path.'",
     secenekler: [
       {
-        metin: "Stay in the army, become a career soldier.",
+        metin: "Stay in the army as a career soldier.",
         basariliSonuc: {
-          mesaj: "You signed on for a long term of service; you're a veteran soldier now.",
-          detay: "Over the passing years you realized the regiment had become like a family to you. Civilian life has long since grown foreign, but this is the path you chose.",
+          mesaj: "You signed on long-term; you're a veteran now.",
+          detay: "The regiment is family now; civilian life is foreign.",
         },
         basarisizSonuc: {
-          mesaj: "You chose to stay, but the new commander doesn't take as much interest in you as the old one.",
-          detay: "Years have passed and you're still the same rank. Some careers just quietly stall.",
+          mesaj: "You stayed, but the new commander pays you less heed.",
+          detay: "Years passed, same rank. Some careers just stall.",
         },
       },
       {
         metin: "Be discharged, return to civilian life.",
         basariliSonuc: {
-          mesaj: "You took your retirement bonus and returned to civilian life; for the first time in years you're making your own decisions.",
-          detay: "The city has changed a lot since you joined up. Walking, you still count your steps; your sleep is still on alert. But no one gives you orders anymore.",
+          mesaj: "You took your bonus; now you make your own decisions.",
+          detay: "You still count your steps; but no more orders.",
         },
         basarisizSonuc: {
-          mesaj: "Your discharge papers were delayed; part of your bonus got lost in the bureaucracy.",
-          detay: "You served for years and got less than you expected in return. Still, you're free now; you understand that has a price.",
+          mesaj: "Discharge delayed; part of your bonus lost to red tape.",
+          detay: "Years served, less than expected; but you're free.",
         },
       },
     ],
   },
   zincir_tuccar_teklif: {
     baslik: "A Big Order Offer",
-    metin: "A merchant from a distant city offers a huge supply agreement that will run for years. If you accept you'll have tied most of your capital to this single relationship.",
+    metin: "A merchant from a far city offers a huge supply deal lasting years. Accepting ties up most of your capital.",
     secenekler: [
       {
-        metin: "Sign the agreement, enter the big game.",
+        metin: "Sign, enter the big game.",
         basariliSonuc: {
-          mesaj: "The signatures were made; you're now in a partnership that will run for years.",
-          detay: "Most of your capital is tied to this agreement. Either you'll win big or you'll lose everything.",
+          mesaj: "Signed; you're in a partnership that will run for years.",
+          detay: "Your capital rides on it: big win or ruin.",
         },
         basarisizSonuc: {
-          mesaj: "The contract terms turned out heavier than you thought, but there's no going back now.",
-          detay: "Even the first costs were more than you expected; you already look at this venture with doubt.",
+          mesaj: "Terms were heavier than thought, but no turning back.",
+          detay: "Even early costs were high; doubt sets in.",
         },
       },
       {
-        metin: "Refuse the offer, focus on your existing business.",
+        metin: "Refuse, focus on your current business.",
         basariliSonuc: {
-          mesaj: "You took no risk; business went on calmly as always.",
-          detay: "Maybe you missed a big opportunity, maybe you escaped a big disaster; you'll never know.",
+          mesaj: "You took no risk; business stayed calm as ever.",
+          detay: "A missed chance or a dodged disaster? Unknowable.",
         },
         basarisizSonuc: {
-          mesaj: "The other merchant, hearing you refused, took the offer to your rival.",
-          detay: "Hearing your rival grew with this deal isn't pleasant, but at least you took no risk.",
+          mesaj: "Hearing your refusal, he took the offer to your rival.",
+          detay: "Your rival grew, but you took no risk.",
         },
       },
     ],
   },
   zincir_tuccar_kervan_sorunu: {
     baslik: "Trouble on the Road",
-    metin: "The first load of your big order is on the road; the messenger arrived out of breath: 'The caravan was caught in a storm and a bandit raid; your partner is waiting for an urgent decision from you.'",
+    metin: "The first load is on the road; the messenger gasps: 'The caravan hit a storm and bandits; your partner awaits your decision.'",
     secenekler: [
       {
-        metin: "Send extra money and organize an armed rescue expedition.",
+        metin: "Send extra money, mount an armed rescue.",
         basariliSonuc: {
-          mesaj: "The rescue expedition worked; most of the load and your men were brought back safely.",
-          detay: "Your partner saw your resolve; the agreement can move to its next stage.",
+          mesaj: "The rescue worked; most of the load and your men were saved.",
+          detay: "Your partner saw your resolve; the deal can go on.",
         },
         basarisizSonuc: {
-          mesaj: "Despite the extra spending, most of the load was lost.",
-          detay: "You both spent and lost; the future of the agreement is more uncertain now.",
+          mesaj: "Despite extra spending, most of the load was lost.",
+          detay: "You spent and lost; the deal's future is murkier.",
         },
       },
       {
-        metin: "Accept the losses, keep the contract as it is.",
+        metin: "Accept the losses, keep the contract.",
         basariliSonuc: {
-          mesaj: "Your partner was understanding; the contract continues with a small delay.",
-          detay: "Such losses are in the nature of trade; your partner knows this and was patient.",
+          mesaj: "Partner understood; contract continues, slightly delayed.",
+          detay: "Such losses come with trade.",
         },
         basarisizSonuc: {
-          mesaj: "Your partner resented this indifference of yours; the relationship became strained.",
-          detay: "The agreement continues but it isn't as warm as before.",
+          mesaj: "Your partner resented your indifference; relations strained.",
+          detay: "The deal continues, but not as warmly.",
         },
       },
       {
-        metin: "Use the loss as a pretext and pull fake insurance money from your guild.",
+        metin: "Use the loss as a pretext; claim fake guild insurance.",
         basariliSonuc: {
-          mesaj: "You drew up papers as if all the goods had burned. The guild paid you an enormous compensation.",
-          detay: "You kept part of the load and gained an unjust fortune.",
+          mesaj: "You filed papers as if all goods burned; the guild paid hugely.",
+          detay: "You kept some cargo and an unjust fortune.",
         },
         basarisizSonuc: {
-          mesaj: "The guild inspectors caught the fraud at once! You got a heavy fine and your reputation was stained.",
+          mesaj: "Inspectors caught the fraud at once! Heavy fine, stained name.",
         },
       },
     ],
   },
   zincir_din_gorev_teklifi: {
     baslik: "A Distant Mission",
-    metin: "The higher authority proposes you for a mission that will run for years, to a small congregation in a distant land. If you accept, you'll leave your life here behind.",
+    metin: "Your superiors propose you for a years-long mission to a small, distant congregation. Your life here stays behind.",
     secenekler: [
       {
         metin: "Accept the mission, set out.",
         basariliSonuc: {
-          mesaj: "You packed your things, said farewell to your congregation, and set out.",
-          detay: "Leaving this land was harder than you thought, but a long road lies ahead of you.",
+          mesaj: "You packed, bade your congregation farewell and set out.",
+          detay: "Leaving was harder than expected; the road is long.",
         },
         basarisizSonuc: {
-          mesaj: "The preparations for departure cost more than you expected.",
-          detay: "Still, you've made your decision; you're on this mission now.",
+          mesaj: "Preparing to depart cost more than you expected.",
+          detay: "Still, you decided; the mission is yours.",
         },
       },
       {
         metin: "Refuse the mission, stay with your congregation.",
         basariliSonuc: {
-          mesaj: "Your congregation was glad of your decision; you didn't abandon them.",
-          detay: "Maybe you missed a great experience, but there are people waiting for you here.",
+          mesaj: "Your congregation rejoiced; you didn't abandon them.",
+          detay: "Missed experience, but people await you here.",
         },
         basarisizSonuc: {
-          mesaj: "The higher authority recorded your refusal as 'a lack of ambition'.",
-          detay: "Your congregation is pleased, but the higher authorities may not consider you for big missions again.",
+          mesaj: "Your superiors logged your refusal as 'lack of ambition'.",
+          detay: "Congregation pleased; superiors may overlook you.",
         },
       },
     ],
   },
   zincir_din_gorev_donus: {
     baslik: "Time to Return",
-    metin: "After years of your distant mission the higher authority has recalled you. The mission is complete; now it is time to return to the life you left behind.",
+    metin: "After years on your distant mission, your superiors recalled you. Time to return to the life you left.",
     secenekler: [
       {
         metin: "Return to your old congregation.",
         basariliSonuc: {
-          mesaj: "When you returned after years, your congregation welcomed you like a hero.",
-          detay: "What you saw in distant lands has changed you. Your old congregation is the same but you're no longer as you were; that's both a gain and a loneliness.",
+          mesaj: "On your return the congregation welcomed you like a hero.",
+          detay: "Distant lands changed you: gain and loneliness both.",
         },
         basarisizSonuc: {
-          mesaj: "You returned, but most of your congregation had grown used to the new official who took your place.",
-          detay: "This is the price of years away: when you come back your place belongs to someone else.",
+          mesaj: "The congregation had grown used to your replacement.",
+          detay: "The price of years away: your place is taken.",
         },
       },
       {
-        metin: "Stay in the land where you served, build a new congregation.",
+        metin: "Stay there, build a new congregation.",
         basariliSonuc: {
-          mesaj: "You stayed in that land and built your own congregation; over the years a small community formed.",
-          detay: "Your old life is a distant memory now. Here you have something you built from scratch, and it's yours.",
+          mesaj: "You stayed and founded a small congregation of your own.",
+          detay: "Your old life is a memory; this one is yours.",
         },
         basarisizSonuc: {
-          mesaj: "The decision to stay came hard; unable to find enough support, you got by with a small congregation.",
-          detay: "It wasn't easy, but you also know you left nothing behind; you have to build everything from the start.",
+          mesaj: "Without enough support, you got by with a small flock.",
+          detay: "Not easy; everything must be built from scratch.",
         },
       },
     ],
   },
   genel_pazar_yeri_soytarisi: {
     baslik: "The Traveling Jester",
-    metin: "A masked jester who has come to the market square is trying to pull you out of the crowd as a 'volunteer' for his act.",
+    metin: "A masked jester in the market square tries to pull you from the crowd as a 'volunteer' for his act.",
     secenekler: [
       {
         metin: "Join the act, do your best.",
@@ -1794,122 +1794,122 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
           mesaj: "Not used.",
         },
         onTepki: {
-          metin: "The moment you stepped into the square the jester shoved you down and started mocking your clothes. The crowd is laughing at you. This isn't a game, it's a humiliation show!",
-          geriCekilMetni: "Control your anger, slip quietly into the crowd and get away.",
+          metin: "The jester shoved you down; the crowd laughs.",
+          geriCekilMetni: "Hold your temper, slip away quietly.",
           geriCekilSonucu: {
-            mesaj: "You were remembered as a coward who can't take a joke. You thought about that moment for days.",
-            detay: "Sometimes slipping away is the greatest pain.",
+            mesaj: "You were remembered as the coward who can't take a joke.",
+            detay: "Sometimes slipping away hurts most.",
           },
-          devamMetni: "Rip the mask off his face and play your own joke on him!",
+          devamMetni: "Rip off his mask and turn the joke on him!",
           devamSonucu: {
-            mesaj: "When you pulled off the mask it turned out the man was a wanted swindler! You became a hero in the square.",
-            detay: "You won't be mocked — you'll do the mocking!",
+            mesaj: "The mask fell: a wanted swindler! You're the square's hero.",
+            detay: "Not mocked, you did the mocking!",
           },
         },
       },
       {
-        metin: "Decline politely, step back from the crowd.",
+        metin: "Decline politely, step back.",
         basariliSonuc: {
           mesaj: "Your refusal was accepted; the jester picked someone else.",
-          detay: "You didn't take the risk of shame; your life went on calmly.",
+          detay: "You dodged the shame; life went on calmly.",
         },
         basarisizSonuc: {
-          mesaj: "The jester turned your refusal into a joke too and mocked you.",
-          detay: "Trying to run away sometimes draws even more attention.",
+          mesaj: "The jester made your refusal a joke too and mocked you.",
+          detay: "Trying to flee sometimes draws more attention.",
         },
       },
     ],
   },
   genel_gokyuzunde_isik: {
     baslik: "A Light in the Sky",
-    metin: "At night a bright light with a tail appeared in the sky. Rumors spread among the people that it's an 'omen of the apocalypse'; some are in a panic.",
+    metin: "A bright, tailed light appeared in the night sky. Rumors call it an 'omen of the apocalypse'; some are panicking.",
     secenekler: [
       {
         metin: "Try to calm the people.",
         basariliSonuc: {
-          mesaj: "Your calm manner soothed the panic; the people trusted you.",
-          detay: "The light disappeared a few days later and everyone returned to daily life; but they remembered you.",
+          mesaj: "Your calm soothed the panic; people trusted you.",
+          detay: "The light vanished; but they remembered you.",
         },
         basarisizSonuc: {
-          mesaj: "Some didn't listen to you; the panic lasted a little longer.",
+          mesaj: "Some wouldn't listen; the panic lasted a bit longer.",
           detay: "Fear is sometimes stronger than reason.",
         },
       },
       {
-        metin: "Get swept up in the rumors too, make preparations.",
+        metin: "Get swept up too, make preparations.",
         basariliSonuc: {
-          mesaj: "The provisions you stockpiled were of no use, but at least you were prepared.",
-          detay: "The light disappeared, life went on; you were a little embarrassed but no harm done.",
+          mesaj: "Your stockpile was useless, but you were prepared.",
+          detay: "The light vanished; a bit embarrassing, no harm.",
         },
         basarisizSonuc: {
-          mesaj: "Your panic buying became a joke among the neighbors.",
-          detay: "The nickname 'the man waiting for the apocalypse' stuck to you for a while.",
+          mesaj: "Your panic buying became a neighborhood joke.",
+          detay: "The nickname 'apocalypse man' stuck a while.",
         },
       },
     ],
   },
   genel_hastalikli_kis: {
     baslik: "A Harsh Winter",
-    metin: "This year's winter is unusually harsh; the prices of wood and provisions have shot up, and many of your neighbors have fallen ill.",
+    metin: "This winter is unusually harsh; wood and provisions prices shot up and many neighbors fell ill.",
     secenekler: [
       {
         metin: "Stockpile extra wood and provisions.",
         basariliSonuc: {
-          mesaj: "You spent the winter warm and fed; you came out without falling ill.",
-          detay: "While your neighbors fell sick, you were prepared.",
+          mesaj: "You wintered warm and fed, without falling ill.",
+          detay: "Neighbors fell sick; you were prepared.",
         },
         basarisizSonuc: {
-          mesaj: "You got by with what you stockpiled, but prices were higher than you expected.",
-          detay: "You got through the winter but your purse grew lighter.",
+          mesaj: "Your stock got you by, but prices were higher than expected.",
+          detay: "You survived winter, but your purse is lighter.",
         },
       },
       {
         metin: "Get by frugally, economize.",
         basariliSonuc: {
-          mesaj: "You were thrifty and got through the winter cheaply.",
-          detay: "You were cold but you endured; sometimes little is enough.",
+          mesaj: "You were thrifty and wintered cheaply.",
+          detay: "Cold, but you endured; sometimes little is enough.",
         },
         basarisizSonuc: {
-          mesaj: "The cold made you ill; it turned into pneumonia.",
-          detay: "Economizing, you economized on your health.",
+          mesaj: "The cold made you ill; it became pneumonia.",
+          detay: "Economizing, you skimped on your health.",
         },
       },
     ],
   },
   genel_kisisel_hastalik: {
     baslik: "Burning with Fever",
-    metin: "Your fever hasn't broken for days and you're getting worse. You have to make a decision — this illness doesn't seem like it'll pass on its own.",
+    metin: "Your fever hasn't broken for days and you're worsening. You must decide; this won't pass on its own.",
     secenekler: [
       {
-        metin: "Buy medicine (25 Gold), go to the best doctor.",
+        metin: "Buy medicine (25 Gold), see the best doctor.",
         basariliSonuc: {
-          mesaj: "The medicine the doctor gave worked fast; you're on your feet within a few days.",
-          detay: "The money's gone but your health came back; a good trade.",
+          mesaj: "The medicine worked fast; you're up within days.",
+          detay: "Money gone, health back; a good trade.",
         },
         basarisizSonuc: {
-          mesaj: "The medicine helped, but the recovery went slower than you expected.",
-          detay: "Not every treatment works like a miracle.",
+          mesaj: "The medicine helped, but recovery was slow.",
+          detay: "Not every cure is a miracle.",
         },
       },
       {
-        metin: "Take a folk remedy (5 Gold), trust to luck.",
+        metin: "Take a folk remedy (5 Gold), trust luck.",
         basariliSonuc: {
-          mesaj: "The strange-smelling mixture worked! Within a few days you pulled yourself together.",
-          detay: "Sometimes village recipes really do work.",
+          mesaj: "The foul-smelling mixture worked! You recovered in days.",
+          detay: "Village recipes sometimes really work.",
         },
         basarisizSonuc: {
-          mesaj: "The mixture didn't work at all, and your condition even got a little worse.",
-          detay: "Cheap solutions sometimes cost more in the end.",
+          mesaj: "The mixture failed and you got a bit worse.",
+          detay: "Cheap fixes can cost more in the end.",
         },
       },
       {
-        metin: "Do nothing, try to rest.",
+        metin: "Do nothing, just rest.",
         basariliSonuc: {
-          mesaj: "Your body recovered on its own; you were lucky.",
+          mesaj: "Your body recovered by itself; you were lucky.",
           detay: "Sometimes the body finds its own way.",
         },
         basarisizSonuc: {
-          mesaj: "The illness ran on untreated; your condition got much worse.",
+          mesaj: "The illness ran untreated; you grew much worse.",
           detay: "Some illnesses don't pass with rest.",
         },
       },
@@ -1917,541 +1917,541 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
   },
   genel_esrarengiz_mektup: {
     baslik: "An Unsigned Letter",
-    metin: "An unsigned letter was found under the door. Someone claims your spouse/partner is cheating on you, but offers no proof at all.",
+    metin: "An unsigned letter was slipped under your door: someone says your spouse/partner is cheating, with no proof.",
     secenekler: [
       {
         metin: "Investigate the claim.",
         basariliSonuc: {
-          mesaj: "Your investigation revealed the claim was baseless, the game of a jealous person.",
-          detay: "Your peace came back but you'll always wonder who wrote that letter.",
+          mesaj: "The claim was baseless, a jealous person's game.",
+          detay: "Peace is back; you'll always wonder who wrote it.",
         },
         basarisizSonuc: {
-          mesaj: "Your investigation led to needless fights and mistrust.",
-          detay: "Sometimes not asking gives a better result than asking.",
+          mesaj: "Your digging caused needless fights and mistrust.",
+          detay: "Sometimes not asking beats asking.",
         },
       },
       {
-        metin: "Tear up the letter, pay it no mind.",
+        metin: "Tear up the letter, ignore it.",
         basariliSonuc: {
-          mesaj: "You forgot the letter and life went on its normal course.",
-          detay: "Some stones are better left unturned.",
+          mesaj: "You forgot the letter; life went on normally.",
+          detay: "Some stones are best left unturned.",
         },
         basarisizSonuc: {
-          mesaj: "Though you ignored the letter it never left your mind; mistrust settled in.",
-          detay: "Ignoring something doesn't always mean forgetting it.",
+          mesaj: "Ignored, but it never left your mind; mistrust set in.",
+          detay: "Ignoring isn't the same as forgetting.",
         },
       },
     ],
   },
   genel_zar_oyunu_borcu: {
     baslik: "An Unpaid Gambling Debt",
-    metin: "An acquaintance hasn't paid you a gambling debt and now changes direction when he sees you. You can demand your money in front of everyone or quietly forget it.",
+    metin: "An acquaintance never paid his gambling debt and now dodges you. Demand it publicly or quietly forget it.",
     secenekler: [
       {
-        metin: "Demand your money in front of everyone.",
+        metin: "Demand your money publicly.",
         basariliSonuc: {
-          mesaj: "Embarrassed, the man paid his debt right away.",
-          detay: "No one asked you for a loan again, but you got the money.",
+          mesaj: "Embarrassed, the man paid at once.",
+          detay: "No one asked you for a loan again; you got paid.",
         },
         basarisizSonuc: {
-          mesaj: "The man said he had no money and made a scene; you were humiliated.",
+          mesaj: "He pleaded poverty and made a scene; you looked small.",
           detay: "Your insistence made you look ridiculous too.",
         },
       },
       {
-        metin: "Quietly forget it, don't spoil the relationship.",
+        metin: "Quietly forget it, keep the friendship.",
         basariliSonuc: {
-          mesaj: "You forgot the money; your friendship wasn't spoiled.",
-          detay: "A small loss is better than a big unease, you told yourself.",
+          mesaj: "You forgot the money; the friendship survived.",
+          detay: "Small loss beats big unease, you told yourself.",
         },
         basarisizSonuc: {
-          mesaj: "Seeing you'd forgotten his debt, the man asked you for another loan.",
-          detay: "Good will is sometimes taken advantage of.",
+          mesaj: "Seeing you'd forgotten the debt, he asked for another loan.",
+          detay: "Good will gets taken advantage of.",
         },
       },
     ],
   },
   genel_meydan_okuyan_ressam: {
     baslik: "The Street Painter",
-    metin: "A painter sitting in the square wants to do your portrait — for free, just because 'you have an interesting face'. You don't know what kind of picture will come out.",
+    metin: "A square painter offers a free portrait: 'you have an interesting face'. No telling how it'll turn out.",
     secenekler: [
       {
         metin: "Pose.",
         basariliSonuc: {
-          mesaj: "The painting came out surprisingly beautiful; the painter put it in an exhibition and your name was mentioned too.",
-          detay: "Being known in the city as 'the man in the painting' is a strange but pleasant feeling.",
+          mesaj: "A lovely portrait, exhibited with your name on it.",
+          detay: "Being 'the man in the painting' feels odd but nice.",
         },
         basarisizSonuc: {
-          mesaj: "The painting came out in a way that could hardly be called flattering; everyone laughed.",
-          detay: "What the artist called an 'interesting face' wasn't much of a compliment after all.",
+          mesaj: "The portrait was hardly flattering; everyone laughed.",
+          detay: "'Interesting face' wasn't much of a compliment.",
         },
       },
       {
         metin: "Decline politely.",
         basariliSonuc: {
           mesaj: "You declined and went on your way.",
-          detay: "Maybe you missed an interesting memory, but you took no risk.",
+          detay: "Maybe a missed memory, but no risk taken.",
         },
         basarisizSonuc: {
-          mesaj: "The painter insisted and kept you standing in the square a long time; the rest of the day you were on edge.",
-          detay: "A simple 'no' sometimes takes longer than you'd think.",
+          mesaj: "The painter held you up; you were on edge all day.",
+          detay: "A simple 'no' can take a while.",
         },
       },
     ],
   },
   genel_fotografhane_reklami: {
     baslik: "An Advertising Photograph",
-    metin: "A newly opened shop is looking for someone 'ordinary but trustworthy-looking' for an advertising photograph. You were chosen, but your photo will hang in the shop window.",
+    metin: "A new shop wants someone 'ordinary but trustworthy-looking' for an ad photo. You were chosen; it'll hang in the window.",
     secenekler: [
       {
-        metin: "Accept the offer, pose.",
+        metin: "Accept, pose.",
         basariliSonuc: {
-          mesaj: "Your photo was hung in the window; your acquaintances laugh when they see you.",
-          detay: "A small extra income and a fun reputation in the neighborhood.",
+          mesaj: "Your photo hung in the window; acquaintances laugh at you.",
+          detay: "Small extra income and a funny local fame.",
         },
         basarisizSonuc: {
-          mesaj: "You closed your eyes when the camera flashed; a comical shot was hung in the window.",
-          detay: "Everyone sees that shot and laughs; at least you got paid.",
+          mesaj: "You blinked at the flash; a comic shot hung in the window.",
+          detay: "Everyone laughs; at least you got paid.",
         },
       },
       {
         metin: "Refuse the offer.",
         basariliSonuc: {
           mesaj: "You refused and went on with your ordinary life.",
-          detay: "Appearing in shop windows isn't for everyone.",
+          detay: "Shop windows aren't for everyone.",
         },
         basarisizSonuc: {
-          mesaj: "The shop owner was persistent; to be rid of him you had to buy something small.",
-          detay: "Sometimes even saying no comes with a price.",
+          mesaj: "The owner pushed; you bought something small to escape.",
+          detay: "Even saying no sometimes has a price.",
         },
       },
     ],
   },
   genel_kurtlar_saldirisi: {
     baslik: "A Wolf Pack",
-    metin: "Because of the harsh winter, a starving wolf pack has been spotted near the village; they attack livestock at night, and even in daytime one must be careful.",
+    metin: "Starving wolves from the harsh winter are raiding livestock near the village.",
     secenekler: [
       {
-        metin: "Join the other villagers in a hunt.",
+        metin: "Join the hunt.",
         basariliSonuc: {
-          mesaj: "You scattered the pack; the village felt safe again.",
-          detay: "When one of the wolves came near you, you flinched but you didn't retreat.",
+          mesaj: "You scattered the pack; the village relaxed.",
+          detay: "You flinched but held your ground.",
         },
         basarisizSonuc: {
-          mesaj: "A wolf bit you; the wound healed but it ached for a long time.",
-          detay: "In this struggle with nature, this time you weren't the winner.",
+          mesaj: "A wolf bit you; the wound ached for long.",
+          detay: "This time nature won.",
         },
       },
       {
-        metin: "Stay home, bring your animals inside.",
+        metin: "Stay home, pen the animals in.",
         basariliSonuc: {
-          mesaj: "You brought your animals inside; the wolves turned to another house.",
-          detay: "You stayed safe but your neighbor's animals were killed.",
+          mesaj: "Animals safe inside; wolves went to another house.",
+          detay: "Your neighbor's animals died.",
         },
         basarisizSonuc: {
-          mesaj: "Despite the precautions a wolf forced the barn door and got inside.",
-          detay: "You lost one of your animals; nature sometimes doesn't heed precautions.",
+          mesaj: "A wolf forced the barn door and got in.",
+          detay: "You lost an animal.",
         },
       },
     ],
   },
   genel_yeni_icat_saati: {
     baslik: "The Pocket Watch Fashion",
-    metin: "A new, elegant pocket watch has become the fashion all over the city; those who don't own one are seen as 'backward'. The price is quite high.",
+    metin: "A fine pocket watch is all the rage; those without one seem backward. It is costly.",
     secenekler: [
       {
         metin: "Buy the watch.",
         basariliSonuc: {
-          mesaj: "Your watch drew attention; your circle began to see you as more 'modern'.",
-          detay: "A small accessory made an unexpected impact in your social circle.",
+          mesaj: "The watch turned heads; your circle finds you more modern.",
+          detay: "A small accessory, big impact.",
         },
         basarisizSonuc: {
-          mesaj: "The watch broke a week later; the repairman said its parts were fake.",
-          detay: "Following fashion is sometimes an expensive lesson.",
+          mesaj: "The watch broke in a week; its parts were fake.",
+          detay: "Fashion was a costly lesson.",
         },
       },
       {
-        metin: "Decide you don't need to buy it.",
+        metin: "Skip it.",
         basariliSonuc: {
-          mesaj: "You kept your money; the fashion changed after a while anyway.",
-          detay: "Acting with common sense always pays.",
+          mesaj: "You kept your money; the fashion soon passed.",
+          detay: "Sense pays off.",
         },
         basarisizSonuc: {
-          mesaj: "In some circles you were looked down on for 'not even having a watch'.",
-          detay: "Being sensible sometimes carries a social price.",
+          mesaj: "Some circles sneered: 'not even a watch'.",
+          detay: "Sense has a social price.",
         },
       },
     ],
   },
   genel_kutuphane_bulgusu: {
     baslik: "A Forgotten Manuscript",
-    metin: "In an old library, among the dusty shelves, you found an old and valuable-looking manuscript no one had noticed. You can hand it over to where it belongs or keep it for yourself.",
+    metin: "In an old library you found a valuable manuscript no one had noticed. Hand it in or keep it.",
     secenekler: [
       {
-        metin: "Hand the manuscript to the authorities.",
+        metin: "Hand it in.",
         basariliSonuc: {
-          mesaj: "The manuscript you handed over turned out to be a valuable historical document; your name went on record.",
-          detay: "Not claiming what you found made you known in the city for your honesty.",
+          mesaj: "It was a valuable historical document; your name was recorded.",
+          detay: "You became known for honesty.",
         },
         basarisizSonuc: {
-          mesaj: "You handed it over but no one took much interest; it was an ordinary document.",
-          detay: "Honesty isn't always rewarded with a great prize.",
+          mesaj: "You handed it in; it was ordinary and no one cared.",
+          detay: "Honesty isn't always rewarded.",
         },
       },
       {
-        metin: "Quietly keep it for yourself, maybe it's valuable.",
+        metin: "Quietly keep it.",
         basariliSonuc: {
-          mesaj: "The manuscript really was valuable; you sold it secretly to a collector.",
-          detay: "You got the money but you know whose it really was.",
+          mesaj: "It was valuable; you secretly sold it to a collector.",
+          detay: "Money in hand, guilt on mind.",
         },
         basarisizSonuc: {
-          mesaj: "The manuscript turned out to be a worthless copy; what you kept was a secret for nothing.",
-          detay: "Sometimes taking a risk gains you nothing, only wears on your conscience.",
+          mesaj: "A worthless copy; the secret was for nothing.",
+          detay: "The risk only wore on your conscience.",
         },
       },
     ],
   },
   genel_deprem: {
     baslik: "The Earth's Wrath",
-    metin: "At midnight the ground shook; some houses cracked, one collapsed entirely. In the morning the city is counting the damage and trying to tend its wounds.",
+    metin: "A midnight earthquake cracked houses and collapsed one. By morning the city tends its wounds.",
     secenekler: [
       {
-        metin: "Help pull people out from under the rubble.",
+        metin: "Help dig people from the rubble.",
         basariliSonuc: {
-          mesaj: "You pulled a family alive from the collapsed house; the city is talking about you.",
-          detay: "Your hands are covered in stone and dust but the lives you saved were worth it.",
+          mesaj: "You pulled a family out alive; the city talks of you.",
+          detay: "The lives saved were worth it.",
         },
         basarisizSonuc: {
-          mesaj: "During the rubble work a chunk of wall fell on you.",
-          detay: "Trying to help, you got hurt yourself.",
+          mesaj: "A chunk of wall fell on you in the rubble.",
+          detay: "You were hurt helping.",
         },
       },
       {
-        metin: "Prioritize your own house and your family's safety.",
+        metin: "Protect your home and family first.",
         basariliSonuc: {
-          mesaj: "Your family is safe; you repaired the damage to your house.",
-          detay: "You didn't help others, but first you protected your own hearth.",
+          mesaj: "Your family is safe; the house repaired.",
+          detay: "You helped no one else.",
         },
         basarisizSonuc: {
-          mesaj: "Your house was damaged too, and on top of that your neighbors drew away from you for not helping.",
-          detay: "Sometimes you can't protect both yourself and others.",
+          mesaj: "Your house was damaged and neighbors drew away.",
+          detay: "Sometimes you can't protect anyone.",
         },
       },
     ],
   },
   genel_yanlis_kimlik: {
     baslik: "They Mistook You for Someone Else",
-    metin: "A group of men cornered you and named someone allegedly in debt. You aren't that person but apparently you look a lot like him.",
+    metin: "Men corner you, naming a debtor. You aren't him, but you look just like him.",
     secenekler: [
       {
-        metin: "Stay calm, try to prove your identity.",
+        metin: "Stay calm, prove who you are.",
         basariliSonuc: {
-          mesaj: "In the end they listened and understood you were the wrong person.",
-          detay: "Your heart was racing but it ended well.",
+          mesaj: "They listened and saw you were the wrong man.",
+          detay: "Your heart raced, but it ended well.",
         },
         basarisizSonuc: {
-          mesaj: "The men didn't believe you; you were beaten and the money in your pocket was taken.",
-          detay: "Because of a wrong resemblance you paid someone else's debt with your body.",
+          mesaj: "They didn't believe you; they beat you and took your money.",
+          detay: "You paid another's debt with your body.",
         },
       },
       {
         metin: "Distract the crowd, run.",
         basariliSonuc: {
-          mesaj: "The crowd was startled for a moment and you slipped away.",
-          detay: "By the time you got home with your heart pounding you couldn't stop laughing.",
+          mesaj: "The crowd froze and you slipped away.",
+          detay: "At home you couldn't stop laughing.",
         },
         basarisizSonuc: {
-          mesaj: "You were caught while running; running made them even more suspicious.",
-          detay: "Proving your innocence became much harder after you ran.",
+          mesaj: "You were caught running; fleeing raised suspicion.",
+          detay: "Running made you look guilty.",
         },
       },
     ],
   },
   genel_kutlama_daveti_yanlislikla: {
     baslik: "An Invitation Sent by Mistake",
-    metin: "You received a magnificent invitation letter, not meant for you, addressed to your name probably by a clerical error. If you go, no one might notice.",
+    metin: "A grand invitation arrived in your name, likely by clerical error. If you go, no one may notice.",
     secenekler: [
       {
-        metin: "Go to the party, try your luck.",
+        metin: "Go, try your luck.",
         basariliSonuc: {
-          mesaj: "No one noticed the mistake; you even met some impressive names.",
-          detay: "Sometimes being in the right place matters more than whether you were invited.",
+          mesaj: "No one noticed; you met impressive people.",
+          detay: "Being there mattered more than the invite.",
         },
         basarisizSonuc: {
-          mesaj: "The host realized he didn't know you and had you shown out in front of everyone.",
-          detay: "A few shame-filled minutes weren't forgotten for a long time.",
+          mesaj: "The host didn't know you and had you shown out.",
+          detay: "The shame lingered a long time.",
         },
       },
       {
-        metin: "Send the invitation back, don't go.",
+        metin: "Send the invitation back.",
         basariliSonuc: {
-          mesaj: "Your honesty brought a small but satisfying peace.",
-          detay: "Maybe you missed an interesting evening but your conscience is clear.",
+          mesaj: "Honesty brought a small peace.",
+          detay: "Missed a night, conscience clear.",
         },
         basarisizSonuc: {
-          mesaj: "You sent the invitation back but curiosity gnawed at you for a long time.",
-          detay: "You did the right thing, and still couldn't help thinking 'what if I'd gone'.",
+          mesaj: "You sent it back, but curiosity gnawed at you.",
+          detay: "You wondered 'what if I'd gone'.",
         },
       },
     ],
   },
   genel_tarihi_veba_bilgini: {
     baslik: "Knowledge from Distant Lands",
-    metin: "A traveler returning from the east tells that in his homeland, keeping the sick apart worked in fighting the disease. This is a new idea most people will find strange.",
+    metin: "A traveler from the east says isolating the sick slows disease. Most find the idea strange.",
     secenekler: [
       {
-        metin: "Hear the idea out, try to apply it in your own circle.",
+        metin: "Hear him out, try it.",
         basariliSonuc: {
-          mesaj: "The simple measures you applied really did slow the spread of the disease in your neighborhood.",
-          detay: "No one quite understood why it worked but the results are there; they started to see you differently.",
+          mesaj: "Your measures slowed the disease in your neighborhood.",
+          detay: "People began to see you differently.",
         },
         basarisizSonuc: {
-          mesaj: "Your neighbors mocked the idea as 'foreign nonsense' and didn't apply it.",
-          detay: "Getting a new idea accepted sometimes takes time; this time there wasn't enough of it.",
+          mesaj: "Neighbors mocked it as 'foreign nonsense' and ignored it.",
+          detay: "New ideas take time; there wasn't enough.",
         },
       },
       {
-        metin: "Take no interest, trust the traditional methods.",
+        metin: "Ignore it, trust tradition.",
         basariliSonuc: {
-          mesaj: "You carried on with the usual methods; no one found you strange.",
-          detay: "Maybe you passed over a useful idea but at least you stayed in step.",
+          mesaj: "You kept to usual methods; no one found you odd.",
+          detay: "You fit in, maybe missed a chance.",
         },
         basarisizSonuc: {
           mesaj: "That year disease spread faster than ever around you.",
-          detay: "Maybe if you'd tried the new idea you could have made a difference; you'll never know.",
+          detay: "Maybe it would have helped; you'll never know.",
         },
       },
     ],
   },
   genel_sanayi_bulusu_hevesi: {
     baslik: "An Amateur Inventor",
-    metin: "Your neighbor claims a strange machine of his own design will make life easier and asks you for a small investment. The machine looks odd but your neighbor is very sure.",
+    metin: "Your neighbor swears his odd machine will ease life and asks for a small investment. He is very sure.",
     secenekler: [
       {
-        metin: "Make a small investment.",
+        metin: "Invest a little.",
         basariliSonuc: {
-          mesaj: "The machine really worked! Your neighbor set up a partnership with you and together you started a small production.",
-          detay: "While no one else would give this strange contraption a coin, you did, and you won.",
+          mesaj: "It worked! You and your neighbor started a small production.",
+          detay: "You won where everyone else passed.",
         },
         basarisizSonuc: {
-          mesaj: "The machine fell apart on the first trial; your neighbor is sad but you're sadder.",
-          detay: "Some enthusiasms are just enthusiasms.",
+          mesaj: "The machine fell apart on first trial; you grieved most.",
+          detay: "Some enthusiasm is only enthusiasm.",
         },
       },
       {
         metin: "Refuse politely.",
         basariliSonuc: {
-          mesaj: "You refused; your neighbor seemed a little put out but was understanding.",
-          detay: "Some risks aren't worth taking.",
+          mesaj: "You refused; your neighbor was a bit put out but understood.",
+          detay: "Some risks aren't worth it.",
         },
         basarisizSonuc: {
-          mesaj: "Your neighbor sold his machine to someone else and that person got rich.",
-          detay: "Learning about the opportunity you missed stung a little.",
+          mesaj: "He sold the machine to someone else, who got rich.",
+          detay: "The missed chance stung.",
         },
       },
     ],
   },
   genel_kayip_mektup_yillar_sonra: {
     baslik: "A Letter That Came Years Later",
-    metin: "The postman finally delivered to you a letter sent years ago that had gone to the wrong address. The sender was someone who, back then, was confessing their love for you.",
+    metin: "The postman delivered a letter misdirected years ago. The sender had confessed love for you.",
     secenekler: [
       {
-        metin: "Try to find the person who sent it.",
+        metin: "Try to find the sender.",
         basariliSonuc: {
-          mesaj: "You found the person; though they're married now, you parted with a good conversation and a mutual smile.",
-          detay: "Making peace with a piece of your past felt strange but good.",
+          mesaj: "You found them; married now, you parted after a warm talk.",
+          detay: "Making peace with the past felt good.",
         },
         basarisizSonuc: {
-          mesaj: "The person had long since moved to another city; you found no trace.",
-          detay: "Some stories are doomed to stay unfinished.",
+          mesaj: "They had moved to another city; no trace.",
+          detay: "Some stories stay unfinished.",
         },
       },
       {
-        metin: "Read the letter and keep it as a memory.",
+        metin: "Read it, keep it as a memory.",
         basariliSonuc: {
-          mesaj: "You read the letter, smiled, and carefully put it away in a box.",
-          detay: "A small piece of your past is with you now; sometimes that's enough.",
+          mesaj: "You read it, smiled and boxed it away.",
+          detay: "Sometimes that's enough.",
         },
         basarisizSonuc: {
-          mesaj: "The letter moved you more than you expected; you wandered around distracted for a few days.",
-          detay: "The past sometimes crashes into the present uninvited.",
+          mesaj: "The letter moved you; you wandered distracted for days.",
+          detay: "The past barges in uninvited.",
         },
       },
     ],
   },
   genel_sarhos_soylu_kavgasi: {
     baslik: "A Drunk Noble's Insolence",
-    metin: "At an inn a drunk noble insulted you and everyone around is waiting for your reaction. If you answer back you keep your honor, if you don't you keep your peace.",
+    metin: "A drunk noble insulted you at the inn and all await your reaction.",
     secenekler: [
       {
         metin: "Answer back sharply.",
         basariliSonuc: {
-          mesaj: "Your words drew the crowd's applause; the noble left embarrassed.",
-          detay: "For a long time you were known at the inn as 'the man who silenced a noble'.",
+          mesaj: "Your words drew applause; the noble left abashed.",
+          detay: "'The man who silenced a noble'.",
         },
         basarisizSonuc: {
-          mesaj: "The noble called his men and had you thrown out of the inn.",
-          detay: "You stood up for your honor and there was a price.",
+          mesaj: "The noble had his men throw you out.",
+          detay: "Honor had a price.",
         },
       },
       {
         metin: "Ignore it, leave quietly.",
         basariliSonuc: {
-          mesaj: "You left the inn before any scene.",
-          detay: "You boiled inside a bit but you didn't get into trouble.",
+          mesaj: "You left the inn without a scene.",
+          detay: "You simmered but stayed out of trouble.",
         },
         basarisizSonuc: {
-          mesaj: "Those at the inn read your silence as 'cowardice'.",
-          detay: "Being sensible sometimes costs you reputation.",
+          mesaj: "The inn took your silence for cowardice.",
+          detay: "Sense sometimes costs reputation.",
         },
       },
     ],
   },
   genel_kutu_muze_esyasi: {
     baslik: "An Antique Curiosity",
-    metin: "In the new fashion for 'antique collecting', you heard that an old family heirloom found in your attic might actually be valuable.",
+    metin: "Antiques are in fashion; an old heirloom from your attic may be valuable.",
     secenekler: [
       {
-        metin: "Show it to an expert, learn its value.",
+        metin: "Show an expert.",
         basariliSonuc: {
-          mesaj: "The item really was valuable; you sold it to a collector for a good price.",
-          detay: "Something that sat in the attic for years became an unexpected source of income.",
+          mesaj: "It was valuable; you sold it to a collector at a good price.",
+          detay: "The attic paid off unexpectedly.",
         },
         basarisizSonuc: {
-          mesaj: "The item turned out to be an ordinary imitation; you just paid the expert's fee.",
+          mesaj: "A plain imitation; you only paid the expert's fee.",
           detay: "Not every old thing is valuable.",
         },
       },
       {
-        metin: "Keep it as a family heirloom, don't sell.",
+        metin: "Keep it as an heirloom.",
         basariliSonuc: {
-          mesaj: "You kept the item; it became a memory to pass to the next generation of your family.",
-          detay: "Some things aren't measured in money.",
+          mesaj: "You kept it; a memory for the next generation.",
+          detay: "Not everything is measured in money.",
         },
         basarisizSonuc: {
-          mesaj: "Years later you learned the item was very valuable but by then it was lost.",
-          detay: "Sometimes even the right decision brings regret.",
+          mesaj: "Years later you learned it was very valuable, but it was lost.",
+          detay: "Even the right choice can bring regret.",
         },
       },
     ],
   },
   kisilik_sinirli_hakaret: {
     baslik: "Patience Lost",
-    metin: "In the marketplace someone shoved you deliberately and didn't even apologize. Something is boiling in you; holding back your anger is getting harder.",
+    metin: "In the market someone shoved you on purpose, no apology. You're seething.",
     secenekler: [
       {
-        metin: "Let your anger loose, put the man in his place.",
+        metin: "Let your anger out, put him in his place.",
         basariliSonuc: {
-          mesaj: "Your sharp response cornered the man; the crowd took your side.",
-          detay: "Your anger worked this time; everyone saw you were in the right.",
+          mesaj: "He was cornered; the crowd sided with you.",
+          detay: "Your anger worked this time.",
         },
         basarisizSonuc: {
-          mesaj: "The fight escalated, you were both beaten, and they fined you.",
-          detay: "Your temper put you in a tight spot again; you noticed this once more.",
+          mesaj: "The fight grew; you were both beaten and fined.",
+          detay: "Your temper burned you again.",
         },
       },
       {
-        metin: "Grit your teeth, take a deep breath, and walk away.",
+        metin: "Grit your teeth, breathe, walk away.",
         basariliSonuc: {
-          mesaj: "You barely held yourself back but you did it; a tension stayed inside you.",
-          detay: "Despite your quick-tempered nature you came out on top this time; it had rarely been this hard.",
+          mesaj: "You barely held back, but did; tension lingers.",
+          detay: "This time you won.",
         },
         basarisizSonuc: {
-          mesaj: "Even trying to stay calm, your anger boiled inside; you couldn't sleep that night.",
-          detay: "You felt the anger you suppressed was waiting somewhere to explode.",
+          mesaj: "Even holding back, you seethed and couldn't sleep.",
+          detay: "Suppressed anger waits to explode.",
         },
       },
     ],
   },
   kisilik_sakin_kaos: {
     baslik: "In the Middle of the Storm",
-    metin: "During a fire panic, while everyone screams and runs, you are strangely calm. This composure caught people's attention.",
+    metin: "In a fire panic, while all scream, you stay calm. It drew attention.",
     secenekler: [
       {
         metin: "Use your calm to direct the crowd.",
         basariliSonuc: {
-          mesaj: "Your voice and your calm broke the panic; people evacuated in an orderly way.",
-          detay: "Where everyone was screaming, your voice was heard, and that made you a natural leader.",
+          mesaj: "Your calm broke the panic; people evacuated in order.",
+          detay: "You became a natural leader.",
         },
         basarisizSonuc: {
-          mesaj: "Your calm wasn't enough this time; the crowd didn't listen to you.",
-          detay: "Sometimes even the calmest voice can't quell chaos.",
+          mesaj: "Calm wasn't enough; the crowd ignored you.",
+          detay: "Even the calmest voice can't quell chaos.",
         },
       },
       {
-        metin: "Quietly see to your own safety, don't step forward.",
+        metin: "Quietly save yourself.",
         basariliSonuc: {
-          mesaj: "You calmly moved somewhere safe; no one noticed you.",
-          detay: "Your composure only helped yourself this time, and that was enough.",
+          mesaj: "You calmly reached safety unnoticed.",
+          detay: "Calm was enough for you.",
         },
         basarisizSonuc: {
-          mesaj: "Your staying calm led to you being questioned afterward: 'why didn't you help?'",
-          detay: "Calm is sometimes misread as indifference.",
+          mesaj: "Later they asked: 'why didn't you help?'",
+          detay: "Calm is mistaken for indifference.",
         },
       },
     ],
   },
   kisilik_kibirli_kucumseme: {
     baslik: "The Man You Looked Down On",
-    metin: "You argued with a plainly dressed man and belittled him. Later you learned he was the head of one of the most influential families in the city — going about in disguise.",
+    metin: "You belittled a plainly dressed man; he was a powerful family head in disguise.",
     secenekler: [
       {
-        metin: "Use his secret as blackmail! Your pride doesn't bend.",
+        metin: "Blackmail him with his secret.",
         basariliSonuc: {
-          mesaj: "You threatened to spread word of the noble going about in disguise. He paid you a hefty 'hush fee'.",
-          detay: "Your pride made you rich, but you made a very powerful enemy in the shadows.",
+          mesaj: "You threatened to expose him; he paid a hefty hush fee.",
+          detay: "Rich now, with a powerful enemy.",
         },
         basarisizSonuc: {
-          mesaj: "The noble, unable to stomach the blackmail against his pride, sent assassins to your house that night. You paid for your pride with your life.",
+          mesaj: "The noble sent assassins; your pride cost you your life.",
         },
       },
       {
-        metin: "Go and apologize, swallow your pride.",
+        metin: "Apologize, swallow your pride.",
         basariliSonuc: {
-          mesaj: "Your apology was accepted; the man was understanding, but the damage was done.",
-          detay: "Swallowing your pride was hard but at least you didn't gain a great enemy.",
+          mesaj: "Apology accepted; he was understanding.",
+          detay: "At least you made no great enemy.",
         },
         basarisizSonuc: {
-          mesaj: "Your apology wasn't found sincere enough; the man shut you out of his business.",
-          detay: "Your pride cost you dearly this time.",
+          mesaj: "He found the apology insincere and shut you out of business.",
+          detay: "Your pride cost you dearly.",
         },
       },
       {
-        metin: "Don't care, it doesn't matter who he is.",
+        metin: "Shrug it off, who he is doesn't matter.",
         basariliSonuc: {
-          mesaj: "Surprisingly nothing happened; the man seems to have forgotten the matter.",
-          detay: "This time your pride cost you nothing, but you shouldn't count on luck.",
+          mesaj: "Nothing happened; he seems to have forgotten.",
+          detay: "Don't count on luck.",
         },
         basarisizSonuc: {
-          mesaj: "Using his influence, the man made things hard for you in many circles.",
-          detay: "Your pride gained you a powerful enemy you never knew.",
+          mesaj: "He used his influence to make life hard for you.",
+          detay: "Your pride won you a powerful enemy.",
         },
       },
     ],
   },
   kisilik_alayci_dil: {
     baslik: "A Poisoned Joke",
-    metin: "At a gathering you made a mocking joke aimed at an influential person; everyone laughed but the target didn't.",
+    metin: "At a gathering you cracked a mocking joke at an influential man; all laughed but him.",
     secenekler: [
       {
         metin: "Defend your joke, don't back down.",
         basariliSonuc: {
-          mesaj: "The crowd backed you; your reputation for being 'blunt' grew.",
-          detay: "Your sharp tongue earned you respect this time.",
+          mesaj: "The crowd backed you; you're now known as blunt.",
+          detay: "Your sharp tongue earned respect.",
         },
         basarisizSonuc: {
-          mesaj: "The target turned out to be powerful; he quietly began sabotaging your business.",
-          detay: "You started paying the price of your mockery over the long run.",
+          mesaj: "He was powerful; he quietly began sabotaging your business.",
+          detay: "You began paying for your mockery.",
         },
       },
       {
-        metin: "Say it was a joke, smooth things over.",
+        metin: "Say it was a joke, smooth it over.",
         basariliSonuc: {
-          mesaj: "You eased the tension; though the man seemed offended the matter didn't grow.",
-          detay: "You managed to rein in your sharp tongue this time.",
+          mesaj: "Tension eased; he was offended but it went no further.",
+          detay: "You reined in your tongue.",
         },
         basarisizSonuc: {
-          mesaj: "Your attempt to smooth it over looked even more smug; no one was convinced.",
+          mesaj: "Your attempt looked even more smug; no one was convinced.",
           detay: "Sometimes the damage is already done.",
         },
       },
@@ -2459,633 +2459,633 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
   },
   kisilik_umutlu_karanlikta_isik: {
     baslik: "A Light in the Dark",
-    metin: "After a bad harvest/downturn everyone around you has lost hope. You still believe things will get better and you want to share that with people.",
+    metin: "After hard times everyone lost hope. You still believe things will improve.",
     secenekler: [
       {
-        metin: "Rally people, revive their hope.",
+        metin: "Rally people, revive hope.",
         basariliSonuc: {
-          mesaj: "Your words gave people strength; you decided together to get through the hardship.",
-          detay: "Your hope created a community spirit where most people had given up.",
+          mesaj: "Your words gave strength; you resolved to endure together.",
+          detay: "Your hope built a community spirit.",
         },
         basarisizSonuc: {
-          mesaj: "Your optimism was criticized by some as 'out of touch with reality'.",
-          detay: "Hope doesn't always convince everyone.",
+          mesaj: "Some called your optimism out of touch.",
+          detay: "Hope doesn't convince everyone.",
         },
       },
       {
-        metin: "Be content with your own hope, move on quietly.",
+        metin: "Carry your hope quietly.",
         basariliSonuc: {
-          mesaj: "Your hope kept you standing without anyone seeing.",
-          detay: "Sometimes hope, even unshared, is enough to keep one person on their feet.",
+          mesaj: "Your hope kept you standing, unseen.",
+          detay: "Unshared, hope still suffices.",
         },
         basarisizSonuc: {
-          mesaj: "Your hope didn't match reality this time; you were disappointed.",
-          detay: "Optimism isn't always rewarded, but it doesn't teach you to give up either.",
+          mesaj: "Reality didn't match your hope; you were let down.",
+          detay: "Unrewarded, but you didn't give up.",
         },
       },
     ],
   },
   kisilik_umutsuz_neden_ugrasayim: {
     baslik: "Why Bother",
-    metin: "A real opportunity has come your way but a voice inside says 'it's pointless anyway'. Trying costs time and effort, not trying means staying in the same place forever.",
+    metin: "A real chance appeared, but a voice says 'it's pointless anyway'.",
     secenekler: [
       {
-        metin: "Try anyway, maybe this time is different.",
+        metin: "Try anyway.",
         basariliSonuc: {
-          mesaj: "Surprisingly it worked; maybe it isn't all pointless after all.",
-          detay: "Despite the hopelessness inside you, trying turned out better than you thought.",
+          mesaj: "Surprisingly it worked; maybe not all is pointless.",
+          detay: "Trying turned out better than expected.",
         },
         basarisizSonuc: {
-          mesaj: "It went as you expected; it didn't work, and you thought that proved you right.",
-          detay: "'I knew it,' you told yourself, but a small new disappointment piled up inside.",
+          mesaj: "As expected, it failed.",
+          detay: "'I knew it,' you said, but it hurt.",
         },
       },
       {
-        metin: "Don't bother, it won't matter anyway.",
+        metin: "Don't bother, it won't matter.",
         basariliSonuc: {
-          mesaj: "You let the opportunity pass; life went on in its usual course.",
-          detay: "Something inside said 'what if I'd tried' but you didn't want to admit it.",
+          mesaj: "You let it pass; life went on as usual.",
+          detay: "You wouldn't admit 'what if'.",
         },
         basarisizSonuc: {
-          mesaj: "Seeing someone else succeed with the same opportunity stung.",
-          detay: "The thing you didn't try blossoming in someone else's hands deepened your hopelessness.",
+          mesaj: "Seeing someone else succeed with it stung.",
+          detay: "Your hopelessness deepened.",
         },
       },
     ],
   },
   kisilik_depresif_agir_gunler: {
     baslik: "Heavy Days",
-    metin: "For weeks there's been a toxic weight you can't shake off; even getting out of bed seems impossible now. Those around you say 'pull yourself together' but that dark pit is pulling you in.",
+    metin: "For weeks a heavy weight won't lift; getting up seems impossible. They say 'pull yourself together', but the dark pulls you in.",
     secenekler: [
       {
-        metin: "Ask for help, open up to someone.",
+        metin: "Ask for help, open up.",
         basariliSonuc: {
-          mesaj: "Opening up to someone wasn't as hard as you expected; the load lightened a little and you got on your feet.",
-          detay: "A weight you don't carry alone became bearable.",
+          mesaj: "Opening up wasn't hard; the load eased and you rose.",
+          detay: "A shared load is lighter.",
         },
         basarisizSonuc: {
-          mesaj: "The person you opened up to didn't understand and said 'you're exaggerating'.",
-          detay: "Opening up to the wrong person is sometimes heavier than not opening up at all.",
+          mesaj: "They didn't understand: 'you're exaggerating'.",
+          detay: "Opening up to the wrong person weighs more.",
         },
       },
       {
-        metin: "Tell no one, wait it out alone in your bed.",
+        metin: "Tell no one, wait it out in bed.",
         basariliSonuc: {
-          mesaj: "You got through the days, hard as it was; no one noticed anything.",
-          detay: "Carrying the weight alone wore you down, but by some miracle you survived.",
+          mesaj: "You got through the days; no one noticed.",
+          detay: "Carrying it alone wore you down, but you lived.",
         },
         basarisizSonuc: {
-          mesaj: "The weight swallowed you completely. You slept for days, lost your job, and your health quickly deteriorated.",
-          detay: "The darkness inside you began to consume your body too.",
+          mesaj: "It swallowed you; you lost your job and your health failed.",
+          detay: "The darkness consumes your body too.",
         },
       },
     ],
   },
   kisilik_cesur_kimsenin_girmedigi: {
     baslik: "Where No One Goes",
-    metin: "There is said to be something valuable in a collapsed building/cave/ruin that everyone calls dangerous and impassable. No one dares to go.",
+    metin: "A collapsed ruin is said to hold something valuable, but all call it too dangerous.",
     secenekler: [
       {
-        metin: "Go inside, take the risk.",
+        metin: "Go in, risk it.",
         basariliSonuc: {
-          mesaj: "You really did find something valuable inside; you did what no one else dared.",
-          detay: "Your courage paid off once more; in the city your name is spoken as 'the fearless one'.",
+          mesaj: "You found something valuable where no one dared go.",
+          detay: "Called 'the fearless' in town.",
         },
         basarisizSonuc: {
-          mesaj: "The structure collapsed; you barely escaped being buried under the rubble.",
-          detay: "This time your courage nearly cost you your life.",
+          mesaj: "The ruin collapsed; you barely escaped the rubble.",
+          detay: "Courage nearly cost your life.",
         },
       },
       {
-        metin: "Act with common sense, don't take the risk this time.",
+        metin: "Be sensible, skip the risk.",
         basariliSonuc: {
-          mesaj: "You suppressed the voice inside and kept away; with a strange unease you're safe.",
-          detay: "You chose not to use your courage this time and that was a kind of strength too.",
+          mesaj: "You stayed away; uneasy, but safe.",
+          detay: "Not going in took strength too.",
         },
         basarisizSonuc: {
-          mesaj: "Someone else went in and found the treasure; they teased you, 'why didn't you go in?'",
-          detay: "This is a price of being known as brave: even when you don't go in, an explanation is expected.",
+          mesaj: "Someone else took the treasure; they teased: 'why didn't you go?'",
+          detay: "Even not going in needed explaining.",
         },
       },
     ],
   },
   kisilik_huzunlu_gecmisin_golgesi: {
     baslik: "The Shadow of the Past",
-    metin: "You came across a place/object/name that reminds you of an old pain. The sadness inside you came alive again and for a while those around you noticed.",
+    metin: "A place, object or name recalled an old pain; your sadness stirred again.",
     secenekler: [
       {
-        metin: "Face your sadness, accept that memory.",
+        metin: "Face your sadness, accept the memory.",
         basariliSonuc: {
-          mesaj: "Facing it was painful but somehow it eased you inside.",
-          detay: "Accepting your sadness instead of suppressing it brought a peace you didn't expect.",
+          mesaj: "Facing it hurt but eased you.",
+          detay: "Acceptance brought unexpected peace.",
         },
         basarisizSonuc: {
-          mesaj: "The confrontation was heavier than you expected; for a few days you couldn't speak to anyone.",
-          detay: "Some memories don't pass easily, even faced.",
+          mesaj: "It was too heavy; you couldn't speak for days.",
+          detay: "Some memories don't pass easily.",
         },
       },
       {
-        metin: "Hide your sadness, carry on with daily life.",
+        metin: "Hide your sadness, carry on.",
         basariliSonuc: {
-          mesaj: "You kept your sadness inside and went on with your work; no one noticed.",
-          detay: "Your sadness goes on being your silent companion.",
+          mesaj: "You kept it inside and worked on; no one noticed.",
+          detay: "Sadness stays your quiet companion.",
         },
         basarisizSonuc: {
-          mesaj: "Trying to hide it wore you down further; your sadness turned into a physical weight.",
-          detay: "Suppressed feelings sometimes find a place in your body.",
+          mesaj: "Hiding it wore you down; sadness became physical weight.",
+          detay: "Suppressed feelings settle in the body.",
         },
       },
     ],
   },
   kisilik_sosyal_herkesin_tanidigi: {
     baslik: "A Face Everyone Knows",
-    metin: "Thanks to your wide circle you heard about an opportunity you normally couldn't reach — an acquaintance of an acquaintance opened a special door for you.",
+    metin: "Your wide circle tipped you off to an opportunity you couldn't normally reach.",
     secenekler: [
       {
-        metin: "Use your connections, make the most of the opportunity.",
+        metin: "Use your connections.",
         basariliSonuc: {
-          mesaj: "Thanks to your connections the door really did open; everyone showed once more the value of saying 'I know him'.",
-          detay: "Your wide circle worked for you again; for some people, a network is worth more than capital.",
+          mesaj: "The door opened thanks to your connections.",
+          detay: "A network can beat capital.",
         },
         basarisizSonuc: {
-          mesaj: "The opportunity wasn't as good as it looked; your time and hope went to waste.",
-          detay: "Sometimes knowing too many people means being open to the wrong opportunities too.",
+          mesaj: "The chance wasn't as good as it looked; time wasted.",
+          detay: "A wide circle also opens wrong doors.",
         },
       },
       {
-        metin: "Offer the opportunity to a friend, let it go to them.",
+        metin: "Offer it to a friend.",
         basariliSonuc: {
-          mesaj: "Your friend made use of the opportunity and remained grateful to you for life.",
-          detay: "Sometimes opening a door for someone else feels more valuable than opening it for yourself.",
+          mesaj: "Your friend seized it and stayed grateful.",
+          detay: "Opening a door for others feels better.",
         },
         basarisizSonuc: {
-          mesaj: "Your friend couldn't make use of the opportunity; you were both a little disappointed.",
-          detay: "Good intentions don't always give the result you want.",
+          mesaj: "Your friend failed to use it; you were both let down.",
+          detay: "Good intentions don't always work.",
         },
       },
     ],
   },
   kisilik_icedonuk_kalabaliktan_kacis: {
     baslik: "Escape from the Crowd",
-    metin: "You're expected at a big, loud party; being there could help you meet important people, but even the thought of it exhausts you.",
+    metin: "You're expected at a big, loud party; you could meet important people, but the thought exhausts you.",
     secenekler: [
       {
         metin: "Push yourself, go.",
         basariliSonuc: {
-          mesaj: "Hard as it was, you went; you made a few valuable acquaintances.",
-          detay: "The crowd wore you out but it wasn't entirely for nothing.",
+          mesaj: "Hard as it was, you went and made a few valuable contacts.",
+          detay: "Draining, but not for nothing.",
         },
         basarisizSonuc: {
-          mesaj: "You were overwhelmed in the crowd and left early; this was noticed.",
-          detay: "Pushing yourself doesn't always work; this time the price was heavy.",
+          mesaj: "Overwhelmed, you left early, and it was noticed.",
+          detay: "Pushing yourself cost you dearly.",
         },
       },
       {
-        metin: "Decline with a polite excuse, protect your own peace.",
+        metin: "Decline with a polite excuse.",
         basariliSonuc: {
-          mesaj: "You spent a calm evening at home; you gathered yourself again.",
-          detay: "Not everyone has to socialize; knowing your own peace is a strength too.",
+          mesaj: "A calm evening at home restored you.",
+          detay: "Knowing your peace is strength too.",
         },
         basarisizSonuc: {
-          mesaj: "An important opportunity was discussed at the party you didn't attend; you learned later that you'd missed it.",
-          detay: "Your introversion protected you but it closed a door too.",
+          mesaj: "An important chance came up at the party; you missed it.",
+          detay: "It protected you but closed a door.",
         },
       },
     ],
   },
   kisilik_sivridilli_soz_bedeli: {
     baslik: "The Price of Your Words",
-    metin: "A sharp remark you made without thinking, aimed at an influential person, spread quickly. Some count it as courage, some as disrespect.",
+    metin: "A sharp remark you blurted at an influential man spread fast. Some call it courage, some disrespect.",
     secenekler: [
       {
-        metin: "Stand behind your words, don't back down.",
+        metin: "Stand by your words.",
         basariliSonuc: {
-          mesaj: "You became known for your honesty; many people, it turned out, were thinking the same thing.",
-          detay: "Your sharp tongue was read this time as a mark of courage.",
+          mesaj: "You became known for honesty; many thought the same.",
+          detay: "Your sharp tongue read as courage.",
         },
         basarisizSonuc: {
-          mesaj: "The target turned out to be powerful; he quietly began making things hard for you.",
-          detay: "Your words had a price and you're paying it now.",
+          mesaj: "He was powerful; he quietly made things hard for you.",
+          detay: "You're paying for your words now.",
         },
       },
       {
-        metin: "Apologize, try to repair the relationship.",
+        metin: "Apologize, mend the relationship.",
         basariliSonuc: {
-          mesaj: "Your apology was accepted; the relationship was repaired, though your pride took a little hit.",
-          detay: "Reining in your sharp tongue was hard but it worked.",
+          mesaj: "Apology accepted; relations mended, pride dented.",
+          detay: "Reining in your tongue worked.",
         },
         basarisizSonuc: {
-          mesaj: "Your apology wasn't found sincere enough; the relationship was already damaged.",
-          detay: "Some words can't be taken back once spoken.",
+          mesaj: "Apology found insincere; the damage was done.",
+          detay: "Some words can't be taken back.",
         },
       },
     ],
   },
   kisilik_yumusakbasli_herkesin_sevdigi: {
     baslik: "Kindness Exploited",
-    metin: "Thanks to your gentle nature everyone likes you, but this time someone is openly abusing your good will and making a very heavy, unfair demand of you.",
+    metin: "Everyone likes your gentle nature; someone abuses it with a heavy, unfair demand.",
     secenekler: [
       {
-        metin: "Say no gently but clearly.",
+        metin: "Say no, gently but firmly.",
         basariliSonuc: {
-          mesaj: "Your gentle but firm stance earned respect; the man gave up on what he wanted.",
-          detay: "Being gentle doesn't mean being unable to set a boundary; you proved that.",
+          mesaj: "Your firm stance earned respect; he backed off.",
+          detay: "Gentle doesn't mean boundaryless.",
         },
         basarisizSonuc: {
-          mesaj: "Your refusal was met with surprise by some: 'that's not like him'.",
-          detay: "Setting a boundary may seem against your nature but sometimes it's necessary.",
+          mesaj: "Some were surprised: 'that's not like him'.",
+          detay: "Boundaries are sometimes necessary.",
         },
       },
       {
-        metin: "Accept as always, don't disturb the peace.",
+        metin: "Accept as always.",
         basariliSonuc: {
-          mesaj: "You accepted the request; the man left pleased but you diminished a little more.",
-          detay: "Pleasing everyone sometimes reduces your own share.",
+          mesaj: "You agreed; he left pleased, you diminished.",
+          detay: "Pleasing everyone shrinks your share.",
         },
         basarisizSonuc: {
-          mesaj: "Your accepting opened the door for the man to use you again and again.",
-          detay: "Your kindness got you exploited this time. When you look in the mirror you're angry at yourself.",
+          mesaj: "Your yes invited him to use you again and again.",
+          detay: "Your kindness was exploited; you're angry at yourself.",
         },
       },
     ],
   },
   kisilik_rekabetci_kim_daha_iyi: {
     baslik: "Who Is Better",
-    metin: "An acquaintance has openly started competing with you: who will earn more, who will be better known. This rivalry spurs you on.",
+    metin: "An acquaintance openly competes with you: who earns more, who is better known.",
     secenekler: [
       {
-        metin: "Accept the rivalry, lay everything on the line.",
+        metin: "Accept the rivalry, give your all.",
         basariliSonuc: {
-          mesaj: "You won the rivalry by a wide margin; even your rival had to congratulate you.",
-          detay: "Your competitive nature put you out front once more.",
+          mesaj: "You won by a wide margin; even your rival congratulated you.",
+          detay: "Your competitive streak paid off.",
         },
         basarisizSonuc: {
-          mesaj: "Your rival left you behind; losing felt heavier than ever.",
-          detay: "Your competitive spirit sometimes pushes you into more risk than you should take and crushes you when you lose.",
+          mesaj: "Your rival left you behind; losing hit hard.",
+          detay: "Rivalry sometimes pushes you into too much risk.",
         },
       },
       {
-        metin: "Ignore the rivalry, go at your own pace.",
+        metin: "Ignore the rivalry.",
         basariliSonuc: {
-          mesaj: "You didn't get into the rivalry; though there was an unease inside, your business went healthily.",
-          detay: "Learning not to enter every race is a kind of maturity too.",
+          mesaj: "You stayed out; uneasy, but business ran healthily.",
+          detay: "Skipping some races is maturity.",
         },
         basarisizSonuc: {
-          mesaj: "Your rival read your not competing as 'accepting defeat'.",
-          detay: "Even your withdrawing was read by others as a result, and it hurt your pride.",
+          mesaj: "Your rival read your absence as conceding defeat.",
+          detay: "Even withdrawing counted as defeat.",
         },
       },
     ],
   },
   kisilik_hirsli_yeterince_degil: {
     baslik: "Never Enough",
-    metin: "You have a business that's going well, but the voice inside you says 'not enough, there must be more'. A bigger move is risky but your ambition won't stop you.",
+    metin: "Your business does well, but a voice says 'not enough, there must be more'. A big move is risky.",
     secenekler: [
       {
-        metin: "Take the risk to grow everything.",
+        metin: "Risk it to grow.",
         basariliSonuc: {
-          mesaj: "Your big move paid off; your business jumped to a higher level.",
-          detay: "Your ambition carried you forward once more; but the voice inside still says 'there must be more'.",
+          mesaj: "The big move paid off; your business jumped a level.",
+          detay: "Ambition carried you; the voice won't quiet.",
         },
         basarisizSonuc: {
-          mesaj: "Your big move didn't work; you lost even part of your solid business.",
-          detay: "Your ambition convinced you not to be content with enough this time, and you paid dearly for it.",
+          mesaj: "The move failed; you lost part of your solid business.",
+          detay: "Ambition ignored enough; you paid dearly.",
         },
       },
       {
-        metin: "Be content with what you have, don't take the risk.",
+        metin: "Settle for what you have.",
         basariliSonuc: {
-          mesaj: "You were content with what you had; despite the unease inside you, your business stayed stable.",
-          detay: "You managed to rein in your ambition this time; it wasn't easy.",
+          mesaj: "You settled; uneasy, but your business stayed stable.",
+          detay: "You reined in ambition this time.",
         },
         basarisizSonuc: {
-          mesaj: "Though you tried to be content, the dissatisfaction inside you kept you sleepless for days.",
-          detay: "Having an ambitious nature turns saying 'enough' into a torment.",
+          mesaj: "Even settled, dissatisfaction kept you sleepless for days.",
+          detay: "For the ambitious, 'enough' is torment.",
         },
       },
     ],
   },
   kisilik_vicdanli_vicdanin_sesi: {
     baslik: "The Voice of Your Conscience",
-    metin: "There's an easy and very profitable path no one would notice, but this path means an innocent person is unjustly harmed. Your conscience won't leave you alone.",
+    metin: "An easy, profitable path no one would notice would harm an innocent. Your conscience nags.",
     secenekler: [
       {
-        metin: "Listen to your conscience, refuse the easy path.",
+        metin: "Heed your conscience, refuse.",
         basariliSonuc: {
-          mesaj: "You listened to the voice of your conscience; though no one knows, you're at peace with yourself.",
-          detay: "Your conscientious nature steered you toward the right thing once more. You lay your head easy on the pillow.",
+          mesaj: "You heeded your conscience; no one knows, but you're at peace.",
+          detay: "You sleep easy.",
         },
         basarisizSonuc: {
-          mesaj: "You did the right thing but it cost more than you expected.",
-          detay: "Listening to your conscience sometimes has a concrete price.",
+          mesaj: "You did right, but it cost more than expected.",
+          detay: "Conscience sometimes has a real price.",
         },
       },
       {
-        metin: "Tell yourself 'I have no choice this time', take the easy path.",
+        metin: "Say 'I must', take the easy path.",
         basariliSonuc: {
-          mesaj: "You won, but that innocent man's face won't leave your mind.",
-          detay: "For a conscientious person, this choice left a poison far heavier than the money you gained.",
+          mesaj: "You won, but the innocent's face haunts you.",
+          detay: "The money weighs less than the poison.",
         },
         basarisizSonuc: {
-          mesaj: "You neither got the gain you expected nor kept your conscience; it ate you alive.",
-          detay: "Acting against your nature feels twice as heavy when you lose.",
+          mesaj: "You got neither the gain nor a clear conscience.",
+          detay: "Acting against nature hurts twice.",
         },
       },
     ],
   },
   yerlesim_sinir_baskini: {
     baslik: "A Raid on the Border",
-    metin: "At midnight a small raiding party attacked your village on the border. You woke to gunshots, burning houses, and screams.",
+    metin: "At midnight raiders hit your border village. You woke to gunfire, burning houses and screams.",
     secenekler: [
       {
-        metin: "Grab your weapon and run to the village's defense.",
+        metin: "Grab your weapon, defend the village.",
         basariliSonuc: {
-          mesaj: "You helped drive off the raid; the villagers were grateful to you.",
-          detay: "You took your share of the spoils and the thanks.",
+          mesaj: "You helped repel the raid; villagers are grateful.",
+          detay: "You got your share of spoils and thanks.",
         },
         basarisizSonuc: {
-          mesaj: "You were badly wounded in the fighting; it took weeks to heal.",
-          detay: "The price of living on the border sometimes stays in your flesh.",
+          mesaj: "Badly wounded in the fight; healing took weeks.",
+          detay: "The border's price stays in your flesh.",
         },
       },
       {
-        metin: "Take your family and flee to the forest, let the raid pass.",
+        metin: "Take your family, flee to the forest.",
         basariliSonuc: {
-          mesaj: "You saved your life but when you returned half your house had been plundered.",
-          detay: "Those who live on the border learn to choose life over property.",
+          mesaj: "You saved your life; half your house was plundered.",
+          detay: "Border folk choose life over property.",
         },
         basarisizSonuc: {
-          mesaj: "While fleeing you ran into the raiders; you lost your belongings and took a few wounds.",
-          detay: "On the border, peace is something rented for a short while.",
+          mesaj: "You ran into raiders; lost belongings and took wounds.",
+          detay: "On the border, peace is short-term rent.",
         },
       },
     ],
   },
   yerlesim_sehir_salgin_kalabaligi: {
     baslik: "The Crowded Bazaar",
-    metin: "The bazaar in the city center is packed as always; but this month cases of feverish illness are rising fast. Standing in the crowd is risky, staying away means missing opportunities.",
+    metin: "The bazaar is packed, but a fever illness is spreading. Going is risky; staying away costs chances.",
     secenekler: [
       {
-        metin: "Mingle in the bazaar, make the most of opportunities.",
+        metin: "Join the bazaar, seize chances.",
         basariliSonuc: {
-          mesaj: "You caught a good bargain in the crowd; the illness passed you by too.",
-          detay: "This is the advantage of living in the city: opportunity is always in the crowd.",
+          mesaj: "You caught a good bargain and no illness.",
+          detay: "Opportunity is in the crowd.",
         },
         basarisizSonuc: {
-          mesaj: "After the bazaar your fever spiked; you spent days in bed.",
-          detay: "In crowded cities illness spreads as fast as opportunity.",
+          mesaj: "Back from the bazaar your fever rose; days in bed.",
+          detay: "Illness spreads as fast as opportunity.",
         },
       },
       {
-        metin: "Stay home, get through this month.",
+        metin: "Stay home, get through the month.",
         basariliSonuc: {
-          mesaj: "You stayed home and were protected from the illness; but you missed the bazaar's opportunities.",
-          detay: "Some months pass with just surviving.",
+          mesaj: "Safe from illness, but you missed the bazaar's chances.",
+          detay: "Some months are just survival.",
         },
         basarisizSonuc: {
-          mesaj: "Despite staying home, one of the neighbors carried the illness; you got through it with a small expense.",
-          detay: "Isolating completely in a city is nearly impossible.",
+          mesaj: "A neighbor still brought the illness; a small expense got you through.",
+          detay: "Total isolation in a city is near impossible.",
         },
       },
     ],
   },
   sanayi_fabrika_grevi: {
     baslik: "A Factory Strike",
-    metin: "In the {bolge} factories the workers went on strike for a wage raise and humane conditions. The streets are full of tension; soldiers are on the way. Everyone expects you to pick a side.",
+    metin: "{bolge} factory workers struck for better pay and conditions. Streets are tense, soldiers are coming. Pick a side.",
     secenekler: [
       {
-        metin: "Support the strike, stand with the workers.",
+        metin: "Back the strike, stand with workers.",
         basariliSonuc: {
-          mesaj: "The strike ended in a partial victory; the workers will count you on their side.",
-          detay: "In the industrial age, taking the side of the oppressed is most often a proud decision with no going back.",
+          mesaj: "The strike ended in partial victory; workers count you as theirs.",
+          detay: "Siding with the oppressed is a proud choice.",
         },
         basarisizSonuc: {
-          mesaj: "The strike was bloodily crushed; your name was named among the ringleaders. You were beaten.",
-          detay: "Factory owners don't forget this kind of thing.",
+          mesaj: "The strike was crushed; you were named a ringleader and beaten.",
+          detay: "Factory owners don't forget.",
         },
       },
       {
-        metin: "Oppose it, take the side of the employers (capital).",
+        metin: "Side with the employers.",
         basariliSonuc: {
-          mesaj: "The employers showed their appreciation; your strongbox filled up a bit.",
-          detay: "The winners of the industrial age are most often not the most merciful but those who pick the right side.",
+          mesaj: "Employers were pleased; your strongbox filled a bit.",
+          detay: "Winners pick the right side.",
         },
         basarisizSonuc: {
-          mesaj: "The workers didn't forget your stance; one night walking down the street you were attacked.",
-          detay: "Some choices bring a short-term gain and a long-term, painful price.",
+          mesaj: "Workers didn't forget; you were attacked one night.",
+          detay: "Short-term gain, long-term price.",
         },
       },
     ],
   },
   sanayi_sendika_toplantisi: {
     baslik: "A Secret Union Meeting",
-    metin: "A newly formed union in your neighborhood is secretly gathering members. {dost} suggests you join too; the solidarity is strong but in the state's eyes it's a risky allegiance.",
+    metin: "A new union secretly recruits in your neighborhood. {dost} urges you to join; strong solidarity, but risky in the state's eyes.",
     secenekler: [
       {
-        metin: "Join the union, act together with {dost}.",
+        metin: "Join, act together with {dost}.",
         basariliSonuc: {
-          mesaj: "The meeting went well; {dost} was glad you were beside him.",
-          detay: "The age of solidarity rewards those who act together.",
+          mesaj: "The meeting went well; {dost} is glad you're there.",
+          detay: "Solidarity rewards unity.",
         },
         basarisizSonuc: {
-          mesaj: "The meeting ended in chaos with a police raid. You barely got away.",
-          detay: "No organizing effort runs smoothly the first time.",
+          mesaj: "Police raided the meeting; you barely escaped.",
+          detay: "First attempts rarely run smooth.",
         },
       },
       {
-        metin: "Don't join, prefer to stay independent and safe.",
+        metin: "Don't join; stay independent and safe.",
         basariliSonuc: {
-          mesaj: "You stayed independent; {dost} was a little disappointed but respected it.",
-          detay: "Not every road has to be walked together.",
+          mesaj: "You stayed independent; {dost} was disappointed but respected it.",
+          detay: "Not every road is walked together.",
         },
         basarisizSonuc: {
-          mesaj: "{dost} told people around that this decision made you a 'boss's toady'.",
-          detay: "Independence is sometimes read as loneliness and betrayal.",
+          mesaj: "{dost} called you a 'boss's toady' around town.",
+          detay: "Independence can be read as betrayal.",
         },
       },
     ],
   },
   sanayi_gazete_haberi: {
     baslik: "A Newspaper Article",
-    metin: "A local newspaper is preparing an article about you. The reporter asks whether you want an honest interview or an exaggerated, embellished heroic story.",
+    metin: "A local paper is writing about you. The reporter asks: an honest interview or an embellished hero tale?",
     secenekler: [
       {
-        metin: "Give an honest interview, tell it as it is.",
+        metin: "Give an honest interview.",
         basariliSonuc: {
-          mesaj: "The article was plain but effective; readers appreciated your sincerity.",
-          detay: "In the age of the press, honesty leaves a more lasting reputation than showiness.",
+          mesaj: "Plain but effective; readers liked your sincerity.",
+          detay: "Honesty outlasts show.",
         },
         basarisizSonuc: {
-          mesaj: "The interview didn't get the attention you expected; it stayed on the back pages as an ordinary item.",
+          mesaj: "The interview drew no attention; it sat on the back pages.",
           detay: "Not every honest story makes the front page.",
         },
       },
       {
-        metin: "Embellish the story, tell it like a hero.",
+        metin: "Embellish it, play the hero.",
         basariliSonuc: {
-          mesaj: "The article made a big splash in the city; your name is on everyone's lips.",
-          detay: "The age of the press can put a well-told lie ahead of the truth.",
+          mesaj: "The article made a splash; your name is on every lip.",
+          detay: "A well-told lie can outrun truth.",
         },
         basarisizSonuc: {
-          mesaj: "Your exaggerations came out; a rival newspaper declared you a 'liar'.",
-          detay: "In the industrial age lies spread much faster than before and burn out quickly.",
+          mesaj: "Your exaggerations surfaced; a rival paper called you a 'liar'.",
+          detay: "Lies spread fast and die fast.",
         },
       },
     ],
   },
   sanayi_tren_yolculugu: {
     baslik: "A Train Journey",
-    metin: "The newly opened railway line lets you reach a big opportunity in a distant city in a few hours. The ticket is expensive but the opportunity seems too good to miss.",
+    metin: "The new railway reaches a big opportunity in a distant city in hours. The ticket is dear, but the chance seems unmissable.",
     secenekler: [
       {
-        metin: "Buy the ticket, board the train and chase the opportunity.",
+        metin: "Buy the ticket, chase the chance.",
         basariliSonuc: {
-          mesaj: "The journey paid off more than enough; the deal was signed.",
-          detay: "The railway age rewards those who turn distances into opportunities.",
+          mesaj: "The trip paid off handsomely; the deal was signed.",
+          detay: "Those who turn distance to chance win.",
         },
         basarisizSonuc: {
-          mesaj: "When you got to the city you learned the opportunity had already gone to someone else.",
-          detay: "Sometimes the train arrives on time but the opportunity doesn't wait for you.",
+          mesaj: "On arrival you learned the chance had gone to someone else.",
+          detay: "The train is on time; chances don't wait.",
         },
       },
       {
-        metin: "Don't take the risk, keep your money, stay home.",
+        metin: "Skip the risk, keep your money.",
         basariliSonuc: {
-          mesaj: "You kept your money; the opportunity got away but at least your purse didn't get lighter.",
-          detay: "Missing every train opportunity may not be as bad a choice as it seems.",
+          mesaj: "You kept your money; the chance went but your purse didn't.",
+          detay: "A missed chance isn't always a loss.",
         },
         basarisizSonuc: {
-          mesaj: "Later, hearing how much those who took the opportunity made, it sank in.",
-          detay: "Missed opportunities sometimes won't leave your mind for a long time.",
+          mesaj: "Hearing what those who went earned, it stung.",
+          detay: "Missed chances linger in the mind.",
         },
       },
     ],
   },
   sanayi_gaz_lambasi_sokaklari: {
     baslik: "The Gaslit Streets",
-    metin: "The city streets, lit by gas lamps, take on a new life at night: coffeehouses, gambling dens, salons where society gathers. You heard that {rakip} is out tonight too.",
+    metin: "Gaslit streets come alive at night: coffeehouses, gambling dens, society salons. You hear {rakip} is out too.",
     secenekler: [
       {
-        metin: "Mingle in society too, make new connections.",
+        metin: "Mingle in society, make contacts.",
         basariliSonuc: {
-          mesaj: "The evening was pleasant; you made a few valuable acquaintances.",
-          detay: "The gaslit nights are the real social life of the industrial city.",
+          mesaj: "A pleasant evening; you made a few valuable contacts.",
+          detay: "The real social life starts at night.",
         },
         basarisizSonuc: {
-          mesaj: "You crossed {rakip} during the night; not to mention the money you lost at the gambling table.",
-          detay: "The city's night life can be as risky as it is alluring.",
+          mesaj: "You clashed with {rakip} and lost money gambling.",
+          detay: "Night life is as risky as it is alluring.",
         },
       },
       {
-        metin: "Stay home, have a quiet evening.",
+        metin: "Stay home, spend a quiet night.",
         basariliSonuc: {
-          mesaj: "You had a calm evening; you woke rested the next day.",
-          detay: "You don't have to go out every night.",
+          mesaj: "A calm night; you woke rested.",
+          detay: "You needn't go out every night.",
         },
         basarisizSonuc: {
-          mesaj: "The next day, hearing everyone talk about the night's entertainment, you felt left out.",
-          detay: "Sometimes staying home has a small social price too.",
+          mesaj: "Hearing everyone discuss the night, you felt left out.",
+          detay: "Staying home has a small social price.",
         },
       },
     ],
   },
   rutbe3_asker_saldiri_karari: {
     baslik: "A Command Decision",
-    metin: "You are a commander now. Your scouts reported a small enemy unit dug in in a nearby valley; they look weak but it could be a trap. You will give the order, and your unit trusts you.",
+    metin: "You command now. Scouts report a weak-looking enemy unit in a nearby valley; it could be a trap.",
     secenekler: [
       {
-        metin: "Forward! Order a raid at dawn.",
+        metin: "Forward! Order a dawn raid.",
         basariliSonuc: {
-          mesaj: "The raid hit dead on; the enemy unit scattered, the spoils were divided among your unit.",
-          detay: "Your name is spoken like a legend now, not only in your own unit but in the command tier.",
+          mesaj: "The raid struck true; the enemy scattered, spoils shared.",
+          detay: "Your name is legend in high command.",
         },
         basarisizSonuc: {
-          mesaj: "It was a trap. Your unit took heavy losses and you barely got yourself off the front.",
-          detay: "This decision left a deep mark on both your body and your reputation.",
+          mesaj: "A trap. Your unit took heavy losses; you barely escaped.",
+          detay: "It scarred your body and reputation.",
         },
       },
       {
         metin: "Wait, gather intelligence first.",
         basariliSonuc: {
-          mesaj: "Your patience paid off; it turned out to be a trap and you pulled your unit back without losses.",
-          detay: "Cautious commanders write epics too, just more quietly.",
+          mesaj: "Patience paid off; it was a trap, and you withdrew unscathed.",
+          detay: "Cautious commanders write epics quietly.",
         },
         basarisizSonuc: {
-          mesaj: "While you waited the opportunity slipped away; the high command questioned your indecision.",
-          detay: "Sometimes even the right decision costs reputation when it's badly timed.",
+          mesaj: "The chance slipped away; high command questioned your indecision.",
+          detay: "A right decision made late still costs.",
         },
       },
     ],
   },
   rutbe3_tuccar_lonca_karari: {
     baslik: "A Guild Decision",
-    metin: "As guild master you now set the prices of bread and grain. There is a famine; the people are in a hard spot, but keeping prices low means giving up your own profit.",
+    metin: "As guild master you set bread and grain prices. Famine looms; low prices mean giving up profit.",
     secenekler: [
       {
         metin: "Keep prices low, stand with the people.",
         basariliSonuc: {
-          mesaj: "Your decision was heard in the city; the people began to speak of you as the most just of the guild masters.",
-          detay: "Though some of your guild partners are angry at this decision, your standing in the street has never been so high.",
+          mesaj: "Word spread; the people call you the guild's most just master.",
+          detay: "Partners grumbled, but your standing peaked.",
         },
         basarisizSonuc: {
-          mesaj: "Your intentions were good but carrying it out cost far more than you foresaw.",
-          detay: "The guild's coffers paid the bill for this decision for a long time.",
+          mesaj: "Good intentions, but carrying it out cost far more.",
+          detay: "The guild's coffers paid for long.",
         },
       },
       {
-        metin: "Keep prices high, protect your profit.",
+        metin: "Keep prices high, protect profit.",
         basariliSonuc: {
-          mesaj: "Your strongbox filled; but the number of people who turn their faces away when they hear your name rose too.",
-          detay: "Wealth and being loved usually don't come at the same time.",
+          mesaj: "Your strongbox filled, but more people turn from your name.",
+          detay: "Wealth and love seldom come together.",
         },
         basarisizSonuc: {
-          mesaj: "The people revolted, a few warehouses were plundered; most of the profit you expected evaporated.",
-          detay: "Hunger can overturn even the most careful calculations overnight.",
+          mesaj: "The people rioted, warehouses were looted; most profit vanished.",
+          detay: "Hunger upends the most careful sums.",
         },
       },
     ],
   },
   rutbe3_din_vaiz_karari: {
     baslik: "A Pulpit Decision",
-    metin: "You've become chief preacher; there is tension in your congregation. Some want a harsh sermon against neighbors of other faiths, some expect a call for tolerance. What you say from the pulpit will steer this city.",
+    metin: "You are chief preacher; the flock is tense. Some want a harsh sermon on other faiths, some tolerance.",
     secenekler: [
       {
-        metin: "Give a call for tolerance and unity.",
+        metin: "Call for tolerance and unity.",
         basariliSonuc: {
-          mesaj: "Your sermon echoed through the city; even different groups spoke of you with respect.",
-          detay: "A measured word from the pulpit can outlast the sword.",
+          mesaj: "Your sermon resonated; even other groups spoke of you with respect.",
+          detay: "A measured word outlasts the sword.",
         },
         basarisizSonuc: {
-          mesaj: "Some hardliners in the congregation declared you 'weak'; your word doesn't carry the weight it did.",
-          detay: "A call for tolerance never pleases everyone at once.",
+          mesaj: "Hardliners called you 'weak'; your word carries less weight.",
+          detay: "Tolerance never pleases everyone.",
         },
       },
       {
-        metin: "Give a harsh, exclusionary sermon.",
+        metin: "Preach harsh and exclusionary.",
         basariliSonuc: {
-          mesaj: "Your sermon fired up your congregation; their loyalty to you grew but so did the tension in the city.",
-          detay: "The gap between your consolidated authority and your conscience grows wider every day.",
+          mesaj: "Your sermon fired up the flock; loyalty and tension rose.",
+          detay: "Authority and conscience drift apart.",
         },
         basarisizSonuc: {
-          mesaj: "Your words turned into a clash in the streets; even some congregation members drew away from you.",
-          detay: "A word from the pulpit sometimes turns into a fire beyond your control.",
+          mesaj: "Your words sparked street clashes; even the flock drew away.",
+          detay: "A word can become a fire beyond control.",
         },
       },
     ],
   },
   tepki_amire_meydan_okuma: {
     baslik: "Your Patience Snapped",
-    metin: "{amir} leveled another unfair criticism at you today, and in front of everyone. The anger inside you rose to your throat.",
+    metin: "{amir} criticized you unfairly again, in front of everyone. Your anger rises.",
     secenekler: [
       {
-        metin: "Swallow it, say nothing.",
+        metin: "Swallow it, stay silent.",
         basariliSonuc: {
-          mesaj: "You swallowed it; your anger piled up somewhere inside.",
-          detay: "Some battles are won with silence — or just postponed.",
+          mesaj: "You swallowed it; the anger piled up inside.",
+          detay: "Silence wins, or just postpones.",
         },
         basarisizSonuc: {
-          mesaj: "You tried to swallow it but your hands shook and everyone noticed.",
-          detay: "Suppressed anger sometimes becomes even more visible.",
+          mesaj: "You tried to swallow it but shook; everyone noticed.",
+          detay: "Suppressed anger shows even more.",
         },
       },
       {
@@ -3097,16 +3097,16 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
           mesaj: "Not used.",
         },
         onTepki: {
-          metin: "{amir} looks at you in shock, and the people around have dropped what they were doing to watch. What you said can't be taken back, but whether to go further is in your hands.",
-          geriCekilMetni: "Soften it at once: 'I didn't mean it that way.'",
+          metin: "{amir} is stunned; all are watching. Go on?",
+          geriCekilMetni: "Soften it: 'I didn't mean it.'",
           geriCekilSonucu: {
-            mesaj: "You backed off at the last moment; the tension eased but a regret stayed inside you.",
-            detay: "Sometimes the bravest thing is knowing when to stay silent.",
+            mesaj: "You backed off; tension eased, regret remained.",
+            detay: "Sometimes the bravest thing is silence.",
           },
-          devamMetni: "No. Stand behind what you said.",
+          devamMetni: "No. Stand by what you said.",
           devamSonucu: {
-            mesaj: "You went all the way. {amir} walked off without a word, but your punishment wasn't slow to come.",
-            detay: "Standing firm had a price, but at least you stayed true to yourself.",
+            mesaj: "You went all the way. {amir} walked off silent, but punishment came.",
+            detay: "It cost you, but you stayed true.",
           },
         },
       },
@@ -3114,21 +3114,21 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
   },
   tepki_ticaret_sert_tehdit: {
     baslik: "Tension at the Table",
-    metin: "A supplier you've worked with for a long time tried to raise the agreed price at the last moment. Your anger is rising; you're about to hurl a threat that would end the relationship.",
+    metin: "Your old supplier tries to raise the agreed price at the last moment. You're angry; you're about to threaten to end the relationship.",
     secenekler: [
       {
         metin: "Stay calm, offer a new price.",
         basariliSonuc: {
-          mesaj: "You found a reasonable middle ground; the relationship didn't cool.",
-          detay: "Calm is sometimes the best negotiating tactic.",
+          mesaj: "You found a fair middle ground; the relationship held.",
+          detay: "Calm is the best bargaining tactic.",
         },
         basarisizSonuc: {
-          mesaj: "The supplier didn't like your offer and drove a hard bargain.",
-          detay: "Not every calm approach finds a reward.",
+          mesaj: "The supplier disliked your offer and held firm.",
+          detay: "Calm doesn't always pay off.",
         },
       },
       {
-        metin: "Slam the table, threaten to end the relationship.",
+        metin: "Slam the table, threaten to end it.",
         basariliSonuc: {
           mesaj: "Not used.",
         },
@@ -3136,16 +3136,16 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
           mesaj: "Not used.",
         },
         onTepki: {
-          metin: "The supplier's face falls. You're about to say 'we can end this relationship right here,' but that risks a bond you've built over years.",
-          geriCekilMetni: "Calm down, pull back the threat.",
+          metin: "The supplier scowls. The threat risks the bond.",
+          geriCekilMetni: "Calm down, take the threat back.",
           geriCekilSonucu: {
-            mesaj: "You softened at the last moment; the supplier appreciated it and gave a small discount.",
-            detay: "Sometimes a step back is the shortest way forward.",
+            mesaj: "You softened at the last moment; the supplier gave a small discount.",
+            detay: "A step back is sometimes the shortest way.",
           },
-          devamMetni: "No. Carry your threat all the way through.",
+          devamMetni: "No. Press the threat.",
           devamSonucu: {
-            mesaj: "The supplier didn't let you collapse the deal, and gave in — but he doesn't trust you anymore.",
-            detay: "The bargain you won weighs the same as the trust you lost.",
+            mesaj: "The supplier gave in, but he no longer trusts you.",
+            detay: "You won the bargain, lost the trust.",
           },
         },
       },
@@ -3153,21 +3153,21 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
   },
   tepki_din_cemaat_meydan_okuma: {
     baslik: "A Moment at the Pulpit",
-    metin: "During your sermon someone in the congregation raised their voice and openly questioned you. Everyone is looking at you; your next word will either consolidate your authority or shake it.",
+    metin: "During your sermon someone openly questioned you. All eyes are on you; your word will bolster your authority or shake it.",
     secenekler: [
       {
         metin: "Give a patient, measured answer.",
         basariliSonuc: {
-          mesaj: "Your measured answer calmed the congregation; your standing rose.",
-          detay: "Patience is one of the strongest weapons in the pulpit.",
+          mesaj: "Your measured answer calmed the flock; your standing rose.",
+          detay: "Patience is the pulpit's strongest weapon.",
         },
         basarisizSonuc: {
-          mesaj: "Your answer wasn't found convincing enough; the murmuring continued.",
-          detay: "Not every calm answer finds its reward.",
+          mesaj: "Your answer didn't convince; the murmuring went on.",
+          detay: "A calm answer doesn't always pay off.",
         },
       },
       {
-        metin: "Remind them of your authority in a harsh tone.",
+        metin: "Assert your authority sharply.",
         basariliSonuc: {
           mesaj: "Not used.",
         },
@@ -3175,15 +3175,15 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
           mesaj: "Not used.",
         },
         onTepki: {
-          metin: "Your voice hardens, the congregation falls silent. Continuing in this tone could consolidate your authority or split your congregation in two.",
-          geriCekilMetni: "Soften your voice, close the argument.",
+          metin: "The flock hushes. Harshness may bolster or split.",
+          geriCekilMetni: "Soften your voice, end the dispute.",
           geriCekilSonucu: {
             mesaj: "You softened your tone at the last moment; the tension eased.",
-            detay: "Sometimes authority is shown by lowering your voice.",
+            detay: "Authority is sometimes a lowered voice.",
           },
-          devamMetni: "No. Keep your harsh tone.",
+          devamMetni: "No. Keep the harsh tone.",
           devamSonucu: {
-            mesaj: "Your words echoed through the pulpit; some respected you more, some left the congregation.",
+            mesaj: "Your words echoed; some respected you more, some left the congregation.",
             detay: "Authority sometimes comes with a split.",
           },
         },
@@ -3192,21 +3192,21 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
   },
   tepki_asker_amirine_itaatsizlik: {
     baslik: "Defying an Order",
-    metin: "{amir} gave you an openly unjust, even dangerous order. Military discipline demands obedience but your conscience objects.",
+    metin: "{amir} gave you an openly unjust, even dangerous order. Discipline demands obedience but your conscience objects.",
     secenekler: [
       {
-        metin: "Carry out the order without question.",
+        metin: "Carry out the order unquestioned.",
         basariliSonuc: {
-          mesaj: "You carried out the order; your discipline was praised but an unease stayed inside you.",
-          detay: "Sometimes obedience silences the voice of conscience.",
+          mesaj: "You obeyed; your discipline was praised but unease remained.",
+          detay: "Obedience sometimes silences conscience.",
         },
         basarisizSonuc: {
-          mesaj: "You carried out the order but things didn't go as planned.",
+          mesaj: "You obeyed but things didn't go as planned.",
           detay: "Blind obedience has a price too.",
         },
       },
       {
-        metin: "You're about to openly refuse the order.",
+        metin: "Openly defy the order.",
         basariliSonuc: {
           mesaj: "Not used.",
         },
@@ -3214,16 +3214,16 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
           mesaj: "Not used.",
         },
         onTepki: {
-          metin: "{amir} narrows his eyes: 'Are you disobeying an order?' The answer you give to this question could change your military life.",
-          geriCekilMetni: "Back down at the last moment, accept the order.",
+          metin: "{amir}: 'Disobeying?' Your answer shapes your fate.",
+          geriCekilMetni: "Back down, accept the order.",
           geriCekilSonucu: {
-            mesaj: "You accepted the order at the last moment; {amir} passed without a word but a regret stayed inside you.",
-            detay: "Sometimes instead of standing firm you choose to survive.",
+            mesaj: "You accepted at the last moment; {amir} said nothing but regret remained.",
+            detay: "Sometimes you choose survival over standing firm.",
           },
-          devamMetni: "No. Openly refuse the order.",
+          devamMetni: "No. Refuse the order.",
           devamSonucu: {
-            mesaj: "You refused the order; your conscience is eased but the disciplinary punishment wasn't slow to come.",
-            detay: "Doing what you knew was right had a price, but you don't regret it.",
+            mesaj: "You refused; your conscience eased but the punishment was swift.",
+            detay: "Doing right had a price; you don't regret it.",
           },
         },
       },
@@ -3231,111 +3231,111 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
   },
   zincir_asker_baskin_karari: {
     baslik: "The Moment of the Raid",
-    metin: "Your unit raided a small enemy caravan. After a short clash the spoils were seized; but the commander turns to you and asks: 'Do we stop here?'",
+    metin: "Your unit raided a small enemy caravan and took the spoils. The commander asks: 'Do we stop here?'",
     secenekler: [
       {
-        metin: "Gather what was seized, fall back.",
+        metin: "Gather the spoils, fall back.",
         basariliSonuc: {
-          mesaj: "You gathered what you seized and fell back safely.",
-          detay: "The commander liked your decision: 'Greed is sometimes the greatest enemy.'",
+          mesaj: "You gathered the spoils and fell back safely.",
+          detay: "Commander: 'Greed is the greatest enemy.'",
         },
         basarisizSonuc: {
-          mesaj: "The retreat got messy, a few soldiers were lightly wounded but the spoils stayed in your hands.",
-          detay: "Still, it was a dangerous withdrawal.",
+          mesaj: "The retreat got messy, a few were wounded but the spoils stayed.",
+          detay: "Still, a dangerous withdrawal.",
         },
       },
       {
-        metin: "Push forward for more.",
+        metin: "Push on for more.",
         basariliSonuc: {
-          mesaj: "You pushed on; you seized a second caravan too.",
-          detay: "Your unit's morale is sky high, but how long will your luck last?",
+          mesaj: "You pushed on and took a second caravan.",
+          detay: "Morale is sky high, but how long will luck last?",
         },
         basarisizSonuc: {
-          mesaj: "You pushed on but were ambushed; a few soldiers were lost.",
-          detay: "Greed had a heavy price.",
+          mesaj: "You were ambushed while pushing on; a few men were lost.",
+          detay: "Greed's price was heavy.",
         },
       },
     ],
   },
   zincir_asker_ganimet_devami: {
     baslik: "Is This Enough?",
-    metin: "The commander turns to the unit and asks: 'Is this much spoils enough, or do we attack again?' All eyes are on you; they await your decision.",
+    metin: "The commander asks: 'Are these spoils enough, or do we strike again?' All eyes are on you.",
     secenekler: [
       {
-        metin: "Enough. Let's go back with what we've won.",
+        metin: "Enough. Let's go back with our gains.",
         basariliSonuc: {
-          mesaj: "You went back with what you'd won; the unit reached base safe and sound.",
-          detay: "Sometimes the wisest victory is knowing when to stop.",
+          mesaj: "You returned with your gains; the unit reached base safe.",
+          detay: "The wisest victory is knowing when to stop.",
         },
         basarisizSonuc: {
-          mesaj: "The decision to go back disappointed some of the soldiers.",
-          detay: "Not everyone is of the same mind.",
+          mesaj: "Going back disappointed some of the soldiers.",
+          detay: "Not everyone agrees.",
         },
       },
       {
-        metin: "No, let's attack for more.",
+        metin: "No, let's strike again.",
         basariliSonuc: {
-          mesaj: "The second wave succeeded too; your unit's name spread through the region.",
-          detay: "Your luck held this time too.",
+          mesaj: "The second wave succeeded; your unit's name spread.",
+          detay: "Luck held again.",
         },
         basarisizSonuc: {
           mesaj: "The last attack ended in disaster; the unit took heavy losses.",
-          detay: "The bill for greed was paid very heavily this time.",
+          detay: "Greed's bill was heavy.",
         },
       },
     ],
   },
   zincir_asker_dusman_kacisi: {
     baslik: "The Fleeing Enemy",
-    metin: "After a short clash the enemy unit scattered and fled. A few are wounded and moving slowly; if you chase them you can catch up.",
+    metin: "After a short clash the enemy scattered and fled. A few are wounded and slow; chase them and you'll catch up.",
     secenekler: [
       {
         metin: "Let them go, hold your position.",
         basariliSonuc: {
-          mesaj: "You held your position; the unit got a chance to rest.",
-          detay: "Sometimes victory is protected by not chasing.",
+          mesaj: "You held your position; the unit rested.",
+          detay: "Victory is sometimes kept by not chasing.",
         },
         basarisizSonuc: {
-          mesaj: "The decision to wait was counted cowardice by some soldiers.",
-          detay: "Not every cautious decision is appreciated.",
+          mesaj: "Some soldiers called your waiting cowardice.",
+          detay: "Caution isn't always praised.",
         },
       },
       {
-        metin: "Go after them, finish the job.",
+        metin: "Go after them, finish it.",
         basariliSonuc: {
-          mesaj: "You caught the fleeing ones; the unit won a complete victory.",
-          detay: "But you've entered unknown terrain now.",
+          mesaj: "You caught the fleeing men; a complete victory.",
+          detay: "But now you're in unknown terrain.",
         },
         basarisizSonuc: {
-          mesaj: "While chasing, your formation broke; a few soldiers fell behind.",
-          detay: "The hunger for victory sometimes turns into a trap.",
+          mesaj: "Your formation broke while chasing; a few men fell behind.",
+          detay: "Hunger for victory becomes a trap.",
         },
       },
     ],
   },
   zincir_asker_takip_karari: {
     baslik: "Unknown Terrain",
-    metin: "The chase dragged you into a forest you don't know. Something is moving ahead — maybe reinforcements, maybe just the wind. On or back?",
+    metin: "The chase dragged you into an unfamiliar forest. Something moves ahead: reinforcements or just wind? On or back?",
     secenekler: [
       {
-        metin: "Turn back, don't take the risk.",
+        metin: "Turn back, don't risk it.",
         basariliSonuc: {
           mesaj: "You turned back; the unit reached base safely.",
           detay: "Cautious commanders live long.",
         },
         basarisizSonuc: {
-          mesaj: "The decision to go back was counted by some as missing an opportunity.",
+          mesaj: "Some saw turning back as a missed chance.",
           detay: "Pleasing everyone is impossible.",
         },
       },
       {
-        metin: "Go in, take the danger.",
+        metin: "Go in, risk the danger.",
         basariliSonuc: {
-          mesaj: "Inside you found an abandoned enemy camp; the spoils went to the unit.",
-          detay: "Your courage was rewarded this time.",
+          mesaj: "You found an abandoned enemy camp; the spoils were the unit's.",
+          detay: "Courage was rewarded this time.",
         },
         basarisizSonuc: {
-          mesaj: "The inside of the forest was a real trap; the unit took heavy losses.",
+          mesaj: "The forest was a real trap; the unit took heavy losses.",
           detay: "It wasn't the wind.",
         },
       },
@@ -3343,335 +3343,335 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
   },
   zincir_tuccar_agir_pazarlik: {
     baslik: "A Hard Offer",
-    metin: "A big buyer wants to take your goods far below the market price. If you accept, a small but guaranteed profit; if you refuse, a bigger gain goes at risk.",
+    metin: "A big buyer wants your goods far below market price. Accept for a small sure profit; refuse and risk a bigger gain.",
     secenekler: [
       {
-        metin: "Accept the offer, secure the deal.",
+        metin: "Accept, secure the deal.",
         basariliSonuc: {
-          mesaj: "You accepted the offer; the profit is low but guaranteed.",
-          detay: "Sometimes a small but sure gain is worth more than taking a big risk.",
+          mesaj: "You accepted; the profit is low but certain.",
+          detay: "A small sure gain beats a big risk.",
         },
         basarisizSonuc: {
-          mesaj: "You accepted the offer but the buyer hardened the terms a little more at the last moment.",
-          detay: "You can't always come out ahead at the table.",
+          mesaj: "You accepted but the buyer toughened the terms at the last moment.",
+          detay: "You can't always come out ahead.",
         },
       },
       {
         metin: "Refuse, hold out for a better price.",
         basariliSonuc: {
-          mesaj: "Your insistence worked, the buyer raised the price.",
-          detay: "Your courage found its reward this time.",
+          mesaj: "Your insistence worked; the buyer raised the price.",
+          detay: "Courage paid off.",
         },
         basarisizSonuc: {
-          mesaj: "The buyer gave up and turned to another merchant.",
-          detay: "Insisting doesn't always pay off.",
+          mesaj: "The buyer gave up and went to another merchant.",
+          detay: "Insisting doesn't always pay.",
         },
       },
     ],
   },
   zincir_tuccar_pazarlik_sonucu: {
     baslik: "The Buyer Came Back",
-    metin: "The same buyer came back a few days later, this time offering a bigger order — but with even tighter terms. Do you want to tie yourself more to this relationship?",
+    metin: "The same buyer is back days later with a bigger order but tighter terms. Tie yourself further to this relationship?",
     secenekler: [
       {
-        metin: "Thank them, leave the relationship here.",
+        metin: "Thank them, leave it here.",
         basariliSonuc: {
           mesaj: "You politely refused; the relationship stayed balanced.",
-          detay: "You don't have to seize every opportunity.",
+          detay: "You needn't seize every chance.",
         },
         basarisizSonuc: {
           mesaj: "Your refusal offended the buyer; you lost a small customer.",
-          detay: "Sometimes 'no' carries a price too.",
+          detay: "Sometimes 'no' has a price.",
         },
       },
       {
-        metin: "Accept the big order, take the risk.",
+        metin: "Accept the big order.",
         basariliSonuc: {
-          mesaj: "The big order was completed without a hitch; your trade grew a notch.",
-          detay: "Some risks really do pay off.",
+          mesaj: "The order went smoothly; your trade grew a notch.",
+          detay: "Some risks do pay off.",
         },
         basarisizSonuc: {
-          mesaj: "Something went wrong during the order and you took a loss.",
-          detay: "Big opportunities come with big risk.",
+          mesaj: "Things went wrong with the order; you took a loss.",
+          detay: "Big chances bring big risk.",
         },
       },
     ],
   },
   genclik_kustahligi: {
     baslik: "Youthful Insolence",
-    metin: "You openly disagree with the view of a respected elder. You're caught between raising your voice in front of everyone or not.",
+    metin: "You openly disagree with a respected elder. You're torn between raising your voice before everyone and staying silent.",
     secenekler: [
       {
         metin: "Answer back, defend your view.",
         basariliSonuc: {
-          mesaj: "Your courage was appreciated by some of the young people; you were called 'someone with a mind of their own'.",
-          detay: "Young voices are sometimes the first spark of change.",
+          mesaj: "The young admired your courage: 'someone with a mind of their own'.",
+          detay: "Young voices spark change.",
         },
         basarisizSonuc: {
-          mesaj: "You were scolded as 'disrespectful'; the elders were cold toward you for a while.",
-          detay: "Not every rebellion is understood right away.",
+          mesaj: "Scolded as 'disrespectful', the elders turned cold for a while.",
+          detay: "Not every rebellion is understood at once.",
         },
       },
       {
         metin: "Be quiet, listen respectfully.",
         basariliSonuc: {
-          mesaj: "Your staying silent was read as maturity.",
-          detay: "Sometimes silence is a show of strength too.",
+          mesaj: "Your silence was read as maturity.",
+          detay: "Silence is a show of strength too.",
         },
         basarisizSonuc: {
-          mesaj: "Swallowing what you felt left you uneasy; you had trouble falling asleep that night.",
-          detay: "Swallowed words sometimes echo inside.",
+          mesaj: "Swallowing it left you uneasy; you slept badly that night.",
+          detay: "Swallowed words echo inside.",
         },
       },
     ],
   },
   arkadas_grubu_baskisi: {
     baslik: "Peer Pressure",
-    metin: "Your friends want to drag you into a dangerous and slightly stupid midnight adventure. 'Don't come if you're scared,' they say, laughing.",
+    metin: "Your friends want you in a dangerous, slightly stupid midnight adventure. 'Don't come if you're scared,' they laugh.",
     secenekler: [
       {
-        metin: "Join them, show your courage.",
+        metin: "Join in, show your courage.",
         basariliSonuc: {
-          mesaj: "The night turned into an unforgettable adventure; you became a legend in the group.",
-          detay: "Some memories still make you smile years later.",
+          mesaj: "The night became an unforgettable adventure; you're a legend in the group.",
+          detay: "Some memories make you smile for years.",
         },
         basarisizSonuc: {
           mesaj: "The adventure went wrong; you got home hurt and broke.",
-          detay: "Courage is sometimes mixed with carelessness.",
+          detay: "Courage is sometimes carelessness.",
         },
       },
       {
         metin: "Refuse, choose your own path.",
         basariliSonuc: {
-          mesaj: "You turned the offer down; the next day, hearing what happened to your friends, you saw you'd been right.",
-          detay: "Sometimes saying no is the wisest answer.",
+          mesaj: "You refused; next day, hearing what befell them, you were proved right.",
+          detay: "Saying no is sometimes wisest.",
         },
         basarisizSonuc: {
           mesaj: "They teased you as a 'coward' for a while.",
-          detay: "Not every refusal is met with understanding.",
+          detay: "Not every refusal is understood.",
         },
       },
     ],
   },
   ilk_hayal_kirikligi: {
     baslik: "The First Great Disappointment",
-    metin: "Something you worked at for months blew up in your hands — what you hoped for didn't happen. It feels like your first real failure.",
+    metin: "Months of work blew up in your hands. It feels like your first real failure.",
     secenekler: [
       {
         metin: "Try again, don't give up.",
         basariliSonuc: {
-          mesaj: "You succeeded on your second try; you saw your first failure had made you stronger.",
-          detay: "Some lessons are only learned by falling.",
+          mesaj: "You succeeded the second time; failure made you stronger.",
+          detay: "Some lessons are learned by falling.",
         },
         basarisizSonuc: {
-          mesaj: "The second try didn't work either; for a while you lost confidence in yourself.",
-          detay: "Not every second chance brings victory.",
+          mesaj: "The second try failed too; your confidence was shaken.",
+          detay: "A second chance brings no victory.",
         },
       },
       {
         metin: "Accept it, turn to something else.",
         basariliSonuc: {
-          mesaj: "You accepted the disappointment and turned your energy to another field.",
-          detay: "Sometimes the wisest move is to give up.",
+          mesaj: "You accepted the disappointment and turned your energy elsewhere.",
+          detay: "Sometimes the wisest move is giving up.",
         },
         basarisizSonuc: {
-          mesaj: "You gave up but a nagging 'what if' stayed with you for a long time.",
-          detay: "Abandoned work sometimes won't let you go.",
+          mesaj: "You gave up but a 'what if' lingered for long.",
+          detay: "Abandoned work won't let go.",
         },
       },
     ],
   },
   genc_asker_ilk_darbe: {
     baslik: "The First Sword Blow",
-    metin: "On the drill ground the sergeant puts you into a duel exercise with an experienced soldier. This is the first time you swing your sword against a real opponent.",
+    metin: "On the drill ground the sergeant pits you in a duel against a veteran. Your first sword swing at a real opponent.",
     secenekler: [
       {
-        metin: "Attack with all your might, show what you've learned.",
+        metin: "Attack with all your might.",
         basariliSonuc: {
-          mesaj: "You made a move that surprised your opponent; the sergeant didn't take his eyes off you.",
-          detay: "First victories are the most remembered.",
+          mesaj: "Your move surprised your opponent; the sergeant never looked away.",
+          detay: "First victories are remembered most.",
         },
         basarisizSonuc: {
-          mesaj: "The experienced soldier laid you out flat, in front of everyone.",
-          detay: "Pain is sometimes the best teacher.",
+          mesaj: "The veteran laid you flat in front of everyone.",
+          detay: "Pain is the best teacher.",
         },
       },
       {
         metin: "Be cautious, only defend.",
         basariliSonuc: {
-          mesaj: "Your cautious stance kept you standing; even the experienced soldier was surprised.",
-          detay: "Sometimes surviving is worth more than winning.",
+          mesaj: "Your caution kept you standing; even the veteran was surprised.",
+          detay: "Surviving beats winning.",
         },
         basarisizSonuc: {
-          mesaj: "You were found too cautious; they teased you as 'gutless'.",
-          detay: "Not every caution is appreciated.",
+          mesaj: "Found too cautious, they teased you as 'gutless'.",
+          detay: "Not all caution is praised.",
         },
       },
     ],
   },
   genc_tuccar_ilk_pazarlik: {
     baslik: "The First Negotiation",
-    metin: "Not under your master's watch but entirely on your own, you're doing your first big negotiation. The merchant across from you is experienced and impatient.",
+    metin: "Without your master, on your own, you make your first big bargain. The merchant opposite is experienced and impatient.",
     secenekler: [
       {
         metin: "Boldly offer a high price.",
         basariliSonuc: {
-          mesaj: "Your courage found its reward; you struck a deal at a good price.",
-          detay: "You'll never forget the victory of your first big negotiation.",
+          mesaj: "Your courage paid off; you struck a good price.",
+          detay: "You'll never forget your first bargain win.",
         },
         basarisizSonuc: {
-          mesaj: "The other side gave up on you, thinking you 'green', and made a deal with someone else.",
-          detay: "Not every act of courage finds a reward.",
+          mesaj: "Thinking you 'green', he dealt with someone else.",
+          detay: "Not all courage pays.",
         },
       },
       {
-        metin: "Start with a safe, modest offer.",
+        metin: "Start with a modest, safe offer.",
         basariliSonuc: {
-          mesaj: "Your modest offer was accepted; you made a small but safe gain.",
-          detay: "Sometimes the first step must be small.",
+          mesaj: "Your offer was accepted; a small but safe gain.",
+          detay: "The first step should be small.",
         },
         basarisizSonuc: {
-          mesaj: "The negotiation went on a long time but in the end you reached no agreement.",
-          detay: "Not every negotiation ends in a deal.",
+          mesaj: "The haggling dragged on; no deal was struck.",
+          detay: "Not every bargain ends in a deal.",
         },
       },
     ],
   },
   genc_din_adami_ilk_vaaz: {
     baslik: "The First Pulpit",
-    metin: "The head priest fell ill and you have to lead a small service. Small as the crowd is, this is your first real pulpit.",
+    metin: "The head priest is ill; you must lead a small service. The crowd is small, but it is your first real pulpit.",
     secenekler: [
       {
         metin: "Speak in your own words, sincerely.",
         basariliSonuc: {
-          mesaj: "Your words moved the congregation deeply; they said 'this young one will be great one day'.",
-          detay: "Sincerity is sometimes the most powerful sermon.",
+          mesaj: "Your words moved them: 'This young one will be great.'",
+          detay: "Sincerity is the strongest sermon.",
         },
         basarisizSonuc: {
-          mesaj: "You stammered from nerves; some whispered with a smile.",
-          detay: "No first attempt is flawless.",
+          mesaj: "You stammered from nerves; some whispered and smiled.",
+          detay: "No first try is flawless.",
         },
       },
       {
         metin: "Read the classic text you memorized.",
         basariliSonuc: {
-          mesaj: "Your safe choice worked; the service went without a hitch.",
-          detay: "Sometimes the known road is the safest.",
+          mesaj: "The safe choice worked; the service went smoothly.",
+          detay: "The known road is safest.",
         },
         basarisizSonuc: {
-          mesaj: "Reciting the text by rote left you quietly unsatisfied; you felt you hadn't found your own voice.",
-          detay: "Safety sometimes trades off against originality.",
+          mesaj: "Reciting by rote left you unsatisfied; you hadn't found your voice.",
+          detay: "Safety sometimes costs originality.",
         },
       },
     ],
   },
   genclik_hatiralari: {
     baslik: "Memories of Youth",
-    metin: "By the fireside your grandchildren or young neighbors ask how your youth was. You have a lot to tell.",
+    metin: "By the fire, grandchildren or young neighbors ask about your youth. You have much to tell.",
     secenekler: [
       {
-        metin: "Tell everyone your stories.",
+        metin: "Tell your stories.",
         basariliSonuc: {
-          mesaj: "Your stories enchanted everyone; you talked into the small hours.",
-          detay: "A life shared is a life lived twice.",
+          mesaj: "Your stories enchanted all; you talked into the small hours.",
+          detay: "A shared life is lived twice.",
         },
         basarisizSonuc: {
-          mesaj: "Your stories didn't catch on; the young ones hurriedly changed the subject.",
-          detay: "Not every generation is enchanted by the same stories.",
+          mesaj: "Your stories fell flat; the young changed the subject.",
+          detay: "Not every generation is enchanted.",
         },
       },
       {
         metin: "Live it quietly within yourself.",
         basariliSonuc: {
-          mesaj: "You kept your memories to yourself, relived them in a quiet peace.",
-          detay: "Some treasures are valuable even unshared.",
+          mesaj: "You kept the memories and relived them in quiet peace.",
+          detay: "Some treasures are worth more unshared.",
         },
         basarisizSonuc: {
-          mesaj: "Your silence deepened your feeling of loneliness.",
-          detay: "Sometimes not sharing carries a price too.",
+          mesaj: "Your silence deepened your loneliness.",
+          detay: "Not sharing has a price too.",
         },
       },
     ],
   },
   bedenin_sinirlari: {
     baslik: "The Body's Limits",
-    metin: "You noticed today that you couldn't do something you used to do easily. Your body is no longer what it was in your youth.",
+    metin: "Today you couldn't do what you once did easily. Your body is no longer what it was.",
     secenekler: [
       {
         metin: "Push yourself like in your youth.",
         basariliSonuc: {
-          mesaj: "You did it! Your body can still respond like in the old days.",
+          mesaj: "You did it! Your body still answers like in the old days.",
           detay: "Will sometimes beats age.",
         },
         basarisizSonuc: {
-          mesaj: "You overdid it and stayed bedridden for days.",
-          detay: "The body sometimes overrules the will.",
+          mesaj: "You overdid it and lay bedridden for days.",
+          detay: "The body overrules the will.",
         },
       },
       {
         metin: "Accept your age, slow down.",
         basariliSonuc: {
-          mesaj: "Accepting your age was a more peaceful thing than you expected.",
-          detay: "Wisdom is sometimes knowing your limits.",
+          mesaj: "Accepting your age was more peaceful than expected.",
+          detay: "Wisdom is knowing your limits.",
         },
         basarisizSonuc: {
-          mesaj: "Slowing down hurt your pride; you sighed, missing your old days.",
-          detay: "Acceptance sometimes takes time.",
+          mesaj: "Slowing down hurt your pride; you sighed for the old days.",
+          detay: "Acceptance takes time.",
         },
       },
     ],
   },
   mirasin_ne_olacak: {
     baslik: "What Becomes of Your Legacy?",
-    metin: "You can't help thinking about what you'll leave behind. The knowledge, wealth and experience you gathered over years — will they go with you?",
+    metin: "You think about what you'll leave behind. Will the knowledge, wealth and experience of years go with you?",
     secenekler: [
       {
-        metin: "Pass your wealth and wisdom to someone young.",
+        metin: "Pass wealth and wisdom to a young one.",
         basariliSonuc: {
-          mesaj: "The youth you chose listened to your teachings with full attention; knowing your legacy would live put you at ease.",
-          detay: "The true legacy is knowledge more than gold.",
+          mesaj: "The youth you chose listened closely; your legacy will live.",
+          detay: "The true legacy is knowledge, not gold.",
         },
         basarisizSonuc: {
-          mesaj: "The person you chose abused your trust and wasted part of what you gave.",
-          detay: "Not every trust is given to one who deserves it.",
+          mesaj: "The one you chose abused your trust and wasted what you gave.",
+          detay: "Not every trust goes to the worthy.",
         },
       },
       {
-        metin: "Keep it for yourself, trust no one.",
+        metin: "Keep it, trust no one.",
         basariliSonuc: {
-          mesaj: "You kept everything to yourself; the sense of security put you at ease.",
-          detay: "Sometimes caution is a choice too.",
+          mesaj: "You kept everything; the sense of security eased you.",
+          detay: "Caution is a choice too.",
         },
         basarisizSonuc: {
-          mesaj: "Your loneliness began to make you question the meaning of all you'd kept.",
-          detay: "An unshared legacy sometimes loses its meaning.",
+          mesaj: "Loneliness made you question the meaning of all you kept.",
+          detay: "An unshared legacy loses meaning.",
         },
       },
     ],
   },
   yasli_asker_son_nobet: {
     baslik: "The Last Watch",
-    metin: "The commander asks, 'Would you stand watch one more time, one last time?' You're being asked to show a young soldier the way.",
+    metin: "The commander asks: 'Stand watch one more time, one last time?' You're to guide a young soldier.",
     secenekler: [
       {
-        metin: "Accept, put on your uniform one last time.",
+        metin: "Accept, don your uniform one last time.",
         basariliSonuc: {
-          mesaj: "What you taught the young soldier was knowledge that will save his life; you were full of pride.",
+          mesaj: "What you taught the young soldier will save his life; you were proud.",
           detay: "Some watches last a lifetime.",
         },
         basarisizSonuc: {
-          mesaj: "The cold night watch wore your body out too much.",
-          detay: "An aging body doesn't give the old endurance.",
+          mesaj: "The cold night watch wore your body out.",
+          detay: "An aging body lacks the old endurance.",
         },
       },
       {
-        metin: "Decline politely, it's time to rest now.",
+        metin: "Politely decline, time to rest.",
         basariliSonuc: {
-          mesaj: "Your refusal was met with understanding; you chose the rest you deserve.",
-          detay: "Someone who has served a lifetime has a right to rest.",
+          mesaj: "Your refusal was understood; you chose the rest you deserve.",
+          detay: "A lifetime of service earns rest.",
         },
         basarisizSonuc: {
-          mesaj: "Some of the young ones met this with disappointment.",
+          mesaj: "Some of the young met it with disappointment.",
           detay: "Not every retirement is applauded.",
         },
       },
@@ -3679,545 +3679,545 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
   },
   yasli_tuccar_dukkani_devretmek: {
     baslik: "Handing Over the Shop",
-    metin: "You wonder whether it's time to hand over the business you've poured effort into for years. A young assistant seems ready to take it over.",
+    metin: "Is it time to hand over the business you've built for years? A young assistant seems ready.",
     secenekler: [
       {
-        metin: "Trust them, hand the business over.",
+        metin: "Trust them, hand it over.",
         basariliSonuc: {
-          mesaj: "Your young assistant took over the business with great care; seeing your legacy continue made you proud.",
-          detay: "Effort sometimes carries on in the best hands.",
+          mesaj: "Your assistant took over with great care; your legacy lives on, to your pride.",
+          detay: "Effort lives on in the best hands.",
         },
         basarisizSonuc: {
-          mesaj: "The young assistant made some mistakes; a shadow fell on your years of reputation.",
-          detay: "Not every handover goes flawlessly.",
+          mesaj: "The assistant made mistakes; a shadow fell on your reputation.",
+          detay: "Not every handover is flawless.",
         },
       },
       {
-        metin: "No, keep the reins in your own hands.",
+        metin: "No, keep the reins.",
         basariliSonuc: {
-          mesaj: "You kept running the business; habit gives you confidence.",
-          detay: "For some people, work is life itself.",
+          mesaj: "You kept running it; habit reassures you.",
+          detay: "For some, work is life itself.",
         },
         basarisizSonuc: {
-          mesaj: "Despite your age, carrying the whole weight of the business wore your body out.",
-          detay: "Not letting go sometimes exacts a price.",
+          mesaj: "Carrying the whole load at your age wore you out.",
+          detay: "Not letting go has a price.",
         },
       },
     ],
   },
   yasli_din_adami_son_vaaz: {
     baslik: "The Last Sermon",
-    metin: "Your health isn't what it was and the congregation has invited you to the pulpit to give what may be your most important sermon. What you say could be remembered for many years.",
+    metin: "Your health is failing; the congregation invites you to the pulpit for perhaps your most important sermon. It may be remembered for years.",
     secenekler: [
       {
         metin: "Share a lifetime of wisdom.",
         basariliSonuc: {
-          mesaj: "Your words moved the congregation to tears; you gave a sermon that will be told for years.",
-          detay: "The essence of a life can fit into a few sentences.",
+          mesaj: "Your words moved them to tears; a sermon retold for years.",
+          detay: "A life's essence fits in few sentences.",
         },
         basarisizSonuc: {
-          mesaj: "Excitement and fatigue wore you out; you had to cut the sermon short.",
-          detay: "The body sometimes can't keep up with the spirit's wish.",
+          mesaj: "Excitement and fatigue overcame you; you cut the sermon short.",
+          detay: "The body can't keep up with the spirit.",
         },
       },
       {
         metin: "Give a short, plain talk.",
         basariliSonuc: {
-          mesaj: "Your plain words still came from the heart; the congregation was grateful.",
-          detay: "Sometimes few words say much.",
+          mesaj: "Your plain words came from the heart; they were grateful.",
+          detay: "Few words say much.",
         },
         basarisizSonuc: {
-          mesaj: "You felt there was much you wanted to say but couldn't.",
-          detay: "Some words, if not spoken in time, stay inside forever.",
+          mesaj: "Much you wanted to say stayed unsaid.",
+          detay: "Words unspoken in time stay inside.",
         },
       },
     ],
   },
   derinlik_asker_agir_yara: {
     baslik: "Between the Swords",
-    metin: "At the fiercest moment of the pitched battle, two enemy soldiers caught you in a pincer. Falling back stains your honor, but fighting to the end is very risky.",
+    metin: "At the battle's fiercest, two enemy soldiers pincer you. Retreat stains your honor; fighting on is risky.",
     secenekler: [
       {
-        metin: "Fall back, take cover behind your shield.",
+        metin: "Fall back behind your shield.",
         basariliSonuc: {
           mesaj: "You fell back in time; your shield protected you.",
-          detay: "Surviving sometimes requires a step back.",
+          detay: "Surviving sometimes needs a step back.",
         },
         basarisizSonuc: {
-          mesaj: "Even falling back you took a sword blow.",
-          detay: "There is no safe corner on the battlefield.",
+          mesaj: "Even retreating, you took a sword blow.",
+          detay: "The battlefield has no safe corner.",
         },
       },
       {
-        metin: "Fight to the end, stand against both.",
+        metin: "Fight on against both.",
         basariliSonuc: {
-          mesaj: "You bested them both; the unit welcomed you back like an epic hero.",
-          detay: "This day will be remembered as the day your name became a legend on the battlefield.",
+          mesaj: "You beat both; the unit welcomed you as an epic hero.",
+          detay: "The day your name became legend.",
         },
         basarisizSonuc: {
-          mesaj: "A sword blow left your arm useless; the surgeon couldn't save it.",
-          detay: "You won't fight like you used to, but you're alive — and for today, that's enough.",
+          mesaj: "A blow ruined your arm; the surgeon couldn't save it.",
+          detay: "You won't fight as before, but you live.",
         },
       },
     ],
   },
   derinlik_asker_yakin_dovus: {
     baslik: "The Melee",
-    metin: "Your unit is entering the close-combat line. The commander waits for your decision: will you fight in the front rank with both hands, or support from the back with a spear?",
+    metin: "Your unit enters the melee. The commander asks: front rank with both hands, or back with a spear?",
     secenekler: [
       {
-        metin: "Move to the front rank, wield your sword with both hands.",
-        kilitAciklamasi: "Your body and your mind no longer allow it.",
+        metin: "Take the front, wield your sword two-handed.",
+        kilitAciklamasi: "Your body and mind no longer allow it.",
         basariliSonuc: {
-          mesaj: "The courage you showed in the front rank became the unit's morale.",
-          detay: "No one dared to stand in front of you.",
+          mesaj: "Your courage in front became the unit's morale.",
+          detay: "No one dared stand before you.",
         },
         basarisizSonuc: {
-          mesaj: "The front rank exacted a heavy price; wounded but on your feet.",
+          mesaj: "The front rank took a heavy toll; wounded but standing.",
           detay: "Your courage had a price.",
         },
       },
       {
-        metin: "Stay in the back, support with a spear.",
+        metin: "Stay back, support with a spear.",
         basariliSonuc: {
-          mesaj: "Your support position held the unit's line.",
-          detay: "Not every act of heroism has to be in the front rank.",
+          mesaj: "Your support held the unit's line.",
+          detay: "Not all heroism is in front.",
         },
         basarisizSonuc: {
-          mesaj: "Even in the back, you took your share of the chaos of the clash.",
-          detay: "There is no fully safe place on the battlefield.",
+          mesaj: "Even in the back, you took your share of the chaos.",
+          detay: "The battlefield has no fully safe place.",
         },
       },
     ],
   },
   derinlik_asker_savas_travmasi: {
     baslik: "The End of the Siege",
-    metin: "After a siege lasting weeks the city fell. What you saw in the streets showed you the ugliest face of war. Will these images stay with you?",
+    metin: "After weeks of siege the city fell. What you saw in the streets was war's ugliest face. Will it stay with you?",
     secenekler: [
       {
-        metin: "Suppress what you saw, carry on with your duty.",
+        metin: "Suppress it, carry on.",
         basariliSonuc: {
-          mesaj: "You set aside what you saw and carried on with your duty.",
-          detay: "Some soldiers can manage this, some only pretend to.",
+          mesaj: "You set aside what you saw and carried on.",
+          detay: "Some manage it; some only pretend.",
         },
         basarisizSonuc: {
-          mesaj: "What you saw shook you inside; the nights are no longer the same.",
-          detay: "War sometimes wounds not the body but the mind — and that wound is invisible but deep.",
+          mesaj: "What you saw shook you inside; nights are no longer the same.",
+          detay: "War wounds the mind; unseen but deep.",
         },
       },
       {
-        metin: "Step aside for a while, give yourself some leave.",
+        metin: "Step aside for a while.",
         basariliSonuc: {
-          mesaj: "The time you gave yourself did you good; a few days later you came back stronger.",
-          detay: "Being kind to yourself is not weakness.",
+          mesaj: "The time you gave yourself helped; you returned stronger.",
+          detay: "Kindness to yourself isn't weakness.",
         },
         basarisizSonuc: {
-          mesaj: "Your stepping back was counted weakness by some.",
-          detay: "Not everyone meets emotional weight with the same understanding.",
+          mesaj: "Some counted your withdrawal as weakness.",
+          detay: "Not everyone understands emotional weight.",
         },
       },
     ],
   },
   derinlik_tuccar_lonca_ihanet: {
     baslik: "Turning Your Back on the Guild",
-    metin: "You have a chance to break the guild's rules and make a very profitable deal secretly with a rival city. But if the guild finds out, it's counted a betrayal with no going back.",
+    metin: "You could break guild rules and strike a very profitable secret deal with a rival city. If found out, it's a betrayal with no return.",
     secenekler: [
       {
-        metin: "Refuse the opportunity, stay loyal to the guild.",
+        metin: "Refuse, stay loyal to the guild.",
         basariliSonuc: {
           mesaj: "You kept your loyalty; your place in the guild is solid.",
-          detay: "Some opportunities aren't worth risking trust.",
+          detay: "Some chances aren't worth risking trust.",
         },
         basarisizSonuc: {
-          mesaj: "You refused but the opportunity wouldn't leave your mind.",
-          detay: "Some 'what ifs' linger a long time.",
+          mesaj: "You refused but the chance stayed on your mind.",
+          detay: "Some 'what ifs' linger.",
         },
       },
       {
         metin: "Make the deal secretly.",
         basariliSonuc: {
-          mesaj: "The deal went through unnoticed; your pocket swelled.",
-          detay: "You were lucky this time, but this kind of luck doesn't last forever.",
+          mesaj: "The deal went unnoticed; your purse swelled.",
+          detay: "Such luck doesn't last forever.",
         },
         basarisizSonuc: {
-          mesaj: "Your betrayal came out; the guild threw you out of its doors forever.",
-          detay: "The guild's protection and network are gone now; you have to run everything on your own.",
+          mesaj: "Your betrayal came out; the guild expelled you for good.",
+          detay: "No guild protection now; everything is on you.",
         },
       },
     ],
   },
   derinlik_din_papa_karsi_gelme: {
     baslik: "A Word Against the Church",
-    metin: "You find a decision of the higher authorities to be against your conscience. To openly oppose it carries the risk of losing everything you have in the church.",
+    metin: "You find a decision of your superiors against your conscience. Open opposition risks everything you have in the church.",
     secenekler: [
       {
         metin: "Stay silent, obey.",
         basariliSonuc: {
-          mesaj: "You obeyed; your position is safe but there's a weight inside you.",
-          detay: "Some silences pay a price, just an invisible one.",
+          mesaj: "You obeyed; your position is safe but a weight remains.",
+          detay: "Some silences have an unseen price.",
         },
         basarisizSonuc: {
-          mesaj: "Even though you obeyed, your conscience wouldn't leave you alone.",
+          mesaj: "Though you obeyed, your conscience gave no rest.",
           detay: "Some thoughts aren't easily silenced.",
         },
       },
       {
-        metin: "Openly oppose it.",
+        metin: "Oppose openly.",
         basariliSonuc: {
-          mesaj: "Your courage drew attention; even some of the higher authorities quietly backed you.",
-          detay: "Sometimes saying what you know is right wins you unexpected allies.",
+          mesaj: "Your courage drew notice; some superiors quietly backed you.",
+          detay: "Speaking right wins unexpected allies.",
         },
         basarisizSonuc: {
-          mesaj: "Your opposition ended in excommunication; you have no place in official church circles anymore.",
-          detay: "Your conscience is at ease, but you're on a completely different, far lonelier road now.",
+          mesaj: "Your opposition ended in excommunication; no place in church circles remains.",
+          detay: "Your conscience is clear, but your road is lonelier.",
         },
       },
     ],
   },
   derinlik_asker_krala_karsi: {
     baslik: "A Stand Against the King",
-    metin: "The king gave an openly unjust and cruel order: the punishment of an innocent village. Your conscience wants you to oppose it but the price could be very heavy.",
+    metin: "The king gave an openly cruel order: punish an innocent village. Conscience urges defiance, but the price may be heavy.",
     secenekler: [
       {
         metin: "Carry out the order quietly.",
         basariliSonuc: {
-          mesaj: "You carried out the order; the king is pleased but your conscience will never be the same.",
-          detay: "Some orders, even carried out, don't leave a person as they were.",
+          mesaj: "You obeyed; the king is pleased but your conscience won't be the same.",
+          detay: "Some orders leave a person changed.",
         },
         basarisizSonuc: {
-          mesaj: "You carried out the order but the villagers' cries will break your sleep.",
-          detay: "Some duties, even won, feel like a defeat.",
+          mesaj: "You obeyed but the villagers' cries will haunt your sleep.",
+          detay: "Some duties, won, feel like defeat.",
         },
       },
       {
         metin: "Openly refuse the order.",
         basariliSonuc: {
-          mesaj: "Your refusal became an example of courage; some of your unit stood on your side.",
-          detay: "Sometimes one person's courage emboldens others.",
+          mesaj: "Your refusal set an example; some of your unit stood with you.",
+          detay: "One person's courage emboldens others.",
         },
         basarisizSonuc: {
-          mesaj: "Your refusal was reported to the king; you were officially declared 'the king's enemy'.",
-          detay: "Your conscience is at peace, but you live a life where you could lose your head at any moment now.",
+          mesaj: "Your refusal reached the king; you're now officially 'the king's enemy'.",
+          detay: "Your conscience is at peace, but your head is at risk.",
         },
       },
     ],
   },
   derinlik_tuccar_ipek_ticareti: {
     baslik: "Silk from Distant Lands",
-    metin: "A caravan from the east brought silk of unmatched quality. If you put your whole fortune into this one shipment, either a legendary gain or a great loss awaits you.",
+    metin: "A caravan from the east brought silk of unmatched quality. Stake your whole fortune on it and a legendary gain or a great loss awaits.",
     secenekler: [
       {
-        metin: "Put all your capital into the silk.",
+        metin: "Put all your capital in silk.",
         basariliSonuc: {
-          mesaj: "The silk sold at an incredible price in the market; your name is now spoken among the richest merchants in the city.",
-          detay: "People started calling you not just by your name but 'the Silk King'.",
+          mesaj: "The silk sold at an incredible price; your name is among the city's richest merchants.",
+          detay: "They now call you 'the Silk King'.",
         },
         basarisizSonuc: {
           mesaj: "Most of the silk fell prey to damp on the road; your investment was largely wasted.",
-          detay: "Big dreams sometimes end in big losses.",
+          detay: "Big dreams bring big losses.",
         },
       },
       {
-        metin: "Buy a small amount, stay cautious.",
+        metin: "Buy a little, stay cautious.",
         basariliSonuc: {
           mesaj: "Your small investment brought a safe gain.",
-          detay: "Caution isn't always the most exciting, but it's safe.",
+          detay: "Caution is unexciting but safe.",
         },
         basarisizSonuc: {
-          mesaj: "Even your small investment didn't turn out as you'd hoped.",
-          detay: "Some days the market's pulse slips away.",
+          mesaj: "Even your small investment didn't turn out as hoped.",
+          detay: "Sometimes the market's pulse slips away.",
         },
       },
     ],
   },
   derinlik_asker_destansi_zafer: {
     baslik: "An Epic Defense",
-    metin: "Your small unit was tasked with defending a pass against a far larger enemy wave. This is a day that will go to legend or to oblivion.",
+    metin: "Your small unit must hold a pass against a far larger enemy wave. A day for legend or oblivion.",
     secenekler: [
       {
         metin: "Defend the pass to the end.",
         basariliSonuc: {
-          mesaj: "You held the pass by yourselves; the enemy finally fell back. This day became the stuff of epics.",
-          detay: "The soldiers speak of you as 'Brave Heart' now.",
+          mesaj: "You held the pass alone; the enemy fell back. The day became legend.",
+          detay: "Soldiers call you 'Brave Heart'.",
         },
         basarisizSonuc: {
-          mesaj: "The pass fell but your resistance cost the enemy heavy losses.",
-          detay: "Even a defeat can sometimes be honorable.",
+          mesaj: "The pass fell but your stand cost the enemy dearly.",
+          detay: "Even defeat can be honorable.",
         },
       },
       {
-        metin: "Fall back in good order.",
+        metin: "Withdraw in good order.",
         basariliSonuc: {
-          mesaj: "You fell back; you reached the safe zone without losses.",
-          detay: "Not every day has to be epic.",
+          mesaj: "You reached safety without losses.",
+          detay: "Not every day must be epic.",
         },
         basarisizSonuc: {
-          mesaj: "There was a small skirmish during the retreat.",
-          detay: "Even roads that look safe can carry risk.",
+          mesaj: "A small skirmish broke out during the retreat.",
+          detay: "Even safe-looking roads carry risk.",
         },
       },
     ],
   },
   derinlik_din_mucize_sifa: {
     baslik: "A Hopeless Case",
-    metin: "A patient the doctors gave up on was brought to you. You could try to give him hope with prayer and care, but the outcome isn't guaranteed.",
+    metin: "A patient the doctors gave up on is brought to you. You can try giving hope with prayer and care, but nothing is certain.",
     secenekler: [
       {
-        metin: "Don't leave his side day or night, pray.",
+        metin: "Pray at his side day and night.",
         basariliSonuc: {
-          mesaj: "The patient recovered unexpectedly; the people told it as a miracle.",
-          detay: "They call you 'the Healer' now; you just know you did what you could.",
+          mesaj: "The patient recovered unexpectedly; people called it a miracle.",
+          detay: "They call you 'the Healer'; you did what you could.",
         },
         basarisizSonuc: {
           mesaj: "Despite all your effort the patient couldn't be saved.",
-          detay: "Some losses can't be prevented no matter how hard you try.",
+          detay: "Some losses can't be prevented.",
         },
       },
       {
-        metin: "Do what you can but don't give too much hope.",
+        metin: "Do what you can, promise no hope.",
         basariliSonuc: {
-          mesaj: "Your measured approach did both the patient and you good.",
-          detay: "You don't always have to be at the extreme.",
+          mesaj: "Your measured approach helped both patient and you.",
+          detay: "You needn't always be at the extreme.",
         },
         basarisizSonuc: {
-          mesaj: "The patient couldn't be saved but you know you did what you could.",
-          detay: "Peace of conscience is sometimes the only consolation.",
+          mesaj: "The patient couldn't be saved, but you did what you could.",
+          detay: "Peace of conscience is sometimes the only comfort.",
         },
       },
     ],
   },
   derinlik_soylu_olumu: {
     baslik: "A Moment of Fate",
-    metin: "A dispute turned into a violent clash; the man across from you was the son of a powerful and populous noble family. Without meaning to, you caused his death.",
+    metin: "A dispute turned violent; your opponent was the son of a powerful, large noble family. You caused his death unintentionally.",
     secenekler: [
       {
         metin: "Try to hide it, stay silent.",
         basariliSonuc: {
-          mesaj: "You managed to cover it up, but your conscience and the fear inside won't leave you.",
-          detay: "Some secrets weigh on you even while they wait quietly.",
+          mesaj: "You covered it up, but your conscience and fear won't leave you.",
+          detay: "Secrets weigh even in silence.",
         },
         basarisizSonuc: {
-          mesaj: "The truth came out quickly; the family has its eye on you now.",
-          detay: "Some secrets spread faster the harder you try to hide them.",
+          mesaj: "The truth soon came out; the family has its eye on you.",
+          detay: "A hidden secret spreads faster.",
         },
       },
       {
-        metin: "Send word to the family openly, give an account.",
+        metin: "Tell the family openly, answer for it.",
         basariliSonuc: {
-          mesaj: "Your honesty softened the family a little; you reached a settlement by paying blood money.",
-          detay: "Some accounts can be closed with money — but not all.",
+          mesaj: "Your honesty softened the family; you settled with blood money.",
+          detay: "Some debts close with money; not all.",
         },
         basarisizSonuc: {
-          mesaj: "Your honesty didn't soften the family; their anger only grew.",
-          detay: "For some families no apology is ever enough.",
+          mesaj: "Your honesty didn't soften them; their anger grew.",
+          detay: "For some families no apology is enough.",
         },
       },
     ],
   },
   derinlik_kan_davasi_suikast: {
     baslik: "From the Dark of Night",
-    metin: "Years later, the blood feud you thought you'd forgotten found you. In a dark alley an assassin attacked you.",
+    metin: "Years later, the blood feud you thought forgotten found you. An assassin attacked you in a dark alley.",
     secenekler: [
       {
         metin: "Fight back.",
         basariliSonuc: {
-          mesaj: "You put the assassin out of action; the blood feud is finally closed.",
-          detay: "A burden you carried on your shoulders for years ended tonight.",
+          mesaj: "You put the assassin down; the blood feud is closed.",
+          detay: "A burden of years ended tonight.",
         },
         basarisizSonuc: {
-          mesaj: "You were badly wounded but the assassin fled too; at least the threat pulled back for a while.",
-          detay: "You survived tonight, but the price was heavy.",
+          mesaj: "You were badly wounded and the assassin fled; the threat receded for a while.",
+          detay: "You survived tonight, but at heavy cost.",
         },
       },
       {
         metin: "Flee, call for help.",
         basariliSonuc: {
-          mesaj: "You managed to get away; afterward you reached a secret settlement with the family, and the blood feud closed.",
-          detay: "Some battles can be won by running too.",
+          mesaj: "You escaped, then settled secretly with the family and closed the feud.",
+          detay: "Some battles are won by running.",
         },
         basarisizSonuc: {
-          mesaj: "You were caught while fleeing; there was a short but violent clash, and the assassin finally gave up and left.",
-          detay: "The blood feud still hangs over you like a shadow.",
+          mesaj: "Caught while fleeing, a brief violent clash ended with the assassin giving up.",
+          detay: "The feud still hangs over you like a shadow.",
         },
       },
     ],
   },
   derinlik_din_veba_bakimi: {
     baslik: "Among the Plague-Stricken",
-    metin: "Plague is spreading in the city and there's no one left to care for the sick. Caring for them could expose you to the disease too, but with time your medical knowledge could give you immunity or a gift for healing.",
+    metin: "Plague spreads through the city and no one tends the sick. Caring may infect you, but your medical knowledge may bring immunity or healing.",
     secenekler: [
       {
-        metin: "Tend the sick yourself, hone your techniques.",
+        metin: "Tend the sick yourself.",
         basariliSonuc: {
           mesaj: "After weeks of care you learned the finer points of treating the disease.",
-          detay: "Now you don't just pray, you can really give healing.",
+          detay: "Now you don't just pray, you heal.",
         },
         basarisizSonuc: {
-          mesaj: "You fell ill too, but your body won the fight; you're immune to the plague now.",
-          detay: "The hard ordeal you went through, strangely, made you stronger.",
+          mesaj: "You fell ill but your body won; you're immune to plague now.",
+          detay: "The ordeal made you stronger.",
         },
       },
       {
-        metin: "Pray from a distance, don't take the risk.",
+        metin: "Pray from afar, avoid the risk.",
         basariliSonuc: {
-          mesaj: "You prayed from a distance; you stayed safe.",
-          detay: "Not every act of courage requires taking a risk.",
+          mesaj: "You prayed from afar and stayed safe.",
+          detay: "Not all courage takes risks.",
         },
         basarisizSonuc: {
-          mesaj: "Your keeping away was criticized by some congregation members.",
-          detay: "Not everyone expects the same measure of courage, though some do.",
+          mesaj: "Some congregants criticized your distance.",
+          detay: "Not all expect the same courage; some do.",
         },
       },
     ],
   },
   derinlik_veba_salgini_ikinci_dalga: {
     baslik: "The Plague's Second Wave",
-    metin: "The plague has picked up speed again. The hospital is overflowing, and helping hands have grown even fewer.",
+    metin: "The plague surged again. The hospital overflows and helping hands are fewer.",
     secenekler: [
       {
-        metin: "Trust your immunity and help the sick freely.",
-        kilitAciklamasi: "You have no immunity; approaching this freely would be far too risky.",
+        metin: "Trust your immunity, help the sick.",
+        kilitAciklamasi: "You have no immunity; this would be too risky.",
         basariliSonuc: {
-          mesaj: "Thanks to your immunity you helped the sick fearlessly; the people saw you as a hero.",
-          detay: "Your past pain now helps you save others.",
+          mesaj: "You helped the sick fearlessly; people saw you as a hero.",
+          detay: "Your past pain now saves others.",
         },
         basarisizSonuc: {
-          mesaj: "Your immunity protected you but exhaustion took over.",
-          detay: "The body may be durable but the spirit can tire.",
+          mesaj: "Immunity protected you but exhaustion weighed heavy.",
+          detay: "The body may endure; the spirit tires.",
         },
       },
       {
-        metin: "Use your healer's knowledge to tend the sick.",
-        kilitAciklamasi: "You do not know this technique.",
+        metin: "Use your healing knowledge on the sick.",
+        kilitAciklamasi: "You don't know this technique.",
         basariliSonuc: {
           mesaj: "Thanks to your knowledge you healed many patients.",
-          detay: "The techniques you learned served you exactly at a moment like this.",
+          detay: "What you learned served in just such a moment.",
         },
         basarisizSonuc: {
-          mesaj: "Despite your knowledge this wave was even more merciless.",
-          detay: "Not every knowledge can stop every disaster.",
+          mesaj: "Despite your knowledge this wave was more merciless.",
+          detay: "No knowledge stops every disaster.",
         },
       },
       {
         metin: "Keep your distance, only pray.",
         basariliSonuc: {
-          mesaj: "You kept your distance; you stayed safe.",
-          detay: "Some days just surviving is enough.",
+          mesaj: "You kept your distance and stayed safe.",
+          detay: "Some days surviving is enough.",
         },
         basarisizSonuc: {
-          mesaj: "Staying safe disturbed you inside; you blamed yourself for not being able to help.",
-          detay: "Some safe choices can trouble the conscience.",
+          mesaj: "Safety troubled you; you blamed yourself for not helping.",
+          detay: "Safe choices can trouble conscience.",
         },
       },
     ],
   },
   derinlik_afyon_teklifi: {
     baslik: "A Painkilling Offer",
-    metin: "After a hard period an acquaintance offers you opium extract to ease your pains. It's certainly soothing, but so is the risk of addiction.",
+    metin: "After a hard time, an acquaintance offers opium extract to ease your pain. It soothes, but addiction is a risk.",
     secenekler: [
       {
-        metin: "Try it once, you want relief.",
+        metin: "Try it once.",
         basariliSonuc: {
           mesaj: "Your pain eased for a while; you felt lighter.",
-          detay: "The relief is real but temporary.",
+          detay: "Relief is real but temporary.",
         },
         basarisizSonuc: {
-          mesaj: "The relief felt so good you used it again and again. You can't easily give it up now.",
-          detay: "The thing that eased your pain quietly turned into a new pain.",
+          mesaj: "It felt so good you used it again and again; now you can't quit.",
+          detay: "What eased your pain became a new pain.",
         },
       },
       {
-        metin: "Refuse, deal with the pain another way.",
+        metin: "Refuse, face the pain another way.",
         basariliSonuc: {
-          mesaj: "You refused; you chose to deal with your pain by other means.",
-          detay: "The hard road is often the more solid one.",
+          mesaj: "You refused and chose other ways to face your pain.",
+          detay: "The hard road is often sturdier.",
         },
         basarisizSonuc: {
-          mesaj: "Refusing wasn't easy; your pain went on a while longer.",
-          detay: "Some hardships are overcome without an escape.",
+          mesaj: "Refusing wasn't easy; the pain lasted longer.",
+          detay: "Some hardships pass without escape.",
         },
       },
     ],
   },
   derinlik_bagimliliktan_kurtulma: {
     baslik: "A Moment of Awakening",
-    metin: "Looking at yourself in the mirror, you saw what your addiction has made of you. Maybe it's time to change now.",
+    metin: "In the mirror you saw what addiction has made of you. Perhaps it's time to change.",
     secenekler: [
       {
-        metin: "Fight your addiction with willpower.",
+        metin: "Fight the addiction with willpower.",
         basariliSonuc: {
-          mesaj: "After a long and hellish struggle you got completely free of your addiction.",
-          detay: "This is one of the hardest but most valuable victories you've won in life.",
+          mesaj: "After a hellish struggle you freed yourself of addiction.",
+          detay: "One of life's hardest, most valuable victories.",
         },
         basarisizSonuc: {
-          mesaj: "You fought but couldn't withstand the withdrawal crises; you returned to your old habit in tears.",
-          detay: "Some chains don't break on the first try.",
+          mesaj: "You couldn't bear the withdrawal; you returned to the habit in tears.",
+          detay: "Some chains don't break in one try.",
         },
       },
       {
-        metin: "Put it off for now, leave it for another day.",
+        metin: "Put it off for now.",
         basariliSonuc: {
-          mesaj: "You decided to put off the change; maybe another day.",
-          detay: "The right moment for some decisions may not have come yet.",
+          mesaj: "You put off the change; maybe another day.",
+          detay: "The right moment may not have come.",
         },
         basarisizSonuc: {
-          mesaj: "The decision to put it off left a dark unease inside you.",
-          detay: "Sometimes putting things off carries its own weight.",
+          mesaj: "Putting it off left a dark unease.",
+          detay: "Delay has its own weight.",
         },
       },
     ],
   },
   global_kitlik_baslangici: {
     baslik: "The Shadow of Drought",
-    metin: "This year the rains came late and the crops burned. Signs heralding a famine are appearing in the region.",
+    metin: "The rains came late this year and crops scorched. Signs of famine appear in the region.",
     secenekler: [
       {
-        metin: "Share your surplus with your neighbors.",
+        metin: "Share your surplus with neighbors.",
         basariliSonuc: {
-          mesaj: "You shared what you had; the famine is beginning but at least your conscience is at ease.",
+          mesaj: "You shared what you had; famine begins but your conscience is clear.",
           detay: "Hard days are near, but you're not alone.",
         },
         basarisizSonuc: {
-          mesaj: "Your sharing wasn't found enough; the famine is beginning.",
+          mesaj: "Your sharing wasn't enough; famine begins.",
           detay: "A hard time is at the door.",
         },
       },
       {
-        metin: "Protect your own stores, look after yourself first.",
+        metin: "Guard your stores, look after yourself.",
         basariliSonuc: {
-          mesaj: "You protected your own share; the famine is engulfing the region all the same.",
-          detay: "Your selfishness will keep you a little safer.",
+          mesaj: "You guarded your share; famine still grips the region.",
+          detay: "Selfishness keeps you a little safer.",
         },
         basarisizSonuc: {
-          mesaj: "Your selfishness was noticed and your reputation was shaken.",
-          detay: "Hard times bring out people's true faces.",
+          mesaj: "Your selfishness was noticed; your reputation suffered.",
+          detay: "Hard times show true faces.",
         },
       },
     ],
   },
   global_isyan_baslangici: {
     baslik: "Tension in the Streets",
-    metin: "Anger at the taxes and the government has spilled into the streets. Small demonstrations may be the herald of a great revolt.",
+    metin: "Anger at taxes and rule has spilled into the streets. Small protests may herald a great revolt.",
     secenekler: [
       {
-        metin: "Quietly turn a blind eye to the demonstrations, stay out of it.",
+        metin: "Turn a blind eye, stay out.",
         basariliSonuc: {
-          mesaj: "You stayed out of it; but the tension grew into a revolt.",
-          detay: "Some storms can't be stopped, only waited out.",
+          mesaj: "You stayed out; but the tension grew into revolt.",
+          detay: "Some storms can't be stopped, only awaited.",
         },
         basarisizSonuc: {
           mesaj: "Even out of it, you took your share of the chaos.",
-          detay: "The streets aren't safe anymore.",
+          detay: "The streets are no longer safe.",
         },
       },
       {
-        metin: "Warn the authorities, ask them to take precautions.",
+        metin: "Warn the authorities, ask for precautions.",
         basariliSonuc: {
-          mesaj: "Your warning was heeded; small measures calmed the tension for a while.",
-          detay: "This time the disaster was postponed.",
+          mesaj: "Your warning was heeded; the tension calmed for a while.",
+          detay: "Disaster was postponed this time.",
         },
         basarisizSonuc: {
-          mesaj: "Your warning wasn't heeded; the tension turned into a revolt.",
+          mesaj: "Your warning went unheeded; tension turned to revolt.",
           detay: "Some warnings go unheard.",
         },
       },
@@ -4225,83 +4225,83 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
   },
   global_altin_cag_baslangici: {
     baslik: "The Start of Abundance",
-    metin: "A bountiful harvest, new trade routes and a peaceful period have all come together. The region seems to be entering an age of prosperity.",
+    metin: "A bountiful harvest, new trade routes and peace have come together. The region seems to enter prosperity.",
     secenekler: [
       {
-        metin: "Take your share of this bounty too.",
+        metin: "Take your share of the bounty.",
         basariliSonuc: {
-          mesaj: "You joined in the bountiful period; the region is entering a golden age.",
-          detay: "Some periods bring abundance to everyone.",
+          mesaj: "You joined the bountiful era; the region enters a golden age.",
+          detay: "Some eras bring abundance to all.",
         },
         basarisizSonuc: {
-          mesaj: "Though you couldn't fully make use of the opportunity, abundance is beginning across the region.",
-          detay: "Not everyone benefits at the same pace.",
+          mesaj: "You missed part of the chance, but abundance begins across the region.",
+          detay: "Not everyone benefits equally fast.",
         },
       },
       {
-        metin: "Be cautious, assume this abundance is temporary.",
+        metin: "Be cautious, it won't last.",
         basariliSonuc: {
-          mesaj: "Even staying cautious, the region is entering a golden age.",
-          detay: "Some good times deserve to be met without caution.",
+          mesaj: "Even cautious, you see the region enter a golden age.",
+          detay: "Some good times deserve less caution.",
         },
         basarisizSonuc: {
-          mesaj: "Your caution kept you from some opportunities.",
-          detay: "Not everyone enjoys this abundance the same way.",
+          mesaj: "Your caution cost you some chances.",
+          detay: "Not all enjoy abundance equally.",
         },
       },
     ],
   },
   nemesis_fiyat_kirma: {
     baslik: "The Rival's Game",
-    metin: "Just as you're on the verge of a deal with an important customer, {rakip} suddenly appears and announces he's cut his price to half of yours. The customer is now hesitating.",
+    metin: "Just as you near a deal with an important customer, {rakip} appears and announces he's halved your price. The customer wavers.",
     secenekler: [
       {
         metin: "Cut your price too, accept the fight.",
         basariliSonuc: {
-          mesaj: "You kept the customer but your profit margin melted because of {rakip}.",
-          detay: "You won this fight, but it cost you.",
+          mesaj: "You kept the customer but {rakip} melted your margin.",
+          detay: "You won the fight, at a cost.",
         },
         basarisizSonuc: {
-          mesaj: "The price war wore you out too, and the customer still went to {rakip}.",
-          detay: "Some fights are doomed to be lost.",
+          mesaj: "The price war wore you out; the customer still went to {rakip}.",
+          detay: "Some fights are doomed.",
         },
       },
       {
-        metin: "Hold your price, put your quality forward.",
+        metin: "Hold your price, stress quality.",
         basariliSonuc: {
-          mesaj: "The customer appreciated your quality and didn't fall for {rakip}'s cheap game.",
-          detay: "Sometimes it's not price but trust that wins.",
+          mesaj: "The customer valued your quality and ignored {rakip}'s cheap trick.",
+          detay: "Trust wins, not price.",
         },
         basarisizSonuc: {
-          mesaj: "The customer was lured by the cheap price and went to {rakip}.",
-          detay: "Not every customer cares about quality.",
+          mesaj: "The customer fell for the low price and went to {rakip}.",
+          detay: "Not every customer values quality.",
         },
       },
     ],
   },
   nemesis_muhafiz_ihbari: {
     baslik: "The Rival's Report",
-    metin: "{rakip} reported you to the guards for a small illegality — most of it exaggerated, some of it true. Now you have to answer for it.",
+    metin: "{rakip} reported you to the guards for a minor offense; mostly exaggerated, partly true. You must answer for it.",
     secenekler: [
       {
-        metin: "Tell the guards openly, speak the truth.",
+        metin: "Tell the guards the truth.",
         basariliSonuc: {
           mesaj: "Your honesty convinced the guards; {rakip}'s report came to nothing.",
-          detay: "The truth is often the best defense.",
+          detay: "Truth is often the best defense.",
         },
         basarisizSonuc: {
-          mesaj: "Your explanation wasn't found enough; you paid a small fine.",
-          detay: "Some reports don't come to nothing entirely.",
+          mesaj: "Your account fell short; you paid a small fine.",
+          detay: "Some reports don't fully fail.",
         },
       },
       {
-        metin: "Bribe the guards to close the matter.",
+        metin: "Bribe the guards.",
         basariliSonuc: {
-          mesaj: "The bribe worked, the matter was closed.",
-          detay: "Some problems can be hushed with money — but your conscience knows.",
+          mesaj: "The bribe worked; the matter closed.",
+          detay: "Money hushes; conscience knows.",
         },
         basarisizSonuc: {
-          mesaj: "Your bribe attempt was noticed; you lost both money and reputation.",
+          mesaj: "Your bribe was noticed; you lost money and reputation.",
           detay: "Not every bribe stays hidden.",
         },
       },
@@ -4309,412 +4309,412 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
   },
   kelebek_multeci_kurtarma: {
     baslik: "The Stranger by the Road",
-    metin: "By the roadside you saw a stranger, hungry and worn out — a refugee fleeing war or famine. Helping him is a small expense, but your time is short.",
+    metin: "By the road you saw a hungry, worn stranger, a refugee fleeing war or famine. Helping costs little, but your time is short.",
     secenekler: [
       {
-        metin: "Give him food, provide shelter for a night.",
+        metin: "Give food and a night's shelter.",
         basariliSonuc: {
-          mesaj: "You helped the stranger; he went on his way without even asking your name.",
-          detay: "Some kindnesses leave a mark somewhere, even if who they were for is forgotten.",
+          mesaj: "You helped the stranger; he went on without asking your name.",
+          detay: "Kindness leaves a mark even forgotten.",
         },
         basarisizSonuc: {
-          mesaj: "Your help was a little clumsy but you still held out your hand.",
-          detay: "Intent sometimes means more than execution.",
+          mesaj: "Your help was clumsy, but you reached out.",
+          detay: "Intent sometimes says more than deed.",
         },
       },
       {
-        metin: "Ignore it, carry on your way.",
+        metin: "Ignore it, go on your way.",
         basariliSonuc: {
-          mesaj: "You ignored it and carried on.",
+          mesaj: "You ignored him and went on.",
           detay: "Some moments pass unnoticed.",
         },
         basarisizSonuc: {
-          mesaj: "Ignoring it troubled you a little inside.",
-          detay: "Some things ignored leave a mark on the conscience.",
+          mesaj: "Ignoring him troubled you inside.",
+          detay: "Some neglect leaves a mark on conscience.",
         },
       },
     ],
   },
   kelebek_multeci_vali_donusu: {
     baslik: "A Familiar Face, a New Title",
-    metin: "At the reception for the newly appointed governor, you realized he is that worn-out stranger you helped years ago. He recognized you too.",
+    metin: "At the new governor's reception you realized he is the worn stranger you helped years ago. He recognized you too.",
     secenekler: [
       {
-        metin: "Remind him, speak of the old days.",
+        metin: "Remind him, speak of old days.",
         basariliSonuc: {
-          mesaj: "The governor welcomed you warmly; your kindness years ago wasn't forgotten. He gave you a generous return.",
-          detay: "Some kindnesses come back at the most unexpected time.",
+          mesaj: "The governor welcomed you warmly; your kindness was remembered. He rewarded you.",
+          detay: "Kindness returns when least expected.",
         },
         basarisizSonuc: {
-          mesaj: "The governor remembered you but the crowd intervened and the conversation was cut short.",
-          detay: "Some opportunities can't quite be grasped, yet they remain a warm memory.",
+          mesaj: "The governor remembered you but the crowd cut the talk short.",
+          detay: "The chance slipped, a warm memory remains.",
         },
       },
       {
-        metin: "Stay humble, ask for nothing.",
+        metin: "Stay humble, ask nothing.",
         basariliSonuc: {
-          mesaj: "You withdrew without asking for anything; the governor didn't forget this humility, and your name was spoken well of.",
-          detay: "Sometimes the best return is expecting no return.",
+          mesaj: "You withdrew asking nothing; the governor remembered it and spoke well of you.",
+          detay: "The best reward is expecting none.",
         },
         basarisizSonuc: {
-          mesaj: "Your withdrawing wasn't even noticed.",
-          detay: "Not every act of humility is noticed, but it's valuable all the same.",
+          mesaj: "Your withdrawal went unnoticed.",
+          detay: "Not all humility is seen, but it is valuable.",
         },
       },
     ],
   },
   istihbarat_dedikoducu: {
     baslik: "A Well-Connected Gossip",
-    metin: "A gossip you know at the tavern says he can leak you 'inside information' about an upcoming event — for a price, of course.",
+    metin: "A gossip you know at the tavern says he can leak 'inside information' on an upcoming event, for a price.",
     secenekler: [
       {
         metin: "Buy the information.",
         basariliSonuc: {
-          mesaj: "The gossip gave you clear information about the next opportunity.",
-          detay: "You'll make your decision looking at a clearer picture now.",
+          mesaj: "The gossip gave you clear word on the next opportunity.",
+          detay: "Now you'll decide with a clearer picture.",
         },
         basarisizSonuc: {
-          mesaj: "The gossip took the money but what he said wasn't much use.",
-          detay: "Not every source of information is reliable.",
+          mesaj: "The gossip took the money but his information was useless.",
+          detay: "Not every source is reliable.",
         },
       },
       {
-        metin: "Take no interest, trust your own instincts.",
+        metin: "Ignore it, trust your instincts.",
         basariliSonuc: {
-          mesaj: "You refused the offer, chose to trust your own instincts.",
-          detay: "Sometimes your own gut is the best guide.",
+          mesaj: "You refused and trusted your own instincts.",
+          detay: "Your gut is the best guide.",
         },
         basarisizSonuc: {
-          mesaj: "You refused but afterward you couldn't help wondering.",
-          detay: "Curiosity sometimes won't let go.",
+          mesaj: "You refused but couldn't help wondering later.",
+          detay: "Curiosity won't let go.",
         },
       },
     ],
   },
   efsanevi_olum_kuyu: {
     baslik: "The Pit You Dug Yourself",
-    metin: "A well you've been digging in your garden for a long time is nearly done. You want to strike one last blow this evening, though it's gotten dark.",
+    metin: "The well in your garden is nearly done. It's dark, but you want to strike one last blow tonight.",
     secenekler: [
       {
-        metin: "Keep going even in the dark.",
+        metin: "Keep going in the dark.",
         basariliSonuc: {
-          mesaj: "You finished the well even in the dark; finding water was talked about in the village.",
-          detay: "Your persistence was rewarded this time.",
+          mesaj: "You finished the well in the dark; finding water was the talk of the village.",
+          detay: "Your persistence paid off.",
         },
         basarisizSonuc: {
-          mesaj: "In the dark your foot slipped and you fell into the well you dug yourself.",
-          detay: "The villagers will tell this story for years — an instructive, slightly comic end.",
+          mesaj: "Your foot slipped in the dark and you fell into your own well.",
+          detay: "The village will tell this for years.",
         },
       },
       {
-        metin: "Wait for daylight, do it in the morning.",
+        metin: "Wait for morning.",
         basariliSonuc: {
-          mesaj: "You waited for morning; the well was safely finished the next day.",
-          detay: "Patience is sometimes the wisest choice.",
+          mesaj: "The well was safely finished the next day.",
+          detay: "Patience is sometimes wisest.",
         },
         basarisizSonuc: {
           mesaj: "The wait annoyed you but you were safe.",
-          detay: "Some impatience isn't free of cost.",
+          detay: "Impatience has its price.",
         },
       },
     ],
   },
   efsanevi_olum_keci_kovalama: {
     baslik: "The Runaway Goat",
-    metin: "Your most stubborn goat snapped its rope and bolted into the middle of town. You were the one who ran after it, but the goat is dragging you into the busiest part of the market square.",
+    metin: "Your stubborn goat snapped its rope and bolted into town. You chase it, but it drags you into the busiest part of the market.",
     secenekler: [
       {
-        metin: "Chase it at full speed, try to catch it.",
+        metin: "Chase it at full speed.",
         basariliSonuc: {
-          mesaj: "You caught the goat to a big round of applause; the town talked about it for days.",
-          detay: "Some victories are small but unforgettable.",
+          mesaj: "You caught the goat to applause; the town talked about it for days.",
+          detay: "A small but unforgettable victory.",
         },
         basarisizSonuc: {
-          mesaj: "While chasing the goat you burst into the street and were run over by a fast-approaching caravan cart.",
-          detay: "The townsfolk will tell this unlucky but equally comic end for years.",
+          mesaj: "You burst into the street and were run over by a speeding cart.",
+          detay: "The town will tell this comic end for years.",
         },
       },
       {
-        metin: "Give up, leave the goat to its own devices.",
+        metin: "Give up, let the goat go.",
         basariliSonuc: {
-          mesaj: "You gave up chasing the goat; someone found it and brought it to you.",
-          detay: "Sometimes giving up works too.",
+          mesaj: "You gave up; someone found the goat and brought it back.",
+          detay: "Sometimes giving up works.",
         },
         basarisizSonuc: {
           mesaj: "You never saw the goat again.",
-          detay: "Some losses are small but sad all the same.",
+          detay: "A small but sad loss.",
         },
       },
     ],
   },
   din_katolik_gunah_cikarma: {
     baslik: "Confession",
-    metin: "The priest called you to the confession box. Pouring your heart out can bring peace, but some of your secrets might slip out too.",
+    metin: "The priest called you to confession. Pouring your heart out brings peace, but secrets can slip.",
     secenekler: [
       {
-        metin: "Tell everything as it is.",
+        metin: "Tell everything.",
         basariliSonuc: {
-          mesaj: "Pouring your heart out lifted a great weight; for the first time in days you slept easy.",
-          detay: "The priest swore to carry your secret to the grave.",
+          mesaj: "A weight lifted; you slept easy for the first time in days.",
+          detay: "The priest will take your secret to the grave.",
         },
         basarisizSonuc: {
-          mesaj: "The priest let it slip; what you said reached one or two people.",
-          detay: "Some secrets can leak even from the confession pulpit, it seems.",
+          mesaj: "The priest let it slip; word reached a few people.",
+          detay: "Secrets leak even from the confessional.",
         },
       },
       {
-        metin: "Keep it superficial, hide your real sin.",
+        metin: "Stay superficial, hide your real sin.",
         basariliSonuc: {
-          mesaj: "You attended the service but the real weight stayed inside you.",
-          detay: "Telling some things only to yourself isn't enough.",
+          mesaj: "You attended, but the real weight stayed inside.",
+          detay: "Some things aren't settled by telling yourself.",
         },
         basarisizSonuc: {
-          mesaj: "The priest sensed you were hiding something and gave you a strange look.",
-          detay: "Half-truths are sometimes more unsettling than a full lie.",
+          mesaj: "The priest sensed you were hiding something and eyed you oddly.",
+          detay: "Half-truths unsettle more than lies.",
         },
       },
       {
-        metin: "Instead of your own sin, whisper the secret the priest is hiding.",
+        metin: "Whisper the priest's secret instead of your sin.",
         basariliSonuc: {
-          mesaj: "You whispered that you knew about the priest's dirty dealings with that wine merchant. He gave you the church's alms box as hush money.",
-          detay: "You managed to play the devil's advocate even in a holy place.",
+          mesaj: "You whispered of his dirty wine-merchant dealings; he paid you off with the alms box.",
+          detay: "You played devil's advocate even in a holy place.",
         },
         basarisizSonuc: {
-          mesaj: "The priest shouted in anger and threatened to excommunicate you. You had to leave the church.",
+          mesaj: "The priest raged and threatened excommunication; you left the church.",
         },
       },
     ],
   },
   din_katolik_hac_daveti: {
     baslik: "An Invitation to the Holy Land",
-    metin: "A pilgrim caravan is setting out for the holy land; joining is both costly and dangerous but promises a great spiritual transformation.",
+    metin: "A pilgrim caravan is setting out for the holy land; costly and dangerous, but promising spiritual change.",
     secenekler: [
       {
-        metin: "Join the caravan, set out.",
+        metin: "Join the caravan.",
         basariliSonuc: {
-          mesaj: "You reached the holy land; when you returned you were a different person.",
-          detay: "Even your voice changes when you tell of this journey.",
+          mesaj: "You reached the holy land and returned a different person.",
+          detay: "Even your voice changes telling it.",
         },
         basarisizSonuc: {
-          mesaj: "The road made you ill; you had to turn back halfway.",
-          detay: "Some journeys teach you something even without being finished.",
+          mesaj: "The road made you ill; you turned back halfway.",
+          detay: "Some journeys teach even unfinished.",
         },
       },
       {
-        metin: "Don't join, stay with your congregation.",
+        metin: "Don't join, stay with your flock.",
         basariliSonuc: {
-          mesaj: "You chose to stay home; the caravan set out without you.",
+          mesaj: "You stayed home; the caravan left without you.",
           detay: "Maybe another year.",
         },
         basarisizSonuc: {
-          mesaj: "As you watched the caravan leave you felt a faint regret inside.",
-          detay: "Some opportunities don't come again.",
+          mesaj: "Watching the caravan go, you felt a faint regret.",
+          detay: "Some chances don't return.",
         },
       },
     ],
   },
   din_ortodoks_ikona_mucizesi: {
     baslik: "Before the Icon",
-    metin: "The old icon in the church is said to work miracles. Kneeling before it and making a wish is something most of the people do.",
+    metin: "The old icon in the church is said to work miracles. Kneeling before it to make a wish is common.",
     secenekler: [
       {
         metin: "Kneel, pray sincerely.",
         basariliSonuc: {
-          mesaj: "The peace that filled you as you prayed lasted for days.",
-          detay: "You don't know whether the miracle is real, but what you felt was real.",
+          mesaj: "The peace of your prayer lasted for days.",
+          detay: "Miracle or not, what you felt was real.",
         },
         basarisizSonuc: {
-          mesaj: "You didn't find the peace you expected; an emptiness stayed inside you.",
+          mesaj: "You found no peace; an emptiness remained.",
           detay: "Some days even faith isn't enough.",
         },
       },
       {
-        metin: "Wait for night and steal the votive gold!",
+        metin: "Wait for night, steal the votive gold!",
         basariliSonuc: {
-          mesaj: "You hid the gold in your robe without anyone seeing. You left the church a rich man.",
-          detay: "You stole God's money. Your conscience has gone completely blind.",
+          mesaj: "You hid the gold in your robe and left the church rich.",
+          detay: "You stole God's money; your conscience went blind.",
         },
         basarisizSonuc: {
-          mesaj: "The priest caught you red-handed! You were disgraced before the whole church and excommunicated.",
-          detay: "Your name is spoken with the devil's now.",
+          mesaj: "The priest caught you red-handed; disgraced and excommunicated.",
+          detay: "Your name is now spoken with the devil's.",
         },
       },
       {
-        metin: "Watch from a distance, don't take part.",
+        metin: "Watch from afar.",
         basariliSonuc: {
-          mesaj: "You chose to stay outside the rite and watched the crowd.",
-          detay: "Not everyone's way of believing is the same.",
+          mesaj: "You stayed outside the rite and watched the crowd.",
+          detay: "Faith looks different for everyone.",
         },
         basarisizSonuc: {
-          mesaj: "Some of your neighbors noticed your distance and whispered behind your back.",
-          detay: "Not being seen in the congregation sometimes exacts a price.",
+          mesaj: "Neighbors noticed your distance and whispered.",
+          detay: "Staying away from the congregation has a price.",
         },
       },
     ],
   },
   din_ortodoks_buyuk_perhiz: {
     baslik: "The Great Fast",
-    metin: "The long fasting weeks have begun; meat, milk and eggs are forbidden. Your neighbor secretly invited you to a plate of meat, 'no one will see' he says.",
+    metin: "The great fast has begun; no meat, milk or eggs. Your neighbor secretly offers a plate of meat: 'No one will see.'",
     secenekler: [
       {
-        metin: "Turn down the invitation, keep the fast.",
+        metin: "Decline, keep the fast.",
         basariliSonuc: {
-          mesaj: "You kept the fast fully; you began to be spoken of in the congregation as 'strong in faith'.",
-          detay: "Going hungry is sometimes a matter of pride.",
+          mesaj: "You kept the fast; the flock began calling you 'strong in faith'.",
+          detay: "Hunger is sometimes a matter of pride.",
         },
         basarisizSonuc: {
-          mesaj: "Refusing wasn't easy; your hunger made you irritable.",
-          detay: "Willpower sometimes comes out weaker than your stomach.",
+          mesaj: "Refusing was hard; hunger made you irritable.",
+          detay: "Willpower can be weaker than the stomach.",
         },
       },
       {
-        metin: "Slip off to the invitation, eat a plate of meat.",
+        metin: "Slip off and eat the meat.",
         basariliSonuc: {
-          mesaj: "You filled your belly without anyone seeing; your conscience stung a little but the plate was empty.",
-          detay: "Some sins are at least tasty.",
+          mesaj: "You ate unseen; your conscience stung, but the plate was empty.",
+          detay: "Some sins are tasty.",
         },
         basarisizSonuc: {
-          mesaj: "The priest caught you eating meat right at the door; word spread through the whole neighborhood.",
-          detay: "The nickname 'Fast-Breaker' won't leave you alone for a while.",
+          mesaj: "The priest caught you eating; word spread through the neighborhood.",
+          detay: "The nickname 'Fast-Breaker' will stick.",
         },
       },
     ],
   },
   din_sunni_cuma_hutbesi: {
     baslik: "The Friday Sermon",
-    metin: "The imam's sermon is longer than usual today; you're sitting in the front rows and your eyes are getting heavy.",
+    metin: "The imam's sermon is long today; you sit in the front row and your eyes grow heavy.",
     secenekler: [
       {
-        metin: "Pinch yourself, gather your attention.",
+        metin: "Pinch yourself, focus.",
         basariliSonuc: {
-          mesaj: "You sat upright to the end; after the talk the imam praised you.",
+          mesaj: "You sat upright to the end; the imam praised you.",
           detay: "Some victories are just staying awake.",
         },
         basarisizSonuc: {
-          mesaj: "Despite your resistance your eyes closed for a few seconds; nobody noticed, probably.",
-          detay: "Sleep sometimes comes out stronger than willpower.",
+          mesaj: "Your eyes closed for a few seconds; nobody noticed, probably.",
+          detay: "Sleep can beat willpower.",
         },
       },
       {
-        metin: "Let yourself go, let your eyes close.",
+        metin: "Let go, let your eyes close.",
         basariliSonuc: {
-          mesaj: "You caught a little nap; nobody noticed.",
-          detay: "Sometimes you take a risk and win.",
+          mesaj: "You caught a short nap; nobody noticed.",
+          detay: "Sometimes risk pays.",
         },
         basarisizSonuc: {
-          mesaj: "Your snoring echoed through the mosque; everyone turned to look at you.",
-          detay: "This story will be told in the neighborhood for a long time.",
+          mesaj: "Your snoring echoed through the mosque; everyone stared.",
+          detay: "The neighborhood will tell this for long.",
         },
       },
     ],
   },
   din_sunni_zekat_zamani: {
     baslik: "Time for Alms",
-    metin: "Your yearly alms time has come. Setting aside part of your savings for the needy is both a religious duty and a matter of conscience.",
+    metin: "Your yearly alms are due. Setting aside savings for the needy is both a religious duty and a matter of conscience.",
     secenekler: [
       {
-        metin: "Give generously, don't count it.",
+        metin: "Give generously, don't count.",
         basariliSonuc: {
-          mesaj: "What you gave was just enough to get a family through the winter.",
-          detay: "Even a kindness no one knows about warms you inside.",
+          mesaj: "What you gave carried a family through the winter.",
+          detay: "Even unseen kindness warms you.",
         },
         basarisizSonuc: {
-          mesaj: "You gave, but you never learned who received the money.",
-          detay: "Some kindnesses go unanswered; so be it.",
+          mesaj: "You gave, but never learned who received it.",
+          detay: "Some kindness goes unanswered.",
         },
       },
       {
-        metin: "Give the minimum amount, keep the rest.",
+        metin: "Give the minimum, keep the rest.",
         basariliSonuc: {
-          mesaj: "You did your duty and didn't touch the rest.",
-          detay: "You followed the rules; at least this much is enough, you told yourself.",
+          mesaj: "You did your duty and touched nothing more.",
+          detay: "You followed the rules; that's enough, you said.",
         },
         basarisizSonuc: {
-          mesaj: "Your neighbors noticed how little you gave and talked behind your back.",
-          detay: "Generosity sometimes turns into a matter of show.",
+          mesaj: "Neighbors noticed how little you gave and talked.",
+          detay: "Generosity can turn into show.",
         },
       },
     ],
   },
   din_anglikan_kilise_cayi: {
     baslik: "Church Tea",
-    metin: "After the Sunday service the congregation, as always, drinks tea from little cups and pries into each other's affairs. This week the subject is you.",
+    metin: "After Sunday service the congregation sips tea and pries into each other's lives. This week it's you.",
     secenekler: [
       {
-        metin: "Join the conversation, defend yourself.",
+        metin: "Join in, defend yourself.",
         basariliSonuc: {
-          mesaj: "In a jokey tone you turned the situation around; everyone laughed and dropped the subject.",
-          detay: "Behind English politeness there lies a strong sense of humor, it seems.",
+          mesaj: "You turned it with a joke; everyone laughed and dropped it.",
+          detay: "Behind English politeness lies a sharp wit.",
         },
         basarisizSonuc: {
-          mesaj: "Your defense had the opposite effect and the gossip grew.",
-          detay: "Some cups of tea make some people's lives harder.",
+          mesaj: "Your defense backfired; the gossip grew.",
+          detay: "Some teacups make life harder.",
         },
       },
       {
-        metin: "Drink your tea quietly, act like you don't hear.",
+        metin: "Drink your tea quietly.",
         basariliSonuc: {
-          mesaj: "You sat quietly and finished your tea; the gossip died out on its own.",
-          detay: "Sometimes the best answer is not to answer.",
+          mesaj: "You finished your tea quietly; the gossip died out.",
+          detay: "Sometimes silence is the best answer.",
         },
         basarisizSonuc: {
-          mesaj: "Your silence looked to some like 'admitting the fault'.",
-          detay: "Church tea is sometimes no different from a courtroom.",
+          mesaj: "Your silence looked like 'admitting guilt'.",
+          detay: "Church tea can be a courtroom.",
         },
       },
     ],
   },
   din_anglikan_piskopos_ziyareti: {
     baslik: "The Bishop's Visit",
-    metin: "The regional bishop will attend the service; making a good impression could open doors in your social circle.",
+    metin: "The regional bishop will attend the service; a good impression could open doors in your circle.",
     secenekler: [
       {
-        metin: "Prepare carefully, meet the bishop.",
+        metin: "Prepare well, meet the bishop.",
         basariliSonuc: {
-          mesaj: "The bishop had a short but warm chat with you; your name is spoken of in his circle now.",
-          detay: "Small moments like this sometimes open big doors.",
+          mesaj: "The bishop chatted warmly with you; your name began to travel.",
+          detay: "Small moments open big doors.",
         },
         basarisizSonuc: {
-          mesaj: "Your preparation went to waste; the bishop didn't even notice you.",
+          mesaj: "Your preparation was wasted; the bishop never noticed you.",
           detay: "Some investments go unrewarded.",
         },
       },
       {
-        metin: "Blend into the crowd, don't stand out.",
+        metin: "Blend into the crowd.",
         basariliSonuc: {
-          mesaj: "You attended the service as an ordinary congregation member.",
-          detay: "You don't have to chase every opportunity.",
+          mesaj: "You attended as an ordinary member.",
+          detay: "You needn't chase every chance.",
         },
         basarisizSonuc: {
-          mesaj: "Seeing others meet the bishop, you felt a faint jealousy.",
-          detay: "Missed opportunities stick in the mind more.",
+          mesaj: "Seeing others meet the bishop, you felt a pang of envy.",
+          detay: "Missed chances linger in the mind.",
         },
       },
     ],
   },
   asker_kucuk_baskin_ganimeti: {
     baslik: "A Small Raid",
-    metin: "On patrol you ran into a small band of brigands; after a short clash the spoils you seized are being divided among you.",
+    metin: "On patrol you met a small band of brigands; after a short clash the spoils are being shared.",
     secenekler: [
       {
         metin: "Join the fight bravely.",
         basariliSonuc: {
-          mesaj: "With your share of the spoils your pocket swelled a bit; the commander noticed you too.",
-          detay: "Small victories count too.",
+          mesaj: "Your share fattened your purse; the commander noticed you.",
+          detay: "Small victories count.",
         },
         basarisizSonuc: {
-          mesaj: "You took a scratch in the fight and not much fell to your share.",
-          detay: "Not every raid turns a profit.",
+          mesaj: "You took a scratch and got little of the spoils.",
+          detay: "Not every raid pays.",
         },
       },
       {
-        metin: "Stay back, keep lookout.",
+        metin: "Stay back, keep watch.",
         basariliSonuc: {
-          mesaj: "You did your lookout duty well; a small share was set aside for you too.",
-          detay: "You don't always have to be in the front rank.",
+          mesaj: "You kept watch well; a small share was set aside for you.",
+          detay: "You needn't always be in front.",
         },
         basarisizSonuc: {
-          mesaj: "Staying back wasn't well received by some of your comrades.",
+          mesaj: "Some comrades frowned on your staying back.",
           detay: "Some choices are quietly judged.",
         },
       },
@@ -4722,112 +4722,112 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
   },
   dinadami_minnettar_ziyaretci: {
     baslik: "A Grateful Visitor",
-    metin: "A congregation member whose troubles you listened to last month came to your door with a small gift to show his gratitude.",
+    metin: "A congregant whose troubles you heard last month brought a small gift out of gratitude.",
     secenekler: [
       {
         metin: "Accept the gift gladly.",
         basariliSonuc: {
-          mesaj: "The small gift felt like a return for the effort you'd given.",
-          detay: "Sometimes the smallest gestures carry the most worth.",
+          mesaj: "The gift felt like a return for your effort.",
+          detay: "The smallest gesture can mean the most.",
         },
         basarisizSonuc: {
           mesaj: "The gift was modest but the thought was kind.",
-          detay: "It doesn't always have to be big.",
+          detay: "It needn't be big.",
         },
       },
       {
-        metin: "Decline politely, say you helped without expecting anything.",
+        metin: "Politely decline: it was free help.",
         basariliSonuc: {
-          mesaj: "Your refusal spread through the congregation; you became known for your humility.",
-          detay: "Some kinds of standing can't be bought with money.",
+          mesaj: "Word of your refusal spread; you became known for humility.",
+          detay: "Some standing can't be bought.",
         },
         basarisizSonuc: {
-          mesaj: "Your refusal was taken a bit strangely; the visitor left embarrassed.",
-          detay: "Sometimes even good will can be misunderstood.",
+          mesaj: "Your refusal landed oddly; the visitor left embarrassed.",
+          detay: "Even good will can be misread.",
         },
       },
     ],
   },
   sehir_yonetim_asker_baslangic: {
     baslik: "A Power Above the Army",
-    metin: "They are choosing who will manage the city's defense budget; a rival general is after the same seat. If you win, you'll have a say not only over the army but over the city's economy too.",
+    metin: "Who will run the city's defense budget is being chosen; a rival general wants it too. Win, and you'll have a say in the economy as well.",
     secenekler: [
       {
-        metin: "Enter the contest, aim for the seat.",
+        metin: "Enter the contest, go for the seat.",
         basariliSonuc: {
-          mesaj: "You left the rival general behind; part of the city's defense budget is in your hands now.",
-          detay: "Being a commander is no longer an end but the start of a new race.",
+          mesaj: "You beat the rival general; part of the defense budget is now yours.",
+          detay: "Command is no end, but the start of a new race.",
         },
         basarisizSonuc: {
-          mesaj: "The rival general won this round, but the race isn't over; your name is known in this circle now.",
-          detay: "Your first try failed but you're in the game now.",
+          mesaj: "The rival won, but the race isn't over; your name is known now.",
+          detay: "First try failed, but you're in the game.",
         },
       },
       {
         metin: "Refuse, be content with your command.",
         basariliSonuc: {
-          mesaj: "You turned the offer down; you chose to be content with your current position.",
-          detay: "Maybe another day you'll change your mind.",
+          mesaj: "You turned the offer down and kept your position.",
+          detay: "Maybe you'll change your mind someday.",
         },
         basarisizSonuc: {
-          mesaj: "You regretted your refusal a little; the rival general took the seat without you.",
-          detay: "Some opportunities don't come again the same way.",
+          mesaj: "You regretted it a little; the rival general took the seat.",
+          detay: "Some chances don't return the same.",
         },
       },
     ],
   },
   sehir_yonetim_tuccar_baslangic: {
     baslik: "Beyond the Guild",
-    metin: "Guild mastery is no longer a ceiling for you but a start. A seat has come free on the city's trade council; a rival merchant is after the same seat. If you win, you'll run not just your own business but a part of the city's economy.",
+    metin: "A seat opened on the trade council; a rival merchant wants it too. Win, and you'll have a say in the city's economy.",
     secenekler: [
       {
-        metin: "Enter the contest, aim for the seat.",
+        metin: "Enter the contest, go for the seat.",
         basariliSonuc: {
-          mesaj: "You left the rival merchant behind; you have a voice on the city's trade council now.",
-          detay: "Guild mastery is no longer an end but the start of a new race.",
+          mesaj: "You beat the rival merchant; you now have a voice on the council.",
+          detay: "Guild mastery is no end, but the start of a new race.",
         },
         basarisizSonuc: {
-          mesaj: "The rival merchant won this round, but the race isn't over; your name is known on the council now.",
-          detay: "Your first try failed but you're in the game now.",
+          mesaj: "The rival won, but the race isn't over; the council knows your name.",
+          detay: "First try failed, but you're in the game.",
         },
       },
       {
-        metin: "Refuse, be content with your existing business.",
+        metin: "Refuse, stay with your business.",
         basariliSonuc: {
-          mesaj: "You turned the offer down; you chose to be content with your current position.",
-          detay: "Maybe another day you'll change your mind.",
+          mesaj: "You turned the offer down and kept your position.",
+          detay: "Maybe you'll change your mind someday.",
         },
         basarisizSonuc: {
-          mesaj: "You regretted your refusal a little; the rival merchant took the seat without you.",
-          detay: "Some opportunities don't come again the same way.",
+          mesaj: "You regretted it a little; the rival merchant took the seat.",
+          detay: "Some chances don't return the same.",
         },
       },
     ],
   },
   sehir_yonetim_dinadami_baslangic: {
     baslik: "Beyond the Pulpit",
-    metin: "Being head priest is no longer a ceiling for you but a start. There's a debate over who will run the city's great endowments; a rival priest is after the same office. If you win, you'll run not just the congregation but a part of the city's economy too.",
+    metin: "Who will run the city's great endowments is debated; a rival priest wants it too. Win, and you'll have a say in the economy as well.",
     secenekler: [
       {
-        metin: "Enter the contest, aim for the office.",
+        metin: "Enter the contest, go for the office.",
         basariliSonuc: {
-          mesaj: "You left the rival priest behind; you have a voice in the city's great endowments now.",
-          detay: "Being head priest is no longer an end but the start of a new race.",
+          mesaj: "You beat the rival priest; you now have a voice in the great endowments.",
+          detay: "Head priesthood is no end, but the start of a new race.",
         },
         basarisizSonuc: {
-          mesaj: "The rival priest won this round, but the race isn't over; your name is known in the assembly now.",
-          detay: "Your first try failed but you're in the game now.",
+          mesaj: "The rival won, but the race isn't over; the assembly knows your name.",
+          detay: "First try failed, but you're in the game.",
         },
       },
       {
-        metin: "Refuse, be content with your pulpit.",
+        metin: "Refuse, stay with your pulpit.",
         basariliSonuc: {
-          mesaj: "You turned the offer down; you chose to be content with your current position.",
-          detay: "Maybe another day you'll change your mind.",
+          mesaj: "You turned the offer down and kept your position.",
+          detay: "Maybe you'll change your mind someday.",
         },
         basarisizSonuc: {
-          mesaj: "You regretted your refusal a little; the rival priest took the office without you.",
-          detay: "Some opportunities don't come again the same way.",
+          mesaj: "You regretted it a little; the rival priest took the office.",
+          detay: "Some chances don't return the same.",
         },
       },
     ],
@@ -4835,243 +4835,243 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
   sehir_yonetim_zanaatkar_baslangic: {
     baslik: "Beyond the Guild",
     metin:
-      "Mastery is no longer a ceiling for you, but a start. A seat has opened on the city's craft council; a rival master is after the very same seat. If you win, you'll oversee not just your own workshop, but a part of the city's craft order.",
+      "A seat opened on the craft council; a rival master wants it too. Win, and you'll have a say in the city's craft order.",
     secenekler: [
       {
-        metin: "Enter the contest, aim for the seat.",
+        metin: "Enter the contest, go for the seat.",
         basariliSonuc: {
-          mesaj: "You left the rival master behind; you now have a voice on the city's craft council.",
-          detay: "Mastery is no longer an end, but the start of a new race.",
+          mesaj: "You beat the rival master; you now have a voice on the craft council.",
+          detay: "Mastery is no end, but the start of a new race.",
         },
         basarisizSonuc: {
-          mesaj: "The rival master won this round, but the race isn't over; your name is known on the council now.",
-          detay: "Your first try failed but you're in the game now.",
+          mesaj: "The rival won, but the race isn't over; the council knows your name.",
+          detay: "First try failed, but you're in the game.",
         },
       },
       {
-        metin: "Refuse, be content with your workshop.",
+        metin: "Refuse, stay with your workshop.",
         basariliSonuc: {
-          mesaj: "You turned the offer down; you chose to be content with your current position.",
-          detay: "Maybe another day you'll change your mind.",
+          mesaj: "You turned the offer down and kept your position.",
+          detay: "Maybe you'll change your mind someday.",
         },
         basarisizSonuc: {
-          mesaj: "You regretted your refusal a little; the rival master took the seat without you.",
-          detay: "Some opportunities don't come again the same way.",
+          mesaj: "You regretted it a little; the rival master took the seat.",
+          detay: "Some chances don't return the same.",
         },
       },
     ],
   },
   sehir_yonetim_asker_savunma_butcesi: {
     baslik: "The Defense Budget Fight",
-    metin: "This year's split of the city's defense budget is up for review again; the rival general is doing all he can to enlarge his share.",
+    metin: "The city's defense budget is being split again; the rival general is working to enlarge his share.",
     secenekler: [
       {
-        metin: "Fight on the council to enlarge your share.",
+        metin: "Fight for your share on the council.",
         basariliSonuc: {
-          mesaj: "You managed to steer most of the budget to your own troops.",
-          detay: "The rival general will keep watching you, but you won this round.",
+          mesaj: "You steered most of the budget to your own troops.",
+          detay: "The general will watch you, but you won this round.",
         },
         basarisizSonuc: {
           mesaj: "The rival general won this round; your share shrank.",
-          detay: "The race isn't over yet.",
+          detay: "The race isn't over.",
         },
       },
       {
-        metin: "Blackmail him with exposing the rival general's secrets.",
+        metin: "Blackmail him with his secrets.",
         basariliSonuc: {
-          mesaj: "Using the general's weak point you cornered him. Nearly the whole budget was transferred to you.",
-          detay: "Politics is sometimes sharper than the sword.",
+          mesaj: "You cornered the general at his weak point; nearly the whole budget came to you.",
+          detay: "Politics cuts sharper than a sword.",
         },
         basarisizSonuc: {
-          mesaj: "Your blackmail backfired! The general ambushed you and had his men beat you. You lost the budget entirely.",
+          mesaj: "The blackmail backfired! The general had you ambushed and beaten; you lost the budget.",
         },
       },
       {
-        metin: "Pull back, build up strength.",
+        metin: "Pull back, build strength.",
         basariliSonuc: {
-          mesaj: "This time you chose to stay in the background.",
+          mesaj: "This time you stayed in the background.",
           detay: "Patience is sometimes the best strategy.",
         },
         basarisizSonuc: {
-          mesaj: "Your staying back disappointed some of your supporters.",
-          detay: "You don't always have to be watching.",
+          mesaj: "Your retreat disappointed some of your backers.",
+          detay: "You needn't always be watching.",
         },
       },
     ],
   },
   sehir_yonetim_asker_sinir_kampanyasi: {
     baslik: "A Border Expansion Campaign",
-    metin: "Leadership of the campaign to secure the city's border trade routes is under debate; this means both a military and an economic victory.",
+    metin: "Who will lead the campaign to secure the border trade routes is debated; it means a military and economic victory.",
     secenekler: [
       {
-        metin: "Take on leadership of the campaign.",
+        metin: "Take the campaign's leadership.",
         basariliSonuc: {
-          mesaj: "The campaign ended successfully; the border trade routes are under your watch now.",
-          detay: "Your share in the city's economy keeps growing.",
+          mesaj: "The campaign succeeded; the border trade routes are now under your watch.",
+          detay: "Your economic share keeps growing.",
         },
         basarisizSonuc: {
-          mesaj: "The campaign went harder than expected; you came back with losses.",
-          detay: "Build up your strength for the next opportunity.",
+          mesaj: "The campaign went hard; you returned with losses.",
+          detay: "Gather strength for the next chance.",
         },
       },
       {
-        metin: "Leave it to someone else, don't take the risk.",
+        metin: "Leave it to someone else, avoid the risk.",
         basariliSonuc: {
-          mesaj: "You left the leadership to someone else.",
-          detay: "You don't have to win every battle.",
+          mesaj: "You left the leadership to another.",
+          detay: "You needn't win every battle.",
         },
         basarisizSonuc: {
-          mesaj: "Watching the campaign's success from a distance, you felt a faint regret.",
-          detay: "Some opportunities don't come again.",
+          mesaj: "Watching the campaign succeed from afar, you felt a faint regret.",
+          detay: "Some chances don't return.",
         },
       },
     ],
   },
   sehir_yonetim_tuccar_ticaret_yollari: {
     baslik: "New Trade Routes",
-    metin: "There's a vote on the council for the concession on the city's newly opened trade route; the rival merchant is after the same concession.",
+    metin: "The council votes on the concession for the new trade route; a rival merchant wants it too.",
     secenekler: [
       {
-        metin: "Lobby aggressively for the concession.",
+        metin: "Lobby hard for the concession.",
         basariliSonuc: {
-          mesaj: "You won the concession; the new trade route runs with your caravans now.",
-          detay: "Your share in the city's economy keeps growing.",
+          mesaj: "You won the concession; the new route runs on your caravans.",
+          detay: "Your economic share keeps growing.",
         },
         basarisizSonuc: {
-          mesaj: "The rival merchant won the concession; the effort you put in went to waste.",
-          detay: "The race isn't over yet.",
+          mesaj: "The rival merchant won; your effort went to waste.",
+          detay: "The race isn't over.",
         },
       },
       {
         metin: "Pull back this time.",
         basariliSonuc: {
-          mesaj: "You chose not to go for this concession.",
-          detay: "You don't have to chase every opportunity.",
+          mesaj: "You stayed out of this concession.",
+          detay: "You needn't chase every chance.",
         },
         basarisizSonuc: {
-          mesaj: "Hearing your rival won, you were resentful.",
-          detay: "Some opportunities don't come again.",
+          mesaj: "You resented hearing your rival won.",
+          detay: "Some chances don't return.",
         },
       },
     ],
   },
   sehir_yonetim_tuccar_vergi_imtiyazi: {
     baslik: "The Tax Collection Concession",
-    metin: "The concession to collect the city's market taxes went to tender again this year; the rival merchant is preparing a bid.",
+    metin: "The market-tax collection concession is up for tender again; a rival merchant is preparing a bid.",
     secenekler: [
       {
-        metin: "Bid high, snatch the concession.",
+        metin: "Bid high, grab the concession.",
         basariliSonuc: {
-          mesaj: "You won the tender; the market's tax income is in your hands to a degree now.",
-          detay: "Your share in the city's economy keeps growing.",
+          mesaj: "You won the tender; the market's tax income is partly yours.",
+          detay: "Your economic share keeps growing.",
         },
         basarisizSonuc: {
-          mesaj: "The rival merchant won the tender; your bid went to waste.",
-          detay: "The race isn't over yet.",
+          mesaj: "The rival merchant won the tender; your bid was wasted.",
+          detay: "The race isn't over.",
         },
       },
       {
-        metin: "Offer to collect taxes by strong-arming.",
+        metin: "Offer to collect taxes by force.",
         basariliSonuc: {
-          mesaj: "The council quietly approved your offer. With your club-carrying men you collected the taxes mercilessly.",
-          detay: "The people hate you but your strongbox has never been so full.",
+          mesaj: "The council quietly approved; your club-wielding men collected ruthlessly.",
+          detay: "The people hate you, but your coffers overflow.",
         },
         basarisizSonuc: {
-          mesaj: "The council didn't dare go this far and left you out of the tender.",
+          mesaj: "The council didn't dare go that far and shut you out of the tender.",
         },
       },
       {
-        metin: "Don't enter the tender.",
+        metin: "Skip the tender.",
         basariliSonuc: {
-          mesaj: "You chose not to enter this tender.",
-          detay: "You don't have to chase every opportunity.",
+          mesaj: "You stayed out of this tender.",
+          detay: "You needn't chase every chance.",
         },
         basarisizSonuc: {
-          mesaj: "Hearing your rival won, you were resentful.",
-          detay: "Some opportunities don't come again.",
+          mesaj: "You resented hearing your rival won.",
+          detay: "Some chances don't return.",
         },
       },
     ],
   },
   sehir_yonetim_dinadami_vakif_yonetimi: {
     baslik: "Running the Great Endowment",
-    metin: "A seat has come free on the board of the city's largest religious endowment; the rival priest is after the same seat.",
+    metin: "A seat opened on the board of the city's largest religious endowment; a rival priest wants it too.",
     secenekler: [
       {
         metin: "Fight for the seat.",
         basariliSonuc: {
-          mesaj: "You won the seat; the endowment's resources are partly under your watch now.",
-          detay: "Your share in the city's economy keeps growing.",
+          mesaj: "You won the seat; the endowment's resources are partly yours to oversee.",
+          detay: "Your economic share keeps growing.",
         },
         basarisizSonuc: {
-          mesaj: "The rival priest won the seat; your effort went to waste.",
-          detay: "The race isn't over yet.",
+          mesaj: "The rival priest won the seat; your effort was wasted.",
+          detay: "The race isn't over.",
         },
       },
       {
         metin: "Pull back this time.",
         basariliSonuc: {
-          mesaj: "You chose not to go for this seat.",
-          detay: "You don't have to chase every opportunity.",
+          mesaj: "You stayed out of this seat.",
+          detay: "You needn't chase every chance.",
         },
         basarisizSonuc: {
-          mesaj: "Hearing your rival won, you were resentful.",
-          detay: "Some opportunities don't come again.",
+          mesaj: "You resented hearing your rival won.",
+          detay: "Some chances don't return.",
         },
       },
     ],
   },
   sehir_yonetim_dinadami_kutsal_emanet: {
     baslik: "Guardianship of the Holy Relic",
-    metin: "There's a debate over the guardianship of a valuable holy relic brought to the city; this title means both great influence and a great source of income. The rival priest wants this title too.",
+    metin: "Guardianship of a holy relic brought to the city is debated; it means great influence and income. The rival priest wants it too.",
     secenekler: [
       {
         metin: "Step forward for the guardianship.",
         basariliSonuc: {
-          mesaj: "The guardianship was given to you; pilgrims flock to your pulpit now.",
-          detay: "Your share in the city's economy keeps growing.",
+          mesaj: "The guardianship is yours; pilgrims flock to your pulpit.",
+          detay: "Your economic share keeps growing.",
         },
         basarisizSonuc: {
-          mesaj: "The title was given to the rival priest; your effort went to waste.",
-          detay: "The race isn't over yet.",
+          mesaj: "The title went to the rival priest; your effort was wasted.",
+          detay: "The race isn't over.",
         },
       },
       {
         metin: "Pull back this time.",
         basariliSonuc: {
-          mesaj: "You chose not to go for this title.",
-          detay: "You don't have to chase every opportunity.",
+          mesaj: "You didn't seek this title.",
+          detay: "You needn't chase every chance.",
         },
         basarisizSonuc: {
-          mesaj: "Hearing your rival won, you were resentful.",
-          detay: "Some opportunities don't come again.",
+          mesaj: "You resented hearing your rival won.",
+          detay: "Some chances don't return.",
         },
       },
     ],
   },
   saray_kral_daveti: {
     baslik: "An Invitation from the King",
-    metin: "An unexpected messenger knocked on your door: your name and fame have reached the king. You are invited to the palace in person.",
+    metin: "A messenger is at your door: your fame has reached the king. You are summoned to the palace in person.",
     secenekler: [
       {
         metin: "Accept the invitation with honor.",
         basariliSonuc: {
-          mesaj: "You came before the king; you're now someone spoken of with respect in palace circles.",
-          detay: "This invitation is a moment you'll tell of your whole life.",
+          mesaj: "You stood before the king; you're now respected in palace circles.",
+          detay: "A moment to tell for a lifetime.",
         },
         basarisizSonuc: {
-          mesaj: "Your words got a little tangled from nerves but you were still admitted to the palace.",
-          detay: "It wasn't perfect but it was an unforgettable day.",
+          mesaj: "Nerves tangled your words, but you were admitted to the palace.",
+          detay: "Not perfect, but unforgettable.",
         },
       },
       {
-        metin: "Humbly decline, carry on your own life.",
+        metin: "Humbly decline.",
         basariliSonuc: {
-          mesaj: "You politely turned the invitation down; no one pressed too hard.",
-          detay: "You chose to carry on your ordinary life.",
+          mesaj: "You politely declined; no one pressed.",
+          detay: "You chose the ordinary life.",
         },
         basarisizSonuc: {
-          mesaj: "Your refusal was read at the palace as 'insolence'; your name was spoken ill of for a while.",
+          mesaj: "The palace read your refusal as 'insolence'; your name was ill spoken for a while.",
           detay: "Saying no to the king had a price.",
         },
       },
@@ -5079,27 +5079,27 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
   },
   saray_ic_entrika: {
     baslik: "A Palace Intrigue",
-    metin: "An influential noble pulled you aside and asked for your help to make a rival look bad to the king. In return he promises a great favor.",
+    metin: "An influential noble asks your help to smear a rival before the king. In return he promises a great favor.",
     secenekler: [
       {
-        metin: "Join the intrigue, carry out the plan.",
+        metin: "Join the intrigue.",
         basariliSonuc: {
-          mesaj: "The plan worked; the noble owes you now, the rival fell from favor.",
-          detay: "At the palace, power is sometimes gained this way.",
+          mesaj: "The plan worked; the noble owes you, the rival fell from favor.",
+          detay: "At court, power is won this way.",
         },
         basarisizSonuc: {
-          mesaj: "The intrigue came out; it was understood you had a hand in it, and your reputation was damaged.",
-          detay: "Palace intrigues can burn anyone.",
+          mesaj: "The intrigue surfaced and your hand was seen; your reputation suffered.",
+          detay: "Court intrigue burns everyone.",
         },
       },
       {
-        metin: "Decline politely, stay out of it.",
+        metin: "Politely decline, stay clear.",
         basariliSonuc: {
-          mesaj: "You politely turned the offer down; your hands stayed clean.",
-          detay: "Not everyone at the palace has to get mixed up in intrigue.",
+          mesaj: "You turned the offer down; your hands stayed clean.",
+          detay: "Not everyone must join the intrigue.",
         },
         basarisizSonuc: {
-          mesaj: "Your refusal didn't please the noble; he started being cold toward you.",
+          mesaj: "The noble disliked your refusal and turned cold to you.",
           detay: "Some refusals are paid for quietly.",
         },
       },
@@ -5107,66 +5107,66 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
   },
   saray_balosu: {
     baslik: "The Royal Ball",
-    metin: "You were invited to one of the palace's most magnificent balls. Making a good impression could carry you a step ahead in palace circles.",
+    metin: "You're invited to one of the palace's grandest balls. A good impression could put you a step ahead at court.",
     secenekler: [
       {
-        metin: "Move to the center, meet everyone.",
+        metin: "Step forward, meet everyone.",
         basariliSonuc: {
-          mesaj: "Your grace and your conversation were talked about in the ballroom; everyone wanted to meet you.",
-          detay: "In one night you became known in palace circles.",
+          mesaj: "Your grace and talk were the buzz of the ballroom; everyone wanted to meet you.",
+          detay: "In one night the court knew you.",
         },
         basarisizSonuc: {
-          mesaj: "A clumsy moment of yours happened in front of everyone; it was joked about for a while.",
-          detay: "At the palace even small mistakes echo loud.",
+          mesaj: "A clumsy moment happened before everyone; it was joked about for a while.",
+          detay: "At court small slips echo loud.",
         },
       },
       {
-        metin: "Stay at the edge, don't draw attention.",
+        metin: "Stay at the edge.",
         basariliSonuc: {
-          mesaj: "You were content to watch the ball from the edge.",
-          detay: "You don't have to shine every night.",
+          mesaj: "You watched the ball from the edge.",
+          detay: "You needn't shine every night.",
         },
         basarisizSonuc: {
-          mesaj: "Your staying at the edge was noticed; you were called 'dull'.",
-          detay: "Sometimes not being seen exacts a price too.",
+          mesaj: "Your staying aside was noticed; you were called 'dull'.",
+          detay: "Going unseen has a price too.",
         },
       },
       {
-        metin: "Chat with the foreign envoys in their own languages.",
+        metin: "Chat with the foreign envoys in their languages.",
         basariliSonuc: {
-          mesaj: "You chatted with the foreign envoys in their own languages, well versed in their customs; the salon watched you in astonishment.",
-          detay: "The bonds you built over years with people from different worlds served you exactly tonight.",
+          mesaj: "You spoke with the envoys in their languages and customs; the hall was awed.",
+          detay: "The bonds of years served you tonight.",
         },
         basarisizSonuc: {
-          mesaj: "The conversation didn't flow as well as you'd hoped, but the envoys still listened to you with respect.",
-          detay: "The bonds you built with people from different worlds don't always give a perfect result, but they get noticed.",
+          mesaj: "The talk didn't flow well, but the envoys listened respectfully.",
+          detay: "Imperfect bonds still get noticed.",
         },
       },
     ],
   },
   saray_dedikodu: {
     baslik: "Palace Gossip",
-    metin: "From a servant you learned of a secret affair of one of the palace's most powerful families. This information is both dangerous and valuable.",
+    metin: "A servant told you of a secret affair in one of the palace's powerful families. The knowledge is dangerous and valuable.",
     secenekler: [
       {
-        metin: "Sell the information to the right person for a gain.",
+        metin: "Sell it to the right person.",
         basariliSonuc: {
-          mesaj: "You got a fine reward for the information; no one suspected you.",
-          detay: "Trading in secrets has always existed at the palace.",
+          mesaj: "You earned a fine reward for it; no one suspected you.",
+          detay: "Secrets have always been traded at court.",
         },
         basarisizSonuc: {
-          mesaj: "Your source became known; no one speaks freely around you at the palace anymore.",
-          detay: "Once trust is broken it's hard to repair.",
+          mesaj: "Your source was found out; no one speaks freely around you now.",
+          detay: "Broken trust is hard to mend.",
         },
       },
       {
-        metin: "Share the secret with no one, try to forget it.",
+        metin: "Tell no one, try to forget.",
         basariliSonuc: {
-          mesaj: "You decided to forget what you heard; you told no one anything.",
+          mesaj: "You decided to forget what you heard and told no one.",
           detay: "Some secrets aren't worth carrying.",
         },
         basarisizSonuc: {
-          mesaj: "You kept the secret but curiosity troubled you for a while.",
+          mesaj: "You kept the secret, but curiosity nagged you for a while.",
           detay: "Knowing is sometimes a burden.",
         },
       },
@@ -5174,245 +5174,245 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
   },
   saray_av_daveti: {
     baslik: "The King's Hunt Invitation",
-    metin: "The king is going on a great hunt with the palace notables and invites you too. Joining is prestigious but not without danger.",
+    metin: "The king rides out on a great hunt with his court and invites you. Prestigious, but not without danger.",
     secenekler: [
       {
-        metin: "Join the hunt, take the risk.",
+        metin: "Join the hunt, risk it.",
         basariliSonuc: {
-          mesaj: "The courage you showed on the hunt caught the king's eye; you took your share of the game too.",
+          mesaj: "Your courage on the hunt caught the king's eye; you took a share of the game.",
           detay: "The king said he'd invite you again.",
         },
         basarisizSonuc: {
-          mesaj: "You had a bad accident during the hunt; you were embarrassed in front of everyone.",
-          detay: "Some hunts don't go as planned.",
+          mesaj: "You had a bad accident on the hunt and were shamed before all.",
+          detay: "Some hunts go awry.",
         },
       },
       {
-        metin: "Politely give an excuse, don't join.",
+        metin: "Politely give an excuse.",
         basariliSonuc: {
           mesaj: "Your excuse was accepted; you had a safe day.",
-          detay: "You don't have to run to every invitation.",
+          detay: "You needn't run to every invitation.",
         },
         basarisizSonuc: {
-          mesaj: "For not joining, you felt shut out by some circles.",
-          detay: "It's easy to be talked about behind your back at the palace.",
+          mesaj: "Some circles shut you out for staying away.",
+          detay: "At court, talking behind backs is easy.",
         },
       },
     ],
   },
   saray_suikast_duyumu: {
     baslik: "A Dark Rumor",
-    metin: "From a conversation you overheard by chance, you understood a plot is being prepared against the king. You must choose carefully what to do with this information.",
+    metin: "From a conversation you overheard, you learned of a plot against the king. Choose carefully what to do with it.",
     secenekler: [
       {
         metin: "Report it to the king or his guards.",
         basariliSonuc: {
-          mesaj: "Your report turned out true; you were spoken of as the one who saved the king's life.",
-          detay: "This will be the greatest thing said of you at the palace.",
+          mesaj: "Your report proved true; you were hailed as the savior of the king's life.",
+          detay: "The greatest thing ever said of you at court.",
         },
         basarisizSonuc: {
-          mesaj: "Your rumor turned out baseless; you were humiliated for creating a panic for nothing.",
+          mesaj: "Your tip was baseless; you were shamed for causing a needless panic.",
           detay: "Some voices are misheard.",
         },
       },
       {
-        metin: "Stay out of it, keep silent.",
+        metin: "Stay out of it, keep quiet.",
         basariliSonuc: {
-          mesaj: "You told no one what you heard; the matter was resolved without your involvement or never happened.",
-          detay: "Sometimes not knowing is more comfortable.",
+          mesaj: "You told no one; it was settled without you, or never happened.",
+          detay: "Sometimes not knowing is easier.",
         },
         basarisizSonuc: {
-          mesaj: "The plot happened; your silence gnawed at you for a long time.",
-          detay: "You understand now that silence has a price.",
+          mesaj: "The plot happened; your silence gnawed at you for long.",
+          detay: "You now understand silence has a price.",
         },
       },
     ],
   },
   saray_mutfak_kazasi: {
     baslik: "A Small Accident at the Feast",
-    metin: "At a great palace feast, a flustered servant spilled hot soup on you. The whole hall is looking at you now.",
+    metin: "At a great palace feast a flustered servant spilled hot soup on you. The whole hall stares at you.",
     secenekler: [
       {
         metin: "Laugh it off, ease the mood.",
         basariliSonuc: {
-          mesaj: "Laughing at yourself, you turned it into a joke; the hall talked about your composure.",
-          detay: "Sometimes the best impression comes not from perfection but from grace.",
+          mesaj: "You laughed at yourself and made it a joke; the hall praised your composure.",
+          detay: "Grace, not perfection, leaves the impression.",
         },
         basarisizSonuc: {
-          mesaj: "Your smile came out forced; a few people whispered behind your back.",
-          detay: "Not every accident turns into a joke.",
+          mesaj: "Your smile looked forced; a few people whispered.",
+          detay: "Not every accident becomes a joke.",
         },
       },
       {
         metin: "Get angry, scold the servant.",
         basariliSonuc: {
-          mesaj: "Your anger was found justified, the servant apologized.",
-          detay: "Some thought you were in the right.",
+          mesaj: "Your anger was deemed fair; the servant apologized.",
+          detay: "Some thought you were right.",
         },
         basarisizSonuc: {
-          mesaj: "Your sharp reaction was spoken of as 'cruel'; a few people began to keep their distance.",
-          detay: "A small accident turned into a stain on your reputation.",
+          mesaj: "Your harsh reaction was called 'cruel'; some kept their distance.",
+          detay: "A small accident became a big stain on your name.",
         },
       },
     ],
   },
   oc_kervan_katilma_karari: {
     baslik: "A Caravan to Distant Lands",
-    metin: "A great trade caravan is setting out from the city for distant lands. Joining could be both dangerous and a great opportunity.",
+    metin: "A great trade caravan leaves the city for distant lands. Joining is both dangerous and a big chance.",
     secenekler: [
       {
-        metin: "Join the caravan, set out.",
+        metin: "Join the caravan.",
         basariliSonuc: {
-          mesaj: "You packed your goods and joined the caravan; the months ahead will pass on dusty roads.",
-          detay: "This journey will change you; it'll either make you rich or teach you a great deal.",
+          mesaj: "You bundled your goods and joined; months of dusty road lie ahead.",
+          detay: "The journey will make you rich or teach you much.",
         },
         basarisizSonuc: {
-          mesaj: "Your preparations were rushed but you still joined the caravan.",
-          detay: "You'll pay for setting out on this road unprepared.",
+          mesaj: "Your preparations were rushed, but you joined anyway.",
+          detay: "You'll pay for leaving unprepared.",
         },
       },
       {
         metin: "Don't join, stay in the city.",
         basariliSonuc: {
-          mesaj: "You chose to stay in the city; the caravan set out without you.",
-          detay: "Maybe another caravan will come another day.",
+          mesaj: "You stayed in the city; the caravan left without you.",
+          detay: "Maybe another caravan will come.",
         },
         basarisizSonuc: {
-          mesaj: "As you watched the caravan's dust from a distance you felt a regret inside.",
-          detay: "Some opportunities don't come again the same way.",
+          mesaj: "Watching the caravan's dust, you felt regret.",
+          detay: "Some chances don't come the same again.",
         },
       },
     ],
   },
   oc_kervan_soygun_riski: {
     baslik: "Ambush in the Desert",
-    metin: "The caravan fell into a bandit ambush in a desolate pass. The caravan master wants everyone to join the defense.",
+    metin: "The caravan fell into a bandit ambush in a lonely pass. The caravan master wants everyone to help defend.",
     secenekler: [
       {
-        metin: "Defend your goods, stand against the bandits.",
+        metin: "Defend your goods, fight back.",
         basariliSonuc: {
-          mesaj: "The caravan held and drove off the bandits; with your share of the spoils you grew even richer.",
-          detay: "This pass is spoken of with your courage now.",
+          mesaj: "The caravan drove off the bandits; your share of spoils made you richer.",
+          detay: "The pass now bears your courage's name.",
         },
         basarisizSonuc: {
-          mesaj: "The bandits took most of your goods, and you got away wounded.",
-          detay: "This journey cost more than you thought.",
+          mesaj: "The bandits took most of your goods; you escaped wounded.",
+          detay: "The trip cost more than you thought.",
         },
       },
       {
-        metin: "Leave your goods, save your life.",
+        metin: "Leave the goods, save your life.",
         basariliSonuc: {
-          mesaj: "You left part of your goods and fell back; at least you survived.",
-          detay: "Sometimes accepting a loss is the wisest choice.",
+          mesaj: "You left part of your goods and fell back; at least you live.",
+          detay: "Accepting a loss is sometimes wise.",
         },
         basarisizSonuc: {
-          mesaj: "Despite falling back, the bandits took nearly everything.",
-          detay: "Some losses can't be prevented.",
+          mesaj: "Despite retreating, the bandits took nearly everything.",
+          detay: "Some losses can't be avoided.",
         },
       },
     ],
   },
   oc_kervan_uzak_diyar_ticareti: {
     baslik: "The Market of a Distant Land",
-    metin: "The caravan reached the market of a city you'd never seen. Exotic spices, silks, and languages you don't know fill the place.",
+    metin: "The caravan reached the market of a city you'd never seen. Spices, silks and foreign tongues everywhere.",
     secenekler: [
       {
-        metin: "Haggle boldly, make big purchases.",
+        metin: "Haggle boldly, buy big.",
         basariliSonuc: {
-          mesaj: "The deal you made turned out incredibly profitable; back home everyone will talk about this trade.",
-          detay: "The connection you made with distant lands will open new doors for you.",
+          mesaj: "The deal was wildly profitable; back home everyone will talk.",
+          detay: "This link will open new doors.",
         },
         basarisizSonuc: {
-          mesaj: "The local merchants cheated you; the deal didn't turn out as you hoped.",
-          detay: "Inexperience in a foreign market costs dearly.",
+          mesaj: "Local merchants cheated you; the deal fell short of your hopes.",
+          detay: "Inexperience in a foreign market is costly.",
         },
       },
       {
         metin: "Be cautious, do small deals.",
         basariliSonuc: {
           mesaj: "You settled for a small but safe gain.",
-          detay: "Sometimes little but sure beats a lot.",
+          detay: "Little but sure beats a lot.",
         },
         basarisizSonuc: {
-          mesaj: "You made no gain worth mentioning but at least you didn't lose either.",
-          detay: "Not every journey brings a profit.",
+          mesaj: "No gain worth noting, but no loss either.",
+          detay: "Not every trip pays.",
         },
       },
     ],
   },
   oc_kervan_evde_kalanin_pismanligi: {
     baslik: "Tales of the Returned Caravan",
-    metin: "The caravan returned to the city months later; those who joined grew rich and came back with exotic stories. You stayed in the city.",
+    metin: "The caravan returned months later; those who joined came back rich, with exotic tales. You stayed in the city.",
     secenekler: [
       {
-        metin: "Listen to the stories, prepare for the next caravan.",
+        metin: "Hear the tales, ready for the next caravan.",
         basariliSonuc: {
-          mesaj: "The stories told made you keener for the next opportunity.",
-          detay: "Maybe next time you'll join too.",
+          mesaj: "The tales made you keener for the next chance.",
+          detay: "Maybe next time you'll join.",
         },
         basarisizSonuc: {
-          mesaj: "Thinking about the opportunity you missed made you wistful.",
+          mesaj: "Thinking of the chance you missed made you wistful.",
           detay: "Some regrets sink in.",
         },
       },
       {
-        metin: "Don't care, be content with your safe life.",
+        metin: "Don't care, be content with safety.",
         basariliSonuc: {
-          mesaj: "You knew the value of your safe life; not everyone has to take risks.",
-          detay: "Peace is a kind of wealth too.",
+          mesaj: "You valued your safe life; not everyone must take risks.",
+          detay: "Peace is a kind of wealth.",
         },
         basarisizSonuc: {
-          mesaj: "Though you tried not to care, deep down you were curious.",
-          detay: "Some curiosities never pass.",
+          mesaj: "You tried not to care, but inwardly you wondered.",
+          detay: "Some curiosity never fades.",
         },
       },
     ],
   },
   sd_fabrika_grev_karari: {
     baslik: "A Strike at the Factory Gate",
-    metin: "Against long working hours and low wages, the workers decided to strike. The crowd gathered at the factory gate expects you to pick a side too.",
+    metin: "Workers struck over long hours and low pay. The crowd at the factory gate expects you to pick a side.",
     secenekler: [
       {
         metin: "Join the strike, defend workers' rights.",
         basariliSonuc: {
-          mesaj: "You stood shoulder to shoulder with the other workers; at the gate you shouted 'Justice!'",
-          detay: "You're part of the workers' movement now; this choice will shape the years ahead of you.",
+          mesaj: "You stood shoulder to shoulder with the workers, shouting 'Justice!' at the gate.",
+          detay: "You're now part of the workers' movement.",
         },
         basarisizSonuc: {
-          mesaj: "You joined the strike but you were jostled about in the crowd.",
+          mesaj: "You joined the strike but were shoved about in the crowd.",
           detay: "Solidarity isn't always easy.",
         },
       },
       {
         metin: "Don't join, keep working.",
         basariliSonuc: {
-          mesaj: "You walked through the gate and sat down at your bench; the job is your bread and you didn't want to risk it.",
-          detay: "This decision will make you privileged in the boss's eyes.",
+          mesaj: "You went to your bench; the job is your bread and you wouldn't risk it.",
+          detay: "The boss will favor you.",
         },
         basarisizSonuc: {
           mesaj: "As you went in a few strikers shouted 'traitor' at you.",
-          detay: "This choice looks like it'll have a price.",
+          detay: "This choice looks like it will cost you.",
         },
       },
     ],
   },
   sd_grev_polis_mudahalesi: {
     baslik: "Clubs and Shouts",
-    metin: "The strike is in its third week; the factory owner called the gendarmerie. The crowd isn't dispersing, the tension is climbing.",
+    metin: "The strike is in its third week; the owner called the gendarmes. The crowd won't disperse, tension climbs.",
     secenekler: [
       {
-        metin: "Fall back, move to the rear of the crowd.",
+        metin: "Fall back, move behind the crowd.",
         basariliSonuc: {
           mesaj: "You fell back; the strike went on without you.",
-          detay: "You don't have to be in the front rank of every struggle.",
+          detay: "You needn't lead every struggle.",
         },
         basarisizSonuc: {
-          mesaj: "As the crowd broke up you took a scratch in the jostling.",
-          detay: "Chaos protects no one entirely.",
+          mesaj: "As the crowd broke up you took a scrape in the shoving.",
+          detay: "Chaos shields no one fully.",
         },
       },
       {
-        metin: "Stay in the front rank, don't fall back.",
+        metin: "Hold the front, don't retreat.",
         basariliSonuc: {
           mesaj: "Not used.",
         },
@@ -5420,16 +5420,16 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
           mesaj: "Not used.",
         },
         onTepki: {
-          metin: "Suddenly mounted gendarmes began charging the crowd! Clubs rose in the air. You're at the very front — you can run or you can meet the clubs.",
-          geriCekilMetni: "Run! I didn't come here to die in the street.",
+          metin: "Mounted gendarmes charge! Run, or face the clubs?",
+          geriCekilMetni: "Run! I didn't come to die.",
           geriCekilSonucu: {
-            mesaj: "You turned and ran before the club came down. You saved your life but in the workers' eyes you're a coward.",
-            detay: "Some heroic urges last only until the gendarmes show up.",
+            mesaj: "You ran before the club fell. You saved your life, but the workers see a coward.",
+            detay: "Heroic urges last until the gendarmes arrive.",
           },
-          devamMetni: "Build the barricade! I'll never turn back!",
+          devamMetni: "Raise the barricade! I'll never turn back!",
           devamSonucu: {
-            mesaj: "You were caught under the clubs and horses' hooves but you didn't step back for even a second. You became an undying symbol of the whole working class.",
-            detay: "Your body was broken but your spirit grew huge.",
+            mesaj: "You didn't step back even under the clubs; you became a symbol of the working class.",
+            detay: "The body broke, the spirit grew huge.",
           },
         },
       },
@@ -5437,124 +5437,124 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
   },
   sd_grev_kazanim: {
     baslik: "They're Coming to the Table",
-    metin: "After a long resistance the factory owner agreed to meet with the workers' representatives. The demands were put on the table.",
+    metin: "After a long resistance the owner agreed to meet the workers' representatives. The demands are on the table.",
     secenekler: [
       {
-        metin: "Hold firm alongside the representatives.",
+        metin: "Hold firm with the representatives.",
         basariliSonuc: {
-          mesaj: "The boss backed down; wages and working hours were improved. This became your lasting gain too.",
-          detay: "You got the return for your resistance.",
+          mesaj: "The boss backed down; wages and hours improved, and you gained too.",
+          detay: "Your resistance paid off.",
         },
         basarisizSonuc: {
-          mesaj: "The boss gave nothing; the strike lasting weeks came to nothing.",
-          detay: "Not every struggle ends in a gain.",
+          mesaj: "The boss gave nothing; weeks of strike came to naught.",
+          detay: "Not every struggle ends in gain.",
         },
       },
       {
-        metin: "Compromise, accept the middle ground.",
+        metin: "Compromise, take the middle path.",
         basariliSonuc: {
-          mesaj: "You settled for a small wage improvement; everyone went back to work.",
-          detay: "It wasn't quite what you wanted but it was a gain.",
+          mesaj: "You settled for a small raise; everyone went back to work.",
+          detay: "Not what you wanted, but a gain.",
         },
         basarisizSonuc: {
-          mesaj: "Even your compromise offer was rejected; everyone went back to work empty-handed.",
-          detay: "Some bosses won't agree to anything.",
+          mesaj: "Even your compromise was rejected; everyone returned empty-handed.",
+          detay: "Some bosses agree to nothing.",
         },
       },
     ],
   },
   sd_fabrika_sadik_isci: {
     baslik: "The Boss's Trust",
-    metin: "Staying on the job during the strike caught the factory owner's eye; he wants to reward you.",
+    metin: "Staying on the job during the strike caught the owner's eye; he wants to reward you.",
     secenekler: [
       {
-        metin: "Accept the promotion, get closer to the boss.",
+        metin: "Accept the promotion.",
         basariliSonuc: {
-          mesaj: "You got a small foreman's offer; your wage rose permanently.",
-          detay: "But your old workmates don't talk to you like they used to.",
+          mesaj: "You got a small foreman's post; your pay rose for good.",
+          detay: "Your old workmates are cold now.",
         },
         basarisizSonuc: {
-          mesaj: "You got a small bonus but the other workers noticed.",
+          mesaj: "You got a small bonus, but the workers noticed.",
           detay: "Being the boss's favorite has a price.",
         },
       },
       {
-        metin: "Decline politely, stay an ordinary worker.",
+        metin: "Politely decline, stay a worker.",
         basariliSonuc: {
-          mesaj: "You politely turned the offer down; your workmates appreciated it.",
-          detay: "Some opportunities aren't worth accepting.",
+          mesaj: "You politely declined; your workmates appreciated it.",
+          detay: "Some chances aren't worth taking.",
         },
         basarisizSonuc: {
           mesaj: "Your refusal surprised the boss but he didn't repeat the offer.",
-          detay: "Some doors open only once.",
+          detay: "Some doors open once.",
         },
       },
     ],
   },
   sd_fabrika_disliyanlar: {
     baslik: "The Empty Chair",
-    metin: "At the lunch break, when you sat at the usual table no one met your eye; that you stayed on the job during the strike still isn't forgotten.",
+    metin: "At lunch break no one met your eye; staying on the job during the strike is still not forgotten.",
     secenekler: [
       {
-        metin: "Speak openly, try to mend things.",
+        metin: "Speak openly, mend things.",
         basariliSonuc: {
-          mesaj: "You spoke sincerely; some met it with understanding and the ice thawed a little.",
-          detay: "Honesty is sometimes the best bridge.",
+          mesaj: "You spoke sincerely; some understood and the ice thawed.",
+          detay: "Honesty is the best bridge.",
         },
         basarisizSonuc: {
           mesaj: "Your words made the tension worse.",
-          detay: "Some grievances aren't mended with words.",
+          detay: "Some grudges words can't mend.",
         },
       },
       {
-        metin: "Pay it no mind, eat your meal alone.",
+        metin: "Ignore it, eat alone.",
         basariliSonuc: {
-          mesaj: "You got used to eating alone; in time it came to feel normal.",
+          mesaj: "You got used to eating alone; in time it felt normal.",
           detay: "Some prices are paid quietly.",
         },
         basarisizSonuc: {
           mesaj: "The loneliness bothers you more and more.",
-          detay: "People can't bear being alone for long.",
+          detay: "No one bears solitude for long.",
         },
       },
     ],
   },
   sd_icat_yatirim_firsati: {
     baslik: "An Inventor's Offer",
-    metin: "An inventor you know is looking for a partner for a new steam-powered machine. With the little money you have you could invest in this invention.",
+    metin: "An inventor you know seeks a partner for a new steam-powered machine. You could invest your little money.",
     secenekler: [
       {
         metin: "Invest, trust the inventor.",
         basariliSonuc: {
-          mesaj: "The machine really worked; factories started placing orders and your investment came back many times over.",
-          detay: "Being part of this invention put you in the history books.",
+          mesaj: "The machine worked; factories ordered and your investment returned many times over.",
+          detay: "Joining this invention put you in history.",
         },
         basarisizSonuc: {
-          mesaj: "The machine never worked properly; the inventor abandoned the project.",
+          mesaj: "The machine never worked right; the inventor dropped the project.",
           detay: "Not every invention succeeds.",
         },
       },
       {
-        metin: "Don't take the risk, hold on to your money.",
+        metin: "Avoid the risk, keep your money.",
         basariliSonuc: {
-          mesaj: "You turned the offer down; you didn't touch your money.",
-          detay: "It's wiser not to trust some opportunities.",
+          mesaj: "You turned the offer down and kept your money.",
+          detay: "Distrusting some chances is wise.",
         },
         basarisizSonuc: {
-          mesaj: "When the machine actually worked, you felt a faint regret inside.",
-          detay: "You kept thinking 'I wish I'd taken the risk'.",
+          mesaj: "When the machine worked, you felt a faint regret.",
+          detay: "You kept thinking 'if only I'd risked it'.",
         },
       },
     ],
   },
   sd_icat_kendi_bulusu: {
     baslik: "An Idea You Had",
-    metin: "To solve a recurring problem in your work you designed a simple but clever contraption. Maybe it'll be useful, maybe no one will care.",
+    metin: "You designed a simple but clever contraption to fix a recurring problem at work. Will it help, will anyone care?",
     secenekler: [
       {
-        metin: "Present the idea to your boss/guild.",
+        metin: "Present it to your boss/guild.",
         basariliSonuc: {
-          mesaj: "Your contraption worked; your name began to be spoken as 'a clever one'.",
+          mesaj: "The contraption worked; you began to be called 'a clever one'.",
           detay: "Small ideas sometimes make a big difference.",
         },
         basarisizSonuc: {
@@ -5563,13 +5563,13 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
         },
       },
       {
-        metin: "Keep it to yourself, use it only in your own work.",
+        metin: "Keep it, use it in your own work.",
         basariliSonuc: {
-          mesaj: "The contraption made your own work easier; you shared it with no one but your work got lighter.",
-          detay: "Some ideas can stay yours alone.",
+          mesaj: "The contraption eased your work; you shared it with no one.",
+          detay: "Some ideas can stay yours.",
         },
         basarisizSonuc: {
-          mesaj: "The contraption wasn't much use; you gave up trying.",
+          mesaj: "The contraption barely helped; you gave up.",
           detay: "Not every idea works perfectly.",
         },
       },
@@ -5577,167 +5577,167 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
   },
   komik_kecinin_donusu: {
     baslik: "The Devil Returns",
-    metin: "That 'Devilish Goat' you caught epically in the market square years ago has come back to town. It's staring straight at you with hate-filled eyes and stamping its hooves. It wants a rematch!",
+    metin: "The 'Devilish Goat' you caught in the market years ago is back in town. It glares at you, stamping its hooves: it wants a rematch!",
     secenekler: [
       {
-        metin: "Accept the challenge! I'll take it down one more time.",
+        metin: "Accept the challenge!",
         basariliSonuc: {
-          mesaj: "When the dust cloud settled the goat was at your feet, beaten! The crowd applauds you wildly.",
-          detay: "The history books will write you with this absurd but tremendous victory.",
+          mesaj: "When the dust cleared the goat had given up! The crowd cheers you wildly.",
+          detay: "History will record this absurd but tremendous victory.",
         },
         basarisizSonuc: {
-          mesaj: "Over the years the goat has learned new martial arts! It horned you into the mud and bleated in triumph.",
-          detay: "You lost your title. It is the new king.",
+          mesaj: "The goat learned martial arts! It horned you into the mud and bleated in triumph.",
+          detay: "You lost your title; it is the new king.",
         },
       },
       {
-        metin: "Run! This goat isn't what it used to be!",
+        metin: "Run! This goat isn't what it was!",
         basariliSonuc: {
-          mesaj: "You turned and fled screaming to your shop and locked the door.",
-          detay: "Your Conqueror title is crossed out but at least your bones are intact.",
+          mesaj: "You fled screaming to your shop and locked the door.",
+          detay: "Conqueror title crossed out, but your bones are fine.",
         },
         basarisizSonuc: {
-          mesaj: "Two steps from the door the goat rammed you from behind and laid you face-down in the mud. The crowd howled with laughter.",
-          detay: "Turns out even running takes skill.",
+          mesaj: "Two steps from the door the goat rammed you into the mud; everyone laughed.",
+          detay: "Even running takes skill.",
         },
       },
     ],
   },
   is_ikilem_amirin_haksiz_emri: {
     baslik: "An Unjust Order",
-    metin: "{amir} wants you to unjustly accuse an innocent person — so his own mistake gets covered up. If you obey there's a promise of promotion, if you don't you fear retaliation.",
+    metin: "{amir} wants you to falsely accuse an innocent to cover his own mistake. Obey and promotion is promised; refuse and you fear reprisal.",
     secenekler: [
       {
         metin: "Carry out the order, stay silent.",
         basariliSonuc: {
-          mesaj: "You carried out the order; {amir} is pleased, an innocent person paid the price but your record looks spotless.",
-          detay: "Some promotions come on someone else's back.",
+          mesaj: "You obeyed; {amir} is pleased, an innocent paid, but your record is clean.",
+          detay: "Some promotions ride on another's back.",
         },
         basarisizSonuc: {
-          mesaj: "Your lie came out; you suffered both the guilt and a loss of reputation.",
+          mesaj: "Your lie came out; you suffered guilt and lost reputation.",
           detay: "Dirty work rarely stays clean.",
         },
       },
       {
         metin: "Refuse the order, tell the truth.",
         basariliSonuc: {
-          mesaj: "You told the truth; the innocent person was cleared, {amir} bore you a grudge but no one can take the peace inside you.",
-          detay: "Some victories are worth more than a promotion.",
+          mesaj: "You told the truth; the innocent was cleared. {amir} holds a grudge, but you have peace.",
+          detay: "Some victories outweigh promotion.",
         },
         basarisizSonuc: {
-          mesaj: "{amir} punished you for 'insubordination'; your career stalled but your conscience is spotless.",
-          detay: "Telling the truth had a price, and you paid it.",
+          mesaj: "{amir} punished you for 'insubordination'; career stalled, conscience clean.",
+          detay: "You paid the price of truth.",
         },
       },
     ],
   },
   is_ikilem_meslektas_hatasi: {
     baslik: "Someone Else's Mistake",
-    metin: "{ekip} made a serious mistake; if it's noticed you could both be in trouble. If you take the blame and cover for them you pay the price; if you report it, they do.",
+    metin: "{ekip} made a serious mistake; if noticed, you both face trouble. Cover for them and you pay; report it and they do.",
     secenekler: [
       {
         metin: "Take the blame, cover for {ekip}.",
         basariliSonuc: {
-          mesaj: "You took the blame; {ekip} was grateful to you for life but a stain formed on your record.",
-          detay: "Some loyalties cost dearly, and still they're worth it.",
+          mesaj: "You took the blame; {ekip} is grateful for life, but your record is stained.",
+          detay: "Some loyalty is costly, yet worth it.",
         },
         basarisizSonuc: {
-          mesaj: "You took the blame but the truth came out; you lost both your reputation and {ekip}'s trust.",
-          detay: "Some sacrifices go to waste.",
+          mesaj: "You took the blame but the truth came out; you lost your name and {ekip}'s trust.",
+          detay: "Some sacrifices are wasted.",
         },
       },
       {
-        metin: "Report the situation to your superiors.",
+        metin: "Report it to your superiors.",
         basariliSonuc: {
-          mesaj: "You reported it, {ekip} was fired; your record stayed clean but your name in the team became 'untrustworthy'.",
-          detay: "You protected yourself but there was a price.",
+          mesaj: "You reported it, {ekip} was fired; your record is clean but you're 'untrustworthy' now.",
+          detay: "You protected yourself, at a price.",
         },
         basarisizSonuc: {
-          mesaj: "Your report wasn't taken seriously, and on top of that you were called a 'snitch'.",
-          detay: "Some reports don't reach their aim.",
+          mesaj: "Your report was ignored, and you were branded a 'snitch'.",
+          detay: "Some reports go nowhere.",
         },
       },
     ],
   },
   is_ikilem_rakibin_sirri: {
     baslik: "Your Rival's Secret",
-    metin: "You learned a dark secret about {rakip} that could finish him completely. If you spread it his reputation collapses and you clear away your greatest obstacle. But it's like a weapon; it can backfire too.",
+    metin: "You learned a dark secret that could finish {rakip}. Spreading it ruins his name, but it can backfire.",
     secenekler: [
       {
-        metin: "Spread the secret to everyone, finish {rakip}.",
+        metin: "Spread it, finish {rakip}.",
         basariliSonuc: {
-          mesaj: "The secret spread through the city; {rakip} lost his reputation overnight. Your path is clear but you won't forget how it cleared.",
-          detay: "The taste of some victories leaves bitterness in the mouth.",
+          mesaj: "The secret spread; {rakip} lost his standing. Your path is clear, but it tastes bitter.",
+          detay: "Some victories leave bitterness.",
         },
         basarisizSonuc: {
-          mesaj: "It came out that you were the source of the secret; you got the 'slanderer' brand, and {rakip} grew stronger in the victim's role.",
-          detay: "Dark weapons sometimes go off in your hand.",
+          mesaj: "You were exposed as the source; branded a slanderer, while {rakip} grew stronger.",
+          detay: "Dark weapons go off in your hand.",
         },
       },
       {
-        metin: "Keep the secret, compete the honest way.",
+        metin: "Keep it, compete honestly.",
         basariliSonuc: {
-          mesaj: "You never used the secret; somewhere inside you know this is the right thing.",
-          detay: "Never drawing some weapons is a strength too.",
+          mesaj: "You never used it; you know you did right.",
+          detay: "An unused weapon is a strength.",
         },
         basarisizSonuc: {
-          mesaj: "You stayed silent but {rakip} noticed this 'weakness' of yours and grew bolder.",
-          detay: "Kindness is sometimes turned into an opportunity.",
+          mesaj: "You stayed silent, but {rakip} saw weakness and grew bolder.",
+          detay: "Kindness gets exploited.",
         },
       },
     ],
   },
   is_ikilem_ekip_istifa: {
     baslik: "A Resignation Letter",
-    metin: "{ekip} said he got a better offer and handed in his resignation. If you want to keep him you'll have to raise his wage considerably.",
+    metin: "{ekip} got a better offer and resigned. To keep him, you must raise his wage considerably.",
     secenekler: [
       {
         metin: "Raise his wage, keep him.",
         basariliSonuc: {
-          mesaj: "{ekip} accepted the offer and stayed; his loyalty was proven once more.",
-          detay: "Some investments buy not just gold but trust.",
+          mesaj: "{ekip} accepted and stayed; his loyalty is proven.",
+          detay: "Some investments buy trust too.",
         },
         basarisizSonuc: {
-          mesaj: "Despite the raise, {ekip} left anyway; you lost the money and the experience.",
+          mesaj: "Despite the raise, {ekip} left; money and experience both gone.",
           detay: "Sometimes no offer is enough.",
         },
       },
       {
-        metin: "Let him go, you'll find someone new.",
+        metin: "Let him go, find someone new.",
         basariliSonuc: {
-          mesaj: "{ekip} left on good terms; filling his place will take a little time.",
-          detay: "Every parting is one door closing and another opening.",
+          mesaj: "{ekip} left on good terms; replacing him will take time.",
+          detay: "Every parting opens a new door.",
         },
         basarisizSonuc: {
-          mesaj: "As he left, {ekip} carried some of your secrets to your rivals.",
-          detay: "Some partings don't stay quiet.",
+          mesaj: "On leaving, {ekip} carried your secrets to rivals.",
+          detay: "Some partings aren't quiet.",
         },
       },
     ],
   },
   is_ikilem_sahte_evrak: {
     baslik: "An Offer of a Forged Seal",
-    metin: "A clerk you know says he can 'fix' the necessary documents with a forged seal — it would get you past the long, tedious bureaucracy ahead of you in one night. The risk of being caught is low but not zero.",
+    metin: "A clerk says a forged seal can 'fix' your papers overnight. The risk of being caught is low, not zero.",
     secenekler: [
       {
-        metin: "Accept the offer, take the shortcut.",
+        metin: "Accept, take the shortcut.",
         basariliSonuc: {
-          mesaj: "The forged seal worked without a hitch; the matter was settled in one night and no one noticed anything.",
-          detay: "The shortcut got you to the goal but your conscience knows.",
+          mesaj: "The forged seal worked; it was done overnight and no one noticed.",
+          detay: "The shortcut worked, but your conscience knows.",
         },
         basarisizSonuc: {
-          mesaj: "The forgery came out! You were left with a heavy fine and a destroyed reputation.",
-          detay: "Some shortcuts run along the edge of a cliff.",
+          mesaj: "The forgery came out! Heavy fine, reputation in ruins.",
+          detay: "Some shortcuts skirt a cliff.",
         },
       },
       {
-        metin: "Refuse, go the long but honest way.",
+        metin: "Refuse, go the honest way.",
         basariliSonuc: {
-          mesaj: "You got through the long bureaucracy patiently; slow but solid progress.",
+          mesaj: "You outlasted the bureaucracy; slow but solid.",
           detay: "Honesty sometimes takes patience.",
         },
         basarisizSonuc: {
-          mesaj: "The bureaucracy took even longer than you thought; you lost a lot of time and temper.",
+          mesaj: "The bureaucracy dragged on; you lost time and temper.",
           detay: "The honest road isn't always easy.",
         },
       },
@@ -5745,28 +5745,28 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
   },
   is_ikilem_fazla_mesai: {
     baslik: "Working by Candlelight",
-    metin: "An extra job promises extra earnings but it'll eat your nights too. Your body deserves rest but the money is tempting.",
+    metin: "An extra job promises more pay but will eat your nights. Your body wants rest; the money tempts.",
     secenekler: [
       {
-        metin: "Work extra, go without sleep.",
+        metin: "Work extra, lose sleep.",
         basariliSonuc: {
-          mesaj: "You slept little for weeks but in the end your strongbox filled considerably.",
-          detay: "Your body pays for some gains.",
+          mesaj: "You slept little for weeks, but your strongbox filled nicely.",
+          detay: "Your body pays for the gain.",
         },
         basarisizSonuc: {
-          mesaj: "From exhaustion you fainted at work one day; most of the money you earned went on medicine.",
-          detay: "The body sends the bill sooner or later.",
+          mesaj: "You fainted at work from exhaustion; most earnings went on medicine.",
+          detay: "The body bills you sooner or later.",
         },
       },
       {
-        metin: "Refuse, choose to rest.",
+        metin: "Refuse, rest.",
         basariliSonuc: {
-          mesaj: "You refused and rested well; your body is thanking you.",
-          detay: "Sometimes the best gain is a rested body.",
+          mesaj: "You refused and rested well; your body thanks you.",
+          detay: "The best gain is a rested body.",
         },
         basarisizSonuc: {
-          mesaj: "You rested but there's a faint regret inside you about missing the opportunity.",
-          detay: "Not every right choice is without regret.",
+          mesaj: "You rested, but faintly regret the missed chance.",
+          detay: "Not every right choice is regret-free.",
         },
       },
     ],

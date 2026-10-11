@@ -5,29 +5,29 @@ export const OLAYLAR_MESLEK_YATKINLIK_EN: Record<string, OlayCeviri> = {
   myk_asker_ordugah_meydan_okumasi: {
     baslik: "A Challenge",
     metin:
-      "Boredom in the camp has sparked a challenge: a chance to prove your skill with a blade in front of everyone. The crowd is watching you.",
+      "Camp boredom sparked a challenge: prove your skill with a blade before everyone. The crowd is watching.",
     secenekler: [
       {
-        metin: "Strike a masterful blow and floor your opponent.",
-        kilitAciklamasi: "You're not skilled enough for this move yet — try something safer.",
+        metin: "Floor your rival with a masterful blow.",
+        kilitAciklamasi: "Not skilled enough; try something safer.",
         basariliSonuc: {
-          mesaj: "You beat your opponent in front of the crowd; your name was on people's lips in the camp for a while.",
+          mesaj: "You beat your rival before the crowd; your name was talked about for a while.",
         },
         basarisizSonuc: {
-          mesaj: "The move landed, but your timing was off; you hit the ground hard.",
+          mesaj: "The move landed but your timing was off; you hit the ground hard.",
         },
       },
       {
-        metin: "Play it safe, stay purely defensive.",
+        metin: "Play safe, stay defensive.",
         basariliSonuc: {
-          mesaj: "You impressed no one, but gave no one anything to laugh about either; it's over.",
+          mesaj: "You impressed no one, but gave no one a laugh either.",
         },
         basarisizSonuc: {
-          mesaj: "Even staying defensive was a struggle; you took a few hard hits.",
+          mesaj: "Even defending was a struggle; you took a few hard hits.",
         },
       },
       {
-        metin: "Don't take part in the challenge at all.",
+        metin: "Stay out of it.",
         basariliSonuc: {
           mesaj: "You stepped aside. No one said anything, but you knew.",
         },
@@ -39,21 +39,21 @@ export const OLAYLAR_MESLEK_YATKINLIK_EN: Record<string, OlayCeviri> = {
   myk_tuccar_ozel_teklif: {
     baslik: "For You Alone",
     metin:
-      "Your sharp eye for the market hasn't gone unnoticed. A trader you don't know approaches with a low-risk but lucrative partnership offer — a chance not extended to just anyone, reserved for an eye as keen as yours.",
+      "Your sharp eye got noticed. A stranger, a trader, offers a low-risk, lucrative partnership, a chance not given to just anyone.",
     secenekler: [
       {
-        metin: "Accept the offer, put your capital on the table.",
+        metin: "Accept, put in your capital.",
         basariliSonuc: {
-          mesaj: "Your instinct was right; the partnership paid off even better than you expected.",
+          mesaj: "Your instinct was right; the partnership paid off better than expected.",
         },
         basarisizSonuc: {
-          mesaj: "The partnership wasn't as bright as it looked; you couldn't recover part of your capital.",
+          mesaj: "The partnership wasn't so bright; part of your capital was lost.",
         },
       },
       {
-        metin: "Politely decline, don't take the risk.",
+        metin: "Politely decline.",
         basariliSonuc: {
-          mesaj: "You turned the opportunity down. Some part of you wondered 'what if it had worked out' — but the money stayed in your pocket.",
+          mesaj: "You turned it down, wondering \"what if\", but kept your money.",
         },
         basarisizSonuc: { mesaj: "Not used." },
       },
@@ -63,24 +63,24 @@ export const OLAYLAR_MESLEK_YATKINLIK_EN: Record<string, OlayCeviri> = {
   myk_din_gunahkarin_yuku: {
     baslik: "The Congregation's Doubt",
     metin:
-      "Your sermons never quite fit you; the contradictions inside you spill out from the pulpit. An old man from the congregation pulls you aside and asks plainly: 'Do you truly believe in this, my child?'",
+      "Your sermons don't suit you; your inner contradictions spill from the pulpit. An old parishioner asks: 'Do you truly believe, my child?'",
     secenekler: [
       {
         metin: "Be honest, share your doubts.",
         basariliSonuc: {
-          mesaj: "Your honesty surprised him, but you earned his respect; at least you're not lying.",
+          mesaj: "Your honesty surprised him, but won his respect.",
         },
         basarisizSonuc: {
-          mesaj: "Your words spread quickly through the congregation; the way they look at you has changed.",
+          mesaj: "Your words spread through the congregation; the looks changed.",
         },
       },
       {
-        metin: "Cling to your role, act like a true believer.",
+        metin: "Cling to your role, act devout.",
         basariliSonuc: {
-          mesaj: "You were convincing; the man was persuaded and left. Inside, you feel a little more hollow.",
+          mesaj: "You were convincing, he left persuaded. You feel a bit more hollow.",
         },
         basarisizSonuc: {
-          mesaj: "Your insincerity showed in your eyes; the man shook his head and walked away.",
+          mesaj: "Your insincerity showed; he shook his head and left.",
         },
       },
     ],
@@ -89,25 +89,25 @@ export const OLAYLAR_MESLEK_YATKINLIK_EN: Record<string, OlayCeviri> = {
   myk_zanaatkar_ustalik_sinavi: {
     baslik: "A Test of Mastery",
     metin:
-      "The guild left an unusual order at your workshop: alongside an ordinary repair, any master willing may also attempt an entirely new technique. The risk is great, but if you succeed your name will be remembered for years.",
+      "The guild left an unusual order: besides an ordinary repair, a chance to try an entirely new technique. Succeed and your name lives on.",
     secenekler: [
       {
-        metin: "Attempt to invent an entirely new technique.",
-        kilitAciklamasi: "Your hand isn't skilled enough yet to attempt this.",
+        metin: "Try inventing a new technique.",
+        kilitAciklamasi: "Your hand isn't skilled enough yet.",
         basariliSonuc: {
-          mesaj: "Your attempt worked! Even the guild's finest hands are talking about your invention.",
+          mesaj: "It worked! The guild's masters talk of your invention.",
         },
         basarisizSonuc: {
-          mesaj: "You wasted the material; the technique isn't mature yet. Still, no one blamed you for trying.",
+          mesaj: "You wasted material; the technique isn't mature. No one blamed you.",
         },
       },
       {
-        metin: "Play it safe, do the ordinary repair.",
+        metin: "Play safe, do the ordinary repair.",
         basariliSonuc: {
-          mesaj: "The job went smoothly; no one was disappointed, and no one was amazed either.",
+          mesaj: "The job went smoothly; no one disappointed, no one amazed.",
         },
         basarisizSonuc: {
-          mesaj: "Even the simple job hit a small snag; you paid the guild a small compensation.",
+          mesaj: "Even the simple job hit a snag; you paid the guild small compensation.",
         },
       },
     ],
@@ -116,21 +116,21 @@ export const OLAYLAR_MESLEK_YATKINLIK_EN: Record<string, OlayCeviri> = {
   myk_asker_muhafiz_teklifi: {
     baslik: "An Offer to Join the King's Personal Guard",
     metin:
-      "Word of your battlefield skill has reached the ruler's own ears. A messenger from the court invites you to a trial to join the personal guard.",
+      "News of your battlefield skill reached the ruler. The court invites you to a trial for the personal guard.",
     secenekler: [
       {
-        metin: "Accept the offer, take the trial.",
+        metin: "Accept, take the trial.",
         basariliSonuc: {
-          mesaj: "You passed the trial with ease; you now stand at the ruler's own side.",
+          mesaj: "You passed with ease; you now stand at the ruler's side.",
         },
         basarisizSonuc: {
-          mesaj: "You failed the trial; the court sent you back politely, and the camp talked about it for a while.",
+          mesaj: "You failed; the court sent you politely back, and the camp gossiped.",
         },
       },
       {
         metin: "Politely decline, stay with your army.",
         basariliSonuc: {
-          mesaj: "Your refusal made you even more valued in the eyes of your comrades in arms.",
+          mesaj: "Your refusal made you more valued among your comrades.",
         },
         basarisizSonuc: { mesaj: "Not used." },
       },
@@ -140,21 +140,21 @@ export const OLAYLAR_MESLEK_YATKINLIK_EN: Record<string, OlayCeviri> = {
   myk_asker_efsanevi_duello: {
     baslik: "An Invitation to a Legendary Duel",
     metin:
-      "Your reputation has reached a rival champion's ears. He challenges you to a single-strike duel in front of everyone.",
+      "A rival champion who heard of your fame challenges you to a single-strike duel before everyone.",
     secenekler: [
       {
         metin: "Accept the challenge.",
         basariliSonuc: {
-          mesaj: "Your blade flashed and your rival fell to his knees — your name became a legend.",
+          mesaj: "Your blade flashed, your rival knelt; your name became legend.",
         },
         basarisizSonuc: {
-          mesaj: "You left the field badly wounded; news of the defeat spread quickly through the camp.",
+          mesaj: "You left badly wounded; news of the defeat spread through the camp.",
         },
       },
       {
-        metin: "Decline with honor, no excuse needed.",
+        metin: "Decline with honor.",
         basariliSonuc: {
-          mesaj: "You declined; some will call you a coward, but you know you acted wisely.",
+          mesaj: "You declined; some will call you a coward, but you acted wisely.",
         },
         basarisizSonuc: { mesaj: "Not used." },
       },
@@ -164,21 +164,21 @@ export const OLAYLAR_MESLEK_YATKINLIK_EN: Record<string, OlayCeviri> = {
   myk_tuccar_bas_tedarikci: {
     baslik: "An Offer to Become the Kingdom's Chief Supplier",
     metin:
-      "The court steward has heard of your sharp trading instinct. He summons you to a major meeting to become the kingdom's chief supplier.",
+      "The court steward heard of your trading instinct. He summons you to a major meeting to become the kingdom's chief supplier.",
     secenekler: [
       {
         metin: "Sign the big contract.",
         basariliSonuc: {
-          mesaj: "The contract was signed; both your coffers and your name grew considerably.",
+          mesaj: "Signed; both your coffers and your name grew.",
         },
         basarisizSonuc: {
-          mesaj: "The terms were harsher than they looked; the deal cost you dearly.",
+          mesaj: "The terms were harsher than they looked; the deal cost you.",
         },
       },
       {
-        metin: "Don't take the risk, stick to your smaller deals.",
+        metin: "Avoid risk, keep small deals.",
         basariliSonuc: {
-          mesaj: "You carried on with your smaller, safer business.",
+          mesaj: "You carried on with smaller, safer business.",
         },
         basarisizSonuc: { mesaj: "Not used." },
       },
@@ -188,21 +188,21 @@ export const OLAYLAR_MESLEK_YATKINLIK_EN: Record<string, OlayCeviri> = {
   myk_tuccar_rakip_kiskancligi: {
     baslik: "The Envy of Rivals",
     metin:
-      "Your success has drawn eyes. Rival traders are spreading dark rumors about you, and even trying to sabotage your goods.",
+      "Your success drew eyes. Rival traders spread dark rumors about you and try to sabotage your goods.",
     secenekler: [
       {
-        metin: "Gather evidence, defend your reputation.",
+        metin: "Gather proof, defend your name.",
         basariliSonuc: {
-          mesaj: "You found the source of the rumors; once the truth came out, everyone sided with you.",
+          mesaj: "You found the source; once truth came out, everyone sided with you.",
         },
         basarisizSonuc: {
-          mesaj: "You found no evidence; the rumors grew and hurt your business for a while.",
+          mesaj: "No proof found; the rumors grew and hurt your business a while.",
         },
       },
       {
-        metin: "Ignore it, focus on your work.",
+        metin: "Ignore it, mind your work.",
         basariliSonuc: {
-          mesaj: "You ignored the rumors; some kept believing them, but they faded over time.",
+          mesaj: "You ignored the rumors; some still believed, but they faded.",
         },
         basarisizSonuc: { mesaj: "Not used." },
       },
@@ -212,21 +212,21 @@ export const OLAYLAR_MESLEK_YATKINLIK_EN: Record<string, OlayCeviri> = {
   myk_din_kutsal_gorev: {
     baslik: "Chosen for a Holy Task",
     metin:
-      "Your superiors, hearing of the depth of your faith, have chosen you to guard a special, holy relic. It's a rare honor within the congregation.",
+      "Your superiors, knowing your deep faith, chose you to guard a holy relic. A rare honor in the congregation.",
     secenekler: [
       {
         metin: "Accept the task.",
         basariliSonuc: {
-          mesaj: "You completed the task successfully; the congregation now holds you in far greater respect.",
+          mesaj: "You completed it; the congregation now holds you in great respect.",
         },
         basarisizSonuc: {
-          mesaj: "You made a grave mistake during the task; it shook you deeply.",
+          mesaj: "You made a grave mistake in the task; it shook you deeply.",
         },
       },
       {
-        metin: "Humbly decline, say you're not worthy.",
+        metin: "Humbly decline, unworthy.",
         basariliSonuc: {
-          mesaj: "Your humility earned quiet admiration within the congregation.",
+          mesaj: "Your humility won quiet admiration in the congregation.",
         },
         basarisizSonuc: { mesaj: "Not used." },
       },
@@ -236,21 +236,21 @@ export const OLAYLAR_MESLEK_YATKINLIK_EN: Record<string, OlayCeviri> = {
   myk_din_mucize_soylentisi: {
     baslik: "Rumors of a Miracle",
     metin:
-      "A rumor is spreading about someone who was healed or found peace through your hands. Crowds are showing up at your door, hopeful.",
+      "A rumor spreads of someone healed or at peace through your hands. Hopeful crowds gather at your door.",
     secenekler: [
       {
-        metin: "Confirm the rumor, receive the people.",
+        metin: "Confirm the rumor, receive them.",
         basariliSonuc: {
-          mesaj: "The rumor turned you into the most respected name in the region.",
+          mesaj: "The rumor made you the region's most respected name.",
         },
         basarisizSonuc: {
-          mesaj: "You couldn't meet their expectations; disappointment spread quickly.",
+          mesaj: "You couldn't meet expectations; disappointment spread.",
         },
       },
       {
-        metin: "Reject the rumor, stay humble.",
+        metin: "Deny it, stay humble.",
         basariliSonuc: {
-          mesaj: "You rejected the claims of a miracle; some kept believing regardless, but you kept your peace.",
+          mesaj: "You denied the miracle; some still believed, but you kept your peace.",
         },
         basarisizSonuc: { mesaj: "Not used." },
       },
@@ -260,21 +260,21 @@ export const OLAYLAR_MESLEK_YATKINLIK_EN: Record<string, OlayCeviri> = {
   myk_zanaatkar_saray_daveti: {
     baslik: "An Invitation to Become the Court's Chief Craftsman",
     metin:
-      "The mastery of your hands has reached the court. You're commissioned to create a special, magnificent piece for the palace.",
+      "Word of your craft reached the court. You're commissioned to make a magnificent piece for the palace.",
     secenekler: [
       {
-        metin: "Accept the commission, produce your best work.",
+        metin: "Accept, make your best work.",
         basariliSonuc: {
-          mesaj: "Your piece was received with admiration at court; your name is now spoken among the nobility too.",
+          mesaj: "Your piece won admiration at court; the nobility now speak your name.",
         },
         basarisizSonuc: {
-          mesaj: "The piece didn't meet expectations; the court didn't hide its disappointment.",
+          mesaj: "The piece fell short; the court didn't hide its disappointment.",
         },
       },
       {
-        metin: "Don't take the risk, stick to your ordinary orders.",
+        metin: "Avoid risk, keep ordinary orders.",
         basariliSonuc: {
-          mesaj: "You carried on with your smaller, safer orders.",
+          mesaj: "You carried on with smaller, safer orders.",
         },
         basarisizSonuc: { mesaj: "Not used." },
       },
@@ -284,21 +284,21 @@ export const OLAYLAR_MESLEK_YATKINLIK_EN: Record<string, OlayCeviri> = {
   myk_zanaatkar_taklitciler: {
     baslik: "Imitators and Frauds",
     metin:
-      "As your name grew in value, frauds selling copies of your work under your signature have appeared. Your customers are confused.",
+      "As your name grew, frauds began selling copies under your signature. Customers are confused.",
     secenekler: [
       {
-        metin: "Track them down, expose the frauds.",
+        metin: "Hunt them down, expose them.",
         basariliSonuc: {
-          mesaj: "You exposed the frauds; true craftsmanship was talked about again.",
+          mesaj: "You exposed the frauds; true craft was talked of again.",
         },
         basarisizSonuc: {
-          mesaj: "You couldn't find the frauds; your reputation took a hit for a while.",
+          mesaj: "You couldn't find them; your reputation suffered a while.",
         },
       },
       {
-        metin: "Add a distinguishing seal to your own work.",
+        metin: "Add a distinctive seal to your work.",
         basariliSonuc: {
-          mesaj: "Your new seal started setting your work apart; it cost a little, but it worked.",
+          mesaj: "The new seal set your work apart; small cost, it worked.",
         },
         basarisizSonuc: { mesaj: "Not used." },
       },

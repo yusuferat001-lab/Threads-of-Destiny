@@ -230,8 +230,8 @@ export function etkiTahminiGetir(
     tahminler.push({
       simge: '💰',
       metin: en
-        ? `chance of a ${b} ${para > 0 ? 'gain' : 'loss'}`
-        : `${b} ${para > 0 ? 'kazanç' : 'kayıp'} ihtimali`,
+        ? `${b} ${para > 0 ? 'gain' : 'loss'}`
+        : `${b} ${para > 0 ? 'kazanç' : 'kayıp'}`,
       pozitif: para > 0,
     });
   }
@@ -241,8 +241,8 @@ export function etkiTahminiGetir(
     tahminler.push({
       simge: '❤️',
       metin: en
-        ? `chance of a ${b} health ${saglik > 0 ? 'gain' : 'loss'}`
-        : `${b} can ${saglik > 0 ? 'kazancı' : 'kaybı'} ihtimali`,
+        ? `${b} health ${saglik > 0 ? 'gain' : 'loss'}`
+        : `${b} can ${saglik > 0 ? 'kazancı' : 'kaybı'}`,
       pozitif: saglik > 0,
     });
   }
@@ -252,8 +252,8 @@ export function etkiTahminiGetir(
     tahminler.push({
       simge: '🙂',
       metin: en
-        ? `chance of a ${b} morale ${mutluluk > 0 ? 'gain' : 'loss'}`
-        : `${b} moral ${mutluluk > 0 ? 'kazancı' : 'kaybı'} ihtimali`,
+        ? `${b} morale ${mutluluk > 0 ? 'gain' : 'loss'}`
+        : `${b} moral ${mutluluk > 0 ? 'kazancı' : 'kaybı'}`,
       pozitif: mutluluk > 0,
     });
   }
