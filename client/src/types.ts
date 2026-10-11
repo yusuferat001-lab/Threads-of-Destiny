@@ -299,6 +299,8 @@ export interface CharacterState {
   /** Cihazın önceki hayatlarında görülen olaylar (sunucu-içi tekrar önleme için) — client mantığı kullanmaz. */
   istemci_gecmis_olaylar: string[];
   istemci_id: string | null;
+  /** Son seçimlerin gösterge etkisi günlüğü (gösterge penceresi sunucudan okur). */
+  etken_gunlugu?: { yil: number; kaynak: string; stat: GostergeStat; delta: number }[];
   gecmis: GecmisNoktasi[];
   hayat_hikayesi: HayatOlayi[];
   aktif: boolean;
@@ -892,4 +894,6 @@ export interface GostergeDetayi {
   etkenler: GostergeEtken[];
   yukselt: string[];
   dusur: string[];
+  /** Son seçimlerin bu göstergeye etkisi, en yeni üstte. */
+  gecmis: { yil: number; kaynak: string; delta: number }[];
 }

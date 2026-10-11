@@ -11,7 +11,7 @@
  *    kısa ipuçlarıdır.
  *  - Hiçbir state değiştirilmez, tur tüketilmez.
  */
-import type { CharacterState } from "../types";
+import type { CharacterState, SonucEtkisi, EtkenKaydi } from "../types";
 import { T, K } from "../i18n";
 import { konutGetir } from "../data/konutlar";
 import { yasamSecenegiGetir } from "../data/yasamSecenekleri";
@@ -57,7 +57,12 @@ export interface GostergeDetayi {
   yukselt: string[];
   /** Değeri DÜŞÜRMEK için yapılabilecekler (aranma için asıl istenen bölüm). */
   dusur: string[];
+  /** Bu göstergeyi son seçimlerin nasıl etkilediği (en yeni üstte, en fazla 6). */
+  gecmis: { yil: number; kaynak: string; delta: number }[];
 }
+
+/** Yıllık etken/ipucu kısmı; `gecmis` (seçim günlüğü) gostergeDetayiUret'te eklenir. */
+type GostergeDetayTaban = Omit<GostergeDetayi, "gecmis">;
 
 /** Yıllık etkiyi okunur işaretli bir sayıya çevirir: +1, −0.7, +0.5 */
 function isaretli(n: number): string {
@@ -98,7 +103,7 @@ function krizEtkeni(state: CharacterState, alan: "saglik" | "mutluluk" | "un" | 
   return { ikon, metin: T(state.dil, "{0}: {1}/yıl", [T(state.dil, ad), isaretli(v)]), yon: yon(v) };
 }
 
-function saglikDetayi(state: CharacterState): GostergeDetayi {
+function saglikDetayi(state: CharacterState): GostergeDetayTaban {
   const dil = state.dil;
   const etkenler: GostergeEtken[] = [];
 
@@ -162,7 +167,7 @@ function saglikDetayi(state: CharacterState): GostergeDetayi {
   };
 }
 
-function mutlulukDetayi(state: CharacterState): GostergeDetayi {
+function mutlulukDetayi(state: CharacterState): GostergeDetayTaban {
   const dil = state.dil;
   const etkenler: GostergeEtken[] = [];
 
@@ -229,7 +234,7 @@ function mutlulukDetayi(state: CharacterState): GostergeDetayi {
   };
 }
 
-function ahlakDetayi(state: CharacterState): GostergeDetayi {
+function ahlakDetayi(state: CharacterState): GostergeDetayTaban {
   const dil = state.dil;
   const etkenler: GostergeEtken[] = [];
 
@@ -277,7 +282,7 @@ function ahlakDetayi(state: CharacterState): GostergeDetayi {
   };
 }
 
-function sohretDetayi(state: CharacterState): GostergeDetayi {
+function sohretDetayi(state: CharacterState): GostergeDetayTaban {
   const dil = state.dil;
   const etkenler: GostergeEtken[] = [];
 
@@ -317,7 +322,7 @@ function sohretDetayi(state: CharacterState): GostergeDetayi {
   };
 }
 
-function aranmaDetayi(state: CharacterState): GostergeDetayi {
+function aranmaDetayi(state: CharacterState): GostergeDetayTaban {
   const dil = state.dil;
   const etkenler: GostergeEtken[] = [];
 
@@ -397,7 +402,7 @@ function aranmaDetayi(state: CharacterState): GostergeDetayi {
   };
 }
 
-function paraDetayi(state: CharacterState): GostergeDetayi {
+function paraDetayi(state: CharacterState): GostergeDetayTaban {
   const dil = state.dil;
   const etkenler: GostergeEtken[] = [];
 
@@ -446,8 +451,41 @@ function paraDetayi(state: CharacterState): GostergeDetayi {
 }
 
 /** Bir göstergenin detay özetini üretir (salt-okunur). */
+const ETKEN_GUNLUGU_MAKS = 40;
+const ETKEN_GECMIS_GOSTER = 6;
+
+/**
+ * Bir seçimin/olayın göstergelere net etkisini günlüğe yazar (etki zaten jitter,
+ * meslek çarpanı ve suç kazancı kuralından geçmiş SON hâlindedir). Sıfır/ihmal
+ * edilebilir değişimler yazılmaz.
+ */
+export function etkenGunluguNotEt(state: CharacterState, kaynak: string, etki: SonucEtkisi): void {
+  if (!Array.isArray(state.etken_gunlugu)) state.etken_gunlugu = [];
+  const adaylar: [EtkenKaydi["stat"], number | undefined][] = [
+    ["saglik", etki.saglik],
+    ["para", etki.para],
+    ["mutluluk", etki.mutluluk],
+    ["ahlak", etki.ahlak],
+    ["sohret", etki.un],
+    ["aranma", etki.suc_degisim],
+  ];
+  for (const [stat, ham] of adaylar) {
+    const delta = Math.round((ham ?? 0) * 10) / 10;
+    if (Math.abs(delta) < 1) continue;
+    state.etken_gunlugu.push({ yil: state.yil, kaynak, stat, delta });
+  }
+  if (state.etken_gunlugu.length > ETKEN_GUNLUGU_MAKS) {
+    state.etken_gunlugu.splice(0, state.etken_gunlugu.length - ETKEN_GUNLUGU_MAKS);
+  }
+}
+
 export function gostergeDetayiUret(state: CharacterState, stat: GostergeStat): GostergeDetayi {
-  const detay = gostergeDetayiHesapla(state, stat);
+  const detay: GostergeDetayi = { ...gostergeDetayiHesapla(state, stat), gecmis: [] };
+  detay.gecmis = (state.etken_gunlugu ?? [])
+    .filter((k) => k.stat === stat)
+    .slice(-ETKEN_GECMIS_GOSTER)
+    .reverse()
+    .map(({ yil, kaynak, delta }) => ({ yil, kaynak, delta }));
   if (detay.etkenler.length === 0) {
     detay.etkenler.push({
       ikon: "✅",
@@ -458,7 +496,7 @@ export function gostergeDetayiUret(state: CharacterState, stat: GostergeStat): G
   return detay;
 }
 
-function gostergeDetayiHesapla(state: CharacterState, stat: GostergeStat): GostergeDetayi {
+function gostergeDetayiHesapla(state: CharacterState, stat: GostergeStat): GostergeDetayTaban {
   switch (stat) {
     case "saglik":
       return saglikDetayi(state);

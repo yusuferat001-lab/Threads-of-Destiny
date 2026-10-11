@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { gostergeDetayiUret, gostergeStatiMi, GostergeDetayi } from "./gostergeDetay";
+import { gostergeDetayiUret, etkenGunluguNotEt, gostergeStatiMi, GostergeDetayi } from "./gostergeDetay";
 import { CharacterState, Cag, SenaryoResponse, SonucEtkisi, TepkiSonucu, MulkTuru, EvlilikAdayi, OturumAkisiKaydi, IkiDilMetin } from "../types";
 import { T, K, Khukumdar, ikiDilT } from "../i18n";
 import { olayCevirisiUygula } from "../i18n/olaylar";
@@ -1881,6 +1881,7 @@ async function sonucuUygulaVeIlerlet(
   const sucSeviyesiTutuklanmaAni = state.suc_seviyesi;
   if (etki.suc_seviyesi_ayarla !== undefined) state.suc_seviyesi = etki.suc_seviyesi_ayarla;
   etki.suc_degisim = sucDegisimiHesapla(sucOnce, state.suc_seviyesi);
+  etkenGunluguNotEt(state, mevcutOlay.baslik, etki);
   // Veba hastalığı ölüm riski: yalnız hastayken (veba_hastasi) anlamlı; olay
   // seçimi bu turdaki ölüm zarından ÖNCE uygulanır (vebaHastaligiKontrol).
   if (etki.veba_olum_riski_artis && state.etiketler.includes("veba_hastasi")) {
@@ -4282,6 +4283,7 @@ export async function sosyallesmeOlayCoz(id: string, secenekIndex: number): Prom
   if (etki.suc_artis) state.suc_seviyesi += etki.suc_artis;
   if (etki.suc_seviyesi_ayarla !== undefined) state.suc_seviyesi = etki.suc_seviyesi_ayarla;
   etki.suc_degisim = sucDegisimiHesapla(sucOnce, state.suc_seviyesi);
+  etkenGunluguNotEt(state, mevcutOlay.baslik, etki);
 
   // Sosyalleşme olaylarının kullandığı seyrek alanlar (banka denetimi: ekip_ekle 1×, unvan_kazan 2×).
   if (etki.ekip_ekle) {

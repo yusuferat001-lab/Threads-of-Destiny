@@ -812,6 +812,7 @@ export function createCharacter(
     gecmis_olaylar: [],
     istemci_gecmis_olaylar: istemciGecmisOlaylar ?? [],
     istemci_id: istemciId ?? null,
+    etken_gunlugu: [],
     gecmis: [],
     hayat_hikayesi: [],
     aktif: true,
@@ -1117,6 +1118,7 @@ export function eskiKayitGocu(state: CharacterState): void {
   // Çapraz-hayat tekrar önleme (istemci_id bazlı) sonradan eklendi.
   if (!Array.isArray(state.istemci_gecmis_olaylar)) state.istemci_gecmis_olaylar = [];
   if (state.istemci_id === undefined) state.istemci_id = null;
+  if (!Array.isArray(state.etken_gunlugu)) state.etken_gunlugu = [];
   // "Gecikmiş takip" havuzu sonradan eklendi.
   if (!Array.isArray(state.gecikmis_takipler)) state.gecikmis_takipler = [];
   // "Yedi Canlı" başarımının kalıcı bayrağı sonradan eklendi; eski kayıtlarda

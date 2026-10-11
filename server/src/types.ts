@@ -429,6 +429,8 @@ export interface CharacterState {
   istemci_gecmis_olaylar: string[];
   /** Bu hayatı yaratan tarayıcının rastgele istemci kimliği (varsa) — ölümde bu hayatın `gecmis_olaylar`'ını istemci geçmişine yazmak için kullanılır. Yoksa null. */
   istemci_id: string | null;
+  /** Son seçimlerin göstergelere etkisi (yeni → eski değil, kronolojik; en fazla 40). Gösterge detay penceresindeki "Son seçimlerin etkisi" bölümünü besler. */
+  etken_gunlugu: EtkenKaydi[];
   /**
    * Sunucu belleğinde tutulan oyun akışının (cevaplanmamış olay, zorunlu_sonraki
    * zinciri, bekleyen onTepki, Sosyalleş'e giderken kenara ayrılan ana olay) kalıcı
@@ -767,4 +769,12 @@ export interface TepkiSonucu {
 export interface IkiDilMetin {
   tr: string;
   en: string;
+}
+
+/** Bkz. CharacterState.etken_gunlugu. `kaynak` = etkiyi veren olayın o anki dildeki başlığı. */
+export interface EtkenKaydi {
+  yil: number;
+  kaynak: string;
+  stat: "saglik" | "para" | "mutluluk" | "ahlak" | "aranma" | "sohret";
+  delta: number;
 }

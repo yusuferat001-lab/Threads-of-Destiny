@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { createCharacter, yaslanmaUygula, yaslanmaYillikKayip } from "../src/game/stateManager";
-import { gostergeDetayiUret, gostergeStatiMi, GOSTERGE_STATLARI } from "../src/game/gostergeDetay";
+import { gostergeDetayiUret, gostergeStatiMi, etkenGunluguNotEt, GOSTERGE_STATLARI } from "../src/game/gostergeDetay";
 import { sucDegisimiHesapla, yeniOyun, gostergeGetir } from "../src/game/gameEngine";
 
 function karakter(dil = "tr") {
@@ -111,5 +111,27 @@ describe("gostergeStatiMi / gostergeGetir", () => {
     await expect(gostergeGetir(st.id, "kader")).rejects.toThrow();
     const d = await gostergeGetir(st.id, "ahlak");
     expect(d.stat).toBe("ahlak");
+  });
+});
+
+describe("etken günlüğü (son seçimlerin etkisi)", () => {
+  it("etkenGunluguNotEt yalnız belirgin değişimleri yazar ve 40 kayıtla sınırlar", () => {
+    const s = karakter();
+    etkenGunluguNotEt(s, "Pazar Kavgası", { mesaj: "x", saglik: -8, para: 0.4, ahlak: -3, suc_degisim: 12 });
+    expect(s.etken_gunlugu.map((k) => k.stat).sort()).toEqual(["ahlak", "aranma", "saglik"]);
+    for (let i = 0; i < 60; i++) etkenGunluguNotEt(s, `Olay ${i}`, { mesaj: "x", mutluluk: 2 });
+    expect(s.etken_gunlugu.length).toBe(40);
+  });
+
+  it("gostergeDetayiUret ilgili göstergenin geçmişini en yeni üstte, en fazla 6 satır verir", () => {
+    const s = karakter();
+    for (let i = 0; i < 8; i++) etkenGunluguNotEt(s, `Olay ${i}`, { mesaj: "x", saglik: -2 });
+    etkenGunluguNotEt(s, "Rüşvet", { mesaj: "x", suc_degisim: -25 });
+    const sag = gostergeDetayiUret(s, "saglik");
+    expect(sag.gecmis.length).toBe(6);
+    expect(sag.gecmis[0].kaynak).toBe("Olay 7");
+    const ar = gostergeDetayiUret(s, "aranma");
+    expect(ar.gecmis).toEqual([{ yil: s.yil, kaynak: "Rüşvet", delta: -25 }]);
+    expect(gostergeDetayiUret(s, "para").gecmis).toEqual([]);
   });
 });

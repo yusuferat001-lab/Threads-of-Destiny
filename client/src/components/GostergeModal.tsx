@@ -123,6 +123,28 @@ export function GostergeModal({ karakter, stat, onKapat }: GostergeModalProps) {
                   </li>
                 ))}
               </ul>
+              <h3 className="gosterge-baslik">{m.gmGecmis}</h3>
+              {detay.gecmis.length === 0 ? (
+                <p className="gosterge-bilgi">{m.gmGecmisYok}</p>
+              ) : (
+                <ul className="gosterge-liste">
+                  {detay.gecmis.map((g, i) => {
+                    // Aranmada artış kötüdür; diğer göstergelerde artış iyidir.
+                    const iyi = aranma ? g.delta < 0 : g.delta > 0;
+                    return (
+                      <li key={i} className={`gosterge-etken gosterge-etken-${iyi ? 'iyi' : 'kotu'}`}>
+                        <span className="gosterge-etken-ikon" aria-hidden="true">
+                          {g.delta > 0 ? '▲' : '▼'}
+                        </span>
+                        <span>
+                          {g.kaynak} · {g.delta > 0 ? '+' : '−'}
+                          {stat === 'para' ? formatPara(Math.abs(g.delta)) : Math.round(Math.abs(g.delta))}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
               {bolumler.map((b) => (
                 <div key={b.baslik}>
                   <h3 className="gosterge-baslik">{b.baslik}</h3>
