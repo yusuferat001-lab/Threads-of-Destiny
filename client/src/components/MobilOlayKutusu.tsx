@@ -21,7 +21,6 @@ export interface MobilSonuc {
 
 interface MobilOlayKutusuProps {
   cag: string;
-  yerlesim: string;
   ulke?: { savasta: boolean; vebada: boolean; ekonomi: string };
   senaryo: SenaryoResponse;
   /** null → soru durumu (başlık + metin + şıklar); dolu → sonuç durumu (çipler + özet + Devam Et). */
@@ -69,7 +68,6 @@ function useKaydirmaIpucu(ref: RefObject<HTMLElement | null>, icerikAnahtari: st
  */
 export function MobilOlayKutusu({
   cag,
-  yerlesim,
   ulke,
   senaryo,
   sonuc,
@@ -79,7 +77,7 @@ export function MobilOlayKutusu({
   onSecenek,
   onDevam,
 }: MobilOlayKutusuProps) {
-  const { m, kt } = useDil();
+  const { m } = useDil();
   const src = olayResmiSrc(senaryo.kategori, cag);
   const govdeRef = useRef<HTMLDivElement>(null);
   useKaydirmaIpucu(govdeRef, `${sonuc ? 's' : 'q'}|${tepkiModu ? 't' : ''}|${senaryo.olay_basligi}|${sonuc?.ozet ?? ''}`);
@@ -98,7 +96,6 @@ export function MobilOlayKutusu({
   return (
     <section className={`olay-kutusu${sonuc ? ' olay-kutusu-sonuc' : ''}${yogun ? ' olay-kutusu-yogun' : ''}`}>
       <div className="olay-kutusu-etiketler">
-        {yerlesim && <span className="bolge-sahnesi-etiket">{kt(yerlesim)}</span>}
         {ulke?.savasta && <span className="bolge-sahnesi-etiket bolge-sahnesi-tehlike">{m.usSavasta}</span>}
         {ulke?.vebada && <span className="bolge-sahnesi-etiket bolge-sahnesi-tehlike">{m.usSalgin}</span>}
       </div>

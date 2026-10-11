@@ -2270,7 +2270,6 @@ function App() {
                 // aşağıda aynen duruyor ve mobilde render edilmiyor.
                 <MobilOlayKutusu
                   cag={karakter.cag}
-                  yerlesim={karakter.yerlesim}
                   ulke={karakter.ulke}
                   senaryo={senaryo}
                   sonuc={mobilSonuc}
