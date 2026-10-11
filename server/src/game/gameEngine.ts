@@ -872,11 +872,18 @@ async function oturumKaydet(state: CharacterState): Promise<void> {
  */
 export async function oturumlariYukle(): Promise<number> {
   const stateler = await aktifOturumlariYukle();
+  let yuklenen = 0;
   for (const state of stateler) {
-    eskiKayitGocu(state);
-    oturumlar.set(state.id, oturumOlustur(state));
+    // Tek bozuk kayıt tüm sunucunun açılışını (ve Render'da çökme döngüsünü) bozmasın.
+    try {
+      eskiKayitGocu(state);
+      oturumlar.set(state.id, oturumOlustur(state));
+      yuklenen++;
+    } catch (err) {
+      console.error(`Oturum yüklenemedi, atlandı (${state?.id}):`, err);
+    }
   }
-  return stateler.length;
+  return yuklenen;
 }
 
 /**
@@ -930,24 +937,41 @@ async function oturumGetir(id: string): Promise<Oturum> {
     varOlan.sonErisim = Date.now();
     return varOlan;
   }
-  const state = await oturumYukle(id);
-  if (!state) throw new Error("Oyun oturumu bulunamadı.");
-  eskiKayitGocu(state);
-  const oturum = oturumOlustur(state);
-  oturumlar.set(id, oturum);
-  return oturum;
+  // Aynı id için eşzamanlı iki soğuk yükleme iki ayrı Oturum nesnesi yaratıp birinin
+  // değişikliğini kaybettirirdi: yüklemeyi id başına tek bir Promise'e indir.
+  let bekleyen = oturumYuklemeleri.get(id);
+  if (!bekleyen) {
+    bekleyen = (async () => {
+      const state = await oturumYukle(id);
+      if (!state) throw new Error("Oyun oturumu bulunamadı.");
+      eskiKayitGocu(state);
+      const oturum = oturumOlustur(state);
+      oturumlar.set(id, oturum);
+      return oturum;
+    })().finally(() => oturumYuklemeleri.delete(id));
+    oturumYuklemeleri.set(id, bekleyen);
+  }
+  return bekleyen;
 }
+
+const oturumYuklemeleri = new Map<string, Promise<Oturum>>();
 
 /**
  * Bitmiş (aktif:false) ve bir süredir erişilmemiş oturumları in-memory
  * önbellekten siler; DB'deki kaydı etkilemez, tekrar gerekirse oradan
  * yüklenir. Sürekli çalışan bir sunucuda sınırsız RAM büyümesini önler.
  */
-export function oturumlariBellektenTemizle(graceMs: number): number {
+export function oturumlariBellektenTemizle(graceMs: number, aktifGraceMs?: number): number {
   const esik = Date.now() - graceMs;
+  const aktifEsik = aktifGraceMs !== undefined ? Date.now() - aktifGraceMs : undefined;
   let silinen = 0;
   for (const [id, oturum] of oturumlar) {
-    if (!oturum.state.aktif && oturum.sonErisim < esik) {
+    // Aktif oturumlar da her mutasyonda DB'ye yazıldığı için uzun süre boşta kalanlar
+    // güvenle bellekten atılır; oturumGetir gerektiğinde DB'den geri yükler (terk edilmiş
+    // oyunlar RAM'i şişirmesin).
+    const bitmisVeBosta = !oturum.state.aktif && oturum.sonErisim < esik;
+    const aktifVeUzunBosta = oturum.state.aktif && aktifEsik !== undefined && oturum.sonErisim < aktifEsik;
+    if (bitmisVeBosta || aktifVeUzunBosta) {
       oturumlar.delete(id);
       silinen++;
     }
@@ -3434,9 +3458,22 @@ export async function liderlikTablosunaKaydet(id: string, isim: string) {
   const { state } = oturum;
   if (state.aktif) throw new Error("Oyun henüz bitmedi.");
   if (state.skoru_kaydedildi) throw new Error("Bu oyun için skor zaten kaydedildi.");
-  const kayit = await skoruDbyeYaz(state, isim);
+  // Bayrağı `await`'ten ÖNCE kur: aynı oyun için paralel iki istek (farklı isimlerle) ikisi de
+  // kontrolü geçip tabloya çift kayıt yazabiliyordu. Yazım başarısız olursa geri al.
   state.skoru_kaydedildi = true;
-  await oturumKaydet(state);
+  let kayit;
+  try {
+    kayit = await skoruDbyeYaz(state, isim);
+  } catch (err) {
+    state.skoru_kaydedildi = false;
+    throw err;
+  }
+  // Skor yazıldı; oturum kaydı patlarsa isteği başarısız saymayalım (istemci tekrar denemesin).
+  try {
+    await oturumKaydet(state);
+  } catch (err) {
+    console.error(`Skor sonrası oturum kaydı yazılamadı (${id}):`, err);
+  }
   void metrikYaz({
     tur: "skor_kaydi",
     oturum_id: id,

@@ -38,6 +38,16 @@ export class PrismaClient {
       let s = [...sessionlar.values()];
       if (where?.id) s = s.filter((x) => x.id === where.id);
       if (where && typeof where.aktif === "boolean") s = s.filter((x) => x.aktif === where.aktif);
+      // OR: [{aktif, updatedAt:{lt}}...] — eski+terk edilmiş oturum temizliği (sessionRepository).
+      if (where && Array.isArray(where.OR)) {
+        s = s.filter((x) =>
+          where.OR.some(
+            (k: any) =>
+              (typeof k.aktif !== "boolean" || x.aktif === k.aktif) &&
+              (!k.updatedAt?.lt || x.updatedAt < k.updatedAt.lt)
+          )
+        );
+      }
       for (const x of s) sessionlar.delete(x.id);
       return { count: s.length };
     },

@@ -81,4 +81,11 @@ describe("oturum kalıcılığı", () => {
     expect(await oturumYukle(bitmis.id)).toBeNull();
     expect(await oturumYukle(aktif.id)).not.toBeNull();
   });
+  it("eskiOturumlariTemizle aktifEsik verilirse terk edilmiş aktif oturumları da siler", async () => {
+    const terkEdilmis = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
+    const gelecekTarih = new Date(Date.now() + 1000 * 60 * 60);
+    await eskiOturumlariTemizle(gelecekTarih, gelecekTarih);
+    expect(await oturumYukle(terkEdilmis.id)).toBeNull();
+  });
+
 });

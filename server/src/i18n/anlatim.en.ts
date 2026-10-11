@@ -943,4 +943,10 @@ export const ANLATIM_EN: Record<string, string> = {
     "You've played enough at the dice table this year; come back when the year turns.",
   "Lüks eşyalar koleksiyon parçasıdır; hediye edilemez.":
     "Luxury goods are collector's pieces; they can't be given as gifts.",
+  "Şu an veritabanına ulaşılamıyor; biraz sonra tekrar dene.":
+    "The database is unreachable right now; try again in a moment.",
+  "İstek gövdesi geçerli bir JSON değil.": "The request body is not valid JSON.",
+  "İstek gövdesi çok büyük.": "The request body is too large.",
+  "Beklenmeyen bir sunucu hatası oluştu.": "An unexpected server error occurred.",
+  "Çok fazla yeni oyun açtın; biraz bekleyip tekrar dene.": "You've started too many new games; wait a bit and try again.",
 };

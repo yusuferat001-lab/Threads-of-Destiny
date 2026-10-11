@@ -11,6 +11,7 @@ import { geriBildirimRouter } from "./routes/geriBildirim.routes";
 import { istatistikRouter } from "./routes/istatistik.routes";
 import { oturumlariYukle, oturumlariBellektenTemizle, gecmisSkorlariKaydet } from "./game/gameEngine";
 import { eskiOturumlariTemizle } from "./db/sessionRepository";
+import { prisma } from "./db/prismaClient";
 
 const app = express();
 
@@ -102,6 +103,17 @@ const istatistikLimiti = rateLimit({
   message: limitMesaji("Çok fazla istek gönderildi; biraz bekleyip tekrar dene."),
 });
 
+// Yeni oyun açmak (bellek + DB satırı yaratır) daha sıkı sınırlanır: tek bir betik
+// dakikada yüzlerce terk edilmiş oturum açıp sunucuyu şişiremesin.
+const yeniOyunLimiti = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 12,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: limitMesaji("Çok fazla yeni oyun açtın; biraz bekleyip tekrar dene."),
+});
+
+app.post("/api/game/new", yeniOyunLimiti);
 app.use("/api/game", oyunLimiti, gameRouter);
 app.use("/api/scores", skorLimiti, scoreRouter);
 app.use("/api/geri-bildirim", geriBildirimLimiti, geriBildirimRouter);
@@ -127,19 +139,42 @@ if (ISTEMCI_VAR) {
   console.log("İstemci build'i bulunamadı; yalnızca API servis ediliyor.");
 }
 
+// Beklenmeyen hatalar (bozuk JSON, çok büyük gövde, yakalanmamış route hatası) Express'in
+// varsayılan HTML sayfası yerine istemcinin okuyabildiği JSON gövdesiyle dönsün.
+// (4 argümanlı olmalı: Express hata middleware'ini imzasından tanır.)
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+app.use((err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  const tip = (err as { type?: string } | null)?.type;
+  if (tip === "entity.parse.failed") {
+    res.status(400).json({ hata: "İstek gövdesi geçerli bir JSON değil." });
+    return;
+  }
+  if (tip === "entity.too.large") {
+    res.status(413).json({ hata: "İstek gövdesi çok büyük." });
+    return;
+  }
+  console.error("Yakalanmamış sunucu hatası:", err);
+  res.status(500).json({ hata: "Beklenmeyen bir sunucu hatası oluştu." });
+});
+
 const PORT = process.env.PORT ?? 3001;
 
 const BIR_SAAT_MS = 60 * 60 * 1000;
 const BELLEK_GRACE_MS = 30 * 60 * 1000; // bitmiş oturum 30 dk erişilmezse bellekten silinir
 const DB_TEMIZLEME_ESIGI_MS = 7 * 24 * BIR_SAAT_MS; // 7 günden eski bitmiş oturumlar DB'den de silinir
+const AKTIF_BELLEK_GRACE_MS = 2 * BIR_SAAT_MS; // 2 saat boşta kalan AKTİF oturum bellekten atılır (DB'de kalır)
+const AKTIF_DB_TEMIZLEME_ESIGI_MS = 30 * 24 * BIR_SAAT_MS; // 30 gündür dokunulmamış aktif oturum DB'den silinir
 
 function periyodikTemizlemeyiBaslat() {
   setInterval(() => {
-    const bellektenSilinen = oturumlariBellektenTemizle(BELLEK_GRACE_MS);
+    const bellektenSilinen = oturumlariBellektenTemizle(BELLEK_GRACE_MS, AKTIF_BELLEK_GRACE_MS);
     if (bellektenSilinen > 0) {
-      console.log(`${bellektenSilinen} bitmiş oturum bellekten temizlendi.`);
+      console.log(`${bellektenSilinen} oturum bellekten temizlendi.`);
     }
-    eskiOturumlariTemizle(new Date(Date.now() - DB_TEMIZLEME_ESIGI_MS))
+    eskiOturumlariTemizle(
+      new Date(Date.now() - DB_TEMIZLEME_ESIGI_MS),
+      new Date(Date.now() - AKTIF_DB_TEMIZLEME_ESIGI_MS)
+    )
       .then((silinen) => {
         if (silinen > 0) console.log(`${silinen} eski oturum DB'den temizlendi.`);
       })
@@ -148,22 +183,60 @@ function periyodikTemizlemeyiBaslat() {
 }
 
 async function basla() {
-  const yuklenenSayisi = await oturumlariYukle();
-  if (yuklenenSayisi > 0) {
-    console.log(`${yuklenenSayisi} aktif oturum DB'den geri yüklendi.`);
-  }
-  try {
-    const gecmisSkorSayisi = await gecmisSkorlariKaydet();
-    if (gecmisSkorSayisi > 0) {
-      console.log(`${gecmisSkorSayisi} geçmiş oyun liderlik tablosuna eklendi.`);
-    }
-  } catch (err) {
-    console.error("Geçmiş skorlar kaydedilemedi:", err);
-  }
-  periyodikTemizlemeyiBaslat();
-  app.listen(PORT, () => {
+  // Önce portu aç: Render'ın port/sağlık kontrolü, DB'den oturum yükleme ya da geçmiş skor
+  // kurtarma yavaş (Neon soğuk başlangıç, çok sayıda bitmiş oturum) olsa bile zaman aşımına
+  // uğramasın. Oturumlar zaten istek gelince DB'den tembelce yüklenebilir (oturumGetir).
+  const sunucu = app.listen(PORT, () => {
     console.log(`Server ${PORT} portunda çalışıyor.`);
   });
+
+  try {
+    const yuklenenSayisi = await oturumlariYukle();
+    if (yuklenenSayisi > 0) {
+      console.log(`${yuklenenSayisi} aktif oturum DB'den geri yüklendi.`);
+    }
+  } catch (err) {
+    console.error("Aktif oturumlar yüklenemedi (istek geldikçe tembelce yüklenecek):", err);
+  }
+  periyodikTemizlemeyiBaslat();
+  // Geçmiş skor kurtarma arka planda: açılışı geciktirmesin.
+  gecmisSkorlariKaydet()
+    .then((gecmisSkorSayisi) => {
+      if (gecmisSkorSayisi > 0) {
+        console.log(`${gecmisSkorSayisi} geçmiş oyun liderlik tablosuna eklendi.`);
+      }
+    })
+    .catch((err) => console.error("Geçmiş skorlar kaydedilemedi:", err));
+
+  // Render her deploy'da SIGTERM yollar: uçuştaki istekler bitsin, DB bağlantısı temiz kapansın.
+  const kapat = (sinyal: string) => {
+    console.log(`${sinyal} alındı, sunucu kapatılıyor.`);
+    sunucu.close(() => {
+      prisma
+        .$disconnect()
+        .catch(() => undefined)
+        .finally(() => process.exit(0));
+    });
+    setTimeout(() => process.exit(0), 10_000).unref();
+  };
+  process.on("SIGTERM", () => kapat("SIGTERM"));
+  process.on("SIGINT", () => kapat("SIGINT"));
 }
 
-basla();
+// Tek bir yakalanmamış hata (ör. bir ateşle-unut DB yazımı) süreci düşürüp Render'da
+// yeniden başlatma döngüsüne sokmasın; logla ve devam et.
+process.on("unhandledRejection", (neden) => {
+  console.error("Yakalanmamış promise reddi:", neden);
+});
+// Yakalanmamış senkron istisnada süreç durumu güvenilmez olabilir: logla, temiz çık;
+// Render süreci yeniden başlatır (açılış hataları artık satır bazında korunduğu için
+// bu bir çökme döngüsüne dönüşmez).
+process.on("uncaughtException", (err) => {
+  console.error("Yakalanmamış istisna:", err);
+  process.exit(1);
+});
+
+basla().catch((err) => {
+  console.error("Sunucu başlatılamadı:", err);
+  process.exit(1);
+});
