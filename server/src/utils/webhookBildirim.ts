@@ -15,7 +15,11 @@ export async function webhookBildirimGonder(metin: string): Promise<void> {
   const telegram = url.includes("api.telegram.org");
   const govde = telegram
     ? { chat_id: process.env.GERI_BILDIRIM_TELEGRAM_CHAT_ID, text: metin.slice(0, 4000) }
-    : { content: metin.slice(0, 1900) }; // Discord içerik limiti 2000
+    : {
+        content: metin.slice(0, 1900), // Discord içerik limiti 2000
+        // Kullanıcı mesajı "@everyone"/rol etiketi içerse bile kimseyi etiketleme.
+        allowed_mentions: { parse: [] as string[] },
+      };
 
   try {
     await fetch(url, {

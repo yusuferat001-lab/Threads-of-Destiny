@@ -12,6 +12,7 @@ import { istatistikRouter } from "./routes/istatistik.routes";
 import { oturumlariYukle, oturumlariBellektenTemizle, gecmisSkorlariKaydet } from "./game/gameEngine";
 import { eskiOturumlariTemizle } from "./db/sessionRepository";
 import { prisma } from "./db/prismaClient";
+import { gizliAlanlariCikar } from "./utils/jsonYanit";
 
 const app = express();
 
@@ -56,6 +57,8 @@ const izinliOrijinler = process.env.CORS_ORIGIN
   ? process.env.CORS_ORIGIN.split(",").map((o) => o.trim())
   : ["http://localhost:5180"];
 app.use(cors({ origin: izinliOrijinler }));
+// Gizli oyun alanları (ör. ekip üyesinin gerçek kalitesi) hiçbir JSON yanıtında istemciye gitmesin.
+app.set("json replacer", gizliAlanlariCikar);
 app.use(express.json());
 
 // Limit aşıldığında da istemcinin okuyabildiği JSON hata gövdesi dönsün (varsayılan

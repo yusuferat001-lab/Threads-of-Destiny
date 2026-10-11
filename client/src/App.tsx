@@ -495,7 +495,6 @@ function App() {
     await geriBildirimGonder({
       ...girdi,
       baglam: {
-        stateId: karakter?.id ?? null,
         ekran,
         cag: karakter?.cag ?? secilenCag ?? null,
         bolge: karakter?.bolge ?? secilenBolge ?? null,

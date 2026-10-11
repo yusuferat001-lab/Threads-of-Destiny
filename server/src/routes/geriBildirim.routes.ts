@@ -47,6 +47,9 @@ export function geriBildirimTemizle(govde: unknown): TemizlemeSonucu {
     g.baglam && typeof g.baglam === "object" && !Array.isArray(g.baglam)
       ? Object.fromEntries(
           Object.entries(g.baglam as Record<string, unknown>)
+            // Oturum kimliği (UUID = oyunun tek yetkilendirme belirteci) webhook'a/panele
+            // düz metin gitmesin: eski istemciler gönderse bile düşür.
+            .filter(([k]) => k !== "stateId")
             .slice(0, 20)
             .map(([k, v]) => [
               k.slice(0, 40),
