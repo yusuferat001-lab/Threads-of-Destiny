@@ -2127,23 +2127,22 @@ function App() {
 
       {(ekran === 'oyun' || ekran === 'sonuc') && karakter && senaryo && (
         <>
-        {mobil && (
-          // Mobil: sahne artık bir şerit değil, TÜM sayfanın arkasını kaplayan portre katman.
-          // `.oyun-ekrani`nın dışında durur — onun `ekranBelir` transform animasyonu `fixed`
-          // çocuğu kaydırırdı (bkz. mobil-oyun.css).
-          <div className="oyun-arka-sahne" aria-hidden="true">
-            <BolgeSahnesi
-              mod="sayfa"
-              cag={karakter.cag}
-              bolge={karakter.bolge}
-              yerlesim={karakter.yerlesim}
-              ulke={karakter.ulke}
-              un={karakter.un}
-            />
-          </div>
-        )}
+        {/* Sahne artık bir şerit değil, TÜM sayfanın arkasını kaplayan katman (mobil: portre, PC: yatay;
+            PC'de yan sütunların da arkasında durur). `.oyun-ekrani`nın dışında durur — onun `ekranBelir`
+            transform animasyonu `fixed` çocuğu kaydırırdı (bkz. mobil-oyun.css / pc-olay-kutusu.css). */}
+        <div className="oyun-arka-sahne" aria-hidden="true">
+          <BolgeSahnesi
+            mod="sayfa"
+            yatay={!mobil}
+            cag={karakter.cag}
+            bolge={karakter.bolge}
+            yerlesim={karakter.yerlesim}
+            ulke={karakter.ulke}
+            un={karakter.un}
+          />
+        </div>
         <div
-          className={`oyun-ekrani${mobil ? ' oyun-ekrani-mobil' : ''}${ekran === 'sonuc' && sonEtki?.terfiOldu ? ' buyuk-an-terfi' : ''}`}
+          className={`oyun-ekrani${mobil ? ' oyun-ekrani-mobil' : ' oyun-ekrani-pc'}${ekran === 'sonuc' && sonEtki?.terfiOldu ? ' buyuk-an-terfi' : ''}`}
         >
           <UstSerit
             bolge={karakter.bolge}
@@ -2244,21 +2243,6 @@ function App() {
               </button>
 
               <div className="sol-panel-mini-barlar">
-                <button
-                  type="button"
-                  className="un-rozeti un-rozeti-tikla"
-                  onClick={() => setGostergeAcik('sohret')}
-                  aria-haspopup="dialog"
-                  title={`${m.sohret} — ${m.gmDokun}`}
-                >
-                  <span className="un-rozeti-ikon" aria-hidden="true">
-                    🏅
-                  </span>
-                  <div className="un-rozeti-metin">
-                    <span className="un-rozeti-etiket">{m.sohret}</span>
-                    <strong>{unUnvani(karakter.un, dil)}</strong>
-                  </div>
-                </button>
                 {/* Masaüstü canlı skor — mobildeki üst şerit rozetinin karşılığı; aynı döküm penceresini açar. */}
                 <button
                   key={skorGecisi.nonce}
@@ -2271,9 +2255,6 @@ function App() {
                   <strong>{canliSkor.toLocaleString(dil === 'en' ? 'en-US' : 'tr-TR')}</strong>
                 </button>
               </div>
-
-              {/* Kariyer · Yatırım · Mağaza — eskiden sahne üstündeki tıklama noktalarıydı. */}
-              {kisayolKartlari(['kariyer', 'yatirim', 'magaza'])}
 
               <FinansOzetPaneli finans={finans} maasYillikYedek={karakter.maas_yillik} paraBirimi={karakter.para_birimi} />
 
@@ -2288,51 +2269,7 @@ function App() {
                 onKullan={envanterKullanHandler}
                 onHediye={hediyeHandler}
               />
-            </YanPanel>
-            )}
 
-            <div className={mobil ? 'merkez-panel merkez-panel-mobil' : 'merkez-panel'}>
-              {!mobil && (
-                // PC: sahne (resim) üstte, olay kutusu altta. Mobilde sahne sayfa-düzeyi arka plan olarak
-                // yukarıda (`.oyun-arka-sahne`) durur.
-                <div className="merkez-sahne">
-                  <div className="merkez-sahne-arkaplan">
-                    <BolgeSahnesi
-                      cag={karakter.cag}
-                      bolge={karakter.bolge}
-                      yerlesim={karakter.yerlesim}
-                      ulke={karakter.ulke}
-                      un={karakter.un}
-                      tamYukseklik
-                    />
-                  </div>
-                  {/* Amaçlar arka plan görselinin ÜSTÜNDE ince bir şerit — her amaç
-                      çok kısa açıklamasıyla (kullanıcı isteği). Mobilde bu şerit
-                      üst çubuğun altına taşındı (bkz. .ust-amac-serit-satiri). */}
-                  <AmacPaneli durum={amaclar} varyant="serit" />
-                </div>
-              )}
-              {/* Mobil ve PC ortak kadife olay kutusu (soru + sonuç aynı kutuda). */}
-              <OlayKutusu
-                cag={karakter.cag}
-                ulke={karakter.ulke}
-                senaryo={senaryo}
-                sonuc={olaySonucu}
-                tepkiModu={tepkiModu}
-                yukleniyor={yukleniyor}
-                sesKapali={sesKapali}
-                onSecenek={secenekSec}
-                onDevam={devamEt}
-                genis={!mobil}
-                etiketGoster={mobil}
-                klavye={!mobil && !pencereAcik}
-              />
-            </div>
-
-            {!mobil && (
-            <YanPanel className="sag-panel panel-parsomen" baslik="" mobil={mobil}>
-              {/* Evin · Sosyalleş · Aile */}
-              {kisayolKartlari(['ev', 'sosyallesme', 'aile'])}
               <SiyasetPaneli cag={karakter.cag} hizip={karakter.hizip} />
               <HaberlerPaneli haberler={karakter.haberler} />
 
@@ -2354,6 +2291,38 @@ function App() {
                   evcilHayvan={karakter.evcil_hayvan}
                 />
               </div>
+            </YanPanel>
+            )}
+
+            <div className={mobil ? 'merkez-panel merkez-panel-mobil' : 'merkez-panel'}>
+              {!mobil && (
+                // PC: sahne artık sayfa-düzeyi arka plan (yukarıda `.oyun-arka-sahne`); bu boş alan resmi
+                // gösterir, amaç şeridi üstüne biner, olay kutusu altta durur.
+                <div className="merkez-sahne">
+                  <AmacPaneli durum={amaclar} varyant="serit" />
+                </div>
+              )}
+              {/* Mobil ve PC ortak kadife olay kutusu (soru + sonuç aynı kutuda). */}
+              <OlayKutusu
+                cag={karakter.cag}
+                ulke={karakter.ulke}
+                senaryo={senaryo}
+                sonuc={olaySonucu}
+                tepkiModu={tepkiModu}
+                yukleniyor={yukleniyor}
+                sesKapali={sesKapali}
+                onSecenek={secenekSec}
+                onDevam={devamEt}
+                genis={!mobil}
+                etiketGoster={mobil}
+                klavye={!mobil && !pencereAcik}
+              />
+            </div>
+
+            {!mobil && (
+            <YanPanel className="sag-panel" baslik="" mobil={mobil}>
+              {/* Kariyer · Yatırım · Mağaza · Evin · Sosyalleş · Aile — 2×3 büyük kare karo. */}
+              {kisayolKartlari(['kariyer', 'yatirim', 'magaza', 'ev', 'sosyallesme', 'aile'])}
             </YanPanel>
             )}
           </div>
