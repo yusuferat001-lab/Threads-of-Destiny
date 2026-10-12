@@ -1,0 +1,231 @@
+/*
+ * PC oyun ekranı (≥768px) — kadife olay kutusunun ölçüleri + yan sütun kısayol kartları.
+ *
+ * Düzen aynı kalır: sol panel | merkez panel (sahne üstte, olay kutusu altta) | sağ panel.
+ * Olay kutusunun GÖRÜNÜMÜ mobille ortaktır (olay-kutusu.css); burada yalnız PC'ye özgü ölçüler var.
+ * Ölçüler viewport'tan değil MERKEZ PANELİN gerçek boyutundan (`cqw`/`cqh`) gelir: panel
+ * `1fr 3fr 1fr` gridinin ortası olduğu için pencere genişliğiyle birlikte ölçeklenir.
+ *
+ * Kutu yüksekliği SABİTTİR (içeriğe göre değişmez): kutu uzayıp kısalırsa üstündeki sahne
+ * (flex:1) her olayda yeniden ölçeklenip "arka plan zıplıyor" şikâyeti geri gelir. Uzun metin
+ * parşömende kayar, 4 şıkta şık ızgarası kendi içinde kayar.
+ *
+ * App.css, olay-kutusu.css ve mobil-oyun.css'ten SONRA import edilir.
+ */
+@media (min-width: 768px) {
+  /* Merkez panel: kutu ölçüleri için boyut konteyneri (sahnenin eski cqw/cqh tekniğiyle aynı). */
+  .merkez-panel {
+    container-type: size;
+  }
+
+  /* ---- Olay kutusu: ölçüler ---- */
+  .olay-kutusu {
+    --kutu-w: min(94cqw, clamp(420px, 76cqw, 920px));
+    --cerceve-w: min(clamp(176px, 36cqh, 384px), 52cqw); /* oran 1.93:1 */
+    --cerceve-h: calc(var(--cerceve-w) / 1.93);
+    --cerceve-tasma: calc(var(--cerceve-h) * 0.42); /* kutunun üstüne, sahneye taşan pay */
+    --olay-kutusu-h: clamp(320px, 48cqh, 500px);
+
+    /* Çok kısa panelde sahne min-height'ına takılıp kutuyu kırpmasın diye kutu biraz küçülebilir. */
+    flex: 0 1 auto;
+    height: var(--olay-kutusu-h);
+    min-height: 240px;
+    margin: 0 auto clamp(0.5rem, 1.6cqh, 1rem);
+    z-index: 6; /* çerçeve sahnenin alt kenarına binerek üstüne taşar */
+  }
+
+  .olay-kutusu-ic {
+    gap: clamp(8px, 1.4cqh, 12px);
+    padding-right: clamp(14px, 2.2cqw, 28px);
+    padding-bottom: clamp(12px, 2.6cqh, 22px);
+    padding-left: clamp(14px, 2.2cqw, 28px);
+  }
+
+  .olay-kutusu .kose-tezhip {
+    width: 46px;
+    height: 46px;
+  }
+  .olay-kutusu .kt-sol-ust { top: -8px; left: -8px; }
+  .olay-kutusu .kt-sag-ust { top: -8px; right: -8px; }
+  .olay-kutusu .kt-sol-alt { bottom: -8px; left: -8px; }
+  .olay-kutusu .kt-sag-alt { bottom: -8px; right: -8px; }
+
+  .olay-cercevesi-rozet {
+    right: -16px;
+    bottom: -16px;
+    width: 44px;
+    height: 44px;
+    font-size: 1.45rem;
+  }
+
+  /* ---- Parşömen: PC okuma mesafesine göre büyük punto ---- */
+  .olay-parsomeni {
+    min-height: 64px;
+    padding: 10px clamp(14px, 2cqw, 26px);
+  }
+  .olay-parsomeni h2 {
+    margin-bottom: 6px;
+    font-size: clamp(1.1rem, 0.7rem + 0.55vw, 1.5rem);
+  }
+  .olay-parsomeni .olay-metni,
+  .olay-parsomeni .tur-ozeti {
+    font-size: clamp(1rem, 0.82rem + 0.35vw, 1.25rem);
+    line-height: 1.4;
+  }
+  .olay-parsomeni .tepki-notu {
+    font-size: 0.95rem;
+  }
+  .olay-parsomeni .etki-cip {
+    font-size: clamp(0.85rem, 0.75rem + 0.2vw, 1rem);
+    padding: 0.26rem 0.7rem;
+  }
+
+  /* ---- Ahşap şıklar ---- */
+  .olay-kutusu .secenekler {
+    gap: 10px;
+    max-height: 40cqh;
+  }
+  .olay-kutusu .secenek,
+  .olay-kutusu .olay-devam {
+    min-height: clamp(46px, 6cqh, 62px);
+    padding: 8px 14px;
+    font-size: clamp(0.92rem, 0.8rem + 0.25vw, 1.15rem);
+  }
+  .olay-kutusu .secenek.secenek-hafif {
+    padding: 8px 14px;
+  }
+  .olay-kutusu .secenek.secenek-hafif .secenek-metin {
+    font-size: 0.92em;
+  }
+  .olay-kutusu .secenek-kilit {
+    font-size: 0.82rem;
+  }
+  .olay-kutusu .olay-devam {
+    width: min(100%, 420px);
+    min-height: clamp(48px, 6.4cqh, 64px);
+    margin: 0 auto;
+    font-size: clamp(1rem, 0.85rem + 0.3vw, 1.25rem);
+  }
+
+  /* ---- Yoğun içerik (4 şık ya da uzun şık metni): çerçeve küçülür, punto bir kademe iner ---- */
+  .olay-kutusu.olay-kutusu-yogun {
+    --cerceve-w: min(clamp(150px, 29.5cqh, 316px), 44cqw);
+  }
+  .olay-kutusu-yogun .secenekler {
+    gap: 8px;
+  }
+  .olay-kutusu-yogun .secenek {
+    min-height: clamp(40px, 5cqh, 52px);
+    padding: 6px 12px;
+    font-size: clamp(0.86rem, 0.76rem + 0.2vw, 1rem);
+    line-height: 1.2;
+  }
+  .olay-kutusu-yogun .olay-parsomeni h2 {
+    font-size: clamp(1.02rem, 0.66rem + 0.5vw, 1.3rem);
+  }
+  .olay-kutusu-yogun .olay-parsomeni .olay-metni {
+    font-size: clamp(0.94rem, 0.78rem + 0.3vw, 1.12rem);
+    line-height: 1.32;
+  }
+
+  /* Terfi parıltısı kutuya uygulanır (ekran kapsayıcısı saydam olduğu için görünmezdi). */
+  .oyun-ekrani.buyuk-an-terfi .olay-kutusu {
+    animation: buyukAnAltin 1.6s ease-out;
+  }
+
+  /* ---- Yan sütunlardaki ahşap kısayol kartları (KisayolKartlari.tsx) ---- */
+  .kisayol-kartlari {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    width: 100%;
+    margin: 0 0 0.7rem;
+  }
+  .sol-panel .kisayol-kartlari {
+    margin: 0; /* sol panel zaten `gap` ile aralıklı */
+  }
+  .kisayol-karti {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    width: 100%;
+    padding: 0.45rem 0.75rem;
+    text-align: left;
+    font-family: var(--font-baslik);
+    font-size: clamp(0.72rem, 0.25vw + 0.6rem, 0.92rem);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #f4e0b0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+    background: var(--ahsap);
+    border: 2px solid var(--ahsap-kenar);
+    border-radius: 9px;
+    box-shadow: var(--ahsap-golge);
+  }
+  .kisayol-karti:hover:not(:disabled),
+  .kisayol-karti:focus-visible {
+    background: var(--ahsap);
+    border-color: var(--renk-altin-parlak);
+    box-shadow: var(--ahsap-golge);
+    filter: brightness(1.12);
+    transform: none;
+  }
+  .kisayol-karti:active:not(:disabled) {
+    transform: translateY(1px);
+    filter: brightness(0.92);
+  }
+  .kisayol-karti:focus-visible {
+    outline: 2px solid var(--renk-altin-parlak);
+    outline-offset: 2px;
+  }
+  .kisayol-karti:disabled {
+    opacity: 0.55;
+  }
+  .kisayol-karti-ikon {
+    flex: none;
+    width: 1.8rem;
+    font-size: 1.45rem;
+    line-height: 1;
+    text-align: center;
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.6));
+  }
+  .kisayol-karti-etiket {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+/* Dar sütunlar (küçük laptop / yatay tablet): etiket küçülür. */
+@media (min-width: 768px) and (max-width: 1099px) {
+  .kisayol-karti {
+    gap: 0.4rem;
+    padding: 0.4rem 0.5rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.03em;
+  }
+  .kisayol-karti-ikon {
+    width: 1.4rem;
+    font-size: 1.2rem;
+  }
+}
+
+/* Çok dar sütunlar (dikey tablet): yalnız ikon (ad `title`'da). */
+@media (min-width: 768px) and (max-width: 899px) {
+  .kisayol-karti {
+    justify-content: center;
+    padding: 0.4rem;
+  }
+  .kisayol-karti-etiket {
+    display: none;
+  }
+}
+
+@media (min-width: 768px) and (prefers-reduced-motion: reduce) {
+  .oyun-ekrani.buyuk-an-terfi .olay-kutusu {
+    animation: none;
+  }
+}

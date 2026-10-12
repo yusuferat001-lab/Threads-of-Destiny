@@ -1,13 +1,14 @@
-import { useLayoutEffect, useRef, type ReactNode, type RefObject } from 'react';
+import { useEffect, useLayoutEffect, useRef, type ReactNode, type RefObject } from 'react';
 import type { SenaryoResponse, SonucEtkisi } from '../types';
 import { useDil } from '../DilContext';
+import { bic } from '../i18n';
 import { EtkiCipleri } from './EtkiCipleri';
 import { SonucEfekti } from './SonucEfekti';
 import { KoseTezhibi } from './Suslemeler';
 import { olayResmiAdaylari, useOlayResmi } from '../olayResmi';
 
 /** Seçim sonrası gösterilecek her şey — App.tsx `SonEtki`'den türetilir (`ozet` önceden birleştirilmiş). */
-export interface MobilSonuc {
+export interface OlaySonucu {
   etki: SonucEtkisi;
   basarili: boolean;
   kategori: string;
@@ -19,17 +20,23 @@ export interface MobilSonuc {
   ikon: string;
 }
 
-interface MobilOlayKutusuProps {
+interface OlayKutusuProps {
   cag: string;
   ulke?: { savasta: boolean; vebada: boolean; ekonomi: string };
   senaryo: SenaryoResponse;
   /** null → soru durumu (başlık + metin + şıklar); dolu → sonuç durumu (çipler + özet + Devam Et). */
-  sonuc: MobilSonuc | null;
+  sonuc: OlaySonucu | null;
   tepkiModu: boolean;
   yukleniyor: boolean;
   sesKapali: boolean;
   onSecenek: (indeks: number) => void;
   onDevam: () => void;
+  /** PC (geniş hücreli) yerleşim: şık yoğunluk eşikleri geniş hücrelere göre ayarlanır. */
+  genis?: boolean;
+  /** Savaşta/Salgın etiketleri kutunun üstünde gösterilsin mi (PC'de sahne bunları kendi köşesinde çizer). */
+  etiketGoster?: boolean;
+  /** true ise 1-9 şık seçer, sonuç ekranında Enter/Boşluk "Devam Et" yapar (yalnız PC'de, pencere yokken). */
+  klavye?: boolean;
 }
 
 /**
@@ -59,14 +66,64 @@ function useKaydirmaIpucu(ref: RefObject<HTMLElement | null>, icerikAnahtari: st
 }
 
 /**
- * Mobil (≤767px) oyun ekranının olay kutusu — tam sayfa arka planın ÜSTÜNE oturan kadife panel:
- * üstte kutudan taşan çerçeveli olay resmi, altında parşömen (başlık + metin), en altta ahşap şıklar
- * (hep 2 sütun; tek kalan son şık tam genişlik). Şık altı ipuçları (💰❤️🙂) bilinçli olarak yok.
+ * PC için klavye kısayolları: rakam tuşları (1-9) ilgili şıkkı seçer, sonuç ekranında Enter/Boşluk
+ * "Devam Et" yapar. Rakamlar `e.code` ile okunur (AZERTY gibi düzenlerde `e.key` sembol verir).
+ * Yazı alanlarında ve odak bir düğme/bağlantıdayken Enter/Boşluk yok sayılır (yerel tıklama
+ * ikinci kez tetiklenmesin); tuş basılı tutulunca (`repeat`) tekrar etmez.
+ */
+function useKlavyeKisayollari({
+  etkin,
+  sonucMu,
+  secenekler,
+  yukleniyor,
+  onSecenek,
+  onDevam,
+}: {
+  etkin: boolean;
+  sonucMu: boolean;
+  secenekler: SenaryoResponse['secenekler'];
+  yukleniyor: boolean;
+  onSecenek: (indeks: number) => void;
+  onDevam: () => void;
+}) {
+  useEffect(() => {
+    if (!etkin) return;
+    const dinle = (e: KeyboardEvent) => {
+      if (e.defaultPrevented || e.repeat || e.ctrlKey || e.metaKey || e.altKey || yukleniyor) return;
+      const hedef = e.target instanceof HTMLElement ? e.target : null;
+      if (hedef?.closest('input, textarea, select, [contenteditable="true"]')) return;
+      if (sonucMu) {
+        if ((e.key === 'Enter' || e.key === ' ') && !hedef?.closest('button, a, [role="button"]')) {
+          e.preventDefault();
+          onDevam();
+        }
+        return;
+      }
+      const rakam = /^(?:Digit|Numpad)([1-9])$/.exec(e.code);
+      if (!rakam) return;
+      const indeks = Number(rakam[1]) - 1;
+      const secenek = secenekler[indeks];
+      if (secenek && !secenek.kilitli) {
+        e.preventDefault();
+        onSecenek(indeks);
+      }
+    };
+    window.addEventListener('keydown', dinle);
+    return () => window.removeEventListener('keydown', dinle);
+  }, [etkin, sonucMu, secenekler, yukleniyor, onSecenek, onDevam]);
+}
+
+/**
+ * Oyun ekranının olay kutusu (MOBİL ve PC ortak) — kadife panel: üstte kutudan taşan çerçeveli
+ * olay resmi, altında parşömen (başlık + metin), en altta ahşap şıklar (hep 2 sütun; tek kalan
+ * son şık tam genişlik). Şık altı ihtimal çipleri (💰❤️🙂) bilinçli olarak yok; seçimden sonra
+ * gerçek etki çipleri (`EtkiCipleri`) gösterilir.
  *
  * Çerçeve kaydırma kapsayıcısının DIŞINDA durur (kutunun kendisi `overflow` taşımaz) — taşan kısmı
- * kırpılmasın diye. Masaüstü düzeni bu bileşeni KULLANMAZ (bkz. App.tsx `merkez-alt`).
+ * kırpılmasın diye. Mobilde tam sayfa arka planın üstünde, PC'de merkez panelde sahnenin altında
+ * durur; ölçüler yerleşime göre CSS değişkenleriyle verilir (bkz. mobil-oyun.css, pc-olay-kutusu.css).
  */
-export function MobilOlayKutusu({
+export function OlayKutusu({
   cag,
   ulke,
   senaryo,
@@ -76,29 +133,45 @@ export function MobilOlayKutusu({
   sesKapali,
   onSecenek,
   onDevam,
-}: MobilOlayKutusuProps) {
+  genis = false,
+  etiketGoster = true,
+  klavye = false,
+}: OlayKutusuProps) {
   const { m } = useDil();
   const adaylar = olayResmiAdaylari(senaryo.kategori, cag, senaryo.resim);
   const govdeRef = useRef<HTMLDivElement>(null);
   useKaydirmaIpucu(govdeRef, `${sonuc ? 's' : 'q'}|${tepkiModu ? 't' : ''}|${senaryo.olay_basligi}|${sonuc?.ozet ?? ''}`);
-  // Yoğun içerik: dar 2 sütunlu hücrelerde ~17 karakter/satır sığar. 4 şık ya da uzun şık metni
-  // (3 şıkta >44, 2 şıkta >70 karakter; kilit nedeni de yer tutar) varsa çerçeve küçülür, punto iner.
+  useKlavyeKisayollari({
+    etkin: klavye,
+    sonucMu: sonuc !== null,
+    secenekler: senaryo.secenekler,
+    yukleniyor,
+    onSecenek,
+    onDevam,
+  });
+  // Yoğun içerik. Mobilde dar 2 sütunlu hücrelerde ~17 karakter/satır sığar: 4 şık ya da uzun şık
+  // metni (3 şıkta >44, 2 şıkta >70 karakter; kilit nedeni de yer tutar) varsa çerçeve küçülür,
+  // punto iner. PC'de hücreler ~35 karakter/satır alır: yalnız 4 şık ya da >90 karakter yoğundur.
   const enUzunSecenek = Math.max(
     0,
     ...senaryo.secenekler.map((s) => s.metin.length + (s.kilitli && s.kilit_nedeni ? 18 : 0)),
   );
   const yogun =
     !sonuc &&
-    (senaryo.secenekler.length >= 4 ||
-      (senaryo.secenekler.length === 3 && enUzunSecenek > 44) ||
-      enUzunSecenek > 70);
+    (genis
+      ? senaryo.secenekler.length >= 4 || enUzunSecenek > 90
+      : senaryo.secenekler.length >= 4 ||
+        (senaryo.secenekler.length === 3 && enUzunSecenek > 44) ||
+        enUzunSecenek > 70);
 
   return (
     <section className={`olay-kutusu${sonuc ? ' olay-kutusu-sonuc' : ''}${yogun ? ' olay-kutusu-yogun' : ''}`}>
-      <div className="olay-kutusu-etiketler">
-        {ulke?.savasta && <span className="bolge-sahnesi-etiket bolge-sahnesi-tehlike">{m.usSavasta}</span>}
-        {ulke?.vebada && <span className="bolge-sahnesi-etiket bolge-sahnesi-tehlike">{m.usSalgin}</span>}
-      </div>
+      {etiketGoster && (
+        <div className="olay-kutusu-etiketler">
+          {ulke?.savasta && <span className="bolge-sahnesi-etiket bolge-sahnesi-tehlike">{m.usSavasta}</span>}
+          {ulke?.vebada && <span className="bolge-sahnesi-etiket bolge-sahnesi-tehlike">{m.usSalgin}</span>}
+        </div>
+      )}
 
       <OlayCercevesi key={adaylar.join('|')} adaylar={adaylar} emoji={senaryo.gorsel} yukleniyor={yukleniyor}>
         {sonuc && (
@@ -171,6 +244,7 @@ export function MobilOlayKutusu({
                   .join(' ')}
                 disabled={yukleniyor || secenek.kilitli}
                 onClick={() => onSecenek(i)}
+                title={klavye && !secenek.kilitli && i < 9 ? bic(m.okKisayol, i + 1) : undefined}
               >
                 <span className="secenek-metin">
                   {secenek.kilitli ? '🔒 ' : ''}
