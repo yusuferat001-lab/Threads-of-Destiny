@@ -131,7 +131,7 @@ function saglikDetayi(state: CharacterState): GostergeDetayTaban {
   if (state.mutluluk < KRONIK_MUTLULUK_ESIGI) {
     etkenler.push({
       ikon: "😞",
-      metin: T(dil, "Mutluluğun {0} altında: sağlığın da aşınıyor ({1}/yıl).", [KRONIK_MUTLULUK_ESIGI, isaretli(-1)]),
+      metin: T(dil, "Mutluluğun {0} altında: sağlığın da aşınıyor, {1}/yıl.", [KRONIK_MUTLULUK_ESIGI, isaretli(-1)]),
       yon: "kotu",
     });
   }
@@ -155,8 +155,8 @@ function saglikDetayi(state: CharacterState): GostergeDetayTaban {
     deger: state.saglik,
     etkenler,
     yukselt: [
-      T(dil, "Daha iyi bir ev ve yemek düzenine geç (Gelir & Gider ekranı)."),
-      T(dil, "Mağazadan şifa eşyası (ilaç, erzak) al ve envanterden kullan."),
+      T(dil, "Gelir & Gider ekranından daha iyi bir ev ve yemek düzenine geç."),
+      T(dil, "Mağazadan şifa eşyası al ve envanterden kullan."),
       T(dil, "Dinlenme, şifa ve iyileşme sunan olay seçeneklerini seç."),
       T(dil, "Borçtan kurtul; borç her yıl sağlığını yer."),
     ],
@@ -212,7 +212,7 @@ function mutlulukDetayi(state: CharacterState): GostergeDetayTaban {
   if (state.saglik < KRONIK_SAGLIK_ESIGI) {
     etkenler.push({
       ikon: "🤒",
-      metin: T(dil, "Sağlığın {0} altında: moralin aşınıyor ({1}/yıl).", [KRONIK_SAGLIK_ESIGI, isaretli(-1.5)]),
+      metin: T(dil, "Sağlığın {0} altında: moralin aşınıyor, {1}/yıl.", [KRONIK_SAGLIK_ESIGI, isaretli(-1.5)]),
       yon: "kotu",
     });
   }
@@ -222,13 +222,13 @@ function mutlulukDetayi(state: CharacterState): GostergeDetayTaban {
     deger: state.mutluluk,
     etkenler,
     yukselt: [
-      T(dil, "Evlen ve eşinle (hediye, zaman, gezi) arayı iyi tut; çocuklarınla da ilgilen (Aile ekranı)."),
+      T(dil, "Evlen; eşinle ve çocuklarınla Aile ekranından ilgilen."),
       T(dil, "Sosyalleş: meyhane, pazar ve mekân olayları moral verir."),
       T(dil, "Daha rahat bir ev ve keyifli bir sofra seç."),
       T(dil, "Borçlarını öde; borç her yıl moralini düşürür."),
     ],
     dusur: [
-      T(dil, "Yalnızlık, kötü evlilik, borç ve kayıplar (eş/çocuk ölümü) moralini düşürür."),
+      T(dil, "Yalnızlık, kötü evlilik, borç ve sevdiklerini kaybetmek moralini düşürür."),
       T(dil, "Ahlaksız ya da sert seçimler çoğu zaman moral bedeli taşır."),
     ],
   };
@@ -241,7 +241,7 @@ function ahlakDetayi(state: CharacterState): GostergeDetayTaban {
   if (state.meslek === "Tüccar") {
     etkenler.push({
       ikon: "🪙",
-      metin: T(dil, "Tüccarlık: kazançlı yıllar ahlakı yavaşça aşındırır, zor yıllar güçlendirir (yılda en fazla 0.4)."),
+      metin: T(dil, "Tüccarlık: kazançlı yıllar ahlakı yavaşça aşındırır, zor yıllar güçlendirir."),
       yon: "notr",
     });
   }
@@ -312,7 +312,7 @@ function sohretDetayi(state: CharacterState): GostergeDetayTaban {
     etkenler,
     yukselt: [
       T(dil, "Cesur, gösterişli ve topluma açık olay seçeneklerini seç."),
-      T(dil, "Mağazadan lüks eşya al (tablo, mücevher) ve daha görkemli bir eve taşın."),
+      T(dil, "Mağazadan lüks eşya al ve daha görkemli bir eve taşın."),
       T(dil, "Rütbeni yükselt; mesleğinde başarılı olmak adını duyurur."),
     ],
     dusur: [
@@ -358,7 +358,7 @@ function aranmaDetayi(state: CharacterState): GostergeDetayTaban {
   }
   etkenler.push({
     ikon: "🗡️",
-    metin: T(dil, "Para kazandıran ahlaksız seçimler ve karanlık işler aranmanı artırır (suçun büyüklüğüne göre)."),
+    metin: T(dil, "Para kazandıran ahlaksız seçimler ve karanlık işler aranmanı artırır."),
     yon: "kotu",
   });
   if (state.etiketler.includes("hapiste")) {
@@ -393,9 +393,9 @@ function aranmaDetayi(state: CharacterState): GostergeDetayTaban {
       T(dil, "Zar masası, Üç Kağıtçı ve karaborsa deposu da yavaş yavaş artırır."),
     ],
     dusur: [
-      T(dil, "Aranma olaylarındaki kefaret / rüşvet seçeneklerini seç: aranmayı belirgin düşürür (para gerekir)."),
+      T(dil, "Aranma olaylarındaki kefaret ya da rüşvet seçeneklerini seç."),
       T(dil, "Büyük baskında 'teslim ol' ya da 'kaç' sonuçları aranmayı kesin bir seviyeye çeker."),
-      T(dil, "Yönetim ekranında ilişkin 80'in üstündeyse 'sicil temizliği' iste (uzun bekleme süreli)."),
+      T(dil, "Yönetim ekranında ilişkin 80'in üstündeyse 'sicil temizliği' iste."),
       T(dil, "Yönetimle ilişkin 70'in üstündeyse aranman yılda biraz kendiliğinden düşer."),
       T(dil, "Suç işlemeyi bırak: zamanla çok yavaş soğur."),
     ],
@@ -415,7 +415,7 @@ function paraDetayi(state: CharacterState): GostergeDetayTaban {
   const toplamGider = g.yasam + g.konut + g.ekip + g.evcilHayvan + g.savasVergisi;
   etkenler.push({
     ikon: "🧾",
-    metin: T(dil, "Yıllık giderin (yemek, kira, ekip, vergi): {0} {1}", [Math.round(toplamGider), state.para_birimi]),
+    metin: T(dil, "Yıllık giderin: {0} {1}", [Math.round(toplamGider), state.para_birimi]),
     yon: "kotu",
   });
   if (state.para < 0) {
@@ -429,7 +429,7 @@ function paraDetayi(state: CharacterState): GostergeDetayTaban {
     });
   }
   if (state.mulkler.length > 0) {
-    etkenler.push({ ikon: "🏘️", metin: T(dil, "Mülklerin her yıl kira/getiri sağlar (ve zaman zaman bakım masrafı çıkarır)."), yon: "notr" });
+    etkenler.push({ ikon: "🏘️", metin: T(dil, "Mülklerin her yıl kira ve getiri sağlar."), yon: "notr" });
   }
   for (const d of dunyaFinansEtkileri(state)) etkenler.push({ ikon: d.ikon, metin: d.metin, yon: "notr" });
 
@@ -440,7 +440,7 @@ function paraDetayi(state: CharacterState): GostergeDetayTaban {
     yukselt: [
       T(dil, "Rütbeni yükselt: her rütbe maaşına prim ekler."),
       T(dil, "Ahlak, şöhret ve mutluluğunu yüksek tut: itibar maaşını yaklaşık %12'ye kadar artırır."),
-      T(dil, "Yatırım ekranından mülk al (tarla, han, demirci, kervan)."),
+      T(dil, "Yatırım ekranından mülk al."),
       T(dil, "Kazançlı olay seçeneklerini seç; meslek kategorisindeki başarılar daha çok kazandırır."),
     ],
     dusur: [
