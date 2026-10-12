@@ -21,9 +21,9 @@
   /* ---- Olay kutusu: ölçüler ---- */
   .olay-kutusu {
     --kutu-w: min(94cqw, clamp(420px, 76cqw, 920px));
-    --cerceve-w: min(clamp(176px, 36cqh, 384px), 52cqw); /* oran 1.93:1 */
+    --cerceve-w: min(clamp(220px, 50cqh, 560px), 62cqw); /* oran 1.93:1 */
     --cerceve-h: calc(var(--cerceve-w) / 1.93);
-    --cerceve-tasma: calc(var(--cerceve-h) * 0.42); /* kutunun üstüne, sahneye taşan pay */
+    --cerceve-tasma: calc(var(--cerceve-h) * 0.7); /* kutunun üstüne, sahneye taşan pay (büyük resim kutuda az yer kaplasın) */
     --olay-kutusu-h: clamp(320px, 48cqh, 500px);
 
     /* Çok kısa panelde sahne min-height'ına takılıp kutuyu kırpmasın diye kutu biraz küçülebilir. */
@@ -109,7 +109,7 @@
 
   /* ---- Yoğun içerik (4 şık ya da uzun şık metni): çerçeve küçülür, punto bir kademe iner ---- */
   .olay-kutusu.olay-kutusu-yogun {
-    --cerceve-w: min(clamp(150px, 29.5cqh, 316px), 44cqw);
+    --cerceve-w: min(clamp(190px, 42cqh, 460px), 52cqw);
   }
   .olay-kutusu-yogun .secenekler {
     gap: 8px;
