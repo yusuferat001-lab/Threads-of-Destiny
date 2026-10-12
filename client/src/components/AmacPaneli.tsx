@@ -23,7 +23,6 @@ const TR = {
   neYapmali: 'Ne yapmalısın?',
   ilerleme: 'İlerleme',
   bonusEtiketi: 'Skor bonusu',
-  herhangi: 'Hedefe bir an bile ulaşman yeter; ulaştığın an kalıcı olarak kilitlenir.',
   olumdeIpucu: 'Yalnızca öldüğün andaki duruma bakılır: hayatının sonunda bu koşulu sağlıyor olmalısın.',
   tamamIpucu: 'Bu amacı tamamladın.',
   kapat: 'Kapat',
@@ -41,7 +40,6 @@ const EN: typeof TR = {
   neYapmali: 'What to do',
   ilerleme: 'Progress',
   bonusEtiketi: 'Score bonus',
-  herhangi: 'Reaching the target even for a moment is enough; it locks in permanently.',
   olumdeIpucu: 'Only your state at the moment of death counts: you must meet this condition at the end of your life.',
   tamamIpucu: 'You completed this goal.',
   kapat: 'Close',
@@ -92,13 +90,13 @@ export function AmacPaneli({ durum, varyant = 'panel' }: AmacPaneliProps) {
               </div>
             </div>
           )}
-          <p className="amac-detay-ipucu">
-            {seciliAmac.tamamlandi
-              ? `${t.tamamIpucu}${seciliAmac.tamamlanmaYili ? ` (${seciliAmac.tamamlanmaYili})` : ''}`
-              : seciliAmac.kontrolAni === 'olumde'
-                ? t.olumdeIpucu
-                : t.herhangi}
-          </p>
+          {(seciliAmac.tamamlandi || seciliAmac.kontrolAni === 'olumde') && (
+            <p className="amac-detay-ipucu">
+              {seciliAmac.tamamlandi
+                ? `${t.tamamIpucu}${seciliAmac.tamamlanmaYili ? ` (${seciliAmac.tamamlanmaYili})` : ''}`
+                : t.olumdeIpucu}
+            </p>
+          )}
           <button type="button" onClick={() => setSecili(null)}>
             {t.kapat}
           </button>
