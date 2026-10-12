@@ -145,7 +145,7 @@ function saglikDetayi(state: CharacterState): GostergeDetayTaban {
   if (state.saglik < KRONIK_SAGLIK_ESIGI) {
     etkenler.push({
       ikon: "⚠️",
-      metin: T(dil, "Sağlığın {0} altında: riskli seçimlerin ölüm şansı büyür ve moralin düşer.", [KRONIK_SAGLIK_ESIGI]),
+      metin: T(dil, "Sağlığın {0} altında: riskli seçimlerde ölüm şansın büyür.", [KRONIK_SAGLIK_ESIGI]),
       yon: "kotu",
     });
   }
@@ -185,7 +185,7 @@ function mutlulukDetayi(state: CharacterState): GostergeDetayTaban {
     } else if (state.es_puani < KOTU_EVLILIK_ESIGI) {
       etkenler.push({
         ikon: "💢",
-        metin: T(dil, "Eşinle sürekli kavga ediyorsun: moralin her yıl aşınıyor."),
+        metin: T(dil, "Eşinle sürekli kavga: moralin aşınıyor."),
         yon: "kotu",
       });
     } else if (state.es_puani >= IYI_EVLILIK_ESIGI) {
@@ -228,8 +228,8 @@ function mutlulukDetayi(state: CharacterState): GostergeDetayTaban {
       T(dil, "Borçlarını öde; borç her yıl moralini düşürür."),
     ],
     dusur: [
-      T(dil, "Yalnızlık, kötü evlilik, borç ve sevdiklerini kaybetmek moralini düşürür."),
-      T(dil, "Ahlaksız ya da sert seçimler çoğu zaman moral bedeli taşır."),
+      T(dil, "Yalnızlık, kötü evlilik, borç ve kayıplar moralini düşürür."),
+      T(dil, "Ahlaksız ya da sert seçimler moral götürür."),
     ],
   };
 }
@@ -241,7 +241,7 @@ function ahlakDetayi(state: CharacterState): GostergeDetayTaban {
   if (state.meslek === "Tüccar") {
     etkenler.push({
       ikon: "🪙",
-      metin: T(dil, "Tüccarlık: kazançlı yıllar ahlakı yavaşça aşındırır, zor yıllar güçlendirir."),
+      metin: T(dil, "Tüccarlık: kazançlı yıllar ahlakı aşındırır, zor yıllar güçlendirir."),
       yon: "notr",
     });
   }
@@ -261,7 +261,7 @@ function ahlakDetayi(state: CharacterState): GostergeDetayTaban {
   if (etkenler.length === 0) {
     etkenler.push({
       ikon: "ℹ️",
-      metin: T(dil, "Ahlak ağırlıkla olay seçimlerinle değişir; yıllık pasif bir etken yok."),
+      metin: T(dil, "Ahlak ağırlıkla seçimlerinle değişir."),
       yon: "notr",
     });
   }
@@ -273,10 +273,10 @@ function ahlakDetayi(state: CharacterState): GostergeDetayTaban {
     yukselt: [
       T(dil, "Yardım, sadaka ve dürüstlük içeren olay seçeneklerini seç."),
       T(dil, "Sosyalleş ekranından sadaka ver."),
-      T(dil, "Din Adamı rütbesi için ahlak gerekir; ahlakın yüksekse maaş itibarın da artar."),
+      T(dil, "Din Adamı rütbesi ahlak ister; yüksek ahlak maaşı da artırır."),
     ],
     dusur: [
-      T(dil, "Para karşılığı ahlaki taviz veren seçenekler ahlakını düşürür ve aranmanı artırır."),
+      T(dil, "Para karşılığı ahlaki taviz ahlakını düşürür, aranmanı artırır."),
       T(dil, "Karanlık işler, soygun ve şiddet ahlakı sert düşürür."),
     ],
   };
@@ -301,7 +301,7 @@ function sohretDetayi(state: CharacterState): GostergeDetayTaban {
   if (etkenler.length === 0) {
     etkenler.push({
       ikon: "ℹ️",
-      metin: T(dil, "Şöhret ağırlıkla olay seçimlerinle değişir; yıllık pasif bir etken yok."),
+      metin: T(dil, "Şöhret ağırlıkla seçimlerinle değişir."),
       yon: "notr",
     });
   }
@@ -317,7 +317,7 @@ function sohretDetayi(state: CharacterState): GostergeDetayTaban {
     ],
     dusur: [
       T(dil, "Rezillik, hapis ve ödenmeyen borçlar şöhretini düşürür."),
-      T(dil, "Bakımsız bir ev ve yetersiz yemek yıllar içinde adını aşındırır."),
+      T(dil, "Bakımsız ev ve yetersiz yemek adını aşındırır."),
     ],
   };
 }
@@ -356,11 +356,6 @@ function aranmaDetayi(state: CharacterState): GostergeDetayTaban {
       yon: "kotu",
     });
   }
-  etkenler.push({
-    ikon: "🗡️",
-    metin: T(dil, "Para kazandıran ahlaksız seçimler ve karanlık işler aranmanı artırır."),
-    yon: "kotu",
-  });
   if (state.etiketler.includes("hapiste")) {
     etkenler.push({
       ikon: "⛓️",
@@ -378,7 +373,7 @@ function aranmaDetayi(state: CharacterState): GostergeDetayTaban {
     s >= 75
       ? T(dil, "Azılı suçlu: tutuklanırsan 9-12 yıl ceza.")
       : s >= 50
-        ? T(dil, "Baskın bandı: tutuklanırsan 7-9 yıl ceza; ev/iş yeri baskını neredeyse kaçınılmaz.")
+        ? T(dil, "Baskın bandı: tutuklanırsan 7-9 yıl ceza.")
         : s >= 25
           ? T(dil, "Yakalanma bandı: tutuklanırsan 4-7 yıl ceza.")
           : T(dil, "Rutin bant: tutuklanırsan 2-4 yıl ceza.");
@@ -389,15 +384,14 @@ function aranmaDetayi(state: CharacterState): GostergeDetayTaban {
     deger: state.suc_seviyesi,
     etkenler,
     yukselt: [
-      T(dil, "Para karşılığı ahlaki taviz veren seçenekler ve karanlık işler aranmayı artırır."),
+      T(dil, "Para kazandıran ahlaksız seçimler ve karanlık işler aranmanı artırır."),
       T(dil, "Zar masası, Üç Kağıtçı ve karaborsa deposu da yavaş yavaş artırır."),
     ],
     dusur: [
       T(dil, "Aranma olaylarındaki kefaret ya da rüşvet seçeneklerini seç."),
-      T(dil, "Büyük baskında 'teslim ol' ya da 'kaç' sonuçları aranmayı kesin bir seviyeye çeker."),
+      T(dil, "Büyük baskında 'teslim ol' ya da 'kaç' sonuçları aranmanı düşürür."),
       T(dil, "Yönetim ekranında ilişkin 80'in üstündeyse 'sicil temizliği' iste."),
-      T(dil, "Yönetimle ilişkin 70'in üstündeyse aranman yılda biraz kendiliğinden düşer."),
-      T(dil, "Suç işlemeyi bırak: zamanla çok yavaş soğur."),
+      T(dil, "Yönetimle ilişkin 70'in üstündeyse aranman yılda biraz düşer."),
     ],
   };
 }
@@ -439,9 +433,9 @@ function paraDetayi(state: CharacterState): GostergeDetayTaban {
     etkenler,
     yukselt: [
       T(dil, "Rütbeni yükselt: her rütbe maaşına prim ekler."),
-      T(dil, "Ahlak, şöhret ve mutluluğunu yüksek tut: itibar maaşını yaklaşık %12'ye kadar artırır."),
+      T(dil, "Ahlak, şöhret ve mutluluğunu yüksek tut: itibar maaşını artırır."),
       T(dil, "Yatırım ekranından mülk al."),
-      T(dil, "Kazançlı olay seçeneklerini seç; meslek kategorisindeki başarılar daha çok kazandırır."),
+      T(dil, "Kazançlı olay seçeneklerini seç; mesleğindeki başarılar daha çok kazandırır."),
     ],
     dusur: [
       T(dil, "Daha pahalı bir ev ve sofra giderini artırır."),

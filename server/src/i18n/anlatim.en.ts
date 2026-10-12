@@ -795,8 +795,8 @@ export const ANLATIM_EN: Record<string, string> = {
     "Happiness below {0}: your health is eroding too, {1}/yr.",
   "Vebaya yakalandın: ölüm riskin %{0}.":
     "You caught the plague: your death risk is {0}%.",
-  "Sağlığın {0} altında: riskli seçimlerin ölüm şansı büyür ve moralin düşer.":
-    "Health below {0}: risky choices carry a bigger chance of death and your morale sinks.",
+  "Sağlığın {0} altında: riskli seçimlerde ölüm şansın büyür.":
+    "Health below {0}: risky choices carry a bigger chance of death.",
   "Gelir & Gider ekranından daha iyi bir ev ve yemek düzenine geç.":
     "Switch to a better home and diet on the Income & Expenses screen.",
   "Mağazadan şifa eşyası al ve envanterden kullan.":
@@ -811,8 +811,8 @@ export const ANLATIM_EN: Record<string, string> = {
     "Health melts away during famine, plague and war.",
   "Yalnızlık: {0}/yıl":
     "Loneliness: {0}/yr",
-  "Eşinle sürekli kavga ediyorsun: moralin her yıl aşınıyor.":
-    "You keep fighting with your spouse: your morale wears down every year.",
+  "Eşinle sürekli kavga: moralin aşınıyor.":
+    "Constant fights with your spouse: your morale wears down.",
   "Mutlu evlilik: {0}/yıl":
     "Happy marriage: {0}/yr",
   "Çocuklarınla arası bozuk: moralin düşüyor.":
@@ -829,36 +829,36 @@ export const ANLATIM_EN: Record<string, string> = {
     "Choose a more comfortable home and a pleasant table.",
   "Borçlarını öde; borç her yıl moralini düşürür.":
     "Pay off your debts; debt drains your morale every year.",
-  "Yalnızlık, kötü evlilik, borç ve sevdiklerini kaybetmek moralini düşürür.":
-    "Loneliness, a bad marriage, debt and losing loved ones bring your morale down.",
-  "Ahlaksız ya da sert seçimler çoğu zaman moral bedeli taşır.":
-    "Immoral or harsh choices often carry a morale cost.",
-  "Tüccarlık: kazançlı yıllar ahlakı yavaşça aşındırır, zor yıllar güçlendirir.":
-    "Merchant life: profitable years slowly erode morality, hard years strengthen it.",
+  "Yalnızlık, kötü evlilik, borç ve kayıplar moralini düşürür.":
+    "Loneliness, a bad marriage, debt and losses bring your morale down.",
+  "Ahlaksız ya da sert seçimler moral götürür.":
+    "Immoral or harsh choices cost morale.",
+  "Tüccarlık: kazançlı yıllar ahlakı aşındırır, zor yıllar güçlendirir.":
+    "Merchant life: profitable years erode morality, hard years strengthen it.",
   "Karaborsa deposu: {0}/yıl":
     "Black-market depot: {0}/yr",
   "Ayyaşlık damgası ahlakını bir kez düşürdü.":
     "The drunkard stigma cut your morality once.",
   "Geçmişteki suçların ahlakında iz bıraktı.":
     "Past crimes have left a mark on your morality.",
-  "Ahlak ağırlıkla olay seçimlerinle değişir; yıllık pasif bir etken yok.":
-    "Morality mostly changes through your event choices; there is no yearly passive factor.",
+  "Ahlak ağırlıkla seçimlerinle değişir.":
+    "Morality mostly changes through your choices.",
   "Yardım, sadaka ve dürüstlük içeren olay seçeneklerini seç.":
     "Pick event options involving help, charity and honesty.",
   "Sosyalleş ekranından sadaka ver.":
     "Give alms from the Socialize screen.",
-  "Din Adamı rütbesi için ahlak gerekir; ahlakın yüksekse maaş itibarın da artar.":
-    "Clergy ranks require morality; high morality also raises your salary reputation.",
-  "Para karşılığı ahlaki taviz veren seçenekler ahlakını düşürür ve aranmanı artırır.":
-    "Options that trade morals for money lower your morality and raise your wanted level.",
+  "Din Adamı rütbesi ahlak ister; yüksek ahlak maaşı da artırır.":
+    "Clergy ranks need morality; high morality also raises your pay.",
+  "Para karşılığı ahlaki taviz ahlakını düşürür, aranmanı artırır.":
+    "Trading morals for money lowers your morality and raises your wanted level.",
   "Karanlık işler, soygun ve şiddet ahlakı sert düşürür.":
     "Dark deeds, robbery and violence cut morality sharply.",
   "Din adamı saygınlığı: {0}/yıl":
     "Clergy standing: {0}/yr",
   "Tefeci taksidi aksattın: adın çıkıyor.":
     "You missed a loan-shark payment: word is getting around.",
-  "Şöhret ağırlıkla olay seçimlerinle değişir; yıllık pasif bir etken yok.":
-    "Fame mostly changes through your event choices; there is no yearly passive factor.",
+  "Şöhret ağırlıkla seçimlerinle değişir.":
+    "Fame mostly changes through your choices.",
   "Cesur, gösterişli ve topluma açık olay seçeneklerini seç.":
     "Pick bold, showy and public-facing event options.",
   "Mağazadan lüks eşya al ve daha görkemli bir eve taşın.":
@@ -867,8 +867,8 @@ export const ANLATIM_EN: Record<string, string> = {
     "Raise your rank; succeeding in your trade makes a name for you.",
   "Rezillik, hapis ve ödenmeyen borçlar şöhretini düşürür.":
     "Scandal, prison and unpaid debts lower your fame.",
-  "Bakımsız bir ev ve yetersiz yemek yıllar içinde adını aşındırır.":
-    "A shabby home and poor food erode your name over the years.",
+  "Bakımsız ev ve yetersiz yemek adını aşındırır.":
+    "A shabby home and poor food erode your name.",
   "Zamanla çok yavaş soğur: {0}/yıl":
     "It cools off very slowly with time: {0}/yr",
   "Temizsin; kimse seni aramıyor.":
@@ -885,26 +885,22 @@ export const ANLATIM_EN: Record<string, string> = {
     "You are a fugitive: your wanted level is very high.",
   "Azılı suçlu: tutuklanırsan 9-12 yıl ceza.":
     "Hardened criminal: if arrested you face 9-12 years.",
-  "Baskın bandı: tutuklanırsan 7-9 yıl ceza; ev/iş yeri baskını neredeyse kaçınılmaz.":
-    "Raid band: if arrested you face 7-9 years; a raid on your home or workplace is almost certain.",
+  "Baskın bandı: tutuklanırsan 7-9 yıl ceza.":
+    "Raid band: if arrested you face 7-9 years.",
   "Yakalanma bandı: tutuklanırsan 4-7 yıl ceza.":
     "Capture band: if arrested you face 4-7 years.",
   "Rutin bant: tutuklanırsan 2-4 yıl ceza.":
     "Routine band: if arrested you face 2-4 years.",
-  "Para karşılığı ahlaki taviz veren seçenekler ve karanlık işler aranmayı artırır.":
-    "Options that trade morals for money, and dark deeds, raise your wanted level.",
   "Zar masası, Üç Kağıtçı ve karaborsa deposu da yavaş yavaş artırır.":
     "The dice table, Three-Card Monte and a black-market depot raise it gradually too.",
   "Aranma olaylarındaki kefaret ya da rüşvet seçeneklerini seç.":
     "Pick the bail or bribe options in wanted-level events.",
-  "Büyük baskında 'teslim ol' ya da 'kaç' sonuçları aranmayı kesin bir seviyeye çeker.":
-    "In a major raid, the 'surrender' or 'flee' outcomes set your wanted level to a fixed value.",
+  "Büyük baskında 'teslim ol' ya da 'kaç' sonuçları aranmanı düşürür.":
+    "In a major raid, the 'surrender' or 'flee' outcomes lower your wanted level.",
   "Yönetim ekranında ilişkin 80'in üstündeyse 'sicil temizliği' iste.":
     "If your relationship is above 80 on the Authorities screen, ask for a 'record cleanup'.",
-  "Yönetimle ilişkin 70'in üstündeyse aranman yılda biraz kendiliğinden düşer.":
-    "If your relationship with the authorities is above 70, your wanted level drops a little each year by itself.",
-  "Suç işlemeyi bırak: zamanla çok yavaş soğur.":
-    "Stop committing crimes: it cools off very slowly over time.",
+  "Yönetimle ilişkin 70'in üstündeyse aranman yılda biraz düşer.":
+    "If your relationship with the authorities is above 70, your wanted level drops a little each year.",
   "Yıllık maaşın: {0} {1}":
     "Your yearly salary: {0} {1}",
   "Yıllık giderin: {0} {1}":
@@ -917,12 +913,12 @@ export const ANLATIM_EN: Record<string, string> = {
     "Your properties yield rent and income each year.",
   "Rütbeni yükselt: her rütbe maaşına prim ekler.":
     "Raise your rank: each rank adds a premium to your salary.",
-  "Ahlak, şöhret ve mutluluğunu yüksek tut: itibar maaşını yaklaşık %12'ye kadar artırır.":
-    "Keep morality, fame and happiness high: reputation can raise your salary by up to about 12%.",
+  "Ahlak, şöhret ve mutluluğunu yüksek tut: itibar maaşını artırır.":
+    "Keep morality, fame and happiness high: reputation raises your salary.",
   "Yatırım ekranından mülk al.":
     "Buy property from the Investments screen.",
-  "Kazançlı olay seçeneklerini seç; meslek kategorisindeki başarılar daha çok kazandırır.":
-    "Pick profitable event options; successes in your own trade category pay more.",
+  "Kazançlı olay seçeneklerini seç; mesleğindeki başarılar daha çok kazandırır.":
+    "Pick profitable event options; successes in your own trade pay more.",
   "Daha pahalı bir ev ve sofra giderini artırır.":
     "A pricier home and table raise your expenses.",
   "Kumar, rüşvet, bağış ve talepleri kabul etmek paranı eritir.":
