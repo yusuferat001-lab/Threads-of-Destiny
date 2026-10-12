@@ -16,6 +16,12 @@ export interface UlkeKrizi {
 }
 
 /** Tekrarlayan büyük savaş mekaniğinin aktif parametreleri (bkz. server §27); savaş yokken CharacterState.buyuk_savas null'dur. */
+export interface UlkeGecmisiKaydi {
+  yil: number;
+  tur: 'savas_basladi' | 'savas_bitti' | 'veba_basladi' | 'veba_bitti' | 'kriz_basladi' | 'kriz_bitti';
+  ayrinti?: string;
+}
+
 export interface BuyukSavas {
   dusman: string;
   baslangicYili: number;
@@ -265,6 +271,7 @@ export interface CharacterState {
   veba_hayatta_kaldi: boolean;
   /** Hapisten fiziksel bir kaçışla (rüşvet/af değil) çıktıysa true (bir kereliğine, skor bonusu). */
   hapis_basarili_kacis: boolean;
+  ulke_gecmisi: UlkeGecmisiKaydi[];
   kucuk_kriz_sonraki_yil: number;
   gida_fiyat_sok_bitis_yili: number | null;
   /** Ömürde bir kez borçtayken alınan kilise/eş dost yardımı kullanıldı mı. */
@@ -878,6 +885,23 @@ export interface ScoreKaydi {
   /** Gerçek skor çarpanı (ör. 1.5/2/3/3.5/5) — eski kayıtlarda null. */
   amac_carpani: number | null;
   createdAt: string;
+}
+
+/** "Yıl" penceresi: son yıllarda ülkende ve dünyada olanlar (GET /:id/dunya-gecmisi). */
+export interface DunyaMaddesi {
+  yil: number;
+  yilSon?: number;
+  suruyor?: boolean;
+  ikon: string;
+  metin: string;
+}
+
+export interface DunyaGecmisi {
+  yil: number;
+  bolge: string;
+  baslangicYili: number;
+  ulke: DunyaMaddesi[];
+  dunya: DunyaMaddesi[];
 }
 
 /** Üst şerit gösterge detay penceresi (GET /:id/gosterge/:stat). */

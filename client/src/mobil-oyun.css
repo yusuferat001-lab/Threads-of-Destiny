@@ -85,7 +85,7 @@
     --cerceve-h: calc(var(--cerceve-w) / 1.93);
     --cerceve-tasma: calc(var(--cerceve-h) * 0.4);
     /* Görünür alan − (üst şerit + rozet satırı + alt gezinme + boşluk + çerçeve taşması); en az 290px. */
-    --olay-kutusu-h: clamp(290px, calc(100dvh - 314px), 360px);
+    --olay-kutusu-h: clamp(290px, calc(100dvh - 344px), 360px);
   }
 
   .oyun-ekrani-mobil > .ust-serit {
