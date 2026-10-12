@@ -11,6 +11,7 @@ import type {
   FinansOzeti,
   GostergeStat,
   GostergeDetayi,
+  DunyaGecmisi,
   YatirimSonucu,
   KotuIsKarti,
   KotuIsSonucu,
@@ -191,6 +192,10 @@ export function finansGetir(stateId: string) {
 
 export function gostergeGetir(stateId: string, stat: GostergeStat) {
   return istek<{ gosterge: GostergeDetayi }>(`/api/game/${stateId}/gosterge/${stat}`);
+}
+
+export function dunyaGecmisiGetir(stateId: string) {
+  return istek<{ dunyaGecmisi: DunyaGecmisi }>(`/api/game/${stateId}/dunya-gecmisi`);
 }
 
 export function kotuIsConfigGetir(stateId: string) {

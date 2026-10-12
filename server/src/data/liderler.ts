@@ -97,6 +97,11 @@ export function liderGetir(bolge: string, yil: number, cag?: string): string | n
   return donem ? `${donem.unvan} ${donem.isim}` : null;
 }
 
+/** Bir bölge+çağın tüm hükümdar dönemleri (Dünya geçmişi penceresi için; bölge yoksa boş). */
+export function liderDonemleri(bolge: string, cag?: string): LiderDonemi[] {
+  return bolge === "Fransa" && cag === "Sanayi Devrimi" ? LIDERLER_SANAYI_FRANSA : LIDERLER[bolge] ?? [];
+}
+
 /** Savaş olaylarında kullanılacak, döneme uygun düşman/komşu güç adı. */
 export const KOMSU_GUCLER: Record<string, string[]> = {
   Fransa: ["İngiltere Krallığı", "Kutsal Roma İmparatorluğu", "Flandre Kontluğu", "Aragon Krallığı"],

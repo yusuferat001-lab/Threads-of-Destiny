@@ -5882,7 +5882,8 @@ button.ikincil {
   .ust-serit-modul-ahlak .ust-serit-modul-deger {
     white-space: normal;
     overflow: visible;
-    font-size: 0.6rem;
+    font-size: 0.54rem;
+    letter-spacing: -0.02em;
     line-height: 1.05;
     word-break: normal;
     overflow-wrap: anywhere;
@@ -7601,34 +7602,134 @@ button.ikincil {
   }
 }
 
-/* Mobil rozet satırındaki küçük Şöhret düğmesi (masaüstünde sol paneldeki rozet kullanılır). */
-.ust-sohret-rozeti {
+/* ── Üst şerit göstergeleri: değere göre kademeli emoji + ince dolum çubuğu ──
+   Çubuk rengi ton'a göre yeşil → altın → turuncu → kırmızı; kritikte (Can/Mutluluk ≤%20, Para borçta)
+   ikon ve çubuk yavaşça nabız atar. Aranma yıldızlarla zaten görsel olduğundan çubuğu yok. */
+.ust-serit-modul-bar {
+  position: absolute;
+  left: 0.3rem;
+  right: 0.3rem;
+  bottom: 0.16rem;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+  pointer-events: none;
+}
+.ust-serit-modul-bar-dolu {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--bar-renk, #6fbf73);
+  transition: width 0.6s ease, background-color 0.6s ease;
+}
+.ust-serit-modul-ton-iyi { --bar-renk: #6fbf73; }
+.ust-serit-modul-ton-orta { --bar-renk: #d8a94a; }
+.ust-serit-modul-ton-kotu { --bar-renk: #e0803a; }
+.ust-serit-modul-ton-kritik { --bar-renk: #e0463a; }
+.ust-serit-moduller .ust-serit-modul[class*='ust-serit-modul-ton-'] {
+  padding-bottom: calc(clamp(0.22rem, 0.15vw + 0.16rem, 0.42rem) + 0.22rem);
+}
+.ust-serit-modul-ton-kotu .ust-serit-modul-bar { background: rgba(224, 128, 58, 0.2); }
+.ust-serit-modul-ton-kritik .ust-serit-modul-bar { background: rgba(224, 70, 58, 0.25); }
+.ust-serit-modul-ton-kritik .ust-serit-modul-ikon,
+.ust-serit-modul-ton-kritik .ust-serit-modul-bar-dolu {
+  animation: ustSeritNabiz 2.4s ease-in-out infinite;
+}
+@keyframes ustSeritNabiz {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ust-serit-modul-ton-kritik .ust-serit-modul-ikon,
+  .ust-serit-modul-ton-kritik .ust-serit-modul-bar-dolu {
+    animation: none;
+  }
+  .ust-serit-modul-bar-dolu { transition: none; }
+}
+@media (max-width: 767px) {
+  .ust-serit-moduller .ust-serit-modul[class*='ust-serit-modul-ton-'] {
+    padding-bottom: 0.3rem;
+  }
+  .ust-serit-modul-bar {
+    left: 0.22rem;
+    right: 0.22rem;
+    bottom: 0.1rem;
+    height: 2px;
+  }
+}
+
+/* Mobil: Yıl satırı (amaç satırının altı) — dokununca ülke + dünya geçmişi penceresi açılır. */
+.ust-yil-satiri {
   display: none;
 }
 @media (max-width: 767px) {
-  .ust-sohret-rozeti {
-    display: inline-flex;
-    flex: none;
+  .ust-yil-satiri {
+    display: flex;
+    flex: 0 0 auto;
     align-items: center;
-    justify-content: center;
-    width: 26px;
+    justify-content: space-between;
+    gap: 0.5rem;
+    width: auto;
     max-width: none;
-    height: 26px;
-    min-height: 0;
-    margin: 0;
-    padding: 0;
-    font-size: 0.9rem;
-    line-height: 1;
-    background: rgba(0, 0, 0, 0.3);
+    margin: 0.3rem 0.4rem 0;
+    padding: 0.2rem 0.6rem;
+    font: inherit;
+    font-size: 0.72rem;
+    line-height: 1.2;
+    color: var(--renk-altin-parlak);
+    text-align: left;
+    text-shadow: none;
+    letter-spacing: normal;
+    text-transform: none;
+    background: rgba(24, 17, 11, 0.82);
     border: 1px solid var(--renk-ahsap-kenar);
-    border-radius: 50%;
+    border-radius: 999px;
     box-shadow: none;
     cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+    z-index: 2;
   }
-  .ust-sohret-rozeti:focus-visible {
+  .ust-yil-satiri:focus-visible {
     border-color: var(--renk-altin-parlak);
     outline: none;
   }
+  .ust-yil-satiri-yil {
+    flex: none;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+  .ust-yil-satiri-bolge {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #e6d8b8;
+    opacity: 0.9;
+  }
+  .ust-yil-satiri-ipucu {
+    flex: none;
+    opacity: 0.7;
+    font-size: 0.9rem;
+  }
+}
+
+/* Dünya geçmişi penceresi */
+.dunya-gecmisi-aralik {
+  text-align: center;
+  margin-bottom: 0.6rem;
+}
+.dunya-gecmisi-bolum + .dunya-gecmisi-bolum {
+  margin-top: 0.9rem;
+}
+.dunya-gecmisi-yil {
+  display: inline-block;
+  margin-right: 0.25rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--renk-altin-parlak);
 }
 
 /* --- Amaç detay penceresi: bir amaca tıklayınca ne yapılacağı --- */

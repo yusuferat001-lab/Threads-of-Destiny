@@ -78,3 +78,8 @@ export function gelecekSavasKontrol(bolge: string, yil: number, cag?: string, uf
     .sort((a, b) => a.baslangic - b.baslangic)[0];
   return gelecekSavas ? gelecekSavas.rakip : null;
 }
+
+/** Bir bölge+çağ için tüm tarihi savaş pencereleri (Dünya geçmişi penceresi için; bölge yoksa boş). */
+export function tarihiSavasPencereleri(bolge: string, cag?: string): TarihiSavas[] {
+  return bolge === "Fransa" && cag === "Sanayi Devrimi" ? TARIHI_SAVASLAR_SANAYI_FRANSA : TARIHI_SAVASLAR[bolge] ?? [];
+}

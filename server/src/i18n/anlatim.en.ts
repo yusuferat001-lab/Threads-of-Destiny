@@ -933,6 +933,16 @@ export const ANLATIM_EN: Record<string, string> = {
     "Revolt",
   "Altın çağ":
     "Golden age",
+  "Veba salgını":
+    "Plague outbreak",
+  "{0} ile savaş":
+    "War with {0}",
+  "{0} sürüyor":
+    "{0} (ongoing)",
+  "{0} sona erdi":
+    "{0} ended",
+  "{0} tahta çıktı":
+    "{0} took the throne",
   "Geçersiz gösterge.":
     "Invalid indicator.",
   "Şu an seni etkileyen belirgin bir yıllık etken yok; bu değer ağırlıkla seçimlerinle değişir.":

@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { CharacterState, Cag, Dil, Kategori, SonucEtkisi, YatkinlikKaynagi, KisilikEksenleri, UlkeKrizi, MulkTuru, SahipOlunanEsya, AileTalep, YonetimTalep, IkiDilMetin } from "../types";
+import { CharacterState, Cag, Dil, Kategori, SonucEtkisi, YatkinlikKaynagi, KisilikEksenleri, UlkeKrizi, MulkTuru, SahipOlunanEsya, AileTalep, YonetimTalep, IkiDilMetin, UlkeGecmisiKaydi } from "../types";
 import { T, K, ikiDilT } from "../i18n";
 import { amaclariUret, amacSkorCarpani, amaclariOlumdeKontrol, amacTanimiGetir } from "../data/hayatAmaclari";
 import { AILELER, AileTanimi } from "../data/aileler";
@@ -790,6 +790,7 @@ export function createCharacter(
     veba_olum_riski: 0,
     veba_hayatta_kaldi: false,
     hapis_basarili_kacis: false,
+    ulke_gecmisi: [],
     kucuk_kriz_sonraki_yil: yil + 5 + Math.floor(Math.random() * 3), // 5-7 yıl sonra ilk eşik
     gida_fiyat_sok_bitis_yili: null,
     borc_yardimi_alindi: false,
@@ -1073,6 +1074,7 @@ export function eskiKayitGocu(state: CharacterState): void {
   if (typeof state.komik_olum_ile_oldu !== "boolean") state.komik_olum_ile_oldu = false;
   if (typeof state.veba_hayatta_kaldi !== "boolean") state.veba_hayatta_kaldi = false;
   if (typeof state.hapis_basarili_kacis !== "boolean") state.hapis_basarili_kacis = false;
+  if (!Array.isArray(state.ulke_gecmisi)) state.ulke_gecmisi = [];
   // Dil alanı sonradan eklendi; eski kayıtlar her zaman Türkçe oynanmıştı.
   if (state.dil !== "en") state.dil = "tr";
   // Aile ekranı (eş/çocuk ilişkisi + etkileşim + talep) sonradan eklendi (§33).
@@ -1361,6 +1363,16 @@ export function hayatOlayiEkle(state: CharacterState, ikon: string, baslik: stri
   state.hayat_hikayesi.push({ yil: state.yil, yas: state.yas, ikon, baslik });
   if (state.hayat_hikayesi.length > HAYAT_HIKAYESI_MAX) {
     state.hayat_hikayesi.splice(0, state.hayat_hikayesi.length - HAYAT_HIKAYESI_MAX);
+  }
+}
+
+const ULKE_GECMISI_MAX = 30;
+
+/** Ülkedeki savaş/veba/kriz başlangıç-bitişini "Yıl" penceresi için kalıcı kaydeder (en fazla 30 kayıt). */
+export function ulkeGecmisiEkle(state: CharacterState, tur: UlkeGecmisiKaydi["tur"], yil: number, ayrinti?: string): void {
+  state.ulke_gecmisi.push(ayrinti === undefined ? { yil, tur } : { yil, tur, ayrinti });
+  if (state.ulke_gecmisi.length > ULKE_GECMISI_MAX) {
+    state.ulke_gecmisi.splice(0, state.ulke_gecmisi.length - ULKE_GECMISI_MAX);
   }
 }
 
@@ -2375,6 +2387,7 @@ export function kucukKrizKontrolEt(state: CharacterState, yasArtisi: number): st
   const sureYil = KUCUK_KRIZ_SURE_MIN_YIL + Math.floor(Math.random() * (KUCUK_KRIZ_SURE_ARALIK_YIL + 1));
   state.ulke.kriz = { tur: "kitlik", bitisYili: state.yil + sureYil };
   state.gida_fiyat_sok_bitis_yili = state.yil + 2;
+  ulkeGecmisiEkle(state, "kriz_basladi", state.yil, "kitlik");
   state.kucuk_kriz_sonraki_yil =
     state.yil + KUCUK_KRIZ_SONRAKI_ESIK_MIN_YIL + Math.floor(Math.random() * (KUCUK_KRIZ_SONRAKI_ESIK_ARALIK_YIL + 1));
   return T(state.dil, KUCUK_KRIZ_FLAVOR[Math.floor(Math.random() * KUCUK_KRIZ_FLAVOR.length)]);
@@ -2403,6 +2416,7 @@ export function krizEtkisiUygula(state: CharacterState, yasArtisi: number): stri
   if (etki.mutluluk) state.mutluluk += etki.mutluluk * yasArtisi;
   if (state.yil >= kriz.bitisYili) {
     const mesaj = T(state.dil, KRIZ_BITIS_MESAJI[kriz.tur]);
+    ulkeGecmisiEkle(state, "kriz_bitti", state.yil, kriz.tur);
     state.ulke.kriz = null;
     return mesaj;
   }
@@ -2863,6 +2877,7 @@ export function buyukSavasKontrolEt(state: CharacterState, yasArtisi: number): s
       gidaCarpani: BUYUK_SAVAS_GIDA_CARPANI_MIN + Math.random() * BUYUK_SAVAS_GIDA_CARPANI_ARALIK,
     };
     state.ulke.savasta = true;
+    ulkeGecmisiEkle(state, "savas_basladi", state.yil, dusman);
     return T(state.dil, "⚔️ {0} ile aranızdaki gerginlik büyük bir savaşa dönüştü.", [K(state.dil, dusman)]);
   }
   return null;
@@ -2874,6 +2889,7 @@ export function buyukSavasBitisKontrolEt(state: CharacterState): string | null {
   const dusman = state.buyuk_savas.dusman;
   state.ulke.savasta = false;
   state.son_buyuk_savas_bitis_yili = state.yil;
+  ulkeGecmisiEkle(state, "savas_bitti", state.yil, dusman);
   state.buyuk_savas = null;
   return T(state.dil, "🕊️ {0} ile sürdürülen savaş sona erdi, barış geri döndü.", [K(state.dil, dusman)]);
 }
@@ -2940,6 +2956,7 @@ export function vebaBaslat(state: CharacterState, korumaSeviyesi = 0): void {
     korumaSeviyesi: Math.max(0, Math.min(2, etkinKoruma)),
   };
   state.veba_gecirdi = true;
+  ulkeGecmisiEkle(state, "veba_basladi", state.yil);
 }
 
 export interface VebaYillikSonuc {
@@ -3077,6 +3094,7 @@ export function vebaBitisKontrolEt(state: CharacterState): string | null {
   if (state.veba?.aktif && state.yil >= state.veba.bitisYili) {
     state.veba.aktif = false;
     state.ulke.vebada = false;
+    ulkeGecmisiEkle(state, "veba_bitti", state.yil);
     return T(state.dil, "🕊️ Salgın nihayet sona erdi, ama şehir yıllarca izlerini taşıyacak.");
   }
   if (state.veba && !state.veba.aktif && state.yil >= state.veba.etkiBitisYili) {
