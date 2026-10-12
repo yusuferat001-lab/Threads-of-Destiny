@@ -15,7 +15,9 @@ import type { Dil } from './ayarlar';
 export function bic(s: string, ...a: (string | number)[]): string {
   return s.replace(/\{(\d+)\}/g, (_, i) => {
     const v = a[Number(i)];
-    return v === undefined ? `{${i}}` : String(v);
+    if (v === undefined) return `{${i}}`;
+    // Ondalıklı sayılar en fazla 2 basamakla yazılır (float artığı "2.6500000000000004" sızmasın).
+    return typeof v === 'number' && !Number.isInteger(v) && Number.isFinite(v) ? String(Math.round(v * 100) / 100) : String(v);
   });
 }
 

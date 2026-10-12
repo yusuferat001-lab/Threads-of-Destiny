@@ -1289,18 +1289,26 @@ export function clampStats(state: CharacterState): void {
   state.mutluluk = Math.round(clamp(state.mutluluk, 0, 100));
   state.un = Math.round(clamp(state.un, 0, 100));
   state.ahlak = Math.round(clamp(state.ahlak, 0, 100));
-  state.dost_puani = clamp(state.dost_puani, 0, 100);
-  state.rakip_puani = clamp(state.rakip_puani, 0, 100);
-  state.suc_seviyesi = clamp(state.suc_seviyesi, 0, 100);
+  // Kesirli kalabilen değerler en fazla 2 ondalığa yuvarlanır: float birikimi (7.829999999999998,
+  // 130.04999999999993 …) arayüze/metinlere 6-7 basamak olarak sızmasın.
+  state.para = paraYuvarla(state.para);
+  state.kariyer_puani = paraYuvarla(state.kariyer_puani ?? 0);
+  state.dost_puani = paraYuvarla(clamp(state.dost_puani, 0, 100));
+  state.rakip_puani = paraYuvarla(clamp(state.rakip_puani, 0, 100));
+  state.suc_seviyesi = paraYuvarla(clamp(state.suc_seviyesi, 0, 100));
   // Suçun ömür boyu ulaştığı tepe (amaç koşulları: "hiç aranmadan yaşa"). Suç seviyesi
   // artık pasif azalmıyor ama büyük baskın "temize çık" onu düşürebiliyor — bu sayaç unutmaz.
-  state.omur_zirve_suc = Math.max(state.omur_zirve_suc ?? 0, state.suc_seviyesi);
+  state.omur_zirve_suc = paraYuvarla(Math.max(state.omur_zirve_suc ?? 0, state.suc_seviyesi));
   // Nüfuz pasif olarak kesirli birikir (+0.3/yıl); tam sayıda tutulur ki
   // arayüzde ve maaş kırılımında "12.6" gibi değerler görünmesin.
   state.nufuz = Math.round(Math.max(0, state.nufuz));
-  if (state.es_adi) state.es_puani = clamp(state.es_puani, 0, 100);
-  state.yonetim_iliski = clamp(state.yonetim_iliski ?? 40, 0, 100);
-  state.patron_iliski = clamp(state.patron_iliski ?? 40, 0, 100);
+  if (state.es_adi) state.es_puani = paraYuvarla(clamp(state.es_puani, 0, 100));
+  state.yonetim_iliski = paraYuvarla(clamp(state.yonetim_iliski ?? 40, 0, 100));
+  state.patron_iliski = paraYuvarla(clamp(state.patron_iliski ?? 40, 0, 100));
+  for (const r of state.rakipler ?? []) {
+    r.guc = paraYuvarla(r.guc);
+    r.husumet = paraYuvarla(r.husumet);
+  }
   for (const c of state.cocuklar) {
     if (typeof c.iliski === "number") c.iliski = Math.round(clamp(c.iliski, 0, 100));
   }
@@ -1350,7 +1358,7 @@ const GECMIS_MAX_NOKTA = 40;
 
 /** Geçmiş yıl grafiği için o anki durumu kaydeder; liste belli bir uzunlukta tutulur. */
 export function gecmisKaydet(state: CharacterState): void {
-  state.gecmis.push({ yil: state.yil, para: state.para, saglik: state.saglik, un: state.un });
+  state.gecmis.push({ yil: state.yil, para: paraYuvarla(state.para), saglik: state.saglik, un: state.un });
   if (state.gecmis.length > GECMIS_MAX_NOKTA) {
     state.gecmis.splice(0, state.gecmis.length - GECMIS_MAX_NOKTA);
   }

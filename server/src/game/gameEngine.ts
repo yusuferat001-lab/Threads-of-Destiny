@@ -2195,7 +2195,7 @@ async function sonucuUygulaVeIlerlet(
     }
     if (state.aktif) {
       const ekonomi = pasifEkonomiUygula(state, yasArtisi);
-      nakitAkisi.maasBrut = ekonomi.yillikGelirler.reduce((a, b) => a + b, 0);
+      nakitAkisi.maasBrut = paraYuvarla(ekonomi.yillikGelirler.reduce((a, b) => a + b, 0));
       nakitAkisi.giderYasam = ekonomi.giderKalemleri.yasam * yasArtisi;
       nakitAkisi.giderKonut = ekonomi.giderKalemleri.konut * yasArtisi;
       nakitAkisi.giderEkip = ekonomi.giderKalemleri.ekip * yasArtisi;

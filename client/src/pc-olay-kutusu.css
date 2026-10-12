@@ -20,8 +20,8 @@
 
   /* ---- Olay kutusu: ölçüler ---- */
   .olay-kutusu {
-    --kutu-w: min(94cqw, clamp(420px, 76cqw, 920px));
-    --cerceve-w: min(clamp(220px, 50cqh, 560px), 62cqw); /* oran 1.93:1 */
+    --kutu-w: min(94cqw, clamp(400px, 52cqw, 680px)); /* dar: sahne resmi yanlardan görünsün */
+    --cerceve-w: min(clamp(220px, 50cqh, 560px), 62cqw, calc(var(--kutu-w) * 0.85)); /* oran 1.93:1 */
     --cerceve-h: calc(var(--cerceve-w) / 1.93);
     --cerceve-tasma: calc(var(--cerceve-h) * 0.7); /* kutunun üstüne, sahneye taşan pay (büyük resim kutuda az yer kaplasın) */
     --olay-kutusu-h: clamp(320px, 48cqh, 500px);
@@ -30,7 +30,7 @@
     flex: 0 1 auto;
     height: var(--olay-kutusu-h);
     min-height: 240px;
-    margin: 0 auto clamp(0.5rem, 1.6cqh, 1rem);
+    margin: 0 auto clamp(1.5rem, 9cqh, 5.5rem); /* şıklar ekran dibine yapışmasın */
     z-index: 6; /* çerçeve sahnenin alt kenarına binerek üstüne taşar */
   }
 
@@ -109,7 +109,7 @@
 
   /* ---- Yoğun içerik (4 şık ya da uzun şık metni): çerçeve küçülür, punto bir kademe iner ---- */
   .olay-kutusu.olay-kutusu-yogun {
-    --cerceve-w: min(clamp(190px, 42cqh, 460px), 52cqw);
+    --cerceve-w: min(clamp(190px, 42cqh, 460px), 52cqw, calc(var(--kutu-w) * 0.7));
   }
   .olay-kutusu-yogun .secenekler {
     gap: 8px;
