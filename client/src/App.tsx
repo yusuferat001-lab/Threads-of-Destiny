@@ -127,6 +127,7 @@ import { DilContext, dilCtxYap } from './DilContext';
 import { aileKokAdi, enTanimlik } from './aileAdi';
 import { SkorKirilimiPaneli } from './components/SkorKirilimiPaneli';
 import { GostergeModal } from './components/GostergeModal';
+import { DunyaGecmisiModal } from './components/DunyaGecmisiModal';
 import { CarkLogo, KoseTezhibi, MuhurAyrac, AdimGostergesi, KaderYollari } from './components/Suslemeler';
 import { CagAmblemi, BolgeAmblemi } from './components/Amblemler';
 import { useMobilEkran, useGecisDeltasi } from './hooks';
@@ -367,11 +368,12 @@ function App() {
   const [kisilikModalAcik, setKisilikModalAcik] = useState(false);
 
   const dilCtx = dilCtxYap(dil);
-  const { m, kt } = dilCtx;
+  const { m, kt, ktHukumdar } = dilCtx;
 
   // Mobil tek-ekran tasarımı: canlı skor rozetinin detay modalı (yalnız placeholder — §5).
   const [skorDetayAcik, setSkorDetayAcik] = useState(false);
   const [gostergeAcik, setGostergeAcik] = useState<GostergeStat | null>(null);
+  const [yilModalAcik, setYilModalAcik] = useState(false);
   // Ölümde skorun otomatik kaydedilmesi denendi mi (oturum id başına tek sefer) —
   // StrictMode çift-render'ında ve tekrar render'larda ikinci bir POST /api/scores atmamak için.
   const otoSkorKaydiRef = useRef<string | null>(null);
@@ -2155,6 +2157,8 @@ function App() {
             sucSeviyesi={karakter.suc_seviyesi}
             ulke={karakter.ulke}
             hukumdar={karakter.hukumdar}
+            un={karakter.un}
+            mobil={mobil}
             onBolgeTikla={() => setBolgeBilgiAcik(true)}
             onGostergeTikla={setGostergeAcik}
           />
@@ -2181,16 +2185,6 @@ function App() {
                 <AmacPaneli durum={amaclar} varyant="serit" />
               </div>
               <button
-                type="button"
-                className="ust-sohret-rozeti"
-                onClick={() => setGostergeAcik('sohret')}
-                aria-haspopup="dialog"
-                aria-label={`${m.sohret} — ${unUnvani(karakter.un, dil)}`}
-                title={`${m.sohret} — ${unUnvani(karakter.un, dil)}`}
-              >
-                🏅
-              </button>
-              <button
                 key={skorGecisi.nonce}
                 type="button"
                 className="canli-skor-rozeti"
@@ -2200,6 +2194,26 @@ function App() {
                 🏆 {canliSkor.toLocaleString(dil === 'en' ? 'en-US' : 'tr-TR')}
               </button>
             </div>
+          )}
+          {mobil && (
+            // Yıl artık üst şeritte değil: amaç satırının altında, dokununca son yıllarda ülkende ve
+            // dünyada olanları (savaş/veba/kriz/hükümdar/tarih) gösteren pencereyi açar.
+            <button
+              type="button"
+              className="ust-yil-satiri"
+              onClick={() => setYilModalAcik(true)}
+              aria-haspopup="dialog"
+              title={m.dgDokun}
+            >
+              <span className="ust-yil-satiri-yil">📅 {karakter.yil}</span>
+              <span className="ust-yil-satiri-bolge">
+                {kt(karakter.bolge)}
+                {karakter.hukumdar ? ` · 👑 ${ktHukumdar(karakter.hukumdar)}` : ''}
+              </span>
+              <span className="ust-yil-satiri-ipucu" aria-hidden="true">
+                ›
+              </span>
+            </button>
           )}
           <div className="oyun-govde">
             {!mobil && (
@@ -2389,6 +2403,7 @@ function App() {
           {gostergeAcik && karakter && (
             <GostergeModal karakter={karakter} stat={gostergeAcik} onKapat={() => setGostergeAcik(null)} />
           )}
+          {yilModalAcik && karakter && <DunyaGecmisiModal karakter={karakter} onKapat={() => setYilModalAcik(false)} />}
 
           {skorDetayAcik && (
             <div className="skor-detay-katman" onClick={() => setSkorDetayAcik(false)}>

@@ -8,6 +8,7 @@ import {
   isimOnerisiGetir,
   finansGetir,
   gostergeGetir,
+  dunyaGecmisiGetir,
   kotuIsYap,
   kotuIsConfigGetir,
   konutDegistir,
@@ -195,6 +196,15 @@ gameRouter.get("/:id/gosterge/:stat", async (req, res) => {
   try {
     const gosterge = await gostergeGetir(req.params.id, req.params.stat);
     res.json({ gosterge });
+  } catch (err) {
+    res.status(404).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.get("/:id/dunya-gecmisi", async (req, res) => {
+  try {
+    const dunyaGecmisi = await dunyaGecmisiGetir(req.params.id);
+    res.json({ dunyaGecmisi });
   } catch (err) {
     res.status(404).json({ hata: hataMetni(err, req.params.id) });
   }

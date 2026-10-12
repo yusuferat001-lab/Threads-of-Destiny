@@ -17,6 +17,13 @@ export interface UlkeKrizi {
 }
 
 /** Tekrarlayan büyük savaş mekaniği: state.ulke.savasta=true olduğunda aktif; süre/vergi/gıda çarpanı savaş başlarken bir kere rastgele belirlenir. */
+export interface UlkeGecmisiKaydi {
+  yil: number;
+  tur: "savas_basladi" | "savas_bitti" | "veba_basladi" | "veba_bitti" | "kriz_basladi" | "kriz_bitti";
+  /** Savaşta ham (TR) düşman adı; krizde kriz türü ("kitlik" | "isyan" | "altin_cag"). */
+  ayrinti?: string;
+}
+
 export interface BuyukSavas {
   dusman: string;
   baslangicYili: number;
@@ -389,6 +396,8 @@ export interface CharacterState {
   veba_hayatta_kaldi: boolean;
   /** Hapisten FİZİKSEL bir kaçışla (tünel/duvar/çamaşır arabası/gardiyan bayıltma vb. — rüşvet/af DEĞİL) çıktıysa true (bir kereliğine, skor bonusu). */
   hapis_basarili_kacis: boolean;
+  /** Ülkedeki savaş/veba/kriz başlangıç ve bitişlerinin kalıcı kaydı (en fazla 30, eskiden yeniye) — "Yıl" penceresindeki ülke geçmişini besler. */
+  ulke_gecmisi: UlkeGecmisiKaydi[];
   /** Bir sonraki küçük krizin (kıtlık/haydut baskını) tetikleneceği yıl eşiği. */
   kucuk_kriz_sonraki_yil: number;
   /** Küçük kriz tetiklendiğinde SADECE bu yıla kadar geçerli olan ×2 gıda fiyat şoku; null = şok yok. */

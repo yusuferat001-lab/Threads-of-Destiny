@@ -1,4 +1,4 @@
-import { bolgeTemasiGetir, aranmaYildiz, ahlakEtiketi } from '../bolgeTema';
+import { bolgeTemasiGetir, aranmaYildiz, ahlakEtiketi, gostergeGorunumu, type GostergeGorunumu } from '../bolgeTema';
 import { formatPara } from '../format';
 import { bic } from '../i18n';
 import { useDil } from '../DilContext';
@@ -23,6 +23,10 @@ interface UstSeritProps {
   sucSeviyesi: number;
   ulke?: UlkeDurumu;
   hukumdar?: string | null;
+  /** Şöhret (kod alanı `un`). Yalnız mobilde üst şeritte gösterilir (masaüstünde sol panelde). */
+  un?: number;
+  /** Mobil düzen: Yıl modülü şeritten kalkar (Yıl ayrı satırda), yerine tam ortaya Şöhret gelir. */
+  mobil?: boolean;
   /** Verilirse ülke adı kutusu tıklanabilir olur ve bu geri çağrı çalışır (ülke bilgisi modalını açar). */
   onBolgeTikla?: () => void;
   /** Verilirse Can/Para/Mutluluk/Ahlak/Aranma modülleri tıklanabilir olur ve ilgili gösterge detay penceresini açar. */
@@ -57,6 +61,7 @@ function StatModulu({
   sinifEk,
   degerBirim,
   onTikla,
+  gorunum,
 }: {
   ikon: string;
   etiket: string;
@@ -71,11 +76,13 @@ function StatModulu({
   sinifEk?: string;
   /** Verilirse modül bir düğme olur (gösterge detay penceresi). */
   onTikla?: () => void;
+  /** Verilirse ikon değere göre kademeli değişir ve altında ince bir dolum çubuğu çizilir. */
+  gorunum?: GostergeGorunumu;
 }) {
   const { delta, nonce } = useGecisDeltasi(takip ?? 0);
   const { m } = useDil();
   const yon = takip === undefined || nonce === 0 ? '' : delta > 0 ? ' ust-serit-modul-deger-artis' : ' ust-serit-modul-deger-azalis';
-  const sinif = `ust-serit-modul${sinifEk ? ` ${sinifEk}` : ''}${onTikla ? ' ust-serit-modul-tikla' : ''}`;
+  const sinif = `ust-serit-modul${sinifEk ? ` ${sinifEk}` : ''}${onTikla ? ' ust-serit-modul-tikla' : ''}${gorunum ? ` ust-serit-modul-ton-${gorunum.ton}` : ''}`;
   const Kok = onTikla ? 'button' : 'div';
   return (
     <Kok
@@ -84,7 +91,7 @@ function StatModulu({
     >
       {takip !== undefined && <DeltaRozeti key={nonce} deger={delta} nonce={nonce} birim={takipBirim} />}
       <span className="ust-serit-modul-ikon" aria-hidden="true">
-        {ikon}
+        {gorunum ? gorunum.ikon : ikon}
       </span>
       <div className="ust-serit-modul-metin">
         <span className="ust-serit-modul-etiket">{etiket}</span>
@@ -97,6 +104,11 @@ function StatModulu({
           {degerBirim && <span className="ust-serit-modul-birim"> {degerBirim}</span>}
         </span>
       </div>
+      {gorunum && (
+        <span className="ust-serit-modul-bar" aria-hidden="true">
+          <span className="ust-serit-modul-bar-dolu" style={{ width: `${Math.round(gorunum.oran * 100)}%` }} />
+        </span>
+      )}
     </Kok>
   );
 }
@@ -160,6 +172,8 @@ export function UstSerit({
   sucSeviyesi,
   ulke,
   hukumdar,
+  un,
+  mobil,
   onBolgeTikla,
   onGostergeTikla,
 }: UstSeritProps) {
@@ -168,7 +182,7 @@ export function UstSerit({
   return (
     <header className="ust-serit">
       <div className="ust-serit-moduller">
-        <StatModulu ikon="📅" etiket={m.usYil} deger={yil} sinifEk="ust-serit-modul-yil" />
+        {!mobil && <StatModulu ikon="📅" etiket={m.usYil} deger={yil} sinifEk="ust-serit-modul-yil" />}
         <StatModulu ikon="🎂" etiket={m.usYas} deger={yas} />
         <StatModulu
           ikon="❤️"
@@ -176,6 +190,7 @@ export function UstSerit({
           deger={Math.round(saglik)}
           tehlike={saglik <= 30}
           takip={Math.round(saglik)}
+          gorunum={gostergeGorunumu('saglik', saglik)}
           onTikla={onGostergeTikla && (() => onGostergeTikla('saglik'))}
         />
         <StatModulu
@@ -186,14 +201,26 @@ export function UstSerit({
           tehlike={para < 0}
           takip={para}
           takipBirim={paraBirimi}
+          gorunum={gostergeGorunumu('para', para)}
           onTikla={onGostergeTikla && (() => onGostergeTikla('para'))}
         />
+        {mobil && un !== undefined && (
+          <StatModulu
+            ikon="🏅"
+            etiket={m.sohret}
+            deger={Math.round(un)}
+            takip={Math.round(un)}
+            gorunum={gostergeGorunumu('sohret', un)}
+            onTikla={onGostergeTikla && (() => onGostergeTikla('sohret'))}
+          />
+        )}
         <StatModulu
           ikon="⚖️"
           etiket={m.usAhlak}
           deger={ahlakEtiketi(ahlak, dil)}
           takip={Math.round(ahlak)}
           sinifEk="ust-serit-modul-ahlak"
+          gorunum={gostergeGorunumu('ahlak', ahlak)}
           onTikla={onGostergeTikla && (() => onGostergeTikla('ahlak'))}
         />
         <StatModulu
@@ -201,6 +228,7 @@ export function UstSerit({
           etiket={m.usMutluluk}
           deger={Math.round(mutluluk)}
           takip={Math.round(mutluluk)}
+          gorunum={gostergeGorunumu('mutluluk', mutluluk)}
           onTikla={onGostergeTikla && (() => onGostergeTikla('mutluluk'))}
         />
         <AranmaModulu sucSeviyesi={sucSeviyesi} onTikla={onGostergeTikla && (() => onGostergeTikla('aranma'))} />

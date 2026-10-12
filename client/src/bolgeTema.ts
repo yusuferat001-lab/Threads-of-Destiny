@@ -90,6 +90,52 @@ export function aranmaYildiz(sucSeviyesi: number): number {
   return Math.max(0, Math.min(4, sucSeviyesi / 25));
 }
 
+export type GostergeTonu = 'iyi' | 'orta' | 'kotu' | 'kritik';
+
+export interface GostergeGorunumu {
+  /** Değere göre kademeli emoji (değer düştükçe/yükseldikçe değişir). */
+  ikon: string;
+  /** Dolum çubuğunun rengi/animasyonu için kademe. */
+  ton: GostergeTonu;
+  /** Çubuğun doluluk oranı, 0-1. */
+  oran: number;
+}
+
+/** Para çubuğunun tam dolu sayıldığı birim cinsinden servet çıpası (zorunlu bağış eşiğiyle aynı büyüklük). */
+const PARA_CUBUK_CIPASI = 350;
+
+const sinirla01 = (x: number) => Math.max(0, Math.min(1, x));
+
+/**
+ * Üst şerit göstergelerinin kademeli görünümü: değer düştükçe emoji ve çubuk rengi değişir.
+ * Ahlak/Şöhret düşükken "tehlike" değildir (yeni karakterler bile düşük şöhretle başlar),
+ * bu yüzden bu ikisi en kötü `kotu` tonuna iner, `kritik` yalnız Can/Mutluluk/Para'ya özeldir.
+ */
+export function gostergeGorunumu(stat: 'saglik' | 'mutluluk' | 'ahlak' | 'sohret' | 'para', deger: number): GostergeGorunumu {
+  const kademeTonu = (d: number, kritikVar: boolean): GostergeTonu =>
+    d >= 60 ? 'iyi' : d >= 40 ? 'orta' : d >= 20 || !kritikVar ? 'kotu' : 'kritik';
+  switch (stat) {
+    case 'saglik':
+      return { ikon: deger >= 60 ? '❤️' : deger > 30 ? '🩹' : '💔', ton: kademeTonu(deger, true), oran: sinirla01(deger / 100) };
+    case 'mutluluk':
+      return { ikon: deger >= 60 ? '🙂' : deger > 30 ? '😐' : deger > 15 ? '😞' : '😭', ton: kademeTonu(deger, true), oran: sinirla01(deger / 100) };
+    case 'ahlak':
+      return { ikon: deger >= 71 ? '😇' : deger > 30 ? '⚖️' : '😈', ton: kademeTonu(deger, false), oran: sinirla01(deger / 100) };
+    case 'sohret':
+      return {
+        ikon: deger >= 80 ? '🌟' : deger >= 50 ? '⭐' : deger >= 15 ? '🏅' : '👤',
+        ton: deger >= 50 ? 'iyi' : deger >= 15 ? 'orta' : 'kotu',
+        oran: sinirla01(deger / 100),
+      };
+    case 'para':
+      return {
+        ikon: deger < 0 ? '💸' : deger < 5 ? '🪙' : '💰',
+        ton: deger < 0 ? 'kritik' : deger < 5 ? 'kotu' : deger < 40 ? 'orta' : 'iyi',
+        oran: deger <= 0 ? 0 : sinirla01(deger / PARA_CUBUK_CIPASI),
+      };
+  }
+}
+
 export const HAYVAN_SIMGESI: Record<string, string> = {
   Kedi: '🐈',
   Köpek: '🐕',

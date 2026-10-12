@@ -1,5 +1,6 @@
 import { randomUUID } from "crypto";
 import { gostergeDetayiUret, etkenGunluguNotEt, gostergeStatiMi, GostergeDetayi } from "./gostergeDetay";
+import { dunyaGecmisiUret, DunyaGecmisi } from "./dunyaGecmisi";
 import { CharacterState, Cag, SenaryoResponse, SonucEtkisi, TepkiSonucu, MulkTuru, EvlilikAdayi, OturumAkisiKaydi, IkiDilMetin } from "../types";
 import { T, K, Khukumdar, ikiDilT } from "../i18n";
 import { olayCevirisiUygula } from "../i18n/olaylar";
@@ -33,6 +34,7 @@ import {
   gecmisKaydet,
   yaslanmaUygula,
   hayatOlayiEkle,
+  ulkeGecmisiEkle,
   capraletkiUygula,
   haberleriUret,
   hukumdarDegisimHaberiUret,
@@ -2056,6 +2058,7 @@ async function sonucuUygulaVeIlerlet(
   }
   if (etki.kriz_baslat) {
     state.ulke.kriz = { tur: etki.kriz_baslat.tur, bitisYili: state.yil + etki.kriz_baslat.sureYil };
+    ulkeGecmisiEkle(state, "kriz_basladi", state.yil, etki.kriz_baslat.tur);
   }
   const hapistenCiktiBuEtki =
     !!etki.etiket_sil?.includes("hapiste") && state.etiketler.includes("hapiste");
@@ -2539,6 +2542,12 @@ export async function gostergeGetir(id: string, stat: string): Promise<GostergeD
   const oturum = await oturumGetir(id);
   if (!gostergeStatiMi(stat)) throw new Error("Geçersiz gösterge.");
   return gostergeDetayiUret(oturum.state, stat);
+}
+
+/** "Yıl" penceresi: son yıllarda ülkende ve dünyada olan önemli olaylar (salt-okunur, tur tüketmez). */
+export async function dunyaGecmisiGetir(id: string): Promise<DunyaGecmisi> {
+  const oturum = await oturumGetir(id);
+  return dunyaGecmisiUret(oturum.state);
 }
 
 export async function finansGetir(id: string): Promise<FinansOzeti> {
