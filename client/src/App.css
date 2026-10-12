@@ -119,23 +119,19 @@ body {
 }
 
 /* Koyu (ahşap) panellerin kaydırma çubuğu — parşömen panellerinki için bkz. .panel-parsomen. */
-.merkez-alt,
 .ekran {
   scrollbar-width: thin;
   scrollbar-color: var(--renk-ahsap-kenar) rgba(0, 0, 0, 0.25);
 }
 
-.merkez-alt::-webkit-scrollbar,
 .ekran::-webkit-scrollbar {
   width: 10px;
 }
 
-.merkez-alt::-webkit-scrollbar-track,
 .ekran::-webkit-scrollbar-track {
   background: rgba(0, 0, 0, 0.25);
 }
 
-.merkez-alt::-webkit-scrollbar-thumb,
 .ekran::-webkit-scrollbar-thumb {
   background: var(--renk-ahsap-kenar);
   border-radius: 6px;
@@ -1278,125 +1274,22 @@ button.ikincil {
 }
 
 /* Fotoğrafın üstüne artık hiçbir şey binmez (ne kart ne gradyan) — görsel kendi kutusunda
-   yalnız durur, olay metni/seçenekler altındaki ayrı .merkez-alt kutusundadır (eşit kutu
-   ilkesi: üç panel de aynı kalınlıkta çerçeveye/köşeye sahip). Sahne, .merkez-alt'ın SABİT
-   payı (bkz. aşağıdaki not) dışında kalan alanı kaplar (flex:1) — bu pay içerik uzunluğuna
-   göre değişmediği için sahne de her zaman aynı oranı korur, en az 150px'in altına küçülmez
-   — görselin tamamı da "contain" ile hep açıkta kalır (bkz. .bolge-sahnesi-tam). */
+   yalnız durur; olay metni/seçenekler altındaki kadife .olay-kutusu'ndadır (olay-kutusu.css +
+   pc-olay-kutusu.css). Sahne, kutunun SABİT yüksekliği dışında kalan alanı kaplar (flex:1) —
+   kutu içerik uzunluğuna göre değişmediği için sahne de her zaman aynı oranı korur, en az
+   150px'in altına küçülmez — görselin tamamı da "contain" ile hep açıkta kalır
+   (bkz. .bolge-sahnesi-tam). */
 .merkez-sahne {
   position: relative;
   flex: 1 1 0%;
   min-height: 150px;
   overflow: hidden;
-  /* Sahne tıklama noktaları (.sahne-hotspotlar), arka plan görselinin `object-fit: contain`
-     ile bıraktığı gerçek kutuyu cqw/cqh ile birebir taklit edebilsin diye bir boyut
-     konteyneri. İçerik boyutu zaten yalnız flex'ten geliyor (tüm katmanlar mutlak konumlu),
-     bu yüzden `size` containment güvenli. */
-  container-type: size;
 }
 
 .merkez-sahne-arkaplan {
   position: absolute;
   inset: 0;
   z-index: 0;
-}
-
-/* Olay/seçim metni artık görselin ÜSTÜNDE değil, altındaki kendi kutusunda. Bu kutunun payı
-   BİLEREK sabit bir orana kilitlenir (flex: 0 0 <sabit> — içeriğe göre büyüyüp küçülen "auto"
-   DEĞİL): olay metni kısa/uzun ya da seçenek sayısı 2-4 arasında değiştikçe kutu boyu
-   değişmesin diye — aksi halde sahne (flex:1 ile kalanı dolduran taraf) her tıklamada
-   büyüyüp küçülerek görsel bir "kayma" hissi yaratıyordu (olay→sonuç geçişlerinde ölçülen
-   fark ~25-55px). %58'lik pay, gerçek 4 seçenekli + ipuçlu olaylarda bile seçeneklerin
-   (2x2 ızgara, bkz. .secenekler) en azından ilk sırası kaydırmadan görünecek şekilde
-   ölçüldü (%43 gibi daha dar bir pay denendiğinde ilk sıra bile görünmüyordu). İçerik yine
-   de bu sabit alana sığmazsa kendi içinde kayar (overflow-y) — ama artık SADECE gerçekten
-   uzun içerikte, her tıklamada değil.
-   Ayrıca artık tam genişlik yerine ortalanmış, dar bir "kart" halinde — daha kareye yakın
-   bir görünüm için kenarlarda boşluk bırakır ve görselin alt kısmına hafifçe (~%10) taşarak
-   biner; taşan payı sahne geri kazanır (negatif margin + sahne'nin flex:1 büyümesi sayesinde
-   toplam yükseklik hep %100 kalır). Taşma payı SahneHotspotlari'nın yeni ortak sırasının
-   (bkz. .sahne-hotspot-* bottom değerleri) hemen altında kaldığı için tıklama noktalarını
-   örtmez. */
-.merkez-alt {
-  position: relative;
-  z-index: 2; /* sahnenin ve .sahne-hotspot-*'ın üstünde kalsın */
-  /* Paket 3: kartın payı %58'den %52'ye — bölge sahnesi masaüstünde daha çok nefes alsın
-     (sahne artık merkezin ~yarısı). Sabit oran korunur ki olay→sonuç geçişinde sahne
-     "zıplamasın"; içerik sığmazsa kart yine kendi içinde kayar. */
-  flex: 0 0 clamp(260px, 52%, 440px);
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  width: min(680px, 88%);
-  /* Sahnenin altına yalnızca ~%6 taşar; arka planı tam opak. */
-  margin: clamp(-1.4rem, -2.6vh, -0.75rem) auto 0;
-  padding: 0.55rem 1.1rem 0.7rem;
-  border: 2px solid var(--renk-altin);
-  border-radius: 16px;
-  background: var(--renk-ahsap-panel);
-  box-shadow: var(--golge-derin);
-  overflow-y: auto;
-}
-
-/* Seçim SONUCU ekranında kart — 2026-09 sonu düzeltmesi (kullanıcı: "pc'de olay
-   ekranı sabit değil, arkaplan sürekli değişiyor"). Eskiden bu kartın payı
-   İÇERİĞE göre büyüyüp küçülüyordu (flex:0 1 auto + max-height) — sonuç mesajı
-   kısa/uzun oldukça sahnenin (flex:1 ile kalanı dolduran) kapladığı alan da her
-   seçimde değişiyor, bölge görseli yeniden kadrajlanıp "arka plan değişti" hissi
-   veriyordu. Artık soru kartıyla (.merkez-alt) BİREBİR AYNI sabit payı kullanır —
-   sahne, soru⇄sonuç geçişinde artık asla boyut değiştirmez. Kısa sonuçlarda
-   kutuda boşluk kalabilir; uzun sonuçlarda (.merkez-alt'tan miras) overflow-y:auto
-   ile kendi içinde kayar (bkz. ::after fade ipucu, aşağıda). Artık .merkez-alt'tan
-   fazladan hiçbir boyut/margin override'ı yok — sınıf yalnız ::after ipucu için var. */
-/* İçerik taşıyorsa kaydırılabilir olduğunu belli eden alt kenar gölgesi —
-   layout'ta yer kaplamaz (negatif üst margin ile içeriğin üstüne biner). */
-.merkez-alt-sonuc::after {
-  content: '';
-  position: sticky;
-  bottom: -0.75rem;
-  display: block;
-  height: 1.6rem;
-  margin: -1.6rem -1.15rem -0.75rem;
-  background: linear-gradient(to top, var(--renk-ahsap-panel), transparent);
-  pointer-events: none;
-}
-
-.olay-karti {
-  position: relative;
-  width: 100%;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid var(--renk-ahsap-kenar);
-  border-radius: 10px;
-  padding: clamp(0.45rem, 0.2vw + 0.38rem, 0.7rem) clamp(0.75rem, 0.3vw + 0.6rem, 1rem);
-}
-
-/* Parşömen tomarının uçlarındaki "makara" — okunabilirlik dışında işlevi yok. */
-.olay-karti::before,
-.olay-karti::after {
-  content: '';
-  position: absolute;
-  top: -5px;
-  bottom: -5px;
-  width: 16px;
-  border-radius: 8px;
-  background: linear-gradient(90deg, #2b1d12, #6b4f2a 45%, #4a3520 60%, #2b1d12);
-  border: 1px solid var(--renk-ahsap-kenar);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
-}
-
-.olay-karti::before {
-  left: -9px;
-}
-
-.olay-karti::after {
-  right: -9px;
-}
-
-.olay-karti h2 {
-  font-size: clamp(1rem, 0.4vw + 0.85rem, 1.3rem);
-  letter-spacing: 0.02em;
-  color: var(--renk-altin-parlak);
 }
 
 .sag-panel {
@@ -2193,13 +2086,6 @@ button.ikincil {
   padding-top: 0.5rem;
 }
 
-.olay-karti {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  text-align: center;
-}
-
 .olay-gorseli {
   font-size: clamp(1.8rem, 1vw + 1.4rem, 2.6rem);
   line-height: 1;
@@ -2288,19 +2174,6 @@ button.ikincil {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* Paket 4: etki çipleri tek kompakt satır (alt alta yığılmıyor).
-   `display: contents` ile .secenek-tahmin çipleri de bu satırın parçası olur. */
-.secenek-meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.25rem 0.4rem;
-  margin-top: auto;
-  padding-top: 0.15rem;
-}
-.secenek-meta .secenek-tahminler {
-  display: contents;
-}
 
 .secenek:hover:not(:disabled) {
   border-color: var(--renk-altin);
@@ -2710,105 +2583,6 @@ button.ikincil {
   color: #e07a7a !important;
 }
 
-/* ---- Sahne tıklama noktaları (mağaza/işyeri/ev/sosyalleş) ----
- * Gelir&Gider, İşin, Mağaza ve Sosyalleş artık ayrı bir buton satırından değil,
- * doğrudan sahnenin (BolgeSahnesi) arka plan görselindeki dört bölgeden açılır:
- * soldan sağa 🛒 Mağaza (sol bina) · işyeri (meydan) · ev (boş arsa) · 🍷 Sosyalleş (sağ bina).
- *
- * Kapsayıcı, arka plan görseliyle AYNI en-boy oranına (`--sahne-orani`, SahneHotspotlari'dan
- * inline gelir) kilitlenir ve `.merkez-sahne` içinde `object-fit: contain` gibi ortalanır —
- * böylece noktalar görselin kendisine "yapışır", ekran küçülüp büyüdükçe resimle birlikte
- * ölçeklenir ve asla kaymaz. Tüm konumlar yüzde cinsindendir (vw/px yok). Kapsayıcı
- * tıklamayı yutmaz (pointer-events:none) — sadece butonlar tıklanabilir. */
-.sahne-hotspotlar {
-  position: absolute;
-  inset: 0;
-  margin: auto;
-  /* `object-fit: contain` ile aynı kutu: her iki eksende de sınırlayan kenara göre
-     ölçeklenir, ortalanır. cqw/cqh = .merkez-sahne'nin genişliği/yüksekliği. */
-  width: min(100cqw, 100cqh * var(--sahne-orani, 2.356));
-  height: min(100cqh, 100cqw / var(--sahne-orani, 2.356));
-  z-index: 5;
-  pointer-events: none;
-}
-
-.sahne-hotspot {
-  position: absolute;
-  pointer-events: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.2rem;
-  background: transparent;
-  border: none;
-  padding: 0.2rem 0.35rem;
-  cursor: pointer;
-  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.8));
-  transition: transform 0.15s ease, filter 0.15s ease;
-}
-
-.sahne-hotspot:hover:not(:disabled),
-.sahne-hotspot:focus-visible:not(:disabled) {
-  transform: translateY(-4px) scale(1.07);
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.85)) drop-shadow(0 0 10px rgba(var(--renk-altin-rgb), 0.55));
-}
-
-.sahne-hotspot:disabled {
-  cursor: default;
-  opacity: 0.6;
-}
-
-.sahne-hotspot-ikon {
-  display: block;
-  font-size: 2.1rem;
-  line-height: 1;
-}
-
-.sahne-hotspot-etiket {
-  font-size: 0.62rem;
-  font-family: var(--font-baslik);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  background: rgba(10, 7, 4, 0.6);
-  padding: 0.1rem 0.5rem;
-  border-radius: 999px;
-  border: 1px solid rgba(var(--renk-altin-rgb), 0.45);
-  color: var(--renk-altin-parlak);
-  white-space: nowrap;
-}
-
-/* Dört nokta, arka plan görselindeki bölgelere denk gelen sabit yüzde konumlarında durur
- * (soldan sağa: kariyer / işyeri (Yatırım) / ev / sosyalleş). `left` değerleri buton genişliği hesaba
- * katılarak zaten yaklaşık ortalıdır (translateX yok — böylece :hover'daki translateY ve
- * mobildeki scale transform'larıyla çakışmaz). `bottom` değerleri, .merkez-alt yüzen kartının
- * sahnenin altına ~%8-15 taşan bölgesinin (bkz. .merkez-alt) güvenle üstünde kalır. */
-.sahne-hotspot-kariyer {
-  left: 6%;
-  bottom: 21%;
-}
-
-.sahne-hotspot-isyeri {
-  left: 27%;
-  bottom: 17%;
-}
-
-.sahne-hotspot-ev {
-  left: 66%;
-  bottom: 17%;
-}
-
-/* Sağ kenardaki nokta `left` yerine `right` ile sabitlenir — uzun "Sosyalleş" etiketi
-   dar ekranlarda sahnenin `overflow:hidden` kenarına takılıp kırpılmasın diye. */
-.sahne-hotspot-sosyallesme {
-  left: auto;
-  right: 2%;
-  bottom: 21%;
-}
-
-.sahne-hotspot-kariyer .sahne-hotspot-ikon,
-.sahne-hotspot-sosyallesme .sahne-hotspot-ikon {
-  font-size: 1.9rem;
-}
 
 /* ---- Gelir & Gider ekranı ----
  * Diğer tam-sayfa ekranlar gibi (bkz. yukarıdaki genel not) `.tam-govde-3col` ile 3 sütuna
@@ -4470,8 +4244,8 @@ button.ikincil {
    `-webkit-line-clamp:2` ile kırpılıp geri kalanı `title` tooltip'ine
    gizleniyordu — dokunmatikte hiç erişilemiyor, masaüstünde de fareyle
    beklemek gerekiyordu ("olay sonucu tam okunmuyor"). Artık HER platformda
-   tam metin görünür; kutu `.merkez-alt` içinde kendi payında, gerekiyorsa
-   `.merkez-alt` kendi içinde kayar (alt kenarda bir fade ipucu var).
+   tam metin görünür; olay kutusunda parşömen kendi içinde kayar (kenarlarda
+   solma ipucu var, bkz. OlayKutusu `useKaydirmaIpucu`).
    `title` zararsız bir yedek olarak kalır. Blok yavaşça yukarı kayarak belirir (#17). */
 .tur-ozeti {
   font-size: clamp(0.95rem, 0.25vw + 0.82rem, 1.15rem);
@@ -4638,30 +4412,6 @@ button.ikincil {
   opacity: 0.85;
 }
 
-.secenek-tahminler {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.3rem;
-}
-
-.secenek-tahmin {
-  font-size: clamp(0.72rem, 0.25vw + 0.6rem, 1rem);
-  padding: 0.15rem 0.5rem;
-  border-radius: 999px;
-  line-height: 1.5;
-}
-
-.secenek-tahmin.tahmin-pozitif {
-  background: rgba(30, 110, 60, 0.25);
-  border: 1px solid rgba(60, 160, 90, 0.45);
-  color: #a6e0ac;
-}
-
-.secenek-tahmin.tahmin-negatif {
-  background: rgba(139, 44, 44, 0.25);
-  border: 1px solid rgba(180, 70, 70, 0.45);
-  color: #e0a6a6;
-}
 
 /* ---- Envanter paneli ---- */
 
@@ -5418,11 +5168,6 @@ button.ikincil {
   font-size: 3.5rem;
 }
 
-/* Sonuç artık ana oyun ekranında küçük bir kutuda gösteriliyor — ölüm ekranındaki
-   (tam ekran) büyük ikondan farklı olarak burada daha kompakt. */
-.olay-karti-sonuc .sonuc-ikon {
-  font-size: 2.3rem;
-}
 
 /* .ses-toggle-buton kaldırıldı — ses aç/kapa artık yalnızca Ayarlar modalında. */
 
@@ -5984,9 +5729,9 @@ button.ikincil {
     min-height: 0;
   }
 
-  /* Mobil oyun/sonuç ekranının sahnesi + olay kutusu (`.merkez-sahne`, `.merkez-alt`, `.olay-karti`,
-     `.olay-metni-govde`) artık hiç render edilmiyor: tam sayfa portre arka plan + kadife olay kutusu
-     mobil-oyun.css'te (`.oyun-arka-sahne`, `.olay-kutusu*`). Bu sınıflar yalnız masaüstü düzeninde. */
+  /* Mobil oyun/sonuç ekranının sahnesi (`.merkez-sahne`) hiç render edilmiyor: tam sayfa portre
+     arka plan mobil-oyun.css'te (`.oyun-arka-sahne`). Olay kutusu (`.olay-kutusu*`) mobil ve PC
+     için ortaktır (olay-kutusu.css). `.merkez-sahne` yalnız PC düzeninde. */
 
   .tur-ozeti {
     display: block;
@@ -6009,9 +5754,6 @@ button.ikincil {
     top: 0.35rem;
     width: clamp(16px, 0.6vw + 13px, 20px);
     height: clamp(16px, 0.6vw + 13px, 20px);
-  }
-  .secenek-meta {
-    margin-top: 0.1rem;
   }
 
   /* ---- Paket 5: yan paneller mobilde katlanır <details> ----
@@ -6856,57 +6598,6 @@ button.ikincil {
   display: none;
 }
 
-/* --- Task 4 + 6: olay emojisi metnin sol/sağında çapraz, başlık metne yakın --- */
-.olay-karti-govde {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-  width: 100%;
-}
-.olay-karti-metin-blok {
-  display: flex;
-  flex-direction: column;
-  gap: 0.12rem;
-  flex: 1 1 auto;
-  min-width: 0;
-}
-.olay-karti-metin-blok h2 {
-  margin: 0;
-}
-.olay-karti-metin-blok .olay-metni {
-  margin: 0;
-}
-.olay-gorseli-sol,
-.olay-gorseli-sag {
-  flex: 0 0 auto;
-  align-self: center;
-  opacity: 0.9;
-  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
-}
-.olay-gorseli-sol {
-  transform: rotate(-16deg);
-}
-.olay-gorseli-sag {
-  transform: rotate(16deg);
-}
-
-/* Olay illüstrasyonu (public/assets/olay): emoji yerine kartın solunda küçük bir resim. */
-.olay-resmi {
-  display: none;
-  flex: 0 0 auto;
-  align-self: center;
-  width: clamp(104px, 11vw, 168px);
-  aspect-ratio: 1190 / 615;
-  object-fit: cover;
-  border: 1px solid var(--renk-ahsap-kenar);
-  border-radius: 4px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
-  user-select: none;
-}
-.olay-resmi-hazir {
-  display: block;
-}
 
 /* --- Amaçlar: arka plan görselinin ÜSTÜNDE ince overlay şerit (kullanıcı isteği) --- */
 .merkez-sahne > .amac-serit {
