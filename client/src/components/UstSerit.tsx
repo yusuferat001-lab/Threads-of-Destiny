@@ -23,7 +23,7 @@ interface UstSeritProps {
   sucSeviyesi: number;
   ulke?: UlkeDurumu;
   hukumdar?: string | null;
-  /** Şöhret (kod alanı `un`). Yalnız mobilde üst şeritte gösterilir (masaüstünde sol panelde). */
+  /** Şöhret (kod alanı `un`). Hem masaüstünde hem mobilde üst şeritte gösterilir. */
   un?: number;
   /** Mobil düzen: Yıl modülü şeritten kalkar (Yıl ayrı satırda), yerine tam ortaya Şöhret gelir. */
   mobil?: boolean;
@@ -76,7 +76,7 @@ function StatModulu({
   sinifEk?: string;
   /** Verilirse modül bir düğme olur (gösterge detay penceresi). */
   onTikla?: () => void;
-  /** Verilirse ikon değere göre kademeli değişir ve altında ince bir dolum çubuğu çizilir. */
+  /** Verilirse ikon değere göre kademeli değişir. */
   gorunum?: GostergeGorunumu;
 }) {
   const { delta, nonce } = useGecisDeltasi(takip ?? 0);
@@ -104,11 +104,6 @@ function StatModulu({
           {degerBirim && <span className="ust-serit-modul-birim"> {degerBirim}</span>}
         </span>
       </div>
-      {gorunum && (
-        <span className="ust-serit-modul-bar" aria-hidden="true">
-          <span className="ust-serit-modul-bar-dolu" style={{ width: `${Math.round(gorunum.oran * 100)}%` }} />
-        </span>
-      )}
     </Kok>
   );
 }
@@ -204,7 +199,7 @@ export function UstSerit({
           gorunum={gostergeGorunumu('para', para)}
           onTikla={onGostergeTikla && (() => onGostergeTikla('para'))}
         />
-        {mobil && un !== undefined && (
+        {un !== undefined && (
           <StatModulu
             ikon="🏅"
             etiket={m.sohret}

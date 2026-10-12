@@ -24,6 +24,8 @@ interface BolgeSahnesiProps {
    * ve etiketler (Kasaba/Savaşta/Salgın) burada değil olay kutusunun üstünde gösterilir.
    */
   mod?: 'sahne' | 'sayfa';
+  /** `mod='sayfa'` iken true ise (PC) portre `arka-plan-mobil.*` atlanır, yatay `arka-plan.*` kullanılır. */
+  yatay?: boolean;
 }
 
 type YerlesimTipi = 'sehir' | 'sinir' | 'dag' | 'genel';
@@ -167,6 +169,7 @@ export function BolgeSahnesi({
   un = 0,
   tamYukseklik = false,
   mod = 'sahne',
+  yatay = false,
 }: BolgeSahnesiProps) {
   const { m } = useDil();
   const tema = bolgeTemasiGetir(bolge);
@@ -179,12 +182,12 @@ export function BolgeSahnesi({
   // Aday zinciri sırayla denenir: ilk 404'te bir sonrakine geçilir, hepsi yoksa gradyan/SVG yedeği.
   const arkaPlanAdaylari = sayfaModu
     ? [
-        `/assets/sahne/${cagSlug}/arka-plan-mobil.webp`,
+        ...(yatay ? [] : [`/assets/sahne/${cagSlug}/arka-plan-mobil.webp`]),
         `/assets/sahne/${cagSlug}/arka-plan.webp`,
         `/assets/sahne/${cagSlug}/arka-plan.png`,
       ]
     : [`/assets/sahne/${cagSlug}/arka-plan.webp`, `/assets/sahne/${cagSlug}/arka-plan.png`];
-  const bilinenAnahtar = `${cagSlug}|${mod}`;
+  const bilinenAnahtar = `${cagSlug}|${mod}${yatay ? '|yatay' : ''}`;
   const [arkaPlanIndeks, setArkaPlanIndeks] = useState(() => ARKA_PLAN_BILINEN.get(bilinenAnahtar) ?? 0);
   const [onPlanUzanti, setOnPlanUzanti] = useState<'webp' | 'png' | null>(sayfaModu ? null : 'webp');
 

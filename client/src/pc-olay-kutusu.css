@@ -18,156 +18,231 @@
     container-type: size;
   }
 
-  /* ---- Olay kutusu: ölçüler ---- */
+  /* ---- Olay kutusu: ölçüler ----
+     TEK ölçek birimi `--u`: 1920×1080 tasarımının 1 pikselinin bu ekrandaki karşılığı
+     (= min(ekran genişliği/1920, ekran yüksekliği/1080)). Kutudaki HER boyut (genişlik, çerçeve,
+     yazılar, şıklar, boşluklar) "tasarım pikseli × --u" olarak yazılır; clamp/min/max yok →
+     kutu hangi çözünürlükte olursa olsun ekrana göre AYNI oranda görünür.
+     Kutu alta yaslıdır; yüksekliği içeriğe göre (alt/üst sınırlı) değişir, taşan metin parşömende kayar. */
   .olay-kutusu {
-    --kutu-w: min(94cqw, clamp(420px, 76cqw, 920px));
-    --cerceve-w: min(clamp(220px, 50cqh, 560px), 62cqw); /* oran 1.93:1 */
+    --u: min(calc(100vw / 1920), calc(100vh / 1080));
+    --kutu-w: calc(660 * var(--u));
+    --cerceve-w: calc(370 * var(--u)); /* oran 1.93:1 */
     --cerceve-h: calc(var(--cerceve-w) / 1.93);
-    --cerceve-tasma: calc(var(--cerceve-h) * 0.7); /* kutunun üstüne, sahneye taşan pay (büyük resim kutuda az yer kaplasın) */
-    --olay-kutusu-h: clamp(320px, 48cqh, 500px);
+    --cerceve-tasma: calc(var(--cerceve-h) * 0.58); /* kutunun üstünden sahneye taşan pay */
+    --yz-baslik: calc(22 * var(--u));
+    --yz-metin: calc(19.5 * var(--u));
+    --yz-sik: calc(17.5 * var(--u));
+    --sik-yuk: calc(52 * var(--u));
 
-    /* Çok kısa panelde sahne min-height'ına takılıp kutuyu kırpmasın diye kutu biraz küçülebilir. */
     flex: 0 1 auto;
-    height: var(--olay-kutusu-h);
-    min-height: 240px;
-    margin: 0 auto clamp(0.5rem, 1.6cqh, 1rem);
-    z-index: 6; /* çerçeve sahnenin alt kenarına binerek üstüne taşar */
+    height: auto;
+    min-height: calc(360 * var(--u));
+    max-height: calc(640 * var(--u));
+    margin: 0 auto calc(40 * var(--u));
+    z-index: 6; /* çerçeve sahnenin üstüne taşar */
   }
 
   .olay-kutusu-ic {
-    gap: clamp(8px, 1.4cqh, 12px);
-    padding-right: clamp(14px, 2.2cqw, 28px);
-    padding-bottom: clamp(12px, 2.6cqh, 22px);
-    padding-left: clamp(14px, 2.2cqw, 28px);
+    gap: calc(12 * var(--u));
+    padding-right: calc(24 * var(--u));
+    padding-bottom: calc(20 * var(--u));
+    padding-left: calc(24 * var(--u));
   }
 
   .olay-kutusu .kose-tezhip {
-    width: 46px;
-    height: 46px;
+    width: calc(46 * var(--u));
+    height: calc(46 * var(--u));
   }
-  .olay-kutusu .kt-sol-ust { top: -8px; left: -8px; }
-  .olay-kutusu .kt-sag-ust { top: -8px; right: -8px; }
-  .olay-kutusu .kt-sol-alt { bottom: -8px; left: -8px; }
-  .olay-kutusu .kt-sag-alt { bottom: -8px; right: -8px; }
+  .olay-kutusu .kt-sol-ust { top: calc(-8 * var(--u)); left: calc(-8 * var(--u)); }
+  .olay-kutusu .kt-sag-ust { top: calc(-8 * var(--u)); right: calc(-8 * var(--u)); }
+  .olay-kutusu .kt-sol-alt { bottom: calc(-8 * var(--u)); left: calc(-8 * var(--u)); }
+  .olay-kutusu .kt-sag-alt { bottom: calc(-8 * var(--u)); right: calc(-8 * var(--u)); }
 
   .olay-cercevesi-rozet {
-    right: -16px;
-    bottom: -16px;
-    width: 44px;
-    height: 44px;
-    font-size: 1.45rem;
+    right: calc(-16 * var(--u));
+    bottom: calc(-16 * var(--u));
+    width: calc(44 * var(--u));
+    height: calc(44 * var(--u));
+    font-size: calc(23 * var(--u));
   }
 
-  /* ---- Parşömen: PC okuma mesafesine göre büyük punto ---- */
+  /* ---- Parşömen ---- */
   .olay-parsomeni {
-    min-height: 64px;
-    padding: 10px clamp(14px, 2cqw, 26px);
+    min-height: calc(130 * var(--u));
+    padding: calc(14 * var(--u)) calc(22 * var(--u));
   }
   .olay-parsomeni h2 {
-    margin-bottom: 6px;
-    font-size: clamp(1.1rem, 0.7rem + 0.55vw, 1.5rem);
+    margin-bottom: calc(8 * var(--u));
+    font-size: var(--yz-baslik);
   }
   .olay-parsomeni .olay-metni,
   .olay-parsomeni .tur-ozeti {
-    font-size: clamp(1rem, 0.82rem + 0.35vw, 1.25rem);
-    line-height: 1.4;
+    font-size: var(--yz-metin);
+    line-height: 1.42;
   }
   .olay-parsomeni .tepki-notu {
-    font-size: 0.95rem;
+    font-size: calc(var(--yz-metin) * 0.88);
   }
   .olay-parsomeni .etki-cip {
-    font-size: clamp(0.85rem, 0.75rem + 0.2vw, 1rem);
-    padding: 0.26rem 0.7rem;
+    font-size: calc(var(--yz-metin) * 0.85);
+    padding: calc(4 * var(--u)) calc(11 * var(--u));
   }
 
   /* ---- Ahşap şıklar ---- */
   .olay-kutusu .secenekler {
-    gap: 10px;
-    max-height: 40cqh;
+    gap: calc(10 * var(--u));
+    max-height: calc(320 * var(--u));
   }
   .olay-kutusu .secenek,
   .olay-kutusu .olay-devam {
-    min-height: clamp(46px, 6cqh, 62px);
-    padding: 8px 14px;
-    font-size: clamp(0.92rem, 0.8rem + 0.25vw, 1.15rem);
+    min-height: var(--sik-yuk);
+    padding: calc(8 * var(--u)) calc(14 * var(--u));
+    font-size: var(--yz-sik);
+    line-height: 1.22;
   }
   .olay-kutusu .secenek.secenek-hafif {
-    padding: 8px 14px;
+    padding: calc(8 * var(--u)) calc(14 * var(--u));
   }
   .olay-kutusu .secenek.secenek-hafif .secenek-metin {
-    font-size: 0.92em;
+    font-size: 0.94em;
   }
   .olay-kutusu .secenek-kilit {
-    font-size: 0.82rem;
+    font-size: 0.84em;
   }
   .olay-kutusu .olay-devam {
-    width: min(100%, 420px);
-    min-height: clamp(48px, 6.4cqh, 64px);
+    width: min(100%, calc(420 * var(--u)));
     margin: 0 auto;
-    font-size: clamp(1rem, 0.85rem + 0.3vw, 1.25rem);
+    font-size: calc(var(--yz-sik) * 1.08);
   }
 
-  /* ---- Yoğun içerik (4 şık ya da uzun şık metni): çerçeve küçülür, punto bir kademe iner ---- */
+  /* ---- Yoğun içerik (4 şık ya da uzun şık metni): çerçeve ve punto bir kademe küçülür ---- */
   .olay-kutusu.olay-kutusu-yogun {
-    --cerceve-w: min(clamp(190px, 42cqh, 460px), 52cqw);
+    --cerceve-w: calc(290 * var(--u));
+    --yz-metin: calc(17.5 * var(--u));
+    --yz-sik: calc(15.8 * var(--u));
+    --sik-yuk: calc(46 * var(--u));
   }
   .olay-kutusu-yogun .secenekler {
-    gap: 8px;
+    gap: calc(8 * var(--u));
   }
   .olay-kutusu-yogun .secenek {
-    min-height: clamp(40px, 5cqh, 52px);
-    padding: 6px 12px;
-    font-size: clamp(0.86rem, 0.76rem + 0.2vw, 1rem);
+    padding: calc(6 * var(--u)) calc(12 * var(--u));
     line-height: 1.2;
   }
   .olay-kutusu-yogun .olay-parsomeni h2 {
-    font-size: clamp(1.02rem, 0.66rem + 0.5vw, 1.3rem);
-  }
-  .olay-kutusu-yogun .olay-parsomeni .olay-metni {
-    font-size: clamp(0.94rem, 0.78rem + 0.3vw, 1.12rem);
-    line-height: 1.32;
+    font-size: calc(var(--yz-baslik) * 0.92);
   }
 
-  /* Terfi parıltısı kutuya uygulanır (ekran kapsayıcısı saydam olduğu için görünmezdi). */
-  .oyun-ekrani.buyuk-an-terfi .olay-kutusu {
-    animation: buyukAnAltin 1.6s ease-out;
+  /* ---- Sayfa-düzeyi arka plan (sahne resmi sol/sağ sütunların da arkasında, sayfa altına kadar) ----
+     Mobildeki `.oyun-arka-sahne` ile aynı teknik: `position: fixed`, `.oyun-ekrani`nın DIŞINDA. */
+  .oyun-arka-sahne {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+    background: #140f0a;
   }
-
-  /* ---- Yan sütunlardaki ahşap kısayol kartları (KisayolKartlari.tsx) ---- */
-  .kisayol-kartlari {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
+  /* Alt kenar hafif kararır (sütun/kutu gölgeleriyle yumuşak birleşsin). */
+  .oyun-arka-sahne::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 8;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(12, 8, 5, 0.25) 0%, rgba(12, 8, 5, 0) 22%, rgba(12, 8, 5, 0) 70%, rgba(12, 8, 5, 0.4) 100%);
+  }
+  .bolge-sahnesi.bolge-sahnesi-sayfa {
+    position: absolute;
+    inset: 0;
     width: 100%;
-    margin: 0 0 0.7rem;
+    height: 100%;
+    margin: 0;
+    border-radius: 0;
   }
-  .sol-panel .kisayol-kartlari {
-    margin: 0; /* sol panel zaten `gap` ile aralıklı */
+  .bolge-sahnesi-sayfa .bolge-sahnesi-katman,
+  .bolge-sahnesi-sayfa .bolge-sahnesi-svg,
+  .bolge-sahnesi-sayfa .bolge-sahnesi-bolge-tonu {
+    height: 100%;
+  }
+  .bolge-sahnesi-sayfa .bolge-sahnesi-katman {
+    object-fit: cover;
+    object-position: 50% 30%;
+  }
+  .bolge-sahnesi-sayfa-gradyan {
+    position: absolute;
+    inset: 0;
+  }
+
+  /* İçerik arka planın üstünde. */
+  .oyun-ekrani-pc {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Merkez panel artık kutu/ahşap zemin değil: saydam, resim arkada görünür; olay kutusu altta. */
+  .oyun-ekrani-pc .merkez-panel {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    border-radius: 0;
+    overflow: visible;
+  }
+  .oyun-ekrani-pc .merkez-sahne {
+    overflow: visible;
+  }
+
+  /* Yan sütunlar içerik kadar uzar/kısalır (üstten hizalı); ekrana sığmazsa kendi içinde kayar. */
+  .oyun-ekrani-pc .oyun-govde {
+    align-items: stretch;
+  }
+  .oyun-ekrani-pc .sol-panel,
+  .oyun-ekrani-pc .sag-panel {
+    align-self: start;
+    height: auto;
+    max-height: 100%;
+  }
+  .oyun-ekrani-pc .sag-panel {
+    padding: 0;
+    overflow: visible;
+  }
+
+  /* ---- Sağ sütun: 6 büyük kare kısayol karosu (KisayolKartlari.tsx), 2 sütun × 3 sıra ---- */
+  .kisayol-kartlari {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(0.5rem, 0.9vw, 0.9rem);
+    width: 100%;
+    margin: 0;
   }
   .kisayol-karti {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 0.6rem;
+    justify-content: center;
+    gap: clamp(0.3rem, 0.6vw, 0.65rem);
     width: 100%;
-    padding: 0.45rem 0.75rem;
-    text-align: left;
+    aspect-ratio: 1 / 1;
+    padding: 0.4rem;
+    text-align: center;
     font-family: var(--font-baslik);
-    font-size: clamp(0.72rem, 0.25vw + 0.6rem, 0.92rem);
+    font-size: clamp(0.72rem, 0.35vw + 0.6rem, 1rem);
     font-weight: 700;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
     color: #f4e0b0;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
     background: var(--ahsap);
     border: 2px solid var(--ahsap-kenar);
-    border-radius: 9px;
-    box-shadow: var(--ahsap-golge);
+    border-radius: 12px;
+    box-shadow: var(--ahsap-golge), 0 6px 16px rgba(0, 0, 0, 0.5);
   }
   .kisayol-karti:hover:not(:disabled),
   .kisayol-karti:focus-visible {
     background: var(--ahsap);
     border-color: var(--renk-altin-parlak);
-    box-shadow: var(--ahsap-golge);
+    box-shadow: var(--ahsap-golge), 0 6px 16px rgba(0, 0, 0, 0.5);
     filter: brightness(1.12);
     transform: none;
   }
@@ -184,41 +259,33 @@
   }
   .kisayol-karti-ikon {
     flex: none;
-    width: 1.8rem;
-    font-size: 1.45rem;
+    font-size: clamp(2rem, 2.6vw + 0.8rem, 4rem);
     line-height: 1;
     text-align: center;
-    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.6));
+    filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.6));
   }
   .kisayol-karti-etiket {
-    flex: 1 1 auto;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    flex: 0 1 auto;
+    max-width: 100%;
+    line-height: 1.15;
+    overflow-wrap: anywhere;
   }
 }
 
 /* Dar sütunlar (küçük laptop / yatay tablet): etiket küçülür. */
 @media (min-width: 768px) and (max-width: 1099px) {
   .kisayol-karti {
-    gap: 0.4rem;
-    padding: 0.4rem 0.5rem;
-    font-size: 0.7rem;
-    letter-spacing: 0.03em;
+    font-size: 0.66rem;
+    letter-spacing: 0.02em;
+    gap: 0.2rem;
   }
   .kisayol-karti-ikon {
-    width: 1.4rem;
-    font-size: 1.2rem;
+    font-size: 1.8rem;
   }
 }
 
 /* Çok dar sütunlar (dikey tablet): yalnız ikon (ad `title`'da). */
 @media (min-width: 768px) and (max-width: 899px) {
-  .kisayol-karti {
-    justify-content: center;
-    padding: 0.4rem;
-  }
   .kisayol-karti-etiket {
     display: none;
   }
@@ -227,5 +294,19 @@
 @media (min-width: 768px) and (prefers-reduced-motion: reduce) {
   .oyun-ekrani.buyuk-an-terfi .olay-kutusu {
     animation: none;
+  }
+}
+
+/* 8 üst şerit modülü dar PC'de (≤1500px): etiket harf aralığı daralır, "MUTLULUK" kesilmesin. */
+@media (min-width: 768px) and (max-width: 1500px) {
+  .ust-serit-moduller .ust-serit-modul-etiket {
+    letter-spacing: 0;
+  }
+}
+
+/* Çok dar PC (≤1400px): üst şerit etiketleri küçülür, "MUTLULUK" kesilmesin. */
+@media (min-width: 768px) and (max-width: 1400px) {
+  .ust-serit-moduller .ust-serit-modul-etiket {
+    font-size: 0.6rem;
   }
 }
