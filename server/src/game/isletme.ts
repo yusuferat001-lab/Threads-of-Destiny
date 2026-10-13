@@ -46,7 +46,7 @@ export const DEPO_MASRAFI_ORANI = 0.04;
 export const BASLANGIC_STOK = 20;
 export const BORC_ODEME_ORANI = 0.6;
 export const CALISAN_TAVANI = 8;
-export const ISLETME_TALEP_OLCEGI = 0.78;
+export const ISLETME_TALEP_OLCEGI = 0.9;
 /** Müşterinin bütçesi hatlar arasında paylaşılır: n açık hatta her birinin talebi 1/(1+0.6(n-1)) ile çarpılır. */
 export const HAT_PAYLASIM = 0.6;
 const SIPARIS_PAYI = 1.1;
@@ -58,6 +58,8 @@ const DUKKAN_TALEP_KADEME = 0.05;
 const KERVAN_INDIRIM_KADEME = 0.04;
 const KRIZ_PAHALI_TALEP = 0.6;
 const GUMRUK_INDIRIMI = 0.85;
+/** Perakende fiyatı toptan fiyat şokunu yalnız bu oranda izler: kıtlıkta mal pahalanır ama müşterinin alım gücü yetmez, kâr marjı şişmez. */
+const SATIS_FIYAT_UYUMU = 0.6;
 
 export const FIYAT_POLITIKASI: Record<IsletmeFiyat, { fiyat: number; talep: number }> = {
   ucuz: { fiyat: 0.85, talep: 1.35 },
@@ -179,7 +181,7 @@ export function hatHesapla(state: CharacterState, hat: IsletmeHat, tanim: HatTan
     ISLETME_TALEP_OLCEGI;
   return {
     talep,
-    birimFiyat: tanim.birimFiyat * b.enflasyon * kes.fiyat * pol.fiyat * b.fiyatPrimi,
+    birimFiyat: tanim.birimFiyat * b.enflasyon * (1 + (kes.fiyat - 1) * SATIS_FIYAT_UYUMU) * pol.fiyat * b.fiyatPrimi,
     birimMaliyet:
       tanim.birimMaliyet * b.enflasyon * kes.fiyat * (1 - ekip.alisIskonto) * kervan * (state.yil <= (is.gumruk_indirim_bitis ?? -1) ? GUMRUK_INDIRIMI : 1),
     kesim: kes,
