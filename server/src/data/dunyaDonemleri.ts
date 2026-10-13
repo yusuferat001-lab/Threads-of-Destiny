@@ -28,7 +28,7 @@ interface EtkiAraliklari {
 export const DONEM_SURE: Record<DonemTuru, Aralik> = {
   bolluk: [5, 6],
   durgunluk: [5, 6],
-  kitlik: [3, 4],
+  kitlik: [3, 3],
 };
 
 const DONEM_ETKI_ARALIKLARI: Record<DonemTuru, EtkiAraliklari> = {
@@ -37,8 +37,6 @@ const DONEM_ETKI_ARALIKLARI: Record<DonemTuru, EtkiAraliklari> = {
   kitlik: { temelTalep: [0, 0], temelFiyat: [45, 60], luksTalep: [-50, -40], luksFiyat: [-12, -8], yasamGideri: [25, 35], maas: [-12, -8] },
 };
 
-/** Kıtlık döneminde yıllık sağlık kaybı. */
-export const KITLIK_SAGLIK_YILLIK = -1;
 
 // ── Savaş ──────────────────────────────────────────────────────────────────
 /** Durgunluk/kıtlıkta (bollukta asla) savaşın yıllık başlama ihtimali. */
@@ -58,9 +56,13 @@ const SAVAS_ETKI_ARALIKLARI: EtkiAraliklari = {
 };
 
 // ── Veba ───────────────────────────────────────────────────────────────────
-export const VEBA_YILLIK_IHTIMAL = 0.025;
+export const VEBA_YILLIK_IHTIMAL = 0.04;
+/** Veba bu yaştan itibaren çıkabilir. */
+export const VEBA_MIN_YAS = 20;
+/** Bu yaşa kadar hiç veba görmediyse zorla tetiklenir (her oyunda veba kesin çıkar). */
+export const VEBA_ZORUNLU_YAS = 45;
 /** Son vebanın bitişinden sonra yeni dalga için beklenecek yıl. */
-export const VEBA_COOLDOWN_YIL = 25;
+export const VEBA_COOLDOWN_YIL = 30;
 export const VEBA_SURE: Aralik = [5, 6];
 const VEBA_ETKI_ARALIKLARI: EtkiAraliklari = {
   temelTalep: [-25, -18],

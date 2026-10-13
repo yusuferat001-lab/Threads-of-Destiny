@@ -1570,23 +1570,23 @@ Kaynak: [data/ajanlar.ts](server/src/data/ajanlar.ts) + gameEngine `ajanTut`/`aj
 ## 44. Dünya Dönemleri (2026-10, Faz A)
 Kaynak: [data/dunyaDonemleri.ts](server/src/data/dunyaDonemleri.ts) (tablolar + saf fonksiyonlar) + stateManager `donemIlerlet`/`ulkeGuncelle`/`buyukSavasKontrolEt`/`vebaBaslamaliMi`. Yeni meslek planının (dikey dilim, önce Tüccar) ilk adımı.
 
-- **Her an bir dönem:** `state.ulke.donem = {tur: "bolluk"|"durgunluk"|"kitlik", baslangicYili, bitisYili, sonraki, etki}`. "Normal" yok. Aynı dönem asla arka arkaya gelmez: biten dönemin yerine kalan ikisinden biri %50 gelir (`sonraki` dönem başında önceden zarlanır, dedikodu için). Savaş sürerken bolluk gelmez; savaş başlarken bolluk sürüyorsa o yıl biter. Süre: bolluk/durgunluk 5-6, kıtlık 3-4 yıl. Yeni karakterde ilk dönem ve kalan süresi rastgele.
+- **Her an bir dönem:** `state.ulke.donem = {tur: "bolluk"|"durgunluk"|"kitlik", baslangicYili, bitisYili, sonraki, etki}`. "Normal" yok. Aynı dönem asla arka arkaya gelmez: biten dönemin yerine kalan ikisinden biri %50 gelir (`sonraki` dönem başında önceden zarlanır, dedikodu için). Savaş sürerken bolluk gelmez; savaş başlarken bolluk sürüyorsa o yıl biter. Süre: bolluk/durgunluk 5-6, kıtlık sabit 3 yıl. Yeni karakterde ilk dönem ve kalan süresi rastgele.
 - **Etkiler aralıktan, tam yüzde olarak bir kez zarlanır** (`DonemEtkisi`: `temelTalep, temelFiyat, luksTalep, luksFiyat, yasamGideri, maas`, hepsi çarpan). Şu an kullanılanlar: `maas` (maaş kırılımında dönem kalemi), `yasamGideri` (`giderKalemleriHesapla`); talep/fiyat alanları meslek işletmesi için hazır bekliyor.
 
 | | Temel talep | Temel fiyat | Lüks talep | Lüks fiyat | Yaşam gideri | Maaş |
 |---|---|---|---|---|---|---|
 | Bolluk | +3..+7 | −9..−5 | +30..+45 | +10..+16 | −10..−6 | +6..+10 |
 | Durgunluk | −13..−8 | −2..+2 | −35..−25 | −11..−6 | +2..+5 | −10..−6 |
-| Kıtlık | 0 | +45..+60 | −50..−40 | −12..−8 | +25..+35 | −12..−8 |
+| Kıtlık (sağlık etkisi yok) | 0 | +45..+60 | −50..−40 | −12..−8 | +25..+35 | −12..−8 |
 | Savaş | 0 | +18..+25 | −40..−30 | 0 | +12..+18 | −10..−6 |
 | Veba | −25..−18 | +12..+18 | −55..−45 | 0 | 0 | +8..+12 (işçi kıtlığı) |
 
-- **Kıtlık** dönemi yılda −1 sağlık (olayla açılmış yerel kıtlık krizi de varsa ikinci kez düşülmez). `kitlikVar(ulke)` = dönem kıtlık **ya da** `ulke.kriz.tur === "kitlik"`; mülk getirisi, mağaza fiyatı, haberler ve dedikodu bunu kullanır.
+- **Kıtlık dönemi sağlık götürmez** (2026-10 kullanıcı düzeltmesi; yalnız yaşam gideri/fiyat/talep etkisi). Olayla açılan yerel kıtlık krizi (`ulke.kriz`) kendi −1 sağlık/yıl etkisini korur. `kitlikVar(ulke)` = dönem kıtlık **ya da** `ulke.kriz.tur === "kitlik"`; mülk getirisi, mağaza fiyatı, haberler ve dedikodu bunu kullanır.
 - **`ulke.ekonomi` dönemden türetilir** (bolluk → "iyi", diğerleri → "kotu"); eski olaylar/mülk/mağaza çalışmaya devam eder. Olayların `ulke_etkisi.ekonomi`'si (`ulkeGuncelle`) dönemi değiştirmez, yalnız kalan süresini ±1 yıl kaydırır (dönemle aynı yöndeyse uzar, tersse kısalır; en az 1 yıl kalır).
 - **Savaş:** bollukta ve veba sürerken başlamaz; son savaşın bitişinden 6 yıl sonra yılda %18 (`SAVAS_YILLIK_IHTIMAL`); süre 4-5 yıl; vergi %7-10. Zar tutunca bir yıl `state.dunya_yaklasan = {tur:"savas", yil, dusman}` olur, ertesi yıl başlar (araya veba girerse iptal). Tarihi savaş ilanı (§11 kural 1) veba sürerken ertelenir. Olayla savaş başlatma (`ulke_etkisi.savasta`) veba sürerken yok sayılır.
-- **Veba:** 18+ yaşta yılda %2.5, son dalganın bitişinden 25 yıl sonra, savaş sürerken başlamaz; aynı bir yıllık `dunya_yaklasan` aşamasından geçer. Süre 5-6 yıl; ayrı "iz" fazı **yok** (`etkiBitisYili = bitisYili`, `konutKiraCarpani = 1`); bitince `state.veba = null` + `son_veba_bitis_yili`. Bulaşma/hasta havuzu/korunma kademeleri değişmedi (§27).
+- **Veba (her oyunda KESİN çıkar):** 20+ yaşta yılda %4 (`VEBA_YILLIK_IHTIMAL`), son dalganın bitişinden 30 yıl sonra tekrar, savaş sürerken başlamaz; **45 yaşına kadar hiç veba görülmediyse (`!veba_gecirdi && son_veba_bitis_yili == null`) zar atılmadan zorla tetiklenir** (45'te savaş sürüyorsa savaş bitince). Hepsi bir yıllık `dunya_yaklasan` aşamasından geçer (dedikodu sinyali). Süre 5-6 yıl; ayrı "iz" fazı **yok** (`etkiBitisYili = bitisYili`, `konutKiraCarpani = 1`); bitince `state.veba = null` + `son_veba_bitis_yili`. Bulaşma/hasta havuzu/korunma kademeleri değişmedi (§27).
 - **Dedikodu:** dönem bitmesine ≤1 yıl kala sıradaki dönemi %70 doğru söyler (`DEDIKODU_ISABET`); yaklaşan savaş/veba %70 sezilir; hiçbir şey yaklaşmazken %8 "savaş geliyor" yanlış alarmı.
 - **Dünya etkileri listesi** (`dunyaFinansEtkileri`): dönem satırı ("🥀 Kıtlık (~2 yıl): maaş −%9 · yaşam gideri +%31 · −1 sağlık/yıl"), savaş ve salgın satırları gerçek zarlanan yüzdelerle. Yüzde biçimi dile göre (TR "+%9", EN "+9%").
 - **Eski kayıt:** `eskiKayitGocu` dönem yoksa ekonomiye göre atar (iyi → bolluk, kıtlık krizi → kıtlık, diğer → durgunluk), eski küçük kriz alanlarını siler.
-- **Ölçüm:** `npx tsx scripts/simulateDunyaDonemleri.ts` (60 yıllık ömür, 18 yaşından): ~4 bolluk · ~5 durgunluk · ~5 kıtlık, ~2.6 rastgele savaş (~11.5 yıl; tarihi savaşlar hariç), ~0.8 veba (ömürlerin ~%33'ü vebasız); arka arkaya aynı dönem, bollukta savaş, savaş+veba çakışması ihlalleri 0.
+- **Ölçüm:** `npx tsx scripts/simulateDunyaDonemleri.ts` (60 yıllık ömür, 18 yaşından): ~4 bolluk · ~5 durgunluk · ~5 kıtlık, ~2.6 rastgele savaş (~11.5 yıl; tarihi savaşlar hariç), ~1.1 veba, vebasız ömür %0; arka arkaya aynı dönem, bollukta savaş, savaş+veba çakışması ihlalleri 0.
 - **Test:** [donemselDunyaOlaylari.test.ts](server/tests/donemselDunyaOlaylari.test.ts) "dünya dönemleri" + savaş/veba blokları.

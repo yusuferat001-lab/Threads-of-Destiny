@@ -38,12 +38,13 @@ import { tarihiSavasKontrol, gelecekSavasKontrol } from "../data/tarihiSavaslar"
 import {
   DONEM_SURE,
   DONEM_ADLARI,
-  KITLIK_SAGLIK_YILLIK,
   SAVAS_YILLIK_IHTIMAL,
   SAVAS_COOLDOWN_YIL,
   SAVAS_SURE,
   VEBA_YILLIK_IHTIMAL,
   VEBA_COOLDOWN_YIL,
+  VEBA_MIN_YAS,
+  VEBA_ZORUNLU_YAS,
   VEBA_SURE,
   DEDIKODU_ISABET,
   DEDIKODU_YANLIS_ALARM,
@@ -2473,8 +2474,6 @@ export function donemIlerlet(state: CharacterState, yasArtisi: number): string[]
   const ilkYil = state.yil - Math.max(0, yasArtisi);
   for (let y = ilkYil; y < state.yil; y++) {
     while (state.ulke.donem.bitisYili <= y) mesajlar.push(donemGecir(state, state.ulke.donem.bitisYili));
-    // Yerel bir kıtlık krizi zaten -1 sağlık uyguluyorsa ikinci kez düşülmez.
-    if (state.ulke.donem.tur === "kitlik" && state.ulke.kriz?.tur !== "kitlik") state.saglik += KITLIK_SAGLIK_YILLIK;
   }
   while (state.ulke.donem.bitisYili <= state.yil) mesajlar.push(donemGecir(state, state.ulke.donem.bitisYili));
   state.ulke.ekonomi = ekonomiFromDonem(state.ulke.donem.tur);
@@ -3038,11 +3037,10 @@ export function buyukSavasBitisKontrolEt(state: CharacterState): string | null {
   return T(state.dil, "🕊️ {0} ile sürdürülen savaş sona erdi, barış geri döndü.", [K(state.dil, dusman)]);
 }
 
-const VEBA_MIN_YAS = 18;
 
 /**
- * Vebanın zamanı geldi mi (Faz A): 18+ yaşta yılda %2.5; son dalganın bitişinden
- * 25 yıl sonra; savaş sürerken başlamaz. Zar tutunca dalga bir yıl sonra gelir
+ * Vebanın zamanı geldi mi (Faz A): 20+ yaşta yılda %4; son dalganın bitişinden
+ * 30 yıl sonra; 45'e kadar hiç çıkmadıysa zorla; savaş sürerken başlamaz. Zar tutunca dalga bir yıl sonra gelir
  * (`dunya_yaklasan`, dedikodu sinyali); o yıl gelince true döner ve gameEngine
  * başlangıç olayını zorlar.
  */
@@ -3055,6 +3053,11 @@ export function vebaBaslamaliMi(state: CharacterState, yasArtisi: number): boole
     return !state.ulke.savasta;
   }
   if (yaklasan || state.ulke.savasta || state.yas < VEBA_MIN_YAS) return false;
+  // Her oyunda veba kesin çıkar: 45'e kadar hiç görmediyse zar atmadan sinyali kur.
+  if (state.yas >= VEBA_ZORUNLU_YAS && !state.veba_gecirdi && state.son_veba_bitis_yili == null) {
+    state.dunya_yaklasan = { tur: "veba", yil: state.yil + 1 };
+    return false;
+  }
   if (state.son_veba_bitis_yili != null && state.yil - state.son_veba_bitis_yili < VEBA_COOLDOWN_YIL) return false;
   for (let i = 0; i < yasArtisi; i++) {
     if (Math.random() < VEBA_YILLIK_IHTIMAL) {
@@ -3350,7 +3353,6 @@ export function dunyaFinansEtkileri(state: CharacterState): DunyaFinansEtkisi[] 
       T(dil, "maaş {0}", [isaretli(donem.etki.maas)]),
       T(dil, "yaşam gideri {0}", [isaretli(donem.etki.yasamGideri)]),
     ];
-    if (donem.tur === "kitlik") parcalar.push(T(dil, "−1 sağlık/yıl"));
     liste.push({
       ikon: DONEM_ADLARI[donem.tur].simge,
       metin: T(dil, "{0} (~{1} yıl): {2}", [T(dil, DONEM_ADLARI[donem.tur].ad), kalan, parcalar.join(" · ")]),

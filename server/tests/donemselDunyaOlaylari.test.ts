@@ -285,15 +285,55 @@ describe("buyukSavasKontrolEt / buyukSavasBitisKontrolEt", () => {
 });
 
 describe("vebaBaslamaliMi / vebaBaslat / vebaYillikKontrol / vebaBitisKontrolEt", () => {
-  it("18 yaşından küçükken asla tetiklenmez", () => {
+  it("20 yaşından küçükken asla tetiklenmez", () => {
     const state = taze();
-    state.yas = 15;
+    state.yas = 19;
     for (let i = 0; i < 500; i++) {
       expect(vebaBaslamaliMi(state, 2)).toBe(false);
+      expect(state.dunya_yaklasan).toBeNull();
     }
   });
 
-  it("dalga bittikten sonra 25 yıl cooldown boyunca tetiklenmez, sonra tekrar tetiklenebilir", () => {
+  it("45 yaşına kadar hiç çıkmadıysa zar atmadan kesin tetiklenir", () => {
+    for (let i = 0; i < 50; i++) {
+      const state = taze();
+      state.yas = 45;
+      state.veba_gecirdi = false;
+      state.son_veba_bitis_yili = null;
+      vi.spyOn(Math, "random").mockReturnValue(0.99); // zar asla tutmasın
+      expect(vebaBaslamaliMi(state, 1)).toBe(false);
+      expect(state.dunya_yaklasan?.tur).toBe("veba");
+      state.yil = state.dunya_yaklasan!.yil;
+      expect(vebaBaslamaliMi(state, 1)).toBe(true);
+      vi.restoreAllMocks();
+    }
+  });
+
+  it("45'te savaş sürüyorsa savaş bitince tetiklenir", () => {
+    const state = taze();
+    state.yas = 46;
+    state.ulke.savasta = true;
+    vi.spyOn(Math, "random").mockReturnValue(0.99);
+    expect(vebaBaslamaliMi(state, 1)).toBe(false);
+    expect(state.dunya_yaklasan).toBeNull();
+    state.ulke.savasta = false;
+    expect(vebaBaslamaliMi(state, 1)).toBe(false);
+    expect(state.dunya_yaklasan?.tur).toBe("veba");
+    vi.restoreAllMocks();
+  });
+
+  it("45'ten önce geçirilmiş vebadan sonra zorunlu tetikleme çalışmaz", () => {
+    const state = taze();
+    state.yas = 50;
+    state.veba_gecirdi = true;
+    state.son_veba_bitis_yili = state.yil - 5;
+    vi.spyOn(Math, "random").mockReturnValue(0.99);
+    for (let i = 0; i < 20; i++) expect(vebaBaslamaliMi(state, 1)).toBe(false);
+    expect(state.dunya_yaklasan).toBeNull();
+    vi.restoreAllMocks();
+  });
+
+  it("dalga bittikten sonra 30 yıl cooldown boyunca tetiklenmez, sonra tekrar tetiklenebilir", () => {
     const state = taze();
     state.yas = 40;
     state.veba_gecirdi = true;
@@ -302,8 +342,8 @@ describe("vebaBaslamaliMi / vebaBaslat / vebaYillikKontrol / vebaBitisKontrolEt"
     for (let i = 0; i < 500; i++) {
       expect(vebaBaslamaliMi(state, 2)).toBe(false);
     }
-    // Cooldown dolmuş (25 yıl önce): artık yeniden tetiklenebilir.
-    state.son_veba_bitis_yili = state.yil - 25;
+    // Cooldown dolmuş (30 yıl önce): artık yeniden tetiklenebilir.
+    state.son_veba_bitis_yili = state.yil - 30;
     expect(vebaTetikle(state)).toBe(true);
   });
 
@@ -440,7 +480,7 @@ describe("dünya dönemleri (bolluk / durgunluk / kıtlık)", () => {
         expect(d.tur).not.toBe(onceki.tur);
         if (state.ulke.savasta) expect(d.tur).not.toBe("bolluk");
         const sure = d.bitisYili - d.baslangicYili;
-        if (d.tur === "kitlik") expect(sure >= 3 && sure <= 4).toBe(true);
+        if (d.tur === "kitlik") expect(sure).toBe(3);
         else expect(sure >= 5 && sure <= 6).toBe(true);
         onceki = d;
       }
@@ -458,7 +498,7 @@ describe("dünya dönemleri (bolluk / durgunluk / kıtlık)", () => {
     }
   });
 
-  it("kıtlık yıllarında sağlık düşer ve yaşam gideri artar", () => {
+  it("kıtlık yaşam giderini artırır ama sağlık götürmez", () => {
     const state = taze();
     state.ulke.donem = ilkDonemOlustur(state.yil, "bolluk");
     state.ulke.donem.bitisYili = state.yil + 50;
@@ -469,7 +509,7 @@ describe("dünya dönemleri (bolluk / durgunluk / kıtlık)", () => {
     state.saglik = 80;
     state.yil += 2;
     donemIlerlet(state, 2);
-    expect(state.saglik).toBe(78);
+    expect(state.saglik).toBe(80);
   });
 
   it("olayın ekonomi etkisi dönemi değiştirmez, yalnız süresini ±1 yıl kaydırır", () => {
