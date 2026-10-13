@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import type { EkipUyesi, Rakip, KotuIsKarti, YonetimDurumu, YonetimHat, PazarDurumu, AjanDurumu } from '../types';
+import type { IsletmeGorunumu, IsletmeKararGirdisi, EkipUyesi, Rakip, KotuIsKarti, YonetimDurumu, YonetimHat, PazarDurumu, AjanDurumu } from '../types';
 import { useDil } from '../DilContext';
 import { formatPara, formatYuzde, formatYuzdeAralik } from '../format';
 import { bic, type Metinler } from '../i18n';
 import type { Dil } from '../ayarlar';
 import { rutbeIlerlemeHesapla } from '../rutbeIlerleme';
+import { IsletmePaneli } from './IsletmePaneli';
 
 interface KariyerEkraniProps {
   meslek: string;
@@ -44,6 +45,11 @@ interface KariyerEkraniProps {
   /** Ajan sistemi (§43 Faz 2) — arayüzü meslek ekip rolleriyle birlikte gelecek; şimdilik kullanılmıyor. */
   ajanDurum?: AjanDurumu | null;
   onAjanTut?: (rol: string) => void;
+  /** Meslek işletmesi (GET /:id/isletme); işletmesi olmayan mesleklerde null. */
+  isletme?: IsletmeGorunumu | null;
+  onIsletmeKarar?: (hatlar: IsletmeKararGirdisi[]) => void;
+  onIsletmeYatirim?: (yatirimId: string) => void;
+  onIsletmeCalisanAl?: (adayId: string) => void;
   onGeriDon: () => void;
 }
 
@@ -538,6 +544,10 @@ export function KariyerEkrani({
   onTalep,
   onEkipCikar,
   onKotuIs,
+  isletme,
+  onIsletmeKarar,
+  onIsletmeYatirim,
+  onIsletmeCalisanAl,
   onGeriDon,
 }: KariyerEkraniProps) {
   const { m, kt, dil } = useDil();
@@ -797,7 +807,20 @@ export function KariyerEkrani({
             </section>
           )}
 
+          {/* ===== İŞLETME (Tüccar dilimi, §45) — çalışanlar da burada yönetilir ===== */}
+          {isletme?.aktif && onIsletmeKarar && onIsletmeYatirim && onIsletmeCalisanAl && (
+            <IsletmePaneli
+              durum={isletme}
+              yukleniyor={yukleniyor}
+              onKarar={onIsletmeKarar}
+              onYatirim={onIsletmeYatirim}
+              onCalisanAl={onIsletmeCalisanAl}
+              onEkipCikar={onEkipCikar}
+            />
+          )}
+
           {/* ===== EKİBİN ===== */}
+          {!isletme?.aktif && (
           <div className="aile-cocuklar-karti">
             <h3>{m.geEkibin}</h3>
             {ekip.length === 0 ? (
@@ -820,6 +843,7 @@ export function KariyerEkrani({
               </ul>
             )}
           </div>
+          )}
 
           {/* ===== KARANLIK İŞLER (ayrı bir pencerede açılır) ===== */}
           <div className="aile-cocuklar-karti">

@@ -7567,3 +7567,47 @@ button.ikincil {
 .yatirim-kart.karanlik-bekliyor {
   opacity: 0.6;
 }
+
+/* ===== Meslek işletmesi paneli (Kariyer ekranı, CLAUDE.md §45) ===== */
+.isletme-paneli {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 10px;
+  padding: 0.75rem 0.9rem;
+  margin: 0.75rem 0;
+}
+.isletme-paneli h3 { margin: 0 0 0.5rem; }
+.isletme-paneli h4 { margin: 0.9rem 0 0.4rem; font-size: 0.95rem; opacity: 0.9; }
+.isletme-ozet { display: flex; flex-wrap: wrap; gap: 0.35rem 1rem; font-size: 0.88rem; }
+.isletme-hatlar, .isletme-yatirimlar, .isletme-calisanlar { display: flex; flex-direction: column; gap: 0.5rem; }
+.isletme-hat {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 0.5rem 0.65rem;
+  opacity: 0.8;
+}
+.isletme-hat-acik { opacity: 1; border-color: rgba(212, 175, 55, 0.55); }
+.isletme-hat-kilitli { opacity: 0.5; }
+.isletme-hat-baslik { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.isletme-hat-baslik button { margin-left: auto; padding: 0.2rem 0.7rem; font-size: 0.8rem; }
+.isletme-etiket { font-size: 0.72rem; padding: 0.05rem 0.45rem; border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 999px; opacity: 0.85; }
+.isletme-hat-satir { display: flex; flex-wrap: wrap; gap: 0.2rem 0.9rem; font-size: 0.82rem; margin-top: 0.3rem; }
+.isletme-hat-dunya { font-size: 0.78rem; opacity: 0.8; margin-top: 0.2rem; }
+.isletme-hat-kontrol { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; margin-top: 0.4rem; font-size: 0.82rem; }
+.isletme-hat-kontrol button { padding: 0.15rem 0.6rem; font-size: 0.78rem; }
+.isletme-otomatik { display: inline-flex; align-items: center; gap: 0.3rem; margin-left: 0.4rem; }
+.isletme-siparis input { width: 4.2rem; margin: 0 0.3rem; }
+.isletme-yatirim, .isletme-calisan {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.2rem 0.7rem;
+  border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 0.4rem 0.6rem; font-size: 0.84rem;
+}
+.isletme-yatirim small, .isletme-calisan small { flex-basis: 100%; opacity: 0.7; }
+.isletme-yatirim button, .isletme-calisan button { margin-left: auto; padding: 0.2rem 0.7rem; font-size: 0.8rem; }
+.isletme-bos { font-size: 0.84rem; opacity: 0.7; margin: 0.2rem 0; }
+.isletme-dokum { display: flex; flex-direction: column; gap: 0.15rem; font-size: 0.86rem; }
+.isletme-dokum-net { border-top: 1px solid rgba(255, 255, 255, 0.15); padding-top: 0.2rem; margin-top: 0.15rem; }
+.isletme-uyari { font-size: 0.82rem; color: #f0b27a; }
+@media (max-width: 767px) {
+  .isletme-paneli { padding: 0.55rem 0.6rem; }
+  .isletme-ozet { font-size: 0.8rem; gap: 0.25rem 0.7rem; }
+}

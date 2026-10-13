@@ -22,6 +22,8 @@ import type {
   YonetimDurumu,
   PazarDurumu,
   AjanDurumu,
+  IsletmeGorunumu,
+  IsletmeKararGirdisi,
 } from './types';
 import {
   mesleklerGetir,
@@ -72,6 +74,10 @@ import {
   yonetimDurumGetir,
   pazarGetir,
   ajanDurumGetir,
+  isletmeGetir,
+  isletmeKararVer,
+  isletmeYatirimYap,
+  isletmeCalisanAl,
   ajanTut,
   yonetimEtkilesimYap,
   yonetimIstekYap,
@@ -354,6 +360,7 @@ function App() {
   const [yonetimDurum, setYonetimDurum] = useState<YonetimDurumu | null>(null);
   const [pazarDurum, setPazarDurum] = useState<PazarDurumu | null>(null);
   const [ajanDurum, setAjanDurum] = useState<AjanDurumu | null>(null);
+  const [isletme, setIsletme] = useState<IsletmeGorunumu | null>(null);
   const [kotuIsler, setKotuIsler] = useState<KotuIsKarti[]>([]);
   const [krediConfig, setKrediConfig] = useState<KrediConfig | null>(null);
   const [dedikodular, setDedikodular] = useState<string[]>([]);
@@ -941,12 +948,14 @@ function App() {
     setHata(null);
     setYukleniyor(true);
     try {
-      const [durum, { config }, pazar, ajanlar] = await Promise.all([
+      const [durum, { config }, pazar, ajanlar, isletmeDurumu] = await Promise.all([
         yonetimDurumGetir(karakter.id),
         kotuIsConfigGetir(karakter.id),
         pazarGetir(karakter.id),
         ajanDurumGetir(karakter.id),
+        isletmeGetir(karakter.id),
       ]);
+      setIsletme(isletmeDurumu);
       setYonetimDurum(durum);
       setKotuIsler(config);
       setPazarDurum(pazar);
@@ -1495,6 +1504,57 @@ function App() {
     }
   }
 
+  // ===== Meslek işletmesi (§45) — hiçbiri turu tüketmez =====
+  async function isletmeKararHandler(hatlar: IsletmeKararGirdisi[]) {
+    if (!karakter) return;
+    setHata(null);
+    setIslemMesaji(null);
+    setYukleniyor(true);
+    try {
+      const sonuc = await isletmeKararVer(karakter.id, hatlar);
+      setKarakter(sonuc.state);
+      setIsletme(sonuc.durum);
+    } catch (err) {
+      setIslemMesaji(temizHata(err));
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
+  async function isletmeYatirimHandler(yatirimId: string) {
+    if (!karakter) return;
+    setHata(null);
+    setIslemMesaji(null);
+    setYukleniyor(true);
+    try {
+      const sonuc = await isletmeYatirimYap(karakter.id, yatirimId);
+      setKarakter(sonuc.state);
+      setIsletme(sonuc.durum);
+      setIslemMesaji(sonuc.mesaj);
+    } catch (err) {
+      setIslemMesaji(temizHata(err));
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
+  async function isletmeCalisanAlHandler(adayId: string) {
+    if (!karakter) return;
+    setHata(null);
+    setIslemMesaji(null);
+    setYukleniyor(true);
+    try {
+      const sonuc = await isletmeCalisanAl(karakter.id, adayId);
+      setKarakter(sonuc.state);
+      setIsletme(sonuc.durum);
+      setIslemMesaji(sonuc.mesaj);
+    } catch (err) {
+      setIslemMesaji(temizHata(err));
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
   async function ekipCikarHandler(ekipId: string) {
     if (!karakter) return;
     setHata(null);
@@ -1506,6 +1566,7 @@ function App() {
       setIslemMesaji(sonuc.mesaj);
       const { finans } = await finansGetir(sonuc.state.id);
       setFinans(finans);
+      if (isletme?.aktif) setIsletme(await isletmeGetir(sonuc.state.id));
     } catch (err) {
       setHata(temizHata(err));
     } finally {
@@ -2706,6 +2767,10 @@ function App() {
           onTalep={yonetimTalepHandler}
           onEkipCikar={ekipCikarHandler}
           onKotuIs={kotuIsHandler}
+          isletme={isletme}
+          onIsletmeKarar={isletmeKararHandler}
+          onIsletmeYatirim={isletmeYatirimHandler}
+          onIsletmeCalisanAl={isletmeCalisanAlHandler}
           onGeriDon={() => {
             setIslemMesaji(null);
             setEkran('oyun');
