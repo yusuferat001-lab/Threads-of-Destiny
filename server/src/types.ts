@@ -720,6 +720,8 @@ export interface IsletmeDurumu {
   son_dokum: IsletmeDokum | null;
   adaylar: IsletmeAday[];
   aday_yili: number;
+  /** Gümrük rüşveti etkisi: bu oyun yılına kadar alış maliyeti %15 düşük (§45). */
+  gumruk_indirim_bitis?: number;
 }
 
 export interface SonucEtkisi {

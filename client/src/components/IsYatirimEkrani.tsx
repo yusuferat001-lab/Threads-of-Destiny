@@ -1,21 +1,14 @@
 import { useEffect, useState } from 'react';
 import type { MulkKartBilgisi, MulkTuru, KrediConfig } from '../types';
-import { formatPara, formatYuzde } from '../format';
+import { formatPara } from '../format';
 import { bic } from '../i18n';
 import { useDil } from '../DilContext';
 import { useMobilEkran } from '../hooks';
 
 interface IsYatirimEkraniProps {
-  meslek: string;
-  rutbe: string;
   paraBirimi: string;
-  orduMevcudu: number;
-  orduTechizatSeviyesi: number;
-  sehirYonetimSeviyesi: number;
-  sehirYonetimUnvan: string | null;
   para: number;
   krediConfig: KrediConfig | null;
-  dedikodular: string[];
   mulkler: MulkKartBilgisi[];
   yukleniyor: boolean;
   islemMesaji: string | null;
@@ -25,31 +18,6 @@ interface IsYatirimEkraniProps {
   onGeriDon: () => void;
 }
 
-function StatKarosu({
-  ikon,
-  etiket,
-  deger,
-  alt,
-  vurgu,
-}: {
-  ikon: string;
-  etiket: string;
-  deger: string;
-  alt?: string;
-  vurgu?: boolean;
-}) {
-  return (
-    <div className={`is-karo${vurgu ? ' is-karo-vurgu' : ''}`}>
-      <span className="is-karo-ikon" aria-hidden="true">
-        {ikon}
-      </span>
-      <span className="is-karo-etiket">{etiket}</span>
-      <strong className="is-karo-deger">{deger}</strong>
-      {alt && <span className="is-karo-alt">{alt}</span>}
-    </div>
-  );
-}
-
 const PIYASA_SINYAL_ETIKET: Record<string, { tr: string; en: string; sinif: string }> = {
   firsat: { tr: '🟢 Fırsat: şimdi al', en: '🟢 Opportunity: buy now', sinif: 'piyasa-firsat' },
   zirve: { tr: '🔴 Zirvede: beklemek daha iyi', en: '🔴 Peaking: better to wait', sinif: 'piyasa-zirve' },
@@ -57,16 +25,9 @@ const PIYASA_SINYAL_ETIKET: Record<string, { tr: string; en: string; sinif: stri
 };
 
 export function IsYatirimEkrani({
-  meslek,
-  rutbe,
   paraBirimi,
-  orduMevcudu,
-  orduTechizatSeviyesi,
-  sehirYonetimSeviyesi,
-  sehirYonetimUnvan,
   para,
   krediConfig,
-  dedikodular,
   mulkler,
   yukleniyor,
   islemMesaji,
@@ -77,7 +38,6 @@ export function IsYatirimEkrani({
 }: IsYatirimEkraniProps) {
   const { m, kt, dil } = useDil();
   const en = dil === 'en';
-  const saldiriGucu = Math.round(orduMevcudu * (1 + orduTechizatSeviyesi / 100));
   const mobil = useMobilEkran();
   const [aktifSekme, setAktifSekme] = useState(0);
 
@@ -103,7 +63,7 @@ export function IsYatirimEkrani({
 
       {mobil && (
         <div className="ekran-sekmeleri">
-          {[m.iyGorevin, m.iyYatirimlikGayrimenkuller].map((baslik, i) => (
+          {[en ? 'Moneylender' : 'Tefeci', m.iyYatirimlikGayrimenkuller].map((baslik, i) => (
             <button
               key={i}
               type="button"
@@ -118,47 +78,9 @@ export function IsYatirimEkrani({
 
       <div className={mobil ? 'tam-sutun-tekli-sarici' : 'tam-govde-2col'}>
         <div className="tam-sutun" hidden={mobil && aktifSekme !== 0}>
-          <h3 className="tam-baslik">{m.iyGorevin}</h3>
-
-          <div className="is-profil-karti">
-            <div className="is-profil-metin">
-              <strong>{kt(rutbe)}</strong>
-            </div>
-          </div>
-
-          <div className="is-karo-izgara">
-            {sehirYonetimSeviyesi > 0 && (
-              <StatKarosu
-                ikon="🏛️"
-                etiket={m.iySehirYonetimi}
-                deger={kt(sehirYonetimUnvan ?? '')}
-                alt={bic(m.iySeviyeEk, sehirYonetimSeviyesi)}
-              />
-            )}
-
-            {meslek === 'Asker' && (
-              <>
-                <StatKarosu ikon="⚔️" etiket={m.iyOrduMevcudu} deger={`${orduMevcudu} ${m.ksAsker}`} />
-                <StatKarosu ikon="🛡️" etiket={m.iyTechizat} deger={formatYuzde(dil, orduTechizatSeviyesi)} />
-                <StatKarosu ikon="💥" etiket={m.iySaldiriGucu} deger={`${saldiriGucu}`} />
-              </>
-            )}
-          </div>
-
-          <h3 className="tam-baslik tam-baslik-dedikodu">{m.iyPiyasaDedikodulari}</h3>
-
-          {dedikodular.length > 0 && (
-            <div className="dedikodu-panosu dedikodu-panosu-vurgu">
-              <ul>
-                {dedikodular.map((d, i) => (
-                  <li key={i}>{d}</li>
-                ))}
-              </ul>
-            </div>
-          )}
+          <h3 className="tam-baslik">{en ? 'Moneylender' : 'Tefeci'}</h3>
 
           {/* Tefeci / kredi — iki sabit tutar (küçük/büyük), enflasyonla ölçekli. */}
-          <h3 className="tam-baslik">{en ? 'Moneylender' : 'Tefeci'}</h3>
           {krediConfig?.aktifKredi ? (
             <div className="dedikodu-panosu">
               <p>

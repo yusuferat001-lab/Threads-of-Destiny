@@ -13,7 +13,7 @@ import {
 
 async function tuccarAjanli(rol = "Hırsız") {
   const st = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
-  await mesleğiAta(st.id, "Tüccar");
+  await mesleğiAta(st.id, "Asker");
   const s = await stateGetir(st.id);
   s.para = 500;
   await ajanTut(st.id, rol);
@@ -29,16 +29,16 @@ describe("ajanlar (§43 Faz 2)", () => {
     await expect(ajanTut(s.id, "Hırsız")).rejects.toThrow(/Zaten/);
     const d = await ajanDurumGetir(s.id);
     expect(d.roller.find((r) => r.rol === "Hırsız")?.sahip).toBe(true);
-    expect(d.roller.find((r) => r.rol === "Hırsız")?.isler).toContain("kervan_yagmalat");
+    expect(d.roller.find((r) => r.rol === "Hırsız")?.isler).toContain("birini_soy");
   });
 
   it("ajana verilen iş hemen çözülmez, ajan meşgul olur ve iş bekleme süresine girer", async () => {
     const { s, ajan } = await tuccarAjanli("Hırsız");
-    const sonuc = await kotuIsYap(s.id, "kervan_yagmalat", { ajanId: ajan.id });
+    const sonuc = await kotuIsYap(s.id, "birini_soy", { ajanId: ajan.id });
     expect(sonuc.beklemede).toBe(true);
     expect(s.ajan_gorevleri).toHaveLength(1);
-    expect((await ajanDurumGetir(s.id)).gorevler[ajan.id]).toBe("kervan_yagmalat");
-    expect((await kotuIsConfigGetir(s.id)).find((k) => k.id === "kervan_yagmalat")?.kalanYil).toBeGreaterThan(0);
+    expect((await ajanDurumGetir(s.id)).gorevler[ajan.id]).toBe("birini_soy");
+    expect((await kotuIsConfigGetir(s.id)).find((k) => k.id === "birini_soy")?.kalanYil).toBeGreaterThan(0);
     s.kotu_is_kilit = {};
     await expect(kotuIsYap(s.id, "birini_soy", { ajanId: ajan.id })).rejects.toThrow(/zaten/);
   });
@@ -55,7 +55,7 @@ describe("ajanlar (§43 Faz 2)", () => {
     for (let i = 0; i < 40 && !(basariGoruldu && yakalanmaGoruldu); i++) {
       const { s, ajan } = await tuccarAjanli("Hırsız");
       ajan.sadakat = 100; // ihbar etmesin
-      await kotuIsYap(s.id, "kervan_yagmalat", { ajanId: ajan.id });
+      await kotuIsYap(s.id, "birini_soy", { ajanId: ajan.id });
       const saglik = s.saglik;
       const mesajlar = ajanGorevleriniCoz(s);
       expect(mesajlar).toHaveLength(1);
@@ -83,7 +83,7 @@ describe("ajanlar (§43 Faz 2)", () => {
 
   it("kovulan ajanın bekleyen görevi iptal olur", async () => {
     const { s, ajan } = await tuccarAjanli("Hırsız");
-    await kotuIsYap(s.id, "kervan_yagmalat", { ajanId: ajan.id });
+    await kotuIsYap(s.id, "birini_soy", { ajanId: ajan.id });
     await ekipCikar(s.id, ajan.id);
     expect(s.ajan_gorevleri).toHaveLength(0);
   });

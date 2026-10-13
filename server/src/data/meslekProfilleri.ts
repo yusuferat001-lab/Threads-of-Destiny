@@ -192,7 +192,37 @@ export function rolAdiGetir(profil: IsletmeProfili, tur: IsletmeRolTuru): DilliM
   return profil.roller.find((r) => r.tur === tur)?.ad ?? { tr: tur, en: tur };
 }
 
-/** Otorite figürünün adı: ülke özel adı varsa o, yoksa meslek×çağ genel adı. */
+/**
+ * Tek otorite figürünün adı (meslek × çağ × ülke/din). İşletme profili olmayan
+ * meslekler (Zanaatkâr/Din Adamı/Asker — henüz dilimlenmedi) de bu tabloyu kullanır.
+ * Dönen değer kanonik Türkçe addır (K() ile çevrilir).
+ */
+const OTORITE_TABLOSU: Record<string, Record<Cag, { genel: string; ozel?: Record<string, string> }>> = {
+  Tüccar: {
+    "Orta Çağ": { genel: "Lonca Reisi", ozel: { Bizans: "Eparkhos", Selçuklu: "Muhtesip" } },
+    "Sanayi Devrimi": { genel: "Ticaret Odası Başkanı", ozel: { Osmanlı: "Ticaret Nazırı", Rusya: "Lonca Başkanı" } },
+  },
+  Zanaatkâr: {
+    "Orta Çağ": { genel: "Loncabaşı", ozel: { Selçuklu: "Ahi Baba" } },
+    "Sanayi Devrimi": { genel: "Sanayi Odası Başkanı", ozel: { Osmanlı: "Esnaf Kethüdası" } },
+  },
+  "Din Adamı": {
+    "Orta Çağ": { genel: "Piskopos", ozel: { Bizans: "Metropolit", Selçuklu: "Kadı" } },
+    "Sanayi Devrimi": { genel: "Piskopos", ozel: { Rusya: "Metropolit", Osmanlı: "Müftü" } },
+  },
+  Asker: {
+    "Orta Çağ": { genel: "Kumandan", ozel: { Selçuklu: "Subaşı" } },
+    "Sanayi Devrimi": { genel: "Albay", ozel: { Osmanlı: "Paşa", Rusya: "General" } },
+  },
+};
+
+export function otoriteUnvaniGetir(meslek: string, cag: Cag, bolge: string): string | null {
+  const t = OTORITE_TABLOSU[meslek]?.[cag];
+  if (!t) return null;
+  return t.ozel?.[bolge] ?? t.genel;
+}
+
+/** Otorite figürünün iki dilli adı (işletme ekranı için). */
 export function otoriteAdiGetir(meslek: string, cag: Cag, bolge: string): DilliMetin | null {
   const profil = isletmeProfiliGetir(meslek, cag);
   if (!profil) return null;

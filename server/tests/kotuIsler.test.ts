@@ -2,13 +2,13 @@ import { describe, it, expect } from "vitest";
 import { yeniOyun, mesleğiAta, kotuIsYap, kotuIsConfigGetir, stateGetir, hapisCezaSuresiHesapla } from "../src/game/gameEngine";
 
 describe("karanlık işler (illegal işler paneli)", () => {
-  it("kotuIsConfigGetir 5 genel + 3 mesleğe özel aksiyonu şans/kazanç önizlemesiyle döner", async () => {
+  it("kotuIsConfigGetir Tüccar için yalnız kendi 3 işini şans/kazanç önizlemesiyle döner", async () => {
     const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     const config = await kotuIsConfigGetir(state.id);
-    expect(config).toHaveLength(8);
+    expect(config).toHaveLength(3);
     expect(config.filter((k) => k.meslegeOzel).map((k) => k.id).sort()).toEqual(
-      ["gumruk_rusvet", "karaborsa_yarat", "kervan_yagmalat"]
+      ["gumruk_rusvet", "kervan_yagmalat", "rakibe_iftira"]
     );
     for (const kart of config) {
       expect(kart.basariSansi).toBeGreaterThanOrEqual(5);

@@ -948,13 +948,15 @@ function App() {
     setHata(null);
     setYukleniyor(true);
     try {
-      const [durum, { config }, pazar, ajanlar, isletmeDurumu] = await Promise.all([
+      const [durum, { config }, pazar, ajanlar, isletmeDurumu, dedi] = await Promise.all([
         yonetimDurumGetir(karakter.id),
         kotuIsConfigGetir(karakter.id),
         pazarGetir(karakter.id),
         ajanDurumGetir(karakter.id),
         isletmeGetir(karakter.id),
+        dedikoduGetir(karakter.id),
       ]);
+      setDedikodular(dedi.dedikodular);
       setIsletme(isletmeDurumu);
       setYonetimDurum(durum);
       setKotuIsler(config);
@@ -1047,13 +1049,11 @@ function App() {
     setHata(null);
     setYukleniyor(true);
     try {
-      const [{ dedikodular }, { config: mulkConfig }, { kademeler }, kr] = await Promise.all([
-        dedikoduGetir(karakter.id),
+      const [{ config: mulkConfig }, { kademeler }, kr] = await Promise.all([
         mulkConfigGetir(karakter.id),
         zarKademeleriGetir(karakter.id),
         krediGetir(karakter.id),
       ]);
-      setDedikodular(dedikodular);
       setMulkler(mulkConfig);
       setZarKademeleri(kademeler);
       setKrediConfig(kr);
@@ -2537,7 +2537,6 @@ function App() {
           para={karakter.para}
           cag={karakter.cag}
           bolge={karakter.bolge}
-          gecmis={karakter.gecmis}
           konutlar={konutlar}
           guncelKonutId={karakter.konut_id}
           tasinmaMaliyeti={tasinmaMaliyeti}
@@ -2556,15 +2555,8 @@ function App() {
 
       {ekran === 'yatirim' && karakter && (
         <IsYatirimEkrani
-          meslek={karakter.meslek}
-          rutbe={karakter.rutbe}
           paraBirimi={karakter.para_birimi}
-          orduMevcudu={karakter.ordu_mevcudu}
-          orduTechizatSeviyesi={karakter.ordu_techizat_seviyesi}
-          sehirYonetimSeviyesi={karakter.sehir_yonetim_seviyesi}
-          sehirYonetimUnvan={karakter.sehir_yonetim_unvan}
           krediConfig={krediConfig}
-          dedikodular={dedikodular}
           mulkler={mulkler}
           para={karakter.para}
           yukleniyor={yukleniyor}
@@ -2767,6 +2759,9 @@ function App() {
           onTalep={yonetimTalepHandler}
           onEkipCikar={ekipCikarHandler}
           onKotuIs={kotuIsHandler}
+          dedikodular={dedikodular}
+          finans={finans}
+          gecmis={karakter.gecmis}
           isletme={isletme}
           onIsletmeKarar={isletmeKararHandler}
           onIsletmeYatirim={isletmeYatirimHandler}

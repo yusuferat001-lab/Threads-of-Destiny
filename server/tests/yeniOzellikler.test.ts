@@ -19,6 +19,7 @@ function taze(): CharacterState {
   const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
   mesleğiSec(s, "Asker");
   s.para = 500;
+  s.maas_yillik = 20; // kredi tavanı rastgele dönem etkisine bağlı kalmasın
   return s;
 }
 

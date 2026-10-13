@@ -57,6 +57,7 @@ const TALEP_GURULTUSU = 0.08;
 const DUKKAN_TALEP_KADEME = 0.05;
 const KERVAN_INDIRIM_KADEME = 0.04;
 const KRIZ_PAHALI_TALEP = 0.6;
+const GUMRUK_INDIRIMI = 0.85;
 
 export const FIYAT_POLITIKASI: Record<IsletmeFiyat, { fiyat: number; talep: number }> = {
   ucuz: { fiyat: 0.85, talep: 1.35 },
@@ -179,7 +180,8 @@ export function hatHesapla(state: CharacterState, hat: IsletmeHat, tanim: HatTan
   return {
     talep,
     birimFiyat: tanim.birimFiyat * b.enflasyon * kes.fiyat * pol.fiyat * b.fiyatPrimi,
-    birimMaliyet: tanim.birimMaliyet * b.enflasyon * kes.fiyat * (1 - ekip.alisIskonto) * kervan,
+    birimMaliyet:
+      tanim.birimMaliyet * b.enflasyon * kes.fiyat * (1 - ekip.alisIskonto) * kervan * (state.yil <= (is.gumruk_indirim_bitis ?? -1) ? GUMRUK_INDIRIMI : 1),
     kesim: kes,
   };
 }

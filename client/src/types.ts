@@ -871,6 +871,8 @@ export interface KotuIsKarti {
   ajanRolu: string | null;
   /** Yalnız ajana yaptırılabilir. */
   sadeceAjan: boolean;
+  /** İşletmedeki herhangi bir çalışanın yapabildiği iş (§45). */
+  calisanIsi: boolean;
 }
 
 /** Bir ajana verilmiş, henüz çözülmemiş iş. */

@@ -5,6 +5,7 @@
  */
 import type { CharacterState } from "../types";
 import { K, Khukumdar } from "../i18n";
+import { otoriteUnvaniGetir } from "../data/meslekProfilleri";
 
 const YONETIM_ISIM_HAVUZU = [
   "Cezmi",
@@ -30,15 +31,16 @@ export function yoneticiBilgisi(state: CharacterState): { unvan: string; ad: str
   return { unvan: K(state.dil, unvan), ad: yonetimDeterministikIsim(state.id, 7) };
 }
 
+/** Tek otorite (§45): adı meslek × çağ × ülke/dine göre değişir; kral yalnız hükümdar adı olarak kalır. */
 export function patronBilgisi(state: CharacterState): { unvan: string; ad: string } {
   const sanayi = state.cag === "Sanayi Devrimi";
-  let unvan: string;
-  if (state.meslek === "Asker") unvan = sanayi ? "Karargâh Komutanı" : "Ordu Kumandanı";
-  else if (state.meslek === "Tüccar") unvan = sanayi ? "Fabrika Patronu" : "Lonca Reisi";
-  else if (state.meslek === "Din Adamı") {
-    unvan = state.din_kultur === "Sünni İslam" ? "Kadı" : sanayi ? "Başpiskopos" : "Başrahip";
-  } else if (state.meslek === "Zanaatkâr") unvan = sanayi ? "Atölye Sahibi" : "Loncabaşı";
-  else unvan = sanayi ? "Patron" : "Usta";
+  let unvan = otoriteUnvaniGetir(state.meslek, state.cag, state.bolge);
+  // Din Adamı'nda din kültürü ülkeden baskındır (ör. Sünni → Kadı/Müftü, Ortodoks → Metropolit).
+  if (state.meslek === "Din Adamı") {
+    if (state.din_kultur === "Sünni İslam") unvan = sanayi ? "Müftü" : "Kadı";
+    else if (state.din_kultur === "Ortodoks") unvan = "Metropolit";
+    else unvan = "Piskopos";
+  }
+  if (!unvan) unvan = sanayi ? "Patron" : "Usta";
   return { unvan: K(state.dil, unvan), ad: yonetimDeterministikIsim(state.id, 19) };
 }
-

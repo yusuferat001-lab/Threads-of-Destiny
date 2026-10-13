@@ -1724,7 +1724,8 @@ const YONETIM_TALEP_KALEMLERI: Record<"yonetici" | "patron", { bagis: string[]; 
 
 /** Rastgele bir yönetim (yönetici/patron) dayatılan bağış / sadakat talebi üretir. */
 export function yonetimTalebiUret(state: CharacterState): YonetimTalep {
-  const kimden: "yonetici" | "patron" = Math.random() < 0.5 ? "yonetici" : "patron";
+  // Tek otorite (§45): dayatılan talepler yalnız patrondan gelir; kral ilişkisi arka planda kalır.
+  const kimden = "patron" as "yonetici" | "patron";
   const tur: "bagis" | "sadakat" = Math.random() < 0.6 ? "bagis" : "sadakat";
   const enf = enflasyonCarpani(state);
   const servetEk = Math.max(0, Math.min(30, Math.round(gayrimenkulDegeriHesapla(state) * 0.04)));

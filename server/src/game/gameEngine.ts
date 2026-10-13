@@ -3528,6 +3528,8 @@ export interface KotuIsKarti {
   ajanRolu: string | null;
   /** Yalnız ajana yaptırılabilir. */
   sadeceAjan: boolean;
+  /** İşletmedeki herhangi bir çalışanın yapabildiği iş (§45). */
+  calisanIsi: boolean;
 }
 
 /**
@@ -3563,6 +3565,7 @@ export async function kotuIsConfigGetir(id: string): Promise<KotuIsKarti[]> {
     kalanYil: kotuIsKalanYil(state, tanim.id),
     ajanRolu: tanim.ajanRolu ?? null,
     sadeceAjan: !!tanim.sadeceAjan,
+    calisanIsi: !!tanim.calisanIsi && isletmeAktif(state),
   }));
 }
 
@@ -3746,6 +3749,7 @@ function kotuIsEtkiUygula(state: CharacterState, etki: KotuIsEtki, enflasyon: nu
   }
   if (etki.yonetim_iliski) state.yonetim_iliski += etki.yonetim_iliski;
   if (etki.patron_iliski) state.patron_iliski += etki.patron_iliski;
+  if (etki.gumruk_indirim_yil && state.isletme) state.isletme.gumruk_indirim_bitis = state.yil + etki.gumruk_indirim_yil;
   if (etki.kriz && !state.ulke.kriz) {
     state.ulke.kriz = { tur: etki.kriz.tur, bitisYili: state.yil + etki.kriz.sureYil };
     return etki.kriz.tur === "kitlik"
@@ -3795,10 +3799,12 @@ export async function kotuIsYap(id: string, tur: string, secenek: KotuIsSecenek 
 
   // Ajana ver: zar şimdi atılmaz, görev bir sonraki yıl ilerlemesinde çözülür.
   if (secenek.ajanId || tanim.sadeceAjan) {
-    if (!tanim.ajanRolu) throw new Error("Bu işi kimseye yaptıramazsın; kendin çevirmelisin.");
+    const calisanIsi = !!tanim.calisanIsi && isletmeAktif(state);
+    if (!tanim.ajanRolu && !calisanIsi) throw new Error("Bu işi kimseye yaptıramazsın; kendin çevirmelisin.");
     if (!secenek.ajanId) throw new Error(`Bu işi ancak tuttuğun bir ${tanim.ajanRolu} yapabilir.`);
     const ajan = state.ekip.find((e) => e.id === secenek.ajanId);
-    if (!ajan || ajan.rol !== tanim.ajanRolu) throw new Error(`Bu işe uygun bir ${tanim.ajanRolu} seçmelisin.`);
+    if (!ajan) throw new Error("Böyle bir ekip üyesi yok.");
+    if (!calisanIsi && ajan.rol !== tanim.ajanRolu) throw new Error(`Bu işe uygun bir ${tanim.ajanRolu} seçmelisin.`);
     if ((state.ajan_gorevleri ?? []).some((g) => g.ajanId === ajan.id)) throw new Error(`${ajan.isim} zaten bir işte.`);
     state.para = paraYuvarla(state.para - maliyet);
     state.kotu_is_kilit = { ...(state.kotu_is_kilit ?? {}), [tanim.id]: state.yil + tanim.cooldownYil };

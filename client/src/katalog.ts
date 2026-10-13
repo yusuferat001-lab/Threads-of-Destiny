@@ -8,6 +8,22 @@
 import type { Dil } from './ayarlar';
 
 const KATALOG_EN: Record<string, string> = {
+  "Eparkhos": "Eparch",
+  "Muhtesip": "Muhtasib",
+  "Ahi Baba": "Ahi Baba",
+  "Metropolit": "Metropolitan",
+  "Müftü": "Mufti",
+  "Subaşı": "Subashi",
+  "Albay": "Colonel",
+  "Paşa": "Pasha",
+  "General": "General",
+  "Loncabaşı": "Guild Head",
+  "Esnaf Kethüdası": "Tradesmen's Steward",
+  "Ticaret Nazırı": "Minister of Trade",
+  "Lonca Başkanı": "Guild Chairman",
+  "Ticaret Odası Başkanı": "Chamber of Commerce President",
+  "Sanayi Odası Başkanı": "Chamber of Industry President",
+  "Kadı": "Qadi",
   // ---------------------------------------------------------------------------
   // Bölgeler (state.bolge — hem filtre anahtarı hem gösterim; burada yalnız gösterim çevrilir)
   // ---------------------------------------------------------------------------

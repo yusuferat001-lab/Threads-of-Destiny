@@ -8,6 +8,22 @@
  * hükümdar/NPC/evcil hayvan isimleri, tarihi savaş rakip adları. Kavramlar çevrilir.
  */
 export const KATALOG_EN: Record<string, string> = {
+  "Rakibe İftira At": "Slander Your Rival",
+  "Eparkhos": "Eparch",
+  "Muhtesip": "Muhtasib",
+  "Ahi Baba": "Ahi Baba",
+  "Metropolit": "Metropolitan",
+  "Müftü": "Mufti",
+  "Subaşı": "Subashi",
+  "Albay": "Colonel",
+  "Paşa": "Pasha",
+  "General": "General",
+  "Loncabaşı": "Guild Head",
+  "Esnaf Kethüdası": "Tradesmen's Steward",
+  "Ticaret Nazırı": "Minister of Trade",
+  "Lonca Başkanı": "Guild Chairman",
+  "Ticaret Odası Başkanı": "Chamber of Commerce President",
+  "Sanayi Odası Başkanı": "Chamber of Industry President",
   // ---------------------------------------------------------------------------
   // Bölgeler (state.bolge — hem filtre anahtarı hem gösterim; burada yalnız gösterim çevrilir)
   // ---------------------------------------------------------------------------

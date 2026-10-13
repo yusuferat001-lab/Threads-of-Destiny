@@ -42,6 +42,8 @@ export interface KotuIsEtki {
   /** Yönetimle bağlar (§35): kral/vali ve patron hattına delta. */
   yonetim_iliski?: number;
   patron_iliski?: number;
+  /** İşletmede alış maliyetini bu kadar yıl %15 düşürür (gümrük rüşveti, §45). */
+  gumruk_indirim_yil?: number;
   /** Şehirde kısa bir kriz başlatır (yalnız o an başka kriz yoksa). */
   kriz?: { tur: UlkeKrizi["tur"]; sureYil: number };
   /** 0-1: bu dalda "hapiste" etiketi + ceza süresi tetiklenme ihtimali. */
@@ -73,6 +75,8 @@ export interface KotuIsTanimi {
   ajanRolu?: AjanRolu;
   /** Yalnız bir ajana yaptırılabilir (kendin çeviremezsin). */
   sadeceAjan?: boolean;
+  /** İşletmesi olan mesleklerde (§45) HERHANGİ bir çalışanın yapabildiği iş; ajan rolü aranmaz. */
+  calisanIsi?: boolean;
   basarili: KotuIsEtki;
   basarisiz: KotuIsEtki;
 }
@@ -131,36 +135,39 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
     basarisiz: { ahlak: -6, suc_artis: 30, hapis_sansi: 0.3 },
   },
 
-  // ===== TÜCCAR — pazar =====
+  // ===== TÜCCAR — işletmeni etkileyen 3 iş (kendin ya da bir çalışanınla, §45) =====
+  {
+    id: "rakibe_iftira",
+    simge: "📜",
+    basariSansi: 62,
+    meslekler: ["Tüccar"],
+    calisanIsi: true,
+    cooldownYil: 2,
+    maliyet: 6,
+    rakipKirma: 12,
+    basarili: { meslek_gucu: 3, ahlak: -10, mutluluk: 1, rakip_puani: -8, suc_artis: 10, kariyer_puani: 2 },
+    basarisiz: { un: -4, ahlak: -4, suc_artis: 16, hapis_sansi: 0.1 },
+  },
   {
     id: "kervan_yagmalat",
-    ajanRolu: "Hırsız",
     simge: "🐫",
     basariSansi: 58,
     meslekler: ["Tüccar"],
+    calisanIsi: true,
     cooldownYil: 2,
     rakipKirma: 14,
     basarili: { para: 14, meslek_gucu: 2, ahlak: -12, mutluluk: 1, rakip_puani: -8, suc_artis: 16, kariyer_puani: 3 },
     basarisiz: { saglik: -8, ahlak: -4, suc_artis: 22, hapis_sansi: 0.15 },
   },
   {
-    id: "karaborsa_yarat",
-    simge: "📦",
-    basariSansi: 62,
-    meslekler: ["Tüccar"],
-    cooldownYil: 5,
-    maliyet: 12,
-    basarili: { para: 26, meslek_gucu: 5, un: -3, ahlak: -14, suc_artis: 14, kriz: { tur: "kitlik", sureYil: 1 } },
-    basarisiz: { un: -4, ahlak: -4, suc_artis: 18, hapis_sansi: 0.1 },
-  },
-  {
     id: "gumruk_rusvet",
     simge: "🛃",
     basariSansi: 68,
     meslekler: ["Tüccar"],
+    calisanIsi: true,
     cooldownYil: 5,
     maliyet: 14,
-    basarili: { meslek_gucu: 6, ticaret_sermaye: 10, ahlak: -8, suc_artis: 10 },
+    basarili: { meslek_gucu: 2, ticaret_sermaye: 6, ahlak: -8, suc_artis: 10, gumruk_indirim_yil: 4 },
     basarisiz: { un: -5, ahlak: -3, suc_artis: 20, hapis_sansi: 0.15 },
   },
 
@@ -269,6 +276,8 @@ export function kotuIsTanimiGetir(id: string): KotuIsTanimi | undefined {
 
 /** Bu karaktere (meslek + çağ) görünen karanlık işler. */
 export function uygunKotuIsler(meslek: string, cag: Cag): KotuIsTanimi[] {
+  // İşletme dilimi (§45): Tüccar'ın listesi yalnız kendi 3 işidir; genel işler gelmez.
+  if (meslek === "Tüccar") return KOTU_ISLER.filter((k) => k.meslekler?.includes("Tüccar") && (!k.cag || k.cag === cag));
   return KOTU_ISLER.filter((k) => (!k.meslekler || k.meslekler.includes(meslek)) && (!k.cag || k.cag === cag));
 }
 
@@ -278,8 +287,8 @@ export const KOTU_IS_ADLARI: Record<string, string> = {
   adam_dov: "Zevkine Adam Döv",
   birini_soy: "Birini Soy",
   isyeri_yak: "Rakibin İş Yerini Yak",
+  rakibe_iftira: "Rakibe İftira At",
   kervan_yagmalat: "Rakibin Kervanını Yağmalat",
-  karaborsa_yarat: "Karaborsa Yarat",
   gumruk_rusvet: "Gümrüğe Rüşvet",
   sahte_mucize: "Sahte Mucize",
   afaroz_ettir: "Rakibi Aforoz Ettir",
