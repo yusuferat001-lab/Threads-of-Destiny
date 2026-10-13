@@ -36,6 +36,15 @@ import {
 } from "../data/yerelHaberler";
 import { tarihiSavasKontrol, gelecekSavasKontrol } from "../data/tarihiSavaslar";
 import {
+  type IsletmeBaglami,
+  isletmeAktif,
+  isletmeBaslat,
+  isletmeHazirla,
+  isletmeGelirTahmini,
+  isletmeYilIsle,
+} from "./isletme";
+import { isletmeMeslegiMi } from "../data/meslekProfilleri";
+import {
   DONEM_SURE,
   DONEM_ADLARI,
   SAVAS_YILLIK_IHTIMAL,
@@ -515,7 +524,22 @@ function maasCarpanKalemleri(state: CharacterState): { tabanMaas: number; kaleml
   };
 }
 
+/**
+ * İşletme motoruna dışarıdan gelen değerler (enflasyon, rütbe fiyat primi, kalıcı
+ * bonuslar). Olaylardan gelen `maas_carpani` etiketi, yatkınlık maaş çarpanı ve
+ * geçici durumların gelir çarpanı işletmede MAAŞI değil müşteri talebini etkiler.
+ */
+export function isletmeBaglami(state: CharacterState): IsletmeBaglami {
+  const durumCarpani = state.durumlar.reduce((c, d) => c * (d.gelir_carpani ?? 1), 1);
+  return {
+    enflasyon: enflasyonCarpani(state),
+    fiyatPrimi: 1 + (rutbeMaasCarpani(state.rutbe_seviye) - 1) * 0.25,
+    talepCarpani: maasCarpaniGetir(state) * (1 + (state.meslek_maas_carpani ?? 0)) * durumCarpani,
+  };
+}
+
 export function hesaplaMaasYillik(state: CharacterState): number {
+  if (isletmeAktif(state)) return isletmeGelirTahmini(state, isletmeBaglami(state));
   const { tabanMaas, kalemler } = maasCarpanKalemleri(state);
   const ham = kalemler.reduce((acc, k) => acc * k.carpan, tabanMaas);
   return Math.max(1, paraYuvarla(ham));
@@ -830,6 +854,7 @@ export function createCharacter(
     aile_etkilesim_kilit: {},
     kotu_is_kilit: {},
     ajan_gorevleri: [],
+    isletme: null,
     aile_talep: null,
     aile_talep_sonraki_yil: yil + 4,
     // Kral/yönetici ile başlangıçta neredeyse hiç ilişki yok (kullanıcı isteği);
@@ -1127,6 +1152,9 @@ export function eskiKayitGocu(state: CharacterState): void {
   // Karanlık işlerin bekleme süreleri (2026-10, §43 Faz 1) sonradan eklendi.
   if (!state.kotu_is_kilit || typeof state.kotu_is_kilit !== "object") state.kotu_is_kilit = {};
   if (!Array.isArray(state.ajan_gorevleri)) state.ajan_gorevleri = [];
+  // Meslek işletmesi (Tüccar): eski kayıtta yoksa kur, işletmesiz mesleklerde temizle.
+  if (state.meslek && isletmeMeslegiMi(state.meslek)) isletmeHazirla(state, isletmeBaglami(state));
+  else if (state.isletme === undefined || state.isletme) state.isletme = null;
   // Sosyalleşme ekranı tur-harcamayan aksiyonları (içki/deli/sadaka/kulak/ısmarla/fal) sonradan eklendi.
   if (!state.sosyallesme_aksiyon_kilit || typeof state.sosyallesme_aksiyon_kilit !== "object") {
     state.sosyallesme_aksiyon_kilit = {};
@@ -1277,6 +1305,8 @@ export function mesleğiSec(state: CharacterState, meslek: string): void {
   if (!state.meslek_gucu) {
     state.meslek_gucu = baslangicMeslekGucu(state.meslek_yatkinlik_seviyesi, mirasSurduruldu);
   }
+  // Meslek işletmesi (şu an yalnız Tüccar): hat/stok/yatırım durumu kurulur.
+  if (isletmeMeslegiMi(meslek)) isletmeBaslat(state, isletmeBaglami(state));
 
   if (mirasSurduruldu && !state.etiketler.includes("aile_mirasi_surduruldu")) {
     state.un += 10;
@@ -1993,12 +2023,21 @@ export function pasifEkonomiUygula(state: CharacterState, yasArtisi: number): Ek
   // Gelir her yıl ayrı ayrı dalgalanır: bereketli yıl, kötü hasat, durgun pazar...
   const yillikGelirler: number[] = [];
   let netGelir = 0;
+  const isletmeVar = isletmeAktif(state);
   for (let i = 0; i < yasArtisi; i++) {
+    if (isletmeVar) {
+      // İşletme: gelir = o yılın satış − alım − depo kârı (eksi olabilir), maaş formülü yok.
+      const sonuc = isletmeYilIsle(state, isletmeBaglami(state));
+      yillikGelirler.push(sonuc.net);
+      netGelir += sonuc.net - gider;
+      continue;
+    }
     const dalga = 0.85 + Math.random() * 0.3; // 0.85x - 1.15x (büyük denge turu: kullanıcı isteğiyle bant 0.85–1.15)
     const oYilkiGelir = Math.max(0, paraYuvarla(state.maas_yillik * dalga));
     yillikGelirler.push(oYilkiGelir);
     netGelir += oYilkiGelir - gider;
   }
+  if (isletmeVar) state.maas_yillik = hesaplaMaasYillik(state);
   state.para = paraYuvarla(state.para + netGelir);
   // Konut + yaşam tarzının pasif sağlık/mutluluk etkisi yumuşak tavana (70) tabidir:
   // tavan altında tam, üstünde kısılmış işler; hasar (negatif) her zaman tam. Böylece

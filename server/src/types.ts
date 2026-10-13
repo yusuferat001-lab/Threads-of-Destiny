@@ -449,6 +449,8 @@ export interface CharacterState {
   aile_etkilesim_kilit: Record<string, number>;
   /** Ajanlara verilmiş, bir sonraki yıl ilerlemesinde çözülecek karanlık işler (§43 Faz 2). */
   ajan_gorevleri: AjanGorevi[];
+  /** Meslek işletmesi (Tüccar); diğer mesleklerde null. */
+  isletme: IsletmeDurumu | null;
   /** Karanlık işlerin bekleme süreleri: iş id'si → yeniden çevrilebileceği oyun yılı (§43 Faz 1). */
   kotu_is_kilit: Record<string, number>;
   /** Eş/çocuğun bekleyen para talebi; yoksa null (§33). */
@@ -643,6 +645,81 @@ export interface EkipUyesi {
   sadakat: number;
   /** Kısa bir kişilik etiketi (ör. "Sadık", "Hırslı", "Korkak"); tamamen kozmetik/flavor. */
   kisilik: string;
+  /** İşletme rolü türü (aday havuzundan alınanlarda): yazı = bozulma/depo, satın alma = alış maliyeti, satış = talep. */
+  rol_turu?: IsletmeRolTuru;
+  /** Tanınırlık (0-100): yıllık yeni müşteri getirir; yakalanırsa ifşası da ağır olur. */
+  taninirlik?: number;
+}
+
+/** İşletme motorunda çalışanın rolü (meslek×çağ'a göre ad değişir, etkisi aynı). */
+export type IsletmeRolTuru = "yazi" | "satin_alma" | "satis";
+
+/** Hat fiyat politikası: ucuz çok satar az kazandırır, pahalı az satar çok kazandırır. */
+export type IsletmeFiyat = "ucuz" | "normal" | "pahali";
+
+/** İşletmedeki bir ürün hattı (Tüccar: sektör, Zanaatkâr: hedef pazar…). */
+export interface IsletmeHat {
+  id: string;
+  acik: boolean;
+  stok: number;
+  /** true → sipariş otomatik (geçen yılın talebi × 1.1); false → `siparis` sabit sayısı. */
+  otomatik: boolean;
+  siparis: number;
+  fiyat: IsletmeFiyat;
+  /** Geçen yılki talep / satış (otomatik sipariş + ekran gösterimi). */
+  son_talep: number;
+  son_satis: number;
+}
+
+/** Yıl sonu dökümündeki uyarı: kod + isteğe bağlı hat/isim; metin istemcide çevrilir. */
+export interface IsletmeUyari {
+  kod: "stok_bitti" | "fazla_stok" | "calisan_ayrildi" | "kitle_kaybi";
+  hat?: string;
+  isim?: string;
+}
+
+export interface IsletmeDokum {
+  yil: number;
+  satis: number;
+  alim: number;
+  depoMasrafi: number;
+  /** satış − alım − depo masrafı (çalışan maaşı ayrıca giderlerde). */
+  brutKar: number;
+  borcOdeme: number;
+  /** brutKar − borcOdeme (oyuncunun cebine giren, eksi olabilir). */
+  net: number;
+  kitleDegisimi: number;
+  hatlar: { id: string; talep: number; satilan: number; alinan: number; stokSonu: number }[];
+  uyarilar: IsletmeUyari[];
+}
+
+export interface IsletmeAday {
+  id: string;
+  isim: string;
+  rol: string;
+  rolTuru: IsletmeRolTuru;
+  gecmis: { tr: string; en: string };
+  sadakat: number;
+  gercekKalite: number;
+  tahminiMin: number;
+  tahminiMax: number;
+  taninirlik: number;
+  /** Yıllık maaş (işe alındığı andaki enflasyonlu değer). */
+  maas: number;
+  /** Peşin işe alım ücreti. */
+  ucret: number;
+}
+
+/** Meslek işletmesi (şu an yalnız Tüccar; 2026-10 dikey dilim). Diğer meslekler null → eski maaş sistemi. */
+export interface IsletmeDurumu {
+  hatlar: IsletmeHat[];
+  /** Kalıcı yatırım kademeleri (id → 0-3). */
+  yatirimlar: Record<string, number>;
+  /** Tedarikçiye veresiye borç (faizsiz); kârdan %60'a kadar yıllık kapanır. */
+  tedarikci_borcu: number;
+  son_dokum: IsletmeDokum | null;
+  adaylar: IsletmeAday[];
+  aday_yili: number;
 }
 
 export interface SonucEtkisi {

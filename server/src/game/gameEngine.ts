@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
-import { CharacterState, Cag, SenaryoResponse, SonucEtkisi, TepkiSonucu, MulkTuru, EvlilikAdayi, OturumAkisiKaydi, IkiDilMetin } from "../types";
-import { T, K, Khukumdar, ikiDilT } from "../i18n";
+import { IsletmeDokum, CharacterState, Cag, SenaryoResponse, SonucEtkisi, TepkiSonucu, MulkTuru, EvlilikAdayi, OturumAkisiKaydi, IkiDilMetin } from "../types";
+import { T, K, Khukumdar, ikiDilT, ikiDil } from "../i18n";
 import { olayCevirisiUygula } from "../i18n/olaylar";
 import { skorKaydet as skoruDbyeYaz } from "../db/scoreRepository";
 import {
@@ -99,7 +99,30 @@ import {
   krediMaksTutar,
   krediFaizTeklifi,
   krediKademeleri,
+  isletmeBaglami,
 } from "./stateManager";
+import {
+  isletmeAktif,
+  isletmeHazirla,
+  depoKapasitesi,
+  toplamStok,
+  ekipEtkisi,
+  hatSlotSayisi,
+  hatHesapla,
+  hatKilitNedeni,
+  adaylariYenile,
+  beklenenBrutKar,
+  CALISAN_TAVANI,
+  FIYAT_POLITIKASI,
+  DEPO_KAPASITE,
+} from "./isletme";
+import {
+  isletmeProfiliGetir,
+  hatTanimiGetir,
+  yatirimTanimiGetir,
+  otoriteAdiGetir,
+  rolAdiGetir,
+} from "../data/meslekProfilleri";
 import { rutbeTanimiGetir, KARIYER_PUANI_YILLIK, KARIYER_PUANI_KATEGORI_BASARI, RUTBE_PAZAR_PAYI_ESIGI } from "../data/rutbeler";
 import {
   MESLEK_GUCU_KATEGORI_BASARI,
@@ -701,6 +724,20 @@ const YOLCULUK_KAZANC_CARPANI = 1.2;
  * uygulanır.
  */
 const OLAY_PARA_PRIMI = 0.8925;
+
+/**
+ * Çifte kazanç önlemi (2026-10): işletmesi olan oyuncunun KENDİ meslek kategorisindeki
+ * olaylardan gelen pozitif para yarıya iner; kalan yarısı müşteri kitlesine (meslek
+ * gücü) çevrilir. Olay metinlerine dokunulmaz.
+ */
+export function ciftKazancKirp(state: CharacterState, etki: SonucEtkisi, kategori: string): void {
+  if (!etki.para || etki.para <= 0) return;
+  if (!isletmeAktif(state) || MESLEK_KATEGORI[state.meslek] !== kategori) return;
+  const yarisi = etki.para / 2;
+  etki.para = paraYuvarla(yarisi);
+  meslekGucuEkle(state, Math.min(1.5, yarisi / (8 * enflasyonCarpani(state))));
+}
+
 
 type SucKazanciSonucu = "yok" | "suc" | "ciddi";
 
@@ -1781,6 +1818,7 @@ async function sonucuUygulaVeIlerlet(
   // Saldırı gücü / ticaret sermayesi / nüfuz, kendi kategorisindeki kazançları büyütür.
   if (etki.para && etki.para > 0) {
     etki.para = Math.round(etki.para * meslekMetrikCarpani(state, mevcutOlay.kategori));
+    ciftKazancKirp(state, etki, mevcutOlay.kategori);
   }
   // Yolculuk olaylarında kazanılan para %20 daha değerli (eski kalıcı "yolculuğu
   // bitirdin" maaş priminin yerini alır — meslek çarpanının üstüne biner).
@@ -1867,7 +1905,10 @@ async function sonucuUygulaVeIlerlet(
   if (etki.veba_olum_riski_artis && state.etiketler.includes("veba_hastasi")) {
     state.veba_olum_riski = Math.max(0, Math.min(100, state.veba_olum_riski + etki.veba_olum_riski_artis));
   }
-  if (etki.yeni_meslek) state.meslek = etki.yeni_meslek;
+  if (etki.yeni_meslek) {
+    state.meslek = etki.yeni_meslek;
+    isletmeHazirla(state, isletmeBaglami(state));
+  }
   if (etki.maas_carpani) maasCarpaniUygula(state, etki.maas_carpani);
   if (etki.sehir_yonetim_artis) {
     state.sehir_yonetim_seviyesi += etki.sehir_yonetim_artis;
@@ -4024,6 +4065,321 @@ export async function ajanTut(id: string, rol: string): Promise<{ state: Charact
 
 
 // ---------------------------------------------------------------------------
+// Meslek işletmesi (Tüccar dikey dilimi, 2026-10) — hiçbiri turu tüketmez
+// ---------------------------------------------------------------------------
+
+export interface IsletmeHatGorunumu {
+  id: string;
+  simge: string;
+  ad: string;
+  kesim: "temel" | "orta" | "luks";
+  acik: boolean;
+  kilitli: boolean;
+  minRutbe: number;
+  stok: number;
+  otomatik: boolean;
+  siparis: number;
+  fiyat: "ucuz" | "normal" | "pahali";
+  /** Bu yıl için beklenen talep (gürültüsüz) ve birim fiyat/maliyet. */
+  tahminiTalep: number;
+  birimFiyat: number;
+  birimMaliyet: number;
+  beklenenKar: number;
+  sonTalep: number;
+  sonSatis: number;
+  /** Dünya durumunun bu kesime etkisi (yüzde, 0 = etkisiz). */
+  dunyaTalepYuzde: number;
+  dunyaFiyatYuzde: number;
+}
+
+export interface IsletmeYatirimGorunumu {
+  id: string;
+  simge: string;
+  ad: string;
+  aciklama: string;
+  kademe: number;
+  maxKademe: number;
+  sonrakiFiyat: number | null;
+}
+
+export interface IsletmeCalisanGorunumu {
+  id: string;
+  isim: string;
+  rol: string;
+  rolTuru: string | null;
+  sadakat: number;
+  tahminiMin: number;
+  tahminiMax: number;
+  maas: number;
+  taninirlik: number;
+}
+
+export interface IsletmeAdayGorunumu {
+  id: string;
+  isim: string;
+  rol: string;
+  rolTuru: string;
+  gecmis: string;
+  sadakat: number;
+  tahminiMin: number;
+  tahminiMax: number;
+  taninirlik: number;
+  maas: number;
+  ucret: number;
+}
+
+export interface IsletmeGorunumu {
+  aktif: boolean;
+  meslek: string;
+  kitle: number;
+  slot: { kullanilan: number; toplam: number };
+  depo: { kullanilan: number; kapasite: number };
+  hatlar: IsletmeHatGorunumu[];
+  yatirimlar: IsletmeYatirimGorunumu[];
+  calisanlar: IsletmeCalisanGorunumu[];
+  calisanTavani: number;
+  adaylar: IsletmeAdayGorunumu[];
+  tedarikciBorcu: number;
+  sonDokum: IsletmeDokum | null;
+  beklenenBrutKar: number;
+  otorite: string | null;
+  dunya: { donem: string | null; savas: boolean; veba: boolean };
+  para: number;
+  paraBirimi: string;
+}
+
+function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
+  const dil = state.dil;
+  const profil = isletmeProfiliGetir(state.meslek, state.cag);
+  const is = state.isletme;
+  if (!profil || !is) {
+    return {
+      aktif: false, meslek: state.meslek, kitle: state.meslek_gucu, slot: { kullanilan: 0, toplam: 0 },
+      depo: { kullanilan: 0, kapasite: 0 }, hatlar: [], yatirimlar: [], calisanlar: [], calisanTavani: CALISAN_TAVANI,
+      adaylar: [], tedarikciBorcu: 0, sonDokum: null, beklenenBrutKar: 0, otorite: null,
+      dunya: { donem: null, savas: false, veba: false }, para: state.para, paraBirimi: state.para_birimi,
+    };
+  }
+  const b = isletmeBaglami(state);
+  const slot = hatSlotSayisi(state);
+  const hatlar: IsletmeHatGorunumu[] = [];
+  for (const hat of is.hatlar) {
+    const tanim = hatTanimiGetir(profil, hat.id);
+    if (!tanim) continue;
+    const h = hatHesapla(state, hat, tanim, b);
+    hatlar.push({
+      id: hat.id,
+      simge: tanim.simge,
+      ad: ikiDil(dil, tanim.ad.tr, tanim.ad.en),
+      kesim: tanim.kesim,
+      acik: hat.acik,
+      kilitli: hatKilitNedeni(state, tanim) !== null,
+      minRutbe: tanim.minRutbe,
+      stok: hat.stok,
+      otomatik: hat.otomatik,
+      siparis: hat.siparis,
+      fiyat: hat.fiyat,
+      tahminiTalep: Math.round(h.talep),
+      birimFiyat: paraYuvarla(h.birimFiyat),
+      birimMaliyet: paraYuvarla(h.birimMaliyet),
+      beklenenKar: paraYuvarla(h.talep * (h.birimFiyat - h.birimMaliyet)),
+      sonTalep: hat.son_talep,
+      sonSatis: hat.son_satis,
+      dunyaTalepYuzde: Math.round((h.kesim.talep - 1) * 100),
+      dunyaFiyatYuzde: Math.round((h.kesim.fiyat - 1) * 100),
+    });
+  }
+  const yatirimlar: IsletmeYatirimGorunumu[] = profil.yatirimlar.map((y) => {
+    const kademe = is.yatirimlar[y.id] ?? 0;
+    const enf = enflasyonCarpani(state);
+    return {
+      id: y.id,
+      simge: y.simge,
+      ad: ikiDil(dil, y.ad.tr, y.ad.en),
+      aciklama: ikiDil(dil, y.aciklama.tr, y.aciklama.en),
+      kademe,
+      maxKademe: y.fiyatlar.length,
+      sonrakiFiyat: kademe < y.fiyatlar.length ? paraYuvarla(y.fiyatlar[kademe] * enf) : null,
+    };
+  });
+  const calisanlar: IsletmeCalisanGorunumu[] = state.ekip.map((e) => ({
+    id: e.id,
+    isim: e.isim,
+    rol: e.rol_turu ? ikiDil(dil, rolAdiGetir(profil, e.rol_turu).tr, rolAdiGetir(profil, e.rol_turu).en) : K(dil, e.rol),
+    rolTuru: e.rol_turu ?? null,
+    sadakat: e.sadakat,
+    tahminiMin: e.tahminiMin,
+    tahminiMax: e.tahminiMax,
+    maas: e.maas,
+    taninirlik: e.taninirlik ?? 0,
+  }));
+  const adaylar: IsletmeAdayGorunumu[] = is.adaylar.map((a) => ({
+    id: a.id,
+    isim: a.isim,
+    rol: ikiDil(dil, rolAdiGetir(profil, a.rolTuru).tr, rolAdiGetir(profil, a.rolTuru).en),
+    rolTuru: a.rolTuru,
+    gecmis: ikiDil(dil, a.gecmis.tr, a.gecmis.en),
+    sadakat: a.sadakat,
+    tahminiMin: a.tahminiMin,
+    tahminiMax: a.tahminiMax,
+    taninirlik: a.taninirlik,
+    maas: a.maas,
+    ucret: a.ucret,
+  }));
+  const otorite = otoriteAdiGetir(state.meslek, state.cag, state.bolge);
+  return {
+    aktif: true,
+    meslek: state.meslek,
+    kitle: Math.round(state.meslek_gucu * 10) / 10,
+    slot: { kullanilan: is.hatlar.filter((h) => h.acik).length, toplam: slot },
+    depo: { kullanilan: toplamStok(is), kapasite: depoKapasitesi(is) },
+    hatlar,
+    yatirimlar,
+    calisanlar,
+    calisanTavani: CALISAN_TAVANI,
+    adaylar,
+    tedarikciBorcu: is.tedarikci_borcu,
+    sonDokum: is.son_dokum,
+    beklenenBrutKar: paraYuvarla(beklenenBrutKar(state, b)),
+    otorite: otorite ? ikiDil(dil, otorite.tr, otorite.en) : null,
+    dunya: {
+      donem: state.ulke.donem?.tur ?? null,
+      savas: !!state.ulke.savasta,
+      veba: !!state.veba?.aktif,
+    },
+    para: state.para,
+    paraBirimi: state.para_birimi,
+  };
+}
+
+export async function isletmeDurumGetir(id: string): Promise<IsletmeGorunumu> {
+  const { state } = await oturumGetir(id);
+  return isletmeGorunumuHesapla(state);
+}
+
+export interface IsletmeKararGirdisi {
+  id: string;
+  acik?: boolean;
+  otomatik?: boolean;
+  siparis?: number;
+  fiyat?: "ucuz" | "normal" | "pahali";
+}
+
+/** Hat kararlarını (aç/kapa, otomatik sipariş, sabit sipariş, fiyat) toplu uygular. Turu tüketmez. */
+export async function isletmeKararVer(
+  id: string,
+  hatlar: IsletmeKararGirdisi[]
+): Promise<{ state: CharacterState; durum: IsletmeGorunumu }> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  const profil = isletmeProfiliGetir(state.meslek, state.cag);
+  if (!profil || !state.isletme) throw new Error("Bu mesleğin henüz bir işletmesi yok.");
+  const is = state.isletme;
+  if (!Array.isArray(hatlar)) throw new Error("Geçersiz karar.");
+  const kapasite = depoKapasitesi(is);
+  // Önce doğrula, sonra uygula: yarım uygulanmış karar kalmasın.
+  const secenekler = new Map<string, IsletmeKararGirdisi>();
+  for (const g of hatlar) {
+    if (!g || typeof g.id !== "string") throw new Error("Geçersiz karar.");
+    const hat = is.hatlar.find((h) => h.id === g.id);
+    const tanim = hatTanimiGetir(profil, g.id);
+    if (!hat || !tanim) throw new Error("Böyle bir ürün hattı yok.");
+    if (g.acik === true && !hat.acik && hatKilitNedeni(state, tanim)) throw new Error("Bu hattı açmak için rütben yetersiz.");
+    if (g.fiyat !== undefined && !(g.fiyat in FIYAT_POLITIKASI)) throw new Error("Geçersiz fiyat politikası.");
+    if (g.siparis !== undefined && (!Number.isFinite(g.siparis) || g.siparis < 0 || g.siparis > kapasite)) throw new Error("Geçersiz sipariş miktarı.");
+    secenekler.set(g.id, g);
+  }
+  const yeniAcik = new Set(is.hatlar.filter((h) => (secenekler.get(h.id)?.acik ?? h.acik)).map((h) => h.id));
+  if (yeniAcik.size > hatSlotSayisi(state)) throw new Error("Bu kadar hattı aynı anda işletemezsin; daha fazla çalışan gerek.");
+  for (const hat of is.hatlar) {
+    const g = secenekler.get(hat.id);
+    if (!g) continue;
+    if (g.acik !== undefined) hat.acik = g.acik;
+    if (g.otomatik !== undefined) hat.otomatik = g.otomatik;
+    if (g.siparis !== undefined) hat.siparis = Math.floor(g.siparis);
+    if (g.fiyat !== undefined) hat.fiyat = g.fiyat;
+  }
+  await oturumKaydet(state);
+  return { state, durum: isletmeGorunumuHesapla(state) };
+}
+
+/** Kalıcı işletme yatırımının bir sonraki kademesini satın alır. Turu tüketmez. */
+export async function isletmeYatirimYap(
+  id: string,
+  yatirimId: string
+): Promise<{ state: CharacterState; mesaj: string; durum: IsletmeGorunumu }> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  const profil = isletmeProfiliGetir(state.meslek, state.cag);
+  if (!profil || !state.isletme) throw new Error("Bu mesleğin henüz bir işletmesi yok.");
+  const tanim = yatirimTanimiGetir(profil, yatirimId);
+  if (!tanim) throw new Error("Böyle bir yatırım yok.");
+  const kademe = state.isletme.yatirimlar[tanim.id] ?? 0;
+  if (kademe >= tanim.fiyatlar.length) throw new Error("Bu yatırım zaten en üst kademede.");
+  const fiyat = paraYuvarla(tanim.fiyatlar[kademe] * enflasyonCarpani(state));
+  if (state.para < fiyat) throw new Error(`Yeterli paran yok (${fiyat} ${state.para_birimi} gerekli).`);
+  state.para = paraYuvarla(state.para - fiyat);
+  state.isletme.yatirimlar[tanim.id] = kademe + 1;
+  const ad = ikiDil(state.dil, tanim.ad.tr, tanim.ad.en);
+  hayatOlayiEkle(state, tanim.simge, T(state.dil, "{0} yatırımını {1}. kademeye çıkardı", [ad, kademe + 1]));
+  await oturumKaydet(state);
+  return {
+    state,
+    mesaj: T(state.dil, "{0} {1}. kademeye çıktı ({2} {3} ödedin).", [ad, kademe + 1, fiyat, state.para_birimi]),
+    durum: isletmeGorunumuHesapla(state),
+  };
+}
+
+/** Aday havuzundan bir çalışan işe alır: peşin ücret, yıllık maaş ekip giderinden düşer. Turu tüketmez. */
+export async function isletmeCalisanAl(
+  id: string,
+  adayId: string
+): Promise<{ state: CharacterState; mesaj: string; durum: IsletmeGorunumu }> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  const profil = isletmeProfiliGetir(state.meslek, state.cag);
+  if (!profil || !state.isletme) throw new Error("Bu mesleğin henüz bir işletmesi yok.");
+  if (state.etiketler.includes("hapiste")) throw new Error("Hapisteyken adam tutamazsın.");
+  const is = state.isletme;
+  const aday = is.adaylar.find((a) => a.id === adayId);
+  if (!aday) throw new Error("Böyle bir aday yok.");
+  if (state.ekip.length >= CALISAN_TAVANI) throw new Error("Daha fazla çalışan tutamazsın.");
+  if (state.para < aday.ucret) throw new Error(`Yeterli paran yok (${aday.ucret} ${state.para_birimi} gerekli).`);
+  state.para = paraYuvarla(state.para - aday.ucret);
+  is.adaylar = is.adaylar.filter((a) => a.id !== aday.id);
+  const rolAdi = rolAdiGetir(profil, aday.rolTuru);
+  state.ekip.push({
+    id: randomUUID(),
+    isim: aday.isim,
+    // Kanonik (TR) rol adı saklanır; ekranda rol_turu üzerinden dile göre çevrilir.
+    rol: rolAdi.tr,
+    gercekKalite: aday.gercekKalite,
+    tahminiMin: aday.tahminiMin,
+    tahminiMax: aday.tahminiMax,
+    maas: aday.maas,
+    sadakat: aday.sadakat,
+    kisilik: EKIP_KISILIK_HAVUZU[Math.floor(Math.random() * EKIP_KISILIK_HAVUZU.length)],
+    rol_turu: aday.rolTuru,
+    taninirlik: aday.taninirlik,
+  });
+  hayatOlayiEkle(state, "🤝", T(state.dil, "{0} ({1}) işe alındı", [aday.isim, ikiDil(state.dil, rolAdi.tr, rolAdi.en)]));
+  await oturumKaydet(state);
+  return {
+    state,
+    mesaj: T(state.dil, "{0} artık senin için çalışıyor. Peşin {1} {2} ödedin; maaşı her yıl giderinden düşecek.", [
+      aday.isim,
+      aday.ucret,
+      state.para_birimi,
+    ]),
+    durum: isletmeGorunumuHesapla(state),
+  };
+}
+
+
+// ---------------------------------------------------------------------------
 // Piyasa mülkleri + dedikodular + yeraltı zar masası
 // ---------------------------------------------------------------------------
 
@@ -4474,6 +4830,7 @@ export async function sosyallesmeOlayCoz(id: string, secenekIndex: number): Prom
   // Para primi + meslek metrik çarpanı (sonucuUygulaVeIlerlet ile aynı sıra/oran).
   if (etki.para && etki.para > 0) etki.para = paraYuvarla(etki.para * OLAY_PARA_PRIMI);
   if (etki.para && etki.para > 0) etki.para = Math.round(etki.para * meslekMetrikCarpani(state, mevcutOlay.kategori));
+  ciftKazancKirp(state, etki, mevcutOlay.kategori);
   sucKazanciUygula(etki);
   if (mevcutOlay.kategori === "savas") orduKaybiUygula(state, basarili);
 

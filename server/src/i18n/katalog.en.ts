@@ -690,4 +690,8 @@ export const KATALOG_EN: Record<string, string> = {
   "Casus": "Spy",
   "Suikastçı": "Assassin",
   "Rakibi Ortadan Kaldırt": "Have Your Rival Removed",
+  "Kervanbaşı": "Caravan Master",
+  "Muhasebeci": "Bookkeeper",
+  "Satın Alma Memuru": "Purchasing Agent",
+  "Satış Memuru": "Sales Clerk",
 };

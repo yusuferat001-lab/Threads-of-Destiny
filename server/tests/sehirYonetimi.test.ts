@@ -88,7 +88,7 @@ describe("şehir yönetimi (en üst rütbe sonrası sonsuz ilerleme)", () => {
 
   it("şehir yönetimine girmek maaşa kalıcı SABİT +%8 katar; seviyeyle ölçeklenmez", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
-    mesleğiSec(state, "Tüccar");
+    mesleğiSec(state, "Asker");
     state.rutbe_seviye = 4;
     const taban = hesaplaMaasYillik(state);
     state.sehir_yonetim_seviyesi = 1;

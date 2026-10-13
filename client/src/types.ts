@@ -311,6 +311,8 @@ export interface CharacterState {
   aile_etkilesim_kilit: Record<string, number>;
   /** Ajanlara verilmiş, bir sonraki yıl ilerlemesinde çözülecek işler. */
   ajan_gorevleri: AjanGorevi[];
+  /** Meslek işletmesi (Tüccar); diğer mesleklerde null. */
+  isletme: unknown | null;
   /** Karanlık işlerin bekleme süreleri: iş id'si → yeniden çevrilebileceği yıl. */
   kotu_is_kilit: Record<string, number>;
   /** Eş/çocuğun bekleyen para talebi; yoksa null. */
@@ -530,6 +532,116 @@ export interface EkipUyesi {
   maas: number;
   sadakat: number;
   kisilik: string;
+  rol_turu?: IsletmeRolTuru;
+  taninirlik?: number;
+}
+
+export type IsletmeRolTuru = 'yazi' | 'satin_alma' | 'satis';
+export type IsletmeFiyat = 'ucuz' | 'normal' | 'pahali';
+
+export interface IsletmeUyari {
+  kod: 'stok_bitti' | 'fazla_stok' | 'calisan_ayrildi' | 'kitle_kaybi';
+  hat?: string;
+  isim?: string;
+}
+
+export interface IsletmeDokum {
+  yil: number;
+  satis: number;
+  alim: number;
+  depoMasrafi: number;
+  brutKar: number;
+  borcOdeme: number;
+  net: number;
+  kitleDegisimi: number;
+  hatlar: { id: string; talep: number; satilan: number; alinan: number; stokSonu: number }[];
+  uyarilar: IsletmeUyari[];
+}
+
+export interface IsletmeHatGorunumu {
+  id: string;
+  simge: string;
+  ad: string;
+  kesim: 'temel' | 'orta' | 'luks';
+  acik: boolean;
+  kilitli: boolean;
+  minRutbe: number;
+  stok: number;
+  otomatik: boolean;
+  siparis: number;
+  fiyat: IsletmeFiyat;
+  tahminiTalep: number;
+  birimFiyat: number;
+  birimMaliyet: number;
+  beklenenKar: number;
+  sonTalep: number;
+  sonSatis: number;
+  dunyaTalepYuzde: number;
+  dunyaFiyatYuzde: number;
+}
+
+export interface IsletmeYatirimGorunumu {
+  id: string;
+  simge: string;
+  ad: string;
+  aciklama: string;
+  kademe: number;
+  maxKademe: number;
+  sonrakiFiyat: number | null;
+}
+
+export interface IsletmeCalisanGorunumu {
+  id: string;
+  isim: string;
+  rol: string;
+  rolTuru: string | null;
+  sadakat: number;
+  tahminiMin: number;
+  tahminiMax: number;
+  maas: number;
+  taninirlik: number;
+}
+
+export interface IsletmeAdayGorunumu {
+  id: string;
+  isim: string;
+  rol: string;
+  rolTuru: string;
+  gecmis: string;
+  sadakat: number;
+  tahminiMin: number;
+  tahminiMax: number;
+  taninirlik: number;
+  maas: number;
+  ucret: number;
+}
+
+export interface IsletmeGorunumu {
+  aktif: boolean;
+  meslek: string;
+  kitle: number;
+  slot: { kullanilan: number; toplam: number };
+  depo: { kullanilan: number; kapasite: number };
+  hatlar: IsletmeHatGorunumu[];
+  yatirimlar: IsletmeYatirimGorunumu[];
+  calisanlar: IsletmeCalisanGorunumu[];
+  calisanTavani: number;
+  adaylar: IsletmeAdayGorunumu[];
+  tedarikciBorcu: number;
+  sonDokum: IsletmeDokum | null;
+  beklenenBrutKar: number;
+  otorite: string | null;
+  dunya: { donem: string | null; savas: boolean; veba: boolean };
+  para: number;
+  paraBirimi: string;
+}
+
+export interface IsletmeKararGirdisi {
+  id: string;
+  acik?: boolean;
+  otomatik?: boolean;
+  siparis?: number;
+  fiyat?: IsletmeFiyat;
 }
 
 export interface Ast {

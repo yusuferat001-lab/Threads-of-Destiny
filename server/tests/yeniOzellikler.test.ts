@@ -17,7 +17,7 @@ import type { CharacterState } from "../src/types";
 
 function taze(): CharacterState {
   const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
-  mesleğiSec(s, "Tüccar");
+  mesleğiSec(s, "Asker");
   s.para = 500;
   return s;
 }
@@ -123,7 +123,7 @@ describe("Kredi / tefeci", () => {
   it("krediYillikUygula: taksit ödenir, borç azalır", () => {
     const s = taze();
     s.para = 200;
-    krediAl(s, 60);
+    krediAl(s, 40);
     const borcOnce = s.kredi!.kalanBorc;
     krediYillikUygula(s, 1);
     expect(s.kredi!.kalanBorc).toBeLessThan(borcOnce);
@@ -132,7 +132,7 @@ describe("Kredi / tefeci", () => {
   it("üst üste 3 taksit ödenemezse tefeci mülke el koyar", () => {
     const s = taze();
     s.para = 200;
-    krediAl(s, 60);
+    krediAl(s, 40);
     s.mulkler = ["ciftlik"];
     s.para = 0; // artık taksit ödenemez
     krediYillikUygula(s, 3);

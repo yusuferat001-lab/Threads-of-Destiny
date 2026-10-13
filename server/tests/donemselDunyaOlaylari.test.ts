@@ -50,7 +50,7 @@ function vebaTetikle(state: CharacterState, deneme = 600): boolean {
 
 function taze(cag: CharacterState["cag"] = "Orta Çağ"): CharacterState {
   const state = createCharacter(cag, cag === "Orta Çağ" ? "Fransa" : "İngiltere", "kasaba");
-  mesleğiSec(state, "Tüccar");
+  mesleğiSec(state, "Asker");
   state.para = 1000;
   return state;
 }

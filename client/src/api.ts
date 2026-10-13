@@ -1,4 +1,6 @@
 import type {
+  IsletmeGorunumu,
+  IsletmeKararGirdisi,
   CharacterState,
   SenaryoResponse,
   SecimSonucu,
@@ -194,6 +196,31 @@ export function ajanTut(stateId: string, rol: string) {
   return istek<{ state: CharacterState; mesaj: string }>(`/api/game/${stateId}/ajan/tut`, {
     method: 'POST',
     body: JSON.stringify({ rol }),
+  });
+}
+
+export function isletmeGetir(stateId: string) {
+  return istek<IsletmeGorunumu>(`/api/game/${stateId}/isletme`);
+}
+
+export function isletmeKararVer(stateId: string, hatlar: IsletmeKararGirdisi[]) {
+  return istek<{ state: CharacterState; durum: IsletmeGorunumu }>(`/api/game/${stateId}/isletme/karar`, {
+    method: 'POST',
+    body: JSON.stringify({ hatlar }),
+  });
+}
+
+export function isletmeYatirimYap(stateId: string, yatirimId: string) {
+  return istek<{ state: CharacterState; mesaj: string; durum: IsletmeGorunumu }>(`/api/game/${stateId}/isletme/yatirim`, {
+    method: 'POST',
+    body: JSON.stringify({ yatirimId }),
+  });
+}
+
+export function isletmeCalisanAl(stateId: string, adayId: string) {
+  return istek<{ state: CharacterState; mesaj: string; durum: IsletmeGorunumu }>(`/api/game/${stateId}/isletme/calisan`, {
+    method: 'POST',
+    body: JSON.stringify({ adayId }),
   });
 }
 
