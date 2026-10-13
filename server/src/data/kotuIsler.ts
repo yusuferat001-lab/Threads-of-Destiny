@@ -1,4 +1,5 @@
 import type { Cag, Kategori, UlkeKrizi } from "../types";
+import type { AjanRolu } from "./ajanlar";
 
 /**
  * "Karanlık / illegal işler" kataloğu — Kariyer ekranındaki "Karanlık İşler"
@@ -68,6 +69,10 @@ export interface KotuIsTanimi {
   rakipKirma?: number;
   /** Başarılı dalda hedef rakip doğrudan saf dışı kalır. */
   rakipYenilt?: boolean;
+  /** Bu işi senin yerine çevirebilecek ajan rolü (§43 Faz 2, data/ajanlar.ts). */
+  ajanRolu?: AjanRolu;
+  /** Yalnız bir ajana yaptırılabilir (kendin çeviremezsin). */
+  sadeceAjan?: boolean;
   basarili: KotuIsEtki;
   basarisiz: KotuIsEtki;
 }
@@ -76,6 +81,7 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
   // ===== GENEL (her meslek) =====
   {
     id: "rakibi_korkut",
+    ajanRolu: "Kabadayı",
     simge: "🗡️",
     basariSansi: 76,
     cooldownYil: 1,
@@ -94,6 +100,7 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
   },
   {
     id: "birini_soy",
+    ajanRolu: "Hırsız",
     simge: "💰",
     basariSansi: 56,
     cooldownYil: 2,
@@ -102,6 +109,7 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
   },
   {
     id: "isyeri_yak",
+    ajanRolu: "Kabadayı",
     simge: "🔥",
     basariSansi: 44,
     yatkinlik: "savas",
@@ -111,9 +119,22 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
     basarisiz: { saglik: -18, ahlak: -6, suc_artis: 40, olum_sansi: 6, hapis_sansi: 0.35 },
   },
 
+  {
+    id: "suikast_ettir",
+    simge: "☠️",
+    basariSansi: 40,
+    cooldownYil: 8,
+    rakipYenilt: true,
+    ajanRolu: "Suikastçı",
+    sadeceAjan: true,
+    basarili: { meslek_gucu: 4, ahlak: -24, suc_artis: 22 },
+    basarisiz: { ahlak: -6, suc_artis: 30, hapis_sansi: 0.3 },
+  },
+
   // ===== TÜCCAR — pazar =====
   {
     id: "kervan_yagmalat",
+    ajanRolu: "Hırsız",
     simge: "🐫",
     basariSansi: 58,
     meslekler: ["Tüccar"],
@@ -155,6 +176,7 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
   },
   {
     id: "afaroz_ettir",
+    ajanRolu: "Casus",
     simge: "📜",
     basariSansi: 55,
     meslekler: ["Din Adamı"],
@@ -165,6 +187,7 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
   },
   {
     id: "vali_santaj",
+    ajanRolu: "Casus",
     simge: "🗝️",
     basariSansi: 52,
     meslekler: ["Din Adamı"],
@@ -176,6 +199,7 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
   // ===== ZANAATKÂR — lonca/üretim =====
   {
     id: "formul_cal",
+    ajanRolu: "Casus",
     simge: "🔍",
     basariSansi: 58,
     meslekler: ["Zanaatkâr"],
@@ -208,6 +232,7 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
   // ===== ASKER — sokak/asayiş =====
   {
     id: "kaos_cikar",
+    ajanRolu: "Kabadayı",
     simge: "🌪️",
     basariSansi: 55,
     meslekler: ["Asker"],
@@ -217,6 +242,7 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
   },
   {
     id: "kaza_duello",
+    ajanRolu: "Suikastçı",
     simge: "🤺",
     basariSansi: 45,
     meslekler: ["Asker"],
@@ -227,6 +253,7 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
   },
   {
     id: "kervan_baskini",
+    ajanRolu: "Kabadayı",
     simge: "🏴",
     basariSansi: 60,
     meslekler: ["Asker"],
@@ -263,4 +290,5 @@ export const KOTU_IS_ADLARI: Record<string, string> = {
   kaos_cikar: "Kaos Çıkar, Koruma Sat",
   kaza_duello: "Kaza Süsü Verilmiş Düello",
   kervan_baskini: "Kervan Baskını",
+  suikast_ettir: "Rakibi Ortadan Kaldırt",
 };

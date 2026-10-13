@@ -34,6 +34,7 @@ import type {
   YonetimDurumu,
   RakipKarti,
   PazarDurumu,
+  AjanDurumu,
   AmaclarDurumu,
   SalginKorunmaKarti,
   KrediConfig,
@@ -173,7 +174,7 @@ export function kotuIsConfigGetir(stateId: string) {
 export function kotuIsYap(
   stateId: string,
   tur: string,
-  opts?: { hedefRakipAd?: string; vekil?: boolean },
+  opts?: { hedefRakipAd?: string; ajanId?: string },
 ) {
   return istek<KotuIsSonucu>(`/api/game/${stateId}/kotu-is`, {
     method: 'POST',
@@ -183,6 +184,17 @@ export function kotuIsYap(
 
 export function rakiplerGetir(stateId: string) {
   return istek<{ rakipler: RakipKarti[] }>(`/api/game/${stateId}/rakipler`);
+}
+
+export function ajanDurumGetir(stateId: string) {
+  return istek<AjanDurumu>(`/api/game/${stateId}/ajanlar`);
+}
+
+export function ajanTut(stateId: string, rol: string) {
+  return istek<{ state: CharacterState; mesaj: string }>(`/api/game/${stateId}/ajan/tut`, {
+    method: 'POST',
+    body: JSON.stringify({ rol }),
+  });
 }
 
 export function pazarGetir(stateId: string) {

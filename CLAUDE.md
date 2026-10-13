@@ -63,7 +63,9 @@ Taban: `/api/game` (oyun) ve `/api/scores` (liderlik tablosu).
 | POST `/:id/choice` | `{secenekIndex}` | Seçimi uygular; `SecimSonucu` **ya da** `TepkiSonucu` (ara-tepki) döner |
 | GET `/:id/finans` | – | Salt-okunur gelir/gider dökümü (turu tüketmez) — `maasYillik`, `giderKalemleri`, `netYillik` (= maaş − gider), `enflasyonYuzdesi`, `gayrimenkulDegeri`, `maasKirilim` (maaşın rütbe/kariyer/dönemsel kırılımı, §13), `gayrimenkulYillikGelir` (mülklerden yıllık tahmini net gelir; maaşın DIŞINDA ayrı akış — istemci "eline kalan"a ekler) ve `dunyaEtkileri` (`{ikon,metin}[]` — şu an bütçeyi/sağlığı etkileyen dünya durumlarının insan-okunur listesi: ekonomi ±%, savaş/büyük savaş, salgın aktif/iz, kıtlık/isyan/altın çağ, gıda şoku, enflasyon, **artık zorunlu bağış eşiğini göstermez** — ekonomi sıkılaştırma turunda o satır kasıtlı olarak kaldırıldı, mekanik (servet > 350 → kral sessizce bağış alabilir, §27) hâlâ arka planda çalışıyor; `dunyaFinansEtkileri(state)`, formülü açıklar HESAPLAMAZ) |
 | GET `/:id/kotu-is-config` | – | "Karanlık işler" listesi: 4 genel + mesleğe özel 3 iş, her biri canlı şans/kazanç/maliyet/güç kazancı/bekleme süresiyle (§43 Faz 1) |
-| POST `/:id/kotu-is` | `{tur, hedefRakipAd?, vekil?}` | Bir karanlık iş çevirir — zarlı, turu tüketmez, iş başına bekleme süresi; başarısızlıkta hapis/ölüm riski (§13, §43). `hedefRakipAd` + `vekil` = derin rakip ilişkileri (§34.2) |
+| POST `/:id/kotu-is` | `{tur, hedefRakipAd?, ajanId?}` | Bir karanlık iş çevirir — zarlı, turu tüketmez, iş başına bekleme süresi; başarısızlıkta hapis/ölüm riski (§13, §43). `hedefRakipAd` = hedef rakip (§34.2); `ajanId` = işi tutulan bir ajana ver, sonuç bir sonraki turda çözülür (§43 Faz 2) |
+| GET `/:id/ajanlar` | – | Tutulabilir ajan rolleri (ücret, maaş aralığı) + mevcut ajanlar ve görevleri (§43 Faz 2) |
+| POST `/:id/ajan/tut` | `{rol}` | Hırsız/Kabadayı/Casus/Suikastçı tutar — peşin ücret, sonra yıllık maaş ekip giderinden; rol başına bir ajan (§43 Faz 2). Turu tüketmez |
 | GET `/:id/pazar` | – | Meslek pazarı özeti (§43): `{aktif, pazarAdi, gucAdi, simge, oyuncuGucu, pazarPayi, rakipler[{ad,guc,pay,husumet}], digerPay, maasEtkisi, yillikKariyerPuani, rutbeSarti, yeniRakipKalanYil}`. Turu tüketmez |
 | GET `/:id/rakipler` | – | İsimli rakiplerin listesi (`{ad,meslek,guc,husumet,yenildi}`) — Görevin ekranı + karanlık iş hedef seçimi (§34.2) |
 | GET `/:id/amaclar` | – | 3 kişisel hayat amacının durumu: `{amaclar: AmacKarti[], carpan}` — sağ panel canlı ilerleme kartı + ölüm ekranı (§18). Turu tüketmez |
@@ -1556,3 +1558,11 @@ Kaynak: [data/kotuIsler.ts](server/src/data/kotuIsler.ts) (`KOTU_ISLER`, `uygunK
 - **İstemci:** Karanlık İşler penceresi "Mesleğine özel işler" / "Herkesin işleri" diye iki gruba ayrıldı; kartta şans · kazanç · bedel · güç · rakip etkisi tek satırda, beklemedeyken buton "Ortalık kızışık · ~N yıl" ve soluk.
 - **Test:** [kotuIsler.test.ts](server/tests/kotuIsler.test.ts) (bekleme, meslek filtresi, güç artışı, düello, maliyet).
 
+### Faz 2 — Ajanlar (sunucu; arayüz henüz yok)
+Kaynak: [data/ajanlar.ts](server/src/data/ajanlar.ts) + gameEngine `ajanTut`/`ajanDurumGetir`/`ajanGorevleriniCoz`.
+- **Ajan = normal ekip üyesi** (`EkipUyesi`, rolü Hırsız 🦊 / Kabadayı 🪓 / Casus 🕵️ / Suikastçı 🗡️); peşin ücret 10/12/16/30 (× enflasyon), yıllık maaş `maasTaban + kalite/20`. Rol başına en fazla bir ajan.
+- Karanlık işin `ajanRolu`'na uyan bir ajana iş verilirse (`ajanId`) zar hemen atılmaz: görev `state.ajan_gorevleri`'ne yazılır, bir sonraki seçimde yıl ilerlerken çözülür; ajan o sırada başka iş alamaz. Şans = `ajanBasariSansi(taban, gercekKalite)`.
+- Başarıda sağlık/ölüm/hapis bedeli yok, ahlak ve suç yarıya iner, ajan sadakati +5; yine de `(100 − sadakat)/400` ihtimalle ağzından kaçırır. Başarısızlıkta %60 yakalanıp ekipten düşer; düşük sadakatliyse seni ele verir (tam suç, şöhret −5, hapis riski).
+- `suikast_ettir` ☠️ yalnız Suikastçı'yla yapılabilir (`sadeceAjan`). İstemci kartı bu işi şimdilik kapalı gösterir; "adamına yaptır" kutusu kaldırıldı.
+- **Bu sistem geçicidir:** yeni meslek planında (dikey dilim, önce Tüccar) karanlık işler mesleğe özel 3 işe iner ve "çalışana yaptır" mantığına dönüşür.
+- **Test:** [ajanlar.test.ts](server/tests/ajanlar.test.ts).

@@ -21,6 +21,7 @@ import type {
   AileDurumu,
   YonetimDurumu,
   PazarDurumu,
+  AjanDurumu,
 } from './types';
 import {
   mesleklerGetir,
@@ -70,6 +71,8 @@ import {
   aileTalebiKararlastir,
   yonetimDurumGetir,
   pazarGetir,
+  ajanDurumGetir,
+  ajanTut,
   yonetimEtkilesimYap,
   yonetimIstekYap,
   yonetimTalebiKararlastir,
@@ -350,6 +353,7 @@ function App() {
   const [aileDurum, setAileDurum] = useState<AileDurumu | null>(null);
   const [yonetimDurum, setYonetimDurum] = useState<YonetimDurumu | null>(null);
   const [pazarDurum, setPazarDurum] = useState<PazarDurumu | null>(null);
+  const [ajanDurum, setAjanDurum] = useState<AjanDurumu | null>(null);
   const [kotuIsler, setKotuIsler] = useState<KotuIsKarti[]>([]);
   const [krediConfig, setKrediConfig] = useState<KrediConfig | null>(null);
   const [dedikodular, setDedikodular] = useState<string[]>([]);
@@ -937,14 +941,16 @@ function App() {
     setHata(null);
     setYukleniyor(true);
     try {
-      const [durum, { config }, pazar] = await Promise.all([
+      const [durum, { config }, pazar, ajanlar] = await Promise.all([
         yonetimDurumGetir(karakter.id),
         kotuIsConfigGetir(karakter.id),
         pazarGetir(karakter.id),
+        ajanDurumGetir(karakter.id),
       ]);
       setYonetimDurum(durum);
       setKotuIsler(config);
       setPazarDurum(pazar);
+      setAjanDurum(ajanlar);
       setIslemMesaji(null);
       setEkran('kariyer');
     } catch (err) {
@@ -964,9 +970,10 @@ function App() {
 
   async function kariyerKaranlikIslerTazele(id: string) {
     try {
-      const [{ config }, pazar] = await Promise.all([kotuIsConfigGetir(id), pazarGetir(id)]);
+      const [{ config }, pazar, ajanlar] = await Promise.all([kotuIsConfigGetir(id), pazarGetir(id), ajanDurumGetir(id)]);
       setKotuIsler(config);
       setPazarDurum(pazar);
+      setAjanDurum(ajanlar);
     } catch {
       /* durum yenilenemezse eldeki kalır */
     }
@@ -1059,7 +1066,7 @@ function App() {
     setKrediConfig(kr);
   }
 
-  async function kotuIsHandler(tur: string, opts?: { hedefRakipAd?: string; vekil?: boolean }) {
+  async function kotuIsHandler(tur: string, opts?: { hedefRakipAd?: string; ajanId?: string }) {
     if (!karakter) return;
     // Kullanıcı isteği: suç işlerken onay sorma; sonuç açılır pencerede gösterilir.
     setHata(null);
@@ -1074,6 +1081,23 @@ function App() {
       await kariyerKaranlikIslerTazele(sonuc.state.id);
     } catch (err) {
       setHata(temizHata(err));
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
+  async function ajanTutHandler(rol: string) {
+    if (!karakter) return;
+    setHata(null);
+    setIslemMesaji(null);
+    setYukleniyor(true);
+    try {
+      const sonuc = await ajanTut(karakter.id, rol);
+      setKarakter(sonuc.state);
+      setIslemMesaji(sonuc.mesaj);
+      await kariyerKaranlikIslerTazele(sonuc.state.id);
+    } catch (err) {
+      setIslemMesaji(temizHata(err));
     } finally {
       setYukleniyor(false);
     }
@@ -2675,6 +2699,8 @@ function App() {
           islemMesaji={islemMesaji}
           yonetimDurum={yonetimDurum}
           pazarDurum={pazarDurum}
+          ajanDurum={ajanDurum}
+          onAjanTut={ajanTutHandler}
           onEtkilesim={yonetimEtkilesimHandler}
           onIstek={yonetimIstekHandler}
           onTalep={yonetimTalepHandler}

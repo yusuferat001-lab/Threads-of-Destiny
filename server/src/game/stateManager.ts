@@ -825,6 +825,7 @@ export function createCharacter(
     kredi: null,
     aile_etkilesim_kilit: {},
     kotu_is_kilit: {},
+    ajan_gorevleri: [],
     aile_talep: null,
     aile_talep_sonraki_yil: yil + 4,
     // Kral/yönetici ile başlangıçta neredeyse hiç ilişki yok (kullanıcı isteği);
@@ -1111,6 +1112,7 @@ export function eskiKayitGocu(state: CharacterState): void {
   }
   // Karanlık işlerin bekleme süreleri (2026-10, §43 Faz 1) sonradan eklendi.
   if (!state.kotu_is_kilit || typeof state.kotu_is_kilit !== "object") state.kotu_is_kilit = {};
+  if (!Array.isArray(state.ajan_gorevleri)) state.ajan_gorevleri = [];
   // Sosyalleşme ekranı tur-harcamayan aksiyonları (içki/deli/sadaka/kulak/ısmarla/fal) sonradan eklendi.
   if (!state.sosyallesme_aksiyon_kilit || typeof state.sosyallesme_aksiyon_kilit !== "object") {
     state.sosyallesme_aksiyon_kilit = {};

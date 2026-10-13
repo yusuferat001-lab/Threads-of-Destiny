@@ -280,6 +280,8 @@ export interface CharacterState {
 
   /** Aile ekranı etkileşim cooldown'ları: anahtar → tekrar açılacağı oyun yılı (§33). */
   aile_etkilesim_kilit: Record<string, number>;
+  /** Ajanlara verilmiş, bir sonraki yıl ilerlemesinde çözülecek işler. */
+  ajan_gorevleri: AjanGorevi[];
   /** Karanlık işlerin bekleme süreleri: iş id'si → yeniden çevrilebileceği yıl. */
   kotu_is_kilit: Record<string, number>;
   /** Eş/çocuğun bekleyen para talebi; yoksa null. */
@@ -724,12 +726,43 @@ export interface KotuIsKarti {
   meslegeOzel: boolean;
   /** Tekrar çevrilebilmesine kalan oyun yılı (0 = hazır). */
   kalanYil: number;
+  /** Bu işi yapabilecek ajan rolü (kanonik TR) ya da null. */
+  ajanRolu: string | null;
+  /** Yalnız ajana yaptırılabilir. */
+  sadeceAjan: boolean;
+}
+
+/** Bir ajana verilmiş, henüz çözülmemiş iş. */
+export interface AjanGorevi {
+  ajanId: string;
+  isId: string;
+  hedefRakipAd: string | null;
+  verilisYili: number;
+}
+
+/** Kariyer ekranı "Adam Tut" paneli için bir ajan rolü (GET /:id/ajanlar). */
+export interface AjanRolKarti {
+  rol: string;
+  simge: string;
+  ucret: number;
+  maasMin: number;
+  maasMax: number;
+  sahip: boolean;
+  isler: string[];
+}
+
+export interface AjanDurumu {
+  roller: AjanRolKarti[];
+  /** Görevdeki ajanlar: ajan id'si → iş id'si. */
+  gorevler: Record<string, string>;
 }
 
 export interface KotuIsSonucu {
   state: CharacterState;
   kazandi: boolean;
   mesaj: string;
+  /** İş bir ajana verildi, sonucu yıl dönerken. */
+  beklemede?: boolean;
 }
 
 export interface KonutSonucu {

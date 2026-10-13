@@ -787,4 +787,23 @@ export const ANLATIM_EN: Record<string, string> = {
   // Mesleğe özel karanlık işler (2026-10)
   "Ambarları sen boşalttın; şehirde kıtlık başladı.": "You emptied the granaries; famine has struck the city.",
   "Sokaklar karıştı; şehirde isyan çıktı.": "The streets boiled over; a revolt broke out in the city.",
+  // Ajanlar (2026-10)
+  "🕵️ {0} işi üstlendi: {1}. Sonucunu yıl dönerken öğreneceksin.": "🕵️ {0} took on the job: {1}. You'll learn how it went as the year turns.",
+  "🕵️ {0} işini gördü: {1}.": "🕵️ {0} got it done: {1}.",
+  "Ama meyhanede ağzından kaçırmış; adın fısıltılara karıştı.": "But they let it slip at the tavern; your name is in the whispers now.",
+  "🕵️ {0} işi beceremedi: {1}.": "🕵️ {0} botched the job: {1}.",
+  "Geri dönmedi; cesedini sabah buldular.": "They never came back; the body was found in the morning.",
+  "{0} bir işte öldü": "{0} died on a job",
+  "Muhafızlar onu yakaladı.": "The guards caught them.",
+  "{0} yakalandı": "{0} was caught",
+  "Sorguda seni ele verdi.": "Under questioning, they gave you up.",
+  "Adamının ihbarıyla tutuklandı": "Arrested after their hired hand talked",
+  "Kapına dayandılar — kodesi boyladın.": "They came to your door — you landed in a cell.",
+  "Ağzını açmadı; adın karışmadı.": "They kept their mouth shut; your name stayed clean.",
+  "Kılpayı kaçıp geri döndü.": "They slipped away by a hair and came back.",
+  "{0} ({1}) tutuldu": "{0} ({1}) hired",
+  "{0} artık senin için çalışıyor ({1}). Peşin {2} {birim} ödedin; maaşı her yıl giderinden düşecek.": "{0} now works for you ({1}). You paid {2} {birim} up front; their wage comes out of your expenses each year.",
+  "Bu işi kimseye yaptıramazsın; kendin çevirmelisin.": "You can't hand this job off; you have to do it yourself.",
+  "Hapisteyken adam tutamazsın.": "You can't hire anyone while in prison.",
+  "Geçersiz rol.": "Invalid role.",
 };

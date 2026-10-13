@@ -684,4 +684,10 @@ export const KATALOG_EN: Record<string, string> = {
   "Kaos Çıkar, Koruma Sat": "Stir Chaos, Sell Protection",
   "Kaza Süsü Verilmiş Düello": "A Duel Dressed Up as an Accident",
   "Kervan Baskını": "Caravan Raid",
+  // Ajan rolleri (2026-10)
+  "Hırsız": "Thief",
+  "Kabadayı": "Thug",
+  "Casus": "Spy",
+  "Suikastçı": "Assassin",
+  "Rakibi Ortadan Kaldırt": "Have Your Rival Removed",
 };

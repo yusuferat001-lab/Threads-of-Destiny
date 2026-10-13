@@ -39,6 +39,8 @@ import {
   oturumDiliAyarla,
   rakiplerGetir,
   pazarDurumGetir,
+  ajanDurumGetir,
+  ajanTut,
   amaclarGetir,
   hediyeEt,
   salginKorunmaConfigGetir,
@@ -201,16 +203,34 @@ gameRouter.get("/:id/kotu-is-config", async (req, res) => {
 });
 
 gameRouter.post("/:id/kotu-is", async (req, res) => {
-  const { tur, hedefRakipAd, vekil } = req.body ?? {};
+  const { tur, hedefRakipAd, ajanId } = req.body ?? {};
   if (typeof tur !== "string") {
     return res.status(400).json({ hata: "Geçersiz iş." });
   }
   try {
     const sonuc = await kotuIsYap(req.params.id, tur, {
       hedefRakipAd: typeof hedefRakipAd === "string" ? hedefRakipAd : undefined,
-      vekil: vekil === true,
+      ajanId: typeof ajanId === "string" ? ajanId : undefined,
     });
     res.json(sonuc);
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.get("/:id/ajanlar", async (req, res) => {
+  try {
+    res.json(await ajanDurumGetir(req.params.id));
+  } catch (err) {
+    res.status(404).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/ajan/tut", async (req, res) => {
+  const { rol } = req.body ?? {};
+  if (typeof rol !== "string") return res.status(400).json({ hata: "Geçersiz rol." });
+  try {
+    res.json(await ajanTut(req.params.id, rol));
   } catch (err) {
     res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }

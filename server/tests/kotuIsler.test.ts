@@ -2,11 +2,11 @@ import { describe, it, expect } from "vitest";
 import { yeniOyun, mesleğiAta, kotuIsYap, kotuIsConfigGetir, stateGetir, hapisCezaSuresiHesapla } from "../src/game/gameEngine";
 
 describe("karanlık işler (illegal işler paneli)", () => {
-  it("kotuIsConfigGetir 4 genel + 3 mesleğe özel aksiyonu şans/kazanç önizlemesiyle döner", async () => {
+  it("kotuIsConfigGetir 5 genel + 3 mesleğe özel aksiyonu şans/kazanç önizlemesiyle döner", async () => {
     const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     const config = await kotuIsConfigGetir(state.id);
-    expect(config).toHaveLength(7);
+    expect(config).toHaveLength(8);
     expect(config.filter((k) => k.meslegeOzel).map((k) => k.id).sort()).toEqual(
       ["gumruk_rusvet", "karaborsa_yarat", "kervan_yagmalat"]
     );
@@ -143,9 +143,12 @@ describe("karanlık işler (illegal işler paneli)", () => {
     await mesleğiAta(state.id, "Asker");
     const s = await stateGetir(state.id);
     const rakipAd = s.rakipler[0].ad;
-    for (let i = 0; i < 60 && !s.rakipler.find((r) => r.ad === rakipAd)?.yenildi && s.aktif; i++) {
+    // Kaybedilen düello ölüm ya da hapisle bitebilir; her denemede karakteri sıfırlayıp yeniden dene.
+    for (let i = 0; i < 80 && !s.rakipler.find((r) => r.ad === rakipAd)?.yenildi; i++) {
       s.kotu_is_kilit = {};
       s.saglik = 100;
+      s.aktif = true;
+      s.etiketler = s.etiketler.filter((e) => e !== "hapiste");
       await kotuIsYap(state.id, "kaza_duello", { hedefRakipAd: rakipAd });
     }
     expect(s.rakipler.find((r) => r.ad === rakipAd)?.yenildi).toBe(true);

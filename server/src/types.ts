@@ -409,6 +409,8 @@ export interface CharacterState {
 
   /** Aile ekranı etkileşim cooldown'ları: anahtar (ör. "es:hediye", "cocuk:2:oyna") → tekrar açılacağı oyun yılı. */
   aile_etkilesim_kilit: Record<string, number>;
+  /** Ajanlara verilmiş, bir sonraki yıl ilerlemesinde çözülecek karanlık işler (§43 Faz 2). */
+  ajan_gorevleri: AjanGorevi[];
   /** Karanlık işlerin bekleme süreleri: iş id'si → yeniden çevrilebileceği oyun yılı (§43 Faz 1). */
   kotu_is_kilit: Record<string, number>;
   /** Eş/çocuğun bekleyen para talebi; yoksa null (§33). */
@@ -582,6 +584,14 @@ export interface Ast {
 }
 
 /** Yanına aldığın (satın aldığın/işe aldığın) yardımcı; gerçek kalitesi gizli, sadece tahmini bir aralık gösterilir. */
+/** Bir ajana verilmiş, henüz çözülmemiş karanlık iş (§43 Faz 2). */
+export interface AjanGorevi {
+  ajanId: string;
+  isId: string;
+  hedefRakipAd: string | null;
+  verilisYili: number;
+}
+
 export interface EkipUyesi {
   id: string;
   isim: string;

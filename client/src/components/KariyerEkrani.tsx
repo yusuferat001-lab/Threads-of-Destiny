@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import type { EkipUyesi, Rakip, KotuIsKarti, YonetimDurumu, YonetimHat, PazarDurumu } from '../types';
+import type { EkipUyesi, Rakip, KotuIsKarti, YonetimDurumu, YonetimHat, PazarDurumu, AjanDurumu } from '../types';
 import { useDil } from '../DilContext';
 import { formatPara, formatYuzde, formatYuzdeAralik } from '../format';
 import { bic, type Metinler } from '../i18n';
@@ -40,7 +40,10 @@ interface KariyerEkraniProps {
   onIstek: (istekId: string) => void;
   onTalep: (karar: 'kabul' | 'ret' | 'yalan') => void;
   onEkipCikar: (ekipId: string) => void;
-  onKotuIs: (id: string, opts?: { hedefRakipAd?: string; vekil?: boolean }) => void;
+  onKotuIs: (id: string, opts?: { hedefRakipAd?: string; ajanId?: string }) => void;
+  /** Ajan sistemi (§43 Faz 2) — arayüzü meslek ekip rolleriyle birlikte gelecek; şimdilik kullanılmıyor. */
+  ajanDurum?: AjanDurumu | null;
+  onAjanTut?: (rol: string) => void;
   onGeriDon: () => void;
 }
 
@@ -131,7 +134,7 @@ function sucSeviyesiEtiketi(m: Metinler, seviye: number): string {
   return m.iySicilPesinde;
 }
 
-/** Tek bir karanlık iş kartı — rakip hedefleyen işlerde hedef seçimi + "adamına yaptır" seçeneği taşır. */
+/** Tek bir karanlık iş kartı — rakip hedefleyen işlerde hedef seçimi taşır. */
 function KaranlikIsKart({
   is,
   dil,
@@ -158,7 +161,6 @@ function KaranlikIsKart({
   const aktifRakipler = rakipler.filter((r) => !r.yenildi);
   const rakipHedefli = is.rakipKirmaGucu > 0 && aktifRakipler.length > 0;
   const [hedef, setHedef] = useState<string>(aktifRakipler[0]?.ad ?? '');
-  const [vekil, setVekil] = useState(false);
   const bekliyor = is.kalanYil > 0;
 
   const ozet: string[] = [bic(m.iyKaranlikSans, is.basariSansi)];
@@ -190,22 +192,13 @@ function KaranlikIsKart({
               </option>
             ))}
           </select>
-          <label className="karanlik-vekil-etiket">
-            <input type="checkbox" checked={vekil} disabled={yukleniyor} onChange={(e) => setVekil(e.target.checked)} />
-            {en ? 'Send a hired hand (fee; lower personal risk, may be exposed)' : 'Adamına yaptır (ücret; risk düşer, ifşa riski)'}
-          </label>
         </div>
       )}
 
       <button
         className="ikincil karanlik-cevir-buton"
-        disabled={yukleniyor || bekliyor}
-        onClick={() =>
-          onKotuIs(is.id, {
-            hedefRakipAd: rakipHedefli ? hedef : undefined,
-            vekil: rakipHedefli ? vekil : undefined,
-          })
-        }
+        disabled={yukleniyor || bekliyor || is.sadeceAjan}
+        onClick={() => onKotuIs(is.id, { hedefRakipAd: rakipHedefli ? hedef : undefined })}
       >
         {bekliyor ? (en ? `Lie low · ~${is.kalanYil}y` : `Ortalık kızışık · ~${is.kalanYil} yıl`) : en ? 'Do it' : 'Çevir'}
       </button>
