@@ -6,6 +6,7 @@ import {
   mulkGetiriOraniHesapla,
   sucSeviyesiUygula,
   piyasaDedikodulariUret,
+  ilkDonemOlustur,
 } from "../src/game/stateManager";
 import { yeniOyun, mesleğiAta, mulkConfigGetir, mulkSatinAl, zarAt, zarKademeleriGetir, dedikoduGetir } from "../src/game/gameEngine";
 import { OLAY_BANKASI } from "../src/data/olaylar";
@@ -15,6 +16,10 @@ function taze(): CharacterState {
   const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
   mesleğiSec(state, "Tüccar");
   state.para = 1000;
+  // Rastgele başlangıç dönemi (kıtlık çıkabilir) karşılaştırmaları bozmasın: sabit durgunluk.
+  state.ulke.donem = ilkDonemOlustur(state.yil, "durgunluk");
+  state.ulke.donem.bitisYili = state.yil + 50;
+  state.ulke.ekonomi = "normal";
   return state;
 }
 

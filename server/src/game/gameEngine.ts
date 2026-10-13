@@ -81,7 +81,7 @@ import {
   vebaHastaligiKontrol,
   vebaHastaligiBaslatEt,
   vebaBitisKontrolEt,
-  kucukKrizKontrolEt,
+  donemIlerlet,
   MESLEK_KATEGORI,
   eskiKayitGocu,
   aileYillikUygula,
@@ -1083,7 +1083,7 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
   // tuhaflıklara yol açardı. Zaten kuyruğa alınmış bir olay (veba başlangıcı,
   // zorunlu_sonraki zinciri, sosyalleşme) varsa milestone kaskadı zaten atlanır.
   const milestoneKilitli = !zorlananId && havuzKilidiVar(oturum.state);
-  if (!zorlananId && !milestoneKilitli && !oturum.state.ulke.savasta && oturum.state.yas <= 55) {
+  if (!zorlananId && !milestoneKilitli && !oturum.state.ulke.savasta && !oturum.state.ulke.vebada && oturum.state.yas <= 55) {
     const rakip = tarihiSavasKontrol(oturum.state.bolge, oturum.state.yil, oturum.state.cag);
     if (rakip) {
       const izlemeEtiketi = `tarihi_savas_gordu:${rakip}`;
@@ -2228,13 +2228,10 @@ async function sonucuUygulaVeIlerlet(
             zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${yardimMesaji}` : yardimMesaji;
             hayatOlayiEkle(state, "🙏", T(state.dil, "Borç yardımı aldı: +{0} {1}", [ekonomi.borcYardimi, state.para_birimi]));
           }
-          // Küçük kriz (5-7 yılda bir kıtlık/haydut baskını + o yıla mahsus ×2 gıda
-          // şoku) krizEtkisiUygula'dan HEMEN önce çağrılır ki bu turda tetiklenirse
-          // -2 sağlık/yıl etkisini de bu turda görsün.
-          const kucukKrizMesaji = kucukKrizKontrolEt(state, yasArtisi);
-          if (kucukKrizMesaji) {
-            zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${kucukKrizMesaji}` : kucukKrizMesaji;
-            hayatOlayiEkle(state, "🌾", "Küçük bir kriz patlak verdi");
+          // Dünya dönemi (bolluk/durgunluk/kıtlık): geçen yılları işler, süresi dolan
+          // dönemi değiştirir, kıtlık yıllarında sağlık düşer (ölüm kontrolü aşağıda).
+          for (const donemMesaji of donemIlerlet(state, yasArtisi)) {
+            zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${donemMesaji}` : donemMesaji;
           }
           orduBuyumesiDene(state, yasArtisi);
           const krizBitisMesaji = krizEtkisiUygula(state, yasArtisi);

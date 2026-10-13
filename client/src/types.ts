@@ -15,6 +15,33 @@ export interface UlkeKrizi {
   bitisYili: number;
 }
 
+/** Dünya dönemi (server data/dunyaDonemleri.ts): her an biri sürer, aynısı arka arkaya gelmez. */
+export type DonemTuru = 'bolluk' | 'durgunluk' | 'kitlik';
+
+/** Dönem/savaş/veba etkileri — hepsi çarpan (1 = etkisiz). */
+export interface DonemEtkisi {
+  temelTalep: number;
+  temelFiyat: number;
+  luksTalep: number;
+  luksFiyat: number;
+  yasamGideri: number;
+  maas: number;
+}
+
+export interface DonemDurumu {
+  tur: DonemTuru;
+  baslangicYili: number;
+  bitisYili: number;
+  sonraki: DonemTuru;
+  etki: DonemEtkisi;
+}
+
+export interface DunyaYaklasan {
+  tur: 'savas' | 'veba';
+  yil: number;
+  dusman?: string;
+}
+
 /** Tekrarlayan büyük savaş mekaniğinin aktif parametreleri (bkz. server §27); savaş yokken CharacterState.buyuk_savas null'dur. */
 export interface BuyukSavas {
   dusman: string;
@@ -22,6 +49,7 @@ export interface BuyukSavas {
   bitisYili: number;
   vergiOrani: number;
   gidaCarpani: number;
+  etki?: DonemEtkisi;
 }
 
 /** Ömürde bir kez tetiklenebilen veba durumu (bkz. server §27); hiç yaşanmadıysa CharacterState.veba null'dur. */
@@ -33,6 +61,7 @@ export interface VebaDurumu {
   konutKiraCarpani: number;
   gelirCarpani: number;
   korumaSeviyesi: number;
+  etki?: DonemEtkisi;
 }
 
 export interface UlkeDurumu {
@@ -41,6 +70,7 @@ export interface UlkeDurumu {
   ekonomi: 'iyi' | 'normal' | 'kotu';
   kriz: UlkeKrizi | null;
   nufusDurumu: 'artiyor' | 'normal' | 'azaliyor';
+  donem?: DonemDurumu;
 }
 
 export type MulkTuru = 'kucuk_tarla' | 'ciftlik' | 'han' | 'demirci' | 'kervan' | 'karaborsa';
@@ -269,8 +299,7 @@ export interface CharacterState {
   veba_hayatta_kaldi: boolean;
   /** Hapisten fiziksel bir kaçışla (rüşvet/af değil) çıktıysa true (bir kereliğine, skor bonusu). */
   hapis_basarili_kacis: boolean;
-  kucuk_kriz_sonraki_yil: number;
-  gida_fiyat_sok_bitis_yili: number | null;
+  dunya_yaklasan: DunyaYaklasan | null;
   /** Ömürde bir kez borçtayken alınan kilise/eş dost yardımı kullanıldı mı. */
   borc_yardimi_alindi: boolean;
   /** Kalıcı salgından korunma yatırımı; yoksa null. */

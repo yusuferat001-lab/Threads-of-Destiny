@@ -16,15 +16,51 @@ export interface UlkeKrizi {
   bitisYili: number;
 }
 
+/** Dünya dönemi (Faz A): her an bunlardan biri sürer; aynısı arka arkaya gelmez. */
+export type DonemTuru = "bolluk" | "durgunluk" | "kitlik";
+
+/**
+ * Bir dönemin / savaşın / vebanın etkileri — hepsi çarpan (1 = etkisiz). Dönem
+ * başında her biri kendi aralığından BİR KEZ zarla belirlenir (tam yüzde), dönem
+ * boyunca sabit kalır. Talep/fiyat alanları meslek işletmesi (Faz D) için.
+ */
+export interface DonemEtkisi {
+  temelTalep: number;
+  temelFiyat: number;
+  luksTalep: number;
+  luksFiyat: number;
+  yasamGideri: number;
+  /** Eski maaş formülüyle kazanan meslekler için gelir çarpanı. */
+  maas: number;
+}
+
+export interface DonemDurumu {
+  tur: DonemTuru;
+  baslangicYili: number;
+  bitisYili: number;
+  /** Önceden zarla belirlenen sonraki dönem (dedikodu sinyali için); savaş sürerse bolluk yerine diğeri gelir. */
+  sonraki: DonemTuru;
+  etki: DonemEtkisi;
+}
+
+/** Yaklaşan savaş/veba: bir yıl önceden belirlenir ki dedikodu haber verebilsin. */
+export interface DunyaYaklasan {
+  tur: "savas" | "veba";
+  yil: number;
+  dusman?: string;
+}
+
 /** Tekrarlayan büyük savaş mekaniği: state.ulke.savasta=true olduğunda aktif; süre/vergi/gıda çarpanı savaş başlarken bir kere rastgele belirlenir. */
 export interface BuyukSavas {
   dusman: string;
   baslangicYili: number;
   bitisYili: number;
-  /** Pasif gelirden ek olarak kesilen "savaş vergisi" oranı (0.15-0.20). */
+  /** Pasif gelirden ek olarak kesilen "savaş vergisi" oranı (0.07-0.10). */
   vergiOrani: number;
-  /** Yaşam/gıda giderine uygulanan çarpan (1.25-1.35). */
+  /** Yaşam/gıda giderine uygulanan çarpan (1.12-1.18). */
   gidaCarpani: number;
+  /** Talep/fiyat/maaş etkileri (eski kayıtlarda yok). */
+  etki?: DonemEtkisi;
 }
 
 /** Ömürde bir kez tetiklenebilen veba: aktif fazda ölüm riski taşır, aktif+iz süresi boyunca kira/maaş etkisi kalıcıdır. */
@@ -41,6 +77,8 @@ export interface VebaDurumu {
   gelirCarpani: number;
   /** Salgın başında seçilen korunma düzeyi: 0 = hiç, 1 = kısmi (evde tedbir), 2 = tam (kırsala çekil). Yıllık ölüm risklerini kademeli düşürür. */
   korumaSeviyesi: number;
+  /** Talep/fiyat/maaş etkileri (eski kayıtlarda yok). */
+  etki?: DonemEtkisi;
 }
 
 export interface UlkeDurumu {
@@ -51,6 +89,8 @@ export interface UlkeDurumu {
   kriz: UlkeKrizi | null;
   /** Göç/doğum dengesi; mülk gelirlerini (özellikle han/meyhane) ve piyasa dedikodularını etkiler. */
   nufusDurumu: "artiyor" | "normal" | "azaliyor";
+  /** Genel dönem (bolluk/durgunluk/kıtlık). `ekonomi` bundan türetilir. Eski kayıtlarda göçle atanır. */
+  donem?: DonemDurumu;
 }
 
 /** Piyasa mülkleri: her biri en fazla bir kez sahiplenilebilir, getirisi state.ulke'ye göre her tur yeniden hesaplanır. */
@@ -396,10 +436,8 @@ export interface CharacterState {
   veba_hayatta_kaldi: boolean;
   /** Hapisten FİZİKSEL bir kaçışla (tünel/duvar/çamaşır arabası/gardiyan bayıltma vb. — rüşvet/af DEĞİL) çıktıysa true (bir kereliğine, skor bonusu). */
   hapis_basarili_kacis: boolean;
-  /** Bir sonraki küçük krizin (kıtlık/haydut baskını) tetikleneceği yıl eşiği. */
-  kucuk_kriz_sonraki_yil: number;
-  /** Küçük kriz tetiklendiğinde SADECE bu yıla kadar geçerli olan ×2 gıda fiyat şoku; null = şok yok. */
-  gida_fiyat_sok_bitis_yili: number | null;
+  /** Bir yıl sonra başlayacak savaş/veba (dedikodu sinyali için); yoksa null. */
+  dunya_yaklasan: DunyaYaklasan | null;
   /** Ömürde bir kez: borçtayken (para < 0, bütçe açığı sürerken) kilise/eş dost bir kereliğine borcun bir kısmını kapatır. true olunca bir daha tetiklenmez. */
   borc_yardimi_alindi: boolean;
   /** Kalıcı salgından korunma yatırımı; yoksa null. Bir sonraki veba dalgasında tüketilir. */

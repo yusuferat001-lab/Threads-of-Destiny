@@ -14,12 +14,39 @@ import {
   vebaHastaligiKontrol,
   vebaHastaligiBaslatEt,
   vebaBitisKontrolEt,
-  kucukKrizKontrolEt,
+  donemIlerlet,
+  ilkDonemOlustur,
+  ulkeGuncelle,
   giderKalemleriHesapla,
   hesaplaMaasYillik,
 } from "../src/game/stateManager";
 import { olaySec } from "../src/game/olaySecici";
 import type { CharacterState } from "../src/types";
+
+/** Savaş çıkabilmesi için dönemi bolluk dışı yapar. */
+function bollukDisi(state: CharacterState): void {
+  state.ulke.donem = ilkDonemOlustur(state.yil, "durgunluk");
+  state.ulke.donem.bitisYili = state.yil + 50;
+}
+
+/** Zar tutana kadar dener; tutunca bir yıl ilerleyip savaşı başlatır. */
+function savasTetikle(state: CharacterState, deneme = 400): string | null {
+  for (let i = 0; i < deneme; i++) {
+    const mesaj = buyukSavasKontrolEt(state, 1);
+    if (mesaj) return mesaj;
+    if (state.dunya_yaklasan?.tur === "savas") state.yil = state.dunya_yaklasan.yil;
+  }
+  return null;
+}
+
+/** Zar tutana kadar dener; tutunca bir yıl ilerleyip vebayı başlatır. */
+function vebaTetikle(state: CharacterState, deneme = 600): boolean {
+  for (let i = 0; i < deneme; i++) {
+    if (vebaBaslamaliMi(state, 1)) return true;
+    if (state.dunya_yaklasan?.tur === "veba") state.yil = state.dunya_yaklasan.yil;
+  }
+  return false;
+}
 
 function taze(cag: CharacterState["cag"] = "Orta Çağ"): CharacterState {
   const state = createCharacter(cag, cag === "Orta Çağ" ? "Fransa" : "İngiltere", "kasaba");
@@ -35,10 +62,10 @@ describe("enflasyonCarpani — çağa göre yıllık bileşik oran", () => {
     expect(enflasyonCarpani(state)).toBeCloseTo(Math.pow(1.01, 10), 6);
   });
 
-  it("Sanayi Devrimi'nde gelir enflasyonu yılda %2 büyür (Orta Çağ'dan belirgin şekilde hızlı)", () => {
+  it("Sanayi Devrimi'nde enflasyon yılda %2.5 büyür (Orta Çağ'dan belirgin şekilde hızlı)", () => {
     const state = taze("Sanayi Devrimi");
     state.yil = state.baslangic_yili + 10;
-    expect(enflasyonCarpani(state)).toBeCloseTo(Math.pow(1.02, 10), 6);
+    expect(enflasyonCarpani(state)).toBeCloseTo(Math.pow(1.025, 10), 6);
     expect(enflasyonCarpani(state)).toBeGreaterThan(Math.pow(1.01, 10));
   });
 
@@ -158,32 +185,65 @@ describe("buyukSavasKontrolEt / buyukSavasBitisKontrolEt", () => {
     }
   });
 
-  it("10 yıllık cooldown dolmadan tetiklenmez", () => {
+  it("6 yıllık bekleme dolmadan tetiklenmez", () => {
     const state = taze();
-    state.yil = state.baslangic_yili + 5;
+    bollukDisi(state);
+    state.son_buyuk_savas_bitis_yili = state.yil - 3;
     for (let i = 0; i < 200; i++) {
       expect(buyukSavasKontrolEt(state, 2)).toBeNull();
+      expect(state.dunya_yaklasan).toBeNull();
     }
   });
 
-  it("cooldown dolunca makul sürede tetiklenir; parametreler beklenen aralıkta", () => {
+  it("bolluk döneminde başlamaz", () => {
     const state = taze();
+    state.ulke.donem = ilkDonemOlustur(state.yil, "bolluk");
+    state.ulke.donem.bitisYili = state.yil + 50;
     state.yil = state.baslangic_yili + 15;
-    let mesaj: string | null = null;
-    for (let i = 0; i < 200 && !mesaj; i++) {
-      mesaj = buyukSavasKontrolEt(state, 1);
-    }
+    for (let i = 0; i < 300; i++) expect(buyukSavasKontrolEt(state, 2)).toBeNull();
+    expect(state.dunya_yaklasan).toBeNull();
+  });
+
+  it("veba sürerken başlamaz", () => {
+    const state = taze();
+    bollukDisi(state);
+    state.yil = state.baslangic_yili + 15;
+    vebaBaslat(state, 0);
+    state.ulke.vebada = true;
+    for (let i = 0; i < 300; i++) expect(buyukSavasKontrolEt(state, 2)).toBeNull();
+  });
+
+  it("zar tutunca önce bir yıl 'yaklaşıyor' olur, sonra başlar; parametreler beklenen aralıkta", () => {
+    const state = taze();
+    bollukDisi(state);
+    state.yil = state.baslangic_yili + 15;
+    const mesaj = savasTetikle(state);
     expect(mesaj).not.toBeNull();
     expect(state.ulke.savasta).toBe(true);
-    expect(state.buyuk_savas).not.toBeNull();
+    expect(state.dunya_yaklasan).toBeNull();
     const savas = state.buyuk_savas!;
     expect(savas.dusman).toBeTruthy();
-    expect(savas.bitisYili - savas.baslangicYili).toBeGreaterThanOrEqual(3);
-    expect(savas.bitisYili - savas.baslangicYili).toBeLessThanOrEqual(6);
-    expect(savas.vergiOrani).toBeGreaterThanOrEqual(0.08);
-    expect(savas.vergiOrani).toBeLessThanOrEqual(0.12);
-    expect(savas.gidaCarpani).toBeGreaterThanOrEqual(1.15);
-    expect(savas.gidaCarpani).toBeLessThanOrEqual(1.25);
+    expect(savas.bitisYili - savas.baslangicYili).toBeGreaterThanOrEqual(4);
+    expect(savas.bitisYili - savas.baslangicYili).toBeLessThanOrEqual(5);
+    expect(savas.vergiOrani).toBeGreaterThanOrEqual(0.07);
+    expect(savas.vergiOrani).toBeLessThanOrEqual(0.1);
+    expect(savas.gidaCarpani).toBeGreaterThanOrEqual(1.12);
+    expect(savas.gidaCarpani).toBeLessThanOrEqual(1.18);
+  });
+
+  it("olayla savaş başlarken bolluk sürüyorsa bolluk biter", () => {
+    const state = taze();
+    state.ulke.donem = ilkDonemOlustur(state.yil, "bolluk");
+    ulkeGuncelle(state, { savasta: true });
+    expect(state.ulke.savasta).toBe(true);
+    expect(state.ulke.donem!.tur).not.toBe("bolluk");
+  });
+
+  it("veba sürerken olay savaş başlatamaz", () => {
+    const state = taze();
+    state.ulke.vebada = true;
+    ulkeGuncelle(state, { savasta: true });
+    expect(state.ulke.savasta).toBe(false);
   });
 
   it("bitiş yılına ulaşınca savaş sona erer ve cooldown yeniden kurulur", () => {
@@ -244,19 +304,20 @@ describe("vebaBaslamaliMi / vebaBaslat / vebaYillikKontrol / vebaBitisKontrolEt"
     }
     // Cooldown dolmuş (25 yıl önce): artık yeniden tetiklenebilir.
     state.son_veba_bitis_yili = state.yil - 25;
-    let tekrar = false;
-    for (let i = 0; i < 400 && !tekrar; i++) tekrar = vebaBaslamaliMi(state, 2);
-    expect(tekrar).toBe(true);
+    expect(vebaTetikle(state)).toBe(true);
   });
 
   it("uygun yaşta makul sürede tetiklenir", () => {
     const state = taze();
     state.yas = 30;
-    let tetiklendi = false;
-    for (let i = 0; i < 300 && !tetiklendi; i++) {
-      tetiklendi = vebaBaslamaliMi(state, 2);
-    }
-    expect(tetiklendi).toBe(true);
+    expect(vebaTetikle(state)).toBe(true);
+  });
+
+  it("savaş sürerken başlamaz", () => {
+    const state = taze();
+    state.yas = 30;
+    state.ulke.savasta = true;
+    expect(vebaTetikle(state, 400)).toBe(false);
   });
 
   it("vebaBaslat parametreleri beklenen aralıkta üretir ve veba_gecirdi'yi kalıcı işaretler", () => {
@@ -266,13 +327,11 @@ describe("vebaBaslamaliMi / vebaBaslat / vebaYillikKontrol / vebaBitisKontrolEt"
     const v = state.veba!;
     expect(v.aktif).toBe(true);
     expect(v.bitisYili - v.baslangicYili).toBeGreaterThanOrEqual(5);
-    expect(v.bitisYili - v.baslangicYili).toBeLessThanOrEqual(7);
-    expect(v.etkiBitisYili - v.bitisYili).toBeGreaterThanOrEqual(10);
-    expect(v.etkiBitisYili - v.bitisYili).toBeLessThanOrEqual(15);
-    expect(v.konutKiraCarpani).toBeGreaterThanOrEqual(0.6);
-    expect(v.konutKiraCarpani).toBeLessThanOrEqual(0.7);
-    expect(v.gelirCarpani).toBeGreaterThanOrEqual(1.2);
-    expect(v.gelirCarpani).toBeLessThanOrEqual(1.3);
+    expect(v.bitisYili - v.baslangicYili).toBeLessThanOrEqual(6);
+    expect(v.etkiBitisYili).toBe(v.bitisYili); // ayrı "iz" fazı yok
+    expect(v.konutKiraCarpani).toBe(1);
+    expect(v.gelirCarpani).toBeGreaterThanOrEqual(1.08);
+    expect(v.gelirCarpani).toBeLessThanOrEqual(1.12);
   });
 
   it("önlem alınmışsa hastalığı KAPMA oranı önlem alınmamıştan belirgin şekilde düşüktür", () => {
@@ -339,83 +398,90 @@ describe("vebaBaslamaliMi / vebaBaslat / vebaYillikKontrol / vebaBitisKontrolEt"
     expect(oldu).toBe(true);
   });
 
-  it("aktif faz bitince ulke.vebada kapanır ama iz (state.veba) etkiBitisYili'ne kadar sürer", () => {
+  it("süresi dolunca veba tamamen biter ve bekleme süresi başlar", () => {
     const state = taze();
     vebaBaslat(state, 2);
     state.ulke.vebada = true;
-    state.veba!.bitisYili = state.yil; // aktif fazı hemen bitir
-
-    const mesaj = vebaBitisKontrolEt(state);
-    expect(mesaj).not.toBeNull();
+    state.veba!.bitisYili = state.yil;
+    expect(vebaBitisKontrolEt(state)).not.toBeNull();
     expect(state.ulke.vebada).toBe(false);
-    expect(state.veba).not.toBeNull();
-    expect(state.veba!.aktif).toBe(false);
-
-    // İz süresi de dolunca state.veba tamamen temizlenir.
-    state.veba!.etkiBitisYili = state.yil;
-    vebaBitisKontrolEt(state);
     expect(state.veba).toBeNull();
+    expect(state.son_veba_bitis_yili).toBe(state.yil);
   });
 
-  it("veba izi sürerken kira düşer, maaş artar", () => {
-    // Aynı karakter üzerinde önce/sonra karşılaştırılır — iki ayrı createCharacter
-    // çağrısı aile/kişilik gibi rastgele farklarla veba etkisini gölgeleyebilir.
+  it("veba sürerken işçi kıtlığı yüzünden maaş artar", () => {
     const state = taze();
-    const giderNormal = giderKalemleriHesapla(state);
     const maasNormal = hesaplaMaasYillik(state);
-
     vebaBaslat(state, 2);
-    state.veba!.aktif = false; // aktif faz bitmiş, sadece iz sürüyor
-    const giderIzli = giderKalemleriHesapla(state);
-    const maasIzli = hesaplaMaasYillik(state);
-
-    expect(giderIzli.konut).toBeLessThan(giderNormal.konut);
-    expect(maasIzli).toBeGreaterThan(maasNormal);
+    expect(hesaplaMaasYillik(state)).toBeGreaterThan(maasNormal);
   });
 });
 
-describe("kucukKrizKontrolEt", () => {
-  it("eşik yılına ulaşılmadan tetiklenmez", () => {
-    const state = taze();
-    state.kucuk_kriz_sonraki_yil = state.yil + 5;
-    expect(kucukKrizKontrolEt(state, 3)).toBeNull();
+describe("dünya dönemleri (bolluk / durgunluk / kıtlık)", () => {
+  it("yeni karakterde her zaman bir dönem vardır, ekonomi ondan türetilir", () => {
+    for (let i = 0; i < 50; i++) {
+      const state = taze();
+      expect(state.ulke.donem).toBeTruthy();
+      expect(state.ulke.ekonomi).toBe(state.ulke.donem!.tur === "bolluk" ? "iyi" : "kotu");
+    }
   });
 
-  it("başka bir kriz zaten aktifken tetiklenmez", () => {
+  it("aynı dönem asla arka arkaya gelmez; süreler aralıkta; savaşta bolluk gelmez", () => {
     const state = taze();
-    state.kucuk_kriz_sonraki_yil = state.yil;
-    state.ulke.kriz = { tur: "altin_cag", bitisYili: state.yil + 5 };
-    expect(kucukKrizKontrolEt(state, 1)).toBeNull();
+    let onceki = state.ulke.donem!;
+    let gecis = 0;
+    for (let yil = 0; yil < 2000; yil++) {
+      state.ulke.savasta = yil % 40 < 10; // ara sıra savaş
+      state.yil += 1;
+      donemIlerlet(state, 1);
+      const d = state.ulke.donem!;
+      if (d !== onceki) {
+        gecis++;
+        expect(d.tur).not.toBe(onceki.tur);
+        if (state.ulke.savasta) expect(d.tur).not.toBe("bolluk");
+        const sure = d.bitisYili - d.baslangicYili;
+        if (d.tur === "kitlik") expect(sure >= 3 && sure <= 4).toBe(true);
+        else expect(sure >= 5 && sure <= 6).toBe(true);
+        onceki = d;
+      }
+    }
+    expect(gecis).toBeGreaterThan(200);
   });
 
-  it("eşiğe ulaşılınca kıtlık başlatır, o yıla mahsus gıda şoku ekler ve eşiği yeniden kurar", () => {
-    const state = taze();
-    state.kucuk_kriz_sonraki_yil = state.yil;
-    const mesaj = kucukKrizKontrolEt(state, 1);
-    expect(mesaj).not.toBeNull();
-    expect(state.ulke.kriz).not.toBeNull();
-    expect(state.ulke.kriz!.tur).toBe("kitlik");
-    // Şok +2 yıl geçerli (kucukKriz pasifEkonomi'den SONRA çağrıldığı için +1
-    // hiç tahsil edilemiyordu — eski hata).
-    expect(state.gida_fiyat_sok_bitis_yili).toBe(state.yil + 2);
-    expect(state.kucuk_kriz_sonraki_yil).toBeGreaterThanOrEqual(state.yil + 5);
-    expect(state.kucuk_kriz_sonraki_yil).toBeLessThanOrEqual(state.yil + 7);
+  it("etkiler aralıktan tam yüzde olarak gelir", () => {
+    for (let i = 0; i < 200; i++) {
+      const d = ilkDonemOlustur(1100, "kitlik");
+      const yuzde = Math.round((d.etki.temelFiyat - 1) * 100);
+      expect(yuzde).toBeGreaterThanOrEqual(45);
+      expect(yuzde).toBeLessThanOrEqual(60);
+      expect(Math.abs((d.etki.temelFiyat - 1) * 100 - yuzde)).toBeLessThan(1e-9);
+    }
   });
 
-  it("gıda şoku tetik turunda ve bir sonraki turda ×2, iki tur sonra normale döner", () => {
+  it("kıtlık yıllarında sağlık düşer ve yaşam gideri artar", () => {
     const state = taze();
-    const giderOncesi = giderKalemleriHesapla(state).yasam;
+    state.ulke.donem = ilkDonemOlustur(state.yil, "bolluk");
+    state.ulke.donem.bitisYili = state.yil + 50;
+    const giderBolluk = giderKalemleriHesapla(state).yasam;
+    state.ulke.donem = ilkDonemOlustur(state.yil, "kitlik");
+    state.ulke.donem.bitisYili = state.yil + 50;
+    expect(giderKalemleriHesapla(state).yasam).toBeGreaterThanOrEqual(giderBolluk);
+    state.saglik = 80;
+    state.yil += 2;
+    donemIlerlet(state, 2);
+    expect(state.saglik).toBe(78);
+  });
 
-    state.kucuk_kriz_sonraki_yil = state.yil;
-    kucukKrizKontrolEt(state, 1); // gida_fiyat_sok_bitis_yili = state.yil + 2
-
-    expect(giderKalemleriHesapla(state).yasam).toBeGreaterThan(giderOncesi * 1.8); // tetik turu ×2
-
-    state.yil += 1; // bir sonraki tur — şok HÂLÂ geçerli (asıl tahsilat burada)
-    expect(giderKalemleriHesapla(state).yasam).toBeGreaterThan(giderOncesi * 1.8);
-
-    state.yil += 1; // iki tur sonra — normale döner
-    expect(giderKalemleriHesapla(state).yasam).toBeLessThan(giderOncesi * 1.2);
+  it("olayın ekonomi etkisi dönemi değiştirmez, yalnız süresini ±1 yıl kaydırır", () => {
+    const state = taze();
+    state.ulke.donem = ilkDonemOlustur(state.yil, "durgunluk");
+    state.ulke.donem.bitisYili = state.yil + 4;
+    ulkeGuncelle(state, { ekonomi: "iyi" });
+    expect(state.ulke.donem!.tur).toBe("durgunluk");
+    expect(state.ulke.donem!.bitisYili).toBe(state.yil + 3);
+    expect(state.ulke.ekonomi).toBe("kotu");
+    ulkeGuncelle(state, { ekonomi: "kotu" });
+    expect(state.ulke.donem!.bitisYili).toBe(state.yil + 4);
   });
 });
 
