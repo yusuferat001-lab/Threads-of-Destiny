@@ -24,6 +24,7 @@ Git deposu **değildir** (`.git` yok).
 | `npm run simulate` | server/ | `scripts/simulateEconomy.ts` — ekonomiyi bin ömür simüle eder |
 | `npm run analyze-olaylar` | server/ | `scripts/analyzeOlaylar.ts` — olay bankası istatistikleri (bölge/meslek/yaş dağılımı, gerçek `olaySec()` ile simülasyon) |
 | `npm run build` / `lint` | client/ | `tsc -b && vite build` / `oxlint` |
+| `npm run dev:bellek` | server/ | **PostgreSQL'siz** yerel deneme: Prisma bellek-içi taklitle (`scripts/yerel.ts` + `_simPrismaStub.ts`) çalışır; ilerleme/skor sunucu kapanınca silinir. Kökteki `yerel-baslat.bat` (Windows) / `yerel-baslat.sh` (Mac/Linux) bunu + istemciyi başlatıp tarayıcıyı açar; kılavuz: `YEREL.md` |
 | `npm run db:local` | server/ | **Gömülü (portable) PostgreSQL — Docker/kurulum gerektirmez.** `embedded-postgres` (devDep) `server/.localdb`'de bir cluster çalıştırır (localhost:5432, `postgres`/`kader`, db `kadercarki`); ilk çalıştırmada cluster + db'yi kurar. Ayrı terminalde açık bırak, sonra `npm run dev`. `scripts/localDb.ts` — Windows sistem yereli ASCII-dışı olduğundan `initdbFlags:['--locale=C','--encoding=UTF8']` şart. `.localdb` gitignore'da |
 | `npm run db:setup` | server/ | `prisma generate && prisma migrate deploy` — `db:local` çalışırken şemayı kurar |
 | `npx prisma migrate deploy` | server/ | PostgreSQL şemasını kurar (önce yerelde bir Postgres + `DATABASE_URL` gerekir) |
