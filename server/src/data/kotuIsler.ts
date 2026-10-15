@@ -42,7 +42,7 @@ export interface KotuIsEtki {
   /** Yönetimle bağlar (§35): kral/vali ve patron hattına delta. */
   yonetim_iliski?: number;
   patron_iliski?: number;
-  /** İşletmede alış maliyetini bu kadar yıl %15 düşürür (gümrük rüşveti, §45). */
+  /** İşletmede alış/hammadde maliyetini bu kadar yıl %15 düşürür (gümrük rüşveti, hammadde kapatma; §45). */
   gumruk_indirim_yil?: number;
   /** Şehirde kısa bir kriz başlatır (yalnız o an başka kriz yoksa). */
   kriz?: { tur: UlkeKrizi["tur"]; sureYil: number };
@@ -210,6 +210,7 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
     simge: "🔍",
     basariSansi: 58,
     meslekler: ["Zanaatkâr"],
+    calisanIsi: true,
     cooldownYil: 3,
     rakipKirma: 8,
     basarili: { uretim_kapasitesi: 10, meslek_gucu: 6, ahlak: -10, suc_artis: 12 },
@@ -220,10 +221,11 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
     simge: "🪵",
     basariSansi: 70,
     meslekler: ["Zanaatkâr"],
+    calisanIsi: true,
     cooldownYil: 3,
     maliyet: 15,
     rakipKirma: 12,
-    basarili: { para: 20, meslek_gucu: 3, ahlak: -6, rakip_puani: -6, suc_artis: 4 },
+    basarili: { para: 8, meslek_gucu: 3, ahlak: -6, rakip_puani: -6, suc_artis: 4, gumruk_indirim_yil: 4 },
     basarisiz: { para: -6, un: -2, ahlak: -2 },
   },
   {
@@ -231,6 +233,7 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
     simge: "⚖️",
     basariSansi: 60,
     meslekler: ["Zanaatkâr"],
+    calisanIsi: true,
     cooldownYil: 4,
     basarili: { kariyer_puani: 6, patron_iliski: 10, meslek_gucu: 4, ahlak: -10, suc_artis: 6 },
     basarisiz: { patron_iliski: -15, un: -4, ahlak: -3, suc_artis: 6 },
@@ -276,8 +279,8 @@ export function kotuIsTanimiGetir(id: string): KotuIsTanimi | undefined {
 
 /** Bu karaktere (meslek + çağ) görünen karanlık işler. */
 export function uygunKotuIsler(meslek: string, cag: Cag): KotuIsTanimi[] {
-  // İşletme dilimi (§45): Tüccar'ın listesi yalnız kendi 3 işidir; genel işler gelmez.
-  if (meslek === "Tüccar") return KOTU_ISLER.filter((k) => k.meslekler?.includes("Tüccar") && (!k.cag || k.cag === cag));
+  // İşletme dilimi (§45): işletmesi olan mesleklerin listesi yalnız kendi 3 işidir; genel işler gelmez.
+  if (meslek === "Tüccar" || meslek === "Zanaatkâr") return KOTU_ISLER.filter((k) => k.meslekler?.includes(meslek) && (!k.cag || k.cag === cag));
   return KOTU_ISLER.filter((k) => (!k.meslekler || k.meslekler.includes(meslek)) && (!k.cag || k.cag === cag));
 }
 

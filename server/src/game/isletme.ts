@@ -61,6 +61,12 @@ const GUMRUK_INDIRIMI = 0.85;
 /** Perakende fiyatı toptan fiyat şokunu yalnız bu oranda izler: kıtlıkta mal pahalanır ama müşterinin alım gücü yetmez, kâr marjı şişmez. */
 const SATIS_FIYAT_UYUMU = 0.6;
 
+// Üretim modu (Zanaatkâr): yıllık üretim tavanı = taban + çalışan + tezgâh kademesi + üretim kapasitesi metriği.
+export const URETIM_TABAN = 34;
+export const URETIM_CALISAN = 8;
+export const URETIM_TEZGAH_KADEME = 16;
+export const URETIM_METRIK_CARPANI = 0.2;
+
 export const FIYAT_POLITIKASI: Record<IsletmeFiyat, { fiyat: number; talep: number }> = {
   ucuz: { fiyat: 0.85, talep: 1.35 },
   normal: { fiyat: 1, talep: 1 },
@@ -87,6 +93,8 @@ export interface EkipEtkisi {
   alisIskonto: number;
   talepBonusu: number;
   bozulmaAzalmasi: number;
+  /** Üretim tavanına çarpımsal ek (Kalfa/Hammadde Memuru gibi satın alma rolü). */
+  uretimBonusu: number;
   taninirlik: number;
   calisanSayisi: number;
 }
@@ -96,10 +104,14 @@ export function ekipEtkisi(state: CharacterState): EkipEtkisi {
   let alis = 0;
   let talep = 0;
   let bozulma = 0;
+  let uretim = 0;
   let taninirlik = 0;
   for (const uye of state.ekip) {
     const k = uye.gercekKalite / 100;
-    if (uye.rol_turu === "satin_alma") alis += k * 0.08;
+    if (uye.rol_turu === "satin_alma") {
+      alis += k * 0.08;
+      uretim += k * 0.05;
+    }
     else if (uye.rol_turu === "satis") talep += k * 0.06;
     else if (uye.rol_turu === "yazi") bozulma += k * 0.3;
     taninirlik += uye.taninirlik ?? 0;
@@ -108,9 +120,24 @@ export function ekipEtkisi(state: CharacterState): EkipEtkisi {
     alisIskonto: Math.min(0.2, alis),
     talepBonusu: Math.min(0.2, talep),
     bozulmaAzalmasi: Math.min(0.5, bozulma),
+    uretimBonusu: Math.min(0.25, uretim),
     taninirlik,
     calisanSayisi: state.ekip.length,
   };
+}
+
+/** Üretim modundaki mesleklerde yıllık üretim tavanı; ticaret modunda null (sınırsız satın alma). */
+export function uretimTavani(state: CharacterState): number | null {
+  const profil = isletmeProfiliGetir(state.meslek, state.cag);
+  const is = state.isletme;
+  if (!profil || !is || profil.mod !== "uretim") return null;
+  const ekip = ekipEtkisi(state);
+  const taban =
+    URETIM_TABAN +
+    ekip.calisanSayisi * URETIM_CALISAN +
+    (is.yatirimlar.tezgah ?? 0) * URETIM_TEZGAH_KADEME +
+    Math.max(0, state.uretim_kapasitesi ?? 0) * URETIM_METRIK_CARPANI;
+  return Math.floor(taban * (1 + ekip.uretimBonusu));
 }
 
 /** Aynı anda açık tutulabilecek hat sayısı: 1 + her 3 çalışan için 1 (en fazla 3). */
@@ -331,16 +358,33 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
   let toplamKarsilanamayan = 0;
   const satirlar: IsletmeDokum["hatlar"] = [];
 
-  for (const hat of acik) {
+  // 1. geçiş: her açık hattın talebi ve hedef siparişi/üretimi.
+  const planlar = acik.map((hat) => {
     const tanim = hatTanimiGetir(profil, hat.id)!;
     const hs = hatHesapla(state, hat, tanim, b);
     const talep = hs.talep * (1 - TALEP_GURULTUSU + Math.random() * 2 * TALEP_GURULTUSU);
-
     const hedef = hat.otomatik ? Math.ceil((hat.son_talep > 0 ? hat.son_talep : talep) * SIPARIS_PAYI - hat.stok) : hat.siparis;
+    return { hat, tanim, hs, talep, hedef: Math.max(0, Math.floor(hedef)) };
+  });
+
+  // Üretim modu: toplam üretim yıllık tavanı geçemez; aşarsa hatlara orantılı bölünür.
+  const tavan = uretimTavani(state);
+  let olcek = 1;
+  if (tavan !== null) {
+    const toplamHedef = planlar.reduce((t, p) => t + p.hedef, 0);
+    if (toplamHedef > tavan) {
+      olcek = tavan / toplamHedef;
+      uyarilar.push({ kod: "uretim_tavani" });
+    }
+  }
+  let uretilen = 0;
+
+  for (const { hat, hs, talep, hedef } of planlar) {
     const bosYer = Math.max(0, kapasite - toplamStok(is));
-    const siparis = clamp(Math.floor(hedef), 0, bosYer);
+    const siparis = clamp(Math.floor(hedef * olcek), 0, bosYer);
     hat.stok += siparis;
     alim += siparis * hs.birimMaliyet;
+    uretilen += siparis;
 
     const talepAdet = Math.round(talep);
     const satilan = Math.min(hat.stok, talepAdet);
@@ -411,6 +455,7 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
     net,
     kitleDegisimi: r2(state.meslek_gucu - eskiKitle),
     hatlar: satirlar,
+    ...(tavan !== null ? { uretim: { tavan, kullanilan: uretilen } } : {}),
     uyarilar,
   };
   is.son_dokum = dokum;

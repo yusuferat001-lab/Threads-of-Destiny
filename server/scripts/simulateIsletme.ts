@@ -1,12 +1,12 @@
 /**
- * Tüccar işletme ekonomisi simülasyonu (2026-10): gerçek `isletmeYilIsle` +
- * `pasifEkonomiUygula` ile yıl yıl bir Tüccar ömrü oynatır; üç bot tarzı:
+ * İşletme ekonomisi simülasyonu (2026-10; Tüccar/Zanaatkâr): gerçek `isletmeYilIsle` +
+ * `pasifEkonomiUygula` ile yıl yıl bir ömür oynatır; üç bot tarzı:
  *   pasif    — hiç dokunmaz (varsayılan: 1 temel hat, normal fiyat, otomatik sipariş)
  *   dengeli  — rütbe/kâr yettikçe hat açar, çalışan alır, depo/dükkân yatırımı yapar
  *   agresif  — her şeyi mümkün olan en hızlı açar, ucuz fiyatla çok satar
  * Rütbe/şöhret/kitle olay akışı olmadan basit bir sürüklenmeyle taklit edilir.
  *
- *   npx tsx scripts/simulateIsletme.ts      (env: SIM_N, SIM_YIL)
+ *   npx tsx scripts/simulateIsletme.ts      (env: SIM_N, SIM_YIL, SIM_MESLEK=Tüccar|Zanaatkâr)
  */
 import "./_simPrismaStub";
 import { createCharacter, mesleğiSec, pasifEkonomiUygula, giderKalemleriHesapla, isletmeBaglami, ilerletYas, hesaplaMaasYillik } from "../src/game/stateManager";
@@ -16,6 +16,7 @@ import { enflasyonCarpani } from "../src/game/stateManager";
 import type { Cag, CharacterState } from "../src/types";
 
 const N = Number(process.env.SIM_N ?? 300);
+const MESLEK = process.env.SIM_MESLEK ?? "Tüccar";
 const YIL = Number(process.env.SIM_YIL ?? 45);
 type Tarz = "pasif" | "dengeli" | "agresif";
 
@@ -47,8 +48,9 @@ function botKarar(s: CharacterState, tarz: Tarz) {
     });
   }
   // Yatırım: depo → dükkân → kervan, nakit fiyatın 2 katını aştıkça.
-  for (const id of ["depo", "dukkan", "kervan"]) {
-    const t = yatirimTanimiGetir(profil, id)!;
+  for (const id of ["tezgah", "depo", "dukkan", "kervan"]) {
+    const t = yatirimTanimiGetir(profil, id);
+    if (!t) continue;
     const k = is.yatirimlar[id] ?? 0;
     if (k >= t.fiyatlar.length) continue;
     const fiyat = t.fiyatlar[k] * enf;
@@ -73,7 +75,7 @@ interface Cikti { gelir: number[]; gider: number[]; net: number[]; kitle: number
 function tekOmur(cag: Cag, tarz: Tarz): Cikti {
   const s = createCharacter(cag, cag === "Orta Çağ" ? "Fransa" : "İngiltere", "kasaba");
   s.yas = 15;
-  mesleğiSec(s, "Tüccar");
+  mesleğiSec(s, MESLEK);
   const c: Cikti = { gelir: [], gider: [], net: [], kitle: [], para: [], batti: false };
   for (let y = 0; y < YIL; y++) {
     rutbeSurukle(s, y);

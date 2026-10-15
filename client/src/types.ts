@@ -540,7 +540,7 @@ export type IsletmeRolTuru = 'yazi' | 'satin_alma' | 'satis';
 export type IsletmeFiyat = 'ucuz' | 'normal' | 'pahali';
 
 export interface IsletmeUyari {
-  kod: 'stok_bitti' | 'fazla_stok' | 'calisan_ayrildi' | 'kitle_kaybi';
+  kod: 'stok_bitti' | 'fazla_stok' | 'calisan_ayrildi' | 'kitle_kaybi' | 'uretim_tavani';
   hat?: string;
   isim?: string;
 }
@@ -555,6 +555,8 @@ export interface IsletmeDokum {
   net: number;
   kitleDegisimi: number;
   hatlar: { id: string; talep: number; satilan: number; alinan: number; stokSonu: number }[];
+  /** Üretim modundaki mesleklerde (Zanaatkâr) o yılın üretim tavanı ve kullanılan miktar. */
+  uretim?: { tavan: number; kullanilan: number };
   uyarilar: IsletmeUyari[];
 }
 
@@ -622,6 +624,8 @@ export interface IsletmeGorunumu {
   kitle: number;
   slot: { kullanilan: number; toplam: number };
   depo: { kullanilan: number; kapasite: number };
+  /** Üretim modundaki mesleklerde (Zanaatkâr) yıllık üretim tavanı; ticaret modunda null. */
+  uretim: { tavan: number } | null;
   hatlar: IsletmeHatGorunumu[];
   yatirimlar: IsletmeYatirimGorunumu[];
   calisanlar: IsletmeCalisanGorunumu[];

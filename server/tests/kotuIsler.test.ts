@@ -18,6 +18,31 @@ describe("karanlık işler (illegal işler paneli)", () => {
     expect(config.some((k) => k.rakibeYonelik)).toBe(true);
   });
 
+  it("Zanaatkâr için yalnız kendi 3 işi gelir ve üçü de çalışanla yaptırılabilir", async () => {
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
+    await mesleğiAta(state.id, "Zanaatkâr");
+    const config = await kotuIsConfigGetir(state.id);
+    expect(config.map((k) => k.id).sort()).toEqual(["formul_cal", "hammadde_topla", "lonca_manipule"]);
+    expect(config.every((k) => k.calisanIsi)).toBe(true);
+  });
+
+  it("hammadde kapatma başarılı olunca hammadde maliyeti birkaç yıl düşer", async () => {
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
+    await mesleğiAta(state.id, "Zanaatkâr");
+    const s = await stateGetir(state.id);
+    s.para = 500;
+    let basardi = false;
+    for (let i = 0; i < 60 && !basardi; i++) {
+      s.kotu_is_kilit = {};
+      s.etiketler = s.etiketler.filter((e) => e !== "hapiste");
+      s.ahlak = 50;
+      const { kazandi } = await kotuIsYap(state.id, "hammadde_topla");
+      basardi = kazandi;
+    }
+    expect(basardi).toBe(true);
+    expect(s.isletme!.gumruk_indirim_bitis).toBeGreaterThan(s.yil);
+  });
+
   it("bir karanlık iş ahlakı düşürür ve suç seviyesini yükseltir", async () => {
     const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Asker");

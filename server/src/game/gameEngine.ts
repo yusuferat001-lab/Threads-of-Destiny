@@ -103,6 +103,7 @@ import {
 } from "./stateManager";
 import {
   isletmeAktif,
+  uretimTavani,
   isletmeHazirla,
   depoKapasitesi,
   toplamStok,
@@ -4140,6 +4141,8 @@ export interface IsletmeGorunumu {
   kitle: number;
   slot: { kullanilan: number; toplam: number };
   depo: { kullanilan: number; kapasite: number };
+  /** Üretim modundaki mesleklerde yıllık üretim tavanı; ticaret modunda null. */
+  uretim: { tavan: number } | null;
   hatlar: IsletmeHatGorunumu[];
   yatirimlar: IsletmeYatirimGorunumu[];
   calisanlar: IsletmeCalisanGorunumu[];
@@ -4161,7 +4164,7 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
   if (!profil || !is) {
     return {
       aktif: false, meslek: state.meslek, kitle: state.meslek_gucu, slot: { kullanilan: 0, toplam: 0 },
-      depo: { kullanilan: 0, kapasite: 0 }, hatlar: [], yatirimlar: [], calisanlar: [], calisanTavani: CALISAN_TAVANI,
+      depo: { kullanilan: 0, kapasite: 0 }, uretim: null, hatlar: [], yatirimlar: [], calisanlar: [], calisanTavani: CALISAN_TAVANI,
       adaylar: [], tedarikciBorcu: 0, sonDokum: null, beklenenBrutKar: 0, otorite: null,
       dunya: { donem: null, savas: false, veba: false }, para: state.para, paraBirimi: state.para_birimi,
     };
@@ -4239,6 +4242,7 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
     kitle: Math.round(state.meslek_gucu * 10) / 10,
     slot: { kullanilan: is.hatlar.filter((h) => h.acik).length, toplam: slot },
     depo: { kullanilan: toplamStok(is), kapasite: depoKapasitesi(is) },
+    uretim: uretimTavani(state) !== null ? { tavan: uretimTavani(state)! } : null,
     hatlar,
     yatirimlar,
     calisanlar,

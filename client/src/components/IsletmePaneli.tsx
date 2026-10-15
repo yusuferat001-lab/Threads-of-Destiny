@@ -68,7 +68,12 @@ const M = {
   donem: { tr: { bolluk: 'Bolluk', durgunluk: 'Durgunluk', kitlik: 'Kıtlık' }, en: { bolluk: 'Boom', durgunluk: 'Slump', kitlik: 'Famine' } },
   savas: { tr: 'Savaş', en: 'War' },
   veba: { tr: 'Salgın', en: 'Plague' },
-  ilkYil: { tr: 'Henüz bir yıl geçmedi. Hiçbir şeye dokunmasan da dükkân otomatik çalışır.', en: "A year hasn't passed yet. The shop runs on its own even if you touch nothing." },
+  uretimTavani: { tr: 'Üretim tavanı', en: 'Production cap' },
+  uretim: { tr: 'Üretim', en: 'Production' },
+  hammadde: { tr: 'Hammadde', en: 'Materials' },
+  birimUretim: { tr: 'Birim satış / hammadde', en: 'Unit sell / materials' },
+  uretimDolu: { tr: 'üretim tavanın talebe yetmedi; tezgâh ya da çalışan ekle', en: 'your production cap fell short of demand — add a workbench or staff' },
+  ilkYil: { tr: 'Henüz bir yıl geçmedi. Hiçbir şeye dokunmasan da işletme otomatik çalışır.', en: "A year hasn't passed yet. The business runs on its own even if you touch nothing." },
 };
 
 export function IsletmePaneli({ durum, yukleniyor, onKarar, onYatirim, onCalisanAl, onEkipCikar }: Props) {
@@ -78,6 +83,10 @@ export function IsletmePaneli({ durum, yukleniyor, onKarar, onYatirim, onCalisan
 
   if (!durum.aktif) return null;
   const pb = durum.paraBirimi;
+  const uretimModu = !!durum.uretim;
+  const etiketAlim = uretimModu ? t('hammadde') : t('alim');
+  const etiketSiparis = uretimModu ? t('uretim') : t('siparis');
+  const etiketBirim = uretimModu ? t('birimUretim') : t('birim');
   const donemAdi = durum.dunya.donem ? M.donem[dil][durum.dunya.donem as 'bolluk'] : null;
 
   const hatKarti = (h: IsletmeHatGorunumu) => {
@@ -114,7 +123,7 @@ export function IsletmePaneli({ durum, yukleniyor, onKarar, onYatirim, onCalisan
             {t('talep')}: <strong>~{h.tahminiTalep}</strong>
           </span>
           <span>
-            {t('birim')}:{' '}
+            {etiketBirim}:{' '}
             <strong>
               {formatPara(h.birimFiyat)} / {formatPara(h.birimMaliyet)}
             </strong>
@@ -152,7 +161,7 @@ export function IsletmePaneli({ durum, yukleniyor, onKarar, onYatirim, onCalisan
             </label>
             {!h.otomatik && (
               <span className="isletme-siparis">
-                {t('siparis')}:
+                {etiketSiparis}:
                 <input
                   type="number"
                   min={0}
@@ -180,6 +189,7 @@ export function IsletmePaneli({ durum, yukleniyor, onKarar, onYatirim, onCalisan
     if (u.kod === 'stok_bitti') return `⚠️ ${hatAdi(u.hat ?? '')}: ${t('stokBitti')}`;
     if (u.kod === 'fazla_stok') return `📦 ${hatAdi(u.hat ?? '')}: ${t('fazlaStok')}`;
     if (u.kod === 'kitle_kaybi') return `📉 ${t('kitleKaybi')}`;
+    if (u.kod === 'uretim_tavani') return `🔨 ${t('uretimDolu')}`;
     return `🚪 ${u.isim ?? ''}: ${t('ayrildi')}`;
   };
 
@@ -194,6 +204,11 @@ export function IsletmePaneli({ durum, yukleniyor, onKarar, onYatirim, onCalisan
         <span>
           📑 {t('slot')}: <strong>{durum.slot.kullanilan}/{durum.slot.toplam}</strong>
         </span>
+        {durum.uretim && (
+          <span>
+            🔨 {t('uretimTavani')}: <strong>{durum.uretim.tavan}{t('yil')}</strong>
+          </span>
+        )}
         <span>
           🏚️ {t('depo')}: <strong>{durum.depo.kullanilan}/{durum.depo.kapasite}</strong>
         </span>
@@ -287,7 +302,7 @@ export function IsletmePaneli({ durum, yukleniyor, onKarar, onYatirim, onCalisan
             {t('satis')}: <strong>+{formatPara(dokum.satis)}</strong>
           </div>
           <div>
-            {t('alim')}: <strong>−{formatPara(dokum.alim)}</strong>
+            {etiketAlim}: <strong>−{formatPara(dokum.alim)}</strong>
           </div>
           <div>
             {t('depoMasrafi')}: <strong>−{formatPara(dokum.depoMasrafi)}</strong>

@@ -148,3 +148,98 @@ describe("işletme (Tüccar dilimi)", () => {
     expect(s.isletme?.hatlar.length).toBeGreaterThan(0);
   });
 });
+
+async function zanaatkar(cag: "Orta Çağ" | "Sanayi Devrimi" = "Orta Çağ") {
+  const st = await yeniOyun(cag, cag === "Orta Çağ" ? "Fransa" : "İngiltere", "kasaba");
+  await mesleğiAta(st.id, "Zanaatkâr");
+  const s = await stateGetir(st.id);
+  s.ulke.donem = { tur: "durgunluk", baslangicYili: s.yil, bitisYili: s.yil + 5, sonraki: "bolluk", etki: s.ulke.donem!.etki };
+  s.para = 300;
+  return s;
+}
+
+describe("işletme (Zanaatkâr — üretim modu)", () => {
+  it("Zanaatkâr seçilince işletme kurulur, görünümde üretim tavanı vardır (Tüccar'da yok)", async () => {
+    const s = await zanaatkar();
+    expect(s.isletme).toBeTruthy();
+    expect(s.isletme!.hatlar.filter((h) => h.acik)).toHaveLength(1);
+    const d = await isletmeDurumGetir(s.id);
+    expect(d.uretim?.tavan).toBeGreaterThan(0);
+    const t = await tuccar();
+    expect((await isletmeDurumGetir(t.id)).uretim).toBeNull();
+  });
+
+  it("toplam üretim tavanı aşamaz; tavan aşılırsa uyarı ve dökümde üretim bilgisi çıkar", async () => {
+    const s = await zanaatkar();
+    s.rutbe_seviye = 3;
+    s.ekip = [];
+    const hatlar = s.isletme!.hatlar;
+    hatlar.forEach((h) => { h.acik = false; h.stok = 0; });
+    const hat = hatlar.find((h) => h.id === "kap")!;
+    hat.acik = true;
+    hat.otomatik = false;
+    hat.siparis = 150; // tavanın çok üstünde
+    s.isletme!.yatirimlar.depo = 3;
+    const tavan = (await isletmeDurumGetir(s.id)).uretim!.tavan;
+    const { dokum } = isletmeYilIsle(s, isletmeBaglami(s));
+    const uretilen = dokum.hatlar.reduce((t, h) => t + h.alinan, 0);
+    expect(uretilen).toBeLessThanOrEqual(tavan);
+    expect(dokum.uretim?.tavan).toBe(tavan);
+    expect(dokum.uyarilar.some((u) => u.kod === "uretim_tavani")).toBe(true);
+  });
+
+  it("Tüccar'da aynı sipariş tavana takılmaz (depo kapasitesi dışında sınır yok)", async () => {
+    const s = await tuccar();
+    const hat = s.isletme!.hatlar.find((h) => h.acik)!;
+    hat.otomatik = false;
+    hat.stok = 0;
+    hat.siparis = 150;
+    s.isletme!.yatirimlar.depo = 3;
+    const { dokum } = isletmeYilIsle(s, isletmeBaglami(s));
+    expect(dokum.uretim).toBeUndefined();
+    expect(dokum.hatlar[0].alinan).toBeGreaterThan(60);
+  });
+
+  it("tezgâh yatırımı, çalışan ve üretim kapasitesi metriği tavanı büyütür", async () => {
+    const s = await zanaatkar();
+    s.para = 5000;
+    const once = (await isletmeDurumGetir(s.id)).uretim!.tavan;
+    await isletmeYatirimYap(s.id, "tezgah");
+    const tezgahSonra = (await isletmeDurumGetir(s.id)).uretim!.tavan;
+    expect(tezgahSonra).toBeGreaterThan(once);
+    s.uretim_kapasitesi = 40;
+    expect((await isletmeDurumGetir(s.id)).uretim!.tavan).toBeGreaterThan(tezgahSonra);
+    const ayrintiOnce = (await isletmeDurumGetir(s.id)).uretim!.tavan;
+    await isletmeCalisanAl(s.id, s.isletme!.adaylar[0].id);
+    expect((await isletmeDurumGetir(s.id)).uretim!.tavan).toBeGreaterThan(ayrintiOnce);
+  });
+
+  it("hiç dokunmayan Zanaatkâr bir yılda makul kâr eder", async () => {
+    for (const cag of ["Orta Çağ", "Sanayi Devrimi"] as const) {
+      const s = await zanaatkar(cag);
+      const { dokum } = isletmeYilIsle(s, isletmeBaglami(s));
+      expect(dokum.satis).toBeGreaterThan(0);
+      expect(dokum.net).toBeGreaterThan(-5);
+    }
+  });
+
+  it("rol adları ve otorite meslek × çağ × ülkeye göre gelir", async () => {
+    const s = await zanaatkar();
+    expect(s.isletme!.adaylar.every((a) => ["Çırak", "Kalfa", "Pazarcı"].includes(a.rol))).toBe(true);
+    expect((await isletmeDurumGetir(s.id)).otorite).toBe("Loncabaşı");
+    const st = await yeniOyun("Orta Çağ", "Selçuklu", "kasaba");
+    await mesleğiAta(st.id, "Zanaatkâr");
+    expect((await isletmeDurumGetir(st.id)).otorite).toBe("Ahi Baba");
+    const s2 = await zanaatkar("Sanayi Devrimi");
+    expect((await isletmeDurumGetir(s2.id)).otorite).toBe("Sanayi Odası Başkanı");
+  });
+
+  it("çifte kazanç önlemi Zanaatkâr'ın zanaat kategorisinde de işler", async () => {
+    const s = await zanaatkar();
+    const kitle = s.meslek_gucu;
+    const etki = { para: 20, mesaj: "x" };
+    ciftKazancKirp(s, etki, "zanaat");
+    expect(etki.para).toBe(10);
+    expect(s.meslek_gucu).toBeGreaterThan(kitle);
+  });
+});

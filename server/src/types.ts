@@ -673,7 +673,7 @@ export interface IsletmeHat {
 
 /** Yıl sonu dökümündeki uyarı: kod + isteğe bağlı hat/isim; metin istemcide çevrilir. */
 export interface IsletmeUyari {
-  kod: "stok_bitti" | "fazla_stok" | "calisan_ayrildi" | "kitle_kaybi";
+  kod: "stok_bitti" | "fazla_stok" | "calisan_ayrildi" | "kitle_kaybi" | "uretim_tavani";
   hat?: string;
   isim?: string;
 }
@@ -690,6 +690,8 @@ export interface IsletmeDokum {
   net: number;
   kitleDegisimi: number;
   hatlar: { id: string; talep: number; satilan: number; alinan: number; stokSonu: number }[];
+  /** Üretim modundaki mesleklerde (Zanaatkâr) o yılın üretim tavanı ve kullanılan miktar. */
+  uretim?: { tavan: number; kullanilan: number };
   uyarilar: IsletmeUyari[];
 }
 
