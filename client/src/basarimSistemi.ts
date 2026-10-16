@@ -183,7 +183,7 @@ export const BASARIMLAR: BasarimTanimi[] = [
   ),
   ...kademeli(
     'aile', '👨‍👩‍👧‍👦', 'kilometre', ['Kalabalık Sofra', 'A Full Table'],
-    [3, 6],
+    [3, 4],
     (b) => b.istatistik.rekor.cocuk,
     [(n) => `${n} yaşayan çocuğun olsun.`, (n) => `Have ${n} living children at once.`],
   ),

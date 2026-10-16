@@ -63,8 +63,9 @@ import {
   magazadanSatinAl,
   envanterEsyasiKullan,
   geriBildirimGonder,
-  evlilikAdaylariGetir,
-  evlilikTeklifEt,
+  mantikTeklifEt,
+  dugunYap,
+  esEylemYap,
   aileDurumGetir,
   aileEtkilesimYap,
   aileTalebiKararlastir,
@@ -95,14 +96,13 @@ import { KisayolKartlari, type KisayolId } from './components/KisayolKartlari';
 import { EnvanterPaneli } from './components/EnvanterPaneli';
 import { FinansEkrani } from './components/FinansEkrani';
 import { SosyallesmePaneli } from './components/SosyallesmePaneli';
-import { EvlilikPaneli } from './components/EvlilikPaneli';
 import { MagazaPaneli } from './components/MagazaPaneli';
 import { AltGezinme } from './components/AltGezinme';
 import { IsYatirimEkrani } from './components/IsYatirimEkrani';
 import { AyarlarModal } from './components/AyarlarModal';
 import { ayarlariGetir, ayarlariKaydet, type Dil } from './ayarlar';
 import { bolgeOzetiGetir } from './bolgeOzellikleri';
-import type { GeriBildirimGirdi, EvlilikAdayi, GostergeStat } from './types';
+import type { GeriBildirimGirdi, GostergeStat, TeklifHediyesi, DugunButcesi } from './types';
 import { sesKapaliMi, sesTercihiKaydet } from './ses';
 import { muzikModunuAyarla, muzikDurdur, muzikSessizAyarla, type MuzikModu } from './muzik';
 import { aktifOturumIdGetir, aktifOturumIdKaydet, aktifOturumIdSil } from './oturum';
@@ -158,8 +158,7 @@ type Ekran =
   | 'finans'
   | 'yatirim'
   | 'sosyallesme'
-  | 'magaza'
-  | 'evlilik';
+  | 'magaza';
 
 interface SonEtki {
   basarili: boolean;
@@ -209,7 +208,6 @@ const TAM_EKRAN_GRUBU: Ekran[] = [
   'finans',
   'sosyallesme',
   'magaza',
-  'evlilik',
   'aile',
   'olum',
 ];
@@ -228,14 +226,13 @@ const ALT_GEZINME_EKRANLARI: Ekran[] = [
   'sosyallesme',
   'magaza',
   'aile',
-  'evlilik',
 ];
 
 /** Alt gezinme çubuğundan (ya da "Diğer" sheet'inden) açılan 7 alt ekran — Oyun/Sonuç
  * hariç ALT_GEZINME_EKRANLARI. Sabit para rozeti ZATEN bu ekranlarda görünüyordu (aşağıda);
  * mobilde büyük ✕ kapatma butonu da (kullanıcı isteği: "ana ekrana dönüş kolay olsun")
  * aynı listeyi kullanıyor — her birinin "Geri Dön" butonuyla birebir aynı işi yapar. */
-const ALT_EKRAN_GRUBU: Ekran[] = ['yatirim', 'sosyallesme', 'magaza', 'aile', 'kariyer', 'finans', 'evlilik'];
+const ALT_EKRAN_GRUBU: Ekran[] = ['yatirim', 'sosyallesme', 'magaza', 'aile', 'kariyer', 'finans'];
 
 /** Geri bildirim mesajlarına eklenen uygulama sürümü — bir hata raporunun hangi build'e
  * ait olduğunu ayırt etmek için. Yeni bir sürüm çıkınca elle güncelle. */
@@ -340,7 +337,6 @@ function App() {
   const [sosyallesmeYerleri, setSosyallesmeYerleri] = useState<SosyallesmeYeri[]>([]);
   const [sosyalAksiyonConfig, setSosyalAksiyonConfig] = useState<SosyalAksiyonConfig | null>(null);
   const [magazaKatalogu, setMagazaKatalogu] = useState<MagazaEsyaKarti[]>([]);
-  const [evlilikAdaylari, setEvlilikAdaylari] = useState<EvlilikAdayi[]>([]);
 
   const [sesKapali, setSesKapali] = useState(() => sesKapaliMi());
   const [muzikAcik, setMuzikAcik] = useState(() => ayarlariGetir().muzik);
@@ -423,8 +419,7 @@ function App() {
       ekran === 'finans' ||
       ekran === 'yatirim' ||
       ekran === 'sosyallesme' ||
-      ekran === 'magaza' ||
-      ekran === 'evlilik'
+      ekran === 'magaza'
     ) {
       mod = karakter?.cag === 'Sanayi Devrimi' ? 'sanayi' : 'ortacag';
     } else {
@@ -925,6 +920,43 @@ function App() {
     }
   }
 
+  /** Eş/evlilik eylemlerinin ortak kalıbı: çağır → karakteri güncelle → mesajı göster → aile durumunu tazele. */
+  async function aileIslemi(cagri: () => Promise<{ state: NonNullable<typeof karakter>; mesaj: string }>) {
+    if (!karakter) return;
+    setHata(null);
+    setIslemMesaji(null);
+    setYukleniyor(true);
+    try {
+      const sonuc = await cagri();
+      setKarakter(sonuc.state);
+      setIslemMesaji(sonuc.mesaj);
+      try {
+        setAileDurum(await aileDurumGetir(sonuc.state.id));
+      } catch {
+        /* durum yenilenemezse eldeki kalır */
+      }
+    } catch (err) {
+      setHata(temizHata(err));
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
+  async function esEylemHandler(eylem: 'zaman_gecir' | 'hediye_ver', hediye?: 'ucuz' | 'pahali') {
+    if (!karakter) return;
+    await aileIslemi(() => esEylemYap(karakter.id, eylem, hediye));
+  }
+
+  async function mantikTeklifHandler(adayIndex: number, hediye: TeklifHediyesi) {
+    if (!karakter) return;
+    await aileIslemi(() => mantikTeklifEt(karakter.id, adayIndex, hediye));
+  }
+
+  async function dugunHandler(butce: DugunButcesi) {
+    if (!karakter) return;
+    await aileIslemi(() => dugunYap(karakter.id, butce));
+  }
+
   // ===== Kariyer sayfası: Yönetimle Bağlar (§35) =====
   async function kariyerEkraniniAc() {
     if (!karakter) return;
@@ -1358,58 +1390,6 @@ function App() {
     }
   }
 
-  async function evlilikEkraniniAc() {
-    if (!karakter) return;
-    setHata(null);
-    setYukleniyor(true);
-    try {
-      const { adaylar } = await evlilikAdaylariGetir(karakter.id);
-      setEvlilikAdaylari(adaylar);
-      setIslemMesaji(null);
-      setEkran('evlilik');
-    } catch (err) {
-      setHata(temizHata(err));
-    } finally {
-      setYukleniyor(false);
-    }
-  }
-
-  async function evlilikYeniAdaylarHandler() {
-    if (!karakter) return;
-    setHata(null);
-    setYukleniyor(true);
-    try {
-      const { adaylar } = await evlilikAdaylariGetir(karakter.id);
-      setEvlilikAdaylari(adaylar);
-    } catch (err) {
-      setHata(temizHata(err));
-    } finally {
-      setYukleniyor(false);
-    }
-  }
-
-  async function evlilikTeklifEtHandler(aday: EvlilikAdayi) {
-    if (!karakter) return;
-    setHata(null);
-    setIslemMesaji(null);
-    setYukleniyor(true);
-    try {
-      const sonuc = await evlilikTeklifEt(karakter.id, aday);
-      setKarakter(sonuc.state);
-      setIslemMesaji(sonuc.mesaj);
-      if (!sonuc.basarili) {
-        const { adaylar } = await evlilikAdaylariGetir(sonuc.state.id);
-        setEvlilikAdaylari(adaylar);
-      } else {
-        setEvlilikAdaylari([]);
-      }
-    } catch (err) {
-      setHata(temizHata(err));
-    } finally {
-      setYukleniyor(false);
-    }
-  }
-
   async function envanterKullanHandler(esyaId: string) {
     if (!karakter) return;
     setHata(null);
@@ -1533,7 +1513,7 @@ function App() {
         devreDisi={yukleniyor}
         kariyerTalepVar={!!karakter.yonetim_talep}
         aileTalepVar={!!karakter.aile_talep}
-        aileEvlilikRozeti={!karakter.es_adi && karakter.yas >= 18}
+        aileEvlilikRozeti={(!karakter.es_adi && karakter.yas >= 22) || !!karakter.bekleyen_dugun}
         onKariyer={kariyerEkraniniAc}
         onYatirim={yatirimEkraniniAc}
         onMagaza={magazaEkraniniAc}
@@ -1606,7 +1586,7 @@ function App() {
           devreDisi={yukleniyor}
           kariyerTalepVar={!!karakter.yonetim_talep}
           aileTalepVar={!!karakter.aile_talep}
-          aileEvlilikRozeti={!karakter.es_adi && karakter.yas >= 18}
+          aileEvlilikRozeti={(!karakter.es_adi && karakter.yas >= 22) || !!karakter.bekleyen_dugun}
           onKariyer={kariyerEkraniniAc}
           onYatirim={yatirimEkraniniAc}
           onEv={finansEkraniniAc}
@@ -2527,21 +2507,6 @@ function App() {
         />
       )}
 
-      {ekran === 'evlilik' && (
-        <EvlilikPaneli
-          adaylar={evlilikAdaylari}
-          yukleniyor={yukleniyor}
-          islemMesaji={islemMesaji}
-          evli={!!karakter?.es_adi}
-          onTeklifEt={evlilikTeklifEtHandler}
-          onYeniAdaylar={evlilikYeniAdaylarHandler}
-          onGeriDon={() => {
-            setIslemMesaji(null);
-            setEkran('oyun');
-          }}
-        />
-      )}
-
       {ekran === 'magaza' && karakter && (
         <MagazaPaneli
           para={karakter.para}
@@ -2574,14 +2539,14 @@ function App() {
           dostPuani={karakter.dost_puani}
           rakipPuani={karakter.rakip_puani}
           durum={aileDurum}
-          evli={!!karakter.es_adi}
-          yas={karakter.yas}
           evcilHayvan={karakter.evcil_hayvan}
           yukleniyor={yukleniyor}
           islemMesaji={islemMesaji}
           onEtkilesim={aileEtkilesimHandler}
           onTalep={aileTalepHandler}
-          onEvlilik={evlilikEkraniniAc}
+          onEsEylem={esEylemHandler}
+          onMantikTeklif={mantikTeklifHandler}
+          onDugun={dugunHandler}
           onGeriDon={() => {
             setIslemMesaji(null);
             setEkran('oyun');

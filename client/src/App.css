@@ -6758,6 +6758,85 @@ button.ikincil {
   white-space: nowrap;
 }
 
+/* --- İlişkiler: eş rozetleri, mantık adayları, düğün seçenekleri --- */
+.aile-huy-satiri {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.35rem 0;
+}
+.aile-huy-rozet {
+  display: inline-block;
+  padding: 0.12rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--aile-kart-kenar);
+  background: rgba(255, 255, 255, 0.07);
+  font-size: 0.74rem;
+}
+.aile-tur-rozet {
+  border-color: rgba(232, 165, 59, 0.55);
+}
+.aile-huy-gizli {
+  opacity: 0.6;
+  font-style: italic;
+}
+.aile-grup-genc {
+  border-color: rgba(127, 191, 106, 0.6);
+}
+.aile-grup-olgun {
+  border-color: rgba(232, 165, 59, 0.6);
+}
+.aile-ihmal-uyari {
+  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+  color: #e8a53b;
+}
+.aile-aday-izgara {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.75rem;
+  margin: 0.6rem 0;
+}
+.aile-aday-karti {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.7rem 0.8rem;
+  border-radius: 12px;
+  border: 1px solid var(--aile-kart-kenar);
+  background: rgba(0, 0, 0, 0.18);
+}
+.aile-aday-satir {
+  margin: 0;
+  font-size: 0.82rem;
+}
+.aile-hediye-secimi {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.25rem 0;
+}
+.aile-hediye-cip {
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid var(--aile-kart-kenar);
+  background: rgba(255, 255, 255, 0.05);
+  color: inherit;
+  font: inherit;
+  font-size: 0.74rem;
+  cursor: pointer;
+}
+.aile-hediye-cip-secili {
+  background: rgba(232, 165, 59, 0.22);
+  border-color: rgba(232, 165, 59, 0.7);
+}
+.aile-dugun-secenekler {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
 /* --- Task 13/15: aile ekranı evlilik butonu + evcil hayvan kartı --- */
 .aile-evlen-buton {
   display: inline-flex;
@@ -7432,4 +7511,8 @@ button.amac-serit-oge:hover:not(:disabled) {
 }
 button.amac-serit-oge.amac-serit-tamam:hover:not(:disabled) {
   background: rgba(40, 90, 45, 0.85);
+}
+
+.aile-aday-karti > .aile-huy-rozet {
+  align-self: flex-start;
 }
