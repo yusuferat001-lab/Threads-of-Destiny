@@ -5,9 +5,6 @@ const BASKIN_OLAYLARI = new Set(["aranma_baskin_ortacag", "aranma_baskin_sanayi"
 
 /** Evlilik teklifi / düğün olayları (evlilik içi çatışma olayları değil — onlar aile havuzunda). */
 const EVLILIK_OLAYLARI = new Set([
-  "iliski_evlilik_teklifi",
-  "iliski_ikinci_teklif",
-  "evlilik_uc_yol_karari",
   "cocuk_evlilik",
   "cocuk_dugun_masrafi",
 ]);

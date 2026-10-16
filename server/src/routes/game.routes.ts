@@ -29,8 +29,9 @@ import {
   magazaConfigGetir,
   magazadanSatinAl,
   envanterEsyasiKullan,
-  evlilikAdaylariGetir,
-  evlilikTeklifEt,
+  mantikTeklifEt,
+  dugunYap,
+  esEylemYap,
   aileDurumGetir,
   aileEtkilesimYap,
   aileTalebiKararlastir,
@@ -412,22 +413,46 @@ gameRouter.post("/:id/sosyallesme-aksiyon", async (req, res) => {
   }
 });
 
-gameRouter.get("/:id/evlilik-adaylari", async (req, res) => {
+// ===== Mantık evliliği / düğün / eş ilişki barı (Aile & İlişkiler ekranı) =====
+gameRouter.post("/:id/mantik/teklif", async (req, res) => {
+  const { adayIndex, hediye } = req.body ?? {};
+  if (typeof adayIndex !== "number" || !Number.isInteger(adayIndex) || adayIndex < 0) {
+    return res.status(400).json({ hata: "Geçersiz aday." });
+  }
+  if (hediye !== "sade" && hediye !== "ucuz" && hediye !== "pahali") {
+    return res.status(400).json({ hata: "Geçersiz hediye." });
+  }
   try {
-    const adaylar = await evlilikAdaylariGetir(req.params.id);
-    res.json({ adaylar });
+    const sonuc = await mantikTeklifEt(req.params.id, adayIndex, hediye);
+    res.json(sonuc);
   } catch (err) {
     res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
-gameRouter.post("/:id/evlilik-teklifi", async (req, res) => {
-  const { aday } = req.body ?? {};
-  if (!aday || typeof aday !== "object") {
-    return res.status(400).json({ hata: "Geçersiz aday." });
+gameRouter.post("/:id/dugun", async (req, res) => {
+  const { butce } = req.body ?? {};
+  if (butce !== "ucuz" && butce !== "orta" && butce !== "pahali") {
+    return res.status(400).json({ hata: "Geçersiz düğün bütçesi." });
   }
   try {
-    const sonuc = await evlilikTeklifEt(req.params.id, aday);
+    const sonuc = await dugunYap(req.params.id, butce);
+    res.json(sonuc);
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/es/eylem", async (req, res) => {
+  const { eylem, hediye } = req.body ?? {};
+  if (eylem !== "zaman_gecir" && eylem !== "hediye_ver") {
+    return res.status(400).json({ hata: "Geçersiz etkileşim." });
+  }
+  if (eylem === "hediye_ver" && hediye !== "ucuz" && hediye !== "pahali") {
+    return res.status(400).json({ hata: "Geçersiz hediye." });
+  }
+  try {
+    const sonuc = await esEylemYap(req.params.id, eylem, eylem === "hediye_ver" ? hediye : undefined);
     res.json(sonuc);
   } catch (err) {
     res.status(400).json({ hata: hataMetni(err, req.params.id) });

@@ -63,18 +63,42 @@ export interface UlkeDurumu {
 /** Piyasa mülkleri: her biri en fazla bir kez sahiplenilebilir, getirisi state.ulke'ye göre her tur yeniden hesaplanır. */
 export type MulkTuru = "kucuk_tarla" | "ciftlik" | "han" | "demirci" | "kervan" | "karaborsa";
 
+/** Evlilik yolu: "ask" = tanışma/sevgili üzerinden, "mantik" = aday listesinden (çeyizli). */
+export type EvlilikTuru = "ask" | "mantik";
+
+/** Düğün bütçesi: ilişki başlangıcını ve şöhreti belirler (bkz. data/aileSabitleri.ts). */
+export type DugunButcesi = "ucuz" | "orta" | "pahali";
+
+/** Teklifin yanındaki hediye kademesi: sade (hediyesiz) / ucuz / pahalı. */
+export type TeklifHediyesi = "sade" | "ucuz" | "pahali";
+
 /**
- * Olay dışı evlenme akışının (GET /:id/evlilik-adaylari, POST /:id/evlilik-teklifi)
- * adayı: her GET çağrısında rastgele üretilir, state'te saklanmaz — istemci seçtiği
- * adayı olduğu gibi POST'a geri gönderir.
+ * Eşin / adayın gizli huyu. Tanışma (Aşama 2) diyalog yaklaşımıyla eşleşir; evlilikten
+ * sonra da hediye / zaman geçirme etkisini hafifçe değiştirir (bkz. aileSabitleri.HUY_ETKI).
  */
-export interface EvlilikAdayi {
+export type AileHuy = "mizahsever" | "parasever" | "ciddi" | "maceraci" | "sefkatli" | "gururlu";
+
+/** Teklifi kabul edilmiş ama düğün bütçesi henüz seçilmemiş eş adayı (mantık ya da aşk). */
+export type BekleyenDugun = MantikAday & { tur: EvlilikTuru };
+
+/**
+ * Mantık evliliği aday listesindeki bir kişi. State'te (`mantik_adaylar`) saklanır;
+ * liste 5-6 yılda bir yenilenir. `grup`: genç (27-33) çocuk ihtimali yüksek, standart
+ * çeyiz; olgun (38-43) çocuk ihtimali çok düşük ama çeyiz ve meslek bonusu 1.5×.
+ */
+export interface MantikAday {
   isim: string;
   meslek: string;
   rutbe: string;
-  kisilik: [string, string];
-  /** Oyuncunun kişiliğiyle kaba bir uyum tahmini (0-100); teklif başarı şansını etkiler. */
-  uyumYuzdesi: number;
+  /** Adayın yaşı (listelendiği yıldaki). */
+  yas: number;
+  grup: "genc" | "olgun";
+  /** Gizli huylar — kartta yalnız ilki görünür, ikincisi evlilikten sonra açılır. */
+  huylar: [AileHuy, AileHuy];
+  /** Peşin çeyiz parası (enflasyonlu, düğünde cebe girer). */
+  ceyiz: number;
+  /** Kalıcı "meslek bonusu" (yüzde) — evlenince `es_meslek_bonusu`na yazılır. */
+  meslek_bonusu: number;
 }
 
 /** Mağaza eşya türü: "sifa" sağlık/mutluluk verir ve zamanla bozulur; "luks" ün/statü verir ve kalıcıdır. */
@@ -320,6 +344,43 @@ export interface CharacterState {
   /** Son çocuğun doğduğu oyun yılı — eşle ilişkiye bağlı doğum denemesinin cooldown'u (§33). */
   son_dogum_yili?: number;
 
+  // ---- Eş modeli (Aile/Evlilik yeniden tasarımı, bkz. data/aileSabitleri.ts, game/aileSistemi.ts) ----
+  // İlişki barı `es_puani`nın kendisidir (0-100); aşağıdakiler eşin kimliği ve sayaçlarıdır.
+  /** Eşin doğum yılı (yaş = yil − es_dogum_yili); eş yoksa null. */
+  es_dogum_yili: number | null;
+  /** Evlilik yolu; eş yoksa null. */
+  es_evlilik_turu: EvlilikTuru | null;
+  /** Evlenilen eşin grubu (doğum şansı ve çeyiz/bonus için); eş yoksa null. */
+  es_grup: "genc" | "olgun" | null;
+  /** Eşin iki gizli huyu; eş yoksa []. */
+  es_huylar: AileHuy[];
+  /** Eşin getirdiği kalıcı "meslek bonusu" (maaş yüzdesi); eş gidince 0. Meslek sistemi değişince yeniden bağlanacak placeholder. */
+  es_meslek_bonusu: number;
+  /** Düğünle kazanılan şöhret (negatif de olabilir); eş terk ederse geri alınır. */
+  es_dugun_un: number;
+  /** Eşle son "zaman geçir" eyleminin yılı (ihmal sayacı bundan hesaplanır); eş yoksa null. */
+  es_son_zaman_yili: number | null;
+  /** İlişki barı 20'nin altında geçen toplam yıl; bar toparlanınca 0'lanır. */
+  es_dusuk_yil: number;
+  /** Bar <20 iken kaç yılda eş terk eder (2 ya da 3, evlilikte bir kez rastgele seçilir). */
+  es_terk_esigi: number;
+  /** Bu eşin doğurduğu çocuk sayısı (tavan 5). */
+  es_dogum_sayisi: number;
+  /** Eşin yeniden hamile kalabileceği en erken oyun yılı. */
+  es_sonraki_hamilelik_yili: number;
+  /** 7-8 yıllık ihmal uyarı olayı bu evlilikte gösterildi mi. */
+  es_ihmal_uyari_goruldu: boolean;
+  /** Mantık evliliği aday listesi (3 kişi); boşsa ilk açılışta üretilir. */
+  mantik_adaylar: MantikAday[];
+  /** Aday listesinin yenileneceği oyun yılı. */
+  mantik_yenileme_yili: number;
+  /** Reddedilen teklif sonrası mantık sisteminin kilitli olduğu son yıl (bu yıl dahil değil: yil >= değer açar). */
+  mantik_kilit_yili: number;
+  /** Teklifi kabul edilmiş, düğün bütçesi bekleyen eş adayı; yoksa null. */
+  bekleyen_dugun: BekleyenDugun | null;
+  /** Eş ölümü/terk sonrası yas döneminin bittiği yıl; bu yıldan önce evlilik teklifi/tanışma kapalı. 0 = yas yok. */
+  yas_bitis_yili: number;
+
   ekip: EkipUyesi[];
   hizip: string | null;
 
@@ -486,6 +547,10 @@ export interface Cocuk {
   yasiyor: boolean;
   /** Çocukla ilişki puanı (0-100); yeni doğan çocuk 65 ile başlar. Aile ekranındaki etkileşimlerle artar, ilgilenilmezse yılda ~0.6 düşer. Eski kayıtlarda eskiKayitGocu 60 backfill eder. */
   iliski: number;
+  /** Baba mesleğine yatkınlık (Aşama 3: 15 yaşında işe alım): %70 yatkın / %20 uyumsuz / %10 nötr. Doğumda belirlenir. */
+  yatkinlik?: "yatkin" | "notr" | "uyumsuz";
+  /** Doğum komplikasyonunda bebek bu oyun yılında ölecek (ilk 3 yıl içinde); yoksa tanımsız. */
+  erken_olum_yili?: number;
 }
 
 /**
@@ -626,6 +691,8 @@ export interface SonucEtkisi {
   /** true ise bölgeye uygun rastgele bir isimle evlenilir (es_adi atanır). */
   es_ata?: boolean;
   es_puani?: number;
+  /** true ise eşe vakit ayrıldı sayılır: ihmal sayacı (es_son_zaman_yili) bu yıla çekilir. */
+  es_ilgi_gosterildi?: boolean;
   /** true ise eş kaybedilir (boşanma/ölüm): es_adi null'a döner, medeni:evli etiketi kaldırılır. */
   es_kaybet?: boolean;
   cocuk_ekle?: number;

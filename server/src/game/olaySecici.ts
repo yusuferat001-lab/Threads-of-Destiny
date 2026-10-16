@@ -117,7 +117,8 @@ function uygunMu(olay: OlayTanimi, state: CharacterState): boolean {
     olay.sosyallesmeYeri === undefined &&
     olay.mulkOlayi === undefined &&
     !olay.gecikmisSonucOlayi &&
-    olay.saglikEsikOlayi === undefined
+    olay.saglikEsikOlayi === undefined &&
+    !olay.yalnizZorlaOlayi
   );
 }
 
@@ -230,18 +231,8 @@ function belirsizAralikHesapla(state: CharacterState, basariSansi: number): { mi
 // bir ağır olayın seçilme ihtimali büyük ölçüde azaltılır (tamamen engellenmez).
 const AGIR_ARKA_ARKAYA_CARPANI = 0.15;
 
-/** Bekar karakter yaşlandıkça evlilik teklifinin çıkma ağırlığı artar: 18 yaşta ×1, her yaş +0.15 (29'da ~×2.65). */
-const EVLILIK_TEKLIFI_ID = "iliski_evlilik_teklifi";
-const EVLILIK_YAS_TABANI = 18;
-const EVLILIK_YAS_CARPANI = 0.15;
-
-function evlilikAgirlikCarpani(olay: OlayTanimi, state: CharacterState): number {
-  if (olay.id !== EVLILIK_TEKLIFI_ID || state.etiketler.includes("medeni:evli")) return 1;
-  return 1 + Math.max(0, state.yas - EVLILIK_YAS_TABANI) * EVLILIK_YAS_CARPANI;
-}
-
 function olayAgirligiHesapla(olay: OlayTanimi, state: CharacterState, sonTon?: "agir" | "hafif" | null): number {
-  const temel = (olay.agirlik ?? 1) * evlilikAgirlikCarpani(olay, state);
+  const temel = olay.agirlik ?? 1;
   if (sonTon === "agir" && olay.ton === "agir") return temel * AGIR_ARKA_ARKAYA_CARPANI;
   return temel;
 }

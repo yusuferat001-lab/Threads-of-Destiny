@@ -2,52 +2,6 @@ import type { OlayCeviri } from "./index";
 
 /** server/src/data/olaylar/evlilikVeAile.ts — İngilizce çevirileri. */
 export const OLAYLAR_EVLILIK_AILE_EN: Record<string, OlayCeviri> = {
-  evlilik_uc_yol_karari: {
-    baslik: "On the Threshold of Marriage",
-    metin:
-      "Time to marry: a cold but influential noble, a rich but plain merchant's heir, or the penniless one your heart chose.",
-    secenekler: [
-      {
-        metin: "Marry for convenience into the noble family.",
-        basariliSonuc: {
-          mesaj:
-            "A cold palace ceremony. Your spouse is kind but distant; doors have opened.",
-          detay: "Some marriages are made to rise.",
-        },
-        basarisizSonuc: {
-          mesaj:
-            "The family looked down on you; the ceremony was plain. Your spouse is disappointed.",
-          detay: "In this bargain, you were the cheap side.",
-        },
-      },
-      {
-        metin: "Marry the rich merchant family's dowered heir.",
-        basariliSonuc: {
-          mesaj:
-            "The in-laws paid for the wedding. Some snicker, but the chests are full.",
-          detay: "Beauty fades; gold doesn't.",
-        },
-        basarisizSonuc: {
-          mesaj:
-            "The dowry fell short; your spouse learned you married for money and sulked.",
-          detay: "Some bargains disappoint both sides.",
-        },
-      },
-      {
-        metin: "Marry the penniless one you love.",
-        basariliSonuc: {
-          mesaj:
-            "You married despite both families. Not rich, but you wake up smiling.",
-          detay: "Some wealth sleeps beside you.",
-        },
-        basarisizSonuc: {
-          mesaj:
-            "You married, but neither family came. Happy, yet completely alone.",
-          detay: "Love sometimes costs you family.",
-        },
-      },
-    ],
-  },
 
   evl_ms_sogukluk: {
     baslik: "Same Table, Two Strangers",
@@ -2082,6 +2036,23 @@ export const OLAYLAR_EVLILIK_AILE_EN: Record<string, OlayCeviri> = {
       },
     ],
   },
+  iliski_es_ihmal_uyarisi: {
+    baslik: "The Cooling Hearth",
+    metin: "You haven't spent time with {es} in years. One evening they whisper: 'I no longer know you.'",
+    secenekler: [
+      {
+        metin: "Drop everything, give them this week.",
+        basariliSonuc: { mesaj: "For a week you looked only at them; the ice began to thaw." },
+        basarisizSonuc: { mesaj: "You seem too late; still, a door opened a crack." },
+      },
+      {
+        metin: "Say 'too busy' and move on.",
+        basariliSonuc: { mesaj: "They nodded. You never heard their voice again." },
+        basarisizSonuc: { mesaj: "Unused." },
+      },
+    ],
+  },
+
   evl_krizi: {
     baslik: "Breaking Point",
     metin: "Things with {es} have gone truly sour. One morning they said 'this can't go on.' Time to decide.",
