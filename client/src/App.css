@@ -7516,3 +7516,59 @@ button.amac-serit-oge.amac-serit-tamam:hover:not(:disabled) {
 .aile-aday-karti > .aile-huy-rozet {
   align-self: flex-start;
 }
+
+/* --- Tanışma penceresi (aşk evliliği) --- */
+.tanisma-katman {
+  z-index: 60;
+}
+.tanisma-modal {
+  max-width: 520px;
+}
+.tanisma-adim {
+  font-size: 0.78rem;
+  opacity: 0.75;
+}
+.tanisma-govde {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+.tanisma-istek {
+  margin: 0;
+  line-height: 1.45;
+}
+.tanisma-tepki {
+  margin: 0;
+  padding: 0.45rem 0.7rem;
+  border-left: 3px solid #b88a4a;
+  background: rgba(184, 138, 74, 0.14);
+  font-style: italic;
+}
+.tanisma-secenekler {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+.tanisma-secenek,
+.tanisma-buton {
+  padding: 0.55rem 0.8rem;
+  text-align: left;
+}
+.tanisma-sonuc {
+  margin: 0;
+  font-weight: 600;
+}
+.tanisma-sonuc-iyi {
+  color: #4f8a3a;
+}
+.tanisma-sonuc-kotu {
+  color: #a24a3a;
+}
+.tanisma-vazgec {
+  align-self: flex-start;
+}
+
+.aile-sevgili-karti .aile-bos-metin,
+.aile-sevgili-karti .aile-ihmal-uyari {
+  margin-bottom: 0.4rem;
+}

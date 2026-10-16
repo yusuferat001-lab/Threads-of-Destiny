@@ -774,6 +774,9 @@ export function createCharacter(
     mantik_yenileme_yili: 0,
     mantik_kilit_yili: 0,
     bekleyen_dugun: null,
+    aktif_tanisma: null,
+    sevgili: null,
+    nostalji_yili: null,
     yas_bitis_yili: 0,
     ekip: [],
     hizip: null,
@@ -1144,6 +1147,9 @@ export function eskiKayitGocu(state: CharacterState): void {
   if (typeof state.mantik_kilit_yili !== "number") state.mantik_kilit_yili = 0;
   if (typeof state.yas_bitis_yili !== "number") state.yas_bitis_yili = 0;
   if (state.bekleyen_dugun === undefined) state.bekleyen_dugun = null;
+  if (state.aktif_tanisma === undefined) state.aktif_tanisma = null;
+  if (state.sevgili === undefined) state.sevgili = null;
+  if (typeof state.nostalji_yili !== "number") state.nostalji_yili = null;
   // Derin rakip ilişkileri sonradan eklendi: meslek seçilmişse eski tekil
   // rakip_adi'ndan TEK bir rakip türet (2026-09: iki rakip yerine tek rakip).
   if (!Array.isArray(state.rakipler) || state.rakipler.length === 0) {

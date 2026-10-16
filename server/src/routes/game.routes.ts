@@ -32,6 +32,13 @@ import {
   mantikTeklifEt,
   dugunYap,
   esEylemYap,
+  tanismaGetir,
+  tanismaYaklas,
+  tanismaVazgec,
+  tanismaSec,
+  sevgiliTeklifEt,
+  sevgiliGonulAl,
+  sevgiliAyril,
   aileDurumGetir,
   aileEtkilesimYap,
   aileTalebiKararlastir,
@@ -454,6 +461,67 @@ gameRouter.post("/:id/es/eylem", async (req, res) => {
   try {
     const sonuc = await esEylemYap(req.params.id, eylem, eylem === "hediye_ver" ? hediye : undefined);
     res.json(sonuc);
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+// ===== Aşk evliliği: tanışma diyaloğu + sevgili =====
+gameRouter.get("/:id/tanisma", async (req, res) => {
+  try {
+    res.json(await tanismaGetir(req.params.id));
+  } catch (err) {
+    res.status(404).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/tanisma/yaklas", async (req, res) => {
+  try {
+    res.json(await tanismaYaklas(req.params.id));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/tanisma/vazgec", async (req, res) => {
+  try {
+    res.json(await tanismaVazgec(req.params.id));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/tanisma/secim", async (req, res) => {
+  const { secenek } = req.body ?? {};
+  if (typeof secenek !== "number" || !Number.isInteger(secenek) || secenek < 0) {
+    return res.status(400).json({ hata: "Geçersiz seçenek." });
+  }
+  try {
+    res.json(await tanismaSec(req.params.id, secenek));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/sevgili/teklif", async (req, res) => {
+  try {
+    res.json(await sevgiliTeklifEt(req.params.id));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/sevgili/gonul-al", async (req, res) => {
+  try {
+    res.json(await sevgiliGonulAl(req.params.id));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/sevgili/ayril", async (req, res) => {
+  try {
+    res.json(await sevgiliAyril(req.params.id));
   } catch (err) {
     res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }

@@ -32,6 +32,9 @@ import type {
   MagazaSatinAlSonucu,
   EnvanterKullanSonucu,
   MantikTeklifSonucu,
+  TanismaDurumu,
+  TanismaYaniti,
+  SevgiliSonucu,
   TeklifHediyesi,
   DugunButcesi,
   AileDurumu,
@@ -372,6 +375,37 @@ export function esEylemYap(stateId: string, eylem: 'zaman_gecir' | 'hediye_ver',
     method: 'POST',
     body: JSON.stringify({ eylem, hediye }),
   });
+}
+
+export function tanismaGetir(stateId: string) {
+  return istek<TanismaDurumu>(`/api/game/${stateId}/tanisma`);
+}
+
+export function tanismaYaklas(stateId: string) {
+  return istek<TanismaYaniti>(`/api/game/${stateId}/tanisma/yaklas`, { method: 'POST' });
+}
+
+export function tanismaVazgec(stateId: string) {
+  return istek<TanismaYaniti>(`/api/game/${stateId}/tanisma/vazgec`, { method: 'POST' });
+}
+
+export function tanismaSec(stateId: string, secenek: number) {
+  return istek<TanismaYaniti>(`/api/game/${stateId}/tanisma/secim`, {
+    method: 'POST',
+    body: JSON.stringify({ secenek }),
+  });
+}
+
+export function sevgiliTeklifEt(stateId: string) {
+  return istek<SevgiliSonucu>(`/api/game/${stateId}/sevgili/teklif`, { method: 'POST' });
+}
+
+export function sevgiliGonulAl(stateId: string) {
+  return istek<SevgiliSonucu>(`/api/game/${stateId}/sevgili/gonul-al`, { method: 'POST' });
+}
+
+export function sevgiliAyril(stateId: string) {
+  return istek<SevgiliSonucu>(`/api/game/${stateId}/sevgili/ayril`, { method: 'POST' });
 }
 
 export function aileDurumGetir(stateId: string) {

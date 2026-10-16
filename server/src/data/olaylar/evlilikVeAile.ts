@@ -3186,6 +3186,71 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
     ],
   },
   {
+    id: "iliski_tanisma_firsati",
+    kategori: "sosyal",
+    yalnizZorlaOlayi: true,
+    gorsel: "💞",
+    baslik: "Göz Göze",
+    metin: "Kalabalıkta biri bakışını yakalıyor. Yanına gidip konuşabilirsin.",
+    secenekler: [
+      {
+        metin: "Yanına git.",
+        baseBasariSansi: 100,
+        basariliSonuc: {
+          tanisma_baslat: true,
+          mesaj: "Kalabalığı yarıp yanına yürüdün.",
+        },
+        basarisizSonuc: {
+          mesaj: "Kullanılmadı.",
+        },
+      },
+      {
+        metin: "Vazgeç, yoluna devam et.",
+        baseBasariSansi: 100,
+        basariliSonuc: {
+          tanisma_nostalji: true,
+          mutluluk: -1,
+          mesaj: "Başını çevirdin; o yüz kalabalığa karıştı.",
+        },
+        basarisizSonuc: {
+          mesaj: "Kullanılmadı.",
+        },
+      },
+    ],
+  },
+  {
+    id: "iliski_nostalji",
+    kategori: "sosyal",
+    yalnizZorlaOlayi: true,
+    gorsel: "🕰️",
+    baslik: "Tanıdık Bir Yüz",
+    metin: "Yıllar önce yanına gitmeye cesaret edemediğin o kişiye benzeyen biri karşında duruyor.",
+    secenekler: [
+      {
+        metin: "Bu sefer yanına git.",
+        baseBasariSansi: 100,
+        basariliSonuc: {
+          tanisma_baslat: true,
+          mesaj: "Eski pişmanlığı yenip adım attın.",
+        },
+        basarisizSonuc: {
+          mesaj: "Kullanılmadı.",
+        },
+      },
+      {
+        metin: "Bir kez daha geç.",
+        baseBasariSansi: 100,
+        basariliSonuc: {
+          mutluluk: -2,
+          mesaj: "Yine geçtin; içinde eski bir sızı kıpırdadı.",
+        },
+        basarisizSonuc: {
+          mesaj: "Kullanılmadı.",
+        },
+      },
+    ],
+  },
+  {
     id: "iliski_es_ihmal_uyarisi",
     kategori: "sosyal",
     gerekliEtiketler: ["medeni:evli"],

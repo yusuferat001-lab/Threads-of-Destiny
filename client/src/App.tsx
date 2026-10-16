@@ -66,6 +66,13 @@ import {
   mantikTeklifEt,
   dugunYap,
   esEylemYap,
+  tanismaGetir,
+  tanismaYaklas,
+  tanismaVazgec,
+  tanismaSec,
+  sevgiliTeklifEt,
+  sevgiliGonulAl,
+  sevgiliAyril,
   aileDurumGetir,
   aileEtkilesimYap,
   aileTalebiKararlastir,
@@ -102,7 +109,7 @@ import { IsYatirimEkrani } from './components/IsYatirimEkrani';
 import { AyarlarModal } from './components/AyarlarModal';
 import { ayarlariGetir, ayarlariKaydet, type Dil } from './ayarlar';
 import { bolgeOzetiGetir } from './bolgeOzellikleri';
-import type { GeriBildirimGirdi, GostergeStat, TeklifHediyesi, DugunButcesi } from './types';
+import type { GeriBildirimGirdi, GostergeStat, TeklifHediyesi, DugunButcesi, TanismaDurumu, TanismaYaniti } from './types';
 import { sesKapaliMi, sesTercihiKaydet } from './ses';
 import { muzikModunuAyarla, muzikDurdur, muzikSessizAyarla, type MuzikModu } from './muzik';
 import { aktifOturumIdGetir, aktifOturumIdKaydet, aktifOturumIdSil } from './oturum';
@@ -127,6 +134,7 @@ import { DilContext, dilCtxYap } from './DilContext';
 import { aileKokAdi, enTanimlik } from './aileAdi';
 import { SkorKirilimiPaneli } from './components/SkorKirilimiPaneli';
 import { GostergeModal } from './components/GostergeModal';
+import { TanismaModal } from './components/TanismaModal';
 import { DunyaGecmisiModal } from './components/DunyaGecmisiModal';
 import { CarkLogo, KoseTezhibi, MuhurAyrac, AdimGostergesi, KaderYollari } from './components/Suslemeler';
 import { CagAmblemi, BolgeAmblemi } from './components/Amblemler';
@@ -369,6 +377,10 @@ function App() {
   // Mobil tek-ekran tasarımı: canlı skor rozetinin detay modalı (yalnız placeholder — §5).
   const [skorDetayAcik, setSkorDetayAcik] = useState(false);
   const [gostergeAcik, setGostergeAcik] = useState<GostergeStat | null>(null);
+  // Aşk evliliği: süren tanışma penceresi (durum sunucudan, karakter state'inde `aktif_tanisma`).
+  const [tanisma, setTanisma] = useState<TanismaDurumu | null>(null);
+  const [tanismaTepki, setTanismaTepki] = useState<string | null>(null);
+  const [tanismaSonuc, setTanismaSonuc] = useState<{ mesaj: string; basarili: boolean } | null>(null);
   const [yilModalAcik, setYilModalAcik] = useState(false);
   // Ölümde skorun otomatik kaydedilmesi denendi mi (oturum id başına tek sefer) —
   // StrictMode çift-render'ında ve tekrar render'larda ikinci bir POST /api/scores atmamak için.
@@ -957,6 +969,52 @@ function App() {
     await aileIslemi(() => dugunYap(karakter.id, butce));
   }
 
+  async function sevgiliHandler(eylem: 'teklif' | 'gonul_al' | 'ayril') {
+    if (!karakter) return;
+    await aileIslemi(() =>
+      eylem === 'teklif'
+        ? sevgiliTeklifEt(karakter.id)
+        : eylem === 'gonul_al'
+          ? sevgiliGonulAl(karakter.id)
+          : sevgiliAyril(karakter.id),
+    );
+  }
+
+  /** Tanışma adımlarının ortak kalıbı: çağır → durum/tepki/sonuç güncelle. */
+  async function tanismaIslemi(cagri: () => Promise<TanismaYaniti>) {
+    setHata(null);
+    setYukleniyor(true);
+    try {
+      const yanit = await cagri();
+      setKarakter(yanit.state);
+      setTanismaTepki(yanit.tepki);
+      if (yanit.bitti) {
+        setTanisma(null);
+        setTanismaSonuc({ mesaj: yanit.mesaj ?? '', basarili: yanit.basarili === true });
+      } else {
+        setTanisma(yanit.durum.aktif ? yanit.durum : null);
+      }
+    } catch (err) {
+      setHata(temizHata(err));
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
+  async function tanismaKapat() {
+    setTanisma(null);
+    setTanismaTepki(null);
+    setTanismaSonuc(null);
+    // Aile ekranı açıksa sevgili/eş durumu tazelensin.
+    if (karakter && ekran === 'aile') {
+      try {
+        setAileDurum(await aileDurumGetir(karakter.id));
+      } catch {
+        /* eldeki durum kalır */
+      }
+    }
+  }
+
   // ===== Kariyer sayfası: Yönetimle Bağlar (§35) =====
   async function kariyerEkraniniAc() {
     if (!karakter) return;
@@ -1286,6 +1344,12 @@ function App() {
     try {
       const sonuc = await sosyallesmeYerineGit(karakter.id, yerId);
       setKarakter(sonuc.state);
+      if (sonuc.tanismaBasladi) {
+        // Mekân olayı yerine biriyle göz göze gelindi: tanışma penceresi (effect) açılır.
+        setTanisma(null);
+        setTanismaSonuc(null);
+        return;
+      }
       const { senaryo: mekanOlayi } = await senaryoGetir(sonuc.state.id);
       // Ana oyun ekranına GEÇMEDEN, olayı Sosyalleş ekranının içinde göster.
       setSosyalOlay(mekanOlayi);
@@ -1497,7 +1561,21 @@ function App() {
         }
       : null;
   // Klavye kısayolları (1-4 / Enter) bir pencere açıkken devre dışı kalır.
-  const pencereAcik = ayarlarAcik || bolgeBilgiAcik || kisilikModalAcik || skorDetayAcik || gostergeAcik !== null;
+  // Karakterin state'inde süren bir tanışma varsa (olay/mekân başlattı ya da sayfa yenilendi) penceresini aç.
+  useEffect(() => {
+    if (!karakter?.id || !karakter.aktif_tanisma || tanisma || tanismaSonuc) return;
+    let iptal = false;
+    tanismaGetir(karakter.id)
+      .then((d) => {
+        if (!iptal && d.aktif) setTanisma(d);
+      })
+      .catch(() => {});
+    return () => {
+      iptal = true;
+    };
+  }, [karakter?.id, karakter?.aktif_tanisma, tanisma, tanismaSonuc]);
+
+  const pencereAcik = ayarlarAcik || bolgeBilgiAcik || kisilikModalAcik || skorDetayAcik || gostergeAcik !== null || tanisma !== null || tanismaSonuc !== null;
   // PC yan sütunlarındaki ahşap kısayol kartları (eskiden sahne üstündeki tıklama noktaları).
   function kisayolKartlari(ogeler: KisayolId[]) {
     if (!karakter) return null;
@@ -2530,6 +2608,19 @@ function App() {
         />
       )}
 
+      {(tanisma !== null || tanismaSonuc !== null) && karakter && (
+        <TanismaModal
+          durum={tanisma}
+          tepki={tanismaTepki}
+          sonuc={tanismaSonuc}
+          yukleniyor={yukleniyor}
+          onYaklas={() => tanismaIslemi(() => tanismaYaklas(karakter.id))}
+          onVazgec={() => tanismaIslemi(() => tanismaVazgec(karakter.id))}
+          onSec={(i) => tanismaIslemi(() => tanismaSec(karakter.id, i))}
+          onKapat={tanismaKapat}
+        />
+      )}
+
       {ekran === 'aile' && karakter && (
         <AileEkrani
           anneAdi={karakter.anne_adi}
@@ -2547,6 +2638,7 @@ function App() {
           onEsEylem={esEylemHandler}
           onMantikTeklif={mantikTeklifHandler}
           onDugun={dugunHandler}
+          onSevgili={sevgiliHandler}
           onGeriDon={() => {
             setIslemMesaji(null);
             setEkran('oyun');

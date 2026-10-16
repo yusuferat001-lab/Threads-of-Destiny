@@ -101,6 +101,59 @@ export interface MantikAday {
   meslek_bonusu: number;
 }
 
+/** Tanışma diyaloğundaki yaklaşım tarzı; karşı tarafın gizli huyuyla eşleşirse adım başarı şansı artar. */
+export type TanismaYaklasim = "komik" | "nazik" | "ovunme" | "mutevazi";
+
+/** Tanışılan kişi (aşk evliliği yolu) — mantık adayından farklı olarak yalnız kimlik + gizli huylar taşır. */
+export interface TanismaAdayi {
+  isim: string;
+  meslek: string;
+  rutbe: string;
+  yas: number;
+  huylar: [AileHuy, AileHuy];
+  /** Dış görünüş cümlesinin indeksi (data/tanismaDiyalog.ts GORUNUM). */
+  gorunum: number;
+}
+
+/**
+ * Süren tanışma: 0. adımda göz göze gelinir (yanına git / vazgeç), sonra 3-4 adımlık
+ * diyalog. State'te saklanır (sayfa yenilense / sunucu yeniden başlasa bile sürer).
+ */
+export interface AktifTanisma {
+  mekan: string;
+  aday: TanismaAdayi;
+  /** 0 = göz göze (karar), 1..toplam = diyalog adımı. */
+  adim: number;
+  toplam: number;
+  /** Başarılı geçilen adım sayısı. */
+  basari: number;
+  /** Şu anki adımda sunulan 3 yaklaşım (sırayla seçenek 0..2). */
+  yaklasimlar: TanismaYaklasim[];
+  /** Son adımın tepkisi (metin diyaloğa göre sunucuda çözülür): hangi yaklaşım + ton + varyant. */
+  son_tepki: { yaklasim: TanismaYaklasim; ton: "olumlu" | "notr" | "soguk"; varyant: number } | null;
+}
+
+/** Tanışmadan çıkan sevgili: 4 yıllık sayaç içinde evlilik teklifi yapılmazsa darılır. */
+export interface Sevgili {
+  isim: string;
+  meslek: string;
+  rutbe: string;
+  /** Doğum yılı (yaş = yil − dogum_yili). */
+  dogum_yili: number;
+  huylar: [AileHuy, AileHuy];
+  /** Sevgili ilişki barı (0-100); evlenince düğünle yeniden belirlenir. */
+  iliski: number;
+  baslangic_yili: number;
+  /** Bu yıla kadar teklif yapılmazsa darılır; "gönül al" süreyi uzatır. */
+  son_yil: number;
+  darildi: boolean;
+  darilma_yili: number | null;
+  /** "Gönül al" bu yıldan önce tekrarlanamaz. */
+  gonul_kilit_yili: number;
+  /** Evlenirse eşin getireceği meslek bonusu (aşkta mantık-gencinin yarısı). */
+  meslek_bonusu: number;
+}
+
 /** Mağaza eşya türü: "sifa" sağlık/mutluluk verir ve zamanla bozulur; "luks" ün/statü verir ve kalıcıdır. */
 export type MagazaEsyaKategori = "sifa" | "luks";
 
@@ -378,6 +431,12 @@ export interface CharacterState {
   mantik_kilit_yili: number;
   /** Teklifi kabul edilmiş, düğün bütçesi bekleyen eş adayı; yoksa null. */
   bekleyen_dugun: BekleyenDugun | null;
+  /** Aşk evliliği yolu: süren tanışma diyaloğu; yoksa null. */
+  aktif_tanisma: AktifTanisma | null;
+  /** Aşk evliliği yolu: sevgili; yoksa null. */
+  sevgili: Sevgili | null;
+  /** Vazgeçilen tanışmanın "nostalji" olayının tetikleneceği yıl; yoksa null. */
+  nostalji_yili: number | null;
   /** Eş ölümü/terk sonrası yas döneminin bittiği yıl; bu yıldan önce evlilik teklifi/tanışma kapalı. 0 = yas yok. */
   yas_bitis_yili: number;
 
@@ -693,6 +752,10 @@ export interface SonucEtkisi {
   es_puani?: number;
   /** true ise eşe vakit ayrıldı sayılır: ihmal sayacı (es_son_zaman_yili) bu yıla çekilir. */
   es_ilgi_gosterildi?: boolean;
+  /** true ise bekar karakter için bir tanışma (göz göze gelme) başlar (`aktif_tanisma`). */
+  tanisma_baslat?: boolean;
+  /** true ise (bir tanışmadan vazgeçildi) 4-6 yıl sonra tetiklenecek nostalji olayı kurulur. */
+  tanisma_nostalji?: boolean;
   /** true ise eş kaybedilir (boşanma/ölüm): es_adi null'a döner, medeni:evli etiketi kaldırılır. */
   es_kaybet?: boolean;
   cocuk_ekle?: number;

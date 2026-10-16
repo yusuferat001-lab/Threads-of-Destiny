@@ -82,6 +82,7 @@ describe("evcil hayvan sistemi", () => {
   function digerZorunluOlaylariGecistir(state: Awaited<ReturnType<typeof yeniOyun>>) {
     state.hayat_amaci = { id: "x", ad: "x", aciklama: "x", hedefTuru: "para", hedefDeger: 999999, tamamlandi: false };
     state.gecmis_olaylar.push("hayat_amaci_secimi", "iliski_evlilik_teklifi", "iliski_ikinci_teklif");
+    state.etiketler.push("tanisma_donum_26", "tanisma_donum_36"); // aşk evliliği tanışma fırsatı zorlanmasın
     // Tarihi savaş ilanı zorlanan olayı bazı yıl/bölge kombinasyonlarında devreye girebiliyor; savasta=true ile o kontrolü baştan atlarız.
     state.ulke.savasta = true;
     // Kariyer yolu girişi (Tüccar için "İlk Anlaşma") 18 yaşından itibaren zorla

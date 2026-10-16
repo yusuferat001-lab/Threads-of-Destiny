@@ -24,6 +24,8 @@ interface AileEkraniProps {
   onMantikTeklif: (adayIndex: number, hediye: TeklifHediyesi) => void;
   /** Bekleyen düğün için bütçe seçimi. */
   onDugun: (butce: DugunButcesi) => void;
+  /** Sevgili eylemleri: evlilik teklifi / gönül al / ayrıl. */
+  onSevgili: (eylem: 'teklif' | 'gonul_al' | 'ayril') => void;
   onGeriDon: () => void;
 }
 
@@ -249,6 +251,7 @@ export function AileEkrani({
   onEsEylem,
   onMantikTeklif,
   onDugun,
+  onSevgili,
   onGeriDon,
 }: AileEkraniProps) {
   const { m, kt, dil } = useDil();
@@ -405,7 +408,60 @@ export function AileEkrani({
           </div>
         )}
 
-        {durum && !durum.es && !durum.bekleyenDugun && (
+        {durum?.sevgili && !durum.es && !durum.bekleyenDugun && (
+          <div className="aile-kart aile-kart-tam aile-sevgili-karti">
+            <h3>💞 {im(dil, 'sevgiliBaslik')}</h3>
+            <div className="aile-es-baslik">
+              <span className="aile-es-ad">{durum.sevgili.isim}</span>
+              <span className="aile-es-meslek">
+                {kt(durum.sevgili.rutbe)} · {kt(durum.sevgili.meslek)} · {im(dil, 'yasEk', durum.sevgili.yas)}
+              </span>
+            </div>
+            <div className="aile-huy-satiri">
+              <span className="aile-huy-rozet">{huyAdi(dil, durum.sevgili.huy)}</span>
+              <span className="aile-huy-rozet aile-huy-gizli">{im(dil, 'gizliHuy')}</span>
+            </div>
+            <IliskiBar
+              deger={durum.sevgili.bar}
+              etiket={`${esEtiket(m, durum.sevgili.bar)} · ${im(dil, 'barSayi', durum.sevgili.bar)}`}
+            />
+            <p className="aile-bos-metin">{im(dil, 'sevgiliBonus', durum.sevgili.meslekBonusu)}</p>
+            {durum.sevgili.darildi ? (
+              <p className="aile-ihmal-uyari">💢 {im(dil, 'sevgiliDargin')}</p>
+            ) : (
+              <p className="aile-bos-metin">{im(dil, 'sevgiliSure', Math.max(0, durum.sevgili.kalanYil))}</p>
+            )}
+            <div className="aile-etkilesim-satir">
+              <button
+                className="aile-etkilesim-buton"
+                disabled={yukleniyor}
+                onClick={() => onSevgili('teklif')}
+              >
+                <span className="aile-etkilesim-ad">{im(dil, 'sevgiliTeklif')}</span>
+                <span className="aile-etkilesim-alt">{im(dil, 'sevgiliSans', Math.round(durum.sevgili.teklifSansi / 5) * 5)}</span>
+              </button>
+              <button
+                className="aile-etkilesim-buton"
+                disabled={yukleniyor || durum.sevgili.gonulKilitKalanYil > 0 || durum.para < durum.sevgili.gonulMaliyet}
+                onClick={() => onSevgili('gonul_al')}
+              >
+                <span className="aile-etkilesim-ad">{im(dil, 'gonulAl')}</span>
+                <span className="aile-etkilesim-alt">
+                  {durum.sevgili.gonulKilitKalanYil > 0
+                    ? im(dil, 'kilitYil', durum.sevgili.gonulKilitKalanYil)
+                    : durum.para < durum.sevgili.gonulMaliyet
+                      ? im(dil, 'paraYetmez')
+                      : `${durum.sevgili.gonulMaliyet} ${durum.paraBirimi}`}
+                </span>
+              </button>
+              <button className="aile-etkilesim-buton" disabled={yukleniyor} onClick={() => onSevgili('ayril')}>
+                <span className="aile-etkilesim-ad">{im(dil, 'sevgiliAyril')}</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {durum && !durum.es && !durum.bekleyenDugun && !durum.sevgili && !durum.tanismaAktif && (
           <div className="aile-kart aile-kart-tam aile-adaylar-karti">
             <h3>📜 {im(dil, 'adaylarBaslik')}</h3>
             {durum.mantik.acik ? (
@@ -472,7 +528,9 @@ export function AileEkrani({
                     ? im(dil, 'sebepYasDonemi', Math.max(1, durum.mantik.yasKalanYil))
                     : durum.mantik.sebep === 'kilit'
                       ? im(dil, 'sebepKilit', Math.max(1, durum.mantik.kilitKalanYil))
-                      : im(dil, 'sebepHapis')}
+                      : durum.mantik.sebep === 'sevgili'
+                        ? im(dil, 'sebepSevgili')
+                        : im(dil, 'sebepHapis')}
               </p>
             )}
           </div>

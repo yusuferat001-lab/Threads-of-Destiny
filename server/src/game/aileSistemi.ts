@@ -120,6 +120,7 @@ export function mantikUygunlukKontrolEt(state: CharacterState): void {
   if (state.yas < S.MANTIK_MIN_YAS) throw new Error("Mantık evliliği için henüz çok gençsin.");
   if (yasDonemindeMi(state)) throw new Error("Yas tutuyorsun; şimdi yeni bir evlilik düşünemezsin.");
   if (state.bekleyen_dugun) throw new Error("Bekleyen bir düğün var; önce onu tamamla.");
+  if (state.sevgili || state.aktif_tanisma) throw new Error("Bir sevgilin var; önce o ilişkiyi sonuçlandır.");
   if (state.yil < state.mantik_kilit_yili) throw new Error("Mantık evliliği teklifleri şimdilik kapalı; biraz zaman geçmeli.");
 }
 

@@ -146,3 +146,33 @@ export const SUC_ES_ESIGI = 20;
 export const SUC_ES_ZARARI = 6;
 /** `sir:*` etiketi ekleyen seçimlerin eşe zararı. */
 export const SIR_ES_ZARARI = 8;
+
+// ---------- Aşk evliliği: tanışma + sevgili ----------
+/** Tanışma diyaloğunun adım sayısı (3 ya da 4, rastgele). */
+export const TANISMA_ADIM_ARALIK: [number, number] = [3, 4];
+/** Adım temel başarı şansı (%) ve huy eşleşme/uyumsuzluk etkisi (puan). */
+export const TANISMA_BAZ_SANS = 50;
+export const TANISMA_ESLESME_BONUSU = 20;
+export const TANISMA_UYUMSUZLUK_CEZASI = 15;
+export const TANISMA_SANS_ARALIK: [number, number] = [10, 92];
+/** Tanışmanın başarılı sayılması için gereken başarılı adım sayısı = toplam − bu kadar. */
+export const TANISMA_TOLERANS = 1;
+/** Bekar oyuncu bir sosyalleşme mekânına girdiğinde tanışma çıkma olasılığı. */
+export const TANISMA_MEKAN_SANSI = 0.12;
+/** Bekar karaktere bu yaşlarda (ilk fırsatta) zorunlu tanışma fırsatı sunulur. */
+export const TANISMA_DONUMLERI = [26, 36];
+/** Vazgeçilen tanışmanın nostalji olayı bu kadar yıl sonra gelir. */
+export const NOSTALJI_YIL_ARALIK: [number, number] = [4, 6];
+
+/** Sevgili: başlangıç barı, evlilik teklifi için süre, darılma ve gönül alma. */
+export const SEVGILI_BASLANGIC_BAR: [number, number] = [68, 79];
+export const SEVGILI_SURE_YIL = 4;
+export const SEVGILI_DARILMA_BAR_KAYBI = 25;
+/** Darılan sevgili bu kadar yıl içinde gönlü alınmazsa ayrılır. */
+export const SEVGILI_DARGIN_SURE_YIL = 2;
+export const GONUL_AL_MALIYET = 20;
+export const GONUL_AL_UZATMA_YIL = 3;
+export const GONUL_AL_BEKLEME_YIL = 1;
+export const GONUL_AL_BAR_ARTISI = 12;
+/** Sevgili barı bunun altına düşerse sevgili ayrılır. */
+export const SEVGILI_AYRILMA_ESIGI = 20;

@@ -56,6 +56,22 @@ const METIN = {
   dugunIliski: ['ilişki {0}', 'bond {0}'],
   dugunSohret: ['şöhret {0}', 'fame {0}'],
   dugunMaliyet: ['{0} {1}', '{0} {1}'],
+  // Sevgili (aşk evliliği)
+  sevgiliBaslik: ['Sevgilin', 'Your Sweetheart'],
+  sevgiliSure: ['Evlilik teklifi için ~{0} yıl var.', 'About {0} yr left to propose.'],
+  sevgiliDargin: ['Teklif beklemekten yoruldu ve sana darıldı. Gönlünü almazsan ayrılabilir.', 'Tired of waiting, they are cross with you. They may leave unless you win them back.'],
+  sevgiliBonus: ['Evlenirsen eşinin desteği: maaşa +%{0}', 'If you marry, their support: +{0}% income'],
+  sevgiliTeklif: ['💍 Evlenme Teklif Et', '💍 Propose'],
+  gonulAl: ['🌹 Gönlünü Al', '🌹 Win Them Back'],
+  sevgiliAyril: ['💔 Ayrıl', '💔 Break Up'],
+  sevgiliSans: ['şans ~%{0}', 'chance ~{0}%'],
+  sebepSevgili: ['Bir sevgilin var; önce o ilişkiyi sonuçlandır.', 'You have a sweetheart; settle that relationship first.'],
+  // Tanışma penceresi
+  tanismaBaslik: ['💞 Göz Göze', '💞 Eye to Eye'],
+  tanismaYaklas: ['Yanına git', 'Walk over'],
+  tanismaVazgec: ['Vazgeç', 'Let it go'],
+  tanismaAdim: ['Adım {0}/{1}', 'Step {0}/{1}'],
+  tamam: ['Tamam', 'OK'],
   // Huylar
   huy_mizahsever: ['Mizah sever', 'Humorous'],
   huy_parasever: ['Parayı sever', 'Fond of money'],
