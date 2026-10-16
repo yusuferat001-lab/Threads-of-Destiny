@@ -368,6 +368,8 @@ export interface Cocuk {
   iliski: number;
   yatkinlik?: 'yatkin' | 'notr' | 'uyumsuz';
   erken_olum_yili?: number;
+  is_durumu?: 'bekliyor' | 'red_tepkisi' | 'ise_alindi' | 'reddetti';
+  ekip_id?: string;
 }
 
 /** Eş/çocuğun bekleyen para talebi (Aile ekranında "Kabul Et / Reddet" kartı). */
@@ -451,6 +453,12 @@ export interface TanismaYaniti {
   mesaj: string | null;
 }
 
+export interface CocukIseAlSonucu {
+  state: CharacterState;
+  kabul: boolean;
+  mesaj: string;
+}
+
 export interface SevgiliSonucu {
   state: CharacterState;
   mesaj: string;
@@ -473,7 +481,14 @@ export interface AileDurumu {
     ihmalYili: number;
     dogumSayisi: number;
   } | null;
-  cocuklar: { isim: string; dogumYili: number; yas: number; yasiyor: boolean; iliski: number }[];
+  cocuklar: {
+    isim: string;
+    dogumYili: number;
+    yas: number;
+    yasiyor: boolean;
+    iliski: number;
+    isDurumu: 'bekliyor' | 'red_tepkisi' | 'ise_alindi' | 'reddetti' | null;
+  }[];
   etkilesimler: { id: string; ikon: string; hedef: 'es' | 'cocuk' | 'hepsi'; maliyet: number }[];
   kilitler: Record<string, number>;
   talep: AileTalep | null;
@@ -616,6 +631,7 @@ export interface EkipUyesi {
   maas: number;
   sadakat: number;
   kisilik: string;
+  cocuk_isim?: string;
 }
 
 export interface Ast {

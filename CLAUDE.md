@@ -80,6 +80,8 @@ Taban: `/api/game` (oyun) ve `/api/scores` (liderlik tablosu).
 | GET `/:id/tanisma` | – | Aşk evliliği yolu: süren tanışmanın durumu (`aktif`, `adim`, `toplam`, giriş cümlesi, aday özeti, adım başlığı, 3 seçenek metni, önceki adımın tepki metni) — §45 |
 | POST `/:id/tanisma/yaklas` · `/vazgec` · `/secim` | `{secenek}` (yalnız secim) | Göz göze → yanına git / vazgeç / diyalog seçimi; son adımda sonuç (`bitti`, `basarili`, `mesaj`). Vazgeçiş 4-6 yıl sonra nostalji olayı kurar. Turu tüketmez |
 | POST `/:id/sevgili/teklif` · `/gonul-al` · `/ayril` | – | Sevgiliye evlilik teklifi (kabulde `bekleyen_dugun` tur "ask") / gönül al (bedel öder, süre +3 yıl) / ayrıl (§45). Turu tüketmez |
+| POST `/:id/cocuk/ise-al` | `{cocukIndex}` | 15+ yaşındaki `is_durumu:"bekliyor"` çocuğu ekibe ("Varis") alma teklifi; yatkın %100 / nötr %50 / uyumsuz %15 kabul (± ilişki). Kabul → ekip üyesi + ilişki +5; red → `red_tepkisi` (§45). Turu tüketmez |
+| POST `/:id/cocuk/red-tepkisi` | `{cocukIndex, tepki:"ofke"\|"sakin"}` | Reddeden çocuğa tepki: öfke −15 ilişki/−2 mutluluk, sakin +3 ilişki; çocuk `reddetti` olur (§45). Turu tüketmez |
 | POST `/:id/aile/etkilesim` | `{etkilesimId, cocukIndex?}` | Çocukla (oyna/hediye/eğitim) ve ailece (aile_gezi) etkileşim; eş etkileşimleri kaldırıldı (§45). Turu tüketmez |
 | POST `/:id/aile/talep` | `{karar:"kabul"\|"ret"}` | Bekleyen aile talebini yanıtlar — kabul: para gider + ilişki artar; ret: ilişki + mutluluk düşer (§33). Turu tüketmez |
 | GET `/:id/yonetim` | – | Kariyer sayfası "Yönetim" verisi: iki ilişki hattı (`yonetici` + `patron`) unvan/ad/ilişki, etkileşim kataloğu (bağış/hediye/yağcılık/hizmet), istekler (ilişki yüksekken açılan iyilikler) + kilitler + bekleyen `yonetim_talep` (§35). Turu tüketmez |
@@ -1593,7 +1595,7 @@ Kullanıcı mobildeki olay/şık dizilimini ve paletini çok beğendi; PC'de esk
 - **Kapsam dışı:** Sosyalleş mekân olay kartı eski ahşap görünümünde kaldı (yalnız çipleri kalktı); sahne `contain` ile aynen duruyor. İstihbarat/gözlemci mekaniği (net başarı şansını gösterme) istemcide zaten görünmüyordu; ihtimal çipleri de kalkınca tamamen etkisiz — kaldırma ya da yeni ödül ayrı karar.
 - **Doğrulama yöntemi:** depoda hazır sahte-API harness'ı yok; geçici Playwright betiğiyle (Chromium `/opt/pw-browsers`) gerçek sunucu + Vite dev server üzerinde `/scenario` ve `/choice` sabit fixture ile yanıtlanıp 360–430px mobil ve 768–2560px PC görüntüleri önce/sonra karşılaştırıldı (mobil piksel paritesi).
 
-## 45. Eş / Evlilik / Doğum Sistemi (2026-10, Aşama 1-2)
+## 45. Eş / Evlilik / Doğum Sistemi (2026-10, Aşama 1-3)
 
 Kaynak: [aileSistemi.ts](server/src/game/aileSistemi.ts) (saf fonksiyonlar), [aileSabitleri.ts](server/src/data/aileSabitleri.ts) (TÜM sayılar tek yerde), `stateManager.esiSifirla`. Tasarım: kullanıcı dokümanı; aşamalı teslim — **Aşama 1 (bu bölüm): eş modeli + mantık evliliği + ilişki barı + doğum + İlişkiler ekranı**. **Aşama 2 (aşk evliliği: tanışma diyaloğu, sevgili, gönül al) aşağıda "Aşk evliliği" maddesinde.** Aşama 3 (çocuğu 15 yaşında ekibe alma) henüz yapılmadı — `Cocuk.yatkinlik` altyapısı hazır.
 
@@ -1618,3 +1620,9 @@ Kaynak: [aileSistemi.ts](server/src/game/aileSistemi.ts) (saf fonksiyonlar), [ai
 - **Eş bonusu aşkta** mantık-gencin yarısı (+2); aşk evliliğinde çeyiz yoktur.
 - **İstemci:** [TanismaModal.tsx](client/src/components/TanismaModal.tsx) (kök seviyede, `state.aktif_tanisma` varken otomatik açılır; sayfa yenilense de sürer), İlişkiler ekranında "Sevgilin" kartı (teklif / gönül al / ayrıl). Testler: [askSistemi.test.ts](server/tests/askSistemi.test.ts).
 
+### Çocuğu ekibe alma (Aşama 3) — kaynak: [aileSistemi.ts](server/src/game/aileSistemi.ts) `cocukIsYillikUygula`/`cocukKabulEder`/`cocukRedTepkisiUygula`, [aileSabitleri.ts](server/src/data/aileSabitleri.ts) `COCUK_*`
+- **Yatkınlık:** `Cocuk.yatkinlik` ("yatkin" %70 / "notr" %10 / "uyumsuz" %20) doğumda gizlice atanır; istemciye sızdırılmaz (`aileDurumGetir` yalnız `isDurumu` döner).
+- **Davet:** yıllık `cocukIsYillikUygula` 15+ yaşındaki yaşayan çocuğu `is_durumu:"bekliyor"` yapar (ölen çocuk ekipten düşer). İlişkiler ekranında "💼 Yanıma Al" → `POST /cocuk/ise-al`. Kabul oranı yatkın 1 / nötr 0,5 / uyumsuz 0,15, ±(ilişki−50)/400.
+- **Kabul:** ortak `ekipUyesiEkle` yardımcısıyla (eski iki kopya `ekip_ekle` bloğu da buna taşındı) rol "Varis" (EN "Heir"), kalite ≈ piyasa en iyisinin (85) %1-2 üstü, maaş %15-20 düşük, sadakat 100, kişilik "Sadık", pasif maaş buff'ı; `Cocuk.ekip_id` ↔ `EkipUyesi.cocuk_isim`. İlişki +5, mutluluk +3.
+- **Red:** `is_durumu:"red_tepkisi"` → oyuncu "Öfkelen" (ilişki −15, mutluluk −2) ya da "Sakin Karşıla" (+3) seçer → `reddetti`; tekrar davet edilmez. Çocuk ekipten kovulursa ilişki −25 ve `reddetti`.
+- **Test:** [cocukIs.test.ts](server/tests/cocukIs.test.ts).

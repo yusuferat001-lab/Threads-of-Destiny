@@ -610,6 +610,13 @@ export interface Cocuk {
   yatkinlik?: "yatkin" | "notr" | "uyumsuz";
   /** Doğum komplikasyonunda bebek bu oyun yılında ölecek (ilk 3 yıl içinde); yoksa tanımsız. */
   erken_olum_yili?: number;
+  /**
+   * 15 yaşında yanında çalışma daveti: "bekliyor" (davet bekleniyor) → kabul "ise_alindi" ya da
+   * red "red_tepkisi" (oyuncu öfke/sakin seçer) → "reddetti". Eski kayıtlarda tanımsız.
+   */
+  is_durumu?: "bekliyor" | "red_tepkisi" | "ise_alindi" | "reddetti";
+  /** İşe alındıysa ekip üyesinin id'si. */
+  ekip_id?: string;
 }
 
 /**
@@ -721,6 +728,8 @@ export interface EkipUyesi {
   sadakat: number;
   /** Kısa bir kişilik etiketi (ör. "Sadık", "Hırslı", "Korkak"); tamamen kozmetik/flavor. */
   kisilik: string;
+  /** Bu üye oyuncunun çocuğuysa çocuğun adı (cocuklar[].isim ile eşleşir). */
+  cocuk_isim?: string;
 }
 
 export interface SonucEtkisi {

@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import { gostergeDetayiUret, etkenGunluguNotEt, gostergeStatiMi, GostergeDetayi } from "./gostergeDetay";
 import { dunyaGecmisiUret, DunyaGecmisi } from "./dunyaGecmisi";
-import { CharacterState, Cag, SenaryoResponse, SonucEtkisi, TepkiSonucu, MulkTuru, OturumAkisiKaydi, IkiDilMetin, AileHuy, DugunButcesi, EvlilikTuru, TeklifHediyesi } from "../types";
+import { CharacterState, Cag, SenaryoResponse, SonucEtkisi, TepkiSonucu, MulkTuru, OturumAkisiKaydi, IkiDilMetin, EkipUyesi, AileHuy, DugunButcesi, EvlilikTuru, TeklifHediyesi } from "../types";
 import { T, K, Khukumdar, ikiDilT } from "../i18n";
 import { olayCevirisiUygula } from "../i18n/olaylar";
 import { skorKaydet as skoruDbyeYaz } from "../db/scoreRepository";
@@ -116,7 +116,7 @@ import {
   ADIM_METNI as TANISMA_ADIM_METNI,
   SECENEK_METNI as TANISMA_SECENEK_METNI,
 } from "../data/tanismaDiyalog";
-import { MANTIK_MIN_YAS, DUGUN, KOTU_IS_ES_ZARARI, SUC_ES_ESIGI, SUC_ES_ZARARI, SIR_ES_ZARARI, IHMAL_UYARI_YIL, NOSTALJI_YIL_ARALIK } from "../data/aileSabitleri";
+import { COCUK_EKIP_ROLU, COCUK_KOV_ILISKI, MANTIK_MIN_YAS, DUGUN, KOTU_IS_ES_ZARARI, SUC_ES_ESIGI, SUC_ES_ZARARI, SIR_ES_ZARARI, IHMAL_UYARI_YIL, NOSTALJI_YIL_ARALIK } from "../data/aileSabitleri";
 import { olaySec, doldur, temelUygunMu, sosyallesmeIcinOlaySec } from "./olaySecici";
 import { OlayTanimi, OnTepki, OLAY_BANKASI } from "../data/olaylar";
 import { OLAY_SOSYALLESME } from "../data/olaylar/sosyallesme";
@@ -587,6 +587,67 @@ const SARAY_OLAY_IDLERI = [
 
 /** Yeni bir ekip üyesi işe alınırken rastgele atanan, tamamen kozmetik kişilik etiketi. */
 const EKIP_KISILIK_HAVUZU = ["Sadık", "Hırslı", "Korkak", "Kurnaz", "Tembel", "Cesur", "Güvenilmez", "Çalışkan"];
+
+interface EkipEklemeSecenekleri {
+  /** Verilmezse rastgele bir isim seçilir. */
+  isim?: string;
+  /** Verilmezse üç zar ortalaması (uçlar nadir, ortalama olası). */
+  gercekKalite?: number;
+  /** 0-1: eşdeğer bir çalışanın maaşından bu oranda indirim. */
+  maasIndirimi?: number;
+  sadakat?: number;
+  kisilik?: string;
+  /** Üye oyuncunun çocuğuysa çocuğun adı. */
+  cocukIsim?: string;
+  /** Verilmezse işe alma anındaki kalıcı maaş çarpanı 1 + (kalite − 50) / 500. */
+  buffCarpani?: number;
+}
+
+/**
+ * Yeni bir ekip üyesi işe alır (olay `ekip_ekle` etkisi ve çocuğun yanında çalışması ortak yolu):
+ * gizli kalite, maaş, sadakat, kalıcı pasif maaş çarpanı ve hayat hikayesi kaydı.
+ */
+function ekipUyesiEkle(
+  state: CharacterState,
+  rol: string,
+  tahminGenisligi: number,
+  secenekler: EkipEklemeSecenekleri = {}
+): EkipUyesi {
+  const isim =
+    secenekler.isim ??
+    rastgeleBirIsimSec(state.cag, state.bolge, [
+      state.dost_adi,
+      state.rakip_adi,
+      state.es_adi ?? "",
+      state.isim ?? "",
+      ...state.ekip.map((e) => e.isim),
+    ]);
+  // Üç zar ortalaması: uçlar (çok kötü/çok iyi) nadir, ortalama tutulmak daha olası — "bazen hasta, bazen aşırı başarılı" hissi.
+  const gercekKalite =
+    secenekler.gercekKalite ?? Math.round((Math.random() * 100 + Math.random() * 100 + Math.random() * 100) / 3);
+  const tahminiMin = Math.max(0, Math.round(gercekKalite - tahminGenisligi / 2));
+  const tahminiMax = Math.min(100, Math.round(gercekKalite + tahminGenisligi / 2));
+  const tamMaas = 2 + Math.round(gercekKalite / 14);
+  const maas = secenekler.maasIndirimi ? Math.round(tamMaas * (1 - secenekler.maasIndirimi) * 10) / 10 : tamMaas;
+  const sadakat = secenekler.sadakat ?? Math.round(30 + Math.random() * 60);
+  const kisilik = secenekler.kisilik ?? EKIP_KISILIK_HAVUZU[Math.floor(Math.random() * EKIP_KISILIK_HAVUZU.length)];
+  const uye: EkipUyesi = {
+    id: randomUUID(),
+    isim,
+    rol,
+    gercekKalite,
+    tahminiMin,
+    tahminiMax,
+    maas,
+    sadakat,
+    kisilik,
+    ...(secenekler.cocukIsim ? { cocuk_isim: secenekler.cocukIsim } : {}),
+  };
+  state.ekip.push(uye);
+  maasCarpaniUygula(state, secenekler.buffCarpani ?? 1 + (gercekKalite - 50) / 500);
+  hayatOlayiEkle(state, "🤝", T(state.dil, "{0} ({1}) ekibine katıldı", [isim, K(state.dil, rol)]));
+  return uye;
+}
 
 /** Alkollü bir sosyalleşme mekânında (meyhane/pub/ordugâh çadırı) kaçıncı olayda "ayyaş" damgası kalıcı olarak vurulur. */
 const AYYAS_ESIGI = 3;
@@ -1935,36 +1996,7 @@ async function sonucuUygulaVeIlerlet(
     }
   }
 
-  if (etki.ekip_ekle) {
-    const isim = rastgeleBirIsimSec(state.cag, state.bolge, [
-      state.dost_adi,
-      state.rakip_adi,
-      state.es_adi ?? "",
-      state.isim ?? "",
-      ...state.ekip.map((e) => e.isim),
-    ]);
-    // Üç zar ortalaması: uçlar (çok kötü/çok iyi) nadir, ortalama tutulmak daha olası — "bazen hasta, bazen aşırı başarılı" hissi.
-    const gercekKalite = Math.round((Math.random() * 100 + Math.random() * 100 + Math.random() * 100) / 3);
-    const genislik = etki.ekip_ekle.tahminGenisligi;
-    const tahminiMin = Math.max(0, Math.round(gercekKalite - genislik / 2));
-    const tahminiMax = Math.min(100, Math.round(gercekKalite + genislik / 2));
-    const maas = 2 + Math.round(gercekKalite / 14);
-    const sadakat = Math.round(30 + Math.random() * 60);
-    const kisilik = EKIP_KISILIK_HAVUZU[Math.floor(Math.random() * EKIP_KISILIK_HAVUZU.length)];
-    state.ekip.push({
-      id: randomUUID(),
-      isim,
-      rol: etki.ekip_ekle.rol,
-      gercekKalite,
-      tahminiMin,
-      tahminiMax,
-      maas,
-      sadakat,
-      kisilik,
-    });
-    maasCarpaniUygula(state, 1 + (gercekKalite - 50) / 500);
-    hayatOlayiEkle(state, "🤝", T(state.dil, "{0} ({1}) ekibine katıldı", [isim, K(state.dil, etki.ekip_ekle.rol)]));
-  }
+  if (etki.ekip_ekle) ekipUyesiEkle(state, etki.ekip_ekle.rol, etki.ekip_ekle.tahminGenisligi);
   if (etki.ekip_kaybi && state.ekip.length > 0) {
     const idx = Math.floor(Math.random() * state.ekip.length);
     const kaybedilen = state.ekip.splice(idx, 1)[0];
@@ -2267,6 +2299,10 @@ async function sonucuUygulaVeIlerlet(
           const dogumMesaji = AS.dogumDenemesi(state, yasArtisi);
           if (dogumMesaji) {
             zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${dogumMesaji}` : dogumMesaji;
+          }
+          // 15 yaşına gelen çocuğa yanında çalışma daveti hakkı; ölen çocuk ekipten düşer.
+          for (const cocukMesaji of AS.cocukIsYillikUygula(state)) {
+            zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${cocukMesaji}` : cocukMesaji;
           }
           // Kariyer sayfası: yönetimle bağların soğuması + dayatılan talep (§35).
           const yonetimMesaji = yonetimYillikUygula(state, yasArtisi);
@@ -2648,7 +2684,15 @@ export interface AileDurumu {
     ihmalYili: number;
     dogumSayisi: number;
   } | null;
-  cocuklar: { isim: string; dogumYili: number; yas: number; yasiyor: boolean; iliski: number }[];
+  cocuklar: {
+    isim: string;
+    dogumYili: number;
+    yas: number;
+    yasiyor: boolean;
+    iliski: number;
+    /** Yanında çalışma daveti durumu (yatkınlık bilerek gönderilmez — davete verilen tepkide anlaşılır). */
+    isDurumu: "bekliyor" | "red_tepkisi" | "ise_alindi" | "reddetti" | null;
+  }[];
   etkilesimler: { id: string; ikon: string; hedef: AileEtkilesimHedef; maliyet: number }[];
   /** Etkileşim kilit anahtarı → tekrar açılacağı oyun yılı (istemci kalanYil'i guncelYil ile hesaplar). */
   kilitler: Record<string, number>;
@@ -2741,6 +2785,7 @@ export async function aileDurumGetir(id: string): Promise<AileDurumu> {
       yas: Math.max(0, state.yil - c.dogum_yili),
       yasiyor: c.yasiyor,
       iliski: Math.round(typeof c.iliski === "number" ? c.iliski : 60),
+      isDurumu: c.is_durumu ?? null,
     })),
     etkilesimler: AILE_ETKILESIMLERI.map((t) => ({
       id: t.id,
@@ -2987,6 +3032,58 @@ export async function sevgiliAyril(id: string): Promise<SevgiliSonucu> {
   const adi = AK.sevgiliAyril(state);
   await oturumKaydet(state);
   return { state, mesaj: T(state.dil, "{0} ile yollarınızı ayırdınız.", [adi]) };
+}
+
+export interface CocukIseAlSonucu {
+  state: CharacterState;
+  kabul: boolean;
+  mesaj: string;
+}
+
+/** 15 yaşındaki çocuğu yanında çalışmaya davet eder: yatkına göre kabul/red; kabulde ekibe girer. Turu tüketmez. */
+export async function cocukIseAl(id: string, cocukIndex: number): Promise<CocukIseAlSonucu> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  const cocuk = AS.cocukDavetiKontrolEt(state, cocukIndex, "bekliyor");
+  if (!cocuk.yatkinlik) cocuk.yatkinlik = AS.cocukYatkinligi();
+  const kabul = AS.cocukKabulEder(cocuk);
+  let mesaj: string;
+  if (kabul) {
+    const { gercekKalite, maasIndirimi, buffCarpani } = AS.cocukEkipDegerleri();
+    const uye = ekipUyesiEkle(state, COCUK_EKIP_ROLU, 8, {
+      isim: cocuk.isim,
+      gercekKalite,
+      maasIndirimi,
+      sadakat: 100,
+      kisilik: "Sadık",
+      cocukIsim: cocuk.isim,
+      buffCarpani,
+    });
+    cocuk.is_durumu = "ise_alindi";
+    cocuk.ekip_id = uye.id;
+    cocuk.iliski = (typeof cocuk.iliski === "number" ? cocuk.iliski : 60) + 5;
+    state.mutluluk += 3;
+    mesaj = T(state.dil, "{0} teklifini sevinçle kabul etti; artık yanında çalışıyor.", [cocuk.isim]);
+  } else {
+    cocuk.is_durumu = "red_tepkisi";
+    mesaj = T(state.dil, "{0} teklifini reddetti: 'Bu iş bana göre değil.' Ona nasıl karşılık vereceksin?", [cocuk.isim]);
+  }
+  clampStats(state);
+  await oturumKaydet(state);
+  return { state, kabul, mesaj };
+}
+
+/** Reddedilen davete öfkelen / sakin karşıla. Turu tüketmez. */
+export async function cocukRedTepkisi(id: string, cocukIndex: number, tepki: "ofke" | "sakin"): Promise<CocukIseAlSonucu> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  const adi = AS.cocukRedTepkisiUygula(state, cocukIndex, tepki);
+  await oturumKaydet(state);
+  const mesaj =
+    tepki === "ofke"
+      ? T(state.dil, "{0}'e öfkelendin; aranıza soğukluk girdi.", [adi])
+      : T(state.dil, "{0}'in kararına sakince saygı gösterdin; aranız yumuşadı.", [adi]);
+  return { state, kabul: false, mesaj };
 }
 
 /** Eşle ilişki barı eylemi (zaman geçir / hediye ver). Turu tüketmez. */
@@ -3647,8 +3744,19 @@ export async function ekipCikar(id: string, ekipId: string): Promise<EkipCikarSo
   if (index === -1) throw new Error("Böyle bir ekip üyesi yok.");
   const [cikarilan] = state.ekip.splice(index, 1);
   hayatOlayiEkle(state, "👋", `${cikarilan.isim} (${cikarilan.rol}) ekibinden kovuldu`);
+  let mesaj = T(state.dil, "{0}'i ekibinden çıkardın; artık yıllık maaşını ödemiyorsun.", [cikarilan.isim]);
+  // Çocuğunu ekipten kovmak aileye ağır gelir: ilişki düşer, davet bir daha açılmaz.
+  const cocuk = cikarilan.cocuk_isim ? state.cocuklar.find((c) => c.isim === cikarilan.cocuk_isim) : undefined;
+  if (cocuk) {
+    cocuk.iliski = Math.max(0, (typeof cocuk.iliski === "number" ? cocuk.iliski : 60) + COCUK_KOV_ILISKI);
+    cocuk.is_durumu = "reddetti";
+    delete cocuk.ekip_id;
+    state.mutluluk -= 3;
+    clampStats(state);
+    mesaj += " " + T(state.dil, "Çocuğunu kovmak aranızı ağır yaraladı.");
+  }
   await oturumKaydet(state);
-  return { state, mesaj: T(state.dil, "{0}'i ekibinden çıkardın; artık yıllık maaşını ödemiyorsun.", [cikarilan.isim]) };
+  return { state, mesaj };
 }
 
 /**
@@ -4492,26 +4600,7 @@ export async function sosyallesmeOlayCoz(id: string, secenekIndex: number): Prom
   etkenGunluguNotEt(state, mevcutOlay.baslik, etki);
 
   // Sosyalleşme olaylarının kullandığı seyrek alanlar (banka denetimi: ekip_ekle 1×, unvan_kazan 2×).
-  if (etki.ekip_ekle) {
-    const isim = rastgeleBirIsimSec(state.cag, state.bolge, [
-      state.dost_adi, state.rakip_adi, state.es_adi ?? "", state.isim ?? "", ...state.ekip.map((e) => e.isim),
-    ]);
-    const gercekKalite = Math.round((Math.random() * 100 + Math.random() * 100 + Math.random() * 100) / 3);
-    const genislik = etki.ekip_ekle.tahminGenisligi;
-    state.ekip.push({
-      id: randomUUID(),
-      isim,
-      rol: etki.ekip_ekle.rol,
-      gercekKalite,
-      tahminiMin: Math.max(0, Math.round(gercekKalite - genislik / 2)),
-      tahminiMax: Math.min(100, Math.round(gercekKalite + genislik / 2)),
-      maas: 2 + Math.round(gercekKalite / 14),
-      sadakat: Math.round(30 + Math.random() * 60),
-      kisilik: EKIP_KISILIK_HAVUZU[Math.floor(Math.random() * EKIP_KISILIK_HAVUZU.length)],
-    });
-    maasCarpaniUygula(state, 1 + (gercekKalite - 50) / 500);
-    hayatOlayiEkle(state, "🤝", T(state.dil, "{0} ({1}) ekibine katıldı", [isim, K(state.dil, etki.ekip_ekle.rol)]));
-  }
+  if (etki.ekip_ekle) ekipUyesiEkle(state, etki.ekip_ekle.rol, etki.ekip_ekle.tahminGenisligi);
   if (etki.ekip_kaybi && state.ekip.length > 0) {
     const kaybedilen = state.ekip.splice(Math.floor(Math.random() * state.ekip.length), 1)[0];
     hayatOlayiEkle(state, "👋", T(state.dil, "{0} ekipten ayrıldı", [kaybedilen.isim]));

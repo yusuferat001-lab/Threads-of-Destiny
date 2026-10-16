@@ -24,6 +24,10 @@ interface AileEkraniProps {
   onMantikTeklif: (adayIndex: number, hediye: TeklifHediyesi) => void;
   /** Bekleyen düğün için bütçe seçimi. */
   onDugun: (butce: DugunButcesi) => void;
+  /** 15 yaşındaki çocuğu yanında çalışmaya davet et. */
+  onCocukIseAl: (cocukIndex: number) => void;
+  /** Reddeden çocuğa öfkelen / sakin karşıla. */
+  onCocukRedTepkisi: (cocukIndex: number, tepki: 'ofke' | 'sakin') => void;
   /** Sevgili eylemleri: evlilik teklifi / gönül al / ayrıl. */
   onSevgili: (eylem: 'teklif' | 'gonul_al' | 'ayril') => void;
   onGeriDon: () => void;
@@ -252,6 +256,8 @@ export function AileEkrani({
   onMantikTeklif,
   onDugun,
   onSevgili,
+  onCocukIseAl,
+  onCocukRedTepkisi,
   onGeriDon,
 }: AileEkraniProps) {
   const { m, kt, dil } = useDil();
@@ -569,6 +575,41 @@ export function AileEkrani({
                   {cocuk.yasiyor && (
                     <>
                       <IliskiBar deger={cocuk.iliski} etiket={cocukEtiket(m, cocuk.iliski)} />
+                      {cocuk.isDurumu === 'ise_alindi' && (
+                        <p className="aile-bos-metin">💼 {im(dil, 'yanindaCalisiyor')}</p>
+                      )}
+                      {cocuk.isDurumu === 'bekliyor' && (
+                        <button
+                          className="aile-etkilesim-buton aile-is-davet"
+                          disabled={yukleniyor}
+                          onClick={() => onCocukIseAl(i)}
+                          title={im(dil, 'yanimaAlAciklama')}
+                        >
+                          <span className="aile-etkilesim-ad">{im(dil, 'yanimaAl')}</span>
+                          <span className="aile-etkilesim-alt">{im(dil, 'yanimaAlAciklama')}</span>
+                        </button>
+                      )}
+                      {cocuk.isDurumu === 'red_tepkisi' && (
+                        <>
+                          <p className="aile-ihmal-uyari">{im(dil, 'redBasligi')}</p>
+                          <div className="aile-etkilesim-satir">
+                            <button
+                              className="aile-etkilesim-buton"
+                              disabled={yukleniyor}
+                              onClick={() => onCocukRedTepkisi(i, 'ofke')}
+                            >
+                              <span className="aile-etkilesim-ad">{im(dil, 'redOfke')}</span>
+                            </button>
+                            <button
+                              className="aile-etkilesim-buton"
+                              disabled={yukleniyor}
+                              onClick={() => onCocukRedTepkisi(i, 'sakin')}
+                            >
+                              <span className="aile-etkilesim-ad">{im(dil, 'redSakin')}</span>
+                            </button>
+                          </div>
+                        </>
+                      )}
                       <div className="aile-etkilesim-satir">
                         {cocukEtkilesimleri.map((e) => (
                           <EtkilesimButonu

@@ -73,6 +73,8 @@ import {
   sevgiliTeklifEt,
   sevgiliGonulAl,
   sevgiliAyril,
+  cocukIseAl,
+  cocukRedTepkisi,
   aileDurumGetir,
   aileEtkilesimYap,
   aileTalebiKararlastir,
@@ -967,6 +969,16 @@ function App() {
   async function dugunHandler(butce: DugunButcesi) {
     if (!karakter) return;
     await aileIslemi(() => dugunYap(karakter.id, butce));
+  }
+
+  async function cocukIseAlHandler(cocukIndex: number) {
+    if (!karakter) return;
+    await aileIslemi(() => cocukIseAl(karakter.id, cocukIndex));
+  }
+
+  async function cocukRedTepkisiHandler(cocukIndex: number, tepki: 'ofke' | 'sakin') {
+    if (!karakter) return;
+    await aileIslemi(() => cocukRedTepkisi(karakter.id, cocukIndex, tepki));
   }
 
   async function sevgiliHandler(eylem: 'teklif' | 'gonul_al' | 'ayril') {
@@ -2639,6 +2651,8 @@ function App() {
           onMantikTeklif={mantikTeklifHandler}
           onDugun={dugunHandler}
           onSevgili={sevgiliHandler}
+          onCocukIseAl={cocukIseAlHandler}
+          onCocukRedTepkisi={cocukRedTepkisiHandler}
           onGeriDon={() => {
             setIslemMesaji(null);
             setEkran('oyun');

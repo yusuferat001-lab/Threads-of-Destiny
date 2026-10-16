@@ -72,6 +72,13 @@ const METIN = {
   tanismaVazgec: ['Vazgeç', 'Let it go'],
   tanismaAdim: ['Adım {0}/{1}', 'Step {0}/{1}'],
   tamam: ['Tamam', 'OK'],
+  // Çocuğu yanına alma (15 yaş)
+  yanimaAl: ['💼 Yanıma Al', '💼 Take On'],
+  yanimaAlAciklama: ['Yanında çalışmaya davet et.', 'Invite them to work beside you.'],
+  yanindaCalisiyor: ['Yanında çalışıyor', 'Works beside you'],
+  redOfke: ['😠 Öfkelen', '😠 Flare Up'],
+  redSakin: ['🤝 Sakin Karşıla', '🤝 Take It Calmly'],
+  redBasligi: ['Teklifini reddetti. Ona nasıl karşılık vereceksin?', 'They turned you down. How will you respond?'],
   // Huylar
   huy_mizahsever: ['Mizah sever', 'Humorous'],
   huy_parasever: ['Parayı sever', 'Fond of money'],

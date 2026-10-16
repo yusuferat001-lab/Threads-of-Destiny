@@ -176,3 +176,21 @@ export const GONUL_AL_BEKLEME_YIL = 1;
 export const GONUL_AL_BAR_ARTISI = 12;
 /** Sevgili barı bunun altına düşerse sevgili ayrılır. */
 export const SEVGILI_AYRILMA_ESIGI = 20;
+
+// ---------- Çocuğu ekibe alma (15 yaş) ----------
+export const COCUK_IS_YASI = 15;
+/** Davete olumlu yanıt olasılığı (yatkınlığa göre); ilişki ±12,5 puan oynatır. */
+export const COCUK_KABUL_ORANI = { yatkin: 1, notr: 0.5, uyumsuz: 0.15 };
+/** "Piyasadaki en iyi çalışan" kalitesi; çocuk bunun %1-2 üstünde pasif buff sağlar. */
+export const PIYASA_EN_IYI_KALITE = 85;
+export const COCUK_KALITE_USTUNLUGU: [number, number] = [0.01, 0.02];
+/** Çocuk, eşdeğer bir çalışandan bu oranda (%15-20) daha düşük maaş alır. */
+export const COCUK_MAAS_INDIRIMI: [number, number] = [0.15, 0.2];
+/** Ekip rolü (kozmetik katalog adı). */
+export const COCUK_EKIP_ROLU = "Varis";
+/** Reddedilen davete tepki: öfke / sakin karşılama (çocukla ilişki). */
+export const COCUK_OFKE_ILISKI = -15;
+export const COCUK_OFKE_MUTLULUK = -2;
+export const COCUK_SAKIN_ILISKI = 3;
+/** Çocuğu ekipten kovmanın ilişki bedeli. */
+export const COCUK_KOV_ILISKI = -25;

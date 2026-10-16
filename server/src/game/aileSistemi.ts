@@ -505,3 +505,81 @@ export function eventCocuguKaydet(state: CharacterState, yil: number, evlatEdinm
 }
 
 export { cocukYatkinligi };
+
+// ---------- çocuğu ekibe alma (15 yaş) ----------
+/**
+ * Yıllık: 15 yaşına gelen çocuğa "yanında çalışma daveti" hakkı açılır; ekipte çalışan bir
+ * çocuk ölürse üye ekipten düşer. Anlatı cümleleri döner.
+ */
+export function cocukIsYillikUygula(state: CharacterState): string[] {
+  const mesajlar: string[] = [];
+  for (const c of state.cocuklar) {
+    if (!c.yasiyor || c.is_durumu) continue;
+    if (state.yil - c.dogum_yili >= S.COCUK_IS_YASI) {
+      c.is_durumu = "bekliyor";
+      if (!c.yatkinlik) c.yatkinlik = cocukYatkinligi();
+      mesajlar.push(
+        T(state.dil, "👨‍👦 {0} {1} yaşına geldi; yanında çalışabilir. İlişkiler ekranından davet edebilirsin.", [c.isim, S.COCUK_IS_YASI])
+      );
+    }
+  }
+  // Ölen çocuk ekipten düşer.
+  for (const uye of [...state.ekip]) {
+    if (!uye.cocuk_isim) continue;
+    const c = state.cocuklar.find((x) => x.isim === uye.cocuk_isim);
+    if (!c || !c.yasiyor) {
+      state.ekip = state.ekip.filter((e) => e.id !== uye.id);
+      if (c) delete c.ekip_id;
+      mesajlar.push(T(state.dil, "👋 {0} artık ekibinde değil.", [uye.isim]));
+    }
+  }
+  return mesajlar;
+}
+
+/** Çocuk daveti kabul eder mi: yatkın %100, nötr %50, uyumsuz %15; ilişki ±12,5 puan oynatır. */
+export function cocukKabulEder(cocuk: Cocuk): boolean {
+  const yatkinlik = cocuk.yatkinlik ?? "notr";
+  const taban = S.COCUK_KABUL_ORANI[yatkinlik];
+  if (taban >= 1) return true;
+  const iliski = typeof cocuk.iliski === "number" ? cocuk.iliski : 60;
+  return Math.random() < sinirla(taban + (iliski - 50) / 400, 0.02, 0.95);
+}
+
+/** Geçerli, daveti bekleyen yaşayan bir çocuk döner; değilse hata fırlatır. */
+export function cocukDavetiKontrolEt(state: CharacterState, cocukIndex: number, beklenen: "bekliyor" | "red_tepkisi"): Cocuk {
+  if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  const c = state.cocuklar[cocukIndex];
+  if (!c || !c.yasiyor) throw new Error("Geçerli bir çocuk seçmelisin.");
+  if (c.is_durumu !== beklenen) {
+    throw new Error(
+      beklenen === "bekliyor" ? "Bu çocuk için bekleyen bir iş daveti yok." : "Bu çocuğun reddine verecek bir tepkin yok."
+    );
+  }
+  return c;
+}
+
+/** Reddedilen davete öfkelen / sakin karşıla: çocukla bağı belirler, daveti kapatır. */
+export function cocukRedTepkisiUygula(state: CharacterState, cocukIndex: number, tepki: "ofke" | "sakin"): string {
+  const c = cocukDavetiKontrolEt(state, cocukIndex, "red_tepkisi");
+  if (tepki !== "ofke" && tepki !== "sakin") throw new Error("Geçersiz tepki.");
+  const iliski = typeof c.iliski === "number" ? c.iliski : 60;
+  if (tepki === "ofke") {
+    c.iliski = iliski + S.COCUK_OFKE_ILISKI;
+    state.mutluluk += S.COCUK_OFKE_MUTLULUK;
+  } else {
+    c.iliski = iliski + S.COCUK_SAKIN_ILISKI;
+  }
+  c.is_durumu = "reddetti";
+  clampStats(state);
+  return c.isim;
+}
+
+/** Kabul eden çocuğun ekip kaydı için kalite ve maaş/buff değerleri. */
+export function cocukEkipDegerleri(): { gercekKalite: number; maasIndirimi: number; buffCarpani: number } {
+  const ustunluk = S.COCUK_KALITE_USTUNLUGU[0] + Math.random() * (S.COCUK_KALITE_USTUNLUGU[1] - S.COCUK_KALITE_USTUNLUGU[0]);
+  const gercekKalite = Math.min(100, Math.round(S.PIYASA_EN_IYI_KALITE * (1 + ustunluk)));
+  const maasIndirimi = S.COCUK_MAAS_INDIRIMI[0] + Math.random() * (S.COCUK_MAAS_INDIRIMI[1] - S.COCUK_MAAS_INDIRIMI[0]);
+  // En iyi piyasa çalışanının buff'ı × (1 + %1-2): normal işe alım formülünün (kalite−50)/500'ünden biraz yüksek.
+  const buffCarpani = (1 + (S.PIYASA_EN_IYI_KALITE - 50) / 500) * (1 + ustunluk);
+  return { gercekKalite, maasIndirimi, buffCarpani };
+}

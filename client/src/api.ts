@@ -35,6 +35,7 @@ import type {
   TanismaDurumu,
   TanismaYaniti,
   SevgiliSonucu,
+  CocukIseAlSonucu,
   TeklifHediyesi,
   DugunButcesi,
   AileDurumu,
@@ -374,6 +375,20 @@ export function esEylemYap(stateId: string, eylem: 'zaman_gecir' | 'hediye_ver',
   return istek<{ state: CharacterState; mesaj: string }>(`/api/game/${stateId}/es/eylem`, {
     method: 'POST',
     body: JSON.stringify({ eylem, hediye }),
+  });
+}
+
+export function cocukIseAl(stateId: string, cocukIndex: number) {
+  return istek<CocukIseAlSonucu>(`/api/game/${stateId}/cocuk/ise-al`, {
+    method: 'POST',
+    body: JSON.stringify({ cocukIndex }),
+  });
+}
+
+export function cocukRedTepkisi(stateId: string, cocukIndex: number, tepki: 'ofke' | 'sakin') {
+  return istek<CocukIseAlSonucu>(`/api/game/${stateId}/cocuk/red-tepkisi`, {
+    method: 'POST',
+    body: JSON.stringify({ cocukIndex, tepki }),
   });
 }
 

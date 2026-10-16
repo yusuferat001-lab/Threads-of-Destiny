@@ -32,6 +32,8 @@ import {
   mantikTeklifEt,
   dugunYap,
   esEylemYap,
+  cocukIseAl,
+  cocukRedTepkisi,
   tanismaGetir,
   tanismaYaklas,
   tanismaVazgec,
@@ -522,6 +524,33 @@ gameRouter.post("/:id/sevgili/gonul-al", async (req, res) => {
 gameRouter.post("/:id/sevgili/ayril", async (req, res) => {
   try {
     res.json(await sevgiliAyril(req.params.id));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/cocuk/ise-al", async (req, res) => {
+  const { cocukIndex } = req.body ?? {};
+  if (typeof cocukIndex !== "number" || !Number.isInteger(cocukIndex) || cocukIndex < 0) {
+    return res.status(400).json({ hata: "Geçerli bir çocuk seçmelisin." });
+  }
+  try {
+    res.json(await cocukIseAl(req.params.id, cocukIndex));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/cocuk/red-tepkisi", async (req, res) => {
+  const { cocukIndex, tepki } = req.body ?? {};
+  if (typeof cocukIndex !== "number" || !Number.isInteger(cocukIndex) || cocukIndex < 0) {
+    return res.status(400).json({ hata: "Geçerli bir çocuk seçmelisin." });
+  }
+  if (tepki !== "ofke" && tepki !== "sakin") {
+    return res.status(400).json({ hata: "Geçersiz tepki." });
+  }
+  try {
+    res.json(await cocukRedTepkisi(req.params.id, cocukIndex, tepki));
   } catch (err) {
     res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
