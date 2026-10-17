@@ -1,41 +1,60 @@
-import { useState } from 'react';
-import type { IsletmeGorunumu, IsletmeHatGorunumu, IsletmeFiyat, IsletmeKararGirdisi } from '../types';
+import { useEffect, useState } from 'react';
+import type {
+  IsletmeGorunumu,
+  IsletmeHatGorunumu,
+  IsletmeFiyat,
+  IsletmeKararGirdisi,
+  IsletmeStokHedefi,
+  IsletmeUyari,
+} from '../types';
 import { useDil } from '../DilContext';
 import { formatPara, formatYuzde } from '../format';
 
 interface Props {
   durum: IsletmeGorunumu;
   yukleniyor: boolean;
-  onKarar: (hatlar: IsletmeKararGirdisi[]) => void;
+  onKarar: (hatlar: IsletmeKararGirdisi[], stokHedefi?: IsletmeStokHedefi) => void;
   onYatirim: (yatirimId: string) => void;
   onCalisanAl: (adayId: string) => void;
   onEkipCikar: (ekipId: string) => void;
 }
 
+type D = { tr: string; en: string };
+
 /** Metinler bileşene gömülü (NasilOynanir/KARANLIK_ISLER deseni): TR + EN aynı objede. */
 const M = {
   baslik: { tr: '🏪 İşletmen', en: '🏪 Your Business' },
-  kitle: { tr: 'Müşteri kitlen', en: 'Customer base' },
+  pay: { tr: 'Pazar payın', en: 'Market share' },
+  musteri: { tr: 'Müşterin', en: 'Customers' },
+  pazar: { tr: 'Toplam pazar', en: 'Whole market' },
+  kisi: { tr: 'kişi', en: 'people' },
   slot: { tr: 'Açık hat', en: 'Open lines' },
   depo: { tr: 'Depo', en: 'Warehouse' },
+  curume: { tr: 'çürüme', en: 'spoilage' },
+  bakim: { tr: 'bakım', en: 'upkeep' },
+  vergi: { tr: 'Vergi', en: 'Tax' },
+  vergiIndirim: { tr: 'indirimli, kalan', en: 'reduced, left' },
+  yilKisa: { tr: 'yıl', en: 'yr' },
+  koruma: { tr: 'Koruma', en: 'Security' },
+  hirsizlikAralik: { tr: 'hırsızlık ~her', en: 'theft ~every' },
   borc: { tr: 'Tedarikçi borcu', en: 'Supplier debt' },
   beklenen: { tr: 'Beklenen kâr', en: 'Expected profit' },
   yil: { tr: '/yıl', en: '/yr' },
+  stokHedefi: { tr: 'Stok hedefi', en: 'Stock target' },
+  stokHedefiNot: {
+    tr: 'Yıl başında depoyu beklenen talebe göre doldurursun. Az tutarsan malın biter ve müşteri kaçar; çok tutarsan mal çürür, depo masrafı artar.',
+    en: 'At the start of each year you fill the warehouse to the expected demand. Too little and you sell out and lose customers; too much and goods spoil and storage costs rise.',
+  },
   hatlar: { tr: 'Ürün hatları', en: 'Product lines' },
   acik: { tr: 'Açık', en: 'Open' },
   kapali: { tr: 'Kapalı', en: 'Closed' },
   rutbeGerek: { tr: 'Rütbe', en: 'Rank' },
   stok: { tr: 'Stok', en: 'Stock' },
   fiyat: { tr: 'Fiyat', en: 'Price' },
-  ucuz: { tr: 'Ucuz', en: 'Cheap' },
-  normal: { tr: 'Normal', en: 'Normal' },
-  pahali: { tr: 'Pahalı', en: 'Dear' },
-  otomatik: { tr: 'Otomatik sipariş', en: 'Auto order' },
-  siparis: { tr: 'Sipariş', en: 'Order' },
-  uygula: { tr: 'Uygula', en: 'Apply' },
   talep: { tr: 'Beklenen talep', en: 'Expected demand' },
-  birim: { tr: 'Birim satış / alış', en: 'Unit sell / buy' },
+  birim: { tr: 'Satış / alış', en: 'Sell / buy' },
   kar: { tr: 'Kâr', en: 'Profit' },
+  sicak: { tr: '🔥 Dönemin sıcak ürünü: talep ve fiyat yüksek, biterse kayıp ikiye katlanır.', en: '🔥 Hot product this period: high demand and price, and running out costs double.' },
   dunya: { tr: 'Dünya', en: 'World' },
   temel: { tr: 'temel', en: 'staple' },
   orta: { tr: 'orta', en: 'mid' },
@@ -45,60 +64,174 @@ const M = {
   yukselt: { tr: 'Yükselt', en: 'Upgrade' },
   azami: { tr: 'Azami', en: 'Maxed' },
   calisanlar: { tr: 'Çalışanların', en: 'Your staff' },
-  yok: { tr: 'Henüz çalışanın yok. 3 çalışan ikinci bir hat açmanı sağlar.', en: 'No staff yet. 3 employees let you open a second line.' },
+  yok: { tr: 'Henüz çalışanın yok. 3 çalışan ikinci bir hat açmanı sağlar; limit rütbeyle artar.', en: 'No staff yet. 3 employees let you open a second line; the limit grows with rank.' },
+  yetenek: { tr: 'Yetenek', en: 'Skill' },
   sadakat: { tr: 'Sadakat', en: 'Loyalty' },
-  kalite: { tr: 'Beceri', en: 'Skill' },
-  taninirlik: { tr: 'Tanınırlık', en: 'Renown' },
   maas: { tr: 'maaş', en: 'wage' },
+  sadik: { tr: 'Sadık', en: 'Loyal' },
+  riskli: { tr: 'Sadakati düşük: sızdırabilir, çalabilir, işi bırakabilir', en: 'Low loyalty: may leak secrets, steal or quit' },
   kov: { tr: 'Çıkar', en: 'Dismiss' },
-  adaylar: { tr: 'Bu yılın adayları', en: "This year's candidates" },
+  adaylar: { tr: 'Adaylar', en: 'Candidates' },
+  adayYenilenme: { tr: 'Liste yenilenmesine', en: 'List refreshes in' },
   al: { tr: 'İşe al', en: 'Hire' },
-  pesin: { tr: 'peşin', en: 'up front' },
   dokum: { tr: 'Geçen yılın dökümü', en: "Last year's ledger" },
   satis: { tr: 'Satış', en: 'Sales' },
   alim: { tr: 'Mal alımı', en: 'Purchases' },
+  hammadde: { tr: 'Hammadde', en: 'Materials' },
   depoMasrafi: { tr: 'Depo masrafı', en: 'Storage' },
+  vergiKalemi: { tr: 'Vergi', en: 'Tax' },
   borcOdeme: { tr: 'Borç ödemesi', en: 'Debt repaid' },
   net: { tr: 'Eline geçen', en: 'Net to you' },
-  kitleDegisimi: { tr: 'Kitle değişimi', en: 'Customer change' },
-  stokBitti: { tr: 'stoğun bitti, müşteri rakibe kaçtı', en: 'ran out of stock — customers left for the rival' },
-  fazlaStok: { tr: 'kapalı hatta atıl stok birikti', en: 'idle stock piled up on a closed line' },
-  kitleKaybi: { tr: 'Karşılanamayan talep müşteri kitleni eritti.', en: 'Unmet demand shrank your customer base.' },
-  ayrildi: { tr: 'işi bıraktı ve kasadan para aldı', en: 'quit and took money from the till' },
+  musteriDegisim: { tr: 'Müşteri değişimi', en: 'Customer change' },
   donem: { tr: { bolluk: 'Bolluk', durgunluk: 'Durgunluk', kitlik: 'Kıtlık' }, en: { bolluk: 'Boom', durgunluk: 'Slump', kitlik: 'Famine' } },
   savas: { tr: 'Savaş', en: 'War' },
   veba: { tr: 'Salgın', en: 'Plague' },
   uretimTavani: { tr: 'Üretim tavanı', en: 'Production cap' },
-  uretim: { tr: 'Üretim', en: 'Production' },
-  hammadde: { tr: 'Hammadde', en: 'Materials' },
-  birimUretim: { tr: 'Birim satış / hammadde', en: 'Unit sell / materials' },
-  uretimDolu: { tr: 'üretim tavanın talebe yetmedi; tezgâh ya da çalışan ekle', en: 'your production cap fell short of demand — add a workbench or staff' },
+  birimUretim: { tr: 'Satış / hammadde', en: 'Sell / materials' },
   ilkYil: { tr: 'Henüz bir yıl geçmedi. Hiçbir şeye dokunmasan da işletme otomatik çalışır.', en: "A year hasn't passed yet. The business runs on its own even if you touch nothing." },
+  imtiyazlar: { tr: 'Aktif imtiyazlar', en: 'Active privileges' },
+  otorite: { tr: 'Şehir yöneticin', en: 'Your city governor' },
+  iliski: { tr: 'ilişki', en: 'relation' },
+  tamam: { tr: 'Tamam', en: 'OK' },
+  olayBaslik: { tr: 'Geçen yıl işletmende olanlar', en: 'What happened at your business last year' },
 };
+
+const IMTIYAZ_ADLARI: Record<string, D> = {
+  pazar_imtiyazi: { tr: 'Pazar yeri imtiyazı (talep +%10)', en: 'Market-stall privilege (demand +10%)' },
+  gumruk_muafiyeti: { tr: 'Gümrük muafiyeti (alış −%10)', en: 'Customs exemption (purchases −10%)' },
+  tekel_ruhsati: { tr: 'Tekel ruhsatı (en çok satan hatta fiyat +%10)', en: 'Monopoly licence (+10% price on your top line)' },
+  hammadde_tahsisi: { tr: 'Hammadde tahsisi (hammadde −%10)', en: 'Material allocation (materials −10%)' },
+  atolye_ruhsati: { tr: 'Atölye genişleme ruhsatı (üretim +%10)', en: 'Workshop licence (output +10%)' },
+};
+
+const STOK_HEDEFLERI: { id: IsletmeStokHedefi; ad: D; ipucu: D }[] = [
+  { id: 'cokaz', ad: { tr: 'Çok az', en: 'Very low' }, ipucu: { tr: 'Talebin %75\'i kadar stok. Ucuz ama sık biter.', en: '75% of expected demand. Cheap but often sells out.' } },
+  { id: 'az', ad: { tr: 'Az', en: 'Low' }, ipucu: { tr: 'Talebin %95\'i kadar stok.', en: '95% of expected demand.' } },
+  { id: 'normal', ad: { tr: 'Normal', en: 'Normal' }, ipucu: { tr: 'Talebin %115\'i kadar stok. Dengeli.', en: '115% of expected demand. Balanced.' } },
+  { id: 'fazla', ad: { tr: 'Fazla', en: 'High' }, ipucu: { tr: 'Talebin %150\'si kadar stok. Güvenli ama çürür.', en: '150% of expected demand. Safe but spoils.' } },
+  { id: 'dolu', ad: { tr: 'Dolu', en: 'Full' }, ipucu: { tr: 'Depoyu tamamen doldur. En yüksek masraf.', en: 'Fill the warehouse. Highest cost.' } },
+];
+
+const FIYATLAR: { id: IsletmeFiyat; etiket: D; aciklama: D }[] = [
+  {
+    id: 'eksi20',
+    etiket: { tr: '−%20', en: '−20%' },
+    aciklama: {
+      tr: 'Fiyat −%20, talep +%45. Çok satar, müşteri kazanırsın (yılda +%3 pay); birim kâr az, stok çabuk biter.',
+      en: 'Price −20%, demand +45%. You sell a lot and win customers (+3% share a year); thin margin, stock runs out fast.',
+    },
+  },
+  {
+    id: 'eksi10',
+    etiket: { tr: '−%10', en: '−10%' },
+    aciklama: {
+      tr: 'Fiyat −%10, talep +%20. Daha çok satar, müşteri çekersin (yılda +%1,5 pay); birim kâr biraz düşer.',
+      en: 'Price −10%, demand +20%. You sell more and attract customers (+1.5% share a year); slightly lower margin.',
+    },
+  },
+  { id: 'normal', etiket: { tr: 'Piyasa', en: 'Market' }, aciklama: { tr: 'Piyasa fiyatı. Dengeli.', en: 'Market price. Balanced.' } },
+  {
+    id: 'arti10',
+    etiket: { tr: '+%10', en: '+10%' },
+    aciklama: {
+      tr: 'Fiyat +%10, talep −%12. Birim kâr artar; müşteri yavaşça kaçar (yılda −%1 pay). Krizde talep daha çok düşer.',
+      en: 'Price +10%, demand −12%. Better margin; customers slowly drift away (−1% share a year). Demand drops more in a crisis.',
+    },
+  },
+  {
+    id: 'arti20',
+    etiket: { tr: '+%20', en: '+20%' },
+    aciklama: {
+      tr: 'Fiyat +%20, talep −%30. Birim kâr yüksek ama müşteri kaçar (yılda −%3 pay). Kıtlık ve savaşta riskli.',
+      en: 'Price +20%, demand −30%. High margin but customers leave (−3% share a year). Risky in famine and war.',
+    },
+  },
+];
+
+const HIRSIZLIK_SONUCLARI: Record<string, D> = {
+  agir: { tr: 'Hırsızlar ağır vurdu', en: 'Thieves struck hard' },
+  rahat: { tr: 'Hırsızlar rahatça çaldı', en: 'Thieves stole freely' },
+  kismi: { tr: 'Hırsızlar kısmen başarılı oldu', en: 'Thieves only partly succeeded' },
+  engellendi: { tr: 'Hırsızlık girişimi tamamen engellendi', en: 'The theft attempt was completely stopped' },
+  sans: { tr: 'Hırsızlar şansları yaver gitmeden kaçtı', en: 'Thieves slipped away empty-handed by luck' },
+};
+const SALDIRI_SONUCLARI: Record<string, D> = {
+  musteri_calma: { tr: 'Rakip müşterilerini çaldı', en: 'The rival stole your customers' },
+  iftira: { tr: 'Rakip hakkında iftira yaydı', en: 'The rival spread slander about you' },
+  sabotaj: { tr: 'Rakip deponu sabote etti', en: 'The rival sabotaged your warehouse' },
+  nakit: { tr: 'Rakip seni zarara uğrattı', en: 'The rival hurt your finances' },
+};
+
+/** Aynı yıl için açılır uyarıyı yalnız bir kez göstermek için (modül düzeyi; sayfa yenilenince sıfırlanır). */
+let sonGosterilenYil = -1;
 
 export function IsletmePaneli({ durum, yukleniyor, onKarar, onYatirim, onCalisanAl, onEkipCikar }: Props) {
   const { dil } = useDil();
   const t = (k: Exclude<keyof typeof M, 'donem'>) => M[k][dil];
-  const [siparisTaslagi, setSiparisTaslagi] = useState<Record<string, string>>({});
+  const d = (m: D) => m[dil];
+  const [uyariAcik, setUyariAcik] = useState(false);
+
+  const dokum = durum.sonDokum;
+  const onemliKodlar: IsletmeUyari['kod'][] = ['hirsizlik', 'sizdirma', 'ic_hirsizlik', 'rakip_saldiri', 'calisan_ayrildi', 'vergi_indirimi_bitti', 'imtiyaz_bitti'];
+  const onemliUyarilar = dokum ? dokum.uyarilar.filter((u) => onemliKodlar.includes(u.kod)) : [];
+  useEffect(() => {
+    if (dokum && onemliUyarilar.length > 0 && dokum.yil !== sonGosterilenYil) {
+      sonGosterilenYil = dokum.yil;
+      setUyariAcik(true);
+    }
+  }, [dokum?.yil]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!durum.aktif) return null;
   const pb = durum.paraBirimi;
   const uretimModu = !!durum.uretim;
   const etiketAlim = uretimModu ? t('hammadde') : t('alim');
-  const etiketSiparis = uretimModu ? t('uretim') : t('siparis');
-  const etiketBirim = uretimModu ? t('birimUretim') : t('birim');
   const donemAdi = durum.dunya.donem ? M.donem[dil][durum.dunya.donem as 'bolluk'] : null;
+  const hatAdi = (id: string) => durum.hatlar.find((h) => h.id === id)?.ad ?? id;
+
+  const uyariMetni = (u: IsletmeUyari): string => {
+    const en = dil === 'en';
+    switch (u.kod) {
+      case 'stok_bitti':
+        return `⚠️ ${hatAdi(u.hat ?? '')}: ${en ? 'ran out of stock — customers left for the rival' : 'stoğun bitti, müşteri rakibe kaçtı'}`;
+      case 'fazla_stok':
+        return `📦 ${hatAdi(u.hat ?? '')}: ${en ? 'idle stock piled up on a closed line' : 'kapalı hatta atıl stok birikti'}`;
+      case 'kitle_kaybi':
+        return en ? '📉 Unmet demand cost you customers.' : '📉 Karşılanamayan talep müşteri kaybettirdi.';
+      case 'uretim_tavani':
+        return en ? '🔨 Your production cap fell short of demand — add a workbench or staff.' : '🔨 Üretim tavanın talebe yetmedi; tezgâh ya da çalışan ekle.';
+      case 'calisan_ayrildi':
+        return `🚪 ${u.isim ?? ''}: ${en ? 'quit and took a severance from the till' : 'işi bıraktı ve kasadan tazminat aldı'}`;
+      case 'sizdirma':
+        return `🕵️ ${u.isim ?? ''}: ${en ? 'leaked your secrets to the rival; you lost customers' : 'sırlarını rakibe sızdırdı, müşteri kaybettin'}`;
+      case 'ic_hirsizlik':
+        return `🫳 ${u.isim ?? ''}: ${en ? `stole goods (${u.urunYuzde}%) and cash (${formatPara(u.tutar ?? 0)})` : `mal (%${u.urunYuzde}) ve para (${formatPara(u.tutar ?? 0)}) çaldı`}`;
+      case 'hirsizlik': {
+        const s = d(HIRSIZLIK_SONUCLARI[u.sonuc ?? 'sans']);
+        const ek = u.urunYuzde || u.tutar ? ` — ${en ? 'goods' : 'mal'} ${u.urunYuzde ?? 0}%, ${en ? 'cash' : 'para'} ${formatPara(u.tutar ?? 0)}` : '';
+        return `🦹 ${s}${ek}`;
+      }
+      case 'rakip_saldiri':
+        return `⚔️ ${d(SALDIRI_SONUCLARI[u.sonuc ?? 'nakit'])}${u.tutar ? ` (${formatPara(u.tutar)} ${pb})` : ''}`;
+      case 'vergi_indirimi_bitti':
+        return en ? '🧾 Your tax reduction has ended.' : '🧾 Vergi indirimin sona erdi.';
+      case 'imtiyaz_bitti':
+        return `📜 ${u.hat && IMTIYAZ_ADLARI[u.hat] ? d(IMTIYAZ_ADLARI[u.hat]) : ''}: ${en ? 'expired' : 'sona erdi'}`;
+      default:
+        return '';
+    }
+  };
 
   const hatKarti = (h: IsletmeHatGorunumu) => {
     const dunyaEtkisi =
       h.dunyaTalepYuzde !== 0 || h.dunyaFiyatYuzde !== 0
         ? `${dil === 'en' ? 'demand' : 'talep'} ${formatYuzde(dil, h.dunyaTalepYuzde, true)} · ${dil === 'en' ? 'price' : 'fiyat'} ${formatYuzde(dil, h.dunyaFiyatYuzde, true)}`
         : null;
+    const secili = FIYATLAR.find((f) => f.id === h.fiyat) ?? FIYATLAR[2];
     return (
       <div key={h.id} className={`isletme-hat${h.acik ? ' isletme-hat-acik' : ''}${h.kilitli ? ' isletme-hat-kilitli' : ''}`}>
         <div className="isletme-hat-baslik">
           <strong>
-            {h.simge} {h.ad}
+            {h.simge} {h.ad} {h.sicak ? '🔥' : ''}
           </strong>
           <span className="isletme-etiket">{t(h.kesim)}</span>
           {h.kilitli ? (
@@ -106,15 +239,16 @@ export function IsletmePaneli({ durum, yukleniyor, onKarar, onYatirim, onCalisan
               🔒 {t('rutbeGerek')} {h.minRutbe}
             </span>
           ) : (
-            <button
-              className={h.acik ? '' : 'ikincil'}
-              disabled={yukleniyor}
-              onClick={() => onKarar([{ id: h.id, acik: !h.acik }])}
-            >
+            <button className={h.acik ? '' : 'ikincil'} disabled={yukleniyor} onClick={() => onKarar([{ id: h.id, acik: !h.acik }])}>
               {h.acik ? t('acik') : t('kapali')}
             </button>
           )}
         </div>
+        <div className="isletme-hat-artieksi">
+          <span>➕ {h.arti}</span>
+          <span>➖ {h.eksi}</span>
+        </div>
+        {h.sicak && <div className="isletme-hat-dunya">{t('sicak')}</div>}
         <div className="isletme-hat-satir">
           <span>
             {t('stok')}: <strong>{h.stok}</strong>
@@ -123,7 +257,7 @@ export function IsletmePaneli({ durum, yukleniyor, onKarar, onYatirim, onCalisan
             {t('talep')}: <strong>~{h.tahminiTalep}</strong>
           </span>
           <span>
-            {etiketBirim}:{' '}
+            {uretimModu ? t('birimUretim') : t('birim')}:{' '}
             <strong>
               {formatPara(h.birimFiyat)} / {formatPara(h.birimMaliyet)}
             </strong>
@@ -138,59 +272,20 @@ export function IsletmePaneli({ durum, yukleniyor, onKarar, onYatirim, onCalisan
           </div>
         )}
         {h.acik && (
-          <div className="isletme-hat-kontrol">
-            <span>{t('fiyat')}:</span>
-            {(['ucuz', 'normal', 'pahali'] as IsletmeFiyat[]).map((f) => (
-              <button
-                key={f}
-                className={h.fiyat === f ? '' : 'ikincil'}
-                disabled={yukleniyor}
-                onClick={() => onKarar([{ id: h.id, fiyat: f }])}
-              >
-                {t(f)}
-              </button>
-            ))}
-            <label className="isletme-otomatik">
-              <input
-                type="checkbox"
-                checked={h.otomatik}
-                disabled={yukleniyor}
-                onChange={(e) => onKarar([{ id: h.id, otomatik: e.target.checked }])}
-              />
-              {t('otomatik')}
-            </label>
-            {!h.otomatik && (
-              <span className="isletme-siparis">
-                {etiketSiparis}:
-                <input
-                  type="number"
-                  min={0}
-                  max={durum.depo.kapasite}
-                  value={siparisTaslagi[h.id] ?? String(h.siparis)}
-                  onChange={(e) => setSiparisTaslagi({ ...siparisTaslagi, [h.id]: e.target.value })}
-                />
-                <button
-                  disabled={yukleniyor}
-                  onClick={() => onKarar([{ id: h.id, siparis: Math.max(0, Number(siparisTaslagi[h.id] ?? h.siparis) || 0) }])}
-                >
-                  {t('uygula')}
+          <>
+            <div className="isletme-hat-kontrol">
+              <span>{t('fiyat')}:</span>
+              {FIYATLAR.map((f) => (
+                <button key={f.id} className={h.fiyat === f.id ? '' : 'ikincil'} disabled={yukleniyor} onClick={() => onKarar([{ id: h.id, fiyat: f.id }])}>
+                  {d(f.etiket)}
                 </button>
-              </span>
-            )}
-          </div>
+              ))}
+            </div>
+            <div className="isletme-fiyat-not">{d(secili.aciklama)}</div>
+          </>
         )}
       </div>
     );
-  };
-
-  const dokum = durum.sonDokum;
-  const hatAdi = (id: string) => durum.hatlar.find((h) => h.id === id)?.ad ?? id;
-  const uyariMetni = (u: NonNullable<typeof dokum>['uyarilar'][number]) => {
-    if (u.kod === 'stok_bitti') return `⚠️ ${hatAdi(u.hat ?? '')}: ${t('stokBitti')}`;
-    if (u.kod === 'fazla_stok') return `📦 ${hatAdi(u.hat ?? '')}: ${t('fazlaStok')}`;
-    if (u.kod === 'kitle_kaybi') return `📉 ${t('kitleKaybi')}`;
-    if (u.kod === 'uretim_tavani') return `🔨 ${t('uretimDolu')}`;
-    return `🚪 ${u.isim ?? ''}: ${t('ayrildi')}`;
   };
 
   return (
@@ -199,7 +294,14 @@ export function IsletmePaneli({ durum, yukleniyor, onKarar, onYatirim, onCalisan
 
       <div className="isletme-ozet">
         <span>
-          👥 {t('kitle')}: <strong>{formatPara(durum.kitle)}</strong>
+          ⚖️ {t('pay')}: <strong>{formatPara(durum.pazarPayi)}%</strong>
+        </span>
+        <span>
+          👥 {t('musteri')}: <strong>{durum.musteri}</strong>
+          {dokum && dokum.musteriDegisim !== 0 ? <em> ({dokum.musteriDegisim > 0 ? '+' : ''}{dokum.musteriDegisim})</em> : null}
+        </span>
+        <span>
+          🌐 {t('pazar')}: <strong>{durum.pazarMusteri} {t('kisi')}</strong>
         </span>
         <span>
           📑 {t('slot')}: <strong>{durum.slot.kullanilan}/{durum.slot.toplam}</strong>
@@ -210,7 +312,14 @@ export function IsletmePaneli({ durum, yukleniyor, onKarar, onYatirim, onCalisan
           </span>
         )}
         <span>
-          🏚️ {t('depo')}: <strong>{durum.depo.kullanilan}/{durum.depo.kapasite}</strong>
+          🏚️ {t('depo')}: <strong>{durum.depo.kullanilan}/{durum.depo.kapasite}</strong> · {t('curume')} %{durum.depo.curumeYuzde} · {t('bakim')} {formatPara(durum.depo.bakim)}
+        </span>
+        <span>
+          🧾 {t('vergi')}: <strong>%{Math.round(durum.vergi.oran * 1000) / 10}</strong>
+          {durum.vergi.indirimKalanYil > 0 ? ` (${t('vergiIndirim')} ${durum.vergi.indirimKalanYil} ${t('yilKisa')})` : ''}
+        </span>
+        <span>
+          🔒 {t('koruma')}: <strong>%{Math.round(durum.koruma.toplam * 100)}</strong> · {t('hirsizlikAralik')} {durum.koruma.hirsizlikAralik} {t('yilKisa')}
         </span>
         {durum.tedarikciBorcu > 0 && (
           <span>
@@ -220,11 +329,35 @@ export function IsletmePaneli({ durum, yukleniyor, onKarar, onYatirim, onCalisan
         <span>
           💰 {t('beklenen')}: <strong>~{formatPara(durum.beklenenBrutKar)} {pb}{t('yil')}</strong>
         </span>
+        {durum.otorite && (
+          <span>
+            🏛️ {t('otorite')}: <strong>{durum.otorite}</strong> · {t('iliski')} {durum.otoriteIliski}
+          </span>
+        )}
         {(donemAdi || durum.dunya.savas || durum.dunya.veba) && (
           <span>
             🌍 {[donemAdi, durum.dunya.savas ? t('savas') : null, durum.dunya.veba ? t('veba') : null].filter(Boolean).join(' · ')}
           </span>
         )}
+      </div>
+
+      {durum.imtiyazlar.length > 0 && (
+        <div className="isletme-imtiyazlar">
+          <strong>{t('imtiyazlar')}:</strong>{' '}
+          {durum.imtiyazlar.map((i) => `${IMTIYAZ_ADLARI[i.id] ? d(IMTIYAZ_ADLARI[i.id]) : i.id} (${i.kalanYil} ${t('yilKisa')})`).join(' · ')}
+        </div>
+      )}
+
+      <h4>{t('stokHedefi')}</h4>
+      <div className="isletme-hat-kontrol">
+        {STOK_HEDEFLERI.map((s) => (
+          <button key={s.id} className={durum.stokHedefi === s.id ? '' : 'ikincil'} disabled={yukleniyor} title={d(s.ipucu)} onClick={() => onKarar([], s.id)}>
+            {d(s.ad)}
+          </button>
+        ))}
+      </div>
+      <div className="isletme-fiyat-not">
+        {d(STOK_HEDEFLERI.find((s) => s.id === durum.stokHedefi)?.ipucu ?? STOK_HEDEFLERI[2].ipucu)} {t('stokHedefiNot')}
       </div>
 
       <h4>{t('hatlar')}</h4>
@@ -260,10 +393,18 @@ export function IsletmePaneli({ durum, yukleniyor, onKarar, onYatirim, onCalisan
       ) : (
         <div className="isletme-calisanlar">
           {durum.calisanlar.map((c) => (
-            <div key={c.id} className="isletme-calisan">
+            <div key={c.id} className={`isletme-calisan${c.riskli ? ' isletme-calisan-riskli' : ''}`}>
               <strong>{c.isim}</strong> <em>({c.rol})</em>
+              {c.sadik && <span className="isletme-etiket">⭐ {t('sadik')}</span>}
+              {c.riskli && (
+                <span className="isletme-etiket" title={t('riskli')}>
+                  ⚠️ {t('sadakat')} {c.sadakat}
+                </span>
+              )}
+              <small>{c.rolAciklama}</small>
               <span>
-                {t('kalite')} {c.tahminiMin}-{c.tahminiMax} · {t('sadakat')} {Math.round(c.sadakat)} · {t('taninirlik')} {Math.round(c.taninirlik)} · {t('maas')} {formatPara(c.maas)}
+                {t('yetenek')} {c.yetenek} · {t('sadakat')} {c.sadakat} · {t('maas')} {formatPara(c.maas)}
+                {t('yil')}
               </span>
               <button className="ikincil" disabled={yukleniyor} onClick={() => onEkipCikar(c.id)}>
                 {t('kov')}
@@ -275,17 +416,22 @@ export function IsletmePaneli({ durum, yukleniyor, onKarar, onYatirim, onCalisan
 
       {durum.adaylar.length > 0 && (
         <>
-          <h4>{t('adaylar')}</h4>
+          <h4>
+            {t('adaylar')} <small>({t('adayYenilenme')} {durum.adayYenilenmeKalanYil} {t('yilKisa')})</small>
+          </h4>
           <div className="isletme-calisanlar">
             {durum.adaylar.map((a) => (
               <div key={a.id} className="isletme-calisan isletme-aday">
                 <strong>{a.isim}</strong> <em>({a.rol})</em>
+                <span className="isletme-etiket">{a.tipAdi}</span>
+                <small>{a.rolAciklama}</small>
                 <small>{a.gecmis}</small>
                 <span>
-                  {t('kalite')} {a.tahminiMin}-{a.tahminiMax} · {t('sadakat')} {Math.round(a.sadakat)} · {t('taninirlik')} {Math.round(a.taninirlik)} · {t('maas')} {formatPara(a.maas)}
+                  {t('yetenek')} {a.yetenek} · {t('sadakat')} {a.sadakat} · {t('maas')} {formatPara(a.maas)}
+                  {t('yil')}
                 </span>
-                <button disabled={yukleniyor || durum.para < a.ucret || durum.calisanlar.length >= durum.calisanTavani} onClick={() => onCalisanAl(a.id)}>
-                  {t('al')} · {formatPara(a.ucret)} {pb} {t('pesin')}
+                <button disabled={yukleniyor || durum.calisanlar.length >= durum.calisanTavani} onClick={() => onCalisanAl(a.id)}>
+                  {t('al')}
                 </button>
               </div>
             ))}
@@ -307,6 +453,11 @@ export function IsletmePaneli({ durum, yukleniyor, onKarar, onYatirim, onCalisan
           <div>
             {t('depoMasrafi')}: <strong>−{formatPara(dokum.depoMasrafi)}</strong>
           </div>
+          {dokum.vergi > 0 && (
+            <div>
+              {t('vergiKalemi')} (%{Math.round(dokum.vergiOrani * 1000) / 10}): <strong>−{formatPara(dokum.vergi)}</strong>
+            </div>
+          )}
           {dokum.borcOdeme > 0 && (
             <div>
               {t('borcOdeme')}: <strong>−{formatPara(dokum.borcOdeme)}</strong>
@@ -316,13 +467,30 @@ export function IsletmePaneli({ durum, yukleniyor, onKarar, onYatirim, onCalisan
             {t('net')}: <strong>{dokum.net >= 0 ? '+' : ''}{formatPara(dokum.net)} {pb}</strong>
           </div>
           <div>
-            {t('kitleDegisimi')}: <strong>{dokum.kitleDegisimi >= 0 ? '+' : ''}{formatPara(dokum.kitleDegisimi)}</strong>
+            {t('pay')}: <strong>%{dokum.pazarPayi}</strong> · {t('musteriDegisim')}: <strong>{dokum.musteriDegisim >= 0 ? '+' : ''}{dokum.musteriDegisim}</strong>
           </div>
           {dokum.uyarilar.map((u, i) => (
             <div key={i} className="isletme-uyari">
               {uyariMetni(u)}
             </div>
           ))}
+        </div>
+      )}
+
+      {uyariAcik && dokum && (
+        <div className="kariyer-sonuc-katman kariyer-sonuc-katman-ust" role="dialog" onClick={() => setUyariAcik(false)}>
+          <div className="kariyer-sonuc-modal" onClick={(e) => e.stopPropagation()}>
+            <h4>{t('olayBaslik')}</h4>
+            {onemliUyarilar.map((u, i) => (
+              <p key={i}>{uyariMetni(u)}</p>
+            ))}
+            {durum.calisanlar.some((c) => c.riskli) && (
+              <p>
+                ⚠️ {t('riskli')}: {durum.calisanlar.filter((c) => c.riskli).map((c) => `${c.isim} (${t('yetenek')} ${c.yetenek} · ${t('sadakat')} ${c.sadakat})`).join(', ')}
+              </p>
+            )}
+            <button onClick={() => setUyariAcik(false)}>{t('tamam')}</button>
+          </div>
         </div>
       )}
     </section>

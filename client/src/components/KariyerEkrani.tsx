@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import type { FinansOzeti, GecmisNoktasi, IsletmeGorunumu, IsletmeKararGirdisi, EkipUyesi, Rakip, KotuIsKarti, YonetimDurumu, YonetimHat, PazarDurumu, AjanDurumu } from '../types';
+import type { FinansOzeti, GecmisNoktasi, IsletmeGorunumu, IsletmeKararGirdisi, IsletmeStokHedefi, EkipUyesi, Rakip, KotuIsKarti, YonetimDurumu, YonetimHat, PazarDurumu, AjanDurumu } from '../types';
 import { useDil } from '../DilContext';
 import { formatPara, formatYuzde, formatYuzdeAralik } from '../format';
 import { bic, type Metinler } from '../i18n';
@@ -36,7 +36,7 @@ interface KariyerEkraniProps {
   /** Son işlem/hata metni — ekrana açılır sonuç penceresinde gösterilir. */
   islemMesaji: string | null;
   yonetimDurum: YonetimDurumu | null;
-  /** Meslek pazarı (GET /:id/pazar): güçler, paylar, maaş etkisi, rütbe şartı. */
+  /** Meslek pazarı (GET /:id/pazar): paylar, müşteriler, maaş etkisi, rütbe şartı. */
   pazarDurum: PazarDurumu | null;
   onEtkilesim: (etkilesimId: string, kademe?: number) => void;
   onIstek: (istekId: string) => void;
@@ -53,7 +53,7 @@ interface KariyerEkraniProps {
   gecmis?: GecmisNoktasi[];
   /** Meslek işletmesi (GET /:id/isletme); işletmesi olmayan mesleklerde null. */
   isletme?: IsletmeGorunumu | null;
-  onIsletmeKarar?: (hatlar: IsletmeKararGirdisi[]) => void;
+  onIsletmeKarar?: (hatlar: IsletmeKararGirdisi[], stokHedefi?: IsletmeStokHedefi) => void;
   onIsletmeYatirim?: (yatirimId: string) => void;
   onIsletmeCalisanAl?: (adayId: string) => void;
   onGeriDon: () => void;
@@ -155,7 +155,6 @@ function KaranlikIsKart({
   yukleniyor,
   rakipler,
   dinKultur,
-  gucAdi,
   ekip,
   onKotuIs,
 }: {
@@ -166,7 +165,6 @@ function KaranlikIsKart({
   yukleniyor: boolean;
   rakipler: Rakip[];
   dinKultur: string | null;
-  gucAdi: string;
   ekip: EkipUyesi[];
   onKotuIs: KariyerEkraniProps['onKotuIs'];
 }) {
@@ -181,9 +179,9 @@ function KaranlikIsKart({
   const ozet: string[] = [bic(m.iyKaranlikSans, is.basariSansi)];
   if (is.tahminiKazanc > 0) ozet.push(bic(m.iyKaranlikKazanc, formatPara(is.tahminiKazanc), paraBirimi));
   if (is.maliyet > 0) ozet.push(`${en ? 'cost' : 'bedel'} ${formatPara(is.maliyet)} ${paraBirimi}`);
-  if (is.meslekGucuKazanci > 0 && gucAdi) ozet.push(`${gucAdi} +${is.meslekGucuKazanci}`);
+  if (is.meslekGucuKazanci > 0) ozet.push(en ? 'market share up' : 'pazar payın artar');
   if (is.rakipKirmaGucu >= 100) ozet.push(en ? 'finishes your rival' : 'rakibi bitirir');
-  else if (is.rakipKirmaGucu > 0) ozet.push(`${en ? 'rival' : 'rakip'} −${is.rakipKirmaGucu}`);
+  else if (is.rakipKirmaGucu > 0) ozet.push(en ? 'weakens your rival' : 'rakibi zayıflatır');
 
   return (
     <div className={`yatirim-kart isyatirim-kendi-is-kart${bekliyor ? ' karanlik-bekliyor' : ''}`} title={metin.aciklama}>
@@ -294,11 +292,53 @@ const ISTEK_ADLARI: Record<string, { tr: string; en: string; ipTr: string; ipEn:
     ipTr: 'Kariyer puanına büyük sıçrama.',
     ipEn: 'A big jump in career points.',
   },
+  vergi_indirimi: {
+    tr: 'Vergi indirimi',
+    en: 'Tax reduction',
+    ipTr: 'Vergin 10 yıl boyunca yarıya iner.',
+    ipEn: 'Your tax is halved for 10 years.',
+  },
+  pazar_imtiyazi: {
+    tr: 'Pazar yeri imtiyazı',
+    en: 'Market-stall privilege',
+    ipTr: '5 yıl boyunca talep +%10.',
+    ipEn: 'Demand +10% for 5 years.',
+  },
+  gumruk_muafiyeti: {
+    tr: 'Gümrük / transit muafiyeti',
+    en: 'Customs / transit exemption',
+    ipTr: '5 yıl boyunca alış maliyeti −%10.',
+    ipEn: 'Purchase costs −10% for 5 years.',
+  },
+  tekel_ruhsati: {
+    tr: 'Tekel ruhsatı',
+    en: 'Monopoly licence',
+    ipTr: '5 yıl boyunca en çok sattığın hatta satış fiyatı +%10.',
+    ipEn: 'For 5 years, +10% sale price on your best-selling line.',
+  },
+  hammadde_tahsisi: {
+    tr: 'Hammadde tahsisi',
+    en: 'Material allocation',
+    ipTr: '5 yıl boyunca hammadde gideri −%10.',
+    ipEn: 'Material costs −10% for 5 years.',
+  },
+  atolye_ruhsati: {
+    tr: 'Atölye genişleme ruhsatı',
+    en: 'Workshop expansion licence',
+    ipTr: '5 yıl boyunca üretim tavanı +%10.',
+    ipEn: 'Production cap +10% for 5 years.',
+  },
+  resmi_siparis: {
+    tr: 'Resmî sipariş',
+    en: 'Official order',
+    ipTr: 'Tek seferlik para + pazar payına küçük bir artış.',
+    ipEn: 'One-off payment + a small bump in market share.',
+  },
   rakibe_darbe: {
     tr: 'Rakibe darbe',
     en: 'Strike a rival',
-    ipTr: 'En güçlü rakibinin gücü resmi elle kırılır.',
-    ipEn: "Your strongest rival's power is broken by official hands.",
+    ipTr: 'Rakibinin müşterileri resmi elle senin payına geçer.',
+    ipEn: "Your rival's customers are shifted to you by official hands.",
   },
   sermaye_destegi: {
     tr: 'Sermaye / teçhizat desteği',
@@ -360,12 +400,13 @@ function PazarKarti({ pazar }: { pazar: PazarDurumu }) {
       </div>
       <ul className="pazar-satirlari">
         <li>
-          <span className="pazar-nokta pazar-nokta-sen" /> {en ? 'You' : 'Sen'} — {pazar.gucAdi} {pazar.oyuncuGucu} ·{' '}
-          <strong>{yuzde(pazar.pazarPayi)}</strong>
+          <span className="pazar-nokta pazar-nokta-sen" /> {en ? 'You' : 'Sen'}
+          {pazar.musteri > 0 ? ` — ${pazar.musteri} ${en ? 'customers' : 'müşteri'}` : ''} · <strong>{yuzde(pazar.pazarPayi)}</strong>
         </li>
         {pazar.rakipler.map((r) => (
           <li key={r.ad}>
-            <span className="pazar-nokta pazar-nokta-rakip" /> {r.ad} — {pazar.gucAdi} {r.guc} · {yuzde(r.pay)}
+            <span className="pazar-nokta pazar-nokta-rakip" /> {r.ad}
+            {pazar.pazarMusteri > 0 ? ` — ${r.musteri} ${en ? 'customers' : 'müşteri'}` : ''} · {yuzde(r.pay)}
           </li>
         ))}
         <li>
@@ -376,6 +417,11 @@ function PazarKarti({ pazar }: { pazar: PazarDurumu }) {
         💰 {en ? 'Salary effect' : 'Maaşa etkisi'}: <strong>{isaretli(pazar.maasEtkisi)}</strong> · 🎖️{' '}
         {en ? 'Career XP' : 'Kariyer puanı'} +{pazar.yillikKariyerPuani}/{en ? 'yr' : 'yıl'}
       </p>
+      {pazar.pazarMusteri > 0 && (
+        <p className="pazar-etki">
+          🌐 {en ? 'Whole market' : 'Toplam pazar'}: {pazar.pazarMusteri} {en ? 'people' : 'kişi'}
+        </p>
+      )}
       {pazar.rakipler.length === 0 && pazar.yeniRakipKalanYil !== null && (
         <p className="pazar-etki">
           ♟️ {en
@@ -385,8 +431,8 @@ function PazarKarti({ pazar }: { pazar: PazarDurumu }) {
       )}
       <p className="pazar-ipucu">
         {en
-          ? 'Your power grows with successes in your trade; every blow to a rival hands you their customers.'
-          : 'Gücün mesleğindeki başarılarla büyür; rakibe indirdiğin her darbe onun müşterisini sana geçirir.'}
+          ? 'Your share grows with successes in your trade, fair prices and good staff; every blow to a rival hands you their customers.'
+          : 'Payın mesleğindeki başarılarla, uygun fiyatla ve iyi çalışanlarla büyür; rakibe indirdiğin her darbe onun müşterisini sana geçirir.'}
       </p>
     </div>
   );
@@ -423,7 +469,7 @@ function HatKarti({
     <div className="kariyer-hat-karti">
       <div className="kariyer-hat-baslik">
         <span className="kariyer-hat-ikon" aria-hidden="true">
-          {hat === 'yonetici' ? '👑' : '⚜️'}
+          {hat === 'yonetici' ? (durum.tekOtorite ? '🏛️' : '👑') : '⚜️'}
         </span>
         <div className="kariyer-hat-kimlik">
           <strong>{kisi.ad}</strong>
@@ -603,8 +649,6 @@ export function KariyerEkrani({
     if (islemMesaji) setModalMesaj(islemMesaji);
   }, [islemMesaji]);
 
-  const gucEtiket = (g: number) =>
-    g >= 75 ? (en ? 'dominant' : 'çok güçlü') : g >= 50 ? (en ? 'strong' : 'güçlü') : g >= 25 ? (en ? 'middling' : 'orta') : en ? 'weak' : 'zayıf';
   const husumetEtiket = (h: number) =>
     h >= 70 ? (en ? 'blood feud' : 'kan davası') : h >= 45 ? (en ? 'holds a grudge' : 'kırgın') : en ? 'lukewarm' : 'ılımlı';
 
@@ -794,7 +838,7 @@ export function KariyerEkrani({
           {/* ===== YÖNETİMLE BAĞLAR ===== */}
           {yonetimDurum && (
             <section className="kariyer-bolum kariyer-yonetim">
-              {talep && talep.kimden === 'yonetici' && !hukumdarModalAcik && (
+              {talep && talep.kimden === 'yonetici' && !yonetimDurum.tekOtorite && !hukumdarModalAcik && (
                 <div className="kariyer-talep-afisi">
                   <strong>👑 {talep.kimAdi}</strong>
                   <p>
@@ -813,9 +857,9 @@ export function KariyerEkrani({
                 </div>
               )}
 
-              {talep && talep.kimden === 'patron' && (
+              {talep && (talep.kimden === 'patron' || yonetimDurum.tekOtorite) && (
                 <div className="kariyer-talep-afisi">
-                  <strong>📜 {talep.kimAdi}</strong>
+                  <strong>{yonetimDurum.tekOtorite ? '🏛️' : '📜'} {talep.kimAdi}</strong>
                   <p>
                     {talep.tur === 'bagis'
                       ? `${talep.kalem} — ${formatPara(talep.tutar)} ${paraBirimi} ${en ? 'demanded.' : 'istiyor.'}`
@@ -844,7 +888,7 @@ export function KariyerEkrani({
               )}
 
               <div className="kariyer-hatlar">
-                <HatKarti hat="patron" durum={yonetimDurum} yukleniyor={yukleniyor} onEtkilesim={onEtkilesim} onIstek={onIstek} />
+                <HatKarti hat={yonetimDurum.tekOtorite ? 'yonetici' : 'patron'} durum={yonetimDurum} yukleniyor={yukleniyor} onEtkilesim={onEtkilesim} onIstek={onIstek} />
               </div>
             </section>
           )}
@@ -952,7 +996,7 @@ export function KariyerEkrani({
                       ♟️ {r.ad} · {kt(r.meslek)}
                       {r.yenildi
                         ? ` · ${en ? 'defeated' : 'saf dışı'}`
-                        : ` · ${en ? 'power' : 'güç'}: ${gucEtiket(r.guc)} · ${husumetEtiket(r.husumet)}`}
+                        : ` · ${en ? 'share' : 'pay'}: ${formatYuzde(dil, r.pay)} · ${husumetEtiket(r.husumet)}`}
                     </span>
                   ))}
                 </div>
@@ -980,7 +1024,6 @@ export function KariyerEkrani({
                         yukleniyor={yukleniyor}
                         rakipler={rakipler}
                         dinKultur={dinKultur}
-                        gucAdi={pazarDurum?.gucAdi ?? ''}
                         ekip={ekip}
                         onKotuIs={onKotuIs}
                       />

@@ -32,6 +32,8 @@ export interface DonemEtkisi {
   yasamGideri: number;
   /** Eski maaş formülüyle kazanan meslekler için gelir çarpanı. */
   maas: number;
+  /** Toplam pazar büyüklüğünün YILLIK değişimi (kesir: 0.035 = +%3,5; savaş/vebada negatif); dönem başında aralıktan zarlanır. Eski kayıtlarda yok → türden hesaplanır. */
+  pazarBuyume?: number;
 }
 
 export interface DonemDurumu {
@@ -350,6 +352,19 @@ export interface CharacterState {
   rakipler: Rakip[];
   /** Bir rakip yenildiyse pazara yeni bir rakibin gireceği oyun yılı (yoksa null). Yenilen rakipler listede `yenildi:true` kalır. */
   rakip_yeni_yil: number | null;
+  /**
+   * Toplam pazar büyüklüğü (müşteri sayısı; işletme modeli, §45). Oyuncunun müşterisi
+   * = pazar payı × pazar_musteri. Başlangıç 350–500 arası rastgele; dönemle büyür,
+   * savaş/vebada küçülür (herkesin müşterisi aynı oranda). Eski kayıtlarda 400.
+   */
+  pazar_musteri: number;
+  /** Rakip saldırı eşikleri (oyuncunun pazar payı, 0-1): oyun başında [%20–22, %34–35, %45–46] arasından atanır. */
+  rakip_esikler: [number, number, number];
+  /** Son rakip saldırısının yılı (kademeye göre 2–4 yıl cooldown). */
+  rakip_saldiri_son_yil: number | null;
+  /** Vergi çarpanı (1 = normal; <1 indirim, >1 zam) ve bitiş yılı (§45 vergi). */
+  vergi_carpan: number;
+  vergi_carpan_bitis_yili: number | null;
 
   es_adi: string | null;
   es_puani: number;
@@ -645,24 +660,39 @@ export interface EkipUyesi {
   sadakat: number;
   /** Kısa bir kişilik etiketi (ör. "Sadık", "Hırslı", "Korkak"); tamamen kozmetik/flavor. */
   kisilik: string;
-  /** İşletme rolü türü (aday havuzundan alınanlarda): yazı = bozulma/depo, satın alma = alış maliyeti, satış = talep. */
+  /** İşletme rolü türü (aday havuzundan alınanlarda): ana = satış/üretim, maliyet = alış/hammadde, musteri = pazar payı büyümesi, guvenlik = koruma. */
   rol_turu?: IsletmeRolTuru;
-  /** Tanınırlık (0-100): yıllık yeni müşteri getirir; yakalanırsa ifşası da ağır olur. */
-  taninirlik?: number;
+  /**
+   * Giriş (işe alım) yeteneği/sadakati: maaş buna göre sabittir (yalnız enflasyonla artar, §45).
+   * `gercekKalite` (güncel yetenek) ve `sadakat` (güncel sadakat) çalıştıkça artar.
+   */
+  y_giris?: number;
+  s_giris?: number;
+  /** Giriş seviyesine göre enflasyonsuz yıllık maaş tabanı; güncel `maas` = maas_taban × enflasyon (yıllık güncellenir). */
+  maas_taban?: number;
+  /** Son bilgi sızdırma / iç hırsızlık olayı yılları (3 yıl cooldown). */
+  sizdirma_son_yil?: number;
+  ic_hirsizlik_son_yil?: number;
 }
 
 /** İşletme motorunda çalışanın rolü (meslek×çağ'a göre ad değişir, etkisi aynı). */
-export type IsletmeRolTuru = "yazi" | "satin_alma" | "satis";
+export type IsletmeRolTuru = "ana" | "maliyet" | "musteri" | "guvenlik";
 
-/** Hat fiyat politikası: ucuz çok satar az kazandırır, pahalı az satar çok kazandırır. */
-export type IsletmeFiyat = "ucuz" | "normal" | "pahali";
+/** Aday tipi: Yetenek/Sadakat aralığını ve maaş bandını belirler (data/meslekProfilleri.ts ADAY_TIP_ARALIKLARI). */
+export type IsletmeAdayTipi = "serseri" | "sadik_cirak" | "siradan" | "usta_guvenilmez" | "usta_sadik";
+
+/** Hat fiyat politikası: piyasa fiyatının %20/%10 altı/üstü (5 aralık). */
+export type IsletmeFiyat = "eksi20" | "eksi10" | "normal" | "arti10" | "arti20";
+
+/** Stok hedefi (işletme geneli): beklenen talebe göre ne kadar stok tutulacağı. */
+export type IsletmeStokHedefi = "cokaz" | "az" | "normal" | "fazla" | "dolu";
 
 /** İşletmedeki bir ürün hattı (Tüccar: sektör, Zanaatkâr: hedef pazar…). */
 export interface IsletmeHat {
   id: string;
   acik: boolean;
   stok: number;
-  /** true → sipariş otomatik (geçen yılın talebi × 1.1); false → `siparis` sabit sayısı. */
+  /** ESKİ alanlar (sipariş sistemi kaldırıldı, motor yok sayar; eski kayıt uyumu için tipte kalır). */
   otomatik: boolean;
   siparis: number;
   fiyat: IsletmeFiyat;
@@ -673,9 +703,26 @@ export interface IsletmeHat {
 
 /** Yıl sonu dökümündeki uyarı: kod + isteğe bağlı hat/isim; metin istemcide çevrilir. */
 export interface IsletmeUyari {
-  kod: "stok_bitti" | "fazla_stok" | "calisan_ayrildi" | "kitle_kaybi" | "uretim_tavani";
+  kod:
+    | "stok_bitti"
+    | "fazla_stok"
+    | "calisan_ayrildi"
+    | "kitle_kaybi"
+    | "uretim_tavani"
+    | "hirsizlik"
+    | "sizdirma"
+    | "ic_hirsizlik"
+    | "rakip_saldiri"
+    | "vergi_indirimi_bitti"
+    | "imtiyaz_bitti";
   hat?: string;
   isim?: string;
+  /** hırsızlık sonucu / rakip saldırı türü (istemci metni bunlardan kurar). */
+  sonuc?: "agir" | "rahat" | "kismi" | "engellendi" | "sans" | "musteri_calma" | "iftira" | "sabotaj" | "nakit";
+  /** Çalınan/azalan ürün oranı (%) ve nakit hasarı (%, geçen yıl brüt kârına göre); tutar olarak da `tutar`. */
+  urunYuzde?: number;
+  nakitYuzde?: number;
+  tutar?: number;
 }
 
 export interface IsletmeDokum {
@@ -686,9 +733,16 @@ export interface IsletmeDokum {
   /** satış − alım − depo masrafı (çalışan maaşı ayrıca giderlerde). */
   brutKar: number;
   borcOdeme: number;
-  /** brutKar − borcOdeme (oyuncunun cebine giren, eksi olabilir). */
+  /** brutKar − borcOdeme − vergi − (hırsızlık nakit hasarı) (oyuncunun cebine giren, eksi olabilir). */
   net: number;
-  kitleDegisimi: number;
+  /** Yıllık vergi tutarı ve o yılki oran (0-1). */
+  vergi: number;
+  vergiOrani: number;
+  /** Yıl sonu pazar payı (0-100 yüzde), müşteri sayısı ve bu yılki değişimi, toplam pazar büyüklüğü. */
+  pazarPayi: number;
+  musteri: number;
+  musteriDegisim: number;
+  pazarMusteri: number;
   hatlar: { id: string; talep: number; satilan: number; alinan: number; stokSonu: number }[];
   /** Üretim modundaki mesleklerde (Zanaatkâr) o yılın üretim tavanı ve kullanılan miktar. */
   uretim?: { tavan: number; kullanilan: number };
@@ -700,16 +754,13 @@ export interface IsletmeAday {
   isim: string;
   rol: string;
   rolTuru: IsletmeRolTuru;
+  tip: IsletmeAdayTipi;
   gecmis: { tr: string; en: string };
+  /** Kesin Yetenek (20–90) ve Sadakat (10–80); oyuncuya olduğu gibi gösterilir. */
+  yetenek: number;
   sadakat: number;
-  gercekKalite: number;
-  tahminiMin: number;
-  tahminiMax: number;
-  taninirlik: number;
-  /** Yıllık maaş (işe alındığı andaki enflasyonlu değer). */
-  maas: number;
-  /** Peşin işe alım ücreti. */
-  ucret: number;
+  /** Enflasyonsuz yıllık maaş tabanı (giriş seviyesine göre sabit) — güncel maaş = maas_taban × enflasyon. */
+  maas_taban: number;
 }
 
 /** Meslek işletmesi (şu an yalnız Tüccar; 2026-10 dikey dilim). Diğer meslekler null → eski maaş sistemi. */
@@ -721,9 +772,23 @@ export interface IsletmeDurumu {
   tedarikci_borcu: number;
   son_dokum: IsletmeDokum | null;
   adaylar: IsletmeAday[];
+  /** Aday listesinin son yenilendiği yıl (3 yılda bir yenilenir). */
   aday_yili: number;
   /** Gümrük rüşveti etkisi: bu oyun yılına kadar alış maliyeti %15 düşük (§45). */
   gumruk_indirim_bitis?: number;
+  /** Stok hedefi (varsayılan "normal"); sipariş sayısı kalktı. */
+  stok_hedefi?: IsletmeStokHedefi;
+  /** Son dış hırsızlık girişiminin yılı (3 yıl cooldown). */
+  hirsizlik_son_yil?: number | null;
+  /** Otoriteden alınan süreli imtiyazlar: imtiyaz id → bitiş yılı (pazar_imtiyazi, gumruk_muafiyeti, tekel_ruhsati, hammadde_tahsisi, atolye_ruhsati). */
+  imtiyazlar?: Record<string, number>;
+  /** Tekel ruhsatı verilen hat (ruhsat süresince satış fiyatı +%10). */
+  tekel_hat?: string | null;
+}
+
+/** Dünya dönemi "sıcak ürün" bilgisi (deterministik) — kart etiketi için. */
+export interface IsletmeSicakUrun {
+  hatId: string;
 }
 
 export interface SonucEtkisi {
@@ -830,6 +895,15 @@ export interface SonucEtkisi {
    * (normal rastgele havuzdan dışlanır, olaySecici.ts uygunMu).
    */
   gecikmis_takip?: string;
+  /**
+   * Vergi oranı çarpanını `sureYil` yıl boyunca değiştirir (<1 indirim, >1 zam; §45 vergi).
+   * Yalnız işletmesi olan mesleklerde (Tüccar/Zanaatkâr) vergi kesildiği için başka mesleklerde sessizce yok sayılır.
+   */
+  vergi_degisim?: { carpan: number; sureYil: number };
+  /** Şehir yöneticisi (otorite) ilişkisine (state.yonetim_iliski) delta; ± olabilir, 0-100 clamp. */
+  otorite_iliski?: number;
+  /** Pazar payını (yüzde PUANI olarak, ör. +1 = %1 puan) değiştirir; yalnız işletmesi olan mesleklerde. Küçük değerler kullan (±0.5…±3). */
+  pazar_payi_artis?: number;
 }
 
 /**

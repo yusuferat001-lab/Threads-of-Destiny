@@ -239,10 +239,10 @@ gameRouter.get("/:id/isletme", async (req, res) => {
 });
 
 gameRouter.post("/:id/isletme/karar", async (req, res) => {
-  const { hatlar } = req.body ?? {};
+  const { hatlar, stokHedefi } = req.body ?? {};
   if (!Array.isArray(hatlar)) return res.status(400).json({ hata: "Geçersiz karar." });
   try {
-    res.json(await isletmeKararVer(req.params.id, hatlar));
+    res.json(await isletmeKararVer(req.params.id, hatlar, stokHedefi));
   } catch (err) {
     res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }

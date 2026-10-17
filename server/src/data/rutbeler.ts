@@ -1,4 +1,5 @@
 import { Cag } from "../types";
+import { isletmeMeslegiMi } from "./meslekProfilleri";
 
 /**
  * Bir rütbe kademesine geçmek için gereken eşik. `para` KASITLI olarak yok —
@@ -36,6 +37,16 @@ export const TERFI_COOLDOWN: Record<number, number> = { 2: 0, 3: 2, 4: 2, 5: 8 }
  * kademe. Meslek ve çağdan bağımsız.
  */
 export const RUTBE_PAZAR_PAYI_ESIGI: Record<number, number> = { 4: 0.18, 5: 0.35 };
+
+/**
+ * İşletmesi olan meslekler (Tüccar/Zanaatkâr; §45) başlangıçta ≈%8–9 paydan başlar, orta oyunda ≈%35'e,
+ * iyi oyunda %50'ye çıkar — eşikler buna göre yüksektir. Diğer meslekler eski eşikleri kullanır.
+ */
+export const RUTBE_PAZAR_PAYI_ESIGI_ISLETME: Record<number, number> = { 2: 0.12, 3: 0.2, 4: 0.32, 5: 0.5 };
+
+export function rutbePazarPayiEsigi(meslek: string, hedefSeviye: number): number | undefined {
+  return isletmeMeslegiMi(meslek) ? RUTBE_PAZAR_PAYI_ESIGI_ISLETME[hedefSeviye] : RUTBE_PAZAR_PAYI_ESIGI[hedefSeviye];
+}
 
 /**
  * Seviye 1..5 için maaşa çarpımsal, kalıcı rütbe primi (hesaplaMaasYillik içinde

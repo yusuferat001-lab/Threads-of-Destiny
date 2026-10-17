@@ -8,6 +8,8 @@ import { ekliYerTutuculariDoldur } from "../i18n/ekler";
 import { olayCevirisiUygula } from "../i18n/olaylar";
 import { HAVUZ_KILIT_ETIKETLERI as HAVUZ_KILIT_LISTESI, hapisErkenCikisMumkunMu } from "./stateManager";
 import { yatkinlikZarBonusOrani } from "../data/meslekYatkinlik";
+import { isletmeMeslegiMi } from "../data/meslekProfilleri";
+import { yoneticiBilgisi, patronBilgisi } from "./yonetimKisileri";
 
 /**
  * Normal olay havuzunu tamamen kapatıp kendi özel havuzuna geçiren etiketler
@@ -131,6 +133,12 @@ function rastgeleEkipAdi(state: CharacterState): string {
   return state.ekip[Math.floor(Math.random() * state.ekip.length)].isim;
 }
 
+/** "{otorite}" yer tutucusu: şehir yöneticisi (işletmeli meslekler) ya da patron/lonca figürü — "Unvan İsim". */
+function otoriteAdiVeUnvani(state: CharacterState): string {
+  const b = isletmeMeslegiMi(state.meslek) ? yoneticiBilgisi(state) : patronBilgisi(state);
+  return `${b.unvan} ${b.ad}`;
+}
+
 export function doldur(metin: string, state: CharacterState): string {
   const dil = state.dil;
   // Türkçe metinlerde "{es}'in", "{dost}'a", "{hayvan}'ı" gibi kesmeli ekler, yer
@@ -141,7 +149,7 @@ export function doldur(metin: string, state: CharacterState): string {
   const cocukAdi = metin.includes("{cocuk}") ? rastgeleYasayanCocukAdi(state) : "";
   const ekipAdi = metin.includes("{ekip}") ? rastgeleEkipAdi(state) : "";
   if (dil !== "en") {
-    metin = ekliYerTutuculariDoldur(metin, /\{(dost|rakip|es|anne|baba|amir|hayvan|cocuk|ekip|bolge|komsu)\}'([a-zçğıöşü]+)/g, (anahtar) => {
+    metin = ekliYerTutuculariDoldur(metin, /\{(dost|rakip|es|anne|baba|amir|hayvan|cocuk|ekip|bolge|komsu|otorite)\}'([a-zçğıöşü]+)/g, (anahtar) => {
       switch (anahtar) {
         case "dost":
           return state.dost_adi;
@@ -163,6 +171,8 @@ export function doldur(metin: string, state: CharacterState): string {
           return state.ekip.length > 0 ? ekipAdi : undefined;
         case "bolge":
           return K(dil, state.bolge);
+        case "otorite":
+          return otoriteAdiVeUnvani(state);
         default:
           return undefined;
       }
@@ -170,6 +180,7 @@ export function doldur(metin: string, state: CharacterState): string {
   }
   return metin
     .replace(/\{bolge\}/g, K(dil, state.bolge))
+    .replace(/\{otorite\}/g, () => otoriteAdiVeUnvani(state))
     .replace(/\{meslek\}/g, K(dil, state.meslek))
     .replace(/\{aile\}/g, K(dil, state.aile_meslegi))
     .replace(/\{yil\}/g, String(state.yil))

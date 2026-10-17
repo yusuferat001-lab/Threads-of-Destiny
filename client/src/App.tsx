@@ -24,6 +24,7 @@ import type {
   AjanDurumu,
   IsletmeGorunumu,
   IsletmeKararGirdisi,
+  IsletmeStokHedefi,
 } from './types';
 import {
   mesleklerGetir,
@@ -1505,13 +1506,13 @@ function App() {
   }
 
   // ===== Meslek işletmesi (§45) — hiçbiri turu tüketmez =====
-  async function isletmeKararHandler(hatlar: IsletmeKararGirdisi[]) {
+  async function isletmeKararHandler(hatlar: IsletmeKararGirdisi[], stokHedefi?: IsletmeStokHedefi) {
     if (!karakter) return;
     setHata(null);
     setIslemMesaji(null);
     setYukleniyor(true);
     try {
-      const sonuc = await isletmeKararVer(karakter.id, hatlar);
+      const sonuc = await isletmeKararVer(karakter.id, hatlar, stokHedefi);
       setKarakter(sonuc.state);
       setIsletme(sonuc.durum);
     } catch (err) {

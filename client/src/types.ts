@@ -421,6 +421,8 @@ export interface GecikmisTakip {
 export interface YonetimDurumu {
   yonetici: { unvan: string; ad: string; iliski: number; bagisKademeleri: number[] };
   patron: { unvan: string; ad: string; iliski: number; bagisKademeleri: number[] };
+  /** İşletmeli mesleklerde yalnız şehir yöneticisi (yonetici hattı) vardır; patron hattı gizlenir. */
+  tekOtorite: boolean;
   etkilesimler: { id: string; hat: YonetimHat; ikon: string }[];
   istekler: {
     id: string;
@@ -448,7 +450,9 @@ export interface KisilikEksenleri {
 export interface Rakip {
   ad: string;
   meslek: string;
-  guc: number;
+  /** Pazar payı (0-100 yüzde) ve müşteri sayısı. */
+  pay: number;
+  musteri: number;
   husumet: number;
   yenildi: boolean;
 }
@@ -457,16 +461,18 @@ export interface Rakip {
 export interface RakipKarti {
   ad: string;
   meslek: string;
-  guc: number;
+  /** Pazar payı (0-100 yüzde) ve müşteri sayısı. */
+  pay: number;
+  musteri: number;
   husumet: number;
   yenildi: boolean;
 }
 
 export interface PazarRakipSatiri {
   ad: string;
-  guc: number;
   /** 0-100 yüzde. */
   pay: number;
+  musteri: number;
   husumet: number;
 }
 
@@ -474,11 +480,12 @@ export interface PazarRakipSatiri {
 export interface PazarDurumu {
   aktif: boolean;
   pazarAdi: string;
-  gucAdi: string;
   simge: string;
-  oyuncuGucu: number;
   /** 0-100 yüzde. */
   pazarPayi: number;
+  /** Müşteri sayısı ve toplam pazar büyüklüğü (işletmeli mesleklerde). */
+  musteri: number;
+  pazarMusteri: number;
   rakipler: PazarRakipSatiri[];
   digerPay: number;
   /** Pazar payının maaşa etkisi (±yüzde). */
@@ -533,16 +540,31 @@ export interface EkipUyesi {
   sadakat: number;
   kisilik: string;
   rol_turu?: IsletmeRolTuru;
-  taninirlik?: number;
 }
 
-export type IsletmeRolTuru = 'yazi' | 'satin_alma' | 'satis';
-export type IsletmeFiyat = 'ucuz' | 'normal' | 'pahali';
+export type IsletmeRolTuru = 'ana' | 'maliyet' | 'musteri' | 'guvenlik';
+export type IsletmeFiyat = 'eksi20' | 'eksi10' | 'normal' | 'arti10' | 'arti20';
+export type IsletmeStokHedefi = 'cokaz' | 'az' | 'normal' | 'fazla' | 'dolu';
 
 export interface IsletmeUyari {
-  kod: 'stok_bitti' | 'fazla_stok' | 'calisan_ayrildi' | 'kitle_kaybi' | 'uretim_tavani';
+  kod:
+    | 'stok_bitti'
+    | 'fazla_stok'
+    | 'calisan_ayrildi'
+    | 'kitle_kaybi'
+    | 'uretim_tavani'
+    | 'hirsizlik'
+    | 'sizdirma'
+    | 'ic_hirsizlik'
+    | 'rakip_saldiri'
+    | 'vergi_indirimi_bitti'
+    | 'imtiyaz_bitti';
   hat?: string;
   isim?: string;
+  sonuc?: 'agir' | 'rahat' | 'kismi' | 'engellendi' | 'sans' | 'musteri_calma' | 'iftira' | 'sabotaj' | 'nakit';
+  urunYuzde?: number;
+  nakitYuzde?: number;
+  tutar?: number;
 }
 
 export interface IsletmeDokum {
@@ -553,7 +575,12 @@ export interface IsletmeDokum {
   brutKar: number;
   borcOdeme: number;
   net: number;
-  kitleDegisimi: number;
+  vergi: number;
+  vergiOrani: number;
+  pazarPayi: number;
+  musteri: number;
+  musteriDegisim: number;
+  pazarMusteri: number;
   hatlar: { id: string; talep: number; satilan: number; alinan: number; stokSonu: number }[];
   /** Üretim modundaki mesleklerde (Zanaatkâr) o yılın üretim tavanı ve kullanılan miktar. */
   uretim?: { tavan: number; kullanilan: number };
@@ -569,8 +596,6 @@ export interface IsletmeHatGorunumu {
   kilitli: boolean;
   minRutbe: number;
   stok: number;
-  otomatik: boolean;
-  siparis: number;
   fiyat: IsletmeFiyat;
   tahminiTalep: number;
   birimFiyat: number;
@@ -580,6 +605,9 @@ export interface IsletmeHatGorunumu {
   sonSatis: number;
   dunyaTalepYuzde: number;
   dunyaFiyatYuzde: number;
+  sicak: boolean;
+  arti: string;
+  eksi: string;
 }
 
 export interface IsletmeYatirimGorunumu {
@@ -597,11 +625,12 @@ export interface IsletmeCalisanGorunumu {
   isim: string;
   rol: string;
   rolTuru: string | null;
+  rolAciklama: string;
+  yetenek: number;
   sadakat: number;
-  tahminiMin: number;
-  tahminiMax: number;
   maas: number;
-  taninirlik: number;
+  sadik: boolean;
+  riskli: boolean;
 }
 
 export interface IsletmeAdayGorunumu {
@@ -609,32 +638,41 @@ export interface IsletmeAdayGorunumu {
   isim: string;
   rol: string;
   rolTuru: string;
+  rolAciklama: string;
+  tip: string;
+  tipAdi: string;
   gecmis: string;
+  yetenek: number;
   sadakat: number;
-  tahminiMin: number;
-  tahminiMax: number;
-  taninirlik: number;
   maas: number;
-  ucret: number;
 }
 
 export interface IsletmeGorunumu {
   aktif: boolean;
   meslek: string;
-  kitle: number;
+  /** Pazar payı (0-100, bir ondalık), müşteri sayısı ve toplam pazar büyüklüğü. */
+  pazarPayi: number;
+  musteri: number;
+  pazarMusteri: number;
   slot: { kullanilan: number; toplam: number };
-  depo: { kullanilan: number; kapasite: number };
+  depo: { kullanilan: number; kapasite: number; kademe: number; curumeYuzde: number; bakim: number };
   /** Üretim modundaki mesleklerde (Zanaatkâr) yıllık üretim tavanı; ticaret modunda null. */
   uretim: { tavan: number } | null;
+  stokHedefi: IsletmeStokHedefi;
   hatlar: IsletmeHatGorunumu[];
   yatirimlar: IsletmeYatirimGorunumu[];
   calisanlar: IsletmeCalisanGorunumu[];
   calisanTavani: number;
   adaylar: IsletmeAdayGorunumu[];
+  adayYenilenmeKalanYil: number;
   tedarikciBorcu: number;
   sonDokum: IsletmeDokum | null;
   beklenenBrutKar: number;
+  vergi: { oran: number; indirimKalanYil: number };
+  koruma: { toplam: number; calisan: number; yatirim: number; otorite: number; hirsizlikAralik: number };
   otorite: string | null;
+  otoriteIliski: number;
+  imtiyazlar: { id: string; kalanYil: number }[];
   dunya: { donem: string | null; savas: boolean; veba: boolean };
   para: number;
   paraBirimi: string;
@@ -643,8 +681,6 @@ export interface IsletmeGorunumu {
 export interface IsletmeKararGirdisi {
   id: string;
   acik?: boolean;
-  otomatik?: boolean;
-  siparis?: number;
   fiyat?: IsletmeFiyat;
 }
 

@@ -282,7 +282,7 @@ const TR = {
   geVebaHayatta: 'hayatta kalma şansı',
   geAstlarin: 'Astların',
   geEkibin: 'Ekibin',
-  geMeslekGucu: 'Meslek Gücün',
+  geMeslekGucu: 'Mesleğin Durumu',
   geKimseYok: 'Henüz emrinde kimse yok.',
   geEkipYok: 'Ekibinde kimse yok.',
 
@@ -731,7 +731,7 @@ const TR = {
 
   // ---- Sadeleştirilmiş / kısaltılmış metinler ----
   feKirilimLejant: '🎖️ 📈 kalıcı · 🤝 🏪 🌍 duruma göre değişir',
-  fePazarNot: 'rakibin güçlendikçe düşer, sen güçlendikçe artar',
+  fePazarNot: 'rakibin payı büyüdükçe düşer, sen büyüdükçe artar',
   feTasinNotKisa: 'Tur harcamaz. Pahalıya geçiş bir kerelik {0} {1}.',
   feTasinmaKisa: ' · +{0} {1} taşınma',
   iyNetKisa: '💰 Kazanç ~{0}{1} {2}/yıl ({3}%)',
@@ -1010,7 +1010,7 @@ const EN: Metinler = {
   geVebaHayatta: 'survival chance',
   geAstlarin: 'Your Subordinates',
   geEkibin: 'Your Crew',
-  geMeslekGucu: 'Your Professional Power',
+  geMeslekGucu: 'Your Trade',
   geKimseYok: 'No one under your command yet.',
   geEkipYok: 'No one on your crew.',
 
@@ -1455,7 +1455,7 @@ const EN: Metinler = {
 
   // ---- Simplified / shortened text ----
   feKirilimLejant: '🎖️ 📈 permanent · 🤝 🏪 🌍 vary with circumstances',
-  fePazarNot: 'falls as your rival grows, rises as you grow',
+  fePazarNot: 'falls as your rival’s share grows, rises as yours does',
   feTasinNotKisa: 'Costs no turn. Upgrading costs a one-time {0} {1}.',
   feTasinmaKisa: ' · +{0} {1} to move',
   iyNetKisa: '💰 Return ~{0}{1} {2}/yr ({3}%)',

@@ -61,8 +61,18 @@ describe("meslek pazarı", () => {
     expect(s.rakip_yeni_yil).toBeNull();
   });
 
-  it("yıllık akış: pasif güç kazancı + paya bağlı kariyer puanı; hapiste güç erir", () => {
+  it("işletmeli mesleklerde pasif güç kazancı yok (pay işletme akışından büyür); paya bağlı kariyer puanı var", () => {
     const s = tuccar();
+    const guc = s.meslek_gucu;
+    const kp = s.kariyer_puani;
+    pazarYillikUygula(s, 2);
+    expect(s.meslek_gucu).toBe(guc);
+    expect(s.kariyer_puani).toBeGreaterThan(kp);
+  });
+
+  it("yıllık akış (işletmesiz meslek): pasif güç kazancı + paya bağlı kariyer puanı; hapiste güç erir", () => {
+    const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
+    mesleğiSec(s, "Din Adamı");
     const guc = s.meslek_gucu;
     const kp = s.kariyer_puani;
     pazarYillikUygula(s, 2);
@@ -92,12 +102,15 @@ describe("meslek pazarı", () => {
     const d = pazarDurumuHesapla(s);
     expect(d.aktif).toBe(true);
     expect(d.pazarAdi).toBe("Pazar Payı");
-    expect(d.gucAdi).toBe("Ticari Güç");
+    expect(d.musteri).toBeGreaterThan(0);
+    expect(d.pazarMusteri).toBeGreaterThan(300);
     expect(d.rakipler).toHaveLength(1);
     expect(Math.abs(d.pazarPayi + d.rakipler[0].pay + d.digerPay - 100)).toBeLessThanOrEqual(2);
-    expect(d.rutbeSarti).toBeNull(); // S2 pazar şartı istemez
+    expect(d.rutbeSarti?.seviye).toBe(2); // işletmeli meslekte S2 de %12 pay ister
+    expect(d.rutbeSarti?.gerekliPay).toBe(12);
     s.rutbe_seviye = 3;
     expect(pazarDurumuHesapla(s).rutbeSarti?.seviye).toBe(4);
+    expect(pazarDurumuHesapla(s).rutbeSarti?.gerekliPay).toBe(32);
   });
 
   it("eski kayıtlara güç verilir; birden çok aktif rakip teke iner, yenilenler korunur", () => {
@@ -110,7 +123,7 @@ describe("meslek pazarı", () => {
       { ad: "C", meslek: "Tüccar", guc: 5, husumet: 30, yenildi: true },
     ];
     eskiKayitGocu(s);
-    expect(s.meslek_gucu).toBeGreaterThanOrEqual(baslangicMeslekGucu(1, false));
+    expect(s.meslek_gucu).toBeGreaterThanOrEqual(baslangicMeslekGucu(1, false, 58, () => 0));
     expect(s.rakip_yeni_yil).toBeNull();
     expect(s.rakipler.map((r) => r.ad)).toEqual(["A", "C"]);
   });

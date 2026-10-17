@@ -22,6 +22,8 @@ interface EtkiAraliklari {
   luksFiyat: Aralik;
   yasamGideri: Aralik;
   maas: Aralik;
+  /** Toplam pazar büyüklüğünün yıllık değişimi, ONDALIKLI yüzde ×10 (35 = +%3,5; −50 = −%5,0). */
+  pazarBuyume: Aralik;
 }
 
 /** Süre (yıl, iki uç dahil). */
@@ -32,9 +34,10 @@ export const DONEM_SURE: Record<DonemTuru, Aralik> = {
 };
 
 const DONEM_ETKI_ARALIKLARI: Record<DonemTuru, EtkiAraliklari> = {
-  bolluk: { temelTalep: [3, 7], temelFiyat: [-9, -5], luksTalep: [30, 45], luksFiyat: [10, 16], yasamGideri: [-10, -6], maas: [6, 10] },
-  durgunluk: { temelTalep: [-13, -8], temelFiyat: [-2, 2], luksTalep: [-35, -25], luksFiyat: [-11, -6], yasamGideri: [2, 5], maas: [-10, -6] },
-  kitlik: { temelTalep: [0, 0], temelFiyat: [45, 60], luksTalep: [-50, -40], luksFiyat: [-12, -8], yasamGideri: [25, 35], maas: [-12, -8] },
+  bolluk: { temelTalep: [3, 7], temelFiyat: [-9, -5], luksTalep: [30, 45], luksFiyat: [10, 16], yasamGideri: [-10, -6], maas: [6, 10], pazarBuyume: [30, 45] },
+  durgunluk: { temelTalep: [-13, -8], temelFiyat: [-2, 2], luksTalep: [-35, -25], luksFiyat: [-11, -6], yasamGideri: [2, 5], maas: [-10, -6], pazarBuyume: [10, 20] },
+  // Kıtlıkta temel mal (tahıl, kap-kacak) talebi patlar: işletme için "depoyu doldur" fırsatı (§45).
+  kitlik: { temelTalep: [40, 60], temelFiyat: [45, 60], luksTalep: [-50, -40], luksFiyat: [-12, -8], yasamGideri: [25, 35], maas: [-12, -8], pazarBuyume: [0, 10] },
 };
 
 
@@ -53,6 +56,7 @@ const SAVAS_ETKI_ARALIKLARI: EtkiAraliklari = {
   luksFiyat: [0, 0],
   yasamGideri: [12, 18],
   maas: [-10, -6],
+  pazarBuyume: [-60, -40],
 };
 
 // ── Veba ───────────────────────────────────────────────────────────────────
@@ -72,6 +76,8 @@ const VEBA_ETKI_ARALIKLARI: EtkiAraliklari = {
   yasamGideri: [0, 0],
   // İşçi kıtlığı: maaşla çalışanın ücreti artar.
   maas: [8, 12],
+  // Veba: müşteri ölür.
+  pazarBuyume: [-100, -60],
 };
 
 /** Dedikodunun yaklaşan dönem/savaş/veba hakkında doğru söyleme ihtimali. */
@@ -104,7 +110,14 @@ function etkiZarla(a: EtkiAraliklari, rnd: () => number): DonemEtkisi {
     luksFiyat: carpan(a.luksFiyat, rnd),
     yasamGideri: carpan(a.yasamGideri, rnd),
     maas: carpan(a.maas, rnd),
+    pazarBuyume: tamSayi(a.pazarBuyume, rnd) / 1000,
   };
+}
+
+/** Eski kayıtlarda `etki.pazarBuyume` yoksa türün orta değeri (kesir, yıllık). */
+export function pazarBuyumeVarsayilan(tur: DonemTuru | "savas" | "veba"): number {
+  const ort: Record<string, number> = { bolluk: 0.0375, durgunluk: 0.015, kitlik: 0.005, savas: -0.05, veba: -0.08 };
+  return ort[tur] ?? 0.02;
 }
 
 export function donemEtkisiZarla(tur: DonemTuru, rnd: () => number = Math.random): DonemEtkisi {

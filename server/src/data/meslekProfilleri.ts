@@ -1,4 +1,7 @@
-import type { Cag, IsletmeRolTuru } from "../types";
+import type { Cag, IsletmeAdayTipi, IsletmeFiyat, IsletmeRolTuru } from "../types";
+import { ADAY_SABLONLARI, type AdayTaslagi } from "./adayHavuzlari";
+
+export type { AdayTaslagi } from "./adayHavuzlari";
 
 /**
  * Meslek işletmesi profilleri (2026-10, dikey dilim — Tüccar + Zanaatkâr).
@@ -19,7 +22,7 @@ export interface HatTanimi {
   simge: string;
   ad: DilliMetin;
   kesim: UrunKesimi;
-  /** Müşteri (meslek_gucu) başına yıllık talep birimi. */
+  /** Müşteri başına yıllık talep birimi (isletme.ts TALEP_KATSAYI_OLCEGI ile ölçeklenir). */
   talepTabani: number;
   /** Birim alış/üretim maliyeti ve satış fiyatı (enflasyonsuz taban). */
   birimMaliyet: number;
@@ -30,11 +33,15 @@ export interface HatTanimi {
   savasTalep?: number;
 }
 
+/** Yatırımın motor etkisi: id'ye değil bu türe bakılır. */
+export type YatirimEtkisi = "depo" | "talep" | "alis" | "uretim" | "pazar" | "koruma";
+
 export interface YatirimTanimi {
   id: string;
   simge: string;
   ad: DilliMetin;
   aciklama: DilliMetin;
+  etki: YatirimEtkisi;
   /** Kademe başına enflasyonsuz fiyat (index 0 = 1. kademe). */
   fiyatlar: number[];
 }
@@ -44,14 +51,6 @@ export interface RolTanimi {
   ad: DilliMetin;
 }
 
-export interface AdayTaslagi {
-  rolTuru: IsletmeRolTuru;
-  gecmis: DilliMetin;
-  sadakat: [number, number];
-  kalite: [number, number];
-  taninirlik: [number, number];
-}
-
 export interface IsletmeProfili {
   /** "ticaret": mal satın alınır (depo dolana dek); "uretim": yıllık üretim tavanı vardır, maliyet hammaddedir. */
   mod?: "ticaret" | "uretim";
@@ -59,43 +58,186 @@ export interface IsletmeProfili {
   yatirimlar: YatirimTanimi[];
   roller: RolTanimi[];
   adaylar: AdayTaslagi[];
-  /** Otorite figürünün adı (ülke bazlı özel adlar `otoriteOzel`te). */
-  otorite: DilliMetin;
-  otoriteOzel?: Record<string, DilliMetin>;
 }
 
-const TUCCAR_YATIRIMLAR: YatirimTanimi[] = [
-  {
-    id: "depo",
-    simge: "🏚️",
-    ad: { tr: "Depo", en: "Warehouse" },
-    aciklama: {
-      tr: "Stok kapasitesi: 40 → 80 → 140 → 220 birim.",
-      en: "Stock capacity: 40 → 80 → 140 → 220 units.",
-    },
-    fiyatlar: [25, 60, 120],
+// ── Aday tipleri (Yetenek 20–90, Sadakat 10–80) ────────────────────────────
+export const ADAY_TIP_ARALIKLARI: Record<IsletmeAdayTipi, { y: [number, number]; s: [number, number] }> = {
+  serseri: { y: [20, 40], s: [10, 35] },
+  sadik_cirak: { y: [20, 45], s: [60, 80] },
+  siradan: { y: [40, 65], s: [40, 65] },
+  usta_guvenilmez: { y: [65, 90], s: [10, 40] },
+  usta_sadik: { y: [70, 90], s: [60, 80] },
+};
+
+export const ADAY_TIP_ADLARI: Record<IsletmeAdayTipi, DilliMetin> = {
+  serseri: { tr: "Serseri", en: "Drifter" },
+  sadik_cirak: { tr: "Sadık çırak", en: "Loyal apprentice" },
+  siradan: { tr: "Sıradan", en: "Ordinary" },
+  usta_guvenilmez: { tr: "Usta ama güvenilmez", en: "Skilled but untrustworthy" },
+  usta_sadik: { tr: "Usta ve sadık", en: "Skilled and loyal" },
+};
+
+// ── Hat/fiyat artı-eksi metinleri (oyuncuya kısa gösterilir) ───────────────
+export const KESIM_ARTI_EKSI: Record<UrunKesimi, { arti: DilliMetin; eksi: DilliMetin }> = {
+  temel: {
+    arti: { tr: "Krizde de satar, talebi sağlam", en: "Sells even in a crisis, steady demand" },
+    eksi: { tr: "Birim kârı düşük", en: "Low profit per unit" },
   },
+  orta: {
+    arti: { tr: "Dengeli kâr ve talep", en: "Balanced profit and demand" },
+    eksi: { tr: "Savaşta ve krizde dalgalı", en: "Swings in war and crisis" },
+  },
+  luks: {
+    arti: { tr: "Bollukta çok yüksek kâr", en: "Very high profit in boom years" },
+    eksi: { tr: "Kıtlık, durgunluk ve savaşta satmaz", en: "Won't sell in famine, slump or war" },
+  },
+};
+export const SAVAS_TALEP_ARTISI: DilliMetin = { tr: "Savaşta talebi artar", en: "Demand rises in war" };
+
+export const FIYAT_ARTI_EKSI: Record<IsletmeFiyat, DilliMetin> = {
+  eksi20: {
+    tr: "Fiyat −%20, talep +%45. Çok satar, müşteri kazanırsın (yılda +%3 pay); birim kâr az, stok çabuk biter.",
+    en: "Price −20%, demand +45%. You sell a lot and win customers (+3% share a year); thin margin, stock runs out fast.",
+  },
+  eksi10: {
+    tr: "Fiyat −%10, talep +%20. Daha çok satar, müşteri çekersin (yılda +%1,5 pay); birim kâr biraz düşer.",
+    en: "Price −10%, demand +20%. You sell more and attract customers (+1.5% share a year); slightly lower margin.",
+  },
+  normal: { tr: "Piyasa fiyatı. Dengeli.", en: "Market price. Balanced." },
+  arti10: {
+    tr: "Fiyat +%10, talep −%12. Birim kâr artar; müşteri yavaşça kaçar (yılda −%1 pay). Krizde talep daha çok düşer.",
+    en: "Price +10%, demand −12%. Better margin; customers slowly drift away (−1% share a year). Demand drops more in a crisis.",
+  },
+  arti20: {
+    tr: "Fiyat +%20, talep −%30. Birim kâr yüksek ama müşteri kaçar (yılda −%3 pay). Kıtlık ve savaşta riskli.",
+    en: "Price +20%, demand −30%. High margin but customers leave (−3% share a year). Risky in famine and war.",
+  },
+};
+
+// ── Yatırımlar (profil başına 5 × 3 kademe; fiyat enflasyonsuz taban) ──────
+const YATIRIM_DEPO: YatirimTanimi = {
+  id: "depo",
+  simge: "🏚️",
+  ad: { tr: "Depo", en: "Warehouse" },
+  aciklama: {
+    tr: "Stok kapasitesi: 100 → 220 → 420 → 750. Büyük depo mal çürümesini azaltır (%10 → %2) ama bakımı pahalıdır.",
+    en: "Stock capacity: 100 → 220 → 420 → 750. A bigger warehouse reduces spoilage (10% → 2%) but costs more to maintain.",
+  },
+  etki: "depo",
+  fiyatlar: [35, 90, 180],
+};
+const YATIRIM_TANITIM: YatirimTanimi = {
+  id: "tanitim",
+  simge: "📣",
+  ad: { tr: "Tanıtım", en: "Advertising" },
+  aciklama: {
+    tr: "Her kademe pazar payı büyümesini artırır: yılda +%1 / +%2 / +%3 (toplam).",
+    en: "Each tier boosts market share growth: +1% / +2% / +3% a year (total).",
+  },
+  etki: "pazar",
+  fiyatlar: [20, 45, 90],
+};
+const YATIRIM_GUVENLIK_TUCCAR: YatirimTanimi = {
+  id: "guvenlik",
+  simge: "🔒",
+  ad: { tr: "Depo Güvenliği", en: "Warehouse Security" },
+  aciklama: {
+    tr: "Kilit-sürgü → demir kapı + bekçi köpeği → nöbet kulesi. Koruma +0,17 / +0,34 / +0,50 (toplam).",
+    en: "Bolt and lock → iron door + guard dog → watchtower. Protection +0.17 / +0.34 / +0.50 (total).",
+  },
+  etki: "koruma",
+  fiyatlar: [20, 50, 110],
+};
+const YATIRIM_GUVENLIK_ZANAAT: YatirimTanimi = {
+  ...YATIRIM_GUVENLIK_TUCCAR,
+  ad: { tr: "Atölye Güvenliği", en: "Workshop Security" },
+};
+
+const TUCCAR_YATIRIMLAR: YatirimTanimi[] = [
+  YATIRIM_DEPO,
   {
     id: "dukkan",
     simge: "🏪",
     ad: { tr: "Dükkân", en: "Shop" },
     aciklama: {
-      tr: "Her kademe müşteri talebini %5 artırır.",
-      en: "Each tier raises customer demand by 5%.",
+      tr: "Her kademe müşteri talebini %10 artırır.",
+      en: "Each tier raises customer demand by 10%.",
     },
-    fiyatlar: [30, 70, 140],
+    etki: "talep",
+    fiyatlar: [15, 30, 55],
   },
   {
     id: "kervan",
     simge: "🐪",
     ad: { tr: "Kervan", en: "Caravan" },
     aciklama: {
-      tr: "Her kademe alış maliyetini %4 düşürür.",
-      en: "Each tier cuts purchase costs by 4%.",
+      tr: "Her kademe alış maliyetini %8 düşürür.",
+      en: "Each tier cuts purchase costs by 8%.",
     },
-    fiyatlar: [35, 80, 150],
+    etki: "alis",
+    fiyatlar: [15, 30, 55],
   },
+  YATIRIM_TANITIM,
+  YATIRIM_GUVENLIK_TUCCAR,
 ];
+
+const ZANAATKAR_YATIRIMLAR: YatirimTanimi[] = [
+  {
+    id: "tezgah",
+    simge: "🔨",
+    ad: { tr: "Tezgâh ve Aletler", en: "Workbench & Tools" },
+    aciklama: {
+      tr: "Her kademe yıllık üretim tavanını %60 artırır.",
+      en: "Each tier raises your yearly production cap by 60%.",
+    },
+    etki: "uretim",
+    fiyatlar: [30, 70, 140],
+  },
+  YATIRIM_DEPO,
+  {
+    id: "dukkan",
+    simge: "🏪",
+    ad: { tr: "Vitrin", en: "Showroom" },
+    aciklama: {
+      tr: "Her kademe müşteri talebini %10 artırır.",
+      en: "Each tier raises customer demand by 10%.",
+    },
+    etki: "talep",
+    fiyatlar: [15, 30, 55],
+  },
+  YATIRIM_TANITIM,
+  YATIRIM_GUVENLIK_ZANAAT,
+];
+
+// ── Roller ─────────────────────────────────────────────────────────────────
+const TUCCAR_ROLLER: RolTanimi[] = [
+  { tur: "ana", ad: { tr: "Satıcı", en: "Salesman" } },
+  { tur: "maliyet", ad: { tr: "Alıcı", en: "Buyer" } },
+  { tur: "musteri", ad: { tr: "Tanıtımcı", en: "Promoter" } },
+  { tur: "guvenlik", ad: { tr: "Depo muhafızı", en: "Warehouse guard" } },
+];
+const ZANAATKAR_ROLLER: RolTanimi[] = [
+  { tur: "ana", ad: { tr: "Üretici", en: "Maker" } },
+  { tur: "maliyet", ad: { tr: "Hammaddeci", en: "Materials buyer" } },
+  { tur: "musteri", ad: { tr: "Tanıtımcı", en: "Promoter" } },
+  { tur: "guvenlik", ad: { tr: "Atölye bekçisi", en: "Workshop watchman" } },
+];
+
+/** Rol başına oyuncuya gösterilen kısa etki açıklaması (bonus yeteneğe göre değişir). */
+export const ROL_ACIKLAMALARI: Record<"ticaret" | "uretim", Record<IsletmeRolTuru, DilliMetin>> = {
+  ticaret: {
+    ana: { tr: "Yıllık satışı artırır", en: "Raises yearly sales" },
+    maliyet: { tr: "Mal alış maliyetini düşürür", en: "Lowers purchase costs" },
+    musteri: { tr: "Pazar payını büyütür", en: "Grows market share" },
+    guvenlik: { tr: "Hırsızlığa karşı korur", en: "Protects against theft" },
+  },
+  uretim: {
+    ana: { tr: "Yıllık üretimi artırır", en: "Raises yearly production" },
+    maliyet: { tr: "Hammadde giderini düşürür", en: "Lowers material costs" },
+    musteri: { tr: "Pazar payını büyütür", en: "Grows market share" },
+    guvenlik: { tr: "Hırsızlığa karşı korur", en: "Protects against theft" },
+  },
+};
 
 const TUCCAR_ORTA_CAG: IsletmeProfili = {
   hatlar: [
@@ -107,30 +249,8 @@ const TUCCAR_ORTA_CAG: IsletmeProfili = {
     { id: "kurk", simge: "🦊", ad: { tr: "Kürk ve İpek", en: "Fur & Silk" }, kesim: "luks", talepTabani: 0.35, birimMaliyet: 2.4, birimFiyat: 5.2, minRutbe: 3 },
   ],
   yatirimlar: TUCCAR_YATIRIMLAR,
-  roller: [
-    { tur: "yazi", ad: { tr: "Kâtip", en: "Clerk" } },
-    { tur: "satin_alma", ad: { tr: "Kervanbaşı", en: "Caravan Master" } },
-    { tur: "satis", ad: { tr: "Tezgâhtar", en: "Stallkeeper" } },
-  ],
-  adaylar: [
-    { rolTuru: "yazi", gecmis: { tr: "papaz okulundan kovulmuş genç bir kâtip", en: "a young clerk expelled from the church school" }, sadakat: [40, 75], kalite: [35, 65], taninirlik: [5, 20] },
-    { rolTuru: "yazi", gecmis: { tr: "hesapta ünlü yaşlı bir ciltçi", en: "an old bookbinder famed for his sums" }, sadakat: [60, 90], kalite: [55, 85], taninirlik: [10, 30] },
-    { rolTuru: "yazi", gecmis: { tr: "rakip loncadan kaçan bir defterdar", en: "a ledger-keeper who fled a rival guild" }, sadakat: [20, 50], kalite: [60, 90], taninirlik: [15, 40] },
-    { rolTuru: "yazi", gecmis: { tr: "geceleri mum ışığında çalışan bir keşiş", en: "a monk who works by candlelight" }, sadakat: [65, 95], kalite: [45, 75], taninirlik: [0, 15] },
-    { rolTuru: "satin_alma", gecmis: { tr: "yolları avucunun içi gibi bilen eski bir kervancı", en: "a veteran caravaner who knows every road" }, sadakat: [55, 90], kalite: [55, 90], taninirlik: [20, 50] },
-    { rolTuru: "satin_alma", gecmis: { tr: "Ceneviz limanlarından gelmiş bir acente", en: "an agent from the Genoese ports" }, sadakat: [30, 60], kalite: [50, 85], taninirlik: [25, 55] },
-    { rolTuru: "satin_alma", gecmis: { tr: "ucuza çalışan, güvenilmez bir katırcı", en: "a cheap, unreliable muleteer" }, sadakat: [15, 45], kalite: [25, 55], taninirlik: [0, 15] },
-    { rolTuru: "satin_alma", gecmis: { tr: "Bizans'tan sürgün edilmiş bir ipek tüccarı", en: "an exiled silk merchant from Byzantium" }, sadakat: [25, 60], kalite: [60, 90], taninirlik: [30, 65] },
-    { rolTuru: "satis", gecmis: { tr: "pazarın en gürültülü dellalı", en: "the loudest crier in the market" }, sadakat: [35, 70], kalite: [40, 75], taninirlik: [25, 60] },
-    { rolTuru: "satis", gecmis: { tr: "lonca şeyhinin yeğeni", en: "the guildmaster's nephew" }, sadakat: [50, 85], kalite: [30, 60], taninirlik: [15, 40] },
-    { rolTuru: "satis", gecmis: { tr: "hesapta keskin bir kasap kızı", en: "a butcher's daughter, sharp with numbers" }, sadakat: [55, 90], kalite: [45, 80], taninirlik: [10, 35] },
-    { rolTuru: "satis", gecmis: { tr: "dilenirken satıcılığa geçmiş bir külhanbeyi", en: "a street rogue turned peddler" }, sadakat: [10, 40], kalite: [30, 70], taninirlik: [10, 40] },
-  ],
-  otorite: { tr: "Lonca Reisi", en: "Guildmaster" },
-  otoriteOzel: {
-    Bizans: { tr: "Eparkhos", en: "Eparch" },
-    Selçuklu: { tr: "Muhtesip", en: "Muhtasib" },
-  },
+  roller: TUCCAR_ROLLER,
+  adaylar: ADAY_SABLONLARI["Tüccar|Orta Çağ"] ?? [],
 };
 
 const TUCCAR_SANAYI: IsletmeProfili = {
@@ -143,65 +263,9 @@ const TUCCAR_SANAYI: IsletmeProfili = {
     { id: "ipek", simge: "🪭", ad: { tr: "İpek", en: "Silk" }, kesim: "luks", talepTabani: 0.35, birimMaliyet: 2.4, birimFiyat: 5.2, minRutbe: 3 },
   ],
   yatirimlar: TUCCAR_YATIRIMLAR,
-  roller: [
-    { tur: "yazi", ad: { tr: "Muhasebeci", en: "Bookkeeper" } },
-    { tur: "satin_alma", ad: { tr: "Satın Alma Memuru", en: "Purchasing Agent" } },
-    { tur: "satis", ad: { tr: "Satış Memuru", en: "Sales Clerk" } },
-  ],
-  adaylar: [
-    { rolTuru: "yazi", gecmis: { tr: "gaz lambası altında defter tutan emekli bir bankacı", en: "a retired banker who keeps books under a gas lamp" }, sadakat: [55, 90], kalite: [50, 80], taninirlik: [5, 25] },
-    { rolTuru: "yazi", gecmis: { tr: "borsada para kaybetmiş genç bir hesapçı", en: "a young bookkeeper who lost money on the exchange" }, sadakat: [20, 55], kalite: [50, 80], taninirlik: [5, 25] },
-    { rolTuru: "yazi", gecmis: { tr: "kasaba okulunun en parlak öğrencisi", en: "the brightest pupil of the town school" }, sadakat: [55, 90], kalite: [45, 75], taninirlik: [5, 20] },
-    { rolTuru: "yazi", gecmis: { tr: "çay saatinde bile defterden başını kaldırmayan biri", en: "someone who won't lift their head from the ledger even at tea" }, sadakat: [65, 95], kalite: [40, 70], taninirlik: [0, 10] },
-    { rolTuru: "satin_alma", gecmis: { tr: "liman iskelelerini bilen eski bir gemici", en: "a former sailor who knows the harbour docks" }, sadakat: [50, 85], kalite: [50, 85], taninirlik: [15, 45] },
-    { rolTuru: "satin_alma", gecmis: { tr: "demiryolu şirketinden ayrılmış bir sevkiyatçı", en: "a freight clerk who left the railway company" }, sadakat: [40, 75], kalite: [55, 90], taninirlik: [20, 50] },
-    { rolTuru: "satin_alma", gecmis: { tr: "her işte payına bakan bir komisyoncu", en: "a commission agent who wants a cut of everything" }, sadakat: [15, 45], kalite: [45, 80], taninirlik: [10, 35] },
-    { rolTuru: "satin_alma", gecmis: { tr: "fabrika sahibinin kâhyası", en: "a factory owner's steward" }, sadakat: [60, 95], kalite: [40, 70], taninirlik: [10, 30] },
-    { rolTuru: "satis", gecmis: { tr: "vitrin düzenlemekte usta bir kadın", en: "a woman skilled at dressing shop windows" }, sadakat: [55, 90], kalite: [45, 80], taninirlik: [25, 55] },
-    { rolTuru: "satis", gecmis: { tr: "gazeteye ilan veren hevesli bir genç", en: "an eager youth who places ads in the newspaper" }, sadakat: [35, 70], kalite: [30, 65], taninirlik: [20, 50] },
-    { rolTuru: "satis", gecmis: { tr: "mahallenin tanınmış bakkalının oğlu", en: "the son of the neighbourhood's best-known grocer" }, sadakat: [50, 85], kalite: [35, 70], taninirlik: [30, 60] },
-    { rolTuru: "satis", gecmis: { tr: "yalan söylemekte usta bir gezgin satıcı", en: "a travelling salesman gifted at lying" }, sadakat: [10, 40], kalite: [50, 85], taninirlik: [10, 30] },
-  ],
-  otorite: { tr: "Ticaret Odası Başkanı", en: "Chamber of Commerce President" },
-  otoriteOzel: {
-    Osmanlı: { tr: "Ticaret Nazırı", en: "Minister of Trade" },
-    Rusya: { tr: "Lonca Başkanı", en: "Guild Chairman" },
-  },
+  roller: TUCCAR_ROLLER,
+  adaylar: ADAY_SABLONLARI["Tüccar|Sanayi Devrimi"] ?? [],
 };
-
-
-const ZANAATKAR_YATIRIMLAR: YatirimTanimi[] = [
-  {
-    id: "tezgah",
-    simge: "🔨",
-    ad: { tr: "Tezgâh ve Aletler", en: "Workbench & Tools" },
-    aciklama: {
-      tr: "Her kademe yıllık üretim tavanını artırır.",
-      en: "Each tier raises your yearly production cap.",
-    },
-    fiyatlar: [30, 70, 140],
-  },
-  {
-    id: "depo",
-    simge: "🏚️",
-    ad: { tr: "Depo", en: "Warehouse" },
-    aciklama: {
-      tr: "Stok kapasitesi: 40 → 80 → 140 → 220 birim.",
-      en: "Stock capacity: 40 → 80 → 140 → 220 units.",
-    },
-    fiyatlar: [25, 60, 120],
-  },
-  {
-    id: "dukkan",
-    simge: "🏪",
-    ad: { tr: "Vitrin", en: "Showroom" },
-    aciklama: {
-      tr: "Her kademe müşteri talebini %5 artırır.",
-      en: "Each tier raises customer demand by 5%.",
-    },
-    fiyatlar: [30, 70, 140],
-  },
-];
 
 const ZANAATKAR_ORTA_CAG: IsletmeProfili = {
   mod: "uretim",
@@ -213,29 +277,8 @@ const ZANAATKAR_ORTA_CAG: IsletmeProfili = {
     { id: "kuyum", simge: "💍", ad: { tr: "Kuyum ve İşleme", en: "Jewellery & Fine Work" }, kesim: "luks", talepTabani: 0.32, birimMaliyet: 1.9, birimFiyat: 5.0, minRutbe: 3 },
   ],
   yatirimlar: ZANAATKAR_YATIRIMLAR,
-  roller: [
-    { tur: "yazi", ad: { tr: "Çırak", en: "Apprentice" } },
-    { tur: "satin_alma", ad: { tr: "Kalfa", en: "Journeyman" } },
-    { tur: "satis", ad: { tr: "Pazarcı", en: "Market Seller" } },
-  ],
-  adaylar: [
-    { rolTuru: "yazi", gecmis: { tr: "köyden gelmiş, işe aç bir çırak", en: "a hungry apprentice from the village" }, sadakat: [55, 90], kalite: [30, 60], taninirlik: [0, 15] },
-    { rolTuru: "yazi", gecmis: { tr: "ustasından kaçmış asi bir çırak", en: "a rebellious apprentice who fled his master" }, sadakat: [15, 45], kalite: [45, 75], taninirlik: [5, 25] },
-    { rolTuru: "yazi", gecmis: { tr: "elleri her işe yatkın yetim bir oğlan", en: "an orphan boy with nimble hands" }, sadakat: [60, 95], kalite: [40, 70], taninirlik: [0, 10] },
-    { rolTuru: "yazi", gecmis: { tr: "ocağı yakıp külü eksik etmeyen titiz bir kız", en: "a meticulous girl who keeps the forge tidy" }, sadakat: [50, 85], kalite: [50, 80], taninirlik: [5, 20] },
-    { rolTuru: "satin_alma", gecmis: { tr: "kerestecileri ve demircileri tanıyan bir kalfa", en: "a journeyman who knows every timber and iron dealer" }, sadakat: [50, 85], kalite: [55, 90], taninirlik: [20, 50] },
-    { rolTuru: "satin_alma", gecmis: { tr: "başka şehirden loncayı terk etmiş bir kalfa", en: "a journeyman who left a guild in another city" }, sadakat: [25, 55], kalite: [60, 90], taninirlik: [25, 55] },
-    { rolTuru: "satin_alma", gecmis: { tr: "ucuza çalışan, hammaddeden çalan bir kalfa", en: "a cheap journeyman who skims on materials" }, sadakat: [10, 40], kalite: [30, 60], taninirlik: [0, 20] },
-    { rolTuru: "satin_alma", gecmis: { tr: "usta işi bilen yaşlı bir kalfa", en: "an old journeyman of true craft" }, sadakat: [65, 95], kalite: [50, 80], taninirlik: [10, 35] },
-    { rolTuru: "satis", gecmis: { tr: "pazarın en gürültülü seyyar satıcısı", en: "the market's loudest peddler" }, sadakat: [35, 70], kalite: [40, 75], taninirlik: [25, 60] },
-    { rolTuru: "satis", gecmis: { tr: "lonca reisinin kuzeni", en: "the guildmaster's cousin" }, sadakat: [50, 85], kalite: [30, 60], taninirlik: [20, 45] },
-    { rolTuru: "satis", gecmis: { tr: "her müşteriyi adıyla tanıyan bir dul", en: "a widow who knows every customer by name" }, sadakat: [60, 95], kalite: [45, 80], taninirlik: [15, 40] },
-    { rolTuru: "satis", gecmis: { tr: "hanlarda mal tanıtan bir külhanbeyi", en: "a rogue who hawks wares at the inns" }, sadakat: [10, 40], kalite: [35, 75], taninirlik: [10, 35] },
-  ],
-  otorite: { tr: "Loncabaşı", en: "Guildmaster" },
-  otoriteOzel: {
-    Selçuklu: { tr: "Ahi Baba", en: "Ahi Baba" },
-  },
+  roller: ZANAATKAR_ROLLER,
+  adaylar: ADAY_SABLONLARI["Zanaatkâr|Orta Çağ"] ?? [],
 };
 
 const ZANAATKAR_SANAYI: IsletmeProfili = {
@@ -248,29 +291,8 @@ const ZANAATKAR_SANAYI: IsletmeProfili = {
     { id: "saat", simge: "⌚", ad: { tr: "Saat ve Mücevher", en: "Watches & Jewellery" }, kesim: "luks", talepTabani: 0.33, birimMaliyet: 2.0, birimFiyat: 5.2, minRutbe: 3 },
   ],
   yatirimlar: ZANAATKAR_YATIRIMLAR,
-  roller: [
-    { tur: "yazi", ad: { tr: "Ustabaşı", en: "Foreman" } },
-    { tur: "satin_alma", ad: { tr: "Hammadde Memuru", en: "Materials Clerk" } },
-    { tur: "satis", ad: { tr: "Satış Elemanı", en: "Salesperson" } },
-  ],
-  adaylar: [
-    { rolTuru: "yazi", gecmis: { tr: "tezgâhta gençliğini tüketmiş emektar bir ustabaşı", en: "a veteran foreman who spent his youth at the bench" }, sadakat: [60, 95], kalite: [50, 80], taninirlik: [5, 25] },
-    { rolTuru: "yazi", gecmis: { tr: "sendikadan atılmış öfkeli bir işçi", en: "an angry worker expelled from the union" }, sadakat: [10, 40], kalite: [45, 80], taninirlik: [5, 25] },
-    { rolTuru: "yazi", gecmis: { tr: "makine başında gece vardiyası çeken bir genç", en: "a youth who works the night shift on the machines" }, sadakat: [50, 85], kalite: [35, 65], taninirlik: [0, 15] },
-    { rolTuru: "yazi", gecmis: { tr: "teknik okuldan yeni çıkmış, hırslı bir kalfa", en: "an ambitious graduate of the technical school" }, sadakat: [40, 75], kalite: [55, 85], taninirlik: [5, 25] },
-    { rolTuru: "satin_alma", gecmis: { tr: "demir ve kömür tüccarlarının dostu bir memur", en: "a clerk on friendly terms with iron and coal dealers" }, sadakat: [45, 80], kalite: [55, 90], taninirlik: [15, 45] },
-    { rolTuru: "satin_alma", gecmis: { tr: "her kalemde komisyon isteyen bir acente", en: "an agent who wants a commission on everything" }, sadakat: [10, 45], kalite: [45, 80], taninirlik: [10, 35] },
-    { rolTuru: "satin_alma", gecmis: { tr: "liman ambarlarını bilen eski bir hamal ustası", en: "a former stevedore who knows the dock warehouses" }, sadakat: [55, 90], kalite: [40, 70], taninirlik: [10, 30] },
-    { rolTuru: "satin_alma", gecmis: { tr: "fabrika sahibinin kayıp kuzeni", en: "the factory owner's black-sheep cousin" }, sadakat: [20, 55], kalite: [50, 85], taninirlik: [20, 50] },
-    { rolTuru: "satis", gecmis: { tr: "vitrin düzenlemekte usta bir kadın", en: "a woman skilled at dressing shop windows" }, sadakat: [55, 90], kalite: [45, 80], taninirlik: [25, 55] },
-    { rolTuru: "satis", gecmis: { tr: "gazeteye ilan veren hevesli bir genç", en: "an eager youth who places ads in the newspaper" }, sadakat: [35, 70], kalite: [30, 65], taninirlik: [20, 50] },
-    { rolTuru: "satis", gecmis: { tr: "mahallenin tanınmış bakkalının oğlu", en: "the son of the neighbourhood's best-known grocer" }, sadakat: [50, 85], kalite: [35, 70], taninirlik: [30, 60] },
-    { rolTuru: "satis", gecmis: { tr: "kapı kapı dolaşan inatçı bir gezgin satıcı", en: "a stubborn door-to-door salesman" }, sadakat: [15, 45], kalite: [50, 85], taninirlik: [10, 30] },
-  ],
-  otorite: { tr: "Sanayi Odası Başkanı", en: "Industrial Chamber President" },
-  otoriteOzel: {
-    Osmanlı: { tr: "Esnaf Kethüdası", en: "Craftsmen's Steward" },
-  },
+  roller: ZANAATKAR_ROLLER,
+  adaylar: ADAY_SABLONLARI["Zanaatkâr|Sanayi Devrimi"] ?? [],
 };
 
 const PROFILLER: Partial<Record<string, Record<Cag, IsletmeProfili>>> = {
@@ -300,19 +322,34 @@ export function rolAdiGetir(profil: IsletmeProfili, tur: IsletmeRolTuru): DilliM
 }
 
 /**
- * Tek otorite figürünün adı (meslek × çağ × ülke/din). İşletme profili olmayan
- * meslekler (Zanaatkâr/Din Adamı/Asker — henüz dilimlenmedi) de bu tabloyu kullanır.
- * Dönen değer kanonik Türkçe addır (K() ile çevrilir).
+ * Şehir yöneticisi (işletmeli meslekler için TEK otorite): ülke × çağ'a göre unvan.
+ * Dönen değer kanonik Türkçe addır (K() ile çevrilir; katalog.en.ts).
+ */
+const SEHIR_YONETICISI: Record<Cag, Record<string, string>> = {
+  "Orta Çağ": {
+    Fransa: "Prévôt",
+    "Kutsal Roma": "Burggraf",
+    Bizans: "Eparkhos",
+    Selçuklu: "Subaşı",
+    Eyyubiler: "Subaşı",
+  },
+  "Sanayi Devrimi": {
+    İngiltere: "Belediye Başkanı",
+    Fransa: "Préfet",
+    Osmanlı: "Vali",
+    Rusya: "Gubernator",
+  },
+};
+
+export function sehirYoneticisiUnvani(cag: Cag, bolge: string): string {
+  return SEHIR_YONETICISI[cag]?.[bolge] ?? (cag === "Sanayi Devrimi" ? "Vali" : "Prévôt");
+}
+
+/**
+ * Din Adamı/Asker için (henüz işletmesi olmayan meslekler) eski "patron" figürünün adı
+ * (meslek × çağ × ülke/din). Dönen değer kanonik Türkçe addır (K() ile çevrilir).
  */
 const OTORITE_TABLOSU: Record<string, Record<Cag, { genel: string; ozel?: Record<string, string> }>> = {
-  Tüccar: {
-    "Orta Çağ": { genel: "Lonca Reisi", ozel: { Bizans: "Eparkhos", Selçuklu: "Muhtesip" } },
-    "Sanayi Devrimi": { genel: "Ticaret Odası Başkanı", ozel: { Osmanlı: "Ticaret Nazırı", Rusya: "Lonca Başkanı" } },
-  },
-  Zanaatkâr: {
-    "Orta Çağ": { genel: "Loncabaşı", ozel: { Selçuklu: "Ahi Baba" } },
-    "Sanayi Devrimi": { genel: "Sanayi Odası Başkanı", ozel: { Osmanlı: "Esnaf Kethüdası" } },
-  },
   "Din Adamı": {
     "Orta Çağ": { genel: "Piskopos", ozel: { Bizans: "Metropolit", Selçuklu: "Kadı" } },
     "Sanayi Devrimi": { genel: "Piskopos", ozel: { Rusya: "Metropolit", Osmanlı: "Müftü" } },
@@ -324,14 +361,8 @@ const OTORITE_TABLOSU: Record<string, Record<Cag, { genel: string; ozel?: Record
 };
 
 export function otoriteUnvaniGetir(meslek: string, cag: Cag, bolge: string): string | null {
+  if (isletmeMeslegiMi(meslek)) return sehirYoneticisiUnvani(cag, bolge);
   const t = OTORITE_TABLOSU[meslek]?.[cag];
   if (!t) return null;
   return t.ozel?.[bolge] ?? t.genel;
-}
-
-/** Otorite figürünün iki dilli adı (işletme ekranı için). */
-export function otoriteAdiGetir(meslek: string, cag: Cag, bolge: string): DilliMetin | null {
-  const profil = isletmeProfiliGetir(meslek, cag);
-  if (!profil) return null;
-  return profil.otoriteOzel?.[bolge] ?? profil.otorite;
 }

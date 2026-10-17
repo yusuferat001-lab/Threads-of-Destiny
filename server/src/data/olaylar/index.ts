@@ -38,6 +38,8 @@ import { OLAY_BOLGESEL_SANAYI } from "./bolgeselSanayi";
 import { OLAY_GECIKMIS_TAKIP } from "./gecikmisTakip";
 import { OLAY_SAGLIK_ESIK_25, OLAY_SAGLIK_ESIK_10 } from "./saglikKritik";
 import { OLAY_MESLEK_YATKINLIK } from "./meslekYatkinlikOlaylari";
+import { OLAY_VERGI } from "./vergiOlaylari";
+import { OLAY_OTORITE } from "./otoriteOlaylari";
 
 export const OLAY_BANKASI: OlayTanimi[] = [
   ...OLAY_HAPIS,
@@ -79,4 +81,6 @@ export const OLAY_BANKASI: OlayTanimi[] = [
   ...OLAY_GENEL,
   ...OLAY_EVLILIK_AILE,
   ...OLAY_MESLEK_YATKINLIK,
+  ...OLAY_VERGI,
+  ...OLAY_OTORITE,
 ];

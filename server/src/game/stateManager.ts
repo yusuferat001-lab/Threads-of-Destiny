@@ -11,7 +11,7 @@ import {
   RutbeTanimi,
   TERFI_COOLDOWN,
   rutbeMaasCarpani,
-  RUTBE_PAZAR_PAYI_ESIGI,
+  rutbePazarPayiEsigi,
   KARIYER_PUANI_YILLIK,
 } from "../data/rutbeler";
 import { YerlesimTanimi, yerlesimGetir, yerlesimIdByAd } from "../data/yerlesimler";
@@ -38,6 +38,7 @@ import { tarihiSavasKontrol, gelecekSavasKontrol } from "../data/tarihiSavaslar"
 import {
   type IsletmeBaglami,
   isletmeAktif,
+  calisanMaaslariniGuncelle,
   isletmeBaslat,
   isletmeHazirla,
   isletmeGelirTahmini,
@@ -75,6 +76,10 @@ import {
   pazarMaasCarpani,
   pazarAdlariGetir,
   baslangicMeslekGucu,
+  rakipGucToplami,
+  sohretOtoriteIliskisi,
+  rastgelePazarMusteri,
+  rastgeleRakipEsikleri,
   MESLEK_GUCU_TAVAN,
   MESLEK_GUCU_YILLIK_TABAN,
   MESLEK_GUCU_YILLIK_RUTBE,
@@ -802,6 +807,11 @@ export function createCharacter(
     // rakipler meslek seçilince (mesleğiSec) doldurulur — rakip_adi ilk rakip olur.
     rakipler: [],
     rakip_yeni_yil: null,
+    pazar_musteri: rastgelePazarMusteri(),
+    rakip_esikler: rastgeleRakipEsikleri(),
+    rakip_saldiri_son_yil: null,
+    vergi_carpan: 1,
+    vergi_carpan_bitis_yili: null,
 
     es_adi: null,
     es_puani: 0,
@@ -907,7 +917,7 @@ export function createCharacter(
 }
 
 function esikKarsilaniyorMu(esik: RutbeEsigi, state: CharacterState, hedefSeviye: number): boolean {
-  const gerekliPay = RUTBE_PAZAR_PAYI_ESIGI[hedefSeviye];
+  const gerekliPay = rutbePazarPayiEsigi(state.meslek, hedefSeviye);
   return (
     (state.kariyer_puani ?? 0) >= esik.kariyer_puani &&
     (esik.un === undefined || state.un >= esik.un) &&
@@ -1183,6 +1193,12 @@ export function eskiKayitGocu(state: CharacterState): void {
     state.rakipler = [...aktifler.slice(0, 1), ...yenilenler];
   }
   if (state.rakip_yeni_yil === undefined) state.rakip_yeni_yil = null;
+  // İşletme v2 (§45): toplam pazar, rakip saldırı eşikleri, vergi çarpanı.
+  if (typeof state.pazar_musteri !== "number") state.pazar_musteri = 400;
+  if (!Array.isArray(state.rakip_esikler) || state.rakip_esikler.length !== 3) state.rakip_esikler = rastgeleRakipEsikleri();
+  if (state.rakip_saldiri_son_yil === undefined) state.rakip_saldiri_son_yil = null;
+  if (typeof state.vergi_carpan !== "number") state.vergi_carpan = 1;
+  if (state.vergi_carpan_bitis_yili === undefined) state.vergi_carpan_bitis_yili = null;
   // Meslek pazarı (2026-10): eski kayıtlarda güç yok — başlangıç gücü + rütbe kadar ilerleme ver.
   if (typeof state.meslek_gucu !== "number") {
     state.meslek_gucu =
@@ -1303,10 +1319,14 @@ export function mesleğiSec(state: CharacterState, meslek: string): void {
 
   // Meslek pazarı (data/pazar.ts): taban güç + yatkınlık kademesi + aile mirası.
   if (!state.meslek_gucu) {
-    state.meslek_gucu = baslangicMeslekGucu(state.meslek_yatkinlik_seviyesi, mirasSurduruldu);
+    state.meslek_gucu = baslangicMeslekGucu(state.meslek_yatkinlik_seviyesi, mirasSurduruldu, rakipGucToplami(state));
   }
   // Meslek işletmesi (şu an yalnız Tüccar): hat/stok/yatırım durumu kurulur.
-  if (isletmeMeslegiMi(meslek)) isletmeBaslat(state, isletmeBaglami(state));
+  if (isletmeMeslegiMi(meslek)) {
+    isletmeBaslat(state, isletmeBaglami(state));
+    // Tek otorite = şehir yöneticisi: ilişki 30–40 arası rastgele başlar (§45).
+    state.yonetim_iliski = 30 + Math.floor(Math.random() * 11);
+  }
 
   if (mirasSurduruldu && !state.etiketler.includes("aile_mirasi_surduruldu")) {
     state.un += 10;
@@ -1688,6 +1708,21 @@ const YONETIM_TALEP_SURESI_DOLMA_CEZA = 14;
 const YONETIM_TALEP_YILLIK_IHTIMAL = 0.13;
 
 /** Kariyer sayfası "yönetici" / "patron" talebi için insan-okunur gerekçeler. */
+/** İşletmeli mesleklerin tek otoritesi (şehir yöneticisi) için talep gerekçeleri. */
+const SEHIR_TALEP_KALEMLERI: { bagis: string[]; sadakat: string[] } = {
+  bagis: [
+    "şehir surlarının onarımı için katkı",
+    "pazar yerinin yenilenmesi için pay",
+    "şehir yönetiminin vergi açığı için bağış",
+    "şenlik ve ziyafet masrafına katkı",
+  ],
+  sadakat: [
+    "şehir meclisinde destek sözü",
+    "rakip tüccarlarla iş yapmama taahhüdü",
+    "şehre sadakat yemini",
+  ],
+};
+
 const YONETIM_TALEP_KALEMLERI: Record<"yonetici" | "patron", { bagis: string[]; sadakat: string[] }> = {
   yonetici: {
     bagis: [
@@ -1724,14 +1759,14 @@ const YONETIM_TALEP_KALEMLERI: Record<"yonetici" | "patron", { bagis: string[]; 
 
 /** Rastgele bir yönetim (yönetici/patron) dayatılan bağış / sadakat talebi üretir. */
 export function yonetimTalebiUret(state: CharacterState): YonetimTalep {
-  // Tek otorite (§45): dayatılan talepler yalnız patrondan gelir; kral ilişkisi arka planda kalır.
-  const kimden = "patron" as "yonetici" | "patron";
+  // Tek otorite (§45): işletmeli mesleklerde talep şehir yöneticisinden, diğerlerinde patrondan gelir.
+  const kimden: "yonetici" | "patron" = isletmeMeslegiMi(state.meslek) ? "yonetici" : "patron";
   const tur: "bagis" | "sadakat" = Math.random() < 0.6 ? "bagis" : "sadakat";
   const enf = enflasyonCarpani(state);
   const servetEk = Math.max(0, Math.min(30, Math.round(gayrimenkulDegeriHesapla(state) * 0.04)));
   const tutar =
     tur === "bagis" ? paraYuvarla((14 + Math.floor(Math.random() * 32) + servetEk) * enf) : 0;
-  const havuz = YONETIM_TALEP_KALEMLERI[kimden][tur];
+  const havuz = isletmeMeslegiMi(state.meslek) ? SEHIR_TALEP_KALEMLERI[tur] : YONETIM_TALEP_KALEMLERI[kimden][tur];
   return {
     id: randomUUID(),
     kimden,
@@ -1755,8 +1790,13 @@ export function yonetimYillikUygula(state: CharacterState, yasArtisi: number): s
   state.patron_iliski = Math.max(0, state.patron_iliski - YONETIM_ILISKI_DUSUS_YILLIK * yasArtisi);
   // Şöhret arttıkça kral seni yavaşça fark eder — küçük pasif artış (un≤30 → 0,
   // un=100 → yılda ~+0.63; yıllık düşüşü ancak yüksek şöhrette geçer).
-  const unItisi = Math.max(0, (state.un - 30) / 100) * 0.9 * yasArtisi;
-  if (unItisi > 0) state.yonetim_iliski = Math.min(100, state.yonetim_iliski + unItisi);
+  if (isletmeMeslegiMi(state.meslek)) {
+    // İşletmeli meslekler: şehir yöneticisi (tek otorite) ilişkisi şöhret aralıklarına göre çok az artar/azalır (§45).
+    state.yonetim_iliski = clamp(state.yonetim_iliski + sohretOtoriteIliskisi(state.un) * yasArtisi, 0, 100);
+  } else {
+    const unItisi = Math.max(0, (state.un - 30) / 100) * 0.9 * yasArtisi;
+    if (unItisi > 0) state.yonetim_iliski = Math.min(100, state.yonetim_iliski + unItisi);
+  }
   // "Çok sık üstüne gitme" sayacı zamanla soğur (bir tur ~2-4 puan siler).
   state.yonetim_yakin_etkilesim = Math.max(0, (state.yonetim_yakin_etkilesim ?? 0) - yasArtisi * 2);
 
@@ -2007,11 +2047,14 @@ export function giderKalemleriHesapla(state: CharacterState): GiderKalemleri {
     konut: paraYuvarla((konutGetir(state.konut_id)?.kiraYillik ?? 0) * enflasyon),
     ekip: state.ekip.reduce((toplam, uye) => toplam + uye.maas, 0),
     evcilHayvan: state.evcil_hayvan ? paraYuvarla(EVCIL_HAYVAN_GIDERI_YILLIK * enflasyon) : 0,
-    savasVergisi: state.buyuk_savas ? paraYuvarla(hesaplaMaasYillik(state) * state.buyuk_savas.vergiOrani) : 0,
+    // İşletmeli mesleklerde savaş vergisi yıllık vergi oranının içindedir (isletme.ts vergiOrani); çifte kesinti olmasın.
+    savasVergisi: state.buyuk_savas && !isletmeAktif(state) ? paraYuvarla(hesaplaMaasYillik(state) * state.buyuk_savas.vergiOrani) : 0,
   };
 }
 
 export function pasifEkonomiUygula(state: CharacterState, yasArtisi: number): EkonomiSonucu {
+  // Çalışan maaşları her yıl güncel enflasyonla yenilenir (giriş seviyesine göre sabit taban × enflasyon).
+  if (isletmeAktif(state)) calisanMaaslariniGuncelle(state, enflasyonCarpani(state));
   state.maas_yillik = hesaplaMaasYillik(state);
   const giderKalemleri = giderKalemleriHesapla(state);
   const gider =
@@ -2808,6 +2851,8 @@ export function pazarYillikUygula(state: CharacterState, yasArtisi: number): str
   const uzakta = state.etiketler.includes("hapiste") || state.etiketler.includes("yolculukta");
   if (uzakta) {
     meslekGucuEkle(state, -MESLEK_GUCU_YOKLUK_KAYBI * yasArtisi);
+  } else if (isletmeMeslegiMi(state.meslek)) {
+    // İşletmeli mesleklerde pasif pay büyümesi isletmeYilIsle'de (memnuniyet + şöhret + fiyat + tanıtım) hesaplanır.
   } else {
     meslekGucuEkle(state, (MESLEK_GUCU_YILLIK_TABAN + MESLEK_GUCU_YILLIK_RUTBE * (state.rutbe_seviye ?? 1)) * yasArtisi);
   }
@@ -2858,6 +2903,8 @@ export interface RakipMisillemeSonucu {
  */
 export function rakipMisillemesiDene(state: CharacterState, yasArtisi: number): RakipMisillemeSonucu | null {
   if (yasArtisi <= 0) return null;
+  // İşletmeli mesleklerde rakip saldırıları pazar payı eşiklerine bağlı yeni mekanikte (isletme.ts isletmeYilIsle).
+  if (isletmeMeslegiMi(state.meslek)) return null;
   if (state.etiketler.includes("hapiste") || state.etiketler.includes("yolculukta")) return null;
   for (let i = 0; i < yasArtisi; i++) {
     const adaylar = state.rakipler.filter((r) => !r.yenildi && r.husumet >= 55);

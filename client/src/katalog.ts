@@ -9,6 +9,11 @@ import type { Dil } from './ayarlar';
 
 const KATALOG_EN: Record<string, string> = {
   "Eparkhos": "Eparch",
+  "Prévôt": "Provost",
+  "Burggraf": "Burgrave",
+  "Belediye Başkanı": "Mayor",
+  "Préfet": "Prefect",
+  "Gubernator": "Governor",
   "Muhtesip": "Muhtasib",
   "Ahi Baba": "Ahi Baba",
   "Metropolit": "Metropolitan",

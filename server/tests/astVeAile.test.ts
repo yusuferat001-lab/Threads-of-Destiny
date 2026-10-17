@@ -129,7 +129,7 @@ function terfiEttir(state: ReturnType<typeof createCharacter>, hedefSeviye: numb
     state.kariyer_puani = 999;
     state.un = 100;
     state.ahlak = 100;
-    state.meslek_gucu = 100; // S4/S5 pazar payı şartı
+    state.meslek_gucu = 1000; // pay şartı (işletmeli meslekte S5 %50)
     state.yil += 10; // her kademe cooldown'unu fazlasıyla aşar
     rutbeGuncelle(state);
   }

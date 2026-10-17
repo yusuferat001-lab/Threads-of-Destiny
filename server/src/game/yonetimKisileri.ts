@@ -5,7 +5,8 @@
  */
 import type { CharacterState } from "../types";
 import { K, Khukumdar } from "../i18n";
-import { otoriteUnvaniGetir } from "../data/meslekProfilleri";
+import { otoriteUnvaniGetir, isletmeMeslegiMi, sehirYoneticisiUnvani } from "../data/meslekProfilleri";
+import { deterministikErkekIsimSec } from "../data/npcIsimleri";
 
 const YONETIM_ISIM_HAVUZU = [
   "Cezmi",
@@ -26,6 +27,13 @@ function yonetimDeterministikIsim(seed: string, tuz: number): string {
 }
 
 export function yoneticiBilgisi(state: CharacterState): { unvan: string; ad: string } {
+  // İşletmeli meslekler (§45): tek otorite şehir yöneticisidir; ülke × çağ unvanı, kültüre uygun sabit isim.
+  if (isletmeMeslegiMi(state.meslek)) {
+    return {
+      unvan: K(state.dil, sehirYoneticisiUnvani(state.cag, state.bolge)),
+      ad: deterministikErkekIsimSec(state.cag, state.bolge, state.id, 7),
+    };
+  }
   if (state.hukumdar) return { unvan: K(state.dil, "Hükümdar"), ad: Khukumdar(state.dil, state.hukumdar) };
   const unvan = state.cag === "Sanayi Devrimi" ? "Vali" : "Bölge Beyi";
   return { unvan: K(state.dil, unvan), ad: yonetimDeterministikIsim(state.id, 7) };

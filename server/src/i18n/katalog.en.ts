@@ -10,6 +10,11 @@
 export const KATALOG_EN: Record<string, string> = {
   "Rakibe İftira At": "Slander Your Rival",
   "Eparkhos": "Eparch",
+  "Prévôt": "Provost",
+  "Burggraf": "Burgrave",
+  "Belediye Başkanı": "Mayor",
+  "Préfet": "Prefect",
+  "Gubernator": "Governor",
   "Muhtesip": "Muhtasib",
   "Ahi Baba": "Ahi Baba",
   "Metropolit": "Metropolitan",
