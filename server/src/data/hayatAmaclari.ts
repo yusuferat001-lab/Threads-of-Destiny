@@ -187,8 +187,8 @@ export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
   {
     id: "kalabalik_soy", zorluk: "zor", kontrolAni: "herhangi",
     baslik: { tr: "Kalabalık Soy", en: "A Teeming Line" },
-    aciklama: { tr: "En az 6 yaşayan çocuğun olsun, hepsiyle de gerçekten yakın bir bağ kur.", en: "Have at least 6 living children — and stay genuinely close to every one of them." },
-    kosul: (s) => yasayanCocuk(s) >= 6 && ortalamaCocukIliskisi(s) >= 50,
+    aciklama: { tr: "En az 4 yaşayan çocuğun olsun, hepsiyle de gerçekten yakın bir bağ kur.", en: "Have at least 4 living children — and stay genuinely close to every one of them." },
+    kosul: (s) => yasayanCocuk(s) >= 4 && ortalamaCocukIliskisi(s) >= 50,
   },
   {
     id: "zengin_ve_ihtiyar", zorluk: "zor", kontrolAni: "olumde",
@@ -603,7 +603,7 @@ export const AMAC_ILERLEME: Record<
   guvenilir_ekip: { hedef: 60, metrik: (s) => ortalamaEkipSadakati(s) },
   servet_zirvesi: { hedef: 700, metrik: (_s, servet) => servet },
   yasayan_efsane: { hedef: 95, metrik: (s) => s.un },
-  kalabalik_soy: { hedef: 6, metrik: (s) => (s.cocuklar ?? []).filter((c) => c.yasiyor).length },
+  kalabalik_soy: { hedef: 4, metrik: (s) => (s.cocuklar ?? []).filter((c) => c.yasiyor).length },
   zengin_ve_ihtiyar: { hedef: 350, metrik: (_s, servet) => servet },
   kumar_efsanesi: { hedef: 350, metrik: (s) => Math.max(0, s.omur_kumar_net ?? 0) },
   olumle_dans: { hedef: 4, metrik: (s) => s.omur_riskli_basari ?? 0 },

@@ -8,6 +8,7 @@ import { OLAY_BANKASI } from "../src/data/olaylar";
 /** Diğer garantili olaylar (evlilik teklifi, tarihi savaş) devreye girmesin diye zaten "görülmüş"/geçersiz işaretlenir. */
 function digerZorunluOlaylariGecistir(state: Awaited<ReturnType<typeof yeniOyun>>) {
   state.gecmis_olaylar.push("iliski_evlilik_teklifi", "iliski_ikinci_teklif", "oc_tuccar_yol_ilk_anlasma");
+  state.etiketler.push("tanisma_donum_27", "tanisma_donum_36"); // aşk evliliği tanışma fırsatı zorlanmasın
   state.etiketler.push("yol:tuccar:hayirsever");
   state.ulke.savasta = true;
   // Büyük yolculuk garantisi (kural 11) gizemli eşya takip garantisinden önceliklidir

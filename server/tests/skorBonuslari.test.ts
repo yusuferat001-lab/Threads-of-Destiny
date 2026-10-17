@@ -29,6 +29,7 @@ async function isoleKomikOlumKarakteri(yas: number) {
   etiketEkle(state, ["yol:tuccar:__test_dal__"]); // kariyer yolu girişini atla
   etiketEkle(state, ["hizip_secildi"]); // hizip zorunlu seçim kuralını atla
   state.gecmis_olaylar.push("iliski_evlilik_teklifi", "iliski_ikinci_teklif"); // evlilik teklifi garantisini atla
+  state.etiketler.push("tanisma_donum_27", "tanisma_donum_36"); // aşk evliliği tanışma fırsatı zorlanmasın
   etiketEkle(state, ["yolculuk_tamamlandi"]); // büyük yolculuk garantisini atla
   state.gecmis_olaylar.push("gizem_ejderha_tilsimi"); // mistik garantiyi atla
   // Komik ölüm havuzu HARİÇ diğer tüm standalone havuzları tamamen "görülmüş"

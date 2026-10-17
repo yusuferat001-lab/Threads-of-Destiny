@@ -11,6 +11,7 @@
  *    kısa ipuçlarıdır.
  *  - Hiçbir state değiştirilmez, tur tüketilmez.
  */
+import { YAS_MUTLULUK_YILLIK } from "../data/aileSabitleri";
 import type { CharacterState, SonucEtkisi, EtkenKaydi } from "../types";
 import { T, K } from "../i18n";
 import { konutGetir } from "../data/konutlar";
@@ -195,6 +196,9 @@ function mutlulukDetayi(state: CharacterState): GostergeDetayTaban {
         yon: "iyi",
       });
     }
+  }
+  if (!state.es_adi && state.yil < (state.yas_bitis_yili ?? 0)) {
+    etkenler.push({ ikon: "🕯️", metin: T(dil, "Yas: {0}/yıl", [isaretli(-YAS_MUTLULUK_YILLIK)]), yon: "kotu" });
   }
   const cocukIyi = state.cocuklar.filter((c) => c.yasiyor && c.iliski >= 75).length;
   const cocukKotu = state.cocuklar.filter((c) => c.yasiyor && c.iliski < 35).length;

@@ -186,6 +186,7 @@ describe("gecikmiş takip havuzu — uçtan uca motor akışı", () => {
     state.ulke.savasta = true; // §11 kural 1 (tarihi savaş ilanı)
     state.gecmis_olaylar.push("oc_tuccar_yol_ilk_anlasma"); // §11 kural 2 (kariyer yolu girişi)
     state.gecmis_olaylar.push("iliski_evlilik_teklifi"); // §11 kural 3 (evlilik teklifi garantisi)
+    state.etiketler.push("tanisma_donum_27", "tanisma_donum_36"); // aşk evliliği tanışma fırsatı zorlanmasın
     state.gecmis_olaylar.push("evcilhayvan_sahiplenme_teklifi_ortacag"); // §11 kural 5 (evcil hayvan teklifi)
     state.etiketler.push("yolculuk_tamamlandi"); // §11 kural 11 (büyük yolculuk garantisi)
     state.gecmis_olaylar.push("gizem_ejderha_tilsimi"); // §11 kural 13 (mistik garanti, 25-45 yaş)

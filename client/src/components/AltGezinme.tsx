@@ -38,7 +38,7 @@ export function AltGezinme({
 }: AltGezinmeProps) {
   const { m } = useDil();
   const [digerAcik, setDigerAcik] = useState(false);
-  const digerAktif = ekran === 'magaza' || ekran === 'aile' || ekran === 'evlilik';
+  const digerAktif = ekran === 'magaza' || ekran === 'aile';
   const digerBildirimVar = aileTalepVar || aileEvlilikRozeti;
 
   function git(fn: () => void) {

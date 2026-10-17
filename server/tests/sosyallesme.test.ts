@@ -15,9 +15,13 @@ import {
 import { OLAY_SOSYALLESME } from "../src/data/olaylar/sosyallesme";
 import { OLAY_BANKASI } from "../src/data/olaylar";
 import { secimUygulaVeCoz } from "./testUtils";
+import { tanismaAyar } from "../src/game/askSistemi";
 import { SOSYALLESME_YERLERI } from "../src/data/sosyallesmeYerleri";
 import { AKSIYON_ROTASYON_HAVUZU, AKSIYON_ROTASYON_GOSTERIM } from "../src/data/sosyallesmeAksiyonlari";
 import type { CharacterState } from "../src/types";
+
+// Mekân girişlerindeki rastgele tanışma (aşk evliliği) bu testlerin mekân olayı beklentisini bozmasın.
+tanismaAyar.mekanSansi = 0;
 
 /**
  * Aksiyon havuzu artık rotasyonlu (2026-09 sonu) — hangi 3 aksiyonun aktif

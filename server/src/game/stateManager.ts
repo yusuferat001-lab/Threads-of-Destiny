@@ -5,6 +5,7 @@ import { amaclariUret, amacSkorCarpani, amaclariOlumdeKontrol, amacTanimiGetir }
 import { AILELER, AileTanimi } from "../data/aileler";
 import { BolgeOzellikleri, bolgeOzellikleriGetir } from "../data/bolgeOzellikleri";
 import { rastgeleKisilikCifti, kisilikGetir } from "../data/kisilikler";
+import { YAS_OLUM_YIL, YAS_TERK_YIL } from "../data/aileSabitleri";
 import {
   rutbeTanimiGetir,
   RutbeEsigi,
@@ -485,6 +486,8 @@ function maasCarpanKalemleri(state: CharacterState): { tabanMaas: number; kaleml
       { ad: T(dil, "Şehir yönetimi"), carpan: sehirYonetimMaasCarpani(state.sehir_yonetim_seviyesi), grup: "kariyer" },
       { ad: T(dil, "Kalıcı ödüller (köken + olaylar)"), carpan: maasCarpaniGetir(state), grup: "kariyer" },
       { ad: T(dil, "Mesleğe yatkınlığın"), carpan: 1 + (state.meslek_maas_carpani ?? 0), grup: "kariyer" },
+      // Eşin getirdiği "meslek bonusu" (placeholder): meslek sistemi değişince yalnız burası yeniden bağlanır.
+      { ad: T(dil, "Eşinin desteği"), carpan: state.es_adi ? 1 + (state.es_meslek_bonusu ?? 0) / 100 : 1, grup: "kariyer" },
       { ad: T(dil, "İtibarın (mutluluk·şöhret·ahlak)"), carpan: 1 + itibarToplam / 100, grup: "itibar" },
       { ad: T(dil, "Enflasyon"), carpan: enflasyonCarpani(state), grup: "donemsel" },
       { ad: ekonomiAd, carpan: ekonomiCarpani, grup: "donemsel" },
@@ -755,6 +758,26 @@ export function createCharacter(
     es_rutbe: null,
     cocuk_sayisi: 0,
     cocuklar: [],
+    es_dogum_yili: null,
+    es_evlilik_turu: null,
+    es_grup: null,
+    es_huylar: [],
+    es_meslek_bonusu: 0,
+    es_dugun_un: 0,
+    es_son_zaman_yili: null,
+    es_dusuk_yil: 0,
+    es_terk_esigi: 2,
+    es_dogum_sayisi: 0,
+    es_sonraki_hamilelik_yili: 0,
+    es_ihmal_uyari_goruldu: false,
+    mantik_adaylar: [],
+    mantik_yenileme_yili: 0,
+    mantik_kilit_yili: 0,
+    bekleyen_dugun: null,
+    aktif_tanisma: null,
+    sevgili: null,
+    nostalji_yili: null,
+    yas_bitis_yili: 0,
     ekip: [],
     hizip: null,
     amir_adi: null,
@@ -1092,6 +1115,41 @@ export function eskiKayitGocu(state: CharacterState): void {
   for (const c of state.cocuklar ?? []) {
     if (typeof c.iliski !== "number") c.iliski = 60;
   }
+  // Eş modeli (aile/evlilik yeniden tasarımı) sonradan eklendi. Evli eski kayıtlarda
+  // eşin yaşı bilinmiyor: oyuncudan ~3 yaş küçük sayılır; evlilik yolu etikete bakılır.
+  if (state.es_adi) {
+    if (typeof state.es_dogum_yili !== "number") state.es_dogum_yili = state.yil - Math.max(18, state.yas - 3);
+    if (state.es_evlilik_turu !== "ask" && state.es_evlilik_turu !== "mantik") {
+      state.es_evlilik_turu = state.etiketler.includes("evlilik_yolu:ask") ? "ask" : "mantik";
+    }
+    if (state.es_grup !== "genc" && state.es_grup !== "olgun") state.es_grup = "genc";
+    if (typeof state.es_son_zaman_yili !== "number") state.es_son_zaman_yili = state.yil;
+    if (typeof state.es_dogum_sayisi !== "number") state.es_dogum_sayisi = Math.min(5, (state.cocuklar ?? []).length);
+  } else {
+    if (typeof state.es_dogum_yili !== "number") state.es_dogum_yili = null;
+    if (state.es_evlilik_turu !== "ask" && state.es_evlilik_turu !== "mantik") state.es_evlilik_turu = null;
+    if (state.es_grup !== "genc" && state.es_grup !== "olgun") state.es_grup = null;
+    if (typeof state.es_son_zaman_yili !== "number") state.es_son_zaman_yili = null;
+    if (typeof state.es_dogum_sayisi !== "number") state.es_dogum_sayisi = 0;
+  }
+  if (!Array.isArray(state.es_huylar)) state.es_huylar = [];
+  if (typeof state.es_meslek_bonusu !== "number") state.es_meslek_bonusu = 0;
+  if (typeof state.es_dugun_un !== "number") state.es_dugun_un = 0;
+  if (typeof state.es_dusuk_yil !== "number") state.es_dusuk_yil = 0;
+  if (typeof state.es_terk_esigi !== "number") state.es_terk_esigi = 2;
+  if (typeof state.es_sonraki_hamilelik_yili !== "number") {
+    const sonDogum = typeof state.son_dogum_yili === "number" ? state.son_dogum_yili : null;
+    state.es_sonraki_hamilelik_yili = sonDogum != null ? sonDogum + 3 : 0;
+  }
+  if (typeof state.es_ihmal_uyari_goruldu !== "boolean") state.es_ihmal_uyari_goruldu = false;
+  if (!Array.isArray(state.mantik_adaylar)) state.mantik_adaylar = [];
+  if (typeof state.mantik_yenileme_yili !== "number") state.mantik_yenileme_yili = 0;
+  if (typeof state.mantik_kilit_yili !== "number") state.mantik_kilit_yili = 0;
+  if (typeof state.yas_bitis_yili !== "number") state.yas_bitis_yili = 0;
+  if (state.bekleyen_dugun === undefined) state.bekleyen_dugun = null;
+  if (state.aktif_tanisma === undefined) state.aktif_tanisma = null;
+  if (state.sevgili === undefined) state.sevgili = null;
+  if (typeof state.nostalji_yili !== "number") state.nostalji_yili = null;
   // Derin rakip ilişkileri sonradan eklendi: meslek seçilmişse eski tekil
   // rakip_adi'ndan TEK bir rakip türet (2026-09: iki rakip yerine tek rakip).
   if (!Array.isArray(state.rakipler) || state.rakipler.length === 0) {
@@ -1449,7 +1507,6 @@ export const IYI_EVLILIK_MUTLULUK_YILLIK = 0.5; // +0.5/yıl
 // ===== Aile ekranı: eş/çocuk ilişkisi pasif sürüklenmesi + para talebi (§33) =====
 // Felsefe evlilik moraliyle aynı: ilgilenmezsen ilişki soğur, düşük ilişki moral
 // aşındırır, oyuncu Aile ekranındaki etkileşimlerle (hediye/zaman/gezi) yukarı çeker.
-const AILE_ES_ILISKI_DUSUS_YILLIK = 0.4;
 const AILE_COCUK_ILISKI_DUSUS_YILLIK = 0.6;
 const AILE_COCUK_KOTU_ESIGI = 35; // çocuk ilişkisi bunun altındaysa moral cezası
 const AILE_COCUK_IYI_ESIGI = 75; // bunun üstündeyse küçük moral bonusu
@@ -1479,13 +1536,44 @@ const AILE_TALEP_COCUK_KALEMLERI = [
   "bir usta çıraklığı ücreti",
 ];
 
-/** Yıllık pasif kontrol: eş/çocuk ilişkisi soğuması, düşük ilişki moral cezası, bekleyen talebin süresi dolması ve yeni talep üretimi. Bir anlatı cümlesi döndürebilir (gameEngine zamanAnlatimi'ye ekler). */
+/**
+ * Eşi evlilik slotundan çıkarır (ölüm / terk / boşanma / veba): eş alanları, meslek
+ * bonusu ve sayaçlar sıfırlanır, `medeni:evli` düşer, yeni mantık adayları hemen
+ * aktifleşir ve (ölüm/terk) yas dönemi başlar. Terkte düğün şöhreti geri alınır.
+ * Çocuklar ve ömür boyu doğum kayıtları korunur. Anlatı için eşin adını döndürür.
+ */
+export function esiSifirla(state: CharacterState, neden: "olum" | "terk" | "bosanma"): string | null {
+  const eski = state.es_adi;
+  if (neden === "terk" && state.es_dugun_un) state.un -= state.es_dugun_un;
+  state.es_adi = null;
+  state.es_puani = 0;
+  state.es_meslek = null;
+  state.es_rutbe = null;
+  state.es_dogum_yili = null;
+  state.es_evlilik_turu = null;
+  state.es_grup = null;
+  state.es_huylar = [];
+  state.es_meslek_bonusu = 0;
+  state.es_dugun_un = 0;
+  state.es_son_zaman_yili = null;
+  state.es_dusuk_yil = 0;
+  state.es_dogum_sayisi = 0;
+  state.es_sonraki_hamilelik_yili = 0;
+  state.es_ihmal_uyari_goruldu = false;
+  etiketSil(state, ["medeni:evli"]);
+  // Slot sıfırlandı: yeni mantık adayları hemen üretilsin, red kilidi kalksın.
+  state.mantik_adaylar = [];
+  state.mantik_yenileme_yili = 0;
+  state.mantik_kilit_yili = 0;
+  state.bekleyen_dugun = null;
+  if (neden === "olum") state.yas_bitis_yili = state.yil + YAS_OLUM_YIL;
+  else if (neden === "terk") state.yas_bitis_yili = state.yil + YAS_TERK_YIL;
+  return eski;
+}
+
+/** Yıllık pasif kontrol: çocuk ilişkisi soğuması, düşük ilişki moral cezası, bekleyen çocuk talebinin süresi dolması ve yeni talep üretimi. (Eşin yıllık mantığı game/aileSistemi.ts'tedir.) Bir anlatı cümlesi döndürebilir (gameEngine zamanAnlatimi'ye ekler). */
 export function aileYillikUygula(state: CharacterState, yasArtisi: number): string | null {
   let not: string | null = null;
-
-  if (state.es_adi) {
-    state.es_puani = Math.max(0, state.es_puani - AILE_ES_ILISKI_DUSUS_YILLIK * yasArtisi);
-  }
 
   let cocukCeza = 0;
   let cocukBonus = 0;
@@ -1507,7 +1595,7 @@ export function aileYillikUygula(state: CharacterState, yasArtisi: number): stri
   if (state.aile_talep && state.yil > state.aile_talep.sonYil) {
     const t = state.aile_talep;
     if (t.kimden === "es" && state.es_adi) {
-      state.es_puani = Math.max(0, state.es_puani - AILE_TALEP_SURESI_DOLMA_CEZA);
+      state.es_puani = Math.max(0, state.es_puani - AILE_TALEP_SURESI_DOLMA_CEZA); // eski kayıttan kalan eş talebi
     } else if (
       t.kimden === "cocuk" &&
       t.cocukIndex != null &&
@@ -1521,12 +1609,12 @@ export function aileYillikUygula(state: CharacterState, yasArtisi: number): stri
     state.aile_talep = null;
   }
 
-  // Yeni talep üretimi
+  // Yeni talep üretimi (yalnız çocuklardan; eş artık ilişki barıyla yönetilir)
   const yasayanCocukVar = state.cocuklar.some((c) => c.yasiyor);
   if (
     !state.aile_talep &&
     state.yil >= state.aile_talep_sonraki_yil &&
-    (state.es_adi || yasayanCocukVar) &&
+    yasayanCocukVar &&
     !state.etiketler.includes("hapiste") &&
     !state.etiketler.includes("yolculukta") &&
     Math.random() < AILE_TALEP_YILLIK_IHTIMAL
@@ -1551,9 +1639,7 @@ export function aileTalebiUret(state: CharacterState): AileTalep | null {
   const yasayanCocukIndexleri = state.cocuklar
     .map((c, i) => (c.yasiyor ? i : -1))
     .filter((i) => i >= 0);
-  const esVar = Boolean(state.es_adi);
   const kaynaklar: ("es" | "cocuk")[] = [];
-  if (esVar) kaynaklar.push("es");
   if (yasayanCocukIndexleri.length > 0) kaynaklar.push("cocuk");
   if (kaynaklar.length === 0) return null;
   const kimden = kaynaklar[Math.floor(Math.random() * kaynaklar.length)];
@@ -3036,12 +3122,7 @@ export function vebaYillikKontrol(state: CharacterState, yasArtisi: number): Veb
       sonuc.mesajlar.push(T(state.dil, "🦠 Veba sana da bulaştı — hastalandın. Hayatta kalman bundan sonraki seçimlerine bağlı."));
     }
     if (state.es_adi && Math.random() < esSansi) {
-      const kaybedilenEs = state.es_adi;
-      state.es_adi = null;
-      state.es_puani = 0;
-      state.es_meslek = null;
-      state.es_rutbe = null;
-      etiketSil(state, ["medeni:evli"]);
+      const kaybedilenEs = esiSifirla(state, "olum") ?? "";
       hayatOlayiEkle(state, "💔", T(state.dil, "{0} vebaya yenik düştü", [kaybedilenEs]));
       sonuc.mesajlar.push(T(state.dil, "💔 {0} vebaya yenik düştü.", [kaybedilenEs]));
     }

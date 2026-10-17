@@ -29,8 +29,18 @@ import {
   magazaConfigGetir,
   magazadanSatinAl,
   envanterEsyasiKullan,
-  evlilikAdaylariGetir,
-  evlilikTeklifEt,
+  mantikTeklifEt,
+  dugunYap,
+  esEylemYap,
+  cocukIseAl,
+  cocukRedTepkisi,
+  tanismaGetir,
+  tanismaYaklas,
+  tanismaVazgec,
+  tanismaSec,
+  sevgiliTeklifEt,
+  sevgiliGonulAl,
+  sevgiliAyril,
   aileDurumGetir,
   aileEtkilesimYap,
   aileTalebiKararlastir,
@@ -412,23 +422,135 @@ gameRouter.post("/:id/sosyallesme-aksiyon", async (req, res) => {
   }
 });
 
-gameRouter.get("/:id/evlilik-adaylari", async (req, res) => {
+// ===== Mantık evliliği / düğün / eş ilişki barı (Aile & İlişkiler ekranı) =====
+gameRouter.post("/:id/mantik/teklif", async (req, res) => {
+  const { adayIndex, hediye } = req.body ?? {};
+  if (typeof adayIndex !== "number" || !Number.isInteger(adayIndex) || adayIndex < 0) {
+    return res.status(400).json({ hata: "Geçersiz aday." });
+  }
+  if (hediye !== "sade" && hediye !== "ucuz" && hediye !== "pahali") {
+    return res.status(400).json({ hata: "Geçersiz hediye." });
+  }
   try {
-    const adaylar = await evlilikAdaylariGetir(req.params.id);
-    res.json({ adaylar });
+    const sonuc = await mantikTeklifEt(req.params.id, adayIndex, hediye);
+    res.json(sonuc);
   } catch (err) {
     res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 
-gameRouter.post("/:id/evlilik-teklifi", async (req, res) => {
-  const { aday } = req.body ?? {};
-  if (!aday || typeof aday !== "object") {
-    return res.status(400).json({ hata: "Geçersiz aday." });
+gameRouter.post("/:id/dugun", async (req, res) => {
+  const { butce } = req.body ?? {};
+  if (butce !== "ucuz" && butce !== "orta" && butce !== "pahali") {
+    return res.status(400).json({ hata: "Geçersiz düğün bütçesi." });
   }
   try {
-    const sonuc = await evlilikTeklifEt(req.params.id, aday);
+    const sonuc = await dugunYap(req.params.id, butce);
     res.json(sonuc);
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/es/eylem", async (req, res) => {
+  const { eylem, hediye } = req.body ?? {};
+  if (eylem !== "zaman_gecir" && eylem !== "hediye_ver") {
+    return res.status(400).json({ hata: "Geçersiz etkileşim." });
+  }
+  if (eylem === "hediye_ver" && hediye !== "ucuz" && hediye !== "pahali") {
+    return res.status(400).json({ hata: "Geçersiz hediye." });
+  }
+  try {
+    const sonuc = await esEylemYap(req.params.id, eylem, eylem === "hediye_ver" ? hediye : undefined);
+    res.json(sonuc);
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+// ===== Aşk evliliği: tanışma diyaloğu + sevgili =====
+gameRouter.get("/:id/tanisma", async (req, res) => {
+  try {
+    res.json(await tanismaGetir(req.params.id));
+  } catch (err) {
+    res.status(404).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/tanisma/yaklas", async (req, res) => {
+  try {
+    res.json(await tanismaYaklas(req.params.id));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/tanisma/vazgec", async (req, res) => {
+  try {
+    res.json(await tanismaVazgec(req.params.id));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/tanisma/secim", async (req, res) => {
+  const { secenek } = req.body ?? {};
+  if (typeof secenek !== "number" || !Number.isInteger(secenek) || secenek < 0) {
+    return res.status(400).json({ hata: "Geçersiz seçenek." });
+  }
+  try {
+    res.json(await tanismaSec(req.params.id, secenek));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/sevgili/teklif", async (req, res) => {
+  try {
+    res.json(await sevgiliTeklifEt(req.params.id));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/sevgili/gonul-al", async (req, res) => {
+  try {
+    res.json(await sevgiliGonulAl(req.params.id));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/sevgili/ayril", async (req, res) => {
+  try {
+    res.json(await sevgiliAyril(req.params.id));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/cocuk/ise-al", async (req, res) => {
+  const { cocukIndex } = req.body ?? {};
+  if (typeof cocukIndex !== "number" || !Number.isInteger(cocukIndex) || cocukIndex < 0) {
+    return res.status(400).json({ hata: "Geçerli bir çocuk seçmelisin." });
+  }
+  try {
+    res.json(await cocukIseAl(req.params.id, cocukIndex));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/cocuk/red-tepkisi", async (req, res) => {
+  const { cocukIndex, tepki } = req.body ?? {};
+  if (typeof cocukIndex !== "number" || !Number.isInteger(cocukIndex) || cocukIndex < 0) {
+    return res.status(400).json({ hata: "Geçerli bir çocuk seçmelisin." });
+  }
+  if (tepki !== "ofke" && tepki !== "sakin") {
+    return res.status(400).json({ hata: "Geçersiz tepki." });
+  }
+  try {
+    res.json(await cocukRedTepkisi(req.params.id, cocukIndex, tepki));
   } catch (err) {
     res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }

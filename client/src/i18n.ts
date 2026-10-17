@@ -331,7 +331,7 @@ const TR = {
   // ---- Mobil alt gezinme çubuğu ----
   agBaslik: 'Alt gezinme',
   agDiger: 'Diğer',
-  agAile: 'Aile',
+  agAile: 'İlişkiler',
   agKapat: 'Kapat, Oyuna dön',
 
   // ---- Mobil canlı skor rozeti + detay modalı ----
@@ -691,8 +691,6 @@ const TR = {
   // Etkileşim bölümleri
   aeEsEtkilesimBaslik: 'Eşinle',
   aeBirlikteBaslik: 'Birlikte',
-  aeEvlen: '💍 Evlen',
-  aeEvlenAlt: 'Kendine bir eş ara',
   aeEvcilBaslik: 'Evcil Hayvanın',
   aeEvcilYok: 'Bir evcil hayvanın yok.',
   aeBedava: 'Ücretsiz',
@@ -700,14 +698,6 @@ const TR = {
   aeParaYetmez: 'Paran yetmiyor',
   aeYasEk: '{0} yaşında',
   // Etkileşim adları / açıklamaları (id bazlı)
-  aeEtk_es_hediye: 'Hediye Al',
-  aeEtk_es_hediye_d: 'Güzel bir şey al, yüzünü güldür.',
-  aeEtk_es_zaman: 'Zaman Ayır',
-  aeEtk_es_zaman_d: 'İşi bir kenara bırak, baş başa vakit geçir.',
-  aeEtk_es_sevgi: 'Sevgi Göster',
-  aeEtk_es_sevgi_d: 'Sarıl, öp, sevildiğini hissettir.',
-  aeEtk_es_gezi: 'Geziye Çıkar',
-  aeEtk_es_gezi_d: 'İkiniz için küçük bir kaçamak.',
   aeEtk_cocuk_oyna: 'Oyna',
   aeEtk_cocuk_oyna_d: 'Onunla oyun oyna, gününü ona ayır.',
   aeEtk_cocuk_hediye: 'Hediye Al',
@@ -732,14 +722,6 @@ const TR = {
   spAyyasZaten: 'Zaten ayyaş olarak tanınıyorsun.',
   spZiyaretUyari: 'Şimdiye kadar {0} kez gittin — {1} ziyaret daha ayyaşlık damgası vurur.',
 
-  // ---- EvlilikPaneli (tam) ----
-  evBaslik: 'Evlilik',
-  evIntro: 'Kaderin seni bir olayla evlendirmesini beklemeden, kendi adayını seçip teklif edebilirsin. Turu tüketmez, teklif reddedilirse tekrar deneyebilirsin.',
-  evYukleniyorMesaji: 'Adaylar aranıyor...',
-  evUyum: 'Uyum: ~%{0}',
-  evTeklifEt: 'Evlenme Teklif Et',
-  evYeniAdaylar: 'Farklı Adaylar Göster',
-  evZatenEvli: 'Zaten evlisin.',
 
   // ---- IsYatirimEkrani (ek) ----
   iyMaliyetEk: 'Maliyet: {0} {1}',
@@ -1075,7 +1057,7 @@ const EN: Metinler = {
   // ---- Mobile bottom navigation ----
   agBaslik: 'Bottom navigation',
   agDiger: 'More',
-  agAile: 'Family',
+  agAile: 'Relationships',
   agKapat: 'Close, back to game',
 
   // ---- Mobile live score badge + detail modal ----
@@ -1432,22 +1414,12 @@ const EN: Metinler = {
   aeTalepRet: 'Refuse',
   aeEsEtkilesimBaslik: 'With Your Spouse',
   aeBirlikteBaslik: 'Together',
-  aeEvlen: '💍 Get Married',
-  aeEvlenAlt: 'Look for a spouse',
   aeEvcilBaslik: 'Your Pet',
   aeEvcilYok: 'You have no pet.',
   aeBedava: 'Free',
   aeKilitliYil: '{0} yr',
   aeParaYetmez: 'Not enough money',
   aeYasEk: 'age {0}',
-  aeEtk_es_hediye: 'Buy a Gift',
-  aeEtk_es_hediye_d: 'Get them something nice, light up their face.',
-  aeEtk_es_zaman: 'Spend Time',
-  aeEtk_es_zaman_d: 'Set work aside, spend time alone together.',
-  aeEtk_es_sevgi: 'Show Affection',
-  aeEtk_es_sevgi_d: 'Hold them, kiss them, make them feel loved.',
-  aeEtk_es_gezi: 'Take Them Out',
-  aeEtk_es_gezi_d: 'A little getaway for the two of you.',
   aeEtk_cocuk_oyna: 'Play',
   aeEtk_cocuk_oyna_d: 'Play with them, give them your day.',
   aeEtk_cocuk_hediye: 'Buy a Gift',
@@ -1473,13 +1445,6 @@ const EN: Metinler = {
   spZiyaretUyari: 'You have gone {0} times so far — {1} more visits will earn a drunkard mark.',
 
   // ---- EvlilikPaneli ----
-  evBaslik: 'Marriage',
-  evIntro: "Instead of waiting for fate to marry you off through an event, you can pick your own candidate and propose. Costs no turn — if rejected, you can try again.",
-  evYukleniyorMesaji: 'Searching for candidates...',
-  evUyum: 'Compatibility: ~{0}%',
-  evTeklifEt: 'Propose Marriage',
-  evYeniAdaylar: 'Show Different Candidates',
-  evZatenEvli: 'You are already married.',
 
   // ---- IsYatirimEkrani ----
   iyMaliyetEk: 'Cost: {0} {1}',

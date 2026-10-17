@@ -35,7 +35,7 @@ describe("olay illüstrasyonu havuz anahtarı", () => {
     expect(anahtar({ id: "kuresel_veba_baslangici" })).toBe("veba");
     expect(anahtar({ id: "kacak_kis", kacakOlayi: true })).toBe("kacak");
     expect(anahtar({ id: "aranma_baskin_ortacag" })).toBe("baskin");
-    expect(anahtar({ id: "iliski_evlilik_teklifi" })).toBe("evlilik");
+    expect(anahtar({ id: "cocuk_evlilik" })).toBe("evlilik");
     expect(anahtar({ id: "cocuk_dugun_masrafi" })).toBe("evlilik");
     expect(anahtar({ id: "buyu_kristal_kure", gizemli: true })).toBe("gizem");
     // Özel havuz genel olanı yener: gizemli ama hapis olayı → hapis.

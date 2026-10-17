@@ -2,34 +2,6 @@ import type { OlayCeviri } from "./index";
 
 /** server/src/data/olaylar/aile.ts — İngilizce çevirileri. */
 export const OLAYLAR_AILE_EN: Record<string, OlayCeviri> = {
-  iliski_evlilik_teklifi: {
-    baslik: "An Influential Bond",
-    metin:
-      "{dost} introduced you to someone from a powerful city family. The marriage would be loveless but open great doors.",
-    secenekler: [
-      {
-        metin: "Accept the marriage of convenience.",
-        basariliSonuc: {
-          mesaj:
-            "A grand ceremony. You belong to a powerful family, yet bed feels cold.",
-        },
-        basarisizSonuc: {
-          mesaj: "The family found you lacking and cancelled the wedding. The city mocks you.",
-        },
-      },
-      {
-        metin: "Say you want love, refuse.",
-        basariliSonuc: {
-          mesaj:
-            "You spurned influence and money. All call you mad, but your conscience is clear.",
-        },
-        basarisizSonuc: {
-          mesaj:
-            "You refused, but alone at night you wondered if you erred.",
-        },
-      },
-    ],
-  },
 
   iliski_cocuk_mujdesi: {
     baslik: "An Heir Is Coming",

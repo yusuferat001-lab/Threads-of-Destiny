@@ -27,29 +27,10 @@ async function evliOturum(): Promise<CharacterState> {
 }
 
 describe("aileEtkilesimYap", () => {
-  it("maliyeti düşer, eş ilişkisini artırır, cooldown yazar; ikinci çağrı reddedilir", async () => {
-    vi.spyOn(Math, "random").mockReturnValue(0.1); // < 0.8 → tam etki
+  it("eş etkileşimleri katalogdan kalktı (eş artık ilişki barıyla yönetilir)", async () => {
     const state = await evliOturum();
-    const oncekiPara = state.para;
-    const oncekiPuan = state.es_puani;
-
-    const sonuc = await aileEtkilesimYap(state.id, "es_hediye");
-    expect(sonuc.tam).toBe(true);
-    expect(sonuc.state.para).toBeLessThan(oncekiPara);
-    expect(sonuc.state.es_puani).toBeGreaterThan(oncekiPuan);
-    expect(sonuc.state.aile_etkilesim_kilit["es_hediye"]).toBeGreaterThan(sonuc.state.yil);
-
     await expect(aileEtkilesimYap(state.id, "es_hediye")).rejects.toThrow();
-  });
-
-  it("ücretsiz etkileşim (es_zaman) parayı değiştirmez ama ilişkiyi artırır", async () => {
-    vi.spyOn(Math, "random").mockReturnValue(0.1);
-    const state = await evliOturum();
-    const oncekiPara = state.para;
-    const oncekiPuan = state.es_puani;
-    const sonuc = await aileEtkilesimYap(state.id, "es_zaman");
-    expect(sonuc.state.para).toBe(oncekiPara);
-    expect(sonuc.state.es_puani).toBeGreaterThan(oncekiPuan);
+    await expect(aileEtkilesimYap(state.id, "es_zaman")).rejects.toThrow();
   });
 
   it("çocuk etkileşimi hedef çocuğun ilişkisini artırır ve child-index'li cooldown yazar", async () => {
@@ -63,7 +44,7 @@ describe("aileEtkilesimYap", () => {
   it("para yetmezse hata verir", async () => {
     const state = await evliOturum();
     state.para = 0;
-    await expect(aileEtkilesimYap(state.id, "es_gezi")).rejects.toThrow();
+    await expect(aileEtkilesimYap(state.id, "cocuk_egitim", 0)).rejects.toThrow();
   });
 });
 
@@ -75,7 +56,8 @@ describe("aileDurumGetir", () => {
     expect(durum.cocuklar).toHaveLength(1);
     expect(durum.cocuklar[0].yas).toBe(8);
     expect(durum.etkilesimler.length).toBeGreaterThan(0);
-    expect(durum.etkilesimler.some((e) => e.id === "es_hediye")).toBe(true);
+    expect(durum.etkilesimler.some((e) => e.id === "cocuk_oyna")).toBe(true);
+    expect(durum.etkilesimler.some((e) => e.id === "es_hediye")).toBe(false);
   });
 });
 
@@ -120,14 +102,14 @@ describe("aileTalebiKararlastir", () => {
 });
 
 describe("aileYillikUygula", () => {
-  it("ilgilenilmeyen eş/çocuk ilişkisi zamanla düşer", () => {
+  it("ilgilenilmeyen çocuğun ilişkisi zamanla düşer (eşin yıllık mantığı aileSistemi'nde)", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.es_adi = "Adela";
     state.es_puani = 60;
     state.cocuklar.push({ isim: "Milo", dogum_yili: state.yil - 5, yasiyor: true, iliski: 60 });
     aileYillikUygula(state, 2);
-    expect(state.es_puani).toBeLessThan(60);
+    expect(state.es_puani).toBe(60);
     expect(state.cocuklar[0].iliski).toBeLessThan(60);
   });
 
@@ -170,6 +152,7 @@ describe("aileYillikUygula", () => {
     mesleğiSec(state, "Tüccar");
     state.es_adi = "Adela";
     state.es_puani = 50;
+    state.cocuklar.push({ isim: "Milo", dogum_yili: 1290, yasiyor: true, iliski: 60 });
     state.yil = 1300;
     state.aile_talep_sonraki_yil = 1290;
     aileYillikUygula(state, 1);

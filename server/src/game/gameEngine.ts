@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import { gostergeDetayiUret, etkenGunluguNotEt, gostergeStatiMi, GostergeDetayi } from "./gostergeDetay";
 import { dunyaGecmisiUret, DunyaGecmisi } from "./dunyaGecmisi";
-import { CharacterState, Cag, SenaryoResponse, SonucEtkisi, TepkiSonucu, MulkTuru, EvlilikAdayi, OturumAkisiKaydi, IkiDilMetin } from "../types";
+import { CharacterState, Cag, SenaryoResponse, SonucEtkisi, TepkiSonucu, MulkTuru, OturumAkisiKaydi, IkiDilMetin, EkipUyesi, AileHuy, DugunButcesi, EvlilikTuru, TeklifHediyesi } from "../types";
 import { T, K, Khukumdar, ikiDilT } from "../i18n";
 import { olayCevirisiUygula } from "../i18n/olaylar";
 import { skorKaydet as skoruDbyeYaz } from "../db/scoreRepository";
@@ -20,6 +20,7 @@ import {
   ilerletYas,
   etiketEkle,
   etiketSil,
+  esiSifirla,
   ulkeGuncelle,
   durumEkle,
   durumlariUygula,
@@ -107,6 +108,15 @@ import { rutbeTanimiGetir, KARIYER_PUANI_YILLIK, KARIYER_PUANI_KATEGORI_BASARI }
 import { yoneticiBilgisi, patronBilgisi } from "./yonetimKisileri";
 import { KOTU_ISLER, kotuIsTanimiGetir, KotuIsEtki } from "../data/kotuIsler";
 import { rollSuccess } from "./diceRoll";
+import * as AS from "./aileSistemi";
+import * as AK from "./askSistemi";
+import {
+  MEKAN_GIRIS as TANISMA_MEKAN_GIRIS,
+  GORUNUM as TANISMA_GORUNUM,
+  ADIM_METNI as TANISMA_ADIM_METNI,
+  SECENEK_METNI as TANISMA_SECENEK_METNI,
+} from "../data/tanismaDiyalog";
+import { COCUK_EKIP_ROLU, COCUK_KOV_ILISKI, MANTIK_MIN_YAS, DUGUN, KOTU_IS_ES_ZARARI, SUC_ES_ESIGI, SUC_ES_ZARARI, SIR_ES_ZARARI, IHMAL_UYARI_YIL, NOSTALJI_YIL_ARALIK } from "../data/aileSabitleri";
 import { olaySec, doldur, temelUygunMu, sosyallesmeIcinOlaySec } from "./olaySecici";
 import { OlayTanimi, OnTepki, OLAY_BANKASI } from "../data/olaylar";
 import { OLAY_SOSYALLESME } from "../data/olaylar/sosyallesme";
@@ -578,6 +588,67 @@ const SARAY_OLAY_IDLERI = [
 /** Yeni bir ekip üyesi işe alınırken rastgele atanan, tamamen kozmetik kişilik etiketi. */
 const EKIP_KISILIK_HAVUZU = ["Sadık", "Hırslı", "Korkak", "Kurnaz", "Tembel", "Cesur", "Güvenilmez", "Çalışkan"];
 
+interface EkipEklemeSecenekleri {
+  /** Verilmezse rastgele bir isim seçilir. */
+  isim?: string;
+  /** Verilmezse üç zar ortalaması (uçlar nadir, ortalama olası). */
+  gercekKalite?: number;
+  /** 0-1: eşdeğer bir çalışanın maaşından bu oranda indirim. */
+  maasIndirimi?: number;
+  sadakat?: number;
+  kisilik?: string;
+  /** Üye oyuncunun çocuğuysa çocuğun adı. */
+  cocukIsim?: string;
+  /** Verilmezse işe alma anındaki kalıcı maaş çarpanı 1 + (kalite − 50) / 500. */
+  buffCarpani?: number;
+}
+
+/**
+ * Yeni bir ekip üyesi işe alır (olay `ekip_ekle` etkisi ve çocuğun yanında çalışması ortak yolu):
+ * gizli kalite, maaş, sadakat, kalıcı pasif maaş çarpanı ve hayat hikayesi kaydı.
+ */
+function ekipUyesiEkle(
+  state: CharacterState,
+  rol: string,
+  tahminGenisligi: number,
+  secenekler: EkipEklemeSecenekleri = {}
+): EkipUyesi {
+  const isim =
+    secenekler.isim ??
+    rastgeleBirIsimSec(state.cag, state.bolge, [
+      state.dost_adi,
+      state.rakip_adi,
+      state.es_adi ?? "",
+      state.isim ?? "",
+      ...state.ekip.map((e) => e.isim),
+    ]);
+  // Üç zar ortalaması: uçlar (çok kötü/çok iyi) nadir, ortalama tutulmak daha olası — "bazen hasta, bazen aşırı başarılı" hissi.
+  const gercekKalite =
+    secenekler.gercekKalite ?? Math.round((Math.random() * 100 + Math.random() * 100 + Math.random() * 100) / 3);
+  const tahminiMin = Math.max(0, Math.round(gercekKalite - tahminGenisligi / 2));
+  const tahminiMax = Math.min(100, Math.round(gercekKalite + tahminGenisligi / 2));
+  const tamMaas = 2 + Math.round(gercekKalite / 14);
+  const maas = secenekler.maasIndirimi ? Math.round(tamMaas * (1 - secenekler.maasIndirimi) * 10) / 10 : tamMaas;
+  const sadakat = secenekler.sadakat ?? Math.round(30 + Math.random() * 60);
+  const kisilik = secenekler.kisilik ?? EKIP_KISILIK_HAVUZU[Math.floor(Math.random() * EKIP_KISILIK_HAVUZU.length)];
+  const uye: EkipUyesi = {
+    id: randomUUID(),
+    isim,
+    rol,
+    gercekKalite,
+    tahminiMin,
+    tahminiMax,
+    maas,
+    sadakat,
+    kisilik,
+    ...(secenekler.cocukIsim ? { cocuk_isim: secenekler.cocukIsim } : {}),
+  };
+  state.ekip.push(uye);
+  maasCarpaniUygula(state, secenekler.buffCarpani ?? 1 + (gercekKalite - 50) / 500);
+  hayatOlayiEkle(state, "🤝", T(state.dil, "{0} ({1}) ekibine katıldı", [isim, K(state.dil, rol)]));
+  return uye;
+}
+
 /** Alkollü bir sosyalleşme mekânında (meyhane/pub/ordugâh çadırı) kaçıncı olayda "ayyaş" damgası kalıcı olarak vurulur. */
 const AYYAS_ESIGI = 3;
 
@@ -799,8 +870,6 @@ interface Oturum {
    * mekân/ana olay tekrar üretilince buradan geri yüklenir/temizlenir.
    */
   sakliOlay: { olay: OlayTanimi; senaryo: SenaryoResponse } | null;
-  /** Son GET /evlilik-adaylari ile üretilen adaylar — teklif bunlardan biri olmalı (uyum istemciden alınmaz). */
-  evlilikAdaylari?: EvlilikAdayi[];
 }
 
 const oturumlar = new Map<string, Oturum>();
@@ -1199,17 +1268,36 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
       zorlananId = hizipGirisId;
     }
   }
-  // 29 yaşına kadar hiç evlenmemiş ve evlilik teklifiyle hiç karşılaşmamışsa
-  // (ne ilk teklif ne de ikinci teklif zinciri), garanti bir kez zorla tetiklenir.
+  // Eşiyle uzun süre (7+ yıl) hiç vakit geçirmeyen evli karaktere bir kez özel uyarı olayı
+  // zorlanır (yıllık gizli düşüş/ihmal cezası zaten işliyor; bu, oyuncuya haber verir).
   if (
     !zorlananId &&
     !milestoneKilitli &&
-    oturum.state.yas >= 29 &&
-    !oturum.state.etiketler.includes("medeni:evli") &&
-    !oturum.state.gecmis_olaylar.includes("iliski_evlilik_teklifi") &&
-    !oturum.state.gecmis_olaylar.includes("iliski_ikinci_teklif")
+    oturum.state.es_adi &&
+    !oturum.state.es_ihmal_uyari_goruldu &&
+    AS.ihmalYili(oturum.state) >= IHMAL_UYARI_YIL
   ) {
-    zorlananId = "iliski_evlilik_teklifi";
+    oturum.state.es_ihmal_uyari_goruldu = true;
+    zorlananId = "iliski_es_ihmal_uyarisi";
+  }
+  // Aşk evliliği yolu: 27 ve 36 yaşında (önceki dönemde hiç tanışma yaşanmamışsa) ve yılda %4 ihtimalle
+  // "göz göze" olayı — bekar ya da evli; vazgeçilen tanışmanın nostaljisi 4-6 yıl sonra geri gelir.
+  if (!zorlananId && !milestoneKilitli) {
+    const donum = AK.tanismaDonumEtiketi(oturum.state);
+    if (donum) etiketEkle(oturum.state, [donum.etiket]);
+    if (donum?.zorla) {
+      zorlananId = "iliski_tanisma_firsati";
+    } else if (oturum.state.etiketler.includes("tanisma_firsati_bekliyor") && AK.tanismaBaslatilabilirMi(oturum.state)) {
+      etiketSil(oturum.state, ["tanisma_firsati_bekliyor"]);
+      zorlananId = "iliski_tanisma_firsati";
+    } else if (
+      oturum.state.nostalji_yili != null &&
+      oturum.state.yil >= oturum.state.nostalji_yili &&
+      AK.tanismaBaslatilabilirMi(oturum.state)
+    ) {
+      oturum.state.nostalji_yili = null;
+      zorlananId = "iliski_nostalji";
+    }
   }
   // Rütbe 4'e (5 kademeli merdivende "başarılı kariyer" eşiği) ulaşan bir
   // karaktere, şansa bırakmadan bir kez şehir yönetimi arenasına giriş teklifi
@@ -1710,73 +1798,6 @@ export async function secimUygula(id: string, secenekIndex: number): Promise<Sec
   return sonucuUygulaVeIlerlet(oturum, mevcutOlay, etki, basarili, eskiRutbeSeviye, komikOlumRiskliSecenekMi, mesajCeviri);
 }
 
-/** Doğum denemesi cooldown'u (yıl) — bu kadar yıl geçmeden yeni çocuk olmaz
- * (çocuklar arası asgari düzenli aralık). */
-const DOGUM_COOLDOWN_YIL = 4;
-/** Yaşayan+ölü toplam çocuk tavanı — bunun üstünde doğum denenmez. */
-const DOGUM_COCUK_TAVANI = 8;
-/** Cooldown eşiğini aştıktan sonra her ek bekleme yılı şansa eklenen "sabır" payı —
- * evlilik makul durumdaysa (es_puani ≥ 30) doğumun rastgele değil DÜZENLİ/öngörülebilir
- * bir aralıkta gerçekleşmesini sağlar: kötü bir zar birkaç yıl doğumu geciktirebilir ama
- * ilişki iyiyse birikerek neredeyse kesin hale gelir. */
-const DOGUM_SABIR_PAYI_YILLIK = 0.14;
-const DOGUM_YILLIK_SANS_TAVANI = 0.92;
-
-/**
- * Evli bir karakterde, eşle ilişkiye (es_puani) bağlı, cooldown'lu bir yıllık doğum
- * zarı atar. es_puani ≤ 30 iken hiç doğum olmaz; üstündeyse taban şans es_puani'yle
- * büyür VE cooldown sonrası her geçen yıl "sabır payı" ekleyerek şansı yükseltir —
- * böylece çocuklar tamamen şansa bağlı, seyrek/düzensiz bir olay olmak yerine, iyi
- * giden bir evlilikte birkaç yıl içinde güvenilir biçimde gerçekleşir.
- * Başarılıysa bir çocuk ekler ve `hayat_hikayesi`'ne yazar; anlatı cümlesi döner.
- */
-function dogumDenemesiUygula(state: CharacterState, yasArtisi: number): string | null {
-  if (!state.es_adi) return null;
-  if (state.yas >= 55) return null;
-  if (
-    state.etiketler.includes("hapiste") ||
-    state.etiketler.includes("yolculukta") ||
-    state.etiketler.includes("veba_hastasi")
-  ) {
-    return null;
-  }
-  if (state.cocuklar.length >= DOGUM_COCUK_TAVANI) return null;
-  const sonDogum = typeof state.son_dogum_yili === "number" ? state.son_dogum_yili : -9999;
-  const gecenYil = state.yil - sonDogum;
-  if (gecenYil < DOGUM_COOLDOWN_YIL) return null;
-
-  // es_puani 30 → 0, 100 → 1 arası lineer taban çarpanı.
-  const iliskiCarpani = Math.max(0, Math.min(1, (state.es_puani - 30) / 70));
-  if (iliskiCarpani <= 0) return null;
-  const bekleyisYil = gecenYil - DOGUM_COOLDOWN_YIL;
-  const yillikSans = Math.min(
-    DOGUM_YILLIK_SANS_TAVANI,
-    iliskiCarpani * 0.16 + bekleyisYil * DOGUM_SABIR_PAYI_YILLIK
-  );
-  let oldu = false;
-  for (let i = 0; i < yasArtisi; i++) {
-    if (Math.random() < yillikSans) {
-      oldu = true;
-      break;
-    }
-  }
-  if (!oldu) return null;
-
-  const isim = rastgeleBirIsimSec(state.cag, state.bolge, [
-    state.dost_adi,
-    state.rakip_adi,
-    state.es_adi ?? "",
-    state.isim ?? "",
-    ...state.cocuklar.map((c) => c.isim),
-  ]);
-  state.cocuklar.push({ isim, dogum_yili: state.yil, yasiyor: true, iliski: 65 });
-  state.cocuk_sayisi = state.cocuklar.filter((c) => c.yasiyor).length;
-  state.son_dogum_yili = state.yil;
-  etiketEkle(state, ["cocuk_var"]);
-  hayatOlayiEkle(state, "👶", T(state.dil, "{0} doğdu", [isim]));
-  return T(state.dil, "👶 Eşin {0} ile aranız iyiydi; bir bebeğiniz oldu: {1}.", [state.es_adi, isim]);
-}
-
 async function sonucuUygulaVeIlerlet(
   oturum: Oturum,
   mevcutOlay: OlayTanimi,
@@ -1883,6 +1904,7 @@ async function sonucuUygulaVeIlerlet(
   const sucSeviyesiTutuklanmaAni = state.suc_seviyesi;
   if (etki.suc_seviyesi_ayarla !== undefined) state.suc_seviyesi = etki.suc_seviyesi_ayarla;
   etki.suc_degisim = sucDegisimiHesapla(sucOnce, state.suc_seviyesi);
+  if (etki.suc_degisim >= SUC_ES_ESIGI) AS.esBarDusur(state, SUC_ES_ZARARI); // ağır suç eşin güvenini sarsar
   etkenGunluguNotEt(state, mevcutOlay.baslik, etki);
   // Veba hastalığı ölüm riski: yalnız hastayken (veba_hastasi) anlamlı; olay
   // seçimi bu turdaki ölüm zarından ÖNCE uygulanır (vebaHastaligiKontrol).
@@ -1922,29 +1944,30 @@ async function sonucuUygulaVeIlerlet(
   }
 
   if (etki.es_ata) {
-    // Oyuncu karakteri erkek — eş her zaman kadın isim havuzundan seçilir.
-    state.es_adi = rastgeleCinsiyetliIsimSec(state.cag, state.bolge, "kadin", [state.dost_adi, state.rakip_adi, state.isim ?? ""]);
-    state.es_puani = 60;
-    state.es_meslek = MESLEKLER[Math.floor(Math.random() * MESLEKLER.length)];
-    const esRutbeTanimi = rutbeTanimiGetir(state.es_meslek, state.cag, state.din_kultur);
-    state.es_rutbe = esRutbeTanimi
-      ? esRutbeTanimi.unvanlar[Math.floor(Math.random() * esRutbeTanimi.unvanlar.length)]
-      : state.es_meslek;
-    hayatOlayiEkle(state, "💍", T(state.dil, "{0} ile evlendi", [state.es_adi]));
+    // Olay kaynaklı evlilik (eski akış / ara olaylar): yeni eş modeline oturtulur —
+    // oyuncu karakteri erkek, eş her zaman kadın isim havuzundan seçilir.
+    const olayEsiAdi = rastgeleCinsiyetliIsimSec(state.cag, state.bolge, "kadin", [state.dost_adi, state.rakip_adi, state.isim ?? ""]);
+    AS.esiOlaydanAta(state, olayEsiAdi);
+    hayatOlayiEkle(state, "💍", T(state.dil, "{0} ile evlendi", [olayEsiAdi]));
   }
   if (etki.es_kaybet) {
-    const kaybedilenEs = state.es_adi;
-    state.es_adi = null;
-    state.es_puani = 0;
-    state.es_meslek = null;
-    state.es_rutbe = null;
-    etiketSil(state, ["medeni:evli"]);
+    const kaybedilenEs = esiSifirla(state, "bosanma");
     if (kaybedilenEs) hayatOlayiEkle(state, "💔", T(state.dil, "{0} ile yolları ayrıldı", [kaybedilenEs]));
   }
   if (state.es_adi) state.es_puani += etki.es_puani ?? 0;
+  if (etki.es_ilgi_gosterildi && state.es_adi) state.es_son_zaman_yili = state.yil;
+  if (etki.tanisma_baslat && AK.tanismaBaslatilabilirMi(state)) AK.tanismaBaslat(state, AK.tanismaMekanSec(state));
+  if (etki.tanisma_nostalji && state.es_adi) AK.sadakatOdulu(state);
+  else if (etki.tanisma_nostalji && state.nostalji_yili == null) {
+    state.nostalji_yili = state.yil + NOSTALJI_YIL_ARALIK[0] + Math.floor(Math.random() * (NOSTALJI_YIL_ARALIK[1] - NOSTALJI_YIL_ARALIK[0] + 1));
+  }
 
   if (etki.cocuk_ekle) {
+    // Evlat edinme (yetim) dışındaki olay doğumları eşin 5 doğum / bekleme kurallarına tabidir;
+    // ömür boyu toplam çocuk tavanı (8) her durumda geçerlidir.
+    const evlatEdinme = mevcutOlay.id === "aile2_yetim_evlat_alma";
     for (let i = 0; i < etki.cocuk_ekle; i++) {
+      if (!AS.eventCocukuIzinli(state, evlatEdinme)) break;
       const isim = rastgeleBirIsimSec(state.cag, state.bolge, [
         state.dost_adi,
         state.rakip_adi,
@@ -1952,11 +1975,12 @@ async function sonucuUygulaVeIlerlet(
         state.isim ?? "",
         ...state.cocuklar.map((c) => c.isim),
       ]);
-      state.cocuklar.push({ isim, dogum_yili: state.yil, yasiyor: true, iliski: 65 });
+      state.cocuklar.push({ isim, dogum_yili: state.yil, yasiyor: true, iliski: 65, yatkinlik: AS.cocukYatkinligi() });
+      AS.eventCocuguKaydet(state, state.yil, evlatEdinme);
       hayatOlayiEkle(state, "👶", T(state.dil, "{0} doğdu", [isim]));
     }
     state.cocuk_sayisi = state.cocuklar.filter((c) => c.yasiyor).length;
-    etiketEkle(state, ["cocuk_var"]);
+    if (state.cocuk_sayisi > 0) etiketEkle(state, ["cocuk_var"]);
   }
   if (etki.cocuk_kaybet) {
     const yasayanlar = state.cocuklar.filter((c) => c.yasiyor);
@@ -1976,36 +2000,7 @@ async function sonucuUygulaVeIlerlet(
     }
   }
 
-  if (etki.ekip_ekle) {
-    const isim = rastgeleBirIsimSec(state.cag, state.bolge, [
-      state.dost_adi,
-      state.rakip_adi,
-      state.es_adi ?? "",
-      state.isim ?? "",
-      ...state.ekip.map((e) => e.isim),
-    ]);
-    // Üç zar ortalaması: uçlar (çok kötü/çok iyi) nadir, ortalama tutulmak daha olası — "bazen hasta, bazen aşırı başarılı" hissi.
-    const gercekKalite = Math.round((Math.random() * 100 + Math.random() * 100 + Math.random() * 100) / 3);
-    const genislik = etki.ekip_ekle.tahminGenisligi;
-    const tahminiMin = Math.max(0, Math.round(gercekKalite - genislik / 2));
-    const tahminiMax = Math.min(100, Math.round(gercekKalite + genislik / 2));
-    const maas = 2 + Math.round(gercekKalite / 14);
-    const sadakat = Math.round(30 + Math.random() * 60);
-    const kisilik = EKIP_KISILIK_HAVUZU[Math.floor(Math.random() * EKIP_KISILIK_HAVUZU.length)];
-    state.ekip.push({
-      id: randomUUID(),
-      isim,
-      rol: etki.ekip_ekle.rol,
-      gercekKalite,
-      tahminiMin,
-      tahminiMax,
-      maas,
-      sadakat,
-      kisilik,
-    });
-    maasCarpaniUygula(state, 1 + (gercekKalite - 50) / 500);
-    hayatOlayiEkle(state, "🤝", T(state.dil, "{0} ({1}) ekibine katıldı", [isim, K(state.dil, etki.ekip_ekle.rol)]));
-  }
+  if (etki.ekip_ekle) ekipUyesiEkle(state, etki.ekip_ekle.rol, etki.ekip_ekle.tahminGenisligi);
   if (etki.ekip_kaybi && state.ekip.length > 0) {
     const idx = Math.floor(Math.random() * state.ekip.length);
     const kaybedilen = state.ekip.splice(idx, 1)[0];
@@ -2062,6 +2057,10 @@ async function sonucuUygulaVeIlerlet(
   }
   const hapistenCiktiBuEtki =
     !!etki.etiket_sil?.includes("hapiste") && state.etiketler.includes("hapiste");
+  // Karanlık bir sır (sir:*) edinmek eşin ilişkisine zarar verir.
+  if (etki.etiket_ekle?.some((e) => e.startsWith("sir:") && !state.etiketler.includes(e))) {
+    AS.esBarDusur(state, SIR_ES_ZARARI);
+  }
   etiketEkle(state, etki.etiket_ekle);
   etiketSil(state, etki.etiket_sil);
   // Hapse yeni girildiyse ceza süresi tutuklanma anındaki suc_seviyesi bandına
@@ -2294,12 +2293,22 @@ async function sonucuUygulaVeIlerlet(
           if (aileMesaji) {
             zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${aileMesaji}` : aileMesaji;
           }
-          // Eşle ilişkiye bağlı doğum denemesi (§33) — es_puani çok belirleyici,
-          // cooldown sonsuz çocuğu engeller. İçerik gameEngine'de çünkü çocuk
-          // ismi üretimi burada.
-          const dogumMesaji = dogumDenemesiUygula(state, yasArtisi);
+          // Eşin yıllık mantığı (gizli düşüş, ihmal, terk, yaşlılık ölümü, yas) + yeni doğum kuralları.
+          for (const esMesaji of AS.esYillikUygula(state, yasArtisi)) {
+            zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${esMesaji}` : esMesaji;
+          }
+          for (const sevgiliMesaji of AK.sevgiliYillikUygula(state, yasArtisi)) {
+            zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${sevgiliMesaji}` : sevgiliMesaji;
+          }
+          // Rastgele "göz göze" fırsatı (yılda %4): bir sonraki /scenario'da olay olarak gelir.
+          if (AK.tanismaYillikZar(state, yasArtisi)) etiketEkle(state, ["tanisma_firsati_bekliyor"]);
+          const dogumMesaji = AS.dogumDenemesi(state, yasArtisi);
           if (dogumMesaji) {
             zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${dogumMesaji}` : dogumMesaji;
+          }
+          // 15 yaşına gelen çocuğa yanında çalışma daveti hakkı; ölen çocuk ekipten düşer.
+          for (const cocukMesaji of AS.cocukIsYillikUygula(state)) {
+            zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${cocukMesaji}` : cocukMesaji;
           }
           // Kariyer sayfası: yönetimle bağların soğuması + dayatılan talep (§35).
           const yonetimMesaji = yonetimYillikUygula(state, yasArtisi);
@@ -2605,134 +2614,6 @@ export async function yasamSecimiDegistir(id: string, secimId: string): Promise<
   return { state, mesaj };
 }
 
-/** Bir karakterin şu an evlenmeye uygun olup olmadığını kontrol eder; değilse sebebi fırlatır. */
-function evlilikUygunlukKontrolEt(state: CharacterState): void {
-  if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
-  if (state.yas < 18) throw new Error("Evlenmek için henüz çok gençsin.");
-  if (state.etiketler.includes("medeni:evli")) throw new Error("Zaten evlisin.");
-  if (state.etiketler.includes("hapiste")) throw new Error("Hapisteyken evlenemezsin.");
-  if (state.etiketler.includes("yolculukta")) throw new Error("Yolculuktayken evlenemezsin.");
-}
-
-/** Bir evlilik adayının oyuncunun kişiliğiyle kaba bir uyum yüzdesi — paylaşılan özellik bonus verir, çelişen özellik kırar. */
-function evlilikUyumHesapla(state: CharacterState, adayKisilik: [string, string]): number {
-  let uyum = 45 + Math.floor(Math.random() * 30); // taban 45-74
-  for (const ozellik of adayKisilik) {
-    if (state.kisilik.includes(ozellik)) uyum += 12;
-    const tanim = kisilikGetir(ozellik);
-    if (tanim && state.kisilik.some((sahip) => tanim.celisenler.includes(sahip))) uyum -= 15;
-  }
-  return Math.max(15, Math.min(95, uyum));
-}
-
-function rastgeleEvlilikAdayiUret(state: CharacterState): EvlilikAdayi {
-  const meslek = MESLEKLER[Math.floor(Math.random() * MESLEKLER.length)];
-  const rutbeTanimi = rutbeTanimiGetir(meslek, state.cag, state.din_kultur);
-  const rutbe = rutbeTanimi
-    ? rutbeTanimi.unvanlar[Math.floor(Math.random() * rutbeTanimi.unvanlar.length)]
-    : meslek;
-  const kisilik = rastgeleKisilikCifti();
-  const disariBirak = [state.dost_adi, state.rakip_adi, state.es_adi, state.isim].filter((a): a is string => Boolean(a));
-  // Oyuncu karakteri erkek — evlilik adayları her zaman kadın isim havuzundan.
-  const isim = rastgeleCinsiyetliIsimSec(state.cag, state.bolge, "kadin", disariBirak);
-  return { isim, meslek, rutbe, kisilik, uyumYuzdesi: evlilikUyumHesapla(state, kisilik) };
-}
-
-/** Olay beklemeden, oyuncunun istediği an açabileceği evlilik adayları listesi (2 aday, her çağrıda yeniden üretilir). Turu tüketmez. */
-export async function evlilikAdaylariGetir(id: string): Promise<EvlilikAdayi[]> {
-  const oturum = await oturumGetir(id);
-  const { state } = oturum;
-  evlilikUygunlukKontrolEt(state);
-  const adaylar = [rastgeleEvlilikAdayiUret(state), rastgeleEvlilikAdayiUret(state)];
-  oturum.evlilikAdaylari = adaylar;
-  return adaylar;
-}
-
-interface EvlilikTeklifSonucu {
-  state: CharacterState;
-  basarili: boolean;
-  mesaj: string;
-}
-
-/**
- * Bir aday listeden seçilip teklif edilir: başarı şansı adayın uyumYuzdesi'ne +
- * oyuncunun mutluluk/ün durumuna göre küçük bir düzeltmeye bağlıdır (zar atılır).
- * Reddedilirse hiçbir state değişikliği olmaz, tekrar denenebilir. Turu tüketmez.
- */
-export async function evlilikTeklifEt(id: string, aday: EvlilikAdayi): Promise<EvlilikTeklifSonucu> {
-  const oturum = await oturumGetir(id);
-  const { state } = oturum;
-  evlilikUygunlukKontrolEt(state);
-  if (
-    !aday ||
-    typeof aday.isim !== "string" ||
-    typeof aday.meslek !== "string" ||
-    typeof aday.rutbe !== "string" ||
-    !Array.isArray(aday.kisilik) ||
-    aday.kisilik.length !== 2
-  ) {
-    throw new Error("Geçersiz evlilik adayı.");
-  }
-  // Aday sunucunun ürettiği listeden olmalı; uyum yüzdesi istemciden ALINMAZ
-  // (istemci uyumYuzdesi: 95 gönderip teklifi garantileyebiliyordu). Liste bellekte
-  // yoksa (sunucu yeniden başladı) alanlar doğrulanıp uyum yeniden hesaplanır.
-  const kayitli = oturum.evlilikAdaylari?.find(
-    (a) =>
-      a.isim === aday.isim &&
-      a.meslek === aday.meslek &&
-      a.rutbe === aday.rutbe &&
-      a.kisilik[0] === aday.kisilik[0] &&
-      a.kisilik[1] === aday.kisilik[1]
-  );
-  if (!kayitli) {
-    const isimTemiz = aday.isim.trim();
-    if (
-      !isimTemiz ||
-      isimTemiz.length > 40 ||
-      uygunsuzMu(isimTemiz) ||
-      !MESLEKLER.includes(aday.meslek) ||
-      aday.rutbe.length > 60 ||
-      !aday.kisilik.every((k) => typeof k === "string" && kisilikGetir(k) !== undefined)
-    ) {
-      throw new Error("Geçersiz evlilik adayı.");
-    }
-  }
-  const uyum = kayitli
-    ? kayitli.uyumYuzdesi
-    : evlilikUyumHesapla(state, [aday.kisilik[0], aday.kisilik[1]] as [string, string]);
-  const sans = Math.max(
-    10,
-    Math.min(90, uyum + Math.round((state.mutluluk - 50) / 5) + Math.round((state.un - 20) / 10))
-  );
-  const basarili = Math.random() * 100 < sans;
-  if (basarili) {
-    state.es_adi = aday.isim;
-    state.es_meslek = aday.meslek;
-    state.es_rutbe = aday.rutbe;
-    state.es_puani = 55 + Math.round(uyum / 5);
-    etiketEkle(state, ["medeni:evli"]);
-    hayatOlayiEkle(
-      state,
-      "💍",
-      T(state.dil, "{0} ile evlendi ({1}, {2})", [
-        aday.isim,
-        K(state.dil, aday.kisilik[0]),
-        K(state.dil, aday.kisilik[1]),
-      ])
-    );
-    clampStats(state);
-  }
-  // Reddeden aday listeden düşer (aynı adaya tekrar tekrar teklif edilemesin; yeni adaylar istenebilir).
-  if (oturum.evlilikAdaylari) {
-    oturum.evlilikAdaylari = basarili ? [] : oturum.evlilikAdaylari.filter((a) => a !== kayitli);
-  }
-  const mesaj = basarili
-    ? T(state.dil, "{0} teklifini kabul etti! Artık evlisin.", [aday.isim])
-    : T(state.dil, "{0} teklifini nazikçe geri çevirdi. Belki başka zaman...", [aday.isim]);
-  await oturumKaydet(state);
-  return { state, basarili, mesaj };
-}
-
 // ---------------------------------------------------------------------------
 // Aile ekranı: eş/çocuk etkileşimleri + bekleyen para talebi (§33)
 // Sosyalleşme/mağaza deseni: hepsi tur harcamaz, oturumKaydet sonrası döner.
@@ -2755,10 +2636,6 @@ interface AileEtkilesimTanimi {
 }
 
 const AILE_ETKILESIMLERI: AileEtkilesimTanimi[] = [
-  { id: "es_hediye", ikon: "🎁", hedef: "es", tabanMaliyet: 10, cooldownYil: 3, esPuani: 12, mutluluk: 3 },
-  { id: "es_zaman", ikon: "⏳", hedef: "es", tabanMaliyet: 0, cooldownYil: 3, esPuani: 7, mutluluk: 4, saglik: 2 },
-  { id: "es_sevgi", ikon: "💋", hedef: "es", tabanMaliyet: 0, cooldownYil: 2, esPuani: 5, mutluluk: 3 },
-  { id: "es_gezi", ikon: "🌇", hedef: "es", tabanMaliyet: 14, cooldownYil: 4, esPuani: 9, mutluluk: 6 },
   { id: "cocuk_oyna", ikon: "🎠", hedef: "cocuk", tabanMaliyet: 0, cooldownYil: 3, cocukIliski: 8, mutluluk: 4 },
   { id: "cocuk_hediye", ikon: "🧸", hedef: "cocuk", tabanMaliyet: 8, cooldownYil: 3, cocukIliski: 12, mutluluk: 3 },
   { id: "cocuk_egitim", ikon: "🎓", hedef: "cocuk", tabanMaliyet: 18, cooldownYil: 6, cocukIliski: 9, un: 2 },
@@ -2774,9 +2651,54 @@ function aileEtkilesimMaliyeti(state: CharacterState, tanim: AileEtkilesimTanimi
   return Math.max(1, paraYuvarla(tanim.tabanMaliyet * enflasyonCarpani(state)));
 }
 
+export interface MantikAdayGorunum {
+  isim: string;
+  meslek: string;
+  rutbe: string;
+  yas: number;
+  grup: "genc" | "olgun";
+  /** Yalnız ilk huy görünür; ikincisi evlilikten sonra açılır. */
+  huy: AileHuy;
+  ceyiz: number;
+  meslekBonusu: number;
+}
+
+export interface MantikDurumu {
+  acik: boolean;
+  /** acik=false ise sebep kodu (istemci çevirir): evli | yas_dusuk | yas_donemi | kilit | hapis | bekleyen_dugun. */
+  sebep: string | null;
+  minYas: number;
+  kilitKalanYil: number;
+  yasKalanYil: number;
+  yenilemeKalanYil: number;
+  adaylar: MantikAdayGorunum[];
+  teklifSecenekleri: { hediye: TeklifHediyesi; maliyet: number; sans: number }[];
+}
+
 export interface AileDurumu {
-  es: { adi: string; meslek: string | null; rutbe: string | null; puan: number } | null;
-  cocuklar: { isim: string; dogumYili: number; yas: number; yasiyor: boolean; iliski: number }[];
+  es: {
+    adi: string;
+    meslek: string | null;
+    rutbe: string | null;
+    puan: number;
+    yas: number | null;
+    tur: EvlilikTuru | null;
+    grup: "genc" | "olgun" | null;
+    huylar: AileHuy[];
+    meslekBonusu: number;
+    /** Son "zaman geçir"den bu yana geçen yıl (uyarı için; gizli yıllık düşüş DEĞİL). */
+    ihmalYili: number;
+    dogumSayisi: number;
+  } | null;
+  cocuklar: {
+    isim: string;
+    dogumYili: number;
+    yas: number;
+    yasiyor: boolean;
+    iliski: number;
+    /** Yanında çalışma daveti durumu (yatkınlık bilerek gönderilmez — davete verilen tepkide anlaşılır). */
+    isDurumu: "bekliyor" | "red_tepkisi" | "ise_alindi" | "reddetti" | null;
+  }[];
   etkilesimler: { id: string; ikon: string; hedef: AileEtkilesimHedef; maliyet: number }[];
   /** Etkileşim kilit anahtarı → tekrar açılacağı oyun yılı (istemci kalanYil'i guncelYil ile hesaplar). */
   kilitler: Record<string, number>;
@@ -2784,16 +2706,84 @@ export interface AileDurumu {
   guncelYil: number;
   para: number;
   paraBirimi: string;
+  /** Eş bar eylemlerinin güncel maliyetleri. */
+  esEylem: { hediyeUcuz: number; hediyePahali: number };
+  mantik: MantikDurumu;
+  /** Teklifi kabul edilmiş, bütçe seçimi bekleyen düğün. */
+  bekleyenDugun: { isim: string; meslek: string; rutbe: string; ceyiz: number; tur: EvlilikTuru } | null;
+  /** Aşk evliliği yolu: sevgili kartı (yalnız ilk huy görünür); yoksa null. */
+  sevgili: {
+    isim: string;
+    meslek: string;
+    rutbe: string;
+    yas: number;
+    huy: AileHuy;
+    bar: number;
+    /** Evlilik teklifi için kalan yıl (negatif/0 = süre doldu). */
+    kalanYil: number;
+    darildi: boolean;
+    meslekBonusu: number;
+    gonulMaliyet: number;
+    gonulKilitKalanYil: number;
+    teklifSansi: number;
+  } | null;
+  /** Süren tanışma var mı (istemci penceresi açar). */
+  tanismaAktif: boolean;
+  dugunSecenekleri: { butce: DugunButcesi; maliyet: number; iliski: number; un: number }[];
 }
 
-/** Aile ekranının ihtiyaç duyduğu her şey: eş/çocuk özeti, etkileşim kataloğu + kilitler, bekleyen talep. Turu tüketmez. */
+function mantikSebebi(state: CharacterState): string | null {
+  if (state.etiketler.includes("medeni:evli") || state.es_adi) return "evli";
+  if (state.etiketler.includes("hapiste") || state.etiketler.includes("yolculukta")) return "hapis";
+  if (state.bekleyen_dugun) return "bekleyen_dugun";
+  if (state.sevgili || state.aktif_tanisma) return "sevgili";
+  if (state.yas < MANTIK_MIN_YAS) return "yas_dusuk";
+  if (AS.yasDonemindeMi(state)) return "yas_donemi";
+  if (state.yil < state.mantik_kilit_yili) return "kilit";
+  return null;
+}
+
+/** Aile ekranının ihtiyaç duyduğu her şey: eş/çocuk özeti, mantık adayları, etkileşim kataloğu + kilitler, bekleyen talep/düğün. Turu tüketmez. */
 export async function aileDurumGetir(id: string): Promise<AileDurumu> {
   const oturum = await oturumGetir(id);
   const { state } = oturum;
   if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
-  return {
+
+  const sebep = mantikSebebi(state);
+  let degisti = false;
+  if (sebep === null) {
+    const onceki = state.mantik_adaylar;
+    AS.mantikListesiniHazirla(state);
+    degisti = onceki !== state.mantik_adaylar;
+  }
+  const adaylar: MantikAdayGorunum[] = sebep === null
+    ? state.mantik_adaylar.map((a) => ({
+        isim: a.isim,
+        meslek: a.meslek,
+        rutbe: a.rutbe,
+        yas: a.yas,
+        grup: a.grup,
+        huy: a.huylar[0],
+        ceyiz: a.ceyiz,
+        meslekBonusu: a.meslek_bonusu,
+      }))
+    : [];
+
+  const durum: AileDurumu = {
     es: state.es_adi
-      ? { adi: state.es_adi, meslek: state.es_meslek, rutbe: state.es_rutbe, puan: Math.round(state.es_puani) }
+      ? {
+          adi: state.es_adi,
+          meslek: state.es_meslek,
+          rutbe: state.es_rutbe,
+          puan: Math.round(state.es_puani),
+          yas: AS.esYasi(state),
+          tur: state.es_evlilik_turu,
+          grup: state.es_grup,
+          huylar: [...state.es_huylar],
+          meslekBonusu: state.es_meslek_bonusu,
+          ihmalYili: AS.ihmalYili(state),
+          dogumSayisi: state.es_dogum_sayisi,
+        }
       : null,
     cocuklar: state.cocuklar.map((c) => ({
       isim: c.isim,
@@ -2801,6 +2791,7 @@ export async function aileDurumGetir(id: string): Promise<AileDurumu> {
       yas: Math.max(0, state.yil - c.dogum_yili),
       yasiyor: c.yasiyor,
       iliski: Math.round(typeof c.iliski === "number" ? c.iliski : 60),
+      isDurumu: c.is_durumu ?? null,
     })),
     etkilesimler: AILE_ETKILESIMLERI.map((t) => ({
       id: t.id,
@@ -2813,7 +2804,301 @@ export async function aileDurumGetir(id: string): Promise<AileDurumu> {
     guncelYil: state.yil,
     para: state.para,
     paraBirimi: state.para_birimi,
+    esEylem: {
+      hediyeUcuz: AS.hediyeVerMaliyeti(state, "ucuz"),
+      hediyePahali: AS.hediyeVerMaliyeti(state, "pahali"),
+    },
+    mantik: {
+      acik: sebep === null,
+      sebep,
+      minYas: MANTIK_MIN_YAS,
+      kilitKalanYil: Math.max(0, state.mantik_kilit_yili - state.yil),
+      yasKalanYil: Math.max(0, state.yas_bitis_yili - state.yil),
+      yenilemeKalanYil: Math.max(0, state.mantik_yenileme_yili - state.yil),
+      adaylar,
+      teklifSecenekleri: (["sade", "ucuz", "pahali"] as TeklifHediyesi[]).map((h) => ({
+        hediye: h,
+        maliyet: AS.teklifHediyeMaliyeti(state, h),
+        sans: AS.mantikTeklifSansi(state, h),
+      })),
+    },
+    bekleyenDugun: state.bekleyen_dugun
+      ? {
+          isim: state.bekleyen_dugun.isim,
+          meslek: state.bekleyen_dugun.meslek,
+          rutbe: state.bekleyen_dugun.rutbe,
+          ceyiz: state.bekleyen_dugun.ceyiz,
+          tur: state.bekleyen_dugun.tur,
+        }
+      : null,
+    sevgili: state.sevgili
+      ? {
+          isim: state.sevgili.isim,
+          meslek: state.sevgili.meslek,
+          rutbe: state.sevgili.rutbe,
+          yas: Math.max(0, state.yil - state.sevgili.dogum_yili),
+          huy: state.sevgili.huylar[0],
+          bar: Math.round(state.sevgili.iliski),
+          kalanYil: state.sevgili.son_yil - state.yil,
+          darildi: state.sevgili.darildi,
+          meslekBonusu: state.sevgili.meslek_bonusu,
+          gonulMaliyet: AK.gonulAlMaliyeti(state),
+          gonulKilitKalanYil: Math.max(0, state.sevgili.gonul_kilit_yili - state.yil),
+          teklifSansi: AK.sevgiliTeklifSansi(state.sevgili),
+        }
+      : null,
+    tanismaAktif: state.aktif_tanisma != null,
+    dugunSecenekleri: (["ucuz", "orta", "pahali"] as DugunButcesi[]).map((b) => ({
+      butce: b,
+      maliyet: AS.dugunMaliyeti(state, b),
+      iliski: DUGUN[b].iliski,
+      un: DUGUN[b].un,
+    })),
   };
+  if (degisti) await oturumKaydet(state);
+  return durum;
+}
+
+export interface MantikTeklifSonucu {
+  state: CharacterState;
+  kabul: boolean;
+  mesaj: string;
+}
+
+/** Mantık evliliği: listeden bir adaya (isteğe bağlı hediyeyle) teklif. Kabulde düğün bütçesi seçimi beklenir. Turu tüketmez. */
+export async function mantikTeklifEt(id: string, adayIndex: number, hediye: TeklifHediyesi): Promise<MantikTeklifSonucu> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  const sonuc = AS.mantikTeklifEt(state, adayIndex, hediye);
+  const mesaj = sonuc.kabul
+    ? T(state.dil, "{0} teklifini kabul etti! Şimdi düğün bütçeni seç.", [sonuc.aday.isim])
+    : T(state.dil, "{0} teklifini nazikçe geri çevirdi. Belki başka zaman...", [sonuc.aday.isim]) +
+      " " +
+      T(state.dil, "Bir süre yeni teklif yapamazsın.");
+  await oturumKaydet(state);
+  return { state, kabul: sonuc.kabul, mesaj };
+}
+
+export interface DugunSonucuDTO {
+  state: CharacterState;
+  mesaj: string;
+}
+
+/** Bekleyen düğünü seçilen bütçeyle gerçekleştirir; eş modeli kurulur. Turu tüketmez. */
+export async function dugunYap(id: string, butce: DugunButcesi): Promise<DugunSonucuDTO> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  const sonuc = AS.dugunYap(state, butce);
+  let mesaj = T(state.dil, "💍 {0} ile evlendin!", [sonuc.isim]);
+  if (sonuc.ceyiz > 0) {
+    mesaj += " " + T(state.dil, "Çeyiz olarak {0} {1} getirdi.", [sonuc.ceyiz, state.para_birimi]);
+  }
+  await oturumKaydet(state);
+  return { state, mesaj };
+}
+
+export interface EsEylemSonucuDTO {
+  state: CharacterState;
+  mesaj: string;
+}
+
+// ---------------------------------------------------------------------------
+// Aşk evliliği: tanışma diyaloğu + sevgili (game/askSistemi.ts). Hiçbiri turu tüketmez.
+// ---------------------------------------------------------------------------
+
+export interface TanismaDurumu {
+  aktif: boolean;
+  /** 0 = göz göze (yanına git / vazgeç), 1..toplam = diyalog adımı. */
+  adim: number;
+  toplam: number;
+  mekan: string;
+  /** İlk karşılaşma cümlesi (mekân + aday adı). */
+  giris: string;
+  aday: { isim: string; meslek: string; rutbe: string; yas: number; gorunum: string } | null;
+  /** Şu anki adımın başlığı (adim >= 1). */
+  istek: string | null;
+  secenekler: { metin: string }[];
+  /** Önceki adımın tepkisi (düz anlatı). */
+  sonTepki: string | null;
+}
+
+function tanismaDurumuUret(state: CharacterState): TanismaDurumu {
+  const t = state.aktif_tanisma;
+  if (!t) {
+    return { aktif: false, adim: 0, toplam: 0, mekan: "", giris: "", aday: null, istek: null, secenekler: [], sonTepki: null };
+  }
+  const dil = state.dil;
+  const cevir = (m: { tr: string; en: string }) => (dil === "en" ? m.en : m.tr).replace(/\{0\}/g, t.aday.isim);
+  const girisSablon = TANISMA_MEKAN_GIRIS[t.mekan] ?? TANISMA_MEKAN_GIRIS.pazar_meydani;
+  const gorunum = TANISMA_GORUNUM[t.aday.gorunum % TANISMA_GORUNUM.length];
+  const giris = cevir(girisSablon) + " " + (dil === "en" ? gorunum.en : gorunum.tr) + ".";
+  const adimIndex = Math.min(Math.max(t.adim, 1), TANISMA_ADIM_METNI.length) - 1;
+  return {
+    aktif: true,
+    adim: t.adim,
+    toplam: t.toplam,
+    mekan: t.mekan,
+    giris,
+    aday: {
+      isim: t.aday.isim,
+      meslek: t.aday.meslek,
+      rutbe: t.aday.rutbe,
+      yas: t.aday.yas,
+      gorunum: dil === "en" ? gorunum.en : gorunum.tr,
+    },
+    istek: t.adim >= 1 ? cevir(TANISMA_ADIM_METNI[adimIndex]) : null,
+    secenekler:
+      t.adim >= 1
+        ? t.yaklasimlar.map((y) => ({ metin: cevir(TANISMA_SECENEK_METNI[y][adimIndex]) }))
+        : [],
+    sonTepki: t.son_tepki ? AK.tepkiMetniUret(dil, t.aday, t.son_tepki) : null,
+  };
+}
+
+export async function tanismaGetir(id: string): Promise<TanismaDurumu> {
+  const oturum = await oturumGetir(id);
+  if (!oturum.state.aktif) throw new Error("Oyun zaten bitmiş.");
+  return tanismaDurumuUret(oturum.state);
+}
+
+export interface TanismaYaniti {
+  state: CharacterState;
+  durum: TanismaDurumu;
+  /** Diyalog bitti mi (sonuç `mesaj`'da). */
+  bitti: boolean;
+  basarili: boolean | null;
+  /** Bu adımın tepkisi; vazgeçilince boş. */
+  tepki: string | null;
+  mesaj: string | null;
+}
+
+export async function tanismaYaklas(id: string): Promise<TanismaYaniti> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  AK.tanismaYaklas(state);
+  await oturumKaydet(state);
+  return { state, durum: tanismaDurumuUret(state), bitti: false, basarili: null, tepki: null, mesaj: null };
+}
+
+export async function tanismaVazgec(id: string): Promise<TanismaYaniti> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  const mesaj = AK.tanismaVazgec(state);
+  await oturumKaydet(state);
+  return { state, durum: tanismaDurumuUret(state), bitti: true, basarili: false, tepki: null, mesaj };
+}
+
+export async function tanismaSec(id: string, secenekIndex: number): Promise<TanismaYaniti> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  const sonuc = AK.tanismaSec(state, secenekIndex);
+  await oturumKaydet(state);
+  return {
+    state,
+    durum: tanismaDurumuUret(state),
+    bitti: sonuc.bitti,
+    basarili: sonuc.basarili,
+    tepki: sonuc.tepki,
+    mesaj: sonuc.mesaj,
+  };
+}
+
+export interface SevgiliSonucu {
+  state: CharacterState;
+  mesaj: string;
+  kabul?: boolean;
+}
+
+export async function sevgiliTeklifEt(id: string): Promise<SevgiliSonucu> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  const sonuc = AK.sevgiliTeklifEt(state);
+  const mesaj = sonuc.kabul
+    ? T(state.dil, "{0} teklifini kabul etti! Şimdi düğün bütçeni seç.", [sonuc.isim])
+    : T(state.dil, "{0} teklifini nazikçe geri çevirdi. Belki başka zaman...", [sonuc.isim]);
+  await oturumKaydet(state);
+  return { state, mesaj, kabul: sonuc.kabul };
+}
+
+export async function sevgiliGonulAl(id: string): Promise<SevgiliSonucu> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  const adi = state.sevgili?.isim ?? "";
+  AK.gonulAl(state);
+  await oturumKaydet(state);
+  return { state, mesaj: T(state.dil, "{0}'in gönlünü aldın; yüzü yeniden güldü.", [adi]) };
+}
+
+export async function sevgiliAyril(id: string): Promise<SevgiliSonucu> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  const adi = AK.sevgiliAyril(state);
+  await oturumKaydet(state);
+  return { state, mesaj: T(state.dil, "{0} ile yollarınızı ayırdınız.", [adi]) };
+}
+
+export interface CocukIseAlSonucu {
+  state: CharacterState;
+  kabul: boolean;
+  mesaj: string;
+}
+
+/** 15 yaşındaki çocuğu yanında çalışmaya davet eder: yatkına göre kabul/red; kabulde ekibe girer. Turu tüketmez. */
+export async function cocukIseAl(id: string, cocukIndex: number): Promise<CocukIseAlSonucu> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  const cocuk = AS.cocukDavetiKontrolEt(state, cocukIndex, "bekliyor");
+  if (!cocuk.yatkinlik) cocuk.yatkinlik = AS.cocukYatkinligi();
+  const kabul = AS.cocukKabulEder(cocuk);
+  let mesaj: string;
+  if (kabul) {
+    const { gercekKalite, maasIndirimi, buffCarpani } = AS.cocukEkipDegerleri();
+    const uye = ekipUyesiEkle(state, COCUK_EKIP_ROLU, 8, {
+      isim: cocuk.isim,
+      gercekKalite,
+      maasIndirimi,
+      sadakat: 100,
+      kisilik: "Sadık",
+      cocukIsim: cocuk.isim,
+      buffCarpani,
+    });
+    cocuk.is_durumu = "ise_alindi";
+    cocuk.ekip_id = uye.id;
+    cocuk.iliski = (typeof cocuk.iliski === "number" ? cocuk.iliski : 60) + 5;
+    state.mutluluk += 3;
+    mesaj = T(state.dil, "{0} teklifini sevinçle kabul etti; artık yanında çalışıyor.", [cocuk.isim]);
+  } else {
+    cocuk.is_durumu = "red_tepkisi";
+    mesaj = T(state.dil, "{0} teklifini reddetti: 'Bu iş bana göre değil.' Ona nasıl karşılık vereceksin?", [cocuk.isim]);
+  }
+  clampStats(state);
+  await oturumKaydet(state);
+  return { state, kabul, mesaj };
+}
+
+/** Reddedilen davete öfkelen / sakin karşıla. Turu tüketmez. */
+export async function cocukRedTepkisi(id: string, cocukIndex: number, tepki: "ofke" | "sakin"): Promise<CocukIseAlSonucu> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  const adi = AS.cocukRedTepkisiUygula(state, cocukIndex, tepki);
+  await oturumKaydet(state);
+  const mesaj =
+    tepki === "ofke"
+      ? T(state.dil, "{0}'e öfkelendin; aranıza soğukluk girdi.", [adi])
+      : T(state.dil, "{0}'in kararına sakince saygı gösterdin; aranız yumuşadı.", [adi]);
+  return { state, kabul: false, mesaj };
+}
+
+/** Eşle ilişki barı eylemi (zaman geçir / hediye ver). Turu tüketmez. */
+export async function esEylemYap(id: string, eylem: AS.EsEylemi, hediye?: "ucuz" | "pahali"): Promise<EsEylemSonucuDTO> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  const sonuc = AS.esEylemYap(state, eylem, hediye);
+  await oturumKaydet(state);
+  return { state, mesaj: sonuc.mesaj };
 }
 
 interface AileEtkilesimSonucu {
@@ -3465,8 +3750,19 @@ export async function ekipCikar(id: string, ekipId: string): Promise<EkipCikarSo
   if (index === -1) throw new Error("Böyle bir ekip üyesi yok.");
   const [cikarilan] = state.ekip.splice(index, 1);
   hayatOlayiEkle(state, "👋", `${cikarilan.isim} (${cikarilan.rol}) ekibinden kovuldu`);
+  let mesaj = T(state.dil, "{0}'i ekibinden çıkardın; artık yıllık maaşını ödemiyorsun.", [cikarilan.isim]);
+  // Çocuğunu ekipten kovmak aileye ağır gelir: ilişki düşer, davet bir daha açılmaz.
+  const cocuk = cikarilan.cocuk_isim ? state.cocuklar.find((c) => c.isim === cikarilan.cocuk_isim) : undefined;
+  if (cocuk) {
+    cocuk.iliski = Math.max(0, (typeof cocuk.iliski === "number" ? cocuk.iliski : 60) + COCUK_KOV_ILISKI);
+    cocuk.is_durumu = "reddetti";
+    delete cocuk.ekip_id;
+    state.mutluluk -= 3;
+    clampStats(state);
+    mesaj += " " + T(state.dil, "Çocuğunu kovmak aranızı ağır yaraladı.");
+  }
   await oturumKaydet(state);
-  return { state, mesaj: T(state.dil, "{0}'i ekibinden çıkardın; artık yıllık maaşını ödemiyorsun.", [cikarilan.isim]) };
+  return { state, mesaj };
 }
 
 /**
@@ -3715,6 +4011,9 @@ export async function kotuIsYap(id: string, tur: string, secenek: KotuIsSecenek 
       }
     : hamDal;
   kotuIsEtkiUygula(state, dal, enflasyon);
+  // Eşin haberi olur: karanlık işler (vekille yaptırılsa bile) ilişkiyi anında zedeler.
+  const esZarari = KOTU_IS_ES_ZARARI[tur] ?? 0;
+  AS.esBarDusur(state, vekil ? Math.ceil(esZarari / 2) : esZarari);
 
   const adi = K(dil, KOTU_IS_ADLARI[tur] ?? tur);
   let mesaj = kazandi
@@ -4158,6 +4457,8 @@ interface SosyallesmeSonucu {
   state: CharacterState;
   /** Bu mekâna gitmek için düşülen peşin giriş ücreti (enflasyonla ölçekli). */
   girisUcreti: number;
+  /** true ise mekân olayı yerine bir tanışma (göz göze gelme) başladı — istemci /scenario çekmez, tanışma penceresini açar. */
+  tanismaBasladi?: boolean;
 }
 
 /**
@@ -4192,6 +4493,15 @@ export async function sosyallesmeYerineGit(id: string, yerId: string): Promise<S
   const girisUcreti = paraYuvarla(SOSYALLESME_GIRIS_UCRETI * enflasyonCarpani(state));
   if (state.para < girisUcreti) {
     throw new Error(`Cebinde bu mekâna gidecek kadar para yok (~${girisUcreti} ${state.para_birimi} giriş ücreti).`);
+  }
+  // Aşk evliliği yolu: bekar karakter mekâna girince küçük bir olasılıkla mekân olayı yerine
+  // biriyle göz göze gelir (tanışma). Mekân ziyareti sayılır (kilitlenir), ücret düşer.
+  if (AK.tanismaMekanSansiTuttu(state)) {
+    state.para = paraYuvarla(state.para - girisUcreti);
+    AK.tanismaBaslat(state, yerId);
+    state.sosyallesme_aksiyon_kilit[`mekan:${yerId}`] = state.yil;
+    await oturumKaydet(state);
+    return { state, girisUcreti, tanismaBasladi: true };
   }
   // Önce olayı seç (uygun olay yoksa fırlatır), parayı SONRA düş: hata durumunda ücret kaybolmasın.
   const olay = sosyallesmeIcinOlaySec(state, yerId);
@@ -4292,29 +4602,11 @@ export async function sosyallesmeOlayCoz(id: string, secenekIndex: number): Prom
   if (etki.suc_artis) state.suc_seviyesi += etki.suc_artis;
   if (etki.suc_seviyesi_ayarla !== undefined) state.suc_seviyesi = etki.suc_seviyesi_ayarla;
   etki.suc_degisim = sucDegisimiHesapla(sucOnce, state.suc_seviyesi);
+  if (etki.suc_degisim >= SUC_ES_ESIGI) AS.esBarDusur(state, SUC_ES_ZARARI); // ağır suç eşin güvenini sarsar
   etkenGunluguNotEt(state, mevcutOlay.baslik, etki);
 
   // Sosyalleşme olaylarının kullandığı seyrek alanlar (banka denetimi: ekip_ekle 1×, unvan_kazan 2×).
-  if (etki.ekip_ekle) {
-    const isim = rastgeleBirIsimSec(state.cag, state.bolge, [
-      state.dost_adi, state.rakip_adi, state.es_adi ?? "", state.isim ?? "", ...state.ekip.map((e) => e.isim),
-    ]);
-    const gercekKalite = Math.round((Math.random() * 100 + Math.random() * 100 + Math.random() * 100) / 3);
-    const genislik = etki.ekip_ekle.tahminGenisligi;
-    state.ekip.push({
-      id: randomUUID(),
-      isim,
-      rol: etki.ekip_ekle.rol,
-      gercekKalite,
-      tahminiMin: Math.max(0, Math.round(gercekKalite - genislik / 2)),
-      tahminiMax: Math.min(100, Math.round(gercekKalite + genislik / 2)),
-      maas: 2 + Math.round(gercekKalite / 14),
-      sadakat: Math.round(30 + Math.random() * 60),
-      kisilik: EKIP_KISILIK_HAVUZU[Math.floor(Math.random() * EKIP_KISILIK_HAVUZU.length)],
-    });
-    maasCarpaniUygula(state, 1 + (gercekKalite - 50) / 500);
-    hayatOlayiEkle(state, "🤝", T(state.dil, "{0} ({1}) ekibine katıldı", [isim, K(state.dil, etki.ekip_ekle.rol)]));
-  }
+  if (etki.ekip_ekle) ekipUyesiEkle(state, etki.ekip_ekle.rol, etki.ekip_ekle.tahminGenisligi);
   if (etki.ekip_kaybi && state.ekip.length > 0) {
     const kaybedilen = state.ekip.splice(Math.floor(Math.random() * state.ekip.length), 1)[0];
     hayatOlayiEkle(state, "👋", T(state.dil, "{0} ekipten ayrıldı", [kaybedilen.isim]));
