@@ -1610,7 +1610,7 @@ Kaynak: [aileSistemi.ts](server/src/game/aileSistemi.ts) (saf fonksiyonlar), [ai
 - **Hedefler:** `kalabalik_soy` amacı ve istemci "aile" başarımı 6 → 4 çocuk.
 - **Eski eşikler:** `minEsPuani`/`maxEsPuani` kullanan olaylarda düşük-bar kriz eşikleri (18-35) yeni ölçeğe çekildi (33-45).
 - **Denge ölçümü:** `npx tsx scripts/simulateAile.ts` (SIM_N, bellek-içi stub): ilgili oyuncuda ort. bar ~81, evlilerde ~1,9 doğum/1,5 yaşayan çocuk; ihmalkar oyuncuda ~%90 terk.
-- **İstemci:** `AileEkrani.tsx` ("İlişkiler" ekranı, id `aile`) + [iliskilerMetin.ts](client/src/iliskilerMetin.ts) (TR+EN gömülü metinler). Eş kartı (rozetler, bar, bonus, ihmal uyarısı, 3 eylem düğmesi), "Evlilik Adayları" (3 kart, hediye çipleri, teklif), "Düğün Hazırlığı" (bekleyen düğün). `KisayolKartlari`/`AltGezinme` etiketi "İlişkiler" (bekar+22+ ya da bekleyen düğün varken 💍/🔔).
+- **İstemci:** `AileEkrani.tsx` ("İlişkiler" ekranı, id `aile`) + [iliskilerMetin.ts](client/src/iliskilerMetin.ts) (TR+EN gömülü metinler). Eş kartı (rozetler, bar, 3 eylem düğmesi), "Evlilik Adayları" (3 kart, hediye çipleri, teklif), "Düğün Hazırlığı" (bekleyen düğün). **Ekran çeyizi ve ihmal uyarısını göstermez** (çeyiz düğünde yine cebe girer; ihmal arka planda işler ve yalnız 7. yılda zorunlu `iliski_es_ihmal_uyarisi` olayıyla bildirilir). `KisayolKartlari`/`AltGezinme` etiketi "İlişkiler" (bekar+22+ ya da bekleyen düğün varken 💍/🔔).
 - **Testler:** [aileSistemi.test.ts](server/tests/aileSistemi.test.ts) (saf mantık), [evlilik.test.ts](server/tests/evlilik.test.ts) (motor akışı), [aileEkrani.test.ts](server/tests/aileEkrani.test.ts) (çocuk etkileşimi/talep).
 
 ### Aşk evliliği (Aşama 2) — kaynak: [askSistemi.ts](server/src/game/askSistemi.ts), [tanismaDiyalog.ts](server/src/data/tanismaDiyalog.ts)

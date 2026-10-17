@@ -316,11 +316,6 @@ export function AileEkrani({
           <div className="aile-kart aile-kart-tam aile-dugun-karti">
             <h3>💒 {im(dil, 'dugunBaslik')}</h3>
             <p className="aile-talep-metin">{im(dil, 'dugunIntro', durum.bekleyenDugun.isim)}</p>
-            {durum.bekleyenDugun.ceyiz > 0 && (
-              <p className="aile-talep-tutar">
-                {im(dil, 'dugunCeyiz', durum.bekleyenDugun.ceyiz, durum.paraBirimi)}
-              </p>
-            )}
             <div className="aile-dugun-secenekler">
               {durum.dugunSecenekleri.map((d) => {
                 const parasiYok = durum.para < d.maliyet;
@@ -374,7 +369,6 @@ export function AileEkrani({
               ))}
             </div>
             <IliskiBar deger={durum.es.puan} etiket={`${esEtiket(m, durum.es.puan)} · ${im(dil, 'barSayi', durum.es.puan)}`} />
-            {durum.es.ihmalYili >= 2 && <p className="aile-ihmal-uyari">⚠️ {im(dil, 'ihmalUyari')}</p>}
             <div className="aile-etkilesim-satir">
               <button
                 className="aile-etkilesim-buton"
@@ -483,7 +477,6 @@ export function AileEkrani({
                           {a.grup === 'genc' ? im(dil, 'genc') : im(dil, 'olgun')}
                         </span>
                         <p className="aile-bos-metin">{a.grup === 'genc' ? im(dil, 'gencAciklama') : im(dil, 'olgunAciklama')}</p>
-                        <p className="aile-aday-satir">{im(dil, 'ceyiz', a.ceyiz, durum.paraBirimi)}</p>
                         <div className="aile-huy-satiri">
                           <span className="aile-huy-rozet">{huyAdi(dil, a.huy)}</span>
                           <span className="aile-huy-rozet aile-huy-gizli">{im(dil, 'gizliHuy')}</span>

@@ -14,7 +14,6 @@ const METIN = {
   turAsk: ['Aşk evliliği', 'Love match'],
   turMantik: ['Mantık evliliği', 'Arranged marriage'],
   yasEk: ['{0} yaşında', 'aged {0}'],
-  ihmalUyari: ['Eşin senden ilgi bekliyor.', 'Your spouse is waiting for your attention.'],
   barSayi: ['{0}/100', '{0}/100'],
   // Eylemler
   zamanGecir: ['⏳ Zaman Geçir', '⏳ Spend Time'],
@@ -32,7 +31,6 @@ const METIN = {
   olgun: ['Olgun', 'Mature'],
   gencAciklama: ['Çocuk ihtimali yüksek, standart çeyiz.', 'Likely to have children, standard dowry.'],
   olgunAciklama: ['Çocuk ihtimali çok düşük; çeyiz ve katkısı 1,5 kat.', 'Unlikely to have children; dowry and support are 1.5× larger.'],
-  ceyiz: ['Çeyiz: {0} {1}', 'Dowry: {0} {1}'],
   gizliHuy: ['Bir huyu daha var…', 'Has another trait…'],
   teklifSade: ['Sade teklif', 'Plain proposal'],
   teklifUcuz: ['Küçük hediyeyle', 'With a small gift'],
@@ -45,7 +43,6 @@ const METIN = {
   sebepHapis: ['Şu an evlilik için uygun değilsin.', 'You are in no position to marry right now.'],
   // Düğün
   dugunIntro: ['{0} teklifini kabul etti. Düğününü nasıl yapacaksın?', '{0} accepted. How will you hold the wedding?'],
-  dugunCeyiz: ['Çeyiz olarak {0} {1} gelecek.', 'A dowry of {0} {1} will arrive.'],
   dugunUcuz: ['Mütevazı Düğün', 'Modest Wedding'],
   dugunOrta: ['Orta Düğün', 'Fair Wedding'],
   dugunPahali: ['Görkemli Düğün', 'Grand Wedding'],
