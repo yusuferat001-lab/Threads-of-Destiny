@@ -67,7 +67,7 @@ describe("suç işleyerek para kazanma — gerçek olay üzerinden (entegrasyon)
       const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
       state.yas = 40;
       state.saglik = 100;
-      state.etiketler.push("yolculuk_tamamlandi", "tanisma_donum_26", "tanisma_donum_36"); // tanışma fırsatı zorlanmasın
+      state.etiketler.push("yolculuk_tamamlandi", "tanisma_donum_27", "tanisma_donum_36"); // tanışma fırsatı zorlanmasın
       await mesleğiAta(state.id, "Asker");
       sadeceBuOlayaZorla(state, "oc_asker_manastir_talani");
 

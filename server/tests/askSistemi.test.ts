@@ -56,10 +56,7 @@ describe("tanışma başlatma", () => {
     expect(() => AK.tanismaBaslat(state, "pazar_meydani")).toThrow();
   });
 
-  it("evli, sevgilisi olan, yas tutan ve 18 yaş altı karakter tanışamaz", () => {
-    const evli = bekar();
-    AS.esiOlaydanAta(evli, "Mira");
-    expect(AK.tanismaBaslatilabilirMi(evli)).toBe(false);
+  it("sevgilisi olan, yas tutan ve 18 yaş altı karakter tanışamaz", () => {
     const sevgiliVar = bekar();
     sevgiliVar.sevgili = { isim: "A", meslek: "Tüccar", rutbe: "x", dogum_yili: 1, huylar: ["ciddi", "mizahsever"], iliski: 70, baslangic_yili: 1, son_yil: 5, darildi: false, darilma_yili: null, gonul_kilit_yili: 0, meslek_bonusu: 2 };
     expect(AK.tanismaBaslatilabilirMi(sevgiliVar)).toBe(false);
@@ -70,21 +67,94 @@ describe("tanışma başlatma", () => {
     expect(AK.tanismaBaslatilabilirMi(bekar(30))).toBe(true);
   });
 
-  it("26 ve 36 yaş dönümlerinde ilk fırsatta işaret verir, işaretlenince bir daha vermez", () => {
-    const genc = bekar(25);
-    expect(AK.tanismaDonumEtiketi(genc)).toBeNull();
-    const a = bekar(27);
-    expect(AK.tanismaDonumEtiketi(a)).toBe("tanisma_donum_26");
-    a.etiketler.push("tanisma_donum_26");
-    expect(AK.tanismaDonumEtiketi(a)).toBeNull();
-    a.yas = 37;
-    expect(AK.tanismaDonumEtiketi(a)).toBe("tanisma_donum_36");
-    a.etiketler.push("tanisma_donum_36");
-    expect(AK.tanismaDonumEtiketi(a)).toBeNull();
-    // evli karakter fırsat almaz
+  it("evli karakter de tanışabilir; sevgili ya da düğün bekleyen tanışamaz", () => {
     const evli = bekar(30);
     AS.esiOlaydanAta(evli, "Mira");
-    expect(AK.tanismaDonumEtiketi(evli)).toBeNull();
+    expect(AK.tanismaBaslatilabilirMi(evli)).toBe(true);
+  });
+
+  it("27 ve 36 yaş dönümlerinde, o dönemde hiç tanışma yaşanmamışsa zorlar; işaretlenince bir daha vermez", () => {
+    expect(AK.tanismaDonumEtiketi(bekar(26))).toBeNull();
+    const a = bekar(28);
+    expect(AK.tanismaDonumEtiketi(a)).toEqual({ etiket: "tanisma_donum_27", zorla: true });
+    a.etiketler.push("tanisma_donum_27");
+    expect(AK.tanismaDonumEtiketi(a)).toBeNull();
+    a.yas = 37;
+    expect(AK.tanismaDonumEtiketi(a)).toEqual({ etiket: "tanisma_donum_36", zorla: true });
+    a.etiketler.push("tanisma_donum_36");
+    expect(AK.tanismaDonumEtiketi(a)).toBeNull();
+  });
+
+  it("evli karakter de dönümde zorlanır; dönemde tanışma yaşadıysa zorlanmaz (sessizce işaretlenir)", () => {
+    const evli = bekar(28);
+    AS.esiOlaydanAta(evli, "Mira");
+    expect(AK.tanismaDonumEtiketi(evli)?.zorla).toBe(true);
+    const yasadi = bekar(28);
+    yasadi.etiketler.push("tanisma_yasandi:22");
+    expect(AK.tanismaDonumEtiketi(yasadi)).toEqual({ etiket: "tanisma_donum_27", zorla: false });
+    // 36 penceresi 27'den sonrasını sayar: 22'deki tanışma 36'yı karşılamaz
+    yasadi.etiketler.push("tanisma_donum_27");
+    yasadi.yas = 37;
+    expect(AK.tanismaDonumEtiketi(yasadi)?.zorla).toBe(true);
+  });
+
+  it("yıllık %4 zar: tutarsa true, tutmazsa false; etiket zaten varsa ya da tanışamıyorsa false", () => {
+    const a = bekar(30);
+    vi.spyOn(Math, "random").mockReturnValue(0.01);
+    expect(AK.tanismaYillikZar(a, 1)).toBe(true);
+    a.etiketler.push("tanisma_firsati_bekliyor");
+    expect(AK.tanismaYillikZar(a, 1)).toBe(false);
+    vi.restoreAllMocks();
+    vi.spyOn(Math, "random").mockReturnValue(0.5);
+    expect(AK.tanismaYillikZar(bekar(30), 3)).toBe(false);
+    vi.restoreAllMocks();
+  });
+});
+
+describe("evli karakterde tanışma", () => {
+  function evliTanisma(barBaslangic = 70) {
+    const state = bekar(30);
+    AS.esiOlaydanAta(state, "Mira");
+    state.es_puani = barBaslangic;
+    state.ahlak = 60;
+    adayKur(state, ["mizahsever", "sefkatli"], 3);
+    return state;
+  }
+
+  it("kabul = aldatma: sevgili oluşmaz, eş barı ve ahlak düşer", () => {
+    const state = evliTanisma();
+    const t = state.aktif_tanisma!;
+    t.basari = t.toplam; // kabul garantili
+    t.adim = t.toplam;
+    vi.spyOn(Math, "random").mockReturnValue(0.99); // ifşa olmaz
+    const son = AK.tanismaSec(state, 0);
+    vi.restoreAllMocks();
+    expect(son.bitti).toBe(true);
+    expect(son.basarili).toBe(false);
+    expect(state.sevgili).toBeNull();
+    expect(state.es_puani).toBe(70 - S.ALDATMA_BAR_CEZASI);
+    expect(state.ahlak).toBe(60 + S.ALDATMA_AHLAK);
+  });
+
+  it("ifşa olursa eş barı ek olarak düşer", () => {
+    const state = evliTanisma(90);
+    const t = state.aktif_tanisma!;
+    t.basari = t.toplam; // kabul garantili
+    t.adim = t.toplam;
+    vi.spyOn(Math, "random").mockReturnValue(0.0); // adım başarılı + ifşa (0 < 0.4)
+    const son = AK.tanismaSec(state, 0);
+    vi.restoreAllMocks();
+    expect(son.mesaj).toBeTruthy();
+    expect(state.es_puani).toBe(90 - S.ALDATMA_BAR_CEZASI - S.ALDATMA_IFSA_BAR);
+  });
+
+  it("vazgeçmek sadakat ödülüdür ve nostalji kurmaz", () => {
+    const state = evliTanisma(50);
+    state.ahlak = 50;
+    AK.tanismaVazgec(state);
+    expect(state.nostalji_yili).toBeNull();
+    expect(state.es_puani).toBe(50 + S.SADAKAT_BAR);
+    expect(state.ahlak).toBe(50 + S.SADAKAT_AHLAK);
   });
 });
 
@@ -391,7 +461,7 @@ describe("zorunlu tanışma fırsatı (senaryoUret kaskadı)", () => {
             expect(state.aktif_tanisma).toBeNull();
             expect(state.nostalji_yili).not.toBeNull();
           }
-          expect(state.etiketler).toContain("tanisma_donum_26");
+          expect(state.etiketler).toContain("tanisma_donum_27");
         } else {
           const acik = senaryo.secenekler.findIndex((x) => !x.kilitli);
           await secimUygula(state.id, acik >= 0 ? acik : 0);

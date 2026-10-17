@@ -983,6 +983,7 @@ export const ANLATIM_EN: Record<string, string> = {
   "💢 {0} evlilik teklifi beklemekten yoruldu ve sana darıldı. Gönlünü almazsan bu ilişki bitebilir.": "💢 {0} grew tired of waiting for a proposal and is cross with you. If you do not win them back, this may end.",
   "💔 {0} seni terk etti. Bu ilişkiyi ayakta tutamadın.": "💔 {0} has left you. You could not keep this relationship alive.",
   "{0} ile sevgili oldu": "Became sweethearts with {0}",
+  "{0} ile gizli bir yakınlaşma yaşadı": "Shared a secret closeness with {0}",
   "Şu an biriyle tanışacak durumda değilsin.": "You are in no position to meet someone right now.",
   "Süren bir tanışma yok.": "There is no meeting in progress.",
   "Zaten yanına gittin.": "You have already approached.",

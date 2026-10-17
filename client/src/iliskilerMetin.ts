@@ -14,7 +14,6 @@ const METIN = {
   turAsk: ['Aşk evliliği', 'Love match'],
   turMantik: ['Mantık evliliği', 'Arranged marriage'],
   yasEk: ['{0} yaşında', 'aged {0}'],
-  meslekBonusu: ['Eşinin desteği: maaşa +%{0}', "Spouse's support: +{0}% income"],
   ihmalUyari: ['Eşin senden ilgi bekliyor.', 'Your spouse is waiting for your attention.'],
   barSayi: ['{0}/100', '{0}/100'],
   // Eylemler
@@ -22,7 +21,7 @@ const METIN = {
   zamanGecirAlt: ['ücretsiz · biraz yorucu', 'free · a bit tiring'],
   hediyeUcuz: ['🎁 Küçük Hediye', '🎁 Small Gift'],
   hediyePahali: ['💎 Pahalı Hediye', '💎 Costly Gift'],
-  kilitYil: ['~{0} yıl', '~{0} yr'],
+  henuzErken: ['Henüz erken', 'Too soon'],
   paraYetmez: ['Paran yetmiyor', 'Not enough money'],
   // Mantık adayları
   adayIntro: [
@@ -34,18 +33,15 @@ const METIN = {
   gencAciklama: ['Çocuk ihtimali yüksek, standart çeyiz.', 'Likely to have children, standard dowry.'],
   olgunAciklama: ['Çocuk ihtimali çok düşük; çeyiz ve katkısı 1,5 kat.', 'Unlikely to have children; dowry and support are 1.5× larger.'],
   ceyiz: ['Çeyiz: {0} {1}', 'Dowry: {0} {1}'],
-  bonus: ['Meslek bonusu: +%{0}', 'Trade bonus: +{0}%'],
   gizliHuy: ['Bir huyu daha var…', 'Has another trait…'],
   teklifSade: ['Sade teklif', 'Plain proposal'],
   teklifUcuz: ['Küçük hediyeyle', 'With a small gift'],
   teklifPahali: ['Pahalı hediyeyle', 'With a costly gift'],
   teklifEt: ['💍 Teklif Et', '💍 Propose'],
-  sans: ['şans ~%{0}', 'chance ~{0}%'],
-  yenileme: ['Liste ~{0} yıl sonra yenilenir.', 'The list refreshes in ~{0} yr.'],
   // Kapalı sebepleri
   sebepYasDusuk: ['Mantık evliliği {0} yaşından sonra açılır.', 'Arranged marriage opens at age {0}.'],
-  sebepYasDonemi: ['Yas tutuyorsun; ~{0} yıl sonra yeni bir evlilik düşünebilirsin.', 'You are in mourning; in ~{0} yr you may think of a new marriage.'],
-  sebepKilit: ['Son teklifin reddedildi; ~{0} yıl sonra yeniden deneyebilirsin.', 'Your last proposal was turned down; try again in ~{0} yr.'],
+  sebepYasDonemi: ['Yas tutuyorsun; yeni bir evlilik için biraz zaman geçmeli.', 'You are in mourning; it is too soon to think of a new marriage.'],
+  sebepKilit: ['Son teklifin reddedildi; bir süre sonra yeniden deneyebilirsin.', 'Your last proposal was turned down; try again after a while.'],
   sebepHapis: ['Şu an evlilik için uygun değilsin.', 'You are in no position to marry right now.'],
   // Düğün
   dugunIntro: ['{0} teklifini kabul etti. Düğününü nasıl yapacaksın?', '{0} accepted. How will you hold the wedding?'],
@@ -58,20 +54,15 @@ const METIN = {
   dugunMaliyet: ['{0} {1}', '{0} {1}'],
   // Sevgili (aşk evliliği)
   sevgiliBaslik: ['Sevgilin', 'Your Sweetheart'],
-  sevgiliSure: ['Evlilik teklifi için ~{0} yıl var.', 'About {0} yr left to propose.'],
   sevgiliDargin: ['Teklif beklemekten yoruldu ve sana darıldı. Gönlünü almazsan ayrılabilir.', 'Tired of waiting, they are cross with you. They may leave unless you win them back.'],
-  sevgiliBonus: ['Evlenirsen eşinin desteği: maaşa +%{0}', 'If you marry, their support: +{0}% income'],
   sevgiliTeklif: ['💍 Evlenme Teklif Et', '💍 Propose'],
   gonulAl: ['🌹 Gönlünü Al', '🌹 Win Them Back'],
   sevgiliAyril: ['💔 Ayrıl', '💔 Break Up'],
-  sevgiliSans: ['şans ~%{0}', 'chance ~{0}%'],
   sebepSevgili: ['Bir sevgilin var; önce o ilişkiyi sonuçlandır.', 'You have a sweetheart; settle that relationship first.'],
   // Tanışma penceresi
   tanismaBaslik: ['💞 Göz Göze', '💞 Eye to Eye'],
   tanismaYaklas: ['Yanına git', 'Walk over'],
   tanismaVazgec: ['Vazgeç', 'Let it go'],
-  tanismaAdim: ['Adım {0}/{1}', 'Step {0}/{1}'],
-  tamam: ['Tamam', 'OK'],
   // Çocuğu yanına alma (15 yaş)
   yanimaAl: ['💼 Yanıma Al', '💼 Take On'],
   yanimaAlAciklama: ['Yanında çalışmaya davet et.', 'Invite them to work beside you.'],

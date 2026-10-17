@@ -179,3 +179,16 @@ export const SONUC_VAZGECILDI: IkiDil = {
   tr: "Yanına gitmeye cesaret edemedin; {0} kalabalığa karıştı.",
   en: "You did not dare approach; {0} melted into the crowd.",
 };
+
+export const SONUC_SADAKAT: IkiDil = {
+  tr: "Evli olduğunu hatırlayıp {0} ile konuşmadan uzaklaştın; vicdanın rahat.",
+  en: "Remembering you are married, you walked away from {0}; your conscience is clear.",
+};
+export const SONUC_ALDATMA: IkiDil = {
+  tr: "{0} ile gizli bir yakınlaşma yaşadın; içini bir suçluluk kapladı.",
+  en: "You shared a secret closeness with {0}; guilt settled in.",
+};
+export const SONUC_ALDATMA_IFSA: IkiDil = {
+  tr: "Ama {0} bunu öğrendi; evlilik sarsıldı.",
+  en: "But {0} found out; the marriage was shaken.",
+};

@@ -374,7 +374,6 @@ export function AileEkrani({
               ))}
             </div>
             <IliskiBar deger={durum.es.puan} etiket={`${esEtiket(m, durum.es.puan)} · ${im(dil, 'barSayi', durum.es.puan)}`} />
-            {durum.es.meslekBonusu > 0 && <p className="aile-bos-metin">{im(dil, 'meslekBonusu', durum.es.meslekBonusu)}</p>}
             {durum.es.ihmalYili >= 2 && <p className="aile-ihmal-uyari">⚠️ {im(dil, 'ihmalUyari')}</p>}
             <div className="aile-etkilesim-satir">
               <button
@@ -384,7 +383,7 @@ export function AileEkrani({
               >
                 <span className="aile-etkilesim-ad">{im(dil, 'zamanGecir')}</span>
                 <span className="aile-etkilesim-alt">
-                  {kalanYil('es:zaman_gecir') > 0 ? im(dil, 'kilitYil', kalanYil('es:zaman_gecir')) : im(dil, 'zamanGecirAlt')}
+                  {kalanYil('es:zaman_gecir') > 0 ? im(dil, 'henuzErken') : im(dil, 'zamanGecirAlt')}
                 </span>
               </button>
               {(['ucuz', 'pahali'] as const).map((h) => {
@@ -400,7 +399,7 @@ export function AileEkrani({
                   >
                     <span className="aile-etkilesim-ad">{h === 'ucuz' ? im(dil, 'hediyeUcuz') : im(dil, 'hediyePahali')}</span>
                     <span className="aile-etkilesim-alt">
-                      {kilit > 0 ? im(dil, 'kilitYil', kilit) : parasiYok ? im(dil, 'paraYetmez') : `${maliyet} ${durum.paraBirimi}`}
+                      {kilit > 0 ? im(dil, 'henuzErken') : parasiYok ? im(dil, 'paraYetmez') : `${maliyet} ${durum.paraBirimi}`}
                     </span>
                   </button>
                 );
@@ -431,12 +430,7 @@ export function AileEkrani({
               deger={durum.sevgili.bar}
               etiket={`${esEtiket(m, durum.sevgili.bar)} · ${im(dil, 'barSayi', durum.sevgili.bar)}`}
             />
-            <p className="aile-bos-metin">{im(dil, 'sevgiliBonus', durum.sevgili.meslekBonusu)}</p>
-            {durum.sevgili.darildi ? (
-              <p className="aile-ihmal-uyari">💢 {im(dil, 'sevgiliDargin')}</p>
-            ) : (
-              <p className="aile-bos-metin">{im(dil, 'sevgiliSure', Math.max(0, durum.sevgili.kalanYil))}</p>
-            )}
+            {durum.sevgili.darildi && <p className="aile-ihmal-uyari">💢 {im(dil, 'sevgiliDargin')}</p>}
             <div className="aile-etkilesim-satir">
               <button
                 className="aile-etkilesim-buton"
@@ -444,7 +438,6 @@ export function AileEkrani({
                 onClick={() => onSevgili('teklif')}
               >
                 <span className="aile-etkilesim-ad">{im(dil, 'sevgiliTeklif')}</span>
-                <span className="aile-etkilesim-alt">{im(dil, 'sevgiliSans', Math.round(durum.sevgili.teklifSansi / 5) * 5)}</span>
               </button>
               <button
                 className="aile-etkilesim-buton"
@@ -454,7 +447,7 @@ export function AileEkrani({
                 <span className="aile-etkilesim-ad">{im(dil, 'gonulAl')}</span>
                 <span className="aile-etkilesim-alt">
                   {durum.sevgili.gonulKilitKalanYil > 0
-                    ? im(dil, 'kilitYil', durum.sevgili.gonulKilitKalanYil)
+                    ? im(dil, 'henuzErken')
                     : durum.para < durum.sevgili.gonulMaliyet
                       ? im(dil, 'paraYetmez')
                       : `${durum.sevgili.gonulMaliyet} ${durum.paraBirimi}`}
@@ -491,7 +484,6 @@ export function AileEkrani({
                         </span>
                         <p className="aile-bos-metin">{a.grup === 'genc' ? im(dil, 'gencAciklama') : im(dil, 'olgunAciklama')}</p>
                         <p className="aile-aday-satir">{im(dil, 'ceyiz', a.ceyiz, durum.paraBirimi)}</p>
-                        <p className="aile-aday-satir">{im(dil, 'bonus', a.meslekBonusu)}</p>
                         <div className="aile-huy-satiri">
                           <span className="aile-huy-rozet">{huyAdi(dil, a.huy)}</span>
                           <span className="aile-huy-rozet aile-huy-gizli">{im(dil, 'gizliHuy')}</span>
@@ -518,22 +510,20 @@ export function AileEkrani({
                           onClick={() => onMantikTeklif(i, secili)}
                         >
                           {im(dil, 'teklifEt')}
-                          {secenek && <span className="aile-etkilesim-alt">{im(dil, 'sans', Math.round(secenek.sans / 5) * 5)}</span>}
                         </button>
                       </div>
                     );
                   })}
                 </div>
-                <p className="aile-bos-metin">{im(dil, 'yenileme', Math.max(1, durum.mantik.yenilemeKalanYil))}</p>
               </>
             ) : (
               <p className="aile-bos-metin">
                 {durum.mantik.sebep === 'yas_dusuk'
                   ? im(dil, 'sebepYasDusuk', durum.mantik.minYas)
                   : durum.mantik.sebep === 'yas_donemi'
-                    ? im(dil, 'sebepYasDonemi', Math.max(1, durum.mantik.yasKalanYil))
+                    ? im(dil, 'sebepYasDonemi')
                     : durum.mantik.sebep === 'kilit'
-                      ? im(dil, 'sebepKilit', Math.max(1, durum.mantik.kilitKalanYil))
+                      ? im(dil, 'sebepKilit')
                       : durum.mantik.sebep === 'sevgili'
                         ? im(dil, 'sebepSevgili')
                         : im(dil, 'sebepHapis')}

@@ -1280,12 +1280,15 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
     oturum.state.es_ihmal_uyari_goruldu = true;
     zorlananId = "iliski_es_ihmal_uyarisi";
   }
-  // Aşk evliliği yolu: bekar karaktere 26 ve 36 yaş dönümlerinde (ilk fırsatta) zorunlu
-  // "göz göze" olayı; vazgeçilen tanışmanın nostaljisi 4-6 yıl sonra geri gelir.
+  // Aşk evliliği yolu: 27 ve 36 yaşında (önceki dönemde hiç tanışma yaşanmamışsa) ve yılda %4 ihtimalle
+  // "göz göze" olayı — bekar ya da evli; vazgeçilen tanışmanın nostaljisi 4-6 yıl sonra geri gelir.
   if (!zorlananId && !milestoneKilitli) {
-    const donumEtiketi = AK.tanismaDonumEtiketi(oturum.state);
-    if (donumEtiketi) {
-      etiketEkle(oturum.state, [donumEtiketi]);
+    const donum = AK.tanismaDonumEtiketi(oturum.state);
+    if (donum) etiketEkle(oturum.state, [donum.etiket]);
+    if (donum?.zorla) {
+      zorlananId = "iliski_tanisma_firsati";
+    } else if (oturum.state.etiketler.includes("tanisma_firsati_bekliyor") && AK.tanismaBaslatilabilirMi(oturum.state)) {
+      etiketSil(oturum.state, ["tanisma_firsati_bekliyor"]);
       zorlananId = "iliski_tanisma_firsati";
     } else if (
       oturum.state.nostalji_yili != null &&
@@ -1954,7 +1957,8 @@ async function sonucuUygulaVeIlerlet(
   if (state.es_adi) state.es_puani += etki.es_puani ?? 0;
   if (etki.es_ilgi_gosterildi && state.es_adi) state.es_son_zaman_yili = state.yil;
   if (etki.tanisma_baslat && AK.tanismaBaslatilabilirMi(state)) AK.tanismaBaslat(state, AK.tanismaMekanSec(state));
-  if (etki.tanisma_nostalji && state.nostalji_yili == null) {
+  if (etki.tanisma_nostalji && state.es_adi) AK.sadakatOdulu(state);
+  else if (etki.tanisma_nostalji && state.nostalji_yili == null) {
     state.nostalji_yili = state.yil + NOSTALJI_YIL_ARALIK[0] + Math.floor(Math.random() * (NOSTALJI_YIL_ARALIK[1] - NOSTALJI_YIL_ARALIK[0] + 1));
   }
 
@@ -2296,6 +2300,8 @@ async function sonucuUygulaVeIlerlet(
           for (const sevgiliMesaji of AK.sevgiliYillikUygula(state, yasArtisi)) {
             zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${sevgiliMesaji}` : sevgiliMesaji;
           }
+          // Rastgele "göz göze" fırsatı (yılda %4): bir sonraki /scenario'da olay olarak gelir.
+          if (AK.tanismaYillikZar(state, yasArtisi)) etiketEkle(state, ["tanisma_firsati_bekliyor"]);
           const dogumMesaji = AS.dogumDenemesi(state, yasArtisi);
           if (dogumMesaji) {
             zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${dogumMesaji}` : dogumMesaji;

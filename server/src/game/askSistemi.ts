@@ -16,7 +16,7 @@ import { rastgeleCinsiyetliIsimSec } from "../data/npcIsimleri";
 import { SOSYALLESME_YERLERI, sosyallesmeYeriUygunMu } from "../data/sosyallesmeYerleri";
 import * as S from "../data/aileSabitleri";
 import * as D from "../data/tanismaDiyalog";
-import { yasDonemindeMi } from "./aileSistemi";
+import { esBarDusur, yasDonemindeMi } from "./aileSistemi";
 
 function aralik(a: number, b: number): number {
   return a + Math.floor(Math.random() * (b - a + 1));
@@ -37,25 +37,59 @@ export function bekarMi(state: CharacterState): boolean {
   return !state.es_adi && !state.sevgili && !state.aktif_tanisma && !state.bekleyen_dugun;
 }
 
-/** Bir tanışma şu an başlatılabilir mi (hata fırlatmaz). */
+/** Bir tanışma şu an başlatılabilir mi (hata fırlatmaz). Evli karakter de tanışabilir (sonuç: aldatma riski). */
 export function tanismaBaslatilabilirMi(state: CharacterState): boolean {
   return (
     state.aktif &&
     state.yas >= 18 &&
-    bekarMi(state) &&
+    !state.sevgili &&
+    !state.aktif_tanisma &&
+    !state.bekleyen_dugun &&
     !yasDonemindeMi(state) &&
     !["hapiste", "yolculukta", "kacak", "veba_hastasi"].some((e) => state.etiketler.includes(e))
   );
 }
 
-/** Zorunlu tanışma fırsatı (26 ve 36 yaş dönümleri) gerekli mi; gerekliyse işaretlenecek etiketi döner. */
-export function tanismaDonumEtiketi(state: CharacterState): string | null {
-  if (!tanismaBaslatilabilirMi(state)) return null;
+const TANISMA_YASANDI_ONEK = "tanisma_yasandi:";
+
+/** Bu karakter verilen yaş aralığında (alt dahil, üst hariç) bir tanışma yaşadı mı. */
+function tanismaYasandiMi(state: CharacterState, altYas: number, ustYas: number): boolean {
+  return state.etiketler.some((e) => {
+    if (!e.startsWith(TANISMA_YASANDI_ONEK)) return false;
+    const yas = Number(e.slice(TANISMA_YASANDI_ONEK.length));
+    return yas >= altYas && yas < ustYas;
+  });
+}
+
+/**
+ * Zorunlu tanışma fırsatı (27 ve 36 yaş dönümleri) gerekli mi; gerekliyse işaretlenecek etiketi döner.
+ * Önceki dönümden (ilki için 18) bu yana hiç tanışma yaşanmamışsa zorlanır; yaşanmışsa dönüm sessizce işaretlenir.
+ */
+export function tanismaDonumEtiketi(state: CharacterState): { etiket: string; zorla: boolean } | null {
+  let onceki = 18;
   for (const yas of S.TANISMA_DONUMLERI) {
     const etiket = `tanisma_donum_${yas}`;
-    if (state.yas >= yas && !state.etiketler.includes(etiket)) return etiket;
+    if (state.yas >= yas && !state.etiketler.includes(etiket)) {
+      const yasandi = tanismaYasandiMi(state, onceki, yas + 1);
+      if (!yasandi && !tanismaBaslatilabilirMi(state)) return null;
+      return { etiket, zorla: !yasandi };
+    }
+    onceki = yas;
   }
   return null;
+}
+
+/** Turdaki `yasArtisi` yılın her biri için rastgele tanışma fırsatı zarı; tutarsa true. */
+export function tanismaYillikZar(state: CharacterState, yasArtisi: number): boolean {
+  if (!tanismaBaslatilabilirMi(state) || state.etiketler.includes("tanisma_firsati_bekliyor")) return false;
+  for (let i = 0; i < yasArtisi; i++) if (Math.random() < S.TANISMA_YILLIK_SANS) return true;
+  return false;
+}
+
+/** Evli karakter tanışmadan vazgeçerse sadakat ödülü (ahlak + eş barı). */
+export function sadakatOdulu(state: CharacterState): void {
+  state.ahlak += S.SADAKAT_AHLAK;
+  if (state.es_adi) state.es_puani = Math.min(100, state.es_puani + S.SADAKAT_BAR);
 }
 
 /** Çalışma anı ayarı (testler sıfırlayarak mekân girişlerindeki rastgele tanışmayı kapatabilir). */
@@ -63,7 +97,9 @@ export const tanismaAyar = { mekanSansi: S.TANISMA_MEKAN_SANSI };
 
 /** Bir sosyalleşme mekân girişinde rastgele tanışma çıkar mı. */
 export function tanismaMekanSansiTuttu(state: CharacterState): boolean {
-  return tanismaAyar.mekanSansi > 0 && tanismaBaslatilabilirMi(state) && Math.random() < tanismaAyar.mekanSansi;
+  if (tanismaAyar.mekanSansi <= 0 || !tanismaBaslatilabilirMi(state)) return false;
+  const carpan = state.es_adi ? S.TANISMA_EVLI_MEKAN_CARPANI : 1;
+  return Math.random() < tanismaAyar.mekanSansi * carpan;
 }
 
 // ---------- aday ve tanışma ----------
@@ -118,6 +154,7 @@ export function tanismaBaslat(state: CharacterState, mekanId: string): AktifTani
     son_tepki: null,
   };
   state.aktif_tanisma = tanisma;
+  etiketEkle(state, [`${TANISMA_YASANDI_ONEK}${state.yas}`]);
   return tanisma;
 }
 
@@ -135,6 +172,10 @@ export function tanismaVazgec(state: CharacterState): string {
   const t = state.aktif_tanisma;
   if (!t) throw new Error("Süren bir tanışma yok.");
   state.aktif_tanisma = null;
+  if (state.es_adi) {
+    sadakatOdulu(state);
+    return cevir(state.dil, D.SONUC_SADAKAT, t.aday.isim);
+  }
   if (state.nostalji_yili == null) state.nostalji_yili = state.yil + aralik(...S.NOSTALJI_YIL_ARALIK);
   return cevir(state.dil, D.SONUC_VAZGECILDI, t.aday.isim);
 }
@@ -210,6 +251,20 @@ export function tanismaSec(state: CharacterState, secenekIndex: number): Tanisma
   // Son adım: sonuç.
   const kabul = t.basari >= t.toplam - S.TANISMA_TOLERANS;
   state.aktif_tanisma = null;
+  if (kabul && state.es_adi) {
+    // Evliyken kabul = aldatma: sevgili oluşmaz, eş barı/ahlak düşer, %40 ifşa olur.
+    esBarDusur(state, S.ALDATMA_BAR_CEZASI);
+    state.ahlak += S.ALDATMA_AHLAK;
+    state.mutluluk += S.ALDATMA_MUTLULUK;
+    hayatOlayiEkle(state, "💔", T(state.dil, "{0} ile gizli bir yakınlaşma yaşadı", [aday.isim]));
+    let mesaj = cevir(state.dil, D.SONUC_ALDATMA, aday.isim);
+    if (Math.random() < S.ALDATMA_IFSA_SANSI) {
+      esBarDusur(state, S.ALDATMA_IFSA_BAR);
+      state.un += S.ALDATMA_IFSA_SOHRET;
+      mesaj += " " + cevir(state.dil, D.SONUC_ALDATMA_IFSA, state.es_adi ?? "");
+    }
+    return { bitti: true, basarili: false, tepki, mesaj, aday };
+  }
   if (kabul) {
     const sevgili: Sevgili = {
       isim: aday.isim,

@@ -136,7 +136,7 @@ import { DilContext, dilCtxYap } from './DilContext';
 import { aileKokAdi, enTanimlik } from './aileAdi';
 import { SkorKirilimiPaneli } from './components/SkorKirilimiPaneli';
 import { GostergeModal } from './components/GostergeModal';
-import { TanismaModal } from './components/TanismaModal';
+import { tanismaSenaryosu, tanismaOlaySonucu } from './tanismaOlay';
 import { DunyaGecmisiModal } from './components/DunyaGecmisiModal';
 import { CarkLogo, KoseTezhibi, MuhurAyrac, AdimGostergesi, KaderYollari } from './components/Suslemeler';
 import { CagAmblemi, BolgeAmblemi } from './components/Amblemler';
@@ -802,6 +802,18 @@ function App() {
     setHata(null);
     setYukleniyor(true);
     try {
+      if (karakter.aktif_tanisma) {
+        // Bu olay bir tanışma başlattı: yeni senaryo çekmek yerine "göz göze" olayı açılır.
+        const d = await tanismaGetir(karakter.id);
+        if (d.aktif) {
+          setTanisma(d);
+          setTanismaTepki(null);
+          setTanismaSonuc(null);
+          setTepkiModu(false);
+          setEkran('oyun');
+          return;
+        }
+      }
       const { senaryo } = await senaryoGetir(karakter.id);
       setSenaryo(senaryo);
       setTepkiModu(false);
@@ -1013,18 +1025,24 @@ function App() {
     }
   }
 
+  /** Tanışma olayının şık seçimi: 0. adımda [yanına git, vazgeç], sonraki adımlarda [yaklaşımlar..., vazgeç]. */
+  function tanismaSecenek(indeks: number) {
+    if (!karakter || !tanisma) return;
+    if (tanisma.adim === 0) {
+      void tanismaIslemi(() => (indeks === 0 ? tanismaYaklas(karakter.id) : tanismaVazgec(karakter.id)));
+    } else if (indeks < tanisma.secenekler.length) {
+      void tanismaIslemi(() => tanismaSec(karakter.id, indeks));
+    } else {
+      void tanismaIslemi(() => tanismaVazgec(karakter.id));
+    }
+  }
+
+  /** Tanışma sonucu okunduktan sonra "Devam Et": olay kapanır, oyun kaldığı yerden sürer. */
   async function tanismaKapat() {
     setTanisma(null);
     setTanismaTepki(null);
     setTanismaSonuc(null);
-    // Aile ekranı açıksa sevgili/eş durumu tazelensin.
-    if (karakter && ekran === 'aile') {
-      try {
-        setAileDurum(await aileDurumGetir(karakter.id));
-      } catch {
-        /* eldeki durum kalır */
-      }
-    }
+    await devamEt();
   }
 
   // ===== Kariyer sayfası: Yönetimle Bağlar (§35) =====
@@ -1357,9 +1375,11 @@ function App() {
       const sonuc = await sosyallesmeYerineGit(karakter.id, yerId);
       setKarakter(sonuc.state);
       if (sonuc.tanismaBasladi) {
-        // Mekân olayı yerine biriyle göz göze gelindi: tanışma penceresi (effect) açılır.
+        // Mekân olayı yerine biriyle göz göze gelindi: oyun ekranına dönülür, tanışma olay kutusunda (effect) açılır.
         setTanisma(null);
         setTanismaSonuc(null);
+        setTepkiModu(false);
+        setEkran('oyun');
         return;
       }
       const { senaryo: mekanOlayi } = await senaryoGetir(sonuc.state.id);
@@ -1572,10 +1592,20 @@ function App() {
           ikon: sonEtki.terfiOldu ? '🎖️' : sonucIkonuGetir(sonEtki.basarili, false, sonEtki.kategori),
         }
       : null;
+  // Süren tanışma ya da bitmiş tanışmanın sonucu: olay kutusunda normal bir olay gibi gösterilir.
+  const tanismaSonucu: OlaySonucu | null = tanismaSonuc
+    ? tanismaOlaySonucu(tanismaSonuc, tanismaTepki, karakter?.para_birimi ?? '')
+    : null;
+  const tanismaSenaryo: SenaryoResponse | null =
+    ekran === 'oyun' && tanisma
+      ? tanismaSenaryosu(tanisma, tanismaTepki, dil)
+      : ekran === 'oyun' && tanismaSonuc && senaryo
+        ? { ...senaryo, olay_basligi: '💞', olay_metni: '', kategori: 'sosyal', gorsel: '💞', resim: 'evlilik', secenekler: [] }
+        : null;
   // Klavye kısayolları (1-4 / Enter) bir pencere açıkken devre dışı kalır.
   // Karakterin state'inde süren bir tanışma varsa (olay/mekân başlattı ya da sayfa yenilendi) penceresini aç.
   useEffect(() => {
-    if (!karakter?.id || !karakter.aktif_tanisma || tanisma || tanismaSonuc) return;
+    if (ekran !== 'oyun' || !karakter?.id || !karakter.aktif_tanisma || tanisma || tanismaSonuc) return;
     let iptal = false;
     tanismaGetir(karakter.id)
       .then((d) => {
@@ -1585,9 +1615,9 @@ function App() {
     return () => {
       iptal = true;
     };
-  }, [karakter?.id, karakter?.aktif_tanisma, tanisma, tanismaSonuc]);
+  }, [ekran, karakter?.id, karakter?.aktif_tanisma, tanisma, tanismaSonuc]);
 
-  const pencereAcik = ayarlarAcik || bolgeBilgiAcik || kisilikModalAcik || skorDetayAcik || gostergeAcik !== null || tanisma !== null || tanismaSonuc !== null;
+  const pencereAcik = ayarlarAcik || bolgeBilgiAcik || kisilikModalAcik || skorDetayAcik || gostergeAcik !== null;
   // PC yan sütunlarındaki ahşap kısayol kartları (eskiden sahne üstündeki tıklama noktaları).
   function kisayolKartlari(ogeler: KisayolId[]) {
     if (!karakter) return null;
@@ -2376,13 +2406,13 @@ function App() {
               <OlayKutusu
                 cag={karakter.cag}
                 ulke={karakter.ulke}
-                senaryo={senaryo}
-                sonuc={olaySonucu}
-                tepkiModu={tepkiModu}
+                senaryo={tanismaSenaryo ?? senaryo}
+                sonuc={tanismaSenaryo ? tanismaSonucu : olaySonucu}
+                tepkiModu={tanismaSenaryo ? false : tepkiModu}
                 yukleniyor={yukleniyor}
                 sesKapali={sesKapali}
-                onSecenek={secenekSec}
-                onDevam={devamEt}
+                onSecenek={tanismaSenaryo ? tanismaSecenek : secenekSec}
+                onDevam={tanismaSenaryo ? tanismaKapat : devamEt}
                 genis={!mobil}
                 etiketGoster={mobil}
                 klavye={!mobil && !pencereAcik}
@@ -2617,19 +2647,6 @@ function App() {
             setIslemMesaji(null);
             setEkran('oyun');
           }}
-        />
-      )}
-
-      {(tanisma !== null || tanismaSonuc !== null) && karakter && (
-        <TanismaModal
-          durum={tanisma}
-          tepki={tanismaTepki}
-          sonuc={tanismaSonuc}
-          yukleniyor={yukleniyor}
-          onYaklas={() => tanismaIslemi(() => tanismaYaklas(karakter.id))}
-          onVazgec={() => tanismaIslemi(() => tanismaVazgec(karakter.id))}
-          onSec={(i) => tanismaIslemi(() => tanismaSec(karakter.id, i))}
-          onKapat={tanismaKapat}
         />
       )}
 
