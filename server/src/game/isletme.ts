@@ -81,10 +81,10 @@ const TALEP_GURULTUSU = 0.08;
 /** Yüzdelik müşteri büyümesi pay bu eşiğe yaklaştıkça sıfıra iner. */
 const PAY_DOYMA_ESIGI = 0.68;
 const DUKKAN_TALEP_KADEME = 0.1;
-const KERVAN_INDIRIM_KADEME = 0.08;
-const GUMRUK_INDIRIMI = 0.15;
-const MUAFIYET_INDIRIMI = 0.1;
-const MALIYET_INDIRIM_TAVANI = 0.3;
+/** Maliyet indirimleri ÇARPIMSAL birleşir (tavan yok): maliyet × (1−a)(1−b)(1−c)…; her kaynak kendi payını düşer, yığıldıkça getirisi azalır. */
+const KERVAN_INDIRIM_KADEME = 0.05;
+const GUMRUK_INDIRIMI = 0.1;
+const MUAFIYET_INDIRIMI = 0.08;
 const TEZGAH_URETIM_KADEME = 0.6;
 const TANITIM_PAY_KADEME = 0.01;
 /** Perakende fiyatı toptan fiyat şokunu yalnız bu oranda izler: kıtlıkta mal pahalanır ama müşterinin alım gücü yetmez. */
@@ -190,8 +190,10 @@ export function hatSlotSayisi(state: CharacterState): number {
 export interface EkipBonuslari {
   /** Ana rol: Tüccar'da talep (satış), Zanaatkâr'da üretim tavanı bonusu (toplam, kesir). */
   ana: number;
-  /** Alış / hammadde maliyeti indirimi (kesir). */
+  /** Alış / hammadde maliyeti indirimi (kesir, çalışanların çarpımsal toplamı: 1 − Π(1−dᵢ)). */
   maliyet: number;
+  /** Çalışanlardan gelen maliyet çarpanı Π(1−dᵢ) (1 = indirim yok). */
+  maliyetCarpani: number;
   /** Pazar payı (G) yıllık büyüme bonusu (kesir). */
   musteri: number;
   /** Güvenlik çalışanlarından gelen Koruma. */
@@ -212,7 +214,7 @@ export function calisanBonusu(uye: EkipUyesi): { tur: IsletmeRolTuru; deger: num
     case "ana":
       return { tur: "ana", deger: (0.05 + 0.35 * y) * k };
     case "maliyet":
-      return { tur: "maliyet", deger: (0.03 + 0.2 * y) * k };
+      return { tur: "maliyet", deger: (0.02 + 0.1 * y) * k };
     case "musteri":
       return { tur: "musteri", deger: (0.01 + 0.05 * y) * k };
     case "guvenlik":
@@ -222,17 +224,18 @@ export function calisanBonusu(uye: EkipUyesi): { tur: IsletmeRolTuru; deger: num
   }
 }
 
-/** Çalışanların işletmeye toplam etkisi (bonuslar düz toplanır; azalma/tavan yok). */
+/** Çalışanların işletmeye toplam etkisi (ana/müşteri/koruma düz toplanır; maliyet indirimi çarpımsal birleşir). */
 export function ekipBonuslari(state: CharacterState): EkipBonuslari {
-  const sonuc: EkipBonuslari = { ana: 0, maliyet: 0, musteri: 0, koruma: 0, calisanSayisi: state.ekip.length };
+  const sonuc: EkipBonuslari = { ana: 0, maliyet: 0, maliyetCarpani: 1, musteri: 0, koruma: 0, calisanSayisi: state.ekip.length };
   for (const uye of state.ekip) {
     const b = calisanBonusu(uye);
     if (!b) continue;
     if (b.tur === "ana") sonuc.ana += b.deger;
-    else if (b.tur === "maliyet") sonuc.maliyet += b.deger;
+    else if (b.tur === "maliyet") sonuc.maliyetCarpani *= 1 - b.deger;
     else if (b.tur === "musteri") sonuc.musteri += b.deger;
     else sonuc.koruma += b.deger;
   }
+  sonuc.maliyet = 1 - sonuc.maliyetCarpani;
   return sonuc;
 }
 
@@ -245,8 +248,8 @@ export function korumaHesapla(state: CharacterState): { calisan: number; yatirim
   return { calisan, yatirim, otorite, toplam: Math.min(1, calisan + yatirim + otorite) };
 }
 
-/** Çalışan maaşı çarpanı (v8.2: +%15). */
-export const MAAS_CARPANI = 1.15;
+/** Çalışan maaşı çarpanı (v8.2: +%15 → v8.4: +%7). */
+export const MAAS_CARPANI = 1.07;
 
 /** Giriş seviyesine (Y, S) göre enflasyonsuz yıllık maaş tabanı. */
 export function maasTabani(yetenek: number, sadakat: number): number {
@@ -415,10 +418,12 @@ export function hatHesapla(state: CharacterState, hat: IsletmeHat, tanim: HatTan
     anaTalep *
     dukkan;
   const tekel = is.tekel_hat === hat.id && imtiyazAktifMi(state, "tekel_ruhsati") ? 1.1 : 1;
-  let indirim = bon.maliyet + yatirimKademesi(state, "alis") * KERVAN_INDIRIM_KADEME;
-  if (state.yil <= (is.gumruk_indirim_bitis ?? -1)) indirim += GUMRUK_INDIRIMI;
-  if (imtiyazAktifMi(state, "gumruk_muafiyeti") || imtiyazAktifMi(state, "hammadde_tahsisi")) indirim += MUAFIYET_INDIRIMI;
-  indirim = Math.min(MALIYET_INDIRIM_TAVANI, indirim);
+  // Maliyet indirimleri çarpımsal: çalışanlar × tedarik yatırımı (kademe başı) × gümrük/hammadde anlaşması × imtiyaz.
+  const maliyetCarpani =
+    bon.maliyetCarpani *
+    Math.pow(1 - KERVAN_INDIRIM_KADEME, yatirimKademesi(state, "alis")) *
+    (state.yil <= (is.gumruk_indirim_bitis ?? -1) ? 1 - GUMRUK_INDIRIMI : 1) *
+    (imtiyazAktifMi(state, "gumruk_muafiyeti") || imtiyazAktifMi(state, "hammadde_tahsisi") ? 1 - MUAFIYET_INDIRIMI : 1);
   return {
     talep,
     birimFiyat:
@@ -429,7 +434,7 @@ export function hatHesapla(state: CharacterState, hat: IsletmeHat, tanim: HatTan
       b.fiyatPrimi *
       (sicak ? SICAK_URUN_FIYAT : 1) *
       tekel,
-    birimMaliyet: tanim.birimMaliyet * b.enflasyon * kes.fiyat * (1 - indirim) * piyasaCarpani(state, "alis_maliyeti"),
+    birimMaliyet: tanim.birimMaliyet * b.enflasyon * kes.fiyat * maliyetCarpani * piyasaCarpani(state, "alis_maliyeti"),
     kesim: kes,
     sicak,
   };

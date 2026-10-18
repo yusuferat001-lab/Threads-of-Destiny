@@ -120,7 +120,7 @@ const YATIRIM_DEPO: YatirimTanimi = {
   simge: "🏚️",
   ad: { tr: "Depo", en: "Warehouse" },
   aciklama: {
-    tr: "Stok kapasitesi: 100 → 220 → 420 → 750. Büyük depo mal çürümesini azaltır (%10 → %2) ama bakımı pahalıdır.",
+    tr: "Stok kapasitesi: 100 → 220 → 420 → 750. Büyük depo mal çürümesini azaltır (%15 → %8) ama bakımı pahalıdır.",
     en: "Stock capacity: 100 → 220 → 420 → 750. A bigger warehouse reduces spoilage (10% → 2%) but costs more to maintain.",
   },
   etki: "depo",
@@ -171,8 +171,8 @@ const TUCCAR_YATIRIMLAR: YatirimTanimi[] = [
     simge: "🐪",
     ad: { tr: "Kervan", en: "Caravan" },
     aciklama: {
-      tr: "Her kademe alış maliyetini %8 düşürür.",
-      en: "Each tier cuts purchase costs by 8%.",
+      tr: "Her kademe alış maliyetini %5 düşürür (diğer indirimlerle çarpımsal birleşir).",
+      en: "Each tier cuts purchase costs by 5% (stacks multiplicatively with other discounts).",
     },
     etki: "alis",
     fiyatlar: [15, 30, 55],
@@ -284,11 +284,11 @@ const ZANAATKAR_ORTA_CAG: IsletmeProfili = {
 const ZANAATKAR_SANAYI: IsletmeProfili = {
   mod: "uretim",
   hatlar: [
-    { id: "ayakkabi", simge: "👞", ad: { tr: "Ayakkabı ve Deri", en: "Shoes & Leather" }, kesim: "temel", talepTabani: 1.602, birimMaliyet: 0.62, birimFiyat: 1.15, minRutbe: 1 },
-    { id: "ev_esyasi", simge: "🍳", ad: { tr: "Ev Eşyası", en: "Household Goods" }, kesim: "temel", talepTabani: 1.494, birimMaliyet: 0.67, birimFiyat: 1.2, minRutbe: 1 },
-    { id: "mobilya", simge: "🛋️", ad: { tr: "Mobilya ve Cam", en: "Furniture & Glass" }, kesim: "orta", talepTabani: 1.129, birimMaliyet: 0.91, birimFiyat: 1.9, minRutbe: 2 },
-    { id: "makine", simge: "⚙️", ad: { tr: "Makine Parçası", en: "Machine Parts" }, kesim: "orta", talepTabani: 0.941, birimMaliyet: 1.06, birimFiyat: 2.5, minRutbe: 2, savasTalep: 1.3 },
-    { id: "saat", simge: "⌚", ad: { tr: "Saat ve Mücevher", en: "Watches & Jewellery" }, kesim: "luks", talepTabani: 0.436, birimMaliyet: 1.92, birimFiyat: 5.2, minRutbe: 3 },
+    { id: "ayakkabi", simge: "👞", ad: { tr: "Ayakkabı ve Deri", en: "Shoes & Leather" }, kesim: "temel", talepTabani: 1.49, birimMaliyet: 0.62, birimFiyat: 1.15, minRutbe: 1 },
+    { id: "ev_esyasi", simge: "🍳", ad: { tr: "Ev Eşyası", en: "Household Goods" }, kesim: "temel", talepTabani: 1.389, birimMaliyet: 0.67, birimFiyat: 1.2, minRutbe: 1 },
+    { id: "mobilya", simge: "🛋️", ad: { tr: "Mobilya ve Cam", en: "Furniture & Glass" }, kesim: "orta", talepTabani: 1.05, birimMaliyet: 0.91, birimFiyat: 1.9, minRutbe: 2 },
+    { id: "makine", simge: "⚙️", ad: { tr: "Makine Parçası", en: "Machine Parts" }, kesim: "orta", talepTabani: 0.875, birimMaliyet: 1.06, birimFiyat: 2.5, minRutbe: 2, savasTalep: 1.3 },
+    { id: "saat", simge: "⌚", ad: { tr: "Saat ve Mücevher", en: "Watches & Jewellery" }, kesim: "luks", talepTabani: 0.405, birimMaliyet: 1.92, birimFiyat: 5.2, minRutbe: 3 },
   ],
   yatirimlar: ZANAATKAR_YATIRIMLAR,
   roller: ZANAATKAR_ROLLER,

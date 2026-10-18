@@ -2996,13 +2996,9 @@ export function krediMaksTutar(state: CharacterState): number {
   return Math.max(0, Math.min(tavan, Math.round(maas * 6 * sucKesinti)));
 }
 
-/** Tefecinin güvensizlik primi: borçluysa +4, suç seviyesi yüksekse +3, ahlak düşükse +2 puan (havuz faizine eklenir). */
+/** Tefecinin güvensizlik primi: yalnız borçluysan (para < 0) havuz faizine +4 puan biner. */
 export function krediFaizEki(state: CharacterState): number {
-  let ek = 0;
-  if (state.para < 0) ek += 0.04;
-  if (state.suc_seviyesi >= 40) ek += 0.03;
-  if (state.ahlak < 35) ek += 0.02;
-  return ek;
+  return state.para < 0 ? 0.04 : 0;
 }
 
 function krediTeklifiKur(state: CharacterState, tanim: KrediHavuzTanimi, maks: number): KrediTeklifi | null {
@@ -3066,7 +3062,7 @@ export function krediPazarlik(state: CharacterState): string {
   const k = state.kredi;
   k.pazarlikYapildi = true;
   const kalanYil = Math.max(1, (k.vadeYil ?? 6) - (state.yil - k.alindigiYil));
-  const sans = 30 + (state.un - 20) / 2 + (state.ahlak - 50) / 4; // ~%20-70
+  const sans = Math.min(35, Math.max(8, 15 + (state.un - 20) / 4 + (state.ahlak - 50) / 8)); // ~%8-35
   if (Math.random() * 100 < sans) {
     k.faizOrani = Math.max(0.05, Math.round((k.faizOrani - 0.03) * 100) / 100);
     k.yillikTaksit = Math.max(2, Math.ceil(annuiteTaksit(k.kalanBorc, k.faizOrani, kalanYil)));

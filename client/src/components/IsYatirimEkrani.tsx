@@ -119,9 +119,7 @@ export function IsYatirimEkrani({
                   >
                     <strong>{formatPara(t.tutar)} {paraBirimi}</strong>
                     <br />
-                    {en ? 'interest' : 'faiz'} %{Math.round(t.faiz * 100)} · {t.vade} {en ? 'yrs' : 'yıl'}
-                    <br />
-                    {en ? 'instalment' : 'taksit'} ~{formatPara(t.taksit)}/{en ? 'yr' : 'yıl'} · {en ? 'total' : 'toplam'} ~{formatPara(t.taksit * t.vade)}
+                    {en ? 'interest' : 'faiz'} %{Math.round(t.faiz * 100)} · {en ? 'term' : 'vade'} {t.vade} {en ? 'yrs' : 'yıl'}
                   </button>
                 ))}
               </div>

@@ -222,7 +222,7 @@ describe("işletme (Tüccar dilimi)", () => {
   it("çalışan bonusları güncel Yeteneğe göre ve düz toplanır; sadık (≥75) ×1,05", () => {
     const ana = calisanBonusu(uye("ana", 50, 60))!;
     expect(ana.deger).toBeCloseTo(0.05 + 0.35 * 0.5);
-    expect(calisanBonusu(uye("maliyet", 100, 60))!.deger).toBeCloseTo(0.23);
+    expect(calisanBonusu(uye("maliyet", 100, 60))!.deger).toBeCloseTo(0.12);
     expect(calisanBonusu(uye("musteri", 100, 60))!.deger).toBeCloseTo(0.06);
     expect(calisanBonusu(uye("guvenlik", 50, 60))!.deger).toBeCloseTo(0.36);
     const sadik = calisanBonusu(uye("ana", 50, 80))!;
@@ -235,8 +235,8 @@ describe("işletme (Tüccar dilimi)", () => {
   });
 
   it("maaş giriş seviyesine göre sabit, yalnız enflasyonla artar", () => {
-    expect(maasTabani(20, 10)).toBeCloseTo(1.15 * (1.2 + 0.4 + 0.1 + 0.08), 2);
-    expect(maasTabani(90, 80)).toBeCloseTo(1.15 * (1.2 + 1.8 + 0.8 + 2.88), 2);
+    expect(maasTabani(20, 10)).toBeCloseTo(1.07 * (1.2 + 0.4 + 0.1 + 0.08), 2);
+    expect(maasTabani(90, 80)).toBeCloseTo(1.07 * (1.2 + 1.8 + 0.8 + 2.88), 2);
     expect(maasTabani(90, 80)).toBeGreaterThan(maasTabani(20, 10));
   });
 

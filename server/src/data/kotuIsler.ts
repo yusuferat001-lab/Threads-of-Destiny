@@ -42,7 +42,7 @@ export interface KotuIsEtki {
   /** Yönetimle bağlar (§35): kral/vali ve patron hattına delta. */
   yonetim_iliski?: number;
   patron_iliski?: number;
-  /** İşletmede alış/hammadde maliyetini bu kadar yıl %15 düşürür (gümrük rüşveti, hammadde kapatma; §45). */
+  /** İşletmede alış/hammadde maliyetini bu kadar yıl %10 düşürür (gümrük rüşveti, hammadde kapatma; §45). */
   gumruk_indirim_yil?: number;
   /** Şehirde kısa bir kriz başlatır (yalnız o an başka kriz yoksa). */
   kriz?: { tur: UlkeKrizi["tur"]; sureYil: number };

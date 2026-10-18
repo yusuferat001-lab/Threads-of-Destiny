@@ -308,8 +308,8 @@ const ISTEK_ADLARI: Record<string, { tr: string; en: string; ipTr: string; ipEn:
   gumruk_muafiyeti: {
     tr: 'Gümrük / transit muafiyeti',
     en: 'Customs / transit exemption',
-    ipTr: '5 yıl boyunca alış maliyeti −%10.',
-    ipEn: 'Purchase costs −10% for 5 years.',
+    ipTr: '5 yıl boyunca alış maliyeti −%8 (diğer indirimlerle çarpımsal).',
+    ipEn: 'Purchase costs −8% for 5 years (stacks multiplicatively).',
   },
   tekel_ruhsati: {
     tr: 'Tekel ruhsatı',
@@ -320,8 +320,8 @@ const ISTEK_ADLARI: Record<string, { tr: string; en: string; ipTr: string; ipEn:
   hammadde_tahsisi: {
     tr: 'Hammadde tahsisi',
     en: 'Material allocation',
-    ipTr: '5 yıl boyunca hammadde gideri −%10.',
-    ipEn: 'Material costs −10% for 5 years.',
+    ipTr: '5 yıl boyunca hammadde gideri −%8 (diğer indirimlerle çarpımsal).',
+    ipEn: 'Material costs −8% for 5 years (stacks multiplicatively).',
   },
   atolye_ruhsati: {
     tr: 'Atölye genişleme ruhsatı',
