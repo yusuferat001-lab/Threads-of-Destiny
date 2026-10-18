@@ -1786,6 +1786,7 @@ export const OLAY_SANAYI_DINADAMI_YOLLARI: OlayTanimi[] = [
         metin: "Teklifi kabul et.",
         baseBasariSansi: 75,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 16,
           ahlak: -12,
           mutluluk: -2,
@@ -1793,6 +1794,7 @@ export const OLAY_SANAYI_DINADAMI_YOLLARI: OlayTanimi[] = [
           detay: "Rahatlığın faturasını vicdan öder.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           para: 8,
           ahlak: -14,
           un: -8,
@@ -1835,6 +1837,7 @@ export const OLAY_SANAYI_DINADAMI_YOLLARI: OlayTanimi[] = [
         metin: "Fondan gizlice para al.",
         baseBasariSansi: 65,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 14,
           ahlak: -14,
           mutluluk: -4,
@@ -1842,6 +1845,7 @@ export const OLAY_SANAYI_DINADAMI_YOLLARI: OlayTanimi[] = [
           detay: "Sessiz suç vicdanda ses bırakır.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           para: 6,
           ahlak: -16,
           un: -12,
@@ -2038,6 +2042,7 @@ export const OLAY_SANAYI_DINADAMI_YOLLARI: OlayTanimi[] = [
         metin: "Kaydı sahteleştir.",
         baseBasariSansi: 65,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 20,
           ahlak: -16,
           mutluluk: -2,
@@ -2045,6 +2050,7 @@ export const OLAY_SANAYI_DINADAMI_YOLLARI: OlayTanimi[] = [
           detay: "Kayıtlar kirlenince güven de kirlenir.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           para: 8,
           ahlak: -18,
           un: -14,
@@ -2087,6 +2093,7 @@ export const OLAY_SANAYI_DINADAMI_YOLLARI: OlayTanimi[] = [
         metin: "Almaya devam et, daha temkinli ol.",
         baseBasariSansi: 60,
         basariliSonuc: {
+          suc_sinifi: "kucuk",
           para: 15,
           ahlak: -12,
           mutluluk: -3,
@@ -2094,6 +2101,7 @@ export const OLAY_SANAYI_DINADAMI_YOLLARI: OlayTanimi[] = [
           detay: "Alışkanlık en zor bırakılan günahtır.",
         },
         basarisizSonuc: {
+          suc_sinifi: "orta",
           ahlak: -18,
           un: -16,
           para: -10,
@@ -2137,6 +2145,7 @@ export const OLAY_SANAYI_DINADAMI_YOLLARI: OlayTanimi[] = [
         metin: "Sırrı şantajla kullan, avantaj sağla.",
         baseBasariSansi: 55,
         basariliSonuc: {
+          suc_sinifi: "orta",
           rakip_puani: -16,
           para: 12,
           ahlak: -14,
@@ -2145,6 +2154,7 @@ export const OLAY_SANAYI_DINADAMI_YOLLARI: OlayTanimi[] = [
           detay: "Güç bazen korkudan doğar.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           ahlak: -18,
           un: -16,
           mutluluk: -8,
@@ -2296,6 +2306,7 @@ export const OLAY_SANAYI_DINADAMI_YOLLARI: OlayTanimi[] = [
         metin: "Son büyük rüşvetle örtbas et, sessizce emekli ol.",
         baseBasariSansi: 55,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 30,
           ahlak: -18,
           mutluluk: -2,
@@ -2303,6 +2314,7 @@ export const OLAY_SANAYI_DINADAMI_YOLLARI: OlayTanimi[] = [
           detay: "Bazı zaferler yalnız cebi doyurur.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           ahlak: -25,
           un: -28,
           para: -20,

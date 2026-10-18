@@ -338,6 +338,7 @@ export const OLAY_SANAYI_ASKER: OlayTanimi[] = [
         metin: "Sahte başvuru yap.",
         baseBasariSansi: 50,
         basariliSonuc: {
+          suc_sinifi: "orta",
           un: 25,
           para: 15,
           ahlak: -25,
@@ -345,6 +346,7 @@ export const OLAY_SANAYI_ASKER: OlayTanimi[] = [
           detay: "Hak etmediğini bilen tek kişi sensin.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           un: -35,
           ahlak: -20,
           para: -15,
@@ -883,6 +885,7 @@ export const OLAY_SANAYI_ASKER: OlayTanimi[] = [
         metin: "Kabul et, silahları kaçır.",
         baseBasariSansi: 45,
         basariliSonuc: {
+          suc_sinifi: "buyuk",
           para: 45,
           ahlak: -30,
           un: -5,
@@ -890,6 +893,7 @@ export const OLAY_SANAYI_ASKER: OlayTanimi[] = [
           detay: "O silahlarla kimin vurulduğunu hiç bilmeyeceksin.",
         },
         basarisizSonuc: {
+          suc_sinifi: "agir",
           saglik: -20,
           ahlak: -30,
           olum_sansi: 10,
@@ -949,12 +953,14 @@ export const OLAY_SANAYI_ASKER: OlayTanimi[] = [
         metin: "Sus, raporu birlikte değiştirin.",
         baseBasariSansi: 75,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 20,
           ahlak: -22,
           mesaj: "Sustun; subay minnettar, adın terfi listesine yazıldı.",
           detay: "Terfi gelince ölenlerin isimlerini de hatırladın.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           un: -25,
           ahlak: -22,
           para: -15,

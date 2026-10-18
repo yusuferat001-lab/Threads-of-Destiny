@@ -840,7 +840,6 @@ export const ANLATIM_EN: Record<string, string> = {
   "{0} ({1}) işe alındı": "{0} ({1}) was hired",
   "{0} artık senin için çalışıyor. Peşin {1} {2} ödedin; maaşı her yıl giderinden düşecek.": "{0} now works for you. You paid {1} {2} up front; their wage will come out of your expenses every year.",
   "Bu mesleğin henüz bir işletmesi yok.": "This profession has no business to run yet.",
-  "Geçersiz karar.": "Invalid decision.",
   "Böyle bir ürün hattı yok.": "There is no such product line.",
   "Bu hattı açmak için rütben yetersiz.": "Your rank is too low to open this line.",
   "Geçersiz fiyat politikası.": "Invalid price policy.",
@@ -951,28 +950,58 @@ export const ANLATIM_EN: Record<string, string> = {
     "Scandal, prison and unpaid debts lower your fame.",
   "Bakımsız ev ve yetersiz yemek adını aşındırır.":
     "A shabby home and poor food erode your name.",
-  "Zamanla çok yavaş soğur: {0}/yıl":
-    "It cools off very slowly with time: {0}/yr",
+  "Uzun süredir suç işlemedin; zamanla soğur: {0}/yıl":
+    "You have kept clean for a long time; it cools off: {0}/yr",
+  "{0} yıl daha suç işlemezsen şehir seni unutmaya başlar ({1}/yıl).":
+    "Stay clean {0} more year(s) and the city starts to forget you ({1}/yr).",
   "Temizsin; kimse seni aramıyor.":
     "You are clean; nobody is looking for you.",
   "Yönetimdeki himayen: {0}/yıl":
     "Your patron in the government: {0}/yr",
   "Kumar oynamak her seferinde biraz aranmanı artırır.":
     "Gambling raises your wanted level a little each time.",
-  "Para kazandıran ahlaksız seçimler ve karanlık işler aranmanı artırır.":
-    "Immoral choices that earn money and dark deeds raise your wanted level.",
-  "Hapistesin; cezanı tamamlamak aranmayı kendiliğinden sıfırlamaz.":
-    "You are in prison; serving your sentence does not reset your wanted level by itself.",
+  "Yasa dışı seçimler (hırsızlık, rüşvet, kaçakçılık, şiddet) ve karanlık işler aranmanı artırır.":
+    "Illegal choices (theft, bribery, smuggling, violence) and dark deeds raise your wanted level.",
+  "Hapistesin; cezanı tamamlayınca aranman en fazla 10'a iner.":
+    "You are in prison; once you finish your sentence your wanted level drops to 10 at most.",
   "Kaçaksın: aranman çok yüksek.":
     "You are a fugitive: your wanted level is very high.",
-  "Azılı suçlu: tutuklanırsan 9-12 yıl ceza.":
-    "Hardened criminal: if arrested you face 9-12 years.",
-  "Baskın bandı: tutuklanırsan 7-9 yıl ceza.":
-    "Raid band: if arrested you face 7-9 years.",
-  "Yakalanma bandı: tutuklanırsan 4-7 yıl ceza.":
-    "Capture band: if arrested you face 4-7 years.",
-  "Rutin bant: tutuklanırsan 2-4 yıl ceza.":
-    "Routine band: if arrested you face 2-4 years.",
+  "Azılı suçlu (3★): tutuklanırsan 12-14 yıl ceza.":
+    "Hardened criminal (3★): if arrested you face 12-14 years.",
+  "Baskın bandı (2★): tutuklanırsan 9-11 yıl ceza.":
+    "Raid band (2★): if arrested you face 9-11 years.",
+  "Yakalanma bandı (1★): tutuklanırsan 7-9 yıl ceza.":
+    "Capture band (1★): if arrested you face 7-9 years.",
+  "Rutin bant: tutuklanırsan 3-4 yıl ceza.":
+    "Routine band: if arrested you face 3-4 years.",
+  "Aranma ekranından kefaret öde (gönüllü ödemede %20 indirim) ya da kendi isteğinle teslim ol (%25 daha kısa ceza).":
+    "Pay bail from the Wanted screen (20% off when voluntary) or turn yourself in (25% shorter sentence).",
+  "Aranma gölgesi": "Wanted shadow",
+  "Eski bir suçun açığa çıktı": "An old crime came to light",
+  "Baskından kıl payı kaçtı": "Narrowly escaped a raid",
+  "Evine baskın yapıldı ve tutuklandı": "His home was raided and he was arrested",
+  "Kendi isteğiyle teslim oldu": "Turned himself in",
+  "Kefareti ödedin ({0} {birim}); sicilin {1}.": "You paid the bail ({0} {birim}); your record is {1}.",
+  "yarı yarıya temizlendi": "half cleared",
+  "tamamen temizlendi": "fully cleared",
+  "Kendi isteğinle teslim oldun; ceza indirimli: {0} yıl.": "You turned yourself in; reduced sentence: {0} years.",
+  "Kefareti reddettin; polis seni not aldı (aranma +{0}).": "You refused the bail; the police took note (wanted +{0}).",
+  "Kefareti ödedin ({0} {birim}).": "You paid the bail ({0} {birim}).",
+  "pazar payın ve gelirin": "your market share and income",
+  "müşterilerin ve işin kalitesi": "your customers and the quality of your work",
+  "cemaatin ve bağışların": "your congregation and donations",
+  "birliğinin morali ve maaşın": "your unit's morale and pay",
+  "gelirin": "your income",
+  "Sicilin zaten temiz.": "Your record is already clean.",
+  "Bu seviyede yarım ödeme yok; tamamını öde.": "No half payment at this level; pay in full.",
+  "Kefaret için yeterli paran yok.": "You do not have enough money for the bail.",
+  "Bekleyen bir polis uyarısı yok.": "There is no pending police warning.",
+  "Zaten hapistesin.": "You are already in prison.",
+  "Yolculuktayken teslim olamazsın.": "You cannot turn yourself in while travelling.",
+  "Teslim olacak kadar aranmıyorsun.": "You are not wanted enough to turn yourself in.",
+  "Polis uyarısını yanıtlaman gerekir.": "You must answer the police warning.",
+  "Bildirim bulunamadı.": "Notification not found.",
+  "Geçersiz karar.": "Invalid decision.",
   "Zar masası, Üç Kağıtçı ve karaborsa deposu da yavaş yavaş artırır.":
     "The dice table, Three-Card Monte and a black-market depot raise it gradually too.",
   "Aranma olaylarındaki kefaret ya da rüşvet seçeneklerini seç.":

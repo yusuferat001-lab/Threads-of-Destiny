@@ -117,14 +117,15 @@ export const OLAY_BUYULU: OlayTanimi[] = [
         metin: "Ne istediğini sor, pazarlık et.",
         baseBasariSansi: 35,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 25,
           ahlak: -12,
           mutluluk: -5,
-          suc_artis: 10,
           mesaj:
             "Bir kese altınla döndün ama verdiğin söz içini kemiriyor. Kimseye anlatamazsın.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           saglik: -12,
           mutluluk: -10,
           etiket_ekle: ["kalici:kronik_agri"],
@@ -143,7 +144,6 @@ export const OLAY_BUYULU: OlayTanimi[] = [
         },
         basarisizSonuc: {
           mutluluk: -6,
-          suc_artis: 8,
           mesaj:
             "Biri seni ormandan çıkarken gördü. Köy 'onunla konuştu' diye fısıldıyor.",
         },
@@ -422,15 +422,16 @@ export const OLAY_BUYULU: OlayTanimi[] = [
         metin: "Deftere adını yaz.",
         baseBasariSansi: 40,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 40,
           ahlak: -20,
           mutluluk: -8,
-          suc_artis: 12,
           efsanevi_olum: "Dört yol ağzında verdiği sözün bedelini ödedi",
           mesaj:
             "Cebin doldu, işlerin açıldı. Ama her yol ağzında içinden bir şey kopuyor.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           saglik: -10,
           mutluluk: -12,
           mesaj: "Kalem değmeden yabancı kayboldu. Eve dönünce günlerce hastalandın.",

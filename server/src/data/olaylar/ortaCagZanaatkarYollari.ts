@@ -66,18 +66,18 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
         metin: "Ucuz malzeme kullan, süreyi tut.",
         baseBasariSansi: 62,
         basariliSonuc: {
+          suc_sinifi: "kucuk",
           para: 16,
           ahlak: -12,
-          suc_artis: 6,
           etiket_ekle: ["yol:zanaatkar:hileci", "zanaatkar_yolu_secildi"],
           mesaj: "Kimse anlamadan zamanında teslim ettin; cebin doldu, vicdanın sızladı.",
           detay: "İlk hile kolaydır; zor olan bırakmaktır.",
         },
         basarisizSonuc: {
+          suc_sinifi: "orta",
           para: -8,
           un: -12,
           ahlak: -10,
-          suc_artis: 10,
           etiket_ekle: ["yol:zanaatkar:hileci", "zanaatkar_yolu_secildi"],
           mesaj: "Kalitesizlik anlaşıldı; para iade edildi, adın çarşıda lekelendi.",
           detay: "Ucuz iş en pahalıya patlar.",
@@ -325,15 +325,16 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
         metin: "Memurlara küçük bir hediye sun.",
         baseBasariSansi: 55,
         basariliSonuc: {
+          suc_sinifi: "kucuk",
           para: -6,
           un: 4,
           mesaj: "Hediye işleri yumuşattı, denetim hızla bitti.",
           detay: "Bazı kapılar küçük jestle açılır.",
         },
         basarisizSonuc: {
+          suc_sinifi: "orta",
           para: -6,
           un: -10,
-          suc_artis: 6,
           mesaj: "Hediye rüşvet sayıldı, ciddi soruşturma açıldı.",
           detay: "Bazı jestler suça dönüşür.",
         },
@@ -866,17 +867,17 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
         metin: "Malzemeyi değiştir, farkı cebe at.",
         baseBasariSansi: 58,
         basariliSonuc: {
+          suc_sinifi: "kucuk",
           para: 18,
           ahlak: -10,
-          suc_artis: 8,
           mesaj: "Kimse anlamadı; kârın hatırı sayılır arttı.",
           detay: "Sessiz hile en tehlikeli alışkanlıktır.",
         },
         basarisizSonuc: {
+          suc_sinifi: "orta",
           para: -10,
           un: -14,
           ahlak: -8,
-          suc_artis: 12,
           mesaj: "Müşteri malzemeyi fark etti; dava tehdidi aldın.",
           detay: "Hile er geç ortaya çıkar.",
         },
@@ -912,14 +913,15 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
         metin: "Çarşıda dedikodu yay.",
         baseBasariSansi: 55,
         basariliSonuc: {
+          suc_sinifi: "kucuk",
           para: 10,
           rakip_puani: -8,
           ahlak: -8,
-          suc_artis: 5,
           mesaj: "Dedikodu tuttu; birkaç müşteri sana geçti.",
           detay: "Karanlık yollar bazen kestirmedir.",
         },
         basarisizSonuc: {
+          suc_sinifi: "orta",
           un: -10,
           mutluluk: -4,
           mesaj: "Dedikodunun senden çıktığı anlaşıldı; itibarın zedelendi.",
@@ -956,8 +958,8 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
       {
         metin: "Tartıyı hafifçe oyna.",
         baseBasariSansi: 60,
-        basariliSonuc: { para: 10, ahlak: -8, suc_artis: 6, mesaj: "Kimse anlamadı; küçük ama sürekli kazanç sağladın.", detay: "Küçük hile büyük alışkanlığa döner." },
-        basarisizSonuc: { para: -6, un: -8, ahlak: -6, suc_artis: 10, mesaj: "Bir müşteri tartını denetletti, hile çıktı.", detay: "Küçük hile büyük skandal olur." },
+        basariliSonuc: { suc_sinifi: "kucuk", para: 10, ahlak: -8, mesaj: "Kimse anlamadı; küçük ama sürekli kazanç sağladın.", detay: "Küçük hile büyük alışkanlığa döner." },
+        basarisizSonuc: { suc_sinifi: "orta", para: -6, un: -8, ahlak: -6, mesaj: "Bir müşteri tartını denetletti, hile çıktı.", detay: "Küçük hile büyük skandal olur." },
       },
       {
         metin: "Tartıyı dürüst kullan.",
@@ -989,8 +991,8 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
       {
         metin: "Damgayı taklit et.",
         baseBasariSansi: 48,
-        basariliSonuc: { para: 24, ahlak: -14, suc_artis: 12, mesaj: "Sahte damga tuttu, tatlı bir kâr ettin.", detay: "Sahtekârlık kısa vadede tatlıdır." },
-        basarisizSonuc: { para: -10, un: -16, ahlak: -10, suc_artis: 18, mesaj: "Gerçek usta öğrendi, davayı loncaya taşıdı.", detay: "Büyük isim taklit edilmez, kazanılır." },
+        basariliSonuc: { suc_sinifi: "orta", para: 24, ahlak: -14, mesaj: "Sahte damga tuttu, tatlı bir kâr ettin.", detay: "Sahtekârlık kısa vadede tatlıdır." },
+        basarisizSonuc: { suc_sinifi: "buyuk", para: -10, un: -16, ahlak: -10, mesaj: "Gerçek usta öğrendi, davayı loncaya taşıdı.", detay: "Büyük isim taklit edilmez, kazanılır." },
       },
       {
         metin: "Kendi imzanla dürüstçe sat.",
@@ -1023,8 +1025,8 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
         metin: "Denetçiye rüşvet ver.",
         baseBasariSansi: 62,
         maliyet: 8,
-        basariliSonuc: { para: -8, ahlak: -10, suc_artis: 8, mesaj: "Denetçi sorunlara göz yumdu; işine devam ettin.", detay: "Rüşvet geçici çözümdür." },
-        basarisizSonuc: { para: -8, un: -14, ahlak: -8, suc_artis: 14, mesaj: "Denetçi rüşveti reddedip üstlerine bildirdi.", detay: "Her rüşvet kabul görmez." },
+        basariliSonuc: { suc_sinifi: "kucuk", para: -8, ahlak: -10, mesaj: "Denetçi sorunlara göz yumdu; işine devam ettin.", detay: "Rüşvet geçici çözümdür." },
+        basarisizSonuc: { suc_sinifi: "orta", para: -8, un: -14, ahlak: -8, mesaj: "Denetçi rüşveti reddedip üstlerine bildirdi.", detay: "Her rüşvet kabul görmez." },
       },
       {
         metin: "Dürüstçe hazırlan, sorunları kendin çöz.",
@@ -1056,8 +1058,8 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
       {
         metin: "Kârın bir kısmını gizle.",
         baseBasariSansi: 56,
-        basariliSonuc: { para: 16, ahlak: -12, suc_artis: 7, mesaj: "Ortağın anlamadı; fazladan kazandın.", detay: "Güven suistimal edilebilir sermayedir." },
-        basarisizSonuc: { para: -8, dost_puani: -10, ahlak: -8, suc_artis: 10, mesaj: "Ortağın hileyi fark etti, aranız bozuldu.", detay: "Güven kaybı paradan ağırdır." },
+        basariliSonuc: { suc_sinifi: "kucuk", para: 16, ahlak: -12, mesaj: "Ortağın anlamadı; fazladan kazandın.", detay: "Güven suistimal edilebilir sermayedir." },
+        basarisizSonuc: { suc_sinifi: "orta", para: -8, dost_puani: -10, ahlak: -8, mesaj: "Ortağın hileyi fark etti, aranız bozuldu.", detay: "Güven kaybı paradan ağırdır." },
       },
       {
         metin: "Kârı dürüstçe paylaş.",
@@ -1113,8 +1115,8 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
       {
         metin: "Sahte eseri sat.",
         baseBasariSansi: 42,
-        basariliSonuc: { para: 30, ahlak: -18, suc_artis: 16, mesaj: "Tüccar anlamadı; büyük vurgun yaptın.", detay: "Büyük hile büyük risk taşır." },
-        basarisizSonuc: { para: -14, un: -20, ahlak: -14, suc_artis: 22, mesaj: "Tüccar uzmana gösterdi; sahtekârlığın şehre yayıldı.", detay: "Açgözlülük çoğu zaman batırır." },
+        basariliSonuc: { suc_sinifi: "orta", para: 30, ahlak: -18, mesaj: "Tüccar anlamadı; büyük vurgun yaptın.", detay: "Büyük hile büyük risk taşır." },
+        basarisizSonuc: { suc_sinifi: "buyuk", para: -14, un: -20, ahlak: -14, mesaj: "Tüccar uzmana gösterdi; sahtekârlığın şehre yayıldı.", detay: "Açgözlülük çoğu zaman batırır." },
       },
       {
         metin: "Vazgeç, eseri gerçek değeriyle sat.",
@@ -1181,8 +1183,8 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
       {
         metin: "Şüpheli bir tanıdığa teklif götür.",
         baseBasariSansi: 50,
-        basariliSonuc: { para: 20, ahlak: -12, suc_artis: 14, mesaj: "Ortaklık tuttu, ikiniz de kazandınız.", detay: "Karanlık işler ortak ister." },
-        basarisizSonuc: { para: -12, un: -12, ahlak: -10, suc_artis: 16, mesaj: "Ortağın seni ele verip kendini kurtarmaya çalıştı.", detay: "Karanlıkta güven nadirdir." },
+        basariliSonuc: { suc_sinifi: "orta", para: 20, ahlak: -12, mesaj: "Ortaklık tuttu, ikiniz de kazandınız.", detay: "Karanlık işler ortak ister." },
+        basarisizSonuc: { suc_sinifi: "orta", para: -12, un: -12, ahlak: -10, mesaj: "Ortağın seni ele verip kendini kurtarmaya çalıştı.", detay: "Karanlıkta güven nadirdir." },
       },
       {
         metin: "Planı bırak, dürüst devam et.",
@@ -1219,8 +1221,8 @@ export const OLAY_ORTACAG_ZANAATKAR_YOLLARI: OlayTanimi[] = [
       {
         metin: "Eski yöntemle sürdür, riske gir.",
         baseBasariSansi: 45,
-        basariliSonuc: { para: 20, ahlak: -10, suc_artis: 10, mesaj: "Bir kez daha yırttın; kasa doldu, huzur azaldı.", detay: "Şans sonsuz sürmez." },
-        basarisizSonuc: { para: -16, un: -20, ahlak: -14, suc_artis: 20, mesaj: "Sonunda yakalandın; çarşıda hileci diye anılacaksın.", detay: "Er geç hesap sorulur." },
+        basariliSonuc: { suc_sinifi: "orta", para: 20, ahlak: -10, mesaj: "Bir kez daha yırttın; kasa doldu, huzur azaldı.", detay: "Şans sonsuz sürmez." },
+        basarisizSonuc: { suc_sinifi: "buyuk", para: -16, un: -20, ahlak: -14, mesaj: "Sonunda yakalandın; çarşıda hileci diye anılacaksın.", detay: "Er geç hesap sorulur." },
       },
     ],
   },

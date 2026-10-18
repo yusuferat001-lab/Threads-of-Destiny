@@ -40,7 +40,7 @@ export const OLAY_VERGI: OlayTanimi[] = [
         basariliSonuc: {
           para: -6,
           ahlak: -5,
-          suc_artis: 6,
+          suc_sinifi: "kucuk",
           vergi_degisim: { carpan: 0.7, sureYil: 4 },
           mesaj: "Kese sessizce el değiştirdi. Tahsildar defterine düşük bir rakam yazdı; önümüzdeki yıllarda payın hafifleyecek.",
           detay: "Ama bu iş bir kere başladı mı, tahsildar seni hep aklında tutar.",
@@ -48,7 +48,7 @@ export const OLAY_VERGI: OlayTanimi[] = [
         basarisizSonuc: {
           para: -20,
           ahlak: -4,
-          suc_artis: 8,
+          suc_sinifi: "orta",
           otorite_iliski: -6,
           mutluluk: -2,
           mesaj: "Tahsildar keseyi alıp seni muhafızın önünde ifşa etti. Hem keseyi hem cezayı ödedin, kasabada adın kötüye çıktı.",
@@ -60,13 +60,13 @@ export const OLAY_VERGI: OlayTanimi[] = [
         basariliSonuc: {
           para: 10,
           ahlak: -3,
-          suc_artis: 4,
+          suc_sinifi: "kucuk",
           mesaj: "Eksik defteri gösterdin, tahsildar inandı ve payı çok düşük hesapladı. Kazancının bir kısmını yanına kâr kaldın.",
         },
         basarisizSonuc: {
           para: -25,
           otorite_iliski: -8,
-          suc_artis: 8,
+          suc_sinifi: "orta",
           ahlak: -3,
           mutluluk: -3,
           mesaj: "Kâtipler gizli defteri buldu. Ağır bir ceza ödedin ve kasaba yöneticisinin gözünden düştün.",
@@ -281,14 +281,14 @@ export const OLAY_VERGI: OlayTanimi[] = [
         basariliSonuc: {
           para: -6,
           ahlak: -5,
-          suc_artis: 6,
+          suc_sinifi: "kucuk",
           vergi_degisim: { carpan: 0.7, sureYil: 4 },
           mesaj: "Zarf cebe girdi, rapor 'önemsiz fark' diye kapandı. Vergi matrahın dört yıl boyunca düşük hesaplanacak.",
         },
         basarisizSonuc: {
           para: -22,
           ahlak: -4,
-          suc_artis: 8,
+          suc_sinifi: "orta",
           otorite_iliski: -6,
           mutluluk: -2,
           mesaj: "Memur zarfı tutanağa geçirdi. Rüşvet teşebbüsü cezası yedin ve belediye seni artık 'dikkat edilecekler' listesinde tutuyor.",
@@ -300,13 +300,13 @@ export const OLAY_VERGI: OlayTanimi[] = [
         basariliSonuc: {
           para: 10,
           ahlak: -3,
-          suc_artis: 4,
+          suc_sinifi: "kucuk",
           mesaj: "Memur düzgün görünen deftere takılıp gitti. Asıl kazancın bir kısmı korunmuş oldu.",
         },
         basarisizSonuc: {
           para: -26,
           otorite_iliski: -8,
-          suc_artis: 8,
+          suc_sinifi: "orta",
           ahlak: -3,
           mutluluk: -3,
           mesaj: "İkinci defter ortaya çıktı. Ağır para cezası kesildi ve belediye nezdinde itibarın sarsıldı.",

@@ -138,12 +138,14 @@ export const OLAY_ORTACAG_TUCCAR: OlayTanimi[] = [
         metin: "Al, ipek diye sat.",
         baseBasariSansi: 55,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 45,
           ahlak: -25,
           mesaj: "Kimse anlamadı; kâr marjın üç katına çıktı.",
           detay: "Bunu tekrar yapacağını biliyorsun.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           para: -25,
           un: -30,
           ahlak: -18,
@@ -210,12 +212,14 @@ export const OLAY_ORTACAG_TUCCAR: OlayTanimi[] = [
         metin: "Sikkeleri sessizce harca.",
         baseBasariSansi: 65,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 15,
           ahlak: -15,
           mesaj: "Sikkeler fark edilmeden harcandı; zararın telafi oldu.",
           detay: "Bu senin küçük sırrın oldu.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           para: -25,
           un: -20,
           ahlak: -12,
@@ -302,6 +306,7 @@ export const OLAY_ORTACAG_TUCCAR: OlayTanimi[] = [
         baseBasariSansi: 60,
         maxAhlak: 45,
         basariliSonuc: {
+          suc_sinifi: "buyuk",
           para: 50,
           ahlak: -35,
           un: 15,
@@ -309,6 +314,7 @@ export const OLAY_ORTACAG_TUCCAR: OlayTanimi[] = [
           detay: "Zenginleştin ama ailesi seni affetmez.",
         },
         basarisizSonuc: {
+          suc_sinifi: "agir",
           para: -40,
           un: -30,
           mesaj: "Müfettişler ikinizi de suçlu buldu; mallarına el konuldu.",
@@ -318,12 +324,14 @@ export const OLAY_ORTACAG_TUCCAR: OlayTanimi[] = [
         metin: "Öneriyi kabul et.",
         baseBasariSansi: 60,
         basariliSonuc: {
+          suc_sinifi: "buyuk",
           para: 35,
           ahlak: -20,
           mesaj: "Yıllarca vergi kaçırdın; kazancın katlandı.",
           detay: "Sırrı sıkı tutuyorsun.",
         },
         basarisizSonuc: {
+          suc_sinifi: "agir",
           para: -45,
           un: -25,
           ahlak: -15,
@@ -570,12 +578,14 @@ export const OLAY_ORTACAG_TUCCAR: OlayTanimi[] = [
         metin: "Ortaklığı kabul et.",
         baseBasariSansi: 40,
         basariliSonuc: {
+          suc_sinifi: "buyuk",
           para: 70,
           ahlak: -30,
           mesaj: "Sahte sikkeler sorunsuz dolaştı; servetin kat kat arttı.",
           detay: "Servetin temelinde bir yalan var.",
         },
         basarisizSonuc: {
+          suc_sinifi: "agir",
           olum: true,
           mesaj: "Lonca sahte sikkeleri çözdü; kalpazanlıktan idam edildin.",
         },
@@ -808,12 +818,14 @@ export const OLAY_ORTACAG_TUCCAR: OlayTanimi[] = [
         metin: "Kabul et, işe ortak ol.",
         baseBasariSansi: 40,
         basariliSonuc: {
+          suc_sinifi: "buyuk",
           para: 70,
           ahlak: -22,
           mesaj: "Sahte sikkeler fark edilmedi; kasan inanılmaz doldu.",
           detay: "Bazı zenginlikler tehlikeli sırla gelir.",
         },
         basarisizSonuc: {
+          suc_sinifi: "agir",
           para: -40,
           ahlak: -22,
           olum_sansi: 15,
@@ -907,6 +919,7 @@ export const OLAY_ORTACAG_TUCCAR: OlayTanimi[] = [
         metin: "Karşılık ver, onun malını bozdur.",
         baseBasariSansi: 50,
         basariliSonuc: {
+          suc_sinifi: "buyuk",
           para: 20,
           ahlak: -20,
           un: -8,
@@ -914,6 +927,7 @@ export const OLAY_ORTACAG_TUCCAR: OlayTanimi[] = [
           detay: "Bu hırsızlıktan başka bir şey değil.",
         },
         basarisizSonuc: {
+          suc_sinifi: "agir",
           para: -30,
           un: -25,
           ahlak: -20,
@@ -1211,6 +1225,7 @@ export const OLAY_ORTACAG_TUCCAR: OlayTanimi[] = [
         metin: "Katıl, kartel payını al.",
         baseBasariSansi: 75,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 32,
           ahlak: -20,
           un: -10,
@@ -1218,6 +1233,7 @@ export const OLAY_ORTACAG_TUCCAR: OlayTanimi[] = [
           detay: "Aç çocukları duymamaya çalışıyorsun.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           para: -25,
           ahlak: -20,
           un: -30,
@@ -1282,6 +1298,7 @@ export const OLAY_ORTACAG_TUCCAR: OlayTanimi[] = [
         metin: "Ödeme, tayfayı kaderine bırak.",
         baseBasariSansi: 70,
         basariliSonuc: {
+          suc_sinifi: "buyuk",
           para: 5,
           ahlak: -25,
           un: -15,
@@ -1290,6 +1307,7 @@ export const OLAY_ORTACAG_TUCCAR: OlayTanimi[] = [
           detay: "Kasan kurtuldu, yüzler rüyanda.",
         },
         basarisizSonuc: {
+          suc_sinifi: "agir",
           para: -20,
           ahlak: -20,
           mesaj: "Haber yayıldı; kimse gemine binmiyor, gemin tayfasız çürüdü.",

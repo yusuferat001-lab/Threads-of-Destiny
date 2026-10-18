@@ -259,6 +259,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         metin: "Adam tut, dükkâna el koy, onu sokağa at.",
         baseBasariSansi: 95,
         basariliSonuc: {
+          suc_sinifi: "buyuk",
           para: 60,
           ahlak: -30,
           etiket_sil: [
@@ -271,6 +272,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           mesaj: "Adamlarını gönderdin. Dostunun ailesi ağlarken dükkânın anahtarını aldın.",
         },
         basarisizSonuc: {
+          suc_sinifi: "agir",
           para: 40,
           ahlak: -20,
           un: -15,
@@ -380,6 +382,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           },
           devamMetni: "Sessizce kabul et, çarka gir.",
           devamSonucu: {
+            suc_sinifi: "orta",
             para: 15,
             ahlak: -20,
             etiket_ekle: [
@@ -421,6 +424,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         metin: "Altını al, malı sakla.",
         baseBasariSansi: 80,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 45,
           ahlak: -25,
           etiket_ekle: [
@@ -429,6 +433,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           mesaj: "Keseyi cübbene sakladın. Zenginleştin ama gece kapı çalınca kalbin gümleyecek.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           para: -20,
           ahlak: -25,
           un: -30,
@@ -574,6 +579,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         metin: "Bağışı sessizce al, günahını temizle.",
         baseBasariSansi: 90,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 50,
           ahlak: -35,
           un: -20,
@@ -583,6 +589,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           mesaj: "Altınlar mahzenine girdi, soylu serbest. Halk nefret ediyor, aynaya bakamazsın.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           un: -30,
           ahlak: -20,
           mesaj: "Rüşvet aldığın ortaya çıktı. Diğer rahipler ayaklandı, unvanın sarsıldı.",
@@ -630,6 +637,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         metin: "Kaydı değiştir, altını sakla.",
         baseBasariSansi: 50,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 35,
           ahlak: -25,
           etiket_ekle: [
@@ -638,6 +646,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           mesaj: "Altınları zulaladın. Askerler paslı kılıçla talim yapıyor, umurunda değil.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           para: -10,
           un: -30,
           ahlak: -20,
@@ -871,12 +880,14 @@ export const OLAY_GENEL: OlayTanimi[] = [
           min: 60,
         },
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 45,
           un: 15,
           ahlak: -10,
           mesaj: "Alevlerin arasından sandıkla çıktın! Yanıkların var ama servetine servet kattın.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           saglik: -35,
           olum_sansi: 10,
           mesaj: "Kiriş kafana çöktü! Seni ölü gibi çıkardılar, günlerce komada kaldın.",
@@ -1770,6 +1781,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         metin: "Haklısınız de, ama köyleri yağmalamaya ikna et.",
         baseBasariSansi: 65,
         basariliSonuc: {
+          suc_sinifi: "buyuk",
           para: 45,
           ahlak: -40,
           un: -15,
@@ -1780,6 +1792,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           detay: "Ağlayan köylü kadının yüzü kabuslarında.",
         },
         basarisizSonuc: {
+          suc_sinifi: "agir",
           saglik: -30,
           ahlak: -25,
           un: -20,
@@ -1808,6 +1821,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 60,
         maliyet: 15,
         basariliSonuc: {
+          suc_sinifi: "buyuk",
           para: 50,
           ahlak: -35,
           un: -15,
@@ -1818,6 +1832,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           mesaj: "Ölülerin evlerine çöktün. Dev emlak imparatorluğu kurdun; kâbuslarında o yüzler.",
         },
         basarisizSonuc: {
+          suc_sinifi: "agir",
           para: -25,
           un: -25,
           ahlak: -30,
@@ -1927,6 +1942,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         metin: "Keseyi al, iki kelimeyi et.",
         baseBasariSansi: 70,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 50,
           ahlak: -28,
           etiket_ekle: [
@@ -1936,6 +1952,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           detay: "Ne kolay olduğu ürküttü. İkinci kese gelecek.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           para: -20,
           un: -30,
           ahlak: -22,
@@ -1968,6 +1985,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 45,
         maxAhlak: 40,
         basariliSonuc: {
+          suc_sinifi: "buyuk",
           para: 60,
           un: 15,
           ahlak: -30,
@@ -1975,6 +1993,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           detay: "Zayıflığı paraya çevirdin. Kural artık senin.",
         },
         basarisizSonuc: {
+          suc_sinifi: "agir",
           para: -25,
           un: -28,
           ahlak: -22,
@@ -2111,6 +2130,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         metin: "Ortak ol, yükü indir.",
         baseBasariSansi: 55,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 45,
           ahlak: -20,
           etiket_ekle: [
@@ -2120,6 +2140,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           detay: "Girmesi kolay, çıkması zor bir kapı.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           para: -30,
           un: -22,
           saglik: -12,
@@ -2154,6 +2175,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 45,
         maxAhlak: 35,
         basariliSonuc: {
+          suc_sinifi: "buyuk",
           para: 70,
           ahlak: -30,
           un: -15,
@@ -2164,6 +2186,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           detay: "Zengin oldun; artık hep arkana bakarsın.",
         },
         basarisizSonuc: {
+          suc_sinifi: "agir",
           saglik: -30,
           olum_sansi: 15,
           mesaj: "Kaptan ihaneti fark etti; tayfasıyla seni denize attı.",
@@ -2242,6 +2265,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           },
           devamMetni: "Gözdağı ver: 'O yeri bana vereceksin!'",
           devamSonucu: {
+            suc_sinifi: "kucuk",
             un: 20,
             para: 10,
             ahlak: -15,
@@ -3518,6 +3542,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 40,
         maxAhlak: 35,
         basariliSonuc: {
+          suc_sinifi: "buyuk",
           para: 50,
           ahlak: -20,
           etiket_ekle: [
@@ -3527,6 +3552,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           detay: "Yükün bir kısmı sende, üstüne haksız servet.",
         },
         basarisizSonuc: {
+          suc_sinifi: "agir",
           para: -40,
           un: -30,
           ahlak: -15,
@@ -4633,6 +4659,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 40,
         maxAhlak: 45,
         basariliSonuc: {
+          suc_sinifi: "buyuk",
           para: 50,
           un: 15,
           ahlak: -30,
@@ -4640,6 +4667,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           detay: "Zengin oldun, güçlü düşman edindin.",
         },
         basarisizSonuc: {
+          suc_sinifi: "agir",
           olum: true,
           mesaj: "Soylu suikastçı yolladı; kibrin canına mal oldu.",
         },
@@ -5240,6 +5268,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         metin: "'Mecburum' de, kolay yolu seç.",
         baseBasariSansi: 60,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 45,
           ahlak: -35,
           mutluluk: -25,
@@ -5247,6 +5276,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           detay: "Para, bıraktığı zehirden hafif.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           para: -20,
           ahlak: -25,
           un: -20,
@@ -8298,12 +8328,14 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 40,
         maxAhlak: 35,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 50,
           ahlak: -25,
           mesaj: "Altınları cübbene sakladın; kiliseden zengin çıktın.",
           detay: "Tanrı'nın parasını çaldın; vicdanın körleşti.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           un: -35,
           ahlak: -20,
           para: -15,
@@ -8903,6 +8935,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 40,
         maxAhlak: 40,
         basariliSonuc: {
+          suc_sinifi: "buyuk",
           sehir_yonetim_artis: 2,
           para: 40,
           un: 15,
@@ -8911,6 +8944,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           detay: "Siyaset kılıçtan keskindir.",
         },
         basarisizSonuc: {
+          suc_sinifi: "agir",
           saglik: -30,
           un: -15,
           olum_sansi: 5,
@@ -10346,6 +10380,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
         baseBasariSansi: 65,
         maliyet: 12,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 30,
           un: 5,
           ahlak: -18,
@@ -10353,6 +10388,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
           detay: "Kısa yol işledi ama vicdanın biliyor.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           para: -30,
           un: -25,
           ahlak: -18,

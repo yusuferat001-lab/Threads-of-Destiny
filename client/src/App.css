@@ -7656,3 +7656,20 @@ button.amac-serit-oge.amac-serit-tamam:hover:not(:disabled) {
 .aile-sevgili-karti .aile-ihmal-uyari {
   margin-bottom: 0.4rem;
 }
+
+/* Aranma II: yıldız tablosu, kefaret/teslim düğmeleri, bildirim penceresi */
+.aranma-paneli { margin-bottom: 0.6rem; }
+.aranma-tablo { width: 100%; border-collapse: collapse; font-size: 0.82rem; margin: 0.4rem 0; }
+.aranma-tablo th, .aranma-tablo td { padding: 0.25rem 0.35rem; text-align: center; border-bottom: 1px solid rgba(120, 90, 40, 0.25); }
+.aranma-tablo-aktif { background: rgba(200, 150, 40, 0.22); font-weight: 700; }
+.aranma-butonlar { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.3rem 0; }
+.aranma-butonlar button { flex: 1 1 auto; }
+.aranma-uyari { color: #b3361f; }
+.aranma-hata { color: #b3361f; }
+.aranma-basari { color: #2f7a3a; }
+.aranma-bildirim-katman { z-index: 1200; }
+.aranma-bildirim-alt { margin-top: 0.8rem; }
+@media (max-width: 767px) {
+  .aranma-tablo { font-size: 0.7rem; }
+  .aranma-tablo th, .aranma-tablo td { padding: 0.2rem 0.15rem; }
+}

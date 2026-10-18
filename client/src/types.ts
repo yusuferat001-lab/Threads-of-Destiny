@@ -302,6 +302,14 @@ export interface CharacterState {
   hayat_amaci: HayatAmaci | null;
   hayat_amaclari: AmacIlerleme[];
   omur_zirve_suc: number;
+  son_suc_yili: number;
+  ifsa_kuyrugu: { yil: number; sinif: 'kucuk' | 'orta' | 'buyuk' | 'agir'; baslik: string }[];
+  polis_uyari_yili: number | null;
+  son_polis_uyari_yili: number | null;
+  aranma_esik60_ustu: boolean;
+  baskin_yili: number | null;
+  aranma_esik75_ustu: boolean;
+  aranma_bildirimleri: AranmaBildirimi[];
   omur_kumar_net: number;
   omur_sadaka_sayisi: number;
   omur_hediye_sayisi: number;
@@ -942,6 +950,7 @@ export interface SonucEtkisi {
   nufuz_artis?: number;
   uretim_kapasitesi_artis?: number;
   suc_artis?: number;
+  suc_sinifi?: 'kucuk' | 'orta' | 'buyuk' | 'agir';
   suc_seviyesi_ayarla?: number;
   /** Sunucunun yazdığı: bu seçimin aranma üzerindeki gerçek net değişimi (kelepçe sonrası). */
   suc_degisim?: number;
@@ -1389,4 +1398,40 @@ export interface GostergeDetayi {
   dusur: string[];
   /** Son seçimlerin bu göstergeye etkisi, en yeni üstte. */
   gecmis: { yil: number; kaynak: string; delta: number }[];
+}
+
+/** Aranma bildirimi (açılır pencere): ifşa / polis uyarısı / baskın. */
+export interface AranmaBildirimi {
+  id: string;
+  tur: 'ifsa' | 'polis_uyari' | 'baskin';
+  yil: number;
+  baslik?: string;
+  aranmaArtis?: number;
+  ahlakDusus?: number;
+  tutar?: number;
+  yarimTutar?: number;
+  kacti?: boolean;
+  ceza?: number;
+}
+
+/** GET /:id/aranma yanıtı — Aranma bölümü verisi. */
+export interface AranmaDurumu {
+  puan: number;
+  yildiz: number;
+  /** Mesleki gelir kaybı oranı (0..0.15). */
+  debuffOrani: number;
+  /** Suç şıklarına yıldız başına eklenen başarı bonusu (toplam puan). */
+  basariBonusu: number;
+  /** Gönüllü ödemede tam / yarım tutar (indirimli). 0 = ödenecek bir şey yok. */
+  tamTutar: number;
+  yarimTutar: number;
+  yarimMumkun: boolean;
+  /** Gönüllü teslimde tahmini ceza (yıl); teslim mümkün değilse null. */
+  teslimCezasi: number | null;
+  para: number;
+  paraBirimi: string;
+  hapiste: boolean;
+  bekleyenBaskin: boolean;
+  /** Aranma ekranındaki ipucu için kısa meslek etiketi ("pazar payın", "müşterilerin"…). */
+  debuffEtiketi: string;
 }

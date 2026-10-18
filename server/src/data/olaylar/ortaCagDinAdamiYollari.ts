@@ -172,6 +172,7 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         metin: "Kabul et, işi büyüt.",
         baseBasariSansi: 55,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 50,
           un: 10,
           ahlak: -25,
@@ -181,6 +182,7 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
           detay: "Vicdanın sesi küçülüyor.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           para: 15,
           un: -20,
           ahlak: -20,
@@ -1345,6 +1347,7 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         metin: "Her emanete hikâye uydur, törenle kutsa.",
         baseBasariSansi: 60,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 35,
           un: 10,
           ahlak: -20,
@@ -1352,6 +1355,7 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
           detay: "Her emanette bir yalan var; kimse sormuyor.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           para: 10,
           un: -15,
           ahlak: -15,
@@ -1363,12 +1367,14 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         metin: "Yalnız en inandırıcı birkaç parçayı seç.",
         baseBasariSansi: 75,
         basariliSonuc: {
+          suc_sinifi: "kucuk",
           para: 20,
           ahlak: -12,
           mesaj: "Seçtiğin parçalar sorunsuz satıldı; atölye küçük ama güvenli kaldı.",
           detay: "Açgözlülüğü frenlemek akıllıcadır.",
         },
         basarisizSonuc: {
+          suc_sinifi: "orta",
           para: 8,
           un: -5,
           mesaj: "Seçiciliğin tüccarı kızdırdı; 'cesaretin yok' diyerek ortaklığı sorguladı.",
@@ -1379,12 +1385,14 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         metin: "Kirli işi çırağa devret, sen kutsa.",
         baseBasariSansi: 60,
         basariliSonuc: {
+          suc_sinifi: "kucuk",
           para: 28,
           ahlak: -15,
           mesaj: "Çırağın üretimi üstlendi, sen törende göründün; eller kirlenmeden kasa doldu.",
           detay: "Sorumluluk paylaşmak suç paylaşmaktır.",
         },
         basarisizSonuc: {
+          suc_sinifi: "orta",
           para: 5,
           un: -12,
           ahlak: -10,
@@ -1408,6 +1416,7 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         metin: "Gösteriyi yap, adamı ayağa kaldır.",
         baseBasariSansi: 55,
         basariliSonuc: {
+          suc_sinifi: "orta",
           un: 28,
           para: 30,
           ahlak: -22,
@@ -1415,6 +1424,7 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
           detay: "Sadece sen biliyorsun: adam sakat değildi.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           un: -30,
           ahlak: -20,
           para: -10,
@@ -1592,12 +1602,14 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         metin: "Bilgiyi sakla, rakibe şantaj yap.",
         baseBasariSansi: 45,
         basariliSonuc: {
+          suc_sinifi: "buyuk",
           para: 25,
           ahlak: -28,
           mesaj: "Rakip sessizliğin için düzenli ödemeyi kabul etti; kimse bir şey öğrenmedi.",
           detay: "Artık senin sessizliğin de suç.",
         },
         basarisizSonuc: {
+          suc_sinifi: "agir",
           para: -15,
           un: -25,
           ahlak: -20,
@@ -1710,6 +1722,7 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         metin: "Kabul et, sandığı görkemli törenle tanıt.",
         baseBasariSansi: 45,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 55,
           un: 30,
           ahlak: -25,
@@ -1718,6 +1731,7 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
           detay: "Yalanın ne kadar derin, unutmuyorsun.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           para: -20,
           un: -35,
           ahlak: -20,
@@ -1744,6 +1758,7 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         metin: "Sandığı hazırla, tanıtımı küçük çevrede tut.",
         baseBasariSansi: 60,
         basariliSonuc: {
+          suc_sinifi: "kucuk",
           para: 25,
           un: 11,
           ahlak: -15,
@@ -1751,6 +1766,7 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
           detay: "Açgözlülüğü frenlemek işe yaradı.",
         },
         basarisizSonuc: {
+          suc_sinifi: "orta",
           un: -10,
           ahlak: -10,
           mesaj: "Küçük çevre bile anlattı, söylenti kontrolden çıktı ama skandal olmadı.",
@@ -1818,6 +1834,7 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         metin: "Kabul et, adını başka şehre de yay.",
         baseBasariSansi: 50,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 45,
           nufuz_artis: 20,
           ahlak: -22,
@@ -1825,6 +1842,7 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
           detay: "Ne kadar büyüdüğünü kestiremiyorsun.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           para: -10,
           un: -25,
           ahlak: -15,
@@ -1862,12 +1880,14 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         metin: "Yükü onayla, riski göze al.",
         baseBasariSansi: 50,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 40,
           ahlak: -18,
           mesaj: "Yük sorunsuz gitti; uzak diyarların hacıları bile 'kutsal' mührünü tanıyor.",
           detay: "Adın denizler aşıyor; hangi yalanla, unutmuyorsun.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           para: -25,
           un: -20,
           ahlak: -10,
@@ -1879,12 +1899,14 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         metin: "Yükü böl, yarısını güvenli yoldan yolla.",
         baseBasariSansi: 60,
         basariliSonuc: {
+          suc_sinifi: "kucuk",
           para: 22,
           ahlak: -12,
           mesaj: "Yükü böldün; bir kısmı güvenle ulaştı, diğeri az kayıpla atlatıldı.",
           detay: "Temkinli açgözlülük de bir strateji.",
         },
         basarisizSonuc: {
+          suc_sinifi: "orta",
           para: -10,
           un: -8,
           mesaj: "Bölmek işi yavaşlattı; tüccar zamanlama kaçtı diyerek payını kesti.",
@@ -2166,12 +2188,14 @@ export const OLAY_ORTACAG_DINADAMI_YOLLARI: OlayTanimi[] = [
         metin: "Aylarca teselli et, vasiyeti kendine yönlendir.",
         baseBasariSansi: 50,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 50,
           ahlak: -28,
           mesaj: "Kadın ölünce servetinin çoğu cemaate, yani fiilen sana kaldı.",
           detay: "Dinlerken hep vasiyeti düşünüyordun.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           para: -10,
           un: -20,
           ahlak: -20,

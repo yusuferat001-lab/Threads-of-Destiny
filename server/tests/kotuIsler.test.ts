@@ -55,6 +55,26 @@ describe("karanlık işler (illegal işler paneli)", () => {
     expect(s.suc_seviyesi).toBeGreaterThan(onceSuc);
   });
 
+  it("aranma artışı iş sınıfının aralığındadır: başarıda sınıf, başarısızlıkta bir üst sınıf", async () => {
+    // birini_soy: başarı = büyük (20-26), başarısızlık = ağır (24-30).
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
+    await mesleğiAta(state.id, "Asker"); // genel işler yalnız işletmesi olmayan mesleklerde
+    const s0 = await stateGetir(state.id);
+    s0.suc_seviyesi = 0;
+    s0.para = 1000;
+    const sonuc = await kotuIsYap(state.id, "birini_soy");
+    const artis = sonuc.state.suc_seviyesi;
+    if (sonuc.kazandi) {
+      expect(artis).toBeGreaterThanOrEqual(20);
+      expect(artis).toBeLessThanOrEqual(26);
+    } else {
+      expect(artis).toBeGreaterThanOrEqual(24);
+      expect(artis).toBeLessThanOrEqual(30);
+    }
+    // Aranmayı artıran iş "4 yıl temiz" sayacını sıfırlar.
+    expect(sonuc.state.son_suc_yili).toBe(sonuc.state.yil);
+  });
+
   it("geçersiz iş türü hata fırlatır", async () => {
     const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
@@ -87,18 +107,18 @@ describe("karanlık işler (illegal işler paneli)", () => {
 
   it("hapisCezaSuresiHesapla, tutuklanma anındaki aranma bandına göre doğru aralıkta ceza üretir (2026-09 yeniden düzenleme)", () => {
     const beklenenAralik: [number, [number, number]][] = [
-      [0, [2, 4]],
-      [10, [2, 4]],
-      [24, [2, 4]],
-      [25, [4, 7]],
-      [40, [4, 7]],
-      [49, [4, 7]],
-      [50, [7, 9]],
-      [60, [7, 9]],
-      [74, [7, 9]],
-      [75, [9, 12]],
-      [90, [9, 12]],
-      [100, [9, 12]],
+      [0, [3, 4]],
+      [10, [3, 4]],
+      [24, [3, 4]],
+      [25, [7, 9]],
+      [40, [7, 9]],
+      [49, [7, 9]],
+      [50, [9, 11]],
+      [60, [9, 11]],
+      [74, [9, 11]],
+      [75, [12, 14]],
+      [90, [12, 14]],
+      [100, [12, 14]],
     ];
     for (const [sucSeviyesi, [min, max]] of beklenenAralik) {
       for (let i = 0; i < 50; i++) {

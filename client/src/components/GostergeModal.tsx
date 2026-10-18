@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { gostergeGetir } from '../api';
-import { aranmaYildiz, ahlakEtiketi, unUnvani } from '../bolgeTema';
+import { aranmaTamYildiz, ahlakEtiketi, unUnvani } from '../bolgeTema';
+import { AranmaPaneli } from './AranmaPaneli';
 import { formatPara } from '../format';
 import { useDil } from '../DilContext';
 import type { CharacterState, GostergeDetayi, GostergeStat } from '../types';
@@ -9,6 +10,8 @@ interface GostergeModalProps {
   karakter: CharacterState;
   stat: GostergeStat;
   onKapat: () => void;
+  /** Aranma panelinden yapılan işlem (kefaret / teslim) state'i değiştirir. */
+  onState?: (state: CharacterState) => void;
 }
 
 /**
@@ -17,7 +20,7 @@ interface GostergeModalProps {
  * sunucudan (GET /:id/gosterge/:stat) gelir — yıllık etken sayıları motorun kendi
  * sabitlerinden üretilir, bu yüzden formül değişince açıklama sapmaz.
  */
-export function GostergeModal({ karakter, stat, onKapat }: GostergeModalProps) {
+export function GostergeModal({ karakter, stat, onKapat, onState }: GostergeModalProps) {
   const { m, dil } = useDil();
   const [detay, setDetay] = useState<GostergeDetayi | null>(null);
   const [hata, setHata] = useState(false);
@@ -67,8 +70,8 @@ export function GostergeModal({ karakter, stat, onKapat }: GostergeModalProps) {
       case 'sohret':
         return `${unUnvani(karakter.un, dil)} · ${Math.round(karakter.un)} / 100`;
       case 'aranma':
-        return `${'★'.repeat(Math.ceil(aranmaYildiz(karakter.suc_seviyesi)))}${'☆'.repeat(
-          4 - Math.ceil(aranmaYildiz(karakter.suc_seviyesi))
+        return `${'★'.repeat(aranmaTamYildiz(karakter.suc_seviyesi))}${'☆'.repeat(
+          3 - aranmaTamYildiz(karakter.suc_seviyesi)
         )} · ${Math.round(karakter.suc_seviyesi)} / 100`;
       case 'para':
         return `${formatPara(karakter.para)} ${karakter.para_birimi}`;
@@ -108,6 +111,7 @@ export function GostergeModal({ karakter, stat, onKapat }: GostergeModalProps) {
         </div>
         <div className="skor-detay-govde gosterge-govde">
           <p className="gosterge-deger">{deger}</p>
+          {aranma && onState && <AranmaPaneli karakter={karakter} onState={onState} />}
           {hata && <p className="gosterge-bilgi">{m.gmHata}</p>}
           {!detay && !hata && <p className="gosterge-bilgi">{m.gmYukleniyor}</p>}
           {detay && (

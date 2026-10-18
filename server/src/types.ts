@@ -540,6 +540,22 @@ export interface CharacterState {
   hayat_amaclari: AmacIlerleme[];
   /** Suç seviyesinin ömür boyu ulaştığı en yüksek değer (amaç koşulları için — "hiç aranmadan yaşa"). */
   omur_zirve_suc: number;
+  /** Aranmayı artıran en son olayın oyun yılı — pasif düşüş "4 yıl temiz kalırsan" şartı bunu kullanır (stateManager.sucArtisiKaydet). */
+  son_suc_yili: number;
+  /** Aranma II: başarılı (gizli kalan) suçların ifşa kuyruğu — yalnız ifşa olacaklar yazılır; `yil` gelince açılır pencere + aranma/ahlak artışı. */
+  ifsa_kuyrugu: IfsaKaydi[];
+  /** Polis uyarısının planlanan yılı (60 aşılınca 2-3 yıl sonrası); yoksa null. */
+  polis_uyari_yili: number | null;
+  /** Son polis uyarısının yılı — 10 yıllık cooldown referansı. */
+  son_polis_uyari_yili: number | null;
+  /** Önceki kontrolde aranma >60 muydu (yukarı geçişi yakalamak için). */
+  aranma_esik60_ustu: boolean;
+  /** 3★ baskının planlanan yılı (75 aşılınca 4-5 yıl sonrası); yoksa null. */
+  baskin_yili: number | null;
+  /** Önceki kontrolde aranma >=75 miydi. */
+  aranma_esik75_ustu: boolean;
+  /** Oyuncuya açılır pencereyle gösterilecek aranma bildirimleri (ifşa / polis uyarısı / baskın), en eski önce. */
+  aranma_bildirimleri: AranmaBildirimi[];
   /** Zar/üç kâğıt/bilek güreşinden ömür boyu net kâr/zarar toplamı (kumar amaçları için). */
   omur_kumar_net: number;
   /** Ömür boyu verilen sadaka sayısı (sosyalleşme "sadaka" aksiyonu + bağış olayları). */
@@ -996,6 +1012,34 @@ export interface IsletmeSicakUrun {
   hatId: string;
 }
 
+/** Yasa dışı eylem büyüklük sınıfı (aranma artışı aralıkları: gameEngine.SUC_SINIFI_ARALIKLARI). "agir" = suçüstü yakalanma. */
+export type SucSinifi = "kucuk" | "orta" | "buyuk" | "agir";
+
+/** İfşa kuyruğu kaydı: `yil`'da, `sinif` büyüklüğündeki suç açığa çıkar. */
+export interface IfsaKaydi {
+  yil: number;
+  sinif: SucSinifi;
+  baslik: string;
+}
+
+/** Aranma bildirimi (açılır pencere). Polis uyarısı yanıtlanana dek kalır. */
+export interface AranmaBildirimi {
+  id: string;
+  tur: "ifsa" | "polis_uyari" | "baskin";
+  yil: number;
+  /** ifsa: açığa çıkan olayın başlığı. */
+  baslik?: string;
+  /** ifsa: aranma/ahlak değişimi. */
+  aranmaArtis?: number;
+  ahlakDusus?: number;
+  /** polis_uyari: indirimsiz tam / yarım kefaret tutarı. */
+  tutar?: number;
+  yarimTutar?: number;
+  /** baskin: kaçıp kaçmadığı, hapse girdiyse ceza (yıl). */
+  kacti?: boolean;
+  ceza?: number;
+}
+
 export interface SonucEtkisi {
   para?: number;
   un?: number;
@@ -1064,6 +1108,8 @@ export interface SonucEtkisi {
   uretim_kapasitesi_artis?: number;
   /** TEK suç/aranma eksenini (suc_seviyesi, 0-100 aralığında kelepçelenir) değiştirir; ± olabilir (rüşvet/kefaret şıkları negatif verir). Kumar/karaborsa ve suç-kazancı motor kuralı da bunu kullanır. */
   suc_artis?: number;
+  /** Yasa dışı eylemin büyüklük sınıfı: motor bu sınıfın aralığından (kucuk 4-8 · orta 10-16 · buyuk 20-26 · agir 24-30) bir değer seçip `suc_artis`'e ekler; para > 0 ise ×1.6 uygular. Başarılı dala sınıf, başarısız dala (suçüstü) bir üst sınıf yazılır. Suç olmayan şıklarda ALAN YOKTUR. */
+  suc_sinifi?: SucSinifi;
   /** suc_seviyesi'ni mevcut değerden bağımsız, doğrudan belirtilen değere (0-100) sabitler — ör. büyük baskın sonrası "temize çıkar / kademe 1'e in" gibi kesin hedefler için; genel yükseliş/düşüş için bunun yerine suc_artis kullanılmalı. */
   suc_seviyesi_ayarla?: number;
   /** SADECE motor yazar (uygulananEtki'de): bu seçimin aranma (suc_seviyesi) üzerindeki GERÇEK net değişimi — suc_artis, suç-kazancı motor kuralı ve suc_seviyesi_ayarla, 0-100 kelepçesi sonrası. Sonuç ekranı çipi bunu gösterir. */
@@ -1200,4 +1246,21 @@ export interface EtkenKaydi {
   kaynak: string;
   stat: "saglik" | "para" | "mutluluk" | "ahlak" | "aranma" | "sohret";
   delta: number;
+}
+
+/** GET /:id/aranma yanıtı — Aranma ekranı verisi (client/types.ts aynası). */
+export interface AranmaDurumu {
+  puan: number;
+  yildiz: number;
+  debuffOrani: number;
+  basariBonusu: number;
+  tamTutar: number;
+  yarimTutar: number;
+  yarimMumkun: boolean;
+  teslimCezasi: number | null;
+  para: number;
+  paraBirimi: string;
+  hapiste: boolean;
+  bekleyenBaskin: boolean;
+  debuffEtiketi: string;
 }
