@@ -31,11 +31,13 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         metin: "Uğraşma, asilzadeye 'antika' diye sat.",
         baseBasariSansi: 75,
         basariliSonuc: {
+          suc_sinifi: "kucuk",
           para: 20,
           ahlak: -10,
           mesaj: "Parşömeni antika diye sattın; cebin doldu, vicdanın sızladı.",
         },
         basarisizSonuc: {
+          suc_sinifi: "orta",
           un: -10,
           ahlak: -5,
           mesaj: "Asilzade çöp olduğunu anladı, seni kapı dışarı etti.",
@@ -84,6 +86,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         baseBasariSansi: 50,
         maxAhlak: 40,
         basariliSonuc: {
+          suc_sinifi: "kucuk",
           para: 25,
           ahlak: -15,
           etiket_ekle: [
@@ -92,6 +95,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           mesaj: "Ölünün altın yüzüğünü cebe attın. Acımasız ama kârlı.",
         },
         basarisizSonuc: {
+          suc_sinifi: "orta",
           un: -25,
           ahlak: -15,
           mesaj: "Dul eş seni gördü! 'Hırsız!' çığlıklarıyla dayak yedin.",
@@ -296,11 +300,13 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         baseBasariSansi: 65,
         maxAhlak: 45,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 80,
           ahlak: -30,
           mesaj: "Asilzade hikâyeye bayılıp servet ödedi; ruhunu satmış gibisin.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           un: -30,
           ahlak: -20,
           mesaj: "Asilzade sahtekârlıkla suçlayıp seni dövdürdü; tüy uçtu.",
@@ -846,6 +852,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         baseBasariSansi: 50,
         maliyet: 15,
         basariliSonuc: {
+          suc_sinifi: "buyuk",
           para: 70,
           ahlak: -35,
           un: 15,
@@ -856,6 +863,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           mesaj: "İlaç ve suyu altına sattın; ölüm üstüne servet kurdun.",
         },
         basarisizSonuc: {
+          suc_sinifi: "agir",
           saglik: -35,
           para: -15,
           olum_sansi: 25,
@@ -1486,6 +1494,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           "envanter:golge_sikke",
         ],
         basariliSonuc: {
+          suc_sinifi: "buyuk",
           para: 80,
           un: 30,
           ahlak: -40,
@@ -2159,6 +2168,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
         baseBasariSansi: 90,
         maxAhlak: 55,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 90,
           ahlak: -15,
           durum_sil: [
@@ -2171,6 +2181,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
           detay: "Bazı kazançların bedelini başkası öder.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           para: 90,
           ahlak: -15,
           mesaj: "Keseyi açınca soğukluğu hissetti; parayı geri alıp keseyi sana fırlattı.",

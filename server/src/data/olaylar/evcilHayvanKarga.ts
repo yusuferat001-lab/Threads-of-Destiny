@@ -416,6 +416,7 @@ export const OLAY_EVCIL_HAYVAN_KARGA: OlayTanimi[] = [
         metin: "Senedi sakla, avantaj kopar.",
         baseBasariSansi: 60,
         basariliSonuc: {
+          suc_sinifi: "kucuk",
           para: 12,
           ahlak: -8,
           mutluluk: -3,
@@ -423,6 +424,7 @@ export const OLAY_EVCIL_HAYVAN_KARGA: OlayTanimi[] = [
           detay: "Kazanç kirli, kuş hırsız.",
         },
         basarisizSonuc: {
+          suc_sinifi: "orta",
           saglik: -6,
           un: -5,
           ahlak: -4,
@@ -722,6 +724,7 @@ export const OLAY_EVCIL_HAYVAN_KARGA: OlayTanimi[] = [
         metin: "Kaçakçıyla ortak ol.",
         baseBasariSansi: 55,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 20,
           ahlak: -9,
           mutluluk: -3,
@@ -729,6 +732,7 @@ export const OLAY_EVCIL_HAYVAN_KARGA: OlayTanimi[] = [
           detay: "Para temiz, ellerin değil.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           saglik: -8,
           para: -14,
           ahlak: -4,
@@ -1064,6 +1068,7 @@ export const OLAY_EVCIL_HAYVAN_KARGA: OlayTanimi[] = [
         metin: "Eşyaları sat.",
         baseBasariSansi: 55,
         basariliSonuc: {
+          suc_sinifi: "kucuk",
           para: 14,
           ahlak: -7,
           mutluluk: -2,
@@ -1071,6 +1076,7 @@ export const OLAY_EVCIL_HAYVAN_KARGA: OlayTanimi[] = [
           detay: "Bu ortaklığın izi kalır.",
         },
         basarisizSonuc: {
+          suc_sinifi: "orta",
           un: -4,
           mutluluk: -4,
           saglik: -2,

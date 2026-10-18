@@ -150,12 +150,14 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         baseBasariSansi: 45,
         maliyet: 20,
         basariliSonuc: {
+          suc_sinifi: "buyuk",
           para: 60,
           un: 15,
           ahlak: -35,
           mesaj: "Liman alev alev! Rakiplerin iflas etti, piyasa senin.",
         },
         basarisizSonuc: {
+          suc_sinifi: "agir",
           para: -40,
           un: -30,
           ahlak: -20,
@@ -664,6 +666,7 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         baseBasariSansi: 70,
         maxAhlak: 45,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 50,
           un: 25,
           ahlak: -20,
@@ -671,6 +674,7 @@ export const OLAY_HIZIP: OlayTanimi[] = [
           detay: "Hem kahraman hem zengin; ikiyüzlülük zirvede.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           saglik: -20,
           un: -20,
           mesaj: "Adam tehlikeli bir suikastçı çıktı! Seni bıçaklayıp kaçtı.",
@@ -948,6 +952,7 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         metin: "Görevi kabul et, sivil zayiatı umursama.",
         baseBasariSansi: 45,
         basariliSonuc: {
+          suc_sinifi: "orta",
           un: 35,
           para: 20,
           ahlak: -40,
@@ -955,6 +960,7 @@ export const OLAY_HIZIP: OlayTanimi[] = [
           detay: "Kahramansın ama o çığlıkları unutmayacaksın.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           saglik: -35,
           un: -25,
           olum_sansi: 15,
@@ -967,6 +973,7 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         baseBasariSansi: 35,
         maxAhlak: 40,
         basariliSonuc: {
+          suc_sinifi: "buyuk",
           para: 80,
           un: 20,
           ahlak: -40,
@@ -974,6 +981,7 @@ export const OLAY_HIZIP: OlayTanimi[] = [
           detay: "Devrimci değil, savaşla beslenen akbabasın.",
         },
         basarisizSonuc: {
+          suc_sinifi: "agir",
           olum: true,
           mesaj: "Açgözlülükle geciktin; muhafızlar seni depoda kurşuna dizdi.",
         },
@@ -1565,12 +1573,14 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         metin: "Gizli yoldan eski müşterilere mal ulaştır.",
         baseBasariSansi: 45,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 35,
           ahlak: -10,
           mesaj: "Gizli yollardan ticareti sürdürdün; ne para ne müşteri kaybettin.",
           detay: "Kurallar esnek vicdana göre bükülür.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           para: -25,
           un: -20,
           mesaj: "Lonca casusları yakaladı! Ambargoyu deldiğin için ağır ceza ödedin.",
@@ -1644,12 +1654,14 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         metin: "Malları topla, kimseye söyleme.",
         baseBasariSansi: 70,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 35,
           ahlak: -10,
           mesaj: "Malları sessizce topladın, kesen kabardı.",
           detay: "Talih bazen başkasının felaketinden doğar.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           un: -15,
           mesaj: "Toplarken görüldün; bir süre 'leş kargası' diye anıldın.",
           detay: "Bazı fırsatlar utanç da getirir.",
@@ -3236,6 +3248,7 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         ],
         kilitAciklamasi: "Bunun için gizemli bir sikke gerek.",
         basariliSonuc: {
+          suc_sinifi: "kucuk",
           para: 20,
           un: 15,
           ahlak: -12,
@@ -3243,6 +3256,7 @@ export const OLAY_HIZIP: OlayTanimi[] = [
           detay: "Zafer tatlı, ama nasıl kazandığını sen bilirsin.",
         },
         basarisizSonuc: {
+          suc_sinifi: "orta",
           mesaj: "Kullanılmadı.",
         },
       },

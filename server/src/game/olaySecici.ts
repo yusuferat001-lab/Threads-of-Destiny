@@ -1,4 +1,5 @@
 import { CharacterState, Kategori, Secenek, SenaryoResponse } from "../types";
+import { sucBasariBonusu } from "../data/aranmaSabitleri";
 import { OLAY_BANKASI, OlayTanimi, OlaySecenegi } from "../data/olaylar";
 import { OLAY_SOSYALLESME } from "../data/olaylar/sosyallesme";
 import { komsuGucSec } from "../data/liderler";
@@ -445,7 +446,11 @@ export function olaySec(
         : undefined;
       const basariSansi = zarBelirleyenUye
         ? zarBelirleyenUye.gercekKalite
-        : clampSans(Math.round(secenek.baseBasariSansi * (1 + yatkinlikOrani)));
+        : clampSans(
+            Math.round(secenek.baseBasariSansi * (1 + yatkinlikOrani)) +
+              // Aranma II: yüksek yıldız suçu kolaylaştırır (+7/+14/+25), yalnız riskli (<100) suç şıklarında.
+              (secenek.basariliSonuc.suc_sinifi && secenek.baseBasariSansi < 100 ? sucBasariBonusu(state.suc_seviyesi) : 0)
+          );
       return {
         metin: doldur(secenek.metin, state, olay.hayvanTuru),
         basari_sansi: basariSansi,

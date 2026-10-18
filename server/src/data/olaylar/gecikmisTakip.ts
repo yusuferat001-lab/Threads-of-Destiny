@@ -278,7 +278,7 @@ const TEMALAR: TakipTema[] = [
       gorsel: "🗡️",
       secenekler: [
         { metin: "İstediğini ver, başını kurtar.", sonuc: { para: -14, mutluluk: -3, mesaj: "İstediğini verip kurtuldun; tehdit seni sarstı." } },
-        { metin: "Tehdide boyun eğme.", sonuc: { suc_artis: 4, mutluluk: -5, mesaj: "Boyun eğmedin; adam bir süre etrafında dolanıp seni tedirgin etti." } },
+        { metin: "Tehdide boyun eğme.", sonuc: { mutluluk: -5, mesaj: "Boyun eğmedin; adam bir süre etrafında dolanıp seni tedirgin etti." } },
       ],
     },
   },
@@ -597,7 +597,7 @@ const TEMALAR: TakipTema[] = [
     metin: "Gece yarısı kapını bir kaçak çalıyor; bir gecelik sığınak ve azık istiyor. Kim olduğunu bilmiyorsun.",
     yardim: {
       metin: "Gizlice yardım et.",
-      sonuc: { para: -3, ahlak: 2, suc_artis: 3, mesaj: "Gizlice yardım ettin; kaçak şafaktan önce minnetle ayrıldı." },
+      sonuc: { para: -3, ahlak: 2, suc_sinifi: "kucuk", mesaj: "Gizlice yardım ettin; kaçak şafaktan önce minnetle ayrıldı." },
     },
     reddet: {
       metin: "Riske girme, geri çevir.",

@@ -267,7 +267,7 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
         },
         basarisizSonuc: {
           mesaj: "He saw through the bluff; the house was ransacked, you were arrested.",
-          detay: "4-7 years inside; try escaping.",
+          detay: "7-9 years inside; try escaping.",
         },
       },
     ],
@@ -297,7 +297,7 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
         },
         basarisizSonuc: {
           mesaj: "He took it as an insult and had you arrested.",
-          detay: "Stinginess cost you 4-7 years.",
+          detay: "Stinginess cost you 7-9 years.",
         },
       },
     ],
@@ -498,7 +498,7 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
         },
         basarisizSonuc: {
           mesaj: "They caught you despite the money; now you're broke too.",
-          detay: "Money isn't enough: 9-12 years.",
+          detay: "Money isn't enough: 12-14 years.",
         },
       },
       {
@@ -509,7 +509,7 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
         },
         basarisizSonuc: {
           mesaj: "They waited at the gate; escape ended before it began.",
-          detay: "Every exit is watched; 9-12 years.",
+          detay: "Every exit is watched; 12-14 years.",
         },
       },
     ],
@@ -528,7 +528,7 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
         },
         basarisizSonuc: {
           mesaj: "He took the money and handed you over: broke and wounded.",
-          detay: "Can't trust hunters; 9-12 years.",
+          detay: "Can't trust hunters; 12-14 years.",
         },
       },
       {
@@ -539,7 +539,7 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
         },
         basarisizSonuc: {
           mesaj: "A hunter saw through the disguise, recognized and caught you.",
-          detay: "No mask fools them; 9-12 years.",
+          detay: "No mask fools them; 12-14 years.",
         },
       },
     ],
@@ -588,7 +588,7 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
         },
         basarisizSonuc: {
           mesaj: "You fell from the roof and they were on you.",
-          detay: "Nothing went to plan; 9-12 years ahead.",
+          detay: "Nothing went to plan; 12-14 years ahead.",
         },
       },
       {
@@ -599,7 +599,7 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
         },
         basarisizSonuc: {
           mesaj: "The commander refused the money; the door was broken down.",
-          detay: "Offers failed; 9-12 years.",
+          detay: "Offers failed; 12-14 years.",
         },
       },
     ],
@@ -614,7 +614,7 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
         metin: "Surrender, don't resist.",
         basariliSonuc: {
           mesaj: "You surrendered; your home was plundered, you were chained.",
-          detay: "At least 7 years; penance won't cut it.",
+          detay: "At least 9 years; penance won't cut it.",
         },
         basarisizSonuc: {
           mesaj: "Though you surrendered, they slammed you down; shackles bit.",
@@ -656,7 +656,7 @@ export const OLAYLAR_ARANMA_SEVIYESI_EN: Record<string, OlayCeviri> = {
         metin: "Surrender, don't resist.",
         basariliSonuc: {
           mesaj: "You surrendered; they seized your till and shackled you.",
-          detay: "At least 7 years; penance won't cut it.",
+          detay: "At least 9 years; penance won't cut it.",
         },
         basarisizSonuc: {
           mesaj: "You surrendered, yet were slammed to the wall; shackles bit.",

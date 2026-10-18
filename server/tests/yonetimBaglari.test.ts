@@ -173,8 +173,9 @@ describe("yonetimTalebiKararlastir", () => {
     expect(sonuc.state.yonetim_iliski).toBeLessThan(40);
     expect(sonuc.state.un).toBeLessThan(50);
     expect(sonuc.state.yonetim_talep).toBeNull();
-    // Hükümdardan kaçmak yalnızca ilişki sorunu değil, ciddi bir suç artışıdır (2026-09 sonu).
-    expect(sonuc.state.suc_seviyesi).toBeGreaterThanOrEqual(35);
+    // Hükümdardan kaçmak yalnızca ilişki sorunu değil, "büyük suç" aralığında (20-26) bir aranma artışıdır.
+    expect(sonuc.state.suc_seviyesi).toBeGreaterThanOrEqual(10 + 20);
+    expect(sonuc.state.suc_seviyesi).toBeLessThanOrEqual(10 + 26);
   });
 
   it("ret (patron): aranmaya dokunmaz, sadece ilişki/şöhret düşer", async () => {

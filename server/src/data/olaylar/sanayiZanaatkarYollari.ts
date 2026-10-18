@@ -294,8 +294,8 @@ export const OLAY_SANAYI_ZANAATKAR_YOLLARI: OlayTanimi[] = [
         metin: "Teklifi kabul et.",
         baseBasariSansi: 48,
         maliyet: 14,
-        basariliSonuc: { para: -14, uretim_kapasitesi_artis: 14, ahlak: -8, suc_artis: 8, mesaj: "Çalıntı tasarımlar üretimini bir hamlede sıçrattı.", detay: "Çalıntı bilgi avantajdır ama vicdan yer." },
-        basarisizSonuc: { para: -14, un: -10, ahlak: -8, suc_artis: 14, mesaj: "Tuzağa düştün; casus rakip fabrikanın adamıydı.", detay: "Kolay fırsat genelde tuzaktır." },
+        basariliSonuc: { suc_sinifi: "kucuk", para: -14, uretim_kapasitesi_artis: 14, ahlak: -8, mesaj: "Çalıntı tasarımlar üretimini bir hamlede sıçrattı.", detay: "Çalıntı bilgi avantajdır ama vicdan yer." },
+        basarisizSonuc: { suc_sinifi: "orta", para: -14, un: -10, ahlak: -8, mesaj: "Tuzağa düştün; casus rakip fabrikanın adamıydı.", detay: "Kolay fırsat genelde tuzaktır." },
       },
       {
         metin: "Teklifi reddet, dürüst kal.",

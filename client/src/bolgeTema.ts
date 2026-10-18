@@ -83,11 +83,15 @@ export function unUnvani(un: number, dil: Dil = 'tr'): string {
   return sonuc;
 }
 
-/** Aranma (suç) seviyesini üst şeritte yıldız olarak göstermek için 0-5 aralığına ölçekler. */
+/** Aranma (suç) seviyesini üst şeritte yıldız olarak göstermek için 0-3 aralığına ölçekler. */
 export function aranmaYildiz(sucSeviyesi: number): number {
-  // Aranma yeniden dengeleme turu: 5 yıldız/20-band → 4 yıldız/25-band
-  // (bkz. server/src/data/olaylar/aranmaSeviyesi.ts kademe bantları).
-  return Math.max(0, Math.min(4, sucSeviyesi / 25));
+  // Aranma II: 3 yıldız, eşikler 25 / 50 / 75 (bkz. server/src/data/aranmaSabitleri.ts).
+  return Math.max(0, Math.min(3, sucSeviyesi / 25));
+}
+
+/** Tam yıldız sayısı (0-3): 25 / 50 / 75 eşikleri. */
+export function aranmaTamYildiz(sucSeviyesi: number): number {
+  return Math.floor(aranmaYildiz(sucSeviyesi));
 }
 
 export type GostergeTonu = 'iyi' | 'orta' | 'kotu' | 'kritik';

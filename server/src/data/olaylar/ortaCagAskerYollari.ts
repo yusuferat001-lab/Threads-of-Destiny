@@ -462,12 +462,14 @@ export const OLAY_ORTACAG_ASKER_YOLLARI: OlayTanimi[] = [
         metin: "Altını al, yükü görmezden gel.",
         baseBasariSansi: 60,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 45,
           ahlak: -20,
           mesaj: "Kese cebine girdi, yük şehre sessizce girdi.",
           detay: "Gece kendine 'sadece bu sefer' dedin.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           para: -20,
           ahlak: -20,
           un: -30,

@@ -426,14 +426,14 @@ export const OLAY_MULK: OlayTanimi[] = [
         metin: "Kabul et, derine dal.",
         baseBasariSansi: 50,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 35,
           ahlak: -10,
-          suc_artis: 8,
           mesaj: "İş riskli ama sorunsuz kapandı; cebine büyük meblağ girdi.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           para: -10,
-          suc_artis: 12,
           mesaj: "İş çığırından çıktı; para kaybettin, gözler üstünde.",
         },
       },
@@ -469,7 +469,6 @@ export const OLAY_MULK: OlayTanimi[] = [
           mesaj: "Şüpheliyi sessizce uzaklaştırdın; depo bir süre güvende.",
         },
         basarisizSonuc: {
-          suc_artis: 6,
           mesaj: "Kovduğun kişi öfkeyle bekçilere gitti; gözler arttı.",
         },
       },
@@ -483,7 +482,7 @@ export const OLAY_MULK: OlayTanimi[] = [
           mesaj: "Şüphe asılsızdı; depo sorunsuz sürdü.",
         },
         basarisizSonuc: {
-          suc_artis: 14,
+          suc_sinifi: "orta",
           para: -12,
           mesaj: "Şüphen doğruymuş; bekçiler baskın denedi, zor sıyrıldın.",
         },

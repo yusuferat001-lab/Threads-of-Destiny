@@ -778,6 +778,7 @@ export const OLAY_AILE: OlayTanimi[] = [
         metin: "Mücevherleri kaçır, babamın mirası.",
         baseBasariSansi: 50,
         basariliSonuc: {
+          suc_sinifi: "buyuk",
           para: 80,
           ahlak: -35,
           un: -15,
@@ -788,6 +789,7 @@ export const OLAY_AILE: OlayTanimi[] = [
           mesaj: "Kaçırdın! Kral çıldırdı ama sen bir gecede inanılmaz zengin oldun.",
         },
         basarisizSonuc: {
+          suc_sinifi: "agir",
           para: -40,
           un: -30,
           saglik: -20,
@@ -1468,12 +1470,14 @@ export const OLAY_AILE: OlayTanimi[] = [
         metin: "Kabul et, aile mesleğine dön.",
         baseBasariSansi: 55,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 50,
           ahlak: -18,
           mesaj: "Mal sorunsuz geçti; kasan doldu ama babanın izinde yürüdüğünü fark ettin.",
           detay: "Bazı kanlar değişmez.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           para: -25,
           un: -20,
           ahlak: -18,
@@ -1566,6 +1570,7 @@ export const OLAY_AILE: OlayTanimi[] = [
         metin: "Sırrı kullan, soyludan avantaj kopar.",
         baseBasariSansi: 60,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 35,
           un: 10,
           ahlak: -18,
@@ -1573,6 +1578,7 @@ export const OLAY_AILE: OlayTanimi[] = [
           detay: "Bazı kazançlar yeminin üstüne kurulur.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           un: -15,
           ahlak: -18,
           mesaj: "Soylu şantaja boyun eğmedi, seni gözden düşürdü.",

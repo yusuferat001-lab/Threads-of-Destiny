@@ -216,12 +216,14 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
         metin: "İlanı abart, mucize vaat et.",
         baseBasariSansi: 55,
         basariliSonuc: {
+          suc_sinifi: "kucuk",
           para: 28,
           ahlak: -10,
           mesaj: "Abartılı ilan müşteri seli getirdi; kasa doldu.",
           detay: "Bazı yalanlar hemen ikna eder.",
         },
         basarisizSonuc: {
+          suc_sinifi: "orta",
           para: -10,
           un: -15,
           ahlak: -10,
@@ -267,6 +269,7 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
         metin: "Çizimleri kullan, makineyi üret.",
         baseBasariSansi: 50,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 60,
           un: 12,
           ahlak: -20,
@@ -274,6 +277,7 @@ export const OLAY_SANAYI_TUCCAR: OlayTanimi[] = [
           detay: "Bazı sıçramaların temeli çalıntı.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           para: -40,
           un: -25,
           ahlak: -20,

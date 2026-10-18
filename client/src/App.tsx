@@ -136,6 +136,7 @@ import { DilContext, dilCtxYap } from './DilContext';
 import { aileKokAdi, enTanimlik } from './aileAdi';
 import { SkorKirilimiPaneli } from './components/SkorKirilimiPaneli';
 import { GostergeModal } from './components/GostergeModal';
+import { AranmaBildirimModal } from './components/AranmaBildirimModal';
 import { tanismaSenaryosu, tanismaOlaySonucu } from './tanismaOlay';
 import { DunyaGecmisiModal } from './components/DunyaGecmisiModal';
 import { CarkLogo, KoseTezhibi, MuhurAyrac, AdimGostergesi, KaderYollari } from './components/Suslemeler';
@@ -2470,7 +2471,15 @@ function App() {
           )}
 
           {gostergeAcik && karakter && (
-            <GostergeModal karakter={karakter} stat={gostergeAcik} onKapat={() => setGostergeAcik(null)} />
+            <GostergeModal karakter={karakter} stat={gostergeAcik} onKapat={() => setGostergeAcik(null)} onState={setKarakter} />
+          )}
+          {karakter && karakter.aktif && karakter.aranma_bildirimleri?.length > 0 && (
+            <AranmaBildirimModal
+              key={karakter.aranma_bildirimleri[0].id}
+              karakter={karakter}
+              bildirim={karakter.aranma_bildirimleri[0]}
+              onState={setKarakter}
+            />
           )}
           {yilModalAcik && karakter && <DunyaGecmisiModal karakter={karakter} onKapat={() => setYilModalAcik(false)} />}
 

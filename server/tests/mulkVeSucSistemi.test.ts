@@ -5,6 +5,7 @@ import {
   mulkGelirleriUygula,
   mulkGetiriOraniHesapla,
   sucSeviyesiUygula,
+  sucArtisiKaydet,
   piyasaDedikodulariUret,
 } from "../src/game/stateManager";
 import { yeniOyun, mesleğiAta, mulkConfigGetir, mulkSatinAl, zarAt, zarKademeleriGetir, dedikoduGetir } from "../src/game/gameEngine";
@@ -104,13 +105,42 @@ describe("mülk getiri hesabı — dünya durumuna göre", () => {
 });
 
 describe("suç seviyesi pasif azalma", () => {
-  it("zamanla çok yavaş düşer (2026-09, 0.15/yıl), sıfırın altına inmez", () => {
+  it("son aranma artışından sonra 5 yıl hiç düşmez", () => {
+    const state = taze();
+    state.suc_seviyesi = 30;
+    state.son_suc_yili = state.yil - 5;
+    sucSeviyesiUygula(state, 2);
+    expect(state.suc_seviyesi).toBe(30);
+  });
+
+  it("6. yıldan itibaren yılda 1 düşer (turdaki yıl sayısı kadar)", () => {
+    const state = taze();
+    state.suc_seviyesi = 30;
+    state.son_suc_yili = state.yil - 6; // 6 yıl temiz: bu turun 1 yılı düşer
+    sucSeviyesiUygula(state, 1);
+    expect(state.suc_seviyesi).toBe(29);
+
+    state.suc_seviyesi = 30;
+    state.son_suc_yili = state.yil - 7; // iki yıllık turda ikisi de düşer
+    sucSeviyesiUygula(state, 2);
+    expect(state.suc_seviyesi).toBe(28);
+
+    state.suc_seviyesi = 30;
+    state.son_suc_yili = state.yil - 6; // iki yıllık turun yalnız ikinci yılı eşiği aşar
+    sucSeviyesiUygula(state, 2);
+    expect(state.suc_seviyesi).toBe(29);
+  });
+
+  it("aranma artışı sayacı sıfırlar ve sıfırın altına inmez", () => {
     const state = taze();
     state.suc_seviyesi = 10;
+    state.son_suc_yili = state.yil - 20;
+    sucArtisiKaydet(state);
     sucSeviyesiUygula(state, 3);
-    expect(state.suc_seviyesi).toBeCloseTo(10 - 0.15 * 3, 5);
+    expect(state.suc_seviyesi).toBe(10);
 
     state.suc_seviyesi = 1;
+    state.son_suc_yili = state.yil - 30;
     sucSeviyesiUygula(state, 10);
     expect(state.suc_seviyesi).toBe(0);
   });
