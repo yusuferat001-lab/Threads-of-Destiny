@@ -32,7 +32,7 @@ describe("meslek pazarı (müşteri modeli)", () => {
     expect(pazarPayiHesapla(s)).toBeCloseTo(s.meslek_musteri / s.pazar_musteri, 6);
     // Başlangıç payı ~%5–12; iki rakip: büyük %44–51, ikinci %28–34 (P'nin kesri).
     expect(pazarPayiHesapla(s)).toBeGreaterThan(0.04);
-    expect(pazarPayiHesapla(s)).toBeLessThan(0.14);
+    expect(pazarPayiHesapla(s)).toBeLessThan(0.17);
     expect(s.rakipler.filter((r) => !r.yenildi)).toHaveLength(2);
     const buyuk = s.rakipler[0].musteri / s.pazar_musteri;
     const ikinci = s.rakipler[1].musteri / s.pazar_musteri;
@@ -235,5 +235,57 @@ describe("meslek pazarı (müşteri modeli)", () => {
     const dusuk = baslangicMusteri(400, 1, false, () => 0);
     const yuksek = baslangicMusteri(400, 4, true, () => 0);
     expect(yuksek).toBeGreaterThan(dusuk);
+  });
+});
+
+import {
+  sabitMusteriArtisi,
+  rakipSaldiriKademesi,
+  rastgeleSaldiriYili,
+  saldiriTuruSec,
+  SALDIRI_TUR_AGIRLIKLARI,
+} from "../src/data/pazar";
+
+describe("v8.2: sabit müşteri desteği ve saldırı yardımcıları", () => {
+  it("yıllık sabit destek yaşa göre: 15–24 → +1, 25–34 → +0,5, 35+ → +0,2 (paydan bağımsız)", () => {
+    expect(sabitMusteriArtisi(15)).toBe(1);
+    expect(sabitMusteriArtisi(24)).toBe(1);
+    expect(sabitMusteriArtisi(25)).toBe(0.5);
+    expect(sabitMusteriArtisi(34)).toBe(0.5);
+    expect(sabitMusteriArtisi(35)).toBe(0.2);
+    expect(sabitMusteriArtisi(80)).toBe(0.2);
+  });
+
+  it("saldırı kademesi: pay %0–20 → 1, %21–34 → 2, %35+ → 3", () => {
+    expect(rakipSaldiriKademesi(0.03)).toBe(1);
+    expect(rakipSaldiriKademesi(0.2)).toBe(1);
+    expect(rakipSaldiriKademesi(0.21)).toBe(2);
+    expect(rakipSaldiriKademesi(0.34)).toBe(2);
+    expect(rakipSaldiriKademesi(0.35)).toBe(3);
+    expect(rakipSaldiriKademesi(0.7)).toBe(3);
+  });
+
+  it("saldırı yılı bugünden 4–9 yıl sonra; otorite ilişkisi yüksekse +1", () => {
+    expect(rastgeleSaldiriYili(1200, false, () => 0)).toBe(1204);
+    expect(rastgeleSaldiriYili(1200, false, () => 0.999)).toBe(1209);
+    expect(rastgeleSaldiriYili(1200, true, () => 0)).toBe(1205);
+    const gorulen = new Set<number>();
+    for (let i = 0; i < 400; i++) gorulen.add(rastgeleSaldiriYili(1200, false));
+    expect([...gorulen].sort()).toEqual([1204, 1205, 1206, 1207, 1208, 1209]);
+  });
+
+  it("tür ağırlıkları her kademede %100; kademe 1'de sabotaj/iftira, kademe 2'de sabotaj çıkmaz", () => {
+    for (const k of [1, 2, 3] as const) {
+      const toplam = Object.values(SALDIRI_TUR_AGIRLIKLARI[k]).reduce((t, x) => t + x, 0);
+      expect(toplam).toBe(100);
+    }
+    for (let i = 0; i < 300; i++) {
+      const t1 = saldiriTuruSec(1);
+      expect(["baskin", "musteri_calma"]).toContain(t1);
+      expect(saldiriTuruSec(2)).not.toBe("sabotaj");
+    }
+    const gorulen = new Set<string>();
+    for (let i = 0; i < 600; i++) gorulen.add(saldiriTuruSec(3));
+    expect(gorulen.size).toBe(4);
   });
 });

@@ -64,7 +64,7 @@ describe("işletme (Tüccar dilimi)", () => {
     }
   });
 
-  it("pazar büyüklüğü 350–500, başlangıç payı ≈%5–12, rakip eşikleri aralıkların içinde", async () => {
+  it("pazar büyüklüğü 350–500, başlangıç payı ≈%8–16, ilk saldırı henüz planlanmamış", async () => {
     for (let i = 0; i < 20; i++) {
       const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
       mesleğiSec(s, "Tüccar");
@@ -72,15 +72,9 @@ describe("işletme (Tüccar dilimi)", () => {
       expect(s.pazar_musteri).toBeLessThanOrEqual(500);
       const pay = pazarPayiHesapla(s);
       expect(pay).toBeGreaterThan(0.045);
-      expect(pay).toBeLessThan(0.14);
+      expect(pay).toBeLessThan(0.17);
       expect(musteriSayisi(s)).toBeCloseTo(pay * s.pazar_musteri, 5);
-      const [a, b, c] = s.rakip_esikler;
-      expect(a).toBeGreaterThanOrEqual(0.2);
-      expect(a).toBeLessThanOrEqual(0.22);
-      expect(b).toBeGreaterThanOrEqual(0.34);
-      expect(b).toBeLessThanOrEqual(0.35);
-      expect(c).toBeGreaterThanOrEqual(0.45);
-      expect(c).toBeLessThanOrEqual(0.46);
+      expect(s.rakip_sonraki_saldiri_yili).toBeNull();
       expect(s.yonetim_iliski).toBeGreaterThanOrEqual(30);
       expect(s.yonetim_iliski).toBeLessThanOrEqual(40);
     }
@@ -201,13 +195,13 @@ describe("işletme (Tüccar dilimi)", () => {
     const s = await tuccar();
     s.para = 5000;
     expect(depoKapasitesi(s.isletme!)).toBe(100);
-    expect(curumeOrani(s.isletme!)).toBeCloseTo(0.1);
+    expect(curumeOrani(s.isletme!)).toBeCloseTo(0.15);
     await isletmeYatirimYap(s.id, "depo");
     expect(depoKapasitesi(s.isletme!)).toBe(220);
     await isletmeYatirimYap(s.id, "depo");
     await isletmeYatirimYap(s.id, "depo");
     expect(depoKapasitesi(s.isletme!)).toBe(750);
-    expect(curumeOrani(s.isletme!)).toBeCloseTo(0.02);
+    expect(curumeOrani(s.isletme!)).toBeCloseTo(0.08);
     await expect(isletmeYatirimYap(s.id, "depo")).rejects.toThrow(/en üst kademe/);
   });
 
@@ -241,8 +235,8 @@ describe("işletme (Tüccar dilimi)", () => {
   });
 
   it("maaş giriş seviyesine göre sabit, yalnız enflasyonla artar", () => {
-    expect(maasTabani(20, 10)).toBeCloseTo(1.2 + 0.4 + 0.1 + 0.08, 2);
-    expect(maasTabani(90, 80)).toBeCloseTo(1.2 + 1.8 + 0.8 + 2.88, 2);
+    expect(maasTabani(20, 10)).toBeCloseTo(1.15 * (1.2 + 0.4 + 0.1 + 0.08), 2);
+    expect(maasTabani(90, 80)).toBeCloseTo(1.15 * (1.2 + 1.8 + 0.8 + 2.88), 2);
     expect(maasTabani(90, 80)).toBeGreaterThan(maasTabani(20, 10));
   });
 
@@ -310,20 +304,20 @@ describe("işletme (Tüccar dilimi)", () => {
     expect(korumaHesapla(s).otorite).toBeCloseTo(0.1);
   });
 
-  it("vergi: kârın %12'si; savaşta +6 puan; otorite ilişkisi <25'te +3 puan; indirim yarıya indirir; zarar yılında vergi yok", async () => {
+  it("vergi: kârın %25'i; savaşta +10 puan; otorite ilişkisi <25'te +3 puan; indirim yarıya indirir; zarar yılında vergi yok", async () => {
     const s = await tuccar();
     s.yonetim_iliski = 50;
     s.ulke.savasta = false;
-    expect(vergiOrani(s)).toBeCloseTo(0.12);
+    expect(vergiOrani(s)).toBeCloseTo(0.25);
     s.ulke.savasta = true;
-    expect(vergiOrani(s)).toBeCloseTo(0.18);
+    expect(vergiOrani(s)).toBeCloseTo(0.35);
     s.ulke.savasta = false;
     s.yonetim_iliski = 10;
-    expect(vergiOrani(s)).toBeCloseTo(0.15);
+    expect(vergiOrani(s)).toBeCloseTo(0.28);
     s.yonetim_iliski = 50;
     s.vergi_carpan = 0.5;
     s.vergi_carpan_bitis_yili = s.yil + 9;
-    expect(vergiOrani(s)).toBeCloseTo(0.06);
+    expect(vergiOrani(s)).toBeCloseTo(0.125);
     s.yil += 10;
     s.vergi_carpan_bitis_yili = s.yil - 1;
     const { dokum } = isletmeYilIsle(s, isletmeBaglami(s));
@@ -388,11 +382,12 @@ describe("işletme (Zanaatkâr — üretim modu)", () => {
     expect((await isletmeDurumGetir(t.id)).uretim).toBeNull();
   });
 
-  it("toplam üretim tavanı aşamaz; tavan aşılırsa uyarı ve dökümde üretim bilgisi çıkar", async () => {
+  it("üretim tavanı SATIŞI sınırlar (alım depoya sığdığı kadar); tavan aşılırsa uyarı ve dökümde üretim bilgisi çıkar", async () => {
     const s = await zanaatkar();
     s.rutbe_seviye = 3;
     s.ekip = [];
     s.pazar_musteri = 20000; // devasa talep: tavan kesin aşılır
+    s.meslek_musteri = 4000;
     const hatlar = s.isletme!.hatlar;
     hatlar.forEach((h) => { h.acik = false; h.stok = 0; });
     hatlar.find((h) => h.id === "kap")!.acik = true;
@@ -400,8 +395,11 @@ describe("işletme (Zanaatkâr — üretim modu)", () => {
     s.isletme!.stok_hedefi = "dolu";
     const tavan = (await isletmeDurumGetir(s.id)).uretim!.tavan;
     const { dokum } = isletmeYilIsle(s, isletmeBaglami(s));
-    const uretilen = dokum.hatlar.reduce((t, h) => t + h.alinan, 0);
-    expect(uretilen).toBeLessThanOrEqual(tavan);
+    const satilan = dokum.hatlar.reduce((t, h) => t + h.satilan, 0);
+    const alinan = dokum.hatlar.reduce((t, h) => t + h.alinan, 0);
+    expect(satilan).toBeLessThanOrEqual(tavan);
+    expect(alinan).toBeGreaterThan(tavan); // hammadde depoya sığdığı kadar alınır, satış tavana takılır
+    expect(alinan).toBeLessThanOrEqual(750);
     expect(dokum.uretim?.tavan).toBe(tavan);
     expect(dokum.uyarilar.some((u) => u.kod === "uretim_tavani")).toBe(true);
   });
@@ -459,5 +457,96 @@ describe("işletme (Zanaatkâr — üretim modu)", () => {
     ciftKazancKirp(s, etki, "zanaat");
     expect(etki.para).toBe(10);
     expect(s.meslek_musteri).toBeGreaterThan(kitle);
+  });
+
+  it("hammadde biterse satış durur; artan hammadde depoda kalıp çürür (parası ödenip boşa giden üretim yok)", async () => {
+    const s = await zanaatkar();
+    s.ekip = [];
+    s.isletme!.hatlar.forEach((h) => { h.stok = 0; });
+    s.isletme!.stok_hedefi = "cokaz"; // talebin 0,75 katı: hammadde yetmez
+    const { dokum } = isletmeYilIsle(s, isletmeBaglami(s));
+    const satilan = dokum.hatlar.reduce((t, h) => t + h.satilan, 0);
+    const talep = dokum.hatlar.reduce((t, h) => t + h.talep, 0);
+    expect(satilan).toBeLessThan(talep);
+  });
+});
+
+describe("v8.2: lonca aidatı, saldırı takvimi", () => {
+  it("lonca aidatı satışın %3'üdür ve brüt kârdan düşer", async () => {
+    const s = await tuccar();
+    s.ekip = [];
+    const { dokum } = isletmeYilIsle(s, isletmeBaglami(s));
+    expect(dokum.loncaAidati).toBeCloseTo(dokum.satis * 0.03, 1);
+    expect(dokum.brutKar).toBeCloseTo(dokum.satis - dokum.alim - dokum.depoMasrafi - dokum.loncaAidati, 1);
+  });
+
+  it("ilk işletme yılında saldırı yılı 4–9 yıl sonraya planlanır; vakti gelmeden saldırı olmaz", async () => {
+    const s = await tuccar();
+    s.ekip = [];
+    s.yonetim_iliski = 10;
+    const yil = s.yil;
+    const { dokum } = isletmeYilIsle(s, isletmeBaglami(s));
+    expect(s.rakip_sonraki_saldiri_yili).toBeGreaterThanOrEqual(yil + 4);
+    expect(s.rakip_sonraki_saldiri_yili).toBeLessThanOrEqual(yil + 9);
+    expect(dokum.uyarilar.some((u) => u.kod === "rakip_saldiri")).toBe(false);
+  });
+
+  it("vakti gelen saldırı kesin gerçekleşir ve bir sonrakini 4–9 yıl sonraya koyar", async () => {
+    for (let i = 0; i < 20; i++) {
+      const s = await tuccar();
+      s.ekip = [];
+      s.yonetim_iliski = 10;
+      s.rakip_sonraki_saldiri_yili = s.yil;
+      const { dokum } = isletmeYilIsle(s, isletmeBaglami(s));
+      const u = dokum.uyarilar.find((x) => x.kod === "rakip_saldiri");
+      expect(u).toBeTruthy();
+      expect(u!.rakip).toBeTruthy();
+      expect(s.rakip_saldiri_son_yil).toBe(s.yil);
+      expect(s.rakip_sonraki_saldiri_yili).toBeGreaterThanOrEqual(s.yil + 4);
+      expect(s.rakip_sonraki_saldiri_yili).toBeLessThanOrEqual(s.yil + 9);
+    }
+  });
+
+  it("içerden sızma: sadakati <45 çalışan varsa güvenlik engelleyemez, sızma işaretlenir ve çalışanın sadakati düşer", async () => {
+    let sizmaGordu = false;
+    for (let i = 0; i < 30; i++) {
+      const s = await tuccar();
+      s.ekip = [uye("guvenlik", 80, 30)];
+      s.isletme!.yatirimlar.guvenlik = 3; // Koruma yüksek
+      s.yonetim_iliski = 10;
+      s.rakip_sonraki_saldiri_yili = s.yil;
+      const { dokum } = isletmeYilIsle(s, isletmeBaglami(s));
+      if (s.ekip.length === 0) continue; // düşük sadakatli çalışan o yıl işi bırakmış olabilir (adım 2)
+      const u = dokum.uyarilar.find((x) => x.kod === "rakip_saldiri");
+      expect(u).toBeTruthy();
+      expect(u!.sizma).toBe(true);
+      expect(u!.engellendi).toBeFalsy();
+      expect(s.ekip[0].sadakat).toBeLessThan(30);
+      sizmaGordu = true;
+    }
+    expect(sizmaGordu).toBe(true);
+  });
+
+  it("güvenlik yüksekken fiziksel saldırılar (baskın, sabotaj) çoğunlukla engellenir; söylenti saldırıları asla", async () => {
+    let fizikselEngel = 0;
+    let fiziksel = 0;
+    for (let i = 0; i < 120; i++) {
+      const s = await tuccar();
+      s.ekip = [uye("guvenlik", 100, 90), uye("guvenlik", 100, 90)];
+      s.isletme!.yatirimlar.guvenlik = 3; // Koruma ≥ 0,9
+      s.yonetim_iliski = 10;
+      s.rakip_sonraki_saldiri_yili = s.yil;
+      const { dokum } = isletmeYilIsle(s, isletmeBaglami(s));
+      const u = dokum.uyarilar.find((x) => x.kod === "rakip_saldiri")!;
+      if (u.sonuc === "baskin" || u.sonuc === "sabotaj") {
+        fiziksel++;
+        if (u.engellendi) fizikselEngel++;
+      } else {
+        expect(u.engellendi).toBeFalsy();
+        expect(u.musteriKaybi ?? 0).toBeGreaterThanOrEqual(0);
+      }
+    }
+    expect(fiziksel).toBeGreaterThan(0);
+    expect(fizikselEngel / fiziksel).toBeGreaterThan(0.7);
   });
 });

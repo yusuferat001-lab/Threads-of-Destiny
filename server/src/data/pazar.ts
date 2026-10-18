@@ -17,12 +17,18 @@ import type { CharacterState } from "../types";
  * içe aktarma oluşmaz.
  */
 
-/** Oyuncunun yıllık sabit müşteri artışı (işletmesizlerde rütbe başına ek). */
-export const MUSTERI_YILLIK_SABIT = 2.6;
-/** Sabit büyüme doğal olarak doyar: pay bu eşiğe yaklaştıkça sıfıra iner (küçük işletme hızlı, büyük işletme yüzdelik etkenlerle büyür). */
-export const MUSTERI_SABIT_DOYMA_PAYI = 0.27;
-export function sabitMusteriArtisi(pay: number): number {
-  return MUSTERI_YILLIK_SABIT * Math.max(0, 1 - pay / MUSTERI_SABIT_DOYMA_PAYI);
+/**
+ * Yıllık sabit müşteri desteği (v8.2): paydan bağımsız düz değer, yaşa göre kademeli —
+ * mesleğin ilk 10 yılı (yaş 15–24) +1, sonraki 10 yıl (25–34) +0,5, sonrası +0,2.
+ * Yalnız küçük bir taban destektir; asıl büyüme çalışan/yatırım/fiyat/şöhret ve olaylardan gelir.
+ */
+export const MUSTERI_DESTEK_KADEMELERI: { yasAltinda: number; deger: number }[] = [
+  { yasAltinda: 25, deger: 1 },
+  { yasAltinda: 35, deger: 0.5 },
+  { yasAltinda: Infinity, deger: 0.2 },
+];
+export function sabitMusteriArtisi(yas: number): number {
+  return (MUSTERI_DESTEK_KADEMELERI.find((k) => yas < k.yasAltinda) ?? MUSTERI_DESTEK_KADEMELERI[MUSTERI_DESTEK_KADEMELERI.length - 1]).deger;
 }
 export const MUSTERI_YILLIK_RUTBE = 0.3;
 /** Hapiste/yolculuktayken pazardan uzak kalmanın yıllık müşteri kaybı (kendi müşterisinin kesri). */
@@ -67,23 +73,61 @@ export const PAZAR_ADLARI: Record<string, PazarAdlari> = {
 /** Toplam pazar büyüklüğü (müşteri sayısı) oyun başında bu aralıktan atanır. */
 export const PAZAR_MUSTERI_ARALIK: [number, number] = [350, 500];
 /** Her müşterinin bir üründen yıllık baz alım oranı (dönem etkilerinden bağımsız; üstüne dönem çarpanları biner). */
-export const ALIM_ORANI = 0.4;
+export const ALIM_ORANI = 0.42;
 /** Başlangıç pazar payı tabanı (%8–9) ve mesleğe yatkınlık kademesine göre ek (puan). */
-export const BASLANGIC_PAY_ARALIK: [number, number] = [0.08, 0.09];
+export const BASLANGIC_PAY_ARALIK: [number, number] = [0.11, 0.12];
 export const YATKINLIK_PAY_EKI = [0, -0.03, 0, 0.02, 0.03]; // index = meslek_yatkinlik_seviyesi (1 kötü … 4 mükemmel)
 
-/** Rakip saldırı eşikleri oyuncunun pazar payına göre: oyun başında bu aralıklardan atanır. */
-export const RAKIP_ESIK_ARALIKLARI: [[number, number], [number, number], [number, number]] = [
-  [0.2, 0.22],
-  [0.34, 0.35],
-  [0.45, 0.46],
-];
-/** Kademe başına [yıllık saldırı şansı, saldırıdan sonra cooldown yılı]. */
-export const RAKIP_SALDIRI_KADEMELERI: [number, number][] = [
-  [0.12, 4],
-  [0.15, 3],
-  [0.2, 2],
-];
+// ── Rakip saldırıları (v8.2) ───────────────────────────────────────────────
+/** Saldırı kademesi sabit pay aralığıyla belirlenir: %0–20 → 1, %21–34 → 2, %35+ → 3. */
+export function rakipSaldiriKademesi(pay: number): 1 | 2 | 3 {
+  const yuzde = Math.round(pay * 100);
+  if (yuzde <= 20) return 1;
+  if (yuzde <= 34) return 2;
+  return 3;
+}
+/** Saldırılar zarla değil takvimle gelir: bir sonraki saldırı, bugünden 4–9 yıl sonra (eşit olasılık) bir yıla konur. */
+export const RAKIP_SALDIRI_ARALIK_YIL: [number, number] = [4, 9];
+/** Şehir yöneticisi ilişkisi yüksekse aralığa eklenen yıl. */
+export const RAKIP_SALDIRI_OTORITE_EKI_YIL = 1;
+export function rastgeleSaldiriYili(yil: number, otoriteKoruma: boolean, rnd: () => number = Math.random): number {
+  const [a, b] = RAKIP_SALDIRI_ARALIK_YIL;
+  return yil + a + Math.floor(rnd() * (b - a + 1)) + (otoriteKoruma ? RAKIP_SALDIRI_OTORITE_EKI_YIL : 0);
+}
+/** Saldıran: %65 büyük rakip, %35 ikinci rakip (tek aktif rakip varsa o). İkinci rakibin hasarı ×0,8. */
+export const RAKIP_BUYUK_SALDIRI_ORANI = 0.65;
+export const RAKIP_IKINCI_HASAR_CARPANI = 0.8;
+/** Sadakati düşük çalışan rakibe bilgi sızdırırsa hasar %30 artar, güvenlik devre dışı kalır, çalışanın sadakati düşer. */
+export const SIZMA_HASAR_CARPANI = 1.3;
+export const SIZMA_SADAKAT_KAYBI = 15;
+
+export type SaldiriTuru = "baskin" | "sabotaj" | "iftira" | "musteri_calma";
+/** Fiziksel saldırıları (baskın, sabotaj) güvenlik engelleyebilir; söylenti saldırıları (iftira, müşteri çalma) engellenemez. */
+export const FIZIKSEL_SALDIRILAR: SaldiriTuru[] = ["baskin", "sabotaj"];
+/** Kademeye göre tür ağırlıkları (%). */
+export const SALDIRI_TUR_AGIRLIKLARI: Record<1 | 2 | 3, Record<SaldiriTuru, number>> = {
+  1: { baskin: 55, sabotaj: 0, iftira: 0, musteri_calma: 45 },
+  2: { baskin: 20, sabotaj: 0, iftira: 35, musteri_calma: 45 },
+  3: { baskin: 15, sabotaj: 35, iftira: 20, musteri_calma: 30 },
+};
+/** Tür başına hasar, kademe 1/2/3. nakit: geçen yılın brüt kârının %'si; musteri: oyuncunun müşteri sayısının %'si; sohret: puan; stok: [min,max] %. */
+export const SALDIRI_HASARLARI = {
+  baskin: { nakit: [10, 17, 25] },
+  sabotaj: { stok: [17, 25] as [number, number], nakit: [9, 9, 9] },
+  iftira: { sohret: [0, 6, 9.5], musteri: [0, 5, 8] },
+  musteri_calma: { musteri: [6, 10, 15] },
+} as const;
+
+export function saldiriTuruSec(kademe: 1 | 2 | 3, rnd: () => number = Math.random): SaldiriTuru {
+  const agirlik = SALDIRI_TUR_AGIRLIKLARI[kademe];
+  const toplam = (Object.values(agirlik) as number[]).reduce((t, x) => t + x, 0);
+  let zar = rnd() * toplam;
+  for (const tur of Object.keys(agirlik) as SaldiriTuru[]) {
+    zar -= agirlik[tur];
+    if (zar < 0) return tur;
+  }
+  return "musteri_calma";
+}
 
 /** Şöhret (un) aralıklarına göre pazar payı büyümesi (G'nin yıllık yüzdesi, kesir) ve otorite ilişkisi (yıllık puan). */
 export function sohretPayBuyumesi(un: number): number {
@@ -106,19 +150,6 @@ export function sohretOtoriteIliskisi(un: number): number {
 export function rastgelePazarMusteri(rnd: () => number = Math.random): number {
   const [min, max] = PAZAR_MUSTERI_ARALIK;
   return Math.round(min + rnd() * (max - min));
-}
-
-export function rastgeleRakipEsikleri(rnd: () => number = Math.random): [number, number, number] {
-  const r = RAKIP_ESIK_ARALIKLARI.map(([a, b]) => Math.round((a + rnd() * (b - a)) * 1000) / 1000);
-  return [r[0], r[1], r[2]];
-}
-
-/** Rakip saldırı kademesi (0 = yok, 1-3) — oyuncunun payı eşikleri geçtikçe artar. */
-export function rakipSaldiriKademesi(pay: number, esikler: [number, number, number]): number {
-  if (pay >= esikler[2]) return 3;
-  if (pay >= esikler[1]) return 2;
-  if (pay >= esikler[0]) return 1;
-  return 0;
 }
 
 export function pazarAdlariGetir(meslek: string): PazarAdlari | null {

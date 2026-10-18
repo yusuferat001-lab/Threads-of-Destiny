@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { PiyasaHaberleri } from './PiyasaHaberleri';
 import type { FinansOzeti, GecmisNoktasi, IsletmeGorunumu, IsletmeKararGirdisi, IsletmeStokHedefi, EkipUyesi, Rakip, KotuIsKarti, YonetimDurumu, YonetimHat, PazarDurumu, AjanDurumu } from '../types';
 import { useDil } from '../DilContext';
-import { formatPara, formatYuzde, formatYuzdeAralik } from '../format';
+import { formatPara, formatYuzde, formatYuzdeAralik, formatMusteri } from '../format';
 import { bic, type Metinler } from '../i18n';
 import type { Dil } from '../ayarlar';
 import { rutbeIlerlemeHesapla } from '../rutbeIlerleme';
@@ -402,12 +402,12 @@ function PazarKarti({ pazar }: { pazar: PazarDurumu }) {
       <ul className="pazar-satirlari">
         <li>
           <span className="pazar-nokta pazar-nokta-sen" /> {en ? 'You' : 'Sen'}
-          {pazar.musteri > 0 ? ` — ${pazar.musteri} ${en ? 'customers' : 'müşteri'}` : ''} · <strong>{yuzde(pazar.pazarPayi)}</strong>
+          {pazar.musteri > 0 ? ` — ${formatMusteri(dil, pazar.musteri)} ${en ? 'customers' : 'müşteri'}` : ''} · <strong>{yuzde(pazar.pazarPayi)}</strong>
         </li>
         {pazar.rakipler.map((r) => (
           <li key={r.ad}>
             <span className="pazar-nokta pazar-nokta-rakip" /> {r.ad}
-            {pazar.pazarMusteri > 0 ? ` — ${r.musteri} ${en ? 'customers' : 'müşteri'}` : ''} · {yuzde(r.pay)}
+            {pazar.pazarMusteri > 0 ? ` — ${formatMusteri(dil, r.musteri)} ${en ? 'customers' : 'müşteri'}` : ''} · {yuzde(r.pay)}
           </li>
         ))}
         <li>

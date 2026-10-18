@@ -11,7 +11,7 @@ import type {
 import { useDil } from '../DilContext';
 import { kt } from '../katalog';
 import { PiyasaHaberleri } from './PiyasaHaberleri';
-import { formatPara, formatYuzde } from '../format';
+import { formatPara, formatYuzde, formatMusteri } from '../format';
 
 interface Props {
   durum: IsletmeGorunumu;
@@ -55,6 +55,7 @@ const M = {
   kapali: { tr: 'Kapalı', en: 'Closed' },
   rutbeGerek: { tr: 'Rütbe', en: 'Rank' },
   stok: { tr: 'Stok', en: 'Stock' },
+  hammaddeStogu: { tr: 'Hammadde stoğu', en: 'Raw materials' },
   fiyat: { tr: 'Fiyat', en: 'Price' },
   talep: { tr: 'Beklenen talep', en: 'Expected demand' },
   birim: { tr: 'Satış / alış', en: 'Sell / buy' },
@@ -84,6 +85,7 @@ const M = {
   alim: { tr: 'Mal alımı', en: 'Purchases' },
   hammadde: { tr: 'Hammadde', en: 'Materials' },
   depoMasrafi: { tr: 'Depo masrafı', en: 'Storage' },
+  loncaAidati: { tr: 'Lonca aidatı', en: 'Guild dues' },
   vergiKalemi: { tr: 'Vergi', en: 'Tax' },
   borcOdeme: { tr: 'Borç ödemesi', en: 'Debt repaid' },
   net: { tr: 'Eline geçen', en: 'Net to you' },
@@ -161,10 +163,15 @@ const HIRSIZLIK_SONUCLARI: Record<string, D> = {
   sans: { tr: 'Hırsızlar şansları yaver gitmeden kaçtı', en: 'Thieves slipped away empty-handed by luck' },
 };
 const SALDIRI_SONUCLARI: Record<string, D> = {
-  musteri_calma: { tr: 'Rakip müşterilerini çaldı', en: 'The rival stole your customers' },
-  iftira: { tr: 'Rakip hakkında iftira yaydı', en: 'The rival spread slander about you' },
-  sabotaj: { tr: 'Rakip deponu sabote etti', en: 'The rival sabotaged your warehouse' },
-  nakit: { tr: 'Rakip seni zarara uğrattı', en: 'The rival hurt your finances' },
+  baskin: { tr: 'dükkânını basıp kasayı boşalttı', en: 'raided your shop and emptied the till' },
+  musteri_calma: { tr: 'müşterilerini çaldı', en: 'stole your customers' },
+  iftira: { tr: 'hakkında iftira yaydı', en: 'spread slander about you' },
+  sabotaj: { tr: 'deponu yaktı ve bozdu', en: 'burned and ruined your warehouse' },
+  nakit: { tr: 'seni zarara uğrattı', en: 'hurt your finances' },
+};
+const SALDIRI_ENGELLENDI: Record<string, D> = {
+  baskin: { tr: 'dükkânı basmaya/taşlamaya geldi, güvenliğin püskürttü', en: 'came to raid your shop; your guards drove them off' },
+  sabotaj: { tr: 'deponu yakmaya geldi, güvenliğin püskürttü', en: 'came to burn your warehouse; your guards drove them off' },
 };
 
 /** Aynı yıl için açılır uyarıyı yalnız bir kez göstermek için (modül düzeyi; sayfa yenilenince sıfırlanır). */
@@ -215,8 +222,18 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
         const ek = u.urunYuzde || u.tutar ? ` — ${en ? 'goods' : 'mal'} ${u.urunYuzde ?? 0}%, ${en ? 'cash' : 'para'} ${formatPara(u.tutar ?? 0)}` : '';
         return `🦹 ${s}${ek}`;
       }
-      case 'rakip_saldiri':
-        return `⚔️ ${d(SALDIRI_SONUCLARI[u.sonuc ?? 'nakit'])}${u.tutar ? ` (${formatPara(u.tutar)} ${pb})` : ''}`;
+      case 'rakip_saldiri': {
+        const kim = u.rakip ?? (en ? 'The rival' : 'Rakip');
+        const tur = u.sonuc ?? 'nakit';
+        if (u.engellendi) return `🛡️ ${kim}: ${d(SALDIRI_ENGELLENDI[tur] ?? SALDIRI_ENGELLENDI.baskin)}`;
+        const kayiplar: string[] = [];
+        if (u.musteriKaybi) kayiplar.push(en ? `you lost ${formatMusteri(dil, u.musteriKaybi)} customers` : `${formatMusteri(dil, u.musteriKaybi)} müşteri kaybettin`);
+        if (u.tutar) kayiplar.push(`${formatPara(u.tutar)} ${pb}`);
+        if (u.urunYuzde) kayiplar.push(en ? `${u.urunYuzde}% of stock` : `stokun %${u.urunYuzde}'i`);
+        if (u.sohretKaybi) kayiplar.push(en ? `fame −${u.sohretKaybi}` : `şöhret −${u.sohretKaybi}`);
+        const sizma = u.sizma ? ` 🕵️ ${en ? `${u.isim ?? ''} leaked inside information (+30% damage, guards bypassed).` : `${u.isim ?? ''} içeriden bilgi sızdırdı (hasar %30 arttı, güvenlik devre dışı).`}` : '';
+        return `⚔️ ${kim} ${d(SALDIRI_SONUCLARI[tur] ?? SALDIRI_SONUCLARI.nakit)}${kayiplar.length ? ` — ${kayiplar.join(', ')}` : ''}.${sizma}`;
+      }
       case 'vergi_indirimi_bitti':
         return en ? '🧾 Your tax reduction has ended.' : '🧾 Vergi indirimin sona erdi.';
       case 'imtiyaz_bitti':
@@ -256,7 +273,7 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
         {h.sicak && <div className="isletme-hat-dunya">{t('sicak')}</div>}
         <div className="isletme-hat-satir">
           <span>
-            {t('stok')}: <strong>{h.stok}</strong>
+            {uretimModu ? t('hammaddeStogu') : t('stok')}: <strong>{h.stok}</strong>
           </span>
           <span>
             {t('talep')}: <strong>~{h.tahminiTalep}</strong>
@@ -302,8 +319,8 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
           ⚖️ {t('pay')}: <strong>{formatPara(durum.pazarPayi)}%</strong>
         </span>
         <span>
-          👥 {t('musteri')}: <strong>{durum.musteri}</strong>
-          {dokum && dokum.musteriDegisim !== 0 ? <em> ({dokum.musteriDegisim > 0 ? '+' : ''}{dokum.musteriDegisim})</em> : null}
+          👥 {t('musteri')}: <strong>{formatMusteri(dil, durum.musteri)}</strong>
+          {dokum && dokum.musteriDegisim !== 0 ? <em> ({formatMusteri(dil, dokum.musteriDegisim, true)})</em> : null}
         </span>
         <span>
           🌐 {t('pazar')}: <strong>{durum.pazarMusteri} {t('kisi')}</strong>
@@ -460,6 +477,11 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
           <div>
             {t('depoMasrafi')}: <strong>−{formatPara(dokum.depoMasrafi)}</strong>
           </div>
+          {dokum.loncaAidati > 0 && (
+            <div>
+              {t('loncaAidati')} (%3): <strong>−{formatPara(dokum.loncaAidati)}</strong>
+            </div>
+          )}
           {dokum.vergi > 0 && (
             <div>
               {t('vergiKalemi')} (%{Math.round(dokum.vergiOrani * 1000) / 10}): <strong>−{formatPara(dokum.vergi)}</strong>
@@ -474,7 +496,7 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
             {t('net')}: <strong>{dokum.net >= 0 ? '+' : ''}{formatPara(dokum.net)} {pb}</strong>
           </div>
           <div>
-            {t('pay')}: <strong>%{dokum.pazarPayi}</strong> · {t('musteriDegisim')}: <strong>{dokum.musteriDegisim >= 0 ? '+' : ''}{dokum.musteriDegisim}</strong>
+            {t('pay')}: <strong>%{dokum.pazarPayi}</strong> · {t('musteriDegisim')}: <strong>{formatMusteri(dil, dokum.musteriDegisim, true)}</strong>
           </div>
           {dokum.uyarilar.map((u, i) => (
             <div key={i} className="isletme-uyari">

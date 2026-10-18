@@ -84,7 +84,6 @@ import {
   KUCUK_TABAN_PAY,
   sohretOtoriteIliskisi,
   rastgelePazarMusteri,
-  rastgeleRakipEsikleri,
   PAZAR_KARIYER_PUANI_YILLIK,
   RAKIP_KIRMA_DOGRUDAN,
 } from "../data/pazar";
@@ -813,7 +812,7 @@ export function createCharacter(
     rakipler: [],
     rakip_yeni_yil: null,
     pazar_musteri: rastgelePazarMusteri(),
-    rakip_esikler: rastgeleRakipEsikleri(),
+    rakip_sonraki_saldiri_yili: null,
     rakip_saldiri_son_yil: null,
     vergi_carpan: 1,
     vergi_carpan_bitis_yili: null,
@@ -1229,7 +1228,8 @@ export function eskiKayitGocu(state: CharacterState): void {
   if (state.rakip_yeni_yil === undefined) state.rakip_yeni_yil = null;
   // İşletme v2 (§45): toplam pazar, rakip saldırı eşikleri, vergi çarpanı.
   if (typeof state.pazar_musteri !== "number") state.pazar_musteri = 400;
-  if (!Array.isArray(state.rakip_esikler) || state.rakip_esikler.length !== 3) state.rakip_esikler = rastgeleRakipEsikleri();
+  if (state.rakip_sonraki_saldiri_yili === undefined) state.rakip_sonraki_saldiri_yili = null;
+  delete (state as unknown as Record<string, unknown>).rakip_esikler;
   if (state.rakip_saldiri_son_yil === undefined) state.rakip_saldiri_son_yil = null;
   if (typeof state.vergi_carpan !== "number") state.vergi_carpan = 1;
   if (state.vergi_carpan_bitis_yili === undefined) state.vergi_carpan_bitis_yili = null;

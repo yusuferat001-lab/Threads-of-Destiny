@@ -1,5 +1,6 @@
 import type { PazarDurumu } from '../types';
 import { useDil } from '../DilContext';
+import { formatMusteri } from '../format';
 
 /**
  * "📰 Piyasada Neler Oluyor": rakibin hamleleri, küçük esnaf olayları ve müşteri dağılımının
@@ -8,11 +9,11 @@ import { useDil } from '../DilContext';
 export function PiyasaHaberleri({ pazar, sayilarGoster, adet = 4 }: { pazar: PazarDurumu; sayilarGoster: boolean; adet?: number }) {
   const { dil } = useDil();
   const en = dil === 'en';
-  const isaret = (v: number) => (v > 0 ? `+${v}` : v < 0 ? `−${Math.abs(v)}` : '±0');
+  const isaret = (v: number) => formatMusteri(dil, v, true);
   const dg = pazar.dagilim;
   const satir = (ad: string, n: number, degisim: number) => (
     <span>
-      {ad} <strong>{n}</strong> <small className={degisim > 0 ? 'piyasa-art' : degisim < 0 ? 'piyasa-eksi' : ''}>({isaret(degisim)})</small>
+      {ad} <strong>{formatMusteri(dil, n)}</strong> <small className={degisim > 0 ? 'piyasa-art' : degisim < 0 ? 'piyasa-eksi' : ''}>({isaret(degisim)})</small>
     </span>
   );
   if (pazar.haberler.length === 0 && !sayilarGoster) return null;

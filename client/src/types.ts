@@ -582,10 +582,16 @@ export interface IsletmeUyari {
     | 'imtiyaz_bitti';
   hat?: string;
   isim?: string;
-  sonuc?: 'agir' | 'rahat' | 'kismi' | 'engellendi' | 'sans' | 'musteri_calma' | 'iftira' | 'sabotaj' | 'nakit';
+  sonuc?: 'agir' | 'rahat' | 'kismi' | 'engellendi' | 'sans' | 'musteri_calma' | 'iftira' | 'sabotaj' | 'baskin' | 'nakit';
   urunYuzde?: number;
   nakitYuzde?: number;
   tutar?: number;
+  /** Rakip saldırısı: saldıran, güvenlik engelledi mi, içerden sızma, kaybedilen müşteri (ondalık), şöhret kaybı. */
+  rakip?: string;
+  engellendi?: boolean;
+  sizma?: boolean;
+  musteriKaybi?: number;
+  sohretKaybi?: number;
 }
 
 export interface IsletmeDokum {
@@ -593,6 +599,7 @@ export interface IsletmeDokum {
   satis: number;
   alim: number;
   depoMasrafi: number;
+  loncaAidati: number;
   brutKar: number;
   borcOdeme: number;
   net: number;

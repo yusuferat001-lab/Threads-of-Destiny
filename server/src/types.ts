@@ -368,9 +368,9 @@ export interface CharacterState {
   /** Yıl sonu müşteri dağılımı fotoğrafı (bir sonraki yılda değişimi göstermek için) ve son yıl değişimi. */
   musteri_ref: { oyuncu: number; rakip: number; kucuk: number } | null;
   son_musteri_degisim: { oyuncu: number; rakip: number; kucuk: number } | null;
-  /** Rakip saldırı eşikleri (oyuncunun pazar payı, 0-1): oyun başında [%20–22, %34–35, %45–46] arasından atanır. */
-  rakip_esikler: [number, number, number];
-  /** Son rakip saldırısının yılı (kademeye göre 2–4 yıl cooldown). */
+  /** Bir sonraki rakip saldırısının yılı (her saldırıdan sonra bugünden 4–9 yıl sonrasına konur; zar yok). null = henüz planlanmadı. */
+  rakip_sonraki_saldiri_yili: number | null;
+  /** Son rakip saldırısının yılı (bilgi). */
   rakip_saldiri_son_yil: number | null;
   /** Vergi çarpanı (1 = normal; <1 indirim, >1 zam) ve bitiş yılı (§45 vergi). */
   vergi_carpan: number;
@@ -753,7 +753,13 @@ export interface IsletmeUyari {
   hat?: string;
   isim?: string;
   /** hırsızlık sonucu / rakip saldırı türü (istemci metni bunlardan kurar). */
-  sonuc?: "agir" | "rahat" | "kismi" | "engellendi" | "sans" | "musteri_calma" | "iftira" | "sabotaj" | "nakit";
+  sonuc?: "agir" | "rahat" | "kismi" | "engellendi" | "sans" | "musteri_calma" | "iftira" | "sabotaj" | "baskin" | "nakit";
+  /** Rakip saldırısı: saldıran rakibin adı, güvenlik engelledi mi, içerden sızma var mı, kaybedilen müşteri (ondalık), şöhret ve stok kaybı. */
+  rakip?: string;
+  engellendi?: boolean;
+  sizma?: boolean;
+  musteriKaybi?: number;
+  sohretKaybi?: number;
   /** Çalınan/azalan ürün oranı (%) ve nakit hasarı (%, geçen yıl brüt kârına göre); tutar olarak da `tutar`. */
   urunYuzde?: number;
   nakitYuzde?: number;
@@ -765,6 +771,8 @@ export interface IsletmeDokum {
   satis: number;
   alim: number;
   depoMasrafi: number;
+  /** Lonca aidatı: satışın %3'ü (v8.2). */
+  loncaAidati: number;
   /** satış − alım − depo masrafı (çalışan maaşı ayrıca giderlerde). */
   brutKar: number;
   borcOdeme: number;

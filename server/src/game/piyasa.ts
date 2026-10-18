@@ -310,7 +310,7 @@ function rakipHamlesiUygula(state: CharacterState, r: Rakip): void {
     grup: "rakip",
     kod: hamle.id,
     metin: { tr: tr.tr, en: en.en },
-    musteri: Math.round(fark),
+    musteri: Math.round(fark * 10) / 10,
   });
 }
 
@@ -329,7 +329,7 @@ function kucukOlayiUygula(state: CharacterState): void {
     grup: "kucuk",
     kod: o.id,
     metin: o.metin,
-    musteri: Math.round(fark),
+    musteri: Math.round(fark * 10) / 10,
   });
 }
 
@@ -364,7 +364,7 @@ export function rakipYenildiKontrol(state: CharacterState, haberVer = true): boo
           tr: `${r.ad} pazardan çekildi; müşterilerinin bir kısmı sana geçti.`,
           en: `${r.ad} withdrew from the market; some of its customers came to you.`,
         },
-        musteri: Math.round(kalan * 0.5),
+        musteri: Math.round(kalan * 0.5 * 10) / 10,
       });
     }
   }
@@ -393,9 +393,8 @@ export function piyasaYillikUygula(state: CharacterState, yasArtisi: number): st
       musteriKaydir(state, "oyuncu", -state.meslek_musteri * MUSTERI_YOKLUK_KAYBI);
     } else if (!isletmeMeslegiMi(state.meslek)) {
       // İşletmeli mesleklerde oyuncu büyümesi isletmeYilIsle'de (fiyat/tanıtım/çalışan/şöhret) hesaplanır.
-      const pay = state.meslek_musteri / Math.max(1, state.pazar_musteri);
       const yuzde = sohretPayBuyumesi(state.un);
-      musteriKaydir(state, "oyuncu", sabitMusteriArtisi(pay) + MUSTERI_YILLIK_RUTBE * (state.rutbe_seviye ?? 1) * 0.5 + state.meslek_musteri * yuzde);
+      musteriKaydir(state, "oyuncu", sabitMusteriArtisi(state.yas) + MUSTERI_YILLIK_RUTBE * (state.rutbe_seviye ?? 1) * 0.5 + state.meslek_musteri * yuzde);
     }
 
     for (const r of aktifRakipler(state)) {

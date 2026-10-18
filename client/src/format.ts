@@ -23,3 +23,11 @@ export function formatYuzde(dil: 'tr' | 'en', deger: number, isaretli = false): 
 export function formatYuzdeAralik(dil: 'tr' | 'en', min: number, max: number): string {
   return dil === 'en' ? `${min}-${max}%` : `%${min}-${max}`;
 }
+
+/** Müşteri sayısı: en fazla 1 ondalık (TR virgül, EN nokta); tam sayıysa ondalıksız. `isaretli` ise +/− öneki. */
+export function formatMusteri(dil: 'tr' | 'en', n: number, isaretli = false): string {
+  const v = Math.round(Math.abs(n) * 10) / 10;
+  const metin = Number.isInteger(v) ? String(v) : dil === 'tr' ? v.toFixed(1).replace('.', ',') : v.toFixed(1);
+  if (!isaretli) return n < 0 ? `−${metin}` : metin;
+  return n > 0 ? `+${metin}` : n < 0 ? `−${metin}` : '±0';
+}

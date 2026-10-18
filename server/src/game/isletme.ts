@@ -27,10 +27,18 @@ import {
   ALIM_ORANI,
   sabitMusteriArtisi,
   aktifRakip,
+  aktifRakipler,
   musteriSayisi,
   pazarPayiHesapla,
   rakipSaldiriKademesi,
-  RAKIP_SALDIRI_KADEMELERI,
+  rastgeleSaldiriYili,
+  saldiriTuruSec,
+  FIZIKSEL_SALDIRILAR,
+  SALDIRI_HASARLARI,
+  RAKIP_BUYUK_SALDIRI_ORANI,
+  RAKIP_IKINCI_HASAR_CARPANI,
+  SIZMA_HASAR_CARPANI,
+  SIZMA_SADAKAT_KAYBI,
   sohretPayBuyumesi,
 } from "../data/pazar";
 import { pazarBuyumeVarsayilan } from "../data/dunyaDonemleri";
@@ -57,14 +65,12 @@ export interface IsletmeBaglami {
 // ── Sayılar (simülasyonla ayarlanır; bkz. scripts/simulateIsletme.ts) ───────
 /** Depo kademeleri (0..3): kapasite, çürüme oranı, sabit yıllık bakım (enflasyonsuz). Depo yılda BİR kez dolar. */
 export const DEPO_KAPASITE = [100, 220, 420, 750];
-export const CURUME_ORANLARI = [0.1, 0.07, 0.045, 0.02];
-export const DEPO_BAKIM = [3, 7, 13, 22];
+export const CURUME_ORANLARI = [0.15, 0.12, 0.1, 0.08];
+export const DEPO_BAKIM = [4, 10, 18, 30];
 export const BASLANGIC_STOK = 20;
 export const BORC_ODEME_ORANI = 0.6;
 /** Rütbe S1..S5 → en fazla toplam çalışan. */
 export const CALISAN_LIMITLERI = [2, 4, 6, 8, 10];
-/** Müşteri çekimi dahil talep ölçeği: başlangıç gelirini bugünkü banda yakın tutar (sim ile ayarlanır). */
-export const TALEP_KATSAYI_OLCEGI = 1.1;
 /** Müşterinin bütçesi hatlar arasında paylaşılır: n açık hatta her birinin talebi 1/(1+0.6(n-1)) ile çarpılır. */
 export const HAT_PAYLASIM = 0.6;
 /** Karşılanamayan talep bu orandan büyükse müşteri kaybı: min(%12, (oran−eşik)×%30) kendi müşterisinin yüzdesi (sıcak ürünse ×2). */
@@ -78,7 +84,7 @@ const DUKKAN_TALEP_KADEME = 0.1;
 const KERVAN_INDIRIM_KADEME = 0.08;
 const GUMRUK_INDIRIMI = 0.15;
 const MUAFIYET_INDIRIMI = 0.1;
-const MALIYET_INDIRIM_TAVANI = 0.6;
+const MALIYET_INDIRIM_TAVANI = 0.3;
 const TEZGAH_URETIM_KADEME = 0.6;
 const TANITIM_PAY_KADEME = 0.01;
 /** Perakende fiyatı toptan fiyat şokunu yalnız bu oranda izler: kıtlıkta mal pahalanır ama müşterinin alım gücü yetmez. */
@@ -90,9 +96,12 @@ export const URETIM_TABAN = 80;
 export const URETIM_ANA_TALEP_PAYI = 0.55;
 export const URETIM_METRIK_CARPANI = 0.2;
 
+// Lonca aidatı: satışın %3'ü (v8.2), brüt kârdan vergiden önce düşer.
+export const LONCA_AIDATI_ORANI = 0.03;
+
 // Vergi
-export const VERGI_TABAN_ORANI = 0.12;
-export const VERGI_SAVAS_EKI = 0.06;
+export const VERGI_TABAN_ORANI = 0.25;
+export const VERGI_SAVAS_EKI = 0.1;
 export const VERGI_KOTU_ILISKI_EKI = 0.03;
 export const VERGI_KOTU_ILISKI_ESIGI = 25;
 
@@ -236,9 +245,12 @@ export function korumaHesapla(state: CharacterState): { calisan: number; yatirim
   return { calisan, yatirim, otorite, toplam: Math.min(1, calisan + yatirim + otorite) };
 }
 
+/** Çalışan maaşı çarpanı (v8.2: +%15). */
+export const MAAS_CARPANI = 1.15;
+
 /** Giriş seviyesine (Y, S) göre enflasyonsuz yıllık maaş tabanı. */
 export function maasTabani(yetenek: number, sadakat: number): number {
-  return r2(1.2 + 0.02 * yetenek + 0.01 * sadakat + 0.0004 * yetenek * sadakat);
+  return r2(MAAS_CARPANI * (1.2 + 0.02 * yetenek + 0.01 * sadakat + 0.0004 * yetenek * sadakat));
 }
 
 /** Her çalışanın güncel maaşını `maas_taban × güncel enflasyon` ile yeniler (yeni adaylar ve mevcutlar). */
@@ -295,8 +307,8 @@ export function sicakUrunHatId(state: CharacterState, profil: IsletmeProfili): s
   return havuz[karisim(tohum, state.meslek.length) % havuz.length].id;
 }
 
-export const SICAK_URUN_TALEP = 1.6;
-export const SICAK_URUN_FIYAT = 1.15;
+export const SICAK_URUN_TALEP = 1.3;
+export const SICAK_URUN_FIYAT = 1.08;
 
 export interface KesimEtkisi {
   talep: number;
@@ -393,7 +405,6 @@ export function hatHesapla(state: CharacterState, hat: IsletmeHat, tanim: HatTan
   const talep =
     musteriSayisi(state) *
     ALIM_ORANI *
-    TALEP_KATSAYI_OLCEGI *
     tanim.talepTabani *
     kes.talep *
     politikaTalep *
@@ -717,30 +728,17 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
         : p.hs.talep * oran;
     return Math.max(0, Math.ceil(hedefStok - p.hat.stok));
   });
+  // Zanaatkâr'da depo HAMMADDE tutar (1 hammadde = 1 ürün); üretim tavanı alımı değil SATIŞI sınırlar (adım 5).
+  // Depoya sığmayan hammadde hiç alınmaz (parası ödenmez); alınıp satılamayan hammadde yıl sonu çürür.
   const tavan = uretimTavani(state);
-  let olcek = 1;
-  if (tavan !== null) {
-    const toplamIstenen = istenenler.reduce((t, x) => t + x, 0);
-    if (toplamIstenen > tavan) {
-      olcek = tavan / toplamIstenen;
-      uyarilar.push({ kod: "uretim_tavani" });
-    }
-  }
-  const tasmaYok = !(tavan !== null && (hedefAdi === "fazla" || hedefAdi === "dolu"));
-  const uretimPlani = istenenler.map((x) => Math.floor(x * olcek));
   const bosYer = Math.max(0, kapasite - toplamStok(is));
-  const toplamUretim = uretimPlani.reduce((t, x) => t + x, 0);
-  const sigdirma = toplamUretim > bosYer ? bosYer / toplamUretim : 1;
+  const toplamIstenen = istenenler.reduce((t, x) => t + x, 0);
+  const sigdirma = toplamIstenen > bosYer ? bosYer / toplamIstenen : 1;
+  const uretimPlani = istenenler.map((x) => Math.floor(x * sigdirma));
   let alim = 0;
-  let uretilen = 0;
   planlar.forEach((p, i) => {
-    const planli = uretimPlani[i];
-    // Fazla/Dolu hedefte (Zanaatkâr) sığmayan üretim boşa gider ama hammadde parası ödenir; diğer durumlarda sığan kadar alınır/üretilir.
-    const odenen = tasmaYok ? Math.floor(planli * sigdirma) : planli;
-    const eklenen = Math.floor(planli * sigdirma);
-    p.hat.stok += eklenen;
-    alim += odenen * p.hs.birimMaliyet;
-    uretilen += odenen;
+    p.hat.stok += uretimPlani[i];
+    alim += uretimPlani[i] * p.hs.birimMaliyet;
   });
 
   // 2. Çalışan sadakati: düşük sadakatli çalışan sızdırır, çalar, ayrılır.
@@ -796,34 +794,66 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
     }
   }
 
-  // 4. Rakip saldırısı: oyuncunun payı eşikleri geçtikçe sertleşir; saldırıdan sonra cooldown.
+  // 4. Rakip saldırısı (v8.2): zar yok, takvim — bir sonraki saldırı yılı 4–9 yıl sonraya konur; kademe sabit pay aralığından.
   const pay = pazarPayiHesapla(state);
-  const kademe = rakipSaldiriKademesi(pay, state.rakip_esikler ?? [0.21, 0.345, 0.455]);
+  const kademe = rakipSaldiriKademesi(pay);
+  const aktifler = aktifRakipler(state);
   if (kademe >= 2 && rakip) {
     rakip.husumet = clamp(rakip.husumet + 3, 0, 100);
   }
-  if (kademe >= 1 && rakip) {
-    const [sans, cooldown] = RAKIP_SALDIRI_KADEMELERI[kademe - 1];
-    const sonYil = state.rakip_saldiri_son_yil;
-    const hazir = sonYil == null || state.yil - sonYil >= cooldown;
-    const korunma = (state.yonetim_iliski ?? 0) >= OTORITE_KORUMA_ESIGI ? 0.85 : 1;
-    if (hazir && Math.random() < sans * korunma) {
+  const otoriteKoruma = (state.yonetim_iliski ?? 0) >= OTORITE_KORUMA_ESIGI;
+  if (state.rakip_sonraki_saldiri_yili == null) state.rakip_sonraki_saldiri_yili = rastgeleSaldiriYili(state.yil, otoriteKoruma);
+  if (state.yil >= state.rakip_sonraki_saldiri_yili) {
+    state.rakip_sonraki_saldiri_yili = rastgeleSaldiriYili(state.yil, otoriteKoruma);
+    if (aktifler.length > 0) {
+      const buyuk = rakip!;
+      const kucukler = aktifler.filter((r) => r !== buyuk);
+      const saldiran = kucukler.length > 0 && Math.random() >= RAKIP_BUYUK_SALDIRI_ORANI ? kucukler[Math.floor(Math.random() * kucukler.length)] : buyuk;
       state.rakip_saldiri_son_yil = state.yil;
-      const nakitYuzde = kademe === 1 ? 3 + Math.random() * 2 : kademe === 2 ? 8 : 14;
-      const tutar = r2(brutTaban * (nakitYuzde / 100));
-      nakitHasar += tutar;
-      const sohretKaybi = kademe === 1 ? 2 + Math.random() : kademe === 2 ? 5 : 8;
-      state.un = Math.max(0, state.un - sohretKaybi);
-      const musteriKaybi = kademe === 1 ? 0.01 : kademe === 2 ? 0.02 + Math.random() * 0.01 : 0.04 + Math.random() * 0.01;
-      // Hedefli: kaybedilen müşteri tamamen rakibe geçer.
-      if (rakip) musteriAktar(state, "oyuncu", rakipGrubu(rakip.ad), state.meslek_musteri * musteriKaybi);
-      let tur: IsletmeUyari["sonuc"] = "nakit";
-      if (kademe === 2) tur = Math.random() < 0.5 ? "iftira" : "musteri_calma";
-      if (kademe === 3) {
-        tur = Math.random() < 0.5 ? "sabotaj" : "musteri_calma";
-        if (tur === "sabotaj") stokAzalt(is, 0.1 + Math.random() * 0.05);
+      const tur = saldiriTuruSec(kademe);
+      // İçerden sızma: sadakati düşük bir çalışan rakibe satılır → hasar artar, güvenlik devre dışı.
+      const sizan = state.ekip
+        .filter((u) => u.rol_turu && u.sadakat < SADAKAT_RISK_ESIGI)
+        .sort((x, y) => x.sadakat - y.sadakat)[0];
+      const carpan = (saldiran === buyuk ? 1 : RAKIP_IKINCI_HASAR_CARPANI) * (sizan ? SIZMA_HASAR_CARPANI : 1);
+      const uyari: IsletmeUyari = { kod: "rakip_saldiri", sonuc: tur, rakip: saldiran.ad, ...(sizan ? { sizma: true, isim: sizan.isim } : {}) };
+      const engel = clamp(korumaHesapla(state).toplam, 0, 0.9);
+      if (FIZIKSEL_SALDIRILAR.includes(tur) && !sizan && Math.random() < engel) {
+        uyari.engellendi = true;
+      } else {
+        const i = kademe - 1;
+        if (sizan) sizan.sadakat = Math.max(0, sizan.sadakat - SIZMA_SADAKAT_KAYBI);
+        let nakitYuzde = 0;
+        let musteriYuzde = 0;
+        if (tur === "baskin") nakitYuzde = SALDIRI_HASARLARI.baskin.nakit[i];
+        if (tur === "sabotaj") {
+          const [mn, mx] = SALDIRI_HASARLARI.sabotaj.stok;
+          const urunYuzde = (mn + Math.random() * (mx - mn)) * carpan;
+          stokAzalt(is, Math.min(1, urunYuzde / 100));
+          uyari.urunYuzde = Math.round(urunYuzde);
+          nakitYuzde = SALDIRI_HASARLARI.sabotaj.nakit[i];
+        }
+        if (tur === "iftira") {
+          const sohret = SALDIRI_HASARLARI.iftira.sohret[i] * carpan;
+          state.un = Math.max(0, state.un - sohret);
+          uyari.sohretKaybi = Math.round(sohret * 10) / 10;
+          musteriYuzde = SALDIRI_HASARLARI.iftira.musteri[i];
+        }
+        if (tur === "musteri_calma") musteriYuzde = SALDIRI_HASARLARI.musteri_calma.musteri[i];
+        if (nakitYuzde > 0) {
+          const yuzde = nakitYuzde * carpan;
+          const tutar = r2(brutTaban * (yuzde / 100));
+          nakitHasar += tutar;
+          uyari.nakitYuzde = Math.round(yuzde);
+          uyari.tutar = tutar;
+        }
+        if (musteriYuzde > 0) {
+          // Hedefli: kaybedilen müşteri (ondalıklı) tamamen saldıran rakibe geçer.
+          const kayip = musteriAktar(state, "oyuncu", rakipGrubu(saldiran.ad), state.meslek_musteri * (musteriYuzde * carpan / 100));
+          uyari.musteriKaybi = Math.round(kayip * 10) / 10;
+        }
       }
-      uyarilar.push({ kod: "rakip_saldiri", sonuc: tur, nakitYuzde: Math.round(nakitYuzde), tutar });
+      uyarilar.push(uyari);
     }
   }
 
@@ -833,9 +863,19 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
   let toplamKarsilanamayan = 0;
   let sicakKarsilanamadi = false;
   const satirlar: IsletmeDokum["hatlar"] = [];
+  // Üretim modunda (Zanaatkâr) yıllık üretim tavanı toplam satışı sınırlar; tavan aşılırsa tüm hatlar orantılı kısılır.
+  const satisHakki = planlar.map((p) => Math.min(p.hat.stok, Math.round(p.talep)));
+  const toplamHak = satisHakki.reduce((t, x) => t + x, 0);
+  let tavanOlcek = 1;
+  if (tavan !== null && toplamHak > tavan) {
+    tavanOlcek = tavan / toplamHak;
+    uyarilar.push({ kod: "uretim_tavani" });
+  }
+  let satilanToplam = 0;
   planlar.forEach((p, i) => {
     const talepAdet = Math.round(p.talep);
-    const satilan = Math.min(p.hat.stok, talepAdet);
+    const satilan = Math.floor(satisHakki[i] * tavanOlcek);
+    satilanToplam += satilan;
     p.hat.stok -= satilan;
     satis += satilan * p.hs.birimFiyat;
     toplamTalep += talepAdet;
@@ -879,11 +919,12 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
     const mevcutPay = pazarPayiHesapla(state);
     // Pay büyüdükçe pozitif büyüme doyar (pay %60'a yaklaşınca sıfır); eksi etkiler tam işler.
     const yuzde = ham > 0 ? ham * Math.max(0, 1 - mevcutPay / PAY_DOYMA_ESIGI) : ham;
-    musteriKaydir(state, "oyuncu", sabitMusteriArtisi(mevcutPay) + state.meslek_musteri * yuzde);
+    musteriKaydir(state, "oyuncu", sabitMusteriArtisi(state.yas) + state.meslek_musteri * yuzde);
   }
 
   // 8. Brüt kâr, vergi, borç.
-  const brutKar = r2(satis - alim - depoMasrafi);
+  const loncaAidati = r2(satis * LONCA_AIDATI_ORANI);
+  const brutKar = r2(satis - alim - depoMasrafi - loncaAidati);
   const vOran = vergiOrani(state);
   const vergi = brutKar > 0 ? r2(brutKar * vOran) : 0;
   let borcOdeme = 0;
@@ -903,17 +944,18 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
     satis: r2(satis),
     alim: r2(alim),
     depoMasrafi: r2(depoMasrafi),
+    loncaAidati,
     brutKar,
     borcOdeme,
     net,
     vergi,
     vergiOrani: vOran,
     pazarPayi: Math.round(pazarPayiHesapla(state) * 100),
-    musteri: Math.round(yeniMusteri),
-    musteriDegisim: Math.round(yeniMusteri - eskiMusteri),
+    musteri: Math.round(yeniMusteri * 10) / 10,
+    musteriDegisim: Math.round((yeniMusteri - eskiMusteri) * 10) / 10,
     pazarMusteri: state.pazar_musteri,
     hatlar: satirlar,
-    ...(tavan !== null ? { uretim: { tavan, kullanilan: uretilen } } : {}),
+    ...(tavan !== null ? { uretim: { tavan, kullanilan: satilanToplam } } : {}),
     uyarilar,
   };
   is.son_dokum = dokum;

@@ -3792,7 +3792,7 @@ export async function rakiplerGetir(id: string): Promise<RakipKarti[]> {
       ad: r.ad,
       meslek: r.meslek,
       pay: Math.round(pay * 100),
-      musteri: Math.round(pay * Math.max(0, state.pazar_musteri ?? 0)),
+      musteri: Math.round(pay * Math.max(0, state.pazar_musteri ?? 0) * 10) / 10,
       husumet: Math.round(r.husumet),
       yenildi: r.yenildi,
     };
@@ -3844,12 +3844,12 @@ function dagilimOzeti(state: CharacterState): PazarDurumu["dagilim"] {
   const d = musteriDagilimi(state);
   const f = state.son_musteri_degisim;
   return {
-    oyuncu: Math.round(d.oyuncu),
-    rakip: Math.round(d.rakip),
-    kucuk: Math.round(d.kucuk),
-    oyuncuDegisim: Math.round(f?.oyuncu ?? 0),
-    rakipDegisim: Math.round(f?.rakip ?? 0),
-    kucukDegisim: Math.round(f?.kucuk ?? 0),
+    oyuncu: Math.round(d.oyuncu * 10) / 10,
+    rakip: Math.round(d.rakip * 10) / 10,
+    kucuk: Math.round(d.kucuk * 10) / 10,
+    oyuncuDegisim: Math.round((f?.oyuncu ?? 0) * 10) / 10,
+    rakipDegisim: Math.round((f?.rakip ?? 0) * 10) / 10,
+    kucukDegisim: Math.round((f?.kucuk ?? 0) * 10) / 10,
   };
 }
 
@@ -3869,7 +3869,7 @@ export function pazarDurumuHesapla(state: CharacterState): PazarDurumu {
     .filter((r) => !r.yenildi)
     .map((r) => {
       const rp = rakipPayiHesapla(state, r.musteri);
-      return { ad: r.ad, pay: Math.round(rp * 100), musteri: Math.round(rp * pazarM), husumet: Math.round(r.husumet) };
+      return { ad: r.ad, pay: Math.round(rp * 100), musteri: Math.round(rp * pazarM * 10) / 10, husumet: Math.round(r.husumet) };
     });
   const sonraki = state.rutbe_seviye + 1;
   const gerekli = rutbePazarPayiEsigi(state.meslek, sonraki);
@@ -3878,7 +3878,7 @@ export function pazarDurumuHesapla(state: CharacterState): PazarDurumu {
     pazarAdi: K(dil, adlar.pazar),
     simge: adlar.simge,
     pazarPayi: Math.round(pay * 100),
-    musteri: isletmeMeslegiMi(state.meslek) ? Math.round(musteriSayisi(state)) : 0,
+    musteri: isletmeMeslegiMi(state.meslek) ? Math.round(musteriSayisi(state) * 10) / 10 : 0,
     pazarMusteri: isletmeMeslegiMi(state.meslek) ? pazarM : 0,
     rakipler,
     digerPay: Math.max(0, 100 - Math.round(pay * 100) - rakipler.reduce((t, r) => t + r.pay, 0)),
@@ -4525,7 +4525,7 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
     aktif: true,
     meslek: state.meslek,
     pazarPayi: Math.round(pazarPayiHesapla(state) * 1000) / 10,
-    musteri: Math.round(musteriSayisi(state)),
+    musteri: Math.round(musteriSayisi(state) * 10) / 10,
     pazarMusteri: Math.round(state.pazar_musteri ?? 0),
     slot: { kullanilan: is.hatlar.filter((h) => h.acik).length, toplam: slot },
     depo: {

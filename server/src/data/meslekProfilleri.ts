@@ -22,7 +22,7 @@ export interface HatTanimi {
   simge: string;
   ad: DilliMetin;
   kesim: UrunKesimi;
-  /** Müşteri başına yıllık talep birimi (isletme.ts TALEP_KATSAYI_OLCEGI ile ölçeklenir). */
+  /** Müşteri başına yıllık talep birimi (pazar.ts ALIM_ORANI ile ölçeklenir). */
   talepTabani: number;
   /** Birim alış/üretim maliyeti ve satış fiyatı (enflasyonsuz taban). */
   birimMaliyet: number;
@@ -241,12 +241,12 @@ export const ROL_ACIKLAMALARI: Record<"ticaret" | "uretim", Record<IsletmeRolTur
 
 const TUCCAR_ORTA_CAG: IsletmeProfili = {
   hatlar: [
-    { id: "tahil", simge: "🌾", ad: { tr: "Tahıl", en: "Grain" }, kesim: "temel", talepTabani: 1.6, birimMaliyet: 0.7, birimFiyat: 1.15, minRutbe: 1 },
-    { id: "kumas", simge: "🧵", ad: { tr: "Kumaş", en: "Cloth" }, kesim: "orta", talepTabani: 0.9, birimMaliyet: 1.0, birimFiyat: 1.9, minRutbe: 2 },
-    { id: "sarap", simge: "🍷", ad: { tr: "Şarap", en: "Wine" }, kesim: "orta", talepTabani: 0.8, birimMaliyet: 1.1, birimFiyat: 2.1, minRutbe: 2 },
-    { id: "silah", simge: "⚔️", ad: { tr: "Silah", en: "Arms" }, kesim: "orta", talepTabani: 0.7, birimMaliyet: 1.2, birimFiyat: 2.3, minRutbe: 2, savasTalep: 1.5 },
-    { id: "baharat", simge: "🌶️", ad: { tr: "Baharat", en: "Spices" }, kesim: "luks", talepTabani: 0.3, birimMaliyet: 2.2, birimFiyat: 5.0, minRutbe: 3 },
-    { id: "kurk", simge: "🦊", ad: { tr: "Kürk ve İpek", en: "Fur & Silk" }, kesim: "luks", talepTabani: 0.35, birimMaliyet: 2.4, birimFiyat: 5.2, minRutbe: 3 },
+    { id: "tahil", simge: "🌾", ad: { tr: "Tahıl", en: "Grain" }, kesim: "temel", talepTabani: 1.49, birimMaliyet: 0.67, birimFiyat: 1.15, minRutbe: 1 },
+    { id: "kumas", simge: "🧵", ad: { tr: "Kumaş", en: "Cloth" }, kesim: "orta", talepTabani: 0.84, birimMaliyet: 0.96, birimFiyat: 1.9, minRutbe: 2 },
+    { id: "sarap", simge: "🍷", ad: { tr: "Şarap", en: "Wine" }, kesim: "orta", talepTabani: 0.74, birimMaliyet: 1.06, birimFiyat: 2.1, minRutbe: 2 },
+    { id: "silah", simge: "⚔️", ad: { tr: "Silah", en: "Arms" }, kesim: "orta", talepTabani: 0.65, birimMaliyet: 1.15, birimFiyat: 2.3, minRutbe: 2, savasTalep: 1.5 },
+    { id: "baharat", simge: "🌶️", ad: { tr: "Baharat", en: "Spices" }, kesim: "luks", talepTabani: 0.28, birimMaliyet: 2.11, birimFiyat: 5.0, minRutbe: 3 },
+    { id: "kurk", simge: "🦊", ad: { tr: "Kürk ve İpek", en: "Fur & Silk" }, kesim: "luks", talepTabani: 0.33, birimMaliyet: 2.3, birimFiyat: 5.2, minRutbe: 3 },
   ],
   yatirimlar: TUCCAR_YATIRIMLAR,
   roller: TUCCAR_ROLLER,
@@ -255,12 +255,12 @@ const TUCCAR_ORTA_CAG: IsletmeProfili = {
 
 const TUCCAR_SANAYI: IsletmeProfili = {
   hatlar: [
-    { id: "tahil", simge: "🌾", ad: { tr: "Tahıl", en: "Grain" }, kesim: "temel", talepTabani: 1.6, birimMaliyet: 0.7, birimFiyat: 1.15, minRutbe: 1 },
-    { id: "komur", simge: "⛏️", ad: { tr: "Kömür", en: "Coal" }, kesim: "temel", talepTabani: 1.5, birimMaliyet: 0.75, birimFiyat: 1.2, minRutbe: 1 },
-    { id: "pamuklu", simge: "🧶", ad: { tr: "Pamuklu", en: "Cotton Goods" }, kesim: "orta", talepTabani: 0.9, birimMaliyet: 1.0, birimFiyat: 1.9, minRutbe: 2 },
-    { id: "cay_kahve", simge: "☕", ad: { tr: "Çay ve Kahve", en: "Tea & Coffee" }, kesim: "orta", talepTabani: 0.8, birimMaliyet: 1.1, birimFiyat: 2.1, minRutbe: 2 },
-    { id: "makine", simge: "⚙️", ad: { tr: "Makine Parçası", en: "Machine Parts" }, kesim: "orta", talepTabani: 0.7, birimMaliyet: 1.3, birimFiyat: 2.5, minRutbe: 2, savasTalep: 1.3 },
-    { id: "ipek", simge: "🪭", ad: { tr: "İpek", en: "Silk" }, kesim: "luks", talepTabani: 0.35, birimMaliyet: 2.4, birimFiyat: 5.2, minRutbe: 3 },
+    { id: "tahil", simge: "🌾", ad: { tr: "Tahıl", en: "Grain" }, kesim: "temel", talepTabani: 1.496, birimMaliyet: 0.67, birimFiyat: 1.15, minRutbe: 1 },
+    { id: "komur", simge: "⛏️", ad: { tr: "Kömür", en: "Coal" }, kesim: "temel", talepTabani: 1.397, birimMaliyet: 0.72, birimFiyat: 1.2, minRutbe: 1 },
+    { id: "pamuklu", simge: "🧶", ad: { tr: "Pamuklu", en: "Cotton Goods" }, kesim: "orta", talepTabani: 0.77, birimMaliyet: 0.96, birimFiyat: 1.9, minRutbe: 2 },
+    { id: "cay_kahve", simge: "☕", ad: { tr: "Çay ve Kahve", en: "Tea & Coffee" }, kesim: "orta", talepTabani: 0.68, birimMaliyet: 1.06, birimFiyat: 2.1, minRutbe: 2 },
+    { id: "makine", simge: "⚙️", ad: { tr: "Makine Parçası", en: "Machine Parts" }, kesim: "orta", talepTabani: 0.59, birimMaliyet: 1.25, birimFiyat: 2.5, minRutbe: 2, savasTalep: 1.3 },
+    { id: "ipek", simge: "🪭", ad: { tr: "İpek", en: "Silk" }, kesim: "luks", talepTabani: 0.3, birimMaliyet: 2.3, birimFiyat: 5.2, minRutbe: 3 },
   ],
   yatirimlar: TUCCAR_YATIRIMLAR,
   roller: TUCCAR_ROLLER,
@@ -270,11 +270,11 @@ const TUCCAR_SANAYI: IsletmeProfili = {
 const ZANAATKAR_ORTA_CAG: IsletmeProfili = {
   mod: "uretim",
   hatlar: [
-    { id: "kap", simge: "🏺", ad: { tr: "Çömlek ve Kap", en: "Pottery & Vessels" }, kesim: "temel", talepTabani: 1.41, birimMaliyet: 0.6, birimFiyat: 1.15, minRutbe: 1 },
-    { id: "demir", simge: "⚒️", ad: { tr: "Demir Alet", en: "Iron Tools" }, kesim: "temel", talepTabani: 1.14, birimMaliyet: 0.7, birimFiyat: 1.2, minRutbe: 1 },
-    { id: "mobilya", simge: "🪑", ad: { tr: "Mobilya", en: "Furniture" }, kesim: "orta", talepTabani: 0.75, birimMaliyet: 0.9, birimFiyat: 1.9, minRutbe: 2 },
-    { id: "silah", simge: "⚔️", ad: { tr: "Kılıç ve Zırh", en: "Swords & Armour" }, kesim: "orta", talepTabani: 0.62, birimMaliyet: 1.0, birimFiyat: 2.3, minRutbe: 2, savasTalep: 1.5 },
-    { id: "kuyum", simge: "💍", ad: { tr: "Kuyum ve İşleme", en: "Jewellery & Fine Work" }, kesim: "luks", talepTabani: 0.28, birimMaliyet: 1.9, birimFiyat: 5.0, minRutbe: 3 },
+    { id: "kap", simge: "🏺", ad: { tr: "Çömlek ve Kap", en: "Pottery & Vessels" }, kesim: "temel", talepTabani: 1.584, birimMaliyet: 0.58, birimFiyat: 1.15, minRutbe: 1 },
+    { id: "demir", simge: "⚒️", ad: { tr: "Demir Alet", en: "Iron Tools" }, kesim: "temel", talepTabani: 1.278, birimMaliyet: 0.67, birimFiyat: 1.2, minRutbe: 1 },
+    { id: "mobilya", simge: "🪑", ad: { tr: "Mobilya", en: "Furniture" }, kesim: "orta", talepTabani: 1.037, birimMaliyet: 0.86, birimFiyat: 1.9, minRutbe: 2 },
+    { id: "silah", simge: "⚔️", ad: { tr: "Kılıç ve Zırh", en: "Swords & Armour" }, kesim: "orta", talepTabani: 0.858, birimMaliyet: 0.96, birimFiyat: 2.3, minRutbe: 2, savasTalep: 1.5 },
+    { id: "kuyum", simge: "💍", ad: { tr: "Kuyum ve İşleme", en: "Jewellery & Fine Work" }, kesim: "luks", talepTabani: 0.383, birimMaliyet: 1.82, birimFiyat: 5.0, minRutbe: 3 },
   ],
   yatirimlar: ZANAATKAR_YATIRIMLAR,
   roller: ZANAATKAR_ROLLER,
@@ -284,11 +284,11 @@ const ZANAATKAR_ORTA_CAG: IsletmeProfili = {
 const ZANAATKAR_SANAYI: IsletmeProfili = {
   mod: "uretim",
   hatlar: [
-    { id: "ayakkabi", simge: "👞", ad: { tr: "Ayakkabı ve Deri", en: "Shoes & Leather" }, kesim: "temel", talepTabani: 2.25, birimMaliyet: 0.65, birimFiyat: 1.15, minRutbe: 1 },
-    { id: "ev_esyasi", simge: "🍳", ad: { tr: "Ev Eşyası", en: "Household Goods" }, kesim: "temel", talepTabani: 2.1, birimMaliyet: 0.7, birimFiyat: 1.2, minRutbe: 1 },
-    { id: "mobilya", simge: "🛋️", ad: { tr: "Mobilya ve Cam", en: "Furniture & Glass" }, kesim: "orta", talepTabani: 1.27, birimMaliyet: 0.95, birimFiyat: 1.9, minRutbe: 2 },
-    { id: "makine", simge: "⚙️", ad: { tr: "Makine Parçası", en: "Machine Parts" }, kesim: "orta", talepTabani: 1.05, birimMaliyet: 1.1, birimFiyat: 2.5, minRutbe: 2, savasTalep: 1.3 },
-    { id: "saat", simge: "⌚", ad: { tr: "Saat ve Mücevher", en: "Watches & Jewellery" }, kesim: "luks", talepTabani: 0.49, birimMaliyet: 2.0, birimFiyat: 5.2, minRutbe: 3 },
+    { id: "ayakkabi", simge: "👞", ad: { tr: "Ayakkabı ve Deri", en: "Shoes & Leather" }, kesim: "temel", talepTabani: 1.602, birimMaliyet: 0.62, birimFiyat: 1.15, minRutbe: 1 },
+    { id: "ev_esyasi", simge: "🍳", ad: { tr: "Ev Eşyası", en: "Household Goods" }, kesim: "temel", talepTabani: 1.494, birimMaliyet: 0.67, birimFiyat: 1.2, minRutbe: 1 },
+    { id: "mobilya", simge: "🛋️", ad: { tr: "Mobilya ve Cam", en: "Furniture & Glass" }, kesim: "orta", talepTabani: 1.129, birimMaliyet: 0.91, birimFiyat: 1.9, minRutbe: 2 },
+    { id: "makine", simge: "⚙️", ad: { tr: "Makine Parçası", en: "Machine Parts" }, kesim: "orta", talepTabani: 0.941, birimMaliyet: 1.06, birimFiyat: 2.5, minRutbe: 2, savasTalep: 1.3 },
+    { id: "saat", simge: "⌚", ad: { tr: "Saat ve Mücevher", en: "Watches & Jewellery" }, kesim: "luks", talepTabani: 0.436, birimMaliyet: 1.92, birimFiyat: 5.2, minRutbe: 3 },
   ],
   yatirimlar: ZANAATKAR_YATIRIMLAR,
   roller: ZANAATKAR_ROLLER,
