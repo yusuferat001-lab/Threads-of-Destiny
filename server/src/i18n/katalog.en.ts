@@ -417,8 +417,8 @@ export const KATALOG_EN: Record<string, string> = {
   "Kedi": "Cat",
   "Köpek": "Dog",
   "Şahin": "Falcon",
-  "Papağan": "Parrot",
-  "Kurt": "Wolf",
+  "Karga": "Crow",
+  "At": "Horse",
 
   // ---------------------------------------------------------------------------
   // Hizipler
@@ -715,4 +715,6 @@ export const KATALOG_EN: Record<string, string> = {
   "Muhasebeci": "Bookkeeper",
   "Satın Alma Memuru": "Purchasing Agent",
   "Satış Memuru": "Sales Clerk",
+  // Ekip rolü: oyuncunun yanında çalışan çocuğu
+  "Varis": "Heir",
 };

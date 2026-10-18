@@ -425,7 +425,9 @@ export const ANLATIM_EN: Record<string, string> = {
   "{0} ({1}) ekibine katıldı": "{0} ({1}) joined the crew",
   "{0} ekipten ayrıldı": "{0} left the crew",
   "{0} adlı bir {1} edindi": "Got a {1} named {0}",
-  "{0} adlı {1}sini kaybetti": "Lost their {1} named {0}",
+  "{0} adlı evcil hayvanını kaybetti": "Lost their pet {0}",
+  "Evcil hayvanı {0} ömrünü doldurup öldü": "Their pet {0} died of old age",
+  "💔 {0}, ömrünü doldurup sessizce göçtü; yerini kimse dolduramaz.": "💔 {0} passed away peacefully at the end of a long life; no one can fill the gap.",
   "{0} el konuldu": "{0} was confiscated",
   "\"{0}\" ünvanını kazandı": "Earned the title \"{0}\"",
   "Zorunlu bağış: -{0} {birim}": "Forced donation: -{0} {birim}",
@@ -846,7 +848,6 @@ export const ANLATIM_EN: Record<string, string> = {
   "Bu kadar hattı aynı anda işletemezsin; daha fazla çalışan gerek.": "You can't run this many lines at once; you need more staff.",
   "Böyle bir yatırım yok.": "There is no such investment.",
   "Bu yatırım zaten en üst kademede.": "This investment is already at its top tier.",
-  "Böyle bir aday yok.": "There is no such candidate.",
   "Daha fazla çalışan tutamazsın.": "You can't employ any more staff.",
   "Geçersiz yatırım.": "Invalid investment.",
   "Geçersiz aday.": "Invalid candidate.",
@@ -861,4 +862,223 @@ export const ANLATIM_EN: Record<string, string> = {
   "şehir meclisinde destek sözü": "a pledge of support in the city council",
   "rakip tüccarlarla iş yapmama taahhüdü": "a promise not to do business with rival merchants",
   "şehre sadakat yemini": "an oath of loyalty to the city",
+  // Gösterge detay penceresi (gostergeDetay.ts)
+  "{0}: {1}/yıl":
+    "{0}: {1}/yr",
+  "Yaşlanma: {0}/yıl":
+    "Aging: {0}/yr",
+  "Ev ve yemek düzenin: {0}/yıl":
+    "Your home and diet: {0}/yr",
+  "Sağlık {0} üstündeyken bu iyileşme çok yavaşlar.":
+    "Above {0} health this recovery slows to a crawl.",
+  "Borç stresi: {0}/yıl":
+    "Debt stress: {0}/yr",
+  "Mutluluğun {0} altında: sağlığın da aşınıyor, {1}/yıl.":
+    "Happiness below {0}: your health is eroding too, {1}/yr.",
+  "Vebaya yakalandın: ölüm riskin %{0}.":
+    "You caught the plague: your death risk is {0}%.",
+  "Sağlığın {0} altında: riskli seçimlerde ölüm şansın büyür.":
+    "Health below {0}: risky choices carry a bigger chance of death.",
+  "Gelir & Gider ekranından daha iyi bir ev ve yemek düzenine geç.":
+    "Switch to a better home and diet on the Income & Expenses screen.",
+  "Mağazadan şifa eşyası al ve envanterden kullan.":
+    "Buy healing goods in the shop and use them from your inventory.",
+  "Dinlenme, şifa ve iyileşme sunan olay seçeneklerini seç.":
+    "Pick event options that offer rest, healing and recovery.",
+  "Borçtan kurtul; borç her yıl sağlığını yer.":
+    "Get out of debt; debt eats your health every year.",
+  "Riskli, kavgalı ve tehlikeli olay seçenekleri sağlığını düşürür.":
+    "Risky, violent and dangerous event options cost you health.",
+  "Kıtlık, salgın ve savaş dönemlerinde sağlık erir.":
+    "Health melts away during famine, plague and war.",
+  "Yalnızlık: {0}/yıl":
+    "Loneliness: {0}/yr",
+  "Eşinle sürekli kavga: moralin aşınıyor.":
+    "Constant fights with your spouse: your morale wears down.",
+  "Mutlu evlilik: {0}/yıl":
+    "Happy marriage: {0}/yr",
+  "Çocuklarınla arası bozuk: moralin düşüyor.":
+    "You are on bad terms with your children: your morale is dropping.",
+  "Çocuklarınla aran iyi: morale iyi geliyor.":
+    "You get along with your children: it lifts your spirits.",
+  "Sağlığın {0} altında: moralin aşınıyor, {1}/yıl.":
+    "Health below {0}: your morale is wearing down, {1}/yr.",
+  "Evlen; eşinle ve çocuklarınla Aile ekranından ilgilen.":
+    "Marry, and look after your spouse and children on the Family screen.",
+  "Sosyalleş: meyhane, pazar ve mekân olayları moral verir.":
+    "Socialize: tavern, market and venue events lift your mood.",
+  "Daha rahat bir ev ve keyifli bir sofra seç.":
+    "Choose a more comfortable home and a pleasant table.",
+  "Borçlarını öde; borç her yıl moralini düşürür.":
+    "Pay off your debts; debt drains your morale every year.",
+  "Yalnızlık, kötü evlilik, borç ve kayıplar moralini düşürür.":
+    "Loneliness, a bad marriage, debt and losses bring your morale down.",
+  "Ahlaksız ya da sert seçimler moral götürür.":
+    "Immoral or harsh choices cost morale.",
+  "Tüccarlık: kazançlı yıllar ahlakı aşındırır, zor yıllar güçlendirir.":
+    "Merchant life: profitable years erode morality, hard years strengthen it.",
+  "Karaborsa deposu: {0}/yıl":
+    "Black-market depot: {0}/yr",
+  "Ayyaşlık damgası ahlakını bir kez düşürdü.":
+    "The drunkard stigma cut your morality once.",
+  "Geçmişteki suçların ahlakında iz bıraktı.":
+    "Past crimes have left a mark on your morality.",
+  "Ahlak ağırlıkla seçimlerinle değişir.":
+    "Morality mostly changes through your choices.",
+  "Yardım, sadaka ve dürüstlük içeren olay seçeneklerini seç.":
+    "Pick event options involving help, charity and honesty.",
+  "Sosyalleş ekranından sadaka ver.":
+    "Give alms from the Socialize screen.",
+  "Din Adamı rütbesi ahlak ister; yüksek ahlak maaşı da artırır.":
+    "Clergy ranks need morality; high morality also raises your pay.",
+  "Para karşılığı ahlaki taviz ahlakını düşürür, aranmanı artırır.":
+    "Trading morals for money lowers your morality and raises your wanted level.",
+  "Karanlık işler, soygun ve şiddet ahlakı sert düşürür.":
+    "Dark deeds, robbery and violence cut morality sharply.",
+  "Din adamı saygınlığı: {0}/yıl":
+    "Clergy standing: {0}/yr",
+  "Tefeci taksidi aksattın: adın çıkıyor.":
+    "You missed a loan-shark payment: word is getting around.",
+  "Şöhret ağırlıkla seçimlerinle değişir.":
+    "Fame mostly changes through your choices.",
+  "Cesur, gösterişli ve topluma açık olay seçeneklerini seç.":
+    "Pick bold, showy and public-facing event options.",
+  "Mağazadan lüks eşya al ve daha görkemli bir eve taşın.":
+    "Buy luxury goods in the shop and move into a grander home.",
+  "Rütbeni yükselt; mesleğinde başarılı olmak adını duyurur.":
+    "Raise your rank; succeeding in your trade makes a name for you.",
+  "Rezillik, hapis ve ödenmeyen borçlar şöhretini düşürür.":
+    "Scandal, prison and unpaid debts lower your fame.",
+  "Bakımsız ev ve yetersiz yemek adını aşındırır.":
+    "A shabby home and poor food erode your name.",
+  "Zamanla çok yavaş soğur: {0}/yıl":
+    "It cools off very slowly with time: {0}/yr",
+  "Temizsin; kimse seni aramıyor.":
+    "You are clean; nobody is looking for you.",
+  "Yönetimdeki himayen: {0}/yıl":
+    "Your patron in the government: {0}/yr",
+  "Kumar oynamak her seferinde biraz aranmanı artırır.":
+    "Gambling raises your wanted level a little each time.",
+  "Para kazandıran ahlaksız seçimler ve karanlık işler aranmanı artırır.":
+    "Immoral choices that earn money and dark deeds raise your wanted level.",
+  "Hapistesin; cezanı tamamlamak aranmayı kendiliğinden sıfırlamaz.":
+    "You are in prison; serving your sentence does not reset your wanted level by itself.",
+  "Kaçaksın: aranman çok yüksek.":
+    "You are a fugitive: your wanted level is very high.",
+  "Azılı suçlu: tutuklanırsan 9-12 yıl ceza.":
+    "Hardened criminal: if arrested you face 9-12 years.",
+  "Baskın bandı: tutuklanırsan 7-9 yıl ceza.":
+    "Raid band: if arrested you face 7-9 years.",
+  "Yakalanma bandı: tutuklanırsan 4-7 yıl ceza.":
+    "Capture band: if arrested you face 4-7 years.",
+  "Rutin bant: tutuklanırsan 2-4 yıl ceza.":
+    "Routine band: if arrested you face 2-4 years.",
+  "Zar masası, Üç Kağıtçı ve karaborsa deposu da yavaş yavaş artırır.":
+    "The dice table, Three-Card Monte and a black-market depot raise it gradually too.",
+  "Aranma olaylarındaki kefaret ya da rüşvet seçeneklerini seç.":
+    "Pick the bail or bribe options in wanted-level events.",
+  "Büyük baskında 'teslim ol' ya da 'kaç' sonuçları aranmanı düşürür.":
+    "In a major raid, the 'surrender' or 'flee' outcomes lower your wanted level.",
+  "Yönetim ekranında ilişkin 80'in üstündeyse 'sicil temizliği' iste.":
+    "If your relationship is above 80 on the Authorities screen, ask for a 'record cleanup'.",
+  "Yönetimle ilişkin 70'in üstündeyse aranman yılda biraz düşer.":
+    "If your relationship with the authorities is above 70, your wanted level drops a little each year.",
+  "Yıllık maaşın: {0} {1}":
+    "Your yearly salary: {0} {1}",
+  "Yıllık giderin: {0} {1}":
+    "Your yearly expenses: {0} {1}",
+  "Borçtasın: faiz her yıl borcunu büyütür.":
+    "You are in debt: interest grows it every year.",
+  "Tefeci kredin: kalan borç {0} {1}":
+    "Your loan-shark loan: {0} {1} still owed",
+  "Mülklerin her yıl kira ve getiri sağlar.":
+    "Your properties yield rent and income each year.",
+  "Rütbeni yükselt: her rütbe maaşına prim ekler.":
+    "Raise your rank: each rank adds a premium to your salary.",
+  "Ahlak, şöhret ve mutluluğunu yüksek tut: itibar maaşını artırır.":
+    "Keep morality, fame and happiness high: reputation raises your salary.",
+  "Yatırım ekranından mülk al.":
+    "Buy property from the Investments screen.",
+  "Kazançlı olay seçeneklerini seç; mesleğindeki başarılar daha çok kazandırır.":
+    "Pick profitable event options; successes in your own trade pay more.",
+  "Daha pahalı bir ev ve sofra giderini artırır.":
+    "A pricier home and table raise your expenses.",
+  "Kumar, rüşvet, bağış ve talepleri kabul etmek paranı eritir.":
+    "Gambling, bribes, donations and giving in to demands drain your money.",
+  "İsyan":
+    "Revolt",
+  "Altın çağ":
+    "Golden age",
+  "Veba salgını":
+    "Plague outbreak",
+  "{0} ile savaş":
+    "War with {0}",
+  "{0} sürüyor":
+    "{0} (ongoing)",
+  "{0} sona erdi":
+    "{0} ended",
+  "{0} tahta çıktı":
+    "{0} took the throne",
+  "Geçersiz gösterge.":
+    "Invalid indicator.",
+  "Şu an seni etkileyen belirgin bir yıllık etken yok; bu değer ağırlıkla seçimlerinle değişir.":
+    "Nothing in particular is affecting you year to year right now; this value mostly changes through your choices.",
+  "Bu işi yakın zamanda çevirdin; ortalık sakinleşsin (~{0} yıl).":
+    "You pulled this job recently; let things cool down (~{0} yrs).",
+  "Bu yıl zar masasında yeterince oynadın; yıl dönünce yine gelirsin.":
+    "You've played enough at the dice table this year; come back when the year turns.",
+  "Lüks eşyalar koleksiyon parçasıdır; hediye edilemez.":
+    "Luxury goods are collector's pieces; they can't be given as gifts.",
+  "Şu an veritabanına ulaşılamıyor; biraz sonra tekrar dene.":
+    "The database is unreachable right now; try again in a moment.",
+  "İstek gövdesi geçerli bir JSON değil.": "The request body is not valid JSON.",
+  "İstek gövdesi çok büyük.": "The request body is too large.",
+  "Beklenmeyen bir sunucu hatası oluştu.": "An unexpected server error occurred.",
+  "Çok fazla yeni oyun açtın; biraz bekleyip tekrar dene.": "You've started too many new games; wait a bit and try again.",
+  "Böyle bir etkileşim yok.": "There is no such interaction.",
+  "Bu, {0} için özellikle anlamlıydı.": "That meant a great deal to {0}.",
+  "💔 {0} seni terk etti. Aranızdaki bağ artık kopmuştu.": "💔 {0} has left you. The bond between you had already snapped.",
+  "{0} hayata gözlerini yumdu": "{0} passed away",
+  "💔 {0} hayata gözlerini yumdu.": "💔 {0} has passed away.",
+  "💔 {0} doğum sırasında hayatını kaybetti.": "💔 {0} died in childbirth.",
+  "💔 {0} küçük yaşta hayatını kaybetti.": "💔 {0} died young.",
+  "Mantık evliliği için henüz çok gençsin.": "You are still too young for an arranged marriage.",
+  "Yas tutuyorsun; şimdi yeni bir evlilik düşünemezsin.": "You are in mourning; you cannot think of a new marriage right now.",
+  "Bekleyen bir düğün var; önce onu tamamla.": "There is a wedding pending; finish it first.",
+  "Mantık evliliği teklifleri şimdilik kapalı; biraz zaman geçmeli.": "Marriage proposals are closed for now; some time must pass.",
+  "Geçersiz hediye.": "Invalid gift.",
+  "Böyle bir aday yok.": "There is no such candidate.",
+  "Bu teklif hediyesini karşılayacak paran yok.": "You cannot afford this proposal gift.",
+  "Bekleyen bir düğün yok.": "There is no pending wedding.",
+  "Geçersiz düğün bütçesi.": "Invalid wedding budget.",
+  "Bu düğün bütçesini karşılayacak paran yok.": "You cannot afford this wedding budget.",
+  "{0} teklifini kabul etti! Şimdi düğün bütçeni seç.": "{0} accepted your proposal! Now choose your wedding budget.",
+  "Bir süre yeni teklif yapamazsın.": "You cannot make a new proposal for a while.",
+  "💍 {0} ile evlendin!": "💍 You married {0}!",
+  "Çeyiz olarak {0} {1} getirdi.": "They brought {0} {1} as a dowry.",
+  "Eşinin desteği": "Your spouse's support",
+  "Yas: {0}/yıl": "Mourning: {0}/yr",
+  "{0}'in gönlünü aldın; yüzü yeniden güldü.": "You won {0} back; the smile returned.",
+  "{0} ile yollarınızı ayırdınız.": "You and {0} went your separate ways.",
+  "💢 {0} evlilik teklifi beklemekten yoruldu ve sana darıldı. Gönlünü almazsan bu ilişki bitebilir.": "💢 {0} grew tired of waiting for a proposal and is cross with you. If you do not win them back, this may end.",
+  "💔 {0} seni terk etti. Bu ilişkiyi ayakta tutamadın.": "💔 {0} has left you. You could not keep this relationship alive.",
+  "{0} ile sevgili oldu": "Became sweethearts with {0}",
+  "{0} ile gizli bir yakınlaşma yaşadı": "Shared a secret closeness with {0}",
+  "Şu an biriyle tanışacak durumda değilsin.": "You are in no position to meet someone right now.",
+  "Süren bir tanışma yok.": "There is no meeting in progress.",
+  "Zaten yanına gittin.": "You have already approached.",
+  "Önce yanına gitmelisin.": "You must approach first.",
+  "Geçersiz seçenek.": "Invalid choice.",
+  "Bir sevgilin yok.": "You have no sweetheart.",
+  "Bir sevgilin var; önce o ilişkiyi sonuçlandır.": "You have a sweetheart; settle that relationship first.",
+  "👨‍👦 {0} {1} yaşına geldi; yanında çalışabilir. İlişkiler ekranından davet edebilirsin.": "👨‍👦 {0} has turned {1}; they can work beside you. You can invite them from the Relationships screen.",
+  "👋 {0} artık ekibinde değil.": "👋 {0} is no longer on your crew.",
+  "Bu çocuk için bekleyen bir iş daveti yok.": "There is no pending job invitation for this child.",
+  "Bu çocuğun reddine verecek bir tepkin yok.": "There is no refusal from this child to respond to.",
+  "Geçersiz tepki.": "Invalid reaction.",
+  "{0} teklifini sevinçle kabul etti; artık yanında çalışıyor.": "{0} gladly accepted; they now work beside you.",
+  "{0} teklifini reddetti: 'Bu iş bana göre değil.' Ona nasıl karşılık vereceksin?": "{0} declined: 'This work is not for me.' How will you respond?",
+  "{0}'e öfkelendin; aranıza soğukluk girdi.": "You flared up at {0}; a coldness came between you.",
+  "{0}'in kararına sakince saygı gösterdin; aranız yumuşadı.": "You calmly respected {0}'s decision; things softened between you.",
+  "Çocuğunu kovmak aranızı ağır yaraladı.": "Dismissing your own child wounded your bond deeply.",
 };

@@ -37,37 +37,37 @@ export const OLAY_SAGLIK_ESIK_25: OlayTanimi[] = [
     gorsel: "🤒",
     baslik: "Yüksek Ateş",
     metin:
-      "Günlerdir süren bitkinlik nihayet seni yatağa düşürdü — vücudun yanıyor, terliyorsun, kalkacak halin yok. Bu hiç iyiye işaret değil.",
+      "Günlerdir süren bitkinlik seni yatağa düşürdü; vücudun yanıyor, kalkacak halin yok.",
     secenekler: [
       {
-        metin: "Hekim çağırt, ilaç aldır.",
+        metin: "Hekim çağır, ilaç al.",
         baseBasariSansi: 85,
         maliyet: 7,
-        kilitAciklamasi: "Hekimin ücretini karşılayacak paran yok.",
+        kilitAciklamasi: "Hekime verecek paran yok.",
         basariliSonuc: {
           para: -7,
           saglik: 11,
           mutluluk: 2,
-          mesaj: "Hekimin verdiği karışım ateşini düşürdü. Birkaç gün içinde ayaktasın.",
+          mesaj: "Hekimin karışımı ateşi düşürdü; birkaç günde ayaktasın.",
         },
         basarisizSonuc: {
           para: -7,
           saglik: 5,
-          mesaj: "Tedavi beklediğin kadar hızlı işlemedi ama en kötüsünü atlattın.",
+          mesaj: "Tedavi yavaş işledi ama en kötüsünü atlattın.",
         },
       },
       {
-        metin: "Soğuk kompresle kendin idare et.",
+        metin: "Soğuk kompresle idare et.",
         baseBasariSansi: 55,
         basariliSonuc: {
           saglik: 13,
           mutluluk: -1,
-          mesaj: "Uzun, terli bir gecenin ardından ateşin düştü. Ucuz atlattın.",
+          mesaj: "Terli bir gecenin ardından ateş düştü. Ucuz atlattın.",
         },
         basarisizSonuc: {
           saglik: -6,
           mutluluk: -4,
-          mesaj: "Ateş düşmedi, sayıklamaya başladın. Durumun daha da kötüleşti.",
+          mesaj: "Ateş düşmedi, sayıklamaya başladın; durumun kötüleşti.",
         },
       },
     ],
@@ -79,7 +79,7 @@ export const OLAY_SAGLIK_ESIK_25: OlayTanimi[] = [
     gorsel: "🤢",
     baslik: "Bozulmuş Yemek",
     metin:
-      "Yediğin bir şey içine oturdu — mide bulantısı, kramplar, art arda kusmalar. Bünyen zaten zayıfken bu seni iyice yıprattı.",
+      "Yediğin şey içine oturdu: bulantı, kramp, kusma. Zayıf bünyeni iyice yıprattı.",
     secenekler: [
       {
         metin: "Hekimden ilaç al.",
@@ -89,25 +89,25 @@ export const OLAY_SAGLIK_ESIK_25: OlayTanimi[] = [
         basariliSonuc: {
           para: -5,
           saglik: 10,
-          mesaj: "İlaç midendeki yangını dindirdi; kısa sürede toparlandın.",
+          mesaj: "İlaç midendeki yangını dindirdi; çabuk toparlandın.",
         },
         basarisizSonuc: {
           para: -5,
           saglik: 4,
-          mesaj: "İlaç tam işe yaramadı ama en azından kötüye gitmedi.",
+          mesaj: "İlaç tam işlemedi ama kötüye gitmedin.",
         },
       },
       {
-        metin: "Kendi kendine geçmesini bekle.",
+        metin: "Kendiliğinden geçsin, bekle.",
         baseBasariSansi: 50,
         basariliSonuc: {
           saglik: 12,
-          mesaj: "Birkaç günlük açlık ve bol su işe yaradı; bünyen kendini temizledi.",
+          mesaj: "Birkaç gün açlık ve bol su işe yaradı.",
         },
         basarisizSonuc: {
           saglik: -7,
           mutluluk: -3,
-          mesaj: "Zehirlenme ilerledi, günlerce yataktan kalkamadın.",
+          mesaj: "Zehirlenme ilerledi; günlerce yataktan kalkamadın.",
         },
       },
     ],
@@ -119,37 +119,37 @@ export const OLAY_SAGLIK_ESIK_25: OlayTanimi[] = [
     gorsel: "🩹",
     baslik: "İltihaplanan Yara",
     metin:
-      "Geçen aylardan kalma bir yara iyileşmek yerine kızarıp şişti; dokunduğunda zonkluyor. Böyle bırakırsan işler kötüye gidebilir.",
+      "Eski bir yara iyileşmek yerine kızarıp şişti, zonkluyor. Bırakırsan kötüleşir.",
     secenekler: [
       {
         metin: "Yarayı hekime temizlet.",
         baseBasariSansi: 86,
         maliyet: 9,
-        kilitAciklamasi: "Hekimin ücretini karşılayamıyorsun.",
+        kilitAciklamasi: "Hekime verecek paran yok.",
         basariliSonuc: {
           para: -9,
           saglik: 12,
           mutluluk: 3,
-          mesaj: "Hekim yarayı temizleyip sardı; iltihap birkaç gün içinde çekildi.",
+          mesaj: "Hekim yarayı temizleyip sardı; iltihap birkaç günde çekildi.",
         },
         basarisizSonuc: {
           para: -9,
           saglik: 5,
-          mesaj: "Tedavi tam istediğin gibi sonuç vermedi ama daha kötüye gitmedi.",
+          mesaj: "Tedavi istediğin gibi olmadı ama kötüleşmedi.",
         },
       },
       {
-        metin: "Kendin sıkıp temizlemeyi dene.",
+        metin: "Kendin sıkıp temizle.",
         baseBasariSansi: 42,
         basariliSonuc: {
           saglik: 14,
           mutluluk: -2,
-          mesaj: "Acı vericiydi ama işe yaradı — iltihap boşaldı, yara kapanmaya başladı.",
+          mesaj: "Acıtıcıydı ama işe yaradı; iltihap boşaldı.",
         },
         basarisizSonuc: {
           saglik: -9,
           mutluluk: -5,
-          mesaj: "Yarayı daha da bozdun; iltihap yayıldı, bacağın/kolun günlerce zonkladı.",
+          mesaj: "Yarayı bozdun; iltihap yayıldı, günlerce zonkladı.",
         },
       },
     ],
@@ -161,37 +161,37 @@ export const OLAY_SAGLIK_ESIK_25: OlayTanimi[] = [
     gorsel: "😷",
     baslik: "Göğsüne Oturan Öksürük",
     metin:
-      "Öksürük göğsüne yerleşti, nefes alırken ıslık sesi çıkarıyorsun. Sabahları kalkmak eskisinden çok daha zor.",
+      "Öksürük göğsüne yerleşti, nefes alırken ıslık çıkıyor. Sabahları kalkmak çok zor.",
     secenekler: [
       {
         metin: "İlaç al, birkaç gün dinlen.",
         baseBasariSansi: 84,
         maliyet: 8,
-        kilitAciklamasi: "İlacın parasını karşılayamıyorsun.",
+        kilitAciklamasi: "İlaca verecek paran yok.",
         basariliSonuc: {
           para: -8,
           saglik: 11,
           mutluluk: 2,
-          mesaj: "İlaç ve dinlenme göğsündeki ıslığı kesti; nefesin açıldı.",
+          mesaj: "İlaç ve dinlenme ıslığı kesti; nefesin açıldı.",
         },
         basarisizSonuc: {
           para: -8,
           saglik: 5,
-          mesaj: "Öksürük tam geçmedi ama nefes alman kolaylaştı.",
+          mesaj: "Öksürük geçmedi ama nefes almak kolaylaştı.",
         },
       },
       {
-        metin: "Sıcak buhar/tütsü kürüne gir.",
+        metin: "Sıcak buhar kürüne gir.",
         baseBasariSansi: 50,
         basariliSonuc: {
           saglik: 13,
           mutluluk: -1,
-          mesaj: "Buhar göğsündekini gevşetti; saatler içinde rahat nefes almaya başladın.",
+          mesaj: "Buhar göğsünü gevşetti; saatler içinde rahatladın.",
         },
         basarisizSonuc: {
           saglik: -8,
           mutluluk: -4,
-          mesaj: "Buhar işe yaramadı, öksürük daha da derinleşti.",
+          mesaj: "Buhar işe yaramadı, öksürük derinleşti.",
         },
       },
     ],
@@ -203,37 +203,37 @@ export const OLAY_SAGLIK_ESIK_25: OlayTanimi[] = [
     gorsel: "😵",
     baslik: "Bedenin Çöktü",
     metin:
-      "Aylardır dinlenmeden çalıştın; bugün ayakta duramayacak kadar bitkin düştün. Bedeni bu kadar zorlamanın bir bedeli var.",
+      "Aylardır dinlenmeden çalıştın; bugün ayakta duramayacak kadar bitkinsin.",
     secenekler: [
       {
-        metin: "Her şeyi bırak, birkaç gün dinlen.",
+        metin: "Her şeyi bırak, dinlen.",
         baseBasariSansi: 80,
         basariliSonuc: {
           saglik: 9,
           mutluluk: 3,
           un: -2,
-          mesaj: "İşleri askıya alıp dinlendin. Birkaç kişi yokluğunu konuştu ama ayaktasın.",
+          mesaj: "İşleri askıya alıp dinlendin. Yokluğun konuşuldu ama ayaktasın.",
         },
         basarisizSonuc: {
           saglik: 3,
-          mesaj: "Dinlenmeye çalıştın ama zihnin bir türlü rahatlamadı.",
+          mesaj: "Dinlenmeye çalıştın ama zihnin rahatlamadı.",
         },
       },
       {
-        metin: "Uyarıcı bir kaynatmayla ayakta durmaya çalış.",
+        metin: "Uyarıcı kaynatmayla ayakta kal.",
         baseBasariSansi: 45,
         maliyet: 4,
-        kilitAciklamasi: "Kaynatmanın malzemesine bile paran yok.",
+        kilitAciklamasi: "Kaynatmaya verecek paran yok.",
         basariliSonuc: {
           para: -4,
           saglik: 13,
-          mesaj: "Beklenmedik biçimde işe yaradı; bedenin toparlandı, hiç iş kaybetmedin.",
+          mesaj: "Beklenmedik biçimde işe yaradı; toparlandın, iş kaybetmedin.",
         },
         basarisizSonuc: {
           para: -4,
           saglik: -8,
           mutluluk: -3,
-          mesaj: "Kaynatma bedenini daha da zorladı; çöküşün derinleşti.",
+          mesaj: "Kaynatma seni daha da zorladı; çöküş derinleşti.",
         },
       },
     ],
@@ -245,36 +245,36 @@ export const OLAY_SAGLIK_ESIK_25: OlayTanimi[] = [
     gorsel: "🩸",
     baslik: "Yaralanma ve Kan Kaybı",
     metin:
-      "Küçük bir kaza sandığın yara, dursun dursun kanamayı bırakmıyor. Baş dönmesi başladı bile.",
+      "Küçük sandığın yara kanamayı bırakmıyor. Baş dönmesi başladı bile.",
     secenekler: [
       {
         metin: "Hekime koş, dikiş attır.",
         baseBasariSansi: 87,
         maliyet: 10,
-        kilitAciklamasi: "Dikiş ücretini karşılayamıyorsun.",
+        kilitAciklamasi: "Dikişe verecek paran yok.",
         basariliSonuc: {
           para: -10,
           saglik: 12,
-          mesaj: "Hekim yarayı dikti, kanama durdu. Birkaç gün içinde kendine geldin.",
+          mesaj: "Hekim yarayı dikti, kanama durdu; birkaç günde kendine geldin.",
         },
         basarisizSonuc: {
           para: -10,
           saglik: 6,
-          mesaj: "Dikiş tuttu ama kan kaybının etkisi bir süre daha sürdü.",
+          mesaj: "Dikiş tuttu ama kan kaybının etkisi sürdü.",
         },
       },
       {
-        metin: "Kendin sıkıca sar, bekle.",
+        metin: "Sıkıca sar, bekle.",
         baseBasariSansi: 46,
         basariliSonuc: {
           saglik: 13,
           mutluluk: -1,
-          mesaj: "Sargı tuttu, kanama kendiliğinden durdu. Şanslıydın.",
+          mesaj: "Sargı tuttu, kanama durdu. Şanslıydın.",
         },
         basarisizSonuc: {
           saglik: -10,
           mutluluk: -5,
-          mesaj: "Sargı gevşedi, kan kaybın arttı. Günlerce halsiz kaldın.",
+          mesaj: "Sargı gevşedi, kan kaybı arttı; günlerce halsiz kaldın.",
         },
       },
     ],
@@ -286,38 +286,38 @@ export const OLAY_SAGLIK_ESIK_25: OlayTanimi[] = [
     gorsel: "🦴",
     baslik: "Düşme ve Kırık",
     metin:
-      "Kötü bir düşüş sonrası göğsünde/kolunda korkunç bir ağrı var — muhtemelen bir şey kırıldı. Nefes almak bile acı veriyor.",
+      "Kötü düşüşten sonra göğsünde/kolunda korkunç bir ağrı var; muhtemelen kırık. Nefes bile acıtıyor.",
     secenekler: [
       {
         metin: "Hekime görün, doğru sardır.",
         baseBasariSansi: 85,
         maliyet: 9,
-        kilitAciklamasi: "Hekimin ücretini karşılayamıyorsun.",
+        kilitAciklamasi: "Hekime verecek paran yok.",
         basariliSonuc: {
           para: -9,
           saglik: 11,
           mutluluk: 2,
-          mesaj: "Hekim kırığı doğru şekilde sardı; ağrın belirgin şekilde azaldı.",
+          mesaj: "Hekim kırığı doğru sardı; ağrın belirgin azaldı.",
         },
         basarisizSonuc: {
           para: -9,
           saglik: 5,
-          mesaj: "Sargı tam oturmadı ama en azından kötüleşmedi.",
+          mesaj: "Sargı tam oturmadı ama kötüleşmedi.",
         },
       },
       {
-        metin: "Kendin sar, dişini sıkıp işine devam et.",
+        metin: "Kendin sar, işine devam et.",
         baseBasariSansi: 42,
         basariliSonuc: {
           para: 2,
           saglik: 13,
           mutluluk: -2,
-          mesaj: "İnadına şükür, kırık kendiliğinden düzgün kaynadı. Üstelik işini de aksatmadın.",
+          mesaj: "Kırık kendiliğinden düzgün kaynadı; işini de aksatmadın.",
         },
         basarisizSonuc: {
           saglik: -9,
           mutluluk: -5,
-          mesaj: "Kırık yanlış kaynadı; ağrı ve zayıflık daha da arttı.",
+          mesaj: "Kırık yanlış kaynadı; ağrı ve zayıflık arttı.",
         },
       },
     ],
@@ -329,10 +329,10 @@ export const OLAY_SAGLIK_ESIK_25: OlayTanimi[] = [
     gorsel: "🫃",
     baslik: "Karnını Delen Ağrı",
     metin:
-      "Karnının bir tarafında saplanan, gittikçe artan bir ağrı var. Bu sıradan bir hazımsızlığa benzemiyor.",
+      "Karnının bir yanında saplanan, giderek artan bir ağrı var. Sıradan hazımsızlığa benzemiyor.",
     secenekler: [
       {
-        metin: "Hekime görün, tedavi ücretini öde.",
+        metin: "Hekime görün, ücreti öde.",
         baseBasariSansi: 88,
         maliyet: 12,
         kilitAciklamasi: "Tedavi ücretini karşılayamıyorsun.",
@@ -340,25 +340,25 @@ export const OLAY_SAGLIK_ESIK_25: OlayTanimi[] = [
           para: -12,
           saglik: 13,
           mutluluk: 3,
-          mesaj: "Hekimin doğru teşhisi ve tedavisi ağrını dindirdi. Rahat bir nefes aldın.",
+          mesaj: "Hekimin teşhisi ve tedavisi ağrını dindirdi.",
         },
         basarisizSonuc: {
           para: -12,
           saglik: 6,
-          mesaj: "Tedavi tam işe yaramadı ama ağrı biraz hafifledi.",
+          mesaj: "Tedavi tam işlemedi ama ağrı biraz hafifledi.",
         },
       },
       {
-        metin: "Ağrı kesici otlarla bekle-gör.",
+        metin: "Ağrı kesici otlarla bekle.",
         baseBasariSansi: 44,
         basariliSonuc: {
           saglik: 10,
-          mesaj: "Otlar işe yaradı, ağrı yavaş yavaş geçti. Paranı da harcamadın.",
+          mesaj: "Otlar işe yaradı, ağrı geçti; para da harcamadın.",
         },
         basarisizSonuc: {
           saglik: -9,
           mutluluk: -4,
-          mesaj: "Ağrı dinmek yerine yayıldı; günlerce iki büklüm dolaştın.",
+          mesaj: "Ağrı yayıldı; günlerce iki büklüm dolaştın.",
         },
       },
     ],
@@ -370,37 +370,37 @@ export const OLAY_SAGLIK_ESIK_25: OlayTanimi[] = [
     gorsel: "🐍",
     baslik: "Zehirli Bir Isırık",
     metin:
-      "Bir böcek ya da yılan seni ısırdı; ısırık yeri şişip morardı, tüm kolun/bacağın uyuşmaya başladı.",
+      "Bir böcek ya da yılan ısırdı; yer şişip morardı, kolun/bacağın uyuşuyor.",
     secenekler: [
       {
         metin: "Hekimden panzehir al.",
         baseBasariSansi: 83,
         maliyet: 11,
-        kilitAciklamasi: "Panzehrin parasını karşılayamıyorsun.",
+        kilitAciklamasi: "Panzehire verecek paran yok.",
         basariliSonuc: {
           para: -11,
           saglik: 12,
           mutluluk: 2,
-          mesaj: "Panzehir zehri etkisiz hale getirdi. Şişlik günler içinde indi.",
+          mesaj: "Panzehir zehri etkisiz kıldı; şişlik günlerde indi.",
         },
         basarisizSonuc: {
           para: -11,
           saglik: 5,
-          mesaj: "Panzehir tam işe yaramadı ama zehrin yayılmasını yavaşlattı.",
+          mesaj: "Panzehir tam işlemedi ama zehri yavaşlattı.",
         },
       },
       {
-        metin: "Halk usulü, yarayı kendin tedavi et.",
+        metin: "Halk usulü kendin tedavi et.",
         baseBasariSansi: 40,
         basariliSonuc: {
           saglik: 14,
           mutluluk: -2,
-          mesaj: "Riskli bir yöntemdi ama işe yaradı; zehir vücudundan atıldı.",
+          mesaj: "Riskliydi ama işe yaradı; zehir atıldı.",
         },
         basarisizSonuc: {
           saglik: -10,
           mutluluk: -5,
-          mesaj: "Yöntem işe yaramadı, zehir daha da yayıldı. Günlerce yatalak kaldın.",
+          mesaj: "Yöntem tutmadı, zehir yayıldı; günlerce yatalak kaldın.",
         },
       },
     ],
@@ -412,37 +412,37 @@ export const OLAY_SAGLIK_ESIK_25: OlayTanimi[] = [
     gorsel: "🥵",
     baslik: "Salgın Humma",
     metin:
-      "Mahallede dolaşan bir humma sonunda sana da bulaştı — titreme, terleme, iştahsızlık. Yatağından kalkacak halin yok.",
+      "Mahalledeki humma sana da bulaştı: titreme, terleme, iştahsızlık. Yataktan kalkamıyorsun.",
     secenekler: [
       {
-        metin: "Karantinaya çekil, tedavi al.",
+        metin: "Karantinaya çekil, tedavi ol.",
         baseBasariSansi: 82,
         maliyet: 8,
-        kilitAciklamasi: "Tedavi masrafını karşılayamıyorsun.",
+        kilitAciklamasi: "Tedaviye verecek paran yok.",
         basariliSonuc: {
           para: -8,
           saglik: 11,
           un: -2,
-          mesaj: "Kendini eve kapatıp tedavi oldun; hastalık başkasına da bulaşmadı, sen de iyileştin.",
+          mesaj: "Eve kapanıp tedavi oldun; kimseye bulaşmadı, iyileştin.",
         },
         basarisizSonuc: {
           para: -8,
           saglik: 4,
-          mesaj: "Tedavi yavaş işledi ama en azından işler kötüleşmedi.",
+          mesaj: "Tedavi yavaş işledi ama kötüleşmedin.",
         },
       },
       {
-        metin: "İş başında kal, hastalığı görmezden gel.",
+        metin: "İş başında kal, görmezden gel.",
         baseBasariSansi: 48,
         basariliSonuc: {
           para: 3,
           saglik: 8,
-          mesaj: "Şansına, bünyen kendi kendine hummayı yendi; üstelik işini de kaybetmedin.",
+          mesaj: "Şansına bünyen hummayı yendi; işini de kaybetmedin.",
         },
         basarisizSonuc: {
           saglik: -9,
           mutluluk: -4,
-          mesaj: "Hummayı görmezden gelmek işe yaramadı; iyice yataklara düştün.",
+          mesaj: "Görmezden gelmek işe yaramadı; iyice yattın.",
         },
       },
     ],
@@ -454,36 +454,36 @@ export const OLAY_SAGLIK_ESIK_25: OlayTanimi[] = [
     gorsel: "🥶",
     baslik: "Soğukta Donma Tehlikesi",
     metin:
-      "Sert bir kış fırtınasında yolda kaldın; parmakların hissizleşti, dişlerin takırdıyor. Isınmazsan işler kötüye gidebilir.",
+      "Kış fırtınasında yolda kaldın; parmakların hissizleşti, dişlerin takırdıyor.",
     secenekler: [
       {
-        metin: "Sıcak bir handa/evde bir süre barın.",
+        metin: "Sıcak bir handa barın.",
         baseBasariSansi: 84,
         maliyet: 6,
-        kilitAciklamasi: "Barınacak yerin parasını bile karşılayamıyorsun.",
+        kilitAciklamasi: "Barınmaya verecek paran yok.",
         basariliSonuc: {
           para: -6,
           saglik: 11,
           mutluluk: 3,
-          mesaj: "Sıcak bir ocağın yanında yavaş yavaş ısındın; bedenin kendini toparladı.",
+          mesaj: "Sıcak ocak başında ısındın; bedenin toparlandı.",
         },
         basarisizSonuc: {
           para: -6,
           saglik: 5,
-          mesaj: "Isınman zaman aldı ama en kötüsünü atlattın.",
+          mesaj: "Isınman uzun sürdü ama en kötüsünü atlattın.",
         },
       },
       {
-        metin: "Ateş yakıp açık havada idare et.",
+        metin: "Ateş yakıp açıkta idare et.",
         baseBasariSansi: 47,
         basariliSonuc: {
           saglik: 13,
-          mesaj: "Zar zor yaktığın ateş seni kurtardı; sabaha sağ ve nispeten iyi çıktın.",
+          mesaj: "Zor yaktığın ateş seni kurtardı; sabaha sağ çıktın.",
         },
         basarisizSonuc: {
           saglik: -9,
           mutluluk: -4,
-          mesaj: "Ateş sönünce soğuk iyice işledi; parmakların günlerce uyuştu kaldı.",
+          mesaj: "Ateş sönünce soğuk işledi; parmakların günlerce uyuştu.",
         },
       },
     ],
@@ -495,37 +495,37 @@ export const OLAY_SAGLIK_ESIK_25: OlayTanimi[] = [
     gorsel: "🥵",
     baslik: "Güneş Çarpması",
     metin:
-      "Öğle güneşinin altında saatlerce çalıştın; başın dönüyor, gözlerinin önü kararıyor. Bedenin daha fazla dayanamıyor.",
+      "Öğle güneşinde saatlerce çalıştın; başın dönüyor, gözün kararıyor.",
     secenekler: [
       {
-        metin: "Gölgede su ve bakımla dinlen.",
+        metin: "Gölgede su içip dinlen.",
         baseBasariSansi: 86,
         maliyet: 4,
-        kilitAciklamasi: "Serinletici içecek almaya bile paran yok.",
+        kilitAciklamasi: "Serinletici içeceğe verecek paran yok.",
         basariliSonuc: {
           para: -4,
           saglik: 10,
           mutluluk: 2,
-          mesaj: "Bol su ve gölge işe yaradı; baş dönmesi geçti, kendine geldin.",
+          mesaj: "Su ve gölge işe yaradı; baş dönmesi geçti.",
         },
         basarisizSonuc: {
           para: -4,
           saglik: 5,
-          mesaj: "Toparlanman biraz sürdü ama en kötüsünü atlattın.",
+          mesaj: "Toparlanman sürdü ama en kötüsünü atlattın.",
         },
       },
       {
-        metin: "İşi bırakmadan, kısa bir mola ver.",
+        metin: "Kısa bir mola ver, devam et.",
         baseBasariSansi: 50,
         basariliSonuc: {
           para: 2,
           saglik: 9,
-          mesaj: "Kısa molada toparlandın; hem sağlığın hem cebin idare etti.",
+          mesaj: "Kısa molada toparlandın; sağlığın da cebin de idare etti.",
         },
         basarisizSonuc: {
           saglik: -8,
           mutluluk: -3,
-          mesaj: "Mola yetmedi, güneş çarpması iyice ağırlaştı.",
+          mesaj: "Mola yetmedi, güneş çarpması ağırlaştı.",
         },
       },
     ],
@@ -537,37 +537,37 @@ export const OLAY_SAGLIK_ESIK_25: OlayTanimi[] = [
     gorsel: "🦵",
     baslik: "Eski Yaranın Nüksü",
     metin:
-      "Yıllar önceki bir yaralanmadan kalan ağrı aniden nükseti — bu kez eskisinden çok daha şiddetli. Yürümesi bile zorlaşıyor.",
+      "Yıllar önceki yaralanmanın ağrısı aniden nüksetti, bu kez çok şiddetli. Yürümek bile zor.",
     secenekler: [
       {
-        metin: "Hekime tekrar görün, tedavi ol.",
+        metin: "Hekime tekrar görün.",
         baseBasariSansi: 85,
         maliyet: 9,
-        kilitAciklamasi: "Tedavi ücretini karşılayamıyorsun.",
+        kilitAciklamasi: "Tedaviye verecek paran yok.",
         basariliSonuc: {
           para: -9,
           saglik: 12,
-          mesaj: "Hekimin uyguladığı tedavi eski yarayı bir kez daha sakinleştirdi.",
+          mesaj: "Tedavi eski yarayı bir kez daha yatıştırdı.",
         },
         basarisizSonuc: {
           para: -9,
           saglik: 5,
-          mesaj: "Tedavi tam işe yaramadı ama ağrı biraz azaldı.",
+          mesaj: "Tedavi tam işlemedi ama ağrı azaldı.",
         },
       },
       {
-        metin: "Güçlü bir içki/afyon damlasıyla ağrıyı bastır.",
+        metin: "İçki/afyonla ağrıyı bastır.",
         baseBasariSansi: 42,
         basariliSonuc: {
           saglik: 13,
           mutluluk: 2,
           ahlak: -2,
-          mesaj: "Ağrı geçti, kendini bir süreliğine iyi hissettin — ama bu yolu sık kullanmamalısın.",
+          mesaj: "Ağrı geçti, bir süre iyi hissettin; ama sık kullanma.",
         },
         basarisizSonuc: {
           saglik: -8,
           mutluluk: -5,
-          mesaj: "Ağrı dinmedi, üstüne bir de bulantı ve baş dönmesi bindi.",
+          mesaj: "Ağrı dinmedi, üstüne bulantı ve baş dönmesi geldi.",
         },
       },
     ],
@@ -579,37 +579,37 @@ export const OLAY_SAGLIK_ESIK_25: OlayTanimi[] = [
     gorsel: "🌙",
     baslik: "Uykusuzluk ve Sinir Krizi",
     metin:
-      "Günlerdir gözüne uyku girmiyor; eller titriyor, düşünceler karışıyor. Bedenin dinlenmeden daha fazla dayanamayacak.",
+      "Günlerdir uyuyamıyorsun; eller titriyor, düşünceler karışık. Dinlenmeden dayanamazsın.",
     secenekler: [
       {
-        metin: "Birinin yerine bakmasını sağlayıp tam dinlen.",
+        metin: "Birini yerine koy, dinlen.",
         baseBasariSansi: 83,
         maliyet: 5,
-        kilitAciklamasi: "Yerine bakacak birine ödeyecek paran yok.",
+        kilitAciklamasi: "Yerine bakacak birine verecek paran yok.",
         basariliSonuc: {
           para: -5,
           saglik: 10,
           mutluluk: 4,
-          mesaj: "Günlerce kesintisiz uyudun; zihnin de bedenin de yeniden yerine geldi.",
+          mesaj: "Günlerce kesintisiz uyudun; zihnin de bedenin de yerine geldi.",
         },
         basarisizSonuc: {
           para: -5,
           saglik: 4,
-          mesaj: "Uyku tam gelmedi ama biraz olsun dinlenebildin.",
+          mesaj: "Uyku tam gelmedi ama biraz dinlendin.",
         },
       },
       {
-        metin: "Güçlü bir uyku ilacıyla zorla uyu.",
+        metin: "Güçlü ilaçla zorla uyu.",
         baseBasariSansi: 45,
         basariliSonuc: {
           saglik: 12,
           mutluluk: 1,
-          mesaj: "İlaç seni derin bir uykuya soktu; uyandığında kendini çok daha iyi hissettin.",
+          mesaj: "İlaç derin bir uyku verdi; çok daha iyi uyandın.",
         },
         basarisizSonuc: {
           saglik: -7,
           mutluluk: -5,
-          mesaj: "İlaç ters etki yaptı; sersemlemiş ve daha da bitkin uyandın.",
+          mesaj: "İlaç ters etti; sersem ve bitkin uyandın.",
         },
       },
     ],
@@ -621,37 +621,37 @@ export const OLAY_SAGLIK_ESIK_25: OlayTanimi[] = [
     gorsel: "🥱",
     baslik: "Ardı Arkası Kesilmeyen Yorgunluk",
     metin:
-      "Haftalardır dinlenmeden çalışıyorsun; artık bacakların tutmuyor, eller titriyor. Bu tempoyu daha fazla sürdüremezsin.",
+      "Haftalardır dinlenmeden çalışıyorsun; bacakların tutmuyor, eller titriyor.",
     secenekler: [
       {
-        metin: "İşini bir süreliğine bırak.",
+        metin: "İşi bir süre bırak.",
         baseBasariSansi: 82,
         maliyet: 6,
-        kilitAciklamasi: "İşini bırakacak kadar birikimin yok.",
+        kilitAciklamasi: "İşi bırakacak birikimin yok.",
         basariliSonuc: {
           para: -6,
           saglik: 11,
           un: -1,
-          mesaj: "Birkaç haftalık moladan sonra bedenin gerçekten toparlandı.",
+          mesaj: "Birkaç haftalık molayla bedenin toparlandı.",
         },
         basarisizSonuc: {
           para: -6,
           saglik: 5,
-          mesaj: "Mola tam yetmedi ama en azından daha kötüye gitmedin.",
+          mesaj: "Mola yetmedi ama kötüleşmedin.",
         },
       },
       {
-        metin: "Kendini zorla, dişini sıkıp devam et.",
+        metin: "Dişini sıkıp devam et.",
         baseBasariSansi: 44,
         basariliSonuc: {
           para: 4,
           saglik: 9,
-          mesaj: "Şansına, bedenin bir şekilde dayandı — üstüne bir de kazandın.",
+          mesaj: "Şansına bedenin dayandı; üstüne kazandın da.",
         },
         basarisizSonuc: {
           saglik: -9,
           mutluluk: -4,
-          mesaj: "Bedenin daha fazla dayanamadı; iyice yıprandın.",
+          mesaj: "Bedenin dayanamadı; iyice yıprandın.",
         },
       },
     ],
@@ -666,39 +666,39 @@ export const OLAY_SAGLIK_ESIK_10: OlayTanimi[] = [
     gorsel: "😨",
     baslik: "Nefes Alamıyorsun",
     metin:
-      "Göğsün sıkışıyor, her nefes bir savaşa dönüştü. Yanındakilerin yüzündeki korkuyu görebiliyorsun — durumun gerçekten ciddi.",
+      "Göğsün sıkışıyor, her nefes bir savaş. Yanındakilerin yüzündeki korku durumun ciddiyetini gösteriyor.",
     secenekler: [
       {
-        metin: "Derhal hekim getirt.",
+        metin: "Hemen hekim getirt.",
         baseBasariSansi: 82,
         maliyet: 14,
-        kilitAciklamasi: "Acil hekim ücretini karşılayamıyorsun.",
+        kilitAciklamasi: "Acil hekime verecek paran yok.",
         basariliSonuc: {
           para: -14,
           saglik: 14,
           mutluluk: 4,
-          mesaj: "Hekim zamanında yetişti; nefesin açıldı, en kötüsü geride kaldı.",
+          mesaj: "Hekim yetişti; nefesin açıldı, en kötüsü geçti.",
         },
         basarisizSonuc: {
           para: -14,
           saglik: 4,
           olum_sansi: 6,
-          mesaj: "Hekim elinden geleni yaptı ama durumun hâlâ çok kritik.",
+          mesaj: "Hekim elinden geleni yaptı ama durumun hâlâ kritik.",
         },
       },
       {
-        metin: "Sakinleşmeye çalış, bekle.",
+        metin: "Sakin kal, bekle.",
         baseBasariSansi: 40,
         basariliSonuc: {
           saglik: 11,
           mutluluk: 2,
-          mesaj: "Yavaş yavaş nefesin düzene girdi; en kötü anı atlattın.",
+          mesaj: "Nefesin yavaşça düzene girdi; en kötüsünü atlattın.",
         },
         basarisizSonuc: {
           saglik: -10,
           mutluluk: -6,
           olum_sansi: 12,
-          mesaj: "Nefesin daha da daraldı. Bilincin bulanıklaşıyor.",
+          mesaj: "Nefesin daha da daraldı; bilincin bulanıyor.",
         },
       },
     ],
@@ -710,23 +710,23 @@ export const OLAY_SAGLIK_ESIK_10: OlayTanimi[] = [
     gorsel: "😵‍💫",
     baslik: "Baygın Düştün",
     metin:
-      "Ayakların altındaki zemin kaydı, gözlerin karardı — bir anda yere yığıldın. Etrafındakiler seni çevirip ayıltmaya çalışıyor.",
+      "Zemin ayağının altından kaydı, gözün karardı; yere yığıldın. Etrafındakiler seni ayıltmaya çalışıyor.",
     secenekler: [
       {
-        metin: "Yanındakiler hekim çağırsın.",
+        metin: "Hekim çağırsınlar.",
         baseBasariSansi: 84,
         maliyet: 12,
-        kilitAciklamasi: "Hekim ücretini karşılayacak paran yok.",
+        kilitAciklamasi: "Hekime verecek paran yok.",
         basariliSonuc: {
           para: -12,
           saglik: 13,
-          mesaj: "Hekim geldiğinde nabzın hâlâ atıyordu; müdahalesiyle kendine geldin.",
+          mesaj: "Hekim geldiğinde nabzın atıyordu; müdahaleyle kendine geldin.",
         },
         basarisizSonuc: {
           para: -12,
           saglik: 5,
           olum_sansi: 5,
-          mesaj: "Hekim geç kaldı ama en azından bir şeyler yapabildi.",
+          mesaj: "Hekim geç kaldı ama bir şeyler yapabildi.",
         },
       },
       {
@@ -734,12 +734,12 @@ export const OLAY_SAGLIK_ESIK_10: OlayTanimi[] = [
         baseBasariSansi: 42,
         basariliSonuc: {
           saglik: 10,
-          mesaj: "Uzun bir sessizliğin ardından gözlerini açtın. Şanslısın.",
+          mesaj: "Uzun sessizlikten sonra gözlerini açtın. Şanslısın.",
         },
         basarisizSonuc: {
           saglik: -9,
           olum_sansi: 11,
-          mesaj: "Bir türlü ayılmıyorsun; yanındakiler artık ağlamaya başladı.",
+          mesaj: "Bir türlü ayılmıyorsun; yanındakiler ağlamaya başladı.",
         },
       },
     ],
@@ -751,38 +751,38 @@ export const OLAY_SAGLIK_ESIK_10: OlayTanimi[] = [
     gorsel: "🥴",
     baslik: "Hummadan Sayıklıyorsun",
     metin:
-      "Ateşin öyle yükseldi ki artık ne söylediğinin farkında değilsin; sayıklıyorsun, terden sırılsıklamsın. Yakınların büyük bir korkuyla başında bekliyor.",
+      "Ateşin öyle yükseldi ki sayıklıyor, terden sırılsıklam yatıyorsun. Yakınların korkuyla başında bekliyor.",
     secenekler: [
       {
-        metin: "Soğuk kompres ve hekim tedavisi.",
+        metin: "Soğuk kompres ve hekim.",
         baseBasariSansi: 83,
         maliyet: 13,
-        kilitAciklamasi: "Tedavi masrafını karşılayamıyorsun.",
+        kilitAciklamasi: "Tedaviye verecek paran yok.",
         basariliSonuc: {
           para: -13,
           saglik: 14,
           mutluluk: 3,
-          mesaj: "Ateş nihayet kırıldı; gözlerini açtığında etrafındakiler hıçkıra hıçkıra sevindi.",
+          mesaj: "Ateş kırıldı; gözünü açınca yakınların hıçkırarak sevindi.",
         },
         basarisizSonuc: {
           para: -13,
           saglik: 4,
           olum_sansi: 6,
-          mesaj: "Ateş inatla düşmüyor; hekim daha fazlasını yapamayacağını söyledi.",
+          mesaj: "Ateş düşmüyor; hekim daha fazlasını yapamıyor.",
         },
       },
       {
-        metin: "Yakınların gelenekle/dua ile bekler.",
+        metin: "Yakınların dua ile beklesin.",
         baseBasariSansi: 38,
         basariliSonuc: {
           saglik: 11,
-          mesaj: "Sabaha karşı ateşin kendiliğinden düştü. Herkes rahat bir nefes aldı.",
+          mesaj: "Sabaha doğru ateş kendiliğinden düştü; herkes rahatladı.",
         },
         basarisizSonuc: {
           saglik: -11,
           mutluluk: -5,
           olum_sansi: 13,
-          mesaj: "Sayıklaman şiddetlendi; ateş bir türlü kırılmıyor.",
+          mesaj: "Sayıklaman şiddetlendi; ateş kırılmıyor.",
         },
       },
     ],
@@ -794,37 +794,37 @@ export const OLAY_SAGLIK_ESIK_10: OlayTanimi[] = [
     gorsel: "🩸",
     baslik: "Durmayan Kanama",
     metin:
-      "Yara sandığından çok daha derinmiş; kanama bir türlü durmuyor, bilincin bulanıklaşmaya başladı. Her saniye önemli.",
+      "Yara sandığından derin; kanama durmuyor, bilincin bulanıyor. Her saniye önemli.",
     secenekler: [
       {
-        metin: "Hekim acilen dikiş atsın.",
+        metin: "Hekim hemen diksin.",
         baseBasariSansi: 85,
         maliyet: 15,
-        kilitAciklamasi: "Acil müdahale ücretini karşılayamıyorsun.",
+        kilitAciklamasi: "Acil müdahaleye verecek paran yok.",
         basariliSonuc: {
           para: -15,
           saglik: 14,
           mutluluk: 3,
-          mesaj: "Hekim tam vaktinde yetişti; kanamayı durdurdu. Bir daha bu kadar şanslı olmayabilirsin.",
+          mesaj: "Hekim tam vaktinde yetişip kanamayı durdurdu.",
         },
         basarisizSonuc: {
           para: -15,
           saglik: 5,
           olum_sansi: 7,
-          mesaj: "Müdahale gecikti; kan kaybın ciddi boyutlara ulaştı.",
+          mesaj: "Müdahale gecikti; kan kaybın ciddileşti.",
         },
       },
       {
-        metin: "Kendin sıkıca sarıp bekle.",
+        metin: "Sıkıca sar, bekle.",
         baseBasariSansi: 36,
         basariliSonuc: {
           saglik: 12,
-          mesaj: "Sargı tuttu, kanama durdu. İnanılmaz bir şans.",
+          mesaj: "Sargı tuttu, kanama durdu. İnanılmaz şans.",
         },
         basarisizSonuc: {
           saglik: -12,
           olum_sansi: 15,
-          mesaj: "Kanama durmuyor; giderek daha da halsizleşiyorsun.",
+          mesaj: "Kanama durmuyor; giderek halsizleşiyorsun.",
         },
       },
     ],
@@ -836,37 +836,37 @@ export const OLAY_SAGLIK_ESIK_10: OlayTanimi[] = [
     gorsel: "💔",
     baslik: "Kalbin Duracak Gibi",
     metin:
-      "Göğsünde çılgınca bir çarpıntı var, sanki her an duracakmış gibi. Nefesin kesiliyor, ellerin buz gibi.",
+      "Göğsünde çılgın bir çarpıntı var, kalp her an duracak gibi. Nefesin kesiliyor, ellerin buz gibi.",
     secenekler: [
       {
-        metin: "Hekim tam istirahat ve ilaç önersin.",
+        metin: "Hekim istirahat ve ilaç versin.",
         baseBasariSansi: 80,
         maliyet: 14,
-        kilitAciklamasi: "Hekimin ücretini karşılayamıyorsun.",
+        kilitAciklamasi: "Hekime verecek paran yok.",
         basariliSonuc: {
           para: -14,
           saglik: 13,
           mutluluk: 3,
-          mesaj: "Hekimin verdiği ilaç ve kesin istirahat çarpıntını yatıştırdı.",
+          mesaj: "İlaç ve kesin istirahat çarpıntıyı yatıştırdı.",
         },
         basarisizSonuc: {
           para: -14,
           saglik: 4,
           olum_sansi: 8,
-          mesaj: "İlaç tam işe yaramadı; kalbin hâlâ düzensiz atıyor.",
+          mesaj: "İlaç tam işlemedi; kalbin hâlâ düzensiz.",
         },
       },
       {
-        metin: "Tamamen hareketsiz kalıp bekle.",
+        metin: "Hareketsiz kalıp bekle.",
         baseBasariSansi: 44,
         basariliSonuc: {
           saglik: 10,
-          mesaj: "Uzun, korkulu bir bekleyişin ardından çarpıntı yavaşça geçti.",
+          mesaj: "Korkulu bir bekleyişin ardından çarpıntı geçti.",
         },
         basarisizSonuc: {
           saglik: -9,
           olum_sansi: 12,
-          mesaj: "Çarpıntı geçmek yerine şiddetlendi; göğsündeki baskı artıyor.",
+          mesaj: "Çarpıntı şiddetlendi; göğsündeki baskı artıyor.",
         },
       },
     ],
@@ -878,24 +878,24 @@ export const OLAY_SAGLIK_ESIK_10: OlayTanimi[] = [
     gorsel: "😴",
     baslik: "Uyandırılamıyorsun",
     metin:
-      "Saatlerdir derin bir uykudasın ve hiçbir sesle, hiçbir dokunuşla uyanmıyorsun. Yakınların panik içinde başında bekliyor.",
+      "Saatlerdir derin uykudasın; hiçbir ses ya da dokunuş seni uyandırmıyor. Yakınların panikte.",
     secenekler: [
       {
-        metin: "Yakınların acilen hekim getirsin.",
+        metin: "Hemen hekim getirsinler.",
         baseBasariSansi: 86,
         maliyet: 16,
-        kilitAciklamasi: "Acil hekim ücretini karşılayacak para yok.",
+        kilitAciklamasi: "Acil hekime verecek paran yok.",
         basariliSonuc: {
           para: -16,
           saglik: 14,
           mutluluk: 5,
-          mesaj: "Hekimin müdahalesiyle gözlerini açtın. Odadaki herkes gözyaşlarına boğuldu.",
+          mesaj: "Hekimin müdahalesiyle gözlerini açtın; oda gözyaşına boğuldu.",
         },
         basarisizSonuc: {
           para: -16,
           saglik: 5,
           olum_sansi: 6,
-          mesaj: "Hekim elinden geleni yaptı ama hâlâ derin bir uykudasın.",
+          mesaj: "Hekim elinden geleni yaptı ama hâlâ uyanmadın.",
         },
       },
       {
@@ -903,12 +903,12 @@ export const OLAY_SAGLIK_ESIK_10: OlayTanimi[] = [
         baseBasariSansi: 40,
         basariliSonuc: {
           saglik: 11,
-          mesaj: "Uzun bir bekleyişin ardından gözlerini yavaşça açtın.",
+          mesaj: "Uzun beklayıştan sonra gözlerini yavaşça açtın.",
         },
         basarisizSonuc: {
           saglik: -10,
           olum_sansi: 13,
-          mesaj: "Saatler geçmesine rağmen hâlâ uyanmıyorsun; nefesin yüzeyselleşti.",
+          mesaj: "Saatler geçti, uyanmıyorsun; nefesin yüzeyselleşti.",
         },
       },
     ],
@@ -920,37 +920,37 @@ export const OLAY_SAGLIK_ESIK_10: OlayTanimi[] = [
     gorsel: "☠️",
     baslik: "Zehirin Son Aşaması",
     metin:
-      "Vücuduna giren zehir artık ciddi bir aşamaya ulaştı; kaslarını kontrol edemiyor, görüşün bulanıklaşıyor.",
+      "Vücuttaki zehir ağır aşamada; kaslarını kontrol edemiyor, görüşün bulanıyor.",
     secenekler: [
       {
-        metin: "Hekimden acilen panzehir getirt.",
+        metin: "Hekimden acil panzehir getirt.",
         baseBasariSansi: 82,
         maliyet: 15,
-        kilitAciklamasi: "Panzehrin ücretini karşılayamıyorsun.",
+        kilitAciklamasi: "Panzehire verecek paran yok.",
         basariliSonuc: {
           para: -15,
           saglik: 14,
-          mesaj: "Panzehir tam vaktinde geldi; zehir etkisiz hale geldi.",
+          mesaj: "Panzehir tam vaktinde geldi; zehir etkisiz kaldı.",
         },
         basarisizSonuc: {
           para: -15,
           saglik: 4,
           olum_sansi: 8,
-          mesaj: "Panzehir yeterince hızlı işlemedi; zehir hâlâ vücudunda.",
+          mesaj: "Panzehir yeterince hızlı işlemedi; zehir hâlâ içinde.",
         },
       },
       {
-        metin: "Bol su içip kusturmaya çalış.",
+        metin: "Bol su iç, kus.",
         baseBasariSansi: 37,
         basariliSonuc: {
           saglik: 12,
           mutluluk: -1,
-          mesaj: "İğrenç ama işe yaradı; zehri büyük ölçüde vücudundan attın.",
+          mesaj: "İğrençti ama işe yaradı; zehrin çoğunu attın.",
         },
         basarisizSonuc: {
           saglik: -11,
           olum_sansi: 14,
-          mesaj: "Zehir kanına iyice karıştı; her geçen dakika kötüleşiyorsun.",
+          mesaj: "Zehir kana karıştı; dakikalar içinde kötüleşiyorsun.",
         },
       },
     ],
@@ -962,37 +962,37 @@ export const OLAY_SAGLIK_ESIK_10: OlayTanimi[] = [
     gorsel: "🧊",
     baslik: "Kritik Derecede Donmuşsun",
     metin:
-      "Bedenin artık titremiyor bile — bu iyiye işaret değil. Dudakların morarmış, bilincin gidip geliyor.",
+      "Bedenin artık titremiyor bile; bu kötü işaret. Dudakların mor, bilincin gidip geliyor.",
     secenekler: [
       {
-        metin: "Hekim gözetiminde yavaşça ısıt.",
+        metin: "Hekim gözetiminde ısıt.",
         baseBasariSansi: 83,
         maliyet: 12,
-        kilitAciklamasi: "Hekim/ısıtma masrafını karşılayamıyorsun.",
+        kilitAciklamasi: "Hekime verecek paran yok.",
         basariliSonuc: {
           para: -12,
           saglik: 13,
           mutluluk: 3,
-          mesaj: "Doğru şekilde ısıtıldın; kalbin düzenli atmaya, bilincin yerine gelmeye başladı.",
+          mesaj: "Doğru ısıtıldın; kalbin düzene, bilincin yerine geldi.",
         },
         basarisizSonuc: {
           para: -12,
           saglik: 5,
           olum_sansi: 7,
-          mesaj: "Isınman çok yavaş ilerliyor; durumun hâlâ endişe verici.",
+          mesaj: "Isınman çok yavaş; durumun hâlâ endişe verici.",
         },
       },
       {
-        metin: "Kendiliğinden ısınmasını bekle.",
+        metin: "Kendiliğinden ısınmayı bekle.",
         baseBasariSansi: 39,
         basariliSonuc: {
           saglik: 11,
-          mesaj: "Battaniyeler altında saatler geçti ama sonunda titremeye, yani ısınmaya başladın.",
+          mesaj: "Battaniyeler altında saatler sonra titremeye, yani ısınmaya başladın.",
         },
         basarisizSonuc: {
           saglik: -10,
           olum_sansi: 12,
-          mesaj: "Vücut ısın daha da düşüyor; nefesin yavaşladı.",
+          mesaj: "Vücut ısın düşüyor; nefesin yavaşladı.",
         },
       },
     ],
@@ -1004,28 +1004,28 @@ export const OLAY_SAGLIK_ESIK_10: OlayTanimi[] = [
     gorsel: "🦶",
     baslik: "Yaran Kangren Olmak Üzere",
     metin:
-      "Yara artık siyaha çalıyor, kötü bir koku yayıyor. Hekim vakit kaybetmeden bir şey yapılmazsa çok daha kötüsünün geleceğini söylüyor.",
+      "Yara siyaha çalıyor, kötü kokuyor. Hekim hemen müdahale edilmezse çok daha kötüsü geleceğini söylüyor.",
     secenekler: [
       {
-        metin: "Hekim yarayı acilen temizlesin/müdahale etsin.",
+        metin: "Hekim hemen müdahale etsin.",
         baseBasariSansi: 84,
         maliyet: 17,
-        kilitAciklamasi: "Acil müdahale ücretini karşılayamıyorsun.",
+        kilitAciklamasi: "Acil müdahaleye verecek paran yok.",
         basariliSonuc: {
           para: -17,
           saglik: 14,
           mutluluk: 4,
-          mesaj: "Hekimin acil müdahalesi yayılmayı durdurdu; canını zor da olsa kurtardın.",
+          mesaj: "Acil müdahale yayılmayı durdurdu; canını zor kurtardın.",
         },
         basarisizSonuc: {
           para: -17,
           saglik: 5,
           olum_sansi: 9,
-          mesaj: "Müdahale yeterince erken olmadı; enfeksiyon yayılmaya devam ediyor.",
+          mesaj: "Müdahale geç kaldı; enfeksiyon yayılıyor.",
         },
       },
       {
-        metin: "Yarayı kendin dağlayıp temizlemeye çalış.",
+        metin: "Yarayı kendin dağla.",
         baseBasariSansi: 33,
         basariliSonuc: {
           saglik: 13,
@@ -1047,37 +1047,37 @@ export const OLAY_SAGLIK_ESIK_10: OlayTanimi[] = [
     gorsel: "🫥",
     baslik: "Açlıktan Ölümün Eşiğinde",
     metin:
-      "Günlerdir düzgün bir şey yemedin; bedenin kendi kendini tüketiyor. Kalkacak, hatta konuşacak gücün bile kalmadı.",
+      "Günlerdir düzgün bir şey yemedin; beden kendini tüketiyor. Kalkacak, konuşacak gücün yok.",
     secenekler: [
       {
-        metin: "Yakınların/hekim seni zorla besler.",
+        metin: "Seni zorla besletsinler.",
         baseBasariSansi: 85,
         maliyet: 10,
-        kilitAciklamasi: "Düzgün bir yemek/bakım için bile paran yok.",
+        kilitAciklamasi: "Yemeğe/bakıma verecek paran yok.",
         basariliSonuc: {
           para: -10,
           saglik: 13,
           mutluluk: 4,
-          mesaj: "Yavaş yavaş, küçük öğünlerle beslendin; bedenin nefes almaya başladı.",
+          mesaj: "Küçük öğünlerle beslendin; bedenin nefes aldı.",
         },
         basarisizSonuc: {
           para: -10,
           saglik: 5,
           olum_sansi: 6,
-          mesaj: "Bedenin yemeği zor kabul ediyor; toparlanma çok yavaş.",
+          mesaj: "Beden yemeği zor kabul ediyor; toparlanma yavaş.",
         },
       },
       {
-        metin: "Bulduğun her şeyi hızla ye.",
+        metin: "Bulduğunu hızla ye.",
         baseBasariSansi: 42,
         basariliSonuc: {
           saglik: 11,
-          mesaj: "Aç karnına hızlı yemek mideni şoke etti ama bedenin ihtiyacı olanı buldu.",
+          mesaj: "Hızlı yemek midene ağır geldi ama bedenin ihtiyacını buldu.",
         },
         basarisizSonuc: {
           saglik: -9,
           olum_sansi: 11,
-          mesaj: "Aç bir mideye ansızın yüklenmek işleri daha da kötüleştirdi.",
+          mesaj: "Aç mideye ansızın yüklenmek durumu kötüleştirdi.",
         },
       },
     ],
@@ -1089,37 +1089,37 @@ export const OLAY_SAGLIK_ESIK_10: OlayTanimi[] = [
     gorsel: "⚕️",
     baslik: "Acil Bir Müdahale Şart",
     metin:
-      "Hekim durumunun ciddiyetini anlatıyor: hemen, riskli de olsa bir müdahale yapılmazsa iyileşme ihtimali çok düşük. Karar senin.",
+      "Hekim, riskli de olsa hemen müdahale edilmezse iyileşme ihtimalinin düşük olduğunu söylüyor. Karar senin.",
     secenekler: [
       {
         metin: "Riskli müdahaleyi kabul et.",
         baseBasariSansi: 80,
         maliyet: 18,
-        kilitAciklamasi: "Müdahalenin ücretini karşılayamıyorsun.",
+        kilitAciklamasi: "Müdahaleye verecek paran yok.",
         basariliSonuc: {
           para: -18,
           saglik: 14,
           mutluluk: 3,
-          mesaj: "Müdahale zorlu geçti ama başarılı oldu; hekim gülümseyerek yanından ayrıldı.",
+          mesaj: "Müdahale zorlu geçti ama başarılı oldu.",
         },
         basarisizSonuc: {
           para: -18,
           saglik: 3,
           olum_sansi: 10,
-          mesaj: "Müdahale beklenen sonucu vermedi; durumun hâlâ çok kritik.",
+          mesaj: "Müdahale sonuç vermedi; durumun hâlâ çok kritik.",
         },
       },
       {
-        metin: "Müdahaleyi reddet, doğal seyrine bırak.",
+        metin: "Reddet, kendi seyrine bırak.",
         baseBasariSansi: 35,
         basariliSonuc: {
           saglik: 9,
-          mesaj: "Bedenin kendi başına, beklenmedik biçimde toparlanmaya başladı.",
+          mesaj: "Beden kendi başına, beklenmedik biçimde toparlanmaya başladı.",
         },
         basarisizSonuc: {
           saglik: -13,
           olum_sansi: 16,
-          mesaj: "Müdahalesiz bırakmak riskli bir bahisti; durumun hızla kötüleşiyor.",
+          mesaj: "Müdahalesiz kalmak riskli bahisti; durumun hızla kötüleşiyor.",
         },
       },
     ],
@@ -1131,13 +1131,13 @@ export const OLAY_SAGLIK_ESIK_10: OlayTanimi[] = [
     gorsel: "🫁",
     baslik: "Zatürre Son Evresinde",
     metin:
-      "Göğsündeki enfeksiyon ilerledi; her nefes hırıltılı ve ağrılı. Hekim durumun ciddi olduğunu gizlemiyor.",
+      "Göğsündeki enfeksiyon ilerledi; her nefes hırıltılı ve ağrılı. Hekim durumun ciddi olduğunu saklamıyor.",
     secenekler: [
       {
         metin: "Hekim yoğun tedavi uygulasın.",
         baseBasariSansi: 81,
         maliyet: 16,
-        kilitAciklamasi: "Yoğun tedavi masrafını karşılayamıyorsun.",
+        kilitAciklamasi: "Yoğun tedaviye verecek paran yok.",
         basariliSonuc: {
           para: -16,
           saglik: 14,
@@ -1152,16 +1152,16 @@ export const OLAY_SAGLIK_ESIK_10: OlayTanimi[] = [
         },
       },
       {
-        metin: "Buhar ve sıcak örtülerle evde bakıl.",
+        metin: "Evde buhar ve sıcak örtüyle bakıl.",
         baseBasariSansi: 38,
         basariliSonuc: {
           saglik: 11,
-          mesaj: "Yavaş ama gerçek bir toparlanma; nefesin açılmaya başladı.",
+          mesaj: "Yavaş ama gerçek bir toparlanma; nefesin açıldı.",
         },
         basarisizSonuc: {
           saglik: -11,
           olum_sansi: 13,
-          mesaj: "Ev bakımı yeterli gelmedi; göğsündeki hırıltı derinleşti.",
+          mesaj: "Ev bakımı yetmedi; hırıltı derinleşti.",
         },
       },
     ],
@@ -1173,37 +1173,37 @@ export const OLAY_SAGLIK_ESIK_10: OlayTanimi[] = [
     gorsel: "⚡",
     baslik: "Göğsünde Kopan Fırtına",
     metin:
-      "Göğsünün ortasında ezici bir ağrı var, sol koluna kadar yayılıyor. Nefesin kesiliyor, soğuk ter döküyorsun.",
+      "Göğsünün ortasında ezici bir ağrı var, sol koluna yayılıyor. Nefesin kesiliyor, soğuk ter döküyorsun.",
     secenekler: [
       {
-        metin: "Hekim acil müdahale etsin, tam istirahat.",
+        metin: "Hekim müdahale etsin, tam istirahat.",
         baseBasariSansi: 82,
         maliyet: 17,
-        kilitAciklamasi: "Acil müdahale ücretini karşılayamıyorsun.",
+        kilitAciklamasi: "Acil müdahaleye verecek paran yok.",
         basariliSonuc: {
           para: -17,
           saglik: 14,
           mutluluk: 3,
-          mesaj: "Hekimin acil müdahalesi ağrıyı dindirdi; nabzın düzene girdi.",
+          mesaj: "Acil müdahale ağrıyı dindirdi; nabzın düzene girdi.",
         },
         basarisizSonuc: {
           para: -17,
           saglik: 4,
           olum_sansi: 10,
-          mesaj: "Müdahale ağrıyı tam dindiremedi; göğsündeki baskı sürüyor.",
+          mesaj: "Müdahale ağrıyı tam dindirmedi; baskı sürüyor.",
         },
       },
       {
-        metin: "Ağrının geçmesini umarak bekle.",
+        metin: "Ağrının geçmesini bekle.",
         baseBasariSansi: 37,
         basariliSonuc: {
           saglik: 10,
-          mesaj: "Uzun, korkulu dakikaların ardından ağrı yavaşça hafifledi.",
+          mesaj: "Korkulu dakikaların ardından ağrı yavaşça hafifledi.",
         },
         basarisizSonuc: {
           saglik: -12,
           olum_sansi: 15,
-          mesaj: "Ağrı hafiflemek yerine yayıldı; nefesin daralıyor.",
+          mesaj: "Ağrı yayıldı; nefesin daralıyor.",
         },
       },
     ],
@@ -1215,37 +1215,37 @@ export const OLAY_SAGLIK_ESIK_10: OlayTanimi[] = [
     gorsel: "🚨",
     baslik: "Ağır Bir Kazanın Şokundasın",
     metin:
-      "Az önce yaşadığın ağır kaza bedenini alt üst etti; bilincin yerinde ama beden şok içinde, titriyor ve buz gibi.",
+      "Az önceki ağır kaza bedenini alt üst etti; bilincin yerinde ama şoktasın, titriyor ve buz gibisin.",
     secenekler: [
       {
-        metin: "Hekim şok tedavisi ve dinlenme sağlasın.",
+        metin: "Hekim şok tedavisi yapsın.",
         baseBasariSansi: 83,
         maliyet: 15,
-        kilitAciklamasi: "Şok tedavisinin ücretini karşılayamıyorsun.",
+        kilitAciklamasi: "Şok tedavisine verecek paran yok.",
         basariliSonuc: {
           para: -15,
           saglik: 14,
           mutluluk: 3,
-          mesaj: "Hekimin müdahalesiyle şoktan çıktın; bedenin yavaşça normale döndü.",
+          mesaj: "Hekimin müdahalesiyle şoktan çıktın; beden normale döndü.",
         },
         basarisizSonuc: {
           para: -15,
           saglik: 5,
           olum_sansi: 8,
-          mesaj: "Şok hâlâ geçmiyor; nabzın düzensiz atıyor.",
+          mesaj: "Şok geçmiyor; nabzın düzensiz.",
         },
       },
       {
-        metin: "Kendine gelmeye çalış, ayağa kalk.",
+        metin: "Kendine gelmeye çalış, kalk.",
         baseBasariSansi: 40,
         basariliSonuc: {
           saglik: 11,
-          mesaj: "İnadına şükür, bedenin şoku kendi başına atlattı.",
+          mesaj: "İnadına şükür, şoku kendi başına atlattın.",
         },
         basarisizSonuc: {
           saglik: -10,
           olum_sansi: 12,
-          mesaj: "Şok derinleşti; bilincin bulanıklaşmaya başladı.",
+          mesaj: "Şok derinleşti; bilincin bulanmaya başladı.",
         },
       },
     ],
@@ -1257,39 +1257,39 @@ export const OLAY_SAGLIK_ESIK_10: OlayTanimi[] = [
     gorsel: "🕯️",
     baslik: "Bedenin Daha Fazla Dayanamıyor",
     metin:
-      "Yılların yorgunluğu, hastalıkları, kayıpları hepsi bir anda üstüne çöktü sanki. Bedenin de ruhun da tükenmiş durumda.",
+      "Yılların yorgunluğu, hastalıkları, kayıpları bir anda çöktü. Beden de ruh da tükenmiş.",
     secenekler: [
       {
-        metin: "Her şeyi bırak, tam bir tedavi/istirahat sürecine gir.",
+        metin: "Her şeyi bırak, tam tedavi ve istirahat.",
         baseBasariSansi: 84,
         maliyet: 16,
-        kilitAciklamasi: "Uzun bir tedavi/istirahat sürecini karşılayamıyorsun.",
+        kilitAciklamasi: "Uzun tedavi/istirahate verecek paran yok.",
         basariliSonuc: {
           para: -16,
           saglik: 14,
           mutluluk: 5,
-          mesaj: "Uzun bir toparlanma sürecinin ardından hem bedenin hem ruhun nefes aldı.",
+          mesaj: "Uzun bir toparlanmayla bedenin de ruhun da nefes aldı.",
         },
         basarisizSonuc: {
           para: -16,
           saglik: 5,
           olum_sansi: 8,
-          mesaj: "Tedavi tam işe yaramadı; bedenin hâlâ çok zayıf.",
+          mesaj: "Tedavi tam işlemedi; beden hâlâ çok zayıf.",
         },
       },
       {
-        metin: "Pes etmeyi reddet, zorla ayakta dur.",
+        metin: "Pes etme, zorla ayakta dur.",
         baseBasariSansi: 36,
         basariliSonuc: {
           saglik: 11,
           mutluluk: -1,
-          mesaj: "İnadın bir kez daha işe yaradı; bedenin son bir kez daha dayandı.",
+          mesaj: "İnadın yine işe yaradı; beden son bir kez dayandı.",
         },
         basarisizSonuc: {
           saglik: -12,
           mutluluk: -6,
           olum_sansi: 14,
-          mesaj: "Bedenin artık gerçekten kaldıramıyor; her şey son derece kırılgan hissettiriyor.",
+          mesaj: "Beden artık kaldırmıyor; her şey kırılgan.",
         },
       },
     ],

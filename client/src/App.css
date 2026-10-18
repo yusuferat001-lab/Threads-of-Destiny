@@ -119,23 +119,19 @@ body {
 }
 
 /* Koyu (ahşap) panellerin kaydırma çubuğu — parşömen panellerinki için bkz. .panel-parsomen. */
-.merkez-alt,
 .ekran {
   scrollbar-width: thin;
   scrollbar-color: var(--renk-ahsap-kenar) rgba(0, 0, 0, 0.25);
 }
 
-.merkez-alt::-webkit-scrollbar,
 .ekran::-webkit-scrollbar {
   width: 10px;
 }
 
-.merkez-alt::-webkit-scrollbar-track,
 .ekran::-webkit-scrollbar-track {
   background: rgba(0, 0, 0, 0.25);
 }
 
-.merkez-alt::-webkit-scrollbar-thumb,
 .ekran::-webkit-scrollbar-thumb {
   background: var(--renk-ahsap-kenar);
   border-radius: 6px;
@@ -1278,125 +1274,22 @@ button.ikincil {
 }
 
 /* Fotoğrafın üstüne artık hiçbir şey binmez (ne kart ne gradyan) — görsel kendi kutusunda
-   yalnız durur, olay metni/seçenekler altındaki ayrı .merkez-alt kutusundadır (eşit kutu
-   ilkesi: üç panel de aynı kalınlıkta çerçeveye/köşeye sahip). Sahne, .merkez-alt'ın SABİT
-   payı (bkz. aşağıdaki not) dışında kalan alanı kaplar (flex:1) — bu pay içerik uzunluğuna
-   göre değişmediği için sahne de her zaman aynı oranı korur, en az 150px'in altına küçülmez
-   — görselin tamamı da "contain" ile hep açıkta kalır (bkz. .bolge-sahnesi-tam). */
+   yalnız durur; olay metni/seçenekler altındaki kadife .olay-kutusu'ndadır (olay-kutusu.css +
+   pc-olay-kutusu.css). Sahne, kutunun SABİT yüksekliği dışında kalan alanı kaplar (flex:1) —
+   kutu içerik uzunluğuna göre değişmediği için sahne de her zaman aynı oranı korur, en az
+   150px'in altına küçülmez — görselin tamamı da "contain" ile hep açıkta kalır
+   (bkz. .bolge-sahnesi-tam). */
 .merkez-sahne {
   position: relative;
   flex: 1 1 0%;
   min-height: 150px;
   overflow: hidden;
-  /* Sahne tıklama noktaları (.sahne-hotspotlar), arka plan görselinin `object-fit: contain`
-     ile bıraktığı gerçek kutuyu cqw/cqh ile birebir taklit edebilsin diye bir boyut
-     konteyneri. İçerik boyutu zaten yalnız flex'ten geliyor (tüm katmanlar mutlak konumlu),
-     bu yüzden `size` containment güvenli. */
-  container-type: size;
 }
 
 .merkez-sahne-arkaplan {
   position: absolute;
   inset: 0;
   z-index: 0;
-}
-
-/* Olay/seçim metni artık görselin ÜSTÜNDE değil, altındaki kendi kutusunda. Bu kutunun payı
-   BİLEREK sabit bir orana kilitlenir (flex: 0 0 <sabit> — içeriğe göre büyüyüp küçülen "auto"
-   DEĞİL): olay metni kısa/uzun ya da seçenek sayısı 2-4 arasında değiştikçe kutu boyu
-   değişmesin diye — aksi halde sahne (flex:1 ile kalanı dolduran taraf) her tıklamada
-   büyüyüp küçülerek görsel bir "kayma" hissi yaratıyordu (olay→sonuç geçişlerinde ölçülen
-   fark ~25-55px). %58'lik pay, gerçek 4 seçenekli + ipuçlu olaylarda bile seçeneklerin
-   (2x2 ızgara, bkz. .secenekler) en azından ilk sırası kaydırmadan görünecek şekilde
-   ölçüldü (%43 gibi daha dar bir pay denendiğinde ilk sıra bile görünmüyordu). İçerik yine
-   de bu sabit alana sığmazsa kendi içinde kayar (overflow-y) — ama artık SADECE gerçekten
-   uzun içerikte, her tıklamada değil.
-   Ayrıca artık tam genişlik yerine ortalanmış, dar bir "kart" halinde — daha kareye yakın
-   bir görünüm için kenarlarda boşluk bırakır ve görselin alt kısmına hafifçe (~%10) taşarak
-   biner; taşan payı sahne geri kazanır (negatif margin + sahne'nin flex:1 büyümesi sayesinde
-   toplam yükseklik hep %100 kalır). Taşma payı SahneHotspotlari'nın yeni ortak sırasının
-   (bkz. .sahne-hotspot-* bottom değerleri) hemen altında kaldığı için tıklama noktalarını
-   örtmez. */
-.merkez-alt {
-  position: relative;
-  z-index: 2; /* sahnenin ve .sahne-hotspot-*'ın üstünde kalsın */
-  /* Paket 3: kartın payı %58'den %52'ye — bölge sahnesi masaüstünde daha çok nefes alsın
-     (sahne artık merkezin ~yarısı). Sabit oran korunur ki olay→sonuç geçişinde sahne
-     "zıplamasın"; içerik sığmazsa kart yine kendi içinde kayar. */
-  flex: 0 0 clamp(260px, 52%, 440px);
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-  width: min(680px, 88%);
-  /* Sahnenin altına yalnızca ~%6 taşar; arka planı tam opak. */
-  margin: clamp(-1.4rem, -2.6vh, -0.75rem) auto 0;
-  padding: 0.55rem 1.1rem 0.7rem;
-  border: 2px solid var(--renk-altin);
-  border-radius: 16px;
-  background: var(--renk-ahsap-panel);
-  box-shadow: var(--golge-derin);
-  overflow-y: auto;
-}
-
-/* Seçim SONUCU ekranında kart — 2026-09 sonu düzeltmesi (kullanıcı: "pc'de olay
-   ekranı sabit değil, arkaplan sürekli değişiyor"). Eskiden bu kartın payı
-   İÇERİĞE göre büyüyüp küçülüyordu (flex:0 1 auto + max-height) — sonuç mesajı
-   kısa/uzun oldukça sahnenin (flex:1 ile kalanı dolduran) kapladığı alan da her
-   seçimde değişiyor, bölge görseli yeniden kadrajlanıp "arka plan değişti" hissi
-   veriyordu. Artık soru kartıyla (.merkez-alt) BİREBİR AYNI sabit payı kullanır —
-   sahne, soru⇄sonuç geçişinde artık asla boyut değiştirmez. Kısa sonuçlarda
-   kutuda boşluk kalabilir; uzun sonuçlarda (.merkez-alt'tan miras) overflow-y:auto
-   ile kendi içinde kayar (bkz. ::after fade ipucu, aşağıda). Artık .merkez-alt'tan
-   fazladan hiçbir boyut/margin override'ı yok — sınıf yalnız ::after ipucu için var. */
-/* İçerik taşıyorsa kaydırılabilir olduğunu belli eden alt kenar gölgesi —
-   layout'ta yer kaplamaz (negatif üst margin ile içeriğin üstüne biner). */
-.merkez-alt-sonuc::after {
-  content: '';
-  position: sticky;
-  bottom: -0.75rem;
-  display: block;
-  height: 1.6rem;
-  margin: -1.6rem -1.15rem -0.75rem;
-  background: linear-gradient(to top, var(--renk-ahsap-panel), transparent);
-  pointer-events: none;
-}
-
-.olay-karti {
-  position: relative;
-  width: 100%;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid var(--renk-ahsap-kenar);
-  border-radius: 10px;
-  padding: clamp(0.45rem, 0.2vw + 0.38rem, 0.7rem) clamp(0.75rem, 0.3vw + 0.6rem, 1rem);
-}
-
-/* Parşömen tomarının uçlarındaki "makara" — okunabilirlik dışında işlevi yok. */
-.olay-karti::before,
-.olay-karti::after {
-  content: '';
-  position: absolute;
-  top: -5px;
-  bottom: -5px;
-  width: 16px;
-  border-radius: 8px;
-  background: linear-gradient(90deg, #2b1d12, #6b4f2a 45%, #4a3520 60%, #2b1d12);
-  border: 1px solid var(--renk-ahsap-kenar);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
-}
-
-.olay-karti::before {
-  left: -9px;
-}
-
-.olay-karti::after {
-  right: -9px;
-}
-
-.olay-karti h2 {
-  font-size: clamp(1rem, 0.4vw + 0.85rem, 1.3rem);
-  letter-spacing: 0.02em;
-  color: var(--renk-altin-parlak);
 }
 
 .sag-panel {
@@ -1513,11 +1406,12 @@ button.ikincil {
   }
 }
 
-/* 7 stat modülü (aranma seviyesi dahil) her zaman eşit genişlikte bir grid — bar küçülüp
-   büyüse de her modül barın sabit bir oranını (1/7) kaplar, tek tek farklı boylarda dizilip taşmaz. */
+/* 8 stat modülü (Yıl, Yaş, Can, Para, Şöhret, Ahlak, Mutluluk, Aranma) her zaman eşit genişlikte bir grid —
+   bar küçülüp büyüse de her modül barın sabit bir oranını (1/8) kaplar, tek tek farklı boylarda dizilip taşmaz.
+   Mobilde Yıl şeritte yok → 7 sütun (aşağıdaki mobil kural). */
 .ust-serit-moduller {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(8, 1fr);
   gap: clamp(0.4rem, 0.4vw + 0.3rem, 0.8rem);
   flex: 1 1 auto;
   min-width: 0;
@@ -2193,13 +2087,6 @@ button.ikincil {
   padding-top: 0.5rem;
 }
 
-.olay-karti {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  text-align: center;
-}
-
 .olay-gorseli {
   font-size: clamp(1.8rem, 1vw + 1.4rem, 2.6rem);
   line-height: 1;
@@ -2288,19 +2175,6 @@ button.ikincil {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* Paket 4: şans + etki çipleri artık tek kompakt satır (alt alta yığılmıyor).
-   `display: contents` ile .secenek-tahmin çipleri de bu satırın parçası olur. */
-.secenek-meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.25rem 0.4rem;
-  margin-top: auto;
-  padding-top: 0.15rem;
-}
-.secenek-meta .secenek-tahminler {
-  display: contents;
-}
 
 .secenek:hover:not(:disabled) {
   border-color: var(--renk-altin);
@@ -2710,105 +2584,6 @@ button.ikincil {
   color: #e07a7a !important;
 }
 
-/* ---- Sahne tıklama noktaları (mağaza/işyeri/ev/sosyalleş) ----
- * Gelir&Gider, İşin, Mağaza ve Sosyalleş artık ayrı bir buton satırından değil,
- * doğrudan sahnenin (BolgeSahnesi) arka plan görselindeki dört bölgeden açılır:
- * soldan sağa 🛒 Mağaza (sol bina) · işyeri (meydan) · ev (boş arsa) · 🍷 Sosyalleş (sağ bina).
- *
- * Kapsayıcı, arka plan görseliyle AYNI en-boy oranına (`--sahne-orani`, SahneHotspotlari'dan
- * inline gelir) kilitlenir ve `.merkez-sahne` içinde `object-fit: contain` gibi ortalanır —
- * böylece noktalar görselin kendisine "yapışır", ekran küçülüp büyüdükçe resimle birlikte
- * ölçeklenir ve asla kaymaz. Tüm konumlar yüzde cinsindendir (vw/px yok). Kapsayıcı
- * tıklamayı yutmaz (pointer-events:none) — sadece butonlar tıklanabilir. */
-.sahne-hotspotlar {
-  position: absolute;
-  inset: 0;
-  margin: auto;
-  /* `object-fit: contain` ile aynı kutu: her iki eksende de sınırlayan kenara göre
-     ölçeklenir, ortalanır. cqw/cqh = .merkez-sahne'nin genişliği/yüksekliği. */
-  width: min(100cqw, 100cqh * var(--sahne-orani, 2.356));
-  height: min(100cqh, 100cqw / var(--sahne-orani, 2.356));
-  z-index: 5;
-  pointer-events: none;
-}
-
-.sahne-hotspot {
-  position: absolute;
-  pointer-events: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.2rem;
-  background: transparent;
-  border: none;
-  padding: 0.2rem 0.35rem;
-  cursor: pointer;
-  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.8));
-  transition: transform 0.15s ease, filter 0.15s ease;
-}
-
-.sahne-hotspot:hover:not(:disabled),
-.sahne-hotspot:focus-visible:not(:disabled) {
-  transform: translateY(-4px) scale(1.07);
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.85)) drop-shadow(0 0 10px rgba(var(--renk-altin-rgb), 0.55));
-}
-
-.sahne-hotspot:disabled {
-  cursor: default;
-  opacity: 0.6;
-}
-
-.sahne-hotspot-ikon {
-  display: block;
-  font-size: 2.1rem;
-  line-height: 1;
-}
-
-.sahne-hotspot-etiket {
-  font-size: 0.62rem;
-  font-family: var(--font-baslik);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  background: rgba(10, 7, 4, 0.6);
-  padding: 0.1rem 0.5rem;
-  border-radius: 999px;
-  border: 1px solid rgba(var(--renk-altin-rgb), 0.45);
-  color: var(--renk-altin-parlak);
-  white-space: nowrap;
-}
-
-/* Dört nokta, arka plan görselindeki bölgelere denk gelen sabit yüzde konumlarında durur
- * (soldan sağa: kariyer / işyeri (Yatırım) / ev / sosyalleş). `left` değerleri buton genişliği hesaba
- * katılarak zaten yaklaşık ortalıdır (translateX yok — böylece :hover'daki translateY ve
- * mobildeki scale transform'larıyla çakışmaz). `bottom` değerleri, .merkez-alt yüzen kartının
- * sahnenin altına ~%8-15 taşan bölgesinin (bkz. .merkez-alt) güvenle üstünde kalır. */
-.sahne-hotspot-kariyer {
-  left: 6%;
-  bottom: 21%;
-}
-
-.sahne-hotspot-isyeri {
-  left: 27%;
-  bottom: 17%;
-}
-
-.sahne-hotspot-ev {
-  left: 66%;
-  bottom: 17%;
-}
-
-/* Sağ kenardaki nokta `left` yerine `right` ile sabitlenir — uzun "Sosyalleş" etiketi
-   dar ekranlarda sahnenin `overflow:hidden` kenarına takılıp kırpılmasın diye. */
-.sahne-hotspot-sosyallesme {
-  left: auto;
-  right: 2%;
-  bottom: 21%;
-}
-
-.sahne-hotspot-kariyer .sahne-hotspot-ikon,
-.sahne-hotspot-sosyallesme .sahne-hotspot-ikon {
-  font-size: 1.9rem;
-}
 
 /* ---- Gelir & Gider ekranı ----
  * Diğer tam-sayfa ekranlar gibi (bkz. yukarıdaki genel not) `.tam-govde-3col` ile 3 sütuna
@@ -4470,8 +4245,8 @@ button.ikincil {
    `-webkit-line-clamp:2` ile kırpılıp geri kalanı `title` tooltip'ine
    gizleniyordu — dokunmatikte hiç erişilemiyor, masaüstünde de fareyle
    beklemek gerekiyordu ("olay sonucu tam okunmuyor"). Artık HER platformda
-   tam metin görünür; kutu `.merkez-alt` içinde kendi payında, gerekiyorsa
-   `.merkez-alt` kendi içinde kayar (alt kenarda bir fade ipucu var).
+   tam metin görünür; olay kutusunda parşömen kendi içinde kayar (kenarlarda
+   solma ipucu var, bkz. OlayKutusu `useKaydirmaIpucu`).
    `title` zararsız bir yedek olarak kalır. Blok yavaşça yukarı kayarak belirir (#17). */
 .tur-ozeti {
   font-size: clamp(0.95rem, 0.25vw + 0.82rem, 1.15rem);
@@ -4638,35 +4413,6 @@ button.ikincil {
   opacity: 0.85;
 }
 
-.secenek-sans {
-  font-size: clamp(0.75rem, 0.3vw + 0.6rem, 1.05rem);
-  opacity: 0.65;
-}
-
-.secenek-tahminler {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.3rem;
-}
-
-.secenek-tahmin {
-  font-size: clamp(0.72rem, 0.25vw + 0.6rem, 1rem);
-  padding: 0.15rem 0.5rem;
-  border-radius: 999px;
-  line-height: 1.5;
-}
-
-.secenek-tahmin.tahmin-pozitif {
-  background: rgba(30, 110, 60, 0.25);
-  border: 1px solid rgba(60, 160, 90, 0.45);
-  color: #a6e0ac;
-}
-
-.secenek-tahmin.tahmin-negatif {
-  background: rgba(139, 44, 44, 0.25);
-  border: 1px solid rgba(180, 70, 70, 0.45);
-  color: #e0a6a6;
-}
 
 /* ---- Envanter paneli ---- */
 
@@ -5430,11 +5176,6 @@ button.ikincil {
   font-size: 3.5rem;
 }
 
-/* Sonuç artık ana oyun ekranında küçük bir kutuda gösteriliyor — ölüm ekranındaki
-   (tam ekran) büyük ikondan farklı olarak burada daha kompakt. */
-.olay-karti-sonuc .sonuc-ikon {
-  font-size: 2.3rem;
-}
 
 /* .ses-toggle-buton kaldırıldı — ses aç/kapa artık yalnızca Ayarlar modalında. */
 
@@ -5894,7 +5635,8 @@ button.ikincil {
   .ust-serit-modul-ahlak .ust-serit-modul-deger {
     white-space: normal;
     overflow: visible;
-    font-size: 0.6rem;
+    font-size: 0.54rem;
+    letter-spacing: -0.02em;
     line-height: 1.05;
     word-break: normal;
     overflow-wrap: anywhere;
@@ -5996,59 +5738,9 @@ button.ikincil {
     min-height: 0;
   }
 
-  /* Sahne mobilde sadece atmosfer — daha kısa bir şerit. Hotspot'lar artık burada
-     HİÇ render edilmiyor (eski "Paket 2" alt-grid'i kaldırıldı) — dört hedefi de
-     (Kariyer/Yatırım/Evin/Sosyalleş) sabit alt gezinme çubuğunda, bkz. AltGezinme. */
-  .merkez-sahne {
-    flex: none;
-    min-height: 0;
-    aspect-ratio: 21 / 8;
-  }
-
-  /* Sahnenin alt kısmına, altındaki olay kartıyla yumuşakça birleşsin diye bir
-     gradyan (kullanıcı isteği — "siyah/kahverengi gradyan"). */
-  .merkez-sahne-gradyan {
-    position: absolute;
-    inset: auto 0 0 0;
-    height: clamp(36px, 45%, 70px);
-    z-index: 1;
-    pointer-events: none;
-    background: linear-gradient(to top, var(--renk-ahsap-koyu) 0%, rgba(20, 15, 10, 0.55) 55%, transparent 100%);
-  }
-
-  /* Kilit sayesinde (bkz. .oyun-kapsayici-tam) sayfa artık hiç kaymıyor — kartın
-     kendisi de artık kendi payını (flex:1) alıp GEREKİRSE (en kötü senaryo: uzun
-     metin + çok seçenek aynı anda) kendi içinde kayabiliyor (güvenlik ağı; normal
-     durumda her şey sığdığı için görünür bir fark yaratmaz). Padding yarıya indi
-     (kullanıcı isteği). */
-  .merkez-alt {
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow-y: auto;
-    width: 100%;
-    margin-top: 0;
-    padding: 0.3rem 0.4rem 0.4rem;
-  }
-
-  .merkez-alt-sonuc {
-    margin-top: 0;
-  }
-  .merkez-alt-sonuc::after {
-    display: none;
-  }
-
-  .olay-karti {
-    padding: 0.3rem 0.5rem;
-  }
-
-  /* Olay metni (ve sonuç ekranındaki EtkiCipleri+özet) kendi kutusunda kayar —
-     başlık ve seçenekler/Devam Et butonu bu kutunun DIŞINDA, HER ZAMAN görünür
-     kalır. Uzun bir olay artık sayfayı asla aşağı itmiyor. */
-  .olay-metni-govde {
-    max-height: 30vh;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
+  /* Mobil oyun/sonuç ekranının sahnesi (`.merkez-sahne`) hiç render edilmiyor: tam sayfa portre
+     arka plan mobil-oyun.css'te (`.oyun-arka-sahne`). Olay kutusu (`.olay-kutusu*`) mobil ve PC
+     için ortaktır (olay-kutusu.css). `.merkez-sahne` yalnız PC düzeninde. */
 
   .tur-ozeti {
     display: block;
@@ -6071,9 +5763,6 @@ button.ikincil {
     top: 0.35rem;
     width: clamp(16px, 0.6vw + 13px, 20px);
     height: clamp(16px, 0.6vw + 13px, 20px);
-  }
-  .secenek-meta {
-    margin-top: 0.1rem;
   }
 
   /* ---- Paket 5: yan paneller mobilde katlanır <details> ----
@@ -6360,57 +6049,6 @@ button.ikincil {
   .ekran-kariyer,
   .ekran-tam-sayfa {
     padding-bottom: calc(var(--alt-gezinme-yukseklik) + env(safe-area-inset-bottom, 0));
-  }
-
-  /* ---- Canlı skor detay modalı (yer tutucu — içerik kullanıcı tarafından doldurulacak) ---- */
-  .skor-detay-katman {
-    position: fixed;
-    inset: 0;
-    z-index: 60;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1.2rem;
-    background: rgba(0, 0, 0, 0.6);
-  }
-  .skor-detay-modal {
-    width: 100%;
-    max-width: 380px;
-    background: linear-gradient(180deg, var(--panel-ust), var(--panel-alt));
-    border: 1px solid #7a5a36;
-    border-radius: 12px;
-    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.6);
-    overflow: hidden;
-  }
-  .skor-detay-modal-ust {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-    padding: 0.8rem 0.9rem;
-    border-bottom: 1px solid var(--renk-kahve-kenar);
-    background: rgba(0, 0, 0, 0.25);
-  }
-  .skor-detay-modal-ust h2 {
-    margin: 0;
-    font-size: 1.05rem;
-    color: var(--renk-altin-parlak);
-  }
-  .skor-detay-kapat {
-    width: auto;
-    max-width: none;
-    margin: 0;
-    padding: 0.3rem 0.6rem;
-    font-size: 0.8rem;
-    flex-shrink: 0;
-  }
-  .skor-detay-govde {
-    padding: 1rem 0.9rem;
-    text-align: center;
-    opacity: 0.85;
-  }
-  .skor-detay-govde p {
-    margin: 0;
   }
 }
 
@@ -6969,40 +6607,6 @@ button.ikincil {
   display: none;
 }
 
-/* --- Task 4 + 6: olay emojisi metnin sol/sağında çapraz, başlık metne yakın --- */
-.olay-karti-govde {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.4rem;
-  width: 100%;
-}
-.olay-karti-metin-blok {
-  display: flex;
-  flex-direction: column;
-  gap: 0.12rem;
-  flex: 1 1 auto;
-  min-width: 0;
-}
-.olay-karti-metin-blok h2 {
-  margin: 0;
-}
-.olay-karti-metin-blok .olay-metni {
-  margin: 0;
-}
-.olay-gorseli-sol,
-.olay-gorseli-sag {
-  flex: 0 0 auto;
-  align-self: center;
-  opacity: 0.9;
-  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
-}
-.olay-gorseli-sol {
-  transform: rotate(-16deg);
-}
-.olay-gorseli-sag {
-  transform: rotate(16deg);
-}
 
 /* --- Amaçlar: arka plan görselinin ÜSTÜNDE ince overlay şerit (kullanıcı isteği) --- */
 .merkez-sahne > .amac-serit {
@@ -7161,6 +6765,85 @@ button.ikincil {
   white-space: nowrap;
 }
 
+/* --- İlişkiler: eş rozetleri, mantık adayları, düğün seçenekleri --- */
+.aile-huy-satiri {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.35rem 0;
+}
+.aile-huy-rozet {
+  display: inline-block;
+  padding: 0.12rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--aile-kart-kenar);
+  background: rgba(255, 255, 255, 0.07);
+  font-size: 0.74rem;
+}
+.aile-tur-rozet {
+  border-color: rgba(232, 165, 59, 0.55);
+}
+.aile-huy-gizli {
+  opacity: 0.6;
+  font-style: italic;
+}
+.aile-grup-genc {
+  border-color: rgba(127, 191, 106, 0.6);
+}
+.aile-grup-olgun {
+  border-color: rgba(232, 165, 59, 0.6);
+}
+.aile-ihmal-uyari {
+  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+  color: #e8a53b;
+}
+.aile-aday-izgara {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.75rem;
+  margin: 0.6rem 0;
+}
+.aile-aday-karti {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.7rem 0.8rem;
+  border-radius: 12px;
+  border: 1px solid var(--aile-kart-kenar);
+  background: rgba(0, 0, 0, 0.18);
+}
+.aile-aday-satir {
+  margin: 0;
+  font-size: 0.82rem;
+}
+.aile-hediye-secimi {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.25rem 0;
+}
+.aile-hediye-cip {
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  border: 1px solid var(--aile-kart-kenar);
+  background: rgba(255, 255, 255, 0.05);
+  color: inherit;
+  font: inherit;
+  font-size: 0.74rem;
+  cursor: pointer;
+}
+.aile-hediye-cip-secili {
+  background: rgba(232, 165, 59, 0.22);
+  border-color: rgba(232, 165, 59, 0.7);
+}
+.aile-dugun-secenekler {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
 /* --- Task 13/15: aile ekranı evlilik butonu + evcil hayvan kartı --- */
 .aile-evlen-buton {
   display: inline-flex;
@@ -7212,12 +6895,6 @@ button.ikincil {
     margin-top: 0.5rem;
   }
 
-  .merkez-sahne > .amac-serit {
-    top: 0.25rem;
-    left: 0.25rem;
-    right: 0.25rem;
-    gap: 0.2rem;
-  }
   .amac-serit-oge {
     max-width: none;
     padding: 0.16rem 0.4rem;
@@ -7241,17 +6918,6 @@ button.ikincil {
     overflow: hidden;
     white-space: normal;
     font-size: 0.9em;
-  }
-
-  .olay-karti-govde {
-    gap: 0.2rem;
-  }
-  .olay-gorseli-sol,
-  .olay-gorseli-sag {
-    font-size: 1.5rem;
-  }
-  .olay-gorseli-sag {
-    display: none;
   }
 
   .kisilik-modal {
@@ -7636,3 +7302,357 @@ button.ikincil {
 .piyasa-eksi { color: #e5604f; }
 .piyasa-bos { font-size: 0.8rem; opacity: 0.7; margin: 0; }
 .kariyer-istek-rusvet { margin-left: 0.4rem; }
+/* ---- Canlı skor detay modalı (masaüstü + mobil) ---- */
+.skor-detay-katman {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.2rem;
+  background: rgba(0, 0, 0, 0.6);
+}
+.skor-detay-modal {
+  width: 100%;
+  max-width: 420px;
+  background: linear-gradient(180deg, var(--panel-ust), var(--panel-alt));
+  border: 1px solid #7a5a36;
+  border-radius: 12px;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+}
+.skor-detay-modal-ust {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.8rem 0.9rem;
+  border-bottom: 1px solid var(--renk-kahve-kenar);
+  background: rgba(0, 0, 0, 0.25);
+}
+.skor-detay-modal-ust h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--renk-altin-parlak);
+}
+.skor-detay-kapat {
+  width: auto;
+  max-width: none;
+  margin: 0;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+.skor-detay-govde {
+  padding: 1rem 0.9rem;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+.skor-detay-govde p {
+  margin: 0;
+}
+
+/* Masaüstü sol panel canlı skor rozeti (mobilde üst şeritteki hap rozet kullanılır) */
+.canli-skor-rozeti-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  margin: 0.45rem 0 0;
+  padding: 0.4rem 0.65rem;
+  border-radius: 8px;
+  background: var(--altin-gradyan);
+  border: 1px solid var(--renk-altin-parlak);
+  box-shadow: var(--yaldiz-parilti);
+  color: var(--renk-parsomen-metin);
+  font-size: clamp(0.72rem, 0.3vw + 0.58rem, 0.95rem);
+  cursor: pointer;
+}
+.canli-skor-rozeti-panel strong {
+  font-family: var(--font-baslik);
+  font-size: clamp(0.9rem, 0.4vw + 0.7rem, 1.25rem);
+}
+@media (max-width: 767px) {
+  .canli-skor-rozeti-panel { display: none; }
+}
+
+.meslek-yatkinlik-bonus {
+  font-size: clamp(0.72rem, 0.3vw + 0.58rem, 0.98rem);
+  color: #e9d9a6;
+  font-weight: 600;
+}
+.meslek-yatkinlik-bonus.meslek-yatkinlik-malus { color: #e8a39a; }
+.meslek-yatkinlik-bonus.meslek-yatkinlik-yok { color: #cfc6ad; font-weight: 400; opacity: 0.8; }
+
+/* ── Gösterge detay penceresi: tıklanabilir üst şerit modülleri + modal içeriği ── */
+.ust-serit-moduller .ust-serit-modul.ust-serit-modul-tikla,
+.sol-panel-mini-barlar button.un-rozeti.un-rozeti-tikla {
+  /* Genel button stillerini (gradyan, tam genişlik, gölge) sıfırla: görünüm div'li hâliyle aynı kalsın. */
+  width: auto;
+  max-width: none;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  text-align: inherit;
+  text-shadow: none;
+  box-shadow: none;
+  letter-spacing: inherit;
+  text-transform: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.ust-serit-moduller .ust-serit-modul.ust-serit-modul-tikla {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--renk-ahsap-kenar);
+  border-radius: 8px;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.ust-serit-moduller .ust-serit-modul.ust-serit-modul-tikla:hover,
+.ust-serit-moduller .ust-serit-modul.ust-serit-modul-tikla:focus-visible {
+  background: rgba(0, 0, 0, 0.4);
+  border-color: var(--renk-altin-parlak);
+  outline: none;
+}
+/* Uçan +N/−N rozeti tıklamayı yutmasın. */
+.ust-serit-delta {
+  pointer-events: none;
+}
+.sol-panel-mini-barlar button.un-rozeti.un-rozeti-tikla {
+  width: 100%;
+  background: none;
+  border: 0;
+  padding: 0.15rem 0;
+  border-radius: 6px;
+}
+.sol-panel-mini-barlar button.un-rozeti.un-rozeti-tikla:hover,
+.sol-panel-mini-barlar button.un-rozeti.un-rozeti-tikla:focus-visible {
+  background: rgba(255, 255, 255, 0.06);
+  outline: none;
+}
+.sol-panel-mini-barlar button.un-rozeti .un-rozeti-metin {
+  text-align: left;
+}
+
+.gosterge-katman {
+  z-index: 65;
+}
+.gosterge-modal {
+  max-width: 460px;
+}
+.gosterge-deger {
+  margin: 0 0 0.6rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--renk-altin-parlak);
+  text-align: center;
+}
+.gosterge-bilgi {
+  text-align: center;
+  opacity: 0.8;
+}
+.gosterge-baslik {
+  margin: 0.9rem 0 0.35rem;
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+  color: var(--renk-altin-parlak);
+}
+.gosterge-liste {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.gosterge-liste li {
+  font-size: 0.86rem;
+  line-height: 1.35;
+}
+.gosterge-etken {
+  display: flex;
+  gap: 0.45rem;
+  align-items: flex-start;
+  padding: 0.35rem 0.5rem;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border-left: 3px solid rgba(255, 255, 255, 0.25);
+}
+.gosterge-etken-iyi {
+  border-left-color: #5fae6a;
+}
+.gosterge-etken-kotu {
+  border-left-color: #c9574a;
+}
+.gosterge-etken-ikon {
+  flex-shrink: 0;
+}
+.gosterge-ipuclari li {
+  position: relative;
+  padding-left: 1rem;
+}
+.gosterge-ipuclari li::before {
+  content: '•';
+  position: absolute;
+  left: 0.2rem;
+  color: var(--renk-altin-parlak);
+}
+@media (max-width: 767px) {
+  .gosterge-govde {
+    max-height: 72vh;
+  }
+  .ust-serit-moduller .ust-serit-modul.ust-serit-modul-tikla {
+    min-height: 2.6rem;
+  }
+}
+
+/* ── Üst şerit göstergeleri: değere göre kademeli emoji ──
+   Kritikte (Can/Mutluluk ≤%20, Para borçta) ikon yavaşça nabız atar. Aranma yıldızlarla zaten görsel. */
+.ust-serit-modul-ton-kritik .ust-serit-modul-ikon {
+  animation: ustSeritNabiz 2.4s ease-in-out infinite;
+}
+@keyframes ustSeritNabiz {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ust-serit-modul-ton-kritik .ust-serit-modul-ikon {
+    animation: none;
+  }
+}
+
+/* Mobil: Yıl satırı (amaç satırının altı) — dokununca ülke + dünya geçmişi penceresi açılır. */
+.ust-yil-satiri {
+  display: none;
+}
+@media (max-width: 767px) {
+  .ust-yil-satiri {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    width: auto;
+    max-width: none;
+    margin: 0.3rem 0.4rem 0;
+    padding: 0.2rem 0.6rem;
+    font: inherit;
+    font-size: 0.72rem;
+    line-height: 1.2;
+    color: var(--renk-altin-parlak);
+    text-align: left;
+    text-shadow: none;
+    letter-spacing: normal;
+    text-transform: none;
+    background: rgba(24, 17, 11, 0.82);
+    border: 1px solid var(--renk-ahsap-kenar);
+    border-radius: 999px;
+    box-shadow: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+    z-index: 2;
+  }
+  .ust-yil-satiri:focus-visible {
+    border-color: var(--renk-altin-parlak);
+    outline: none;
+  }
+  .ust-yil-satiri-yil {
+    flex: none;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+  .ust-yil-satiri-bolge {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: #e6d8b8;
+    opacity: 0.9;
+  }
+  .ust-yil-satiri-ipucu {
+    flex: none;
+    opacity: 0.7;
+    font-size: 0.9rem;
+  }
+}
+
+/* Dünya geçmişi penceresi */
+.dunya-gecmisi-aralik {
+  text-align: center;
+  margin-bottom: 0.6rem;
+}
+.dunya-gecmisi-bolum + .dunya-gecmisi-bolum {
+  margin-top: 0.9rem;
+}
+.dunya-gecmisi-yil {
+  display: inline-block;
+  margin-right: 0.25rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--renk-altin-parlak);
+}
+
+/* --- Amaç detay penceresi: bir amaca tıklayınca ne yapılacağı --- */
+.amac-serit-oge {
+  /* Şerit artık tıklanır (button): tarayıcı varsayılanlarını sıfırla, overlay'in pointer-events:none'ını aş. */
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.amac-tiklanir {
+  cursor: pointer;
+}
+.amac-detay-modal {
+  max-width: 380px;
+}
+.amac-detay-modal.amac-zor {
+  border-left-color: #d8a94a;
+}
+.amac-detay-etiket {
+  font-size: 0.78rem;
+  opacity: 0.8;
+  margin: 0 0 0.6rem;
+}
+.amac-detay-alt-baslik {
+  margin: 0 0 0.25rem;
+  font-size: 0.82rem;
+  color: var(--renk-altin-parlak);
+  letter-spacing: 0.04em;
+}
+.amac-detay-ilerleme {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin: 0 0 0.8rem;
+  font-size: 0.85rem;
+}
+.amac-detay-ipucu {
+  font-size: 0.78rem;
+  opacity: 0.8;
+  font-style: italic;
+}
+.amac-serit-oge {
+  box-shadow: none;
+}
+button.amac-serit-oge:hover:not(:disabled) {
+  background: rgba(34, 22, 10, 0.85);
+  transform: none;
+  box-shadow: none;
+}
+button.amac-serit-oge.amac-serit-tamam:hover:not(:disabled) {
+  background: rgba(40, 90, 45, 0.85);
+}
+
+.aile-aday-karti > .aile-huy-rozet {
+  align-self: flex-start;
+}
+
+.aile-sevgili-karti .aile-bos-metin,
+.aile-sevgili-karti .aile-ihmal-uyari {
+  margin-bottom: 0.4rem;
+}

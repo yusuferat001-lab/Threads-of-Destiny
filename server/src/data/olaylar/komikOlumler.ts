@@ -19,16 +19,16 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
     gorsel: "🛢️",
     baslik: "Fıçıyla Şelale",
     metin:
-      "Meyhanede iddiaya girdin: kimse boş bir şarap fıçısının içine girip küçük şelaleden aşağı inmeye cesaret edemez. Herkes sana bakıyor. Fıçı hazır.",
+      "Meyhanede iddiaya girdin: kimse boş şarap fıçısıyla şelaleden inmeye cesaret edemez. Herkes sana bakıyor.",
     secenekler: [
       {
-        metin: "Fıçıya gir, iniş için itilmeni bekle.",
+        metin: "Fıçıya gir, itilmeyi bekle.",
         baseBasariSansi: 45,
         basariliSonuc: {
           un: 14,
           mutluluk: 10,
           para: 8,
-          mesaj: "Fıçı döne döne indi, sen sırılsıklam ama sağ çıktın. Meyhane haftalarca senin adını andı.",
+          mesaj: "Sırılsıklam ama sağ çıktın; meyhane seni konuştu.",
           detay: "Bazı aptallıklar tutar.",
         },
         basarisizSonuc: {
@@ -36,19 +36,19 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
           efsanevi_olum: "Fıçıyla Şelaleden İnen Adam",
           saglik: -22,
           mutluluk: -6,
-          mesaj: "Fıçı ilk kayada paramparça oldu. Kalabalık önce güldü, sonra sustu; seni sudan çıkardıklarında zar zor nefes alıyordun.",
+          mesaj: "Fıçı ilk kayada parçalandı; zar zor nefes alıyordun.",
         },
       },
       {
-        metin: "İddiayı geri çevir, bir bardak daha iste.",
+        metin: "Reddet, bir bardak daha iste.",
         baseBasariSansi: 90,
         basariliSonuc: {
           mutluluk: 2,
-          mesaj: "Omuz silktin. Birkaç kişi 'ödlek' dedi ama sabaha unuttular.",
+          mesaj: "Omuz silktin; 'ödlek' diyenler sabaha unuttu.",
         },
         basarisizSonuc: {
           un: -3,
-          mesaj: "Geri çekilişin biraz fazla telaşlı oldu; günlerce 'fıçı korkusu' diye anıldın.",
+          mesaj: "Telaşla çekildin; günlerce 'fıçı korkusu' diye anıldın.",
         },
       },
     ],
@@ -62,34 +62,34 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
     gorsel: "🌶️",
     baslik: "En Acı Biber",
     metin:
-      "Bir seyyar satıcı, uzak diyarlardan gelen 'ejderha nefesi' denen biberden bir sepet açtı. 'Bütününü çiğ yiyene sepet bedava' diyor. Etraf toplandı.",
+      "Seyyar satıcı 'ejderha nefesi' biberini gösteriyor: 'Bütününü çiğ yiyene sepet bedava.' Kalabalık toplandı.",
     secenekler: [
       {
-        metin: "Al ağzına, çiğne, yut. Gözünü kırpma.",
+        metin: "Çiğne, yut, gözünü kırpma.",
         baseBasariSansi: 40,
         basariliSonuc: {
           un: 10,
           mutluluk: 6,
           para: 6,
-          mesaj: "Yüzün mora döndü, gözlerinden yaş fışkırdı ama yuttun. Satıcı sepeti sırıtarak uzattı.",
+          mesaj: "Gözlerin yaşardı ama yuttun; satıcı sırıtıp sepeti uzattı.",
         },
         basarisizSonuc: {
           olum_sansi: 55,
           efsanevi_olum: "Ejderha Nefesini Yutan Kahraman",
           saglik: -22,
-          mesaj: "Nefesin kesildi, yüzün morardı; günlerce yatakta kaldın, doktor 'ilk kez böyle bir şey görüyorum' deyip durdu.",
+          mesaj: "Nefesin kesildi; günlerce yattın, doktor böylesini görmemişti.",
         },
       },
       {
-        metin: "Bir dilim tadına bak, gerisini bırak.",
+        metin: "Bir dilim tat, bırak.",
         baseBasariSansi: 85,
         basariliSonuc: {
           mutluluk: 2,
-          mesaj: "Bir dilim yetti de arttı bile. Ağzın yandı ama hikâyeni anlatacak kadar yaşadın.",
+          mesaj: "Bir dilim yetti; ağzın yandı ama sağsın.",
         },
         basarisizSonuc: {
           saglik: -6,
-          mesaj: "O bir dilim bile fazla geldi; iki gün ağzına bir şey koyamadın.",
+          mesaj: "Bir dilim bile fazla geldi; iki gün bir şey yiyemedin.",
         },
       },
     ],
@@ -103,7 +103,7 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
     gorsel: "🗿",
     baslik: "Meydandaki Heykel",
     metin:
-      "Arkadaşların, gece meydandaki hükümdar heykeline komik bir bıyık çizmeye seni kışkırtıyor. Merdiven hazır, boya hazır, muhafızlar biraz ötede.",
+      "Arkadaşların, gece hükümdar heykeline bıyık çizmen için kışkırtıyor. Merdiven, boya hazır; muhafızlar yakında.",
     secenekler: [
       {
         metin: "Merdivene çık, bıyığı çiz.",
@@ -112,27 +112,27 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
           un: 8,
           mutluluk: 8,
           suc_artis: 6,
-          mesaj: "Bıyık kusursuz oldu. Şehir sabah gülmekten kırıldı, kimse seni ele vermedi.",
+          mesaj: "Bıyık kusursuz oldu; şehir güldü, kimse seni ele vermedi.",
         },
         basarisizSonuc: {
           olum_sansi: 55,
           efsanevi_olum: "Kralın Bıyığını Çizerken Düşen",
           saglik: -20,
           suc_artis: 6,
-          mesaj: "Merdiven kaydı; taş zemine sertçe çakıldın. 'Neredeyse bitiyordu' diye sayıklayıp durdun.",
+          mesaj: "Merdiven kaydı, taşa çakıldın. 'Neredeyse bitiyordu' dedin.",
         },
       },
       {
-        metin: "Boyayı arkadaşına ver, sen gözcü ol.",
+        metin: "Boyayı arkadaşına ver, gözcü ol.",
         baseBasariSansi: 80,
         basariliSonuc: {
           mutluluk: 4,
-          mesaj: "Gözcülük ettin, iş bitti, kimse yakalanmadı. Kahraman arkadaşın oldu ama gülen sen de vardın.",
+          mesaj: "İş bitti, kimse yakalanmadı; kahraman arkadaşın oldu.",
         },
         basarisizSonuc: {
           suc_artis: 8,
           saglik: -4,
-          mesaj: "Devriye erken geldi; koşarken bir el arabasına takılıp yuvarlandın. En azından tanınmadın.",
+          mesaj: "Devriye geldi; el arabasına takılıp yuvarlandın, tanınmadın.",
         },
       },
     ],
@@ -146,32 +146,32 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
     gorsel: "🐝",
     baslik: "Bedava Bal",
     metin:
-      "Ağacın tepesinde kocaman bir arı kovanı var, içi balla dolu. Aşağıdan bakınca 'birkaç sokma değer' gibi görünüyor.",
+      "Ağacın tepesinde bal dolu kocaman bir arı kovanı var. Aşağıdan 'birkaç sokma değer' gibi görünüyor.",
     secenekler: [
       {
-        metin: "Ağaca tırman, kovanı sopayla dürt.",
+        metin: "Tırman, kovanı sopayla dürt.",
         baseBasariSansi: 45,
         basariliSonuc: {
           para: 12,
           mutluluk: 5,
-          mesaj: "Birkaç yerinden şiştin ama bir kova bal indirdin. Günlerce herkese ikram ettin.",
+          mesaj: "Birkaç sokma yedin ama bir kova bal indirdin.",
         },
         basarisizSonuc: {
           olum_sansi: 55,
           saglik: -25,
           efsanevi_olum: "Arıların Fikrini Sormadan Bal Alan",
-          mesaj: "Sürü fikrini çok net belirtti. Ağaçtan nasıl indiğini kimse tam göremedi.",
+          mesaj: "Sürü fikrini net belirtti; nasıl indiğini kimse görmedi.",
         },
       },
       {
-        metin: "Bir arıcıya haber ver, payını iste.",
+        metin: "Arıcıya haber ver, pay iste.",
         baseBasariSansi: 85,
         basariliSonuc: {
           para: 4,
-          mesaj: "Arıcı işini bilerek yaptı, sana da bir kavanoz düştü. Tek bir sokma bile yok.",
+          mesaj: "Arıcı işini bildi, sana da bir kavanoz düştü; sokma yok.",
         },
         basarisizSonuc: {
-          mesaj: "Arıcı 'benim kovanım değil' deyip gitti. Bal ağaçta kaldı, sen de yerde.",
+          mesaj: "Arıcı 'benim kovanım değil' deyip gitti; bal ağaçta kaldı.",
         },
       },
     ],
@@ -185,32 +185,32 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
     gorsel: "🫁",
     baslik: "Nefesimi En Uzun Tutarım",
     metin:
-      "Hamamda / meyhanede laf lafı açtı: kim nefesini en uzun tutabilir? Bahis konuldu. Birileri saymaya başladı bile.",
+      "Hamamda / meyhanede laf döndü: kim nefesini en uzun tutar? Bahis kondu, biri saymaya başladı bile.",
     secenekler: [
       {
-        metin: "Ciğerini doldur, gözlerini kapat, dayan.",
+        metin: "Nefesini tut, dayan.",
         baseBasariSansi: 55,
         basariliSonuc: {
           para: 6,
           un: 4,
-          mesaj: "Yüzün kızardı, damarların attı ama son dayanan sen oldun. Bahsi topladın.",
+          mesaj: "Yüzün kızardı ama son dayanan sendin; bahsi topladın.",
         },
         basarisizSonuc: {
           olum_sansi: 35,
           saglik: -10,
           efsanevi_olum: "Bir Bahis Uğruna Nefesini Fazla Tutan",
-          mesaj: "İnatla tuttun, tuttun... sonra masaya kapandın. Kalkmadın.",
+          mesaj: "Tuttun, tuttun... sonra masaya kapandın, kalkmadın.",
         },
       },
       {
         metin: "'Ben sayarım' de, bahse girme.",
         baseBasariSansi: 95,
         basariliSonuc: {
-          mesaj: "Saydın, güldün, kimse fark etmeden kenara çekildin. Akşamın en sağlıklı adamı sendin.",
+          mesaj: "Saydın, güldün, sıvıştın; akşamın en sağlam adamıydın.",
         },
         basarisizSonuc: {
           mutluluk: -2,
-          mesaj: "Sayarken şaşırdın, herkes sana kızdı. Ölmedin ama itibarın biraz sarsıldı.",
+          mesaj: "Saymayı şaşırdın, herkes kızdı; itibarın sarsıldı.",
         },
       },
     ],
@@ -224,21 +224,21 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
     gorsel: "🎃",
     baslik: "Dev Kabak Yarışı",
     metin:
-      "Pazar meydanında bir yarışma: en ağır kabağı getiren ödülü alır. Senin komşunun tarlasında bir canavar var — tek başına kaldırılır mı, bilinmez.",
+      "Pazar yarışması: en ağır kabağı getiren ödül alır. Komşunun tarlasında bir canavar var; tek kişi kaldırır mı?",
     secenekler: [
       {
-        metin: "Sırtla, meydana kadar taşı.",
+        metin: "Sırtla, meydana taşı.",
         baseBasariSansi: 50,
         basariliSonuc: {
           para: 15,
           un: 5,
-          mesaj: "Bel fıtığının eşiğinden döndün ama kabağı yetiştirdin ve birinci oldun.",
+          mesaj: "Belin zor dayandı ama birinci oldun.",
         },
         basarisizSonuc: {
           olum_sansi: 40,
           saglik: -22,
           efsanevi_olum: "Dev Kabağın Altında Kalan",
-          mesaj: "Kabak omzundan kaydı, sen de altında. 'En ağır kabak' unvanını kazandın, ama alamadın.",
+          mesaj: "Kabak kaydı, altında kaldın; ödülü alamadın.",
         },
       },
       {
@@ -247,11 +247,11 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
         maliyet: 4,
         basariliSonuc: {
           para: 6,
-          mesaj: "El arabasıyla rahat rahat getirdin. Birinci olamadın ama sağlam olan üçüncülük de fena değil.",
+          mesaj: "Rahat taşıdın; üçüncü oldun, fena değil.",
         },
         basarisizSonuc: {
           para: -4,
-          mesaj: "El arabasının tekeri kabağın ağırlığına dayanamadı; kabak yolun ortasında patladı.",
+          mesaj: "El arabasının tekeri dayanamadı; kabak yolda patladı.",
         },
       },
     ],
@@ -266,21 +266,21 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
     gorsel: "🧊",
     baslik: "Donmuş Göl",
     metin:
-      "Kış ortası. Göl donmuş görünüyor. Çocuklar kıyıda kaymaya korkuyor; biri 'büyük adam korkar mı hiç' diye takılıyor.",
+      "Kış ortası, göl donmuş görünüyor. Çocuklar kaymaya korkuyor; biri 'koca adam korkar mı?' diye takılıyor.",
     secenekler: [
       {
-        metin: "Buzun ortasına doğru koş, kay.",
+        metin: "Buzun ortasına koş, kay.",
         baseBasariSansi: 50,
         basariliSonuc: {
           mutluluk: 8,
           un: 4,
-          mesaj: "Buz tuttu, ortaya kadar kaydın, çocuklar alkışladı. Bir efsane doğdu.",
+          mesaj: "Buz tuttu, ortaya kadar kaydın; çocuklar alkışladı.",
         },
         basarisizSonuc: {
           olum_sansi: 60,
           saglik: -20,
           efsanevi_olum: "Buzun Kalınlığına Fazla Güvenen",
-          mesaj: "Tam ortada çıtırtıyı duydun. Duyduğun son ses oydu.",
+          mesaj: "Ortada çıtırtıyı duydun. Duyduğun son ses oydu.",
         },
       },
       {
@@ -288,11 +288,11 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
         baseBasariSansi: 90,
         basariliSonuc: {
           mutluluk: 3,
-          mesaj: "Kıyıda birkaç tur attın, güldün, kuru döndün. Çocuklar yine de memnundu.",
+          mesaj: "Kıyıda birkaç tur attın, kuru döndün.",
         },
         basarisizSonuc: {
           saglik: -5,
-          mesaj: "Sığ yerde bile buz kırıldı; dizine kadar buzlu suya girdin, titreyerek eve koştun.",
+          mesaj: "Sığda bile buz kırıldı; dizine kadar girip titreyerek koştun.",
         },
       },
     ],
@@ -306,7 +306,7 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
     gorsel: "🏋️",
     baslik: "Gülle Taşıma Yarışı",
     metin:
-      "Ordugâhta / meydanda erler bir oyun buldu: kim en ağır gülleyi en uzağa taşırsa akşam yemeğini seçer. Sıra sende.",
+      "Ordugâhta / meydanda erler bir oyun buldu: en ağır gülleyi en uzağa taşıyan akşam yemeğini seçer. Sıra sende.",
     secenekler: [
       {
         metin: "En büyüğünü kucakla, yürü.",
@@ -315,25 +315,25 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
           un: 6,
           saglik: -3,
           mutluluk: 5,
-          mesaj: "Suratın kıpkırmızı, damarların patlayacak gibi ama en uzağa sen taşıdın. Akşam ziyafet senindi.",
+          mesaj: "En uzağa sen taşıdın; akşam ziyafeti senindi.",
         },
         basarisizSonuc: {
           olum_sansi: 35,
           saglik: -18,
           efsanevi_olum: "Gülleyi Ayağının Üstüne Düşüren",
-          mesaj: "Gülle elinden kaydı; nereye düştüğünü söylemek acı verir. Kanaman durmadı.",
+          mesaj: "Gülle elinden kaydı; kanaman durmadı.",
         },
       },
       {
-        metin: "Orta boydan birini seç, garantiye oyna.",
+        metin: "Orta boy seç, garantiye oyna.",
         baseBasariSansi: 85,
         basariliSonuc: {
           mutluluk: 3,
-          mesaj: "Makul bir gülle, makul bir mesafe. İkinci oldun, ayakların yerinde.",
+          mesaj: "Makul gülle, makul mesafe; ikinci oldun, ayakların yerinde.",
         },
         basarisizSonuc: {
           saglik: -4,
-          mesaj: "Orta boy bile ağır geldi; birkaç adımda bıraktın, herkes güldü.",
+          mesaj: "Orta boy bile ağır geldi; bıraktın, herkes güldü.",
         },
       },
     ],
@@ -348,7 +348,7 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
     gorsel: "🌀",
     baslik: "Değirmenin Kanadı",
     metin:
-      "Köy değirmeninin kanatları rüzgârla dönüyor. Birileri 'bir kanada tutunup bir tur dönmeye' meydan okuyor. Aşağıdan kolay görünüyor.",
+      "Değirmenin kanatları rüzgârla dönüyor. Biri, kanada tutunup bir tur dönmene meydan okuyor.",
     secenekler: [
       {
         metin: "Kanada atla, sıkı tutun.",
@@ -356,25 +356,25 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
         basariliSonuc: {
           un: 12,
           mutluluk: 8,
-          mesaj: "Bir tam tur döndün, tam tepede midemi bıraktım diye bağırdın, sonra sağ salim indin. Köy seni konuşuyor.",
+          mesaj: "Bir tur döndün, sağ indin; köy seni konuşuyor.",
         },
         basarisizSonuc: {
           olum_sansi: 58,
           efsanevi_olum: "Değirmen Kanadıyla Uçmayı Deneyen",
           saglik: -24,
-          mesaj: "Tepede eller çözüldü. İniş planladığın gibi olmadı; günlerce kımıldayamadan yattın.",
+          mesaj: "Tepede eller çözüldü; günlerce kımıldayamadan yattın.",
         },
       },
       {
-        metin: "Kanadın alt ucuna elini değdir, geri çekil.",
+        metin: "Kanadın ucuna dokun, çekil.",
         baseBasariSansi: 90,
         basariliSonuc: {
           mutluluk: 3,
-          mesaj: "Kanada bir dokundun, herkes 'gördük gördük' dedi. Yeterince cesur, hâlâ tek parça.",
+          mesaj: "Dokundun, herkes gördü; cesursun ve tek parçasın.",
         },
         basarisizSonuc: {
           saglik: -6,
-          mesaj: "Zamanlaman kötüydü; kanat eline çarpıp seni yere savurdu. Bilek burkuldu, gurur da.",
+          mesaj: "Kanat elini vurup seni savurdu; bilek de gurur da burkuldu.",
         },
       },
     ],
@@ -388,7 +388,7 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
     gorsel: "🐗",
     baslik: "Domuzla Yarış",
     metin:
-      "Panayırda bir adam yaban domuzunu ipe bağlamış, 'yüz adım koşuda domuzu geçene ödül' diyor. Domuz huysuz görünüyor.",
+      "Panayırda bir adam yaban domuzunu ipe bağlamış: 'Yüz adımda domuzu geçene ödül.' Domuz huysuz görünüyor.",
     secenekler: [
       {
         metin: "İpi çöz, domuzla yarış.",
@@ -396,7 +396,7 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
         basariliSonuc: {
           para: 12,
           un: 6,
-          mesaj: "Domuz şaşırdı, sen kaçtın, çizgiyi önce geçtin. Ödülü aldın, domuz da bir tarlaya daldı.",
+          mesaj: "Çizgiyi önce geçtin; ödülü aldın, domuz tarlaya daldı.",
         },
         basarisizSonuc: {
           olum_sansi: 45,
@@ -406,14 +406,14 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
         },
       },
       {
-        metin: "Adamla pazarlık et, sadece domuzu izle.",
+        metin: "Pazarlık et, domuzu izle.",
         baseBasariSansi: 85,
         basariliSonuc: {
           mutluluk: 2,
-          mesaj: "Kenardan izledin, başkası koştu, sen güldün. Akşam sağ salim eve döndün.",
+          mesaj: "Kenardan izleyip güldün; sağ salim döndün.",
         },
         basarisizSonuc: {
-          mesaj: "Domuz ipini kopardı, kalabalık dağıldı; sen de kaçanların arasındaydın.",
+          mesaj: "Domuz ipi koparıp kalabalığı dağıttı; sen de kaçtın.",
         },
       },
     ],
@@ -427,7 +427,7 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
     gorsel: "🪂",
     baslik: "Bez Kanatlarla Uçuş",
     metin:
-      "Bir mucit heves, iki bez kanat dikmiş; 'kuleden atlarsan süzülürsün' diyor. Kanatlar biraz gevşek dikilmiş gibi.",
+      "Bir mucit iki bez kanat dikmiş: 'Kuleden atlarsan süzülürsün.' Kanatlar biraz gevşek dikilmiş gibi.",
     secenekler: [
       {
         metin: "Kanatları tak, kuleden atla.",
@@ -435,24 +435,24 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
         basariliSonuc: {
           un: 20,
           mutluluk: 12,
-          mesaj: "Birkaç saniye gerçekten süzüldün — sonra bir saman yığınına gömüldün. Ama uçtun. Herkes uçtuğunu gördü.",
+          mesaj: "Birkaç saniye süzülüp samana gömüldün. Ama uçtun!",
         },
         basarisizSonuc: {
           olum_sansi: 62,
           efsanevi_olum: "Bez Kanatlara Güvenen Öncü",
           saglik: -25,
-          mesaj: "Kanatlar açıldı, sonra kapandı. Saman yığını bu sefer yerinde değildi; toprağa çakılıp öylece kaldın.",
+          mesaj: "Kanatlar kapandı; saman yerinde yoktu, yere çakıldın.",
         },
       },
       {
-        metin: "Önce bir çuval taş at, kanatları dene.",
+        metin: "Önce bir çuval taşla dene.",
         baseBasariSansi: 90,
         basariliSonuc: {
           un: 3,
-          mesaj: "Çuval taş gibi düştü. 'Belki başka gün' dedin, mucit sana kızdı ama sen yaşıyorsun.",
+          mesaj: "Çuval taş gibi düştü; mucit kızdı ama yaşıyorsun.",
         },
         basarisizSonuc: {
-          mesaj: "Çuvalı atarken dengeyi kaybedip neredeyse kendin düşüyordun. O 'neredeyse' hayatını kurtardı.",
+          mesaj: "Çuvalı atarken az kalsın düşüyordun; bu hayatını kurtardı.",
         },
       },
     ],
@@ -466,27 +466,27 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
     gorsel: "🌉",
     baslik: "Çürük Köprü",
     metin:
-      "Dere üstündeki eski tahta köprünün yarısı çürük. Uzun yol dolanmak yerine, 'hızlı geçersen dayanır' diyorlar.",
+      "Dere üstündeki eski köprünün yarısı çürük. Uzun yol yerine 'hızlı geçersen dayanır' diyorlar.",
     secenekler: [
       {
         metin: "Koşarak geç, arkana bakma.",
         baseBasariSansi: 55,
         basariliSonuc: {
           mutluluk: 4,
-          mesaj: "Tahtalar çatırdadı ama sen çoktan öbür yakadaydın. Dolambaçlı yoldan yarım gün kazandın.",
+          mesaj: "Tahtalar çatırdadı ama öbür yakadaydın; yarım gün kazandın.",
         },
         basarisizSonuc: {
           olum_sansi: 45,
           saglik: -18,
           efsanevi_olum: "Çürük Köprüye 'Dayanır' Diyen",
-          mesaj: "Tam ortada tahtalar teslim oldu. Dere sığdı ama kayalar değildi.",
+          mesaj: "Ortada tahtalar çöktü; dere sığdı ama kayalar değildi.",
         },
       },
       {
         metin: "Uzun yoldan dolan.",
         baseBasariSansi: 95,
         basariliSonuc: {
-          mesaj: "Yarım gün fazladan yürüdün, ayakların şişti ama akşam ateşin başına oturan sen oldun.",
+          mesaj: "Ayakların şişti ama akşam ateşin başındaydın.",
         },
         basarisizSonuc: {
           saglik: -3,
@@ -504,7 +504,7 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
     gorsel: "⛈️",
     baslik: "Fırtınada Tepe",
     metin:
-      "Gök gürlüyor, herkes içeri kaçıyor. Biri iddia ediyor: 'En yüksek tepede, elinde demir çubukla en uzun duran cesurdur.'",
+      "Gök gürlüyor, herkes içeri kaçıyor. Biri iddia ediyor: 'Tepede, elinde demir çubukla en uzun duran cesurdur.'",
     secenekler: [
       {
         metin: "Demir çubuğu kap, tepeye çık.",
@@ -512,24 +512,24 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
         basariliSonuc: {
           un: 10,
           mutluluk: 6,
-          mesaj: "Fırtına dindi, sen hâlâ ayaktaydın. 'Deli ama cesur' dediler; ikisi de doğruydu.",
+          mesaj: "Fırtına dindi, hâlâ ayaktaydın; 'deli ama cesur' dediler.",
         },
         basarisizSonuc: {
           olum_sansi: 58,
           efsanevi_olum: "Fırtınada Demir Çubukla En Uzun Duran",
           saglik: -22,
-          mesaj: "Gök, iddiana gürültüyle cevap verdi; çarpmanın şokuyla tepeden yuvarlandın, saçların is kokuyordu.",
+          mesaj: "Yıldırım çarptı; tepeden yuvarlandın, saçların is kokuyordu.",
         },
       },
       {
-        metin: "Herkesle beraber sundurmaya sığın.",
+        metin: "Herkesle sundurmaya sığın.",
         baseBasariSansi: 97,
         basariliSonuc: {
-          mesaj: "Sundurmanın altında ıslanmadan bekledin. Aptallar dışarıda, sen içerideydin.",
+          mesaj: "Kuru kaldın; aptallar dışarıdaydı, sen içerideydin.",
         },
         basarisizSonuc: {
           saglik: -2,
-          mesaj: "Sundurmanın kiremidi damladı, biraz ıslandın. Faturası buydu.",
+          mesaj: "Kiremit damladı, biraz ıslandın. Faturası buydu.",
         },
       },
     ],
@@ -544,32 +544,32 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
     gorsel: "🚂",
     baslik: "Basınç Meselesi",
     metin:
-      "Fabrikada yeni buhar kazanının valfi tıkanmış. Usta 'çekiçle bir vur, açılır' diyor ama kazan tehlikeli derecede tısırdıyor.",
+      "Fabrikada yeni buhar kazanının valfi tıkandı. Usta 'çekiçle vur, açılır' diyor ama kazan tehlikeli tıslıyor.",
     secenekler: [
       {
-        metin: "Çekici al, valfe sert bir vur.",
+        metin: "Çekici al, valfe sert vur.",
         baseBasariSansi: 45,
         basariliSonuc: {
           para: 10,
           un: 5,
-          mesaj: "Valf 'pıst' diye açıldı, basınç düştü. Usta sırtını sıvazladı, ustabaşı bir ikramiye yazdı.",
+          mesaj: "Valf açıldı, basınç düştü; ustabaşı ikramiye yazdı.",
         },
         basarisizSonuc: {
           olum_sansi: 55,
           saglik: -25,
           efsanevi_olum: "Buhar Kazanına Çekiçle Cevap Veren",
-          mesaj: "Kazan cevabını verdi. Fabrikanın yarısı o gün tatil oldu.",
+          mesaj: "Kazan cevabını verdi; fabrikanın yarısı tatil oldu.",
         },
       },
       {
-        metin: "Ateşi söndür, kazan soğusun, sonra bak.",
+        metin: "Ateşi söndür, soğuyunca bak.",
         baseBasariSansi: 88,
         basariliSonuc: {
           para: 3,
-          mesaj: "Bir vardiya kaybettiniz ama kazan soğuyunca valf kolayca temizlendi. Kimse yanmadı.",
+          mesaj: "Bir vardiya gitti ama valf temizlendi; kimse yanmadı.",
         },
         basarisizSonuc: {
-          mesaj: "Ateşi söndürürken elini hafif haşladın; yine de doğru karardı.",
+          mesaj: "Elini hafif haşladın; yine de doğru karardı.",
         },
       },
     ],

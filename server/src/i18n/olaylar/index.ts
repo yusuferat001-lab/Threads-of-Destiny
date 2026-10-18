@@ -57,6 +57,11 @@ import { OLAYLAR_ILISKILER_EN } from "./iliskiler.en";
 import { OLAYLAR_AILE_EN } from "./aile.en";
 import { OLAYLAR_HAPIS_EN } from "./hapis.en";
 import { OLAYLAR_EVCIL_HAYVAN_EN } from "./evcilHayvan.en";
+import { OLAYLAR_EVCIL_HAYVAN_KOPEK_EN } from "./evcilHayvanKopek.en";
+import { OLAYLAR_EVCIL_HAYVAN_KEDI_EN } from "./evcilHayvanKedi.en";
+import { OLAYLAR_EVCIL_HAYVAN_SAHIN_EN } from "./evcilHayvanSahin.en";
+import { OLAYLAR_EVCIL_HAYVAN_KARGA_EN } from "./evcilHayvanKarga.en";
+import { OLAYLAR_EVCIL_HAYVAN_AT_EN } from "./evcilHayvanAt.en";
 import { OLAYLAR_ARANMA_SEVIYESI_EN } from "./aranmaSeviyesi.en";
 import { OLAYLAR_ESYA_VE_GIZEM_EN } from "./esyaVeGizem.en";
 import { OLAYLAR_EVLILIK_AILE_EN } from "./evlilikVeAile.en";
@@ -102,6 +107,11 @@ const KAYIT: Record<string, OlayCeviri>[] = [
   OLAYLAR_AILE_EN,
   OLAYLAR_HAPIS_EN,
   OLAYLAR_EVCIL_HAYVAN_EN,
+  OLAYLAR_EVCIL_HAYVAN_KOPEK_EN,
+  OLAYLAR_EVCIL_HAYVAN_KEDI_EN,
+  OLAYLAR_EVCIL_HAYVAN_SAHIN_EN,
+  OLAYLAR_EVCIL_HAYVAN_KARGA_EN,
+  OLAYLAR_EVCIL_HAYVAN_AT_EN,
   OLAYLAR_ARANMA_SEVIYESI_EN,
   OLAYLAR_ESYA_VE_GIZEM_EN,
   OLAYLAR_EVLILIK_AILE_EN,

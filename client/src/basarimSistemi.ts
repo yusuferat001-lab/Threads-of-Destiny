@@ -183,7 +183,7 @@ export const BASARIMLAR: BasarimTanimi[] = [
   ),
   ...kademeli(
     'aile', '👨‍👩‍👧‍👦', 'kilometre', ['Kalabalık Sofra', 'A Full Table'],
-    [3, 6],
+    [3, 4],
     (b) => b.istatistik.rekor.cocuk,
     [(n) => `${n} yaşayan çocuğun olsun.`, (n) => `Have ${n} living children at once.`],
   ),
@@ -766,7 +766,7 @@ function okuSet(key: string): Set<string> {
   try {
     const ham = localStorage.getItem(key);
     const veri = ham ? JSON.parse(ham) : [];
-    return new Set(Array.isArray(veri) ? veri : []);
+    return new Set(Array.isArray(veri) ? veri.filter((x): x is string => typeof x === 'string') : []);
   } catch {
     return new Set();
   }

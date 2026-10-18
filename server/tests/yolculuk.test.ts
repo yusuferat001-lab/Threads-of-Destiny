@@ -19,6 +19,8 @@ function digerGarantileriGecistir(state: CharacterState) {
   // olay atayabildiği için, izole edilmiş yolculuk testlerinde onu da devre dışı bırakırız.
   state.veba_gecirdi = true;
   state.gecmis_olaylar.push("iliski_evlilik_teklifi", "iliski_ikinci_teklif");
+  state.hayvan_karsilasma_sayisi = 2; // evcil hayvan karşılaşma garantisini (29/38 yaş) atla
+  state.etiketler.push("tanisma_donum_27", "tanisma_donum_36"); // aşk evliliği tanışma fırsatı zorlanmasın
   state.evcil_hayvan = { tur: "Kedi", isim: "Testçik" };
   // Her çağ×meslek kombinasyonunda (Asker/Din Adamı/Tüccar) kariyer yolu girişi
   // 18 yaşından itibaren zorla tetiklenir; bu testler sadece yolculuk garantisini

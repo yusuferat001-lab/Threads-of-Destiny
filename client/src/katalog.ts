@@ -393,8 +393,8 @@ const KATALOG_EN: Record<string, string> = {
   "Kedi": "Cat",
   "Köpek": "Dog",
   "Şahin": "Falcon",
-  "Papağan": "Parrot",
-  "Kurt": "Wolf",
+  "Karga": "Crow",
+  "At": "Horse",
 
   // ---------------------------------------------------------------------------
   // Hizipler
@@ -626,6 +626,8 @@ const KATALOG_EN: Record<string, string> = {
   "Kan Davası — Beklemede": "Blood Feud — Pending",
   "Afyon Bağımlılığı": "Opium Addiction",
   "Unutulmuş Bir İyilik": "A Forgotten Kindness",
+  // Ekip rolü: oyuncunun yanında çalışan çocuğu
+  "Varis": "Heir",
 };
 
 /** Sabit katalog değeri (bölge/meslek/kişilik/aile/rütbe/konut/mağaza...) gösterim çevirisi. */

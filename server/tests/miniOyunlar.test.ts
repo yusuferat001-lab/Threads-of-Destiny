@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import {
   yeniOyun,
   mesleğiAta,
@@ -26,6 +26,26 @@ describe("mini oyunlar", () => {
     s = await stateGetir(state.id);
     expect(s.suc_seviyesi).toBeGreaterThan(onceSuc);
     expect(s.hazard_el_sayisi).toBe(1);
+  });
+
+  it("Hazard: oyun yılı başına en fazla 5 el; yıl dönünce sayaç sıfırlanır", async () => {
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
+    await mesleğiAta(state.id, "Tüccar");
+    const s = await stateGetir(state.id);
+    s.para = 100000;
+    s.saglik = 100;
+    const [kademe] = await zarKademeleriGetir(state.id);
+    // Bıçak olayı (rastgele ölüm riski) testi flake etmesin: Math.random sabit, bıçak çekilmez.
+    const rnd = vi.spyOn(Math, "random").mockReturnValue(0.99);
+    try {
+      for (let i = 0; i < 5; i++) await zarAt(state.id, kademe);
+      await expect(zarAt(state.id, kademe)).rejects.toThrow(/yeterince oynadın/);
+    } finally {
+      rnd.mockRestore();
+    }
+    s.yil += 1;
+    const [yeniKademe] = await zarKademeleriGetir(state.id); // enflasyon kademeyi kaydırır
+    await expect(zarAt(state.id, yeniKademe)).resolves.toBeDefined();
   });
 
   it("Hazard: geçersiz bahis tutarı hata fırlatır", async () => {

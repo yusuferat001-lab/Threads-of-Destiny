@@ -20,7 +20,20 @@ export async function oturumYukle(id: string): Promise<CharacterState | null> {
 /** Server açılışında in-memory önbelleği doldurmak için aktif oturumları döndürür. */
 export async function aktifOturumlariYukle(): Promise<CharacterState[]> {
   const kayitlar = await prisma.session.findMany({ where: { aktif: true } });
-  return kayitlar.map((k) => JSON.parse(k.data) as CharacterState);
+  return guvenliCozumle(kayitlar);
+}
+
+/** JSON'u bozuk kayıtları atlar (loglar): tek satır tüm açılışı çökertmesin. */
+function guvenliCozumle(kayitlar: { id: string; data: string }[]): CharacterState[] {
+  const sonuc: CharacterState[] = [];
+  for (const k of kayitlar) {
+    try {
+      sonuc.push(JSON.parse(k.data) as CharacterState);
+    } catch (err) {
+      console.error(`Bozuk oturum kaydı atlandı (${k.id}):`, err);
+    }
+  }
+  return sonuc;
 }
 
 /**
@@ -30,7 +43,7 @@ export async function aktifOturumlariYukle(): Promise<CharacterState[]> {
  */
 export async function bitmisOturumlariYukle(): Promise<CharacterState[]> {
   const kayitlar = await prisma.session.findMany({ where: { aktif: false } });
-  return kayitlar.map((k) => JSON.parse(k.data) as CharacterState);
+  return guvenliCozumle(kayitlar);
 }
 
 export async function oturumSil(id: string): Promise<void> {
@@ -52,10 +65,14 @@ export async function oturumYasiSaniye(id: string): Promise<number> {
   }
 }
 
-/** Belirli bir süreden eski, bitmiş oturumları siler (RAM/DB büyümesini sınırlar). */
-export async function eskiOturumlariTemizle(oncekiTarih: Date): Promise<number> {
-  const sonuc = await prisma.session.deleteMany({
-    where: { aktif: false, updatedAt: { lt: oncekiTarih } },
-  });
+/**
+ * Belirli bir süreden eski oturumları siler (RAM/DB büyümesini sınırlar): bitmiş
+ * oturumlar `oncekiTarih`'ten, terk edilmiş AKTİF oturumlar (verilirse)
+ * `aktifOncekiTarih`'ten eskiyse silinir.
+ */
+export async function eskiOturumlariTemizle(oncekiTarih: Date, aktifOncekiTarih?: Date): Promise<number> {
+  const kosullar: { aktif: boolean; updatedAt: { lt: Date } }[] = [{ aktif: false, updatedAt: { lt: oncekiTarih } }];
+  if (aktifOncekiTarih) kosullar.push({ aktif: true, updatedAt: { lt: aktifOncekiTarih } });
+  const sonuc = await prisma.session.deleteMany({ where: { OR: kosullar } });
   return sonuc.count;
 }

@@ -16,6 +16,16 @@ interface BolgeSahnesiProps {
   un?: number;
   /** true ise sahne, sabit 110px şerit yerine kapsayıcısının tamamını (%100 yükseklik) doldurur. */
   tamYukseklik?: boolean;
+  /**
+   * 'sahne' (varsayılan) = bugünkü yatay şerit/çerçeve sahnesi.
+   * 'sayfa' = mobil oyun ekranının TÜM sayfa arkasını kaplayan portre arka plan: önce
+   * `arka-plan-mobil.webp` aranır, yoksa yatay `arka-plan.*` `cover` ile kullanılır, o da yoksa
+   * yalnız bölge gradyanı. Prosedürel siluet/emoji ÇİZİLMEZ (400×140 viewBox portrede ×6 büyür)
+   * ve etiketler (Kasaba/Savaşta/Salgın) burada değil olay kutusunun üstünde gösterilir.
+   */
+  mod?: 'sahne' | 'sayfa';
+  /** `mod='sayfa'` iken true ise (PC) portre `arka-plan-mobil.*` atlanır, yatay `arka-plan.*` kullanılır. */
+  yatay?: boolean;
 }
 
 type YerlesimTipi = 'sehir' | 'sinir' | 'dag' | 'genel';
@@ -145,23 +155,60 @@ function DinamikEfektKatmani({
   );
 }
 
-export function BolgeSahnesi({ cag, bolge, yerlesim, ulke, un = 0, tamYukseklik = false }: BolgeSahnesiProps) {
-  const { m, kt } = useDil();
+/**
+ * Hangi aday dosyanın var olduğunu oturum boyunca hatırlar: alt ekranlardan (Kariyer, Yatırım…)
+ * oyuna dönünce sahne yeniden kurulur, aynı 404'ler tekrar denenmesin (Sanayi'de yalnız `.png` var).
+ */
+const ARKA_PLAN_BILINEN = new Map<string, number>();
+
+export function BolgeSahnesi({
+  cag,
+  bolge,
+  yerlesim,
+  ulke,
+  un = 0,
+  tamYukseklik = false,
+  mod = 'sahne',
+  yatay = false,
+}: BolgeSahnesiProps) {
+  const { m } = useDil();
   const tema = bolgeTemasiGetir(bolge);
   const tip = yerlesimTipiCikar(yerlesim);
   const isikSayisi = Math.max(0, isikSayisiHesapla(un) - (ulke?.vebada ? 2 : 0));
-  const [arkaPlanUzanti, setArkaPlanUzanti] = useState<'webp' | 'png' | null>('webp');
-  const [onPlanUzanti, setOnPlanUzanti] = useState<'webp' | 'png' | null>('webp');
-
+  const sayfaModu = mod === 'sayfa';
   const cagSlug = cagSlugCikar(cag);
   // Şimdilik sahne görseli sadece çağa göre değişiyor, yerleşim tipine göre değil
   // (yerleşim tipi hâlâ karakterin stat/yatkınlık etkilerinde kullanılıyor, sadece burada değil).
-  const arkaPlanSrc = arkaPlanUzanti ? `/assets/sahne/${cagSlug}/arka-plan.${arkaPlanUzanti}` : null;
+  // Aday zinciri sırayla denenir: ilk 404'te bir sonrakine geçilir, hepsi yoksa gradyan/SVG yedeği.
+  const arkaPlanAdaylari = sayfaModu
+    ? [
+        ...(yatay ? [] : [`/assets/sahne/${cagSlug}/arka-plan-mobil.webp`]),
+        `/assets/sahne/${cagSlug}/arka-plan.webp`,
+        `/assets/sahne/${cagSlug}/arka-plan.png`,
+      ]
+    : [`/assets/sahne/${cagSlug}/arka-plan.webp`, `/assets/sahne/${cagSlug}/arka-plan.png`];
+  const bilinenAnahtar = `${cagSlug}|${mod}${yatay ? '|yatay' : ''}`;
+  const [arkaPlanIndeks, setArkaPlanIndeks] = useState(() => ARKA_PLAN_BILINEN.get(bilinenAnahtar) ?? 0);
+  const [onPlanUzanti, setOnPlanUzanti] = useState<'webp' | 'png' | null>(sayfaModu ? null : 'webp');
+
+  const arkaPlanSrc = arkaPlanAdaylari[arkaPlanIndeks] ?? null;
   const onPlanSrc = onPlanUzanti ? `/assets/sahne/${cagSlug}/on-plan.${onPlanUzanti}` : null;
-  const arkaPlanYuklendi = arkaPlanUzanti !== null;
+  const arkaPlanYuklendi = arkaPlanSrc !== null;
+
+  function arkaPlanHatasi() {
+    const sonraki = arkaPlanIndeks + 1;
+    ARKA_PLAN_BILINEN.set(bilinenAnahtar, sonraki);
+    setArkaPlanIndeks(sonraki);
+  }
+
+  const kapsayiciSinifi = sayfaModu
+    ? 'bolge-sahnesi bolge-sahnesi-sayfa'
+    : tamYukseklik
+      ? 'bolge-sahnesi bolge-sahnesi-tam'
+      : 'bolge-sahnesi';
 
   return (
-    <div className={tamYukseklik ? 'bolge-sahnesi bolge-sahnesi-tam' : 'bolge-sahnesi'}>
+    <div className={kapsayiciSinifi}>
       {arkaPlanSrc ? (
         <>
           <img
@@ -169,10 +216,18 @@ export function BolgeSahnesi({ cag, bolge, yerlesim, ulke, un = 0, tamYukseklik 
             alt=""
             className="bolge-sahnesi-katman bolge-sahnesi-katman-arka"
             style={{ background: `linear-gradient(${tema.renk1}, ${tema.renk2})` }}
-            onError={() => setArkaPlanUzanti((onceki) => (onceki === 'webp' ? 'png' : null))}
+            decoding="async"
+            draggable={false}
+            onError={arkaPlanHatasi}
           />
           <div className="bolge-sahnesi-bolge-tonu" style={{ background: tema.renk1 }} />
         </>
+      ) : sayfaModu ? (
+        // Portre kapsayıcıda 400×140'lık SVG ×6 büyür — yedek olarak yalnız bölge gradyanı.
+        <div
+          className="bolge-sahnesi-sayfa-gradyan"
+          style={{ background: `linear-gradient(${tema.renk1}, ${tema.renk2})` }}
+        />
       ) : (
         <svg viewBox="0 0 400 140" className="bolge-sahnesi-svg" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
           <defs>
@@ -194,9 +249,9 @@ export function BolgeSahnesi({ cag, bolge, yerlesim, ulke, un = 0, tamYukseklik 
         />
       ) : null}
 
-      <DinamikEfektKatmani tip={tip} isikSayisi={isikSayisi} ulke={ulke} ciziSiluet={!arkaPlanYuklendi} />
+      <DinamikEfektKatmani tip={tip} isikSayisi={isikSayisi} ulke={ulke} ciziSiluet={!arkaPlanYuklendi && !sayfaModu} />
 
-      {!arkaPlanYuklendi && (
+      {!arkaPlanYuklendi && !sayfaModu && (
         <svg viewBox="0 0 400 140" className="bolge-sahnesi-svg bolge-sahnesi-sembol" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
           <text x="200" y="58" fontSize="40" textAnchor="middle" dominantBaseline="middle">
             {tema.sembol}
@@ -204,11 +259,12 @@ export function BolgeSahnesi({ cag, bolge, yerlesim, ulke, un = 0, tamYukseklik 
         </svg>
       )}
 
-      <div className="bolge-sahnesi-etiketler">
-        {yerlesim && <span className="bolge-sahnesi-etiket">{kt(yerlesim)}</span>}
-        {ulke?.savasta && <span className="bolge-sahnesi-etiket bolge-sahnesi-tehlike">{m.usSavasta}</span>}
-        {ulke?.vebada && <span className="bolge-sahnesi-etiket bolge-sahnesi-tehlike">{m.usSalgin}</span>}
-      </div>
+      {!sayfaModu && (
+        <div className="bolge-sahnesi-etiketler">
+          {ulke?.savasta && <span className="bolge-sahnesi-etiket bolge-sahnesi-tehlike">{m.usSavasta}</span>}
+          {ulke?.vebada && <span className="bolge-sahnesi-etiket bolge-sahnesi-tehlike">{m.usSalgin}</span>}
+        </div>
+      )}
     </div>
   );
 }

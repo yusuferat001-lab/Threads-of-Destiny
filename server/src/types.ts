@@ -53,6 +53,13 @@ export interface DunyaYaklasan {
 }
 
 /** Tekrarlayan büyük savaş mekaniği: state.ulke.savasta=true olduğunda aktif; süre/vergi/gıda çarpanı savaş başlarken bir kere rastgele belirlenir. */
+export interface UlkeGecmisiKaydi {
+  yil: number;
+  tur: "savas_basladi" | "savas_bitti" | "veba_basladi" | "veba_bitti" | "kriz_basladi" | "kriz_bitti";
+  /** Savaşta ham (TR) düşman adı; krizde kriz türü ("kitlik" | "isyan" | "altin_cag"). */
+  ayrinti?: string;
+}
+
 export interface BuyukSavas {
   dusman: string;
   baslangicYili: number;
@@ -98,18 +105,95 @@ export interface UlkeDurumu {
 /** Piyasa mülkleri: her biri en fazla bir kez sahiplenilebilir, getirisi state.ulke'ye göre her tur yeniden hesaplanır. */
 export type MulkTuru = "kucuk_tarla" | "ciftlik" | "han" | "demirci" | "kervan" | "karaborsa";
 
+/** Evlilik yolu: "ask" = tanışma/sevgili üzerinden, "mantik" = aday listesinden (çeyizli). */
+export type EvlilikTuru = "ask" | "mantik";
+
+/** Düğün bütçesi: ilişki başlangıcını ve şöhreti belirler (bkz. data/aileSabitleri.ts). */
+export type DugunButcesi = "ucuz" | "orta" | "pahali";
+
+/** Teklifin yanındaki hediye kademesi: sade (hediyesiz) / ucuz / pahalı. */
+export type TeklifHediyesi = "sade" | "ucuz" | "pahali";
+
 /**
- * Olay dışı evlenme akışının (GET /:id/evlilik-adaylari, POST /:id/evlilik-teklifi)
- * adayı: her GET çağrısında rastgele üretilir, state'te saklanmaz — istemci seçtiği
- * adayı olduğu gibi POST'a geri gönderir.
+ * Eşin / adayın gizli huyu. Tanışma (Aşama 2) diyalog yaklaşımıyla eşleşir; evlilikten
+ * sonra da hediye / zaman geçirme etkisini hafifçe değiştirir (bkz. aileSabitleri.HUY_ETKI).
  */
-export interface EvlilikAdayi {
+export type AileHuy = "mizahsever" | "parasever" | "ciddi" | "maceraci" | "sefkatli" | "gururlu";
+
+/** Teklifi kabul edilmiş ama düğün bütçesi henüz seçilmemiş eş adayı (mantık ya da aşk). */
+export type BekleyenDugun = MantikAday & { tur: EvlilikTuru };
+
+/**
+ * Mantık evliliği aday listesindeki bir kişi. State'te (`mantik_adaylar`) saklanır;
+ * liste 5-6 yılda bir yenilenir. `grup`: genç (27-33) çocuk ihtimali yüksek, standart
+ * çeyiz; olgun (38-43) çocuk ihtimali çok düşük ama çeyiz ve meslek bonusu 1.5×.
+ */
+export interface MantikAday {
   isim: string;
   meslek: string;
   rutbe: string;
-  kisilik: [string, string];
-  /** Oyuncunun kişiliğiyle kaba bir uyum tahmini (0-100); teklif başarı şansını etkiler. */
-  uyumYuzdesi: number;
+  /** Adayın yaşı (listelendiği yıldaki). */
+  yas: number;
+  grup: "genc" | "olgun";
+  /** Gizli huylar — kartta yalnız ilki görünür, ikincisi evlilikten sonra açılır. */
+  huylar: [AileHuy, AileHuy];
+  /** Peşin çeyiz parası (enflasyonlu, düğünde cebe girer). */
+  ceyiz: number;
+  /** Kalıcı "meslek bonusu" (yüzde) — evlenince `es_meslek_bonusu`na yazılır. */
+  meslek_bonusu: number;
+}
+
+/** Tanışma diyaloğundaki yaklaşım tarzı; karşı tarafın gizli huyuyla eşleşirse adım başarı şansı artar. */
+export type TanismaYaklasim = "komik" | "nazik" | "ovunme" | "mutevazi";
+
+/** Tanışılan kişi (aşk evliliği yolu) — mantık adayından farklı olarak yalnız kimlik + gizli huylar taşır. */
+export interface TanismaAdayi {
+  isim: string;
+  meslek: string;
+  rutbe: string;
+  yas: number;
+  huylar: [AileHuy, AileHuy];
+  /** Dış görünüş cümlesinin indeksi (data/tanismaDiyalog.ts GORUNUM). */
+  gorunum: number;
+}
+
+/**
+ * Süren tanışma: 0. adımda göz göze gelinir (yanına git / vazgeç), sonra 3-4 adımlık
+ * diyalog. State'te saklanır (sayfa yenilense / sunucu yeniden başlasa bile sürer).
+ */
+export interface AktifTanisma {
+  mekan: string;
+  aday: TanismaAdayi;
+  /** 0 = göz göze (karar), 1..toplam = diyalog adımı. */
+  adim: number;
+  toplam: number;
+  /** Başarılı geçilen adım sayısı. */
+  basari: number;
+  /** Şu anki adımda sunulan 3 yaklaşım (sırayla seçenek 0..2). */
+  yaklasimlar: TanismaYaklasim[];
+  /** Son adımın tepkisi (metin diyaloğa göre sunucuda çözülür): hangi yaklaşım + ton + varyant. */
+  son_tepki: { yaklasim: TanismaYaklasim; ton: "olumlu" | "notr" | "soguk"; varyant: number } | null;
+}
+
+/** Tanışmadan çıkan sevgili: 4 yıllık sayaç içinde evlilik teklifi yapılmazsa darılır. */
+export interface Sevgili {
+  isim: string;
+  meslek: string;
+  rutbe: string;
+  /** Doğum yılı (yaş = yil − dogum_yili). */
+  dogum_yili: number;
+  huylar: [AileHuy, AileHuy];
+  /** Sevgili ilişki barı (0-100); evlenince düğünle yeniden belirlenir. */
+  iliski: number;
+  baslangic_yili: number;
+  /** Bu yıla kadar teklif yapılmazsa darılır; "gönül al" süreyi uzatır. */
+  son_yil: number;
+  darildi: boolean;
+  darilma_yili: number | null;
+  /** "Gönül al" bu yıldan önce tekrarlanamaz. */
+  gonul_kilit_yili: number;
+  /** Evlenirse eşin getireceği meslek bonusu (aşkta mantık-gencinin yarısı). */
+  meslek_bonusu: number;
 }
 
 /** Mağaza eşya türü: "sifa" sağlık/mutluluk verir ve zamanla bozulur; "luks" ün/statü verir ve kalıcıdır. */
@@ -385,6 +469,49 @@ export interface CharacterState {
   /** Son çocuğun doğduğu oyun yılı — eşle ilişkiye bağlı doğum denemesinin cooldown'u (§33). */
   son_dogum_yili?: number;
 
+  // ---- Eş modeli (Aile/Evlilik yeniden tasarımı, bkz. data/aileSabitleri.ts, game/aileSistemi.ts) ----
+  // İlişki barı `es_puani`nın kendisidir (0-100); aşağıdakiler eşin kimliği ve sayaçlarıdır.
+  /** Eşin doğum yılı (yaş = yil − es_dogum_yili); eş yoksa null. */
+  es_dogum_yili: number | null;
+  /** Evlilik yolu; eş yoksa null. */
+  es_evlilik_turu: EvlilikTuru | null;
+  /** Evlenilen eşin grubu (doğum şansı ve çeyiz/bonus için); eş yoksa null. */
+  es_grup: "genc" | "olgun" | null;
+  /** Eşin iki gizli huyu; eş yoksa []. */
+  es_huylar: AileHuy[];
+  /** Eşin getirdiği kalıcı "meslek bonusu" (maaş yüzdesi); eş gidince 0. Meslek sistemi değişince yeniden bağlanacak placeholder. */
+  es_meslek_bonusu: number;
+  /** Düğünle kazanılan şöhret (negatif de olabilir); eş terk ederse geri alınır. */
+  es_dugun_un: number;
+  /** Eşle son "zaman geçir" eyleminin yılı (ihmal sayacı bundan hesaplanır); eş yoksa null. */
+  es_son_zaman_yili: number | null;
+  /** İlişki barı 20'nin altında geçen toplam yıl; bar toparlanınca 0'lanır. */
+  es_dusuk_yil: number;
+  /** Bar <20 iken kaç yılda eş terk eder (2 ya da 3, evlilikte bir kez rastgele seçilir). */
+  es_terk_esigi: number;
+  /** Bu eşin doğurduğu çocuk sayısı (tavan 5). */
+  es_dogum_sayisi: number;
+  /** Eşin yeniden hamile kalabileceği en erken oyun yılı. */
+  es_sonraki_hamilelik_yili: number;
+  /** 7-8 yıllık ihmal uyarı olayı bu evlilikte gösterildi mi. */
+  es_ihmal_uyari_goruldu: boolean;
+  /** Mantık evliliği aday listesi (3 kişi); boşsa ilk açılışta üretilir. */
+  mantik_adaylar: MantikAday[];
+  /** Aday listesinin yenileneceği oyun yılı. */
+  mantik_yenileme_yili: number;
+  /** Reddedilen teklif sonrası mantık sisteminin kilitli olduğu son yıl (bu yıl dahil değil: yil >= değer açar). */
+  mantik_kilit_yili: number;
+  /** Teklifi kabul edilmiş, düğün bütçesi bekleyen eş adayı; yoksa null. */
+  bekleyen_dugun: BekleyenDugun | null;
+  /** Aşk evliliği yolu: süren tanışma diyaloğu; yoksa null. */
+  aktif_tanisma: AktifTanisma | null;
+  /** Aşk evliliği yolu: sevgili; yoksa null. */
+  sevgili: Sevgili | null;
+  /** Vazgeçilen tanışmanın "nostalji" olayının tetikleneceği yıl; yoksa null. */
+  nostalji_yili: number | null;
+  /** Eş ölümü/terk sonrası yas döneminin bittiği yıl; bu yıldan önce evlilik teklifi/tanışma kapalı. 0 = yas yok. */
+  yas_bitis_yili: number;
+
   ekip: EkipUyesi[];
   hizip: string | null;
 
@@ -397,7 +524,14 @@ export interface CharacterState {
   anne_adi: string;
   baba_adi: string;
 
+  /** İlk yaşayan evcil hayvan (eski tek-hayvan alanı; evcilHayvanSenkronla `evcil_hayvanlar[0]`'dan türetir). Gider, hayat amacı, başarım ve gösterim bu alanı okur. */
   evcil_hayvan: EvcilHayvan | null;
+  /** Yaşayan tüm evcil hayvanlar (aynı anda en fazla 2). Pasif bonuslar hepsinden toplanır. */
+  evcil_hayvanlar: EvcilHayvan[];
+  /** Bir hayatta yaşanan evcil hayvan karşılaşması sayısı (kabul ya da ret fark etmez; tavan 2). */
+  hayvan_karsilasma_sayisi: number;
+  /** Karşılaşması yaşanan hayvan türleri; aynı tür bir daha çıkmaz (hayvan ölse bile). */
+  hayvan_karsilasma_turleri: string[];
   /** Kazanılan lakaplar/ünvanlar (ör. "İpek Kralı", "Cesur Yürek"); kalıcı, birikimli. */
   unvanlar: string[];
   /** ESKİ tekil amaç — artık atanmıyor (yeni karakterde null). Geriye dönük uyum için duruyor. */
@@ -463,6 +597,8 @@ export interface CharacterState {
   hapis_basarili_kacis: boolean;
   /** Bir yıl sonra başlayacak savaş/veba (dedikodu sinyali için); yoksa null. */
   dunya_yaklasan: DunyaYaklasan | null;
+  /** Ülkedeki savaş/veba/kriz başlangıç ve bitişlerinin kalıcı kaydı (en fazla 30, eskiden yeniye) — "Yıl" penceresindeki ülke geçmişini besler. */
+  ulke_gecmisi: UlkeGecmisiKaydi[];
   /** Ömürde bir kez: borçtayken (para < 0, bütçe açığı sürerken) kilise/eş dost bir kereliğine borcun bir kısmını kapatır. true olunca bir daha tetiklenmez. */
   borc_yardimi_alindi: boolean;
   /** Kalıcı salgından korunma yatırımı; yoksa null. Bir sonraki veba dalgasında tüketilir. */
@@ -507,6 +643,8 @@ export interface CharacterState {
   istemci_gecmis_olaylar: string[];
   /** Bu hayatı yaratan tarayıcının rastgele istemci kimliği (varsa) — ölümde bu hayatın `gecmis_olaylar`'ını istemci geçmişine yazmak için kullanılır. Yoksa null. */
   istemci_id: string | null;
+  /** Son seçimlerin göstergelere etkisi (yeni → eski değil, kronolojik; en fazla 40). Gösterge detay penceresindeki "Son seçimlerin etkisi" bölümünü besler. */
+  etken_gunlugu: EtkenKaydi[];
   /**
    * Sunucu belleğinde tutulan oyun akışının (cevaplanmamış olay, zorunlu_sonraki
    * zinciri, bekleyen onTepki, Sosyalleş'e giderken kenara ayrılan ana olay) kalıcı
@@ -545,6 +683,13 @@ export interface HayatOlayi {
 export interface EvcilHayvan {
   tur: string;
   isim: string;
+  /** Edinildiği oyun yılı ve karakter yaşı. */
+  edinim_yili: number;
+  edinim_yasi: number;
+  /** Bu hayvanın ömrü (yıl): türün ortalaması ±2 yıl rastgelelik. `edinim_yili + omur`'da doğal sebeplerle ölür. */
+  omur: number;
+  /** Edinirken rastgele atanan kalıcı pasif bonus (data/evcilHayvanlar.ts HAYVAN_BONUSLARI id'si). */
+  bonus_id: string;
 }
 
 export interface Cocuk {
@@ -553,6 +698,17 @@ export interface Cocuk {
   yasiyor: boolean;
   /** Çocukla ilişki puanı (0-100); yeni doğan çocuk 65 ile başlar. Aile ekranındaki etkileşimlerle artar, ilgilenilmezse yılda ~0.6 düşer. Eski kayıtlarda eskiKayitGocu 60 backfill eder. */
   iliski: number;
+  /** Baba mesleğine yatkınlık (Aşama 3: 15 yaşında işe alım): %70 yatkın / %20 uyumsuz / %10 nötr. Doğumda belirlenir. */
+  yatkinlik?: "yatkin" | "notr" | "uyumsuz";
+  /** Doğum komplikasyonunda bebek bu oyun yılında ölecek (ilk 3 yıl içinde); yoksa tanımsız. */
+  erken_olum_yili?: number;
+  /**
+   * 15 yaşında yanında çalışma daveti: "bekliyor" (davet bekleniyor) → kabul "ise_alindi" ya da
+   * red "red_tepkisi" (oyuncu öfke/sakin seçer) → "reddetti". Eski kayıtlarda tanımsız.
+   */
+  is_durumu?: "bekliyor" | "red_tepkisi" | "ise_alindi" | "reddetti";
+  /** İşe alındıysa ekip üyesinin id'si. */
+  ekip_id?: string;
 }
 
 /**
@@ -679,6 +835,8 @@ export interface EkipUyesi {
   sadakat: number;
   /** Kısa bir kişilik etiketi (ör. "Sadık", "Hırslı", "Korkak"); tamamen kozmetik/flavor. */
   kisilik: string;
+  /** Bu üye oyuncunun çocuğuysa çocuğun adı (cocuklar[].isim ile eşleşir). */
+  cocuk_isim?: string;
   /** İşletme rolü türü (aday havuzundan alınanlarda): ana = satış/üretim, maliyet = alış/hammadde, musteri = pazar payı büyümesi, guvenlik = koruma. */
   rol_turu?: IsletmeRolTuru;
   /**
@@ -865,6 +1023,12 @@ export interface SonucEtkisi {
   /** true ise bölgeye uygun rastgele bir isimle evlenilir (es_adi atanır). */
   es_ata?: boolean;
   es_puani?: number;
+  /** true ise eşe vakit ayrıldı sayılır: ihmal sayacı (es_son_zaman_yili) bu yıla çekilir. */
+  es_ilgi_gosterildi?: boolean;
+  /** true ise bekar karakter için bir tanışma (göz göze gelme) başlar (`aktif_tanisma`). */
+  tanisma_baslat?: boolean;
+  /** true ise (bir tanışmadan vazgeçildi) 4-6 yıl sonra tetiklenecek nostalji olayı kurulur. */
+  tanisma_nostalji?: boolean;
   /** true ise eş kaybedilir (boşanma/ölüm): es_adi null'a döner, medeni:evli etiketi kaldırılır. */
   es_kaybet?: boolean;
   cocuk_ekle?: number;
@@ -902,6 +1066,8 @@ export interface SonucEtkisi {
   suc_artis?: number;
   /** suc_seviyesi'ni mevcut değerden bağımsız, doğrudan belirtilen değere (0-100) sabitler — ör. büyük baskın sonrası "temize çıkar / kademe 1'e in" gibi kesin hedefler için; genel yükseliş/düşüş için bunun yerine suc_artis kullanılmalı. */
   suc_seviyesi_ayarla?: number;
+  /** SADECE motor yazar (uygulananEtki'de): bu seçimin aranma (suc_seviyesi) üzerindeki GERÇEK net değişimi — suc_artis, suç-kazancı motor kuralı ve suc_seviyesi_ayarla, 0-100 kelepçesi sonrası. Sonuç ekranı çipi bunu gösterir. */
+  suc_degisim?: number;
   /** Hapiste kalan ceza süresini (state.hapis_ceza_kalan) yıl olarak uzatır — riskli kaçış girişimi başarısız olunca kullanılır. Yalnız "hapiste" etiketi varken anlamlıdır. */
   hapis_ceza_artis?: number;
   /** true ise, bu sonuç hapishaneden FİZİKSEL bir kaçışla (tünel/duvar/çamaşır arabası/gardiyan bayıltma vb.) çıkışı temsil eder — rüşvet/af ile parayla çıkış SAYILMAZ. Bir ömürde ilk kez gerçekleştiğinde skor formülüne tek seferlik bir bonus ekler (bkz. hesaplaSkorKirilimi). */
@@ -916,9 +1082,9 @@ export interface SonucEtkisi {
   yerlesim_zorla?: string;
   /** Belirtilen türdeki mülk sahiplikten elden çıkar (baskın/el koyma gibi olaylarda kullanılır). */
   mulk_kaybet?: MulkTuru;
-  /** Belirtilirse ve karakterin henüz evcil hayvanı yoksa, tur belirtilmemişse çağa uygun rastgele bir tür seçilir. */
+  /** Belirtilen türde bir evcil hayvan edinilir (aynı anda en fazla 2 hayvan; aynı türden zaten yaşayan varsa yok sayılır). */
   evcil_hayvan_edin?: { tur?: string };
-  /** true ise mevcut evcil hayvan kaybedilir. */
+  /** true ise evcil hayvan kaybedilir (olayın `hayvanTuru`'ndaki hayvan; belirtilmemişse en son edinilen). */
   evcil_hayvan_kaybet?: boolean;
   /** Belirtilirse ve karakter bu ünvanı henüz taşımıyorsa, unvanlar listesine eklenir. */
   unvan_kazan?: string;
@@ -1006,6 +1172,8 @@ export interface SenaryoResponse {
   olay_metni: string;
   kategori: Kategori;
   gorsel: string;
+  /** Özel havuz illüstrasyonu anahtarı (ör. "hapis", "yolculuk-hac"); yoksa kategori resmi kullanılır. */
+  resim?: string;
   secenekler: Secenek[];
 }
 
@@ -1024,4 +1192,12 @@ export interface TepkiSonucu {
 export interface IkiDilMetin {
   tr: string;
   en: string;
+}
+
+/** Bkz. CharacterState.etken_gunlugu. `kaynak` = etkiyi veren olayın o anki dildeki başlığı. */
+export interface EtkenKaydi {
+  yil: number;
+  kaynak: string;
+  stat: "saglik" | "para" | "mutluluk" | "ahlak" | "aranma" | "sohret";
+  delta: number;
 }

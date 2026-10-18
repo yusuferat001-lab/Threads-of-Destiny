@@ -5,45 +5,45 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
   sd_asker_ayaklanma: {
     baslik: "The Workers' Uprising",
     metin:
-      "The workers in the {bolge} factory district have built a barricade. Command has given the order to move in. Behind the barricade are not armed men but families asking for bread.",
+      "Workers in the {bolge} factory district built a barricade. Orders say move in; behind it are families asking for bread.",
     secenekler: [
       {
-        metin: "Carry out the order, break the barricade.",
+        metin: "Obey the order, break the barricade.",
         basariliSonuc: {
-          mesaj: "The barricade was broken; command put you on the promotion list.",
+          mesaj: "The barricade fell; command put you on the promotion list.",
           detay:
-            "You did not write in the report how many were hurt that day. The promotion came, and so did a woman in the district who spat in your face.",
+            "The promotion came; a woman spat in your face.",
         },
         basarisizSonuc: {
-          mesaj: "The workers resisted; you were caught in the crowd and badly beaten.",
+          mesaj: "The workers resisted; you were caught in the crowd and beaten.",
           detay:
-            "Neither did the barricade break nor did you become a hero. While you lay in the infirmary, command filed the 'operation failed' report under your name.",
+            "The failure report went out under your name.",
         },
       },
       {
-        metin: "Delay the intervention, try to mediate.",
+        metin: "Delay, try to mediate.",
         basariliSonuc: {
-          mesaj: "The talks worked; the barricade came down without bloodshed, no one died.",
+          mesaj: "The barricade came down without blood; no one died.",
           detay:
-            "The workers carried you on their shoulders, while command noted 'delay in carrying out orders' on your record. You earned both.",
+            "Workers cheered you; your file noted 'delay'.",
         },
         basarisizSonuc: {
-          mesaj: "The talks collapsed; you were both too late and someone else did the crackdown.",
+          mesaj: "Talks collapsed; someone else cracked down, blood spilled.",
           detay:
-            "Blood was spilled anyway and you had only delayed it. Command relieved you of duty, and the workers don't even know your name.",
+            "You were relieved; the workers don't know your name.",
         },
       },
       {
-        metin: "Leave the post on a pretext of illness.",
+        metin: "Feign illness, leave your post.",
         basariliSonuc: {
-          mesaj: "You went on medical leave; you did not join the crackdown, and no one pressed the matter.",
+          mesaj: "You went on sick leave; no one pressed it.",
           detay:
-            "You kept your hands clean but watched someone else dirty theirs. You were struck off the promotion list, and you don't care — you think.",
+            "Hands clean; struck off the promotion list.",
         },
         basarisizSonuc: {
-          mesaj: "Your report was found false; a record of 'shirking duty' was entered on your file.",
+          mesaj: "Your report was found false; 'shirking duty' went on your file.",
           detay:
-            "You neither joined the crackdown nor honestly opposed it. Your file now reads both 'unreliable' and 'coward'.",
+            "Your file now reads 'unreliable' and 'coward'.",
         },
       },
     ],
@@ -52,32 +52,32 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
   sd_asker_somurge: {
     baslik: "Colonial Duty",
     metin:
-      "A revolt has broken out in a distant colony. Your regiment is being sent: the climate is deadly, the local people hostile, but land and rank are promised to those who return.",
+      "A revolt broke out in a distant colony. Your regiment is sent: deadly climate, hostile people, but land and rank for survivors.",
     secenekler: [
       {
-        metin: "Join the mission with full commitment.",
+        metin: "Join the mission wholeheartedly.",
         basariliSonuc: {
-          mesaj: "The revolt was put down; you received a medal, rank, and land in the colony.",
+          mesaj: "The revolt was crushed; you won a medal, rank and land.",
           detay:
-            "Those who work the land you were given are the people who fought against you three years ago. You threw yourself into your work to avoid thinking about it.",
+            "Your land is worked by your former enemies.",
         },
         basarisizSonuc: {
-          mesaj: "Malaria mowed down the regiment; you did not escape either, and were carried aboard the ship on a stretcher.",
+          mesaj: "Malaria mowed down the regiment; you were carried aboard on a stretcher.",
           detay:
-            "It was not a bullet but a mosquito that beat you. The fevers recurred for years, and that climate never left your body.",
+            "A mosquito, not a bullet, beat you; fevers lingered.",
         },
       },
       {
-        metin: "Apply for a clerkship in the colonial administration.",
+        metin: "Seek a colonial clerkship.",
         basariliSonuc: {
-          mesaj: "You got a clerkship in the administration building; you watched the war from a window.",
+          mesaj: "You got the clerkship; you watched the war from a window.",
           detay:
-            "You recorded the taxes and the confiscated land. You did not wield a sword, but your pen displaced more families.",
+            "Your pen displaced more families than a sword.",
         },
         basarisizSonuc: {
-          mesaj: "Your clerkship request was denied; you went to the front and were called 'a man who tried to run'.",
+          mesaj: "Clerkship denied; you went to the front, branded a deserter.",
           detay:
-            "The worst combination: you are both in danger and without respect. Your regiment mates now keep their distance.",
+            "Both in danger and without respect.",
         },
       },
     ],
@@ -86,28 +86,28 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
   sd_asker_yeni_tufek_denemesi: {
     baslik: "The Experimental Rifle",
     metin:
-      "The army has chosen you to test a new rifle prototype. The weapon is powerful, but some examples have suffered barrel bursts; not deadly, but risky.",
+      "The army chose you to test a new rifle prototype. Powerful, but some barrels have burst.",
     secenekler: [
       {
-        metin: "Volunteer to take on the test.",
+        metin: "Volunteer for the test.",
         basariliSonuc: {
-          mesaj: "The weapon worked without a hitch; your report was used in the army's decision-making.",
-          detay: "You are now known as 'the man who tests new weapons first'.",
+          mesaj: "The rifle worked flawlessly; your report guided the decision.",
+          detay: "You're now 'the man who tests new weapons first'.",
         },
         basarisizSonuc: {
-          mesaj: "The barrel burst in your hand; your fingers were injured, but you received compensation.",
-          detay: "The army logged it as a 'faulty batch'; you paid the price with your body.",
+          mesaj: "The barrel burst in your hand; fingers hurt, compensation paid.",
+          detay: "Logged as a faulty batch; you paid the price.",
         },
       },
       {
-        metin: "Refuse the test, keep to the old-model rifle.",
+        metin: "Refuse, keep the old rifle.",
         basariliSonuc: {
-          mesaj: "Your refusal was received as reasonable; another volunteer was found.",
-          detay: "You prioritized your safety and no one used it against you.",
+          mesaj: "Your refusal was seen as reasonable; another volunteer stepped in.",
+          detay: "You chose safety; no one blamed you.",
         },
         basarisizSonuc: {
-          mesaj: "Your superiors read your refusal as 'being closed to progress'.",
-          detay: "Sometimes even being cautious becomes grounds for accusation.",
+          mesaj: "Superiors read your refusal as 'closed to progress'.",
+          detay: "Even caution can become an accusation.",
         },
       },
     ],
@@ -116,28 +116,28 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
   sd_asker_muhbir_teklifi: {
     baslik: "A Secret Intelligence Offer",
     metin:
-      "An officer offers you a secret assignment to infiltrate the workers' unions and gather information. There is good money, but you will have to spy on your friends.",
+      "An officer offers a secret job: infiltrate the workers' unions and report. Good money, but you'd spy on your friends.",
     secenekler: [
       {
-        metin: "Accept the assignment, begin to infiltrate.",
+        metin: "Accept, start infiltrating.",
         basariliSonuc: {
-          mesaj: "You received a considerable payment for the information you gathered.",
-          detay: "You remember the faces of the workers who came to the meetings; they had trusted you.",
+          mesaj: "You earned a handsome payment for your information.",
+          detay: "You remember the faces of those who trusted you.",
         },
         basarisizSonuc: {
-          mesaj: "Your identity was exposed; the workers beat you and threw you out.",
-          detay: "You both betrayed and paid the price without ever getting its reward.",
+          mesaj: "You were exposed; the workers beat you and drove you out.",
+          detay: "You betrayed them and paid anyway.",
         },
       },
       {
         metin: "Refuse the offer.",
         basariliSonuc: {
-          mesaj: "Your refusal stayed as a note on your file, but your conscience is at ease.",
-          detay: "Some doors will not open for you now, but at least you betrayed no one.",
+          mesaj: "A note stays on your file, but your conscience is clear.",
+          detay: "Some doors closed; your conscience stayed open.",
         },
         basarisizSonuc: {
-          mesaj: "Your refusal was read as 'unreliable'; you were struck off the promotion list.",
-          detay: "Doing the right thing sometimes costs you your career.",
+          mesaj: "Your refusal read as 'unreliable'; struck off the promotion list.",
+          detay: "Honesty sometimes costs a career.",
         },
       },
     ],
@@ -146,28 +146,28 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
   sd_asker_kislada_veba_karantina: {
     baslik: "An Outbreak in the Barracks",
     metin:
-      "There are soldiers in the barracks showing signs of typhoid. Command wants to impose a quarantine, but that means cancelled leave and a collapse in morale.",
+      "Soldiers in the barracks show typhoid signs. Command wants quarantine, meaning cancelled leave and crushed morale.",
     secenekler: [
       {
         metin: "Lead the quarantine.",
         basariliSonuc: {
-          mesaj: "The quarantine was effective; the outbreak did not spread beyond the barracks.",
-          detay: "The soldiers grumbled at first, then thanked you.",
+          mesaj: "Quarantine worked; the outbreak stayed in the barracks.",
+          detay: "The men grumbled, then thanked you.",
         },
         basarisizSonuc: {
-          mesaj: "Despite the precautions, you fell ill too.",
-          detay: "You imposed the quarantine and still could not escape the sickness.",
+          mesaj: "Despite precautions, you fell ill too.",
+          detay: "You enforced it and still caught it.",
         },
       },
       {
-        metin: "Don't cancel leave, put the sick in a separate tent.",
+        metin: "Keep leave, isolate the sick.",
         basariliSonuc: {
-          mesaj: "The soldiers kept their morale and the sickness did not spread; you were lucky.",
-          detay: "You took the risk and this time it worked.",
+          mesaj: "Morale held and the sickness didn't spread; you were lucky.",
+          detay: "You took the risk and it paid off.",
         },
         basarisizSonuc: {
-          mesaj: "The sickness spread fast; a third of the barracks took to bed, you included.",
-          detay: "The risk you took for morale cost you your health.",
+          mesaj: "It spread; a third of the barracks fell ill, you included.",
+          detay: "Your gamble for morale cost health.",
         },
       },
     ],
@@ -176,28 +176,28 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
   sd_asker_fabrika_koruma_gorevi: {
     baslik: "Factory Watch",
     metin:
-      "A factory owner offers you a private payment to guard his factory against the striking workers. It's not your official duty, but your superiors turn a blind eye.",
+      "A factory owner offers private pay to guard his plant from striking workers. Your superiors look the other way.",
     secenekler: [
       {
-        metin: "Accept the offer, guard the factory.",
+        metin: "Accept, guard the factory.",
         basariliSonuc: {
-          mesaj: "The factory was guarded without incident; the owner paid generously.",
-          detay: "People stare at you now when you pass through the worker district; you have learned to ignore it.",
+          mesaj: "The factory was guarded; the owner paid generously.",
+          detay: "People stare at you in the worker district now.",
         },
         basarisizSonuc: {
-          mesaj: "You were hurt in a scuffle with angry workers; you got your payment anyway.",
-          detay: "The money is in your pocket, but your body paid for it.",
+          mesaj: "You were hurt in a scuffle with workers; you still got paid.",
+          detay: "Money in your pocket, the cost in your body.",
         },
       },
       {
-        metin: "Refuse the offer, focus on your official duty.",
+        metin: "Refuse, stick to official duty.",
         basariliSonuc: {
-          mesaj: "You stayed neutral; neither the workers nor the boss is angry with you.",
-          detay: "You gave up the extra income, but your conscience and reputation stayed intact.",
+          mesaj: "You stayed neutral; neither workers nor boss is angry.",
+          detay: "You gave up extra pay; your name is intact.",
         },
         basarisizSonuc: {
-          mesaj: "Your refusal angered the factory owner; he stopped giving you priority on military supply contracts.",
-          detay: "Even your neutrality sometimes offends someone.",
+          mesaj: "The owner took offense; no more priority on supply contracts.",
+          detay: "Even neutrality offends someone.",
         },
       },
     ],
@@ -206,28 +206,28 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
   sd_asker_madalya_sahtekarligi: {
     baslik: "False Heroism",
     metin:
-      "You could claim you 'acted heroically' in a battle you never actually took part in and apply for a medal; the records are muddled and no one can fully check.",
+      "You could claim 'heroism' in a battle you missed and apply for a medal; the records are muddled.",
     secenekler: [
       {
-        metin: "Make the false application.",
+        metin: "File the false application.",
         basariliSonuc: {
-          mesaj: "The medal was given to you; no one questioned your story.",
-          detay: "Every time you look at the medal on your chest, you are the only one who knows you did not earn it.",
+          mesaj: "The medal was granted; no one questioned your story.",
+          detay: "Only you know you didn't earn it.",
         },
         basarisizSonuc: {
-          mesaj: "A soldier who was actually there called you a liar; your fraud was heard army-wide.",
-          detay: "The reputation you tried to win ended in its exact opposite.",
+          mesaj: "A soldier who was there called you a liar; the fraud spread.",
+          detay: "You earned the opposite of the reputation you sought.",
         },
       },
       {
-        metin: "Don't apply, be content with your real service.",
+        metin: "Don't apply, rest on real service.",
         basariliSonuc: {
-          mesaj: "You carried on with your ordinary service; no one questioned you.",
-          detay: "Even without a medal, you can be proud of yourself.",
+          mesaj: "You carried on with ordinary service; no one questioned you.",
+          detay: "Even without a medal, you're proud.",
         },
         basarisizSonuc: {
-          mesaj: "While others won medals with false applications, you came away empty-handed.",
-          detay: "Honesty is not always rewarded, but it did not change you.",
+          mesaj: "Others won medals with false claims while you got nothing.",
+          detay: "Honesty goes unrewarded, but it didn't change you.",
         },
       },
     ],
@@ -236,39 +236,39 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
   "sd_asker_telgraf_hattı_sabotaji": {
     baslik: "The Cut Telegraph Line",
     metin:
-      "The telegraph line between the front and headquarters has been sabotaged. You are asked to join the repair team, but the line runs through an area close to the enemy line.",
+      "The front-to-HQ telegraph line was sabotaged. You're asked to join the repair crew; the line runs near the enemy.",
     secenekler: [
       {
-        metin: "Use one of your foster children as a scout to repair the line safely.",
+        metin: "Use your foster child as scout, repair safely.",
         basariliSonuc: {
           mesaj:
-            "One of the foster children you raised knew the area like the back of his hand. Under his guidance you repaired the line without falling into an ambush.",
-          detay: "The investment you made in the orphanage years ago saved your life today.",
+            "Your foster child knew the ground; you repaired it without an ambush.",
+          detay: "Your orphanage investment saved your life.",
         },
         basarisizSonuc: {
           mesaj: "Not used.",
         },
       },
       {
-        metin: "Join the repair team, fix the line.",
+        metin: "Join the repair crew.",
         basariliSonuc: {
-          mesaj: "You repaired the line under enemy fire; communication was restored.",
-          detay: "Command said this repair changed the course of the war.",
+          mesaj: "You fixed the line under fire; contact was restored.",
+          detay: "They said the repair changed the war's course.",
         },
         basarisizSonuc: {
-          mesaj: "You were caught by sniper fire during the repair.",
-          detay: "The line was fixed, but the price was heavy; two of your friends were wounded too.",
+          mesaj: "Sniper fire caught you during the repair.",
+          detay: "The line was fixed; two friends were wounded.",
         },
       },
       {
-        metin: "Deliver the message by hand as a courier.",
+        metin: "Ride as courier, carry the message.",
         basariliSonuc: {
-          mesaj: "You delivered the message on horseback without approaching the enemy lines.",
-          detay: "You were spent with exhaustion, but the mission was completed.",
+          mesaj: "You delivered the message on horseback, clear of the enemy.",
+          detay: "Exhausted, but the mission is done.",
         },
         basarisizSonuc: {
-          mesaj: "Your horse stumbled on the road, the message arrived late; a chance to attack was missed.",
-          detay: "You did what you could, but it was not enough.",
+          mesaj: "Your horse stumbled, the message came late; a chance was lost.",
+          detay: "You did your best; it wasn't enough.",
         },
       },
     ],
@@ -277,28 +277,28 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
   sd_asker_kislada_kumarhane: {
     baslik: "The Secret Gambling Den",
     metin:
-      "A hidden gambling table runs in one of the back rooms of the barracks. Winners take real money, but the risk of being caught means a disciplinary penalty.",
+      "A secret gambling table runs in a back room of the barracks. Winners get real money; getting caught means discipline.",
     secenekler: [
       {
-        metin: "Sit at the table, try your luck.",
+        metin: "Sit down, try your luck.",
         basariliSonuc: {
-          mesaj: "It was a lucky night; you left the table with your pockets full.",
-          detay: "The other soldiers eyed you warily and said 'I won't play again'.",
+          mesaj: "A lucky night; you left with full pockets.",
+          detay: "Others eyed you warily: 'never playing again'.",
         },
         basarisizSonuc: {
-          mesaj: "It was a bad night; you left most of your pay on the table.",
-          detay: "You are thinking about how to get by until the end of the month.",
+          mesaj: "A bad night; most of your pay stayed on the table.",
+          detay: "You wonder how to last till month's end.",
         },
       },
       {
-        metin: "Stay away, keep your discipline.",
+        metin: "Stay away, keep discipline.",
         basariliSonuc: {
-          mesaj: "You did not get mixed up in the gambling; nothing happened to your money or your reputation.",
-          detay: "Some of your friends call it 'boring', but you are content with your decision.",
+          mesaj: "You skipped the gambling; money and name are intact.",
+          detay: "They call you 'boring'; you're fine with it.",
         },
         basarisizSonuc: {
           mesaj: "They teased you as 'arrogant' for not joining.",
-          detay: "Right decisions sometimes become the butt of jokes.",
+          detay: "Right choices sometimes draw mockery.",
         },
       },
     ],
@@ -307,29 +307,29 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
   sd_asker_gazeteci_roportaji: {
     baslik: "The War Correspondent",
     metin:
-      "A newspaper correspondent wants to hear the real conditions at the front from you. What you say will either praise the army or turn into a sensational scandal.",
+      "A newspaper correspondent wants the real front-line conditions from you. Your words will either praise the army or spark a scandal.",
     secenekler: [
       {
         metin: "Tell the truth as it is.",
         basariliSonuc: {
-          mesaj: "Your interview caused a great stir among the public; you became known for your honesty.",
+          mesaj: "Your interview caused a stir; you became known for honesty.",
           detay:
-            "The real conditions of the soldiers were spoken about this openly for the first time; some improvements were even made.",
+            "Soldiers' conditions were aired; some things improved.",
         },
         basarisizSonuc: {
-          mesaj: "Your superiors found the interview 'demoralizing' and gave you a disciplinary penalty.",
-          detay: "Telling the truth had a price, but the public supported you.",
+          mesaj: "Superiors called it 'demoralizing' and punished you.",
+          detay: "Truth had a price, but the public backed you.",
         },
       },
       {
-        metin: "Paint an optimistic picture that praises the army.",
+        metin: "Paint a rosy picture of the army.",
         basariliSonuc: {
-          mesaj: "Your superiors were pleased with the interview; you received a small reward.",
-          detay: "What you said was not quite the truth, but no one questioned it.",
+          mesaj: "Superiors were pleased; you got a small reward.",
+          detay: "Not quite the truth, but no one questioned it.",
         },
         basarisizSonuc: {
-          mesaj: "When the soldiers at the front read your exaggerated account, they lost their trust in you.",
-          detay: "You pleased your superiors but disappointed your comrades.",
+          mesaj: "Soldiers at the front read your gloss and lost trust in you.",
+          detay: "You pleased superiors and let comrades down.",
         },
       },
     ],
@@ -338,28 +338,28 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
   sd_asker_yeni_silah_denemesi: {
     baslik: "The Experimental Weapon",
     metin:
-      "Your commander wants to test a new, as-yet-untested rapid-fire weapon on you in the field. Whether it is adopted by the army will be decided by your performance.",
+      "Your commander wants to field-test an untested rapid-fire weapon on you. Its fate rides on your performance.",
     secenekler: [
       {
-        metin: "Accept the test, use the weapon in the field.",
+        metin: "Accept, use the weapon in the field.",
         basariliSonuc: {
-          mesaj: "The weapon proved unexpectedly effective; your performance was talked about at command level.",
-          detay: "Some risks put you into history.",
+          mesaj: "The weapon proved remarkably effective; command talked of you.",
+          detay: "Some risks put you in history.",
         },
         basarisizSonuc: {
-          mesaj: "The weapon recoiled unexpectedly; you were badly injured.",
-          detay: "What is experimental has a price.",
+          mesaj: "The weapon recoiled; you were badly hurt.",
+          detay: "Experiments carry a price.",
         },
       },
       {
-        metin: "Refuse the test, keep your traditional weapon.",
+        metin: "Refuse, keep your old weapon.",
         basariliSonuc: {
-          mesaj: "You refused; your commander frowned, but your health is intact.",
-          detay: "Some assurances are worth more than reputation.",
+          mesaj: "You refused; the commander frowned, but you're unhurt.",
+          detay: "Some safeguards outweigh reputation.",
         },
         basarisizSonuc: {
-          mesaj: "Your refusal was logged as 'cowardice'; you dropped back on the promotion list.",
-          detay: "Not every cautious step is read the same way.",
+          mesaj: "Logged as 'cowardice'; you slipped on the promotion list.",
+          detay: "Not every caution is read alike.",
         },
       },
     ],
@@ -368,30 +368,30 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
   sd_asker_grev_kirici_gorevi: {
     baslik: "On the Strike Line",
     metin:
-      "You have been ordered to disperse the striking workers gathered outside the factory. Among them are even your childhood friends; the order is firm, but the tension in the square is at its peak.",
+      "You're ordered to disperse strikers outside the factory. Childhood friends are among them; the order is firm, the square tense.",
     secenekler: [
       {
-        metin: "Carry out the order harshly, put down the strike.",
+        metin: "Enforce the order harshly, crush the strike.",
         basariliSonuc: {
           mesaj:
-            "You dispersed the strike; command rewarded you, but no one in your district will meet your eye now.",
-          detay: "Some duties make you a stranger to your own people.",
+            "You broke the strike; rewarded, but your district turned its back.",
+          detay: "Some duties estrange you from your own people.",
         },
         basarisizSonuc: {
-          mesaj: "The intervention turned into a clash, stones and truncheons flew; you left wounded.",
+          mesaj: "It turned into a clash; you left wounded.",
           detay: "Harshness is sometimes met with harshness.",
         },
       },
       {
-        metin: "Slow the intervention, try to lower the tension.",
+        metin: "Slow the move, calm the tension.",
         basariliSonuc: {
           mesaj:
-            "You eased the tension, they dispersed without bloodshed; your old district still counts you as 'one of us'.",
-          detay: "Some victories are won without blood.",
+            "They left without bloodshed; your district still calls you 'ours'.",
+          detay: "Some victories are bloodless.",
         },
         basarisizSonuc: {
-          mesaj: "Your slowing down was counted as 'dereliction of duty'; you received a disciplinary penalty.",
-          detay: "Your mercy sometimes has an official price.",
+          mesaj: "Slowing down was called 'neglect of duty'; you were penalized.",
+          detay: "Mercy sometimes has an official price.",
         },
       },
     ],
@@ -400,29 +400,29 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
   sd_asker_somurge_vicdan: {
     baslik: "A Test of Conscience in the Colony",
     metin:
-      "In the colony where you are posted, you witnessed a local family's land being confiscated unjustly. Your superiors count it as 'the requirement of order'; speaking up may change nothing, but your conscience won't stay quiet.",
+      "In the colony, a local family's land is being seized unjustly. Superiors call it 'order'; your conscience won't be quiet.",
     secenekler: [
       {
-        metin: "Defend the family, object to your superiors.",
+        metin: "Defend the family, protest to superiors.",
         basariliSonuc: {
-          mesaj: "Your objection drew the attention of some senior officers; part of the family got their land back.",
+          mesaj: "Your protest drew notice; the family regained part of its land.",
           detay: "Some voices work better than expected.",
         },
         basarisizSonuc: {
-          mesaj: "Your objection was ignored, and on top of it you were flagged as 'undisciplined'.",
-          detay: "You sometimes pay for your conscience with your career.",
+          mesaj: "Your protest was ignored and you were flagged 'undisciplined'.",
+          detay: "You sometimes pay for conscience with your career.",
         },
       },
       {
-        metin: "Stay silent, follow orders and the order of things.",
+        metin: "Stay silent, follow orders.",
         basariliSonuc: {
           mesaj:
-            "You stayed silent, your career advanced without a hitch; but the helplessness in that family's eyes still won't leave your mind.",
-          detay: "Some silences gnaw at you for years.",
+            "Your career advanced; the family's despair still haunts you.",
+          detay: "Some silences gnaw for years.",
         },
         basarisizSonuc: {
-          mesaj: "You know your silence will come back to you one day as another test of conscience.",
-          detay: "The reckonings you flee do not leave you.",
+          mesaj: "Your silence will return as another test of conscience.",
+          detay: "Reckonings you flee keep following.",
         },
       },
     ],
@@ -431,29 +431,29 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
   sd_asker_savas_muhabiri_gomulu: {
     baslik: "The Embedded Correspondent",
     metin:
-      "A war correspondent from a major newspaper has been embedded with your battalion at the front, writing down your every move. It's your call how much you open up to him.",
+      "A newspaper correspondent is embedded with your battalion, noting every move. How open you are is up to you.",
     secenekler: [
       {
-        metin: "Give him full access, speak to him candidly.",
+        metin: "Give full access, speak candidly.",
         basariliSonuc: {
-          mesaj: "What he wrote reached wide audiences; your name was spoken of with respect in the papers.",
+          mesaj: "His writing reached wide audiences; your name was praised.",
           detay:
-            "It cost you hospitality and time, but in return thousands saw a war through your eyes.",
+            "Thousands saw the war through your eyes.",
         },
         basarisizSonuc: {
-          mesaj: "He twisted your words to his own slant; the article troubled your superiors.",
-          detay: "Candor, it turns out, also means losing control of your own words.",
+          mesaj: "He twisted your words; the piece troubled your superiors.",
+          detay: "Candor means losing control of your words.",
         },
       },
       {
-        metin: "Keep your distance, give only official information.",
+        metin: "Keep distance, give official facts only.",
         basariliSonuc: {
-          mesaj: "The correspondent wrote a dry report; no one was praised, no one blamed.",
-          detay: "You stayed safe, but someone else became the hero of the story.",
+          mesaj: "He wrote a dry report; no one praised or blamed.",
+          detay: "You stayed safe, but someone else was the hero.",
         },
         basarisizSonuc: {
-          mesaj: "He read your distance as 'having something to hide' and wrote it that way.",
-          detay: "Silence sometimes raises more questions than speaking would have.",
+          mesaj: "He read your distance as 'hiding something' and wrote so.",
+          detay: "Silence can raise more questions than speech.",
         },
       },
     ],
@@ -462,28 +462,28 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
   sd_asker_divani_harp: {
     baslik: "The Court-Martial",
     metin:
-      "You sit on the tribunal judging a private who defied orders and pulled back from the front. Whether it was fear or a genuine tactical necessity is unclear; the verdict you give will decide a life.",
+      "You sit on a tribunal judging a private who left the front unordered. Fear or tactics, unclear; your verdict decides a life.",
     secenekler: [
       {
-        metin: "Hand down a harsh sentence, make an example of discipline.",
+        metin: "Hand down a harsh sentence, set an example.",
         basariliSonuc: {
-          mesaj: "The sentence was made an example; discipline was restored, command praised you.",
-          detay: "You can't help thinking about what will be written to that private's family.",
+          mesaj: "Discipline was restored; command praised you.",
+          detay: "You wonder what will be written to his family.",
         },
         basarisizSonuc: {
-          mesaj: "The verdict caused an uproar at the front; the soldiers found you merciless.",
-          detay: "Being harsh made you neither more respected nor more at ease.",
+          mesaj: "The verdict caused an uproar; soldiers found you merciless.",
+          detay: "Harshness made you neither respected nor at ease.",
         },
       },
       {
-        metin: "Weigh the mitigating circumstances, give a lighter sentence.",
+        metin: "Give a light sentence, weigh the reasons.",
         basariliSonuc: {
-          mesaj: "Your verdict was found just; the private got a second chance and earned it.",
-          detay: "Justice sometimes takes courage; this time it paid off.",
+          mesaj: "The verdict was just; the private earned his second chance.",
+          detay: "Justice takes courage; this time it paid.",
         },
         basarisizSonuc: {
-          mesaj: "Your superiors called your decision 'softness' and hit you with a disciplinary penalty.",
-          detay: "Your mercy remained a stain on your own record.",
+          mesaj: "Superiors called it 'softness' and penalized you.",
+          detay: "Your mercy left a stain on your record.",
         },
       },
     ],
@@ -492,28 +492,28 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
   sd_asker_hastane_reformu: {
     baslik: "The Field Hospital Reform",
     metin:
-      "Conditions at the field hospital are dreadful: filthy bandages, too few staff, a high death rate. A team of civilian nurses wants to change how things are run, but the top brass calls it 'needless expense'.",
+      "The field hospital has filthy bandages, thin staff, high death rates. Nurses want reform; the brass calls it 'needless expense'.",
     secenekler: [
       {
-        metin: "Back the reform, contribute from your own resources.",
+        metin: "Back the reform, chip in your own money.",
         basariliSonuc: {
-          mesaj: "The reform went ahead; the hospital's death rate dropped noticeably.",
-          detay: "The money out of your own pocket changed how many soldiers made it home alive.",
+          mesaj: "The reform went through; the death rate dropped sharply.",
+          detay: "Your own money saved many soldiers.",
         },
         basarisizSonuc: {
-          mesaj: "The funds weren't enough, the reform was left half-done; the nurses gave up and left.",
+          mesaj: "Funds ran short, reform stalled; the nurses quit.",
           detay: "Good will alone doesn't make bandages.",
         },
       },
       {
-        metin: "Stick with the old way, reserve the funds for the war.",
+        metin: "Keep the old way, funds to the war.",
         basariliSonuc: {
-          mesaj: "The budget was preserved for the war; the hospital deaths remained just a statistic.",
-          detay: "The numbers look fine, but you know the names behind those numbers.",
+          mesaj: "Funds went to war; hospital deaths stayed statistics.",
+          detay: "You know the names behind the numbers.",
         },
         basarisizSonuc: {
-          mesaj: "The filthy conditions turned into an outbreak at the hospital; you fell ill too.",
-          detay: "Every coin you saved came back from somewhere else in the end.",
+          mesaj: "Filth became an outbreak; you fell ill too.",
+          detay: "Every coin saved came back elsewhere.",
         },
       },
     ],
@@ -522,30 +522,30 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
   sd_asker_maas_isyani: {
     baslik: "Unpaid Wages",
     metin:
-      "The soldiers' pay hasn't come for months; whispers of mutiny circle the barracks. The men come to you — either be their voice, or show your loyalty to your superiors.",
+      "Pay has been missing for months; mutiny whispers circle the barracks. Be their voice or show loyalty to your superiors.",
     secenekler: [
       {
-        metin: "Carry the soldiers' demand up to your superiors, be their voice.",
+        metin: "Carry the demand up, be their voice.",
         basariliSonuc: {
           mesaj:
-            "Your demand was heard, wages were partly paid; you even gave some soldiers advances from your own pocket.",
-          detay: "Speaking for them cost you dearly, but now the barracks trusts you.",
+            "Wages were partly paid; you advanced some men money yourself.",
+          detay: "Speaking up cost you, but the men trust you.",
         },
         basarisizSonuc: {
-          mesaj: "Your demand was labeled 'incitement'; a penalty was docked from your own pay.",
-          detay: "Raising a rightful voice came out of your own pocket.",
+          mesaj: "Your demand was called 'incitement'; a penalty was docked.",
+          detay: "A rightful voice came out of your pocket.",
         },
       },
       {
-        metin: "Stay silent, call for obedience.",
+        metin: "Stay silent, urge obedience.",
         basariliSonuc: {
           mesaj:
-            "Your superiors were pleased with your loyalty; among the soldiers you became known as 'not one of their own'.",
-          detay: "Silence brought you a reward, and a loneliness.",
+            "Superiors were pleased; the men saw you as 'not theirs'.",
+          detay: "Silence brought a reward, and loneliness.",
         },
         basarisizSonuc: {
-          mesaj: "The whispers turned into a mutiny; you were wounded in the chaos that broke out.",
-          detay: "Staying silent didn't stop the storm — it just left you inside it.",
+          mesaj: "Whispers became mutiny; you were hurt in the chaos.",
+          detay: "Silence didn't stop the storm.",
         },
       },
     ],
@@ -554,29 +554,29 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
   sd_asker_silah_kacakciligi: {
     baslik: "The Black Market Arms Offer",
     metin:
-      "A trader proposes that you sell rifles 'gone missing' from the armory to rebels and take a cut. There's a lot of money in it; but those weapons could one day be pointed at your own comrades.",
+      "A trader proposes selling rifles 'lost' from the armory to rebels for a cut. Big money; but they may turn on your comrades.",
     secenekler: [
       {
-        metin: "Accept the offer, smuggle the weapons.",
+        metin: "Accept, smuggle the weapons.",
         basariliSonuc: {
-          mesaj: "The weapons were delivered without a hitch; your pocket grew heavy overnight.",
-          detay: "You'll never know whether one of your comrades will be shot with those very weapons.",
+          mesaj: "The weapons were delivered; your pockets filled overnight.",
+          detay: "You'll never know who those guns shot.",
         },
         basarisizSonuc: {
           mesaj:
-            "You were caught in the act of smuggling; at the front you faced interrogation and the threat of execution.",
-          detay: "The scent of money arrived at the same time as the scent of death.",
+            "Caught smuggling; you faced interrogation and execution threats.",
+          detay: "The scent of money came with the scent of death.",
         },
       },
       {
-        metin: "Refuse the offer, report it to your superiors.",
+        metin: "Refuse, report to superiors.",
         basariliSonuc: {
-          mesaj: "Your report brought down the smuggling ring; the trader was arrested.",
-          detay: "Some opportunities are worth more for being refused.",
+          mesaj: "Your report broke the ring; the trader was arrested.",
+          detay: "Some chances gain worth by being refused.",
         },
         basarisizSonuc: {
-          mesaj: "Your report couldn't be proven; the trader slandered you and damaged your reputation.",
-          detay: "You did the right thing and still ended up the accused.",
+          mesaj: "Unproven; the trader slandered you and damaged your name.",
+          detay: "You did right and still got blamed.",
         },
       },
     ],
@@ -585,29 +585,29 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
   sd_asker_top_atisi_hatasi: {
     baslik: "A Fatal Mistake",
     metin:
-      "An officer's miscalculated artillery coordinates hit your own position; several soldiers died. The officer wants you to alter the report and stay silent.",
+      "An officer's bad artillery coordinates hit your own position; soldiers died. He wants you to alter the report and stay quiet.",
     secenekler: [
       {
-        metin: "Report the truth, expose the mistake.",
+        metin: "Report the truth, expose the error.",
         basariliSonuc: {
           mesaj:
-            "The truth was reported; the families of the dead soldiers at least learned what really happened.",
-          detay: "Some officers never sat you at their table again, but your conscience is clear.",
+            "The truth was reported; the families learned what happened.",
+          detay: "Some officers shunned you; your conscience is clear.",
         },
         basarisizSonuc: {
-          mesaj: "The report was dismissed as 'an unproven accusation'; the officer's friends shut you out.",
-          detay: "Telling the truth doesn't always mean the truth wins.",
+          mesaj: "Dismissed as 'unproven accusation'; the officer's friends shut you out.",
+          detay: "Telling truth doesn't mean truth wins.",
         },
       },
       {
         metin: "Stay silent, alter the report together.",
         basariliSonuc: {
-          mesaj: "You stayed silent; the officer was grateful, your name went on the promotion list.",
-          detay: "When the promotion came, you also remembered the names of those who died.",
+          mesaj: "You kept quiet; he was grateful, your name made the list.",
+          detay: "At the promotion, you remembered the dead by name.",
         },
         basarisizSonuc: {
-          mesaj: "The truth came out from another witness; you were accused of falsification.",
-          detay: "The truth you hid burst open, and pulled you in with it.",
+          mesaj: "Another witness exposed it; you were accused of falsifying.",
+          detay: "The hidden truth burst and dragged you in.",
         },
       },
     ],
@@ -616,28 +616,28 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
   sd_asker_gazi_emekli_maasi: {
     baslik: "The Fight Over a Veteran's Pension",
     metin:
-      "An old comrade who lost an arm in the war has had his pension lost in the bureaucracy. You could push his file to the front of the line, but it would delay another veteran waiting his turn.",
+      "A comrade who lost an arm has his pension lost in bureaucracy. Pushing his file ahead would delay another veteran in line.",
     secenekler: [
       {
-        metin: "Push your comrade's file to the front.",
+        metin: "Push your comrade's file ahead.",
         basariliSonuc: {
-          mesaj: "Your comrade got his pension; his gratitude toward you never faded.",
-          detay: "You paid off a debt, but you also learned the name of the veteran who lost his place in line.",
+          mesaj: "Your comrade got his pension; his gratitude never faded.",
+          detay: "You repaid a debt, and learned who lost his place.",
         },
         basarisizSonuc: {
-          mesaj: "The bureaucracy turned you down as an 'irregular request'; your comrade is still waiting.",
-          detay: "Your good will was no match for the paperwork.",
+          mesaj: "Turned down as an 'irregular request'; he's still waiting.",
+          detay: "Good will lost to paperwork.",
         },
       },
       {
-        metin: "Follow the queue, wait your turn fairly for everyone.",
+        metin: "Follow the queue, wait fairly.",
         basariliSonuc: {
-          mesaj: "You were fair; your comrade waited for months, but the system worked for everyone.",
-          detay: "Doing the right thing sometimes means upsetting someone you care about.",
+          mesaj: "You were fair; he waited months, but the system held for all.",
+          detay: "Doing right can mean hurting someone you love.",
         },
         basarisizSonuc: {
-          mesaj: "Your comrade never forgot that you stayed quiet while he needed your help.",
-          detay: "You stayed loyal to fairness and lost a friendship for it.",
+          mesaj: "He never forgot your silence when he needed help.",
+          detay: "You kept faith with fairness and lost a friend.",
         },
       },
     ],
@@ -646,27 +646,27 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
   sd_asker_topcu_denemesi: {
     baslik: "The New Cannon Trial",
     metin:
-      "A factory is counting on your favorable report to get a new cannon approved by the army. The gun is powerful, but the trials showed some cracks in the barrel.",
+      "A factory counts on your favorable report to get its new cannon approved. Powerful, but trials showed barrel cracks.",
     secenekler: [
       {
-        metin: "Give the cannon a favorable report, back a fast approval.",
+        metin: "Report favorably, back quick approval.",
         basariliSonuc: {
-          mesaj: "The cannon was approved quickly; the factory paid you a generous sum.",
-          detay: "You didn't mention the cracks in your report; you know this silence will cost something.",
+          mesaj: "The cannon was approved fast; the factory paid generously.",
+          detay: "You left out the cracks; that will cost.",
         },
         basarisizSonuc: {
-          mesaj: "During a training shot a cannon barrel burst; several soldiers were wounded.",
-          detay: "The crack you overlooked showed itself at the worst possible moment.",
+          mesaj: "A barrel burst in a training shot; several soldiers were hurt.",
+          detay: "The ignored crack showed at the worst moment.",
         },
       },
       {
-        metin: "Ask for additional tests, delay the approval.",
+        metin: "Demand more tests, delay approval.",
         basariliSonuc: {
-          mesaj: "The additional tests found the flaw; the corrected cannon entered service safely.",
-          detay: "You'll never fully know how many lives your patience will save down the line.",
+          mesaj: "More tests found the flaw; the fixed cannon entered service safely.",
+          detay: "You'll never know how many lives your patience saved.",
         },
         basarisizSonuc: {
-          mesaj: "The delay angered your superiors; the factory complained that you were 'slowing things down'.",
+          mesaj: "The delay angered superiors; the factory complained of you.",
           detay: "Caution is sometimes mistaken for laziness.",
         },
       },
@@ -676,27 +676,27 @@ export const OLAYLAR_SANAYI_ASKER_EN: Record<string, OlayCeviri> = {
   sd_asker_casus_teklifi: {
     baslik: "A Foreign Offer",
     metin:
-      "An agent of a foreign power promises you a fortune in exchange for the army's movement plans. If you're caught, you'll be shot for treason.",
+      "A foreign agent offers a fortune for the army's movement plans. If caught, you'll be shot for treason.",
     secenekler: [
       {
-        metin: "Accept the offer, sell the information.",
+        metin: "Accept, sell the information.",
         basariliSonuc: {
-          mesaj: "You handed over the information; in return you gained a fortune that would change your life.",
-          detay: "Every night you feel like you hear a footstep at the door.",
+          mesaj: "You sold it; a life-changing fortune was yours.",
+          detay: "Every night you hear footsteps at the door.",
         },
         basarisizSonuc: {
-          mesaj: "Your espionage came to light; you were shot for treason.",
+          mesaj: "Your spying was exposed; you were shot for treason.",
         },
       },
       {
-        metin: "Refuse the offer, report it to your superiors.",
+        metin: "Refuse, report to superiors.",
         basariliSonuc: {
-          mesaj: "You had the agent caught; your loyalty was praised throughout the army.",
-          detay: "Some betrayals turn into honor for you, for having been refused.",
+          mesaj: "The agent was caught; your loyalty was praised army-wide.",
+          detay: "Some betrayals refused become honor.",
         },
         basarisizSonuc: {
-          mesaj: "Your report couldn't be proven; the agent got away, and your superiors eyed you with suspicion.",
-          detay: "You did the right thing and still weren't fully trusted.",
+          mesaj: "Unproven; the agent fled, and superiors eyed you with suspicion.",
+          detay: "You did right and still weren't fully trusted.",
         },
       },
     ],

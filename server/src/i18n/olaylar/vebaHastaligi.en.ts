@@ -5,27 +5,27 @@ export const OLAYLAR_VEBA_HASTALIGI_EN: Record<string, OlayCeviri> = {
   veba_hasta_hekim: {
     baslik: "Send for a Physician",
     metin:
-      "Your fever won't break and the blotches have reached your armpit. One of the few physicians still on their feet in the city agrees to treat you — for a heavy fee.",
+      "Your fever won't break; blotches reached your armpit. One of the few physicians left will treat you, for a steep fee.",
     secenekler: [
       {
-        metin: "Pay whatever it takes; keep the physician at your side.",
+        metin: "Pay any fee; keep the physician.",
         kilitAciklamasi: "You can't afford the physician's fee.",
         basariliSonuc: {
-          mesaj: "The physician never left your side for days — bled you, made poultices, watched the fever. The crisis slowly eased.",
+          mesaj: "The physician stayed for days; the crisis slowly eased.",
           detay: "The right care changes everything.",
         },
         basarisizSonuc: {
-          mesaj: "The physician did what they could, but the case was severe; still, better than being alone.",
+          mesaj: "The physician did their best, but the case was severe.",
           detay: "Sometimes even money isn't enough.",
         },
       },
       {
-        metin: "I can't pay that; try to ride it out alone.",
+        metin: "I can't pay; I'll ride it out alone.",
         basariliSonuc: {
-          mesaj: "You sent the physician away. Drenched in sweat in your bed, you watched your own body fight.",
+          mesaj: "You sent the physician away and fought it out in sweat.",
         },
         basarisizSonuc: {
-          mesaj: "The nights grew worse; you kept thinking you should have paid.",
+          mesaj: "The nights worsened; you wished you'd paid.",
         },
       },
     ],
@@ -33,25 +33,25 @@ export const OLAYLAR_VEBA_HASTALIGI_EN: Record<string, OlayCeviri> = {
   veba_hasta_sifaci_otu: {
     baslik: "The Healer's Herbs",
     metin:
-      "A healer woman in the neighbourhood sells a bitter herb brew she boils for plague victims. Some swear it works, some call it poison.",
+      "A local healer sells a bitter herb brew to plague victims. Some swear by it, some call it poison.",
     secenekler: [
       {
-        metin: "Take the brew, drink it as directed.",
+        metin: "Take the brew, drink as directed.",
         kilitAciklamasi: "You have no money for the healer.",
         basariliSonuc: {
-          mesaj: "The night you drank it you sweated buckets; by morning the fever had dropped a notch. The days after were better.",
+          mesaj: "You sweated all night; by morning the fever dropped.",
         },
         basarisizSonuc: {
-          mesaj: "Your stomach couldn't take the brew; you vomited for days and your condition worsened.",
+          mesaj: "The brew wrecked your stomach; you vomited for days.",
         },
       },
       {
-        metin: "I don't trust it, I won't take it.",
+        metin: "I don't trust it; I won't take it.",
         basariliSonuc: {
-          mesaj: "You turned the healer away. Maybe the right call, maybe a wasted chance.",
+          mesaj: "You turned the healer away. Right call, or lost chance?",
         },
         basarisizSonuc: {
-          mesaj: "After refusing, you brooded over 'what if it would have worked?'",
+          mesaj: "You brooded: what if it would have worked?",
         },
       },
     ],
@@ -59,25 +59,25 @@ export const OLAYLAR_VEBA_HASTALIGI_EN: Record<string, OlayCeviri> = {
   veba_hasta_kadim_ilac: {
     baslik: "The Monastery's Salve",
     metin:
-      "The monks at the monastery outside the city apply a salve and prayer regimen they have guarded for generations. If they accept you, you must stay there several days.",
+      "Monks at a monastery outside the city apply an old salve and prayer cure. You must stay there several days.",
     secenekler: [
       {
-        metin: "Go to the monastery, complete the regimen.",
-        kilitAciklamasi: "You can't afford the donation and a stay at the monastery.",
+        metin: "Go to the monastery for the cure.",
+        kilitAciklamasi: "You can't afford the donation and stay.",
         basariliSonuc: {
-          mesaj: "You rested in cool stone cells, amid the smell of herbs and the sound of chanting. Your body began to recover, and so did your spirit.",
+          mesaj: "Amid herbs and chanting, body and spirit mended.",
         },
         basarisizSonuc: {
-          mesaj: "The salve worked no miracle, but at least your days passed in a clean bed, being cared for.",
+          mesaj: "The salve worked no miracle, but you were cared for.",
         },
       },
       {
-        metin: "I can't travel in this state; I'll stay home.",
+        metin: "Too weak to travel; I'll stay home.",
         basariliSonuc: {
-          mesaj: "You couldn't risk the journey; you fought on at home with your own means.",
+          mesaj: "You skipped the journey and held on at home.",
         },
         basarisizSonuc: {
-          mesaj: "Being alone at home weighed on you; you couldn't get the monks' offer out of your head.",
+          mesaj: "Alone at home, you couldn't forget the monks.",
         },
       },
     ],
@@ -85,25 +85,25 @@ export const OLAYLAR_VEBA_HASTALIGI_EN: Record<string, OlayCeviri> = {
   veba_hasta_deneysel_tedavi: {
     baslik: "The Young Doctor's Method",
     metin:
-      "At a newly opened hospital, a young doctor studying the epidemic applies an experimental treatment: regular intervention, a clean room, close monitoring. The fee is high, the outcome uncertain.",
+      "At a new hospital, a young doctor tries an experimental treatment: clean room, close watch. High fee, uncertain outcome.",
     secenekler: [
       {
-        metin: "Check yourself in, try the treatment.",
+        metin: "Check in and try the treatment.",
         kilitAciklamasi: "You can't cover the hospital fee.",
         basariliSonuc: {
-          mesaj: "Your days passed in a white room, checked every hour. The doctor's method held; you got through the crisis.",
+          mesaj: "Watched hourly in a white room, you beat the crisis.",
         },
         basarisizSonuc: {
-          mesaj: "The treatment wasn't settled yet; some of the interventions wore you down further. The doctor took notes; you got worse.",
+          mesaj: "The treatment hadn't settled; it wore you down further.",
         },
       },
       {
-        metin: "I won't be a test subject; I'll stay home.",
+        metin: "No guinea pig for me; staying home.",
         basariliSonuc: {
-          mesaj: "You refused the hospital; you fought on in your own bed with methods you knew.",
+          mesaj: "You refused the hospital and fought on in your own bed.",
         },
         basarisizSonuc: {
-          mesaj: "Waiting at home, you kept thinking about that clean room at the hospital.",
+          mesaj: "Waiting at home, you kept picturing that clean room.",
         },
       },
     ],
@@ -111,24 +111,24 @@ export const OLAYLAR_VEBA_HASTALIGI_EN: Record<string, OlayCeviri> = {
   veba_hasta_hacamat: {
     baslik: "Bloodletting",
     metin:
-      "The common belief of the age: sickness spreads through 'foul blood'. A barber-surgeon offers to draw off some blood from your vein to 'let out the poison'. Sometimes it helps, sometimes it drops the patient further.",
+      "Folk belief says plague spreads through 'foul blood'. A barber-surgeon offers to bleed you; it may help, or sink you.",
     secenekler: [
       {
         metin: "Let them draw your blood.",
         basariliSonuc: {
-          mesaj: "After the procedure you felt a strange lightness; the fever broke within a few days.",
+          mesaj: "You felt a strange lightness; the fever broke in days.",
         },
         basarisizSonuc: {
-          mesaj: "Your already weak body was shaken by the blood loss; you fainted and couldn't stand for days.",
+          mesaj: "Blood loss shook you; you fainted, bedridden for days.",
         },
       },
       {
-        metin: "No, I don't have that much blood to spare.",
+        metin: "No, I have no blood to spare.",
         basariliSonuc: {
-          mesaj: "You sent the barber-surgeon away. At least you held your ground, nothing worse happened.",
+          mesaj: "You sent the barber-surgeon away; nothing worse happened.",
         },
         basarisizSonuc: {
-          mesaj: "You refused, but the neighbours kept whispering it was 'his stubbornness'.",
+          mesaj: "You refused, but neighbours whispered it was stubbornness.",
         },
       },
     ],
@@ -136,24 +136,24 @@ export const OLAYLAR_VEBA_HASTALIGI_EN: Record<string, OlayCeviri> = {
   veba_hasta_dinlen: {
     baslik: "Drop Everything",
     metin:
-      "Work, debt, duty... they can all wait. Your body wants one thing: uninterrupted rest, hot broth, silence.",
+      "Work, debt, duty... all can wait. Your body wants rest, hot broth, silence.",
     secenekler: [
       {
-        metin: "Stop working entirely, just rest.",
+        metin: "Drop work entirely; just rest.",
         basariliSonuc: {
-          mesaj: "You spent days in bed, sleeping and sweating. You lost income, but your body recovered.",
+          mesaj: "Days of sleep and sweat. You lost income but recovered.",
         },
         basarisizSonuc: {
-          mesaj: "You tried to rest but couldn't sleep for worry; still, staying away from grinding work did you good.",
+          mesaj: "Worry kept you awake; still, time off grinding work helped.",
         },
       },
       {
-        metin: "I can't afford to rest, I have to stay on my feet.",
+        metin: "No time to rest; I must keep going.",
         basariliSonuc: {
-          mesaj: "You gritted your teeth and did your work. Your income held, but in the evenings you found yourself on the floor.",
+          mesaj: "You pushed on and earned, but collapsed each evening.",
         },
         basarisizSonuc: {
-          mesaj: "Pushing yourself cost you dearly; one day you collapsed in the middle of the market and the sickness flared.",
+          mesaj: "Pushing backfired: you collapsed in the market, sickness flared.",
         },
       },
     ],
@@ -161,24 +161,24 @@ export const OLAYLAR_VEBA_HASTALIGI_EN: Record<string, OlayCeviri> = {
   veba_hasta_sarlatan_iksiri: {
     baslik: "The Miracle Elixir Seller",
     metin:
-      "A peddler turned up at your door: bright bottles in hand, a promise on his tongue that it 'cures the plague in one night'. The price is outrageous, the contents unknown.",
+      "A peddler at your door: bright bottles, a promise to 'cure the plague overnight'. Outrageous price, unknown contents.",
     secenekler: [
       {
-        metin: "You're desperate; take the bottle, drink it.",
+        metin: "Desperate; take the bottle, drink.",
         basariliSonuc: {
-          mesaj: "Whatever was in it, you slept easy that night and the fever broke. Luck or miracle — you don't know.",
+          mesaj: "You slept easy and the fever broke. Luck or miracle?",
         },
         basarisizSonuc: {
-          mesaj: "The elixir burned your stomach, your head spun. The seller was already at another door. Your condition worsened.",
+          mesaj: "The elixir burned; the seller was gone, you worsened.",
         },
       },
       {
         metin: "Drive the swindler off.",
         basariliSonuc: {
-          mesaj: "You shut the door in his face. Your money stayed in your pocket, and the false hope on the threshold.",
+          mesaj: "You shut the door; money kept, false hope left outside.",
         },
         basarisizSonuc: {
-          mesaj: "You drove him off, but the thought 'what if it really would have worked' gnawed at you at night.",
+          mesaj: "You drove him off, but 'what if it worked?' gnawed at you.",
         },
       },
     ],
@@ -186,24 +186,24 @@ export const OLAYLAR_VEBA_HASTALIGI_EN: Record<string, OlayCeviri> = {
   veba_hasta_aile_bakimi: {
     baslik: "Someone at Your Bedside",
     metin:
-      "One of your loved ones is willing to risk infection to stay at your bedside, feed you, clean you. Your survival may hinge largely on that care — but you'd be putting them in danger too.",
+      "A loved one will risk infection to nurse you at your bedside. Their care may save you, but you'd endanger them.",
     secenekler: [
       {
-        metin: "Accept; let them stay at your side.",
+        metin: "Accept; let them stay by you.",
         basariliSonuc: {
-          mesaj: "They didn't let go of your hand for days. That warm attention may have been the medicine itself; you slowly came back to yourself.",
+          mesaj: "They never let go of your hand; that care healed you.",
         },
         basarisizSonuc: {
-          mesaj: "They did all they could, but the case was severe. Still, knowing you weren't alone gave you strength.",
+          mesaj: "They did all they could; at least you weren't alone.",
         },
       },
       {
         metin: "Refuse; let no one come near.",
         basariliSonuc: {
-          mesaj: "You locked your door, let no one in. You protected them, but you fought this battle alone.",
+          mesaj: "You locked your door and protected them, fighting alone.",
         },
         basarisizSonuc: {
-          mesaj: "Loneliness and sickness together dragged you down; there was no one to hear your voice.",
+          mesaj: "Loneliness and sickness dragged you down; no one heard you.",
         },
       },
     ],
@@ -211,24 +211,24 @@ export const OLAYLAR_VEBA_HASTALIGI_EN: Record<string, OlayCeviri> = {
   veba_hasta_atesli_sayikla: {
     baslik: "The Fever Peaks",
     metin:
-      "The fever rose so high in the night that you thought the ceiling was falling on you, heard sounds that weren't there. This is the sickness's most dangerous moment — your body will either turn this night or it won't.",
+      "Your fever spiked; the ceiling seemed to fall, voices that weren't there. Your body will turn this night or it won't.",
     secenekler: [
       {
-        metin: "Fight with your last strength; drink water, wet cloths, stay upright.",
+        metin: "Fight on; drink water, stay upright.",
         basariliSonuc: {
-          mesaj: "You pushed yourself until dawn; with first light the fever broke. The worst is behind you.",
+          mesaj: "You fought till dawn; at first light the fever broke.",
         },
         basarisizSonuc: {
-          mesaj: "You tried to fight but the body gave in; you lost another night to delirium and sweat.",
+          mesaj: "The body gave in; delirium and sweat took another night.",
         },
       },
       {
         metin: "Let go; whatever happens, happens.",
         basariliSonuc: {
-          mesaj: "You stopped fighting and a strange calm settled in. The body fought its own way; in the morning you were still there.",
+          mesaj: "You stopped fighting, a calm settled; by morning you lived.",
         },
         basarisizSonuc: {
-          mesaj: "Surrender won out; you slid into a deep pit inside the fever and barely climbed back.",
+          mesaj: "Surrender won; you sank deep into fever, barely returned.",
         },
       },
     ],

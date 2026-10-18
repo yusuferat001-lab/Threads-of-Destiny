@@ -5,45 +5,45 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
   oc_din_bagis: {
     baslik: "The Wealthy Donor",
     metin:
-      "A wealthy family offers the congregation a large donation in exchange for the forgiveness of a crime their son committed. The congregation's roof leaks and there is no money for winter firewood.",
+      "A wealthy family offers a large donation to forgive their son's crime. The roof leaks and there's no winter firewood.",
     secenekler: [
       {
         metin: "Take the donation, forgive the family.",
         basariliSonuc: {
-          mesaj: "The donation came; the roof was repaired, the congregation spent the winter warm.",
+          mesaj: "The roof was repaired; the congregation wintered warm.",
           detay:
-            "No one asked whose money paid for the roof. Every time it rains you look at that roof and remember what you sold.",
+            "Looking at the roof, you remember what you sold.",
         },
         basarisizSonuc: {
-          mesaj: "The deal got out; the congregation rose up, saying 'you sold sin for money'.",
+          mesaj: "The deal got out; the congregation rose up: 'You sold sin!'",
           detay:
-            "Part of the donation came but your reputation went. Half the congregation started going to another house of worship and never came back.",
+            "Some donation came, but your reputation went.",
         },
       },
       {
-        metin: "Refuse the donation, sentence the boy to serve the congregation.",
+        metin: "Refuse the donation, sentence the boy to service.",
         basariliSonuc: {
-          mesaj: "The boy served the congregation for a year and truly changed; everyone saw it.",
+          mesaj: "The boy served a year and truly changed.",
           detay:
-            "The roof still leaks but the congregation calls you 'the man who can't be bought'. You spent the winter cold and no one complained.",
+            "The roof leaks, but they call you 'unbuyable'.",
         },
         basarisizSonuc: {
-          mesaj: "The family left the congregation in anger and took the other rich families with them.",
+          mesaj: "The family left in anger, taking other rich ones along.",
           detay:
-            "You did not compromise your principles and the congregation was left without firewood in winter. Righteousness sometimes sends a bill to others too.",
+            "You kept your principles; no firewood came.",
         },
       },
       {
-        metin: "Take the donation, but require the family to apologize publicly.",
+        metin: "Take it, but demand a public apology.",
         basariliSonuc: {
-          mesaj: "The family apologized in the square and made the donation; both justice and resource.",
+          mesaj: "The family apologized in the square and donated.",
           detay:
-            "You chose the hard road and it worked. The congregation both repaired its roof and saw that justice cannot be bought.",
+            "Roof repaired, and justice proved not for sale.",
         },
         basarisizSonuc: {
-          mesaj: "The family refused to apologize publicly; neither donation nor justice came.",
+          mesaj: "The family refused to apologize; no donation, no justice.",
           detay:
-            "You were too clever. You let both hares run: the congregation is broke, the family is angry, and you are stuck in the middle.",
+            "You lost both hares; you're stuck in the middle.",
         },
       },
     ],
@@ -52,44 +52,44 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
   oc_din_sir: {
     baslik: "The Secret of the Confessional",
     metin:
-      "During confession a man admitted he plans to poison the lord. The first rule of your calling is to keep this secret; the first rule of your conscience is to prevent a murder.",
+      "In confession a man admitted he plans to poison the lord. Your calling demands secrecy; your conscience demands preventing murder.",
     secenekler: [
       {
-        metin: "Keep the secret, try to talk him out of it.",
+        metin: "Keep the secret, try to dissuade him.",
         basariliSonuc: {
-          mesaj: "You talked with him for days and talked him out of it; no one learned anything.",
+          mesaj: "You talked for days and he gave up; no one learned a thing.",
           detay:
-            "Neither did the lord die nor was a secret revealed. You are the only one who knows this and no one will thank you. You are content with that.",
+            "No one will thank you. You accept that.",
         },
         basarisizSonuc: {
-          mesaj: "The man carried out his plan; the lord was poisoned and it came out that you knew.",
+          mesaj: "The man went through with it; the lord was poisoned and your knowledge came out.",
           detay:
-            "You kept the secret and a man died. Your professional rule did not protect you; the congregation whispers 'he knew and stayed silent'.",
+            "You stayed silent, a man died; they whisper 'he knew'.",
         },
       },
       {
         metin: "Warn the lord, break the secret.",
         basariliSonuc: {
-          mesaj: "The assassination was prevented; the lord rewarded you and took you into his circle.",
+          mesaj: "The plot was foiled; the lord rewarded you and kept you close.",
           detay:
-            "You saved a life and in return lost your congregation's willingness to open up to you. No one comes to confess anymore.",
+            "You saved a life; now no one comes to confess.",
         },
         basarisizSonuc: {
-          mesaj: "The lord did not believe you; and it got out that you broke the secret.",
+          mesaj: "The lord didn't believe you; your broken secret got out.",
           detay:
-            "You neither prevented the assassination nor kept trust. The congregation closed its doors, and the lord counted you a 'slanderer'.",
+            "You neither stopped the plot nor kept trust.",
         },
       },
       {
-        metin: "Use the knowledge as leverage against the man himself.",
+        metin: "Use it as leverage against the man.",
         basariliSonuc: {
-          mesaj: "The man gave you whatever you asked to keep quiet; the secret stayed and the purse filled.",
+          mesaj: "The man paid for your silence; the secret stayed, the purse filled.",
           detay:
-            "You turned his fear into money. For the first time in months you sleep easy, and you try not to think about where that ease comes from.",
+            "You turned his fear into money and sleep easy.",
         },
         basarisizSonuc: {
           mesaj:
-            "The man did not expect blackmail, and you did not reckon that he had nothing to lose. One night you were found behind the church.",
+            "He had nothing to lose; you were found behind the church one night.",
         },
       },
     ],
@@ -98,30 +98,30 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
   oc_din_mucize_iddiasi: {
     baslik: "A Claim of a Miracle",
     metin:
-      "In some village they say a blind man saw after your prayer. The news spreads; pilgrims have started to pour in. You yourself are not sure what happened.",
+      "A village says a blind man saw after your prayer. The news spreads; pilgrims pour in. You're unsure what happened.",
     secenekler: [
       {
-        metin: "Confirm the miracle, build the affair up.",
+        metin: "Confirm the miracle, build it up.",
         basariliSonuc: {
-          mesaj: "Pilgrims poured in, your congregation grew rich; your name spread to distant lands.",
+          mesaj: "Pilgrims poured in, the congregation prospered; your name spread.",
           detay:
-            "Was it really a miracle or a coincidence? Even you are no longer sure. But there are believers, and you give them hope.",
+            "Unsure, you still give believers hope.",
         },
         basarisizSonuc: {
           mesaj: "A traveling physician proved the man could already see; you were accused of fraud.",
-          detay: "Your credibility collapsed in a day; some congregation members never saw you the same way again.",
+          detay: "Your credibility collapsed in a day.",
         },
       },
       {
-        metin: "Say openly that it was not a miracle.",
+        metin: "Say plainly it was no miracle.",
         basariliSonuc: {
           mesaj:
-            "Your honesty disappointed some pilgrims but increased your congregation's trust in you.",
-          detay: "You did not sell a miracle; in the long run this set your reputation on firmer ground.",
+            "Your honesty let some pilgrims down but raised the congregation's trust.",
+          detay: "You sold no miracle; your reputation stands firmer.",
         },
         basarisizSonuc: {
-          mesaj: "The pilgrims did not want to listen to you; the rumor kept spreading on its own.",
-          detay: "Telling the truth does not always get ahead of the rumor.",
+          mesaj: "The pilgrims wouldn't listen; the rumor spread on its own.",
+          detay: "Truth doesn't always outrun a rumor.",
         },
       },
     ],
@@ -130,29 +130,29 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
   oc_din_kilise_onarim_parasi: {
     baslik: "The Collapsing Roof",
     metin:
-      "The roof of the house of worship is in danger of collapse. The repair is expensive; the congregation has no money, and you shrink from asking them for more donations.",
+      "The house of worship's roof is near collapse. Repair is costly; the congregation is broke and you hate asking them for more.",
     secenekler: [
       {
-        metin: "Spend your own savings on the repair.",
+        metin: "Spend your own savings on repairs.",
         basariliSonuc: {
           mesaj: "The roof was repaired; the congregation never forgot your sacrifice.",
-          detay: "You gave every coin in your pocket to that roof, but no one got wet in the rain again.",
+          detay: "You gave every coin; no one got rained on again.",
         },
         basarisizSonuc: {
-          mesaj: "The money you gave was not enough; the builders left the job half done.",
-          detay: "Your good intentions were not enough; the roof is still dangerous.",
+          mesaj: "Your money fell short; the builders quit halfway.",
+          detay: "Good will wasn't enough; the roof is still unsafe.",
         },
       },
       {
         metin: "Ask a wealthy family for a large donation.",
         basariliSonuc: {
           mesaj:
-            "The family made the donation but in return asked you to carve their family name into the roof.",
-          detay: "The roof was renewed but now you see that family's name every time you look up.",
+            "The family donated but had their name carved into the roof.",
+          detay: "New roof; you see that name whenever you look up.",
         },
         basarisizSonuc: {
-          mesaj: "The family refused the donation; they said 'if God wills it, the roof will repair itself'.",
-          detay: "The generosity of the rich sometimes stays only in words.",
+          mesaj: "The family refused: 'If God wills, the roof will mend itself.'",
+          detay: "The generosity of the rich often stays in words.",
         },
       },
     ],
@@ -161,28 +161,28 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
   oc_din_iki_mezhep_arasi: {
     baslik: "A Doctrinal Dispute",
     metin:
-      "A difference of interpretation is growing within your congregation; one group finds your teaching 'close to heresy', the other supports you. The congregation faces the danger of a split.",
+      "A difference of interpretation is growing; one group finds your teaching 'close to heresy', the other backs you. The congregation may split.",
     secenekler: [
       {
         metin: "Find a conciliatory middle way.",
         basariliSonuc: {
-          mesaj: "The middle way you found managed both sides; the congregation did not split.",
-          detay: "No one got quite what they wanted, but no one left; sometimes that is a victory.",
+          mesaj: "The middle way managed both sides; the congregation held together.",
+          detay: "No one got what they wanted, but no one left.",
         },
         basarisizSonuc: {
-          mesaj: "The middle way angered both sides; you were criticized as 'neither this nor that'.",
+          mesaj: "The middle way angered both sides: 'neither this nor that'.",
           detay: "Compromise sometimes pleases no one.",
         },
       },
       {
-        metin: "Take a firm side, defend your teaching clearly.",
+        metin: "Take a firm side, defend your teaching.",
         basariliSonuc: {
-          mesaj: "Your stance convinced most of the congregation; the dissenters quietly left.",
-          detay: "Your congregation shrank but those who remained are fully devoted to you; that is enough for you.",
+          mesaj: "Your stance convinced most; the dissenters quietly left.",
+          detay: "The congregation shrank, but the rest are devoted.",
         },
         basarisizSonuc: {
-          mesaj: "Your stance split the congregation in two; one group left and founded its own house of worship.",
-          detay: "You said what you believed and lost half your congregation; still, your conscience is at ease.",
+          mesaj: "Your stance split them; one group founded its own house of worship.",
+          detay: "You spoke your belief, lost half; conscience clear.",
         },
       },
     ],
@@ -191,32 +191,32 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
   oc_din_zengin_gunahkarin_itirafi: {
     baslik: "A Deathbed Confession",
     metin:
-      "A wealthy moneylender on the point of death confessed, at confession, a murder he had hidden for years, and said he would leave part of his fortune to you — on condition that you stay silent.",
+      "A dying wealthy moneylender confessed a long-hidden murder and offered you part of his fortune for your silence.",
     secenekler: [
       {
         metin: "Stay silent, accept the inheritance.",
         basariliSonuc: {
           mesaj: "The man died, the inheritance came to you; no one learned the truth.",
           detay:
-            "With this money, which you channeled into the congregation's funds, you were able to do much, but you always remember where it came from.",
+            "The money did much good; you remember its source.",
         },
         basarisizSonuc: {
           mesaj:
-            "You took the inheritance but his family found out and filed suit; you had to return most of it.",
-          detay: "The secret didn't hold, only the unease remained.",
+            "His family found out and sued; you returned most of it.",
+          detay: "The secret didn't hold; only unease remained.",
         },
       },
       {
-        metin: "Refuse the inheritance, tell his family so that justice may be done.",
+        metin: "Refuse the inheritance, tell his family.",
         basariliSonuc: {
           mesaj:
-            "What you said was investigated and the family of the real murder victim found peace years later.",
-          detay: "You broke the seal of confession, but you believe it was the right thing.",
+            "Your account was investigated; the victim's family found peace years later.",
+          detay: "You broke the seal, but believe it was right.",
         },
         basarisizSonuc: {
           mesaj:
-            "No one believed what you said; a dead man's word did not count, and you were spoken of as 'the priest who reveals secrets'.",
-          detay: "You tried to do the right thing and got nothing for it.",
+            "No one believed a dead man's word; you became 'the priest who tells secrets'.",
+          detay: "You tried to do right and got nothing for it.",
         },
       },
     ],
@@ -225,28 +225,28 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
   oc_din_veba_sonrasi_evlatlik: {
     baslik: "The Orphaned Children",
     metin:
-      "After the plague or the war, several orphaned children were left at the congregation's door. Their care is expensive, but leaving them on the street is not possible either.",
+      "After plague or war, orphaned children were left at the congregation's door. Their care is costly, but they can't be left on the street.",
     secenekler: [
       {
         metin: "Raise the children under the congregation's roof.",
         basariliSonuc: {
-          mesaj: "The children grew up in the congregation; years later some became your most loyal helpers.",
-          detay: "Small hands learned to work the bellows, big hearts learned to be grateful.",
+          mesaj: "The children grew up in the congregation; some became your most loyal helpers.",
+          detay: "Small hands learned to work, hearts to be grateful.",
         },
         basarisizSonuc: {
-          mesaj: "The care costs came out higher than you expected; the congregation budget was strained.",
-          detay: "Your good intentions cost dearly, but at least the children were safe.",
+          mesaj: "Care cost more than expected; the congregation's budget strained.",
+          detay: "Good will cost dearly, but the children were safe.",
         },
       },
       {
-        metin: "Place the children with wealthy families for adoption.",
+        metin: "Place the children with wealthy families.",
         basariliSonuc: {
-          mesaj: "The children settled with good families; from time to time they come to visit you.",
-          detay: "You tried to do the best for everyone and mostly succeeded.",
+          mesaj: "The children settled with good families and visit you now and then.",
+          detay: "You tried your best for everyone and mostly succeeded.",
         },
         basarisizSonuc: {
-          mesaj: "It came out that one of the families was working a child hard and treating them badly.",
-          detay: "A decision made in good faith led to a pain you did not know about.",
+          mesaj: "One family turned out to be working a child hard and mistreating them.",
+          detay: "A well-meant decision caused a pain you didn't know of.",
         },
       },
     ],
@@ -255,29 +255,29 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
   "oc_din_haclı_vaaz_talebi": {
     baslik: "A Demand for a War Sermon",
     metin:
-      "The lord wants you to give a fiery sermon to urge the people to the campaign. Most of your congregation does not want to go, but refusing the lord's request is dangerous too.",
+      "The lord wants a fiery sermon urging the people to the campaign. Your congregation doesn't want to go, but refusing him is dangerous.",
     secenekler: [
       {
-        metin: "Give the sermon he asked for, urge the people to the campaign.",
+        metin: "Give the sermon, urge the people to go.",
         basariliSonuc: {
-          mesaj: "Your sermon was effective; dozens of young men enlisted, the lord rewarded you.",
+          mesaj: "The sermon worked; dozens of youths enlisted and the lord rewarded you.",
           detay:
-            "You don't know how many of those young men will come back; for the first time you felt the power of your sermon this heavily.",
+            "You don't know how many will return; it weighs on you.",
         },
         basarisizSonuc: {
-          mesaj: "Your sermon was not very effective, and the lord made his displeasure clear.",
-          detay: "Your conscience is not at ease and the lord is not pleased with you; this is the worst outcome.",
+          mesaj: "The sermon fell flat and the lord showed his displeasure.",
+          detay: "Neither conscience nor lord at ease; the worst outcome.",
         },
       },
       {
-        metin: "Refuse the sermon, stand with your congregation's conscience.",
+        metin: "Refuse the sermon, side with your congregation.",
         basariliSonuc: {
-          mesaj: "Your refusal won the congregation's respect; the lord held his tongue this time.",
-          detay: "The congregation began to see you as its protector; that is a trust no money can measure.",
+          mesaj: "Your refusal won the congregation's respect; the lord held his tongue.",
+          detay: "They see you as protector; no money buys that.",
         },
         basarisizSonuc: {
-          mesaj: "The lord took your refusal as an insult; some privileges given to the congregation were withdrawn.",
-          detay: "Your principles cost dearly, but you still think they were right.",
+          mesaj: "The lord took it as an insult; some of the congregation's privileges were withdrawn.",
+          detay: "Your principles cost dearly, yet you think them right.",
         },
       },
     ],
@@ -286,28 +286,28 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
   oc_din_kutsal_emanet_hirsizligi: {
     baslik: "The Stolen Relic",
     metin:
-      "The most sacred relic of the house of worship has been stolen. The congregation is shocked; suspicion turns to one of your own — an old helper who has served for a long time.",
+      "The house of worship's holiest relic was stolen. Suspicion falls on one of your own, an old helper of long service.",
     secenekler: [
       {
         metin: "Investigate quietly, find the truth.",
         basariliSonuc: {
-          mesaj: "Your investigation found the real thief; the innocent helper was cleared and the relic returned.",
-          detay: "Acting patiently and fairly made you even more respected in the congregation's eyes.",
+          mesaj: "The real thief was found; the helper was cleared and the relic returned.",
+          detay: "Your patience and fairness earned you respect.",
         },
         basarisizSonuc: {
-          mesaj: "Your suspicions proved wrong; the old helper was wrongly accused and left the congregation.",
-          detay: "One mistake broke the heart of someone who had served for years.",
+          mesaj: "Your suspicion was wrong; the old helper was wrongly accused and left.",
+          detay: "One mistake broke a loyal servant's heart.",
         },
       },
       {
-        metin: "Explain the situation to the congregation, mourn the loss together.",
+        metin: "Tell the congregation, mourn the loss together.",
         basariliSonuc: {
-          mesaj: "The congregation met the loss with maturity; the community did not fall apart.",
-          detay: "The relic is gone but the congregation's trust in one another is not.",
+          mesaj: "The congregation took the loss with maturity; unity held.",
+          detay: "The relic is gone; the trust is not.",
         },
         basarisizSonuc: {
-          mesaj: "Distrust began within the congregation; everyone started to suspect everyone else.",
-          detay: "An unsolved mystery sometimes does more harm than a solved crime.",
+          mesaj: "Distrust began; everyone suspected everyone.",
+          detay: "An unsolved mystery can hurt more than a solved crime.",
         },
       },
     ],
@@ -316,28 +316,28 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
   "oc_din_falcı_kadin": {
     baslik: "The Village Fortune-Teller",
     metin:
-      "An old woman living in the village reads fortunes and tries herbs, contrary to the teaching of the church/mosque. The people knock on both your door and hers.",
+      "An old village woman reads fortunes and tries herbs against church/mosque teaching. The people knock on both your door and hers.",
     secenekler: [
       {
-        metin: "Accuse the woman of heresy, stop the practice.",
+        metin: "Accuse her of heresy, stop it.",
         basariliSonuc: {
-          mesaj: "The woman gave up the practice; the authority of the teaching was preserved.",
-          detay: "Some villagers found you rigid, but you believe this is right.",
+          mesaj: "She gave up the practice; the teaching's authority held.",
+          detay: "Some found you rigid; you think it right.",
         },
         basarisizSonuc: {
-          mesaj: "The villagers defended the woman and found you 'out of touch with the people'.",
-          detay: "You used your authority and some of the people never saw you the same way again.",
+          mesaj: "Villagers defended her and found you 'out of touch'.",
+          detay: "You used your authority and lost some trust.",
         },
       },
       {
-        metin: "Turn a blind eye, leave the people to their own ways.",
+        metin: "Turn a blind eye, leave the people to their ways.",
         basariliSonuc: {
-          mesaj: "Both traditions quietly went on existing side by side.",
-          detay: "Not choosing some battles is a wisdom too.",
+          mesaj: "Both traditions quietly went on side by side.",
+          detay: "Not choosing some battles is wisdom.",
         },
         basarisizSonuc: {
-          mesaj: "The higher authorities learned of the situation and criticized you for 'loose discipline'.",
-          detay: "It turns out tolerance can have a price too.",
+          mesaj: "Higher authorities learned of it and criticized your 'loose discipline'.",
+          detay: "Tolerance can have a price too.",
         },
       },
     ],
@@ -346,28 +346,28 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
   oc_din_kardes_kilise_rekabeti: {
     baslik: "Rivalry With the Neighboring House of Worship",
     metin:
-      "A new house of worship opened at the other end of the city and has started to draw people away from your congregation. The rival clergyman is younger, more charismatic, and gives bolder sermons.",
+      "A new house of worship across the city is drawing your people away. The rival clergyman is younger, more charismatic, and bolder.",
     secenekler: [
       {
-        metin: "Improve your own sermons, win the people back.",
+        metin: "Improve your sermons, win people back.",
         basariliSonuc: {
-          mesaj: "Your renewed sermons won the congregation back; you even added new members.",
-          detay: "The rivalry kept you from growing lazy; that was good for you too.",
+          mesaj: "Your renewed sermons won them back and added new members.",
+          detay: "Rivalry kept you from growing lazy.",
         },
         basarisizSonuc: {
-          mesaj: "Despite your efforts, part of your congregation went over to the other side.",
-          detay: "You didn't win everyone back, but you didn't stop trying.",
+          mesaj: "Despite your efforts, part of the congregation switched sides.",
+          detay: "You didn't win everyone back, but kept trying.",
         },
       },
       {
-        metin: "Spread negative rumors about the rival.",
+        metin: "Spread bad rumors about the rival.",
         basariliSonuc: {
-          mesaj: "The rumors damaged your rival's reputation; your congregation came back.",
-          detay: "You won, but you know how this win came, and it bothers you.",
+          mesaj: "The rumors hurt your rival's name; your congregation returned.",
+          detay: "You won, but you know how, and it bothers you.",
         },
         basarisizSonuc: {
-          mesaj: "It came out that you were the source of the rumors; the congregation was ashamed of you.",
-          detay: "The dirty game backfired and now you are diminished in the eyes of both your rival and your congregation.",
+          mesaj: "You were exposed as the source; the congregation was ashamed of you.",
+          detay: "The dirty play backfired; everyone thinks less of you.",
         },
       },
     ],
@@ -376,29 +376,29 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
   oc_din_kehanet_talebi: {
     baslik: "The Lord's Request for a Prophecy",
     metin:
-      "Before going to war, the lord asks you to interpret a 'sign'. Whatever you say will affect his decision — and you will be held responsible for the outcome.",
+      "Before war, the lord asks you to interpret a 'sign'. Your words will sway his decision, and you'll answer for the result.",
     secenekler: [
       {
         metin: "Interpret honestly, stay neutral.",
         basariliSonuc: {
-          mesaj: "Your interpretation was balanced; the lord made his decision with his own mind.",
+          mesaj: "Your reading was balanced; the lord decided with his own mind.",
           detay:
-            "You did not take on the responsibility, and that protected you from an accusation that might have come later.",
+            "You took no responsibility, and that protected you.",
         },
         basarisizSonuc: {
-          mesaj: "The lord was annoyed at not getting a clear answer and said 'you are no use to me'.",
-          detay: "Sometimes honesty goes unappreciated because it does not give the certainty expected.",
+          mesaj: "The lord, denied a clear answer, snapped: 'you are no use'.",
+          detay: "Honesty goes unthanked when it gives no certainty.",
         },
       },
       {
-        metin: "Give the interpretation the lord wants to hear.",
+        metin: "Say what the lord wants to hear.",
         basariliSonuc: {
-          mesaj: "The lord was pleased with your interpretation and rewarded you.",
-          detay: "Time will tell whether what you said comes true.",
+          mesaj: "The lord was pleased and rewarded you.",
+          detay: "Time will tell if it comes true.",
         },
         basarisizSonuc: {
-          mesaj: "What you said did not come to pass; the lord punished you as a 'false oracle'.",
-          detay: "The price of telling him what he wanted to hear was your own reputation.",
+          mesaj: "It didn't come to pass; the lord punished you as a 'false oracle'.",
+          detay: "Telling him what he wanted cost your reputation.",
         },
       },
     ],
@@ -407,27 +407,27 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
   oc_din_kehanet_sahteciligi: {
     baslik: "The Sign the People Want",
     metin:
-      "Famine and despair have gripped the city; the people await a sign from the sky, a miracle. With a small trick you could stage a 'holy omen' and raise morale, or you could tell the bitter truth.",
+      "Famine grips the city; the people await a miracle from the sky. You could stage a 'holy omen' with a small trick, or tell the bitter truth.",
     secenekler: [
       {
         metin: "Stage a small miracle, give hope.",
         basariliSonuc: {
-          mesaj: "The 'miracle' spread fast among the people; hope returned, the streets came alive again.",
-          detay: "Some lies are lies even when told in good faith.",
+          mesaj: "The 'miracle' spread fast; hope returned and the streets revived.",
+          detay: "Some lies are lies even when well-meant.",
         },
         basarisizSonuc: {
-          mesaj: "The trick was noticed! When the people realized they had been deceived they marched on the church in anger.",
+          mesaj: "The trick was exposed! The deceived people marched on the church.",
           detay: "Fake miracles collapse sooner or later.",
         },
       },
       {
-        metin: "Tell the people the bitter truth, call for patience and solidarity.",
+        metin: "Tell the bitter truth, call for patience.",
         basariliSonuc: {
-          mesaj: "Your words did not comfort everyone, but your honesty strengthened the congregation's trust in you.",
+          mesaj: "Your words didn't comfort all, but your honesty deepened their trust.",
           detay: "Sometimes comfort is as valuable as hope.",
         },
         basarisizSonuc: {
-          mesaj: "The truth broke the despairing people further; some criticized you as 'without comfort'.",
+          mesaj: "The truth crushed the despairing people; some called you 'comfortless'.",
           detay: "Honesty is sometimes not enough.",
         },
       },
@@ -437,30 +437,30 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
   oc_din_engizisyon_tanikligi: {
     baslik: "A Weak Accusation",
     metin:
-      "An old woman is accused of witchcraft; the evidence is extremely weak, but the authorities expect testimony from you accusing her. Refusing could put you under suspicion too.",
+      "An old woman is accused of witchcraft; the evidence is very weak, yet the authorities expect your testimony against her. Refusing makes you a suspect.",
     secenekler: [
       {
-        metin: "Give the testimony they want, accuse the woman.",
+        metin: "Give the testimony, accuse the woman.",
         basariliSonuc: {
           mesaj:
-            "Your testimony was accepted; in the authorities' eyes you are a loyal clergyman, but that woman's screams come into your dreams.",
-          detay: "Some assurances are built on another's life.",
+            "Testimony accepted; the authorities approve, but her screams haunt your dreams.",
+          detay: "Some assurances rest on another's life.",
         },
         basarisizSonuc: {
-          mesaj: "Your testimony brought the desired result but your conscience never left you at peace again.",
+          mesaj: "The testimony worked, but your conscience never rested again.",
           detay: "Some victories are really losses.",
         },
       },
       {
-        metin: "Defend the woman, stress the insufficiency of the evidence.",
+        metin: "Defend the woman, stress the weak evidence.",
         basariliSonuc: {
           mesaj:
-            "Your defense worked, the woman was released; among the people you began to be spoken of as 'just'.",
-          detay: "Some victories are worth all the risk.",
+            "Your defense worked and she was freed; people call you 'just'.",
+          detay: "Some victories are worth every risk.",
         },
         basarisizSonuc: {
-          mesaj: "Your defense was rejected, and on top of it you faced a charge of 'collaborating with the suspect'.",
-          detay: "Defending the truth sometimes has a heavy price.",
+          mesaj: "Your defense was rejected, and you were charged with 'aiding the suspect'.",
+          detay: "Defending the truth can cost dearly.",
         },
       },
     ],
@@ -469,29 +469,29 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
   oc_din_zekat_dagitimi: {
     baslik: "Alms That Fall Short",
     metin:
-      "The purse of alms in your hand is too small for the dozens of hungry families lined up at your door. Do you hand out equal but tiny shares to everyone, or give full support to the few most in need?",
+      "Your alms purse can't cover the dozens of hungry families at your door. Give everyone a tiny equal share, or full help to a few?",
     secenekler: [
       {
-        metin: "Hand out small equal shares to everyone.",
+        metin: "Hand out small equal shares to all.",
         basariliSonuc: {
           mesaj:
-            "Everyone got something; no one went away empty-handed, but not one of them had their problem truly solved.",
-          detay: "Justice sometimes makes everyone a little happy and no one fully happy.",
+            "No one left empty-handed, but no one's trouble was truly solved.",
+          detay: "Justice pleases all a little, none fully.",
         },
         basarisizSonuc: {
-          mesaj: "There was shoving during the distribution, and a few did not even get their share.",
-          detay: "Equality sometimes turns into chaos.",
+          mesaj: "Shoving broke out; a few got no share at all.",
+          detay: "Equality sometimes turns to chaos.",
         },
       },
       {
-        metin: "Give full support to the few most in need, turn the others away.",
+        metin: "Give full help to the few most in need.",
         basariliSonuc: {
           mesaj:
-            "The lives of the families you chose truly changed; but you can't forget the eyes of those who left your door empty-handed.",
-          detay: "Deep help fits into a narrow circle.",
+            "The chosen families' lives changed; you can't forget the empty-handed.",
+          detay: "Deep help fits a narrow circle.",
         },
         basarisizSonuc: {
-          mesaj: "Those you turned away accused you of 'favoritism'; your choice caused a dispute.",
+          mesaj: "Those turned away accused you of 'favoritism'.",
           detay: "Every choice leaves someone out.",
         },
       },
@@ -501,28 +501,28 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
   oc_din_sapkin_sigintisi: {
     baslik: "The Fugitive Accused of Heresy",
     metin:
-      "A man knocks on your door at midnight; he's wanted for views that defy official doctrine, and he's asking you for sanctuary. Sheltering him puts you in danger too.",
+      "At midnight a man wanted for views against official doctrine knocks, asking sanctuary. Sheltering him endangers you too.",
     secenekler: [
       {
-        metin: "Shelter him in secret, help him reach safety.",
+        metin: "Shelter him secretly, see him to safety.",
         basariliSonuc: {
-          mesaj: "You quietly delivered the man to a distant congregation; no one found a trace.",
-          detay: "You'll never be able to tell anyone of this courage, but you know it.",
+          mesaj: "You delivered him to a distant congregation; no one found a trace.",
+          detay: "You can't tell anyone of this courage, but you know.",
         },
         basarisizSonuc: {
-          mesaj: "What you hid came to light; you too were questioned for complicity.",
-          detay: "Your good will placed you among the suspects as well.",
+          mesaj: "Your secret came out; you were questioned for complicity.",
+          detay: "Good will put you among the suspects too.",
         },
       },
       {
         metin: "Hand him over, follow the rules.",
         basariliSonuc: {
           mesaj: "The authorities were satisfied; the man was taken away.",
-          detay: "You followed the rules; you can't forget the look in his eyes.",
+          detay: "You followed the rules; his look haunts you.",
         },
         basarisizSonuc: {
-          mesaj: "The man you handed over escaped along the way; you angered both the authorities and your own conscience.",
-          detay: "You neither applied the rule correctly nor eased your conscience.",
+          mesaj: "The man escaped on the way; you angered both the authorities and your conscience.",
+          detay: "You neither applied the rule nor eased your conscience.",
         },
       },
     ],
@@ -531,28 +531,28 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
   oc_din_yazma_atolyesi: {
     baslik: "The Scriptorium",
     metin:
-      "You discovered a gifted scribe at the house of worship; producing an illuminated copy of an ancient sacred text could bring the congregation great fame, but it demands months of labor and money for materials.",
+      "You found a gifted scribe; an illuminated copy of an ancient sacred text could bring the congregation fame, but costs months of labor and money.",
     secenekler: [
       {
-        metin: "Set aside resources for the project, support the scribe.",
+        metin: "Fund the project, support the scribe.",
         basariliSonuc: {
           mesaj: "The work was completed; its fame reached distant cities.",
-          detay: "The scribe's patience and your resources gave birth to a lasting work.",
+          detay: "Patience and resources made a lasting work.",
         },
         basarisizSonuc: {
-          mesaj: "The work was left unfinished; the scribe fell ill and had to give it up.",
-          detay: "The labor and money spent remained on an incomplete page.",
+          mesaj: "The work stayed unfinished; the scribe fell ill and quit.",
+          detay: "The labor and money stayed on an unfinished page.",
         },
       },
       {
-        metin: "Direct the resources to daily needs, refuse the project.",
+        metin: "Use the funds for daily needs, refuse the project.",
         basariliSonuc: {
           mesaj: "Daily needs were met; the work was never made.",
-          detay: "You fulfilled your duty, but you chased no opportunity.",
+          detay: "You did your duty but chased no opportunity.",
         },
         basarisizSonuc: {
-          mesaj: "The scribe went to another monastery and earned fame there instead.",
-          detay: "It's hard to watch a chance you passed up shine in someone else's hands.",
+          mesaj: "The scribe went to another monastery and won fame there.",
+          detay: "Your missed chance shines in someone else's hands.",
         },
       },
     ],
@@ -561,27 +561,27 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
   oc_din_komsu_manastir_toprak_davasi: {
     baslik: "The Land Dispute",
     metin:
-      "The neighboring monastery claims that a field your congregation has long worked actually belongs to them. The case can go to the lord's court, or you can settle it between yourselves.",
+      "The neighboring monastery claims a field your congregation long worked is theirs. It can go to the lord's court, or you can settle.",
     secenekler: [
       {
-        metin: "Take it to court, defend your right to the end.",
+        metin: "Take it to court, defend your right.",
         basariliSonuc: {
-          mesaj: "The land stayed with your congregation; the court ruled in your favor.",
-          detay: "You won, but the bitterness of the case burned the bridge to the neighboring monastery.",
+          mesaj: "The land stayed yours; the court ruled in your favor.",
+          detay: "You won, but the bitterness burned the bridge.",
         },
         basarisizSonuc: {
-          mesaj: "The case was lost; you lost both the land and the court costs.",
-          detay: "You sought your right and were left with even less.",
+          mesaj: "The case was lost; you lost land and costs.",
+          detay: "You sought your right and ended with less.",
         },
       },
       {
-        metin: "Settle with the neighboring monastery, share the land.",
+        metin: "Settle with the monastery, share the land.",
         basariliSonuc: {
-          mesaj: "Peace was reached between the two monasteries; a shared-use agreement was made.",
+          mesaj: "Peace was made; a shared-use agreement signed.",
           detay: "A small sacrifice averted a long feud.",
         },
         basarisizSonuc: {
-          mesaj: "The agreement fell apart; the neighboring monastery broke its word and took most of the land.",
+          mesaj: "The deal collapsed; the monastery broke its word and took most of the land.",
           detay: "Your good will went unrewarded.",
         },
       },
@@ -591,27 +591,27 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
   oc_din_ac_koylu_ondaligi: {
     baslik: "The Starving Peasant's Tithe",
     metin:
-      "In this famine year the peasants have no means to pay their tithe. The higher authorities want collection to continue uninterrupted; you feel as if you'd be taking the peasants' last sack of wheat.",
+      "In a famine year the peasants can't pay the tithe. The authorities demand collection; you feel you'd be taking their last sack of wheat.",
     secenekler: [
       {
         metin: "Collect the tithe in full.",
         basariliSonuc: {
-          mesaj: "The taxes were collected in full; the higher authorities are pleased, but the peasants curse your name.",
-          detay: "The weight of the purse in your pocket does not erase the despair in their eyes.",
+          mesaj: "Taxes collected; the authorities are pleased, the peasants curse you.",
+          detay: "The heavy purse can't erase their despairing eyes.",
         },
         basarisizSonuc: {
-          mesaj: "During collection one family lost even its last food; your name turned bad in the village.",
-          detay: "You carried out the order and left a family to starve.",
+          mesaj: "A family lost its last food in the collection; your name turned bad.",
+          detay: "You obeyed and left a family to starve.",
         },
       },
       {
-        metin: "Forgive the tithe this year, answer to the higher authorities yourself.",
+        metin: "Forgive the tithe this year, answer for it yourself.",
         basariliSonuc: {
-          mesaj: "The peasants never forgot you; the higher authorities were displeased but stayed silent.",
-          detay: "You gave up authority, not your own pocket — and you believe it was right.",
+          mesaj: "The peasants never forgot you; the authorities stayed displeased but silent.",
+          detay: "You gave up authority, not your own purse.",
         },
         basarisizSonuc: {
-          mesaj: "The higher authorities threatened to remove you for 'tax evasion'.",
+          mesaj: "The authorities threatened to remove you for 'tax evasion'.",
           detay: "Mercy had a price; you paid it, not the peasants.",
         },
       },
@@ -621,28 +621,28 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
   oc_din_veba_son_ayin_yuku: {
     baslik: "The Burden of Last Rites",
     metin:
-      "The plague is knocking on doors one by one; keeping up with last rites for the dying grows more impossible by the day. You may have to refuse some calls that come in the dead of night.",
+      "The plague knocks on doors one by one; reaching all the dying for last rites grows impossible. You may have to refuse some midnight calls.",
     secenekler: [
       {
         metin: "Answer every call, spare yourself nothing.",
         basariliSonuc: {
-          mesaj: "You made it to everyone in time; the congregation remembers you as a saint.",
+          mesaj: "You reached everyone; the congregation remembers you as a saint.",
           detay: "Your body is spent, but you left no one alone.",
         },
         basarisizSonuc: {
-          mesaj: "You wore yourself out; going door to door, the disease caught you too.",
+          mesaj: "You wore out; going door to door, the disease caught you too.",
           detay: "Trying to save everyone, you forgot yourself.",
         },
       },
       {
         metin: "Prioritize, preserve your strength.",
         basariliSonuc: {
-          mesaj: "You left some people alone, but by protecting yourself you could keep serving.",
-          detay: "You survived so you could reach more people — that's what you tell yourself.",
+          mesaj: "You left some alone, but could keep serving.",
+          detay: "You live to reach more people.",
         },
         basarisizSonuc: {
-          mesaj: "Your priorities proved wrong; one family never forgave you.",
-          detay: "The calculation you made cost someone their final moments spent alone.",
+          mesaj: "Your priorities were wrong; one family never forgave you.",
+          detay: "Your calculation left someone alone at the end.",
         },
       },
     ],
@@ -651,28 +651,28 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
   oc_din_ofkeli_kalabalik: {
     baslik: "The Angry Mob",
     metin:
-      "Accusations over the famine and the plague have turned an angry mob against a small minority community in the city. Some families want to take shelter at your house of worship; letting them in could make you a target of the mob too.",
+      "Blame for famine and plague turned a mob on a small minority. Families seek shelter at your door; taking them in makes you a target too.",
     secenekler: [
       {
         metin: "Open your door, protect them.",
         basariliSonuc: {
-          mesaj: "The families stayed safe; this courage is still told of years later.",
-          detay: "The night you opened your door, you thought not of who was who, but of who was human.",
+          mesaj: "The families stayed safe; your courage is told of for years.",
+          detay: "You saw not who they were, but that they were human.",
         },
         basarisizSonuc: {
-          mesaj: "The mob broke down the door of the house of worship too; you took a beating as well.",
-          detay: "You did the right thing and paid for it with your own body.",
+          mesaj: "The mob broke the door down too; you were beaten.",
+          detay: "You did right and paid with your body.",
         },
       },
       {
-        metin: "Shut your door, choose not to get involved.",
+        metin: "Shut your door, stay out of it.",
         basariliSonuc: {
-          mesaj: "You stayed silent; the mob's anger found another outlet elsewhere.",
-          detay: "You're safe, but you still hear the screams of that night.",
+          mesaj: "You kept silent; the mob vented its anger elsewhere.",
+          detay: "You're safe, but still hear the screams.",
         },
         basarisizSonuc: {
-          mesaj: "You carried the price of your silence in your conscience for a long time.",
-          detay: "Not getting involved is itself a choice sometimes, the heaviest kind.",
+          mesaj: "You carried the price of your silence in your conscience for long.",
+          detay: "Staying out is a choice too, the heaviest kind.",
         },
       },
     ],
@@ -681,28 +681,28 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
   oc_din_aforoz_emri: {
     baslik: "The Order of Excommunication",
     metin:
-      "The higher authorities order you to excommunicate an elderly congregant who has long been faithful to the doctrine — solely because he fell into a dispute with a noble. There's no evidence, only politics.",
+      "Your superiors order you to excommunicate a faithful elderly congregant, solely over a dispute with a noble. No evidence, only politics.",
     secenekler: [
       {
-        metin: "Carry out the order, excommunicate the man.",
+        metin: "Carry out the order, excommunicate him.",
         basariliSonuc: {
-          mesaj: "The order was carried out; the higher authorities were pleased.",
-          detay: "Watching the man's collapse before the congregation, you knew you hadn't done right.",
+          mesaj: "The order was carried out; the authorities were pleased.",
+          detay: "Watching his collapse, you knew it was wrong.",
         },
         basarisizSonuc: {
-          mesaj: "The injustice didn't escape the congregation's notice; their trust in you was shaken.",
-          detay: "You carried out the order and still satisfied no one.",
+          mesaj: "The injustice didn't escape the congregation; their trust shook.",
+          detay: "You obeyed and still pleased no one.",
         },
       },
       {
         metin: "Refuse the order, defend the man.",
         basariliSonuc: {
-          mesaj: "The higher authorities backed down; the man was cleared.",
-          detay: "Some victories really are worth the risk you took.",
+          mesaj: "The authorities backed down; the man was cleared.",
+          detay: "Some victories are worth the risk.",
         },
         basarisizSonuc: {
-          mesaj: "The higher authorities began questioning you too; your own position is now at risk.",
-          detay: "You defended the truth, and now you're the one in trouble.",
+          mesaj: "The authorities began questioning you too; your post is at risk.",
+          detay: "You defended the truth and now you're in trouble.",
         },
       },
     ],
@@ -711,28 +711,28 @@ export const OLAYLAR_ORTACAG_DINADAMI_EN: Record<string, OlayCeviri> = {
   oc_din_soylu_itirafi_gayrimesru_varis: {
     baslik: "The Noble's Last Secret",
     metin:
-      "A dying lord, while confessing his sins, admits he has an illegitimate son and that the inheritance will be stolen from the true heir; he asks you to seal this secret away, or to see that it reaches the true heir.",
+      "A dying lord confesses an illegitimate son and that the inheritance will be stolen from the true heir; he asks you to seal the secret or reach the heir.",
     secenekler: [
       {
         metin: "Seal the secret, tell no one.",
         basariliSonuc: {
-          mesaj: "You stayed silent; the official heir took the inheritance, and the family made a grateful donation.",
-          detay: "Every time you count that donation, you remember where it came from.",
+          mesaj: "You stayed silent; the official heir inherited and the family donated.",
+          detay: "Counting that donation, you recall its source.",
         },
         basarisizSonuc: {
-          mesaj: "The truth came out another way; once your silence was known, you lost trust.",
-          detay: "The secret you kept burst open, and pulled you in with it.",
+          mesaj: "The truth surfaced; once your silence was known, you lost trust.",
+          detay: "The secret you kept burst, pulling you in.",
         },
       },
       {
-        metin: "Find the true heir, see that it reaches him.",
+        metin: "Find the true heir, see it reaches him.",
         basariliSonuc: {
-          mesaj: "The true heir was found; justice — slow as it was — found its way.",
-          detay: "Doing the right thing was worth the travel costs and the sleepless nights.",
+          mesaj: "The true heir was found; justice, though slow, was done.",
+          detay: "It was worth the travel and sleepless nights.",
         },
         basarisizSonuc: {
-          mesaj: "Your search caught the noble family's attention; they accused you of 'stirring up trouble'.",
-          detay: "Searching for justice, you found yourself in the middle of a dispute.",
+          mesaj: "Your search drew the noble family's notice; they accused you of 'stirring trouble'.",
+          detay: "Seeking justice, you landed in the middle of a dispute.",
         },
       },
     ],

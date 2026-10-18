@@ -42,12 +42,6 @@ export function SkorKirilimiPaneli({ karakter, baslikGoster = true }: { karakter
             <span>+{say(3000)}</span>
           </li>
         )}
-        {kirilim.yolculukTamamlandi && (
-          <li className="skor-kirilimi-tik">
-            <span>{m.skorKirilimTikYolculuk}</span>
-            <span>+{say(3000)}</span>
-          </li>
-        )}
         {kirilim.gizemliEsyaSahibi && (
           <li className="skor-kirilimi-tik">
             <span>{m.skorKirilimTikGizemli}</span>

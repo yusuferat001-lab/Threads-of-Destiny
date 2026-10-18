@@ -4,7 +4,8 @@ const OLUM_KEY = 'kader_carki_basarim_olumler';
 function oku(key: string): string[] {
   try {
     const ham = localStorage.getItem(key);
-    return ham ? JSON.parse(ham) : [];
+    const veri = ham ? JSON.parse(ham) : [];
+    return Array.isArray(veri) ? veri.filter((x): x is string => typeof x === 'string') : [];
   } catch {
     return [];
   }

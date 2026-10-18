@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { olaySec } from "../src/game/olaySecici";
 import { createCharacter, mesleğiSec } from "../src/game/stateManager";
 import {
@@ -13,9 +13,15 @@ import {
   aktifAksiyonRotasyonu,
 } from "../src/game/gameEngine";
 import { OLAY_SOSYALLESME } from "../src/data/olaylar/sosyallesme";
+import { OLAY_BANKASI } from "../src/data/olaylar";
+import { secimUygulaVeCoz } from "./testUtils";
+import { tanismaAyar } from "../src/game/askSistemi";
 import { SOSYALLESME_YERLERI } from "../src/data/sosyallesmeYerleri";
 import { AKSIYON_ROTASYON_HAVUZU, AKSIYON_ROTASYON_GOSTERIM } from "../src/data/sosyallesmeAksiyonlari";
 import type { CharacterState } from "../src/types";
+
+// Mekân girişlerindeki rastgele tanışma (aşk evliliği) bu testlerin mekân olayı beklentisini bozmasın.
+tanismaAyar.mekanSansi = 0;
 
 /**
  * Aksiyon havuzu artık rotasyonlu (2026-09 sonu) — hangi 3 aksiyonun aktif
@@ -194,6 +200,60 @@ describe("sosyallesmeYerineGit — mekâna gitmek", () => {
     await mesleğiAta(state.id, "Tüccar");
     state.etiketler.push("hapiste");
     await expect(sosyallesmeYerineGit(state.id, "meyhane")).rejects.toThrow();
+  });
+});
+
+describe("sosyalleşme — bekleyen zorunlu olay korunur, ücret hata durumunda kaybolmaz", () => {
+  it("sırada zorunlu bir olay (veba başlangıcı) varken mekâna girilemez; olay kaybolmaz ve ücret düşmez", async () => {
+    const vebaBasligi = OLAY_BANKASI.find((o) => o.id === "kuresel_veba_baslangici")!.baslik;
+    let kanitlandi = false;
+    for (let deneme = 0; deneme < 40 && !kanitlandi; deneme++) {
+      const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
+      await mesleğiAta(state.id, "Tüccar");
+      state.yas = 30;
+      state.para = 500;
+      state.saglik = 100;
+      state.dunya_yaklasan = { tur: "veba", yil: state.yil }; // v8.6: veba bir yıl önceden sinyal verir; sıra gelmiş
+      // Math.random sabit düşük: veba başlangıcı kesin tetiklenir; ölüm zarları da
+      // tetiklenmesin diye seçilen olayın ölüm riski olmayan ilk şıkkı denenir.
+      const rnd = vi.spyOn(Math, "random").mockReturnValue(0.02);
+      try {
+        const senaryo = await senaryoUret(state.id);
+        const idx = senaryo.secenekler.findIndex((x) => !x.kilitli);
+        await secimUygulaVeCoz(state.id, idx >= 0 ? idx : 0);
+      } finally {
+        rnd.mockRestore();
+      }
+      if (!state.aktif) continue;
+      const paraOnce = state.para;
+      let reddedildi = false;
+      try {
+        await sosyallesmeYerineGit(state.id, "meyhane");
+      } catch (e) {
+        reddedildi = /önündeki olayı çöz/.test((e as Error).message);
+      }
+      if (!reddedildi) continue; // bu denemede veba tetiklenmedi (başka bir sebeple akış farklı)
+      expect(state.para).toBe(paraOnce); // ücret düşmedi
+      const sonraki = await senaryoUret(state.id);
+      expect(sonraki.olay_basligi).toBe(vebaBasligi); // bekleyen olay ezilmedi
+      kanitlandi = true;
+    }
+    expect(kanitlandi).toBe(true);
+  }, 30000);
+
+  it("çözülen mekân olayı gecmis_olaylar'a yazılır", async () => {
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
+    await mesleğiAta(state.id, "Tüccar");
+    state.yas = 25;
+    state.para = 2000;
+    await sosyallesmeYerineGit(state.id, "meyhane");
+    const senaryo = await senaryoUret(state.id);
+    const mekanIdleri = new Set(OLAY_SOSYALLESME.filter((o) => o.sosyallesmeYeri === "meyhane").map((o) => o.id));
+    const olay = OLAY_SOSYALLESME.find((o) => o.baslik === senaryo.olay_basligi)!;
+    expect(state.gecmis_olaylar.includes(olay.id)).toBe(false);
+    await sosyallesmeOlayCoz(state.id, 0);
+    expect(mekanIdleri.has(olay.id)).toBe(true);
+    expect(state.gecmis_olaylar[state.gecmis_olaylar.length - 1]).toBe(olay.id);
   });
 });
 

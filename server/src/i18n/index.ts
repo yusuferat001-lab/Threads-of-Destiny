@@ -33,6 +33,12 @@ export type { Dil };
  *
  * @example T(dil, "{0} artık hükümdar.", [yeniAd])
  */
+/** Şablona giren sayılar en fazla 2 ondalıkla yazılır ("2.6500000000000004" yerine "2.65"). */
+function sayiMetni(v: string | number): string {
+  if (typeof v !== "number" || Number.isInteger(v) || !Number.isFinite(v)) return String(v);
+  return String(Math.round(v * 100) / 100);
+}
+
 export function T(dil: Dil, tr: string, params?: (string | number)[]): string {
   const ham = dil === "en" ? ANLATIM_EN[tr] ?? tr : tr;
   if (!params || params.length === 0) return ham;
@@ -41,11 +47,11 @@ export function T(dil: Dil, tr: string, params?: (string | number)[]): string {
       ? ham
       : ekliYerTutuculariDoldur(ham, /\{(\d+)\}'([a-zçğıöşü]+)/g, (i) => {
           const v = params[Number(i)];
-          return v === undefined ? undefined : String(v);
+          return v === undefined ? undefined : sayiMetni(v);
         });
   return ekli.replace(/\{(\d+)\}/g, (_m: string, i: string) => {
     const v = params[Number(i)];
-    return v === undefined ? `{${i}}` : String(v);
+    return v === undefined ? `{${i}}` : sayiMetni(v);
   });
 }
 

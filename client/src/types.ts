@@ -43,6 +43,12 @@ export interface DunyaYaklasan {
 }
 
 /** Tekrarlayan büyük savaş mekaniğinin aktif parametreleri (bkz. server §27); savaş yokken CharacterState.buyuk_savas null'dur. */
+export interface UlkeGecmisiKaydi {
+  yil: number;
+  tur: 'savas_basladi' | 'savas_bitti' | 'veba_basladi' | 'veba_bitti' | 'kriz_basladi' | 'kriz_bitti';
+  ayrinti?: string;
+}
+
 export interface BuyukSavas {
   dusman: string;
   baslangicYili: number;
@@ -75,18 +81,22 @@ export interface UlkeDurumu {
 
 export type MulkTuru = 'kucuk_tarla' | 'ciftlik' | 'han' | 'demirci' | 'kervan' | 'karaborsa';
 
-export interface EvlilikAdayi {
+export type EvlilikTuru = 'ask' | 'mantik';
+export type DugunButcesi = 'ucuz' | 'orta' | 'pahali';
+export type TeklifHediyesi = 'sade' | 'ucuz' | 'pahali';
+export type TanismaYaklasim = 'komik' | 'nazik' | 'ovunme' | 'mutevazi';
+export type AileHuy = 'mizahsever' | 'parasever' | 'ciddi' | 'maceraci' | 'sefkatli' | 'gururlu';
+
+/** Teklifi kabul edilmiş, düğün bütçesi bekleyen eş adayı (sunucuda `BekleyenDugun`). */
+export interface MantikAday {
   isim: string;
   meslek: string;
   rutbe: string;
-  kisilik: [string, string];
-  uyumYuzdesi: number;
-}
-
-export interface EvlilikTeklifSonucu {
-  state: CharacterState;
-  basarili: boolean;
-  mesaj: string;
+  yas: number;
+  grup: 'genc' | 'olgun';
+  huylar: [AileHuy, AileHuy];
+  ceyiz: number;
+  meslek_bonusu: number;
 }
 
 export type MagazaEsyaKategori = 'sifa' | 'luks';
@@ -253,6 +263,26 @@ export interface CharacterState {
   cocuk_sayisi: number;
   cocuklar: Cocuk[];
   son_dogum_yili?: number;
+  es_dogum_yili: number | null;
+  es_evlilik_turu: EvlilikTuru | null;
+  es_grup: 'genc' | 'olgun' | null;
+  es_huylar: AileHuy[];
+  es_meslek_bonusu: number;
+  es_dugun_un: number;
+  es_son_zaman_yili: number | null;
+  es_dusuk_yil: number;
+  es_terk_esigi: number;
+  es_dogum_sayisi: number;
+  es_sonraki_hamilelik_yili: number;
+  es_ihmal_uyari_goruldu: boolean;
+  mantik_adaylar: MantikAday[];
+  mantik_yenileme_yili: number;
+  mantik_kilit_yili: number;
+  bekleyen_dugun: (MantikAday & { tur: EvlilikTuru }) | null;
+  aktif_tanisma: AktifTanisma | null;
+  sevgili: Sevgili | null;
+  nostalji_yili: number | null;
+  yas_bitis_yili: number;
 
   ekip: EkipUyesi[];
   hizip: string | null;
@@ -265,6 +295,9 @@ export interface CharacterState {
   baba_adi: string;
 
   evcil_hayvan: EvcilHayvan | null;
+  evcil_hayvanlar: EvcilHayvan[];
+  hayvan_karsilasma_sayisi: number;
+  hayvan_karsilasma_turleri: string[];
   unvanlar: string[];
   hayat_amaci: HayatAmaci | null;
   hayat_amaclari: AmacIlerleme[];
@@ -300,6 +333,7 @@ export interface CharacterState {
   /** Hapisten fiziksel bir kaçışla (rüşvet/af değil) çıktıysa true (bir kereliğine, skor bonusu). */
   hapis_basarili_kacis: boolean;
   dunya_yaklasan: DunyaYaklasan | null;
+  ulke_gecmisi: UlkeGecmisiKaydi[];
   /** Ömürde bir kez borçtayken alınan kilise/eş dost yardımı kullanıldı mı. */
   borc_yardimi_alindi: boolean;
   /** Kalıcı salgından korunma yatırımı; yoksa null. */
@@ -339,6 +373,8 @@ export interface CharacterState {
   /** Cihazın önceki hayatlarında görülen olaylar (sunucu-içi tekrar önleme için) — client mantığı kullanmaz. */
   istemci_gecmis_olaylar: string[];
   istemci_id: string | null;
+  /** Son seçimlerin gösterge etkisi günlüğü (gösterge penceresi sunucudan okur). */
+  etken_gunlugu?: { yil: number; kaynak: string; stat: GostergeStat; delta: number }[];
   gecmis: GecmisNoktasi[];
   hayat_hikayesi: HayatOlayi[];
   aktif: boolean;
@@ -365,6 +401,12 @@ export interface HayatOlayi {
 export interface EvcilHayvan {
   tur: string;
   isim: string;
+  edinim_yili: number;
+  edinim_yasi: number;
+  /** Hayvanın ömrü (yıl); edinim_yili + omur'da doğal ölür. */
+  omur: number;
+  /** Kalıcı pasif bonus kimliği (hayvanBonus.ts). */
+  bonus_id: string;
 }
 
 export interface Cocuk {
@@ -373,6 +415,10 @@ export interface Cocuk {
   yasiyor: boolean;
   /** Çocukla ilişki puanı (0-100); Aile ekranındaki etkileşimlerle artar, ilgilenilmezse yılda ~0.6 düşer (§33). */
   iliski: number;
+  yatkinlik?: 'yatkin' | 'notr' | 'uyumsuz';
+  erken_olum_yili?: number;
+  is_durumu?: 'bekliyor' | 'red_tepkisi' | 'ise_alindi' | 'reddetti';
+  ekip_id?: string;
 }
 
 /** Eş/çocuğun bekleyen para talebi (Aile ekranında "Kabul Et / Reddet" kartı). */
@@ -386,16 +432,143 @@ export interface AileTalep {
   sonYil: number;
 }
 
-/** GET /:id/aile yanıtı — Aile ekranının ihtiyaç duyduğu her şey. */
+export interface MantikAdayGorunum {
+  isim: string;
+  meslek: string;
+  rutbe: string;
+  yas: number;
+  grup: 'genc' | 'olgun';
+  /** Yalnız ilk huy görünür; ikincisi evlilikten sonra açılır. */
+  huy: AileHuy;
+  ceyiz: number;
+  meslekBonusu: number;
+}
+
+export interface MantikDurumu {
+  acik: boolean;
+  /** acik=false ise: evli | yas_dusuk | yas_donemi | kilit | hapis | bekleyen_dugun. */
+  sebep: string | null;
+  minYas: number;
+  kilitKalanYil: number;
+  yasKalanYil: number;
+  yenilemeKalanYil: number;
+  adaylar: MantikAdayGorunum[];
+  teklifSecenekleri: { hediye: TeklifHediyesi; maliyet: number; sans: number }[];
+}
+
+export interface AktifTanisma {
+  mekan: string;
+  aday: { isim: string; meslek: string; rutbe: string; yas: number; huylar: [AileHuy, AileHuy]; gorunum: number };
+  adim: number;
+  toplam: number;
+  basari: number;
+  yaklasimlar: TanismaYaklasim[];
+}
+
+export interface Sevgili {
+  isim: string;
+  meslek: string;
+  rutbe: string;
+  dogum_yili: number;
+  huylar: [AileHuy, AileHuy];
+  iliski: number;
+  baslangic_yili: number;
+  son_yil: number;
+  darildi: boolean;
+  darilma_yili: number | null;
+  gonul_kilit_yili: number;
+  meslek_bonusu: number;
+}
+
+/** GET /:id/tanisma ve tanışma POST yanıtlarındaki durum. */
+export interface TanismaDurumu {
+  aktif: boolean;
+  adim: number;
+  toplam: number;
+  mekan: string;
+  giris: string;
+  aday: { isim: string; meslek: string; rutbe: string; yas: number; gorunum: string } | null;
+  istek: string | null;
+  secenekler: { metin: string }[];
+  sonTepki: string | null;
+}
+
+export interface TanismaYaniti {
+  state: CharacterState;
+  durum: TanismaDurumu;
+  bitti: boolean;
+  basarili: boolean | null;
+  tepki: string | null;
+  mesaj: string | null;
+}
+
+export interface CocukIseAlSonucu {
+  state: CharacterState;
+  kabul: boolean;
+  mesaj: string;
+}
+
+export interface SevgiliSonucu {
+  state: CharacterState;
+  mesaj: string;
+  kabul?: boolean;
+}
+
+/** GET /:id/aile yanıtı — Aile & İlişkiler ekranının ihtiyaç duyduğu her şey. */
 export interface AileDurumu {
-  es: { adi: string; meslek: string | null; rutbe: string | null; puan: number } | null;
-  cocuklar: { isim: string; dogumYili: number; yas: number; yasiyor: boolean; iliski: number }[];
+  es: {
+    adi: string;
+    meslek: string | null;
+    rutbe: string | null;
+    puan: number;
+    yas: number | null;
+    tur: EvlilikTuru | null;
+    grup: 'genc' | 'olgun' | null;
+    huylar: AileHuy[];
+    meslekBonusu: number;
+    /** Son "zaman geçir"den bu yana geçen yıl. */
+    ihmalYili: number;
+    dogumSayisi: number;
+  } | null;
+  cocuklar: {
+    isim: string;
+    dogumYili: number;
+    yas: number;
+    yasiyor: boolean;
+    iliski: number;
+    isDurumu: 'bekliyor' | 'red_tepkisi' | 'ise_alindi' | 'reddetti' | null;
+  }[];
   etkilesimler: { id: string; ikon: string; hedef: 'es' | 'cocuk' | 'hepsi'; maliyet: number }[];
   kilitler: Record<string, number>;
   talep: AileTalep | null;
   guncelYil: number;
   para: number;
   paraBirimi: string;
+  esEylem: { hediyeUcuz: number; hediyePahali: number };
+  mantik: MantikDurumu;
+  bekleyenDugun: { isim: string; meslek: string; rutbe: string; ceyiz: number; tur: EvlilikTuru } | null;
+  sevgili: {
+    isim: string;
+    meslek: string;
+    rutbe: string;
+    yas: number;
+    huy: AileHuy;
+    bar: number;
+    kalanYil: number;
+    darildi: boolean;
+    meslekBonusu: number;
+    gonulMaliyet: number;
+    gonulKilitKalanYil: number;
+    teklifSansi: number;
+  } | null;
+  tanismaAktif: boolean;
+  dugunSecenekleri: { butce: DugunButcesi; maliyet: number; iliski: number; un: number }[];
+}
+
+export interface MantikTeklifSonucu {
+  state: CharacterState;
+  kabul: boolean;
+  mesaj: string;
 }
 
 /** Kariyer sayfası — yönetimden gelen dayatılan bağış / sadakat talebi. §35. */
@@ -572,6 +745,7 @@ export interface EkipUyesi {
   maas: number;
   sadakat: number;
   kisilik: string;
+  cocuk_isim?: string;
   rol_turu?: IsletmeRolTuru;
 }
 
@@ -730,6 +904,8 @@ export interface Ast {
 }
 
 export interface SonucEtkisi {
+  /** Hapisten FİZİKSEL kaçışı temsil eder (sunucu skor bonusu için kullanır). */
+  hapis_basarili_kacis?: true;
   para?: number;
   un?: number;
   ahlak?: number;
@@ -767,6 +943,8 @@ export interface SonucEtkisi {
   uretim_kapasitesi_artis?: number;
   suc_artis?: number;
   suc_seviyesi_ayarla?: number;
+  /** Sunucunun yazdığı: bu seçimin aranma üzerindeki gerçek net değişimi (kelepçe sonrası). */
+  suc_degisim?: number;
   /** Hapis ceza süresini yıl olarak uzatır (başarısız riskli kaçış girişimi). */
   hapis_ceza_artis?: number;
   para_sifirla?: boolean;
@@ -805,6 +983,8 @@ export interface Secenek {
   kilit_nedeni?: string;
   /** Sunucudaki OlaySecenegi.hafifSecenek — küçük/ikincil "vazgeç" bağlantısı olarak gösterilir. */
   hafif?: boolean;
+  /** Olay tanımındaki ASIL şık sırası (kişilik filtresi sırayı kaydırabilir); sunucu kullanır, istemci yalnız taşır. */
+  ham_index?: number;
 }
 
 export interface SenaryoResponse {
@@ -812,6 +992,8 @@ export interface SenaryoResponse {
   olay_metni: string;
   kategori: string;
   gorsel: string;
+  /** Özel havuz illüstrasyonu anahtarı (ör. "hapis", "yolculuk-hac"); yoksa kategori resmi kullanılır. */
+  resim?: string;
   secenekler: Secenek[];
 }
 
@@ -1063,6 +1245,8 @@ export interface SosyallesmeSonucu {
   state: CharacterState;
   /** Bu mekâna gitmek için düşülen peşin giriş ücreti. */
   girisUcreti: number;
+  /** true ise mekân olayı yerine bir tanışma başladı — /scenario çekilmez. */
+  tanismaBasladi?: boolean;
 }
 
 export interface SosyalAksiyonKarti {
@@ -1168,4 +1352,41 @@ export interface ScoreKaydi {
   /** Gerçek skor çarpanı (ör. 1.5/2/3/3.5/5) — eski kayıtlarda null. */
   amac_carpani: number | null;
   createdAt: string;
+}
+
+/** "Yıl" penceresi: son yıllarda ülkende ve dünyada olanlar (GET /:id/dunya-gecmisi). */
+export interface DunyaMaddesi {
+  yil: number;
+  yilSon?: number;
+  suruyor?: boolean;
+  ikon: string;
+  metin: string;
+}
+
+export interface DunyaGecmisi {
+  yil: number;
+  bolge: string;
+  baslangicYili: number;
+  ulke: DunyaMaddesi[];
+  dunya: DunyaMaddesi[];
+}
+
+/** Üst şerit gösterge detay penceresi (GET /:id/gosterge/:stat). */
+export type GostergeStat = 'saglik' | 'para' | 'mutluluk' | 'ahlak' | 'aranma' | 'sohret';
+
+export interface GostergeEtken {
+  ikon: string;
+  metin: string;
+  /** iyi = değeri yükseltir, kotu = düşürür, notr = bilgi. */
+  yon: 'iyi' | 'kotu' | 'notr';
+}
+
+export interface GostergeDetayi {
+  stat: GostergeStat;
+  deger: number;
+  etkenler: GostergeEtken[];
+  yukselt: string[];
+  dusur: string[];
+  /** Son seçimlerin bu göstergeye etkisi, en yeni üstte. */
+  gecmis: { yil: number; kaynak: string; delta: number }[];
 }

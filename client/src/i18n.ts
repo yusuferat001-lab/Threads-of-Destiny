@@ -15,7 +15,9 @@ import type { Dil } from './ayarlar';
 export function bic(s: string, ...a: (string | number)[]): string {
   return s.replace(/\{(\d+)\}/g, (_, i) => {
     const v = a[Number(i)];
-    return v === undefined ? `{${i}}` : String(v);
+    if (v === undefined) return `{${i}}`;
+    // Ondalıklı sayılar en fazla 2 basamakla yazılır (float artığı "2.6500000000000004" sızmasın).
+    return typeof v === 'number' && !Number.isInteger(v) && Number.isFinite(v) ? String(Math.round(v * 100) / 100) : String(v);
   });
 }
 
@@ -190,7 +192,7 @@ const TR = {
   panelDunyaSiyaset: 'Dünya & Siyaset',
   tepkiNotu: '⏳ Tarih henüz ilerlemedi — bu senin son sözün.',
   kaderSekilleniyor: 'Kaderin şekilleniyor…',
-  sansEki: '%{0}-{1} şans',
+  okKisayol: 'Kısayol: {0}',
   btnAileniGor: 'Aileni Gör →',
   zamanBasligi: '— {0} yıl sonra —',
   yasSonek: '{0} yaşında',
@@ -212,7 +214,6 @@ const TR = {
   skorKirilimMutluluk: '🙂 Mutluluk',
   skorKirilimRutbe: '🎖️ Rütbe',
   skorKirilimTikSaray: '👑 Sarayda bulundu',
-  skorKirilimTikYolculuk: '🗺️ Büyük yolculuğu tamamladı',
   skorKirilimTikGizemli: '🔮 Esrarengiz bir eşyaya sahip',
   skorKirilimTikKomikRisk: '🎲 Ölümüne bir riske girip hayatta kaldı',
   skorKirilimTikKomikOlum: '💀 Ölümüne bir riske girerken can verdi',
@@ -330,7 +331,7 @@ const TR = {
   // ---- Mobil alt gezinme çubuğu ----
   agBaslik: 'Alt gezinme',
   agDiger: 'Diğer',
-  agAile: 'Aile',
+  agAile: 'İlişkiler',
   agKapat: 'Kapat, Oyuna dön',
 
   // ---- Mobil canlı skor rozeti + detay modalı ----
@@ -345,6 +346,22 @@ const TR = {
   ecMutluluk: 'Mutluluk',
   ecAhlak: 'Ahlak',
   ecSohret: 'Şöhret',
+  ecAranma: 'Aranma',
+  gmEtkenler: 'Seni şu an etkileyenler',
+  gmGecmis: 'Son seçimlerinin etkisi',
+  gmGecmisYok: 'Henüz bu göstergeyi belirgin değiştiren bir seçim yapmadın.',
+  gmYukselt: 'Nasıl yükselir?',
+  gmDusur: 'Nasıl düşer?',
+  gmAranmaArtirir: 'Neyi artırır?',
+  gmAranmaDusur: 'Nasıl düşürürsün?',
+  gmYukleniyor: 'Yükleniyor…',
+  gmHata: 'Ayrıntılar alınamadı.',
+  gmDokun: 'Ayrıntı için dokun',
+  dgAralik: 'Son yıllarda: {0}–{1}',
+  dgUlke: 'Ülkende',
+  dgDunya: 'Dünyada',
+  dgBos: 'Bu yıllarda kayda değer bir olay yok.',
+  dgDokun: 'Son yıllarda ülkende ve dünyada olanlar için dokun',
   ecEvlendin: 'Evlendin',
   ecEsKaybi: 'Eşini kaybettin',
   ecCocukEkle: '+{0} çocuk',
@@ -573,6 +590,8 @@ const TR = {
   kpYatkinlikZar: 'Zar',
   kpYatkinlikMaas: 'Maaş',
   kpYatkinlikTecrube: 'Tecrübe',
+  kpYatkinlikSohret: 'Şöhret',
+  kpYatkinlikYok: 'Yatkınlık bonusu yok',
   kpSinerji: 'sinerjisi',
 
   // ---- AileOzetPaneli (ek) ----
@@ -582,6 +601,7 @@ const TR = {
   aoCocukTek: 'Çocuk',
   aoCocukCogul: 'Çocuklar',
   aoEvcilHayvanTek: 'Evcil Hayvan',
+  aoHayvanPasif: 'Pasif',
 
   // ---- Dost/Rakip kartı (AileEkrani içinde, eski IliskilerPaneli) ----
   ilBaslik: 'İlişkilerin',
@@ -672,8 +692,6 @@ const TR = {
   // Etkileşim bölümleri
   aeEsEtkilesimBaslik: 'Eşinle',
   aeBirlikteBaslik: 'Birlikte',
-  aeEvlen: '💍 Evlen',
-  aeEvlenAlt: 'Kendine bir eş ara',
   aeEvcilBaslik: 'Evcil Hayvanın',
   aeEvcilYok: 'Bir evcil hayvanın yok.',
   aeBedava: 'Ücretsiz',
@@ -681,14 +699,6 @@ const TR = {
   aeParaYetmez: 'Paran yetmiyor',
   aeYasEk: '{0} yaşında',
   // Etkileşim adları / açıklamaları (id bazlı)
-  aeEtk_es_hediye: 'Hediye Al',
-  aeEtk_es_hediye_d: 'Güzel bir şey al, yüzünü güldür.',
-  aeEtk_es_zaman: 'Zaman Ayır',
-  aeEtk_es_zaman_d: 'İşi bir kenara bırak, baş başa vakit geçir.',
-  aeEtk_es_sevgi: 'Sevgi Göster',
-  aeEtk_es_sevgi_d: 'Sarıl, öp, sevildiğini hissettir.',
-  aeEtk_es_gezi: 'Geziye Çıkar',
-  aeEtk_es_gezi_d: 'İkiniz için küçük bir kaçamak.',
   aeEtk_cocuk_oyna: 'Oyna',
   aeEtk_cocuk_oyna_d: 'Onunla oyun oyna, gününü ona ayır.',
   aeEtk_cocuk_hediye: 'Hediye Al',
@@ -713,14 +723,6 @@ const TR = {
   spAyyasZaten: 'Zaten ayyaş olarak tanınıyorsun.',
   spZiyaretUyari: 'Şimdiye kadar {0} kez gittin — {1} ziyaret daha ayyaşlık damgası vurur.',
 
-  // ---- EvlilikPaneli (tam) ----
-  evBaslik: 'Evlilik',
-  evIntro: 'Kaderin seni bir olayla evlendirmesini beklemeden, kendi adayını seçip teklif edebilirsin. Turu tüketmez, teklif reddedilirse tekrar deneyebilirsin.',
-  evYukleniyorMesaji: 'Adaylar aranıyor...',
-  evUyum: 'Uyum: ~%{0}',
-  evTeklifEt: 'Evlenme Teklif Et',
-  evYeniAdaylar: 'Farklı Adaylar Göster',
-  evZatenEvli: 'Zaten evlisin.',
 
   // ---- IsYatirimEkrani (ek) ----
   iyMaliyetEk: 'Maliyet: {0} {1}',
@@ -918,7 +920,7 @@ const EN: Metinler = {
   panelDunyaSiyaset: 'World & Politics',
   tepkiNotu: "⏳ Time hasn't moved yet — this is your final word.",
   kaderSekilleniyor: 'Your fate is taking shape…',
-  sansEki: '{0}-{1}% chance',
+  okKisayol: 'Shortcut: {0}',
   btnAileniGor: 'View Your Family →',
   zamanBasligi: '— {0} years later —',
   yasSonek: 'age {0}',
@@ -940,7 +942,6 @@ const EN: Metinler = {
   skorKirilimMutluluk: '🙂 Happiness',
   skorKirilimRutbe: '🎖️ Rank',
   skorKirilimTikSaray: '👑 Was invited to court',
-  skorKirilimTikYolculuk: '🗺️ Completed a great journey',
   skorKirilimTikGizemli: '🔮 Owns a mysterious item',
   skorKirilimTikKomikRisk: '🎲 Took a deadly risk and survived',
   skorKirilimTikKomikOlum: '💀 Died taking a deadly risk',
@@ -1058,7 +1059,7 @@ const EN: Metinler = {
   // ---- Mobile bottom navigation ----
   agBaslik: 'Bottom navigation',
   agDiger: 'More',
-  agAile: 'Family',
+  agAile: 'Relationships',
   agKapat: 'Close, back to game',
 
   // ---- Mobile live score badge + detail modal ----
@@ -1073,6 +1074,22 @@ const EN: Metinler = {
   ecMutluluk: 'Happiness',
   ecAhlak: 'Morality',
   ecSohret: 'Fame',
+  ecAranma: 'Wanted',
+  gmEtkenler: 'What is affecting you now',
+  gmGecmis: 'Effect of your recent choices',
+  gmGecmisYok: "You haven't made a choice that moved this meter noticeably yet.",
+  gmYukselt: 'How does it go up?',
+  gmDusur: 'How does it go down?',
+  gmAranmaArtirir: 'What raises it?',
+  gmAranmaDusur: 'How to lower it?',
+  gmYukleniyor: 'Loading…',
+  gmHata: 'Could not load the details.',
+  gmDokun: 'Tap for details',
+  dgAralik: 'In recent years: {0}–{1}',
+  dgUlke: 'In your country',
+  dgDunya: 'In the world',
+  dgBos: 'Nothing notable in these years.',
+  dgDokun: 'Tap for recent events in your country and the world',
   ecEvlendin: 'You got married',
   ecEsKaybi: 'You lost your spouse',
   ecCocukEkle: '+{0} child',
@@ -1301,6 +1318,8 @@ const EN: Metinler = {
   kpYatkinlikZar: 'Dice',
   kpYatkinlikMaas: 'Pay',
   kpYatkinlikTecrube: 'Pace',
+  kpYatkinlikSohret: 'Fame',
+  kpYatkinlikYok: 'No aptitude bonus',
   kpSinerji: 'synergy',
 
   // ---- AileOzetPaneli ----
@@ -1310,6 +1329,7 @@ const EN: Metinler = {
   aoCocukTek: 'Child',
   aoCocukCogul: 'Children',
   aoEvcilHayvanTek: 'Pet',
+  aoHayvanPasif: 'Passive',
 
   // ---- Dost/Rakip card (inside AileEkrani, formerly IliskilerPaneli) ----
   ilBaslik: 'Your Relationships',
@@ -1397,22 +1417,12 @@ const EN: Metinler = {
   aeTalepRet: 'Refuse',
   aeEsEtkilesimBaslik: 'With Your Spouse',
   aeBirlikteBaslik: 'Together',
-  aeEvlen: '💍 Get Married',
-  aeEvlenAlt: 'Look for a spouse',
   aeEvcilBaslik: 'Your Pet',
   aeEvcilYok: 'You have no pet.',
   aeBedava: 'Free',
   aeKilitliYil: '{0} yr',
   aeParaYetmez: 'Not enough money',
   aeYasEk: 'age {0}',
-  aeEtk_es_hediye: 'Buy a Gift',
-  aeEtk_es_hediye_d: 'Get them something nice, light up their face.',
-  aeEtk_es_zaman: 'Spend Time',
-  aeEtk_es_zaman_d: 'Set work aside, spend time alone together.',
-  aeEtk_es_sevgi: 'Show Affection',
-  aeEtk_es_sevgi_d: 'Hold them, kiss them, make them feel loved.',
-  aeEtk_es_gezi: 'Take Them Out',
-  aeEtk_es_gezi_d: 'A little getaway for the two of you.',
   aeEtk_cocuk_oyna: 'Play',
   aeEtk_cocuk_oyna_d: 'Play with them, give them your day.',
   aeEtk_cocuk_hediye: 'Buy a Gift',
@@ -1438,13 +1448,6 @@ const EN: Metinler = {
   spZiyaretUyari: 'You have gone {0} times so far — {1} more visits will earn a drunkard mark.',
 
   // ---- EvlilikPaneli ----
-  evBaslik: 'Marriage',
-  evIntro: "Instead of waiting for fate to marry you off through an event, you can pick your own candidate and propose. Costs no turn — if rejected, you can try again.",
-  evYukleniyorMesaji: 'Searching for candidates...',
-  evUyum: 'Compatibility: ~{0}%',
-  evTeklifEt: 'Propose Marriage',
-  evYeniAdaylar: 'Show Different Candidates',
-  evZatenEvli: 'You are already married.',
 
   // ---- IsYatirimEkrani ----
   iyMaliyetEk: 'Cost: {0} {1}',

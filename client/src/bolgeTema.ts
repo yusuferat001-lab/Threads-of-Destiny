@@ -1,4 +1,3 @@
-import type { SonucEtkisi } from './types';
 import type { Dil } from './ayarlar';
 
 export interface BolgeTema {
@@ -91,12 +90,58 @@ export function aranmaYildiz(sucSeviyesi: number): number {
   return Math.max(0, Math.min(4, sucSeviyesi / 25));
 }
 
+export type GostergeTonu = 'iyi' | 'orta' | 'kotu' | 'kritik';
+
+export interface GostergeGorunumu {
+  /** Değere göre kademeli emoji (değer düştükçe/yükseldikçe değişir). */
+  ikon: string;
+  /** Dolum çubuğunun rengi/animasyonu için kademe. */
+  ton: GostergeTonu;
+  /** Çubuğun doluluk oranı, 0-1. */
+  oran: number;
+}
+
+/** Para çubuğunun tam dolu sayıldığı birim cinsinden servet çıpası (zorunlu bağış eşiğiyle aynı büyüklük). */
+const PARA_CUBUK_CIPASI = 350;
+
+const sinirla01 = (x: number) => Math.max(0, Math.min(1, x));
+
+/**
+ * Üst şerit göstergelerinin kademeli görünümü: değer düştükçe emoji ve çubuk rengi değişir.
+ * Ahlak/Şöhret düşükken "tehlike" değildir (yeni karakterler bile düşük şöhretle başlar),
+ * bu yüzden bu ikisi en kötü `kotu` tonuna iner, `kritik` yalnız Can/Mutluluk/Para'ya özeldir.
+ */
+export function gostergeGorunumu(stat: 'saglik' | 'mutluluk' | 'ahlak' | 'sohret' | 'para', deger: number): GostergeGorunumu {
+  const kademeTonu = (d: number, kritikVar: boolean): GostergeTonu =>
+    d >= 60 ? 'iyi' : d >= 40 ? 'orta' : d >= 20 || !kritikVar ? 'kotu' : 'kritik';
+  switch (stat) {
+    case 'saglik':
+      return { ikon: deger >= 60 ? '❤️' : deger > 30 ? '🩹' : '💔', ton: kademeTonu(deger, true), oran: sinirla01(deger / 100) };
+    case 'mutluluk':
+      return { ikon: deger >= 60 ? '🙂' : deger > 30 ? '😐' : deger > 15 ? '😞' : '😭', ton: kademeTonu(deger, true), oran: sinirla01(deger / 100) };
+    case 'ahlak':
+      return { ikon: deger >= 71 ? '😇' : deger > 30 ? '⚖️' : '😈', ton: kademeTonu(deger, false), oran: sinirla01(deger / 100) };
+    case 'sohret':
+      return {
+        ikon: deger >= 80 ? '🌟' : deger >= 50 ? '⭐' : deger >= 15 ? '🏅' : '👤',
+        ton: deger >= 50 ? 'iyi' : deger >= 15 ? 'orta' : 'kotu',
+        oran: sinirla01(deger / 100),
+      };
+    case 'para':
+      return {
+        ikon: deger < 0 ? '💸' : deger < 5 ? '🪙' : '💰',
+        ton: deger < 0 ? 'kritik' : deger < 5 ? 'kotu' : deger < 40 ? 'orta' : 'iyi',
+        oran: deger <= 0 ? 0 : sinirla01(deger / PARA_CUBUK_CIPASI),
+      };
+  }
+}
+
 export const HAYVAN_SIMGESI: Record<string, string> = {
   Kedi: '🐈',
   Köpek: '🐕',
-  Kurt: '🐺',
   Şahin: '🦅',
-  Papağan: '🦜',
+  Karga: '🐦‍⬛',
+  At: '🐎',
 };
 
 /** Mesleklerin hangi yatkınlık kategorisine karşılık geldiği. */
@@ -147,104 +192,18 @@ export function yatkinlikEtiketi(deger: number, dil: Dil = 'tr'): { etiket: stri
   return { etiket: dil === 'en' ? 'Very Apt' : 'Çok Yatkın', simge: '🔥' };
 }
 
-export interface EtkiTahmini {
-  simge: string;
-  metin: string;
-  pozitif: boolean;
-}
-
-const PARA_BUYUKLUK_ESIKLERI: [number, string, string][] = [
-  [10, 'küçük', 'small'],
-  [30, 'orta', 'moderate'],
-  [Infinity, 'büyük', 'large'],
-];
-
-const SAGLIK_BUYUKLUK_ESIKLERI: [number, string, string][] = [
-  [6, 'küçük', 'small'],
-  [15, 'orta', 'moderate'],
-  [Infinity, 'büyük', 'large'],
-];
-
-const MUTLULUK_BUYUKLUK_ESIKLERI: [number, string, string][] = [
-  [6, 'küçük', 'small'],
-  [15, 'orta', 'moderate'],
-  [Infinity, 'büyük', 'large'],
-];
-
-function buyuklukEtiketi(esikler: [number, string, string][], mutlakDeger: number, dil: Dil): string {
-  const i = dil === 'en' ? 2 : 1;
-  for (const satir of esikler) {
-    if (mutlakDeger <= satir[0]) return satir[i] as string;
-  }
-  return esikler[esikler.length - 1][i] as string;
-}
-
 /**
- * İki olası sonuçtan (başarılı/başarısız) oyuncuya gösterilecek değerleri seçer —
- * kesin miktar değil, ihtimallerin kaba büyüklüğünü vermek için. Başarı ve
- * başarısızlık aynı yönde etkiliyorsa sadece daha dikkat çekici olanı döner;
- * zıt yönlerdeyse (biri kazanç biri kayıp) ikisini de döner, böylece oyuncu
- * "başarırsam kazanabilirim, başarısız olursam kaybedebilirim" ihtimalinin
- * her iki tarafını da görür.
+ * Meslek seçiminde gösterilen yatkınlık bonus önizlemesi — sunucudaki
+ * meslekYatkinlik.ts kademe eşikleri/oranlarının aynası (<=-5 kötü, -4..4 nötr,
+ * 5..19 iyi, >=20 mükemmel). Oranlar yüzde olarak; mükemmelde tek seferlik şöhret de var.
  */
-function belirginDegerler(a?: number, b?: number): number[] {
-  const aVar = a !== undefined && a !== 0;
-  const bVar = b !== undefined && b !== 0;
-  if (!aVar && !bVar) return [];
-  if (!aVar) return [b as number];
-  if (!bVar) return [a as number];
-  if (a! > 0 !== b! > 0) return [a as number, b as number];
-  return [Math.abs(a as number) >= Math.abs(b as number) ? (a as number) : (b as number)];
-}
-
-/**
- * Bir seçeneğin olası para/sağlık/mutluluk etkisini "sisli" (kesin sayı içermeyen,
- * sadece küçük/orta/büyük + yön) bir tahmin listesine çevirir. Seçim yapılmadan
- * önce oyuncuya gösterilir; gerçek miktar sadece seçim sonrasında (EtkiCipleri
- * bileşeninde) görünür.
- */
-export function etkiTahminiGetir(
-  basariliSonuc: SonucEtkisi,
-  basarisizSonuc: SonucEtkisi,
-  dil: Dil = 'tr'
-): EtkiTahmini[] {
-  const tahminler: EtkiTahmini[] = [];
-  const en = dil === 'en';
-
-  for (const para of belirginDegerler(basariliSonuc.para, basarisizSonuc.para)) {
-    const b = buyuklukEtiketi(PARA_BUYUKLUK_ESIKLERI, Math.abs(para), dil);
-    tahminler.push({
-      simge: '💰',
-      metin: en
-        ? `chance of a ${b} ${para > 0 ? 'gain' : 'loss'}`
-        : `${b} ${para > 0 ? 'kazanç' : 'kayıp'} ihtimali`,
-      pozitif: para > 0,
-    });
-  }
-
-  for (const saglik of belirginDegerler(basariliSonuc.saglik, basarisizSonuc.saglik)) {
-    const b = buyuklukEtiketi(SAGLIK_BUYUKLUK_ESIKLERI, Math.abs(saglik), dil);
-    tahminler.push({
-      simge: '❤️',
-      metin: en
-        ? `chance of a ${b} health ${saglik > 0 ? 'gain' : 'loss'}`
-        : `${b} can ${saglik > 0 ? 'kazancı' : 'kaybı'} ihtimali`,
-      pozitif: saglik > 0,
-    });
-  }
-
-  for (const mutluluk of belirginDegerler(basariliSonuc.mutluluk, basarisizSonuc.mutluluk)) {
-    const b = buyuklukEtiketi(MUTLULUK_BUYUKLUK_ESIKLERI, Math.abs(mutluluk), dil);
-    tahminler.push({
-      simge: '🙂',
-      metin: en
-        ? `chance of a ${b} morale ${mutluluk > 0 ? 'gain' : 'loss'}`
-        : `${b} moral ${mutluluk > 0 ? 'kazancı' : 'kaybı'} ihtimali`,
-      pozitif: mutluluk > 0,
-    });
-  }
-
-  return tahminler;
+export function meslekYatkinlikOnizleme(
+  puan: number,
+): { seviye: 1 | 2 | 3 | 4; zar: number; maas: number; tecrube: number; sohret: number } {
+  if (puan <= -5) return { seviye: 1, zar: -15, maas: -10, tecrube: -15, sohret: 0 };
+  if (puan >= 20) return { seviye: 4, zar: 20, maas: 10, tecrube: 15, sohret: 8 };
+  if (puan >= 5) return { seviye: 3, zar: 10, maas: 5, tecrube: 7, sohret: 0 };
+  return { seviye: 2, zar: 0, maas: 0, tecrube: 0, sohret: 0 };
 }
 
 interface DonemselTema {

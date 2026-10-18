@@ -36,12 +36,9 @@ function havuzTumIdler(havuz: OlayTanimi[]): string[] {
  * yolu girişi / evlilik teklifi garantisi / büyük yolculuk / mistik garanti)
  * devre dışı bırakan ortak bir hazırlık — standalone havuz garantisinin izole
  * test edilebilmesi için (bkz. saray.test.ts/yolculuk.test.ts'teki aynı
- * desen). Evcil hayvan sahiplenilmez (`evcil_hayvan` null kalır) — sahiplenme
- * teklifi (kural 5) yalnız 20-24 yaşta, takip garantisi (kural 6) yalnız
- * hayvan varken devreye girdiği için testlerin kullandığı 25+ yaşlarda zaten
- * devre dışı kalırlardı; hayvan atamak gerçek kod eşiğiyle (30 yaş, CLAUDE.md
- * §11'deki "45-50" notu güncel değil) kural 6'yı beklenmedik biçimde
- * tetikleyip standalone havuz garantisinin önüne geçiyordu.
+ * desen). Evcil hayvan karşılaşma garantisi (29/38 yaş, kural 5) bu testlerin
+ * 30 yaşındaki kontrol noktasının önüne geçmesin diye karşılaşma sayacı
+ * tavana (2) çekilir; hayvan hiç edinilmez.
  */
 async function izoleKarakterOlustur(meslek: "Tüccar" | "Asker" | "Din Adamı") {
   const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
@@ -51,8 +48,10 @@ async function izoleKarakterOlustur(meslek: "Tüccar" | "Asker" | "Din Adamı") 
   etiketEkle(state, [`${yolOnEki}__test_dal__`]); // kariyer yolu girişini atla (YOL_TAKIP_KONTROL_NOKTALARI'nde olmayan uydurma bir dal)
   etiketEkle(state, ["hizip_secildi"]); // hizip zorunlu seçim kuralını atla (2026-09 sonu)
   state.gecmis_olaylar.push("iliski_evlilik_teklifi", "iliski_ikinci_teklif"); // evlilik teklifi garantisini atla
+  state.etiketler.push("tanisma_donum_27", "tanisma_donum_36"); // aşk evliliği tanışma fırsatı zorlanmasın
   etiketEkle(state, ["yolculuk_tamamlandi"]); // büyük yolculuk garantisini atla (§11 kural 11)
   state.gecmis_olaylar.push("gizem_ejderha_tilsimi"); // mistik garantiyi (§11 kural 13, 25-45 yaş) atla
+  state.hayvan_karsilasma_sayisi = 2; // evcil hayvan karşılaşma garantisini (kural 5, 29/38 yaş) atla
   return state;
 }
 

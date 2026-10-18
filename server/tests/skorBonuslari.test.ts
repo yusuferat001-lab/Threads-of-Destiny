@@ -29,8 +29,10 @@ async function isoleKomikOlumKarakteri(yas: number) {
   etiketEkle(state, ["yol:tuccar:__test_dal__"]); // kariyer yolu girişini atla
   etiketEkle(state, ["hizip_secildi"]); // hizip zorunlu seçim kuralını atla
   state.gecmis_olaylar.push("iliski_evlilik_teklifi", "iliski_ikinci_teklif"); // evlilik teklifi garantisini atla
+  state.etiketler.push("tanisma_donum_27", "tanisma_donum_36"); // aşk evliliği tanışma fırsatı zorlanmasın
   etiketEkle(state, ["yolculuk_tamamlandi"]); // büyük yolculuk garantisini atla
   state.gecmis_olaylar.push("gizem_ejderha_tilsimi"); // mistik garantiyi atla
+  state.hayvan_karsilasma_sayisi = 2; // evcil hayvan karşılaşma garantisini atla
   // Komik ölüm havuzu HARİÇ diğer tüm standalone havuzları tamamen "görülmüş"
   // yap ki standaloneHavuzGarantisiSec'in tek adayı komik ölüm havuzu kalsın.
   state.gecmis_olaylar.push(...OLAY_GENEL.map((o) => o.id));
@@ -144,5 +146,17 @@ describe("Faz 5 — hapisten fiziksel kaçış skor bonusu", () => {
     const sonuc = await secimUygulaVeCoz(state.id, 0); // rüşvet teklif et
     expect(sonuc.state.etiketler.includes("hapiste")).toBe(false);
     expect(sonuc.state.hapis_basarili_kacis).toBe(false);
+  });
+});
+
+describe("büyük yolculuk skoru (çifte sayım düzeltmesi)", () => {
+  it("yolculuğu tamamlamak skora yalnız +2000 katar, tik puanına girmez", async () => {
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
+    const once = hesaplaSkorKirilimi(state);
+    etiketEkle(state, ["yolculuk_tamamlandi"]);
+    const sonra = hesaplaSkorKirilimi(state);
+    expect(sonra.tikPuani).toBe(once.tikPuani);
+    expect(sonra.basariOlayiPuani - once.basariOlayiPuani).toBe(2000);
+    expect(sonra.temelToplam - once.temelToplam).toBe(2000);
   });
 });
