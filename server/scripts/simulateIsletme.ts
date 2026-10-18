@@ -17,6 +17,9 @@ import {
   giderKalemleriHesapla,
   donemIlerlet,
   buyukSavasKontrolEt,
+  buyukSavasBitisKontrolEt,
+  vebaBaslat,
+  vebaBitisKontrolEt,
   vebaBaslamaliMi,
   pazarYillikUygula,
   musteriEkle,
@@ -92,19 +95,24 @@ function botKarar(s: CharacterState, tarz: Tarz) {
   is.stok_hedefi = "normal";
 }
 
-interface Cikti { gelir: number[]; net: number[]; pay: number[]; rakipPay: number[]; para: number[]; batti: boolean; sonPara: number; hirsizlik: number; anaRolKazanc: number }
+interface Cikti { gider: number[]; musteri: number[]; calisan: number[]; batmaYili: number; batmaDetay: string; gelir: number[]; net: number[]; pay: number[]; rakipPay: number[]; para: number[]; batti: boolean; sonPara: number; hirsizlik: number; anaRolKazanc: number }
 
 function tekOmur(cag: Cag, tarz: Tarz): Cikti {
   const s = createCharacter(cag, cag === "Orta Çağ" ? "Fransa" : "İngiltere", "kasaba");
   s.yas = 15;
   mesleğiSec(s, MESLEK);
-  const c: Cikti = { gelir: [], net: [], pay: [], rakipPay: [], para: [], batti: false, sonPara: 0, hirsizlik: 0, anaRolKazanc: 0 };
+  const c: Cikti = { gider: [], musteri: [], calisan: [], batmaYili: -1, batmaDetay: "", gelir: [], net: [], pay: [], rakipPay: [], para: [], batti: false, sonPara: 0, hirsizlik: 0, anaRolKazanc: 0 };
   for (let y = 0; y < YIL; y++) {
     rutbeSurukle(s, y, tarz);
     botKarar(s, tarz);
     donemIlerlet(s, 1);
     buyukSavasKontrolEt(s, 1);
-    vebaBaslamaliMi(s);
+    buyukSavasBitisKontrolEt(s); // savaş bitmezse pazar sonsuza dek küçülür (önceki sürümde eksikti)
+    if (vebaBaslamaliMi(s, 1)) {
+      s.ulke.vebada = true;
+      vebaBaslat(s, 0);
+    }
+    vebaBitisKontrolEt(s);
     const g = giderKalemleriHesapla(s);
     const gider = g.yasam + g.konut + g.ekip + g.evcilHayvan + g.savasVergisi;
     const onceki = s.para;
@@ -116,11 +124,19 @@ function tekOmur(cag: Cag, tarz: Tarz): Cikti {
     c.gelir.push(s.para - onceki + gider);
     c.net.push(s.para - onceki);
     c.pay.push(pazarPayiHesapla(s) * 100);
+    c.gider.push(gider);
+    c.musteri.push(s.meslek_musteri);
+    c.calisan.push(s.ekip.length);
     c.rakipPay.push(((s.rakipler.find((r) => !r.yenildi)?.musteri ?? 0) / s.pazar_musteri) * 100);
     c.para.push(s.para);
     if (process.env.SIM_DEBUG && y % 5 === 4) console.log(y, JSON.stringify({satis: s.isletme?.son_dokum?.satis, alim: s.isletme?.son_dokum?.alim, brut: s.isletme?.son_dokum?.brutKar, uretim: s.isletme?.son_dokum?.uretim, hat: s.isletme?.son_dokum?.hatlar, ek: s.ekip.length, up: s.isletme?.son_dokum?.uyarilar.map(u=>u.kod)}));
     c.hirsizlik += s.isletme?.son_dokum?.uyarilar.filter((u) => u.kod === "hirsizlik").length ?? 0;
-    if (s.para < -30) c.batti = true;
+    if (s.para < -30 && !c.batti) {
+      c.batti = true;
+      const d = s.isletme?.son_dokum;
+      c.batmaYili = y;
+      c.batmaDetay = `gelir ${(s.para - onceki + gider).toFixed(1)} gider ${gider.toFixed(1)} ekip ${s.ekip.length} depo${s.isletme?.yatirimlar.depo ?? 0} brut ${d?.brutKar ?? 0} vergi ${d?.vergi ?? 0} uyari ${d?.uyarilar.map((u) => u.kod).join(",")}`;
+    }
     if (s.para < 0 && s.isletme) s.para = Math.max(s.para, -30);
     c.sonPara = s.para;
   }
@@ -151,6 +167,21 @@ for (const cag of CAGLAR) {
     const sonPay = sonuclar.map((c) => c.pay[c.pay.length - 1]).sort((a, b) => a - b);
     const sonNegatif = sonuclar.filter((c) => c.sonPara < 0).length;
     const hirs = ort(sonuclar.map((c) => c.hirsizlik));
+    if (process.env.SIM_YASLAR) {
+      const yaslar = process.env.SIM_YASLAR.split(",").map(Number);
+      for (const yas of yaslar) {
+        const i = yas - 15;
+        const al = (f: (c: Cikti) => number[]) => ort(sonuclar.map((c) => f(c)[i] ?? 0));
+        const gelir = al((c) => c.gelir), gider = al((c) => c.gider);
+        console.log(`  yaş ${yas}: gelir ${gelir.toFixed(1)} · gider ${gider.toFixed(1)} · net ${(gelir - gider).toFixed(1)} · gelir/gider ${(gelir / Math.max(0.01, gider)).toFixed(2)} · müşteri ${al((c) => c.musteri).toFixed(0)} · pay %${al((c) => c.pay).toFixed(1)} · çalışan ${al((c) => c.calisan).toFixed(1)}`);
+      }
+      const batanlar = sonuclar.filter((c) => c.batti);
+      if (batanlar.length) {
+        const yasOrt = ort(batanlar.map((c) => 15 + c.batmaYili));
+        const erken = batanlar.filter((c) => c.batmaYili < 12).length;
+        console.log(`  batanlar: ort. yaş ${yasOrt.toFixed(0)} · ilk 12 yılda ${erken}/${batanlar.length} · örnekler: ${batanlar.slice(0, 3).map((c) => c.batmaDetay).join(" | ")}`);
+      }
+    }
     console.log(
       `\n${cag} / ${tarz}  (batan %${Math.round((batan / N) * 100)}, ömür sonunda borçlu %${Math.round((sonNegatif / N) * 100)}) · son pay medyan %${sonPay[Math.floor(N / 2)].toFixed(1)} (p10 %${sonPay[Math.floor(N * 0.1)].toFixed(1)}, p90 %${sonPay[Math.floor(N * 0.9)].toFixed(1)}) · hırsızlık/ömür ${hirs.toFixed(1)}\n  ${satirlar.join("\n  ")}`
     );
