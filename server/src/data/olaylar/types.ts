@@ -201,6 +201,18 @@ export interface OlayTanimi {
    */
   yalnizZorlaOlayi?: boolean;
   agirlik?: number;
+  /**
+   * Evcil hayvan KARŞILAŞMA olayı: bu hayvan türünü sahiplenme fırsatı sunar
+   * (`SonucEtkisi.evcil_hayvan_edin`). Bir hayatta en fazla 2 karşılaşma yaşanır ve
+   * aynı tür bir daha çıkmaz; yaşa bağlı garanti için gameEngine.senaryoUret kural 5.
+   */
+  hayvanKarsilasmaTuru?: string;
+  /**
+   * Evcil hayvan DEVAM (takip) olayı: yalnız bu türden yaşayan bir hayvanı olana çıkar
+   * (`gerekliEtiketler: ["evcil_hayvan_tur:<Tür>"]` ile birlikte yazılır). `{hayvan}`
+   * yer tutucusu bu türdeki hayvanın adına çözülür; `evcil_hayvan_kaybet` bu hayvanı hedefler.
+   */
+  hayvanTuru?: string;
   sureYilMin?: number;
   sureYilMax?: number;
   /** Ağır (trajik) ya da hafif (komik) olaylar art arda gelmesin diye kullanılan ton etiketi. */

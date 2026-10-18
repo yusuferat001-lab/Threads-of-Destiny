@@ -601,6 +601,7 @@ const TR = {
   aoCocukTek: 'Çocuk',
   aoCocukCogul: 'Çocuklar',
   aoEvcilHayvanTek: 'Evcil Hayvan',
+  aoHayvanPasif: 'Pasif',
 
   // ---- Dost/Rakip kartı (AileEkrani içinde, eski IliskilerPaneli) ----
   ilBaslik: 'İlişkilerin',
@@ -1327,6 +1328,7 @@ const EN: Metinler = {
   aoCocukTek: 'Child',
   aoCocukCogul: 'Children',
   aoEvcilHayvanTek: 'Pet',
+  aoHayvanPasif: 'Passive',
 
   // ---- Dost/Rakip card (inside AileEkrani, formerly IliskilerPaneli) ----
   ilBaslik: 'Your Relationships',

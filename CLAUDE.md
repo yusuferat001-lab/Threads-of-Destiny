@@ -186,7 +186,7 @@ Kaynak: [server/src/types.ts](server/src/types.ts). Tek kaynak — client `types
 | `cocuk_sayisi`, `cocuklar: Cocuk[]` | `{isim, dogum_yili, yasiyor, iliski, yatkinlik?, erken_olum_yili?}` (yatkınlık doğumda %70/%20/%10; erken ölüm doğum komplikasyonu, §45) |
 | `ekip: EkipUyesi[]` | İşe alınan yardımcılar (§ aşağıda) |
 | `hizip` | string\|null — katılınan hizbin adı (§16) |
-| `evcil_hayvan` | `{tur, isim}` \| null |
+| `evcil_hayvan` / `evcil_hayvanlar` / `hayvan_karsilasma_sayisi` / `hayvan_karsilasma_turleri` | `evcil_hayvanlar: EvcilHayvan[]` (`{tur, isim, edinim_yili, edinim_yasi, omur, bonus_id}`, aynı anda en fazla 2); `evcil_hayvan` = ilk yaşayan (eski alan, `evcilHayvanSenkronla` türetir); sayaç ≤2, tür listesi (§45) |
 | `unvanlar` | string[] — kazanılan kalıcı lakaplar |
 | `hayat_amaci` | `HayatAmaci\|null` — **ESKİ tekil amaç, artık atanmıyor** (yeni karakterde `null`); geriye dönük uyum için tipte + `hesaplaSkor` fallback'inde kalıyor |
 | `hayat_amaclari` | `AmacIlerleme[]` — meslek seçilince havuzdan çekilen **2 normal + 1 zor** kişisel amaç; skoru `amacSkorCarpani` ile çarpar (§18) |
@@ -341,7 +341,7 @@ Olay/seçenek metninde ve sonuç `mesaj`/`detay`'ında kullanılabilir: `{bolge}
 | `hapis.ts` | 46 | ~1600 | Hapis alt sistemi (§17) — ceza yılı sayacı + parasız riskli kaçış olayları dahil |
 | `aile.ts` | 34 | ~1720 | Aile geçmişine özel olaylar |
 | `aranmaSeviyesi.ts` | 32 | ~1495 | Aranma kademesi alt sistemi — TEK eksen `suc_seviyesi`'nin bantlarına (`min/maxSucSeviyesi`) kilitli tetikleyici/kademe/baskın/kaçak olayları (§17) |
-| `evcilHayvan.ts` | 28 | 1425 | Evcil hayvan olayları |
+| `evcilHayvan.ts` + `evcilHayvan{Kopek,Kedi,Sahin,Karga,At}.ts` | 6 genel + 12 eski türe özel + Köpek/Kedi/Şahin 18'er + Karga/At 22'şer = 116 | ~5000 | Evcil hayvan olayları: 6 genel takip + her tür için 6 karşılaşma (3 Orta Çağ + 3 Sanayi) ve çağ başına ≥10 devam olayı (§45) |
 | `iliskiler.ts` | 22 | ~1075 | Dost/rakip/eş ilişki olayları |
 | `ortaCagTuccar.ts` | 26 | ~1400 | Orta Çağ Tüccar'a özel (yol-öncesi/yol-bağımsız standalone havuz) |
 | `ortaCagAsker.ts` | 26 | ~1400 | Orta Çağ Asker'e özel (yol-öncesi/yol-bağımsız standalone havuz) |
@@ -441,8 +441,8 @@ Bir seçeneğin `onTepki` alanı varsa: seçilince **zar atılmaz**, zaman ilerl
 2. **Kariyer yolu girişi** (2026-09'dan beri **6 çağ×meslek kombinasyonunun hepsi**, `gameEngine.ts`'teki `YOL_SISTEMLERI` tablosundan okunur — eskiden sadece Orta Çağ Asker/Din Adamı'ydı) — yaş≥18, ilgili `yol:asker:*`/`yol:din:*`/`yol:tuccar:*` etiketi henüz yok, giriş olayı daha önce görülmemiş → Orta Çağ Asker `oc_asker_yol_ilk_emir` / Orta Çağ Din Adamı `oc_din_yol_ilk_sinav` / Orta Çağ Tüccar `oc_tuccar_yol_ilk_anlasma` / Sanayi Devrimi Asker `sd_asker_yol_ilk_gorev` / Sanayi Devrimi Tüccar `sd_tuccar_yol_ilk_karar` / Sanayi Devrimi Din Adamı `sd_din_yol_ilk_vaaz`.
 3. **Eş ihmal uyarısı** (2026-10, §45) — evli, `es_ihmal_uyari_goruldu` yok, son "zaman geçir"den ≥7 yıl geçmiş (`IHMAL_UYARI_YIL`) → `iliski_es_ihmal_uyarisi` (`yalnizZorlaOlayi`, bir evlilikte bir kez). Eski "29 yaş evlilik teklifi garantisi" ve `iliski_evlilik_teklifi`/`iliski_ikinci_teklif`/`evlilik_uc_yol_karari` olayları kaldırıldı.
 4. **Şehir yönetimi girişi** — `rutbe_seviye>=4` (2026-08 rütbe reformuyla eski `>=3`'ten yükseltildi, §14), `sehir_yonetimi_basladi` etiketi yok → mesleğe göre `sehir_yonetim_{tuccar|dinadami|asker|zanaatkar}_baslangic` (Zanaatkâr 2026-09 sonunda eklendi, §15).
-5. **Evcil hayvan teklifi** — 20≤yaş<25, evcil hayvanı yok, teklif olayı görülmemiş → çağa göre `evcilhayvan_sahiplenme_teklifi_{sanayi|ortacag}`.
-6. **Evcil hayvan takip garantisi** — evcil hayvanı var, kümülatif kontrol noktaları (`EVCIL_HAYVAN_TAKIP_KONTROL_NOKTALARI`: 30→1, 42→2, 55→3 — bu bölümdeki eski "45≤yaş<50, <2 görülmüş" tek-eşikli açıklama kümülatif modele geçilince güncellenmemişti), `EVCIL_HAYVAN_TAKIP_OLAY_IDLERI` hedefin altındaysa → `EVCIL_HAYVAN_GENEL_TAKIP_OLAY_IDLERI` havuzundan (öncelik görülmemişlerde) rastgele.
+5. **Evcil hayvan karşılaşma garantisi** (§46) — rastgele karşılaşma denk gelmediyse 29 yaşına kadar 1., 38 yaşına kadar 2. karşılaşma (`hayvanKarsilasmaGarantisiSec`): `hayvanKarsilasmaTuru` taşıyan, `temelUygunMu`'dan geçen görülmemiş bir olay. Bir hayatta en fazla 2 karşılaşma, aynı tür bir daha çıkmaz.
+6. **Evcil hayvan devam garantisi** (§46) — her yaşayan hayvan için sahipliğin 5/9/13/17. yılında o türün `hayvanTuru` havuzundan kümülatif 1/2/3/4 olay (`hayvanDevamGarantisiSec`, `kumulatifTakipSec` ile).
 7. **Gizemli eşya takip garantisi** — 38≤yaş<46, sahip olunan her `esya:`/`envanter:` etiketi için `GIZEMLI_ESYA_TAKIP_HAVUZU[esyaId]`'den hiç görülmemişse → o havuzdan rastgele (ilk eşleşen eşya kazanır).
 8. **Hizip takip garantisi** (kümülatif kontrol noktaları, `HIZIP_TAKIP_KONTROL_NOKTALARI`) — hizbe katılmış karakter, hayatı boyunca hizbe özel havuzdan (~10 olay: 9 hizbe özel + 1 meslek-çatışma genel) belirli yaşlara kadar en az N olay görmüş olmalı: 26→1, 35→2, 44→3, 53→4, 62→5. 2026-09'da (kullanıcı isteği "hizip... daha detaylı yaşlara tetikle") eski tek-4-noktalı (30/42/55/65→1-4) tablo daha sık/ince aralıklara bölündü, ilk yaş 30→26'ya indirildi, nihai hedef 4→5'e yükseltildi.
 9. **Saray daveti** — henüz `sarayda` değil, `un>=70 AND ahlak>=70`, `saray_kral_daveti` görülmemiş → `saray_kral_daveti`.
@@ -795,7 +795,7 @@ Kaynak: [magazaEsyalari.ts](server/src/data/magazaEsyalari.ts). "sifa" bozulur (
 | antika_eser | luks | – | 240 | un+14 | – |
 
 ### Evcil Hayvanlar
-Türler: Orta Çağ → Kedi/Köpek/Şahin; Sanayi → Kedi/Köpek/Papağan. İsim havuzu 12 sabit isim (Boncuk, Tekir, Duman, Şeker, Pamuk, Zeytin, Kömür, Fındık, Minnoş, Bulut, Toprak, Yıldız). Takip olayları §11 kural 6'da.
+Beş tür, iki çağda da aynı: Köpek (ömür 14) · Kedi (15) · Şahin (17) · Karga (18) · At (20), edinirken ±2 yıl. İsim havuzu 12 sabit isim. Ayrıntılar §46 (Papağan/Kurt 2026-10'da kaldırıldı).
 
 ### Gizemli Eşyalar (15 tanım, `envanter:`/`esya:` etiketiyle taşınır)
 Kaynak: [gizemliEsyalar.ts](server/src/data/gizemliEsyalar.ts) (garanti havuzu) + [client/src/envanter.ts](client/src/envanter.ts) (görüntüleme): Ejderha Tılsımı, Kara Kılıç, Melek Tüyü, Mucize İksir, Ölünün Yüzüğü, Gölge Sikke, Gizemli Harita, Hazine Haritası, Bulunmuş Hazine, Kutsal Emanet (`esya:kutsal_kalinti` — ölümden koruma relik'i, §9), Lanetli Altın, Manastırın Kara Kedisi, Atadan Kalma Kılıç, Fısıldayan Taş, Eski Bir Ayna. Sadece 5'inin garanti takip-olay havuzu var (§11 kural 7): `melek_tuyu, kutsal_kalinti, lanetli_altin, fisildayan_tas, eski_ayna`.
@@ -1626,3 +1626,16 @@ Kaynak: [aileSistemi.ts](server/src/game/aileSistemi.ts) (saf fonksiyonlar), [ai
 - **Kabul:** ortak `ekipUyesiEkle` yardımcısıyla (eski iki kopya `ekip_ekle` bloğu da buna taşındı) rol "Varis" (EN "Heir"), kalite ≈ piyasa en iyisinin (85) %1-2 üstü, maaş %15-20 düşük, sadakat 100, kişilik "Sadık", pasif maaş buff'ı; `Cocuk.ekip_id` ↔ `EkipUyesi.cocuk_isim`. İlişki +5, mutluluk +3.
 - **Red:** `is_durumu:"red_tepkisi"` → oyuncu "Öfkelen" (ilişki −15, mutluluk −2) ya da "Sakin Karşıla" (+3) seçer → `reddetti`; tekrar davet edilmez. Çocuk ekipten kovulursa ilişki −25 ve `reddetti`.
 - **Test:** [cocukIs.test.ts](server/tests/cocukIs.test.ts).
+
+## 46. Evcil Hayvan Sistemi Yeniden Tasarımı (2026-10)
+
+Kaynak veri: [data/evcilHayvanlar.ts](server/src/data/evcilHayvanlar.ts) (türler, ömür, bonus tablosu, `yeniEvcilHayvanUret`, `hayvanBonusVar`, `evcilHayvanSenkronla`), motor yardımcıları [game/hayvanEtkileri.ts](server/src/game/hayvanEtkileri.ts), state fonksiyonları `stateManager.ts` (`evcilHayvanEkle/Kaldir/YillikUygula`, `eskiKayitGocu` göçü).
+
+- **Tür seti:** Köpek, Kedi, Şahin, Karga, At (iki çağda da). Papağan ve Kurt kaldırıldı: eski kayıtlar Papağan→Karga, Kurt→Köpek'e taşınır; ilgili şık kilitleri (`ortaCagTuccar`, `ortaCagAsker`, `hizip`) yeni türlere çevrildi.
+- **Karşılaşma:** `OlayTanimi.hayvanKarsilasmaTuru` (tür başına 3 Orta Çağ + 3 Sanayi olay, `hayvan_karsilasma_<tur>_<oc|sd>_<n>`, 20-55 yaş). Kabul şıkkı `evcil_hayvan_edin:{tur}` (zarlı), diğer şık güvenli. Çözülünce (kabul/ret) `hayvan_karsilasma_sayisi++`; tavan 2, aynı tür bir daha çıkmaz (`temelUygunMu`). Rastgele havuzda `agirlik:1`; garanti §11 kural 5 (29/38 yaş).
+- **Aynı anda en fazla 2 hayvan**, aynı tür bir kez; `{hayvan}` yer tutucusu olayın `hayvanTuru`'ndaki hayvanın adına çözülür (`doldur(metin,state,hayvanTuru)`); `evcil_hayvan_kaybet` o hayvanı hedefler.
+- **Ömür:** `omur = ortalama ± 2`; `evcilHayvanYillikUygula` (yıl bloğunda `aileYillikUygula`'dan sonra) `yil >= edinim_yili + omur` ise hayvan ölür (mutluluk −6, etiket silinir, bonus biter).
+- **Pasif bonus** (edinirken türün iki bonusundan biri rastgele, `bonus_id`; arayüzde karşılaşmada gizli, sahiplenince Aile ekranı + sol panelde "Pasif: +X"): Köpek savunma (soygun/sızıntı/misilleme ×0.75) · Köpek sağlık (veba kapma ×0.8, hastalık düşüşü +3, olay sağlık kaybı ×0.8) · Kedi mutluluk (negatif mutluluk ×0.75) · Kedi şans (olay şansı +%5 oran, karanlık iş +5 puan) · Şahin şöhret (yıllık un +0.5, yönetim ilişkisi +0.4, mekân olayında +1 un) · Şahin saldırı (`rakipGucKir` ×1.25, savaş yatkınlıklı karanlık işte +4) · Karga istihbarat (misilleme ×0.7, kategori başarısında kariyer puanı ×1.25) · Karga karanlık (karanlık iş +6) · At ticaret (ticaret kazancı ×1.07, mülk getirisi +0.01) · At enerji (aile etkileşimi beklemesi −1 yıl, en az 1). İki hayvan yaşıyorsa bonuslar toplanır. Olay-etki bonusları `hayvanOlayEtkisiUygula` ile ana seçim ve mekân yolunda uygulanır.
+- **Devam havuzları:** `OlayTanimi.hayvanTuru` + `gerekliEtiketler:["evcil_hayvan_tur:<Tür>"]`. Her tür çağ başına ≥10 görünür devam olayı (Köpek/Kedi/Şahin: 4 eski çağsız + 12 yeni; Karga/At: 16 yeni). Garanti §11 kural 6 (sahipliğin 5/9/13/17. yılında kümülatif 1/2/3/4). 6 genel takip olayı (`evcil_hayvan_var`) normal havuzda kalır.
+- **Gider:** hayvan başına yılda 1 × enflasyon. **Resim:** `hayvan_karsilasma_*` öneki `evcil-hayvan` anahtarını alır.
+- **Test:** [evcilHayvan.test.ts](server/tests/evcilHayvan.test.ts). Yaş 29+ bir karakteri hazırlayan testler karşılaşma garantisi araya girmesin diye `state.hayvan_karsilasma_sayisi = 2` atar.

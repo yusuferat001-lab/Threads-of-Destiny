@@ -409,10 +409,10 @@ export const OLAY_ORTACAG_TUCCAR: OlayTanimi[] = [
     metin: "Bilmediğin bir dilde konuşan bir tüccar kervanı geldi. Kimse anlaşamıyor ama malları çok değerli.",
     secenekler: [
       {
-        metin: "Papağanın taklidiyle buzları kır.",
+        metin: "Kargan sesleri taklit etsin, buzları kır.",
         baseBasariSansi: 100,
         gerekliEtiketler: [
-          "evcil_hayvan_tur:Papağan",
+          "evcil_hayvan_tur:Karga",
         ],
         basariliSonuc: {
           ahlak: -3,
@@ -422,7 +422,7 @@ export const OLAY_ORTACAG_TUCCAR: OlayTanimi[] = [
           etiket_ekle: [
             "uzak_diyar_baglantisi",
           ],
-          mesaj: "Papağanın taklidine kervan güldü; en iyi fiyatta anlaştınız!",
+          mesaj: "Kargan'ın taklidine kervan güldü; en iyi fiyatta anlaştınız!",
         },
         basarisizSonuc: {
           mesaj: "Kullanılmadı.",

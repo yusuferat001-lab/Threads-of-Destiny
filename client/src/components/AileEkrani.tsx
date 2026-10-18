@@ -4,6 +4,7 @@ import { im, huyAdi } from '../iliskilerMetin';
 import { bic, type Metinler } from '../i18n';
 import { HAYVAN_SIMGESI } from '../bolgeTema';
 import { useDil } from '../DilContext';
+import { hayvanBonusBilgisi } from '../hayvanBonus';
 
 interface AileEkraniProps {
   anneAdi: string;
@@ -13,7 +14,7 @@ interface AileEkraniProps {
   dostPuani: number;
   rakipPuani: number;
   durum: AileDurumu | null;
-  evcilHayvan: EvcilHayvan | null;
+  evcilHayvanlar: EvcilHayvan[];
   yukleniyor: boolean;
   islemMesaji: string | null;
   onEtkilesim: (etkilesimId: string, cocukIndex?: number) => void;
@@ -247,7 +248,7 @@ export function AileEkrani({
   dostPuani,
   rakipPuani,
   durum,
-  evcilHayvan,
+  evcilHayvanlar,
   yukleniyor,
   islemMesaji,
   onEtkilesim,
@@ -527,10 +528,16 @@ export function AileEkrani({
 
         <div className="aile-kart aile-evcil-karti">
           <h3>{m.aeEvcilBaslik}</h3>
-          {evcilHayvan ? (
-            <span className="iliski-rozet">
-              {HAYVAN_SIMGESI[evcilHayvan.tur] ?? '🐾'} {evcilHayvan.isim} · {kt(evcilHayvan.tur)}
-            </span>
+          {evcilHayvanlar.length > 0 ? (
+            evcilHayvanlar.map((hayvan) => {
+              const bonus = hayvanBonusBilgisi(hayvan.bonus_id, dil);
+              return (
+                <span className="iliski-rozet" key={`${hayvan.tur}-${hayvan.isim}`} title={bonus?.aciklama}>
+                  {HAYVAN_SIMGESI[hayvan.tur] ?? '🐾'} {hayvan.isim} · {kt(hayvan.tur)}
+                  {bonus ? ` — ${m.aoHayvanPasif}: +${bonus.kisa}` : ''}
+                </span>
+              );
+            })
           ) : (
             <p className="aile-bos-metin">{m.aeEvcilYok}</p>
           )}

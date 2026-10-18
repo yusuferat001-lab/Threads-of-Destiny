@@ -106,13 +106,13 @@ describe("olay illüstrasyonu havuz anahtarı", () => {
     const anahtar = (id: string) => olayResimAnahtari({ id });
     expect(anahtar("evcil_hayvan_sahin_av")).toBe("evcil-hayvan");
     expect(anahtar("evcil_hayvan_kedi_yikim")).toBe("evcil-hayvan");
-    expect(anahtar("evcil_hayvan_kurt_vahsi_icgudu")).toBe("evcil-hayvan");
-    expect(anahtar("evcilhayvan_sahiplenme_teklifi_ortacag")).toBe("evcil-hayvan");
-    expect(anahtar("vahsi_kurt_yavrusu_bulma")).toBe("evcil-hayvan");
+    expect(anahtar("evcil_hayvan_karga_gizli_mesaj")).toBe("evcil-hayvan");
+    expect(anahtar("hayvan_karsilasma_at_oc_1")).toBe("evcil-hayvan");
     expect(anahtar("komik_sd_sirkten_kacan_hayvan")).toBeUndefined();
     expect(olayResimAnahtari({ id: "aranma_kacak_vahsi_hayvan", kacakOlayi: true })).toBe("kacak");
     const sayi = OLAY_BANKASI.filter((o) => olayResimAnahtari(o) === "evcil-hayvan").length;
-    expect(sayi).toBe(28);
+    // 6 genel + 12 eski türe özel + Köpek/Kedi/Şahin 18'er + Karga/At 22'şer (karşılaşma + devam)
+    expect(sayi).toBe(116);
   });
 
   it("havuz dışı olaylar ve eşlenmeyen yolculuklar anahtar almaz (kategori resmine düşer)", () => {

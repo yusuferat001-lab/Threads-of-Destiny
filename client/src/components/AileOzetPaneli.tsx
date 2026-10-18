@@ -1,17 +1,18 @@
 import type { Cocuk, EvcilHayvan } from '../types';
 import { HAYVAN_SIMGESI } from '../bolgeTema';
 import { useDil } from '../DilContext';
+import { hayvanBonusBilgisi } from '../hayvanBonus';
 
 interface AileOzetPaneliProps {
   esAdi: string | null;
   esMeslek: string | null;
   esRutbe: string | null;
   cocuklar: Cocuk[];
-  evcilHayvan: EvcilHayvan | null;
+  evcilHayvanlar: EvcilHayvan[];
 }
 
-export function AileOzetPaneli({ esAdi, esMeslek, esRutbe, cocuklar, evcilHayvan }: AileOzetPaneliProps) {
-  const { m, kt } = useDil();
+export function AileOzetPaneli({ esAdi, esMeslek, esRutbe, cocuklar, evcilHayvanlar }: AileOzetPaneliProps) {
+  const { m, kt, dil } = useDil();
   const yasayanCocuklar = cocuklar.filter((c) => c.yasiyor);
 
   return (
@@ -40,17 +41,23 @@ export function AileOzetPaneli({ esAdi, esMeslek, esRutbe, cocuklar, evcilHayvan
           </div>
         </div>
       )}
-      {evcilHayvan && (
-        <div className="aile-ozet-satir">
-          <span className="aile-ozet-simge" aria-hidden="true">
-            {HAYVAN_SIMGESI[evcilHayvan.tur] ?? '🐾'}
-          </span>
-          <div className="aile-ozet-metin">
-            <span className="aile-ozet-ad">{evcilHayvan.isim}</span>
-            <span className="aile-ozet-rol">{m.aoEvcilHayvanTek}</span>
+      {evcilHayvanlar.map((hayvan) => {
+        const bonus = hayvanBonusBilgisi(hayvan.bonus_id, dil);
+        return (
+          <div className="aile-ozet-satir" key={`${hayvan.tur}-${hayvan.isim}`} title={bonus?.aciklama}>
+            <span className="aile-ozet-simge" aria-hidden="true">
+              {HAYVAN_SIMGESI[hayvan.tur] ?? '🐾'}
+            </span>
+            <div className="aile-ozet-metin">
+              <span className="aile-ozet-ad">{hayvan.isim}</span>
+              <span className="aile-ozet-rol">
+                {kt(hayvan.tur)}
+                {bonus ? ` · ${m.aoHayvanPasif}: +${bonus.kisa}` : ''}
+              </span>
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })}
     </div>
   );
 }

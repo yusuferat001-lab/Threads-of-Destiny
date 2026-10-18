@@ -34,9 +34,9 @@ const BOLGE_RESIMLERI: ReadonlyArray<readonly [onek: string, anahtar: string]> =
   ["bolge_selcuklu_", "bolge-selcuklu"],
 ];
 
-/** Evcil hayvan olayları: takip/teklif havuzu (`evcil_hayvan_*`, `evcilhayvan_*`) + vahşi kurt yavrusu. */
-const EVCIL_HAYVAN_ONEKLERI = ["evcil_hayvan_", "evcilhayvan_"];
-const EVCIL_HAYVAN_OLAYLARI = new Set(["vahsi_kurt_yavrusu_bulma"]);
+/** Evcil hayvan olayları: devam havuzu (`evcil_hayvan_*`) + karşılaşma olayları (`hayvan_karsilasma_*`). */
+const EVCIL_HAYVAN_ONEKLERI = ["evcil_hayvan_", "evcilhayvan_", "hayvan_karsilasma_"];
+const EVCIL_HAYVAN_OLAYLARI = new Set<string>();
 
 /**
  * Olay illüstrasyonunun "havuz anahtarı" (`client/public/assets/olay/<anahtar>-<orta-cag|sanayi>.webp`).

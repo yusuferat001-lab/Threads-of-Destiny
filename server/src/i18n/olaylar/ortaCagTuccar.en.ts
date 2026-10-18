@@ -263,10 +263,10 @@ export const OLAYLAR_ORTACAG_TUCCAR_EN: Record<string, OlayCeviri> = {
       "A caravan whose language you don't know arrives. No one can communicate, but their goods are clearly valuable.",
     secenekler: [
       {
-        metin: "Break the ice with your parrot's mimicry.",
+        metin: "Let your crow mimic voices and break the ice.",
         basariliSonuc: {
           mesaj:
-            "Your parrot's mimicry cracked up the caravan; best price struck!",
+            "Your crow's mimicry cracked up the caravan; best price struck!",
         },
         basarisizSonuc: {
           mesaj: "Not used.",

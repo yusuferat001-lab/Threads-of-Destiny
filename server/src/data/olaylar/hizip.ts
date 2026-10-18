@@ -3365,7 +3365,7 @@ export const OLAY_HIZIP: OlayTanimi[] = [
         metin: "{hayvan}'ı kürsünün ardında konuştur.",
         baseBasariSansi: 85,
         gerekliEtiketler: [
-          "evcil_hayvan_tur:Papağan",
+          "evcil_hayvan_tur:Karga",
         ],
         kilitAciklamasi: "Bunun için taklitçi, eğitimli bir kuş gerek.",
         basariliSonuc: {

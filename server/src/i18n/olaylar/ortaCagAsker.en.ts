@@ -201,10 +201,10 @@ export const OLAYLAR_ORTACAG_ASKER_EN: Record<string, OlayCeviri> = {
       "Going on watch, you found your horse gone. A child saw a man lead it off in the night.",
     secenekler: [
       {
-        metin: "Set your pet wolf on the thief's trail!",
+        metin: "Set your dog on the thief's trail!",
         basariliSonuc: {
           mesaj:
-            "Your wolf cornered the thief in the forest. You took your horse and his gold.",
+            "Your dog cornered the thief in the forest. You took your horse and his gold.",
           detay: "No one in the barracks dares touch your things.",
         },
         basarisizSonuc: {

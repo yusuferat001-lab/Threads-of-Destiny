@@ -333,17 +333,17 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
     metin: "Nöbete çıkarken atının bağlı olduğu yerin boş olduğunu gördün. Bir çocuk, gece bir adamın atı götürdüğünü gördüğünü söylüyor.",
     secenekler: [
       {
-        metin: "Evcil Kurdunu hırsızın izine sal!",
+        metin: "Köpeğini hırsızın izine sal!",
         baseBasariSansi: 100,
         gerekliEtiketler: [
-          "evcil_hayvan_tur:Kurt",
+          "evcil_hayvan_tur:Köpek",
         ],
         basariliSonuc: {
           ahlak: -3,
           mutluluk: -4,
           para: 25,
           un: 20,
-          mesaj: "Kurt hırsızı ormanda köşeye sıkıştırdı. Atını ve adamın altınlarını aldın.",
+          mesaj: "Köpeğin hırsızı ormanda köşeye sıkıştırdı. Atını ve adamın altınlarını aldın.",
           detay: "Kışlada kimse eşyana dokunmaya cesaret edemiyor.",
         },
         basarisizSonuc: {

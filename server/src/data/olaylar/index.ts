@@ -20,6 +20,11 @@ import { OLAY_ORTACAG_ZANAATKAR_YOLLARI } from "./ortaCagZanaatkarYollari";
 import { OLAY_SANAYI_ZANAATKAR } from "./sanayiZanaatkar";
 import { OLAY_SANAYI_ZANAATKAR_YOLLARI } from "./sanayiZanaatkarYollari";
 import { OLAY_EVCIL_HAYVAN } from "./evcilHayvan";
+import { OLAY_EVCIL_HAYVAN_KOPEK } from "./evcilHayvanKopek";
+import { OLAY_EVCIL_HAYVAN_KEDI } from "./evcilHayvanKedi";
+import { OLAY_EVCIL_HAYVAN_SAHIN } from "./evcilHayvanSahin";
+import { OLAY_EVCIL_HAYVAN_KARGA } from "./evcilHayvanKarga";
+import { OLAY_EVCIL_HAYVAN_AT } from "./evcilHayvanAt";
 import { OLAY_ESYA_VE_GIZEM } from "./esyaVeGizem";
 import { OLAY_AILE } from "./aile";
 import { OLAY_ILISKILER } from "./iliskiler";
@@ -73,6 +78,11 @@ export const OLAY_BANKASI: OlayTanimi[] = [
   ...OLAY_SANAYI_ZANAATKAR,
   ...OLAY_SANAYI_ZANAATKAR_YOLLARI,
   ...OLAY_EVCIL_HAYVAN,
+  ...OLAY_EVCIL_HAYVAN_KOPEK,
+  ...OLAY_EVCIL_HAYVAN_KEDI,
+  ...OLAY_EVCIL_HAYVAN_SAHIN,
+  ...OLAY_EVCIL_HAYVAN_KARGA,
+  ...OLAY_EVCIL_HAYVAN_AT,
   ...OLAY_ESYA_VE_GIZEM,
   ...OLAY_AILE,
   ...OLAY_ILISKILER,

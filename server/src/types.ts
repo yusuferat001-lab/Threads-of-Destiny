@@ -452,7 +452,14 @@ export interface CharacterState {
   anne_adi: string;
   baba_adi: string;
 
+  /** İlk yaşayan evcil hayvan (eski tek-hayvan alanı; evcilHayvanSenkronla `evcil_hayvanlar[0]`'dan türetir). Gider, hayat amacı, başarım ve gösterim bu alanı okur. */
   evcil_hayvan: EvcilHayvan | null;
+  /** Yaşayan tüm evcil hayvanlar (aynı anda en fazla 2). Pasif bonuslar hepsinden toplanır. */
+  evcil_hayvanlar: EvcilHayvan[];
+  /** Bir hayatta yaşanan evcil hayvan karşılaşması sayısı (kabul ya da ret fark etmez; tavan 2). */
+  hayvan_karsilasma_sayisi: number;
+  /** Karşılaşması yaşanan hayvan türleri; aynı tür bir daha çıkmaz (hayvan ölse bile). */
+  hayvan_karsilasma_turleri: string[];
   /** Kazanılan lakaplar/ünvanlar (ör. "İpek Kralı", "Cesur Yürek"); kalıcı, birikimli. */
   unvanlar: string[];
   /** ESKİ tekil amaç — artık atanmıyor (yeni karakterde null). Geriye dönük uyum için duruyor. */
@@ -598,6 +605,13 @@ export interface HayatOlayi {
 export interface EvcilHayvan {
   tur: string;
   isim: string;
+  /** Edinildiği oyun yılı ve karakter yaşı. */
+  edinim_yili: number;
+  edinim_yasi: number;
+  /** Bu hayvanın ömrü (yıl): türün ortalaması ±2 yıl rastgelelik. `edinim_yili + omur`'da doğal sebeplerle ölür. */
+  omur: number;
+  /** Edinirken rastgele atanan kalıcı pasif bonus (data/evcilHayvanlar.ts HAYVAN_BONUSLARI id'si). */
+  bonus_id: string;
 }
 
 export interface Cocuk {
@@ -818,9 +832,9 @@ export interface SonucEtkisi {
   yerlesim_zorla?: string;
   /** Belirtilen türdeki mülk sahiplikten elden çıkar (baskın/el koyma gibi olaylarda kullanılır). */
   mulk_kaybet?: MulkTuru;
-  /** Belirtilirse ve karakterin henüz evcil hayvanı yoksa, tur belirtilmemişse çağa uygun rastgele bir tür seçilir. */
+  /** Belirtilen türde bir evcil hayvan edinilir (aynı anda en fazla 2 hayvan; aynı türden zaten yaşayan varsa yok sayılır). */
   evcil_hayvan_edin?: { tur?: string };
-  /** true ise mevcut evcil hayvan kaybedilir. */
+  /** true ise evcil hayvan kaybedilir (olayın `hayvanTuru`'ndaki hayvan; belirtilmemişse en son edinilen). */
   evcil_hayvan_kaybet?: boolean;
   /** Belirtilirse ve karakter bu ünvanı henüz taşımıyorsa, unvanlar listesine eklenir. */
   unvan_kazan?: string;
