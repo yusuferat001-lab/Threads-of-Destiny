@@ -207,165 +207,12 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
     ],
   },
   {
-    id: "evcilhayvan_sahiplenme_teklifi_ortacag",
-    cag: "Orta Çağ",
-    kategori: "sosyal",
-    agirlik: 1,
-    gorsel: "🐾",
-    sureYilMin: 1,
-    sureYilMax: 1,
-    baslik: "Bir Dost mu, Yoksa Yalnızlık mı?",
-    metin: "Pazarda düşündün: hayatına sadık bir dost katma vakti gelmiş olabilir. Ya da yalnız daha rahatsın.",
-    secenekler: [
-      {
-        metin: "Köpek yavrusu edin.",
-        baseBasariSansi: 95,
-        basariliSonuc: {
-          mutluluk: 3,
-          evcil_hayvan_edin: {
-            tur: "Köpek",
-          },
-          mesaj: "Yavru köpeği aldın; kuyruk sallayıp peşine takıldı.",
-          detay: "Artık yalnız değilsin.",
-        },
-        basarisizSonuc: {
-          mesaj: "Yavru ilk gece kayboldu, bir daha görünmedi.",
-          detay: "Bazı dostluklar başlamadan biter.",
-        },
-      },
-      {
-        metin: "Kedi edin.",
-        baseBasariSansi: 95,
-        basariliSonuc: {
-          mutluluk: 3,
-          evcil_hayvan_edin: {
-            tur: "Kedi",
-          },
-          mesaj: "Kedi yerleşti; seni yok saymayı bile sevimli yapıyor.",
-          detay: "Evde artık bir efendi daha var.",
-        },
-        basarisizSonuc: {
-          mesaj: "Kedi bir gece sessizce gitti, dönmedi.",
-          detay: "Bazı dostluklar başlamadan biter.",
-        },
-      },
-      {
-        metin: "Şahin edin, eğit.",
-        baseBasariSansi: 70,
-        basariliSonuc: {
-          un: 6,
-          evcil_hayvan_edin: {
-            tur: "Şahin",
-          },
-          mesaj: "Emeğin işe yaradı; şahin omzunda, herkes hayran.",
-          detay: "Şahin sahibi olmak saygı kazandırır.",
-        },
-        basarisizSonuc: {
-          saglik: -5,
-          mesaj: "Şahin elini tırmalayıp uçtu gitti.",
-          detay: "Bazıları özgürlüğü seçer.",
-        },
-      },
-      {
-        metin: "Hayır, yalnız daha rahatım.",
-        baseBasariSansi: 100,
-        hafifSecenek: true,
-        basariliSonuc: {
-          saglik: 2,
-          mutluluk: -2,
-          mesaj: "Şimdilik yalnız kalmayı seçtin.",
-          detay: "Belki ileride fikrin değişir.",
-        },
-        basarisizSonuc: {
-          mutluluk: -2,
-          mesaj: "Kullanılmadı.",
-        },
-      },
-    ],
-  },
-  {
-    id: "evcilhayvan_sahiplenme_teklifi_sanayi",
-    cag: "Sanayi Devrimi",
-    kategori: "sosyal",
-    agirlik: 1,
-    gorsel: "🐾",
-    sureYilMin: 1,
-    sureYilMax: 1,
-    baslik: "Bir Dost mu, Yoksa Yalnızlık mı?",
-    metin: "Fabrikadan çıkarken pazarda hayvan satan bir tezgah gördün. Bir dost edinebilir ya da yalnız kalabilirsin.",
-    secenekler: [
-      {
-        metin: "Köpek yavrusu edin.",
-        baseBasariSansi: 95,
-        basariliSonuc: {
-          mutluluk: 3,
-          evcil_hayvan_edin: {
-            tur: "Köpek",
-          },
-          mesaj: "Yavru köpeği aldın; kuyruk sallayıp peşine takıldı.",
-          detay: "Artık yalnız değilsin.",
-        },
-        basarisizSonuc: {
-          mesaj: "Yavru ilk gece kayboldu, bir daha görünmedi.",
-          detay: "Bazı dostluklar başlamadan biter.",
-        },
-      },
-      {
-        metin: "Kedi edin.",
-        baseBasariSansi: 95,
-        basariliSonuc: {
-          mutluluk: 3,
-          evcil_hayvan_edin: {
-            tur: "Kedi",
-          },
-          mesaj: "Kedi yerleşti; seni yok saymayı bile sevimli yapıyor.",
-          detay: "Evde artık bir efendi daha var.",
-        },
-        basarisizSonuc: {
-          mesaj: "Kedi bir gece sessizce gitti, dönmedi.",
-          detay: "Bazı dostluklar başlamadan biter.",
-        },
-      },
-      {
-        metin: "Konuşan papağan al.",
-        baseBasariSansi: 90,
-        basariliSonuc: {
-          mutluluk: 3,
-          evcil_hayvan_edin: {
-            tur: "Papağan",
-          },
-          mesaj: "Papağan aldın; eve varmadan küfürlerini ezberledi.",
-          detay: "Bu kuşla hayat hiç sessiz geçmez.",
-        },
-        basarisizSonuc: {
-          para: -5,
-          mesaj: "Papağan kaçtı, paran da gitti.",
-          detay: "Bazı yatırımlar kanatlanıp gider.",
-        },
-      },
-      {
-        metin: "Hayır, yalnız daha rahatım.",
-        baseBasariSansi: 100,
-        hafifSecenek: true,
-        basariliSonuc: {
-          saglik: 2,
-          mutluluk: -2,
-          mesaj: "Şimdilik yalnız kalmayı seçtin.",
-          detay: "Belki ileride fikrin değişir.",
-        },
-        basarisizSonuc: {
-          mutluluk: -2,
-          mesaj: "Kullanılmadı.",
-        },
-      },
-    ],
-  },
-  {
     id: "evcil_hayvan_sahin_av",
     kategori: "sosyal",
     gerekliEtiketler: [
       "evcil_hayvan_tur:Şahin",
     ],
+    hayvanTuru: "Şahin",
     agirlik: 0.7,
     gorsel: "🦅",
     sureYilMin: 1,
@@ -413,6 +260,7 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
     gerekliEtiketler: [
       "evcil_hayvan_tur:Şahin",
     ],
+    hayvanTuru: "Şahin",
     agirlik: 0.5,
     gorsel: "💨",
     sureYilMin: 1,
@@ -453,106 +301,12 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
     ],
   },
   {
-    id: "evcil_hayvan_papagan_agiz_kacirma",
-    kategori: "sosyal",
-    gerekliEtiketler: [
-      "evcil_hayvan_tur:Papağan",
-    ],
-    agirlik: 0.7,
-    ton: "hafif",
-    gorsel: "🦜",
-    sureYilMin: 1,
-    sureYilMax: 1,
-    baslik: "Ağzından Kaçan Sır",
-    metin: "{hayvan}, misafirlikte duyduğun karanlık bir sırrı yanlış kişinin önünde tekrarladı! Herkes sana bakıyor.",
-    secenekler: [
-      {
-        metin: "Gül geç, 'kuş konuşur' de.",
-        baseBasariSansi: 70,
-        basariliSonuc: {
-          un: 5,
-          mutluluk: 3,
-          mesaj: "Ortam kahkahaya boğuldu; olay şakaya döndü.",
-          detay: "{hayvan} sayesinde meclisin gözdesisin.",
-        },
-        basarisizSonuc: {
-          un: -10,
-          ahlak: -5,
-          mesaj: "Kimse gülmedi; dedikodunun sahibi silahına davrandı.",
-          detay: "{hayvan}'ın yanında dikkatli ol.",
-        },
-      },
-      {
-        metin: "Utan, özür dile.",
-        baseBasariSansi: 85,
-        basariliSonuc: {
-          saglik: 2,
-          ahlak: 1,
-          mutluluk: -1,
-          mesaj: "Kısa bir özürle konu kapandı.",
-          detay: "Hızlı özür iyi savunmadır.",
-        },
-        basarisizSonuc: {
-          un: -8,
-          mesaj: "Özrün inandırmadı; bazıları hâlâ şüpheli.",
-          detay: "{hayvan} sır saklamayı öğrenmez.",
-        },
-      },
-    ],
-  },
-  {
-    id: "evcil_hayvan_papagan_taklit_yetenegi",
-    kategori: "sosyal",
-    gerekliEtiketler: [
-      "evcil_hayvan_tur:Papağan",
-    ],
-    agirlik: 0.6,
-    ton: "hafif",
-    gorsel: "🎭",
-    sureYilMin: 1,
-    sureYilMax: 1,
-    baslik: "Küçük Bir Yıldız",
-    metin: "{hayvan} komşuların seslerini öyle iyi taklit etti ki ünlendi; herkes gösteri istiyor.",
-    secenekler: [
-      {
-        metin: "Meydanda gösteri yap.",
-        baseBasariSansi: 65,
-        basariliSonuc: {
-          un: 15,
-          para: 10,
-          mesaj: "{hayvan} herkesi güldürdü; bahşiş bile aldın.",
-          detay: "Bir kuş seni ünlü etti.",
-        },
-        basarisizSonuc: {
-          un: -8,
-          mesaj: "{hayvan} tek kelime etmedi; kalabalık dalga geçerek dağıldı.",
-          detay: "Sahne hayvanı huysuzlanır.",
-        },
-      },
-      {
-        metin: "Reddet, mahremiyetini koru.",
-        baseBasariSansi: 90,
-        basariliSonuc: {
-          saglik: 2,
-          ahlak: 1,
-          mutluluk: -1,
-          mesaj: "Gösteriyi reddettin; hayat sakin aktı.",
-          detay: "Her fırsatın peşine düşme.",
-        },
-        basarisizSonuc: {
-          mutluluk: -3,
-          mesaj: "Bazı komşular ısrar etti; bunaldın.",
-          detay: "Ün bazen davetsiz gelir.",
-        },
-      },
-    ],
-  },
-  {
     id: "evcil_hayvan_kedi_yikim",
     kategori: "sosyal",
     gerekliEtiketler: [
       "evcil_hayvan_tur:Kedi",
     ],
+    hayvanTuru: "Kedi",
     agirlik: 0.6,
     ton: "hafif",
     gorsel: "🐈‍⬛",
@@ -597,6 +351,7 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
     gerekliEtiketler: [
       "evcil_hayvan_tur:Köpek",
     ],
+    hayvanTuru: "Köpek",
     agirlik: 0.6,
     gorsel: "🦴",
     sureYilMin: 1,
@@ -735,6 +490,7 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
     gerekliEtiketler: [
       "evcil_hayvan_tur:Köpek",
     ],
+    hayvanTuru: "Köpek",
     agirlik: 0.6,
     ton: "hafif",
     gorsel: "🪑",
@@ -780,6 +536,7 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
     gerekliEtiketler: [
       "evcil_hayvan_tur:Kedi",
     ],
+    hayvanTuru: "Kedi",
     agirlik: 0.6,
     ton: "hafif",
     gorsel: "🐦",
@@ -823,168 +580,13 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
     ],
   },
   {
-    id: "evcil_hayvan_kurt_vahsi_icgudu",
-    kategori: "sosyal",
-    gerekliEtiketler: [
-      "evcil_hayvan_tur:Kurt",
-    ],
-    ton: "agir",
-    agirlik: 0.6,
-    gorsel: "🐾",
-    sureYilMin: 1,
-    sureYilMax: 1,
-    baslik: "Vahşi İçgüdü",
-    metin: "{hayvan} komşunun küçük hayvanına saldırdı; vahşi doğası geri geldi. Hemen müdahale etmelisin.",
-    secenekler: [
-      {
-        metin: "Araya gir, {hayvan}'ı durdur.",
-        baseBasariSansi: 50,
-        basariliSonuc: {
-          saglik: -6,
-          mesaj: "Elin zedelendi ama {hayvan}'ı çektin; kimse zarar görmedi.",
-          detay: "Vahşi hayvanla yaşamanın bedeli.",
-        },
-        basarisizSonuc: {
-          para: -15,
-          un: -8,
-          mesaj: "Olay büyüdü; kaybı ödedin, adın 'tehlikeli'ye çıktı.",
-          detay: "Bazıları seni hâlâ dışlıyor.",
-        },
-      },
-      {
-        metin: "Karışma, doğasına bırak.",
-        baseBasariSansi: 60,
-        basariliSonuc: {
-          ahlak: -5,
-          mesaj: "Karışmadın; {hayvan} kendi sakinleşti.",
-          detay: "Seyirci kalmak da seçimdir.",
-        },
-        basarisizSonuc: {
-          ahlak: -10,
-          un: -5,
-          mesaj: "Müdahale etmediğin için seni suçladılar.",
-          detay: "Sessizliğin de bedeli var.",
-        },
-      },
-    ],
-  },
-  {
-    id: "evcil_hayvan_kurt_sürü_ozlemi",
-    kategori: "sosyal",
-    gerekliEtiketler: [
-      "evcil_hayvan_tur:Kurt",
-    ],
-    ton: "agir",
-    agirlik: 0.5,
-    gorsel: "🌙",
-    sureYilMin: 1,
-    sureYilMax: 1,
-    baslik: "Uzaktan Bir Uluma",
-    metin: "Uzaktan bir kurt uluması geldi; {hayvan} uzun uzun karşılık verdi, gözlerinde yeni bir özlem var.",
-    secenekler: [
-      {
-        metin: "Bırak, doğasına uysun.",
-        baseBasariSansi: 55,
-        basariliSonuc: {
-          evcil_hayvan_kaybet: true,
-          ahlak: 8,
-          mutluluk: -6,
-          mesaj: "Sabah {hayvan} gitmişti; kapı açıktı, sürüsünü seçti.",
-          detay: "Sevdiğin için bıraktın.",
-        },
-        basarisizSonuc: {
-          mutluluk: -3,
-          mesaj: "Kapıyı açık bıraktın ama {hayvan} sabah yine yanındaydı.",
-          detay: "Belki artık yuvası burası.",
-        },
-      },
-      {
-        metin: "Yanına git, sakinleştir.",
-        baseBasariSansi: 70,
-        basariliSonuc: {
-          mutluluk: 3,
-          mesaj: "Okşadın; {hayvan} sakinleşip başını omzuna yasladı.",
-          detay: "Bazı bağlar vahşiliği yener.",
-        },
-        basarisizSonuc: {
-          mutluluk: -2,
-          mesaj: "{hayvan} bütün gece huzursuz dolaştı, uyuyamadın.",
-          detay: "Özlem bir gecede geçmez.",
-        },
-      },
-    ],
-  },
-  {
-    id: "vahsi_kurt_yavrusu_bulma",
-    kategori: "sosyal",
-    ton: "agir",
-    agirlik: 0.25,
-    gorsel: "🐺",
-    yasakliEtiketler: ["evcil_hayvan_var"],
-    sureYilMin: 1,
-    sureYilMax: 1,
-    baslik: "Ormanın Derinliklerinde",
-    metin: "Ormanda ölü bir dişi kurdun yanında nefes alan tek bir yavru buldun; gözlerinde yalnız hayatta kalma içgüdüsü.",
-    secenekler: [
-      {
-        metin: "Yavruyu al, sabırla evcilleştir.",
-        baseBasariSansi: 55,
-        basariliSonuc: {
-          mutluluk: 5,
-          saglik: -3,
-          evcil_hayvan_edin: {
-            tur: "Kurt",
-          },
-          mesaj: "Yavru önce hırladı, sonra etini kabul etti; artık yanında.",
-          detay: "Zor ama sadakati eşsiz.",
-        },
-        basarisizSonuc: {
-          saglik: -10,
-          mesaj: "Yavru seni ısırıp ormana kaçtı.",
-          detay: "Bazı ruhlar özgürlüğü seçer.",
-        },
-      },
-      {
-        metin: "Postu için satışa hazırla.",
-        baseBasariSansi: 90,
-        basariliSonuc: {
-          para: 18,
-          ahlak: -12,
-          mesaj: "Yavruyu kürkçüye sattın; para kazandın, vicdanın ağır.",
-          detay: "Bazı kazançlar hep acı kalır.",
-        },
-        basarisizSonuc: {
-          para: 5,
-          ahlak: -12,
-          mutluluk: -5,
-          mesaj: "Kürkçü fiyatı düşük tuttu; vicdanın sızladı, cebin dolmadı.",
-          detay: "Bedeli ödedin, karşılık alamadın.",
-        },
-      },
-      {
-        metin: "Doğaya bırak, karışma.",
-        baseBasariSansi: 95,
-        basariliSonuc: {
-          ahlak: 3,
-          mutluluk: -1,
-          mesaj: "Yavruyu bıraktın; kaderi kendi elinde.",
-          detay: "Karar vermemek de karardır.",
-        },
-        basarisizSonuc: {
-          mutluluk: -3,
-          mesaj: "Dönüp bakamadın; o bakışı geceleri hatırlıyorsun.",
-          detay: "Vicdan sessizce eziyet eder.",
-        },
-      },
-    ],
-  },
-  {
     id: "evcil_hayvan_kedi_hirsiz_hediyesi",
     kategori: "sosyal",
     ton: "hafif",
     gerekliEtiketler: [
       "evcil_hayvan_tur:Kedi",
     ],
+    hayvanTuru: "Kedi",
     agirlik: 0.7,
     gorsel: "💍",
     sureYilMin: 1,
@@ -1033,6 +635,7 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
     gerekliEtiketler: [
       "evcil_hayvan_tur:Kedi",
     ],
+    hayvanTuru: "Kedi",
     agirlik: 0.6,
     gorsel: "🌳",
     sureYilMin: 1,
@@ -1082,6 +685,7 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
     gerekliEtiketler: [
       "evcil_hayvan_tur:Köpek",
     ],
+    hayvanTuru: "Köpek",
     gorsel: "🩹",
     sureYilMin: 1,
     sureYilMax: 1,
@@ -1130,6 +734,7 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
     gerekliEtiketler: [
       "evcil_hayvan_tur:Köpek",
     ],
+    hayvanTuru: "Köpek",
     gorsel: "🐕‍🦺",
     sureYilMin: 1,
     sureYilMax: 1,
@@ -1177,6 +782,7 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
     gerekliEtiketler: [
       "evcil_hayvan_tur:Şahin",
     ],
+    hayvanTuru: "Şahin",
     gorsel: "🏆",
     sureYilMin: 1,
     sureYilMax: 1,
@@ -1223,6 +829,7 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
     gerekliEtiketler: [
       "evcil_hayvan_tur:Şahin",
     ],
+    hayvanTuru: "Şahin",
     gorsel: "✉️",
     sureYilMin: 1,
     sureYilMax: 1,
@@ -1260,148 +867,6 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
           mutluluk: -2,
           mesaj: "Sahibi çıkmadı; mektup çekmecede tozlandı.",
           detay: "Bazı iyi niyetler amacına varmaz.",
-        },
-      },
-    ],
-  },
-  {
-    id: "evcil_hayvan_papagan_taklit_dolandiriciligi",
-    kategori: "ticaret",
-    ton: "hafif",
-    agirlik: 0.6,
-    gerekliEtiketler: [
-      "evcil_hayvan_tur:Papağan",
-    ],
-    gorsel: "🦜",
-    sureYilMin: 1,
-    sureYilMax: 1,
-    baslik: "Taklitçi Gaga",
-    metin: "{hayvan}'ın rakibinin sesini birebir taklit ettiğini fark ettin. Pazarda dolap çevirebilir ya da eğlenebilirsin.",
-    secenekler: [
-      {
-        metin: "Rakip sesiyle müşterileri kandır.",
-        baseBasariSansi: 55,
-        maxAhlak: 50,
-        basariliSonuc: {
-          para: 22,
-          ahlak: -14,
-          mesaj: "Müşteriler 'rakibin' garip teklifine kanıp tezgâhına geldi!",
-          detay: "Kazandın ama bunun kumpas olduğunu biliyorsun.",
-        },
-        basarisizSonuc: {
-          un: -16,
-          ahlak: -14,
-          para: -8,
-          mesaj: "Rakibin oyunu anladı, meydanda rezil oldun.",
-          detay: "Papağana güvenmek pahalıya patladı.",
-        },
-      },
-      {
-        metin: "Sadece eğlence için gösteri yap.",
-        baseBasariSansi: 90,
-        basariliSonuc: {
-          mutluluk: 4,
-          dost_puani: 3,
-          mesaj: "Herkes kahkahayla izledi; {hayvan} günün yıldızı oldu.",
-          detay: "Bazen en iyi kazanç bir gülüştür.",
-        },
-        basarisizSonuc: {
-          mesaj: "Gösteri ilgi görmedi, {hayvan} somurttu.",
-          detay: "Her numara alkış almaz.",
-        },
-      },
-    ],
-  },
-  {
-    id: "evcil_hayvan_papagan_hastalik_secimi",
-    kategori: "saglik",
-    agirlik: 0.6,
-    gerekliEtiketler: [
-      "evcil_hayvan_tur:Papağan",
-    ],
-    gorsel: "💊",
-    sureYilMin: 1,
-    sureYilMax: 1,
-    baslik: "Susan Gaga",
-    metin: "{hayvan} günlerdir öksürükle sessiz. Pahalı egzotik hekim çare olabilir ya da doğaya bırakıp umut edersin.",
-    secenekler: [
-      {
-        metin: "Egzotik hekime götür.",
-        baseBasariSansi: 75,
-        maliyet: 18,
-        basariliSonuc: {
-          para: -18,
-          mutluluk: 5,
-          mesaj: "Damlalar işe yaradı; {hayvan} yine evi çınlatıyor.",
-          detay: "Sesi dönünce evin sessizliğini anladın.",
-        },
-        basarisizSonuc: {
-          para: -18,
-          mutluluk: -6,
-          mesaj: "Tedaviye rağmen {hayvan}'ın sesi eskisi gibi olmadı.",
-          detay: "Bazı şeyler parayla dönmez.",
-        },
-      },
-      {
-        metin: "Evde dinlendir, bekle.",
-        baseBasariSansi: 40,
-        basariliSonuc: {
-          mutluluk: 3,
-          mesaj: "Sabrın işe yaradı; {hayvan} eski neşesine döndü.",
-          detay: "Zaman en iyi ilaçtır.",
-        },
-        basarisizSonuc: {
-          evcil_hayvan_kaybet: true,
-          mutluluk: -16,
-          mesaj: "{hayvan} bir sabah tünekte hareketsiz bulundu.",
-          detay: "Evin sessizliği artık hoş değil.",
-        },
-      },
-    ],
-  },
-  {
-    id: "evcil_hayvan_kurt_ticaret_korkusu",
-    kategori: "ticaret",
-    agirlik: 0.5,
-    gerekliEtiketler: [
-      "evcil_hayvan_tur:Kurt",
-    ],
-    gorsel: "😨",
-    sureYilMin: 1,
-    sureYilMax: 1,
-    baslik: "Müşterileri Kaçıran Bakış",
-    metin: "{hayvan} dükkânın önünde bekçi gibi oturuyor; müşteriler sarı gözlerinden ürküp dönüyor. Kazancın düştü.",
-    secenekler: [
-      {
-        metin: "Arka bahçeye bağla.",
-        baseBasariSansi: 85,
-        basariliSonuc: {
-          para: 15,
-          mutluluk: -8,
-          mesaj: "Müşteriler döndü, kasa doldu. {hayvan} pencereden seni izliyor.",
-          detay: "İş kurtuldu ama vicdanında diken var.",
-        },
-        basarisizSonuc: {
-          para: 8,
-          mutluluk: -10,
-          mesaj: "Müşteri biraz döndü; {hayvan}'ın bakışı içini burktu.",
-          detay: "Kazanç bazen sessiz bedel ister.",
-        },
-      },
-      {
-        metin: "Yanından ayırma, kaybı göze al.",
-        baseBasariSansi: 80,
-        basariliSonuc: {
-          mutluluk: 5,
-          para: -12,
-          mesaj: "{hayvan} yanında kaldı; kazancın azaldı, için rahat.",
-          detay: "Bazı dostluklar kâra sığmaz.",
-        },
-        basarisizSonuc: {
-          para: -20,
-          mutluluk: -4,
-          mesaj: "Müşteri iyice azaldı; {hayvan}'ın sürtünmesi değdi.",
-          detay: "Cüzdanın hafifledi, kalbin değil.",
         },
       },
     ],

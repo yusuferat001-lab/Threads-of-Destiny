@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { CharacterState, Cag, Dil, Kategori, SonucEtkisi, YatkinlikKaynagi, KisilikEksenleri, UlkeKrizi, MulkTuru, SahipOlunanEsya, AileTalep, YonetimTalep, IkiDilMetin, UlkeGecmisiKaydi } from "../types";
+import { CharacterState, Cag, Dil, Kategori, SonucEtkisi, YatkinlikKaynagi, KisilikEksenleri, UlkeKrizi, MulkTuru, SahipOlunanEsya, AileTalep, YonetimTalep, IkiDilMetin, UlkeGecmisiKaydi, EvcilHayvan } from "../types";
 import { T, K, ikiDilT } from "../i18n";
 import { amaclariUret, amacSkorCarpani, amaclariOlumdeKontrol, amacTanimiGetir } from "../data/hayatAmaclari";
 import { AILELER, AileTanimi } from "../data/aileler";
@@ -35,6 +35,13 @@ import {
 } from "../data/yerelHaberler";
 import { tarihiSavasKontrol, gelecekSavasKontrol } from "../data/tarihiSavaslar";
 import { mulkTanimiGetir } from "../data/mulkler";
+import {
+  HAYVAN_ORTALAMA_OMUR,
+  HAYVAN_BONUSLARI,
+  hayvanBonusVar,
+  evcilHayvanSenkronla,
+  yeniEvcilHayvanUret,
+} from "../data/evcilHayvanlar";
 import { MagazaEsyasiTanimi, magazaEsyasiTanimiGetir } from "../data/magazaEsyalari";
 import {
   YATKINLIK_TIER_ETKILERI,
@@ -763,6 +770,9 @@ export function createCharacter(
     anne_adi: anneAdi,
     baba_adi: babaAdi,
     evcil_hayvan: null,
+    evcil_hayvanlar: [],
+    hayvan_karsilasma_sayisi: 0,
+    hayvan_karsilasma_turleri: [],
     unvanlar: [],
     hayat_amaci: null,
     // 15 yaşında meslek seçilince (mesleğiSec) doldurulur.
@@ -1127,6 +1137,31 @@ export function eskiKayitGocu(state: CharacterState): void {
   // bilinmiyor sayılır (retroaktif olarak kazandırılmaz — bir sonraki relik
   // tetiklenmesinde zaten normal yoldan set edilir).
   if (typeof state.relik_can_kurtardi !== "boolean") state.relik_can_kurtardi = false;
+  // Evcil hayvan sistemi yeniden tasarımı (2026-10): tek hayvan -> yaşayan hayvanlar listesi,
+  // ömür + pasif bonus + karşılaşma sayacı. Papağan/Kurt türleri kaldırıldı (Karga/Köpek'e taşınır).
+  if (!Array.isArray(state.evcil_hayvanlar)) {
+    state.evcil_hayvanlar = [];
+    const eski = state.evcil_hayvan as (Partial<EvcilHayvan> & { tur: string; isim: string }) | null;
+    if (eski) {
+      const tur = eski.tur === "Papağan" ? "Karga" : eski.tur === "Kurt" ? "Köpek" : eski.tur;
+      etiketSil(state, [`evcil_hayvan_tur:${eski.tur}`]);
+      const gecenYil = typeof eski.edinim_yili === "number" ? state.yil - eski.edinim_yili : 2;
+      const ortalama = HAYVAN_ORTALAMA_OMUR[tur] ?? 14;
+      const cift = HAYVAN_BONUSLARI[tur];
+      state.evcil_hayvanlar.push({
+        tur,
+        isim: eski.isim,
+        edinim_yili: typeof eski.edinim_yili === "number" ? eski.edinim_yili : state.yil - 2,
+        edinim_yasi: typeof eski.edinim_yasi === "number" ? eski.edinim_yasi : Math.max(15, state.yas - 2),
+        omur: Math.max(typeof eski.omur === "number" ? eski.omur : ortalama + Math.floor(Math.random() * 5) - 2, gecenYil + 3),
+        bonus_id: eski.bonus_id ?? (cift ? cift[Math.floor(Math.random() * cift.length)].id : ""),
+      });
+      etiketEkle(state, ["evcil_hayvan_var", `evcil_hayvan_tur:${tur}`]);
+    }
+  }
+  evcilHayvanSenkronla(state);
+  if (typeof state.hayvan_karsilasma_sayisi !== "number") state.hayvan_karsilasma_sayisi = state.evcil_hayvanlar.length;
+  if (!Array.isArray(state.hayvan_karsilasma_turleri)) state.hayvan_karsilasma_turleri = state.evcil_hayvanlar.map((h) => h.tur);
   // Kişilik kaynaklı gayrimenkul getiri bonusu (§41) sonradan eklendi; eski kayıtlarda etkisiz (0) sayılır.
   if (typeof state.gayrimenkul_getiri_bonusu !== "number") state.gayrimenkul_getiri_bonusu = 0;
   // Mesleğe yatkınlık kademeleri (2026-09 sonu) sonradan eklendi. Meslek zaten
@@ -1480,6 +1515,45 @@ const AILE_TALEP_COCUK_KALEMLERI = [
 ];
 
 /** Yıllık pasif kontrol: eş/çocuk ilişkisi soğuması, düşük ilişki moral cezası, bekleyen talebin süresi dolması ve yeni talep üretimi. Bir anlatı cümlesi döndürebilir (gameEngine zamanAnlatimi'ye ekler). */
+/** Yeni bir hayvanı yaşayan listeye ekler (etiketler + senkron). Tavan/tekil tür kontrolü çağıranın işi. */
+export function evcilHayvanEkle(state: CharacterState, tur: string): EvcilHayvan {
+  const hayvan = yeniEvcilHayvanUret(tur, state);
+  state.evcil_hayvanlar.push(hayvan);
+  etiketEkle(state, ["evcil_hayvan_var", `evcil_hayvan_tur:${tur}`]);
+  evcilHayvanSenkronla(state);
+  return hayvan;
+}
+
+/** Bir hayvanı yaşayan listeden çıkarır (ölüm/kayıp); etiketleri ve eski tek-alanı günceller. */
+export function evcilHayvanKaldir(state: CharacterState, hayvan: EvcilHayvan): void {
+  state.evcil_hayvanlar = state.evcil_hayvanlar.filter((h) => h !== hayvan);
+  etiketSil(state, [`evcil_hayvan_tur:${hayvan.tur}`]);
+  if (state.evcil_hayvanlar.length === 0) etiketSil(state, ["evcil_hayvan_var"]);
+  evcilHayvanSenkronla(state);
+}
+
+/**
+ * Yıllık evcil hayvan işleri: pasif şöhret bonusları (Şahin), sonra ömrünü dolduran
+ * hayvanların doğal ölümü (bonusu biter). Ölüm cümlesi döner (zamanAnlatimi'ne eklenir).
+ */
+export function evcilHayvanYillikUygula(state: CharacterState, yasArtisi: number): string | null {
+  if (state.evcil_hayvanlar.length === 0) return null;
+  if (hayvanBonusVar(state, "sahin_sohret")) {
+    state.un += 0.5 * yasArtisi;
+    state.yonetim_iliski = Math.min(100, state.yonetim_iliski + 0.4 * yasArtisi);
+  }
+  const olenler = state.evcil_hayvanlar.filter((h) => state.yil >= h.edinim_yili + h.omur);
+  if (olenler.length === 0) return null;
+  const cumleler: string[] = [];
+  for (const hayvan of olenler) {
+    evcilHayvanKaldir(state, hayvan);
+    state.mutluluk -= 6;
+    hayatOlayiEkle(state, "💔", T(state.dil, "Evcil hayvanı {0} ömrünü doldurup öldü", [hayvan.isim]));
+    cumleler.push(T(state.dil, "💔 {0}, ömrünü doldurup sessizce göçtü; yerini kimse dolduramaz.", [hayvan.isim]));
+  }
+  return cumleler.join(" ");
+}
+
 export function aileYillikUygula(state: CharacterState, yasArtisi: number): string | null {
   let not: string | null = null;
 
@@ -1900,6 +1974,11 @@ export interface EkonomiSonucu {
 
 const EVCIL_HAYVAN_GIDERI_YILLIK = 1;
 
+/** Yaşayan hayvan sayısı (eski tek-alan `evcil_hayvan` ile kurulmuş durumlar için de güvenli). */
+function evcilHayvanSayisi(state: CharacterState): number {
+  return Math.max((state.evcil_hayvanlar ?? []).length, state.evcil_hayvan ? 1 : 0);
+}
+
 /** Karakterin yerleşimine göre yaşam giderine uygulanan çarpanı döner (en fazla ±%2). */
 function yasamMaliyetCarpaniGetir(state: CharacterState): number {
   const yerlesim = yerlesimGetir(yerlesimIdByAd(state.yerlesim));
@@ -1930,7 +2009,7 @@ export function giderKalemleriHesapla(state: CharacterState): GiderKalemleri {
     ),
     konut: paraYuvarla((konutGetir(state.konut_id)?.kiraYillik ?? 0) * vebaKiraCarpani * giderEnflasyon),
     ekip: state.ekip.reduce((toplam, uye) => toplam + uye.maas, 0),
-    evcilHayvan: state.evcil_hayvan ? paraYuvarla(EVCIL_HAYVAN_GIDERI_YILLIK * enflasyon) : 0,
+    evcilHayvan: evcilHayvanSayisi(state) > 0 ? paraYuvarla(EVCIL_HAYVAN_GIDERI_YILLIK * enflasyon * evcilHayvanSayisi(state)) : 0,
     savasVergisi: state.buyuk_savas ? paraYuvarla(hesaplaMaasYillik(state) * state.buyuk_savas.vergiOrani) : 0,
   };
 }
@@ -2538,7 +2617,7 @@ export function zenginlikSizintiKontrolEt(state: CharacterState, yasArtisi: numb
     if (netServet < ZENGINLIK_SIZINTI_SERVET_ESIGI || state.para < ZENGINLIK_SIZINTI_NAKIT_ESIGI) continue;
     const taban = state.son_zenginlik_sizinti_yili ?? state.baslangic_yili;
     if (state.yil - taban < ZENGINLIK_SIZINTI_COOLDOWN_YIL) continue;
-    if (Math.random() >= ZENGINLIK_SIZINTI_YILLIK_IHTIMAL) continue;
+    if (Math.random() >= ZENGINLIK_SIZINTI_YILLIK_IHTIMAL * (hayvanBonusVar(state, "kopek_savunma") ? 0.75 : 1)) continue;
     const oran = ZENGINLIK_SIZINTI_ORAN_MIN + Math.random() * ZENGINLIK_SIZINTI_ORAN_ARALIK;
     const miktar = Math.max(3, paraYuvarla(state.para * oran));
     state.para -= miktar;
@@ -2583,7 +2662,7 @@ export function rakipSoygunKontrolEt(state: CharacterState, yasArtisi: number): 
     if (state.para < RAKIP_SOYGUN_NAKIT_ESIGI) continue;
     const taban = state.son_rakip_soygun_yili ?? state.baslangic_yili;
     if (state.yil - taban < RAKIP_SOYGUN_COOLDOWN_YIL) continue;
-    if (Math.random() >= RAKIP_SOYGUN_YILLIK_IHTIMAL) continue;
+    if (Math.random() >= RAKIP_SOYGUN_YILLIK_IHTIMAL * (hayvanBonusVar(state, "kopek_savunma") ? 0.75 : 1)) continue;
     const oran = RAKIP_SOYGUN_ORAN_MIN + Math.random() * RAKIP_SOYGUN_ORAN_ARALIK;
     const miktar = Math.max(10, paraYuvarla(state.para * oran));
     state.para -= miktar;
@@ -2638,7 +2717,8 @@ export function rakipGucKir(
   const rakip = state.rakipler.find((r) => r.ad === rakipAd && !r.yenildi);
   if (!rakip) return null;
   const oncekiGuc = rakip.guc;
-  rakip.guc = Math.max(0, Math.min(100, rakip.guc - taban));
+  // Şahin (saldırı) pasif bonusu rakibe baskı gücünü artırır.
+  rakip.guc = Math.max(0, Math.min(100, rakip.guc - taban * (hayvanBonusVar(state, "sahin_saldiri") ? 1.25 : 1)));
   const kirilan = oncekiGuc - rakip.guc;
   rakip.husumet = Math.min(100, rakip.husumet + 10 + Math.floor(Math.random() * 11)); // +10..20
 
@@ -2695,7 +2775,9 @@ export function rakipMisillemesiDene(state: CharacterState, yasArtisi: number): 
     const adaylar = state.rakipler.filter((r) => !r.yenildi && r.husumet >= 55);
     if (adaylar.length === 0) return null;
     const rakip = adaylar[Math.floor(Math.random() * adaylar.length)];
-    if (Math.random() >= rakip.husumet / 320) continue;
+    // Köpek (savunma) ve Karga (istihbarat, komployu önceden sezme) pasif bonusları misilleme ihtimalini düşürür.
+    const misillemeCarpani = (hayvanBonusVar(state, "kopek_savunma") ? 0.75 : 1) * (hayvanBonusVar(state, "karga_istihbarat") ? 0.7 : 1);
+    if (Math.random() >= (rakip.husumet / 320) * misillemeCarpani) continue;
     const tur = Math.floor(Math.random() * 3);
     let mesaj: string;
     if (tur === 0) {
@@ -3013,7 +3095,8 @@ export function vebaYillikKontrol(state: CharacterState, yasArtisi: number): Veb
   const sonuc: VebaYillikSonuc = { hastalandi: false, mesajlar: [] };
   if (yasArtisi <= 0 || !state.veba?.aktif) return sonuc;
   const k = Math.max(0, Math.min(2, state.veba.korumaSeviyesi ?? 0));
-  const kapmaSansi = VEBA_KAPMA_KADEME[k];
+  // Köpek (sağlık) pasif bonusu salgına yakalanma şansını düşürür.
+  const kapmaSansi = VEBA_KAPMA_KADEME[k] * (hayvanBonusVar(state, "kopek_saglik") ? 0.8 : 1);
   const esSansi = VEBA_ES_KAYIP_KADEME[k];
   const cocukSansi = VEBA_COCUK_KAYIP_KADEME[k];
   const zatenHasta = state.etiketler.includes("veba_hastasi");
@@ -3082,7 +3165,7 @@ export function vebaHastaligiKontrol(state: CharacterState): VebaHastaligiSonuc 
     sonuc.mesajlar.push(T(state.dil, "Veba direncini kırdı; ateşler içinde son nefesini verdin."));
     return sonuc;
   }
-  state.veba_olum_riski = Math.max(0, risk - VEBA_HASTALIK_DOGAL_DUSUS);
+  state.veba_olum_riski = Math.max(0, risk - VEBA_HASTALIK_DOGAL_DUSUS - (hayvanBonusVar(state, "kopek_saglik") ? 3 : 0));
   if (state.veba_olum_riski <= VEBA_HASTALIK_IYILESME_ESIGI) {
     state.veba_olum_riski = 0;
     etiketSil(state, ["veba_hastasi"]);
@@ -3327,7 +3410,7 @@ export function mulkGetiriOraniHesapla(tur: MulkTuru, ulke: CharacterState["ulke
  * eklenir, küçük büyüklüğü yüzünden ayrıca kırpılmaz.
  */
 export function mulkGetiriOraniKisisel(state: CharacterState, tur: MulkTuru): number {
-  return mulkGetiriOraniHesapla(tur, state.ulke) + (state.gayrimenkul_getiri_bonusu ?? 0);
+  return mulkGetiriOraniHesapla(tur, state.ulke) + (state.gayrimenkul_getiri_bonusu ?? 0) + (hayvanBonusVar(state, "at_ticaret") ? 0.01 : 0);
 }
 
 /**

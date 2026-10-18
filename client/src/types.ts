@@ -237,6 +237,9 @@ export interface CharacterState {
   baba_adi: string;
 
   evcil_hayvan: EvcilHayvan | null;
+  evcil_hayvanlar: EvcilHayvan[];
+  hayvan_karsilasma_sayisi: number;
+  hayvan_karsilasma_turleri: string[];
   unvanlar: string[];
   hayat_amaci: HayatAmaci | null;
   hayat_amaclari: AmacIlerleme[];
@@ -334,6 +337,12 @@ export interface HayatOlayi {
 export interface EvcilHayvan {
   tur: string;
   isim: string;
+  edinim_yili: number;
+  edinim_yasi: number;
+  /** Hayvanın ömrü (yıl); edinim_yili + omur'da doğal ölür. */
+  omur: number;
+  /** Kalıcı pasif bonus kimliği (hayvanBonus.ts). */
+  bonus_id: string;
 }
 
 export interface Cocuk {

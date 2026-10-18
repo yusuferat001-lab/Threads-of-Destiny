@@ -139,9 +139,9 @@ export function gostergeGorunumu(stat: 'saglik' | 'mutluluk' | 'ahlak' | 'sohret
 export const HAYVAN_SIMGESI: Record<string, string> = {
   Kedi: '🐈',
   Köpek: '🐕',
-  Kurt: '🐺',
   Şahin: '🦅',
-  Papağan: '🦜',
+  Karga: '🐦‍⬛',
+  At: '🐎',
 };
 
 /** Mesleklerin hangi yatkınlık kategorisine karşılık geldiği. */

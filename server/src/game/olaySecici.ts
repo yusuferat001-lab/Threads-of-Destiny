@@ -9,6 +9,7 @@ import { olayCevirisiUygula } from "../i18n/olaylar";
 import { HAVUZ_KILIT_ETIKETLERI as HAVUZ_KILIT_LISTESI, hapisErkenCikisMumkunMu } from "./stateManager";
 import { yatkinlikZarBonusOrani } from "../data/meslekYatkinlik";
 import { olayResimAnahtari } from "./olayResmi";
+import { HAYVAN_KARSILASMA_TAVANI, HAYVAN_AYNI_ANDA_TAVANI, hayvanBonusVar } from "../data/evcilHayvanlar";
 
 /**
  * Normal olay havuzunu tamamen kapatıp kendi özel havuzuna geçiren etiketler
@@ -55,6 +56,14 @@ export function temelUygunMu(olay: OlayTanimi, state: CharacterState): boolean {
   if (olay.gerekliEtiketler && !olay.gerekliEtiketler.every((e) => state.etiketler.includes(e))) return false;
   if (olay.yasakliEtiketler && olay.yasakliEtiketler.some((e) => state.etiketler.includes(e))) return false;
   if (olay.gerekliKisilik && !state.kisilik.includes(olay.gerekliKisilik)) return false;
+  // Evcil hayvan karşılaşması: hayatta en fazla 2, aynı tür bir daha yok, 2 hayvan yaşıyorsa yeni edinilemez.
+  if (olay.hayvanKarsilasmaTuru) {
+    if ((state.hayvan_karsilasma_sayisi ?? 0) >= HAYVAN_KARSILASMA_TAVANI) return false;
+    if ((state.hayvan_karsilasma_turleri ?? []).includes(olay.hayvanKarsilasmaTuru)) return false;
+    if ((state.evcil_hayvanlar ?? []).length >= HAYVAN_AYNI_ANDA_TAVANI) return false;
+  }
+  // Evcil hayvan devam olayı: o türden yaşayan bir hayvan gerekir.
+  if (olay.hayvanTuru && !(state.evcil_hayvanlar ?? []).some((h) => h.tur === olay.hayvanTuru)) return false;
   if (olay.gerekliDin && olay.gerekliDin !== state.din_kultur) return false;
   if (olay.minRutbeSeviye !== undefined && state.rutbe_seviye < olay.minRutbeSeviye) return false;
   // Mesleğe yatkınlık kademesi gating (2026-09 sonu): meslek seçilmemiş (seviye null)
@@ -132,7 +141,14 @@ function rastgeleEkipAdi(state: CharacterState): string {
   return state.ekip[Math.floor(Math.random() * state.ekip.length)].isim;
 }
 
-export function doldur(metin: string, state: CharacterState): string {
+/** `{hayvan}` için ad: olayın hayvan türü verilmişse o türdeki hayvan, yoksa ilk yaşayan hayvan. */
+function hayvanAdiBul(state: CharacterState, hayvanTuru?: string): string | undefined {
+  const hayvanlar = state.evcil_hayvanlar ?? [];
+  const hedef = hayvanTuru ? hayvanlar.find((h) => h.tur === hayvanTuru) : undefined;
+  return (hedef ?? hayvanlar[0] ?? state.evcil_hayvan)?.isim;
+}
+
+export function doldur(metin: string, state: CharacterState, hayvanTuru?: string): string {
   const dil = state.dil;
   // Türkçe metinlerde "{es}'in", "{dost}'a", "{hayvan}'ı" gibi kesmeli ekler, yer
   // tutucuya gelen gerçek isme göre uyumlanır ("Theodora'nın", "Maria'ya"...);
@@ -157,7 +173,7 @@ export function doldur(metin: string, state: CharacterState): string {
         case "amir":
           return state.amir_adi ? `${K(dil, state.amir_rutbe)} ${state.amir_adi}` : undefined;
         case "hayvan":
-          return state.evcil_hayvan?.isim ?? undefined;
+          return hayvanAdiBul(state, hayvanTuru);
         case "cocuk":
           return state.cocuklar.some((c) => c.yasiyor) ? cocukAdi : undefined;
         case "ekip":
@@ -181,7 +197,7 @@ export function doldur(metin: string, state: CharacterState): string {
     .replace(/\{anne\}/g, state.anne_adi)
     .replace(/\{baba\}/g, state.baba_adi)
     .replace(/\{amir\}/g, state.amir_adi ? `${K(dil, state.amir_rutbe)} ${state.amir_adi}` : T(dil, "amirin"))
-    .replace(/\{hayvan\}/g, state.evcil_hayvan?.isim ?? T(dil, "hayvanın"))
+    .replace(/\{hayvan\}/g, hayvanAdiBul(state, hayvanTuru) ?? T(dil, "hayvanın"))
     .replace(/\{cocuk\}/g, () => cocukAdi || rastgeleYasayanCocukAdi(state))
     .replace(/\{ekip\}/g, () => ekipAdi || rastgeleEkipAdi(state))
     .replace(
@@ -427,7 +443,10 @@ export function olaySec(
       // (yatkınlık dökümü yalnız kaynak başına küçük deltalar gösterir) şansı bu
       // kadar oynatması "görünmez ama hissedilen" bir haksızlıktı. Artık yalnızca
       // küçük, kademeli bir ORAN uygular (bkz. data/meslekYatkinlik.ts).
-      const yatkinlikOrani = yatkinlikZarBonusOrani(state, olay.kategori);
+      // Kedi (şans) pasif bonusu: riskli (kesin olmayan) şıklarda küçük bir başarı şansı ekler.
+      const yatkinlikOrani =
+        yatkinlikZarBonusOrani(state, olay.kategori) +
+        (hayvanBonusVar(state, "kedi_sans") && secenek.baseBasariSansi < 100 ? 0.05 : 0);
       // Ekip üyesinin gizli kalitesi başarı şansını belirliyorsa, karakterin kendi
       // yatkınlığı devre dışı kalır; şans doğrudan üyenin gercekKalite'sine eşitlenir.
       const zarBelirleyenUye = secenek.ekipKalitesiZarBelirler
@@ -437,7 +456,7 @@ export function olaySec(
         ? zarBelirleyenUye.gercekKalite
         : clampSans(Math.round(secenek.baseBasariSansi * (1 + yatkinlikOrani)));
       return {
-        metin: doldur(secenek.metin, state),
+        metin: doldur(secenek.metin, state, olay.hayvanTuru),
         basari_sansi: basariSansi,
         belirsiz_aralik: netSansGoster ? { min: basariSansi, max: basariSansi } : belirsizAralikHesapla(state, basariSansi),
         basarili_sonuc: secenek.basariliSonuc,
@@ -461,7 +480,7 @@ export function olaySec(
     olay,
     senaryo: {
       olay_basligi: olay.baslik,
-      olay_metni: doldur(olay.metin, state),
+      olay_metni: doldur(olay.metin, state, olay.hayvanTuru),
       kategori: olay.kategori,
       gorsel: olay.gorsel ?? KATEGORI_GORSEL[olay.kategori] ?? "📜",
       resim: olayResimAnahtari(olay),

@@ -372,8 +372,8 @@ const KATALOG_EN: Record<string, string> = {
   "Kedi": "Cat",
   "Köpek": "Dog",
   "Şahin": "Falcon",
-  "Papağan": "Parrot",
-  "Kurt": "Wolf",
+  "Karga": "Crow",
+  "At": "Horse",
 
   // ---------------------------------------------------------------------------
   // Hizipler

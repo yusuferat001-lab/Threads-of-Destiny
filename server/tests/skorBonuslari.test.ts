@@ -31,6 +31,7 @@ async function isoleKomikOlumKarakteri(yas: number) {
   state.gecmis_olaylar.push("iliski_evlilik_teklifi", "iliski_ikinci_teklif"); // evlilik teklifi garantisini atla
   etiketEkle(state, ["yolculuk_tamamlandi"]); // büyük yolculuk garantisini atla
   state.gecmis_olaylar.push("gizem_ejderha_tilsimi"); // mistik garantiyi atla
+  state.hayvan_karsilasma_sayisi = 2; // evcil hayvan karşılaşma garantisini atla
   // Komik ölüm havuzu HARİÇ diğer tüm standalone havuzları tamamen "görülmüş"
   // yap ki standaloneHavuzGarantisiSec'in tek adayı komik ölüm havuzu kalsın.
   state.gecmis_olaylar.push(...OLAY_GENEL.map((o) => o.id));

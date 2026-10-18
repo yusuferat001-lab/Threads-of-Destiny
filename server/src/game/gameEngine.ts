@@ -89,6 +89,9 @@ import {
   MESLEK_KATEGORI,
   eskiKayitGocu,
   aileYillikUygula,
+  evcilHayvanEkle,
+  evcilHayvanKaldir,
+  evcilHayvanYillikUygula,
   ekipSadakatYillikUygula,
   yonetimYillikUygula,
   havuzKilidiVar,
@@ -143,12 +146,8 @@ import {
 } from "../data/sosyallesmeAksiyonlari";
 import { rastgeleBirIsimSec, rastgeleOyuncuIsmiSec, rastgeleCinsiyetliIsimSec } from "../data/npcIsimleri";
 import { rastgeleKisilikCifti, kisilikGetir } from "../data/kisilikler";
-import {
-  rastgeleHayvanTuruSec,
-  rastgeleHayvanIsmiSec,
-  EVCIL_HAYVAN_TAKIP_OLAY_IDLERI,
-  EVCIL_HAYVAN_GENEL_TAKIP_OLAY_IDLERI,
-} from "../data/evcilHayvanlar";
+import { HAYVAN_KARSILASMA_TAVANI, HAYVAN_AYNI_ANDA_TAVANI, hayvanBonusVar } from "../data/evcilHayvanlar";
+import { hayvanOlayEtkisiUygula, hayvanKariyerCarpani, hayvanKotuIsPuani, hayvanAileBeklemeIndirimi } from "./hayvanEtkileri";
 import { tarihiSavasKontrol } from "../data/tarihiSavaslar";
 import { GIZEMLI_ESYA_TAKIP_HAVUZU } from "../data/gizemliEsyalar";
 import { yerlesimGetir } from "../data/yerlesimler";
@@ -532,15 +531,56 @@ const STANDALONE_HAVUZ_GARANTILERI: StandaloneHavuzTanimi[] = [
 ];
 
 /**
- * Evcil hayvan takip garantisinin kümülatif hedefleri (havuz: 6 genel +
- * türe özel ~2 = ~8 aday). 20-25 yaşında sahiplenildiği için ilk kontrol
- * noktası biraz sonraya bırakılır.
+ * Evcil hayvan KARŞILAŞMA garantisi (2026-10 yeniden tasarım): rastgele karşılaşmalar
+ * hiç denk gelmezse sistem bu yaşlarda zorlar — 29'a kadar 1., 38'e kadar 2. karşılaşma.
+ * Bir hayatta en fazla `HAYVAN_KARSILASMA_TAVANI` (2) karşılaşma olur.
  */
-const EVCIL_HAYVAN_TAKIP_KONTROL_NOKTALARI = [
-  { yas: 30, hedef: 1 },
-  { yas: 42, hedef: 2 },
-  { yas: 55, hedef: 3 },
+const HAYVAN_KARSILASMA_KONTROL_NOKTALARI = [
+  { yas: 29, hedef: 1 },
+  { yas: 38, hedef: 2 },
 ];
+
+/**
+ * Hayvan başına DEVAM (takip) garantisi: hayvanın sahipliğinin 5/9/13/17. yılında o
+ * türe özel havuzdan (`OlayTanimi.hayvanTuru`) kümülatif olarak 1/2/3/4 olay görülmüş
+ * olmalı. Havuz ayrıca normal ağırlıklı seçimle de rastgele çıkar.
+ */
+const HAYVAN_DEVAM_KONTROL_NOKTALARI = [
+  { yas: 5, hedef: 1 },
+  { yas: 9, hedef: 2 },
+  { yas: 13, hedef: 3 },
+  { yas: 17, hedef: 4 },
+];
+
+/** Aday havuzunu o anki state'e göre filtreler (temelUygunMu), görülmemiş olanlardan rastgele döner. */
+function hayvanKarsilasmaGarantisiSec(state: CharacterState): string | null {
+  const hedef = HAYVAN_KARSILASMA_KONTROL_NOKTALARI.reduce(
+    (maks, nokta) => (state.yas >= nokta.yas ? Math.max(maks, nokta.hedef) : maks),
+    0
+  );
+  if (hedef === 0 || state.hayvan_karsilasma_sayisi >= Math.min(hedef, HAYVAN_KARSILASMA_TAVANI)) return null;
+  const adaylar = OLAY_BANKASI.filter(
+    (o) => o.hayvanKarsilasmaTuru && !state.gecmis_olaylar.includes(o.id) && temelUygunMu(o, state)
+  );
+  return adaylar.length > 0 ? adaylar[Math.floor(Math.random() * adaylar.length)].id : null;
+}
+
+/** Yaşayan her hayvan için sahiplik süresine göre kümülatif hedefin gerisindeyse o türün havuzundan zorlanacak olay. */
+function hayvanDevamGarantisiSec(state: CharacterState): string | null {
+  for (const hayvan of state.evcil_hayvanlar) {
+    const sahiplikYili = state.yas - hayvan.edinim_yasi;
+    const havuz = OLAY_BANKASI.filter((o) => o.hayvanTuru === hayvan.tur);
+    const secilen = kumulatifTakipSec(
+      HAYVAN_DEVAM_KONTROL_NOKTALARI.map((n) => ({ yas: n.yas, hedef: n.hedef })),
+      sahiplikYili,
+      havuz.map((o) => o.id),
+      havuz.filter((o) => temelUygunMu(o, state)).map((o) => o.id),
+      state.gecmis_olaylar
+    );
+    if (secilen) return secilen;
+  }
+  return null;
+}
 
 // Gizemli eşya takip garantisi: her eşyanın kendi havuzu sadece 2 olay.
 // Havuz sadece 2 olay; ikisini de garanti etmek gizemi tamamen ortadan
@@ -1229,22 +1269,10 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
       zorlananId = baslangicId;
     }
   }
-  // 20-25 yaş arası, henüz evcil hayvanı olmayan bir karaktere hayatında bir kez
-  // (rastgele bir olayı beklemeden) doğrudan sahiplenme teklifi sunulur.
-  if (
-    !zorlananId &&
-    !milestoneKilitli &&
-    !oturum.state.evcil_hayvan &&
-    oturum.state.yas >= 20 &&
-    oturum.state.yas < 25
-  ) {
-    const teklifId =
-      oturum.state.cag === "Sanayi Devrimi"
-        ? "evcilhayvan_sahiplenme_teklifi_sanayi"
-        : "evcilhayvan_sahiplenme_teklifi_ortacag";
-    if (!oturum.state.gecmis_olaylar.includes(teklifId)) {
-      zorlananId = teklifId;
-    }
+  // Evcil hayvan karşılaşma garantisi: rastgele denk gelmediyse 29 ve 38 yaşında zorlanır.
+  if (!zorlananId && !milestoneKilitli) {
+    const karsilasma = hayvanKarsilasmaGarantisiSec(oturum.state);
+    if (karsilasma) zorlananId = karsilasma;
   }
   // Ün ve ahlak belli bir eşiğin üstündeyse kral karakteri saraya çağırır;
   // bu, rüşvet/saygınlık denemesinin (saray_girme_denemesi) yanında saraya
@@ -1288,18 +1316,10 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
   // (bkz. yolculuk.test.ts). "Saray daveti" (un/ahlak eşiği, tek seferlik
   // narrow koşul) buna dahil değil — yolculuktan önceki yerinde kaldı.
   //
-  // Evcil hayvan takip garantisi (kümülatif): havuz 6 genel + türe özel ~2
-  // olaydan oluşur (~8 aday); yalnız genel havuzdan seçilir (türe özel
-  // olaylar normal ağırlıklı seçimle çıkar), ama sayım her ikisini kapsar.
-  if (!zorlananId && !milestoneKilitli && oturum.state.evcil_hayvan) {
-    const secilen = kumulatifTakipSec(
-      EVCIL_HAYVAN_TAKIP_KONTROL_NOKTALARI,
-      oturum.state.yas,
-      EVCIL_HAYVAN_TAKIP_OLAY_IDLERI,
-      EVCIL_HAYVAN_GENEL_TAKIP_OLAY_IDLERI,
-      oturum.state.gecmis_olaylar
-    );
-    if (secilen) zorlananId = secilen;
+  // Evcil hayvan devam garantisi (hayvan başına, kümülatif): o türe özel havuzdan.
+  if (!zorlananId && !milestoneKilitli && oturum.state.evcil_hayvanlar.length > 0) {
+    const devam = hayvanDevamGarantisiSec(oturum.state);
+    if (devam) zorlananId = devam;
   }
   // Gizemli eşya takip garantisi (kümülatif): her eşyanın kendi havuzu
   // sadece 2 olay taşır — hedef 1 (en az birini garanti et, ikincisi şansa
@@ -1617,8 +1637,8 @@ function olaySonucMesajiIkiDil(
   const trHam = mesajBul(ham);
   const enHam = ham ? mesajBul(olayCevirisiUygula(ham, "en")) : undefined;
   return {
-    tr: state.dil === "en" ? (trHam ? doldur(trHam, { ...state, dil: "tr" }) : gosterilen) : gosterilen,
-    en: state.dil === "en" ? gosterilen : enHam ? doldur(enHam, { ...state, dil: "en" }) : gosterilen,
+    tr: state.dil === "en" ? (trHam ? doldur(trHam, { ...state, dil: "tr" }, ham?.hayvanTuru) : gosterilen) : gosterilen,
+    en: state.dil === "en" ? gosterilen : enHam ? doldur(enHam, { ...state, dil: "en" }, ham?.hayvanTuru) : gosterilen,
   };
 }
 
@@ -1635,8 +1655,8 @@ export async function secimUygula(id: string, secenekIndex: number): Promise<Sec
     const { onTepki, mevcutOlay, eskiRutbeSeviye } = oturum.bekleyenTepki;
     oturum.bekleyenTepki = null;
     const etki = jitterUygula(secenekIndex === 0 ? onTepki.geriCekilSonucu : onTepki.devamSonucu);
-    etki.mesaj = doldur(etki.mesaj, state);
-    if (etki.detay) etki.detay = doldur(etki.detay, state);
+    etki.mesaj = doldur(etki.mesaj, state, mevcutOlay.hayvanTuru);
+    if (etki.detay) etki.detay = doldur(etki.detay, state, mevcutOlay.hayvanTuru);
     const tepkiHamIndex = mevcutOlay.secenekler.findIndex((s) => s.onTepki === onTepki);
     const tepkiCeviri = olaySonucMesajiIkiDil(state, mevcutOlay.id, tepkiHamIndex, secenekIndex === 0 ? "geriCekil" : "devam", etki.mesaj);
     // Burada zar yok; "basarili" bayrağı sonuç ekranındaki görsel/ses efektinin doğru
@@ -1693,8 +1713,8 @@ export async function secimUygula(id: string, secenekIndex: number): Promise<Sec
   const etki = jitterUygula(basarili ? secenek.basarili_sonuc : secenek.basarisiz_sonuc);
   // {dost}/{rakip}/{es}/{cocuk}/{ekip} yer tutucuları sonuç mesajlarında da kullanılabilsin diye
   // (olay/seçenek metninde olduğu gibi) burada da dolduruluyor.
-  etki.mesaj = doldur(etki.mesaj, state);
-  if (etki.detay) etki.detay = doldur(etki.detay, state);
+  etki.mesaj = doldur(etki.mesaj, state, oturum.mevcutOlay?.hayvanTuru);
+  if (etki.detay) etki.detay = doldur(etki.detay, state, oturum.mevcutOlay?.hayvanTuru);
   // Faz 5 skor bonusu: komikOlumler.ts'in riskli ("aptalca olanı yap") şıkkı seçildi mi?
   // (havuz + başarısız dalın ölümcül olma potansiyeli ile tanınır, hangi dal çıktığından bağımsız).
   const komikOlumRiskliSecenekMi =
@@ -1804,6 +1824,8 @@ async function sonucuUygulaVeIlerlet(
   if (etki.para && etki.para > 0) {
     etki.para = Math.round(etki.para * meslekMetrikCarpani(state, mevcutOlay.kategori));
   }
+  // Evcil hayvan pasif bonusları (mutluluk/sağlık kaybı hafifletme, ticaret primi).
+  hayvanOlayEtkisiUygula(state, etki, mevcutOlay.kategori);
   // Yolculuk olaylarında kazanılan para %20 daha değerli (eski kalıcı "yolculuğu
   // bitirdin" maaş priminin yerini alır — meslek çarpanının üstüne biner).
   if (etki.para && etki.para > 0 && mevcutOlay.yolculukOlayi) {
@@ -1866,7 +1888,7 @@ async function sonucuUygulaVeIlerlet(
   // Mesleğe yatkınlık kademesinin "tecrübe hızı" bonusu/malusu (±%7..±%15) bu
   // kazanca da biner (bkz. data/meslekYatkinlik.ts).
   if (basarili && MESLEK_KATEGORI[state.meslek] === mevcutOlay.kategori) {
-    state.kariyer_puani += KARIYER_PUANI_KATEGORI_BASARI * (1 + (state.meslek_tecrube_hizi ?? 0));
+    state.kariyer_puani += KARIYER_PUANI_KATEGORI_BASARI * (1 + (state.meslek_tecrube_hizi ?? 0)) * hayvanKariyerCarpani(state);
     // Din Adamı, din kategorisinde başarılı olduğu her olayda biraz nüfuz kazanır
     // (pasif un +0.4/yıl sürüklenmesinin eşi) — nüfuz → maaş metrik çarpanı.
     if (state.meslek === "Din Adamı") state.nufuz += 1.5;
@@ -2022,24 +2044,29 @@ async function sonucuUygulaVeIlerlet(
     state.hizip = etki.hizip_ata;
     etiketEkle(state, [`hizip:${etki.hizip_ata}`, "hizip_secildi"]);
   }
-  if (etki.evcil_hayvan_edin && !state.evcil_hayvan) {
-    const tur = etki.evcil_hayvan_edin.tur ?? rastgeleHayvanTuruSec(state.cag);
-    const isim = rastgeleHayvanIsmiSec();
-    state.evcil_hayvan = { tur, isim };
-    etiketEkle(state, ["evcil_hayvan_var", `evcil_hayvan_tur:${tur}`]);
-    hayatOlayiEkle(state, "🐾", T(state.dil, "{0} adlı bir {1} edindi", [
-      isim,
-      K(state.dil, tur).toLocaleLowerCase(state.dil === "en" ? "en" : "tr"),
-    ]));
+  if (etki.evcil_hayvan_edin?.tur) {
+    const tur = etki.evcil_hayvan_edin.tur;
+    // Aynı anda en fazla 2 hayvan; aynı tür birden fazla yaşayamaz.
+    if (state.evcil_hayvanlar.length < HAYVAN_AYNI_ANDA_TAVANI && !state.evcil_hayvanlar.some((h) => h.tur === tur)) {
+      const hayvan = evcilHayvanEkle(state, tur);
+      hayatOlayiEkle(state, "🐾", T(state.dil, "{0} adlı bir {1} edindi", [
+        hayvan.isim,
+        K(state.dil, tur).toLocaleLowerCase(state.dil === "en" ? "en" : "tr"),
+      ]));
+    }
   }
-  if (etki.evcil_hayvan_kaybet && state.evcil_hayvan) {
-    const kaybedilen = state.evcil_hayvan;
-    state.evcil_hayvan = null;
-    etiketSil(state, ["evcil_hayvan_var", `evcil_hayvan_tur:${kaybedilen.tur}`]);
-    hayatOlayiEkle(state, "💔", T(state.dil, "{0} adlı {1}sini kaybetti", [
-      kaybedilen.isim,
-      K(state.dil, kaybedilen.tur).toLocaleLowerCase(state.dil === "en" ? "en" : "tr"),
-    ]));
+  if (etki.evcil_hayvan_kaybet && state.evcil_hayvanlar.length > 0) {
+    // Olayın `hayvanTuru`'ndaki hayvan; belirtilmemişse en son edinilen.
+    const kaybedilen =
+      (mevcutOlay.hayvanTuru ? state.evcil_hayvanlar.find((h) => h.tur === mevcutOlay.hayvanTuru) : undefined) ??
+      state.evcil_hayvanlar[state.evcil_hayvanlar.length - 1];
+    evcilHayvanKaldir(state, kaybedilen);
+    hayatOlayiEkle(state, "💔", T(state.dil, "{0} adlı evcil hayvanını kaybetti", [kaybedilen.isim]));
+  }
+  // Karşılaşma olayı çözüldü (kabul ya da ret): sayaç artar, bu tür bir daha çıkmaz.
+  if (mevcutOlay.hayvanKarsilasmaTuru && !state.hayvan_karsilasma_turleri.includes(mevcutOlay.hayvanKarsilasmaTuru)) {
+    state.hayvan_karsilasma_sayisi += 1;
+    state.hayvan_karsilasma_turleri.push(mevcutOlay.hayvanKarsilasmaTuru);
   }
   if (etki.mulk_kaybet && state.mulkler.includes(etki.mulk_kaybet)) {
     const kaybedilenMulk = mulkTanimiGetir(etki.mulk_kaybet);
@@ -2293,6 +2320,11 @@ async function sonucuUygulaVeIlerlet(
           const aileMesaji = aileYillikUygula(state, yasArtisi);
           if (aileMesaji) {
             zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${aileMesaji}` : aileMesaji;
+          }
+          // Evcil hayvan: pasif şöhret bonusu + ömrünü dolduran hayvanın doğal ölümü.
+          const hayvanMesaji = evcilHayvanYillikUygula(state, yasArtisi);
+          if (hayvanMesaji) {
+            zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${hayvanMesaji}` : hayvanMesaji;
           }
           // Eşle ilişkiye bağlı doğum denemesi (§33) — es_puani çok belirleyici,
           // cooldown sonsuz çocuğu engeller. İçerik gameEngine'de çünkü çocuk
@@ -2894,7 +2926,7 @@ export async function aileEtkilesimYap(
   if (tanim.un) state.un += tanim.un;
   clampStats(state);
 
-  state.aile_etkilesim_kilit[anahtar] = state.yil + tanim.cooldownYil;
+  state.aile_etkilesim_kilit[anahtar] = state.yil + Math.max(1, tanim.cooldownYil - hayvanAileBeklemeIndirimi(state));
   if (etkilesimId === "es_hediye" || etkilesimId === "cocuk_hediye") {
     state.omur_hediye_sayisi = (state.omur_hediye_sayisi ?? 0) + 1; // "Hediye Ağı" amacı
   }
@@ -3534,7 +3566,7 @@ export interface KotuIsKarti {
 
 function kotuIsBasariSansi(state: CharacterState, tanim: (typeof KOTU_ISLER)[number]): number {
   const yatkinlik = state.yatkinliklar[tanim.yatkinlik] ?? 0;
-  return Math.round(Math.min(95, Math.max(5, tanim.basariSansi + yatkinlik)));
+  return Math.round(Math.min(95, Math.max(5, tanim.basariSansi + yatkinlik + hayvanKotuIsPuani(state, tanim.yatkinlik))));
 }
 
 /** Karanlık iş türü başına bekleme (oyun yılı): şiddet/riskli işler daha uzun soğur. */
@@ -4264,6 +4296,9 @@ export async function sosyallesmeOlayCoz(id: string, secenekIndex: number): Prom
   etki.mutluluk = (etki.mutluluk ?? 0) + SOSYALLESME_MORAL_BONUSU;
   const ziyaretEdilenYer = sosyallesmeYeriGetir(mevcutOlay.sosyallesmeYeri);
   if (ziyaretEdilenYer?.alkolluMu) ayyasZiyaretiIsle(state);
+  // Evcil hayvan pasif bonusları (Şahin: mekânda gösteriş +1 şöhret; Kedi/Köpek: kayıp hafifletme).
+  hayvanOlayEtkisiUygula(state, etki, mevcutOlay.kategori);
+  if (hayvanBonusVar(state, "sahin_sohret")) etki.un = (etki.un ?? 0) + 1;
 
   // Temel stat deltaları.
   state.para = paraYuvarla(state.para + (etki.para ?? 0));
@@ -4284,7 +4319,7 @@ export async function sosyallesmeOlayCoz(id: string, secenekIndex: number): Prom
     state.uretim_kapasitesi = Math.min(100, Math.max(0, state.uretim_kapasitesi + etki.uretim_kapasitesi_artis));
   }
   if (basarili && MESLEK_KATEGORI[state.meslek] === mevcutOlay.kategori) {
-    state.kariyer_puani += KARIYER_PUANI_KATEGORI_BASARI * (1 + (state.meslek_tecrube_hizi ?? 0));
+    state.kariyer_puani += KARIYER_PUANI_KATEGORI_BASARI * (1 + (state.meslek_tecrube_hizi ?? 0)) * hayvanKariyerCarpani(state);
     if (state.meslek === "Din Adamı") state.nufuz += 1.5;
   }
   if (etki.kariyer_puani_artis) state.kariyer_puani += etki.kariyer_puani_artis;

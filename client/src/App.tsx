@@ -2288,7 +2288,7 @@ function App() {
                   esMeslek={karakter.es_meslek}
                   esRutbe={karakter.es_rutbe}
                   cocuklar={karakter.cocuklar}
-                  evcilHayvan={karakter.evcil_hayvan}
+                  evcilHayvanlar={karakter.evcil_hayvanlar}
                 />
               </div>
             </YanPanel>
@@ -2576,7 +2576,7 @@ function App() {
           durum={aileDurum}
           evli={!!karakter.es_adi}
           yas={karakter.yas}
-          evcilHayvan={karakter.evcil_hayvan}
+          evcilHayvanlar={karakter.evcil_hayvanlar}
           yukleniyor={yukleniyor}
           islemMesaji={islemMesaji}
           onEtkilesim={aileEtkilesimHandler}
