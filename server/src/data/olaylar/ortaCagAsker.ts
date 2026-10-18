@@ -155,12 +155,14 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
         metin: "Bir kısmını karaborsaya sat, servet yap.",
         baseBasariSansi: 50,
         basariliSonuc: {
+          suc_sinifi: "buyuk",
           para: 55,
           ahlak: -30,
           mesaj: "Erzağın bir kısmını gizlice sattın; kuşatma bitince zengindin.",
           detay: "Açların parasıyla zengin oldun; kimse öğrenmeyecek.",
         },
         basarisizSonuc: {
+          suc_sinifi: "agir",
           olum: true,
           mesaj: "Karaborsa hesapları ortaya çıktı; ihanetten surda asıldın.",
         },
@@ -231,12 +233,14 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
         baseBasariSansi: 45,
         maliyet: 12,
         basariliSonuc: {
+          suc_artis: 1,
           para: 35,
           ahlak: -8,
           mesaj: "Doğru şövalyeye oynadın; bahisçinin yüzü asıldı.",
           detay: "Kılıçsız kazandın; para geri istenmedi.",
         },
         basarisizSonuc: {
+          suc_artis: 1,
           para: -25,
           un: -8,
           ahlak: -8,
@@ -444,12 +448,14 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
         metin: "Teklifi kabul et.",
         baseBasariSansi: 45,
         basariliSonuc: {
+          suc_sinifi: "buyuk",
           para: 50,
           ahlak: -30,
           mesaj: "Silahlar el değiştirdi, kimse fark etmedi.",
           detay: "Kasan doldu; silahlar kimi vurdu, bilmeyeceksin.",
         },
         basarisizSonuc: {
+          suc_sinifi: "agir",
           olum: true,
           mesaj: "Depo sayımında eksik çıktı, iz sürüldü; vatana ihanetten asıldın.",
         },
@@ -486,6 +492,7 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
         metin: "Emri uygula, manastırı yağmala.",
         baseBasariSansi: 75,
         basariliSonuc: {
+          suc_sinifi: "buyuk",
           para: 35,
           un: 10,
           ahlak: -28,
@@ -493,6 +500,7 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
           detay: "Rahiplerin sessiz bakışı aklında; zafer acı.",
         },
         basarisizSonuc: {
+          suc_sinifi: "agir",
           ahlak: -20,
           saglik: -12,
           mesaj: "Rahipler kutsal eşyalar için direndi; kısa, şiddetli arbede çıktı.",
@@ -1002,6 +1010,7 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
         metin: "Sahiplen, kimse görmeden sakla.",
         baseBasariSansi: 75,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 22,
           ahlak: -12,
           mutluluk: -2,
@@ -1009,6 +1018,7 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
           detay: "Kasan doldu ama evin sahiplerinin yüzü aklında.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           para: -10,
           un: -15,
           ahlak: -12,
@@ -1049,12 +1059,14 @@ export const OLAY_ORTACAG_ASKER: OlayTanimi[] = [
         metin: "Kabul et, gözünü kapat.",
         baseBasariSansi: 55,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 20,
           ahlak: -14,
           mesaj: "Yükler sorgusuz geçti; küçük ama düzenli bir gelirin oldu.",
           detay: "Geçen her yük vicdanına bir ağırlık ekliyor.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           para: -20,
           un: -20,
           ahlak: -14,

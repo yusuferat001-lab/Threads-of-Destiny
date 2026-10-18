@@ -91,10 +91,10 @@ export const OLAY_SANAYI_ASKER_YOLLARI: OlayTanimi[] = [
           detay: "Özgürlük bazen görünmez bir yüktür.",
         },
         basarisizSonuc: {
+          suc_sinifi: "orta",
           ahlak: 6,
           saglik: -14,
           un: -16,
-          suc_artis: 12,
           etiket_ekle: ["yol:asker:firari", "sd_asker_yolu_secildi"],
           mesaj: "Nöbetçiler yakaladı; dövüldün, dosyana 'firari' yazıldı.",
           detay: "Kaçış bazen daha ağır zincire dönüşür.",
@@ -736,7 +736,6 @@ export const OLAY_SANAYI_ASKER_YOLLARI: OlayTanimi[] = [
           ahlak: 8,
           un: -14,
           saglik: -10,
-          suc_artis: 6,
           mesaj: "Suçlu bulundun, rütben bir kademe düştü; vicdanının arkasındasın.",
           detay: "Bazı bedeller pişmanlık getirmez.",
         },
@@ -1147,14 +1146,15 @@ export const OLAY_SANAYI_ASKER_YOLLARI: OlayTanimi[] = [
         metin: "Acımasız bir bastırma yürüt.",
         baseBasariSansi: 62,
         basariliSonuc: {
+          suc_sinifi: "kucuk",
           un: 14,
           para: 10,
           ahlak: -20,
-          suc_artis: 8,
           mesaj: "Direniş kırıldı, ganimet ve övgü geldi; ama geride ağır bir yıkım kaldı.",
           detay: "Zaferin bedeli sessizce geride kalır.",
         },
         basarisizSonuc: {
+          suc_sinifi: "orta",
           ahlak: -18,
           saglik: -14,
           un: -6,
@@ -1245,6 +1245,7 @@ export const OLAY_SANAYI_ASKER_YOLLARI: OlayTanimi[] = [
         metin: "Köyü baştan sona yak, kimseyi esirgeme.",
         baseBasariSansi: 70,
         basariliSonuc: {
+          suc_sinifi: "buyuk",
           un: 16,
           ahlak: -26,
           para: 8,
@@ -1252,6 +1253,7 @@ export const OLAY_SANAYI_ASKER_YOLLARI: OlayTanimi[] = [
           detay: "Kimi zafer kutlanmayı hak etmez.",
         },
         basarisizSonuc: {
+          suc_sinifi: "agir",
           ahlak: -20,
           saglik: -10,
           un: -8,
@@ -1534,6 +1536,7 @@ export const OLAY_SANAYI_ASKER_YOLLARI: OlayTanimi[] = [
         metin: "Aileyi rehin al, teslimi bekle.",
         baseBasariSansi: 62,
         basariliSonuc: {
+          suc_sinifi: "orta",
           un: 12,
           ahlak: -24,
           para: 8,
@@ -1541,6 +1544,7 @@ export const OLAY_SANAYI_ASKER_YOLLARI: OlayTanimi[] = [
           detay: "Bazı zaferler kutlanmayı hak etmez.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           ahlak: -20,
           un: -14,
           rakip_puani: -10,
@@ -1592,7 +1596,6 @@ export const OLAY_SANAYI_ASKER_YOLLARI: OlayTanimi[] = [
           para: -25,
           un: -20,
           ahlak: -6,
-          suc_artis: 14,
           mesaj: "Suçlandın; rütben geriletildi, adın tarihe kara leke olarak geçti.",
           detay: "Bazı hesaplar er geç ödenir.",
         },
@@ -1686,8 +1689,8 @@ export const OLAY_SANAYI_ASKER_YOLLARI: OlayTanimi[] = [
           detay: "Özgürlük bazen çorak toprakta saklanmaktır.",
         },
         basarisizSonuc: {
+          suc_sinifi: "orta",
           saglik: -10,
-          suc_artis: 10,
           etiket_ekle: ["hapiste"],
           mesaj: "Devriye kırsalda yakaladı; dövülüp askeri hapishaneye götürüldün.",
           detay: "Kaçış her zaman başarmaz.",
@@ -1702,8 +1705,8 @@ export const OLAY_SANAYI_ASKER_YOLLARI: OlayTanimi[] = [
           detay: "En cüretkar plan bazen en iyi işler.",
         },
         basarisizSonuc: {
+          suc_sinifi: "orta",
           saglik: -8,
-          suc_artis: 12,
           etiket_ekle: ["hapiste"],
           mesaj: "Jandarma şüphelendi, yalanların tutmadı; gözaltına alındın.",
           detay: "Bazı kumarlar kaybedilir.",
@@ -1728,6 +1731,7 @@ export const OLAY_SANAYI_ASKER_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 65,
         maliyet: 16,
         basariliSonuc: {
+          suc_sinifi: "kucuk",
           para: -16,
           mutluluk: 6,
           etiket_ekle: ["sd_firari_sahte_kimlik"],
@@ -1735,9 +1739,9 @@ export const OLAY_SANAYI_ASKER_YOLLARI: OlayTanimi[] = [
           detay: "Bazı hayatlar bir kâğıtla yeniden yazılır.",
         },
         basarisizSonuc: {
+          suc_sinifi: "orta",
           para: -16,
           un: -6,
-          suc_artis: 8,
           mesaj: "Kâğıtlar kalitesizdi, ilk kontrolde sahtelik anlaşıldı; para ve güven gitti.",
           detay: "Ucuz sahtekârlık tuzağa dönüşür.",
         },
@@ -1781,8 +1785,8 @@ export const OLAY_SANAYI_ASKER_YOLLARI: OlayTanimi[] = [
           detay: "Bazı bağlar üniformadan güçlüdür.",
         },
         basarisizSonuc: {
+          suc_sinifi: "orta",
           un: -10,
-          suc_artis: 10,
           etiket_ekle: ["hapiste"],
           mesaj: "Eski yoldaşın ihbar etti; jandarma kısa sürede seni buldu.",
           detay: "Geçmiş bazen affetmez.",
@@ -1797,8 +1801,8 @@ export const OLAY_SANAYI_ASKER_YOLLARI: OlayTanimi[] = [
           detay: "Hayatta kalmak bazen dostluğu feda etmektir.",
         },
         basarisizSonuc: {
+          suc_sinifi: "kucuk",
           saglik: -6,
-          suc_artis: 8,
           mesaj: "Kaçarken dikkat çektin, birkaç kişi peşine düştü; zor sıyrıldın.",
           detay: "Panikle kaçış daha çok göze batar.",
         },
@@ -1874,9 +1878,9 @@ export const OLAY_SANAYI_ASKER_YOLLARI: OlayTanimi[] = [
           detay: "Teslim olmak da cesarettir.",
         },
         basarisizSonuc: {
+          suc_sinifi: "orta",
           saglik: -8,
           un: -10,
-          suc_artis: 15,
           etiket_ekle: ["hapiste"],
           mesaj: "Af seni kapsamadı; teslim olunca tutuklandın, ağır ceza bekliyor.",
           detay: "Bazı kumarlar acı kaybedilir.",
@@ -1968,8 +1972,8 @@ export const OLAY_SANAYI_ASKER_YOLLARI: OlayTanimi[] = [
           detay: "Bazı sınırlar hayatı ikiye böler.",
         },
         basarisizSonuc: {
+          suc_sinifi: "orta",
           saglik: -12,
-          suc_artis: 10,
           etiket_ekle: ["hapiste"],
           mesaj: "Sınır devriyesi karanlıkta yakaladı; sınır ihlaliyle gözaltına alındın.",
           detay: "Karanlık her zaman örtü olmaz.",
@@ -1986,8 +1990,8 @@ export const OLAY_SANAYI_ASKER_YOLLARI: OlayTanimi[] = [
           detay: "Bazı kaçışlar cesaretten çok kâğıt ister.",
         },
         basarisizSonuc: {
+          suc_sinifi: "orta",
           para: -10,
-          suc_artis: 10,
           etiket_ekle: ["hapiste"],
           mesaj: "Sahtelik anlaşıldı; daha ağır bir suçlamayla içeri atıldın.",
           detay: "Sahtekârlık gerçek suçtan ağır cezalanır.",
@@ -2056,14 +2060,14 @@ export const OLAY_SANAYI_ASKER_YOLLARI: OlayTanimi[] = [
         metin: "Kuryeliği kabul et, kanunun sınırında dolaş.",
         baseBasariSansi: 52,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 20,
-          suc_artis: 10,
           mesaj: "Cebin doldu; ama artık karanlık çevrelerin de radarındasın.",
           detay: "Bazı paralar temiz ellerden geçmez.",
         },
         basarisizSonuc: {
+          suc_sinifi: "orta",
           saglik: -10,
-          suc_artis: 16,
           para: -6,
           mesaj: "Teslimatta çatışmaya karıştın; parayı kaybettin, yaralandın.",
           detay: "Karanlık işler nadiren güvenli çıkar.",
@@ -2109,8 +2113,8 @@ export const OLAY_SANAYI_ASKER_YOLLARI: OlayTanimi[] = [
           detay: "Hayatta kalmak bazen baştan kurmaktır.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           saglik: -10,
-          suc_artis: 18,
           etiket_ekle: ["hapiste"],
           mesaj: "Kaçmaya vakit bulamadan jandarma geldi; kaçak yaşamın sona erdi.",
           detay: "Bazı kaçışlar bir dakikayla kaybedilir.",
@@ -2125,8 +2129,8 @@ export const OLAY_SANAYI_ASKER_YOLLARI: OlayTanimi[] = [
           detay: "Soğukkanlılık en iyi kalkandır.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           saglik: -12,
-          suc_artis: 20,
           etiket_ekle: ["hapiste"],
           mesaj: "Yalanların tutmadı, orada tutuklandın; kaçak yaşamın sona erdi.",
           detay: "Bazı kumarlar acı kaybedilir.",
@@ -2175,8 +2179,8 @@ export const OLAY_SANAYI_ASKER_YOLLARI: OlayTanimi[] = [
           detay: "Bazı geçmişler yüzleşince kapanır.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           saglik: -14,
-          suc_artis: 20,
           etiket_ekle: ["hapiste"],
           mesaj: "Yüzleşme kötü bitti; yaşlı bedeninle yeniden gözaltına alındın.",
           detay: "Bazı geçmişler affetmeyi bilmez.",

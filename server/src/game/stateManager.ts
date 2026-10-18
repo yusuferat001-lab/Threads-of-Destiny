@@ -801,6 +801,8 @@ export function createCharacter(
     // 15 yaşında meslek seçilince (mesleğiSec) doldurulur.
     hayat_amaclari: [],
     omur_zirve_suc: 0,
+    // Aranmayı artıran son olayın yılı; yaratılışta baslangic_yili (4 yıllık temizlik sayacı ondan sayılır).
+    son_suc_yili: yil,
     omur_kumar_net: 0,
     omur_sadaka_sayisi: 0,
     omur_hediye_sayisi: 0,
@@ -1098,6 +1100,8 @@ export function eskiKayitGocu(state: CharacterState): void {
       state.meslek && MESLEKLER.includes(state.meslek) ? amaclariUret(state.cag, state.meslek) : [];
   }
   if (typeof state.omur_zirve_suc !== "number") state.omur_zirve_suc = state.suc_seviyesi ?? 0;
+  // Eski kayıtlar: 4 yıllık temizlik sayacı mevcut yıldan başlasın (aniden toplu düşüş olmasın).
+  if (typeof state.son_suc_yili !== "number") state.son_suc_yili = state.yil;
   if (typeof state.omur_kumar_net !== "number") state.omur_kumar_net = 0;
   if (typeof state.omur_sadaka_sayisi !== "number") state.omur_sadaka_sayisi = 0;
   if (typeof state.omur_hediye_sayisi !== "number") state.omur_hediye_sayisi = 0;
@@ -2596,17 +2600,32 @@ export function krizEtkisiUygula(state: CharacterState, yasArtisi: number): stri
   return null;
 }
 
-// 2026-09 (kullanıcı isteği): "aranma seviyesi zamanla çok yavaş düşsün" — tamamen
-// suç işlemeyi bırakan bir karakter artık sonsuza dek sabit kademede kalmaz, ama
-// düşüş kasıtlı olarak çok yavaştır (0.15/yıl → 100'den 0'a inmesi ~667 yıl sürer,
-// gerçekçi bir ömürde en fazla bir-iki bandı aşağı çeker). Ana düşüş yolu hâlâ
-// aranmaSeviyesi.ts'teki kefaret/rüşvet seçenekleri (suc_artis negatif) ve büyük
-// baskının suc_seviyesi_ayarla'sıdır — bu sadece küçük bir pasif "unutulma" payı.
-export const SUC_SEVIYESI_PASIF_AZALMA_YILLIK = 0.15;
+// Aranma pasif düşüşü (2026-10, kullanıcı isteği): aranmayı artıran son olaydan
+// (son_suc_yili) itibaren SUC_TEMIZ_YIL (4) yıl temiz kalan karakter, 5. yıldan
+// itibaren yılda SUC_SEVIYESI_PASIF_AZALMA_YILLIK (1) puan "unutulur". Her yeni
+// aranma artışı (suç sınıfı, karanlık iş, kumar, kral reddi, karaborsa) sayacı
+// sıfırlar — bkz. sucArtisiKaydet. Kefaret/rüşvet şıkları ve büyük baskının
+// suc_seviyesi_ayarla'sı ayrı düşüş yolları olarak aynen kalır.
+export const SUC_SEVIYESI_PASIF_AZALMA_YILLIK = 1;
+export const SUC_TEMIZ_YIL = 4;
+
+/** Aranmayı artıran bir olay oldu: 4 yıllık temizlik sayacını bu yıldan yeniden başlatır. */
+export function sucArtisiKaydet(state: CharacterState): void {
+  state.son_suc_yili = state.yil;
+}
+
+/** Şu an kaç yıldır temiz (son aranma artışından beri geçen oyun yılı). */
+export function sucTemizYilSayisi(state: CharacterState): number {
+  return Math.max(0, state.yil - (state.son_suc_yili ?? state.yil));
+}
 
 export function sucSeviyesiUygula(state: CharacterState, yasArtisi: number): void {
   if (yasArtisi <= 0) return;
-  state.suc_seviyesi = Math.max(0, state.suc_seviyesi - SUC_SEVIYESI_PASIF_AZALMA_YILLIK * yasArtisi);
+  // temiz = tur sonundaki temiz yıl sayısı; ilk SUC_TEMIZ_YIL yıl düşüş yok, sonrası
+  // turun içinde kalan yıllar kadar (en fazla yasArtisi) düşer.
+  const dusecekYil = Math.max(0, Math.min(yasArtisi, sucTemizYilSayisi(state) - SUC_TEMIZ_YIL));
+  if (dusecekYil <= 0) return;
+  state.suc_seviyesi = Math.max(0, state.suc_seviyesi - SUC_SEVIYESI_PASIF_AZALMA_YILLIK * dusecekYil);
 }
 
 // ---------------------------------------------------------------------------
@@ -3523,6 +3542,7 @@ export function mulkGelirleriUygula(state: CharacterState, yasArtisi: number): M
     }
     if (tur === "karaborsa") {
       state.suc_seviyesi += KARABORSA_SUC_ARTISI_YILLIK * yasArtisi;
+      sucArtisiKaydet(state);
       state.ahlak -= KARABORSA_AHLAK_ASINMASI_YILLIK * yasArtisi;
     }
 

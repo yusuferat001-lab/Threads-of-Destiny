@@ -599,12 +599,14 @@ export const OLAY_EVCIL_HAYVAN: OlayTanimi[] = [
         baseBasariSansi: 70,
         maxAhlak: 60,
         basariliSonuc: {
+          suc_sinifi: "kucuk",
           para: 14,
           ahlak: -8,
           mesaj: "Yüzüğü sakladın; kimse {hayvan}'dan şüphelenmedi.",
           detay: "Kedinin vicdanı yok, seninki eksildi.",
         },
         basarisizSonuc: {
+          suc_sinifi: "orta",
           un: -12,
           ahlak: -8,
           mesaj: "Komşu yüzüğü evinde gördü, seni hırsızlıkla suçladı!",

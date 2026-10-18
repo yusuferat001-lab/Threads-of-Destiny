@@ -124,12 +124,14 @@ export const OLAY_ORTACAG_DINADAMI: OlayTanimi[] = [
         metin: "Bilgiyi adamın kendisine karşı koz yap.",
         baseBasariSansi: 40,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 45,
           ahlak: -30,
           mesaj: "Adam susman için istediğini verdi; sır kaldı, kese doldu.",
           detay: "Korkusunu paraya çevirdin ve rahat uyuyorsun.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           olum: true,
           mesaj: "Adamın kaybedecek bir şeyi yoktu; bir gece kilisenin arkasında bulundun.",
         },
@@ -663,6 +665,7 @@ export const OLAY_ORTACAG_DINADAMI: OlayTanimi[] = [
         metin: "İstenen tanıklığı ver, kadını suçla.",
         baseBasariSansi: 85,
         basariliSonuc: {
+          suc_sinifi: "orta",
           un: 10,
           para: 8,
           ahlak: -30,
@@ -670,6 +673,7 @@ export const OLAY_ORTACAG_DINADAMI: OlayTanimi[] = [
           detay: "Bazı güvenceler başkasının hayatına kurulu.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           ahlak: -30,
           mutluluk: -10,
           mesaj: "Tanıklık istenen sonucu verdi ama vicdanın bir daha rahat etmedi.",

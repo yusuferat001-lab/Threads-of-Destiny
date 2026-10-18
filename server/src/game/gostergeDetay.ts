@@ -30,6 +30,8 @@ import {
   IYI_EVLILIK_ESIGI,
   IYI_EVLILIK_MUTLULUK_YILLIK,
   SUC_SEVIYESI_PASIF_AZALMA_YILLIK,
+  SUC_TEMIZ_YIL,
+  sucTemizYilSayisi,
   PASIF_REGEN_TAVANI,
   KARABORSA_SUC_ARTISI_YILLIK,
   KARABORSA_AHLAK_ASINMASI_YILLIK,
@@ -331,11 +333,23 @@ function aranmaDetayi(state: CharacterState): GostergeDetayTaban {
   const etkenler: GostergeEtken[] = [];
 
   if (state.suc_seviyesi > 0) {
-    etkenler.push({
-      ikon: "🕰️",
-      metin: T(dil, "Zamanla çok yavaş soğur: {0}/yıl", [isaretli(-SUC_SEVIYESI_PASIF_AZALMA_YILLIK)]),
-      yon: "iyi",
-    });
+    const temiz = sucTemizYilSayisi(state);
+    etkenler.push(
+      temiz >= SUC_TEMIZ_YIL
+        ? {
+            ikon: "🕰️",
+            metin: T(dil, "Uzun süredir suç işlemedin; zamanla soğur: {0}/yıl", [isaretli(-SUC_SEVIYESI_PASIF_AZALMA_YILLIK)]),
+            yon: "iyi",
+          }
+        : {
+            ikon: "🕰️",
+            metin: T(dil, "{0} yıl daha suç işlemezsen şehir seni unutmaya başlar ({1}/yıl).", [
+              SUC_TEMIZ_YIL - temiz + 1,
+              isaretli(-SUC_SEVIYESI_PASIF_AZALMA_YILLIK),
+            ]),
+            yon: "notr",
+          }
+    );
   } else {
     etkenler.push({ ikon: "✅", metin: T(dil, "Temizsin; kimse seni aramıyor."), yon: "iyi" });
   }
@@ -388,7 +402,7 @@ function aranmaDetayi(state: CharacterState): GostergeDetayTaban {
     deger: state.suc_seviyesi,
     etkenler,
     yukselt: [
-      T(dil, "Para kazandıran ahlaksız seçimler ve karanlık işler aranmanı artırır."),
+      T(dil, "Yasa dışı seçimler (hırsızlık, rüşvet, kaçakçılık, şiddet) ve karanlık işler aranmanı artırır."),
       T(dil, "Zar masası, Üç Kağıtçı ve karaborsa deposu da yavaş yavaş artırır."),
     ],
     dusur: [

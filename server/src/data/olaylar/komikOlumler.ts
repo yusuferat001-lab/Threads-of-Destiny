@@ -109,16 +109,16 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
         metin: "Merdivene çık, bıyığı çiz.",
         baseBasariSansi: 50,
         basariliSonuc: {
+          suc_sinifi: "kucuk",
           un: 8,
           mutluluk: 8,
-          suc_artis: 6,
           mesaj: "Bıyık kusursuz oldu; şehir güldü, kimse seni ele vermedi.",
         },
         basarisizSonuc: {
+          suc_sinifi: "kucuk",
           olum_sansi: 55,
           efsanevi_olum: "Kralın Bıyığını Çizerken Düşen",
           saglik: -20,
-          suc_artis: 6,
           mesaj: "Merdiven kaydı, taşa çakıldın. 'Neredeyse bitiyordu' dedin.",
         },
       },
@@ -130,7 +130,7 @@ export const OLAY_KOMIK_OLUM: OlayTanimi[] = [
           mesaj: "İş bitti, kimse yakalanmadı; kahraman arkadaşın oldu.",
         },
         basarisizSonuc: {
-          suc_artis: 8,
+          suc_sinifi: "kucuk",
           saglik: -4,
           mesaj: "Devriye geldi; el arabasına takılıp yuvarlandın, tanınmadın.",
         },

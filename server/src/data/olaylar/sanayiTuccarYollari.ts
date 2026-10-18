@@ -234,12 +234,14 @@ export const OLAY_SANAYI_TUCCAR_YOLLARI: OlayTanimi[] = [
         metin: "Bu seferlik soru sormadan al.",
         baseBasariSansi: 58,
         basariliSonuc: {
+          suc_sinifi: "kucuk",
           para: 22,
           ahlak: -14,
           mesaj: "Kâr cebine girdi ama geceleri malın kaynağını düşünüyorsun.",
           detay: "İstisna, ilkenin sağlamlığını sınar.",
         },
         basarisizSonuc: {
+          suc_sinifi: "orta",
           para: -18,
           ahlak: -10,
           un: -8,
@@ -742,7 +744,6 @@ export const OLAY_SANAYI_TUCCAR_YOLLARI: OlayTanimi[] = [
         metin: "Herkesin önünde kov, örnek olsun.",
         baseBasariSansi: 62,
         basariliSonuc: {
-          suc_artis: 6,
           ahlak: -16,
           un: -4,
           mesaj: "İşçiler sustu ama bakışları artık farklı.",
@@ -751,7 +752,6 @@ export const OLAY_SANAYI_TUCCAR_YOLLARI: OlayTanimi[] = [
         basarisizSonuc: {
           ahlak: -18,
           un: -14,
-          suc_artis: 10,
           mesaj: "Kovulan işçi gazeteye gitti; olay şehirde yankılandı.",
           detay: "Susturma bazen ters teper.",
         },
@@ -837,15 +837,15 @@ export const OLAY_SANAYI_TUCCAR_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 58,
         maliyet: 16,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: -16,
-          suc_artis: 14,
           ahlak: -12,
           mesaj: "Denetim bir yıl ertelendi; meclis üyesi artık cebinde.",
           detay: "Bazı sorunlar parayla ertelenir.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           para: -16,
-          suc_artis: 20,
           ahlak: -14,
           un: -10,
           mesaj: "Rüşvet reddedildi ve şikâyet edildi; adın soruşturmaya girdi.",
@@ -888,12 +888,13 @@ export const OLAY_SANAYI_TUCCAR_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 52,
         maliyet: 14,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: -14,
-          suc_artis: 10,
           mesaj: "Gazeteci çekildi ama olay küçük çevrelerde fısıldanıyor.",
           detay: "Susturmak yok etmek değildir.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           para: -14,
           ahlak: -14,
           un: -20,
@@ -986,7 +987,6 @@ export const OLAY_SANAYI_TUCCAR_YOLLARI: OlayTanimi[] = [
         basariliSonuc: {
           para: -20,
           ahlak: -10,
-          suc_artis: 8,
           mesaj: "Yasa bir süre gecikti; sanayiciler arasında 'sağlam adam' oldun.",
           detay: "Bazı zaferler geniş cephenin gölgesinde kazanılır.",
         },
@@ -1032,17 +1032,17 @@ export const OLAY_SANAYI_TUCCAR_YOLLARI: OlayTanimi[] = [
         baseBasariSansi: 45,
         maliyet: 20,
         basariliSonuc: {
+          suc_sinifi: "buyuk",
           para: -20,
-          suc_artis: 18,
           ahlak: -18,
           mesaj: "Olay örtbas edildi ama bu sırrı taşımak ağır.",
           detay: "Sırlar taşıyanı yavaşça tüketir.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           para: -32,
           ahlak: -22,
           un: -22,
-          suc_artis: 25,
           mesaj: "Örtbas ortaya çıktı; şehir seni 'katil patron' diye anıyor.",
           detay: "Gerçek ne kadar gömülse yüzeye çıkar.",
         },
@@ -1084,7 +1084,7 @@ export const OLAY_SANAYI_TUCCAR_YOLLARI: OlayTanimi[] = [
         metin: "Jandarmayı çağır, isyanı bastır.",
         baseBasariSansi: 48,
         basariliSonuc: {
-          suc_artis: 20,
+          suc_sinifi: "buyuk",
           ahlak: -20,
           un: -14,
           para: 10,
@@ -1092,6 +1092,7 @@ export const OLAY_SANAYI_TUCCAR_YOLLARI: OlayTanimi[] = [
           detay: "Sertlikle kazanılan sessizlik başka biçimde döner.",
         },
         basarisizSonuc: {
+          suc_sinifi: "agir",
           saglik: -10,
           ahlak: -22,
           un: -24,
@@ -1275,15 +1276,15 @@ export const OLAY_SANAYI_TUCCAR_YOLLARI: OlayTanimi[] = [
         metin: "Bilgiyi kullan, büyük pozisyon al.",
         baseBasariSansi: 58,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 36,
-          suc_artis: 16,
           ahlak: -10,
           mesaj: "Karar açıklanınca büyük kâr ettin; kimse şüphelenmedi, şimdilik.",
           detay: "Bazı kazançlar sessiz bir risk taşır.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           para: -18,
-          suc_artis: 22,
           ahlak: -14,
           un: -8,
           mesaj: "Hareketin dikkat çekti; borsa komiserleri işlemlerini inceliyor.",

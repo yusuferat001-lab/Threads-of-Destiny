@@ -8,13 +8,15 @@
  * (gameEngine.kotuIsYap) — olay hattından geçmez, jitter uygulanmaz.
  *
  * Tasarım: ekonomik getirisi VAR ama bedeli ağır — büyük ahlak düşüşü + hızlı
- * aranma (suc_artis) + başarısızlıkta hapis/ölüm riski ("ortaya çıkma"). Rakip
+ * aranma (suc_sinifi) + başarısızlıkta hapis/ölüm riski ("ortaya çıkma"). Rakip
  * hedefleyen işler `rakip_puani`'yi düşürür ve küçük `kariyer_puani` verir
  * (rakibini zayıflatmak terfi yolunu açar) — ileride gelecek "derin rakip
  * ilişkileri" sistemi bu alanları büyütecek.
  *
  * `para` alanları TABAN değerdir; uygulanırken enflasyon çarpanıyla ölçeklenir.
  */
+import type { SucSinifi } from "../types";
+
 export interface KotuIsEtki {
   /** Taban para deltası (±); enflasyonCarpani ile ölçeklenir. */
   para?: number;
@@ -23,8 +25,8 @@ export interface KotuIsEtki {
   saglik?: number;
   mutluluk?: number;
   rakip_puani?: number;
-  /** Tek suç/aranma ekseni suc_seviyesi'ne eklenir (0-100 clamp). */
-  suc_artis?: number;
+  /** Suç büyüklüğü sınıfı: gameEngine.SUC_SINIFI_ARALIKLARI aralığından rastgele aranma eklenir (başarısız dalda bir üst sınıf, yani suçüstü). */
+  suc_sinifi?: SucSinifi;
   /** Rütbe ilerlemesine küçük katkı (rakibini zayıflatmak = terfi fırsatı). */
   kariyer_puani?: number;
   /** 0-1: bu dalda "hapiste" etiketi + ceza süresi tetiklenme ihtimali. */
@@ -56,18 +58,18 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
       ahlak: -6,
       mutluluk: 2,
       rakip_puani: -10,
-      suc_artis: 7,
+      suc_sinifi: "kucuk",
       kariyer_puani: 2,
     },
-    basarisiz: { ahlak: -3, mutluluk: -3, rakip_puani: -3, suc_artis: 12 },
+    basarisiz: { ahlak: -3, mutluluk: -3, rakip_puani: -3, suc_sinifi: "orta" },
   },
   {
     id: "adam_dov",
     simge: "👊",
     basariSansi: 66,
     yatkinlik: "savas",
-    basarili: { mutluluk: 9, ahlak: -14, suc_artis: 12 },
-    basarisiz: { saglik: -12, ahlak: -6, mutluluk: -5, suc_artis: 18, hapis_sansi: 0.1 },
+    basarili: { mutluluk: 9, ahlak: -14, suc_sinifi: "orta" },
+    basarisiz: { saglik: -12, ahlak: -6, mutluluk: -5, suc_sinifi: "buyuk", hapis_sansi: 0.1 },
   },
   {
     id: "rakibi_dov",
@@ -79,18 +81,18 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
       ahlak: -12,
       mutluluk: 3,
       rakip_puani: -18,
-      suc_artis: 14,
+      suc_sinifi: "orta",
       kariyer_puani: 4,
     },
-    basarisiz: { saglik: -15, ahlak: -5, mutluluk: -4, suc_artis: 22, hapis_sansi: 0.1 },
+    basarisiz: { saglik: -15, ahlak: -5, mutluluk: -4, suc_sinifi: "buyuk", hapis_sansi: 0.1 },
   },
   {
     id: "birini_soy",
     simge: "💰",
     basariSansi: 56,
     yatkinlik: "siyaset",
-    basarili: { para: 24, ahlak: -16, mutluluk: 2, suc_artis: 18 },
-    basarisiz: { saglik: -10, ahlak: -4, suc_artis: 28, hapis_sansi: 0.25 },
+    basarili: { para: 24, ahlak: -16, mutluluk: 2, suc_sinifi: "buyuk" },
+    basarisiz: { saglik: -10, ahlak: -4, suc_sinifi: "agir", hapis_sansi: 0.25 },
   },
   {
     id: "isyeri_yak",
@@ -103,10 +105,10 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
       ahlak: -22,
       mutluluk: 2,
       rakip_puani: -30,
-      suc_artis: 32,
+      suc_sinifi: "buyuk",
       kariyer_puani: 6,
     },
-    basarisiz: { saglik: -18, ahlak: -6, suc_artis: 40, olum_sansi: 6, hapis_sansi: 0.35 },
+    basarisiz: { saglik: -18, ahlak: -6, suc_sinifi: "agir", olum_sansi: 6, hapis_sansi: 0.35 },
   },
 ];
 

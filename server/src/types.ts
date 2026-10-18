@@ -468,6 +468,8 @@ export interface CharacterState {
   hayat_amaclari: AmacIlerleme[];
   /** Suç seviyesinin ömür boyu ulaştığı en yüksek değer (amaç koşulları için — "hiç aranmadan yaşa"). */
   omur_zirve_suc: number;
+  /** Aranmayı artıran en son olayın oyun yılı — pasif düşüş "4 yıl temiz kalırsan" şartı bunu kullanır (stateManager.sucArtisiKaydet). */
+  son_suc_yili: number;
   /** Zar/üç kâğıt/bilek güreşinden ömür boyu net kâr/zarar toplamı (kumar amaçları için). */
   omur_kumar_net: number;
   /** Ömür boyu verilen sadaka sayısı (sosyalleşme "sadaka" aksiyonu + bağış olayları). */
@@ -746,6 +748,9 @@ export interface EkipUyesi {
   cocuk_isim?: string;
 }
 
+/** Yasa dışı eylem büyüklük sınıfı (aranma artışı aralıkları: gameEngine.SUC_SINIFI_ARALIKLARI). "agir" = suçüstü yakalanma. */
+export type SucSinifi = "kucuk" | "orta" | "buyuk" | "agir";
+
 export interface SonucEtkisi {
   para?: number;
   un?: number;
@@ -814,6 +819,8 @@ export interface SonucEtkisi {
   uretim_kapasitesi_artis?: number;
   /** TEK suç/aranma eksenini (suc_seviyesi, 0-100 aralığında kelepçelenir) değiştirir; ± olabilir (rüşvet/kefaret şıkları negatif verir). Kumar/karaborsa ve suç-kazancı motor kuralı da bunu kullanır. */
   suc_artis?: number;
+  /** Yasa dışı eylemin büyüklük sınıfı: motor bu sınıfın aralığından (kucuk 4-8 · orta 10-16 · buyuk 20-26 · agir 24-30) bir değer seçip `suc_artis`'e ekler; para > 0 ise ×1.6 uygular. Başarılı dala sınıf, başarısız dala (suçüstü) bir üst sınıf yazılır. Suç olmayan şıklarda ALAN YOKTUR. */
+  suc_sinifi?: SucSinifi;
   /** suc_seviyesi'ni mevcut değerden bağımsız, doğrudan belirtilen değere (0-100) sabitler — ör. büyük baskın sonrası "temize çıkar / kademe 1'e in" gibi kesin hedefler için; genel yükseliş/düşüş için bunun yerine suc_artis kullanılmalı. */
   suc_seviyesi_ayarla?: number;
   /** SADECE motor yazar (uygulananEtki'de): bu seçimin aranma (suc_seviyesi) üzerindeki GERÇEK net değişimi — suc_artis, suç-kazancı motor kuralı ve suc_seviyesi_ayarla, 0-100 kelepçesi sonrası. Sonuç ekranı çipi bunu gösterir. */

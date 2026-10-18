@@ -871,16 +871,18 @@ export const ANLATIM_EN: Record<string, string> = {
     "Scandal, prison and unpaid debts lower your fame.",
   "Bakımsız ev ve yetersiz yemek adını aşındırır.":
     "A shabby home and poor food erode your name.",
-  "Zamanla çok yavaş soğur: {0}/yıl":
-    "It cools off very slowly with time: {0}/yr",
+  "Uzun süredir suç işlemedin; zamanla soğur: {0}/yıl":
+    "You have kept clean for a long time; it cools off: {0}/yr",
+  "{0} yıl daha suç işlemezsen şehir seni unutmaya başlar ({1}/yıl).":
+    "Stay clean {0} more year(s) and the city starts to forget you ({1}/yr).",
   "Temizsin; kimse seni aramıyor.":
     "You are clean; nobody is looking for you.",
   "Yönetimdeki himayen: {0}/yıl":
     "Your patron in the government: {0}/yr",
   "Kumar oynamak her seferinde biraz aranmanı artırır.":
     "Gambling raises your wanted level a little each time.",
-  "Para kazandıran ahlaksız seçimler ve karanlık işler aranmanı artırır.":
-    "Immoral choices that earn money and dark deeds raise your wanted level.",
+  "Yasa dışı seçimler (hırsızlık, rüşvet, kaçakçılık, şiddet) ve karanlık işler aranmanı artırır.":
+    "Illegal choices (theft, bribery, smuggling, violence) and dark deeds raise your wanted level.",
   "Hapistesin; cezanı tamamlamak aranmayı kendiliğinden sıfırlamaz.":
     "You are in prison; serving your sentence does not reset your wanted level by itself.",
   "Kaçaksın: aranman çok yüksek.":

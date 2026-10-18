@@ -268,6 +268,7 @@ export interface CharacterState {
   hayat_amaci: HayatAmaci | null;
   hayat_amaclari: AmacIlerleme[];
   omur_zirve_suc: number;
+  son_suc_yili: number;
   omur_kumar_net: number;
   omur_sadaka_sayisi: number;
   omur_hediye_sayisi: number;
@@ -687,6 +688,7 @@ export interface SonucEtkisi {
   nufuz_artis?: number;
   uretim_kapasitesi_artis?: number;
   suc_artis?: number;
+  suc_sinifi?: 'kucuk' | 'orta' | 'buyuk' | 'agir';
   suc_seviyesi_ayarla?: number;
   /** Sunucunun yazdığı: bu seçimin aranma üzerindeki gerçek net değişimi (kelepçe sonrası). */
   suc_degisim?: number;

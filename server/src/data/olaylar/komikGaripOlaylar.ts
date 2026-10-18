@@ -360,7 +360,7 @@ export const OLAY_KOMIK_GARIP: OlayTanimi[] = [
           mesaj: "Ara sokaklarda onu atlattın; nefes nefese ama özgürsün.",
         },
         basarisizSonuc: {
-          suc_artis: 6,
+          suc_sinifi: "kucuk",
           mutluluk: -4,
           mesaj: "Yakalandın; kaçman daha şüpheli gösterdi.",
         },
@@ -550,7 +550,6 @@ export const OLAY_KOMIK_GARIP: OlayTanimi[] = [
         },
         basarisizSonuc: {
           un: -5,
-          suc_artis: 5,
           mesaj: "Bir muhbir duydu; 'saygısızlık' şikâyetine ramak kaldı.",
         },
       },
@@ -663,11 +662,13 @@ export const OLAY_KOMIK_GARIP: OlayTanimi[] = [
         metin: "Al, sen de 'ejderha kemiği' diye sat.",
         baseBasariSansi: 55,
         basariliSonuc: {
+          suc_sinifi: "kucuk",
           para: 10,
           ahlak: -5,
           mesaj: "Saf bir gezgine üç katına sattın; vicdan sızladı, kese doldu.",
         },
         basarisizSonuc: {
+          suc_sinifi: "orta",
           un: -6,
           ahlak: -3,
           mesaj: "Alıcı kemiği kasaba gösterdi; 'dolandırıcı' lakabı yapıştı.",
@@ -902,11 +903,13 @@ export const OLAY_KOMIK_GARIP: OlayTanimi[] = [
         metin: "Şişeyi al, başkasına sat.",
         baseBasariSansi: 55,
         basariliSonuc: {
+          suc_sinifi: "kucuk",
           para: 9,
           ahlak: -5,
           mesaj: "İnanan birine üç katına sattın; vicdan sızladı, kese ağırlaştı.",
         },
         basarisizSonuc: {
+          suc_sinifi: "orta",
           un: -5,
           ahlak: -2,
           mesaj: "Alıcı suyu içip hasta olunca hesabı senden sordu.",
@@ -943,13 +946,13 @@ export const OLAY_KOMIK_GARIP: OlayTanimi[] = [
         metin: "Bahse gir, yarışı izle.",
         baseBasariSansi: 55,
         basariliSonuc: {
+          suc_artis: 1,
           para: 14,
-          suc_artis: 6,
           mesaj: "Bahsi kazandın, kese ağırlaştı; ama seni not ettiler.",
         },
         basarisizSonuc: {
+          suc_artis: 1,
           para: -6,
-          suc_artis: 8,
           mesaj: "Parayı kaybettin, bir muhbir de seni gördü.",
         },
       },
@@ -1068,9 +1071,9 @@ export const OLAY_KOMIK_GARIP: OlayTanimi[] = [
           mesaj: "Köy telaşla dışarı fırladı; siz çalıların ardında kahkaha attınız.",
         },
         basarisizSonuc: {
+          suc_sinifi: "kucuk",
           ahlak: -4,
           un: -4,
-          suc_artis: 5,
           mesaj: "Papaz seni suçüstü yakaladı; günlerce avlu temizledin.",
         },
       },
@@ -1300,14 +1303,15 @@ export const OLAY_KOMIK_GARIP: OlayTanimi[] = [
         metin: "Kabul et, kemiği satmaya çalış.",
         baseBasariSansi: 50,
         basariliSonuc: {
+          suc_sinifi: "kucuk",
           para: 18,
           ahlak: -8,
           mesaj: "Zengin köylü kemiği törenle aldı; vicdanın da kesen de ağırlaştı.",
         },
         basarisizSonuc: {
+          suc_sinifi: "kucuk",
           un: -8,
           ahlak: -4,
-          suc_artis: 8,
           mesaj: "Bir keşiş sahteliği anladı; meydanda rezil oldun.",
         },
       },
@@ -1706,7 +1710,6 @@ export const OLAY_KOMIK_GARIP: OlayTanimi[] = [
         },
         basarisizSonuc: {
           un: -5,
-          suc_artis: 4,
           mesaj: "Patron ciddiye alıp soruşturma açtı; adın kara listeye yazıldı.",
         },
       },
@@ -2023,7 +2026,7 @@ export const OLAY_KOMIK_GARIP: OlayTanimi[] = [
           mesaj: "Bir anlaşmazlığı 'çözdün'; kalabalık teşekkür etti, kimse anlamadı.",
         },
         basarisizSonuc: {
-          suc_artis: 8,
+          suc_sinifi: "kucuk",
           un: -5,
           mesaj: "Gerçek polis geldi, seni sahte kıyafetle yakaladı.",
         },
@@ -2335,14 +2338,15 @@ export const OLAY_KOMIK_GARIP: OlayTanimi[] = [
         metin: "Makineyi al, 'mucize' diye sat.",
         baseBasariSansi: 50,
         basariliSonuc: {
+          suc_sinifi: "kucuk",
           para: 16,
           ahlak: -7,
           mesaj: "Saf alıcı ikiye katladığı fiyata aldı; kese doldu, vicdan sızladı.",
         },
         basarisizSonuc: {
+          suc_sinifi: "kucuk",
           un: -7,
           ahlak: -3,
-          suc_artis: 6,
           mesaj: "Makine ilk çalışmada patladı; alıcı seni her yerde şikâyet etti.",
         },
       },

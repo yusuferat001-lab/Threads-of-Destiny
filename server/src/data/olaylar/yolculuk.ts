@@ -1581,6 +1581,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         metin: "Yağmaya katıl, elinden geleni al.",
         baseBasariSansi: 80,
         basariliSonuc: {
+          suc_sinifi: "buyuk",
           para: 45,
           ahlak: -20,
           zorunlu_sonraki: "oc_hacli_ordu_dagiliyor",
@@ -1588,6 +1589,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
           detay: "Zengin döndün ama eskisi gibi uyuyamıyorsun.",
         },
         basarisizSonuc: {
+          suc_sinifi: "agir",
           para: 15,
           ahlak: -15,
           zorunlu_sonraki: "oc_hacli_ordu_dagiliyor",
@@ -7773,6 +7775,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
         metin: "Değerli ciltleri sakla, sat.",
         baseBasariSansi: 80,
         basariliSonuc: {
+          suc_sinifi: "orta",
           para: 35,
           ahlak: -16,
           zorunlu_sonraki: "oc_hacli_ordu_dagiliyor",
@@ -7780,6 +7783,7 @@ export const OLAY_YOLCULUK: OlayTanimi[] = [
           detay: "Zengin döndün, ama vicdanın rahat değil.",
         },
         basarisizSonuc: {
+          suc_sinifi: "buyuk",
           para: 10,
           ahlak: -12,
           zorunlu_sonraki: "oc_hacli_ordu_dagiliyor",

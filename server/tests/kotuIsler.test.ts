@@ -27,6 +27,25 @@ describe("karanlık işler (illegal işler paneli)", () => {
     expect(s.suc_seviyesi).toBeGreaterThan(onceSuc);
   });
 
+  it("aranma artışı iş sınıfının aralığındadır: başarıda sınıf, başarısızlıkta bir üst sınıf", async () => {
+    // birini_soy: başarı = büyük (20-26), başarısızlık = ağır (24-30).
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
+    await mesleğiAta(state.id, "Tüccar");
+    const s0 = await stateGetir(state.id);
+    s0.suc_seviyesi = 0;
+    const sonuc = await kotuIsYap(state.id, "birini_soy");
+    const artis = sonuc.state.suc_seviyesi;
+    if (sonuc.kazandi) {
+      expect(artis).toBeGreaterThanOrEqual(20);
+      expect(artis).toBeLessThanOrEqual(26);
+    } else {
+      expect(artis).toBeGreaterThanOrEqual(24);
+      expect(artis).toBeLessThanOrEqual(30);
+    }
+    // Aranmayı artıran iş "4 yıl temiz" sayacını sıfırlar.
+    expect(sonuc.state.son_suc_yili).toBe(sonuc.state.yil);
+  });
+
   it("geçersiz iş türü hata fırlatır", async () => {
     const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
