@@ -186,3 +186,11 @@ export function rastgeleCinsiyetliIsimSec(cag: Cag, bolge: string, cinsiyet: Cin
   const kaynak = havuz.length > 0 ? havuz : tumHavuz;
   return kaynak[Math.floor(Math.random() * kaynak.length)];
 }
+
+/** Aynı tohumdan her zaman aynı isim (şehir yöneticisi gibi sabit kalması gereken NPC'ler için); erkek havuzundan. */
+export function deterministikErkekIsimSec(cag: Cag, bolge: string, tohum: string, tuz = 0): string {
+  const havuz = bolgeHavuzuGetir(cag, bolge).erkek;
+  let h = tuz >>> 0;
+  for (let i = 0; i < tohum.length; i++) h = (h * 31 + tohum.charCodeAt(i)) >>> 0;
+  return havuz[h % havuz.length];
+}

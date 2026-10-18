@@ -138,7 +138,7 @@ describe("Fabrika Grevi (Sanayi Devrimi, dallanan)", () => {
     mesleğiSec(state, "Tüccar");
     etiketEkle(state, ["grev:karsi_cikti", "grev_karari_verildi"]);
     let bulundu = false;
-    for (let i = 0; i < 500; i++) {
+    for (let i = 0; i < 3000; i++) {
       const { olay } = olaySec(state);
       expect(olay.id).not.toBe("sd_grev_polis_mudahalesi");
       expect(olay.id).not.toBe("sd_grev_kazanim");

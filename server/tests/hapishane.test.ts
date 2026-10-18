@@ -29,7 +29,7 @@ describe("hapishane sistemi", () => {
     state.ahlak = 5;
     state.un = 2;
     let bulundu = false;
-    for (let i = 0; i < 500 && !bulundu; i++) {
+    for (let i = 0; i < 3000 && !bulundu; i++) {
       const { olay } = olaySec(state);
       if (olay.id === "hapis_tutuklanma") bulundu = true;
     }

@@ -283,7 +283,7 @@ const TR = {
   geVebaHayatta: 'hayatta kalma şansı',
   geAstlarin: 'Astların',
   geEkibin: 'Ekibin',
-  geMeslekGucu: 'Meslek Gücün',
+  geMeslekGucu: 'Mesleğin Durumu',
   geKimseYok: 'Henüz emrinde kimse yok.',
   geEkipYok: 'Ekibinde kimse yok.',
 
@@ -491,7 +491,7 @@ const TR = {
   iyKaranlikOnay: 'Bu karanlık işe girişmek ahlakını ciddi düşürür ve aranmanı yükseltir. Devam edilsin mi?',
   iyRutbeNasil: 'Rütbe nasıl yükselir?',
   iyRutbeNasilMetin:
-    '{0} yüksek tuttukça ve mesleğinde başarılı oldukça kariyerin ilerler; zamanla kıdem de kazanırsın. Her terfiden sonra bir sonrakine kadar birkaç yıl geçmesi gerekir. Rütben asla düşmez.',
+    '{0} yüksek tuttukça ve mesleğinde başarılı oldukça kariyerin ilerler; zamanla kıdem de kazanırsın. Mesleğindeki pazar payın yeterliyse terfi gelir. Rütben asla düşmez.',
   iyRutbeAhlakini: 'ahlakını',
   iyRutbeSohretini: 'şöhretini',
   iyRiskliIsler: 'Riskli İşler',
@@ -732,7 +732,8 @@ const TR = {
   kaAria: 'Karakter görseli',
 
   // ---- Sadeleştirilmiş / kısaltılmış metinler ----
-  feKirilimLejant: '🎖️ 📈 kalıcı · 🤝 🌍 dünya durumuna göre değişir',
+  feKirilimLejant: '🎖️ 📈 kalıcı · 🤝 🏪 🌍 duruma göre değişir',
+  fePazarNot: 'rakibin payı büyüdükçe düşer, sen büyüdükçe artar',
   feTasinNotKisa: 'Tur harcamaz. Pahalıya geçiş bir kerelik {0} {1}.',
   feTasinmaKisa: ' · +{0} {1} taşınma',
   iyNetKisa: '💰 Kazanç ~{0}{1} {2}/yıl ({3}%)',
@@ -1010,7 +1011,7 @@ const EN: Metinler = {
   geVebaHayatta: 'survival chance',
   geAstlarin: 'Your Subordinates',
   geEkibin: 'Your Crew',
-  geMeslekGucu: 'Your Professional Power',
+  geMeslekGucu: 'Your Trade',
   geKimseYok: 'No one under your command yet.',
   geEkipYok: 'No one on your crew.',
 
@@ -1218,7 +1219,7 @@ const EN: Metinler = {
   iyKaranlikOnay: 'Going through with this dark deed will sharply lower your morality and raise your wanted level. Continue?',
   iyRutbeNasil: 'How does rank rise?',
   iyRutbeNasilMetin:
-    'Your career advances as you keep your {0} high and succeed in your profession; over time you also gain seniority. After each promotion a few years must pass before the next. Your rank never drops.',
+    'Your career advances as you keep your {0} high and succeed in your profession; over time you also gain seniority. Once your market share is high enough, the promotion comes. Your rank never drops.',
   iyRutbeAhlakini: 'morality',
   iyRutbeSohretini: 'fame',
   iyRiskliIsler: 'Risky Business',
@@ -1456,7 +1457,8 @@ const EN: Metinler = {
   kaAria: 'Character portrait',
 
   // ---- Simplified / shortened text ----
-  feKirilimLejant: '🎖️ 📈 permanent · 🤝 🌍 vary with world conditions',
+  feKirilimLejant: '🎖️ 📈 permanent · 🤝 🏪 🌍 vary with circumstances',
+  fePazarNot: 'falls as your rival’s share grows, rises as yours does',
   feTasinNotKisa: 'Costs no turn. Upgrading costs a one-time {0} {1}.',
   feTasinmaKisa: ' · +{0} {1} to move',
   iyNetKisa: '💰 Return ~{0}{1} {2}/yr ({3}%)',

@@ -8,6 +8,27 @@
  * hükümdar/NPC/evcil hayvan isimleri, tarihi savaş rakip adları. Kavramlar çevrilir.
  */
 export const KATALOG_EN: Record<string, string> = {
+  "Rakibe İftira At": "Slander Your Rival",
+  "Eparkhos": "Eparch",
+  "Prévôt": "Provost",
+  "Burggraf": "Burgrave",
+  "Belediye Başkanı": "Mayor",
+  "Préfet": "Prefect",
+  "Gubernator": "Governor",
+  "Muhtesip": "Muhtasib",
+  "Ahi Baba": "Ahi Baba",
+  "Metropolit": "Metropolitan",
+  "Müftü": "Mufti",
+  "Subaşı": "Subashi",
+  "Albay": "Colonel",
+  "Paşa": "Pasha",
+  "General": "General",
+  "Loncabaşı": "Guild Head",
+  "Esnaf Kethüdası": "Tradesmen's Steward",
+  "Ticaret Nazırı": "Minister of Trade",
+  "Lonca Başkanı": "Guild Chairman",
+  "Ticaret Odası Başkanı": "Chamber of Commerce President",
+  "Sanayi Odası Başkanı": "Chamber of Industry President",
   // ---------------------------------------------------------------------------
   // Bölgeler (state.bolge — hem filtre anahtarı hem gösterim; burada yalnız gösterim çevrilir)
   // ---------------------------------------------------------------------------
@@ -662,6 +683,38 @@ export const KATALOG_EN: Record<string, string> = {
   "Kan Davası — Beklemede": "Blood Feud — Pending",
   "Afyon Bağımlılığı": "Opium Addiction",
   "Unutulmuş Bir İyilik": "A Forgotten Kindness",
+  // Meslek pazarı (2026-10)
+  "Pazar Payı": "Market Share",
+  "Ticari Güç": "Trade Power",
+  "Cemaat Payı": "Congregation Share",
+  "Ruhani Güç": "Spiritual Power",
+  "Üretim Payı": "Production Share",
+  "Zanaat Gücü": "Craft Power",
+  "Bölge Hâkimiyeti": "District Control",
+  "Askeri Güç": "Military Power",
+  // Mesleğe özel karanlık işler (2026-10)
+  "Rakibin Kervanını Yağmalat": "Have Your Rival's Caravan Raided",
+  "Karaborsa Yarat": "Rig the Black Market",
+  "Gümrüğe Rüşvet": "Bribe the Customs House",
+  "Sahte Mucize": "Stage a False Miracle",
+  "Rakibi Aforoz Ettir": "Have Your Rival Excommunicated",
+  "Valiye Şantaj": "Blackmail the Governor",
+  "Rakibin Formülünü Çal": "Steal Your Rival's Formula",
+  "Hammaddeyi Kapat": "Corner the Raw Materials",
+  "Lonca Kararını Çarpıt": "Rig the Guild Vote",
+  "Kaos Çıkar, Koruma Sat": "Stir Chaos, Sell Protection",
+  "Kaza Süsü Verilmiş Düello": "A Duel Dressed Up as an Accident",
+  "Kervan Baskını": "Caravan Raid",
+  // Ajan rolleri (2026-10)
+  "Hırsız": "Thief",
+  "Kabadayı": "Thug",
+  "Casus": "Spy",
+  "Suikastçı": "Assassin",
+  "Rakibi Ortadan Kaldırt": "Have Your Rival Removed",
+  "Kervanbaşı": "Caravan Master",
+  "Muhasebeci": "Bookkeeper",
+  "Satın Alma Memuru": "Purchasing Agent",
+  "Satış Memuru": "Sales Clerk",
   // Ekip rolü: oyuncunun yanında çalışan çocuğu
   "Varis": "Heir",
 };

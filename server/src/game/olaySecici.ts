@@ -9,6 +9,8 @@ import { ekliYerTutuculariDoldur } from "../i18n/ekler";
 import { olayCevirisiUygula } from "../i18n/olaylar";
 import { HAVUZ_KILIT_ETIKETLERI as HAVUZ_KILIT_LISTESI, hapisErkenCikisMumkunMu } from "./stateManager";
 import { yatkinlikZarBonusOrani } from "../data/meslekYatkinlik";
+import { isletmeMeslegiMi } from "../data/meslekProfilleri";
+import { yoneticiBilgisi, patronBilgisi } from "./yonetimKisileri";
 import { olayResimAnahtari } from "./olayResmi";
 import { HAYVAN_KARSILASMA_TAVANI, HAYVAN_AYNI_ANDA_TAVANI, hayvanBonusVar } from "../data/evcilHayvanlar";
 
@@ -143,6 +145,12 @@ function rastgeleEkipAdi(state: CharacterState): string {
   return state.ekip[Math.floor(Math.random() * state.ekip.length)].isim;
 }
 
+/** "{otorite}" yer tutucusu: şehir yöneticisi (işletmeli meslekler) ya da patron/lonca figürü — "Unvan İsim". */
+function otoriteAdiVeUnvani(state: CharacterState): string {
+  const b = isletmeMeslegiMi(state.meslek) ? yoneticiBilgisi(state) : patronBilgisi(state);
+  return `${b.unvan} ${b.ad}`;
+}
+
 /** `{hayvan}` için ad: olayın hayvan türü verilmişse o türdeki hayvan, yoksa ilk yaşayan hayvan. */
 function hayvanAdiBul(state: CharacterState, hayvanTuru?: string): string | undefined {
   const hayvanlar = state.evcil_hayvanlar ?? [];
@@ -160,7 +168,7 @@ export function doldur(metin: string, state: CharacterState, hayvanTuru?: string
   const cocukAdi = metin.includes("{cocuk}") ? rastgeleYasayanCocukAdi(state) : "";
   const ekipAdi = metin.includes("{ekip}") ? rastgeleEkipAdi(state) : "";
   if (dil !== "en") {
-    metin = ekliYerTutuculariDoldur(metin, /\{(dost|rakip|es|anne|baba|amir|hayvan|cocuk|ekip|bolge|komsu)\}'([a-zçğıöşü]+)/g, (anahtar) => {
+    metin = ekliYerTutuculariDoldur(metin, /\{(dost|rakip|es|anne|baba|amir|hayvan|cocuk|ekip|bolge|komsu|otorite)\}'([a-zçğıöşü]+)/g, (anahtar) => {
       switch (anahtar) {
         case "dost":
           return state.dost_adi;
@@ -182,6 +190,8 @@ export function doldur(metin: string, state: CharacterState, hayvanTuru?: string
           return state.ekip.length > 0 ? ekipAdi : undefined;
         case "bolge":
           return K(dil, state.bolge);
+        case "otorite":
+          return otoriteAdiVeUnvani(state);
         default:
           return undefined;
       }
@@ -189,6 +199,7 @@ export function doldur(metin: string, state: CharacterState, hayvanTuru?: string
   }
   return metin
     .replace(/\{bolge\}/g, K(dil, state.bolge))
+    .replace(/\{otorite\}/g, () => otoriteAdiVeUnvani(state))
     .replace(/\{meslek\}/g, K(dil, state.meslek))
     .replace(/\{aile\}/g, K(dil, state.aile_meslegi))
     .replace(/\{yil\}/g, String(state.yil))

@@ -2,10 +2,12 @@ import { describe, it, expect } from "vitest";
 import {
   createCharacter,
   mesleğiSec,
-  rakipGucKir,
+  rakipMusteriKir,
   rakiplerGuncelle,
   rakipMisillemesiDene,
   krediAl,
+  krediPazarlik,
+  krediTeklifleri,
   krediYillikUygula,
   krediMaksTutar,
   vebaBaslat,
@@ -14,53 +16,55 @@ import {
 } from "../src/game/stateManager";
 import { yeniOyun, mesleğiAta, hediyeEt, salginKorunmaYatirimiYap, senaryoUret } from "../src/game/gameEngine";
 import type { CharacterState } from "../src/types";
+import { KREDI_HAVUZU, annuiteTaksit } from "../src/data/krediHavuzu";
 
 function taze(): CharacterState {
   const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
-  mesleğiSec(s, "Tüccar");
+  mesleğiSec(s, "Asker");
   s.para = 500;
+  s.maas_yillik = 20; // kredi tavanı rastgele dönem etkisine bağlı kalmasın
   return s;
 }
 
 describe("Derin rakip ilişkileri", () => {
-  it("meslek seçilince tek isimli rakip üretilir; rakip_adi ile aynı kişi", () => {
+  it("meslek seçilince iki isimli rakip üretilir; rakip_adi büyük rakiple aynı kişi", () => {
     const s = taze();
-    expect(s.rakipler).toHaveLength(1);
+    expect(s.rakipler).toHaveLength(2);
     expect(s.rakipler[0].ad).toBe(s.rakip_adi);
     expect(s.rakipler.every((r) => !r.yenildi)).toBe(true);
   });
 
-  it("rakipGucKir: gücü düşürür, pazar payı (para + kariyer) verir, husumet artırır", () => {
+  it("rakipMusteriKir: rakibin müşterisini azaltır, pazar payı (para + kariyer) verir, husumet artırır", () => {
     const s = taze();
     const r = s.rakipler[0];
-    r.guc = 60;
+    const onceMusteri = r.musteri;
+    const payOnce = s.meslek_musteri;
     const paraOnce = s.para;
     const kpOnce = s.kariyer_puani;
     const husumetOnce = r.husumet;
-    const sonuc = rakipGucKir(s, r.ad, 15, 1);
+    const sonuc = rakipMusteriKir(s, r.ad, 0.15, 1);
     expect(sonuc).not.toBeNull();
-    expect(r.guc).toBe(45);
+    expect(r.musteri).toBeCloseTo(onceMusteri * 0.85, 0);
+    expect(s.meslek_musteri).toBeGreaterThan(payOnce);
     expect(s.para).toBeGreaterThan(paraOnce);
     expect(s.kariyer_puani).toBeGreaterThan(kpOnce);
     expect(r.husumet).toBeGreaterThan(husumetOnce);
   });
 
-  it("güç ≤ 10'a inince rakip yenildi olur ve bir daha kırılamaz", () => {
+  it("rakibin payı %4'ün altına inince yenildi olur ve bir daha kırılamaz", () => {
     const s = taze();
     const r = s.rakipler[0];
-    r.guc = 12;
-    const sonuc = rakipGucKir(s, r.ad, 26, 1);
+    r.musteri = s.pazar_musteri * 0.05;
+    const sonuc = rakipMusteriKir(s, r.ad, 0.5, 1);
     expect(sonuc?.yenildiMi).toBe(true);
     expect(r.yenildi).toBe(true);
-    expect(rakipGucKir(s, r.ad, 10, 1)).toBeNull();
+    expect(rakipMusteriKir(s, r.ad, 0.1, 1)).toBeNull();
   });
 
-  it("rakiplerGuncelle: yenilmemiş rakiplerin gücü büyür, husumet soğur", () => {
+  it("rakiplerGuncelle: husumet soğur (müşteri hareketi piyasaYillikUygula'da)", () => {
     const s = taze();
-    s.rakipler[0].guc = 50;
     s.rakipler[0].husumet = 60;
     rakiplerGuncelle(s, 4);
-    expect(s.rakipler[0].guc).toBeGreaterThan(50);
     expect(s.rakipler[0].husumet).toBeLessThan(60);
   });
 
@@ -104,35 +108,107 @@ describe("§24: zorlanan kaskad havuz kilidi altında milestone zorlamaz", () =>
   });
 });
 
-describe("Kredi / tefeci", () => {
-  it("krediAl: parayı ekler, aktif kredi oluşturur", () => {
+describe("Kredi / tefeci (havuzdan 2 teklif, vadeli)", () => {
+  it("tefeci aynı anda tam 2 farklı teklif sunar; 3 yıl sabit kalır, sonra yenilenir", () => {
     const s = taze();
+    s.maas_yillik = 100;
+    const ilk = krediTeklifleri(s);
+    expect(ilk).toHaveLength(2);
+    expect(new Set(ilk.map((t) => t.id)).size).toBe(2);
+    expect(KREDI_HAVUZU.map((k) => k.id)).toEqual(expect.arrayContaining(ilk.map((t) => t.id)));
+    expect(krediTeklifleri(s).map((t) => t.id)).toEqual(ilk.map((t) => t.id)); // aynı yıl: aynı teklifler
+    s.yil += 3;
+    krediTeklifleri(s);
+    expect(s.kredi_teklifleri!.yil).toBe(s.yil); // yenilendi
+  });
+
+  it("havuzda kısa vade = yüksek faiz, uzun vade = düşük faiz; vadeler birbirine yakın (3–7 yıl)", () => {
+    for (const boyut of ["kucuk", "orta", "buyuk"]) {
+      const kisa = KREDI_HAVUZU.find((k) => k.id === `kisa_${boyut}`)!;
+      const uzun = KREDI_HAVUZU.find((k) => k.id === `uzun_${boyut}`)!;
+      expect(kisa.vade).toBeLessThan(uzun.vade);
+      expect(kisa.faiz).toBeGreaterThan(uzun.faiz);
+    }
+    for (const k of KREDI_HAVUZU) {
+      expect(k.vade).toBeGreaterThanOrEqual(3);
+      expect(k.vade).toBeLessThanOrEqual(7);
+      expect(k.faiz).toBeGreaterThanOrEqual(0.1);
+      expect(k.faiz).toBeLessThanOrEqual(0.21);
+    }
+  });
+
+  it("tutarlar enflasyonla büyür", () => {
+    const s = taze();
+    s.maas_yillik = 1000;
+    s.kredi_teklifleri = { idler: ["uzun_orta", "kisa_orta"], yil: s.yil };
+    const bugun = krediTeklifleri(s).find((t) => t.id === "uzun_orta")!.tutar;
+    s.yil += 40;
+    s.kredi_teklifleri = { idler: ["uzun_orta", "kisa_orta"], yil: s.yil };
+    const sonra = krediTeklifleri(s).find((t) => t.id === "uzun_orta")!.tutar;
+    expect(sonra).toBeGreaterThan(bugun);
+  });
+
+  it("krediAl: parayı ekler, vadeli kredi oluşturur, teklifleri yeniletir", () => {
+    const s = taze();
+    s.maas_yillik = 100;
     s.para = 20;
-    krediAl(s, 60);
-    expect(s.para).toBe(80);
-    expect(s.kredi?.anapara).toBe(60);
-    expect(s.kredi?.kalanBorc).toBe(60);
+    const t = krediTeklifleri(s)[0];
+    krediAl(s, t.id);
+    expect(s.para).toBe(20 + t.tutar);
+    expect(s.kredi?.anapara).toBe(t.tutar);
+    expect(s.kredi?.kalanBorc).toBe(t.tutar);
+    expect(s.kredi?.vadeYil).toBe(t.vade);
+    expect(s.kredi?.yillikTaksit).toBe(t.taksit);
+    expect(s.kredi_teklifleri).toBeNull();
+    expect(() => krediAl(s, t.id)).toThrow();
+    expect(() => krediAl(taze(), "olmayan_teklif")).toThrow(/teklif/);
   });
 
   it("krediMaksTutar: aktif kredi varken 0 döner", () => {
     const s = taze();
-    krediAl(s, krediMaksTutar(s));
+    s.maas_yillik = 100;
+    krediAl(s, krediTeklifleri(s)[0].id);
     expect(krediMaksTutar(s)).toBe(0);
+    expect(krediTeklifleri(s)).toHaveLength(0);
+  });
+
+  it("eşit yıllık taksit vade bitince krediyi kapatır (annüite)", () => {
+    const s = taze();
+    s.maas_yillik = 100;
+    s.para = 5000;
+    const t = krediTeklifleri(s)[0];
+    krediAl(s, t.id);
+    for (let i = 0; i < t.vade; i++) krediYillikUygula(s, 1);
+    expect(s.kredi).toBeNull();
+    expect(annuiteTaksit(100, 0.1, 5) * 5).toBeGreaterThan(100);
   });
 
   it("krediYillikUygula: taksit ödenir, borç azalır", () => {
     const s = taze();
+    s.maas_yillik = 100;
     s.para = 200;
-    krediAl(s, 60);
+    krediAl(s, krediTeklifleri(s)[0].id);
     const borcOnce = s.kredi!.kalanBorc;
     krediYillikUygula(s, 1);
     expect(s.kredi!.kalanBorc).toBeLessThan(borcOnce);
   });
 
+  it("pazarlık faizi değiştirir ve taksiti kalan vadeye göre yeniden hesaplar", () => {
+    const s = taze();
+    s.maas_yillik = 100;
+    krediAl(s, krediTeklifleri(s)[0].id);
+    const eskiFaiz = s.kredi!.faizOrani;
+    krediPazarlik(s);
+    const fark = Math.round((s.kredi!.faizOrani - eskiFaiz) * 100);
+    expect([-4, 5]).toContain(fark);
+    expect(s.kredi!.pazarlikYapildi).toBe(true);
+  });
+
   it("üst üste 3 taksit ödenemezse tefeci mülke el koyar", () => {
     const s = taze();
+    s.maas_yillik = 100;
     s.para = 200;
-    krediAl(s, 60);
+    krediAl(s, krediTeklifleri(s)[0].id);
     s.mulkler = ["ciftlik"];
     s.para = 0; // artık taksit ödenemez
     krediYillikUygula(s, 3);

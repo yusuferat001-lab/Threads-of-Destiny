@@ -87,6 +87,8 @@ import { OLAYLAR_SANAYI_ZANAATKAR_EN } from "./sanayiZanaatkar.en";
 import { OLAYLAR_SANAYI_ZANAATKAR_YOLLARI_EN } from "./sanayiZanaatkarYollari.en";
 import { OLAYLAR_GECIKMIS_TAKIP_EN } from "./gecikmisTakip.en";
 import { OLAYLAR_MESLEK_YATKINLIK_EN } from "./meslekYatkinlikOlaylari.en";
+import { OLAYLAR_VERGI_EN } from "./vergiOlaylari.en";
+import { OLAYLAR_OTORITE_EN } from "./otoriteOlaylari.en";
 
 const KAYIT: Record<string, OlayCeviri>[] = [
   OLAYLAR_KOMIK_OLUM_EN,
@@ -131,6 +133,8 @@ const KAYIT: Record<string, OlayCeviri>[] = [
   OLAYLAR_SANAYI_ZANAATKAR_YOLLARI_EN,
   OLAYLAR_GECIKMIS_TAKIP_EN,
   OLAYLAR_MESLEK_YATKINLIK_EN,
+  OLAYLAR_VERGI_EN,
+  OLAYLAR_OTORITE_EN,
 ];
 
 const CEVIRI_INDEKSI: Record<string, OlayCeviri> = Object.assign({}, ...KAYIT);

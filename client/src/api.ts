@@ -1,4 +1,7 @@
 import type {
+  IsletmeGorunumu,
+  IsletmeKararGirdisi,
+  IsletmeStokHedefi,
   CharacterState,
   SenaryoResponse,
   SecimSonucu,
@@ -42,6 +45,8 @@ import type {
   AileDurumu,
   YonetimDurumu,
   RakipKarti,
+  PazarDurumu,
+  AjanDurumu,
   AmaclarDurumu,
   SalginKorunmaKarti,
   KrediConfig,
@@ -235,7 +240,7 @@ export function kotuIsConfigGetir(stateId: string) {
 export function kotuIsYap(
   stateId: string,
   tur: string,
-  opts?: { hedefRakipAd?: string; vekil?: boolean },
+  opts?: { hedefRakipAd?: string; ajanId?: string },
 ) {
   return istek<KotuIsSonucu>(`/api/game/${stateId}/kotu-is`, {
     method: 'POST',
@@ -245,6 +250,46 @@ export function kotuIsYap(
 
 export function rakiplerGetir(stateId: string) {
   return istek<{ rakipler: RakipKarti[] }>(`/api/game/${stateId}/rakipler`);
+}
+
+export function ajanDurumGetir(stateId: string) {
+  return istek<AjanDurumu>(`/api/game/${stateId}/ajanlar`);
+}
+
+export function ajanTut(stateId: string, rol: string) {
+  return istek<{ state: CharacterState; mesaj: string }>(`/api/game/${stateId}/ajan/tut`, {
+    method: 'POST',
+    body: JSON.stringify({ rol }),
+  });
+}
+
+export function isletmeGetir(stateId: string) {
+  return istek<IsletmeGorunumu>(`/api/game/${stateId}/isletme`);
+}
+
+export function isletmeKararVer(stateId: string, hatlar: IsletmeKararGirdisi[], stokHedefi?: IsletmeStokHedefi) {
+  return istek<{ state: CharacterState; durum: IsletmeGorunumu }>(`/api/game/${stateId}/isletme/karar`, {
+    method: 'POST',
+    body: JSON.stringify({ hatlar, stokHedefi }),
+  });
+}
+
+export function isletmeYatirimYap(stateId: string, yatirimId: string) {
+  return istek<{ state: CharacterState; mesaj: string; durum: IsletmeGorunumu }>(`/api/game/${stateId}/isletme/yatirim`, {
+    method: 'POST',
+    body: JSON.stringify({ yatirimId }),
+  });
+}
+
+export function isletmeCalisanAl(stateId: string, adayId: string) {
+  return istek<{ state: CharacterState; mesaj: string; durum: IsletmeGorunumu }>(`/api/game/${stateId}/isletme/calisan`, {
+    method: 'POST',
+    body: JSON.stringify({ adayId }),
+  });
+}
+
+export function pazarGetir(stateId: string) {
+  return istek<PazarDurumu>(`/api/game/${stateId}/pazar`);
 }
 
 export function amaclarGetir(stateId: string) {
@@ -280,10 +325,10 @@ export function krediGetir(stateId: string) {
   return istek<KrediConfig>(`/api/game/${stateId}/kredi`);
 }
 
-export function krediAl(stateId: string, tutar: number) {
+export function krediAl(stateId: string, teklifId: string) {
   return istek<{ state: CharacterState; mesaj: string }>(`/api/game/${stateId}/kredi/al`, {
     method: 'POST',
-    body: JSON.stringify({ tutar }),
+    body: JSON.stringify({ teklifId }),
   });
 }
 
@@ -484,10 +529,10 @@ export function yonetimEtkilesimYap(stateId: string, etkilesimId: string, kademe
   );
 }
 
-export function yonetimIstekYap(stateId: string, istekId: string) {
+export function yonetimIstekYap(stateId: string, istekId: string, rusvet = false) {
   return istek<{ state: CharacterState; basarili: boolean; mesaj: string }>(
     `/api/game/${stateId}/yonetim/istek`,
-    { method: 'POST', body: JSON.stringify({ istekId }) },
+    { method: 'POST', body: JSON.stringify({ istekId, rusvet }) },
   );
 }
 

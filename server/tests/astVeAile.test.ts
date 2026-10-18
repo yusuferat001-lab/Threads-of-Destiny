@@ -129,6 +129,7 @@ function terfiEttir(state: ReturnType<typeof createCharacter>, hedefSeviye: numb
     state.kariyer_puani = 999;
     state.un = 100;
     state.ahlak = 100;
+    state.meslek_musteri = state.pazar_musteri * 0.6; // pay şartı (işletmeli meslekte S5 %50)
     state.yil += 10; // her kademe cooldown'unu fazlasıyla aşar
     rutbeGuncelle(state);
   }
@@ -147,6 +148,7 @@ describe("astlar", () => {
     mesleğiSec(state, "Asker");
     state.kariyer_puani = 20;
     state.un = 40;
+    state.meslek_musteri = state.pazar_musteri * 0.5; // pay şartı
     rutbeGuncelle(state);
     expect(state.rutbe_seviye).toBe(2);
     expect(state.astlar).toHaveLength(1);
@@ -163,12 +165,13 @@ describe("astlar", () => {
     mesleğiSec(state, "Asker");
     state.kariyer_puani = 20;
     state.un = 40;
+    state.meslek_musteri = state.pazar_musteri * 0.5; // pay şartı
     rutbeGuncelle(state);
     const ilkAstIsim = state.astlar[0].isim;
 
     state.kariyer_puani = 60;
     state.un = 55;
-    state.yil += 5; // seviye 3 cooldown'u (3 yıl) aşılır
+    state.yil += 12; // seviye 3 cooldown'u aşılır
     rutbeGuncelle(state);
 
     expect(state.rutbe_seviye).toBe(3);

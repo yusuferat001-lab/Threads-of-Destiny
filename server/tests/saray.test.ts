@@ -20,7 +20,7 @@ describe("saray sistemi", () => {
     mesleğiSec(state, "Tüccar");
     etiketEkle(state, ["sarayda"]);
     let bulundu = false;
-    for (let i = 0; i < 500 && !bulundu; i++) {
+    for (let i = 0; i < 3000 && !bulundu; i++) {
       const { olay } = olaySec(state);
       if (olay.id === "saray_ic_entrika") bulundu = true;
     }

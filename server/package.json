@@ -12,6 +12,7 @@
     "test": "vitest run",
     "simulate": "tsx scripts/simulateEconomy.ts",
     "analyze-olaylar": "tsx scripts/analyzeOlaylar.ts",
+    "dev:bellek": "tsx scripts/yerel.ts",
     "db:local": "tsx scripts/localDb.ts",
     "db:setup": "prisma generate && prisma migrate deploy"
   },

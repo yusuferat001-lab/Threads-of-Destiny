@@ -52,7 +52,7 @@ describe("yıldız tablosu", () => {
 
   it("maaşa 'Aranma gölgesi' kalemi biner", () => {
     const temiz = taze();
-    const aranan = taze();
+    const aranan = structuredClone(temiz); // aynı karakter: tek fark aranma
     aranan.suc_seviyesi = 80;
     expect(hesaplaMaasYillik(aranan)).toBeLessThan(hesaplaMaasYillik(temiz));
     const kalem = maasKirilimHesapla(aranan).donemselKalemler.find((k) => k.ad === "Aranma gölgesi");

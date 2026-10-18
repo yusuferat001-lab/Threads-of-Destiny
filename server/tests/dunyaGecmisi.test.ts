@@ -7,7 +7,6 @@ import {
   buyukSavasBitisKontrolEt,
   vebaBaslat,
   vebaBitisKontrolEt,
-  kucukKrizKontrolEt,
   krizEtkisiUygula,
 } from "../src/game/stateManager";
 import { dunyaGecmisiUret } from "../src/game/dunyaGecmisi";
@@ -59,9 +58,14 @@ describe("motor kayıt noktaları", () => {
     s.yil = 1100;
     s.baslangic_yili = 1050;
     const orijinal = Math.random;
-    Math.random = () => 0; // yıllık %10 zarı kesin tutsun
+    Math.random = () => 0; // yıllık zarı kesin tutsun
+    s.ulke.donem!.tur = "durgunluk"; // bollukta savaş başlamaz
+    s.ulke.savasta = false;
     let mesaj: string | null;
     try {
+      expect(buyukSavasKontrolEt(s, 1)).toBeNull(); // önce bir yıl önceden sinyal verir
+      expect(s.dunya_yaklasan?.tur).toBe("savas");
+      s.yil += 1;
       mesaj = buyukSavasKontrolEt(s, 1);
     } finally {
       Math.random = orijinal;
@@ -84,12 +88,10 @@ describe("motor kayıt noktaları", () => {
     expect(s.ulke_gecmisi.at(-1)?.tur).toBe("veba_bitti");
   });
 
-  it("küçük kriz başlayınca ve bitince kaydedilir", () => {
+  it("kriz bitince kaydedilir", () => {
     const s = karakter();
-    s.yil = s.kucuk_kriz_sonraki_yil;
-    expect(kucukKrizKontrolEt(s, 1)).toBeTruthy();
-    expect(s.ulke_gecmisi.at(-1)).toEqual({ yil: s.yil, tur: "kriz_basladi", ayrinti: "kitlik" });
-    s.yil = s.ulke.kriz!.bitisYili;
+    s.ulke.kriz = { tur: "kitlik", bitisYili: s.yil + 1 };
+    s.yil = s.ulke.kriz.bitisYili;
     expect(krizEtkisiUygula(s, 1)).toBeTruthy();
     expect(s.ulke_gecmisi.at(-1)?.tur).toBe("kriz_bitti");
   });

@@ -1,53 +1,21 @@
 import { useEffect, useState } from 'react';
 import type { MulkKartBilgisi, MulkTuru, KrediConfig } from '../types';
-import { formatPara, formatYuzde } from '../format';
+import { formatPara } from '../format';
 import { bic } from '../i18n';
 import { useDil } from '../DilContext';
 import { useMobilEkran } from '../hooks';
 
 interface IsYatirimEkraniProps {
-  meslek: string;
-  rutbe: string;
   paraBirimi: string;
-  orduMevcudu: number;
-  orduTechizatSeviyesi: number;
-  sehirYonetimSeviyesi: number;
-  sehirYonetimUnvan: string | null;
   para: number;
   krediConfig: KrediConfig | null;
-  dedikodular: string[];
   mulkler: MulkKartBilgisi[];
   yukleniyor: boolean;
   islemMesaji: string | null;
-  onKrediAl: (tutar: number) => void;
+  onKrediAl: (teklifId: string) => void;
   onKrediPazarlik: () => void;
   onMulkSatinAl: (tur: MulkTuru) => void;
   onGeriDon: () => void;
-}
-
-function StatKarosu({
-  ikon,
-  etiket,
-  deger,
-  alt,
-  vurgu,
-}: {
-  ikon: string;
-  etiket: string;
-  deger: string;
-  alt?: string;
-  vurgu?: boolean;
-}) {
-  return (
-    <div className={`is-karo${vurgu ? ' is-karo-vurgu' : ''}`}>
-      <span className="is-karo-ikon" aria-hidden="true">
-        {ikon}
-      </span>
-      <span className="is-karo-etiket">{etiket}</span>
-      <strong className="is-karo-deger">{deger}</strong>
-      {alt && <span className="is-karo-alt">{alt}</span>}
-    </div>
-  );
 }
 
 const PIYASA_SINYAL_ETIKET: Record<string, { tr: string; en: string; sinif: string }> = {
@@ -57,16 +25,9 @@ const PIYASA_SINYAL_ETIKET: Record<string, { tr: string; en: string; sinif: stri
 };
 
 export function IsYatirimEkrani({
-  meslek,
-  rutbe,
   paraBirimi,
-  orduMevcudu,
-  orduTechizatSeviyesi,
-  sehirYonetimSeviyesi,
-  sehirYonetimUnvan,
   para,
   krediConfig,
-  dedikodular,
   mulkler,
   yukleniyor,
   islemMesaji,
@@ -77,7 +38,6 @@ export function IsYatirimEkrani({
 }: IsYatirimEkraniProps) {
   const { m, kt, dil } = useDil();
   const en = dil === 'en';
-  const saldiriGucu = Math.round(orduMevcudu * (1 + orduTechizatSeviyesi / 100));
   const mobil = useMobilEkran();
   const [aktifSekme, setAktifSekme] = useState(0);
 
@@ -103,7 +63,7 @@ export function IsYatirimEkrani({
 
       {mobil && (
         <div className="ekran-sekmeleri">
-          {[m.iyGorevin, m.iyYatirimlikGayrimenkuller].map((baslik, i) => (
+          {[en ? 'Moneylender' : 'Tefeci', m.iyYatirimlikGayrimenkuller].map((baslik, i) => (
             <button
               key={i}
               type="button"
@@ -118,47 +78,9 @@ export function IsYatirimEkrani({
 
       <div className={mobil ? 'tam-sutun-tekli-sarici' : 'tam-govde-2col'}>
         <div className="tam-sutun" hidden={mobil && aktifSekme !== 0}>
-          <h3 className="tam-baslik">{m.iyGorevin}</h3>
-
-          <div className="is-profil-karti">
-            <div className="is-profil-metin">
-              <strong>{kt(rutbe)}</strong>
-            </div>
-          </div>
-
-          <div className="is-karo-izgara">
-            {sehirYonetimSeviyesi > 0 && (
-              <StatKarosu
-                ikon="🏛️"
-                etiket={m.iySehirYonetimi}
-                deger={kt(sehirYonetimUnvan ?? '')}
-                alt={bic(m.iySeviyeEk, sehirYonetimSeviyesi)}
-              />
-            )}
-
-            {meslek === 'Asker' && (
-              <>
-                <StatKarosu ikon="⚔️" etiket={m.iyOrduMevcudu} deger={`${orduMevcudu} ${m.ksAsker}`} />
-                <StatKarosu ikon="🛡️" etiket={m.iyTechizat} deger={formatYuzde(dil, orduTechizatSeviyesi)} />
-                <StatKarosu ikon="💥" etiket={m.iySaldiriGucu} deger={`${saldiriGucu}`} />
-              </>
-            )}
-          </div>
-
-          <h3 className="tam-baslik tam-baslik-dedikodu">{m.iyPiyasaDedikodulari}</h3>
-
-          {dedikodular.length > 0 && (
-            <div className="dedikodu-panosu dedikodu-panosu-vurgu">
-              <ul>
-                {dedikodular.map((d, i) => (
-                  <li key={i}>{d}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* Tefeci / kredi — iki sabit tutar (küçük/büyük), enflasyonla ölçekli. */}
           <h3 className="tam-baslik">{en ? 'Moneylender' : 'Tefeci'}</h3>
+
+          {/* Tefeci / kredi — havuzdan seçilmiş 2 teklif (tutar enflasyonlu, farklı faiz ve vade). */}
           {krediConfig?.aktifKredi ? (
             <div className="dedikodu-panosu">
               <p>
@@ -167,6 +89,8 @@ export function IsYatirimEkrani({
                 {en ? 'yearly instalment' : 'yıllık taksit'} ~{formatPara(krediConfig.aktifKredi.yillikTaksit)}
                 {' · '}
                 {en ? 'interest' : 'faiz'} %{Math.round(krediConfig.aktifKredi.faizOrani * 100)}
+                {' · '}
+                {en ? 'term' : 'vade'} {krediConfig.aktifKredi.vadeYil} {en ? 'yrs' : 'yıl'}
                 {krediConfig.aktifKredi.odenmeyenTaksit > 0 && (
                   <> · ⚠️ {en ? 'missed' : 'ödenmeyen'}: {krediConfig.aktifKredi.odenmeyenTaksit}</>
                 )}
@@ -177,22 +101,25 @@ export function IsYatirimEkrani({
                 </button>
               )}
             </div>
-          ) : krediConfig && krediConfig.kademeler.length > 0 ? (
+          ) : krediConfig && krediConfig.teklifler.length > 0 ? (
             <div className="dedikodu-panosu">
               <p className="giris-aciklama">
                 {en
-                  ? `Interest ~${Math.round(krediConfig.faizTeklifi * 100)}%. Miss three instalments and the moneylender seizes a property.`
-                  : `~%${Math.round(krediConfig.faizTeklifi * 100)} faizle. Üst üste üç taksit kaçırırsan tefeci bir mülküne el koyar.`}
+                  ? 'Pick one of the two offers. You repay in equal yearly instalments; miss three in a row and the moneylender seizes a property.'
+                  : 'İki tekliften birini seç. Eşit yıllık taksitlerle ödersin; üst üste üç taksit kaçırırsan tefeci bir mülküne el koyar.'}
               </p>
               <div className="kariyer-bagis-kademeler">
-                {krediConfig.kademeler.map((tutar) => (
+                {krediConfig.teklifler.map((t) => (
                   <button
-                    key={tutar}
+                    key={t.id}
                     className="kariyer-bagis-cip"
                     disabled={yukleniyor}
-                    onClick={() => onKrediAl(tutar)}
+                    title={en ? t.ad.en : t.ad.tr}
+                    onClick={() => onKrediAl(t.id)}
                   >
-                    {formatPara(tutar)} {paraBirimi}
+                    <strong>{formatPara(t.tutar)} {paraBirimi}</strong>
+                    <br />
+                    {en ? 'interest' : 'faiz'} %{Math.round(t.faiz * 100)} · {en ? 'term' : 'vade'} {t.vade} {en ? 'yrs' : 'yıl'}
                   </button>
                 ))}
               </div>

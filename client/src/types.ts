@@ -15,6 +15,33 @@ export interface UlkeKrizi {
   bitisYili: number;
 }
 
+/** Dünya dönemi (server data/dunyaDonemleri.ts): her an biri sürer, aynısı arka arkaya gelmez. */
+export type DonemTuru = 'bolluk' | 'durgunluk' | 'kitlik';
+
+/** Dönem/savaş/veba etkileri — hepsi çarpan (1 = etkisiz). */
+export interface DonemEtkisi {
+  temelTalep: number;
+  temelFiyat: number;
+  luksTalep: number;
+  luksFiyat: number;
+  yasamGideri: number;
+  maas: number;
+}
+
+export interface DonemDurumu {
+  tur: DonemTuru;
+  baslangicYili: number;
+  bitisYili: number;
+  sonraki: DonemTuru;
+  etki: DonemEtkisi;
+}
+
+export interface DunyaYaklasan {
+  tur: 'savas' | 'veba';
+  yil: number;
+  dusman?: string;
+}
+
 /** Tekrarlayan büyük savaş mekaniğinin aktif parametreleri (bkz. server §27); savaş yokken CharacterState.buyuk_savas null'dur. */
 export interface UlkeGecmisiKaydi {
   yil: number;
@@ -28,6 +55,7 @@ export interface BuyukSavas {
   bitisYili: number;
   vergiOrani: number;
   gidaCarpani: number;
+  etki?: DonemEtkisi;
 }
 
 /** Ömürde bir kez tetiklenebilen veba durumu (bkz. server §27); hiç yaşanmadıysa CharacterState.veba null'dur. */
@@ -39,6 +67,7 @@ export interface VebaDurumu {
   konutKiraCarpani: number;
   gelirCarpani: number;
   korumaSeviyesi: number;
+  etki?: DonemEtkisi;
 }
 
 export interface UlkeDurumu {
@@ -47,6 +76,7 @@ export interface UlkeDurumu {
   ekonomi: 'iyi' | 'normal' | 'kotu';
   kriz: UlkeKrizi | null;
   nufusDurumu: 'artiyor' | 'normal' | 'azaliyor';
+  donem?: DonemDurumu;
 }
 
 export type MulkTuru = 'kucuk_tarla' | 'ciftlik' | 'han' | 'demirci' | 'kervan' | 'karaborsa';
@@ -194,6 +224,8 @@ export interface CharacterState {
   ticaret_sermaye: number;
   nufuz: number;
   uretim_kapasitesi: number;
+  /** Oyuncunun müşteri sayısı; pazar payı = meslek_musteri / pazar_musteri (sunucu: data/pazar.ts). */
+  meslek_musteri: number;
 
   suc_seviyesi: number;
   /** Hapiste kalan ceza süresi (yıl); 0'a inince otomatik serbest kalınır. Hapiste değilken 0. */
@@ -221,6 +253,8 @@ export interface CharacterState {
   dost_puani: number;
   rakip_puani: number;
   rakipler: Rakip[];
+  /** Yenilen rakibin yerine yenisinin geleceği oyun yılı (yoksa null). */
+  rakip_yeni_yil: number | null;
 
   es_adi: string | null;
   es_puani: number;
@@ -306,18 +340,24 @@ export interface CharacterState {
   veba_hayatta_kaldi: boolean;
   /** Hapisten fiziksel bir kaçışla (rüşvet/af değil) çıktıysa true (bir kereliğine, skor bonusu). */
   hapis_basarili_kacis: boolean;
+  dunya_yaklasan: DunyaYaklasan | null;
   ulke_gecmisi: UlkeGecmisiKaydi[];
-  kucuk_kriz_sonraki_yil: number;
-  gida_fiyat_sok_bitis_yili: number | null;
   /** Ömürde bir kez borçtayken alınan kilise/eş dost yardımı kullanıldı mı. */
   borc_yardimi_alindi: boolean;
   /** Kalıcı salgından korunma yatırımı; yoksa null. */
   salgin_korunma_yatirimi: SalginKorunmaYatirimi | null;
   /** Aktif tefeci kredisi; yoksa null. */
   kredi: Kredi | null;
+  kredi_teklifleri: { idler: string[]; yil: number } | null;
 
   /** Aile ekranı etkileşim cooldown'ları: anahtar → tekrar açılacağı oyun yılı (§33). */
   aile_etkilesim_kilit: Record<string, number>;
+  /** Ajanlara verilmiş, bir sonraki yıl ilerlemesinde çözülecek işler. */
+  ajan_gorevleri: AjanGorevi[];
+  /** Meslek işletmesi (Tüccar); diğer mesleklerde null. */
+  isletme: unknown | null;
+  /** Karanlık işlerin bekleme süreleri: iş id'si → yeniden çevrilebileceği yıl. */
+  kotu_is_kilit: Record<string, number>;
   /** Eş/çocuğun bekleyen para talebi; yoksa null. */
   aile_talep: AileTalep | null;
   aile_talep_sonraki_yil: number;
@@ -563,6 +603,8 @@ export interface GecikmisTakip {
 export interface YonetimDurumu {
   yonetici: { unvan: string; ad: string; iliski: number; bagisKademeleri: number[] };
   patron: { unvan: string; ad: string; iliski: number; bagisKademeleri: number[] };
+  /** İşletmeli mesleklerde yalnız şehir yöneticisi (yonetici hattı) vardır; patron hattı gizlenir. */
+  tekOtorite: boolean;
   etkilesimler: { id: string; hat: YonetimHat; ikon: string }[];
   istekler: {
     id: string;
@@ -571,6 +613,8 @@ export interface YonetimDurumu {
     acik: boolean;
     iliskiBedeli: number;
     tahminiSans: number;
+    /** Rüşvetle eklenen sabit şans (puan); rüşvet yoksa null. */
+    rusvetBonus: number | null;
   }[];
   kilitler: Record<string, number>;
   /** "Çok sık üstüne gitme" sayacı; ≥3 iken etkileşimler ters tepebilir. */
@@ -590,7 +634,9 @@ export interface KisilikEksenleri {
 export interface Rakip {
   ad: string;
   meslek: string;
-  guc: number;
+  /** Pazar payı (0-100 yüzde) ve müşteri sayısı. */
+  pay: number;
+  musteri: number;
   husumet: number;
   yenildi: boolean;
 }
@@ -599,9 +645,57 @@ export interface Rakip {
 export interface RakipKarti {
   ad: string;
   meslek: string;
-  guc: number;
+  /** Pazar payı (0-100 yüzde) ve müşteri sayısı. */
+  pay: number;
+  musteri: number;
   husumet: number;
   yenildi: boolean;
+}
+
+export interface PazarRakipSatiri {
+  ad: string;
+  /** 0-100 yüzde. */
+  pay: number;
+  musteri: number;
+  husumet: number;
+}
+
+/** Kariyer ekranı "Pazar" bölümü (GET /:id/pazar). */
+export interface PazarDurumu {
+  aktif: boolean;
+  pazarAdi: string;
+  simge: string;
+  /** 0-100 yüzde. */
+  pazarPayi: number;
+  /** Müşteri sayısı ve toplam pazar büyüklüğü (işletmeli mesleklerde). */
+  musteri: number;
+  pazarMusteri: number;
+  rakipler: PazarRakipSatiri[];
+  digerPay: number;
+  /** Pazar payının maaşa etkisi (±yüzde). */
+  maasEtkisi: number;
+  yillikKariyerPuani: number;
+  rutbeSarti: { seviye: number; gerekliPay: number; karsilaniyor: boolean } | null;
+  yeniRakipKalanYil: number | null;
+  /** Müşteri dağılımı ve son yıl değişimleri; piyasa haberleri (en yeni önce). */
+  dagilim: { oyuncu: number; rakip: number; kucuk: number; oyuncuDegisim: number; rakipDegisim: number; kucukDegisim: number };
+  haberler: PiyasaHaberi[];
+}
+
+export interface DilliMetin {
+  tr: string;
+  en: string;
+}
+
+/** Piyasada olup biten bir şey (rakip hamlesi, küçük esnaf olayı...). Metin sunucudan iki dilli gelir. */
+export interface PiyasaHaberi {
+  yil: number;
+  simge: string;
+  yon: 'olumlu' | 'olumsuz' | 'notr';
+  grup: 'rakip' | 'kucuk' | 'dunya';
+  kod: string;
+  metin: DilliMetin;
+  musteri: number;
 }
 
 /** Kalıcı salgından korunma yatırımı (§27). */
@@ -625,18 +719,29 @@ export interface Kredi {
   kalanBorc: number;
   faizOrani: number;
   yillikTaksit: number;
+  /** Vade (yıl). */
+  vadeYil: number;
   alindigiYil: number;
   odenmeyenTaksit: number;
   pazarlikYapildi: boolean;
 }
 
+/** Tefecinin sunduğu bir teklif (havuzdan, 3 yılda bir yenilenir): tutar enflasyonlu, faiz yıllık, vade yıl, eşit yıllık taksit. */
+export interface KrediTeklifi {
+  id: string;
+  ad: { tr: string; en: string };
+  tutar: number;
+  faiz: number;
+  vade: number;
+  taksit: number;
+}
+
 export interface KrediConfig {
   aktifKredi: Kredi | null;
   maksTutar: number;
-  faizTeklifi: number;
   minTutar: number;
-  /** Tefecinin sunduğu sabit kredi tutarları (küçük/büyük), enflasyonla ölçekli. */
-  kademeler: number[];
+  /** Tefecinin şu an sunduğu 2 teklif. */
+  teklifler: KrediTeklifi[];
 }
 
 export interface EkipUyesi {
@@ -649,6 +754,156 @@ export interface EkipUyesi {
   sadakat: number;
   kisilik: string;
   cocuk_isim?: string;
+  rol_turu?: IsletmeRolTuru;
+}
+
+export type IsletmeRolTuru = 'ana' | 'maliyet' | 'musteri' | 'guvenlik';
+export type IsletmeFiyat = 'eksi20' | 'eksi10' | 'normal' | 'arti10' | 'arti20';
+export type IsletmeStokHedefi = 'cokaz' | 'az' | 'normal' | 'fazla' | 'dolu';
+
+export interface IsletmeUyari {
+  kod:
+    | 'stok_bitti'
+    | 'fazla_stok'
+    | 'calisan_ayrildi'
+    | 'kitle_kaybi'
+    | 'uretim_tavani'
+    | 'hirsizlik'
+    | 'sizdirma'
+    | 'ic_hirsizlik'
+    | 'rakip_saldiri'
+    | 'vergi_indirimi_bitti'
+    | 'imtiyaz_bitti';
+  hat?: string;
+  isim?: string;
+  sonuc?: 'agir' | 'rahat' | 'kismi' | 'engellendi' | 'sans' | 'musteri_calma' | 'iftira' | 'sabotaj' | 'baskin' | 'nakit';
+  urunYuzde?: number;
+  nakitYuzde?: number;
+  tutar?: number;
+  /** Rakip saldırısı: saldıran, güvenlik engelledi mi, içerden sızma, kaybedilen müşteri (ondalık), şöhret kaybı. */
+  rakip?: string;
+  engellendi?: boolean;
+  sizma?: boolean;
+  musteriKaybi?: number;
+  sohretKaybi?: number;
+}
+
+export interface IsletmeDokum {
+  yil: number;
+  satis: number;
+  alim: number;
+  depoMasrafi: number;
+  loncaAidati: number;
+  brutKar: number;
+  borcOdeme: number;
+  net: number;
+  vergi: number;
+  vergiOrani: number;
+  pazarPayi: number;
+  musteri: number;
+  musteriDegisim: number;
+  pazarMusteri: number;
+  hatlar: { id: string; talep: number; satilan: number; alinan: number; stokSonu: number }[];
+  /** Üretim modundaki mesleklerde (Zanaatkâr) o yılın üretim tavanı ve kullanılan miktar. */
+  uretim?: { tavan: number; kullanilan: number };
+  uyarilar: IsletmeUyari[];
+}
+
+export interface IsletmeHatGorunumu {
+  id: string;
+  simge: string;
+  ad: DilliMetin;
+  kesim: 'temel' | 'orta' | 'luks';
+  acik: boolean;
+  kilitli: boolean;
+  minRutbe: number;
+  stok: number;
+  fiyat: IsletmeFiyat;
+  tahminiTalep: number;
+  birimFiyat: number;
+  birimMaliyet: number;
+  beklenenKar: number;
+  sonTalep: number;
+  sonSatis: number;
+  dunyaTalepYuzde: number;
+  dunyaFiyatYuzde: number;
+  sicak: boolean;
+  arti: DilliMetin;
+  eksi: DilliMetin;
+}
+
+export interface IsletmeYatirimGorunumu {
+  id: string;
+  simge: string;
+  ad: DilliMetin;
+  aciklama: DilliMetin;
+  kademe: number;
+  maxKademe: number;
+  sonrakiFiyat: number | null;
+}
+
+export interface IsletmeCalisanGorunumu {
+  id: string;
+  isim: string;
+  rol: DilliMetin;
+  rolTuru: string | null;
+  rolAciklama: DilliMetin;
+  yetenek: number;
+  sadakat: number;
+  maas: number;
+  sadik: boolean;
+  riskli: boolean;
+}
+
+export interface IsletmeAdayGorunumu {
+  id: string;
+  isim: string;
+  rol: DilliMetin;
+  rolTuru: string;
+  rolAciklama: DilliMetin;
+  tip: string;
+  tipAdi: DilliMetin;
+  gecmis: DilliMetin;
+  yetenek: number;
+  sadakat: number;
+  maas: number;
+}
+
+export interface IsletmeGorunumu {
+  aktif: boolean;
+  meslek: string;
+  /** Pazar payı (0-100, bir ondalık), müşteri sayısı ve toplam pazar büyüklüğü. */
+  pazarPayi: number;
+  musteri: number;
+  pazarMusteri: number;
+  slot: { kullanilan: number; toplam: number };
+  depo: { kullanilan: number; kapasite: number; kademe: number; curumeYuzde: number; bakim: number };
+  /** Üretim modundaki mesleklerde (Zanaatkâr) yıllık üretim tavanı; ticaret modunda null. */
+  uretim: { tavan: number } | null;
+  stokHedefi: IsletmeStokHedefi;
+  hatlar: IsletmeHatGorunumu[];
+  yatirimlar: IsletmeYatirimGorunumu[];
+  calisanlar: IsletmeCalisanGorunumu[];
+  calisanTavani: number;
+  adaylar: IsletmeAdayGorunumu[];
+  adayYenilenmeKalanYil: number;
+  tedarikciBorcu: number;
+  sonDokum: IsletmeDokum | null;
+  beklenenBrutKar: number;
+  vergi: { oran: number; indirimKalanYil: number };
+  koruma: { toplam: number; calisan: number; yatirim: number; otorite: number; hirsizlikAralik: number };
+  otorite: string | null;
+  otoriteIliski: number;
+  imtiyazlar: { id: string; kalanYil: number }[];
+  dunya: { donem: string | null; savas: boolean; veba: boolean };
+  para: number;
+  paraBirimi: string;
+}
+
+export interface IsletmeKararGirdisi {
+  id: string;
+  acik?: boolean;
+  fiyat?: IsletmeFiyat;
 }
 
 export interface Ast {
@@ -827,6 +1082,12 @@ export interface MaasKirilim {
   /** "İtibarın": mutluluk + şöhret + ahlak bant yüzdelerinin toplamı (±). Değişken. */
   itibarYuzde: number;
   itibarKalemler: MaasKirilimKalemi[];
+  /** Meslek pazarı: pazar payının maaşa yüzde etkisi (±). Değişken. */
+  pazarYuzde: number;
+  /** Güncel pazar payı (0-100). */
+  pazarPayiYuzde: number;
+  /** Pazarın görünen adı (oyuncunun dilinde); meslek yoksa boş. */
+  pazarAdi: string;
   /** Enflasyon + ekonomi + savaş + salgın + geçici durumların birleşik yüzdesi. Dönemsel — dünya değiştikçe değişir. */
   donemselYuzde: number;
   donemselKalemler: MaasKirilimKalemi[];
@@ -866,17 +1127,56 @@ export interface KotuIsKarti {
   basariSansi: number;
   /** Başarılı dalın verebileceği yaklaşık para (enflasyonlu); 0 ise para getirisi yok. */
   tahminiKazanc: number;
+  /** Peşin maliyet (enflasyonlu); 0 ise yok. */
+  maliyet: number;
   rakibeYonelik: boolean;
-  /** İsimli bir rakibin gücünü kırabilir mi (>0 ise kırar). */
-  rakipKirmaGucu: number;
-  /** Bu işin tekrar çevrilebilmesine kalan oyun yılı (0 = hazır). */
+  /** Başarıda isimli rakibin müşterisinden alınan yüzde (0-100; 100 = saf dışı bırakır). */
+  rakipKirmaYuzde: number;
+  /** Başarıda kazanılan müşteri sayısı (0 ise yok). */
+  musteriKazanci: number;
+  /** Mesleğe özel iş mi. */
+  meslegeOzel: boolean;
+  /** Tekrar çevrilebilmesine kalan oyun yılı (0 = hazır). */
   kalanYil: number;
+  /** Bu işi yapabilecek ajan rolü (kanonik TR) ya da null. */
+  ajanRolu: string | null;
+  /** Yalnız ajana yaptırılabilir. */
+  sadeceAjan: boolean;
+  /** İşletmedeki herhangi bir çalışanın yapabildiği iş (§45). */
+  calisanIsi: boolean;
+}
+
+/** Bir ajana verilmiş, henüz çözülmemiş iş. */
+export interface AjanGorevi {
+  ajanId: string;
+  isId: string;
+  hedefRakipAd: string | null;
+  verilisYili: number;
+}
+
+/** Kariyer ekranı "Adam Tut" paneli için bir ajan rolü (GET /:id/ajanlar). */
+export interface AjanRolKarti {
+  rol: string;
+  simge: string;
+  ucret: number;
+  maasMin: number;
+  maasMax: number;
+  sahip: boolean;
+  isler: string[];
+}
+
+export interface AjanDurumu {
+  roller: AjanRolKarti[];
+  /** Görevdeki ajanlar: ajan id'si → iş id'si. */
+  gorevler: Record<string, string>;
 }
 
 export interface KotuIsSonucu {
   state: CharacterState;
   kazandi: boolean;
   mesaj: string;
+  /** İş bir ajana verildi, sonucu yıl dönerken. */
+  beklemede?: boolean;
 }
 
 export interface KonutSonucu {

@@ -15,7 +15,7 @@
  * TAHMİN edilen (olay verisine bağlı, deterministik olmayan) kısımlar — hafif örnekleyici:
  *  - ulke.ekonomi (iyi/normal/kotu), ulke.nufusDurumu, ara sıra isyan/altın çağ krizleri.
  *    Bunlar normalde olay `ulke_etkisi` ile değişir; burada kalıcılıklı bir sampler ile
- *    yaklaşık dağılımları taklit edilir (aşağıdaki EKONOMI_* sabitlerine bak).
+ *    yaklaşık dağılımları taklit edilir (ekonomi artık dünya döneminden gelir).
  *
  * Çalıştırma:  npx tsx scripts/simulateGayrimenkul.ts
  * Env: SIM_N (trial/mülk, vars. 4000), SIM_YIL (vars. 30)
@@ -34,7 +34,7 @@ import {
   vebaBaslat,
   vebaBitisKontrolEt,
   vebaYillikKontrol,
-  kucukKrizKontrolEt,
+  donemIlerlet,
   krizEtkisiUygula,
 } from "../src/game/stateManager";
 import { MULK_TANIMLARI, mulkTanimiGetir } from "../src/data/mulkler";
@@ -44,12 +44,6 @@ const N = Number(process.env.SIM_N ?? 4000);
 const YIL = Number(process.env.SIM_YIL ?? 30);
 
 // --- Hafif "olay tabanlı değişim" örnekleyici (ekonomi / nüfus / isyan / altın çağ) ---
-const EKONOMI_DEGISIM_IHTIMALI = 0.12; // yıllık, durum değişir mi
-const EKONOMI_DAGILIM: [CharacterState["ulke"]["ekonomi"], number][] = [
-  ["normal", 0.6],
-  ["iyi", 0.2],
-  ["kotu", 0.2],
-];
 const NUFUS_DEGISIM_IHTIMALI = 0.1;
 const NUFUS_DAGILIM: [NonNullable<CharacterState["ulke"]["nufusDurumu"]>, number][] = [
   ["normal", 0.6],
@@ -77,11 +71,10 @@ function dunyayiIlerlet(state: CharacterState): void {
     state.ulke.vebada = true;
   }
   vebaYillikKontrol(state, 1); // eş/çocuk kaybı olabilir; mülk getirisiyle ilgisiz
-  kucukKrizKontrolEt(state, 1); // kıtlık planlar
+  donemIlerlet(state, 1); // bolluk/durgunluk/kıtlık dönemi (ekonomiyi de belirler)
   krizEtkisiUygula(state, 1); // süresi dolan krizi temizler
 
   // Tahmini örnekleyici: ekonomi / nüfus
-  if (Math.random() < EKONOMI_DEGISIM_IHTIMALI) state.ulke.ekonomi = agirlikliSec(EKONOMI_DAGILIM);
   if (Math.random() < NUFUS_DEGISIM_IHTIMALI) state.ulke.nufusDurumu = agirlikliSec(NUFUS_DAGILIM);
   // Ara sıra isyan / altın çağ (yalnızca başka kriz yokken)
   if (!state.ulke.kriz && Math.random() < ISYAN_YILLIK) {

@@ -54,6 +54,13 @@ import {
   yonetimTalebiKararlastir,
   oturumDiliAyarla,
   rakiplerGetir,
+  pazarDurumGetir,
+  ajanDurumGetir,
+  ajanTut,
+  isletmeDurumGetir,
+  isletmeKararVer,
+  isletmeYatirimYap,
+  isletmeCalisanAl,
   amaclarGetir,
   hediyeEt,
   salginKorunmaConfigGetir,
@@ -267,16 +274,72 @@ gameRouter.get("/:id/kotu-is-config", async (req, res) => {
 });
 
 gameRouter.post("/:id/kotu-is", async (req, res) => {
-  const { tur, hedefRakipAd, vekil } = req.body ?? {};
+  const { tur, hedefRakipAd, ajanId } = req.body ?? {};
   if (typeof tur !== "string") {
     return res.status(400).json({ hata: "Geçersiz iş." });
   }
   try {
     const sonuc = await kotuIsYap(req.params.id, tur, {
       hedefRakipAd: typeof hedefRakipAd === "string" ? hedefRakipAd : undefined,
-      vekil: vekil === true,
+      ajanId: typeof ajanId === "string" ? ajanId : undefined,
     });
     res.json(sonuc);
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.get("/:id/ajanlar", async (req, res) => {
+  try {
+    res.json(await ajanDurumGetir(req.params.id));
+  } catch (err) {
+    res.status(404).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.get("/:id/isletme", async (req, res) => {
+  try {
+    res.json(await isletmeDurumGetir(req.params.id));
+  } catch (err) {
+    res.status(404).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/isletme/karar", async (req, res) => {
+  const { hatlar, stokHedefi } = req.body ?? {};
+  if (!Array.isArray(hatlar)) return res.status(400).json({ hata: "Geçersiz karar." });
+  try {
+    res.json(await isletmeKararVer(req.params.id, hatlar, stokHedefi));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/isletme/yatirim", async (req, res) => {
+  const { yatirimId } = req.body ?? {};
+  if (typeof yatirimId !== "string") return res.status(400).json({ hata: "Geçersiz yatırım." });
+  try {
+    res.json(await isletmeYatirimYap(req.params.id, yatirimId));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/isletme/calisan", async (req, res) => {
+  const { adayId } = req.body ?? {};
+  if (typeof adayId !== "string") return res.status(400).json({ hata: "Geçersiz aday." });
+  try {
+    res.json(await isletmeCalisanAl(req.params.id, adayId));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/ajan/tut", async (req, res) => {
+  const { rol } = req.body ?? {};
+  if (typeof rol !== "string") return res.status(400).json({ hata: "Geçersiz rol." });
+  try {
+    res.json(await ajanTut(req.params.id, rol));
   } catch (err) {
     res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
@@ -660,12 +723,12 @@ gameRouter.post("/:id/yonetim/etkilesim", async (req, res) => {
 });
 
 gameRouter.post("/:id/yonetim/istek", async (req, res) => {
-  const { istekId } = req.body ?? {};
+  const { istekId, rusvet } = req.body ?? {};
   if (typeof istekId !== "string") {
     return res.status(400).json({ hata: "Geçersiz istek." });
   }
   try {
-    const sonuc = await yonetimIstekYap(req.params.id, istekId);
+    const sonuc = await yonetimIstekYap(req.params.id, istekId, rusvet === true);
     res.json(sonuc);
   } catch (err) {
     res.status(400).json({ hata: hataMetni(err, req.params.id) });
@@ -741,6 +804,14 @@ gameRouter.get("/:id/rakipler", async (req, res) => {
   }
 });
 
+gameRouter.get("/:id/pazar", async (req, res) => {
+  try {
+    res.json(await pazarDurumGetir(req.params.id));
+  } catch (err) {
+    res.status(404).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
 gameRouter.get("/:id/amaclar", async (req, res) => {
   try {
     res.json(await amaclarGetir(req.params.id));
@@ -778,12 +849,12 @@ gameRouter.get("/:id/kredi", async (req, res) => {
 });
 
 gameRouter.post("/:id/kredi/al", async (req, res) => {
-  const { tutar } = req.body ?? {};
-  if (typeof tutar !== "number" || !isFinite(tutar) || tutar <= 0) {
-    return res.status(400).json({ hata: "Geçersiz tutar." });
+  const { teklifId } = req.body ?? {};
+  if (typeof teklifId !== "string" || teklifId.length === 0 || teklifId.length > 40) {
+    return res.status(400).json({ hata: "Geçersiz teklif." });
   }
   try {
-    res.json(await krediAlEndpoint(req.params.id, tutar));
+    res.json(await krediAlEndpoint(req.params.id, teklifId));
   } catch (err) {
     res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }

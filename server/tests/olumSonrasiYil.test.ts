@@ -70,9 +70,12 @@ describe("havuz-kilit çakışmaları", () => {
     s.yas = 30;
     const rnd = vi.spyOn(Math, "random").mockReturnValue(0);
     try {
+      s.dunya_yaklasan = { tur: "veba", yil: s.yil }; // veba sırası gelmiş
       expect(vebaBaslamaliMi(s, 1)).toBe(true); // kontrol: normalde tetiklenir
+      s.dunya_yaklasan = { tur: "veba", yil: s.yil };
       etiketEkle(s, ["kacak"]);
-      expect(vebaBaslamaliMi(s, 1)).toBe(false);
+      expect(vebaBaslamaliMi(s, 1)).toBe(false); // kaçakken beklenir
+      expect(s.dunya_yaklasan?.tur).toBe("veba"); // sinyal korunur, kaçak bitince başlar
     } finally {
       rnd.mockRestore();
     }

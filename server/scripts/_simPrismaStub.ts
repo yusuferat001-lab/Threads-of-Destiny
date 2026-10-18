@@ -64,6 +64,22 @@ const sahtePrisma = {
       return [];
     },
   },
+  geriBildirim: {
+    async create({ data }: any) {
+      return { ...data };
+    },
+    async findMany() {
+      return [];
+    },
+  },
+  istemciOlayGecmisi: {
+    async findUnique() {
+      return null;
+    },
+    async upsert({ create }: any) {
+      return { ...create };
+    },
+  },
   async $queryRawUnsafe() {
     return [];
   },

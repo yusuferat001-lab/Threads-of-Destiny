@@ -12,9 +12,10 @@ import type { CharacterState } from "../src/types";
 
 afterEach(() => vi.restoreAllMocks());
 
-async function oturum(): Promise<CharacterState> {
+/** Eski iki hatlı düzen (kral + patron) işletmesi olmayan mesleklerde sürer: Asker/Din Adamı. */
+async function oturum(meslek = "Asker"): Promise<CharacterState> {
   const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
-  await mesleğiAta(state.id, "Tüccar");
+  await mesleğiAta(state.id, meslek);
   state.para = 500;
   state.yas = 30;
   return state;
@@ -114,17 +115,173 @@ describe("yonetimIstekYap", () => {
     );
   });
 
-  it("sermaye_destegi Zanaatkâr'da üretim kapasitesini artırır (2026-09 dengesi öncesi hiçbir etkisi yoktu)", async () => {
+  it("sermaye_destegi Asker'de ordu teçhizatını artırır", async () => {
     vi.spyOn(Math, "random").mockReturnValue(0.1); // rollSuccess geçer
-    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
-    await mesleğiAta(state.id, "Zanaatkâr");
-    state.para = 500;
+    const state = await oturum();
     state.patron_iliski = 90;
-    const oncekiUretim = state.uretim_kapasitesi ?? 0;
-
+    const once = state.ordu_techizat_seviyesi;
     const sonuc = await yonetimIstekYap(state.id, "sermaye_destegi");
     expect(sonuc.basarili).toBe(true);
-    expect(sonuc.state.uretim_kapasitesi).toBe(oncekiUretim + 10);
+    expect(sonuc.state.ordu_techizat_seviyesi).toBe(Math.min(100, once + 10));
+  });
+
+  it("işletmeli meslekte eski patron istekleri ve kral istekleri yoktur", async () => {
+    const state = await oturum("Tüccar");
+    state.patron_iliski = 90;
+    await expect(yonetimIstekYap(state.id, "sermaye_destegi")).rejects.toThrow();
+    await expect(yonetimIstekYap(state.id, "zam")).rejects.toThrow();
+    await expect(yonetimIstekYap(state.id, "terfi_destegi")).rejects.toThrow();
+    await expect(yonetimIstekYap(state.id, "vergi_kayirma")).rejects.toThrow();
+  });
+});
+
+describe("şehir yöneticisi (işletmeli meslekler: tek otorite)", () => {
+  it("tek otorite: durum 'tekOtorite', yalnız yonetici etkileşimleri, mesleğe özel istek listesi", async () => {
+    const t = await oturum("Tüccar");
+    const dt = await yonetimDurumGetir(t.id);
+    expect(dt.tekOtorite).toBe(true);
+    expect(dt.etkilesimler.every((e) => e.hat === "yonetici")).toBe(true);
+    const idler = dt.istekler.map((i) => i.id);
+    expect(idler).toEqual(expect.arrayContaining(["vergi_indirimi", "pazar_imtiyazi", "gumruk_muafiyeti", "tekel_ruhsati"]));
+    expect(idler).not.toContain("hammadde_tahsisi");
+    expect(idler).not.toContain("terfi_destegi");
+    expect(idler).not.toContain("zam");
+    expect(dt.yonetici.unvan).toBe("Prévôt");
+    const z = await oturum("Zanaatkâr");
+    const idz = (await yonetimDurumGetir(z.id)).istekler.map((i) => i.id);
+    expect(idz).toEqual(expect.arrayContaining(["vergi_indirimi", "hammadde_tahsisi", "atolye_ruhsati", "resmi_siparis"]));
+    expect(idz).not.toContain("pazar_imtiyazi");
+    const a = await oturum("Asker");
+    const ida = (await yonetimDurumGetir(a.id)).istekler.map((i) => i.id);
+    expect(ida).not.toContain("vergi_indirimi");
+    expect(ida).toContain("terfi_destegi");
+  });
+
+  it("hediye +5/+10/+18 (45/100/220), hizmet +7, yağcılık +8; cooldown 4/3/4 yıl", async () => {
+    vi.spyOn(Math, "random").mockReturnValue(0.5); // tam etki, ifşa/ters yok (0.5 > 0.4)
+    const state = await oturum("Tüccar");
+    state.para = 5000;
+    state.yonetim_iliski = 30;
+    const kademeler = (await yonetimDurumGetir(state.id)).yonetici.bagisKademeleri;
+    expect(kademeler).toEqual([45, 100, 220]);
+    const s1 = await yonetimEtkilesimYap(state.id, "yonetici:bagis", kademeler[2]);
+    expect(s1.state.yonetim_iliski).toBe(48);
+    expect(s1.state.yonetim_etkilesim_kilit["yonetici:bagis"]).toBe(s1.state.yil + 4);
+    const s2 = await yonetimEtkilesimYap(state.id, "yonetici:hizmet");
+    expect(s2.state.yonetim_iliski).toBe(55);
+    expect(s2.state.yonetim_etkilesim_kilit["yonetici:hizmet"]).toBe(s2.state.yil + 3);
+    const s3 = await yonetimEtkilesimYap(state.id, "yonetici:yalan");
+    expect(s3.state.yonetim_iliski).toBe(63);
+    expect(s3.state.yonetim_etkilesim_kilit["yonetici:yalan"]).toBe(s3.state.yil + 4);
+  });
+
+  it("vergi indirimi: eşik 70, başarıda oran 10 yıl yarıya iner, ilişki bedeli 24; başarısızda kısa (4 yıl) bekleme", async () => {
+    vi.spyOn(Math, "random").mockReturnValue(0.1);
+    const state = await oturum("Tüccar");
+    state.yonetim_iliski = 69;
+    await expect(yonetimIstekYap(state.id, "vergi_indirimi")).rejects.toThrow();
+    state.yonetim_iliski = 80;
+    const sonuc = await yonetimIstekYap(state.id, "vergi_indirimi");
+    expect(sonuc.basarili).toBe(true);
+    expect(sonuc.state.vergi_carpan).toBe(0.5);
+    expect(sonuc.state.vergi_carpan_bitis_yili).toBe(sonuc.state.yil + 9);
+    expect(sonuc.state.yonetim_iliski).toBe(56);
+    expect(sonuc.state.yonetim_etkilesim_kilit["yonetici:istek:vergi_indirimi"]).toBe(sonuc.state.yil + 10);
+  });
+
+  it("istek şansı sabit (56–66) ve ilişkiden bağımsız; rüşvet +17–21 ekler", async () => {
+    const state = await oturum("Tüccar");
+    state.yonetim_iliski = 100;
+    const d = await yonetimDurumGetir(state.id);
+    for (const i of d.istekler) {
+      expect(i.tahminiSans).toBeGreaterThanOrEqual(56);
+      expect(i.tahminiSans).toBeLessThanOrEqual(66);
+      expect(i.rusvetBonus).toBeGreaterThanOrEqual(17);
+      expect(i.rusvetBonus).toBeLessThanOrEqual(21);
+    }
+    state.yonetim_iliski = 72;
+    const d2 = await yonetimDurumGetir(state.id);
+    for (const i of d.istekler) expect(d2.istekler.find((x) => x.id === i.id)!.tahminiSans).toBe(i.tahminiSans);
+    const vi_ = d.istekler.find((i) => i.id === "vergi_indirimi")!;
+    expect(vi_.iliskiBedeli).toBe(24);
+    expect(vi_.minIliski).toBe(70);
+  });
+
+  it("şehir yöneticisine yağcılık ifşa olursa ilişki −5 ve şöhret −4 (eski −16 değil)", async () => {
+    vi.spyOn(Math, "random").mockReturnValue(0.1); // ifşa (0.1 < 0.4)
+    const state = await oturum("Tüccar");
+    state.yonetim_iliski = 50;
+    state.un = 50;
+    const unOnce = state.un;
+    const sonuc = await yonetimEtkilesimYap(state.id, "yonetici:yalan");
+    expect(sonuc.state.yonetim_iliski).toBe(45);
+    expect(sonuc.state.un).toBe(unOnce - 4);
+  });
+
+  it("rüşvet: şans taban + bonus, tek bedel ahlak −5; rüşvet başarısız olsa da başka yan etki yok", async () => {
+    const state = await oturum("Tüccar");
+    state.yonetim_iliski = 90;
+    const d = await yonetimDurumGetir(state.id);
+    const vi_ = d.istekler.find((i) => i.id === "vergi_indirimi")!;
+    expect(vi_.tahminiSans).toBe(60);
+    expect(vi_.rusvetBonus).toBe(18);
+    // Başarısız zar (0.99 > 0.78): ahlak −5, ilişki bedelinin yarısı, aranma/şöhret/ün değişmez.
+    vi.spyOn(Math, "random").mockReturnValue(0.99);
+    const ahlakOnce = state.ahlak;
+    const sucOnce = state.suc_seviyesi;
+    const unOnce = state.un;
+    const sonuc = await yonetimIstekYap(state.id, "vergi_indirimi", true);
+    expect(sonuc.basarili).toBe(false);
+    expect(sonuc.state.ahlak).toBe(ahlakOnce - 5);
+    expect(sonuc.state.suc_seviyesi).toBe(sucOnce);
+    expect(sonuc.state.un).toBe(unOnce);
+    expect(sonuc.state.yonetim_iliski).toBe(90 - 12);
+  });
+
+  it("rüşvet şansı artırır: taban 60 ile başarısız sayılacak zar (0.70), rüşvetle (78) başarılı olur", async () => {
+    vi.spyOn(Math, "random").mockReturnValue(0.7);
+    const a = await oturum("Tüccar");
+    a.yonetim_iliski = 90;
+    expect((await yonetimIstekYap(a.id, "vergi_indirimi")).basarili).toBe(false);
+    const b = await oturum("Tüccar");
+    b.yonetim_iliski = 90;
+    expect((await yonetimIstekYap(b.id, "vergi_indirimi", true)).basarili).toBe(true);
+  });
+
+  it("eski mesleklerde (Asker) rüşvet yoktur", async () => {
+    const a = await oturum("Asker");
+    a.yonetim_iliski = 90;
+    await expect(yonetimIstekYap(a.id, "terfi_destegi", true)).rejects.toThrow();
+  });
+
+  it("tüccar imtiyazı 5 yıl sürer; tekel ruhsatı bir hatta bağlanır; resmi sipariş Zanaatkâr'a para + pay verir", async () => {
+    vi.spyOn(Math, "random").mockReturnValue(0.1);
+    const t = await oturum("Tüccar");
+    t.yonetim_iliski = 90;
+    await yonetimIstekYap(t.id, "pazar_imtiyazi");
+    expect(t.isletme!.imtiyazlar!.pazar_imtiyazi).toBe(t.yil + 4);
+    t.yonetim_iliski = 90;
+    await yonetimIstekYap(t.id, "tekel_ruhsati");
+    expect(t.isletme!.tekel_hat).toBeTruthy();
+    const z = await oturum("Zanaatkâr");
+    z.yonetim_iliski = 90;
+    const para = z.para;
+    const sonuc = await yonetimIstekYap(z.id, "resmi_siparis");
+    expect(sonuc.state.para).toBeGreaterThan(para);
+  });
+
+  it("talep reddi kaçmak değildir: şehir yöneticisine yalan söylenebilir, aranma artmaz", async () => {
+    const state = await oturum("Tüccar");
+    state.suc_seviyesi = 10;
+    state.yonetim_talep = {
+      id: "t9", kimden: "yonetici", kimAdi: "x", tur: "bagis", tutar: 40, kalem: "şehir surlarının onarımı için katkı", sonYil: state.yil + 3,
+    };
+    const sonuc = await yonetimTalebiKararlastir(state.id, "ret");
+    expect(sonuc.state.suc_seviyesi).toBe(10);
+    state.yonetim_talep = {
+      id: "t10", kimden: "yonetici", kimAdi: "x", tur: "bagis", tutar: 40, kalem: "şehir surlarının onarımı için katkı", sonYil: state.yil + 3,
+    };
+    await expect(yonetimTalebiKararlastir(state.id, "yalan")).resolves.toBeTruthy();
   });
 });
 

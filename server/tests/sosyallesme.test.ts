@@ -213,7 +213,8 @@ describe("sosyalleşme — bekleyen zorunlu olay korunur, ücret hata durumunda 
       state.yas = 30;
       state.para = 500;
       state.saglik = 100;
-      // Math.random sabit düşük: veba başlangıcı (yıllık %3) kesin tetiklenir; ölüm zarları da
+      state.dunya_yaklasan = { tur: "veba", yil: state.yil }; // v8.6: veba bir yıl önceden sinyal verir; sıra gelmiş
+      // Math.random sabit düşük: veba başlangıcı kesin tetiklenir; ölüm zarları da
       // tetiklenmesin diye seçilen olayın ölüm riski olmayan ilk şıkkı denenir.
       const rnd = vi.spyOn(Math, "random").mockReturnValue(0.02);
       try {

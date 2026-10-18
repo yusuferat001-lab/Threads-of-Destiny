@@ -34,7 +34,7 @@ import {
 } from "../data/aranmaSabitleri";
 import {
   etiketEkle,
-  giderEnflasyonCarpani,
+  enflasyonCarpani,
   havuzKilidiVar,
   hayatOlayiEkle,
   sucArtisiKaydet,
@@ -70,7 +70,7 @@ export function kefaretKatsayisi(state: CharacterState, puan: number): number {
 /** Verilen aranma puanının İNDİRİMSİZ tam kefareti (puan × katsayı × gider enflasyonu). */
 export function kefaretTutari(state: CharacterState, puan: number = state.suc_seviyesi): number {
   if (puan <= 0) return 0;
-  return Math.max(1, Math.round(puan * kefaretKatsayisi(state, puan) * giderEnflasyonCarpani(state)));
+  return Math.max(1, Math.round(puan * kefaretKatsayisi(state, puan) * enflasyonCarpani(state)));
 }
 
 /** Gönüllü ödeme tutarları (%20 indirimli): tam ve yarım. */
