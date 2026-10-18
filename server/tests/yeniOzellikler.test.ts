@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   createCharacter,
   mesleğiSec,
-  rakipGucKir,
+  rakipMusteriKir,
   rakiplerGuncelle,
   rakipMisillemesiDene,
   krediAl,
@@ -24,44 +24,44 @@ function taze(): CharacterState {
 }
 
 describe("Derin rakip ilişkileri", () => {
-  it("meslek seçilince tek isimli rakip üretilir; rakip_adi ile aynı kişi", () => {
+  it("meslek seçilince iki isimli rakip üretilir; rakip_adi büyük rakiple aynı kişi", () => {
     const s = taze();
-    expect(s.rakipler).toHaveLength(1);
+    expect(s.rakipler).toHaveLength(2);
     expect(s.rakipler[0].ad).toBe(s.rakip_adi);
     expect(s.rakipler.every((r) => !r.yenildi)).toBe(true);
   });
 
-  it("rakipGucKir: gücü düşürür, pazar payı (para + kariyer) verir, husumet artırır", () => {
+  it("rakipMusteriKir: rakibin müşterisini azaltır, pazar payı (para + kariyer) verir, husumet artırır", () => {
     const s = taze();
     const r = s.rakipler[0];
-    r.guc = 60;
+    const onceMusteri = r.musteri;
+    const payOnce = s.meslek_musteri;
     const paraOnce = s.para;
     const kpOnce = s.kariyer_puani;
     const husumetOnce = r.husumet;
-    const sonuc = rakipGucKir(s, r.ad, 15, 1);
+    const sonuc = rakipMusteriKir(s, r.ad, 0.15, 1);
     expect(sonuc).not.toBeNull();
-    expect(r.guc).toBe(45);
+    expect(r.musteri).toBeCloseTo(onceMusteri * 0.85, 0);
+    expect(s.meslek_musteri).toBeGreaterThan(payOnce);
     expect(s.para).toBeGreaterThan(paraOnce);
     expect(s.kariyer_puani).toBeGreaterThan(kpOnce);
     expect(r.husumet).toBeGreaterThan(husumetOnce);
   });
 
-  it("güç ≤ 10'a inince rakip yenildi olur ve bir daha kırılamaz", () => {
+  it("rakibin payı %4'ün altına inince yenildi olur ve bir daha kırılamaz", () => {
     const s = taze();
     const r = s.rakipler[0];
-    r.guc = 12;
-    const sonuc = rakipGucKir(s, r.ad, 26, 1);
+    r.musteri = s.pazar_musteri * 0.05;
+    const sonuc = rakipMusteriKir(s, r.ad, 0.5, 1);
     expect(sonuc?.yenildiMi).toBe(true);
     expect(r.yenildi).toBe(true);
-    expect(rakipGucKir(s, r.ad, 10, 1)).toBeNull();
+    expect(rakipMusteriKir(s, r.ad, 0.1, 1)).toBeNull();
   });
 
-  it("rakiplerGuncelle: yenilmemiş rakiplerin gücü büyür, husumet soğur", () => {
+  it("rakiplerGuncelle: husumet soğur (müşteri hareketi piyasaYillikUygula'da)", () => {
     const s = taze();
-    s.rakipler[0].guc = 50;
     s.rakipler[0].husumet = 60;
     rakiplerGuncelle(s, 4);
-    expect(s.rakipler[0].guc).toBeGreaterThan(50);
     expect(s.rakipler[0].husumet).toBeLessThan(60);
   });
 

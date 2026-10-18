@@ -411,10 +411,10 @@ export function yonetimEtkilesimYap(stateId: string, etkilesimId: string, kademe
   );
 }
 
-export function yonetimIstekYap(stateId: string, istekId: string) {
+export function yonetimIstekYap(stateId: string, istekId: string, rusvet = false) {
   return istek<{ state: CharacterState; basarili: boolean; mesaj: string }>(
     `/api/game/${stateId}/yonetim/istek`,
-    { method: 'POST', body: JSON.stringify({ istekId }) },
+    { method: 'POST', body: JSON.stringify({ istekId, rusvet }) },
   );
 }
 

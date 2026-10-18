@@ -214,8 +214,8 @@ export interface CharacterState {
   ticaret_sermaye: number;
   nufuz: number;
   uretim_kapasitesi: number;
-  /** Meslek pazarındaki güç (0-100). Pazar payı bundan + rakip gücünden türetilir (sunucu: data/pazar.ts). */
-  meslek_gucu: number;
+  /** Oyuncunun müşteri sayısı; pazar payı = meslek_musteri / pazar_musteri (sunucu: data/pazar.ts). */
+  meslek_musteri: number;
 
   suc_seviyesi: number;
   /** Hapiste kalan ceza süresi (yıl); 0'a inince otomatik serbest kalınır. Hapiste değilken 0. */
@@ -431,6 +431,8 @@ export interface YonetimDurumu {
     acik: boolean;
     iliskiBedeli: number;
     tahminiSans: number;
+    /** Rüşvetle eklenen sabit şans (puan); rüşvet yoksa null. */
+    rusvetBonus: number | null;
   }[];
   kilitler: Record<string, number>;
   /** "Çok sık üstüne gitme" sayacı; ≥3 iken etkileşimler ters tepebilir. */
@@ -493,6 +495,25 @@ export interface PazarDurumu {
   yillikKariyerPuani: number;
   rutbeSarti: { seviye: number; gerekliPay: number; karsilaniyor: boolean } | null;
   yeniRakipKalanYil: number | null;
+  /** Müşteri dağılımı ve son yıl değişimleri; piyasa haberleri (en yeni önce). */
+  dagilim: { oyuncu: number; rakip: number; kucuk: number; oyuncuDegisim: number; rakipDegisim: number; kucukDegisim: number };
+  haberler: PiyasaHaberi[];
+}
+
+export interface DilliMetin {
+  tr: string;
+  en: string;
+}
+
+/** Piyasada olup biten bir şey (rakip hamlesi, küçük esnaf olayı...). Metin sunucudan iki dilli gelir. */
+export interface PiyasaHaberi {
+  yil: number;
+  simge: string;
+  yon: 'olumlu' | 'olumsuz' | 'notr';
+  grup: 'rakip' | 'kucuk' | 'dunya';
+  kod: string;
+  metin: DilliMetin;
+  musteri: number;
 }
 
 /** Kalıcı salgından korunma yatırımı (§27). */
@@ -590,7 +611,7 @@ export interface IsletmeDokum {
 export interface IsletmeHatGorunumu {
   id: string;
   simge: string;
-  ad: string;
+  ad: DilliMetin;
   kesim: 'temel' | 'orta' | 'luks';
   acik: boolean;
   kilitli: boolean;
@@ -606,15 +627,15 @@ export interface IsletmeHatGorunumu {
   dunyaTalepYuzde: number;
   dunyaFiyatYuzde: number;
   sicak: boolean;
-  arti: string;
-  eksi: string;
+  arti: DilliMetin;
+  eksi: DilliMetin;
 }
 
 export interface IsletmeYatirimGorunumu {
   id: string;
   simge: string;
-  ad: string;
-  aciklama: string;
+  ad: DilliMetin;
+  aciklama: DilliMetin;
   kademe: number;
   maxKademe: number;
   sonrakiFiyat: number | null;
@@ -623,9 +644,9 @@ export interface IsletmeYatirimGorunumu {
 export interface IsletmeCalisanGorunumu {
   id: string;
   isim: string;
-  rol: string;
+  rol: DilliMetin;
   rolTuru: string | null;
-  rolAciklama: string;
+  rolAciklama: DilliMetin;
   yetenek: number;
   sadakat: number;
   maas: number;
@@ -636,12 +657,12 @@ export interface IsletmeCalisanGorunumu {
 export interface IsletmeAdayGorunumu {
   id: string;
   isim: string;
-  rol: string;
+  rol: DilliMetin;
   rolTuru: string;
-  rolAciklama: string;
+  rolAciklama: DilliMetin;
   tip: string;
-  tipAdi: string;
-  gecmis: string;
+  tipAdi: DilliMetin;
+  gecmis: DilliMetin;
   yetenek: number;
   sadakat: number;
   maas: number;
@@ -899,10 +920,10 @@ export interface KotuIsKarti {
   /** Peşin maliyet (enflasyonlu); 0 ise yok. */
   maliyet: number;
   rakibeYonelik: boolean;
-  /** İsimli bir rakibin gücünü ne kadar kırar (>0 ise kırar; 100 = saf dışı bırakır). */
-  rakipKirmaGucu: number;
-  /** Başarıda meslek pazarındaki gücüne eklenen miktar (0 ise yok). */
-  meslekGucuKazanci: number;
+  /** Başarıda isimli rakibin müşterisinden alınan yüzde (0-100; 100 = saf dışı bırakır). */
+  rakipKirmaYuzde: number;
+  /** Başarıda kazanılan müşteri sayısı (0 ise yok). */
+  musteriKazanci: number;
   /** Mesleğe özel iş mi. */
   meslegeOzel: boolean;
   /** Tekrar çevrilebilmesine kalan oyun yılı (0 = hazır). */

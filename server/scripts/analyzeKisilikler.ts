@@ -53,7 +53,7 @@ const SAYISAL_ALANLAR = [
   "unvan_sayisi",
   "rutbe_seviye",
   "pazar_payi",
-  "meslek_gucu",
+  "musteri",
   "sehir_yonetim_seviyesi",
   "borclu_tur_sayisi",
   "yatirimSayisi",
@@ -318,7 +318,7 @@ for (const [kisilik, arr] of Object.entries(kayitlar.reduce((acc: Record<string,
   return acc;
 }, {}))) {
   const paylar = (arr as any[]).map((k) => k.pazar_payi ?? 0);
-  console.log(`  ${String(kisilik).padEnd(20)} ort ${ort(paylar).toFixed(1).padStart(5)} · med ${medyan(paylar).toFixed(0).padStart(3)} · ≥35: %${yuzde(paylar.filter((p) => p >= 35).length, paylar.length)} · güç ${ort((arr as any[]).map((k) => k.meslek_gucu ?? 0)).toFixed(0)}`);
+  console.log(`  ${String(kisilik).padEnd(20)} ort ${ort(paylar).toFixed(1).padStart(5)} · med ${medyan(paylar).toFixed(0).padStart(3)} · ≥35: %${yuzde(paylar.filter((p) => p >= 35).length, paylar.length)} · müşteri ${ort((arr as any[]).map((k) => k.musteri ?? 0)).toFixed(0)}`);
 }
 
 console.log("\nRütbe dağılımı — TÜM ömürler (S1..S5 %) | dolu ömür (yaş≥55) medyan & S1..S5 %:");

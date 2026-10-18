@@ -147,7 +147,7 @@ describe("karanlık işler (illegal işler paneli)", () => {
     await expect(kotuIsYap(state.id, "kervan_yagmalat")).rejects.toThrow();
   });
 
-  it("mesleğe özel iş başarılı olunca meslek pazarındaki güç artar", async () => {
+  it("mesleğe özel iş başarılı olunca meslek pazarındaki müşteri sayısı artar", async () => {
     const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Zanaatkâr");
     const s = await stateGetir(state.id);
@@ -156,9 +156,9 @@ describe("karanlık işler (illegal işler paneli)", () => {
       s.kotu_is_kilit = {};
       s.etiketler = s.etiketler.filter((e) => e !== "hapiste");
       s.ahlak = 50;
-      const once = s.meslek_gucu;
+      const once = s.meslek_musteri;
       const { kazandi } = await kotuIsYap(state.id, "lonca_manipule");
-      if (kazandi) arttiMi = s.meslek_gucu > once;
+      if (kazandi) arttiMi = s.meslek_musteri > once;
     }
     expect(arttiMi).toBe(true);
   });

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import type {
+  PazarDurumu,
   IsletmeGorunumu,
   IsletmeHatGorunumu,
   IsletmeFiyat,
@@ -8,10 +9,14 @@ import type {
   IsletmeUyari,
 } from '../types';
 import { useDil } from '../DilContext';
+import { kt } from '../katalog';
+import { PiyasaHaberleri } from './PiyasaHaberleri';
 import { formatPara, formatYuzde } from '../format';
 
 interface Props {
   durum: IsletmeGorunumu;
+  /** Piyasa haberleri ve müşteri dağılımı için (yoksa kart gösterilmez). */
+  pazar?: PazarDurumu | null;
   yukleniyor: boolean;
   onKarar: (hatlar: IsletmeKararGirdisi[], stokHedefi?: IsletmeStokHedefi) => void;
   onYatirim: (yatirimId: string) => void;
@@ -165,7 +170,7 @@ const SALDIRI_SONUCLARI: Record<string, D> = {
 /** Aynı yıl için açılır uyarıyı yalnız bir kez göstermek için (modül düzeyi; sayfa yenilenince sıfırlanır). */
 let sonGosterilenYil = -1;
 
-export function IsletmePaneli({ durum, yukleniyor, onKarar, onYatirim, onCalisanAl, onEkipCikar }: Props) {
+export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onCalisanAl, onEkipCikar }: Props) {
   const { dil } = useDil();
   const t = (k: Exclude<keyof typeof M, 'donem'>) => M[k][dil];
   const d = (m: D) => m[dil];
@@ -231,7 +236,7 @@ export function IsletmePaneli({ durum, yukleniyor, onKarar, onYatirim, onCalisan
       <div key={h.id} className={`isletme-hat${h.acik ? ' isletme-hat-acik' : ''}${h.kilitli ? ' isletme-hat-kilitli' : ''}`}>
         <div className="isletme-hat-baslik">
           <strong>
-            {h.simge} {h.ad} {h.sicak ? '🔥' : ''}
+            {h.simge} {d(h.ad)} {h.sicak ? '🔥' : ''}
           </strong>
           <span className="isletme-etiket">{t(h.kesim)}</span>
           {h.kilitli ? (
@@ -245,8 +250,8 @@ export function IsletmePaneli({ durum, yukleniyor, onKarar, onYatirim, onCalisan
           )}
         </div>
         <div className="isletme-hat-artieksi">
-          <span>➕ {h.arti}</span>
-          <span>➖ {h.eksi}</span>
+          <span>➕ {d(h.arti)}</span>
+          <span>➖ {d(h.eksi)}</span>
         </div>
         {h.sicak && <div className="isletme-hat-dunya">{t('sicak')}</div>}
         <div className="isletme-hat-satir">
@@ -331,7 +336,7 @@ export function IsletmePaneli({ durum, yukleniyor, onKarar, onYatirim, onCalisan
         </span>
         {durum.otorite && (
           <span>
-            🏛️ {t('otorite')}: <strong>{durum.otorite}</strong> · {t('iliski')} {durum.otoriteIliski}
+            🏛️ {t('otorite')}: <strong>{kt(dil, durum.otorite)}</strong> · {t('iliski')} {durum.otoriteIliski}
           </span>
         )}
         {(donemAdi || durum.dunya.savas || durum.dunya.veba) && (
@@ -360,20 +365,22 @@ export function IsletmePaneli({ durum, yukleniyor, onKarar, onYatirim, onCalisan
         {d(STOK_HEDEFLERI.find((s) => s.id === durum.stokHedefi)?.ipucu ?? STOK_HEDEFLERI[2].ipucu)} {t('stokHedefiNot')}
       </div>
 
+      {pazar && pazar.aktif && <PiyasaHaberleri pazar={pazar} sayilarGoster />}
+
       <h4>{t('hatlar')}</h4>
       <div className="isletme-hatlar">{durum.hatlar.map(hatKarti)}</div>
 
       <h4>{t('yatirimlar')}</h4>
       <div className="isletme-yatirimlar">
         {durum.yatirimlar.map((y) => (
-          <div key={y.id} className="isletme-yatirim" title={y.aciklama}>
+          <div key={y.id} className="isletme-yatirim" title={d(y.aciklama)}>
             <strong>
-              {y.simge} {y.ad}
+              {y.simge} {d(y.ad)}
             </strong>
             <span>
               {t('kademe')} {y.kademe}/{y.maxKademe}
             </span>
-            <small>{y.aciklama}</small>
+            <small>{d(y.aciklama)}</small>
             {y.sonrakiFiyat === null ? (
               <span className="isletme-etiket">{t('azami')}</span>
             ) : (
@@ -394,14 +401,14 @@ export function IsletmePaneli({ durum, yukleniyor, onKarar, onYatirim, onCalisan
         <div className="isletme-calisanlar">
           {durum.calisanlar.map((c) => (
             <div key={c.id} className={`isletme-calisan${c.riskli ? ' isletme-calisan-riskli' : ''}`}>
-              <strong>{c.isim}</strong> <em>({c.rol})</em>
+              <strong>{c.isim}</strong> <em>({d(c.rol)})</em>
               {c.sadik && <span className="isletme-etiket">⭐ {t('sadik')}</span>}
               {c.riskli && (
                 <span className="isletme-etiket" title={t('riskli')}>
                   ⚠️ {t('sadakat')} {c.sadakat}
                 </span>
               )}
-              <small>{c.rolAciklama}</small>
+              <small>{d(c.rolAciklama)}</small>
               <span>
                 {t('yetenek')} {c.yetenek} · {t('sadakat')} {c.sadakat} · {t('maas')} {formatPara(c.maas)}
                 {t('yil')}
@@ -422,10 +429,10 @@ export function IsletmePaneli({ durum, yukleniyor, onKarar, onYatirim, onCalisan
           <div className="isletme-calisanlar">
             {durum.adaylar.map((a) => (
               <div key={a.id} className="isletme-calisan isletme-aday">
-                <strong>{a.isim}</strong> <em>({a.rol})</em>
-                <span className="isletme-etiket">{a.tipAdi}</span>
-                <small>{a.rolAciklama}</small>
-                <small>{a.gecmis}</small>
+                <strong>{a.isim}</strong> <em>({d(a.rol)})</em>
+                <span className="isletme-etiket">{d(a.tipAdi)}</span>
+                <small>{d(a.rolAciklama)}</small>
+                <small>{d(a.gecmis)}</small>
                 <span>
                   {t('yetenek')} {a.yetenek} · {t('sadakat')} {a.sadakat} · {t('maas')} {formatPara(a.maas)}
                   {t('yil')}

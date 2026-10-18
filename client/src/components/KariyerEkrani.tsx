@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { PiyasaHaberleri } from './PiyasaHaberleri';
 import type { FinansOzeti, GecmisNoktasi, IsletmeGorunumu, IsletmeKararGirdisi, IsletmeStokHedefi, EkipUyesi, Rakip, KotuIsKarti, YonetimDurumu, YonetimHat, PazarDurumu, AjanDurumu } from '../types';
 import { useDil } from '../DilContext';
 import { formatPara, formatYuzde, formatYuzdeAralik } from '../format';
@@ -39,7 +40,7 @@ interface KariyerEkraniProps {
   /** Meslek pazarı (GET /:id/pazar): paylar, müşteriler, maaş etkisi, rütbe şartı. */
   pazarDurum: PazarDurumu | null;
   onEtkilesim: (etkilesimId: string, kademe?: number) => void;
-  onIstek: (istekId: string) => void;
+  onIstek: (istekId: string, rusvet?: boolean) => void;
   onTalep: (karar: 'kabul' | 'ret' | 'yalan') => void;
   onEkipCikar: (ekipId: string) => void;
   onKotuIs: (id: string, opts?: { hedefRakipAd?: string; ajanId?: string }) => void;
@@ -171,7 +172,7 @@ function KaranlikIsKart({
   const en = dil === 'en';
   const metin = karanlikIsMetni(dil, is.id, dinKultur);
   const aktifRakipler = rakipler.filter((r) => !r.yenildi);
-  const rakipHedefli = is.rakipKirmaGucu > 0 && aktifRakipler.length > 0;
+  const rakipHedefli = is.rakipKirmaYuzde > 0 && aktifRakipler.length > 0;
   const [hedef, setHedef] = useState<string>(aktifRakipler[0]?.ad ?? '');
   const bekliyor = is.kalanYil > 0;
   const [calisanId, setCalisanId] = useState<string>('');
@@ -179,9 +180,9 @@ function KaranlikIsKart({
   const ozet: string[] = [bic(m.iyKaranlikSans, is.basariSansi)];
   if (is.tahminiKazanc > 0) ozet.push(bic(m.iyKaranlikKazanc, formatPara(is.tahminiKazanc), paraBirimi));
   if (is.maliyet > 0) ozet.push(`${en ? 'cost' : 'bedel'} ${formatPara(is.maliyet)} ${paraBirimi}`);
-  if (is.meslekGucuKazanci > 0) ozet.push(en ? 'market share up' : 'pazar payın artar');
-  if (is.rakipKirmaGucu >= 100) ozet.push(en ? 'finishes your rival' : 'rakibi bitirir');
-  else if (is.rakipKirmaGucu > 0) ozet.push(en ? 'weakens your rival' : 'rakibi zayıflatır');
+  if (is.musteriKazanci > 0) ozet.push(en ? `+${is.musteriKazanci} customers` : `+${is.musteriKazanci} müşteri`);
+  if (is.rakipKirmaYuzde >= 100) ozet.push(en ? 'finishes your rival' : 'rakibi bitirir');
+  else if (is.rakipKirmaYuzde > 0) ozet.push(en ? 'weakens your rival' : 'rakibi zayıflatır');
 
   return (
     <div className={`yatirim-kart isyatirim-kendi-is-kart${bekliyor ? ' karanlik-bekliyor' : ''}`} title={metin.aciklama}>
@@ -429,6 +430,7 @@ function PazarKarti({ pazar }: { pazar: PazarDurumu }) {
             : `Şimdilik rakibin yok — ~${pazar.yeniRakipKalanYil} yıl içinde yenisi çıkar.`}
         </p>
       )}
+      <PiyasaHaberleri pazar={pazar} sayilarGoster={pazar.pazarMusteri > 0 && pazar.musteri > 0} adet={3} />
       <p className="pazar-ipucu">
         {en
           ? 'Your share grows with successes in your trade, fair prices and good staff; every blow to a rival hands you their customers.'
@@ -450,7 +452,7 @@ function HatKarti({
   durum: YonetimDurumu;
   yukleniyor: boolean;
   onEtkilesim: (id: string, kademe?: number) => void;
-  onIstek: (id: string) => void;
+  onIstek: (id: string, rusvet?: boolean) => void;
 }) {
   const { dil } = useDil();
   const en = dil === 'en';
@@ -575,7 +577,7 @@ function IstekAksiyon({
 }: {
   istek: YonetimDurumu['istekler'][number];
   yukleniyor: boolean;
-  onIstek: (id: string) => void;
+  onIstek: (id: string, rusvet?: boolean) => void;
   en: boolean;
 }) {
   return (
@@ -586,6 +588,16 @@ function IstekAksiyon({
       <button className="ikincil" disabled={yukleniyor} onClick={() => onIstek(istek.id)}>
         {en ? 'Ask' : 'İste'}
       </button>
+      {istek.rusvetBonus ? (
+        <button
+          className="ikincil kariyer-istek-rusvet"
+          disabled={yukleniyor}
+          title={en ? 'Bribe: raises the chance; costs only morality.' : 'Rüşvet: şansı artırır; tek bedeli ahlakın.'}
+          onClick={() => onIstek(istek.id, true)}
+        >
+          💰 {en ? `Bribe +${istek.rusvetBonus}% chance (morality −5)` : `Rüşvet ver +%${istek.rusvetBonus} şans (ahlak −5)`}
+        </button>
+      ) : null}
     </div>
   );
 }
@@ -897,6 +909,7 @@ export function KariyerEkrani({
           {isletme?.aktif && onIsletmeKarar && onIsletmeYatirim && onIsletmeCalisanAl && (
             <IsletmePaneli
               durum={isletme}
+              pazar={pazarDurum}
               yukleniyor={yukleniyor}
               onKarar={onIsletmeKarar}
               onYatirim={onIsletmeYatirim}

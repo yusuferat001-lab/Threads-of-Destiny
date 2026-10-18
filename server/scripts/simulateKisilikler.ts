@@ -682,7 +682,7 @@ interface OyunKaydi {
   rutbe_seviye: number;
   /** Ölüm anındaki meslek pazarı payı (0-100). */
   pazar_payi: number;
-  meslek_gucu: number;
+  musteri: number;
   sehir_yonetim_seviyesi: number;
   tur_sayisi: number;
   cocuk_sayisi: number;
@@ -803,7 +803,7 @@ async function birOyunSimuleEt(kisilik: Kisilik, cag: Cag, meslek: string): Prom
     rutbe: son.rutbe,
     rutbe_seviye: son.rutbe_seviye,
     pazar_payi: Math.round(pazarPayiHesapla(son) * 100),
-    meslek_gucu: Math.round(son.meslek_gucu ?? 0),
+    musteri: Math.round(son.meslek_musteri ?? 0),
     sehir_yonetim_seviyesi: son.sehir_yonetim_seviyesi,
     tur_sayisi: son.tur_sayisi,
     cocuk_sayisi: son.cocuk_sayisi,

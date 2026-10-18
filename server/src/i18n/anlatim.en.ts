@@ -745,6 +745,7 @@ export const ANLATIM_EN: Record<string, string> = {
   "Hükümdara yalan söyleyemezsin — sadece öde ya da kaç.": "You can't lie to the ruler — pay or flee.",
   "Bunu istemek için ilişkin yeterince güçlü değil.": "Your relationship isn't strong enough to ask for this.",
   "Aynı iyiliği bu kadar sık isteyemezsin.": "You can't ask for the same favor so often.",
+  "Bu istekte rüşvet işe yaramaz.": "A bribe is no use for this request.",
   "Şu an bu isteğin bir anlamı yok.": "This request makes no sense right now.",
   "Hapisteyken istekte bulunamazsın.": "You can't make requests while in prison.",
   "Yolculuktayken istekte bulunamazsın.": "You can't make requests while traveling.",

@@ -9,7 +9,7 @@ import type { AjanRolu } from "./ajanlar";
  * 2026-10 (meslek pazarı, §43 Faz 1): 4 GENEL iş herkese açık, ayrıca her
  * mesleğin kendi "savaş alanına" ait 3 özel işi var (Tüccar pazar, Din Adamı
  * cemaat, Zanaatkâr lonca/üretim, Asker sokak/asayiş). Özel işlerin asıl
- * ödülü ham para değil, meslek pazarındaki güç (`meslek_gucu`) ve rakibin
+ * ödülü ham para değil, meslek pazarındaki müşteri sayın (`musteri`) ve rakibin
  * gücünü kırmaktır — tur harcamadığı için para veren her şey sömürülürdü.
  *
  * Her işin kendi bekleme süresi var (`cooldownYil`, `state.kotu_is_kilit`) —
@@ -32,8 +32,8 @@ export interface KotuIsEtki {
   suc_artis?: number;
   /** Rütbe ilerlemesine katkı. */
   kariyer_puani?: number;
-  /** Meslek pazarındaki güce delta (±, data/pazar.ts). */
-  meslek_gucu?: number;
+  /** Oyuncunun müşteri sayısına delta (±; P=416 referansı, gerçek pazarda P/416 ile ölçeklenir; data/pazar.ts). */
+  musteri?: number;
   /** Meslek metrikleri (yalnız ilgili meslekte anlamlı). */
   ticaret_sermaye?: number;
   nufuz?: number;
@@ -67,8 +67,8 @@ export interface KotuIsTanimi {
   cooldownYil: number;
   /** Peşin, geri alınmayan taban maliyet (rüşvet, mal alımı...); enflasyonla ölçeklenir. */
   maliyet?: number;
-  /** Başarılı dalda hedef rakibin gücünü bu kadar kırar (rakipGucKir). */
-  rakipKirma?: number;
+  /** Başarılı dalda hedef rakibin müşterisinin bu kesri alınır (rakipMusteriKir; %30'u doğrudan oyuncuya). */
+  rakipKirmaYuzde?: number;
   /** Başarılı dalda hedef rakip doğrudan saf dışı kalır. */
   rakipYenilt?: boolean;
   /** Bu işi senin yerine çevirebilecek ajan rolü (§43 Faz 2, data/ajanlar.ts). */
@@ -89,7 +89,7 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
     simge: "🗡️",
     basariSansi: 76,
     cooldownYil: 1,
-    rakipKirma: 8,
+    rakipKirmaYuzde: 0.14,
     basarili: { para: 6, un: 2, ahlak: -6, mutluluk: 2, rakip_puani: -10, suc_artis: 7, kariyer_puani: 2 },
     basarisiz: { ahlak: -3, mutluluk: -3, rakip_puani: -3, suc_artis: 12 },
   },
@@ -118,7 +118,7 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
     basariSansi: 44,
     yatkinlik: "savas",
     cooldownYil: 4,
-    rakipKirma: 26,
+    rakipKirmaYuzde: 0.45,
     basarili: { para: 30, un: -4, ahlak: -22, mutluluk: 2, rakip_puani: -30, suc_artis: 32, kariyer_puani: 6 },
     basarisiz: { saglik: -18, ahlak: -6, suc_artis: 40, olum_sansi: 6, hapis_sansi: 0.35 },
   },
@@ -131,7 +131,7 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
     rakipYenilt: true,
     ajanRolu: "Suikastçı",
     sadeceAjan: true,
-    basarili: { meslek_gucu: 4, ahlak: -24, suc_artis: 22 },
+    basarili: { musteri: 12, ahlak: -24, suc_artis: 22 },
     basarisiz: { ahlak: -6, suc_artis: 30, hapis_sansi: 0.3 },
   },
 
@@ -144,8 +144,8 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
     calisanIsi: true,
     cooldownYil: 2,
     maliyet: 6,
-    rakipKirma: 12,
-    basarili: { meslek_gucu: 3, ahlak: -10, mutluluk: 1, rakip_puani: -8, suc_artis: 10, kariyer_puani: 2 },
+    rakipKirmaYuzde: 0.2,
+    basarili: { musteri: 9, ahlak: -10, mutluluk: 1, rakip_puani: -8, suc_artis: 10, kariyer_puani: 2 },
     basarisiz: { un: -4, ahlak: -4, suc_artis: 16, hapis_sansi: 0.1 },
   },
   {
@@ -155,8 +155,8 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
     meslekler: ["Tüccar"],
     calisanIsi: true,
     cooldownYil: 2,
-    rakipKirma: 14,
-    basarili: { para: 14, meslek_gucu: 2, ahlak: -12, mutluluk: 1, rakip_puani: -8, suc_artis: 16, kariyer_puani: 3 },
+    rakipKirmaYuzde: 0.24,
+    basarili: { para: 14, musteri: 6, ahlak: -12, mutluluk: 1, rakip_puani: -8, suc_artis: 16, kariyer_puani: 3 },
     basarisiz: { saglik: -8, ahlak: -4, suc_artis: 22, hapis_sansi: 0.15 },
   },
   {
@@ -167,7 +167,7 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
     calisanIsi: true,
     cooldownYil: 5,
     maliyet: 14,
-    basarili: { meslek_gucu: 2, ticaret_sermaye: 6, ahlak: -8, suc_artis: 10, gumruk_indirim_yil: 4 },
+    basarili: { musteri: 6, ticaret_sermaye: 6, ahlak: -8, suc_artis: 10, gumruk_indirim_yil: 4 },
     basarisiz: { un: -5, ahlak: -3, suc_artis: 20, hapis_sansi: 0.15 },
   },
 
@@ -178,8 +178,8 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
     basariSansi: 60,
     meslekler: ["Din Adamı"],
     cooldownYil: 4,
-    basarili: { un: 6, nufuz: 4, meslek_gucu: 7, ahlak: -14, suc_artis: 6 },
-    basarisiz: { un: -8, ahlak: -6, meslek_gucu: -4, suc_artis: 8 },
+    basarili: { un: 6, nufuz: 4, musteri: 21, ahlak: -14, suc_artis: 6 },
+    basarisiz: { un: -8, ahlak: -6, musteri: -12, suc_artis: 8 },
   },
   {
     id: "afaroz_ettir",
@@ -188,8 +188,8 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
     basariSansi: 55,
     meslekler: ["Din Adamı"],
     cooldownYil: 3,
-    rakipKirma: 16,
-    basarili: { meslek_gucu: 2, ahlak: -12, rakip_puani: -10, suc_artis: 8, kariyer_puani: 3 },
+    rakipKirmaYuzde: 0.28,
+    basarili: { musteri: 6, ahlak: -12, rakip_puani: -10, suc_artis: 8, kariyer_puani: 3 },
     basarisiz: { patron_iliski: -10, un: -5, ahlak: -4, suc_artis: 10 },
   },
   {
@@ -199,7 +199,7 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
     basariSansi: 52,
     meslekler: ["Din Adamı"],
     cooldownYil: 5,
-    basarili: { yonetim_iliski: 12, para: 12, meslek_gucu: 3, ahlak: -12, suc_artis: 14 },
+    basarili: { yonetim_iliski: 12, para: 12, musteri: 9, ahlak: -12, suc_artis: 14 },
     basarisiz: { yonetim_iliski: -15, ahlak: -4, suc_artis: 20, hapis_sansi: 0.2 },
   },
 
@@ -212,8 +212,8 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
     meslekler: ["Zanaatkâr"],
     calisanIsi: true,
     cooldownYil: 3,
-    rakipKirma: 8,
-    basarili: { uretim_kapasitesi: 10, meslek_gucu: 6, ahlak: -10, suc_artis: 12 },
+    rakipKirmaYuzde: 0.14,
+    basarili: { uretim_kapasitesi: 10, musteri: 18, ahlak: -10, suc_artis: 12 },
     basarisiz: { un: -4, ahlak: -3, suc_artis: 18, hapis_sansi: 0.15 },
   },
   {
@@ -224,8 +224,8 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
     calisanIsi: true,
     cooldownYil: 3,
     maliyet: 15,
-    rakipKirma: 12,
-    basarili: { para: 8, meslek_gucu: 3, ahlak: -6, rakip_puani: -6, suc_artis: 4, gumruk_indirim_yil: 4 },
+    rakipKirmaYuzde: 0.2,
+    basarili: { para: 8, musteri: 9, ahlak: -6, rakip_puani: -6, suc_artis: 4, gumruk_indirim_yil: 4 },
     basarisiz: { para: -6, un: -2, ahlak: -2 },
   },
   {
@@ -235,7 +235,7 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
     meslekler: ["Zanaatkâr"],
     calisanIsi: true,
     cooldownYil: 4,
-    basarili: { kariyer_puani: 6, patron_iliski: 10, meslek_gucu: 4, ahlak: -10, suc_artis: 6 },
+    basarili: { kariyer_puani: 6, patron_iliski: 10, musteri: 12, ahlak: -10, suc_artis: 6 },
     basarisiz: { patron_iliski: -15, un: -4, ahlak: -3, suc_artis: 6 },
   },
 
@@ -247,7 +247,7 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
     basariSansi: 55,
     meslekler: ["Asker"],
     cooldownYil: 5,
-    basarili: { para: 16, yonetim_iliski: 8, meslek_gucu: 5, ahlak: -18, suc_artis: 18, kriz: { tur: "isyan", sureYil: 1 } },
+    basarili: { para: 16, yonetim_iliski: 8, musteri: 15, ahlak: -18, suc_artis: 18, kriz: { tur: "isyan", sureYil: 1 } },
     basarisiz: { saglik: -10, ahlak: -5, suc_artis: 26, hapis_sansi: 0.25 },
   },
   {
@@ -258,7 +258,7 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
     meslekler: ["Asker"],
     cooldownYil: 6,
     rakipYenilt: true,
-    basarili: { un: 6, meslek_gucu: 6, ahlak: -16, suc_artis: 14, kariyer_puani: 4 },
+    basarili: { un: 6, musteri: 18, ahlak: -16, suc_artis: 14, kariyer_puani: 4 },
     basarisiz: { saglik: -25, un: -4, suc_artis: 10, olum_sansi: 14 },
   },
   {
@@ -268,7 +268,7 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
     basariSansi: 60,
     meslekler: ["Asker"],
     cooldownYil: 2,
-    basarili: { para: 18, ordu_techizat: 8, meslek_gucu: 3, ahlak: -12, suc_artis: 16 },
+    basarili: { para: 18, ordu_techizat: 8, musteri: 9, ahlak: -12, suc_artis: 16 },
     basarisiz: { saglik: -12, ahlak: -4, suc_artis: 20, hapis_sansi: 0.15 },
   },
 ];

@@ -9,7 +9,7 @@ function terfiEttir(state: ReturnType<typeof createCharacter>, hedef: number): v
     state.kariyer_puani = 999;
     state.un = 100;
     state.ahlak = 100;
-    state.meslek_gucu = 100; // pazar payı şartı (S4 %18, S5 %35)
+    state.meslek_musteri = state.pazar_musteri * 0.6; // pazar payı şartı (S4 %18, S5 %35)
     state.yil += 10;
     rutbeGuncelle(state);
   }
@@ -73,7 +73,7 @@ describe("rütbe reformu — 5 kademe, ratchet, cooldown, kariyer puanı", () =>
   it("çağrı başına en fazla +1 kademe ilerler", () => {
     const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(s, "Tüccar");
-    s.meslek_gucu = 400; // pay şartı (işletmeli meslek: S2 %12 … S5 %50)
+    s.meslek_musteri = s.pazar_musteri * 0.6; // pay şartı (işletmeli meslek: S2 %12 … S5 %50)
     s.kariyer_puani = 999;
     s.un = 100;
     s.yil += 50; // tüm cooldownlar aşılmış olsa bile
@@ -109,7 +109,7 @@ describe("rütbe reformu — 5 kademe, ratchet, cooldown, kariyer puanı", () =>
   it("Tüccar'da her kademe ün ister — ün düşükken kariyer_puani ne olursa olsun terfi olmaz", () => {
     const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(s, "Tüccar");
-    s.meslek_gucu = 400;
+    s.meslek_musteri = s.pazar_musteri * 0.6;
     s.kariyer_puani = 999;
     s.un = 5; // S2 ün eşiğinin (12) altında
     s.yil += 50;
@@ -123,9 +123,8 @@ describe("rütbe reformu — 5 kademe, ratchet, cooldown, kariyer puanı", () =>
   it("S4 ve S5 ayrıca pazar payı ister — pazarda zayıfken terfi durur (işletmeli: S2 %12 · S3 %20 · S4 %32 · S5 %50)", () => {
     const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(s, "Tüccar");
-    const rakip = s.rakipler[0].guc + 40; // rakip + küçük oyuncular
     const payAyarla = (pay: number) => {
-      s.meslek_gucu = (pay / (1 - pay)) * rakip;
+      s.meslek_musteri = s.pazar_musteri * pay;
     };
     payAyarla(0.1); // %10 < %12: S2'ye bile çıkamaz
     s.kariyer_puani = 999;

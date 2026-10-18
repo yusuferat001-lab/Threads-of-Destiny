@@ -25,7 +25,8 @@ import {
 } from "../data/meslekProfilleri";
 import {
   ALIM_ORANI,
-  MESLEK_GUCU_TAVAN,
+  sabitMusteriArtisi,
+  aktifRakip,
   musteriSayisi,
   pazarPayiHesapla,
   rakipSaldiriKademesi,
@@ -33,6 +34,7 @@ import {
   sohretPayBuyumesi,
 } from "../data/pazar";
 import { pazarBuyumeVarsayilan } from "../data/dunyaDonemleri";
+import { musteriKaydir, musteriAktar, pazarOlcekle, piyasaCarpani, rakipGrubu } from "./piyasa";
 import { rastgeleBirIsimSec } from "../data/npcIsimleri";
 
 /**
@@ -57,8 +59,6 @@ export interface IsletmeBaglami {
 export const DEPO_KAPASITE = [100, 220, 420, 750];
 export const CURUME_ORANLARI = [0.1, 0.07, 0.045, 0.02];
 export const DEPO_BAKIM = [3, 7, 13, 22];
-/** Stok değerinin yıllık değişken depolama masrafı. */
-export const DEPO_MASRAFI_ORANI = 0.04;
 export const BASLANGIC_STOK = 20;
 export const BORC_ODEME_ORANI = 0.6;
 /** Rütbe S1..S5 → en fazla toplam çalışan. */
@@ -67,12 +67,13 @@ export const CALISAN_LIMITLERI = [2, 4, 6, 8, 10];
 export const TALEP_KATSAYI_OLCEGI = 1.1;
 /** Müşterinin bütçesi hatlar arasında paylaşılır: n açık hatta her birinin talebi 1/(1+0.6(n-1)) ile çarpılır. */
 export const HAT_PAYLASIM = 0.6;
+/** Karşılanamayan talep bu orandan büyükse müşteri kaybı: min(%12, (oran−eşik)×%30) kendi müşterisinin yüzdesi (sıcak ürünse ×2). */
 const KITLE_KAYIP_ESIGI = 0.15;
-const KITLE_KAYIP_CARPANI = 5;
-const KITLE_KAYIP_TAVANI = 3;
-/** Memnun müşteriden gelen düz yıllık güç (pay) artışı. */
-const TABAN_GUC_ARTISI = 0.3;
+const KITLE_KAYIP_CARPANI = 0.3;
+const KITLE_KAYIP_TAVANI = 0.12;
 const TALEP_GURULTUSU = 0.08;
+/** Yüzdelik müşteri büyümesi pay bu eşiğe yaklaştıkça sıfıra iner. */
+const PAY_DOYMA_ESIGI = 0.68;
 const DUKKAN_TALEP_KADEME = 0.1;
 const KERVAN_INDIRIM_KADEME = 0.08;
 const GUMRUK_INDIRIMI = 0.15;
@@ -399,6 +400,7 @@ export function hatHesapla(state: CharacterState, hat: IsletmeHat, tanim: HatTan
     savasTalep *
     (sicak ? SICAK_URUN_TALEP : 1) *
     b.talepCarpani *
+    piyasaCarpani(state, "talep") *
     anaTalep *
     dukkan;
   const tekel = is.tekel_hat === hat.id && imtiyazAktifMi(state, "tekel_ruhsati") ? 1.1 : 1;
@@ -416,7 +418,7 @@ export function hatHesapla(state: CharacterState, hat: IsletmeHat, tanim: HatTan
       b.fiyatPrimi *
       (sicak ? SICAK_URUN_FIYAT : 1) *
       tekel,
-    birimMaliyet: tanim.birimMaliyet * b.enflasyon * kes.fiyat * (1 - indirim),
+    birimMaliyet: tanim.birimMaliyet * b.enflasyon * kes.fiyat * (1 - indirim) * piyasaCarpani(state, "alis_maliyeti"),
     kesim: kes,
     sicak,
   };
@@ -742,15 +744,14 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
   });
 
   // 2. Çalışan sadakati: düşük sadakatli çalışan sızdırır, çalar, ayrılır.
-  const rakip = state.rakipler.find((r) => !r.yenildi);
+  const rakip = aktifRakip(state); // saldırgan / sızdırma hedefi: en büyük aktif rakip
   for (const uye of [...state.ekip]) {
     if (!uye.rol_turu || uye.sadakat >= SADAKAT_RISK_ESIGI) continue;
     const risk = SADAKAT_RISK_ESIGI - uye.sadakat;
     if ((uye.sizdirma_son_yil === undefined || state.yil - uye.sizdirma_son_yil >= SADAKAT_OLAY_COOLDOWN_YIL) && Math.random() < risk / 200) {
       uye.sizdirma_son_yil = state.yil;
-      if (rakip) rakip.guc = clamp(rakip.guc + 3 + Math.random() * 3, 0, 100);
-      const kayip = state.meslek_gucu * (0.02 + Math.random() * 0.02);
-      state.meslek_gucu = clamp(state.meslek_gucu - kayip, 0, MESLEK_GUCU_TAVAN);
+      // Hedefli: sızdırılan müşteri tamamen rakibe geçer (%2–4).
+      if (rakip) musteriAktar(state, "oyuncu", rakipGrubu(rakip.ad), state.meslek_musteri * (0.02 + Math.random() * 0.02));
       uyarilar.push({ kod: "sizdirma", isim: uye.isim });
     }
     if ((uye.ic_hirsizlik_son_yil === undefined || state.yil - uye.ic_hirsizlik_son_yil >= SADAKAT_OLAY_COOLDOWN_YIL) && Math.random() < risk / 250) {
@@ -799,7 +800,6 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
   const pay = pazarPayiHesapla(state);
   const kademe = rakipSaldiriKademesi(pay, state.rakip_esikler ?? [0.21, 0.345, 0.455]);
   if (kademe >= 2 && rakip) {
-    rakip.guc = clamp(rakip.guc + 0.5 + Math.random() * 0.5, 0, 100);
     rakip.husumet = clamp(rakip.husumet + 3, 0, 100);
   }
   if (kademe >= 1 && rakip) {
@@ -815,7 +815,8 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
       const sohretKaybi = kademe === 1 ? 2 + Math.random() : kademe === 2 ? 5 : 8;
       state.un = Math.max(0, state.un - sohretKaybi);
       const musteriKaybi = kademe === 1 ? 0.01 : kademe === 2 ? 0.02 + Math.random() * 0.01 : 0.04 + Math.random() * 0.01;
-      state.meslek_gucu = clamp(state.meslek_gucu * (1 - musteriKaybi), 0, MESLEK_GUCU_TAVAN);
+      // Hedefli: kaybedilen müşteri tamamen rakibe geçer.
+      if (rakip) musteriAktar(state, "oyuncu", rakipGrubu(rakip.ad), state.meslek_musteri * musteriKaybi);
       let tur: IsletmeUyari["sonuc"] = "nakit";
       if (kademe === 2) tur = Math.random() < 0.5 ? "iftira" : "musteri_calma";
       if (kademe === 3) {
@@ -849,38 +850,37 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
     p.hat.son_satis = satilan;
   });
 
-  // 6. Depo: çürüme (kademeye göre, kapalı hatlar dahil) + sabit bakım + stok değerine bağlı masraf.
-  let depoMasrafi = depoBakimMasrafi(is, b.enflasyon);
+  // 6. Depo: çürüme (kademeye göre, kapalı hatlar dahil) + yalnız kademeye bağlı sabit bakım.
+  const depoMasrafi = depoBakimMasrafi(is, b.enflasyon);
   const curume = curumeOrani(is);
   for (const hat of is.hatlar) {
     const tanim = hatTanimiGetir(profil, hat.id);
     if (!tanim) continue;
-    const kes = kesimEtkisi(state, tanim.kesim);
-    depoMasrafi += hat.stok * DEPO_MASRAFI_ORANI * tanim.birimMaliyet * b.enflasyon * kes.fiyat;
     hat.stok = Math.round(hat.stok * (1 - curume));
     if (hat.stok > 0 && !hat.acik && hat.stok >= 20) uyarilar.push({ kod: "fazla_stok", hat: hat.id });
   }
 
-  // 7. Pazar payı (gizli güç G) değişimi: memnuniyet + şöhret + fiyat + tanıtım + müşteri çalışanları; mal biterse kayıp.
+  // 7. Müşteri sayısı: sabit +1 ve yüzdelik büyüme (şöhret + fiyat + tanıtım + müşteri çalışanları); mal biterse kayıp.
+  //    Kazanç/kayıp diğer gruplardan büyüklükleriyle orantılı alınır/verilir (piyasa.ts).
   const musteriRolu = state.ekip.reduce((t, u) => {
     const bn = calisanBonusu(u);
     return t + (bn?.tur === "musteri" ? bn.deger : 0);
   }, 0);
   const karsilanamayanOrani = toplamTalep > 0 ? toplamKarsilanamayan / toplamTalep : 0;
-  const G0 = state.meslek_gucu;
   if (karsilanamayanOrani > KITLE_KAYIP_ESIGI) {
-    let kayip = Math.min(KITLE_KAYIP_TAVANI, (karsilanamayanOrani - KITLE_KAYIP_ESIGI) * KITLE_KAYIP_CARPANI);
-    if (sicakKarsilanamadi) kayip *= 2;
-    state.meslek_gucu = clamp(state.meslek_gucu - kayip, 0, MESLEK_GUCU_TAVAN);
-    if (rakip) rakip.guc = clamp(rakip.guc + kayip * 0.3, 0, 100);
+    let kayipYuzde = Math.min(KITLE_KAYIP_TAVANI, (karsilanamayanOrani - KITLE_KAYIP_ESIGI) * KITLE_KAYIP_CARPANI);
+    if (sicakKarsilanamadi) kayipYuzde *= 2;
+    musteriKaydir(state, "oyuncu", -state.meslek_musteri * kayipYuzde);
     uyarilar.push({ kod: "kitle_kaybi" });
   } else if (satis > 0) {
     const fiyatEtkisi =
       planlar.length > 0 ? planlar.reduce((t, p) => t + (FIYAT_POLITIKASI[p.hat.fiyat]?.pay ?? 0), 0) / planlar.length : 0;
-    const yuzde = sohretPayBuyumesi(state.un) + fiyatEtkisi + tanitimBuyumesi(state) + musteriRolu;
-    state.meslek_gucu = clamp(state.meslek_gucu + TABAN_GUC_ARTISI + state.meslek_gucu * yuzde, 0, MESLEK_GUCU_TAVAN);
+    const ham = sohretPayBuyumesi(state.un) + fiyatEtkisi + tanitimBuyumesi(state) + musteriRolu;
+    const mevcutPay = pazarPayiHesapla(state);
+    // Pay büyüdükçe pozitif büyüme doyar (pay %60'a yaklaşınca sıfır); eksi etkiler tam işler.
+    const yuzde = ham > 0 ? ham * Math.max(0, 1 - mevcutPay / PAY_DOYMA_ESIGI) : ham;
+    musteriKaydir(state, "oyuncu", sabitMusteriArtisi(mevcutPay) + state.meslek_musteri * yuzde);
   }
-  void G0;
 
   // 8. Brüt kâr, vergi, borç.
   const brutKar = r2(satis - alim - depoMasrafi);
@@ -895,8 +895,7 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
   const net = r2(brutKar - vergi - borcOdeme - nakitHasar - ekstraGider);
 
   // 9. Toplam pazar büyüklüğü (dönem/savaş/veba): herkesin müşterisi aynı oranda değişir.
-  const pazarOnce = Math.max(0, state.pazar_musteri ?? 400);
-  state.pazar_musteri = Math.max(50, Math.round(pazarOnce * (1 + pazarBuyumeOrani(state))));
+  pazarOlcekle(state, 1 + pazarBuyumeOrani(state));
   const yeniMusteri = musteriSayisi(state);
 
   const dokum: IsletmeDokum = {

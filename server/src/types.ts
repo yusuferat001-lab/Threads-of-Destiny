@@ -271,10 +271,11 @@ export interface CharacterState {
   /** Zanaatkâr'a özel derinlik metriği (0-100). Şimdilik maaşa/oyun içi hiçbir etkisi yok — meslekMetrikCarpani için placeholder (dengelemesi sonraya bırakıldı). */
   uretim_kapasitesi: number;
   /**
-   * Meslek pazarındaki gücün (0-100, bkz. data/pazar.ts). Pazar payı bundan ve
-   * rakiplerin gücünden türetilir; maaşı ve rütbeyi etkiler. Meslek seçilmeden 0.
+   * Oyuncunun müşteri sayısı (bkz. data/pazar.ts, game/piyasa.ts). Pazar payı =
+   * meslek_musteri / pazar_musteri; maaşı ve rütbeyi etkiler. Kesirli olabilir
+   * (ekranda yuvarlanır). Meslek seçilmeden 0.
    */
-  meslek_gucu: number;
+  meslek_musteri: number;
 
   /**
    * TEK suç/aranma ekseni (0-100, üst şeritteki yıldız göstergesi bunu okur).
@@ -358,6 +359,15 @@ export interface CharacterState {
    * savaş/vebada küçülür (herkesin müşterisi aynı oranda). Eski kayıtlarda 400.
    */
   pazar_musteri: number;
+  /** Piyasa haberleri (rakip hamleleri, küçük esnaf olayları, dönem etkileri) — son 6; oyuncuya gösterilir (§45 v8.1). */
+  piyasa_gunlugu: PiyasaHaberi[];
+  /** Süreli piyasa etkileri (rakibin hammadde hamlesi, kampanya): işletme maliyet/talep çarpanına biner. */
+  piyasa_etkileri: PiyasaEtkisi[];
+  /** Son rakip hamlesinin yılı (2 yıl cooldown). */
+  rakip_hamle_son_yil: number | null;
+  /** Yıl sonu müşteri dağılımı fotoğrafı (bir sonraki yılda değişimi göstermek için) ve son yıl değişimi. */
+  musteri_ref: { oyuncu: number; rakip: number; kucuk: number } | null;
+  son_musteri_degisim: { oyuncu: number; rakip: number; kucuk: number } | null;
   /** Rakip saldırı eşikleri (oyuncunun pazar payı, 0-1): oyun başında [%20–22, %34–35, %45–46] arasından atanır. */
   rakip_esikler: [number, number, number];
   /** Son rakip saldırısının yılı (kademeye göre 2–4 yıl cooldown). */
@@ -594,9 +604,14 @@ export interface KisilikEksenleri {
 export interface Rakip {
   ad: string;
   meslek: string;
-  guc: number;
+  /** Rakibin müşteri sayısı (yenilmişse 0). Pay = musteri / pazar_musteri. */
+  musteri: number;
   husumet: number;
   yenildi: boolean;
+  /** Başlangıç payı (P'nin kesri): hamle ortalamaya dönüşünün referansı. */
+  hedef_pay?: number;
+  /** Bu rakibin son hamlesinin yılı (2 yıl cooldown). */
+  hamle_son_yil?: number | null;
 }
 
 /**
@@ -699,6 +714,26 @@ export interface IsletmeHat {
   /** Geçen yılki talep / satış (otomatik sipariş + ekran gösterimi). */
   son_talep: number;
   son_satis: number;
+}
+
+/** Piyasada olup biten bir şey (oyuncuya haber olarak gösterilir). Metin sunucudan iki dilli gelir. */
+export interface PiyasaHaberi {
+  yil: number;
+  simge: string;
+  /** OYUNCU için yönü: müşterilerine artı / eksi / belirgin etkisi yok. */
+  yon: "olumlu" | "olumsuz" | "notr";
+  grup: "rakip" | "kucuk" | "dunya";
+  kod: string;
+  metin: { tr: string; en: string };
+  /** Oyuncunun müşteri sayısındaki işaretli (yuvarlanmış) değişim. */
+  musteri: number;
+}
+
+/** Süreli piyasa etkisi: alış maliyeti ya da talep çarpanı (1 + deger). */
+export interface PiyasaEtkisi {
+  tur: "alis_maliyeti" | "talep";
+  deger: number;
+  bitis: number;
 }
 
 /** Yıl sonu dökümündeki uyarı: kod + isteğe bağlı hat/isim; metin istemcide çevrilir. */

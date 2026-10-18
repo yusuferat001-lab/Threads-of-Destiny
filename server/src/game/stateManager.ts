@@ -75,20 +75,20 @@ import {
   pazarPayiHesapla,
   pazarMaasCarpani,
   pazarAdlariGetir,
-  baslangicMeslekGucu,
-  rakipGucToplami,
+  baslangicMusteri,
+  rastgeleRakipMusteri,
+  baslangicRakipMusterileri,
+  aktifRakipler,
+  MAKS_AKTIF_RAKIP,
+  IKINCI_RAKIP_PAY,
+  KUCUK_TABAN_PAY,
   sohretOtoriteIliskisi,
   rastgelePazarMusteri,
   rastgeleRakipEsikleri,
-  MESLEK_GUCU_TAVAN,
-  MESLEK_GUCU_YILLIK_TABAN,
-  MESLEK_GUCU_YILLIK_RUTBE,
-  MESLEK_GUCU_YOKLUK_KAYBI,
   PAZAR_KARIYER_PUANI_YILLIK,
-  YENI_RAKIP_MIN_YIL,
-  YENI_RAKIP_MAX_YIL,
-  RAKIP_KIRMA_GUC_AKTARIMI,
+  RAKIP_KIRMA_DOGRUDAN,
 } from "../data/pazar";
+import { musteriKaydir, rakiptenMusteriAl, rakipYenildiKontrol, piyasaYillikUygula, rakipAdiniGuncelle } from "./piyasa";
 import {
   YATKINLIK_TIER_ETKILERI,
   YATKINLIK_TIER_SEVIYE,
@@ -786,7 +786,12 @@ export function createCharacter(
     ticaret_sermaye: 0,
     nufuz: 0,
     uretim_kapasitesi: 0,
-    meslek_gucu: 0,
+    meslek_musteri: 0,
+    piyasa_gunlugu: [],
+    piyasa_etkileri: [],
+    rakip_hamle_son_yil: null,
+    musteri_ref: null,
+    son_musteri_degisim: null,
     suc_seviyesi: 0,
     hapis_ceza_kalan: 0,
     hapis_ceza_toplam: 0,
@@ -1023,6 +1028,35 @@ export function rutbeGuncelle(state: CharacterState): void {
  * kabaca o ana kadar kazanılmış olması beklenen değere set edilir (mevcut rütbe
  * ratchet olduğu için zaten korunur).
  */
+/**
+ * İki aktif rakip kuralı (v8.1): meslek seçilmiş, pazar kurulmuş bir kayıtta aktif rakip sayısı
+ * MAKS_AKTIF_RAKIP'in altındaysa ve yenilmiş rakibin dönüşü planlanmamışsa eksik rakip eklenir;
+ * oyuncu + rakipler P'nin %97'sini aşıyorsa rakipler orantılı küçültülür; `hedef_pay` eksikse doldurulur.
+ */
+export function rakipleriTamamla(state: CharacterState): void {
+  if (!state.meslek || !MESLEKLER.includes(state.meslek) || !(state.pazar_musteri > 0)) return;
+  const P = state.pazar_musteri;
+  const aktif = aktifRakipler(state);
+  if (aktif.length > 0 && aktif.length < MAKS_AKTIF_RAKIP && state.rakip_yeni_yil == null && state.rakipler.length < MAKS_AKTIF_RAKIP) {
+    const kullanilan = state.meslek_musteri + aktif.reduce((t, r) => t + r.musteri, 0);
+    const alinabilir = Math.max(0, P * (1 - KUCUK_TABAN_PAY) - kullanilan);
+    const musteri = Math.round(Math.min(rastgeleRakipMusteri(P, IKINCI_RAKIP_PAY), alinabilir) * 10) / 10;
+    const ad = rastgeleBirIsimSec(state.cag, state.bolge, [state.isim ?? "", state.dost_adi, state.es_adi ?? "", ...state.rakipler.map((r) => r.ad)]);
+    state.rakipler.push({ ad, meslek: state.meslek, musteri, husumet: 25 + Math.floor(Math.random() * 14), yenildi: false });
+  }
+  const topRakip = aktifRakipler(state).reduce((t, r) => t + r.musteri, 0);
+  const ust = P * (1 - KUCUK_TABAN_PAY) - state.meslek_musteri;
+  if (topRakip > ust && topRakip > 0) {
+    const oran = Math.max(0, ust) / topRakip;
+    for (const r of aktifRakipler(state)) r.musteri = Math.round(r.musteri * oran * 100) / 100;
+  }
+  for (const r of aktifRakipler(state)) {
+    if (typeof r.hedef_pay !== "number") r.hedef_pay = Math.max(0.1, r.musteri / P);
+    if (r.hamle_son_yil === undefined) r.hamle_son_yil = null;
+  }
+  rakipAdiniGuncelle(state);
+}
+
 export function eskiKayitGocu(state: CharacterState): void {
   // Faz A: dünya dönemi yoksa mevcut ekonomiye göre ata; eski küçük kriz alanları temizlenir.
   if (state.ulke && !state.ulke.donem) {
@@ -1180,7 +1214,7 @@ export function eskiKayitGocu(state: CharacterState): void {
   // rakip_adi'ndan TEK bir rakip türet (2026-09: iki rakip yerine tek rakip).
   if (!Array.isArray(state.rakipler) || state.rakipler.length === 0) {
     if (state.meslek && MESLEKLER.includes(state.meslek)) {
-      state.rakipler = [{ ad: state.rakip_adi, meslek: state.meslek, guc: 55, husumet: 35, yenildi: false }];
+      state.rakipler = [{ ad: state.rakip_adi, meslek: state.meslek, musteri: 0, husumet: 35, yenildi: false }];
     } else {
       state.rakipler = [];
     }
@@ -1190,7 +1224,7 @@ export function eskiKayitGocu(state: CharacterState): void {
     // yerlerine yenisi gelir; aktif olan her zaman rakipler[0]'dadır.
     const aktifler = state.rakipler.filter((r) => !r.yenildi);
     const yenilenler = state.rakipler.filter((r) => r.yenildi);
-    state.rakipler = [...aktifler.slice(0, 1), ...yenilenler];
+    state.rakipler = [...aktifler.slice(0, MAKS_AKTIF_RAKIP), ...yenilenler];
   }
   if (state.rakip_yeni_yil === undefined) state.rakip_yeni_yil = null;
   // İşletme v2 (§45): toplam pazar, rakip saldırı eşikleri, vergi çarpanı.
@@ -1199,17 +1233,49 @@ export function eskiKayitGocu(state: CharacterState): void {
   if (state.rakip_saldiri_son_yil === undefined) state.rakip_saldiri_son_yil = null;
   if (typeof state.vergi_carpan !== "number") state.vergi_carpan = 1;
   if (state.vergi_carpan_bitis_yili === undefined) state.vergi_carpan_bitis_yili = null;
-  // Meslek pazarı (2026-10): eski kayıtlarda güç yok — başlangıç gücü + rütbe kadar ilerleme ver.
-  if (typeof state.meslek_gucu !== "number") {
-    state.meslek_gucu =
-      state.meslek && MESLEKLER.includes(state.meslek)
-        ? Math.min(
-            MESLEK_GUCU_TAVAN,
-            baslangicMeslekGucu(state.meslek_yatkinlik_seviyesi ?? null, !!state.aile_mirasi_surduruldu) +
-              4 * Math.max(0, (state.rutbe_seviye ?? 1) - 1)
-          )
-        : 0;
+  // v8.1: gizli güç (meslek_gucu / Rakip.guc) kalktı → müşteri sayısı. Eski kayıtta güçten pay türetilir.
+  if (!Array.isArray(state.piyasa_gunlugu)) state.piyasa_gunlugu = [];
+  if (!Array.isArray(state.piyasa_etkileri)) state.piyasa_etkileri = [];
+  if (state.rakip_hamle_son_yil === undefined) state.rakip_hamle_son_yil = null;
+  if (state.musteri_ref === undefined) state.musteri_ref = null;
+  if (state.son_musteri_degisim === undefined) state.son_musteri_degisim = null;
+  {
+    const eski = state as unknown as { meslek_gucu?: number };
+    if (typeof state.meslek_musteri !== "number") {
+      const meslekli = !!state.meslek && MESLEKLER.includes(state.meslek);
+      const eskiGuc = typeof eski.meslek_gucu === "number" ? eski.meslek_gucu : null;
+      if (meslekli) {
+        const rakipGuc = (state.rakipler ?? []).filter((r) => !r.yenildi).reduce((t, r) => t + (((r as unknown as { guc?: number }).guc) ?? 0), 0);
+        if (eskiGuc !== null) {
+          const toplam = eskiGuc + rakipGuc + 40;
+          state.meslek_musteri = Math.round((eskiGuc / toplam) * state.pazar_musteri * 100) / 100;
+        } else {
+          state.meslek_musteri =
+            baslangicMusteri(state.pazar_musteri, state.meslek_yatkinlik_seviyesi ?? null, !!state.aile_mirasi_surduruldu) +
+            (state.pazar_musteri * 0.015 * Math.max(0, (state.rutbe_seviye ?? 1) - 1));
+        }
+        for (const r of state.rakipler ?? []) {
+          const g = ((r as unknown as { guc?: number }).guc);
+          if (typeof r.musteri !== "number") {
+            if (r.yenildi) r.musteri = 0;
+            else if (typeof g === "number" && eskiGuc !== null) {
+              const toplam = eskiGuc + rakipGuc + 40;
+              r.musteri = Math.round((g / toplam) * state.pazar_musteri * 100) / 100;
+            } else r.musteri = rastgeleRakipMusteri(state.pazar_musteri, IKINCI_RAKIP_PAY);
+          }
+          delete (r as unknown as { guc?: number }).guc;
+        }
+      } else {
+        state.meslek_musteri = 0;
+      }
+    }
+    delete eski.meslek_gucu;
+    for (const r of state.rakipler ?? []) {
+      if (typeof r.musteri !== "number") r.musteri = 0;
+      delete (r as unknown as { guc?: number }).guc;
+    }
   }
+  rakipleriTamamla(state);
   if (state.salgin_korunma_yatirimi === undefined) state.salgin_korunma_yatirimi = null;
   if (state.kredi === undefined) state.kredi = null;
   // Kariyer sayfası — yönetimle bağlar (§35) sonradan eklendi.
@@ -1307,20 +1373,22 @@ export function mesleğiSec(state: CharacterState, meslek: string): void {
     }
   }
 
-  // Derin rakip ilişkileri (§13): meslektaş TEK isimli rakip — eski tekil
-  // rakip_adi ile aynı kişi (geriye dönük uyum — olaylar {rakip}'i kullanır).
-  if (state.rakipler.length === 0) {
-    state.rakipler = [
-      { ad: state.rakip_adi, meslek, guc: 48 + Math.floor(Math.random() * 22), husumet: 28 + Math.floor(Math.random() * 14), yenildi: false },
-    ];
-  }
-
   if (meslek === "Asker") state.ordu_mevcudu = 10;
 
-  // Meslek pazarı (data/pazar.ts): taban güç + yatkınlık kademesi + aile mirası.
-  if (!state.meslek_gucu) {
-    state.meslek_gucu = baslangicMeslekGucu(state.meslek_yatkinlik_seviyesi, mirasSurduruldu, rakipGucToplami(state));
+  // Meslek pazarı (data/pazar.ts): P × (%8–9 + yatkınlık kademesi + aile mirası) müşteriyle başla.
+  if (!state.meslek_musteri) {
+    state.meslek_musteri = baslangicMusteri(state.pazar_musteri, state.meslek_yatkinlik_seviyesi, mirasSurduruldu);
   }
+  // İki rakip (v8.1): büyük %44–51, ikinci %28–34 (P'nin kesri); rakipler[0] = büyük, rakip_adi onunla aynı kişi.
+  if (state.rakipler.length === 0) {
+    const [buyukM, ikinciM] = baslangicRakipMusterileri(state.pazar_musteri, state.meslek_musteri);
+    const ikinciAd = rastgeleBirIsimSec(state.cag, state.bolge, [state.isim ?? "", state.dost_adi, state.es_adi ?? "", state.rakip_adi]);
+    state.rakipler = [
+      { ad: state.rakip_adi, meslek, musteri: buyukM, husumet: 28 + Math.floor(Math.random() * 14), yenildi: false, hedef_pay: buyukM / state.pazar_musteri, hamle_son_yil: null },
+      { ad: ikinciAd, meslek, musteri: ikinciM, husumet: 25 + Math.floor(Math.random() * 14), yenildi: false, hedef_pay: ikinciM / state.pazar_musteri, hamle_son_yil: null },
+    ];
+  }
+  state.musteri_ref = { oyuncu: state.meslek_musteri, rakip: state.rakipler.reduce((t, r) => t + r.musteri, 0), kucuk: Math.max(0, state.pazar_musteri - state.meslek_musteri - state.rakipler.reduce((t, r) => t + r.musteri, 0)) };
   // Meslek işletmesi (şu an yalnız Tüccar): hat/stok/yatırım durumu kurulur.
   if (isletmeMeslegiMi(meslek)) {
     isletmeBaslat(state, isletmeBaglami(state));
@@ -1414,9 +1482,9 @@ export function clampStats(state: CharacterState): void {
   // Nüfuz pasif olarak kesirli birikir (+0.3/yıl); tam sayıda tutulur ki
   // arayüzde ve maaş kırılımında "12.6" gibi değerler görünmesin.
   state.nufuz = Math.round(Math.max(0, state.nufuz));
-  // Meslek gücü kesirli birikir; bir ondalığa yuvarlanır (gösterimde tam sayı).
-  state.meslek_gucu = Math.round(clamp(state.meslek_gucu ?? 0, 0, MESLEK_GUCU_TAVAN) * 10) / 10;
-  for (const r of state.rakipler ?? []) r.guc = Math.round(clamp(r.guc, 0, 100) * 10) / 10;
+  // Müşteri sayıları kesirli birikir; iki ondalığa yuvarlanır (gösterimde tam sayı).
+  state.meslek_musteri = Math.round(Math.max(0, state.meslek_musteri ?? 0) * 100) / 100;
+  for (const r of state.rakipler ?? []) r.musteri = Math.round(Math.max(0, r.musteri ?? 0) * 100) / 100;
   if (state.es_adi) state.es_puani = clamp(state.es_puani, 0, 100);
   state.yonetim_iliski = clamp(state.yonetim_iliski ?? 40, 0, 100);
   state.patron_iliski = clamp(state.patron_iliski ?? 40, 0, 100);
@@ -2770,6 +2838,7 @@ export function rakipSoygunKontrolEt(state: CharacterState, yasArtisi: number): 
 // ---------------------------------------------------------------------------
 
 export interface RakipGucKirSonucu {
+  /** Rakipten alınan müşteri sayısı (oyuncunun payına/küçüklere geçen toplam). */
   kirilan: number;
   pazarPayi: number;
   kariyerKazanci: number;
@@ -2778,44 +2847,34 @@ export interface RakipGucKirSonucu {
 }
 
 /**
- * Bir rakibin gücünü `taban` kadar (0-100 clamp) kırar. Kırılan güç oyuncuya
- * pazar payı olarak döner: para += kırılan × 0.5 × enflasyon, kariyer_puani +=
- * kırılana orantılı 2..6. Güç ≤ 10'a inince rakip "yenildi" (tek seferlik büyük
- * kariyer + ün bonusu). Her çağrı rakibin husumetini artırır (misilleme riski).
+ * Bir rakibin müşterisinin `yuzde` (kesir) kadarını alır. Alınanın %30'u doğrudan oyuncuya
+ * geçer, kalanı oyuncu + küçük esnaf arasında büyüklükleriyle orantılı dağılır (game/piyasa.ts).
+ * Ayrıca para += alınan × 0.14 × enflasyon, kariyer_puani += 2..6. Rakibin payı %4'ün altına
+ * inince "yenildi" (tek seferlik büyük kariyer + ün bonusu). Her çağrı rakibin husumetini
+ * artırır (misilleme riski).
  */
-export function rakipGucKir(
+export function rakipMusteriKir(
   state: CharacterState,
   rakipAd: string,
-  taban: number,
+  yuzde: number,
   enflasyon: number
 ): RakipGucKirSonucu | null {
   const rakip = state.rakipler.find((r) => r.ad === rakipAd && !r.yenildi);
   if (!rakip) return null;
-  const oncekiGuc = rakip.guc;
-  rakip.guc = Math.max(0, Math.min(100, rakip.guc - taban));
-  const kirilan = oncekiGuc - rakip.guc;
+  const kirilan = rakiptenMusteriAl(state, rakipAd, Math.min(1, yuzde), RAKIP_KIRMA_DOGRUDAN);
   rakip.husumet = Math.min(100, rakip.husumet + 10 + Math.floor(Math.random() * 11)); // +10..20
 
-  const pazarPayi = Math.max(1, paraYuvarla(kirilan * 0.5 * enflasyon));
-  const kariyerKazanci = Math.round(2 + (kirilan / 26) * 4); // 26 kırılırsa ~+6
+  const pazarPayi = Math.max(1, paraYuvarla(kirilan * 0.14 * enflasyon));
+  const kariyerKazanci = Math.round(Math.min(6, 2 + (yuzde / 0.45) * 4)); // %45 kırılırsa ~+6
   state.para = paraYuvarla(state.para + pazarPayi);
   state.kariyer_puani += kariyerKazanci;
 
-  // Meslek pazarı: kırılan gücün bir kısmı müşteri olarak sana geçer.
-  meslekGucuEkle(state, kirilan * RAKIP_KIRMA_GUC_AKTARIMI);
-
   let yenildiMi = false;
-  if (rakip.guc <= 10) {
-    rakip.yenildi = true;
+  if (rakipYenildiKontrol(state, false)) {
     yenildiMi = true;
     state.kariyer_puani += 10;
     state.un = Math.min(100, state.un + 4);
     hayatOlayiEkle(state, "♟️", T(state.dil, "{0} rekabeti tamamen bırakmak zorunda kaldı", [rakipAd]));
-    // Boşluk uzun sürmez: birkaç yıl sonra pazara yeni bir rakip girer.
-    if (state.rakip_yeni_yil == null) {
-      state.rakip_yeni_yil =
-        state.yil + YENI_RAKIP_MIN_YIL + Math.floor(Math.random() * (YENI_RAKIP_MAX_YIL - YENI_RAKIP_MIN_YIL + 1));
-    }
   }
 
   const mesaj = yenildiMi
@@ -2831,62 +2890,32 @@ export function rakipGucKir(
 }
 
 // ---------------------------------------------------------------------------
-// Meslek pazarı (data/pazar.ts): oyuncunun gücü + rakiplerin gücü → pazar payı.
+// Meslek pazarı (data/pazar.ts + game/piyasa.ts): müşteri sayıları → pazar payı.
 // ---------------------------------------------------------------------------
 
-/** Oyuncunun meslek gücünü değiştirir (0-100 clamp). Meslek seçilmemişse etkisiz. */
-export function meslekGucuEkle(state: CharacterState, delta: number): void {
+/** Oyuncunun müşterisini değiştirir (diğer gruplardan orantılı). Meslek seçilmemişse etkisiz. */
+export function musteriEkle(state: CharacterState, delta: number): void {
   if (!pazarAdlariGetir(state.meslek) || !delta) return;
-  state.meslek_gucu = clamp((state.meslek_gucu ?? 0) + delta, 0, MESLEK_GUCU_TAVAN);
+  musteriKaydir(state, "oyuncu", delta);
 }
 
 /**
- * Yıllık pazar akışı: pasif güç kazancı (taban + rütbe), hapiste/yolculuktayken
- * pazardan uzak kalma kaybı, pazar payına orantılı kariyer puanı ve — bir rakip
- * yenildiyse — vakti gelince pazara yeni bir rakibin girmesi. Bir anlatı cümlesi
- * döndürebilir (yeni rakip haberi).
+ * Yıllık pazar akışı: pazar payına orantılı kariyer puanı + piyasa akışı (pazardan uzak kalma kaybı,
+ * rakip ve küçük esnaf hareketleri, haberler, yeni rakip girişi — game/piyasa.ts).
+ * Bir anlatı cümlesi döndürebilir.
  */
 export function pazarYillikUygula(state: CharacterState, yasArtisi: number): string | null {
   if (yasArtisi <= 0 || !pazarAdlariGetir(state.meslek)) return null;
-  const uzakta = state.etiketler.includes("hapiste") || state.etiketler.includes("yolculukta");
-  if (uzakta) {
-    meslekGucuEkle(state, -MESLEK_GUCU_YOKLUK_KAYBI * yasArtisi);
-  } else if (isletmeMeslegiMi(state.meslek)) {
-    // İşletmeli mesleklerde pasif pay büyümesi isletmeYilIsle'de (memnuniyet + şöhret + fiyat + tanıtım) hesaplanır.
-  } else {
-    meslekGucuEkle(state, (MESLEK_GUCU_YILLIK_TABAN + MESLEK_GUCU_YILLIK_RUTBE * (state.rutbe_seviye ?? 1)) * yasArtisi);
-  }
+  const mesaj = piyasaYillikUygula(state, yasArtisi);
   state.kariyer_puani += pazarPayiHesapla(state) * PAZAR_KARIYER_PUANI_YILLIK * yasArtisi;
-
-  if (state.rakip_yeni_yil != null && state.yil >= state.rakip_yeni_yil) {
-    state.rakip_yeni_yil = null;
-    if (state.rakipler.some((r) => !r.yenildi)) return null;
-    const ad = rastgeleBirIsimSec(state.cag, state.bolge, [
-      state.isim ?? "",
-      state.dost_adi,
-      state.es_adi ?? "",
-      ...state.rakipler.map((r) => r.ad),
-    ]);
-    state.rakipler.unshift({
-      ad,
-      meslek: state.meslek,
-      guc: 32 + Math.floor(Math.random() * 16),
-      husumet: 25 + Math.floor(Math.random() * 11),
-      yenildi: false,
-    });
-    state.rakip_adi = ad;
-    hayatOlayiEkle(state, "♟️", T(state.dil, "Pazara yeni bir rakip girdi: {0}", [ad]));
-    return T(state.dil, "♟️ Boşluğu fark eden {0} pazara girdi; artık yeni rakibin o.", [ad]);
-  }
-  return null;
+  return mesaj;
 }
 
-/** Yıllık: yenilmemiş rakiplerin gücü yavaşça büyür, husumet yavaşça soğur. */
+/** Yıllık: rakiplerin husumeti yavaşça soğur (müşteri hareketi piyasaYillikUygula'da). */
 export function rakiplerGuncelle(state: CharacterState, yasArtisi: number): void {
   if (yasArtisi <= 0) return;
   for (const r of state.rakipler) {
     if (r.yenildi) continue;
-    r.guc = Math.min(100, r.guc + 0.3 * yasArtisi);
     r.husumet = Math.max(15, r.husumet - 0.5 * yasArtisi);
   }
 }

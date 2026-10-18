@@ -270,11 +270,11 @@ const TUCCAR_SANAYI: IsletmeProfili = {
 const ZANAATKAR_ORTA_CAG: IsletmeProfili = {
   mod: "uretim",
   hatlar: [
-    { id: "kap", simge: "🏺", ad: { tr: "Çömlek ve Kap", en: "Pottery & Vessels" }, kesim: "temel", talepTabani: 1.6, birimMaliyet: 0.6, birimFiyat: 1.15, minRutbe: 1 },
-    { id: "demir", simge: "⚒️", ad: { tr: "Demir Alet", en: "Iron Tools" }, kesim: "temel", talepTabani: 1.3, birimMaliyet: 0.7, birimFiyat: 1.2, minRutbe: 1 },
-    { id: "mobilya", simge: "🪑", ad: { tr: "Mobilya", en: "Furniture" }, kesim: "orta", talepTabani: 0.85, birimMaliyet: 0.9, birimFiyat: 1.9, minRutbe: 2 },
-    { id: "silah", simge: "⚔️", ad: { tr: "Kılıç ve Zırh", en: "Swords & Armour" }, kesim: "orta", talepTabani: 0.7, birimMaliyet: 1.0, birimFiyat: 2.3, minRutbe: 2, savasTalep: 1.5 },
-    { id: "kuyum", simge: "💍", ad: { tr: "Kuyum ve İşleme", en: "Jewellery & Fine Work" }, kesim: "luks", talepTabani: 0.32, birimMaliyet: 1.9, birimFiyat: 5.0, minRutbe: 3 },
+    { id: "kap", simge: "🏺", ad: { tr: "Çömlek ve Kap", en: "Pottery & Vessels" }, kesim: "temel", talepTabani: 1.41, birimMaliyet: 0.6, birimFiyat: 1.15, minRutbe: 1 },
+    { id: "demir", simge: "⚒️", ad: { tr: "Demir Alet", en: "Iron Tools" }, kesim: "temel", talepTabani: 1.14, birimMaliyet: 0.7, birimFiyat: 1.2, minRutbe: 1 },
+    { id: "mobilya", simge: "🪑", ad: { tr: "Mobilya", en: "Furniture" }, kesim: "orta", talepTabani: 0.75, birimMaliyet: 0.9, birimFiyat: 1.9, minRutbe: 2 },
+    { id: "silah", simge: "⚔️", ad: { tr: "Kılıç ve Zırh", en: "Swords & Armour" }, kesim: "orta", talepTabani: 0.62, birimMaliyet: 1.0, birimFiyat: 2.3, minRutbe: 2, savasTalep: 1.5 },
+    { id: "kuyum", simge: "💍", ad: { tr: "Kuyum ve İşleme", en: "Jewellery & Fine Work" }, kesim: "luks", talepTabani: 0.28, birimMaliyet: 1.9, birimFiyat: 5.0, minRutbe: 3 },
   ],
   yatirimlar: ZANAATKAR_YATIRIMLAR,
   roller: ZANAATKAR_ROLLER,
@@ -284,11 +284,11 @@ const ZANAATKAR_ORTA_CAG: IsletmeProfili = {
 const ZANAATKAR_SANAYI: IsletmeProfili = {
   mod: "uretim",
   hatlar: [
-    { id: "ayakkabi", simge: "👞", ad: { tr: "Ayakkabı ve Deri", en: "Shoes & Leather" }, kesim: "temel", talepTabani: 1.5, birimMaliyet: 0.65, birimFiyat: 1.15, minRutbe: 1 },
-    { id: "ev_esyasi", simge: "🍳", ad: { tr: "Ev Eşyası", en: "Household Goods" }, kesim: "temel", talepTabani: 1.4, birimMaliyet: 0.7, birimFiyat: 1.2, minRutbe: 1 },
-    { id: "mobilya", simge: "🛋️", ad: { tr: "Mobilya ve Cam", en: "Furniture & Glass" }, kesim: "orta", talepTabani: 0.85, birimMaliyet: 0.95, birimFiyat: 1.9, minRutbe: 2 },
-    { id: "makine", simge: "⚙️", ad: { tr: "Makine Parçası", en: "Machine Parts" }, kesim: "orta", talepTabani: 0.7, birimMaliyet: 1.1, birimFiyat: 2.5, minRutbe: 2, savasTalep: 1.3 },
-    { id: "saat", simge: "⌚", ad: { tr: "Saat ve Mücevher", en: "Watches & Jewellery" }, kesim: "luks", talepTabani: 0.33, birimMaliyet: 2.0, birimFiyat: 5.2, minRutbe: 3 },
+    { id: "ayakkabi", simge: "👞", ad: { tr: "Ayakkabı ve Deri", en: "Shoes & Leather" }, kesim: "temel", talepTabani: 2.25, birimMaliyet: 0.65, birimFiyat: 1.15, minRutbe: 1 },
+    { id: "ev_esyasi", simge: "🍳", ad: { tr: "Ev Eşyası", en: "Household Goods" }, kesim: "temel", talepTabani: 2.1, birimMaliyet: 0.7, birimFiyat: 1.2, minRutbe: 1 },
+    { id: "mobilya", simge: "🛋️", ad: { tr: "Mobilya ve Cam", en: "Furniture & Glass" }, kesim: "orta", talepTabani: 1.27, birimMaliyet: 0.95, birimFiyat: 1.9, minRutbe: 2 },
+    { id: "makine", simge: "⚙️", ad: { tr: "Makine Parçası", en: "Machine Parts" }, kesim: "orta", talepTabani: 1.05, birimMaliyet: 1.1, birimFiyat: 2.5, minRutbe: 2, savasTalep: 1.3 },
+    { id: "saat", simge: "⌚", ad: { tr: "Saat ve Mücevher", en: "Watches & Jewellery" }, kesim: "luks", talepTabani: 0.49, birimMaliyet: 2.0, birimFiyat: 5.2, minRutbe: 3 },
   ],
   yatirimlar: ZANAATKAR_YATIRIMLAR,
   roller: ZANAATKAR_ROLLER,

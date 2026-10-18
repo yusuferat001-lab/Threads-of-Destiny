@@ -1,3 +1,4 @@
+import { pazarOlcekle } from "../src/game/piyasa";
 import { describe, it, expect } from "vitest";
 import {
   yeniOyun,
@@ -71,7 +72,7 @@ describe("işletme (Tüccar dilimi)", () => {
       expect(s.pazar_musteri).toBeLessThanOrEqual(500);
       const pay = pazarPayiHesapla(s);
       expect(pay).toBeGreaterThan(0.045);
-      expect(pay).toBeLessThan(0.125);
+      expect(pay).toBeLessThan(0.14);
       expect(musteriSayisi(s)).toBeCloseTo(pay * s.pazar_musteri, 5);
       const [a, b, c] = s.rakip_esikler;
       expect(a).toBeGreaterThanOrEqual(0.2);
@@ -104,7 +105,7 @@ describe("işletme (Tüccar dilimi)", () => {
   it("talep = müşteri × %40 × ...: pazar büyüklüğü iki katına çıkınca talep de iki katına çıkar", async () => {
     const s = await tuccar();
     const once = (await isletmeDurumGetir(s.id)).hatlar.find((h) => h.acik)!.tahminiTalep;
-    s.pazar_musteri *= 2;
+    pazarOlcekle(s, 2);
     const sonra = (await isletmeDurumGetir(s.id)).hatlar.find((h) => h.acik)!.tahminiTalep;
     expect(sonra / once).toBeGreaterThan(1.9);
     expect(sonra / once).toBeLessThan(2.1);
@@ -116,10 +117,10 @@ describe("işletme (Tüccar dilimi)", () => {
     hat.stok = 0;
     s.isletme!.stok_hedefi = "cokaz"; // talebin %75'i: karşılanamayan > %15
     s.pazar_musteri = 100000; // gürültü etkisini ezmek için büyük sabit pay
-    const once = s.meslek_gucu;
+    const once = pazarPayiHesapla(s); // pay, pazar büyüklüğü ölçeklenmesinden etkilenmez
     const { dokum } = isletmeYilIsle(s, isletmeBaglami(s));
     expect(dokum.uyarilar.some((u) => u.kod === "kitle_kaybi")).toBe(true);
-    expect(s.meslek_gucu).toBeLessThan(once);
+    expect(pazarPayiHesapla(s)).toBeLessThan(once);
   });
 
   it("5 fiyat seçeneği: daha ucuz = daha çok talep; ve yıllık pay değişimi tabloya uyar", async () => {
@@ -332,11 +333,11 @@ describe("işletme (Tüccar dilimi)", () => {
 
   it("çifte kazanç önlemi: kendi kategorisindeki olay parası yarıya iner, kalanı kitleye gider", async () => {
     const s = await tuccar();
-    const kitle = s.meslek_gucu;
+    const kitle = s.meslek_musteri;
     const etki = { para: 20, mesaj: "x" };
     ciftKazancKirp(s, etki, "ticaret");
     expect(etki.para).toBe(10);
-    expect(s.meslek_gucu).toBeGreaterThan(kitle);
+    expect(s.meslek_musteri).toBeGreaterThan(kitle);
     const baskaKategori = { para: 20, mesaj: "x" };
     ciftKazancKirp(s, baskaKategori, "savas");
     expect(baskaKategori.para).toBe(20);
@@ -453,10 +454,10 @@ describe("işletme (Zanaatkâr — üretim modu)", () => {
 
   it("çifte kazanç önlemi Zanaatkâr'ın zanaat kategorisinde de işler", async () => {
     const s = await zanaatkar();
-    const kitle = s.meslek_gucu;
+    const kitle = s.meslek_musteri;
     const etki = { para: 20, mesaj: "x" };
     ciftKazancKirp(s, etki, "zanaat");
     expect(etki.para).toBe(10);
-    expect(s.meslek_gucu).toBeGreaterThan(kitle);
+    expect(s.meslek_musteri).toBeGreaterThan(kitle);
   });
 });

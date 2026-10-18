@@ -544,12 +544,12 @@ gameRouter.post("/:id/yonetim/etkilesim", async (req, res) => {
 });
 
 gameRouter.post("/:id/yonetim/istek", async (req, res) => {
-  const { istekId } = req.body ?? {};
+  const { istekId, rusvet } = req.body ?? {};
   if (typeof istekId !== "string") {
     return res.status(400).json({ hata: "Geçersiz istek." });
   }
   try {
-    const sonuc = await yonetimIstekYap(req.params.id, istekId);
+    const sonuc = await yonetimIstekYap(req.params.id, istekId, rusvet === true);
     res.json(sonuc);
   } catch (err) {
     res.status(400).json({ hata: hataMetni(err, req.params.id) });

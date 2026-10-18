@@ -1011,13 +1011,13 @@ function App() {
     }
   }
 
-  async function yonetimIstekHandler(istekId: string) {
+  async function yonetimIstekHandler(istekId: string, rusvet = false) {
     if (!karakter) return;
     setHata(null);
     setIslemMesaji(null);
     setYukleniyor(true);
     try {
-      const sonuc = await yonetimIstekYap(karakter.id, istekId);
+      const sonuc = await yonetimIstekYap(karakter.id, istekId, rusvet);
       setKarakter(sonuc.state);
       setIslemMesaji(sonuc.mesaj);
       await yonetimTazele(karakter.id);
