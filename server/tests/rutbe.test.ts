@@ -117,7 +117,7 @@ describe("rütbe reformu — 5 kademe, ratchet, cooldown, kariyer puanı", () =>
     expect(s.rutbe_seviye).toBe(2);
   });
 
-  it("her kademe pazar payı ister, bekleme yılı yok (Tüccar: S2 %16 · S3 %20 · S4 %24 · S5 %45)", () => {
+  it("her kademe pazar payı ister, bekleme yılı yok (Tüccar: S2 %16 · S3 %21 · S4 %25 · S5 %45)", () => {
     const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(s, "Tüccar");
     const payAyarla = (pay: number) => {
@@ -132,12 +132,12 @@ describe("rütbe reformu — 5 kademe, ratchet, cooldown, kariyer puanı", () =>
     rutbeGuncelle(s);
     expect(s.rutbe_seviye).toBe(2);
     rutbeGuncelle(s);
-    expect(s.rutbe_seviye).toBe(2); // %17 < %20: S3 durur
-    payAyarla(0.21);
+    expect(s.rutbe_seviye).toBe(2); // %17 < %21: S3 durur
+    payAyarla(0.22);
     rutbeGuncelle(s);
     expect(s.rutbe_seviye).toBe(3);
     rutbeGuncelle(s);
-    expect(s.rutbe_seviye).toBe(3); // %21 < %24
+    expect(s.rutbe_seviye).toBe(3); // %22 < %25
     payAyarla(0.3);
     rutbeGuncelle(s);
     expect(s.rutbe_seviye).toBe(4);
@@ -150,9 +150,9 @@ describe("rütbe reformu — 5 kademe, ratchet, cooldown, kariyer puanı", () =>
 
   it("pay eşikleri tüm mesleklerde var; Zanaatkâr daha düşük, Din Adamı daha yüksek", () => {
     expect(rutbePazarPayiEsigi("Tüccar", 2)).toBe(0.16);
-    expect(rutbePazarPayiEsigi("Asker", 4)).toBe(0.24);
+    expect(rutbePazarPayiEsigi("Asker", 4)).toBe(0.25);
     expect(rutbePazarPayiEsigi("Zanaatkâr", 5)).toBeCloseTo(0.38, 2);
-    expect(rutbePazarPayiEsigi("Din Adamı", 3)).toBeCloseTo(0.24, 2);
+    expect(rutbePazarPayiEsigi("Din Adamı", 3)).toBeCloseTo(0.25, 2);
     expect(rutbePazarPayiEsigi("Asker", 1)).toBeUndefined();
   });
 

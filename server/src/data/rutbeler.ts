@@ -28,7 +28,7 @@ export interface RutbeTanimi {
  * Anahtar HEDEF kademe. Aktif-dengeli bot ölçümüyle (Tüccar medyanı: %16@25 yaş, %19@35, %24@50, %30@65)
  * ≈ S2 25 · S3 35 · S4 45 yaş, S5 nadir (%5–10) olacak şekilde ayarlandı.
  */
-export const RUTBE_PAZAR_PAYI_ESIGI_ISLETME: Record<number, number> = { 2: 0.16, 3: 0.2, 4: 0.24, 5: 0.45 };
+export const RUTBE_PAZAR_PAYI_ESIGI_ISLETME: Record<number, number> = { 2: 0.16, 3: 0.21, 4: 0.25, 5: 0.45 };
 /** Mesleğe göre eşik çarpanı: pay kazanmanın zorluğu meslekten mesleğe değişir. */
 const PAY_ESIGI_CARPANI: Record<string, number> = { Tüccar: 1, Asker: 1, Zanaatkâr: 0.85, "Din Adamı": 1.2 };
 

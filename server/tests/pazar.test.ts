@@ -206,7 +206,7 @@ describe("meslek pazarı (müşteri modeli)", () => {
     expect(d.rutbeSarti?.gerekliPay).toBe(16);
     s.rutbe_seviye = 3;
     expect(pazarDurumuHesapla(s).rutbeSarti?.seviye).toBe(4);
-    expect(pazarDurumuHesapla(s).rutbeSarti?.gerekliPay).toBe(24);
+    expect(pazarDurumuHesapla(s).rutbeSarti?.gerekliPay).toBe(25);
   });
 
   it("eski kayıtta güçten müşteri türetilir; en çok iki aktif rakip kalır, yenilenler korunur", () => {
