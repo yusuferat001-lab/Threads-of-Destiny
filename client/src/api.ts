@@ -262,10 +262,10 @@ export function krediGetir(stateId: string) {
   return istek<KrediConfig>(`/api/game/${stateId}/kredi`);
 }
 
-export function krediAl(stateId: string, tutar: number) {
+export function krediAl(stateId: string, teklifId: string) {
   return istek<{ state: CharacterState; mesaj: string }>(`/api/game/${stateId}/kredi/al`, {
     method: 'POST',
-    body: JSON.stringify({ tutar }),
+    body: JSON.stringify({ teklifId }),
   });
 }
 

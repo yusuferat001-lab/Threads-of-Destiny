@@ -670,12 +670,12 @@ gameRouter.get("/:id/kredi", async (req, res) => {
 });
 
 gameRouter.post("/:id/kredi/al", async (req, res) => {
-  const { tutar } = req.body ?? {};
-  if (typeof tutar !== "number" || !isFinite(tutar) || tutar <= 0) {
-    return res.status(400).json({ hata: "Geçersiz tutar." });
+  const { teklifId } = req.body ?? {};
+  if (typeof teklifId !== "string" || teklifId.length === 0 || teklifId.length > 40) {
+    return res.status(400).json({ hata: "Geçersiz teklif." });
   }
   try {
-    res.json(await krediAlEndpoint(req.params.id, tutar));
+    res.json(await krediAlEndpoint(req.params.id, teklifId));
   } catch (err) {
     res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }

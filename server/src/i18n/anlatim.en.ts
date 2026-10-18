@@ -699,7 +699,8 @@ export const ANLATIM_EN: Record<string, string> = {
   "🤒 Hastalık sürüyor; şu an hayatta kalma şansın kabaca %{0}.": "🤒 The illness lingers; your chance of survival right now is roughly {0}%.",
   // Tefeci (§34.5)
   "Tefeciden {0} {birim} borç aldı": "Borrowed {0} {birim} from the moneylender",
-  "Tefeci kesesini açtı: +{0} {birim}. Yıllık taksit ~{1}, faiz %{2}.": "The moneylender opened his purse: +{0} {birim}. Yearly instalment ~{1}, interest {2}%.",
+  "Tefeci kesesini açtı: +{0} {birim}. Faiz %{1}, {2} yıl vade, yıllık taksit ~{3}.": "The moneylender opened his purse: +{0} {birim}. Interest {1}%, {2}-year term, yearly instalment ~{3}.",
+  "Tefeci böyle bir teklif sunmuyor.": "The moneylender is not offering that deal.",
   "Tefeci homurdandı ama faizi %{0}'e indirdi.": "The moneylender grumbled but lowered the interest to {0}%.",
   "Pazarlık ters tepti; tefeci faizi %{0}'e çıkardı.": "The haggling backfired; the moneylender raised the interest to {0}%.",
   "🪙 Tefeci taksitini alamadı; 'bir daha kaçırma' diye tehdit etti.": "🪙 The moneylender didn't get his instalment and warned you: 'don't miss another'.",

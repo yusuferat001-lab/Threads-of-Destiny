@@ -5137,6 +5137,13 @@ button.ikincil {
   opacity: 0.35;
   cursor: not-allowed;
 }
+/* Tefeci teklif kartı: çok satırlı (tutar / faiz+vade / taksit). */
+.dedikodu-panosu .kariyer-bagis-cip {
+  text-align: left;
+  font-weight: 600;
+  line-height: 1.4;
+  min-width: 120px;
+}
 
 .kariyer-bikkin-uyari {
   margin: 0 0 0.7rem;

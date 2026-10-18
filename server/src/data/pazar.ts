@@ -75,7 +75,7 @@ export const PAZAR_MUSTERI_ARALIK: [number, number] = [350, 500];
 /** Her müşterinin bir üründen yıllık baz alım oranı (dönem etkilerinden bağımsız; üstüne dönem çarpanları biner). */
 export const ALIM_ORANI = 0.42;
 /** Başlangıç pazar payı tabanı (%8–9) ve mesleğe yatkınlık kademesine göre ek (puan). */
-export const BASLANGIC_PAY_ARALIK: [number, number] = [0.11, 0.12];
+export const BASLANGIC_PAY_ARALIK: [number, number] = [0.1, 0.11];
 export const YATKINLIK_PAY_EKI = [0, -0.03, 0, 0.02, 0.03]; // index = meslek_yatkinlik_seviyesi (1 kötü … 4 mükemmel)
 
 // ── Rakip saldırıları (v8.2) ───────────────────────────────────────────────

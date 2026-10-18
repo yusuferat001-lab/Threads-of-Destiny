@@ -469,6 +469,8 @@ export interface CharacterState {
   salgin_korunma_yatirimi: SalginKorunmaYatirimi | null;
   /** Aktif tefeci kredisi; yoksa null. Aynı anda en fazla bir kredi. */
   kredi: Kredi | null;
+  /** Tefecinin şu an sunduğu 2 teklifin havuz id'leri ve seçildikleri yıl (3 yılda bir ya da kredi alınınca yenilenir). */
+  kredi_teklifleri: { idler: string[]; yil: number } | null;
 
   /** Aile ekranı etkileşim cooldown'ları: anahtar (ör. "es:hediye", "cocuk:2:oyna") → tekrar açılacağı oyun yılı. */
   aile_etkilesim_kilit: Record<string, number>;
@@ -641,6 +643,8 @@ export interface Kredi {
   /** Yıllık taksit hedefi (kalanBorc buna göre erir). */
   yillikTaksit: number;
   alindigiYil: number;
+  /** Vade (yıl); eşit yıllık taksit bu sürede bitecek şekilde hesaplanır. */
+  vadeYil: number;
   /** Üst üste ödenemeyen taksit sayısı; 2'de uyarı, 3'te el koyma. */
   odenmeyenTaksit: number;
   /** Bu kredi için faiz pazarlığı yapıldı mı (kredi başına bir kez). */

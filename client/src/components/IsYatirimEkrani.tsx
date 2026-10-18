@@ -12,7 +12,7 @@ interface IsYatirimEkraniProps {
   mulkler: MulkKartBilgisi[];
   yukleniyor: boolean;
   islemMesaji: string | null;
-  onKrediAl: (tutar: number) => void;
+  onKrediAl: (teklifId: string) => void;
   onKrediPazarlik: () => void;
   onMulkSatinAl: (tur: MulkTuru) => void;
   onGeriDon: () => void;
@@ -80,7 +80,7 @@ export function IsYatirimEkrani({
         <div className="tam-sutun" hidden={mobil && aktifSekme !== 0}>
           <h3 className="tam-baslik">{en ? 'Moneylender' : 'Tefeci'}</h3>
 
-          {/* Tefeci / kredi — iki sabit tutar (küçük/büyük), enflasyonla ölçekli. */}
+          {/* Tefeci / kredi — havuzdan seçilmiş 2 teklif (tutar enflasyonlu, farklı faiz ve vade). */}
           {krediConfig?.aktifKredi ? (
             <div className="dedikodu-panosu">
               <p>
@@ -89,6 +89,8 @@ export function IsYatirimEkrani({
                 {en ? 'yearly instalment' : 'yıllık taksit'} ~{formatPara(krediConfig.aktifKredi.yillikTaksit)}
                 {' · '}
                 {en ? 'interest' : 'faiz'} %{Math.round(krediConfig.aktifKredi.faizOrani * 100)}
+                {' · '}
+                {en ? 'term' : 'vade'} {krediConfig.aktifKredi.vadeYil} {en ? 'yrs' : 'yıl'}
                 {krediConfig.aktifKredi.odenmeyenTaksit > 0 && (
                   <> · ⚠️ {en ? 'missed' : 'ödenmeyen'}: {krediConfig.aktifKredi.odenmeyenTaksit}</>
                 )}
@@ -99,22 +101,27 @@ export function IsYatirimEkrani({
                 </button>
               )}
             </div>
-          ) : krediConfig && krediConfig.kademeler.length > 0 ? (
+          ) : krediConfig && krediConfig.teklifler.length > 0 ? (
             <div className="dedikodu-panosu">
               <p className="giris-aciklama">
                 {en
-                  ? `Interest ~${Math.round(krediConfig.faizTeklifi * 100)}%. Miss three instalments and the moneylender seizes a property.`
-                  : `~%${Math.round(krediConfig.faizTeklifi * 100)} faizle. Üst üste üç taksit kaçırırsan tefeci bir mülküne el koyar.`}
+                  ? 'Pick one of the two offers. You repay in equal yearly instalments; miss three in a row and the moneylender seizes a property.'
+                  : 'İki tekliften birini seç. Eşit yıllık taksitlerle ödersin; üst üste üç taksit kaçırırsan tefeci bir mülküne el koyar.'}
               </p>
               <div className="kariyer-bagis-kademeler">
-                {krediConfig.kademeler.map((tutar) => (
+                {krediConfig.teklifler.map((t) => (
                   <button
-                    key={tutar}
+                    key={t.id}
                     className="kariyer-bagis-cip"
                     disabled={yukleniyor}
-                    onClick={() => onKrediAl(tutar)}
+                    title={en ? t.ad.en : t.ad.tr}
+                    onClick={() => onKrediAl(t.id)}
                   >
-                    {formatPara(tutar)} {paraBirimi}
+                    <strong>{formatPara(t.tutar)} {paraBirimi}</strong>
+                    <br />
+                    {en ? 'interest' : 'faiz'} %{Math.round(t.faiz * 100)} · {t.vade} {en ? 'yrs' : 'yıl'}
+                    <br />
+                    {en ? 'instalment' : 'taksit'} ~{formatPara(t.taksit)}/{en ? 'yr' : 'yıl'} · {en ? 'total' : 'toplam'} ~{formatPara(t.taksit * t.vade)}
                   </button>
                 ))}
               </div>

@@ -1113,13 +1113,13 @@ function App() {
     }
   }
 
-  async function krediAlHandler(tutar: number) {
+  async function krediAlHandler(teklifId: string) {
     if (!karakter) return;
     setHata(null);
     setIslemMesaji(null);
     setYukleniyor(true);
     try {
-      const sonuc = await krediAl(karakter.id, tutar);
+      const sonuc = await krediAl(karakter.id, teklifId);
       setKarakter(sonuc.state);
       setIslemMesaji(sonuc.mesaj);
       const { finans } = await finansGetir(sonuc.state.id);

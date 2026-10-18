@@ -306,6 +306,7 @@ export interface CharacterState {
   salgin_korunma_yatirimi: SalginKorunmaYatirimi | null;
   /** Aktif tefeci kredisi; yoksa null. */
   kredi: Kredi | null;
+  kredi_teklifleri: { idler: string[]; yil: number } | null;
 
   /** Aile ekranı etkileşim cooldown'ları: anahtar → tekrar açılacağı oyun yılı (§33). */
   aile_etkilesim_kilit: Record<string, number>;
@@ -537,18 +538,29 @@ export interface Kredi {
   kalanBorc: number;
   faizOrani: number;
   yillikTaksit: number;
+  /** Vade (yıl). */
+  vadeYil: number;
   alindigiYil: number;
   odenmeyenTaksit: number;
   pazarlikYapildi: boolean;
 }
 
+/** Tefecinin sunduğu bir teklif (havuzdan, 3 yılda bir yenilenir): tutar enflasyonlu, faiz yıllık, vade yıl, eşit yıllık taksit. */
+export interface KrediTeklifi {
+  id: string;
+  ad: { tr: string; en: string };
+  tutar: number;
+  faiz: number;
+  vade: number;
+  taksit: number;
+}
+
 export interface KrediConfig {
   aktifKredi: Kredi | null;
   maksTutar: number;
-  faizTeklifi: number;
   minTutar: number;
-  /** Tefecinin sunduğu sabit kredi tutarları (küçük/büyük), enflasyonla ölçekli. */
-  kademeler: number[];
+  /** Tefecinin şu an sunduğu 2 teklif. */
+  teklifler: KrediTeklifi[];
 }
 
 export interface EkipUyesi {

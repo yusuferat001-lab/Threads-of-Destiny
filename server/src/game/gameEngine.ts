@@ -98,8 +98,8 @@ import {
   krediPazarlik,
   krediYillikUygula,
   krediMaksTutar,
-  krediFaizTeklifi,
-  krediKademeleri,
+  krediTeklifleri,
+  type KrediTeklifi,
   isletmeBaglami,
 } from "./stateManager";
 import {
@@ -5938,27 +5938,27 @@ export async function salginKorunmaYatirimiYap(
 export async function krediConfigGetir(id: string): Promise<{
   aktifKredi: CharacterState["kredi"];
   maksTutar: number;
-  faizTeklifi: number;
   minTutar: number;
-  kademeler: number[];
+  teklifler: KrediTeklifi[];
 }> {
   const oturum = await oturumGetir(id);
   const { state } = oturum;
   const enflasyon = enflasyonCarpani(state);
+  const teklifler = krediTeklifleri(state);
+  await oturumKaydet(state); // teklifler ilk kez/yenilenerek seçilmiş olabilir
   return {
     aktifKredi: state.kredi,
     maksTutar: krediMaksTutar(state),
-    faizTeklifi: krediFaizTeklifi(state),
     minTutar: Math.max(1, Math.round(20 * enflasyon)),
-    kademeler: krediKademeleri(state),
+    teklifler,
   };
 }
 
-export async function krediAlEndpoint(id: string, tutar: number): Promise<{ state: CharacterState; mesaj: string }> {
+export async function krediAlEndpoint(id: string, teklifId: string): Promise<{ state: CharacterState; mesaj: string }> {
   const oturum = await oturumGetir(id);
   const { state } = oturum;
   if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
-  const mesaj = krediAl(state, tutar);
+  const mesaj = krediAl(state, teklifId);
   clampStats(state);
   await oturumKaydet(state);
   return { state, mesaj };

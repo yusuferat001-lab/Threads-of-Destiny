@@ -3,6 +3,7 @@ import { CharacterState, Cag, Dil, Kategori, SonucEtkisi, YatkinlikKaynagi, Kisi
 import { T, K, ikiDilT } from "../i18n";
 import { amaclariUret, amacSkorCarpani, amaclariOlumdeKontrol, amacTanimiGetir } from "../data/hayatAmaclari";
 import { AILELER, AileTanimi } from "../data/aileler";
+import { KREDI_HAVUZU, KREDI_TEKLIF_SAYISI, KREDI_TEKLIF_YENILEME_YIL, krediHavuzTanimi, annuiteTaksit, type KrediHavuzTanimi } from "../data/krediHavuzu";
 import { BolgeOzellikleri, bolgeOzellikleriGetir } from "../data/bolgeOzellikleri";
 import { rastgeleKisilikCifti, kisilikGetir } from "../data/kisilikler";
 import {
@@ -865,6 +866,7 @@ export function createCharacter(
     borc_yardimi_alindi: false,
     salgin_korunma_yatirimi: null,
     kredi: null,
+    kredi_teklifleri: null,
     aile_etkilesim_kilit: {},
     kotu_is_kilit: {},
     ajan_gorevleri: [],
@@ -1278,6 +1280,8 @@ export function eskiKayitGocu(state: CharacterState): void {
   rakipleriTamamla(state);
   if (state.salgin_korunma_yatirimi === undefined) state.salgin_korunma_yatirimi = null;
   if (state.kredi === undefined) state.kredi = null;
+  if (state.kredi_teklifleri === undefined) state.kredi_teklifleri = null;
+  if (state.kredi && typeof state.kredi.vadeYil !== "number") state.kredi.vadeYil = 6;
   // Kariyer sayfası — yönetimle bağlar (§35) sonradan eklendi.
   if (typeof state.yonetim_iliski !== "number") state.yonetim_iliski = 40;
   if (typeof state.patron_iliski !== "number") state.patron_iliski = 40;
@@ -2969,14 +2973,18 @@ export function rakipMisillemesiDene(state: CharacterState, yasArtisi: number): 
 // servete el koyar. Pazarlıkla faiz bir kez düşürülebilir (ya da ters teper).
 // ---------------------------------------------------------------------------
 
-export const KREDI_TABAN_FAIZ = 0.12;
 export const KREDI_MIN_TUTAR_TABAN = 20;
 export const KREDI_MAKS_TUTAR_TABAN = 200;
-/** Geriye dönük uyumluluk için sabit adlar (enflasyonsuz taban değerler). */
-export const KREDI_MIN_TUTAR = KREDI_MIN_TUTAR_TABAN;
-export const KREDI_MAKS_TUTAR = KREDI_MAKS_TUTAR_TABAN;
-/** İki sabit kredi kademesinin enflasyonsuz taban tutarları (küçük/büyük). */
-export const KREDI_KADEME_TABAN = [40, 130];
+
+/** Tefecinin sunduğu bir teklif: tutar (enflasyonlu), yıllık faiz, vade (yıl) ve eşit yıllık taksit. */
+export interface KrediTeklifi {
+  id: string;
+  ad: { tr: string; en: string };
+  tutar: number;
+  faiz: number;
+  vade: number;
+  taksit: number;
+}
 
 /** Oyuncunun şu an alabileceği en yüksek kredi (maaşa + mevcut borç yokluğuna + enflasyona bağlı). */
 export function krediMaksTutar(state: CharacterState): number {
@@ -2988,66 +2996,85 @@ export function krediMaksTutar(state: CharacterState): number {
   return Math.max(0, Math.min(tavan, Math.round(maas * 6 * sucKesinti)));
 }
 
-/** Tefecinin sunduğu iki sabit kredi tutarı (küçük/büyük), enflasyonla ölçekli ve mevcut tavana kırpılmış. */
-export function krediKademeleri(state: CharacterState): number[] {
+/** Tefecinin güvensizlik primi: borçluysa +4, suç seviyesi yüksekse +3, ahlak düşükse +2 puan (havuz faizine eklenir). */
+export function krediFaizEki(state: CharacterState): number {
+  let ek = 0;
+  if (state.para < 0) ek += 0.04;
+  if (state.suc_seviyesi >= 40) ek += 0.03;
+  if (state.ahlak < 35) ek += 0.02;
+  return ek;
+}
+
+function krediTeklifiKur(state: CharacterState, tanim: KrediHavuzTanimi, maks: number): KrediTeklifi | null {
+  const min = Math.max(1, Math.round(KREDI_MIN_TUTAR_TABAN * enflasyonCarpani(state)));
+  const tutar = Math.min(maks, Math.round(tanim.tutar * enflasyonCarpani(state)));
+  if (tutar < min) return null;
+  const faiz = Math.round((tanim.faiz + krediFaizEki(state)) * 100) / 100;
+  const taksit = Math.max(2, Math.ceil(annuiteTaksit(tutar, faiz, tanim.vade)));
+  return { id: tanim.id, ad: tanim.ad, tutar, faiz, vade: tanim.vade, taksit };
+}
+
+/**
+ * Tefecinin şu anki iki teklifi. Havuzdan rastgele iki farklı teklif seçilir, 3 yıl (ya da kredi alınana
+ * dek) sabit kalır; tutarlar enflasyonla büyür, mevcut kredi tavanına kırpılır. Aktif kredi varken boş döner.
+ */
+export function krediTeklifleri(state: CharacterState): KrediTeklifi[] {
   const maks = krediMaksTutar(state);
   if (maks <= 0) return [];
-  const enflasyon = enflasyonCarpani(state);
-  const min = Math.max(1, Math.round(KREDI_MIN_TUTAR_TABAN * enflasyon));
-  const kademeler = KREDI_KADEME_TABAN.map((t) => Math.round(t * enflasyon))
-    .map((t) => Math.min(t, maks))
-    .filter((t) => t >= min);
-  // Aynı değere kırpıldılarsa (düşük tavan) tekilleştir.
-  return kademeler.filter((t, i) => kademeler.indexOf(t) === i);
+  const t = state.kredi_teklifleri;
+  if (!t || state.yil - t.yil >= KREDI_TEKLIF_YENILEME_YIL || t.idler.some((id) => !krediHavuzTanimi(id))) {
+    const idler = [...KREDI_HAVUZU].sort(() => Math.random() - 0.5).slice(0, KREDI_TEKLIF_SAYISI).map((k) => k.id);
+    state.kredi_teklifleri = { idler, yil: state.yil };
+  }
+  const teklifler: KrediTeklifi[] = [];
+  for (const id of state.kredi_teklifleri!.idler) {
+    const tanim = krediHavuzTanimi(id);
+    const teklif = tanim ? krediTeklifiKur(state, tanim, maks) : null;
+    if (teklif) teklifler.push(teklif);
+  }
+  return teklifler;
 }
 
-/** Verilen tutar için tefecinin isteyeceği faiz oranı (borçluysa / suçluysa yükselir). */
-export function krediFaizTeklifi(state: CharacterState): number {
-  let faiz = KREDI_TABAN_FAIZ;
-  if (state.para < 0) faiz += 0.04;
-  if (state.suc_seviyesi >= 40) faiz += 0.03;
-  if (state.ahlak < 35) faiz += 0.02;
-  return Math.round(faiz * 100) / 100;
-}
-
-export function krediAl(state: CharacterState, tutar: number): string {
+export function krediAl(state: CharacterState, teklifId: string): string {
   if (state.kredi) throw new Error("Zaten ödenmemiş bir kredin var.");
-  const maks = krediMaksTutar(state);
-  const t = Math.round(tutar);
-  const minTutar = Math.max(1, Math.round(KREDI_MIN_TUTAR_TABAN * enflasyonCarpani(state)));
-  if (t < minTutar) throw new Error(`En az ${minTutar} ${state.para_birimi} kredi alabilirsin.`);
-  if (t > maks) throw new Error(`Tefeci sana en fazla ${maks} ${state.para_birimi} verir.`);
-  const faiz = krediFaizTeklifi(state);
+  const teklif = krediTeklifleri(state).find((x) => x.id === teklifId);
+  if (!teklif) throw new Error("Tefeci böyle bir teklif sunmuyor.");
   state.kredi = {
-    anapara: t,
-    kalanBorc: t,
-    faizOrani: faiz,
-    yillikTaksit: Math.max(2, Math.round(t * 0.18)),
+    anapara: teklif.tutar,
+    kalanBorc: teklif.tutar,
+    faizOrani: teklif.faiz,
+    yillikTaksit: teklif.taksit,
+    vadeYil: teklif.vade,
     alindigiYil: state.yil,
     odenmeyenTaksit: 0,
     pazarlikYapildi: false,
   };
-  state.para = paraYuvarla(state.para + t);
-  hayatOlayiEkle(state, "🪙", T(state.dil, "Tefeciden {0} {birim} borç aldı", [t]).replace(/\{birim\}/g, state.para_birimi));
-  return T(state.dil, "Tefeci kesesini açtı: +{0} {birim}. Yıllık taksit ~{1}, faiz %{2}.", [
-    t,
-    state.kredi.yillikTaksit,
-    Math.round(faiz * 100),
+  state.kredi_teklifleri = null; // bir sonraki sefer yeni teklifler çıksın
+  state.para = paraYuvarla(state.para + teklif.tutar);
+  hayatOlayiEkle(state, "🪙", T(state.dil, "Tefeciden {0} {birim} borç aldı", [teklif.tutar]).replace(/\{birim\}/g, state.para_birimi));
+  return T(state.dil, "Tefeci kesesini açtı: +{0} {birim}. Faiz %{1}, {2} yıl vade, yıllık taksit ~{3}.", [
+    teklif.tutar,
+    Math.round(teklif.faiz * 100),
+    teklif.vade,
+    teklif.taksit,
   ]).replace(/\{birim\}/g, state.para_birimi);
 }
 
 export function krediPazarlik(state: CharacterState): string {
   if (!state.kredi) throw new Error("Ortada bir kredi yok.");
   if (state.kredi.pazarlikYapildi) throw new Error("Bu kredi için zaten pazarlık ettin.");
-  state.kredi.pazarlikYapildi = true;
+  const k = state.kredi;
+  k.pazarlikYapildi = true;
+  const kalanYil = Math.max(1, (k.vadeYil ?? 6) - (state.yil - k.alindigiYil));
   const sans = 30 + (state.un - 20) / 2 + (state.ahlak - 50) / 4; // ~%20-70
   if (Math.random() * 100 < sans) {
-    state.kredi.faizOrani = Math.max(0.05, Math.round((state.kredi.faizOrani - 0.03) * 100) / 100);
-    state.kredi.yillikTaksit = Math.max(2, Math.round(state.kredi.kalanBorc * 0.16));
-    return T(state.dil, "Tefeci homurdandı ama faizi %{0}'e indirdi.", [Math.round(state.kredi.faizOrani * 100)]);
+    k.faizOrani = Math.max(0.05, Math.round((k.faizOrani - 0.03) * 100) / 100);
+    k.yillikTaksit = Math.max(2, Math.ceil(annuiteTaksit(k.kalanBorc, k.faizOrani, kalanYil)));
+    return T(state.dil, "Tefeci homurdandı ama faizi %{0}'e indirdi.", [Math.round(k.faizOrani * 100)]);
   }
-  state.kredi.faizOrani = Math.min(0.30, Math.round((state.kredi.faizOrani + 0.02) * 100) / 100);
-  return T(state.dil, "Pazarlık ters tepti; tefeci faizi %{0}'e çıkardı.", [Math.round(state.kredi.faizOrani * 100)]);
+  k.faizOrani = Math.min(0.30, Math.round((k.faizOrani + 0.02) * 100) / 100);
+  k.yillikTaksit = Math.max(2, Math.ceil(annuiteTaksit(k.kalanBorc, k.faizOrani, kalanYil)));
+  return T(state.dil, "Pazarlık ters tepti; tefeci faizi %{0}'e çıkardı.", [Math.round(k.faizOrani * 100)]);
 }
 
 /** Yıllık: faiz işler, taksit nakitten otomatik ödenir, ödenmezse el koyma zinciri. */
