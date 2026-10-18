@@ -148,6 +148,7 @@ describe("astlar", () => {
     mesleğiSec(state, "Asker");
     state.kariyer_puani = 20;
     state.un = 40;
+    state.yil += 9; // S2 cooldown'u
     rutbeGuncelle(state);
     expect(state.rutbe_seviye).toBe(2);
     expect(state.astlar).toHaveLength(1);
@@ -164,12 +165,13 @@ describe("astlar", () => {
     mesleğiSec(state, "Asker");
     state.kariyer_puani = 20;
     state.un = 40;
+    state.yil += 9; // S2 cooldown'u
     rutbeGuncelle(state);
     const ilkAstIsim = state.astlar[0].isim;
 
     state.kariyer_puani = 60;
     state.un = 55;
-    state.yil += 5; // seviye 3 cooldown'u (3 yıl) aşılır
+    state.yil += 12; // seviye 3 cooldown'u aşılır
     rutbeGuncelle(state);
 
     expect(state.rutbe_seviye).toBe(3);

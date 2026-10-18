@@ -70,7 +70,7 @@ export const DEPO_BAKIM = [4, 10, 18, 30];
 export const BASLANGIC_STOK = 20;
 export const BORC_ODEME_ORANI = 0.6;
 /** Rütbe S1..S5 → en fazla toplam çalışan. */
-export const CALISAN_LIMITLERI = [2, 4, 6, 8, 10];
+export const CALISAN_LIMITLERI = [2, 3, 5, 6, 7];
 /** Müşterinin bütçesi hatlar arasında paylaşılır: n açık hatta her birinin talebi 1/(1+0.6(n-1)) ile çarpılır. */
 export const HAT_PAYLASIM = 0.6;
 /** Karşılanamayan talep bu orandan büyükse müşteri kaybı: min(%12, (oran−eşik)×%30) kendi müşterisinin yüzdesi (sıcak ürünse ×2). */
@@ -249,7 +249,7 @@ export function korumaHesapla(state: CharacterState): { calisan: number; yatirim
 }
 
 /** Çalışan maaşı çarpanı (v8.2: +%15 → v8.4: +%7). */
-export const MAAS_CARPANI = 1.07;
+export const MAAS_CARPANI = 1.0;
 
 /** Giriş seviyesine (Y, S) göre enflasyonsuz yıllık maaş tabanı. */
 export function maasTabani(yetenek: number, sadakat: number): number {

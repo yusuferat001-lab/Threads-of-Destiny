@@ -132,8 +132,8 @@ describe("Kredi / tefeci (havuzdan 2 teklif, vadeli)", () => {
     for (const k of KREDI_HAVUZU) {
       expect(k.vade).toBeGreaterThanOrEqual(3);
       expect(k.vade).toBeLessThanOrEqual(7);
-      expect(k.faiz).toBeGreaterThanOrEqual(0.09);
-      expect(k.faiz).toBeLessThanOrEqual(0.2);
+      expect(k.faiz).toBeGreaterThanOrEqual(0.1);
+      expect(k.faiz).toBeLessThanOrEqual(0.21);
     }
   });
 
@@ -199,7 +199,8 @@ describe("Kredi / tefeci (havuzdan 2 teklif, vadeli)", () => {
     krediAl(s, krediTeklifleri(s)[0].id);
     const eskiFaiz = s.kredi!.faizOrani;
     krediPazarlik(s);
-    expect(s.kredi!.faizOrani).not.toBe(eskiFaiz);
+    const fark = Math.round((s.kredi!.faizOrani - eskiFaiz) * 100);
+    expect([-4, 5]).toContain(fark);
     expect(s.kredi!.pazarlikYapildi).toBe(true);
   });
 

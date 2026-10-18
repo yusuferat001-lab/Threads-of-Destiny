@@ -29,7 +29,7 @@ export interface RutbeTanimi {
  * yükseldikçe bekleme uzar; kariyer_puani fazlasıyla dolsa bile üst üste terfi
  * edilemez. rutbeGuncelle ayrıca çağrı başına en fazla +1 kademe ilerletir.
  */
-export const TERFI_COOLDOWN: Record<number, number> = { 2: 0, 3: 2, 4: 2, 5: 8 };
+export const TERFI_COOLDOWN: Record<number, number> = { 2: 9, 3: 10, 4: 11, 5: 12 };
 
 /**
  * Meslek pazarı (2026-10, data/pazar.ts): üst kademeler ayrıca en az bu pazar
@@ -42,7 +42,7 @@ export const RUTBE_PAZAR_PAYI_ESIGI: Record<number, number> = { 4: 0.18, 5: 0.35
  * İşletmesi olan meslekler (Tüccar/Zanaatkâr; §45) başlangıçta ≈%8–9 paydan başlar, orta oyunda ≈%35'e,
  * iyi oyunda %50'ye çıkar — eşikler buna göre yüksektir. Diğer meslekler eski eşikleri kullanır.
  */
-export const RUTBE_PAZAR_PAYI_ESIGI_ISLETME: Record<number, number> = { 2: 0.12, 3: 0.2, 4: 0.32, 5: 0.5 };
+export const RUTBE_PAZAR_PAYI_ESIGI_ISLETME: Record<number, number> = { 2: 0.12, 3: 0.15, 4: 0.2, 5: 0.35 };
 
 export function rutbePazarPayiEsigi(meslek: string, hedefSeviye: number): number | undefined {
   return isletmeMeslegiMi(meslek) ? RUTBE_PAZAR_PAYI_ESIGI_ISLETME[hedefSeviye] : RUTBE_PAZAR_PAYI_ESIGI[hedefSeviye];
@@ -96,7 +96,7 @@ export const RUTBELER: Record<string, Record<Cag, RutbeTanimi>> = {
         { kariyer_puani: 10, un: 20 },
         { kariyer_puani: 32, un: 36 },
         { kariyer_puani: 64, un: 48 },
-        { kariyer_puani: 260, un: 78 },
+        { kariyer_puani: 330, un: 78 },
       ],
     },
     "Sanayi Devrimi": {
@@ -105,7 +105,7 @@ export const RUTBELER: Record<string, Record<Cag, RutbeTanimi>> = {
         { kariyer_puani: 10, un: 20 },
         { kariyer_puani: 32, un: 36 },
         { kariyer_puani: 64, un: 48 },
-        { kariyer_puani: 260, un: 78 },
+        { kariyer_puani: 330, un: 78 },
       ],
     },
   },
@@ -138,7 +138,7 @@ export const RUTBELER: Record<string, Record<Cag, RutbeTanimi>> = {
         { kariyer_puani: 10, ahlak: 44 },
         { kariyer_puani: 32, ahlak: 52 },
         { kariyer_puani: 64, ahlak: 62 },
-        { kariyer_puani: 260, ahlak: 80 },
+        { kariyer_puani: 330, ahlak: 80 },
       ],
     },
     "Sanayi Devrimi": {
@@ -149,7 +149,7 @@ export const RUTBELER: Record<string, Record<Cag, RutbeTanimi>> = {
         { kariyer_puani: 10, ahlak: 44 },
         { kariyer_puani: 32, ahlak: 52 },
         { kariyer_puani: 64, ahlak: 62 },
-        { kariyer_puani: 260, ahlak: 80 },
+        { kariyer_puani: 330, ahlak: 80 },
       ],
     },
   },

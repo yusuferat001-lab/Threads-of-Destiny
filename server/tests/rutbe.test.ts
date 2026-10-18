@@ -41,11 +41,12 @@ describe("rütbe reformu — 5 kademe, ratchet, cooldown, kariyer puanı", () =>
     expect(s.son_terfi_yili).toBe(s.baslangic_yili);
   });
 
-  it("kariyer_puani + ün eşiği aşılınca seviye 2'ye terfi eder (S2 cooldown yok)", () => {
+  it("kariyer_puani + ün eşiği aşılınca seviye 2'ye terfi eder (S2 cooldown dolunca)", () => {
     const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(s, "Asker");
     s.kariyer_puani = 20;
     s.un = 40;
+    s.yil = s.baslangic_yili + TERFI_COOLDOWN[2];
     rutbeGuncelle(s);
     expect(s.rutbe_seviye).toBe(2);
     expect(s.rutbe).toBe("Onbaşı");
@@ -57,6 +58,7 @@ describe("rütbe reformu — 5 kademe, ratchet, cooldown, kariyer puanı", () =>
     mesleğiSec(s, "Asker");
     s.kariyer_puani = 20;
     s.un = 40;
+    s.yil = s.baslangic_yili + TERFI_COOLDOWN[2];
     rutbeGuncelle(s);
     const s2Yili = s.yil;
 
@@ -120,7 +122,7 @@ describe("rütbe reformu — 5 kademe, ratchet, cooldown, kariyer puanı", () =>
     expect(s.rutbe_seviye).toBe(2);
   });
 
-  it("S4 ve S5 ayrıca pazar payı ister — pazarda zayıfken terfi durur (işletmeli: S2 %12 · S3 %20 · S4 %32 · S5 %50)", () => {
+  it("S4 ve S5 ayrıca pazar payı ister — pazarda zayıfken terfi durur (işletmeli: S2 %12 · S3 %15 · S4 %20 · S5 %35)", () => {
     const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(s, "Tüccar");
     const payAyarla = (pay: number) => {
@@ -132,22 +134,23 @@ describe("rütbe reformu — 5 kademe, ratchet, cooldown, kariyer puanı", () =>
     s.yil += 10;
     rutbeGuncelle(s);
     expect(s.rutbe_seviye).toBe(1);
-    payAyarla(0.25);
+    payAyarla(0.14);
     rutbeGuncelle(s);
     expect(s.rutbe_seviye).toBe(2);
+    payAyarla(0.17);
     s.yil += 10;
     rutbeGuncelle(s);
-    expect(s.rutbe_seviye).toBe(3); // %25 ≥ %20
-    s.yil += 10;
+    expect(s.rutbe_seviye).toBe(3); // %17 ≥ %15
+    s.yil += 12;
     rutbeGuncelle(s);
-    expect(s.rutbe_seviye).toBe(3); // %25 < %32: S4 durur
-    payAyarla(0.4);
+    expect(s.rutbe_seviye).toBe(3); // %17 < %20: S4 durur
+    payAyarla(0.3);
     rutbeGuncelle(s);
     expect(s.rutbe_seviye).toBe(4);
-    s.yil += 10;
+    s.yil += 12;
     rutbeGuncelle(s);
-    expect(s.rutbe_seviye).toBe(4); // %40 < %50: S5 durur
-    payAyarla(0.55);
+    expect(s.rutbe_seviye).toBe(4); // %30 < %35: S5 durur
+    payAyarla(0.45);
     s.yil += 10;
     rutbeGuncelle(s);
     expect(s.rutbe_seviye).toBe(5);
@@ -158,7 +161,7 @@ describe("rütbe reformu — 5 kademe, ratchet, cooldown, kariyer puanı", () =>
     expect(rutbePazarPayiEsigi("Din Adamı", 5)).toBe(0.35);
     expect(rutbePazarPayiEsigi("Asker", 2)).toBeUndefined();
     expect(rutbePazarPayiEsigi("Tüccar", 2)).toBe(0.12);
-    expect(rutbePazarPayiEsigi("Zanaatkâr", 5)).toBe(0.5);
+    expect(rutbePazarPayiEsigi("Zanaatkâr", 5)).toBe(0.35);
   });
 
   it("maaş rütbe yükseldikçe kalıcı olarak artar", () => {

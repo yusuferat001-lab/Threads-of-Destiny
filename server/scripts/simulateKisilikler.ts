@@ -680,6 +680,8 @@ interface OyunKaydi {
   hayat_amaci_tamamlandi: boolean;
   rutbe: string;
   rutbe_seviye: number;
+  /** Rütbe S2, S3, S4, S5'e ilk ulaşılan yaşlar (0 = hiç ulaşılmadı). */
+  rutbe_yaslari: number[];
   /** Ölüm anındaki meslek pazarı payı (0-100). */
   pazar_payi: number;
   musteri: number;
@@ -753,6 +755,7 @@ async function birOyunSimuleEt(kisilik: Kisilik, cag: Cag, meslek: string): Prom
     borcluTurSayisi: 0,
   };
 
+  const rutbeYaslari = [0, 0, 0, 0];
   let hataMi = false;
   let guard = 0;
   try {
@@ -768,6 +771,7 @@ async function birOyunSimuleEt(kisilik: Kisilik, cag: Cag, meslek: string): Prom
         sonuc = await secimUygula(id, tepkiSec(state, kisilik));
       }
 
+      for (let sv = 2; sv <= 5; sv++) if (rutbeYaslari[sv - 2] === 0 && state.rutbe_seviye >= sv) rutbeYaslari[sv - 2] = state.yas;
       sayaclar.enYuksekPara = Math.max(sayaclar.enYuksekPara, state.para);
       sayaclar.enDusukPara = Math.min(sayaclar.enDusukPara, state.para);
       sayaclar.enDusukSaglik = Math.min(sayaclar.enDusukSaglik, state.saglik);
@@ -802,6 +806,7 @@ async function birOyunSimuleEt(kisilik: Kisilik, cag: Cag, meslek: string): Prom
     hayat_amaci_tamamlandi: son.hayat_amaci?.tamamlandi ?? false,
     rutbe: son.rutbe,
     rutbe_seviye: son.rutbe_seviye,
+    rutbe_yaslari: rutbeYaslari,
     pazar_payi: Math.round(pazarPayiHesapla(son) * 100),
     musteri: Math.round(son.meslek_musteri ?? 0),
     sehir_yonetim_seviyesi: son.sehir_yonetim_seviyesi,
@@ -878,7 +883,7 @@ async function main(): Promise<void> {
 
   for (const kisilik of kisiliklar) {
     for (const cag of caglar) {
-      for (const meslek of MESLEKLER) {
+      for (const meslek of MESLEKLER.filter((m) => !process.env.SIM_MESLEK || process.env.SIM_MESLEK.split(",").includes(m))) {
         console.log(`=== [${kisilik.ad}] ${cag} — ${meslek}: ${N_PER_GROUP} ömür ===`);
         for (let i = 0; i < N_PER_GROUP; i++) {
           const kayit = await birOyunSimuleEt(kisilik, cag, meslek);
@@ -895,7 +900,7 @@ async function main(): Promise<void> {
     }
   }
 
-  const cikisYolu = path.join(__dirname, "simulateKisilikler.sonuc.json");
+  const cikisYolu = process.env.SIM_CIKTI ?? path.join(__dirname, "simulateKisilikler.sonuc.json");
   fs.writeFileSync(cikisYolu, JSON.stringify(tumKayitlar, null, 2), "utf-8");
   const gecenSn = ((Date.now() - baslangic) / 1000).toFixed(0);
   console.log(`\nTüm sonuçlar yazıldı: ${cikisYolu}`);

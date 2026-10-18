@@ -150,9 +150,9 @@ describe("işletme (Tüccar dilimi)", () => {
     expect(s.isletme!.hatlar.filter((h) => h.acik)).toHaveLength(1);
   });
 
-  it("çalışan limiti rütbeye göre 2/4/6/8/10", async () => {
+  it("çalışan limiti rütbeye göre 2/3/5/6/7", async () => {
     const s = await tuccar();
-    const beklenen = [2, 4, 6, 8, 10];
+    const beklenen = [2, 3, 5, 6, 7];
     beklenen.forEach((limit, i) => {
       s.rutbe_seviye = i + 1;
       expect(calisanLimiti(s)).toBe(limit);
@@ -161,7 +161,7 @@ describe("işletme (Tüccar dilimi)", () => {
 
   it("çalışan alımı: peşin ücret yok, aday havuzdan çıkar, rol etkisi var; limit aşılamaz; 3 çalışan 2. slotu açar", async () => {
     const s = await tuccar();
-    s.rutbe_seviye = 2; // limit 4
+    s.rutbe_seviye = 2; // limit 3
     s.ekip = [];
     for (let i = 0; i < 3; i++) {
       const aday = s.isletme!.adaylar[0];
@@ -235,8 +235,8 @@ describe("işletme (Tüccar dilimi)", () => {
   });
 
   it("maaş giriş seviyesine göre sabit, yalnız enflasyonla artar", () => {
-    expect(maasTabani(20, 10)).toBeCloseTo(1.07 * (1.2 + 0.4 + 0.1 + 0.08), 2);
-    expect(maasTabani(90, 80)).toBeCloseTo(1.07 * (1.2 + 1.8 + 0.8 + 2.88), 2);
+    expect(maasTabani(20, 10)).toBeCloseTo(1.0 * (1.2 + 0.4 + 0.1 + 0.08), 2);
+    expect(maasTabani(90, 80)).toBeCloseTo(1.0 * (1.2 + 1.8 + 0.8 + 2.88), 2);
     expect(maasTabani(90, 80)).toBeGreaterThan(maasTabani(20, 10));
   });
 

@@ -610,16 +610,16 @@ Kaynak: [rutbeler.ts](server/src/data/rutbeler.ts). **Eski 3-kademeli, `para` e�
 
 | Meslek | Unvanlar (Orta Çağ / Sanayi) | S2 | S3 | S4 | S5 |
 |---|---|---|---|---|---|
-| Asker | Er→Onbaşı→Silahşor→Kumandan→Serdar / Er→Onbaşı→Çavuş→Yüzbaşı→Binbaşı | kp 10, ün 20 | kp 24, ün 32 | kp 44, ün 42 | **kp 210, ün 72** |
+| Asker | Er→Onbaşı→Silahşor→Kumandan→Serdar / Er→Onbaşı→Çavuş→Yüzbaşı→Binbaşı | kp 10, ün 20 | kp 24, ün 32 | kp 44, ün 42 | **kp 330, ün 72** |
 | Tüccar | Çırak Tüccar→Seyyar Satıcı→Pazarcı→Lonca Ustası→Lonca Reisi / Kâtip Çırak→Tezgâhtar→Şirket Ortağı→Fabrika Patronu→Sanayi Baronu | kp 10, ün 10 | kp 24, ün 17 | kp 44, ün 25 | **kp 210, ün 50** |
-| Din Adamı | Acemi Rahip→Rahip→Vaiz→Başrahip→Piskopos / Papaz Yrd.→Papaz→Vaiz→Başpapaz→Piskopos | kp 10, ahlak 44 | kp 24, ahlak 50 | kp 44, ahlak 58 | **kp 210, ahlak 78** |
+| Din Adamı | Acemi Rahip→Rahip→Vaiz→Başrahip→Piskopos / Papaz Yrd.→Papaz→Vaiz→Başpapaz→Piskopos | kp 10, ahlak 44 | kp 24, ahlak 50 | kp 44, ahlak 58 | **kp 330, ahlak 78** |
 | Zanaatkâr *(2026-09 sonu, 4. meslek)* | Çırak→Kalfa→Usta→Baş Usta→Loncabaşı / Amele→Vasıflı İşçi→Ustabaşı→Atölye Şefi→Fabrika Müdürü | kp 10, ün 8 | kp 24, ün 14 | kp 44, ün 20 | **kp 210, ün 42** |
 
 *Sünni İslam din_kultur: `Medrese Talebesi→Müezzin→Vaiz→İmam→Baş İmam` (her iki çağ, eşikler aynı).*
 
 Her kademe **hem** `kariyer_puani` **hem** mesleğe özgü statı ister (`esikKarsilaniyorMu`): Asker, Tüccar & Zanaatkâr **ün** (her kademede), Din Adamı **ahlak**. `para` koşulu KASITLI OLARAK YOK (sürekli harcanan nakde bağlı bir eşik sessiz rütbe kaybına yol açıyordu). S4→S5 sıçraması bilinçli olarak büyük (kp 44→**210**; 2026-09 ekonomi dengesinde 160'tan yükseltildi — ömürler ~20 yıl uzayınca S5 %2.4→%12.8'e fırlamıştı, 210 onu tekrar "nadir zirve"ye çekti). **S5 nadir bir zirvedir; 2026-09 simülasyonunda genel oran ~%0.4, Para-odaklı bot dolu ömürde ~%4, diğer kişilikler ≈%0** (bkz. §22 `simulateKisilikler`). Zanaatkâr'ın ün eşikleri Tüccar'dan biraz alçak tutuldu (esnaf itibarı, tüccarın "herkes tanır" şöhretinden daha mütevazı).
 
-**Terfi cooldown'u** (`TERFI_COOLDOWN = {2:0, 3:2, 4:2, 5:8}`): bir sonraki kademeye çıkmak için son terfiden bu kadar oyun yılı geçmiş olmalı (`state.yil - state.son_terfi_yili >= cooldown`). `rutbeGuncelle` ayrıca **çağrı başına en fazla +1 kademe** ilerletir — üst üste terfi olmaz.
+**Terfi cooldown'u** (`TERFI_COOLDOWN = {2:9, 3:10, 4:11, 5:12}` (v8.5: kademeler arası ≈9–12 yıl; ölçüm: S2≈25, S3≈36–38, S4≈49, S5≈62–78 yaş)): bir sonraki kademeye çıkmak için son terfiden bu kadar oyun yılı geçmiş olmalı (`state.yil - state.son_terfi_yili >= cooldown`). `rutbeGuncelle` ayrıca **çağrı başına en fazla +1 kademe** ilerletir — üst üste terfi olmaz.
 
 **RATCHET — rütbe ASLA DÜŞMEZ.** `kariyer_puani` (azalmaz zaten) veya ün/ahlak çökse bile `rutbe_seviye` korunur. `rutbeGuncelle` her tur çağrılır ama yalnız yukarı hareket eder. `terfiOldu` bayrağı + `🎖️` kutlama mesajı yalnız artışta üretilir.
 
@@ -1657,3 +1657,9 @@ Bu blok §45 v8/v8.1'in üzerine yazar (çelişkide bu geçerli). Kaynak: `game/
 - **Maliyet indirimi yeniden yazıldı (tavan YOK, çarpımsal):** `birimMaliyet × enflasyon × Π(1 − indirimᵢ)`. Kaynaklar: her **maliyet rolü çalışan** kendi çarpanını getirir (`0,02 + 0,10×Yetenek`, sadıksa ×1,05 → en çok ~%12,6; eski `0,03+0,2Y`), **tedarik/kervan yatırımı** kademe başı **%5** (eski %8), **gümrük rüşveti / hammadde kapatma** karanlık işi 4 yıl **%10** (eski %15), **imtiyaz** (gümrük muafiyeti / hammadde tahsisi) **%8** (eski %10). `EkipBonuslari.maliyetCarpani` çalışanların çarpımıdır (`maliyet = 1 − maliyetCarpani`). Eski `MALIYET_INDIRIM_TAVANI` silindi; yığıldıkça getiri kendiliğinden azalır (tipik dengeli oyuncu ≈ %20–30, teorik zirve ≈ %55–60).
 - **Kredi:** havuz faizine ek faiz **yalnız borçluysan** (para < 0) +4 puan (suç/ahlak primleri kalktı). Pazarlık şansı `clamp(15 + (şöhret−20)/4 + (ahlak−50)/8, 8, 35)` (≈ %8–35; eski %20–70). Kredi kartında yalnız **tutar, faiz, vade** yazar (taksit/toplam yok).
 - **Kalibrasyon (N=250, yaş 30/40/50, net):** pasif +3…+6 → ≈0…+3, son pay ≈%13; dengeli Tüccar OÇ 8/44/55, SD 16/77/100, Zanaatkâr OÇ 18/53/55, SD 27/88/99 (oran ≈1,4–1,8 → 2,3–2,5 → 1,9–2,1). Zanaatkâr SD talep tabanları ×0,93 daha kısıldı (parite).
+
+### §45 v8.5 (2026-10) — Maaş 1x, çalışan limiti 2/3/5/6/7, rütbe aralığı 9–12 yıl, kredi pazarlığı
+- **Çalışan maaşı** `MAAS_CARPANI` 1,07 → **1,0**. **Çalışan limiti** (S1..S5) `CALISAN_LIMITLERI` = **[2, 3, 5, 6, 7]**.
+- **Rütbe temposu:** `TERFI_COOLDOWN` {2:9, 3:10, 4:11, 5:12}; işletmeli meslek pazar payı eşikleri S2 %12 · S3 %15 · S4 %20 · S5 %35; Asker/Din Adamı S5 `kariyer_puani` 260 → 330 (Tüccar/Zanaatkâr S5 260 + pazar payı). Ölçüm (garantici+para botları, N=200/grup, son seviye S1–S5 %): Asker OÇ 2/2/18/57/20, SD 4/15/22/48/10 · Din Adamı OÇ 52/8/8/16/15, SD 39/17/10/28/5 · Tüccar OÇ 7/13/30/41/8, SD 10/16/20/46/7 · Zanaatkâr OÇ 7/37/34/20/0, SD 10/27/42/20/0.
+- **Kredi:** pazarlık şansı `clamp(25 + (şöhret−20)/8 + (ahlak−50)/16, 25, 40)`; başarıda faiz **−4 puan** (taban %5), başarısızlıkta **+5 puan** (tavan %30). Havuz faizleri +1 puan: kısa küçük %16 · uzun küçük %12 · kısa orta %19 · uzun orta %13 · kısa büyük %21 · uzun büyük %15.
+- **Sim:** `simulateKisilikler.ts` çıktısına `rutbe_yaslari` (S2..S5'e ulaşılan yaş) eklendi; env `SIM_CIKTI` (çıktı yolu), `SIM_MESLEK` (meslek filtresi). İşletme kalibrasyonu (N=120): pasif net ≈ +3…+4 → ≈0, dengeli gelir/gider ≈1,6–2,9.
