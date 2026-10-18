@@ -1,5 +1,4 @@
 import { Cag } from "../types";
-import { isletmeMeslegiMi } from "./meslekProfilleri";
 
 /**
  * Bir rütbe kademesine geçmek için gereken eşik. `para` KASITLI olarak yok —
@@ -24,28 +23,19 @@ export interface RutbeTanimi {
 }
 
 /**
- * Bir terfiden sonra, HEDEF kademeye çıkabilmek için son terfiden bu kadar oyun
- * yılı geçmiş olmalı (state.yil - state.son_terfi_yili >= cooldown). Kademe
- * yükseldikçe bekleme uzar; kariyer_puani fazlasıyla dolsa bile üst üste terfi
- * edilemez. rutbeGuncelle ayrıca çağrı başına en fazla +1 kademe ilerletir.
+ * Meslek pazarı (v8.6): HER kademe (S2..S5) ve HER meslek için terfi, mesleğin pazar payına bağlıdır;
+ * terfide bekleme yılı yoktur — pay (ve kariyer puanı/stat) eşiği dolunca terfi gelir.
+ * Anahtar HEDEF kademe. Aktif-dengeli bot ölçümüyle (Tüccar medyanı: %16@25 yaş, %19@35, %24@50, %30@65)
+ * ≈ S2 25 · S3 35 · S4 45 yaş, S5 nadir (%5–10) olacak şekilde ayarlandı.
  */
-export const TERFI_COOLDOWN: Record<number, number> = { 2: 9, 3: 10, 4: 11, 5: 12 };
-
-/**
- * Meslek pazarı (2026-10, data/pazar.ts): üst kademeler ayrıca en az bu pazar
- * payını ister — mesleğinde söz sahibi olmadan zirveye çıkılmaz. Anahtar HEDEF
- * kademe. Meslek ve çağdan bağımsız.
- */
-export const RUTBE_PAZAR_PAYI_ESIGI: Record<number, number> = { 4: 0.18, 5: 0.35 };
-
-/**
- * İşletmesi olan meslekler (Tüccar/Zanaatkâr; §45) başlangıçta ≈%8–9 paydan başlar, orta oyunda ≈%35'e,
- * iyi oyunda %50'ye çıkar — eşikler buna göre yüksektir. Diğer meslekler eski eşikleri kullanır.
- */
-export const RUTBE_PAZAR_PAYI_ESIGI_ISLETME: Record<number, number> = { 2: 0.12, 3: 0.15, 4: 0.2, 5: 0.35 };
+export const RUTBE_PAZAR_PAYI_ESIGI_ISLETME: Record<number, number> = { 2: 0.16, 3: 0.2, 4: 0.24, 5: 0.45 };
+/** Mesleğe göre eşik çarpanı: pay kazanmanın zorluğu meslekten mesleğe değişir. */
+const PAY_ESIGI_CARPANI: Record<string, number> = { Tüccar: 1, Asker: 1, Zanaatkâr: 0.85, "Din Adamı": 1.2 };
 
 export function rutbePazarPayiEsigi(meslek: string, hedefSeviye: number): number | undefined {
-  return isletmeMeslegiMi(meslek) ? RUTBE_PAZAR_PAYI_ESIGI_ISLETME[hedefSeviye] : RUTBE_PAZAR_PAYI_ESIGI[hedefSeviye];
+  const e = RUTBE_PAZAR_PAYI_ESIGI_ISLETME[hedefSeviye];
+  if (e === undefined) return undefined;
+  return Math.round(e * (PAY_ESIGI_CARPANI[meslek] ?? 1) * 100) / 100;
 }
 
 /**

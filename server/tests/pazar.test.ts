@@ -203,10 +203,10 @@ describe("meslek pazarı (müşteri modeli)", () => {
     expect(d.dagilim.oyuncu + d.dagilim.rakip + d.dagilim.kucuk).toBeGreaterThan(d.pazarMusteri - 3);
     expect(Array.isArray(d.haberler)).toBe(true);
     expect(d.rutbeSarti?.seviye).toBe(2); // işletmeli meslekte S2 de %12 pay ister
-    expect(d.rutbeSarti?.gerekliPay).toBe(12);
+    expect(d.rutbeSarti?.gerekliPay).toBe(16);
     s.rutbe_seviye = 3;
     expect(pazarDurumuHesapla(s).rutbeSarti?.seviye).toBe(4);
-    expect(pazarDurumuHesapla(s).rutbeSarti?.gerekliPay).toBe(20);
+    expect(pazarDurumuHesapla(s).rutbeSarti?.gerekliPay).toBe(24);
   });
 
   it("eski kayıtta güçten müşteri türetilir; en çok iki aktif rakip kalır, yenilenler korunur", () => {

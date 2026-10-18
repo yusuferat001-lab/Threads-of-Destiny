@@ -10,7 +10,6 @@ import {
   rutbeTanimiGetir,
   RutbeEsigi,
   RutbeTanimi,
-  TERFI_COOLDOWN,
   rutbeMaasCarpani,
   rutbePazarPayiEsigi,
   KARIYER_PUANI_YILLIK,
@@ -981,8 +980,8 @@ function astlariGuncelle(state: CharacterState, tanim: RutbeTanimi, seviye: numb
  *  - Kademe HAK ETME: kariyer_puani + mesleğe özgü stat (Asker/Tüccar şöhret, Din ahlak)
  *    esikler[0..3]'ü (S2..S5) sırayla karşılamalı.
  *  - RATCHET: rütbe asla düşmez — hak edilen kademe mevcuttan düşükse yok sayılır.
- *  - COOLDOWN: bir sonraki kademeye çıkmak için son terfiden TERFI_COOLDOWN[hedef]
- *    yıl geçmiş olmalı; terfi anında son_terfi_yili = state.yil damgalanır.
+ *  - Bekleme yılı YOK (v8.6): eşikler (kariyer puanı + stat + pazar payı) dolunca terfi gelir;
+ *    terfi anında son_terfi_yili = state.yil damgalanır (yalnız kayıt).
  *  - Çağrı başına en fazla +1 kademe.
  */
 export function rutbeGuncelle(state: CharacterState): void {
@@ -1006,13 +1005,8 @@ export function rutbeGuncelle(state: CharacterState): void {
 
   let hedef = mevcut;
   if (hakEdilen > mevcut) {
-    const sonraki = mevcut + 1;
-    const cooldown = TERFI_COOLDOWN[sonraki] ?? 0;
-    const sonTerfi = state.son_terfi_yili ?? state.baslangic_yili ?? state.yil;
-    if (state.yil - sonTerfi >= cooldown) {
-      hedef = sonraki;
-      state.son_terfi_yili = state.yil;
-    }
+    hedef = mevcut + 1;
+    state.son_terfi_yili = state.yil;
   }
   hedef = Math.max(1, Math.min(5, hedef));
 

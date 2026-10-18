@@ -49,7 +49,13 @@ import {
   envanterEsyasiKullan,
   zarKademeleriGetir,
   zarAt,
+  isletmeKararVer,
+  isletmeYatirimYap,
+  isletmeCalisanAl,
 } from "../src/game/gameEngine";
+import { isletmeProfiliGetir, yatirimTanimiGetir } from "../src/data/meslekProfilleri";
+import { hatSlotSayisi, calisanLimiti } from "../src/game/isletme";
+import { enflasyonCarpani } from "../src/game/stateManager";
 import { yatirimConfigGetir, yatirimYap } from "./_yatirimShim";
 import { MESLEKLER, BOLGELER_BY_CAG, hesaplaSkor, gayrimenkulDegeriHesapla } from "../src/game/stateManager";
 import { amacSkorCarpani } from "../src/data/hayatAmaclari";
@@ -153,6 +159,8 @@ interface YanEylemAyari {
   sosyalSans: number;
   /** "prefer" | "avoid" | "any" — alkollü mekân tercihi. */
   sosyalAlkol: "prefer" | "avoid" | "any";
+  /** İşletmeli meslekte (Tüccar/Zanaatkâr) işletmeyi aktif yönetir: çalışan, yatırım, hat (v8.6). */
+  isletmeAktif?: boolean;
 }
 
 interface Kisilik {
@@ -168,6 +176,29 @@ interface Kisilik {
 }
 
 const KISILIKLER: Kisilik[] = [
+  {
+    id: "aktif",
+    ad: "Dengeli-Aktif",
+    konsantrasyon: 3.0,
+    israrTabani: 0.05,
+    secenekPuani: (o) =>
+      o.p * 100 -
+      o.olumRiski * 500 -
+      o.hapisRiski * 150 -
+      Math.max(0, -o.bekSaglik) * 5 -
+      Math.max(0, -o.bekPara) * 0.5 -
+      Math.max(0, o.sucArtisi) * 20 +
+      o.paraKazanci * 0.3,
+    yan: {
+      konutOran: 0.6, yasamOran: 0.55, konutMin: 2, konutMax: 4, yasamMin: 2, yasamMax: 3,
+      yatirimSans: 0.16, yatirimNakitKat: 2.0, mulkSans: 0.14, mulkNakitKat: 2.5,
+      mulkKaraborsaTercih: false, mulkRiskliKabul: false,
+      sifaSaglikEsigi: 72, sifaSans: 0.32, sifaEnIyiyiAl: false,
+      luksSans: 0.03, luksNakitKat: 3.0, envanterSaglikEsigi: 60,
+      zarSans: 0, zarYuksekTercih: false, sosyalSans: 0.1, sosyalAlkol: "avoid",
+      isletmeAktif: true,
+    },
+  },
   {
     id: "garantici",
     ad: "Garantici",
@@ -450,7 +481,51 @@ const KONUT_MALIYET = KONUTLAR.map((k) => ({ maliyet: k.kiraYillik }));
 const YASAM_MALIYET = YASAM_SECENEKLERI.map((y) => ({ maliyet: y.maliyetYillik }));
 
 /** Her turdan önce: ev/sofra/yatırım/mülk/mağaza/envanter/zar/sosyalleşme kararlarını kişiliğe göre dener. */
+async function isletmeYonet(id: string, state: CharacterState): Promise<void> {
+  const is = state.isletme;
+  const profil = isletmeProfiliGetir(state.meslek, state.cag);
+  if (!is || !profil || state.etiketler.includes("hapiste")) return;
+  const enf = enflasyonCarpani(state);
+  try {
+    // 1) Çalışan: limit dolana dek, ana rol ve güvenlik öncelikli, kaliteli (Y+S) olan.
+    const oncelik = ["ana", "guvenlik", "musteri", "maliyet"];
+    let dene = 0;
+    while (state.ekip.length < calisanLimiti(state) && is.adaylar.length > 0 && dene++ < 10) {
+      const sirali = [...is.adaylar].sort((a, b) => {
+        const o = oncelik.indexOf(a.rolTuru) - oncelik.indexOf(b.rolTuru);
+        return o !== 0 ? o : b.yetenek + b.sadakat - (a.yetenek + a.sadakat);
+      });
+      const a = sirali[0];
+      if (state.para < a.maas_taban * enf * 4 + 25 * enf) break;
+      await isletmeCalisanAl(id, a.id);
+    }
+    // 2) Yatırım: nakit fiyatın 2,2 katını aşınca.
+    for (const yid of ["depo", "tezgah", "dukkan", "vitrin", "guvenlik", "tanitim", "kervan"]) {
+      const t = yatirimTanimiGetir(profil, yid);
+      if (!t) continue;
+      const k = is.yatirimlar[yid] ?? 0;
+      if (k >= t.fiyatlar.length) continue;
+      if (state.para > t.fiyatlar[k] * enf * 2.2) await isletmeYatirimYap(id, yid);
+    }
+    // 3) Hatlar: rütbe açtıkça en kârlı hatları aç, normal fiyat.
+    const slot = hatSlotSayisi(state);
+    const aday = profil.hatlar
+      .filter((h) => h.minRutbe <= state.rutbe_seviye)
+      .sort((a, b) => b.talepTabani * (b.birimFiyat - b.birimMaliyet) - a.talepTabani * (a.birimFiyat - a.birimMaliyet))
+      .slice(0, slot)
+      .map((h) => h.id);
+    await isletmeKararVer(
+      id,
+      is.hatlar.map((h) => ({ id: h.id, acik: aday.includes(h.id), fiyat: "normal" as const })),
+      "normal"
+    );
+  } catch {
+    /* yok say: bot hata yüzünden durmasın */
+  }
+}
+
 async function yanEylemler(id: string, state: CharacterState, ky: YanEylemAyari, sayaclar: Sayaclar): Promise<void> {
+  if (ky.isletmeAktif) await isletmeYonet(id, state);
   let maasYillik = state.maas_yillik ?? 10;
   try {
     const finans = await finansGetir(id);
@@ -682,6 +757,8 @@ interface OyunKaydi {
   rutbe_seviye: number;
   /** Rütbe S2, S3, S4, S5'e ilk ulaşılan yaşlar (0 = hiç ulaşılmadı). */
   rutbe_yaslari: number[];
+  /** 20,25,...,70 yaşlarında [pazar payı %, kariyer_puani] örnekleri (yoksa null). */
+  yas_ornek: ([number, number] | null)[];
   /** Ölüm anındaki meslek pazarı payı (0-100). */
   pazar_payi: number;
   musteri: number;
@@ -756,6 +833,7 @@ async function birOyunSimuleEt(kisilik: Kisilik, cag: Cag, meslek: string): Prom
   };
 
   const rutbeYaslari = [0, 0, 0, 0];
+  const yasOrnek: ([number, number] | null)[] = Array(11).fill(null);
   let hataMi = false;
   let guard = 0;
   try {
@@ -771,6 +849,7 @@ async function birOyunSimuleEt(kisilik: Kisilik, cag: Cag, meslek: string): Prom
         sonuc = await secimUygula(id, tepkiSec(state, kisilik));
       }
 
+      for (let k = 0; k < 11; k++) if (!yasOrnek[k] && state.yas >= 20 + 5 * k) yasOrnek[k] = [Math.round(pazarPayiHesapla(state) * 100), Math.round(state.kariyer_puani)];
       for (let sv = 2; sv <= 5; sv++) if (rutbeYaslari[sv - 2] === 0 && state.rutbe_seviye >= sv) rutbeYaslari[sv - 2] = state.yas;
       sayaclar.enYuksekPara = Math.max(sayaclar.enYuksekPara, state.para);
       sayaclar.enDusukPara = Math.min(sayaclar.enDusukPara, state.para);
@@ -807,6 +886,7 @@ async function birOyunSimuleEt(kisilik: Kisilik, cag: Cag, meslek: string): Prom
     rutbe: son.rutbe,
     rutbe_seviye: son.rutbe_seviye,
     rutbe_yaslari: rutbeYaslari,
+    yas_ornek: yasOrnek,
     pazar_payi: Math.round(pazarPayiHesapla(son) * 100),
     musteri: Math.round(son.meslek_musteri ?? 0),
     sehir_yonetim_seviyesi: son.sehir_yonetim_seviyesi,

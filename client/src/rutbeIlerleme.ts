@@ -19,7 +19,7 @@ interface RutbeTanimi {
   esikler: [RutbeEsigi, RutbeEsigi, RutbeEsigi, RutbeEsigi];
 }
 
-const TERFI_COOLDOWN: Record<number, number> = { 2: 0, 3: 2, 4: 2, 5: 8 };
+const TERFI_COOLDOWN: Record<number, number> = { 2: 0, 3: 0, 4: 0, 5: 0 }; // v8.6: bekleme yılı yok
 
 const RUTBELER: Record<string, Record<string, RutbeTanimi>> = {
   Asker: {

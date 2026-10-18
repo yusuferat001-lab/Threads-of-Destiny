@@ -148,7 +148,7 @@ describe("astlar", () => {
     mesleğiSec(state, "Asker");
     state.kariyer_puani = 20;
     state.un = 40;
-    state.yil += 9; // S2 cooldown'u
+    state.meslek_musteri = state.pazar_musteri * 0.5; // pay şartı
     rutbeGuncelle(state);
     expect(state.rutbe_seviye).toBe(2);
     expect(state.astlar).toHaveLength(1);
@@ -165,7 +165,7 @@ describe("astlar", () => {
     mesleğiSec(state, "Asker");
     state.kariyer_puani = 20;
     state.un = 40;
-    state.yil += 9; // S2 cooldown'u
+    state.meslek_musteri = state.pazar_musteri * 0.5; // pay şartı
     rutbeGuncelle(state);
     const ilkAstIsim = state.astlar[0].isim;
 

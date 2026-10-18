@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { createCharacter, mesleğiSec, rutbeGuncelle, hesaplaMaasYillik } from "../src/game/stateManager";
-import { RUTBELER, TERFI_COOLDOWN, rutbePazarPayiEsigi } from "../src/data/rutbeler";
+import { RUTBELER, rutbePazarPayiEsigi } from "../src/data/rutbeler";
 
 /** Eşikleri fazlasıyla doldurup yılı ilerleterek karakteri hedef kademeye çıkarır. */
 function terfiEttir(state: ReturnType<typeof createCharacter>, hedef: number): void {
@@ -41,35 +41,30 @@ describe("rütbe reformu — 5 kademe, ratchet, cooldown, kariyer puanı", () =>
     expect(s.son_terfi_yili).toBe(s.baslangic_yili);
   });
 
-  it("kariyer_puani + ün eşiği aşılınca seviye 2'ye terfi eder (S2 cooldown dolunca)", () => {
+  it("kariyer_puani + ün eşiği aşılınca seviye 2'ye terfi eder (bekleme yılı yok)", () => {
     const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(s, "Asker");
     s.kariyer_puani = 20;
     s.un = 40;
-    s.yil = s.baslangic_yili + TERFI_COOLDOWN[2];
+    s.meslek_musteri = s.pazar_musteri * 0.5;
     rutbeGuncelle(s);
     expect(s.rutbe_seviye).toBe(2);
     expect(s.rutbe).toBe("Onbaşı");
     expect(s.son_terfi_yili).toBe(s.yil);
   });
 
-  it("cooldown: puan fazlasıyla dolsa bile son terfiden TERFI_COOLDOWN[3] yıl geçmeden seviye 3 olmaz", () => {
+  it("bekleme yılı yok: puan dolunca her çağrıda bir kademe çıkar, hemen ardından da", () => {
     const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(s, "Asker");
     s.kariyer_puani = 20;
     s.un = 40;
-    s.yil = s.baslangic_yili + TERFI_COOLDOWN[2];
+    s.meslek_musteri = s.pazar_musteri * 0.5;
     rutbeGuncelle(s);
-    const s2Yili = s.yil;
-
+    expect(s.rutbe_seviye).toBe(2);
     s.kariyer_puani = 999;
     s.un = 100;
     rutbeGuncelle(s);
-    expect(s.rutbe_seviye).toBe(2); // cooldown dolmadı
-
-    s.yil = s2Yili + TERFI_COOLDOWN[3];
-    rutbeGuncelle(s);
-    expect(s.rutbe_seviye).toBe(3);
+    expect(s.rutbe_seviye).toBe(3); // yıl geçmeden
   });
 
   it("çağrı başına en fazla +1 kademe ilerler", () => {
@@ -122,46 +117,43 @@ describe("rütbe reformu — 5 kademe, ratchet, cooldown, kariyer puanı", () =>
     expect(s.rutbe_seviye).toBe(2);
   });
 
-  it("S4 ve S5 ayrıca pazar payı ister — pazarda zayıfken terfi durur (işletmeli: S2 %12 · S3 %15 · S4 %20 · S5 %35)", () => {
+  it("her kademe pazar payı ister, bekleme yılı yok (Tüccar: S2 %16 · S3 %20 · S4 %24 · S5 %45)", () => {
     const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(s, "Tüccar");
     const payAyarla = (pay: number) => {
       s.meslek_musteri = s.pazar_musteri * pay;
     };
-    payAyarla(0.1); // %10 < %12: S2'ye bile çıkamaz
+    payAyarla(0.1); // %10 < %16: S2'ye çıkamaz
     s.kariyer_puani = 999;
     s.un = 100;
-    s.yil += 10;
     rutbeGuncelle(s);
     expect(s.rutbe_seviye).toBe(1);
-    payAyarla(0.14);
+    payAyarla(0.17);
     rutbeGuncelle(s);
     expect(s.rutbe_seviye).toBe(2);
-    payAyarla(0.17);
-    s.yil += 10;
     rutbeGuncelle(s);
-    expect(s.rutbe_seviye).toBe(3); // %17 ≥ %15
-    s.yil += 12;
+    expect(s.rutbe_seviye).toBe(2); // %17 < %20: S3 durur
+    payAyarla(0.21);
     rutbeGuncelle(s);
-    expect(s.rutbe_seviye).toBe(3); // %17 < %20: S4 durur
+    expect(s.rutbe_seviye).toBe(3);
+    rutbeGuncelle(s);
+    expect(s.rutbe_seviye).toBe(3); // %21 < %24
     payAyarla(0.3);
     rutbeGuncelle(s);
     expect(s.rutbe_seviye).toBe(4);
-    s.yil += 12;
     rutbeGuncelle(s);
-    expect(s.rutbe_seviye).toBe(4); // %30 < %35: S5 durur
-    payAyarla(0.45);
-    s.yil += 10;
+    expect(s.rutbe_seviye).toBe(4); // %30 < %45: S5 durur
+    payAyarla(0.5);
     rutbeGuncelle(s);
     expect(s.rutbe_seviye).toBe(5);
   });
 
-  it("işletmesiz meslekler eski pay eşiklerini kullanır (S4 %18, S5 %35)", () => {
-    expect(rutbePazarPayiEsigi("Asker", 4)).toBe(0.18);
-    expect(rutbePazarPayiEsigi("Din Adamı", 5)).toBe(0.35);
-    expect(rutbePazarPayiEsigi("Asker", 2)).toBeUndefined();
-    expect(rutbePazarPayiEsigi("Tüccar", 2)).toBe(0.12);
-    expect(rutbePazarPayiEsigi("Zanaatkâr", 5)).toBe(0.35);
+  it("pay eşikleri tüm mesleklerde var; Zanaatkâr daha düşük, Din Adamı daha yüksek", () => {
+    expect(rutbePazarPayiEsigi("Tüccar", 2)).toBe(0.16);
+    expect(rutbePazarPayiEsigi("Asker", 4)).toBe(0.24);
+    expect(rutbePazarPayiEsigi("Zanaatkâr", 5)).toBeCloseTo(0.38, 2);
+    expect(rutbePazarPayiEsigi("Din Adamı", 3)).toBeCloseTo(0.24, 2);
+    expect(rutbePazarPayiEsigi("Asker", 1)).toBeUndefined();
   });
 
   it("maaş rütbe yükseldikçe kalıcı olarak artar", () => {
