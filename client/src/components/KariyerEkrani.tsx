@@ -1009,7 +1009,7 @@ export function KariyerEkrani({
                       ♟️ {r.ad} · {kt(r.meslek)}
                       {r.yenildi
                         ? ` · ${en ? 'defeated' : 'saf dışı'}`
-                        : ` · ${en ? 'share' : 'pay'}: ${formatYuzde(dil, r.pay)} · ${husumetEtiket(r.husumet)}`}
+                        : ` · ${en ? 'share' : 'pay'}: ${formatYuzde(dil, pazarDurum?.rakipler.find((x) => x.ad === r.ad)?.pay ?? 0)} · ${husumetEtiket(r.husumet)}`}
                     </span>
                   ))}
                 </div>

@@ -198,7 +198,10 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
   const uretimModu = !!durum.uretim;
   const etiketAlim = uretimModu ? t('hammadde') : t('alim');
   const donemAdi = durum.dunya.donem ? M.donem[dil][durum.dunya.donem as 'bolluk'] : null;
-  const hatAdi = (id: string) => durum.hatlar.find((h) => h.id === id)?.ad ?? id;
+  const hatAdi = (id: string) => {
+    const h = durum.hatlar.find((x) => x.id === id);
+    return h ? d(h.ad) : id;
+  };
 
   const uyariMetni = (u: IsletmeUyari): string => {
     const en = dil === 'en';
