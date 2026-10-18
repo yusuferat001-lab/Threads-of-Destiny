@@ -2,64 +2,6 @@ import type { OlayTanimi } from "./types";
 
 export const OLAY_ILISKILER: OlayTanimi[] = [
   {
-    id: "iliski_ikinci_teklif",
-    kategori: "sosyal",
-    gerekliEtiketler: [
-      "iliski_ikinci_teklif_zamani",
-    ],
-    yasakliEtiketler: [
-      "medeni:evli",
-    ],
-    gorsel: "💐",
-    baslik: "Beklenen Aşk",
-    metin: "Yıllarca yalnız kaldıktan sonra pazarda çarpıştığın sıradan biri... Zengin değil, nüfuzlu değil ama kalbin ilk kez bu kadar hızlı atıyor.",
-    secenekler: [
-      {
-        metin: "Kalbinin peşinden git, evlen.",
-        baseBasariSansi: 80,
-        basariliSonuc: {
-          es_ata: true,
-          es_puani: 15,
-          mutluluk: 12,
-          etiket_ekle: [
-            "medeni:evli",
-            "itibar:fakir_ama_mutlu",
-            "evlilik_yolu:ask",
-          ],
-          etiket_sil: [
-            "iliski_ikinci_teklif_zamani",
-          ],
-          mesaj: "Sade bir törenle evlendiniz. Sofrada kuru ekmek var ama onunla ziyafet gibi.",
-        },
-        basarisizSonuc: {
-          mutluluk: -15,
-          etiket_sil: [
-            "iliski_ikinci_teklif_zamani",
-          ],
-          mesaj: "Aşkına karşılık bulamadın. O başka şehirde yaşamayı seçip kalbini kırdı.",
-        },
-      },
-      {
-        metin: "Aşk doyurmaz, yalnız kalayım.",
-        baseBasariSansi: 90,
-        basariliSonuc: {
-          para: 5,
-          etiket_sil: [
-            "iliski_ikinci_teklif_zamani",
-          ],
-          mesaj: "Mantığı seçtin. Kasan dolar belki ama o gözler ömür boyu aklından çıkmaz.",
-        },
-        basarisizSonuc: {
-          mutluluk: -10,
-          etiket_sil: [
-            "iliski_ikinci_teklif_zamani",
-          ],
-          mesaj: "Mantığı seçtin ama acı çekiyorsun.",
-        },
-      },
-    ],
-  },
-  {
     id: "iliski_ev_ici_kavga",
     kategori: "sosyal",
     gerekliEtiketler: [
@@ -159,7 +101,7 @@ export const OLAY_ILISKILER: OlayTanimi[] = [
     gerekliEtiketler: [
       "medeni:evli",
     ],
-    maxEsPuani: 35,
+    maxEsPuani: 45,
     agirlik: 0.6,
     gorsel: "💔",
     baslik: "Kopuk İpler",

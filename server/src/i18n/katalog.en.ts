@@ -662,4 +662,6 @@ export const KATALOG_EN: Record<string, string> = {
   "Kan Davası — Beklemede": "Blood Feud — Pending",
   "Afyon Bağımlılığı": "Opium Addiction",
   "Unutulmuş Bir İyilik": "A Forgotten Kindness",
+  // Ekip rolü: oyuncunun yanında çalışan çocuğu
+  "Varis": "Heir",
 };

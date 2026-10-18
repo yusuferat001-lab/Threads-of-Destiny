@@ -22,6 +22,7 @@ describe("bölgesel olay havuzu — standalone havuz garantisi", () => {
     state.gecmis_olaylar.push("oc_tuccar_yol_ilk_anlasma"); // §11 kural 2 (kariyer yolu girişi)
     state.gecmis_olaylar.push("iliski_evlilik_teklifi"); // §11 kural 3 (evlilik teklifi garantisi)
     state.hayvan_karsilasma_sayisi = 2; // §11 kural 5 (evcil hayvan karşılaşma garantisi)
+    state.etiketler.push("tanisma_donum_27", "tanisma_donum_36"); // aşk evliliği tanışma fırsatı zorlanmasın
     state.etiketler.push("yolculuk_tamamlandi"); // §11 kural 11
     state.gecmis_olaylar.push("gizem_ejderha_tilsimi"); // §11 kural 13 (mistik garanti)
     // §11 kural 15'in diğer standalone havuz adayları — hedeflerini önceden

@@ -194,6 +194,12 @@ export interface OlayTanimi {
    * `saglik_esik_10_gorundu` etiketleriyle).
    */
   saglikEsikOlayi?: "esik25" | "esik10";
+  /**
+   * true ise olay normal rastgele havuzdan TAMAMEN dışlanır; yalnız motor
+   * kaskadı (`senaryoUret`) ya da bir `zorunlu_sonraki` zinciri tarafından zorlanır
+   * (ör. eş ihmal uyarısı, tanışma fırsatı).
+   */
+  yalnizZorlaOlayi?: boolean;
   agirlik?: number;
   /**
    * Evcil hayvan KARŞILAŞMA olayı: bu hayvan türünü sahiplenme fırsatı sunar

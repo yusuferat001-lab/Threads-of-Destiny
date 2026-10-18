@@ -1,4 +1,6 @@
-import type { AileDurumu, EvcilHayvan } from '../types';
+import { useState } from 'react';
+import type { AileDurumu, DugunButcesi, EvcilHayvan, TeklifHediyesi } from '../types';
+import { im, huyAdi } from '../iliskilerMetin';
 import { bic, type Metinler } from '../i18n';
 import { HAYVAN_SIMGESI } from '../bolgeTema';
 import { useDil } from '../DilContext';
@@ -12,24 +14,28 @@ interface AileEkraniProps {
   dostPuani: number;
   rakipPuani: number;
   durum: AileDurumu | null;
-  /** Evli mi + yaşı — evlilik butonunu göstermek için (18+ ve bekar). */
-  evli: boolean;
-  yas: number;
   evcilHayvanlar: EvcilHayvan[];
   yukleniyor: boolean;
   islemMesaji: string | null;
   onEtkilesim: (etkilesimId: string, cocukIndex?: number) => void;
   onTalep: (karar: 'kabul' | 'ret') => void;
-  onEvlilik: () => void;
+  /** Eşle ilişki barı eylemi: zaman geçir / hediye ver (ucuz | pahali). */
+  onEsEylem: (eylem: 'zaman_gecir' | 'hediye_ver', hediye?: 'ucuz' | 'pahali') => void;
+  /** Mantık evliliği: listedeki adaya (hediye kademesiyle) teklif. */
+  onMantikTeklif: (adayIndex: number, hediye: TeklifHediyesi) => void;
+  /** Bekleyen düğün için bütçe seçimi. */
+  onDugun: (butce: DugunButcesi) => void;
+  /** 15 yaşındaki çocuğu yanında çalışmaya davet et. */
+  onCocukIseAl: (cocukIndex: number) => void;
+  /** Reddeden çocuğa öfkelen / sakin karşıla. */
+  onCocukRedTepkisi: (cocukIndex: number, tepki: 'ofke' | 'sakin') => void;
+  /** Sevgili eylemleri: evlilik teklifi / gönül al / ayrıl. */
+  onSevgili: (eylem: 'teklif' | 'gonul_al' | 'ayril') => void;
   onGeriDon: () => void;
 }
 
 /** Etkileşim id → [ad anahtarı, açıklama anahtarı] */
 const ETK_METIN: Record<string, [keyof Metinler, keyof Metinler]> = {
-  es_hediye: ['aeEtk_es_hediye', 'aeEtk_es_hediye_d'],
-  es_zaman: ['aeEtk_es_zaman', 'aeEtk_es_zaman_d'],
-  es_sevgi: ['aeEtk_es_sevgi', 'aeEtk_es_sevgi_d'],
-  es_gezi: ['aeEtk_es_gezi', 'aeEtk_es_gezi_d'],
   cocuk_oyna: ['aeEtk_cocuk_oyna', 'aeEtk_cocuk_oyna_d'],
   cocuk_hediye: ['aeEtk_cocuk_hediye', 'aeEtk_cocuk_hediye_d'],
   cocuk_egitim: ['aeEtk_cocuk_egitim', 'aeEtk_cocuk_egitim_d'],
@@ -242,24 +248,28 @@ export function AileEkrani({
   dostPuani,
   rakipPuani,
   durum,
-  evli,
-  yas,
   evcilHayvanlar,
   yukleniyor,
   islemMesaji,
   onEtkilesim,
   onTalep,
-  onEvlilik,
+  onEsEylem,
+  onMantikTeklif,
+  onDugun,
+  onSevgili,
+  onCocukIseAl,
+  onCocukRedTepkisi,
   onGeriDon,
 }: AileEkraniProps) {
   const { m, kt, dil } = useDil();
+  // Aday kartı başına seçilen teklif hediyesi (varsayılan: sade).
+  const [hediyeSecimi, setHediyeSecimi] = useState<Record<number, TeklifHediyesi>>({});
 
   const kalanYil = (anahtar: string): number => {
     if (!durum) return 0;
     return Math.max(0, (durum.kilitler[anahtar] ?? 0) - durum.guncelYil);
   };
 
-  const esEtkilesimleri = durum?.etkilesimler.filter((e) => e.hedef === 'es') ?? [];
   const cocukEtkilesimleri = durum?.etkilesimler.filter((e) => e.hedef === 'cocuk') ?? [];
   const aileEtkilesimleri = durum?.etkilesimler.filter((e) => e.hedef === 'hepsi') ?? [];
   const yasayanCocukVar = (durum?.cocuklar ?? []).some((c) => c.yasiyor);
@@ -303,44 +313,215 @@ export function AileEkrani({
 
         <DostRakipKarti m={m} dostAdi={dostAdi} rakipAdi={rakipAdi} dostPuani={dostPuani} rakipPuani={rakipPuani} />
 
+        {durum?.bekleyenDugun && (
+          <div className="aile-kart aile-kart-tam aile-dugun-karti">
+            <h3>💒 {im(dil, 'dugunBaslik')}</h3>
+            <p className="aile-talep-metin">{im(dil, 'dugunIntro', durum.bekleyenDugun.isim)}</p>
+            <div className="aile-dugun-secenekler">
+              {durum.dugunSecenekleri.map((d) => {
+                const parasiYok = durum.para < d.maliyet;
+                const ad =
+                  d.butce === 'ucuz' ? im(dil, 'dugunUcuz') : d.butce === 'orta' ? im(dil, 'dugunOrta') : im(dil, 'dugunPahali');
+                const isaretli = (n: number) => (n > 0 ? `+${n}` : String(n));
+                return (
+                  <button
+                    key={d.butce}
+                    className="aile-etkilesim-buton aile-dugun-buton"
+                    disabled={yukleniyor || parasiYok}
+                    onClick={() => onDugun(d.butce)}
+                  >
+                    <span className="aile-etkilesim-ad">{ad}</span>
+                    <span className="aile-etkilesim-alt">
+                      {parasiYok ? m.aeParaYetmez : im(dil, 'dugunMaliyet', d.maliyet, durum.paraBirimi)}
+                    </span>
+                    <span className="aile-etkilesim-alt">
+                      {im(dil, 'dugunIliski', isaretli(d.iliski))}
+                      {d.un !== 0 ? ` · ${im(dil, 'dugunSohret', isaretli(d.un))}` : ''}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {durum?.es ? (
           <div className="aile-kart aile-es-karti">
-            <h3>{m.aeEsin}</h3>
+            <h3>{im(dil, 'esBaslik')}</h3>
             <div className="aile-es-baslik">
               <span className="aile-es-ad">💍 {durum.es.adi}</span>
               {durum.es.rutbe && durum.es.meslek && (
                 <span className="aile-es-meslek">
                   {kt(durum.es.rutbe)} · {kt(durum.es.meslek)}
+                  {durum.es.yas != null ? ` · ${im(dil, 'yasEk', durum.es.yas)}` : ''}
                 </span>
               )}
             </div>
-            <IliskiBar deger={durum.es.puan} etiket={esEtiket(m, durum.es.puan)} />
-            <div className="aile-etkilesim-satir">
-              {esEtkilesimleri.map((e) => (
-                <EtkilesimButonu
-                  key={e.id}
-                  etkilesimId={e.id}
-                  ikon={e.ikon}
-                  maliyet={e.maliyet}
-                  paraBirimi={durum.paraBirimi}
-                  para={durum.para}
-                  kalanYil={kalanYil(e.id)}
-                  yukleniyor={yukleniyor}
-                  m={m}
-                  onTikla={() => onEtkilesim(e.id)}
-                />
+            <div className="aile-huy-satiri">
+              {durum.es.tur && (
+                <span className="aile-huy-rozet aile-tur-rozet">
+                  {durum.es.tur === 'ask' ? '❤️ ' + im(dil, 'turAsk') : '📜 ' + im(dil, 'turMantik')}
+                </span>
+              )}
+              {durum.es.huylar.map((h) => (
+                <span key={h} className="aile-huy-rozet">
+                  {huyAdi(dil, h)}
+                </span>
               ))}
+            </div>
+            <IliskiBar deger={durum.es.puan} etiket={`${esEtiket(m, durum.es.puan)} · ${im(dil, 'barSayi', durum.es.puan)}`} />
+            <div className="aile-etkilesim-satir">
+              <button
+                className="aile-etkilesim-buton"
+                disabled={yukleniyor || kalanYil('es:zaman_gecir') > 0}
+                onClick={() => onEsEylem('zaman_gecir')}
+              >
+                <span className="aile-etkilesim-ad">{im(dil, 'zamanGecir')}</span>
+                <span className="aile-etkilesim-alt">
+                  {kalanYil('es:zaman_gecir') > 0 ? im(dil, 'henuzErken') : im(dil, 'zamanGecirAlt')}
+                </span>
+              </button>
+              {(['ucuz', 'pahali'] as const).map((h) => {
+                const maliyet = h === 'ucuz' ? durum.esEylem.hediyeUcuz : durum.esEylem.hediyePahali;
+                const kilit = kalanYil('es:hediye_ver');
+                const parasiYok = durum.para < maliyet;
+                return (
+                  <button
+                    key={h}
+                    className="aile-etkilesim-buton"
+                    disabled={yukleniyor || kilit > 0 || parasiYok}
+                    onClick={() => onEsEylem('hediye_ver', h)}
+                  >
+                    <span className="aile-etkilesim-ad">{h === 'ucuz' ? im(dil, 'hediyeUcuz') : im(dil, 'hediyePahali')}</span>
+                    <span className="aile-etkilesim-alt">
+                      {kilit > 0 ? im(dil, 'henuzErken') : parasiYok ? im(dil, 'paraYetmez') : `${maliyet} ${durum.paraBirimi}`}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         ) : (
           <div className="aile-kart aile-es-karti">
-            <h3>{m.aeEsin}</h3>
+            <h3>{im(dil, 'esBaslik')}</h3>
             <p className="aile-bos-metin">{m.aeEsYokMetin}</p>
-            {!evli && yas >= 18 && (
-              <button className="ikincil aile-evlen-buton" disabled={yukleniyor} onClick={onEvlilik}>
-                {m.aeEvlen}
-                <span className="aile-etkilesim-alt">{m.aeEvlenAlt}</span>
+          </div>
+        )}
+
+        {durum?.sevgili && !durum.es && !durum.bekleyenDugun && (
+          <div className="aile-kart aile-kart-tam aile-sevgili-karti">
+            <h3>💞 {im(dil, 'sevgiliBaslik')}</h3>
+            <div className="aile-es-baslik">
+              <span className="aile-es-ad">{durum.sevgili.isim}</span>
+              <span className="aile-es-meslek">
+                {kt(durum.sevgili.rutbe)} · {kt(durum.sevgili.meslek)} · {im(dil, 'yasEk', durum.sevgili.yas)}
+              </span>
+            </div>
+            <div className="aile-huy-satiri">
+              <span className="aile-huy-rozet">{huyAdi(dil, durum.sevgili.huy)}</span>
+              <span className="aile-huy-rozet aile-huy-gizli">{im(dil, 'gizliHuy')}</span>
+            </div>
+            <IliskiBar
+              deger={durum.sevgili.bar}
+              etiket={`${esEtiket(m, durum.sevgili.bar)} · ${im(dil, 'barSayi', durum.sevgili.bar)}`}
+            />
+            {durum.sevgili.darildi && <p className="aile-ihmal-uyari">💢 {im(dil, 'sevgiliDargin')}</p>}
+            <div className="aile-etkilesim-satir">
+              <button
+                className="aile-etkilesim-buton"
+                disabled={yukleniyor}
+                onClick={() => onSevgili('teklif')}
+              >
+                <span className="aile-etkilesim-ad">{im(dil, 'sevgiliTeklif')}</span>
               </button>
+              <button
+                className="aile-etkilesim-buton"
+                disabled={yukleniyor || durum.sevgili.gonulKilitKalanYil > 0 || durum.para < durum.sevgili.gonulMaliyet}
+                onClick={() => onSevgili('gonul_al')}
+              >
+                <span className="aile-etkilesim-ad">{im(dil, 'gonulAl')}</span>
+                <span className="aile-etkilesim-alt">
+                  {durum.sevgili.gonulKilitKalanYil > 0
+                    ? im(dil, 'henuzErken')
+                    : durum.para < durum.sevgili.gonulMaliyet
+                      ? im(dil, 'paraYetmez')
+                      : `${durum.sevgili.gonulMaliyet} ${durum.paraBirimi}`}
+                </span>
+              </button>
+              <button className="aile-etkilesim-buton" disabled={yukleniyor} onClick={() => onSevgili('ayril')}>
+                <span className="aile-etkilesim-ad">{im(dil, 'sevgiliAyril')}</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {durum && !durum.es && !durum.bekleyenDugun && !durum.sevgili && !durum.tanismaAktif && (
+          <div className="aile-kart aile-kart-tam aile-adaylar-karti">
+            <h3>📜 {im(dil, 'adaylarBaslik')}</h3>
+            {durum.mantik.acik ? (
+              <>
+                <p className="aile-bos-metin">{im(dil, 'adayIntro')}</p>
+                <div className="aile-aday-izgara">
+                  {durum.mantik.adaylar.map((a, i) => {
+                    const secili = hediyeSecimi[i] ?? 'sade';
+                    const secenek = durum.mantik.teklifSecenekleri.find((t) => t.hediye === secili);
+                    const parasiYok = !!secenek && durum.para < secenek.maliyet;
+                    return (
+                      <div key={a.isim} className="aile-aday-karti">
+                        <div className="aile-es-baslik">
+                          <span className="aile-es-ad">{a.isim}</span>
+                          <span className="aile-es-meslek">
+                            {kt(a.rutbe)} · {kt(a.meslek)} · {im(dil, 'yasEk', a.yas)}
+                          </span>
+                        </div>
+                        <span className={`aile-huy-rozet aile-grup-${a.grup}`}>
+                          {a.grup === 'genc' ? im(dil, 'genc') : im(dil, 'olgun')}
+                        </span>
+                        <p className="aile-bos-metin">{a.grup === 'genc' ? im(dil, 'gencAciklama') : im(dil, 'olgunAciklama')}</p>
+                        <div className="aile-huy-satiri">
+                          <span className="aile-huy-rozet">{huyAdi(dil, a.huy)}</span>
+                          <span className="aile-huy-rozet aile-huy-gizli">{im(dil, 'gizliHuy')}</span>
+                        </div>
+                        <div className="aile-hediye-secimi" role="radiogroup">
+                          {(['sade', 'ucuz', 'pahali'] as const).map((h) => {
+                            const t = durum.mantik.teklifSecenekleri.find((x) => x.hediye === h);
+                            return (
+                              <button
+                                key={h}
+                                type="button"
+                                className={`aile-hediye-cip${secili === h ? ' aile-hediye-cip-secili' : ''}`}
+                                onClick={() => setHediyeSecimi((onceki) => ({ ...onceki, [i]: h }))}
+                              >
+                                {h === 'sade' ? im(dil, 'teklifSade') : h === 'ucuz' ? im(dil, 'teklifUcuz') : im(dil, 'teklifPahali')}
+                                {t && t.maliyet > 0 ? ` · ${t.maliyet} ${durum.paraBirimi}` : ''}
+                              </button>
+                            );
+                          })}
+                        </div>
+                        <button
+                          className="birincil aile-evlen-buton"
+                          disabled={yukleniyor || parasiYok}
+                          onClick={() => onMantikTeklif(i, secili)}
+                        >
+                          {im(dil, 'teklifEt')}
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            ) : (
+              <p className="aile-bos-metin">
+                {durum.mantik.sebep === 'yas_dusuk'
+                  ? im(dil, 'sebepYasDusuk', durum.mantik.minYas)
+                  : durum.mantik.sebep === 'yas_donemi'
+                    ? im(dil, 'sebepYasDonemi')
+                    : durum.mantik.sebep === 'kilit'
+                      ? im(dil, 'sebepKilit')
+                      : durum.mantik.sebep === 'sevgili'
+                        ? im(dil, 'sebepSevgili')
+                        : im(dil, 'sebepHapis')}
+              </p>
             )}
           </div>
         )}
@@ -384,6 +565,41 @@ export function AileEkrani({
                   {cocuk.yasiyor && (
                     <>
                       <IliskiBar deger={cocuk.iliski} etiket={cocukEtiket(m, cocuk.iliski)} />
+                      {cocuk.isDurumu === 'ise_alindi' && (
+                        <p className="aile-bos-metin">💼 {im(dil, 'yanindaCalisiyor')}</p>
+                      )}
+                      {cocuk.isDurumu === 'bekliyor' && (
+                        <button
+                          className="aile-etkilesim-buton aile-is-davet"
+                          disabled={yukleniyor}
+                          onClick={() => onCocukIseAl(i)}
+                          title={im(dil, 'yanimaAlAciklama')}
+                        >
+                          <span className="aile-etkilesim-ad">{im(dil, 'yanimaAl')}</span>
+                          <span className="aile-etkilesim-alt">{im(dil, 'yanimaAlAciklama')}</span>
+                        </button>
+                      )}
+                      {cocuk.isDurumu === 'red_tepkisi' && (
+                        <>
+                          <p className="aile-ihmal-uyari">{im(dil, 'redBasligi')}</p>
+                          <div className="aile-etkilesim-satir">
+                            <button
+                              className="aile-etkilesim-buton"
+                              disabled={yukleniyor}
+                              onClick={() => onCocukRedTepkisi(i, 'ofke')}
+                            >
+                              <span className="aile-etkilesim-ad">{im(dil, 'redOfke')}</span>
+                            </button>
+                            <button
+                              className="aile-etkilesim-buton"
+                              disabled={yukleniyor}
+                              onClick={() => onCocukRedTepkisi(i, 'sakin')}
+                            >
+                              <span className="aile-etkilesim-ad">{im(dil, 'redSakin')}</span>
+                            </button>
+                          </div>
+                        </>
+                      )}
                       <div className="aile-etkilesim-satir">
                         {cocukEtkilesimleri.map((e) => (
                           <EtkilesimButonu

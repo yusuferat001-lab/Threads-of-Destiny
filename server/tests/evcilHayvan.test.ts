@@ -39,6 +39,7 @@ function digerZorunluOlaylariGecistir(state: CharacterState) {
   state.gecmis_olaylar.push("hayat_amaci_secimi", "iliski_evlilik_teklifi", "iliski_ikinci_teklif");
   state.ulke.savasta = true;
   state.etiketler.push("yol:tuccar:hayirsever", "yolculuk_tamamlandi", "hizip_secildi");
+  state.etiketler.push("tanisma_donum_27", "tanisma_donum_36"); // aşk evliliği tanışma fırsatı zorlanmasın
   state.gecmis_olaylar.push("oc_tuccar_yol_ilk_anlasma", "sd_tuccar_yol_ilk_karar");
 }
 

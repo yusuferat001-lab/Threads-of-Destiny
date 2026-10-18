@@ -2,67 +2,6 @@ import type { OlayTanimi } from "./types";
 
 export const OLAY_AILE: OlayTanimi[] = [
   {
-    id: "iliski_evlilik_teklifi",
-    kategori: "sosyal",
-    minYas: 17,
-    yasakliEtiketler: [
-      "medeni:evli",
-    ],
-    gorsel: "💍",
-    baslik: "Nüfuzlu Bir Bağ",
-    metin: "{dost}, seni şehrin güçlü bir ailesinden biriyle tanıştırdı. Bu evlilikte aşk olmaz ama büyük kapılar açılır.",
-    secenekler: [
-      {
-        metin: "Mantık evliliğini kabul et.",
-        baseBasariSansi: 85,
-        basariliSonuc: {
-          es_ata: true,
-          es_puani: -20,
-          para: 25,
-          un: 15,
-          etiket_ekle: [
-            "medeni:evli",
-            "itibar:nufuzlu_evlilik",
-            "evlilik_yolu:mantik_soylu",
-          ],
-          mesaj: "Tören gösterişliydi. Güçlü bir ailedensin ama yatakta tek hissin üşümek.",
-        },
-        basarisizSonuc: {
-          para: -25,
-          mutluluk: -14,
-          un: -15,
-          mesaj: "Aile seni yetersiz bulup düğünü iptal etti. Şehirde alay konusu oldun.",
-        },
-      },
-      {
-        metin: "Aşk istiyorum de, reddet.",
-        baseBasariSansi: 95,
-        basariliSonuc: {
-          ahlak: 10,
-          durum_ekle: {
-            id: "ikinci_teklif_zamanlayici",
-            ad: "Gerçek Aşk Beklentisi",
-            tur: "gecici",
-            kalan_tur: 4,
-            bitince_etiket: "iliski_ikinci_teklif_zamani",
-          },
-          mesaj: "Nüfuzu ve parayı ittin. Herkes deli diyor ama vicdanın rahat.",
-        },
-        basarisizSonuc: {
-          mutluluk: -5,
-          durum_ekle: {
-            id: "ikinci_teklif_zamanlayici",
-            ad: "Yalnızlığın Ağırlığı",
-            tur: "gecici",
-            kalan_tur: 3,
-            bitince_etiket: "iliski_ikinci_teklif_zamani",
-          },
-          mesaj: "Reddettin ama gece yalnız yatarken 'hata mı ettim' diye düşündün.",
-        },
-      },
-    ],
-  },
-  {
     id: "iliski_cocuk_mujdesi",
     kategori: "sosyal",
     gerekliEtiketler: [

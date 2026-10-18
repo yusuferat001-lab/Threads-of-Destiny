@@ -26,6 +26,7 @@ async function izoleKarakterOlustur() {
   state.ulke.savasta = true;
   etiketEkle(state, ["yol:tuccar:__test_dal__", "hizip_secildi"]);
   state.gecmis_olaylar.push("iliski_evlilik_teklifi", "iliski_ikinci_teklif");
+  state.etiketler.push("tanisma_donum_27", "tanisma_donum_36"); // aşk evliliği tanışma fırsatı zorlanmasın
   etiketEkle(state, ["yolculuk_tamamlandi"]);
   state.gecmis_olaylar.push("gizem_ejderha_tilsimi");
   state.yas = 40;

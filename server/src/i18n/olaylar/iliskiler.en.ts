@@ -2,34 +2,6 @@ import type { OlayCeviri } from "./index";
 
 /** server/src/data/olaylar/iliskiler.ts — İngilizce çevirileri. */
 export const OLAYLAR_ILISKILER_EN: Record<string, OlayCeviri> = {
-  iliski_ikinci_teklif: {
-    baslik: "The Love You Waited For",
-    metin:
-      "After years alone, an ordinary person you bump into at the market... Not rich, not influential, but your heart races as never before.",
-    secenekler: [
-      {
-        metin: "Follow your heart, marry.",
-        basariliSonuc: {
-          mesaj:
-            "A plain wedding. Our table holds dry bread, yet with them it feels a palace feast.",
-        },
-        basarisizSonuc: {
-          mesaj:
-            "Your love went unanswered. They chose another city and broke your heart.",
-        },
-      },
-      {
-        metin: "Love feeds no one; stay alone.",
-        basariliSonuc: {
-          mesaj:
-            "You chose reason. Your coffer may fill, but those eyes will haunt you for life.",
-        },
-        basarisizSonuc: {
-          mesaj: "You chose reason, yet you suffer.",
-        },
-      },
-    ],
-  },
 
   iliski_ev_ici_kavga: {
     baslik: "The Broken Vase",

@@ -436,7 +436,7 @@ function partB(): void {
   console.log("\n--- Koşullu olarak %100 garanti tetiklenen özel olaylar (bu simülasyona dahil değil) ---");
   const garantiler = [
     "dunya_savas_ilani — bölgeye özel tarihi bir savaş başladığında garanti",
-    "iliski_evlilik_teklifi — 29 yaşına kadar hâlâ bekarsa garanti",
+    "iliski_es_ihmal_uyarisi — eşiyle 7+ yıl hiç vakit geçirmeyen evli karakterde bir kez garanti",
     "sehir_yonetim_{tuccar,dinadami,asker}_baslangic — rütbe seviyesi 4'e ulaşınca garanti",
     "evcilhayvan_sahiplenme_teklifi_{ortacag,sanayi} — 20-25 yaş arası evcil hayvanı yoksa garanti",
     "EVCIL_HAYVAN_GENEL_TAKIP_OLAY_IDLERI havuzundan biri — evcil hayvanı olan karakterde 45-50 yaşta, 2.'den az görülmüşse garanti",
