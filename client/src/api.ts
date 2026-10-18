@@ -11,6 +11,7 @@ import type {
   FinansOzeti,
   GostergeStat,
   GostergeDetayi,
+  AranmaDurumu,
   DunyaGecmisi,
   YatirimSonucu,
   KotuIsKarti,
@@ -197,6 +198,30 @@ export function finansGetir(stateId: string) {
 
 export function gostergeGetir(stateId: string, stat: GostergeStat) {
   return istek<{ gosterge: GostergeDetayi }>(`/api/game/${stateId}/gosterge/${stat}`);
+}
+
+export function aranmaGetir(stateId: string) {
+  return istek<{ aranma: AranmaDurumu }>(`/api/game/${stateId}/aranma`);
+}
+
+export function aranmaKefaretOde(stateId: string, yarim: boolean) {
+  return istek<{ state: CharacterState; mesaj: string }>(`/api/game/${stateId}/aranma/kefaret`, {
+    method: 'POST',
+    body: JSON.stringify({ yarim }),
+  });
+}
+
+export function aranmaTeslimOl(stateId: string) {
+  return istek<{ state: CharacterState; mesaj: string; ceza: number }>(`/api/game/${stateId}/aranma/teslim`, {
+    method: 'POST',
+  });
+}
+
+export function aranmaBildirimYanitla(stateId: string, bildirimId: string, karar?: 'tam' | 'yarim' | 'hayir') {
+  return istek<{ state: CharacterState; mesaj: string }>(`/api/game/${stateId}/aranma/bildirim`, {
+    method: 'POST',
+    body: JSON.stringify({ bildirimId, karar }),
+  });
 }
 
 export function dunyaGecmisiGetir(stateId: string) {

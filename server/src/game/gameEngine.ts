@@ -111,6 +111,28 @@ import {
 import { rutbeTanimiGetir, KARIYER_PUANI_YILLIK, KARIYER_PUANI_KATEGORI_BASARI } from "../data/rutbeler";
 import { yoneticiBilgisi, patronBilgisi } from "./yonetimKisileri";
 import { KOTU_ISLER, kotuIsTanimiGetir, KotuIsEtki } from "../data/kotuIsler";
+import {
+  SUC_SINIFI_ARALIKLARI,
+  sucSinifiUst,
+  sucSinifiDegeri,
+  aralikTamSayi,
+  hapisCezaSuresiAraligi,
+  HAPIS_TAHLIYE_ARANMA,
+  sucBasariBonusu,
+  sucRiskCarpani,
+  KEFARET_RED_ARANMA_MIN,
+  KEFARET_RED_ARANMA_MAX,
+} from "../data/aranmaSabitleri";
+import {
+  aranmaYillikIsle,
+  gizliSucKaydet,
+  gonulluKefaretOde,
+  gonulluTeslimOl,
+  polisUyarisiniYanitla,
+  aranmaBildirimiKapat,
+  aranmaDurumuUret,
+} from "./aranmaSistemi";
+import type { AranmaDurumu } from "../types";
 import { rollSuccess } from "./diceRoll";
 import * as AS from "./aileSistemi";
 import * as AK from "./askSistemi";
@@ -718,30 +740,9 @@ const SOSYALLESME_MEKAN_COOLDOWN = 2;
  */
 const SUC_KAZANC_PARA_CARPANI = 1.6;
 
-/**
- * Suç büyüklüğü sınıfları (2026-10, kullanıcı isteği "aranma artışı suça göre belli bir
- * aralıkta olsun"): olay verisi yalnız `suc_sinifi` yazar, motor aralıktan rastgele tam
- * sayı seçer. Aralıklar TEK yerde — dengelemek için buradan ayarlanır.
- *  - kucuk: hafif hile / küçük vurgun · orta: rüşvet, sahte mal, kavga · buyuk: soygun,
- *    ağır şiddet, isyan · agir: suçüstü yakalanma (başarısız dalda bir üst sınıf).
- */
-export const SUC_SINIFI_ARALIKLARI: Record<SucSinifi, readonly [number, number]> = {
-  kucuk: [4, 8],
-  orta: [10, 16],
-  buyuk: [20, 26],
-  agir: [24, 30],
-};
-
-/** Başarısız dal (suçüstü) için bir üst sınıf: kucuk→orta, orta→buyuk, buyuk/agir→agir. */
-export function sucSinifiUst(sinif: SucSinifi): SucSinifi {
-  return sinif === "kucuk" ? "orta" : sinif === "orta" ? "buyuk" : "agir";
-}
-
-/** Sınıfın aralığından (dahil) rastgele tam sayı aranma puanı. */
-export function sucSinifiDegeri(sinif: SucSinifi): number {
-  const [min, max] = SUC_SINIFI_ARALIKLARI[sinif];
-  return min + Math.floor(Math.random() * (max - min + 1));
-}
+// Suç sınıfı aralıkları ve hapis/kefaret/yıldız sabitleri data/aranmaSabitleri.ts'te
+// (tek yer). Eski import yolları için buradan yeniden dışa aktarılır.
+export { SUC_SINIFI_ARALIKLARI, sucSinifiUst, sucSinifiDegeri };
 
 /**
  * Mülk sahibi bir karaktere, her senaryoUret çağrısında mulkOlaylari.ts'ten zorlanan
@@ -762,36 +763,16 @@ const MULK_OLAYI_PENCERE_BITIS_YIL = 15;
 const GECIKMIS_TAKIP_YIL_MIN = 15;
 const GECIKMIS_TAKIP_YIL_MAX = 20;
 
-// Aranma yeniden dengeleme turu (4 bant: 0-25/25-50/50-75/75-100, bkz.
-// aranmaSeviyesi.ts): hapse yeni girişte, tutuklama anındaki suc_seviyesi
-// bandına göre ceza süresi doğrudan bir aralıktan rastgele seçilir — hangi
-// olay/yol tutukladığından (aranmaSeviyesi.ts olayları ya da kotuIsler.ts
-// karanlık iş yakalanması) bağımsız, tek bir fonksiyonda (hapisCezaSuresiHesapla).
-const HAPIS_CEZA_TEMIZ_MIN_YIL = 2;
-const HAPIS_CEZA_TEMIZ_MAX_YIL = 4;
-const HAPIS_CEZA_YAKALANMA_MIN_YIL = 4;
-const HAPIS_CEZA_YAKALANMA_MAX_YIL = 7;
-const HAPIS_CEZA_BASKIN_MIN_YIL = 7;
-const HAPIS_CEZA_BASKIN_MAX_YIL = 9;
-const HAPIS_CEZA_AZILI_MIN_YIL = 9;
-const HAPIS_CEZA_AZILI_MAX_YIL = 12;
-
-/** Bir min-max aralığından (dahil) rastgele tam sayı yıl döndürür. */
-function rastgeleYilAraligi(min: number, max: number): number {
-  return min + Math.floor(Math.random() * (max - min + 1));
-}
-
 /**
  * Tutuklanma anındaki suc_seviyesi bandına göre hapis cezası süresini (yıl)
- * belirler — aranmaSeviyesi.ts'teki 4 bantla birebir hizalı:
- * 0-25 temiz/rutin (3-6y) · 25-50 yakalanma (5-8y) · 50-75 baskın (7-9y) ·
- * 75-100 azılı suçlu (9-12y).
+ * belirler — aranmaSeviyesi.ts'teki 4 bantla birebir hizalı (data/aranmaSabitleri.ts
+ * HAPIS_CEZA_ARALIKLARI): 0-25 → 3-4y · 25-50 → 7-9y · 50-75 → 9-11y · 75+ → 12-14y.
+ * Hangi olay/yol tutukladığından (aranmaSeviyesi.ts, kotuIsler.ts, baskın,
+ * gönüllü teslim) bağımsız tek fonksiyon.
  */
 export function hapisCezaSuresiHesapla(sucSeviyesi: number): number {
-  if (sucSeviyesi >= 75) return rastgeleYilAraligi(HAPIS_CEZA_AZILI_MIN_YIL, HAPIS_CEZA_AZILI_MAX_YIL);
-  if (sucSeviyesi >= 50) return rastgeleYilAraligi(HAPIS_CEZA_BASKIN_MIN_YIL, HAPIS_CEZA_BASKIN_MAX_YIL);
-  if (sucSeviyesi >= 25) return rastgeleYilAraligi(HAPIS_CEZA_YAKALANMA_MIN_YIL, HAPIS_CEZA_YAKALANMA_MAX_YIL);
-  return rastgeleYilAraligi(HAPIS_CEZA_TEMIZ_MIN_YIL, HAPIS_CEZA_TEMIZ_MAX_YIL);
+  const [min, max] = hapisCezaSuresiAraligi(sucSeviyesi);
+  return aralikTamSayi(min, max);
 }
 
 /**
@@ -812,7 +793,7 @@ const YOLCULUK_KAZANC_CARPANI = 1.2;
  */
 const OLAY_PARA_PRIMI = 0.8925;
 
-type SucKazanciSonucu = "yok" | "suc" | "ciddi";
+type SucKazanciSonucu = "yok" | "suc" | "ciddi" | "gizli";
 
 /**
  * Verilen (jitter uygulanmış, mesleğe göre çarpılmış) sonuç etkisini yerinde
@@ -821,7 +802,7 @@ type SucKazanciSonucu = "yok" | "suc" | "ciddi";
  * downstream (state mutasyonu, EtkiCipleri gösterimi, hayat hikayesi büyük-kazanç
  * kaydı) otomatik olarak büyütülmüş değerleri görür.
  */
-export function sucKazanciUygula(etki: SonucEtkisi): SucKazanciSonucu {
+export function sucKazanciUygula(etki: SonucEtkisi, gizliKal = false): SucKazanciSonucu {
   // Suç yalnız olay verisinde açıkça `suc_sinifi` yazılı dallarda sayılır (ahlak/para
   // sezgisi kaldırıldı: hizip, ihanet, flavor gibi suç olmayan şıklar aranma almaz).
   const sinif = etki.suc_sinifi;
@@ -830,6 +811,10 @@ export function sucKazanciUygula(etki: SonucEtkisi): SucKazanciSonucu {
   // Para çarpanı yalnız bu seçimin tek seferlik kazancına biner (yıllık maaşa değil).
   if ((etki.para ?? 0) > 0) etki.para = Math.round((etki.para as number) * SUC_KAZANC_PARA_CARPANI);
 
+  // Aranma II: suçüstü olmayan (başarılı) dal GİZLİ kalır — aranma hemen artmaz, suç
+  // ifşa kuyruğuna girer (aranmaSistemi.gizliSucKaydet, 4-10 yıl sonra açığa çıkabilir).
+  // Suçüstü (başarısız) dal anında artar.
+  if (gizliKal) return "gizli";
   etki.suc_artis = (etki.suc_artis ?? 0) + sucSinifiDegeri(sinif);
 
   return sinif === "buyuk" || sinif === "agir" ? "ciddi" : "suc";
@@ -1827,7 +1812,19 @@ export async function secimUygula(id: string, secenekIndex: number): Promise<Sec
     basarili ? "basarili" : "basarisiz",
     etki.mesaj
   );
+  // Polis (aranma olayları) kefaret istedi ve ödemeyi seçmedin → aranma +6…9 (Aranma II).
+  if (kefaretTalebiMi(mevcutOlay) && !(hamSecenek.maliyet && hamSecenek.maliyet > 0)) {
+    etki.suc_artis = (etki.suc_artis ?? 0) + aralikTamSayi(KEFARET_RED_ARANMA_MIN, KEFARET_RED_ARANMA_MAX);
+  }
   return sonucuUygulaVeIlerlet(oturum, mevcutOlay, etki, basarili, eskiRutbeSeviye, komikOlumRiskliSecenekMi, mesajCeviri);
+}
+
+/** aranmaSeviyesi.ts olaylarından, kefaret ödeme şıkkı (maliyet + aranma düşüren) taşıyanlar = "polis kefaret istiyor". */
+function kefaretTalebiMi(olay: OlayTanimi): boolean {
+  return (
+    olay.id.startsWith("aranma_") &&
+    olay.secenekler.some((s) => (s.maliyet ?? 0) > 0 && (s.basariliSonuc.suc_artis ?? 0) < 0)
+  );
 }
 
 async function sonucuUygulaVeIlerlet(
@@ -1867,7 +1864,8 @@ async function sonucuUygulaVeIlerlet(
   // Suç işleyerek para kazanma: para kazancını büyütür + suç/aranma seviyesini
   // hızla yükseltir (meslek çarpanının üstüne biner — suç + kendi mesleğin en hızlı
   // zenginlik yolu, ama en hızlı hapis/kaçak yolu da). Bkz. sucKazanciUygula.
-  const sucKazanci = sucKazanciUygula(etki);
+  const sucKazanci = sucKazanciUygula(etki, basarili);
+  if (sucKazanci === "gizli" && etki.suc_sinifi) gizliSucKaydet(state, etki.suc_sinifi, mevcutOlay.baslik);
   if (mevcutOlay.kategori === "savas") {
     orduKaybiUygula(state, basarili);
   }
@@ -2270,6 +2268,8 @@ async function sonucuUygulaVeIlerlet(
               state.hapis_ceza_kalan = 0;
               state.hapis_ceza_toplam = 0;
               etiketSil(state, ["hapiste"]);
+              // Ceza çekildi: sicil büyük ölçüde silinir (aranma tahliyede en fazla HAPIS_TAHLIYE_ARANMA).
+              state.suc_seviyesi = Math.min(state.suc_seviyesi, HAPIS_TAHLIYE_ARANMA);
               hayatOlayiEkle(state, "⛓️", T(state.dil, "Cezasını tamamlayıp serbest kaldı"));
               const cikisMesaji = T(state.dil, "⛓️ Cezan doldu; kapılar açıldı ve özgür bir insan olarak dışarı çıktın.");
               zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${cikisMesaji}` : cikisMesaji;
@@ -2326,6 +2326,7 @@ async function sonucuUygulaVeIlerlet(
           nakitAkisi.mulkNet = mulkSonucu.toplamNet;
           nakitAkisi.bilgiMulkBakim = mulkSonucu.bakimOdemeleri.reduce((a, b) => a + b.miktar, 0);
           sucSeviyesiUygula(state, yasArtisi);
+          aranmaYillikIsle(state, hapisCezaSuresiHesapla);
           ekipSadakatYillikUygula(state, yasArtisi);
           // Aile ekranı: eş/çocuk ilişkisi soğuması + düşük ilişki moral cezası +
           // bekleyen para talebinin süresi dolması / yeni talep üretimi (§33).
@@ -2596,6 +2597,66 @@ export async function gostergeGetir(id: string, stat: string): Promise<GostergeD
   const oturum = await oturumGetir(id);
   if (!gostergeStatiMi(stat)) throw new Error("Geçersiz gösterge.");
   return gostergeDetayiUret(oturum.state, stat);
+}
+
+// ─── Aranma ekranı (Aranma II) ───────────────────────────────────────────────
+/** Ekranda gösterilen tahmini teslim cezası için bandın ortası (deterministik). */
+function hapisCezaTahmini(puan: number): number {
+  const [min, max] = hapisCezaSuresiAraligi(puan);
+  return Math.round((min + max) / 2);
+}
+
+export async function aranmaGetir(id: string): Promise<AranmaDurumu> {
+  const oturum = await oturumGetir(id);
+  return aranmaDurumuUret(oturum.state, hapisCezaTahmini);
+}
+
+export async function aranmaKefaretOde(id: string, yarim: boolean): Promise<{ state: CharacterState; mesaj: string }> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  const { odenen } = gonulluKefaretOde(state, yarim);
+  const mesaj = T(state.dil, "Kefareti ödedin ({0} {birim}); sicilin {1}.", [
+    odenen,
+    yarim ? T(state.dil, "yarı yarıya temizlendi") : T(state.dil, "tamamen temizlendi"),
+  ]).replace(/\{birim\}/g, state.para_birimi);
+  await oturumKaydet(state);
+  return { state, mesaj };
+}
+
+export async function aranmaTeslimOl(id: string): Promise<{ state: CharacterState; mesaj: string; ceza: number }> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  const ceza = gonulluTeslimOl(state, hapisCezaSuresiHesapla);
+  const mesaj = T(state.dil, "Kendi isteğinle teslim oldun; ceza indirimli: {0} yıl.", [ceza]);
+  await oturumKaydet(state);
+  return { state, mesaj, ceza };
+}
+
+/** Aranma bildirimini kapatır (ifşa/baskın) ya da polis uyarısını yanıtlar (karar: tam|yarim|hayir). */
+export async function aranmaBildirimiYanitla(
+  id: string,
+  bildirimId: string,
+  karar?: "tam" | "yarim" | "hayir"
+): Promise<{ state: CharacterState; mesaj: string }> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  const b = state.aranma_bildirimleri.find((x) => x.id === bildirimId);
+  if (!b) throw new Error("Bildirim bulunamadı.");
+  let mesaj = "";
+  if (b.tur === "polis_uyari") {
+    if (karar !== "tam" && karar !== "yarim" && karar !== "hayir") throw new Error("Geçersiz karar.");
+    const sonuc = polisUyarisiniYanitla(state, bildirimId, karar);
+    mesaj =
+      karar === "hayir"
+        ? T(state.dil, "Kefareti reddettin; polis seni not aldı (aranma +{0}).", [sonuc.aranmaArtis])
+        : T(state.dil, "Kefareti ödedin ({0} {birim}).", [sonuc.odenen]).replace(/\{birim\}/g, state.para_birimi);
+  } else {
+    aranmaBildirimiKapat(state, bildirimId);
+  }
+  await oturumKaydet(state);
+  return { state, mesaj };
 }
 
 /** "Yıl" penceresi: son yıllarda ülkende ve dünyada olan önemli olaylar (salt-okunur, tur tüketmez). */
@@ -3875,7 +3936,10 @@ export interface KotuIsKarti {
 
 function kotuIsBasariSansi(state: CharacterState, tanim: (typeof KOTU_ISLER)[number]): number {
   const yatkinlik = state.yatkinliklar[tanim.yatkinlik] ?? 0;
-  return Math.round(Math.min(95, Math.max(5, tanim.basariSansi + yatkinlik + hayvanKotuIsPuani(state, tanim.yatkinlik))));
+  // Yüksek yıldız suçu kolaylaştırır (+7/+14/+25 puan, aranmaSabitleri.ts).
+  return Math.round(
+    Math.min(95, Math.max(5, tanim.basariSansi + yatkinlik + hayvanKotuIsPuani(state, tanim.yatkinlik) + sucBasariBonusu(state.suc_seviyesi)))
+  );
 }
 
 /** Karanlık iş türü başına bekleme (oyun yılı): şiddet/riskli işler daha uzun soğur. */
@@ -4059,6 +4123,8 @@ export async function kotuIsYap(id: string, tur: string, secenek: KotuIsSecenek 
         hapis_sansi: hamDal.hapis_sansi ? hamDal.hapis_sansi / 2 : hamDal.hapis_sansi,
       }
     : hamDal;
+  // Yüksek yıldız yakalanma riskini de düşürür (%10/%20/%30 daha az).
+  const riskCarpani = sucRiskCarpani(state.suc_seviyesi);
   kotuIsEtkiUygula(state, dal, enflasyon, vekil ? 0.6 : 1);
   // Eşin haberi olur: karanlık işler (vekille yaptırılsa bile) ilişkiyi anında zedeler.
   const esZarari = KOTU_IS_ES_ZARARI[tur] ?? 0;
@@ -4080,7 +4146,7 @@ export async function kotuIsYap(id: string, tur: string, secenek: KotuIsSecenek 
 
   // "Ortaya çıkma": vekille yaptırınca bile iz kalabilir (%25). Ortaya çıkarsa
   // suç izi tam biner + itibar düşer + (varsa) hedef rakip iyice azılı olur.
-  if (vekil && Math.random() < 0.25) {
+  if (vekil && Math.random() < 0.25 * riskCarpani) {
     state.suc_seviyesi = Math.min(100, state.suc_seviyesi + sucSinifiDegeri(hamDal.suc_sinifi ?? "kucuk"));
     sucArtisiKaydet(state);
     state.un = Math.max(0, state.un - 3);
@@ -4089,7 +4155,7 @@ export async function kotuIsYap(id: string, tur: string, secenek: KotuIsSecenek 
   }
 
   // Başarısız dalda "ortaya çıkma": hapis + (bazı işlerde) ölüm riski.
-  if (!kazandi && dal.hapis_sansi && Math.random() < dal.hapis_sansi) {
+  if (!kazandi && dal.hapis_sansi && Math.random() < dal.hapis_sansi * riskCarpani) {
     etiketEkle(state, ["hapiste"]);
     if (state.hapis_ceza_kalan <= 0) {
       const ceza = hapisCezaSuresiHesapla(state.suc_seviyesi);
@@ -4616,7 +4682,9 @@ export async function sosyallesmeOlayCoz(id: string, secenekIndex: number): Prom
   // Para primi + meslek metrik çarpanı (sonucuUygulaVeIlerlet ile aynı sıra/oran).
   if (etki.para && etki.para > 0) etki.para = paraYuvarla(etki.para * OLAY_PARA_PRIMI);
   if (etki.para && etki.para > 0) etki.para = Math.round(etki.para * meslekMetrikCarpani(state, mevcutOlay.kategori));
-  sucKazanciUygula(etki);
+  if (sucKazanciUygula(etki, basarili) === "gizli" && etki.suc_sinifi) {
+    gizliSucKaydet(state, etki.suc_sinifi, mevcutOlay.baslik);
+  }
   if (mevcutOlay.kategori === "savas") orduKaybiUygula(state, basarili);
 
   // Sosyalleşme moral/masraf/ayyaş kuralı (yer.alkolluMu ise ziyaret sayacı + damga).

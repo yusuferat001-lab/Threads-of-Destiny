@@ -78,18 +78,18 @@ describe("karanlık işler (illegal işler paneli)", () => {
 
   it("hapisCezaSuresiHesapla, tutuklanma anındaki aranma bandına göre doğru aralıkta ceza üretir (2026-09 yeniden düzenleme)", () => {
     const beklenenAralik: [number, [number, number]][] = [
-      [0, [2, 4]],
-      [10, [2, 4]],
-      [24, [2, 4]],
-      [25, [4, 7]],
-      [40, [4, 7]],
-      [49, [4, 7]],
-      [50, [7, 9]],
-      [60, [7, 9]],
-      [74, [7, 9]],
-      [75, [9, 12]],
-      [90, [9, 12]],
-      [100, [9, 12]],
+      [0, [3, 4]],
+      [10, [3, 4]],
+      [24, [3, 4]],
+      [25, [7, 9]],
+      [40, [7, 9]],
+      [49, [7, 9]],
+      [50, [9, 11]],
+      [60, [9, 11]],
+      [74, [9, 11]],
+      [75, [12, 14]],
+      [90, [12, 14]],
+      [100, [12, 14]],
     ];
     for (const [sucSeviyesi, [min, max]] of beklenenAralik) {
       for (let i = 0; i < 50; i++) {

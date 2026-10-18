@@ -470,6 +470,20 @@ export interface CharacterState {
   omur_zirve_suc: number;
   /** Aranmayı artıran en son olayın oyun yılı — pasif düşüş "4 yıl temiz kalırsan" şartı bunu kullanır (stateManager.sucArtisiKaydet). */
   son_suc_yili: number;
+  /** Aranma II: başarılı (gizli kalan) suçların ifşa kuyruğu — yalnız ifşa olacaklar yazılır; `yil` gelince açılır pencere + aranma/ahlak artışı. */
+  ifsa_kuyrugu: IfsaKaydi[];
+  /** Polis uyarısının planlanan yılı (60 aşılınca 2-3 yıl sonrası); yoksa null. */
+  polis_uyari_yili: number | null;
+  /** Son polis uyarısının yılı — 10 yıllık cooldown referansı. */
+  son_polis_uyari_yili: number | null;
+  /** Önceki kontrolde aranma >60 muydu (yukarı geçişi yakalamak için). */
+  aranma_esik60_ustu: boolean;
+  /** 3★ baskının planlanan yılı (75 aşılınca 4-5 yıl sonrası); yoksa null. */
+  baskin_yili: number | null;
+  /** Önceki kontrolde aranma >=75 miydi. */
+  aranma_esik75_ustu: boolean;
+  /** Oyuncuya açılır pencereyle gösterilecek aranma bildirimleri (ifşa / polis uyarısı / baskın), en eski önce. */
+  aranma_bildirimleri: AranmaBildirimi[];
   /** Zar/üç kâğıt/bilek güreşinden ömür boyu net kâr/zarar toplamı (kumar amaçları için). */
   omur_kumar_net: number;
   /** Ömür boyu verilen sadaka sayısı (sosyalleşme "sadaka" aksiyonu + bağış olayları). */
@@ -751,6 +765,31 @@ export interface EkipUyesi {
 /** Yasa dışı eylem büyüklük sınıfı (aranma artışı aralıkları: gameEngine.SUC_SINIFI_ARALIKLARI). "agir" = suçüstü yakalanma. */
 export type SucSinifi = "kucuk" | "orta" | "buyuk" | "agir";
 
+/** İfşa kuyruğu kaydı: `yil`'da, `sinif` büyüklüğündeki suç açığa çıkar. */
+export interface IfsaKaydi {
+  yil: number;
+  sinif: SucSinifi;
+  baslik: string;
+}
+
+/** Aranma bildirimi (açılır pencere). Polis uyarısı yanıtlanana dek kalır. */
+export interface AranmaBildirimi {
+  id: string;
+  tur: "ifsa" | "polis_uyari" | "baskin";
+  yil: number;
+  /** ifsa: açığa çıkan olayın başlığı. */
+  baslik?: string;
+  /** ifsa: aranma/ahlak değişimi. */
+  aranmaArtis?: number;
+  ahlakDusus?: number;
+  /** polis_uyari: indirimsiz tam / yarım kefaret tutarı. */
+  tutar?: number;
+  yarimTutar?: number;
+  /** baskin: kaçıp kaçmadığı, hapse girdiyse ceza (yıl). */
+  kacti?: boolean;
+  ceza?: number;
+}
+
 export interface SonucEtkisi {
   para?: number;
   un?: number;
@@ -948,4 +987,21 @@ export interface EtkenKaydi {
   kaynak: string;
   stat: "saglik" | "para" | "mutluluk" | "ahlak" | "aranma" | "sohret";
   delta: number;
+}
+
+/** GET /:id/aranma yanıtı — Aranma ekranı verisi (client/types.ts aynası). */
+export interface AranmaDurumu {
+  puan: number;
+  yildiz: number;
+  debuffOrani: number;
+  basariBonusu: number;
+  tamTutar: number;
+  yarimTutar: number;
+  yarimMumkun: boolean;
+  teslimCezasi: number | null;
+  para: number;
+  paraBirimi: string;
+  hapiste: boolean;
+  bekleyenBaskin: boolean;
+  debuffEtiketi: string;
 }

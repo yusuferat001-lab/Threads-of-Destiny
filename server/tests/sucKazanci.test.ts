@@ -108,7 +108,7 @@ describe("olay bankası — aranma koruma testi", () => {
 });
 
 describe("suç işleyerek para kazanma — gerçek olay üzerinden (entegrasyon)", () => {
-  it("manastır yağması seçilince suc_seviyesi (yıldız göstergesi) fırlar ve para çarpılır", async () => {
+  it("manastır yağması başarılı olunca suç GİZLİ kalır (aranma hemen artmaz), para çarpılır", async () => {
     for (let deneme = 0; deneme < 60; deneme++) {
       const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
       state.yas = 40;
@@ -124,7 +124,7 @@ describe("suç işleyerek para kazanma — gerçek olay üzerinden (entegrasyon)
       const sonuc = (await secimUygula(state.id, 0)) as SecimSonucu;
       if (!sonuc.basarili) continue;
 
-      expect(sonuc.state.suc_seviyesi).toBeGreaterThan(oncekiSuc + 15); // büyük suç: 20-26
+      expect(sonuc.state.suc_seviyesi).toBe(oncekiSuc); // gizli suç: aranma ifşaya kadar artmaz
       expect(sonuc.uygulananEtki.para ?? 0).toBeGreaterThan(40); // taban 35 → 1.6x
       return;
     }

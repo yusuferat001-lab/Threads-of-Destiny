@@ -108,12 +108,12 @@ function StatModulu({
   );
 }
 
-/** Aranma seviyesini (suç puanı) 4 yıldızlık bir ölçekte gösterir (25 puanlık bantlar,
+/** Aranma seviyesini (suç puanı) 3 yıldızlık bir ölçekte gösterir (25 puanlık bantlar,
  *  bkz. CLAUDE.md §17) — "baskın" bandına (suc_seviyesi>=50) ulaşınca yıldızlar kırmızıya döner. */
 function AranmaModulu({ sucSeviyesi, onTikla }: { sucSeviyesi: number; onTikla?: () => void }) {
   const { m } = useDil();
   const yildiz = aranmaYildiz(sucSeviyesi);
-  const slotlar = Array.from({ length: 4 }, (_, i) => Math.max(0, Math.min(1, yildiz - i)));
+  const slotlar = Array.from({ length: 3 }, (_, i) => Math.max(0, Math.min(1, yildiz - i)));
   const tehlike = sucSeviyesi >= 50;
   const { delta, nonce } = useGecisDeltasi(sucSeviyesi);
   const Kok = onTikla ? 'button' : 'div';

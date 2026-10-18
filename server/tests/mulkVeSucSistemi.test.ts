@@ -105,28 +105,28 @@ describe("mülk getiri hesabı — dünya durumuna göre", () => {
 });
 
 describe("suç seviyesi pasif azalma", () => {
-  it("son aranma artışından sonra 4 yıl hiç düşmez", () => {
+  it("son aranma artışından sonra 5 yıl hiç düşmez", () => {
     const state = taze();
     state.suc_seviyesi = 30;
-    state.son_suc_yili = state.yil - 4;
+    state.son_suc_yili = state.yil - 5;
     sucSeviyesiUygula(state, 2);
     expect(state.suc_seviyesi).toBe(30);
   });
 
-  it("5. yıldan itibaren yılda 1 düşer (turdaki yıl sayısı kadar)", () => {
+  it("6. yıldan itibaren yılda 1 düşer (turdaki yıl sayısı kadar)", () => {
     const state = taze();
     state.suc_seviyesi = 30;
-    state.son_suc_yili = state.yil - 5; // 5 yıl temiz: bu turun 1 yılı düşer
+    state.son_suc_yili = state.yil - 6; // 6 yıl temiz: bu turun 1 yılı düşer
     sucSeviyesiUygula(state, 1);
     expect(state.suc_seviyesi).toBe(29);
 
     state.suc_seviyesi = 30;
-    state.son_suc_yili = state.yil - 6; // iki yıllık turda ikisi de düşer
+    state.son_suc_yili = state.yil - 7; // iki yıllık turda ikisi de düşer
     sucSeviyesiUygula(state, 2);
     expect(state.suc_seviyesi).toBe(28);
 
     state.suc_seviyesi = 30;
-    state.son_suc_yili = state.yil - 5; // iki yıllık turun yalnız ikinci yılı eşiği aşar
+    state.son_suc_yili = state.yil - 6; // iki yıllık turun yalnız ikinci yılı eşiği aşar
     sucSeviyesiUygula(state, 2);
     expect(state.suc_seviyesi).toBe(29);
   });

@@ -8,6 +8,10 @@ import {
   isimOnerisiGetir,
   finansGetir,
   gostergeGetir,
+  aranmaGetir,
+  aranmaKefaretOde,
+  aranmaTeslimOl,
+  aranmaBildirimiYanitla,
   dunyaGecmisiGetir,
   kotuIsYap,
   kotuIsConfigGetir,
@@ -208,6 +212,39 @@ gameRouter.get("/:id/gosterge/:stat", async (req, res) => {
     res.json({ gosterge });
   } catch (err) {
     res.status(404).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.get("/:id/aranma", async (req, res) => {
+  try {
+    res.json({ aranma: await aranmaGetir(req.params.id) });
+  } catch (err) {
+    res.status(404).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/aranma/kefaret", async (req, res) => {
+  try {
+    res.json(await aranmaKefaretOde(req.params.id, req.body?.yarim === true));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/aranma/teslim", async (req, res) => {
+  try {
+    res.json(await aranmaTeslimOl(req.params.id));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/aranma/bildirim", async (req, res) => {
+  try {
+    const karar = req.body?.karar;
+    res.json(await aranmaBildirimiYanitla(req.params.id, String(req.body?.bildirimId ?? ""), karar));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 

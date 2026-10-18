@@ -377,7 +377,7 @@ function aranmaDetayi(state: CharacterState): GostergeDetayTaban {
   if (state.etiketler.includes("hapiste")) {
     etkenler.push({
       ikon: "⛓️",
-      metin: T(dil, "Hapistesin; cezanı tamamlamak aranmayı kendiliğinden sıfırlamaz."),
+      metin: T(dil, "Hapistesin; cezanı tamamlayınca aranman en fazla 10'a iner."),
       yon: "notr",
     });
   }
@@ -389,12 +389,12 @@ function aranmaDetayi(state: CharacterState): GostergeDetayTaban {
   const s = state.suc_seviyesi;
   const bant =
     s >= 75
-      ? T(dil, "Azılı suçlu: tutuklanırsan 9-12 yıl ceza.")
+      ? T(dil, "Azılı suçlu (3★): tutuklanırsan 12-14 yıl ceza.")
       : s >= 50
-        ? T(dil, "Baskın bandı: tutuklanırsan 7-9 yıl ceza.")
+        ? T(dil, "Baskın bandı (2★): tutuklanırsan 9-11 yıl ceza.")
         : s >= 25
-          ? T(dil, "Yakalanma bandı: tutuklanırsan 4-7 yıl ceza.")
-          : T(dil, "Rutin bant: tutuklanırsan 2-4 yıl ceza.");
+          ? T(dil, "Yakalanma bandı (1★): tutuklanırsan 7-9 yıl ceza.")
+          : T(dil, "Rutin bant: tutuklanırsan 3-4 yıl ceza.");
   etkenler.push({ ikon: "📊", metin: bant, yon: "notr" });
 
   return {
@@ -406,6 +406,7 @@ function aranmaDetayi(state: CharacterState): GostergeDetayTaban {
       T(dil, "Zar masası, Üç Kağıtçı ve karaborsa deposu da yavaş yavaş artırır."),
     ],
     dusur: [
+      T(dil, "Aranma ekranından kefaret öde (gönüllü ödemede %20 indirim) ya da kendi isteğinle teslim ol (%25 daha kısa ceza)."),
       T(dil, "Aranma olaylarındaki kefaret ya da rüşvet seçeneklerini seç."),
       T(dil, "Büyük baskında 'teslim ol' ya da 'kaç' sonuçları aranmanı düşürür."),
       T(dil, "Yönetim ekranında ilişkin 80'in üstündeyse 'sicil temizliği' iste."),
