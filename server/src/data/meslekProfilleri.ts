@@ -332,11 +332,11 @@ const TUCCAR_SANAYI: IsletmeProfili = {
 const ZANAATKAR_ORTA_CAG: IsletmeProfili = {
   mod: "uretim",
   hatlar: [
-    { id: "kap", simge: "🏺", ad: { tr: "Çömlek ve Kap", en: "Pottery & Vessels" }, kesim: "temel", talepTabani: 1.584, birimMaliyet: 0.58, birimFiyat: 1.15, minRutbe: 1 },
-    { id: "demir", simge: "⚒️", ad: { tr: "Demir Alet", en: "Iron Tools" }, kesim: "temel", talepTabani: 1.278, birimMaliyet: 0.67, birimFiyat: 1.2, minRutbe: 1 },
-    { id: "mobilya", simge: "🪑", ad: { tr: "Mobilya", en: "Furniture" }, kesim: "orta", talepTabani: 1.037, birimMaliyet: 0.86, birimFiyat: 1.9, minRutbe: 2 },
-    { id: "silah", simge: "⚔️", ad: { tr: "Kılıç ve Zırh", en: "Swords & Armour" }, kesim: "orta", talepTabani: 0.858, birimMaliyet: 0.96, birimFiyat: 2.3, minRutbe: 2, savasTalep: 1.5 },
-    { id: "kuyum", simge: "💍", ad: { tr: "Kuyum ve İşleme", en: "Jewellery & Fine Work" }, kesim: "luks", talepTabani: 0.383, birimMaliyet: 1.82, birimFiyat: 5.0, minRutbe: 3 },
+    { id: "kap", simge: "🏺", ad: { tr: "Çömlek ve Kap", en: "Pottery & Vessels" }, kesim: "temel", talepTabani: 1.711, birimMaliyet: 0.58, birimFiyat: 1.15, minRutbe: 1 },
+    { id: "demir", simge: "⚒️", ad: { tr: "Demir Alet", en: "Iron Tools" }, kesim: "temel", talepTabani: 1.38, birimMaliyet: 0.67, birimFiyat: 1.2, minRutbe: 1 },
+    { id: "mobilya", simge: "🪑", ad: { tr: "Mobilya", en: "Furniture" }, kesim: "orta", talepTabani: 1.12, birimMaliyet: 0.86, birimFiyat: 1.9, minRutbe: 2 },
+    { id: "silah", simge: "⚔️", ad: { tr: "Kılıç ve Zırh", en: "Swords & Armour" }, kesim: "orta", talepTabani: 0.927, birimMaliyet: 0.96, birimFiyat: 2.3, minRutbe: 2, savasTalep: 1.5 },
+    { id: "kuyum", simge: "💍", ad: { tr: "Kuyum ve İşleme", en: "Jewellery & Fine Work" }, kesim: "luks", talepTabani: 0.414, birimMaliyet: 1.82, birimFiyat: 5.0, minRutbe: 3 },
   ],
   yatirimlar: ZANAATKAR_YATIRIMLAR,
   roller: ZANAATKAR_ROLLER,
