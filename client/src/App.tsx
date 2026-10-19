@@ -2261,6 +2261,7 @@ function App() {
                 eksenler={karakter.kisilik_eksenleri}
                 meslekYatkinlikUnvani={karakter.meslek_yatkinlik_unvani}
                 meslekYatkinlikSeviyesi={karakter.meslek_yatkinlik_seviyesi}
+                meslek={karakter.meslek}
                 meslekZarBonusu={karakter.meslek_zar_bonusu}
                 meslekMaasCarpani={karakter.meslek_maas_carpani}
                 meslekTecrubeHizi={karakter.meslek_tecrube_hizi}
@@ -2301,13 +2302,10 @@ function App() {
                       >
                         {onizleme.seviye === 2
                           ? m.kpYatkinlikYok
-                          : `🎯 ${m.kpYatkinlikZar} ${yuzde(onizleme.zar)} · ${m.kpYatkinlikMaas} ${yuzde(onizleme.maas)} · ${m.kpYatkinlikTecrube} ${yuzde(onizleme.tecrube)}${
+                          : `🎯 ${m.kpYatkinlikZar} ${yuzde(onizleme.zar)} · ${meslek === 'Asker' ? `${m.kpYatkinlikMaas} ${yuzde(onizleme.maas)}` : `${m.kpYatkinlikMusteri} ${yuzde(onizleme.musteri)}${m.kpYatkinlikYillik}`} · ${m.kpYatkinlikTecrube} ${yuzde(onizleme.tecrube)}${
                               onizleme.sohret > 0 ? ` · ${m.kpYatkinlikSohret} +${onizleme.sohret}` : ''
                             }`}
                       </span>
-                      {karakter.aile_meslegi === meslek && (
-                        <span className="meslek-miras-ipucu">{m.meslekMirasIpucu}</span>
-                      )}
                     </button>
                   );
                 })}
@@ -2554,6 +2552,7 @@ function App() {
                   eksenler={karakter.kisilik_eksenleri}
                   meslekYatkinlikUnvani={karakter.meslek_yatkinlik_unvani}
                   meslekYatkinlikSeviyesi={karakter.meslek_yatkinlik_seviyesi}
+                meslek={karakter.meslek}
                   meslekZarBonusu={karakter.meslek_zar_bonusu}
                   meslekMaasCarpani={karakter.meslek_maas_carpani}
                   meslekTecrubeHizi={karakter.meslek_tecrube_hizi}

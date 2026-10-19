@@ -231,9 +231,9 @@ describe("meslek pazarı (müşteri modeli)", () => {
     expect(s.rakipler[0].musteri).toBeGreaterThan(0);
   });
 
-  it("baslangicMusteri yatkınlığa ve mirasa göre artar", () => {
-    const dusuk = baslangicMusteri(400, 1, false, () => 0);
-    const yuksek = baslangicMusteri(400, 4, true, () => 0);
+  it("baslangicMusteri yatkınlığa göre artar", () => {
+    const dusuk = baslangicMusteri(400, 1, () => 0);
+    const yuksek = baslangicMusteri(400, 5, () => 0);
     expect(yuksek).toBeGreaterThan(dusuk);
   });
 });

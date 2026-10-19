@@ -37,8 +37,6 @@ export interface KotuIsEtki {
   /** Oyuncunun müşteri sayısına delta (±; P=416 referansı, gerçek pazarda P/416 ile ölçeklenir; data/pazar.ts). */
   musteri?: number;
   /** Meslek metrikleri (yalnız ilgili meslekte anlamlı). */
-  ticaret_sermaye?: number;
-  nufuz?: number;
   uretim_kapasitesi?: number;
   ordu_techizat?: number;
   /** Yönetimle bağlar (§35): kral/vali ve patron hattına delta. */
@@ -169,7 +167,7 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
     calisanIsi: true,
     cooldownYil: 5,
     maliyet: 14,
-    basarili: { musteri: 6, ticaret_sermaye: 6, ahlak: -8, suc_sinifi: "orta", gumruk_indirim_yil: 4 },
+    basarili: { musteri: 6, ahlak: -8, suc_sinifi: "orta", gumruk_indirim_yil: 4 },
     basarisiz: { un: -5, ahlak: -3, suc_sinifi: "buyuk", hapis_sansi: 0.15 },
   },
 
@@ -181,7 +179,7 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
     meslekler: ["Din Adamı"],
     calisanIsi: true,
     cooldownYil: 4,
-    basarili: { un: 6, nufuz: 4, musteri: 21, ahlak: -14, suc_sinifi: "kucuk" },
+    basarili: { un: 6, musteri: 21, ahlak: -14, suc_sinifi: "kucuk" },
     basarisiz: { un: -8, ahlak: -6, musteri: -12, suc_sinifi: "orta" },
   },
   {

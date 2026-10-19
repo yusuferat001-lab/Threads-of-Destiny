@@ -1993,8 +1993,7 @@ async function sonucuUygulaVeIlerlet(
   if (etki.ordu_techizat_artis) {
     state.ordu_techizat_seviyesi = Math.min(100, state.ordu_techizat_seviyesi + etki.ordu_techizat_artis);
   }
-  if (etki.ticaret_sermaye_artis) state.ticaret_sermaye += etki.ticaret_sermaye_artis;
-  if (etki.nufuz_artis) state.nufuz += etki.nufuz_artis;
+  // v10: ticaret_sermaye_artis / nufuz_artis artık etkisiz (Tüccar/Din işletmesi bu sayaçları kullanmaz).
   if (etki.uretim_kapasitesi_artis) {
     state.uretim_kapasitesi = Math.min(100, Math.max(0, state.uretim_kapasitesi + etki.uretim_kapasitesi_artis));
   }
@@ -2007,9 +2006,6 @@ async function sonucuUygulaVeIlerlet(
     state.kariyer_puani += KARIYER_PUANI_KATEGORI_BASARI * (1 + (state.meslek_tecrube_hizi ?? 0)) * hayvanKariyerCarpani(state);
     // Meslek pazarı: mesleğinde başarılı her iş pazardaki gücünü artırır.
     musteriEkle(state, MUSTERI_KATEGORI_BASARI * (1 + (state.meslek_tecrube_hizi ?? 0)));
-    // Din Adamı, din kategorisinde başarılı olduğu her olayda biraz nüfuz kazanır
-    // (pasif un +0.4/yıl sürüklenmesinin eşi) — nüfuz → maaş metrik çarpanı.
-    if (state.meslek === "Din Adamı") state.nufuz += 1.5;
   }
   if (etki.kariyer_puani_artis) state.kariyer_puani += etki.kariyer_puani_artis;
   const sucOnce = state.suc_seviyesi;
@@ -4460,8 +4456,6 @@ interface KotuIsSonucu {
  */
 const MESLEK_METRIK_ALANI: Record<string, keyof SonucEtkisi> = {
   Asker: "ordu_techizat_artis",
-  Tüccar: "ticaret_sermaye_artis",
-  "Din Adamı": "nufuz_artis",
   Zanaatkâr: "uretim_kapasitesi_artis",
 };
 /** KotuIsEtki.musteri değerleri bu pazar büyüklüğü referansıyla yazılmıştır; gerçek pazarda ölçeklenir. */
@@ -4489,8 +4483,6 @@ function kotuIsEtkiUygula(state: CharacterState, etki: KotuIsEtki, enflasyon: nu
   }
   if (etki.kariyer_puani) state.kariyer_puani += etki.kariyer_puani;
   if (etki.musteri) musteriEkle(state, (etki.musteri * (state.pazar_musteri ?? PAZAR_REF_MUSTERI)) / PAZAR_REF_MUSTERI);
-  if (etki.ticaret_sermaye && state.meslek === "Tüccar") state.ticaret_sermaye += etki.ticaret_sermaye;
-  if (etki.nufuz && state.meslek === "Din Adamı") state.nufuz += etki.nufuz;
   if (etki.uretim_kapasitesi && state.meslek === "Zanaatkâr") {
     state.uretim_kapasitesi = Math.min(100, Math.max(0, state.uretim_kapasitesi + etki.uretim_kapasitesi));
   }
@@ -5726,8 +5718,7 @@ export async function sosyallesmeOlayCoz(id: string, secenekIndex: number): Prom
   if (etki.ordu_techizat_artis) {
     state.ordu_techizat_seviyesi = Math.min(100, state.ordu_techizat_seviyesi + etki.ordu_techizat_artis);
   }
-  if (etki.ticaret_sermaye_artis) state.ticaret_sermaye += etki.ticaret_sermaye_artis;
-  if (etki.nufuz_artis) state.nufuz += etki.nufuz_artis;
+  // v10: ticaret_sermaye_artis / nufuz_artis artık etkisiz (Tüccar/Din işletmesi bu sayaçları kullanmaz).
   if (etki.uretim_kapasitesi_artis) {
     state.uretim_kapasitesi = Math.min(100, Math.max(0, state.uretim_kapasitesi + etki.uretim_kapasitesi_artis));
   }
@@ -5736,7 +5727,6 @@ export async function sosyallesmeOlayCoz(id: string, secenekIndex: number): Prom
     state.kariyer_puani += KARIYER_PUANI_KATEGORI_BASARI * (1 + (state.meslek_tecrube_hizi ?? 0)) * hayvanKariyerCarpani(state);
     // Meslek pazarı: mesleğinde başarılı her iş pazardaki gücünü artırır.
     musteriEkle(state, MUSTERI_KATEGORI_BASARI * (1 + (state.meslek_tecrube_hizi ?? 0)));
-    if (state.meslek === "Din Adamı") state.nufuz += 1.5;
   }
   if (etki.kariyer_puani_artis) state.kariyer_puani += etki.kariyer_puani_artis;
   const sucOnce = state.suc_seviyesi;

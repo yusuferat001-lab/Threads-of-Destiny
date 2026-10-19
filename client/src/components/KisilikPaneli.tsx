@@ -15,6 +15,8 @@ function grupla(kaynaklar: YatkinlikKaynagi[]): Map<string, YatkinlikKaynagi[]> 
 }
 
 
+const MUSTERI_BUYUMESI: Record<number, number> = { 1: -0.4, 2: 0, 3: 0.3, 4: 0.6, 5: 1 };
+
 export function KisilikPaneli({
   kisilik,
   aileMeslegi,
@@ -22,6 +24,7 @@ export function KisilikPaneli({
   kaynaklar,
   meslekYatkinlikUnvani,
   meslekYatkinlikSeviyesi,
+  meslek,
   meslekZarBonusu,
   meslekMaasCarpani,
   meslekTecrubeHizi,
@@ -41,7 +44,9 @@ export function KisilikPaneli({
   eksenler?: KisilikEksenleri;
   /** Mesleğe yatkınlık kademesi (2026-09 sonu) — meslek seçilmediyse tümü undefined/null gelir, rozet hiç gösterilmez. Nötr kademede (seviye 2) de gösterilmez (kullanıcı isteği: "ekranda metin yazmayacak"). */
   meslekYatkinlikUnvani?: string | null;
-  meslekYatkinlikSeviyesi?: 1 | 2 | 3 | 4 | null;
+  meslekYatkinlikSeviyesi?: 1 | 2 | 3 | 4 | 5 | null;
+  /** v10: Asker maaş bonusunu, işletmeli üç meslek yıllık müşteri büyümesini gösterir. */
+  meslek?: string;
   meslekZarBonusu?: number;
   meslekMaasCarpani?: number;
   meslekTecrubeHizi?: number;
@@ -61,7 +66,10 @@ export function KisilikPaneli({
         <div className="kisilik-rozet kisilik-rozet-meslek-yatkinlik">
           <span className="kisilik-rozet-ad">🎯 {kt(meslekYatkinlikUnvani)}</span>
           <span className="kisilik-rozet-etki">
-            {m.kpYatkinlikZar} {fmtYuzde(meslekZarBonusu ?? 0)} · {m.kpYatkinlikMaas} {fmtYuzde(meslekMaasCarpani ?? 0)} ·{' '}
+            {m.kpYatkinlikZar} {fmtYuzde(meslekZarBonusu ?? 0)} ·{' '}
+            {meslek === 'Asker'
+              ? `${m.kpYatkinlikMaas} ${fmtYuzde(meslekMaasCarpani ?? 0)}`
+              : `${m.kpYatkinlikMusteri} ${formatYuzde(dil, MUSTERI_BUYUMESI[meslekYatkinlikSeviyesi] ?? 0, true)}${m.kpYatkinlikYillik}`}{' '}·{' '}
             {m.kpYatkinlikTecrube} {fmtYuzde(meslekTecrubeHizi ?? 0)}
           </span>
         </div>

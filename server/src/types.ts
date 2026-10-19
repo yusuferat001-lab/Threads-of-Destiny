@@ -297,7 +297,7 @@ export interface CharacterState {
    * gelen bir yetenek damgası). 1=kötü, 2=nötr, 3=iyi, 4=mükemmel — bkz.
    * data/meslekYatkinlik.ts. Meslek henüz seçilmediyse null.
    */
-  meslek_yatkinlik_seviyesi: 1 | 2 | 3 | 4 | null;
+  meslek_yatkinlik_seviyesi: 1 | 2 | 3 | 4 | 5 | null;
   /** Kademeden türeyen kanonik (TÜRKÇE) unvan — ör. "Kılıca Yatkın"; client `kt()` ile çevirir. Meslek seçilmediyse null. */
   meslek_yatkinlik_unvani: string | null;
   /** Kademeden türeyen kalıcı oransal bonus/malus (ör. -0.15 → olay şansı ×0.85); nötr kademede 0. */
@@ -754,8 +754,8 @@ export interface YonetimTalep {
   /** Talebi yapan kişinin adı (gösterim). */
   kimAdi: string;
   /** "bagis" = para ister; "sadakat" = para yok ama ret ilişkiyi çok düşürür. */
-  tur: "bagis" | "sadakat";
-  /** İstenen para (tur === "sadakat" ise 0). */
+  tur: "bagis" | "sadakat" | "aciklama";
+  /** İstenen para (tur === "sadakat" veya "aciklama" ise 0). */
   tutar: number;
   /** Talebin insan-okunur gerekçesi (ör. "saray onarımı için bağış"). */
   kalem: string;
@@ -986,6 +986,27 @@ export interface IsletmeAday {
   maas_taban: number;
 }
 
+/** Din Adamı cemaat işletmesi politikaları (v10). */
+export type CemaatBagis = IsletmeFiyat;
+export type CemaatKitle = "alt" | "genel" | "ust";
+export type CemaatYardim = "dusuk" | "orta" | "yuksek";
+export type CemaatTon = "ilimli" | "dengeli" | "atesli";
+
+export interface CemaatDurumu {
+  bagis: CemaatBagis;
+  kitle: CemaatKitle;
+  yardim: CemaatYardim;
+  ton: CemaatTon;
+  /** 0-100: yavaş artar, bağış oranını yükseltir ama inanan kaçışı, otorite kaybı ve aşırılık riski getirir. */
+  fanatiklik: number;
+  /** Seçilen öğreti id'leri (rütbe seviyesi başına bir). */
+  ogretiler: string[];
+  /** Seçilmeyi bekleyen öğreti seviyesi; doluysa oyun devam etmez. */
+  bekleyen_ogreti: number | null;
+  mezun_son_yil: number | null;
+  asiri_son_yil: number | null;
+}
+
 /** Meslek işletmesi (şu an yalnız Tüccar; 2026-10 dikey dilim). Diğer meslekler null → eski maaş sistemi. */
 export interface IsletmeDurumu {
   hatlar: IsletmeHat[];
@@ -1007,6 +1028,8 @@ export interface IsletmeDurumu {
   imtiyazlar?: Record<string, number>;
   /** Tekel ruhsatı verilen hat (ruhsat süresince satış fiyatı +%10). */
   tekel_hat?: string | null;
+  /** Yalnız Din Adamı (cemaat modu). */
+  cemaat?: CemaatDurumu;
 }
 
 /** Dünya dönemi "sıcak ürün" bilgisi (deterministik) — kart etiketi için. */

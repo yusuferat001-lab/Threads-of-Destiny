@@ -50,13 +50,27 @@ describe("yıldız tablosu", () => {
     expect(meslekDebuffOrani(90)).toBeCloseTo(0.15);
   });
 
-  it("maaşa 'Aranma gölgesi' kalemi biner", () => {
+  it("Asker maaşına 'Aranma gölgesi' kalemi biner; işletmeli mesleklerde gelire girmez (v10: müşteri/ahlak kaybı)", () => {
     const temiz = taze();
+    temiz.meslek = "Asker"; // işletmesiz eski maaş sistemi
+    temiz.isletme = null;
     const aranan = structuredClone(temiz); // aynı karakter: tek fark aranma
     aranan.suc_seviyesi = 80;
     expect(hesaplaMaasYillik(aranan)).toBeLessThan(hesaplaMaasYillik(temiz));
     const kalem = maasKirilimHesapla(aranan).donemselKalemler.find((k) => k.ad === "Aranma gölgesi");
     expect(kalem?.yuzde).toBe(-15);
+  });
+
+  it("işletmeli mesleklerde aranma yıllık müşteri ve ahlak kaybı olur (1★ %1·0.3, 3★ %4·1.0)", async () => {
+    const { aranmaMusteriKaybi, aranmaAhlakKaybi } = await import("../src/data/aranmaSabitleri");
+    expect(aranmaMusteriKaybi(10)).toBe(0);
+    expect(aranmaMusteriKaybi(30)).toBeCloseTo(0.01);
+    expect(aranmaMusteriKaybi(60)).toBeCloseTo(0.025);
+    expect(aranmaMusteriKaybi(90)).toBeCloseTo(0.04);
+    expect(aranmaAhlakKaybi(30)).toBeCloseTo(0.3);
+    expect(aranmaAhlakKaybi(90)).toBeCloseTo(1.0);
+    const kalem = maasKirilimHesapla(taze()).donemselKalemler.find((k) => k.ad === "Aranma gölgesi");
+    expect(kalem).toBeUndefined();
   });
 });
 

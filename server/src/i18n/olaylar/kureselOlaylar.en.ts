@@ -8,38 +8,38 @@ export const OLAYLAR_KURESEL_EN: Record<string, OlayCeviri> = {
       "Death carts roam the streets of {bolge}. The plague spreads fast and spares no one. How will you protect yourself?",
     secenekler: [
       {
-        metin: "Retreat to the country and isolate.",
-        kilitAciklamasi: "You can't afford to retreat to the countryside.",
+        metin: "Close your business and stay home.",
+        kilitAciklamasi: "You can't afford to stay closed.",
         basariliSonuc: {
           mesaj:
-            "You left the city; in clean air, survival is likelier.",
+            "You locked the door; income dropped hard, but your odds of survival are good.",
         },
         basarisizSonuc: {
           mesaj:
-            "You met sick caravans on the road. Still partly protected.",
+            "The quarantine was breached; income fell and your protection is only partial.",
         },
       },
       {
-        metin: "Wall up your door and quarantine.",
-        kilitAciklamasi: "You can't afford to stockpile provisions.",
+        metin: "Work carefully: fewer customers, cleanliness, distance.",
+        kilitAciklamasi: "You can't afford the precautions.",
         basariliSonuc: {
           mesaj:
-            "Months within four walls, stifling, but it worked.",
+            "You scaled the business down; income fell, but you are partly protected.",
         },
         basarisizSonuc: {
           mesaj:
-            "Quarantine breached; you're barely protected now.",
+            "The precautions weren't enough; income fell and protection is gone.",
         },
       },
       {
-        metin: "Carry on as normal; let fate decide.",
+        metin: "Carry on as if nothing happened.",
         basariliSonuc: {
           mesaj:
-            "The plague gripped {bolge}; you share everyone's fate.",
+            "The shop is open, but frightened people stay away. The plague hits everyone alike.",
         },
         basarisizSonuc: {
           mesaj:
-            "One market day was enough; you woke feverish but survived.",
+            "One market day was enough; you woke feverish but survived. Customers thinned out badly.",
         },
       },
     ],

@@ -27,28 +27,31 @@ const olayBul = (id: string) => {
 };
 
 describe("Mesleğe Yatkınlık Kademeleri (2026-09 sonu)", () => {
-  it("yatkinlikTierBelirle 4 kademeyi doğru sınırlarla ayırır", () => {
+  it("yatkinlikTierBelirle 5 kademeyi doğru sınırlarla ayırır", () => {
     expect(yatkinlikTierBelirle(-100)).toBe("kotu");
     expect(yatkinlikTierBelirle(-5)).toBe("kotu");
     expect(yatkinlikTierBelirle(-4)).toBe("notr");
     expect(yatkinlikTierBelirle(0)).toBe("notr");
     expect(yatkinlikTierBelirle(4)).toBe("notr");
     expect(yatkinlikTierBelirle(5)).toBe("iyi");
-    expect(yatkinlikTierBelirle(19)).toBe("iyi");
+    expect(yatkinlikTierBelirle(11)).toBe("iyi");
+    expect(yatkinlikTierBelirle(12)).toBe("cokiyi");
+    expect(yatkinlikTierBelirle(19)).toBe("cokiyi");
     expect(yatkinlikTierBelirle(20)).toBe("mukemmel");
     expect(yatkinlikTierBelirle(100)).toBe("mukemmel");
   });
 
   it("her kademenin oranları kullanıcının verdiği tam değerlerle eşleşir", () => {
-    expect(YATKINLIK_TIER_ETKILERI.kotu).toEqual({ zarBonusu: -0.15, maasCarpani: -0.1, tecrubeHizi: -0.15 });
-    expect(YATKINLIK_TIER_ETKILERI.notr).toEqual({ zarBonusu: 0, maasCarpani: 0, tecrubeHizi: 0 });
-    expect(YATKINLIK_TIER_ETKILERI.iyi).toEqual({ zarBonusu: 0.1, maasCarpani: 0.05, tecrubeHizi: 0.07 });
-    expect(YATKINLIK_TIER_ETKILERI.mukemmel).toEqual({ zarBonusu: 0.2, maasCarpani: 0.1, tecrubeHizi: 0.15 });
+    expect(YATKINLIK_TIER_ETKILERI.kotu).toEqual({ zarBonusu: -0.15, maasCarpani: -0.06, tecrubeHizi: -0.15, musteriBuyumesi: -0.004 });
+    expect(YATKINLIK_TIER_ETKILERI.notr).toEqual({ zarBonusu: 0, maasCarpani: 0, tecrubeHizi: 0, musteriBuyumesi: 0 });
+    expect(YATKINLIK_TIER_ETKILERI.iyi).toEqual({ zarBonusu: 0.1, maasCarpani: 0.02, tecrubeHizi: 0.07, musteriBuyumesi: 0.003 });
+    expect(YATKINLIK_TIER_ETKILERI.cokiyi).toEqual({ zarBonusu: 0.15, maasCarpani: 0.04, tecrubeHizi: 0.11, musteriBuyumesi: 0.006 });
+    expect(YATKINLIK_TIER_ETKILERI.mukemmel).toEqual({ zarBonusu: 0.2, maasCarpani: 0.1, tecrubeHizi: 0.15, musteriBuyumesi: 0.01 });
   });
 
   it("meslekYatkinlikUnvaniGetir her meslek+çağ+kademe için bir unvan döner ve Orta Çağ/Sanayi isimleri farklıdır", () => {
     for (const meslek of ["Asker", "Tüccar", "Din Adamı", "Zanaatkâr"]) {
-      for (const tier of ["kotu", "notr", "iyi", "mukemmel"] as const) {
+      for (const tier of ["kotu", "notr", "iyi", "cokiyi", "mukemmel"] as const) {
         const oc = meslekYatkinlikUnvaniGetir("Orta Çağ", meslek, tier);
         const sd = meslekYatkinlikUnvaniGetir("Sanayi Devrimi", meslek, tier);
         expect(oc).toBeTruthy();
@@ -66,7 +69,7 @@ describe("Mesleğe Yatkınlık Kademeleri (2026-09 sonu)", () => {
     const oncekiUn = state.un;
     mesleğiSec(state, "Asker");
 
-    expect(state.meslek_yatkinlik_seviyesi).toBe(4);
+    expect(state.meslek_yatkinlik_seviyesi).toBe(5);
     expect(state.meslek_yatkinlik_unvani).toBe("Doğuştan Savaşçı");
     expect(state.meslek_zar_bonusu).toBeCloseTo(0.2);
     expect(state.meslek_maas_carpani).toBeCloseTo(0.1);
@@ -76,7 +79,7 @@ describe("Mesleğe Yatkınlık Kademeleri (2026-09 sonu)", () => {
 
     // yatkınlık sonradan değişse bile kademe SABİT kalır (doğuştan yetenek damgası).
     state.yatkinliklar.savas = -50;
-    expect(state.meslek_yatkinlik_seviyesi).toBe(4);
+    expect(state.meslek_yatkinlik_seviyesi).toBe(5);
   });
 
   it("kötü kademe negatif kalıcı çarpanlar üretir", () => {
@@ -86,7 +89,7 @@ describe("Mesleğe Yatkınlık Kademeleri (2026-09 sonu)", () => {
     expect(state.meslek_yatkinlik_seviyesi).toBe(1);
     expect(state.meslek_yatkinlik_unvani).toBe("Pazarlıktan Anlamaz");
     expect(state.meslek_zar_bonusu).toBeCloseTo(-0.15);
-    expect(state.meslek_maas_carpani).toBeCloseTo(-0.1);
+    expect(state.meslek_maas_carpani).toBeCloseTo(-0.06);
     expect(state.meslek_tecrube_hizi).toBeCloseTo(-0.15);
   });
 
@@ -102,8 +105,8 @@ describe("Mesleğe Yatkınlık Kademeleri (2026-09 sonu)", () => {
 
   it("meslek_maas_carpani maaş kırılımında ayrı bir kalıcı ('kariyer') kalemi olarak görünür", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
-    state.yatkinliklar.zanaat = 30; // mükemmel
-    mesleğiSec(state, "Zanaatkâr");
+    state.yatkinliklar.savas = 30; // mükemmel
+    mesleğiSec(state, "Asker"); // v10: işletmeli üç meslekte maaş yatkınlığı gelire girmez; yalnız Asker
     const kirilim = maasKirilimHesapla(state);
     const kalem = kirilim.kariyerKalemler.find((k) => k.ad === "Mesleğe yatkınlığın");
     expect(kalem).toBeTruthy();
@@ -239,7 +242,7 @@ describe("Mesleğe Yatkınlık Kademeleri (2026-09 sonu)", () => {
   });
 
   it("createCharacter kişilik özelliklerinin maaş/gayrimenkul/ilişki bonuslarını doğuşta uygular", () => {
-    // Vicdanlı: gayrimenkulBonusu +0.02. Hırslı: maasCarpani ×1.05 (ham).
+    // Vicdanlı: gayrimenkulBonusu +0.02. Hırslı: yıllık şöhret etkisi (v10).
     const stateBonus = createCharacter("Orta Çağ", "Fransa", "kasaba");
     stateBonus.kisilik = ["Vicdanlı", "Hırslı"];
     // yatkinlikHesapla zaten createCharacter içinde çağrıldığı için burada state'i
@@ -266,7 +269,8 @@ describe("Mesleğe Yatkınlık Kademeleri (2026-09 sonu)", () => {
       if (s.kisilik.includes("Hırslı")) hirsliState = s;
     }
     expect(hirsliState).toBeTruthy();
-    expect(hirsliState!.etiketler.some((e) => e.startsWith("maas_carpani:"))).toBe(true);
+    // v10: kişilik maaş çarpanı kalktı; yerine çok küçük yıllık etki var.
+    expect(hirsliState!.etiketler.some((e) => e.startsWith("maas_carpani:"))).toBe(false);
 
     // "Sivri Dilli" de patron ilişkisini etkiler (-5) — Sosyal ile eşleşirse
     // (40+5-5=40) toplam etkiyi tam iptal edip testi rastgele başarısız kılabilir;

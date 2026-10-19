@@ -1,3 +1,5 @@
+import { aranmaMusteriKaybi, aranmaAhlakKaybi } from "../data/aranmaSabitleri";
+import { yatkinlikMusteriBuyumesi } from "../data/meslekYatkinlik";
 import { randomUUID } from "crypto";
 import type {
   CharacterState,
@@ -56,10 +58,12 @@ import { rastgeleBirIsimSec } from "../data/npcIsimleri";
 export interface IsletmeBaglami {
   /** enflasyonCarpani(state). */
   enflasyon: number;
-  /** Rütbeye bağlı satış fiyatı primi (S1 = 1.0). */
-  fiyatPrimi: number;
-  /** Kalıcı bonuslar (olay maas_carpani etiketi × yatkınlık × durum): talebe biner. */
-  talepCarpani: number;
+  /**
+   * Kalıcı satış/bağış çarpanı (v10): olay `maas_carpani` etiketi × geçici durumlar (veba tedbiri vb.) × eş desteği.
+   * Tüccar/Zanaatkâr'da SATIŞ (talep), Din Adamı'nda BAĞIŞ çarpanıdır. Rütbe fiyat primi, yatkınlık maaşı ve
+   * aranma gölgesi artık buraya girmez.
+   */
+  satisCarpani: number;
 }
 
 // ── Sayılar (simülasyonla ayarlanır; bkz. scripts/simulateIsletme.ts) ───────
@@ -425,7 +429,7 @@ export function hatHesapla(state: CharacterState, hat: IsletmeHat, tanim: HatTan
     politikaTalep *
     savasTalep *
     (sicak ? SICAK_URUN_TALEP : 1) *
-    b.talepCarpani *
+    b.satisCarpani *
     piyasaCarpani(state, "talep") *
     anaTalep *
     dukkan;
@@ -443,7 +447,6 @@ export function hatHesapla(state: CharacterState, hat: IsletmeHat, tanim: HatTan
       b.enflasyon *
       (1 + (kes.fiyat - 1) * SATIS_FIYAT_UYUMU) *
       pol.fiyat *
-      b.fiyatPrimi *
       (sicak ? SICAK_URUN_FIYAT : 1) *
       tekel,
     birimMaliyet: tanim.birimMaliyet * b.enflasyon * kes.fiyat * maliyetCarpani * piyasaCarpani(state, "alis_maliyeti"),
@@ -932,13 +935,20 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
   } else if (satis > 0) {
     const fiyatEtkisi =
       planlar.length > 0 ? planlar.reduce((t, p) => t + (FIYAT_POLITIKASI[p.hat.fiyat]?.pay ?? 0), 0) / planlar.length : 0;
-    const ham = sohretPayBuyumesi(state.un) + fiyatEtkisi + tanitimBuyumesi(state) + musteriRolu;
+    const ham = sohretPayBuyumesi(state.un) + fiyatEtkisi + tanitimBuyumesi(state) + musteriRolu + yatkinlikMusteriBuyumesi(state);
     const mevcutPay = pazarPayiHesapla(state);
     // Pay büyüdükçe pozitif büyüme doyar (pay %60'a yaklaşınca sıfır); eksi etkiler tam işler.
     // Veba sürerken pozitif büyüme %70 kısılır (v10); eksi etkiler tam işler.
     const vebaKisma = state.veba?.aktif ? VEBA_ARTIS_CARPANI : 1;
     const yuzde = ham > 0 ? ham * Math.max(0, 1 - mevcutPay / PAY_DOYMA_ESIGI) * vebaKisma : ham;
     musteriKaydir(state, "oyuncu", sabitMusteriArtisi(state.yas) * vebaKisma + state.meslek_musteri * yuzde);
+  }
+
+  // 7b. Aranma gölgesi (v10): gelir kısmak yerine yıllık müşteri/inanan ve ahlak kaybı (1★ %1·0.3 · 2★ %2.5·0.6 · 3★ %4·1.0).
+  const aranmaKaybi = aranmaMusteriKaybi(state.suc_seviyesi);
+  if (aranmaKaybi > 0) {
+    musteriKaydir(state, "oyuncu", -state.meslek_musteri * aranmaKaybi);
+    state.ahlak = Math.max(0, state.ahlak - aranmaAhlakKaybi(state.suc_seviyesi));
   }
 
   // 8. Brüt kâr, vergi, borç.

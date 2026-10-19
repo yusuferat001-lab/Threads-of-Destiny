@@ -4,7 +4,7 @@ import type { OlayTanimi } from "./types";
  * MESLEĞE YATKINLIK KADEMESİ olayları (2026-09 sonu, kullanıcı isteği:
  * "mesleklere yatkınlık daha çok şeyi etkilesin ... olaylar çıksın bazı
  * olaylarda şıklar kapansın"). `state.meslek_yatkinlik_seviyesi` (1=kötü,
- * 2=nötr, 3=iyi, 4=mükemmel — bkz. data/meslekYatkinlik.ts) meslek seçilirken
+ * 2=nötr, 3=iyi, 4=çok iyi, 5=mükemmel — bkz. data/meslekYatkinlik.ts) meslek seçilirken
  * bir kez sabitlenir; bu dosyadaki olaylar bu kademeyi hem OLAY seviyesinde
  * (`minMeslekYatkinlikSeviye`/`maxMeslekYatkinlikSeviye` — bazı olaylar
  * yalnız belirli kademede hiç çıkmaz) hem SEÇENEK seviyesinde (aynı alanlar
@@ -161,7 +161,7 @@ export const OLAY_MESLEK_YATKINLIK: OlayTanimi[] = [
       {
         metin: "Yepyeni bir teknik icat etmeyi dene.",
         baseBasariSansi: 45,
-        minMeslekYatkinlikSeviye: 4,
+        minMeslekYatkinlikSeviye: 5,
         kilitAciklamasi: "Elin henüz yeterince usta değil.",
         basariliSonuc: {
           un: 8,
@@ -190,7 +190,7 @@ export const OLAY_MESLEK_YATKINLIK: OlayTanimi[] = [
     ],
   },
 
-  // --- Mükemmel kademe (20+) içeriği: yalnız state.meslek_yatkinlik_seviyesi===4
+  // --- Mükemmel kademe (20+) içeriği: yalnız state.meslek_yatkinlik_seviyesi===5
   // olan karakterlere çıkan, olay-seviyesinde kilitli 8 olay (meslek başına 2).
   // Çağdan bağımsız (mevcut 4 örnekle aynı desen); normal ağırlıklı havuzdan
   // dışlanmaz, yalnızca hafif yüksek `agirlik` ile nadir kademeye ulaşana
@@ -200,7 +200,7 @@ export const OLAY_MESLEK_YATKINLIK: OlayTanimi[] = [
     kategori: "savas",
     meslekler: ["Asker"],
     minYas: 22,
-    minMeslekYatkinlikSeviye: 4,
+    minMeslekYatkinlikSeviye: 5,
     agirlik: 1.2,
     gorsel: "🛡️",
     baslik: "Kralın Şahsi Muhafızı Teklifi",
@@ -240,7 +240,7 @@ export const OLAY_MESLEK_YATKINLIK: OlayTanimi[] = [
     kategori: "savas",
     meslekler: ["Asker"],
     minYas: 20,
-    minMeslekYatkinlikSeviye: 4,
+    minMeslekYatkinlikSeviye: 5,
     agirlik: 1.2,
     gorsel: "⚔️",
     baslik: "Efsanevi Düello Daveti",
@@ -279,7 +279,7 @@ export const OLAY_MESLEK_YATKINLIK: OlayTanimi[] = [
     kategori: "ticaret",
     meslekler: ["Tüccar"],
     minYas: 22,
-    minMeslekYatkinlikSeviye: 4,
+    minMeslekYatkinlikSeviye: 5,
     agirlik: 1.2,
     gorsel: "📜",
     baslik: "Krallığın Baş Tedarikçisi Teklifi",
@@ -318,7 +318,7 @@ export const OLAY_MESLEK_YATKINLIK: OlayTanimi[] = [
     kategori: "ticaret",
     meslekler: ["Tüccar"],
     minYas: 20,
-    minMeslekYatkinlikSeviye: 4,
+    minMeslekYatkinlikSeviye: 5,
     agirlik: 1.2,
     gorsel: "🐍",
     baslik: "Rakiplerin Kıskançlığı",
@@ -356,7 +356,7 @@ export const OLAY_MESLEK_YATKINLIK: OlayTanimi[] = [
     kategori: "din",
     meslekler: ["Din Adamı"],
     minYas: 22,
-    minMeslekYatkinlikSeviye: 4,
+    minMeslekYatkinlikSeviye: 5,
     agirlik: 1.2,
     gorsel: "✨",
     baslik: "Kutsal Bir Görev İçin Seçilmek",
@@ -394,7 +394,7 @@ export const OLAY_MESLEK_YATKINLIK: OlayTanimi[] = [
     kategori: "din",
     meslekler: ["Din Adamı"],
     minYas: 20,
-    minMeslekYatkinlikSeviye: 4,
+    minMeslekYatkinlikSeviye: 5,
     agirlik: 1.2,
     gorsel: "🕊️",
     baslik: "Mucize Söylentisi",
@@ -433,7 +433,7 @@ export const OLAY_MESLEK_YATKINLIK: OlayTanimi[] = [
     kategori: "zanaat",
     meslekler: ["Zanaatkâr"],
     minYas: 22,
-    minMeslekYatkinlikSeviye: 4,
+    minMeslekYatkinlikSeviye: 5,
     agirlik: 1.2,
     gorsel: "👑",
     baslik: "Sarayın Baş Zanaatkârı Daveti",
@@ -471,7 +471,7 @@ export const OLAY_MESLEK_YATKINLIK: OlayTanimi[] = [
     kategori: "zanaat",
     meslekler: ["Zanaatkâr"],
     minYas: 20,
-    minMeslekYatkinlikSeviye: 4,
+    minMeslekYatkinlikSeviye: 5,
     agirlik: 1.2,
     gorsel: "🎭",
     baslik: "Taklitçiler ve Sahtekârlar",

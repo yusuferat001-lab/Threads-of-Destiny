@@ -184,7 +184,7 @@ export interface CharacterState {
   /** Son terfinin oyun yılı (bir sonraki terfinin cooldown referansı). */
   son_terfi_yili: number;
   /** Mesleğe yatkınlık kademesi (2026-09 sonu) — meslek seçilince bir kez hesaplanır, bir daha değişmez. 1=kötü, 2=nötr, 3=iyi, 4=mükemmel. */
-  meslek_yatkinlik_seviyesi: 1 | 2 | 3 | 4 | null;
+  meslek_yatkinlik_seviyesi: 1 | 2 | 3 | 4 | 5 | null;
   /** Kanonik (TR) unvan — `kt()` ile çevrilir. */
   meslek_yatkinlik_unvani: string | null;
   meslek_zar_bonusu: number;
