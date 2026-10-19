@@ -34,7 +34,7 @@ export interface HatTanimi {
 }
 
 /** Yatırımın motor etkisi: id'ye değil bu türe bakılır. */
-export type YatirimEtkisi = "depo" | "talep" | "alis" | "uretim" | "pazar" | "koruma";
+export type YatirimEtkisi = "depo" | "talep" | "alis" | "uretim" | "pazar" | "koruma" | "bina" | "okul" | "yardim";
 
 export interface YatirimTanimi {
   id: string;
@@ -52,8 +52,8 @@ export interface RolTanimi {
 }
 
 export interface IsletmeProfili {
-  /** "ticaret": mal satın alınır (depo dolana dek); "uretim": yıllık üretim tavanı vardır, maliyet hammaddedir. */
-  mod?: "ticaret" | "uretim";
+  /** "ticaret": mal satın alınır (depo dolana dek); "uretim": yıllık üretim tavanı vardır, maliyet hammaddedir; "cemaat": Din Adamı (bağış + faaliyetler, stok yok; game/cemaat.ts). */
+  mod?: "ticaret" | "uretim" | "cemaat";
   hatlar: HatTanimi[];
   yatirimlar: YatirimTanimi[];
   roller: RolTanimi[];
@@ -209,33 +209,40 @@ const ZANAATKAR_YATIRIMLAR: YatirimTanimi[] = [
   YATIRIM_GUVENLIK_ZANAAT,
 ];
 
-// ── Din Adamı (cemaat işletmesi; ticaret modu: mum, merhem, kutsal eşya vb. "adak mallar") ──
+// ── Din Adamı (cemaat işletmesi, v10: mum "satmaz"; bağış + faaliyet geliri, stok yok) ──
 const DIN_YATIRIMLAR: YatirimTanimi[] = [
   {
-    ...YATIRIM_DEPO,
-    ad: { tr: "Sakristi ve Ambar", en: "Sacristy & Storehouse" },
+    id: "bina",
+    simge: "⛪",
+    ad: { tr: "İbadethane", en: "House of Worship" },
+    aciklama: {
+      tr: "Ayine sığan inanan: 40 → 90 → 170 → 300. Kapasiteyi aşan inananlar rakibe geçer; bakımı pahalıdır.",
+      en: "Worshippers it can hold: 40 → 90 → 170 → 300. Those beyond capacity drift to your rival; upkeep is costly.",
+    },
+    etki: "bina",
+    fiyatlar: [22, 55, 120],
   },
   {
-    id: "dukkan",
-    simge: "🕯️",
-    ad: { tr: "Hayır Dükkânı", en: "Alms Shop" },
+    id: "okul",
+    simge: "🏫",
+    ad: { tr: "Okul", en: "School" },
     aciklama: {
-      tr: "Her kademe cemaatin alım talebini %10 artırır.",
-      en: "Each tier raises the congregation's demand by 10%.",
+      tr: "Yılda mezun çıkarma şansı %12 / %20 / %30. Mezun misyoner olur: yeni inananlar getirir, bazen usta bir aday çıkar. Çalışanlar da daha hızlı gelişir.",
+      en: "Yearly chance of a graduate: 12% / 20% / 30%. Graduates become missionaries, bring new believers, and sometimes a skilled recruit emerges. Staff also improve faster.",
     },
-    etki: "talep",
-    fiyatlar: [15, 30, 55],
+    etki: "okul",
+    fiyatlar: [28, 65, 130],
   },
   {
-    id: "kervan",
-    simge: "🌾",
-    ad: { tr: "Manastır Çiftliği", en: "Monastery Farm" },
+    id: "asevi",
+    simge: "🍲",
+    ad: { tr: "Aşevi", en: "Soup Kitchen" },
     aciklama: {
-      tr: "Her kademe mal alış maliyetini %5 düşürür (diğer indirimlerle çarpımsal birleşir).",
-      en: "Each tier cuts purchase costs by 5% (stacks multiplicatively with other discounts).",
+      tr: "Her kademe yardım harcamasının inanan ve ahlak getirisini %15 artırır.",
+      en: "Each tier raises the flock and morality payoff of your aid spending by 15%.",
     },
-    etki: "alis",
-    fiyatlar: [15, 30, 55],
+    etki: "yardim",
+    fiyatlar: [15, 35, 70],
   },
   {
     ...YATIRIM_TANITIM,
@@ -244,6 +251,10 @@ const DIN_YATIRIMLAR: YatirimTanimi[] = [
   {
     ...YATIRIM_GUVENLIK_TUCCAR,
     ad: { tr: "Kilise Güvenliği", en: "Church Security" },
+    aciklama: {
+      tr: "Kumbara ve ibadethaneyi korur: Koruma +0,17 / +0,34 / +0,50 (toplam).",
+      en: "Guards the offering box and the sanctuary: Protection +0.17 / +0.34 / +0.50 (total).",
+    },
   },
 ];
 
@@ -269,7 +280,13 @@ const ZANAATKAR_ROLLER: RolTanimi[] = [
 ];
 
 /** Rol başına oyuncuya gösterilen kısa etki açıklaması (bonus yeteneğe göre değişir). */
-export const ROL_ACIKLAMALARI: Record<"ticaret" | "uretim", Record<IsletmeRolTuru, DilliMetin>> = {
+export const ROL_ACIKLAMALARI: Record<"ticaret" | "uretim" | "cemaat", Record<IsletmeRolTuru, DilliMetin>> = {
+  cemaat: {
+    ana: { tr: "Bağışları artırır", en: "Raises donations" },
+    maliyet: { tr: "Faaliyet masraflarını düşürür", en: "Lowers activity costs" },
+    musteri: { tr: "İnanan sayısını artırır", en: "Grows the flock" },
+    guvenlik: { tr: "Kumbarayı ve ibadethaneyi korur", en: "Protects the offering box and sanctuary" },
+  },
   ticaret: {
     ana: { tr: "Yıllık satışı artırır", en: "Raises yearly sales" },
     maliyet: { tr: "Mal alış maliyetini düşürür", en: "Lowers purchase costs" },
@@ -341,28 +358,16 @@ const ZANAATKAR_SANAYI: IsletmeProfili = {
 };
 
 const DIN_ORTA_CAG: IsletmeProfili = {
-  hatlar: [
-    { id: "mum", simge: "🕯️", ad: { tr: "Mum, Kandil ve Buhur", en: "Candles, Lamps & Incense" }, kesim: "temel", talepTabani: 1.669, birimMaliyet: 0.67, birimFiyat: 1.15, minRutbe: 1 },
-    { id: "ayin", simge: "⚰️", ad: { tr: "Ayin ve Cenaze Hizmeti", en: "Rites & Funeral Services" }, kesim: "temel", talepTabani: 1.456, birimMaliyet: 0.72, birimFiyat: 1.2, minRutbe: 1, savasTalep: 1.3 },
-    { id: "merhem", simge: "🌿", ad: { tr: "Şifa Otu ve Merhem", en: "Healing Herbs & Salves" }, kesim: "orta", talepTabani: 0.941, birimMaliyet: 0.96, birimFiyat: 1.9, minRutbe: 2, savasTalep: 1.4 },
-    { id: "kitap", simge: "📖", ad: { tr: "Dua Kitabı ve Hat", en: "Prayer Books & Calligraphy" }, kesim: "orta", talepTabani: 0.784, birimMaliyet: 1.06, birimFiyat: 2.1, minRutbe: 2 },
-    { id: "kutsal_esya", simge: "📿", ad: { tr: "Kutsal Eşya ve Tespih", en: "Holy Objects & Prayer Beads" }, kesim: "orta", talepTabani: 0.694, birimMaliyet: 1.15, birimFiyat: 2.3, minRutbe: 2 },
-    { id: "emanet", simge: "🏺", ad: { tr: "Kutsal Emanet ve Tılsım", en: "Relics & Charms" }, kesim: "luks", talepTabani: 0.302, birimMaliyet: 2.2, birimFiyat: 5.1, minRutbe: 3 },
-  ],
+  mod: "cemaat",
+  hatlar: [],
   yatirimlar: DIN_YATIRIMLAR,
   roller: DIN_ROLLER,
   adaylar: ADAY_SABLONLARI["Din Adamı|Orta Çağ"] ?? [],
 };
 
 const DIN_SANAYI: IsletmeProfili = {
-  hatlar: [
-    { id: "mum", simge: "🕯️", ad: { tr: "Mum ve Kandil", en: "Candles & Lamps" }, kesim: "temel", talepTabani: 1.68, birimMaliyet: 0.67, birimFiyat: 1.15, minRutbe: 1 },
-    { id: "hizmet", simge: "⚰️", ad: { tr: "Cenaze ve Vaaz Hizmeti", en: "Funeral & Sermon Services" }, kesim: "temel", talepTabani: 1.512, birimMaliyet: 0.72, birimFiyat: 1.2, minRutbe: 1, savasTalep: 1.3 },
-    { id: "ilac", simge: "💊", ad: { tr: "İlaç ve Merhem", en: "Medicine & Salves" }, kesim: "orta", talepTabani: 0.896, birimMaliyet: 0.96, birimFiyat: 1.9, minRutbe: 2, savasTalep: 1.3 },
-    { id: "risale", simge: "📰", ad: { tr: "Dua Kitabı ve Risale", en: "Prayer Books & Tracts" }, kesim: "orta", talepTabani: 0.762, birimMaliyet: 1.0, birimFiyat: 2.0, minRutbe: 2 },
-    { id: "kutsal_esya", simge: "📿", ad: { tr: "Kutsal Eşya ve Tespih", en: "Holy Objects & Prayer Beads" }, kesim: "orta", talepTabani: 0.672, birimMaliyet: 1.15, birimFiyat: 2.3, minRutbe: 2 },
-    { id: "heykel", simge: "🗿", ad: { tr: "Aziz Heykeli ve Süs", en: "Saints' Statues & Ornaments" }, kesim: "luks", talepTabani: 0.314, birimMaliyet: 2.2, birimFiyat: 5.1, minRutbe: 3 },
-  ],
+  mod: "cemaat",
+  hatlar: [],
   yatirimlar: DIN_YATIRIMLAR,
   roller: DIN_ROLLER,
   adaylar: ADAY_SABLONLARI["Din Adamı|Sanayi Devrimi"] ?? [],

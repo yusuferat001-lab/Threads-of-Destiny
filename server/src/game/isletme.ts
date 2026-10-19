@@ -45,6 +45,7 @@ import {
 } from "../data/pazar";
 import { pazarBuyumeVarsayilan, VEBA_TOPARLANMA_ORAN, VEBA_TOPARLANMA_YIL } from "../data/dunyaDonemleri";
 import { musteriKaydir, musteriAktar, pazarOlcekle, piyasaCarpani, rakipGrubu } from "./piyasa";
+import { cemaatBaslat, cemaatHazirla, cemaatBeklenenKar, cemaatYilIsle, faaliyetSlotSayisi } from "./cemaat";
 import { rastgeleBirIsimSec } from "../data/npcIsimleri";
 
 /**
@@ -83,7 +84,7 @@ const KITLE_KAYIP_CARPANI = 0.3;
 const KITLE_KAYIP_TAVANI = 0.12;
 const TALEP_GURULTUSU = 0.08;
 /** Yüzdelik müşteri büyümesi pay bu eşiğe yaklaştıkça sıfıra iner. */
-const PAY_DOYMA_ESIGI = 0.68;
+export const PAY_DOYMA_ESIGI = 0.68;
 const DUKKAN_TALEP_KADEME = 0.1;
 /** Maliyet indirimleri ÇARPIMSAL birleşir (tavan yok): maliyet × (1−a)(1−b)(1−c)…; her kaynak kendi payını düşer, yığıldıkça getirisi azalır. */
 const KERVAN_INDIRIM_KADEME = 0.05;
@@ -189,6 +190,7 @@ export function calisanLimiti(state: CharacterState): number {
 
 /** Aynı anda açık tutulabilecek hat sayısı: 1 + her 3 çalışan için 1 (en fazla 3). */
 export function hatSlotSayisi(state: CharacterState): number {
+  if (isletmeProfiliGetir(state.meslek, state.cag)?.mod === "cemaat") return faaliyetSlotSayisi(state);
   return Math.min(3, 1 + Math.floor(state.ekip.length / 3));
 }
 
@@ -271,10 +273,10 @@ export function calisanMaaslariniGuncelle(state: CharacterState, enflasyon: numb
 }
 
 /** Çalışan işletmede çalıştıkça gelişir: güncel yetenek +0,4, güncel sadakat +0,7 (tavan 100). */
-function calisanlariGelistir(state: CharacterState): void {
+export function calisanlariGelistir(state: CharacterState, ekstraYetenek = 0): void {
   for (const uye of state.ekip) {
     if (!uye.rol_turu) continue;
-    uye.gercekKalite = clamp(uye.gercekKalite + YETENEK_YILLIK_ARTIS, 0, 100);
+    uye.gercekKalite = clamp(uye.gercekKalite + YETENEK_YILLIK_ARTIS + ekstraYetenek, 0, 100);
     uye.sadakat = clamp(uye.sadakat + SADAKAT_YILLIK_ARTIS, 0, 100);
     uye.tahminiMin = uye.gercekKalite;
     uye.tahminiMax = uye.gercekKalite;
@@ -527,6 +529,10 @@ export function isletmeBaslat(state: CharacterState, b: IsletmeBaglami): void {
     state.isletme = null;
     return;
   }
+  if (profil.mod === "cemaat") {
+    cemaatBaslat(state);
+    return;
+  }
   const ilk = profil.hatlar.find((h) => h.minRutbe <= 1) ?? profil.hatlar[0];
   const hatlar: IsletmeHat[] = profil.hatlar.map((h) => ({
     id: h.id,
@@ -561,6 +567,10 @@ export function isletmeHazirla(state: CharacterState, b: IsletmeBaglami): void {
   const profil = isletmeProfiliGetir(state.meslek, state.cag);
   if (!profil) {
     if (state.isletme) state.isletme = null;
+    return;
+  }
+  if (profil.mod === "cemaat") {
+    cemaatHazirla(state);
     return;
   }
   if (!state.isletme) {
@@ -602,6 +612,7 @@ export function beklenenBrutKar(state: CharacterState, b: IsletmeBaglami): numbe
   const is = state.isletme;
   const profil = isletmeProfiliGetir(state.meslek, state.cag);
   if (!is || !profil) return 0;
+  if (profil.mod === "cemaat") return cemaatBeklenenKar(state, b);
   let kar = 0;
   for (const hat of is.hatlar.filter((h) => h.acik).slice(0, hatSlotSayisi(state))) {
     const tanim = hatTanimiGetir(profil, hat.id);
@@ -697,7 +708,7 @@ export interface IsletmeYilSonucu {
   dokum: IsletmeDokum;
 }
 
-function sureleriKontrolEt(state: CharacterState, uyarilar: IsletmeUyari[]): void {
+export function sureleriKontrolEt(state: CharacterState, uyarilar: IsletmeUyari[]): void {
   const is = state.isletme!;
   if (state.vergi_carpan_bitis_yili != null && state.yil > state.vergi_carpan_bitis_yili) {
     if ((state.vergi_carpan ?? 1) < 1) uyarilar.push({ kod: "vergi_indirimi_bitti" });
@@ -715,9 +726,47 @@ function sureleriKontrolEt(state: CharacterState, uyarilar: IsletmeUyari[]): voi
   }
 }
 
+/** Düşük sadakatli çalışanlar sızdırır, çalar, ayrılır (her işletme modu için ortak). */
+export function calisanSadakatKontrolleri(
+  state: CharacterState,
+  brutTaban: number,
+  uyarilar: IsletmeUyari[]
+): { nakitHasar: number; ekstraGider: number } {
+  const is = state.isletme!;
+  const rakip = aktifRakip(state);
+  let nakitHasar = 0;
+  let ekstraGider = 0;
+  for (const uye of [...state.ekip]) {
+    if (!uye.rol_turu || uye.sadakat >= SADAKAT_RISK_ESIGI) continue;
+    const risk = SADAKAT_RISK_ESIGI - uye.sadakat;
+    if ((uye.sizdirma_son_yil === undefined || state.yil - uye.sizdirma_son_yil >= SADAKAT_OLAY_COOLDOWN_YIL) && Math.random() < risk / 200) {
+      uye.sizdirma_son_yil = state.yil;
+      // Hedefli: sızdırılan müşteri tamamen rakibe geçer (%2–4).
+      if (rakip) musteriAktar(state, "oyuncu", rakipGrubu(rakip.ad), state.meslek_musteri * (0.02 + Math.random() * 0.02));
+      uyarilar.push({ kod: "sizdirma", isim: uye.isim });
+    }
+    if ((uye.ic_hirsizlik_son_yil === undefined || state.yil - uye.ic_hirsizlik_son_yil >= SADAKAT_OLAY_COOLDOWN_YIL) && Math.random() < risk / 250) {
+      uye.ic_hirsizlik_son_yil = state.yil;
+      const urunYuzde = 5 + Math.random() * 7;
+      const nakitYuzde = 2 + Math.random() * 3;
+      stokAzalt(is, urunYuzde / 100);
+      const tutar = r2(brutTaban * (nakitYuzde / 100));
+      nakitHasar += tutar;
+      uyarilar.push({ kod: "ic_hirsizlik", isim: uye.isim, urunYuzde: Math.round(urunYuzde), nakitYuzde: Math.round(nakitYuzde), tutar });
+    }
+    if (Math.random() < risk / 500) {
+      state.ekip = state.ekip.filter((e) => e.id !== uye.id);
+      ekstraGider += uye.maas * 1.5;
+      uyarilar.push({ kod: "calisan_ayrildi", isim: uye.isim });
+    }
+  }
+  return { nakitHasar, ekstraGider };
+}
+
 export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): IsletmeYilSonucu {
   const is = state.isletme!;
   const profil = isletmeProfiliGetir(state.meslek, state.cag)!;
+  if (profil.mod === "cemaat") return cemaatYilIsle(state, b);
   const kapasite = depoKapasitesi(is);
   const uyarilar: IsletmeUyari[] = [];
   const slot = hatSlotSayisi(state);
@@ -763,30 +812,9 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
 
   // 2. Çalışan sadakati: düşük sadakatli çalışan sızdırır, çalar, ayrılır.
   const rakip = aktifRakip(state); // saldırgan / sızdırma hedefi: en büyük aktif rakip
-  for (const uye of [...state.ekip]) {
-    if (!uye.rol_turu || uye.sadakat >= SADAKAT_RISK_ESIGI) continue;
-    const risk = SADAKAT_RISK_ESIGI - uye.sadakat;
-    if ((uye.sizdirma_son_yil === undefined || state.yil - uye.sizdirma_son_yil >= SADAKAT_OLAY_COOLDOWN_YIL) && Math.random() < risk / 200) {
-      uye.sizdirma_son_yil = state.yil;
-      // Hedefli: sızdırılan müşteri tamamen rakibe geçer (%2–4).
-      if (rakip) musteriAktar(state, "oyuncu", rakipGrubu(rakip.ad), state.meslek_musteri * (0.02 + Math.random() * 0.02));
-      uyarilar.push({ kod: "sizdirma", isim: uye.isim });
-    }
-    if ((uye.ic_hirsizlik_son_yil === undefined || state.yil - uye.ic_hirsizlik_son_yil >= SADAKAT_OLAY_COOLDOWN_YIL) && Math.random() < risk / 250) {
-      uye.ic_hirsizlik_son_yil = state.yil;
-      const urunYuzde = 5 + Math.random() * 7;
-      const nakitYuzde = 2 + Math.random() * 3;
-      stokAzalt(is, urunYuzde / 100);
-      const tutar = r2(brutTaban * (nakitYuzde / 100));
-      nakitHasar += tutar;
-      uyarilar.push({ kod: "ic_hirsizlik", isim: uye.isim, urunYuzde: Math.round(urunYuzde), nakitYuzde: Math.round(nakitYuzde), tutar });
-    }
-    if (Math.random() < risk / 500) {
-      state.ekip = state.ekip.filter((e) => e.id !== uye.id);
-      ekstraGider += uye.maas * 1.5;
-      uyarilar.push({ kod: "calisan_ayrildi", isim: uye.isim });
-    }
-  }
+  const sadakat = calisanSadakatKontrolleri(state, brutTaban, uyarilar);
+  nakitHasar += sadakat.nakitHasar;
+  ekstraGider += sadakat.ekstraGider;
 
   // 3. Dış hırsızlık: girişim şansı güvenlikten bağımsız, sonucu Koruma belirler.
   const stokPik = toplamStok(is);

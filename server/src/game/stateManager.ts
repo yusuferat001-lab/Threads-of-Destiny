@@ -8,6 +8,7 @@ import { BolgeOzellikleri, bolgeOzellikleriGetir } from "../data/bolgeOzellikler
 import { rastgeleKisilikCifti, kisilikGetir } from "../data/kisilikler";
 import { YAS_OLUM_YIL, YAS_TERK_YIL } from "../data/aileSabitleri";
 import { meslekDebuffOrani } from "../data/aranmaSabitleri";
+import { DIN_TALEP_AGIRLIKLARI } from "../data/cemaat";
 import {
   rutbeTanimiGetir,
   RutbeEsigi,
@@ -1999,6 +2000,14 @@ const SEHIR_TALEP_KALEMLERI: { bagis: string[]; sadakat: string[] } = {
   ],
 };
 
+/** Din Adamı'nın şehir yöneticisinden aldığı "açıklama yap" talepleri (Yap / Yapma). */
+const DIN_ACIKLAMA_KALEMLERI: string[] = [
+  "vergi artışını vaazda kutsal bir görev diye savun",
+  "yöneticinin yeni savaş kararını ibadethanede meşrulaştır",
+  "yöneticinin rakibini kürsüden kötüle",
+  "yönetimin yeni yasasını halka kutsal göster",
+];
+
 const YONETIM_TALEP_KALEMLERI: Record<"yonetici" | "patron", { bagis: string[]; sadakat: string[] }> = {
   yonetici: {
     bagis: [
@@ -2037,12 +2046,16 @@ const YONETIM_TALEP_KALEMLERI: Record<"yonetici" | "patron", { bagis: string[]; 
 export function yonetimTalebiUret(state: CharacterState): YonetimTalep {
   // Tek otorite (§45): işletmeli mesleklerde talep şehir yöneticisinden, diğerlerinde patrondan gelir.
   const kimden: "yonetici" | "patron" = isletmeMeslegiMi(state.meslek) ? "yonetici" : "patron";
-  const tur: "bagis" | "sadakat" = Math.random() < 0.6 ? "bagis" : "sadakat";
+  const dinMi = state.meslek === "Din Adamı";
+  const z = Math.random() * 100;
+  const tur: "bagis" | "sadakat" | "aciklama" = dinMi
+    ? z < DIN_TALEP_AGIRLIKLARI.aciklama ? "aciklama" : z < DIN_TALEP_AGIRLIKLARI.aciklama + DIN_TALEP_AGIRLIKLARI.bagis ? "bagis" : "sadakat"
+    : Math.random() < 0.6 ? "bagis" : "sadakat";
   const enf = enflasyonCarpani(state);
   const servetEk = Math.max(0, Math.min(30, Math.round(gayrimenkulDegeriHesapla(state) * 0.04)));
   const tutar =
     tur === "bagis" ? paraYuvarla((14 + Math.floor(Math.random() * 32) + servetEk) * enf) : 0;
-  const havuz = isletmeMeslegiMi(state.meslek) ? SEHIR_TALEP_KALEMLERI[tur] : YONETIM_TALEP_KALEMLERI[kimden][tur];
+  const havuz = tur === "aciklama" ? DIN_ACIKLAMA_KALEMLERI : isletmeMeslegiMi(state.meslek) ? SEHIR_TALEP_KALEMLERI[tur] : YONETIM_TALEP_KALEMLERI[kimden][tur];
   return {
     id: randomUUID(),
     kimden,

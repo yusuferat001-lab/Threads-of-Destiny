@@ -8,7 +8,7 @@ import type { FaaliyetId } from "./ogretiler";
  */
 
 /** Bağış yapan başına yıllık ortalama bağış (enflasyonsuz). Simülasyonla ayarlanır (scripts/simulateIsletme.ts). */
-export const BAGIS_BIRIMI = 0.78;
+export const BAGIS_BIRIMI = 0.8;
 /** Bağış yapan inanan oranının taban değeri (adak politikasında). */
 export const BAGIS_TABAN_ORANI = 0.6;
 export const BAGIS_ORANI_TAVAN = 0.95;
@@ -60,7 +60,7 @@ export const GELME_ARALIKLARI: Record<GelmeKaynagi, [number, number]> = {
 };
 
 /** Bina kademesi (0..3) → ibadethane kapasitesi (aynı anda ayine sığan inanan). */
-export const BINA_KAPASITE = [40, 90, 170, 300];
+export const BINA_KAPASITE = [55, 110, 190, 320];
 /** Bina bakımı (enflasyonsuz yıllık). */
 export const BINA_BAKIM = [4, 10, 18, 30];
 

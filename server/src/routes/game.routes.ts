@@ -59,6 +59,7 @@ import {
   ajanTut,
   isletmeDurumGetir,
   isletmeKararVer,
+  isletmeOgretiSec,
   isletmeYatirimYap,
   isletmeCalisanAl,
   amaclarGetir,
@@ -306,10 +307,20 @@ gameRouter.get("/:id/isletme", async (req, res) => {
 });
 
 gameRouter.post("/:id/isletme/karar", async (req, res) => {
-  const { hatlar, stokHedefi } = req.body ?? {};
+  const { hatlar, stokHedefi, cemaat } = req.body ?? {};
   if (!Array.isArray(hatlar)) return res.status(400).json({ hata: "Geçersiz karar." });
   try {
-    res.json(await isletmeKararVer(req.params.id, hatlar, stokHedefi));
+    res.json(await isletmeKararVer(req.params.id, hatlar, stokHedefi, cemaat && typeof cemaat === "object" ? cemaat : undefined));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/isletme/ogreti", async (req, res) => {
+  const { ogretiId } = req.body ?? {};
+  if (typeof ogretiId !== "string") return res.status(400).json({ hata: "Geçersiz öğreti." });
+  try {
+    res.json(await isletmeOgretiSec(req.params.id, ogretiId));
   } catch (err) {
     res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }

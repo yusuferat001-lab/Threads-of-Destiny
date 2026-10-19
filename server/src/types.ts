@@ -929,17 +929,23 @@ export interface IsletmeUyari {
     | "ic_hirsizlik"
     | "rakip_saldiri"
     | "vergi_indirimi_bitti"
-    | "imtiyaz_bitti";
+    | "imtiyaz_bitti"
+    | "bina_tasti"
+    | "asiri_olay"
+    | "mezun";
   hat?: string;
   isim?: string;
   /** hırsızlık sonucu / rakip saldırı türü (istemci metni bunlardan kurar). */
-  sonuc?: "agir" | "rahat" | "kismi" | "engellendi" | "sans" | "musteri_calma" | "iftira" | "sabotaj" | "baskin" | "nakit";
+  sonuc?: "agir" | "rahat" | "kismi" | "engellendi" | "sans" | "musteri_calma" | "iftira" | "sabotaj" | "baskin" | "nakit" | "kumbara" | "muridcalma" | "bidat" | "aforoz" | "yangin" | "engizisyon";
   /** Rakip saldırısı: saldıran rakibin adı, güvenlik engelledi mi, içerden sızma var mı, kaybedilen müşteri (ondalık), şöhret ve stok kaybı. */
   rakip?: string;
   engellendi?: boolean;
   sizma?: boolean;
   musteriKaybi?: number;
   sohretKaybi?: number;
+  /** Dini saldırılarda ahlak ve otorite kaybı (puan). */
+  ahlakKaybi?: number;
+  otoriteKaybi?: number;
   /** Çalınan/azalan ürün oranı (%) ve nakit hasarı (%, geçen yıl brüt kârına göre); tutar olarak da `tutar`. */
   urunYuzde?: number;
   nakitYuzde?: number;
@@ -969,6 +975,17 @@ export interface IsletmeDokum {
   hatlar: { id: string; talep: number; satilan: number; alinan: number; stokSonu: number }[];
   /** Üretim modundaki mesleklerde (Zanaatkâr) o yılın üretim tavanı ve kullanılan miktar. */
   uretim?: { tavan: number; kullanilan: number };
+  /** Din Adamı (cemaat modu) yıl dökümü: bağış/faaliyet ayrıntıları. `satis` toplam gelir, `alim` faaliyet+ayin masrafı, `depoMasrafi` bina bakımı, `loncaAidati` teşkilat aidatıdır. */
+  cemaat?: {
+    gelmeOrani: number;
+    gelen: number;
+    kapasite: number;
+    bagis: number;
+    faaliyetler: { id: string; gelir: number; masraf: number }[];
+    ayinMasrafi: number;
+    yardim: number;
+    fanatiklik: number;
+  };
   uyarilar: IsletmeUyari[];
 }
 

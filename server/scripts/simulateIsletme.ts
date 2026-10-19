@@ -27,13 +27,16 @@ import {
 import { isletmeProfiliGetir, yatirimTanimiGetir } from "../src/data/meslekProfilleri";
 import { hatSlotSayisi, calisanLimiti, adaylariGerekirseYenile, calisanBonusu } from "../src/game/isletme";
 import { pazarPayiHesapla } from "../src/data/pazar";
+import { ogretiBekleyenSeviye, ogretiSec, faaliyetSlotSayisi, faaliyetKilitliMi } from "../src/game/cemaat";
+import { ogretiSecenekleri } from "../src/data/ogretiler";
+import { FAALIYETLER } from "../src/data/cemaat";
 import { enflasyonCarpani } from "../src/game/stateManager";
 import type { Cag, CharacterState, IsletmeFiyat, EkipUyesi } from "../src/types";
 
 const N = Number(process.env.SIM_N ?? 200);
 const MESLEK = process.env.SIM_MESLEK ?? "Tüccar";
 const YIL = Number(process.env.SIM_YIL ?? 45);
-type Tarz = "pasif" | "dengeli" | "agresif";
+type Tarz = "pasif" | "dengeli" | "agresif" | "fanatik";
 
 function rutbeSurukle(s: CharacterState, yilIdx: number, tarz: Tarz) {
   // Gerçek ömürdeki ortalama ilerlemeye benzer: pasif daha yavaş.
@@ -51,6 +54,22 @@ function botKarar(s: CharacterState, tarz: Tarz) {
   const enf = enflasyonCarpani(s);
   const slot = hatSlotSayisi(s);
   adaylariGerekirseYenile(s);
+  const cemaatMi = profil.mod === "cemaat";
+  if (cemaatMi && is.cemaat) {
+    // Öğreti: fanatik tarz fanatik olanı, diğerleri ilk fanatik-olmayanı seçer.
+    for (let g = 0; g < 6; g++) {
+      const sev = ogretiBekleyenSeviye(s);
+      if (sev === null) break;
+      const sec = ogretiSecenekleri(sev);
+      const secilen = (tarz === "fanatik" ? sec.find((o) => o.fanatik) : sec.find((o) => !o.fanatik)) ?? sec[0];
+      ogretiSec(s, secilen.id);
+    }
+    const cm = is.cemaat;
+    cm.bagis = tarz === "fanatik" ? "arti10" : tarz === "agresif" ? "eksi10" : "normal";
+    cm.kitle = tarz === "fanatik" ? "ust" : "genel";
+    cm.yardim = tarz === "fanatik" ? "dusuk" : "orta";
+    cm.ton = tarz === "fanatik" ? "atesli" : "dengeli";
+  }
   // Çalışan: limit dolana dek, ana rol ve güvenlik öncelikli; agresif ucuzu, dengeli kaliteliyi sever.
   const limit = process.env.SIM_ISCI === "0" ? 0 : calisanLimiti(s);
   const oncelik = ["ana", "guvenlik", "musteri", "maliyet"];
@@ -71,7 +90,7 @@ function botKarar(s: CharacterState, tarz: Tarz) {
     s.ekip.push(uye);
   }
   // Yatırım: nakit fiyatın 2 katını aştıkça.
-  const sira = tarz === "agresif" ? ["tanitim", "tezgah", "depo", "dukkan", "vitrin", "guvenlik", "kervan"] : ["depo", "tezgah", "dukkan", "vitrin", "guvenlik", "tanitim", "kervan"];
+  const sira = cemaatMi ? ["bina", "okul", "asevi", "tanitim", "guvenlik"] : tarz === "agresif" ? ["tanitim", "tezgah", "depo", "dukkan", "vitrin", "guvenlik", "kervan"] : ["depo", "tezgah", "dukkan", "vitrin", "guvenlik", "tanitim", "kervan"];
   for (const id of process.env.SIM_YATIRIM === "0" ? [] : sira) {
     const t = yatirimTanimiGetir(profil, id);
     if (!t) continue;
@@ -82,6 +101,18 @@ function botKarar(s: CharacterState, tarz: Tarz) {
       s.para -= fiyat;
       is.yatirimlar[id] = k + 1;
     }
+  }
+  if (cemaatMi) {
+    // Faaliyetler: rütbesi yeten en yüksek gelirbirimlilerden slot kadarını aç.
+    for (const h of is.hatlar) h.acik = false;
+    // dengeli/agresif: büyümeyi besleyen faaliyetleri (şifa, eğitim) öne al; fanatik: salt gelir.
+    const oncelik = (f: (typeof FAALIYETLER)[number]) => (tarz === "agresif" ? f.inanan * 40 + f.gelirBirimi * (1 - f.masraf) + (f.id === "tovbe" ? 0.12 : 0) : f.gelirBirimi * (1 - f.masraf));
+    const acilabilir = FAALIYETLER.filter((f) => !faaliyetKilitliMi(s, f.id)).sort((a, b) => oncelik(b) - oncelik(a));
+    for (const f of acilabilir.slice(0, faaliyetSlotSayisi(s))) {
+      const h = is.hatlar.find((x) => x.id === f.id);
+      if (h) h.acik = true;
+    }
+    return;
   }
   // Hatlar: rütbe açtıkça en kârlı hatları aç.
   const adaylar = profil.hatlar.filter((h) => h.minRutbe <= s.rutbe_seviye).sort((a, b) => b.talepTabani * (b.birimFiyat - b.birimMaliyet) - a.talepTabani * (a.birimFiyat - a.birimMaliyet));
@@ -151,7 +182,7 @@ const dilimler: [string, number, number][] = [["15-25", 0, 10], ["25-45", 10, 30
 const ort = (a: number[]) => a.reduce((x, y) => x + y, 0) / Math.max(1, a.length);
 
 const CAGLAR = (process.env.SIM_CAG ? [process.env.SIM_CAG] : ["Orta Çağ", "Sanayi Devrimi"]) as Cag[];
-const TARZLAR = (process.env.SIM_TARZ ? process.env.SIM_TARZ.split(",") : ["pasif", "dengeli", "agresif"]) as Tarz[];
+const TARZLAR = (process.env.SIM_TARZ ? process.env.SIM_TARZ.split(",") : MESLEK === "Din Adamı" ? ["pasif", "dengeli", "agresif", "fanatik"] : ["pasif", "dengeli", "agresif"]) as Tarz[];
 for (const cag of CAGLAR) {
   for (const tarz of TARZLAR) {
     const sonuclar: Cikti[] = [];
