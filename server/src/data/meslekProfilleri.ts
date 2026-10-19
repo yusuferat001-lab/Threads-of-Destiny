@@ -4,7 +4,7 @@ import { ADAY_SABLONLARI, type AdayTaslagi } from "./adayHavuzlari";
 export type { AdayTaslagi } from "./adayHavuzlari";
 
 /**
- * Meslek işletmesi profilleri (2026-10, dikey dilim — Tüccar + Zanaatkâr).
+ * Meslek işletmesi profilleri (2026-10, dikey dilim — Tüccar + Zanaatkâr; Din Adamı 3. meslek olarak eklendi).
  * Kural kodu tek (game/isletme.ts); meslek × çağ yalnız burada isim, kalem
  * listesi ve birkaç sayıyla değişir. Metinler {tr,en} çiftleri olarak gömülüdür
  * (KARANLIK_ISLER deseni): oyuncunun diline göre `ikiDil` ile seçilir.
@@ -209,6 +209,51 @@ const ZANAATKAR_YATIRIMLAR: YatirimTanimi[] = [
   YATIRIM_GUVENLIK_ZANAAT,
 ];
 
+// ── Din Adamı (cemaat işletmesi; ticaret modu: mum, merhem, kutsal eşya vb. "adak mallar") ──
+const DIN_YATIRIMLAR: YatirimTanimi[] = [
+  {
+    ...YATIRIM_DEPO,
+    ad: { tr: "Sakristi ve Ambar", en: "Sacristy & Storehouse" },
+  },
+  {
+    id: "dukkan",
+    simge: "🕯️",
+    ad: { tr: "Hayır Dükkânı", en: "Alms Shop" },
+    aciklama: {
+      tr: "Her kademe cemaatin alım talebini %10 artırır.",
+      en: "Each tier raises the congregation's demand by 10%.",
+    },
+    etki: "talep",
+    fiyatlar: [15, 30, 55],
+  },
+  {
+    id: "kervan",
+    simge: "🌾",
+    ad: { tr: "Manastır Çiftliği", en: "Monastery Farm" },
+    aciklama: {
+      tr: "Her kademe mal alış maliyetini %5 düşürür (diğer indirimlerle çarpımsal birleşir).",
+      en: "Each tier cuts purchase costs by 5% (stacks multiplicatively with other discounts).",
+    },
+    etki: "alis",
+    fiyatlar: [15, 30, 55],
+  },
+  {
+    ...YATIRIM_TANITIM,
+    ad: { tr: "Vaaz ve Davet", en: "Sermons & Outreach" },
+  },
+  {
+    ...YATIRIM_GUVENLIK_TUCCAR,
+    ad: { tr: "Kilise Güvenliği", en: "Church Security" },
+  },
+];
+
+const DIN_ROLLER: RolTanimi[] = [
+  { tur: "ana", ad: { tr: "Vaiz", en: "Preacher" } },
+  { tur: "maliyet", ad: { tr: "Ekonom", en: "Steward" } },
+  { tur: "musteri", ad: { tr: "Davetçi", en: "Outreach worker" } },
+  { tur: "guvenlik", ad: { tr: "Kilise bekçisi", en: "Church watchman" } },
+];
+
 // ── Roller ─────────────────────────────────────────────────────────────────
 const TUCCAR_ROLLER: RolTanimi[] = [
   { tur: "ana", ad: { tr: "Satıcı", en: "Salesman" } },
@@ -295,9 +340,38 @@ const ZANAATKAR_SANAYI: IsletmeProfili = {
   adaylar: ADAY_SABLONLARI["Zanaatkâr|Sanayi Devrimi"] ?? [],
 };
 
+const DIN_ORTA_CAG: IsletmeProfili = {
+  hatlar: [
+    { id: "mum", simge: "🕯️", ad: { tr: "Mum, Kandil ve Buhur", en: "Candles, Lamps & Incense" }, kesim: "temel", talepTabani: 1.669, birimMaliyet: 0.67, birimFiyat: 1.15, minRutbe: 1 },
+    { id: "ayin", simge: "⚰️", ad: { tr: "Ayin ve Cenaze Hizmeti", en: "Rites & Funeral Services" }, kesim: "temel", talepTabani: 1.456, birimMaliyet: 0.72, birimFiyat: 1.2, minRutbe: 1, savasTalep: 1.3 },
+    { id: "merhem", simge: "🌿", ad: { tr: "Şifa Otu ve Merhem", en: "Healing Herbs & Salves" }, kesim: "orta", talepTabani: 0.941, birimMaliyet: 0.96, birimFiyat: 1.9, minRutbe: 2, savasTalep: 1.4 },
+    { id: "kitap", simge: "📖", ad: { tr: "Dua Kitabı ve Hat", en: "Prayer Books & Calligraphy" }, kesim: "orta", talepTabani: 0.784, birimMaliyet: 1.06, birimFiyat: 2.1, minRutbe: 2 },
+    { id: "kutsal_esya", simge: "📿", ad: { tr: "Kutsal Eşya ve Tespih", en: "Holy Objects & Prayer Beads" }, kesim: "orta", talepTabani: 0.694, birimMaliyet: 1.15, birimFiyat: 2.3, minRutbe: 2 },
+    { id: "emanet", simge: "🏺", ad: { tr: "Kutsal Emanet ve Tılsım", en: "Relics & Charms" }, kesim: "luks", talepTabani: 0.302, birimMaliyet: 2.2, birimFiyat: 5.1, minRutbe: 3 },
+  ],
+  yatirimlar: DIN_YATIRIMLAR,
+  roller: DIN_ROLLER,
+  adaylar: ADAY_SABLONLARI["Din Adamı|Orta Çağ"] ?? [],
+};
+
+const DIN_SANAYI: IsletmeProfili = {
+  hatlar: [
+    { id: "mum", simge: "🕯️", ad: { tr: "Mum ve Kandil", en: "Candles & Lamps" }, kesim: "temel", talepTabani: 1.68, birimMaliyet: 0.67, birimFiyat: 1.15, minRutbe: 1 },
+    { id: "hizmet", simge: "⚰️", ad: { tr: "Cenaze ve Vaaz Hizmeti", en: "Funeral & Sermon Services" }, kesim: "temel", talepTabani: 1.512, birimMaliyet: 0.72, birimFiyat: 1.2, minRutbe: 1, savasTalep: 1.3 },
+    { id: "ilac", simge: "💊", ad: { tr: "İlaç ve Merhem", en: "Medicine & Salves" }, kesim: "orta", talepTabani: 0.896, birimMaliyet: 0.96, birimFiyat: 1.9, minRutbe: 2, savasTalep: 1.3 },
+    { id: "risale", simge: "📰", ad: { tr: "Dua Kitabı ve Risale", en: "Prayer Books & Tracts" }, kesim: "orta", talepTabani: 0.762, birimMaliyet: 1.0, birimFiyat: 2.0, minRutbe: 2 },
+    { id: "kutsal_esya", simge: "📿", ad: { tr: "Kutsal Eşya ve Tespih", en: "Holy Objects & Prayer Beads" }, kesim: "orta", talepTabani: 0.672, birimMaliyet: 1.15, birimFiyat: 2.3, minRutbe: 2 },
+    { id: "heykel", simge: "🗿", ad: { tr: "Aziz Heykeli ve Süs", en: "Saints' Statues & Ornaments" }, kesim: "luks", talepTabani: 0.314, birimMaliyet: 2.2, birimFiyat: 5.1, minRutbe: 3 },
+  ],
+  yatirimlar: DIN_YATIRIMLAR,
+  roller: DIN_ROLLER,
+  adaylar: ADAY_SABLONLARI["Din Adamı|Sanayi Devrimi"] ?? [],
+};
+
 const PROFILLER: Partial<Record<string, Record<Cag, IsletmeProfili>>> = {
   Tüccar: { "Orta Çağ": TUCCAR_ORTA_CAG, "Sanayi Devrimi": TUCCAR_SANAYI },
   Zanaatkâr: { "Orta Çağ": ZANAATKAR_ORTA_CAG, "Sanayi Devrimi": ZANAATKAR_SANAYI },
+  "Din Adamı": { "Orta Çağ": DIN_ORTA_CAG, "Sanayi Devrimi": DIN_SANAYI },
 };
 
 /** Meslek işletmesi tanımlıysa profili döner; tanımsız meslekler eski maaş sistemiyle çalışır. */
@@ -346,7 +420,7 @@ export function sehirYoneticisiUnvani(cag: Cag, bolge: string): string {
 }
 
 /**
- * Din Adamı/Asker için (henüz işletmesi olmayan meslekler) eski "patron" figürünün adı
+ * Asker için (henüz işletmesi olmayan meslek) eski "patron" figürünün adı (Din Adamı satırı işletmeye geçince kullanılmaz)
  * (meslek × çağ × ülke/din). Dönen değer kanonik Türkçe addır (K() ile çevrilir).
  */
 const OTORITE_TABLOSU: Record<string, Record<Cag, { genel: string; ozel?: Record<string, string> }>> = {

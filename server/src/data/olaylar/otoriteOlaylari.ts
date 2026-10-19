@@ -1,7 +1,7 @@
 import type { OlayTanimi } from "./types";
 
 /**
- * ŞEHİR YÖNETİCİSİ ("otorite") olayları (2026-10). Tüccar ve Zanaatkâr, kendi
+ * ŞEHİR YÖNETİCİSİ ("otorite") olayları (2026-10). Tüccar, Zanaatkâr ve Din Adamı, kendi
  * şehrinin yöneticisiyle (`{otorite}` — ülkeye ve çağa göre unvan + isim) sürekli
  * pazarlık halindedir: harç, ruhsat, tahsis, denetim, ihale. Çoğu şıkkın
  * `otorite_iliski` etkisi vardır (iyi/uysal seçim +, küstah/ihlalkâr seçim −);
@@ -950,6 +950,141 @@ export const OLAY_OTORITE: OlayTanimi[] = [
           mutluluk: -2,
           mesaj: "Atölyeyi kendi imkânlarınla onardın. Pahalıya geldi ama kimseye borcun kalmadı.",
         },
+        basarisizSonuc: { mesaj: "Kullanılmadı." },
+      },
+    ],
+  },
+  // ═════════════════════════ DİN ADAMI (4) ═════════════════════════
+  {
+    id: "otorite_din_oc_adak_payi",
+    kategori: "din",
+    cag: "Orta Çağ",
+    meslekler: ["Din Adamı"],
+    minYas: 20,
+    agirlik: 1,
+    gorsel: "⛪",
+    baslik: "Adak Payı",
+    metin:
+      "{otorite}'in kâtibi geldi: bu yıl adak ve bağış gelirinin bir kısmı şehir hazinesine yazılacakmış. 'Kutsal para da paradır' diyor.",
+    secenekler: [
+      {
+        metin: "Payı eksiksiz teslim et, makbuzu al.",
+        baseBasariSansi: 100,
+        basariliSonuc: { para: -6, otorite_iliski: 2, mesaj: "Payı teslim ettin. {otorite} cemaatin bu 'düzenli' halinden memnun kaldı." },
+        basarisizSonuc: { mesaj: "Kullanılmadı." },
+      },
+      {
+        metin: "Bağış defterini eksik göster, payı küçült.",
+        baseBasariSansi: 55,
+        maliyet: 4,
+        kilitAciklamasi: "Kâtibi ikna edecek bir armağan bile alamıyorsun.",
+        basariliSonuc: { para: 8, ahlak: -4, suc_sinifi: "kucuk", mesaj: "Kâtip defterde 'kıtlık yılı' diye yazdı; payın yarısı cebinde kaldı." },
+        basarisizSonuc: { para: -22, otorite_iliski: -7, un: -3, suc_sinifi: "orta", mesaj: "Cemaatten biri defteri ele verdi. {otorite} payı iki katına çıkardı; adın kötüye çıktı." },
+      },
+      {
+        metin: "{otorite}'e gidip adağın yoksulların hakkı olduğunu anlat.",
+        baseBasariSansi: 50,
+        basariliSonuc: { para: 4, un: 2, otorite_iliski: 3, mesaj: "{otorite} seni dinledi ve payı küçülttü. Yoksullar adına hayır dua etti." },
+        basarisizSonuc: { para: -6, un: -2, otorite_iliski: -6, mesaj: "{otorite} 'kutsal para da vergiye tabidir' dedi. Hem payı ödedin hem gözden düştün." },
+      },
+    ],
+  },
+  {
+    id: "otorite_din_oc_vakif_arazisi",
+    kategori: "din",
+    cag: "Orta Çağ",
+    meslekler: ["Din Adamı"],
+    minYas: 20,
+    agirlik: 1,
+    gorsel: "🌾",
+    baslik: "Vakıf Arazisi",
+    metin:
+      "Manastırın komşu arazisi satılığa çıktı. {otorite} satışı onaylayacak kişi; ruhsat için 'cemaate katkı' bekliyor. Araziyi alırsan ambarın ve cemaatin büyür.",
+    secenekler: [
+      {
+        metin: "Resmî harcı öde, araziyi kurallara uygun al.",
+        baseBasariSansi: 100,
+        basariliSonuc: { para: -10, otorite_iliski: 2, pazar_payi_artis: 0.5, mesaj: "Harcı ödedin, tapu kaydı yapıldı. Cemaat yeni arazide çalışmaya başladı." },
+        basarisizSonuc: { mesaj: "Kullanılmadı." },
+      },
+      {
+        metin: "{otorite}'e ruhsat için kese uzat.",
+        baseBasariSansi: 55,
+        maliyet: 8,
+        kilitAciklamasi: "{otorite}'e uzatacak bir kese bile bulamıyorsun.",
+        basariliSonuc: { para: -2, pazar_payi_artis: 1, ahlak: -4, suc_sinifi: "kucuk", mesaj: "Ruhsat çabucak çıktı; arazi hem ucuza hem hızlı geldi." },
+        basarisizSonuc: { para: -24, otorite_iliski: -7, un: -3, suc_sinifi: "orta", mesaj: "Rüşvet dedikodusu yayıldı. Ruhsat iptal oldu, kese de geri gelmedi." },
+      },
+      {
+        metin: "Araziyi almaktan vazgeç, elindekiyle yetin.",
+        baseBasariSansi: 100,
+        basariliSonuc: { otorite_iliski: 1, mutluluk: 1, mesaj: "Yeni bir yük almadın. {otorite} temkinli tavrına saygı duydu." },
+        basarisizSonuc: { mesaj: "Kullanılmadı." },
+      },
+    ],
+  },
+  {
+    id: "otorite_din_sd_ruhsat_denetimi",
+    kategori: "din",
+    cag: "Sanayi Devrimi",
+    meslekler: ["Din Adamı"],
+    minYas: 20,
+    agirlik: 1,
+    gorsel: "🏛️",
+    baslik: "Ruhsat Denetimi",
+    metin:
+      "{otorite}'in memuru ibadethaneni denetlemeye geldi: bağış kayıtları, hayır yemeği, vaaz ruhsatı… Küçük bir eksik bile ağır ceza getirir.",
+    secenekler: [
+      {
+        metin: "Tüm kayıtları açıp denetime yardım et.",
+        baseBasariSansi: 100,
+        basariliSonuc: { otorite_iliski: 2, un: 1, mesaj: "Denetim sorunsuz bitti. {otorite} raporuna 'örnek bir cemaat' yazdı." },
+        basarisizSonuc: { mesaj: "Kullanılmadı." },
+      },
+      {
+        metin: "Memura 'masraf' diye bir zarf uzat.",
+        baseBasariSansi: 55,
+        maliyet: 8,
+        kilitAciklamasi: "Memura uzatacak bir zarf bile bulamıyorsun.",
+        basariliSonuc: { para: 2, ahlak: -4, suc_sinifi: "kucuk", mesaj: "Memur eksikleri görmezden geldi, rapor temiz çıktı." },
+        basarisizSonuc: { para: -26, otorite_iliski: -7, un: -3, suc_sinifi: "orta", mesaj: "Zarf rapora girdi. {otorite} ceza kesti ve seni yakın takibe aldı." },
+      },
+      {
+        metin: "Kayıtları gizle, 'defterler yandı' de.",
+        baseBasariSansi: 45,
+        basariliSonuc: { para: 4, ahlak: -5, suc_sinifi: "kucuk", mesaj: "Denetim kayıt bulamayıp çekildi; sen de paranın izini sildin." },
+        basarisizSonuc: { para: -22, otorite_iliski: -8, un: -4, suc_sinifi: "orta", mesaj: "Memur yan odadaki defteri buldu. Ruhsat askıya alındı, ağır para cezası geldi." },
+      },
+    ],
+  },
+  {
+    id: "otorite_din_sd_hayir_cemiyeti",
+    kategori: "din",
+    cag: "Sanayi Devrimi",
+    meslekler: ["Din Adamı"],
+    minYas: 20,
+    agirlik: 1,
+    gorsel: "🤝",
+    baslik: "Hayır Cemiyeti",
+    metin:
+      "Şehirde bir hayır cemiyeti kuruluyor; {otorite} cemiyetin başına seni önerdi. Çalışan mahallesine yardım edersen cemaat büyür, ama kaydı ve hesapları sıkı tutmalısın.",
+    secenekler: [
+      {
+        metin: "Başkanlığı kabul et, cemiyeti titizlikle yönet.",
+        baseBasariSansi: 100,
+        basariliSonuc: { para: -6, un: 3, otorite_iliski: 3, pazar_payi_artis: 0.5, mesaj: "Cemiyet mahallede iyi iş çıkardı; cemaat büyüdü, {otorite} de seni hatırında tuttu." },
+        basarisizSonuc: { mesaj: "Kullanılmadı." },
+      },
+      {
+        metin: "Kabul et ama kasayı kendi işine de kullan.",
+        baseBasariSansi: 45,
+        basariliSonuc: { para: 12, ahlak: -6, suc_sinifi: "kucuk", mesaj: "Cemiyet kasasından kendi işine para akıttın; kimse fark etmedi." },
+        basarisizSonuc: { para: -24, otorite_iliski: -8, un: -5, ahlak: -4, suc_sinifi: "orta", mesaj: "Hesaplar karışınca denetçi izi buldu. {otorite} seni cemiyetten azletti, kamuoyunda adın zedelendi." },
+      },
+      {
+        metin: "Teklifi kibarca geri çevir.",
+        baseBasariSansi: 100,
+        basariliSonuc: { mutluluk: 1, otorite_iliski: -1, mesaj: "İşin yoğunluğunu bahane ettin. {otorite} başını salladı; cemiyet başkasına gitti." },
         basarisizSonuc: { mesaj: "Kullanılmadı." },
       },
     ],

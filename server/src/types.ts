@@ -1001,7 +1001,7 @@ export interface IsletmeDurumu {
   stok_hedefi?: IsletmeStokHedefi;
   /** Son dış hırsızlık girişiminin yılı (3 yıl cooldown). */
   hirsizlik_son_yil?: number | null;
-  /** Otoriteden alınan süreli imtiyazlar: imtiyaz id → bitiş yılı (pazar_imtiyazi, gumruk_muafiyeti, tekel_ruhsati, hammadde_tahsisi, atolye_ruhsati). */
+  /** Otoriteden alınan süreli imtiyazlar: imtiyaz id → bitiş yılı (pazar_imtiyazi, gumruk_muafiyeti, tekel_ruhsati, hammadde_tahsisi, atolye_ruhsati, vakif_muafiyeti, kutsal_gun_imtiyazi). */
   imtiyazlar?: Record<string, number>;
   /** Tekel ruhsatı verilen hat (ruhsat süresince satış fiyatı +%10). */
   tekel_hat?: string | null;

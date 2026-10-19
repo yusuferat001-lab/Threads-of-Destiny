@@ -109,6 +109,8 @@ const IMTIYAZ_ADLARI: Record<string, D> = {
   tekel_ruhsati: { tr: 'Tekel ruhsatı (en çok satan hatta fiyat +%10)', en: 'Monopoly licence (+10% price on your top line)' },
   hammadde_tahsisi: { tr: 'Hammadde tahsisi (hammadde −%10)', en: 'Material allocation (materials −10%)' },
   atolye_ruhsati: { tr: 'Atölye genişleme ruhsatı (üretim +%10)', en: 'Workshop licence (output +10%)' },
+  vakif_muafiyeti: { tr: 'Vakıf muafiyeti (alış −%8)', en: 'Foundation exemption (purchases −8%)' },
+  kutsal_gun_imtiyazi: { tr: 'Kutsal gün pazarı (talep +%10)', en: 'Holy-day market (demand +10%)' },
 };
 
 const STOK_HEDEFLERI: { id: IsletmeStokHedefi; ad: D; ipucu: D }[] = [

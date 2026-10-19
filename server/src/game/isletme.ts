@@ -404,7 +404,7 @@ export function hatHesapla(state: CharacterState, hat: IsletmeHat, tanim: HatTan
   const uretimModu = profil.mod === "uretim";
   // Ticaret modunda ana rol talebi (satışı) artırır; üretim modunda üretim tavanını (uretimTavani).
   const anaTalep = uretimModu ? 1 + bon.ana * URETIM_ANA_TALEP_PAYI : 1 + bon.ana;
-  const dukkan = (1 + yatirimKademesi(state, "talep") * DUKKAN_TALEP_KADEME) * (imtiyazAktifMi(state, "pazar_imtiyazi") ? 1.1 : 1) * paylasim;
+  const dukkan = (1 + yatirimKademesi(state, "talep") * DUKKAN_TALEP_KADEME) * (imtiyazAktifMi(state, "pazar_imtiyazi") || imtiyazAktifMi(state, "kutsal_gun_imtiyazi") ? 1.1 : 1) * paylasim;
   const talep =
     musteriSayisi(state) *
     ALIM_ORANI *
@@ -423,7 +423,7 @@ export function hatHesapla(state: CharacterState, hat: IsletmeHat, tanim: HatTan
     bon.maliyetCarpani *
     Math.pow(1 - KERVAN_INDIRIM_KADEME, yatirimKademesi(state, "alis")) *
     (state.yil <= (is.gumruk_indirim_bitis ?? -1) ? 1 - GUMRUK_INDIRIMI : 1) *
-    (imtiyazAktifMi(state, "gumruk_muafiyeti") || imtiyazAktifMi(state, "hammadde_tahsisi") ? 1 - MUAFIYET_INDIRIMI : 1);
+    (imtiyazAktifMi(state, "gumruk_muafiyeti") || imtiyazAktifMi(state, "hammadde_tahsisi") || imtiyazAktifMi(state, "vakif_muafiyeti") ? 1 - MUAFIYET_INDIRIMI : 1);
   return {
     talep,
     birimFiyat:

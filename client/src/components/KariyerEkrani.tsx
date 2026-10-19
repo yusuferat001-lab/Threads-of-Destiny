@@ -329,6 +329,24 @@ const ISTEK_ADLARI: Record<string, { tr: string; en: string; ipTr: string; ipEn:
     ipTr: '5 yıl boyunca üretim tavanı +%10.',
     ipEn: 'Production cap +10% for 5 years.',
   },
+  vakif_muafiyeti: {
+    tr: 'Vakıf muafiyeti',
+    en: 'Foundation exemption',
+    ipTr: '5 yıl boyunca mal alış maliyeti −%8 (diğer indirimlerle çarpımsal).',
+    ipEn: 'Purchase costs −8% for 5 years (stacks multiplicatively).',
+  },
+  kutsal_gun_imtiyazi: {
+    tr: 'Kutsal gün pazarı',
+    en: 'Holy-day market',
+    ipTr: '5 yıl boyunca cemaatin alım talebi +%10.',
+    ipEn: "The congregation's demand +10% for 5 years.",
+  },
+  bagis_izni: {
+    tr: 'Bağış toplama izni',
+    en: 'Fundraising licence',
+    ipTr: 'Tek seferlik bağış geliri + cemaate küçük bir artış.',
+    ipEn: 'One-off donation income + a small bump in the congregation.',
+  },
   resmi_siparis: {
     tr: 'Resmî sipariş',
     en: 'Official order',

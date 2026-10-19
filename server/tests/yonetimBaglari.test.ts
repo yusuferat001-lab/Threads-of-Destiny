@@ -414,3 +414,19 @@ describe("yonetimYillikUygula", () => {
     expect(state.yonetim_talep).not.toBeNull();
   });
 });
+
+describe("Din Adamı tek otorite (işletmeli meslek)", () => {
+  it("şehir yöneticisi hattı: vergi/rakip/imtiyaz istekleri var, eski patron/kral istekleri yok", async () => {
+    const st = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
+    await mesleğiAta(st.id, "Din Adamı");
+    const d = await yonetimDurumGetir(st.id);
+    expect(d.tekOtorite).toBe(true);
+    expect(d.etkilesimler.every((e) => e.hat === "yonetici")).toBe(true);
+    const idler = d.istekler.map((i) => i.id);
+    expect(idler).toEqual(expect.arrayContaining(["vergi_indirimi", "vakif_muafiyeti", "kutsal_gun_imtiyazi", "bagis_izni"]));
+    expect(idler).not.toContain("zam");
+    expect(idler).not.toContain("terfi_destegi");
+    expect(idler).not.toContain("pazar_imtiyazi");
+    expect(d.yonetici.unvan).toBe("Prévôt");
+  });
+});

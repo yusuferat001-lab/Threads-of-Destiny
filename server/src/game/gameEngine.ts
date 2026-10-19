@@ -3550,8 +3550,8 @@ interface YonetimIstekTanimi {
   uygula: (state: CharacterState, enflasyon: number) => void;
 }
 
-const ISLETMELI_MESLEKLER = ["Tüccar", "Zanaatkâr"];
-const ESKI_MESLEKLER = ["Din Adamı", "Asker"];
+const ISLETMELI_MESLEKLER = ["Tüccar", "Zanaatkâr", "Din Adamı"];
+const ESKI_MESLEKLER = ["Asker"];
 
 /** Bir isteğin kullanıcının mesleği için geçerli olup olmadığı. */
 function istekMeslegeUygunMu(tanim: YonetimIstekTanimi, meslek: string): boolean {
@@ -3633,6 +3633,25 @@ const SEHIR_ISTEKLERI: YonetimIstekTanimi[] = [
     uygula: (state) => {
       imtiyazVer(state, "tekel_ruhsati");
       if (state.isletme) state.isletme.tekel_hat = enCokSatanHat(state);
+    },
+  },
+  // Din Adamı'na özel
+  {
+    id: "vakif_muafiyeti", hat: "yonetici", minIliski: 74, iliskiBedeli: 25, cooldownYil: 10, tabanSans: 62,
+    meslekler: ["Din Adamı"], sehirSansi: true, rusvetBonus: 18,
+    uygula: (state) => imtiyazVer(state, "vakif_muafiyeti"),
+  },
+  {
+    id: "kutsal_gun_imtiyazi", hat: "yonetici", minIliski: 74, iliskiBedeli: 26, cooldownYil: 10, tabanSans: 61,
+    meslekler: ["Din Adamı"], sehirSansi: true, rusvetBonus: 18,
+    uygula: (state) => imtiyazVer(state, "kutsal_gun_imtiyazi"),
+  },
+  {
+    id: "bagis_izni", hat: "yonetici", minIliski: 78, iliskiBedeli: 22, cooldownYil: 8, tabanSans: 65,
+    meslekler: ["Din Adamı"], sehirSansi: true, rusvetBonus: 17,
+    uygula: (state, enflasyon) => {
+      state.para = paraYuvarla(state.para + (15 + Math.floor(Math.random() * 11)) * enflasyon);
+      musteriEkle(state, 0.01 * (state.pazar_musteri ?? 0));
     },
   },
   // Zanaatkâr'a özel
