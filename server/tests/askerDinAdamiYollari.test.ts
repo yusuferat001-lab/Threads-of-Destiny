@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { ogretileriTamamla } from "./_ogreti";
 import { olaySec } from "../src/game/olaySecici";
 import { createCharacter, mesleğiSec } from "../src/game/stateManager";
 import { yeniOyun, mesleğiAta, senaryoUret, secimUygula } from "../src/game/gameEngine";
@@ -118,6 +119,7 @@ describe("kariyer yolu giriş zinciri garantisi (senaryoUret)", () => {
     await mesleğiAta(state.id, "Din Adamı");
     state.yas = 18;
     state.ulke.savasta = true;
+    ogretileriTamamla(state);
     const senaryo = await senaryoUret(state.id);
     expect(senaryo.olay_basligi).toBe("İlk Sınav");
   });

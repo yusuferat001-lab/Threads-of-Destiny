@@ -24,6 +24,7 @@ import type {
   AjanDurumu,
   IsletmeGorunumu,
   IsletmeKararGirdisi,
+  CemaatKararGirdisi,
   IsletmeStokHedefi,
 } from './types';
 import {
@@ -88,6 +89,7 @@ import {
   ajanDurumGetir,
   isletmeGetir,
   isletmeKararVer,
+  isletmeOgretiSec,
   isletmeYatirimYap,
   isletmeCalisanAl,
   ajanTut,
@@ -127,6 +129,8 @@ import type { GeriBildirimGirdi, GostergeStat, TeklifHediyesi, DugunButcesi, Tan
 import { sesKapaliMi, sesTercihiKaydet } from './ses';
 import { muzikModunuAyarla, muzikDurdur, muzikSessizAyarla, type MuzikModu } from './muzik';
 import { aktifOturumIdGetir, aktifOturumIdKaydet, aktifOturumIdSil } from './oturum';
+import { ogretiBekliyor } from './ogreti';
+import { OgretiSecimi } from './components/OgretiSecimi';
 import { basarimlariKaydet, basarimlariGetir } from './basarimlar';
 import { gecmisHayatKaydet, gecmisHayatlariGetir, gecmisHayatlariTemizle, gecmisHayatSil, type GecmisHayat, gecmisOlumNedeni } from './gecmisHayatlar';
 import { YAPIMCI } from './yapimci';
@@ -658,9 +662,11 @@ function App() {
         } else if (!state.meslek) {
           setEkran('acilis');
         } else {
-          const { senaryo } = await senaryoGetir(state.id);
-          if (iptal) return;
-          setSenaryo(senaryo);
+          if (!ogretiBekliyor(state)) {
+            const { senaryo } = await senaryoGetir(state.id);
+            if (iptal) return;
+            setSenaryo(senaryo);
+          }
           setTepkiModu(false);
           setEkran('oyun');
         }
@@ -753,8 +759,10 @@ function App() {
     try {
       const { state } = await meslekAta(karakter.id, meslek);
       setKarakter(state);
-      const { senaryo } = await senaryoGetir(state.id);
-      setSenaryo(senaryo);
+      if (!ogretiBekliyor(state)) {
+        const { senaryo } = await senaryoGetir(state.id);
+        setSenaryo(senaryo);
+      }
       setTepkiModu(false);
       setEkran('oyun');
     } catch (err) {
@@ -829,6 +837,13 @@ function App() {
           setEkran('oyun');
           return;
         }
+      }
+      if (ogretiBekliyor(karakter)) {
+        // Terfi sonrası zorunlu öğreti seçimi (üstteki OgretiSecimi penceresi); seçilince senaryo çekilir.
+        setSenaryo(null);
+        setTepkiModu(false);
+        setEkran('oyun');
+        return;
       }
       const { senaryo } = await senaryoGetir(karakter.id);
       setSenaryo(senaryo);
@@ -1580,13 +1595,35 @@ function App() {
   }
 
   // ===== Meslek işletmesi (§45) — hiçbiri turu tüketmez =====
-  async function isletmeKararHandler(hatlar: IsletmeKararGirdisi[], stokHedefi?: IsletmeStokHedefi) {
+  async function ogretiSecHandler(ogretiId: string) {
+    if (!karakter) return;
+    setHata(null);
+    setYukleniyor(true);
+    try {
+      const sonuc = await isletmeOgretiSec(karakter.id, ogretiId);
+      setKarakter(sonuc.state);
+      setIsletme(sonuc.durum);
+      // Öğreti beklerken senaryo çekilemediyse (yeni oyun / yenilenen sayfa) şimdi çek.
+      if (!senaryo && !ogretiBekliyor(sonuc.state)) {
+        const { senaryo: yeni } = await senaryoGetir(sonuc.state.id);
+        setSenaryo(yeni);
+        setTepkiModu(false);
+        setEkran('oyun');
+      }
+    } catch (err) {
+      setHata(temizHata(err));
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
+  async function isletmeKararHandler(hatlar: IsletmeKararGirdisi[], stokHedefi?: IsletmeStokHedefi, cemaat?: CemaatKararGirdisi) {
     if (!karakter) return;
     setHata(null);
     setIslemMesaji(null);
     setYukleniyor(true);
     try {
-      const sonuc = await isletmeKararVer(karakter.id, hatlar, stokHedefi);
+      const sonuc = await isletmeKararVer(karakter.id, hatlar, stokHedefi, cemaat);
       setKarakter(sonuc.state);
       setIsletme(sonuc.durum);
     } catch (err) {
@@ -1823,6 +1860,15 @@ function App() {
             ✕
           </button>
         </div>
+      )}
+
+      {karakter && ogretiBekliyor(karakter) && ['oyun', 'sonuc', 'kariyer', 'finans', 'yatirim', 'sosyallesme', 'magaza', 'aile'].includes(ekran) && (
+        <OgretiSecimi
+          stateId={karakter.id}
+          ogretiSayisi={((karakter.isletme as { cemaat?: { ogretiler?: string[] } } | null)?.cemaat?.ogretiler ?? []).length}
+          yukleniyor={yukleniyor}
+          onSec={ogretiSecHandler}
+        />
       )}
 
       {ayarlarAcik && (

@@ -1,6 +1,7 @@
 import type {
   IsletmeGorunumu,
   IsletmeKararGirdisi,
+  CemaatKararGirdisi,
   IsletmeStokHedefi,
   CharacterState,
   SenaryoResponse,
@@ -267,10 +268,17 @@ export function isletmeGetir(stateId: string) {
   return istek<IsletmeGorunumu>(`/api/game/${stateId}/isletme`);
 }
 
-export function isletmeKararVer(stateId: string, hatlar: IsletmeKararGirdisi[], stokHedefi?: IsletmeStokHedefi) {
+export function isletmeKararVer(stateId: string, hatlar: IsletmeKararGirdisi[], stokHedefi?: IsletmeStokHedefi, cemaat?: CemaatKararGirdisi) {
   return istek<{ state: CharacterState; durum: IsletmeGorunumu }>(`/api/game/${stateId}/isletme/karar`, {
     method: 'POST',
-    body: JSON.stringify({ hatlar, stokHedefi }),
+    body: JSON.stringify({ hatlar, stokHedefi, cemaat }),
+  });
+}
+
+export function isletmeOgretiSec(stateId: string, ogretiId: string) {
+  return istek<{ state: CharacterState; mesaj: string; durum: IsletmeGorunumu }>(`/api/game/${stateId}/isletme/ogreti`, {
+    method: 'POST',
+    body: JSON.stringify({ ogretiId }),
   });
 }
 

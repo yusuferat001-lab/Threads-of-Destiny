@@ -11,6 +11,7 @@ import type {
 import { useDil } from '../DilContext';
 import { kt } from '../katalog';
 import { PiyasaHaberleri } from './PiyasaHaberleri';
+import { IsletmeOrtak } from './IsletmeOrtak';
 import { formatPara, formatYuzde, formatMusteri } from '../format';
 
 interface Props {
@@ -392,81 +393,15 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
       <h4>{t('hatlar')}</h4>
       <div className="isletme-hatlar">{durum.hatlar.map(hatKarti)}</div>
 
-      <h4>{t('yatirimlar')}</h4>
-      <div className="isletme-yatirimlar">
-        {durum.yatirimlar.map((y) => (
-          <div key={y.id} className="isletme-yatirim" title={d(y.aciklama)}>
-            <strong>
-              {y.simge} {d(y.ad)}
-            </strong>
-            <span>
-              {t('kademe')} {y.kademe}/{y.maxKademe}
-            </span>
-            <small>{d(y.aciklama)}</small>
-            {y.sonrakiFiyat === null ? (
-              <span className="isletme-etiket">{t('azami')}</span>
-            ) : (
-              <button disabled={yukleniyor || durum.para < y.sonrakiFiyat} onClick={() => onYatirim(y.id)}>
-                {t('yukselt')} · {formatPara(y.sonrakiFiyat)} {pb}
-              </button>
-            )}
-          </div>
-        ))}
-      </div>
-
-      <h4>
-        {t('calisanlar')} ({durum.calisanlar.length}/{durum.calisanTavani})
-      </h4>
-      {durum.calisanlar.length === 0 ? (
-        <p className="isletme-bos">{t('yok')}</p>
-      ) : (
-        <div className="isletme-calisanlar">
-          {durum.calisanlar.map((c) => (
-            <div key={c.id} className={`isletme-calisan${c.riskli ? ' isletme-calisan-riskli' : ''}`}>
-              <strong>{c.isim}</strong> <em>({d(c.rol)})</em>
-              {c.sadik && <span className="isletme-etiket">⭐ {t('sadik')}</span>}
-              {c.riskli && (
-                <span className="isletme-etiket" title={t('riskli')}>
-                  ⚠️ {t('sadakat')} {c.sadakat}
-                </span>
-              )}
-              <small>{d(c.rolAciklama)}</small>
-              <span>
-                {t('yetenek')} {c.yetenek} · {t('sadakat')} {c.sadakat} · {t('maas')} {formatPara(c.maas)}
-                {t('yil')}
-              </span>
-              <button className="ikincil" disabled={yukleniyor} onClick={() => onEkipCikar(c.id)}>
-                {t('kov')}
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {durum.adaylar.length > 0 && (
-        <>
-          <h4>
-            {t('adaylar')} <small>({t('adayYenilenme')} {durum.adayYenilenmeKalanYil} {t('yilKisa')})</small>
-          </h4>
-          <div className="isletme-calisanlar">
-            {durum.adaylar.map((a) => (
-              <div key={a.id} className="isletme-calisan isletme-aday">
-                <strong>{a.isim}</strong> <em>({d(a.rol)})</em>
-                <span className="isletme-etiket">{d(a.tipAdi)}</span>
-                <small>{d(a.rolAciklama)}</small>
-                <small>{d(a.gecmis)}</small>
-                <span>
-                  {t('yetenek')} {a.yetenek} · {t('sadakat')} {a.sadakat} · {t('maas')} {formatPara(a.maas)}
-                  {t('yil')}
-                </span>
-                <button disabled={yukleniyor || durum.calisanlar.length >= durum.calisanTavani} onClick={() => onCalisanAl(a.id)}>
-                  {t('al')}
-                </button>
-              </div>
-            ))}
-          </div>
-        </>
-      )}
+      <IsletmeOrtak
+        durum={durum}
+        yukleniyor={yukleniyor}
+        sadakatAdi={M.sadakat}
+        riskliAciklama={M.riskli}
+        onYatirim={onYatirim}
+        onCalisanAl={onCalisanAl}
+        onEkipCikar={onEkipCikar}
+      />
 
       <h4>{t('dokum')}</h4>
       {!dokum ? (

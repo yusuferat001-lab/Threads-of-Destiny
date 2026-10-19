@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { ogretileriTamamla } from "./_ogreti";
 import { olaySec } from "../src/game/olaySecici";
 import { createCharacter, mesleğiSec, etiketEkle } from "../src/game/stateManager";
 import { yeniOyun, mesleğiAta, senaryoUret } from "../src/game/gameEngine";
@@ -105,6 +106,7 @@ describe("yolculuk teklifi garantisi (senaryoUret)", () => {
     etiketEkle(state, ["hizip_secildi"]); // hizip zorunlu seçim kaskadını bu testte atla (2026-09 sonu)
     digerGarantileriGecistir(state);
     state.yas = 27;
+    ogretileriTamamla(state);
     const senaryo = await senaryoUret(state.id);
     expect(senaryo.olay_basligi).toBe(baslikGetir(beklenenId));
   });
