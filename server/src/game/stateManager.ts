@@ -54,8 +54,7 @@ import {
   SAVAS_COOLDOWN_YIL,
   SAVAS_SURE,
   VEBA_YILLIK_IHTIMAL,
-  VEBA_COOLDOWN_YIL,
-  VEBA_MIN_YAS,
+  VEBA_ILK_YIL_YOK,
   VEBA_ZORUNLU_YAS,
   VEBA_SURE,
   DEDIKODU_ISABET,
@@ -66,8 +65,9 @@ import {
   vebaEtkisiZarla,
   sureZarla,
   savasVergisiZarla,
-  sonrakiDonemZarla,
-  savasaGoreDuzelt,
+  donemTorbasindanCek,
+  donemTorbasiniGoster,
+  ilkDonemTorbasi,
   ekonomiFromDonem,
   yuzdeFarki,
 } from "../data/dunyaDonemleri";
@@ -2794,13 +2794,14 @@ export function kitlikVar(ulke: UlkeDurumu): boolean {
   return ulke.donem?.tur === "kitlik" || ulke.kriz?.tur === "kitlik";
 }
 
-function yeniDonem(tur: DonemTuru, baslangicYili: number, sureYil?: number): DonemDurumu {
+function yeniDonem(tur: DonemTuru, baslangicYili: number, sureYil?: number, sonraki?: DonemTuru): DonemDurumu {
   const sure = sureYil ?? sureZarla(DONEM_SURE[tur]);
   return {
     tur,
     baslangicYili,
     bitisYili: baslangicYili + sure,
-    sonraki: sonrakiDonemZarla(tur),
+    // Dedikodu için önceden belirlenen sıradaki dönem (torba, v10); verilmezse torbadan türetilmemiş ilk tahmin.
+    sonraki: sonraki ?? ilkDonemTorbasi(tur)[0],
     etki: donemEtkisiZarla(tur),
   };
 }
@@ -2823,8 +2824,14 @@ const DONEM_BASLANGIC_MESAJI: Record<DonemTuru, string> = {
 /** Dönemi bir sonrakine geçirir (savaş sürerken bolluk gelmez); başlangıç mesajını döner. */
 function donemGecir(state: CharacterState, baslangicYili: number): string {
   const onceki = state.ulke.donem!;
-  const tur = savasaGoreDuzelt(onceki.sonraki, onceki.tur, state.ulke.savasta);
-  state.ulke.donem = yeniDonem(tur, baslangicYili);
+  // Dönem torbası (v10): eski kayıt / ilk geçişte torba yoksa sıradaki tahmin + diğer dönemden kurulur.
+  if (!state.ulke.donem_torbasi) {
+    state.ulke.donem_torbasi = [onceki.sonraki, ...DONEM_TURLERI.filter((t) => t !== onceki.tur && t !== onceki.sonraki)].filter((t) => t !== onceki.tur);
+  }
+  const cekilen = donemTorbasindanCek(state.ulke.donem_torbasi, onceki.tur, state.ulke.savasta);
+  const tur = cekilen.tur;
+  state.ulke.donem_torbasi = cekilen.torba;
+  state.ulke.donem = yeniDonem(tur, baslangicYili, undefined, donemTorbasiniGoster(state.ulke.donem_torbasi, tur, state.ulke.savasta));
   state.ulke.ekonomi = ekonomiFromDonem(tur);
   return T(state.dil, DONEM_BASLANGIC_MESAJI[tur]);
 }
@@ -3415,13 +3422,15 @@ export function buyukSavasBitisKontrolEt(state: CharacterState): string | null {
 
 
 /**
- * Vebanın zamanı geldi mi (Faz A): 20+ yaşta yılda %4; son dalganın bitişinden
- * 30 yıl sonra; 45'e kadar hiç çıkmadıysa zorla; savaş sürerken başlamaz. Zar tutunca dalga bir yıl sonra gelir
+ * Vebanın zamanı geldi mi (v10): bir ömürde TAM BİR veba; oyunun ilk 12 yılında çıkmaz, sonra yılda %5;
+ * 50 yaşına kadar çıkmadıysa zorla; savaş sürerken başlamaz. Zar tutunca dalga bir yıl sonra gelir
  * (`dunya_yaklasan`, dedikodu sinyali); o yıl gelince true döner ve gameEngine
  * başlangıç olayını zorlar.
  */
 export function vebaBaslamaliMi(state: CharacterState, yasArtisi: number): boolean {
   if (yasArtisi <= 0 || state.veba || state.ulke.vebada) return false;
+  // v10: veba bir ömürde TAM BİR kez çıkar; vebası geçmiş karakter bir daha veba görmez.
+  if (state.veba_gecirdi) return false;
   const yaklasan = state.dunya_yaklasan;
   if (yaklasan?.tur === "veba") {
     if (state.yil < yaklasan.yil) return false;
@@ -3430,13 +3439,14 @@ export function vebaBaslamaliMi(state: CharacterState, yasArtisi: number): boole
     state.dunya_yaklasan = null;
     return !state.ulke.savasta;
   }
-  if (yaklasan || state.ulke.savasta || state.yas < VEBA_MIN_YAS) return false;
-  // Her oyunda veba kesin çıkar: 45'e kadar hiç görmediyse zar atmadan sinyali kur.
-  if (state.yas >= VEBA_ZORUNLU_YAS && !state.veba_gecirdi && state.son_veba_bitis_yili == null) {
+  if (yaklasan || state.ulke.savasta) return false;
+  // Oyunun (karakter yaratılışından itibaren) ilk VEBA_ILK_YIL_YOK yılında veba çıkmaz.
+  if (state.yil - (state.baslangic_yili ?? state.yil) < VEBA_ILK_YIL_YOK) return false;
+  // VEBA_ZORUNLU_YAS'a kadar hiç görmediyse zar atmadan sinyali kur (50'de zorla).
+  if (state.yas >= VEBA_ZORUNLU_YAS) {
     state.dunya_yaklasan = { tur: "veba", yil: state.yil + 1 };
     return false;
   }
-  if (state.son_veba_bitis_yili != null && state.yil - state.son_veba_bitis_yili < VEBA_COOLDOWN_YIL) return false;
   // `kacak` da bir havuz kilididir: kaçak karaktere veba başlangıcı zorlanırsa (etiketEkle'nin
   // "yeni kilit kazanır" kuralı yüzünden) kaçak durumu sessizce silinirdi — bekle.
   if (

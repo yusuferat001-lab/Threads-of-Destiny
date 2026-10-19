@@ -41,7 +41,7 @@ import {
   SIZMA_SADAKAT_KAYBI,
   sohretPayBuyumesi,
 } from "../data/pazar";
-import { pazarBuyumeVarsayilan } from "../data/dunyaDonemleri";
+import { pazarBuyumeVarsayilan, VEBA_TOPARLANMA_ORAN, VEBA_TOPARLANMA_YIL } from "../data/dunyaDonemleri";
 import { musteriKaydir, musteriAktar, pazarOlcekle, piyasaCarpani, rakipGrubu } from "./piyasa";
 import { rastgeleBirIsimSec } from "../data/npcIsimleri";
 
@@ -87,6 +87,8 @@ const GUMRUK_INDIRIMI = 0.1;
 const MUAFIYET_INDIRIMI = 0.08;
 const TEZGAH_URETIM_KADEME = 0.6;
 const TANITIM_PAY_KADEME = 0.01;
+/** Veba sürerken müşteri/inanan büyümesinin pozitif kısımları bu çarpanla kısılır (v10). */
+export const VEBA_ARTIS_CARPANI = 0.3;
 /** Perakende fiyatı toptan fiyat şokunu yalnız bu oranda izler: kıtlıkta mal pahalanır ama müşterinin alım gücü yetmez. */
 const SATIS_FIYAT_UYUMU = 0.6;
 
@@ -345,10 +347,20 @@ function krizliMi(state: CharacterState): boolean {
   return d === "kitlik" || d === "durgunluk" || !!state.ulke.savasta || !!state.veba?.aktif;
 }
 
-/** Toplam pazarın bu yılki değişimi (kesir): veba > savaş > dönem. */
+/** Veba bittikten sonra VEBA_TOPARLANMA_YIL boyunca toparlanma sürüyor mu (savaş/veba yokken pazar yılda +%2). */
+export function vebaToparlanmasindaMi(state: CharacterState): boolean {
+  return (
+    state.son_veba_bitis_yili != null &&
+    !state.veba?.aktif &&
+    state.yil - state.son_veba_bitis_yili < VEBA_TOPARLANMA_YIL
+  );
+}
+
+/** Toplam pazarın bu yılki değişimi (kesir): veba > savaş > veba sonrası toparlanma > dönem. */
 export function pazarBuyumeOrani(state: CharacterState): number {
   if (state.veba?.aktif) return state.veba.etki?.pazarBuyume ?? pazarBuyumeVarsayilan("veba");
   if (state.ulke.savasta) return state.buyuk_savas?.etki?.pazarBuyume ?? pazarBuyumeVarsayilan("savas");
+  if (vebaToparlanmasindaMi(state)) return VEBA_TOPARLANMA_ORAN;
   const d = state.ulke.donem;
   if (d) return d.etki.pazarBuyume ?? pazarBuyumeVarsayilan(d.tur);
   return 0.02;
@@ -923,8 +935,10 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
     const ham = sohretPayBuyumesi(state.un) + fiyatEtkisi + tanitimBuyumesi(state) + musteriRolu;
     const mevcutPay = pazarPayiHesapla(state);
     // Pay büyüdükçe pozitif büyüme doyar (pay %60'a yaklaşınca sıfır); eksi etkiler tam işler.
-    const yuzde = ham > 0 ? ham * Math.max(0, 1 - mevcutPay / PAY_DOYMA_ESIGI) : ham;
-    musteriKaydir(state, "oyuncu", sabitMusteriArtisi(state.yas) + state.meslek_musteri * yuzde);
+    // Veba sürerken pozitif büyüme %70 kısılır (v10); eksi etkiler tam işler.
+    const vebaKisma = state.veba?.aktif ? VEBA_ARTIS_CARPANI : 1;
+    const yuzde = ham > 0 ? ham * Math.max(0, 1 - mevcutPay / PAY_DOYMA_ESIGI) * vebaKisma : ham;
+    musteriKaydir(state, "oyuncu", sabitMusteriArtisi(state.yas) * vebaKisma + state.meslek_musteri * yuzde);
   }
 
   // 8. Brüt kâr, vergi, borç.

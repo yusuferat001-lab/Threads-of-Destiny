@@ -21,6 +21,8 @@ import {
   hesaplaMaasYillik,
 } from "../src/game/stateManager";
 import { olaySec } from "../src/game/olaySecici";
+import { pazarBuyumeOrani, vebaToparlanmasindaMi } from "../src/game/isletme";
+import { VEBA_TOPARLANMA_ORAN, VEBA_TOPARLANMA_YIL } from "../src/data/dunyaDonemleri";
 import type { CharacterState } from "../src/types";
 
 /** Savaş çıkabilmesi için dönemi bolluk dışı yapar. */
@@ -284,22 +286,41 @@ describe("buyukSavasKontrolEt / buyukSavasBitisKontrolEt", () => {
   });
 });
 
+/** Karakteri `yas` yaşına getirir (yıl da buna göre ilerler; ilk 12 yıl kuralı gerçek geçen yıla bakar). */
+function yasliTaze(yas: number): CharacterState {
+  const state = taze();
+  state.yas = yas;
+  state.yil = state.baslangic_yili + (yas - 15);
+  return state;
+}
+
 describe("vebaBaslamaliMi / vebaBaslat / vebaYillikKontrol / vebaBitisKontrolEt", () => {
-  it("20 yaşından küçükken asla tetiklenmez", () => {
-    const state = taze();
-    state.yas = 19;
-    for (let i = 0; i < 500; i++) {
-      expect(vebaBaslamaliMi(state, 2)).toBe(false);
+  it("oyunun ilk 12 yılında (27 yaşına kadar) asla tetiklenmez", () => {
+    const state = yasliTaze(26);
+    vi.spyOn(Math, "random").mockReturnValue(0);
+    for (let i = 0; i < 100; i++) {
+      expect(vebaBaslamaliMi(state, 1)).toBe(false);
       expect(state.dunya_yaklasan).toBeNull();
     }
+    vi.restoreAllMocks();
   });
 
-  it("45 yaşına kadar hiç çıkmadıysa zar atmadan kesin tetiklenir", () => {
+  it("12. yıldan sonra yıllık %5 şansla sinyal kurulur", () => {
+    const state = yasliTaze(30);
+    vi.spyOn(Math, "random").mockReturnValue(0.049);
+    expect(vebaBaslamaliMi(state, 1)).toBe(false);
+    expect(state.dunya_yaklasan?.tur).toBe("veba");
+    vi.restoreAllMocks();
+    const state2 = yasliTaze(30);
+    vi.spyOn(Math, "random").mockReturnValue(0.051);
+    expect(vebaBaslamaliMi(state2, 1)).toBe(false);
+    expect(state2.dunya_yaklasan).toBeNull();
+    vi.restoreAllMocks();
+  });
+
+  it("50 yaşına kadar hiç çıkmadıysa zar atmadan kesin tetiklenir", () => {
     for (let i = 0; i < 50; i++) {
-      const state = taze();
-      state.yas = 45;
-      state.veba_gecirdi = false;
-      state.son_veba_bitis_yili = null;
+      const state = yasliTaze(50);
       vi.spyOn(Math, "random").mockReturnValue(0.99); // zar asla tutmasın
       expect(vebaBaslamaliMi(state, 1)).toBe(false);
       expect(state.dunya_yaklasan?.tur).toBe("veba");
@@ -309,9 +330,16 @@ describe("vebaBaslamaliMi / vebaBaslat / vebaYillikKontrol / vebaBitisKontrolEt"
     }
   });
 
-  it("45'te savaş sürüyorsa savaş bitince tetiklenir", () => {
-    const state = taze();
-    state.yas = 46;
+  it("49 yaşında zar tutmazsa zorlama henüz yok", () => {
+    const state = yasliTaze(49);
+    vi.spyOn(Math, "random").mockReturnValue(0.99);
+    for (let i = 0; i < 10; i++) expect(vebaBaslamaliMi(state, 1)).toBe(false);
+    expect(state.dunya_yaklasan).toBeNull();
+    vi.restoreAllMocks();
+  });
+
+  it("50'de savaş sürüyorsa savaş bitince tetiklenir", () => {
+    const state = yasliTaze(51);
     state.ulke.savasta = true;
     vi.spyOn(Math, "random").mockReturnValue(0.99);
     expect(vebaBaslamaliMi(state, 1)).toBe(false);
@@ -322,40 +350,23 @@ describe("vebaBaslamaliMi / vebaBaslat / vebaYillikKontrol / vebaBitisKontrolEt"
     vi.restoreAllMocks();
   });
 
-  it("45'ten önce geçirilmiş vebadan sonra zorunlu tetikleme çalışmaz", () => {
-    const state = taze();
-    state.yas = 50;
+  it("bir ömürde TAM BİR veba: geçirilmiş vebadan sonra ne zar ne zorlama tetikler", () => {
+    const state = yasliTaze(60);
     state.veba_gecirdi = true;
-    state.son_veba_bitis_yili = state.yil - 5;
-    vi.spyOn(Math, "random").mockReturnValue(0.99);
-    for (let i = 0; i < 20; i++) expect(vebaBaslamaliMi(state, 1)).toBe(false);
+    state.son_veba_bitis_yili = state.yil - 30;
+    vi.spyOn(Math, "random").mockReturnValue(0);
+    for (let i = 0; i < 500; i++) expect(vebaBaslamaliMi(state, 2)).toBe(false);
     expect(state.dunya_yaklasan).toBeNull();
     vi.restoreAllMocks();
   });
 
-  it("dalga bittikten sonra 30 yıl cooldown boyunca tetiklenmez, sonra tekrar tetiklenebilir", () => {
-    const state = taze();
-    state.yas = 40;
-    state.veba_gecirdi = true;
-    // Cooldown içinde (dalga 5 yıl önce bitti): asla tetiklenmez.
-    state.son_veba_bitis_yili = state.yil - 5;
-    for (let i = 0; i < 500; i++) {
-      expect(vebaBaslamaliMi(state, 2)).toBe(false);
-    }
-    // Cooldown dolmuş (30 yıl önce): artık yeniden tetiklenebilir.
-    state.son_veba_bitis_yili = state.yil - 30;
-    expect(vebaTetikle(state)).toBe(true);
-  });
-
   it("uygun yaşta makul sürede tetiklenir", () => {
-    const state = taze();
-    state.yas = 30;
+    const state = yasliTaze(30);
     expect(vebaTetikle(state)).toBe(true);
   });
 
   it("savaş sürerken başlamaz", () => {
-    const state = taze();
-    state.yas = 30;
+    const state = yasliTaze(30);
     state.ulke.savasta = true;
     expect(vebaTetikle(state, 400)).toBe(false);
   });
@@ -366,8 +377,8 @@ describe("vebaBaslamaliMi / vebaBaslat / vebaYillikKontrol / vebaBitisKontrolEt"
     expect(state.veba_gecirdi).toBe(true);
     const v = state.veba!;
     expect(v.aktif).toBe(true);
-    expect(v.bitisYili - v.baslangicYili).toBeGreaterThanOrEqual(5);
-    expect(v.bitisYili - v.baslangicYili).toBeLessThanOrEqual(6);
+    expect(v.bitisYili - v.baslangicYili).toBeGreaterThanOrEqual(4);
+    expect(v.bitisYili - v.baslangicYili).toBeLessThanOrEqual(5);
     expect(v.etkiBitisYili).toBe(v.bitisYili); // ayrı "iz" fazı yok
     expect(v.konutKiraCarpani).toBe(1);
     expect(v.gelirCarpani).toBeGreaterThanOrEqual(1.08);
@@ -480,12 +491,67 @@ describe("dünya dönemleri (bolluk / durgunluk / kıtlık)", () => {
         expect(d.tur).not.toBe(onceki.tur);
         if (state.ulke.savasta) expect(d.tur).not.toBe("bolluk");
         const sure = d.bitisYili - d.baslangicYili;
-        if (d.tur === "kitlik") expect(sure).toBe(3);
-        else expect(sure >= 5 && sure <= 6).toBe(true);
+        if (d.tur === "kitlik") expect(sure >= 2 && sure <= 3).toBe(true);
+        else expect(sure >= 4 && sure <= 5).toBe(true);
         onceki = d;
       }
     }
     expect(gecis).toBeGreaterThan(200);
+  });
+
+  it("dönem torbası: 50 yıllık ömürlerde üç dönemin GELME sayısı birbirine yakındır", () => {
+    const sayim = { bolluk: 0, durgunluk: 0, kitlik: 0 };
+    const OMUR = 300;
+    for (let i = 0; i < OMUR; i++) {
+      const state = taze();
+      let onceki = state.ulke.donem!;
+      sayim[onceki.tur]++;
+      for (let yil = 0; yil < 50; yil++) {
+        state.yil += 1;
+        donemIlerlet(state, 1);
+        if (state.ulke.donem !== onceki) {
+          sayim[state.ulke.donem!.tur]++;
+          onceki = state.ulke.donem!;
+        }
+      }
+    }
+    const ort = (sayim.bolluk + sayim.durgunluk + sayim.kitlik) / 3;
+    for (const k of ["bolluk", "durgunluk", "kitlik"] as const) {
+      expect(Math.abs(sayim[k] - ort) / ort).toBeLessThan(0.12);
+    }
+  });
+
+  it("dönem süreleri: bolluk/durgunluk 4–5, kıtlık 2–3 yıl; pazar oranları kullanıcı aralıklarında", () => {
+    for (let i = 0; i < 300; i++) {
+      const b = ilkDonemOlustur(1100, "bolluk");
+      expect(b.etki.pazarBuyume).toBeGreaterThanOrEqual(0.04);
+      expect(b.etki.pazarBuyume).toBeLessThanOrEqual(0.05);
+      const d = ilkDonemOlustur(1100, "durgunluk");
+      expect(d.etki.pazarBuyume).toBeGreaterThanOrEqual(0.01);
+      expect(d.etki.pazarBuyume).toBeLessThanOrEqual(0.02);
+      const k = ilkDonemOlustur(1100, "kitlik");
+      expect(k.etki.pazarBuyume).toBeGreaterThanOrEqual(-0.03);
+      expect(k.etki.pazarBuyume).toBeLessThanOrEqual(-0.02);
+    }
+  });
+
+  it("veba ve savaş pazarı daraltır (veba −%4…5, savaş −%1.5…2.5); veba bitince 8 yıl +%2 toparlanma", () => {
+    const state = taze();
+    bollukDisi(state);
+    vebaBaslat(state, 0);
+    state.ulke.vebada = true;
+    expect(state.veba!.etki!.pazarBuyume).toBeGreaterThanOrEqual(-0.05);
+    expect(state.veba!.etki!.pazarBuyume).toBeLessThanOrEqual(-0.04);
+    expect(pazarBuyumeOrani(state)).toBe(state.veba!.etki!.pazarBuyume);
+    state.yil = state.veba!.bitisYili;
+    vebaBitisKontrolEt(state);
+    expect(vebaToparlanmasindaMi(state)).toBe(true);
+    expect(pazarBuyumeOrani(state)).toBe(VEBA_TOPARLANMA_ORAN);
+    state.yil += VEBA_TOPARLANMA_YIL - 1;
+    expect(vebaToparlanmasindaMi(state)).toBe(true);
+    state.yil += 1;
+    expect(vebaToparlanmasindaMi(state)).toBe(false);
+    expect(pazarBuyumeOrani(state)).toBe(state.ulke.donem!.etki.pazarBuyume);
   });
 
   it("etkiler aralıktan tam yüzde olarak gelir", () => {

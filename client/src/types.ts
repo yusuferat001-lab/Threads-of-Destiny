@@ -77,6 +77,8 @@ export interface UlkeDurumu {
   kriz: UlkeKrizi | null;
   nufusDurumu: 'artiyor' | 'normal' | 'azaliyor';
   donem?: DonemDurumu;
+  /** Dönem torbası (v10): sıradaki dönemlerin karışık sırası; torba bitince yeniden karıştırılır (bir ömürde üç dönemin gelme sayısı yakın kalır). */
+  donem_torbasi?: DonemTuru[];
 }
 
 export type MulkTuru = 'kucuk_tarla' | 'ciftlik' | 'han' | 'demirci' | 'kervan' | 'karaborsa';

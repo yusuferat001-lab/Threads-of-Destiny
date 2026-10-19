@@ -100,6 +100,8 @@ export interface UlkeDurumu {
   nufusDurumu: "artiyor" | "normal" | "azaliyor";
   /** Genel dönem (bolluk/durgunluk/kıtlık). `ekonomi` bundan türetilir. Eski kayıtlarda göçle atanır. */
   donem?: DonemDurumu;
+  /** Dönem torbası (v10): sıradaki dönemlerin karışık sırası; torba bitince yeniden karıştırılır (bir ömürde üç dönemin gelme sayısı yakın kalır). */
+  donem_torbasi?: DonemTuru[];
 }
 
 /** Piyasa mülkleri: her biri en fazla bir kez sahiplenilebilir, getirisi state.ulke'ye göre her tur yeniden hesaplanır. */
