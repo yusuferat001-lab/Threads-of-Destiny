@@ -217,7 +217,8 @@
   line-height: 1.3;
 }
 .strateji-sayfa .isletme-ozet strong {
-  font-family: var(--font-baslik);
+  font-family: var(--font-govde);
+  font-weight: 700;
 }
 
 /* ---- Metin renkleri (latte üstünde) ---- */

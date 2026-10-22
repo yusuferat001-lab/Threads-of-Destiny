@@ -130,7 +130,7 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
             {formatPara(Math.abs(Math.round(net)))}
           </strong>
           <span className="ana-alt">
-            <b className="ana-iyi">{formatPara(Math.round(gelir))}</b> {tr ? 'gelir' : 'in'}
+            <b className="ana-iyi">{formatPara(Math.round(gelir))}</b> {dokum ? (tr ? 'gelir' : 'in') : tr ? 'tahmini' : 'est.'}
             {gider !== null && (
               <>
                 {' · '}

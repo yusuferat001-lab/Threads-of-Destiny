@@ -256,7 +256,7 @@ export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onC
 
       <div className="isletme-ozet">
         <span>
-          ⚖️ {t('pay')}: <strong>{formatPara(durum.pazarPayi)}%</strong>
+          ⚖️ {t('pay')}: <strong>{dil === 'en' ? `${formatMusteri(dil, durum.pazarPayi)}%` : `%${formatMusteri(dil, durum.pazarPayi)}`}</strong>
         </span>
         <span>
           👥 {t('inanan')}: <strong>{formatMusteri(dil, c.inanan)}</strong>
