@@ -50,6 +50,7 @@ describe("konut sistemi (stateManager)", () => {
   it("mütevazı yuvada sağlık/ün pasif etkisi yok", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
+    state.kisilik = ["Sakin", "Vicdanlı"]; // kişiliğin yıllık şöhret etkisi (v10) olmasın
     state.para = 1000;
     state.yasam_secimi_id = "sade_sofra"; // sağlık/mutluluk etkisi olmayan yaşam tarzı; sadece konut etkisini izole eder
     // mutevazi_yuva artık varsayılan — ekstra konutDegistir gerekmez

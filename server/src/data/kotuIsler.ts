@@ -37,8 +37,6 @@ export interface KotuIsEtki {
   /** Oyuncunun müşteri sayısına delta (±; P=416 referansı, gerçek pazarda P/416 ile ölçeklenir; data/pazar.ts). */
   musteri?: number;
   /** Meslek metrikleri (yalnız ilgili meslekte anlamlı). */
-  ticaret_sermaye?: number;
-  nufuz?: number;
   uretim_kapasitesi?: number;
   ordu_techizat?: number;
   /** Yönetimle bağlar (§35): kral/vali ve patron hattına delta. */
@@ -169,37 +167,38 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
     calisanIsi: true,
     cooldownYil: 5,
     maliyet: 14,
-    basarili: { musteri: 6, ticaret_sermaye: 6, ahlak: -8, suc_sinifi: "orta", gumruk_indirim_yil: 4 },
+    basarili: { musteri: 6, ahlak: -8, suc_sinifi: "orta", gumruk_indirim_yil: 4 },
     basarisiz: { un: -5, ahlak: -3, suc_sinifi: "buyuk", hapis_sansi: 0.15 },
   },
 
-  // ===== DİN ADAMI — cemaat =====
+  // ===== DİN ADAMI — cemaat (işletme dilimi: işleri kendin ya da bir çalışanınla çevirirsin, §45) =====
   {
     id: "sahte_mucize",
     simge: "✨",
     basariSansi: 60,
     meslekler: ["Din Adamı"],
+    calisanIsi: true,
     cooldownYil: 4,
-    basarili: { un: 6, nufuz: 4, musteri: 21, ahlak: -14, suc_sinifi: "kucuk" },
+    basarili: { un: 6, musteri: 21, ahlak: -14, suc_sinifi: "kucuk" },
     basarisiz: { un: -8, ahlak: -6, musteri: -12, suc_sinifi: "orta" },
   },
   {
     id: "afaroz_ettir",
-    ajanRolu: "Casus",
     simge: "📜",
     basariSansi: 55,
     meslekler: ["Din Adamı"],
+    calisanIsi: true,
     cooldownYil: 3,
     rakipKirmaYuzde: 0.28,
     basarili: { musteri: 6, ahlak: -12, rakip_puani: -10, suc_sinifi: "kucuk", kariyer_puani: 3 },
-    basarisiz: { patron_iliski: -10, un: -5, ahlak: -4, suc_sinifi: "orta" },
+    basarisiz: { yonetim_iliski: -10, un: -5, ahlak: -4, suc_sinifi: "orta" },
   },
   {
     id: "vali_santaj",
-    ajanRolu: "Casus",
     simge: "🗝️",
     basariSansi: 52,
     meslekler: ["Din Adamı"],
+    calisanIsi: true,
     cooldownYil: 5,
     basarili: { yonetim_iliski: 12, para: 12, musteri: 9, ahlak: -12, suc_sinifi: "orta" },
     basarisiz: { yonetim_iliski: -15, ahlak: -4, suc_sinifi: "buyuk", hapis_sansi: 0.2 },
@@ -282,7 +281,7 @@ export function kotuIsTanimiGetir(id: string): KotuIsTanimi | undefined {
 /** Bu karaktere (meslek + çağ) görünen karanlık işler. */
 export function uygunKotuIsler(meslek: string, cag: Cag): KotuIsTanimi[] {
   // İşletme dilimi (§45): işletmesi olan mesleklerin listesi yalnız kendi 3 işidir; genel işler gelmez.
-  if (meslek === "Tüccar" || meslek === "Zanaatkâr") return KOTU_ISLER.filter((k) => k.meslekler?.includes(meslek) && (!k.cag || k.cag === cag));
+  if (meslek === "Tüccar" || meslek === "Zanaatkâr" || meslek === "Din Adamı") return KOTU_ISLER.filter((k) => k.meslekler?.includes(meslek) && (!k.cag || k.cag === cag));
   return KOTU_ISLER.filter((k) => (!k.meslekler || k.meslekler.includes(meslek)) && (!k.cag || k.cag === cag));
 }
 

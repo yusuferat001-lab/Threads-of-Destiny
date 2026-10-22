@@ -1,5 +1,5 @@
 import { pazarOlcekle } from "../src/game/piyasa";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import {
   yeniOyun,
   mesleğiAta,
@@ -548,5 +548,66 @@ describe("v8.2: lonca aidatı, saldırı takvimi", () => {
     }
     expect(fiziksel).toBeGreaterThan(0);
     expect(fizikselEngel / fiziksel).toBeGreaterThan(0.7);
+  });
+});
+
+async function dinAdami(cag: "Orta Çağ" | "Sanayi Devrimi" = "Orta Çağ", bolge?: string) {
+  const st = await yeniOyun(cag, bolge ?? (cag === "Orta Çağ" ? "Fransa" : "İngiltere"), "kasaba");
+  await mesleğiAta(st.id, "Din Adamı");
+  const s = await stateGetir(st.id);
+  s.ulke.donem = { tur: "durgunluk", baslangicYili: s.yil, bitisYili: s.yil + 5, sonraki: "bolluk", etki: s.ulke.donem!.etki };
+  s.para = 300;
+  return s;
+}
+
+describe("işletme (Din Adamı — cemaat, ticaret modu)", () => {
+  it("Din Adamı seçilince işletme kurulur; üretim tavanı yok; 6 aday (3'ü ana rol)", async () => {
+    for (const cag of ["Orta Çağ", "Sanayi Devrimi"] as const) {
+      const s = await dinAdami(cag);
+      expect(s.isletme).toBeTruthy();
+      expect(s.isletme!.hatlar.filter((h) => h.acik)).toHaveLength(1);
+      expect(s.isletme!.adaylar).toHaveLength(6);
+      expect(s.isletme!.adaylar.filter((a) => a.rolTuru === "ana")).toHaveLength(3);
+      expect((await isletmeDurumGetir(s.id)).uretim).toBeNull();
+    }
+  });
+
+  it("rol adları ve şehir yöneticisi (tek otorite): Vaiz/Ekonom/Davetçi/Kilise bekçisi; Selçuklu'da Subaşı", async () => {
+    const s = await dinAdami();
+    const roller = new Set(["Vaiz", "Ekonom", "Davetçi", "Kilise bekçisi"]);
+    expect(s.isletme!.adaylar.every((a) => roller.has(a.rol))).toBe(true);
+    expect((await isletmeDurumGetir(s.id)).otorite).toBe("Prévôt");
+    const st = await dinAdami("Orta Çağ", "Selçuklu");
+    expect((await isletmeDurumGetir(st.id)).otorite).toBe("Subaşı");
+  });
+
+  it("hiç dokunmayan Din Adamı bir yılda makul kâr eder; pazar adı Cemaat Payı", async () => {
+    const s = await dinAdami();
+    const { net, dokum } = isletmeYilIsle(s, isletmeBaglami(s));
+    expect(dokum.satis).toBeGreaterThan(0);
+    expect(net).toBeGreaterThan(-8);
+    expect(hesaplaMaasYillik(s)).toBeGreaterThanOrEqual(1);
+  });
+
+  it("çifte kazanç önlemi din kategorisinde de işler", async () => {
+    const s = await dinAdami();
+    const once = s.meslek_musteri;
+    const etki = { para: 20, mesaj: "x" } as never as { para: number; mesaj: string };
+    ciftKazancKirp(s, etki, "din");
+    expect(etki.para).toBeLessThan(20);
+    expect(s.meslek_musteri).toBeGreaterThanOrEqual(once);
+  });
+
+  it("Tüccar/Zanaatkâr dışındaki imtiyazlar da işletmeye bağlanır (vakıf muafiyeti alışı, kutsal gün talebi artırır)", async () => {
+    const s = await dinAdami();
+    const b = isletmeBaglami(s);
+    const rnd = vi.spyOn(Math, "random").mockReturnValue(0.5);
+    const normal = isletmeYilIsle(structuredClone(s), b);
+    const m = structuredClone(s);
+    m.isletme!.imtiyazlar = { vakif_muafiyeti: m.yil + 4, kutsal_gun_imtiyazi: m.yil + 4 };
+    const imtiyazli = isletmeYilIsle(m, isletmeBaglami(m));
+    rnd.mockRestore();
+    expect(imtiyazli.dokum.satis).toBeGreaterThan(normal.dokum.satis);
+    expect(imtiyazli.net).toBeGreaterThan(normal.net);
   });
 });

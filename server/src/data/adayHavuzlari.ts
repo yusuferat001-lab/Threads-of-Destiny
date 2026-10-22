@@ -14,7 +14,7 @@ function a(rolTuru: IsletmeRolTuru, tip: IsletmeAdayTipi, tr: string, en: string
 /**
  * İşletme çalışanı aday şablonları. Yetenek/sadakat sayıları koddan, tipe göre üretilir;
  * burada yalnız rol + tip + iki dilli geçmiş cümlesi vardır.
- * Her anahtarda 42 şablon: 22 ana, 8 maliyet, 6 müşteri, 6 güvenlik.
+ * Tüccar/Zanaatkâr anahtarlarında 42 şablon (22 ana, 8 maliyet, 6 müşteri, 6 güvenlik); Din Adamı anahtarlarında 27 (14, 5, 4, 4).
  * Anahtar: `${meslek}|${cag}`
  */
 export const ADAY_SABLONLARI: Record<string, AdayTaslagi[]> = {
@@ -212,5 +212,73 @@ export const ADAY_SABLONLARI: Record<string, AdayTaslagi[]> = {
     a("guvenlik", "siradan", "fabrika kapısında yıllarca nöbet tutmuş sıradan bir bekçi", "an ordinary guard who stood at a factory gate for years"),
     a("guvenlik", "usta_sadik", "tezgâhları ve kalıpları gözü gibi koruyan kıdemli bir bekçibaşı", "a senior head-watchman who guards benches and moulds like his own eyes"),
     a("guvenlik", "usta_sadik", "askerlikten bekçiliğe geçmiş, sırrı ağzından kaçırmayan sadık adam", "a loyal man, once a soldier, who guards the workshop and never gives away a secret"),
+  ],
+
+  "Din Adamı|Orta Çağ": [
+    // ana = Vaiz
+    a("ana", "serseri", "manastırdan kovulmuş, dili tatlı bir keşiş adayı", "a honey-tongued novice expelled from the monastery"),
+    a("ana", "serseri", "sadaka kutusuna göz diken, işsiz bir ayinci", "an idle chanter who eyes the alms box"),
+    a("ana", "serseri", "köyden köye yalancı mucize satan bir derviş", "a wandering mystic who peddles false miracles from village to village"),
+    a("ana", "sadik_cirak", "papazın yetim kalmış, kandil yakmaya meraklı yeğeni", "a priest's orphaned nephew who loves lighting the lamps"),
+    a("ana", "sadik_cirak", "kilise avlusunu sabahtan süpüren sessiz bir genç", "a quiet youth who sweeps the churchyard from dawn"),
+    a("ana", "sadik_cirak", "dua ezberlemeye çalışan, inancı sağlam bir çoban", "a devout shepherd working hard to memorise the prayers"),
+    a("ana", "siradan", "küçük bir köy cemaatine yıllardır hizmet eden vasat bir vaiz", "a middling preacher who has served a small village flock for years"),
+    a("ana", "siradan", "kutsal günlerde ayin tutan, başka bir şey bilmeyen yaşlı rahip", "an old priest who holds services on holy days and knows nothing else"),
+    a("ana", "siradan", "okuma yazması iyi, hırssız bir kâtip rahip", "a literate scribe-priest without ambition"),
+    a("ana", "usta_guvenilmez", "kürsüde herkesi ağlatan ama kasaya bakan karizmatik vaiz", "a charismatic preacher who moves the crowd to tears yet watches the coffers"),
+    a("ana", "usta_guvenilmez", "rakip cemaatle gizli bağı olan parlak bir hatip", "a brilliant orator with secret ties to a rival congregation"),
+    a("ana", "usta_sadik", "ölmek üzere olan ustasının kürsüsünü devralmaya yemin etmiş müridi", "a disciple who swore to take over his dying master's pulpit"),
+    a("ana", "usta_sadik", "kırk yıldır aynı cemaate hizmet eden, sözünün eri bilge rahip", "a wise priest of forty years' service who always keeps his word"),
+    a("ana", "usta_sadik", "kıtlıkta kendi ekmeğini paylaşmış, cemaatin sevdiği vaiz", "a preacher beloved for sharing his own bread in famine"),
+    // maliyet = Ekonom
+    a("maliyet", "serseri", "adak malını ucuza kapatıp pahalıya satan bir tellal", "a broker who snaps up votive goods cheap and sells them dear"),
+    a("maliyet", "sadik_cirak", "mum ve yağ hesabını kusursuz tutan genç bir kâtip", "a young clerk who keeps flawless accounts of candles and oil"),
+    a("maliyet", "siradan", "manastırın ambarını yöneten orta halli bir ekonom", "an average steward who runs the monastery storehouse"),
+    a("maliyet", "usta_guvenilmez", "tüccarlardan gizli komisyon alan usta bir satın almacı", "a skilled buyer who takes secret commissions from merchants"),
+    a("maliyet", "usta_sadik", "yıllardır aynı balmumu ustalarıyla çalışan güvenilir ekonom", "a trusted steward who has worked with the same wax-makers for years"),
+    // musteri = Davetçi
+    a("musteri", "serseri", "kapı kapı gezip bağış toplayan şüpheli bir adam", "a dubious man who goes door to door collecting donations"),
+    a("musteri", "sadik_cirak", "ayine insan çağırmak için çan çalan gayretli bir genç", "an earnest youth who rings the bell to call people to service"),
+    a("musteri", "siradan", "pazar yerinde kutsal günleri duyuran dellal", "a crier who announces holy days in the marketplace"),
+    a("musteri", "usta_guvenilmez", "hacıları cemaate çeken ama kendi cebini düşünen ünlü bir rehber", "a famous guide who draws pilgrims to the congregation but thinks of his own purse"),
+    // guvenlik = Kilise bekçisi
+    a("guvenlik", "serseri", "geceleri şarap küpüne bakan huysuz bir bekçi", "a surly watchman who spends the night eyeing the wine jar"),
+    a("guvenlik", "sadik_cirak", "çan kulesinde nöbet tutan vefalı bir yetim", "a loyal orphan who keeps watch in the bell tower"),
+    a("guvenlik", "siradan", "kasaba kapısından emekli, sakin bir nöbetçi", "a calm retired sentry from the town gate"),
+    a("guvenlik", "usta_sadik", "kutsal emanetleri gözü gibi koruyan yaşlı bir muhafız", "an old guard who protects the relics like his own eyes"),
+  ],
+
+  "Din Adamı|Sanayi Devrimi": [
+    // ana = Vaiz
+    a("ana", "serseri", "ibadethane kapısında bağış toplamayı meslek edinmiş bir işsiz", "a jobless man who has made collecting offerings at the church door his trade"),
+    a("ana", "serseri", "ilahi okuyup kumar borcunu ödemeye çalışan bir genç", "a youth who sings hymns to pay off his gambling debts"),
+    a("ana", "serseri", "sahte vaizlik belgesiyle kasabaları gezen bir dolandırıcı", "a fraud who tours towns with a forged preaching licence"),
+    a("ana", "sadik_cirak", "fabrika işçisi bir annenin okumaya hevesli, dindar oğlu", "the devout, studious son of a factory-worker mother"),
+    a("ana", "sadik_cirak", "ibadethanenin kandillerini her akşam yakan sessiz bir genç", "a quiet youth who lights the lamps of the house of worship every evening"),
+    a("ana", "sadik_cirak", "yetimhaneden çıkıp vaizine minnet duyan bir çocuk", "an orphanage boy grateful to his preacher"),
+    a("ana", "siradan", "mahalle ibadethanesinde yıllardır görevli sıradan bir vaiz", "an ordinary preacher who has served the district chapel for years"),
+    a("ana", "siradan", "gazetelerde vaaz yayımlayan, ne parlak ne vasat bir din adamı", "a clergyman who prints sermons in the papers, neither brilliant nor dull"),
+    a("ana", "siradan", "hayır cemiyetinde çalışan, işini bilen ama hırssız bir görevli", "a charity-society worker who knows the job but lacks drive"),
+    a("ana", "usta_guvenilmez", "salonlarda parlayan ama zenginlerin cebine hizmet eden bir vaiz", "a preacher who shines in the salons but serves the purses of the rich"),
+    a("ana", "usta_guvenilmez", "rakip mezhebe gizlice danışmanlık yapan yetenekli bir hatip", "a gifted orator who secretly advises a rival denomination"),
+    a("ana", "usta_sadik", "kırk yılını işçi mahallesine veren, sözünden dönmeyen emektar vaiz", "a veteran preacher who gave forty years to the workers' quarter and never breaks his word"),
+    a("ana", "usta_sadik", "salgında hastaları terk etmemiş, cemaatin sevgilisi bir din adamı", "a clergyman beloved for never leaving the sick in the epidemic"),
+    a("ana", "usta_sadik", "ustasının mezarı başında ant içmiş, sadık bir müridi", "a faithful disciple who swore an oath at his master's grave"),
+    // maliyet = Ekonom
+    a("maliyet", "serseri", "bağış defterini kendi lehine yazan bir muhasebe yamağı", "an accounting apprentice who writes the donation ledger in his own favour"),
+    a("maliyet", "sadik_cirak", "çarşıda pazarlık öğrenen dürüst bir genç kâtip", "an honest young clerk learning to haggle in the bazaar"),
+    a("maliyet", "siradan", "ibadethanenin mum ve kömür alımını yapan orta halli görevli", "an average official who buys the chapel's candles and coal"),
+    a("maliyet", "usta_guvenilmez", "toptancılardan komisyon alan usta bir satın alma sorumlusu", "a skilled procurement officer who takes commissions from wholesalers"),
+    a("maliyet", "usta_sadik", "vakfın ihtiyaçlarını yıllardır dürüstçe karşılayan kıdemli ekonom", "a senior steward who has honestly met the foundation's needs for years"),
+    // musteri = Davetçi
+    a("musteri", "serseri", "ilan panolarına abartılı davetiyeler asan bir serseri", "a drifter who pins exaggerated invitations on notice boards"),
+    a("musteri", "sadik_cirak", "ibadet saatlerini mahalle mahalle duyuran gayretli bir kız", "an eager girl who announces service times street by street"),
+    a("musteri", "siradan", "gazete ilanlarıyla cemaati büyüten sıradan bir görevli", "an ordinary official who grows the congregation with newspaper adverts"),
+    a("musteri", "usta_guvenilmez", "her cemaate aynı vaadi satan, çok ünlü bir davetçi", "a famous outreach man who sells the same promise to every congregation"),
+    // guvenlik = Kilise bekçisi
+    a("guvenlik", "serseri", "nöbette uyuyakalan, kavgacı bir bekçi", "a quarrelsome watchman who dozes on duty"),
+    a("guvenlik", "sadik_cirak", "gece boyunca ibadethaneyi gezen genç bir bekçi", "a young watchman who patrols the chapel all night"),
+    a("guvenlik", "siradan", "fabrika kapısından ibadethaneye geçmiş sıradan bir bekçi", "an ordinary guard who moved from a factory gate to the chapel"),
+    a("guvenlik", "usta_sadik", "kasa ve bağış kutularını gözü gibi koruyan kıdemli bir bekçibaşı", "a senior head-watchman who guards the safe and offering boxes like his own eyes"),
   ],
 };

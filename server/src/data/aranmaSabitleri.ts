@@ -45,6 +45,16 @@ export function yildizSayisi(sucSeviyesi: number): number {
 
 /** Yıldıza göre mesleki maaş debuff'ı (oran): 1★ %5.5 · 2★ %10 · 3★ %15. */
 export const ARANMA_MESLEK_DEBUFF = [0, 0.055, 0.1, 0.15] as const;
+/** v10 — işletmeli üç meslekte (Tüccar/Zanaatkâr/Din) aranma gelir kısmaz; yıllık müşteri/inanan ve ahlak kaybı olur. */
+export const ARANMA_MUSTERI_KAYBI = [0, 0.01, 0.025, 0.04] as const;
+export const ARANMA_AHLAK_KAYBI = [0, 0.3, 0.6, 1.0] as const;
+export function aranmaMusteriKaybi(sucSeviyesi: number): number {
+  return ARANMA_MUSTERI_KAYBI[yildizSayisi(sucSeviyesi)];
+}
+export function aranmaAhlakKaybi(sucSeviyesi: number): number {
+  return ARANMA_AHLAK_KAYBI[yildizSayisi(sucSeviyesi)];
+}
+
 export function meslekDebuffOrani(sucSeviyesi: number): number {
   return ARANMA_MESLEK_DEBUFF[yildizSayisi(sucSeviyesi)];
 }

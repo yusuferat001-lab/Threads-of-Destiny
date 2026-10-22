@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { PiyasaHaberleri } from './PiyasaHaberleri';
-import type { FinansOzeti, GecmisNoktasi, IsletmeGorunumu, IsletmeKararGirdisi, IsletmeStokHedefi, EkipUyesi, Rakip, KotuIsKarti, YonetimDurumu, YonetimHat, PazarDurumu, AjanDurumu } from '../types';
+import type { FinansOzeti, GecmisNoktasi, IsletmeGorunumu, IsletmeKararGirdisi, CemaatKararGirdisi, IsletmeStokHedefi, EkipUyesi, Rakip, KotuIsKarti, YonetimDurumu, YonetimHat, PazarDurumu, AjanDurumu } from '../types';
 import { useDil } from '../DilContext';
 import { formatPara, formatYuzde, formatYuzdeAralik, formatMusteri } from '../format';
 import { bic, type Metinler } from '../i18n';
 import type { Dil } from '../ayarlar';
 import { rutbeIlerlemeHesapla } from '../rutbeIlerleme';
 import { IsletmePaneli } from './IsletmePaneli';
+import { CemaatPaneli } from './CemaatPaneli';
 import { ButcePaneli } from './ButcePaneli';
 
 interface KariyerEkraniProps {
@@ -54,7 +55,7 @@ interface KariyerEkraniProps {
   gecmis?: GecmisNoktasi[];
   /** Meslek işletmesi (GET /:id/isletme); işletmesi olmayan mesleklerde null. */
   isletme?: IsletmeGorunumu | null;
-  onIsletmeKarar?: (hatlar: IsletmeKararGirdisi[], stokHedefi?: IsletmeStokHedefi) => void;
+  onIsletmeKarar?: (hatlar: IsletmeKararGirdisi[], stokHedefi?: IsletmeStokHedefi, cemaat?: CemaatKararGirdisi) => void;
   onIsletmeYatirim?: (yatirimId: string) => void;
   onIsletmeCalisanAl?: (adayId: string) => void;
   onGeriDon: () => void;
@@ -328,6 +329,24 @@ const ISTEK_ADLARI: Record<string, { tr: string; en: string; ipTr: string; ipEn:
     en: 'Workshop expansion licence',
     ipTr: '5 yıl boyunca üretim tavanı +%10.',
     ipEn: 'Production cap +10% for 5 years.',
+  },
+  vakif_muafiyeti: {
+    tr: 'Vakıf muafiyeti',
+    en: 'Foundation exemption',
+    ipTr: '5 yıl boyunca mal alış maliyeti −%8 (diğer indirimlerle çarpımsal).',
+    ipEn: 'Purchase costs −8% for 5 years (stacks multiplicatively).',
+  },
+  kutsal_gun_imtiyazi: {
+    tr: 'Kutsal gün pazarı',
+    en: 'Holy-day market',
+    ipTr: '5 yıl boyunca cemaatin alım talebi +%10.',
+    ipEn: "The congregation's demand +10% for 5 years.",
+  },
+  bagis_izni: {
+    tr: 'Bağış toplama izni',
+    en: 'Fundraising licence',
+    ipTr: 'Tek seferlik bağış geliri + cemaate küçük bir artış.',
+    ipEn: 'One-off donation income + a small bump in the congregation.',
   },
   resmi_siparis: {
     tr: 'Resmî sipariş',
@@ -668,11 +687,11 @@ export function KariyerEkrani({
   if (meslek === 'Asker') {
     meslekGucSatirlari.push([m.iyOrduMevcudu, String(orduMevcudu)]);
     meslekGucSatirlari.push([m.iyTechizat, formatYuzde(dil, orduTechizatSeviyesi)]);
-  } else if (meslek === 'Tüccar' && ticaretSermaye > 0) {
-    meslekGucSatirlari.push([m.iyTicaretSermayesi, String(ticaretSermaye)]);
-  } else if (meslek === 'Din Adamı' && nufuz > 0) {
-    meslekGucSatirlari.push([m.iyNufuz, String(Math.round(nufuz))]);
   }
+  // v10: Tüccar sermayesi ve Din Adamı nüfuzu kalktı; yerlerini pazar payı / cemaat paneli aldı.
+  void ticaretSermaye;
+  void nufuz;
+  const dinMi = meslek === 'Din Adamı';
 
   const talep = yonetimDurum?.talep ?? null;
   const bikkin = (yonetimDurum?.bikkinlik ?? 0) >= 3;
@@ -875,18 +894,29 @@ export function KariyerEkrani({
                   <p>
                     {talep.tur === 'bagis'
                       ? `${talep.kalem} — ${formatPara(talep.tutar)} ${paraBirimi} ${en ? 'demanded.' : 'istiyor.'}`
-                      : `${talep.kalem} ${en ? 'awaited.' : 'bekliyor.'}`}
+                      : talep.tur === 'aciklama'
+                        ? `${en ? 'Asks you to ' : 'Senden istiyor: '}${talep.kalem}.`
+                        : `${talep.kalem} ${en ? 'awaited.' : 'bekliyor.'}`}
                   </p>
+                  {dinMi && talep.tur === 'aciklama' && (
+                    <p className="kariyer-hukumdar-talep-uyari">
+                      {en
+                        ? 'Do it: authority +13–15, morality −7–8, your flock −3%. Refuse: authority −18–20, morality +2, fame −3 and your flock +2%.'
+                        : 'Yaparsan: otorite +13–15, ahlak −7–8, inanan −%3. Yapmazsan: otorite −18–20, ahlak +2, şöhret −3, inanan +%2.'}
+                    </p>
+                  )}
                   <div className="kariyer-talep-butonlar">
                     <button disabled={yukleniyor || talepParasiYok} onClick={() => onTalep('kabul')}>
-                      {talep.tur === 'bagis' ? (en ? 'Pay' : 'Öde') : en ? 'Swear it' : 'Kabul et'}
+                      {dinMi ? (en ? 'Do it' : 'Yap') : talep.tur === 'bagis' ? (en ? 'Pay' : 'Öde') : en ? 'Swear it' : 'Kabul et'}
                     </button>
                     <button className="ikincil" disabled={yukleniyor} onClick={() => onTalep('ret')}>
-                      {en ? 'Refuse' : 'Reddet'}
+                      {dinMi ? (en ? "Don't" : 'Yapma') : en ? 'Refuse' : 'Reddet'}
                     </button>
-                    <button className="ikincil" disabled={yukleniyor} onClick={() => onTalep('yalan')}>
-                      {en ? '“I’m broke”' : '“Param yok” de'}
-                    </button>
+                    {!dinMi && (
+                      <button className="ikincil" disabled={yukleniyor} onClick={() => onTalep('yalan')}>
+                        {en ? '“I’m broke”' : '“Param yok” de'}
+                      </button>
+                    )}
                   </div>
                 </div>
               )}
@@ -906,7 +936,18 @@ export function KariyerEkrani({
           )}
 
           {/* ===== İŞLETME (Tüccar dilimi, §45) — çalışanlar da burada yönetilir ===== */}
-          {isletme?.aktif && onIsletmeKarar && onIsletmeYatirim && onIsletmeCalisanAl && (
+          {isletme?.aktif && isletme.cemaat && onIsletmeKarar && onIsletmeYatirim && onIsletmeCalisanAl && (
+            <CemaatPaneli
+              durum={isletme}
+              pazar={pazarDurum}
+              yukleniyor={yukleniyor}
+              onKarar={onIsletmeKarar}
+              onYatirim={onIsletmeYatirim}
+              onCalisanAl={onIsletmeCalisanAl}
+              onEkipCikar={onEkipCikar}
+            />
+          )}
+          {isletme?.aktif && !isletme.cemaat && onIsletmeKarar && onIsletmeYatirim && onIsletmeCalisanAl && (
             <IsletmePaneli
               durum={isletme}
               pazar={pazarDurum}

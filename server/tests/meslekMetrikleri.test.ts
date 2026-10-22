@@ -35,10 +35,13 @@ describe("meslek-özel derinlik metrikleri", () => {
     expect(meslekMetrikCarpani(state, "savas")).toBeGreaterThan(1);
     expect(meslekMetrikCarpani(state, "ticaret")).toBe(1);
 
+    // v10: Tüccar ticaret sermayesi ve Din Adamı nüfuzu olay parasını çarpmaz.
     state.meslek = "Tüccar";
     state.ticaret_sermaye = 100;
-    expect(meslekMetrikCarpani(state, "ticaret")).toBeGreaterThan(1);
-    expect(meslekMetrikCarpani(state, "savas")).toBe(1);
+    expect(meslekMetrikCarpani(state, "ticaret")).toBe(1);
+    state.meslek = "Din Adamı";
+    state.nufuz = 100;
+    expect(meslekMetrikCarpani(state, "din")).toBe(1);
   });
 
   it("orduKaybiUygula savaş sırasında barıştan daha fazla kayıp verir", () => {

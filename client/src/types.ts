@@ -77,6 +77,8 @@ export interface UlkeDurumu {
   kriz: UlkeKrizi | null;
   nufusDurumu: 'artiyor' | 'normal' | 'azaliyor';
   donem?: DonemDurumu;
+  /** Dönem torbası (v10): sıradaki dönemlerin karışık sırası; torba bitince yeniden karıştırılır (bir ömürde üç dönemin gelme sayısı yakın kalır). */
+  donem_torbasi?: DonemTuru[];
 }
 
 export type MulkTuru = 'kucuk_tarla' | 'ciftlik' | 'han' | 'demirci' | 'kervan' | 'karaborsa';
@@ -182,7 +184,7 @@ export interface CharacterState {
   /** Son terfinin oyun yılı (bir sonraki terfinin cooldown referansı). */
   son_terfi_yili: number;
   /** Mesleğe yatkınlık kademesi (2026-09 sonu) — meslek seçilince bir kez hesaplanır, bir daha değişmez. 1=kötü, 2=nötr, 3=iyi, 4=mükemmel. */
-  meslek_yatkinlik_seviyesi: 1 | 2 | 3 | 4 | null;
+  meslek_yatkinlik_seviyesi: 1 | 2 | 3 | 4 | 5 | null;
   /** Kanonik (TR) unvan — `kt()` ile çevrilir. */
   meslek_yatkinlik_unvani: string | null;
   meslek_zar_bonusu: number;
@@ -584,7 +586,7 @@ export interface YonetimTalep {
   id: string;
   kimden: 'yonetici' | 'patron';
   kimAdi: string;
-  tur: 'bagis' | 'sadakat';
+  tur: 'bagis' | 'sadakat' | 'aciklama';
   tutar: number;
   kalem: string;
   sonYil: number;
@@ -773,10 +775,15 @@ export interface IsletmeUyari {
     | 'ic_hirsizlik'
     | 'rakip_saldiri'
     | 'vergi_indirimi_bitti'
-    | 'imtiyaz_bitti';
+    | 'imtiyaz_bitti'
+    | 'bina_tasti'
+    | 'asiri_olay'
+    | 'mezun';
   hat?: string;
   isim?: string;
-  sonuc?: 'agir' | 'rahat' | 'kismi' | 'engellendi' | 'sans' | 'musteri_calma' | 'iftira' | 'sabotaj' | 'baskin' | 'nakit';
+  sonuc?:
+    | 'agir' | 'rahat' | 'kismi' | 'engellendi' | 'sans' | 'musteri_calma' | 'iftira' | 'sabotaj' | 'baskin' | 'nakit'
+    | 'kumbara' | 'muridcalma' | 'bidat' | 'aforoz' | 'yangin' | 'engizisyon';
   urunYuzde?: number;
   nakitYuzde?: number;
   tutar?: number;
@@ -786,6 +793,8 @@ export interface IsletmeUyari {
   sizma?: boolean;
   musteriKaybi?: number;
   sohretKaybi?: number;
+  ahlakKaybi?: number;
+  otoriteKaybi?: number;
 }
 
 export interface IsletmeDokum {
@@ -806,6 +815,17 @@ export interface IsletmeDokum {
   hatlar: { id: string; talep: number; satilan: number; alinan: number; stokSonu: number }[];
   /** Üretim modundaki mesleklerde (Zanaatkâr) o yılın üretim tavanı ve kullanılan miktar. */
   uretim?: { tavan: number; kullanilan: number };
+  /** Din Adamı (cemaat modu) yıl dökümü ayrıntıları. */
+  cemaat?: {
+    gelmeOrani: number;
+    gelen: number;
+    kapasite: number;
+    bagis: number;
+    faaliyetler: { id: string; gelir: number; masraf: number }[];
+    ayinMasrafi: number;
+    yardim: number;
+    fanatiklik: number;
+  };
   uyarilar: IsletmeUyari[];
 }
 
@@ -869,8 +889,83 @@ export interface IsletmeAdayGorunumu {
   maas: number;
 }
 
+export interface CemaatPolitikaSecenegi {
+  id: string;
+  ad: DilliMetin;
+  aciklama: DilliMetin;
+}
+export interface CemaatPolitikaGorunumu {
+  secili: string;
+  secenekler: CemaatPolitikaSecenegi[];
+}
+export interface CemaatFaaliyetGorunumu {
+  id: string;
+  simge: string;
+  ad: DilliMetin;
+  aciklama: DilliMetin;
+  acik: boolean;
+  kilitli: boolean;
+  minRutbe: number;
+  gelir: number;
+  masraf: number;
+  dunyaYuzde: number;
+  ahlak: number;
+  inanan: number;
+}
+export interface CemaatOgretiGorunumu {
+  id: string;
+  seviye: number;
+  simge: string;
+  fanatik: boolean;
+  ad: DilliMetin;
+  aciklama: DilliMetin;
+}
+export interface CemaatKararGirdisi {
+  bagis?: string;
+  kitle?: string;
+  yardim?: string;
+  ton?: string;
+}
+export interface CemaatGorunumu {
+  inanan: number;
+  kapasite: number;
+  binaKademesi: number;
+  gelmeMin: number;
+  gelmeMax: number;
+  gelmeKaynagi: string;
+  gelenTahmin: number;
+  tasmaVar: boolean;
+  bagis: number;
+  faaliyetGelir: number;
+  toplamGelir: number;
+  giderler: { faaliyet: number; ayin: number; bina: number; yardim: number; aidat: number; vergi: number };
+  beklenenBrut: number;
+  beklenenNet: number;
+  bagisOrani: number;
+  bagisYapan: number;
+  politikalar: { bagis: CemaatPolitikaGorunumu; kitle: CemaatPolitikaGorunumu; yardim: CemaatPolitikaGorunumu; ton: CemaatPolitikaGorunumu };
+  fanatiklik: number;
+  fanatiklikDegisim: number;
+  fanatikEtkisi: { bagisCarpani: number; yillikKacis: number; yillikOtorite: number; asiriRisk: number };
+  faaliyetler: CemaatFaaliyetGorunumu[];
+  faaliyetSlot: { kullanilan: number; toplam: number };
+  ogretiler: { secilen: CemaatOgretiGorunumu[]; bekleyen: { seviye: number; secenekler: CemaatOgretiGorunumu[] } | null };
+  ahlak: { deger: number; bant: number; bantlar: { min: number; max: number; inanan: number }[] };
+  inananKalemleri: { kod: string; deger: number }[];
+  inananToplam: number;
+  okul: { kademe: number; mezunSansi: number };
+  asevi: { kademe: number; carpan: number };
+  donem: {
+    kaynak: string;
+    yuzdeler: { bagis: number; tovbe: number; ritual: number; sifa: number; egitim: number; emanet: number; yardim: number };
+    pazarBuyumeYuzde: number;
+  };
+}
+
 export interface IsletmeGorunumu {
   aktif: boolean;
+  /** Din Adamı'nda cemaat görünümü; diğer mesleklerde null. */
+  cemaat: CemaatGorunumu | null;
   meslek: string;
   /** Pazar payı (0-100, bir ondalık), müşteri sayısı ve toplam pazar büyüklüğü. */
   pazarPayi: number;

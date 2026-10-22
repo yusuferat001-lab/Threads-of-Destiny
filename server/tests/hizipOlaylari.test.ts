@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { ogretileriTamamla } from "./_ogreti";
 import { olaySec } from "../src/game/olaySecici";
 import { createCharacter, mesleğiSec, etiketEkle } from "../src/game/stateManager";
 import { yeniOyun, mesleğiAta, senaryoUret } from "../src/game/gameEngine";
@@ -141,6 +142,7 @@ describe("hizip zorunlu seçim (2026-09 sonu — 4 meslek de aynı yaş eşiğin
       state.ulke.savasta = true; // tarihi savaş ilanı kuralını atla
       etiketEkle(state, [`${yolOnEki}__test_dal__`]); // kariyer yolu girişini atla
       state.yas = 23;
+      ogretileriTamamla(state);
       const senaryo = await senaryoUret(state.id);
       expect(senaryo.olay_basligi).toBe(baslik);
       expect(senaryo.secenekler).toHaveLength(2); // "Tarafsız kal" yok, yalnız iki taraf
@@ -155,6 +157,7 @@ describe("hizip zorunlu seçim (2026-09 sonu — 4 meslek de aynı yaş eşiğin
       state.ulke.savasta = true;
       etiketEkle(state, [`${yolOnEki}__test_dal__`]);
       state.yas = 22;
+      ogretileriTamamla(state);
       const senaryo = await senaryoUret(state.id);
       expect(senaryo.olay_basligi).not.toBe(baslik);
     }

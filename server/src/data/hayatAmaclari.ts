@@ -20,6 +20,10 @@
  * olan bonus alamaz.
  */
 import { CharacterState, Cag, AmacZorluk, AmacKontrolAni, AmacIlerleme } from "../types";
+import { pazarPayiHesapla } from "./pazar";
+
+/** Oyuncunun pazar/cemaat payı, 0-100 yüzde (hayat amaçları için; v10: eski ticaret_sermaye/nufuz sayaçlarının yerini aldı). */
+const payYuzdesi = (s: CharacterState): number => Math.round(pazarPayiHesapla(s) * 100);
 
 export const AMAC_BONUS: Record<AmacZorluk, number> = { normal: 1.5, zor: 2 };
 
@@ -326,9 +330,9 @@ export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
   },
   {
     id: "buyuyen_sermaye", zorluk: "normal", kontrolAni: "herhangi", meslekler: ["Tüccar"],
-    baslik: { tr: "Büyüyen Sermaye", en: "Growing Capital" },
-    aciklama: { tr: "Ticaret sermayeni 80'e çıkar.", en: "Grow your trade capital to 80." },
-    kosul: (s) => s.ticaret_sermaye >= 80,
+    baslik: { tr: "Büyüyen Pay", en: "Growing Share" },
+    aciklama: { tr: "Pazar payını %22'ye çıkar.", en: "Grow your market share to 22%." },
+    kosul: (s) => payYuzdesi(s) >= 22,
   },
   {
     id: "kar_marji", zorluk: "normal", kontrolAni: "herhangi", meslekler: ["Tüccar"],
@@ -362,9 +366,9 @@ export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
   },
   {
     id: "sermaye_devi", zorluk: "zor", kontrolAni: "herhangi", meslekler: ["Tüccar"],
-    baslik: { tr: "Sermaye Devi", en: "Capital Titan" },
-    aciklama: { tr: "Ticaret sermayeni 180'e çıkar ve bir rakibini pazardan tamamen sil.", en: "Grow your trade capital to 180 and wipe a rival off the market entirely." },
-    kosul: (s) => s.ticaret_sermaye >= 180 && yenilenRakip(s) >= 1,
+    baslik: { tr: "Pazarın Devi", en: "Market Titan" },
+    aciklama: { tr: "Pazar payını %35'e çıkar ve bir rakibini pazardan tamamen sil.", en: "Grow your market share to 35% and wipe a rival off the market entirely." },
+    kosul: (s) => payYuzdesi(s) >= 35 && yenilenRakip(s) >= 1,
   },
 
   // ============================ DİN ADAMI ============================
@@ -382,9 +386,9 @@ export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
   },
   {
     id: "nufuzlu_vaiz", zorluk: "normal", kontrolAni: "herhangi", meslekler: ["Din Adamı"],
-    baslik: { tr: "Nüfuzlu Vaiz", en: "A Preacher of Weight" },
-    aciklama: { tr: "Nüfuzunu 70'e çıkar.", en: "Raise your influence to 70." },
-    kosul: (s) => s.nufuz >= 70,
+    baslik: { tr: "Kalabalık Cemaat", en: "A Crowded Congregation" },
+    aciklama: { tr: "Cemaat payını %25'e çıkar.", en: "Grow your congregation share to 25%." },
+    kosul: (s) => payYuzdesi(s) >= 25,
   },
   {
     id: "sadaka_tasi", zorluk: "normal", kontrolAni: "herhangi", meslekler: ["Din Adamı"],
@@ -407,8 +411,8 @@ export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
   {
     id: "aziz", zorluk: "zor", kontrolAni: "herhangi", meslekler: ["Din Adamı"],
     baslik: { tr: "Aziz Mertebesi", en: "Sainthood" },
-    aciklama: { tr: "Ahlakın 98, nüfuzun 95'e ulaşsın; ömrün boyunca en az 25 kez sadaka ver.", en: "Reach morality 98 and influence 95; give alms at least 25 times over your life." },
-    kosul: (s) => s.ahlak >= 98 && s.nufuz >= 95 && (s.omur_sadaka_sayisi ?? 0) >= 25,
+    aciklama: { tr: "Ahlakın 98'e ulaşsın, cemaat payın %30'u bulsun; ömrün boyunca en az 25 kez sadaka ver.", en: "Reach morality 98 and a 30% congregation share; give alms at least 25 times over your life." },
+    kosul: (s) => s.ahlak >= 98 && payYuzdesi(s) >= 30 && (s.omur_sadaka_sayisi ?? 0) >= 25,
   },
   {
     id: "ruhani_onder", zorluk: "zor", kontrolAni: "herhangi", meslekler: ["Din Adamı"],
@@ -621,16 +625,16 @@ export const AMAC_ILERLEME: Record<
   ordu_kurucusu: { hedef: 280, metrik: (s) => s.ordu_mevcudu },
   lonca_ustasi: { hedef: 4, metrik: (s) => s.rutbe_seviye },
   uc_kepenk: { hedef: 3, metrik: (s) => s.mulkler?.length ?? 0 },
-  buyuyen_sermaye: { hedef: 80, metrik: (s) => s.ticaret_sermaye },
+  buyuyen_sermaye: { hedef: 22, metrik: (s) => payYuzdesi(s) },
   kar_marji: { hedef: 270, metrik: (_s, servet) => servet },
   hediye_agi: { hedef: 6, metrik: (s) => s.omur_hediye_sayisi ?? 0 },
   lonca_reisi: { hedef: 5, metrik: (s) => s.rutbe_seviye },
   imparator: { hedef: 630, metrik: (_s, servet) => servet },
   tekelci: { hedef: 5, metrik: (s) => s.mulkler?.length ?? 0 },
-  sermaye_devi: { hedef: 180, metrik: (s) => s.ticaret_sermaye },
+  sermaye_devi: { hedef: 35, metrik: (s) => payYuzdesi(s) },
   kursu_sahibi: { hedef: 4, metrik: (s) => s.rutbe_seviye },
   comert_el: { hedef: 82, metrik: (s) => s.ahlak },
-  nufuzlu_vaiz: { hedef: 70, metrik: (s) => s.nufuz },
+  nufuzlu_vaiz: { hedef: 25, metrik: (s) => payYuzdesi(s) },
   sadaka_tasi: { hedef: 18, metrik: (s) => s.omur_sadaka_sayisi ?? 0 },
   piskopos: { hedef: 5, metrik: (s) => s.rutbe_seviye },
   aziz: { hedef: 98, metrik: (s) => s.ahlak },

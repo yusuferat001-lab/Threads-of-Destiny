@@ -76,7 +76,7 @@ export const PAZAR_MUSTERI_ARALIK: [number, number] = [350, 500];
 export const ALIM_ORANI = 0.42;
 /** Başlangıç pazar payı tabanı (%8–9) ve mesleğe yatkınlık kademesine göre ek (puan). */
 export const BASLANGIC_PAY_ARALIK: [number, number] = [0.1, 0.11];
-export const YATKINLIK_PAY_EKI = [0, -0.03, 0, 0.02, 0.03]; // index = meslek_yatkinlik_seviyesi (1 kötü … 4 mükemmel)
+export const YATKINLIK_PAY_EKI = [0, -0.03, 0, 0.01, 0.02, 0.03]; // index = meslek_yatkinlik_seviyesi (1 kötü … 5 mükemmel)
 
 // ── Rakip saldırıları (v8.2) ───────────────────────────────────────────────
 /** Saldırı kademesi sabit pay aralığıyla belirlenir: %0–20 → 1, %21–34 → 2, %35+ → 3. */
@@ -193,19 +193,18 @@ export function pazarMaasCarpani(pay: number): number {
 }
 
 /**
- * Meslek seçilince oyuncunun başlangıç müşterisi: P × (%8–9 taban + mesleğe yatkınlık eki
- * [Kötü −3, Nötr 0, İyi +2, Mükemmel +3 puan] + aile mirası +1 puan).
+ * Meslek seçilince oyuncunun başlangıç müşterisi: P × (%10–11 taban + mesleğe yatkınlık eki
+ * [Kötü −3, Nötr 0, İyi +1, Çok İyi +2, Mükemmel +3 puan]). Aile mirası eki v10'da kalktı.
  */
 export function baslangicMusteri(
   pazarMusteri: number,
   yatkinlikSeviyesi: number | null,
-  mirasSurduruldu: boolean,
   rnd: () => number = Math.random
 ): number {
   const [a, b] = BASLANGIC_PAY_ARALIK;
   const taban = a + rnd() * (b - a);
   const kademeEki = YATKINLIK_PAY_EKI[yatkinlikSeviyesi ?? 2] ?? 0;
-  const hedef = taban + kademeEki + (mirasSurduruldu ? 0.01 : 0);
+  const hedef = taban + kademeEki;
   return Math.max(OYUNCU_TABAN_MUSTERI, Math.round(pazarMusteri * Math.max(0.02, hedef) * 10) / 10);
 }
 

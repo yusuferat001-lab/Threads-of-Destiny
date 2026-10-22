@@ -36,6 +36,10 @@ import {
   KARABORSA_SUC_ARTISI_YILLIK,
   KARABORSA_AHLAK_ASINMASI_YILLIK,
 } from "./stateManager";
+import { ahlakInananEtkisi } from "../data/cemaat";
+import { aranmaAhlakKaybi } from "../data/aranmaSabitleri";
+import { kisilikGetir } from "../data/kisilikler";
+import { isletmeMeslegiMi } from "../data/meslekProfilleri";
 
 export const GOSTERGE_STATLARI = ["saglik", "para", "mutluluk", "ahlak", "aranma", "sohret"] as const;
 export type GostergeStat = (typeof GOSTERGE_STATLARI)[number];
@@ -258,6 +262,28 @@ function ahlakDetayi(state: CharacterState): GostergeDetayTaban {
       yon: "kotu",
     });
   }
+  if (state.meslek === "Din Adamı") {
+    // v10: ahlak bantları cemaatin yıllık büyümesini belirler (25'erli).
+    const bant = ahlakInananEtkisi(state.ahlak);
+    etkenler.push({
+      ikon: "⛪",
+      metin: T(dil, "Ahlak bandın inananlarını yılda {0} değiştiriyor (0–24: −%1,5 · 25–49: 0 · 50–74: +%0,5 · 75–100: +%1,5).", [
+        bant === 0
+          ? dil === "en" ? "0%" : "%0"
+          : dil === "en"
+            ? `${bant > 0 ? "+" : "−"}${Math.abs(Math.round(bant * 1000) / 10)}%`
+            : `${bant > 0 ? "+" : "−"}%${String(Math.abs(Math.round(bant * 1000) / 10)).replace(".", ",")}`,
+      ]),
+      yon: bant > 0 ? "iyi" : bant < 0 ? "kotu" : "notr",
+    });
+  }
+  const kisilikAhlak = state.kisilik.reduce((t, k) => t + (kisilikGetir(k)?.yillikEtki?.ahlak ?? 0), 0);
+  if (kisilikAhlak !== 0) {
+    etkenler.push({ ikon: "🎭", metin: T(dil, "Kişiliğin: {0}/yıl", [isaretli(Math.round(kisilikAhlak * 100) / 100)]), yon: yon(kisilikAhlak) });
+  }
+  if (isletmeMeslegiMi(state.meslek) && aranmaAhlakKaybi(state.suc_seviyesi) > 0) {
+    etkenler.push({ ikon: "🚨", metin: T(dil, "Aranma gölgesi: {0}/yıl", [isaretli(-aranmaAhlakKaybi(state.suc_seviyesi))]), yon: "kotu" });
+  }
   if (state.etiketler.includes("bagimlilik:ayyas")) {
     etkenler.push({ ikon: "🍺", metin: T(dil, "Ayyaşlık damgası ahlakını bir kez düşürdü."), yon: "kotu" });
   }
@@ -279,7 +305,7 @@ function ahlakDetayi(state: CharacterState): GostergeDetayTaban {
     yukselt: [
       T(dil, "Yardım, sadaka ve dürüstlük içeren olay seçeneklerini seç."),
       T(dil, "Sosyalleş ekranından sadaka ver."),
-      T(dil, "Din Adamı rütbesi ahlak ister; yüksek ahlak maaşı da artırır."),
+      T(dil, "Din Adamı rütbesi ahlak ister; yüksek ahlak cemaatini de büyütür."),
     ],
     dusur: [
       T(dil, "Para karşılığı ahlaki taviz ahlakını düşürür, aranmanı artırır."),

@@ -203,11 +203,12 @@ export function yatkinlikEtiketi(deger: number, dil: Dil = 'tr'): { etiket: stri
  */
 export function meslekYatkinlikOnizleme(
   puan: number,
-): { seviye: 1 | 2 | 3 | 4; zar: number; maas: number; tecrube: number; sohret: number } {
-  if (puan <= -5) return { seviye: 1, zar: -15, maas: -10, tecrube: -15, sohret: 0 };
-  if (puan >= 20) return { seviye: 4, zar: 20, maas: 10, tecrube: 15, sohret: 8 };
-  if (puan >= 5) return { seviye: 3, zar: 10, maas: 5, tecrube: 7, sohret: 0 };
-  return { seviye: 2, zar: 0, maas: 0, tecrube: 0, sohret: 0 };
+): { seviye: 1 | 2 | 3 | 4 | 5; zar: number; maas: number; tecrube: number; sohret: number; musteri: number } {
+  if (puan <= -5) return { seviye: 1, zar: -15, maas: -6, tecrube: -15, sohret: 0, musteri: -0.4 };
+  if (puan >= 20) return { seviye: 5, zar: 20, maas: 10, tecrube: 15, sohret: 8, musteri: 1.0 };
+  if (puan >= 12) return { seviye: 4, zar: 15, maas: 4, tecrube: 11, sohret: 0, musteri: 0.6 };
+  if (puan >= 5) return { seviye: 3, zar: 10, maas: 2, tecrube: 7, sohret: 0, musteri: 0.3 };
+  return { seviye: 2, zar: 0, maas: 0, tecrube: 0, sohret: 0, musteri: 0 };
 }
 
 interface DonemselTema {

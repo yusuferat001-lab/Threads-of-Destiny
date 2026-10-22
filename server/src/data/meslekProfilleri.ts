@@ -4,7 +4,7 @@ import { ADAY_SABLONLARI, type AdayTaslagi } from "./adayHavuzlari";
 export type { AdayTaslagi } from "./adayHavuzlari";
 
 /**
- * Meslek işletmesi profilleri (2026-10, dikey dilim — Tüccar + Zanaatkâr).
+ * Meslek işletmesi profilleri (2026-10, dikey dilim — Tüccar + Zanaatkâr; Din Adamı 3. meslek olarak eklendi).
  * Kural kodu tek (game/isletme.ts); meslek × çağ yalnız burada isim, kalem
  * listesi ve birkaç sayıyla değişir. Metinler {tr,en} çiftleri olarak gömülüdür
  * (KARANLIK_ISLER deseni): oyuncunun diline göre `ikiDil` ile seçilir.
@@ -34,7 +34,7 @@ export interface HatTanimi {
 }
 
 /** Yatırımın motor etkisi: id'ye değil bu türe bakılır. */
-export type YatirimEtkisi = "depo" | "talep" | "alis" | "uretim" | "pazar" | "koruma";
+export type YatirimEtkisi = "depo" | "talep" | "alis" | "uretim" | "pazar" | "koruma" | "bina" | "okul" | "yardim";
 
 export interface YatirimTanimi {
   id: string;
@@ -52,8 +52,8 @@ export interface RolTanimi {
 }
 
 export interface IsletmeProfili {
-  /** "ticaret": mal satın alınır (depo dolana dek); "uretim": yıllık üretim tavanı vardır, maliyet hammaddedir. */
-  mod?: "ticaret" | "uretim";
+  /** "ticaret": mal satın alınır (depo dolana dek); "uretim": yıllık üretim tavanı vardır, maliyet hammaddedir; "cemaat": Din Adamı (bağış + faaliyetler, stok yok; game/cemaat.ts). */
+  mod?: "ticaret" | "uretim" | "cemaat";
   hatlar: HatTanimi[];
   yatirimlar: YatirimTanimi[];
   roller: RolTanimi[];
@@ -209,6 +209,62 @@ const ZANAATKAR_YATIRIMLAR: YatirimTanimi[] = [
   YATIRIM_GUVENLIK_ZANAAT,
 ];
 
+// ── Din Adamı (cemaat işletmesi, v10: mum "satmaz"; bağış + faaliyet geliri, stok yok) ──
+const DIN_YATIRIMLAR: YatirimTanimi[] = [
+  {
+    id: "bina",
+    simge: "⛪",
+    ad: { tr: "İbadethane", en: "House of Worship" },
+    aciklama: {
+      tr: "Ayine sığan inanan: 40 → 90 → 170 → 300. Kapasiteyi aşan inananlar rakibe geçer; bakımı pahalıdır.",
+      en: "Worshippers it can hold: 40 → 90 → 170 → 300. Those beyond capacity drift to your rival; upkeep is costly.",
+    },
+    etki: "bina",
+    fiyatlar: [22, 55, 120],
+  },
+  {
+    id: "okul",
+    simge: "🏫",
+    ad: { tr: "Okul", en: "School" },
+    aciklama: {
+      tr: "Yılda mezun çıkarma şansı %12 / %20 / %30. Mezun misyoner olur: yeni inananlar getirir, bazen usta bir aday çıkar. Çalışanlar da daha hızlı gelişir.",
+      en: "Yearly chance of a graduate: 12% / 20% / 30%. Graduates become missionaries, bring new believers, and sometimes a skilled recruit emerges. Staff also improve faster.",
+    },
+    etki: "okul",
+    fiyatlar: [28, 65, 130],
+  },
+  {
+    id: "asevi",
+    simge: "🍲",
+    ad: { tr: "Aşevi", en: "Soup Kitchen" },
+    aciklama: {
+      tr: "Her kademe yardım harcamasının inanan ve ahlak getirisini %15 artırır.",
+      en: "Each tier raises the flock and morality payoff of your aid spending by 15%.",
+    },
+    etki: "yardim",
+    fiyatlar: [15, 35, 70],
+  },
+  {
+    ...YATIRIM_TANITIM,
+    ad: { tr: "Vaaz ve Davet", en: "Sermons & Outreach" },
+  },
+  {
+    ...YATIRIM_GUVENLIK_TUCCAR,
+    ad: { tr: "Kilise Güvenliği", en: "Church Security" },
+    aciklama: {
+      tr: "Kumbara ve ibadethaneyi korur: Koruma +0,17 / +0,34 / +0,50 (toplam).",
+      en: "Guards the offering box and the sanctuary: Protection +0.17 / +0.34 / +0.50 (total).",
+    },
+  },
+];
+
+const DIN_ROLLER: RolTanimi[] = [
+  { tur: "ana", ad: { tr: "Vaiz", en: "Preacher" } },
+  { tur: "maliyet", ad: { tr: "Ekonom", en: "Steward" } },
+  { tur: "musteri", ad: { tr: "Davetçi", en: "Outreach worker" } },
+  { tur: "guvenlik", ad: { tr: "Kilise bekçisi", en: "Church watchman" } },
+];
+
 // ── Roller ─────────────────────────────────────────────────────────────────
 const TUCCAR_ROLLER: RolTanimi[] = [
   { tur: "ana", ad: { tr: "Satıcı", en: "Salesman" } },
@@ -224,7 +280,13 @@ const ZANAATKAR_ROLLER: RolTanimi[] = [
 ];
 
 /** Rol başına oyuncuya gösterilen kısa etki açıklaması (bonus yeteneğe göre değişir). */
-export const ROL_ACIKLAMALARI: Record<"ticaret" | "uretim", Record<IsletmeRolTuru, DilliMetin>> = {
+export const ROL_ACIKLAMALARI: Record<"ticaret" | "uretim" | "cemaat", Record<IsletmeRolTuru, DilliMetin>> = {
+  cemaat: {
+    ana: { tr: "Bağışları artırır", en: "Raises donations" },
+    maliyet: { tr: "Faaliyet masraflarını düşürür", en: "Lowers activity costs" },
+    musteri: { tr: "İnanan sayısını artırır", en: "Grows the flock" },
+    guvenlik: { tr: "Kumbarayı ve ibadethaneyi korur", en: "Protects the offering box and sanctuary" },
+  },
   ticaret: {
     ana: { tr: "Yıllık satışı artırır", en: "Raises yearly sales" },
     maliyet: { tr: "Mal alış maliyetini düşürür", en: "Lowers purchase costs" },
@@ -270,11 +332,11 @@ const TUCCAR_SANAYI: IsletmeProfili = {
 const ZANAATKAR_ORTA_CAG: IsletmeProfili = {
   mod: "uretim",
   hatlar: [
-    { id: "kap", simge: "🏺", ad: { tr: "Çömlek ve Kap", en: "Pottery & Vessels" }, kesim: "temel", talepTabani: 1.584, birimMaliyet: 0.58, birimFiyat: 1.15, minRutbe: 1 },
-    { id: "demir", simge: "⚒️", ad: { tr: "Demir Alet", en: "Iron Tools" }, kesim: "temel", talepTabani: 1.278, birimMaliyet: 0.67, birimFiyat: 1.2, minRutbe: 1 },
-    { id: "mobilya", simge: "🪑", ad: { tr: "Mobilya", en: "Furniture" }, kesim: "orta", talepTabani: 1.037, birimMaliyet: 0.86, birimFiyat: 1.9, minRutbe: 2 },
-    { id: "silah", simge: "⚔️", ad: { tr: "Kılıç ve Zırh", en: "Swords & Armour" }, kesim: "orta", talepTabani: 0.858, birimMaliyet: 0.96, birimFiyat: 2.3, minRutbe: 2, savasTalep: 1.5 },
-    { id: "kuyum", simge: "💍", ad: { tr: "Kuyum ve İşleme", en: "Jewellery & Fine Work" }, kesim: "luks", talepTabani: 0.383, birimMaliyet: 1.82, birimFiyat: 5.0, minRutbe: 3 },
+    { id: "kap", simge: "🏺", ad: { tr: "Çömlek ve Kap", en: "Pottery & Vessels" }, kesim: "temel", talepTabani: 1.711, birimMaliyet: 0.58, birimFiyat: 1.15, minRutbe: 1 },
+    { id: "demir", simge: "⚒️", ad: { tr: "Demir Alet", en: "Iron Tools" }, kesim: "temel", talepTabani: 1.38, birimMaliyet: 0.67, birimFiyat: 1.2, minRutbe: 1 },
+    { id: "mobilya", simge: "🪑", ad: { tr: "Mobilya", en: "Furniture" }, kesim: "orta", talepTabani: 1.12, birimMaliyet: 0.86, birimFiyat: 1.9, minRutbe: 2 },
+    { id: "silah", simge: "⚔️", ad: { tr: "Kılıç ve Zırh", en: "Swords & Armour" }, kesim: "orta", talepTabani: 0.927, birimMaliyet: 0.96, birimFiyat: 2.3, minRutbe: 2, savasTalep: 1.5 },
+    { id: "kuyum", simge: "💍", ad: { tr: "Kuyum ve İşleme", en: "Jewellery & Fine Work" }, kesim: "luks", talepTabani: 0.414, birimMaliyet: 1.82, birimFiyat: 5.0, minRutbe: 3 },
   ],
   yatirimlar: ZANAATKAR_YATIRIMLAR,
   roller: ZANAATKAR_ROLLER,
@@ -295,9 +357,26 @@ const ZANAATKAR_SANAYI: IsletmeProfili = {
   adaylar: ADAY_SABLONLARI["Zanaatkâr|Sanayi Devrimi"] ?? [],
 };
 
+const DIN_ORTA_CAG: IsletmeProfili = {
+  mod: "cemaat",
+  hatlar: [],
+  yatirimlar: DIN_YATIRIMLAR,
+  roller: DIN_ROLLER,
+  adaylar: ADAY_SABLONLARI["Din Adamı|Orta Çağ"] ?? [],
+};
+
+const DIN_SANAYI: IsletmeProfili = {
+  mod: "cemaat",
+  hatlar: [],
+  yatirimlar: DIN_YATIRIMLAR,
+  roller: DIN_ROLLER,
+  adaylar: ADAY_SABLONLARI["Din Adamı|Sanayi Devrimi"] ?? [],
+};
+
 const PROFILLER: Partial<Record<string, Record<Cag, IsletmeProfili>>> = {
   Tüccar: { "Orta Çağ": TUCCAR_ORTA_CAG, "Sanayi Devrimi": TUCCAR_SANAYI },
   Zanaatkâr: { "Orta Çağ": ZANAATKAR_ORTA_CAG, "Sanayi Devrimi": ZANAATKAR_SANAYI },
+  "Din Adamı": { "Orta Çağ": DIN_ORTA_CAG, "Sanayi Devrimi": DIN_SANAYI },
 };
 
 /** Meslek işletmesi tanımlıysa profili döner; tanımsız meslekler eski maaş sistemiyle çalışır. */
@@ -346,7 +425,7 @@ export function sehirYoneticisiUnvani(cag: Cag, bolge: string): string {
 }
 
 /**
- * Din Adamı/Asker için (henüz işletmesi olmayan meslekler) eski "patron" figürünün adı
+ * Asker için (henüz işletmesi olmayan meslek) eski "patron" figürünün adı (Din Adamı satırı işletmeye geçince kullanılmaz)
  * (meslek × çağ × ülke/din). Dönen değer kanonik Türkçe addır (K() ile çevrilir).
  */
 const OTORITE_TABLOSU: Record<string, Record<Cag, { genel: string; ozel?: Record<string, string> }>> = {

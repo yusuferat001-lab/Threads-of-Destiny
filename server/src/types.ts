@@ -100,6 +100,8 @@ export interface UlkeDurumu {
   nufusDurumu: "artiyor" | "normal" | "azaliyor";
   /** Genel dönem (bolluk/durgunluk/kıtlık). `ekonomi` bundan türetilir. Eski kayıtlarda göçle atanır. */
   donem?: DonemDurumu;
+  /** Dönem torbası (v10): sıradaki dönemlerin karışık sırası; torba bitince yeniden karıştırılır (bir ömürde üç dönemin gelme sayısı yakın kalır). */
+  donem_torbasi?: DonemTuru[];
 }
 
 /** Piyasa mülkleri: her biri en fazla bir kez sahiplenilebilir, getirisi state.ulke'ye göre her tur yeniden hesaplanır. */
@@ -295,7 +297,7 @@ export interface CharacterState {
    * gelen bir yetenek damgası). 1=kötü, 2=nötr, 3=iyi, 4=mükemmel — bkz.
    * data/meslekYatkinlik.ts. Meslek henüz seçilmediyse null.
    */
-  meslek_yatkinlik_seviyesi: 1 | 2 | 3 | 4 | null;
+  meslek_yatkinlik_seviyesi: 1 | 2 | 3 | 4 | 5 | null;
   /** Kademeden türeyen kanonik (TÜRKÇE) unvan — ör. "Kılıca Yatkın"; client `kt()` ile çevirir. Meslek seçilmediyse null. */
   meslek_yatkinlik_unvani: string | null;
   /** Kademeden türeyen kalıcı oransal bonus/malus (ör. -0.15 → olay şansı ×0.85); nötr kademede 0. */
@@ -752,8 +754,8 @@ export interface YonetimTalep {
   /** Talebi yapan kişinin adı (gösterim). */
   kimAdi: string;
   /** "bagis" = para ister; "sadakat" = para yok ama ret ilişkiyi çok düşürür. */
-  tur: "bagis" | "sadakat";
-  /** İstenen para (tur === "sadakat" ise 0). */
+  tur: "bagis" | "sadakat" | "aciklama";
+  /** İstenen para (tur === "sadakat" veya "aciklama" ise 0). */
   tutar: number;
   /** Talebin insan-okunur gerekçesi (ör. "saray onarımı için bağış"). */
   kalem: string;
@@ -927,17 +929,23 @@ export interface IsletmeUyari {
     | "ic_hirsizlik"
     | "rakip_saldiri"
     | "vergi_indirimi_bitti"
-    | "imtiyaz_bitti";
+    | "imtiyaz_bitti"
+    | "bina_tasti"
+    | "asiri_olay"
+    | "mezun";
   hat?: string;
   isim?: string;
   /** hırsızlık sonucu / rakip saldırı türü (istemci metni bunlardan kurar). */
-  sonuc?: "agir" | "rahat" | "kismi" | "engellendi" | "sans" | "musteri_calma" | "iftira" | "sabotaj" | "baskin" | "nakit";
+  sonuc?: "agir" | "rahat" | "kismi" | "engellendi" | "sans" | "musteri_calma" | "iftira" | "sabotaj" | "baskin" | "nakit" | "kumbara" | "muridcalma" | "bidat" | "aforoz" | "yangin" | "engizisyon";
   /** Rakip saldırısı: saldıran rakibin adı, güvenlik engelledi mi, içerden sızma var mı, kaybedilen müşteri (ondalık), şöhret ve stok kaybı. */
   rakip?: string;
   engellendi?: boolean;
   sizma?: boolean;
   musteriKaybi?: number;
   sohretKaybi?: number;
+  /** Dini saldırılarda ahlak ve otorite kaybı (puan). */
+  ahlakKaybi?: number;
+  otoriteKaybi?: number;
   /** Çalınan/azalan ürün oranı (%) ve nakit hasarı (%, geçen yıl brüt kârına göre); tutar olarak da `tutar`. */
   urunYuzde?: number;
   nakitYuzde?: number;
@@ -967,6 +975,17 @@ export interface IsletmeDokum {
   hatlar: { id: string; talep: number; satilan: number; alinan: number; stokSonu: number }[];
   /** Üretim modundaki mesleklerde (Zanaatkâr) o yılın üretim tavanı ve kullanılan miktar. */
   uretim?: { tavan: number; kullanilan: number };
+  /** Din Adamı (cemaat modu) yıl dökümü: bağış/faaliyet ayrıntıları. `satis` toplam gelir, `alim` faaliyet+ayin masrafı, `depoMasrafi` bina bakımı, `loncaAidati` teşkilat aidatıdır. */
+  cemaat?: {
+    gelmeOrani: number;
+    gelen: number;
+    kapasite: number;
+    bagis: number;
+    faaliyetler: { id: string; gelir: number; masraf: number }[];
+    ayinMasrafi: number;
+    yardim: number;
+    fanatiklik: number;
+  };
   uyarilar: IsletmeUyari[];
 }
 
@@ -982,6 +1001,27 @@ export interface IsletmeAday {
   sadakat: number;
   /** Enflasyonsuz yıllık maaş tabanı (giriş seviyesine göre sabit) — güncel maaş = maas_taban × enflasyon. */
   maas_taban: number;
+}
+
+/** Din Adamı cemaat işletmesi politikaları (v10). */
+export type CemaatBagis = IsletmeFiyat;
+export type CemaatKitle = "alt" | "genel" | "ust";
+export type CemaatYardim = "dusuk" | "orta" | "yuksek";
+export type CemaatTon = "ilimli" | "dengeli" | "atesli";
+
+export interface CemaatDurumu {
+  bagis: CemaatBagis;
+  kitle: CemaatKitle;
+  yardim: CemaatYardim;
+  ton: CemaatTon;
+  /** 0-100: yavaş artar, bağış oranını yükseltir ama inanan kaçışı, otorite kaybı ve aşırılık riski getirir. */
+  fanatiklik: number;
+  /** Seçilen öğreti id'leri (rütbe seviyesi başına bir). */
+  ogretiler: string[];
+  /** Seçilmeyi bekleyen öğreti seviyesi; doluysa oyun devam etmez. */
+  bekleyen_ogreti: number | null;
+  mezun_son_yil: number | null;
+  asiri_son_yil: number | null;
 }
 
 /** Meslek işletmesi (şu an yalnız Tüccar; 2026-10 dikey dilim). Diğer meslekler null → eski maaş sistemi. */
@@ -1001,10 +1041,12 @@ export interface IsletmeDurumu {
   stok_hedefi?: IsletmeStokHedefi;
   /** Son dış hırsızlık girişiminin yılı (3 yıl cooldown). */
   hirsizlik_son_yil?: number | null;
-  /** Otoriteden alınan süreli imtiyazlar: imtiyaz id → bitiş yılı (pazar_imtiyazi, gumruk_muafiyeti, tekel_ruhsati, hammadde_tahsisi, atolye_ruhsati). */
+  /** Otoriteden alınan süreli imtiyazlar: imtiyaz id → bitiş yılı (pazar_imtiyazi, gumruk_muafiyeti, tekel_ruhsati, hammadde_tahsisi, atolye_ruhsati, vakif_muafiyeti, kutsal_gun_imtiyazi). */
   imtiyazlar?: Record<string, number>;
   /** Tekel ruhsatı verilen hat (ruhsat süresince satış fiyatı +%10). */
   tekel_hat?: string | null;
+  /** Yalnız Din Adamı (cemaat modu). */
+  cemaat?: CemaatDurumu;
 }
 
 /** Dünya dönemi "sıcak ürün" bilgisi (deterministik) — kart etiketi için. */
