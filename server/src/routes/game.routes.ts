@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   yeniOyun,
+  yilGec,
   mesleğiAta,
   senaryoUret,
   secimUygula,
@@ -143,7 +144,8 @@ gameRouter.post("/new", async (req, res) => {
       yerlesim,
       oyuncuIsmi,
       dil === "en" ? "en" : "tr",
-      temizIstemciId
+      temizIstemciId,
+      "ilerle"
     );
     res.json({ state });
   } catch (err) {
@@ -180,6 +182,14 @@ gameRouter.get("/:id/state", async (req, res) => {
     res.json({ state });
   } catch (err) {
     res.status(404).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/yil-gec", async (req, res) => {
+  try {
+    res.json(await yilGec(req.params.id));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
 });
 

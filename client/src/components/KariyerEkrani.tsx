@@ -10,6 +10,19 @@ import { IsletmePaneli } from './IsletmePaneli';
 import { CemaatPaneli } from './CemaatPaneli';
 import { ButcePaneli } from './ButcePaneli';
 
+/** Strateji sayfası başlıkları: mesleğe özgü adlar (ana ekran tuşlarıyla aynı). */
+function SAYFA_BASLIKLARI(meslek: string, sayfa: 'isletme' | 'yatirim' | 'calisan' | 'cevre', en: boolean): string {
+  const ad: Record<string, Record<string, [string, string]>> = {
+    isletme: { 'Din Adamı': ['Cemaatin', 'Your Parish'], 'Zanaatkâr': ['Atölyen', 'Your Workshop'], Asker: ['Ordun', 'Your Army'], '': ['Dükkânın', 'Your Shop'] },
+    yatirim: { Asker: ['Teçhizat', 'Gear'], '': ['Yatırımlar', 'Investments'] },
+    calisan: { 'Din Adamı': ['Hizmetliler', 'Clergy & Staff'], 'Zanaatkâr': ['Çıraklar & Ustalar', 'Staff'], Asker: ['Görevler', 'Duties'], '': ['Çalışanlar', 'Staff'] },
+    cevre: { '': ['Çevre', 'Rivals & City'] },
+  };
+  const tablo = ad[sayfa];
+  const [tr, enAd] = tablo[meslek] ?? tablo[''];
+  return en ? enAd : tr;
+}
+
 interface KariyerEkraniProps {
   meslek: string;
   rutbe: string;
@@ -59,6 +72,10 @@ interface KariyerEkraniProps {
   onIsletmeYatirim?: (yatirimId: string) => void;
   onIsletmeCalisanAl?: (adayId: string) => void;
   onGeriDon: () => void;
+  /** Telefon ana ekranı sayfası: verilirse yalnız o bölüm yeni strateji sayfası kabuğunda çizilir. */
+  sayfa?: 'isletme' | 'yatirim' | 'calisan' | 'cevre';
+  /** Yatırım sayfasındaki "Kredi & Mülk" bağlantısı (eski Yatırım ekranını açar). */
+  onMulkKredi?: () => void;
 }
 
 /** Karanlık iş adları/açıklamaları — i18n.ts yerine bileşene gömülü (NasilOynanir deseni). */
@@ -669,10 +686,14 @@ export function KariyerEkrani({
   onIsletmeYatirim,
   onIsletmeCalisanAl,
   onGeriDon,
+  sayfa,
+  onMulkKredi,
 }: KariyerEkraniProps) {
   const { m, kt, dil } = useDil();
   const en = dil === 'en';
   const [karanlikAcik, setKaranlikAcik] = useState(false);
+  // Strateji sayfası modu: hangi bölümler görünür? (sayfa yoksa eski tam ekran: hepsi.)
+  const gor = (...liste: ('isletme' | 'yatirim' | 'calisan' | 'cevre')[]) => !sayfa || liste.includes(sayfa);
 
   // İşlem sonucu / hata → ekrana açılır pencere.
   const [modalMesaj, setModalMesaj] = useState<string | null>(null);
@@ -717,11 +738,91 @@ export function KariyerEkrani({
   const statEtiket = (adi: 'un' | 'ahlak' | null) =>
     adi === 'ahlak' ? m.skorKirilimAhlak.replace(/^[^\s]+\s/, '') : m.skorKirilimSohret.replace(/^[^\s]+\s/, '');
 
+  const karanlikGovde = (modal: boolean) => (
+    <>
+            <div className="kariyer-karanlik-modal-baslik">
+              <h3>{m.iyKaranlikIsler}</h3>
+              {modal && (
+                <button className="ikincil kariyer-karanlik-kapat" onClick={() => setKaranlikAcik(false)}>
+                  ✕
+                </button>
+              )}
+            </div>
+
+            {/* Rakibin — karanlık işlerin en üstünde: hedef seçimi buradan başlar. */}
+            {rakipler.length > 0 && (
+              <div className="aile-koken-karti kariyer-karanlik-rakip">
+                <h3>{en ? 'Your Rival' : 'Rakibin'}</h3>
+                <div className="aile-koken-listesi">
+                  {rakipler.map((r) => (
+                    <span key={r.ad} className={`iliski-rozet${r.yenildi ? ' rakip-yenildi' : ''}`}>
+                      ♟️ {r.ad} · {kt(r.meslek)}
+                      {r.yenildi
+                        ? ` · ${en ? 'defeated' : 'saf dışı'}`
+                        : ` · ${en ? 'share' : 'pay'}: ${formatYuzde(dil, pazarDurum?.rakipler.find((x) => x.ad === r.ad)?.pay ?? 0)} · ${husumetEtiket(r.husumet)}`}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <p className="giris-aciklama tam-yardimci-metin">{m.iyKaranlikIsAcikla}</p>
+
+            {[true, false].map((ozel) => {
+              const liste = kotuIsler.filter((k) => k.meslegeOzel === ozel);
+              if (liste.length === 0) return null;
+              return (
+                <div key={String(ozel)} className="karanlik-grup">
+                  <h4 className="karanlik-grup-baslik">
+                    {ozel ? (en ? 'Your trade’s dirty work' : 'Mesleğine özel işler') : en ? 'Anyone can do these' : 'Herkesin işleri'}
+                  </h4>
+                  <div className="yatirim-kartlari">
+                    {liste.map((is) => (
+                      <KaranlikIsKart
+                        key={is.id}
+                        is={is}
+                        dil={dil}
+                        m={m}
+                        paraBirimi={paraBirimi}
+                        yukleniyor={yukleniyor}
+                        rakipler={rakipler}
+                        dinKultur={dinKultur}
+                        ekip={ekip}
+                        onKotuIs={onKotuIs}
+                      />
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+
+            <p className={`suc-seviyesi-gostergesi ${sucSeviyesi >= 50 ? 'suc-seviyesi-riskli' : ''}`}>
+              {bic(m.iySucSeviyen, Math.round(sucSeviyesi), sucSeviyesiEtiketi(m, sucSeviyesi))}
+            </p>
+
+    </>
+  );
+
   return (
-    <div className="ekran ekran-aile ekran-kariyer">
-      <h2>{m.geBaslik}</h2>
+    <div className={sayfa ? `ekran strateji-sayfa strateji-sayfa-${sayfa}` : 'ekran ekran-aile ekran-kariyer'}>
+      {sayfa ? (
+        <header className="strateji-baslik">
+          <div>
+            <h1>{SAYFA_BASLIKLARI(meslek, sayfa, en)}</h1>
+            <p>
+              {kt(rutbe)} · {en ? 'Rank' : 'Rütbe'} {rutbeSeviye}/5
+            </p>
+          </div>
+          <button type="button" className="strateji-kapat" onClick={onGeriDon} aria-label={en ? 'Close' : 'Kapat'}>
+            ✕
+          </button>
+        </header>
+      ) : (
+        <h2>{m.geBaslik}</h2>
+      )}
 
       {/* Rütbe/kademe göstergesi — Yatırım ekranından buraya taşındı, küçültülerek. */}
+      {gor('isletme') && (
       <div className="kariyer-kademe-satiri">
         <strong>{kt(rutbe)}</strong>
         <span className="kariyer-kademe-noktalar" aria-label={bic(m.iyKademeAria, rutbeSeviye)}>
@@ -730,10 +831,11 @@ export function KariyerEkrani({
           ))}
         </span>
       </div>
+      )}
 
       {/* Rütbe/tecrübe ilerleme çubuğu (Faz 6, 2026-09 sonu) — bir sonraki
           kademeye ne kadar kaldığını (kariyer puanı + mesleğe özgü stat) gösterir. */}
-      {ilerleme.gecerli && (
+      {gor('isletme') && ilerleme.gecerli && (
         <div className="kariyer-ilerleme-blok">
           {ilerleme.enUstMu ? (
             <p className="kariyer-ilerleme-ust">
@@ -839,7 +941,7 @@ export function KariyerEkrani({
         </div>
       )}
 
-      {hapiste && (
+      {gor('isletme') && hapiste && (
         <div className="aile-koken-karti gorev-hapis-karti">
           <span className="iliski-rozet">
             ⛓️ {m.ksHapiste}
@@ -850,7 +952,7 @@ export function KariyerEkrani({
         </div>
       )}
 
-      {vebaHastasi && (
+      {gor('isletme') && vebaHastasi && (
         <div className="aile-koken-karti gorev-hapis-karti">
           <span className="iliski-rozet">
             🦠 {m.geVebaHastasi}
@@ -867,7 +969,7 @@ export function KariyerEkrani({
       <div className="kariyer-govde">
         <div className="kariyer-ana-sutun">
           {/* ===== YÖNETİMLE BAĞLAR ===== */}
-          {yonetimDurum && (
+          {gor('cevre') && yonetimDurum && (
             <section className="kariyer-bolum kariyer-yonetim">
               {talep && talep.kimden === 'yonetici' && !yonetimDurum.tekOtorite && !hukumdarModalAcik && (
                 <div className="kariyer-talep-afisi">
@@ -936,8 +1038,9 @@ export function KariyerEkrani({
           )}
 
           {/* ===== İŞLETME (Tüccar dilimi, §45) — çalışanlar da burada yönetilir ===== */}
-          {isletme?.aktif && isletme.cemaat && onIsletmeKarar && onIsletmeYatirim && onIsletmeCalisanAl && (
+          {sayfa !== 'cevre' && isletme?.aktif && isletme.cemaat && onIsletmeKarar && onIsletmeYatirim && onIsletmeCalisanAl && (
             <CemaatPaneli
+              bolum={sayfa ?? 'hepsi'}
               durum={isletme}
               pazar={pazarDurum}
               yukleniyor={yukleniyor}
@@ -947,8 +1050,9 @@ export function KariyerEkrani({
               onEkipCikar={onEkipCikar}
             />
           )}
-          {isletme?.aktif && !isletme.cemaat && onIsletmeKarar && onIsletmeYatirim && onIsletmeCalisanAl && (
+          {sayfa !== 'cevre' && isletme?.aktif && !isletme.cemaat && onIsletmeKarar && onIsletmeYatirim && onIsletmeCalisanAl && (
             <IsletmePaneli
+              bolum={sayfa ?? 'hepsi'}
               durum={isletme}
               pazar={pazarDurum}
               yukleniyor={yukleniyor}
@@ -957,13 +1061,20 @@ export function KariyerEkrani({
               onCalisanAl={onIsletmeCalisanAl}
               onEkipCikar={onEkipCikar}
             />
+          )}
+
+          {sayfa === 'yatirim' && onMulkKredi && (
+            <button type="button" className="strateji-baglanti" onClick={onMulkKredi}>
+              <span>🏦 {en ? 'Loans & Property' : 'Kredi & Mülk'}</span>
+              <small>{en ? 'Moneylender, land and buildings' : 'Tefeci, arazi ve binalar'}</small>
+            </button>
           )}
 
           {/* ===== BÜTÇEN ===== */}
-          {finans && <ButcePaneli finans={finans} paraBirimi={paraBirimi} gecmis={gecmis ?? []} isletmeAktif={!!isletme?.aktif} />}
+          {gor('isletme') && finans && <ButcePaneli finans={finans} paraBirimi={paraBirimi} gecmis={gecmis ?? []} isletmeAktif={!!isletme?.aktif} />}
 
           {/* ===== EKİBİN ===== */}
-          {!isletme?.aktif && (
+          {gor('calisan') && !isletme?.aktif && (
           <div className="aile-cocuklar-karti">
             <h3>{m.geEkibin}</h3>
             {ekip.length === 0 ? (
@@ -989,7 +1100,7 @@ export function KariyerEkrani({
           )}
 
           {/* ===== PİYASA DEDİKODULARI ===== */}
-          {dedikodular && dedikodular.length > 0 && (
+          {gor('cevre') && dedikodular && dedikodular.length > 0 && (
             <div className="aile-cocuklar-karti">
               <h3>{m.iyPiyasaDedikodulari}</h3>
               <div className="dedikodu-panosu dedikodu-panosu-vurgu">
@@ -1003,16 +1114,19 @@ export function KariyerEkrani({
           )}
 
           {/* ===== KARANLIK İŞLER (ayrı bir pencerede açılır) ===== */}
+          {sayfa === 'cevre' && <div className="strateji-karanlik">{karanlikGovde(false)}</div>}
+          {!sayfa && (
           <div className="aile-cocuklar-karti">
             <button className="kariyer-istek-ac" onClick={() => setKaranlikAcik(true)}>
               ▸ {m.iyKaranlikIsler}
             </button>
           </div>
+          )}
         </div>
 
         <aside className="kariyer-yan-sutun">
-          {pazarDurum?.aktif && <PazarKarti pazar={pazarDurum} />}
-          {meslekGucSatirlari.length > 0 && (
+          {gor('cevre') && pazarDurum?.aktif && <PazarKarti pazar={pazarDurum} />}
+          {gor('isletme') && meslekGucSatirlari.length > 0 && (
             <div className="aile-koken-karti">
               <h3>{m.geMeslekGucu}</h3>
               <div className="aile-koken-listesi">
@@ -1033,64 +1147,7 @@ export function KariyerEkrani({
             className="kariyer-sonuc-modal kariyer-karanlik-modal"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="kariyer-karanlik-modal-baslik">
-              <h3>{m.iyKaranlikIsler}</h3>
-              <button className="ikincil kariyer-karanlik-kapat" onClick={() => setKaranlikAcik(false)}>
-                ✕
-              </button>
-            </div>
-
-            {/* Rakibin — karanlık işlerin en üstünde: hedef seçimi buradan başlar. */}
-            {rakipler.length > 0 && (
-              <div className="aile-koken-karti kariyer-karanlik-rakip">
-                <h3>{en ? 'Your Rival' : 'Rakibin'}</h3>
-                <div className="aile-koken-listesi">
-                  {rakipler.map((r) => (
-                    <span key={r.ad} className={`iliski-rozet${r.yenildi ? ' rakip-yenildi' : ''}`}>
-                      ♟️ {r.ad} · {kt(r.meslek)}
-                      {r.yenildi
-                        ? ` · ${en ? 'defeated' : 'saf dışı'}`
-                        : ` · ${en ? 'share' : 'pay'}: ${formatYuzde(dil, pazarDurum?.rakipler.find((x) => x.ad === r.ad)?.pay ?? 0)} · ${husumetEtiket(r.husumet)}`}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <p className="giris-aciklama tam-yardimci-metin">{m.iyKaranlikIsAcikla}</p>
-
-            {[true, false].map((ozel) => {
-              const liste = kotuIsler.filter((k) => k.meslegeOzel === ozel);
-              if (liste.length === 0) return null;
-              return (
-                <div key={String(ozel)} className="karanlik-grup">
-                  <h4 className="karanlik-grup-baslik">
-                    {ozel ? (en ? 'Your trade’s dirty work' : 'Mesleğine özel işler') : en ? 'Anyone can do these' : 'Herkesin işleri'}
-                  </h4>
-                  <div className="yatirim-kartlari">
-                    {liste.map((is) => (
-                      <KaranlikIsKart
-                        key={is.id}
-                        is={is}
-                        dil={dil}
-                        m={m}
-                        paraBirimi={paraBirimi}
-                        yukleniyor={yukleniyor}
-                        rakipler={rakipler}
-                        dinKultur={dinKultur}
-                        ekip={ekip}
-                        onKotuIs={onKotuIs}
-                      />
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
-
-            <p className={`suc-seviyesi-gostergesi ${sucSeviyesi >= 50 ? 'suc-seviyesi-riskli' : ''}`}>
-              {bic(m.iySucSeviyen, Math.round(sucSeviyesi), sucSeviyesiEtiketi(m, sucSeviyesi))}
-            </p>
-
+            {karanlikGovde(true)}
             <button className="ikincil" onClick={() => setKaranlikAcik(false)}>
               {en ? 'Close' : 'Kapat'}
             </button>
@@ -1098,9 +1155,11 @@ export function KariyerEkrani({
         </div>
       )}
 
-      <button className="ikincil tam-geri-buton" onClick={onGeriDon}>
-        {m.geriDon}
-      </button>
+      {!sayfa && (
+        <button className="ikincil tam-geri-buton" onClick={onGeriDon}>
+          {m.geriDon}
+        </button>
+      )}
 
       {/* Sonuç/hata penceresi en sonda ve bir üst katmanda: karanlık işler ya da kral
           talebi penceresi açıkken sonucu onların ARKASINDA göstermesin. */}

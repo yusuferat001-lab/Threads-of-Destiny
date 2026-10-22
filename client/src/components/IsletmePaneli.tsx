@@ -14,6 +14,12 @@ import { PiyasaHaberleri } from './PiyasaHaberleri';
 import { IsletmeOrtak } from './IsletmeOrtak';
 import { formatPara, formatYuzde, formatMusteri } from '../format';
 
+/** Pazar payı: bir ondalık, dile göre yüzde işareti (TR "%12,7", EN "12.7%"). */
+function payMetni(dil: 'tr' | 'en', pay: number): string {
+  const v = formatMusteri(dil, pay);
+  return dil === 'en' ? `${v}%` : `%${v}`;
+}
+
 interface Props {
   durum: IsletmeGorunumu;
   /** Piyasa haberleri ve müşteri dağılımı için (yoksa kart gösterilmez). */
@@ -23,6 +29,8 @@ interface Props {
   onYatirim: (yatirimId: string) => void;
   onCalisanAl: (adayId: string) => void;
   onEkipCikar: (ekipId: string) => void;
+  /** Telefon ana ekranı sayfaları: yalnız bir bölümü çiz (varsayılan hepsi). */
+  bolum?: 'hepsi' | 'isletme' | 'yatirim' | 'calisan';
 }
 
 type D = { tr: string; en: string };
@@ -42,7 +50,8 @@ const M = {
   vergiIndirim: { tr: 'indirimli, kalan', en: 'reduced, left' },
   yilKisa: { tr: 'yıl', en: 'yr' },
   koruma: { tr: 'Koruma', en: 'Security' },
-  hirsizlikAralik: { tr: 'hırsızlık ~her', en: 'theft ~every' },
+  hirsizlikAralik: { tr: 'hırsız girişimi ~her', en: 'theft attempt ~every' },
+  hirsizlikBirim: { tr: 'yılda bir', en: 'years' },
   borc: { tr: 'Tedarikçi borcu', en: 'Supplier debt' },
   beklenen: { tr: 'Beklenen kâr', en: 'Expected profit' },
   yil: { tr: '/yıl', en: '/yr' },
@@ -180,7 +189,7 @@ const SALDIRI_ENGELLENDI: Record<string, D> = {
 /** Aynı yıl için açılır uyarıyı yalnız bir kez göstermek için (modül düzeyi; sayfa yenilenince sıfırlanır). */
 let sonGosterilenYil = -1;
 
-export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onCalisanAl, onEkipCikar }: Props) {
+export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onCalisanAl, onEkipCikar, bolum = 'hepsi' }: Props) {
   const { dil } = useDil();
   const t = (k: Exclude<keyof typeof M, 'donem'>) => M[k][dil];
   const d = (m: D) => m[dil];
@@ -318,11 +327,13 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
 
   return (
     <section className="isletme-paneli">
+      {(bolum === 'hepsi' || bolum === 'isletme') && (
+        <>
       <h3>{t('baslik')}</h3>
 
       <div className="isletme-ozet">
         <span>
-          ⚖️ {t('pay')}: <strong>{formatPara(durum.pazarPayi)}%</strong>
+          ⚖️ {t('pay')}: <strong>{payMetni(dil, durum.pazarPayi)}</strong>
         </span>
         <span>
           👥 {t('musteri')}: <strong>{formatMusteri(dil, durum.musteri)}</strong>
@@ -347,7 +358,7 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
           {durum.vergi.indirimKalanYil > 0 ? ` (${t('vergiIndirim')} ${durum.vergi.indirimKalanYil} ${t('yilKisa')})` : ''}
         </span>
         <span>
-          🔒 {t('koruma')}: <strong>%{Math.round(durum.koruma.toplam * 100)}</strong> · {t('hirsizlikAralik')} {durum.koruma.hirsizlikAralik} {t('yilKisa')}
+          🔒 {t('koruma')}: <strong>%{Math.round(durum.koruma.toplam * 100)}</strong> · {t('hirsizlikAralik')} {Math.max(1, Math.round(durum.koruma.hirsizlikAralik))} {t('hirsizlikBirim')}
         </span>
         {durum.tedarikciBorcu > 0 && (
           <span>
@@ -393,7 +404,11 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
       <h4>{t('hatlar')}</h4>
       <div className="isletme-hatlar">{durum.hatlar.map(hatKarti)}</div>
 
+        </>
+      )}
+
       <IsletmeOrtak
+        goster={bolum === 'isletme' ? 'yok' : bolum}
         durum={durum}
         yukleniyor={yukleniyor}
         sadakatAdi={M.sadakat}
@@ -403,6 +418,8 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
         onEkipCikar={onEkipCikar}
       />
 
+      {(bolum === 'hepsi' || bolum === 'isletme') && (
+        <>
       <h4>{t('dokum')}</h4>
       {!dokum ? (
         <p className="isletme-bos">{t('ilkYil')}</p>
@@ -444,6 +461,9 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
             </div>
           ))}
         </div>
+      )}
+
+        </>
       )}
 
       {uyariAcik && dokum && (

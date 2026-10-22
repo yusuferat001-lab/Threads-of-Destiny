@@ -38,6 +38,7 @@ import {
   stateGetir,
   oyunDiliAyarla,
   senaryoGetir,
+  yilGec,
   secimYap,
   skorKaydet,
   skorTablosuGetir,
@@ -121,6 +122,7 @@ import { FinansEkrani } from './components/FinansEkrani';
 import { SosyallesmePaneli } from './components/SosyallesmePaneli';
 import { MagazaPaneli } from './components/MagazaPaneli';
 import { AltGezinme } from './components/AltGezinme';
+import { AnaEkranMobil, type AnaTusId } from './components/AnaEkranMobil';
 import { IsYatirimEkrani } from './components/IsYatirimEkrani';
 import { AyarlarModal } from './components/AyarlarModal';
 import { ayarlariGetir, ayarlariKaydet, type Dil } from './ayarlar';
@@ -164,6 +166,8 @@ import './giris.css';
 // import edilmeli (aynı özgüllükte sonraki dosya kazanır).
 import './olay-kutusu.css';
 import './mobil-oyun.css';
+import './ana-ekran.css';
+import './strateji.css';
 import './pc-olay-kutusu.css';
 
 // Geçici olarak kapatıldı (2026-09): günlük giriş serisi/ödülü, gold bakiyesi ve kozmetik dolabı
@@ -375,6 +379,10 @@ function App() {
   const [basarimGaleriAcik, setBasarimGaleriAcik] = useState(false);
   const [nasilOynanirAcik, setNasilOynanirAcik] = useState(false);
   const [yenilikAcik, setYenilikAcik] = useState(false);
+  // "ilerle" modu: İLERLE'den dönen yıllık haber şeridi (ana ekranda kapatılabilir).
+  const [yilNotu, setYilNotu] = useState<string | null>(null);
+  // Ana ekran tuşundan açılan strateji sayfası (null: eski tam ekran Kariyer).
+  const [kariyerSayfa, setKariyerSayfa] = useState<AnaTusId | null>(null);
   const [yeniBasarimlar, setYeniBasarimlar] = useState<BasarimTanimi[]>([]);
   const [dil, setDil] = useState<Dil>(() => ayarlariGetir().dil);
   const [basarimlar, setBasarimlar] = useState(() => basarimlariGetir());
@@ -662,11 +670,9 @@ function App() {
         } else if (!state.meslek) {
           setEkran('acilis');
         } else {
-          if (!ogretiBekliyor(state)) {
-            const { senaryo } = await senaryoGetir(state.id);
-            if (iptal) return;
-            setSenaryo(senaryo);
-          }
+          const acilanSenaryo = await senaryoGerekirseCek(state);
+          if (iptal) return;
+          setSenaryo(acilanSenaryo);
           setTepkiModu(false);
           setEkran('oyun');
         }
@@ -759,10 +765,7 @@ function App() {
     try {
       const { state } = await meslekAta(karakter.id, meslek);
       setKarakter(state);
-      if (!ogretiBekliyor(state)) {
-        const { senaryo } = await senaryoGetir(state.id);
-        setSenaryo(senaryo);
-      }
+      setSenaryo(await senaryoGerekirseCek(state));
       setTepkiModu(false);
       setEkran('oyun');
     } catch (err) {
@@ -845,9 +848,47 @@ function App() {
         setEkran('oyun');
         return;
       }
-      const { senaryo } = await senaryoGetir(karakter.id);
-      setSenaryo(senaryo);
+      // "ilerle" modunda olay cevabından sonra yeni olay hemen çıkmaz: ana ekrana dönülür.
+      setSenaryo(await senaryoGerekirseCek(karakter));
       setTepkiModu(false);
+      setEkran('oyun');
+    } catch (err) {
+      setHata(temizHata(err));
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
+  /**
+   * Olay çekilmesi gerekiyorsa senaryoyu getirir. Öğreti seçimi bekliyorsa ya da "ilerle" zaman
+   * modunda henüz olay çıkmadıysa (ana ekran gösterilir) null döner.
+   */
+  async function senaryoGerekirseCek(state: CharacterState): Promise<SenaryoResponse | null> {
+    if (ogretiBekliyor(state)) return null;
+    if (state.zaman_modeli === 'ilerle' && !state.olay_bekliyor) return null;
+    return (await senaryoGetir(state.id)).senaryo;
+  }
+
+  /** Ana ekran İLERLE: olaysız 1 yıl; 2 yıl dolunca olay hemen gelir. */
+  async function ilerleHandler() {
+    if (!karakter || yukleniyor) return;
+    setHata(null);
+    setYukleniyor(true);
+    try {
+      setYilNotu(null);
+      const sonuc = await yilGec(karakter.id);
+      setKarakter(sonuc.state);
+      if (!sonuc.state.aktif) {
+        setEkran('olum');
+        return;
+      }
+      // Yıl geçerken olanlar (terfi, dönem/veba/savaş haberi, hapis…) kısa bir bildirimle gösterilir.
+      const not = [sonuc.terfiOldu ? sonuc.sonucAnlatimi : '', sonuc.zamanAnlatimi ?? ''].filter(Boolean).join(' ').trim();
+      setYilNotu(not || null);
+      if (sonuc.olayBekliyor) {
+        setSenaryo(await senaryoGerekirseCek(sonuc.state));
+        setTepkiModu(false);
+      }
       setEkran('oyun');
     } catch (err) {
       setHata(temizHata(err));
@@ -1747,6 +1788,36 @@ function App() {
     };
   }, [ekran, karakter?.id, karakter?.aktif_tanisma, tanisma, tanismaSonuc]);
 
+  // "ilerle" zaman modu: olay yokken (iki olay arası) ana ekran gösterilir; olay çıkınca olay kutusu.
+  const ilerleModu = karakter?.zaman_modeli === 'ilerle';
+  const anaEkranModu =
+    !!karakter &&
+    ilerleModu &&
+    ekran === 'oyun' &&
+    !senaryo &&
+    !tanisma &&
+    !tanismaSonuc &&
+    !!karakter.meslek &&
+    !karakter.olay_bekliyor &&
+    !ogretiBekliyor(karakter);
+  // Ana ekran tabloları işletme görünümünden beslenir; her yıl/para değişiminde tazelenir.
+  useEffect(() => {
+    if (!anaEkranModu || !karakter) return;
+    let iptal = false;
+    isletmeGetir(karakter.id)
+      .then((d) => {
+        if (!iptal) setIsletme(d);
+      })
+      .catch(() => {});
+    return () => {
+      iptal = true;
+    };
+  }, [anaEkranModu, karakter?.id, karakter?.yil, karakter?.para]);
+  function anaTusHandler(tus: AnaTusId) {
+    setKariyerSayfa(tus);
+    void kariyerEkraniniAc();
+  }
+
   const pencereAcik = ayarlarAcik || bolgeBilgiAcik || kisilikModalAcik || skorDetayAcik || gostergeAcik !== null;
   // PC yan sütunlarındaki ahşap kısayol kartları (eskiden sahne üstündeki tıklama noktaları).
   function kisayolKartlari(ogeler: KisayolId[]) {
@@ -1816,7 +1887,7 @@ function App() {
          bir ✕ (mobil, kullanıcı isteği) — her ekranın kendi "Geri Dön" butonuyla birebir
          aynı işi yapar, sadece her zaman aynı köşede ve tek dokunuşla erişilir. Bu köşeyi
          alması için ayar dişlisi + para rozeti aşağı kayar (App.css, aynı istek). */}
-      {mobil && karakter && ALT_EKRAN_GRUBU.includes(ekran) && (
+      {mobil && karakter && ALT_EKRAN_GRUBU.includes(ekran) && !(ekran === 'kariyer' && kariyerSayfa) && (
         <button
           type="button"
           className="ekran-kapat-buton"
@@ -1830,19 +1901,19 @@ function App() {
           ✕
         </button>
       )}
-      {mobil && karakter && ALT_GEZINME_EKRANLARI.includes(ekran) && (
+      {mobil && karakter && ALT_GEZINME_EKRANLARI.includes(ekran) && !(ekran === 'kariyer' && kariyerSayfa) && (
         <AltGezinme
           ekran={ekran}
-          devreDisi={yukleniyor}
-          kariyerTalepVar={!!karakter.yonetim_talep}
+          devreDisi={yukleniyor || (ilerleModu && !!karakter.olay_bekliyor)}
           aileTalepVar={!!karakter.aile_talep}
           aileEvlilikRozeti={(!karakter.es_adi && karakter.yas >= 22) || !!karakter.bekleyen_dugun}
-          onKariyer={kariyerEkraniniAc}
-          onYatirim={yatirimEkraniniAc}
           onEv={finansEkraniniAc}
           onSosyallesme={sosyallesmeEkraniniAc}
           onMagaza={magazaEkraniniAc}
           onAile={aileEkraniniAc}
+          onKisilik={() => setKisilikModalAcik(true)}
+          onSkor={() => setSkorDetayAcik(true)}
+          onAyarlar={() => setAyarlarAcik(true)}
         />
       )}
       {islemMesaji && (ekran === 'oyun' || ekran === 'sonuc') && (
@@ -2362,7 +2433,7 @@ function App() {
         </div>
       )}
 
-      {(ekran === 'oyun' || ekran === 'sonuc') && karakter && senaryo && (
+      {(ekran === 'oyun' || ekran === 'sonuc') && karakter && (senaryo || anaEkranModu) && (
         <>
         {/* Sahne artık bir şerit değil, TÜM sayfanın arkasını kaplayan katman (mobil: portre, PC: yatay;
             PC'de yan sütunların da arkasında durur). `.oyun-ekrani`nın dışında durur — onun `ekranBelir`
@@ -2531,7 +2602,7 @@ function App() {
             </YanPanel>
             )}
 
-            <div className={mobil ? 'merkez-panel merkez-panel-mobil' : 'merkez-panel'}>
+            <div className={`${mobil ? 'merkez-panel merkez-panel-mobil' : 'merkez-panel'}${anaEkranModu ? ' merkez-panel-ana' : ''}`}>
               {!mobil && (
                 // PC: sahne artık sayfa-düzeyi arka plan (yukarıda `.oyun-arka-sahne`); bu boş alan resmi
                 // gösterir, amaç şeridi üstüne biner, olay kutusu altta durur.
@@ -2539,11 +2610,24 @@ function App() {
                   <AmacPaneli durum={amaclar} varyant="serit" />
                 </div>
               )}
+              {anaEkranModu && (
+                <AnaEkranMobil
+                  karakter={karakter}
+                  isletme={isletme?.aktif ? isletme : null}
+                  finans={finans}
+                  yukleniyor={yukleniyor}
+                  onTus={anaTusHandler}
+                  onIlerle={ilerleHandler}
+                  yilNotu={yilNotu}
+                  onNotKapat={() => setYilNotu(null)}
+                />
+              )}
               {/* Mobil ve PC ortak kadife olay kutusu (soru + sonuç aynı kutuda). */}
+              {(tanismaSenaryo ?? senaryo) && (
               <OlayKutusu
                 cag={karakter.cag}
                 ulke={karakter.ulke}
-                senaryo={tanismaSenaryo ?? senaryo}
+                senaryo={(tanismaSenaryo ?? senaryo) as SenaryoResponse}
                 sonuc={tanismaSenaryo ? tanismaSonucu : olaySonucu}
                 tepkiModu={tanismaSenaryo ? false : tepkiModu}
                 yukleniyor={yukleniyor}
@@ -2554,6 +2638,7 @@ function App() {
                 etiketGoster={mobil}
                 klavye={!mobil && !pencereAcik}
               />
+              )}
             </div>
 
             {!mobil && (
@@ -2858,8 +2943,14 @@ function App() {
           onIsletmeKarar={isletmeKararHandler}
           onIsletmeYatirim={isletmeYatirimHandler}
           onIsletmeCalisanAl={isletmeCalisanAlHandler}
+          sayfa={kariyerSayfa ?? undefined}
+          onMulkKredi={() => {
+            setKariyerSayfa(null);
+            void yatirimEkraniniAc();
+          }}
           onGeriDon={() => {
             setIslemMesaji(null);
+            setKariyerSayfa(null);
             setEkran('oyun');
           }}
         />

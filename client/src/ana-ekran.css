@@ -1,0 +1,302 @@
+/*
+ * Ana ekran ("ilerle" zaman modeli) + yeni alt çubuk renkleri.
+ *
+ * Palet (kullanıcı onaylı): orta kahve (mocha) alt çubuk/başlıklar, açık sütlü kahve (latte)
+ * paneller/tuşlar/kartlar, kırmızı = olay kutusundaki bordo ile BİREBİR aynı ton
+ * (olay-kutusu.css: #82202a → #591219 → #360a10) + altın çizgi #c9a24a.
+ * App.css'e dokunmaz; --s-* token'ları strateji sayfaları (strateji.css) ile paylaşılır.
+ */
+:root {
+  --s-mocha-1: #6a4e3a;
+  --s-mocha-2: #4a3425;
+  --s-mocha-3: #3a281c;
+  --s-mocha-kenar: #c7b08a;
+  --s-mocha-yazi: #f2e8d6;
+  --s-mocha-soluk: #cdbb9e;
+  --s-mocha-baslik: #e8d2a6;
+  --s-latte-1: #d8c5a6;
+  --s-latte-2: #bda585;
+  --s-latte-acik: #e9dcc3;
+  --s-latte-kenar: #6e4f35;
+  --s-latte-yazi: #2c1f15;
+  --s-latte-soluk: #5e4733;
+  --s-latte-baslik: #5a3a22;
+  --s-bordo-1: #82202a;
+  --s-bordo-2: #591219;
+  --s-bordo-3: #360a10;
+  --s-altin: #c9a24a;
+  --s-iyi: #2f6b3c;
+  --s-kotu: #9a2f22;
+  --s-iyi-koyu: #8fc28a;
+  --s-kotu-koyu: #e58a74;
+}
+
+/* ---- Ana ekran ---- */
+.merkez-panel.merkez-panel-ana {
+  flex: 1 1 auto;
+  justify-content: flex-start;
+  min-height: 0;
+}
+
+.ana-ekran {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 6px;
+  color: var(--s-latte-yazi);
+}
+.ana-bosluk {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.ana-ekran .ana-not {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 4px;
+  padding: 8px 10px;
+  font-size: 0.86rem;
+  line-height: 1.3;
+  background: linear-gradient(180deg, rgba(216, 197, 166, 0.95), rgba(189, 165, 133, 0.95));
+}
+.ana-not-metin {
+  flex: 1;
+}
+.ana-ekran .ana-not-kapat {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  color: var(--s-latte-yazi);
+  background: transparent !important;
+  border: 1px solid var(--s-latte-kenar) !important;
+  border-radius: 50%;
+  box-shadow: none;
+  font-size: 0.75rem;
+}
+
+.ana-cam {
+  background: linear-gradient(180deg, var(--s-latte-1), var(--s-latte-2));
+  border: 1px solid var(--s-latte-kenar);
+  border-radius: 8px;
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+.ana-tablolar {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr 1.15fr;
+  gap: 6px;
+}
+.ana-tablolar .ana-cam {
+  display: flex;
+  flex-direction: column;
+  padding: 6px 8px 7px;
+  min-height: 62px;
+  min-width: 0;
+}
+.ana-etiket {
+  font-family: var(--font-baslik);
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--s-latte-baslik);
+}
+.ana-deger {
+  font-family: var(--font-baslik);
+  font-size: 1.2rem;
+  line-height: 1.05;
+  margin-top: 2px;
+  color: var(--s-latte-yazi);
+}
+.ana-deger-kucuk {
+  font-size: 0.82rem;
+  padding-top: 4px;
+  white-space: nowrap;
+  letter-spacing: 0.04em;
+}
+.ana-alt {
+  margin-top: 3px;
+  font-size: 0.72rem;
+  line-height: 1.15;
+  color: var(--s-latte-soluk);
+}
+.ana-alt-kisa {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.ana-birim {
+  opacity: 0.8;
+}
+.ana-iyi {
+  color: var(--s-iyi);
+  font-weight: 700;
+}
+.ana-kotu {
+  color: var(--s-kotu);
+  font-weight: 700;
+}
+.ana-pay {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  height: 26px;
+  font-size: 0.78rem;
+}
+.ana-cubuk {
+  flex: 1;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--s-latte-acik);
+  border: 1px solid var(--s-latte-kenar);
+}
+.ana-cubuk i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--s-bordo-1), var(--s-bordo-2));
+}
+
+/* 2×2 meslek tuşları */
+.ana-tuslar {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+}
+.ana-tus {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  text-align: left;
+  color: var(--s-latte-yazi);
+  background: linear-gradient(180deg, var(--s-latte-1), var(--s-latte-2));
+  border: 1.5px solid var(--s-latte-kenar);
+  border-radius: 10px;
+  box-shadow:
+    0 4px 9px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  touch-action: manipulation;
+}
+.ana-tus:active:not(:disabled) {
+  transform: translateY(1px);
+  filter: brightness(0.94);
+}
+.ana-tus:disabled {
+  opacity: 0.7;
+}
+.ana-tus-ikon {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  font-size: 1.15rem;
+  border-radius: 50%;
+  background: var(--s-latte-acik);
+  border: 1px solid var(--s-latte-kenar);
+}
+.ana-tus-metin {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.ana-tus-metin b {
+  font-family: var(--font-baslik);
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--s-latte-yazi);
+}
+.ana-tus-metin small {
+  font-size: 0.72rem;
+  color: var(--s-latte-soluk);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* İLERLE: olay kutusundaki bordo */
+.ana-ekran .ana-ilerle {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  /* Genel buton stilleri (App.css) üstüne basar; olay kutusundaki bordo birebir. */
+  color: #f6e8d0 !important;
+  background: linear-gradient(180deg, var(--s-bordo-1), var(--s-bordo-2)) !important;
+  border: 2px solid var(--s-altin) !important;
+  border-radius: 12px;
+  box-shadow:
+    0 5px 12px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 200, 170, 0.28);
+  touch-action: manipulation;
+}
+.ana-ekran .ana-ilerle b {
+  font-family: var(--font-baslik);
+  font-size: 1rem;
+  letter-spacing: 0.2em;
+}
+.ana-ekran .ana-ilerle small {
+  font-size: 0.8rem;
+  opacity: 0.85;
+}
+.ana-ekran .ana-ilerle:active:not(:disabled) {
+  transform: translateY(1px);
+  filter: brightness(0.92);
+}
+.ana-ekran .ana-ilerle:disabled {
+  opacity: 0.7;
+}
+
+/* ---- Alt çubuk: orta kahve + bej çerçeve ---- */
+@media (max-width: 767px) {
+  .alt-gezinme {
+    background: linear-gradient(180deg, var(--s-mocha-1), var(--s-mocha-2));
+    border-top: 2px solid var(--s-mocha-kenar);
+  }
+  .alt-gezinme-buton {
+    color: var(--s-mocha-soluk);
+  }
+  .alt-gezinme-buton:hover:not(:disabled),
+  .alt-gezinme-buton:focus-visible {
+    background: rgba(255, 235, 200, 0.1);
+  }
+  .alt-gezinme-buton-aktif {
+    background: rgba(0, 0, 0, 0.22);
+    border-top: 2px solid var(--s-altin);
+    color: var(--s-mocha-yazi);
+  }
+  .alt-gezinme-nokta {
+    background: var(--s-bordo-1);
+  }
+  .alt-gezinme-diger-sheet {
+    background: linear-gradient(180deg, var(--s-mocha-1), var(--s-mocha-2));
+    border: 1px solid var(--s-mocha-kenar);
+    color: var(--s-mocha-yazi);
+  }
+}
+
+/* PC: merkez panelde ortalanmış dar sütun (ana ekran telefon düzeniyle aynı). */
+@media (min-width: 768px) {
+  .merkez-panel.merkez-panel-ana {
+    align-items: center;
+    justify-content: flex-end;
+    padding-bottom: 14px;
+  }
+  .merkez-panel-ana .ana-ekran {
+    width: min(440px, 100%);
+    flex: 0 1 auto;
+  }
+}

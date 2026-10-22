@@ -31,7 +31,10 @@ export function IsletmeOrtak({
   onYatirim,
   onCalisanAl,
   onEkipCikar,
+  goster = 'hepsi',
 }: {
+  /** Hangi bölüm çizilsin: telefon ana ekranındaki Yatırım / Çalışan sayfaları ayrı gösterir. */
+  goster?: 'hepsi' | 'yatirim' | 'calisan' | 'yok';
   durum: IsletmeGorunumu;
   yukleniyor: boolean;
   sadakatAdi: D;
@@ -45,8 +48,12 @@ export function IsletmeOrtak({
   const d = (m: D) => m[dil];
   const pb = durum.paraBirimi;
   const sad = d(sadakatAdi);
+  const yatirimGoster = goster === 'hepsi' || goster === 'yatirim';
+  const calisanGoster = goster === 'hepsi' || goster === 'calisan';
   return (
     <>
+      {yatirimGoster && (
+        <>
       <h4>{t('yatirimlar')}</h4>
       <div className="isletme-yatirimlar">
         {durum.yatirimlar.map((y) => (
@@ -68,7 +75,11 @@ export function IsletmeOrtak({
           </div>
         ))}
       </div>
+        </>
+      )}
 
+      {calisanGoster && (
+        <>
       <h4>
         {t('calisanlar')} ({durum.calisanlar.length}/{durum.calisanTavani})
       </h4>
@@ -120,6 +131,8 @@ export function IsletmeOrtak({
               </div>
             ))}
           </div>
+        </>
+      )}
         </>
       )}
     </>
