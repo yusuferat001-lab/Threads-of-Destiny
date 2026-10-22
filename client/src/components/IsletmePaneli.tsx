@@ -23,6 +23,8 @@ interface Props {
   onYatirim: (yatirimId: string) => void;
   onCalisanAl: (adayId: string) => void;
   onEkipCikar: (ekipId: string) => void;
+  /** Telefon ana ekranı sayfaları: yalnız bir bölümü çiz (varsayılan hepsi). */
+  bolum?: 'hepsi' | 'isletme' | 'yatirim' | 'calisan';
 }
 
 type D = { tr: string; en: string };
@@ -180,7 +182,7 @@ const SALDIRI_ENGELLENDI: Record<string, D> = {
 /** Aynı yıl için açılır uyarıyı yalnız bir kez göstermek için (modül düzeyi; sayfa yenilenince sıfırlanır). */
 let sonGosterilenYil = -1;
 
-export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onCalisanAl, onEkipCikar }: Props) {
+export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onCalisanAl, onEkipCikar, bolum = 'hepsi' }: Props) {
   const { dil } = useDil();
   const t = (k: Exclude<keyof typeof M, 'donem'>) => M[k][dil];
   const d = (m: D) => m[dil];
@@ -318,6 +320,8 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
 
   return (
     <section className="isletme-paneli">
+      {(bolum === 'hepsi' || bolum === 'isletme') && (
+        <>
       <h3>{t('baslik')}</h3>
 
       <div className="isletme-ozet">
@@ -393,7 +397,11 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
       <h4>{t('hatlar')}</h4>
       <div className="isletme-hatlar">{durum.hatlar.map(hatKarti)}</div>
 
+        </>
+      )}
+
       <IsletmeOrtak
+        goster={bolum === 'isletme' ? 'yok' : bolum}
         durum={durum}
         yukleniyor={yukleniyor}
         sadakatAdi={M.sadakat}
@@ -403,6 +411,8 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
         onEkipCikar={onEkipCikar}
       />
 
+      {(bolum === 'hepsi' || bolum === 'isletme') && (
+        <>
       <h4>{t('dokum')}</h4>
       {!dokum ? (
         <p className="isletme-bos">{t('ilkYil')}</p>
@@ -444,6 +454,9 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
             </div>
           ))}
         </div>
+      )}
+
+        </>
       )}
 
       {uyariAcik && dokum && (

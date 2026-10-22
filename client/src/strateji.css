@@ -1,0 +1,514 @@
+/*
+ * Strateji sayfaları (telefon ana ekranındaki İşletme / Yatırım / Çalışan / Çevre tuşları).
+ *
+ * Mevcut KariyerEkrani + IsletmePaneli/CemaatPaneli bileşenleri `sayfa` / `bolum` prop'larıyla bu
+ * kabukta çizilir; görünüm tamamen burada, `.strateji-sayfa` kapsamında yeniden boyanır (eski kahve+sarı
+ * görünüme dokunulmaz). Palet: ana-ekran.css `--s-*` token'ları — sayfa zemini/başlık orta kahve (mocha),
+ * kartlar açık sütlü kahve (latte), vurgu düğmeleri olay kutusundaki bordo (#82202a → #591219).
+ */
+.oyun-kapsayici:has(.strateji-sayfa) .oyun-para-rozeti,
+.oyun-kapsayici:has(.strateji-sayfa) .ayar-ac-buton {
+  display: none;
+}
+
+.strateji-sayfa {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  max-width: none;
+  margin: 0;
+  padding: 0 0 32px;
+  border: 0;
+  border-radius: 0;
+  color: var(--s-latte-yazi);
+  text-align: left;
+  background:
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.03) 0 1px, transparent 1px 6px),
+    linear-gradient(180deg, #6a4e3a 0%, #55402f 45%, #46322380 100%),
+    #46322f;
+}
+.strateji-sayfa > :not(.strateji-baslik):not(.kariyer-sonuc-katman) {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.strateji-sayfa > .kariyer-govde {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* ---- Başlık ---- */
+.strateji-baslik {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: calc(14px + env(safe-area-inset-top, 0px)) 14px 12px;
+  background: linear-gradient(180deg, var(--s-mocha-1), var(--s-mocha-2));
+  border-bottom: 2px solid var(--s-mocha-kenar);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+}
+.strateji-baslik h1 {
+  margin: 0;
+  font-family: var(--font-baslik);
+  font-size: 1.15rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--s-mocha-baslik);
+}
+.strateji-baslik p {
+  margin: 2px 0 0;
+  font-size: 0.82rem;
+  color: var(--s-mocha-soluk);
+}
+.strateji-sayfa .strateji-kapat {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  color: var(--s-mocha-yazi);
+  background: rgba(0, 0, 0, 0.2) !important;
+  border: 1px solid var(--s-mocha-kenar) !important;
+  border-radius: 50%;
+  box-shadow: none;
+  font-size: 0.95rem;
+}
+
+/* ---- İçerik düzeni ---- */
+.strateji-sayfa .kariyer-govde {
+  display: block;
+  padding: 10px 10px 0;
+}
+.strateji-sayfa .kariyer-ana-sutun,
+.strateji-sayfa .kariyer-yan-sutun {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.strateji-sayfa .kariyer-yan-sutun {
+  margin-top: 8px;
+}
+
+/* ---- Kartlar (latte) ---- */
+.strateji-sayfa .isletme-hat,
+.strateji-sayfa .isletme-yatirim,
+.strateji-sayfa .isletme-calisan,
+.strateji-sayfa .isletme-dokum,
+.strateji-sayfa .isletme-imtiyazlar,
+.strateji-sayfa .isletme-ozet > span,
+.strateji-sayfa .cemaat-donem,
+.strateji-sayfa .cemaat-politika,
+.strateji-sayfa .cemaat-uyari,
+.strateji-sayfa .piyasa-haberleri,
+.strateji-sayfa .aile-cocuklar-karti,
+.strateji-sayfa .aile-koken-karti,
+.strateji-sayfa .kariyer-bolum,
+.strateji-sayfa .kariyer-ilerleme-blok,
+.strateji-sayfa .kariyer-kademe-satiri,
+.strateji-sayfa .kariyer-talep-afisi,
+.strateji-sayfa .strateji-baglanti,
+.strateji-sayfa .strateji-karanlik .karanlik-grup > div > div {
+  color: var(--s-latte-yazi);
+  background: linear-gradient(180deg, var(--s-latte-1), var(--s-latte-2));
+  border: 1px solid var(--s-latte-kenar);
+  border-radius: 8px;
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  opacity: 1;
+}
+.strateji-sayfa .isletme-hat-kilitli {
+  opacity: 0.6;
+}
+.strateji-sayfa .isletme-paneli {
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+}
+.strateji-sayfa .isletme-paneli > h3 {
+  display: none;
+}
+.strateji-sayfa .aile-cocuklar-karti,
+.strateji-sayfa .aile-koken-karti,
+.strateji-sayfa .kariyer-bolum,
+.strateji-sayfa .piyasa-haberleri,
+.strateji-sayfa .kariyer-ilerleme-blok {
+  padding: 10px 12px;
+}
+.strateji-sayfa .kariyer-kademe-satiri {
+  padding: 8px 12px;
+}
+.strateji-sayfa .isletme-hat,
+.strateji-sayfa .isletme-yatirim,
+.strateji-sayfa .isletme-calisan {
+  padding: 8px 10px;
+}
+
+/* ---- Bölüm başlıkları: ortalı, iki yanı çizgili ---- */
+.strateji-sayfa h3,
+.strateji-sayfa h4 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 2px 8px;
+  font-family: var(--font-baslik);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--s-mocha-baslik);
+  opacity: 1;
+}
+.strateji-sayfa h3::before,
+.strateji-sayfa h3::after,
+.strateji-sayfa h4::before,
+.strateji-sayfa h4::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--s-mocha-kenar));
+}
+.strateji-sayfa h3::after,
+.strateji-sayfa h4::after {
+  transform: scaleX(-1);
+}
+/* Kart içindeki başlıklar kartın kendi (açık zemin) rengiyle */
+.strateji-sayfa .aile-cocuklar-karti h3,
+.strateji-sayfa .aile-koken-karti h3,
+.strateji-sayfa .piyasa-haberleri h4,
+.strateji-sayfa .kariyer-bolum h3,
+.strateji-sayfa .kariyer-bolum h4 {
+  margin: 0 0 6px;
+  color: var(--s-latte-baslik);
+}
+.strateji-sayfa .aile-cocuklar-karti h3::before,
+.strateji-sayfa .aile-cocuklar-karti h3::after,
+.strateji-sayfa .aile-koken-karti h3::before,
+.strateji-sayfa .aile-koken-karti h3::after,
+.strateji-sayfa .piyasa-haberleri h4::before,
+.strateji-sayfa .piyasa-haberleri h4::after,
+.strateji-sayfa .kariyer-bolum h3::before,
+.strateji-sayfa .kariyer-bolum h3::after,
+.strateji-sayfa .kariyer-bolum h4::before,
+.strateji-sayfa .kariyer-bolum h4::after {
+  background: linear-gradient(90deg, transparent, var(--s-latte-kenar));
+}
+
+/* ---- Özet ızgarası ---- */
+.strateji-sayfa .isletme-ozet {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  font-size: 0.8rem;
+}
+.strateji-sayfa .isletme-ozet > span {
+  display: block;
+  padding: 6px 9px;
+  line-height: 1.3;
+}
+.strateji-sayfa .isletme-ozet strong {
+  font-family: var(--font-baslik);
+}
+
+/* ---- Metin renkleri (latte üstünde) ---- */
+.strateji-sayfa .isletme-fiyat-not,
+.strateji-sayfa .isletme-bos,
+.strateji-sayfa .isletme-hat-dunya,
+.strateji-sayfa .isletme-yatirim small,
+.strateji-sayfa .isletme-calisan small,
+.strateji-sayfa .pazar-ipucu,
+.strateji-sayfa .pazar-etki,
+.strateji-sayfa .aile-bos-metin {
+  color: var(--s-latte-soluk);
+  opacity: 1;
+}
+.strateji-sayfa .isletme-fiyat-not {
+  margin: 4px 2px 0;
+  font-size: 0.78rem;
+  color: #e3d3b8;
+}
+.strateji-sayfa .isletme-etiket {
+  color: var(--s-latte-soluk);
+  border: 1px solid var(--s-latte-kenar);
+  background: var(--s-latte-acik);
+  opacity: 1;
+}
+.strateji-sayfa .isletme-uyari,
+.strateji-sayfa .cemaat-uyari {
+  color: var(--s-kotu);
+  font-weight: 600;
+}
+.strateji-sayfa .cemaat-uyari {
+  background: linear-gradient(180deg, #e8c9b0, #d9b393);
+}
+.strateji-sayfa .cemaat-arti,
+.strateji-sayfa .piyasa-art {
+  color: var(--s-iyi);
+  font-weight: 700;
+}
+.strateji-sayfa .cemaat-eksi,
+.strateji-sayfa .piyasa-eksi {
+  color: var(--s-kotu);
+  font-weight: 700;
+}
+.strateji-sayfa .isletme-dokum-net {
+  border-top: 1px solid var(--s-latte-kenar);
+  font-weight: 700;
+}
+.strateji-sayfa .isletme-hat-artieksi {
+  color: var(--s-latte-yazi);
+}
+
+/* ---- Çubuklar ---- */
+.strateji-sayfa .cemaat-bar,
+.strateji-sayfa .kariyer-ilerleme-cubuk,
+.strateji-sayfa .pazar-cubuk {
+  background: var(--s-latte-acik);
+  border: 1px solid var(--s-latte-kenar);
+}
+.strateji-sayfa .cemaat-bar-dolgu,
+.strateji-sayfa .kariyer-ilerleme-cubuk-dolu {
+  background: linear-gradient(90deg, var(--s-bordo-1), var(--s-bordo-2));
+}
+.strateji-sayfa .cemaat-bar-cizgi {
+  background: var(--s-latte-kenar);
+}
+.strateji-sayfa .cemaat-bant {
+  border: 1px solid var(--s-latte-kenar);
+  color: var(--s-latte-soluk);
+  background: var(--s-latte-acik);
+  opacity: 1;
+}
+.strateji-sayfa .cemaat-bant-aktif {
+  color: #f6e8d0;
+  background: linear-gradient(180deg, var(--s-bordo-1), var(--s-bordo-2));
+  border-color: var(--s-altin);
+}
+
+/* ---- Düğmeler ---- */
+.strateji-sayfa button:not(.strateji-kapat):not(.strateji-baglanti) {
+  color: #f6e8d0 !important;
+  background: linear-gradient(180deg, var(--s-bordo-1), var(--s-bordo-2)) !important;
+  border: 1.5px solid var(--s-altin) !important;
+  border-radius: 8px;
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 200, 170, 0.25);
+  text-shadow: none;
+}
+.strateji-sayfa button.ikincil:not(.strateji-kapat) {
+  color: var(--s-latte-yazi) !important;
+  background: var(--s-latte-acik) !important;
+  border: 1px solid var(--s-latte-kenar) !important;
+  box-shadow: none;
+}
+.strateji-sayfa button:disabled {
+  opacity: 0.55;
+}
+.strateji-sayfa .isletme-hat-kontrol button {
+  min-width: 2.6rem;
+}
+
+.strateji-sayfa .strateji-baglanti {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  width: 100%;
+  padding: 10px 12px;
+  text-align: left;
+  font-family: var(--font-baslik);
+  letter-spacing: 0.06em;
+}
+.strateji-sayfa .strateji-baglanti small {
+  font-family: var(--font-govde);
+  letter-spacing: 0;
+  color: var(--s-latte-soluk);
+}
+
+/* ---- Açılır pencereler (sonuç/uyarı) ---- */
+.kariyer-sonuc-katman .kariyer-sonuc-modal h4,
+.kariyer-sonuc-katman .kariyer-sonuc-modal h3 {
+  color: var(--s-latte-baslik);
+}
+.strateji-sayfa .kariyer-sonuc-modal,
+.kariyer-sonuc-katman .kariyer-sonuc-modal {
+  color: var(--s-latte-yazi);
+  background: linear-gradient(180deg, var(--s-latte-1), var(--s-latte-2));
+  border: 2px solid var(--s-latte-kenar);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+}
+
+/* ---- İkinci tur düzeltmeleri ---- */
+.strateji-sayfa .isletme-bos {
+  color: var(--s-mocha-soluk);
+  padding: 4px 4px 0;
+}
+.strateji-sayfa .strateji-baglanti {
+  color: var(--s-latte-yazi) !important;
+  background: linear-gradient(180deg, var(--s-latte-1), var(--s-latte-2)) !important;
+  border: 1px solid var(--s-latte-kenar) !important;
+}
+.strateji-sayfa .strateji-baglanti span {
+  font-size: 0.9rem;
+  color: var(--s-latte-baslik);
+}
+
+/* Çevre: pazar kartı en üstte */
+.strateji-sayfa-cevre .kariyer-govde {
+  display: flex;
+  flex-direction: column;
+}
+.strateji-sayfa-cevre .kariyer-yan-sutun {
+  order: -1;
+  margin: 0 0 8px;
+}
+
+/* Yönetim hattı (şehir yöneticisi) */
+.strateji-sayfa .kariyer-hat-karti {
+  color: var(--s-latte-yazi);
+  background: var(--s-latte-acik);
+  border: 1px solid var(--s-latte-kenar);
+  border-radius: 8px;
+  box-shadow: none;
+}
+.strateji-sayfa .kariyer-hat-kimlik span,
+.strateji-sayfa .kariyer-bagis-etiket,
+.strateji-sayfa .kariyer-etkilesim-alt,
+.strateji-sayfa .kariyer-istek-ip,
+.strateji-sayfa .kariyer-iliski-deger {
+  color: var(--s-latte-soluk);
+  opacity: 1;
+}
+.strateji-sayfa .kariyer-hat-kademe {
+  color: var(--s-latte-yazi);
+  background: var(--s-latte-2);
+  border: 1px solid var(--s-latte-kenar);
+}
+.strateji-sayfa .kariyer-iliski-bar {
+  background: var(--s-latte-2);
+  border: 1px solid var(--s-latte-kenar);
+}
+.strateji-sayfa .kariyer-iliski-bar-dolgu {
+  background: linear-gradient(90deg, var(--s-bordo-1), var(--s-bordo-2));
+}
+.strateji-sayfa .kariyer-istek-listesi,
+.strateji-sayfa .kariyer-istek-rozet {
+  color: var(--s-latte-yazi);
+}
+
+/* Piyasa dedikoduları panosu: olay kutusundaki bordo */
+.strateji-sayfa .dedikodu-panosu {
+  color: #f1e4c8;
+  background: linear-gradient(180deg, var(--s-bordo-1), var(--s-bordo-2));
+  border: 1px solid var(--s-altin);
+  border-radius: 8px;
+}
+
+/* ---- Üçüncü tur ---- */
+.strateji-sayfa select {
+  color: var(--s-latte-yazi);
+  background: var(--s-latte-acik);
+  border: 1px solid var(--s-latte-kenar);
+  border-radius: 6px;
+}
+.strateji-sayfa .kariyer-hat-kimlik strong {
+  color: var(--s-latte-yazi);
+}
+.strateji-sayfa .strateji-karanlik .yatirim-kartlari {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.strateji-sayfa .strateji-karanlik .yatirim-kartlari > * {
+  width: 100%;
+  max-width: none;
+}
+.strateji-sayfa .kariyer-karanlik-modal-baslik {
+  display: block;
+}
+.strateji-sayfa .suc-seviyesi-gostergesi {
+  color: var(--s-mocha-soluk);
+  font-size: 0.82rem;
+}
+.strateji-sayfa .karanlik-grup-baslik {
+  margin-top: 12px;
+}
+
+/* ---- Dördüncü tur ---- */
+.strateji-sayfa .isletme-dokum,
+.strateji-sayfa .isletme-imtiyazlar,
+.strateji-sayfa .cemaat-donem,
+.strateji-sayfa .cemaat-politika {
+  padding: 8px 10px;
+}
+.strateji-sayfa .cemaat-donem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.strateji-sayfa .cemaat-politika .isletme-fiyat-not,
+.strateji-sayfa .isletme-hat .isletme-fiyat-not {
+  color: var(--s-latte-soluk);
+}
+.strateji-sayfa .cemaat-kalemler > span {
+  padding: 2px 9px;
+  background: var(--s-latte-acik);
+  border: 1px solid var(--s-latte-kenar);
+  border-radius: 999px;
+  font-weight: 700;
+}
+.strateji-sayfa .cemaat-politika .isletme-hat-kontrol {
+  margin-top: 0;
+}
+
+/* ---- Bütçe paneli (Asker) ---- */
+.strateji-sayfa .finans-karti {
+  color: var(--s-latte-yazi);
+  background: linear-gradient(180deg, var(--s-latte-1), var(--s-latte-2));
+  border: 1px solid var(--s-latte-kenar);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.strateji-sayfa .finans-satiri,
+.strateji-sayfa .finans-satiri span,
+.strateji-sayfa .finans-kirilim-detay,
+.strateji-sayfa .finans-kirilim-ozet {
+  color: var(--s-latte-yazi);
+  opacity: 1;
+}
+.strateji-sayfa .finans-kirilim-ozet {
+  background: var(--s-latte-acik);
+  border: 1px solid var(--s-latte-kenar);
+  border-radius: 6px;
+}
+.strateji-sayfa .finans-gelir,
+.strateji-sayfa .finans-gelir * {
+  color: var(--s-iyi);
+}
+.strateji-sayfa .finans-toplam-gider,
+.strateji-sayfa .finans-toplam-gider * {
+  color: var(--s-kotu);
+}
+.strateji-sayfa .tam-baslik {
+  color: var(--s-mocha-baslik);
+}
+.strateji-sayfa .finans-karti .tam-baslik,
+.strateji-sayfa .finans-karti h3,
+.strateji-sayfa .finans-karti h4 {
+  color: var(--s-latte-baslik);
+}
+.strateji-sayfa .butce-paneli > p,
+.strateji-sayfa .butce-paneli .aile-bos-metin {
+  color: var(--s-mocha-soluk);
+}

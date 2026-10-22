@@ -167,6 +167,7 @@ import './giris.css';
 import './olay-kutusu.css';
 import './mobil-oyun.css';
 import './ana-ekran.css';
+import './strateji.css';
 import './pc-olay-kutusu.css';
 
 // Geçici olarak kapatıldı (2026-09): günlük giriş serisi/ödülü, gold bakiyesi ve kozmetik dolabı
@@ -380,6 +381,8 @@ function App() {
   const [yenilikAcik, setYenilikAcik] = useState(false);
   // "ilerle" modu: İLERLE'den dönen yıllık haber şeridi (ana ekranda kapatılabilir).
   const [yilNotu, setYilNotu] = useState<string | null>(null);
+  // Ana ekran tuşundan açılan strateji sayfası (null: eski tam ekran Kariyer).
+  const [kariyerSayfa, setKariyerSayfa] = useState<AnaTusId | null>(null);
   const [yeniBasarimlar, setYeniBasarimlar] = useState<BasarimTanimi[]>([]);
   const [dil, setDil] = useState<Dil>(() => ayarlariGetir().dil);
   const [basarimlar, setBasarimlar] = useState(() => basarimlariGetir());
@@ -1811,9 +1814,8 @@ function App() {
     };
   }, [anaEkranModu, karakter?.id, karakter?.yil, karakter?.para]);
   function anaTusHandler(tus: AnaTusId) {
-    // C1: dört tuşun sayfaları henüz eski ekranlara bağlı (yeni strateji sayfaları sonraki fazda).
-    if (tus === 'yatirim') void yatirimEkraniniAc();
-    else void kariyerEkraniniAc();
+    setKariyerSayfa(tus);
+    void kariyerEkraniniAc();
   }
 
   const pencereAcik = ayarlarAcik || bolgeBilgiAcik || kisilikModalAcik || skorDetayAcik || gostergeAcik !== null;
@@ -1885,7 +1887,7 @@ function App() {
          bir ✕ (mobil, kullanıcı isteği) — her ekranın kendi "Geri Dön" butonuyla birebir
          aynı işi yapar, sadece her zaman aynı köşede ve tek dokunuşla erişilir. Bu köşeyi
          alması için ayar dişlisi + para rozeti aşağı kayar (App.css, aynı istek). */}
-      {mobil && karakter && ALT_EKRAN_GRUBU.includes(ekran) && (
+      {mobil && karakter && ALT_EKRAN_GRUBU.includes(ekran) && !(ekran === 'kariyer' && kariyerSayfa) && (
         <button
           type="button"
           className="ekran-kapat-buton"
@@ -1899,7 +1901,7 @@ function App() {
           ✕
         </button>
       )}
-      {mobil && karakter && ALT_GEZINME_EKRANLARI.includes(ekran) && (
+      {mobil && karakter && ALT_GEZINME_EKRANLARI.includes(ekran) && !(ekran === 'kariyer' && kariyerSayfa) && (
         <AltGezinme
           ekran={ekran}
           devreDisi={yukleniyor || (ilerleModu && !!karakter.olay_bekliyor)}
@@ -2941,8 +2943,14 @@ function App() {
           onIsletmeKarar={isletmeKararHandler}
           onIsletmeYatirim={isletmeYatirimHandler}
           onIsletmeCalisanAl={isletmeCalisanAlHandler}
+          sayfa={kariyerSayfa ?? undefined}
+          onMulkKredi={() => {
+            setKariyerSayfa(null);
+            void yatirimEkraniniAc();
+          }}
           onGeriDon={() => {
             setIslemMesaji(null);
+            setKariyerSayfa(null);
             setEkran('oyun');
           }}
         />
