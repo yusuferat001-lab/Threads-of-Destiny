@@ -180,6 +180,13 @@ export function senaryoGetir(stateId: string) {
   });
 }
 
+/** Telefon ana ekranı İLERLE: olay çıkarmadan 1 yıl geçirir ("ilerle" zaman modeli). */
+export function yilGec(stateId: string) {
+  return istek<SecimSonucu & { olayBekliyor: boolean }>(`/api/game/${stateId}/yil-gec`, {
+    method: 'POST',
+  });
+}
+
 export function secimYap(stateId: string, secenekIndex: number) {
   return istek<SecimSonucu | TepkiSonucu>(`/api/game/${stateId}/choice`, {
     method: 'POST',

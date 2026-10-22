@@ -1067,6 +1067,12 @@ function kayitliOlayBul(id: string | null | undefined, state: CharacterState): O
 
 /** DB'den gelen bir state için bellek oturumunu, kalıcı akış kaydından geri kurar. */
 function oturumOlustur(state: CharacterState): Oturum {
+  // Eski (klasik zaman modelli) kayıtlar telefon ana ekranının "ilerle" modeline geçer:
+  // ilk açılışta hemen bir olay çıksın diye sayaç 2'den başlar.
+  if (state.zaman_modeli === undefined) {
+    state.zaman_modeli = "ilerle";
+    state.yil_sayaci = 2;
+  }
   const kayit = state.oturum_akisi ?? null;
   const mevcutOlay = kayitliOlayBul(kayit?.olayId, state);
   const mevcutSenaryo = mevcutOlay && kayit?.senaryo ? kayit.senaryo : null;
@@ -1096,8 +1102,34 @@ function oturumOlustur(state: CharacterState): Oturum {
  */
 async function oturumKaydet(state: CharacterState): Promise<void> {
   const oturum = oturumlar.get(state.id);
-  if (oturum && oturum.state === state) state.oturum_akisi = akisKaydiOlustur(oturum);
+  if (oturum && oturum.state === state) {
+    state.oturum_akisi = akisKaydiOlustur(oturum);
+    state.olay_bekliyor = olayBekliyorMu(oturum);
+  }
   await oturumuDbyeYaz(state);
+}
+
+/** "ilerle" modunda iki olay arasında geçen yıl: sayaç bu değere ulaşınca yeni olay çıkar. */
+const OLAY_ARALIGI_YIL = 2;
+
+/**
+ * Şu an çözülmesi gereken bir olay var mı? Klasik modda her zaman (eski akış: her turda olay).
+ * "ilerle" modunda: ekranda/kuyrukta bekleyen olay, zorlanan zincir (zorunlu_sonraki, veba…),
+ * yolculuk adımları (her adım hemen çıkar) ya da son olaydan beri 2 yıl dolmuşsa.
+ * Sosyalleş mekân olayları (oyuncunun kendi seçtiği, ana akıştan bağımsız) sayılmaz.
+ */
+function olayBekliyorMu(oturum: Oturum): boolean {
+  const s = oturum.state;
+  if (!s.aktif || !s.meslek) return false;
+  if (s.zaman_modeli !== "ilerle") return true;
+  if (oturum.bekleyenTepki) return true;
+  if (oturum.mevcutSenaryo && oturum.mevcutOlay && !oturum.mevcutOlay.sosyallesmeYeri) return true;
+  if (oturum.zorlananOlayId) {
+    const zorlanan = OLAY_BANKASI.find((o) => o.id === oturum.zorlananOlayId);
+    if (!zorlanan?.sosyallesmeYeri) return true;
+  }
+  if (s.etiketler.includes("yolculukta")) return true;
+  return (s.yil_sayaci ?? 0) >= OLAY_ARALIGI_YIL;
 }
 
 /**
@@ -1228,13 +1260,18 @@ export async function yeniOyun(
   yerlesimId: string,
   oyuncuIsmi?: string,
   dil?: string,
-  istemciId?: string
+  istemciId?: string,
+  zamanModeli?: "ilerle"
 ): Promise<CharacterState> {
   // Bu cihazın önceki hayatlarında görülen olayları çek — yeni hayatın olay
   // seçimindeki tekrar-önleme penceresini (§12, olaySecici.ts) genişletmek için
   // (aynı cihazdan art arda oynanan hayatlarda hep aynı olayların çıkmasını azaltır).
   const caprazGecmis = istemciId ? await istemciGecmisiOku(istemciId) : [];
   const state = createCharacter(cag, bolge, yerlesimId, oyuncuIsmi, dil, istemciId, caprazGecmis);
+  if (zamanModeli === "ilerle") {
+    state.zaman_modeli = "ilerle";
+    state.yil_sayaci = OLAY_ARALIGI_YIL; // meslek seçilince ilk olay hemen gelsin
+  }
   oturumlar.set(state.id, {
     state,
     mevcutSenaryo: null,
@@ -1279,7 +1316,9 @@ export async function mesleğiAta(id: string, meslek: string): Promise<Character
 }
 
 export async function stateGetir(id: string): Promise<CharacterState> {
-  return (await oturumGetir(id)).state;
+  const oturum = await oturumGetir(id);
+  oturum.state.olay_bekliyor = olayBekliyorMu(oturum);
+  return oturum.state;
 }
 
 /**
@@ -1300,6 +1339,11 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
   const oturum = await oturumGetir(id);
   if (!oturum.state.aktif) throw new Error("Oyun zaten bitmiş.");
   if (!oturum.state.meslek) throw new Error("Önce bir meslek seçmelisin.");
+  // "ilerle" modu: iki olay arası yıllar İLERLE ile geçer; olay henüz çıkmadıysa senaryo üretilmez
+  // (zorlanan olay — Sosyalleş mekânı, zincir — her zaman üretilebilir).
+  if (oturum.state.zaman_modeli === "ilerle" && !oturum.zorlananOlayId && !olayBekliyorMu(oturum)) {
+    throw new Error("Şu an çözülecek bir olay yok; yıl ilerletmelisin.");
+  }
   if (ogretiBekliyorMu(oturum.state)) throw new Error("Önce öğretini seçmelisin.");
 
   // Zaten cevaplanmamış bir olay varsa (sayfa yenilendi, sekme yeniden açıldı,
@@ -1707,6 +1751,9 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
   oturum.mevcutOlay = olay;
   oturum.zorlananOlayId = null;
   oturum.sonTon = olay.ton ?? null;
+  // "ilerle" modu: ana akış olayı üretildi → iki olay arası yıl sayacı baştan başlar
+  // (Sosyalleş mekân olayı oyuncunun kendi seçimidir, sayacı sıfırlamaz).
+  if (oturum.state.zaman_modeli === "ilerle" && !olay.sosyallesmeYeri) oturum.state.yil_sayaci = 0;
   // Yeni bir senaryo üretmek, bekleyen bir onTepki (geri çekil/ısrar et) varsa onu
   // geçersiz kılar — yoksa oyuncu bu YENİ senaryodaki bir seçeneği tıkladığında
   // secimUygula önce eski bekleyenTepki'yi görüp yanlış (ve eşleşmeyen) sonucu
@@ -1947,6 +1994,44 @@ export async function secimUygula(id: string, secenekIndex: number): Promise<Sec
   return sonucuUygulaVeIlerlet(oturum, mevcutOlay, etki, basarili, eskiRutbeSeviye, komikOlumRiskliSecenekMi, mesajCeviri);
 }
 
+/** İLERLE'nin sentetik "olayı": hiçbir seçenek/etki yok; yalnız yıl hattını bir yıl çalıştırır. */
+const YIL_GEC_OLAYI: OlayTanimi = {
+  id: "__yil_gec__",
+  kategori: "sosyal",
+  baslik: "",
+  metin: "",
+  secenekler: [],
+};
+
+/**
+ * Telefon ana ekranının İLERLE düğmesi ("ilerle" zaman modeli): olay çıkarmadan tam 1 yıl geçirir.
+ * Olay bekliyorsa (2 yıl dolmuş, zincir, yolculuk…) reddedilir — önce olay çözülür.
+ * Yıl hattı (maaş/işletme kârı, yaşlanma, dünya dönemi, rakipler…) olay cevabıyla aynı koddan geçer.
+ */
+export async function yilGec(id: string): Promise<SecimSonucu & { olayBekliyor: boolean }> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  if (!state.meslek) throw new Error("Önce bir meslek seçmelisin.");
+  if (state.zaman_modeli !== "ilerle") throw new Error("Bu oyun yıl geçirme modunda değil.");
+  if (ogretiBekliyorMu(state)) throw new Error("Önce öğretini seçmelisin.");
+  if (olayBekliyorMu(oturum)) throw new Error("Önce bekleyen olayı çözmelisin.");
+
+  state.yil_sayaci = (state.yil_sayaci ?? 0) + 1;
+  const eskiRutbeSeviye = state.rutbe_seviye;
+  const sonuc = await sonucuUygulaVeIlerlet(
+    oturum,
+    YIL_GEC_OLAYI,
+    { mesaj: "" },
+    true,
+    eskiRutbeSeviye,
+    false,
+    undefined,
+    1
+  );
+  return { ...sonuc, olayBekliyor: olayBekliyorMu(oturum) };
+}
+
 /** aranmaSeviyesi.ts olaylarından, kefaret ödeme şıkkı (maliyet + aranma düşüren) taşıyanlar = "polis kefaret istiyor". */
 function kefaretTalebiMi(olay: OlayTanimi): boolean {
   return (
@@ -1963,9 +2048,16 @@ async function sonucuUygulaVeIlerlet(
   eskiRutbeSeviye: number,
   komikOlumRiskliSecenekMi: boolean = false,
   /** Seçim mesajının iki dilli hâli — seçim öldürürse ölüm nedeni olarak saklanır. */
-  mesajCeviri?: IkiDilMetin
+  mesajCeviri?: IkiDilMetin,
+  /**
+   * Bu çözümleme kaç yıl ilerletir? Verilmezse: klasik modda eski %60/%40 (yolculukta 1) kuralı;
+   * "ilerle" modunda olay cevabı 0 yıl (yolculuk adımı 1), İLERLE ise 1 yıl verir.
+   */
+  yilSayisi?: number
 ): Promise<SecimSonucu> {
   const { state } = oturum;
+  const yilHedefi: number | null =
+    yilSayisi ?? (state.zaman_modeli === "ilerle" ? (mevcutOlay.yolculukOlayi ? 1 : 0) : null);
   // Nakit akışı defteri: turun sonunda Σ(alanlar) == state.para'daki net değişim olacak
   // şekilde kalem kalem doldurulur; digerNet artık kalan farkı kapatır.
   const paraGiris = state.para;
@@ -2341,7 +2433,7 @@ async function sonucuUygulaVeIlerlet(
   let zamanAnlatimi: string | null = null;
   let capraz = { saglikKaybi: 0, mutlulukKaybi: 0 };
   let hukumdarDegisimHaberi: string | null = null;
-  if (state.aktif) {
+  if (state.aktif && (yilHedefi === null || yilHedefi > 0)) {
     // Olay bazlı süre alanları (sureYilMin/Max) kasıtlı olarak yok sayılıyor: 367 olayın
     // çoğunda sabit "1 yıl" tanımlı olduğundan ortalama turu hedeften epey altına çekiyordu.
     // Bunun yerine her turda 1 ya da 2 yıl ilerlenir; %60 ihtimalle 1, %40 ihtimalle 2 yıl
@@ -2350,8 +2442,8 @@ async function sonucuUygulaVeIlerlet(
     // Tek istisna: yolculuk zinciri adımları (yolculukOlayi:true), 4-5 yıllık bir yolculukta
     // 5-10 adımın sığması için sabit 1 yıl ilerler.
     const eskiHukumdar = state.hukumdar;
-    const turSuresi = Math.random() < 0.6 ? 1 : 2;
-    yasArtisi = mevcutOlay.yolculukOlayi ? ilerletYas(state, 1, 1) : ilerletYas(state, turSuresi, turSuresi);
+    const turSuresi = yilHedefi ?? (mevcutOlay.yolculukOlayi ? 1 : Math.random() < 0.6 ? 1 : 2);
+    yasArtisi = ilerletYas(state, turSuresi, turSuresi);
     // Pasif kıdem: hayatta geçen her yıl kariyer puanını biraz büyütür (yatırım yapmayan
     // bir karakter de zamanla rütbe atlar; yatırım sadece bunu hızlandırır). Mesleğe
     // yatkınlık kademesinin "tecrübe hızı" bonusu/malusu buna da biner.
@@ -2642,7 +2734,7 @@ async function sonucuUygulaVeIlerlet(
 
   let terfiOldu = false;
   if (state.aktif) {
-    gecmisKaydet(state);
+    if (yasArtisi > 0) gecmisKaydet(state); // yıl geçmeyen olay cevabı grafiğe yinelenen nokta eklemesin
     rutbeGuncelle(state);
     if (state.rutbe_seviye > eskiRutbeSeviye) {
       terfiOldu = true;
@@ -2670,7 +2762,7 @@ async function sonucuUygulaVeIlerlet(
   // kendi içinde clampStats çağırmıyor; kalıcı kayıttan önce burada son bir kez sınırlıyoruz.
   clampStats(state);
 
-  state.gecmis_olaylar.push(mevcutOlay.id);
+  if (mevcutOlay.id !== YIL_GEC_OLAYI.id) state.gecmis_olaylar.push(mevcutOlay.id);
   oturum.mevcutSenaryo = null;
   oturum.mevcutOlay = null;
 

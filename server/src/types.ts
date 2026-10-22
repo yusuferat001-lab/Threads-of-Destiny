@@ -394,6 +394,16 @@ export interface CharacterState {
    * olayı yaşansın, kaçış fikri ondan sonra gelsin.
    */
   hapis_tur_sayaci: number;
+  /**
+   * Zaman modeli. "ilerle" (telefon ana ekranı): olaya cevap vermek yıl geçirmez, yıl yalnız
+   * "İLERLE" (`POST /:id/yil-gec`, 1 yıl) ile geçer; son olaydan `yil_sayaci >= 2` yıl sonra olay çıkar.
+   * Yoksa eski "klasik" akış (her seçim %60/%40 ile 1-2 yıl ilerletir).
+   */
+  zaman_modeli?: "ilerle";
+  /** Son olaydan beri geçen yıl ("ilerle" modu); olay üretilince 0'a döner, 2'de yeni olay çıkar. */
+  yil_sayaci?: number;
+  /** Sunucu her kayıtta hesaplar: şu an çözülmesi gereken bir olay var mı ("ilerle" modu; klasikte hep true). */
+  olay_bekliyor?: boolean;
   /** Sahip olunan piyasa mülkleri (her türden en fazla bir tane). */
   mulkler: MulkTuru[];
   /**
