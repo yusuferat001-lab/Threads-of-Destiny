@@ -69,29 +69,6 @@
   --renk-ekru: #ece0c8;
   --renk-ekru-parlak: #f5ecd9;
   --renk-ekru-kenar: #c8b487;
-
-  /* ---- "Mürekkep & Kireç" paleti (2026-10) ----
-   * Altın gradyan / kahve / bordo kadife yerine mat, az renkli, düz yüzeyler: koyu mürekkep zemin,
-   * kömür panel, kireç (kemik) yüzey, tek ana vurgu (vermilyon) + tek ikincil (patina).
-   * Önce olay kutusu bunları kullanıyor (olay-kutusu.css); diğer ekranlar kademeli geçecek. */
-  --m-zemin: #1c2027;
-  --m-panel: #272c34;
-  --m-panel-ust: #323843;
-  --m-cizgi: #3a414c;
-  --m-cerceve: #8a8576;
-  --m-kirec: #e6dfcf;
-  --m-kirec-koyu: #d6cdb8;
-  --m-metin-koyu: #23201b;
-  --m-metin-koyu-soluk: #5c564a;
-  --m-metin-acik: #e6dfcf;
-  --m-metin-acik-soluk: #a8a496;
-  --m-vurgu: #b5452f;
-  --m-vurgu-parlak: #cc5a43;
-  --m-vurgu-koyu: #8a3322;
-  --m-ikincil: #62796c;
-  --m-ikincil-parlak: #7d9487;
-  --m-tehlike: #9a3a30;
-  --m-basari: #4f7a58;
 }
 
 /* ---- Sanayi Devrimi vurgu paleti ("Buhar & Pirinç") ----
@@ -117,12 +94,6 @@
   --altin-gradyan: linear-gradient(150deg, #d8bd7a 0%, #a9822f 42%, #6b5220 78%, #4a3814 100%);
   --altin-gradyan-dik: linear-gradient(180deg, #d8bd7a, #a9822f 55%, #4a3814);
   --tezhip-altin: rgba(169, 130, 47, 0.5);
-  /* Mürekkep & Kireç: Sanayi'de panel/zemin biraz daha soğuk kömür, ikincil donuk çelik-turkuaz. */
-  --m-zemin: #1a1d21;
-  --m-panel: #24272d;
-  --m-panel-ust: #2f333a;
-  --m-ikincil: #5e7b78;
-  --m-ikincil-parlak: #7a9893;
 }
 
 * {

@@ -1,9 +1,8 @@
 /*
  * Olay kutusu (kadife panel) — MOBİL ve PC ortak görünümü.
  *
- * Mürekkep & Kireç paleti (App.css `--m-*`): düz kömür panel + ince taş çerçeve, kutunun üst
- * kenarından taşan çerçeveli olay resmi, kireç yüzeyli metin alanı (başlık + metin / sonuç çipleri)
- * ve düz panel-yüzey şıklar. Bileşen: OlayKutusu.tsx.
+ * Kırmızı kadife zemin + altın çerçeve, kutunun üst kenarından taşan çerçeveli olay resmi,
+ * parşömen (başlık + metin / sonuç çipleri) ve ahşap tahta şıklar. Bileşen: OlayKutusu.tsx.
  * Burada YALNIZ görsel/yapısal kurallar var; ölçüler `--kutu-w`, `--cerceve-w/-h/-tasma`,
  * `--olay-kutusu-h` değişkenlerinden okunur ve yerleşime özgü değerler şu dosyalarda tanımlanır:
  *   - mobil-oyun.css   (≤767px: tam sayfa arka plan üstünde, vw/dvh tabanlı)
@@ -16,28 +15,63 @@
 
 /* Ahşap tahta tokenları — olay kutusundaki şıklar ve yan sütunlardaki kısayol kartları kullanır. */
 :root {
-  --ahsap: var(--m-panel-ust);
-  --ahsap-kenar: var(--m-cizgi);
-  --ahsap-golge: 0 2px 4px rgba(0, 0, 0, 0.4);
+  --ahsap:
+    repeating-linear-gradient(92deg, rgba(255, 255, 255, 0.035) 0 2px, rgba(0, 0, 0, 0.06) 2px 5px),
+    linear-gradient(180deg, #5d3b22 0%, #442816 55%, #2f1b0e 100%);
+  --ahsap-kenar: #8b867d;
+  --ahsap-golge: inset 0 0 0 1px #20130a, inset 0 2px 5px rgba(255, 214, 150, 0.16), 0 3px 6px rgba(0, 0, 0, 0.55);
 }
 
 /* ---- Olay kutusu (kadife panel) ---- */
 .olay-kutusu {
-  --doku-kadife: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  --doku-parsomen: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .28 0 0 0 0 .24 0 0 0 .12 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --doku-kadife: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --doku-parsomen: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .22 0 0 0 0 .08 0 0 0 .32 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   position: relative;
   /* flex/yükseklik/dış boşluk yerleşime özgüdür: mobil-oyun.css ve pc-olay-kutusu.css. */
   width: var(--kutu-w);
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--m-cerceve);
-  border-radius: 10px;
-  background: var(--doku-kadife), var(--m-panel);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.55);
+  border: 3px solid transparent;
+  border-radius: 16px;
+  background:
+    var(--doku-kadife) padding-box,
+    radial-gradient(130% 90% at 50% 0%, #82202a 0%, #591219 55%, #360a10 100%) padding-box,
+    var(--altin-gradyan) border-box;
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.65),
+    inset 0 0 24px rgba(0, 0, 0, 0.55);
 }
-/* Köşe tezhipleri (Suslemeler.tsx `KoseTezhibi`) bu paletle kullanılmıyor — düz çerçeve. */
+/* İç ince altın çizgi. */
+.olay-kutusu::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  z-index: 1;
+  border: 1px solid rgba(230, 193, 122, 0.42);
+  border-radius: 11px;
+  pointer-events: none;
+}
+/* Köşe tezhipleri (Suslemeler.tsx `KoseTezhibi`, kutunun doğrudan çocuğu). */
 .olay-kutusu > .kose-tezhip-kat {
-  display: none;
+  z-index: 2;
+}
+/* giris.css mobilde alt köşeleri gizliyor; burada dört köşe de görünür, kıvrımlar kenarı aşar. */
+.olay-kutusu .kose-tezhip {
+  display: block;
+  width: 40px;
+  height: 40px;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.7));
+}
+.olay-kutusu .kt-sol-ust { top: -6px; left: -6px; }
+.olay-kutusu .kt-sag-ust { top: -6px; right: -6px; }
+.olay-kutusu .kt-sol-alt { bottom: -6px; left: -6px; }
+.olay-kutusu .kt-sag-alt { bottom: -6px; right: -6px; }
+.olay-kutusu .kose-tezhip svg path {
+  stroke: #f2d48c;
+  stroke-width: 3;
+}
+.olay-kutusu .kose-tezhip svg circle {
+  fill: #f2d48c;
 }
 
 /* Bölge etiketi (Kasaba / Savaşta / Salgın): kutunun sağ-üstünde, çerçevenin yanında. */
@@ -74,10 +108,18 @@
   transform: translateX(-50%);
   width: var(--cerceve-w);
   aspect-ratio: 1.93 / 1;
-  padding: 4px;
-  border-radius: 4px;
-  background: var(--m-kirec-koyu);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5);
+  padding: 5px;
+  border-radius: 7px;
+  background:
+    radial-gradient(circle at 7px 7px, #fff3c4 0 1.6px, transparent 2.4px),
+    radial-gradient(circle at calc(100% - 7px) 7px, #fff3c4 0 1.6px, transparent 2.4px),
+    radial-gradient(circle at 7px calc(100% - 7px), #fff3c4 0 1.6px, transparent 2.4px),
+    radial-gradient(circle at calc(100% - 7px) calc(100% - 7px), #fff3c4 0 1.6px, transparent 2.4px),
+    linear-gradient(145deg, #ecd08a 0%, #b8863f 28%, #7a5222 52%, #d9ac5e 76%, #6b4f1f 100%);
+  box-shadow:
+    0 9px 18px rgba(0, 0, 0, 0.65),
+    0 0 0 1px rgba(36, 21, 5, 0.9),
+    inset 0 0 0 1px rgba(255, 236, 170, 0.55);
 }
 .olay-cercevesi-ic {
   position: relative;
@@ -86,13 +128,16 @@
   display: grid;
   place-items: center;
   overflow: hidden;
-  border-radius: 2px;
-  background: var(--m-zemin);
+  border-radius: 3px;
+  background: radial-gradient(120% 120% at 50% 30%, #5c2a1c 0%, #2a1409 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.85),
+    inset 0 0 14px rgba(0, 0, 0, 0.7);
 }
 .olay-cercevesi-emoji {
   font-size: calc(var(--cerceve-h) * 0.52);
   line-height: 1;
-  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.5));
+  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.6));
 }
 .olay-cercevesi-resim {
   position: absolute;
@@ -120,9 +165,9 @@
   font-size: 1.25rem;
   line-height: 1;
   border-radius: 50%;
-  border: 2px solid var(--m-kirec);
-  background: var(--m-vurgu);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  border: 2px solid #e6c17a;
+  background: radial-gradient(circle at 35% 30%, var(--muhur-kirmizi-parlak), var(--muhur-kirmizi) 70%);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.6);
 }
 .olay-cercevesi-efekt.sonuc-efekti-kapsayici {
   position: absolute;
@@ -140,10 +185,15 @@
   flex-direction: column;
   padding: 9px 12px 8px;
   text-align: center;
-  color: var(--m-metin-koyu);
-  background: var(--doku-parsomen), var(--m-kirec);
-  border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  color: var(--renk-parsomen-metin);
+  background:
+    var(--doku-parsomen),
+    radial-gradient(120% 90% at 50% 0%, rgba(255, 251, 230, 0.7), transparent 62%),
+    linear-gradient(180deg, #efe1ba 0%, #e0cd9f 60%, #d3bd8b 100%);
+  border-radius: 5px 8px 6px 9px / 8px 5px 9px 6px;
+  box-shadow:
+    inset 0 0 18px rgba(130, 88, 36, 0.45),
+    0 2px 7px rgba(0, 0, 0, 0.5);
 }
 .olay-parsomeni h2 {
   margin: 0 0 4px;
@@ -154,7 +204,8 @@
   letter-spacing: 0.05em;
   text-transform: uppercase;
   text-wrap: balance;
-  color: var(--m-vurgu-koyu);
+  color: #7a1a1a;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 .olay-parsomeni .olay-metni-govde {
   flex: 1 1 auto;
@@ -166,7 +217,7 @@
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
-  scrollbar-color: rgba(35, 32, 27, 0.35) transparent;
+  scrollbar-color: rgba(107, 79, 42, 0.5) transparent;
 }
 /* Metin sığmayıp kayıyorsa (useKaydirmaIpucu) kaydırılabilir kenarlar solar. */
 .olay-parsomeni .olay-metni-govde[data-kayar='asagi'] {
@@ -191,12 +242,12 @@
   font-size: 0.98rem;
   line-height: 1.32;
   opacity: 1;
-  color: var(--m-metin-koyu);
+  color: #2b1d12;
 }
 .olay-parsomeni .tepki-notu {
   margin: 0 0 4px;
   font-size: 0.85rem;
-  color: var(--m-metin-koyu-soluk);
+  color: #6b4f2a;
   opacity: 1;
 }
 
@@ -211,18 +262,18 @@
   font-weight: 600;
 }
 .olay-parsomeni .etki-pozitif {
-  background: rgba(79, 122, 88, 0.14);
-  border-color: rgba(79, 122, 88, 0.65);
-  color: #2f5a3a;
+  background: rgba(46, 107, 58, 0.16);
+  border-color: rgba(46, 107, 58, 0.7);
+  color: #1f5a2c;
 }
 .olay-parsomeni .etki-negatif {
-  background: rgba(154, 58, 48, 0.12);
-  border-color: rgba(154, 58, 48, 0.6);
-  color: #7d2e25;
+  background: rgba(139, 44, 44, 0.14);
+  border-color: rgba(139, 44, 44, 0.7);
+  color: #7a1a1a;
 }
 .olay-parsomeni .etki-yok-notu {
   margin: 0 0 6px;
-  color: var(--m-metin-koyu-soluk);
+  color: #6b4f2a;
   opacity: 1;
 }
 .olay-parsomeni .tur-ozeti {
@@ -232,7 +283,7 @@
   font-size: 0.97rem;
   line-height: 1.32;
   text-align: center;
-  color: var(--m-metin-koyu);
+  color: #2b1d12;
   background: transparent;
   border-left: 0;
   border-radius: 0;
@@ -259,7 +310,7 @@
   margin: 0;
   text-align: center;
   font-size: 0.8rem;
-  color: var(--m-metin-acik-soluk);
+  color: #f0d9a8;
 }
 
 .olay-kutusu .secenek,
@@ -280,10 +331,11 @@
   line-height: 1.2;
   hyphens: auto;
   overflow-wrap: anywhere;
-  color: var(--m-metin-acik);
+  color: #f4e0b0;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
   background: var(--ahsap);
-  border: 1px solid var(--ahsap-kenar);
-  border-radius: 7px;
+  border: 2px solid var(--ahsap-kenar);
+  border-radius: 9px;
   box-shadow: var(--ahsap-golge);
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
@@ -307,8 +359,8 @@
 @media (hover: hover) {
   .olay-kutusu .secenek:hover:not(:disabled),
   .olay-kutusu .olay-devam:hover:not(:disabled) {
-    border-color: var(--m-vurgu-parlak);
-    background: #3a414d;
+    border-color: var(--renk-altin-parlak);
+    filter: brightness(1.12);
   }
 }
 .olay-kutusu .secenek:active:not(:disabled),
@@ -318,14 +370,13 @@
 }
 .olay-kutusu .secenek:focus-visible,
 .olay-kutusu .olay-devam:focus-visible {
-  outline: 2px solid var(--m-vurgu-parlak);
+  outline: 2px solid var(--renk-altin-parlak);
   outline-offset: 2px;
 }
 .olay-kutusu .secenek.kilitli {
-  background: var(--m-zemin);
-  border: 1px dashed var(--m-cizgi);
-  color: #8b8f97;
-  box-shadow: none;
+  background: linear-gradient(180deg, #2b2119, #1e1610);
+  border: 2px dashed #6d5a44;
+  color: #bda98b;
 }
 .olay-kutusu .secenek-kilit {
   display: block;
@@ -333,14 +384,14 @@
   font-size: 0.72rem;
   line-height: 1.15;
   font-style: italic;
-  color: #d99a8c;
+  color: #f0b4b4;
 }
 /* Risksiz "vazgeç" şıkkı: soluk, kesik kenarlı. */
 .olay-kutusu .secenek.secenek-hafif {
   padding: 8px;
   opacity: 0.8;
-  background: transparent;
-  border: 1px dashed rgba(230, 223, 207, 0.3);
+  background: rgba(40, 25, 12, 0.55);
+  border: 2px dashed rgba(205, 192, 168, 0.5);
   box-shadow: none;
 }
 .olay-kutusu .secenek.secenek-hafif .secenek-metin {
@@ -356,19 +407,7 @@
   min-height: 50px;
   font-size: 1rem;
   letter-spacing: 0.03em;
-  color: #f3ece0;
-  background: var(--m-vurgu);
-  border-color: var(--m-vurgu-koyu);
-}
-.olay-kutusu .olay-devam:hover:not(:disabled) {
-  background: var(--m-vurgu);
-  border-color: var(--m-vurgu-koyu);
-}
-@media (hover: hover) {
-  .olay-kutusu .olay-devam:hover:not(:disabled) {
-    background: var(--m-vurgu-parlak);
-    border-color: var(--m-vurgu-koyu);
-  }
+  color: var(--renk-altin-parlak);
 }
 
 @media (prefers-reduced-motion: reduce) {
