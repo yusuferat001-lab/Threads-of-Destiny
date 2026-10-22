@@ -15,6 +15,16 @@ async function ilkOlayiCoz(id: string) {
   return secimUygulaVeCoz(id, idx >= 0 ? idx : 0);
 }
 
+/** İlk olay seçimi rastgele öldürebilir; hayatta kalan bir "olay yok" oyunu döner. */
+async function olaysizOyun(meslek = "Tüccar") {
+  for (let i = 0; i < 20; i++) {
+    const state = await ilerleOyunu(meslek);
+    await ilkOlayiCoz(state.id);
+    if (state.aktif) return state;
+  }
+  throw new Error("Hayatta kalan oyun üretilemedi.");
+}
+
 describe("ilerle zaman modeli (İLERLE + 2 yılda bir olay)", () => {
   it("meslek seçilince ilk olay hemen bekler; İLERLE reddedilir", async () => {
     const state = await ilerleOyunu();
@@ -41,8 +51,7 @@ describe("ilerle zaman modeli (İLERLE + 2 yılda bir olay)", () => {
   });
 
   it("İLERLE tam 1 yıl geçirir; 2 İLERLE'den sonra olay çıkar", async () => {
-    const state = await ilerleOyunu();
-    await ilkOlayiCoz(state.id);
+    const state = await olaysizOyun();
     const yil = state.yil;
     const yas = state.yas;
 
@@ -65,8 +74,7 @@ describe("ilerle zaman modeli (İLERLE + 2 yılda bir olay)", () => {
   });
 
   it("İLERLE olayı gecmis_olaylar'a yazmaz", async () => {
-    const state = await ilerleOyunu();
-    await ilkOlayiCoz(state.id);
+    const state = await olaysizOyun();
     const once = state.gecmis_olaylar.length;
     await yilGec(state.id);
     expect(state.gecmis_olaylar.length).toBe(once);
@@ -89,16 +97,14 @@ describe("ilerle zaman modeli (İLERLE + 2 yılda bir olay)", () => {
   });
 
   it("yolculukta her adım hemen çıkar (İLERLE kapalı)", async () => {
-    const state = await ilerleOyunu();
-    await ilkOlayiCoz(state.id);
+    const state = await olaysizOyun();
     state.etiketler.push("yolculukta");
     expect((await stateGetir(state.id)).olay_bekliyor).toBe(true);
     await expect(yilGec(state.id)).rejects.toThrow("bekleyen olay");
   });
 
   it("hapiste İLERLE cezayı bir yıl eritir", async () => {
-    const state = await ilerleOyunu();
-    await ilkOlayiCoz(state.id);
+    const state = await olaysizOyun();
     state.etiketler.push("hapiste");
     state.hapis_ceza_kalan = 3;
     state.hapis_ceza_toplam = 3;
@@ -107,8 +113,7 @@ describe("ilerle zaman modeli (İLERLE + 2 yılda bir olay)", () => {
   });
 
   it("100 yaş tavanı: son İLERLE ölümle biter ve sonrasında İLERLE reddedilir", async () => {
-    const state = await ilerleOyunu();
-    await ilkOlayiCoz(state.id);
+    const state = await olaysizOyun();
     state.yas = 99;
     const sonuc = await yilGec(state.id);
     expect(sonuc.state.aktif).toBe(false);
