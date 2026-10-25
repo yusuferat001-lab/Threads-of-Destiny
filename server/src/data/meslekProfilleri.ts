@@ -15,7 +15,8 @@ export interface DilliMetin {
   en: string;
 }
 
-export type UrunKesimi = "temel" | "orta" | "luks";
+/** v11: üç sınıf — temel (gündelik), savas (savaşta talebi artar), luks (bollukta kazandırır). */
+export type UrunKesimi = "temel" | "savas" | "luks";
 
 export interface HatTanimi {
   id: string;
@@ -51,7 +52,30 @@ export interface RolTanimi {
   ad: DilliMetin;
 }
 
+/** Başlangıçta seçilen "ana ürün" bonusu (yalnız o hatta uygulanır). */
+export interface UrunBonusu {
+  /** Alış maliyeti çarpanı (<1 ucuzlatır). */
+  alisCarpani?: number;
+  /** Satış fiyatı çarpanı. */
+  satisCarpani?: number;
+  /** Talep çarpanı. */
+  talepCarpani?: number;
+  /** Depo çürümesi çarpanı (<1 az çürür). */
+  curumeCarpani?: number;
+  /** Savaşta ürünün savaş talebine eklenen ek (ör. 0.15 = ek +%15). */
+  savasTalepEki?: number;
+}
+
+export interface BaslangicUrunu {
+  hat: string;
+  bonus: UrunBonusu;
+  /** Seçim penceresinde gösterilen bir cümlelik bonus açıklaması. */
+  ozet: DilliMetin;
+}
+
 export interface IsletmeProfili {
+  /** v11: oyun başında seçilen üç ürün (temel / savaş / lüks); yoksa (Din Adamı) seçim yok. */
+  baslangicUrunleri?: BaslangicUrunu[];
   /** "ticaret": mal satın alınır (depo dolana dek); "uretim": yıllık üretim tavanı vardır, maliyet hammaddedir; "cemaat": Din Adamı (bağış + faaliyetler, stok yok; game/cemaat.ts). */
   mod?: "ticaret" | "uretim" | "cemaat";
   hatlar: HatTanimi[];
@@ -83,9 +107,9 @@ export const KESIM_ARTI_EKSI: Record<UrunKesimi, { arti: DilliMetin; eksi: Dilli
     arti: { tr: "Krizde de satar, talebi sağlam", en: "Sells even in a crisis, steady demand" },
     eksi: { tr: "Birim kârı düşük", en: "Low profit per unit" },
   },
-  orta: {
-    arti: { tr: "Dengeli kâr ve talep", en: "Balanced profit and demand" },
-    eksi: { tr: "Savaşta ve krizde dalgalı", en: "Swings in war and crisis" },
+  savas: {
+    arti: { tr: "Savaşta talebi ve fiyatı yükselir", en: "Demand and price rise in war" },
+    eksi: { tr: "Barışta durgun satar", en: "Sells slowly in peacetime" },
   },
   luks: {
     arti: { tr: "Bollukta çok yüksek kâr", en: "Very high profit in boom years" },
@@ -96,21 +120,21 @@ export const SAVAS_TALEP_ARTISI: DilliMetin = { tr: "Savaşta talebi artar", en:
 
 export const FIYAT_ARTI_EKSI: Record<IsletmeFiyat, DilliMetin> = {
   eksi20: {
-    tr: "Fiyat −%20, talep +%45. Çok satar, müşteri kazanırsın (yılda +%3 pay); birim kâr az, stok çabuk biter.",
-    en: "Price −20%, demand +45%. You sell a lot and win customers (+3% share a year); thin margin, stock runs out fast.",
+    tr: "Fiyat −%20, talep ≈ +%50. Çok satar, müşteri kazanırsın (yılda +%3 pay); birim kâr az, stok çabuk biter.",
+    en: "Price −20%, demand ≈ +50%. You sell a lot and win customers (+3% share a year); thin margin, stock runs out fast.",
   },
   eksi10: {
-    tr: "Fiyat −%10, talep +%20. Daha çok satar, müşteri çekersin (yılda +%1,5 pay); birim kâr biraz düşer.",
-    en: "Price −10%, demand +20%. You sell more and attract customers (+1.5% share a year); slightly lower margin.",
+    tr: "Fiyat −%10, talep ≈ +%21. Daha çok satar, müşteri çekersin (yılda +%1,5 pay); birim kâr biraz düşer.",
+    en: "Price −10%, demand ≈ +21%. You sell more and attract customers (+1.5% share a year); slightly lower margin.",
   },
   normal: { tr: "Piyasa fiyatı. Dengeli.", en: "Market price. Balanced." },
   arti10: {
-    tr: "Fiyat +%10, talep −%12. Birim kâr artar; müşteri yavaşça kaçar (yılda −%1 pay). Krizde talep daha çok düşer.",
-    en: "Price +10%, demand −12%. Better margin; customers slowly drift away (−1% share a year). Demand drops more in a crisis.",
+    tr: "Fiyat +%10, talep ≈ −%16. Birim kâr artar; müşteri yavaşça kaçar (yılda −%1,5 pay). Krizde talep daha çok düşer.",
+    en: "Price +10%, demand ≈ −16%. Better margin; customers slowly drift away (−1.5% share a year). Demand drops more in a crisis.",
   },
   arti20: {
-    tr: "Fiyat +%20, talep −%30. Birim kâr yüksek ama müşteri kaçar (yılda −%3 pay). Kıtlık ve savaşta riskli.",
-    en: "Price +20%, demand −30%. High margin but customers leave (−3% share a year). Risky in famine and war.",
+    tr: "Fiyat +%20, talep ≈ −%28. Birim kâr yüksek ama müşteri kaçar (yılda −%3 pay). Kıtlık ve savaşta riskli.",
+    en: "Price +20%, demand ≈ −28%. High margin but customers leave (−3% share a year). Risky in famine and war.",
   },
 };
 
@@ -120,8 +144,8 @@ const YATIRIM_DEPO: YatirimTanimi = {
   simge: "🏚️",
   ad: { tr: "Depo", en: "Warehouse" },
   aciklama: {
-    tr: "Stok kapasitesi: 100 → 220 → 420 → 750. Büyük depo mal çürümesini azaltır (%15 → %8) ama bakımı pahalıdır.",
-    en: "Stock capacity: 100 → 220 → 420 → 750. A bigger warehouse reduces spoilage (10% → 2%) but costs more to maintain.",
+    tr: "Stok kapasitesi: 50 → 90 → 130 → 190 birim. Büyük depo mal çürümesini azaltır (%10 → %3) ama bakımı yıllık gider yazar.",
+    en: "Stock capacity: 50 → 90 → 130 → 190 units. A bigger warehouse reduces spoilage (10% → 3%) but upkeep is a yearly cost.",
   },
   etki: "depo",
   fiyatlar: [35, 90, 180],
@@ -216,8 +240,8 @@ const DIN_YATIRIMLAR: YatirimTanimi[] = [
     simge: "⛪",
     ad: { tr: "İbadethane", en: "House of Worship" },
     aciklama: {
-      tr: "Ayine sığan inanan: 40 → 90 → 170 → 300. Kapasiteyi aşan inananlar rakibe geçer; bakımı pahalıdır.",
-      en: "Worshippers it can hold: 40 → 90 → 170 → 300. Those beyond capacity drift to your rival; upkeep is costly.",
+      tr: "Ayine sığan inanan: 50 → 80 → 120 → 175. Kapasiteyi aşan inananlar rakibe geçer; bakımı yıllık gider yazar.",
+      en: "Worshippers it can hold: 50 → 80 → 120 → 175. Those beyond capacity drift to your rival; upkeep is a yearly cost.",
     },
     etki: "bina",
     fiyatlar: [22, 55, 120],
@@ -302,11 +326,16 @@ export const ROL_ACIKLAMALARI: Record<"ticaret" | "uretim" | "cemaat", Record<Is
 };
 
 const TUCCAR_ORTA_CAG: IsletmeProfili = {
+  baslangicUrunleri: [
+    { hat: "tahil", bonus: { curumeCarpani: 0.7 }, ozet: { tr: "Çürümesi %30 az: stok daha uzun dayanır.", en: "30% less spoilage: stock lasts longer." } },
+    { hat: "silah", bonus: { savasTalepEki: 0.15, alisCarpani: 0.96 }, ozet: { tr: "Savaşta talebi ek +%15, alışı %4 ucuz; barışta durgun.", en: "+15% extra demand in war and 4% cheaper to buy; sluggish in peace." } },
+    { hat: "baharat", bonus: { satisCarpani: 1.08 }, ozet: { tr: "Satış fiyatı +%8; talebi az ama marjı yüksek.", en: "+8% selling price; low demand but a fat margin." } },
+  ],
   hatlar: [
     { id: "tahil", simge: "🌾", ad: { tr: "Tahıl", en: "Grain" }, kesim: "temel", talepTabani: 1.49, birimMaliyet: 0.67, birimFiyat: 1.15, minRutbe: 1 },
-    { id: "kumas", simge: "🧵", ad: { tr: "Kumaş", en: "Cloth" }, kesim: "orta", talepTabani: 0.84, birimMaliyet: 0.96, birimFiyat: 1.9, minRutbe: 2 },
-    { id: "sarap", simge: "🍷", ad: { tr: "Şarap", en: "Wine" }, kesim: "orta", talepTabani: 0.74, birimMaliyet: 1.06, birimFiyat: 2.1, minRutbe: 2 },
-    { id: "silah", simge: "⚔️", ad: { tr: "Silah", en: "Arms" }, kesim: "orta", talepTabani: 0.65, birimMaliyet: 1.15, birimFiyat: 2.3, minRutbe: 2, savasTalep: 1.5 },
+    { id: "kumas", simge: "🧵", ad: { tr: "Kumaş", en: "Cloth" }, kesim: "temel", talepTabani: 0.84, birimMaliyet: 0.96, birimFiyat: 1.9, minRutbe: 2 },
+    { id: "sarap", simge: "🍷", ad: { tr: "Şarap", en: "Wine" }, kesim: "temel", talepTabani: 0.74, birimMaliyet: 1.06, birimFiyat: 2.1, minRutbe: 2 },
+    { id: "silah", simge: "⚔️", ad: { tr: "Silah", en: "Arms" }, kesim: "savas", talepTabani: 0.65, birimMaliyet: 1.15, birimFiyat: 2.3, minRutbe: 2, savasTalep: 1.35 },
     { id: "baharat", simge: "🌶️", ad: { tr: "Baharat", en: "Spices" }, kesim: "luks", talepTabani: 0.28, birimMaliyet: 2.11, birimFiyat: 5.0, minRutbe: 3 },
     { id: "kurk", simge: "🦊", ad: { tr: "Kürk ve İpek", en: "Fur & Silk" }, kesim: "luks", talepTabani: 0.33, birimMaliyet: 2.3, birimFiyat: 5.2, minRutbe: 3 },
   ],
@@ -316,12 +345,17 @@ const TUCCAR_ORTA_CAG: IsletmeProfili = {
 };
 
 const TUCCAR_SANAYI: IsletmeProfili = {
+  baslangicUrunleri: [
+    { hat: "tahil", bonus: { curumeCarpani: 0.7 }, ozet: { tr: "Çürümesi %30 az: stok daha uzun dayanır.", en: "30% less spoilage: stock lasts longer." } },
+    { hat: "makine", bonus: { savasTalepEki: 0.15, alisCarpani: 0.96 }, ozet: { tr: "Savaşta talebi ek +%15, alışı %4 ucuz; barışta durgun.", en: "+15% extra demand in war and 4% cheaper to buy; sluggish in peace." } },
+    { hat: "ipek", bonus: { satisCarpani: 1.08 }, ozet: { tr: "Satış fiyatı +%8; talebi az ama marjı yüksek.", en: "+8% selling price; low demand but a fat margin." } },
+  ],
   hatlar: [
     { id: "tahil", simge: "🌾", ad: { tr: "Tahıl", en: "Grain" }, kesim: "temel", talepTabani: 1.496, birimMaliyet: 0.67, birimFiyat: 1.15, minRutbe: 1 },
     { id: "komur", simge: "⛏️", ad: { tr: "Kömür", en: "Coal" }, kesim: "temel", talepTabani: 1.397, birimMaliyet: 0.72, birimFiyat: 1.2, minRutbe: 1 },
-    { id: "pamuklu", simge: "🧶", ad: { tr: "Pamuklu", en: "Cotton Goods" }, kesim: "orta", talepTabani: 0.77, birimMaliyet: 0.96, birimFiyat: 1.9, minRutbe: 2 },
-    { id: "cay_kahve", simge: "☕", ad: { tr: "Çay ve Kahve", en: "Tea & Coffee" }, kesim: "orta", talepTabani: 0.68, birimMaliyet: 1.06, birimFiyat: 2.1, minRutbe: 2 },
-    { id: "makine", simge: "⚙️", ad: { tr: "Makine Parçası", en: "Machine Parts" }, kesim: "orta", talepTabani: 0.59, birimMaliyet: 1.25, birimFiyat: 2.5, minRutbe: 2, savasTalep: 1.3 },
+    { id: "pamuklu", simge: "🧶", ad: { tr: "Pamuklu", en: "Cotton Goods" }, kesim: "temel", talepTabani: 0.77, birimMaliyet: 0.96, birimFiyat: 1.9, minRutbe: 2 },
+    { id: "cay_kahve", simge: "☕", ad: { tr: "Çay ve Kahve", en: "Tea & Coffee" }, kesim: "temel", talepTabani: 0.68, birimMaliyet: 1.06, birimFiyat: 2.1, minRutbe: 2 },
+    { id: "makine", simge: "⚙️", ad: { tr: "Makine Parçası", en: "Machine Parts" }, kesim: "savas", talepTabani: 0.59, birimMaliyet: 1.25, birimFiyat: 2.5, minRutbe: 2, savasTalep: 1.25 },
     { id: "ipek", simge: "🪭", ad: { tr: "İpek", en: "Silk" }, kesim: "luks", talepTabani: 0.3, birimMaliyet: 2.3, birimFiyat: 5.2, minRutbe: 3 },
   ],
   yatirimlar: TUCCAR_YATIRIMLAR,
@@ -330,12 +364,17 @@ const TUCCAR_SANAYI: IsletmeProfili = {
 };
 
 const ZANAATKAR_ORTA_CAG: IsletmeProfili = {
+  baslangicUrunleri: [
+    { hat: "kap", bonus: { alisCarpani: 0.92 }, ozet: { tr: "Hammaddesi %8 ucuz; gündelik talep sağlam.", en: "Raw materials 8% cheaper; steady everyday demand." } },
+    { hat: "silah", bonus: { savasTalepEki: 0.15, alisCarpani: 0.96 }, ozet: { tr: "Savaşta talebi ek +%15, hammaddesi %4 ucuz; barışta durgun.", en: "+15% extra demand in war and 4% cheaper materials; sluggish in peace." } },
+    { hat: "kuyum", bonus: { satisCarpani: 1.08 }, ozet: { tr: "Satış fiyatı +%8; talebi az ama marjı yüksek.", en: "+8% selling price; low demand but a fat margin." } },
+  ],
   mod: "uretim",
   hatlar: [
     { id: "kap", simge: "🏺", ad: { tr: "Çömlek ve Kap", en: "Pottery & Vessels" }, kesim: "temel", talepTabani: 1.711, birimMaliyet: 0.58, birimFiyat: 1.15, minRutbe: 1 },
     { id: "demir", simge: "⚒️", ad: { tr: "Demir Alet", en: "Iron Tools" }, kesim: "temel", talepTabani: 1.38, birimMaliyet: 0.67, birimFiyat: 1.2, minRutbe: 1 },
-    { id: "mobilya", simge: "🪑", ad: { tr: "Mobilya", en: "Furniture" }, kesim: "orta", talepTabani: 1.12, birimMaliyet: 0.86, birimFiyat: 1.9, minRutbe: 2 },
-    { id: "silah", simge: "⚔️", ad: { tr: "Kılıç ve Zırh", en: "Swords & Armour" }, kesim: "orta", talepTabani: 0.927, birimMaliyet: 0.96, birimFiyat: 2.3, minRutbe: 2, savasTalep: 1.5 },
+    { id: "mobilya", simge: "🪑", ad: { tr: "Mobilya", en: "Furniture" }, kesim: "temel", talepTabani: 1.12, birimMaliyet: 0.86, birimFiyat: 1.9, minRutbe: 2 },
+    { id: "silah", simge: "⚔️", ad: { tr: "Kılıç ve Zırh", en: "Swords & Armour" }, kesim: "savas", talepTabani: 0.927, birimMaliyet: 0.96, birimFiyat: 2.3, minRutbe: 2, savasTalep: 1.35 },
     { id: "kuyum", simge: "💍", ad: { tr: "Kuyum ve İşleme", en: "Jewellery & Fine Work" }, kesim: "luks", talepTabani: 0.414, birimMaliyet: 1.82, birimFiyat: 5.0, minRutbe: 3 },
   ],
   yatirimlar: ZANAATKAR_YATIRIMLAR,
@@ -344,12 +383,17 @@ const ZANAATKAR_ORTA_CAG: IsletmeProfili = {
 };
 
 const ZANAATKAR_SANAYI: IsletmeProfili = {
+  baslangicUrunleri: [
+    { hat: "ayakkabi", bonus: { alisCarpani: 0.92 }, ozet: { tr: "Hammaddesi %8 ucuz; gündelik talep sağlam.", en: "Raw materials 8% cheaper; steady everyday demand." } },
+    { hat: "makine", bonus: { savasTalepEki: 0.15, alisCarpani: 0.96 }, ozet: { tr: "Savaşta talebi ek +%15, hammaddesi %4 ucuz; barışta durgun.", en: "+15% extra demand in war and 4% cheaper materials; sluggish in peace." } },
+    { hat: "saat", bonus: { satisCarpani: 1.08 }, ozet: { tr: "Satış fiyatı +%8; talebi az ama marjı yüksek.", en: "+8% selling price; low demand but a fat margin." } },
+  ],
   mod: "uretim",
   hatlar: [
     { id: "ayakkabi", simge: "👞", ad: { tr: "Ayakkabı ve Deri", en: "Shoes & Leather" }, kesim: "temel", talepTabani: 1.49, birimMaliyet: 0.62, birimFiyat: 1.15, minRutbe: 1 },
     { id: "ev_esyasi", simge: "🍳", ad: { tr: "Ev Eşyası", en: "Household Goods" }, kesim: "temel", talepTabani: 1.389, birimMaliyet: 0.67, birimFiyat: 1.2, minRutbe: 1 },
-    { id: "mobilya", simge: "🛋️", ad: { tr: "Mobilya ve Cam", en: "Furniture & Glass" }, kesim: "orta", talepTabani: 1.05, birimMaliyet: 0.91, birimFiyat: 1.9, minRutbe: 2 },
-    { id: "makine", simge: "⚙️", ad: { tr: "Makine Parçası", en: "Machine Parts" }, kesim: "orta", talepTabani: 0.875, birimMaliyet: 1.06, birimFiyat: 2.5, minRutbe: 2, savasTalep: 1.3 },
+    { id: "mobilya", simge: "🛋️", ad: { tr: "Mobilya ve Cam", en: "Furniture & Glass" }, kesim: "temel", talepTabani: 1.05, birimMaliyet: 0.91, birimFiyat: 1.9, minRutbe: 2 },
+    { id: "makine", simge: "⚙️", ad: { tr: "Makine Parçası", en: "Machine Parts" }, kesim: "savas", talepTabani: 0.875, birimMaliyet: 1.06, birimFiyat: 2.5, minRutbe: 2, savasTalep: 1.25 },
     { id: "saat", simge: "⌚", ad: { tr: "Saat ve Mücevher", en: "Watches & Jewellery" }, kesim: "luks", talepTabani: 0.405, birimMaliyet: 1.92, birimFiyat: 5.2, minRutbe: 3 },
   ],
   yatirimlar: ZANAATKAR_YATIRIMLAR,

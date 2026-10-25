@@ -4,6 +4,7 @@
  *   pasif    — hiç dokunmaz (1 temel hat, normal fiyat, stok hedefi normal, çalışan yok)
  *   dengeli  — rütbe/kâr yettikçe hat açar, çalışan alır, yatırım yapar
  *   agresif  — her şeyi en hızlı açar, ucuz fiyatla çok satar, tanıtıma yatırır
+ *   aktif    — dengeli gibi ama çalışanı ve yatırımı daha erken alır (v11 rapor tarzı: 10 yıllık dilimlerde pay / dükkan neti / cebine kalan)
  * Rütbe/şöhret ve olay kaynaklı güç kazancı basit bir sürüklenmeyle taklit edilir.
  * Çıktı: gelir bandı, pazar payı (ölümde), batma oranı, hırsızlık aralığı, çalışan ROI.
  *
@@ -36,7 +37,7 @@ import type { Cag, CharacterState, IsletmeFiyat, EkipUyesi } from "../src/types"
 const N = Number(process.env.SIM_N ?? 200);
 const MESLEK = process.env.SIM_MESLEK ?? "Tüccar";
 const YIL = Number(process.env.SIM_YIL ?? 45);
-type Tarz = "pasif" | "dengeli" | "agresif" | "fanatik";
+type Tarz = "pasif" | "dengeli" | "agresif" | "fanatik" | "aktif";
 
 function rutbeSurukle(s: CharacterState, yilIdx: number, tarz: Tarz) {
   // Gerçek ömürdeki ortalama ilerlemeye benzer: pasif daha yavaş.
@@ -44,7 +45,7 @@ function rutbeSurukle(s: CharacterState, yilIdx: number, tarz: Tarz) {
   s.rutbe_seviye = Math.min(5, 1 + esikler.filter((e, i) => i > 0 && yilIdx >= e).length);
   s.un = Math.min(tarz === "pasif" ? 45 : 75, 20 + yilIdx * 1.1);
   // Olay kaynaklı müşteri kazancı (kategori başarıları ≈ +3 müşteri/olay): pasif az, aktif daha çok.
-  musteriEkle(s, tarz === "pasif" ? 0.2 : tarz === "dengeli" ? 0.8 : 1.2);
+  musteriEkle(s, tarz === "pasif" ? 0.2 : tarz === "dengeli" || tarz === "aktif" ? 0.8 : 1.2);
 }
 
 function botKarar(s: CharacterState, tarz: Tarz) {
@@ -80,7 +81,7 @@ function botKarar(s: CharacterState, tarz: Tarz) {
       return tarz === "agresif" ? a.maas_taban - b.maas_taban : b.yetenek + b.sadakat - (a.yetenek + a.sadakat);
     });
     const a = sirali[0];
-    if (s.para < (a.maas_taban * enf) * 4 + 25 * enf) break;
+    if (s.para < (a.maas_taban * enf) * (tarz === "aktif" ? 2.5 : 4) + (tarz === "aktif" ? 12 : 25) * enf) break;
     is.adaylar = is.adaylar.filter((x) => x.id !== a.id);
     const uye: EkipUyesi = {
       id: a.id, isim: a.isim, rol: a.rol, gercekKalite: a.yetenek, tahminiMin: a.yetenek, tahminiMax: a.yetenek,
@@ -97,7 +98,7 @@ function botKarar(s: CharacterState, tarz: Tarz) {
     const k = is.yatirimlar[id] ?? 0;
     if (k >= t.fiyatlar.length) continue;
     const fiyat = t.fiyatlar[k] * enf;
-    if (s.para > fiyat * 2.2) {
+    if (s.para > fiyat * (tarz === "aktif" ? 1.5 : 2.2)) {
       s.para -= fiyat;
       is.yatirimlar[id] = k + 1;
     }
@@ -126,13 +127,19 @@ function botKarar(s: CharacterState, tarz: Tarz) {
   is.stok_hedefi = "normal";
 }
 
-interface Cikti { gider: number[]; musteri: number[]; calisan: number[]; batmaYili: number; batmaDetay: string; gelir: number[]; net: number[]; pay: number[]; rakipPay: number[]; para: number[]; batti: boolean; sonPara: number; hirsizlik: number; anaRolKazanc: number }
+interface Cikti { dukkan: number[]; gider: number[]; musteri: number[]; calisan: number[]; batmaYili: number; batmaDetay: string; gelir: number[]; net: number[]; pay: number[]; rakipPay: number[]; para: number[]; batti: boolean; sonPara: number; hirsizlik: number; anaRolKazanc: number }
 
 function tekOmur(cag: Cag, tarz: Tarz): Cikti {
   const s = createCharacter(cag, cag === "Orta Çağ" ? "Fransa" : "İngiltere", "kasaba");
   s.yas = 15;
   mesleğiSec(s, MESLEK);
-  const c: Cikti = { gider: [], musteri: [], calisan: [], batmaYili: -1, batmaDetay: "", gelir: [], net: [], pay: [], rakipPay: [], para: [], batti: false, sonPara: 0, hirsizlik: 0, anaRolKazanc: 0 };
+  // v11: oyun başında seçilen ana ürün (temel ürün) — yalnız o hat açık başlar.
+  const bu = isletmeProfiliGetir(s.meslek, s.cag)?.baslangicUrunleri?.[0];
+  if (bu && s.isletme) {
+    s.isletme.ana_urun = bu.hat;
+    for (const h of s.isletme.hatlar) h.acik = h.id === bu.hat;
+  }
+  const c: Cikti = { dukkan: [], gider: [], musteri: [], calisan: [], batmaYili: -1, batmaDetay: "", gelir: [], net: [], pay: [], rakipPay: [], para: [], batti: false, sonPara: 0, hirsizlik: 0, anaRolKazanc: 0 };
   for (let y = 0; y < YIL; y++) {
     rutbeSurukle(s, y, tarz);
     botKarar(s, tarz);
@@ -152,6 +159,7 @@ function tekOmur(cag: Cag, tarz: Tarz): Cikti {
     pasifEkonomiUygula(s, 1);
     pazarYillikUygula(s, 1); // rakip + küçük esnaf hareketleri, haberler
     s.tur_sayisi += 1;
+    c.dukkan.push(s.isletme?.son_dokum?.net ?? 0);
     c.gelir.push(s.para - onceki + gider);
     c.net.push(s.para - onceki);
     c.pay.push(pazarPayiHesapla(s) * 100);
@@ -178,11 +186,11 @@ function tekOmur(cag: Cag, tarz: Tarz): Cikti {
   return c;
 }
 
-const dilimler: [string, number, number][] = [["15-25", 0, 10], ["25-45", 10, 30], ["45+", 30, YIL]];
+const dilimler: [string, number, number][] = [["yaş 15-25", 0, 10], ["25-35", 10, 20], ["35-45", 20, 30], ["45-55", 30, 40], ["55+", 40, YIL]];
 const ort = (a: number[]) => a.reduce((x, y) => x + y, 0) / Math.max(1, a.length);
 
 const CAGLAR = (process.env.SIM_CAG ? [process.env.SIM_CAG] : ["Orta Çağ", "Sanayi Devrimi"]) as Cag[];
-const TARZLAR = (process.env.SIM_TARZ ? process.env.SIM_TARZ.split(",") : MESLEK === "Din Adamı" ? ["pasif", "dengeli", "agresif", "fanatik"] : ["pasif", "dengeli", "agresif"]) as Tarz[];
+const TARZLAR = (process.env.SIM_TARZ ? process.env.SIM_TARZ.split(",") : MESLEK === "Din Adamı" ? ["pasif", "dengeli", "agresif", "fanatik", "aktif"] : ["pasif", "dengeli", "agresif", "aktif"]) as Tarz[];
 for (const cag of CAGLAR) {
   for (const tarz of TARZLAR) {
     const sonuclar: Cikti[] = [];
@@ -192,7 +200,8 @@ for (const cag of CAGLAR) {
       const net = ort(sonuclar.map((c) => ort(c.net.slice(a, b))));
       const pay = ort(sonuclar.map((c) => ort(c.pay.slice(a, b))));
       const rpay = ort(sonuclar.map((c) => ort(c.rakipPay.slice(a, b))));
-      return `${ad}: gelir ${gelir.toFixed(1)} · net ${net.toFixed(1)} · pay %${pay.toFixed(1)} · rakip %${rpay.toFixed(1)}`;
+      const dukkan = ort(sonuclar.map((c) => ort(c.dukkan.slice(a, b))));
+      return `${ad}: pay %${pay.toFixed(1)} · dükkan neti ${dukkan.toFixed(1)} · cebine kalan ${net.toFixed(1)} · (brüt gelir ${gelir.toFixed(1)}, rakip %${rpay.toFixed(1)})`;
     });
     const batan = sonuclar.filter((c) => c.batti).length;
     const sonPay = sonuclar.map((c) => c.pay[c.pay.length - 1]).sort((a, b) => a - b);

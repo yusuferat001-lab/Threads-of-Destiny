@@ -68,6 +68,7 @@ import {
   calisanSadakatKontrolleri,
   calisanlariGelistir,
   ekipBonuslari,
+  ilkYillarGuvenli,
   imtiyazAktifMi,
   korumaHesapla,
   pazarBuyumeOrani,
@@ -123,6 +124,7 @@ export function cemaatBaslat(state: CharacterState): void {
     aday_yili: state.yil,
     stok_hedefi: "normal",
     hirsizlik_son_yil: null,
+    baslangic_yili: state.yil,
     imtiyazlar: {},
     tekel_hat: null,
     cemaat: cemaatVarsayilan(),
@@ -452,7 +454,7 @@ export function cemaatYilIsle(state: CharacterState, b: IsletmeBaglami): Isletme
   if (kademe >= 2 && rakip) rakip.husumet = clamp(rakip.husumet + 3, 0, 100);
   const otoriteKoruma = (state.yonetim_iliski ?? 0) >= OTORITE_KORUMA_ESIGI;
   if (state.rakip_sonraki_saldiri_yili == null) state.rakip_sonraki_saldiri_yili = rastgeleSaldiriYili(state.yil, otoriteKoruma);
-  if (state.yil >= state.rakip_sonraki_saldiri_yili) {
+  if (!ilkYillarGuvenli(state) && state.yil >= state.rakip_sonraki_saldiri_yili) {
     state.rakip_sonraki_saldiri_yili = rastgeleSaldiriYili(state.yil, otoriteKoruma);
     if (aktifler.length > 0 && rakip) {
       const kucukler = aktifler.filter((r) => r !== rakip);
@@ -556,6 +558,10 @@ export function cemaatYilIsle(state: CharacterState, b: IsletmeBaglami): Isletme
     alim: r2(h.faaliyetMasraf + h.ayinMasrafi),
     depoMasrafi: r2(h.binaBakim),
     loncaAidati: r2(h.aidat),
+    calisanMaasi: r2(state.ekip.reduce((t, u) => t + u.maas, 0)),
+    nakitHasar: r2(nakitHasar),
+    ekstraGider: r2(ekstraGider),
+    curumeKaybi: 0,
     brutKar: r2(h.brutKar),
     borcOdeme: 0,
     net,

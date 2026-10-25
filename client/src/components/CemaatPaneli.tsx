@@ -4,7 +4,7 @@ import { useDil } from '../DilContext';
 import { kt } from '../katalog';
 import { PiyasaHaberleri } from './PiyasaHaberleri';
 import { IsletmeOrtak } from './IsletmeOrtak';
-import { formatPara, formatYuzde, formatMusteri } from '../format';
+import { formatPara, formatYuzde, formatMusteri, isaretSinifi } from '../format';
 
 interface Props {
   durum: IsletmeGorunumu;
@@ -167,7 +167,7 @@ export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onC
   const pb = durum.paraBirimi;
   const yuzdeMetni = (v: number) => formatYuzde(dil, v, true);
   const donemAdi = DONEM_ADLARI[c.donem.kaynak] ? d(DONEM_ADLARI[c.donem.kaynak]) : '';
-  const fanatikRenk = c.fanatiklik >= 60 ? '#c0392b' : c.fanatiklik >= 30 ? '#e67e22' : '#d4af37';
+  const fanatikRenk = c.fanatiklik >= 60 ? 'var(--s-kotu, #9a2f22)' : c.fanatiklik >= 30 ? '#b8741a' : 'var(--s-altin, #c9a24a)';
 
   const uyariMetni = (u: IsletmeUyari): string => {
     const en = dil === 'en';
@@ -260,7 +260,7 @@ export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onC
         </span>
         <span>
           👥 {t('inanan')}: <strong>{formatMusteri(dil, c.inanan)}</strong>
-          {dokum && dokum.musteriDegisim !== 0 ? <em> ({formatMusteri(dil, dokum.musteriDegisim, true)})</em> : null}
+          {dokum && dokum.musteriDegisim !== 0 ? <em className={isaretSinifi(dokum.musteriDegisim)}> ({formatMusteri(dil, dokum.musteriDegisim, true)})</em> : null}
         </span>
         <span>
           🌐 {t('pazar')}: <strong>{durum.pazarMusteri} {t('kisi')}</strong>
@@ -474,11 +474,15 @@ export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onC
               {t('gVergi')} (%{Math.round(dokum.vergiOrani * 1000) / 10}): <strong>−{formatPara(dokum.vergi)}</strong>
             </div>
           )}
+          {((dokum.nakitHasar ?? 0) + (dokum.ekstraGider ?? 0)) > 0 && (
+            <div>{dil === 'en' ? 'Theft / raid / severance' : 'Hırsızlık / baskın / tazminat'}: <strong className="kademe-dusuk">−{formatPara((dokum.nakitHasar ?? 0) + (dokum.ekstraGider ?? 0))}</strong></div>
+          )}
           <div className="isletme-dokum-net">
-            {t('net')}: <strong>{dokum.net >= 0 ? '+' : ''}{formatPara(dokum.net)} {pb}</strong>
+            {t('net')}: <strong className={isaretSinifi(dokum.net)}>{dokum.net >= 0 ? '+' : ''}{formatPara(dokum.net)} {pb}</strong>
           </div>
+          <div>{dil === 'en' ? 'Staff wages (paid separately)' : 'Çalışan maaşları (ayrıca ödenir)'}: <strong className="kademe-dusuk">−{formatPara(dokum.calisanMaasi ?? 0)}</strong></div>
           <div>
-            {t('pay')}: <strong>%{dokum.pazarPayi}</strong> · {t('musteriDegisim')}: <strong>{formatMusteri(dil, dokum.musteriDegisim, true)}</strong>
+            {t('pay')}: <strong>%{dokum.pazarPayi}</strong> · {t('musteriDegisim')}: <strong className={isaretSinifi(dokum.musteriDegisim)}>{formatMusteri(dil, dokum.musteriDegisim, true)}</strong>
           </div>
           {dokum.uyarilar.map((u, i) => (
             <div key={i} className="isletme-uyari">

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type {
   CharacterState,
   SenaryoResponse,
@@ -95,6 +95,7 @@ import {
   isletmeCalisanAl,
   ajanTut,
   yonetimEtkilesimYap,
+  isletmeUrunSec,
   yonetimIstekYap,
   yonetimTalebiKararlastir,
 } from './api';
@@ -123,6 +124,7 @@ import { SosyallesmePaneli } from './components/SosyallesmePaneli';
 import { MagazaPaneli } from './components/MagazaPaneli';
 import { AltGezinme } from './components/AltGezinme';
 import { AnaEkranMobil, type AnaTusId } from './components/AnaEkranMobil';
+import { IsletmeBildirimModal, bekleyenIsletmeUyarilari, bildirimGoruldu } from './components/IsletmeBildirimModal';
 import { IsYatirimEkrani } from './components/IsYatirimEkrani';
 import { AyarlarModal } from './components/AyarlarModal';
 import { ayarlariGetir, ayarlariKaydet, type Dil } from './ayarlar';
@@ -133,6 +135,7 @@ import { muzikModunuAyarla, muzikDurdur, muzikSessizAyarla, type MuzikModu } fro
 import { aktifOturumIdGetir, aktifOturumIdKaydet, aktifOturumIdSil } from './oturum';
 import { ogretiBekliyor } from './ogreti';
 import { OgretiSecimi } from './components/OgretiSecimi';
+import { UrunSecimi } from './components/UrunSecimi';
 import { basarimlariKaydet, basarimlariGetir } from './basarimlar';
 import { gecmisHayatKaydet, gecmisHayatlariGetir, gecmisHayatlariTemizle, gecmisHayatSil, type GecmisHayat, gecmisOlumNedeni } from './gecmisHayatlar';
 import { YAPIMCI } from './yapimci';
@@ -381,6 +384,7 @@ function App() {
   const [yenilikAcik, setYenilikAcik] = useState(false);
   // "ilerle" modu: İLERLE'den dönen yıllık haber şeridi (ana ekranda kapatılabilir).
   const [yilNotu, setYilNotu] = useState<string | null>(null);
+  const [bildirimTick, setBildirimTick] = useState(0);
   // Ana ekran tuşundan açılan strateji sayfası (null: eski tam ekran Kariyer).
   const [kariyerSayfa, setKariyerSayfa] = useState<AnaTusId | null>(null);
   const [yeniBasarimlar, setYeniBasarimlar] = useState<BasarimTanimi[]>([]);
@@ -864,7 +868,7 @@ function App() {
    * modunda henüz olay çıkmadıysa (ana ekran gösterilir) null döner.
    */
   async function senaryoGerekirseCek(state: CharacterState): Promise<SenaryoResponse | null> {
-    if (ogretiBekliyor(state)) return null;
+    if (ogretiBekliyor(state) || state.urun_secim_bekliyor) return null;
     if (state.zaman_modeli === 'ilerle' && !state.olay_bekliyor) return null;
     return (await senaryoGetir(state.id)).senaryo;
   }
@@ -1168,13 +1172,13 @@ function App() {
   // Yönetim işlemlerinde hem sonuç hem hata Kariyer ekranındaki açılır pencerede
   // gösterilir (üstte sabit hata bandı yok) — bu yüzden catch'te setHata değil
   // setIslemMesaji kullanılır.
-  async function yonetimEtkilesimHandler(etkilesimId: string, kademe?: number) {
+  async function yonetimEtkilesimHandler(etkilesimId: string, kademe?: number, varyant?: string) {
     if (!karakter) return;
     setHata(null);
     setIslemMesaji(null);
     setYukleniyor(true);
     try {
-      const sonuc = await yonetimEtkilesimYap(karakter.id, etkilesimId, kademe);
+      const sonuc = await yonetimEtkilesimYap(karakter.id, etkilesimId, kademe, varyant);
       setKarakter(sonuc.state);
       setIslemMesaji(sonuc.mesaj);
       await yonetimTazele(karakter.id);
@@ -1636,6 +1640,28 @@ function App() {
   }
 
   // ===== Meslek işletmesi (§45) — hiçbiri turu tüketmez =====
+  async function urunSecHandler(urunId: string) {
+    if (!karakter) return;
+    setHata(null);
+    setYukleniyor(true);
+    try {
+      const sonuc = await isletmeUrunSec(karakter.id, urunId);
+      setKarakter(sonuc.state);
+      setIsletme(sonuc.durum);
+      // Ürün seçilince ilk olay (varsa) çekilir; yoksa ana ekran açılır.
+      if (!senaryo) {
+        const yeni = await senaryoGerekirseCek(sonuc.state);
+        if (yeni) setSenaryo(yeni);
+        setTepkiModu(false);
+        setEkran('oyun');
+      }
+    } catch (err) {
+      setHata(temizHata(err));
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
   async function ogretiSecHandler(ogretiId: string) {
     if (!karakter) return;
     setHata(null);
@@ -1799,6 +1825,7 @@ function App() {
     !tanismaSonuc &&
     !!karakter.meslek &&
     !karakter.olay_bekliyor &&
+    !karakter.urun_secim_bekliyor &&
     !ogretiBekliyor(karakter);
   // Ana ekran tabloları işletme görünümünden beslenir; her yıl/para değişiminde tazelenir.
   useEffect(() => {
@@ -1813,6 +1840,11 @@ function App() {
       iptal = true;
     };
   }, [anaEkranModu, karakter?.id, karakter?.yil, karakter?.para]);
+  // Hırsızlık / rakip saldırısı gibi işletme bildirimleri: yalnız ana ekran açıkken (bekleyen olay yokken) çıkar.
+  const isletmeUyarilari = useMemo(
+    () => (anaEkranModu && karakter ? bekleyenIsletmeUyarilari(isletme, karakter.id) : []),
+    [anaEkranModu, karakter?.id, isletme, bildirimTick], // eslint-disable-line react-hooks/exhaustive-deps
+  );
   function anaTusHandler(tus: AnaTusId) {
     setKariyerSayfa(tus);
     void kariyerEkraniniAc();
@@ -1931,6 +1963,10 @@ function App() {
             ✕
           </button>
         </div>
+      )}
+
+      {karakter && karakter.urun_secim_bekliyor && ['oyun', 'sonuc'].includes(ekran) && (
+        <UrunSecimi stateId={karakter.id} yukleniyor={yukleniyor} onSec={urunSecHandler} />
       )}
 
       {karakter && ogretiBekliyor(karakter) && ['oyun', 'sonuc', 'kariyer', 'finans', 'yatirim', 'sosyallesme', 'magaza', 'aile'].includes(ekran) && (
@@ -2609,6 +2645,16 @@ function App() {
                 <div className="merkez-sahne">
                   <AmacPaneli durum={amaclar} varyant="serit" />
                 </div>
+              )}
+              {anaEkranModu && isletme?.aktif && isletmeUyarilari.length > 0 && (
+                <IsletmeBildirimModal
+                  durum={isletme}
+                  uyarilar={isletmeUyarilari}
+                  onKapat={() => {
+                    if (isletme.sonDokum) bildirimGoruldu(karakter.id, isletme.sonDokum.yil);
+                    setBildirimTick((n) => n + 1);
+                  }}
+                />
               )}
               {anaEkranModu && (
                 <AnaEkranMobil

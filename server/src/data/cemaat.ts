@@ -31,7 +31,7 @@ export const FANATIK_DOGAL_SONUM = 0.3;
 /** Ayin masrafı: bağışın %8'i (mum, buhur, ekmek-şarap). */
 export const AYIN_MASRAF_ORANI = 0.08;
 /** Teşkilat aidatı: toplam gelirin %3'ü. */
-export const TESKILAT_AIDATI_ORANI = 0.03;
+export const TESKILAT_AIDATI_ORANI = 0.02;
 
 /** Ahlak → yıllık inanan değişimi (kesir), 25'erli bantlar. */
 export const AHLAK_BANTLARI: { min: number; max: number; inanan: number }[] = [
@@ -60,9 +60,9 @@ export const GELME_ARALIKLARI: Record<GelmeKaynagi, [number, number]> = {
 };
 
 /** Bina kademesi (0..3) → ibadethane kapasitesi (aynı anda ayine sığan inanan). */
-export const BINA_KAPASITE = [55, 110, 190, 320];
+export const BINA_KAPASITE = [50, 80, 120, 175];
 /** Bina bakımı (enflasyonsuz yıllık). */
-export const BINA_BAKIM = [4, 10, 18, 30];
+export const BINA_BAKIM = [3, 7, 12, 20];
 
 // ── Politikalar ─────────────────────────────────────────────────────────────
 export interface BagisPolitikasi {

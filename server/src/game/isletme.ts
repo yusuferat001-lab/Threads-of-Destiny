@@ -19,6 +19,7 @@ import {
   type AdayTaslagi,
   type HatTanimi,
   type IsletmeProfili,
+  type UrunBonusu,
   type UrunKesimi,
   type YatirimEtkisi,
   hatTanimiGetir,
@@ -34,6 +35,7 @@ import {
   pazarPayiHesapla,
   rakipSaldiriKademesi,
   rastgeleSaldiriYili,
+  ISLETME_GUVENLI_YIL,
   saldiriTuruSec,
   FIZIKSEL_SALDIRILAR,
   SALDIRI_HASARLARI,
@@ -69,9 +71,9 @@ export interface IsletmeBaglami {
 
 // ── Sayılar (simülasyonla ayarlanır; bkz. scripts/simulateIsletme.ts) ───────
 /** Depo kademeleri (0..3): kapasite, çürüme oranı, sabit yıllık bakım (enflasyonsuz). Depo yılda BİR kez dolar. */
-export const DEPO_KAPASITE = [100, 220, 420, 750];
-export const CURUME_ORANLARI = [0.15, 0.12, 0.1, 0.08];
-export const DEPO_BAKIM = [4, 10, 18, 30];
+export const DEPO_KAPASITE = [50, 90, 130, 190];
+export const CURUME_ORANLARI = [0.1, 0.07, 0.05, 0.03];
+export const DEPO_BAKIM = [3, 7, 12, 20];
 export const BASLANGIC_STOK = 20;
 export const BORC_ODEME_ORANI = 0.6;
 /** Rütbe S1..S5 → en fazla toplam çalışan. */
@@ -94,8 +96,8 @@ const TEZGAH_URETIM_KADEME = 0.6;
 const TANITIM_PAY_KADEME = 0.01;
 /** Veba sürerken müşteri/inanan büyümesinin pozitif kısımları bu çarpanla kısılır (v10). */
 export const VEBA_ARTIS_CARPANI = 0.3;
-/** Perakende fiyatı toptan fiyat şokunu yalnız bu oranda izler: kıtlıkta mal pahalanır ama müşterinin alım gücü yetmez. */
-const SATIS_FIYAT_UYUMU = 0.6;
+/** v11: dönem fiyat şoku alışa ve satışa AYNI oranda (%100) yansır; marj oransal korunur, krizin asıl etkisi talepte. */
+const FIYAT_SOKU_YANSIMA = 1;
 
 // Üretim modu (Zanaatkâr): yıllık üretim tavanı = taban × (1 + ana rol bonusları + tezgâh yüzdesi + ruhsat).
 export const URETIM_TABAN = 80;
@@ -104,10 +106,10 @@ export const URETIM_ANA_TALEP_PAYI = 0.55;
 export const URETIM_METRIK_CARPANI = 0.2;
 
 // Lonca aidatı: satışın %3'ü (v8.2), brüt kârdan vergiden önce düşer.
-export const LONCA_AIDATI_ORANI = 0.03;
+export const LONCA_AIDATI_ORANI = 0.02;
 
 // Vergi
-export const VERGI_TABAN_ORANI = 0.25;
+export const VERGI_TABAN_ORANI = 0.2;
 export const VERGI_SAVAS_EKI = 0.1;
 export const VERGI_KOTU_ILISKI_EKI = 0.03;
 export const VERGI_KOTU_ILISKI_ESIGI = 25;
@@ -129,36 +131,43 @@ export const OTORITE_KORUMA = 0.1;
 export interface FiyatPolitikasi {
   /** Satış fiyatı çarpanı. */
   fiyat: number;
-  /** Talep çarpanı. */
-  talep: number;
-  /** Krizde (kıtlık/durgunluk/savaş/veba) talep çarpanı (yoksa `talep`). */
-  krizTalep?: number;
   /** G'nin yıllık yüzde değişimi (kesir). */
   pay: number;
 }
+/** v11: talep çarpanı fiyat^(−e) (aşağıda `fiyatTalepCarpani`); simetrik, ucuza ve pahalıya aynı kural. */
 export const FIYAT_POLITIKASI: Record<IsletmeFiyat, FiyatPolitikasi> = {
-  eksi20: { fiyat: 0.8, talep: 1.45, pay: 0.03 },
-  eksi10: { fiyat: 0.9, talep: 1.2, pay: 0.015 },
-  normal: { fiyat: 1, talep: 1, pay: 0 },
-  arti10: { fiyat: 1.1, talep: 0.88, krizTalep: 0.8, pay: -0.01 },
-  arti20: { fiyat: 1.2, talep: 0.7, krizTalep: 0.55, pay: -0.03 },
+  eksi20: { fiyat: 0.8, pay: 0.03 },
+  eksi10: { fiyat: 0.9, pay: 0.015 },
+  normal: { fiyat: 1, pay: 0 },
+  arti10: { fiyat: 1.1, pay: -0.015 },
+  arti20: { fiyat: 1.2, pay: -0.03 },
 };
+/** Fiyat esnekliği: normalde 1,8; krizde (kıtlık/durgunluk/savaş/veba) müşteri fiyata daha duyarlı: 2,2. */
+export const FIYAT_ESNEKLIK = 1.8;
+export const FIYAT_ESNEKLIK_KRIZ = 2.2;
+export function fiyatTalepCarpani(pol: FiyatPolitikasi, krizli: boolean): number {
+  return Math.pow(pol.fiyat, -(krizli ? FIYAT_ESNEKLIK_KRIZ : FIYAT_ESNEKLIK));
+}
 export const FIYATLAR: IsletmeFiyat[] = ["eksi20", "eksi10", "normal", "arti10", "arti20"];
 
-/** Stok hedefi: beklenen talebin katı; "dolu" depoyu doldurur (null). */
+/** Stok hedefi (v11, 3'lü): geçen yılki talebin katı. Fazla depoya sığdığı kadar. */
 export const STOK_HEDEFI_ORANLARI: Record<IsletmeStokHedefi, number | null> = {
-  cokaz: 0.75,
-  az: 0.95,
-  normal: 1.15,
-  fazla: 1.5,
-  dolu: null,
+  az: 0.8,
+  normal: 1.05,
+  fazla: 1.25,
 };
-export const STOK_HEDEFLERI: IsletmeStokHedefi[] = ["cokaz", "az", "normal", "fazla", "dolu"];
+export const STOK_HEDEFLERI: IsletmeStokHedefi[] = ["az", "normal", "fazla"];
 
 const clamp = (x: number, min: number, max: number) => Math.max(min, Math.min(max, x));
 const r2 = (x: number) => Math.round(x * 100) / 100;
 const aralikta = ([min, max]: [number, number]) => Math.round(min + Math.random() * (max - min));
 const araliktaOnd = ([min, max]: [number, number]) => min + Math.random() * (max - min);
+
+/** İşletmenin ilk ISLETME_GUVENLI_YIL yılında dış hırsızlık ve rakip saldırısı olmaz (v11). */
+export function ilkYillarGuvenli(state: CharacterState): boolean {
+  const bas = state.isletme?.baslangic_yili ?? state.baslangic_yili ?? state.yil;
+  return state.yil - bas < ISLETME_GUVENLI_YIL;
+}
 
 export function isletmeAktif(state: CharacterState): boolean {
   return !!state.isletme && !!isletmeProfiliGetir(state.meslek, state.cag);
@@ -257,7 +266,7 @@ export function korumaHesapla(state: CharacterState): { calisan: number; yatirim
 }
 
 /** Çalışan maaşı çarpanı (v8.2: +%15 → v8.4: +%7). */
-export const MAAS_CARPANI = 1.0;
+export const MAAS_CARPANI = 0.9;
 
 /** Giriş seviyesine (Y, S) göre enflasyonsuz yıllık maaş tabanı. */
 export function maasTabani(yetenek: number, sadakat: number): number {
@@ -305,7 +314,7 @@ export function sicakUrunHatId(state: CharacterState, profil: IsletmeProfili): s
   let tohum = 0;
   if (state.ulke.savasta && state.buyuk_savas) {
     havuz = profil.hatlar.filter((h) => h.savasTalep);
-    if (havuz.length === 0) havuz = profil.hatlar.filter((h) => h.kesim === "orta");
+    if (havuz.length === 0) havuz = profil.hatlar.filter((h) => h.kesim === "savas");
     tohum = state.buyuk_savas.baslangicYili;
   } else if (state.ulke.donem?.tur === "bolluk") {
     havuz = profil.hatlar.filter((h) => h.kesim === "luks");
@@ -327,9 +336,9 @@ export interface KesimEtkisi {
 }
 
 function birlestir(e: DonemEtkisi, kesim: UrunKesimi): KesimEtkisi {
-  if (kesim === "temel") return { talep: e.temelTalep, fiyat: e.temelFiyat };
+  // v11: "savas" ürünleri dönem etkisini temel mallar gibi alır (ek savaş talebi hattın `savasTalep`inden gelir).
   if (kesim === "luks") return { talep: e.luksTalep, fiyat: e.luksFiyat };
-  return { talep: (e.temelTalep + e.luksTalep) / 2, fiyat: (e.temelFiyat + e.luksFiyat) / 2 };
+  return { talep: e.temelTalep, fiyat: e.temelFiyat };
 }
 
 /** Dönem × savaş × veba etkilerinin bir ürün kesimine toplam talep/fiyat çarpanı. */
@@ -403,6 +412,8 @@ export interface HatHesabi {
   talep: number;
   birimFiyat: number;
   birimMaliyet: number;
+  /** Toplam maliyet indirimi (0-1): çalışan × yatırım × anlaşma × imtiyaz × piyasa etkileri. */
+  maliyetIndirim: number;
   kesim: KesimEtkisi;
   sicak: boolean;
 }
@@ -414,8 +425,9 @@ export function hatHesapla(state: CharacterState, hat: IsletmeHat, tanim: HatTan
   const bon = ekipBonuslari(state);
   const kes = kesimEtkisi(state, tanim.kesim);
   const pol = FIYAT_POLITIKASI[hat.fiyat] ?? FIYAT_POLITIKASI.normal;
-  const politikaTalep = pol.krizTalep !== undefined && krizliMi(state) ? pol.krizTalep : pol.talep;
-  const savasTalep = tanim.savasTalep && state.ulke.savasta ? tanim.savasTalep : 1;
+  const politikaTalep = fiyatTalepCarpani(pol, krizliMi(state));
+  const ub = anaUrunBonusu(state, hat.id);
+  const savasTalep = tanim.savasTalep && state.ulke.savasta ? tanim.savasTalep + (ub?.savasTalepEki ?? 0) : 1;
   const sicak = sicakUrunHatId(state, profil) === hat.id;
   const acikSayisi = Math.max(1, is.hatlar.filter((h) => h.acik).length + (hat.acik ? 0 : 1));
   const paylasim = 1 / (1 + HAT_PAYLASIM * (acikSayisi - 1));
@@ -428,6 +440,7 @@ export function hatHesapla(state: CharacterState, hat: IsletmeHat, tanim: HatTan
     ALIM_ORANI *
     tanim.talepTabani *
     kes.talep *
+    (ub?.talepCarpani ?? 1) *
     politikaTalep *
     savasTalep *
     (sicak ? SICAK_URUN_TALEP : 1) *
@@ -447,18 +460,55 @@ export function hatHesapla(state: CharacterState, hat: IsletmeHat, tanim: HatTan
     birimFiyat:
       tanim.birimFiyat *
       b.enflasyon *
-      (1 + (kes.fiyat - 1) * SATIS_FIYAT_UYUMU) *
+      (1 + (kes.fiyat - 1) * FIYAT_SOKU_YANSIMA) *
       pol.fiyat *
       (sicak ? SICAK_URUN_FIYAT : 1) *
+      (ub?.satisCarpani ?? 1) *
       tekel,
-    birimMaliyet: tanim.birimMaliyet * b.enflasyon * kes.fiyat * maliyetCarpani * piyasaCarpani(state, "alis_maliyeti"),
+    birimMaliyet: tanim.birimMaliyet * b.enflasyon * (1 + (kes.fiyat - 1) * FIYAT_SOKU_YANSIMA) * maliyetCarpani * piyasaCarpani(state, "alis_maliyeti") * (ub?.alisCarpani ?? 1),
+    maliyetIndirim: 1 - maliyetCarpani * piyasaCarpani(state, "alis_maliyeti"),
     kesim: kes,
     sicak,
   };
 }
 
 export function hatKilitNedeni(state: CharacterState, tanim: HatTanimi): "rutbe" | null {
+  // v11: oyun başında seçilen ana ürünün rütbe kilidi yoktur.
+  if (state.isletme?.ana_urun === tanim.id) return null;
   return state.rutbe_seviye < tanim.minRutbe ? "rutbe" : null;
+}
+
+/** Ana ürün seçildiyse o hattın bonusu (yalnız seçilen hatta), yoksa null. */
+export function anaUrunBonusu(state: CharacterState, hatId: string): UrunBonusu | null {
+  const is = state.isletme;
+  if (!is || is.ana_urun !== hatId) return null;
+  const profil = isletmeProfiliGetir(state.meslek, state.cag);
+  return profil?.baslangicUrunleri?.find((u) => u.hat === hatId)?.bonus ?? null;
+}
+
+/** Oyuncunun henüz seçmediği başlangıç ürünü var mı? (yalnız API "ilerle" oyunları) */
+export function urunSecimiBekliyorMu(state: CharacterState): boolean {
+  return !!state.urun_secim_bekliyor && !!state.isletme && !state.isletme.ana_urun && !!isletmeProfiliGetir(state.meslek, state.cag)?.baslangicUrunleri?.length;
+}
+
+/** Başlangıç ürününü uygular: yalnız seçilen hat açık kalır; ilk stok beklenen talebin %120'si (depoya sığdığı kadar), parası tedarikçi veresiyesi. */
+export function anaUrunSec(state: CharacterState, urunId: string, b: IsletmeBaglami): void {
+  const is = state.isletme;
+  const profil = isletmeProfiliGetir(state.meslek, state.cag);
+  if (!is || !profil?.baslangicUrunleri) throw new Error("Bu meslekte başlangıç ürünü seçilmez.");
+  if (!urunSecimiBekliyorMu(state)) throw new Error("Başlangıç ürününü zaten seçtin.");
+  if (!profil.baslangicUrunleri.some((u) => u.hat === urunId)) throw new Error("Geçersiz ürün.");
+  is.ana_urun = urunId;
+  for (const h of is.hatlar) {
+    h.acik = h.id === urunId;
+    h.stok = 0;
+  }
+  const hat = is.hatlar.find((h) => h.id === urunId)!;
+  const tanim = hatTanimiGetir(profil, urunId)!;
+  const hs = hatHesapla(state, hat, tanim, b);
+  hat.stok = Math.min(depoKapasitesi(is), Math.max(5, Math.round(hs.talep * 1.2)));
+  is.tedarikci_borcu = r2(hat.stok * hs.birimMaliyet);
+  state.urun_secim_bekliyor = false;
 }
 
 // ── Aday havuzu ─────────────────────────────────────────────────────────────
@@ -493,7 +543,7 @@ function karistir<T>(dizi: T[]): T[] {
   return a;
 }
 
-export const ADAY_SAYISI = 6;
+export const ADAY_SAYISI = 5;
 export const ADAY_ANA_SAYISI = 3;
 export const ADAY_YENILEME_YIL = 3;
 
@@ -554,6 +604,7 @@ export function isletmeBaslat(state: CharacterState, b: IsletmeBaglami): void {
     aday_yili: state.yil,
     stok_hedefi: "normal",
     hirsizlik_son_yil: null,
+    baslangic_yili: state.yil,
     imtiyazlar: {},
     tekel_hat: null,
   };
@@ -588,7 +639,9 @@ export function isletmeHazirla(state: CharacterState, b: IsletmeBaglami): void {
     if (eski) h.fiyat = eski;
     if (!(h.fiyat in FIYAT_POLITIKASI)) h.fiyat = "normal";
   }
-  if (!is.stok_hedefi) is.stok_hedefi = "normal";
+  // v11: stok hedefi 3'lü; eski 5'li değerler yakın karşılığa taşınır.
+  const ESKI_STOK: Record<string, IsletmeStokHedefi> = { cokaz: "az", az: "az", normal: "normal", fazla: "fazla", dolu: "fazla" };
+  is.stok_hedefi = ESKI_STOK[is.stok_hedefi as string] ?? "normal";
   if (is.hirsizlik_son_yil === undefined) is.hirsizlik_son_yil = null;
   if (!is.imtiyazlar) is.imtiyazlar = {};
   if (is.tekel_hat === undefined) is.tekel_hat = null;
@@ -607,28 +660,84 @@ export function isletmeHazirla(state: CharacterState, b: IsletmeBaglami): void {
   }
 }
 
-/** Başlangıç beklenen yıllık brüt kâr (ilk yıl dökümü olmadan "yıllık kazanç" göstergesi için). */
-export function beklenenBrutKar(state: CharacterState, b: IsletmeBaglami): number {
-  const is = state.isletme;
-  const profil = isletmeProfiliGetir(state.meslek, state.cag);
-  if (!is || !profil) return 0;
-  if (profil.mod === "cemaat") return cemaatBeklenenKar(state, b);
-  let kar = 0;
-  for (const hat of is.hatlar.filter((h) => h.acik).slice(0, hatSlotSayisi(state))) {
-    const tanim = hatTanimiGetir(profil, hat.id);
-    if (!tanim) continue;
-    const h = hatHesapla(state, hat, tanim, b);
-    kar += h.talep * (h.birimFiyat - h.birimMaliyet);
-  }
-  return kar;
+/** Bu yılın dürüst tahmini bütçesi (ticaret/üretim modu): satış, alım (çürüme dahil), depo, aidat, vergi, borç ödemesi. */
+export interface IsletmeButcesi {
+  satis: number;
+  alim: number;
+  /** alım içindeki, çürüyüp boşa giden mal tahmini (bilgi). */
+  curume: number;
+  depo: number;
+  aidat: number;
+  /** satış − alım − depo − aidat. */
+  brut: number;
+  vergi: number;
+  borcOdeme: number;
+  /** brüt − vergi − borç ödemesi (dökümdeki `net` ile aynı tanım). */
+  net: number;
+  maas: number;
 }
 
-/** hesaplaMaasYillik'in işletme karşılığı: geçen yılın brüt kârı, yoksa beklenen kâr (en az 1). */
+export function isletmeButcesi(state: CharacterState, b: IsletmeBaglami): IsletmeButcesi {
+  const is = state.isletme;
+  const profil = isletmeProfiliGetir(state.meslek, state.cag);
+  const bos: IsletmeButcesi = { satis: 0, alim: 0, curume: 0, depo: 0, aidat: 0, brut: 0, vergi: 0, borcOdeme: 0, net: 0, maas: 0 };
+  if (!is || !profil) return bos;
+  const maas = r2(state.ekip.reduce((t, u) => t + u.maas, 0));
+  if (profil.mod === "cemaat") {
+    const brut = cemaatBeklenenKar(state, b);
+    return { ...bos, brut, net: brut, maas };
+  }
+  const oranStok = STOK_HEDEFI_ORANLARI[stokHedefiGetir(is)] ?? 1;
+  const curume = curumeOrani(is);
+  let satis = 0;
+  let alim = 0;
+  let curumeKaybi = 0;
+  const tavan = uretimTavani(state);
+  const acik = is.hatlar.filter((h) => h.acik).slice(0, hatSlotSayisi(state));
+  const hesaplar = acik
+    .map((hat) => ({ tanim: hatTanimiGetir(profil, hat.id), hat }))
+    .filter((x): x is { tanim: NonNullable<typeof x.tanim>; hat: typeof x.hat } => !!x.tanim)
+    .map(({ tanim, hat }) => ({ h: hatHesapla(state, hat, tanim, b) }));
+  const toplamTalep = hesaplar.reduce((t, x) => t + x.h.talep, 0);
+  const olcek = tavan !== null && toplamTalep > tavan ? tavan / toplamTalep : 1;
+  for (const { h } of hesaplar) {
+    const talep = h.talep * olcek;
+    satis += talep * h.birimFiyat;
+    const kayip = talep * oranStok * curume * h.birimMaliyet;
+    curumeKaybi += kayip;
+    alim += talep * h.birimMaliyet + kayip;
+  }
+  const depo = depoBakimMasrafi(is, b.enflasyon);
+  const aidat = satis * LONCA_AIDATI_ORANI;
+  const brut = satis - alim - depo - aidat;
+  const vergi = brut > 0 ? brut * vergiOrani(state) : 0;
+  const borcOdeme = is.tedarikci_borcu > 0 && brut - vergi > 0 ? Math.min(is.tedarikci_borcu, (brut - vergi) * BORC_ODEME_ORANI) : 0;
+  return {
+    satis: r2(satis),
+    alim: r2(alim),
+    curume: r2(curumeKaybi),
+    depo: r2(depo),
+    aidat: r2(aidat),
+    brut: r2(brut),
+    vergi: r2(vergi),
+    borcOdeme: r2(borcOdeme),
+    net: r2(brut - vergi - borcOdeme),
+    maas,
+  };
+}
+
+/** Beklenen yıllık brüt kâr (satış − alım − depo − aidat; "yıllık kazanç" göstergesi ve ilk yıl tahmini). */
+export function beklenenBrutKar(state: CharacterState, b: IsletmeBaglami): number {
+  return isletmeButcesi(state, b).brut;
+}
+
+/** hesaplaMaasYillik'in işletme karşılığı: geçen yılın DÜKKAN NETİ (brüt − vergi − borç ödemesi); ilk yıl beklenen net. Eksi olabilir (zarar). */
 export function isletmeGelirTahmini(state: CharacterState, b: IsletmeBaglami): number {
   const is = state.isletme;
   if (!is) return 1;
-  const kar = is.son_dokum ? is.son_dokum.brutKar : beklenenBrutKar(state, b);
-  return Math.max(1, r2(kar));
+  const d = is.son_dokum;
+  if (d) return r2(d.brutKar - d.vergi - d.borcOdeme);
+  return isletmeButcesi(state, b).net;
 }
 
 // ── Vergi ───────────────────────────────────────────────────────────────────
@@ -818,7 +927,7 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
 
   // 3. Dış hırsızlık: girişim şansı güvenlikten bağımsız, sonucu Koruma belirler.
   const stokPik = toplamStok(is);
-  if (stokPik >= 5 && (is.hirsizlik_son_yil == null || state.yil - is.hirsizlik_son_yil >= HIRSIZLIK_COOLDOWN_YIL)) {
+  if (!ilkYillarGuvenli(state) && stokPik >= 5 && (is.hirsizlik_son_yil == null || state.yil - is.hirsizlik_son_yil >= HIRSIZLIK_COOLDOWN_YIL)) {
     const doluluk = kapasite > 0 ? stokPik / kapasite : 0;
     if (Math.random() < hirsizlikGirisimSansi(state, doluluk)) {
       is.hirsizlik_son_yil = state.yil;
@@ -851,7 +960,7 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
   }
   const otoriteKoruma = (state.yonetim_iliski ?? 0) >= OTORITE_KORUMA_ESIGI;
   if (state.rakip_sonraki_saldiri_yili == null) state.rakip_sonraki_saldiri_yili = rastgeleSaldiriYili(state.yil, otoriteKoruma);
-  if (state.yil >= state.rakip_sonraki_saldiri_yili) {
+  if (!ilkYillarGuvenli(state) && state.yil >= state.rakip_sonraki_saldiri_yili) {
     state.rakip_sonraki_saldiri_yili = rastgeleSaldiriYili(state.yil, otoriteKoruma);
     if (aktifler.length > 0) {
       const buyuk = rakip!;
@@ -933,7 +1042,7 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
       uyarilar.push({ kod: "stok_bitti", hat: p.hat.id });
       if (p.hs.sicak) sicakKarsilanamadi = true;
     }
-    satirlar.push({ id: p.hat.id, talep: talepAdet, satilan, alinan: uretimPlani[i], stokSonu: p.hat.stok });
+    satirlar.push({ id: p.hat.id, talep: talepAdet, satilan, alinan: uretimPlani[i], stokSonu: p.hat.stok, birimMaliyet: r2(p.hs.birimMaliyet), birimFiyat: r2(p.hs.birimFiyat) });
     p.hat.son_talep = talepAdet;
     p.hat.son_satis = satilan;
   });
@@ -941,10 +1050,14 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
   // 6. Depo: çürüme (kademeye göre, kapalı hatlar dahil) + yalnız kademeye bağlı sabit bakım.
   const depoMasrafi = depoBakimMasrafi(is, b.enflasyon);
   const curume = curumeOrani(is);
+  let curumeKaybi = 0;
   for (const hat of is.hatlar) {
     const tanim = hatTanimiGetir(profil, hat.id);
     if (!tanim) continue;
-    hat.stok = Math.round(hat.stok * (1 - curume));
+    const once = hat.stok;
+    hat.stok = Math.round(hat.stok * (1 - curume * (anaUrunBonusu(state, hat.id)?.curumeCarpani ?? 1)));
+    const plan = planlar.find((p) => p.hat.id === hat.id);
+    curumeKaybi += (once - hat.stok) * (plan ? plan.hs.birimMaliyet : tanim.birimMaliyet * b.enflasyon);
     if (hat.stok > 0 && !hat.acik && hat.stok >= 20) uyarilar.push({ kod: "fazla_stok", hat: hat.id });
   }
 
@@ -1002,6 +1115,10 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
     alim: r2(alim),
     depoMasrafi: r2(depoMasrafi),
     loncaAidati,
+    calisanMaasi: r2(state.ekip.reduce((t, u) => t + u.maas, 0)),
+    nakitHasar: r2(nakitHasar),
+    ekstraGider: r2(ekstraGider),
+    curumeKaybi: r2(curumeKaybi),
     brutKar,
     borcOdeme,
     net,

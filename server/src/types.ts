@@ -399,6 +399,8 @@ export interface CharacterState {
    * "İLERLE" (`POST /:id/yil-gec`, 1 yıl) ile geçer; son olaydan `yil_sayaci >= 2` yıl sonra olay çıkar.
    * Yoksa eski "klasik" akış (her seçim %60/%40 ile 1-2 yıl ilerletir).
    */
+  /** v11: Tüccar/Zanaatkâr oyun başında 3 ürün arasından birini seçmeden oyun devam etmez (yalnız "ilerle" oyunlarında). */
+  urun_secim_bekliyor?: boolean;
   zaman_modeli?: "ilerle";
   /** Son olaydan beri geçen yıl ("ilerle" modu); olay üretilince 0'a döner, 2'de yeni olay çıkar. */
   yil_sayaci?: number;
@@ -890,7 +892,7 @@ export type IsletmeAdayTipi = "serseri" | "sadik_cirak" | "siradan" | "usta_guve
 export type IsletmeFiyat = "eksi20" | "eksi10" | "normal" | "arti10" | "arti20";
 
 /** Stok hedefi (işletme geneli): beklenen talebe göre ne kadar stok tutulacağı. */
-export type IsletmeStokHedefi = "cokaz" | "az" | "normal" | "fazla" | "dolu";
+export type IsletmeStokHedefi = "az" | "normal" | "fazla";
 
 /** İşletmedeki bir ürün hattı (Tüccar: sektör, Zanaatkâr: hedef pazar…). */
 export interface IsletmeHat {
@@ -982,7 +984,12 @@ export interface IsletmeDokum {
   musteri: number;
   musteriDegisim: number;
   pazarMusteri: number;
-  hatlar: { id: string; talep: number; satilan: number; alinan: number; stokSonu: number }[];
+  /** v11: yıllık çalışan maaşları toplamı, hırsızlık/baskın nakit hasarı, tazminat vb. ek gider ve çürüyen malın alış değeri (eski kayıtlarda yok → 0). */
+  calisanMaasi?: number;
+  nakitHasar?: number;
+  ekstraGider?: number;
+  curumeKaybi?: number;
+  hatlar: { id: string; talep: number; satilan: number; alinan: number; stokSonu: number; birimMaliyet?: number; birimFiyat?: number }[];
   /** Üretim modundaki mesleklerde (Zanaatkâr) o yılın üretim tavanı ve kullanılan miktar. */
   uretim?: { tavan: number; kullanilan: number };
   /** Din Adamı (cemaat modu) yıl dökümü: bağış/faaliyet ayrıntıları. `satis` toplam gelir, `alim` faaliyet+ayin masrafı, `depoMasrafi` bina bakımı, `loncaAidati` teşkilat aidatıdır. */
@@ -1051,6 +1058,10 @@ export interface IsletmeDurumu {
   stok_hedefi?: IsletmeStokHedefi;
   /** Son dış hırsızlık girişiminin yılı (3 yıl cooldown). */
   hirsizlik_son_yil?: number | null;
+  /** v11: oyun başında seçilen ana ürün (hat id); bonusu yalnız o hatta uygulanır. Seçim yapılmamış/eski oyunlarda yok. */
+  ana_urun?: string | null;
+  /** İşletmenin kurulduğu oyun yılı (ilk ISLETME_GUVENLI_YIL yıl dış hırsızlık ve rakip saldırısı yok; eski kayıtlarda yok → baslangic_yili). */
+  baslangic_yili?: number;
   /** Otoriteden alınan süreli imtiyazlar: imtiyaz id → bitiş yılı (pazar_imtiyazi, gumruk_muafiyeti, tekel_ruhsati, hammadde_tahsisi, atolye_ruhsati, vakif_muafiyeti, kutsal_gun_imtiyazi). */
   imtiyazlar?: Record<string, number>;
   /** Tekel ruhsatı verilen hat (ruhsat süresince satış fiyatı +%10). */

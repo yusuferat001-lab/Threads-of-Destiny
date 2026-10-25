@@ -10,6 +10,8 @@ import {
   isletmeCalisanAl,
   ekipCikar,
   ciftKazancKirp,
+  isletmeUrunSec,
+  senaryoUret,
 } from "../src/game/gameEngine";
 import {
   isletmeYilIsle,
@@ -27,6 +29,8 @@ import {
   curumeOrani,
   STOK_HEDEFI_ORANLARI,
   FIYAT_POLITIKASI,
+  fiyatTalepCarpani,
+  ilkYillarGuvenli,
 } from "../src/game/isletme";
 import { isletmeBaglami, hesaplaMaasYillik, createCharacter, mesleğiSec } from "../src/game/stateManager";
 import { pazarPayiHesapla, musteriSayisi } from "../src/data/pazar";
@@ -38,6 +42,7 @@ async function tuccar(cag: "Orta Çağ" | "Sanayi Devrimi" = "Orta Çağ") {
   const s = await stateGetir(st.id);
   s.ulke.donem = { tur: "durgunluk", baslangicYili: s.yil, bitisYili: s.yil + 5, sonraki: "bolluk", etki: s.ulke.donem!.etki };
   s.para = 300;
+  if (s.isletme) s.isletme.baslangic_yili = s.yil - 10; // ilk 7 yıl güvenli dönemi dolmuş say
   return s;
 }
 
@@ -49,12 +54,12 @@ function uye(rol: EkipUyesi["rol_turu"], y: number, sadakat = 60): EkipUyesi {
 }
 
 describe("işletme (Tüccar dilimi)", () => {
-  it("Tüccar seçilince işletme kurulur: 1 açık hat, veresiye borç, 6 aday (tam 3'ü ana rol)", async () => {
+  it("Tüccar seçilince işletme kurulur: 1 açık hat, veresiye borç, 5 aday (tam 3'ü ana rol)", async () => {
     const s = await tuccar();
     expect(s.isletme).toBeTruthy();
     expect(s.isletme!.hatlar.filter((h) => h.acik)).toHaveLength(1);
     expect(s.isletme!.tedarikci_borcu).toBeGreaterThan(0);
-    expect(s.isletme!.adaylar).toHaveLength(6);
+    expect(s.isletme!.adaylar).toHaveLength(5);
     expect(s.isletme!.adaylar.filter((a) => a.rolTuru === "ana")).toHaveLength(3);
     for (const a of s.isletme!.adaylar) {
       expect(a.yetenek).toBeGreaterThanOrEqual(20);
@@ -109,10 +114,12 @@ describe("işletme (Tüccar dilimi)", () => {
     const s = await tuccar();
     const hat = s.isletme!.hatlar.find((h) => h.acik)!;
     hat.stok = 0;
-    s.isletme!.stok_hedefi = "cokaz"; // talebin %75'i: karşılanamayan > %15
+    s.isletme!.stok_hedefi = "az"; // talebin %80'i: karşılanamayan > %15
     s.pazar_musteri = 100000; // gürültü etkisini ezmek için büyük sabit pay
     const once = pazarPayiHesapla(s); // pay, pazar büyüklüğü ölçeklenmesinden etkilenmez
+    const rnd = vi.spyOn(Math, "random").mockReturnValue(0.5); // talep gürültüsü sıfır: karşılanamayan tam %20
     const { dokum } = isletmeYilIsle(s, isletmeBaglami(s));
+    rnd.mockRestore();
     expect(dokum.uyarilar.some((u) => u.kod === "kitle_kaybi")).toBe(true);
     expect(pazarPayiHesapla(s)).toBeLessThan(once);
   });
@@ -127,13 +134,14 @@ describe("işletme (Tüccar dilimi)", () => {
     for (let i = 1; i < talepler.length; i++) expect(talepler[i - 1]).toBeGreaterThan(talepler[i]);
     expect(FIYAT_POLITIKASI.eksi20.pay).toBeCloseTo(0.03);
     expect(FIYAT_POLITIKASI.arti20.pay).toBeCloseTo(-0.03);
-    expect(FIYAT_POLITIKASI.eksi20.talep).toBeCloseTo(1.45);
+    expect(fiyatTalepCarpani(FIYAT_POLITIKASI.eksi20, false)).toBeCloseTo(1.49, 1);
+    expect(fiyatTalepCarpani(FIYAT_POLITIKASI.arti20, true)).toBeCloseTo(0.67, 1);
   });
 
-  it("stok hedefi 5 seçenek ve oranlar (%75/%95/%115/%150/dolu)", async () => {
-    expect(STOK_HEDEFI_ORANLARI).toEqual({ cokaz: 0.75, az: 0.95, normal: 1.15, fazla: 1.5, dolu: null });
+  it("stok hedefi 3 seçenek ve oranlar (%80/%105/%125)", async () => {
+    expect(STOK_HEDEFI_ORANLARI).toEqual({ az: 0.8, normal: 1.05, fazla: 1.25 });
     const s = await tuccar();
-    for (const h of ["cokaz", "az", "normal", "fazla", "dolu"] as const) {
+    for (const h of ["az", "normal", "fazla"] as const) {
       const d = await isletmeKararVer(s.id, [], h);
       expect(d.durum.stokHedefi).toBe(h);
     }
@@ -191,17 +199,17 @@ describe("işletme (Tüccar dilimi)", () => {
     await expect(isletmeYatirimYap(s.id, "depo")).rejects.toThrow(/Yeterli paran yok/);
   });
 
-  it("depo yatırımı kapasiteyi büyütür (100/220/420/750), çürümeyi azaltır; en üst kademeden sonra reddedilir", async () => {
+  it("depo yatırımı kapasiteyi büyütür (50/90/130/190), çürümeyi azaltır; en üst kademeden sonra reddedilir", async () => {
     const s = await tuccar();
     s.para = 5000;
-    expect(depoKapasitesi(s.isletme!)).toBe(100);
-    expect(curumeOrani(s.isletme!)).toBeCloseTo(0.15);
+    expect(depoKapasitesi(s.isletme!)).toBe(50);
+    expect(curumeOrani(s.isletme!)).toBeCloseTo(0.1);
     await isletmeYatirimYap(s.id, "depo");
-    expect(depoKapasitesi(s.isletme!)).toBe(220);
+    expect(depoKapasitesi(s.isletme!)).toBe(90);
     await isletmeYatirimYap(s.id, "depo");
     await isletmeYatirimYap(s.id, "depo");
-    expect(depoKapasitesi(s.isletme!)).toBe(750);
-    expect(curumeOrani(s.isletme!)).toBeCloseTo(0.08);
+    expect(depoKapasitesi(s.isletme!)).toBe(190);
+    expect(curumeOrani(s.isletme!)).toBeCloseTo(0.03);
     await expect(isletmeYatirimYap(s.id, "depo")).rejects.toThrow(/en üst kademe/);
   });
 
@@ -235,8 +243,8 @@ describe("işletme (Tüccar dilimi)", () => {
   });
 
   it("maaş giriş seviyesine göre sabit, yalnız enflasyonla artar", () => {
-    expect(maasTabani(20, 10)).toBeCloseTo(1.0 * (1.2 + 0.4 + 0.1 + 0.08), 2);
-    expect(maasTabani(90, 80)).toBeCloseTo(1.0 * (1.2 + 1.8 + 0.8 + 2.88), 2);
+    expect(maasTabani(20, 10)).toBeCloseTo(0.9 * (1.2 + 0.4 + 0.1 + 0.08), 2);
+    expect(maasTabani(90, 80)).toBeCloseTo(0.9 * (1.2 + 1.8 + 0.8 + 2.88), 2);
     expect(maasTabani(90, 80)).toBeGreaterThan(maasTabani(20, 10));
   });
 
@@ -304,20 +312,20 @@ describe("işletme (Tüccar dilimi)", () => {
     expect(korumaHesapla(s).otorite).toBeCloseTo(0.1);
   });
 
-  it("vergi: kârın %25'i; savaşta +10 puan; otorite ilişkisi <25'te +3 puan; indirim yarıya indirir; zarar yılında vergi yok", async () => {
+  it("vergi: kârın %20'si; savaşta +10 puan; otorite ilişkisi <25'te +3 puan; indirim yarıya indirir; zarar yılında vergi yok", async () => {
     const s = await tuccar();
     s.yonetim_iliski = 50;
     s.ulke.savasta = false;
-    expect(vergiOrani(s)).toBeCloseTo(0.25);
+    expect(vergiOrani(s)).toBeCloseTo(0.2);
     s.ulke.savasta = true;
-    expect(vergiOrani(s)).toBeCloseTo(0.35);
+    expect(vergiOrani(s)).toBeCloseTo(0.3);
     s.ulke.savasta = false;
     s.yonetim_iliski = 10;
-    expect(vergiOrani(s)).toBeCloseTo(0.28);
+    expect(vergiOrani(s)).toBeCloseTo(0.23);
     s.yonetim_iliski = 50;
     s.vergi_carpan = 0.5;
     s.vergi_carpan_bitis_yili = s.yil + 9;
-    expect(vergiOrani(s)).toBeCloseTo(0.125);
+    expect(vergiOrani(s)).toBeCloseTo(0.1);
     s.yil += 10;
     s.vergi_carpan_bitis_yili = s.yil - 1;
     const { dokum } = isletmeYilIsle(s, isletmeBaglami(s));
@@ -368,6 +376,7 @@ async function zanaatkar(cag: "Orta Çağ" | "Sanayi Devrimi" = "Orta Çağ") {
   const s = await stateGetir(st.id);
   s.ulke.donem = { tur: "durgunluk", baslangicYili: s.yil, bitisYili: s.yil + 5, sonraki: "bolluk", etki: s.ulke.donem!.etki };
   s.para = 300;
+  if (s.isletme) s.isletme.baslangic_yili = s.yil - 10; // ilk 7 yıl güvenli dönemi dolmuş say
   return s;
 }
 
@@ -392,14 +401,14 @@ describe("işletme (Zanaatkâr — üretim modu)", () => {
     hatlar.forEach((h) => { h.acik = false; h.stok = 0; });
     hatlar.find((h) => h.id === "kap")!.acik = true;
     s.isletme!.yatirimlar.depo = 3;
-    s.isletme!.stok_hedefi = "dolu";
+    s.isletme!.stok_hedefi = "fazla";
     const tavan = (await isletmeDurumGetir(s.id)).uretim!.tavan;
     const { dokum } = isletmeYilIsle(s, isletmeBaglami(s));
     const satilan = dokum.hatlar.reduce((t, h) => t + h.satilan, 0);
     const alinan = dokum.hatlar.reduce((t, h) => t + h.alinan, 0);
     expect(satilan).toBeLessThanOrEqual(tavan);
     expect(alinan).toBeGreaterThan(tavan); // hammadde depoya sığdığı kadar alınır, satış tavana takılır
-    expect(alinan).toBeLessThanOrEqual(750);
+    expect(alinan).toBeLessThanOrEqual(190);
     expect(dokum.uretim?.tavan).toBe(tavan);
     expect(dokum.uyarilar.some((u) => u.kod === "uretim_tavani")).toBe(true);
   });
@@ -407,12 +416,14 @@ describe("işletme (Zanaatkâr — üretim modu)", () => {
   it("Tüccar'da aynı talep tavana takılmaz (depo kapasitesi dışında sınır yok)", async () => {
     const s = await tuccar();
     s.pazar_musteri = 20000;
+    s.meslek_musteri = 4000;
     s.isletme!.yatirimlar.depo = 3;
-    s.isletme!.stok_hedefi = "dolu";
+    s.isletme!.stok_hedefi = "fazla";
     s.isletme!.hatlar.forEach((h) => { h.stok = 0; });
     const { dokum } = isletmeYilIsle(s, isletmeBaglami(s));
     expect(dokum.uretim).toBeUndefined();
     expect(dokum.hatlar[0].alinan).toBeGreaterThan(60);
+    expect(dokum.hatlar[0].alinan).toBeLessThanOrEqual(190); // depo kademe 3 = 190
   });
 
   it("tezgâh yatırımı (+%60/kademe), üretim kapasitesi ve ana rol çalışanı tavanı büyütür", async () => {
@@ -463,7 +474,7 @@ describe("işletme (Zanaatkâr — üretim modu)", () => {
     const s = await zanaatkar();
     s.ekip = [];
     s.isletme!.hatlar.forEach((h) => { h.stok = 0; });
-    s.isletme!.stok_hedefi = "cokaz"; // talebin 0,75 katı: hammadde yetmez
+    s.isletme!.stok_hedefi = "az"; // talebin 0,8 katı: hammadde yetmez
     const { dokum } = isletmeYilIsle(s, isletmeBaglami(s));
     const satilan = dokum.hatlar.reduce((t, h) => t + h.satilan, 0);
     const talep = dokum.hatlar.reduce((t, h) => t + h.talep, 0);
@@ -471,12 +482,52 @@ describe("işletme (Zanaatkâr — üretim modu)", () => {
   });
 });
 
+describe("v11: ilk 7 yıl güvenli dönem, dürüst bütçe, ürün bonusu", () => {
+  it("işletmenin ilk 7 yılında rakip saldırısı ve dış hırsızlık olmaz; 7. yıldan sonra saldırı gelir", async () => {
+    const s = await tuccar();
+    s.ekip = [];
+    s.isletme!.baslangic_yili = s.yil; // yeni kurulmuş
+    expect(ilkYillarGuvenli(s)).toBe(true);
+    s.rakip_sonraki_saldiri_yili = s.yil;
+    const { dokum } = isletmeYilIsle(s, isletmeBaglami(s));
+    expect(dokum.uyarilar.some((u) => u.kod === "rakip_saldiri" || u.kod === "hirsizlik")).toBe(false);
+    s.yil += 8;
+    expect(ilkYillarGuvenli(s)).toBe(false);
+  });
+
+  it("beklenen bütçe: satış − alım − depo − aidat; vergi ve cebine kalan hesaplanır, dökümde maaş ve çürüme kaybı alanları vardır", async () => {
+    const s = await tuccar();
+    s.ekip = [];
+    const g = await isletmeDurumGetir(s.id);
+    const b = g.butce;
+    expect(b.brut).toBeCloseTo(b.satis - b.alim - b.depo - b.aidat, 1);
+    expect(b.net).toBeCloseTo(b.brut - b.vergi - b.borcOdeme, 1);
+    expect(b.cebineKalan).toBeCloseTo(b.net - b.maas - b.yasamKira - b.krediTaksit, 1);
+    const { dokum } = isletmeYilIsle(s, isletmeBaglami(s));
+    expect(typeof dokum.calisanMaasi).toBe("number");
+    expect(typeof dokum.curumeKaybi).toBe("number");
+    expect(dokum.hatlar[0].birimMaliyet).toBeGreaterThan(0);
+  });
+
+  it("dönem fiyat şoku alışa ve satışa aynı oranda yansır (marj oransal korunur)", async () => {
+    const s = await tuccar();
+    const hat = s.isletme!.hatlar.find((h) => h.id === "tahil")!;
+    s.ulke.donem = { ...s.ulke.donem!, tur: "kitlik", etki: { ...s.ulke.donem!.etki, temelFiyat: 1.3 } };
+    const kitlik = (await isletmeDurumGetir(s.id)).hatlar.find((h) => h.id === hat.id)!;
+    s.ulke.donem = { ...s.ulke.donem!, tur: "durgunluk", etki: { ...s.ulke.donem!.etki, temelFiyat: 1 } };
+    const normal = (await isletmeDurumGetir(s.id)).hatlar.find((h) => h.id === hat.id)!;
+    expect(kitlik.birimMaliyet / normal.birimMaliyet).toBeCloseTo(1.3, 1);
+    const sicakSiz = (h: { birimFiyat: number; sicak: boolean }) => h.birimFiyat / (h.sicak ? 1.08 : 1);
+    expect(sicakSiz(kitlik) / sicakSiz(normal)).toBeCloseTo(1.3, 1);
+  });
+});
+
 describe("v8.2: lonca aidatı, saldırı takvimi", () => {
-  it("lonca aidatı satışın %3'üdür ve brüt kârdan düşer", async () => {
+  it("lonca aidatı satışın %2'sidir ve brüt kârdan düşer", async () => {
     const s = await tuccar();
     s.ekip = [];
     const { dokum } = isletmeYilIsle(s, isletmeBaglami(s));
-    expect(dokum.loncaAidati).toBeCloseTo(dokum.satis * 0.03, 1);
+    expect(dokum.loncaAidati).toBeCloseTo(dokum.satis * 0.02, 1);
     expect(dokum.brutKar).toBeCloseTo(dokum.satis - dokum.alim - dokum.depoMasrafi - dokum.loncaAidati, 1);
   });
 
@@ -557,16 +608,17 @@ async function dinAdami(cag: "Orta Çağ" | "Sanayi Devrimi" = "Orta Çağ", bol
   const s = await stateGetir(st.id);
   s.ulke.donem = { tur: "durgunluk", baslangicYili: s.yil, bitisYili: s.yil + 5, sonraki: "bolluk", etki: s.ulke.donem!.etki };
   s.para = 300;
+  if (s.isletme) s.isletme.baslangic_yili = s.yil - 10; // ilk 7 yıl güvenli dönemi dolmuş say
   return s;
 }
 
 describe("işletme (Din Adamı — cemaat, ticaret modu)", () => {
-  it("Din Adamı seçilince işletme kurulur; üretim tavanı yok; 6 aday (3'ü ana rol)", async () => {
+  it("Din Adamı seçilince işletme kurulur; üretim tavanı yok; 5 aday (3'ü ana rol)", async () => {
     for (const cag of ["Orta Çağ", "Sanayi Devrimi"] as const) {
       const s = await dinAdami(cag);
       expect(s.isletme).toBeTruthy();
       expect(s.isletme!.hatlar.filter((h) => h.acik)).toHaveLength(1);
-      expect(s.isletme!.adaylar).toHaveLength(6);
+      expect(s.isletme!.adaylar).toHaveLength(5);
       expect(s.isletme!.adaylar.filter((a) => a.rolTuru === "ana")).toHaveLength(3);
       expect((await isletmeDurumGetir(s.id)).uretim).toBeNull();
     }
@@ -609,5 +661,52 @@ describe("işletme (Din Adamı — cemaat, ticaret modu)", () => {
     rnd.mockRestore();
     expect(imtiyazli.dokum.satis).toBeGreaterThan(normal.dokum.satis);
     expect(imtiyazli.net).toBeGreaterThan(normal.net);
+  });
+});
+
+describe("v11: başlangıç ürünü seçimi", () => {
+  async function ilerleOyunu(meslek: string, cag: "Orta Çağ" | "Sanayi Devrimi" = "Orta Çağ") {
+    const st = await yeniOyun(cag, cag === "Orta Çağ" ? "Fransa" : "İngiltere", "kasaba", undefined, "tr", undefined, "ilerle");
+    await mesleğiAta(st.id, meslek);
+    return st;
+  }
+
+  it("Tüccar/Zanaatkâr 'ilerle' oyununda 3 ürün (temel/savaş/lüks) seçmeden oyun devam etmez", async () => {
+    for (const meslek of ["Tüccar", "Zanaatkâr"]) {
+      for (const cag of ["Orta Çağ", "Sanayi Devrimi"] as const) {
+        const st = await ilerleOyunu(meslek, cag);
+        expect(st.urun_secim_bekliyor).toBe(true);
+        const g = await isletmeDurumGetir(st.id);
+        expect(g.urunSecimi.bekliyor).toBe(true);
+        expect(g.urunSecimi.secenekler.map((o) => o.kesim)).toEqual(["temel", "savas", "luks"]);
+        await expect(senaryoUret(st.id)).rejects.toThrow(/başlangıç ürününü/);
+      }
+    }
+  });
+
+  it("ürün seçilince yalnız o hat açık kalır (rütbe kilidi aranmaz), ilk stok ve veresiye verilir, bonus uygulanır", async () => {
+    const st = await ilerleOyunu("Tüccar");
+    const g0 = await isletmeDurumGetir(st.id);
+    const bahar = g0.urunSecimi.secenekler.find((o) => o.kesim === "luks")!;
+    const fiyatOnce = g0.hatlar.find((h) => h.id === bahar.id)!.birimFiyat;
+    const sonuc = await isletmeUrunSec(st.id, bahar.id);
+    expect(sonuc.state.urun_secim_bekliyor).toBe(false);
+    expect(sonuc.state.isletme!.ana_urun).toBe(bahar.id);
+    const hatlar = sonuc.state.isletme!.hatlar;
+    expect(hatlar.filter((h) => h.acik).map((h) => h.id)).toEqual([bahar.id]);
+    expect(hatlar.find((h) => h.id === bahar.id)!.stok).toBeGreaterThan(0);
+    expect(sonuc.durum.hatlar.find((h) => h.id === bahar.id)!.anaUrun).toBe(true);
+    expect(sonuc.durum.hatlar.find((h) => h.id === bahar.id)!.kilitli).toBe(false);
+    expect(sonuc.durum.hatlar.find((h) => h.id === bahar.id)!.birimFiyat).toBeGreaterThan(fiyatOnce * 1.05); // lüks ürün: satış +%8
+    await expect(isletmeUrunSec(st.id, bahar.id)).rejects.toThrow(/zaten/);
+  });
+
+  it("geçersiz ürün reddedilir; Din Adamı'nda ürün seçimi yoktur; klasik (ilerle olmayan) oyunlarda beklenmez", async () => {
+    const st = await ilerleOyunu("Tüccar");
+    await expect(isletmeUrunSec(st.id, "yok")).rejects.toThrow();
+    const din = await ilerleOyunu("Din Adamı");
+    expect(din.urun_secim_bekliyor).toBeFalsy();
+    const klasik = await tuccar();
+    expect(klasik.urun_secim_bekliyor).toBeFalsy();
   });
 });

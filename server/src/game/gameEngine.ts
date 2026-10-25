@@ -113,6 +113,7 @@ import {
 } from "./stateManager";
 import {
   isletmeAktif,
+  isletmeGelirTahmini,
   uretimTavani,
   isletmeHazirla,
   depoKapasitesi,
@@ -122,6 +123,11 @@ import {
   hatKilitNedeni,
   adaylariGerekirseYenile,
   beklenenBrutKar,
+  isletmeButcesi,
+  anaUrunSec,
+  anaUrunBonusu,
+  urunSecimiBekliyorMu,
+  type IsletmeButcesi,
   calisanLimiti,
   calisanBonusu,
   ekipBonuslari,
@@ -1304,6 +1310,10 @@ export async function mesleğiAta(id: string, meslek: string): Promise<Character
   if (!oturum.state.aktif) throw new Error("Oyun zaten bitmiş.");
   if (oturum.state.meslek) throw new Error("Meslek zaten seçildi.");
   mesleğiSec(oturum.state, meslek);
+  // v11: Tüccar/Zanaatkâr oyun başında 3 ürün arasından birini seçer (yalnız API'den açılan "ilerle" oyunları).
+  if (oturum.state.zaman_modeli === "ilerle" && isletmeProfiliGetir(oturum.state.meslek, oturum.state.cag)?.baslangicUrunleri?.length) {
+    oturum.state.urun_secim_bekliyor = true;
+  }
   await oturumKaydet(oturum.state);
   void metrikYaz({
     tur: "meslek_secim",
@@ -1345,6 +1355,7 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
     throw new Error("Şu an çözülecek bir olay yok; yıl ilerletmelisin.");
   }
   if (ogretiBekliyorMu(oturum.state)) throw new Error("Önce öğretini seçmelisin.");
+  if (urunSecimiBekliyorMu(oturum.state)) throw new Error("Önce başlangıç ürününü seçmelisin.");
 
   // Zaten cevaplanmamış bir olay varsa (sayfa yenilendi, sekme yeniden açıldı,
   // istemci /scenario'yu tekrar çağırdı) YENİDEN ZAR ATILMAZ — aynı olay aynen
@@ -1907,6 +1918,7 @@ export async function secimUygula(id: string, secenekIndex: number): Promise<Sec
   if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
   if (!state.meslek) throw new Error("Önce bir meslek seçmelisin.");
   if (ogretiBekliyorMu(state)) throw new Error("Önce öğretini seçmelisin.");
+  if (urunSecimiBekliyorMu(state)) throw new Error("Önce başlangıç ürününü seçmelisin.");
 
   // Bir önceki çağrıda onTepki'li bir seçenek seçilmişse, bu çağrı zar atmadan
   // doğrudan geri çekil (0) / ısrar et (1) sonucunu uygular; zaman burada ilerler.
@@ -2015,6 +2027,7 @@ export async function yilGec(id: string): Promise<SecimSonucu & { olayBekliyor: 
   if (!state.meslek) throw new Error("Önce bir meslek seçmelisin.");
   if (state.zaman_modeli !== "ilerle") throw new Error("Bu oyun yıl geçirme modunda değil.");
   if (ogretiBekliyorMu(state)) throw new Error("Önce öğretini seçmelisin.");
+  if (urunSecimiBekliyorMu(state)) throw new Error("Önce başlangıç ürününü seçmelisin.");
   if (olayBekliyorMu(oturum)) throw new Error("Önce bekleyen olayı çözmelisin.");
 
   state.yil_sayaci = (state.yil_sayaci ?? 0) + 1;
@@ -2695,7 +2708,7 @@ async function sonucuUygulaVeIlerlet(
               zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${hm}` : hm;
             }
             if (hastalikSonucu.karakterOldu) {
-              checkDeath(state, true, ikiDilT("Veba direncini kırdı; hastalıktan kurtulamadın."));
+              checkDeath(state, true, ikiDilT("Vebadan öldün; hastalık seni yendi."));
             } else if (hastalikSonucu.iyilesti && !state.veba_hayatta_kaldi) {
               // Faz 5 skor bonusu: bizzat vebayı kapıp atlatmak bir kereliğine ödüllendirilir.
               state.veba_hayatta_kaldi = true;
@@ -2815,8 +2828,12 @@ async function sonucuUygulaVeIlerlet(
 }
 
 export interface FinansOzeti {
+  /** İşletmeli mesleklerde geçen yılın DÜKKAN NETİ (vergi ve borç ödemesi sonrası; maaş ve yaşam giderleri ayrı). */
   maasYillik: number;
   giderKalemleri: GiderKalemleri;
+  /** v11: yıllık kredi taksidi tahmini (hiç kredi yoksa 0) ve gelirin işletme neti olup olmadığı. */
+  krediTaksit: number;
+  isletmeli: boolean;
   netYillik: number;
   /** Gelir (maaş) enflasyonu yüzdesi — oyuncuya gösterilmez, iç kullanım/uyum için. */
   enflasyonYuzdesi: number;
@@ -2909,7 +2926,8 @@ export async function dunyaGecmisiGetir(id: string): Promise<DunyaGecmisi> {
 export async function finansGetir(id: string): Promise<FinansOzeti> {
   const oturum = await oturumGetir(id);
   const { state } = oturum;
-  const maasYillik = hesaplaMaasYillik(state);
+  // İşletmeli mesleklerde gelir = geçen yılın dükkan neti (zarar yılında eksi görünür).
+  const maasYillik = isletmeAktif(state) ? paraYuvarla(isletmeGelirTahmini(state, isletmeBaglami(state))) : hesaplaMaasYillik(state);
   const giderKalemleri = giderKalemleriHesapla(state);
   const toplamGider =
     giderKalemleri.yasam +
@@ -2917,10 +2935,14 @@ export async function finansGetir(id: string): Promise<FinansOzeti> {
     giderKalemleri.ekip +
     giderKalemleri.evcilHayvan +
     giderKalemleri.savasVergisi;
+  // v11: kredi taksidi de "cebine kalan"a girer (eskiden hiçbir panelde yoktu).
+  const krediTaksit = state.kredi ? paraYuvarla(Math.min(state.kredi.kalanBorc, state.kredi.yillikTaksit)) : 0;
   return {
     maasYillik,
     giderKalemleri,
-    netYillik: paraYuvarla(maasYillik - toplamGider),
+    krediTaksit,
+    isletmeli: isletmeAktif(state),
+    netYillik: paraYuvarla(maasYillik - toplamGider - krediTaksit),
     enflasyonYuzdesi: enflasyonYuzdesiHesapla(state),
     giderEnflasyonYuzdesi: giderEnflasyonYuzdesiHesapla(state),
     gayrimenkulDegeri: gayrimenkulDegeriHesapla(state),
@@ -3620,6 +3642,22 @@ interface YonetimEtkilesimTabani {
   ifsaSansi?: number;
   /** İfşa olunca ilişki cezası (varsayılan 16; şehir yöneticisi tablosunda 5). */
   ifsaIliski?: number;
+  /** v11: oyuncunun seçtiği alt seçenekler (yalnız şehir yöneticisi tablosu; yoksa `taban` kendisi uygulanır). */
+  varyantlar?: YonetimVaryanti[];
+}
+
+/** Övgü / hizmet alt seçeneği: taban etkilerin üstüne yazar. Para taban (enflasyonla çarpılır, negatif = maliyet). */
+interface YonetimVaryanti {
+  id: string;
+  iliski: number;
+  ahlak?: number;
+  mutluluk?: number;
+  kariyerPuani?: number;
+  sohret?: number;
+  para?: number;
+  ifsaSansi?: number;
+  /** Başarı mesajı (TR kalıp; {0} = otorite adı). */
+  mesaj: string;
 }
 
 /**
@@ -3646,8 +3684,34 @@ const YONETIM_ETKILESIMLERI: Record<YonetimHat, YonetimEtkilesimTabani[]> = {
 /** İşletmeli mesleklerin tek otoritesi: şehir yöneticisi (§45) — hediye +5/+10/+18, hizmet +7, yağcılık +8 (ifşa: ilişki −5, şöhret −4). */
 const SEHIR_YONETICISI_ETKILESIMLERI: YonetimEtkilesimTabani[] = [
   { id: "bagis", ikon: "💰", cooldownYil: 4, bagisKademeleri: [45, 100, 220], bagisKazanclari: [5, 10, 18] },
-  { id: "yalan", ikon: "🗣️", cooldownYil: 4, iliski: 8, ahlak: -6, mutluluk: -4, ifsaSansi: 0.4, ifsaIliski: 5 },
-  { id: "hizmet", ikon: "🤝", cooldownYil: 3, iliski: 7, kariyerPuani: 2, mutluluk: -2 },
+  {
+    id: "yalan",
+    ikon: "💬",
+    cooldownYil: 4,
+    iliski: 7,
+    ahlak: -3,
+    mutluluk: -3,
+    ifsaSansi: 0.3,
+    ifsaIliski: 5,
+    varyantlar: [
+      { id: "ovgu_adalet", iliski: 7, ahlak: -3, mutluluk: -3, ifsaSansi: 0.25, mesaj: "{0}'in adaletini göklere çıkardın; kulağına hoş geldi." },
+      { id: "ovgu_comertlik", iliski: 7, ahlak: -4, mutluluk: -4, sohret: 1, ifsaSansi: 0.35, mesaj: "{0}'in cömertliğini herkese anlattın; adın da onunla anıldı." },
+      { id: "ovgu_katki", iliski: 6, ahlak: -2, mutluluk: -2, kariyerPuani: 1, ifsaSansi: 0.15, mesaj: "{0}'in şehre katkısını içtenlikle överek anlattın; sözlerin ağırlık taşıdı." },
+    ],
+  },
+  {
+    id: "hizmet",
+    ikon: "🤝",
+    cooldownYil: 3,
+    iliski: 6,
+    kariyerPuani: 2,
+    mutluluk: -3,
+    varyantlar: [
+      { id: "hizmet_nakliye", iliski: 6, kariyerPuani: 3, mutluluk: -3, mesaj: "{0} için ulaklık ve nakliye işi gördün; seni not etti." },
+      { id: "hizmet_danismanlik", iliski: 6, kariyerPuani: 1, ahlak: 1, mutluluk: -3, mesaj: "{0}'e işi hakkında danışmanlık yaptın; fikirlerin dinlendi." },
+      { id: "hizmet_ziyafet", iliski: 6, sohret: 1, para: -8, mutluluk: -3, mesaj: "{0} adına bir ziyafet verdin; sofra konuşuldu." },
+    ],
+  },
 ];
 
 function yonetimEtkilesimTablosu(state: CharacterState, hat: YonetimHat): YonetimEtkilesimTabani[] {
@@ -3964,7 +4028,7 @@ export interface YonetimDurumu {
   patron: { unvan: string; ad: string; iliski: number; bagisKademeleri: number[] };
   /** İşletmeli mesleklerde yalnız şehir yöneticisi (yonetici hattı) vardır; patron/lonca hattı gizlenir. */
   tekOtorite: boolean;
-  etkilesimler: { id: string; hat: YonetimHat; ikon: string }[];
+  etkilesimler: { id: string; hat: YonetimHat; ikon: string; varyantlar: string[] }[];
   istekler: {
     id: string;
     hat: YonetimHat;
@@ -4007,7 +4071,7 @@ export async function yonetimDurumGetir(id: string): Promise<YonetimDurumu> {
     },
     tekOtorite: isletmeMeslegiMi(state.meslek),
     etkilesimler: (isletmeMeslegiMi(state.meslek) ? (["yonetici"] as YonetimHat[]) : (["yonetici", "patron"] as YonetimHat[])).flatMap((hat) =>
-      yonetimEtkilesimTablosu(state, hat).map((t) => ({ id: `${hat}:${t.id}`, hat, ikon: t.ikon }))
+      yonetimEtkilesimTablosu(state, hat).map((t) => ({ id: `${hat}:${t.id}`, hat, ikon: t.ikon, varyantlar: (t.varyantlar ?? []).map((v) => v.id) }))
     ),
     istekler: YONETIM_ISTEKLERI.filter((t) => istekMeslegeUygunMu(t, state.meslek)).map((tanim) => ({
       id: tanim.id,
@@ -4047,7 +4111,8 @@ interface YonetimEtkilesimSonucu {
 export async function yonetimEtkilesimYap(
   id: string,
   etkilesimId: string,
-  kademe?: number
+  kademe?: number,
+  varyantId?: string
 ): Promise<YonetimEtkilesimSonucu> {
   const oturum = await oturumGetir(id);
   const { state } = oturum;
@@ -4067,6 +4132,14 @@ export async function yonetimEtkilesimYap(
   if (typeof kilitYili === "number" && state.yil < kilitYili) {
     throw new Error("Bunu bu kadar sık yapamazsın; biraz zaman geçmeli.");
   }
+
+  // v11: varyantı olan etkileşimde oyuncu bir alt seçenek seçer (yoksa ilki); etkileri tabanın üstüne yazar.
+  let varyant: YonetimVaryanti | undefined;
+  if (taban.varyantlar?.length) {
+    varyant = varyantId ? taban.varyantlar.find((v) => v.id === varyantId) : taban.varyantlar[0];
+    if (!varyant) throw new Error("Geçersiz seçenek.");
+  }
+  const etki = varyant ? { ...taban, iliski: varyant.iliski, ahlak: varyant.ahlak ?? 0, mutluluk: varyant.mutluluk ?? 0, kariyerPuani: varyant.kariyerPuani ?? 0, ifsaSansi: varyant.ifsaSansi } : taban;
 
   const kimAdi = hat === "yonetici" ? yoneticiBilgisi(state).ad : patronBilgisi(state).ad;
 
@@ -4102,13 +4175,13 @@ export async function yonetimEtkilesimYap(
   const carpan = tam ? 1 : 0.5;
 
   // Negatif bedeller (ahlak/mutluluk) tam işler; pozitif kazanç yarım-zarla ölçeklenir.
-  if (taban.ahlak) state.ahlak += taban.ahlak;
-  if (taban.mutluluk) state.mutluluk += taban.mutluluk;
+  if (etki.ahlak) state.ahlak += etki.ahlak;
+  if (etki.mutluluk) state.mutluluk += etki.mutluluk;
 
   let ifsaOldu = false;
-  if (taban.ifsaSansi && Math.random() < taban.ifsaSansi) {
+  if (etki.ifsaSansi && Math.random() < etki.ifsaSansi) {
     ifsaOldu = true;
-    yonetimIliskiYaz(state, hat, yonetimIliskiOku(state, hat) - (taban.ifsaIliski ?? 16));
+    yonetimIliskiYaz(state, hat, yonetimIliskiOku(state, hat) - (etki.ifsaIliski ?? 16));
     state.un -= 4;
   } else if (tabanId === "bagis") {
     const idx = yonetimBagisKademeleri(state, hat).indexOf(bagisTutar);
@@ -4116,8 +4189,12 @@ export async function yonetimEtkilesimYap(
     const kazanc = Math.max(1, Math.round(taban_kazanc * carpan));
     yonetimIliskiYaz(state, hat, yonetimIliskiOku(state, hat) + kazanc);
   } else {
-    yonetimIliskiYaz(state, hat, yonetimIliskiOku(state, hat) + Math.max(1, Math.round((taban.iliski ?? 0) * carpan)));
-    if (taban.kariyerPuani) state.kariyer_puani += Math.max(1, Math.round(taban.kariyerPuani * carpan));
+    yonetimIliskiYaz(state, hat, yonetimIliskiOku(state, hat) + Math.max(1, Math.round((etki.iliski ?? 0) * carpan)));
+    if (etki.kariyerPuani) state.kariyer_puani += Math.max(1, Math.round(etki.kariyerPuani * carpan));
+  }
+  if (varyant && !ifsaOldu) {
+    if (varyant.sohret) state.un += varyant.sohret;
+    if (varyant.para) state.para = paraYuvarla(state.para + varyant.para * enflasyonCarpani(state));
   }
   clampStats(state);
 
@@ -4126,6 +4203,8 @@ export async function yonetimEtkilesimYap(
     mesaj = T(state.dil, "{0} yağcılığını fark etti; güveni sarsıldı.", [kimAdi]);
   } else if (tabanId === "bagis") {
     mesaj = T(state.dil, "{0} bağışını memnuniyetle aldı.", [kimAdi]);
+  } else if (varyant) {
+    mesaj = T(state.dil, varyant.mesaj, [kimAdi]);
   } else if (tabanId === "yalan") {
     mesaj = T(state.dil, "{0}'e yağ çektin; hoşuna gitti ama içine sinmedi.", [kimAdi]);
   } else {
@@ -5009,7 +5088,7 @@ export interface IsletmeHatGorunumu {
   id: string;
   simge: string;
   ad: IkiDilMetin;
-  kesim: "temel" | "orta" | "luks";
+  kesim: "temel" | "savas" | "luks";
   acik: boolean;
   kilitli: boolean;
   minRutbe: number;
@@ -5025,6 +5104,13 @@ export interface IsletmeHatGorunumu {
   /** Dünya durumunun bu kesime etkisi (yüzde, 0 = etkisiz). */
   dunyaTalepYuzde: number;
   dunyaFiyatYuzde: number;
+  /** v11: geçen yıl ödenen birim alış fiyatı (dökümden; ilk yıl null), bu yıl dönemin alışa etkisi (%) ve toplam indirim (%). */
+  oncekiBirimMaliyet: number | null;
+  maliyetDonemYuzde: number;
+  maliyetIndirimYuzde: number;
+  /** v11: seçilen ana ürün mü ve bonus açıklaması. */
+  anaUrun: boolean;
+  anaUrunBonus: IkiDilMetin | null;
   /** Dönemin sıcak ürünü (🔥): +%60 talep, +%15 fiyat, biterse kayıp ×2. */
   sicak: boolean;
   /** Hattın kısa artı / eksi satırları (savaşta talebi artıyorsa artıya eklenir). */
@@ -5159,6 +5245,8 @@ export interface IsletmeGorunumu {
   /** Üretim modundaki mesleklerde yıllık üretim tavanı; ticaret modunda null. */
   uretim: { tavan: number } | null;
   stokHedefi: IsletmeStokHedefi;
+  /** v11: başlangıç ürünü seçimi (yalnız Tüccar/Zanaatkâr); `bekliyor` iken oyun devam etmez. */
+  urunSecimi: { bekliyor: boolean; secilen: string | null; secenekler: { id: string; simge: string; ad: IkiDilMetin; kesim: "temel" | "savas" | "luks"; ozet: IkiDilMetin }[] };
   hatlar: IsletmeHatGorunumu[];
   yatirimlar: IsletmeYatirimGorunumu[];
   calisanlar: IsletmeCalisanGorunumu[];
@@ -5168,6 +5256,8 @@ export interface IsletmeGorunumu {
   tedarikciBorcu: number;
   sonDokum: IsletmeDokum | null;
   beklenenBrutKar: number;
+  /** v11: bu yılın dürüst tahmini bütçesi + cebine kalan (yaşam, kira, hayvan, kredi taksidi düşülmüş). */
+  butce: IsletmeButcesi & { yasamKira: number; krediTaksit: number; cebineKalan: number };
   /** Vergi: bu yıl uygulanan oran (0-1) ve indirimin kalan yılı (yoksa 0). */
   vergi: { oran: number; indirimKalanYil: number };
   /** Koruma (0-1) ve ortalama dış hırsızlık aralığı (yıl). */
@@ -5280,8 +5370,9 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
     return {
       aktif: false, cemaat: null, meslek: state.meslek, pazarPayi: 0, musteri: 0, pazarMusteri: state.pazar_musteri ?? 0,
       slot: { kullanilan: 0, toplam: 0 }, depo: { kullanilan: 0, kapasite: 0, kademe: 0, curumeYuzde: 0, bakim: 0 }, uretim: null,
-      stokHedefi: "normal", hatlar: [], yatirimlar: [], calisanlar: [], calisanTavani: calisanLimiti(state),
+      stokHedefi: "normal", urunSecimi: { bekliyor: false, secilen: null, secenekler: [] }, hatlar: [], yatirimlar: [], calisanlar: [], calisanTavani: calisanLimiti(state),
       adaylar: [], adayYenilenmeKalanYil: 0, tedarikciBorcu: 0, sonDokum: null, beklenenBrutKar: 0,
+      butce: { satis: 0, alim: 0, curume: 0, depo: 0, aidat: 0, brut: 0, vergi: 0, borcOdeme: 0, net: 0, maas: 0, yasamKira: 0, krediTaksit: 0, cebineKalan: 0 },
       vergi: { oran: 0, indirimKalanYil: 0 }, koruma: { toplam: 0, calisan: 0, yatirim: 0, otorite: 0, hirsizlikAralik: 0 },
       otorite: null, otoriteIliski: state.yonetim_iliski ?? 0, imtiyazlar: [],
       dunya: { donem: null, savas: false, veba: false }, para: state.para, paraBirimi: state.para_birimi,
@@ -5317,6 +5408,11 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
       sonSatis: hat.son_satis,
       dunyaTalepYuzde: Math.round((h.kesim.talep - 1) * 100),
       dunyaFiyatYuzde: Math.round((h.kesim.fiyat - 1) * 100),
+      oncekiBirimMaliyet: is.son_dokum?.hatlar.find((x) => x.id === hat.id)?.birimMaliyet ?? null,
+      maliyetDonemYuzde: Math.round((h.kesim.fiyat - 1) * 100),
+      maliyetIndirimYuzde: Math.round(h.maliyetIndirim * 100),
+      anaUrun: is.ana_urun === hat.id,
+      anaUrunBonus: is.ana_urun === hat.id ? (profil.baslangicUrunleri?.find((u) => u.hat === hat.id)?.ozet ?? null) : null,
       sicak: h.sicak,
       arti,
       eksi: { tr: ae.eksi.tr, en: ae.eksi.en },
@@ -5392,6 +5488,14 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
     },
     uretim: uretimTavani(state) !== null ? { tavan: uretimTavani(state)! } : null,
     stokHedefi: stokHedefiGetir(is),
+    urunSecimi: {
+      bekliyor: urunSecimiBekliyorMu(state),
+      secilen: is.ana_urun ?? null,
+      secenekler: (profil.baslangicUrunleri ?? []).flatMap((u) => {
+        const t = hatTanimiGetir(profil, u.hat);
+        return t ? [{ id: u.hat, simge: t.simge, ad: { tr: t.ad.tr, en: t.ad.en }, kesim: t.kesim, ozet: { tr: u.ozet.tr, en: u.ozet.en } }] : [];
+      }),
+    },
     hatlar,
     yatirimlar,
     calisanlar,
@@ -5401,6 +5505,7 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
     tedarikciBorcu: is.tedarikci_borcu,
     sonDokum: is.son_dokum,
     beklenenBrutKar: paraYuvarla(beklenenBrutKar(state, b)),
+    butce: butceVeCebineKalan(state, b),
     vergi: { oran: Math.round(vergiOrani(state) * 1000) / 1000, indirimKalanYil: vergiAktif ? state.vergi_carpan_bitis_yili! - state.yil + 1 : 0 },
     koruma: {
       toplam: Math.round(kor.toplam * 100) / 100,
@@ -5420,6 +5525,15 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
     para: state.para,
     paraBirimi: state.para_birimi,
   };
+}
+
+/** Bu yılın tahmini işletme bütçesi + oyuncunun cebine kalan (yaşam, kira, hayvan, kredi taksidi, çalışan maaşı düşülmüş). */
+function butceVeCebineKalan(state: CharacterState, b: IsletmeBaglami) {
+  const butce = isletmeButcesi(state, b);
+  const g = giderKalemleriHesapla(state);
+  const yasamKira = paraYuvarla(g.yasam + g.konut + g.evcilHayvan);
+  const krediTaksit = state.kredi ? paraYuvarla(Math.min(state.kredi.kalanBorc, state.kredi.yillikTaksit)) : 0;
+  return { ...butce, yasamKira, krediTaksit, cebineKalan: paraYuvarla(butce.net - butce.maas - yasamKira - krediTaksit) };
 }
 
 export async function isletmeDurumGetir(id: string): Promise<IsletmeGorunumu> {
@@ -5530,6 +5644,26 @@ export async function isletmeOgretiSec(
   return {
     state,
     mesaj: T(state.dil, "{0} öğretisini benimsedin.", [ikiDil(state.dil, t.ad.tr, t.ad.en)]),
+    durum: isletmeGorunumuHesapla(state),
+  };
+}
+
+/** v11: oyun başında Tüccar/Zanaatkâr'ın 3 ürün arasından birini seçmesi. Turu tüketmez. */
+export async function isletmeUrunSec(
+  id: string,
+  urunId: string
+): Promise<{ state: CharacterState; mesaj: string; durum: IsletmeGorunumu }> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  anaUrunSec(state, urunId, isletmeBaglami(state));
+  const profil = isletmeProfiliGetir(state.meslek, state.cag)!;
+  const tanim = hatTanimiGetir(profil, urunId)!;
+  hayatOlayiEkle(state, tanim.simge, T(state.dil, "Ana ürünün: {0}", [ikiDil(state.dil, tanim.ad.tr, tanim.ad.en)]));
+  await oturumKaydet(state);
+  return {
+    state,
+    mesaj: T(state.dil, "{0} ürünüyle işe başladın.", [ikiDil(state.dil, tanim.ad.tr, tanim.ad.en)]),
     durum: isletmeGorunumuHesapla(state),
   };
 }

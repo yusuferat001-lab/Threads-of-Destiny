@@ -289,6 +289,13 @@ export function isletmeOgretiSec(stateId: string, ogretiId: string) {
   });
 }
 
+export function isletmeUrunSec(stateId: string, urunId: string) {
+  return istek<{ state: CharacterState; mesaj: string; durum: IsletmeGorunumu }>(`/api/game/${stateId}/isletme/urun`, {
+    method: 'POST',
+    body: JSON.stringify({ urunId }),
+  });
+}
+
 export function isletmeYatirimYap(stateId: string, yatirimId: string) {
   return istek<{ state: CharacterState; mesaj: string; durum: IsletmeGorunumu }>(`/api/game/${stateId}/isletme/yatirim`, {
     method: 'POST',
@@ -537,10 +544,10 @@ export function yonetimDurumGetir(stateId: string) {
   return istek<YonetimDurumu>(`/api/game/${stateId}/yonetim`);
 }
 
-export function yonetimEtkilesimYap(stateId: string, etkilesimId: string, kademe?: number) {
+export function yonetimEtkilesimYap(stateId: string, etkilesimId: string, kademe?: number, varyant?: string) {
   return istek<{ state: CharacterState; tam: boolean; mesaj: string }>(
     `/api/game/${stateId}/yonetim/etkilesim`,
-    { method: 'POST', body: JSON.stringify({ etkilesimId, kademe }) },
+    { method: 'POST', body: JSON.stringify({ etkilesimId, kademe, varyant }) },
   );
 }
 

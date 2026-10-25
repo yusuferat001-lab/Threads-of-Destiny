@@ -184,12 +184,12 @@ describe("cemaat — gelir ve gider", () => {
     }
   });
 
-  it("teşkilat aidatı gelirin %3'ü; ayin masrafı bağışın %8'i; vergi brüt kârın %25'i (durgunluk)", async () => {
+  it("teşkilat aidatı gelirin %2'si; ayin masrafı bağışın %8'i; vergi brüt kârın %20'si (durgunluk)", async () => {
     const s = await din();
     const h = cemaatHesapla(s, isletmeBaglami(s), 0.75);
-    expect(h.aidat).toBeCloseTo(h.toplamGelir * 0.03, 5);
+    expect(h.aidat).toBeCloseTo(h.toplamGelir * 0.02, 5);
     expect(h.ayinMasrafi).toBeCloseTo(h.bagis * 0.08, 5);
-    expect(h.vergiOrani).toBeCloseTo(0.25, 5);
+    expect(h.vergiOrani).toBeCloseTo(0.2, 5);
   });
 
   it("bağış politikası: zorunlu öşür bağış başına daha çok, bağış yapan oranı daha az", async () => {

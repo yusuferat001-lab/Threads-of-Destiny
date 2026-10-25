@@ -1,6 +1,6 @@
 import type { IsletmeGorunumu } from '../types';
 import { useDil } from '../DilContext';
-import { formatPara } from '../format';
+import { formatPara, kademeSinifi } from '../format';
 
 type D = { tr: string; en: string };
 
@@ -93,12 +93,12 @@ export function IsletmeOrtak({
               {c.sadik && <span className="isletme-etiket">⭐ {t('sadik')}</span>}
               {c.riskli && (
                 <span className="isletme-etiket" title={d(riskliAciklama)}>
-                  ⚠️ {sad} {c.sadakat}
+                  ⚠️ {sad} <b className="kademe-dusuk">{c.sadakat}</b>
                 </span>
               )}
               <small>{d(c.rolAciklama)}</small>
               <span>
-                {t('yetenek')} {c.yetenek} · {sad} {c.sadakat} · {t('maas')} {formatPara(c.maas)}
+                {t('yetenek')} <b className={kademeSinifi(c.yetenek, [40, 65])}>{c.yetenek}</b> · {sad} <b className={kademeSinifi(c.sadakat, [45, 75])}>{c.sadakat}</b> · {t('maas')} {formatPara(c.maas)}
                 {t('yil')}
               </span>
               <button className="ikincil" disabled={yukleniyor} onClick={() => onEkipCikar(c.id)}>
@@ -122,7 +122,7 @@ export function IsletmeOrtak({
                 <small>{d(a.rolAciklama)}</small>
                 <small>{d(a.gecmis)}</small>
                 <span>
-                  {t('yetenek')} {a.yetenek} · {sad} {a.sadakat} · {t('maas')} {formatPara(a.maas)}
+                  {t('yetenek')} <b className={kademeSinifi(a.yetenek, [40, 65])}>{a.yetenek}</b> · {sad} <b className={kademeSinifi(a.sadakat, [45, 75])}>{a.sadakat}</b> · {t('maas')} {formatPara(a.maas)}
                   {t('yil')}
                 </span>
                 <button disabled={yukleniyor || durum.calisanlar.length >= durum.calisanTavani} onClick={() => onCalisanAl(a.id)}>

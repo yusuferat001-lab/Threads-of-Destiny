@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { PiyasaHaberleri } from './PiyasaHaberleri';
 import type { FinansOzeti, GecmisNoktasi, IsletmeGorunumu, IsletmeKararGirdisi, CemaatKararGirdisi, IsletmeStokHedefi, EkipUyesi, Rakip, KotuIsKarti, YonetimDurumu, YonetimHat, PazarDurumu, AjanDurumu } from '../types';
 import { useDil } from '../DilContext';
-import { formatPara, formatYuzde, formatYuzdeAralik, formatMusteri } from '../format';
+import { formatPara, formatYuzde, formatYuzdeAralik, formatMusteri, kademeSinifi } from '../format';
 import { bic, type Metinler } from '../i18n';
 import type { Dil } from '../ayarlar';
 import { rutbeIlerlemeHesapla } from '../rutbeIlerleme';
@@ -53,7 +53,7 @@ interface KariyerEkraniProps {
   yonetimDurum: YonetimDurumu | null;
   /** Meslek pazarı (GET /:id/pazar): paylar, müşteriler, maaş etkisi, rütbe şartı. */
   pazarDurum: PazarDurumu | null;
-  onEtkilesim: (etkilesimId: string, kademe?: number) => void;
+  onEtkilesim: (etkilesimId: string, kademe?: number, varyant?: string) => void;
   onIstek: (istekId: string, rusvet?: boolean) => void;
   onTalep: (karar: 'kabul' | 'ret' | 'yalan') => void;
   onEkipCikar: (ekipId: string) => void;
@@ -278,10 +278,10 @@ const ETKILESIM_ADLARI: Record<string, { tr: string; en: string; ipTr: string; i
     ipEn: 'You pick the amount. A bigger gift raises the relationship more.',
   },
   yalan: {
-    tr: '🗣️ Yağ çek / kandır',
-    en: '🗣️ Flatter / deceive',
-    ipTr: 'Bedava ama ahlak ve moral düşer; yakalanırsan ilişki + şöhret çöker.',
-    ipEn: 'Free, but morality and mood drop; if caught, relationship + fame crash.',
+    tr: '💬 Övgü / İltifat',
+    en: '💬 Praise / Compliment',
+    ipTr: 'Bedava ama ahlak ve moral biraz düşer; yakalanırsan ilişki + şöhret çöker. Neyi övdüğünü sen seçersin.',
+    ipEn: 'Free, but morality and mood dip a little; if caught, relationship + fame crash. You pick what to praise.',
   },
   hizmet: {
     tr: '🤝 Hizmet et',
@@ -289,6 +289,16 @@ const ETKILESIM_ADLARI: Record<string, { tr: string; en: string; ipTr: string; i
     ipTr: 'Vaktini ver; ilişki + kariyer puanı, ufak moral bedeli.',
     ipEn: 'Give your time; relationship + career points, small mood cost.',
   },
+};
+
+/** Övgü / hizmet alt seçenekleri (şehir yöneticisi) — iki dilli, bileşene gömülü. */
+const VARYANT_ADLARI: Record<string, { tr: string; en: string; ipTr: string; ipEn: string }> = {
+  ovgu_adalet: { tr: '⚖️ Adaletini öv', en: '⚖️ Praise their fairness', ipTr: 'Dengeli: orta risk, ahlak −3.', ipEn: 'Balanced: medium risk, morality −3.' },
+  ovgu_comertlik: { tr: '🎁 Cömertliğini öv', en: '🎁 Praise their generosity', ipTr: 'Şöhret +1 ama daha kolay fark edilir, ahlak −4.', ipEn: 'Fame +1 but easier to spot, morality −4.' },
+  ovgu_katki: { tr: '🏛️ Şehre katkısını öv', en: '🏛️ Praise what they gave the city', ipTr: 'İçten ve düşük riskli; ilişki biraz az, kariyer +1.', ipEn: 'Sincere and low risk; slightly less relation, career +1.' },
+  hizmet_nakliye: { tr: '🐎 Ulaklık / nakliye', en: '🐎 Errands / hauling', ipTr: 'Kariyer puanı +3, moral −3.', ipEn: 'Career points +3, mood −3.' },
+  hizmet_danismanlik: { tr: '📜 Danışmanlık', en: '📜 Advice', ipTr: 'Ahlak +1, kariyer +1, moral −3.', ipEn: 'Morality +1, career +1, mood −3.' },
+  hizmet_ziyafet: { tr: '🍷 Ziyafet ver', en: '🍷 Host a feast', ipTr: 'Şöhret +1, biraz para gider, moral −3.', ipEn: 'Fame +1, costs some money, mood −3.' },
 };
 
 /** İlişki yüksekken açılan istekler (iyilikler) — iki dilli, bileşene gömülü. */
@@ -487,12 +497,13 @@ function HatKarti({
   hat: YonetimHat;
   durum: YonetimDurumu;
   yukleniyor: boolean;
-  onEtkilesim: (id: string, kademe?: number) => void;
+  onEtkilesim: (id: string, kademe?: number, varyant?: string) => void;
   onIstek: (id: string, rusvet?: boolean) => void;
 }) {
   const { dil } = useDil();
   const en = dil === 'en';
   const [istekAcik, setIstekAcik] = useState(false);
+  const [acikVaryant, setAcikVaryant] = useState<string | null>(null);
 
   const kisi = hat === 'yonetici' ? durum.yonetici : durum.patron;
   const etkilesimler = durum.etkilesimler.filter((e) => e.hat === hat);
@@ -557,17 +568,37 @@ function HatKarti({
             const taban = e.id.split(':')[1];
             const ad = ETKILESIM_ADLARI[taban];
             const kalan = kilitli(e.id);
+            const varyantli = (e.varyantlar ?? []).length > 0;
             return (
-              <button
-                key={e.id}
-                className="kariyer-etkilesim-buton"
-                disabled={yukleniyor || kalan > 0}
-                title={en ? ad?.ipEn : ad?.ipTr}
-                onClick={() => onEtkilesim(e.id)}
-              >
-                <span>{en ? ad?.en : ad?.tr}</span>
-                {kalan > 0 && <span className="kariyer-etkilesim-alt">{yil(kalan)}</span>}
-              </button>
+              <div key={e.id} className="kariyer-etkilesim-grup">
+                <button
+                  className="kariyer-etkilesim-buton"
+                  disabled={yukleniyor || kalan > 0}
+                  title={en ? ad?.ipEn : ad?.ipTr}
+                  onClick={() => (varyantli ? setAcikVaryant(acikVaryant === e.id ? null : e.id) : onEtkilesim(e.id))}
+                >
+                  <span>{en ? ad?.en : ad?.tr}{varyantli ? (acikVaryant === e.id ? ' ▾' : ' ▸') : ''}</span>
+                  {kalan > 0 && <span className="kariyer-etkilesim-alt">{yil(kalan)}</span>}
+                </button>
+                {varyantli && acikVaryant === e.id && kalan === 0 && (
+                  <div className="kariyer-varyantlar">
+                    {e.varyantlar.map((v) => (
+                      <button
+                        key={v}
+                        className="kariyer-bagis-cip"
+                        disabled={yukleniyor}
+                        title={en ? VARYANT_ADLARI[v]?.ipEn : VARYANT_ADLARI[v]?.ipTr}
+                        onClick={() => {
+                          setAcikVaryant(null);
+                          onEtkilesim(e.id, undefined, v);
+                        }}
+                      >
+                        {en ? VARYANT_ADLARI[v]?.en : VARYANT_ADLARI[v]?.tr}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             );
           })}
       </div>
@@ -1086,7 +1117,7 @@ export function KariyerEkrani({
                     <span className="aile-cocuk-ad">🧑 {uye.isim}</span>
                     <span className="aile-cocuk-detay">
                       {kt(uye.rol)} · {uye.maas} {paraBirimi}/{m.ksYilBasi} · 🎭 {kt(uye.kisilik)} · 🤝{' '}
-                      {formatYuzde(dil, Math.round(uye.sadakat))} · {m.ksKalite}{' '}
+                      <b className={kademeSinifi(uye.sadakat, [45, 75])}>{formatYuzde(dil, Math.round(uye.sadakat))}</b> · {m.ksKalite}{' '}
                       {formatYuzdeAralik(dil, uye.tahminiMin, uye.tahminiMax)}
                     </span>
                     <button className="ikincil gorev-ekip-kov" disabled={yukleniyor} onClick={() => onEkipCikar(uye.id)}>

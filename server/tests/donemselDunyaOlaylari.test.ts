@@ -64,10 +64,10 @@ describe("enflasyonCarpani — çağa göre yıllık bileşik oran", () => {
     expect(enflasyonCarpani(state)).toBeCloseTo(Math.pow(1.01, 10), 6);
   });
 
-  it("Sanayi Devrimi'nde enflasyon yılda %2.5 büyür (Orta Çağ'dan belirgin şekilde hızlı)", () => {
+  it("Sanayi Devrimi'nde enflasyon yılda %2 büyür (Orta Çağ'dan belirgin şekilde hızlı)", () => {
     const state = taze("Sanayi Devrimi");
     state.yil = state.baslangic_yili + 10;
-    expect(enflasyonCarpani(state)).toBeCloseTo(Math.pow(1.025, 10), 6);
+    expect(enflasyonCarpani(state)).toBeCloseTo(Math.pow(1.02, 10), 6);
     expect(enflasyonCarpani(state)).toBeGreaterThan(Math.pow(1.01, 10));
   });
 
@@ -229,8 +229,8 @@ describe("buyukSavasKontrolEt / buyukSavasBitisKontrolEt", () => {
     expect(savas.bitisYili - savas.baslangicYili).toBeLessThanOrEqual(5);
     expect(savas.vergiOrani).toBeGreaterThanOrEqual(0.07);
     expect(savas.vergiOrani).toBeLessThanOrEqual(0.1);
-    expect(savas.gidaCarpani).toBeGreaterThanOrEqual(1.12);
-    expect(savas.gidaCarpani).toBeLessThanOrEqual(1.18);
+    expect(savas.gidaCarpani).toBeGreaterThanOrEqual(1.04);
+    expect(savas.gidaCarpani).toBeLessThanOrEqual(1.06);
   });
 
   it("olayla savaş başlarken bolluk sürüyorsa bolluk biter", () => {
@@ -558,8 +558,8 @@ describe("dünya dönemleri (bolluk / durgunluk / kıtlık)", () => {
     for (let i = 0; i < 200; i++) {
       const d = ilkDonemOlustur(1100, "kitlik");
       const yuzde = Math.round((d.etki.temelFiyat - 1) * 100);
-      expect(yuzde).toBeGreaterThanOrEqual(45);
-      expect(yuzde).toBeLessThanOrEqual(60);
+      expect(yuzde).toBeGreaterThanOrEqual(15);
+      expect(yuzde).toBeLessThanOrEqual(30);
       expect(Math.abs((d.etki.temelFiyat - 1) * 100 - yuzde)).toBeLessThan(1e-9);
     }
   });

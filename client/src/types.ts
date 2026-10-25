@@ -241,6 +241,7 @@ export interface CharacterState {
    * "İLERLE" (`POST /:id/yil-gec`, 1 yıl) ile geçer; son olaydan `yil_sayaci >= 2` yıl sonra olay çıkar.
    * Yoksa eski "klasik" akış (her seçim %60/%40 ile 1-2 yıl ilerletir).
    */
+  urun_secim_bekliyor?: boolean;
   zaman_modeli?: "ilerle";
   /** Son olaydan beri geçen yıl ("ilerle" modu); olay üretilince 0'a döner, 2'de yeni olay çıkar. */
   yil_sayaci?: number;
@@ -617,7 +618,7 @@ export interface YonetimDurumu {
   patron: { unvan: string; ad: string; iliski: number; bagisKademeleri: number[] };
   /** İşletmeli mesleklerde yalnız şehir yöneticisi (yonetici hattı) vardır; patron hattı gizlenir. */
   tekOtorite: boolean;
-  etkilesimler: { id: string; hat: YonetimHat; ikon: string }[];
+  etkilesimler: { id: string; hat: YonetimHat; ikon: string; varyantlar: string[] }[];
   istekler: {
     id: string;
     hat: YonetimHat;
@@ -771,7 +772,7 @@ export interface EkipUyesi {
 
 export type IsletmeRolTuru = 'ana' | 'maliyet' | 'musteri' | 'guvenlik';
 export type IsletmeFiyat = 'eksi20' | 'eksi10' | 'normal' | 'arti10' | 'arti20';
-export type IsletmeStokHedefi = 'cokaz' | 'az' | 'normal' | 'fazla' | 'dolu';
+export type IsletmeStokHedefi = 'az' | 'normal' | 'fazla';
 
 export interface IsletmeUyari {
   kod:
@@ -822,7 +823,12 @@ export interface IsletmeDokum {
   musteri: number;
   musteriDegisim: number;
   pazarMusteri: number;
-  hatlar: { id: string; talep: number; satilan: number; alinan: number; stokSonu: number }[];
+  /** v11: yıllık çalışan maaşları toplamı, hırsızlık/baskın nakit hasarı, tazminat vb. ek gider ve çürüyen malın alış değeri (eski kayıtlarda yok → 0). */
+  calisanMaasi?: number;
+  nakitHasar?: number;
+  ekstraGider?: number;
+  curumeKaybi?: number;
+  hatlar: { id: string; talep: number; satilan: number; alinan: number; stokSonu: number; birimMaliyet?: number; birimFiyat?: number }[];
   /** Üretim modundaki mesleklerde (Zanaatkâr) o yılın üretim tavanı ve kullanılan miktar. */
   uretim?: { tavan: number; kullanilan: number };
   /** Din Adamı (cemaat modu) yıl dökümü ayrıntıları. */
@@ -843,7 +849,7 @@ export interface IsletmeHatGorunumu {
   id: string;
   simge: string;
   ad: DilliMetin;
-  kesim: 'temel' | 'orta' | 'luks';
+  kesim: 'temel' | 'savas' | 'luks';
   acik: boolean;
   kilitli: boolean;
   minRutbe: number;
@@ -857,6 +863,11 @@ export interface IsletmeHatGorunumu {
   sonSatis: number;
   dunyaTalepYuzde: number;
   dunyaFiyatYuzde: number;
+  oncekiBirimMaliyet: number | null;
+  maliyetDonemYuzde: number;
+  maliyetIndirimYuzde: number;
+  anaUrun: boolean;
+  anaUrunBonus: DilliMetin | null;
   sicak: boolean;
   arti: DilliMetin;
   eksi: DilliMetin;
@@ -972,6 +983,23 @@ export interface CemaatGorunumu {
   };
 }
 
+/** Bu yılın tahmini işletme bütçesi + cebine kalan (yaşam, kira, hayvan, kredi taksidi, maaş düşülmüş). */
+export interface IsletmeButcesi {
+  satis: number;
+  alim: number;
+  curume: number;
+  depo: number;
+  aidat: number;
+  brut: number;
+  vergi: number;
+  borcOdeme: number;
+  net: number;
+  maas: number;
+  yasamKira: number;
+  krediTaksit: number;
+  cebineKalan: number;
+}
+
 export interface IsletmeGorunumu {
   aktif: boolean;
   /** Din Adamı'nda cemaat görünümü; diğer mesleklerde null. */
@@ -986,6 +1014,11 @@ export interface IsletmeGorunumu {
   /** Üretim modundaki mesleklerde (Zanaatkâr) yıllık üretim tavanı; ticaret modunda null. */
   uretim: { tavan: number } | null;
   stokHedefi: IsletmeStokHedefi;
+  urunSecimi: {
+    bekliyor: boolean;
+    secilen: string | null;
+    secenekler: { id: string; simge: string; ad: DilliMetin; kesim: 'temel' | 'savas' | 'luks'; ozet: DilliMetin }[];
+  };
   hatlar: IsletmeHatGorunumu[];
   yatirimlar: IsletmeYatirimGorunumu[];
   calisanlar: IsletmeCalisanGorunumu[];
@@ -995,6 +1028,7 @@ export interface IsletmeGorunumu {
   tedarikciBorcu: number;
   sonDokum: IsletmeDokum | null;
   beklenenBrutKar: number;
+  butce: IsletmeButcesi;
   vergi: { oran: number; indirimKalanYil: number };
   koruma: { toplam: number; calisan: number; yatirim: number; otorite: number; hirsizlikAralik: number };
   otorite: string | null;
@@ -1206,6 +1240,8 @@ export interface DunyaFinansEtkisi {
 export interface FinansOzeti {
   maasYillik: number;
   giderKalemleri: GiderKalemleri;
+  krediTaksit: number;
+  isletmeli: boolean;
   netYillik: number;
   /** Gelir (maaş) enflasyonu yüzdesi — oyuncuya gösterilmez. */
   enflasyonYuzdesi: number;

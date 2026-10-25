@@ -73,7 +73,7 @@ export const PAZAR_ADLARI: Record<string, PazarAdlari> = {
 /** Toplam pazar büyüklüğü (müşteri sayısı) oyun başında bu aralıktan atanır. */
 export const PAZAR_MUSTERI_ARALIK: [number, number] = [350, 500];
 /** Her müşterinin bir üründen yıllık baz alım oranı (dönem etkilerinden bağımsız; üstüne dönem çarpanları biner). */
-export const ALIM_ORANI = 0.42;
+export const ALIM_ORANI = 0.44;
 /** Başlangıç pazar payı tabanı (%8–9) ve mesleğe yatkınlık kademesine göre ek (puan). */
 export const BASLANGIC_PAY_ARALIK: [number, number] = [0.1, 0.11];
 export const YATKINLIK_PAY_EKI = [0, -0.03, 0, 0.01, 0.02, 0.03]; // index = meslek_yatkinlik_seviyesi (1 kötü … 5 mükemmel)
@@ -90,6 +90,8 @@ export function rakipSaldiriKademesi(pay: number): 1 | 2 | 3 {
 export const RAKIP_SALDIRI_ARALIK_YIL: [number, number] = [4, 9];
 /** Şehir yöneticisi ilişkisi yüksekse aralığa eklenen yıl. */
 export const RAKIP_SALDIRI_OTORITE_EKI_YIL = 1;
+/** v11: işletme kurulduktan sonra bu kadar yıl dış hırsızlık ve rakip saldırısı olmaz. */
+export const ISLETME_GUVENLI_YIL = 7;
 export function rastgeleSaldiriYili(yil: number, otoriteKoruma: boolean, rnd: () => number = Math.random): number {
   const [a, b] = RAKIP_SALDIRI_ARALIK_YIL;
   return yil + a + Math.floor(rnd() * (b - a + 1)) + (otoriteKoruma ? RAKIP_SALDIRI_OTORITE_EKI_YIL : 0);
