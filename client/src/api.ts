@@ -179,10 +179,18 @@ export function senaryoGetir(stateId: string) {
   });
 }
 
+/** "Yıl Geç": olay çözüldükten sonraki tek sakin yılı geçirir (olay çıkarmaz). */
+export function yilGec(stateId: string) {
+  return istek<{ state: CharacterState; yasArtisi: number; zamanAnlatimi: string | null; terfiOldu: boolean }>(
+    `/api/game/${stateId}/yil-gec`,
+    { method: 'POST' },
+  );
+}
+
 export function secimYap(stateId: string, secenekIndex: number) {
   return istek<SecimSonucu | TepkiSonucu>(`/api/game/${stateId}/choice`, {
     method: 'POST',
-    body: JSON.stringify({ secenekIndex }),
+    body: JSON.stringify({ secenekIndex, yilGecAyri: true }),
   });
 }
 

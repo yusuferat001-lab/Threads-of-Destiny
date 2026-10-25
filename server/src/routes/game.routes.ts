@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  yilGec,
   yeniOyun,
   mesleğiAta,
   senaryoUret,
@@ -191,13 +192,22 @@ gameRouter.post("/:id/scenario", async (req, res) => {
   }
 });
 
+gameRouter.post("/:id/yil-gec", async (req, res) => {
+  try {
+    const sonuc = await yilGec(req.params.id);
+    res.json(sonuc);
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
 gameRouter.post("/:id/choice", async (req, res) => {
   try {
     const { secenekIndex } = req.body ?? {};
     if (typeof secenekIndex !== "number") {
       return res.status(400).json({ hata: "secenekIndex sayı olmalı." });
     }
-    const sonuc = await secimUygula(req.params.id, secenekIndex);
+    const sonuc = await secimUygula(req.params.id, secenekIndex, req.body?.yilGecAyri === true);
     res.json(sonuc);
   } catch (err) {
     res.status(400).json({ hata: hataMetni(err, req.params.id) });

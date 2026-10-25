@@ -503,11 +503,7 @@ interface MaasCarpanKalemi {
 function maasCarpanKalemleri(state: CharacterState): { tabanMaas: number; kalemler: MaasCarpanKalemi[] } {
   const tabanMaas = TEMEL_MAAS[state.meslek] ?? 6;
   const itibarToplam = itibarMaasKirilimi(state).toplam; // mutluluk+şöhret+ahlak bantları toplamı, ±%; §13
-  // Kıdem çok yavaş büyür ve en fazla +%10'a ulaşır: 40 tur (≈55-65 oyun yılı,
-  // yani neredeyse tam bir ömür) sonunda tavana gelir. Eskiden +%2/tur ile
-  // 20 turda +%40'a çıkıyordu, sonra +%0.375/tur ile tavan +%15'e çekildi;
-  // ekonomi sıkılaştırma turunda tekrar +%10 tavanına döndürüldü.
-  const kariyerYili = Math.min(state.tur_sayisi + 8, 40); // "ikinci seviyeden" başlar: taze karakter +%2 kıdem alır, tavan +%10
+  // (Kıdem primi 2026-10'da kaldırıldı: tur sayısı artık yıl sayısını yansıtmıyor.)
   const durumCarpani = state.durumlar.reduce((c, d) => c * (d.gelir_carpani ?? 1), 1);
   // Dünya dönemi / savaş / veba (Faz A): her biri başlarken zarla belirlenen maaş çarpanı.
   const donem = state.ulke.donem;
@@ -520,7 +516,6 @@ function maasCarpanKalemleri(state: CharacterState): { tabanMaas: number; kaleml
   return {
     tabanMaas,
     kalemler: [
-      { ad: T(dil, "Kıdem"), carpan: 1 + kariyerYili * 0.0025, grup: "kariyer" },
       { ad: T(dil, "Şehir yönetimi"), carpan: sehirYonetimMaasCarpani(state.sehir_yonetim_seviyesi), grup: "kariyer" },
       { ad: T(dil, "Kalıcı ödüller (köken + olaylar)"), carpan: maasCarpaniGetir(state), grup: "kariyer" },
       { ad: T(dil, "Mesleğe yatkınlığın"), carpan: 1 + (state.meslek_maas_carpani ?? 0), grup: "kariyer" },
@@ -848,13 +843,13 @@ export function createCharacter(
     es_dogum_sayisi: 0,
     es_sonraki_hamilelik_yili: 0,
     es_ihmal_uyari_goruldu: false,
+    sakin_yil_bekliyor: false,
     mantik_adaylar: [],
     mantik_yenileme_yili: 0,
     mantik_kilit_yili: 0,
     bekleyen_dugun: null,
     aktif_tanisma: null,
     sevgili: null,
-    nostalji_yili: null,
     yas_bitis_yili: 0,
     ekip: [],
     hizip: null,
@@ -1289,6 +1284,15 @@ export function eskiKayitGocu(state: CharacterState): void {
     state.es_sonraki_hamilelik_yili = sonDogum != null ? sonDogum + 3 : 0;
   }
   if (typeof state.es_ihmal_uyari_goruldu !== "boolean") state.es_ihmal_uyari_goruldu = false;
+  if (typeof state.sakin_yil_bekliyor !== "boolean") state.sakin_yil_bekliyor = false;
+  // Durumlar tur yerine YIL sayar (2026-10): eski kayıtlardaki kalan_tur/tur_basi_* çevrilir (1 tur ≈ 1,4 yıl).
+  for (const d of state.durumlar as unknown as Array<Record<string, number | undefined>>) {
+    if (typeof d.kalan_tur === "number") { d.kalan_yil = Math.max(1, Math.round(d.kalan_tur * 1.4)); delete d.kalan_tur; }
+    for (const alan of ["saglik", "para", "mutluluk"]) {
+      const eski = d[`tur_basi_${alan}`];
+      if (typeof eski === "number") { d[`yil_basi_${alan}`] = Math.round((eski / 1.4) * 10) / 10; delete d[`tur_basi_${alan}`]; }
+    }
+  }
   if (!Array.isArray(state.mantik_adaylar)) state.mantik_adaylar = [];
   if (typeof state.mantik_yenileme_yili !== "number") state.mantik_yenileme_yili = 0;
   if (typeof state.mantik_kilit_yili !== "number") state.mantik_kilit_yili = 0;
@@ -1296,7 +1300,6 @@ export function eskiKayitGocu(state: CharacterState): void {
   if (state.bekleyen_dugun === undefined) state.bekleyen_dugun = null;
   if (state.aktif_tanisma === undefined) state.aktif_tanisma = null;
   if (state.sevgili === undefined) state.sevgili = null;
-  if (typeof state.nostalji_yili !== "number") state.nostalji_yili = null;
   // Derin rakip ilişkileri sonradan eklendi: meslek seçilmişse eski tekil
   // rakip_adi'ndan TEK bir rakip türet (2026-09: iki rakip yerine tek rakip).
   if (!Array.isArray(state.rakipler) || state.rakipler.length === 0) {
@@ -2257,12 +2260,13 @@ export function durumEkle(state: CharacterState, yeniDurum?: CharacterState["dur
   state.durumlar.push({ ...yeniDurum });
 }
 
-export function durumlariUygula(state: CharacterState): IkiDilMetin | null {
+/** Durumların yıllık etkilerini geçen yıl sayısı kadar uygular ve süreleri (yıl) düşürür. */
+export function durumlariUygula(state: CharacterState, yasArtisi = 1): IkiDilMetin | null {
   let olumculDurum: IkiDilMetin | null = null;
 
   for (const durum of state.durumlar) {
-    if (durum.tur_basi_saglik) {
-      state.saglik += durum.tur_basi_saglik;
+    if (durum.yil_basi_saglik) {
+      state.saglik += durum.yil_basi_saglik * yasArtisi;
       if (state.saglik <= 0 && !olumculDurum) {
         olumculDurum = {
           tr: T("tr", "{0} yüzünden hayatını kaybetti.", [durum.ad]),
@@ -2270,21 +2274,21 @@ export function durumlariUygula(state: CharacterState): IkiDilMetin | null {
         };
       }
     }
-    if (durum.tur_basi_para) {
-      state.para += durum.tur_basi_para;
+    if (durum.yil_basi_para) {
+      state.para += durum.yil_basi_para * yasArtisi;
     }
-    if (durum.tur_basi_mutluluk) {
-      state.mutluluk += durum.tur_basi_mutluluk;
+    if (durum.yil_basi_mutluluk) {
+      state.mutluluk += durum.yil_basi_mutluluk * yasArtisi;
     }
-    if (durum.tur === "gecici" && durum.kalan_tur !== undefined) {
-      durum.kalan_tur -= 1;
-      if (durum.kalan_tur <= 0 && durum.bitince_etiket) {
+    if (durum.tur === "gecici" && durum.kalan_yil !== undefined) {
+      durum.kalan_yil -= yasArtisi;
+      if (durum.kalan_yil <= 0 && durum.bitince_etiket) {
         etiketEkle(state, [durum.bitince_etiket]);
       }
     }
   }
 
-  state.durumlar = state.durumlar.filter((d) => d.tur === "kalici" || (d.kalan_tur ?? 0) > 0);
+  state.durumlar = state.durumlar.filter((d) => d.tur === "kalici" || (d.kalan_yil ?? 0) > 0);
   clampStats(state);
   return olumculDurum;
 }
@@ -2562,7 +2566,7 @@ export function zamanAnlatimiUret(
   if (yasArtisi <= 0) return null;
 
   const dil = state.dil;
-  const surenHastalik = state.durumlar.find((d) => d.tur === "gecici" && (d.tur_basi_saglik ?? 0) < 0);
+  const surenHastalik = state.durumlar.find((d) => d.tur === "gecici" && (d.yil_basi_saglik ?? 0) < 0);
 
   if (ekonomi.borcaGirdi) {
     return ekonomi.faiz > 0
@@ -2613,7 +2617,7 @@ const SANS_OLAYLARI: SansOlayi[] = [
   { mesaj: "{dost} evlenmiş, sen davet edilmemişsin; içine hafif bir kırgınlık oturdu.", dost_puani: -3 },
 ];
 
-const SANS_OLAYI_IHTIMALI = 0.18;
+const SANS_OLAYI_IHTIMALI = 0.12;
 
 /**
  * "Zengin görünmenin gündelik fısıltısı" (Z2): net servet ≥ 350 & nakit ≥ 50
@@ -3850,7 +3854,7 @@ export function mulkGetiriOraniKisisel(state: CharacterState, tur: MulkTuru): nu
 
 /**
  * Sahip olunan her mülkün yıllık getirisini/zararını state.ulke'nin GÜNCEL durumuna göre
- * yeniden hesaplar (Durum sistemindeki sabit tur_basi_para'nın aksine, her turda taze
+ * yeniden hesaplar (Durum sistemindeki sabit yil_basi_para'nın aksine, her turda taze
  * hesaplanır). Kervan/gemi savaş sürerken her yıl bir ihtimalle tamamen kaybolabilir.
  */
 export function mulkGelirleriUygula(state: CharacterState, yasArtisi: number): MulkGelirSonucu {

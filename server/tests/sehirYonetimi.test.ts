@@ -60,7 +60,7 @@ describe("şehir yönetimi (en üst rütbe sonrası sonsuz ilerleme)", () => {
       etiketEkle(state, ["hizip_secildi"]); // hizip zorunlu seçim kaskadını bu testte atla (2026-09 sonu)
       state.hayat_amaci = { id: "x", ad: "x", aciklama: "x", hedefTuru: "para", hedefDeger: 999999, tamamlandi: false };
       state.gecmis_olaylar.push("hayat_amaci_secimi", "iliski_evlilik_teklifi", "iliski_ikinci_teklif");
-      state.etiketler.push("tanisma_donum_27", "tanisma_donum_36"); // aşk evliliği tanışma fırsatı zorlanmasın
+      state.etiketler.push("tanisma_donum_25", "tanisma_donum_40"); // aşk evliliği tanışma fırsatı zorlanmasın
       state.ulke.savasta = true;
       state.rutbe_seviye = 4;
       const senaryo = await senaryoUret(state.id);

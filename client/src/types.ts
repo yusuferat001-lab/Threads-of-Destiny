@@ -2,10 +2,10 @@ export interface Durum {
   id: string;
   ad: string;
   tur: 'gecici' | 'kalici';
-  kalan_tur?: number;
-  tur_basi_saglik?: number;
-  tur_basi_para?: number;
-  tur_basi_mutluluk?: number;
+  kalan_yil?: number;
+  yil_basi_saglik?: number;
+  yil_basi_para?: number;
+  yil_basi_mutluluk?: number;
   gelir_carpani?: number;
   bitince_etiket?: string;
 }
@@ -275,13 +275,13 @@ export interface CharacterState {
   es_dogum_sayisi: number;
   es_sonraki_hamilelik_yili: number;
   es_ihmal_uyari_goruldu: boolean;
+  sakin_yil_bekliyor: boolean;
   mantik_adaylar: MantikAday[];
   mantik_yenileme_yili: number;
   mantik_kilit_yili: number;
   bekleyen_dugun: (MantikAday & { tur: EvlilikTuru }) | null;
   aktif_tanisma: AktifTanisma | null;
   sevgili: Sevgili | null;
-  nostalji_yili: number | null;
   yas_bitis_yili: number;
 
   ekip: EkipUyesi[];

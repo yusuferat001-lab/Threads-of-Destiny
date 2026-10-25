@@ -480,16 +480,14 @@ export const ANLATIM_EN: Record<string, string> = {
     "The dice turned your way! You staked {0} {birim} and got back {1} {birim}.",
   "Zar seni yüzüstü bıraktı; {0} {birim} masada kaldı.":
     "The dice let you down; {0} {birim} stayed on the table.",
-  "Yakın zamanda temel ürün aldın — {0} yıl sonra tekrar alışveriş yapabilirsin.":
-    "You recently bought an essential — you can shop again in {0} years.",
-  "Yakın zamanda temel ürün aldın; {0} yıl sonra tekrar alışveriş yapabilirsin.":
-    "You recently bought an essential; you can shop again in {0} years.",
+  "Yakın zamanda temel ürün aldın; bir süre sonra tekrar alışveriş yapabilirsin.":
+    "You recently bought an essential; you can shop again after a while.",
   "Bu eşyaya zaten sahipsin.": "You already own this item.",
   "{0} satın aldın ({1} {birim}).": "You bought {0} ({1} {birim}).",
   "Şehirdeki itibarın hemen arttı (+{0} şöhret). Artık bu eşyaya sahipsin.":
     "Your standing in the city rose at once (+{0} fame). You now own this item.",
-  "Envanterine eklendi — {0} yıl içinde kullanmazsan bozulur. Temel ürün alışverişin {1} yıl kilitlenecek.":
-    "Added to your inventory — it spoils if unused within {0} years. Essential shopping will be locked for {1} years.",
+  "Envanterine eklendi — uzun süre kullanmazsan bozulur. Bir süre temel ürün alışverişi yapamazsın.":
+    "Added to your inventory — it spoils if left unused too long. You cannot buy essentials for a while.",
   "{0} kullandın{1}.": "You used {0}{1}.",
   "{0} kullandın ama hiç işe yaramadı, boşa gitti.": "You used {0}, but it did nothing — a waste.",
   "{0} ters tepti; biraz fenalaştın ({1} sağlık).": "{0} backfired; you felt worse ({1} health).",
@@ -503,7 +501,7 @@ export const ANLATIM_EN: Record<string, string> = {
   "Hafif bir keyif, zararsız.": "A mild, harmless pleasure.",
   "Bu yıl bir şey içtin.": "You've had a drink this year.",
   "Yeterli paran yok.": "You don't have enough money.",
-  "Yakında tekrar yapabilirsin ({0} yıl).": "You can do this again soon ({0} yr).",
+  "Yakında tekrar yapabilirsin.": "You can do this again soon.",
   "Bunun için alkollü bir mekân gerek.": "This needs a venue that serves drink.",
   "{0} devirdin. Keyiflendin ama yarın seni bekliyor.":
     "You downed {0}. You're merry now, but tomorrow is waiting.",
@@ -672,7 +670,7 @@ export const ANLATIM_EN: Record<string, string> = {
   "Üç kağıtçıyı bir kez olsun yendi: +{0} {birim}": "Beat the shell-game hustler for once: +{0} {birim}",
   "Doğru bardağı buldun! {0} {birim} kazandın.": "You found the right cup! You won {0} {birim}.",
   "Para o bardağın altında değildi; {0} {birim} gitti. (Zaten hiç olmadı.)": "The coin wasn't under that cup; {0} {birim} gone. (It never was.)",
-  "Kolun hâlâ ağrıyor; {0} yıl sonra yeniden bilek güreşebilirsin.": "Your arm still aches; you can arm-wrestle again in {0} year(s).",
+  "Kolun hâlâ ağrıyor; biraz sonra yeniden bilek güreşebilirsin.": "Your arm still aches; you can arm-wrestle again in a while.",
   "Bir bilek güreşini kazandı": "Won an arm-wrestling match",
   "Rakibin bileğini masaya yapıştırdın! Meydanın gözü sende — ün ve {0} {birim}.": "You slammed your opponent's wrist to the table! All eyes on you — fame and {0} {birim}.",
   "Bileğin bükülene kadar direndin ama masaya sen yapıştın. Herkes güldü.": "You held on until your wrist bent, but it was yours that hit the table. Everyone laughed.",
@@ -757,6 +755,12 @@ export const ANLATIM_EN: Record<string, string> = {
   "Geçerli bir bağış tutarı seç.": "Choose a valid donation amount.",
   "Hapisteyken ailenle ilgilenemezsin.": "You can't tend to your family while in prison.",
   "Yolculuktayken ailenle ilgilenemezsin.": "You can't tend to your family while traveling.",
+  "Yolculuktayken işletmenle ilgilenemezsin.": "You can't run your business while traveling.",
+  "Yolculuktayken işletmene yatırım yapamazsın.": "You can't invest in your business while traveling.",
+  "Yolculuktayken çalışan alamazsın.": "You can't hire anyone while traveling.",
+  "Yolculuktayken ekibinle ilgilenemezsin.": "You can't tend to your crew while traveling.",
+  "Şu an yıl geçirilemez.": "You can't pass the year right now.",
+  "Önce önündeki olayı çöz.": "Resolve the event in front of you first.",
   "Bunun için bir eşin olmalı.": "You need a spouse for this.",
   "Geçerli bir çocuk seçmelisin.": "You need to choose a valid child.",
   "Ailen yok.": "You have no family.",
@@ -809,6 +813,7 @@ export const ANLATIM_EN: Record<string, string> = {
   "{0} artık senin için çalışıyor ({1}). Peşin {2} {birim} ödedin; maaşı her yıl giderinden düşecek.": "{0} now works for you ({1}). You paid {2} {birim} up front; their wage comes out of your expenses each year.",
   "Bu işi kimseye yaptıramazsın; kendin çevirmelisin.": "You can't hand this job off; you have to do it yourself.",
   "Hapisteyken adam tutamazsın.": "You can't hire anyone while in prison.",
+  "Yolculuktayken adam tutamazsın.": "You can't hire anyone while traveling.",
   "Geçersiz rol.": "Invalid role.",
   // Faz A: dünya dönemleri
   "Bolluk": "Prosperity",

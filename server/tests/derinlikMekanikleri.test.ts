@@ -49,7 +49,7 @@ describe("kan davası (gecikmeli tetikleyici zincir)", () => {
       id: "kan_davasi_beklemede",
       ad: "Kan Davası — Beklemede",
       tur: "gecici",
-      kalan_tur: 1,
+      kalan_yil: 1,
       bitince_etiket: "kandavasi:zamani",
     });
 
@@ -169,7 +169,7 @@ describe("bağımlılık ve durum_sil (kurtulma)", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.etiketler.push("bagimlilik:kumarbaz", "bagimlilik:var");
-    state.durumlar.push({ id: "kumar_bagimliligi", ad: "Kumar Bağımlılığı", tur: "kalici", tur_basi_para: -3 });
+    state.durumlar.push({ id: "kumar_bagimliligi", ad: "Kumar Bağımlılığı", tur: "kalici", yil_basi_para: -2.1 });
 
     const senaryo = olayBul(state, "Bir Uyanış Anı", 1500);
     expect(senaryo).not.toBeNull();

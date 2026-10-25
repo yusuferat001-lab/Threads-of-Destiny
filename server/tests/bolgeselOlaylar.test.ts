@@ -1,3 +1,6 @@
+import { OLAY_OTORITE } from "../src/data/olaylar/otoriteOlaylari";
+import { OLAY_MESLEK_YATKINLIK } from "../src/data/olaylar/meslekYatkinlikOlaylari";
+import { OLAY_GECIKMIS_TAKIP } from "../src/data/olaylar/gecikmisTakip";
 import { describe, it, expect } from "vitest";
 import { OLAY_BOLGESEL_ORTACAG } from "../src/data/olaylar/bolgeselOrtaCag";
 import { OLAY_BOLGESEL_SANAYI } from "../src/data/olaylar/bolgeselSanayi";
@@ -22,7 +25,7 @@ describe("bölgesel olay havuzu — standalone havuz garantisi", () => {
     state.gecmis_olaylar.push("oc_tuccar_yol_ilk_anlasma"); // §11 kural 2 (kariyer yolu girişi)
     state.gecmis_olaylar.push("iliski_evlilik_teklifi"); // §11 kural 3 (evlilik teklifi garantisi)
     state.hayvan_karsilasma_sayisi = 2; // §11 kural 5 (evcil hayvan karşılaşma garantisi)
-    state.etiketler.push("tanisma_donum_27", "tanisma_donum_36"); // aşk evliliği tanışma fırsatı zorlanmasın
+    state.etiketler.push("tanisma_donum_25", "tanisma_donum_40"); // aşk evliliği tanışma fırsatı zorlanmasın
     state.etiketler.push("yolculuk_tamamlandi"); // §11 kural 11
     state.gecmis_olaylar.push("gizem_ejderha_tilsimi"); // §11 kural 13 (mistik garanti)
     // §11 kural 15'in diğer standalone havuz adayları — hedeflerini önceden
@@ -34,16 +37,19 @@ describe("bölgesel olay havuzu — standalone havuz garantisi", () => {
     state.gecmis_olaylar.push(OLAY_EVLILIK_AILE[0].id);
     state.gecmis_olaylar.push(OLAY_KOMIK_GARIP[0].id);
     state.gecmis_olaylar.push(OLAY_KOMIK_OLUM[0].id);
+    // Yeni garanti havuzları (otorite/vergi, meslek yatkınlık, gecikmiş takip) de hedefini karşılamış sayılsın.
+    state.gecmis_olaylar.push(OLAY_OTORITE[0].id, ...OLAY_MESLEK_YATKINLIK.map((o) => o.id));
+    state.gecmis_olaylar.push(...OLAY_GECIKMIS_TAKIP.filter((o) => o.gecikmisTakipOlayi).slice(0, 2).map((o) => o.id));
     state.gecmis_olaylar.push("gt_oc01_dilenci"); // §37 gecikmiş takip tetikleyici garantisi
   }
 
-  it("28 yaşına kadar oyuncunun kendi bölgesinden en az 1 bölgesel olay zorlanır", async () => {
+  it("38 yaşına kadar oyuncunun kendi bölgesinden en az 1 bölgesel olay zorlanır", async () => {
     const yeni = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(yeni.id, "Tüccar");
     etiketEkle(yeni, ["hizip_secildi"]); // hizip zorunlu seçim kaskadını bu testte atla (2026-09 sonu)
     const state = await stateGetir(yeni.id);
     digerKaskadlariDevreDisiBirak(state);
-    state.yas = 28;
+    state.yas = 38;
     const senaryo = await senaryoUret(yeni.id);
     const kendiBolgesininOlaylari = OLAY_BOLGESEL_ORTACAG.filter((o) => o.bolgeler?.includes("Fransa"));
     const baslikSeti = new Set(kendiBolgesininOlaylari.map((o) => o.baslik));
@@ -56,7 +62,7 @@ describe("bölgesel olay havuzu — standalone havuz garantisi", () => {
     etiketEkle(yeni, ["hizip_secildi"]); // hizip zorunlu seçim kaskadını bu testte atla (2026-09 sonu)
     const state = await stateGetir(yeni.id);
     digerKaskadlariDevreDisiBirak(state);
-    state.yas = 28;
+    state.yas = 38;
     const senaryo = await senaryoUret(yeni.id);
     const baskaBolgeBaslikSeti = new Set(
       [

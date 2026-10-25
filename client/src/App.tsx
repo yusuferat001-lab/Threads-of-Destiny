@@ -37,6 +37,7 @@ import {
   stateGetir,
   oyunDiliAyarla,
   senaryoGetir,
+  yilGec,
   secimYap,
   skorKaydet,
   skorTablosuGetir,
@@ -150,6 +151,7 @@ import { SkorKirilimiPaneli } from './components/SkorKirilimiPaneli';
 import { GostergeModal } from './components/GostergeModal';
 import { AranmaBildirimModal } from './components/AranmaBildirimModal';
 import { tanismaSenaryosu, tanismaOlaySonucu } from './tanismaOlay';
+import { sakinYilSenaryosu } from './sakinYil';
 import { DunyaGecmisiModal } from './components/DunyaGecmisiModal';
 import { CarkLogo, KoseTezhibi, MuhurAyrac, AdimGostergesi, KaderYollari } from './components/Suslemeler';
 import { CagAmblemi, BolgeAmblemi } from './components/Amblemler';
@@ -657,6 +659,11 @@ function App() {
           setEkran('olum');
         } else if (!state.meslek) {
           setEkran('acilis');
+        } else if (state.sakin_yil_bekliyor) {
+          // Sakin yıl ("Yıl Geç") bekleniyor: olay yerine sentetik kutu gösterilir.
+          setSenaryo(sakinYilSenaryosu(state.yil, state.dil === 'en' ? 'en' : 'tr'));
+          setTepkiModu(false);
+          setEkran('oyun');
         } else {
           const { senaryo } = await senaryoGetir(state.id);
           if (iptal) return;
@@ -830,7 +837,38 @@ function App() {
           return;
         }
       }
+      if (karakter.sakin_yil_bekliyor) {
+        // Olay çözüldü: sıradaki adım tek sakin yıl; "Yıl Geç" düğmesiyle geçilir.
+        setSenaryo(sakinYilSenaryosu(karakter.yil, dil));
+        setTepkiModu(false);
+        setEkran('oyun');
+        return;
+      }
       const { senaryo } = await senaryoGetir(karakter.id);
+      setSenaryo(senaryo);
+      setTepkiModu(false);
+      setEkran('oyun');
+    } catch (err) {
+      setHata(temizHata(err));
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
+  /** "Yıl Geç": sakin yılı geçirir, yıl haberini gösterir ve sıradaki olayı açar. */
+  async function yilGecIslemi() {
+    if (!karakter) return;
+    setHata(null);
+    setYukleniyor(true);
+    try {
+      const sonuc = await yilGec(karakter.id);
+      setKarakter(sonuc.state);
+      if (!sonuc.state.aktif) {
+        setEkran('olum');
+        return;
+      }
+      if (sonuc.zamanAnlatimi) setIslemMesaji(sonuc.zamanAnlatimi);
+      const { senaryo } = await senaryoGetir(sonuc.state.id);
       setSenaryo(senaryo);
       setTepkiModu(false);
       setEkran('oyun');
@@ -1689,6 +1727,11 @@ function App() {
   const tanismaSonucu: OlaySonucu | null = tanismaSonuc
     ? tanismaOlaySonucu(tanismaSonuc, tanismaTepki, karakter?.para_birimi ?? '')
     : null;
+  // Olay çözüldükten sonra bekleyen tek sakin yıl: olay kutusunda tek şıklı "Yıl Geç" olarak gösterilir.
+  const sakinYilSenaryo: SenaryoResponse | null =
+    ekran === 'oyun' && karakter?.aktif && karakter.sakin_yil_bekliyor && !tanisma && !tanismaSonuc
+      ? sakinYilSenaryosu(karakter.yil, dil)
+      : null;
   const tanismaSenaryo: SenaryoResponse | null =
     ekran === 'oyun' && tanisma
       ? tanismaSenaryosu(tanisma, tanismaTepki, dil)
@@ -2499,12 +2542,12 @@ function App() {
               <OlayKutusu
                 cag={karakter.cag}
                 ulke={karakter.ulke}
-                senaryo={tanismaSenaryo ?? senaryo}
-                sonuc={tanismaSenaryo ? tanismaSonucu : olaySonucu}
-                tepkiModu={tanismaSenaryo ? false : tepkiModu}
+                senaryo={tanismaSenaryo ?? sakinYilSenaryo ?? senaryo}
+                sonuc={tanismaSenaryo ? tanismaSonucu : sakinYilSenaryo ? null : olaySonucu}
+                tepkiModu={tanismaSenaryo || sakinYilSenaryo ? false : tepkiModu}
                 yukleniyor={yukleniyor}
                 sesKapali={sesKapali}
-                onSecenek={tanismaSenaryo ? tanismaSecenek : secenekSec}
+                onSecenek={tanismaSenaryo ? tanismaSecenek : sakinYilSenaryo ? () => void yilGecIslemi() : secenekSec}
                 onDevam={tanismaSenaryo ? tanismaKapat : devamEt}
                 genis={!mobil}
                 etiketGoster={mobil}

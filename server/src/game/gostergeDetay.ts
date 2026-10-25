@@ -85,7 +85,7 @@ function konutYasamEtkisi(state: CharacterState, alan: "saglik" | "mutluluk" | "
   return (konut?.[anahtar] ?? 0) + (yasam?.[anahtar] ?? 0);
 }
 
-function durumEtkenleri(state: CharacterState, alan: "tur_basi_saglik" | "tur_basi_mutluluk"): GostergeEtken[] {
+function durumEtkenleri(state: CharacterState, alan: "yil_basi_saglik" | "yil_basi_mutluluk"): GostergeEtken[] {
   const dil = state.dil;
   const liste: GostergeEtken[] = [];
   for (const d of state.durumlar) {
@@ -125,7 +125,7 @@ function saglikDetayi(state: CharacterState): GostergeDetayTaban {
       });
     }
   }
-  etkenler.push(...durumEtkenleri(state, "tur_basi_saglik"));
+  etkenler.push(...durumEtkenleri(state, "yil_basi_saglik"));
   const kriz = krizEtkeni(state, "saglik");
   if (kriz) etkenler.push(kriz);
   if (state.para < 0) {
@@ -209,7 +209,7 @@ function mutlulukDetayi(state: CharacterState): GostergeDetayTaban {
   } else if (cocukIyi > 0) {
     etkenler.push({ ikon: "👨‍👧", metin: T(dil, "Çocuklarınla aran iyi: morale iyi geliyor."), yon: "iyi" });
   }
-  etkenler.push(...durumEtkenleri(state, "tur_basi_mutluluk"));
+  etkenler.push(...durumEtkenleri(state, "yil_basi_mutluluk"));
   const kriz = krizEtkeni(state, "mutluluk");
   if (kriz) etkenler.push(kriz);
   if (state.para < 0) {
