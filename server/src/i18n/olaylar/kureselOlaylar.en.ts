@@ -5,7 +5,7 @@ export const OLAYLAR_KURESEL_EN: Record<string, OlayCeviri> = {
   kuresel_veba_baslangici: {
     baslik: "Plague at the Door",
     metin:
-      "Death carts roam the streets of {bolge}. The plague spreads fast and spares no one. How will you protect yourself?",
+      "Death carts roam the streets of {bolge}. The plague spreads fast and spares no one. How will you protect yourself? Chance of catching it per year: no protection 9% · medium 5% · full 3%. If you catch it, your death risk starts at 70%. Your spouse and children die per year at: 5% · 3% · 2%.",
     secenekler: [
       {
         metin: "Close your business and stay home.",

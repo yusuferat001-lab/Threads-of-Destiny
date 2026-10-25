@@ -559,3 +559,7 @@
 
 .strateji-sayfa .kariyer-etkilesim-grup { display: flex; flex-direction: column; gap: 4px; }
 .strateji-sayfa .kariyer-varyantlar { display: flex; flex-wrap: wrap; gap: 4px; }
+
+/* v12: yatırım kartında "şimdi → sonraki kademe" karşılaştırması */
+.isletme-yatirim .isletme-yatirim-etki { flex-basis: 100%; font-size: 0.82rem; }
+.isletme-yatirim .isletme-yatirim-sonraki { font-size: 0.86rem; }

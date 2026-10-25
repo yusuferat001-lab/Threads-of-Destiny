@@ -881,6 +881,8 @@ export interface IsletmeYatirimGorunumu {
   kademe: number;
   maxKademe: number;
   sonrakiFiyat: number | null;
+  etkiSimdi: DilliMetin;
+  etkiSonraki: DilliMetin | null;
 }
 
 export interface IsletmeCalisanGorunumu {

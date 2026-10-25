@@ -826,7 +826,7 @@ export const ANLATIM_EN: Record<string, string> = {
   "maaş {0}": "pay {0}",
   "yaşam gideri {0}": "living costs {0}",
   "−1 sağlık/yıl": "−1 health/year",
-  "{0} (~{1} yıl): {2}": "{0} (~{1} yrs): {2}",
+  "{0}: {1}": "{0}: {1}",
   "Büyük savaş ({0}): maaş {1} · yemek {2} · savaş vergisi %{3}": "Great war ({0}): pay {1} · food {2} · war tax {3}%",
   "Savaş: maaş {0}": "War: pay {0}",
   "Salgın: her yıl hastalık riski · işçi kıtlığı maaş {0}": "Plague: yearly risk of infection · labour shortage pay {0}",

@@ -1735,6 +1735,14 @@ Bu blok önceki §13/§27/§44/§45 maddelerinin üzerine yazar (çelişkide bu 
 - **Renkler:** `format.ts kademeSinifi` + `strateji.css .kademe-*` (yetenek [40,65], sadakat/inanç [45,75]).
 - **Ölçüm:** `SIM_TARZ=aktif npx tsx scripts/simulateIsletme.ts` 10 yıllık diliminde pazar payı, dükkân neti, cebine kalan basar.
 
+### §45 v12 (2026-10) — 4 kademeli yatırımlar, kademe önizlemesi, veba oranları, dönem süresi gizli
+Bu blok §45 v11'in üzerine yazar.
+- **Her yatırım 4 kademe** (`fiyatlar: katla(taban)` = taban·[1,2,4,8], enflasyonla çarpılır; eskiden 3 kademe). Toplam etkiler: dükkân/vitrin talep +%8/kademe · kervan/tedarik alış −%4/kademe (çarpımsal) · tezgâh üretim tavanı +%45/kademe · tanıtım pazar büyümesi +%1/yıl/kademe · güvenlik koruma +0,125/kademe (en çok 0,5) · aşevi yardım getirisi +%12/kademe · depo kapasitesi 50/90/130/190/260 (çürüme %10/7/5/3/2, bakım 3/7/12/20/30) · ibadethane 50/80/120/175/240 (bakım 3/7/12/20/30) · okul mezun şansı %0/8/16/24/32. Eski kayıtlardaki 3'e kadar kademeler geçerli kalır.
+- **Önizleme:** `IsletmeYatirimGorunumu.etkiSimdi` / `etkiSonraki` (`game/yatirimMetinleri.ts` `yatirimEtkiMetni`, sayılar motor sabitlerinden okunur). Yatırım kartında "Şimdi: Talep +%16 → Sonraki kademe: Talep +%24" yazar; depo/bina kartında kapasite, çürüme ve bakım birlikte görünür.
+- **Dönem süresi oyuncuya yazılmaz:** `dunyaFinansEtkileri` dönem satırı "(~N yıl)" içermez (mekanikte süre aynı).
+- **Veba olayı** (`kuresel_veba_baslangici`) metni korunma kademelerinin oranlarını yazar: yılda yakalanma korumasız %9 / orta %5 / tam %3 (`VEBA_KAPMA_KADEME`), yakalanırsan ölüm riski %70'ten başlar, eş ve çocuklar yılda %5 / %3 / %2 ölür.
+- **Ölçüm:** `scripts/simulateIsletme.ts` her 10 yıllık dilimde toplam pazar, müşteri sayısı ve enflasyon çarpanını da basar (gelir artışının pay yüzdesinden mi, pazar/enflasyondan mı geldiğini ayırmak için).
+
 > **Numara notu (2026-10 birleştirmesi):** aşağıdaki §47–§50, ayrı bir dalda yazılırken §43–§46 olarak numaralanmıştı (Gösterge Detay · PC Olay Kutusu · Eş/Evlilik · Evcil Hayvan); yukarıdaki §43–§45 (Meslek Pazarı/Dönemler/İşletme) ile çakıştığı için yeniden numaralandı. Bu bölümlerin metnindeki ve kod yorumlarındaki "§43–§46" atıfları kendi konularına (yeni numaralar) aittir.
 
 ## 47. Gösterge Detay Penceresi, Ekonomi Frenleri ve Sunucu Dayanıklılığı (2026-10)

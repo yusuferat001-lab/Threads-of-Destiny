@@ -1,6 +1,7 @@
 import { randomUUID } from "crypto";
 import { gostergeDetayiUret, etkenGunluguNotEt, gostergeStatiMi, GostergeDetayi } from "./gostergeDetay";
 import { dunyaGecmisiUret, DunyaGecmisi } from "./dunyaGecmisi";
+import { yatirimEtkiMetni } from "./yatirimMetinleri";
 import { IsletmeDokum, IsletmeFiyat, IsletmeStokHedefi, IsletmeRolTuru, CharacterState, Cag, SenaryoResponse, SonucEtkisi, SucSinifi, TepkiSonucu, MulkTuru, OturumAkisiKaydi, IkiDilMetin, PiyasaHaberi, EkipUyesi, YonetimTalep, AileHuy, DugunButcesi, EvlilikTuru, TeklifHediyesi } from "../types";
 import { T, K, Khukumdar, ikiDilT, ikiDil } from "../i18n";
 import { musteriDagilimi, musteriAktar, musteriKaydir, rakipGrubu } from "./piyasa";
@@ -5126,6 +5127,9 @@ export interface IsletmeYatirimGorunumu {
   kademe: number;
   maxKademe: number;
   sonrakiFiyat: number | null;
+  /** v12: şu anki kademenin toplam etkisi ve (varsa) bir sonraki kademenin toplam etkisi. */
+  etkiSimdi: IkiDilMetin;
+  etkiSonraki: IkiDilMetin | null;
 }
 
 export interface IsletmeCalisanGorunumu {
@@ -5428,6 +5432,8 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
       kademe,
       maxKademe: y.fiyatlar.length,
       sonrakiFiyat: kademe < y.fiyatlar.length ? paraYuvarla(y.fiyatlar[kademe] * enf) : null,
+      etkiSimdi: yatirimEtkiMetni(y.etki, kademe, enf),
+      etkiSonraki: kademe < y.fiyatlar.length ? yatirimEtkiMetni(y.etki, kademe + 1, enf) : null,
     };
   });
   const calisanlar: IsletmeCalisanGorunumu[] = state.ekip.map((e) => {

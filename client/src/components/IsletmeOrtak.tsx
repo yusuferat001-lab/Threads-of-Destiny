@@ -9,6 +9,8 @@ const M = {
   kademe: { tr: 'Kademe', en: 'Tier' },
   yukselt: { tr: 'Yükselt', en: 'Upgrade' },
   azami: { tr: 'Azami', en: 'Maxed' },
+  simdi: { tr: 'Şimdi', en: 'Now' },
+  sonra: { tr: 'Sonraki kademe', en: 'Next tier' },
   calisanlar: { tr: 'Çalışanların', en: 'Your staff' },
   yok: { tr: 'Henüz çalışanın yok. Limit rütbeyle artar.', en: 'No staff yet. The limit grows with rank.' },
   yetenek: { tr: 'Yetenek', en: 'Skill' },
@@ -65,6 +67,14 @@ export function IsletmeOrtak({
               {t('kademe')} {y.kademe}/{y.maxKademe}
             </span>
             <small>{d(y.aciklama)}</small>
+            <span className="isletme-yatirim-etki">
+              <b>{t('simdi')}:</b> {d(y.etkiSimdi)}
+            </span>
+            {y.etkiSonraki && (
+              <span className="isletme-yatirim-etki isletme-yatirim-sonraki">
+                <b>{t('sonra')}:</b> <span className="kademe-yuksek">{d(y.etkiSonraki)}</span>
+              </span>
+            )}
             {y.sonrakiFiyat === null ? (
               <span className="isletme-etiket">{t('azami')}</span>
             ) : (

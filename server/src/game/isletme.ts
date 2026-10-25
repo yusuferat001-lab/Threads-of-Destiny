@@ -70,10 +70,10 @@ export interface IsletmeBaglami {
 }
 
 // ── Sayılar (simülasyonla ayarlanır; bkz. scripts/simulateIsletme.ts) ───────
-/** Depo kademeleri (0..3): kapasite, çürüme oranı, sabit yıllık bakım (enflasyonsuz). Depo yılda BİR kez dolar. */
-export const DEPO_KAPASITE = [50, 90, 130, 190];
-export const CURUME_ORANLARI = [0.1, 0.07, 0.05, 0.03];
-export const DEPO_BAKIM = [3, 7, 12, 20];
+/** Depo kademeleri (0..4): kapasite, çürüme oranı, sabit yıllık bakım (enflasyonsuz). Depo yılda BİR kez dolar. */
+export const DEPO_KAPASITE = [50, 90, 130, 190, 260];
+export const CURUME_ORANLARI = [0.1, 0.07, 0.05, 0.03, 0.02];
+export const DEPO_BAKIM = [3, 7, 12, 20, 30];
 export const BASLANGIC_STOK = 20;
 export const BORC_ODEME_ORANI = 0.6;
 /** Rütbe S1..S5 → en fazla toplam çalışan. */
@@ -87,13 +87,13 @@ const KITLE_KAYIP_TAVANI = 0.12;
 const TALEP_GURULTUSU = 0.08;
 /** Yüzdelik müşteri büyümesi pay bu eşiğe yaklaştıkça sıfıra iner. */
 export const PAY_DOYMA_ESIGI = 0.68;
-const DUKKAN_TALEP_KADEME = 0.1;
+export const DUKKAN_TALEP_KADEME = 0.08;
 /** Maliyet indirimleri ÇARPIMSAL birleşir (tavan yok): maliyet × (1−a)(1−b)(1−c)…; her kaynak kendi payını düşer, yığıldıkça getirisi azalır. */
-const KERVAN_INDIRIM_KADEME = 0.05;
+export const KERVAN_INDIRIM_KADEME = 0.04;
 const GUMRUK_INDIRIMI = 0.1;
 const MUAFIYET_INDIRIMI = 0.08;
-const TEZGAH_URETIM_KADEME = 0.6;
-const TANITIM_PAY_KADEME = 0.01;
+export const TEZGAH_URETIM_KADEME = 0.45;
+export const TANITIM_PAY_KADEME = 0.01;
 /** Veba sürerken müşteri/inanan büyümesinin pozitif kısımları bu çarpanla kısılır (v10). */
 export const VEBA_ARTIS_CARPANI = 0.3;
 /** v11: dönem fiyat şoku alışa ve satışa AYNI oranda (%100) yansır; marj oransal korunur, krizin asıl etkisi talepte. */
@@ -124,7 +124,7 @@ export const SADAKAT_OLAY_COOLDOWN_YIL = 3;
 
 // Dış hırsızlık
 export const HIRSIZLIK_COOLDOWN_YIL = 3;
-export const GUVENLIK_YATIRIM_KORUMA = [0, 0.17, 0.34, 0.5];
+export const GUVENLIK_YATIRIM_KORUMA = [0, 0.125, 0.25, 0.375, 0.5];
 export const OTORITE_KORUMA_ESIGI = 70;
 export const OTORITE_KORUMA = 0.1;
 
@@ -387,7 +387,7 @@ export function uretimTavani(state: CharacterState): number | null {
   const is = state.isletme;
   if (!profil || !is || profil.mod !== "uretim") return null;
   const bon = ekipBonuslari(state);
-  const tezgah = clamp(is.yatirimlar.tezgah ?? 0, 0, 3) * TEZGAH_URETIM_KADEME;
+  const tezgah = clamp(is.yatirimlar.tezgah ?? 0, 0, 4) * TEZGAH_URETIM_KADEME;
   const ruhsat = imtiyazAktifMi(state, "atolye_ruhsati") ? 0.1 : 0;
   const taban = URETIM_TABAN + Math.max(0, state.uretim_kapasitesi ?? 0) * URETIM_METRIK_CARPANI;
   return Math.floor(taban * (1 + bon.ana + tezgah + ruhsat));

@@ -26,7 +26,7 @@ export const OLAY_KURESEL: OlayTanimi[] = [
     gorsel: "☠️",
     baslik: "Salgın Kapıda",
     metin:
-      "{bolge} sokaklarında ölüm arabaları geziyor. Salgın hızla yayılıyor, kimseyi ayırmıyor. Nasıl korunacaksın?",
+      "{bolge} sokaklarında ölüm arabaları geziyor. Salgın hızla yayılıyor, kimseyi ayırmıyor. Nasıl korunacaksın? Yılda yakalanma: korumasız %9 · orta koruma %5 · tam koruma %3. Yakalanırsan ölüm riski %70'ten başlar. Eşin ve çocukların yılda ölür: %5 · %3 · %2.",
     secenekler: [
       {
         metin: "İşini kapat, evine kapan.",

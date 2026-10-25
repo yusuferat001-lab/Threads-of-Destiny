@@ -138,39 +138,40 @@ export const FIYAT_ARTI_EKSI: Record<IsletmeFiyat, DilliMetin> = {
   },
 };
 
-// ── Yatırımlar (profil başına 5 × 3 kademe; fiyat enflasyonsuz taban) ──────
+// ── Yatırımlar (profil başına 5 × 4 kademe; fiyat enflasyonsuz taban, her kademe bir öncekinin 2 katı) ──────
+const katla = (taban: number): number[] => [taban, taban * 2, taban * 4, taban * 8];
 const YATIRIM_DEPO: YatirimTanimi = {
   id: "depo",
   simge: "🏚️",
   ad: { tr: "Depo", en: "Warehouse" },
   aciklama: {
-    tr: "Stok kapasitesi: 50 → 90 → 130 → 190 birim. Büyük depo mal çürümesini azaltır (%10 → %3) ama bakımı yıllık gider yazar.",
-    en: "Stock capacity: 50 → 90 → 130 → 190 units. A bigger warehouse reduces spoilage (10% → 3%) but upkeep is a yearly cost.",
+    tr: "Stok kapasitesi, mal çürümesi ve yıllık bakım gideri depoya bağlıdır. Büyük depo çürümeyi azaltır ama bakımı pahalıdır.",
+    en: "Stock capacity, spoilage and yearly upkeep depend on the warehouse. A bigger one cuts spoilage but costs more to maintain.",
   },
   etki: "depo",
-  fiyatlar: [35, 90, 180],
+  fiyatlar: katla(35),
 };
 const YATIRIM_TANITIM: YatirimTanimi = {
   id: "tanitim",
   simge: "📣",
   ad: { tr: "Tanıtım", en: "Advertising" },
   aciklama: {
-    tr: "Her kademe pazar payı büyümesini artırır: yılda +%1 / +%2 / +%3 (toplam).",
-    en: "Each tier boosts market share growth: +1% / +2% / +3% a year (total).",
+    tr: "Her kademe pazar payı büyümesini yılda +%1 artırır.",
+    en: "Each tier adds +1% a year to market share growth.",
   },
   etki: "pazar",
-  fiyatlar: [20, 45, 90],
+  fiyatlar: katla(20),
 };
 const YATIRIM_GUVENLIK_TUCCAR: YatirimTanimi = {
   id: "guvenlik",
   simge: "🔒",
   ad: { tr: "Depo Güvenliği", en: "Warehouse Security" },
   aciklama: {
-    tr: "Kilit-sürgü → demir kapı + bekçi köpeği → nöbet kulesi. Koruma +0,17 / +0,34 / +0,50 (toplam).",
-    en: "Bolt and lock → iron door + guard dog → watchtower. Protection +0.17 / +0.34 / +0.50 (total).",
+    tr: "Kilit-sürgü → demir kapı → bekçi köpeği → nöbet kulesi. Her kademe korumayı +0,125 artırır (en çok 0,5).",
+    en: "Bolt and lock → iron door → guard dog → watchtower. Each tier adds +0.125 protection (max 0.5).",
   },
   etki: "koruma",
-  fiyatlar: [20, 50, 110],
+  fiyatlar: katla(20),
 };
 const YATIRIM_GUVENLIK_ZANAAT: YatirimTanimi = {
   ...YATIRIM_GUVENLIK_TUCCAR,
@@ -184,22 +185,22 @@ const TUCCAR_YATIRIMLAR: YatirimTanimi[] = [
     simge: "🏪",
     ad: { tr: "Dükkân", en: "Shop" },
     aciklama: {
-      tr: "Her kademe müşteri talebini %10 artırır.",
-      en: "Each tier raises customer demand by 10%.",
+      tr: "Her kademe müşteri talebini %8 artırır.",
+      en: "Each tier raises customer demand by 8%.",
     },
     etki: "talep",
-    fiyatlar: [15, 30, 55],
+    fiyatlar: katla(15),
   },
   {
     id: "kervan",
     simge: "🐪",
     ad: { tr: "Kervan", en: "Caravan" },
     aciklama: {
-      tr: "Her kademe alış maliyetini %5 düşürür (diğer indirimlerle çarpımsal birleşir).",
-      en: "Each tier cuts purchase costs by 5% (stacks multiplicatively with other discounts).",
+      tr: "Her kademe alış maliyetini %4 düşürür (diğer indirimlerle çarpımsal birleşir).",
+      en: "Each tier cuts purchase costs by 4% (stacks multiplicatively with other discounts).",
     },
     etki: "alis",
-    fiyatlar: [15, 30, 55],
+    fiyatlar: katla(15),
   },
   YATIRIM_TANITIM,
   YATIRIM_GUVENLIK_TUCCAR,
@@ -211,11 +212,11 @@ const ZANAATKAR_YATIRIMLAR: YatirimTanimi[] = [
     simge: "🔨",
     ad: { tr: "Tezgâh ve Aletler", en: "Workbench & Tools" },
     aciklama: {
-      tr: "Her kademe yıllık üretim tavanını %60 artırır.",
-      en: "Each tier raises your yearly production cap by 60%.",
+      tr: "Her kademe yıllık üretim tavanını %45 artırır.",
+      en: "Each tier raises your yearly production cap by 45%.",
     },
     etki: "uretim",
-    fiyatlar: [30, 70, 140],
+    fiyatlar: katla(30),
   },
   YATIRIM_DEPO,
   {
@@ -223,11 +224,11 @@ const ZANAATKAR_YATIRIMLAR: YatirimTanimi[] = [
     simge: "🏪",
     ad: { tr: "Vitrin", en: "Showroom" },
     aciklama: {
-      tr: "Her kademe müşteri talebini %10 artırır.",
-      en: "Each tier raises customer demand by 10%.",
+      tr: "Her kademe müşteri talebini %8 artırır.",
+      en: "Each tier raises customer demand by 8%.",
     },
     etki: "talep",
-    fiyatlar: [15, 30, 55],
+    fiyatlar: katla(15),
   },
   YATIRIM_TANITIM,
   YATIRIM_GUVENLIK_ZANAAT,
@@ -240,33 +241,33 @@ const DIN_YATIRIMLAR: YatirimTanimi[] = [
     simge: "⛪",
     ad: { tr: "İbadethane", en: "House of Worship" },
     aciklama: {
-      tr: "Ayine sığan inanan: 50 → 80 → 120 → 175. Kapasiteyi aşan inananlar rakibe geçer; bakımı yıllık gider yazar.",
-      en: "Worshippers it can hold: 50 → 80 → 120 → 175. Those beyond capacity drift to your rival; upkeep is a yearly cost.",
+      tr: "Ayine sığan inanan sayısı ve yıllık bakım gideri ibadethaneye bağlıdır. Kapasiteyi aşan inananlar rakibe geçer.",
+      en: "The worshippers it can hold and its yearly upkeep depend on the building. Those beyond capacity drift to your rival.",
     },
     etki: "bina",
-    fiyatlar: [22, 55, 120],
+    fiyatlar: katla(22),
   },
   {
     id: "okul",
     simge: "🏫",
     ad: { tr: "Okul", en: "School" },
     aciklama: {
-      tr: "Yılda mezun çıkarma şansı %12 / %20 / %30. Mezun misyoner olur: yeni inananlar getirir, bazen usta bir aday çıkar. Çalışanlar da daha hızlı gelişir.",
-      en: "Yearly chance of a graduate: 12% / 20% / 30%. Graduates become missionaries, bring new believers, and sometimes a skilled recruit emerges. Staff also improve faster.",
+      tr: "Her kademe yıllık mezun çıkarma şansını %8 artırır. Mezun misyoner olur: yeni inananlar getirir, bazen usta bir aday çıkar. Çalışanlar da daha hızlı gelişir.",
+      en: "Each tier adds 8% to the yearly chance of a graduate. Graduates become missionaries, bring new believers, and sometimes a skilled recruit emerges. Staff also improve faster.",
     },
     etki: "okul",
-    fiyatlar: [28, 65, 130],
+    fiyatlar: katla(28),
   },
   {
     id: "asevi",
     simge: "🍲",
     ad: { tr: "Aşevi", en: "Soup Kitchen" },
     aciklama: {
-      tr: "Her kademe yardım harcamasının inanan ve ahlak getirisini %15 artırır.",
-      en: "Each tier raises the flock and morality payoff of your aid spending by 15%.",
+      tr: "Her kademe yardım harcamasının inanan ve ahlak getirisini %12 artırır.",
+      en: "Each tier raises the flock and morality payoff of your aid spending by 12%.",
     },
     etki: "yardim",
-    fiyatlar: [15, 35, 70],
+    fiyatlar: katla(15),
   },
   {
     ...YATIRIM_TANITIM,
@@ -276,8 +277,8 @@ const DIN_YATIRIMLAR: YatirimTanimi[] = [
     ...YATIRIM_GUVENLIK_TUCCAR,
     ad: { tr: "Kilise Güvenliği", en: "Church Security" },
     aciklama: {
-      tr: "Kumbara ve ibadethaneyi korur: Koruma +0,17 / +0,34 / +0,50 (toplam).",
-      en: "Guards the offering box and the sanctuary: Protection +0.17 / +0.34 / +0.50 (total).",
+      tr: "Kumbara ve ibadethaneyi korur: her kademe korumayı +0,125 artırır (en çok 0,5).",
+      en: "Guards the offering box and the sanctuary: each tier adds +0.125 protection (max 0.5).",
     },
   },
 ];

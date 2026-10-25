@@ -3812,14 +3812,13 @@ export function dunyaFinansEtkileri(state: CharacterState): DunyaFinansEtkisi[] 
 
   const donem = state.ulke.donem;
   if (donem) {
-    const kalan = Math.max(0, donem.bitisYili - state.yil);
     const parcalar = [
       T(dil, "maaş {0}", [isaretli(donem.etki.maas)]),
       T(dil, "yaşam gideri {0}", [isaretli(donem.etki.yasamGideri)]),
     ];
     liste.push({
       ikon: DONEM_ADLARI[donem.tur].simge,
-      metin: T(dil, "{0} (~{1} yıl): {2}", [T(dil, DONEM_ADLARI[donem.tur].ad), kalan, parcalar.join(" · ")]),
+      metin: T(dil, "{0}: {1}", [T(dil, DONEM_ADLARI[donem.tur].ad), parcalar.join(" · ")]),
     });
   }
 

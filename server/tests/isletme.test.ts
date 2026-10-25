@@ -193,13 +193,32 @@ describe("işletme (Tüccar dilimi)", () => {
     await ekipCikar(s.id, s.ekip[0].id);
   });
 
+  it("yatırım fiyatları katlanarak artar (her kademe bir öncekinin 2 katı) ve kartta şimdi/sonraki etki görünür", async () => {
+    const s = await tuccar();
+    s.para = 5000;
+    const ilk = (await isletmeDurumGetir(s.id)).yatirimlar.find((y) => y.id === "dukkan")!;
+    expect(ilk.maxKademe).toBe(4);
+    expect(ilk.etkiSimdi.tr).toBe("Etki yok");
+    expect(ilk.etkiSonraki!.tr).toBe("Talep +%8");
+    const fiyatlar: number[] = [ilk.sonrakiFiyat!];
+    for (let i = 0; i < 3; i++) {
+      await isletmeYatirimYap(s.id, "dukkan");
+      fiyatlar.push((await isletmeDurumGetir(s.id)).yatirimlar.find((y) => y.id === "dukkan")!.sonrakiFiyat ?? 0);
+    }
+    expect(fiyatlar[1] / fiyatlar[0]).toBeCloseTo(2, 1);
+    expect(fiyatlar[2] / fiyatlar[1]).toBeCloseTo(2, 1);
+    const k = (await isletmeDurumGetir(s.id)).yatirimlar.find((y) => y.id === "dukkan")!;
+    expect(k.etkiSimdi.tr).toBe("Talep +%24");
+    expect(k.etkiSonraki!.tr).toBe("Talep +%32");
+  });
+
   it("yetersiz parayla yatırım yapılamaz", async () => {
     const s = await tuccar();
     s.para = 0;
     await expect(isletmeYatirimYap(s.id, "depo")).rejects.toThrow(/Yeterli paran yok/);
   });
 
-  it("depo yatırımı kapasiteyi büyütür (50/90/130/190), çürümeyi azaltır; en üst kademeden sonra reddedilir", async () => {
+  it("depo yatırımı kapasiteyi büyütür (50/90/130/190/260), çürümeyi azaltır; en üst kademeden sonra reddedilir", async () => {
     const s = await tuccar();
     s.para = 5000;
     expect(depoKapasitesi(s.isletme!)).toBe(50);
@@ -210,6 +229,9 @@ describe("işletme (Tüccar dilimi)", () => {
     await isletmeYatirimYap(s.id, "depo");
     expect(depoKapasitesi(s.isletme!)).toBe(190);
     expect(curumeOrani(s.isletme!)).toBeCloseTo(0.03);
+    await isletmeYatirimYap(s.id, "depo");
+    expect(depoKapasitesi(s.isletme!)).toBe(260);
+    expect(curumeOrani(s.isletme!)).toBeCloseTo(0.02);
     await expect(isletmeYatirimYap(s.id, "depo")).rejects.toThrow(/en üst kademe/);
   });
 
@@ -221,7 +243,8 @@ describe("işletme (Tüccar dilimi)", () => {
     expect((await isletmeDurumGetir(s.id)).hatlar.find((h) => h.id === "tahil")!.tahminiTalep).toBeGreaterThan(talepOnce);
     expect(korumaHesapla(s).yatirim).toBe(0);
     await isletmeYatirimYap(s.id, "guvenlik");
-    expect(korumaHesapla(s).yatirim).toBeCloseTo(0.17);
+    expect(korumaHesapla(s).yatirim).toBeCloseTo(0.125);
+    await isletmeYatirimYap(s.id, "guvenlik");
     await isletmeYatirimYap(s.id, "guvenlik");
     await isletmeYatirimYap(s.id, "guvenlik");
     expect(korumaHesapla(s).yatirim).toBeCloseTo(0.5);
@@ -426,13 +449,13 @@ describe("işletme (Zanaatkâr — üretim modu)", () => {
     expect(dokum.hatlar[0].alinan).toBeLessThanOrEqual(190); // depo kademe 3 = 190
   });
 
-  it("tezgâh yatırımı (+%60/kademe), üretim kapasitesi ve ana rol çalışanı tavanı büyütür", async () => {
+  it("tezgâh yatırımı (+%45/kademe), üretim kapasitesi ve ana rol çalışanı tavanı büyütür", async () => {
     const s = await zanaatkar();
     s.para = 5000;
     const once = (await isletmeDurumGetir(s.id)).uretim!.tavan;
     await isletmeYatirimYap(s.id, "tezgah");
     const tezgahSonra = (await isletmeDurumGetir(s.id)).uretim!.tavan;
-    expect(tezgahSonra / once).toBeGreaterThan(1.5);
+    expect(tezgahSonra / once).toBeGreaterThan(1.35);
     s.uretim_kapasitesi = 40;
     expect((await isletmeDurumGetir(s.id)).uretim!.tavan).toBeGreaterThan(tezgahSonra);
     const ayrintiOnce = (await isletmeDurumGetir(s.id)).uretim!.tavan;

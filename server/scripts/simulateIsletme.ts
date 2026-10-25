@@ -127,7 +127,7 @@ function botKarar(s: CharacterState, tarz: Tarz) {
   is.stok_hedefi = "normal";
 }
 
-interface Cikti { dukkan: number[]; gider: number[]; musteri: number[]; calisan: number[]; batmaYili: number; batmaDetay: string; gelir: number[]; net: number[]; pay: number[]; rakipPay: number[]; para: number[]; batti: boolean; sonPara: number; hirsizlik: number; anaRolKazanc: number }
+interface Cikti { dukkan: number[]; gider: number[]; musteri: number[]; calisan: number[]; batmaYili: number; batmaDetay: string; gelir: number[]; net: number[]; pay: number[]; rakipPay: number[]; para: number[]; batti: boolean; sonPara: number; hirsizlik: number; anaRolKazanc: number; pazar: number[]; enf: number[] }
 
 function tekOmur(cag: Cag, tarz: Tarz): Cikti {
   const s = createCharacter(cag, cag === "Orta Çağ" ? "Fransa" : "İngiltere", "kasaba");
@@ -139,7 +139,7 @@ function tekOmur(cag: Cag, tarz: Tarz): Cikti {
     s.isletme.ana_urun = bu.hat;
     for (const h of s.isletme.hatlar) h.acik = h.id === bu.hat;
   }
-  const c: Cikti = { dukkan: [], gider: [], musteri: [], calisan: [], batmaYili: -1, batmaDetay: "", gelir: [], net: [], pay: [], rakipPay: [], para: [], batti: false, sonPara: 0, hirsizlik: 0, anaRolKazanc: 0 };
+  const c: Cikti = { dukkan: [], gider: [], musteri: [], calisan: [], batmaYili: -1, batmaDetay: "", gelir: [], net: [], pay: [], rakipPay: [], para: [], batti: false, sonPara: 0, hirsizlik: 0, anaRolKazanc: 0, pazar: [], enf: [] };
   for (let y = 0; y < YIL; y++) {
     rutbeSurukle(s, y, tarz);
     botKarar(s, tarz);
@@ -165,6 +165,8 @@ function tekOmur(cag: Cag, tarz: Tarz): Cikti {
     c.pay.push(pazarPayiHesapla(s) * 100);
     c.gider.push(gider);
     c.musteri.push(s.meslek_musteri);
+    c.pazar.push(s.pazar_musteri);
+    c.enf.push(enflasyonCarpani(s));
     c.calisan.push(s.ekip.length);
     c.rakipPay.push(((s.rakipler.find((r) => !r.yenildi)?.musteri ?? 0) / s.pazar_musteri) * 100);
     c.para.push(s.para);
@@ -201,7 +203,7 @@ for (const cag of CAGLAR) {
       const pay = ort(sonuclar.map((c) => ort(c.pay.slice(a, b))));
       const rpay = ort(sonuclar.map((c) => ort(c.rakipPay.slice(a, b))));
       const dukkan = ort(sonuclar.map((c) => ort(c.dukkan.slice(a, b))));
-      return `${ad}: pay %${pay.toFixed(1)} · dükkan neti ${dukkan.toFixed(1)} · cebine kalan ${net.toFixed(1)} · (brüt gelir ${gelir.toFixed(1)}, rakip %${rpay.toFixed(1)})`;
+      return `${ad}: pay %${pay.toFixed(1)} · dükkan neti ${dukkan.toFixed(1)} · cebine kalan ${net.toFixed(1)} · (brüt gelir ${gelir.toFixed(1)}, rakip %${rpay.toFixed(1)}) · toplam pazar ${ort(sonuclar.map((c) => ort(c.pazar.slice(a, b)))).toFixed(0)} · müşterin ${ort(sonuclar.map((c) => ort(c.musteri.slice(a, b)))).toFixed(0)} · enflasyon ×${ort(sonuclar.map((c) => ort(c.enf.slice(a, b)))).toFixed(2)}`;
     });
     const batan = sonuclar.filter((c) => c.batti).length;
     const sonPay = sonuclar.map((c) => c.pay[c.pay.length - 1]).sort((a, b) => a - b);

@@ -225,7 +225,7 @@ export function okulKademesi(state: CharacterState): number {
   return clamp(yatirimKademesi(state, "okul"), 0, OKUL_MEZUN_SANSI.length - 1);
 }
 export function aseviKademesi(state: CharacterState): number {
-  return clamp(yatirimKademesi(state, "yardim"), 0, 3);
+  return clamp(yatirimKademesi(state, "yardim"), 0, 4);
 }
 export function binaKapasitesi(state: CharacterState, o: OgretiToplami): number {
   return Math.round(BINA_KAPASITE[binaKademesi(state)] * o.kapasite);
