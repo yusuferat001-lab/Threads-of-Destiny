@@ -70,6 +70,19 @@ export const OLAYLAR_HIZIP_ZANAATKAR_EN: Record<string, OlayCeviri> = {
       ["Demand a fix first.", "He fixed the work; the bar was raised.", "Strictness protects the craft.", "The journeyman was hurt; the Council found you harsh.", "A true word sometimes leaves you alone.", ""],
     ]),
 
+  hizip_lonca_meclisi_yabanci_usta: c("Foreign Master",
+    "A master from another city asks the Council for permission to open a workshop. The Council asks your view.",
+    [
+      ["Let it be allowed.", "The foreign master was grateful; the Council noted your generosity.", "An open door, a wide friendship.", "The new master took some of your customers.", "Competition knocks on the door.", ""],
+      ["Oppose it.", "Competition stayed away; the Council backed you.", "Closing the door pays too.", "Your opposition was received harshly in the Council.", "A narrow door makes enemies.", ""],
+    ]),
+  hizip_lonca_meclisi_lonca_alayi: c("Guild Parade",
+    "The Council wants you to carry the workshop's banner in the annual guild parade. The cost is yours.",
+    [
+      ["Carry the banner proudly.", "Your name was applauded in the parade.", "Pride comes with a cost.", "Rain flooded the parade; the banner sank in mud.", "Not every show lands.", ""],
+      ["Refuse, citing the cost.", "Your purse was spared; nobody questioned it.", "Spending little earns little fame.", "Your refusal was talked about in the Council.", "He who skips the parade is remembered.", ""],
+    ]),
+
   hizip_serbest_ustalar_serbest_fiyat: c("Your Own Price",
     "Free Masters set their own prices. An expensive order came this week; you'll name the price.",
     [
@@ -117,5 +130,17 @@ export const OLAYLAR_HIZIP_ZANAATKAR_EN: Record<string, OlayCeviri> = {
     [
       ["Refuse the offer.", "You kept your side; the Free Masters drew strength from you.", "Independence has a high price.", "Because of your refusal, your old penalties reopened.", "Burning the bridge is easy.", ""],
       ["Negotiate, meet halfway.", "Your penalties were reduced, but some friends are angry.", "A compromise doesn't suit everyone.", "Both sides found you untrustworthy.", "Whoever stays in the middle is crushed.", ""],
+    ]),
+  hizip_serbest_ustalar_fikir_hirsizi: c("Idea Thief",
+    "A free master copied your design and is selling it cheaper.",
+    [
+      ["Say it to his face.", "The master apologized and paid what he owed.", "Plain words clear the road.", "The argument turned into a brawl; the market watched.", "Anger eats reputation.", ""],
+      ["Answer with better work.", "Your new piece outshone the copy.", "The best answer is work.", "The new piece didn't get the attention you hoped for.", "Ambition isn't always enough.", ""],
+    ]),
+  hizip_serbest_ustalar_ortak_tezgah: c("Market Stall",
+    "The free masters set up a shared stall at the market. They offer you a corner.",
+    [
+      ["Take a spot at the stall.", "The stall was crowded; goods sold fast.", "A crowd pays.", "The stall stayed empty for days.", "Crowds can be wrong too.", ""],
+      ["Stay in your workshop.", "You spent a calm year in your workshop.", "A known road carries you.", "Neighbors earned from the stall while you fell behind.", "Waiting is also a choice.", ""],
     ]),
 };

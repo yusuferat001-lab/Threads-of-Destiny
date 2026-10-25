@@ -122,6 +122,27 @@ export const OLAY_HIZIP_ZANAATKAR: OlayTanimi[] = [
         { un: -2, mutluluk: -3, mesaj: "Kalfa kırıldı, Meclis seni katı buldu.", detay: "Doğru söz bazen yalnız bırakır." }),
     ]),
 
+  olay("hizip_lonca_meclisi_yabanci_usta", "Lonca Meclisi", "🧭", "Yabancı Usta",
+    "Başka şehirden bir usta atölye açmak için Meclis'ten izin istiyor. Meclis senin görüşünü soruyor.",
+    [
+      secenek("İzin verilsin de.", 70,
+        { un: 4, ahlak: 3, mesaj: "Yabancı usta sana minnet duydu; Meclis cömertliğini not etti.", detay: "Açık kapı, geniş dostluk." },
+        { para: -6, mesaj: "Yeni usta müşterilerinin bir kısmını kaptı.", detay: "Rekabet kapıyı çalar." }),
+      secenek("Karşı çık.", 80,
+        { para: 6, un: 2, mesaj: "Rekabet uzak kaldı; Meclis seni destekledi.", detay: "Kapıyı kapatmak da kâr getirir." },
+        { ahlak: -3, un: -4, mesaj: "Karşı çıkışın Meclis'te sert karşılandı.", detay: "Dar kapı düşman kazandırır." }),
+    ]),
+  olay("hizip_lonca_meclisi_lonca_alayi", "Lonca Meclisi", "🚩", "Lonca Alayı",
+    "Meclis yıllık lonca alayında atölyenin sancağını taşımanı istiyor. Masrafı sana ait.",
+    [
+      secenek("Sancağı gururla taşı.", 80,
+        { para: -8, un: 7, mutluluk: 3, mesaj: "Alayda adın alkışlandı.", detay: "Gurur masrafla gelir." },
+        { para: -8, un: -2, mesaj: "Yağmur alayı bastı; sancak çamura battı.", detay: "Her gösteri tutmaz." }),
+      secenek("Masraf bahanesiyle reddet.", 85,
+        { para: 4, un: -2, mesaj: "Kesen korundu; kimse sorgulamadı.", detay: "Az harcamak az ün." },
+        { un: -6, mesaj: "Reddin Meclis'te söz oldu.", detay: "Alaya gelmeyen hatırlanır." }),
+    ]),
+
   // ═══════════════════════════ SERBEST USTALAR ═══════════════════════════
   olay("hizip_serbest_ustalar_serbest_fiyat", "Serbest Ustalar", "💰", "Kendi Fiyatın",
     "Serbest Ustalar kendi fiyatını kendi koyuyor. Bu hafta pahalı bir sipariş geldi; fiyatı sen belirleyeceksin.",
@@ -202,5 +223,25 @@ export const OLAY_HIZIP_ZANAATKAR: OlayTanimi[] = [
       secenek("Müzakere et, yarı yoldan karşıla.", 55,
         { para: 5, un: 3, ahlak: -3, mesaj: "Cezaların indirildi; ama bazı arkadaşlar kızgın.", detay: "Uzlaşma herkese yaramaz." },
         { un: -6, ahlak: -4, mesaj: "İki taraf da seni güvenilmez buldu.", detay: "Ortada kalan ezilir." }),
+    ]),
+  olay("hizip_serbest_ustalar_fikir_hirsizi", "Serbest Ustalar", "🧵", "Fikir Hırsızı",
+    "Bir serbest usta senin tasarımını kopyalayıp daha ucuza satıyor.",
+    [
+      secenek("Yüzüne karşı söyle.", 55,
+        { para: 8, un: 3, ahlak: 2, mesaj: "Usta özür dileyip hakkını ödedi.", detay: "Açık söz yolu temizler." },
+        { un: -5, mutluluk: -3, mesaj: "Tartışma kavgaya döndü; pazar seyretti.", detay: "Öfke ün yer." }),
+      secenek("Daha iyisini yapıp cevap ver.", 65,
+        { para: 10, un: 6, mesaj: "Yeni eserin kopyayı gölgede bıraktı.", detay: "En iyi cevap iştir." },
+        { para: -6, mutluluk: -2, mesaj: "Yeni eser beklenen ilgiyi görmedi.", detay: "Hırs her zaman yetmez." }),
+    ]),
+  olay("hizip_serbest_ustalar_ortak_tezgah", "Serbest Ustalar", "🛒", "Çarşı Tezgâhı",
+    "Serbest ustalar çarşıda ortak bir tezgâh kurmuş. Sana da bir köşe veriyorlar.",
+    [
+      secenek("Tezgâhta yer al.", 65,
+        { para: 14, un: 3, mesaj: "Tezgâh kalabalıktı; mallar çabuk gitti.", detay: "Kalabalık kazandırır." },
+        { para: -6, mutluluk: -2, mesaj: "Tezgâh günlerce boş kaldı.", detay: "Kalabalık da yanılır." }),
+      secenek("Atölyende kal.", 90,
+        { para: 4, mesaj: "Atölyende sakin bir yıl geçirdin.", detay: "Bildiğin yol seni taşır." },
+        { para: -2, un: -2, mesaj: "Komşular tezgâhtan kazandı, sen geride kaldın.", detay: "Beklemek de bir seçimdir." }),
     ]),
 ];

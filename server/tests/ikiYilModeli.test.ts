@@ -18,7 +18,18 @@ import type { SecimSonucu, TepkiSonucu } from "../src/types";
 
 /** secimUygula bazen ara_tepki döner; yilGecAyri bayrağıyla çözer. */
 async function sec(id: string, index: number, yilGecAyri: boolean): Promise<SecimSonucu> {
-  let sonuc: SecimSonucu | TepkiSonucu = await secimUygula(id, index, yilGecAyri);
+  // Rastgele olayın şıkkı kilitli/pahalı olabilir: ilk uygulanabilir şıkkı dene.
+  let sonuc: SecimSonucu | TepkiSonucu | undefined;
+  let hata: unknown;
+  for (const i of [index, 0, 1, 2, 3]) {
+    try {
+      sonuc = await secimUygula(id, i, yilGecAyri);
+      break;
+    } catch (e) {
+      hata = e;
+    }
+  }
+  if (!sonuc) throw hata;
   if ("ara_tepki" in sonuc) sonuc = await secimUygula(id, 1, yilGecAyri);
   return sonuc as SecimSonucu;
 }
@@ -28,6 +39,7 @@ async function hazirOyun() {
   await mesleğiAta(state.id, "Tüccar");
   etiketEkle(state, ["hizip_secildi", "yolculuk_tamamlandi"]);
   state.ulke.savasta = true; // tarihi savaş ilanı araya girmesin
+  state.para = 500; // rastgele olayın şık maliyeti testi bozmasın
   return state;
 }
 
@@ -162,10 +174,10 @@ describe("evcil hayvan olayları rastgele havuzdan çıkar", () => {
 });
 
 describe("Zanaatkâr hizipleri artık kendi olaylarına sahip", () => {
-  it("iki hizbe de 8'er olay var, hepsi hizip etiketine bağlı ve bankada kayıtlı", () => {
+  it("iki hizbe de 10'ar olay var, hepsi hizip etiketine bağlı ve bankada kayıtlı", () => {
     for (const hizip of ["Lonca Meclisi", "Serbest Ustalar"]) {
       const olaylar = OLAY_HIZIP_ZANAATKAR.filter((o) => o.gerekliEtiketler?.includes(`hizip:${hizip}`));
-      expect(olaylar).toHaveLength(8);
+      expect(olaylar).toHaveLength(10);
       for (const o of olaylar) {
         expect(o.meslekler).toEqual(["Zanaatkâr"]);
         expect(OLAY_BANKASI.some((b) => b.id === o.id)).toBe(true);
@@ -212,5 +224,48 @@ describe("garanti tekrarı hatası düzeldi", () => {
     }
     // Eskiden aynı genel hizip olayı hedef dolana kadar her turda tekrar zorlanıyordu.
     expect(new Set(gorulen).size).toBeGreaterThan(1);
+  });
+});
+
+describe("sosyalleşme mekân olayı sakin yılı yutmaz", () => {
+  it("mekân olayı kuyruktayken senaryoUret sakin yılı otomatik geçirmez", async () => {
+    const { sosyallesmeYerineGit } = await import("../src/game/gameEngine");
+    const state = await hazirOyun();
+    state.yas = 30;
+    state.para = 50;
+    state.sakin_yil_bekliyor = true;
+    const yilOnce = state.yil;
+    await sosyallesmeYerineGit(state.id, "pazar_meydani");
+    await senaryoUret(state.id);
+    const sonra = await stateGetir(state.id);
+    expect(sonra.yil).toBe(yilOnce);
+    expect(sonra.sakin_yil_bekliyor).toBe(true);
+  });
+});
+
+describe("yolculuk teklifi kilide denk gelirse kaçmaz", () => {
+  async function teklifOyunu(yas: number, teklifEdildi: boolean) {
+    const state = await hazirOyun();
+    state.etiketler = state.etiketler.filter((e) => e !== "yolculuk_tamamlandi");
+    state.yas = yas;
+    state.hayvan_karsilasma_sayisi = 2;
+    etiketEkle(state, ["tanisma_donum_25", "tanisma_donum_40", "sehir_yonetimi_basladi", "yol:tuccar:durust", "saray_daveti_goruldu"]);
+    state.gecmis_olaylar.push("oc_tuccar_yol_ilk_anlasma");
+    if (teklifEdildi) etiketEkle(state, ["yolculuk_teklifi_edildi"]);
+    return state;
+  }
+  const TEKLIFLER = ["yolculuk_kesif_teklif", "yolculuk_mucit_teklif", "sd_somurge_gitme_karari"];
+
+  it("hiç teklif edilmediyse 35-40 yaşında da teklif gelir", async () => {
+    const state = await teklifOyunu(38, false);
+    const bir = await senaryoUret(state.id);
+    expect(TEKLIFLER.some((id) => OLAY_BANKASI.find((o) => o.id === id)?.baslik === bir.olay_basligi)).toBe(true);
+  });
+
+  it("teklif edilip reddedildiyse 35 yaşından sonra tekrar zorlanmaz", async () => {
+    const state = await teklifOyunu(38, true);
+    etiketEkle(state, ["yolculuk_teklifi_zamani"]);
+    const bir = await senaryoUret(state.id);
+    expect(TEKLIFLER.some((id) => OLAY_BANKASI.find((o) => o.id === id)?.baslik === bir.olay_basligi)).toBe(false);
   });
 });

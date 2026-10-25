@@ -1167,7 +1167,11 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
   if (!oturum.state.meslek) throw new Error("Önce bir meslek seçmelisin.");
 
   // Sakin yıl ("Yıl Geç") atlandıysa (eski istemci / bot) olay üretmeden önce otomatik geçirilir.
-  if (oturum.state.sakin_yil_bekliyor && !oturum.mevcutOlay) {
+  // Kuyruktaki bir sosyalleşme mekân olayı varken geçirilmez: mekân olayı tur/yıl harcamaz,
+  // sakin yıl onun öncesinde sessizce kaybolmasın.
+  const mekanOlayiBekliyor =
+    !!oturum.zorlananOlayId && !!OLAY_BANKASI.find((o) => o.id === oturum.zorlananOlayId)?.sosyallesmeYeri;
+  if (oturum.state.sakin_yil_bekliyor && !oturum.mevcutOlay && !mekanOlayiBekliyor) {
     await yilGecUygula(oturum);
     if (!oturum.state.aktif) throw new Error("Oyun zaten bitmiş.");
   }
@@ -1367,7 +1371,8 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
     !zorlananId &&
     !milestoneKilitli &&
     oturum.state.yas >= 30 &&
-    oturum.state.yas <= 34 &&
+    // 30-34 penceresi; hapis/veba/kaçak kilidi yüzünden HİÇ teklif edilemediyse pencere 40'a uzar.
+    oturum.state.yas <= (oturum.state.etiketler.includes("yolculuk_teklifi_edildi") ? 34 : 40) &&
     !oturum.state.etiketler.includes("yolculukta") &&
     !oturum.state.etiketler.includes("hapiste") &&
     !oturum.state.etiketler.includes("yolculuk_tamamlandi") &&
