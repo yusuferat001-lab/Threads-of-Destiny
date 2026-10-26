@@ -102,7 +102,7 @@ export const PIYASA_SAPMA_ALIS = 0.03;
 export const PIYASA_SAPMA_SATIS = 0.02;
 /** Karşılanamayan talep bu oranı geçmedikçe sorun yok: ne uyarı (hat bazında) ne müşteri kaybı (toplamda). */
 const KITLE_KAYIP_ESIGI = 0.1;
-/** Eşik aşılırsa toplam talebin karşılanamayan oranının bu kesri kadar müşteri, gelecek yıl rakibe gider. */
+/** Üst üste iki yıl eşik aşılırsa, o iki yılın karşılanamayan oran ortalamasının bu kesri kadar müşteri rakibe gider. */
 const KITLE_KAYIP_KESRI = 0.1;
 /** Tek yılda kaybedilebilecek müşteri oranı (kendi müşterisinin yüzdesi) üst sınırı. */
 const KITLE_KAYIP_TAVANI = 0.1;
@@ -1247,18 +1247,16 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
     return t + (bn?.tur === "musteri" ? bn.deger : 0);
   }, 0);
   const karsilanamayanOrani = toplamTalep > 0 ? toplamKarsilanamayan / toplamTalep : 0;
-  // Önceki yıldan bekleyen kayıp bu yıl gerçekleşir (gecikmeli): müşteriler bir süre bekler, sonra gider.
-  const bekleyenKayip = Math.min(is.bekleyen_musteri_kaybi ?? 0, state.meslek_musteri);
-  if (bekleyenKayip > 0) {
-    musteriKaydir(state, "oyuncu", -bekleyenKayip);
+  // İlk yetmeme yalnız uyarıdır (hat bazlı "stok_bitti"). Hemen ardından ikinci yıl da eşik aşılırsa, son iki yılın
+  // karşılanamayan oranlarının ortalamasının %10'u kadar müşteri gider (tavanlı).
+  const oncekiOran = is.onceki_karsilanamayan_orani ?? 0;
+  if (karsilanamayanOrani > KITLE_KAYIP_ESIGI && oncekiOran > KITLE_KAYIP_ESIGI) {
+    const ortalamaOran = (karsilanamayanOrani + oncekiOran) / 2;
+    const kayipYuzde = Math.min(KITLE_KAYIP_TAVANI, ortalamaOran * KITLE_KAYIP_KESRI);
+    musteriKaydir(state, "oyuncu", -state.meslek_musteri * kayipYuzde);
     uyarilar.push({ kod: "kitle_kaybi" });
   }
-  is.bekleyen_musteri_kaybi = 0;
-  if (karsilanamayanOrani > KITLE_KAYIP_ESIGI) {
-    // Bu yılın kaybı hemen değil, gelecek yıl işlenir; karşılanamayan oranın %10'u kadar müşteri kaçar (tavan %10).
-    const kayipYuzde = Math.min(KITLE_KAYIP_TAVANI, karsilanamayanOrani * KITLE_KAYIP_KESRI);
-    is.bekleyen_musteri_kaybi = state.meslek_musteri * kayipYuzde;
-  }
+  is.onceki_karsilanamayan_orani = karsilanamayanOrani;
   if (satis > 0) {
     const fiyatEtkisi =
       planlar.length > 0 ? planlar.reduce((t, p) => t + (FIYAT_POLITIKASI[p.hat.fiyat]?.pay ?? 0), 0) / planlar.length : 0;

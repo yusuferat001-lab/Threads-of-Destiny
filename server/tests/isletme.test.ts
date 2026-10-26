@@ -132,31 +132,39 @@ describe("işletme (Tüccar dilimi)", () => {
     expect(sonra / once).toBeLessThan(2.1);
   });
 
-  it("stok hedefi çok düşükse mal biter ve müşteri kaybedilir", async () => {
+  it("mal ilk yıl yetmezse yalnız uyarı; üst üste ikinci yıl yetmezse iki yılın ortalamasının %10'u kadar müşteri gider", async () => {
     const s = await tuccar();
     const hat = s.isletme!.hatlar.find((h) => h.acik)!;
-    hat.stok = 0;
-    s.isletme!.stok_hedefi = "az"; // talebin %80'i: karşılanamayan > %15
     s.pazar_musteri = 100000; // gürültü etkisini ezmek için büyük sabit pay
-    const once = pazarPayiHesapla(s); // pay, pazar büyüklüğü ölçeklenmesinden etkilenmez
-    const rnd = vi.spyOn(Math, "random").mockReturnValue(0.5); // talep gürültüsü sıfır: karşılanamayan tam %20
-    const musteriYilBasi = s.meslek_musteri;
-    isletmeYilIsle(s, isletmeBaglami(s));
-    // Gecikmeli: bu yıl müşteri kaybı yok, karşılanamayanın yarısı gelecek yıla devreden bekleyen kayıp olur.
-    expect(s.isletme!.bekleyen_musteri_kaybi).toBeGreaterThan(0);
-    const beklenen = s.isletme!.bekleyen_musteri_kaybi!;
-    // Depo boş ve elle doldurulmadı: talebin tamamı karşılanamadı → p≈1 → müşterinin ~%10'u gidecek.
-    expect(beklenen).toBeGreaterThan(musteriYilBasi * 0.08);
-    expect(beklenen).toBeLessThanOrEqual(musteriYilBasi * 0.1001);
-    s.isletme!.hatlar.find((h) => h.acik)!.stok = 10000; // ikinci yıl mal yeter
-    s.isletme!.depo_oto = { acik: false, yuzde: 50 };
-    const musteriOnce = s.meslek_musteri;
+    const rnd = vi.spyOn(Math, "random").mockReturnValue(0.5); // talep gürültüsü sıfır
+    hat.stok = 0; // depo boş, elle doldurulmaz: karşılanamayan oran ≈ %100
+    const musteri0 = s.meslek_musteri;
+    const yil1 = isletmeYilIsle(s, isletmeBaglami(s));
+    expect(yil1.dokum.uyarilar.some((u) => u.kod === "stok_bitti")).toBe(true);
+    expect(yil1.dokum.uyarilar.some((u) => u.kod === "kitle_kaybi")).toBe(false);
+    expect(s.meslek_musteri).toBeGreaterThanOrEqual(musteri0 - 0.001); // ilk yıl kayıp yok
+    expect(s.isletme!.onceki_karsilanamayan_orani).toBeGreaterThan(0.9);
+    hat.stok = 0; // ikinci yıl da yetmedi
+    const musteri1 = s.meslek_musteri;
+    const yil2 = isletmeYilIsle(s, isletmeBaglami(s));
+    rnd.mockRestore();
+    expect(yil2.dokum.uyarilar.some((u) => u.kod === "kitle_kaybi")).toBe(true);
+    const kayipOrani = (musteri1 - s.meslek_musteri) / musteri1;
+    expect(kayipOrani).toBeGreaterThan(0.03); // büyüme (+sabit müşteri) kaybın bir kısmını telafi eder
+    expect(kayipOrani).toBeLessThanOrEqual(0.1001);
+  });
+
+  it("karşılanamayan oran eşiğin altındaysa ya da araya yeterli yıl girerse müşteri kaybı olmaz", async () => {
+    const s = await tuccar();
+    s.isletme!.onceki_karsilanamayan_orani = 0.5; // geçen yıl yetmedi
+    s.pazar_musteri = 100000;
+    const rnd = vi.spyOn(Math, "random").mockReturnValue(0.5);
+    const hat = s.isletme!.hatlar.find((h) => h.acik)!;
+    hat.stok = 100000; // bu yıl mal bol
     const { dokum } = isletmeYilIsle(s, isletmeBaglami(s));
     rnd.mockRestore();
-    expect(dokum.uyarilar.some((u) => u.kod === "kitle_kaybi")).toBe(true);
-    expect(s.isletme!.bekleyen_musteri_kaybi).toBe(0);
-    expect(s.meslek_musteri).toBeLessThan(musteriOnce);
-    void once;
+    expect(dokum.uyarilar.some((u) => u.kod === "kitle_kaybi")).toBe(false);
+    expect(s.isletme!.onceki_karsilanamayan_orani).toBeLessThanOrEqual(0.1);
   });
 
   it("5 fiyat seçeneği: daha ucuz = daha çok talep; ve yıllık pay değişimi tabloya uyar", async () => {

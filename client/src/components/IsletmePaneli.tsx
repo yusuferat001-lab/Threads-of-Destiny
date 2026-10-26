@@ -220,11 +220,11 @@ export function isletmeUyariMetni(u: IsletmeUyari, durum: IsletmeGorunumu, dil: 
     const en = dil === 'en';
     switch (u.kod) {
       case 'stok_bitti':
-        return `⚠️ ${hatAdi(u.hat ?? '')}: ${en ? 'ran out of stock — half the turned-away customers will drift to the rival next year' : 'stoğun bitti, geri çevrilen müşterilerin yarısı gelecek yıl rakibe kayacak'}`;
+        return `⚠️ ${hatAdi(u.hat ?? '')}: ${en ? 'ran out of stock — if it happens again next year, customers will leave for the rival' : 'stoğun yetmedi; gelecek yıl da yetmezse müşteri rakibe kayacak'}`;
       case 'fazla_stok':
         return `📦 ${hatAdi(u.hat ?? '')}: ${en ? 'idle stock piled up on a closed line' : 'kapalı hatta atıl stok birikti'}`;
       case 'kitle_kaybi':
-        return en ? '📉 Last year\'s unmet demand cost you customers.' : '📉 Geçen yıl karşılanamayan talep müşteri kaybettirdi.';
+        return en ? '📉 Two years of unmet demand cost you customers.' : '📉 Üst üste iki yıl karşılanamayan talep müşteri kaybettirdi.';
       case 'uretim_tavani':
         return en ? '🔨 Your production cap fell short of demand — add a workbench or staff.' : '🔨 Üretim tavanın talebe yetmedi; tezgâh ya da çalışan ekle.';
       case 'calisan_ayrildi':
