@@ -140,10 +140,22 @@ describe("işletme (Tüccar dilimi)", () => {
     s.pazar_musteri = 100000; // gürültü etkisini ezmek için büyük sabit pay
     const once = pazarPayiHesapla(s); // pay, pazar büyüklüğü ölçeklenmesinden etkilenmez
     const rnd = vi.spyOn(Math, "random").mockReturnValue(0.5); // talep gürültüsü sıfır: karşılanamayan tam %20
+    isletmeYilIsle(s, isletmeBaglami(s));
+    // Gecikmeli: bu yıl müşteri kaybı yok, karşılanamayanın yarısı gelecek yıla devreden bekleyen kayıp olur.
+    expect(s.isletme!.bekleyen_musteri_kaybi).toBeGreaterThan(0);
+    const beklenen = s.isletme!.bekleyen_musteri_kaybi!;
+    // Depo boş ve elle doldurulmadı: talebin tamamı karşılanamadı → müşterinin yarısı gidecek.
+    expect(beklenen).toBeGreaterThan(s.meslek_musteri * 0.4);
+    expect(beklenen).toBeLessThanOrEqual(s.meslek_musteri * 0.6);
+    s.isletme!.hatlar.find((h) => h.acik)!.stok = 10000; // ikinci yıl mal yeter
+    s.isletme!.depo_oto = { acik: false, yuzde: 50 };
+    const musteriOnce = s.meslek_musteri;
     const { dokum } = isletmeYilIsle(s, isletmeBaglami(s));
     rnd.mockRestore();
     expect(dokum.uyarilar.some((u) => u.kod === "kitle_kaybi")).toBe(true);
-    expect(pazarPayiHesapla(s)).toBeLessThan(once);
+    expect(s.isletme!.bekleyen_musteri_kaybi).toBe(0);
+    expect(s.meslek_musteri).toBeLessThan(musteriOnce);
+    void once;
   });
 
   it("5 fiyat seçeneği: daha ucuz = daha çok talep; ve yıllık pay değişimi tabloya uyar", async () => {

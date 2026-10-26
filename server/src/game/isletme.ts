@@ -102,8 +102,9 @@ export const PIYASA_SAPMA_ALIS = 0.03;
 export const PIYASA_SAPMA_SATIS = 0.02;
 /** Karşılanamayan talep bu orandan büyükse müşteri kaybı: min(%12, (oran−eşik)×%30) kendi müşterisinin yüzdesi (sıcak ürünse ×2). */
 const KITLE_KAYIP_ESIGI = 0.15;
-const KITLE_KAYIP_CARPANI = 0.3;
-const KITLE_KAYIP_TAVANI = 0.12;
+/** Karşılanamayan talebe bakan müşterilerin kaçan kesri (yarısı bir sonraki yıl rakibe gider). */
+const KITLE_KAYIP_KESRI = 0.5;
+const KITLE_KAYIP_TAVANI = 0.6;
 const TALEP_GURULTUSU = 0.08;
 /** Yüzdelik müşteri büyümesi pay bu eşiğe yaklaştıkça sıfıra iner. */
 export const PAY_DOYMA_ESIGI = 0.68;
@@ -1247,12 +1248,20 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
     return t + (bn?.tur === "musteri" ? bn.deger : 0);
   }, 0);
   const karsilanamayanOrani = toplamTalep > 0 ? toplamKarsilanamayan / toplamTalep : 0;
-  if (karsilanamayanOrani > KITLE_KAYIP_ESIGI) {
-    let kayipYuzde = Math.min(KITLE_KAYIP_TAVANI, (karsilanamayanOrani - KITLE_KAYIP_ESIGI) * KITLE_KAYIP_CARPANI);
-    if (sicakKarsilanamadi) kayipYuzde *= 2;
-    musteriKaydir(state, "oyuncu", -state.meslek_musteri * kayipYuzde);
+  // Önceki yıldan bekleyen kayıp bu yıl gerçekleşir (gecikmeli): müşteriler bir süre bekler, sonra gider.
+  const bekleyenKayip = Math.min(is.bekleyen_musteri_kaybi ?? 0, state.meslek_musteri);
+  if (bekleyenKayip > 0) {
+    musteriKaydir(state, "oyuncu", -bekleyenKayip);
     uyarilar.push({ kod: "kitle_kaybi" });
-  } else if (satis > 0) {
+  }
+  is.bekleyen_musteri_kaybi = 0;
+  if (karsilanamayanOrani > KITLE_KAYIP_ESIGI) {
+    // Bu yılın kaybı hemen değil, gelecek yıl işlenir; karşılanamayan müşterinin yarısı kaçar.
+    let kayipYuzde = Math.min(KITLE_KAYIP_TAVANI, karsilanamayanOrani * KITLE_KAYIP_KESRI);
+    if (sicakKarsilanamadi) kayipYuzde = Math.min(KITLE_KAYIP_TAVANI, kayipYuzde * 1.5);
+    is.bekleyen_musteri_kaybi = state.meslek_musteri * kayipYuzde;
+  }
+  if (satis > 0) {
     const fiyatEtkisi =
       planlar.length > 0 ? planlar.reduce((t, p) => t + (FIYAT_POLITIKASI[p.hat.fiyat]?.pay ?? 0), 0) / planlar.length : 0;
     const cesitlilik = Math.max(0, planlar.length - 1) * HAT_CESITLILIK_MUSTERI; // her ek açık hat: ürün çeşitliliği

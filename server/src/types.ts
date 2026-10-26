@@ -1062,6 +1062,8 @@ export interface IsletmeDurumu {
   /** v12: bu yıl elle yapılan mal alımlarının toplam tutarı ve hat başına adetleri (yıl sonunda sıfırlanır). */
   yil_alim?: number;
   yil_alinan?: Record<string, number>;
+  /** Mal yetmeyen yıldan gelecek yıla devreden müşteri kaybı (adet; gecikmeli, karşılanamayanın yarısı). */
+  bekleyen_musteri_kaybi?: number;
   /** Son dış hırsızlık yılı (bilgi). */
   hirsizlik_son_yil?: number | null;
   /** v20: bir sonraki dış hırsızlık yılı (takvim: önceki olaydan 9-11 yıl sonra; ilk 7 yıl yok). */
