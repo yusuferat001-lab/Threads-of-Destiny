@@ -26,13 +26,11 @@ import {
   durumEkle,
   durumlariUygula,
   pasifEkonomiUygula,
-  zamanAnlatimiUret,
   sonucAnlatimiUret,
   maasCarpaniUygula,
   maasCarpaniGetir,
   MAAS_CARPANI_TAVAN,
   rutbeGuncelle,
-  sansOlayiDene,
   gecmisKaydet,
   yaslanmaUygula,
   hayatOlayiEkle,
@@ -1917,7 +1915,6 @@ function yilIlerlet(g: YilIlerletGirdi): { yasArtisi: number; zamanAnlatimi: str
   const { state } = oturum;
   let yasArtisi = 0;
   let zamanAnlatimi: string | null = null;
-  let capraz = { saglikKaybi: 0, mutlulukKaybi: 0 };
   let hukumdarDegisimHaberi: string | null = null;
   if (state.aktif) {
     // Süre çağıran tarafından belirlenir (olay turu: 1 yıl + ardından "Yıl Geç" sakin yılı;
@@ -1956,18 +1953,19 @@ function yilIlerlet(g: YilIlerletGirdi): { yasArtisi: number; zamanAnlatimi: str
       nakitAkisi.faiz = ekonomi.faiz;
       checkDeath(state, false); // borç stresiyle sağlık 0'a inmiş olabilir
       yilSonuBlogu: if (state.aktif) {
-        const yaslanmaKaybi = yaslanmaUygula(state, yasArtisi);
+        yaslanmaUygula(state, yasArtisi);
         if (state.saglik <= 0) {
           checkDeath(state, true, ikiDilT("İleri yaşın getirdiği yorgunlukla huzur içinde vefat etti."));
         }
         if (state.aktif) {
-          capraz = capraletkiUygula(state, yasArtisi);
+          capraletkiUygula(state, yasArtisi);
           if (state.saglik <= 0) {
             checkDeath(state, true, ikiDilT("Uzun süredir çöken ruh hali bedenini de tüketti."));
           }
         }
         if (state.aktif) {
-          zamanAnlatimi = zamanAnlatimiUret(state, yasArtisi, ekonomi);
+          // Tekrar eden durum cümleleri ("savaş sürüyordu", "salgın sürüyordu"...) artık yazılmaz:
+          // sol panelde ve göstergelerde zaten görünüyor. Yalnız önemli haberler zamanAnlatimi'ne eklenir.
           // Hapis cezası: her turda geçen yıl kadar erir; dolduğunda karakter
           // kendiliğinden serbest kalır (bir kaçış/af olayı beklemek zorunda değil).
           // Tutuklanmanın olduğu turda erimeyi atla (hapisteYeniGirildiBuTur) —
@@ -1988,11 +1986,6 @@ function yilIlerlet(g: YilIlerletGirdi): { yasArtisi: number; zamanAnlatimi: str
               hayatOlayiEkle(state, "⛓️", T(state.dil, "Cezasını tamamlayıp serbest kaldı"));
               const cikisMesaji = T(state.dil, "⛓️ Cezan doldu; kapılar açıldı ve özgür bir insan olarak dışarı çıktın.");
               zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${cikisMesaji}` : cikisMesaji;
-            } else {
-              const kalanMesaji = T(state.dil, "⛓️ Hücrede bir yıl daha geçti; tahliyene yaklaşık {0} yıl kaldı.", [
-                state.hapis_ceza_kalan,
-              ]);
-              zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${kalanMesaji}` : kalanMesaji;
             }
           }
           if (ayyasOlduBuTur) {
@@ -2011,11 +2004,9 @@ function yilIlerlet(g: YilIlerletGirdi): { yasArtisi: number; zamanAnlatimi: str
           }
           // Dünya dönemi (bolluk/durgunluk/kıtlık): geçen yılları işler, süresi dolan
           // dönemi değiştirir, kıtlık yıllarında sağlık düşer (ölüm kontrolü aşağıda).
-          for (const donemMesaji of donemIlerlet(state, yasArtisi)) {
-            zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${donemMesaji}` : donemMesaji;
-          }
+          donemIlerlet(state, yasArtisi); // mesajları yazılmaz: dönem sol paneldeki dünya etkilerinde görünür
           orduBuyumesiDene(state, yasArtisi);
-          const krizBitisMesaji = krizEtkisiUygula(state, yasArtisi);
+          krizEtkisiUygula(state, yasArtisi);
           if (state.saglik <= 0) {
             checkDeath(state, true, ikiDilT("Kıtlığın getirdiği yoksunlukla tükendi."));
           }
@@ -2027,13 +2018,6 @@ function yilIlerlet(g: YilIlerletGirdi): { yasArtisi: number; zamanAnlatimi: str
           if (mulkSonucu.kervanBatti) {
             const kervanMesaji = T(state.dil, "🌊 Ticaret kervanın savaşın kaosunda kayboldu; yatırımından geriye bir şey kalmadı.");
             zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${kervanMesaji}` : kervanMesaji;
-          }
-          for (const bakim of mulkSonucu.bakimOdemeleri) {
-            const bakimMesaji = T(state.dil, "🔧 {0} için {1} {birim} bakım/vergi gideri ödedin.", [
-              K(state.dil, bakim.ad),
-              bakim.miktar,
-            ]).replace(/\{birim\}/g, state.para_birimi);
-            zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${bakimMesaji}` : bakimMesaji;
           }
           nakitAkisi.mulkNet = mulkSonucu.toplamNet;
           nakitAkisi.bilgiMulkBakim = mulkSonucu.bakimOdemeleri.reduce((a, b) => a + b.miktar, 0);
@@ -2072,25 +2056,7 @@ function yilIlerlet(g: YilIlerletGirdi): { yasArtisi: number; zamanAnlatimi: str
             zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${yonetimMesaji}` : yonetimMesaji;
           }
           const envanterSonucu = envanterBozulmasiUygula(state, yasArtisi);
-          if (envanterSonucu.cozulenler.length > 0) {
-            const cozulmeMesaji =
-              envanterSonucu.cozulenler.length === 1
-                ? T(state.dil, "🗑️ {0} çürüdü, atmak zorunda kaldın.", [K(state.dil, envanterSonucu.cozulenler[0])])
-                : T(state.dil, "🗑️ Envanterinden {0} eşya ({1}) çürüdü.", [
-                    envanterSonucu.cozulenler.length,
-                    envanterSonucu.cozulenler.map((c) => K(state.dil, c)).join(", "),
-                  ]);
-            zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${cozulmeMesaji}` : cozulmeMesaji;
-          }
-          for (const bakim of envanterSonucu.bakimOdemeleri) {
-            const bakimMesaji = T(state.dil, "🔧 {0} için {1} {birim} bakım gideri ödedin.", [
-              K(state.dil, bakim.ad),
-              bakim.miktar,
-            ]).replace(/\{birim\}/g, state.para_birimi);
-            zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${bakimMesaji}` : bakimMesaji;
-          }
           nakitAkisi.envanterBakim = envanterSonucu.bakimOdemeleri.reduce((a, b) => a + b.miktar, 0);
-          const sansMesaji = sansOlayiDene(state);
 
           // Zorunlu bağış / büyük savaş / veba — arka planda tetiklenen dünya olayları;
           // sonuçları (varsa) ayyaşlık bildirimiyle aynı desende koşulsuz olarak
@@ -2187,21 +2153,6 @@ function yilIlerlet(g: YilIlerletGirdi): { yasArtisi: number; zamanAnlatimi: str
             }
           }
 
-          // En fazla TEK ek bağlam cümlesi eklenir — art arda yığılıp metni
-          // uzatmasın diye önem/nadirlik sırasına göre sadece biri seçilir.
-          // Yaşlanma kaybı en rutin/sık olanı olduğu için hem en düşük
-          // öncelikli hem de her seferinde değil, ara sıra belirtilir.
-          const ekCumle =
-            krizBitisMesaji ??
-            sansMesaji ??
-            (capraz.saglikKaybi > 0 ? T(state.dil, "İçindeki karanlık bedenini de yormaya başladı.") : null) ??
-            (capraz.mutlulukKaybi > 0 ? T(state.dil, "Sağlığındaki bu düşüş moralini de eziyor.") : null) ??
-            (yaslanmaKaybi > 0 && Math.random() < 0.3
-              ? T(state.dil, "Yaşın ilerledikçe bedenin eskisi kadar dayanmıyor.")
-              : null);
-          if (ekCumle) {
-            zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${ekCumle}` : ekCumle;
-          }
         }
       } else {
         state.olum_nedeni_ceviri = ikiDilT("Borç ve yoksulluk içinde tükendi.");

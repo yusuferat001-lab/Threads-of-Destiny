@@ -1717,7 +1717,7 @@ function App() {
           kategori: sonEtki.kategori,
           paraBirimi: sonEtki.paraBirimi,
           terfiOldu: sonEtki.terfiOldu,
-          ozet: [sonEtki.etki.mesaj, sonEtki.zamanAnlatimi ?? sonEtki.sonucAnlatimi]
+          ozet: [sonEtki.etki.mesaj, sonEtki.sonucAnlatimi, sonEtki.zamanAnlatimi]
             .filter((s): s is string => !!s && s.trim() !== '')
             .join(' '),
           ikon: sonEtki.terfiOldu ? '🎖️' : sonucIkonuGetir(sonEtki.basarili, false, sonEtki.kategori),
@@ -2709,7 +2709,8 @@ function App() {
                     {(() => {
                       const ozet = [
                         sosyalOlaySonuc.etki.mesaj,
-                        sosyalOlaySonuc.zamanAnlatimi ?? sosyalOlaySonuc.sonucAnlatimi,
+                        sosyalOlaySonuc.sonucAnlatimi,
+                        sosyalOlaySonuc.zamanAnlatimi,
                       ]
                         .filter((s): s is string => !!s && s.trim() !== '')
                         .join(' ');
