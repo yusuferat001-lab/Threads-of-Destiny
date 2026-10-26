@@ -2,7 +2,7 @@ import type {
   IsletmeGorunumu,
   IsletmeKararGirdisi,
   CemaatKararGirdisi,
-  IsletmeStokHedefi,
+  DepoDoldurPlani,
   CharacterState,
   SenaryoResponse,
   SecimSonucu,
@@ -275,10 +275,26 @@ export function isletmeGetir(stateId: string) {
   return istek<IsletmeGorunumu>(`/api/game/${stateId}/isletme`);
 }
 
-export function isletmeKararVer(stateId: string, hatlar: IsletmeKararGirdisi[], stokHedefi?: IsletmeStokHedefi, cemaat?: CemaatKararGirdisi) {
+export function isletmeKararVer(stateId: string, hatlar: IsletmeKararGirdisi[], cemaat?: CemaatKararGirdisi) {
   return istek<{ state: CharacterState; durum: IsletmeGorunumu }>(`/api/game/${stateId}/isletme/karar`, {
     method: 'POST',
-    body: JSON.stringify({ hatlar, stokHedefi, cemaat }),
+    body: JSON.stringify({ hatlar, cemaat }),
+  });
+}
+
+/** v20: depoyu hedef yüzdeye doldurma planı (onayla=false) ya da satın alma (onayla=true). */
+export function isletmeDepoDoldur(stateId: string, hedefYuzde: number, onayla: boolean) {
+  return istek<{ state: CharacterState; plan: DepoDoldurPlani; mesaj: string; durum: IsletmeGorunumu }>(`/api/game/${stateId}/isletme/depo-doldur`, {
+    method: 'POST',
+    body: JSON.stringify({ hedefYuzde, onayla }),
+  });
+}
+
+/** v20: otomatik depo doldurmayı aç/kapa ve yüzdesini ayarla. */
+export function isletmeDepoOtomatik(stateId: string, acik: boolean, yuzde: number) {
+  return istek<{ state: CharacterState; durum: IsletmeGorunumu }>(`/api/game/${stateId}/isletme/depo-oto`, {
+    method: 'POST',
+    body: JSON.stringify({ acik, yuzde }),
   });
 }
 
@@ -286,6 +302,13 @@ export function isletmeOgretiSec(stateId: string, ogretiId: string) {
   return istek<{ state: CharacterState; mesaj: string; durum: IsletmeGorunumu }>(`/api/game/${stateId}/isletme/ogreti`, {
     method: 'POST',
     body: JSON.stringify({ ogretiId }),
+  });
+}
+
+export function isletmeUrunSec(stateId: string, urunId: string) {
+  return istek<{ state: CharacterState; mesaj: string; durum: IsletmeGorunumu }>(`/api/game/${stateId}/isletme/urun`, {
+    method: 'POST',
+    body: JSON.stringify({ urunId }),
   });
 }
 
@@ -537,10 +560,10 @@ export function yonetimDurumGetir(stateId: string) {
   return istek<YonetimDurumu>(`/api/game/${stateId}/yonetim`);
 }
 
-export function yonetimEtkilesimYap(stateId: string, etkilesimId: string, kademe?: number) {
+export function yonetimEtkilesimYap(stateId: string, etkilesimId: string, kademe?: number, varyant?: string) {
   return istek<{ state: CharacterState; tam: boolean; mesaj: string }>(
     `/api/game/${stateId}/yonetim/etkilesim`,
-    { method: 'POST', body: JSON.stringify({ etkilesimId, kademe }) },
+    { method: 'POST', body: JSON.stringify({ etkilesimId, kademe, varyant }) },
   );
 }
 

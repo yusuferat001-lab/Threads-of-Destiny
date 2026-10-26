@@ -60,13 +60,13 @@ describe("hayat amaçları (3'lü sistem)", () => {
 });
 
 describe("global kriz/altın çağ", () => {
-  it("kıtlık her yıl sağlığı düşürür", () => {
+  it("kıtlık krizi sağlığı düşürmez (v11)", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
     state.saglik = 80;
     state.ulke.kriz = { tur: "kitlik", bitisYili: state.yil + 10 };
     krizEtkisiUygula(state, 3);
-    expect(state.saglik).toBe(80 - 1 * 3); // KRIZ_ETKI.kitlik.saglik = -1/yıl
+    expect(state.saglik).toBe(80); // v11: KRIZ_ETKI.kitlik sağlık götürmez
   });
 
   it("altın çağ her yıl para/mutluluk artırır", () => {

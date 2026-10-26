@@ -46,6 +46,7 @@ import {
   isletmeHazirla,
   isletmeGelirTahmini,
   isletmeYilIsle,
+  otomatikDepoDoldur,
 } from "./isletme";
 import { isletmeMeslegiMi } from "../data/meslekProfilleri";
 import {
@@ -420,7 +421,7 @@ export function maasCarpaniUygula(state: CharacterState, carpan: number, ham = f
 /** Fiyatların ve gelirlerin birlikte büyümesi: karakterin yaratıldığı yıldan bu yana geçen gerçek yıla göre bileşik. */
 const ENFLASYON_ORANI_YILLIK: Record<Cag, number> = {
   "Orta Çağ": 0.01,
-  "Sanayi Devrimi": 0.025,
+  "Sanayi Devrimi": 0.02,
 };
 
 /**
@@ -431,6 +432,16 @@ const ENFLASYON_ORANI_YILLIK: Record<Cag, number> = {
 export function enflasyonCarpani(state: CharacterState): number {
   const gecenYil = Math.max(0, state.yil - state.baslangic_yili);
   const oran = ENFLASYON_ORANI_YILLIK[state.cag] ?? 0.01;
+  return Math.pow(1 + oran, gecenYil);
+}
+
+/** v20: gider enflasyonu gelir enflasyonunun ×1,15'idir (OÇ %1,15 · SD %2,3/yıl). */
+export const GIDER_ENFLASYON_KATSAYISI = 1.15;
+
+/** Maliyet tarafı (alış, yaşam, kira, maaş, bakım, yatırım fiyatı) için bileşik çarpan. */
+export function giderEnflasyonCarpani(state: CharacterState): number {
+  const gecenYil = Math.max(0, state.yil - state.baslangic_yili);
+  const oran = (ENFLASYON_ORANI_YILLIK[state.cag] ?? 0.01) * GIDER_ENFLASYON_KATSAYISI;
   return Math.pow(1 + oran, gecenYil);
 }
 
@@ -552,12 +563,13 @@ export function isletmeBaglami(state: CharacterState): IsletmeBaglami {
   const durumCarpani = state.durumlar.reduce((c, d) => c * (d.gelir_carpani ?? 1), 1);
   return {
     enflasyon: enflasyonCarpani(state),
-    satisCarpani: maasCarpaniGetir(state) * durumCarpani * (state.es_adi ? 1 + (state.es_meslek_bonusu ?? 0) / 100 : 1),
+    giderEnflasyon: giderEnflasyonCarpani(state),
+    satisCarpani: durumCarpani, // yalnız geçici durumlar talepte kalır; eş ve olay çarpanı müşteri sayısına yazılır
   };
 }
 
 export function hesaplaMaasYillik(state: CharacterState): number {
-  if (isletmeAktif(state)) return isletmeGelirTahmini(state, isletmeBaglami(state));
+  if (isletmeAktif(state)) return Math.max(1, isletmeGelirTahmini(state, isletmeBaglami(state))); // kredi tavanı vb. için en az 1; gerçek (eksi olabilen) net: finansGetir
   const { tabanMaas, kalemler } = maasCarpanKalemleri(state);
   const ham = kalemler.reduce((acc, k) => acc * k.carpan, tabanMaas);
   return Math.max(1, paraYuvarla(ham));
@@ -1713,13 +1725,28 @@ export function ilerletYas(state: CharacterState, minYil = 1, maxYil = 3): numbe
  * turda birden fazla yıl atlanırsa (yasArtisi > 1) her yıl kendi eşiğine göre
  * ayrı ayrı hesaplanır.
  */
-/** Verilen yaştaki YILLIK yaşlanma sağlık kaybı (yaslanmaUygula + gösterge detayı ortak kullanır). */
+/**
+ * Verilen yaştaki YILLIK yaşlanma sağlık kaybı (yaslanmaUygula + gösterge detayı ortak kullanır).
+ * v11 "tavanlı iniş": 50-74 yaş arası kayıp bir tavana kadar iner (bkz. yaslanmaSaglikTavani);
+ * 75'ten sonra tavansız (−6, 80+ −8).
+ */
 export function yaslanmaYillikKayip(yas: number): number {
   if (yas >= 80) return 8;
-  if (yas >= 70) return 6;
-  if (yas >= 60) return 4;
-  if (yas >= 50) return 1;
+  if (yas >= 75) return 6;
+  if (yas >= 70) return 5;
+  if (yas >= 60) return 5;
+  if (yas >= 50) return 3;
   return 0;
+}
+
+/** Yaşlanmanın sağlığı indirebileceği en alt sınır (yoksa null = tavansız). Sağlık sınırın üstündeyse oraya kadar düşer, altındaysa yaşlanma dokunmaz. */
+export function yaslanmaSaglikTavani(yas: number): number | null {
+  if (yas >= 75) return null;
+  if (yas >= 70) return 10;
+  if (yas >= 65) return 20;
+  if (yas >= 60) return 30;
+  if (yas >= 50) return 40;
+  return null;
 }
 
 export function yaslanmaUygula(state: CharacterState, yasArtisi: number): number {
@@ -1728,10 +1755,34 @@ export function yaslanmaUygula(state: CharacterState, yasArtisi: number): number
   let yas = state.yas - yasArtisi;
   for (let i = 0; i < yasArtisi; i++) {
     yas += 1;
-    toplamKayip += yaslanmaYillikKayip(yas);
+    const kayip = yaslanmaYillikKayip(yas);
+    if (kayip <= 0) continue;
+    const tavan = yaslanmaSaglikTavani(yas);
+    if (tavan === null) {
+      state.saglik -= kayip;
+      toplamKayip += kayip;
+    } else if (state.saglik > tavan) {
+      const dusen = Math.min(kayip, state.saglik - tavan);
+      state.saglik -= dusen;
+      toplamKayip += dusen;
+    }
   }
-  state.saglik -= toplamKayip;
   return toplamKayip;
+}
+
+/** v11: gençlik toparlanması — yılın yaşı 30'a kadar, sağlık 70'in altındaysa yılda +1 can. */
+export const GENC_SAGLIK_YAS_SINIRI = 30;
+export const GENC_SAGLIK_HEDEFI = 70;
+export function gencSaglikToparlanmasi(state: CharacterState, yasArtisi: number): number {
+  let artis = 0;
+  for (let i = 0; i < yasArtisi; i++) {
+    const yilYasi = state.yas - yasArtisi + i + 1;
+    if (yilYasi <= GENC_SAGLIK_YAS_SINIRI && state.saglik < GENC_SAGLIK_HEDEFI) {
+      state.saglik += 1;
+      artis += 1;
+    }
+  }
+  return artis;
 }
 
 export const KRONIK_SAGLIK_ESIGI = 30;
@@ -2336,7 +2387,7 @@ function yasamMaliyetCarpaniGetir(state: CharacterState): number {
 
 /** Bir sonraki turun gider dökümünü, gerçekte uygulamadan hesaplar; Finans ekranı bunu kullanır. */
 export function giderKalemleriHesapla(state: CharacterState): GiderKalemleri {
-  const enflasyon = enflasyonCarpani(state);
+  const enflasyon = giderEnflasyonCarpani(state);
   const yasamSecenegi = yasamSecenegiGetir(state.yasam_secimi_id);
   // Yaşam gideri dönemle (bolluk −, durgunluk +, kıtlık ++) ve savaşla (gıda pahalanır) çarpılır.
   const donemCarpani = state.ulke.donem?.etki.yasamGideri ?? 1;
@@ -2355,7 +2406,7 @@ export function giderKalemleriHesapla(state: CharacterState): GiderKalemleri {
 
 export function pasifEkonomiUygula(state: CharacterState, yasArtisi: number): EkonomiSonucu {
   // Çalışan maaşları her yıl güncel enflasyonla yenilenir (giriş seviyesine göre sabit taban × enflasyon).
-  if (isletmeAktif(state)) calisanMaaslariniGuncelle(state, enflasyonCarpani(state));
+  if (isletmeAktif(state)) calisanMaaslariniGuncelle(state, giderEnflasyonCarpani(state));
   state.maas_yillik = hesaplaMaasYillik(state);
   const giderKalemleri = giderKalemleriHesapla(state);
   const gider =
@@ -2371,10 +2422,18 @@ export function pasifEkonomiUygula(state: CharacterState, yasArtisi: number): Ek
   const isletmeVar = isletmeAktif(state);
   for (let i = 0; i < yasArtisi; i++) {
     if (isletmeVar) {
+      // v20: otomatik depo — açıksa yıl başında seçilen yüzdeye para yettiği kadar dolar. Çok yıllık turda
+      // ikinci yıldan itibaren önceki yılların net nakdi de eldeki para sayılır (para sonda toplu işlendiği için geçici eklenir).
+      const paraYedek = state.para;
+      state.para = paraYuvarla(paraYedek + netGelir);
+      const oto = otomatikDepoDoldur(state, isletmeBaglami(state));
+      const harcanan = oto ? oto.maliyet : 0;
+      state.para = paraYedek;
+      netGelir -= harcanan;
       // İşletme: gelir = o yılın satış − alım − depo kârı (eksi olabilir), maaş formülü yok.
       const sonuc = isletmeYilIsle(state, isletmeBaglami(state));
       yillikGelirler.push(sonuc.net);
-      netGelir += sonuc.net - gider;
+      netGelir += sonuc.net + sonuc.onOdenenAlim - gider;
       continue;
     }
     const dalga = 0.85 + Math.random() * 0.3; // 0.85x - 1.15x (büyük denge turu: kullanıcı isteğiyle bant 0.85–1.15)
@@ -2394,6 +2453,7 @@ export function pasifEkonomiUygula(state: CharacterState, yasArtisi: number): Ek
   const mutlulukPasif =
     (yasamSecenegi?.mutlulukEtkisiYillik ?? 0) * yasArtisi + (konut?.mutlulukEtkisiYillik ?? 0) * yasArtisi;
   if (saglikPasif) state.saglik += pasifRegenEtkisi(state.saglik, saglikPasif);
+  gencSaglikToparlanmasi(state, yasArtisi);
   if (mutlulukPasif) state.mutluluk += pasifRegenEtkisi(state.mutluluk, mutlulukPasif);
   // Konut + yaşam tarzının ün etkisi (yumuşak tavana tabi değil; hem gösteriş
   // primi hem de bakımsız/aç bir hayatın itibar aşınması buradan işler).
@@ -2446,8 +2506,8 @@ export function pasifEkonomiUygula(state: CharacterState, yasArtisi: number): Ek
   if (state.para < 0) {
     borcaGirdi = true;
     const borcTutari = Math.abs(state.para);
-    state.saglik -= 1 * yasArtisi;
-    state.mutluluk -= 2 * yasArtisi;
+    // v11: borç sağlığı düşürmez, yalnız moral yıpratır.
+    state.mutluluk -= 1 * yasArtisi;
     if (netGelir > 0) {
       // Aktif ödüyor: faiz %2/yıl + net gelirin %25'i kadar ek anapara affı.
       faiz = paraYuvarla(borcTutari * 0.02 * yasArtisi);
@@ -2879,7 +2939,7 @@ export function donemIlerlet(state: CharacterState, yasArtisi: number): string[]
 }
 
 export const KRIZ_ETKI: Record<UlkeKrizi["tur"], { saglik?: number; para?: number; un?: number; mutluluk?: number }> = {
-  kitlik: { saglik: -1 }, // -2 → -1: kıtlık artık ölüm sarmalını tek başına döndürmüyor
+  kitlik: {}, // v11: kıtlık sağlık götürmez (etkisi yaşam gideri / fiyat / talepte)
   isyan: { para: -3, un: -1 },
   altin_cag: { para: 4, mutluluk: 1 },
 };
@@ -3523,12 +3583,17 @@ export interface VebaYillikSonuc {
  * olay havuzuna geçer (bkz. vebaHastaligiKontrol). Eş/çocuk için oran hâlâ
  * DOĞRUDAN ölümdür (onlar için olay katmanı yok), yalnız ~%50 büyütüldü.
  */
-const VEBA_KAPMA_KADEME = [0.093, 0.054, 0.027]; // [hiç, kısmi, tam koruma] — karakterin hastalığı kapma ihtimali/yıl
-const VEBA_ES_KAYIP_KADEME = [0.054, 0.033, 0.017];
-const VEBA_COCUK_KAYIP_KADEME = [0.048, 0.03, 0.015];
+const VEBA_KAPMA_KADEME = [0.208, 0.076, 0.033]; // [hiç, kısmi, tam koruma] — karakterin hastalığı kapma ihtimali/yıl (salgın boyunca ≈ %65 / %30 / %14)
+const VEBA_ES_KAYIP_KADEME = [0.086, 0.053, 0.027];
+const VEBA_COCUK_KAYIP_KADEME = [0.077, 0.048, 0.024];
 
-/** Vebayı yeni kapan bir karakterin başlangıç ölüm riski (%). Olaylarla düşer/yükselir. */
-const VEBA_BASLANGIC_OLUM_RISKI = 70;
+/** Vebayı yeni kapan bir karakterin başlangıç ölüm olasılığı (%): ölüm %55 · yaralı %30 · sağlıklı %15. Hastalık olayının seçimi bunu kaydırır. */
+const VEBA_BASLANGIC_OLUM_RISKI = 55;
+/** Yakalanma anında anında kaybedilen can, yaralı atlatmada ek kayıp, sağlıklı atlatmada kazanç. */
+const VEBA_YAKALANMA_CAN_KAYBI: [number, number] = [25, 28];
+const VEBA_YARALI_CAN_KAYBI: [number, number] = [20, 22];
+const VEBA_SAGLIKLI_CAN_KAZANCI: [number, number] = [5, 9];
+const vebaAralik = ([a, b]: [number, number]) => a + Math.floor(Math.random() * (b - a + 1));
 
 /**
  * Karaktere kişisel veba hastalığını başlatır: "veba_hastasi" etiketi + (henüz
@@ -3538,12 +3603,12 @@ const VEBA_BASLANGIC_OLUM_RISKI = 70;
  */
 export function vebaHastaligiBaslatEt(state: CharacterState): void {
   if (!state.etiketler.includes("veba_hastasi")) etiketEkle(state, ["veba_hastasi"]);
-  if (state.veba_olum_riski <= 0) state.veba_olum_riski = VEBA_BASLANGIC_OLUM_RISKI;
+  if (state.veba_olum_riski <= 0) {
+    // Yeni yakalanma: ölüm olasılığı %55'ten başlar ve yakalandığın an can düşer (en az 1 kalır; sonrası zarda belli olur).
+    state.veba_olum_riski = VEBA_BASLANGIC_OLUM_RISKI;
+    state.saglik = Math.max(1, state.saglik - vebaAralik(VEBA_YAKALANMA_CAN_KAYBI));
+  }
 }
-/** Hasta bir turu ölmeden atlatınca ölüm riskinden düşülen sabit miktar (beden direniyor). */
-const VEBA_HASTALIK_DOGAL_DUSUS = 21;
-/** Ölüm riski bu eşiğin altına inince hastalık atlatılmış sayılır (etiket silinir). */
-const VEBA_HASTALIK_IYILESME_ESIGI = 12;
 
 /**
  * Aktif veba sürerken her yıl: karakterin hastalığı KAPIP kapmadığını, eşinin
@@ -3602,34 +3667,34 @@ export interface VebaHastaligiSonuc {
 }
 
 /**
- * Karakter vebayı BİZZAT kapmışsa (etiket "veba_hastasi") her turda BİR KEZ
- * çalışır: o anki `veba_olum_riski` (%) yüzdesine karşı ölüm zarı atılır.
- * Ölmezse risk `VEBA_HASTALIK_DOGAL_DUSUS` kadar düşer; eşiğin altına inince
- * hastalık atlatılmış sayılır (etiket + alan temizlenir). `vebaHastasiOlayi`
- * olaylarının `veba_olum_riski_artis` etkisi bu turdan ÖNCE (olay çözümünde)
- * uygulandığı için, iyi bir tedavi seçimi bu zarı belirgin biçimde iyileştirir.
- * Karakter ölümü burada UYGULANMAZ — sinyal döner, checkDeath gameEngine'de.
+ * Karakter vebayı BİZZAT kapmışsa (etiket "veba_hastasi"), hastalık olayından (`vebaHastasiOlayi`, 10 olaydan BİR tanesi)
+ * hemen sonra BİR KEZ çalışır: o anki `veba_olum_riski` (%55 + olay seçiminin kaydırması, 5–90 arası) ölüm olasılığıdır;
+ * kalan olasılık yaralı : sağlıklı = 2 : 1 bölünür (taban 55 / 30 / 15). Ölüm → karakter ölür; yaralı → can −20..22
+ * (en az 1) ve hastalık biter; sağlıklı → can +5..9 ve hastalık biter. Karakter ölümü burada UYGULANMAZ — sinyal döner.
  */
 export function vebaHastaligiKontrol(state: CharacterState): VebaHastaligiSonuc {
   const sonuc: VebaHastaligiSonuc = { karakterOldu: false, iyilesti: false, mesajlar: [] };
   if (!state.etiketler.includes("veba_hastasi")) return sonuc;
-  const risk = Math.max(0, Math.min(100, state.veba_olum_riski));
-  if (Math.random() * 100 < risk) {
+  const kopekBonusu = hayvanBonusVar(state, "kopek_saglik") ? 5 : 0;
+  const olum = Math.max(5, Math.min(90, state.veba_olum_riski - kopekBonusu)) / 100;
+  const kalan = 1 - olum;
+  const zar = Math.random();
+  if (zar < olum) {
     sonuc.karakterOldu = true;
-    sonuc.mesajlar.push(T(state.dil, "Veba direncini kırdı; ateşler içinde son nefesini verdin."));
+    sonuc.mesajlar.push(T(state.dil, "Vebadan öldün; ateşler içinde son nefesini verdin."));
     return sonuc;
   }
-  state.veba_olum_riski = Math.max(0, risk - VEBA_HASTALIK_DOGAL_DUSUS - (hayvanBonusVar(state, "kopek_saglik") ? 3 : 0));
-  if (state.veba_olum_riski <= VEBA_HASTALIK_IYILESME_ESIGI) {
-    state.veba_olum_riski = 0;
-    etiketSil(state, ["veba_hastasi"]);
-    sonuc.iyilesti = true;
-    hayatOlayiEkle(state, "🌿", T(state.dil, "Vebayı atlattı"));
-    sonuc.mesajlar.push(T(state.dil, "🌿 Ateşin düştü, gücün yavaş yavaş geri geliyor — vebayı atlattın."));
+  state.veba_olum_riski = 0;
+  etiketSil(state, ["veba_hastasi"]);
+  sonuc.iyilesti = true;
+  if (zar < olum + kalan * (2 / 3)) {
+    state.saglik = Math.max(1, state.saglik - vebaAralik(VEBA_YARALI_CAN_KAYBI));
+    hayatOlayiEkle(state, "🩹", T(state.dil, "Vebayı yaralı atlattı"));
+    sonuc.mesajlar.push(T(state.dil, "🩹 Ateşin düştü ama hastalık seni yıprattı — vebayı yaralı atlattın."));
   } else {
-    sonuc.mesajlar.push(T(state.dil, "🤒 Hastalık sürüyor; şu an hayatta kalma şansın kabaca %{0}.", [
-      Math.round(100 - state.veba_olum_riski),
-    ]));
+    state.saglik = Math.min(100, state.saglik + vebaAralik(VEBA_SAGLIKLI_CAN_KAZANCI));
+    hayatOlayiEkle(state, "🌿", T(state.dil, "Vebayı atlattı"));
+    sonuc.mesajlar.push(T(state.dil, "🌿 Ateşin düştü, gücün yavaş yavaş geri geliyor — vebayı sağlıkla atlattın."));
   }
   return sonuc;
 }
@@ -3772,14 +3837,13 @@ export function dunyaFinansEtkileri(state: CharacterState): DunyaFinansEtkisi[] 
 
   const donem = state.ulke.donem;
   if (donem) {
-    const kalan = Math.max(0, donem.bitisYili - state.yil);
     const parcalar = [
       T(dil, "maaş {0}", [isaretli(donem.etki.maas)]),
       T(dil, "yaşam gideri {0}", [isaretli(donem.etki.yasamGideri)]),
     ];
     liste.push({
       ikon: DONEM_ADLARI[donem.tur].simge,
-      metin: T(dil, "{0} (~{1} yıl): {2}", [T(dil, DONEM_ADLARI[donem.tur].ad), kalan, parcalar.join(" · ")]),
+      metin: T(dil, "{0}: {1}", [T(dil, DONEM_ADLARI[donem.tur].ad), parcalar.join(" · ")]),
     });
   }
 
@@ -3806,8 +3870,7 @@ export function dunyaFinansEtkileri(state: CharacterState): DunyaFinansEtkisi[] 
     });
   }
 
-  if (state.ulke.kriz?.tur === "kitlik" && donem?.tur !== "kitlik") liste.push({ ikon: "🌾", metin: T(dil, "Kıtlık: −1 sağlık/yıl") });
-  else if (state.ulke.kriz?.tur === "isyan") liste.push({ ikon: "🔥", metin: T(dil, "İsyan: −3 para & −1 ün/yıl") });
+  if (state.ulke.kriz?.tur === "isyan") liste.push({ ikon: "🔥", metin: T(dil, "İsyan: −3 para & −1 ün/yıl") });
   else if (state.ulke.kriz?.tur === "altin_cag")
     liste.push({ ikon: "✨", metin: T(dil, "Altın çağ: +4 para & +1 mutluluk/yıl") });
 

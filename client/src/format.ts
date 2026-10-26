@@ -31,3 +31,17 @@ export function formatMusteri(dil: 'tr' | 'en', n: number, isaretli = false): st
   if (!isaretli) return n < 0 ? `−${metin}` : metin;
   return n > 0 ? `+${metin}` : n < 0 ? `−${metin}` : '±0';
 }
+
+/**
+ * Sayısal kademeye renk sınıfı (yeni strateji ekranları): `esikler` = [düşük, yüksek];
+ * değer ilkinin altındaysa kırmızı, ikincinin altındaysa altın/nötr, üstündeyse yeşil.
+ * Örn. yetenek [40,65], sadakat/inanç [45,75].
+ */
+export function kademeSinifi(deger: number, esikler: [number, number] = [40, 70]): string {
+  return deger < esikler[0] ? 'kademe-dusuk' : deger < esikler[1] ? 'kademe-orta' : 'kademe-yuksek';
+}
+
+/** İşarete göre renk sınıfı: artı yeşil, eksi kırmızı, sıfır nötr (kâr/net/gider ve yüzde değişimleri için). */
+export function isaretSinifi(deger: number): string {
+  return deger > 0 ? 'kademe-yuksek' : deger < 0 ? 'kademe-dusuk' : '';
+}

@@ -132,8 +132,8 @@ describe("Kredi / tefeci (havuzdan 2 teklif, vadeli)", () => {
     for (const k of KREDI_HAVUZU) {
       expect(k.vade).toBeGreaterThanOrEqual(3);
       expect(k.vade).toBeLessThanOrEqual(7);
-      expect(k.faiz).toBeGreaterThanOrEqual(0.1);
-      expect(k.faiz).toBeLessThanOrEqual(0.21);
+      expect(k.faiz).toBeGreaterThanOrEqual(0.09);
+      expect(k.faiz).toBeLessThanOrEqual(0.18);
     }
   });
 

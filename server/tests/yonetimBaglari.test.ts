@@ -157,7 +157,7 @@ describe("şehir yöneticisi (işletmeli meslekler: tek otorite)", () => {
     expect(ida).toContain("terfi_destegi");
   });
 
-  it("hediye +5/+10/+18 (45/100/220), hizmet +7, yağcılık +8; cooldown 4/3/4 yıl", async () => {
+  it("hediye +5/+10/+18 (45/100/220), hizmet +6, övgü +7; cooldown 4/3/4 yıl", async () => {
     vi.spyOn(Math, "random").mockReturnValue(0.5); // tam etki, ifşa/ters yok (0.5 > 0.4)
     const state = await oturum("Tüccar");
     state.para = 5000;
@@ -168,11 +168,30 @@ describe("şehir yöneticisi (işletmeli meslekler: tek otorite)", () => {
     expect(s1.state.yonetim_iliski).toBe(48);
     expect(s1.state.yonetim_etkilesim_kilit["yonetici:bagis"]).toBe(s1.state.yil + 4);
     const s2 = await yonetimEtkilesimYap(state.id, "yonetici:hizmet");
-    expect(s2.state.yonetim_iliski).toBe(55);
+    expect(s2.state.yonetim_iliski).toBe(54);
     expect(s2.state.yonetim_etkilesim_kilit["yonetici:hizmet"]).toBe(s2.state.yil + 3);
     const s3 = await yonetimEtkilesimYap(state.id, "yonetici:yalan");
-    expect(s3.state.yonetim_iliski).toBe(63);
+    expect(s3.state.yonetim_iliski).toBe(61);
     expect(s3.state.yonetim_etkilesim_kilit["yonetici:yalan"]).toBe(s3.state.yil + 4);
+  });
+
+  it("övgü ve hizmet 3'er alt seçenek sunar; seçilen varyant kendi etkisini uygular; geçersiz varyant reddedilir", async () => {
+    vi.spyOn(Math, "random").mockReturnValue(0.5);
+    const state = await oturum("Tüccar");
+    state.para = 5000;
+    state.yonetim_iliski = 30;
+    const d = await yonetimDurumGetir(state.id);
+    expect(d.etkilesimler.find((e) => e.id === "yonetici:yalan")!.varyantlar).toEqual(["ovgu_adalet", "ovgu_comertlik", "ovgu_katki"]);
+    expect(d.etkilesimler.find((e) => e.id === "yonetici:hizmet")!.varyantlar).toEqual(["hizmet_nakliye", "hizmet_danismanlik", "hizmet_ziyafet"]);
+    await expect(yonetimEtkilesimYap(state.id, "yonetici:yalan", undefined, "yok")).rejects.toThrow();
+    const un0 = state.un;
+    const r = await yonetimEtkilesimYap(state.id, "yonetici:yalan", undefined, "ovgu_comertlik");
+    expect(r.state.yonetim_iliski).toBe(37);
+    expect(r.state.un).toBeGreaterThan(un0);
+    const para0 = r.state.para;
+    const h = await yonetimEtkilesimYap(state.id, "yonetici:hizmet", undefined, "hizmet_ziyafet");
+    expect(h.state.yonetim_iliski).toBe(43);
+    expect(h.state.para).toBeLessThan(para0);
   });
 
   it("vergi indirimi: eşik 70, başarıda oran 10 yıl yarıya iner, ilişki bedeli 24; başarısızda kısa (4 yıl) bekleme", async () => {

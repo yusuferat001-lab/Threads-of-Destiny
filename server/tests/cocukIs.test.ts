@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { createCharacter, mesleğiSec, hesaplaMaasYillik } from "../src/game/stateManager";
+import { createCharacter, mesleğiSec, hesaplaMaasYillik, maasCarpaniGetir } from "../src/game/stateManager";
 import * as AS from "../src/game/aileSistemi";
 import * as S from "../src/data/aileSabitleri";
 import { yeniOyun, mesleğiAta, cocukIseAl, cocukRedTepkisi, ekipCikar, aileDurumGetir } from "../src/game/gameEngine";
@@ -102,7 +102,7 @@ describe("motor: çocuğu ekibe al / reddedilen davete tepki", () => {
   it("yatkın çocuk kabul eder: ekibe girer (sadakat 100, düşük maaş), maaş çarpanı artar, ilişki ve moral yükselir", async () => {
     const state = await oturum();
     const c = cocukEkle(state, 16, "yatkin", { is_durumu: "bekliyor" });
-    const maasOnce = hesaplaMaasYillik(state);
+    const maasOnce = maasCarpaniGetir(state); // kalıcı maaş çarpanı etiketi (işletmeli mesleklerde satış/bağış çarpanı)
     const mutluluk = state.mutluluk;
     const sonuc = await cocukIseAl(state.id, 0);
     expect(sonuc.kabul).toBe(true);
@@ -118,7 +118,7 @@ describe("motor: çocuğu ekibe al / reddedilen davete tepki", () => {
     const tam = 2 + Math.round(uye.gercekKalite / 14);
     expect(uye.maas).toBeLessThanOrEqual(tam * 0.86);
     expect(uye.maas).toBeGreaterThanOrEqual(tam * 0.79);
-    expect(hesaplaMaasYillik(state)).toBeGreaterThan(maasOnce);
+    expect(maasCarpaniGetir(state)).toBeGreaterThan(maasOnce);
     expect(c.iliski).toBe(65);
     expect(state.mutluluk).toBeGreaterThan(mutluluk);
     // ikinci kez davet edilemez

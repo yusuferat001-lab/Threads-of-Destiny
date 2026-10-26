@@ -29,7 +29,8 @@ export function ButcePaneli({ finans, paraBirimi, gecmis, isletmeAktif = false }
     giderKalemleri.konut +
     giderKalemleri.ekip +
     giderKalemleri.evcilHayvan +
-    giderKalemleri.savasVergisi;
+    giderKalemleri.savasVergisi +
+    finans.krediTaksit;
   const gercekNet = netYillik + gayrimenkulYillikGelir;
 
   return (
@@ -38,9 +39,9 @@ export function ButcePaneli({ finans, paraBirimi, gecmis, isletmeAktif = false }
 
           <div className="finans-karti">
             <div className="finans-satiri finans-gelir">
-              <span>{isletmeAktif ? (dil === 'en' ? "💰 Last year's profit" : '💰 Geçen yılın kârı') : m.feYillikMaas}</span>
-              <span>
-                +{formatPara(maasYillik)} {paraBirimi}
+              <span>{isletmeAktif ? (dil === 'en' ? "💰 Shop net (last year, after tax)" : '💰 Dükkan neti (geçen yıl, vergi sonrası)') : m.feYillikMaas}</span>
+              <span className={maasYillik < 0 ? 'finans-net-negatif' : undefined}>
+                {maasYillik >= 0 ? '+' : '−'}{formatPara(Math.abs(maasYillik))} {paraBirimi}
               </span>
             </div>
 
@@ -137,6 +138,14 @@ export function ButcePaneli({ finans, paraBirimi, gecmis, isletmeAktif = false }
                 </span>
               </div>
             )}
+            {finans.krediTaksit > 0 && (
+              <div className="finans-satiri">
+                <span>{dil === 'en' ? 'Loan instalment' : 'Kredi taksidi'}</span>
+                <span>
+                  -{formatPara(finans.krediTaksit)} {paraBirimi}
+                </span>
+              </div>
+            )}
             <div className="finans-satiri finans-toplam-gider">
               <span>{m.feToplamGider}</span>
               <span>
@@ -145,7 +154,7 @@ export function ButcePaneli({ finans, paraBirimi, gecmis, isletmeAktif = false }
             </div>
 
             <div className={`finans-satiri finans-net ${gercekNet < 0 ? 'finans-net-negatif' : ''}`}>
-              <span>{gayrimenkulYillikGelir !== 0 ? m.feNetYillikDahil : m.feNetYillik}</span>
+              <span>{isletmeAktif ? (dil === 'en' ? 'Left in your pocket' : 'Cebine kalan') : gayrimenkulYillikGelir !== 0 ? m.feNetYillikDahil : m.feNetYillik}</span>
               <span>
                 {gercekNet >= 0 ? '+' : ''}
                 {formatPara(gercekNet)} {paraBirimi}

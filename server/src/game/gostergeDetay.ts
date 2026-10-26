@@ -18,6 +18,9 @@ import { konutGetir } from "../data/konutlar";
 import { yasamSecenegiGetir } from "../data/yasamSecenekleri";
 import {
   yaslanmaYillikKayip,
+  yaslanmaSaglikTavani,
+  GENC_SAGLIK_YAS_SINIRI,
+  GENC_SAGLIK_HEDEFI,
   giderKalemleriHesapla,
   hesaplaMaasYillik,
   dunyaFinansEtkileri,
@@ -115,8 +118,15 @@ function saglikDetayi(state: CharacterState): GostergeDetayTaban {
   const etkenler: GostergeEtken[] = [];
 
   const yaslanma = yaslanmaYillikKayip(state.yas);
+  const tavan = yaslanmaSaglikTavani(state.yas);
   if (yaslanma > 0) {
     etkenler.push({ ikon: "⏳", metin: T(dil, "Yaşlanma: {0}/yıl", [isaretli(-yaslanma)]), yon: "kotu" });
+    if (tavan !== null) {
+      etkenler.push({ ikon: "🧱", metin: T(dil, "Yaşlanma sağlığını en fazla {0} cana kadar düşürür.", [tavan]), yon: "notr" });
+    }
+  }
+  if (state.yas <= GENC_SAGLIK_YAS_SINIRI && state.saglik < GENC_SAGLIK_HEDEFI) {
+    etkenler.push({ ikon: "🌱", metin: T(dil, "Gençlik toparlanması: {0}/yıl (30 yaşa kadar, {1} cana kadar)", [isaretli(1), GENC_SAGLIK_HEDEFI]), yon: "iyi" });
   }
   const ev = konutYasamEtkisi(state, "saglik");
   if (ev) {
@@ -132,9 +142,6 @@ function saglikDetayi(state: CharacterState): GostergeDetayTaban {
   etkenler.push(...durumEtkenleri(state, "tur_basi_saglik"));
   const kriz = krizEtkeni(state, "saglik");
   if (kriz) etkenler.push(kriz);
-  if (state.para < 0) {
-    etkenler.push({ ikon: "💸", metin: T(dil, "Borç stresi: {0}/yıl", [isaretli(-1)]), yon: "kotu" });
-  }
   if (state.mutluluk < KRONIK_MUTLULUK_ESIGI) {
     etkenler.push({
       ikon: "😞",
@@ -165,11 +172,10 @@ function saglikDetayi(state: CharacterState): GostergeDetayTaban {
       T(dil, "Gelir & Gider ekranından daha iyi bir ev ve yemek düzenine geç."),
       T(dil, "Mağazadan şifa eşyası al ve envanterden kullan."),
       T(dil, "Dinlenme, şifa ve iyileşme sunan olay seçeneklerini seç."),
-      T(dil, "Borçtan kurtul; borç her yıl sağlığını yer."),
     ],
     dusur: [
       T(dil, "Riskli, kavgalı ve tehlikeli olay seçenekleri sağlığını düşürür."),
-      T(dil, "Kıtlık, salgın ve savaş dönemlerinde sağlık erir."),
+      T(dil, "Salgın hastalığı ve yaşlılık sağlığını erit."),
     ],
   };
 }
@@ -217,7 +223,7 @@ function mutlulukDetayi(state: CharacterState): GostergeDetayTaban {
   const kriz = krizEtkeni(state, "mutluluk");
   if (kriz) etkenler.push(kriz);
   if (state.para < 0) {
-    etkenler.push({ ikon: "💸", metin: T(dil, "Borç stresi: {0}/yıl", [isaretli(-2)]), yon: "kotu" });
+    etkenler.push({ ikon: "💸", metin: T(dil, "Borç stresi: {0}/yıl", [isaretli(-1)]), yon: "kotu" });
   }
   if (state.saglik < KRONIK_SAGLIK_ESIGI) {
     etkenler.push({

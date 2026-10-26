@@ -1,10 +1,15 @@
 import { describe, it, expect } from "vitest";
-import { yeniOyun, mesleğiAta, senaryoUret, yilGec, stateGetir } from "../src/game/gameEngine";
+import { yeniOyun, mesleğiAta, senaryoUret, yilGec, stateGetir, isletmeUrunSec } from "../src/game/gameEngine";
+import { isletmeProfiliGetir } from "../src/data/meslekProfilleri";
 import { secimUygulaVeCoz } from "./testUtils";
 
 async function ilerleOyunu(meslek = "Tüccar") {
   const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba", undefined, "tr", undefined, "ilerle");
   await mesleğiAta(state.id, meslek);
+  if (state.urun_secim_bekliyor) {
+    const profil = isletmeProfiliGetir(state.meslek!, state.cag)!;
+    await isletmeUrunSec(state.id, profil.baslangicUrunleri![0].hat);
+  }
   return state; // yeniOyun bellek oturumundaki AYNI nesneyi döner
 }
 

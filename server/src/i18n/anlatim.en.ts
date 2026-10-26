@@ -296,7 +296,6 @@ export const ANLATIM_EN: Record<string, string> = {
     "Plague: yearly death risk · labor shortage salary +{0}% · rent −{1}%",
   "Salgın izi ({0} yıl): maaş +%{1} · kira −%{2}":
     "Plague aftermath ({0} yrs): salary +{1}% · rent −{2}%",
-  "Kıtlık: −1 sağlık/yıl": "Famine: −1 health/yr",
   "İsyan: −3 para & −1 ün/yıl": "Revolt: −3 money & −1 fame/yr",
   "Altın çağ: +4 para & +1 mutluluk/yıl": "Golden age: +4 money & +1 happiness/yr",
   "Gıda fiyat şoku: yemek gideri bu yıl ×2": "Food price shock: living cost ×2 this year",
@@ -609,6 +608,12 @@ export const ANLATIM_EN: Record<string, string> = {
   "{0} bağışını memnuniyetle aldı.": "{0} gladly accepted your donation.",
   "{0}'e yağ çektin; hoşuna gitti ama içine sinmedi.": "You flattered {0}; it pleased them, but it didn't sit right with you.",
   "{0} için bir iş gördün; seni not etti.": "You did a job for {0}; they took note of you.",
+  "{0}'in adaletini göklere çıkardın; kulağına hoş geldi.": "You sang the praises of {0}'s fairness; it was music to their ears.",
+  "{0}'in cömertliğini herkese anlattın; adın da onunla anıldı.": "You told everyone of {0}'s generosity; your name was mentioned alongside theirs.",
+  "{0}'in şehre katkısını içtenlikle överek anlattın; sözlerin ağırlık taşıdı.": "You sincerely praised {0}'s contribution to the city; your words carried weight.",
+  "{0} için ulaklık ve nakliye işi gördün; seni not etti.": "You ran errands and hauled goods for {0}; they took note of you.",
+  "{0}'e işi hakkında danışmanlık yaptın; fikirlerin dinlendi.": "You advised {0} on their affairs; your ideas were heard.",
+  "{0} adına bir ziyafet verdin; sofra konuşuldu.": "You threw a feast in {0}'s name; the table was the talk of the town.",
   "Ama beklediğin kadar etkili olmadı.": "But it wasn't as effective as you hoped.",
   "{0} isteğini yerine getirdi.": "{0} granted your request.",
   "{0} bu sefer isteğini geri çevirdi.": "{0} turned down your request this time.",
@@ -695,9 +700,15 @@ export const ANLATIM_EN: Record<string, string> = {
   "Salgına karşı hazırlık yaptın (kademe {0}). Bir sonraki dalgada işine yarayacak.": "You prepared for the plague (tier {0}). It will help in the next wave.",
   "Vebaya yakalandı": "Caught the plague",
   "🦠 Veba sana da bulaştı — hastalandın. Hayatta kalman bundan sonraki seçimlerine bağlı.": "🦠 The plague caught up with you — you're sick. Whether you survive depends on your next choices.",
-  "Veba direncini kırdı; ateşler içinde son nefesini verdin.": "The plague broke your resistance; you breathed your last in a fever.",
+  "Vebadan öldün; ateşler içinde son nefesini verdin.": "You died of the plague; you breathed your last in a fever.",
   "Vebayı atlattı": "Survived the plague",
-  "🌿 Ateşin düştü, gücün yavaş yavaş geri geliyor — vebayı atlattın.": "🌿 Your fever broke and your strength is slowly returning — you survived the plague.",
+  "🌿 Ateşin düştü, gücün yavaş yavaş geri geliyor — vebayı sağlıkla atlattın.": "🌿 Your fever broke and your strength is slowly returning — you came through the plague healthy.",
+  "Vebayı yaralı atlattı": "Survived the plague, but scarred",
+  "🩹 Ateşin düştü ama hastalık seni yıprattı — vebayı yaralı atlattın.": "🩹 Your fever broke but the sickness wore you down — you survived the plague, scarred.",
+  "{0} birim mal aldın ({1} {2} ödedin).": "You bought {0} units of goods (paid {1} {2}).",
+  "Paran yettiği kadar {0} birim mal aldın ({1} {2} ödedin); depo %{3} dolu.": "You bought {0} units with the money you had (paid {1} {2}); the warehouse is {3}% full.",
+  "Mal almaya paran yetmiyor; gerekirse tefeciden borç alabilirsin.": "You cannot afford any goods; you can borrow from the moneylender if you need to.",
+  "Deponda zaten yeterli mal var.": "Your warehouse already holds enough goods.",
   "🤒 Hastalık sürüyor; şu an hayatta kalma şansın kabaca %{0}.": "🤒 The illness lingers; your chance of survival right now is roughly {0}%.",
   // Tefeci (§34.5)
   "Tefeciden {0} {birim} borç aldı": "Borrowed {0} {birim} from the moneylender",
@@ -783,7 +794,7 @@ export const ANLATIM_EN: Record<string, string> = {
   // Ölüm nedenleri (önceden çevrilmeden saklanıyordu)
   "İleri yaşın getirdiği yorgunlukla huzur içinde vefat etti.": "Passed away peacefully, worn out by old age.",
   "Uzun süredir çöken ruh hali bedenini de tüketti.": "A spirit long in collapse finally wore the body down too.",
-  "Veba direncini kırdı; hastalıktan kurtulamadın.": "The plague broke your resistance; you did not survive the illness.",
+  "Vebadan öldün; hastalık seni yendi.": "You died of the plague; the illness beat you.",
   // Meslek pazarı (2026-10)
   "Pazar payın": "Your market share",
   "Pazara yeni bir rakip girdi: {0}": "A new rival entered the market: {0}",
@@ -821,7 +832,7 @@ export const ANLATIM_EN: Record<string, string> = {
   "maaş {0}": "pay {0}",
   "yaşam gideri {0}": "living costs {0}",
   "−1 sağlık/yıl": "−1 health/year",
-  "{0} (~{1} yıl): {2}": "{0} (~{1} yrs): {2}",
+  "{0}: {1}": "{0}: {1}",
   "Büyük savaş ({0}): maaş {1} · yemek {2} · savaş vergisi %{3}": "Great war ({0}): pay {1} · food {2} · war tax {3}%",
   "Savaş: maaş {0}": "War: pay {0}",
   "Salgın: her yıl hastalık riski · işçi kıtlığı maaş {0}": "Plague: yearly risk of infection · labour shortage pay {0}",
@@ -846,6 +857,12 @@ export const ANLATIM_EN: Record<string, string> = {
   "Geçersiz sipariş miktarı.": "Invalid order amount.",
   "Bu kadar hattı aynı anda işletemezsin; daha fazla çalışan gerek.": "You can't run this many lines at once; you need more staff.",
   "Önce öğretini seçmelisin.": "You must choose your doctrine first.",
+  "Önce başlangıç ürününü seçmelisin.": "You must choose your starting product first.",
+  "Bu meslekte başlangıç ürünü seçilmez.": "This profession has no starting product to choose.",
+  "Başlangıç ürününü zaten seçtin.": "You have already chosen your starting product.",
+  "Geçersiz ürün.": "Invalid product.",
+  "Ana ürünün: {0}": "Your main product: {0}",
+  "{0} ürünüyle işe başladın.": "You started out with {0}.",
   "Bu oyun yıl geçirme modunda değil.": "This game is not in year-advance mode.",
   "Önce bekleyen olayı çözmelisin.": "Resolve the pending event first.",
   "Şu an çözülecek bir olay yok; yıl ilerletmelisin.": "There is no event to resolve right now; advance the year.",
@@ -891,6 +908,8 @@ export const ANLATIM_EN: Record<string, string> = {
   // Gösterge detay penceresi (gostergeDetay.ts)
   "{0}: {1}/yıl":
     "{0}: {1}/yr",
+  "Yaşlanma sağlığını en fazla {0} cana kadar düşürür.": "Aging can only lower your health down to {0}.",
+  "Gençlik toparlanması: {0}/yıl (30 yaşa kadar, {1} cana kadar)": "Youthful recovery: {0}/yr (until age 30, up to {1} health)",
   "Yaşlanma: {0}/yıl":
     "Aging: {0}/yr",
   "Ev ve yemek düzenin: {0}/yıl":
@@ -911,12 +930,10 @@ export const ANLATIM_EN: Record<string, string> = {
     "Buy healing goods in the shop and use them from your inventory.",
   "Dinlenme, şifa ve iyileşme sunan olay seçeneklerini seç.":
     "Pick event options that offer rest, healing and recovery.",
-  "Borçtan kurtul; borç her yıl sağlığını yer.":
-    "Get out of debt; debt eats your health every year.",
   "Riskli, kavgalı ve tehlikeli olay seçenekleri sağlığını düşürür.":
     "Risky, violent and dangerous event options cost you health.",
-  "Kıtlık, salgın ve savaş dönemlerinde sağlık erir.":
-    "Health melts away during famine, plague and war.",
+  "Salgın hastalığı ve yaşlılık sağlığını erit.":
+    "Plague and old age wear your health down.",
   "Yalnızlık: {0}/yıl":
     "Loneliness: {0}/yr",
   "Eşinle sürekli kavga: moralin aşınıyor.":

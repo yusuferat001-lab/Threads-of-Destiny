@@ -32,7 +32,6 @@ import {
   MEZUN_PAZAR_ARALIK,
   OKUL_MEZUN_SANSI,
   OKUL_YETENEK_KADEME,
-  TESKILAT_AIDATI_ORANI,
   TON_FANATIKLIK,
   YARDIM_POLITIKASI,
   ahlakInananEtkisi,
@@ -68,8 +67,10 @@ import {
   calisanSadakatKontrolleri,
   calisanlariGelistir,
   ekipBonuslari,
+  ilkYillarGuvenli,
   imtiyazAktifMi,
   korumaHesapla,
+  loncaAidatiOrani,
   pazarBuyumeOrani,
   sureleriKontrolEt,
   tanitimBuyumesi,
@@ -121,8 +122,8 @@ export function cemaatBaslat(state: CharacterState): void {
     son_dokum: null,
     adaylar: [],
     aday_yili: state.yil,
-    stok_hedefi: "normal",
     hirsizlik_son_yil: null,
+    baslangic_yili: state.yil,
     imtiyazlar: {},
     tekel_hat: null,
     cemaat: cemaatVarsayilan(),
@@ -145,7 +146,6 @@ export function cemaatHazirla(state: CharacterState): void {
     is.hatlar.forEach((h) => (h.acik = acikTovbe ? h.id === "tovbe" : h.acik));
     is.tedarikci_borcu = 0;
     is.tekel_hat = null;
-    is.stok_hedefi = "normal";
   }
   for (const f of FAALIYETLER) {
     if (!is.hatlar.some((h) => h.id === f.id)) is.hatlar.push({ id: f.id, acik: false, stok: 0, otomatik: true, siparis: 0, fiyat: "normal", son_talep: 0, son_satis: 0 });
@@ -223,7 +223,7 @@ export function okulKademesi(state: CharacterState): number {
   return clamp(yatirimKademesi(state, "okul"), 0, OKUL_MEZUN_SANSI.length - 1);
 }
 export function aseviKademesi(state: CharacterState): number {
-  return clamp(yatirimKademesi(state, "yardim"), 0, 3);
+  return clamp(yatirimKademesi(state, "yardim"), 0, 4);
 }
 export function binaKapasitesi(state: CharacterState, o: OgretiToplami): number {
   return Math.round(BINA_KAPASITE[binaKademesi(state)] * o.kapasite);
@@ -300,7 +300,6 @@ export function cemaatHesapla(state: CharacterState, b: IsletmeBaglami, gelmeTab
     bp.miktar *
     kitle.bagis *
     d.bagis *
-    (1 + bon.ana) *
     (imtiyazAktifMi(state, "kutsal_gun_imtiyazi") ? 1.1 : 1) *
     piyasaCarpani(state, "talep") *
     b.satisCarpani;
@@ -315,9 +314,9 @@ export function cemaatHesapla(state: CharacterState, b: IsletmeBaglami, gelmeTab
   const faaliyetMasraf = faaliyetler.reduce((t, x) => t + x.masraf, 0);
   const toplamGelir = bagis + faaliyetGelir;
   const ayinMasrafi = bagis * AYIN_MASRAF_ORANI;
-  const binaBakim = binaBakimMasrafi(state, b.enflasyon);
+  const binaBakim = binaBakimMasrafi(state, b.giderEnflasyon);
   const yardim = toplamGelir * yp.oran * d.yardim * (1 - clamp(o.yardimMaliyet, 0, 0.8));
-  const aidat = toplamGelir * TESKILAT_AIDATI_ORANI;
+  const aidat = toplamGelir * loncaAidatiOrani(pazarPayiHesapla(state));
   const brutKar = toplamGelir - faaliyetMasraf - ayinMasrafi - binaBakim - yardim - aidat;
   const vOran = Math.max(0.05, vergiOrani(state) - o.vergiPuan);
   const vergi = brutKar > 0 ? brutKar * vOran : 0;
@@ -420,17 +419,18 @@ export function cemaatYilIsle(state: CharacterState, b: IsletmeBaglami): Isletme
   const o = ogretiToplami(cm.ogretiler);
   const uyarilar: IsletmeUyari[] = [];
   const eskiMusteri = musteriSayisi(state);
-  const oncekiBrut = is.son_dokum ? is.son_dokum.brutKar : cemaatBeklenenKar(state, b);
-  const brutTaban = Math.max(0, oncekiBrut);
+  // v12: nakit hasarlar geçen yılın TOPLAM gelirine (bağış + faaliyet) göre hesaplanır, kâra göre değil.
+  const oncekiGelir = is.son_dokum ? is.son_dokum.satis : cemaatBeklenenKar(state, b);
+  const gelirTaban = Math.max(0, oncekiGelir);
   let nakitHasar = 0;
   let ekstraGider = 0;
 
   sureleriKontrolEt(state, uyarilar);
   calisanlariGelistir(state, o.yetenek + OKUL_YETENEK_KADEME * okulKademesi(state));
-  calisanMaaslariniGuncelle(state, b.enflasyon);
+  calisanMaaslariniGuncelle(state, b.giderEnflasyon);
 
   // 1. Çalışan sadakati (sızdırma / iç hırsızlık / ayrılma).
-  const sadakat = calisanSadakatKontrolleri(state, brutTaban, uyarilar);
+  const sadakat = calisanSadakatKontrolleri(state, gelirTaban, uyarilar);
   nakitHasar += sadakat.nakitHasar;
   ekstraGider += sadakat.ekstraGider;
 
@@ -452,7 +452,7 @@ export function cemaatYilIsle(state: CharacterState, b: IsletmeBaglami): Isletme
   if (kademe >= 2 && rakip) rakip.husumet = clamp(rakip.husumet + 3, 0, 100);
   const otoriteKoruma = (state.yonetim_iliski ?? 0) >= OTORITE_KORUMA_ESIGI;
   if (state.rakip_sonraki_saldiri_yili == null) state.rakip_sonraki_saldiri_yili = rastgeleSaldiriYili(state.yil, otoriteKoruma);
-  if (state.yil >= state.rakip_sonraki_saldiri_yili) {
+  if (!ilkYillarGuvenli(state) && state.yil >= state.rakip_sonraki_saldiri_yili) {
     state.rakip_sonraki_saldiri_yili = rastgeleSaldiriYili(state.yil, otoriteKoruma);
     if (aktifler.length > 0 && rakip) {
       const kucukler = aktifler.filter((r) => r !== rakip);
@@ -472,7 +472,7 @@ export function cemaatYilIsle(state: CharacterState, b: IsletmeBaglami): Isletme
         const grup = rakipGrubu(saldiran.ad);
         if (hasar.nakit && hasar.nakit[i] > 0) {
           const yuzde = hasar.nakit[i] * carpan;
-          const tutar = r2(brutTaban * (yuzde / 100));
+          const tutar = r2(gelirTaban * (yuzde / 100));
           nakitHasar += tutar;
           uyari.nakitYuzde = Math.round(yuzde);
           uyari.tutar = tutar;
@@ -556,6 +556,10 @@ export function cemaatYilIsle(state: CharacterState, b: IsletmeBaglami): Isletme
     alim: r2(h.faaliyetMasraf + h.ayinMasrafi),
     depoMasrafi: r2(h.binaBakim),
     loncaAidati: r2(h.aidat),
+    calisanMaasi: r2(state.ekip.reduce((t, u) => t + u.maas, 0)),
+    nakitHasar: r2(nakitHasar),
+    ekstraGider: r2(ekstraGider),
+    curumeKaybi: 0,
     brutKar: r2(h.brutKar),
     borcOdeme: 0,
     net,
@@ -580,7 +584,7 @@ export function cemaatYilIsle(state: CharacterState, b: IsletmeBaglami): Isletme
   };
   is.son_dokum = dokum;
   adaylariGerekirseYenile(state);
-  return { net, dokum };
+  return { net, onOdenenAlim: 0, dokum };
 }
 
 /** Görünümde Vaiz vb. rol adı için kısa yardımcı (profil yoksa boş). */

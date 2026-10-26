@@ -7268,6 +7268,10 @@ button.ikincil {
 .isletme-hat-dunya { font-size: 0.78rem; opacity: 0.8; margin-top: 0.2rem; }
 .isletme-hat-kontrol { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; margin-top: 0.4rem; font-size: 0.82rem; }
 .isletme-hat-kontrol button { padding: 0.15rem 0.6rem; font-size: 0.78rem; }
+.isletme-depo-doldur { margin: 0.6rem 0; padding: 0.5rem 0.6rem; border: 1px solid rgba(190, 150, 70, 0.35); border-radius: 8px; }
+.isletme-depo-doldur h4 { margin: 0 0 0.3rem; }
+.isletme-depo-plan { margin: 0.4rem 0; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; font-size: 0.85rem; }
+.isletme-depo-plan button { padding: 0.2rem 0.8rem; }
 .isletme-otomatik { display: inline-flex; align-items: center; gap: 0.3rem; margin-left: 0.4rem; }
 .isletme-siparis input { width: 4.2rem; margin: 0 0.3rem; }
 .isletme-yatirim, .isletme-calisan {

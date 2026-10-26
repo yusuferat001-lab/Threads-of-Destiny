@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { createCharacter, yaslanmaUygula, yaslanmaYillikKayip } from "../src/game/stateManager";
+import { createCharacter, yaslanmaUygula, yaslanmaYillikKayip, gencSaglikToparlanmasi } from "../src/game/stateManager";
 import { gostergeDetayiUret, gostergeStatiMi, etkenGunluguNotEt, GOSTERGE_STATLARI } from "../src/game/gostergeDetay";
 import { sucDegisimiHesapla, yeniOyun, gostergeGetir } from "../src/game/gameEngine";
 
@@ -10,15 +10,16 @@ function karakter(dil = "tr") {
 describe("yaslanmaYillikKayip", () => {
   it("yaşlanmaUygula ile aynı tabloyu kullanır", () => {
     expect(yaslanmaYillikKayip(49)).toBe(0);
-    expect(yaslanmaYillikKayip(50)).toBe(1);
-    expect(yaslanmaYillikKayip(60)).toBe(4);
-    expect(yaslanmaYillikKayip(70)).toBe(6);
+    expect(yaslanmaYillikKayip(50)).toBe(3);
+    expect(yaslanmaYillikKayip(60)).toBe(5);
+    expect(yaslanmaYillikKayip(70)).toBe(5);
+    expect(yaslanmaYillikKayip(75)).toBe(6);
     expect(yaslanmaYillikKayip(80)).toBe(8);
     const s = karakter();
     s.yas = 72;
     s.saglik = 100;
-    expect(yaslanmaUygula(s, 1)).toBe(6);
-    expect(s.saglik).toBe(94);
+    expect(yaslanmaUygula(s, 1)).toBe(5);
+    expect(s.saglik).toBe(95);
   });
 });
 
@@ -49,18 +50,54 @@ describe("gostergeDetayiUret", () => {
     expect(gostergeDetayiUret(genc, "saglik").etkenler.some((e) => e.metin.startsWith("Yaşlanma"))).toBe(false);
     const yasli = karakter();
     yasli.yas = 72;
-    const e = gostergeDetayiUret(yasli, "saglik").etkenler.find((x) => x.metin.startsWith("Yaşlanma"));
-    expect(e?.metin).toContain("−6");
+    const e = gostergeDetayiUret(yasli, "saglik").etkenler.find((x) => x.metin.startsWith("Yaşlanma:"));
+    expect(e?.metin).toContain("−5");
     expect(e?.yon).toBe("kotu");
   });
 
-  it("sağlık: borçlu karakterde borç stresi, kıtlıkta kıtlık etkeni görünür", () => {
+  it("borç sağlığı düşürmez (yalnız mutluluğu −1/yıl yıpratır); kıtlık sağlık götürmez", () => {
     const s = karakter();
     s.para = -20;
     s.ulke.kriz = { tur: "kitlik", bitisYili: s.yil + 2 };
     const m = gostergeDetayiUret(s, "saglik").etkenler.map((e) => e.metin).join("|");
-    expect(m).toContain("Borç stresi");
-    expect(m).toContain("Kıtlık");
+    expect(m).not.toContain("Borç stresi");
+    expect(m).not.toContain("Kıtlık");
+    const mut = gostergeDetayiUret(s, "mutluluk").etkenler.map((e) => e.metin).join("|");
+    expect(mut).toContain("Borç stresi");
+    expect(mut).toContain("−1");
+  });
+
+  it("yaşlanma tavanlı iniş: 50-59 → 40, 60-64 → 30, 65-69 → 20, 70-74 → 10; tavanın altındaki sağlığa dokunmaz; genç 30'a kadar +1", () => {
+    const a = karakter();
+    a.yas = 58; // yasArtisi 1 → yıl yaşı 58
+    a.saglik = 41;
+    yaslanmaUygula(a, 1);
+    expect(a.saglik).toBe(40);
+    a.yas = 59;
+    yaslanmaUygula(a, 1);
+    expect(a.saglik).toBe(40); // tavanda durur
+    const b = karakter();
+    b.yas = 62;
+    b.saglik = 35;
+    yaslanmaUygula(b, 2); // 61-62 → tavan 30
+    expect(b.saglik).toBe(30);
+    const c = karakter();
+    c.yas = 72;
+    c.saglik = 8; // tavanın (10) altında: değişmez
+    yaslanmaUygula(c, 1);
+    expect(c.saglik).toBe(8);
+    const g = karakter();
+    g.yas = 25;
+    g.saglik = 60;
+    gencSaglikToparlanmasi(g, 2);
+    expect(g.saglik).toBe(62);
+    g.saglik = 70;
+    gencSaglikToparlanmasi(g, 1);
+    expect(g.saglik).toBe(70); // 70'te durur
+    g.yas = 31;
+    g.saglik = 50;
+    gencSaglikToparlanmasi(g, 1);
+    expect(g.saglik).toBe(50); // 30'dan sonra yok
   });
 
   it("mutluluk: 26+ yaşında bekâr karakter yalnızlık cezası görür", () => {

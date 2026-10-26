@@ -35,10 +35,10 @@ export const DONEM_SURE: Record<DonemTuru, Aralik> = {
 };
 
 const DONEM_ETKI_ARALIKLARI: Record<DonemTuru, EtkiAraliklari> = {
-  bolluk: { temelTalep: [3, 7], temelFiyat: [-9, -5], luksTalep: [30, 45], luksFiyat: [10, 16], yasamGideri: [-10, -6], maas: [6, 10], pazarBuyume: [40, 50] },
-  durgunluk: { temelTalep: [-13, -8], temelFiyat: [-2, 2], luksTalep: [-35, -25], luksFiyat: [-11, -6], yasamGideri: [2, 5], maas: [-10, -6], pazarBuyume: [10, 20] },
+  bolluk: { temelTalep: [3, 7], temelFiyat: [-9, -5], luksTalep: [25, 35], luksFiyat: [10, 16], yasamGideri: [-6, -3], maas: [6, 10], pazarBuyume: [40, 50] },
+  durgunluk: { temelTalep: [-10, -6], temelFiyat: [-2, 2], luksTalep: [-30, -20], luksFiyat: [-10, -6], yasamGideri: [1, 3], maas: [-10, -6], pazarBuyume: [10, 20] },
   // Kıtlıkta temel mal (tahıl, kap-kacak) talebi patlar: işletme için "depoyu doldur" fırsatı (§45).
-  kitlik: { temelTalep: [40, 60], temelFiyat: [45, 60], luksTalep: [-50, -40], luksFiyat: [-12, -8], yasamGideri: [25, 35], maas: [-12, -8], pazarBuyume: [-30, -20] },
+  kitlik: { temelTalep: [20, 35], temelFiyat: [15, 30], luksTalep: [-35, -25], luksFiyat: [-10, -6], yasamGideri: [8, 12], maas: [-12, -8], pazarBuyume: [-30, -20] },
 };
 
 
@@ -52,10 +52,10 @@ export const SAVAS_SURE: Aralik = [4, 5];
 export const SAVAS_VERGI: Aralik = [7, 10];
 const SAVAS_ETKI_ARALIKLARI: EtkiAraliklari = {
   temelTalep: [0, 0],
-  temelFiyat: [18, 25],
-  luksTalep: [-40, -30],
+  temelFiyat: [10, 18],
+  luksTalep: [-30, -20],
   luksFiyat: [0, 0],
-  yasamGideri: [12, 18],
+  yasamGideri: [4, 6],
   maas: [-10, -6],
   // v10: savaşta toplam pazar yılda −%1.5…−2.5 (herkesin müşterisi aynı oranda erir).
   pazarBuyume: [-25, -15],
@@ -72,9 +72,9 @@ export const VEBA_SURE: Aralik = [4, 5];
 export const VEBA_TOPARLANMA_YIL = 8;
 export const VEBA_TOPARLANMA_ORAN = 0.02;
 const VEBA_ETKI_ARALIKLARI: EtkiAraliklari = {
-  temelTalep: [-25, -18],
-  temelFiyat: [12, 18],
-  luksTalep: [-55, -45],
+  temelTalep: [-20, -12],
+  temelFiyat: [8, 14],
+  luksTalep: [-35, -25],
   luksFiyat: [0, 0],
   yasamGideri: [0, 0],
   // İşçi kıtlığı: maaşla çalışanın ücreti artar.

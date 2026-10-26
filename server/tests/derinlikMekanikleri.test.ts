@@ -140,6 +140,7 @@ describe("ünvan sistemi (uçtan uca)", () => {
         if (state.saglik < 60) state.saglik = 90;
         if (state.para < 200) state.para = 500;
         if (state.tur_sayisi < 10) state.tur_sayisi = 10;
+        if (state.rutbe_seviye < 2) state.rutbe_seviye = 2; // olay minRutbeSeviye:2 ister; rütbe pazar payına bağlı ve rastgele yürüyüşte yavaş büyür
         let senaryo;
         try {
           senaryo = await senaryoUret(state.id);

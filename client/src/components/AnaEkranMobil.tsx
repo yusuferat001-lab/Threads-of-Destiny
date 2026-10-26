@@ -83,8 +83,9 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
   const degisim = dokum?.musteriDegisim ?? null;
 
   // Kâr paneli: geçen yılın dökümü; yoksa tahmini/yıllık gelir.
-  const gelir = dokum ? dokum.satis : isletme ? isletme.beklenenBrutKar : karakter.maas_yillik;
-  const net = dokum ? dokum.net : isletme ? isletme.beklenenBrutKar : (finans?.netYillik ?? 0);
+  const gelir = dokum ? dokum.satis : isletme ? isletme.butce.satis : karakter.maas_yillik;
+  const net = dokum ? dokum.net : isletme ? isletme.butce.net : (finans?.netYillik ?? 0);
+  const cebineKalan = isletme ? isletme.butce.cebineKalan : null;
   const gider = dokum ? Math.max(0, dokum.satis - dokum.net) : null;
 
   const donemAnahtar = isletme?.dunya.donem ?? karakter.ulke.donem?.tur ?? null;
@@ -124,7 +125,7 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
           </span>
         </div>
         <div className="ana-cam">
-          <span className="ana-etiket">{tr ? 'Yıllık Kâr' : 'Yearly Profit'}</span>
+          <span className="ana-etiket">{tr ? 'Yıllık Net' : 'Yearly Net'}</span>
           <strong className="ana-deger">
             {net >= 0 ? '+' : '−'}
             {formatPara(Math.abs(Math.round(net)))}
@@ -139,6 +140,15 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
             )}{' '}
             <span className="ana-birim">{birim}</span>
           </span>
+          {cebineKalan !== null && (
+            <span className="ana-alt">
+              {tr ? 'Cebine kalan' : 'In your pocket'}:{' '}
+              <b className={cebineKalan >= 0 ? 'ana-iyi' : 'ana-kotu'}>
+                {cebineKalan >= 0 ? '+' : '−'}
+                {formatPara(Math.abs(Math.round(cebineKalan * 10) / 10))}
+              </b>
+            </span>
+          )}
         </div>
         <div className="ana-cam">
           <span className="ana-etiket">{tr ? 'Dönem' : 'Era'}</span>
