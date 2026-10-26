@@ -31,6 +31,7 @@ import {
   hatHesapla,
   vergiOrani,
   depoKapasitesi,
+  depoKapasiteTablosu,
   curumeOrani,
   FIYAT_POLITIKASI,
   fiyatTalepCarpani,
@@ -334,21 +335,35 @@ describe("işletme (Tüccar dilimi)", () => {
     await expect(isletmeYatirimYap(s.id, "depo")).rejects.toThrow(/Yeterli paran yok/);
   });
 
-  it("depo yatırımı kapasiteyi büyütür (Orta Çağ 50/75/110/160/240), çürümeyi azaltır; en üst kademeden sonra reddedilir", async () => {
+  it("depo yatırımı kapasiteyi büyütür (Tüccar Orta Çağ tablosu), çürümeyi azaltır; en üst kademeden sonra reddedilir", async () => {
     const s = await tuccar();
     s.para = 100000;
-    expect(depoKapasitesi(s.isletme!)).toBe(50);
+    const kap = depoKapasiteTablosu("Orta Çağ", "Tüccar");
+    expect(depoKapasitesi(s.isletme!)).toBe(kap[0]);
     expect(curumeOrani(s.isletme!)).toBeCloseTo(0.1);
     await isletmeYatirimYap(s.id, "depo");
-    expect(depoKapasitesi(s.isletme!)).toBe(75);
+    expect(depoKapasitesi(s.isletme!)).toBe(kap[1]);
     await isletmeYatirimYap(s.id, "depo");
     await isletmeYatirimYap(s.id, "depo");
-    expect(depoKapasitesi(s.isletme!)).toBe(160);
+    expect(depoKapasitesi(s.isletme!)).toBe(kap[3]);
     expect(curumeOrani(s.isletme!)).toBeCloseTo(0.045);
     await isletmeYatirimYap(s.id, "depo");
-    expect(depoKapasitesi(s.isletme!)).toBe(240);
+    expect(depoKapasitesi(s.isletme!)).toBe(kap[4]);
     expect(curumeOrani(s.isletme!)).toBeCloseTo(0.03);
     await expect(isletmeYatirimYap(s.id, "depo")).rejects.toThrow(/en üst kademe/);
+  });
+
+  it("toplam talep müşteri sayısını (×1,0) aşamaz; talep oranı 0,60", async () => {
+    const { ALIM_ORANI } = await import("../src/data/pazar");
+    expect(ALIM_ORANI).toBe(0.6);
+    const s = await tuccar();
+    s.pazar_musteri = 2000;
+    s.meslek_musteri = 100;
+    s.rutbe_seviye = 5;
+    s.isletme!.hatlar.forEach((h) => { h.acik = true; h.stok = 5000; });
+    const { dokum } = isletmeYilIsle(s, isletmeBaglami(s));
+    const toplam = dokum.hatlar.reduce((t, h) => t + h.talep, 0);
+    expect(toplam).toBeLessThanOrEqual(100 + 1e-6);
   });
 
   it("güvenlik yatırımı Korumayı yükseltir (kademe başı +0,10, en çok 0,4)", async () => {
@@ -623,7 +638,7 @@ describe("işletme (Zanaatkâr — üretim modu)", () => {
     const alinan = dokum.hatlar.reduce((t, h) => t + h.alinan, 0);
     expect(satilan).toBeLessThanOrEqual(tavan);
     expect(alinan).toBeGreaterThan(tavan); // hammadde depoya sığdığı kadar alınır, satış tavana takılır
-    expect(alinan).toBeLessThanOrEqual(160);
+    expect(alinan).toBeLessThanOrEqual(depoKapasitesi(s.isletme!));
     expect(dokum.uretim?.tavan).toBe(tavan);
     expect(dokum.uyarilar.some((u) => u.kod === "uretim_tavani")).toBe(true);
   });
@@ -639,7 +654,7 @@ describe("işletme (Zanaatkâr — üretim modu)", () => {
     const { dokum } = isletmeYilIsle(s, isletmeBaglami(s));
     expect(dokum.uretim).toBeUndefined();
     expect(dokum.hatlar[0].alinan).toBeGreaterThan(60);
-    expect(dokum.hatlar[0].alinan).toBeLessThanOrEqual(160); // depo kademe 3 = 160
+    expect(dokum.hatlar[0].alinan).toBeLessThanOrEqual(depoKapasitesi(s.isletme!)); // depo kademe 3
   });
 
   it("tezgâh yatırımı (+%35/kademe), üretim kapasitesi ve ana rol çalışanı tavanı büyütür", async () => {

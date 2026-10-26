@@ -5460,8 +5460,8 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
       kademe,
       maxKademe: y.fiyatlar.length,
       sonrakiFiyat: kademe < y.fiyatlar.length ? paraYuvarla(y.fiyatlar[kademe] * genf) : null,
-      etkiSimdi: yatirimEtkiMetni(y.etki, kademe, genf, state.cag),
-      etkiSonraki: kademe < y.fiyatlar.length ? yatirimEtkiMetni(y.etki, kademe + 1, genf, state.cag) : null,
+      etkiSimdi: yatirimEtkiMetni(y.etki, kademe, genf, state.cag, state.meslek),
+      etkiSonraki: kademe < y.fiyatlar.length ? yatirimEtkiMetni(y.etki, kademe + 1, genf, state.cag, state.meslek) : null,
       ...yatirimMasrafGorunumu(y, kademe, genf),
     };
   });

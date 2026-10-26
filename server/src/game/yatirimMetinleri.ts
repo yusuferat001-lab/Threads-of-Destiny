@@ -27,13 +27,13 @@ const dili = (f: (dil: "tr" | "en") => string): DilliMetin => ({ tr: f("tr"), en
  * Bir yatırımın verilen kademedeki TOPLAM etkisi (kademe 0 = hiç yatırım yok).
  * Oyuncuya "şimdi → bir sonraki kademe" karşılaştırması göstermek için; sayılar motor sabitlerinden okunur.
  */
-export function yatirimEtkiMetni(etki: YatirimEtkisi, kademe: number, enflasyon: number, cag?: string): DilliMetin {
+export function yatirimEtkiMetni(etki: YatirimEtkisi, kademe: number, enflasyon: number, cag?: string, meslek?: string): DilliMetin {
   const k = Math.max(0, Math.floor(kademe));
   const r2 = (n: number) => Math.round(n * 100) / 100;
   switch (etki) {
     case "depo": {
       const i = Math.min(k, DEPO_KAPASITE.length - 1);
-      const kap = depoKapasiteTablosu(cag);
+      const kap = depoKapasiteTablosu(cag, meslek);
       return dili((d) =>
         d === "tr"
           ? `${kap[i]} birim stok · çürüme ${yuzde(CURUME_ORANLARI[i] * 100, d)} · bakım ${sayi(r2(DEPO_BAKIM[i] * enflasyon), d)}/yıl`

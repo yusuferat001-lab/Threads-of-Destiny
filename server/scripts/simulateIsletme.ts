@@ -268,7 +268,7 @@ for (const cag of CAGLAR) {
       const kova: Record<string, { n: number; talep: number; k: number; gerekli: number }> = {};
       for (const c of sonuclar) for (let i = 0; i < c.pay.length; i++) {
         const key = `%${Math.min(60, Math.floor(c.pay[i] / 5) * 5)}-${Math.min(60, Math.floor(c.pay[i] / 5) * 5) + 5}`;
-        const g = depoKapasiteTablosu(cag).findIndex((kk) => kk >= c.talep[i]);
+        const g = depoKapasiteTablosu(cag, MESLEK).findIndex((kk) => kk >= c.talep[i]);
         const o = (kova[key] ??= { n: 0, talep: 0, k: 0, gerekli: 0 });
         o.n++; o.talep += c.talep[i]; o.k += c.depoK[i]; o.gerekli += g < 0 ? 5 : g;
       }

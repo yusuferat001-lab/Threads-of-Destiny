@@ -1075,6 +1075,8 @@ export interface IsletmeDurumu {
   depo_oto?: { acik: boolean; yuzde: number };
   /** v15: işletmenin kurulduğu çağ (depo kapasite tablosu çağa göre). */
   cag?: string;
+  /** v24: işletmenin sahibi meslek (depo kapasite tablosu meslek × çağ). */
+  meslek?: string;
   /** v11: oyun başında seçilen ana ürün (hat id); bonusu yalnız o hatta uygulanır. Seçim yapılmamış/eski oyunlarda yok. */
   ana_urun?: string | null;
   /** İşletmenin kurulduğu oyun yılı (ilk ISLETME_GUVENLI_YIL yıl dış hırsızlık ve rakip saldırısı yok; eski kayıtlarda yok → baslangic_yili). */

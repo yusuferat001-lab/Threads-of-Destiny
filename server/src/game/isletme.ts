@@ -73,14 +73,25 @@ export interface IsletmeBaglami {
 
 // ── Sayılar (simülasyonla ayarlanır; bkz. scripts/simulateIsletme.ts) ───────
 /** Depo kademeleri (0..4): kapasite, çürüme oranı, sabit yıllık bakım (enflasyonsuz). Depo yılda BİR kez dolar. */
-export const DEPO_KAPASITE = [50, 75, 110, 160, 240];
-/** Sanayi Devrimi'nde talep (iki temel hat, daha büyük pazar) Orta Çağ'dan ~%25 yüksektir; depo kademeleri buna göre büyüktür. */
-export const DEPO_KAPASITE_SANAYI = [60, 90, 135, 195, 290];
-export function depoKapasiteTablosu(cag?: string): number[] {
-  return cag === "Sanayi Devrimi" ? DEPO_KAPASITE_SANAYI : DEPO_KAPASITE;
+/**
+ * v24: depo kapasite tabloları meslek × çağ'a göre ayrıdır (talep ALIM_ORANI 0,60 ile +%15 büyüdü).
+ * Orta Çağ'da iki temel hat yok, Sanayi'de pazar daha büyük; Zanaatkâr'da depo hammadde tutar. Değerler simülasyonla ayarlanır.
+ */
+export const DEPO_KAPASITE_TABLOLARI: Record<string, number[]> = {
+  "Tüccar|Orta Çağ": [58, 86, 127, 184, 276],
+  "Tüccar|Sanayi Devrimi": [69, 104, 155, 224, 334],
+  "Zanaatkâr|Orta Çağ": [58, 86, 127, 184, 276],
+  "Zanaatkâr|Sanayi Devrimi": [60, 90, 135, 195, 290],
+};
+/** Eski kayıtlar / bilinmeyen kombinasyon için yedek (Orta Çağ Tüccar). */
+export const DEPO_KAPASITE = DEPO_KAPASITE_TABLOLARI["Tüccar|Orta Çağ"];
+export function depoKapasiteTablosu(cag?: string, meslek?: string): number[] {
+  return DEPO_KAPASITE_TABLOLARI[`${meslek ?? "Tüccar"}|${cag ?? "Orta Çağ"}`] ?? DEPO_KAPASITE;
 }
 export const CURUME_ORANLARI = [0.1, 0.08, 0.06, 0.045, 0.03];
-export const DEPO_BAKIM = [5, 12, 26, 50, 90];
+export const DEPO_BAKIM = [6, 12, 24, 36, 55];
+/** v24: açık hatların toplam yıllık talebi müşteri sayısının bu katını geçemez. */
+export const TALEP_TAVAN_ORANI = 1;
 export const BASLANGIC_STOK = 30;
 /** Başlangıç deposunun doluluk oranı. */
 export const BASLANGIC_DEPO_DOLULUK = 0.75;
@@ -205,7 +216,7 @@ export function depoKademesi(is: IsletmeDurumu): number {
   return clamp(is.yatirimlar.depo ?? 0, 0, DEPO_KAPASITE.length - 1);
 }
 export function depoKapasitesi(is: IsletmeDurumu): number {
-  return depoKapasiteTablosu(is.cag)[depoKademesi(is)];
+  return depoKapasiteTablosu(is.cag, is.meslek)[depoKademesi(is)];
 }
 export function curumeOrani(is: IsletmeDurumu): number {
   return CURUME_ORANLARI[depoKademesi(is)];
@@ -642,7 +653,7 @@ export function isletmeBaslat(state: CharacterState, b: IsletmeBaglami): void {
   const hatlar: IsletmeHat[] = profil.hatlar.map((h) => ({
     id: h.id,
     acik: h.id === ilk.id,
-    stok: h.id === ilk.id ? (state.meslek === "Tüccar" ? depoKapasiteTablosu(state.cag)[0] : BASLANGIC_STOK) : 0,
+    stok: h.id === ilk.id ? (state.meslek === "Tüccar" ? depoKapasiteTablosu(state.cag, state.meslek)[0] : BASLANGIC_STOK) : 0,
     otomatik: true,
     siparis: 0,
     fiyat: "normal",
@@ -651,11 +662,12 @@ export function isletmeBaslat(state: CharacterState, b: IsletmeBaglami): void {
   }));
   state.isletme = {
     cag: state.cag,
+    meslek: state.meslek,
     hatlar,
     yatirimlar: {},
     // İlk malın yarısı peşin, yarısı veresiye: borç sattıkça kapanır, faizsiz.
     tedarikci_borcu: r2(
-      (state.meslek === "Tüccar" ? depoKapasiteTablosu(state.cag)[0] : BASLANGIC_STOK) *
+      (state.meslek === "Tüccar" ? depoKapasiteTablosu(state.cag, state.meslek)[0] : BASLANGIC_STOK) *
         ilk.birimMaliyet *
         b.giderEnflasyon *
         baslangicVeresiyeOrani(state.meslek),
@@ -714,6 +726,7 @@ export function isletmeHazirla(state: CharacterState, b: IsletmeBaglami): void {
   if (is.hirsizlik_sonraki_yil === undefined) is.hirsizlik_sonraki_yil = null;
   if (!is.depo_oto) is.depo_oto = { acik: false, yuzde: 50 };
   is.cag = state.cag; // v15: depo kapasitesi çağa göre değişir
+  is.meslek = state.meslek; // v24: ve mesleğe göre
   if (!is.piyasa_sapma) piyasaSapmasiniYenile(state);
   if (is.yil_alim === undefined) is.yil_alim = 0;
   if (!is.yil_alinan) is.yil_alinan = {};
@@ -1103,6 +1116,13 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
     const hs = hatHesapla(state, hat, tanim, b);
     return { hat, tanim, hs, talep: hs.talep * (1 - TALEP_GURULTUSU + Math.random() * 2 * TALEP_GURULTUSU) };
   });
+  // v24: toplam talep müşteri sayısını (×1,0) aşamaz; aşarsa hatlara orantılı kısılır.
+  const hamToplamTalep = planlar.reduce((t, x) => t + x.talep, 0);
+  const talepTavani = eskiMusteri * TALEP_TAVAN_ORANI;
+  if (hamToplamTalep > talepTavani && hamToplamTalep > 0) {
+    const k = talepTavani / hamToplamTalep;
+    for (const x of planlar) x.talep *= k;
+  }
   // Zanaatkâr'da depo HAMMADDE tutar (1 hammadde = 1 ürün); üretim tavanı alımı değil SATIŞI sınırlar (adım 5).
   const tavan = uretimTavani(state);
   const alim = is.yil_alim ?? 0; // yıl içinde ödenmiş alımlar (para zaten çekildi; yıl sonu nakit etkisinde geri eklenir)
