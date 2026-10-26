@@ -26,6 +26,8 @@ export interface PiyasaHamlesi {
   etki?: { tur: "alis_maliyeti" | "talep"; deger: number; sureYil: number };
   agirlik?: number;
   metin: { tr: string; en: string };
+  /** Din Adamı (cemaat) için anlatım; işletmeli hamlelerde yoksa Din Adamı'nda bu hamle hiç çıkmaz. */
+  dinMetin?: { tr: string; en: string };
 }
 
 export const RAKIP_HAMLELERI: PiyasaHamlesi[] = [
@@ -36,12 +38,22 @@ export const RAKIP_HAMLELERI: PiyasaHamlesi[] = [
       tr: "{rakip} fiyatları kırdı; müşterilerin bir kısmı ona kaydı.",
       en: "{rakip} slashed prices; some of your customers drifted over.",
     },
+
+    dinMetin: {
+      tr: "{rakip} ücretsiz yemek ve ayin dağıtmaya başladı; bazı inananların ona kaydı.",
+      en: "{rakip} began handing out free meals and rites; some of your flock drifted to them.",
+    },
   },
   {
     id: "urun_satmaya_basladi", simge: "🆕", yon: "buyur", yuzde: [0.02, 0.03], hedef: "oyuncu", isletmeli: true, urunlu: true,
     metin: {
       tr: "{rakip} de artık {urun} satmaya başladı; alıcılar bölündü.",
       en: "{rakip} now sells {urun} too; buyers are split.",
+    },
+
+    dinMetin: {
+      tr: "{rakip} de senin vaaz konularına el attı; dinleyiciler bölündü.",
+      en: "{rakip} took up your sermon themes too; listeners are split.",
     },
   },
   {
@@ -50,12 +62,22 @@ export const RAKIP_HAMLELERI: PiyasaHamlesi[] = [
       tr: "{rakip} yeni bir ürün çeşidi açtı; çarşıda konuşuluyor.",
       en: "{rakip} opened a new line of goods; the market is talking.",
     },
+
+    dinMetin: {
+      tr: "{rakip} yeni bir ayin düzeni kurdu; halk konuşuyor.",
+      en: "{rakip} set up a new order of worship; the people are talking.",
+    },
   },
   {
     id: "reklam", simge: "📣", yon: "buyur", yuzde: [0.02, 0.03], isletmeli: true,
     metin: {
       tr: "{rakip} büyük bir tanıtım kampanyası yaptı.",
       en: "{rakip} ran a big promotion campaign.",
+    },
+
+    dinMetin: {
+      tr: "{rakip} büyük bir vaaz turu düzenledi.",
+      en: "{rakip} held a big preaching tour.",
     },
   },
   {
@@ -64,12 +86,22 @@ export const RAKIP_HAMLELERI: PiyasaHamlesi[] = [
       tr: "{rakip} usta bir kalfa kattı; işleri hızlandı.",
       en: "{rakip} hired a skilled journeyman; business picked up.",
     },
+
+    dinMetin: {
+      tr: "{rakip} ünlü bir vaiz kattı; ibadethanesi dolup taşıyor.",
+      en: "{rakip} recruited a famed preacher; their sanctuary is overflowing.",
+    },
   },
   {
     id: "imtiyaz", simge: "📜", yon: "buyur", yuzde: [0.03, 0.05], isletmeli: true,
     metin: {
       tr: "{rakip} şehir yöneticisinden bir imtiyaz kopardı.",
       en: "{rakip} wrested a concession from the city governor.",
+    },
+
+    dinMetin: {
+      tr: "{rakip} şehir yöneticisinden bir vakıf imtiyazı kopardı.",
+      en: "{rakip} wrested a foundation concession from the city governor.",
     },
   },
   {
@@ -101,12 +133,22 @@ export const RAKIP_HAMLELERI: PiyasaHamlesi[] = [
       tr: "{rakip}'in malları bozuldu, rafları boşaldı.",
       en: "{rakip}'s goods spoiled and the shelves emptied.",
     },
+
+    dinMetin: {
+      tr: "{rakip}'in kumbarası boşaldı, adakları azaldı.",
+      en: "{rakip}'s offering box ran dry; their donations dwindled.",
+    },
   },
   {
     id: "kalitesiz_mal", simge: "😠", yon: "kuculur", yuzde: [0.04, 0.055], isletmeli: true,
     metin: {
       tr: "{rakip} kalitesiz mal skandalı yaşadı; halk ondan uzaklaştı.",
       en: "{rakip} was caught in a bad-goods scandal; people turned away.",
+    },
+
+    dinMetin: {
+      tr: "{rakip} yolsuzluk söylentisiyle anıldı; halk ondan uzaklaştı.",
+      en: "{rakip} was hit by corruption rumours; people turned away.",
     },
   },
   {
@@ -115,12 +157,22 @@ export const RAKIP_HAMLELERI: PiyasaHamlesi[] = [
       tr: "{rakip}'in dükkânında hırsızlık ve yangın çıktı.",
       en: "{rakip}'s shop suffered a theft and a fire.",
     },
+
+    dinMetin: {
+      tr: "{rakip}'in ibadethanesinde hırsızlık ve yangın çıktı.",
+      en: "{rakip}'s sanctuary suffered a theft and a fire.",
+    },
   },
   {
     id: "kalfa_ayrildi", simge: "🚪", yon: "kuculur", yuzde: [0.015, 0.025], isletmeli: true,
     metin: {
       tr: "{rakip}'in baş kalfası ayrıldı.",
       en: "{rakip}'s head journeyman quit.",
+    },
+
+    dinMetin: {
+      tr: "{rakip}'in baş vaizi ayrıldı.",
+      en: "{rakip}'s head preacher quit.",
     },
   },
   {
@@ -135,6 +187,11 @@ export const RAKIP_HAMLELERI: PiyasaHamlesi[] = [
     metin: {
       tr: "{rakip} tedarikçisiyle kavga etti; rafları yarı boş kaldı.",
       en: "{rakip} fell out with a supplier; shelves are half empty.",
+    },
+
+    dinMetin: {
+      tr: "{rakip} yerel yöneticiyle kavga etti; cemaati dağıldı.",
+      en: "{rakip} fell out with the local governor; their congregation scattered.",
     },
   },
   {
@@ -166,6 +223,11 @@ export const RAKIP_HAMLELERI: PiyasaHamlesi[] = [
       tr: "Bölgede bir panayır kuruldu; bu yıl talep artıyor.",
       en: "A fair opened in the region; demand is up this year.",
     },
+
+    dinMetin: {
+      tr: "Bölgede büyük bir bayram var; bu yıl bağışlar artıyor.",
+      en: "A great feast has come to the region; donations are up this year.",
+    },
   },
   {
     id: "kampanya_olumsuz", simge: "🌧️", yon: "kuculur", yuzde: [0.005, 0.01], isletmeli: true,
@@ -173,6 +235,11 @@ export const RAKIP_HAMLELERI: PiyasaHamlesi[] = [
     metin: {
       tr: "Çarşıda alışveriş durgun; bu yıl talep düşüyor.",
       en: "The market is sluggish; demand is down this year.",
+    },
+
+    dinMetin: {
+      tr: "Halk yoksulluktan yakınıyor; bu yıl bağışlar düşüyor.",
+      en: "The people complain of hardship; donations are down this year.",
     },
   },
 ];
@@ -183,14 +250,15 @@ export interface KucukOlay {
   /** Küçük esnaf havuzunun kendi müşterisine göre yüzde değişimi (işaretli). */
   yuzde: [number, number];
   metin: { tr: string; en: string };
+  dinMetin?: { tr: string; en: string };
 }
 
 export const KUCUK_OLAYLARI: KucukOlay[] = [
-  { id: "yeni_dukkan", simge: "🏠", yuzde: [0.015, 0.025], metin: { tr: "Mahalleye yeni bir dükkân açıldı; herkesten pay aldı.", en: "A new shop opened in the district and took a share from everyone." } },
-  { id: "kooperatif", simge: "🤲", yuzde: [0.02, 0.03], metin: { tr: "Küçük esnaf birleşip ucuza satmaya başladı.", en: "Small traders banded together and began selling cheap." } },
-  { id: "iflas", simge: "📉", yuzde: [-0.035, -0.025], metin: { tr: "Küçük esnaftan biri iflas etti; müşterileri dağıldı.", en: "A small trader went bankrupt; his customers scattered." } },
-  { id: "gezgin_tuccar", simge: "🧳", yuzde: [0.01, 0.02], metin: { tr: "Şehre bir gezgin satıcı geldi; müşteri çekti.", en: "A travelling seller came to town and drew customers." } },
-  { id: "carsi_yandi", simge: "🔥", yuzde: [-0.03, -0.02], metin: { tr: "Semt çarşısı yandı; esnafın müşterisi azaldı.", en: "The district bazaar burned down; small traders lost customers." } },
+  { id: "yeni_dukkan", simge: "🏠", yuzde: [0.015, 0.025], metin: { tr: "Mahalleye yeni bir dükkân açıldı; herkesten pay aldı.", en: "A new shop opened in the district and took a share from everyone." }, dinMetin: { tr: "Mahalleye yeni bir ibadet yeri açıldı; herkesten pay aldı.", en: "A new place of worship opened in the district and drew from everyone." } },
+  { id: "kooperatif", simge: "🤲", yuzde: [0.02, 0.03], metin: { tr: "Küçük esnaf birleşip ucuza satmaya başladı.", en: "Small traders banded together and began selling cheap." }, dinMetin: { tr: "Küçük cemaatler birleşip ortak yardım dağıtmaya başladı.", en: "Small congregations banded together to hand out aid." } },
+  { id: "iflas", simge: "📉", yuzde: [-0.035, -0.025], metin: { tr: "Küçük esnaftan biri iflas etti; müşterileri dağıldı.", en: "A small trader went bankrupt; his customers scattered." }, dinMetin: { tr: "Küçük bir cemaat dağıldı; mensupları etrafa saçıldı.", en: "A small congregation broke up; its members scattered." } },
+  { id: "gezgin_tuccar", simge: "🧳", yuzde: [0.01, 0.02], metin: { tr: "Şehre bir gezgin satıcı geldi; müşteri çekti.", en: "A travelling seller came to town and drew customers." }, dinMetin: { tr: "Şehre gezgin bir vaiz geldi; dinleyici çekti.", en: "A travelling preacher came to town and drew listeners." } },
+  { id: "carsi_yandi", simge: "🔥", yuzde: [-0.03, -0.02], metin: { tr: "Semt çarşısı yandı; esnafın müşterisi azaldı.", en: "The district bazaar burned down; small traders lost customers." }, dinMetin: { tr: "Semt çarşısı yandı; halkın bağış gücü azaldı.", en: "The district bazaar burned down; people can give less." } },
 ];
 
 /** Dönem başına küçük esnafın yıllık ek değişimi (kendi müşterisinin yüzdesi). */

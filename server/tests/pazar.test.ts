@@ -231,9 +231,9 @@ describe("meslek pazarı (müşteri modeli)", () => {
     expect(s.rakipler[0].musteri).toBeGreaterThan(0);
   });
 
-  it("baslangicMusteri yatkınlığa ve mirasa göre artar", () => {
-    const dusuk = baslangicMusteri(400, 1, false, () => 0);
-    const yuksek = baslangicMusteri(400, 4, true, () => 0);
+  it("baslangicMusteri yatkınlığa göre artar", () => {
+    const dusuk = baslangicMusteri(400, 1, () => 0);
+    const yuksek = baslangicMusteri(400, 5, () => 0);
     expect(yuksek).toBeGreaterThan(dusuk);
   });
 });
@@ -265,13 +265,13 @@ describe("v8.2: sabit müşteri desteği ve saldırı yardımcıları", () => {
     expect(rakipSaldiriKademesi(0.7)).toBe(3);
   });
 
-  it("saldırı yılı bugünden 4–9 yıl sonra; otorite ilişkisi yüksekse +1", () => {
-    expect(rastgeleSaldiriYili(1200, false, () => 0)).toBe(1204);
-    expect(rastgeleSaldiriYili(1200, false, () => 0.999)).toBe(1209);
-    expect(rastgeleSaldiriYili(1200, true, () => 0)).toBe(1205);
+  it("saldırı yılı bugünden 5–8 yıl sonra; otorite ilişkisi yüksekse +1", () => {
+    expect(rastgeleSaldiriYili(1200, false, () => 0)).toBe(1205);
+    expect(rastgeleSaldiriYili(1200, false, () => 0.999)).toBe(1208);
+    expect(rastgeleSaldiriYili(1200, true, () => 0)).toBe(1206);
     const gorulen = new Set<number>();
     for (let i = 0; i < 400; i++) gorulen.add(rastgeleSaldiriYili(1200, false));
-    expect([...gorulen].sort()).toEqual([1204, 1205, 1206, 1207, 1208, 1209]);
+    expect([...gorulen].sort()).toEqual([1205, 1206, 1207, 1208]);
   });
 
   it("tür ağırlıkları her kademede %100; kademe 1'de sabotaj/iftira, kademe 2'de sabotaj çıkmaz", () => {

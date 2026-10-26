@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { ogretileriTamamla } from "./_ogreti";
 import { olaySec } from "../src/game/olaySecici";
 import {
   createCharacter,
@@ -63,6 +64,7 @@ describe("şehir yönetimi (en üst rütbe sonrası sonsuz ilerleme)", () => {
       state.etiketler.push("tanisma_donum_25", "tanisma_donum_40"); // aşk evliliği tanışma fırsatı zorlanmasın
       state.ulke.savasta = true;
       state.rutbe_seviye = 4;
+      ogretileriTamamla(state);
       const senaryo = await senaryoUret(state.id);
       expect(senaryo.olay_basligi).toBe(beklenenBaslik[beklenenId]);
     }

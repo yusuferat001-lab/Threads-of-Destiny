@@ -6,31 +6,27 @@ import {
   mesleğiAta,
   senaryoUret,
   secimUygula,
-  yilGec,
   stateGetir,
-  isletmeKararVer,
-  yilKilidiVar,
 } from "../src/game/gameEngine";
 import { evcilHayvanEkle } from "../src/game/stateManager";
 import { OLAY_HIZIP_ZANAATKAR } from "../src/data/olaylar/hizipZanaatkar";
 import { OLAY_BANKASI } from "../src/data/olaylar";
 import type { SecimSonucu, TepkiSonucu } from "../src/types";
 
-/** secimUygula bazen ara_tepki döner; yilGecAyri bayrağıyla çözer. */
-async function sec(id: string, index: number, yilGecAyri: boolean): Promise<SecimSonucu> {
-  // Rastgele olayın şıkkı kilitli/pahalı olabilir: ilk uygulanabilir şıkkı dene.
+/** Rastgele olayın şıkkı kilitli/pahalı olabilir: ilk uygulanabilir şıkkı dener; ara_tepki'yi çözer. */
+async function sec(id: string, index: number, _u?: boolean): Promise<SecimSonucu> {
   let sonuc: SecimSonucu | TepkiSonucu | undefined;
   let hata: unknown;
   for (const i of [index, 0, 1, 2, 3]) {
     try {
-      sonuc = await secimUygula(id, i, yilGecAyri);
+      sonuc = await secimUygula(id, i);
       break;
     } catch (e) {
       hata = e;
     }
   }
   if (!sonuc) throw hata;
-  if ("ara_tepki" in sonuc) sonuc = await secimUygula(id, 1, yilGecAyri);
+  if ("ara_tepki" in sonuc) sonuc = await secimUygula(id, 1);
   return sonuc as SecimSonucu;
 }
 
@@ -42,91 +38,6 @@ async function hazirOyun() {
   state.para = 500; // rastgele olayın şık maliyeti testi bozmasın
   return state;
 }
-
-describe("olay başına 2 yıl: olay yılı + 'Yıl Geç' sakin yılı", () => {
-  it("varsayılan akışta (test/bot) olay yılı ve sakin yıl aynı çağrıda geçer: toplam 2 yıl", async () => {
-    const state = await hazirOyun();
-    const yilOnce = state.yil;
-    await senaryoUret(state.id);
-    const sonuc = await sec(state.id, 0, false); // ilk uygulanabilir şık (kilitli/pahalı şık testi bozmasın)
-    // Seçilen rastgele olay hapis/veba/kaçak kilidi kurarsa o turda sakin yıl yoktur (olay başına 1 yıl).
-    if (sonuc.state.aktif && !yilKilidiVar(sonuc.state)) {
-      expect(sonuc.yasArtisi).toBe(2);
-      expect(sonuc.state.yil - yilOnce).toBe(2);
-      expect(sonuc.state.sakin_yil_bekliyor).toBe(false);
-    }
-  });
-
-  it("yilGecAyri=true iken olay yalnız 1 yıl ilerletir, sakin yıl 'Yıl Geç' ile 1 yıl daha geçirir", async () => {
-    const state = await hazirOyun();
-    const yilOnce = state.yil;
-    await senaryoUret(state.id);
-    const sonuc = await sec(state.id, 0, true);
-    if (!sonuc.state.aktif) return; // nadir: ölüm
-    expect(sonuc.state.yil - yilOnce).toBe(1);
-    expect(sonuc.state.sakin_yil_bekliyor).toBe(true);
-    const yil = await yilGec(state.id);
-    expect(yil.yasArtisi).toBe(1);
-    expect(yil.state.yil - yilOnce).toBe(2);
-    expect(yil.state.sakin_yil_bekliyor).toBe(false);
-  });
-
-  it("'Yıl Geç' sakin yıl beklenmiyorsa ya da cevaplanmamış olay varken reddedilir", async () => {
-    const state = await hazirOyun();
-    await expect(yilGec(state.id)).rejects.toThrow();
-    await senaryoUret(state.id);
-    await expect(yilGec(state.id)).rejects.toThrow();
-  });
-
-  it("sakin yıl atlanırsa senaryoUret onu otomatik geçirir (eski istemci uyumu)", async () => {
-    const state = await hazirOyun();
-    await senaryoUret(state.id);
-    const sonuc = await sec(state.id, 0, true);
-    if (!sonuc.state.aktif) return;
-    const yilOnce = sonuc.state.yil;
-    try {
-      await senaryoUret(state.id);
-    } catch {
-      return; // sakin yılda ölüm
-    }
-    const sonra = await stateGetir(state.id);
-    expect(sonra.yil - yilOnce).toBe(1);
-    expect(sonra.sakin_yil_bekliyor).toBe(false);
-  });
-
-  it("hapiste/yolculukta/kaçakken sakin yıl kurulmaz (olay başına 1 yıl)", async () => {
-    const state = await hazirOyun();
-    state.hapis_ceza_kalan = 8;
-    state.hapis_ceza_toplam = 8;
-    etiketEkle(state, ["hapiste"]);
-    const yilOnce = state.yil;
-    await senaryoUret(state.id);
-    const sonuc = await sec(state.id, 0, true);
-    if (!sonuc.state.aktif) return;
-    expect(sonuc.state.yil - yilOnce).toBeLessThanOrEqual(1);
-    // Seçim hapisten çıkardıysa (kaçış/af) kilit kalkar ve normal sakin yıl kurulur; hâlâ içerideyse kurulmaz.
-    if (sonuc.state.etiketler.includes("hapiste")) expect(sonuc.state.sakin_yil_bekliyor).toBe(false);
-  });
-
-  it("yolculukta her 2 olayda 1 yıl geçer ve işletme/çalışan işlemleri kilitlidir", async () => {
-    const state = await hazirOyun();
-    etiketEkle(state, ["yolculukta", "yolculuk_tipi:kesif", "yolculuk_yolu:deniz"]);
-    state.yas = 31;
-    state.tur_sayisi = 10;
-    const yilOnce = state.yil;
-    for (let i = 0; i < 2; i++) {
-      await senaryoUret(state.id);
-      const sonuc = await sec(state.id, 0, false);
-      if (!sonuc.state.aktif) return;
-      if (!sonuc.state.etiketler.includes("yolculukta")) break;
-    }
-    const sonra = await stateGetir(state.id);
-    if (sonra.etiketler.includes("yolculukta")) {
-      expect(sonra.yil - yilOnce).toBe(1);
-      await expect(isletmeKararVer(state.id, [], undefined)).rejects.toThrow(/Yolculuk/);
-    }
-  });
-});
 
 describe("durumlar yıl sayar", () => {
   it("yıllık etki geçen yıl sayısıyla çarpılır, süre yıl olarak düşer, bitince etiket eklenir", () => {
@@ -221,27 +132,11 @@ describe("garanti tekrarı hatası düzeldi", () => {
     for (let i = 0; i < 4; i++) {
       const senaryo = await senaryoUret(state.id);
       gorulen.push(senaryo.olay_basligi);
-      const s = await sec(state.id, 0, false);
+      const s = await sec(state.id, 0);
       if (!s.state.aktif) break;
     }
     // Eskiden aynı genel hizip olayı hedef dolana kadar her turda tekrar zorlanıyordu.
     expect(new Set(gorulen).size).toBeGreaterThan(1);
-  });
-});
-
-describe("sosyalleşme mekân olayı sakin yılı yutmaz", () => {
-  it("mekân olayı kuyruktayken senaryoUret sakin yılı otomatik geçirmez", async () => {
-    const { sosyallesmeYerineGit } = await import("../src/game/gameEngine");
-    const state = await hazirOyun();
-    state.yas = 30;
-    state.para = 50;
-    state.sakin_yil_bekliyor = true;
-    const yilOnce = state.yil;
-    await sosyallesmeYerineGit(state.id, "pazar_meydani");
-    await senaryoUret(state.id);
-    const sonra = await stateGetir(state.id);
-    expect(sonra.yil).toBe(yilOnce);
-    expect(sonra.sakin_yil_bekliyor).toBe(true);
   });
 });
 

@@ -73,6 +73,14 @@ export const KATALOG_EN: Record<string, string> = {
   "Acemi Çaylak": "Green Recruit",
   "Kılıca Yatkın": "Natural with a Blade",
   "Doğuştan Savaşçı": "Born Warrior",
+  "Yiğit Savaşçı": "Valiant Fighter",
+  "Keskin Pazarlıkçı": "Sharp Haggler",
+  "Halkın Sevdiği Vaiz": "Beloved Preacher",
+  "Parmakları Altın": "Golden Fingers",
+  "Gözü Pek Subay": "Daring Officer",
+  "Kurnaz Girişimci": "Shrewd Entrepreneur",
+  "Gönülleri Fetheden": "Winner of Hearts",
+  "Zanaatın Gözdesi": "Darling of the Craft",
   "Pazarlıktan Anlamaz": "Hopeless Haggler",
   "Sıradan Satıcı": "Ordinary Peddler",
   "Ticari Zekası Parlak": "Sharp Trading Mind",
@@ -190,6 +198,9 @@ export const KATALOG_EN: Record<string, string> = {
 
   // fabrika_iscisi kalıcı durumu
   "Tozlu Ciğerler": "Dusty Lungs",
+  "Karantina": "Quarantine",
+  "Tedbirli çalışma": "Careful operation",
+  "Korku": "Fear",
 
   // ---------------------------------------------------------------------------
   // Rütbe unvanları (5 kademe × meslek × çağ + İslam varyantı)

@@ -100,6 +100,8 @@ export interface UlkeDurumu {
   nufusDurumu: "artiyor" | "normal" | "azaliyor";
   /** Genel dönem (bolluk/durgunluk/kıtlık). `ekonomi` bundan türetilir. Eski kayıtlarda göçle atanır. */
   donem?: DonemDurumu;
+  /** Dönem torbası (v10): sıradaki dönemlerin karışık sırası; torba bitince yeniden karıştırılır (bir ömürde üç dönemin gelme sayısı yakın kalır). */
+  donem_torbasi?: DonemTuru[];
 }
 
 /** Piyasa mülkleri: her biri en fazla bir kez sahiplenilebilir, getirisi state.ulke'ye göre her tur yeniden hesaplanır. */
@@ -297,7 +299,7 @@ export interface CharacterState {
    * gelen bir yetenek damgası). 1=kötü, 2=nötr, 3=iyi, 4=mükemmel — bkz.
    * data/meslekYatkinlik.ts. Meslek henüz seçilmediyse null.
    */
-  meslek_yatkinlik_seviyesi: 1 | 2 | 3 | 4 | null;
+  meslek_yatkinlik_seviyesi: 1 | 2 | 3 | 4 | 5 | null;
   /** Kademeden türeyen kanonik (TÜRKÇE) unvan — ör. "Kılıca Yatkın"; client `kt()` ile çevirir. Meslek seçilmediyse null. */
   meslek_yatkinlik_unvani: string | null;
   /** Kademeden türeyen kalıcı oransal bonus/malus (ör. -0.15 → olay şansı ×0.85); nötr kademede 0. */
@@ -394,6 +396,18 @@ export interface CharacterState {
    * olayı yaşansın, kaçış fikri ondan sonra gelsin.
    */
   hapis_tur_sayaci: number;
+  /**
+   * Zaman modeli. "ilerle" (telefon ana ekranı): olaya cevap vermek yıl geçirmez, yıl yalnız
+   * "İLERLE" (`POST /:id/yil-gec`, 1 yıl) ile geçer; son olaydan `yil_sayaci >= 2` yıl sonra olay çıkar.
+   * Yoksa eski "klasik" akış (her seçim %60/%40 ile 1-2 yıl ilerletir).
+   */
+  /** v11: Tüccar/Zanaatkâr oyun başında 3 ürün arasından birini seçmeden oyun devam etmez (yalnız "ilerle" oyunlarında). */
+  urun_secim_bekliyor?: boolean;
+  zaman_modeli?: "ilerle";
+  /** Son olaydan beri geçen yıl ("ilerle" modu); olay üretilince 0'a döner, 2'de yeni olay çıkar. */
+  yil_sayaci?: number;
+  /** Sunucu her kayıtta hesaplar: şu an çözülmesi gereken bir olay var mı ("ilerle" modu; klasikte hep true). */
+  olay_bekliyor?: boolean;
   /** Sahip olunan piyasa mülkleri (her türden en fazla bir tane). */
   mulkler: MulkTuru[];
   /**
@@ -498,7 +512,6 @@ export interface CharacterState {
   /** 7-8 yıllık ihmal uyarı olayı bu evlilikte gösterildi mi. */
   es_ihmal_uyari_goruldu: boolean;
   /** Bir olay turundan sonra tek bir sakin yıl ("Yıl Geç") bekleniyor; hapis/yolculuk/kaçak/veba hastalığında hiç kurulmaz. */
-  sakin_yil_bekliyor: boolean;
   /** Mantık evliliği aday listesi (3 kişi); boşsa ilk açılışta üretilir. */
   mantik_adaylar: MantikAday[];
   /** Aday listesinin yenileneceği oyun yılı. */
@@ -754,8 +767,8 @@ export interface YonetimTalep {
   /** Talebi yapan kişinin adı (gösterim). */
   kimAdi: string;
   /** "bagis" = para ister; "sadakat" = para yok ama ret ilişkiyi çok düşürür. */
-  tur: "bagis" | "sadakat";
-  /** İstenen para (tur === "sadakat" ise 0). */
+  tur: "bagis" | "sadakat" | "aciklama";
+  /** İstenen para (tur === "sadakat" veya "aciklama" ise 0). */
   tutar: number;
   /** Talebin insan-okunur gerekçesi (ör. "saray onarımı için bağış"). */
   kalem: string;
@@ -880,7 +893,7 @@ export type IsletmeAdayTipi = "serseri" | "sadik_cirak" | "siradan" | "usta_guve
 export type IsletmeFiyat = "eksi20" | "eksi10" | "normal" | "arti10" | "arti20";
 
 /** Stok hedefi (işletme geneli): beklenen talebe göre ne kadar stok tutulacağı. */
-export type IsletmeStokHedefi = "cokaz" | "az" | "normal" | "fazla" | "dolu";
+export type IsletmeStokHedefi = "az" | "normal" | "fazla";
 
 /** İşletmedeki bir ürün hattı (Tüccar: sektör, Zanaatkâr: hedef pazar…). */
 export interface IsletmeHat {
@@ -929,17 +942,23 @@ export interface IsletmeUyari {
     | "ic_hirsizlik"
     | "rakip_saldiri"
     | "vergi_indirimi_bitti"
-    | "imtiyaz_bitti";
+    | "imtiyaz_bitti"
+    | "bina_tasti"
+    | "asiri_olay"
+    | "mezun";
   hat?: string;
   isim?: string;
   /** hırsızlık sonucu / rakip saldırı türü (istemci metni bunlardan kurar). */
-  sonuc?: "agir" | "rahat" | "kismi" | "engellendi" | "sans" | "musteri_calma" | "iftira" | "sabotaj" | "baskin" | "nakit";
+  sonuc?: "agir" | "rahat" | "kismi" | "engellendi" | "sans" | "musteri_calma" | "iftira" | "sabotaj" | "baskin" | "nakit" | "kumbara" | "muridcalma" | "bidat" | "aforoz" | "yangin" | "engizisyon";
   /** Rakip saldırısı: saldıran rakibin adı, güvenlik engelledi mi, içerden sızma var mı, kaybedilen müşteri (ondalık), şöhret ve stok kaybı. */
   rakip?: string;
   engellendi?: boolean;
   sizma?: boolean;
   musteriKaybi?: number;
   sohretKaybi?: number;
+  /** Dini saldırılarda ahlak ve otorite kaybı (puan). */
+  ahlakKaybi?: number;
+  otoriteKaybi?: number;
   /** Çalınan/azalan ürün oranı (%) ve nakit hasarı (%, geçen yıl brüt kârına göre); tutar olarak da `tutar`. */
   urunYuzde?: number;
   nakitYuzde?: number;
@@ -966,9 +985,25 @@ export interface IsletmeDokum {
   musteri: number;
   musteriDegisim: number;
   pazarMusteri: number;
-  hatlar: { id: string; talep: number; satilan: number; alinan: number; stokSonu: number }[];
+  /** v11: yıllık çalışan maaşları toplamı, hırsızlık/baskın nakit hasarı, tazminat vb. ek gider ve çürüyen malın alış değeri (eski kayıtlarda yok → 0). */
+  calisanMaasi?: number;
+  nakitHasar?: number;
+  ekstraGider?: number;
+  curumeKaybi?: number;
+  hatlar: { id: string; talep: number; satilan: number; alinan: number; stokSonu: number; birimMaliyet?: number; birimFiyat?: number }[];
   /** Üretim modundaki mesleklerde (Zanaatkâr) o yılın üretim tavanı ve kullanılan miktar. */
   uretim?: { tavan: number; kullanilan: number };
+  /** Din Adamı (cemaat modu) yıl dökümü: bağış/faaliyet ayrıntıları. `satis` toplam gelir, `alim` faaliyet+ayin masrafı, `depoMasrafi` bina bakımı, `loncaAidati` teşkilat aidatıdır. */
+  cemaat?: {
+    gelmeOrani: number;
+    gelen: number;
+    kapasite: number;
+    bagis: number;
+    faaliyetler: { id: string; gelir: number; masraf: number }[];
+    ayinMasrafi: number;
+    yardim: number;
+    fanatiklik: number;
+  };
   uyarilar: IsletmeUyari[];
 }
 
@@ -986,6 +1021,27 @@ export interface IsletmeAday {
   maas_taban: number;
 }
 
+/** Din Adamı cemaat işletmesi politikaları (v10). */
+export type CemaatBagis = IsletmeFiyat;
+export type CemaatKitle = "alt" | "genel" | "ust";
+export type CemaatYardim = "dusuk" | "orta" | "yuksek";
+export type CemaatTon = "ilimli" | "dengeli" | "atesli";
+
+export interface CemaatDurumu {
+  bagis: CemaatBagis;
+  kitle: CemaatKitle;
+  yardim: CemaatYardim;
+  ton: CemaatTon;
+  /** 0-100: yavaş artar, bağış oranını yükseltir ama inanan kaçışı, otorite kaybı ve aşırılık riski getirir. */
+  fanatiklik: number;
+  /** Seçilen öğreti id'leri (rütbe seviyesi başına bir). */
+  ogretiler: string[];
+  /** Seçilmeyi bekleyen öğreti seviyesi; doluysa oyun devam etmez. */
+  bekleyen_ogreti: number | null;
+  mezun_son_yil: number | null;
+  asiri_son_yil: number | null;
+}
+
 /** Meslek işletmesi (şu an yalnız Tüccar; 2026-10 dikey dilim). Diğer meslekler null → eski maaş sistemi. */
 export interface IsletmeDurumu {
   hatlar: IsletmeHat[];
@@ -999,14 +1055,30 @@ export interface IsletmeDurumu {
   aday_yili: number;
   /** Gümrük rüşveti etkisi: bu oyun yılına kadar alış maliyeti %15 düşük (§45). */
   gumruk_indirim_bitis?: number;
-  /** Stok hedefi (varsayılan "normal"); sipariş sayısı kalktı. */
+  /** @deprecated v12: stok hedefi kalktı (depo elle doldurulur); eski kayıtlarda göçte silinir. */
   stok_hedefi?: IsletmeStokHedefi;
-  /** Son dış hırsızlık girişiminin yılı (3 yıl cooldown). */
+  /** v12: bu yıl elle yapılan mal alımlarının toplam tutarı ve hat başına adetleri (yıl sonunda sıfırlanır). */
+  yil_alim?: number;
+  yil_alinan?: Record<string, number>;
+  /** Son dış hırsızlık yılı (bilgi). */
   hirsizlik_son_yil?: number | null;
-  /** Otoriteden alınan süreli imtiyazlar: imtiyaz id → bitiş yılı (pazar_imtiyazi, gumruk_muafiyeti, tekel_ruhsati, hammadde_tahsisi, atolye_ruhsati). */
+  /** v20: bir sonraki dış hırsızlık yılı (takvim: önceki olaydan 9-11 yıl sonra; ilk 7 yıl yok). */
+  hirsizlik_sonraki_yil?: number | null;
+  /** v20: yıl başı piyasa sapması: hat başına alış ±%3, satış ±%2 (o yıl sabit). */
+  piyasa_sapma?: Record<string, { alis: number; satis: number }>;
+  piyasa_sapma_yili?: number;
+  /** v20: otomatik depo doldurma — açıkken her yıl başı depo seçilen yüzdeye para yettiği kadar dolar. */
+  depo_oto?: { acik: boolean; yuzde: number };
+  /** v11: oyun başında seçilen ana ürün (hat id); bonusu yalnız o hatta uygulanır. Seçim yapılmamış/eski oyunlarda yok. */
+  ana_urun?: string | null;
+  /** İşletmenin kurulduğu oyun yılı (ilk ISLETME_GUVENLI_YIL yıl dış hırsızlık ve rakip saldırısı yok; eski kayıtlarda yok → baslangic_yili). */
+  baslangic_yili?: number;
+  /** Otoriteden alınan süreli imtiyazlar: imtiyaz id → bitiş yılı (pazar_imtiyazi, gumruk_muafiyeti, tekel_ruhsati, hammadde_tahsisi, atolye_ruhsati, vakif_muafiyeti, kutsal_gun_imtiyazi). */
   imtiyazlar?: Record<string, number>;
   /** Tekel ruhsatı verilen hat (ruhsat süresince satış fiyatı +%10). */
   tekel_hat?: string | null;
+  /** Yalnız Din Adamı (cemaat modu). */
+  cemaat?: CemaatDurumu;
 }
 
 /** Dünya dönemi "sıcak ürün" bilgisi (deterministik) — kart etiketi için. */

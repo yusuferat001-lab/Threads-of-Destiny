@@ -48,7 +48,7 @@ export const YASAM_SECENEKLERI: YasamSecenegiTanimi[] = [
     ad: "Sade Sofra",
     simge: "🍞",
     aciklama: "Dengeli bir sofra; ne artısı ne eksisi var. Artık yemek seni yıpratmıyor.",
-    maliyetYillik: 5,
+    maliyetYillik: 4.5,
   },
   {
     id: "keyifli_sofra",
@@ -56,7 +56,7 @@ export const YASAM_SECENEKLERI: YasamSecenegiTanimi[] = [
     simge: "🍲",
     aciklama:
       "Şatafatsız ama lezzetli, canını sıcacık hissettiren bir sofra; sağlıktan çok keyif ve moral için yenir.",
-    maliyetYillik: 9,
+    maliyetYillik: 8,
     saglikEtkisiYillik: 1,
     mutlulukEtkisiYillik: 3,
   },
@@ -65,7 +65,7 @@ export const YASAM_SECENEKLERI: YasamSecenegiTanimi[] = [
     ad: "Dengeli Sofra",
     simge: "🥘",
     aciklama: "Taze ve besleyici, bedenini gerçekten güçlendiren dengeli bir beslenme düzeni.",
-    maliyetYillik: 14,
+    maliyetYillik: 13,
     saglikEtkisiYillik: 3,
     mutlulukEtkisiYillik: 2,
     unEtkisiYillik: 1,
@@ -76,7 +76,7 @@ export const YASAM_SECENEKLERI: YasamSecenegiTanimi[] = [
     simge: "🍖",
     aciklama:
       "Her akşam sanki bir şölenmiş gibi yersin; gerçekten pahalı ama bu sofradan kalkanlar hem doyar hem de senden söz eder.",
-    maliyetYillik: 21,
+    maliyetYillik: 20,
     saglikEtkisiYillik: 3,
     mutlulukEtkisiYillik: 3,
     unEtkisiYillik: 4,

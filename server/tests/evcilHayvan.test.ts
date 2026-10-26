@@ -214,18 +214,23 @@ describe("evcil hayvan sistemi: pasif bonuslar", () => {
     expect(etki3.para).toBe(100);
   });
 
-  it("Köpek (sağlık) veba hastalığı doğal düşüşünü hızlandırır", () => {
-    const state = yeniKarakter();
-    state.etiketler.push("veba_hastasi");
-    state.veba_olum_riski = 60;
-    vi.spyOn(Math, "random").mockReturnValue(0.99); // ölüm zarı tutmaz
-    vebaHastaligiKontrol(state);
-    const bonussuz = state.veba_olum_riski;
-    state.veba_olum_riski = 60;
-    state.etiketler.push("veba_hastasi");
-    evcilHayvanEkle(state, "Köpek").bonus_id = "kopek_saglik";
-    vebaHastaligiKontrol(state);
-    expect(state.veba_olum_riski).toBe(bonussuz - 3);
+  it("Köpek (sağlık) veba hastalığında ölüm olasılığını 5 puan düşürür", () => {
+    const olum = (kopekli: boolean) => {
+      const state = yeniKarakter();
+      state.etiketler.push("veba_hastasi");
+      state.veba_olum_riski = 55;
+      if (kopekli) evcilHayvanEkle(state, "Köpek").bonus_id = "kopek_saglik";
+      let oldu = 0;
+      const N = 6000;
+      for (let i = 0; i < N; i++) {
+        state.etiketler = state.etiketler.filter((e) => e !== "veba_hastasi").concat("veba_hastasi");
+        state.veba_olum_riski = 55;
+        state.saglik = 80;
+        if (vebaHastaligiKontrol(state).karakterOldu) oldu++;
+      }
+      return oldu / N;
+    };
+    expect(olum(false) - olum(true)).toBeGreaterThan(0.02);
   });
 });
 

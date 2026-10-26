@@ -178,7 +178,6 @@ const TR = {
   meslekSecAlt: 'Ailenin mesleğini sürdürürsen hazır bir müşteri ve tanıdık ağı devralırsın.',
   acilisSkorIpucu:
     'Skorun; servetin, şöhretin, ahlakın, mutluluğun ve rütbenin toplamından oluşur. Sarayda bulunmak, büyük bir yolculuğu tamamlamak ve esrarengiz bir eşyaya sahip olmak ekstra puan katar; hayat amaçlarını tamamlamak skoru katlar.',
-  meslekMirasIpucu: '✓ Aile mesleğin — bonus kazanırsın',
   meslekAciklamaAsker: 'Savaş, sadakat ve rütbe. Yüksek risk, hızlı ün.',
   meslekAciklamaTuccar: 'Kâr, pazarlık ve ağ kurma. Yüksek kazanç potansiyeli.',
   meslekAciklamaDinAdami: 'Cemaat, vicdan ve nüfuz. İstikrarlı saygınlık.',
@@ -593,6 +592,8 @@ const TR = {
   kpYatkinlikZar: 'Zar',
   kpYatkinlikMaas: 'Maaş',
   kpYatkinlikTecrube: 'Tecrübe',
+  kpYatkinlikMusteri: 'Müşteri',
+  kpYatkinlikYillik: '/yıl',
   kpYatkinlikSohret: 'Şöhret',
   kpYatkinlikYok: 'Yatkınlık bonusu yok',
   kpSinerji: 'sinerjisi',
@@ -909,7 +910,6 @@ const EN: Metinler = {
   meslekSecAlt: "If you continue your family's trade, you inherit a ready network of clients and contacts.",
   acilisSkorIpucu:
     'Your score is the sum of your wealth, fame, morality, happiness and rank. Being received at court, completing a great journey, and owning a mysterious item all add extra points; completing your life goals multiplies your score.',
-  meslekMirasIpucu: '✓ Your family trade — you earn a bonus',
   meslekAciklamaAsker: 'War, loyalty and rank. High risk, quick fame.',
   meslekAciklamaTuccar: 'Profit, bargaining and networking. High earning potential.',
   meslekAciklamaDinAdami: 'Congregation, conscience and influence. Steady prestige.',
@@ -1324,6 +1324,8 @@ const EN: Metinler = {
   kpYatkinlikZar: 'Dice',
   kpYatkinlikMaas: 'Pay',
   kpYatkinlikTecrube: 'Pace',
+  kpYatkinlikMusteri: 'Customers',
+  kpYatkinlikYillik: '/yr',
   kpYatkinlikSohret: 'Fame',
   kpYatkinlikYok: 'No aptitude bonus',
   kpSinerji: 'synergy',

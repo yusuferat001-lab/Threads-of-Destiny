@@ -2,9 +2,10 @@ import type { DonemEtkisi, DonemTuru } from "../types";
 
 /**
  * Dünya dönemleri (2026-10, Faz A): her an bolluk / durgunluk / kıtlık'tan biri
- * sürer. Aynı dönem asla arka arkaya gelmez — biten dönemin yerine kalan ikisinden
- * biri %50 gelir (savaş sürerken bolluk gelemez). Savaş ve veba dönemden bağımsız
- * işler ama ikisi aynı anda olmaz.
+ * sürer. Aynı dönem asla arka arkaya gelmez. Sıra "dönem torbasıyla" seçilir (v10):
+ * üç dönem karışık bir torbaya konur, torba bitince yeniden karıştırılır — bir
+ * ömürde üçünün gelme sayısı birbirine yakın kalır (savaş sürerken bolluk çekilmez,
+ * torbada bekler). Savaş ve veba dönemden bağımsız işler ama ikisi aynı anda olmaz.
  *
  * Etkiler her dönem / savaş / veba başlarken kendi aralığından BİR KEZ, tam yüzde
  * olarak zarla belirlenir ve o dönem boyunca sabit kalır (bir bollukta lüks talep
@@ -28,16 +29,16 @@ interface EtkiAraliklari {
 
 /** Süre (yıl, iki uç dahil). */
 export const DONEM_SURE: Record<DonemTuru, Aralik> = {
-  bolluk: [5, 6],
-  durgunluk: [5, 6],
-  kitlik: [3, 3],
+  bolluk: [4, 5],
+  durgunluk: [4, 5],
+  kitlik: [2, 3],
 };
 
 const DONEM_ETKI_ARALIKLARI: Record<DonemTuru, EtkiAraliklari> = {
-  bolluk: { temelTalep: [3, 7], temelFiyat: [-9, -5], luksTalep: [30, 45], luksFiyat: [10, 16], yasamGideri: [-10, -6], maas: [6, 10], pazarBuyume: [30, 45] },
-  durgunluk: { temelTalep: [-13, -8], temelFiyat: [-2, 2], luksTalep: [-35, -25], luksFiyat: [-11, -6], yasamGideri: [2, 5], maas: [-10, -6], pazarBuyume: [10, 20] },
+  bolluk: { temelTalep: [3, 7], temelFiyat: [-9, -5], luksTalep: [25, 35], luksFiyat: [10, 16], yasamGideri: [-6, -3], maas: [6, 10], pazarBuyume: [40, 50] },
+  durgunluk: { temelTalep: [-10, -6], temelFiyat: [-2, 2], luksTalep: [-30, -20], luksFiyat: [-10, -6], yasamGideri: [1, 3], maas: [-10, -6], pazarBuyume: [10, 20] },
   // Kıtlıkta temel mal (tahıl, kap-kacak) talebi patlar: işletme için "depoyu doldur" fırsatı (§45).
-  kitlik: { temelTalep: [40, 60], temelFiyat: [45, 60], luksTalep: [-50, -40], luksFiyat: [-12, -8], yasamGideri: [25, 35], maas: [-12, -8], pazarBuyume: [0, 10] },
+  kitlik: { temelTalep: [20, 35], temelFiyat: [15, 30], luksTalep: [-35, -25], luksFiyat: [-10, -6], yasamGideri: [8, 12], maas: [-12, -8], pazarBuyume: [-30, -20] },
 };
 
 
@@ -51,33 +52,35 @@ export const SAVAS_SURE: Aralik = [4, 5];
 export const SAVAS_VERGI: Aralik = [7, 10];
 const SAVAS_ETKI_ARALIKLARI: EtkiAraliklari = {
   temelTalep: [0, 0],
-  temelFiyat: [18, 25],
-  luksTalep: [-40, -30],
+  temelFiyat: [10, 18],
+  luksTalep: [-30, -20],
   luksFiyat: [0, 0],
-  yasamGideri: [12, 18],
+  yasamGideri: [4, 6],
   maas: [-10, -6],
-  pazarBuyume: [-60, -40],
+  // v10: savaşta toplam pazar yılda −%1.5…−2.5 (herkesin müşterisi aynı oranda erir).
+  pazarBuyume: [-25, -15],
 };
 
 // ── Veba ───────────────────────────────────────────────────────────────────
-export const VEBA_YILLIK_IHTIMAL = 0.04;
-/** Veba bu yaştan itibaren çıkabilir. */
-export const VEBA_MIN_YAS = 20;
-/** Bu yaşa kadar hiç veba görmediyse zorla tetiklenir (her oyunda veba kesin çıkar). */
-export const VEBA_ZORUNLU_YAS = 45;
-/** Son vebanın bitişinden sonra yeni dalga için beklenecek yıl. */
-export const VEBA_COOLDOWN_YIL = 30;
-export const VEBA_SURE: Aralik = [5, 6];
+/** v10: veba bir ömürde TAM BİR kez çıkar; oyunun (karakter yaratılışından itibaren) ilk 12 yılında çıkmaz, sonra yılda %5. */
+export const VEBA_YILLIK_IHTIMAL = 0.05;
+export const VEBA_ILK_YIL_YOK = 12;
+/** Bu yaşa kadar hiç veba görmediyse zorla tetiklenir (savaş/havuz kilidi varsa bitince). */
+export const VEBA_ZORUNLU_YAS = 50;
+export const VEBA_SURE: Aralik = [4, 5];
+/** Veba bittikten sonra bu kadar yıl toplam pazar yılda +%2 büyür (toparlanma). */
+export const VEBA_TOPARLANMA_YIL = 8;
+export const VEBA_TOPARLANMA_ORAN = 0.02;
 const VEBA_ETKI_ARALIKLARI: EtkiAraliklari = {
-  temelTalep: [-25, -18],
-  temelFiyat: [12, 18],
-  luksTalep: [-55, -45],
+  temelTalep: [-20, -12],
+  temelFiyat: [8, 14],
+  luksTalep: [-35, -25],
   luksFiyat: [0, 0],
   yasamGideri: [0, 0],
   // İşçi kıtlığı: maaşla çalışanın ücreti artar.
   maas: [8, 12],
-  // Veba: müşteri ölür.
-  pazarBuyume: [-100, -60],
+  // Veba: müşteri ölür (v10: yılda −%4…−5).
+  pazarBuyume: [-50, -40],
 };
 
 /** Dedikodunun yaklaşan dönem/savaş/veba hakkında doğru söyleme ihtimali. */
@@ -116,7 +119,7 @@ function etkiZarla(a: EtkiAraliklari, rnd: () => number): DonemEtkisi {
 
 /** Eski kayıtlarda `etki.pazarBuyume` yoksa türün orta değeri (kesir, yıllık). */
 export function pazarBuyumeVarsayilan(tur: DonemTuru | "savas" | "veba"): number {
-  const ort: Record<string, number> = { bolluk: 0.0375, durgunluk: 0.015, kitlik: 0.005, savas: -0.05, veba: -0.08 };
+  const ort: Record<string, number> = { bolluk: 0.045, durgunluk: 0.015, kitlik: -0.025, savas: -0.02, veba: -0.045 };
   return ort[tur] ?? 0.02;
 }
 
@@ -141,16 +144,59 @@ export function savasVergisiZarla(rnd: () => number = Math.random): number {
   return tamSayi(SAVAS_VERGI, rnd) / 100;
 }
 
-/** `tur`'dan sonra gelecek dönem: kalan ikisinden biri %50. */
-export function sonrakiDonemZarla(tur: DonemTuru, rnd: () => number = Math.random): DonemTuru {
-  const digerleri = DONEM_TURLERI.filter((t) => t !== tur);
-  return digerleri[rnd() < 0.5 ? 0 : 1];
+function karistir<T>(dizi: T[], rnd: () => number): T[] {
+  const a = [...dizi];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(rnd() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
 }
 
-/** Savaş sürerken bolluk gelemez: `aday` bolluksa ve savaş varsa, öncekinden ve bolluktan farklı olan döner. */
-export function savasaGoreDuzelt(aday: DonemTuru, onceki: DonemTuru, savasta: boolean): DonemTuru {
-  if (!savasta || aday !== "bolluk") return aday;
-  return DONEM_TURLERI.find((t) => t !== "bolluk" && t !== onceki) ?? "durgunluk";
+/** Torbadan ilk uygun dönemin sırası: öncekiyle aynı olamaz, savaş sürerken bolluk çekilmez (torbada bekler). Yoksa -1. */
+function uygunIndeks(torba: DonemTuru[], onceki: DonemTuru, savasta: boolean): number {
+  return torba.findIndex((t) => t !== onceki && !(savasta && t === "bolluk"));
+}
+
+/**
+ * Dönem torbası (v10): sıradaki dönemi torbadan çeker. Torba, uygun dönem kalmayınca
+ * (ya da boşsa) yeni karıştırılmış üç dönemle doldurulur. Çekilen dönemi ve yeni torbayı döner.
+ */
+export function donemTorbasindanCek(
+  torba: DonemTuru[] | undefined,
+  onceki: DonemTuru,
+  savasta: boolean,
+  rnd: () => number = Math.random
+): { tur: DonemTuru; torba: DonemTuru[] } {
+  let t = [...(torba ?? [])];
+  for (let i = 0; i < 10; i++) {
+    const idx = uygunIndeks(t, onceki, savasta);
+    if (idx >= 0) {
+      const tur = t[idx];
+      t.splice(idx, 1);
+      return { tur, torba: t };
+    }
+    t = [...t, ...karistir(DONEM_TURLERI, rnd)];
+  }
+  return { tur: DONEM_TURLERI.find((x) => x !== onceki && !(savasta && x === "bolluk")) ?? "durgunluk", torba: t };
+}
+
+/** Sıradaki dönemi torbayı tüketmeden gösterir (dedikodu için). */
+export function donemTorbasiniGoster(
+  torba: DonemTuru[] | undefined,
+  onceki: DonemTuru,
+  savasta: boolean,
+  rnd: () => number = Math.random
+): DonemTuru {
+  return donemTorbasindanCek(torba, onceki, savasta, rnd).tur;
+}
+
+/** Yeni bir oyun / eski kayıt için ilk torba: şu anki dönem hariç iki dönem karışık sırada. */
+export function ilkDonemTorbasi(tur: DonemTuru, rnd: () => number = Math.random): DonemTuru[] {
+  return karistir(
+    DONEM_TURLERI.filter((t) => t !== tur),
+    rnd
+  );
 }
 
 /** Eski olaylar/mülk/mağaza `ulke.ekonomi` okur; dönemden türetilir ("normal" artık oluşmaz). */

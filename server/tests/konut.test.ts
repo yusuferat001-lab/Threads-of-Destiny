@@ -24,7 +24,7 @@ describe("konut sistemi (stateManager)", () => {
     state.para = 1000;
     konutDegistir(state, "gorkemli_konak");
     const gider = giderKalemleriHesapla(state);
-    expect(gider.konut).toBe(23); // görkemli konak kirası 23 (Faz 9 ladder'ı); başlangıçta enflasyon 1 → çarpansız
+    expect(gider.konut).toBe(21); // görkemli konak kirası 21 (v11); başlangıçta enflasyon 1 → çarpansız
   });
 
   it("nemli barakada sağlık zamanla azalır", () => {
@@ -32,6 +32,7 @@ describe("konut sistemi (stateManager)", () => {
     mesleğiSec(state, "Tüccar");
     state.para = 1000;
     konutDegistir(state, "nemli_baraka"); // en dibi açıkça seç
+    state.yas = 40; // gençlik toparlanması (30 yaşa kadar +1/yıl) devreye girmesin
     state.saglik = 80;
     pasifEkonomiUygula(state, 5);
     expect(state.saglik).toBe(80 - 4 * 5); // Faz 9: dip kademe cezası -4/yıl
@@ -50,6 +51,7 @@ describe("konut sistemi (stateManager)", () => {
   it("mütevazı yuvada sağlık/ün pasif etkisi yok", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
+    state.kisilik = ["Sakin", "Vicdanlı"]; // kişiliğin yıllık şöhret etkisi (v10) olmasın
     state.para = 1000;
     state.yasam_secimi_id = "sade_sofra"; // sağlık/mutluluk etkisi olmayan yaşam tarzı; sadece konut etkisini izole eder
     // mutevazi_yuva artık varsayılan — ekstra konutDegistir gerekmez

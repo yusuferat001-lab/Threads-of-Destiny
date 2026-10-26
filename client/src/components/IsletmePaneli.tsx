@@ -1,27 +1,40 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import type {
   PazarDurumu,
   IsletmeGorunumu,
   IsletmeHatGorunumu,
   IsletmeFiyat,
   IsletmeKararGirdisi,
-  IsletmeStokHedefi,
+  DepoDoldurPlani,
   IsletmeUyari,
 } from '../types';
 import { useDil } from '../DilContext';
 import { kt } from '../katalog';
 import { PiyasaHaberleri } from './PiyasaHaberleri';
-import { formatPara, formatYuzde, formatMusteri } from '../format';
+import { IsletmeOrtak } from './IsletmeOrtak';
+import { formatPara, formatYuzde, formatMusteri, isaretSinifi } from '../format';
+
+/** Pazar payı: bir ondalık, dile göre yüzde işareti (TR "%12,7", EN "12.7%"). */
+function payMetni(dil: 'tr' | 'en', pay: number): string {
+  const v = formatMusteri(dil, pay);
+  return dil === 'en' ? `${v}%` : `%${v}`;
+}
 
 interface Props {
   durum: IsletmeGorunumu;
   /** Piyasa haberleri ve müşteri dağılımı için (yoksa kart gösterilmez). */
   pazar?: PazarDurumu | null;
   yukleniyor: boolean;
-  onKarar: (hatlar: IsletmeKararGirdisi[], stokHedefi?: IsletmeStokHedefi) => void;
+  onKarar: (hatlar: IsletmeKararGirdisi[]) => void;
+  /** v20: depo doldurma planı / satın alma / otomatik doldurma (yoksa depo bölümü gösterilmez). */
+  onDepoPlan?: (hedefYuzde: number) => Promise<DepoDoldurPlani | null>;
+  onDepoSatinAl?: (hedefYuzde: number) => Promise<void>;
+  onDepoOto?: (acik: boolean, yuzde: number) => Promise<void>;
   onYatirim: (yatirimId: string) => void;
   onCalisanAl: (adayId: string) => void;
   onEkipCikar: (ekipId: string) => void;
+  /** Telefon ana ekranı sayfaları: yalnız bir bölümü çiz (varsayılan hepsi). */
+  bolum?: 'hepsi' | 'isletme' | 'yatirim' | 'calisan';
 }
 
 type D = { tr: string; en: string };
@@ -41,15 +54,43 @@ const M = {
   vergiIndirim: { tr: 'indirimli, kalan', en: 'reduced, left' },
   yilKisa: { tr: 'yıl', en: 'yr' },
   koruma: { tr: 'Koruma', en: 'Security' },
-  hirsizlikAralik: { tr: 'hırsızlık ~her', en: 'theft ~every' },
+  butceBaslik: { tr: '📒 Dükkan bütçesi', en: '📒 Shop budget' },
+  buYil: { tr: 'Bu yıl (tahmini)', en: 'This year (estimate)' },
+  gecenYil: { tr: 'Geçen yıl', en: 'Last year' },
+  maasKalemi: { tr: 'Çalışan maaşları', en: 'Staff wages' },
+  curumeKalemi: { tr: 'Çürüyen mal', en: 'Spoiled goods' },
+  hasarKalemi: { tr: 'Hırsızlık / baskın / tazminat', en: 'Theft / raid / severance' },
+  dukkanNeti: { tr: 'Dükkan neti', en: 'Shop net' },
+  yasamKira: { tr: 'Yaşam + kira', en: 'Living + rent' },
+  krediTaksit: { tr: 'Kredi taksidi', en: 'Loan instalment' },
+  cebineKalan: { tr: 'Cebine kalan', en: 'Left in your pocket' },
+  gecenAlis: { tr: 'geçen yıl', en: 'last year' },
+  alisIndirim: { tr: 'indirimin', en: 'your discount' },
+  alisDonem: { tr: 'dönem', en: 'period' },
+  alisBaslik: { tr: 'Alış', en: 'Buying' },
   borc: { tr: 'Tedarikçi borcu', en: 'Supplier debt' },
-  beklenen: { tr: 'Beklenen kâr', en: 'Expected profit' },
+  beklenen: { tr: 'Beklenen net', en: 'Expected net' },
   yil: { tr: '/yıl', en: '/yr' },
-  stokHedefi: { tr: 'Stok hedefi', en: 'Stock target' },
-  stokHedefiNot: {
-    tr: 'Yıl başında depoyu beklenen talebe göre doldurursun. Az tutarsan malın biter ve müşteri kaçar; çok tutarsan mal çürür, depo masrafı artar.',
-    en: 'At the start of each year you fill the warehouse to the expected demand. Too little and you sell out and lose customers; too much and goods spoil and storage costs rise.',
+  depoDoldurBaslik: { tr: 'Depoyu doldur', en: 'Fill the warehouse' },
+  depoDolu: { tr: 'dolu', en: 'full' },
+  depoBirimFiyat: { tr: 'Birim alış', en: 'Unit cost' },
+  depoDoldurNot: {
+    tr: 'Mal yılda bir kez, kendin alırsın. Bir yüzdeye bas, ödenecek tutarı gör, sonra satın al. Paran yetmezse yalnız parana yetecek kadar alınır; eksiye düşmezsin, gerekirse tefeciden borç al.',
+    en: 'You buy goods yourself, once a year. Pick a percentage, see what you would pay, then buy. If you cannot afford it you only buy what your money covers; you never go into debt by buying — borrow from the moneylender if you must.',
   },
+  odenecek: { tr: 'Ödenecek', en: 'To pay' },
+  adetBirim: { tr: 'birim', en: 'units' },
+  eldekiPara: { tr: 'Elindeki para', en: 'Your cash' },
+  yetmiyor: { tr: 'Paran hedefe yetmiyor; paran kadar alırsın', en: 'You cannot afford the target; you will buy what you can' },
+  yetmiyorKarsilik: { tr: 'depo %', en: 'warehouse ' },
+  satinAl: { tr: 'Satın al', en: 'Buy' },
+  zatenDolu: { tr: 'Depo zaten bu kadar dolu.', en: 'The warehouse is already that full.' },
+  otomatik: { tr: 'Otomatik', en: 'Automatic' },
+  otomatikNot: {
+    tr: 'Açıkken depo her yıl başı seçtiğin yüzdeye, paran yettiği kadar dolar. Sen kapatana kadar sürer.',
+    en: 'When on, the warehouse refills to your chosen % at the start of every year as far as your money allows, until you turn it off.',
+  },
+  sapma: { tr: 'bu yılın piyasa farkı', en: 'this year\'s market swing' },
   hatlar: { tr: 'Ürün hatları', en: 'Product lines' },
   acik: { tr: 'Açık', en: 'Open' },
   kapali: { tr: 'Kapalı', en: 'Closed' },
@@ -63,7 +104,7 @@ const M = {
   sicak: { tr: '🔥 Dönemin sıcak ürünü: talep ve fiyat yüksek, biterse kayıp ikiye katlanır.', en: '🔥 Hot product this period: high demand and price, and running out costs double.' },
   dunya: { tr: 'Dünya', en: 'World' },
   temel: { tr: 'temel', en: 'staple' },
-  orta: { tr: 'orta', en: 'mid' },
+  kesimSavas: { tr: 'savaş', en: 'war' },
   luks: { tr: 'lüks', en: 'luxury' },
   yatirimlar: { tr: 'Yatırımlar', en: 'Investments' },
   kademe: { tr: 'Kademe', en: 'Tier' },
@@ -109,31 +150,25 @@ const IMTIYAZ_ADLARI: Record<string, D> = {
   tekel_ruhsati: { tr: 'Tekel ruhsatı (en çok satan hatta fiyat +%10)', en: 'Monopoly licence (+10% price on your top line)' },
   hammadde_tahsisi: { tr: 'Hammadde tahsisi (hammadde −%10)', en: 'Material allocation (materials −10%)' },
   atolye_ruhsati: { tr: 'Atölye genişleme ruhsatı (üretim +%10)', en: 'Workshop licence (output +10%)' },
+  vakif_muafiyeti: { tr: 'Vakıf muafiyeti (alış −%8)', en: 'Foundation exemption (purchases −8%)' },
+  kutsal_gun_imtiyazi: { tr: 'Kutsal gün pazarı (talep +%10)', en: 'Holy-day market (demand +10%)' },
 };
-
-const STOK_HEDEFLERI: { id: IsletmeStokHedefi; ad: D; ipucu: D }[] = [
-  { id: 'cokaz', ad: { tr: 'Çok az', en: 'Very low' }, ipucu: { tr: 'Talebin %75\'i kadar stok. Ucuz ama sık biter.', en: '75% of expected demand. Cheap but often sells out.' } },
-  { id: 'az', ad: { tr: 'Az', en: 'Low' }, ipucu: { tr: 'Talebin %95\'i kadar stok.', en: '95% of expected demand.' } },
-  { id: 'normal', ad: { tr: 'Normal', en: 'Normal' }, ipucu: { tr: 'Talebin %115\'i kadar stok. Dengeli.', en: '115% of expected demand. Balanced.' } },
-  { id: 'fazla', ad: { tr: 'Fazla', en: 'High' }, ipucu: { tr: 'Talebin %150\'si kadar stok. Güvenli ama çürür.', en: '150% of expected demand. Safe but spoils.' } },
-  { id: 'dolu', ad: { tr: 'Dolu', en: 'Full' }, ipucu: { tr: 'Depoyu tamamen doldur. En yüksek masraf.', en: 'Fill the warehouse. Highest cost.' } },
-];
 
 const FIYATLAR: { id: IsletmeFiyat; etiket: D; aciklama: D }[] = [
   {
     id: 'eksi20',
     etiket: { tr: '−%20', en: '−20%' },
     aciklama: {
-      tr: 'Fiyat −%20, talep +%45. Çok satar, müşteri kazanırsın (yılda +%3 pay); birim kâr az, stok çabuk biter.',
-      en: 'Price −20%, demand +45%. You sell a lot and win customers (+3% share a year); thin margin, stock runs out fast.',
+      tr: 'Fiyat −%20: talep ≈ +%20, birim kâr az. Müşterin yılda +%2 büyür.',
+      en: 'Price −20%: demand ≈ +20%, thin margin. Your customers grow +2% a year.',
     },
   },
   {
     id: 'eksi10',
     etiket: { tr: '−%10', en: '−10%' },
     aciklama: {
-      tr: 'Fiyat −%10, talep +%20. Daha çok satar, müşteri çekersin (yılda +%1,5 pay); birim kâr biraz düşer.',
-      en: 'Price −10%, demand +20%. You sell more and attract customers (+1.5% share a year); slightly lower margin.',
+      tr: 'Fiyat −%10: talep ≈ +%9, birim kâr biraz düşer. Müşterin yılda +%1 büyür.',
+      en: 'Price −10%: demand ≈ +9%, slightly lower margin. Your customers grow +1% a year.',
     },
   },
   { id: 'normal', etiket: { tr: 'Piyasa', en: 'Market' }, aciklama: { tr: 'Piyasa fiyatı. Dengeli.', en: 'Market price. Balanced.' } },
@@ -141,16 +176,16 @@ const FIYATLAR: { id: IsletmeFiyat; etiket: D; aciklama: D }[] = [
     id: 'arti10',
     etiket: { tr: '+%10', en: '+10%' },
     aciklama: {
-      tr: 'Fiyat +%10, talep −%12. Birim kâr artar; müşteri yavaşça kaçar (yılda −%1 pay). Krizde talep daha çok düşer.',
-      en: 'Price +10%, demand −12%. Better margin; customers slowly drift away (−1% share a year). Demand drops more in a crisis.',
+      tr: 'Fiyat +%10: talep ≈ −%7, birim kâr artar. Müşterin yılda −%1 azalır.',
+      en: 'Price +10%: demand ≈ −7%, better margin. Your customers drop 1% a year.',
     },
   },
   {
     id: 'arti20',
     etiket: { tr: '+%20', en: '+20%' },
     aciklama: {
-      tr: 'Fiyat +%20, talep −%30. Birim kâr yüksek ama müşteri kaçar (yılda −%3 pay). Kıtlık ve savaşta riskli.',
-      en: 'Price +20%, demand −30%. High margin but customers leave (−3% share a year). Risky in famine and war.',
+      tr: 'Fiyat +%20: talep ≈ −%14, birim kâr yüksek. Müşterin yılda −%2 azalır.',
+      en: 'Price +20%: demand ≈ −14%, high margin. Your customers drop 2% a year.',
     },
   },
 ];
@@ -174,36 +209,13 @@ const SALDIRI_ENGELLENDI: Record<string, D> = {
   sabotaj: { tr: 'deponu yakmaya geldi, güvenliğin püskürttü', en: 'came to burn your warehouse; your guards drove them off' },
 };
 
-/** Aynı yıl için açılır uyarıyı yalnız bir kez göstermek için (modül düzeyi; sayfa yenilenince sıfırlanır). */
-let sonGosterilenYil = -1;
-
-export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onCalisanAl, onEkipCikar }: Props) {
-  const { dil } = useDil();
-  const t = (k: Exclude<keyof typeof M, 'donem'>) => M[k][dil];
+export function isletmeUyariMetni(u: IsletmeUyari, durum: IsletmeGorunumu, dil: 'tr' | 'en'): string {
   const d = (m: D) => m[dil];
-  const [uyariAcik, setUyariAcik] = useState(false);
-
-  const dokum = durum.sonDokum;
-  const onemliKodlar: IsletmeUyari['kod'][] = ['hirsizlik', 'sizdirma', 'ic_hirsizlik', 'rakip_saldiri', 'calisan_ayrildi', 'vergi_indirimi_bitti', 'imtiyaz_bitti'];
-  const onemliUyarilar = dokum ? dokum.uyarilar.filter((u) => onemliKodlar.includes(u.kod)) : [];
-  useEffect(() => {
-    if (dokum && onemliUyarilar.length > 0 && dokum.yil !== sonGosterilenYil) {
-      sonGosterilenYil = dokum.yil;
-      setUyariAcik(true);
-    }
-  }, [dokum?.yil]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  if (!durum.aktif) return null;
   const pb = durum.paraBirimi;
-  const uretimModu = !!durum.uretim;
-  const etiketAlim = uretimModu ? t('hammadde') : t('alim');
-  const donemAdi = durum.dunya.donem ? M.donem[dil][durum.dunya.donem as 'bolluk'] : null;
   const hatAdi = (id: string) => {
     const h = durum.hatlar.find((x) => x.id === id);
     return h ? d(h.ad) : id;
   };
-
-  const uyariMetni = (u: IsletmeUyari): string => {
     const en = dil === 'en';
     switch (u.kod) {
       case 'stok_bitti':
@@ -244,7 +256,21 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
       default:
         return '';
     }
-  };
+  }
+
+export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onDepoPlan, onDepoSatinAl, onDepoOto, onYatirim, onCalisanAl, onEkipCikar, bolum = 'hepsi' }: Props) {
+  const { dil } = useDil();
+  const [plan, setPlan] = useState<DepoDoldurPlani | null>(null);
+  const t = (k: Exclude<keyof typeof M, 'donem'>) => M[k][dil];
+  const d = (m: D) => m[dil];
+
+  const dokum = durum.sonDokum;
+  if (!durum.aktif) return null;
+  const pb = durum.paraBirimi;
+  const uretimModu = !!durum.uretim;
+  const etiketAlim = uretimModu ? t('hammadde') : t('alim');
+  const donemAdi = durum.dunya.donem ? M.donem[dil][durum.dunya.donem as 'bolluk'] : null;
+  const uyariMetni = (u: IsletmeUyari): string => isletmeUyariMetni(u, durum, dil);
 
   const hatKarti = (h: IsletmeHatGorunumu) => {
     const dunyaEtkisi =
@@ -258,7 +284,8 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
           <strong>
             {h.simge} {d(h.ad)} {h.sicak ? '🔥' : ''}
           </strong>
-          <span className="isletme-etiket">{t(h.kesim)}</span>
+          <span className="isletme-etiket">{t(h.kesim === 'savas' ? 'kesimSavas' : h.kesim)}</span>
+          {h.anaUrun && <span className="isletme-etiket">⭐ {dil === 'en' ? 'Main product' : 'Ana ürün'}</span>}
           {h.kilitli ? (
             <span className="isletme-etiket">
               🔒 {t('rutbeGerek')} {h.minRutbe}
@@ -274,12 +301,10 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
           <span>➖ {d(h.eksi)}</span>
         </div>
         {h.sicak && <div className="isletme-hat-dunya">{t('sicak')}</div>}
+        {h.anaUrunBonus && <div className="isletme-hat-dunya">⭐ {d(h.anaUrunBonus)}</div>}
         <div className="isletme-hat-satir">
           <span>
             {uretimModu ? t('hammaddeStogu') : t('stok')}: <strong>{h.stok}</strong>
-          </span>
-          <span>
-            {t('talep')}: <strong>~{h.tahminiTalep}</strong>
           </span>
           <span>
             {uretimModu ? t('birimUretim') : t('birim')}:{' '}
@@ -294,6 +319,15 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
         {dunyaEtkisi && (
           <div className="isletme-hat-dunya">
             🌍 {t('dunya')}: {dunyaEtkisi}
+          </div>
+        )}
+        {h.acik && (
+          <div className="isletme-hat-dunya">
+            🧾 {t('alisBaslik')}: <strong>{formatPara(h.birimMaliyet)}</strong>
+            {h.oncekiBirimMaliyet != null ? ` (${t('gecenAlis')} ${formatPara(h.oncekiBirimMaliyet)})` : ''}
+            {h.maliyetDonemYuzde !== 0 ? <> · {t('alisDonem')} <span className={h.maliyetDonemYuzde > 0 ? 'kademe-dusuk' : 'kademe-yuksek'}>{formatYuzde(dil, h.maliyetDonemYuzde, true)}</span></> : null}
+            {h.maliyetIndirimYuzde > 0 ? <> · {t('alisIndirim')} <span className="kademe-yuksek">−{formatYuzde(dil, h.maliyetIndirimYuzde)}</span></> : null}
+            {' · '}{t('sapma')}: {dil === 'en' ? 'buy' : 'alış'} <span className={h.alisSapmaYuzde > 0 ? 'kademe-dusuk' : 'kademe-yuksek'}>{formatYuzde(dil, h.alisSapmaYuzde, true)}</span>, {dil === 'en' ? 'sell' : 'satış'} <span className={h.satisSapmaYuzde >= 0 ? 'kademe-yuksek' : 'kademe-dusuk'}>{formatYuzde(dil, h.satisSapmaYuzde, true)}</span>
           </div>
         )}
         {h.acik && (
@@ -315,11 +349,13 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
 
   return (
     <section className="isletme-paneli">
+      {(bolum === 'hepsi' || bolum === 'isletme') && (
+        <>
       <h3>{t('baslik')}</h3>
 
       <div className="isletme-ozet">
         <span>
-          ⚖️ {t('pay')}: <strong>{formatPara(durum.pazarPayi)}%</strong>
+          ⚖️ {t('pay')}: <strong>{payMetni(dil, durum.pazarPayi)}</strong>
         </span>
         <span>
           👥 {t('musteri')}: <strong>{formatMusteri(dil, durum.musteri)}</strong>
@@ -344,7 +380,7 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
           {durum.vergi.indirimKalanYil > 0 ? ` (${t('vergiIndirim')} ${durum.vergi.indirimKalanYil} ${t('yilKisa')})` : ''}
         </span>
         <span>
-          🔒 {t('koruma')}: <strong>%{Math.round(durum.koruma.toplam * 100)}</strong> · {t('hirsizlikAralik')} {durum.koruma.hirsizlikAralik} {t('yilKisa')}
+          🔒 {t('koruma')}: <strong>%{Math.round(durum.koruma.toplam * 100)}</strong>
         </span>
         {durum.tedarikciBorcu > 0 && (
           <span>
@@ -352,7 +388,7 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
           </span>
         )}
         <span>
-          💰 {t('beklenen')}: <strong>~{formatPara(durum.beklenenBrutKar)} {pb}{t('yil')}</strong>
+          💰 {t('beklenen')}: <strong className={isaretSinifi(durum.butce.net)}>~{formatPara(durum.butce.net)} {pb}{t('yil')}</strong>
         </span>
         {durum.otorite && (
           <span>
@@ -373,133 +409,136 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
         </div>
       )}
 
-      <h4>{t('stokHedefi')}</h4>
-      <div className="isletme-hat-kontrol">
-        {STOK_HEDEFLERI.map((s) => (
-          <button key={s.id} className={durum.stokHedefi === s.id ? '' : 'ikincil'} disabled={yukleniyor} title={d(s.ipucu)} onClick={() => onKarar([], s.id)}>
-            {d(s.ad)}
-          </button>
-        ))}
-      </div>
-      <div className="isletme-fiyat-not">
-        {d(STOK_HEDEFLERI.find((s) => s.id === durum.stokHedefi)?.ipucu ?? STOK_HEDEFLERI[2].ipucu)} {t('stokHedefiNot')}
-      </div>
+      {onDepoPlan && onDepoSatinAl && durum.depo.kapasite > 0 && (
+        <div className="isletme-depo-doldur">
+          <h4>
+            {t('depoDoldurBaslik')} — {durum.depo.dolulukYuzde}% {t('depoDolu')} ({durum.depo.kullanilan}/{durum.depo.kapasite})
+          </h4>
+          <div className="isletme-hat-dunya">
+            {t('depoBirimFiyat')}:{' '}
+            {durum.hatlar.filter((h) => h.acik).map((h) => `${h.simge} ${formatPara(h.birimMaliyet)}`).join(' · ')}
+          </div>
+          <div className="isletme-hat-kontrol">
+            {durum.depo.doldurYuzdeleri.map((y) => (
+              <button
+                key={y}
+                className={plan?.hedefYuzde === y ? '' : 'ikincil'}
+                disabled={yukleniyor}
+                onClick={async () => setPlan(await onDepoPlan(y))}
+              >
+                %{y}
+              </button>
+            ))}
+          </div>
+          {plan && (
+            <div className="isletme-depo-plan">
+              {plan.adet > 0 ? (
+                <>
+                  <strong>
+                    {t('odenecek')}: {formatPara(plan.maliyet)} {pb}
+                  </strong>{' '}
+                  ({plan.adet} {t('adetBirim')})
+                </>
+              ) : (
+                <span>{plan.yetersiz ? t('yetmiyor') : t('zatenDolu')}</span>
+              )}
+              {plan.yetersiz && (
+                <div className="kademe-dusuk">
+                  {t('yetmiyor')} — {t('eldekiPara')}: {formatPara(plan.elindekiPara)} {pb} ≈ {dil === 'en' ? `${t('yetmiyorKarsilik')}${plan.ulasilacakYuzde}%` : `${t('yetmiyorKarsilik')}${plan.ulasilacakYuzde}`}
+                </div>
+              )}
+              {plan.adet > 0 && (
+                <button
+                  disabled={yukleniyor}
+                  onClick={async () => {
+                    await onDepoSatinAl(plan.hedefYuzde);
+                    setPlan(null);
+                  }}
+                >
+                  {t('satinAl')}
+                </button>
+              )}
+            </div>
+          )}
+          {onDepoOto && (
+            <div className="isletme-hat-kontrol">
+              <span>🔁 {t('otomatik')}:</span>
+              <button className={durum.depo.oto.acik ? '' : 'ikincil'} disabled={yukleniyor} onClick={() => onDepoOto(!durum.depo.oto.acik, durum.depo.oto.yuzde)}>
+                {durum.depo.oto.acik ? t('acik') : t('kapali')}
+              </button>
+              {durum.depo.doldurYuzdeleri.map((y) => (
+                <button key={y} className={durum.depo.oto.yuzde === y ? '' : 'ikincil'} disabled={yukleniyor} onClick={() => onDepoOto(durum.depo.oto.acik, y)}>
+                  %{y}
+                </button>
+              ))}
+            </div>
+          )}
+          <div className="isletme-fiyat-not">{t('depoDoldurNot')} {t('otomatikNot')}</div>
+        </div>
+      )}
 
       {pazar && pazar.aktif && <PiyasaHaberleri pazar={pazar} sayilarGoster />}
 
       <h4>{t('hatlar')}</h4>
       <div className="isletme-hatlar">{durum.hatlar.map(hatKarti)}</div>
 
-      <h4>{t('yatirimlar')}</h4>
-      <div className="isletme-yatirimlar">
-        {durum.yatirimlar.map((y) => (
-          <div key={y.id} className="isletme-yatirim" title={d(y.aciklama)}>
-            <strong>
-              {y.simge} {d(y.ad)}
-            </strong>
-            <span>
-              {t('kademe')} {y.kademe}/{y.maxKademe}
-            </span>
-            <small>{d(y.aciklama)}</small>
-            {y.sonrakiFiyat === null ? (
-              <span className="isletme-etiket">{t('azami')}</span>
-            ) : (
-              <button disabled={yukleniyor || durum.para < y.sonrakiFiyat} onClick={() => onYatirim(y.id)}>
-                {t('yukselt')} · {formatPara(y.sonrakiFiyat)} {pb}
-              </button>
-            )}
-          </div>
-        ))}
-      </div>
-
-      <h4>
-        {t('calisanlar')} ({durum.calisanlar.length}/{durum.calisanTavani})
-      </h4>
-      {durum.calisanlar.length === 0 ? (
-        <p className="isletme-bos">{t('yok')}</p>
-      ) : (
-        <div className="isletme-calisanlar">
-          {durum.calisanlar.map((c) => (
-            <div key={c.id} className={`isletme-calisan${c.riskli ? ' isletme-calisan-riskli' : ''}`}>
-              <strong>{c.isim}</strong> <em>({d(c.rol)})</em>
-              {c.sadik && <span className="isletme-etiket">⭐ {t('sadik')}</span>}
-              {c.riskli && (
-                <span className="isletme-etiket" title={t('riskli')}>
-                  ⚠️ {t('sadakat')} {c.sadakat}
-                </span>
-              )}
-              <small>{d(c.rolAciklama)}</small>
-              <span>
-                {t('yetenek')} {c.yetenek} · {t('sadakat')} {c.sadakat} · {t('maas')} {formatPara(c.maas)}
-                {t('yil')}
-              </span>
-              <button className="ikincil" disabled={yukleniyor} onClick={() => onEkipCikar(c.id)}>
-                {t('kov')}
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {durum.adaylar.length > 0 && (
-        <>
-          <h4>
-            {t('adaylar')} <small>({t('adayYenilenme')} {durum.adayYenilenmeKalanYil} {t('yilKisa')})</small>
-          </h4>
-          <div className="isletme-calisanlar">
-            {durum.adaylar.map((a) => (
-              <div key={a.id} className="isletme-calisan isletme-aday">
-                <strong>{a.isim}</strong> <em>({d(a.rol)})</em>
-                <span className="isletme-etiket">{d(a.tipAdi)}</span>
-                <small>{d(a.rolAciklama)}</small>
-                <small>{d(a.gecmis)}</small>
-                <span>
-                  {t('yetenek')} {a.yetenek} · {t('sadakat')} {a.sadakat} · {t('maas')} {formatPara(a.maas)}
-                  {t('yil')}
-                </span>
-                <button disabled={yukleniyor || durum.calisanlar.length >= durum.calisanTavani} onClick={() => onCalisanAl(a.id)}>
-                  {t('al')}
-                </button>
-              </div>
-            ))}
-          </div>
         </>
       )}
 
-      <h4>{t('dokum')}</h4>
-      {!dokum ? (
-        <p className="isletme-bos">{t('ilkYil')}</p>
-      ) : (
+      <IsletmeOrtak
+        goster={bolum === 'isletme' ? 'yok' : bolum}
+        durum={durum}
+        yukleniyor={yukleniyor}
+        sadakatAdi={M.sadakat}
+        riskliAciklama={M.riskli}
+        onYatirim={onYatirim}
+        onCalisanAl={onCalisanAl}
+        onEkipCikar={onEkipCikar}
+      />
+
+      {(bolum === 'hepsi' || bolum === 'isletme') && (
+        <>
+      <h4>{t('butceBaslik')}</h4>
+      <div className="isletme-butce">
+        <div className="isletme-butce-sutun">
+          <h5>{t('buYil')}</h5>
+          <div className="isletme-butce-satir"><span>{t('satis')}</span><span className="kademe-yuksek">+{formatPara(durum.butce.satis)}</span></div>
+          <div className="isletme-butce-satir"><span>{etiketAlim}</span><span className="kademe-dusuk">−{formatPara(durum.butce.alim)}</span></div>
+          <div className="isletme-butce-satir"><span>{t('depoMasrafi')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.depo)}</span></div>
+          <div className="isletme-butce-satir"><span>{t('loncaAidati')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.aidat)}</span></div>
+          <div className="isletme-butce-satir"><span>{t('vergiKalemi')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.vergi)}</span></div>
+          {durum.butce.borcOdeme > 0 && <div className="isletme-butce-satir"><span>{t('borcOdeme')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.borcOdeme)}</span></div>}
+          <div className="isletme-butce-satir isletme-butce-toplam"><span>{t('dukkanNeti')}</span><span className={isaretSinifi(durum.butce.net)}>{durum.butce.net >= 0 ? '+' : ''}{formatPara(durum.butce.net)}</span></div>
+          <div className="isletme-butce-satir"><span>{t('maasKalemi')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.maas)}</span></div>
+          <div className="isletme-butce-satir"><span>{t('yasamKira')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.yasamKira)}</span></div>
+          {durum.butce.krediTaksit > 0 && <div className="isletme-butce-satir"><span>{t('krediTaksit')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.krediTaksit)}</span></div>}
+          <div className="isletme-butce-satir isletme-butce-toplam"><span>{t('cebineKalan')}</span><span className={isaretSinifi(durum.butce.cebineKalan)}>{durum.butce.cebineKalan >= 0 ? '+' : ''}{formatPara(durum.butce.cebineKalan)} {pb}</span></div>
+        </div>
+        <div className="isletme-butce-sutun">
+          <h5>{t('gecenYil')}</h5>
+          {!dokum ? (
+            <p className="isletme-bos">{t('ilkYil')}</p>
+          ) : (
+            <>
+              <div className="isletme-butce-satir"><span>{t('satis')}</span><span className="kademe-yuksek">+{formatPara(dokum.satis)}</span></div>
+              <div className="isletme-butce-satir"><span>{etiketAlim}</span><span className="kademe-dusuk">−{formatPara(dokum.alim)}</span></div>
+              {(dokum.curumeKaybi ?? 0) > 0 && <div className="isletme-butce-satir"><span>↳ {t('curumeKalemi')}</span><span>{formatPara(dokum.curumeKaybi ?? 0)}</span></div>}
+              <div className="isletme-butce-satir"><span>{t('depoMasrafi')}</span><span className="kademe-dusuk">−{formatPara(dokum.depoMasrafi)}</span></div>
+              {dokum.loncaAidati > 0 && <div className="isletme-butce-satir"><span>{t('loncaAidati')}</span><span className="kademe-dusuk">−{formatPara(dokum.loncaAidati)}</span></div>}
+              {dokum.vergi > 0 && <div className="isletme-butce-satir"><span>{t('vergiKalemi')} ({formatYuzde(dil, Math.round(dokum.vergiOrani * 1000) / 10)})</span><span className="kademe-dusuk">−{formatPara(dokum.vergi)}</span></div>}
+              {dokum.borcOdeme > 0 && <div className="isletme-butce-satir"><span>{t('borcOdeme')}</span><span className="kademe-dusuk">−{formatPara(dokum.borcOdeme)}</span></div>}
+              {((dokum.nakitHasar ?? 0) + (dokum.ekstraGider ?? 0)) > 0 && <div className="isletme-butce-satir"><span>{t('hasarKalemi')}</span><span className="kademe-dusuk">−{formatPara((dokum.nakitHasar ?? 0) + (dokum.ekstraGider ?? 0))}</span></div>}
+              <div className="isletme-butce-satir isletme-butce-toplam"><span>{t('dukkanNeti')}</span><span className={isaretSinifi(dokum.net)}>{dokum.net >= 0 ? '+' : ''}{formatPara(dokum.net)}</span></div>
+              <div className="isletme-butce-satir"><span>{t('maasKalemi')}</span><span className="kademe-dusuk">−{formatPara(dokum.calisanMaasi ?? durum.butce.maas)}</span></div>
+            </>
+          )}
+        </div>
+      </div>
+
+      {dokum && (
         <div className="isletme-dokum">
           <div>
-            {t('satis')}: <strong>+{formatPara(dokum.satis)}</strong>
-          </div>
-          <div>
-            {etiketAlim}: <strong>−{formatPara(dokum.alim)}</strong>
-          </div>
-          <div>
-            {t('depoMasrafi')}: <strong>−{formatPara(dokum.depoMasrafi)}</strong>
-          </div>
-          {dokum.loncaAidati > 0 && (
-            <div>
-              {t('loncaAidati')} (%3): <strong>−{formatPara(dokum.loncaAidati)}</strong>
-            </div>
-          )}
-          {dokum.vergi > 0 && (
-            <div>
-              {t('vergiKalemi')} (%{Math.round(dokum.vergiOrani * 1000) / 10}): <strong>−{formatPara(dokum.vergi)}</strong>
-            </div>
-          )}
-          {dokum.borcOdeme > 0 && (
-            <div>
-              {t('borcOdeme')}: <strong>−{formatPara(dokum.borcOdeme)}</strong>
-            </div>
-          )}
-          <div className="isletme-dokum-net">
-            {t('net')}: <strong>{dokum.net >= 0 ? '+' : ''}{formatPara(dokum.net)} {pb}</strong>
-          </div>
-          <div>
-            {t('pay')}: <strong>%{dokum.pazarPayi}</strong> · {t('musteriDegisim')}: <strong>{formatMusteri(dil, dokum.musteriDegisim, true)}</strong>
+            {t('pay')}: <strong>%{dokum.pazarPayi}</strong> · {t('musteriDegisim')}: <strong className={isaretSinifi(dokum.musteriDegisim)}>{formatMusteri(dil, dokum.musteriDegisim, true)}</strong>
           </div>
           {dokum.uyarilar.map((u, i) => (
             <div key={i} className="isletme-uyari">
@@ -509,22 +548,9 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
         </div>
       )}
 
-      {uyariAcik && dokum && (
-        <div className="kariyer-sonuc-katman kariyer-sonuc-katman-ust" role="dialog" onClick={() => setUyariAcik(false)}>
-          <div className="kariyer-sonuc-modal" onClick={(e) => e.stopPropagation()}>
-            <h4>{t('olayBaslik')}</h4>
-            {onemliUyarilar.map((u, i) => (
-              <p key={i}>{uyariMetni(u)}</p>
-            ))}
-            {durum.calisanlar.some((c) => c.riskli) && (
-              <p>
-                ⚠️ {t('riskli')}: {durum.calisanlar.filter((c) => c.riskli).map((c) => `${c.isim} (${t('yetenek')} ${c.yetenek} · ${t('sadakat')} ${c.sadakat})`).join(', ')}
-              </p>
-            )}
-            <button onClick={() => setUyariAcik(false)}>{t('tamam')}</button>
-          </div>
-        </div>
+        </>
       )}
+
     </section>
   );
 }

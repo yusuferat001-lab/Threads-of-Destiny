@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { ogretileriTamamla } from "./_ogreti";
 import { olaySec } from "../src/game/olaySecici";
 import { createCharacter, mesleğiSec, etiketEkle } from "../src/game/stateManager";
 import { yeniOyun, mesleğiAta, senaryoUret } from "../src/game/gameEngine";
@@ -105,6 +106,7 @@ describe("yolculuk teklifi garantisi (senaryoUret)", () => {
     etiketEkle(state, ["hizip_secildi"]); // hizip zorunlu seçim kaskadını bu testte atla (2026-09 sonu)
     digerGarantileriGecistir(state);
     state.yas = 31;
+    ogretileriTamamla(state);
     const senaryo = await senaryoUret(state.id);
     expect(senaryo.olay_basligi).toBe(baslikGetir(beklenenId));
   });
@@ -135,7 +137,7 @@ describe("yolculuk teklifi garantisi (senaryoUret)", () => {
 
     // Cooldown mekaniği: reddedince eklenen "durum" birkaç tur sonra
     // "yolculuk_teklifi_zamani" etiketini ekler ve teklif yeniden zorlanır.
-    // Tur süresi (1-2 yıl) + durum kalan_tur rastgele olduğu için burada
+    // Tur süresi (1-2 yıl) + durum kalan_yil rastgele olduğu için burada
     // cooldown'un dolduğu anı doğrudan simüle ediyoruz (RNG'ye güvenmeden).
     redSonuc.state.etiketler.push("yolculuk_teklifi_zamani");
     digerGarantileriGecistir(redSonuc.state);

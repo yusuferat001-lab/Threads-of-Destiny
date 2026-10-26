@@ -18,6 +18,9 @@ import { konutGetir } from "../data/konutlar";
 import { yasamSecenegiGetir } from "../data/yasamSecenekleri";
 import {
   yaslanmaYillikKayip,
+  yaslanmaSaglikTavani,
+  GENC_SAGLIK_YAS_SINIRI,
+  GENC_SAGLIK_HEDEFI,
   giderKalemleriHesapla,
   hesaplaMaasYillik,
   dunyaFinansEtkileri,
@@ -36,6 +39,10 @@ import {
   KARABORSA_SUC_ARTISI_YILLIK,
   KARABORSA_AHLAK_ASINMASI_YILLIK,
 } from "./stateManager";
+import { ahlakInananEtkisi } from "../data/cemaat";
+import { aranmaAhlakKaybi } from "../data/aranmaSabitleri";
+import { kisilikGetir } from "../data/kisilikler";
+import { isletmeMeslegiMi } from "../data/meslekProfilleri";
 
 export const GOSTERGE_STATLARI = ["saglik", "para", "mutluluk", "ahlak", "aranma", "sohret"] as const;
 export type GostergeStat = (typeof GOSTERGE_STATLARI)[number];
@@ -111,8 +118,15 @@ function saglikDetayi(state: CharacterState): GostergeDetayTaban {
   const etkenler: GostergeEtken[] = [];
 
   const yaslanma = yaslanmaYillikKayip(state.yas);
+  const tavan = yaslanmaSaglikTavani(state.yas);
   if (yaslanma > 0) {
     etkenler.push({ ikon: "⏳", metin: T(dil, "Yaşlanma: {0}/yıl", [isaretli(-yaslanma)]), yon: "kotu" });
+    if (tavan !== null) {
+      etkenler.push({ ikon: "🧱", metin: T(dil, "Yaşlanma sağlığını en fazla {0} cana kadar düşürür.", [tavan]), yon: "notr" });
+    }
+  }
+  if (state.yas <= GENC_SAGLIK_YAS_SINIRI && state.saglik < GENC_SAGLIK_HEDEFI) {
+    etkenler.push({ ikon: "🌱", metin: T(dil, "Gençlik toparlanması: {0}/yıl (30 yaşa kadar, {1} cana kadar)", [isaretli(1), GENC_SAGLIK_HEDEFI]), yon: "iyi" });
   }
   const ev = konutYasamEtkisi(state, "saglik");
   if (ev) {
@@ -128,9 +142,6 @@ function saglikDetayi(state: CharacterState): GostergeDetayTaban {
   etkenler.push(...durumEtkenleri(state, "yil_basi_saglik"));
   const kriz = krizEtkeni(state, "saglik");
   if (kriz) etkenler.push(kriz);
-  if (state.para < 0) {
-    etkenler.push({ ikon: "💸", metin: T(dil, "Borç stresi: {0}/yıl", [isaretli(-1)]), yon: "kotu" });
-  }
   if (state.mutluluk < KRONIK_MUTLULUK_ESIGI) {
     etkenler.push({
       ikon: "😞",
@@ -161,11 +172,10 @@ function saglikDetayi(state: CharacterState): GostergeDetayTaban {
       T(dil, "Gelir & Gider ekranından daha iyi bir ev ve yemek düzenine geç."),
       T(dil, "Mağazadan şifa eşyası al ve envanterden kullan."),
       T(dil, "Dinlenme, şifa ve iyileşme sunan olay seçeneklerini seç."),
-      T(dil, "Borçtan kurtul; borç her yıl sağlığını yer."),
     ],
     dusur: [
       T(dil, "Riskli, kavgalı ve tehlikeli olay seçenekleri sağlığını düşürür."),
-      T(dil, "Kıtlık, salgın ve savaş dönemlerinde sağlık erir."),
+      T(dil, "Salgın hastalığı ve yaşlılık sağlığını erit."),
     ],
   };
 }
@@ -213,7 +223,7 @@ function mutlulukDetayi(state: CharacterState): GostergeDetayTaban {
   const kriz = krizEtkeni(state, "mutluluk");
   if (kriz) etkenler.push(kriz);
   if (state.para < 0) {
-    etkenler.push({ ikon: "💸", metin: T(dil, "Borç stresi: {0}/yıl", [isaretli(-2)]), yon: "kotu" });
+    etkenler.push({ ikon: "💸", metin: T(dil, "Borç stresi: {0}/yıl", [isaretli(-1)]), yon: "kotu" });
   }
   if (state.saglik < KRONIK_SAGLIK_ESIGI) {
     etkenler.push({
@@ -258,6 +268,28 @@ function ahlakDetayi(state: CharacterState): GostergeDetayTaban {
       yon: "kotu",
     });
   }
+  if (state.meslek === "Din Adamı") {
+    // v10: ahlak bantları cemaatin yıllık büyümesini belirler (25'erli).
+    const bant = ahlakInananEtkisi(state.ahlak);
+    etkenler.push({
+      ikon: "⛪",
+      metin: T(dil, "Ahlak bandın inananlarını yılda {0} değiştiriyor (0–24: −%1,5 · 25–49: 0 · 50–74: +%0,5 · 75–100: +%1,5).", [
+        bant === 0
+          ? dil === "en" ? "0%" : "%0"
+          : dil === "en"
+            ? `${bant > 0 ? "+" : "−"}${Math.abs(Math.round(bant * 1000) / 10)}%`
+            : `${bant > 0 ? "+" : "−"}%${String(Math.abs(Math.round(bant * 1000) / 10)).replace(".", ",")}`,
+      ]),
+      yon: bant > 0 ? "iyi" : bant < 0 ? "kotu" : "notr",
+    });
+  }
+  const kisilikAhlak = state.kisilik.reduce((t, k) => t + (kisilikGetir(k)?.yillikEtki?.ahlak ?? 0), 0);
+  if (kisilikAhlak !== 0) {
+    etkenler.push({ ikon: "🎭", metin: T(dil, "Kişiliğin: {0}/yıl", [isaretli(Math.round(kisilikAhlak * 100) / 100)]), yon: yon(kisilikAhlak) });
+  }
+  if (isletmeMeslegiMi(state.meslek) && aranmaAhlakKaybi(state.suc_seviyesi) > 0) {
+    etkenler.push({ ikon: "🚨", metin: T(dil, "Aranma gölgesi: {0}/yıl", [isaretli(-aranmaAhlakKaybi(state.suc_seviyesi))]), yon: "kotu" });
+  }
   if (state.etiketler.includes("bagimlilik:ayyas")) {
     etkenler.push({ ikon: "🍺", metin: T(dil, "Ayyaşlık damgası ahlakını bir kez düşürdü."), yon: "kotu" });
   }
@@ -279,7 +311,7 @@ function ahlakDetayi(state: CharacterState): GostergeDetayTaban {
     yukselt: [
       T(dil, "Yardım, sadaka ve dürüstlük içeren olay seçeneklerini seç."),
       T(dil, "Sosyalleş ekranından sadaka ver."),
-      T(dil, "Din Adamı rütbesi ahlak ister; yüksek ahlak maaşı da artırır."),
+      T(dil, "Din Adamı rütbesi ahlak ister; yüksek ahlak cemaatini de büyütür."),
     ],
     dusur: [
       T(dil, "Para karşılığı ahlaki taviz ahlakını düşürür, aranmanı artırır."),

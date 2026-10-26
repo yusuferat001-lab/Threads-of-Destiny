@@ -530,4 +530,97 @@ export const OLAYLAR_OTORITE_EN: Record<string, OlayCeviri> = {
       },
     ],
   },
+
+  // ───────────── Din Adamı (Clergyman) ─────────────
+  otorite_din_oc_adak_payi: {
+    baslik: "The Offerings Cut",
+    metin:
+      "{otorite}'s clerk has come: part of this year's offerings and donations is to be written to the city treasury. 'Holy money is still money,' he says.",
+    secenekler: [
+      {
+        metin: "Hand over the share in full and take the receipt.",
+        basariliSonuc: { mesaj: "You handed over the share. {otorite} was pleased with how 'orderly' your flock is." },
+        basarisizSonuc: { mesaj: "Not used." },
+      },
+      {
+        metin: "Show the donation book short and shrink the share.",
+        kilitAciklamasi: "You can't even find a gift to win the clerk over.",
+        basariliSonuc: { mesaj: "The clerk wrote 'famine year' in the book; half the share stayed in your pocket." },
+        basarisizSonuc: { mesaj: "Someone in the flock gave the book away. {otorite} doubled the share, and your name turned sour." },
+      },
+      {
+        metin: "Go to {otorite} and argue that the offerings belong to the poor.",
+        basariliSonuc: { mesaj: "{otorite} heard you out and reduced the share. The poor prayed for you." },
+        basarisizSonuc: { mesaj: "{otorite} said, 'Holy money is taxable too.' You paid the share and fell out of favor." },
+      },
+    ],
+  },
+  otorite_din_oc_vakif_arazisi: {
+    baslik: "Foundation Land",
+    metin:
+      "The neighbouring plot next to the monastery is up for sale. {otorite} must approve the sale and expects a 'contribution to the community' for the licence. If you buy it, your storehouse and flock grow.",
+    secenekler: [
+      {
+        metin: "Pay the official fee and buy the land by the rules.",
+        basariliSonuc: { mesaj: "You paid the fee and the deed was registered. The community started working the new land." },
+        basarisizSonuc: { mesaj: "Not used." },
+      },
+      {
+        metin: "Slip {otorite} a purse for the licence.",
+        kilitAciklamasi: "You can't even find a purse to hand {otorite}.",
+        basariliSonuc: { mesaj: "The licence came through quickly; the land came cheap and fast." },
+        basarisizSonuc: { mesaj: "Rumours of the bribe spread. The licence was cancelled and the purse never came back." },
+      },
+      {
+        metin: "Give up on the land and make do with what you have.",
+        basariliSonuc: { mesaj: "You took on no new burden. {otorite} respected your caution." },
+        basarisizSonuc: { mesaj: "Not used." },
+      },
+    ],
+  },
+  otorite_din_sd_ruhsat_denetimi: {
+    baslik: "Licence Inspection",
+    metin:
+      "{otorite}'s official has come to inspect your house of worship: donation records, charity meals, preaching licence… Even a small gap brings a heavy fine.",
+    secenekler: [
+      {
+        metin: "Open all the records and help with the inspection.",
+        basariliSonuc: { mesaj: "The inspection ended without trouble. {otorite} wrote 'a model congregation' in the report." },
+        basarisizSonuc: { mesaj: "Not used." },
+      },
+      {
+        metin: "Slip the official an envelope for 'expenses'.",
+        kilitAciklamasi: "You can't even find an envelope to hand the official.",
+        basariliSonuc: { mesaj: "The official overlooked the gaps and the report came out clean." },
+        basarisizSonuc: { mesaj: "The envelope went into the report. {otorite} fined you and put you under close watch." },
+      },
+      {
+        metin: "Hide the records and say 'the ledgers burned'.",
+        basariliSonuc: { mesaj: "The inspection found no records and left; you wiped the money's trail too." },
+        basarisizSonuc: { mesaj: "The official found the ledger in the next room. Your licence was suspended and a heavy fine followed." },
+      },
+    ],
+  },
+  otorite_din_sd_hayir_cemiyeti: {
+    baslik: "The Charity Society",
+    metin:
+      "A charity society is being founded in the city, and {otorite} has recommended you to head it. Helping the workers' quarter grows your flock, but you must keep strict records and accounts.",
+    secenekler: [
+      {
+        metin: "Accept the chairmanship and run the society with care.",
+        basariliSonuc: { mesaj: "The society did good work in the quarter; your flock grew, and {otorite} kept you in mind." },
+        basarisizSonuc: { mesaj: "Not used." },
+      },
+      {
+        metin: "Accept, but also use the society's coffers for your own business.",
+        basariliSonuc: { mesaj: "You funnelled society money into your own business, and nobody noticed." },
+        basarisizSonuc: { mesaj: "When the accounts tangled, the auditor found the trail. {otorite} removed you and your name was tarnished in public." },
+      },
+      {
+        metin: "Politely decline the offer.",
+        basariliSonuc: { mesaj: "You pleaded a heavy workload. {otorite} nodded; the society went to someone else." },
+        basarisizSonuc: { mesaj: "Not used." },
+      },
+    ],
+  },
 };

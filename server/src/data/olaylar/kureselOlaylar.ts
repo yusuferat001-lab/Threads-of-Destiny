@@ -8,8 +8,9 @@ import { OlayTanimi } from "./types";
  * Veba İSTİSNA: hem başlangıcı ("ne kadar korunacaksın?") hem de aktif dönemi
  * ("kapını biri çaldı — bulaşma riski") gerçek oyuncu kararı gerektirir.
  *  - `kuresel_veba_baslangici`: `vebada:false` iken zorlanır (vebaBaslamaliMi).
- *    3 seçenek = 3 korunma kademesi (`veba_koruma` 0/1/2). Korunma para + mutluluk
- *    maliyetli ve garantili değil: başarısız seçim korunmayı bir kademe düşürür.
+ *    3 seçenek = 3 korunma kademesi (`veba_koruma` 0/1/2) + geçici gelir durumu
+ *    (v10: işi kapat ×0.45 / tedbirli ×0.70 / normal ×0.85 — 4 tur; Din'de bağışa, Tüccar/Zanaatkâr'da satışa biner).
+ *    Korunma garantili değil: başarısız seçim korunmayı bir kademe düşürür.
  *  - "veba dönemi" olayları: `gerekliUlke:{vebada:true}` — sadece aktif salgın
  *    sürerken normal havuza girer; her biri yardım/temas (ahlak+, büyük bulaşma
  *    riski) ile kaçınma (ahlak−/mutluluk−, güvenli) arasında seçim sunar.
@@ -28,68 +29,72 @@ export const OLAY_KURESEL: OlayTanimi[] = [
       "{bolge} sokaklarında ölüm arabaları geziyor. Salgın hızla yayılıyor, kimseyi ayırmıyor. Nasıl korunacaksın?",
     secenekler: [
       {
-        metin: "Kırsala çekil, kendini izole et.",
-        baseBasariSansi: 80,
-        maliyet: 15,
-        kilitAciklamasi: "Kırsalda geçinecek paran yok.",
+        metin: "İşini kapat, evine kapan.",
+        baseBasariSansi: 85,
+        maliyet: 10,
+        kilitAciklamasi: "Kapalı kalırken geçinecek paran yok.",
         basariliSonuc: {
           ulke_etkisi: { vebada: true },
           veba_koruma: 2,
-          para: -15,
-          mutluluk: -10,
-          un: -4,
+          para: -10,
+          mutluluk: -8,
+          durum_ekle: { id: "veba_karantina", ad: "Karantina", tur: "gecici", kalan_yil: 6, gelir_carpani: 0.45 },
           mesaj:
-            "Şehri bıraktın; temiz havada kurtulma şansın yüksek.",
+            "Kapıyı kilitledin; gelirin ciddi düştü ama kurtulma şansın yüksek.",
         },
         basarisizSonuc: {
           ulke_etkisi: { vebada: true },
           veba_koruma: 1,
-          para: -15,
-          mutluluk: -12,
-          saglik: -6,
+          para: -10,
+          mutluluk: -10,
+          saglik: -4,
+          durum_ekle: { id: "veba_karantina", ad: "Karantina", tur: "gecici", kalan_yil: 6, gelir_carpani: 0.45 },
           mesaj:
-            "Yolda hasta kervanlara denk geldin. Yine de kısmen korunuyorsun.",
+            "Karantina delindi; gelirin düştü, korunman da yarım kaldı.",
         },
       },
       {
-        metin: "Kapıyı ördür, karantinaya gir.",
-        baseBasariSansi: 85,
-        maliyet: 6,
-        kilitAciklamasi: "Erzak stoklayacak paran yok.",
+        metin: "Tedbirli çalış: az müşteri, temizlik, mesafe.",
+        baseBasariSansi: 80,
+        maliyet: 5,
+        kilitAciklamasi: "Tedbir için ayıracak paran yok.",
         basariliSonuc: {
           ulke_etkisi: { vebada: true },
           veba_koruma: 1,
-          para: -6,
-          mutluluk: -6,
+          para: -5,
+          mutluluk: -4,
+          durum_ekle: { id: "veba_tedbir", ad: "Tedbirli çalışma", tur: "gecici", kalan_yil: 6, gelir_carpani: 0.7 },
           mesaj:
-            "Aylarca dört duvar arasında kaldın; işe yaradı.",
+            "İşi küçülttün; gelirin düştü ama kısmen korunuyorsun.",
         },
         basarisizSonuc: {
           ulke_etkisi: { vebada: true },
           veba_koruma: 0,
-          para: -6,
-          mutluluk: -8,
+          para: -5,
+          mutluluk: -6,
           saglik: -4,
+          durum_ekle: { id: "veba_tedbir", ad: "Tedbirli çalışma", tur: "gecici", kalan_yil: 6, gelir_carpani: 0.7 },
           mesaj:
-            "Karantina delindi; korunman neredeyse kalmadı.",
+            "Tedbirler yetmedi; hem gelir düştü hem korunma kalmadı.",
         },
       },
       {
-        metin: "Normal devam et, kaderine boyun eğ.",
+        metin: "Hiçbir şey olmamış gibi çalış.",
         baseBasariSansi: 60,
         basariliSonuc: {
           ulke_etkisi: { vebada: true },
           veba_koruma: 0,
-          un: 2,
+          durum_ekle: { id: "veba_korku", ad: "Korku", tur: "gecici", kalan_yil: 6, gelir_carpani: 0.85 },
           mesaj:
-            "Salgın {bolge}'yi sardı; herkesle aynı kaderi paylaşıyorsun.",
+            "Dükkân açık; ama korkan halk az geliyor. Salgın herkesi eşit vuruyor.",
         },
         basarisizSonuc: {
           ulke_etkisi: { vebada: true },
           veba_koruma: 0,
           saglik: -10,
+          durum_ekle: { id: "veba_korku", ad: "Korku", tur: "gecici", kalan_yil: 6, gelir_carpani: 0.85 },
           mesaj:
-            "Çarşıda bir gün yetti; ateşle uyandın ama atlattın.",
+            "Çarşıda bir gün yetti; ateşle uyandın ama atlattın. Müşteri iyice azaldı.",
         },
       },
     ],

@@ -35,7 +35,7 @@ const BOLGE_OZELLIKLERI: Record<string, BolgeOzellikleri> = {
   },
   "Orta Çağ|Kutsal Roma": {
     saglik: 4,
-    ahlak: -6,
+    ahlak: -5,
     yatkinlikEtkisi: { zanaat: 6, siyaset: -5, ticaret: 3, savas: 2, din: -2 },
     ozet: {
       tr: "🛒 Ticaret canlı, beden dinç · 👑 parçalı beylikler otoriteyi ve vicdanı zorlar",
@@ -45,7 +45,7 @@ const BOLGE_OZELLIKLERI: Record<string, BolgeOzellikleri> = {
   "Orta Çağ|Bizans": {
     para: 14,
     saglik: -10,
-    un: 10,
+    un: 5,
     ahlak: -4,
     mutluluk: -2,
     yatkinlikEtkisi: { ticaret: 6, sosyal: 4, zanaat: 2, din: -2, savas: -1 },
@@ -56,7 +56,7 @@ const BOLGE_OZELLIKLERI: Record<string, BolgeOzellikleri> = {
   },
   "Orta Çağ|Selçuklu": {
     para: -4,
-    ahlak: 8,
+    ahlak: 5,
     yatkinlikEtkisi: { din: 6, savas: 5, ticaret: -3, zanaat: 1 },
     ozet: {
       tr: "🕌 Din ve savaş yatkınlığı güçlü · 🛒 ticaret biraz geride",
@@ -76,7 +76,7 @@ const BOLGE_OZELLIKLERI: Record<string, BolgeOzellikleri> = {
   },
   "Sanayi Devrimi|Fransa": {
     para: -8,
-    un: 6,
+    un: 5,
     mutluluk: 2,
     yatkinlikEtkisi: { siyaset: 6, sosyal: 4, ticaret: 3, zanaat: 1, din: -2 },
     ozet: {
@@ -86,7 +86,7 @@ const BOLGE_OZELLIKLERI: Record<string, BolgeOzellikleri> = {
   },
   "Sanayi Devrimi|Osmanlı": {
     para: -6,
-    ahlak: 10,
+    ahlak: 5,
     mutluluk: 4,
     yatkinlikEtkisi: { din: 6, ticaret: -3, zanaat: 2, savas: 2 },
     ozet: {
@@ -96,7 +96,7 @@ const BOLGE_OZELLIKLERI: Record<string, BolgeOzellikleri> = {
   },
   "Sanayi Devrimi|Rusya": {
     saglik: 8,
-    un: -10,
+    un: -5,
     mutluluk: -4,
     yatkinlikEtkisi: { savas: 6, zanaat: 3, siyaset: -2, ticaret: -1, din: 1 },
     ozet: {

@@ -67,7 +67,7 @@ export const KONUTLAR: KonutTanimi[] = [
     simge: "🔥",
     aciklama:
       "Küçük ama sımsıcak, içi sevgiyle döşenmiş bir ev; gösterişten çok huzur ve neşe sunuyor, komşuların arasında da adından iyi söz ettiriyor.",
-    kiraYillik: 8,
+    kiraYillik: 7.5,
     saglikEtkisiYillik: 1,
     mutlulukEtkisiYillik: 2,
     unEtkisiYillik: 1,
@@ -78,7 +78,7 @@ export const KONUTLAR: KonutTanimi[] = [
     simge: "🧱",
     aciklama:
       "Kalın duvarları, iyi havalandırması ve temiz suyuyla bedenini gerçekten koruyan, sağlam ve konforlu bir ev.",
-    kiraYillik: 14,
+    kiraYillik: 13,
     saglikEtkisiYillik: 3,
     mutlulukEtkisiYillik: 2,
     unEtkisiYillik: 1,
@@ -89,7 +89,7 @@ export const KONUTLAR: KonutTanimi[] = [
     simge: "🏛️",
     aciklama:
       "Bölgenin konuştuğu, gerçekten görkemli bir çatı; hem bedenin hem ruhun bu konforda rahat eder, adın da kapılarından çok öteye taşınır.",
-    kiraYillik: 23,
+    kiraYillik: 21,
     saglikEtkisiYillik: 3,
     mutlulukEtkisiYillik: 3,
     unEtkisiYillik: 5,

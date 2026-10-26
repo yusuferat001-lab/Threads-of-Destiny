@@ -5,12 +5,11 @@ import type { OlayTanimi } from "./types";
  * ile) açılan özel olay havuzu. Hastayken normal olay havuzu tamamen kapanır
  * (hapisOlayi/yolculukOlayi ile aynı mantık, bkz. olaySecici.uygunMu).
  *
- * Her turda BİR ölüm/iyileşme zarı atılır (vebaHastaligiKontrol): başlangıç
- * ölüm riski ~%70, her hayatta kalınan turda -15 doğal düşüş, ≤12'de iyileşme.
- * Buradaki seçimler bu zarı ATILMADAN ÖNCE `veba_olum_riski_artis` ile
- * değiştirir — para harcayarak (hekim/ilaç/tedavi) hayatta kalma şansını
- * belirgin biçimde yükseltebilir; ihmal/şarlatan/çalışmaya devam riski artırır.
- * Negatif `veba_olum_riski_artis` = risk DÜŞER (iyi).
+ * Hasta olunca bu havuzdan BİR olay çıkar (tek zar): seçimden sonra bir kez ölüm/yaralı/sağlıklı zarı atılır
+ * (vebaHastaligiKontrol): taban ölüm %55 · yaralı %30 · sağlıklı %15. Buradaki seçimler zardan ÖNCE
+ * `veba_olum_riski_artis` ile ölüm olasılığını (%5–90 arası) kaydırır — para harcayarak (hekim/ilaç/tedavi)
+ * hayatta kalma şansını belirgin biçimde yükseltebilir; ihmal/şarlatan/çalışmaya devam riski artırır.
+ * Negatif `veba_olum_riski_artis` = ölüm olasılığı DÜŞER (iyi). Zardan sonra hastalık biter.
  */
 export const OLAY_VEBA_HASTALIGI: OlayTanimi[] = [
   {

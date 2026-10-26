@@ -7268,6 +7268,10 @@ button.ikincil {
 .isletme-hat-dunya { font-size: 0.78rem; opacity: 0.8; margin-top: 0.2rem; }
 .isletme-hat-kontrol { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; margin-top: 0.4rem; font-size: 0.82rem; }
 .isletme-hat-kontrol button { padding: 0.15rem 0.6rem; font-size: 0.78rem; }
+.isletme-depo-doldur { margin: 0.6rem 0; padding: 0.5rem 0.6rem; border: 1px solid rgba(190, 150, 70, 0.35); border-radius: 8px; }
+.isletme-depo-doldur h4 { margin: 0 0 0.3rem; }
+.isletme-depo-plan { margin: 0.4rem 0; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; font-size: 0.85rem; }
+.isletme-depo-plan button { padding: 0.2rem 0.8rem; }
 .isletme-otomatik { display: inline-flex; align-items: center; gap: 0.3rem; margin-left: 0.4rem; }
 .isletme-siparis input { width: 4.2rem; margin: 0 0.3rem; }
 .isletme-yatirim, .isletme-calisan {
@@ -7672,4 +7676,45 @@ button.amac-serit-oge.amac-serit-tamam:hover:not(:disabled) {
 @media (max-width: 767px) {
   .aranma-tablo { font-size: 0.7rem; }
   .aranma-tablo th, .aranma-tablo td { padding: 0.2rem 0.15rem; }
+}
+
+/* ===== Din Adamı cemaat paneli (v10) ===== */
+.cemaat-donem {
+  display: flex; flex-direction: column; gap: 0.15rem; padding: 0.5rem 0.7rem; margin: 0.4rem 0 0.7rem;
+  border: 1px solid rgba(212, 175, 55, 0.4); border-radius: 8px; background: rgba(212, 175, 55, 0.08); font-size: 0.84rem;
+}
+.cemaat-donem-kitlik, .cemaat-donem-savas, .cemaat-donem-veba { border-color: rgba(192, 57, 43, 0.55); background: rgba(192, 57, 43, 0.1); }
+.cemaat-donem-bolluk { border-color: rgba(39, 174, 96, 0.5); background: rgba(39, 174, 96, 0.1); }
+.cemaat-uyari { margin: 0.4rem 0; padding: 0.4rem 0.6rem; border-radius: 6px; background: rgba(230, 126, 34, 0.18); color: #f0b27a; font-size: 0.85rem; }
+.cemaat-bar { position: relative; height: 12px; border-radius: 6px; background: rgba(255, 255, 255, 0.12); overflow: hidden; margin: 0.25rem 0; }
+.cemaat-bar-dolgu { height: 100%; background: linear-gradient(90deg, #8e6f1a, #d4af37); transition: width 0.3s; }
+.cemaat-bar-cizgi { position: absolute; top: 0; bottom: 0; width: 1px; background: rgba(255, 255, 255, 0.6); }
+.cemaat-bantlar { display: flex; flex-wrap: wrap; gap: 0.35rem; font-size: 0.78rem; margin: 0.2rem 0; }
+.cemaat-bant { padding: 0.1rem 0.5rem; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.25); opacity: 0.7; }
+.cemaat-bant-aktif { opacity: 1; border-color: #d4af37; background: rgba(212, 175, 55, 0.18); }
+.cemaat-kalemler { display: flex; flex-wrap: wrap; gap: 0.3rem 0.8rem; font-size: 0.82rem; }
+.cemaat-arti { color: #7bd88f; }
+.cemaat-eksi { color: #f1948a; }
+.cemaat-politika { margin: 0.35rem 0 0.6rem; }
+
+/* Zorunlu öğreti seçimi (kapatılamaz) */
+.ogreti-katman {
+  position: fixed; inset: 0; z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 1rem;
+  background: rgba(10, 6, 2, 0.88); overflow-y: auto;
+}
+.ogreti-kutu {
+  width: min(860px, 100%); max-height: 100%; overflow-y: auto; padding: 1.2rem 1.4rem; border-radius: 12px;
+  background: #2a1d10; border: 2px solid #d4af37; color: #f3e6c8; text-align: center;
+}
+.ogreti-kutu h2 { margin: 0 0 0.4rem; }
+.ogreti-seviye { opacity: 0.8; font-size: 0.85rem; }
+.ogreti-kartlar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; margin-top: 0.8rem; }
+.ogreti-kart { display: flex; flex-direction: column; gap: 0.35rem; padding: 0.8rem; border: 1px solid rgba(212, 175, 55, 0.5); border-radius: 10px; background: rgba(255, 255, 255, 0.04); }
+.ogreti-kart-fanatik { border-color: rgba(192, 57, 43, 0.8); background: rgba(192, 57, 43, 0.1); }
+.ogreti-kart p { margin: 0; font-size: 0.86rem; opacity: 0.9; flex: 1; }
+.ogreti-simge { font-size: 1.8rem; }
+.ogreti-kart button { margin-top: auto; }
+@media (max-width: 767px) {
+  .ogreti-kartlar { grid-template-columns: 1fr; }
+  .ogreti-kutu { padding: 0.9rem; }
 }

@@ -258,9 +258,10 @@ function oyuncuFiyatUcuzMu(state: CharacterState): boolean {
 /** Rakip pay yönüne göre ortalamaya dönüş: kendi başlangıç payına göre çok büyükse olumsuz, çok küçükse olumlu hamle ağırlığı ×2. */
 function hamleSec(state: CharacterState, rakipPay: number, hedefPay: number): PiyasaHamlesi | null {
   const isletmeli = isletmeMeslegiMi(state.meslek);
-  const adaylar = RAKIP_HAMLELERI.filter((h) => (isletmeli ? true : !h.isletmeli)).filter(
-    (h) => !(h.urunlu && !acikHatAdi(state))
-  );
+  const din = state.meslek === "Din Adamı";
+  const adaylar = din
+    ? RAKIP_HAMLELERI.filter((h) => !h.isletmeli || !!h.dinMetin)
+    : RAKIP_HAMLELERI.filter((h) => (isletmeli ? true : !h.isletmeli)).filter((h) => !(h.urunlu && !acikHatAdi(state)));
   if (adaylar.length === 0) return null;
   const agirlik = adaylar.map((h) => {
     let w = h.agirlik ?? 1;
@@ -285,7 +286,7 @@ function rakipHamlesiUygula(state: CharacterState, r: Rakip): void {
   const before = d0.oyuncu;
   const grup = rakipGrubu(r.ad);
   let yuzde = rnd(hamle.yuzde[0], hamle.yuzde[1]);
-  if (hamle.fiyatKarsiligi && oyuncuFiyatUcuzMu(state)) yuzde *= 0.5;
+  if (hamle.fiyatKarsiligi && state.meslek !== "Din Adamı" && oyuncuFiyatUcuzMu(state)) yuzde *= 0.5;
   if (hamle.hedef === "oyuncu") {
     musteriAktar(state, "oyuncu", grup, d0.oyuncu * yuzde);
   } else {
@@ -299,9 +300,11 @@ function rakipHamlesiUygula(state: CharacterState, r: Rakip): void {
   }
   r.hamle_son_yil = state.yil;
   state.rakip_hamle_son_yil = state.yil;
-  const urun = hamle.urunlu ? acikHatAdi(state) : null;
-  const tr = doldur(hamle.metin, { rakip: r.ad, urun: urun?.tr ?? "" });
-  const en = doldur(hamle.metin, { rakip: r.ad, urun: urun?.en ?? "" });
+  const dinMi = state.meslek === "Din Adamı" && !!hamle.dinMetin;
+  const urun = hamle.urunlu && !dinMi ? acikHatAdi(state) : null;
+  const metinKaynak = dinMi ? hamle.dinMetin! : hamle.metin;
+  const tr = doldur(metinKaynak, { rakip: r.ad, urun: urun?.tr ?? "" });
+  const en = doldur(metinKaynak, { rakip: r.ad, urun: urun?.en ?? "" });
   const fark = musteriDagilimi(state).oyuncu - before;
   haberEkle(state, {
     yil: state.yil,
@@ -328,7 +331,7 @@ function kucukOlayiUygula(state: CharacterState): void {
     yon: yonBul(fark),
     grup: "kucuk",
     kod: o.id,
-    metin: o.metin,
+    metin: state.meslek === "Din Adamı" && o.dinMetin ? o.dinMetin : o.metin,
     musteri: Math.round(fark * 10) / 10,
   });
 }
