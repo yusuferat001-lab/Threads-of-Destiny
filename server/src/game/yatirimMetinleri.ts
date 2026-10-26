@@ -1,4 +1,5 @@
-import type { YatirimEtkisi, DilliMetin } from "../data/meslekProfilleri";
+import type { YatirimEtkisi, DilliMetin, YatirimTanimi } from "../data/meslekProfilleri";
+import { yatirimKademeMasrafi, yatirimToplamFiyati, YATIRIM_MASRAF_ORANI } from "./yatirimMasrafi";
 import {
   CURUME_ORANLARI,
   DEPO_BAKIM,
@@ -62,4 +63,23 @@ export function yatirimEtkiMetni(etki: YatirimEtkisi, kademe: number, enflasyon:
     case "yardim":
       return dili((d) => (k === 0 ? (d === "tr" ? "Etki yok" : "No effect") : `${d === "tr" ? "Yardım getirisi" : "Aid payoff"} ${art(k * ASEVI_KADEME_ETKISI * 100, d)}`));
   }
+}
+
+/**
+ * Yatırım kartı için yıllık masraf: şimdiki toplam ve bir sonraki kademenin ekleyeceği tutar.
+ * Depo ve ibadethane kademesi kendi bakımını öder; diğer yatırımlar kademe fiyatının %2'sini.
+ */
+export function yatirimMasrafGorunumu(y: YatirimTanimi, kademe: number, enflasyon: number): { yillikMasraf: number; sonrakiMasraf: number | null } {
+  const r2 = (n: number) => Math.round(n * 100) / 100;
+  const sonVar = kademe < y.fiyatlar.length;
+  if (y.etki === "depo" || y.etki === "bina") {
+    const tablo = y.etki === "depo" ? DEPO_BAKIM : BINA_BAKIM;
+    const simdi = tablo[Math.min(kademe, tablo.length - 1)] * enflasyon;
+    const sonraki = tablo[Math.min(kademe + 1, tablo.length - 1)] * enflasyon;
+    return { yillikMasraf: r2(simdi), sonrakiMasraf: sonVar ? r2(sonraki - simdi) : null };
+  }
+  return {
+    yillikMasraf: r2(yatirimToplamFiyati(y.fiyatlar, kademe) * YATIRIM_MASRAF_ORANI * enflasyon),
+    sonrakiMasraf: sonVar ? yatirimKademeMasrafi(y.fiyatlar, kademe, enflasyon) : null,
+  };
 }

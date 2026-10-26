@@ -1,3 +1,4 @@
+import { yatirimYillikMasrafi } from "./yatirimMasrafi";
 import { aranmaMusteriKaybi, aranmaAhlakKaybi } from "../data/aranmaSabitleri";
 import { yatkinlikMusteriBuyumesi } from "../data/meslekYatkinlik";
 import { randomUUID } from "crypto";
@@ -75,7 +76,11 @@ export interface IsletmeBaglami {
 export const DEPO_KAPASITE = [40, 70, 105, 150, 210];
 export const CURUME_ORANLARI = [0.1, 0.08, 0.06, 0.045, 0.03];
 export const DEPO_BAKIM = [4, 8, 15, 28, 45];
-export const BASLANGIC_STOK = 35;
+export const BASLANGIC_STOK = 30;
+/** Başlangıç deposunun doluluk oranı. */
+export const BASLANGIC_DEPO_DOLULUK = 0.75;
+/** Başlangıç malının bedelinin veresiye kalan kesri (yarısı peşin ödenmiş sayılır). */
+export const BASLANGIC_VERESIYE_ORANI = 0.5;
 export const BORC_ODEME_ORANI = 0.25;
 /** Rütbe S1..S5 → en fazla toplam çalışan. */
 export const CALISAN_LIMITLERI = [2, 3, 5, 6, 7];
@@ -192,6 +197,12 @@ export function curumeOrani(is: IsletmeDurumu): number {
 export function depoBakimMasrafi(is: IsletmeDurumu, enflasyon: number): number {
   return r2(DEPO_BAKIM[depoKademesi(is)] * enflasyon);
 }
+/** Dükkân gideri = depo bakımı + yatırım kademelerinin yıllık masrafı (%2). Bütçede tek satır olarak görünür. */
+export function dukkanGideri(state: CharacterState, giderEnflasyon: number): number {
+  const is = state.isletme;
+  if (!is) return 0;
+  return r2(depoBakimMasrafi(is, giderEnflasyon) + yatirimYillikMasrafi(state, giderEnflasyon));
+}
 export function toplamStok(is: IsletmeDurumu): number {
   return is.hatlar.reduce((t, h) => t + h.stok, 0);
 }
@@ -281,10 +292,12 @@ export function maasTabani(yetenek: number, sadakat: number): number {
   return r2(MAAS_CARPANI * (1.2 + 0.02 * yetenek + 0.01 * sadakat + 0.0004 * yetenek * sadakat));
 }
 
-/** Her çalışanın güncel maaşını `maas_taban × güncel enflasyon` ile yeniler (yeni adaylar ve mevcutlar). */
+/** Her çalışanın güncel maaşını `maasTabani(güncel Y, S) × güncel enflasyon` ile yeniler (yeni adaylar ve mevcutlar). */
 export function calisanMaaslariniGuncelle(state: CharacterState, enflasyon: number): void {
   for (const uye of state.ekip) {
     if (uye.maas_taban === undefined) continue;
+    // v14: maaş çalışanın GÜNCEL Yetenek/Sadakat'ine bağlı — geliştikçe artar (işe alırken giriş seviyesi baz alınır).
+    if (uye.rol_turu) uye.maas_taban = maasTabani(uye.gercekKalite, uye.sadakat);
     uye.maas = r2(uye.maas_taban * enflasyon);
   }
 }
@@ -507,7 +520,7 @@ export function urunSecimiBekliyorMu(state: CharacterState): boolean {
   return !!state.urun_secim_bekliyor && !!state.isletme && !state.isletme.ana_urun && !!isletmeProfiliGetir(state.meslek, state.cag)?.baslangicUrunleri?.length;
 }
 
-/** Başlangıç ürününü uygular: yalnız seçilen hat açık kalır; ilk stok beklenen talebin %120'si (depoya sığdığı kadar), parası tedarikçi veresiyesi. */
+/** Başlangıç ürününü uygular: yalnız seçilen hat açık kalır; depo %75 dolu başlar, yarısı peşin, yarısı tedarikçi veresiyesi. */
 export function anaUrunSec(state: CharacterState, urunId: string, b: IsletmeBaglami): void {
   const is = state.isletme;
   const profil = isletmeProfiliGetir(state.meslek, state.cag);
@@ -522,8 +535,8 @@ export function anaUrunSec(state: CharacterState, urunId: string, b: IsletmeBagl
   const hat = is.hatlar.find((h) => h.id === urunId)!;
   const tanim = hatTanimiGetir(profil, urunId)!;
   const hs = hatHesapla(state, hat, tanim, b);
-  hat.stok = Math.min(depoKapasitesi(is), Math.max(5, Math.round(hs.talep * 1.2)));
-  is.tedarikci_borcu = r2(hat.stok * hs.birimMaliyet);
+  hat.stok = Math.round(depoKapasitesi(is) * BASLANGIC_DEPO_DOLULUK); // depo %75 dolu başlar
+  is.tedarikci_borcu = r2(hat.stok * hs.birimMaliyet * BASLANGIC_VERESIYE_ORANI); // yarısı peşin, yarısı veresiye
   state.urun_secim_bekliyor = false;
 }
 
@@ -623,8 +636,8 @@ export function isletmeBaslat(state: CharacterState, b: IsletmeBaglami): void {
   state.isletme = {
     hatlar,
     yatirimlar: {},
-    // İlk mal veresiye gelir: sattıkça kapanır, faizsiz.
-    tedarikci_borcu: r2(BASLANGIC_STOK * ilk.birimMaliyet * b.giderEnflasyon),
+    // İlk malın yarısı peşin, yarısı veresiye: borç sattıkça kapanır, faizsiz.
+    tedarikci_borcu: r2(BASLANGIC_STOK * ilk.birimMaliyet * b.giderEnflasyon * BASLANGIC_VERESIYE_ORANI),
     son_dokum: null,
     adaylar: [],
     aday_yili: state.yil,
@@ -756,7 +769,7 @@ export function isletmeButcesi(state: CharacterState, b: IsletmeBaglami): Isletm
     curumeKaybi += kayip;
     alim += talep * h.birimMaliyet + kayip;
   }
-  const depo = depoBakimMasrafi(is, b.giderEnflasyon);
+  const depo = dukkanGideri(state, b.giderEnflasyon);
   const aidat = satis * loncaAidatiOrani(pazarPayiHesapla(state));
   const brut = satis - alim - depo - aidat;
   const vergi = brut > 0 ? brut * vergiOrani(state) : 0;
@@ -1199,7 +1212,8 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
   });
 
   // 6. Depo: çürüme (kademeye göre, kapalı hatlar dahil) + yalnız kademeye bağlı sabit bakım.
-  const depoMasrafi = depoBakimMasrafi(is, b.giderEnflasyon);
+  const yatirimMasrafi = yatirimYillikMasrafi(state, b.giderEnflasyon);
+  const depoMasrafi = r2(depoBakimMasrafi(is, b.giderEnflasyon) + yatirimMasrafi); // dükkân gideri
   const curume = curumeOrani(is);
   let curumeKaybi = 0;
   for (const hat of is.hatlar) {
@@ -1266,6 +1280,7 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
     satis: r2(satis),
     alim: r2(alim),
     depoMasrafi: r2(depoMasrafi),
+    yatirimMasrafi,
     loncaAidati,
     calisanMaasi: r2(state.ekip.reduce((t, u) => t + u.maas, 0)),
     nakitHasar: r2(nakitHasar),

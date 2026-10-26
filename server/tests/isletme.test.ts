@@ -36,7 +36,13 @@ import {
   fiyatTalepCarpani,
   ilkYillarGuvenli,
   isletmeHazirla,
+  dukkanGideri,
+  depoBakimMasrafi,
+  toplamStok,
+  BASLANGIC_DEPO_DOLULUK,
+  BASLANGIC_VERESIYE_ORANI,
 } from "../src/game/isletme";
+import { YATIRIM_MASRAF_ORANI } from "../src/game/yatirimMasrafi";
 import { isletmeBaglami, hesaplaMaasYillik, createCharacter, mesleğiSec } from "../src/game/stateManager";
 import { hatTanimiGetir, isletmeProfiliGetir } from "../src/data/meslekProfilleri";
 import { pazarPayiHesapla, musteriSayisi } from "../src/data/pazar";
@@ -329,7 +335,7 @@ describe("işletme (Tüccar dilimi)", () => {
     expect(maasTabani(90, 80)).toBeGreaterThan(maasTabani(20, 10));
   });
 
-  it("çalışan çalıştıkça gelişir (Yetenek +0,3, Sadakat +0,6) ama giriş maaşı değişmez", async () => {
+  it("çalışan çalıştıkça gelişir (Yetenek +0,3, Sadakat +0,6) ve maaşı güncel Yetenek/Sadakat'e göre artar", async () => {
     const s = await tuccar();
     const u = uye("ana", 50, 50);
     s.ekip = [u];
@@ -337,7 +343,38 @@ describe("işletme (Tüccar dilimi)", () => {
     isletmeYilIsle(s, isletmeBaglami(s));
     expect(u.gercekKalite).toBeCloseTo(50.3);
     expect(u.sadakat).toBeCloseTo(50.6);
-    expect(u.maas_taban).toBe(taban);
+    expect(u.maas_taban).toBeCloseTo(maasTabani(50.3, 50.6), 2);
+    expect(u.maas_taban).toBeGreaterThan(taban);
+    // yıllar içinde artmaya devam eder
+    for (let i = 0; i < 10; i++) isletmeYilIsle(s, isletmeBaglami(s));
+    expect(u.maas_taban).toBeCloseTo(maasTabani(u.gercekKalite, u.sadakat), 2);
+    expect(u.maas_taban).toBeGreaterThan(taban * 1.05);
+  });
+
+  it("dükkân gideri = depo bakımı + yatırım kademe fiyatlarının %2'si (depo/bina hariç)", async () => {
+    const s = await tuccar();
+    const b = isletmeBaglami(s);
+    const bos = dukkanGideri(s, b.giderEnflasyon);
+    expect(bos).toBeCloseTo(depoBakimMasrafi(s.isletme!, b.giderEnflasyon), 2);
+    s.isletme!.yatirimlar.pazar = 2; // tanıtım: ilk iki kademe fiyatı
+    const profil = isletmeProfiliGetir(s.meslek, s.cag)!;
+    const y = profil.yatirimlar.find((x) => x.etki === "pazar")!;
+    s.isletme!.yatirimlar = { ...s.isletme!.yatirimlar, [y.id]: 2 };
+    const beklenen = (y.fiyatlar[0] + y.fiyatlar[1]) * YATIRIM_MASRAF_ORANI * b.giderEnflasyon;
+    expect(dukkanGideri(s, b.giderEnflasyon) - bos).toBeCloseTo(beklenen, 1);
+    const { dokum } = isletmeYilIsle(s, b);
+    expect(dokum.yatirimMasrafi).toBeCloseTo(beklenen, 1);
+    expect(dokum.depoMasrafi).toBeGreaterThanOrEqual(dokum.yatirimMasrafi!);
+  });
+
+  it("başlangıçta depo %75 dolu, mal bedelinin yarısı veresiye", async () => {
+    const s = await tuccar();
+    const is = s.isletme!;
+    const kap = depoKapasitesi(is);
+    expect(toplamStok(is)).toBe(Math.round(kap * BASLANGIC_DEPO_DOLULUK));
+    const ilk = is.hatlar.find((h) => h.acik)!;
+    const maliyet = hatTanimiGetir(isletmeProfiliGetir(s.meslek, s.cag)!, ilk.id)!.birimMaliyet * isletmeBaglami(s).giderEnflasyon;
+    expect(is.tedarikci_borcu).toBeCloseTo(ilk.stok * maliyet * BASLANGIC_VERESIYE_ORANI, 0);
   });
 
   it("düşük sadakatli çalışan sızdırma/iç hırsızlık/ayrılma uyarısı üretebilir; yüksek sadakatli üretmez", async () => {

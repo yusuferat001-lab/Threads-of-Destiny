@@ -125,7 +125,8 @@ const M = {
   satis: { tr: 'Satış', en: 'Sales' },
   alim: { tr: 'Mal alımı', en: 'Purchases' },
   hammadde: { tr: 'Hammadde', en: 'Materials' },
-  depoMasrafi: { tr: 'Depo masrafı', en: 'Storage' },
+  depoMasrafi: { tr: 'Dükkân giderleri', en: 'Shop expenses' },
+  dukkanGideri: { tr: 'dükkân gideri', en: 'shop expenses' },
   loncaAidati: { tr: 'Lonca aidatı', en: 'Guild dues' },
   vergiKalemi: { tr: 'Vergi', en: 'Tax' },
   borcOdeme: { tr: 'Borç ödemesi', en: 'Debt repaid' },
@@ -373,7 +374,7 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onDepoPlan, o
           </span>
         )}
         <span>
-          🏚️ {t('depo')}: <strong>{durum.depo.kullanilan}/{durum.depo.kapasite}</strong> · {t('curume')} %{durum.depo.curumeYuzde} · {t('bakim')} {formatPara(durum.depo.bakim)}
+          🏚️ {t('depo')}: <strong>{durum.depo.kullanilan}/{durum.depo.kapasite}</strong> · {t('curume')} %{durum.depo.curumeYuzde} · {t('dukkanGideri')} {formatPara(durum.depo.dukkanGideri)}
         </span>
         <span>
           🧾 {t('vergi')}: <strong>%{Math.round(durum.vergi.oran * 1000) / 10}</strong>

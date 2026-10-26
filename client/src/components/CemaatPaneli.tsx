@@ -43,7 +43,7 @@ const M = {
   toplamGelir: { tr: 'Toplam gelir', en: 'Total income' },
   gFaaliyet: { tr: 'Faaliyet masrafı', en: 'Activity costs' },
   gAyin: { tr: 'Ayin masrafı (bağışın %8\'i)', en: 'Rite costs (8% of donations)' },
-  gBina: { tr: 'İbadethane bakımı', en: 'Sanctuary upkeep' },
+  gBina: { tr: 'Cemaat giderleri (bina + yatırımlar)', en: 'Congregation expenses (building + investments)' },
   gYardim: { tr: 'Yardım harcaması', en: 'Aid spending' },
   gAidat: { tr: 'Teşkilat aidatı', en: 'Church dues' },
   gVergi: { tr: 'Vergi', en: 'Tax' },

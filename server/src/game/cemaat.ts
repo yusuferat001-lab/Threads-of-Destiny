@@ -55,6 +55,7 @@ import {
   sabitMusteriArtisi,
   sohretPayBuyumesi,
 } from "../data/pazar";
+import { yatirimYillikMasrafi } from "./yatirimMasrafi";
 import { musteriAktar, musteriKaydir, pazarOlcekle, piyasaCarpani, rakipGrubu } from "./piyasa";
 import {
   OTORITE_KORUMA_ESIGI,
@@ -314,7 +315,7 @@ export function cemaatHesapla(state: CharacterState, b: IsletmeBaglami, gelmeTab
   const faaliyetMasraf = faaliyetler.reduce((t, x) => t + x.masraf, 0);
   const toplamGelir = bagis + faaliyetGelir;
   const ayinMasrafi = bagis * AYIN_MASRAF_ORANI;
-  const binaBakim = binaBakimMasrafi(state, b.giderEnflasyon);
+  const binaBakim = r2(binaBakimMasrafi(state, b.giderEnflasyon) + yatirimYillikMasrafi(state, b.giderEnflasyon)); // cemaat giderleri: bina bakımı + yatırım kademe masrafı
   const yardim = toplamGelir * yp.oran * d.yardim * (1 - clamp(o.yardimMaliyet, 0, 0.8));
   const aidat = toplamGelir * loncaAidatiOrani(pazarPayiHesapla(state));
   const brutKar = toplamGelir - faaliyetMasraf - ayinMasrafi - binaBakim - yardim - aidat;
@@ -555,6 +556,7 @@ export function cemaatYilIsle(state: CharacterState, b: IsletmeBaglami): Isletme
     satis: r2(h.toplamGelir),
     alim: r2(h.faaliyetMasraf + h.ayinMasrafi),
     depoMasrafi: r2(h.binaBakim),
+    yatirimMasrafi: yatirimYillikMasrafi(state, b.giderEnflasyon),
     loncaAidati: r2(h.aidat),
     calisanMaasi: r2(state.ekip.reduce((t, u) => t + u.maas, 0)),
     nakitHasar: r2(nakitHasar),

@@ -968,7 +968,10 @@ export interface IsletmeDokum {
   yil: number;
   satis: number;
   alim: number;
+  /** Dükkân gideri: depo bakımı + yatırım kademelerinin yıllık masrafı (v14). */
   depoMasrafi: number;
+  /** Dükkân giderinin yatırım kısmı (v14); eski kayıtlarda yok. */
+  yatirimMasrafi?: number;
   /** Lonca aidatı: satışın %3'ü (v8.2). */
   loncaAidati: number;
   /** satış − alım − depo masrafı (çalışan maaşı ayrıca giderlerde). */
