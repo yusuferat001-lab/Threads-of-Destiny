@@ -149,7 +149,8 @@ const YATIRIM_DEPO: YatirimTanimi = {
     en: "Stock capacity, spoilage and yearly upkeep depend on the warehouse. A bigger one cuts spoilage but costs more to maintain.",
   },
   etki: "depo",
-  fiyatlar: katla(35),
+  // v15: depo ihtiyacı pazar payıyla erken büyür; ×3 merdiveni yerine daha yumuşak basamaklar.
+  fiyatlar: [30, 70, 150, 300],
 };
 const YATIRIM_TANITIM: YatirimTanimi = {
   id: "tanitim",

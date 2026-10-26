@@ -138,20 +138,20 @@ describe("işletme (Tüccar dilimi)", () => {
     s.pazar_musteri = 100000; // gürültü etkisini ezmek için büyük sabit pay
     const rnd = vi.spyOn(Math, "random").mockReturnValue(0.5); // talep gürültüsü sıfır
     hat.stok = 0; // depo boş, elle doldurulmaz: karşılanamayan oran ≈ %100
-    const musteri0 = pazarPayiHesapla(s); // pay: dünya döneminin pazar ölçeklemesinden etkilenmez
+    const musteri0 = s.meslek_musteri;
     const yil1 = isletmeYilIsle(s, isletmeBaglami(s));
     expect(yil1.dokum.uyarilar.some((u) => u.kod === "stok_bitti")).toBe(true);
     expect(yil1.dokum.uyarilar.some((u) => u.kod === "kitle_kaybi")).toBe(false);
-    expect(pazarPayiHesapla(s)).toBeGreaterThanOrEqual(musteri0 - 0.0001); // ilk yıl kayıp yok
+    expect(s.meslek_musteri).toBeGreaterThanOrEqual(musteri0 * 0.95); // ilk yıl stok kaybı yok (yatkınlığa bağlı küçük oynama olabilir)
     expect(s.isletme!.onceki_karsilanamayan_orani).toBeGreaterThan(0.9);
     hat.stok = 0; // ikinci yıl da yetmedi
-    const musteri1 = pazarPayiHesapla(s);
+    const musteri1 = s.meslek_musteri;
     const yil2 = isletmeYilIsle(s, isletmeBaglami(s));
     rnd.mockRestore();
     expect(yil2.dokum.uyarilar.some((u) => u.kod === "kitle_kaybi")).toBe(true);
-    const kayipOrani = (musteri1 - pazarPayiHesapla(s)) / musteri1;
+    const kayipOrani = (musteri1 - s.meslek_musteri) / musteri1;
     expect(kayipOrani).toBeGreaterThan(0.03); // büyüme (+sabit müşteri) kaybın bir kısmını telafi eder
-    expect(kayipOrani).toBeLessThanOrEqual(0.105); // %10 + pay ölçüm payı
+    expect(kayipOrani).toBeLessThanOrEqual(0.14); // %10 kayıp + yatkınlığa bağlı küçük negatif büyüme olabilir
   });
 
   it("karşılanamayan oran eşiğin altındaysa ya da araya yeterli yıl girerse müşteri kaybı olmaz", async () => {
@@ -207,14 +207,12 @@ describe("işletme (Tüccar dilimi)", () => {
     expect(s.para).toBe(0);
   });
 
-  it("otomatik depo: açıkken seçilen yüzdeye doldurur, kapalıyken dokunmaz; sapma alış ±%3 / satış ±%2 aralığında", async () => {
+  it("otomatik depo: her yıl kapasiteye (%100) kadar kendiliğinden dolar; sapma alış ±%3 / satış ±%2 aralığında", async () => {
     const s = await tuccar();
     const b = isletmeBaglami(s);
     s.isletme!.hatlar.forEach((h) => { h.stok = 0; });
-    expect(otomatikDepoDoldur(s, b)).toBeNull();
-    s.isletme!.depo_oto = { acik: true, yuzde: 50 };
-    otomatikDepoDoldur(s, b);
-    expect(s.isletme!.hatlar.reduce((t, h) => t + h.stok, 0)).toBe(Math.floor(depoKapasitesi(s.isletme!) * 0.5));
+    otomatikDepoDoldur(s, b); // ayar yok: depo_oto kapalı olsa da dolar
+    expect(s.isletme!.hatlar.reduce((t, h) => t + h.stok, 0)).toBe(depoKapasitesi(s.isletme!));
     for (let i = 0; i < 50; i++) {
       piyasaSapmasiniYenile(s);
       for (const v of Object.values(s.isletme!.piyasa_sapma!)) {
@@ -308,19 +306,19 @@ describe("işletme (Tüccar dilimi)", () => {
     await expect(isletmeYatirimYap(s.id, "depo")).rejects.toThrow(/Yeterli paran yok/);
   });
 
-  it("depo yatırımı kapasiteyi büyütür (40/70/105/150/210), çürümeyi azaltır; en üst kademeden sonra reddedilir", async () => {
+  it("depo yatırımı kapasiteyi büyütür (Orta Çağ 58/80/105/135/170), çürümeyi azaltır; en üst kademeden sonra reddedilir", async () => {
     const s = await tuccar();
     s.para = 100000;
-    expect(depoKapasitesi(s.isletme!)).toBe(40);
+    expect(depoKapasitesi(s.isletme!)).toBe(58);
     expect(curumeOrani(s.isletme!)).toBeCloseTo(0.1);
     await isletmeYatirimYap(s.id, "depo");
-    expect(depoKapasitesi(s.isletme!)).toBe(70);
+    expect(depoKapasitesi(s.isletme!)).toBe(80);
     await isletmeYatirimYap(s.id, "depo");
     await isletmeYatirimYap(s.id, "depo");
-    expect(depoKapasitesi(s.isletme!)).toBe(150);
+    expect(depoKapasitesi(s.isletme!)).toBe(135);
     expect(curumeOrani(s.isletme!)).toBeCloseTo(0.045);
     await isletmeYatirimYap(s.id, "depo");
-    expect(depoKapasitesi(s.isletme!)).toBe(210);
+    expect(depoKapasitesi(s.isletme!)).toBe(170);
     expect(curumeOrani(s.isletme!)).toBeCloseTo(0.03);
     await expect(isletmeYatirimYap(s.id, "depo")).rejects.toThrow(/en üst kademe/);
   });
@@ -398,6 +396,18 @@ describe("işletme (Tüccar dilimi)", () => {
     expect(hat.talepMin).toBeGreaterThan(0);
     expect(hat.talepMax).toBeGreaterThanOrEqual(hat.talepMin);
     expect(hat.talepMax).toBeLessThanOrEqual(Math.round(hat.talepMin * 1.25) + 1); // ±%8 gürültü
+  });
+
+  it("depo kapasitesi çağa göre: Sanayi Devrimi'nde Orta Çağ'dan büyük; yıl işlerken depo kendiliğinden dolar", async () => {
+    const oc = await tuccar("Orta Çağ");
+    const sd = await tuccar("Sanayi Devrimi");
+    expect(depoKapasitesi(sd.isletme!)).toBeGreaterThan(depoKapasitesi(oc.isletme!));
+    // Tüccar başlangıçta tam dolu başlar; yıl sonunda stok erir, pasifEkonomi yıl başında yeniden doldurur (ayar gerekmez).
+    oc.isletme!.depo_oto = { acik: false, yuzde: 50 };
+    oc.isletme!.hatlar.forEach((h) => { h.stok = 0; });
+    oc.para = 500;
+    otomatikDepoDoldur(oc, isletmeBaglami(oc));
+    expect(toplamStok(oc.isletme!)).toBe(depoKapasitesi(oc.isletme!));
   });
 
   it("Tüccar başlangıçta depo tam dolu ve borçsuz başlar", async () => {
