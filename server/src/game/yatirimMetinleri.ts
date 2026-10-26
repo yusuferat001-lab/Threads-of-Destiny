@@ -1,8 +1,10 @@
-import type { YatirimEtkisi, DilliMetin } from "../data/meslekProfilleri";
+import type { YatirimEtkisi, DilliMetin, YatirimTanimi } from "../data/meslekProfilleri";
+import { yatirimKademeMasrafi, yatirimToplamFiyati, YATIRIM_MASRAF_ORANI } from "./yatirimMasrafi";
 import {
   CURUME_ORANLARI,
   DEPO_BAKIM,
   DEPO_KAPASITE,
+  depoKapasiteTablosu,
   GUVENLIK_YATIRIM_KORUMA,
   KERVAN_INDIRIM_KADEME,
   TANITIM_PAY_KADEME,
@@ -25,16 +27,17 @@ const dili = (f: (dil: "tr" | "en") => string): DilliMetin => ({ tr: f("tr"), en
  * Bir yatırımın verilen kademedeki TOPLAM etkisi (kademe 0 = hiç yatırım yok).
  * Oyuncuya "şimdi → bir sonraki kademe" karşılaştırması göstermek için; sayılar motor sabitlerinden okunur.
  */
-export function yatirimEtkiMetni(etki: YatirimEtkisi, kademe: number, enflasyon: number): DilliMetin {
+export function yatirimEtkiMetni(etki: YatirimEtkisi, kademe: number, enflasyon: number, cag?: string): DilliMetin {
   const k = Math.max(0, Math.floor(kademe));
   const r2 = (n: number) => Math.round(n * 100) / 100;
   switch (etki) {
     case "depo": {
       const i = Math.min(k, DEPO_KAPASITE.length - 1);
+      const kap = depoKapasiteTablosu(cag);
       return dili((d) =>
         d === "tr"
-          ? `${DEPO_KAPASITE[i]} birim stok · çürüme ${yuzde(CURUME_ORANLARI[i] * 100, d)} · bakım ${sayi(r2(DEPO_BAKIM[i] * enflasyon), d)}/yıl`
-          : `${DEPO_KAPASITE[i]} units of stock · ${yuzde(CURUME_ORANLARI[i] * 100, d)} spoilage · upkeep ${sayi(r2(DEPO_BAKIM[i] * enflasyon), d)}/yr`
+          ? `${kap[i]} birim stok · çürüme ${yuzde(CURUME_ORANLARI[i] * 100, d)} · bakım ${sayi(r2(DEPO_BAKIM[i] * enflasyon), d)}/yıl`
+          : `${kap[i]} units of stock · ${yuzde(CURUME_ORANLARI[i] * 100, d)} spoilage · upkeep ${sayi(r2(DEPO_BAKIM[i] * enflasyon), d)}/yr`
       );
     }
     case "bina": {
@@ -62,4 +65,23 @@ export function yatirimEtkiMetni(etki: YatirimEtkisi, kademe: number, enflasyon:
     case "yardim":
       return dili((d) => (k === 0 ? (d === "tr" ? "Etki yok" : "No effect") : `${d === "tr" ? "Yardım getirisi" : "Aid payoff"} ${art(k * ASEVI_KADEME_ETKISI * 100, d)}`));
   }
+}
+
+/**
+ * Yatırım kartı için yıllık masraf: şimdiki toplam ve bir sonraki kademenin ekleyeceği tutar.
+ * Depo ve ibadethane kademesi kendi bakımını öder; diğer yatırımlar kademe fiyatının %2'sini.
+ */
+export function yatirimMasrafGorunumu(y: YatirimTanimi, kademe: number, enflasyon: number): { yillikMasraf: number; sonrakiMasraf: number | null } {
+  const r2 = (n: number) => Math.round(n * 100) / 100;
+  const sonVar = kademe < y.fiyatlar.length;
+  if (y.etki === "depo" || y.etki === "bina") {
+    const tablo = y.etki === "depo" ? DEPO_BAKIM : BINA_BAKIM;
+    const simdi = tablo[Math.min(kademe, tablo.length - 1)] * enflasyon;
+    const sonraki = tablo[Math.min(kademe + 1, tablo.length - 1)] * enflasyon;
+    return { yillikMasraf: r2(simdi), sonrakiMasraf: sonVar ? r2(sonraki - simdi) : null };
+  }
+  return {
+    yillikMasraf: r2(yatirimToplamFiyati(y.fiyatlar, kademe) * YATIRIM_MASRAF_ORANI * enflasyon),
+    sonrakiMasraf: sonVar ? yatirimKademeMasrafi(y.fiyatlar, kademe, enflasyon) : null,
+  };
 }

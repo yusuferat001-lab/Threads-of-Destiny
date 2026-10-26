@@ -969,7 +969,10 @@ export interface IsletmeDokum {
   yil: number;
   satis: number;
   alim: number;
+  /** Dükkân gideri: depo bakımı + yatırım kademelerinin yıllık masrafı (v14). */
   depoMasrafi: number;
+  /** Dükkân giderinin yatırım kısmı (v14); eski kayıtlarda yok. */
+  yatirimMasrafi?: number;
   /** Lonca aidatı: satışın %3'ü (v8.2). */
   loncaAidati: number;
   /** satış − alım − depo masrafı (çalışan maaşı ayrıca giderlerde). */
@@ -1060,6 +1063,8 @@ export interface IsletmeDurumu {
   /** v12: bu yıl elle yapılan mal alımlarının toplam tutarı ve hat başına adetleri (yıl sonunda sıfırlanır). */
   yil_alim?: number;
   yil_alinan?: Record<string, number>;
+  /** Geçen yıl toplam talebin karşılanamayan oranı (0-1). Üst üste iki yıl eşik aşılınca müşteri kaybı hesaplanır. */
+  onceki_karsilanamayan_orani?: number;
   /** Son dış hırsızlık yılı (bilgi). */
   hirsizlik_son_yil?: number | null;
   /** v20: bir sonraki dış hırsızlık yılı (takvim: önceki olaydan 9-11 yıl sonra; ilk 7 yıl yok). */
@@ -1069,6 +1074,8 @@ export interface IsletmeDurumu {
   piyasa_sapma_yili?: number;
   /** v20: otomatik depo doldurma — açıkken her yıl başı depo seçilen yüzdeye para yettiği kadar dolar. */
   depo_oto?: { acik: boolean; yuzde: number };
+  /** v15: işletmenin kurulduğu çağ (depo kapasite tablosu çağa göre). */
+  cag?: string;
   /** v11: oyun başında seçilen ana ürün (hat id); bonusu yalnız o hatta uygulanır. Seçim yapılmamış/eski oyunlarda yok. */
   ana_urun?: string | null;
   /** İşletmenin kurulduğu oyun yılı (ilk ISLETME_GUVENLI_YIL yıl dış hırsızlık ve rakip saldırısı yok; eski kayıtlarda yok → baslangic_yili). */

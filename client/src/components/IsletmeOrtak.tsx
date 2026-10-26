@@ -11,6 +11,7 @@ const M = {
   azami: { tr: 'Azami', en: 'Maxed' },
   simdi: { tr: 'Şimdi', en: 'Now' },
   sonra: { tr: 'Sonraki kademe', en: 'Next tier' },
+  yillikMasraf: { tr: 'Yıllık masraf', en: 'Yearly cost' },
   calisanlar: { tr: 'Çalışanların', en: 'Your staff' },
   yok: { tr: 'Henüz çalışanın yok. Limit rütbeyle artar.', en: 'No staff yet. The limit grows with rank.' },
   yetenek: { tr: 'Yetenek', en: 'Skill' },
@@ -69,6 +70,10 @@ export function IsletmeOrtak({
             <small>{d(y.aciklama)}</small>
             <span className="isletme-yatirim-etki">
               <b>{t('simdi')}:</b> {d(y.etkiSimdi)}
+            </span>
+            <span className="isletme-yatirim-etki">
+              <b>{t('yillikMasraf')}:</b> {formatPara(y.yillikMasraf)}
+              {y.sonrakiMasraf !== null && <span className="kademe-dusuk"> (+{formatPara(y.sonrakiMasraf)})</span>}
             </span>
             {y.etkiSonraki && (
               <span className="isletme-yatirim-etki isletme-yatirim-sonraki">

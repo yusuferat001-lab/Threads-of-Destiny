@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import { gostergeDetayiUret, etkenGunluguNotEt, gostergeStatiMi, GostergeDetayi } from "./gostergeDetay";
 import { dunyaGecmisiUret, DunyaGecmisi } from "./dunyaGecmisi";
-import { yatirimEtkiMetni } from "./yatirimMetinleri";
+import { yatirimEtkiMetni, yatirimMasrafGorunumu } from "./yatirimMetinleri";
 import { IsletmeDokum, IsletmeFiyat, IsletmeStokHedefi, IsletmeRolTuru, CharacterState, Cag, SenaryoResponse, SonucEtkisi, SucSinifi, TepkiSonucu, MulkTuru, OturumAkisiKaydi, IkiDilMetin, PiyasaHaberi, EkipUyesi, YonetimTalep, AileHuy, DugunButcesi, EvlilikTuru, TeklifHediyesi } from "../types";
 import { T, K, Khukumdar, ikiDilT, ikiDil } from "../i18n";
 import { musteriDagilimi, musteriAktar, musteriKaydir, rakipGrubu } from "./piyasa";
@@ -134,6 +134,7 @@ import {
   korumaHesapla,
   curumeOrani,
   depoBakimMasrafi,
+  dukkanGideri,
   depoKademesi,
   hirsizlikOlasiliklari,
   sicakUrunHatId,
@@ -152,6 +153,7 @@ import {
   SADAKAT_RISK_ESIGI,
   SADIK_ESIGI,
   pazarBuyumeOrani,
+  TALEP_GURULTUSU,
   type IsletmeBaglami,
 } from "./isletme";
 import {
@@ -4967,6 +4969,9 @@ export interface IsletmeHatGorunumu {
   birimFiyat: number;
   birimMaliyet: number;
   beklenenKar: number;
+  /** Bu yıl için tahmini talep aralığı (adet): beklenen talep ± yıllık talep gürültüsü. */
+  talepMin: number;
+  talepMax: number;
   sonTalep: number;
   sonSatis: number;
   /** Dünya durumunun bu kesime etkisi (yüzde, 0 = etkisiz). */
@@ -5000,6 +5005,9 @@ export interface IsletmeYatirimGorunumu {
   /** v12: şu anki kademenin toplam etkisi ve (varsa) bir sonraki kademenin toplam etkisi. */
   etkiSimdi: IkiDilMetin;
   etkiSonraki: IkiDilMetin | null;
+  /** v14: bu yatırımın şu anki yıllık masrafı ve bir sonraki kademenin ekleyeceği masraf (depo/bina bakımı dahil). */
+  yillikMasraf: number;
+  sonrakiMasraf: number | null;
 }
 
 export interface IsletmeCalisanGorunumu {
@@ -5116,7 +5124,7 @@ export interface IsletmeGorunumu {
   pazarMusteri: number;
   slot: { kullanilan: number; toplam: number };
   /** v12: `dolulukYuzde` = kullanılan/kapasite; `doldurYuzdeleri` elle doldurma seçenekleri (alım yıl sonunda otomatik değil). */
-  depo: { kullanilan: number; kapasite: number; kademe: number; curumeYuzde: number; bakim: number; dolulukYuzde: number; doldurYuzdeleri: number[]; oto: { acik: boolean; yuzde: number } };
+  depo: { kullanilan: number; kapasite: number; kademe: number; curumeYuzde: number; bakim: number; dukkanGideri: number; dolulukYuzde: number; doldurYuzdeleri: number[]; oto: { acik: boolean; yuzde: number } };
   /** Üretim modundaki mesleklerde yıllık üretim tavanı; ticaret modunda null. */
   uretim: { tavan: number } | null;
   /** v11: başlangıç ürünü seçimi (yalnız Tüccar/Zanaatkâr); `bekliyor` iken oyun devam etmez. */
@@ -5243,7 +5251,7 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
   if (!profil || !is) {
     return {
       aktif: false, cemaat: null, meslek: state.meslek, pazarPayi: 0, musteri: 0, pazarMusteri: state.pazar_musteri ?? 0,
-      slot: { kullanilan: 0, toplam: 0 }, depo: { kullanilan: 0, kapasite: 0, kademe: 0, curumeYuzde: 0, bakim: 0, dolulukYuzde: 0, doldurYuzdeleri: [], oto: { acik: false, yuzde: 50 } }, uretim: null,
+      slot: { kullanilan: 0, toplam: 0 }, depo: { kullanilan: 0, kapasite: 0, kademe: 0, curumeYuzde: 0, bakim: 0, dukkanGideri: 0, dolulukYuzde: 0, doldurYuzdeleri: [], oto: { acik: false, yuzde: 50 } }, uretim: null,
       urunSecimi: { bekliyor: false, secilen: null, secenekler: [] }, hatlar: [], yatirimlar: [], calisanlar: [], calisanTavani: calisanLimiti(state),
       adaylar: [], adayYenilenmeKalanYil: 0, tedarikciBorcu: 0, sonDokum: null, beklenenBrutKar: 0,
       butce: { satis: 0, alim: 0, curume: 0, depo: 0, aidat: 0, brut: 0, vergi: 0, borcOdeme: 0, net: 0, maas: 0, yasamKira: 0, krediTaksit: 0, cebineKalan: 0 },
@@ -5277,6 +5285,8 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
       birimFiyat: paraYuvarla(h.birimFiyat),
       birimMaliyet: paraYuvarla(h.birimMaliyet),
       beklenenKar: paraYuvarla(h.talep * (h.birimFiyat - h.birimMaliyet)),
+      talepMin: Math.max(0, Math.round(h.talep * (1 - TALEP_GURULTUSU))),
+      talepMax: Math.max(0, Math.round(h.talep * (1 + TALEP_GURULTUSU))),
       sonTalep: hat.son_talep,
       sonSatis: hat.son_satis,
       dunyaTalepYuzde: Math.round((h.kesim.talep - 1) * 100),
@@ -5303,8 +5313,9 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
       kademe,
       maxKademe: y.fiyatlar.length,
       sonrakiFiyat: kademe < y.fiyatlar.length ? paraYuvarla(y.fiyatlar[kademe] * genf) : null,
-      etkiSimdi: yatirimEtkiMetni(y.etki, kademe, genf),
-      etkiSonraki: kademe < y.fiyatlar.length ? yatirimEtkiMetni(y.etki, kademe + 1, genf) : null,
+      etkiSimdi: yatirimEtkiMetni(y.etki, kademe, genf, state.cag),
+      etkiSonraki: kademe < y.fiyatlar.length ? yatirimEtkiMetni(y.etki, kademe + 1, genf, state.cag) : null,
+      ...yatirimMasrafGorunumu(y, kademe, genf),
     };
   });
   const calisanlar: IsletmeCalisanGorunumu[] = state.ekip.map((e) => {
@@ -5361,6 +5372,7 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
       kademe: depoKademesi(is),
       curumeYuzde: Math.round(curumeOrani(is) * 1000) / 10,
       bakim: paraYuvarla(depoBakimMasrafi(is, genf)),
+      dukkanGideri: paraYuvarla(dukkanGideri(state, genf)),
       dolulukYuzde: depoDolulukYuzdesi(is),
       doldurYuzdeleri: [...DEPO_DOLDUR_YUZDELERI],
       oto: { acik: !!is.depo_oto?.acik, yuzde: is.depo_oto?.yuzde ?? 50 },

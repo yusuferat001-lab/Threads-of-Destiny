@@ -162,7 +162,7 @@ describe("aranma kademesi — baskın olayının etkileri (gerçek secimUygula �
     const sonuc = (await secimUygula(state.id, 0)) as SecimSonucu;
 
     expect(sonuc.state.etiketler).toContain("hapiste");
-    expect(sonuc.state.para).toBeLessThan(50);
+    expect(sonuc.state.para).toBeLessThan(150); // 250 başlangıç elden gider; kalan, yıl bloğundaki işletme kârından gelir
     expect(sonuc.state.un).toBe(0);
     expect(sonuc.state.suc_seviyesi).toBeLessThan(20);
   });
@@ -178,7 +178,7 @@ describe("aranma kademesi — baskın olayının etkileri (gerçek secimUygula �
       await senaryoUret(state.id);
       const sonuc = (await secimUygula(state.id, 1)) as SecimSonucu;
 
-      expect(sonuc.state.para).toBeLessThan(180);
+      expect(sonuc.state.para).toBeLessThan(260);
       if (sonuc.state.etiketler.includes("hapiste")) {
         basarisizGorundu = true;
         expect(sonuc.state.suc_seviyesi).toBeLessThan(20);

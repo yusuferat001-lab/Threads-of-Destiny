@@ -856,6 +856,8 @@ export interface IsletmeHatGorunumu {
   birimFiyat: number;
   birimMaliyet: number;
   beklenenKar: number;
+  talepMin: number;
+  talepMax: number;
   sonTalep: number;
   sonSatis: number;
   dunyaTalepYuzde: number;
@@ -883,6 +885,9 @@ export interface IsletmeYatirimGorunumu {
   sonrakiFiyat: number | null;
   etkiSimdi: DilliMetin;
   etkiSonraki: DilliMetin | null;
+  /** v14: bu yatırımın şu anki yıllık masrafı ve bir sonraki kademenin ekleyeceği tutar. */
+  yillikMasraf: number;
+  sonrakiMasraf: number | null;
 }
 
 export interface IsletmeCalisanGorunumu {
@@ -1012,7 +1017,7 @@ export interface IsletmeGorunumu {
   musteri: number;
   pazarMusteri: number;
   slot: { kullanilan: number; toplam: number };
-  depo: { kullanilan: number; kapasite: number; kademe: number; curumeYuzde: number; bakim: number; dolulukYuzde: number; doldurYuzdeleri: number[]; oto: { acik: boolean; yuzde: number } };
+  depo: { kullanilan: number; kapasite: number; kademe: number; curumeYuzde: number; bakim: number; dukkanGideri: number; dolulukYuzde: number; doldurYuzdeleri: number[]; oto: { acik: boolean; yuzde: number } };
   /** Üretim modundaki mesleklerde (Zanaatkâr) yıllık üretim tavanı; ticaret modunda null. */
   uretim: { tavan: number } | null;
   urunSecimi: {
