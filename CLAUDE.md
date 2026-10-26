@@ -1926,3 +1926,6 @@ Bu blok §45 v15'in üzerine yazar (çelişkide bu geçerli).
 - **Depo kapasitesi meslek × çağ tablosu** (`DEPO_KAPASITE_TABLOLARI`, `depoKapasiteTablosu(cag, meslek)`; `IsletmeDurumu.meslek` eklendi, eski kayıtlarda `isletmeHazirla` yazar): Tüccar OÇ 58/86/127/184/276 · Tüccar SD 69/104/155/224/334 · Zanaatkâr OÇ 58/86/127/184/276 · Zanaatkâr SD 60/90/135/195/290 (küçültme denemesi 50/75/110/160/240 stok yetmemesini ve batmayı artırdı, geri alındı). Din Adamı `BINA_KAPASITE` aynı (50/75/105/145/195).
 - **Depo bakımı** `DEPO_BAKIM` ve Din `BINA_BAKIM` = **6 / 12 / 24 / 36 / 55** (× gider enflasyonu). Bina bakımı artınca Din geliri yarıya indiği için `BAGIS_BIRIMI` 1,10 → **1,21**.
 - **Ölçüm** (`SIM_TARZ=aktif`, N=100–150; 55+ yaş yatırım öncesi cebine kalan OÇ/SD): Tüccar 118/181 · Zanaatkâr 109/77–89 · Din 75/95. Batma (sim, oynak): Tüccar %17/%28, Zanaatkâr %10/%26–43, Din %0. Erken yıllar (15–25) cebine kalan 6–10. Tüccar SD geç oyunu hedefin (~110–130) üstünde kalıyor.
+
+### §45 v17 (2026-10) — Kredi havuzu
+Tutarlar küçük +%10, orta +%15, büyük +%20 (43/50/90/104/161/181 taban), yıllık faizler v13'e göre −1 puan: kısa küçük %12 · uzun küçük %8 · kısa orta %15 · uzun orta %9 · kısa büyük %17 · uzun büyük %11 (`data/krediHavuzu.ts`). Vadeler, annüite ve pazarlık kuralları aynı; en büyük teklif (181) `KREDI_MAKS_TUTAR_TABAN` (200) altında kalır.
