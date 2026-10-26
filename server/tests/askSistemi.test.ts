@@ -430,29 +430,42 @@ describe("motor sarmalayıcıları (aşk akışı uçtan uca)", () => {
 describe("zorunlu tanışma fırsatı (senaryoUret kaskadı)", () => {
   it("25 yaş dönümünde iliski_tanisma_firsati çıkar; 'yanına git' tanışmayı başlatır, 'vazgeç' kapatır", async () => {
     for (const secim of ["git", "vazgec"] as const) {
-      const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
-      await mesleğiAta(state.id, "Tüccar");
-      state.yas = 26;
-      state.para = 500;
+      // Rastgele bir olay karakteri öldürebilir ya da hapse/veba karantinasına sokabilir; bu testin
+      // konusu değil — her turda kilitler kaldırılıp can doldurulur, yine de ölürse yeni bir karakterle denenir.
       let bulundu = false;
-      for (let tur = 0; tur < 25 && !bulundu; tur++) {
-        const senaryo = await senaryoUret(state.id);
-        if (senaryo.olay_basligi === "Göz Göze") {
-          bulundu = true;
-          const secimIndex = senaryo.secenekler.findIndex((x) => (secim === "git" ? x.metin.startsWith("Yanına git") : x.metin.startsWith("Vazgeç")));
-          await secimUygula(state.id, secimIndex);
-          if (secim === "git") {
-            expect(state.aktif_tanisma).not.toBeNull();
-            expect(state.aktif_tanisma?.adim).toBe(0);
-          } else {
-            expect(state.aktif_tanisma).toBeNull();
+      for (let deneme = 0; deneme < 4 && !bulundu; deneme++) {
+        const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
+        await mesleğiAta(state.id, "Tüccar");
+        state.yas = 26;
+        state.para = 500;
+        for (let tur = 0; tur < 30 && !bulundu; tur++) {
+          state.saglik = 100;
+          state.mutluluk = Math.max(state.mutluluk, 60);
+          for (const kilit of ["hapiste", "kacak", "veba_hastasi", "yolculukta"]) {
+            const idx = state.etiketler.indexOf(kilit);
+            if (idx >= 0) state.etiketler.splice(idx, 1);
           }
-          expect(state.etiketler).toContain("tanisma_donum_25");
-        } else {
-          const acik = senaryo.secenekler.findIndex((x) => !x.kilitli);
-          await secimUygula(state.id, acik >= 0 ? acik : 0);
+          state.hapis_ceza_kalan = 0;
+          state.hapis_ceza_toplam = 0;
+          state.veba_olum_riski = 0;
+          const senaryo = await senaryoUret(state.id);
+          if (senaryo.olay_basligi === "Göz Göze") {
+            bulundu = true;
+            const secimIndex = senaryo.secenekler.findIndex((x) => (secim === "git" ? x.metin.startsWith("Yanına git") : x.metin.startsWith("Vazgeç")));
+            await secimUygula(state.id, secimIndex);
+            if (secim === "git") {
+              expect(state.aktif_tanisma).not.toBeNull();
+              expect(state.aktif_tanisma?.adim).toBe(0);
+            } else {
+              expect(state.aktif_tanisma).toBeNull();
+            }
+            expect(state.etiketler).toContain("tanisma_donum_25");
+          } else {
+            const acik = senaryo.secenekler.findIndex((x) => !x.kilitli);
+            await secimUygula(state.id, acik >= 0 ? acik : 0);
+          }
+          if (!state.aktif) break;
         }
-        if (!state.aktif) break;
       }
       expect(bulundu, `secim=${secim}`).toBe(true);
     }

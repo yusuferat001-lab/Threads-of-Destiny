@@ -458,8 +458,13 @@ export function olaySec(
       const zarBelirleyenUye = secenek.ekipKalitesiZarBelirler
         ? state.ekip.find((uye) => uye.rol === secenek.ekipKalitesiZarBelirler)
         : undefined;
+      // Kesin (100) şıklar yatkınlık oranıyla da %95 tavanıyla da zayıflamaz: aksi halde
+      // "Yanına git" gibi garantili şıklar %5 (kötü yatkınlıkta %15) ihtimalle erişilemez
+      // "Kullanılmadı." başarısızlık dalına düşerdi.
       const basariSansi = zarBelirleyenUye
         ? zarBelirleyenUye.gercekKalite
+        : secenek.baseBasariSansi >= 100
+        ? 100
         : clampSans(
             Math.round(secenek.baseBasariSansi * (1 + yatkinlikOrani)) +
               // Aranma II: yüksek yıldız suçu kolaylaştırır (+7/+14/+25), yalnız riskli (<100) suç şıklarında.

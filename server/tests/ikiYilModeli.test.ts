@@ -9,11 +9,11 @@ import {
   yilGec,
   stateGetir,
   isletmeKararVer,
+  yilKilidiVar,
 } from "../src/game/gameEngine";
 import { evcilHayvanEkle } from "../src/game/stateManager";
 import { OLAY_HIZIP_ZANAATKAR } from "../src/data/olaylar/hizipZanaatkar";
 import { OLAY_BANKASI } from "../src/data/olaylar";
-import { secimUygulaVeCoz } from "./testUtils";
 import type { SecimSonucu, TepkiSonucu } from "../src/types";
 
 /** secimUygula bazen ara_tepki döner; yilGecAyri bayrağıyla çözer. */
@@ -48,8 +48,9 @@ describe("olay başına 2 yıl: olay yılı + 'Yıl Geç' sakin yılı", () => {
     const state = await hazirOyun();
     const yilOnce = state.yil;
     await senaryoUret(state.id);
-    const sonuc = await secimUygulaVeCoz(state.id, 0);
-    if (sonuc.state.aktif) {
+    const sonuc = await sec(state.id, 0, false); // ilk uygulanabilir şık (kilitli/pahalı şık testi bozmasın)
+    // Seçilen rastgele olay hapis/veba/kaçak kilidi kurarsa o turda sakin yıl yoktur (olay başına 1 yıl).
+    if (sonuc.state.aktif && !yilKilidiVar(sonuc.state)) {
       expect(sonuc.yasArtisi).toBe(2);
       expect(sonuc.state.yil - yilOnce).toBe(2);
       expect(sonuc.state.sakin_yil_bekliyor).toBe(false);
@@ -102,8 +103,9 @@ describe("olay başına 2 yıl: olay yılı + 'Yıl Geç' sakin yılı", () => {
     await senaryoUret(state.id);
     const sonuc = await sec(state.id, 0, true);
     if (!sonuc.state.aktif) return;
-    expect(sonuc.state.sakin_yil_bekliyor).toBe(false);
     expect(sonuc.state.yil - yilOnce).toBeLessThanOrEqual(1);
+    // Seçim hapisten çıkardıysa (kaçış/af) kilit kalkar ve normal sakin yıl kurulur; hâlâ içerideyse kurulmaz.
+    if (sonuc.state.etiketler.includes("hapiste")) expect(sonuc.state.sakin_yil_bekliyor).toBe(false);
   });
 
   it("yolculukta her 2 olayda 1 yıl geçer ve işletme/çalışan işlemleri kilitlidir", async () => {
