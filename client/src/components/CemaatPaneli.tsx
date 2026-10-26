@@ -45,7 +45,7 @@ const M = {
   gAyin: { tr: 'Ayin masrafı (bağışın %8\'i)', en: 'Rite costs (8% of donations)' },
   gBina: { tr: 'İbadethane bakımı', en: 'Sanctuary upkeep' },
   gYardim: { tr: 'Yardım harcaması', en: 'Aid spending' },
-  gAidat: { tr: 'Teşkilat aidatı (%3)', en: 'Church dues (3%)' },
+  gAidat: { tr: 'Teşkilat aidatı', en: 'Church dues' },
   gVergi: { tr: 'Vergi', en: 'Tax' },
   beklenenNet: { tr: 'Beklenen net', en: 'Expected net' },
   ekipNot: { tr: 'Çalışan maaşları ayrıca giderinden düşer.', en: 'Staff wages come out of your expenses separately.' },

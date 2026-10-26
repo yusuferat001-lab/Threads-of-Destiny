@@ -146,7 +146,7 @@ function botKarar(s: CharacterState, tarz: Tarz) {
   is.depo_oto = { acik: true, yuzde: hedef };
 }
 
-interface Cikti { satis: number[]; alim: number[]; maas: number[]; aidat: number[]; vergi: number[]; depoM: number[]; hasar: number[]; yatirim: number[]; dukkan: number[]; gider: number[]; musteri: number[]; calisan: number[]; batmaYili: number; batmaDetay: string; gelir: number[]; net: number[]; pay: number[]; rakipPay: number[]; para: number[]; batti: boolean; sonPara: number; hirsizlik: number; anaRolKazanc: number; pazar: number[]; enf: number[] }
+interface Cikti { hatKar: Record<string, number[]>; hatSatis: Record<string, number[]>; satis: number[]; alim: number[]; maas: number[]; aidat: number[]; vergi: number[]; depoM: number[]; hasar: number[]; yatirim: number[]; dukkan: number[]; gider: number[]; musteri: number[]; calisan: number[]; batmaYili: number; batmaDetay: string; gelir: number[]; net: number[]; pay: number[]; rakipPay: number[]; para: number[]; batti: boolean; sonPara: number; hirsizlik: number; anaRolKazanc: number; pazar: number[]; enf: number[] }
 
 function tekOmur(cag: Cag, tarz: Tarz): Cikti {
   const s = createCharacter(cag, cag === "Orta Çağ" ? "Fransa" : "İngiltere", "kasaba");
@@ -159,7 +159,7 @@ function tekOmur(cag: Cag, tarz: Tarz): Cikti {
     s.isletme.ana_urun = bu.hat;
     for (const h of s.isletme.hatlar) h.acik = h.id === bu.hat;
   }
-  const c: Cikti = { satis: [], alim: [], maas: [], aidat: [], vergi: [], depoM: [], hasar: [], yatirim: [], dukkan: [], gider: [], musteri: [], calisan: [], batmaYili: -1, batmaDetay: "", gelir: [], net: [], pay: [], rakipPay: [], para: [], batti: false, sonPara: 0, hirsizlik: 0, anaRolKazanc: 0, pazar: [], enf: [] };
+  const c: Cikti = { hatKar: {}, hatSatis: {}, satis: [], alim: [], maas: [], aidat: [], vergi: [], depoM: [], hasar: [], yatirim: [], dukkan: [], gider: [], musteri: [], calisan: [], batmaYili: -1, batmaDetay: "", gelir: [], net: [], pay: [], rakipPay: [], para: [], batti: false, sonPara: 0, hirsizlik: 0, anaRolKazanc: 0, pazar: [], enf: [] };
   for (let y = 0; y < YIL; y++) {
     rutbeSurukle(s, y, tarz);
     const para0 = s.para;
@@ -184,6 +184,11 @@ function tekOmur(cag: Cag, tarz: Tarz): Cikti {
     krediYillikUygula(s, 1); // faiz + taksit
     s.tur_sayisi += 1;
     const d0 = s.isletme?.son_dokum;
+    for (const h of d0?.hatlar ?? []) {
+      (c.hatKar[h.id] ??= new Array(c.satis.length).fill(0)).push((h.satilan ?? 0) * ((h.birimFiyat ?? 0) - (h.birimMaliyet ?? 0)));
+      (c.hatSatis[h.id] ??= new Array(c.satis.length).fill(0)).push((h.satilan ?? 0) * (h.birimFiyat ?? 0));
+    }
+    for (const k of Object.keys(c.hatKar)) { if (c.hatKar[k].length <= c.satis.length) { c.hatKar[k].push(0); c.hatSatis[k].push(0); } }
     c.satis.push(d0?.satis ?? 0); c.alim.push(d0?.alim ?? 0); c.maas.push(d0?.calisanMaasi ?? 0);
     c.aidat.push(d0?.loncaAidati ?? 0); c.vergi.push(d0?.vergi ?? 0); c.depoM.push((d0?.depoMasrafi ?? 0) + (d0?.curumeKaybi ?? 0));
     c.hasar.push((d0?.nakitHasar ?? 0) + (d0?.ekstraGider ?? 0)); c.yatirim.push(yatirimHarcama);
@@ -236,6 +241,11 @@ for (const cag of CAGLAR) {
       const rpay = ort(kaynak.map((c) => ort(c.rakipPay.slice(a, b))));
       const dukkan = ort(kaynak.map((c) => ort(c.dukkan.slice(a, b))));
       const m = (f: (c: Cikti) => number[]) => ort(kaynak.map((c) => ort(f(c).slice(a, b)))).toFixed(1);
+      if (process.env.SIM_DOKUM) {
+        const idler = [...new Set(kaynak.flatMap((c) => Object.keys(c.hatKar)))];
+        const parca = idler.map((id) => `${id} satış ${ort(kaynak.map((c) => ort((c.hatSatis[id] ?? []).slice(a, b)))).toFixed(0)} / marj ${ort(kaynak.map((c) => ort((c.hatKar[id] ?? []).slice(a, b)))).toFixed(0)}`).filter((x) => !/ 0 \/ marj 0$/.test(x));
+        console.log(`    [${ad}] hatlar: ${parca.join(" · ")}`);
+      }
       if (process.env.SIM_DOKUM) console.log(`    [${ad}] satış ${m((c) => c.satis)} − alım ${m((c) => c.alim)} − çalışan ${m((c) => c.maas)} − aidat ${m((c) => c.aidat)} − vergi ${m((c) => c.vergi)} − depo+çürüme ${m((c) => c.depoM)} − hasar ${m((c) => c.hasar)} − yatırım ${m((c) => c.yatirim)} − yaşam+kira ${m((c) => c.gider)}`);
       return `${ad}: pay %${pay.toFixed(1)} · dükkan neti ${dukkan.toFixed(1)} · cebine kalan ${net.toFixed(1)} (yatırım öncesi ${(net + ort(kaynak.map((c) => ort(c.yatirim.slice(a, b))))).toFixed(1)}) · (brüt gelir ${gelir.toFixed(1)}, rakip %${rpay.toFixed(1)}) · toplam pazar ${ort(kaynak.map((c) => ort(c.pazar.slice(a, b)))).toFixed(0)} · müşterin ${ort(kaynak.map((c) => ort(c.musteri.slice(a, b)))).toFixed(0)} · enflasyon ×${ort(kaynak.map((c) => ort(c.enf.slice(a, b)))).toFixed(2)}`;
     });

@@ -8,7 +8,7 @@ import type { FaaliyetId } from "./ogretiler";
  */
 
 /** Bağış yapan başına yıllık ortalama bağış (enflasyonsuz). Simülasyonla ayarlanır (scripts/simulateIsletme.ts). */
-export const BAGIS_BIRIMI = 0.9;
+export const BAGIS_BIRIMI = 1.03;
 /** Bağış yapan inanan oranının taban değeri (adak politikasında). */
 export const BAGIS_TABAN_ORANI = 0.6;
 export const BAGIS_ORANI_TAVAN = 0.95;
