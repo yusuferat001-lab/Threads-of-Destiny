@@ -150,7 +150,7 @@ const YATIRIM_DEPO: YatirimTanimi = {
   },
   etki: "depo",
   // v15: depo ihtiyacı pazar payıyla erken büyür; ×3 merdiveni yerine daha yumuşak basamaklar.
-  fiyatlar: [30, 70, 150, 300],
+  fiyatlar: [20, 60, 140, 300],
 };
 const YATIRIM_TANITIM: YatirimTanimi = {
   id: "tanitim",

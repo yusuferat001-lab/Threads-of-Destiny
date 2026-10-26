@@ -73,14 +73,14 @@ export interface IsletmeBaglami {
 
 // ── Sayılar (simülasyonla ayarlanır; bkz. scripts/simulateIsletme.ts) ───────
 /** Depo kademeleri (0..4): kapasite, çürüme oranı, sabit yıllık bakım (enflasyonsuz). Depo yılda BİR kez dolar. */
-export const DEPO_KAPASITE = [58, 80, 105, 135, 170];
+export const DEPO_KAPASITE = [50, 75, 110, 160, 240];
 /** Sanayi Devrimi'nde talep (iki temel hat, daha büyük pazar) Orta Çağ'dan ~%25 yüksektir; depo kademeleri buna göre büyüktür. */
-export const DEPO_KAPASITE_SANAYI = [70, 95, 125, 160, 200];
+export const DEPO_KAPASITE_SANAYI = [60, 90, 135, 195, 290];
 export function depoKapasiteTablosu(cag?: string): number[] {
   return cag === "Sanayi Devrimi" ? DEPO_KAPASITE_SANAYI : DEPO_KAPASITE;
 }
 export const CURUME_ORANLARI = [0.1, 0.08, 0.06, 0.045, 0.03];
-export const DEPO_BAKIM = [6, 12, 24, 45, 75];
+export const DEPO_BAKIM = [5, 12, 26, 50, 90];
 export const BASLANGIC_STOK = 30;
 /** Başlangıç deposunun doluluk oranı. */
 export const BASLANGIC_DEPO_DOLULUK = 0.75;
@@ -105,12 +105,12 @@ export const HAT_CESITLILIK_MUSTERI = 0.005;
 /** v20: her yıl başı alış ±%3, satış ±%2 piyasa sapması (o yıl sabit). */
 export const PIYASA_SAPMA_ALIS = 0.03;
 export const PIYASA_SAPMA_SATIS = 0.02;
-/** Karşılanamayan talep bu oranı geçmedikçe sorun yok: ne uyarı (hat bazında) ne müşteri kaybı (toplamda). */
-const KITLE_KAYIP_ESIGI = 0.1;
-/** Üst üste iki yıl eşik aşılırsa, o iki yılın karşılanamayan oran ortalamasının bu kesri kadar müşteri rakibe gider. */
-const KITLE_KAYIP_KESRI = 0.1;
-/** Tek yılda kaybedilebilecek müşteri oranı (kendi müşterisinin yüzdesi) üst sınırı. */
-const KITLE_KAYIP_TAVANI = 0.1;
+/**
+ * Eşik yok: talebin herhangi bir kısmı karşılanamazsa uyarı çıkar. Üst üste İKİ yıl karşılanamazsa (ve sonraki her yıl
+ * karşılanamadıkça) son iki yılın karşılanamayan oran ortalamasının bu kesri kadar müşteri o yıl rakibe gider
+ * (kayıp en çok %30'dur; ortalama 1 olsa bile).
+ */
+const KITLE_KAYIP_KESRI = 0.3;
 export const TALEP_GURULTUSU = 0.08;
 /** Yüzdelik müşteri büyümesi pay bu eşiğe yaklaştıkça sıfıra iner. */
 export const PAY_DOYMA_ESIGI = 0.68;
@@ -1226,7 +1226,7 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
     toplamTalep += talepAdet;
     const karsilanamayan = Math.max(0, talepAdet - satilan);
     toplamKarsilanamayan += karsilanamayan;
-    if (talepAdet > 0 && karsilanamayan > talepAdet * KITLE_KAYIP_ESIGI) {
+    if (talepAdet > 0 && karsilanamayan > 0) {
       uyarilar.push({ kod: "stok_bitti", hat: p.hat.id });
     }
     satirlar.push({ id: p.hat.id, talep: talepAdet, satilan, alinan: alinanlar[p.hat.id] ?? 0, stokSonu: p.hat.stok, birimMaliyet: r2(p.hs.birimMaliyet), birimFiyat: r2(p.hs.birimFiyat) });
@@ -1256,13 +1256,12 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
     return t + (bn?.tur === "musteri" ? bn.deger : 0);
   }, 0);
   const karsilanamayanOrani = toplamTalep > 0 ? toplamKarsilanamayan / toplamTalep : 0;
-  // İlk yetmeme yalnız uyarıdır (hat bazlı "stok_bitti"). Hemen ardından ikinci yıl da eşik aşılırsa, son iki yılın
-  // karşılanamayan oranlarının ortalamasının %10'u kadar müşteri gider (tavanlı).
+  // İlk yetmeme yalnız uyarıdır (hat bazlı "stok_bitti"). Hemen ardından ikinci yıl da karşılanamazsa — ve kayıp
+  // sürdükçe sonraki yıllarda da — son iki yılın karşılanamayan oranlarının ortalamasının %30'u kadar müşteri gider.
   const oncekiOran = is.onceki_karsilanamayan_orani ?? 0;
-  if (karsilanamayanOrani > KITLE_KAYIP_ESIGI && oncekiOran > KITLE_KAYIP_ESIGI) {
+  if (karsilanamayanOrani > 0 && oncekiOran > 0) {
     const ortalamaOran = (karsilanamayanOrani + oncekiOran) / 2;
-    const kayipYuzde = Math.min(KITLE_KAYIP_TAVANI, ortalamaOran * KITLE_KAYIP_KESRI);
-    musteriKaydir(state, "oyuncu", -state.meslek_musteri * kayipYuzde);
+    musteriKaydir(state, "oyuncu", -state.meslek_musteri * ortalamaOran * KITLE_KAYIP_KESRI);
     uyarilar.push({ kod: "kitle_kaybi" });
   }
   is.onceki_karsilanamayan_orani = karsilanamayanOrani;
