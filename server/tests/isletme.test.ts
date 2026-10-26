@@ -41,6 +41,8 @@ import {
   toplamStok,
   BASLANGIC_DEPO_DOLULUK,
   BASLANGIC_VERESIYE_ORANI,
+  baslangicDepoDoluluk,
+  baslangicVeresiyeOrani,
 } from "../src/game/isletme";
 import { YATIRIM_MASRAF_ORANI } from "../src/game/yatirimMasrafi";
 import { isletmeBaglami, hesaplaMaasYillik, createCharacter, mesleğiSec } from "../src/game/stateManager";
@@ -77,7 +79,7 @@ describe("işletme (Tüccar dilimi)", () => {
     const s = await tuccar();
     expect(s.isletme).toBeTruthy();
     expect(s.isletme!.hatlar.filter((h) => h.acik)).toHaveLength(1);
-    expect(s.isletme!.tedarikci_borcu).toBeGreaterThan(0);
+    expect(s.isletme!.tedarikci_borcu).toBe(0);
     expect(s.isletme!.adaylar).toHaveLength(5);
     expect(s.isletme!.adaylar.filter((a) => a.rolTuru === "ana")).toHaveLength(0);
     for (const rol of ["maliyet", "musteri", "guvenlik"]) expect(s.isletme!.adaylar.filter((a) => a.rolTuru === rol).length).toBeLessThanOrEqual(2);
@@ -367,14 +369,20 @@ describe("işletme (Tüccar dilimi)", () => {
     expect(dokum.depoMasrafi).toBeGreaterThanOrEqual(dokum.yatirimMasrafi!);
   });
 
-  it("başlangıçta depo %75 dolu, mal bedelinin yarısı veresiye", async () => {
+  it("Tüccar başlangıçta depo tam dolu ve borçsuz başlar", async () => {
     const s = await tuccar();
     const is = s.isletme!;
-    const kap = depoKapasitesi(is);
-    expect(toplamStok(is)).toBe(Math.round(kap * BASLANGIC_DEPO_DOLULUK));
-    const ilk = is.hatlar.find((h) => h.acik)!;
-    const maliyet = hatTanimiGetir(isletmeProfiliGetir(s.meslek, s.cag)!, ilk.id)!.birimMaliyet * isletmeBaglami(s).giderEnflasyon;
-    expect(is.tedarikci_borcu).toBeCloseTo(ilk.stok * maliyet * BASLANGIC_VERESIYE_ORANI, 0);
+    expect(toplamStok(is)).toBe(depoKapasitesi(is));
+    expect(is.tedarikci_borcu).toBe(0);
+  });
+
+  it("diğer meslekler başlangıçta depo %75 dolu, mal bedelinin yarısı veresiye", async () => {
+    const s = await tuccar();
+    s.meslek = "Zanaatkâr";
+    const is = s.isletme!;
+    expect(baslangicDepoDoluluk(s.meslek)).toBe(BASLANGIC_DEPO_DOLULUK);
+    expect(baslangicVeresiyeOrani(s.meslek)).toBe(BASLANGIC_VERESIYE_ORANI);
+    expect(is).toBeTruthy();
   });
 
   it("düşük sadakatli çalışan sızdırma/iç hırsızlık/ayrılma uyarısı üretebilir; yüksek sadakatli üretmez", async () => {

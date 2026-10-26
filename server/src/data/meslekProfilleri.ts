@@ -369,9 +369,9 @@ const ZANAATKAR_SANAYI: IsletmeProfili = {
   hatlar: [
     { id: "ayakkabi", simge: "👞", ad: { tr: "Ayakkabı ve Deri", en: "Shoes & Leather" }, kesim: "temel", talepTabani: 1.49, birimMaliyet: 0.53, birimFiyat: 1.22, minRutbe: 1 },
     { id: "ev_esyasi", simge: "🍳", ad: { tr: "Ev Eşyası", en: "Household Goods" }, kesim: "temel", talepTabani: 1.389, birimMaliyet: 0.57, birimFiyat: 1.27, minRutbe: 1 },
-    { id: "mobilya", simge: "🛋️", ad: { tr: "Mobilya ve Cam", en: "Furniture & Glass" }, kesim: "temel", talepTabani: 1.05, birimMaliyet: 0.78, birimFiyat: 2.01, minRutbe: 2 },
-    { id: "makine", simge: "⚙️", ad: { tr: "Makine Parçası", en: "Machine Parts" }, kesim: "savas", talepTabani: 0.875, birimMaliyet: 0.9, birimFiyat: 2.65, minRutbe: 2, savasTalep: 1.25 },
-    { id: "saat", simge: "⌚", ad: { tr: "Saat ve Mücevher", en: "Watches & Jewellery" }, kesim: "luks", talepTabani: 0.405, birimMaliyet: 1.64, birimFiyat: 5.51, minRutbe: 3 },
+    { id: "mobilya", simge: "🛋️", ad: { tr: "Mobilya ve Cam", en: "Furniture & Glass" }, kesim: "temel", talepTabani: 1.05, birimMaliyet: 0.78, birimFiyat: 1.77, minRutbe: 2 },
+    { id: "makine", simge: "⚙️", ad: { tr: "Makine Parçası", en: "Machine Parts" }, kesim: "savas", talepTabani: 0.875, birimMaliyet: 0.9, birimFiyat: 2.33, minRutbe: 2, savasTalep: 1.25 },
+    { id: "saat", simge: "⌚", ad: { tr: "Saat ve Mücevher", en: "Watches & Jewellery" }, kesim: "luks", talepTabani: 0.405, birimMaliyet: 1.64, birimFiyat: 4.85, minRutbe: 3 },
   ],
   yatirimlar: ZANAATKAR_YATIRIMLAR,
   roller: ZANAATKAR_ROLLER,

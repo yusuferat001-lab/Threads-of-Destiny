@@ -81,6 +81,15 @@ export const BASLANGIC_STOK = 30;
 export const BASLANGIC_DEPO_DOLULUK = 0.75;
 /** Başlangıç malının bedelinin veresiye kalan kesri (yarısı peşin ödenmiş sayılır). */
 export const BASLANGIC_VERESIYE_ORANI = 0.5;
+/** Tüccar daha cüzdanlı başlar: depo tam dolu, borçsuz (erken yıllarda batmasın). */
+export const TUCCAR_BASLANGIC_DEPO_DOLULUK = 1;
+export const TUCCAR_BASLANGIC_VERESIYE_ORANI = 0;
+export function baslangicDepoDoluluk(meslek: string): number {
+  return meslek === "Tüccar" ? TUCCAR_BASLANGIC_DEPO_DOLULUK : BASLANGIC_DEPO_DOLULUK;
+}
+export function baslangicVeresiyeOrani(meslek: string): number {
+  return meslek === "Tüccar" ? TUCCAR_BASLANGIC_VERESIYE_ORANI : BASLANGIC_VERESIYE_ORANI;
+}
 export const BORC_ODEME_ORANI = 0.25;
 /** Rütbe S1..S5 → en fazla toplam çalışan. */
 export const CALISAN_LIMITLERI = [2, 3, 5, 6, 7];
@@ -535,8 +544,8 @@ export function anaUrunSec(state: CharacterState, urunId: string, b: IsletmeBagl
   const hat = is.hatlar.find((h) => h.id === urunId)!;
   const tanim = hatTanimiGetir(profil, urunId)!;
   const hs = hatHesapla(state, hat, tanim, b);
-  hat.stok = Math.round(depoKapasitesi(is) * BASLANGIC_DEPO_DOLULUK); // depo %75 dolu başlar
-  is.tedarikci_borcu = r2(hat.stok * hs.birimMaliyet * BASLANGIC_VERESIYE_ORANI); // yarısı peşin, yarısı veresiye
+  hat.stok = Math.round(depoKapasitesi(is) * baslangicDepoDoluluk(state.meslek)); // Tüccar tam dolu, diğerleri %75
+  is.tedarikci_borcu = r2(hat.stok * hs.birimMaliyet * baslangicVeresiyeOrani(state.meslek)); // Tüccar borçsuz, diğerleri yarı veresiye
   state.urun_secim_bekliyor = false;
 }
 
@@ -626,7 +635,7 @@ export function isletmeBaslat(state: CharacterState, b: IsletmeBaglami): void {
   const hatlar: IsletmeHat[] = profil.hatlar.map((h) => ({
     id: h.id,
     acik: h.id === ilk.id,
-    stok: h.id === ilk.id ? BASLANGIC_STOK : 0,
+    stok: h.id === ilk.id ? (state.meslek === "Tüccar" ? DEPO_KAPASITE[0] : BASLANGIC_STOK) : 0,
     otomatik: true,
     siparis: 0,
     fiyat: "normal",
@@ -637,7 +646,12 @@ export function isletmeBaslat(state: CharacterState, b: IsletmeBaglami): void {
     hatlar,
     yatirimlar: {},
     // İlk malın yarısı peşin, yarısı veresiye: borç sattıkça kapanır, faizsiz.
-    tedarikci_borcu: r2(BASLANGIC_STOK * ilk.birimMaliyet * b.giderEnflasyon * BASLANGIC_VERESIYE_ORANI),
+    tedarikci_borcu: r2(
+      (state.meslek === "Tüccar" ? DEPO_KAPASITE[0] : BASLANGIC_STOK) *
+        ilk.birimMaliyet *
+        b.giderEnflasyon *
+        baslangicVeresiyeOrani(state.meslek),
+    ),
     son_dokum: null,
     adaylar: [],
     aday_yili: state.yil,
