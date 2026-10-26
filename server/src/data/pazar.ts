@@ -73,7 +73,7 @@ export const PAZAR_ADLARI: Record<string, PazarAdlari> = {
 /** Toplam pazar büyüklüğü (müşteri sayısı) oyun başında bu aralıktan atanır. */
 export const PAZAR_MUSTERI_ARALIK: [number, number] = [350, 500];
 /** Her müşterinin bir üründen yıllık baz alım oranı (dönem etkilerinden bağımsız; üstüne dönem çarpanları biner). */
-export const ALIM_ORANI = 0.44;
+export const ALIM_ORANI = 0.52;
 /** Başlangıç pazar payı tabanı (%8–9) ve mesleğe yatkınlık kademesine göre ek (puan). */
 export const BASLANGIC_PAY_ARALIK: [number, number] = [0.1, 0.11];
 export const YATKINLIK_PAY_EKI = [0, -0.03, 0, 0.01, 0.02, 0.03]; // index = meslek_yatkinlik_seviyesi (1 kötü … 5 mükemmel)
@@ -87,7 +87,7 @@ export function rakipSaldiriKademesi(pay: number): 1 | 2 | 3 {
   return 3;
 }
 /** Saldırılar zarla değil takvimle gelir: bir sonraki saldırı, bugünden 4–9 yıl sonra (eşit olasılık) bir yıla konur. */
-export const RAKIP_SALDIRI_ARALIK_YIL: [number, number] = [4, 9];
+export const RAKIP_SALDIRI_ARALIK_YIL: [number, number] = [5, 8];
 /** Şehir yöneticisi ilişkisi yüksekse aralığa eklenen yıl. */
 export const RAKIP_SALDIRI_OTORITE_EKI_YIL = 1;
 /** v11: işletme kurulduktan sonra bu kadar yıl dış hırsızlık ve rakip saldırısı olmaz. */
@@ -112,10 +112,10 @@ export const SALDIRI_TUR_AGIRLIKLARI: Record<1 | 2 | 3, Record<SaldiriTuru, numb
   2: { baskin: 20, sabotaj: 0, iftira: 35, musteri_calma: 45 },
   3: { baskin: 15, sabotaj: 35, iftira: 20, musteri_calma: 30 },
 };
-/** Tür başına hasar, kademe 1/2/3. nakit: geçen yılın brüt kârının %'si; musteri: oyuncunun müşteri sayısının %'si; sohret: puan; stok: [min,max] %. */
+/** Tür başına hasar, kademe 1/2/3. nakit: geçen yılın toplam satışının %'si; musteri: oyuncunun müşteri sayısının %'si; sohret: puan; stok: [min,max] %. */
 export const SALDIRI_HASARLARI = {
-  baskin: { nakit: [10, 17, 25] },
-  sabotaj: { stok: [17, 25] as [number, number], nakit: [9, 9, 9] },
+  baskin: { nakit: [5, 9, 13] },
+  sabotaj: { stok: [17, 25] as [number, number], nakit: [6, 6, 6] },
   iftira: { sohret: [0, 6, 9.5], musteri: [0, 5, 8] },
   musteri_calma: { musteri: [6, 10, 15] },
 } as const;

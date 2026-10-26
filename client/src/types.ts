@@ -772,7 +772,6 @@ export interface EkipUyesi {
 
 export type IsletmeRolTuru = 'ana' | 'maliyet' | 'musteri' | 'guvenlik';
 export type IsletmeFiyat = 'eksi20' | 'eksi10' | 'normal' | 'arti10' | 'arti20';
-export type IsletmeStokHedefi = 'az' | 'normal' | 'fazla';
 
 export interface IsletmeUyari {
   kod:
@@ -855,7 +854,6 @@ export interface IsletmeHatGorunumu {
   minRutbe: number;
   stok: number;
   fiyat: IsletmeFiyat;
-  tahminiTalep: number;
   birimFiyat: number;
   birimMaliyet: number;
   beklenenKar: number;
@@ -864,6 +862,9 @@ export interface IsletmeHatGorunumu {
   dunyaTalepYuzde: number;
   dunyaFiyatYuzde: number;
   oncekiBirimMaliyet: number | null;
+  /** v20: bu yılın piyasa sapması (alış ±%3, satış ±%2; yıl boyu sabit), yüzde. */
+  alisSapmaYuzde: number;
+  satisSapmaYuzde: number;
   maliyetDonemYuzde: number;
   maliyetIndirimYuzde: number;
   anaUrun: boolean;
@@ -1012,10 +1013,9 @@ export interface IsletmeGorunumu {
   musteri: number;
   pazarMusteri: number;
   slot: { kullanilan: number; toplam: number };
-  depo: { kullanilan: number; kapasite: number; kademe: number; curumeYuzde: number; bakim: number };
+  depo: { kullanilan: number; kapasite: number; kademe: number; curumeYuzde: number; bakim: number; dolulukYuzde: number; doldurYuzdeleri: number[]; oto: { acik: boolean; yuzde: number } };
   /** Üretim modundaki mesleklerde (Zanaatkâr) yıllık üretim tavanı; ticaret modunda null. */
   uretim: { tavan: number } | null;
-  stokHedefi: IsletmeStokHedefi;
   urunSecimi: {
     bekliyor: boolean;
     secilen: string | null;
@@ -1039,6 +1039,21 @@ export interface IsletmeGorunumu {
   dunya: { donem: string | null; savas: boolean; veba: boolean };
   para: number;
   paraBirimi: string;
+}
+
+/** v20: depoyu belirli bir yüzdeye doldurma planı (parayı çekmez); para yetmezse yalnız parası kadar alınır. */
+export interface DepoDoldurPlani {
+  hedefYuzde: number;
+  mevcutYuzde: number;
+  kapasite: number;
+  adet: number;
+  maliyet: number;
+  hatlar: { hat: string; adet: number; birimMaliyet: number; tutar: number }[];
+  tamAdet: number;
+  tamMaliyet: number;
+  yetersiz: boolean;
+  elindekiPara: number;
+  ulasilacakYuzde: number;
 }
 
 export interface IsletmeKararGirdisi {

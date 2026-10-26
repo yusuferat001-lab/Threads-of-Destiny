@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { PiyasaHaberleri } from './PiyasaHaberleri';
-import type { FinansOzeti, GecmisNoktasi, IsletmeGorunumu, IsletmeKararGirdisi, CemaatKararGirdisi, IsletmeStokHedefi, EkipUyesi, Rakip, KotuIsKarti, YonetimDurumu, YonetimHat, PazarDurumu, AjanDurumu } from '../types';
+import type { FinansOzeti, GecmisNoktasi, IsletmeGorunumu, IsletmeKararGirdisi, CemaatKararGirdisi, DepoDoldurPlani, EkipUyesi, Rakip, KotuIsKarti, YonetimDurumu, YonetimHat, PazarDurumu, AjanDurumu } from '../types';
 import { useDil } from '../DilContext';
 import { formatPara, formatYuzde, formatYuzdeAralik, formatMusteri, kademeSinifi } from '../format';
 import { bic, type Metinler } from '../i18n';
@@ -68,7 +68,10 @@ interface KariyerEkraniProps {
   gecmis?: GecmisNoktasi[];
   /** Meslek işletmesi (GET /:id/isletme); işletmesi olmayan mesleklerde null. */
   isletme?: IsletmeGorunumu | null;
-  onIsletmeKarar?: (hatlar: IsletmeKararGirdisi[], stokHedefi?: IsletmeStokHedefi, cemaat?: CemaatKararGirdisi) => void;
+  onIsletmeKarar?: (hatlar: IsletmeKararGirdisi[], cemaat?: CemaatKararGirdisi) => void;
+  onDepoPlan?: (hedefYuzde: number) => Promise<DepoDoldurPlani | null>;
+  onDepoSatinAl?: (hedefYuzde: number) => Promise<void>;
+  onDepoOto?: (acik: boolean, yuzde: number) => Promise<void>;
   onIsletmeYatirim?: (yatirimId: string) => void;
   onIsletmeCalisanAl?: (adayId: string) => void;
   onGeriDon: () => void;
@@ -714,6 +717,9 @@ export function KariyerEkrani({
   gecmis,
   isletme,
   onIsletmeKarar,
+  onDepoPlan,
+  onDepoSatinAl,
+  onDepoOto,
   onIsletmeYatirim,
   onIsletmeCalisanAl,
   onGeriDon,
@@ -1088,6 +1094,9 @@ export function KariyerEkrani({
               pazar={pazarDurum}
               yukleniyor={yukleniyor}
               onKarar={onIsletmeKarar}
+              onDepoPlan={onDepoPlan}
+              onDepoSatinAl={onDepoSatinAl}
+              onDepoOto={onDepoOto}
               onYatirim={onIsletmeYatirim}
               onCalisanAl={onIsletmeCalisanAl}
               onEkipCikar={onEkipCikar}

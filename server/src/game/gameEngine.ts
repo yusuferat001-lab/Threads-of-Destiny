@@ -59,6 +59,7 @@ import {
   krizEtkisiUygula,
   sehirYonetimGuncelle,
   enflasyonCarpani,
+  giderEnflasyonCarpani,
   mulkGelirleriUygula,
   mulkGetiriOraniHesapla,
   mulkGetiriOraniKisisel,
@@ -137,17 +138,18 @@ import {
   depoBakimMasrafi,
   depoKademesi,
   hirsizlikOlasiliklari,
-  hirsizlikGirisimSansi,
-  hirsizlikOrtalamaAralik,
   sicakUrunHatId,
-  stokHedefiGetir,
   vergiOrani,
   imtiyazAktifMi,
   maasTabani,
   FIYAT_POLITIKASI,
   FIYATLAR,
-  STOK_HEDEFLERI,
   DEPO_KAPASITE,
+  DEPO_DOLDUR_YUZDELERI,
+  depoDolulukYuzdesi,
+  depoDoldurPlani,
+  depoyuDoldur,
+  DepoDoldurPlani,
   ADAY_YENILEME_YIL,
   SADAKAT_RISK_ESIGI,
   SADIK_ESIGI,
@@ -5096,7 +5098,6 @@ export interface IsletmeHatGorunumu {
   stok: number;
   fiyat: IsletmeFiyat;
   /** Bu yıl için beklenen talep (gürültüsüz) ve birim fiyat/maliyet. */
-  tahminiTalep: number;
   birimFiyat: number;
   birimMaliyet: number;
   beklenenKar: number;
@@ -5107,6 +5108,9 @@ export interface IsletmeHatGorunumu {
   dunyaFiyatYuzde: number;
   /** v11: geçen yıl ödenen birim alış fiyatı (dökümden; ilk yıl null), bu yıl dönemin alışa etkisi (%) ve toplam indirim (%). */
   oncekiBirimMaliyet: number | null;
+  /** v20: bu yılın piyasa sapması (alış ±%3, satış ±%2; yıl boyu sabit), yüzde olarak. */
+  alisSapmaYuzde: number;
+  satisSapmaYuzde: number;
   maliyetDonemYuzde: number;
   maliyetIndirimYuzde: number;
   /** v11: seçilen ana ürün mü ve bonus açıklaması. */
@@ -5245,10 +5249,10 @@ export interface IsletmeGorunumu {
   musteri: number;
   pazarMusteri: number;
   slot: { kullanilan: number; toplam: number };
-  depo: { kullanilan: number; kapasite: number; kademe: number; curumeYuzde: number; bakim: number };
+  /** v12: `dolulukYuzde` = kullanılan/kapasite; `doldurYuzdeleri` elle doldurma seçenekleri (alım yıl sonunda otomatik değil). */
+  depo: { kullanilan: number; kapasite: number; kademe: number; curumeYuzde: number; bakim: number; dolulukYuzde: number; doldurYuzdeleri: number[]; oto: { acik: boolean; yuzde: number } };
   /** Üretim modundaki mesleklerde yıllık üretim tavanı; ticaret modunda null. */
   uretim: { tavan: number } | null;
-  stokHedefi: IsletmeStokHedefi;
   /** v11: başlangıç ürünü seçimi (yalnız Tüccar/Zanaatkâr); `bekliyor` iken oyun devam etmez. */
   urunSecimi: { bekliyor: boolean; secilen: string | null; secenekler: { id: string; simge: string; ad: IkiDilMetin; kesim: "temel" | "savas" | "luks"; ozet: IkiDilMetin }[] };
   hatlar: IsletmeHatGorunumu[];
@@ -5373,8 +5377,8 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
   if (!profil || !is) {
     return {
       aktif: false, cemaat: null, meslek: state.meslek, pazarPayi: 0, musteri: 0, pazarMusteri: state.pazar_musteri ?? 0,
-      slot: { kullanilan: 0, toplam: 0 }, depo: { kullanilan: 0, kapasite: 0, kademe: 0, curumeYuzde: 0, bakim: 0 }, uretim: null,
-      stokHedefi: "normal", urunSecimi: { bekliyor: false, secilen: null, secenekler: [] }, hatlar: [], yatirimlar: [], calisanlar: [], calisanTavani: calisanLimiti(state),
+      slot: { kullanilan: 0, toplam: 0 }, depo: { kullanilan: 0, kapasite: 0, kademe: 0, curumeYuzde: 0, bakim: 0, dolulukYuzde: 0, doldurYuzdeleri: [], oto: { acik: false, yuzde: 50 } }, uretim: null,
+      urunSecimi: { bekliyor: false, secilen: null, secenekler: [] }, hatlar: [], yatirimlar: [], calisanlar: [], calisanTavani: calisanLimiti(state),
       adaylar: [], adayYenilenmeKalanYil: 0, tedarikciBorcu: 0, sonDokum: null, beklenenBrutKar: 0,
       butce: { satis: 0, alim: 0, curume: 0, depo: 0, aidat: 0, brut: 0, vergi: 0, borcOdeme: 0, net: 0, maas: 0, yasamKira: 0, krediTaksit: 0, cebineKalan: 0 },
       vergi: { oran: 0, indirimKalanYil: 0 }, koruma: { toplam: 0, calisan: 0, yatirim: 0, otorite: 0, hirsizlikAralik: 0 },
@@ -5383,7 +5387,7 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
     };
   }
   const b = isletmeBaglami(state);
-  const enf = enflasyonCarpani(state);
+  const genf = giderEnflasyonCarpani(state);
   const slot = hatSlotSayisi(state);
   const hatlar: IsletmeHatGorunumu[] = [];
   for (const hat of is.hatlar) {
@@ -5404,7 +5408,6 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
       minRutbe: tanim.minRutbe,
       stok: hat.stok,
       fiyat: hat.fiyat,
-      tahminiTalep: Math.round(h.talep),
       birimFiyat: paraYuvarla(h.birimFiyat),
       birimMaliyet: paraYuvarla(h.birimMaliyet),
       beklenenKar: paraYuvarla(h.talep * (h.birimFiyat - h.birimMaliyet)),
@@ -5413,6 +5416,8 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
       dunyaTalepYuzde: Math.round((h.kesim.talep - 1) * 100),
       dunyaFiyatYuzde: Math.round((h.kesim.fiyat - 1) * 100),
       oncekiBirimMaliyet: is.son_dokum?.hatlar.find((x) => x.id === hat.id)?.birimMaliyet ?? null,
+      alisSapmaYuzde: Math.round(((is.piyasa_sapma?.[hat.id]?.alis ?? 1) - 1) * 1000) / 10,
+      satisSapmaYuzde: Math.round(((is.piyasa_sapma?.[hat.id]?.satis ?? 1) - 1) * 1000) / 10,
       maliyetDonemYuzde: Math.round((h.kesim.fiyat - 1) * 100),
       maliyetIndirimYuzde: Math.round(h.maliyetIndirim * 100),
       anaUrun: is.ana_urun === hat.id,
@@ -5431,9 +5436,9 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
       aciklama: { tr: y.aciklama.tr, en: y.aciklama.en },
       kademe,
       maxKademe: y.fiyatlar.length,
-      sonrakiFiyat: kademe < y.fiyatlar.length ? paraYuvarla(y.fiyatlar[kademe] * enf) : null,
-      etkiSimdi: yatirimEtkiMetni(y.etki, kademe, enf),
-      etkiSonraki: kademe < y.fiyatlar.length ? yatirimEtkiMetni(y.etki, kademe + 1, enf) : null,
+      sonrakiFiyat: kademe < y.fiyatlar.length ? paraYuvarla(y.fiyatlar[kademe] * genf) : null,
+      etkiSimdi: yatirimEtkiMetni(y.etki, kademe, genf),
+      etkiSonraki: kademe < y.fiyatlar.length ? yatirimEtkiMetni(y.etki, kademe + 1, genf) : null,
     };
   });
   const calisanlar: IsletmeCalisanGorunumu[] = state.ekip.map((e) => {
@@ -5466,13 +5471,12 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
       gecmis: { tr: a.gecmis.tr, en: a.gecmis.en },
       yetenek: a.yetenek,
       sadakat: a.sadakat,
-      maas: paraYuvarla(a.maas_taban * enf),
+      maas: paraYuvarla(a.maas_taban * genf),
     };
   });
   const unvan = sehirYoneticisiUnvani(state.cag, state.bolge);
   const kor = korumaHesapla(state);
   const kapasite = depoKapasitesi(is);
-  const doluluk = kapasite > 0 ? toplamStok(is) / kapasite : 0;
   const imtiyazlar = Object.entries(is.imtiyazlar ?? {})
     .filter(([, bitis]) => typeof bitis === "number" && state.yil <= bitis)
     .map(([iid, bitis]) => ({ id: iid, kalanYil: bitis - state.yil + 1 }));
@@ -5490,10 +5494,12 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
       kapasite,
       kademe: depoKademesi(is),
       curumeYuzde: Math.round(curumeOrani(is) * 1000) / 10,
-      bakim: paraYuvarla(depoBakimMasrafi(is, enf)),
+      bakim: paraYuvarla(depoBakimMasrafi(is, genf)),
+      dolulukYuzde: depoDolulukYuzdesi(is),
+      doldurYuzdeleri: [...DEPO_DOLDUR_YUZDELERI],
+      oto: { acik: !!is.depo_oto?.acik, yuzde: is.depo_oto?.yuzde ?? 50 },
     },
     uretim: uretimTavani(state) !== null ? { tavan: uretimTavani(state)! } : null,
-    stokHedefi: stokHedefiGetir(is),
     urunSecimi: {
       bekliyor: urunSecimiBekliyorMu(state),
       secilen: is.ana_urun ?? null,
@@ -5518,7 +5524,7 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
       calisan: Math.round(kor.calisan * 100) / 100,
       yatirim: Math.round(kor.yatirim * 100) / 100,
       otorite: Math.round(kor.otorite * 100) / 100,
-      hirsizlikAralik: Math.round(hirsizlikOrtalamaAralik(hirsizlikGirisimSansi(state, doluluk)) * 10) / 10,
+      hirsizlikAralik: 10,
     },
     otorite: unvan,
     otoriteIliski: Math.round(state.yonetim_iliski ?? 0),
@@ -5564,7 +5570,6 @@ export interface CemaatKararGirdisi {
 export async function isletmeKararVer(
   id: string,
   hatlar: IsletmeKararGirdisi[],
-  stokHedefi?: IsletmeStokHedefi,
   cemaatKarari?: CemaatKararGirdisi
 ): Promise<{ state: CharacterState; durum: IsletmeGorunumu }> {
   const oturum = await oturumGetir(id);
@@ -5575,7 +5580,6 @@ export async function isletmeKararVer(
   const is = state.isletme;
   if (!Array.isArray(hatlar)) throw new Error("Geçersiz karar.");
   if (profil.mod === "cemaat") return cemaatKararVer(state, hatlar, cemaatKarari);
-  if (stokHedefi !== undefined && !STOK_HEDEFLERI.includes(stokHedefi)) throw new Error("Geçersiz stok hedefi.");
   // Önce doğrula, sonra uygula: yarım uygulanmış karar kalmasın.
   const secenekler = new Map<string, IsletmeKararGirdisi>();
   for (const g of hatlar) {
@@ -5595,7 +5599,6 @@ export async function isletmeKararVer(
     if (g.acik !== undefined) hat.acik = g.acik;
     if (g.fiyat !== undefined) hat.fiyat = g.fiyat;
   }
-  if (stokHedefi !== undefined) is.stok_hedefi = stokHedefi;
   await oturumKaydet(state);
   return { state, durum: isletmeGorunumuHesapla(state) };
 }
@@ -5674,6 +5677,59 @@ export async function isletmeUrunSec(
   };
 }
 
+/**
+ * v12: depoyu kapasitenin %0/25/50/75'ine kadar doldurur. `onayla=false` yalnız planı (adet, ödenecek tutar) döner,
+ * parayı çekmez; `onayla=true` parayı hemen çeker ve stoğu ekler. Turu tüketmez.
+ */
+export async function isletmeDepoDoldur(
+  id: string,
+  hedefYuzde: number,
+  onayla: boolean
+): Promise<{ state: CharacterState; plan: DepoDoldurPlani; mesaj: string; durum: IsletmeGorunumu }> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  if (!state.isletme) throw new Error("Bu mesleğin henüz bir işletmesi yok.");
+  if (urunSecimiBekliyorMu(state)) throw new Error("Önce başlangıç ürününü seçmelisin.");
+  const b = isletmeBaglami(state);
+  if (!onayla) {
+    const plan = depoDoldurPlani(state, hedefYuzde, b);
+    return { state, plan, mesaj: "", durum: isletmeGorunumuHesapla(state) };
+  }
+  const plan = depoyuDoldur(state, hedefYuzde, b);
+  await oturumKaydet(state);
+  return {
+    state,
+    plan,
+    mesaj:
+      plan.adet > 0
+        ? plan.yetersiz
+          ? T(state.dil, "Paran yettiği kadar {0} birim mal aldın ({1} {2} ödedin); depo %{3} dolu.", [plan.adet, plan.maliyet, state.para_birimi, plan.ulasilacakYuzde])
+          : T(state.dil, "{0} birim mal aldın ({1} {2} ödedin).", [plan.adet, plan.maliyet, state.para_birimi])
+        : plan.yetersiz
+          ? T(state.dil, "Mal almaya paran yetmiyor; gerekirse tefeciden borç alabilirsin.")
+          : T(state.dil, "Deponda zaten yeterli mal var."),
+    durum: isletmeGorunumuHesapla(state),
+  };
+}
+
+/** v20: otomatik depo doldurmayı açar/kapatır ve yüzdesini ayarlar. Turu tüketmez. */
+export async function isletmeDepoOtomatik(
+  id: string,
+  acik: boolean,
+  yuzde: number
+): Promise<{ state: CharacterState; durum: IsletmeGorunumu }> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  const profil = isletmeProfiliGetir(state.meslek, state.cag);
+  if (!profil || !state.isletme || profil.mod === "cemaat") throw new Error("Bu mesleğin deposu yok.");
+  if (!(DEPO_DOLDUR_YUZDELERI as readonly number[]).includes(yuzde)) throw new Error("Geçersiz doldurma oranı.");
+  state.isletme.depo_oto = { acik: !!acik, yuzde };
+  await oturumKaydet(state);
+  return { state, durum: isletmeGorunumuHesapla(state) };
+}
+
 /** Kalıcı işletme yatırımının bir sonraki kademesini satın alır. Turu tüketmez. */
 export async function isletmeYatirimYap(
   id: string,
@@ -5688,7 +5744,7 @@ export async function isletmeYatirimYap(
   if (!tanim) throw new Error("Böyle bir yatırım yok.");
   const kademe = state.isletme.yatirimlar[tanim.id] ?? 0;
   if (kademe >= tanim.fiyatlar.length) throw new Error("Bu yatırım zaten en üst kademede.");
-  const fiyat = paraYuvarla(tanim.fiyatlar[kademe] * enflasyonCarpani(state));
+  const fiyat = paraYuvarla(tanim.fiyatlar[kademe] * giderEnflasyonCarpani(state));
   if (state.para < fiyat) throw new Error(`Yeterli paran yok (${fiyat} ${state.para_birimi} gerekli).`);
   state.para = paraYuvarla(state.para - fiyat);
   state.isletme.yatirimlar[tanim.id] = kademe + 1;
@@ -5727,7 +5783,7 @@ export async function isletmeCalisanAl(
     gercekKalite: aday.yetenek,
     tahminiMin: aday.yetenek,
     tahminiMax: aday.yetenek,
-    maas: paraYuvarla(aday.maas_taban * enflasyonCarpani(state)),
+    maas: paraYuvarla(aday.maas_taban * giderEnflasyonCarpani(state)),
     sadakat: aday.sadakat,
     kisilik: EKIP_KISILIK_HAVUZU[Math.floor(Math.random() * EKIP_KISILIK_HAVUZU.length)],
     rol_turu: aday.rolTuru,

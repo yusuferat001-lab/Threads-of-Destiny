@@ -26,12 +26,12 @@ import {
   musteriEkle,
 } from "../src/game/stateManager";
 import { isletmeProfiliGetir, yatirimTanimiGetir } from "../src/data/meslekProfilleri";
-import { hatSlotSayisi, calisanLimiti, adaylariGerekirseYenile, calisanBonusu } from "../src/game/isletme";
+import { hatSlotSayisi, calisanLimiti, adaylariGerekirseYenile, calisanBonusu, depoKapasitesi } from "../src/game/isletme";
 import { pazarPayiHesapla } from "../src/data/pazar";
 import { ogretiBekleyenSeviye, ogretiSec, faaliyetSlotSayisi, faaliyetKilitliMi } from "../src/game/cemaat";
 import { ogretiSecenekleri } from "../src/data/ogretiler";
 import { FAALIYETLER } from "../src/data/cemaat";
-import { enflasyonCarpani } from "../src/game/stateManager";
+import { enflasyonCarpani, giderEnflasyonCarpani, isletmeBaglami, krediAl, krediTeklifleri, krediYillikUygula } from "../src/game/stateManager";
 import type { Cag, CharacterState, IsletmeFiyat, EkipUyesi } from "../src/types";
 
 const N = Number(process.env.SIM_N ?? 200);
@@ -49,12 +49,23 @@ function rutbeSurukle(s: CharacterState, yilIdx: number, tarz: Tarz) {
 }
 
 function botKarar(s: CharacterState, tarz: Tarz) {
+  if (s.isletme && tarz === "pasif") s.isletme.depo_oto = { acik: true, yuzde: 100 }; // pasif: yalnız "Otomatik %100" açar
   if (tarz === "pasif" || !s.isletme) return;
   const is = s.isletme;
   const profil = isletmeProfiliGetir(s.meslek, s.cag)!;
   const enf = enflasyonCarpani(s);
   const slot = hatSlotSayisi(s);
   adaylariGerekirseYenile(s);
+  // Nakit sıkışırsa ve dükkân kârlıysa tefeciden en küçük krediyi çeker (oyuncu da böyle yapar).
+  const stoksuz = s.isletme.hatlar.reduce((t, h) => t + h.stok, 0) === 0;
+  if (!s.kredi && s.para < 10 * giderEnflasyonCarpani(s) && ((s.isletme?.son_dokum?.net ?? 0) > 0 || stoksuz)) {
+    try {
+      const t = krediTeklifleri(s).sort((x, y) => x.tutar - y.tutar)[0];
+      if (t) krediAl(s, t.id);
+    } catch {
+      /* kredi alınamadı */
+    }
+  }
   const cemaatMi = profil.mod === "cemaat";
   if (cemaatMi && is.cemaat) {
     // Öğreti: fanatik tarz fanatik olanı, diğerleri ilk fanatik-olmayanı seçer.
@@ -72,8 +83,8 @@ function botKarar(s: CharacterState, tarz: Tarz) {
     cm.ton = tarz === "fanatik" ? "atesli" : "dengeli";
   }
   // Çalışan: limit dolana dek, ana rol ve güvenlik öncelikli; agresif ucuzu, dengeli kaliteliyi sever.
-  const limit = process.env.SIM_ISCI === "0" ? 0 : calisanLimiti(s);
-  const oncelik = ["ana", "guvenlik", "musteri", "maliyet"];
+  const limit = process.env.SIM_ISCI === "0" ? 0 : tarz === "aktif" ? Math.min(3, calisanLimiti(s)) : calisanLimiti(s);
+  const oncelik = tarz === "aktif" ? ["musteri", "maliyet", "ana", "guvenlik"] : ["ana", "guvenlik", "musteri", "maliyet"];
   while (s.ekip.length < limit && is.adaylar.length > 0) {
     const sirali = [...is.adaylar].sort((a, b) => {
       const o = oncelik.indexOf(a.rolTuru) - oncelik.indexOf(b.rolTuru);
@@ -81,7 +92,10 @@ function botKarar(s: CharacterState, tarz: Tarz) {
       return tarz === "agresif" ? a.maas_taban - b.maas_taban : b.yetenek + b.sadakat - (a.yetenek + a.sadakat);
     });
     const a = sirali[0];
-    if (s.para < (a.maas_taban * enf) * (tarz === "aktif" ? 2.5 : 4) + (tarz === "aktif" ? 12 : 25) * enf) break;
+    const rezerv = (depoKapasitesi(is) * 0.8 + 18) * giderEnflasyonCarpani(s); // önce mal alımı + bir yıllık geçim için nakit ayır
+    const toplamMaas = s.ekip.reduce((t, u) => t + u.maas, 0);
+    if (s.para < rezerv + (a.maas_taban * enf) * 3) break;
+    if ((is.son_dokum?.net ?? 0) - toplamMaas - a.maas_taban * enf < 15 * giderEnflasyonCarpani(s)) break; // dükkân yeni maaşı + geçimi taşımıyorsa çalışan almaz
     is.adaylar = is.adaylar.filter((x) => x.id !== a.id);
     const uye: EkipUyesi = {
       id: a.id, isim: a.isim, rol: a.rol, gercekKalite: a.yetenek, tahminiMin: a.yetenek, tahminiMax: a.yetenek,
@@ -97,8 +111,8 @@ function botKarar(s: CharacterState, tarz: Tarz) {
     if (!t) continue;
     const k = is.yatirimlar[id] ?? 0;
     if (k >= t.fiyatlar.length) continue;
-    const fiyat = t.fiyatlar[k] * enf;
-    if (s.para > fiyat * (tarz === "aktif" ? 1.5 : 2.2)) {
+    const fiyat = t.fiyatlar[k] * giderEnflasyonCarpani(s);
+    if (s.para > (depoKapasitesi(is) * 0.8 + 18) * giderEnflasyonCarpani(s) + fiyat) {
       s.para -= fiyat;
       is.yatirimlar[id] = k + 1;
     }
@@ -124,7 +138,12 @@ function botKarar(s: CharacterState, tarz: Tarz) {
     h.acik = true;
     h.fiyat = fiyat;
   }
-  is.stok_hedefi = "normal";
+  // v20: depo yıl başı otomatik dolar (oyundaki "Otomatik" düğmesi): pasif hep %50; diğerleri geçen yılın talebine bakıp yeterince dolduran en küçük oranı seçer.
+  const sonTalep = is.hatlar.filter((h) => h.acik).reduce((t, h) => t + (h.son_talep || 0), 0);
+  const kap = depoKapasitesi(is);
+  const gerekli = sonTalep > 0 ? ((sonTalep * 1.1) / kap) * 100 : 50;
+  const hedef = tarz === "agresif" ? (gerekli <= 50 ? 50 : gerekli <= 75 ? 75 : 100) : 100; // aktif/dengeli/pasif: depo hep dolu
+  is.depo_oto = { acik: true, yuzde: hedef };
 }
 
 interface Cikti { dukkan: number[]; gider: number[]; musteri: number[]; calisan: number[]; batmaYili: number; batmaDetay: string; gelir: number[]; net: number[]; pay: number[]; rakipPay: number[]; para: number[]; batti: boolean; sonPara: number; hirsizlik: number; anaRolKazanc: number; pazar: number[]; enf: number[] }
@@ -133,6 +152,7 @@ function tekOmur(cag: Cag, tarz: Tarz): Cikti {
   const s = createCharacter(cag, cag === "Orta Çağ" ? "Fransa" : "İngiltere", "kasaba");
   s.yas = 15;
   mesleğiSec(s, MESLEK);
+  if (process.env.SIM_PARA) s.para = Number(process.env.SIM_PARA);
   // v11: oyun başında seçilen ana ürün (temel ürün) — yalnız o hat açık başlar.
   const bu = isletmeProfiliGetir(s.meslek, s.cag)?.baslangicUrunleri?.[0];
   if (bu && s.isletme) {
@@ -158,6 +178,7 @@ function tekOmur(cag: Cag, tarz: Tarz): Cikti {
     s.yas += 1;
     pasifEkonomiUygula(s, 1);
     pazarYillikUygula(s, 1); // rakip + küçük esnaf hareketleri, haberler
+    krediYillikUygula(s, 1); // faiz + taksit
     s.tur_sayisi += 1;
     c.dukkan.push(s.isletme?.son_dokum?.net ?? 0);
     c.gelir.push(s.para - onceki + gider);
@@ -170,6 +191,7 @@ function tekOmur(cag: Cag, tarz: Tarz): Cikti {
     c.calisan.push(s.ekip.length);
     c.rakipPay.push(((s.rakipler.find((r) => !r.yenildi)?.musteri ?? 0) / s.pazar_musteri) * 100);
     c.para.push(s.para);
+    if (process.env.SIM_DEBUG2 && y < 8) console.log(y, "para", s.para.toFixed(1), "stok", s.isletme?.hatlar.filter((h) => h.acik).map((h) => h.id + ":" + h.stok).join(","), "satis", s.isletme?.son_dokum?.satis, "alim", s.isletme?.son_dokum?.alim, "net", s.isletme?.son_dokum?.net, "musteri", s.meslek_musteri.toFixed(1));
     if (process.env.SIM_DEBUG && y % 5 === 4) console.log(y, JSON.stringify({satis: s.isletme?.son_dokum?.satis, alim: s.isletme?.son_dokum?.alim, brut: s.isletme?.son_dokum?.brutKar, uretim: s.isletme?.son_dokum?.uretim, hat: s.isletme?.son_dokum?.hatlar, ek: s.ekip.length, up: s.isletme?.son_dokum?.uyarilar.map(u=>u.kod)}));
     c.hirsizlik += s.isletme?.son_dokum?.uyarilar.filter((u) => u.kod === "hirsizlik").length ?? 0;
     if (s.para < -30 && !c.batti) {
@@ -197,13 +219,16 @@ for (const cag of CAGLAR) {
   for (const tarz of TARZLAR) {
     const sonuclar: Cikti[] = [];
     for (let i = 0; i < N; i++) sonuclar.push(tekOmur(cag, tarz));
+    // Dilim tabloları batmayanların ortalamasıdır (batanlar ayrıca yüzde olarak yazılır); 5'ten az kalırsa hepsi.
+    const hayatta = sonuclar.filter((c) => !c.batti);
+    const kaynak = hayatta.length >= 5 ? hayatta : sonuclar;
     const satirlar = dilimler.map(([ad, a, b]) => {
-      const gelir = ort(sonuclar.map((c) => ort(c.gelir.slice(a, b))));
-      const net = ort(sonuclar.map((c) => ort(c.net.slice(a, b))));
-      const pay = ort(sonuclar.map((c) => ort(c.pay.slice(a, b))));
-      const rpay = ort(sonuclar.map((c) => ort(c.rakipPay.slice(a, b))));
-      const dukkan = ort(sonuclar.map((c) => ort(c.dukkan.slice(a, b))));
-      return `${ad}: pay %${pay.toFixed(1)} · dükkan neti ${dukkan.toFixed(1)} · cebine kalan ${net.toFixed(1)} · (brüt gelir ${gelir.toFixed(1)}, rakip %${rpay.toFixed(1)}) · toplam pazar ${ort(sonuclar.map((c) => ort(c.pazar.slice(a, b)))).toFixed(0)} · müşterin ${ort(sonuclar.map((c) => ort(c.musteri.slice(a, b)))).toFixed(0)} · enflasyon ×${ort(sonuclar.map((c) => ort(c.enf.slice(a, b)))).toFixed(2)}`;
+      const gelir = ort(kaynak.map((c) => ort(c.gelir.slice(a, b))));
+      const net = ort(kaynak.map((c) => ort(c.net.slice(a, b))));
+      const pay = ort(kaynak.map((c) => ort(c.pay.slice(a, b))));
+      const rpay = ort(kaynak.map((c) => ort(c.rakipPay.slice(a, b))));
+      const dukkan = ort(kaynak.map((c) => ort(c.dukkan.slice(a, b))));
+      return `${ad}: pay %${pay.toFixed(1)} · dükkan neti ${dukkan.toFixed(1)} · cebine kalan ${net.toFixed(1)} · (brüt gelir ${gelir.toFixed(1)}, rakip %${rpay.toFixed(1)}) · toplam pazar ${ort(kaynak.map((c) => ort(c.pazar.slice(a, b)))).toFixed(0)} · müşterin ${ort(kaynak.map((c) => ort(c.musteri.slice(a, b)))).toFixed(0)} · enflasyon ×${ort(kaynak.map((c) => ort(c.enf.slice(a, b)))).toFixed(2)}`;
     });
     const batan = sonuclar.filter((c) => c.batti).length;
     const sonPay = sonuclar.map((c) => c.pay[c.pay.length - 1]).sort((a, b) => a - b);

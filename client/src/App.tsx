@@ -25,7 +25,7 @@ import type {
   IsletmeGorunumu,
   IsletmeKararGirdisi,
   CemaatKararGirdisi,
-  IsletmeStokHedefi,
+  DepoDoldurPlani,
 } from './types';
 import {
   mesleklerGetir,
@@ -90,6 +90,8 @@ import {
   ajanDurumGetir,
   isletmeGetir,
   isletmeKararVer,
+  isletmeDepoDoldur,
+  isletmeDepoOtomatik,
   isletmeOgretiSec,
   isletmeYatirimYap,
   isletmeCalisanAl,
@@ -1684,13 +1686,57 @@ function App() {
     }
   }
 
-  async function isletmeKararHandler(hatlar: IsletmeKararGirdisi[], stokHedefi?: IsletmeStokHedefi, cemaat?: CemaatKararGirdisi) {
+  /** v20: depo doldurma planı (parayı çekmez): kaç birim, ne kadar ödenecek, parası yetiyor mu. */
+  async function isletmeDepoPlanHandler(hedefYuzde: number): Promise<DepoDoldurPlani | null> {
+    if (!karakter) return null;
+    try {
+      const sonuc = await isletmeDepoDoldur(karakter.id, hedefYuzde, false);
+      return sonuc.plan;
+    } catch (err) {
+      setIslemMesaji(temizHata(err));
+      return null;
+    }
+  }
+
+  async function isletmeDepoSatinAlHandler(hedefYuzde: number) {
     if (!karakter) return;
     setHata(null);
     setIslemMesaji(null);
     setYukleniyor(true);
     try {
-      const sonuc = await isletmeKararVer(karakter.id, hatlar, stokHedefi, cemaat);
+      const sonuc = await isletmeDepoDoldur(karakter.id, hedefYuzde, true);
+      setKarakter(sonuc.state);
+      setIsletme(sonuc.durum);
+      setIslemMesaji(sonuc.mesaj);
+    } catch (err) {
+      setIslemMesaji(temizHata(err));
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
+  async function isletmeDepoOtoHandler(acik: boolean, yuzde: number) {
+    if (!karakter) return;
+    setHata(null);
+    setYukleniyor(true);
+    try {
+      const sonuc = await isletmeDepoOtomatik(karakter.id, acik, yuzde);
+      setKarakter(sonuc.state);
+      setIsletme(sonuc.durum);
+    } catch (err) {
+      setIslemMesaji(temizHata(err));
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
+  async function isletmeKararHandler(hatlar: IsletmeKararGirdisi[], cemaat?: CemaatKararGirdisi) {
+    if (!karakter) return;
+    setHata(null);
+    setIslemMesaji(null);
+    setYukleniyor(true);
+    try {
+      const sonuc = await isletmeKararVer(karakter.id, hatlar, cemaat);
       setKarakter(sonuc.state);
       setIsletme(sonuc.durum);
     } catch (err) {
@@ -2987,6 +3033,9 @@ function App() {
           gecmis={karakter.gecmis}
           isletme={isletme}
           onIsletmeKarar={isletmeKararHandler}
+          onDepoPlan={isletmeDepoPlanHandler}
+          onDepoSatinAl={isletmeDepoSatinAlHandler}
+          onDepoOto={isletmeDepoOtoHandler}
           onIsletmeYatirim={isletmeYatirimHandler}
           onIsletmeCalisanAl={isletmeCalisanAlHandler}
           sayfa={kariyerSayfa ?? undefined}

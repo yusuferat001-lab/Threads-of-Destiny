@@ -50,6 +50,7 @@ import {
   zarKademeleriGetir,
   zarAt,
   isletmeKararVer,
+  isletmeDepoOtomatik,
   isletmeYatirimYap,
   isletmeCalisanAl,
 } from "../src/game/gameEngine";
@@ -516,9 +517,9 @@ async function isletmeYonet(id: string, state: CharacterState): Promise<void> {
       .map((h) => h.id);
     await isletmeKararVer(
       id,
-      is.hatlar.map((h) => ({ id: h.id, acik: aday.includes(h.id), fiyat: "normal" as const })),
-      "normal"
+      is.hatlar.map((h) => ({ id: h.id, acik: aday.includes(h.id), fiyat: "normal" as const }))
     );
+    await isletmeDepoOtomatik(id, true, 75); // v20: depo her yıl başı %75'e (para yettiği kadar) dolsun
   } catch {
     /* yok say: bot hata yüzünden durmasın */
   }

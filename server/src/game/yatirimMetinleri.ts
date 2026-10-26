@@ -3,7 +3,6 @@ import {
   CURUME_ORANLARI,
   DEPO_BAKIM,
   DEPO_KAPASITE,
-  DUKKAN_TALEP_KADEME,
   GUVENLIK_YATIRIM_KORUMA,
   KERVAN_INDIRIM_KADEME,
   TANITIM_PAY_KADEME,
@@ -46,14 +45,12 @@ export function yatirimEtkiMetni(etki: YatirimEtkisi, kademe: number, enflasyon:
           : `Holds ${BINA_KAPASITE[i]} worshippers · upkeep ${sayi(r2(BINA_BAKIM[i] * enflasyon), d)}/yr`
       );
     }
-    case "talep":
-      return dili((d) => (k === 0 ? (d === "tr" ? "Etki yok" : "No effect") : `${d === "tr" ? "Talep" : "Demand"} ${art(k * DUKKAN_TALEP_KADEME * 100, d)}`));
     case "alis":
       return dili((d) => (k === 0 ? (d === "tr" ? "Etki yok" : "No effect") : `${d === "tr" ? "Alış maliyeti" : "Purchase cost"} ${eksi((1 - Math.pow(1 - KERVAN_INDIRIM_KADEME, k)) * 100, d)}`));
     case "uretim":
       return dili((d) => (k === 0 ? (d === "tr" ? "Etki yok" : "No effect") : `${d === "tr" ? "Üretim tavanı" : "Production cap"} ${art(k * TEZGAH_URETIM_KADEME * 100, d)}`));
     case "pazar":
-      return dili((d) => (k === 0 ? (d === "tr" ? "Etki yok" : "No effect") : `${d === "tr" ? "Pazar büyümesi" : "Market growth"} ${art(k * TANITIM_PAY_KADEME * 100, d)}${d === "tr" ? "/yıl" : "/yr"}`));
+      return dili((d) => (k === 0 ? (d === "tr" ? "Etki yok" : "No effect") : `${d === "tr" ? "Müşteri artışı" : "Customer growth"} ${art(k * TANITIM_PAY_KADEME * 100, d)}${d === "tr" ? "/yıl" : "/yr"}`));
     case "koruma": {
       const i = Math.min(k, GUVENLIK_YATIRIM_KORUMA.length - 1);
       return dili((d) => (i === 0 ? (d === "tr" ? "Etki yok" : "No effect") : `${d === "tr" ? "Koruma" : "Protection"} +${d === "tr" ? String(GUVENLIK_YATIRIM_KORUMA[i]).replace(".", ",") : String(GUVENLIK_YATIRIM_KORUMA[i])}`));

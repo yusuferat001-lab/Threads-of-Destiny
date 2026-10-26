@@ -35,7 +35,7 @@ export interface HatTanimi {
 }
 
 /** Yatırımın motor etkisi: id'ye değil bu türe bakılır. */
-export type YatirimEtkisi = "depo" | "talep" | "alis" | "uretim" | "pazar" | "koruma" | "bina" | "okul" | "yardim";
+export type YatirimEtkisi = "depo" | "alis" | "uretim" | "pazar" | "koruma" | "bina" | "okul" | "yardim";
 
 export interface YatirimTanimi {
   id: string;
@@ -120,26 +120,26 @@ export const SAVAS_TALEP_ARTISI: DilliMetin = { tr: "Savaşta talebi artar", en:
 
 export const FIYAT_ARTI_EKSI: Record<IsletmeFiyat, DilliMetin> = {
   eksi20: {
-    tr: "Fiyat −%20, talep ≈ +%50. Çok satar, müşteri kazanırsın (yılda +%3 pay); birim kâr az, stok çabuk biter.",
-    en: "Price −20%, demand ≈ +50%. You sell a lot and win customers (+3% share a year); thin margin, stock runs out fast.",
+    tr: "Fiyat −%20: talep ≈ +%20, birim kâr az. Müşterin yılda +%2 büyür.",
+    en: "Price −20%: demand ≈ +20%, thin margin. Your customers grow +2% a year.",
   },
   eksi10: {
-    tr: "Fiyat −%10, talep ≈ +%21. Daha çok satar, müşteri çekersin (yılda +%1,5 pay); birim kâr biraz düşer.",
-    en: "Price −10%, demand ≈ +21%. You sell more and attract customers (+1.5% share a year); slightly lower margin.",
+    tr: "Fiyat −%10: talep ≈ +%9, birim kâr biraz düşer. Müşterin yılda +%1 büyür.",
+    en: "Price −10%: demand ≈ +9%, slightly lower margin. Your customers grow +1% a year.",
   },
   normal: { tr: "Piyasa fiyatı. Dengeli.", en: "Market price. Balanced." },
   arti10: {
-    tr: "Fiyat +%10, talep ≈ −%16. Birim kâr artar; müşteri yavaşça kaçar (yılda −%1,5 pay). Krizde talep daha çok düşer.",
-    en: "Price +10%, demand ≈ −16%. Better margin; customers slowly drift away (−1.5% share a year). Demand drops more in a crisis.",
+    tr: "Fiyat +%10: talep ≈ −%7, birim kâr artar. Müşterin yılda −%1 azalır.",
+    en: "Price +10%: demand ≈ −7%, better margin. Your customers drop 1% a year.",
   },
   arti20: {
-    tr: "Fiyat +%20, talep ≈ −%28. Birim kâr yüksek ama müşteri kaçar (yılda −%3 pay). Kıtlık ve savaşta riskli.",
-    en: "Price +20%, demand ≈ −28%. High margin but customers leave (−3% share a year). Risky in famine and war.",
+    tr: "Fiyat +%20: talep ≈ −%14, birim kâr yüksek. Müşterin yılda −%2 azalır.",
+    en: "Price +20%: demand ≈ −14%, high margin. Your customers drop 2% a year.",
   },
 };
 
-// ── Yatırımlar (profil başına 5 × 4 kademe; fiyat enflasyonsuz taban, her kademe bir öncekinin 2 katı) ──────
-const katla = (taban: number): number[] => [taban, taban * 2, taban * 4, taban * 8];
+// ── Yatırımlar (4 kademe; fiyat enflasyonsuz taban, her kademe bir öncekinin 3 katı; gider enflasyonuyla çarpılır) ──────
+const katla = (taban: number): number[] => [taban, taban * 3, taban * 9, taban * 27];
 const YATIRIM_DEPO: YatirimTanimi = {
   id: "depo",
   simge: "🏚️",
@@ -156,8 +156,8 @@ const YATIRIM_TANITIM: YatirimTanimi = {
   simge: "📣",
   ad: { tr: "Tanıtım", en: "Advertising" },
   aciklama: {
-    tr: "Her kademe pazar payı büyümesini yılda +%1 artırır.",
-    en: "Each tier adds +1% a year to market share growth.",
+    tr: "Her kademe yıllık müşteri artışını %1 artırır. Müşteriyi etkileyen tek yatırımdır.",
+    en: "Each tier adds +1% a year to your customer growth. It is the only investment that grows customers.",
   },
   etki: "pazar",
   fiyatlar: katla(20),
@@ -167,8 +167,8 @@ const YATIRIM_GUVENLIK_TUCCAR: YatirimTanimi = {
   simge: "🔒",
   ad: { tr: "Depo Güvenliği", en: "Warehouse Security" },
   aciklama: {
-    tr: "Kilit-sürgü → demir kapı → bekçi köpeği → nöbet kulesi. Her kademe korumayı +0,125 artırır (en çok 0,5).",
-    en: "Bolt and lock → iron door → guard dog → watchtower. Each tier adds +0.125 protection (max 0.5).",
+    tr: "Kilit-sürgü → demir kapı → bekçi köpeği → nöbet kulesi. Her kademe korumayı +0,10 artırır (en çok 0,4).",
+    en: "Bolt and lock → iron door → guard dog → watchtower. Each tier adds +0.10 protection (max 0.4).",
   },
   etki: "koruma",
   fiyatlar: katla(20),
@@ -181,23 +181,12 @@ const YATIRIM_GUVENLIK_ZANAAT: YatirimTanimi = {
 const TUCCAR_YATIRIMLAR: YatirimTanimi[] = [
   YATIRIM_DEPO,
   {
-    id: "dukkan",
-    simge: "🏪",
-    ad: { tr: "Dükkân", en: "Shop" },
-    aciklama: {
-      tr: "Her kademe müşteri talebini %8 artırır.",
-      en: "Each tier raises customer demand by 8%.",
-    },
-    etki: "talep",
-    fiyatlar: katla(15),
-  },
-  {
     id: "kervan",
     simge: "🐪",
     ad: { tr: "Kervan", en: "Caravan" },
     aciklama: {
-      tr: "Her kademe alış maliyetini %4 düşürür (diğer indirimlerle çarpımsal birleşir).",
-      en: "Each tier cuts purchase costs by 4% (stacks multiplicatively with other discounts).",
+      tr: "Her kademe alış maliyetini %3 düşürür (diğer indirimlerle çarpımsal birleşir).",
+      en: "Each tier cuts purchase costs by 3% (stacks multiplicatively with other discounts).",
     },
     etki: "alis",
     fiyatlar: katla(15),
@@ -212,24 +201,13 @@ const ZANAATKAR_YATIRIMLAR: YatirimTanimi[] = [
     simge: "🔨",
     ad: { tr: "Tezgâh ve Aletler", en: "Workbench & Tools" },
     aciklama: {
-      tr: "Her kademe yıllık üretim tavanını %45 artırır.",
-      en: "Each tier raises your yearly production cap by 45%.",
+      tr: "Her kademe yıllık üretim tavanını %35 artırır.",
+      en: "Each tier raises your yearly production cap by 35%.",
     },
     etki: "uretim",
     fiyatlar: katla(30),
   },
   YATIRIM_DEPO,
-  {
-    id: "dukkan",
-    simge: "🏪",
-    ad: { tr: "Vitrin", en: "Showroom" },
-    aciklama: {
-      tr: "Her kademe müşteri talebini %8 artırır.",
-      en: "Each tier raises customer demand by 8%.",
-    },
-    etki: "talep",
-    fiyatlar: katla(15),
-  },
   YATIRIM_TANITIM,
   YATIRIM_GUVENLIK_ZANAAT,
 ];
@@ -252,8 +230,8 @@ const DIN_YATIRIMLAR: YatirimTanimi[] = [
     simge: "🏫",
     ad: { tr: "Okul", en: "School" },
     aciklama: {
-      tr: "Her kademe yıllık mezun çıkarma şansını %8 artırır. Mezun misyoner olur: yeni inananlar getirir, bazen usta bir aday çıkar. Çalışanlar da daha hızlı gelişir.",
-      en: "Each tier adds 8% to the yearly chance of a graduate. Graduates become missionaries, bring new believers, and sometimes a skilled recruit emerges. Staff also improve faster.",
+      tr: "Her kademe yıllık mezun çıkarma şansını %6 artırır. Mezun misyoner olur: yeni inananlar getirir, bazen usta bir aday çıkar. Çalışanlar da daha hızlı gelişir.",
+      en: "Each tier adds 6% to the yearly chance of a graduate. Graduates become missionaries, bring new believers, and sometimes a skilled recruit emerges. Staff also improve faster.",
     },
     etki: "okul",
     fiyatlar: katla(28),
@@ -263,8 +241,8 @@ const DIN_YATIRIMLAR: YatirimTanimi[] = [
     simge: "🍲",
     ad: { tr: "Aşevi", en: "Soup Kitchen" },
     aciklama: {
-      tr: "Her kademe yardım harcamasının inanan ve ahlak getirisini %12 artırır.",
-      en: "Each tier raises the flock and morality payoff of your aid spending by 12%.",
+      tr: "Her kademe yardım harcamasının inanan ve ahlak getirisini %9 artırır.",
+      en: "Each tier raises the flock and morality payoff of your aid spending by 9%.",
     },
     etki: "yardim",
     fiyatlar: katla(15),
@@ -277,14 +255,13 @@ const DIN_YATIRIMLAR: YatirimTanimi[] = [
     ...YATIRIM_GUVENLIK_TUCCAR,
     ad: { tr: "Kilise Güvenliği", en: "Church Security" },
     aciklama: {
-      tr: "Kumbara ve ibadethaneyi korur: her kademe korumayı +0,125 artırır (en çok 0,5).",
-      en: "Guards the offering box and the sanctuary: each tier adds +0.125 protection (max 0.5).",
+      tr: "Kumbara ve ibadethaneyi korur: her kademe korumayı +0,10 artırır (en çok 0,4).",
+      en: "Guards the offering box and the sanctuary: each tier adds +0.10 protection (max 0.4).",
     },
   },
 ];
 
 const DIN_ROLLER: RolTanimi[] = [
-  { tur: "ana", ad: { tr: "Vaiz", en: "Preacher" } },
   { tur: "maliyet", ad: { tr: "Ekonom", en: "Steward" } },
   { tur: "musteri", ad: { tr: "Davetçi", en: "Outreach worker" } },
   { tur: "guvenlik", ad: { tr: "Kilise bekçisi", en: "Church watchman" } },
@@ -292,7 +269,6 @@ const DIN_ROLLER: RolTanimi[] = [
 
 // ── Roller ─────────────────────────────────────────────────────────────────
 const TUCCAR_ROLLER: RolTanimi[] = [
-  { tur: "ana", ad: { tr: "Satıcı", en: "Salesman" } },
   { tur: "maliyet", ad: { tr: "Alıcı", en: "Buyer" } },
   { tur: "musteri", ad: { tr: "Tanıtımcı", en: "Promoter" } },
   { tur: "guvenlik", ad: { tr: "Depo muhafızı", en: "Warehouse guard" } },
@@ -309,19 +285,19 @@ export const ROL_ACIKLAMALARI: Record<"ticaret" | "uretim" | "cemaat", Record<Is
   cemaat: {
     ana: { tr: "Bağışları artırır", en: "Raises donations" },
     maliyet: { tr: "Faaliyet masraflarını düşürür", en: "Lowers activity costs" },
-    musteri: { tr: "İnanan sayısını artırır", en: "Grows the flock" },
+    musteri: { tr: "İnanan sayısını yıllık % olarak artırır", en: "Grows the flock by a yearly %" },
     guvenlik: { tr: "Kumbarayı ve ibadethaneyi korur", en: "Protects the offering box and sanctuary" },
   },
   ticaret: {
     ana: { tr: "Yıllık satışı artırır", en: "Raises yearly sales" },
     maliyet: { tr: "Mal alış maliyetini düşürür", en: "Lowers purchase costs" },
-    musteri: { tr: "Pazar payını büyütür", en: "Grows market share" },
+    musteri: { tr: "Müşteri sayısını yıllık % olarak artırır", en: "Grows your customers by a yearly %" },
     guvenlik: { tr: "Hırsızlığa karşı korur", en: "Protects against theft" },
   },
   uretim: {
     ana: { tr: "Yıllık üretimi artırır", en: "Raises yearly production" },
     maliyet: { tr: "Hammadde giderini düşürür", en: "Lowers material costs" },
-    musteri: { tr: "Pazar payını büyütür", en: "Grows market share" },
+    musteri: { tr: "Müşteri sayısını yıllık % olarak artırır", en: "Grows your customers by a yearly %" },
     guvenlik: { tr: "Hırsızlığa karşı korur", en: "Protects against theft" },
   },
 };
@@ -333,12 +309,12 @@ const TUCCAR_ORTA_CAG: IsletmeProfili = {
     { hat: "baharat", bonus: { satisCarpani: 1.08 }, ozet: { tr: "Satış fiyatı +%8; talebi az ama marjı yüksek.", en: "+8% selling price; low demand but a fat margin." } },
   ],
   hatlar: [
-    { id: "tahil", simge: "🌾", ad: { tr: "Tahıl", en: "Grain" }, kesim: "temel", talepTabani: 1.49, birimMaliyet: 0.67, birimFiyat: 1.15, minRutbe: 1 },
-    { id: "kumas", simge: "🧵", ad: { tr: "Kumaş", en: "Cloth" }, kesim: "temel", talepTabani: 0.84, birimMaliyet: 0.96, birimFiyat: 1.9, minRutbe: 2 },
-    { id: "sarap", simge: "🍷", ad: { tr: "Şarap", en: "Wine" }, kesim: "temel", talepTabani: 0.74, birimMaliyet: 1.06, birimFiyat: 2.1, minRutbe: 2 },
-    { id: "silah", simge: "⚔️", ad: { tr: "Silah", en: "Arms" }, kesim: "savas", talepTabani: 0.65, birimMaliyet: 1.15, birimFiyat: 2.3, minRutbe: 2, savasTalep: 1.35 },
-    { id: "baharat", simge: "🌶️", ad: { tr: "Baharat", en: "Spices" }, kesim: "luks", talepTabani: 0.28, birimMaliyet: 2.11, birimFiyat: 5.0, minRutbe: 3 },
-    { id: "kurk", simge: "🦊", ad: { tr: "Kürk ve İpek", en: "Fur & Silk" }, kesim: "luks", talepTabani: 0.33, birimMaliyet: 2.3, birimFiyat: 5.2, minRutbe: 3 },
+    { id: "tahil", simge: "🌾", ad: { tr: "Tahıl", en: "Grain" }, kesim: "temel", talepTabani: 1.49, birimMaliyet: 0.57, birimFiyat: 1.22, minRutbe: 1 },
+    { id: "kumas", simge: "🧵", ad: { tr: "Kumaş", en: "Cloth" }, kesim: "temel", talepTabani: 0.84, birimMaliyet: 0.82, birimFiyat: 2.01, minRutbe: 2 },
+    { id: "sarap", simge: "🍷", ad: { tr: "Şarap", en: "Wine" }, kesim: "temel", talepTabani: 0.74, birimMaliyet: 0.9, birimFiyat: 2.23, minRutbe: 2 },
+    { id: "silah", simge: "⚔️", ad: { tr: "Silah", en: "Arms" }, kesim: "savas", talepTabani: 0.65, birimMaliyet: 0.98, birimFiyat: 2.44, minRutbe: 2, savasTalep: 1.35 },
+    { id: "baharat", simge: "🌶️", ad: { tr: "Baharat", en: "Spices" }, kesim: "luks", talepTabani: 0.28, birimMaliyet: 1.8, birimFiyat: 5.3, minRutbe: 3 },
+    { id: "kurk", simge: "🦊", ad: { tr: "Kürk ve İpek", en: "Fur & Silk" }, kesim: "luks", talepTabani: 0.33, birimMaliyet: 1.97, birimFiyat: 5.51, minRutbe: 3 },
   ],
   yatirimlar: TUCCAR_YATIRIMLAR,
   roller: TUCCAR_ROLLER,
@@ -352,12 +328,12 @@ const TUCCAR_SANAYI: IsletmeProfili = {
     { hat: "ipek", bonus: { satisCarpani: 1.08 }, ozet: { tr: "Satış fiyatı +%8; talebi az ama marjı yüksek.", en: "+8% selling price; low demand but a fat margin." } },
   ],
   hatlar: [
-    { id: "tahil", simge: "🌾", ad: { tr: "Tahıl", en: "Grain" }, kesim: "temel", talepTabani: 1.496, birimMaliyet: 0.67, birimFiyat: 1.15, minRutbe: 1 },
-    { id: "komur", simge: "⛏️", ad: { tr: "Kömür", en: "Coal" }, kesim: "temel", talepTabani: 1.397, birimMaliyet: 0.72, birimFiyat: 1.2, minRutbe: 1 },
-    { id: "pamuklu", simge: "🧶", ad: { tr: "Pamuklu", en: "Cotton Goods" }, kesim: "temel", talepTabani: 0.77, birimMaliyet: 0.96, birimFiyat: 1.9, minRutbe: 2 },
-    { id: "cay_kahve", simge: "☕", ad: { tr: "Çay ve Kahve", en: "Tea & Coffee" }, kesim: "temel", talepTabani: 0.68, birimMaliyet: 1.06, birimFiyat: 2.1, minRutbe: 2 },
-    { id: "makine", simge: "⚙️", ad: { tr: "Makine Parçası", en: "Machine Parts" }, kesim: "savas", talepTabani: 0.59, birimMaliyet: 1.25, birimFiyat: 2.5, minRutbe: 2, savasTalep: 1.25 },
-    { id: "ipek", simge: "🪭", ad: { tr: "İpek", en: "Silk" }, kesim: "luks", talepTabani: 0.3, birimMaliyet: 2.3, birimFiyat: 5.2, minRutbe: 3 },
+    { id: "tahil", simge: "🌾", ad: { tr: "Tahıl", en: "Grain" }, kesim: "temel", talepTabani: 1.496, birimMaliyet: 0.57, birimFiyat: 1.22, minRutbe: 1 },
+    { id: "komur", simge: "⛏️", ad: { tr: "Kömür", en: "Coal" }, kesim: "temel", talepTabani: 1.397, birimMaliyet: 0.62, birimFiyat: 1.27, minRutbe: 1 },
+    { id: "pamuklu", simge: "🧶", ad: { tr: "Pamuklu", en: "Cotton Goods" }, kesim: "temel", talepTabani: 0.77, birimMaliyet: 0.82, birimFiyat: 2.01, minRutbe: 2 },
+    { id: "cay_kahve", simge: "☕", ad: { tr: "Çay ve Kahve", en: "Tea & Coffee" }, kesim: "temel", talepTabani: 0.68, birimMaliyet: 0.9, birimFiyat: 2.23, minRutbe: 2 },
+    { id: "makine", simge: "⚙️", ad: { tr: "Makine Parçası", en: "Machine Parts" }, kesim: "savas", talepTabani: 0.59, birimMaliyet: 1.06, birimFiyat: 2.65, minRutbe: 2, savasTalep: 1.25 },
+    { id: "ipek", simge: "🪭", ad: { tr: "İpek", en: "Silk" }, kesim: "luks", talepTabani: 0.3, birimMaliyet: 1.97, birimFiyat: 5.51, minRutbe: 3 },
   ],
   yatirimlar: TUCCAR_YATIRIMLAR,
   roller: TUCCAR_ROLLER,
@@ -372,11 +348,11 @@ const ZANAATKAR_ORTA_CAG: IsletmeProfili = {
   ],
   mod: "uretim",
   hatlar: [
-    { id: "kap", simge: "🏺", ad: { tr: "Çömlek ve Kap", en: "Pottery & Vessels" }, kesim: "temel", talepTabani: 1.711, birimMaliyet: 0.58, birimFiyat: 1.15, minRutbe: 1 },
-    { id: "demir", simge: "⚒️", ad: { tr: "Demir Alet", en: "Iron Tools" }, kesim: "temel", talepTabani: 1.38, birimMaliyet: 0.67, birimFiyat: 1.2, minRutbe: 1 },
-    { id: "mobilya", simge: "🪑", ad: { tr: "Mobilya", en: "Furniture" }, kesim: "temel", talepTabani: 1.12, birimMaliyet: 0.86, birimFiyat: 1.9, minRutbe: 2 },
-    { id: "silah", simge: "⚔️", ad: { tr: "Kılıç ve Zırh", en: "Swords & Armour" }, kesim: "savas", talepTabani: 0.927, birimMaliyet: 0.96, birimFiyat: 2.3, minRutbe: 2, savasTalep: 1.35 },
-    { id: "kuyum", simge: "💍", ad: { tr: "Kuyum ve İşleme", en: "Jewellery & Fine Work" }, kesim: "luks", talepTabani: 0.414, birimMaliyet: 1.82, birimFiyat: 5.0, minRutbe: 3 },
+    { id: "kap", simge: "🏺", ad: { tr: "Çömlek ve Kap", en: "Pottery & Vessels" }, kesim: "temel", talepTabani: 1.711, birimMaliyet: 0.49, birimFiyat: 1.22, minRutbe: 1 },
+    { id: "demir", simge: "⚒️", ad: { tr: "Demir Alet", en: "Iron Tools" }, kesim: "temel", talepTabani: 1.38, birimMaliyet: 0.57, birimFiyat: 1.27, minRutbe: 1 },
+    { id: "mobilya", simge: "🪑", ad: { tr: "Mobilya", en: "Furniture" }, kesim: "temel", talepTabani: 1.12, birimMaliyet: 0.73, birimFiyat: 2.01, minRutbe: 2 },
+    { id: "silah", simge: "⚔️", ad: { tr: "Kılıç ve Zırh", en: "Swords & Armour" }, kesim: "savas", talepTabani: 0.927, birimMaliyet: 0.82, birimFiyat: 2.44, minRutbe: 2, savasTalep: 1.35 },
+    { id: "kuyum", simge: "💍", ad: { tr: "Kuyum ve İşleme", en: "Jewellery & Fine Work" }, kesim: "luks", talepTabani: 0.414, birimMaliyet: 1.56, birimFiyat: 5.3, minRutbe: 3 },
   ],
   yatirimlar: ZANAATKAR_YATIRIMLAR,
   roller: ZANAATKAR_ROLLER,
@@ -391,11 +367,11 @@ const ZANAATKAR_SANAYI: IsletmeProfili = {
   ],
   mod: "uretim",
   hatlar: [
-    { id: "ayakkabi", simge: "👞", ad: { tr: "Ayakkabı ve Deri", en: "Shoes & Leather" }, kesim: "temel", talepTabani: 1.49, birimMaliyet: 0.62, birimFiyat: 1.15, minRutbe: 1 },
-    { id: "ev_esyasi", simge: "🍳", ad: { tr: "Ev Eşyası", en: "Household Goods" }, kesim: "temel", talepTabani: 1.389, birimMaliyet: 0.67, birimFiyat: 1.2, minRutbe: 1 },
-    { id: "mobilya", simge: "🛋️", ad: { tr: "Mobilya ve Cam", en: "Furniture & Glass" }, kesim: "temel", talepTabani: 1.05, birimMaliyet: 0.91, birimFiyat: 1.9, minRutbe: 2 },
-    { id: "makine", simge: "⚙️", ad: { tr: "Makine Parçası", en: "Machine Parts" }, kesim: "savas", talepTabani: 0.875, birimMaliyet: 1.06, birimFiyat: 2.5, minRutbe: 2, savasTalep: 1.25 },
-    { id: "saat", simge: "⌚", ad: { tr: "Saat ve Mücevher", en: "Watches & Jewellery" }, kesim: "luks", talepTabani: 0.405, birimMaliyet: 1.92, birimFiyat: 5.2, minRutbe: 3 },
+    { id: "ayakkabi", simge: "👞", ad: { tr: "Ayakkabı ve Deri", en: "Shoes & Leather" }, kesim: "temel", talepTabani: 1.49, birimMaliyet: 0.53, birimFiyat: 1.22, minRutbe: 1 },
+    { id: "ev_esyasi", simge: "🍳", ad: { tr: "Ev Eşyası", en: "Household Goods" }, kesim: "temel", talepTabani: 1.389, birimMaliyet: 0.57, birimFiyat: 1.27, minRutbe: 1 },
+    { id: "mobilya", simge: "🛋️", ad: { tr: "Mobilya ve Cam", en: "Furniture & Glass" }, kesim: "temel", talepTabani: 1.05, birimMaliyet: 0.78, birimFiyat: 2.01, minRutbe: 2 },
+    { id: "makine", simge: "⚙️", ad: { tr: "Makine Parçası", en: "Machine Parts" }, kesim: "savas", talepTabani: 0.875, birimMaliyet: 0.9, birimFiyat: 2.65, minRutbe: 2, savasTalep: 1.25 },
+    { id: "saat", simge: "⌚", ad: { tr: "Saat ve Mücevher", en: "Watches & Jewellery" }, kesim: "luks", talepTabani: 0.405, birimMaliyet: 1.64, birimFiyat: 5.51, minRutbe: 3 },
   ],
   yatirimlar: ZANAATKAR_YATIRIMLAR,
   roller: ZANAATKAR_ROLLER,

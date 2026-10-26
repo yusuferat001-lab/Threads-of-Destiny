@@ -402,7 +402,7 @@ describe("vebaBaslamaliMi / vebaBaslat / vebaYillikKontrol / vebaBitisKontrolEt"
     expect(kapanOnlemli).toBeLessThan(kapanOnlemsiz);
   });
 
-  it("hastalığı kapan karakter 'veba_hastasi' etiketi + ~%70 ölüm riski alır (ölmez)", () => {
+  it("hastalığı kapan karakter 'veba_hastasi' etiketi + %55 ölüm olasılığı alır ve canı 25–28 düşer (ölmez)", () => {
     const state = taze();
     state.yas = 30;
     vebaBaslat(state, 0);
@@ -412,30 +412,46 @@ describe("vebaBaslamaliMi / vebaBaslat / vebaYillikKontrol / vebaBitisKontrolEt"
       denemeSayisi++;
     }
     expect(state.etiketler.includes("veba_hastasi")).toBe(true);
-    expect(state.veba_olum_riski).toBe(70);
+    expect(state.veba_olum_riski).toBe(55);
     expect(state.aktif).toBe(true);
+    expect(state.saglik).toBeGreaterThanOrEqual(1);
   });
 
-  it("vebaHastaligiKontrol: ölmezse risk düşer, eşik altında iyileşir (etiket silinir)", () => {
-    const state = taze();
-    vebaHastaligiBaslatEt(state);
-    expect(state.veba_olum_riski).toBe(70);
-    // Riski elle düşürüp iyileşmeyi zorla (tek turda eşik altına insin).
-    state.veba_olum_riski = 20;
-    let iyilesti = false;
-    for (let i = 0; i < 50 && !iyilesti; i++) {
+  it("vebaHastaligiKontrol: tek zar — taban 55/30/15; ölmezse hastalık biter (yaralı can −20..22, sağlıklı can +5..9)", () => {
+    const sayac = { oldu: 0, yarali: 0, saglikli: 0 };
+    const N = 4000;
+    for (let i = 0; i < N; i++) {
+      const state = taze();
+      state.saglik = 60;
+      vebaHastaligiBaslatEt(state);
+      expect(state.veba_olum_riski).toBe(55);
+      const yakalanmaSonrasi = state.saglik;
+      expect(yakalanmaSonrasi).toBeLessThanOrEqual(35);
+      expect(yakalanmaSonrasi).toBeGreaterThanOrEqual(32);
       const sonuc = vebaHastaligiKontrol(state);
       if (sonuc.karakterOldu) {
-        // düşük riskte de nadiren ölebilir; yeniden hastalandır ve dene
-        vebaHastaligiBaslatEt(state);
-        state.veba_olum_riski = 20;
+        sayac.oldu++;
         continue;
       }
-      iyilesti = sonuc.iyilesti;
+      expect(sonuc.iyilesti).toBe(true);
+      expect(state.etiketler.includes("veba_hastasi")).toBe(false);
+      expect(state.veba_olum_riski).toBe(0);
+      const fark = state.saglik - yakalanmaSonrasi;
+      if (fark > 0) {
+        sayac.saglikli++;
+        expect(fark).toBeGreaterThanOrEqual(5);
+        expect(fark).toBeLessThanOrEqual(9);
+      } else {
+        sayac.yarali++;
+        expect(fark).toBeLessThanOrEqual(-1);
+      }
     }
-    expect(iyilesti).toBe(true);
-    expect(state.etiketler.includes("veba_hastasi")).toBe(false);
-    expect(state.veba_olum_riski).toBe(0);
+    expect(sayac.oldu / N).toBeGreaterThan(0.5);
+    expect(sayac.oldu / N).toBeLessThan(0.6);
+    expect(sayac.yarali / N).toBeGreaterThan(0.26);
+    expect(sayac.yarali / N).toBeLessThan(0.34);
+    expect(sayac.saglikli / N).toBeGreaterThan(0.11);
+    expect(sayac.saglikli / N).toBeLessThan(0.19);
   });
 
   it("vebaHastaligiKontrol: yüksek riskte karakter ölebilir (sinyal döner)", () => {

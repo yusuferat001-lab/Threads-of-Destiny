@@ -16,12 +16,12 @@ export interface KrediHavuzTanimi {
 }
 
 export const KREDI_HAVUZU: KrediHavuzTanimi[] = [
-  { id: "kisa_kucuk", tutar: 35, faiz: 0.16, vade: 3, ad: { tr: "Kısa vadeli küçük kese", en: "Short-term small purse" } },
-  { id: "uzun_kucuk", tutar: 40, faiz: 0.12, vade: 6, ad: { tr: "Uzun vadeli küçük kese", en: "Long-term small purse" } },
-  { id: "kisa_orta", tutar: 70, faiz: 0.19, vade: 4, ad: { tr: "Kısa vadeli orta kese", en: "Short-term medium purse" } },
-  { id: "uzun_orta", tutar: 80, faiz: 0.13, vade: 7, ad: { tr: "Uzun vadeli orta kese", en: "Long-term medium purse" } },
-  { id: "kisa_buyuk", tutar: 120, faiz: 0.21, vade: 5, ad: { tr: "Kısa vadeli büyük kese", en: "Short-term large purse" } },
-  { id: "uzun_buyuk", tutar: 135, faiz: 0.15, vade: 7, ad: { tr: "Uzun vadeli büyük kese", en: "Long-term large purse" } },
+  { id: "kisa_kucuk", tutar: 39, faiz: 0.13, vade: 3, ad: { tr: "Kısa vadeli küçük kese", en: "Short-term small purse" } },
+  { id: "uzun_kucuk", tutar: 45, faiz: 0.09, vade: 6, ad: { tr: "Uzun vadeli küçük kese", en: "Long-term small purse" } },
+  { id: "kisa_orta", tutar: 78, faiz: 0.16, vade: 4, ad: { tr: "Kısa vadeli orta kese", en: "Short-term medium purse" } },
+  { id: "uzun_orta", tutar: 90, faiz: 0.10, vade: 7, ad: { tr: "Uzun vadeli orta kese", en: "Long-term medium purse" } },
+  { id: "kisa_buyuk", tutar: 134, faiz: 0.18, vade: 5, ad: { tr: "Kısa vadeli büyük kese", en: "Short-term large purse" } },
+  { id: "uzun_buyuk", tutar: 151, faiz: 0.12, vade: 7, ad: { tr: "Uzun vadeli büyük kese", en: "Long-term large purse" } },
 ];
 
 export const KREDI_TEKLIF_SAYISI = 2;

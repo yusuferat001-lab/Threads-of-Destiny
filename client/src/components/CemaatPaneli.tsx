@@ -10,7 +10,7 @@ interface Props {
   durum: IsletmeGorunumu;
   pazar?: PazarDurumu | null;
   yukleniyor: boolean;
-  onKarar: (hatlar: IsletmeKararGirdisi[], stokHedefi?: undefined, cemaat?: CemaatKararGirdisi) => void;
+  onKarar: (hatlar: IsletmeKararGirdisi[], cemaat?: CemaatKararGirdisi) => void;
   onYatirim: (yatirimId: string) => void;
   onCalisanAl: (adayId: string) => void;
   onEkipCikar: (ekipId: string) => void;
@@ -220,7 +220,7 @@ export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onC
               className={p.secili === s.id ? '' : 'ikincil'}
               disabled={yukleniyor}
               title={d(s.aciklama)}
-              onClick={() => onKarar([], undefined, { [anahtar]: s.id })}
+              onClick={() => onKarar([], { [anahtar]: s.id })}
             >
               {d(s.ad)}
             </button>

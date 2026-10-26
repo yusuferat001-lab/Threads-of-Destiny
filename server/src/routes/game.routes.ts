@@ -63,6 +63,8 @@ import {
   isletmeOgretiSec,
   isletmeUrunSec,
   isletmeYatirimYap,
+  isletmeDepoDoldur,
+  isletmeDepoOtomatik,
   isletmeCalisanAl,
   amaclarGetir,
   hediyeEt,
@@ -318,10 +320,30 @@ gameRouter.get("/:id/isletme", async (req, res) => {
 });
 
 gameRouter.post("/:id/isletme/karar", async (req, res) => {
-  const { hatlar, stokHedefi, cemaat } = req.body ?? {};
+  const { hatlar, cemaat } = req.body ?? {};
   if (!Array.isArray(hatlar)) return res.status(400).json({ hata: "Geçersiz karar." });
   try {
-    res.json(await isletmeKararVer(req.params.id, hatlar, stokHedefi, cemaat && typeof cemaat === "object" ? cemaat : undefined));
+    res.json(await isletmeKararVer(req.params.id, hatlar, cemaat && typeof cemaat === "object" ? cemaat : undefined));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/isletme/depo-doldur", async (req, res) => {
+  const { hedefYuzde, onayla } = req.body ?? {};
+  if (typeof hedefYuzde !== "number") return res.status(400).json({ hata: "Geçersiz doldurma oranı." });
+  try {
+    res.json(await isletmeDepoDoldur(req.params.id, hedefYuzde, onayla === true));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/isletme/depo-oto", async (req, res) => {
+  const { acik, yuzde } = req.body ?? {};
+  if (typeof acik !== "boolean" || typeof yuzde !== "number") return res.status(400).json({ hata: "Geçersiz doldurma oranı." });
+  try {
+    res.json(await isletmeDepoOtomatik(req.params.id, acik, yuzde));
   } catch (err) {
     res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }

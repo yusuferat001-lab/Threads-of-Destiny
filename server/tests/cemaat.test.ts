@@ -261,10 +261,10 @@ describe("cemaat — rütbeye bağlı faaliyetler", () => {
     await isletmeOgretiSec(s.id, ogretiSecenekleri(1)[0].id);
     await expect(isletmeKararVer(s.id, [{ id: "emanet", acik: true }])).rejects.toThrow();
     await expect(isletmeKararVer(s.id, [{ id: "ritual", acik: true }])).rejects.toThrow(); // S1'de tek slot (tövbe açık)
-    const ok = await isletmeKararVer(s.id, [{ id: "tovbe", acik: false }, { id: "ritual", acik: true }], undefined, { bagis: "arti10", ton: "atesli" });
+    const ok = await isletmeKararVer(s.id, [{ id: "tovbe", acik: false }, { id: "ritual", acik: true }], { bagis: "arti10", ton: "atesli" });
     expect(ok.durum.cemaat!.politikalar.bagis.secili).toBe("arti10");
     expect(ok.durum.cemaat!.politikalar.ton.secili).toBe("atesli");
-    await expect(isletmeKararVer(s.id, [], undefined, { bagis: "yok" })).rejects.toThrow();
+    await expect(isletmeKararVer(s.id, [], { bagis: "yok" })).rejects.toThrow();
   });
 
   it("görünüm cemaat verisini döner", async () => {

@@ -46,6 +46,7 @@ import {
   isletmeHazirla,
   isletmeGelirTahmini,
   isletmeYilIsle,
+  otomatikDepoDoldur,
 } from "./isletme";
 import { isletmeMeslegiMi } from "../data/meslekProfilleri";
 import {
@@ -434,6 +435,16 @@ export function enflasyonCarpani(state: CharacterState): number {
   return Math.pow(1 + oran, gecenYil);
 }
 
+/** v20: gider enflasyonu gelir enflasyonunun ×1,15'idir (OÇ %1,15 · SD %2,3/yıl). */
+export const GIDER_ENFLASYON_KATSAYISI = 1.15;
+
+/** Maliyet tarafı (alış, yaşam, kira, maaş, bakım, yatırım fiyatı) için bileşik çarpan. */
+export function giderEnflasyonCarpani(state: CharacterState): number {
+  const gecenYil = Math.max(0, state.yil - state.baslangic_yili);
+  const oran = (ENFLASYON_ORANI_YILLIK[state.cag] ?? 0.01) * GIDER_ENFLASYON_KATSAYISI;
+  return Math.pow(1 + oran, gecenYil);
+}
+
 /** Finans ekranında gösterilecek toplam gelir enflasyonu yüzdesi (oyunun başından bu yana). */
 export function enflasyonYuzdesiHesapla(state: CharacterState): number {
   return Math.round((enflasyonCarpani(state) - 1) * 100);
@@ -552,6 +563,7 @@ export function isletmeBaglami(state: CharacterState): IsletmeBaglami {
   const durumCarpani = state.durumlar.reduce((c, d) => c * (d.gelir_carpani ?? 1), 1);
   return {
     enflasyon: enflasyonCarpani(state),
+    giderEnflasyon: giderEnflasyonCarpani(state),
     satisCarpani: maasCarpaniGetir(state) * durumCarpani * (state.es_adi ? 1 + (state.es_meslek_bonusu ?? 0) / 100 : 1),
   };
 }
@@ -2375,7 +2387,7 @@ function yasamMaliyetCarpaniGetir(state: CharacterState): number {
 
 /** Bir sonraki turun gider dökümünü, gerçekte uygulamadan hesaplar; Finans ekranı bunu kullanır. */
 export function giderKalemleriHesapla(state: CharacterState): GiderKalemleri {
-  const enflasyon = enflasyonCarpani(state);
+  const enflasyon = giderEnflasyonCarpani(state);
   const yasamSecenegi = yasamSecenegiGetir(state.yasam_secimi_id);
   // Yaşam gideri dönemle (bolluk −, durgunluk +, kıtlık ++) ve savaşla (gıda pahalanır) çarpılır.
   const donemCarpani = state.ulke.donem?.etki.yasamGideri ?? 1;
@@ -2394,7 +2406,7 @@ export function giderKalemleriHesapla(state: CharacterState): GiderKalemleri {
 
 export function pasifEkonomiUygula(state: CharacterState, yasArtisi: number): EkonomiSonucu {
   // Çalışan maaşları her yıl güncel enflasyonla yenilenir (giriş seviyesine göre sabit taban × enflasyon).
-  if (isletmeAktif(state)) calisanMaaslariniGuncelle(state, enflasyonCarpani(state));
+  if (isletmeAktif(state)) calisanMaaslariniGuncelle(state, giderEnflasyonCarpani(state));
   state.maas_yillik = hesaplaMaasYillik(state);
   const giderKalemleri = giderKalemleriHesapla(state);
   const gider =
@@ -2410,10 +2422,18 @@ export function pasifEkonomiUygula(state: CharacterState, yasArtisi: number): Ek
   const isletmeVar = isletmeAktif(state);
   for (let i = 0; i < yasArtisi; i++) {
     if (isletmeVar) {
+      // v20: otomatik depo — açıksa yıl başında seçilen yüzdeye para yettiği kadar dolar. Çok yıllık turda
+      // ikinci yıldan itibaren önceki yılların net nakdi de eldeki para sayılır (para sonda toplu işlendiği için geçici eklenir).
+      const paraYedek = state.para;
+      state.para = paraYuvarla(paraYedek + netGelir);
+      const oto = otomatikDepoDoldur(state, isletmeBaglami(state));
+      const harcanan = oto ? oto.maliyet : 0;
+      state.para = paraYedek;
+      netGelir -= harcanan;
       // İşletme: gelir = o yılın satış − alım − depo kârı (eksi olabilir), maaş formülü yok.
       const sonuc = isletmeYilIsle(state, isletmeBaglami(state));
       yillikGelirler.push(sonuc.net);
-      netGelir += sonuc.net - gider;
+      netGelir += sonuc.net + sonuc.onOdenenAlim - gider;
       continue;
     }
     const dalga = 0.85 + Math.random() * 0.3; // 0.85x - 1.15x (büyük denge turu: kullanıcı isteğiyle bant 0.85–1.15)
@@ -3563,12 +3583,17 @@ export interface VebaYillikSonuc {
  * olay havuzuna geçer (bkz. vebaHastaligiKontrol). Eş/çocuk için oran hâlâ
  * DOĞRUDAN ölümdür (onlar için olay katmanı yok), yalnız ~%50 büyütüldü.
  */
-const VEBA_KAPMA_KADEME = [0.093, 0.054, 0.027]; // [hiç, kısmi, tam koruma] — karakterin hastalığı kapma ihtimali/yıl
-const VEBA_ES_KAYIP_KADEME = [0.054, 0.033, 0.017];
-const VEBA_COCUK_KAYIP_KADEME = [0.048, 0.03, 0.015];
+const VEBA_KAPMA_KADEME = [0.208, 0.076, 0.033]; // [hiç, kısmi, tam koruma] — karakterin hastalığı kapma ihtimali/yıl (salgın boyunca ≈ %65 / %30 / %14)
+const VEBA_ES_KAYIP_KADEME = [0.086, 0.053, 0.027];
+const VEBA_COCUK_KAYIP_KADEME = [0.077, 0.048, 0.024];
 
-/** Vebayı yeni kapan bir karakterin başlangıç ölüm riski (%). Olaylarla düşer/yükselir. */
-const VEBA_BASLANGIC_OLUM_RISKI = 70;
+/** Vebayı yeni kapan bir karakterin başlangıç ölüm olasılığı (%): ölüm %55 · yaralı %30 · sağlıklı %15. Hastalık olayının seçimi bunu kaydırır. */
+const VEBA_BASLANGIC_OLUM_RISKI = 55;
+/** Yakalanma anında anında kaybedilen can, yaralı atlatmada ek kayıp, sağlıklı atlatmada kazanç. */
+const VEBA_YAKALANMA_CAN_KAYBI: [number, number] = [25, 28];
+const VEBA_YARALI_CAN_KAYBI: [number, number] = [20, 22];
+const VEBA_SAGLIKLI_CAN_KAZANCI: [number, number] = [5, 9];
+const vebaAralik = ([a, b]: [number, number]) => a + Math.floor(Math.random() * (b - a + 1));
 
 /**
  * Karaktere kişisel veba hastalığını başlatır: "veba_hastasi" etiketi + (henüz
@@ -3578,12 +3603,12 @@ const VEBA_BASLANGIC_OLUM_RISKI = 70;
  */
 export function vebaHastaligiBaslatEt(state: CharacterState): void {
   if (!state.etiketler.includes("veba_hastasi")) etiketEkle(state, ["veba_hastasi"]);
-  if (state.veba_olum_riski <= 0) state.veba_olum_riski = VEBA_BASLANGIC_OLUM_RISKI;
+  if (state.veba_olum_riski <= 0) {
+    // Yeni yakalanma: ölüm olasılığı %55'ten başlar ve yakalandığın an can düşer (en az 1 kalır; sonrası zarda belli olur).
+    state.veba_olum_riski = VEBA_BASLANGIC_OLUM_RISKI;
+    state.saglik = Math.max(1, state.saglik - vebaAralik(VEBA_YAKALANMA_CAN_KAYBI));
+  }
 }
-/** Hasta bir turu ölmeden atlatınca ölüm riskinden düşülen sabit miktar (beden direniyor). */
-const VEBA_HASTALIK_DOGAL_DUSUS = 21;
-/** Ölüm riski bu eşiğin altına inince hastalık atlatılmış sayılır (etiket silinir). */
-const VEBA_HASTALIK_IYILESME_ESIGI = 12;
 
 /**
  * Aktif veba sürerken her yıl: karakterin hastalığı KAPIP kapmadığını, eşinin
@@ -3642,34 +3667,34 @@ export interface VebaHastaligiSonuc {
 }
 
 /**
- * Karakter vebayı BİZZAT kapmışsa (etiket "veba_hastasi") her turda BİR KEZ
- * çalışır: o anki `veba_olum_riski` (%) yüzdesine karşı ölüm zarı atılır.
- * Ölmezse risk `VEBA_HASTALIK_DOGAL_DUSUS` kadar düşer; eşiğin altına inince
- * hastalık atlatılmış sayılır (etiket + alan temizlenir). `vebaHastasiOlayi`
- * olaylarının `veba_olum_riski_artis` etkisi bu turdan ÖNCE (olay çözümünde)
- * uygulandığı için, iyi bir tedavi seçimi bu zarı belirgin biçimde iyileştirir.
- * Karakter ölümü burada UYGULANMAZ — sinyal döner, checkDeath gameEngine'de.
+ * Karakter vebayı BİZZAT kapmışsa (etiket "veba_hastasi"), hastalık olayından (`vebaHastasiOlayi`, 10 olaydan BİR tanesi)
+ * hemen sonra BİR KEZ çalışır: o anki `veba_olum_riski` (%55 + olay seçiminin kaydırması, 5–90 arası) ölüm olasılığıdır;
+ * kalan olasılık yaralı : sağlıklı = 2 : 1 bölünür (taban 55 / 30 / 15). Ölüm → karakter ölür; yaralı → can −20..22
+ * (en az 1) ve hastalık biter; sağlıklı → can +5..9 ve hastalık biter. Karakter ölümü burada UYGULANMAZ — sinyal döner.
  */
 export function vebaHastaligiKontrol(state: CharacterState): VebaHastaligiSonuc {
   const sonuc: VebaHastaligiSonuc = { karakterOldu: false, iyilesti: false, mesajlar: [] };
   if (!state.etiketler.includes("veba_hastasi")) return sonuc;
-  const risk = Math.max(0, Math.min(100, state.veba_olum_riski));
-  if (Math.random() * 100 < risk) {
+  const kopekBonusu = hayvanBonusVar(state, "kopek_saglik") ? 5 : 0;
+  const olum = Math.max(5, Math.min(90, state.veba_olum_riski - kopekBonusu)) / 100;
+  const kalan = 1 - olum;
+  const zar = Math.random();
+  if (zar < olum) {
     sonuc.karakterOldu = true;
     sonuc.mesajlar.push(T(state.dil, "Vebadan öldün; ateşler içinde son nefesini verdin."));
     return sonuc;
   }
-  state.veba_olum_riski = Math.max(0, risk - VEBA_HASTALIK_DOGAL_DUSUS - (hayvanBonusVar(state, "kopek_saglik") ? 3 : 0));
-  if (state.veba_olum_riski <= VEBA_HASTALIK_IYILESME_ESIGI) {
-    state.veba_olum_riski = 0;
-    etiketSil(state, ["veba_hastasi"]);
-    sonuc.iyilesti = true;
-    hayatOlayiEkle(state, "🌿", T(state.dil, "Vebayı atlattı"));
-    sonuc.mesajlar.push(T(state.dil, "🌿 Ateşin düştü, gücün yavaş yavaş geri geliyor — vebayı atlattın."));
+  state.veba_olum_riski = 0;
+  etiketSil(state, ["veba_hastasi"]);
+  sonuc.iyilesti = true;
+  if (zar < olum + kalan * (2 / 3)) {
+    state.saglik = Math.max(1, state.saglik - vebaAralik(VEBA_YARALI_CAN_KAYBI));
+    hayatOlayiEkle(state, "🩹", T(state.dil, "Vebayı yaralı atlattı"));
+    sonuc.mesajlar.push(T(state.dil, "🩹 Ateşin düştü ama hastalık seni yıprattı — vebayı yaralı atlattın."));
   } else {
-    sonuc.mesajlar.push(T(state.dil, "🤒 Hastalık sürüyor; şu an hayatta kalma şansın kabaca %{0}.", [
-      Math.round(100 - state.veba_olum_riski),
-    ]));
+    state.saglik = Math.min(100, state.saglik + vebaAralik(VEBA_SAGLIKLI_CAN_KAZANCI));
+    hayatOlayiEkle(state, "🌿", T(state.dil, "Vebayı atlattı"));
+    sonuc.mesajlar.push(T(state.dil, "🌿 Ateşin düştü, gücün yavaş yavaş geri geliyor — vebayı sağlıkla atlattın."));
   }
   return sonuc;
 }

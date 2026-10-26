@@ -1,10 +1,11 @@
+import { useState } from 'react';
 import type {
   PazarDurumu,
   IsletmeGorunumu,
   IsletmeHatGorunumu,
   IsletmeFiyat,
   IsletmeKararGirdisi,
-  IsletmeStokHedefi,
+  DepoDoldurPlani,
   IsletmeUyari,
 } from '../types';
 import { useDil } from '../DilContext';
@@ -24,7 +25,11 @@ interface Props {
   /** Piyasa haberleri ve müşteri dağılımı için (yoksa kart gösterilmez). */
   pazar?: PazarDurumu | null;
   yukleniyor: boolean;
-  onKarar: (hatlar: IsletmeKararGirdisi[], stokHedefi?: IsletmeStokHedefi) => void;
+  onKarar: (hatlar: IsletmeKararGirdisi[]) => void;
+  /** v20: depo doldurma planı / satın alma / otomatik doldurma (yoksa depo bölümü gösterilmez). */
+  onDepoPlan?: (hedefYuzde: number) => Promise<DepoDoldurPlani | null>;
+  onDepoSatinAl?: (hedefYuzde: number) => Promise<void>;
+  onDepoOto?: (acik: boolean, yuzde: number) => Promise<void>;
   onYatirim: (yatirimId: string) => void;
   onCalisanAl: (adayId: string) => void;
   onEkipCikar: (ekipId: string) => void;
@@ -66,11 +71,26 @@ const M = {
   borc: { tr: 'Tedarikçi borcu', en: 'Supplier debt' },
   beklenen: { tr: 'Beklenen net', en: 'Expected net' },
   yil: { tr: '/yıl', en: '/yr' },
-  stokHedefi: { tr: 'Stok hedefi', en: 'Stock target' },
-  stokHedefiNot: {
-    tr: 'Yıl başında depoyu beklenen talebe göre doldurursun. Az tutarsan malın biter ve müşteri kaçar; çok tutarsan mal çürür, depo masrafı artar.',
-    en: 'At the start of each year you fill the warehouse to the expected demand. Too little and you sell out and lose customers; too much and goods spoil and storage costs rise.',
+  depoDoldurBaslik: { tr: 'Depoyu doldur', en: 'Fill the warehouse' },
+  depoDolu: { tr: 'dolu', en: 'full' },
+  depoBirimFiyat: { tr: 'Birim alış', en: 'Unit cost' },
+  depoDoldurNot: {
+    tr: 'Mal yılda bir kez, kendin alırsın. Bir yüzdeye bas, ödenecek tutarı gör, sonra satın al. Paran yetmezse yalnız parana yetecek kadar alınır; eksiye düşmezsin, gerekirse tefeciden borç al.',
+    en: 'You buy goods yourself, once a year. Pick a percentage, see what you would pay, then buy. If you cannot afford it you only buy what your money covers; you never go into debt by buying — borrow from the moneylender if you must.',
   },
+  odenecek: { tr: 'Ödenecek', en: 'To pay' },
+  adetBirim: { tr: 'birim', en: 'units' },
+  eldekiPara: { tr: 'Elindeki para', en: 'Your cash' },
+  yetmiyor: { tr: 'Paran hedefe yetmiyor; paran kadar alırsın', en: 'You cannot afford the target; you will buy what you can' },
+  yetmiyorKarsilik: { tr: 'depo %', en: 'warehouse ' },
+  satinAl: { tr: 'Satın al', en: 'Buy' },
+  zatenDolu: { tr: 'Depo zaten bu kadar dolu.', en: 'The warehouse is already that full.' },
+  otomatik: { tr: 'Otomatik', en: 'Automatic' },
+  otomatikNot: {
+    tr: 'Açıkken depo her yıl başı seçtiğin yüzdeye, paran yettiği kadar dolar. Sen kapatana kadar sürer.',
+    en: 'When on, the warehouse refills to your chosen % at the start of every year as far as your money allows, until you turn it off.',
+  },
+  sapma: { tr: 'bu yılın piyasa farkı', en: 'this year\'s market swing' },
   hatlar: { tr: 'Ürün hatları', en: 'Product lines' },
   acik: { tr: 'Açık', en: 'Open' },
   kapali: { tr: 'Kapalı', en: 'Closed' },
@@ -134,27 +154,21 @@ const IMTIYAZ_ADLARI: Record<string, D> = {
   kutsal_gun_imtiyazi: { tr: 'Kutsal gün pazarı (talep +%10)', en: 'Holy-day market (demand +10%)' },
 };
 
-const STOK_HEDEFLERI: { id: IsletmeStokHedefi; ad: D; ipucu: D }[] = [
-  { id: 'az', ad: { tr: 'Az', en: 'Low' }, ipucu: { tr: 'Geçen yılki talebin %80\'i kadar stok. Ucuz ama sık biter.', en: '80% of last year\'s demand. Cheap but can sell out.' } },
-  { id: 'normal', ad: { tr: 'Normal', en: 'Normal' }, ipucu: { tr: 'Geçen yılki talebin %105\'i kadar stok. Dengeli.', en: '105% of last year\'s demand. Balanced.' } },
-  { id: 'fazla', ad: { tr: 'Fazla', en: 'High' }, ipucu: { tr: 'Geçen yılki talebin %125\'i kadar stok (depoya sığdığı kadar). Güvenli ama çürür.', en: '125% of last year\'s demand (as far as the warehouse allows). Safe but spoils.' } },
-];
-
 const FIYATLAR: { id: IsletmeFiyat; etiket: D; aciklama: D }[] = [
   {
     id: 'eksi20',
     etiket: { tr: '−%20', en: '−20%' },
     aciklama: {
-      tr: 'Fiyat −%20, talep +%45. Çok satar, müşteri kazanırsın (yılda +%3 pay); birim kâr az, stok çabuk biter.',
-      en: 'Price −20%, demand +45%. You sell a lot and win customers (+3% share a year); thin margin, stock runs out fast.',
+      tr: 'Fiyat −%20: talep ≈ +%20, birim kâr az. Müşterin yılda +%2 büyür.',
+      en: 'Price −20%: demand ≈ +20%, thin margin. Your customers grow +2% a year.',
     },
   },
   {
     id: 'eksi10',
     etiket: { tr: '−%10', en: '−10%' },
     aciklama: {
-      tr: 'Fiyat −%10, talep +%20. Daha çok satar, müşteri çekersin (yılda +%1,5 pay); birim kâr biraz düşer.',
-      en: 'Price −10%, demand +20%. You sell more and attract customers (+1.5% share a year); slightly lower margin.',
+      tr: 'Fiyat −%10: talep ≈ +%9, birim kâr biraz düşer. Müşterin yılda +%1 büyür.',
+      en: 'Price −10%: demand ≈ +9%, slightly lower margin. Your customers grow +1% a year.',
     },
   },
   { id: 'normal', etiket: { tr: 'Piyasa', en: 'Market' }, aciklama: { tr: 'Piyasa fiyatı. Dengeli.', en: 'Market price. Balanced.' } },
@@ -162,16 +176,16 @@ const FIYATLAR: { id: IsletmeFiyat; etiket: D; aciklama: D }[] = [
     id: 'arti10',
     etiket: { tr: '+%10', en: '+10%' },
     aciklama: {
-      tr: 'Fiyat +%10, talep −%12. Birim kâr artar; müşteri yavaşça kaçar (yılda −%1 pay). Krizde talep daha çok düşer.',
-      en: 'Price +10%, demand −12%. Better margin; customers slowly drift away (−1% share a year). Demand drops more in a crisis.',
+      tr: 'Fiyat +%10: talep ≈ −%7, birim kâr artar. Müşterin yılda −%1 azalır.',
+      en: 'Price +10%: demand ≈ −7%, better margin. Your customers drop 1% a year.',
     },
   },
   {
     id: 'arti20',
     etiket: { tr: '+%20', en: '+20%' },
     aciklama: {
-      tr: 'Fiyat +%20, talep −%30. Birim kâr yüksek ama müşteri kaçar (yılda −%3 pay). Kıtlık ve savaşta riskli.',
-      en: 'Price +20%, demand −30%. High margin but customers leave (−3% share a year). Risky in famine and war.',
+      tr: 'Fiyat +%20: talep ≈ −%14, birim kâr yüksek. Müşterin yılda −%2 azalır.',
+      en: 'Price +20%: demand ≈ −14%, high margin. Your customers drop 2% a year.',
     },
   },
 ];
@@ -244,8 +258,9 @@ export function isletmeUyariMetni(u: IsletmeUyari, durum: IsletmeGorunumu, dil: 
     }
   }
 
-export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onCalisanAl, onEkipCikar, bolum = 'hepsi' }: Props) {
+export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onDepoPlan, onDepoSatinAl, onDepoOto, onYatirim, onCalisanAl, onEkipCikar, bolum = 'hepsi' }: Props) {
   const { dil } = useDil();
+  const [plan, setPlan] = useState<DepoDoldurPlani | null>(null);
   const t = (k: Exclude<keyof typeof M, 'donem'>) => M[k][dil];
   const d = (m: D) => m[dil];
 
@@ -292,9 +307,6 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
             {uretimModu ? t('hammaddeStogu') : t('stok')}: <strong>{h.stok}</strong>
           </span>
           <span>
-            {t('talep')}: <strong>~{h.tahminiTalep}</strong>
-          </span>
-          <span>
             {uretimModu ? t('birimUretim') : t('birim')}:{' '}
             <strong>
               {formatPara(h.birimFiyat)} / {formatPara(h.birimMaliyet)}
@@ -315,6 +327,7 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
             {h.oncekiBirimMaliyet != null ? ` (${t('gecenAlis')} ${formatPara(h.oncekiBirimMaliyet)})` : ''}
             {h.maliyetDonemYuzde !== 0 ? <> · {t('alisDonem')} <span className={h.maliyetDonemYuzde > 0 ? 'kademe-dusuk' : 'kademe-yuksek'}>{formatYuzde(dil, h.maliyetDonemYuzde, true)}</span></> : null}
             {h.maliyetIndirimYuzde > 0 ? <> · {t('alisIndirim')} <span className="kademe-yuksek">−{formatYuzde(dil, h.maliyetIndirimYuzde)}</span></> : null}
+            {' · '}{t('sapma')}: {dil === 'en' ? 'buy' : 'alış'} <span className={h.alisSapmaYuzde > 0 ? 'kademe-dusuk' : 'kademe-yuksek'}>{formatYuzde(dil, h.alisSapmaYuzde, true)}</span>, {dil === 'en' ? 'sell' : 'satış'} <span className={h.satisSapmaYuzde >= 0 ? 'kademe-yuksek' : 'kademe-dusuk'}>{formatYuzde(dil, h.satisSapmaYuzde, true)}</span>
           </div>
         )}
         {h.acik && (
@@ -396,17 +409,73 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
         </div>
       )}
 
-      <h4>{t('stokHedefi')}</h4>
-      <div className="isletme-hat-kontrol">
-        {STOK_HEDEFLERI.map((s) => (
-          <button key={s.id} className={durum.stokHedefi === s.id ? '' : 'ikincil'} disabled={yukleniyor} title={d(s.ipucu)} onClick={() => onKarar([], s.id)}>
-            {d(s.ad)}
-          </button>
-        ))}
-      </div>
-      <div className="isletme-fiyat-not">
-        {d(STOK_HEDEFLERI.find((s) => s.id === durum.stokHedefi)?.ipucu ?? STOK_HEDEFLERI[1].ipucu)} {t('stokHedefiNot')}
-      </div>
+      {onDepoPlan && onDepoSatinAl && durum.depo.kapasite > 0 && (
+        <div className="isletme-depo-doldur">
+          <h4>
+            {t('depoDoldurBaslik')} — {durum.depo.dolulukYuzde}% {t('depoDolu')} ({durum.depo.kullanilan}/{durum.depo.kapasite})
+          </h4>
+          <div className="isletme-hat-dunya">
+            {t('depoBirimFiyat')}:{' '}
+            {durum.hatlar.filter((h) => h.acik).map((h) => `${h.simge} ${formatPara(h.birimMaliyet)}`).join(' · ')}
+          </div>
+          <div className="isletme-hat-kontrol">
+            {durum.depo.doldurYuzdeleri.map((y) => (
+              <button
+                key={y}
+                className={plan?.hedefYuzde === y ? '' : 'ikincil'}
+                disabled={yukleniyor}
+                onClick={async () => setPlan(await onDepoPlan(y))}
+              >
+                %{y}
+              </button>
+            ))}
+          </div>
+          {plan && (
+            <div className="isletme-depo-plan">
+              {plan.adet > 0 ? (
+                <>
+                  <strong>
+                    {t('odenecek')}: {formatPara(plan.maliyet)} {pb}
+                  </strong>{' '}
+                  ({plan.adet} {t('adetBirim')})
+                </>
+              ) : (
+                <span>{plan.yetersiz ? t('yetmiyor') : t('zatenDolu')}</span>
+              )}
+              {plan.yetersiz && (
+                <div className="kademe-dusuk">
+                  {t('yetmiyor')} — {t('eldekiPara')}: {formatPara(plan.elindekiPara)} {pb} ≈ {dil === 'en' ? `${t('yetmiyorKarsilik')}${plan.ulasilacakYuzde}%` : `${t('yetmiyorKarsilik')}${plan.ulasilacakYuzde}`}
+                </div>
+              )}
+              {plan.adet > 0 && (
+                <button
+                  disabled={yukleniyor}
+                  onClick={async () => {
+                    await onDepoSatinAl(plan.hedefYuzde);
+                    setPlan(null);
+                  }}
+                >
+                  {t('satinAl')}
+                </button>
+              )}
+            </div>
+          )}
+          {onDepoOto && (
+            <div className="isletme-hat-kontrol">
+              <span>🔁 {t('otomatik')}:</span>
+              <button className={durum.depo.oto.acik ? '' : 'ikincil'} disabled={yukleniyor} onClick={() => onDepoOto(!durum.depo.oto.acik, durum.depo.oto.yuzde)}>
+                {durum.depo.oto.acik ? t('acik') : t('kapali')}
+              </button>
+              {durum.depo.doldurYuzdeleri.map((y) => (
+                <button key={y} className={durum.depo.oto.yuzde === y ? '' : 'ikincil'} disabled={yukleniyor} onClick={() => onDepoOto(durum.depo.oto.acik, y)}>
+                  %{y}
+                </button>
+              ))}
+            </div>
+          )}
+          <div className="isletme-fiyat-not">{t('depoDoldurNot')} {t('otomatikNot')}</div>
+        </div>
+      )}
 
       {pazar && pazar.aktif && <PiyasaHaberleri pazar={pazar} sayilarGoster />}
 

@@ -1054,10 +1054,20 @@ export interface IsletmeDurumu {
   aday_yili: number;
   /** Gümrük rüşveti etkisi: bu oyun yılına kadar alış maliyeti %15 düşük (§45). */
   gumruk_indirim_bitis?: number;
-  /** Stok hedefi (varsayılan "normal"); sipariş sayısı kalktı. */
+  /** @deprecated v12: stok hedefi kalktı (depo elle doldurulur); eski kayıtlarda göçte silinir. */
   stok_hedefi?: IsletmeStokHedefi;
-  /** Son dış hırsızlık girişiminin yılı (3 yıl cooldown). */
+  /** v12: bu yıl elle yapılan mal alımlarının toplam tutarı ve hat başına adetleri (yıl sonunda sıfırlanır). */
+  yil_alim?: number;
+  yil_alinan?: Record<string, number>;
+  /** Son dış hırsızlık yılı (bilgi). */
   hirsizlik_son_yil?: number | null;
+  /** v20: bir sonraki dış hırsızlık yılı (takvim: önceki olaydan 9-11 yıl sonra; ilk 7 yıl yok). */
+  hirsizlik_sonraki_yil?: number | null;
+  /** v20: yıl başı piyasa sapması: hat başına alış ±%3, satış ±%2 (o yıl sabit). */
+  piyasa_sapma?: Record<string, { alis: number; satis: number }>;
+  piyasa_sapma_yili?: number;
+  /** v20: otomatik depo doldurma — açıkken her yıl başı depo seçilen yüzdeye para yettiği kadar dolar. */
+  depo_oto?: { acik: boolean; yuzde: number };
   /** v11: oyun başında seçilen ana ürün (hat id); bonusu yalnız o hatta uygulanır. Seçim yapılmamış/eski oyunlarda yok. */
   ana_urun?: string | null;
   /** İşletmenin kurulduğu oyun yılı (ilk ISLETME_GUVENLI_YIL yıl dış hırsızlık ve rakip saldırısı yok; eski kayıtlarda yok → baslangic_yili). */
