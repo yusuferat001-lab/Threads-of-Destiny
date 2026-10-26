@@ -145,7 +145,7 @@ function botKarar(s: CharacterState, tarz: Tarz) {
   // v15: depo her yıl başı motor tarafından kapasiteye kadar kendiliğinden dolar (oyuncu ayarı yok).
 }
 
-interface Cikti { hatKar: Record<string, number[]>; hatSatis: Record<string, number[]>; satis: number[]; alim: number[]; maas: number[]; aidat: number[]; vergi: number[]; depoM: number[]; hasar: number[]; yatirim: number[]; dukkan: number[]; gider: number[]; musteri: number[]; calisan: number[]; batmaYili: number; batmaDetay: string; gelir: number[]; net: number[]; pay: number[]; rakipPay: number[]; para: number[]; batti: boolean; sonPara: number; hirsizlik: number; anaRolKazanc: number; pazar: number[]; enf: number[]; depoK: number[]; kap: number[]; talep: number[]; stokBitti: number[]; kayip: number[] }
+interface Cikti { hatKar: Record<string, number[]>; hatSatis: Record<string, number[]>; satis: number[]; alim: number[]; maas: number[]; aidat: number[]; vergi: number[]; depoM: number[]; hasar: number[]; yatirim: number[]; dukkan: number[]; gider: number[]; musteri: number[]; calisan: number[]; batmaYili: number; batmaDetay: string; batmaVeri: { gelir: number; gider: number; ekip: number; depo: number; brut: number; hasar: boolean; kredi: boolean; pay: number; stokBitti: boolean } | null; krediYili: number; gelir: number[]; net: number[]; pay: number[]; rakipPay: number[]; para: number[]; batti: boolean; sonPara: number; hirsizlik: number; anaRolKazanc: number; pazar: number[]; enf: number[]; depoK: number[]; kap: number[]; talep: number[]; stokBitti: number[]; kayip: number[] }
 
 function tekOmur(cag: Cag, tarz: Tarz): Cikti {
   const s = createCharacter(cag, cag === "Orta Çağ" ? "Fransa" : "İngiltere", "kasaba");
@@ -158,7 +158,7 @@ function tekOmur(cag: Cag, tarz: Tarz): Cikti {
     s.isletme.ana_urun = bu.hat;
     for (const h of s.isletme.hatlar) h.acik = h.id === bu.hat;
   }
-  const c: Cikti = { hatKar: {}, hatSatis: {}, satis: [], alim: [], maas: [], aidat: [], vergi: [], depoM: [], hasar: [], yatirim: [], dukkan: [], gider: [], musteri: [], calisan: [], batmaYili: -1, batmaDetay: "", gelir: [], net: [], pay: [], rakipPay: [], para: [], batti: false, sonPara: 0, hirsizlik: 0, anaRolKazanc: 0, pazar: [], enf: [], depoK: [], kap: [], talep: [], stokBitti: [], kayip: [] };
+  const c: Cikti = { hatKar: {}, hatSatis: {}, satis: [], alim: [], maas: [], aidat: [], vergi: [], depoM: [], hasar: [], yatirim: [], dukkan: [], gider: [], musteri: [], calisan: [], batmaYili: -1, batmaDetay: "", batmaVeri: null, krediYili: 0, gelir: [], net: [], pay: [], rakipPay: [], para: [], batti: false, sonPara: 0, hirsizlik: 0, anaRolKazanc: 0, pazar: [], enf: [], depoK: [], kap: [], talep: [], stokBitti: [], kayip: [] };
   for (let y = 0; y < YIL; y++) {
     rutbeSurukle(s, y, tarz);
     const para0 = s.para;
@@ -209,11 +209,17 @@ function tekOmur(cag: Cag, tarz: Tarz): Cikti {
     c.para.push(s.para);
     if (process.env.SIM_DEBUG2 && y < 8) console.log(y, "para", s.para.toFixed(1), "stok", s.isletme?.hatlar.filter((h) => h.acik).map((h) => h.id + ":" + h.stok).join(","), "satis", s.isletme?.son_dokum?.satis, "alim", s.isletme?.son_dokum?.alim, "net", s.isletme?.son_dokum?.net, "musteri", s.meslek_musteri.toFixed(1));
     if (process.env.SIM_DEBUG && y % 5 === 4) console.log(y, JSON.stringify({satis: s.isletme?.son_dokum?.satis, alim: s.isletme?.son_dokum?.alim, brut: s.isletme?.son_dokum?.brutKar, uretim: s.isletme?.son_dokum?.uretim, hat: s.isletme?.son_dokum?.hatlar, ek: s.ekip.length, up: s.isletme?.son_dokum?.uyarilar.map(u=>u.kod)}));
+    if (s.kredi) c.krediYili++;
     c.hirsizlik += s.isletme?.son_dokum?.uyarilar.filter((u) => u.kod === "hirsizlik").length ?? 0;
     if (s.para < -30 && !c.batti) {
       c.batti = true;
       const d = s.isletme?.son_dokum;
       c.batmaYili = y;
+      c.batmaVeri = {
+        gelir: s.para - onceki + gider, gider, ekip: s.ekip.length, depo: s.isletme?.yatirimlar.depo ?? 0, brut: d?.brutKar ?? 0,
+        hasar: !!d?.uyarilar.some((u) => ["hirsizlik", "ic_hirsizlik", "rakip_saldiri", "sizdirma"].includes(u.kod)), kredi: !!s.kredi, pay: pazarPayiHesapla(s) * 100,
+        stokBitti: !!d?.uyarilar.some((u) => u.kod === "stok_bitti"),
+      };
       c.batmaDetay = `gelir ${(s.para - onceki + gider).toFixed(1)} gider ${gider.toFixed(1)} ekip ${s.ekip.length} depo${s.isletme?.yatirimlar.depo ?? 0} brut ${d?.brutKar ?? 0} vergi ${d?.vergi ?? 0} uyari ${d?.uyarilar.map((u) => u.kod).join(",")}`;
     }
     if (s.para < 0 && s.isletme) s.para = Math.max(s.para, -30);
@@ -293,6 +299,9 @@ for (const cag of CAGLAR) {
       if (batanlar.length) {
         const yasOrt = ort(batanlar.map((c) => 15 + c.batmaYili));
         const erken = batanlar.filter((c) => c.batmaYili < 12).length;
+        const bv = batanlar.map((c) => c.batmaVeri!).filter(Boolean);
+        const yz = (f: (v: NonNullable<Cikti["batmaVeri"]>) => boolean) => `%${Math.round((bv.filter(f).length / Math.max(1, bv.length)) * 100)}`;
+        console.log(`  batma nedeni (n=${bv.length}): brüt kâr<0 ${yz((v) => v.brut < 0)} · hasar(hırsız/saldırı/sızma) o yıl ${yz((v) => v.hasar)} · stok bitti ${yz((v) => v.stokBitti)} · kredi taşıyor ${yz((v) => v.kredi)} · ort. gelir ${ort(bv.map((v) => v.gelir)).toFixed(0)} / gider ${ort(bv.map((v) => v.gider)).toFixed(0)} · ort. çalışan ${ort(bv.map((v) => v.ekip)).toFixed(1)} · depo K${ort(bv.map((v) => v.depo)).toFixed(1)} · pay %${ort(bv.map((v) => v.pay)).toFixed(0)} · kredi yılı/ömür (tüm oyuncular) ${ort(sonuclar.map((c) => c.krediYili)).toFixed(1)}`);
         console.log(`  batanlar: ort. yaş ${yasOrt.toFixed(0)} · ilk 12 yılda ${erken}/${batanlar.length} · örnekler: ${batanlar.slice(0, 3).map((c) => c.batmaDetay).join(" | ")}`);
       }
     }
