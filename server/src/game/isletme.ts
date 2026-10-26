@@ -1197,7 +1197,6 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
   let satis = 0;
   let toplamTalep = 0;
   let toplamKarsilanamayan = 0;
-  let sicakKarsilanamadi = false;
   const satirlar: IsletmeDokum["hatlar"] = [];
   // Üretim modunda (Zanaatkâr) yıllık üretim tavanı toplam satışı sınırlar; tavan aşılırsa tüm hatlar orantılı kısılır.
   const satisHakki = planlar.map((p) => Math.min(p.hat.stok, Math.round(p.talep)));
@@ -1219,7 +1218,6 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
     toplamKarsilanamayan += karsilanamayan;
     if (talepAdet > 0 && karsilanamayan > talepAdet * KITLE_KAYIP_ESIGI) {
       uyarilar.push({ kod: "stok_bitti", hat: p.hat.id });
-      if (p.hs.sicak) sicakKarsilanamadi = true;
     }
     satirlar.push({ id: p.hat.id, talep: talepAdet, satilan, alinan: alinanlar[p.hat.id] ?? 0, stokSonu: p.hat.stok, birimMaliyet: r2(p.hs.birimMaliyet), birimFiyat: r2(p.hs.birimFiyat) });
     p.hat.son_talep = talepAdet;
@@ -1257,8 +1255,7 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
   is.bekleyen_musteri_kaybi = 0;
   if (karsilanamayanOrani > KITLE_KAYIP_ESIGI) {
     // Bu yılın kaybı hemen değil, gelecek yıl işlenir; karşılanamayan oranın %30'u kadar müşteri kaçar (tavan %25).
-    let kayipYuzde = Math.min(KITLE_KAYIP_TAVANI, karsilanamayanOrani * KITLE_KAYIP_KESRI);
-    if (sicakKarsilanamadi) kayipYuzde = Math.min(KITLE_KAYIP_TAVANI, kayipYuzde * 1.5);
+    const kayipYuzde = Math.min(KITLE_KAYIP_TAVANI, karsilanamayanOrani * KITLE_KAYIP_KESRI);
     is.bekleyen_musteri_kaybi = state.meslek_musteri * kayipYuzde;
   }
   if (satis > 0) {
