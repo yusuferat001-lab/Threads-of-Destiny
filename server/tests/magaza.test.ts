@@ -4,6 +4,7 @@ import {
   mesleğiSec,
   magazaFiyatiHesapla,
   envanterBozulmasiUygula,
+  magazaVitriniYenile,
   temelMagazaKilitliMi,
   TEMEL_MAGAZA_KILIT_SURESI_YIL,
   ilkDonemOlustur,
@@ -14,6 +15,7 @@ import {
   magazaConfigGetir,
   magazadanSatinAl,
   envanterEsyasiKullan,
+  hediyeEt,
 } from "../src/game/gameEngine";
 import { MAGAZA_ESYALARI, magazaEsyasiTanimiGetir } from "../src/data/magazaEsyalari";
 import type { CharacterState } from "../src/types";
@@ -32,6 +34,11 @@ function taze(): CharacterState {
 afterEach(() => {
   vi.restoreAllMocks(); // sifa zar testlerindeki Math.random mock'u diğer testlere sızmasın
 });
+
+/** Koleksiyon eşyaları yalnız vitrindeyken satılır; testleri rastgeleliğe bırakmamak için vitrini sabitler. */
+function vitrineKoy(state: CharacterState, ...idler: string[]) {
+  state.magaza_vitrin = { yenileme_yili: state.yil + 100, idler };
+}
 
 describe("mağaza kataloğu — fiyat/etki dengesi mantıklı olmalı", () => {
   it("her sifa eşyası için: fiyat arttıkça toplam (saglik+mutluluk) etki de artar", () => {
@@ -207,6 +214,7 @@ describe("gameEngine entegrasyonu — mağaza/envanter aksiyonları", () => {
     const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     state.para = 1000;
+    vitrineKoy(state, "ipek_hali", "nadide_tablo");
     const oncekiUn = state.un;
 
     const sonuc = await magazadanSatinAl(state.id, "ipek_hali");
@@ -224,6 +232,7 @@ describe("gameEngine entegrasyonu — mağaza/envanter aksiyonları", () => {
     const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     state.para = 1000;
+    vitrineKoy(state, "ipek_hali", "nadide_tablo");
     await magazadanSatinAl(state.id, "ipek_hali");
     await magazadanSatinAl(state.id, "kaliteli_erzak");
 
@@ -268,11 +277,98 @@ describe("gameEngine entegrasyonu — mağaza/envanter aksiyonları", () => {
     const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     state.para = 1000;
+    vitrineKoy(state, "antika_eser");
     const satinAlma = await magazadanSatinAl(state.id, "antika_eser");
     const esyaId = satinAlma.state.magaza_envanteri[0].id;
 
     await expect(envanterEsyasiKullan(state.id, esyaId)).rejects.toThrow();
     expect(satinAlma.state.magaza_envanteri).toHaveLength(1);
+  });
+
+  it("vitrinde olmayan koleksiyon eşyası satın alınamaz ve katalogda görünmez; şifa vitrine tabi değil", async () => {
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
+    await mesleğiAta(state.id, "Tüccar");
+    state.para = 5000;
+    vitrineKoy(state, "ipek_hali");
+    await expect(magazadanSatinAl(state.id, "antika_eser")).rejects.toThrow();
+    const katalog = await magazaConfigGetir(state.id);
+    expect(katalog.some((k) => k.id === "antika_eser")).toBe(false);
+    expect(katalog.some((k) => k.id === "ipek_hali")).toBe(true);
+    // Orta Çağ'a uygun tüm şifa eşyaları hep görünür.
+    const sifalar = MAGAZA_ESYALARI.filter((e) => e.kategori === "sifa" && (!e.cag || e.cag === "Orta Çağ"));
+    for (const s of sifalar) expect(katalog.some((k) => k.id === s.id)).toBe(true);
+  });
+
+  it("sanat eseri: ünü hemen artırır, tekrar alınamaz, hediye edilemez, kullanılamaz", async () => {
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
+    await mesleğiAta(state.id, "Tüccar");
+    state.para = 5000;
+    state.un = 10;
+    vitrineKoy(state, "oc_gotik_heykel");
+    const sonuc = await magazadanSatinAl(state.id, "oc_gotik_heykel");
+    expect(sonuc.state.un).toBe(25);
+    expect(sonuc.state.magaza_envanteri[0].kategori).toBe("sanat");
+    expect(sonuc.state.magaza_temel_kilit_bitis_yili).toBeNull(); // şifa kilidi yazılmaz
+    await expect(magazadanSatinAl(state.id, "oc_gotik_heykel")).rejects.toThrow();
+    await expect(hediyeEt(state.id, sonuc.state.magaza_envanteri[0].id, "dost")).rejects.toThrow(/koleksiyon/);
+    await expect(envanterEsyasiKullan(state.id, sonuc.state.magaza_envanteri[0].id)).rejects.toThrow();
+  });
+
+  it("binek: ün + mutluluk verir, sanat/lüks çağ ayrımına uyar (Sanayi eşyası Orta Çağ'da alınamaz)", async () => {
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
+    await mesleğiAta(state.id, "Tüccar");
+    state.para = 5000;
+    state.un = 10;
+    state.mutluluk = 40;
+    vitrineKoy(state, "oc_binek_ati", "sd_fayton");
+    const sonuc = await magazadanSatinAl(state.id, "oc_binek_ati");
+    expect(sonuc.state.un).toBe(14);
+    expect(sonuc.state.mutluluk).toBe(43);
+    await expect(magazadanSatinAl(state.id, "sd_fayton")).rejects.toThrow();
+  });
+
+  it("koleksiyon bakımı eşyanın kendi aralığı ve oranıyla işler (binek 4-6 yıl, değerinin %15'i)", () => {
+    const state = taze();
+    const tanim = magazaEsyasiTanimiGetir("oc_binek_ati");
+    expect(tanim.bakimAraligi).toEqual([4, 6]);
+    state.magaza_envanteri.push({ id: "b1", katalogId: tanim.id, ad: tanim.ad, simge: tanim.simge, kategori: "binek", alisYili: state.yil, kalanYil: 1 });
+    const para = state.para;
+    const sonuc = envanterBozulmasiUygula(state, 1);
+    expect(sonuc.bakimOdemeleri).toHaveLength(1);
+    const masraf = para - state.para;
+    expect(masraf).toBeGreaterThanOrEqual(10); // 80 × 0,15 = 12 (son basamak düzeltmesiyle ±4)
+    expect(masraf).toBeLessThanOrEqual(16);
+    expect(state.magaza_envanteri[0].kalanYil).toBeGreaterThanOrEqual(4);
+    expect(state.magaza_envanteri[0].kalanYil).toBeLessThanOrEqual(6);
+  });
+
+  it("vitrin: kategori başına adet sınırı, çağa uygunluk, 3-4 yılda bir yenilenme, sahip olunan eser vitrine girmez", () => {
+    const state = taze();
+    expect(magazaVitriniYenile(state)).toBe(true);
+    const v = state.magaza_vitrin!;
+    expect(v.yenileme_yili - state.yil).toBeGreaterThanOrEqual(3);
+    expect(v.yenileme_yili - state.yil).toBeLessThanOrEqual(4);
+    const say = (k: string) => v.idler.filter((id) => magazaEsyasiTanimiGetir(id).kategori === k).length;
+    expect(say("sanat")).toBe(3);
+    expect(say("binek")).toBe(2);
+    expect(say("luks")).toBe(2);
+    expect(say("sifa")).toBe(0);
+    for (const id of v.idler) {
+      const t = magazaEsyasiTanimiGetir(id);
+      expect(!t.cag || t.cag === "Orta Çağ").toBe(true);
+    }
+    // süre dolmadan yenilenmez, dolunca yenilenir
+    expect(magazaVitriniYenile(state)).toBe(false);
+    state.yil = v.yenileme_yili;
+    expect(magazaVitriniYenile(state)).toBe(true);
+    // sahip olunan sanat eseri yeni vitrine girmez
+    const sahip = magazaEsyasiTanimiGetir("oc_ikon");
+    state.magaza_envanteri.push({ id: "k1", katalogId: sahip.id, ad: sahip.ad, simge: sahip.simge, kategori: "sanat", alisYili: state.yil, kalanYil: 9 });
+    for (let i = 0; i < 30; i++) {
+      state.magaza_vitrin = null;
+      magazaVitriniYenile(state);
+      expect(state.magaza_vitrin!.idler).not.toContain("oc_ikon");
+    }
   });
 
   it("MAGAZA_ESYALARI: her eşya benzersiz id taşır", () => {

@@ -61,9 +61,23 @@ export function MagazaPaneli({
     sekme === 'envanter' ? [] : katalog.filter((esya) => esya.kategori === sekme);
   const kilitAciklamasi = gosterilenler.find((e) => e.kilitli)?.kilitAciklamasi;
 
-  const sekmeBaslik = (kat: MagazaSekme) =>
-    kat === 'sifa' ? m.mpSekmeSifa : kat === 'luks' ? m.mpSekmeLuks : m.enBaslikTam;
-  const sekmeAciklama = sekme === 'sifa' ? m.mpSifaAciklama : sekme === 'luks' ? m.mpLuksAciklama : '';
+  const SEKME_BASLIK: Record<MagazaSekme, string> = {
+    sifa: m.mpSekmeSifa,
+    luks: m.mpSekmeLuks,
+    sanat: m.mpSekmeSanat,
+    binek: m.mpSekmeBinek,
+    envanter: m.enBaslikTam,
+  };
+  const SEKME_SIMGE: Record<MagazaSekme, string> = { sifa: '🌿', luks: '💎', sanat: '🖼️', binek: '🐎', envanter: '🎒' };
+  const SEKME_ACIKLAMA: Record<MagazaSekme, string> = {
+    sifa: m.mpSifaAciklama,
+    luks: m.mpLuksAciklama,
+    sanat: m.mpSanatAciklama,
+    binek: m.mpBinekAciklama,
+    envanter: '',
+  };
+  const sekmeBaslik = (kat: MagazaSekme) => SEKME_BASLIK[kat];
+  const sekmeAciklama = SEKME_ACIKLAMA[sekme];
 
   return (
     <div className="ekran ekran-tam-sayfa ekran-magaza">
@@ -71,7 +85,7 @@ export function MagazaPaneli({
       <p className="giris-aciklama">{bic(m.mpAciklama, formatPara(para), paraBirimi)}</p>
 
       <div className="magaza-sekmeleri">
-        {(['sifa', 'luks', ...(envanterSekmesiVar ? (['envanter'] as const) : [])] as MagazaSekme[]).map(
+        {(['sifa', 'luks', 'sanat', 'binek', ...(envanterSekmesiVar ? (['envanter'] as const) : [])] as MagazaSekme[]).map(
           (kategori) => (
             <button
               key={kategori}
@@ -79,7 +93,7 @@ export function MagazaPaneli({
               disabled={yukleniyor}
               onClick={() => setSekme(kategori)}
             >
-              {kategori === 'sifa' ? '🌿' : kategori === 'luks' ? '💎' : '🎒'} {sekmeBaslik(kategori)}
+              {SEKME_SIMGE[kategori]} {sekmeBaslik(kategori)}
             </button>
           ),
         )}

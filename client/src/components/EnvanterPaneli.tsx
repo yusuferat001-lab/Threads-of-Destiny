@@ -79,7 +79,7 @@ export function EnvanterPaneli({
           <div className="envanter-esya-metin">
             <span className="envanter-esya-ad">{kt(esya.ad)}</span>
             <span className="envanter-esya-aciklama">
-              {esya.kategori === 'luks'
+              {esya.kategori !== 'sifa'
                 ? m.enLuksAciklama
                 : esya.kalanYil !== null
                   ? bic(m.enCurumeUyariTam, esya.kalanYil)
@@ -127,7 +127,7 @@ export function EnvanterPaneli({
                 {m.enKullanTam}
               </button>
             )}
-            {onHediye && (
+            {onHediye && esya.kategori === 'sifa' && (
               <button
                 className="envanter-kullan-buton envanter-hediye-buton"
                 disabled={yukleniyor}

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { createCharacter, yaslanmaUygula, yaslanmaYillikKayip, gencSaglikToparlanmasi } from "../src/game/stateManager";
+import { createCharacter, yaslanmaUygula, yaslanmaYillikKayip, gencSaglikToparlanmasi, capraletkiUygula, sohretErimesiYillik, pasifEkonomiUygula } from "../src/game/stateManager";
 import { gostergeDetayiUret, gostergeStatiMi, etkenGunluguNotEt, GOSTERGE_STATLARI } from "../src/game/gostergeDetay";
 import { sucDegisimiHesapla, yeniOyun, gostergeGetir } from "../src/game/gameEngine";
 
@@ -15,6 +15,9 @@ describe("yaslanmaYillikKayip", () => {
     expect(yaslanmaYillikKayip(70)).toBe(5);
     expect(yaslanmaYillikKayip(75)).toBe(6);
     expect(yaslanmaYillikKayip(80)).toBe(8);
+    expect(yaslanmaYillikKayip(84)).toBe(8);
+    expect(yaslanmaYillikKayip(85)).toBe(10);
+    expect(yaslanmaYillikKayip(95)).toBe(10);
     const s = karakter();
     s.yas = 72;
     s.saglik = 100;
@@ -98,6 +101,66 @@ describe("gostergeDetayiUret", () => {
     g.saglik = 50;
     gencSaglikToparlanmasi(g, 1);
     expect(g.saglik).toBe(50); // 30'dan sonra yok
+  });
+
+  it("şöhret erimesi: 60 altı yok, 60-75 −1, 75 üstü −2 (pasifEkonomiUygula + gösterge)", () => {
+    expect(sohretErimesiYillik(59)).toBe(0);
+    expect(sohretErimesiYillik(60)).toBe(1);
+    expect(sohretErimesiYillik(75)).toBe(1);
+    expect(sohretErimesiYillik(76)).toBe(2);
+    const s = karakter();
+    s.meslek = null as never;
+    s.un = 80;
+    pasifEkonomiUygula(s, 1);
+    expect(s.un).toBe(78);
+    s.un = 65;
+    pasifEkonomiUygula(s, 2);
+    expect(s.un).toBe(63);
+    s.un = 40;
+    pasifEkonomiUygula(s, 1);
+    expect(s.un).toBe(40);
+    s.un = 90;
+    const m = gostergeDetayiUret(s, "sohret").etkenler.map((e) => e.metin).join("|");
+    expect(m).toContain("−2");
+    expect(m).toContain("sönüyor");
+  });
+
+  it("85+ yaşta tavansız yılda −10 can iner", () => {
+    const s = karakter();
+    s.yas = 86;
+    s.saglik = 60;
+    expect(yaslanmaUygula(s, 1)).toBe(10);
+    expect(s.saglik).toBe(50);
+  });
+
+  it("çapraz erozyon: sağlık 10 altında ARDIŞIK 2 yıl kalırsa mutluluk −1/yıl; sağlık yükselince sayaç sıfırlanır; mutluluk sağlığı etkilemez", () => {
+    const s = karakter();
+    s.saglik = 9;
+    s.mutluluk = 50;
+    capraletkiUygula(s, 1);
+    expect(s.mutluluk).toBe(50); // 1. yıl: etki yok
+    expect(s.saglik_kritik_yil_sayaci).toBe(1);
+    capraletkiUygula(s, 1);
+    expect(s.mutluluk).toBe(49); // 2. yıl: −1
+    capraletkiUygula(s, 1);
+    expect(s.mutluluk).toBe(48);
+    s.saglik = 10; // eşiğin üstü (< 10 değil)
+    capraletkiUygula(s, 1);
+    expect(s.saglik_kritik_yil_sayaci).toBe(0);
+    expect(s.mutluluk).toBe(48);
+    // eski kural: sağlık 25 / mutluluk 5 artık hiçbir şey yapmaz
+    const t = karakter();
+    t.saglik = 25;
+    t.mutluluk = 5;
+    capraletkiUygula(t, 3);
+    expect(t.saglik).toBe(25);
+    expect(t.mutluluk).toBe(5);
+    // çok yıllı tur: yıl yıl sayılır
+    const u = karakter();
+    u.saglik = 5;
+    u.mutluluk = 50;
+    capraletkiUygula(u, 3); // yıl1 sayaç1, yıl2 −1, yıl3 −1
+    expect(u.mutluluk).toBe(48);
   });
 
   it("mutluluk: 26+ yaşında bekâr karakter yalnızlık cezası görür", () => {

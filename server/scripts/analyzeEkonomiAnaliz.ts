@@ -45,7 +45,7 @@ const GIDER_ETIKET: Record<string, string> = {
   evcil: "Evcil hayvan",
   faiz: "Borç faizi",
   savasVergisi: "Savaş vergisi",
-  bagis: "Zorunlu bağış (kral)",
+  bagis: "Ekstra vergi (şehir yöneticisi)",
   olay: "Olay seçim maliyeti",
   mulkZarar: "Gayrimenkul zararı",
   yatirim: "Kendi işine yatırım",
@@ -227,6 +227,6 @@ for (const k of kisilikler) {
     `  ÖMÜR BOYU  gelir%  maaş ${yb.gelirYuzde.maas} · olay ${yb.gelirYuzde.olay} · mülk ${yb.gelirYuzde.mulk} · zar ${yb.gelirYuzde.zar} · diğer ${yb.gelirYuzde.diger}   (Σgelir ort ${yb.toplamGelirOrt})`
   );
   console.log(
-    `  ÖMÜR BOYU  gider%  kira ${yb.giderYuzde.konut} · yemek ${yb.giderYuzde.yasam} · olay ${yb.giderYuzde.olay} · yatırım ${yb.giderYuzde.yatirim} · mülkAlım ${yb.giderYuzde.mulkAlim} · mağaza ${yb.giderYuzde.magaza} · faiz ${yb.giderYuzde.faiz} · bağış ${yb.giderYuzde.bagis} · savaşV ${yb.giderYuzde.savasVergisi} · taşınma ${yb.giderYuzde.tasinma} · diğer ${yb.giderYuzde.diger}   (Σgider ort ${yb.toplamGiderOrt})`
+    `  ÖMÜR BOYU  gider%  kira ${yb.giderYuzde.konut} · yemek ${yb.giderYuzde.yasam} · olay ${yb.giderYuzde.olay} · yatırım ${yb.giderYuzde.yatirim} · mülkAlım ${yb.giderYuzde.mulkAlim} · mağaza ${yb.giderYuzde.magaza} · faiz ${yb.giderYuzde.faiz} · ekstraVergi ${yb.giderYuzde.bagis} · savaşV ${yb.giderYuzde.savasVergisi} · taşınma ${yb.giderYuzde.tasinma} · diğer ${yb.giderYuzde.diger}   (Σgider ort ${yb.toplamGiderOrt})`
   );
 }

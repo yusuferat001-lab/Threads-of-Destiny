@@ -105,7 +105,7 @@ export interface GostergeGorunumu {
   oran: number;
 }
 
-/** Para çubuğunun tam dolu sayıldığı birim cinsinden servet çıpası (zorunlu bağış eşiğiyle aynı büyüklük). */
+/** Para çubuğunun tam dolu sayıldığı birim cinsinden servet çıpası. */
 const PARA_CUBUK_CIPASI = 350;
 
 const sinirla01 = (x: number) => Math.max(0, Math.min(1, x));

@@ -55,7 +55,7 @@ interface KariyerEkraniProps {
   pazarDurum: PazarDurumu | null;
   onEtkilesim: (etkilesimId: string, kademe?: number, varyant?: string) => void;
   onIstek: (istekId: string, rusvet?: boolean) => void;
-  onTalep: (karar: 'kabul' | 'ret' | 'yalan') => void;
+  onTalep: (karar: 'kabul' | 'ret' | 'yalan' | 'rusvet') => void;
   onEkipCikar: (ekipId: string) => void;
   onKotuIs: (id: string, opts?: { hedefRakipAd?: string; ajanId?: string }) => void;
   /** Ajan sistemi (§43 Faz 2) — arayüzü meslek ekip rolleriyle birlikte gelecek; şimdilik kullanılmıyor. */
@@ -759,7 +759,7 @@ export function KariyerEkrani({
   // Kral talebi penceresi ekranı tamamen kilitliyordu; oyuncu "sonra" deyip ekranı
   // kullanabilsin (talebin zaten bir son yılı var, sonra karar verebilir).
   const [hukumdarTalebiErtelendi, setHukumdarTalebiErtelendi] = useState<string | null>(null);
-  const hukumdarModalAcik = !!talep && talep.kimden === 'yonetici' && hukumdarTalebiErtelendi !== talep.id;
+  const hukumdarModalAcik = !!talep && talep.kimden === 'yonetici' && !yonetimDurum?.tekOtorite && hukumdarTalebiErtelendi !== talep.id;
 
   const ilerleme = rutbeIlerlemeHesapla(
     meslek,
@@ -1024,7 +1024,9 @@ export function KariyerEkrani({
                 <div className="kariyer-talep-afisi">
                   <strong>{yonetimDurum.tekOtorite ? '🏛️' : '📜'} {talep.kimAdi}</strong>
                   <p>
-                    {talep.tur === 'bagis'
+                    {talep.tur === 'vergi'
+                      ? `${en ? 'Extra tax' : 'Ekstra vergi'} — ${formatPara(talep.tutar)} ${paraBirimi} ${en ? 'demanded.' : 'istiyor.'}`
+                      : talep.tur === 'bagis'
                       ? `${talep.kalem} — ${formatPara(talep.tutar)} ${paraBirimi} ${en ? 'demanded.' : 'istiyor.'}`
                       : talep.tur === 'aciklama'
                         ? `${en ? 'Asks you to ' : 'Senden istiyor: '}${talep.kalem}.`
@@ -1037,6 +1039,16 @@ export function KariyerEkrani({
                         : 'Yaparsan: otorite +13–15, ahlak −7–8, inanan −%3. Yapmazsan: otorite −18–20, ahlak +2, şöhret −3, inanan +%2.'}
                     </p>
                   )}
+                  {talep.tur === 'vergi' ? (
+                    <div className="kariyer-talep-butonlar">
+                      <button disabled={yukleniyor} onClick={() => onTalep('kabul')}>
+                        {en ? 'Pay' : 'Öde'}
+                      </button>
+                      <button className="ikincil" disabled={yukleniyor} onClick={() => onTalep('rusvet')}>
+                        {en ? 'Offer a bribe' : 'Rüşvet ver'}
+                      </button>
+                    </div>
+                  ) : (
                   <div className="kariyer-talep-butonlar">
                     <button disabled={yukleniyor || talepParasiYok} onClick={() => onTalep('kabul')}>
                       {dinMi ? (en ? 'Do it' : 'Yap') : talep.tur === 'bagis' ? (en ? 'Pay' : 'Öde') : en ? 'Swear it' : 'Kabul et'}
@@ -1050,6 +1062,7 @@ export function KariyerEkrani({
                       </button>
                     )}
                   </div>
+                  )}
                 </div>
               )}
 

@@ -1,7 +1,7 @@
 import { OlayTanimi } from "./types";
 
 /**
- * "Dünya olayları". Savaş / zorunlu bağış / küçük kriz tamamen arka planda
+ * "Dünya olayları". Savaş / küçük kriz tamamen arka planda
  * (gameEngine.ts'teki periyodik kontrol fonksiyonlarıyla) tetiklenir, hiç olay
  * ekranı gerektirmez.
  *

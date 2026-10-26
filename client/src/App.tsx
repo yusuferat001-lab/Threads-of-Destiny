@@ -1208,7 +1208,7 @@ function App() {
     }
   }
 
-  async function yonetimTalepHandler(karar: 'kabul' | 'ret' | 'yalan') {
+  async function yonetimTalepHandler(karar: 'kabul' | 'ret' | 'yalan' | 'rusvet') {
     if (!karakter) return;
     setHata(null);
     setIslemMesaji(null);

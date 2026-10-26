@@ -4,7 +4,6 @@ import {
   mesleğiSec,
   enflasyonCarpani,
   paraYuvarla,
-  zorunluBagisKontrolEt,
   rakipSoygunKontrolEt,
   buyukSavasKontrolEt,
   buyukSavasBitisKontrolEt,
@@ -81,50 +80,6 @@ describe("paraYuvarla — para 2 ondalık basamağa yuvarlanır", () => {
   it("2 basamaktan fazlasını keser", () => {
     expect(paraYuvarla(12.3456)).toBe(12.35);
     expect(paraYuvarla(10)).toBe(10);
-  });
-});
-
-describe("zorunluBagisKontrolEt", () => {
-  it("servet eşiğin altındayken asla tetiklenmez", () => {
-    const state = taze();
-    state.para = 100;
-    for (let i = 0; i < 200; i++) {
-      expect(zorunluBagisKontrolEt(state, 1)).toBeNull();
-    }
-  });
-
-  it("eşik aşılsa da cooldown dolmadan tetiklenmez", () => {
-    const state = taze();
-    state.para = 5000;
-    state.son_zorunlu_bagis_yili = state.yil; // az önce tetiklenmiş
-    for (let i = 0; i < 200; i++) {
-      expect(zorunluBagisKontrolEt(state, 1)).toBeNull();
-    }
-  });
-
-  it("hapiste/yolculukta iken tetiklenmez", () => {
-    const state = taze();
-    state.para = 5000;
-    state.etiketler.push("hapiste");
-    for (let i = 0; i < 200; i++) {
-      expect(zorunluBagisKontrolEt(state, 1)).toBeNull();
-    }
-  });
-
-  it("eşik aşılmış + cooldown dolmuşken makul sürede tetiklenir ve servetin %20-25'ini alır", () => {
-    const state = taze();
-    state.para = 5000;
-    state.yil = state.baslangic_yili + 10; // 5 yıllık cooldown zaten dolmuş olsun
-    let sonuc = null;
-    for (let i = 0; i < 100 && !sonuc; i++) {
-      sonuc = zorunluBagisKontrolEt(state, 2);
-    }
-    expect(sonuc).not.toBeNull();
-    expect(sonuc!.miktar).toBeGreaterThan(0);
-    expect(state.son_zorunlu_bagis_yili).toBe(state.yil);
-    // ZORUNLU_BAGIS_ORAN_MIN 0.20 + ARALIK 0.05 → toplam servetin %20-25'i (jitter/yuvarlama payıyla).
-    expect(sonuc!.miktar).toBeGreaterThan(5000 * 0.19);
-    expect(sonuc!.miktar).toBeLessThan(5000 * 0.26);
   });
 });
 
