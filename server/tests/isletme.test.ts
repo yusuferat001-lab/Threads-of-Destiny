@@ -390,6 +390,16 @@ describe("işletme (Tüccar dilimi)", () => {
     expect(dokum.depoMasrafi).toBeGreaterThanOrEqual(dokum.yatirimMasrafi!);
   });
 
+  it("görünümde hat başına stok ve tahmini talep aralığı (adet) var", async () => {
+    const s = await tuccar();
+    const g = await isletmeDurumGetir(s.id);
+    const hat = g.hatlar.find((h) => h.acik)!;
+    expect(hat.stok).toBe(s.isletme!.hatlar.find((h) => h.id === hat.id)!.stok);
+    expect(hat.talepMin).toBeGreaterThan(0);
+    expect(hat.talepMax).toBeGreaterThanOrEqual(hat.talepMin);
+    expect(hat.talepMax).toBeLessThanOrEqual(Math.round(hat.talepMin * 1.25) + 1); // ±%8 gürültü
+  });
+
   it("Tüccar başlangıçta depo tam dolu ve borçsuz başlar", async () => {
     const s = await tuccar();
     const is = s.isletme!;

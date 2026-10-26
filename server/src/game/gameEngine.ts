@@ -155,6 +155,7 @@ import {
   SADAKAT_RISK_ESIGI,
   SADIK_ESIGI,
   pazarBuyumeOrani,
+  TALEP_GURULTUSU,
   type IsletmeBaglami,
 } from "./isletme";
 import {
@@ -5115,6 +5116,9 @@ export interface IsletmeHatGorunumu {
   birimFiyat: number;
   birimMaliyet: number;
   beklenenKar: number;
+  /** Bu yıl için tahmini talep aralığı (adet): beklenen talep ± yıllık talep gürültüsü. */
+  talepMin: number;
+  talepMax: number;
   sonTalep: number;
   sonSatis: number;
   /** Dünya durumunun bu kesime etkisi (yüzde, 0 = etkisiz). */
@@ -5428,6 +5432,8 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
       birimFiyat: paraYuvarla(h.birimFiyat),
       birimMaliyet: paraYuvarla(h.birimMaliyet),
       beklenenKar: paraYuvarla(h.talep * (h.birimFiyat - h.birimMaliyet)),
+      talepMin: Math.max(0, Math.round(h.talep * (1 - TALEP_GURULTUSU))),
+      talepMax: Math.max(0, Math.round(h.talep * (1 + TALEP_GURULTUSU))),
       sonTalep: hat.son_talep,
       sonSatis: hat.son_satis,
       dunyaTalepYuzde: Math.round((h.kesim.talep - 1) * 100),

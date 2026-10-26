@@ -857,6 +857,8 @@ export interface IsletmeHatGorunumu {
   birimFiyat: number;
   birimMaliyet: number;
   beklenenKar: number;
+  talepMin: number;
+  talepMax: number;
   sonTalep: number;
   sonSatis: number;
   dunyaTalepYuzde: number;

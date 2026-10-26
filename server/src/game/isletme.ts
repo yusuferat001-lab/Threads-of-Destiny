@@ -106,7 +106,7 @@ const KITLE_KAYIP_ESIGI = 0.1;
 const KITLE_KAYIP_KESRI = 0.1;
 /** Tek yılda kaybedilebilecek müşteri oranı (kendi müşterisinin yüzdesi) üst sınırı. */
 const KITLE_KAYIP_TAVANI = 0.1;
-const TALEP_GURULTUSU = 0.08;
+export const TALEP_GURULTUSU = 0.08;
 /** Yüzdelik müşteri büyümesi pay bu eşiğe yaklaştıkça sıfıra iner. */
 export const PAY_DOYMA_ESIGI = 0.68;
 /** Maliyet indirimleri ÇARPIMSAL birleşir (tavan yok): maliyet × (1−a)(1−b)(1−c)…; her kaynak kendi payını düşer, yığıldıkça getirisi azalır. */

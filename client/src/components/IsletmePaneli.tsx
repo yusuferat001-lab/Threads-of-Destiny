@@ -80,6 +80,8 @@ const M = {
   },
   odenecek: { tr: 'Ödenecek', en: 'To pay' },
   adetBirim: { tr: 'birim', en: 'units' },
+  depodaStok: { tr: 'Depoda', en: 'In stock' },
+  tahminiTalep: { tr: 'tahmini talep', en: 'expected demand' },
   eldekiPara: { tr: 'Elindeki para', en: 'Your cash' },
   yetmiyor: { tr: 'Paran hedefe yetmiyor; paran kadar alırsın', en: 'You cannot afford the target; you will buy what you can' },
   yetmiyorKarsilik: { tr: 'depo %', en: 'warehouse ' },
@@ -418,6 +420,13 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onDepoPlan, o
           <div className="isletme-hat-dunya">
             {t('depoBirimFiyat')}:{' '}
             {durum.hatlar.filter((h) => h.acik).map((h) => `${h.simge} ${formatPara(h.birimMaliyet)}`).join(' · ')}
+          </div>
+          <div className="isletme-hat-dunya">
+            {durum.hatlar.filter((h) => h.acik).map((h) => (
+              <div key={h.id}>
+                {h.simge} {d(h.ad)}: {t('depodaStok')} <strong>{h.stok}</strong> {t('adetBirim')} · {t('tahminiTalep')} <strong>{h.talepMin}–{h.talepMax}</strong> {t('adetBirim')}
+              </div>
+            ))}
           </div>
           <div className="isletme-hat-kontrol">
             {durum.depo.doldurYuzdeleri.map((y) => (
