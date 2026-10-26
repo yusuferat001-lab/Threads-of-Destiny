@@ -103,8 +103,8 @@ export const PIYASA_SAPMA_SATIS = 0.02;
 /** Karşılanamayan talep bu orandan büyükse müşteri kaybı: min(%12, (oran−eşik)×%30) kendi müşterisinin yüzdesi (sıcak ürünse ×2). */
 const KITLE_KAYIP_ESIGI = 0.15;
 /** Karşılanamayan talep oranının müşteriye çevrilen kesri (kaçanlar bir sonraki yıl rakibe gider). */
-const KITLE_KAYIP_KESRI = 0.3;
-const KITLE_KAYIP_TAVANI = 0.15;
+const KITLE_KAYIP_KESRI = 0.2;
+const KITLE_KAYIP_TAVANI = 0.1;
 const TALEP_GURULTUSU = 0.08;
 /** Yüzdelik müşteri büyümesi pay bu eşiğe yaklaştıkça sıfıra iner. */
 export const PAY_DOYMA_ESIGI = 0.68;
@@ -1254,7 +1254,7 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
   }
   is.bekleyen_musteri_kaybi = 0;
   if (karsilanamayanOrani > KITLE_KAYIP_ESIGI) {
-    // Bu yılın kaybı hemen değil, gelecek yıl işlenir; karşılanamayan oranın %30'u kadar müşteri kaçar (tavan %15).
+    // Bu yılın kaybı hemen değil, gelecek yıl işlenir; karşılanamayan oranın %20'si kadar müşteri kaçar (tavan %10).
     const kayipYuzde = Math.min(KITLE_KAYIP_TAVANI, karsilanamayanOrani * KITLE_KAYIP_KESRI);
     is.bekleyen_musteri_kaybi = state.meslek_musteri * kayipYuzde;
   }
