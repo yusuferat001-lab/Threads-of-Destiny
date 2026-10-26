@@ -129,7 +129,7 @@ export const AILELER: AileTanimi[] = [
     un: -6,
     ahlak: 14,
     mutluluk: -6,
-    durumlar: [{ id: "fabrika_ciger", ad: "Tozlu Ciğerler", tur: "kalici", tur_basi_saglik: -1 }],
+    durumlar: [{ id: "fabrika_ciger", ad: "Tozlu Ciğerler", tur: "kalici", yil_basi_saglik: -0.7 }],
     yatkinlikEtkisi: { zanaat: 8, savas: 4, din: 2, ticaret: -3 },
   },
   {

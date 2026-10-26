@@ -157,14 +157,8 @@ export const TANISMA_UYUMSUZLUK_CEZASI = 15;
 export const TANISMA_SANS_ARALIK: [number, number] = [10, 92];
 /** Tanışmanın başarılı sayılması için gereken başarılı adım sayısı = toplam − bu kadar. */
 export const TANISMA_TOLERANS = 1;
-/** Bekar oyuncu bir sosyalleşme mekânına girdiğinde tanışma çıkma olasılığı. */
-export const TANISMA_MEKAN_SANSI = 0.12;
 /** Bu yaşlara gelmiş ve önceki dönemde hiç tanışma yaşamamış karaktere (bekar ya da evli) ilk fırsatta zorunlu tanışma fırsatı sunulur. */
-export const TANISMA_DONUMLERI = [27, 36];
-/** Her oyun yılı için rastgele tanışma fırsatı çıkma olasılığı (bekar ya da evli). */
-export const TANISMA_YILLIK_SANS = 0.04;
-/** Evli karakterde sosyalleşme mekânında tanışma olasılığı çarpanı. */
-export const TANISMA_EVLI_MEKAN_CARPANI = 0.5;
+export const TANISMA_DONUMLERI = [25, 40];
 /** Evliyken tanışmayı kabul etmek = aldatma: eş barı, ahlak, moral; %40 ifşa olur. */
 export const ALDATMA_BAR_CEZASI = 25;
 export const ALDATMA_AHLAK = -12;
@@ -175,8 +169,6 @@ export const ALDATMA_IFSA_SOHRET = -5;
 /** Evliyken tanışmadan vazgeçmek (sadakat) ödülü. */
 export const SADAKAT_AHLAK = 3;
 export const SADAKAT_BAR = 3;
-/** Vazgeçilen tanışmanın nostalji olayı bu kadar yıl sonra gelir. */
-export const NOSTALJI_YIL_ARALIK: [number, number] = [4, 6];
 
 /** Sevgili: başlangıç barı, evlilik teklifi için süre, darılma ve gönül alma. */
 export const SEVGILI_BASLANGIC_BAR: [number, number] = [68, 79];

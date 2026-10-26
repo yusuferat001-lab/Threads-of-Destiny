@@ -9,6 +9,8 @@ import { OLAY_EVLILIK_AILE } from "../src/data/olaylar/evlilikVeAile";
 import { OLAY_KOMIK_GARIP } from "../src/data/olaylar/komikGaripOlaylar";
 import { OLAY_KOMIK_OLUM } from "../src/data/olaylar/komikOlumler";
 import { OLAY_BOLGESEL_ORTACAG } from "../src/data/olaylar/bolgeselOrtaCag";
+import { OLAY_OTORITE } from "../src/data/olaylar/otoriteOlaylari";
+import { OLAY_MESLEK_YATKINLIK } from "../src/data/olaylar/meslekYatkinlikOlaylari";
 import { yeniOyun, mesleğiAta, senaryoUret, stateGetir } from "../src/game/gameEngine";
 import { etiketEkle } from "../src/game/stateManager";
 import { secimUygulaVeCoz } from "./testUtils";
@@ -187,7 +189,7 @@ describe("gecikmiş takip havuzu — uçtan uca motor akışı", () => {
     state.gecmis_olaylar.push("oc_tuccar_yol_ilk_anlasma"); // §11 kural 2 (kariyer yolu girişi)
     state.gecmis_olaylar.push("iliski_evlilik_teklifi"); // §11 kural 3 (evlilik teklifi garantisi)
     state.hayvan_karsilasma_sayisi = 2; // §11 kural 5 (evcil hayvan karşılaşma garantisi)
-    state.etiketler.push("tanisma_donum_27", "tanisma_donum_36"); // aşk evliliği tanışma fırsatı zorlanmasın
+    state.etiketler.push("tanisma_donum_25", "tanisma_donum_40"); // aşk evliliği tanışma fırsatı zorlanmasın
     state.etiketler.push("yolculuk_tamamlandi"); // §11 kural 11 (büyük yolculuk garantisi)
     state.gecmis_olaylar.push("gizem_ejderha_tilsimi"); // §11 kural 13 (mistik garanti, 25-45 yaş)
     // §38 bölgesel olay garantisi (2026-09 denetim turu) — karakterin kendi
@@ -207,6 +209,8 @@ describe("gecikmiş takip havuzu — uçtan uca motor akışı", () => {
     state.gecmis_olaylar.push(OLAY_EVLILIK_AILE[0].id);
     state.gecmis_olaylar.push(OLAY_KOMIK_GARIP[0].id);
     state.gecmis_olaylar.push(OLAY_KOMIK_OLUM[0].id);
+    // Otorite/vergi (28→1) ve meslek yatkınlık (29→1) garantileri de karşılanmış sayılsın.
+    state.gecmis_olaylar.push(OLAY_OTORITE[0].id, ...OLAY_MESLEK_YATKINLIK.map((o) => o.id));
   }
 
   it("tetikleyici garantisi: 24 yaşına kadar en az 1 tetikleyici olay zorlanır", async () => {

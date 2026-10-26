@@ -85,7 +85,7 @@ export const OLAY_AILE: OlayTanimi[] = [
             id: "suikast_yarasi",
             ad: "Suikast Yarası",
             tur: "kalici",
-            tur_basi_saglik: -1,
+            yil_basi_saglik: -0.7,
           },
           mesaj: "Gölgeden zehirli bir hançer çıktı. Zor kurtuldun, yaran hiç tam iyileşmeyecek.",
         },

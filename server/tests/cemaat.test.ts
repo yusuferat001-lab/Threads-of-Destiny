@@ -372,13 +372,13 @@ describe("cemaat — rakip saldırıları, veba kararı, Yap/Yapma", () => {
     expect(DINI_SALDIRI_AGIRLIKLARI[1].engizisyon).toBeUndefined();
   });
 
-  it("veba kararı: 3 seçenek, geçici gelir durumu 0.45 / 0.70 / 0.85 (4 tur) — kırsala çekilme yok", () => {
+  it("veba kararı: 3 seçenek, geçici gelir durumu 0.45 / 0.70 / 0.85 (6 yıl) — kırsala çekilme yok", () => {
     const olay = OLAY_KURESEL.find((o) => o.id === "kuresel_veba_baslangici")!;
     expect(olay.secenekler).toHaveLength(3);
     const carpanlar = olay.secenekler.map((s) => s.basariliSonuc.durum_ekle?.gelir_carpani);
     expect(carpanlar).toEqual([0.45, 0.7, 0.85]);
     for (const s of olay.secenekler) {
-      expect(s.basariliSonuc.durum_ekle?.kalan_tur).toBe(4);
+      expect(s.basariliSonuc.durum_ekle?.kalan_yil).toBe(6);
       expect(s.basarisizSonuc.durum_ekle?.gelir_carpani).toBe(s.basariliSonuc.durum_ekle?.gelir_carpani);
     }
     expect(olay.secenekler.map((s) => s.basariliSonuc.veba_koruma)).toEqual([2, 1, 0]);
@@ -388,7 +388,7 @@ describe("cemaat — rakip saldırıları, veba kararı, Yap/Yapma", () => {
   it("geçici durum çarpanı Din'de bağışa işler", async () => {
     const s = await din();
     const normal = cemaatHesapla(s, isletmeBaglami(s), 0.75).bagis;
-    s.durumlar.push({ id: "veba_karantina", ad: "Karantina", tur: "gecici", kalan_tur: 4, gelir_carpani: 0.45 });
+    s.durumlar.push({ id: "veba_karantina", ad: "Karantina", tur: "gecici", kalan_yil: 6, gelir_carpani: 0.45 });
     const kapali = cemaatHesapla(s, isletmeBaglami(s), 0.75).bagis;
     expect(kapali / normal).toBeCloseTo(0.45, 5);
   });
@@ -398,7 +398,7 @@ describe("cemaat — rakip saldırıları, veba kararı, Yap/Yapma", () => {
     const normal = cemaatHesapla(s, isletmeBaglami(s), 0.75).bagis;
     maasCarpaniUygula(s, 1.1);
     expect(cemaatHesapla(s, isletmeBaglami(s), 0.75).bagis).toBeCloseTo(normal, 6);
-    s.durumlar.push({ id: "t", ad: "t", tur: "gecici", kalan_tur: 3, gelir_carpani: 1.1 });
+    s.durumlar.push({ id: "t", ad: "t", tur: "gecici", kalan_yil: 4, gelir_carpani: 1.1 });
     expect(cemaatHesapla(s, isletmeBaglami(s), 0.75).bagis / normal).toBeCloseTo(1.1, 3);
   });
 

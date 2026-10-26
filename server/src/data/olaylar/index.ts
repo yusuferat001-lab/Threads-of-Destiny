@@ -3,6 +3,7 @@ import type { OlayTanimi } from "./types";
 import { OLAY_HAPIS } from "./hapis";
 import { OLAY_YOLCULUK } from "./yolculuk";
 import { OLAY_HIZIP } from "./hizip";
+import { OLAY_HIZIP_ZANAATKAR } from "./hizipZanaatkar";
 import { OLAY_ORTACAG_ASKER } from "./ortaCagAsker";
 import { OLAY_ORTACAG_ASKER_YOLLARI } from "./ortaCagAskerYollari";
 import { OLAY_ORTACAG_TUCCAR } from "./ortaCagTuccar";
@@ -63,6 +64,7 @@ export const OLAY_BANKASI: OlayTanimi[] = [
   ...OLAY_SAGLIK_ESIK_10,
   ...OLAY_YOLCULUK,
   ...OLAY_HIZIP,
+  ...OLAY_HIZIP_ZANAATKAR,
   ...OLAY_ORTACAG_ASKER,
   ...OLAY_ORTACAG_ASKER_YOLLARI,
   ...OLAY_ORTACAG_TUCCAR,

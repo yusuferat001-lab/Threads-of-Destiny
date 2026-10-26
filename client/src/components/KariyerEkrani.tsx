@@ -235,7 +235,7 @@ function KaranlikIsKart({
         disabled={yukleniyor || bekliyor || is.sadeceAjan}
         onClick={() => onKotuIs(is.id, { hedefRakipAd: rakipHedefli ? hedef : undefined })}
       >
-        {bekliyor ? (en ? `Lie low · ~${is.kalanYil}y` : `Ortalık kızışık · ~${is.kalanYil} yıl`) : en ? 'Do it yourself' : 'Kendin çevir'}
+        {bekliyor ? (en ? 'Lie low for now' : 'Ortalık kızışık') : en ? 'Do it yourself' : 'Kendin çevir'}
       </button>
 
       {/* Çalışanınla yaptır (§45): sonuç yıl dönerken öğrenilir; başarıda risk onda, ele verirse sana dönebilir. */}
@@ -882,13 +882,6 @@ export function KariyerEkrani({
             <>
               <div className="kariyer-ilerleme-baslik">
                 <span>{en ? 'Progress to' : 'Sıradaki kademe:'} <strong>{kt(ilerleme.sonrakiUnvan ?? '')}</strong></span>
-                {ilerleme.cooldownBekliyor && (pazarDurum?.rutbeSarti?.karsilaniyor ?? true) && (
-                  <span className="kariyer-ilerleme-cooldown">
-                    {en
-                      ? `Eligible — ${ilerleme.cooldownKalanYil}y until promotion`
-                      : `Hak ettin — terfiye ~${ilerleme.cooldownKalanYil} yıl kaldı`}
-                  </span>
-                )}
               </div>
               <div className="kariyer-ilerleme-cubuk-satiri">
                 <span className="kariyer-ilerleme-etiket">{en ? 'Career XP' : 'Kariyer Puanı'}</span>

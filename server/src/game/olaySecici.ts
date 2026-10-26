@@ -105,7 +105,7 @@ export function temelUygunMu(olay: OlayTanimi, state: CharacterState): boolean {
   // (b) toplam ceza 5 yıldan kısaysa (kısa cezada kaçış zincirine zaman/gerekçe
   // yok) havuzdan çıkarılır. Zincirin devam adımları zorunlu_sonraki ile
   // zorlandığı için bu filtreden hiç geçmiyor, etkilenmiyor.
-  if (olay.hapisKacisBaslangici && (state.hapis_tur_sayaci < 2 || state.hapis_ceza_toplam < 5)) {
+  if (olay.hapisKacisBaslangici && (state.hapis_tur_sayaci < 1 || state.hapis_ceza_toplam < 5)) {
     return false;
   }
   const yolculukta = state.etiketler.includes("yolculukta");
@@ -127,6 +127,9 @@ function uygunMu(olay: OlayTanimi, state: CharacterState): boolean {
   return (
     temelUygunMu(olay, state) &&
     olay.sosyallesmeYeri === undefined &&
+    // Evcil hayvan karşılaşma/devam olayları yalnız garanti kaskadıyla gelir (rastgele havuzda sürekli çıkıyordu).
+    olay.hayvanTuru === undefined &&
+    olay.hayvanKarsilasmaTuru === undefined &&
     olay.mulkOlayi === undefined &&
     !olay.gecikmisSonucOlayi &&
     olay.saglikEsikOlayi === undefined &&
@@ -455,8 +458,13 @@ export function olaySec(
       const zarBelirleyenUye = secenek.ekipKalitesiZarBelirler
         ? state.ekip.find((uye) => uye.rol === secenek.ekipKalitesiZarBelirler)
         : undefined;
+      // Kesin (100) şıklar yatkınlık oranıyla da %95 tavanıyla da zayıflamaz: aksi halde
+      // "Yanına git" gibi garantili şıklar %5 (kötü yatkınlıkta %15) ihtimalle erişilemez
+      // "Kullanılmadı." başarısızlık dalına düşerdi.
       const basariSansi = zarBelirleyenUye
         ? zarBelirleyenUye.gercekKalite
+        : secenek.baseBasariSansi >= 100
+        ? 100
         : clampSans(
             Math.round(secenek.baseBasariSansi * (1 + yatkinlikOrani)) +
               // Aranma II: yüksek yıldız suçu kolaylaştırır (+7/+14/+25), yalnız riskli (<100) suç şıklarında.

@@ -298,8 +298,8 @@ export function BilekGuresiWidget({
         <button className="mini-oyun-buton" disabled={yukleniyor || kalanYil > 0} onClick={basla}>
           {kalanYil > 0
             ? dil === 'en'
-              ? `Your arm aches · ~${kalanYil} yr`
-              : `Kolun ağrıyor · ~${kalanYil} yıl`
+              ? 'Your arm aches'
+              : 'Kolun ağrıyor'
             : asama === 'sonuc'
               ? m.moTekrar
               : m.moBilekBasla}

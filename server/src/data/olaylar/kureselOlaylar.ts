@@ -38,7 +38,7 @@ export const OLAY_KURESEL: OlayTanimi[] = [
           veba_koruma: 2,
           para: -10,
           mutluluk: -8,
-          durum_ekle: { id: "veba_karantina", ad: "Karantina", tur: "gecici", kalan_tur: 4, gelir_carpani: 0.45 },
+          durum_ekle: { id: "veba_karantina", ad: "Karantina", tur: "gecici", kalan_yil: 6, gelir_carpani: 0.45 },
           mesaj:
             "Kapıyı kilitledin; gelirin ciddi düştü ama kurtulma şansın yüksek.",
         },
@@ -48,7 +48,7 @@ export const OLAY_KURESEL: OlayTanimi[] = [
           para: -10,
           mutluluk: -10,
           saglik: -4,
-          durum_ekle: { id: "veba_karantina", ad: "Karantina", tur: "gecici", kalan_tur: 4, gelir_carpani: 0.45 },
+          durum_ekle: { id: "veba_karantina", ad: "Karantina", tur: "gecici", kalan_yil: 6, gelir_carpani: 0.45 },
           mesaj:
             "Karantina delindi; gelirin düştü, korunman da yarım kaldı.",
         },
@@ -63,7 +63,7 @@ export const OLAY_KURESEL: OlayTanimi[] = [
           veba_koruma: 1,
           para: -5,
           mutluluk: -4,
-          durum_ekle: { id: "veba_tedbir", ad: "Tedbirli çalışma", tur: "gecici", kalan_tur: 4, gelir_carpani: 0.7 },
+          durum_ekle: { id: "veba_tedbir", ad: "Tedbirli çalışma", tur: "gecici", kalan_yil: 6, gelir_carpani: 0.7 },
           mesaj:
             "İşi küçülttün; gelirin düştü ama kısmen korunuyorsun.",
         },
@@ -73,7 +73,7 @@ export const OLAY_KURESEL: OlayTanimi[] = [
           para: -5,
           mutluluk: -6,
           saglik: -4,
-          durum_ekle: { id: "veba_tedbir", ad: "Tedbirli çalışma", tur: "gecici", kalan_tur: 4, gelir_carpani: 0.7 },
+          durum_ekle: { id: "veba_tedbir", ad: "Tedbirli çalışma", tur: "gecici", kalan_yil: 6, gelir_carpani: 0.7 },
           mesaj:
             "Tedbirler yetmedi; hem gelir düştü hem korunma kalmadı.",
         },
@@ -84,7 +84,7 @@ export const OLAY_KURESEL: OlayTanimi[] = [
         basariliSonuc: {
           ulke_etkisi: { vebada: true },
           veba_koruma: 0,
-          durum_ekle: { id: "veba_korku", ad: "Korku", tur: "gecici", kalan_tur: 4, gelir_carpani: 0.85 },
+          durum_ekle: { id: "veba_korku", ad: "Korku", tur: "gecici", kalan_yil: 6, gelir_carpani: 0.85 },
           mesaj:
             "Dükkân açık; ama korkan halk az geliyor. Salgın herkesi eşit vuruyor.",
         },
@@ -92,7 +92,7 @@ export const OLAY_KURESEL: OlayTanimi[] = [
           ulke_etkisi: { vebada: true },
           veba_koruma: 0,
           saglik: -10,
-          durum_ekle: { id: "veba_korku", ad: "Korku", tur: "gecici", kalan_tur: 4, gelir_carpani: 0.85 },
+          durum_ekle: { id: "veba_korku", ad: "Korku", tur: "gecici", kalan_yil: 6, gelir_carpani: 0.85 },
           mesaj:
             "Çarşıda bir gün yetti; ateşle uyandın ama atlattın. Müşteri iyice azaldı.",
         },

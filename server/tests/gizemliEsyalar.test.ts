@@ -9,7 +9,7 @@ import { OLAY_BANKASI } from "../src/data/olaylar";
 function digerZorunluOlaylariGecistir(state: Awaited<ReturnType<typeof yeniOyun>>) {
   state.gecmis_olaylar.push("iliski_evlilik_teklifi", "iliski_ikinci_teklif", "oc_tuccar_yol_ilk_anlasma");
   state.hayvan_karsilasma_sayisi = 2; // evcil hayvan karşılaşma garantisini (29/38 yaş) atla
-  state.etiketler.push("tanisma_donum_27", "tanisma_donum_36"); // aşk evliliği tanışma fırsatı zorlanmasın
+  state.etiketler.push("tanisma_donum_25", "tanisma_donum_40"); // aşk evliliği tanışma fırsatı zorlanmasın
   state.etiketler.push("yol:tuccar:hayirsever");
   state.ulke.savasta = true;
   // Büyük yolculuk garantisi (kural 11) gizemli eşya takip garantisinden önceliklidir
@@ -49,13 +49,13 @@ describe("gizemli eşya sistemi", () => {
     }
   });
 
-  it("bir eşyaya sahip olup 38-46 yaşındayken hiç takip olayı yaşamamış karaktere garanti olay zorlanır", async () => {
+  it("bir eşyaya sahip olup 45+ yaşındayken hiç takip olayı yaşamamış karaktere garanti olay zorlanır", async () => {
     const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     etiketEkle(state, ["hizip_secildi"]); // hizip zorunlu seçim kaskadını bu testte atla (2026-09 sonu)
     digerZorunluOlaylariGecistir(state);
     state.etiketler.push("esya:fisildayan_tas");
-    state.yas = 40;
+    state.yas = 46;
     const senaryo = await senaryoUret(state.id);
     const beklenenBasliklar = GIZEMLI_ESYA_TAKIP_HAVUZU["fisildayan_tas"].map(baslikGetir);
     expect(beklenenBasliklar).toContain(senaryo.olay_basligi);
@@ -68,7 +68,7 @@ describe("gizemli eşya sistemi", () => {
     digerZorunluOlaylariGecistir(state);
     state.etiketler.push("esya:eski_ayna");
     state.gecmis_olaylar.push(GIZEMLI_ESYA_TAKIP_HAVUZU["eski_ayna"][0], GIZEMLI_ESYA_TAKIP_HAVUZU["eski_ayna"][1]);
-    state.yas = 40;
+    state.yas = 46;
     const senaryo = await senaryoUret(state.id);
     const takipBasliklari = GIZEMLI_ESYA_TAKIP_HAVUZU["eski_ayna"].map(baslikGetir);
     expect(takipBasliklari).not.toContain(senaryo.olay_basligi);
