@@ -132,12 +132,12 @@ describe("işletme (Tüccar dilimi)", () => {
     expect(sonra / once).toBeLessThan(2.1);
   });
 
-  it("mal ilk yıl yetmezse yalnız uyarı; üst üste ikinci yıl yetmezse iki yılın ortalamasının %10'u kadar müşteri gider", async () => {
+  it("mal ilk yıl yetmezse yalnız uyarı; üst üste ikinci yıl yetmezse iki yılın ortalamasının %30'u kadar müşteri gider", async () => {
     const s = await tuccar();
     const hat = s.isletme!.hatlar.find((h) => h.acik)!;
     s.pazar_musteri = 100000; // gürültü etkisini ezmek için büyük sabit pay
     const rnd = vi.spyOn(Math, "random").mockReturnValue(0.5); // talep gürültüsü sıfır
-    hat.stok = 0; // depo boş, elle doldurulmaz: karşılanamayan oran ≈ %100
+    hat.stok = 0; // depo boş: karşılanamayan oran ≈ %100
     const musteri0 = s.meslek_musteri;
     const yil1 = isletmeYilIsle(s, isletmeBaglami(s));
     expect(yil1.dokum.uyarilar.some((u) => u.kod === "stok_bitti")).toBe(true);
@@ -150,11 +150,33 @@ describe("işletme (Tüccar dilimi)", () => {
     rnd.mockRestore();
     expect(yil2.dokum.uyarilar.some((u) => u.kod === "kitle_kaybi")).toBe(true);
     const kayipOrani = (musteri1 - s.meslek_musteri) / musteri1;
-    expect(kayipOrani).toBeGreaterThan(0.03); // büyüme (+sabit müşteri) kaybın bir kısmını telafi eder
-    expect(kayipOrani).toBeLessThanOrEqual(0.14); // %10 kayıp + yatkınlığa bağlı küçük negatif büyüme olabilir
+    expect(kayipOrani).toBeGreaterThan(0.2); // ortalama oran ≈1 → ~%30; büyüme kaybın bir kısmını telafi eder
+    expect(kayipOrani).toBeLessThanOrEqual(0.34);
   });
 
-  it("karşılanamayan oran eşiğin altındaysa ya da araya yeterli yıl girerse müşteri kaybı olmaz", async () => {
+  it("kayıp sürdükçe her yıl son iki yılın ortalaması kullanılır (taban yok)", async () => {
+    const s = await tuccar();
+    s.pazar_musteri = 100000;
+    const rnd = vi.spyOn(Math, "random").mockReturnValue(0.5);
+    s.isletme!.onceki_karsilanamayan_orani = 0.2; // geçen yıl talebin %20'si karşılanamadı
+    s.isletme!.hatlar.find((h) => h.acik)!.stok = 0; // bu yıl ≈ %100 karşılanamıyor
+    const musteri0 = s.meslek_musteri;
+    isletmeYilIsle(s, isletmeBaglami(s));
+    const p = s.isletme!.onceki_karsilanamayan_orani!;
+    expect(p).toBeGreaterThan(0.9);
+    const kayip = (musteri0 - s.meslek_musteri) / musteri0;
+    const beklenen = ((p + 0.2) / 2) * 0.3; // ≈ %18
+    expect(kayip).toBeGreaterThan(beklenen - 0.05);
+    expect(kayip).toBeLessThanOrEqual(beklenen + 0.03);
+    // Üçüncü yıl da karşılanamazsa ortalama (bu yıl + geçen yıl) yine uygulanır.
+    s.isletme!.hatlar.find((h) => h.acik)!.stok = 0;
+    const musteri1 = s.meslek_musteri;
+    isletmeYilIsle(s, isletmeBaglami(s));
+    rnd.mockRestore();
+    expect((musteri1 - s.meslek_musteri) / musteri1).toBeGreaterThan(0.2);
+  });
+
+  it("karşılanamayan talep hiç yoksa ya da önceki yıl yetmişse müşteri kaybı olmaz", async () => {
     const s = await tuccar();
     s.isletme!.onceki_karsilanamayan_orani = 0.5; // geçen yıl yetmedi
     s.pazar_musteri = 100000;
@@ -162,9 +184,15 @@ describe("işletme (Tüccar dilimi)", () => {
     const hat = s.isletme!.hatlar.find((h) => h.acik)!;
     hat.stok = 100000; // bu yıl mal bol
     const { dokum } = isletmeYilIsle(s, isletmeBaglami(s));
-    rnd.mockRestore();
     expect(dokum.uyarilar.some((u) => u.kod === "kitle_kaybi")).toBe(false);
-    expect(s.isletme!.onceki_karsilanamayan_orani).toBeLessThanOrEqual(0.1);
+    expect(s.isletme!.onceki_karsilanamayan_orani).toBe(0);
+    // Bir sonraki yıl yetmezse, geçen yıl yettiği için yalnız uyarı (kayıp yok).
+    hat.stok = 0;
+    const m = s.meslek_musteri;
+    const sonuc = isletmeYilIsle(s, isletmeBaglami(s));
+    rnd.mockRestore();
+    expect(sonuc.dokum.uyarilar.some((u) => u.kod === "kitle_kaybi")).toBe(false);
+    expect(s.meslek_musteri).toBeGreaterThanOrEqual(m * 0.95);
   });
 
   it("5 fiyat seçeneği: daha ucuz = daha çok talep; ve yıllık pay değişimi tabloya uyar", async () => {
