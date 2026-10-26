@@ -3208,41 +3208,9 @@ export const OLAY_EVLILIK_AILE: OlayTanimi[] = [
         metin: "Vazgeç, yoluna devam et.",
         baseBasariSansi: 100,
         basariliSonuc: {
-          tanisma_nostalji: true,
+          tanisma_vazgec: true,
           mutluluk: -1,
           mesaj: "Başını çevirdin; o yüz kalabalığa karıştı.",
-        },
-        basarisizSonuc: {
-          mesaj: "Kullanılmadı.",
-        },
-      },
-    ],
-  },
-  {
-    id: "iliski_nostalji",
-    kategori: "sosyal",
-    yalnizZorlaOlayi: true,
-    gorsel: "🕰️",
-    baslik: "Tanıdık Bir Yüz",
-    metin: "Yıllar önce yanına gitmeye cesaret edemediğin o kişiye benzeyen biri karşında duruyor.",
-    secenekler: [
-      {
-        metin: "Bu sefer yanına git.",
-        baseBasariSansi: 100,
-        basariliSonuc: {
-          tanisma_baslat: true,
-          mesaj: "Eski pişmanlığı yenip adım attın.",
-        },
-        basarisizSonuc: {
-          mesaj: "Kullanılmadı.",
-        },
-      },
-      {
-        metin: "Bir kez daha geç.",
-        baseBasariSansi: 100,
-        basariliSonuc: {
-          mutluluk: -2,
-          mesaj: "Yine geçtin; içinde eski bir sızı kıpırdadı.",
         },
         basarisizSonuc: {
           mesaj: "Kullanılmadı.",

@@ -102,8 +102,8 @@ const BOLUMLER: Bolum[] = [
     ikon: '👪',
     baslik: { tr: 'İlişkiler & Aile', en: 'Relationships & Family' },
     metin: {
-      tr: 'Evlenmek için 22 yaşından sonra "İlişkiler" ekranından bir adaya teklif edip düğün bütçesini seçersin; eşinle vakit geçirip hediye vererek bağını sıcak tutmazsan seni terk edebilir. Eş, çocuklar, ekip üyelerin, evcil hayvanın ve katıldığın hizip zamanla kendi olaylarını getirir.',
-      en: 'After age 22 you can propose to a candidate on the "Relationships" screen and pick a wedding budget; if you do not keep the bond warm with time and gifts, your spouse may leave. A spouse, children, crew members, a pet and the faction you join each bring their own events over time.',
+      tr: 'Evlenmek için "İlişkiler" ekranından bir adaya teklif edip düğün bütçesini seçersin; eşinle vakit geçirip hediye vererek bağını sıcak tutmazsan seni terk edebilir. Eş, çocuklar, ekip üyelerin, evcil hayvanın ve katıldığın hizip zamanla kendi olaylarını getirir.',
+      en: 'To marry, you can propose to a candidate on the "Relationships" screen and pick a wedding budget; if you do not keep the bond warm with time and gifts, your spouse may leave. A spouse, children, crew members, a pet and the faction you join each bring their own events over time.',
     },
   },
   {

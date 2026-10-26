@@ -205,11 +205,11 @@ describe("hapishane sistemi", () => {
       }
     });
 
-    it("ceza yeterli (≥5 yıl) ama ilk 2 hapisOlayi çözülmeden kaçış-başlangıç olayı çıkmaz", () => {
+    it("ceza yeterli (≥5 yıl) ama ilk hapisOlayi çözülmeden kaçış-başlangıç olayı çıkmaz", () => {
       const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
       mesleğiSec(state, "Tüccar");
       state.hapis_ceza_toplam = 8;
-      state.hapis_tur_sayaci = 1;
+      state.hapis_tur_sayaci = 0;
       etiketEkle(state, ["hapiste"]);
       for (let i = 0; i < 500; i++) {
         const { olay } = olaySec(state);
@@ -217,7 +217,7 @@ describe("hapishane sistemi", () => {
       }
     });
 
-    it("ceza yeterli VE en az 2 hapisOlayi çözülmüşse kaçış-başlangıç olayları uygun hale gelir", () => {
+    it("ceza yeterli VE en az 1 hapisOlayi çözülmüşse kaçış-başlangıç olayları uygun hale gelir", () => {
       const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
       mesleğiSec(state, "Tüccar");
       state.hapis_ceza_toplam = 8;

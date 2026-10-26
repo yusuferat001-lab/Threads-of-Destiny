@@ -2053,23 +2053,6 @@ export const OLAYLAR_EVLILIK_AILE_EN: Record<string, OlayCeviri> = {
     ],
   },
 
-  iliski_nostalji: {
-    baslik: "A Familiar Face",
-    metin: "Someone who looks like the person you never dared approach years ago stands before you.",
-    secenekler: [
-      {
-        metin: "Go over this time.",
-        basariliSonuc: { mesaj: "You overcame the old regret and stepped forward." },
-        basarisizSonuc: { mesaj: "Unused." },
-      },
-      {
-        metin: "Walk past once more.",
-        basariliSonuc: { mesaj: "You passed again; an old ache stirred inside." },
-        basarisizSonuc: { mesaj: "Unused." },
-      },
-    ],
-  },
-
   iliski_es_ihmal_uyarisi: {
     baslik: "The Cooling Hearth",
     metin: "You haven't spent time with {es} in years. One evening they whisper: 'I no longer know you.'",

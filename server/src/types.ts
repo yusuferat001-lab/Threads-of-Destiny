@@ -255,12 +255,14 @@ export interface Durum {
   id: string;
   ad: string;
   tur: "gecici" | "kalici";
-  kalan_tur?: number;
-  tur_basi_saglik?: number;
-  tur_basi_para?: number;
-  tur_basi_mutluluk?: number;
+  /** Geçici durumun kalan süresi (oyun YILI). */
+  kalan_yil?: number;
+  /** Her oyun yılı uygulanan etkiler (turdaki yıl sayısıyla çarpılır). */
+  yil_basi_saglik?: number;
+  yil_basi_para?: number;
+  yil_basi_mutluluk?: number;
   gelir_carpani?: number;
-  /** Bu durum (kalan_tur 0'a inince) sona erdiğinde karaktere eklenecek etiket; gecikmeli olay zincirleri için kullanılır. */
+  /** Bu durum (kalan_yil 0'a inince) sona erdiğinde karaktere eklenecek etiket; gecikmeli olay zincirleri için kullanılır. */
   bitince_etiket?: string;
 }
 
@@ -509,6 +511,7 @@ export interface CharacterState {
   es_sonraki_hamilelik_yili: number;
   /** 7-8 yıllık ihmal uyarı olayı bu evlilikte gösterildi mi. */
   es_ihmal_uyari_goruldu: boolean;
+  /** Bir olay turundan sonra tek bir sakin yıl ("Yıl Geç") bekleniyor; hapis/yolculuk/kaçak/veba hastalığında hiç kurulmaz. */
   /** Mantık evliliği aday listesi (3 kişi); boşsa ilk açılışta üretilir. */
   mantik_adaylar: MantikAday[];
   /** Aday listesinin yenileneceği oyun yılı. */
@@ -521,8 +524,6 @@ export interface CharacterState {
   aktif_tanisma: AktifTanisma | null;
   /** Aşk evliliği yolu: sevgili; yoksa null. */
   sevgili: Sevgili | null;
-  /** Vazgeçilen tanışmanın "nostalji" olayının tetikleneceği yıl; yoksa null. */
-  nostalji_yili: number | null;
   /** Eş ölümü/terk sonrası yas döneminin bittiği yıl; bu yıldan önce evlilik teklifi/tanışma kapalı. 0 = yas yok. */
   yas_bitis_yili: number;
 
@@ -1153,8 +1154,8 @@ export interface SonucEtkisi {
   es_ilgi_gosterildi?: boolean;
   /** true ise bekar karakter için bir tanışma (göz göze gelme) başlar (`aktif_tanisma`). */
   tanisma_baslat?: boolean;
-  /** true ise (bir tanışmadan vazgeçildi) 4-6 yıl sonra tetiklenecek nostalji olayı kurulur. */
-  tanisma_nostalji?: boolean;
+  /** true ise (göz göze fırsatından vazgeçildi): evliyse sadakat ödülü verilir. */
+  tanisma_vazgec?: boolean;
   /** true ise eş kaybedilir (boşanma/ölüm): es_adi null'a döner, medeni:evli etiketi kaldırılır. */
   es_kaybet?: boolean;
   cocuk_ekle?: number;
