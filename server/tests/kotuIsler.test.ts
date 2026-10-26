@@ -137,6 +137,7 @@ describe("karanlık işler (illegal işler paneli)", () => {
     let tutuklandi = false;
     for (let i = 0; i < 60 && !tutuklandi; i++) {
       s.kotu_is_kilit = {}; // bekleme süresini test için sıfırla
+      s.suc_seviyesi = 0; // yıldız başarı bonusu yakalanmayı nadirleştirmesin (testin konusu ceza aralığı)
       await kotuIsYap(state.id, "birini_soy");
       if (s.etiketler.includes("hapiste")) tutuklandi = true;
     }
