@@ -919,12 +919,18 @@ const OLAY_PARA_PRIMI = 0.8925;
  * olaylardan gelen pozitif para yarıya iner; kalan yarısı müşteri kitlesine
  * çevrilir (10 kırpılan para ≈ 1 müşteri, en çok +3). Olay metinlerine dokunulmaz.
  */
+/** Olaylardan gelen müşteri tam sayıya yuvarlanır (0'a yuvarlanan sessizce atlanır). */
+function musteriEkleTam(state: CharacterState, delta: number): void {
+  const tam = Math.round(delta);
+  if (tam) musteriEkle(state, tam);
+}
+
 export function ciftKazancKirp(state: CharacterState, etki: SonucEtkisi, kategori: string): void {
   if (!etki.para || etki.para <= 0) return;
   if (!isletmeAktif(state) || MESLEK_KATEGORI[state.meslek] !== kategori) return;
   const yarisi = etki.para / 2;
   etki.para = paraYuvarla(yarisi);
-  musteriEkle(state, Math.min(3, yarisi / (10 * enflasyonCarpani(state))));
+  musteriEkleTam(state, Math.min(3, yarisi / (10 * enflasyonCarpani(state))));
 }
 
 
@@ -2158,7 +2164,7 @@ async function sonucuUygulaVeIlerlet(
   if (basarili && MESLEK_KATEGORI[state.meslek] === mevcutOlay.kategori) {
     state.kariyer_puani += KARIYER_PUANI_KATEGORI_BASARI * (1 + (state.meslek_tecrube_hizi ?? 0)) * hayvanKariyerCarpani(state);
     // Meslek pazarı: mesleğinde başarılı her iş pazardaki gücünü artırır.
-    musteriEkle(state, MUSTERI_KATEGORI_BASARI * (1 + (state.meslek_tecrube_hizi ?? 0)));
+    musteriEkleTam(state, MUSTERI_KATEGORI_BASARI * (1 + (state.meslek_tecrube_hizi ?? 0)));
   }
   if (etki.kariyer_puani_artis) state.kariyer_puani += etki.kariyer_puani_artis;
   const sucOnce = state.suc_seviyesi;
@@ -2184,7 +2190,14 @@ async function sonucuUygulaVeIlerlet(
     state.meslek = etki.yeni_meslek;
     isletmeHazirla(state, isletmeBaglami(state));
   }
-  if (etki.maas_carpani) maasCarpaniUygula(state, etki.maas_carpani);
+  if (etki.maas_carpani) {
+    if (isletmeMeslegiMi(state.meslek)) {
+      // İşletmede kalıcı maaş çarpanı talebe değil müşteriye yazılır: bir kerelik (çarpan−1)×%30 müşteri.
+      musteriEkleTam(state, (etki.maas_carpani - 1) * 0.3 * (state.meslek_musteri ?? 0));
+    } else {
+      maasCarpaniUygula(state, etki.maas_carpani);
+    }
+  }
   if (etki.sehir_yonetim_artis) {
     state.sehir_yonetim_seviyesi += etki.sehir_yonetim_artis;
     sehirYonetimGuncelle(state);
@@ -2281,7 +2294,7 @@ async function sonucuUygulaVeIlerlet(
     state.yonetim_iliski = Math.max(0, Math.min(100, state.yonetim_iliski + etki.otorite_iliski));
   }
   if (typeof etki.pazar_payi_artis === "number" && etki.pazar_payi_artis !== 0 && PAZAR_ADLARI_VAR(state)) {
-    musteriEkle(state, (etki.pazar_payi_artis / 100) * (state.pazar_musteri ?? 0));
+    musteriEkleTam(state, (etki.pazar_payi_artis / 100) * (state.pazar_musteri ?? 0));
   }
 
   if (etki.ekip_ekle) ekipUyesiEkle(state, etki.ekip_ekle.rol, etki.ekip_ekle.tahminGenisligi);
@@ -3851,7 +3864,7 @@ const SEHIR_ISTEKLERI: YonetimIstekTanimi[] = [
     meslekler: ["Din Adamı"], sehirSansi: true, rusvetBonus: 17,
     uygula: (state, enflasyon) => {
       state.para = paraYuvarla(state.para + (15 + Math.floor(Math.random() * 11)) * enflasyon);
-      musteriEkle(state, 0.01 * (state.pazar_musteri ?? 0));
+      musteriEkleTam(state, 0.01 * (state.pazar_musteri ?? 0));
     },
   },
   // Zanaatkâr'a özel
@@ -3870,7 +3883,7 @@ const SEHIR_ISTEKLERI: YonetimIstekTanimi[] = [
     meslekler: ["Zanaatkâr"], sehirSansi: true, rusvetBonus: 17,
     uygula: (state, enflasyon) => {
       state.para = paraYuvarla(state.para + (15 + Math.floor(Math.random() * 11)) * enflasyon);
-      musteriEkle(state, 0.01 * (state.pazar_musteri ?? 0));
+      musteriEkleTam(state, 0.01 * (state.pazar_musteri ?? 0));
     },
   },
 ];
@@ -4730,7 +4743,7 @@ const PAZAR_REF_MUSTERI = 416;
 function metrikGucKatkisiUygula(state: CharacterState, etki: SonucEtkisi): void {
   const alan = MESLEK_METRIK_ALANI[state.meslek];
   const artis = alan ? (etki[alan] as number | undefined) : undefined;
-  if (artis && artis > 0) musteriEkle(state, artis * 0.75);
+  if (artis && artis > 0) musteriEkleTam(state, artis * 0.75);
 }
 
 /** Bir KotuIsEtki dalını doğrudan state'e uygular (jitter yok, olay hattından geçmez). Bir anlatı eki döndürebilir. */
@@ -4748,7 +4761,7 @@ function kotuIsEtkiUygula(state: CharacterState, etki: KotuIsEtki, enflasyon: nu
     if (artis > 0) sucArtisiKaydet(state);
   }
   if (etki.kariyer_puani) state.kariyer_puani += etki.kariyer_puani;
-  if (etki.musteri) musteriEkle(state, (etki.musteri * (state.pazar_musteri ?? PAZAR_REF_MUSTERI)) / PAZAR_REF_MUSTERI);
+  if (etki.musteri) musteriEkleTam(state, (etki.musteri * (state.pazar_musteri ?? PAZAR_REF_MUSTERI)) / PAZAR_REF_MUSTERI);
   if (etki.uretim_kapasitesi && state.meslek === "Zanaatkâr") {
     state.uretim_kapasitesi = Math.min(100, Math.max(0, state.uretim_kapasitesi + etki.uretim_kapasitesi));
   }
@@ -6331,7 +6344,7 @@ export async function sosyallesmeOlayCoz(id: string, secenekIndex: number): Prom
   if (basarili && MESLEK_KATEGORI[state.meslek] === mevcutOlay.kategori) {
     state.kariyer_puani += KARIYER_PUANI_KATEGORI_BASARI * (1 + (state.meslek_tecrube_hizi ?? 0)) * hayvanKariyerCarpani(state);
     // Meslek pazarı: mesleğinde başarılı her iş pazardaki gücünü artırır.
-    musteriEkle(state, MUSTERI_KATEGORI_BASARI * (1 + (state.meslek_tecrube_hizi ?? 0)));
+    musteriEkleTam(state, MUSTERI_KATEGORI_BASARI * (1 + (state.meslek_tecrube_hizi ?? 0)));
   }
   if (etki.kariyer_puani_artis) state.kariyer_puani += etki.kariyer_puani_artis;
   const sucOnce = state.suc_seviyesi;

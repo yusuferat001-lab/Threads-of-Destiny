@@ -415,6 +415,15 @@ export function tanitimBuyumesi(state: CharacterState): number {
   return yatirimKademesi(state, "pazar") * TANITIM_PAY_KADEME;
 }
 
+/** Eşin mesleki desteği yıllık müşteri artışına yazılır: +%0,1 / %0,2 / %0,3. */
+export function esMusteriBuyumesi(state: CharacterState): number {
+  if (!state.es_adi) return 0;
+  const b = state.es_meslek_bonusu ?? 0;
+  if (b >= 6) return 0.003;
+  if (b >= 4) return 0.002;
+  return b > 0 ? 0.001 : 0;
+}
+
 // ── Hat hesabı ──────────────────────────────────────────────────────────────
 export interface HatHesabi {
   talep: number;
@@ -1219,7 +1228,7 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
     const fiyatEtkisi =
       planlar.length > 0 ? planlar.reduce((t, p) => t + (FIYAT_POLITIKASI[p.hat.fiyat]?.pay ?? 0), 0) / planlar.length : 0;
     const cesitlilik = Math.max(0, planlar.length - 1) * HAT_CESITLILIK_MUSTERI; // her ek açık hat: ürün çeşitliliği
-    const ham = sohretPayBuyumesi(state.un) + fiyatEtkisi + tanitimBuyumesi(state) + musteriRolu + cesitlilik + yatkinlikMusteriBuyumesi(state);
+    const ham = sohretPayBuyumesi(state.un) + fiyatEtkisi + tanitimBuyumesi(state) + musteriRolu + cesitlilik + yatkinlikMusteriBuyumesi(state) + esMusteriBuyumesi(state);
     const mevcutPay = pazarPayiHesapla(state);
     // Pay büyüdükçe pozitif büyüme doyar (pay %60'a yaklaşınca sıfır); eksi etkiler tam işler.
     // Veba sürerken pozitif büyüme %70 kısılır (v10); eksi etkiler tam işler.

@@ -564,7 +564,7 @@ export function isletmeBaglami(state: CharacterState): IsletmeBaglami {
   return {
     enflasyon: enflasyonCarpani(state),
     giderEnflasyon: giderEnflasyonCarpani(state),
-    satisCarpani: maasCarpaniGetir(state) * durumCarpani * (state.es_adi ? 1 + (state.es_meslek_bonusu ?? 0) / 100 : 1),
+    satisCarpani: durumCarpani, // yalnız geçici durumlar talepte kalır; eş ve olay çarpanı müşteri sayısına yazılır
   };
 }
 

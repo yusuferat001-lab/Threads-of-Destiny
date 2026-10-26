@@ -393,12 +393,27 @@ describe("cemaat — rakip saldırıları, veba kararı, Yap/Yapma", () => {
     expect(kapali / normal).toBeCloseTo(0.45, 5);
   });
 
-  it("olay maas_carpani etiketi Din'de bağış çarpanıdır; Asker'de gelire etkisi yoktur", async () => {
+  it("işletmede kalıcı maaş çarpanı bağışı değil müşteriyi etkiler; geçici durum bağışta kalır", async () => {
     const s = await din();
     const normal = cemaatHesapla(s, isletmeBaglami(s), 0.75).bagis;
     maasCarpaniUygula(s, 1.1);
-    const yuksek = cemaatHesapla(s, isletmeBaglami(s), 0.75).bagis;
-    expect(yuksek / normal).toBeCloseTo(1.05, 3); // pozitif katkı yarıya iner
+    expect(cemaatHesapla(s, isletmeBaglami(s), 0.75).bagis).toBeCloseTo(normal, 6);
+    s.durumlar.push({ id: "t", ad: "t", tur: "gecici", kalan_tur: 3, gelir_carpani: 1.1 });
+    expect(cemaatHesapla(s, isletmeBaglami(s), 0.75).bagis / normal).toBeCloseTo(1.1, 3);
+  });
+
+  it("eş desteği yıllık müşteri artışıdır (+%0,1/0,2/0,3); eşsizken 0", async () => {
+    const { esMusteriBuyumesi } = await import("../src/game/isletme");
+    const s = await din();
+    s.es_adi = null;
+    expect(esMusteriBuyumesi(s)).toBe(0);
+    s.es_adi = "Eş";
+    s.es_meslek_bonusu = 2;
+    expect(esMusteriBuyumesi(s)).toBe(0.001);
+    s.es_meslek_bonusu = 4;
+    expect(esMusteriBuyumesi(s)).toBe(0.002);
+    s.es_meslek_bonusu = 6;
+    expect(esMusteriBuyumesi(s)).toBe(0.003);
   });
 
   it("Din Adamı talepleri: açıklama %50 / bağış %30 / destek %20; Yap otoriteyi artırır, Yapma düşürür; yalan reddedilir", async () => {
