@@ -100,10 +100,11 @@ export const HAT_CESITLILIK_MUSTERI = 0.005;
 /** v20: her yıl başı alış ±%3, satış ±%2 piyasa sapması (o yıl sabit). */
 export const PIYASA_SAPMA_ALIS = 0.03;
 export const PIYASA_SAPMA_SATIS = 0.02;
-/** Karşılanamayan talep bu orandan büyükse müşteri kaybı: min(%12, (oran−eşik)×%30) kendi müşterisinin yüzdesi (sıcak ürünse ×2). */
+/** Bir hattın talebinin bu oranından fazlası karşılanamadıysa "stoğun bitti" uyarısı çıkar (yalnız uyarı, kayıp ayrı kuralla). */
 const KITLE_KAYIP_ESIGI = 0.15;
-/** Karşılanamayan talep oranının müşteriye çevrilen kesri (kaçanlar bir sonraki yıl rakibe gider). */
-const KITLE_KAYIP_KESRI = 0.2;
+/** Yıl içinde toplam talebin karşılanamayan oranının bu çeyreği kadar müşteri, gelecek yıl rakibe gider. */
+const KITLE_KAYIP_KESRI = 0.25;
+/** Tek yılda kaybedilebilecek müşteri oranı (kendi müşterisinin yüzdesi) üst sınırı. */
 const KITLE_KAYIP_TAVANI = 0.1;
 const TALEP_GURULTUSU = 0.08;
 /** Yüzdelik müşteri büyümesi pay bu eşiğe yaklaştıkça sıfıra iner. */
@@ -1253,8 +1254,8 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
     uyarilar.push({ kod: "kitle_kaybi" });
   }
   is.bekleyen_musteri_kaybi = 0;
-  if (karsilanamayanOrani > KITLE_KAYIP_ESIGI) {
-    // Bu yılın kaybı hemen değil, gelecek yıl işlenir; karşılanamayan oranın %20'si kadar müşteri kaçar (tavan %10).
+  if (karsilanamayanOrani > 0) {
+    // Bu yılın kaybı hemen değil, gelecek yıl işlenir; karşılanamayan oranın çeyreği kadar müşteri kaçar (tavan %10).
     const kayipYuzde = Math.min(KITLE_KAYIP_TAVANI, karsilanamayanOrani * KITLE_KAYIP_KESRI);
     is.bekleyen_musteri_kaybi = state.meslek_musteri * kayipYuzde;
   }
