@@ -39,7 +39,7 @@ function digerZorunluOlaylariGecistir(state: CharacterState) {
   state.gecmis_olaylar.push("hayat_amaci_secimi", "iliski_evlilik_teklifi", "iliski_ikinci_teklif");
   state.ulke.savasta = true;
   state.etiketler.push("yol:tuccar:hayirsever", "yolculuk_tamamlandi", "hizip_secildi");
-  state.etiketler.push("tanisma_donum_27", "tanisma_donum_36"); // aşk evliliği tanışma fırsatı zorlanmasın
+  state.etiketler.push("tanisma_donum_25", "tanisma_donum_40"); // aşk evliliği tanışma fırsatı zorlanmasın
   state.gecmis_olaylar.push("oc_tuccar_yol_ilk_anlasma", "sd_tuccar_yol_ilk_karar");
 }
 
@@ -301,7 +301,7 @@ describe("evcil hayvan sistemi: motor akışı", () => {
     }
   }, 60000);
 
-  it("sahiplikten 5 yıl sonra hayvanın türüne özel bir devam olayı zorlanır", async () => {
+  it("sahipliğin 7. yılında hayvanın türüne özel TEK bir devam olayı zorlanır", async () => {
     const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     digerZorunluOlaylariGecistir(state);
@@ -309,8 +309,8 @@ describe("evcil hayvan sistemi: motor akışı", () => {
     state.hayvan_karsilasma_turleri = ["Şahin"];
     state.yas = 32;
     const h = evcilHayvanEkle(state, "Şahin");
-    h.edinim_yasi = 26;
-    h.edinim_yili = state.yil - 6;
+    h.edinim_yasi = 25;
+    h.edinim_yili = state.yil - 7;
     h.omur = 17;
     const senaryo = await senaryoUret(state.id);
     const olay = OLAY_BANKASI.find((o) => o.baslik === senaryo.olay_basligi && o.hayvanTuru === "Şahin");

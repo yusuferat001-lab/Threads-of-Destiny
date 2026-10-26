@@ -37,7 +37,7 @@ describe("iki dilli ölüm nedeni", () => {
     const s = createCharacter("Orta Çağ", "Fransa", "kasaba", undefined, "en");
     mesleğiSec(s, "Asker");
     s.saglik = 1;
-    s.durumlar.push({ id: "x", ad: "Kronik Eklem Ağrısı", tur: "kalici", tur_basi_saglik: -5 });
+    s.durumlar.push({ id: "x", ad: "Kronik Eklem Ağrısı", tur: "kalici", yil_basi_saglik: -3.6 });
     const neden = durumlariUygula(s);
     expect(neden?.tr).toContain("Kronik Eklem Ağrısı");
     expect(neden?.en).toContain("Chronic Joint Pain");

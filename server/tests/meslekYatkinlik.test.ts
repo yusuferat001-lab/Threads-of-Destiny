@@ -152,6 +152,19 @@ describe("Mesleğe Yatkınlık Kademeleri (2026-09 sonu)", () => {
     expect(sonuc.senaryo.secenekler[1].basari_sansi).not.toBe(95);
   });
 
+  it("kesin (baseBasariSansi 100) şıklar yatkınlıktan ve %95 tavanından etkilenmez", () => {
+    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
+    state.meslek = "Asker";
+    // "Göz Göze": iki şık da %100 (tanışma başlat / vazgeç) — kötü yatkınlıkta bile 100 kalmalı.
+    for (const yatkinlik of [-25, 0, 25]) {
+      state.yatkinliklar.sosyal = yatkinlik;
+      state.yatkinliklar.savas = yatkinlik;
+      state.yatkinliklar.zanaat = yatkinlik;
+      const sonuc = olaySec(state, "iliski_tanisma_firsati");
+      expect(sonuc.senaryo.secenekler.map((x) => x.basari_sansi)).toEqual([100, 100]);
+    }
+  });
+
   it("OlaySecenegi.minMeslekYatkinlikSeviye yalnız yetersiz kademeyi kilitler", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     state.meslek = "Asker";

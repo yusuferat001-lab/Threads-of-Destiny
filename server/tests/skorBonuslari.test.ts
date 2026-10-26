@@ -9,6 +9,7 @@ import { OLAY_AILE } from "../src/data/olaylar/aile";
 import { OLAY_EVLILIK_AILE } from "../src/data/olaylar/evlilikVeAile";
 import { OLAY_KOMIK_GARIP } from "../src/data/olaylar/komikGaripOlaylar";
 import { OLAY_GECIKMIS_TAKIP } from "../src/data/olaylar/gecikmisTakip";
+import { OLAY_KOMIK_OLUM } from "../src/data/olaylar/komikOlumler";
 import { OLAY_BOLGESEL_ORTACAG } from "../src/data/olaylar/bolgeselOrtaCag";
 import { OLAY_BOLGESEL_SANAYI } from "../src/data/olaylar/bolgeselSanayi";
 import { secimUygulaVeCoz } from "./testUtils";
@@ -29,7 +30,7 @@ async function isoleKomikOlumKarakteri(yas: number) {
   etiketEkle(state, ["yol:tuccar:__test_dal__"]); // kariyer yolu girişini atla
   etiketEkle(state, ["hizip_secildi"]); // hizip zorunlu seçim kuralını atla
   state.gecmis_olaylar.push("iliski_evlilik_teklifi", "iliski_ikinci_teklif"); // evlilik teklifi garantisini atla
-  state.etiketler.push("tanisma_donum_27", "tanisma_donum_36"); // aşk evliliği tanışma fırsatı zorlanmasın
+  state.etiketler.push("tanisma_donum_25", "tanisma_donum_40"); // aşk evliliği tanışma fırsatı zorlanmasın
   etiketEkle(state, ["yolculuk_tamamlandi"]); // büyük yolculuk garantisini atla
   state.gecmis_olaylar.push("gizem_ejderha_tilsimi"); // mistik garantiyi atla
   state.hayvan_karsilasma_sayisi = 2; // evcil hayvan karşılaşma garantisini atla
@@ -45,6 +46,8 @@ async function isoleKomikOlumKarakteri(yas: number) {
   state.gecmis_olaylar.push(...OLAY_BOLGESEL_ORTACAG.map((o) => o.id));
   state.gecmis_olaylar.push(...OLAY_BOLGESEL_SANAYI.map((o) => o.id));
   state.yas = yas;
+  // Komik ölüm havuzunun artık yaş garantisi yok: ilk komik ölüm olayı gecikmiş-takip kuyruğuyla zorlanır.
+  state.gecikmis_takipler.push({ id: "test-komik-olum", olayId: OLAY_KOMIK_OLUM[0].id, tetiklenmeYili: state.yil - 1 });
   return state;
 }
 

@@ -73,41 +73,37 @@ describe("tanışma başlatma", () => {
     expect(AK.tanismaBaslatilabilirMi(evli)).toBe(true);
   });
 
-  it("27 ve 36 yaş dönümlerinde, o dönemde hiç tanışma yaşanmamışsa zorlar; işaretlenince bir daha vermez", () => {
-    expect(AK.tanismaDonumEtiketi(bekar(26))).toBeNull();
-    const a = bekar(28);
-    expect(AK.tanismaDonumEtiketi(a)).toEqual({ etiket: "tanisma_donum_27", zorla: true });
-    a.etiketler.push("tanisma_donum_27");
+  it("25 ve 40 yaş dönümlerinde fırsatı her zaman zorlar; işaretlenince bir daha vermez", () => {
+    expect(AK.tanismaDonumEtiketi(bekar(24))).toBeNull();
+    const a = bekar(26);
+    expect(AK.tanismaDonumEtiketi(a)).toEqual({ etiket: "tanisma_donum_25", zorla: true });
+    a.etiketler.push("tanisma_donum_25");
     expect(AK.tanismaDonumEtiketi(a)).toBeNull();
-    a.yas = 37;
-    expect(AK.tanismaDonumEtiketi(a)).toEqual({ etiket: "tanisma_donum_36", zorla: true });
-    a.etiketler.push("tanisma_donum_36");
+    a.yas = 41;
+    expect(AK.tanismaDonumEtiketi(a)).toEqual({ etiket: "tanisma_donum_40", zorla: true });
+    a.etiketler.push("tanisma_donum_40");
     expect(AK.tanismaDonumEtiketi(a)).toBeNull();
   });
 
-  it("evli karakter de dönümde zorlanır; dönemde tanışma yaşadıysa zorlanmaz (sessizce işaretlenir)", () => {
-    const evli = bekar(28);
+  it("evli karakter de dönümde zorlanır; daha önce tanışma yaşansa bile dönüm kaçmaz", () => {
+    const evli = bekar(26);
     AS.esiOlaydanAta(evli, "Mira");
     expect(AK.tanismaDonumEtiketi(evli)?.zorla).toBe(true);
-    const yasadi = bekar(28);
+    const yasadi = bekar(26);
     yasadi.etiketler.push("tanisma_yasandi:22");
-    expect(AK.tanismaDonumEtiketi(yasadi)).toEqual({ etiket: "tanisma_donum_27", zorla: false });
-    // 36 penceresi 27'den sonrasını sayar: 22'deki tanışma 36'yı karşılamaz
-    yasadi.etiketler.push("tanisma_donum_27");
-    yasadi.yas = 37;
-    expect(AK.tanismaDonumEtiketi(yasadi)?.zorla).toBe(true);
+    expect(AK.tanismaDonumEtiketi(yasadi)).toEqual({ etiket: "tanisma_donum_25", zorla: true });
   });
 
-  it("yıllık %4 zar: tutarsa true, tutmazsa false; etiket zaten varsa ya da tanışamıyorsa false", () => {
-    const a = bekar(30);
-    vi.spyOn(Math, "random").mockReturnValue(0.01);
-    expect(AK.tanismaYillikZar(a, 1)).toBe(true);
-    a.etiketler.push("tanisma_firsati_bekliyor");
-    expect(AK.tanismaYillikZar(a, 1)).toBe(false);
-    vi.restoreAllMocks();
-    vi.spyOn(Math, "random").mockReturnValue(0.5);
-    expect(AK.tanismaYillikZar(bekar(30), 3)).toBe(false);
-    vi.restoreAllMocks();
+  it("kilit (yas/hapis) varsa dönüm ertelenir; sevgilisi olan karakterde kullanılmış sayılır", () => {
+    const yasli = bekar(26);
+    yasli.yas_bitis_yili = yasli.yil + 2; // yas döneminde tanışamaz
+    expect(AK.tanismaDonumEtiketi(yasli)).toBeNull();
+    const hapiste = bekar(26);
+    hapiste.etiketler.push("hapiste");
+    expect(AK.tanismaDonumEtiketi(hapiste)).toBeNull();
+    const sevgiliVar = bekar(26);
+    sevgiliVar.sevgili = { isim: "A", meslek: "Tüccar", rutbe: "x", dogum_yili: 1, huylar: ["ciddi", "mizahsever"], iliski: 70, baslangic_yili: 1, son_yil: 5, darildi: false, darilma_yili: null, gonul_kilit_yili: 0, meslek_bonusu: 2 };
+    expect(AK.tanismaDonumEtiketi(sevgiliVar)).toEqual({ etiket: "tanisma_donum_25", zorla: false });
   });
 });
 
@@ -148,11 +144,10 @@ describe("evli karakterde tanışma", () => {
     expect(state.es_puani).toBe(90 - S.ALDATMA_BAR_CEZASI - S.ALDATMA_IFSA_BAR);
   });
 
-  it("vazgeçmek sadakat ödülüdür ve nostalji kurmaz", () => {
+  it("vazgeçmek sadakat ödülüdür", () => {
     const state = evliTanisma(50);
     state.ahlak = 50;
     AK.tanismaVazgec(state);
-    expect(state.nostalji_yili).toBeNull();
     expect(state.es_puani).toBe(50 + S.SADAKAT_BAR);
     expect(state.ahlak).toBe(50 + S.SADAKAT_AHLAK);
   });
@@ -239,19 +234,12 @@ describe("tanışma adımları", () => {
     expect(AK.tepkiTonu(false, "sever")).toBe("soguk");
   });
 
-  it("vazgeç: tanışma silinir, 4-6 yıl sonra nostalji kurulur (ikinci vazgeçiş süreyi uzatmaz)", () => {
+  it("vazgeç: tanışma silinir (nostalji / tekrar fırsat kurulmaz)", () => {
     const state = bekar();
     AK.tanismaBaslat(state, "pazar_meydani");
     const mesaj = AK.tanismaVazgec(state);
     expect(mesaj.length).toBeGreaterThan(5);
     expect(state.aktif_tanisma).toBeNull();
-    const fark = (state.nostalji_yili as number) - state.yil;
-    expect(fark).toBeGreaterThanOrEqual(4);
-    expect(fark).toBeLessThanOrEqual(6);
-    const ilk = state.nostalji_yili;
-    AK.tanismaBaslat(state, "pazar_meydani");
-    AK.tanismaVazgec(state);
-    expect(state.nostalji_yili).toBe(ilk);
   });
 
   it("diyalog verisi: her yaklaşımın 4 adım metni ve 3 tonda 2 varyant tepkisi var, iki dilli", () => {
@@ -429,44 +417,55 @@ describe("motor sarmalayıcıları (aşk akışı uçtan uca)", () => {
     expect(dugun.state.sevgili).toBeNull();
   });
 
-  it("vazgeç motor üzerinden de nostalji kurar; tanışma yokken seçim hata verir", async () => {
+  it("vazgeç motor üzerinden de çalışır; tanışma yokken seçim hata verir", async () => {
     const state = await oturum();
     await expect(tanismaSec(state.id, 0)).rejects.toThrow();
     AK.tanismaBaslat(state, "pazar_meydani");
     const v = await tanismaVazgec(state.id);
     expect(v.bitti).toBe(true);
     expect(v.durum.aktif).toBe(false);
-    expect(v.state.nostalji_yili).not.toBeNull();
   });
 });
 
 describe("zorunlu tanışma fırsatı (senaryoUret kaskadı)", () => {
-  it("bekar 26+ karakterde iliski_tanisma_firsati çıkar; 'yanına git' tanışmayı başlatır, 'vazgeç' nostalji kurar", async () => {
+  it("25 yaş dönümünde iliski_tanisma_firsati çıkar; 'yanına git' tanışmayı başlatır, 'vazgeç' kapatır", async () => {
     for (const secim of ["git", "vazgec"] as const) {
-      const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
-      await mesleğiAta(state.id, "Tüccar");
-      state.yas = 27;
-      state.para = 500;
+      // Rastgele bir olay karakteri öldürebilir ya da hapse/veba karantinasına sokabilir; bu testin
+      // konusu değil — her turda kilitler kaldırılıp can doldurulur, yine de ölürse yeni bir karakterle denenir.
       let bulundu = false;
-      for (let tur = 0; tur < 25 && !bulundu; tur++) {
-        const senaryo = await senaryoUret(state.id);
-        if (senaryo.olay_basligi === "Göz Göze") {
-          bulundu = true;
-          const secimIndex = senaryo.secenekler.findIndex((x) => (secim === "git" ? x.metin.startsWith("Yanına git") : x.metin.startsWith("Vazgeç")));
-          await secimUygula(state.id, secimIndex);
-          if (secim === "git") {
-            expect(state.aktif_tanisma).not.toBeNull();
-            expect(state.aktif_tanisma?.adim).toBe(0);
-          } else {
-            expect(state.aktif_tanisma).toBeNull();
-            expect(state.nostalji_yili).not.toBeNull();
+      for (let deneme = 0; deneme < 4 && !bulundu; deneme++) {
+        const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
+        await mesleğiAta(state.id, "Tüccar");
+        state.yas = 26;
+        state.para = 500;
+        for (let tur = 0; tur < 30 && !bulundu; tur++) {
+          state.saglik = 100;
+          state.mutluluk = Math.max(state.mutluluk, 60);
+          for (const kilit of ["hapiste", "kacak", "veba_hastasi", "yolculukta"]) {
+            const idx = state.etiketler.indexOf(kilit);
+            if (idx >= 0) state.etiketler.splice(idx, 1);
           }
-          expect(state.etiketler).toContain("tanisma_donum_27");
-        } else {
-          const acik = senaryo.secenekler.findIndex((x) => !x.kilitli);
-          await secimUygula(state.id, acik >= 0 ? acik : 0);
+          state.hapis_ceza_kalan = 0;
+          state.hapis_ceza_toplam = 0;
+          state.veba_olum_riski = 0;
+          const senaryo = await senaryoUret(state.id);
+          if (senaryo.olay_basligi === "Göz Göze") {
+            bulundu = true;
+            const secimIndex = senaryo.secenekler.findIndex((x) => (secim === "git" ? x.metin.startsWith("Yanına git") : x.metin.startsWith("Vazgeç")));
+            await secimUygula(state.id, secimIndex);
+            if (secim === "git") {
+              expect(state.aktif_tanisma).not.toBeNull();
+              expect(state.aktif_tanisma?.adim).toBe(0);
+            } else {
+              expect(state.aktif_tanisma).toBeNull();
+            }
+            expect(state.etiketler).toContain("tanisma_donum_25");
+          } else {
+            const acik = senaryo.secenekler.findIndex((x) => !x.kilitli);
+            await secimUygula(state.id, acik >= 0 ? acik : 0);
+          }
+          if (!state.aktif) break;
         }
-        if (!state.aktif) break;
       }
       expect(bulundu, `secim=${secim}`).toBe(true);
     }

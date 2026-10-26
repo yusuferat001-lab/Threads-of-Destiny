@@ -21,7 +21,7 @@ function digerGarantileriGecistir(state: CharacterState) {
   state.veba_gecirdi = true;
   state.gecmis_olaylar.push("iliski_evlilik_teklifi", "iliski_ikinci_teklif");
   state.hayvan_karsilasma_sayisi = 2; // evcil hayvan karşılaşma garantisini (29/38 yaş) atla
-  state.etiketler.push("tanisma_donum_27", "tanisma_donum_36"); // aşk evliliği tanışma fırsatı zorlanmasın
+  state.etiketler.push("tanisma_donum_25", "tanisma_donum_40"); // aşk evliliği tanışma fırsatı zorlanmasın
   state.evcil_hayvan = { tur: "Kedi", isim: "Testçik" };
   // Her çağ×meslek kombinasyonunda (Asker/Din Adamı/Tüccar) kariyer yolu girişi
   // 18 yaşından itibaren zorla tetiklenir; bu testler sadece yolculuk garantisini
@@ -45,7 +45,7 @@ describe("yolculuk teklifi garantisi (senaryoUret)", () => {
     await mesleğiAta(state.id, "Asker");
     etiketEkle(state, ["hizip_secildi"]); // hizip zorunlu seçim kaskadını bu testte atla (2026-09 sonu)
     digerGarantileriGecistir(state);
-    state.yas = 27;
+    state.yas = 31;
     const senaryo = await senaryoUret(state.id);
     // Asker zaten orduda olduğu için reddetme seçeneği olmayan kendi seferberlik
     // varyantını görür (bkz. gameEngine.ts uygunYolculukTeklifleri).
@@ -57,7 +57,7 @@ describe("yolculuk teklifi garantisi (senaryoUret)", () => {
     await mesleğiAta(state.id, "Asker");
     etiketEkle(state, ["hizip_secildi"]); // hizip zorunlu seçim kaskadını bu testte atla (2026-09 sonu)
     digerGarantileriGecistir(state);
-    state.yas = 27;
+    state.yas = 31;
     const senaryo = await senaryoUret(state.id);
     expect(senaryo.olay_basligi).toBe(baslikGetir("yolculuk_savunma_teklif"));
   });
@@ -67,7 +67,7 @@ describe("yolculuk teklifi garantisi (senaryoUret)", () => {
     await mesleğiAta(state.id, "Asker");
     etiketEkle(state, ["hizip_secildi"]); // hizip zorunlu seçim kaskadını bu testte atla (2026-09 sonu)
     digerGarantileriGecistir(state);
-    state.yas = 27;
+    state.yas = 31;
     const senaryo = await senaryoUret(state.id);
     expect(senaryo.olay_basligi).toBe(baslikGetir("sd_somurge_gitme_karari"));
   });
@@ -77,7 +77,7 @@ describe("yolculuk teklifi garantisi (senaryoUret)", () => {
     await mesleğiAta(state.id, "Tüccar");
     etiketEkle(state, ["hizip_secildi"]); // hizip zorunlu seçim kaskadını bu testte atla (2026-09 sonu)
     digerGarantileriGecistir(state);
-    state.yas = 27;
+    state.yas = 31;
     const senaryo = await senaryoUret(state.id);
     expect(senaryo.olay_basligi).toBe(baslikGetir("yolculuk_kesif_teklif"));
   });
@@ -87,7 +87,7 @@ describe("yolculuk teklifi garantisi (senaryoUret)", () => {
     await mesleğiAta(state.id, "Tüccar");
     etiketEkle(state, ["hizip_secildi"]); // hizip zorunlu seçim kaskadını bu testte atla (2026-09 sonu)
     digerGarantileriGecistir(state);
-    state.yas = 27;
+    state.yas = 31;
     const senaryo = await senaryoUret(state.id);
     const beklenenler = [
       baslikGetir("yolculuk_kesif_teklif"),
@@ -105,7 +105,7 @@ describe("yolculuk teklifi garantisi (senaryoUret)", () => {
     await mesleğiAta(state.id, "Din Adamı");
     etiketEkle(state, ["hizip_secildi"]); // hizip zorunlu seçim kaskadını bu testte atla (2026-09 sonu)
     digerGarantileriGecistir(state);
-    state.yas = 27;
+    state.yas = 31;
     ogretileriTamamla(state);
     const senaryo = await senaryoUret(state.id);
     expect(senaryo.olay_basligi).toBe(baslikGetir(beklenenId));
@@ -116,7 +116,7 @@ describe("yolculuk teklifi garantisi (senaryoUret)", () => {
     await mesleğiAta(state.id, "Tüccar");
     etiketEkle(state, ["hizip_secildi"]); // hizip zorunlu seçim kaskadını bu testte atla (2026-09 sonu)
     digerGarantileriGecistir(state);
-    state.yas = 27;
+    state.yas = 31;
     state.etiketler.push("yolculuk_tamamlandi");
     const senaryo = await senaryoUret(state.id);
     expect(senaryo.olay_basligi).not.toBe(baslikGetir("yolculuk_kesif_teklif"));
@@ -127,7 +127,7 @@ describe("yolculuk teklifi garantisi (senaryoUret)", () => {
     await mesleğiAta(state.id, "Tüccar");
     etiketEkle(state, ["hizip_secildi"]); // hizip zorunlu seçim kaskadını bu testte atla (2026-09 sonu)
     digerGarantileriGecistir(state);
-    state.yas = 27;
+    state.yas = 31;
     const ilkSenaryo = await senaryoUret(state.id);
     expect(ilkSenaryo.olay_basligi).toBe(baslikGetir("yolculuk_kesif_teklif"));
     // Reddet seçeneği (üçüncü şık, index 2).
@@ -137,7 +137,7 @@ describe("yolculuk teklifi garantisi (senaryoUret)", () => {
 
     // Cooldown mekaniği: reddedince eklenen "durum" birkaç tur sonra
     // "yolculuk_teklifi_zamani" etiketini ekler ve teklif yeniden zorlanır.
-    // Tur süresi (1-2 yıl) + durum kalan_tur rastgele olduğu için burada
+    // Tur süresi (1-2 yıl) + durum kalan_yil rastgele olduğu için burada
     // cooldown'un dolduğu anı doğrudan simüle ediyoruz (RNG'ye güvenmeden).
     redSonuc.state.etiketler.push("yolculuk_teklifi_zamani");
     digerGarantileriGecistir(redSonuc.state);
@@ -150,7 +150,7 @@ describe("yolculukta iken normal olay havuzu tamamen kilitleniyor", () => {
   it("Coğrafi Keşif'in deniz rotasında sadece o rotaya ait olaylar çıkar", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
-    state.yas = 25;
+    state.yas = 31;
     etiketEkle(state, ["yolculukta", "yolculuk_tipi:kesif", "yolculuk_yolu:deniz"]);
 
     const izinVerilenler = new Set([
@@ -176,7 +176,7 @@ describe("yolculukta iken normal olay havuzu tamamen kilitleniyor", () => {
   it("Coğrafi Keşif'in kara rotasında sadece o rotaya ait olaylar çıkar", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Tüccar");
-    state.yas = 25;
+    state.yas = 31;
     etiketEkle(state, ["yolculukta", "yolculuk_tipi:kesif", "yolculuk_yolu:kara"]);
 
     const izinVerilenler = new Set([
@@ -240,7 +240,7 @@ describe("yolculuk zinciri uçtan uca (Coğrafi Keşif, deniz rotası)", () => {
       await mesleğiAta(state.id, "Tüccar");
       etiketEkle(state, ["hizip_secildi"]); // hizip zorunlu seçim kaskadını bu testte atla (2026-09 sonu)
       digerGarantileriGecistir(state);
-      state.yas = 27;
+      state.yas = 31;
       state.para = 500;
 
       const teklif = await senaryoUret(state.id);

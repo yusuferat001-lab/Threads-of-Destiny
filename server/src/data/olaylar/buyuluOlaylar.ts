@@ -129,7 +129,7 @@ export const OLAY_BUYULU: OlayTanimi[] = [
           saglik: -12,
           mutluluk: -10,
           etiket_ekle: ["kalici:kronik_agri"],
-          durum_ekle: { id: "lanet", ad: "Üstündeki Gölge", tur: "kalici", tur_basi_saglik: -1 },
+          durum_ekle: { id: "lanet", ad: "Üstündeki Gölge", tur: "kalici", yil_basi_saglik: -0.7 },
           mesaj:
             "Kadın güldü, alnına dokundu. Artık uyuyamıyorsun; beden lanetli gibi.",
         },
