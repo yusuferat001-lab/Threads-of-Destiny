@@ -1,11 +1,9 @@
-import { useState } from 'react';
 import type {
   PazarDurumu,
   IsletmeGorunumu,
   IsletmeHatGorunumu,
   IsletmeFiyat,
   IsletmeKararGirdisi,
-  DepoDoldurPlani,
   IsletmeUyari,
 } from '../types';
 import { useDil } from '../DilContext';
@@ -26,10 +24,6 @@ interface Props {
   pazar?: PazarDurumu | null;
   yukleniyor: boolean;
   onKarar: (hatlar: IsletmeKararGirdisi[]) => void;
-  /** v20: depo doldurma planı / satın alma / otomatik doldurma (yoksa depo bölümü gösterilmez). */
-  onDepoPlan?: (hedefYuzde: number) => Promise<DepoDoldurPlani | null>;
-  onDepoSatinAl?: (hedefYuzde: number) => Promise<void>;
-  onDepoOto?: (acik: boolean, yuzde: number) => Promise<void>;
   onYatirim: (yatirimId: string) => void;
   onCalisanAl: (adayId: string) => void;
   onEkipCikar: (ekipId: string) => void;
@@ -71,7 +65,8 @@ const M = {
   borc: { tr: 'Tedarikçi borcu', en: 'Supplier debt' },
   beklenen: { tr: 'Beklenen net', en: 'Expected net' },
   yil: { tr: '/yıl', en: '/yr' },
-  depoDoldurBaslik: { tr: 'Depoyu doldur', en: 'Fill the warehouse' },
+  depoBaslik: { tr: 'Depo', en: 'Warehouse' },
+  depoOtoNot: { tr: 'Depo her yıl başı kendiliğinden dolar. Talep depoyu aşarsa müşteri kaybedersin; çözüm depoyu büyütmek.', en: 'The warehouse refills itself every year. If demand outgrows it you lose customers; upgrade the warehouse.' },
   depoDolu: { tr: 'dolu', en: 'full' },
   depoBirimFiyat: { tr: 'Birim alış', en: 'Unit cost' },
   depoDoldurNot: {
@@ -261,9 +256,8 @@ export function isletmeUyariMetni(u: IsletmeUyari, durum: IsletmeGorunumu, dil: 
     }
   }
 
-export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onDepoPlan, onDepoSatinAl, onDepoOto, onYatirim, onCalisanAl, onEkipCikar, bolum = 'hepsi' }: Props) {
+export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onCalisanAl, onEkipCikar, bolum = 'hepsi' }: Props) {
   const { dil } = useDil();
-  const [plan, setPlan] = useState<DepoDoldurPlani | null>(null);
   const t = (k: Exclude<keyof typeof M, 'donem'>) => M[k][dil];
   const d = (m: D) => m[dil];
 
@@ -412,78 +406,19 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onDepoPlan, o
         </div>
       )}
 
-      {onDepoPlan && onDepoSatinAl && durum.depo.kapasite > 0 && (
+      {durum.depo.kapasite > 0 && (
         <div className="isletme-depo-doldur">
           <h4>
-            {t('depoDoldurBaslik')} — {durum.depo.dolulukYuzde}% {t('depoDolu')} ({durum.depo.kullanilan}/{durum.depo.kapasite})
+            {t('depoBaslik')} — {durum.depo.kullanilan}/{durum.depo.kapasite} {t('adetBirim')} ({durum.depo.dolulukYuzde}% {t('depoDolu')})
           </h4>
-          <div className="isletme-hat-dunya">
-            {t('depoBirimFiyat')}:{' '}
-            {durum.hatlar.filter((h) => h.acik).map((h) => `${h.simge} ${formatPara(h.birimMaliyet)}`).join(' · ')}
-          </div>
           <div className="isletme-hat-dunya">
             {durum.hatlar.filter((h) => h.acik).map((h) => (
               <div key={h.id}>
-                {h.simge} {d(h.ad)}: {t('depodaStok')} <strong>{h.stok}</strong> {t('adetBirim')} · {t('tahminiTalep')} <strong>{h.talepMin}–{h.talepMax}</strong> {t('adetBirim')}
+                {h.simge} {d(h.ad)}: {t('depodaStok')} <strong>{h.stok}</strong> {t('adetBirim')} · {t('tahminiTalep')} <strong>{h.talepMin}–{h.talepMax}</strong> {t('adetBirim')} · {t('depoBirimFiyat')} {formatPara(h.birimMaliyet)}
               </div>
             ))}
           </div>
-          <div className="isletme-hat-kontrol">
-            {durum.depo.doldurYuzdeleri.map((y) => (
-              <button
-                key={y}
-                className={plan?.hedefYuzde === y ? '' : 'ikincil'}
-                disabled={yukleniyor}
-                onClick={async () => setPlan(await onDepoPlan(y))}
-              >
-                %{y}
-              </button>
-            ))}
-          </div>
-          {plan && (
-            <div className="isletme-depo-plan">
-              {plan.adet > 0 ? (
-                <>
-                  <strong>
-                    {t('odenecek')}: {formatPara(plan.maliyet)} {pb}
-                  </strong>{' '}
-                  ({plan.adet} {t('adetBirim')})
-                </>
-              ) : (
-                <span>{plan.yetersiz ? t('yetmiyor') : t('zatenDolu')}</span>
-              )}
-              {plan.yetersiz && (
-                <div className="kademe-dusuk">
-                  {t('yetmiyor')} — {t('eldekiPara')}: {formatPara(plan.elindekiPara)} {pb} ≈ {dil === 'en' ? `${t('yetmiyorKarsilik')}${plan.ulasilacakYuzde}%` : `${t('yetmiyorKarsilik')}${plan.ulasilacakYuzde}`}
-                </div>
-              )}
-              {plan.adet > 0 && (
-                <button
-                  disabled={yukleniyor}
-                  onClick={async () => {
-                    await onDepoSatinAl(plan.hedefYuzde);
-                    setPlan(null);
-                  }}
-                >
-                  {t('satinAl')}
-                </button>
-              )}
-            </div>
-          )}
-          {onDepoOto && (
-            <div className="isletme-hat-kontrol">
-              <span>🔁 {t('otomatik')}:</span>
-              <button className={durum.depo.oto.acik ? '' : 'ikincil'} disabled={yukleniyor} onClick={() => onDepoOto(!durum.depo.oto.acik, durum.depo.oto.yuzde)}>
-                {durum.depo.oto.acik ? t('acik') : t('kapali')}
-              </button>
-              {durum.depo.doldurYuzdeleri.map((y) => (
-                <button key={y} className={durum.depo.oto.yuzde === y ? '' : 'ikincil'} disabled={yukleniyor} onClick={() => onDepoOto(durum.depo.oto.acik, y)}>
-                  %{y}
-                </button>
-              ))}
-            </div>
-          )}
-          <div className="isletme-fiyat-not">{t('depoDoldurNot')} {t('otomatikNot')}</div>
+          <div className="isletme-fiyat-not">{t('depoOtoNot')}</div>
         </div>
       )}
 

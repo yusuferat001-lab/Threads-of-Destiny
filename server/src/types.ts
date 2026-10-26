@@ -1073,6 +1073,8 @@ export interface IsletmeDurumu {
   piyasa_sapma_yili?: number;
   /** v20: otomatik depo doldurma — açıkken her yıl başı depo seçilen yüzdeye para yettiği kadar dolar. */
   depo_oto?: { acik: boolean; yuzde: number };
+  /** v15: işletmenin kurulduğu çağ (depo kapasite tablosu çağa göre). */
+  cag?: string;
   /** v11: oyun başında seçilen ana ürün (hat id); bonusu yalnız o hatta uygulanır. Seçim yapılmamış/eski oyunlarda yok. */
   ana_urun?: string | null;
   /** İşletmenin kurulduğu oyun yılı (ilk ISLETME_GUVENLI_YIL yıl dış hırsızlık ve rakip saldırısı yok; eski kayıtlarda yok → baslangic_yili). */

@@ -73,9 +73,14 @@ export interface IsletmeBaglami {
 
 // ── Sayılar (simülasyonla ayarlanır; bkz. scripts/simulateIsletme.ts) ───────
 /** Depo kademeleri (0..4): kapasite, çürüme oranı, sabit yıllık bakım (enflasyonsuz). Depo yılda BİR kez dolar. */
-export const DEPO_KAPASITE = [40, 70, 105, 150, 210];
+export const DEPO_KAPASITE = [58, 80, 105, 135, 170];
+/** Sanayi Devrimi'nde talep (iki temel hat, daha büyük pazar) Orta Çağ'dan ~%25 yüksektir; depo kademeleri buna göre büyüktür. */
+export const DEPO_KAPASITE_SANAYI = [70, 95, 125, 160, 200];
+export function depoKapasiteTablosu(cag?: string): number[] {
+  return cag === "Sanayi Devrimi" ? DEPO_KAPASITE_SANAYI : DEPO_KAPASITE;
+}
 export const CURUME_ORANLARI = [0.1, 0.08, 0.06, 0.045, 0.03];
-export const DEPO_BAKIM = [4, 8, 15, 28, 45];
+export const DEPO_BAKIM = [6, 12, 24, 45, 75];
 export const BASLANGIC_STOK = 30;
 /** Başlangıç deposunun doluluk oranı. */
 export const BASLANGIC_DEPO_DOLULUK = 0.75;
@@ -200,7 +205,7 @@ export function depoKademesi(is: IsletmeDurumu): number {
   return clamp(is.yatirimlar.depo ?? 0, 0, DEPO_KAPASITE.length - 1);
 }
 export function depoKapasitesi(is: IsletmeDurumu): number {
-  return DEPO_KAPASITE[depoKademesi(is)];
+  return depoKapasiteTablosu(is.cag)[depoKademesi(is)];
 }
 export function curumeOrani(is: IsletmeDurumu): number {
   return CURUME_ORANLARI[depoKademesi(is)];
@@ -637,7 +642,7 @@ export function isletmeBaslat(state: CharacterState, b: IsletmeBaglami): void {
   const hatlar: IsletmeHat[] = profil.hatlar.map((h) => ({
     id: h.id,
     acik: h.id === ilk.id,
-    stok: h.id === ilk.id ? (state.meslek === "Tüccar" ? DEPO_KAPASITE[0] : BASLANGIC_STOK) : 0,
+    stok: h.id === ilk.id ? (state.meslek === "Tüccar" ? depoKapasiteTablosu(state.cag)[0] : BASLANGIC_STOK) : 0,
     otomatik: true,
     siparis: 0,
     fiyat: "normal",
@@ -645,11 +650,12 @@ export function isletmeBaslat(state: CharacterState, b: IsletmeBaglami): void {
     son_satis: 0,
   }));
   state.isletme = {
+    cag: state.cag,
     hatlar,
     yatirimlar: {},
     // İlk malın yarısı peşin, yarısı veresiye: borç sattıkça kapanır, faizsiz.
     tedarikci_borcu: r2(
-      (state.meslek === "Tüccar" ? DEPO_KAPASITE[0] : BASLANGIC_STOK) *
+      (state.meslek === "Tüccar" ? depoKapasiteTablosu(state.cag)[0] : BASLANGIC_STOK) *
         ilk.birimMaliyet *
         b.giderEnflasyon *
         baslangicVeresiyeOrani(state.meslek),
@@ -707,6 +713,7 @@ export function isletmeHazirla(state: CharacterState, b: IsletmeBaglami): void {
   }
   if (is.hirsizlik_sonraki_yil === undefined) is.hirsizlik_sonraki_yil = null;
   if (!is.depo_oto) is.depo_oto = { acik: false, yuzde: 50 };
+  is.cag = state.cag; // v15: depo kapasitesi çağa göre değişir
   if (!is.piyasa_sapma) piyasaSapmasiniYenile(state);
   if (is.yil_alim === undefined) is.yil_alim = 0;
   if (!is.yil_alinan) is.yil_alinan = {};
@@ -915,13 +922,15 @@ export function depoyuDoldur(state: CharacterState, hedefYuzde: number, b: Islet
   return plan;
 }
 
-/** v20: otomatik depo açıksa seçilen yüzdeye (para yettiği kadar) doldurur; ticaret/üretim modu dışında etkisiz. */
+/**
+ * v15: depo HER yıl başı kendiliğinden kapasitesine kadar (para yettiği kadar) dolar; oyuncunun ayarı yok.
+ * Talep kapasiteyi aşarsa karşılanamayan talep müşteri kaybına yol açar → çözüm depoyu büyütmek.
+ * Ticaret/üretim modu dışında (Din Adamı) etkisiz.
+ */
 export function otomatikDepoDoldur(state: CharacterState, b: IsletmeBaglami): DepoDoldurPlani | null {
-  const oto = state.isletme?.depo_oto;
   const profil = isletmeProfiliGetir(state.meslek, state.cag);
-  if (!oto?.acik || !profil || profil.mod === "cemaat") return null;
-  if (!(DEPO_DOLDUR_YUZDELERI as readonly number[]).includes(oto.yuzde)) return null;
-  return depoyuDoldur(state, oto.yuzde, b);
+  if (!state.isletme || !profil || profil.mod === "cemaat") return null;
+  return depoyuDoldur(state, 100, b);
 }
 
 /** v20: her hat için o yılın piyasa sapması: alış ±%3, satış ±%2 (yıl boyu sabit). */
