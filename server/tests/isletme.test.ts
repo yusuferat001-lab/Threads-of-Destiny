@@ -334,19 +334,19 @@ describe("işletme (Tüccar dilimi)", () => {
     await expect(isletmeYatirimYap(s.id, "depo")).rejects.toThrow(/Yeterli paran yok/);
   });
 
-  it("depo yatırımı kapasiteyi büyütür (Orta Çağ 58/80/105/135/170), çürümeyi azaltır; en üst kademeden sonra reddedilir", async () => {
+  it("depo yatırımı kapasiteyi büyütür (Orta Çağ 50/75/110/160/240), çürümeyi azaltır; en üst kademeden sonra reddedilir", async () => {
     const s = await tuccar();
     s.para = 100000;
-    expect(depoKapasitesi(s.isletme!)).toBe(58);
+    expect(depoKapasitesi(s.isletme!)).toBe(50);
     expect(curumeOrani(s.isletme!)).toBeCloseTo(0.1);
     await isletmeYatirimYap(s.id, "depo");
-    expect(depoKapasitesi(s.isletme!)).toBe(80);
+    expect(depoKapasitesi(s.isletme!)).toBe(75);
     await isletmeYatirimYap(s.id, "depo");
     await isletmeYatirimYap(s.id, "depo");
-    expect(depoKapasitesi(s.isletme!)).toBe(135);
+    expect(depoKapasitesi(s.isletme!)).toBe(160);
     expect(curumeOrani(s.isletme!)).toBeCloseTo(0.045);
     await isletmeYatirimYap(s.id, "depo");
-    expect(depoKapasitesi(s.isletme!)).toBe(170);
+    expect(depoKapasitesi(s.isletme!)).toBe(240);
     expect(curumeOrani(s.isletme!)).toBeCloseTo(0.03);
     await expect(isletmeYatirimYap(s.id, "depo")).rejects.toThrow(/en üst kademe/);
   });
@@ -623,7 +623,7 @@ describe("işletme (Zanaatkâr — üretim modu)", () => {
     const alinan = dokum.hatlar.reduce((t, h) => t + h.alinan, 0);
     expect(satilan).toBeLessThanOrEqual(tavan);
     expect(alinan).toBeGreaterThan(tavan); // hammadde depoya sığdığı kadar alınır, satış tavana takılır
-    expect(alinan).toBeLessThanOrEqual(150);
+    expect(alinan).toBeLessThanOrEqual(160);
     expect(dokum.uretim?.tavan).toBe(tavan);
     expect(dokum.uyarilar.some((u) => u.kod === "uretim_tavani")).toBe(true);
   });
@@ -639,7 +639,7 @@ describe("işletme (Zanaatkâr — üretim modu)", () => {
     const { dokum } = isletmeYilIsle(s, isletmeBaglami(s));
     expect(dokum.uretim).toBeUndefined();
     expect(dokum.hatlar[0].alinan).toBeGreaterThan(60);
-    expect(dokum.hatlar[0].alinan).toBeLessThanOrEqual(150); // depo kademe 3 = 150
+    expect(dokum.hatlar[0].alinan).toBeLessThanOrEqual(160); // depo kademe 3 = 160
   });
 
   it("tezgâh yatırımı (+%35/kademe), üretim kapasitesi ve ana rol çalışanı tavanı büyütür", async () => {

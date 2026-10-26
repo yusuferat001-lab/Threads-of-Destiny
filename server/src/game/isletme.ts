@@ -73,14 +73,14 @@ export interface IsletmeBaglami {
 
 // ── Sayılar (simülasyonla ayarlanır; bkz. scripts/simulateIsletme.ts) ───────
 /** Depo kademeleri (0..4): kapasite, çürüme oranı, sabit yıllık bakım (enflasyonsuz). Depo yılda BİR kez dolar. */
-export const DEPO_KAPASITE = [58, 80, 105, 135, 170];
+export const DEPO_KAPASITE = [50, 75, 110, 160, 240];
 /** Sanayi Devrimi'nde talep (iki temel hat, daha büyük pazar) Orta Çağ'dan ~%25 yüksektir; depo kademeleri buna göre büyüktür. */
-export const DEPO_KAPASITE_SANAYI = [70, 95, 125, 160, 200];
+export const DEPO_KAPASITE_SANAYI = [60, 90, 135, 195, 290];
 export function depoKapasiteTablosu(cag?: string): number[] {
   return cag === "Sanayi Devrimi" ? DEPO_KAPASITE_SANAYI : DEPO_KAPASITE;
 }
 export const CURUME_ORANLARI = [0.1, 0.08, 0.06, 0.045, 0.03];
-export const DEPO_BAKIM = [6, 12, 24, 45, 75];
+export const DEPO_BAKIM = [5, 12, 26, 50, 90];
 export const BASLANGIC_STOK = 30;
 /** Başlangıç deposunun doluluk oranı. */
 export const BASLANGIC_DEPO_DOLULUK = 0.75;
