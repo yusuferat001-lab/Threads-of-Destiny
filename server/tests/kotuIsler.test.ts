@@ -135,8 +135,9 @@ describe("karanlık işler (illegal işler paneli)", () => {
     const s = await stateGetir(state.id);
     s.para = 1000; // birini_soy'un maliyet kontrolüne takılmasın (ölüm riski yok, güvenle döngüye sokulabilir)
     let tutuklandi = false;
-    for (let i = 0; i < 60 && !tutuklandi; i++) {
+    for (let i = 0; i < 200 && !tutuklandi; i++) {
       s.kotu_is_kilit = {}; // bekleme süresini test için sıfırla
+      s.saglik = 100; // başarısız denemelerin sağlık kaybı karakteri öldürüp döngüyü kesmesin
       s.suc_seviyesi = 0; // yıldız başarı bonusu yakalanmayı nadirleştirmesin (testin konusu ceza aralığı)
       await kotuIsYap(state.id, "birini_soy");
       if (s.etiketler.includes("hapiste")) tutuklandi = true;
