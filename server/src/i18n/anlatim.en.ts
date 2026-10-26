@@ -855,6 +855,7 @@ export const ANLATIM_EN: Record<string, string> = {
   "Bu kadar hattı aynı anda işletemezsin; daha fazla çalışan gerek.": "You can't run this many lines at once; you need more staff.",
   "Önce öğretini seçmelisin.": "You must choose your doctrine first.",
   "Önce başlangıç ürününü seçmelisin.": "You must choose your starting product first.",
+  "Önce ekstra vergi talebini yanıtlamalısın.": "You must answer the extra tax demand first.",
   "Bu meslekte başlangıç ürünü seçilmez.": "This profession has no starting product to choose.",
   "Başlangıç ürününü zaten seçtin.": "You have already chosen your starting product.",
   "Geçersiz ürün.": "Invalid product.",
@@ -929,8 +930,6 @@ export const ANLATIM_EN: Record<string, string> = {
     "Risky, violent and dangerous event options cost you health.",
   "Salgın hastalığı ve yaşlılık sağlığını erit.":
     "Plague and old age wear your health down.",
-  "{0} ekstra vergiyi senin adına tahsil etti: {1} {birim}.":
-    "{0} collected the extra tax on your behalf: {1} {birim}.",
   "{0} için ekstra vergiyi ödedin: {1} {birim}.":
     "You paid the extra tax to {0}: {1} {birim}.",
   "{0} rüşveti cebine indirdi ve vergiyi unuttu: {1} {birim} gitti.":

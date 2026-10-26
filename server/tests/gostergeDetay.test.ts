@@ -103,25 +103,23 @@ describe("gostergeDetayiUret", () => {
     expect(g.saglik).toBe(50); // 30'dan sonra yok
   });
 
-  it("şöhret erimesi: 60 altı yok, 60-75 −1, 75 üstü −2 (pasifEkonomiUygula + gösterge)", () => {
-    expect(sohretErimesiYillik(59)).toBe(0);
-    expect(sohretErimesiYillik(60)).toBe(1);
-    expect(sohretErimesiYillik(75)).toBe(1);
-    expect(sohretErimesiYillik(76)).toBe(2);
+  it("şöhret erimesi: 40 altı yok, 40-50 −1, 50-65 −2, 65-80 −3, 80+ −4 (pasifEkonomiUygula + gösterge)", () => {
+    const beklenen: [number, number][] = [[39, 0], [40, 1], [49, 1], [50, 2], [64, 2], [65, 3], [79, 3], [80, 4], [100, 4]];
+    for (const [un, kayip] of beklenen) expect(sohretErimesiYillik(un)).toBe(kayip);
     const s = karakter();
     s.meslek = null as never;
-    s.un = 80;
+    s.un = 90;
     pasifEkonomiUygula(s, 1);
-    expect(s.un).toBe(78);
-    s.un = 65;
+    expect(s.un).toBe(86);
+    s.un = 55;
     pasifEkonomiUygula(s, 2);
-    expect(s.un).toBe(63);
-    s.un = 40;
+    expect(s.un).toBe(51);
+    s.un = 30;
     pasifEkonomiUygula(s, 1);
-    expect(s.un).toBe(40);
+    expect(s.un).toBe(30);
     s.un = 90;
     const m = gostergeDetayiUret(s, "sohret").etkenler.map((e) => e.metin).join("|");
-    expect(m).toContain("−2");
+    expect(m).toContain("−4");
     expect(m).toContain("sönüyor");
   });
 

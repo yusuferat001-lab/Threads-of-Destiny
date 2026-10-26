@@ -122,7 +122,6 @@ function nakitAkisiniIsle(d: Defter, na: any): void {
   d.gider.savasVergisi += sayi(na.savasVergisi);
   d.gider.faiz += sayi(na.faiz);
   d.gider.envanterBakim += sayi(na.envanterBakim);
-  d.gider.bagis += sayi(na.ekstraVergi); // "bagis" anahtarı eski; artık ekstra vergi kalemi
   d.gider.sizinti += sayi(na.zenginlikSizinti);
   const diger = sayi(na.digerNet);
   if (diger >= 0) d.gelir.diger += diger;

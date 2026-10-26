@@ -9,6 +9,7 @@ import {
   EKSTRA_VERGI_RUSVET_BASARISIZ_ILISKI,
   EKSTRA_VERGI_RUSVET_BEDEL_ORANI,
   EKSTRA_VERGI_RUSVET_SANS,
+  vergiBekliyorMu,
 } from "../data/ekstraVergi";
 import { T, K, Khukumdar, ikiDilT, ikiDil } from "../i18n";
 import { musteriDagilimi, musteriAktar, musteriKaydir, rakipGrubu } from "./piyasa";
@@ -1280,6 +1281,7 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
   }
   if (ogretiBekliyorMu(oturum.state)) throw new Error("Önce öğretini seçmelisin.");
   if (urunSecimiBekliyorMu(oturum.state)) throw new Error("Önce başlangıç ürününü seçmelisin.");
+  if (vergiBekliyorMu(oturum.state)) throw new Error("Önce ekstra vergi talebini yanıtlamalısın.");
 
   // Zaten cevaplanmamış bir olay varsa (sayfa yenilendi, sekme yeniden açıldı,
   // istemci /scenario'yu tekrar çağırdı) YENİDEN ZAR ATILMAZ — aynı olay aynen
@@ -1706,8 +1708,6 @@ export interface TurNakitAkisi {
   mulkNet: number;
   /** Lüks mağaza eşyalarının periyodik bakım/vergi masrafı (mutlak değer). */
   envanterBakim: number;
-  /** Şehir yöneticisinin süresi dolan ekstra vergi talebinden otomatik tahsilatı (mutlak değer). */
-  ekstraVergi: number;
   /** Zenginlik sızıntısı (hırsız/haraç/dolandırıcı — net servet ≥ 350 & nakit ≥ 50; mutlak değer). */
   zenginlikSizinti: number;
   /** Rakibin "parayı alıp kaçtığı" soygun (nakit ≥ 150 iken düşük ihtimalli; mutlak değer). */
@@ -1808,6 +1808,7 @@ export async function secimUygula(id: string, secenekIndex: number): Promise<Sec
   if (!state.meslek) throw new Error("Önce bir meslek seçmelisin.");
   if (ogretiBekliyorMu(state)) throw new Error("Önce öğretini seçmelisin.");
   if (urunSecimiBekliyorMu(state)) throw new Error("Önce başlangıç ürününü seçmelisin.");
+  if (vergiBekliyorMu(state)) throw new Error("Önce ekstra vergi talebini yanıtlamalısın.");
 
   // Bir önceki çağrıda onTepki'li bir seçenek seçilmişse, bu çağrı zar atmadan
   // doğrudan geri çekil (0) / ısrar et (1) sonucunu uygular; zaman burada ilerler.
@@ -1917,6 +1918,7 @@ export async function yilGec(id: string): Promise<SecimSonucu & { olayBekliyor: 
   if (state.zaman_modeli !== "ilerle") throw new Error("Bu oyun yıl geçirme modunda değil.");
   if (ogretiBekliyorMu(state)) throw new Error("Önce öğretini seçmelisin.");
   if (urunSecimiBekliyorMu(state)) throw new Error("Önce başlangıç ürününü seçmelisin.");
+  if (vergiBekliyorMu(state)) throw new Error("Önce ekstra vergi talebini yanıtlamalısın.");
   if (olayBekliyorMu(oturum)) throw new Error("Önce bekleyen olayı çözmelisin.");
 
   state.yil_sayaci = (state.yil_sayaci ?? 0) + 1;
@@ -2119,10 +2121,7 @@ function yilIlerlet(g: YilIlerletGirdi): { yasArtisi: number; zamanAnlatimi: str
             zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${cocukMesaji}` : cocukMesaji;
           }
           // Kariyer sayfası: yönetimle bağların soğuması + dayatılan talep (§35).
-          const paraYonetimOnce = state.para;
           const yonetimMesaji = yonetimYillikUygula(state, yasArtisi);
-          // Süresi dolan ekstra vergi otomatik tahsil edilir; nakit defterine ayrı kalem olarak yazılır.
-          nakitAkisi.ekstraVergi = Math.max(0, paraYuvarla(paraYonetimOnce - state.para));
           if (yonetimMesaji) {
             zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${yonetimMesaji}` : yonetimMesaji;
           }
@@ -2280,7 +2279,7 @@ async function sonucuUygulaVeIlerlet(
   const nakitAkisi: TurNakitAkisi = {
     olayGeliri: 0, olayGideri: 0, maasBrut: 0, giderYasam: 0, giderKonut: 0,
     giderEkip: 0, giderEvcil: 0, savasVergisi: 0, faiz: 0, mulkNet: 0,
-    envanterBakim: 0, ekstraVergi: 0, zenginlikSizinti: 0, rakipSoygun: 0, digerNet: 0, bilgiMulkBakim: 0,
+    envanterBakim: 0, zenginlikSizinti: 0, rakipSoygun: 0, digerNet: 0, bilgiMulkBakim: 0,
   };
   // Olay geliri primi: maaş dışı gelir kanalını hafifçe güçlendirir (her olay için ~%5.5).
   if (etki.para && etki.para > 0) {
@@ -2687,7 +2686,6 @@ async function sonucuUygulaVeIlerlet(
     nakitAkisi.faiz +
     nakitAkisi.mulkNet -
     nakitAkisi.envanterBakim -
-    nakitAkisi.ekstraVergi -
     nakitAkisi.zenginlikSizinti -
     nakitAkisi.rakipSoygun;
   nakitAkisi.digerNet = paraYuvarla(state.para - paraGiris - mutabakatliToplam);

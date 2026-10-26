@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { yonetimYillikUygula, enflasyonCarpani } from "../src/game/stateManager";
-import { yeniOyun, mesleğiAta, yonetimTalebiKararlastir } from "../src/game/gameEngine";
+import { yeniOyun, mesleğiAta, yonetimTalebiKararlastir, senaryoUret, secimUygula, yilGec } from "../src/game/gameEngine";
 import {
   EKSTRA_VERGI_ARALIK_YIL,
   EKSTRA_VERGI_KAR_ESIGI,
-  EKSTRA_VERGI_SURE_YIL,
+  EKSTRA_VERGI_SONSUZ_YIL,
   ekstraVergiCarpani,
   ekstraVergiSonrakiYil,
 } from "../src/data/ekstraVergi";
@@ -61,7 +61,7 @@ describe("yonetimYillikUygula — ekstra vergi talebi", () => {
     expect(t.kimden).toBe("yonetici");
     expect(t.tutar).toBeGreaterThanOrEqual(400);
     expect(t.tutar).toBeLessThanOrEqual(600);
-    expect(t.sonYil).toBe(state.yil + EKSTRA_VERGI_SURE_YIL);
+    expect(t.sonYil).toBe(EKSTRA_VERGI_SONSUZ_YIL);
     expect(state.ekstra_vergi_sonraki_yil).toBeGreaterThanOrEqual(state.yil + 8);
   });
 
@@ -82,15 +82,51 @@ describe("yonetimYillikUygula — ekstra vergi talebi", () => {
     expect(state.yonetim_talep?.tur).not.toBe("vergi");
   });
 
-  it("süre dolunca tutar otomatik tahsil edilir ve ilişki düşer", async () => {
+  it("kâr eşiği 40'tır: 41×enflasyon üstü talep üretir", async () => {
+    expect(EKSTRA_VERGI_KAR_ESIGI).toBe(40);
+    const state = await oturum();
+    karYaz(state, EKSTRA_VERGI_KAR_ESIGI * enflasyonCarpani(state) + 1);
+    state.ekstra_vergi_sonraki_yil = state.yil;
+    yonetimYillikUygula(state, 1);
+    expect(state.yonetim_talep?.tur).toBe("vergi");
+  });
+
+  it("talebin süresi yoktur: yıllar geçse de tutar tahsil edilmez, talep yerinde kalır", async () => {
     const state = await oturum();
     state.yonetim_iliski = 60;
-    state.yonetim_talep = { id: "v1", kimden: "yonetici", kimAdi: "x", tur: "vergi", tutar: 300, kalem: "ekstra vergi", sonYil: state.yil - 1 };
-    const para = state.para;
+    karYaz(state, 200);
+    state.ekstra_vergi_sonraki_yil = state.yil;
     yonetimYillikUygula(state, 1);
-    expect(state.yonetim_talep).toBeNull();
-    expect(state.para).toBe(para - 300);
-    expect(state.yonetim_iliski).toBeLessThan(60);
+    const talep = state.yonetim_talep as YonetimTalep;
+    expect(talep.tur).toBe("vergi");
+    const para = state.para;
+    state.yil += 10;
+    yonetimYillikUygula(state, 2);
+    expect(state.yonetim_talep).toEqual(talep);
+    expect(state.para).toBe(para);
+  });
+});
+
+describe("bekleyen vergi talebi oyunu durdurur", () => {
+  async function bekleyenVergi() {
+    const state = await oturum();
+    state.zaman_modeli = "ilerle";
+    state.yonetim_talep = { id: "v3", kimden: "yonetici", kimAdi: "x", tur: "vergi", tutar: 300, kalem: "ekstra vergi", sonYil: EKSTRA_VERGI_SONSUZ_YIL };
+    return state;
+  }
+
+  it("senaryoUret, secimUygula ve yilGec reddedilir", async () => {
+    const state = await bekleyenVergi();
+    await expect(yilGec(state.id)).rejects.toThrow("ekstra vergi");
+    delete state.zaman_modeli; // klasik mod: senaryo/seçim yolları
+    await expect(senaryoUret(state.id)).rejects.toThrow("ekstra vergi");
+    await expect(secimUygula(state.id, 0)).rejects.toThrow("ekstra vergi");
+  });
+
+  it("öde dedikten sonra akış serbest kalır", async () => {
+    const state = await bekleyenVergi();
+    await yonetimTalebiKararlastir(state.id, "kabul");
+    await expect(yilGec(state.id)).resolves.toBeDefined();
   });
 });
 

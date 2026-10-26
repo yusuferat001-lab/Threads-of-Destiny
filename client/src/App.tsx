@@ -135,8 +135,9 @@ import type { GeriBildirimGirdi, GostergeStat, TeklifHediyesi, DugunButcesi, Tan
 import { sesKapaliMi, sesTercihiKaydet } from './ses';
 import { muzikModunuAyarla, muzikDurdur, muzikSessizAyarla, type MuzikModu } from './muzik';
 import { aktifOturumIdGetir, aktifOturumIdKaydet, aktifOturumIdSil } from './oturum';
-import { ogretiBekliyor } from './ogreti';
+import { ogretiBekliyor, vergiBekliyor } from './ogreti';
 import { OgretiSecimi } from './components/OgretiSecimi';
+import { VergiTalebi } from './components/VergiTalebi';
 import { UrunSecimi } from './components/UrunSecimi';
 import { basarimlariKaydet, basarimlariGetir } from './basarimlar';
 import { gecmisHayatKaydet, gecmisHayatlariGetir, gecmisHayatlariTemizle, gecmisHayatSil, type GecmisHayat, gecmisOlumNedeni } from './gecmisHayatlar';
@@ -870,7 +871,7 @@ function App() {
    * modunda henüz olay çıkmadıysa (ana ekran gösterilir) null döner.
    */
   async function senaryoGerekirseCek(state: CharacterState): Promise<SenaryoResponse | null> {
-    if (ogretiBekliyor(state) || state.urun_secim_bekliyor) return null;
+    if (ogretiBekliyor(state) || state.urun_secim_bekliyor || vergiBekliyor(state)) return null;
     if (state.zaman_modeli === 'ilerle' && !state.olay_bekliyor) return null;
     return (await senaryoGetir(state.id)).senaryo;
   }
@@ -1214,9 +1215,16 @@ function App() {
     setIslemMesaji(null);
     setYukleniyor(true);
     try {
+      const vergiydi = vergiBekliyor(karakter);
       const sonuc = await yonetimTalebiKararlastir(karakter.id, karar);
       setKarakter(sonuc.state);
       setIslemMesaji(sonuc.mesaj);
+      // Vergi yüzünden çekilemeyen bekleyen olay varsa, vergi yanıtlanınca şimdi çek.
+      if (vergiydi && !senaryo && sonuc.state.olay_bekliyor) {
+        const yeni = await senaryoGerekirseCek(sonuc.state);
+        if (yeni) setSenaryo(yeni);
+        setTepkiModu(false);
+      }
       await yonetimTazele(karakter.id);
     } catch (err) {
       setIslemMesaji(temizHata(err));
@@ -2013,6 +2021,15 @@ function App() {
 
       {karakter && karakter.urun_secim_bekliyor && ['oyun', 'sonuc'].includes(ekran) && (
         <UrunSecimi stateId={karakter.id} yukleniyor={yukleniyor} onSec={urunSecHandler} />
+      )}
+
+      {karakter && vergiBekliyor(karakter) && karakter.yonetim_talep && ['oyun', 'sonuc', 'kariyer', 'finans', 'yatirim', 'sosyallesme', 'magaza', 'aile'].includes(ekran) && (
+        <VergiTalebi
+          talep={karakter.yonetim_talep}
+          paraBirimi={karakter.para_birimi}
+          yukleniyor={yukleniyor}
+          onKarar={yonetimTalepHandler}
+        />
       )}
 
       {karakter && ogretiBekliyor(karakter) && ['oyun', 'sonuc', 'kariyer', 'finans', 'yatirim', 'sosyallesme', 'magaza', 'aile'].includes(ekran) && (

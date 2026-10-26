@@ -9,7 +9,7 @@ import { rastgeleKisilikCifti, kisilikGetir } from "../data/kisilikler";
 import { YAS_OLUM_YIL, YAS_TERK_YIL } from "../data/aileSabitleri";
 import { meslekDebuffOrani } from "../data/aranmaSabitleri";
 import { DIN_TALEP_AGIRLIKLARI } from "../data/cemaat";
-import { EKSTRA_VERGI_KAR_ESIGI, EKSTRA_VERGI_SURE_YIL, ekstraVergiSonrakiYil, ekstraVergiCarpani } from "../data/ekstraVergi";
+import { EKSTRA_VERGI_KAR_ESIGI, EKSTRA_VERGI_SONSUZ_YIL, ekstraVergiSonrakiYil, ekstraVergiCarpani } from "../data/ekstraVergi";
 import {
   rutbeTanimiGetir,
   RutbeEsigi,
@@ -1807,15 +1807,19 @@ export const CAPRAZ_SAGLIK_ESIGI = 10;
 export const CAPRAZ_ARDISIK_YIL = 2;
 export const CAPRAZ_MUTLULUK_YILLIK = 1;
 
-/** Pasif şöhret erimesi: 60-75 arası yılda −1, 75'in üstü yılda −2 (altı etkilenmez). */
-export const SOHRET_EROME_ESIGI = 60;
-export const SOHRET_EROME_YUKSEK_ESIGI = 75;
-export const SOHRET_EROME_ORTA_YILLIK = 1;
-export const SOHRET_EROME_YUKSEK_YILLIK = 2;
+/** Pasif şöhret erimesi: [alt sınır, yıllık kayıp] — 40-50 −1, 50-65 −2, 65-80 −3, 80-100 −4 (40 altı etkilenmez). */
+export const SOHRET_EROME_BANTLARI: ReadonlyArray<readonly [number, number]> = [
+  [40, 1],
+  [50, 2],
+  [65, 3],
+  [80, 4],
+];
 export function sohretErimesiYillik(un: number): number {
-  if (un > SOHRET_EROME_YUKSEK_ESIGI) return SOHRET_EROME_YUKSEK_YILLIK;
-  if (un >= SOHRET_EROME_ESIGI) return SOHRET_EROME_ORTA_YILLIK;
-  return 0;
+  let kayip = 0;
+  for (const [esik, yillik] of SOHRET_EROME_BANTLARI) {
+    if (un >= esik) kayip = yillik;
+  }
+  return kayip;
 }
 
 // Evlilik ↔ mutluluk pasif sürüklenmesi (kullanıcı isteği: "evli olmamak mutluluk
@@ -2179,17 +2183,8 @@ export function yonetimYillikUygula(state: CharacterState, yasArtisi: number): s
   }
 
   // Bekleyen talebin süresi doldu mu?
-  if (state.yonetim_talep && state.yil > state.yonetim_talep.sonYil && state.yonetim_talep.tur === "vergi") {
-    // Ekstra vergi cevapsız kalırsa tutar kendiliğinden tahsil edilir (borca girilebilir) ve yönetici soğur.
-    const t = state.yonetim_talep;
-    state.para = paraYuvarla(state.para - t.tutar);
-    state.yonetim_iliski = Math.max(0, state.yonetim_iliski - YONETIM_TALEP_SURESI_DOLMA_CEZA);
-    not = T(state.dil, "{0} ekstra vergiyi senin adına tahsil etti: {1} {birim}.", [yoneticiBilgisi(state).ad, t.tutar]).replace(
-      /\{birim\}/g,
-      state.para_birimi
-    );
-    state.yonetim_talep = null;
-  } else if (state.yonetim_talep && state.yil > state.yonetim_talep.sonYil) {
+  // Ekstra vergi talebinin süresi yoktur: oyuncu yanıtlayana dek (zorunlu pencere) bekler.
+  if (state.yonetim_talep && state.yonetim_talep.tur !== "vergi" && state.yil > state.yonetim_talep.sonYil) {
     const t = state.yonetim_talep;
     if (t.kimden === "yonetici") {
       state.yonetim_iliski = Math.max(0, state.yonetim_iliski - YONETIM_TALEP_SURESI_DOLMA_CEZA);
@@ -2221,7 +2216,7 @@ export function yonetimYillikUygula(state: CharacterState, yasArtisi: number): s
           tur: "vergi",
           tutar: paraYuvarla(brutKar * ekstraVergiCarpani(state.yonetim_iliski)),
           kalem: "ekstra vergi",
-          sonYil: state.yil + EKSTRA_VERGI_SURE_YIL,
+          sonYil: EKSTRA_VERGI_SONSUZ_YIL,
         };
         state.yonetim_talep = vergi;
         state.ekstra_vergi_sonraki_yil = ekstraVergiSonrakiYil(state.yil);

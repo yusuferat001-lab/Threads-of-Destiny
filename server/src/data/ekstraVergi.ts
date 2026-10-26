@@ -1,7 +1,7 @@
 /**
  * Ekstra vergi (şehir yöneticisi): işletmeli mesleklerde (Tüccar, Zanaatkâr, Din Adamı) kâr
  * eşiği aşılınca 8-9 yılda bir yönetici, son yılın brüt kârının 2-3 katını ister. Oyuncu öder
- * ya da rüşvet verir; karar vermezse süre dolunca tutar otomatik tahsil edilir.
+ * ya da rüşvet verir; yanıtlamadan oyun ilerlemez (zorunlu pencere), süre sınırı yoktur.
  * Tüm sayılar tek yerde (oyuncuya GÖSTERİLMEZ, yalnız talep tutarı görünür).
  */
 
@@ -9,15 +9,20 @@
 export const EKSTRA_VERGI_ARALIK_YIL: [number, number] = [8, 9];
 
 /** Talep, son yılın brüt kârı bu eşiğin (× enflasyon çarpanı) üstündeyse üretilir. */
-export const EKSTRA_VERGI_KAR_ESIGI = 50;
+export const EKSTRA_VERGI_KAR_ESIGI = 40;
 
 /** Tutar = brüt kâr × çarpan. Çarpan 2-3 arası rastgele; ilişki iyiyse alt uca, kötüyse üst uca iner. */
 export const EKSTRA_VERGI_CARPAN_ARALIK: [number, number] = [2, 3];
 export const EKSTRA_VERGI_IYI_ILISKI = 70;
 export const EKSTRA_VERGI_KOTU_ILISKI = 25;
 
-/** Talep süresi (yıl). Dolunca tutar otomatik tahsil edilir. */
-export const EKSTRA_VERGI_SURE_YIL = 2;
+/** Talebin süresi yoktur: oyuncu yanıtlayana dek oyun ilerlemez (`sonYil` yalnız tip uyumu için bu değeri taşır). */
+export const EKSTRA_VERGI_SONSUZ_YIL = 99999;
+
+/** Bekleyen ekstra vergi talebi var mı? (zorunlu pencere; zaman ilerleten yollar bu iken reddedilir.) */
+export function vergiBekliyorMu(state: { yonetim_talep?: { tur: string } | null }): boolean {
+  return state.yonetim_talep?.tur === "vergi";
+}
 
 /** Ödeme: ilişki kazancı. */
 export const EKSTRA_VERGI_ODEME_ILISKI = 4;
