@@ -145,8 +145,8 @@ describe("işletme (Tüccar dilimi)", () => {
     // Gecikmeli: bu yıl müşteri kaybı yok, karşılanamayanın yarısı gelecek yıla devreden bekleyen kayıp olur.
     expect(s.isletme!.bekleyen_musteri_kaybi).toBeGreaterThan(0);
     const beklenen = s.isletme!.bekleyen_musteri_kaybi!;
-    // Depo boş ve elle doldurulmadı: talebin tamamı karşılanamadı → kayıp tavana (%10) dayanır.
-    expect(beklenen).toBeGreaterThan(musteriYilBasi * 0.05);
+    // Depo boş ve elle doldurulmadı: talebin tamamı karşılanamadı → p≈1 → müşterinin ~%10'u gidecek.
+    expect(beklenen).toBeGreaterThan(musteriYilBasi * 0.08);
     expect(beklenen).toBeLessThanOrEqual(musteriYilBasi * 0.1001);
     s.isletme!.hatlar.find((h) => h.acik)!.stok = 10000; // ikinci yıl mal yeter
     s.isletme!.depo_oto = { acik: false, yuzde: 50 };
