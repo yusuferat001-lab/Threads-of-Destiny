@@ -7,7 +7,7 @@ import {
   depoKapasiteTablosu,
   GUVENLIK_YATIRIM_KORUMA,
   KERVAN_INDIRIM_KADEME,
-  TANITIM_MUSTERI_KADEME,
+  TANITIM_MUSTERI,
   TEZGAH_URETIM_KADEME,
 } from "./isletme";
 import { ASEVI_KADEME_ETKISI, BINA_BAKIM, BINA_KAPASITE, OKUL_MEZUN_SANSI } from "../data/cemaat";
@@ -53,7 +53,7 @@ export function yatirimEtkiMetni(etki: YatirimEtkisi, kademe: number, enflasyon:
     case "uretim":
       return dili((d) => (k === 0 ? (d === "tr" ? "Etki yok" : "No effect") : `${d === "tr" ? "Üretim tavanı" : "Production cap"} ${art(k * TEZGAH_URETIM_KADEME * 100, d)}`));
     case "pazar":
-      return dili((d) => (k === 0 ? (d === "tr" ? "Etki yok" : "No effect") : `${d === "tr" ? "Müşteri artışı" : "Customer growth"} +${k * TANITIM_MUSTERI_KADEME} ${d === "tr" ? "müşteri/yıl" : "customers/yr"}`));
+      return dili((d) => (k === 0 ? (d === "tr" ? "Etki yok" : "No effect") : `${d === "tr" ? "Müşteri artışı" : "Customer growth"} +${TANITIM_MUSTERI[Math.min(k, TANITIM_MUSTERI.length - 1)]} ${d === "tr" ? "müşteri/yıl" : "customers/yr"}`));
     case "koruma": {
       const i = Math.min(k, GUVENLIK_YATIRIM_KORUMA.length - 1);
       return dili((d) => (i === 0 ? (d === "tr" ? "Etki yok" : "No effect") : `${d === "tr" ? "Koruma" : "Protection"} +${d === "tr" ? String(GUVENLIK_YATIRIM_KORUMA[i]).replace(".", ",") : String(GUVENLIK_YATIRIM_KORUMA[i])}`));

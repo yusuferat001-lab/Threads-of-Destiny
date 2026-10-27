@@ -402,18 +402,18 @@ describe("cemaat — rakip saldırıları, veba kararı, Yap/Yapma", () => {
     expect(cemaatHesapla(s, isletmeBaglami(s), 0.75).bagis / normal).toBeCloseTo(1.1, 3);
   });
 
-  it("eş desteği yıllık müşteri artışıdır (+%0,1/0,2/0,3); eşsizken 0", async () => {
+  it("eş desteği yıllık müşteri artışıdır (eş bonusu 6+ → +1 müşteri); eşsizken 0", async () => {
     const { esMusteriBuyumesi } = await import("../src/game/isletme");
     const s = await din();
     s.es_adi = null;
     expect(esMusteriBuyumesi(s)).toBe(0);
     s.es_adi = "Eş";
     s.es_meslek_bonusu = 2;
-    expect(esMusteriBuyumesi(s)).toBe(0.001);
+    expect(esMusteriBuyumesi(s)).toBe(0);
     s.es_meslek_bonusu = 4;
-    expect(esMusteriBuyumesi(s)).toBe(0.002);
+    expect(esMusteriBuyumesi(s)).toBe(0);
     s.es_meslek_bonusu = 6;
-    expect(esMusteriBuyumesi(s)).toBe(0.003);
+    expect(esMusteriBuyumesi(s)).toBe(1);
   });
 
   it("Din Adamı talepleri: açıklama %50 / bağış %30 / destek %20; Yap otoriteyi artırır, Yapma düşürür; yalan reddedilir", async () => {
@@ -471,17 +471,17 @@ describe("cemaat — eski kayıt göçü ve aranma/yatkınlık", () => {
     expect(aranan.ahlak).toBeLessThan(temiz.ahlak);
   });
 
-  it("mesleğe yatkınlık gelir yerine müşteri büyümesi sağlar (Mükemmel +%1/yıl, Kötü −%0.4/yıl)", async () => {
+  it("mesleğe yatkınlık gelir yerine inanan artışı sağlar (Mükemmel +2/yıl, Kötü −1/yıl; kalem inanan sayısına oranlanır)", async () => {
     const s = await din();
-    const kalem = () => cemaatEtkenleri(s).kalemler.find((k) => k.kod === "yatkinlik")!.deger;
+    const kalem = () => cemaatEtkenleri(s).kalemler.find((k) => k.kod === "yatkinlik")!.deger * Math.max(1, s.meslek_musteri);
     s.meslek_yatkinlik_seviyesi = 2;
     expect(kalem()).toBe(0);
     s.meslek_yatkinlik_seviyesi = 5;
-    expect(kalem()).toBeCloseTo(0.01);
+    expect(kalem()).toBeCloseTo(2);
     s.meslek_yatkinlik_seviyesi = 4;
-    expect(kalem()).toBeCloseTo(0.006);
+    expect(kalem()).toBeCloseTo(1);
     s.meslek_yatkinlik_seviyesi = 1;
-    expect(kalem()).toBeCloseTo(-0.004);
+    expect(kalem()).toBeCloseTo(-1);
   });
 
   it("başlangıç ahlak 20–60 ve şöhret 0–40 bandında", () => {

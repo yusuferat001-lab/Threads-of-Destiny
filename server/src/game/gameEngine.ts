@@ -825,7 +825,7 @@ const OLAY_PARA_PRIMI = 0.8925;
 /**
  * Çifte kazanç önlemi (2026-10): işletmesi olan oyuncunun KENDİ meslek kategorisindeki
  * olaylardan gelen pozitif para yarıya iner; kalan yarısı müşteri kitlesine
- * çevrilir (10 kırpılan para ≈ 1 müşteri, en çok +3). Olay metinlerine dokunulmaz.
+ * çevrilir (10 kırpılan para ≈ 1 müşteri, en çok +4). Olay metinlerine dokunulmaz.
  */
 /** Olaylardan gelen müşteri tam sayıya yuvarlanır (0'a yuvarlanan sessizce atlanır). */
 function musteriEkleTam(state: CharacterState, delta: number): void {
@@ -838,7 +838,7 @@ export function ciftKazancKirp(state: CharacterState, etki: SonucEtkisi, kategor
   if (!isletmeAktif(state) || MESLEK_KATEGORI[state.meslek] !== kategori) return;
   const yarisi = etki.para / 2;
   etki.para = paraYuvarla(yarisi);
-  musteriEkleTam(state, Math.min(3, yarisi / (10 * enflasyonCarpani(state))));
+  musteriEkleTam(state, Math.min(4, yarisi / (10 * enflasyonCarpani(state))));
 }
 
 

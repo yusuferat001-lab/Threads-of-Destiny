@@ -52,7 +52,7 @@ import {
   pazarPayiHesapla,
   rakipSaldiriKademesi,
   rastgeleSaldiriYili,
-  sohretPayBuyumesi,
+  sohretMusteriSayisi,
 } from "../data/pazar";
 import { yatirimYillikMasrafi } from "./yatirimMasrafi";
 import { musteriAktar, musteriKaydir, pazarOlcekle, piyasaCarpani, rakipGrubu } from "./piyasa";
@@ -71,6 +71,7 @@ import {
   imtiyazAktifMi,
   korumaHesapla,
   loncaAidatiOrani,
+  olasilikliYuvarla,
   pazarBuyumeOrani,
   sureleriKontrolEt,
   tanitimBuyumesi,
@@ -356,6 +357,9 @@ export interface CemaatEtkenleri {
   fanatiklikDegisim: number;
 }
 
+/** v27: pazar büyüdüğü için yüzdelik inanan kalemleri bu çarpanla ölçeklenir; yıllık toplam tam sayıya yuvarlanır. */
+export const CEMAAT_INANAN_OLCEK = 1.25;
+
 /** Bu yılın inanan büyümesi (kesir), ahlak ve otorite etkisi; `cemaatYilIsle` ve görünüm kullanır. */
 export function cemaatEtkenleri(state: CharacterState): CemaatEtkenleri {
   const is = state.isletme!;
@@ -368,17 +372,18 @@ export function cemaatEtkenleri(state: CharacterState): CemaatEtkenleri {
   const yE = yardimEtkisiCarpani(state, o);
   const altC = cm.kitle === "alt" ? o.altKitle : 1;
   const acik = acikFaaliyetler(state);
+  const kitleBoyu = Math.max(1, state.meslek_musteri);
   const kalemler: { kod: string; deger: number }[] = [
-    { kod: "sohret", deger: sohretPayBuyumesi(state.un) },
-    { kod: "ahlak", deger: ahlakInananEtkisi(state.ahlak) },
-    { kod: "bagis", deger: bp.inanan },
-    { kod: "kitle", deger: kitle.inanan * (kitle.inanan > 0 ? altC : 1) },
-    { kod: "yardim", deger: yp.inanan * (yp.inanan > 0 ? yE : 1) },
-    { kod: "faaliyet", deger: acik.reduce((t, f) => t + f.inanan, 0) },
-    { kod: "ogreti", deger: o.inanan },
-    { kod: "tanitim", deger: tanitimBuyumesi(state) / Math.max(1, state.meslek_musteri) },
-    { kod: "davetci", deger: bon.musteri / Math.max(1, state.meslek_musteri) },
-    { kod: "yatkinlik", deger: yatkinlikMusteriBuyumesi(state) },
+    { kod: "sohret", deger: sohretMusteriSayisi(state.un) / kitleBoyu },
+    { kod: "ahlak", deger: ahlakInananEtkisi(state.ahlak) * CEMAAT_INANAN_OLCEK },
+    { kod: "bagis", deger: bp.inanan * CEMAAT_INANAN_OLCEK },
+    { kod: "kitle", deger: kitle.inanan * (kitle.inanan > 0 ? altC : 1) * CEMAAT_INANAN_OLCEK },
+    { kod: "yardim", deger: yp.inanan * (yp.inanan > 0 ? yE : 1) * CEMAAT_INANAN_OLCEK },
+    { kod: "faaliyet", deger: acik.reduce((t, f) => t + f.inanan, 0) * CEMAAT_INANAN_OLCEK },
+    { kod: "ogreti", deger: o.inanan * CEMAAT_INANAN_OLCEK },
+    { kod: "tanitim", deger: tanitimBuyumesi(state) / kitleBoyu },
+    { kod: "davetci", deger: bon.musteri / kitleBoyu },
+    { kod: "yatkinlik", deger: yatkinlikMusteriBuyumesi(state) / kitleBoyu },
     { kod: "fanatik", deger: -FANATIK_KACIS_KATSAYI * cm.fanatiklik * o.fanatikKacis },
   ];
   const toplam = kalemler.reduce((t, k) => t + k.deger, 0);
@@ -509,7 +514,7 @@ export function cemaatYilIsle(state: CharacterState, b: IsletmeBaglami): Isletme
   const mevcutPay = pazarPayiHesapla(state);
   const vebaKisma = state.veba?.aktif ? VEBA_ARTIS_CARPANI : 1;
   const yuzde = etken.toplam > 0 ? etken.toplam * Math.max(0, 1 - mevcutPay / PAY_DOYMA_ESIGI) * vebaKisma : etken.toplam;
-  musteriKaydir(state, "oyuncu", state.meslek_musteri * yuzde);
+  musteriKaydir(state, "oyuncu", olasilikliYuvarla(state.meslek_musteri * yuzde));
   const aranmaKaybi = aranmaMusteriKaybi(state.suc_seviyesi);
   if (aranmaKaybi > 0) musteriKaydir(state, "oyuncu", -state.meslek_musteri * aranmaKaybi);
 

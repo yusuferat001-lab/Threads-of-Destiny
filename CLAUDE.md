@@ -1950,3 +1950,29 @@ Bu blok §45 v18'in "rekabet aşınması" ve yüzdelik tanıtım/çalışan bonu
 - **Zanaatkâr da Tüccar gibi depo tam dolu ve borçsuz başlar** (`baslangicDepoDoluluk/VeresiyeOrani`); Din Adamı'nda stok yok.
 - **Din Adamı:** ayine gelme oranı normal 0,78–0,86 (kıtlık 0,72–0,80, savaş 0,68–0,78, veba aynı), bağış yapan oranı tabanı 0,65 (`BAGIS_TABAN_ORANI`).
 - **Ölçüm** (`scripts/simulateIsletme.ts`, N=100, 55+ yaş net / pay): pasif Tüccar OÇ 21 / %10,7 (batan %2), aktif 79 / %35,5 (batan %31); Zanaatkâr OÇ pasif 23 / %9,5, aktif 101 / %28 (%15); Zanaatkâr SD aktif batan %46 (stok bitme sarmalı); Din aktif OÇ/SD 129/202, batan %0. Pasif oyuncu artık neredeyse hiç batmıyor (aşınma kalktığı için).
+
+### §45 v20 (2026-10) — Veresiye alım, hırsızlık nakit hasarı yarıya, rakip hamlesi herkesten çalar, müşteri artışı kaynakları tam sayı ×1,25
+Bu blok §45 v19'un üzerine yazar.
+- **Batma teşhisi (sim, N=80, aktif bot):** aktif oyuncunun batmasının asıl sebebi dış hırsızlıktı. Hırsızlık kapalıyken Tüccar SD batma %33→%5, Zanaatkâr SD %49→%10; rakip saldırısı etkisiz (%33→%33), rakip hamlesi küçük (%33→%26). Nakit eksiye düşünce depo planı hiç mal alamıyor → satış 0 → müşteri erimesi, çıkış yoktu.
+- **Veresiye alım** (`isletme.ts depoDoldurPlani/depoyuDoldur`, `VERESIYE_TAVAN_ORANI=0,6`): nakit yetmeyen kısım tedarikçiden veresiye alınır (`tedarikci_borcu` artar, `BORC_ODEME_ORANI` ile kârdan %25 ödenir). Toplam veresiye borcu tam bir depo dolumunun %60'ını aşamaz; para eksideyken de alım yapılır, nakit eksiye düşmez. `DepoDoldurPlani.veresiye` alanı; `pasifEkonomiUygula` nakitten yalnız `maliyet − veresiye` düşer.
+- **Hırsızlıkta çalınan nakit yarıya:** ağır 15–22 / rahat 10–15 / kısmi 0–4 (önceki yıl satışının %'si); stok kaybı (40–55 / 25–40 / 6–14) ve 9–11 yıl takvimi aynı.
+- **Rakip hamlesi kendi hariç tüm pazardan alır:** `fiyat_kirdi` (3–7) ve `urun_satmaya_basladi` (2–5) artık rakibin TAM SAYI kazancı olarak tanımlı ve `musteriKaydir(grup, +sayi)` ile oyuncu + küçük esnaf + öbür rakipten büyüklükleriyle orantılı alınır (oyuncunun fiyatı zaten ucuzsa kazanç yarıya iner); `HAMLE_ETKI_CARPANI` 1,25 → 1,5. Oyuncunun kaybı payıyla orantılıdır.
+- **Müşteri artışı kaynakları (pazar ~×1,25 büyüdü) — hepsi yıllık TAM sayı:**
+
+| Kaynak | Eski | Yeni |
+|---|---|---|
+| Tanıtım K1/K2/K3/K4 (`TANITIM_MUSTERI`) | +1/+2/+3/+4 | +1/+3/+4/+5 |
+| Müşteri rolü çalışan (`calisanBonusu`) | 1+3·Yetenek | `round(1,25·(1+3·Yetenek)·sadık)` → +1…+5 |
+| Şöhret (`sohretMusteriSayisi`) | −0,4%…+1% | ≤10: −1 · 11–75: 0 · 76–90: +1 · >90: +2 |
+| Her ek açık hat (`HAT_CESITLILIK_MUSTERI`) | +%0,5 | +1 |
+| Fiyat politikası −20/−10/0/+10/+20 | +2%/+1%/0/−1%/−2% | +3/+1/0/−1/−3 |
+| Mesleğe yatkınlık kötü…mükemmel (`YATKINLIK_TIER_ETKILERI.musteriBuyumesi`) | −0,4%…+1% | −1/0/+1/+1/+2 |
+| Eş bonusu (`esMusteriBuyumesi`) | +%0,1/0,2/0,3 | bonus ≥6: +1, aksi 0 |
+| Mesleğe uygun kategori başarısı (`MUSTERI_KATEGORI_BASARI`) | +3 | +4 |
+| Çift-kazanç kırpması tavanı (`ciftKazancKirp`) | 3 | 4 |
+
+  Olay `pazar_payi_artis`, karanlık iş `musteri` (P/416), olay `maas_carpani`, rakip yenilince ve okul misyoneri zaten pazarla/kendi müşterisiyle ölçeklendiği için değişmedi. `isletmeYilIsle` adım 7 artık kaynakları SAYI olarak toplar; pozitif toplam pay doyması (`PAY_DOYMA_ESIGI`) ve veba kısmasıyla çarpılır, sonuç `olasilikliYuvarla` (beklenen değeri koruyan tam sayı yuvarlaması) ile tam sayıya indirilir.
+- **Din Adamı:** şöhret/yatkınlık/tanıtım/davetçi aynı tam sayı kaynaklardır (`cemaatEtkenleri` kalemleri inanan sayısına oranlanır); ahlak bandı/bağış/vaaz kitlesi/yardım/faaliyet/öğreti yüzdelik kalemleri `CEMAAT_INANAN_OLCEK=1,25` ile ölçeklenir ve yıllık toplam `olasilikliYuvarla` ile tam sayıya yuvarlanır.
+- **Ölçüm** (`scripts/simulateIsletme.ts`, N=100; 55+ yaş dükkân neti / pay / cebine kalan; batan %):
+  pasif — Tüccar OÇ/SD 26/%12 · 48/%13 (batan %1/%1); Zanaatkâr OÇ/SD 26/%11 · 30/%11 (%9/%8); Din OÇ/SD 30/%8,5 · 42/%7 (%8/%20).
+  aktif — Tüccar OÇ/SD 111/%43 · 178/%42 (batan %0/%2); Zanaatkâr OÇ/SD 115/%32 · 129/%31 (%1/%6); Din OÇ/SD 131/%30 · 184/%29 (%0/%0). Aktif 55+ cebine kalan: Tüccar 23/59, Zanaatkâr 26/32, Din 24/30.

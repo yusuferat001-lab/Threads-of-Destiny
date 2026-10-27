@@ -120,21 +120,21 @@ export const SAVAS_TALEP_ARTISI: DilliMetin = { tr: "Savaşta talebi artar", en:
 
 export const FIYAT_ARTI_EKSI: Record<IsletmeFiyat, DilliMetin> = {
   eksi20: {
-    tr: "Fiyat −%20: talep ≈ +%20, birim kâr az. Müşterin yılda +%2 büyür.",
-    en: "Price −20%: demand ≈ +20%, thin margin. Your customers grow +2% a year.",
+    tr: "Fiyat −%20: talep ≈ +%20, birim kâr az. Yılda +3 müşteri kazanırsın.",
+    en: "Price −20%: demand ≈ +20%, thin margin. You gain +3 customers a year.",
   },
   eksi10: {
-    tr: "Fiyat −%10: talep ≈ +%9, birim kâr biraz düşer. Müşterin yılda +%1 büyür.",
-    en: "Price −10%: demand ≈ +9%, slightly lower margin. Your customers grow +1% a year.",
+    tr: "Fiyat −%10: talep ≈ +%9, birim kâr biraz düşer. Yılda +1 müşteri kazanırsın.",
+    en: "Price −10%: demand ≈ +9%, slightly lower margin. You gain +1 customer a year.",
   },
   normal: { tr: "Piyasa fiyatı. Dengeli.", en: "Market price. Balanced." },
   arti10: {
-    tr: "Fiyat +%10: talep ≈ −%7, birim kâr artar. Müşterin yılda −%1 azalır.",
-    en: "Price +10%: demand ≈ −7%, better margin. Your customers drop 1% a year.",
+    tr: "Fiyat +%10: talep ≈ −%7, birim kâr artar. Yılda 1 müşteri kaybedersin.",
+    en: "Price +10%: demand ≈ −7%, better margin. You lose 1 customer a year.",
   },
   arti20: {
-    tr: "Fiyat +%20: talep ≈ −%14, birim kâr yüksek. Müşterin yılda −%2 azalır.",
-    en: "Price +20%: demand ≈ −14%, high margin. Your customers drop 2% a year.",
+    tr: "Fiyat +%20: talep ≈ −%14, birim kâr yüksek. Yılda 3 müşteri kaybedersin.",
+    en: "Price +20%: demand ≈ −14%, high margin. You lose 3 customers a year.",
   },
 };
 
@@ -157,8 +157,8 @@ const YATIRIM_TANITIM: YatirimTanimi = {
   simge: "📣",
   ad: { tr: "Tanıtım", en: "Advertising" },
   aciklama: {
-    tr: "Her kademe yılda +1 müşteri kazandırır (4. kademede +4).",
-    en: "Each tier brings +1 customer a year (+4 at tier 4).",
+    tr: "Yılda müşteri kazandırır: 1. kademe +1, 2. +3, 3. +4, 4. +5.",
+    en: "Brings customers a year: tier 1 +1, tier 2 +3, tier 3 +4, tier 4 +5.",
   },
   etki: "pazar",
   fiyatlar: katla(20),
@@ -286,19 +286,19 @@ export const ROL_ACIKLAMALARI: Record<"ticaret" | "uretim" | "cemaat", Record<Is
   cemaat: {
     ana: { tr: "Bağışları artırır", en: "Raises donations" },
     maliyet: { tr: "Faaliyet masraflarını düşürür", en: "Lowers activity costs" },
-    musteri: { tr: "Yılda +1…+4 inanan kazandırır", en: "Brings +1…+4 worshippers a year" },
+    musteri: { tr: "Yılda +1…+5 inanan kazandırır", en: "Brings +1…+5 worshippers a year" },
     guvenlik: { tr: "Kumbarayı ve ibadethaneyi korur", en: "Protects the offering box and sanctuary" },
   },
   ticaret: {
     ana: { tr: "Yıllık satışı artırır", en: "Raises yearly sales" },
     maliyet: { tr: "Mal alış maliyetini düşürür", en: "Lowers purchase costs" },
-    musteri: { tr: "Yılda +1…+4 müşteri kazandırır", en: "Brings +1…+4 customers a year" },
+    musteri: { tr: "Yılda +1…+5 müşteri kazandırır", en: "Brings +1…+5 customers a year" },
     guvenlik: { tr: "Hırsızlığa karşı korur", en: "Protects against theft" },
   },
   uretim: {
     ana: { tr: "Yıllık üretimi artırır", en: "Raises yearly production" },
     maliyet: { tr: "Hammadde giderini düşürür", en: "Lowers material costs" },
-    musteri: { tr: "Yılda +1…+4 müşteri kazandırır", en: "Brings +1…+4 customers a year" },
+    musteri: { tr: "Yılda +1…+5 müşteri kazandırır", en: "Brings +1…+5 customers a year" },
     guvenlik: { tr: "Hırsızlığa karşı korur", en: "Protects against theft" },
   },
 };

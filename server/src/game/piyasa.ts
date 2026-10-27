@@ -288,12 +288,13 @@ function rakipHamlesiUygula(state: CharacterState, r: Rakip): void {
   let yuzde = rnd(hamle.yuzde[0], hamle.yuzde[1]) * HAMLE_ETKI_CARPANI;
   const ucuz = hamle.fiyatKarsiligi && state.meslek !== "Din Adamı" && oyuncuFiyatUcuzMu(state);
   if (ucuz) yuzde *= 0.5;
-  if (hamle.hedef === "oyuncu") {
-    // Doğrudan saldırı müşteri SAYISI olarak tanımlıdır (tam sayı); fiyatı zaten ucuzsa yarıya iner.
-    const [a, b] = hamle.sayi ?? [1, 2];
+  if (hamle.sayi) {
+    // Rakibin kazancı müşteri SAYISI olarak tanımlıdır (tam sayı); kendi hariç tüm pazardan (oyuncu, küçük esnaf, öbür rakip)
+    // büyüklükleriyle orantılı alınır. Oyuncunun fiyatı zaten ucuzsa kazanç yarıya iner.
+    const [a, b] = hamle.sayi;
     let sayi = a + Math.floor(Math.random() * (b - a + 1));
     if (ucuz) sayi = Math.max(1, Math.ceil(sayi / 2));
-    musteriAktar(state, "oyuncu", grup, Math.min(sayi, d0.oyuncu));
+    musteriKaydir(state, grup, sayi);
   } else {
     musteriKaydir(state, grup, (hamle.yon === "buyur" ? 1 : -1) * r.musteri * yuzde);
   }

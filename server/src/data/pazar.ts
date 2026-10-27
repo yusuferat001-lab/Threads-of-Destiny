@@ -35,7 +35,7 @@ export const MUSTERI_YILLIK_RUTBE = 0.3;
 /** Hapiste/yolculuktayken pazardan uzak kalmanın yıllık müşteri kaybı (kendi müşterisinin kesri). */
 export const MUSTERI_YOKLUK_KAYBI = 0.03;
 /** Mesleğine uygun kategoride başarılı her olay oyuncuya bu kadar müşteri kazandırır (tecrübe hızıyla çarpılır). */
-export const MUSTERI_KATEGORI_BASARI = 3;
+export const MUSTERI_KATEGORI_BASARI = 4;
 /** Pazar payı başına yıllık kariyer puanı katkısı (pay 0.40 → +2.4/yıl). */
 export const PAZAR_KARIYER_PUANI_YILLIK = 6;
 /** Bir rakip yenildikten sonra yeni rakibin ortaya çıkması için beklenen yıl aralığı. */
@@ -140,6 +140,13 @@ export function sohretPayBuyumesi(un: number): number {
   if (un <= 75) return 0.003;
   if (un <= 90) return 0.006;
   return 0.01;
+}
+/** v27: şöhretten gelen yıllık müşteri SAYISI (işletmeli meslekler): <=10 → −1 · 11–75 → 0 · 76–90 → +1 · >90 → +2. */
+export function sohretMusteriSayisi(un: number): number {
+  if (un <= 10) return -1;
+  if (un <= 75) return 0;
+  if (un <= 90) return 1;
+  return 2;
 }
 export function sohretOtoriteIliskisi(un: number): number {
   if (un <= 10) return -0.15;

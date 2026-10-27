@@ -76,10 +76,11 @@ describe("piyasa akışı (rakip + küçük esnaf hareketleri, haberler)", () =>
     expect(adet()).toBeGreaterThanOrEqual(once);
   });
 
-  it("saldırgan hamleler (fiyat kırdı, ürün satmaya başladı) hedeflidir: oyuncunun müşterisinin %'si", () => {
+  it("saldırgan hamleler (fiyat kırdı, ürün satmaya başladı): rakibin tam sayı kazancı kendi hariç tüm pazardan alınır", () => {
     for (const id of ["fiyat_kirdi", "urun_satmaya_basladi"]) {
       const h = RAKIP_HAMLELERI.find((x) => x.id === id)!;
-      expect(h.hedef).toBe("oyuncu");
+      expect(h.hedef).toBeUndefined();
+      expect(h.sayi).toBeDefined();
       expect(h.yon).toBe("buyur");
     }
     expect(RAKIP_HAMLELERI.find((x) => x.id === "urun_satmaya_basladi")!.urunlu).toBe(true);

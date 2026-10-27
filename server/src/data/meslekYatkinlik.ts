@@ -33,25 +33,25 @@ export interface YatkinlikTierEtkisi {
   maasCarpani: number;
   /** kariyer_puani kazanç hızına (pasif kıdem + kendi kategorindeki başarı bonusu) uygulanan oransal katkı. */
   tecrubeHizi: number;
-  /** v10: işletmeli üç meslekte (Tüccar/Zanaatkâr/Din) yıllık müşteri/inanan büyümesine eklenen kesir (gelire DEĞİL, müşteriye işler). */
+  /** v27: işletmeli üç meslekte (Tüccar/Zanaatkâr/Din) yıllık müşteri/inanan büyümesine eklenen TAM SAYI (gelire DEĞİL, müşteriye işler). */
   musteriBuyumesi: number;
 }
 
 /**
  * v10 — 5 kademe (Çok İyi eklendi):
- *  <= -5  (Kötü)      → Zar -%15 · Maaş -%6  · Tecrübe -%15 · Müşteri -%0.4/yıl
+ *  <= -5  (Kötü)      → Zar -%15 · Maaş -%6  · Tecrübe -%15 · Müşteri -1/yıl
  *  -4..+4 (Nötr)       → etkisiz (%0), ekranda hiç metin gösterilmez
- *  +5..+11 (İyi)       → Zar +%10 · Maaş +%2  · Tecrübe +%7  · Müşteri +%0.3/yıl
- *  +12..+19 (Çok İyi)  → Zar +%15 · Maaş +%4  · Tecrübe +%11 · Müşteri +%0.6/yıl
- *  >= +20 (Mükemmel)   → Zar +%20 · Maaş +%10 · Tecrübe +%15 · Müşteri +%1.0/yıl (+ tek seferlik şöhret bonusu)
+ *  +5..+11 (İyi)       → Zar +%10 · Maaş +%2  · Tecrübe +%7  · Müşteri +1/yıl
+ *  +12..+19 (Çok İyi)  → Zar +%15 · Maaş +%4  · Tecrübe +%11 · Müşteri +1/yıl
+ *  >= +20 (Mükemmel)   → Zar +%20 · Maaş +%10 · Tecrübe +%15 · Müşteri +2/yıl (+ tek seferlik şöhret bonusu)
  * Maaş çarpanı yalnız Asker'in eski maaş formülünde etkilidir; işletmeli üç meslekte gelire değil müşteri büyümesine işler.
  */
 export const YATKINLIK_TIER_ETKILERI: Record<YatkinlikTierId, YatkinlikTierEtkisi> = {
-  kotu: { zarBonusu: -0.15, maasCarpani: -0.06, tecrubeHizi: -0.15, musteriBuyumesi: -0.004 },
+  kotu: { zarBonusu: -0.15, maasCarpani: -0.06, tecrubeHizi: -0.15, musteriBuyumesi: -1 },
   notr: { zarBonusu: 0, maasCarpani: 0, tecrubeHizi: 0, musteriBuyumesi: 0 },
-  iyi: { zarBonusu: 0.1, maasCarpani: 0.02, tecrubeHizi: 0.07, musteriBuyumesi: 0.003 },
-  cokiyi: { zarBonusu: 0.15, maasCarpani: 0.04, tecrubeHizi: 0.11, musteriBuyumesi: 0.006 },
-  mukemmel: { zarBonusu: 0.2, maasCarpani: 0.1, tecrubeHizi: 0.15, musteriBuyumesi: 0.01 },
+  iyi: { zarBonusu: 0.1, maasCarpani: 0.02, tecrubeHizi: 0.07, musteriBuyumesi: 1 },
+  cokiyi: { zarBonusu: 0.15, maasCarpani: 0.04, tecrubeHizi: 0.11, musteriBuyumesi: 1 },
+  mukemmel: { zarBonusu: 0.2, maasCarpani: 0.1, tecrubeHizi: 0.15, musteriBuyumesi: 2 },
 };
 
 /** Mükemmel kademeye ulaşan bir karakterin meslek seçiminde bir kereliğine kazandığı ekstra şöhret ("yeteneğin daha ilk günden fark edildi"). */
@@ -82,7 +82,7 @@ export function yatkinlikSeviyedenTier(seviye: number | null | undefined): Yatki
   }
 }
 
-/** Karakterin mesleğe yatkınlığından gelen yıllık müşteri/inanan büyümesi (kesir; işletmeli üç meslek). */
+/** Karakterin mesleğe yatkınlığından gelen yıllık müşteri/inanan artışı (tam sayı; işletmeli üç meslek). */
 export function yatkinlikMusteriBuyumesi(state: CharacterState): number {
   return YATKINLIK_TIER_ETKILERI[yatkinlikSeviyedenTier(state.meslek_yatkinlik_seviyesi)].musteriBuyumesi;
 }

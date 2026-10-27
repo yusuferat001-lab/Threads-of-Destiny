@@ -2429,7 +2429,7 @@ export function pasifEkonomiUygula(state: CharacterState, yasArtisi: number): Ek
       const paraYedek = state.para;
       state.para = paraYuvarla(paraYedek + netGelir);
       const oto = otomatikDepoDoldur(state, isletmeBaglami(state));
-      const harcanan = oto ? oto.maliyet : 0;
+      const harcanan = oto ? oto.maliyet - oto.veresiye : 0; // veresiye kısmı nakitten çıkmaz (borç olur)
       state.para = paraYedek;
       netGelir -= harcanan;
       // İşletme: gelir = o yılın satış − alım − depo kârı (eksi olabilir), maaş formülü yok.

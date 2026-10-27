@@ -42,7 +42,7 @@ import {
   RAKIP_IKINCI_HASAR_CARPANI,
   SIZMA_HASAR_CARPANI,
   SIZMA_SADAKAT_KAYBI,
-  sohretPayBuyumesi,
+  sohretMusteriSayisi,
 } from "../data/pazar";
 import { pazarBuyumeVarsayilan, VEBA_TOPARLANMA_ORAN, VEBA_TOPARLANMA_YIL } from "../data/dunyaDonemleri";
 import { musteriKaydir, musteriAktar, pazarOlcekle, piyasaCarpani, rakipGrubu } from "./piyasa";
@@ -106,12 +106,14 @@ export function baslangicVeresiyeOrani(meslek: string): number {
   return meslek === "Tüccar" || meslek === "Zanaatkâr" ? TUCCAR_BASLANGIC_VERESIYE_ORANI : BASLANGIC_VERESIYE_ORANI;
 }
 export const BORC_ODEME_ORANI = 0.25;
+/** v27: nakit mala yetmezse eksik kısım tedarikçiden veresiye alınır; toplam veresiye borcu tam bir depo dolumunun bu kesrini aşamaz. */
+export const VERESIYE_TAVAN_ORANI = 0.6;
 /** Rütbe S1..S5 → en fazla toplam çalışan. */
 export const CALISAN_LIMITLERI = [2, 3, 5, 6, 7];
 /** Müşterinin bütçesi hatlar arasında paylaşılır: n açık hatta her birinin talebi 1/(1+0.9(n-1)) ile çarpılır (toplam talep neredeyse sabit). */
 export const HAT_PAYLASIM = 0.9;
-/** v20: her ek açık hat (ürün çeşitliliği) yıllık müşteri artışına bu kadar (kesir) ekler. */
-export const HAT_CESITLILIK_MUSTERI = 0.005;
+/** v27: her ek açık hat (ürün çeşitliliği) yıllık +1 müşteri (tam sayı) ekler. */
+export const HAT_CESITLILIK_MUSTERI = 1;
 /** v20: her yıl başı alış ±%3, satış ±%2 piyasa sapması (o yıl sabit). */
 export const PIYASA_SAPMA_ALIS = 0.03;
 export const PIYASA_SAPMA_SATIS = 0.02;
@@ -129,8 +131,8 @@ export const KERVAN_INDIRIM_KADEME = 0.04;
 const GUMRUK_INDIRIMI = 0.1;
 const MUAFIYET_INDIRIMI = 0.08;
 export const TEZGAH_URETIM_KADEME = 0.45;
-/** Tanıtım yatırımı: kademe başına yıllık +1 müşteri (sayı; yüzde değil). */
-export const TANITIM_MUSTERI_KADEME = 1;
+/** Tanıtım yatırımı (v27): toplam kademeye göre yıllık müşteri SAYISI [K0..K4] = 0/1/3/4/5. */
+export const TANITIM_MUSTERI = [0, 1, 3, 4, 5];
 /** Veba sürerken müşteri/inanan büyümesinin pozitif kısımları bu çarpanla kısılır (v10). */
 export const VEBA_ARTIS_CARPANI = 0.3;
 /** v11: dönem fiyat şoku alışa ve satışa AYNI oranda (%100) yansır; marj oransal korunur, krizin asıl etkisi talepte. */
@@ -175,16 +177,16 @@ export const OTORITE_KORUMA = 0.1;
 export interface FiyatPolitikasi {
   /** Satış fiyatı çarpanı. */
   fiyat: number;
-  /** G'nin yıllık yüzde değişimi (kesir). */
+  /** v27: yıllık müşteri değişimi (tam sayı). */
   pay: number;
 }
 /** v11: talep çarpanı fiyat^(−e) (aşağıda `fiyatTalepCarpani`); simetrik, ucuza ve pahalıya aynı kural. */
 export const FIYAT_POLITIKASI: Record<IsletmeFiyat, FiyatPolitikasi> = {
-  eksi20: { fiyat: 0.8, pay: 0.02 },
-  eksi10: { fiyat: 0.9, pay: 0.01 },
+  eksi20: { fiyat: 0.8, pay: 3 },
+  eksi10: { fiyat: 0.9, pay: 1 },
   normal: { fiyat: 1, pay: 0 },
-  arti10: { fiyat: 1.1, pay: -0.01 },
-  arti20: { fiyat: 1.2, pay: -0.02 },
+  arti10: { fiyat: 1.1, pay: -1 },
+  arti20: { fiyat: 1.2, pay: -3 },
 };
 /** Fiyat esnekliği (v20): normalde 0,82; krizde (kıtlık/durgunluk/savaş/veba) müşteri fiyata biraz daha duyarlı: 1,0. */
 export const FIYAT_ESNEKLIK = 0.82;
@@ -198,6 +200,12 @@ export const FIYATLAR: IsletmeFiyat[] = ["eksi20", "eksi10", "normal", "arti10",
 export const DEPO_DOLDUR_YUZDELERI = [25, 50, 75, 100] as const;
 
 const clamp = (x: number, min: number, max: number) => Math.max(min, Math.min(max, x));
+
+/** Beklenen değeri koruyan tam sayı yuvarlaması (ör. 2,4 → %60 ihtimalle 2, %40 ihtimalle 3). */
+export function olasilikliYuvarla(x: number, rnd: () => number = Math.random): number {
+  const alt = Math.floor(x);
+  return alt + (rnd() < x - alt ? 1 : 0);
+}
 const r2 = (x: number) => Math.round(x * 100) / 100;
 const aralikta = ([min, max]: [number, number]) => Math.round(min + Math.random() * (max - min));
 const araliktaOnd = ([min, max]: [number, number]) => min + Math.random() * (max - min);
@@ -279,7 +287,7 @@ export function calisanBonusu(uye: EkipUyesi): { tur: IsletmeRolTuru; deger: num
     case "maliyet":
       return { tur: "maliyet", deger: (0.03 + 0.15 * y) * k };
     case "musteri":
-      return { tur: "musteri", deger: (1 + 3 * y) * k }; // yıllık müşteri SAYISI (+1…+4)
+      return { tur: "musteri", deger: Math.round(1.25 * (1 + 3 * y) * k) }; // yıllık müşteri SAYISI, tam sayı (+1…+5)
     case "guvenlik":
       return { tur: "guvenlik", deger: (0.08 + 0.8 * y) * k };
     default:
@@ -450,18 +458,15 @@ export function yatirimKademesi(state: CharacterState, etki: YatirimEtkisi): num
   return kademe;
 }
 
-/** Tanıtım yatırımından gelen yıllık müşteri SAYISI (kademe başına +1). */
+/** Tanıtım yatırımından gelen yıllık müşteri SAYISI (tam sayı; K1/K2/K3/K4 = +1/+3/+4/+5). */
 export function tanitimBuyumesi(state: CharacterState): number {
-  return yatirimKademesi(state, "pazar") * TANITIM_MUSTERI_KADEME;
+  return TANITIM_MUSTERI[clamp(yatirimKademesi(state, "pazar"), 0, TANITIM_MUSTERI.length - 1)];
 }
 
-/** Eşin mesleki desteği yıllık müşteri artışına yazılır: +%0,1 / %0,2 / %0,3. */
+/** Eşin mesleki desteği yıllık müşteri artışına yazılır: eş bonusu 6+ ise +1 müşteri/yıl (tam sayı). */
 export function esMusteriBuyumesi(state: CharacterState): number {
   if (!state.es_adi) return 0;
-  const b = state.es_meslek_bonusu ?? 0;
-  if (b >= 6) return 0.003;
-  if (b >= 4) return 0.002;
-  return b > 0 ? 0.001 : 0;
+  return (state.es_meslek_bonusu ?? 0) >= 6 ? 1 : 0;
 }
 
 // ── Hat hesabı ──────────────────────────────────────────────────────────────
@@ -856,9 +861,11 @@ export interface DepoDoldurPlani {
   /** Hedefe tam ulaşmak için gereken adet ve tutar. */
   tamAdet: number;
   tamMaliyet: number;
-  /** Para hedefe yetmiyor mu? */
+  /** Para hedefe yetmiyor mu? (veresiye payı dahil edildikten sonra bile) */
   yetersiz: boolean;
   elindekiPara: number;
+  /** v27: `maliyet`in nakit yetmeyip tedarikçiden veresiye alınacak kısmı (borç olarak yazılır, kârdan ödenir). */
+  veresiye: number;
   /** Bu alımdan sonra depo doluluğu (%). */
   ulasilacakYuzde: number;
 }
@@ -892,9 +899,13 @@ export function depoDoldurPlani(state: CharacterState, hedefYuzde: number, b: Is
   const tamAdet = adetler.reduce((t, x) => t + x, 0);
   const tamMaliyet = r2(toplamTutar(adetler));
   const elindekiPara = Math.max(0, r2(state.para));
-  // Para yetmiyorsa en kalabalık hattan birer birim düşerek parasının yettiği kadarına in.
+  // v27: veresiye payı — kalan veresiye hakkı = tavan (tam depo dolumunun %60'ı) − mevcut tedarikçi borcu.
+  const tamDepoMaliyeti = hesaplar.reduce((t, x, i) => t + kapasite * pay[i] * birimler[i], 0);
+  const veresiyeHakki = Math.max(0, r2(tamDepoMaliyeti * VERESIYE_TAVAN_ORANI - (is.tedarikci_borcu ?? 0)));
+  const butce = elindekiPara + veresiyeHakki;
+  // Bütçe (nakit + veresiye hakkı) yetmiyorsa en kalabalık hattan birer birim düşerek yettiği kadarına in.
   const alinacak = [...adetler];
-  while (toplamTutar(alinacak) > elindekiPara + 1e-9) {
+  while (toplamTutar(alinacak) > butce + 1e-9) {
     let en = -1;
     for (let i = 0; i < alinacak.length; i++) if (alinacak[i] > 0 && (en < 0 || alinacak[i] > alinacak[en])) en = i;
     if (en < 0) break;
@@ -910,6 +921,7 @@ export function depoDoldurPlani(state: CharacterState, hedefYuzde: number, b: Is
     kapasite,
     adet,
     maliyet: r2(hatlar.reduce((t, x) => t + x.tutar, 0)),
+    veresiye: r2(Math.max(0, hatlar.reduce((t, x) => t + x.tutar, 0) - elindekiPara)),
     hatlar,
     tamAdet,
     tamMaliyet,
@@ -924,7 +936,9 @@ export function depoyuDoldur(state: CharacterState, hedefYuzde: number, b: Islet
   const plan = depoDoldurPlani(state, hedefYuzde, b);
   const is = state.isletme!;
   if (plan.adet <= 0) return plan;
-  state.para = Math.max(0, r2(state.para - plan.maliyet));
+  // Nakit önce kullanılır; yetmeyen kısım veresiye (tedarikçi borcu) olur, para eksiye düşmez.
+  state.para = Math.max(0, r2(state.para - (plan.maliyet - plan.veresiye)));
+  if (plan.veresiye > 0) is.tedarikci_borcu = r2((is.tedarikci_borcu ?? 0) + plan.veresiye);
   is.yil_alim = r2((is.yil_alim ?? 0) + plan.maliyet);
   if (!is.yil_alinan) is.yil_alinan = {};
   for (const h of plan.hatlar) {
@@ -1004,9 +1018,9 @@ export function hirsizlikOlasiliklari(koruma: number): Record<HirsizlikSonucu, n
 
 /** Sonuç başına [depodan çalınan stok %, nakit hasarı %] — nakit: geçen yılın TOPLAM satışına göre, eldeki nakitle sınırlı DEĞİL. */
 export const HIRSIZLIK_KAYIPLARI: Record<HirsizlikSonucu, { urun: [number, number]; nakit: [number, number] }> = {
-  agir: { urun: [40, 55], nakit: [30, 45] },
-  rahat: { urun: [25, 40], nakit: [20, 30] },
-  kismi: { urun: [6, 14], nakit: [0, 8] },
+  agir: { urun: [40, 55], nakit: [15, 22] },
+  rahat: { urun: [25, 40], nakit: [10, 15] },
+  kismi: { urun: [6, 14], nakit: [0, 4] },
   engellendi: { urun: [0, 0], nakit: [0, 0] },
   sans: { urun: [0, 0], nakit: [0, 0] },
 };
@@ -1289,15 +1303,14 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
     const fiyatEtkisi =
       planlar.length > 0 ? planlar.reduce((t, p) => t + (FIYAT_POLITIKASI[p.hat.fiyat]?.pay ?? 0), 0) / planlar.length : 0;
     const cesitlilik = Math.max(0, planlar.length - 1) * HAT_CESITLILIK_MUSTERI; // her ek açık hat: ürün çeşitliliği
-    // Tanıtım yatırımı ve müşteri rolündeki çalışan yıllık SAYI verir (v26); kalanlar kendi müşterinin yüzdesi.
-    const sayiYuzde = (tanitimBuyumesi(state) + musteriRolu) / Math.max(1, state.meslek_musteri);
-    const ham = sohretPayBuyumesi(state.un) + fiyatEtkisi + sayiYuzde + cesitlilik + yatkinlikMusteriBuyumesi(state) + esMusteriBuyumesi(state);
+    // v27: tüm kaynaklar yıllık TAM müşteri sayısıdır (şöhret, fiyat, tanıtım, müşteri çalışanı, çeşitlilik, yatkınlık, eş).
+    const ham = sohretMusteriSayisi(state.un) + fiyatEtkisi + tanitimBuyumesi(state) + musteriRolu + cesitlilik + yatkinlikMusteriBuyumesi(state) + esMusteriBuyumesi(state);
     const mevcutPay = pazarPayiHesapla(state);
-    // Pay büyüdükçe pozitif büyüme doyar (pay %60'a yaklaşınca sıfır); eksi etkiler tam işler.
-    // Veba sürerken pozitif büyüme %70 kısılır (v10); eksi etkiler tam işler.
+    // Pay büyüdükçe pozitif artış doyar (pay %68'e yaklaşınca sıfır); eksi etkiler tam işler.
+    // Veba sürerken pozitif artış %70 kısılır (v10). Kısılan değer olasılıklı yuvarlamayla yine tam sayıya iner.
     const vebaKisma = state.veba?.aktif ? VEBA_ARTIS_CARPANI : 1;
-    const yuzde = ham > 0 ? ham * Math.max(0, 1 - mevcutPay / PAY_DOYMA_ESIGI) * vebaKisma : ham;
-    musteriKaydir(state, "oyuncu", state.meslek_musteri * yuzde);
+    const sayi = ham > 0 ? ham * Math.max(0, 1 - mevcutPay / PAY_DOYMA_ESIGI) * vebaKisma : ham;
+    musteriKaydir(state, "oyuncu", olasilikliYuvarla(sayi));
   }
 
   // 7b. Aranma gölgesi (v10): gelir kısmak yerine yıllık müşteri/inanan ve ahlak kaybı (1★ %1·0.3 · 2★ %2.5·0.6 · 3★ %4·1.0).
