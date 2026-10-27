@@ -18,6 +18,7 @@ import {
   hatSlotSayisi,
   calisanLimiti,
   calisanBonusu,
+  tanitimBuyumesi,
   ekipBonuslari,
   korumaHesapla,
   maasTabani,
@@ -48,7 +49,7 @@ import {
 import { YATIRIM_MASRAF_ORANI } from "../src/game/yatirimMasrafi";
 import { isletmeBaglami, hesaplaMaasYillik, createCharacter, mesleğiSec } from "../src/game/stateManager";
 import { hatTanimiGetir, isletmeProfiliGetir } from "../src/data/meslekProfilleri";
-import { pazarPayiHesapla, musteriSayisi, MUSTERI_ASINMA_YILLIK } from "../src/data/pazar";
+import { pazarPayiHesapla, musteriSayisi } from "../src/data/pazar";
 import type { EkipUyesi } from "../src/types";
 
 async function tuccar(cag: "Orta Çağ" | "Sanayi Devrimi" = "Orta Çağ") {
@@ -92,12 +93,12 @@ describe("işletme (Tüccar dilimi)", () => {
     }
   });
 
-  it("pazar büyüklüğü 350–500, başlangıç payı ≈%8–16, ilk saldırı henüz planlanmamış", async () => {
+  it("pazar büyüklüğü 510–540, başlangıç payı ≈%8–16, ilk saldırı henüz planlanmamış", async () => {
     for (let i = 0; i < 20; i++) {
       const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
       mesleğiSec(s, "Tüccar");
-      expect(s.pazar_musteri).toBeGreaterThanOrEqual(350);
-      expect(s.pazar_musteri).toBeLessThanOrEqual(500);
+      expect(s.pazar_musteri).toBeGreaterThanOrEqual(510);
+      expect(s.pazar_musteri).toBeLessThanOrEqual(540);
       const pay = pazarPayiHesapla(s);
       expect(pay).toBeGreaterThan(0.045);
       expect(pay).toBeLessThan(0.17);
@@ -298,24 +299,24 @@ describe("işletme (Tüccar dilimi)", () => {
     await ekipCikar(s.id, s.ekip[0].id);
   });
 
-  it("yatırım fiyatları katlanarak artar (her kademe bir öncekinin 3 katı) ve kartta şimdi/sonraki etki görünür", async () => {
+  it("yatırım fiyatları 20 / 55 / 135 / 325 merdiveniyle artar ve kartta şimdi/sonraki etki görünür", async () => {
     const s = await tuccar();
     s.para = 100000;
     const ilk = (await isletmeDurumGetir(s.id)).yatirimlar.find((y) => y.id === "tanitim")!;
     expect(ilk.maxKademe).toBe(4);
     expect(ilk.etkiSimdi.tr).toBe("Etki yok");
-    expect(ilk.etkiSonraki!.tr).toBe("Müşteri artışı +%2/yıl");
+    expect(ilk.etkiSonraki!.tr).toBe("Müşteri artışı +1 müşteri/yıl");
     const fiyatlar: number[] = [ilk.sonrakiFiyat!];
     for (let i = 0; i < 3; i++) {
       await isletmeYatirimYap(s.id, "tanitim");
       fiyatlar.push((await isletmeDurumGetir(s.id)).yatirimlar.find((y) => y.id === "tanitim")!.sonrakiFiyat ?? 0);
     }
-    expect(fiyatlar[1] / fiyatlar[0]).toBeCloseTo(3, 1);
-    expect(fiyatlar[2] / fiyatlar[1]).toBeCloseTo(3, 1);
-    expect(fiyatlar[3] / fiyatlar[2]).toBeCloseTo(3, 1);
+    expect(fiyatlar[1] / fiyatlar[0]).toBeCloseTo(55 / 20, 1);
+    expect(fiyatlar[2] / fiyatlar[1]).toBeCloseTo(135 / 55, 1);
+    expect(fiyatlar[3] / fiyatlar[2]).toBeCloseTo(325 / 135, 1);
     const k = (await isletmeDurumGetir(s.id)).yatirimlar.find((y) => y.id === "tanitim")!;
-    expect(k.etkiSimdi.tr).toBe("Müşteri artışı +%6/yıl");
-    expect(k.etkiSonraki!.tr).toBe("Müşteri artışı +%8/yıl");
+    expect(k.etkiSimdi.tr).toBe("Müşteri artışı +3 müşteri/yıl");
+    expect(k.etkiSonraki!.tr).toBe("Müşteri artışı +4 müşteri/yıl");
   });
 
   it("dükkân yatırımı kalktı: müşteriyi etkileyen tek yatırım Tanıtım; eski kayıttaki dükkân kademesi Tanıtım'a taşınır", async () => {
@@ -366,23 +367,23 @@ describe("işletme (Tüccar dilimi)", () => {
     expect(toplam).toBeLessThanOrEqual(100 + 1e-6);
   });
 
-  it("güvenlik yatırımı Korumayı yükseltir (kademe başı +0,15, en çok 0,6)", async () => {
+  it("güvenlik yatırımı Korumayı yükseltir (kademe başı +0,125, en çok 0,5)", async () => {
     const s = await tuccar();
     s.para = 100000;
     expect(korumaHesapla(s).yatirim).toBe(0);
     await isletmeYatirimYap(s.id, "guvenlik");
-    expect(korumaHesapla(s).yatirim).toBeCloseTo(0.15);
+    expect(korumaHesapla(s).yatirim).toBeCloseTo(0.125);
     await isletmeYatirimYap(s.id, "guvenlik");
     await isletmeYatirimYap(s.id, "guvenlik");
     await isletmeYatirimYap(s.id, "guvenlik");
-    expect(korumaHesapla(s).yatirim).toBeCloseTo(0.6);
+    expect(korumaHesapla(s).yatirim).toBeCloseTo(0.5);
   });
 
   it("çalışan bonusları güncel Yeteneğe göre ve düz toplanır; sadık (≥75) ×1,05", () => {
     const ana = calisanBonusu(uye("ana", 50, 60))!;
     expect(ana.deger).toBeCloseTo(0.075 + 0.525 * 0.5);
     expect(calisanBonusu(uye("maliyet", 100, 60))!.deger).toBeCloseTo(0.18);
-    expect(calisanBonusu(uye("musteri", 100, 60))!.deger).toBeCloseTo(0.12);
+    expect(calisanBonusu(uye("musteri", 100, 60))!.deger).toBeCloseTo(4); // yıllık +4 müşteri (sayı)
     expect(calisanBonusu(uye("guvenlik", 50, 60))!.deger).toBeCloseTo(0.48);
     const sadik = calisanBonusu(uye("ana", 50, 80))!;
     expect(sadik.deger).toBeCloseTo(ana.deger * 1.05);
@@ -460,12 +461,14 @@ describe("işletme (Tüccar dilimi)", () => {
     expect(is.tedarikci_borcu).toBe(0);
   });
 
-  it("diğer meslekler başlangıçta depo %75 dolu, mal bedelinin yarısı veresiye", async () => {
+  it("Zanaatkâr da Tüccar gibi depo tam dolu ve borçsuz başlar; yedek sabitler %75/yarım veresiye", async () => {
     const s = await tuccar();
     s.meslek = "Zanaatkâr";
     const is = s.isletme!;
-    expect(baslangicDepoDoluluk(s.meslek)).toBe(BASLANGIC_DEPO_DOLULUK);
-    expect(baslangicVeresiyeOrani(s.meslek)).toBe(BASLANGIC_VERESIYE_ORANI);
+    expect(baslangicDepoDoluluk(s.meslek)).toBe(1);
+    expect(baslangicVeresiyeOrani(s.meslek)).toBe(0);
+    expect(BASLANGIC_DEPO_DOLULUK).toBe(0.75);
+    expect(BASLANGIC_VERESIYE_ORANI).toBe(0.5);
     expect(is).toBeTruthy();
   });
 
@@ -940,27 +943,26 @@ describe("v11: başlangıç ürünü seçimi", () => {
     expect(klasik.urun_secim_bekliyor).toBeFalsy();
   });
 
-  it("v18b rekabet aşınması: hiçbir şey yapmayan oyuncunun müşterisi her yıl azalır, tanıtım kademesi bunu dengeler", async () => {
-    expect(MUSTERI_ASINMA_YILLIK).toBeGreaterThanOrEqual(0.009);
-    expect(MUSTERI_ASINMA_YILLIK).toBeLessThanOrEqual(0.012);
-    const pasif = await tuccar();
-    pasif.ulke.donem = { tur: "durgunluk", baslangicYili: pasif.yil, bitisYili: pasif.yil + 50, sonraki: "bolluk", etki: pasif.ulke.donem!.etki };
-    pasif.un = 10; // şöhret ve yatkınlık gibi rastgele pozitif kaynakları nötrle
-    pasif.meslek_yatkinlik_seviyesi = 2;
-    pasif.es_adi = null;
-    pasif.isletme!.hatlar.forEach((h, i) => (h.acik = i === 0)); // hat çeşitliliği bonusu karışmasın
-    const once = pazarPayiHesapla(pasif);
-    isletmeYilIsle(pasif, isletmeBaglami(pasif));
-    expect(pazarPayiHesapla(pasif)).toBeLessThan(once); // toplam pazar büyüse de PAY düşer
-    const tanitimli = await tuccar();
-    tanitimli.ulke.donem = { tur: "durgunluk", baslangicYili: tanitimli.yil, bitisYili: tanitimli.yil + 50, sonraki: "bolluk", etki: tanitimli.ulke.donem!.etki };
-    tanitimli.un = 10;
-    tanitimli.meslek_yatkinlik_seviyesi = 2;
-    tanitimli.es_adi = null;
-    tanitimli.isletme!.hatlar.forEach((h, i) => (h.acik = i === 0));
-    tanitimli.isletme!.yatirimlar.tanitim = 4;
-    const t0 = pazarPayiHesapla(tanitimli);
-    isletmeYilIsle(tanitimli, isletmeBaglami(tanitimli));
-    expect(pazarPayiHesapla(tanitimli)).toBeGreaterThan(t0);
+  it("v26: tanıtım ve müşteri rolü yıllık SAYI olarak müşteri kazandırır; pasif erime yok", async () => {
+    const s = await tuccar();
+    s.ulke.donem = { tur: "durgunluk", baslangicYili: s.yil, bitisYili: s.yil + 50, sonraki: "bolluk", etki: s.ulke.donem!.etki };
+    s.un = 40;
+    s.meslek_yatkinlik_seviyesi = 3; // yatkınlık yüzdesini nötrle (3 → 0)
+    s.es_adi = null;
+    s.isletme!.hatlar.forEach((h, i) => (h.acik = i === 0));
+    expect(tanitimBuyumesi(s)).toBe(0);
+    s.isletme!.yatirimlar.tanitim = 4;
+    expect(tanitimBuyumesi(s)).toBe(4); // kademe başına +1 müşteri/yıl
+    const bn = calisanBonusu({ rol_turu: "musteri", gercekKalite: 100, sadakat: 50 } as never);
+    expect(bn!.deger).toBeCloseTo(4, 5); // en iyi çalışan +4 müşteri/yıl
+    const dusuk = calisanBonusu({ rol_turu: "musteri", gercekKalite: 0, sadakat: 50 } as never);
+    expect(dusuk!.deger).toBeCloseTo(1, 5);
+  });
+
+  it("v26: Zanaatkâr depo tam dolu ve borçsuz başlar", async () => {
+    const z = await zanaatkar();
+    expect(z.isletme!.tedarikci_borcu).toBe(0);
+    const ilk = z.isletme!.hatlar.find((h) => h.acik)!;
+    expect(ilk.stok).toBe(depoKapasiteTablosu(z.cag, z.meslek)[0]);
   });
 });

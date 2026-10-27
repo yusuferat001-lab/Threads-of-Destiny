@@ -43,7 +43,6 @@ import {
   SIZMA_HASAR_CARPANI,
   SIZMA_SADAKAT_KAYBI,
   sohretPayBuyumesi,
-  musteriAsinmaOrani,
 } from "../data/pazar";
 import { pazarBuyumeVarsayilan, VEBA_TOPARLANMA_ORAN, VEBA_TOPARLANMA_YIL } from "../data/dunyaDonemleri";
 import { musteriKaydir, musteriAktar, pazarOlcekle, piyasaCarpani, rakipGrubu } from "./piyasa";
@@ -78,10 +77,10 @@ export interface IsletmeBaglami {
  * Orta Çağ'da iki temel hat yok, Sanayi'de pazar daha büyük; Zanaatkâr'da depo hammadde tutar. Değerler simülasyonla ayarlanır.
  */
 export const DEPO_KAPASITE_TABLOLARI: Record<string, number[]> = {
-  "Tüccar|Orta Çağ": [58, 86, 127, 184, 276],
-  "Tüccar|Sanayi Devrimi": [69, 104, 155, 224, 334],
-  "Zanaatkâr|Orta Çağ": [58, 86, 127, 184, 276],
-  "Zanaatkâr|Sanayi Devrimi": [60, 90, 135, 195, 290],
+  "Tüccar|Orta Çağ": [72, 106, 157, 227, 341],
+  "Tüccar|Sanayi Devrimi": [85, 128, 191, 277, 412],
+  "Zanaatkâr|Orta Çağ": [72, 106, 157, 227, 341],
+  "Zanaatkâr|Sanayi Devrimi": [74, 111, 167, 241, 358],
 };
 /** Eski kayıtlar / bilinmeyen kombinasyon için yedek (Orta Çağ Tüccar). */
 export const DEPO_KAPASITE = DEPO_KAPASITE_TABLOLARI["Tüccar|Orta Çağ"];
@@ -97,14 +96,14 @@ export const BASLANGIC_STOK = 30;
 export const BASLANGIC_DEPO_DOLULUK = 0.75;
 /** Başlangıç malının bedelinin veresiye kalan kesri (yarısı peşin ödenmiş sayılır). */
 export const BASLANGIC_VERESIYE_ORANI = 0.5;
-/** Tüccar daha cüzdanlı başlar: depo tam dolu, borçsuz (erken yıllarda batmasın). */
+/** Tüccar ve Zanaatkâr daha cüzdanlı başlar (v26): depo tam dolu, borçsuz (erken yıllarda batmasın). */
 export const TUCCAR_BASLANGIC_DEPO_DOLULUK = 1;
 export const TUCCAR_BASLANGIC_VERESIYE_ORANI = 0;
 export function baslangicDepoDoluluk(meslek: string): number {
-  return meslek === "Tüccar" ? TUCCAR_BASLANGIC_DEPO_DOLULUK : BASLANGIC_DEPO_DOLULUK;
+  return meslek === "Tüccar" || meslek === "Zanaatkâr" ? TUCCAR_BASLANGIC_DEPO_DOLULUK : BASLANGIC_DEPO_DOLULUK;
 }
 export function baslangicVeresiyeOrani(meslek: string): number {
-  return meslek === "Tüccar" ? TUCCAR_BASLANGIC_VERESIYE_ORANI : BASLANGIC_VERESIYE_ORANI;
+  return meslek === "Tüccar" || meslek === "Zanaatkâr" ? TUCCAR_BASLANGIC_VERESIYE_ORANI : BASLANGIC_VERESIYE_ORANI;
 }
 export const BORC_ODEME_ORANI = 0.25;
 /** Rütbe S1..S5 → en fazla toplam çalışan. */
@@ -126,11 +125,12 @@ export const TALEP_GURULTUSU = 0.08;
 /** Yüzdelik müşteri büyümesi pay bu eşiğe yaklaştıkça sıfıra iner. */
 export const PAY_DOYMA_ESIGI = 0.68;
 /** Maliyet indirimleri ÇARPIMSAL birleşir (tavan yok): maliyet × (1−a)(1−b)(1−c)…; her kaynak kendi payını düşer, yığıldıkça getirisi azalır. */
-export const KERVAN_INDIRIM_KADEME = 0.05;
+export const KERVAN_INDIRIM_KADEME = 0.04;
 const GUMRUK_INDIRIMI = 0.1;
 const MUAFIYET_INDIRIMI = 0.08;
-export const TEZGAH_URETIM_KADEME = 0.5;
-export const TANITIM_PAY_KADEME = 0.02;
+export const TEZGAH_URETIM_KADEME = 0.45;
+/** Tanıtım yatırımı: kademe başına yıllık +1 müşteri (sayı; yüzde değil). */
+export const TANITIM_MUSTERI_KADEME = 1;
 /** Veba sürerken müşteri/inanan büyümesinin pozitif kısımları bu çarpanla kısılır (v10). */
 export const VEBA_ARTIS_CARPANI = 0.3;
 /** v11: dönem fiyat şoku alışa ve satışa AYNI oranda (%100) yansır; marj oransal korunur, krizin asıl etkisi talepte. */
@@ -168,7 +168,7 @@ export const SADIK_BONUS = 1.05;
 export const SADAKAT_OLAY_COOLDOWN_YIL = 3;
 
 // Dış hırsızlık
-export const GUVENLIK_YATIRIM_KORUMA = [0, 0.15, 0.3, 0.45, 0.6];
+export const GUVENLIK_YATIRIM_KORUMA = [0, 0.125, 0.25, 0.375, 0.5];
 export const OTORITE_KORUMA_ESIGI = 70;
 export const OTORITE_KORUMA = 0.1;
 
@@ -279,7 +279,7 @@ export function calisanBonusu(uye: EkipUyesi): { tur: IsletmeRolTuru; deger: num
     case "maliyet":
       return { tur: "maliyet", deger: (0.03 + 0.15 * y) * k };
     case "musteri":
-      return { tur: "musteri", deger: (0.02 + 0.1 * y) * k };
+      return { tur: "musteri", deger: (1 + 3 * y) * k }; // yıllık müşteri SAYISI (+1…+4)
     case "guvenlik":
       return { tur: "guvenlik", deger: (0.08 + 0.8 * y) * k };
     default:
@@ -450,9 +450,9 @@ export function yatirimKademesi(state: CharacterState, etki: YatirimEtkisi): num
   return kademe;
 }
 
-/** Yatırımlardan gelen yıllık pazar payı (G) büyümesi (kesir). */
+/** Tanıtım yatırımından gelen yıllık müşteri SAYISI (kademe başına +1). */
 export function tanitimBuyumesi(state: CharacterState): number {
-  return yatirimKademesi(state, "pazar") * TANITIM_PAY_KADEME;
+  return yatirimKademesi(state, "pazar") * TANITIM_MUSTERI_KADEME;
 }
 
 /** Eşin mesleki desteği yıllık müşteri artışına yazılır: +%0,1 / %0,2 / %0,3. */
@@ -653,7 +653,7 @@ export function isletmeBaslat(state: CharacterState, b: IsletmeBaglami): void {
   const hatlar: IsletmeHat[] = profil.hatlar.map((h) => ({
     id: h.id,
     acik: h.id === ilk.id,
-    stok: h.id === ilk.id ? (state.meslek === "Tüccar" ? depoKapasiteTablosu(state.cag, state.meslek)[0] : BASLANGIC_STOK) : 0,
+    stok: h.id === ilk.id ? depoKapasiteTablosu(state.cag, state.meslek)[0] : 0,
     otomatik: true,
     siparis: 0,
     fiyat: "normal",
@@ -667,7 +667,7 @@ export function isletmeBaslat(state: CharacterState, b: IsletmeBaglami): void {
     yatirimlar: {},
     // İlk malın yarısı peşin, yarısı veresiye: borç sattıkça kapanır, faizsiz.
     tedarikci_borcu: r2(
-      (state.meslek === "Tüccar" ? depoKapasiteTablosu(state.cag, state.meslek)[0] : BASLANGIC_STOK) *
+      depoKapasiteTablosu(state.cag, state.meslek)[0] *
         ilk.birimMaliyet *
         b.giderEnflasyon *
         baslangicVeresiyeOrani(state.meslek),
@@ -1289,7 +1289,9 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
     const fiyatEtkisi =
       planlar.length > 0 ? planlar.reduce((t, p) => t + (FIYAT_POLITIKASI[p.hat.fiyat]?.pay ?? 0), 0) / planlar.length : 0;
     const cesitlilik = Math.max(0, planlar.length - 1) * HAT_CESITLILIK_MUSTERI; // her ek açık hat: ürün çeşitliliği
-    const ham = sohretPayBuyumesi(state.un) + fiyatEtkisi + tanitimBuyumesi(state) + musteriRolu + cesitlilik + yatkinlikMusteriBuyumesi(state) + esMusteriBuyumesi(state);
+    // Tanıtım yatırımı ve müşteri rolündeki çalışan yıllık SAYI verir (v26); kalanlar kendi müşterinin yüzdesi.
+    const sayiYuzde = (tanitimBuyumesi(state) + musteriRolu) / Math.max(1, state.meslek_musteri);
+    const ham = sohretPayBuyumesi(state.un) + fiyatEtkisi + sayiYuzde + cesitlilik + yatkinlikMusteriBuyumesi(state) + esMusteriBuyumesi(state);
     const mevcutPay = pazarPayiHesapla(state);
     // Pay büyüdükçe pozitif büyüme doyar (pay %60'a yaklaşınca sıfır); eksi etkiler tam işler.
     // Veba sürerken pozitif büyüme %70 kısılır (v10); eksi etkiler tam işler.
@@ -1297,9 +1299,6 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
     const yuzde = ham > 0 ? ham * Math.max(0, 1 - mevcutPay / PAY_DOYMA_ESIGI) * vebaKisma : ham;
     musteriKaydir(state, "oyuncu", state.meslek_musteri * yuzde);
   }
-
-  // 7a. Rekabet aşınması (v18b): bedava büyüme yok, yıllık küçük müşteri kaybı var.
-  musteriKaydir(state, "oyuncu", -state.meslek_musteri * musteriAsinmaOrani());
 
   // 7b. Aranma gölgesi (v10): gelir kısmak yerine yıllık müşteri/inanan ve ahlak kaybı (1★ %1·0.3 · 2★ %2.5·0.6 · 3★ %4·1.0).
   const aranmaKaybi = aranmaMusteriKaybi(state.suc_seviyesi);
