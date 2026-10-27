@@ -26,7 +26,7 @@ import {
   musteriEkle,
 } from "../src/game/stateManager";
 import { isletmeProfiliGetir, yatirimTanimiGetir } from "../src/data/meslekProfilleri";
-import { hatSlotSayisi, calisanLimiti, adaylariGerekirseYenile, calisanBonusu, depoKapasitesi } from "../src/game/isletme";
+import { hatSlotSayisi, calisanLimiti, adaylariGerekirseYenile, calisanBonusu, depoKapasitesi, depoKademesi, depoKapasiteTablosu } from "../src/game/isletme";
 import { pazarPayiHesapla } from "../src/data/pazar";
 import { ogretiBekleyenSeviye, ogretiSec, faaliyetSlotSayisi, faaliyetKilitliMi } from "../src/game/cemaat";
 import { ogretiSecenekleri } from "../src/data/ogretiler";
@@ -49,7 +49,6 @@ function rutbeSurukle(s: CharacterState, yilIdx: number, tarz: Tarz) {
 }
 
 function botKarar(s: CharacterState, tarz: Tarz) {
-  if (s.isletme && tarz === "pasif") s.isletme.depo_oto = { acik: true, yuzde: 100 }; // pasif: yalnız "Otomatik %100" açar
   if (tarz === "pasif" || !s.isletme) return;
   const is = s.isletme;
   const profil = isletmeProfiliGetir(s.meslek, s.cag)!;
@@ -111,6 +110,11 @@ function botKarar(s: CharacterState, tarz: Tarz) {
     if (!t) continue;
     const k = is.yatirimlar[id] ?? 0;
     if (k >= t.fiyatlar.length) continue;
+    if (id === "depo" && !cemaatMi) {
+      // v15: depo kendiliğinden dolar; kapasite yetmeyince müşteri kaybı olur → yalnız talep kapasiteye yaklaşınca büyüt.
+      const talepToplam = is.hatlar.filter((h) => h.acik).reduce((t2, h) => t2 + (h.son_talep || 0), 0);
+      if (talepToplam < depoKapasitesi(is) * (process.env.SIM_DEPO_ESIK ? Number(process.env.SIM_DEPO_ESIK) : 0.9)) continue;
+    }
     const fiyat = t.fiyatlar[k] * giderEnflasyonCarpani(s);
     if (s.para > (depoKapasitesi(is) * 0.8 + 18) * giderEnflasyonCarpani(s) + fiyat) {
       s.para -= fiyat;
@@ -138,15 +142,10 @@ function botKarar(s: CharacterState, tarz: Tarz) {
     h.acik = true;
     h.fiyat = fiyat;
   }
-  // v20: depo yıl başı otomatik dolar (oyundaki "Otomatik" düğmesi): pasif hep %50; diğerleri geçen yılın talebine bakıp yeterince dolduran en küçük oranı seçer.
-  const sonTalep = is.hatlar.filter((h) => h.acik).reduce((t, h) => t + (h.son_talep || 0), 0);
-  const kap = depoKapasitesi(is);
-  const gerekli = sonTalep > 0 ? ((sonTalep * 1.1) / kap) * 100 : 50;
-  const hedef = tarz === "agresif" ? (gerekli <= 50 ? 50 : gerekli <= 75 ? 75 : 100) : 100; // aktif/dengeli/pasif: depo hep dolu
-  is.depo_oto = { acik: true, yuzde: hedef };
+  // v15: depo her yıl başı motor tarafından kapasiteye kadar kendiliğinden dolar (oyuncu ayarı yok).
 }
 
-interface Cikti { satis: number[]; alim: number[]; maas: number[]; aidat: number[]; vergi: number[]; depoM: number[]; hasar: number[]; yatirim: number[]; dukkan: number[]; gider: number[]; musteri: number[]; calisan: number[]; batmaYili: number; batmaDetay: string; gelir: number[]; net: number[]; pay: number[]; rakipPay: number[]; para: number[]; batti: boolean; sonPara: number; hirsizlik: number; anaRolKazanc: number; pazar: number[]; enf: number[] }
+interface Cikti { hatKar: Record<string, number[]>; hatSatis: Record<string, number[]>; satis: number[]; alim: number[]; maas: number[]; aidat: number[]; vergi: number[]; depoM: number[]; hasar: number[]; yatirim: number[]; dukkan: number[]; gider: number[]; musteri: number[]; calisan: number[]; batmaYili: number; batmaDetay: string; gelir: number[]; net: number[]; pay: number[]; rakipPay: number[]; para: number[]; batti: boolean; sonPara: number; hirsizlik: number; anaRolKazanc: number; pazar: number[]; enf: number[]; depoK: number[]; kap: number[]; talep: number[]; stokBitti: number[]; kayip: number[] }
 
 function tekOmur(cag: Cag, tarz: Tarz): Cikti {
   const s = createCharacter(cag, cag === "Orta Çağ" ? "Fransa" : "İngiltere", "kasaba");
@@ -159,7 +158,7 @@ function tekOmur(cag: Cag, tarz: Tarz): Cikti {
     s.isletme.ana_urun = bu.hat;
     for (const h of s.isletme.hatlar) h.acik = h.id === bu.hat;
   }
-  const c: Cikti = { satis: [], alim: [], maas: [], aidat: [], vergi: [], depoM: [], hasar: [], yatirim: [], dukkan: [], gider: [], musteri: [], calisan: [], batmaYili: -1, batmaDetay: "", gelir: [], net: [], pay: [], rakipPay: [], para: [], batti: false, sonPara: 0, hirsizlik: 0, anaRolKazanc: 0, pazar: [], enf: [] };
+  const c: Cikti = { hatKar: {}, hatSatis: {}, satis: [], alim: [], maas: [], aidat: [], vergi: [], depoM: [], hasar: [], yatirim: [], dukkan: [], gider: [], musteri: [], calisan: [], batmaYili: -1, batmaDetay: "", gelir: [], net: [], pay: [], rakipPay: [], para: [], batti: false, sonPara: 0, hirsizlik: 0, anaRolKazanc: 0, pazar: [], enf: [], depoK: [], kap: [], talep: [], stokBitti: [], kayip: [] };
   for (let y = 0; y < YIL; y++) {
     rutbeSurukle(s, y, tarz);
     const para0 = s.para;
@@ -184,6 +183,11 @@ function tekOmur(cag: Cag, tarz: Tarz): Cikti {
     krediYillikUygula(s, 1); // faiz + taksit
     s.tur_sayisi += 1;
     const d0 = s.isletme?.son_dokum;
+    for (const h of d0?.hatlar ?? []) {
+      (c.hatKar[h.id] ??= new Array(c.satis.length).fill(0)).push((h.satilan ?? 0) * ((h.birimFiyat ?? 0) - (h.birimMaliyet ?? 0)));
+      (c.hatSatis[h.id] ??= new Array(c.satis.length).fill(0)).push((h.satilan ?? 0) * (h.birimFiyat ?? 0));
+    }
+    for (const k of Object.keys(c.hatKar)) { if (c.hatKar[k].length <= c.satis.length) { c.hatKar[k].push(0); c.hatSatis[k].push(0); } }
     c.satis.push(d0?.satis ?? 0); c.alim.push(d0?.alim ?? 0); c.maas.push(d0?.calisanMaasi ?? 0);
     c.aidat.push(d0?.loncaAidati ?? 0); c.vergi.push(d0?.vergi ?? 0); c.depoM.push((d0?.depoMasrafi ?? 0) + (d0?.curumeKaybi ?? 0));
     c.hasar.push((d0?.nakitHasar ?? 0) + (d0?.ekstraGider ?? 0)); c.yatirim.push(yatirimHarcama);
@@ -196,6 +200,11 @@ function tekOmur(cag: Cag, tarz: Tarz): Cikti {
     c.pazar.push(s.pazar_musteri);
     c.enf.push(enflasyonCarpani(s));
     c.calisan.push(s.ekip.length);
+    c.depoK.push(s.isletme ? depoKademesi(s.isletme) : 0);
+    c.kap.push(s.isletme ? depoKapasitesi(s.isletme) : 0);
+    c.talep.push(s.isletme ? s.isletme.hatlar.filter((h) => h.acik).reduce((t, h) => t + (h.son_talep || 0), 0) : 0);
+    c.stokBitti.push(d0?.uyarilar.some((u) => u.kod === "stok_bitti") ? 1 : 0);
+    c.kayip.push(d0?.uyarilar.some((u) => u.kod === "kitle_kaybi") ? 1 : 0);
     c.rakipPay.push(((s.rakipler.find((r) => !r.yenildi)?.musteri ?? 0) / s.pazar_musteri) * 100);
     c.para.push(s.para);
     if (process.env.SIM_DEBUG2 && y < 8) console.log(y, "para", s.para.toFixed(1), "stok", s.isletme?.hatlar.filter((h) => h.acik).map((h) => h.id + ":" + h.stok).join(","), "satis", s.isletme?.son_dokum?.satis, "alim", s.isletme?.son_dokum?.alim, "net", s.isletme?.son_dokum?.net, "musteri", s.meslek_musteri.toFixed(1));
@@ -236,9 +245,38 @@ for (const cag of CAGLAR) {
       const rpay = ort(kaynak.map((c) => ort(c.rakipPay.slice(a, b))));
       const dukkan = ort(kaynak.map((c) => ort(c.dukkan.slice(a, b))));
       const m = (f: (c: Cikti) => number[]) => ort(kaynak.map((c) => ort(f(c).slice(a, b)))).toFixed(1);
+      if (process.env.SIM_DOKUM) {
+        const idler = [...new Set(kaynak.flatMap((c) => Object.keys(c.hatKar)))];
+        const parca = idler.map((id) => `${id} satış ${ort(kaynak.map((c) => ort((c.hatSatis[id] ?? []).slice(a, b)))).toFixed(0)} / marj ${ort(kaynak.map((c) => ort((c.hatKar[id] ?? []).slice(a, b)))).toFixed(0)}`).filter((x) => !/ 0 \/ marj 0$/.test(x));
+        console.log(`    [${ad}] hatlar: ${parca.join(" · ")}`);
+      }
       if (process.env.SIM_DOKUM) console.log(`    [${ad}] satış ${m((c) => c.satis)} − alım ${m((c) => c.alim)} − çalışan ${m((c) => c.maas)} − aidat ${m((c) => c.aidat)} − vergi ${m((c) => c.vergi)} − depo+çürüme ${m((c) => c.depoM)} − hasar ${m((c) => c.hasar)} − yatırım ${m((c) => c.yatirim)} − yaşam+kira ${m((c) => c.gider)}`);
       return `${ad}: pay %${pay.toFixed(1)} · dükkan neti ${dukkan.toFixed(1)} · cebine kalan ${net.toFixed(1)} (yatırım öncesi ${(net + ort(kaynak.map((c) => ort(c.yatirim.slice(a, b))))).toFixed(1)}) · (brüt gelir ${gelir.toFixed(1)}, rakip %${rpay.toFixed(1)}) · toplam pazar ${ort(kaynak.map((c) => ort(c.pazar.slice(a, b)))).toFixed(0)} · müşterin ${ort(kaynak.map((c) => ort(c.musteri.slice(a, b)))).toFixed(0)} · enflasyon ×${ort(kaynak.map((c) => ort(c.enf.slice(a, b)))).toFixed(2)}`;
     });
+    if (process.env.SIM_DEPO_RAPOR && MESLEK !== "Din Adamı") {
+      // Dilim başına: ortalama depo kademesi, kademe dağılımı, talep/kapasite, "stok yetmedi" ve "müşteri kaybı" yılları.
+      for (const [ad, a, b] of dilimler) {
+        const yilSayisi = sonuclar.reduce((t, c) => t + c.depoK.slice(a, b).length, 0) || 1;
+        const kd = [0, 0, 0, 0, 0];
+        for (const c of sonuclar) for (const k of c.depoK.slice(a, b)) kd[k] += 1;
+        const oran = ort(sonuclar.map((c) => ort(c.talep.slice(a, b).map((t, i) => t / Math.max(1, c.kap[a + i])))));
+        const sb = sonuclar.reduce((t, c) => t + c.stokBitti.slice(a, b).reduce((x, y) => x + y, 0), 0) / yilSayisi;
+        const kp = sonuclar.reduce((t, c) => t + c.kayip.slice(a, b).reduce((x, y) => x + y, 0), 0) / yilSayisi;
+        console.log(`    [depo ${ad}] kademe dağılımı ${kd.map((n, i) => `K${i}:%${((n / yilSayisi) * 100).toFixed(0)}`).join(" ")} · talep/kapasite ${(oran * 100).toFixed(0)}% · stok yetmedi yılı %${(sb * 100).toFixed(0)} · müşteri kaybı yılı %${(kp * 100).toFixed(0)} · depo bakımı ${ort(sonuclar.map((c) => ort(c.depoM.slice(a, b)))).toFixed(1)}`);
+      }
+      // Pazar payı kovası → o payda gereken depo kademesi (talep ≤ kapasite) ve fiilen sahip olunan.
+      const kova: Record<string, { n: number; talep: number; k: number; gerekli: number }> = {};
+      for (const c of sonuclar) for (let i = 0; i < c.pay.length; i++) {
+        const key = `%${Math.min(60, Math.floor(c.pay[i] / 5) * 5)}-${Math.min(60, Math.floor(c.pay[i] / 5) * 5) + 5}`;
+        const g = depoKapasiteTablosu(cag).findIndex((kk) => kk >= c.talep[i]);
+        const o = (kova[key] ??= { n: 0, talep: 0, k: 0, gerekli: 0 });
+        o.n++; o.talep += c.talep[i]; o.k += c.depoK[i]; o.gerekli += g < 0 ? 5 : g;
+      }
+      for (const key of Object.keys(kova).sort((x, y) => parseInt(x.slice(1)) - parseInt(y.slice(1)))) {
+        const o = kova[key];
+        console.log(`    [pay ${key}] ${o.n} oyuncu-yılı · ort. talep ${(o.talep / o.n).toFixed(0)} birim · gereken depo kademesi ort. K${(o.gerekli / o.n).toFixed(1)} (5 = en büyük depo da yetmez) · fiilen K${(o.k / o.n).toFixed(1)}`);
+      }
+    }
     const batan = sonuclar.filter((c) => c.batti).length;
     const sonPay = sonuclar.map((c) => c.pay[c.pay.length - 1]).sort((a, b) => a - b);
     const sonNegatif = sonuclar.filter((c) => c.sonPara < 0).length;

@@ -233,6 +233,10 @@
   color: var(--s-latte-soluk);
   opacity: 1;
 }
+.strateji-sayfa .isletme-depo-doldur .isletme-hat-dunya,
+.strateji-sayfa .isletme-depo-doldur .isletme-hat-kontrol > span {
+  color: #e3d3b8; /* koyu zeminde okunur */
+}
 .strateji-sayfa .isletme-fiyat-not {
   margin: 4px 2px 0;
   font-size: 0.78rem;
