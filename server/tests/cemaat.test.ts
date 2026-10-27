@@ -119,15 +119,15 @@ describe("cemaat — kurulum ve öğreti", () => {
 });
 
 describe("cemaat — gelir ve gider", () => {
-  it("ayine gelme oranı aralığı dönemden gelir: normal %70–80, kıtlık %65–75, savaş %60–72, veba %35–50", async () => {
+  it("ayine gelme oranı aralığı dönemden gelir: normal %78–86, kıtlık %72–80, savaş %68–78, veba %35–50", async () => {
     const s = await din();
-    expect(GELME_ARALIKLARI.normal).toEqual([0.7, 0.8]);
+    expect(GELME_ARALIKLARI.normal).toEqual([0.78, 0.86]);
     s.ulke.donem!.tur = "bolluk";
     expect(gelmeKaynagiBul(s)).toBe("normal");
     s.ulke.donem!.tur = "kitlik";
-    expect(gelmeAraligi(s)).toEqual([0.65, 0.75]);
+    expect(gelmeAraligi(s)).toEqual([0.72, 0.8]);
     s.ulke.savasta = true;
-    expect(gelmeAraligi(s)).toEqual([0.6, 0.72]);
+    expect(gelmeAraligi(s)).toEqual([0.68, 0.78]);
     s.veba = { aktif: true, baslangicYili: s.yil, bitisYili: s.yil + 4, etkiBitisYili: s.yil + 4, konutKiraCarpani: 1, gelirCarpani: 1, korumaSeviyesi: 0 } as never;
     expect(gelmeAraligi(s)).toEqual([0.35, 0.5]);
   });
@@ -139,8 +139,8 @@ describe("cemaat — gelir ve gider", () => {
     for (let i = 0; i < 6; i++) {
       const c = structuredClone(s);
       const { dokum } = cemaatYilIsle(c, isletmeBaglami(c));
-      expect(dokum.cemaat!.gelmeOrani).toBeGreaterThanOrEqual(0.7);
-      expect(dokum.cemaat!.gelmeOrani).toBeLessThanOrEqual(0.8);
+      expect(dokum.cemaat!.gelmeOrani).toBeGreaterThanOrEqual(0.78);
+      expect(dokum.cemaat!.gelmeOrani).toBeLessThanOrEqual(0.86);
       oranlar.add(dokum.cemaat!.gelmeOrani);
     }
     expect(oranlar.size).toBeGreaterThan(1);
@@ -151,8 +151,8 @@ describe("cemaat — gelir ve gider", () => {
     const b = isletmeBaglami(s);
     const h = cemaatHesapla(s, b, 0.75);
     expect(h.gelen).toBeCloseTo(Math.min(musteriSayisi(s) * 0.75, h.kapasite));
-    expect(h.bagisOrani).toBeCloseTo(0.6);
-    expect(h.bagis).toBeCloseTo(h.gelen * 0.6 * BAGIS_BIRIMI * b.enflasyon * CEMAAT_DONEM_ETKILERI.durgunluk.bagis, 5);
+    expect(h.bagisOrani).toBeCloseTo(0.65);
+    expect(h.bagis).toBeCloseTo(h.gelen * 0.65 * BAGIS_BIRIMI * b.enflasyon * CEMAAT_DONEM_ETKILERI.durgunluk.bagis, 5);
     const buyuk = structuredClone(s);
     buyuk.meslek_musteri = 400;
     buyuk.pazar_musteri = 900;
@@ -402,18 +402,18 @@ describe("cemaat — rakip saldırıları, veba kararı, Yap/Yapma", () => {
     expect(cemaatHesapla(s, isletmeBaglami(s), 0.75).bagis / normal).toBeCloseTo(1.1, 3);
   });
 
-  it("eş desteği yıllık müşteri artışıdır (+%0,1/0,2/0,3); eşsizken 0", async () => {
+  it("eş desteği yıllık müşteri artışıdır (eş bonusu 6+ → +1 müşteri); eşsizken 0", async () => {
     const { esMusteriBuyumesi } = await import("../src/game/isletme");
     const s = await din();
     s.es_adi = null;
     expect(esMusteriBuyumesi(s)).toBe(0);
     s.es_adi = "Eş";
     s.es_meslek_bonusu = 2;
-    expect(esMusteriBuyumesi(s)).toBe(0.001);
+    expect(esMusteriBuyumesi(s)).toBe(0);
     s.es_meslek_bonusu = 4;
-    expect(esMusteriBuyumesi(s)).toBe(0.002);
+    expect(esMusteriBuyumesi(s)).toBe(0);
     s.es_meslek_bonusu = 6;
-    expect(esMusteriBuyumesi(s)).toBe(0.003);
+    expect(esMusteriBuyumesi(s)).toBe(1);
   });
 
   it("Din Adamı talepleri: açıklama %50 / bağış %30 / destek %20; Yap otoriteyi artırır, Yapma düşürür; yalan reddedilir", async () => {
@@ -471,17 +471,17 @@ describe("cemaat — eski kayıt göçü ve aranma/yatkınlık", () => {
     expect(aranan.ahlak).toBeLessThan(temiz.ahlak);
   });
 
-  it("mesleğe yatkınlık gelir yerine müşteri büyümesi sağlar (Mükemmel +%1/yıl, Kötü −%0.4/yıl)", async () => {
+  it("mesleğe yatkınlık gelir yerine inanan artışı sağlar (Mükemmel +2/yıl, Kötü −1/yıl; kalem inanan sayısına oranlanır)", async () => {
     const s = await din();
-    const kalem = () => cemaatEtkenleri(s).kalemler.find((k) => k.kod === "yatkinlik")!.deger;
+    const kalem = () => cemaatEtkenleri(s).kalemler.find((k) => k.kod === "yatkinlik")!.deger * Math.max(1, s.meslek_musteri);
     s.meslek_yatkinlik_seviyesi = 2;
     expect(kalem()).toBe(0);
     s.meslek_yatkinlik_seviyesi = 5;
-    expect(kalem()).toBeCloseTo(0.01);
+    expect(kalem()).toBeCloseTo(2);
     s.meslek_yatkinlik_seviyesi = 4;
-    expect(kalem()).toBeCloseTo(0.006);
+    expect(kalem()).toBeCloseTo(1);
     s.meslek_yatkinlik_seviyesi = 1;
-    expect(kalem()).toBeCloseTo(-0.004);
+    expect(kalem()).toBeCloseTo(-1);
   });
 
   it("başlangıç ahlak 20–60 ve şöhret 0–40 bandında", () => {

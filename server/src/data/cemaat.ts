@@ -8,9 +8,9 @@ import type { FaaliyetId } from "./ogretiler";
  */
 
 /** Bağış yapan başına yıllık ortalama bağış (enflasyonsuz). Simülasyonla ayarlanır (scripts/simulateIsletme.ts). */
-export const BAGIS_BIRIMI = 1.10;
+export const BAGIS_BIRIMI = 1.21;
 /** Bağış yapan inanan oranının taban değeri (adak politikasında). */
-export const BAGIS_TABAN_ORANI = 0.6;
+export const BAGIS_TABAN_ORANI = 0.65;
 export const BAGIS_ORANI_TAVAN = 0.95;
 /** Fanatiklik başına bağış yapma oranı artışı (f=50 → ×1.30). */
 export const FANATIK_BAGIS_KATSAYI = 0.006;
@@ -53,16 +53,16 @@ export function ahlakBandiIndeksi(ahlak: number): number {
 /** Ayine gelme oranı aralıkları (yıl yıl rastgele). */
 export type GelmeKaynagi = "normal" | "kitlik" | "savas" | "veba";
 export const GELME_ARALIKLARI: Record<GelmeKaynagi, [number, number]> = {
-  normal: [0.7, 0.8],
-  kitlik: [0.65, 0.75],
-  savas: [0.6, 0.72],
+  normal: [0.78, 0.86],
+  kitlik: [0.72, 0.8],
+  savas: [0.68, 0.78],
   veba: [0.35, 0.5],
 };
 
 /** Bina kademesi (0..4) → ibadethane kapasitesi (aynı anda ayine sığan inanan). */
 export const BINA_KAPASITE = [50, 75, 105, 145, 195];
 /** Bina bakımı (enflasyonsuz yıllık). */
-export const BINA_BAKIM = [4, 8, 15, 28, 45];
+export const BINA_BAKIM = [6, 12, 24, 36, 55];
 
 // ── Politikalar ─────────────────────────────────────────────────────────────
 export interface BagisPolitikasi {
@@ -160,7 +160,7 @@ export const YARDIM_POLITIKASI: Record<CemaatYardim, YardimPolitikasi> = {
 };
 export const YARDIM_SIRASI: CemaatYardim[] = ["dusuk", "orta", "yuksek"];
 /** Aşevi yatırımının her kademesi yardımın inanan/ahlak getirisini bu kadar artırır. */
-export const ASEVI_KADEME_ETKISI = 0.09;
+export const ASEVI_KADEME_ETKISI = 0.12;
 
 export const TON_SIRASI: CemaatTon[] = ["ilimli", "dengeli", "atesli"];
 export const TON_ADLARI: Record<CemaatTon, { ad: DilliMetin; aciklama: DilliMetin }> = {
@@ -250,7 +250,7 @@ export const CEMAAT_DONEM_ETKILERI: Record<DonemTuru | "savas" | "veba", CemaatD
 
 // ── Okul / misyoner ─────────────────────────────────────────────────────────
 /** Okul kademesi (0..4) → yıllık mezun şansı. */
-export const OKUL_MEZUN_SANSI = [0, 0.06, 0.12, 0.18, 0.24];
+export const OKUL_MEZUN_SANSI = [0, 0.08, 0.16, 0.24, 0.32];
 /** Misyoner mezun: inanan büyümesi (kendi inananının… P'nin) yüzdesi ve usta aday ihtimali. */
 export const MEZUN_PAZAR_ARALIK: [number, number] = [0.008, 0.015];
 export const MEZUN_ADAY_SANSI = 0.35;

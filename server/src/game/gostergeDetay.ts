@@ -341,9 +341,6 @@ function sohretDetayi(state: CharacterState): GostergeDetayTaban {
       etkenler.push({ ikon: "💸", metin: T(dil, "Borcun itibarını yıpratıyor: {0}/yıl", [isaretli(-borcKademe.sohret)]), yon: "kotu" });
     }
   }
-  if (state.kredi && state.kredi.odenmeyenTaksit >= 2) {
-    etkenler.push({ ikon: "💰", metin: T(dil, "Tefeci taksidi aksattın: adın çıkıyor."), yon: "kotu" });
-  }
   if (etkenler.length === 0) {
     etkenler.push({
       ikon: "ℹ️",

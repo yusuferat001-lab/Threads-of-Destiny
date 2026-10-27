@@ -1058,6 +1058,8 @@ export interface DepoDoldurPlani {
   tamMaliyet: number;
   yetersiz: boolean;
   elindekiPara: number;
+  /** Nakit yetmeyip tedarikçiden veresiye alınan kısım (borç olur). */
+  veresiye: number;
   ulasilacakYuzde: number;
 }
 

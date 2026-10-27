@@ -62,16 +62,25 @@ describe("piyasa akışı (rakip + küçük esnaf hareketleri, haberler)", () =>
     expect(s.rakipler.some((r) => ilk.metin.tr.includes(r.ad))).toBe(true);
     expect(ilk.metin.en.length).toBeGreaterThan(5);
     const once = adet();
-    s.yil = 2001; // cooldown (2 yıl): bu yıl yeni rakip hamlesi yok
+    // v26: hamleler arası 1–2 yıl. 1 yıl sonra zar %50 — yüksek zarda hamle yok; 2. yılda kesin hamle var.
+    (Math.random as unknown as ReturnType<typeof vi.fn>).mockReturnValue(0.9);
+    const toplam = () => s.piyasa_gunlugu.length;
+    const t0 = toplam();
+    s.yil = 2001;
     piyasaYillikUygula(s, 1);
-    expect(s.piyasa_gunlugu.filter((h) => h.grup === "rakip" && h.yil === 2001 && h.kod !== "rakip_yenildi")).toHaveLength(0);
+    expect(s.piyasa_gunlugu.filter((h) => h.yil === 2001 && h.kod !== "rakip_yenildi" && h.kod !== "yeni_rakip")).toHaveLength(0);
+    expect(toplam()).toBe(t0);
+    s.yil = 2002;
+    piyasaYillikUygula(s, 1);
+    expect(s.piyasa_gunlugu.some((h) => h.yil === 2002)).toBe(true);
     expect(adet()).toBeGreaterThanOrEqual(once);
   });
 
-  it("saldırgan hamleler (fiyat kırdı, ürün satmaya başladı) hedeflidir: oyuncunun müşterisinin %'si", () => {
+  it("saldırgan hamleler (fiyat kırdı, ürün satmaya başladı): rakibin tam sayı kazancı kendi hariç tüm pazardan alınır", () => {
     for (const id of ["fiyat_kirdi", "urun_satmaya_basladi"]) {
       const h = RAKIP_HAMLELERI.find((x) => x.id === id)!;
-      expect(h.hedef).toBe("oyuncu");
+      expect(h.hedef).toBeUndefined();
+      expect(h.sayi).toBeDefined();
       expect(h.yon).toBe("buyur");
     }
     expect(RAKIP_HAMLELERI.find((x) => x.id === "urun_satmaya_basladi")!.urunlu).toBe(true);
