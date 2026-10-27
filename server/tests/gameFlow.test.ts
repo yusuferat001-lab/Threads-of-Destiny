@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { yeniOyun, mesleğiAta, senaryoUret, secimUygula, liderlikTablosunaKaydet, gecmisSkorlariKaydet } from "../src/game/gameEngine";
 import { skorKaydet } from "../src/db/scoreRepository";
 import { secimUygulaVeCoz } from "./testUtils";
+import { vergisizSenaryo } from "./_ogreti";
 
 async function oyunuOlumeKadarOyna(meslek: string) {
   const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
@@ -10,7 +11,7 @@ async function oyunuOlumeKadarOyna(meslek: string) {
   let aktif = true;
   let sonState = state;
   for (let tur = 0; tur < 150 && aktif; tur++) {
-    const senaryo = await senaryoUret(state.id);
+    const senaryo = await vergisizSenaryo(state);
     const idx = senaryo.secenekler.findIndex((s) => !s.kilitli);
     const sonuc = await secimUygulaVeCoz(state.id, idx >= 0 ? idx : 0);
     aktif = sonuc.state.aktif;
@@ -38,7 +39,7 @@ describe("kritik oyun akışı: yeni oyun → meslek → seçim → ölüm → s
     expect(atanmis.meslek).toBe("Tüccar");
     expect(atanmis.rutbe).toBeTruthy();
 
-    const senaryo = await senaryoUret(state.id);
+    const senaryo = await vergisizSenaryo(state);
     expect(senaryo.secenekler.length).toBeGreaterThan(0);
     for (const secenek of senaryo.secenekler) {
       if (!secenek.kilitli) {
@@ -114,7 +115,7 @@ describe("kritik oyun akışı: yeni oyun → meslek → seçim → ölüm → s
   it("kilitli bir seçenek uygulanmaya çalışıldığında hata fırlatır", async () => {
     const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
-    const senaryo = await senaryoUret(state.id);
+    const senaryo = await vergisizSenaryo(state);
     const kilitliIdx = senaryo.secenekler.findIndex((s) => s.kilitli);
     if (kilitliIdx >= 0) {
       await expect(secimUygula(state.id, kilitliIdx)).rejects.toThrow();

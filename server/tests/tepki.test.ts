@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { yeniOyun, mesleğiAta, senaryoUret, secimUygula } from "../src/game/gameEngine";
 import type { CharacterState, SecimSonucu, TepkiSonucu } from "../src/types";
+import { vergisizSenaryo } from "./_ogreti";
 
 interface TepkiBulgusu {
   state: CharacterState;
@@ -27,7 +28,7 @@ async function tepkiAra(toplamButce: number): Promise<TepkiBulgusu | null> {
       kalan--;
       if (state.saglik < 60) state.saglik = 90;
       if (state.para < 100) state.para = 500;
-      const senaryo = await senaryoUret(state.id);
+      const senaryo = await vergisizSenaryo(state);
       const acikSecenekler = senaryo.secenekler.map((s, i) => ({ s, i })).filter(({ s }) => !s.kilitli);
       const idx = acikSecenekler.length > 0 ? acikSecenekler[Math.floor(Math.random() * acikSecenekler.length)].i : 0;
       const oncekiYil = state.yil;

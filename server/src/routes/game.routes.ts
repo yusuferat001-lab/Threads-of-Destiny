@@ -792,7 +792,7 @@ gameRouter.post("/:id/yonetim/istek", async (req, res) => {
 
 gameRouter.post("/:id/yonetim/talep", async (req, res) => {
   const { karar } = req.body ?? {};
-  if (karar !== "kabul" && karar !== "ret" && karar !== "yalan") {
+  if (karar !== "kabul" && karar !== "ret" && karar !== "yalan" && karar !== "rusvet") {
     return res.status(400).json({ hata: "Geçersiz karar." });
   }
   try {

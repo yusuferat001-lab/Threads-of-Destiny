@@ -334,6 +334,60 @@ const KATALOG_EN: Record<string, string> = {
     "A jewel that dazzles in the goldsmith's window and shouts the wearer's wealth.",
   "Geçmiş bir çağdan kalma, hikâyesi kadar değerli de olan nadir bir eser.":
     "A rare artifact from a past age, as valuable as its story.",
+  "Işıklı El Yazması": "Illuminated Manuscript",
+  "Altın Zeminli İkon": "Gold-Ground Icon",
+  "Vitray Pencere Paneli": "Stained-Glass Panel",
+  "Oyma Fildişi Diptik": "Carved Ivory Diptych",
+  "Gotik Taş Heykel": "Gothic Stone Statue",
+  "Altın İşlemeli Duvar Tapiseri": "Gold-Threaded Wall Tapestry",
+  "Yağlıboya Manzara Tablosu": "Oil Landscape Painting",
+  "Mermer Büst": "Marble Bust",
+  "Nakışlı Porselen Takım": "Painted Porcelain Set",
+  "Gümüş Şamdan Takımı": "Silver Candelabra Set",
+  "Ünlü Ressama Yaptırılmış Portre": "Portrait by a Famed Painter",
+  "Kristal Avize": "Crystal Chandelier",
+  "Süslü Eyer ve Koşum Takımı": "Ornate Saddle and Harness",
+  "Soylu Binek Atı": "Noble Riding Horse",
+  "Zırhlı Savaş Atı": "Armored Warhorse",
+  "Hafif Fayton": "Light Phaeton",
+  "Landau Arabası": "Landau Carriage",
+  "Küçük Buharlı Yat": "Small Steam Yacht",
+  "Keşişlerin yıllarca altın yaldızla süslediği, sayfa kenarları minyatürlü bir kitap.":
+    "A book the monks spent years adorning with gold leaf, its margins filled with miniatures.",
+  "Kutsal bir sima, altın zemin üzerine ince fırça darbeleriyle işlenmiş; kiliselerin kıskandığı bir parça.":
+    "A holy face rendered in fine brushstrokes on a gold ground; a piece even churches envy.",
+  "Renkli camın kurşunla birleştiği, güneşe tutulunca odayı boyayan bir panel.":
+    "A panel of colored glass joined with lead that paints the room when held to the sun.",
+  "Katlanır iki kanatlı, ince kabartmalı fildişi levha; seyyahlar bile yolculukta yanında taşırdı.":
+    "A folding two-leaf ivory plaque with delicate relief; even travelers carried one on the road.",
+  "Katedral atölyesinde yontulmuş, yüzündeki ifadeyle ziyaretçiyi susturan bir heykel.":
+    "A statue carved in a cathedral workshop whose expression silences every visitor.",
+  "Bir av sahnesini anlatan, altın ve gümüş iplikle dokunmuş dev bir duvar halısı.":
+    "A huge wall hanging woven with gold and silver thread, telling a hunting scene.",
+  "Sergilerde adı geçen bir ressamın, ışığı yakalamasıyla övülen yağlıboya manzarası.":
+    "An oil landscape by a painter spoken of at the exhibitions, praised for how it catches the light.",
+  "Atölyede, ölçüleri titizlikle alınarak yontulmuş, salonun köşesine yakışan bir büst.":
+    "A bust carved in the studio with painstaking measurements, perfect for a corner of the salon.",
+  "Elle boyanmış, ince cidarlı porselen çay takımı; misafirler dokunmaya bile çekinir.":
+    "A hand-painted, thin-walled porcelain tea set; guests hesitate even to touch it.",
+  "Atölyesinin imzasını taşıyan, kabartmalı ağır gümüş bir şamdan takımı.":
+    "A heavy embossed silver candelabra set bearing the workshop's mark.",
+  "Şehrin en çok konuşulan ressamına poz verdiğin, altın çerçeveli boy portren.":
+    "A full-length portrait in a gilded frame, painted by the most talked-about artist in town.",
+  "Yüzlerce kristal damlasıyla ışığı dağıtan, salonu saraya çeviren bir avize.":
+    "A chandelier of hundreds of crystal drops that scatters the light and turns your salon into a palace.",
+  "Gümüş tokalı, işlemeli deri bir eyer takımı; ata binmeyenler bile bakar.":
+    "An embroidered leather saddle set with silver buckles; even non-riders stare.",
+  "Yürüyüşü kusursuz, soylu bir soydan gelen, caddede başları çeviren bir at.":
+    "A horse of noble blood with a flawless gait that turns heads on the street.",
+  "Göğsü zırhla örtülü, turnuvalarda ve törenlerde şövalyeleri taşıyan görkemli bir at.":
+    "A magnificent horse with an armored chest, carrying knights at tournaments and ceremonies.",
+  "Yaylı, açık bir fayton; pazar gezintilerinin en gözde aracı.":
+    "A sprung, open phaeton; the favorite vehicle for Sunday outings.",
+  "Ters çevrilebilir tavanlı, iki atlı, saten döşemeli şık bir araba.":
+    "An elegant two-horse carriage with a folding top and satin upholstery.",
+  "Bacası ince ince tüten, nehir ve körfez gezileri için yaptırılmış parlak bir yat.":
+    "A gleaming yacht with a slim, smoking funnel, built for river and bay cruises.",
 
   // ---------------------------------------------------------------------------
   // Sosyalleşme mekânları

@@ -20,6 +20,7 @@ async function oyun() {
 describe("ekonomi sömürülerini kapatma", () => {
   it("lüks eşya hediye edilemez (al → hediye et → tekrar al döngüsü kapalı)", async () => {
     const s = await oyun();
+    s.magaza_vitrin = { yenileme_yili: s.yil + 100, idler: ["ipek_hali"] };
     await magazadanSatinAl(s.id, "ipek_hali");
     const esya = s.magaza_envanteri.find((e) => e.katalogId === "ipek_hali");
     expect(esya).toBeDefined();

@@ -17,6 +17,7 @@ import {
 import { yeniOyun, mesleğiAta, hediyeEt, salginKorunmaYatirimiYap, senaryoUret } from "../src/game/gameEngine";
 import type { CharacterState } from "../src/types";
 import { KREDI_HAVUZU, annuiteTaksit } from "../src/data/krediHavuzu";
+import { vergisizSenaryo } from "./_ogreti";
 
 function taze(): CharacterState {
   const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
@@ -101,7 +102,7 @@ describe("§24: zorlanan kaskad havuz kilidi altında milestone zorlamaz", () =>
     await mesleğiAta(s.id, "Tüccar");
     // yolculuk havuzunu aç + yaşı ilerlet
     for (let i = 0; i < 40; i++) {
-      const senaryo = await senaryoUret(s.id);
+      const senaryo = await vergisizSenaryo(s);
       // yolculuk etiketi olmadan da olay üretilebilmeli; sadece crash olmamalı
       expect(senaryo.secenekler.length).toBeGreaterThan(0);
     }

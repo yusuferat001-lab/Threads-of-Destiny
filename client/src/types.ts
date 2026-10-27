@@ -101,7 +101,7 @@ export interface MantikAday {
   meslek_bonusu: number;
 }
 
-export type MagazaEsyaKategori = 'sifa' | 'luks';
+export type MagazaEsyaKategori = 'sifa' | 'luks' | 'sanat' | 'binek';
 
 /** Mağazadan satın alınıp envanterde tutulan somut bir eşya kopyası; her satın alma kendi id/ömrünü taşır. */
 export interface SahipOlunanEsya {
@@ -236,6 +236,8 @@ export interface CharacterState {
   hapis_ceza_toplam: number;
   /** Hapse en son girişten beri çözülen hapisOlayi:true olay sayısı. */
   hapis_tur_sayaci: number;
+  /** Sağlık 10'un altında kalınan ardışık yıl sayısı (2'de mutluluk aşınır). */
+  saglik_kritik_yil_sayaci: number;
   /**
    * Zaman modeli. "ilerle" (telefon ana ekranı): olaya cevap vermek yıl geçirmez, yıl yalnız
    * "İLERLE" (`POST /:id/yil-gec`, 1 yıl) ile geçer; son olaydan `yil_sayaci >= 2` yıl sonra olay çıkar.
@@ -338,7 +340,6 @@ export interface CharacterState {
   durumlar: Durum[];
   ulke: UlkeDurumu;
 
-  son_zorunlu_bagis_yili: number | null;
   son_zenginlik_sizinti_yili: number | null;
   son_rakip_soygun_yili: number | null;
   buyuk_savas: BuyukSavas | null;
@@ -596,7 +597,7 @@ export interface YonetimTalep {
   id: string;
   kimden: 'yonetici' | 'patron';
   kimAdi: string;
-  tur: 'bagis' | 'sadakat' | 'aciklama';
+  tur: 'bagis' | 'sadakat' | 'aciklama' | 'vergi';
   tutar: number;
   kalem: string;
   sonYil: number;

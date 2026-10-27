@@ -12,6 +12,7 @@ import { evcilHayvanEkle } from "../src/game/stateManager";
 import { OLAY_HIZIP_ZANAATKAR } from "../src/data/olaylar/hizipZanaatkar";
 import { OLAY_BANKASI } from "../src/data/olaylar";
 import type { SecimSonucu, TepkiSonucu } from "../src/types";
+import { vergisizSenaryo } from "./_ogreti";
 
 /** Rastgele olayın şıkkı kilitli/pahalı olabilir: ilk uygulanabilir şıkkı dener; ara_tepki'yi çözer. */
 async function sec(id: string, index: number, _u?: boolean): Promise<SecimSonucu> {
@@ -130,7 +131,7 @@ describe("garanti tekrarı hatası düzeldi", () => {
     state.yas = 62;
     const gorulen: string[] = [];
     for (let i = 0; i < 4; i++) {
-      const senaryo = await senaryoUret(state.id);
+      const senaryo = await vergisizSenaryo(state);
       gorulen.push(senaryo.olay_basligi);
       const s = await sec(state.id, 0);
       if (!s.state.aktif) break;

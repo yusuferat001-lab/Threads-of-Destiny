@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { yeniOyun, mesleğiAta, senaryoUret, secimUygula } from "../src/game/gameEngine";
+import { vergisizSenaryo } from "./_ogreti";
 
 /**
  * "Zanaatkâr'ın kendi olay havuzu (kariyer yolu + standalone, 130 olay) bir
@@ -26,7 +27,7 @@ async function birOmurOyna(cag: "Orta Çağ" | "Sanayi Devrimi", bolge: string) 
   let aktif = true;
   let sonState = state;
   for (let tur = 0; tur < 200 && aktif; tur++) {
-    const senaryo = await senaryoUret(state.id);
+    const senaryo = await vergisizSenaryo(state);
     const acik = senaryo.secenekler.map((s, i) => ({ s, i })).filter((x) => !x.s.kilitli);
     const secim = acik.length > 0 ? acik[Math.floor(Math.random() * acik.length)].i : 0;
     const sonuc = await secimUygulaVeCoz(state.id, secim);

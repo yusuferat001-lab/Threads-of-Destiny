@@ -39,7 +39,7 @@ const GIDER_SEG = [
   { key: "magaza", ad: "Mağaza", renk: "var(--c-magaza)" },
   { key: "faiz", ad: "Borç faizi", renk: "var(--c-faiz)" },
   { key: "sizinti", ad: "Zenginlik sızıntısı", renk: "var(--c-zar)" },
-  { key: "diger2", ad: "Diğer (bağış/savaş v./taşınma/…)", renk: "var(--c-diger)" },
+  { key: "diger2", ad: "Diğer (ekstra vergi/savaş v./taşınma/…)", renk: "var(--c-diger)" },
 ];
 function giderComp(y: Record<string, number>) {
   const diger2 =

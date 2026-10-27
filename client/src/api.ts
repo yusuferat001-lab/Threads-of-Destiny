@@ -574,7 +574,7 @@ export function yonetimIstekYap(stateId: string, istekId: string, rusvet = false
   );
 }
 
-export function yonetimTalebiKararlastir(stateId: string, karar: 'kabul' | 'ret' | 'yalan') {
+export function yonetimTalebiKararlastir(stateId: string, karar: 'kabul' | 'ret' | 'yalan' | 'rusvet') {
   return istek<{ state: CharacterState; kabul: boolean; mesaj: string }>(
     `/api/game/${stateId}/yonetim/talep`,
     { method: 'POST', body: JSON.stringify({ karar }) },

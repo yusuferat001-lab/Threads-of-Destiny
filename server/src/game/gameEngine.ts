@@ -3,6 +3,14 @@ import { gostergeDetayiUret, etkenGunluguNotEt, gostergeStatiMi, GostergeDetayi 
 import { dunyaGecmisiUret, DunyaGecmisi } from "./dunyaGecmisi";
 import { yatirimEtkiMetni, yatirimMasrafGorunumu } from "./yatirimMetinleri";
 import { IsletmeDokum, IsletmeFiyat, IsletmeStokHedefi, IsletmeRolTuru, CharacterState, Cag, SenaryoResponse, SonucEtkisi, SucSinifi, TepkiSonucu, MulkTuru, OturumAkisiKaydi, IkiDilMetin, PiyasaHaberi, EkipUyesi, YonetimTalep, AileHuy, DugunButcesi, EvlilikTuru, TeklifHediyesi } from "../types";
+import {
+  EKSTRA_VERGI_ODEME_ILISKI,
+  EKSTRA_VERGI_RUSVET_AHLAK,
+  EKSTRA_VERGI_RUSVET_BASARISIZ_ILISKI,
+  EKSTRA_VERGI_RUSVET_BEDEL_ORANI,
+  EKSTRA_VERGI_RUSVET_SANS,
+  vergiBekliyorMu,
+} from "../data/ekstraVergi";
 import { T, K, Khukumdar, ikiDilT, ikiDil } from "../i18n";
 import { musteriDagilimi, musteriAktar, musteriKaydir, rakipGrubu } from "./piyasa";
 import { olayCevirisiUygula } from "../i18n/olaylar";
@@ -76,8 +84,9 @@ import {
   temelMagazaKilitliMi,
   TEMEL_MAGAZA_KILIT_SURESI_YIL,
   rastgeleLuksBakimAraligi,
+  magazaVitriniYenile,
+  magazadaSatildiMi,
   paraYuvarla,
-  zorunluBagisKontrolEt,
   zenginlikSizintiKontrolEt,
   rakipSoygunKontrolEt,
   buyukSavasKontrolEt,
@@ -317,6 +326,7 @@ import { istemciGecmisiOku, istemciGecmisiGuncelle } from "../db/istemciGecmisRe
 import { MULK_TANIMLARI, mulkTanimiGetir } from "../data/mulkler";
 import {
   MAGAZA_ESYALARI,
+  koleksiyonKategorisiMi,
   magazaEsyasiTanimiGetir,
   sifaBasariSans,
   sifaFaydaAralik,
@@ -1273,6 +1283,7 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
   }
   if (ogretiBekliyorMu(oturum.state)) throw new Error("Önce öğretini seçmelisin.");
   if (urunSecimiBekliyorMu(oturum.state)) throw new Error("Önce başlangıç ürününü seçmelisin.");
+  if (vergiBekliyorMu(oturum.state)) throw new Error("Önce ekstra vergi talebini yanıtlamalısın.");
 
   // Zaten cevaplanmamış bir olay varsa (sayfa yenilendi, sekme yeniden açıldı,
   // istemci /scenario'yu tekrar çağırdı) YENİDEN ZAR ATILMAZ — aynı olay aynen
@@ -1699,8 +1710,6 @@ export interface TurNakitAkisi {
   mulkNet: number;
   /** Lüks mağaza eşyalarının periyodik bakım/vergi masrafı (mutlak değer). */
   envanterBakim: number;
-  /** Kralın zorunlu bağış tahsilatı (mutlak değer). */
-  zorunluBagis: number;
   /** Zenginlik sızıntısı (hırsız/haraç/dolandırıcı — net servet ≥ 350 & nakit ≥ 50; mutlak değer). */
   zenginlikSizinti: number;
   /** Rakibin "parayı alıp kaçtığı" soygun (nakit ≥ 150 iken düşük ihtimalli; mutlak değer). */
@@ -1801,6 +1810,7 @@ export async function secimUygula(id: string, secenekIndex: number): Promise<Sec
   if (!state.meslek) throw new Error("Önce bir meslek seçmelisin.");
   if (ogretiBekliyorMu(state)) throw new Error("Önce öğretini seçmelisin.");
   if (urunSecimiBekliyorMu(state)) throw new Error("Önce başlangıç ürününü seçmelisin.");
+  if (vergiBekliyorMu(state)) throw new Error("Önce ekstra vergi talebini yanıtlamalısın.");
 
   // Bir önceki çağrıda onTepki'li bir seçenek seçilmişse, bu çağrı zar atmadan
   // doğrudan geri çekil (0) / ısrar et (1) sonucunu uygular; zaman burada ilerler.
@@ -1910,6 +1920,7 @@ export async function yilGec(id: string): Promise<SecimSonucu & { olayBekliyor: 
   if (state.zaman_modeli !== "ilerle") throw new Error("Bu oyun yıl geçirme modunda değil.");
   if (ogretiBekliyorMu(state)) throw new Error("Önce öğretini seçmelisin.");
   if (urunSecimiBekliyorMu(state)) throw new Error("Önce başlangıç ürününü seçmelisin.");
+  if (vergiBekliyorMu(state)) throw new Error("Önce ekstra vergi talebini yanıtlamalısın.");
   if (olayBekliyorMu(oturum)) throw new Error("Önce bekleyen olayı çözmelisin.");
 
   state.yil_sayaci = (state.yil_sayaci ?? 0) + 1;
@@ -2021,10 +2032,8 @@ function yilIlerlet(g: YilIlerletGirdi): { yasArtisi: number; zamanAnlatimi: str
           checkDeath(state, true, ikiDilT("İleri yaşın getirdiği yorgunlukla huzur içinde vefat etti."));
         }
         if (state.aktif) {
+          // Sağlık → mutluluk çapraz etkisi artık sağlığı düşürmez (yalnız mutluluk aşınır).
           capraletkiUygula(state, yasArtisi);
-          if (state.saglik <= 0) {
-            checkDeath(state, true, ikiDilT("Uzun süredir çöken ruh hali bedenini de tüketti."));
-          }
         }
         if (state.aktif) {
           // Tekrar eden durum cümleleri ("savaş sürüyordu", "salgın sürüyordu"...) artık yazılmaz:
@@ -2119,18 +2128,13 @@ function yilIlerlet(g: YilIlerletGirdi): { yasArtisi: number; zamanAnlatimi: str
             zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${yonetimMesaji}` : yonetimMesaji;
           }
           const envanterSonucu = envanterBozulmasiUygula(state, yasArtisi);
+          magazaVitriniYenile(state);
           nakitAkisi.envanterBakim = envanterSonucu.bakimOdemeleri.reduce((a, b) => a + b.miktar, 0);
 
-          // Zorunlu bağış / büyük savaş / veba — arka planda tetiklenen dünya olayları;
+          // Büyük savaş / veba — arka planda tetiklenen dünya olayları;
           // sonuçları (varsa) ayyaşlık bildirimiyle aynı desende koşulsuz olarak
           // zamanAnlatimi'ye eklenir (aşağıdaki tek-slotlu ekCumle önceliğinden bağımsız,
           // çünkü hepsi nadir ve önemli birer haber).
-          const bagisSonucu = zorunluBagisKontrolEt(state, yasArtisi);
-          if (bagisSonucu) {
-            zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${bagisSonucu.mesaj}` : bagisSonucu.mesaj;
-            hayatOlayiEkle(state, "👑", T(state.dil, "Zorunlu bağış: -{0} {birim}", [bagisSonucu.miktar]).replace(/\{birim\}/g, state.para_birimi));
-            nakitAkisi.zorunluBagis = bagisSonucu.miktar;
-          }
 
           // Zenginlik sızıntısı (hırsız/haraç/dolandırıcı — net servet ≥ 350 & nakit ≥ 50).
           const sizintiSonucu = zenginlikSizintiKontrolEt(state, yasArtisi);
@@ -2277,7 +2281,7 @@ async function sonucuUygulaVeIlerlet(
   const nakitAkisi: TurNakitAkisi = {
     olayGeliri: 0, olayGideri: 0, maasBrut: 0, giderYasam: 0, giderKonut: 0,
     giderEkip: 0, giderEvcil: 0, savasVergisi: 0, faiz: 0, mulkNet: 0,
-    envanterBakim: 0, zorunluBagis: 0, zenginlikSizinti: 0, rakipSoygun: 0, digerNet: 0, bilgiMulkBakim: 0,
+    envanterBakim: 0, zenginlikSizinti: 0, rakipSoygun: 0, digerNet: 0, bilgiMulkBakim: 0,
   };
   // Olay geliri primi: maaş dışı gelir kanalını hafifçe güçlendirir (her olay için ~%5.5).
   if (etki.para && etki.para > 0) {
@@ -2684,7 +2688,6 @@ async function sonucuUygulaVeIlerlet(
     nakitAkisi.faiz +
     nakitAkisi.mulkNet -
     nakitAkisi.envanterBakim -
-    nakitAkisi.zorunluBagis -
     nakitAkisi.zenginlikSizinti -
     nakitAkisi.rakipSoygun;
   nakitAkisi.digerNet = paraYuvarla(state.para - paraGiris - mutabakatliToplam);
@@ -2708,13 +2711,13 @@ export interface FinansOzeti {
   enflasyonYuzdesi: number;
   /** Yaşam + konut GİDER enflasyonu yüzdesi (gelirden ayrı, biraz yüksek). Gelir&Gider ekranındaki seçim kartları bunu kullanır ki tutar gerçek gider dökümüyle birebir eşleşsin. */
   giderEnflasyonYuzdesi: number;
-  /** Sahip olunan tüm gayrimenkullerin güncel toplam değeri (zorunlu bağış eşiği bu + nakit toplamına bakar). */
+  /** Sahip olunan tüm gayrimenkullerin güncel toplam değeri (net servet hesabı bu + nakit toplamına bakar). */
   gayrimenkulDegeri: number;
   /** Yıllık maaşın hangi bileşenlerden oluştuğu + her birinin kalıcı mı dönemsel mi olduğu. */
   maasKirilim: MaasKirilim;
   /** Mülklerden gelen yıllık tahmini net gelir — maaşın DIŞINDA, ayrı bir gelir akışı. */
   gayrimenkulYillikGelir: number;
-  /** Şu an bütçeyi/sağlığı etkileyen dünya durumlarının insan-okunur listesi (ekonomi, savaş, salgın, kıtlık, enflasyon, zorunlu bağış eşiği). */
+  /** Şu an bütçeyi/sağlığı etkileyen dünya durumlarının insan-okunur listesi (ekonomi, savaş, salgın, kıtlık, enflasyon). */
   dunyaEtkileri: DunyaFinansEtkisi[];
 }
 
@@ -4194,16 +4197,58 @@ async function dinTalebiKararlastir(state: CharacterState, talep: YonetimTalep, 
   return { state, kabul: yap, mesaj };
 }
 
+/**
+ * Ekstra vergi talebi: yalnız "kabul" (öde) ya da "rusvet". Para yetmese de tahsil edilir (borca girilir).
+ * Rüşvet: tutarın bir kısmı peşin gider, ahlak düşer; şansla vergi silinir, tutmazsa tam tutar + ilişki kaybı.
+ */
+async function vergiTalebiKararlastir(
+  state: CharacterState,
+  talep: YonetimTalep,
+  karar: "kabul" | "ret" | "yalan" | "rusvet"
+): Promise<YonetimTalepSonucu> {
+  if (karar !== "kabul" && karar !== "rusvet") throw new Error("Bu talepte yalnızca öde ya da rüşvet verebilirsin.");
+  const kimAdi = yoneticiBilgisi(state).ad;
+  let mesaj: string;
+  if (karar === "kabul") {
+    state.para = paraYuvarla(state.para - talep.tutar);
+    yonetimIliskiYaz(state, "yonetici", yonetimIliskiOku(state, "yonetici") + EKSTRA_VERGI_ODEME_ILISKI);
+    mesaj = T(state.dil, "{0} için ekstra vergiyi ödedin: {1} {birim}.", [kimAdi, talep.tutar]).replace(/\{birim\}/g, state.para_birimi);
+  } else {
+    const bedel = paraYuvarla(talep.tutar * EKSTRA_VERGI_RUSVET_BEDEL_ORANI);
+    state.para = paraYuvarla(state.para - bedel);
+    state.ahlak -= EKSTRA_VERGI_RUSVET_AHLAK;
+    if (Math.random() < EKSTRA_VERGI_RUSVET_SANS) {
+      mesaj = T(state.dil, "{0} rüşveti cebine indirdi ve vergiyi unuttu: {1} {birim} gitti.", [kimAdi, bedel]).replace(
+        /\{birim\}/g,
+        state.para_birimi
+      );
+    } else {
+      state.para = paraYuvarla(state.para - talep.tutar);
+      yonetimIliskiYaz(state, "yonetici", yonetimIliskiOku(state, "yonetici") - EKSTRA_VERGI_RUSVET_BASARISIZ_ILISKI);
+      mesaj = T(state.dil, "{0} rüşveti aldı ama vergiyi yine de kesti: toplam {1} {birim} gitti.", [
+        kimAdi,
+        paraYuvarla(bedel + talep.tutar),
+      ]).replace(/\{birim\}/g, state.para_birimi);
+    }
+  }
+  clampStats(state);
+  state.yonetim_talep = null;
+  await oturumKaydet(state);
+  return { state, kabul: karar === "kabul", mesaj };
+}
+
 export async function yonetimTalebiKararlastir(
   id: string,
-  karar: "kabul" | "ret" | "yalan"
+  karar: "kabul" | "ret" | "yalan" | "rusvet"
 ): Promise<YonetimTalepSonucu> {
   const oturum = await oturumGetir(id);
   const { state } = oturum;
   if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
   const talep = state.yonetim_talep;
   if (!talep) throw new Error("Bekleyen bir talep yok.");
-  if (karar !== "kabul" && karar !== "ret" && karar !== "yalan") throw new Error("Geçersiz karar.");
+  if (karar !== "kabul" && karar !== "ret" && karar !== "yalan" && karar !== "rusvet") throw new Error("Geçersiz karar.");
+  if (talep.tur === "vergi") return vergiTalebiKararlastir(state, talep, karar);
+  if (karar === "rusvet") throw new Error("Bu talepte rüşvet verilemez.");
   const sehirYoneticisi = isletmeMeslegiMi(state.meslek);
   if (talep.kimden === "yonetici" && karar === "yalan" && !sehirYoneticisi) {
     throw new Error("Hükümdara yalan söyleyemezsin — sadece öde ya da kaç.");
@@ -6679,20 +6724,24 @@ export interface MagazaEsyaKarti {
   sifaFaydaAralik?: { min: number; max: number };
   /** Şu anki dünya durumuna (savaş/kriz/ekonomi) ve enflasyona göre GÜNCEL fiyat; sabit değildir. */
   fiyat: number;
-  /** Sadece "luks": bu eşyaya zaten sahip mi (her türden en fazla 1 sahiplenilir, bir daha satın alınamaz). */
+  /** Koleksiyon kategorileri (lüks/sanat/binek): bu eşyaya zaten sahip mi (her türden en fazla 1, bir daha satın alınamaz). */
   sahipMi: boolean;
   /** Sadece "sifa": az önce bir sifa alımı yapıldığı için TÜM kategori geçici olarak kilitli mi. */
   kilitli: boolean;
   kilitAciklamasi?: string;
 }
 
-/** Mağaza ekranının canlı kataloğunu döner: karakterin çağına uygun eşyalar + o anki dinamik fiyat/kilit/sahiplik durumu. */
+/**
+ * Mağaza ekranının canlı kataloğunu döner: karakterin çağına uygun eşyalar + o anki dinamik fiyat/kilit/sahiplik durumu.
+ * Şifa eşyaları hep görünür; lüks/sanat/binek yalnız o anki VİTRİNDE (belirli aralıkla yenilenir, bkz. magazaVitriniYenile).
+ * Vitrin ilk kez kuruluyorsa ya da süresi dolmuşsa burada yenilenip kaydedilir.
+ */
 export async function magazaConfigGetir(id: string): Promise<MagazaEsyaKarti[]> {
   const oturum = await oturumGetir(id);
   const { state } = oturum;
+  if (magazaVitriniYenile(state)) await oturumKaydet(state);
   const kilitliMi = temelMagazaKilitliMi(state);
-  const kalanKilitYili = state.magaza_temel_kilit_bitis_yili !== null ? state.magaza_temel_kilit_bitis_yili - state.yil : 0;
-  return MAGAZA_ESYALARI.filter((tanim) => !tanim.cag || tanim.cag === state.cag).map((tanim) => ({
+  return MAGAZA_ESYALARI.filter((tanim) => magazadaSatildiMi(state, tanim)).map((tanim) => ({
     id: tanim.id,
     ad: tanim.ad,
     simge: tanim.simge,
@@ -6704,7 +6753,7 @@ export async function magazaConfigGetir(id: string): Promise<MagazaEsyaKarti[]> 
     omurYil: tanim.omurYil,
     sifaFaydaAralik: tanim.kategori === "sifa" ? sifaFaydaAralik(tanim.tabanFiyat) : undefined,
     fiyat: magazaFiyatiHesapla(tanim, state),
-    sahipMi: tanim.kategori === "luks" && state.magaza_envanteri.some((e) => e.katalogId === tanim.id),
+    sahipMi: koleksiyonKategorisiMi(tanim.kategori) && state.magaza_envanteri.some((e) => e.katalogId === tanim.id),
     kilitli: tanim.kategori === "sifa" && kilitliMi,
     kilitAciklamasi:
       tanim.kategori === "sifa" && kilitliMi
@@ -6736,12 +6785,13 @@ export async function magazadanSatinAl(id: string, katalogId: string): Promise<M
   if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
   const tanim = magazaEsyasiTanimiGetir(katalogId);
   if (tanim.cag && tanim.cag !== state.cag) throw new Error("Bu eşya senin çağında satılmıyor.");
+  magazaVitriniYenile(state);
+  if (!magazadaSatildiMi(state, tanim)) throw new Error(T(state.dil, "Bu eşya artık vitrinde değil."));
 
   if (tanim.kategori === "sifa" && temelMagazaKilitliMi(state)) {
-    const kalanYil = state.magaza_temel_kilit_bitis_yili! - state.yil;
     throw new Error(T(state.dil, "Yakın zamanda temel ürün aldın; bir süre sonra tekrar alışveriş yapabilirsin."));
   }
-  if (tanim.kategori === "luks" && state.magaza_envanteri.some((e) => e.katalogId === tanim.id)) {
+  if (koleksiyonKategorisiMi(tanim.kategori) && state.magaza_envanteri.some((e) => e.katalogId === tanim.id)) {
     throw new Error(T(state.dil, "Bu eşyaya zaten sahipsin."));
   }
 
@@ -6757,14 +6807,15 @@ export async function magazadanSatinAl(id: string, katalogId: string): Promise<M
     simge: tanim.simge,
     kategori: tanim.kategori,
     alisYili: state.yil,
-    kalanYil: tanim.kategori === "sifa" ? (tanim.omurYil ?? 1) : rastgeleLuksBakimAraligi(),
+    kalanYil: tanim.kategori === "sifa" ? (tanim.omurYil ?? 1) : rastgeleLuksBakimAraligi(tanim),
   };
   state.magaza_envanteri.push(esya);
 
   let mesaj = T(state.dil, "{0} satın aldın ({1} {birim}).", [K(state.dil, tanim.ad), fiyat]).replace(/\{birim\}/g, state.para_birimi);
-  if (tanim.kategori === "luks" && tanim.unEtkisi) {
-    state.un += tanim.unEtkisi;
-    mesaj += " " + T(state.dil, "Şehirdeki itibarın hemen arttı (+{0} şöhret). Artık bu eşyaya sahipsin.", [tanim.unEtkisi]);
+  if (koleksiyonKategorisiMi(tanim.kategori)) {
+    if (tanim.unEtkisi) state.un += tanim.unEtkisi;
+    if (tanim.mutlulukEtkisi) state.mutluluk += tanim.mutlulukEtkisi;
+    mesaj += " " + T(state.dil, "Şehirdeki itibarın hemen arttı (+{0} şöhret). Artık bu eşyaya sahipsin.", [tanim.unEtkisi ?? 0]);
   } else {
     state.magaza_temel_kilit_bitis_yili = state.yil + TEMEL_MAGAZA_KILIT_SURESI_YIL;
     mesaj += " " + T(state.dil, "Envanterine eklendi — uzun süre kullanmazsan bozulur. Bir süre temel ürün alışverişi yapamazsın.");
@@ -6851,7 +6902,7 @@ export async function hediyeEt(
   const tanim = magazaEsyasiTanimiGetir(esya.katalogId);
   // Lüks eşya koleksiyon parçasıdır (şöhret verir, türünden bir tane tutulur): hediye edilirse
   // aynısı yeniden alınıp ilişki/şöhret kasılabilirdi — yalnız tüketim ("sifa") eşyası hediye edilir.
-  if (esya.kategori === "luks") throw new Error("Lüks eşyalar koleksiyon parçasıdır; hediye edilemez.");
+  if (koleksiyonKategorisiMi(esya.kategori)) throw new Error("Lüks eşyalar koleksiyon parçasıdır; hediye edilemez.");
   const artis = Math.max(3, Math.min(14, Math.round((tanim?.tabanFiyat ?? 20) / 12)));
   const dil = state.dil;
   let mesaj: string;

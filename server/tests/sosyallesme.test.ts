@@ -18,6 +18,7 @@ import { secimUygulaVeCoz } from "./testUtils";
 import { SOSYALLESME_YERLERI } from "../src/data/sosyallesmeYerleri";
 import { AKSIYON_ROTASYON_HAVUZU, AKSIYON_ROTASYON_GOSTERIM } from "../src/data/sosyallesmeAksiyonlari";
 import type { CharacterState } from "../src/types";
+import { vergisizSenaryo } from "./_ogreti";
 
 // Mekân girişlerindeki rastgele tanışma (aşk evliliği) bu testlerin mekân olayı beklentisini bozmasın.
 
@@ -179,7 +180,7 @@ describe("sosyallesmeYerineGit — mekâna gitmek", () => {
 
     for (const yerId of ["pazar_meydani", "meyhane", "ordugah_cadiri"]) {
       await sosyallesmeYerineGit(state.id, yerId);
-      await senaryoUret(state.id);
+      await vergisizSenaryo(state);
       await sosyallesmeOlayCoz(state.id, 0);
       state.para = 2000;
       state.saglik = 100;
@@ -278,7 +279,7 @@ describe("ayyaşlık mekaniği (3 alkollü ziyaret eşiği)", () => {
     for (let i = 0; i < 3; i++) {
       state.yil += 3; // mekân cooldown'unu (2 yıl) elle geç — sosyallesmeOlayCoz zamanı ilerletmez
       await sosyallesmeYerineGit(state.id, "meyhane");
-      const senaryo = await senaryoUret(state.id);
+      const senaryo = await vergisizSenaryo(state);
       const index = enGuvenliSecenekIndex(senaryo.secenekler);
       const sonuc = await sosyallesmeOlayCoz(state.id, index);
       sonGuncelState = sonuc.state;

@@ -270,8 +270,6 @@ export const ANLATIM_EN: Record<string, string> = {
     "The revolt was put down; the streets slowly calmed.",
   "Altın çağ sona erdi, hayat eski normaline döndü.":
     "The golden age ended; life returned to its old normal.",
-  "👑 Hükümdar zenginleştiğini fark etti; kraliyet hazinesi için zorla {0} {birim} bağış aldı.":
-    "👑 The ruler noticed your growing wealth; he took {0} {birim} as a forced 'donation' for the royal treasury.",
   "⚔️ {0} ile aranızdaki gerginlik büyük bir savaşa dönüştü.":
     "⚔️ The tension between you and {0} has erupted into a great war.",
   "🕊️ {0} ile sürdürülen savaş sona erdi, barış geri döndü.":
@@ -299,10 +297,6 @@ export const ANLATIM_EN: Record<string, string> = {
   "İsyan: −3 para & −1 ün/yıl": "Revolt: −3 money & −1 fame/yr",
   "Altın çağ: +4 para & +1 mutluluk/yıl": "Golden age: +4 money & +1 happiness/yr",
   "Gıda fiyat şoku: yemek gideri bu yıl ×2": "Food price shock: living cost ×2 this year",
-  "Servetin {0}'ü aştı: hükümdarın gözü üstünde ama ~{1} yıl daha bağış isteyemez (servetinin {2}'si)":
-    "Your wealth passed {0}: the ruler has his eye on you, but cannot ask for a donation for ~{1} more years ({2} of your wealth)",
-  "Servetin {0}'ü aştı: hükümdar zenginleştiğini fark etti — her yıl ~%{1} ihtimalle servetinin {2}'sini \"bağış\" olarak alabilir":
-    "Your wealth passed {0}: the ruler has noticed your growing wealth — each year, with ~{1}% chance, he may take {2} of your wealth as a 'donation'",
 
   // ---- Maaş kırılımı kalem adları (maasCarpanKalemleri) ----
   "Kıdem": "Seniority",
@@ -429,7 +423,6 @@ export const ANLATIM_EN: Record<string, string> = {
   "💔 {0}, ömrünü doldurup sessizce göçtü; yerini kimse dolduramaz.": "💔 {0} passed away peacefully at the end of a long life; no one can fill the gap.",
   "{0} el konuldu": "{0} was confiscated",
   "\"{0}\" ünvanını kazandı": "Earned the title \"{0}\"",
-  "Zorunlu bağış: -{0} {birim}": "Forced donation: -{0} {birim}",
   "Zenginlik sızıntısı: -{0} {birim}": "Wealth leak: -{0} {birim}",
   "Rakip parayı alıp kaçtı: -{0} {birim}": "Rival grabbed the money and fled: -{0} {birim}",
   "Veba sona erdi": "The plague ended",
@@ -797,7 +790,6 @@ export const ANLATIM_EN: Record<string, string> = {
 
   // Ölüm nedenleri (önceden çevrilmeden saklanıyordu)
   "İleri yaşın getirdiği yorgunlukla huzur içinde vefat etti.": "Passed away peacefully, worn out by old age.",
-  "Uzun süredir çöken ruh hali bedenini de tüketti.": "A spirit long in collapse finally wore the body down too.",
   "Vebadan öldün; hastalık seni yendi.": "You died of the plague; the illness beat you.",
   // Meslek pazarı (2026-10)
   "Pazar payın": "Your market share",
@@ -863,6 +855,8 @@ export const ANLATIM_EN: Record<string, string> = {
   "Bu kadar hattı aynı anda işletemezsin; daha fazla çalışan gerek.": "You can't run this many lines at once; you need more staff.",
   "Önce öğretini seçmelisin.": "You must choose your doctrine first.",
   "Önce başlangıç ürününü seçmelisin.": "You must choose your starting product first.",
+  "Borcun itibarını yıpratıyor: {0}/yıl": "Your debt is eroding your standing: {0}/yr",
+  "Önce ekstra vergi talebini yanıtlamalısın.": "You must answer the extra tax demand first.",
   "Bu meslekte başlangıç ürünü seçilmez.": "This profession has no starting product to choose.",
   "Başlangıç ürününü zaten seçtin.": "You have already chosen your starting product.",
   "Geçersiz ürün.": "Invalid product.",
@@ -923,8 +917,6 @@ export const ANLATIM_EN: Record<string, string> = {
     "Above {0} health this recovery slows to a crawl.",
   "Borç stresi: {0}/yıl":
     "Debt stress: {0}/yr",
-  "Mutluluğun {0} altında: sağlığın da aşınıyor, {1}/yıl.":
-    "Happiness below {0}: your health is eroding too, {1}/yr.",
   "Vebaya yakalandın: ölüm riskin %{0}.":
     "You caught the plague: your death risk is {0}%.",
   "Sağlığın {0} altında: riskli seçimlerde ölüm şansın büyür.":
@@ -939,6 +931,18 @@ export const ANLATIM_EN: Record<string, string> = {
     "Risky, violent and dangerous event options cost you health.",
   "Salgın hastalığı ve yaşlılık sağlığını erit.":
     "Plague and old age wear your health down.",
+  "{0} için ekstra vergiyi ödedin: {1} {birim}.":
+    "You paid the extra tax to {0}: {1} {birim}.",
+  "{0} rüşveti cebine indirdi ve vergiyi unuttu: {1} {birim} gitti.":
+    "{0} pocketed the bribe and forgot the tax: {1} {birim} gone.",
+  "{0} rüşveti aldı ama vergiyi yine de kesti: toplam {1} {birim} gitti.":
+    "{0} took the bribe but collected the tax anyway: {1} {birim} gone in total.",
+  "Bu eşya artık vitrinde değil.":
+    "This item is no longer in the display.",
+  "Yüksek şöhret zamanla sönüyor: {0}/yıl":
+    "High fame fades with time: {0}/yr",
+  "Şöhret 60'ı geçince kendiliğinden söner; ayakta tutmak için çabalaman gerekir.":
+    "Fame above 60 fades on its own; you have to work to keep it up.",
   "Yalnızlık: {0}/yıl":
     "Loneliness: {0}/yr",
   "Eşinle sürekli kavga: moralin aşınıyor.":
@@ -949,8 +953,8 @@ export const ANLATIM_EN: Record<string, string> = {
     "You are on bad terms with your children: your morale is dropping.",
   "Çocuklarınla aran iyi: morale iyi geliyor.":
     "You get along with your children: it lifts your spirits.",
-  "Sağlığın {0} altında: moralin aşınıyor, {1}/yıl.":
-    "Health below {0}: your morale is wearing down, {1}/yr.",
+  "Sağlığın uzun süredir çok düşük: moralin aşınıyor, {0}/yıl.":
+    "Your health has been critically low for a long time: your morale is wearing down, {0}/yr.",
   "Evlen; eşinle ve çocuklarınla Aile ekranından ilgilen.":
     "Marry, and look after your spouse and children on the Family screen.",
   "Sosyalleş: meyhane, pazar ve mekân olayları moral verir.":

@@ -21,6 +21,7 @@ import {
 } from "../src/data/evcilHayvanlar";
 import { hayvanOlayEtkisiUygula } from "../src/game/hayvanEtkileri";
 import { secimUygulaVeCoz } from "./testUtils";
+import { vergisizSenaryo } from "./_ogreti";
 import type { CharacterState } from "../src/types";
 
 afterEach(() => {
@@ -240,7 +241,7 @@ describe("evcil hayvan sistemi: motor akışı", () => {
     await mesleğiAta(state.id, "Tüccar");
     digerZorunluOlaylariGecistir(state);
     state.yas = 29;
-    const senaryo = await senaryoUret(state.id);
+    const senaryo = await vergisizSenaryo(state);
     const olay = OLAY_BANKASI.find((o) => o.baslik === senaryo.olay_basligi && o.hayvanKarsilasmaTuru);
     expect(olay).toBeDefined();
     expect(olay!.cag).toBe("Orta Çağ");
@@ -251,7 +252,7 @@ describe("evcil hayvan sistemi: motor akışı", () => {
     await mesleğiAta(state.id, "Tüccar");
     digerZorunluOlaylariGecistir(state);
     state.yas = 29;
-    const senaryo = await senaryoUret(state.id);
+    const senaryo = await vergisizSenaryo(state);
     const olay = OLAY_BANKASI.find((o) => o.baslik === senaryo.olay_basligi && o.hayvanKarsilasmaTuru)!;
     const tur = olay.hayvanKarsilasmaTuru!;
     const kabulIndex = olay.secenekler.findIndex((s) => s.basariliSonuc.evcil_hayvan_edin);
@@ -276,7 +277,7 @@ describe("evcil hayvan sistemi: motor akışı", () => {
     state.hayvan_karsilasma_sayisi = 1;
     state.hayvan_karsilasma_turleri = ["Köpek"];
     state.yas = 38;
-    const senaryo = await senaryoUret(state.id);
+    const senaryo = await vergisizSenaryo(state);
     const olay = OLAY_BANKASI.find((o) => o.baslik === senaryo.olay_basligi && o.hayvanKarsilasmaTuru);
     expect(olay).toBeDefined();
     expect(olay!.hayvanKarsilasmaTuru).not.toBe("Köpek");
@@ -290,7 +291,7 @@ describe("evcil hayvan sistemi: motor akışı", () => {
     state.hayvan_karsilasma_turleri = ["Köpek", "Kedi"];
     state.yas = 45;
     for (let i = 0; i < 25; i++) {
-      const senaryo = await senaryoUret(state.id);
+      const senaryo = await vergisizSenaryo(state);
       expect(OLAY_BANKASI.find((o) => o.baslik === senaryo.olay_basligi && o.hayvanKarsilasmaTuru)).toBeUndefined();
       const acik = senaryo.secenekler.findIndex((x) => !x.kilitli);
       await secimUygulaVeCoz(state.id, Math.max(0, acik));
@@ -312,7 +313,7 @@ describe("evcil hayvan sistemi: motor akışı", () => {
     h.edinim_yasi = 25;
     h.edinim_yili = state.yil - 7;
     h.omur = 17;
-    const senaryo = await senaryoUret(state.id);
+    const senaryo = await vergisizSenaryo(state);
     const olay = OLAY_BANKASI.find((o) => o.baslik === senaryo.olay_basligi && o.hayvanTuru === "Şahin");
     expect(olay).toBeDefined();
   });

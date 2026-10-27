@@ -28,14 +28,28 @@ export interface MagazaEsyasiTanimi {
   tabanFiyat: number;
   saglikEtkisi?: number;
   mutlulukEtkisi?: number;
-  /** Sadece "luks" kategorisi: satın alınır alınmaz bir kereliğine uygulanan ün artışı. */
+  /** Koleksiyon kategorileri ("luks"/"sanat"/"binek"): satın alınır alınmaz bir kereliğine uygulanan ün artışı. */
   unEtkisi?: number;
   /** Sadece "sifa" kategorisi: kaç yıl içinde kullanılmazsa çürüyüp envanterden silineceği (7-12 yıl arası). */
   omurYil?: number;
   fiyatEtkenleri?: MagazaFiyatEtkenleri;
   /** Belirtilmezse her çağda satılır. */
   cag?: Cag;
+  /** Koleksiyon eşyası: periyodik bakım aralığı (yıl, [min, max]); belirtilmezse 8-10. */
+  bakimAraligi?: [number, number];
+  /** Koleksiyon eşyası: bakım masrafının güncel değere oranı; belirtilmezse 0,20. */
+  bakimOrani?: number;
 }
+
+/** Şifa dışındaki her kategori kalıcı koleksiyon parçasıdır (türünden en fazla 1, hediye edilemez, periyodik bakım). */
+export function koleksiyonKategorisiMi(kategori: MagazaEsyaKategori): boolean {
+  return kategori !== "sifa";
+}
+
+/** Vitrinde aynı anda görünen eşya adedi (kategori başına); listede olmayan kategori (şifa) hep tam görünür. */
+export const MAGAZA_VITRIN_ADET: Partial<Record<MagazaEsyaKategori, number>> = { luks: 2, sanat: 3, binek: 2 };
+/** Vitrin yenileme aralığı (yıl, [min, max]). */
+export const MAGAZA_VITRIN_YENILEME_YIL: [number, number] = [3, 4];
 
 /**
  * Fiyat/etki dengesi kasıtlı olarak KADEMELİDİR: ucuz "sifa" eşyaları sadece
@@ -119,7 +133,7 @@ export const MAGAZA_ESYALARI: MagazaEsyasiTanimi[] = [
     fiyatEtkenleri: { altin_cag: 0.8, kitlik: 1.3, savasta: 1.15 },
   },
 
-  // ---- Lüks Tüketim: ün/statü verir, çürümez, her türden en fazla 1 sahiplenilir, kriz zamanı ucuzlar/bollukta pahalanır ----
+  // ---- Lüks Tüketim: ün/statü verir, çürümez, her türden en fazla 1 sahiplenilir, kriz zamanı ucuzlar/bollukta pahalanır (vitrinde döner) ----
   {
     id: "ipek_hali",
     ad: "İpek Halı",
@@ -159,6 +173,228 @@ export const MAGAZA_ESYALARI: MagazaEsyasiTanimi[] = [
     tabanFiyat: 225,
     unEtkisi: 14,
     fiyatEtkenleri: { altin_cag: 1.45, savasta: 0.6, vebada: 0.65, ekonomiIyi: 1.15 },
+  },
+
+  // ---- Sanat: şöhret için büyük tek seferlik ün, her 8-10 yılda bakım/restorasyon masrafı. Vitrinde döner (her seferinde 3 eser). ----
+  // Orta Çağ
+  {
+    id: "oc_yazma_eser",
+    ad: "Işıklı El Yazması",
+    simge: "📜",
+    aciklama: "Keşişlerin yıllarca altın yaldızla süslediği, sayfa kenarları minyatürlü bir kitap.",
+    kategori: "sanat",
+    tabanFiyat: 90,
+    unEtkisi: 7,
+    fiyatEtkenleri: { altin_cag: 1.35, savasta: 0.7, kitlik: 0.75, ekonomiIyi: 1.1 },
+    cag: "Orta Çağ",
+  },
+  {
+    id: "oc_ikon",
+    ad: "Altın Zeminli İkon",
+    simge: "🖼️",
+    aciklama: "Kutsal bir sima, altın zemin üzerine ince fırça darbeleriyle işlenmiş; kiliselerin kıskandığı bir parça.",
+    kategori: "sanat",
+    tabanFiyat: 130,
+    unEtkisi: 9,
+    fiyatEtkenleri: { altin_cag: 1.35, savasta: 0.7, vebada: 0.8, ekonomiIyi: 1.1 },
+    cag: "Orta Çağ",
+  },
+  {
+    id: "oc_vitray",
+    ad: "Vitray Pencere Paneli",
+    simge: "🪟",
+    aciklama: "Renkli camın kurşunla birleştiği, güneşe tutulunca odayı boyayan bir panel.",
+    kategori: "sanat",
+    tabanFiyat: 170,
+    unEtkisi: 11,
+    fiyatEtkenleri: { altin_cag: 1.4, savasta: 0.65, ekonomiIyi: 1.15 },
+    cag: "Orta Çağ",
+  },
+  {
+    id: "oc_fildisi_diptik",
+    ad: "Oyma Fildişi Diptik",
+    simge: "🦷",
+    aciklama: "Katlanır iki kanatlı, ince kabartmalı fildişi levha; seyyahlar bile yolculukta yanında taşırdı.",
+    kategori: "sanat",
+    tabanFiyat: 215,
+    unEtkisi: 13,
+    fiyatEtkenleri: { altin_cag: 1.4, savasta: 0.65, vebada: 0.75 },
+    cag: "Orta Çağ",
+  },
+  {
+    id: "oc_gotik_heykel",
+    ad: "Gotik Taş Heykel",
+    simge: "🗿",
+    aciklama: "Katedral atölyesinde yontulmuş, yüzündeki ifadeyle ziyaretçiyi susturan bir heykel.",
+    kategori: "sanat",
+    tabanFiyat: 265,
+    unEtkisi: 15,
+    fiyatEtkenleri: { altin_cag: 1.45, savasta: 0.6, vebada: 0.7, ekonomiIyi: 1.15 },
+    cag: "Orta Çağ",
+  },
+  {
+    id: "oc_tapiseri",
+    ad: "Altın İşlemeli Duvar Tapiseri",
+    simge: "🧶",
+    aciklama: "Bir av sahnesini anlatan, altın ve gümüş iplikle dokunmuş dev bir duvar halısı.",
+    kategori: "sanat",
+    tabanFiyat: 340,
+    unEtkisi: 18,
+    fiyatEtkenleri: { altin_cag: 1.5, savasta: 0.6, vebada: 0.7, ekonomiIyi: 1.2 },
+    cag: "Orta Çağ",
+  },
+  // Sanayi Devrimi
+  {
+    id: "sd_manzara_tablo",
+    ad: "Yağlıboya Manzara Tablosu",
+    simge: "🏞️",
+    aciklama: "Sergilerde adı geçen bir ressamın, ışığı yakalamasıyla övülen yağlıboya manzarası.",
+    kategori: "sanat",
+    tabanFiyat: 95,
+    unEtkisi: 7,
+    fiyatEtkenleri: { altin_cag: 1.35, savasta: 0.7, ekonomiIyi: 1.1 },
+    cag: "Sanayi Devrimi",
+  },
+  {
+    id: "sd_mermer_bust",
+    ad: "Mermer Büst",
+    simge: "🗿",
+    aciklama: "Atölyede, ölçüleri titizlikle alınarak yontulmuş, salonun köşesine yakışan bir büst.",
+    kategori: "sanat",
+    tabanFiyat: 135,
+    unEtkisi: 9,
+    fiyatEtkenleri: { altin_cag: 1.35, savasta: 0.7, ekonomiIyi: 1.1 },
+    cag: "Sanayi Devrimi",
+  },
+  {
+    id: "sd_porselen_takim",
+    ad: "Nakışlı Porselen Takım",
+    simge: "🫖",
+    aciklama: "Elle boyanmış, ince cidarlı porselen çay takımı; misafirler dokunmaya bile çekinir.",
+    kategori: "sanat",
+    tabanFiyat: 175,
+    unEtkisi: 11,
+    fiyatEtkenleri: { altin_cag: 1.4, savasta: 0.65, ekonomiIyi: 1.15 },
+    cag: "Sanayi Devrimi",
+  },
+  {
+    id: "sd_gumus_samdan",
+    ad: "Gümüş Şamdan Takımı",
+    simge: "🕯️",
+    aciklama: "Atölyesinin imzasını taşıyan, kabartmalı ağır gümüş bir şamdan takımı.",
+    kategori: "sanat",
+    tabanFiyat: 215,
+    unEtkisi: 13,
+    fiyatEtkenleri: { altin_cag: 1.4, savasta: 0.65 },
+    cag: "Sanayi Devrimi",
+  },
+  {
+    id: "sd_portre",
+    ad: "Ünlü Ressama Yaptırılmış Portre",
+    simge: "🎨",
+    aciklama: "Şehrin en çok konuşulan ressamına poz verdiğin, altın çerçeveli boy portren.",
+    kategori: "sanat",
+    tabanFiyat: 270,
+    unEtkisi: 15,
+    fiyatEtkenleri: { altin_cag: 1.45, savasta: 0.65, ekonomiIyi: 1.15 },
+    cag: "Sanayi Devrimi",
+  },
+  {
+    id: "sd_kristal_avize",
+    ad: "Kristal Avize",
+    simge: "💡",
+    aciklama: "Yüzlerce kristal damlasıyla ışığı dağıtan, salonu saraya çeviren bir avize.",
+    kategori: "sanat",
+    tabanFiyat: 350,
+    unEtkisi: 18,
+    fiyatEtkenleri: { altin_cag: 1.5, savasta: 0.6, ekonomiIyi: 1.2 },
+    cag: "Sanayi Devrimi",
+  },
+
+  // ---- Binek: ün + biraz mutluluk; bakımı daha sık (4-6 yıl, değerinin ~%15'i). Vitrinde döner (her seferinde 2 binek). ----
+  {
+    id: "oc_susli_eyer",
+    ad: "Süslü Eyer ve Koşum Takımı",
+    simge: "🏇",
+    aciklama: "Gümüş tokalı, işlemeli deri bir eyer takımı; ata binmeyenler bile bakar.",
+    kategori: "binek",
+    tabanFiyat: 55,
+    unEtkisi: 3,
+    mutlulukEtkisi: 2,
+    bakimAraligi: [4, 6],
+    bakimOrani: 0.15,
+    fiyatEtkenleri: { altin_cag: 1.25, savasta: 1.1, ekonomiIyi: 1.1 },
+    cag: "Orta Çağ",
+  },
+  {
+    id: "oc_binek_ati",
+    ad: "Soylu Binek Atı",
+    simge: "🐎",
+    aciklama: "Yürüyüşü kusursuz, soylu bir soydan gelen, caddede başları çeviren bir at.",
+    kategori: "binek",
+    tabanFiyat: 80,
+    unEtkisi: 4,
+    mutlulukEtkisi: 3,
+    bakimAraligi: [4, 6],
+    bakimOrani: 0.15,
+    fiyatEtkenleri: { altin_cag: 1.3, savasta: 1.2, kitlik: 1.1 },
+    cag: "Orta Çağ",
+  },
+  {
+    id: "oc_savas_ati",
+    ad: "Zırhlı Savaş Atı",
+    simge: "🛡️",
+    aciklama: "Göğsü zırhla örtülü, turnuvalarda ve törenlerde şövalyeleri taşıyan görkemli bir at.",
+    kategori: "binek",
+    tabanFiyat: 170,
+    unEtkisi: 8,
+    mutlulukEtkisi: 2,
+    bakimAraligi: [4, 6],
+    bakimOrani: 0.15,
+    fiyatEtkenleri: { altin_cag: 1.3, savasta: 1.35, kitlik: 1.15 },
+    cag: "Orta Çağ",
+  },
+  {
+    id: "sd_fayton",
+    ad: "Hafif Fayton",
+    simge: "🛞",
+    aciklama: "Yaylı, açık bir fayton; pazar gezintilerinin en gözde aracı.",
+    kategori: "binek",
+    tabanFiyat: 60,
+    unEtkisi: 3,
+    mutlulukEtkisi: 2,
+    bakimAraligi: [4, 6],
+    bakimOrani: 0.15,
+    fiyatEtkenleri: { altin_cag: 1.25, savasta: 0.9, ekonomiIyi: 1.1 },
+    cag: "Sanayi Devrimi",
+  },
+  {
+    id: "sd_landau",
+    ad: "Landau Arabası",
+    simge: "🚋",
+    aciklama: "Ters çevrilebilir tavanlı, iki atlı, saten döşemeli şık bir araba.",
+    kategori: "binek",
+    tabanFiyat: 130,
+    unEtkisi: 6,
+    mutlulukEtkisi: 3,
+    bakimAraligi: [4, 6],
+    bakimOrani: 0.15,
+    fiyatEtkenleri: { altin_cag: 1.3, savasta: 0.85, ekonomiIyi: 1.15 },
+    cag: "Sanayi Devrimi",
+  },
+  {
+    id: "sd_buharli_yat",
+    ad: "Küçük Buharlı Yat",
+    simge: "⛵",
+    aciklama: "Bacası ince ince tüten, nehir ve körfez gezileri için yaptırılmış parlak bir yat.",
+    kategori: "binek",
+    tabanFiyat: 290,
+    unEtkisi: 12,
+    mutlulukEtkisi: 4,
+    bakimAraligi: [4, 6],
+    bakimOrani: 0.15,
+    fiyatEtkenleri: { altin_cag: 1.4, savasta: 0.8, ekonomiIyi: 1.2 },
+    cag: "Sanayi Devrimi",
   },
 ];
 

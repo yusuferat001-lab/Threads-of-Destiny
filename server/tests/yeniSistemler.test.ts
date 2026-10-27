@@ -3,6 +3,7 @@ import { olaySec } from "../src/game/olaySecici";
 import { createCharacter, haberleriUret } from "../src/game/stateManager";
 import { yeniOyun, mesleğiAta, senaryoUret, ekipCikar } from "../src/game/gameEngine";
 import { secimUygulaVeCoz } from "./testUtils";
+import { vergisizSenaryo } from "./_ogreti";
 
 describe("kişilik ekseni", () => {
   it("yüksek fevrilikte sadece fevri seçenek görünür", () => {
@@ -46,7 +47,7 @@ describe("ekip sistemi", () => {
     await mesleğiAta(state.id, "Tüccar");
 
     for (let i = 0; i < 1000 && state.aktif; i++) {
-      const senaryo = await senaryoUret(state.id);
+      const senaryo = await vergisizSenaryo(state);
       if (senaryo.olay_basligi === "Referanslı Ama Pahalı Bir Yardımcı") {
         const sonuc = await secimUygulaVeCoz(state.id, 0);
         if (sonuc.basarili) {
@@ -83,7 +84,7 @@ describe("ekip sistemi", () => {
     await mesleğiAta(state.id, "Tüccar");
 
     for (let i = 0; i < 1000 && state.aktif; i++) {
-      const senaryo = await senaryoUret(state.id);
+      const senaryo = await vergisizSenaryo(state);
       if (senaryo.olay_basligi === "Referanslı Ama Pahalı Bir Yardımcı") {
         const sonuc = await secimUygulaVeCoz(state.id, 0);
         if (sonuc.basarili) {

@@ -198,8 +198,19 @@ export interface Sevgili {
   meslek_bonusu: number;
 }
 
-/** Mağaza eşya türü: "sifa" sağlık/mutluluk verir ve zamanla bozulur; "luks" ün/statü verir ve kalıcıdır. */
-export type MagazaEsyaKategori = "sifa" | "luks";
+/**
+ * Mağaza eşya türü: "sifa" sağlık/mutluluk verir ve zamanla bozulur; "luks" / "sanat" / "binek"
+ * ün/statü (binekte biraz mutluluk) verir, kalıcı koleksiyon parçasıdır ve periyodik bakım masrafı çıkarır.
+ */
+export type MagazaEsyaKategori = "sifa" | "luks" | "sanat" | "binek";
+
+/** Mağazanın "vitrini": lüks/sanat/binek kataloğunun o an satışta görünen alt kümesi; belirli aralıkla yenilenir. */
+export interface MagazaVitrini {
+  /** Bu yıl (dahil) geldiğinde vitrin yeniden karılır. */
+  yenileme_yili: number;
+  /** Görünen koleksiyon eşyalarının katalog id'leri (şifa her zaman tam görünür, burada tutulmaz). */
+  idler: string[];
+}
 
 /**
  * Mağazadan satın alınıp state.magaza_envanteri'nde tutulan somut bir eşya
@@ -397,6 +408,11 @@ export interface CharacterState {
    */
   hapis_tur_sayaci: number;
   /**
+   * Sağlık kritik (10'un altında) kalınan ARDIŞIK yıl sayısı; sağlık eşiğin üstüne çıkınca 0'a döner.
+   * 2'ye ulaşınca her yıl mutluluk −1 (stateManager.capraletkiUygula).
+   */
+  saglik_kritik_yil_sayaci: number;
+  /**
    * Zaman modeli. "ilerle" (telefon ana ekranı): olaya cevap vermek yıl geçirmez, yıl yalnız
    * "İLERLE" (`POST /:id/yil-gec`, 1 yıl) ile geçer; son olaydan `yil_sayaci >= 2` yıl sonra olay çıkar.
    * Yoksa eski "klasik" akış (her seçim %60/%40 ile 1-2 yıl ilerletir).
@@ -428,6 +444,8 @@ export interface CharacterState {
   magaza_envanteri: SahipOlunanEsya[];
   /** state.yil bu değere ulaşana kadar "sifa" mağaza alışverişi kilitlidir (herhangi bir sifa satın alımından sonra +3 yıl kilitlenir); null = kilit yok. */
   magaza_temel_kilit_bitis_yili: number | null;
+  /** Dönen mağaza vitrini; null = henüz kurulmadı (ilk mağaza açılışında ya da yıl bloğunda kurulur). */
+  magaza_vitrin: MagazaVitrini | null;
   /**
    * Alkollü bir sosyalleşme mekânına (meyhane/pub/ordugâh çadırı) kaç kez gidip
    * bir olay yaşandığı; AYYAS_ESIGI'ye ulaşınca bir kereliğine "bagimlilik:ayyas"
@@ -470,6 +488,8 @@ export interface CharacterState {
   son_musteri_degisim: { oyuncu: number; rakip: number; kucuk: number } | null;
   /** Bir sonraki rakip saldırısının yılı (her saldırıdan sonra bugünden 4–9 yıl sonrasına konur; zar yok). null = henüz planlanmadı. */
   rakip_sonraki_saldiri_yili: number | null;
+  /** Şehir yöneticisinin bir sonraki ekstra vergi talebinin en erken yılı (işletmeli meslekler); null = henüz kurulmadı. */
+  ekstra_vergi_sonraki_yil: number | null;
   /** Son rakip saldırısının yılı (bilgi). */
   rakip_saldiri_son_yil: number | null;
   /** Vergi çarpanı (1 = normal; <1 indirim, >1 zam) ve bitiş yılı (§45 vergi). */
@@ -598,8 +618,6 @@ export interface CharacterState {
   durumlar: Durum[];
   ulke: UlkeDurumu;
 
-  /** Zorunlu bağış olayının son tetiklendiği yıl (cooldown takibi); hiç tetiklenmediyse null. */
-  son_zorunlu_bagis_yili: number | null;
   /** Zenginlik sızıntısının (hırsız/haraç/dolandırıcı vb. — net servet ≥ 350 & nakit ≥ 50) son tetiklendiği yıl; 6 yıllık cooldown takibi. Hiç olmadıysa null. */
   son_zenginlik_sizinti_yili: number | null;
   /** Rakip'in "parayı alıp kaçtığı" soygunun son yaşandığı yıl (nakit yüksekken düşük ihtimalli, 8 yıllık cooldown). Hiç olmadıysa null. */
@@ -767,8 +785,8 @@ export interface YonetimTalep {
   /** Talebi yapan kişinin adı (gösterim). */
   kimAdi: string;
   /** "bagis" = para ister; "sadakat" = para yok ama ret ilişkiyi çok düşürür. */
-  tur: "bagis" | "sadakat" | "aciklama";
-  /** İstenen para (tur === "sadakat" veya "aciklama" ise 0). */
+  tur: "bagis" | "sadakat" | "aciklama" | "vergi";
+  /** İstenen para (tur === "sadakat" veya "aciklama" ise 0). "vergi" = işletme kârına bağlı ekstra vergi (öde / rüşvet). */
   tutar: number;
   /** Talebin insan-okunur gerekçesi (ör. "saray onarımı için bağış"). */
   kalem: string;

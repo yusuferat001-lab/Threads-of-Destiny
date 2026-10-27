@@ -26,7 +26,11 @@ import {
   dunyaFinansEtkileri,
   KRIZ_ETKI,
   KRONIK_SAGLIK_ESIGI,
-  KRONIK_MUTLULUK_ESIGI,
+  sohretErimesiYillik,
+  borcKademesi,
+  enflasyonCarpani,
+  CAPRAZ_ARDISIK_YIL,
+  CAPRAZ_MUTLULUK_YILLIK,
   EVLILIK_MORAL_YAS,
   YALNIZLIK_MUTLULUK_YILLIK,
   KOTU_EVLILIK_ESIGI,
@@ -142,13 +146,6 @@ function saglikDetayi(state: CharacterState): GostergeDetayTaban {
   etkenler.push(...durumEtkenleri(state, "yil_basi_saglik"));
   const kriz = krizEtkeni(state, "saglik");
   if (kriz) etkenler.push(kriz);
-  if (state.mutluluk < KRONIK_MUTLULUK_ESIGI) {
-    etkenler.push({
-      ikon: "😞",
-      metin: T(dil, "Mutluluğun {0} altında: sağlığın da aşınıyor, {1}/yıl.", [KRONIK_MUTLULUK_ESIGI, isaretli(-1)]),
-      yon: "kotu",
-    });
-  }
   if (state.etiketler.includes("veba_hastasi")) {
     etkenler.push({
       ikon: "☠️",
@@ -223,12 +220,13 @@ function mutlulukDetayi(state: CharacterState): GostergeDetayTaban {
   const kriz = krizEtkeni(state, "mutluluk");
   if (kriz) etkenler.push(kriz);
   if (state.para < 0) {
-    etkenler.push({ ikon: "💸", metin: T(dil, "Borç stresi: {0}/yıl", [isaretli(-1)]), yon: "kotu" });
+    const borcKademe = borcKademesi(Math.abs(state.para), enflasyonCarpani(state));
+    etkenler.push({ ikon: "💸", metin: T(dil, "Borç stresi: {0}/yıl", [isaretli(-borcKademe.mutluluk)]), yon: "kotu" });
   }
-  if (state.saglik < KRONIK_SAGLIK_ESIGI) {
+  if ((state.saglik_kritik_yil_sayaci ?? 0) >= CAPRAZ_ARDISIK_YIL) {
     etkenler.push({
       ikon: "🤒",
-      metin: T(dil, "Sağlığın {0} altında: moralin aşınıyor, {1}/yıl.", [KRONIK_SAGLIK_ESIGI, isaretli(-1.5)]),
+      metin: T(dil, "Sağlığın uzun süredir çok düşük: moralin aşınıyor, {0}/yıl.", [isaretli(-CAPRAZ_MUTLULUK_YILLIK)]),
       yon: "kotu",
     });
   }
@@ -331,8 +329,18 @@ function sohretDetayi(state: CharacterState): GostergeDetayTaban {
   if (state.meslek === "Din Adamı") {
     etkenler.push({ ikon: "⛪", metin: T(dil, "Din adamı saygınlığı: {0}/yıl", [isaretli(0.4)]), yon: "iyi" });
   }
+  const erime = sohretErimesiYillik(state.un);
+  if (erime) {
+    etkenler.push({ ikon: "🕯️", metin: T(dil, "Yüksek şöhret zamanla sönüyor: {0}/yıl", [isaretli(-erime)]), yon: "kotu" });
+  }
   const kriz = krizEtkeni(state, "un");
   if (kriz) etkenler.push(kriz);
+  if (state.para < 0) {
+    const borcKademe = borcKademesi(Math.abs(state.para), enflasyonCarpani(state));
+    if (borcKademe.sohret > 0) {
+      etkenler.push({ ikon: "💸", metin: T(dil, "Borcun itibarını yıpratıyor: {0}/yıl", [isaretli(-borcKademe.sohret)]), yon: "kotu" });
+    }
+  }
   if (etkenler.length === 0) {
     etkenler.push({
       ikon: "ℹ️",
@@ -353,6 +361,7 @@ function sohretDetayi(state: CharacterState): GostergeDetayTaban {
     dusur: [
       T(dil, "Rezillik, hapis ve ödenmeyen borçlar şöhretini düşürür."),
       T(dil, "Bakımsız ev ve yetersiz yemek adını aşındırır."),
+      T(dil, "Şöhret 60'ı geçince kendiliğinden söner; ayakta tutmak için çabalaman gerekir."),
     ],
   };
 }
