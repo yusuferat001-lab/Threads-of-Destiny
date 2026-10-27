@@ -20,7 +20,8 @@ import type { CharacterState } from "../types";
 /**
  * Yıllık sabit müşteri desteği (v8.2): paydan bağımsız düz değer, yaşa göre kademeli —
  * mesleğin ilk 10 yılı (yaş 15–24) +1, sonraki 10 yıl (25–34) +0,5, sonrası +0,2.
- * Yalnız küçük bir taban destektir; asıl büyüme çalışan/yatırım/fiyat/şöhret ve olaylardan gelir.
+ * v18: İŞLETMELİ mesleklerde (Tüccar/Zanaatkâr/Din Adamı) bu bedava büyüme KALDIRILDI — pasif oyuncu geriler;
+ * yalnız işletmesiz meslek (Asker, piyasa.ts) hâlâ kullanır.
  */
 export const MUSTERI_DESTEK_KADEMELERI: { yasAltinda: number; deger: number }[] = [
   { yasAltinda: 25, deger: 1 },
@@ -34,7 +35,7 @@ export const MUSTERI_YILLIK_RUTBE = 0.3;
 /** Hapiste/yolculuktayken pazardan uzak kalmanın yıllık müşteri kaybı (kendi müşterisinin kesri). */
 export const MUSTERI_YOKLUK_KAYBI = 0.03;
 /** Mesleğine uygun kategoride başarılı her olay oyuncuya bu kadar müşteri kazandırır (tecrübe hızıyla çarpılır). */
-export const MUSTERI_KATEGORI_BASARI = 3;
+export const MUSTERI_KATEGORI_BASARI = 4;
 /** Pazar payı başına yıllık kariyer puanı katkısı (pay 0.40 → +2.4/yıl). */
 export const PAZAR_KARIYER_PUANI_YILLIK = 6;
 /** Bir rakip yenildikten sonra yeni rakibin ortaya çıkması için beklenen yıl aralığı. */
@@ -71,9 +72,9 @@ export const PAZAR_ADLARI: Record<string, PazarAdlari> = {
 
 // ── Müşteri sayısı modeli (işletmeli meslekler; §45) ──────────────────────
 /** Toplam pazar büyüklüğü (müşteri sayısı) oyun başında bu aralıktan atanır. */
-export const PAZAR_MUSTERI_ARALIK: [number, number] = [350, 500];
+export const PAZAR_MUSTERI_ARALIK: [number, number] = [510, 540];
 /** Her müşterinin bir üründen yıllık baz alım oranı (dönem etkilerinden bağımsız; üstüne dönem çarpanları biner). */
-export const ALIM_ORANI = 0.52;
+export const ALIM_ORANI = 0.6;
 /** Başlangıç pazar payı tabanı (%8–9) ve mesleğe yatkınlık kademesine göre ek (puan). */
 export const BASLANGIC_PAY_ARALIK: [number, number] = [0.1, 0.11];
 export const YATKINLIK_PAY_EKI = [0, -0.03, 0, 0.01, 0.02, 0.03]; // index = meslek_yatkinlik_seviyesi (1 kötü … 5 mükemmel)
@@ -139,6 +140,13 @@ export function sohretPayBuyumesi(un: number): number {
   if (un <= 75) return 0.003;
   if (un <= 90) return 0.006;
   return 0.01;
+}
+/** v27: şöhretten gelen yıllık müşteri SAYISI (işletmeli meslekler): <=10 → −1 · 11–75 → 0 · 76–90 → +1 · >90 → +2. */
+export function sohretMusteriSayisi(un: number): number {
+  if (un <= 10) return -1;
+  if (un <= 75) return 0;
+  if (un <= 90) return 1;
+  return 2;
 }
 export function sohretOtoriteIliskisi(un: number): number {
   if (un <= 10) return -0.15;

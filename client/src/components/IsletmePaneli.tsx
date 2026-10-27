@@ -66,7 +66,7 @@ const M = {
   beklenen: { tr: 'Beklenen net', en: 'Expected net' },
   yil: { tr: '/yıl', en: '/yr' },
   depoBaslik: { tr: 'Depo', en: 'Warehouse' },
-  depoOtoNot: { tr: 'Depo her yıl başı kendiliğinden dolar. Talep depoyu aşarsa müşteri kaybedersin; çözüm depoyu büyütmek.', en: 'The warehouse refills itself every year. If demand outgrows it you lose customers; upgrade the warehouse.' },
+  depoOtoNot: { tr: 'Depo her yıl başı kendiliğinden dolar; nakit yetmezse eksik mal tedarikçiden veresiye alınır ve kârdan ödenir. Talep depoyu aşarsa müşteri kaybedersin; çözüm depoyu büyütmek.', en: 'The warehouse refills itself every year; if cash runs short the missing goods are bought on supplier credit and repaid from profit. If demand outgrows it you lose customers; upgrade the warehouse.' },
   depoDolu: { tr: 'dolu', en: 'full' },
   depoBirimFiyat: { tr: 'Birim alış', en: 'Unit cost' },
   depoDoldurNot: {
@@ -157,16 +157,16 @@ const FIYATLAR: { id: IsletmeFiyat; etiket: D; aciklama: D }[] = [
     id: 'eksi20',
     etiket: { tr: '−%20', en: '−20%' },
     aciklama: {
-      tr: 'Fiyat −%20: talep ≈ +%20, birim kâr az. Müşterin yılda +%2 büyür.',
-      en: 'Price −20%: demand ≈ +20%, thin margin. Your customers grow +2% a year.',
+      tr: 'Fiyat −%20: talep ≈ +%20, birim kâr az. Yılda +3 müşteri kazanırsın.',
+      en: 'Price −20%: demand ≈ +20%, thin margin. You gain +3 customers a year.',
     },
   },
   {
     id: 'eksi10',
     etiket: { tr: '−%10', en: '−10%' },
     aciklama: {
-      tr: 'Fiyat −%10: talep ≈ +%9, birim kâr biraz düşer. Müşterin yılda +%1 büyür.',
-      en: 'Price −10%: demand ≈ +9%, slightly lower margin. Your customers grow +1% a year.',
+      tr: 'Fiyat −%10: talep ≈ +%9, birim kâr biraz düşer. Yılda +1 müşteri kazanırsın.',
+      en: 'Price −10%: demand ≈ +9%, slightly lower margin. You gain +1 customer a year.',
     },
   },
   { id: 'normal', etiket: { tr: 'Piyasa', en: 'Market' }, aciklama: { tr: 'Piyasa fiyatı. Dengeli.', en: 'Market price. Balanced.' } },
@@ -174,16 +174,16 @@ const FIYATLAR: { id: IsletmeFiyat; etiket: D; aciklama: D }[] = [
     id: 'arti10',
     etiket: { tr: '+%10', en: '+10%' },
     aciklama: {
-      tr: 'Fiyat +%10: talep ≈ −%7, birim kâr artar. Müşterin yılda −%1 azalır.',
-      en: 'Price +10%: demand ≈ −7%, better margin. Your customers drop 1% a year.',
+      tr: 'Fiyat +%10: talep ≈ −%7, birim kâr artar. Yılda 1 müşteri kaybedersin.',
+      en: 'Price +10%: demand ≈ −7%, better margin. You lose 1 customer a year.',
     },
   },
   {
     id: 'arti20',
     etiket: { tr: '+%20', en: '+20%' },
     aciklama: {
-      tr: 'Fiyat +%20: talep ≈ −%14, birim kâr yüksek. Müşterin yılda −%2 azalır.',
-      en: 'Price +20%: demand ≈ −14%, high margin. Your customers drop 2% a year.',
+      tr: 'Fiyat +%20: talep ≈ −%14, birim kâr yüksek. Yılda 3 müşteri kaybedersin.',
+      en: 'Price +20%: demand ≈ −14%, high margin. You lose 3 customers a year.',
     },
   },
 ];

@@ -91,9 +91,6 @@ export function IsYatirimEkrani({
                 {en ? 'interest' : 'faiz'} %{Math.round(krediConfig.aktifKredi.faizOrani * 100)}
                 {' · '}
                 {en ? 'term' : 'vade'} {krediConfig.aktifKredi.vadeYil} {en ? 'yrs' : 'yıl'}
-                {krediConfig.aktifKredi.odenmeyenTaksit > 0 && (
-                  <> · ⚠️ {en ? 'missed' : 'ödenmeyen'}: {krediConfig.aktifKredi.odenmeyenTaksit}</>
-                )}
               </p>
               {!krediConfig.aktifKredi.pazarlikYapildi && (
                 <button className="ikincil" disabled={yukleniyor} onClick={onKrediPazarlik}>

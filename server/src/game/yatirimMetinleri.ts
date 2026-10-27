@@ -7,7 +7,7 @@ import {
   depoKapasiteTablosu,
   GUVENLIK_YATIRIM_KORUMA,
   KERVAN_INDIRIM_KADEME,
-  TANITIM_PAY_KADEME,
+  TANITIM_MUSTERI,
   TEZGAH_URETIM_KADEME,
 } from "./isletme";
 import { ASEVI_KADEME_ETKISI, BINA_BAKIM, BINA_KAPASITE, OKUL_MEZUN_SANSI } from "../data/cemaat";
@@ -27,13 +27,13 @@ const dili = (f: (dil: "tr" | "en") => string): DilliMetin => ({ tr: f("tr"), en
  * Bir yatırımın verilen kademedeki TOPLAM etkisi (kademe 0 = hiç yatırım yok).
  * Oyuncuya "şimdi → bir sonraki kademe" karşılaştırması göstermek için; sayılar motor sabitlerinden okunur.
  */
-export function yatirimEtkiMetni(etki: YatirimEtkisi, kademe: number, enflasyon: number, cag?: string): DilliMetin {
+export function yatirimEtkiMetni(etki: YatirimEtkisi, kademe: number, enflasyon: number, cag?: string, meslek?: string): DilliMetin {
   const k = Math.max(0, Math.floor(kademe));
   const r2 = (n: number) => Math.round(n * 100) / 100;
   switch (etki) {
     case "depo": {
       const i = Math.min(k, DEPO_KAPASITE.length - 1);
-      const kap = depoKapasiteTablosu(cag);
+      const kap = depoKapasiteTablosu(cag, meslek);
       return dili((d) =>
         d === "tr"
           ? `${kap[i]} birim stok · çürüme ${yuzde(CURUME_ORANLARI[i] * 100, d)} · bakım ${sayi(r2(DEPO_BAKIM[i] * enflasyon), d)}/yıl`
@@ -53,7 +53,7 @@ export function yatirimEtkiMetni(etki: YatirimEtkisi, kademe: number, enflasyon:
     case "uretim":
       return dili((d) => (k === 0 ? (d === "tr" ? "Etki yok" : "No effect") : `${d === "tr" ? "Üretim tavanı" : "Production cap"} ${art(k * TEZGAH_URETIM_KADEME * 100, d)}`));
     case "pazar":
-      return dili((d) => (k === 0 ? (d === "tr" ? "Etki yok" : "No effect") : `${d === "tr" ? "Müşteri artışı" : "Customer growth"} ${art(k * TANITIM_PAY_KADEME * 100, d)}${d === "tr" ? "/yıl" : "/yr"}`));
+      return dili((d) => (k === 0 ? (d === "tr" ? "Etki yok" : "No effect") : `${d === "tr" ? "Müşteri artışı" : "Customer growth"} +${TANITIM_MUSTERI[Math.min(k, TANITIM_MUSTERI.length - 1)]} ${d === "tr" ? "müşteri/yıl" : "customers/yr"}`));
     case "koruma": {
       const i = Math.min(k, GUVENLIK_YATIRIM_KORUMA.length - 1);
       return dili((d) => (i === 0 ? (d === "tr" ? "Etki yok" : "No effect") : `${d === "tr" ? "Koruma" : "Protection"} +${d === "tr" ? String(GUVENLIK_YATIRIM_KORUMA[i]).replace(".", ",") : String(GUVENLIK_YATIRIM_KORUMA[i])}`));

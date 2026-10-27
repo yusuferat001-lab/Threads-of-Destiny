@@ -684,10 +684,10 @@ export const BASARIMLAR: BasarimTanimi[] = [
     nadirlik: 'nadir',
     ad: { tr: 'Tefecinin Eline Düşen', en: 'In the Usurer\'s Grip' },
     aciklama: {
-      tr: 'Aktif bir kredin varken, en az iki taksitini ödeyemeden öl.',
-      en: 'Die with an active loan and at least two missed installments.',
+      tr: 'Aktif bir kredin varken borç içinde (nakit eksi) öl.',
+      en: 'Die in debt (negative cash) while holding an active loan.',
     },
-    kosul: (o) => o.state.kredi != null && o.state.kredi.odenmeyenTaksit >= 2,
+    kosul: (o) => o.state.kredi != null && o.state.para < 0,
   },
 
   // ============================== KOLEKSİYONLAR ==============================

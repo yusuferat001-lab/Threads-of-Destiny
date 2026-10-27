@@ -14,6 +14,8 @@ export interface PiyasaHamlesi {
   yon: HamleYonu;
   /** Grubun kendi müşterisinin (hedefliyse oyuncunun müşterisinin) yüzdesi, kesir olarak [min,max]. */
   yuzde: [number, number];
+  /** Rakibin bu hamleden kazandığı müşteri SAYISI [min,max] (tam sayı); diğer tüm gruplardan (oyuncu + küçük esnaf + öbür rakip) orantılı alınır. */
+  sayi?: [number, number];
   /** Doğrudan oyuncuyu hedefler (rakip büyürken müşteri YALNIZ oyuncudan gelir). */
   hedef?: "oyuncu";
   /** Yalnız işletmeli meslekler (fiyat/ürün/hammadde anlatır). */
@@ -33,7 +35,7 @@ export interface PiyasaHamlesi {
 export const RAKIP_HAMLELERI: PiyasaHamlesi[] = [
   // ── Rakip büyür ──
   {
-    id: "fiyat_kirdi", simge: "🏷️", yon: "buyur", yuzde: [0.025, 0.04], hedef: "oyuncu", isletmeli: true, fiyatKarsiligi: true,
+    id: "fiyat_kirdi", simge: "🏷️", yon: "buyur", yuzde: [0.025, 0.04], sayi: [3, 7], isletmeli: true, fiyatKarsiligi: true,
     metin: {
       tr: "{rakip} fiyatları kırdı; müşterilerin bir kısmı ona kaydı.",
       en: "{rakip} slashed prices; some of your customers drifted over.",
@@ -45,7 +47,7 @@ export const RAKIP_HAMLELERI: PiyasaHamlesi[] = [
     },
   },
   {
-    id: "urun_satmaya_basladi", simge: "🆕", yon: "buyur", yuzde: [0.02, 0.03], hedef: "oyuncu", isletmeli: true, urunlu: true,
+    id: "urun_satmaya_basladi", simge: "🆕", yon: "buyur", yuzde: [0.02, 0.03], sayi: [2, 5], isletmeli: true, urunlu: true,
     metin: {
       tr: "{rakip} de artık {urun} satmaya başladı; alıcılar bölündü.",
       en: "{rakip} now sells {urun} too; buyers are split.",
@@ -270,6 +272,8 @@ export const KUCUK_DONEM_ETKISI: Record<string, number> = {
   veba: -0.03,
 };
 
-export const RAKIP_HAMLE_SANSI = 0.3;
-export const RAKIP_HAMLE_COOLDOWN_YIL = 2;
-export const KUCUK_OLAY_SANSI = 0.25;
+/** v26: piyasada iki hamle arası 1–2 yıl (1 yıl geçince %50, 2 yılda kesin); hamlenin %75'i rakipten, %25'i küçük esnaftan. */
+export const HAMLE_ARALIK_MAX_YIL = 2;
+export const RAKIP_HAMLESI_ORANI = 0.75;
+/** Hamle etkisi (grup yüzdeleri) bu çarpanla büyür; pasif aşınma kalktığı için müşteri hareketi hamlelerden gelir. */
+export const HAMLE_ETKI_CARPANI = 1.5;

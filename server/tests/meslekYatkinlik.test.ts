@@ -42,11 +42,11 @@ describe("Mesleğe Yatkınlık Kademeleri (2026-09 sonu)", () => {
   });
 
   it("her kademenin oranları kullanıcının verdiği tam değerlerle eşleşir", () => {
-    expect(YATKINLIK_TIER_ETKILERI.kotu).toEqual({ zarBonusu: -0.15, maasCarpani: -0.06, tecrubeHizi: -0.15, musteriBuyumesi: -0.004 });
+    expect(YATKINLIK_TIER_ETKILERI.kotu).toEqual({ zarBonusu: -0.15, maasCarpani: -0.06, tecrubeHizi: -0.15, musteriBuyumesi: -1 });
     expect(YATKINLIK_TIER_ETKILERI.notr).toEqual({ zarBonusu: 0, maasCarpani: 0, tecrubeHizi: 0, musteriBuyumesi: 0 });
-    expect(YATKINLIK_TIER_ETKILERI.iyi).toEqual({ zarBonusu: 0.1, maasCarpani: 0.02, tecrubeHizi: 0.07, musteriBuyumesi: 0.003 });
-    expect(YATKINLIK_TIER_ETKILERI.cokiyi).toEqual({ zarBonusu: 0.15, maasCarpani: 0.04, tecrubeHizi: 0.11, musteriBuyumesi: 0.006 });
-    expect(YATKINLIK_TIER_ETKILERI.mukemmel).toEqual({ zarBonusu: 0.2, maasCarpani: 0.1, tecrubeHizi: 0.15, musteriBuyumesi: 0.01 });
+    expect(YATKINLIK_TIER_ETKILERI.iyi).toEqual({ zarBonusu: 0.1, maasCarpani: 0.02, tecrubeHizi: 0.07, musteriBuyumesi: 1 });
+    expect(YATKINLIK_TIER_ETKILERI.cokiyi).toEqual({ zarBonusu: 0.15, maasCarpani: 0.04, tecrubeHizi: 0.11, musteriBuyumesi: 1 });
+    expect(YATKINLIK_TIER_ETKILERI.mukemmel).toEqual({ zarBonusu: 0.2, maasCarpani: 0.1, tecrubeHizi: 0.15, musteriBuyumesi: 2 });
   });
 
   it("meslekYatkinlikUnvaniGetir her meslek+çağ+kademe için bir unvan döner ve Orta Çağ/Sanayi isimleri farklıdır", () => {

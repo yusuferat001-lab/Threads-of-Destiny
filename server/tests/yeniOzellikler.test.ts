@@ -122,7 +122,7 @@ describe("Kredi / tefeci (havuzdan 2 teklif, vadeli)", () => {
     expect(s.kredi_teklifleri!.yil).toBe(s.yil); // yenilendi
   });
 
-  it("havuzda kısa vade = yüksek faiz, uzun vade = düşük faiz; vadeler birbirine yakın (3–7 yıl)", () => {
+  it("havuzda kısa vade = yüksek faiz, uzun vade = düşük faiz; tüm vadeler 6–10 yıl, faizler %7–13 (v18)", () => {
     for (const boyut of ["kucuk", "orta", "buyuk"]) {
       const kisa = KREDI_HAVUZU.find((k) => k.id === `kisa_${boyut}`)!;
       const uzun = KREDI_HAVUZU.find((k) => k.id === `uzun_${boyut}`)!;
@@ -130,10 +130,10 @@ describe("Kredi / tefeci (havuzdan 2 teklif, vadeli)", () => {
       expect(kisa.faiz).toBeGreaterThan(uzun.faiz);
     }
     for (const k of KREDI_HAVUZU) {
-      expect(k.vade).toBeGreaterThanOrEqual(3);
-      expect(k.vade).toBeLessThanOrEqual(7);
-      expect(k.faiz).toBeGreaterThanOrEqual(0.09);
-      expect(k.faiz).toBeLessThanOrEqual(0.18);
+      expect(k.vade).toBeGreaterThanOrEqual(6);
+      expect(k.vade).toBeLessThanOrEqual(10);
+      expect(k.faiz).toBeGreaterThanOrEqual(0.07);
+      expect(k.faiz).toBeLessThanOrEqual(0.13);
     }
   });
 
@@ -197,23 +197,25 @@ describe("Kredi / tefeci (havuzdan 2 teklif, vadeli)", () => {
     const s = taze();
     s.maas_yillik = 100;
     krediAl(s, krediTeklifleri(s)[0].id);
-    const eskiFaiz = s.kredi!.faizOrani;
     krediPazarlik(s);
-    const fark = Math.round((s.kredi!.faizOrani - eskiFaiz) * 100);
-    expect([-4, 5]).toContain(fark);
+    expect(s.kredi!.faizOrani).toBeGreaterThanOrEqual(0.07);
+    expect(s.kredi!.faizOrani).toBeLessThanOrEqual(0.17);
     expect(s.kredi!.pazarlikYapildi).toBe(true);
   });
 
-  it("üst üste 3 taksit ödenemezse tefeci mülke el koyar", () => {
+  it("nakit yetmese de taksit ödenir: para eksiye düşer, el koyma/ceza yok (v18)", () => {
     const s = taze();
     s.maas_yillik = 100;
     s.para = 200;
     krediAl(s, krediTeklifleri(s)[0].id);
     s.mulkler = ["ciftlik"];
-    s.para = 0; // artık taksit ödenemez
+    s.para = 0;
+    const borcOnce = s.kredi!.kalanBorc;
     krediYillikUygula(s, 3);
-    expect(s.kredi).toBeNull();
-    expect(s.mulkler).not.toContain("ciftlik");
+    expect(s.mulkler).toContain("ciftlik");
+    expect(s.para).toBeLessThan(0);
+    expect(s.kredi!.kalanBorc).toBeLessThan(borcOnce);
+    expect(s.kredi!.odenmeyenTaksit).toBe(0);
   });
 });
 

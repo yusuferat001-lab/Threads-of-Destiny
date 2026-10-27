@@ -33,9 +33,9 @@ import {
   RAKIP_HAMLELERI,
   KUCUK_OLAYLARI,
   KUCUK_DONEM_ETKISI,
-  RAKIP_HAMLE_SANSI,
-  RAKIP_HAMLE_COOLDOWN_YIL,
-  KUCUK_OLAY_SANSI,
+  HAMLE_ARALIK_MAX_YIL,
+  RAKIP_HAMLESI_ORANI,
+  HAMLE_ETKI_CARPANI,
   type PiyasaHamlesi,
 } from "../data/piyasaHamleleri";
 import { isletmeMeslegiMi, isletmeProfiliGetir } from "../data/meslekProfilleri";
@@ -285,10 +285,16 @@ function rakipHamlesiUygula(state: CharacterState, r: Rakip): void {
   if (!hamle) return;
   const before = d0.oyuncu;
   const grup = rakipGrubu(r.ad);
-  let yuzde = rnd(hamle.yuzde[0], hamle.yuzde[1]);
-  if (hamle.fiyatKarsiligi && state.meslek !== "Din Adamı" && oyuncuFiyatUcuzMu(state)) yuzde *= 0.5;
-  if (hamle.hedef === "oyuncu") {
-    musteriAktar(state, "oyuncu", grup, d0.oyuncu * yuzde);
+  let yuzde = rnd(hamle.yuzde[0], hamle.yuzde[1]) * HAMLE_ETKI_CARPANI;
+  const ucuz = hamle.fiyatKarsiligi && state.meslek !== "Din Adamı" && oyuncuFiyatUcuzMu(state);
+  if (ucuz) yuzde *= 0.5;
+  if (hamle.sayi) {
+    // Rakibin kazancı müşteri SAYISI olarak tanımlıdır (tam sayı); kendi hariç tüm pazardan (oyuncu, küçük esnaf, öbür rakip)
+    // büyüklükleriyle orantılı alınır. Oyuncunun fiyatı zaten ucuzsa kazanç yarıya iner.
+    const [a, b] = hamle.sayi;
+    let sayi = a + Math.floor(Math.random() * (b - a + 1));
+    if (ucuz) sayi = Math.max(1, Math.ceil(sayi / 2));
+    musteriKaydir(state, grup, sayi);
   } else {
     musteriKaydir(state, grup, (hamle.yon === "buyur" ? 1 : -1) * r.musteri * yuzde);
   }
@@ -313,7 +319,7 @@ function rakipHamlesiUygula(state: CharacterState, r: Rakip): void {
     grup: "rakip",
     kod: hamle.id,
     metin: { tr: tr.tr, en: en.en },
-    musteri: Math.round(fark * 10) / 10,
+    musteri: Math.round(fark),
   });
 }
 
@@ -332,7 +338,7 @@ function kucukOlayiUygula(state: CharacterState): void {
     grup: "kucuk",
     kod: o.id,
     metin: state.meslek === "Din Adamı" && o.dinMetin ? o.dinMetin : o.metin,
-    musteri: Math.round(fark * 10) / 10,
+    musteri: Math.round(fark),
   });
 }
 
@@ -404,8 +410,18 @@ export function piyasaYillikUygula(state: CharacterState, yasArtisi: number): st
       // Doğal dalgalanma ±%1, sonra (cooldown'a uygunsa) hamle.
       musteriKaydir(state, rakipGrubu(r.ad), r.musteri * rnd(-0.01, 0.01));
       r.husumet = Math.max(15, r.husumet - 0.5);
-      const hazir = r.hamle_son_yil == null || state.yil - r.hamle_son_yil >= RAKIP_HAMLE_COOLDOWN_YIL;
-      if (hazir && Math.random() < RAKIP_HAMLE_SANSI) rakipHamlesiUygula(state, r);
+    }
+    // Piyasa hamlesi: iki hamle arası 1–2 yıl (v26). Hamlenin çoğu rakipten, kalanı küçük esnaftan gelir.
+    const yilSim = state.yil - yasArtisi + 1 + i;
+    const gecen = yilSim - (state.rakip_hamle_son_yil ?? yilSim - 1);
+    if (gecen >= HAMLE_ARALIK_MAX_YIL || (gecen >= 1 && Math.random() < 0.5)) {
+      const rakipler = aktifRakipler(state);
+      if (rakipler.length > 0 && Math.random() < RAKIP_HAMLESI_ORANI) {
+        rakipHamlesiUygula(state, rakipler[Math.floor(Math.random() * rakipler.length)]);
+      } else {
+        kucukOlayiUygula(state);
+      }
+      state.rakip_hamle_son_yil = yilSim;
     }
 
     // Küçük esnaf: doğal dalgalanma ±%1 + dönem etkisi + yılda %25 olay.
@@ -413,7 +429,6 @@ export function piyasaYillikUygula(state: CharacterState, yasArtisi: number): st
     const donem = donemAnahtari(state);
     const donemEtkisi = donem ? KUCUK_DONEM_ETKISI[donem] ?? 0 : 0;
     musteriKaydir(state, "kucuk", Math.max(d.kucuk, d.toplam * 0.08) * (rnd(-0.01, 0.01) + donemEtkisi));
-    if (Math.random() < KUCUK_OLAY_SANSI) kucukOlayiUygula(state);
 
     rakipYenildiKontrol(state);
   }
