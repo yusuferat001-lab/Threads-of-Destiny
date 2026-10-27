@@ -3387,11 +3387,11 @@ export function krediPazarlik(state: CharacterState): string {
   const kalanYil = Math.max(1, (k.vadeYil ?? 6) - (state.yil - k.alindigiYil));
   const sans = Math.min(40, Math.max(25, 25 + (state.un - 20) / 8 + (state.ahlak - 50) / 16)); // ~%25-40
   if (Math.random() * 100 < sans) {
-    k.faizOrani = Math.max(0.05, Math.round((k.faizOrani - 0.04) * 100) / 100);
+    k.faizOrani = Math.max(0.07, Math.round((k.faizOrani - 0.04) * 100) / 100);
     k.yillikTaksit = Math.max(2, Math.ceil(annuiteTaksit(k.kalanBorc, k.faizOrani, kalanYil)));
     return T(state.dil, "Tefeci homurdandı ama faizi %{0}'e indirdi.", [Math.round(k.faizOrani * 100)]);
   }
-  k.faizOrani = Math.min(0.30, Math.round((k.faizOrani + 0.05) * 100) / 100);
+  k.faizOrani = Math.min(0.17, Math.round((k.faizOrani + 0.05) * 100) / 100);
   k.yillikTaksit = Math.max(2, Math.ceil(annuiteTaksit(k.kalanBorc, k.faizOrani, kalanYil)));
   return T(state.dil, "Pazarlık ters tepti; tefeci faizi %{0}'e çıkardı.", [Math.round(k.faizOrani * 100)]);
 }
@@ -3404,36 +3404,11 @@ export function krediYillikUygula(state: CharacterState, yasArtisi: number): str
     if (!state.kredi) break;
     const k = state.kredi;
     k.kalanBorc = paraYuvarla(k.kalanBorc * (1 + k.faizOrani));
-    if (state.para >= k.yillikTaksit) {
-      const odeme = Math.min(k.yillikTaksit, k.kalanBorc);
-      state.para = paraYuvarla(state.para - odeme);
-      k.kalanBorc = paraYuvarla(k.kalanBorc - odeme);
-      k.odenmeyenTaksit = 0;
-    } else {
-      k.odenmeyenTaksit += 1;
-      if (k.odenmeyenTaksit === 2) {
-        mesajlar.push(T(state.dil, "🪙 Tefeci taksitini alamadı; 'bir daha kaçırma' diye tehdit etti."));
-      } else if (k.odenmeyenTaksit >= 3) {
-        // El koyma: varsa en değerli mülke, yoksa nakde + itibara.
-        if (state.mulkler.length > 0) {
-          const alinan = state.mulkler.pop()!;
-          delete state.mulk_bakim_kalan[alinan];
-          if (state.mulk_alis_yili) delete state.mulk_alis_yili[alinan];
-          mesajlar.push(
-            T(state.dil, "🪙 Tefecinin adamları borcun karşılığında {0} el koydu.", [K(state.dil, alinan)])
-          );
-          hayatOlayiEkle(state, "🪙", T(state.dil, "Tefeci borç için {0} el koydu", [K(state.dil, alinan)]));
-        } else {
-          const alinan = Math.max(0, paraYuvarla(Math.min(k.kalanBorc, Math.max(0, state.para))));
-          state.para = paraYuvarla(state.para - alinan);
-          state.un = Math.max(0, state.un - 10);
-          mesajlar.push(T(state.dil, "🪙 Tefeci borcun için elinde ne varsa aldı; itibarın da yerlerde."));
-          hayatOlayiEkle(state, "🪙", T(state.dil, "Tefeci borç için servetine el koydu"));
-        }
-        state.kredi = null;
-        break;
-      }
-    }
+    // v18: taksit koşulsuz ödenir; nakit yetmezse para eksiye düşer (el koyma/tehdit yok).
+    const odeme = Math.min(k.yillikTaksit, k.kalanBorc);
+    state.para = paraYuvarla(state.para - odeme);
+    k.kalanBorc = paraYuvarla(k.kalanBorc - odeme);
+    k.odenmeyenTaksit = 0;
     if (state.kredi && state.kredi.kalanBorc <= 0) {
       mesajlar.push(T(state.dil, "🪙 Tefecinin borcunu tamamen kapattın; defterden adın silindi."));
       hayatOlayiEkle(state, "🪙", T(state.dil, "Tefeci borcu bitti"));

@@ -160,7 +160,7 @@ export const YARDIM_POLITIKASI: Record<CemaatYardim, YardimPolitikasi> = {
 };
 export const YARDIM_SIRASI: CemaatYardim[] = ["dusuk", "orta", "yuksek"];
 /** Aşevi yatırımının her kademesi yardımın inanan/ahlak getirisini bu kadar artırır. */
-export const ASEVI_KADEME_ETKISI = 0.09;
+export const ASEVI_KADEME_ETKISI = 0.15;
 
 export const TON_SIRASI: CemaatTon[] = ["ilimli", "dengeli", "atesli"];
 export const TON_ADLARI: Record<CemaatTon, { ad: DilliMetin; aciklama: DilliMetin }> = {
@@ -250,7 +250,7 @@ export const CEMAAT_DONEM_ETKILERI: Record<DonemTuru | "savas" | "veba", CemaatD
 
 // ── Okul / misyoner ─────────────────────────────────────────────────────────
 /** Okul kademesi (0..4) → yıllık mezun şansı. */
-export const OKUL_MEZUN_SANSI = [0, 0.06, 0.12, 0.18, 0.24];
+export const OKUL_MEZUN_SANSI = [0, 0.1, 0.2, 0.3, 0.4];
 /** Misyoner mezun: inanan büyümesi (kendi inananının… P'nin) yüzdesi ve usta aday ihtimali. */
 export const MEZUN_PAZAR_ARALIK: [number, number] = [0.008, 0.015];
 export const MEZUN_ADAY_SANSI = 0.35;

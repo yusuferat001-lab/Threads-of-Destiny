@@ -20,7 +20,8 @@ import type { CharacterState } from "../types";
 /**
  * Yıllık sabit müşteri desteği (v8.2): paydan bağımsız düz değer, yaşa göre kademeli —
  * mesleğin ilk 10 yılı (yaş 15–24) +1, sonraki 10 yıl (25–34) +0,5, sonrası +0,2.
- * Yalnız küçük bir taban destektir; asıl büyüme çalışan/yatırım/fiyat/şöhret ve olaylardan gelir.
+ * v18: İŞLETMELİ mesleklerde (Tüccar/Zanaatkâr/Din Adamı) bu bedava büyüme KALDIRILDI — pasif oyuncu geriler;
+ * yalnız işletmesiz meslek (Asker, piyasa.ts) hâlâ kullanır.
  */
 export const MUSTERI_DESTEK_KADEMELERI: { yasAltinda: number; deger: number }[] = [
   { yasAltinda: 25, deger: 1 },
@@ -31,6 +32,12 @@ export function sabitMusteriArtisi(yas: number): number {
   return (MUSTERI_DESTEK_KADEMELERI.find((k) => yas < k.yasAltinda) ?? MUSTERI_DESTEK_KADEMELERI[MUSTERI_DESTEK_KADEMELERI.length - 1]).deger;
 }
 export const MUSTERI_YILLIK_RUTBE = 0.3;
+/**
+ * v18b: rekabet aşınması — işletmeli mesleklerde (Tüccar/Zanaatkâr/Din Adamı) oyuncunun müşterisi her yıl bu kesri
+ * kadar azalır (rakipler ve yeni dükkânlar müşteri yer). Hiçbir şey yapmayan oyuncu geriler; tanıtım, müşteri rolü
+ * çalışanı, hat çeşitliliği, şöhret ve olaylar bunu dengeler.
+ */
+export const MUSTERI_ASINMA_YILLIK = 0.02;
 /** Hapiste/yolculuktayken pazardan uzak kalmanın yıllık müşteri kaybı (kendi müşterisinin kesri). */
 export const MUSTERI_YOKLUK_KAYBI = 0.03;
 /** Mesleğine uygun kategoride başarılı her olay oyuncuya bu kadar müşteri kazandırır (tecrübe hızıyla çarpılır). */

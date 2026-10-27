@@ -48,7 +48,7 @@ import {
 import { YATIRIM_MASRAF_ORANI } from "../src/game/yatirimMasrafi";
 import { isletmeBaglami, hesaplaMaasYillik, createCharacter, mesleğiSec } from "../src/game/stateManager";
 import { hatTanimiGetir, isletmeProfiliGetir } from "../src/data/meslekProfilleri";
-import { pazarPayiHesapla, musteriSayisi } from "../src/data/pazar";
+import { pazarPayiHesapla, musteriSayisi, MUSTERI_ASINMA_YILLIK } from "../src/data/pazar";
 import type { EkipUyesi } from "../src/types";
 
 async function tuccar(cag: "Orta Çağ" | "Sanayi Devrimi" = "Orta Çağ") {
@@ -168,7 +168,7 @@ describe("işletme (Tüccar dilimi)", () => {
     const kayip = (musteri0 - s.meslek_musteri) / musteri0;
     const beklenen = ((p + 0.2) / 2) * 0.3; // ≈ %18
     expect(kayip).toBeGreaterThan(beklenen - 0.05);
-    expect(kayip).toBeLessThanOrEqual(beklenen + 0.03);
+    expect(kayip).toBeLessThanOrEqual(beklenen + 0.05); // v18b: rekabet aşınması (%2) eklenir
     // Üçüncü yıl da karşılanamazsa ortalama (bu yıl + geçen yıl) yine uygulanır.
     s.isletme!.hatlar.find((h) => h.acik)!.stok = 0;
     const musteri1 = s.meslek_musteri;
@@ -304,7 +304,7 @@ describe("işletme (Tüccar dilimi)", () => {
     const ilk = (await isletmeDurumGetir(s.id)).yatirimlar.find((y) => y.id === "tanitim")!;
     expect(ilk.maxKademe).toBe(4);
     expect(ilk.etkiSimdi.tr).toBe("Etki yok");
-    expect(ilk.etkiSonraki!.tr).toBe("Müşteri artışı +%1/yıl");
+    expect(ilk.etkiSonraki!.tr).toBe("Müşteri artışı +%2/yıl");
     const fiyatlar: number[] = [ilk.sonrakiFiyat!];
     for (let i = 0; i < 3; i++) {
       await isletmeYatirimYap(s.id, "tanitim");
@@ -314,8 +314,8 @@ describe("işletme (Tüccar dilimi)", () => {
     expect(fiyatlar[2] / fiyatlar[1]).toBeCloseTo(3, 1);
     expect(fiyatlar[3] / fiyatlar[2]).toBeCloseTo(3, 1);
     const k = (await isletmeDurumGetir(s.id)).yatirimlar.find((y) => y.id === "tanitim")!;
-    expect(k.etkiSimdi.tr).toBe("Müşteri artışı +%3/yıl");
-    expect(k.etkiSonraki!.tr).toBe("Müşteri artışı +%4/yıl");
+    expect(k.etkiSimdi.tr).toBe("Müşteri artışı +%6/yıl");
+    expect(k.etkiSonraki!.tr).toBe("Müşteri artışı +%8/yıl");
   });
 
   it("dükkân yatırımı kalktı: müşteriyi etkileyen tek yatırım Tanıtım; eski kayıttaki dükkân kademesi Tanıtım'a taşınır", async () => {
@@ -366,31 +366,31 @@ describe("işletme (Tüccar dilimi)", () => {
     expect(toplam).toBeLessThanOrEqual(100 + 1e-6);
   });
 
-  it("güvenlik yatırımı Korumayı yükseltir (kademe başı +0,10, en çok 0,4)", async () => {
+  it("güvenlik yatırımı Korumayı yükseltir (kademe başı +0,15, en çok 0,6)", async () => {
     const s = await tuccar();
     s.para = 100000;
     expect(korumaHesapla(s).yatirim).toBe(0);
     await isletmeYatirimYap(s.id, "guvenlik");
-    expect(korumaHesapla(s).yatirim).toBeCloseTo(0.1);
+    expect(korumaHesapla(s).yatirim).toBeCloseTo(0.15);
     await isletmeYatirimYap(s.id, "guvenlik");
     await isletmeYatirimYap(s.id, "guvenlik");
     await isletmeYatirimYap(s.id, "guvenlik");
-    expect(korumaHesapla(s).yatirim).toBeCloseTo(0.4);
+    expect(korumaHesapla(s).yatirim).toBeCloseTo(0.6);
   });
 
   it("çalışan bonusları güncel Yeteneğe göre ve düz toplanır; sadık (≥75) ×1,05", () => {
     const ana = calisanBonusu(uye("ana", 50, 60))!;
-    expect(ana.deger).toBeCloseTo(0.05 + 0.35 * 0.5);
-    expect(calisanBonusu(uye("maliyet", 100, 60))!.deger).toBeCloseTo(0.12);
-    expect(calisanBonusu(uye("musteri", 100, 60))!.deger).toBeCloseTo(0.06);
-    expect(calisanBonusu(uye("guvenlik", 50, 60))!.deger).toBeCloseTo(0.36);
+    expect(ana.deger).toBeCloseTo(0.075 + 0.525 * 0.5);
+    expect(calisanBonusu(uye("maliyet", 100, 60))!.deger).toBeCloseTo(0.18);
+    expect(calisanBonusu(uye("musteri", 100, 60))!.deger).toBeCloseTo(0.12);
+    expect(calisanBonusu(uye("guvenlik", 50, 60))!.deger).toBeCloseTo(0.48);
     const sadik = calisanBonusu(uye("ana", 50, 80))!;
     expect(sadik.deger).toBeCloseTo(ana.deger * 1.05);
     const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
     s.ekip = [uye("ana", 50, 60), uye("ana", 50, 60), uye("guvenlik", 50, 60)];
     const b = ekipBonuslari(s);
     expect(b.ana).toBeCloseTo(ana.deger * 2);
-    expect(b.koruma).toBeCloseTo(0.36);
+    expect(b.koruma).toBeCloseTo(0.48);
   });
 
   it("maaş giriş seviyesine göre sabit, yalnız enflasyonla artar", () => {
@@ -534,9 +534,9 @@ describe("işletme (Tüccar dilimi)", () => {
     expect(korumaHesapla(s).toplam).toBe(1);
     s.ekip = [uye("guvenlik", 50, 60)];
     s.isletme!.yatirimlar.guvenlik = 0;
-    expect(korumaHesapla(s).toplam).toBeCloseTo(0.36);
+    expect(korumaHesapla(s).toplam).toBeCloseTo(0.48);
     s.yonetim_iliski = 70;
-    expect(korumaHesapla(s).toplam).toBeCloseTo(0.46);
+    expect(korumaHesapla(s).toplam).toBeCloseTo(0.58);
     s.yonetim_iliski = 95;
     expect(korumaHesapla(s).otorite).toBeCloseTo(0.1);
   });
@@ -938,5 +938,28 @@ describe("v11: başlangıç ürünü seçimi", () => {
     expect(din.urun_secim_bekliyor).toBeFalsy();
     const klasik = await tuccar();
     expect(klasik.urun_secim_bekliyor).toBeFalsy();
+  });
+
+  it("v18b rekabet aşınması: hiçbir şey yapmayan oyuncunun müşterisi her yıl azalır, tanıtım kademesi bunu dengeler", async () => {
+    expect(MUSTERI_ASINMA_YILLIK).toBeGreaterThan(0);
+    const pasif = await tuccar();
+    pasif.ulke.donem = { tur: "durgunluk", baslangicYili: pasif.yil, bitisYili: pasif.yil + 50, sonraki: "bolluk", etki: pasif.ulke.donem!.etki };
+    pasif.un = 10; // şöhret ve yatkınlık gibi rastgele pozitif kaynakları nötrle
+    pasif.meslek_yatkinlik_seviyesi = 2;
+    pasif.es_adi = null;
+    pasif.isletme!.hatlar.forEach((h, i) => (h.acik = i === 0)); // hat çeşitliliği bonusu karışmasın
+    const once = pazarPayiHesapla(pasif);
+    isletmeYilIsle(pasif, isletmeBaglami(pasif));
+    expect(pazarPayiHesapla(pasif)).toBeLessThan(once); // toplam pazar büyüse de PAY düşer
+    const tanitimli = await tuccar();
+    tanitimli.ulke.donem = { tur: "durgunluk", baslangicYili: tanitimli.yil, bitisYili: tanitimli.yil + 50, sonraki: "bolluk", etki: tanitimli.ulke.donem!.etki };
+    tanitimli.un = 10;
+    tanitimli.meslek_yatkinlik_seviyesi = 2;
+    tanitimli.es_adi = null;
+    tanitimli.isletme!.hatlar.forEach((h, i) => (h.acik = i === 0));
+    tanitimli.isletme!.yatirimlar.tanitim = 4;
+    const t0 = pazarPayiHesapla(tanitimli);
+    isletmeYilIsle(tanitimli, isletmeBaglami(tanitimli));
+    expect(pazarPayiHesapla(tanitimli)).toBeGreaterThan(t0);
   });
 });

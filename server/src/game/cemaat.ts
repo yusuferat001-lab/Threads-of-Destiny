@@ -52,8 +52,8 @@ import {
   pazarPayiHesapla,
   rakipSaldiriKademesi,
   rastgeleSaldiriYili,
-  sabitMusteriArtisi,
   sohretPayBuyumesi,
+  MUSTERI_ASINMA_YILLIK,
 } from "../data/pazar";
 import { yatirimYillikMasrafi } from "./yatirimMasrafi";
 import { musteriAktar, musteriKaydir, pazarOlcekle, piyasaCarpani, rakipGrubu } from "./piyasa";
@@ -510,7 +510,8 @@ export function cemaatYilIsle(state: CharacterState, b: IsletmeBaglami): Isletme
   const mevcutPay = pazarPayiHesapla(state);
   const vebaKisma = state.veba?.aktif ? VEBA_ARTIS_CARPANI : 1;
   const yuzde = etken.toplam > 0 ? etken.toplam * Math.max(0, 1 - mevcutPay / PAY_DOYMA_ESIGI) * vebaKisma : etken.toplam;
-  musteriKaydir(state, "oyuncu", sabitMusteriArtisi(state.yas) * vebaKisma + state.meslek_musteri * yuzde);
+  musteriKaydir(state, "oyuncu", state.meslek_musteri * yuzde);
+  musteriKaydir(state, "oyuncu", -state.meslek_musteri * MUSTERI_ASINMA_YILLIK); // v18b rekabet aşınması
   const aranmaKaybi = aranmaMusteriKaybi(state.suc_seviyesi);
   if (aranmaKaybi > 0) musteriKaydir(state, "oyuncu", -state.meslek_musteri * aranmaKaybi);
 

@@ -28,7 +28,6 @@ import {
 } from "../data/meslekProfilleri";
 import {
   ALIM_ORANI,
-  sabitMusteriArtisi,
   aktifRakip,
   aktifRakipler,
   musteriSayisi,
@@ -44,6 +43,7 @@ import {
   SIZMA_HASAR_CARPANI,
   SIZMA_SADAKAT_KAYBI,
   sohretPayBuyumesi,
+  MUSTERI_ASINMA_YILLIK,
 } from "../data/pazar";
 import { pazarBuyumeVarsayilan, VEBA_TOPARLANMA_ORAN, VEBA_TOPARLANMA_YIL } from "../data/dunyaDonemleri";
 import { musteriKaydir, musteriAktar, pazarOlcekle, piyasaCarpani, rakipGrubu } from "./piyasa";
@@ -126,11 +126,11 @@ export const TALEP_GURULTUSU = 0.08;
 /** Yüzdelik müşteri büyümesi pay bu eşiğe yaklaştıkça sıfıra iner. */
 export const PAY_DOYMA_ESIGI = 0.68;
 /** Maliyet indirimleri ÇARPIMSAL birleşir (tavan yok): maliyet × (1−a)(1−b)(1−c)…; her kaynak kendi payını düşer, yığıldıkça getirisi azalır. */
-export const KERVAN_INDIRIM_KADEME = 0.03;
+export const KERVAN_INDIRIM_KADEME = 0.05;
 const GUMRUK_INDIRIMI = 0.1;
 const MUAFIYET_INDIRIMI = 0.08;
-export const TEZGAH_URETIM_KADEME = 0.35;
-export const TANITIM_PAY_KADEME = 0.01;
+export const TEZGAH_URETIM_KADEME = 0.5;
+export const TANITIM_PAY_KADEME = 0.02;
 /** Veba sürerken müşteri/inanan büyümesinin pozitif kısımları bu çarpanla kısılır (v10). */
 export const VEBA_ARTIS_CARPANI = 0.3;
 /** v11: dönem fiyat şoku alışa ve satışa AYNI oranda (%100) yansır; marj oransal korunur, krizin asıl etkisi talepte. */
@@ -168,7 +168,7 @@ export const SADIK_BONUS = 1.05;
 export const SADAKAT_OLAY_COOLDOWN_YIL = 3;
 
 // Dış hırsızlık
-export const GUVENLIK_YATIRIM_KORUMA = [0, 0.1, 0.2, 0.3, 0.4];
+export const GUVENLIK_YATIRIM_KORUMA = [0, 0.15, 0.3, 0.45, 0.6];
 export const OTORITE_KORUMA_ESIGI = 70;
 export const OTORITE_KORUMA = 0.1;
 
@@ -275,13 +275,13 @@ export function calisanBonusu(uye: EkipUyesi): { tur: IsletmeRolTuru; deger: num
   const k = sadikCarpani(uye);
   switch (uye.rol_turu) {
     case "ana":
-      return { tur: "ana", deger: (0.05 + 0.35 * y) * k };
+      return { tur: "ana", deger: (0.075 + 0.525 * y) * k };
     case "maliyet":
-      return { tur: "maliyet", deger: (0.02 + 0.1 * y) * k };
+      return { tur: "maliyet", deger: (0.03 + 0.15 * y) * k };
     case "musteri":
-      return { tur: "musteri", deger: (0.01 + 0.05 * y) * k };
+      return { tur: "musteri", deger: (0.02 + 0.1 * y) * k };
     case "guvenlik":
-      return { tur: "guvenlik", deger: (0.06 + 0.6 * y) * k };
+      return { tur: "guvenlik", deger: (0.08 + 0.8 * y) * k };
     default:
       return null;
   }
@@ -1295,8 +1295,11 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
     // Veba sürerken pozitif büyüme %70 kısılır (v10); eksi etkiler tam işler.
     const vebaKisma = state.veba?.aktif ? VEBA_ARTIS_CARPANI : 1;
     const yuzde = ham > 0 ? ham * Math.max(0, 1 - mevcutPay / PAY_DOYMA_ESIGI) * vebaKisma : ham;
-    musteriKaydir(state, "oyuncu", sabitMusteriArtisi(state.yas) * vebaKisma + state.meslek_musteri * yuzde);
+    musteriKaydir(state, "oyuncu", state.meslek_musteri * yuzde);
   }
+
+  // 7a. Rekabet aşınması (v18b): bedava büyüme yok, yıllık küçük müşteri kaybı var.
+  musteriKaydir(state, "oyuncu", -state.meslek_musteri * MUSTERI_ASINMA_YILLIK);
 
   // 7b. Aranma gölgesi (v10): gelir kısmak yerine yıllık müşteri/inanan ve ahlak kaybı (1★ %1·0.3 · 2★ %2.5·0.6 · 3★ %4·1.0).
   const aranmaKaybi = aranmaMusteriKaybi(state.suc_seviyesi);
