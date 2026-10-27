@@ -5,6 +5,7 @@ import { yeniOyun, mesleğiAta, senaryoUret, secimUygula } from "../src/game/gam
 import { OLAY_BANKASI } from "../src/data/olaylar";
 import { OLAY_ARANMA_SEVIYESI } from "../src/data/olaylar/aranmaSeviyesi";
 import type { CharacterState, SecimSonucu } from "../src/types";
+import { vergisizSenaryo } from "./_ogreti";
 
 /**
  * TEK suç/aranma ekseni (suc_seviyesi, 0-100). Aranma kademe bantları:
@@ -175,7 +176,7 @@ describe("aranma kademesi — baskın olayının etkileri (gerçek secimUygula �
       state.suc_seviyesi = BANT.k4;
       state.para = 400;
       sadeceBuOlayaZorla(state, "aranma_baskin_ortacag");
-      await senaryoUret(state.id);
+      await vergisizSenaryo(state);
       const sonuc = (await secimUygula(state.id, 1)) as SecimSonucu;
 
       expect(sonuc.state.para).toBeLessThan(260);
@@ -198,7 +199,7 @@ describe("aranma kademesi — baskın olayının etkileri (gerçek secimUygula �
       state.suc_seviyesi = BANT.k3;
       state.para = 100;
       sadeceBuOlayaZorla(state, "aranma_baskin_ortacag");
-      await senaryoUret(state.id);
+      await vergisizSenaryo(state);
       const sonuc = (await secimUygula(state.id, 2)) as SecimSonucu;
 
       if (sonuc.state.etiketler.includes("kacak")) {
@@ -220,7 +221,7 @@ describe("aranma kademesi — tetikleyici ve kademe olaylarının etki alanı", 
       state.suc_seviyesi = BANT.k1;
       state.para = 200;
       sadeceBuOlayaZorla(state, "aranma_1_rutin_sorgu");
-      await senaryoUret(state.id);
+      await vergisizSenaryo(state);
       const sonuc = (await secimUygula(state.id, 0)) as SecimSonucu;
       if (sonuc.state.suc_seviyesi < 20) dususGorundu = true;
     }
@@ -233,7 +234,7 @@ describe("aranma kademesi — tetikleyici ve kademe olaylarının etki alanı", 
       const state = await tazeOturum("Tüccar");
       state.suc_seviyesi = 0;
       sadeceBuOlayaZorla(state, "aranma_giris_meyhane_kavgasi");
-      await senaryoUret(state.id);
+      await vergisizSenaryo(state);
       const sonuc = (await secimUygula(state.id, 1)) as SecimSonucu;
       if (sonuc.state.suc_seviyesi >= 20) yukselisGorundu = true;
     }
@@ -251,7 +252,7 @@ describe("aranma kademesi — kaçak hayatı asla açmaza girmiyor", () => {
     for (let tur = 0; tur < 15 && state.aktif; tur++) {
       if (state.saglik < 50) state.saglik = 90;
       if (state.para < 20) state.para = 60;
-      const senaryo = await senaryoUret(state.id);
+      const senaryo = await vergisizSenaryo(state);
       const acikSecenekler = senaryo.secenekler.map((s, i) => ({ s, i })).filter(({ s }) => !s.kilitli);
       expect(acikSecenekler.length).toBeGreaterThan(0);
       const idx = acikSecenekler[Math.floor(Math.random() * acikSecenekler.length)].i;

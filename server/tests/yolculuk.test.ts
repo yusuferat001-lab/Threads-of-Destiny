@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { ogretileriTamamla } from "./_ogreti";
+import { ogretileriTamamla, vergisizSenaryo } from "./_ogreti";
 import { olaySec } from "../src/game/olaySecici";
 import { createCharacter, mesleğiSec, etiketEkle } from "../src/game/stateManager";
 import { yeniOyun, mesleğiAta, senaryoUret } from "../src/game/gameEngine";
@@ -253,7 +253,7 @@ describe("yolculuk zinciri uçtan uca (Coğrafi Keşif, deniz rotası)", () => {
       for (const beklenenIdler of beklenenSira) {
         sonuc.state.saglik = 100;
         sonuc.state.para = 500;
-        const senaryo = await senaryoUret(state.id);
+        const senaryo = await vergisizSenaryo(state);
         const beklenenBasliklar = [...beklenenIdler].map(baslikGetir);
         expect(beklenenBasliklar).toContain(senaryo.olay_basligi);
         let acikIdx = -1;
