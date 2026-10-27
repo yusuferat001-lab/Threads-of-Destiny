@@ -1807,6 +1807,25 @@ export const CAPRAZ_SAGLIK_ESIGI = 10;
 export const CAPRAZ_ARDISIK_YIL = 2;
 export const CAPRAZ_MUTLULUK_YILLIK = 1;
 
+/**
+ * Borç kademeleri (eşik × enflasyon çarpanı): borç büyüdükçe yıllık mutluluk/şöhret kaybı artar.
+ * Son kademenin eşiği aynı zamanda "ağır faiz" eşiğidir (aşan kısma BORC_AGIR_FAIZ_ORANI işler).
+ */
+export const BORC_KADEMELERI: ReadonlyArray<{ esik: number; mutluluk: number; sohret: number }> = [
+  { esik: 0, mutluluk: 1, sohret: 0 },
+  { esik: 50, mutluluk: 2, sohret: 1 },
+  { esik: 100, mutluluk: 3, sohret: 3 },
+];
+export const BORC_AGIR_ESIK_TABAN = BORC_KADEMELERI[BORC_KADEMELERI.length - 1].esik;
+export const BORC_AGIR_FAIZ_ORANI = 0.1;
+export function borcKademesi(borc: number, enflasyon: number): { mutluluk: number; sohret: number } {
+  let kademe = BORC_KADEMELERI[0];
+  for (const k of BORC_KADEMELERI) {
+    if (borc >= k.esik * enflasyon) kademe = k;
+  }
+  return kademe;
+}
+
 /** Pasif şöhret erimesi: [alt sınır, yıllık kayıp] — 40-50 −1, 50-65 −2, 65-80 −3, 80-100 −4 (40 altı etkilenmez). */
 export const SOHRET_EROME_BANTLARI: ReadonlyArray<readonly [number, number]> = [
   [40, 1],
@@ -2579,15 +2598,23 @@ export function pasifEkonomiUygula(state: CharacterState, yasArtisi: number): Ek
   if (state.para < 0) {
     borcaGirdi = true;
     const borcTutari = Math.abs(state.para);
-    // v11: borç sağlığı düşürmez, yalnız moral yıpratır.
-    state.mutluluk -= 1 * yasArtisi;
+    // v11: borç sağlığı düşürmez; moral (ve büyük borçta şöhret) kademeli yıpranır.
+    const enfl = enflasyonCarpani(state);
+    const kademe = borcKademesi(borcTutari, enfl);
+    state.mutluluk -= kademe.mutluluk * yasArtisi;
+    state.un -= kademe.sohret * yasArtisi;
+    // Eşiğe kadar olan kısma taban oran, eşiği aşan kısma ağır oran işler.
+    const agirEsik = BORC_AGIR_ESIK_TABAN * enfl;
+    const tabanKisim = Math.min(borcTutari, agirEsik);
+    const agirKisim = Math.max(0, borcTutari - agirEsik);
+    const agirFaiz = agirKisim * BORC_AGIR_FAIZ_ORANI;
     if (netGelir > 0) {
-      // Aktif ödüyor: faiz %2/yıl + net gelirin %25'i kadar ek anapara affı.
-      faiz = paraYuvarla(borcTutari * 0.02 * yasArtisi);
+      // Aktif ödüyor: taban faiz %2/yıl + net gelirin %25'i kadar ek anapara affı.
+      faiz = paraYuvarla((tabanKisim * 0.02 + agirFaiz) * yasArtisi);
       state.para = paraYuvarla(Math.min(0, state.para - faiz + netGelir * 0.25));
     } else {
-      // Ödeyemiyor: faiz %4/yıl (tavan yok — borç büyüdükçe faiz de büyür).
-      faiz = paraYuvarla(borcTutari * 0.04 * yasArtisi);
+      // Ödeyemiyor: taban faiz %4/yıl (tavan yok — borç büyüdükçe faiz de büyür).
+      faiz = paraYuvarla((tabanKisim * 0.04 + agirFaiz) * yasArtisi);
       state.para -= faiz;
     }
     // Ömürde BİR KEZ: borç sürerken ve bütçe hâlâ açık verirken (netGelir <= 0)

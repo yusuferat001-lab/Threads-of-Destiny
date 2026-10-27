@@ -855,6 +855,7 @@ export const ANLATIM_EN: Record<string, string> = {
   "Bu kadar hattı aynı anda işletemezsin; daha fazla çalışan gerek.": "You can't run this many lines at once; you need more staff.",
   "Önce öğretini seçmelisin.": "You must choose your doctrine first.",
   "Önce başlangıç ürününü seçmelisin.": "You must choose your starting product first.",
+  "Borcun itibarını yıpratıyor: {0}/yıl": "Your debt is eroding your standing: {0}/yr",
   "Önce ekstra vergi talebini yanıtlamalısın.": "You must answer the extra tax demand first.",
   "Bu meslekte başlangıç ürünü seçilmez.": "This profession has no starting product to choose.",
   "Başlangıç ürününü zaten seçtin.": "You have already chosen your starting product.",

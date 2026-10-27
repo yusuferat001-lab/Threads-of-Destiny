@@ -27,6 +27,8 @@ import {
   KRIZ_ETKI,
   KRONIK_SAGLIK_ESIGI,
   sohretErimesiYillik,
+  borcKademesi,
+  enflasyonCarpani,
   CAPRAZ_ARDISIK_YIL,
   CAPRAZ_MUTLULUK_YILLIK,
   EVLILIK_MORAL_YAS,
@@ -218,7 +220,8 @@ function mutlulukDetayi(state: CharacterState): GostergeDetayTaban {
   const kriz = krizEtkeni(state, "mutluluk");
   if (kriz) etkenler.push(kriz);
   if (state.para < 0) {
-    etkenler.push({ ikon: "💸", metin: T(dil, "Borç stresi: {0}/yıl", [isaretli(-1)]), yon: "kotu" });
+    const borcKademe = borcKademesi(Math.abs(state.para), enflasyonCarpani(state));
+    etkenler.push({ ikon: "💸", metin: T(dil, "Borç stresi: {0}/yıl", [isaretli(-borcKademe.mutluluk)]), yon: "kotu" });
   }
   if ((state.saglik_kritik_yil_sayaci ?? 0) >= CAPRAZ_ARDISIK_YIL) {
     etkenler.push({
@@ -332,6 +335,12 @@ function sohretDetayi(state: CharacterState): GostergeDetayTaban {
   }
   const kriz = krizEtkeni(state, "un");
   if (kriz) etkenler.push(kriz);
+  if (state.para < 0) {
+    const borcKademe = borcKademesi(Math.abs(state.para), enflasyonCarpani(state));
+    if (borcKademe.sohret > 0) {
+      etkenler.push({ ikon: "💸", metin: T(dil, "Borcun itibarını yıpratıyor: {0}/yıl", [isaretli(-borcKademe.sohret)]), yon: "kotu" });
+    }
+  }
   if (state.kredi && state.kredi.odenmeyenTaksit >= 2) {
     etkenler.push({ ikon: "💰", metin: T(dil, "Tefeci taksidi aksattın: adın çıkıyor."), yon: "kotu" });
   }

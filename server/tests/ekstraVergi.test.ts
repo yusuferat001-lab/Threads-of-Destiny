@@ -45,8 +45,8 @@ describe("yonetimYillikUygula — ekstra vergi talebi", () => {
     expect(state.ekstra_vergi_sonraki_yil).toBeNull();
     karYaz(state, 1000);
     yonetimYillikUygula(state, 1);
-    expect(state.ekstra_vergi_sonraki_yil).toBeGreaterThanOrEqual(state.yil + 8);
-    expect(state.ekstra_vergi_sonraki_yil).toBeLessThanOrEqual(state.yil + 9);
+    expect(state.ekstra_vergi_sonraki_yil).toBeGreaterThanOrEqual(state.yil + EKSTRA_VERGI_ARALIK_YIL[0]);
+    expect(state.ekstra_vergi_sonraki_yil).toBeLessThanOrEqual(state.yil + EKSTRA_VERGI_ARALIK_YIL[1]);
     expect(state.yonetim_talep?.tur).not.toBe("vergi");
   });
 
@@ -62,7 +62,7 @@ describe("yonetimYillikUygula — ekstra vergi talebi", () => {
     expect(t.tutar).toBeGreaterThanOrEqual(400);
     expect(t.tutar).toBeLessThanOrEqual(600);
     expect(t.sonYil).toBe(EKSTRA_VERGI_SONSUZ_YIL);
-    expect(state.ekstra_vergi_sonraki_yil).toBeGreaterThanOrEqual(state.yil + 8);
+    expect(state.ekstra_vergi_sonraki_yil).toBeGreaterThanOrEqual(state.yil + EKSTRA_VERGI_ARALIK_YIL[0]);
   });
 
   it("kâr eşiğin (enflasyonlu) altındaysa talep çıkmaz ve vade korunur", async () => {

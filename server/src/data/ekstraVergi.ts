@@ -6,7 +6,7 @@
  */
 
 /** Takvim: bir sonraki talebin en erken yılı = bugün + [min, max] (eşit olasılık). */
-export const EKSTRA_VERGI_ARALIK_YIL: [number, number] = [8, 9];
+export const EKSTRA_VERGI_ARALIK_YIL: [number, number] = [8, 10];
 
 /** Talep, son yılın brüt kârı bu eşiğin (× enflasyon çarpanı) üstündeyse üretilir. */
 export const EKSTRA_VERGI_KAR_ESIGI = 40;
