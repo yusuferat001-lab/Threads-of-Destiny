@@ -43,7 +43,7 @@ import {
   SIZMA_HASAR_CARPANI,
   SIZMA_SADAKAT_KAYBI,
   sohretPayBuyumesi,
-  MUSTERI_ASINMA_YILLIK,
+  musteriAsinmaOrani,
 } from "../data/pazar";
 import { pazarBuyumeVarsayilan, VEBA_TOPARLANMA_ORAN, VEBA_TOPARLANMA_YIL } from "../data/dunyaDonemleri";
 import { musteriKaydir, musteriAktar, pazarOlcekle, piyasaCarpani, rakipGrubu } from "./piyasa";
@@ -1299,7 +1299,7 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
   }
 
   // 7a. Rekabet aşınması (v18b): bedava büyüme yok, yıllık küçük müşteri kaybı var.
-  musteriKaydir(state, "oyuncu", -state.meslek_musteri * MUSTERI_ASINMA_YILLIK);
+  musteriKaydir(state, "oyuncu", -state.meslek_musteri * musteriAsinmaOrani());
 
   // 7b. Aranma gölgesi (v10): gelir kısmak yerine yıllık müşteri/inanan ve ahlak kaybı (1★ %1·0.3 · 2★ %2.5·0.6 · 3★ %4·1.0).
   const aranmaKaybi = aranmaMusteriKaybi(state.suc_seviyesi);

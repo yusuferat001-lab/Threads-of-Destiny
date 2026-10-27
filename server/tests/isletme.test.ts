@@ -941,7 +941,8 @@ describe("v11: başlangıç ürünü seçimi", () => {
   });
 
   it("v18b rekabet aşınması: hiçbir şey yapmayan oyuncunun müşterisi her yıl azalır, tanıtım kademesi bunu dengeler", async () => {
-    expect(MUSTERI_ASINMA_YILLIK).toBeGreaterThan(0);
+    expect(MUSTERI_ASINMA_YILLIK).toBeGreaterThanOrEqual(0.009);
+    expect(MUSTERI_ASINMA_YILLIK).toBeLessThanOrEqual(0.012);
     const pasif = await tuccar();
     pasif.ulke.donem = { tur: "durgunluk", baslangicYili: pasif.yil, bitisYili: pasif.yil + 50, sonraki: "bolluk", etki: pasif.ulke.donem!.etki };
     pasif.un = 10; // şöhret ve yatkınlık gibi rastgele pozitif kaynakları nötrle

@@ -37,7 +37,13 @@ export const MUSTERI_YILLIK_RUTBE = 0.3;
  * kadar azalır (rakipler ve yeni dükkânlar müşteri yer). Hiçbir şey yapmayan oyuncu geriler; tanıtım, müşteri rolü
  * çalışanı, hat çeşitliliği, şöhret ve olaylar bunu dengeler.
  */
-export const MUSTERI_ASINMA_YILLIK = 0.02;
+export const MUSTERI_ASINMA_ARALIK: [number, number] = [0.009, 0.012];
+/** Aralığın ortası (belgeleme / testler); motor her yıl aralıktan ayrı zarlar. */
+export const MUSTERI_ASINMA_YILLIK = 0.0105;
+export function musteriAsinmaOrani(rnd: () => number = Math.random): number {
+  const [a, b] = MUSTERI_ASINMA_ARALIK;
+  return a + (b - a) * rnd();
+}
 /** Hapiste/yolculuktayken pazardan uzak kalmanın yıllık müşteri kaybı (kendi müşterisinin kesri). */
 export const MUSTERI_YOKLUK_KAYBI = 0.03;
 /** Mesleğine uygun kategoride başarılı her olay oyuncuya bu kadar müşteri kazandırır (tecrübe hızıyla çarpılır). */
