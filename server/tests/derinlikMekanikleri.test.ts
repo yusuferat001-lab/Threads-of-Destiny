@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { olaySec } from "../src/game/olaySecici";
 import { createCharacter, mesleğiSec, durumlariUygula } from "../src/game/stateManager";
 import { yeniOyun, mesleğiAta, senaryoUret, secimUygula } from "../src/game/gameEngine";
+import { vergisizSenaryo } from "./_ogreti";
 
 function olayBul(state: ReturnType<typeof createCharacter>, baslik: string, maxDeneme: number) {
   for (let i = 0; i < maxDeneme; i++) {
@@ -143,7 +144,7 @@ describe("ünvan sistemi (uçtan uca)", () => {
         if (state.rutbe_seviye < 2) state.rutbe_seviye = 2; // olay minRutbeSeviye:2 ister; rütbe pazar payına bağlı ve rastgele yürüyüşte yavaş büyür
         let senaryo;
         try {
-          senaryo = await senaryoUret(state.id);
+          senaryo = await vergisizSenaryo(state);
         } catch {
           break; // rastgele yürüyüş nadiren havuzu boşaltan bir duruma düşebilir — bu denemeyi bırak, yeniden başla
         }
