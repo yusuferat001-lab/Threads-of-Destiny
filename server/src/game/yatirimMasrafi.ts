@@ -2,11 +2,13 @@ import type { CharacterState } from "../types";
 import { isletmeProfiliGetir } from "../data/meslekProfilleri";
 
 /**
- * Yatırım yıllık masrafı (v14): alınan her kademenin fiyatının %2'si yılda bir "dükkân giderine" biner.
- * Depo ve ibadethane kendi bakımını zaten öder (DEPO_BAKIM / BINA_BAKIM), bu yüzden burada sayılmaz.
+ * Yatırım yıllık masrafı (v22: KALDIRILDI → oran 0). Eskiden (v14) alınan her kademenin fiyatının %2'si yılda bir
+ * "dükkân giderine" biniyordu; kullanıcı isteğiyle depo/ibadethane hariç kademe yükseltmenin yıllık masrafı yok.
+ * Depo ve ibadethane kendi bakımını öder (DEPO_BAKIM / BINA_BAKIM), o ayrı ve duruyor.
+ * Oran 0 olduğu için fonksiyonlar geriye dönük uyumla duruyor, hepsi 0 döner.
  * Bu modül isletme.ts ve cemaat.ts tarafından ortak okunur (aralarındaki döngüsel içe aktarmayı önlemek için ayrı dosya).
  */
-export const YATIRIM_MASRAF_ORANI = 0.02;
+export const YATIRIM_MASRAF_ORANI = 0;
 const BAKIMI_AYRI_OLANLAR = new Set(["depo", "bina"]);
 
 /** Bir yatırımın verilen kademeye kadar alınmış kademelerinin toplam fiyatı (enflasyonsuz). */

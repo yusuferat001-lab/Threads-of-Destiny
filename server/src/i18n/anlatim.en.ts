@@ -171,8 +171,8 @@ export const ANLATIM_EN: Record<string, string> = {
     "Your debt was not cleared, and {0} {birim} of interest was added on top.",
   "Borcun hâlâ kapanmadı, tefeciler peşini bırakmıyor.":
     "Your debt is still not cleared; the moneylenders won't let go.",
-  "🙏 Zor günlerinde kilise ve birkaç eş dost devreye girdi; borcunun {0} {1}'ini kapattılar. Bu bir daha olmayacak.":
-    "🙏 In your hard times the church and a few friends stepped in; they cleared {0} {1} of your debt. This won't happen again.",
+  "🙏 Zor günlerinde kilise ve birkaç eş dost devreye girdi; eline {0} {1} nakit verdiler. Bu bir daha olmayacak.":
+    "🙏 In your hard times the church and a few friends stepped in; they put {0} {1} in your hands. This won't happen again.",
   "Borç yardımı aldı: +{0} {1}": "Received debt relief: +{0} {1}",
 
   // ---- Hapis ceza süresi ----

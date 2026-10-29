@@ -776,6 +776,7 @@ export type IsletmeFiyat = 'eksi20' | 'eksi10' | 'normal' | 'arti10' | 'arti20';
 export interface IsletmeUyari {
   kod:
     | 'stok_bitti'
+    | 'alim_yetersiz'
     | 'fazla_stok'
     | 'calisan_ayrildi'
     | 'kitle_kaybi'

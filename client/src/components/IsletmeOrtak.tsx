@@ -71,10 +71,12 @@ export function IsletmeOrtak({
             <span className="isletme-yatirim-etki">
               <b>{t('simdi')}:</b> {d(y.etkiSimdi)}
             </span>
-            <span className="isletme-yatirim-etki">
-              <b>{t('yillikMasraf')}:</b> {formatPara(y.yillikMasraf)}
-              {y.sonrakiMasraf !== null && <span className="kademe-dusuk"> (+{formatPara(y.sonrakiMasraf)})</span>}
-            </span>
+            {y.yillikMasraf > 0 && (
+              <span className="isletme-yatirim-etki">
+                <b>{t('yillikMasraf')}:</b> {formatPara(y.yillikMasraf)}
+                {y.sonrakiMasraf !== null && <span className="kademe-dusuk"> (+{formatPara(y.sonrakiMasraf)})</span>}
+              </span>
+            )}
             {y.etkiSonraki && (
               <span className="isletme-yatirim-etki isletme-yatirim-sonraki">
                 <b>{t('sonra')}:</b> <span className="kademe-yuksek">{d(y.etkiSonraki)}</span>

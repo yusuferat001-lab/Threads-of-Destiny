@@ -2068,7 +2068,7 @@ function yilIlerlet(g: YilIlerletGirdi): { yasArtisi: number; zamanAnlatimi: str
           if (ekonomi.borcYardimi > 0) {
             const yardimMesaji = T(
               state.dil,
-              "🙏 Zor günlerinde kilise ve birkaç eş dost devreye girdi; borcunun {0} {1}'ini kapattılar. Bu bir daha olmayacak.",
+              "🙏 Zor günlerinde kilise ve birkaç eş dost devreye girdi; eline {0} {1} nakit verdiler. Bu bir daha olmayacak.",
               [ekonomi.borcYardimi, state.para_birimi]
             );
             zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${yardimMesaji}` : yardimMesaji;
@@ -2436,7 +2436,11 @@ async function sonucuUygulaVeIlerlet(
   }
   if (state.es_adi) state.es_puani += etki.es_puani ?? 0;
   if (etki.es_ilgi_gosterildi && state.es_adi) state.es_son_zaman_yili = state.yil;
-  if (etki.tanisma_baslat && AK.tanismaBaslatilabilirMi(state)) AK.tanismaBaslat(state, AK.tanismaMekanSec(state));
+  if (etki.tanisma_baslat && AK.tanismaBaslatilabilirMi(state)) {
+    AK.tanismaBaslat(state, AK.tanismaMekanSec(state));
+    // Olayda zaten "Yanına git" denildi: göz göze adımı tekrar sorulmaz, diyalog 1. adımdan açılır.
+    AK.tanismaYaklas(state);
+  }
   if (etki.tanisma_vazgec && state.es_adi) AK.sadakatOdulu(state);
 
   if (etki.cocuk_ekle) {

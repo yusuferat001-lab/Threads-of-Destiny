@@ -62,7 +62,7 @@ export const GELME_ARALIKLARI: Record<GelmeKaynagi, [number, number]> = {
 /** Bina kademesi (0..4) → ibadethane kapasitesi (aynı anda ayine sığan inanan). */
 export const BINA_KAPASITE = [50, 75, 105, 145, 195];
 /** Bina bakımı (enflasyonsuz yıllık). */
-export const BINA_BAKIM = [6, 12, 24, 36, 55];
+export const BINA_BAKIM = [4, 8, 17, 25, 38]; // v22: ~%30 düşürüldü
 
 // ── Politikalar ─────────────────────────────────────────────────────────────
 export interface BagisPolitikasi {
@@ -160,7 +160,10 @@ export const YARDIM_POLITIKASI: Record<CemaatYardim, YardimPolitikasi> = {
 };
 export const YARDIM_SIRASI: CemaatYardim[] = ["dusuk", "orta", "yuksek"];
 /** Aşevi yatırımının her kademesi yardımın inanan/ahlak getirisini bu kadar artırır. */
-export const ASEVI_KADEME_ETKISI = 0.12;
+export const ASEVI_KADEME_ETKISI = 0.40; // v25: 0.12 → 0.40 (K4 = yardım getirisi ×2,6)
+/** v25: aşevi (orta/bol yardım politikasında) kademe başına doğrudan yıllık inanan ve ahlak getirir. */
+export const ASEVI_INANAN_YILLIK = [0, 1, 2, 3, 5];
+export const ASEVI_AHLAK_YILLIK = [0, 0.15, 0.3, 0.45, 0.7];
 
 export const TON_SIRASI: CemaatTon[] = ["ilimli", "dengeli", "atesli"];
 export const TON_ADLARI: Record<CemaatTon, { ad: DilliMetin; aciklama: DilliMetin }> = {
@@ -195,12 +198,12 @@ export interface FaaliyetTanimi {
 }
 export const FAALIYETLER: FaaliyetTanimi[] = [
   {
-    id: "tovbe", simge: "🙏", gelirBirimi: 0.2, masraf: 0.1, minRutbe: 1, ahlak: -0.4, inanan: 0,
+    id: "tovbe", simge: "🙏", gelirBirimi: 0.23, masraf: 0.1, minRutbe: 1, ahlak: -0.4, inanan: 0,
     ad: { tr: "Tövbe ve İtiraf", en: "Penance & Confession" },
     aciklama: { tr: "Günahlarından arınmak isteyenlerden ücret alırsın. Ahlak −0,4/yıl.", en: "You charge those seeking absolution. Morality −0.4/yr." },
   },
   {
-    id: "ritual", simge: "⚰️", gelirBirimi: 0.15, masraf: 0.2, minRutbe: 1, ahlak: 0, inanan: 0,
+    id: "ritual", simge: "⚰️", gelirBirimi: 0.17, masraf: 0.2, minRutbe: 1, ahlak: 0, inanan: 0,
     ad: { tr: "Ayin, Nikâh ve Cenaze", en: "Rites, Weddings & Funerals" },
     aciklama: { tr: "Nikâh, cenaze, dua. Savaş ve salgında çok artar.", en: "Weddings, funerals, prayers. Soar in war and plague." },
   },

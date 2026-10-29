@@ -1,5 +1,4 @@
 import type { YatirimEtkisi, DilliMetin, YatirimTanimi } from "../data/meslekProfilleri";
-import { yatirimKademeMasrafi, yatirimToplamFiyati, YATIRIM_MASRAF_ORANI } from "./yatirimMasrafi";
 import {
   CURUME_ORANLARI,
   DEPO_BAKIM,
@@ -10,7 +9,7 @@ import {
   TANITIM_MUSTERI,
   TEZGAH_URETIM_KADEME,
 } from "./isletme";
-import { ASEVI_KADEME_ETKISI, BINA_BAKIM, BINA_KAPASITE, OKUL_MEZUN_SANSI } from "../data/cemaat";
+import { ASEVI_AHLAK_YILLIK, ASEVI_INANAN_YILLIK, ASEVI_KADEME_ETKISI, BINA_BAKIM, BINA_KAPASITE, OKUL_MEZUN_SANSI } from "../data/cemaat";
 
 /** 12.5 → "12,5" (tr) / "12.5" (en); tam sayılar ondalıksız. */
 function sayi(n: number, dil: "tr" | "en"): string {
@@ -63,13 +62,19 @@ export function yatirimEtkiMetni(etki: YatirimEtkisi, kademe: number, enflasyon:
       return dili((d) => (i === 0 ? (d === "tr" ? "Etki yok" : "No effect") : `${d === "tr" ? "Yıllık mezun şansı" : "Yearly graduate chance"} ${yuzde(OKUL_MEZUN_SANSI[i] * 100, d)}`));
     }
     case "yardim":
-      return dili((d) => (k === 0 ? (d === "tr" ? "Etki yok" : "No effect") : `${d === "tr" ? "Yardım getirisi" : "Aid payoff"} ${art(k * ASEVI_KADEME_ETKISI * 100, d)}`));
+      return dili((d) => {
+        if (k === 0) return d === "tr" ? "Etki yok" : "No effect";
+        const i = Math.min(k, ASEVI_INANAN_YILLIK.length - 1);
+        return d === "tr"
+          ? `Yardım getirisi ${art(k * ASEVI_KADEME_ETKISI * 100, d)} · +${ASEVI_INANAN_YILLIK[i]} inanan/yıl · ahlak +${ASEVI_AHLAK_YILLIK[i]}/yıl`
+          : `Aid payoff ${art(k * ASEVI_KADEME_ETKISI * 100, d)} · +${ASEVI_INANAN_YILLIK[i]} believers/yr · morality +${ASEVI_AHLAK_YILLIK[i]}/yr`;
+      });
   }
 }
 
 /**
  * Yatırım kartı için yıllık masraf: şimdiki toplam ve bir sonraki kademenin ekleyeceği tutar.
- * Depo ve ibadethane kademesi kendi bakımını öder; diğer yatırımlar kademe fiyatının %2'sini.
+ * Yalnız depo ve ibadethane kademesi kendi bakımını öder; diğer yatırımların yıllık masrafı yoktur (v22).
  */
 export function yatirimMasrafGorunumu(y: YatirimTanimi, kademe: number, enflasyon: number): { yillikMasraf: number; sonrakiMasraf: number | null } {
   const r2 = (n: number) => Math.round(n * 100) / 100;
@@ -80,8 +85,5 @@ export function yatirimMasrafGorunumu(y: YatirimTanimi, kademe: number, enflasyo
     const sonraki = tablo[Math.min(kademe + 1, tablo.length - 1)] * enflasyon;
     return { yillikMasraf: r2(simdi), sonrakiMasraf: sonVar ? r2(sonraki - simdi) : null };
   }
-  return {
-    yillikMasraf: r2(yatirimToplamFiyati(y.fiyatlar, kademe) * YATIRIM_MASRAF_ORANI * enflasyon),
-    sonrakiMasraf: sonVar ? yatirimKademeMasrafi(y.fiyatlar, kademe, enflasyon) : null,
-  };
+  return { yillikMasraf: 0, sonrakiMasraf: null };
 }

@@ -88,7 +88,7 @@ export function depoKapasiteTablosu(cag?: string, meslek?: string): number[] {
   return DEPO_KAPASITE_TABLOLARI[`${meslek ?? "Tüccar"}|${cag ?? "Orta Çağ"}`] ?? DEPO_KAPASITE;
 }
 export const CURUME_ORANLARI = [0.1, 0.08, 0.06, 0.045, 0.03];
-export const DEPO_BAKIM = [6, 12, 24, 36, 55];
+export const DEPO_BAKIM = [4, 8, 17, 25, 38]; // v22: bir önceki 6/12/24/36/55'ten ~%30 düşük
 /** v24: açık hatların toplam yıllık talebi müşteri sayısının bu katını geçemez. */
 export const TALEP_TAVAN_ORANI = 1;
 export const BASLANGIC_STOK = 30;
@@ -108,6 +108,11 @@ export function baslangicVeresiyeOrani(meslek: string): number {
 export const BORC_ODEME_ORANI = 0.25;
 /** v27: nakit mala yetmezse eksik kısım tedarikçiden veresiye alınır; toplam veresiye borcu tam bir depo dolumunun bu kesrini aşamaz. */
 export const VERESIYE_TAVAN_ORANI = 0.6;
+/**
+ * v22: mal alımında nakit −50'ye kadar (× gelir enflasyonu) eksiye inebilir; bu limit dolunca tedarikçi veresiyesi devreye girer.
+ * Aynı limit, "ilk kez bu sınırın altına düşünce bir kereye mahsus nakit yardımı" kuralının eşiğidir (stateManager).
+ */
+export const STOK_EKSI_NAKIT_LIMITI = 50;
 /** Rütbe S1..S5 → en fazla toplam çalışan. */
 export const CALISAN_LIMITLERI = [2, 3, 5, 6, 7];
 /** Müşterinin bütçesi hatlar arasında paylaşılır: n açık hatta her birinin talebi 1/(1+0.9(n-1)) ile çarpılır (toplam talep neredeyse sabit). */
@@ -122,7 +127,7 @@ export const PIYASA_SAPMA_SATIS = 0.02;
  * karşılanamadıkça) son iki yılın karşılanamayan oran ortalamasının bu kesri kadar müşteri o yıl rakibe gider
  * (kayıp en çok %30'dur; ortalama 1 olsa bile).
  */
-const KITLE_KAYIP_KESRI = 0.3;
+const KITLE_KAYIP_KESRI = 0.15; // v22: 0,30 → 0,15
 export const TALEP_GURULTUSU = 0.08;
 /** Yüzdelik müşteri büyümesi pay bu eşiğe yaklaştıkça sıfıra iner. */
 export const PAY_DOYMA_ESIGI = 0.68;
@@ -320,7 +325,7 @@ export function korumaHesapla(state: CharacterState): { calisan: number; yatirim
 }
 
 /** Çalışan maaşı çarpanı (v8.2: +%15 → v8.4: +%7). */
-export const MAAS_CARPANI = 0.95;
+export const MAAS_CARPANI = 0.9; // v22: 0,95 → 0,90 (−5 puan)
 
 /** Giriş seviyesine (Y, S) göre enflasyonsuz yıllık maaş tabanı. */
 export function maasTabani(yetenek: number, sadakat: number): number {
@@ -899,10 +904,12 @@ export function depoDoldurPlani(state: CharacterState, hedefYuzde: number, b: Is
   const tamAdet = adetler.reduce((t, x) => t + x, 0);
   const tamMaliyet = r2(toplamTutar(adetler));
   const elindekiPara = Math.max(0, r2(state.para));
+  // v22: nakit −limit'e kadar harcanabilir (para eksideyse kalan hak o kadar azalır).
+  const nakitHakki = Math.max(0, r2(state.para + STOK_EKSI_NAKIT_LIMITI * b.enflasyon));
   // v27: veresiye payı — kalan veresiye hakkı = tavan (tam depo dolumunun %60'ı) − mevcut tedarikçi borcu.
   const tamDepoMaliyeti = hesaplar.reduce((t, x, i) => t + kapasite * pay[i] * birimler[i], 0);
   const veresiyeHakki = Math.max(0, r2(tamDepoMaliyeti * VERESIYE_TAVAN_ORANI - (is.tedarikci_borcu ?? 0)));
-  const butce = elindekiPara + veresiyeHakki;
+  const butce = nakitHakki + veresiyeHakki;
   // Bütçe (nakit + veresiye hakkı) yetmiyorsa en kalabalık hattan birer birim düşerek yettiği kadarına in.
   const alinacak = [...adetler];
   while (toplamTutar(alinacak) > butce + 1e-9) {
@@ -921,7 +928,7 @@ export function depoDoldurPlani(state: CharacterState, hedefYuzde: number, b: Is
     kapasite,
     adet,
     maliyet: r2(hatlar.reduce((t, x) => t + x.tutar, 0)),
-    veresiye: r2(Math.max(0, hatlar.reduce((t, x) => t + x.tutar, 0) - elindekiPara)),
+    veresiye: r2(Math.max(0, hatlar.reduce((t, x) => t + x.tutar, 0) - nakitHakki)),
     hatlar,
     tamAdet,
     tamMaliyet,
@@ -936,8 +943,8 @@ export function depoyuDoldur(state: CharacterState, hedefYuzde: number, b: Islet
   const plan = depoDoldurPlani(state, hedefYuzde, b);
   const is = state.isletme!;
   if (plan.adet <= 0) return plan;
-  // Nakit önce kullanılır; yetmeyen kısım veresiye (tedarikçi borcu) olur, para eksiye düşmez.
-  state.para = Math.max(0, r2(state.para - (plan.maliyet - plan.veresiye)));
+  // Nakit önce kullanılır (−50'ye kadar eksiye inebilir); yetmeyen kısım veresiye (tedarikçi borcu) olur.
+  state.para = r2(state.para - (plan.maliyet - plan.veresiye));
   if (plan.veresiye > 0) is.tedarikci_borcu = r2((is.tedarikci_borcu ?? 0) + plan.veresiye);
   is.yil_alim = r2((is.yil_alim ?? 0) + plan.maliyet);
   if (!is.yil_alinan) is.yil_alinan = {};
@@ -1290,6 +1297,9 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
     return t + (bn?.tur === "musteri" ? bn.deger : 0);
   }, 0);
   const karsilanamayanOrani = toplamTalep > 0 ? toplamKarsilanamayan / toplamTalep : 0;
+  // Stok yetmediyse ve sebep kapasite değil paraysa (yıl başı alım nakit+veresiye ile tamamlanamadı), oyuncuya ayrıca söylenir.
+  if (is.alim_yetersiz && karsilanamayanOrani > 0) uyarilar.push({ kod: "alim_yetersiz" });
+  is.alim_yetersiz = false;
   // İlk yetmeme yalnız uyarıdır (hat bazlı "stok_bitti"). Hemen ardından ikinci yıl da karşılanamazsa — ve kayıp
   // sürdükçe sonraki yıllarda da — son iki yılın karşılanamayan oranlarının ortalamasının %30'u kadar müşteri gider.
   const oncekiOran = is.onceki_karsilanamayan_orani ?? 0;

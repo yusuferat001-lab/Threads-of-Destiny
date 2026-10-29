@@ -102,8 +102,8 @@ export function IsYatirimEkrani({
             <div className="dedikodu-panosu">
               <p className="giris-aciklama">
                 {en
-                  ? 'Pick one of the two offers. You repay in equal yearly instalments; miss three in a row and the moneylender seizes a property.'
-                  : 'İki tekliften birini seç. Eşit yıllık taksitlerle ödersin; üst üste üç taksit kaçırırsan tefeci bir mülküne el koyar.'}
+                  ? 'Pick one of the two offers. You repay in equal yearly instalments, and he lends even when you are in the red.'
+                  : 'İki tekliften birini seç. Eşit yıllık taksitlerle ödersin; nakdin eksideyken bile tefeci borç verir.'}
               </p>
               <div className="kariyer-bagis-kademeler">
                 {krediConfig.teklifler.map((t) => (
