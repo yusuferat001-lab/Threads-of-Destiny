@@ -455,7 +455,8 @@ describe("zorunlu tanışma fırsatı (senaryoUret kaskadı)", () => {
             await secimUygula(state.id, secimIndex);
             if (secim === "git") {
               expect(state.aktif_tanisma).not.toBeNull();
-              expect(state.aktif_tanisma?.adim).toBe(0);
+              // Olaydaki "Yanına git" göz göze adımını zaten tüketti: diyalog doğrudan 1. adımdan başlar.
+              expect(state.aktif_tanisma?.adim).toBe(1);
             } else {
               expect(state.aktif_tanisma).toBeNull();
             }

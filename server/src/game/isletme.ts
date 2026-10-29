@@ -1290,6 +1290,9 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
     return t + (bn?.tur === "musteri" ? bn.deger : 0);
   }, 0);
   const karsilanamayanOrani = toplamTalep > 0 ? toplamKarsilanamayan / toplamTalep : 0;
+  // Stok yetmediyse ve sebep kapasite değil paraysa (yıl başı alım nakit+veresiye ile tamamlanamadı), oyuncuya ayrıca söylenir.
+  if (is.alim_yetersiz && karsilanamayanOrani > 0) uyarilar.push({ kod: "alim_yetersiz" });
+  is.alim_yetersiz = false;
   // İlk yetmeme yalnız uyarıdır (hat bazlı "stok_bitti"). Hemen ardından ikinci yıl da karşılanamazsa — ve kayıp
   // sürdükçe sonraki yıllarda da — son iki yılın karşılanamayan oranlarının ortalamasının %30'u kadar müşteri gider.
   const oncekiOran = is.onceki_karsilanamayan_orani ?? 0;

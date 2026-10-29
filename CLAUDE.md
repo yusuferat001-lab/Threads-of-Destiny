@@ -1989,3 +1989,7 @@ Bu blok §45 v19'un üzerine yazar.
 - **Ölçüm** (`scripts/simulateIsletme.ts`, N=100; 55+ yaş dükkân neti / pay / cebine kalan; batan %):
   pasif — Tüccar OÇ/SD 26/%12 · 48/%13 (batan %1/%1); Zanaatkâr OÇ/SD 26/%11 · 30/%11 (%9/%8); Din OÇ/SD 30/%8,5 · 42/%7 (%8/%20).
   aktif — Tüccar OÇ/SD 111/%43 · 178/%42 (batan %0/%2); Zanaatkâr OÇ/SD 115/%32 · 129/%31 (%1/%6); Din OÇ/SD 131/%30 · 184/%29 (%0/%0). Aktif 55+ cebine kalan: Tüccar 23/59, Zanaatkâr 26/32, Din 24/30.
+
+### §45 v21 (2026-10) — Stok uyarısı açılır pencerede, tanışmada çift "Yanına git" düzeldi
+- **Stok yetmemesi artık açılır pencerede:** `IsletmeBildirimModal` `ONEMLI_KODLAR` listesine `stok_bitti`, `kitle_kaybi`, `uretim_tavani` ve yeni `alim_yetersiz` eklendi (yıl sonu dökümündeki bu uyarılar ana ekranda "Geçen yıl işletmende olanlar" penceresiyle gelir). `alim_yetersiz`: yıl başı otomatik depo dolumu paranın (+veresiye hakkının) yetmemesi yüzünden eksik kaldıysa (`IsletmeDurumu.alim_yetersiz`, `pasifEkonomiUygula` yazar, `isletmeYilIsle` tüketir) ve o yıl talep karşılanamadıysa çıkar; "depo küçük" ile "para yetmedi" ayrımı oyuncuya söylenir.
+- **Tanışma:** `iliski_tanisma_firsati` olayındaki "Yanına git" (`tanisma_baslat`) artık tanışmayı doğrudan 1. diyalog adımından açar (`tanismaBaslat` + `tanismaYaklas`); eskiden ardından 0. adım "göz göze → Yanına git" bir kez daha soruluyordu. Mekândan başlayan tanışma (0. adım) değişmedi.

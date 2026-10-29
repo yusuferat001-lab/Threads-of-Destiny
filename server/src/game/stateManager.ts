@@ -2516,6 +2516,7 @@ export function pasifEkonomiUygula(state: CharacterState, yasArtisi: number): Ek
       state.para = paraYuvarla(paraYedek + netGelir);
       const oto = otomatikDepoDoldur(state, isletmeBaglami(state));
       const harcanan = oto ? oto.maliyet - oto.veresiye : 0; // veresiye kısmı nakitten çıkmaz (borç olur)
+      if (state.isletme) state.isletme.alim_yetersiz = !!oto?.yetersiz; // yıl sonu uyarısı: para yetmediği için depo eksik doldu
       state.para = paraYedek;
       netGelir -= harcanan;
       // İşletme: gelir = o yılın satış − alım − depo kârı (eksi olabilir), maaş formülü yok.
