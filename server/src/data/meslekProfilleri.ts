@@ -248,8 +248,8 @@ const DIN_YATIRIMLAR: YatirimTanimi[] = [
     simge: "🍲",
     ad: { tr: "Aşevi", en: "Soup Kitchen" },
     aciklama: {
-      tr: "Her kademe yardım harcamasının inanan ve ahlak getirisini %12 artırır.",
-      en: "Each tier raises the flock and morality payoff of your aid spending by 12%.",
+      tr: "Her kademe yardımın getirisini %40 artırır; orta/bol yardımda ayrıca her yıl yeni inanan ve ahlak kazandırır.",
+      en: "Each tier raises your aid payoff by 40%; with fair/generous aid it also brings new believers and morality every year.",
     },
     etki: "yardim",
     fiyatlar: FIYAT_ASEVI,

@@ -160,7 +160,10 @@ export const YARDIM_POLITIKASI: Record<CemaatYardim, YardimPolitikasi> = {
 };
 export const YARDIM_SIRASI: CemaatYardim[] = ["dusuk", "orta", "yuksek"];
 /** Aşevi yatırımının her kademesi yardımın inanan/ahlak getirisini bu kadar artırır. */
-export const ASEVI_KADEME_ETKISI = 0.12;
+export const ASEVI_KADEME_ETKISI = 0.40; // v25: 0.12 → 0.40 (K4 = yardım getirisi ×2,6)
+/** v25: aşevi (orta/bol yardım politikasında) kademe başına doğrudan yıllık inanan ve ahlak getirir. */
+export const ASEVI_INANAN_YILLIK = [0, 1, 2, 3, 5];
+export const ASEVI_AHLAK_YILLIK = [0, 0.15, 0.3, 0.45, 0.7];
 
 export const TON_SIRASI: CemaatTon[] = ["ilimli", "dengeli", "atesli"];
 export const TON_ADLARI: Record<CemaatTon, { ad: DilliMetin; aciklama: DilliMetin }> = {

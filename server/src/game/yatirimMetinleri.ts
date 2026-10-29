@@ -9,7 +9,7 @@ import {
   TANITIM_MUSTERI,
   TEZGAH_URETIM_KADEME,
 } from "./isletme";
-import { ASEVI_KADEME_ETKISI, BINA_BAKIM, BINA_KAPASITE, OKUL_MEZUN_SANSI } from "../data/cemaat";
+import { ASEVI_AHLAK_YILLIK, ASEVI_INANAN_YILLIK, ASEVI_KADEME_ETKISI, BINA_BAKIM, BINA_KAPASITE, OKUL_MEZUN_SANSI } from "../data/cemaat";
 
 /** 12.5 → "12,5" (tr) / "12.5" (en); tam sayılar ondalıksız. */
 function sayi(n: number, dil: "tr" | "en"): string {
@@ -62,7 +62,13 @@ export function yatirimEtkiMetni(etki: YatirimEtkisi, kademe: number, enflasyon:
       return dili((d) => (i === 0 ? (d === "tr" ? "Etki yok" : "No effect") : `${d === "tr" ? "Yıllık mezun şansı" : "Yearly graduate chance"} ${yuzde(OKUL_MEZUN_SANSI[i] * 100, d)}`));
     }
     case "yardim":
-      return dili((d) => (k === 0 ? (d === "tr" ? "Etki yok" : "No effect") : `${d === "tr" ? "Yardım getirisi" : "Aid payoff"} ${art(k * ASEVI_KADEME_ETKISI * 100, d)}`));
+      return dili((d) => {
+        if (k === 0) return d === "tr" ? "Etki yok" : "No effect";
+        const i = Math.min(k, ASEVI_INANAN_YILLIK.length - 1);
+        return d === "tr"
+          ? `Yardım getirisi ${art(k * ASEVI_KADEME_ETKISI * 100, d)} · +${ASEVI_INANAN_YILLIK[i]} inanan/yıl · ahlak +${ASEVI_AHLAK_YILLIK[i]}/yıl`
+          : `Aid payoff ${art(k * ASEVI_KADEME_ETKISI * 100, d)} · +${ASEVI_INANAN_YILLIK[i]} believers/yr · morality +${ASEVI_AHLAK_YILLIK[i]}/yr`;
+      });
   }
 }
 
