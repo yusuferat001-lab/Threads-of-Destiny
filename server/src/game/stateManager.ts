@@ -2216,7 +2216,7 @@ export function yonetimYillikUygula(state: CharacterState, yasArtisi: number): s
     state.yonetim_talep = null;
   }
 
-  // Ekstra vergi (işletmeli mesleklerde): 8-9 yılda bir, eşik üstü kârda yönetici kârın 2-3 katını ister.
+  // Ekstra vergi (işletmeli mesleklerde): 8-10 yılda bir, eşik üstü net kârda yönetici net kârın 2-3 katını ister.
   if (isletmeMeslegiMi(state.meslek) && state.isletme) {
     if (state.ekstra_vergi_sonraki_yil == null) {
       state.ekstra_vergi_sonraki_yil = ekstraVergiSonrakiYil(state.yil);
@@ -2226,14 +2226,15 @@ export function yonetimYillikUygula(state: CharacterState, yasArtisi: number): s
       !state.etiketler.includes("hapiste") &&
       !state.etiketler.includes("yolculukta")
     ) {
-      const brutKar = state.isletme.son_dokum?.brutKar ?? 0;
-      if (brutKar > EKSTRA_VERGI_KAR_ESIGI * enflasyonCarpani(state)) {
+      // Taban: geçen yılın NET kârı (oyuncunun gördüğü "dükkân neti"); brüt kâr değil.
+      const netKar = state.isletme.son_dokum?.net ?? 0;
+      if (netKar > EKSTRA_VERGI_KAR_ESIGI * enflasyonCarpani(state)) {
         const vergi: YonetimTalep = {
           id: randomUUID(),
           kimden: "yonetici",
           kimAdi: yoneticiBilgisi(state).ad,
           tur: "vergi",
-          tutar: paraYuvarla(brutKar * ekstraVergiCarpani(state.yonetim_iliski)),
+          tutar: paraYuvarla(netKar * ekstraVergiCarpani(state.yonetim_iliski)),
           kalem: "ekstra vergi",
           sonYil: EKSTRA_VERGI_SONSUZ_YIL,
         };

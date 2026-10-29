@@ -124,6 +124,7 @@ import { MagazaPaneli } from './components/MagazaPaneli';
 import { AltGezinme } from './components/AltGezinme';
 import { AnaEkranMobil, type AnaTusId } from './components/AnaEkranMobil';
 import { IsletmeBildirimModal, bekleyenIsletmeUyarilari, bildirimGoruldu } from './components/IsletmeBildirimModal';
+import { bekleyenStokUyarisi, stokUyariGoruldu, stokUyariSenaryosu } from './stokUyari';
 import { IsYatirimEkrani } from './components/IsYatirimEkrani';
 import { AyarlarModal } from './components/AyarlarModal';
 import { ayarlariGetir, ayarlariKaydet, type Dil } from './ayarlar';
@@ -1852,6 +1853,12 @@ function App() {
     () => (anaEkranModu && karakter ? bekleyenIsletmeUyarilari(isletme, karakter.id) : []),
     [anaEkranModu, karakter?.id, isletme, bildirimTick], // eslint-disable-line react-hooks/exhaustive-deps
   );
+  // Stok yetmedi: ayrı, zorunlu pencere (olay kutusunda); "Kapat"a basılmadan kapanmaz, bekleyen olay cevaplandıktan sonra çıkar.
+  const stokUyarisi = useMemo(
+    () => (anaEkranModu && karakter ? bekleyenStokUyarisi(isletme, karakter.id, dil) : null),
+    [anaEkranModu, karakter?.id, isletme, dil, bildirimTick], // eslint-disable-line react-hooks/exhaustive-deps
+  );
+  const stokUyariSen = stokUyarisi && karakter ? stokUyariSenaryosu(stokUyarisi, karakter.meslek, dil) : null;
   function anaTusHandler(tus: AnaTusId) {
     setKariyerSayfa(tus);
     void kariyerEkraniniAc();
@@ -2654,7 +2661,7 @@ function App() {
             </YanPanel>
             )}
 
-            <div className={`${mobil ? 'merkez-panel merkez-panel-mobil' : 'merkez-panel'}${anaEkranModu ? ' merkez-panel-ana' : ''}`}>
+            <div className={`${mobil ? 'merkez-panel merkez-panel-mobil' : 'merkez-panel'}${anaEkranModu && !stokUyarisi ? ' merkez-panel-ana' : ''}`}>
               {!mobil && (
                 // PC: sahne artık sayfa-düzeyi arka plan (yukarıda `.oyun-arka-sahne`); bu boş alan resmi
                 // gösterir, amaç şeridi üstüne biner, olay kutusu altta durur.
@@ -2662,7 +2669,7 @@ function App() {
                   <AmacPaneli durum={amaclar} varyant="serit" />
                 </div>
               )}
-              {anaEkranModu && isletme?.aktif && isletmeUyarilari.length > 0 && (
+              {anaEkranModu && !stokUyarisi && isletme?.aktif && isletmeUyarilari.length > 0 && (
                 <IsletmeBildirimModal
                   durum={isletme}
                   uyarilar={isletmeUyarilari}
@@ -2672,7 +2679,7 @@ function App() {
                   }}
                 />
               )}
-              {anaEkranModu && (
+              {anaEkranModu && !stokUyarisi && (
                 <AnaEkranMobil
                   karakter={karakter}
                   isletme={isletme?.aktif ? isletme : null}
@@ -2682,6 +2689,25 @@ function App() {
                   onIlerle={ilerleHandler}
                   yilNotu={yilNotu}
                   onNotKapat={() => setYilNotu(null)}
+                />
+              )}
+              {stokUyariSen && stokUyarisi && (
+                <OlayKutusu
+                  cag={karakter.cag}
+                  ulke={karakter.ulke}
+                  senaryo={stokUyariSen}
+                  sonuc={null}
+                  tepkiModu={false}
+                  yukleniyor={false}
+                  sesKapali={sesKapali}
+                  onSecenek={() => {
+                    stokUyariGoruldu(karakter.id, stokUyarisi.yil);
+                    setBildirimTick((n) => n + 1);
+                  }}
+                  onDevam={() => {}}
+                  genis={!mobil}
+                  etiketGoster={mobil}
+                  klavye={false}
                 />
               )}
               {/* Mobil ve PC ortak kadife olay kutusu (soru + sonuç aynı kutuda). */}

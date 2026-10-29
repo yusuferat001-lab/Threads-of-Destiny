@@ -439,20 +439,18 @@ describe("işletme (Tüccar dilimi)", () => {
     expect(u.maas_taban).toBeGreaterThan(taban * 1.05);
   });
 
-  it("dükkân gideri = depo bakımı + yatırım kademe fiyatlarının %2'si (depo/bina hariç)", async () => {
+  it("dükkân gideri = yalnız depo bakımı; depo dışı yatırım kademesi yıllık masraf çıkarmaz", async () => {
     const s = await tuccar();
     const b = isletmeBaglami(s);
     const bos = dukkanGideri(s, b.giderEnflasyon);
     expect(bos).toBeCloseTo(depoBakimMasrafi(s.isletme!, b.giderEnflasyon), 2);
-    s.isletme!.yatirimlar.pazar = 2; // tanıtım: ilk iki kademe fiyatı
     const profil = isletmeProfiliGetir(s.meslek, s.cag)!;
     const y = profil.yatirimlar.find((x) => x.etki === "pazar")!;
-    s.isletme!.yatirimlar = { ...s.isletme!.yatirimlar, [y.id]: 2 };
-    const beklenen = (y.fiyatlar[0] + y.fiyatlar[1]) * YATIRIM_MASRAF_ORANI * b.giderEnflasyon;
-    expect(dukkanGideri(s, b.giderEnflasyon) - bos).toBeCloseTo(beklenen, 1);
+    s.isletme!.yatirimlar = { ...s.isletme!.yatirimlar, [y.id]: 3 };
+    expect(YATIRIM_MASRAF_ORANI).toBe(0);
+    expect(dukkanGideri(s, b.giderEnflasyon)).toBeCloseTo(bos, 5);
     const { dokum } = isletmeYilIsle(s, b);
-    expect(dokum.yatirimMasrafi).toBeCloseTo(beklenen, 1);
-    expect(dokum.depoMasrafi).toBeGreaterThanOrEqual(dokum.yatirimMasrafi!);
+    expect(dokum.yatirimMasrafi ?? 0).toBe(0);
   });
 
   it("görünümde hat başına stok ve tahmini talep aralığı (adet) var", async () => {

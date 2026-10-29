@@ -195,12 +195,12 @@ export interface FaaliyetTanimi {
 }
 export const FAALIYETLER: FaaliyetTanimi[] = [
   {
-    id: "tovbe", simge: "🙏", gelirBirimi: 0.2, masraf: 0.1, minRutbe: 1, ahlak: -0.4, inanan: 0,
+    id: "tovbe", simge: "🙏", gelirBirimi: 0.23, masraf: 0.1, minRutbe: 1, ahlak: -0.4, inanan: 0,
     ad: { tr: "Tövbe ve İtiraf", en: "Penance & Confession" },
     aciklama: { tr: "Günahlarından arınmak isteyenlerden ücret alırsın. Ahlak −0,4/yıl.", en: "You charge those seeking absolution. Morality −0.4/yr." },
   },
   {
-    id: "ritual", simge: "⚰️", gelirBirimi: 0.15, masraf: 0.2, minRutbe: 1, ahlak: 0, inanan: 0,
+    id: "ritual", simge: "⚰️", gelirBirimi: 0.17, masraf: 0.2, minRutbe: 1, ahlak: 0, inanan: 0,
     ad: { tr: "Ayin, Nikâh ve Cenaze", en: "Rites, Weddings & Funerals" },
     aciklama: { tr: "Nikâh, cenaze, dua. Savaş ve salgında çok artar.", en: "Weddings, funerals, prayers. Soar in war and plague." },
   },
