@@ -2002,3 +2002,16 @@ Bu blok §45 v14/v21 ve §52 ekstra vergi maddelerinin üzerine yazar.
 - **Oyun başı marj +%10:** rütbe-1 hatların (Tüccar OÇ tahıl · SD tahıl/kömür · Zanaatkâr OÇ çömlek/demir · SD ayakkabı/ev eşyası) birim marjı ×1,10 (`birimFiyat = maliyet + 1,10·eski marj`); Din Adamı S1 faaliyetleri tövbe `gelirBirimi` 0,20→0,23, ayin 0,15→0,17. Ölçüm (aktif bot, N=80, yaş 15-25 dükkân neti): Tüccar OÇ 21,7→25,7 · SD 30,5→34,4 · Zanaatkâr OÇ 20,4→23,3 · SD 19,1→21,7 · Din OÇ 28,6→31,6 · SD 26,1→30,2 (kademe masrafı kalkışı dahil ≈ +%10-18).
 - **Kod gerçeği (CLAUDE.md'nin eski rakamları yerine):** veba zorunlu yaşı 50 (`VEBA_ZORUNLU_YAS`), süre 4-5 yıl; kıtlık 2-3 yıl; dönem etkileri `data/dunyaDonemleri.ts` + Din için `data/cemaat.ts` `CEMAAT_DONEM_ETKILERI`. `isletme_bildirimleri` sunucu kuyruğu kodda yok; işletme bildirimleri istemcide `son_dokum.uyarilar`'dan üretilir.
 
+### §45 v23 (2026-10) — Eksi nakitle mal/kredi, tek seferlik nakit yardımı, hafif müşteri kaybı, ucuz bakım/maaş
+Bu blok §45 v14/v20/v22 ve §13 "ömürde bir kez borç yardımı" ile §52 ekstra vergi maddelerinin üzerine yazar.
+- **Müşteri kaybı (mal yetmezse):** iki yıllık kuraldaki oran `KITLE_KAYIP_KESRI` 0,30 → **0,15** (son iki yılın karşılanamayan oranı ortalamasının %15'i).
+- **Eksi nakitle mal alımı:** `STOK_EKSI_NAKIT_LIMITI = 50` (× gelir enflasyonu). Depo dolumu nakdi önce −limit'e kadar eksiye indirebilir (`nakitHakki = para + limit`); limit dolunca tedarikçi veresiyesi (v20) devreye girer. Nakit artık limitin altına alımla düşmez.
+- **Kredi eksi nakitte de açık:** `krediMaksTutar` alt sınırı `KREDI_GARANTI_TUTAR_TABAN = 50` × enflasyon (maaş/kâr küçük ya da para eksi olsa da en az bu kadar çekilebilir; tavan 200×enf). `krediFaizEki` (borçluysan +4 puan) aynen.
+- **Nakit yardımı (eski "borcun 50'sini sil" kuralının yerine):** nakit ilk kez `−50 × enflasyon`'un altına düştüğünde (`pasifEkonomiUygula`, bütçenin artı/eksi olması önemsiz) ömürde BİR kez eline `60-70 × enflasyon` nakit verilir (`borc_yardimi_alindi`).
+- **Ekstra vergi:** net kâr eşiği **60** (× enflasyon), tutar = net kâr × **2-2,5** (iyi ilişki 2, kötü 2,5).
+- **Piyasa hamleleri** (rakip fiyat kırdı/ürün sattı vb. "Piyasada neler oluyor" haberleri): `HAMLE_ETKI_CARPANI` 1,5 → **1,05**; müşteri SAYISI veren hamlelerde sayı ×`HAMLE_SAYI_CARPANI` 0,7 (en az 1).
+- **Depo/ibadethane bakımı** (kademe masrafı): `DEPO_BAKIM` ve `BINA_BAKIM` 6/12/24/36/55 → **4/8/17/25/38** (× gider enflasyonu).
+- **Çalışan maaşı:** `MAAS_CARPANI` 0,95 → **0,90**.
+- Stok uyarısı penceresi ve tefeci açıklaması güncellendi (artık "üç taksit kaçırırsan el koyar" yazmıyor).
+- **Ölçüm** (aktif bot, N=80, dükkân neti 15-25 yaş / 55+): Tüccar OÇ 29,4/134 · SD 38,0/251; Zanaatkâr OÇ 26,6/153 · SD 24,3/169; Din OÇ 32,9/209 · SD 31,6/297. Not: simülatörün "batan" ölçütü (nakit < −30) artık −50'ye kadar mal alınabildiği için daha kolay tetiklenir; "kalıcı iflas" %0-4.
+

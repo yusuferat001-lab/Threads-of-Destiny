@@ -2068,7 +2068,7 @@ function yilIlerlet(g: YilIlerletGirdi): { yasArtisi: number; zamanAnlatimi: str
           if (ekonomi.borcYardimi > 0) {
             const yardimMesaji = T(
               state.dil,
-              "🙏 Zor günlerinde kilise ve birkaç eş dost devreye girdi; borcunun {0} {1}'ini kapattılar. Bu bir daha olmayacak.",
+              "🙏 Zor günlerinde kilise ve birkaç eş dost devreye girdi; eline {0} {1} nakit verdiler. Bu bir daha olmayacak.",
               [ekonomi.borcYardimi, state.para_birimi]
             );
             zamanAnlatimi = zamanAnlatimi ? `${zamanAnlatimi} ${yardimMesaji}` : yardimMesaji;

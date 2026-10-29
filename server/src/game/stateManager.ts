@@ -48,6 +48,7 @@ import {
   isletmeGelirTahmini,
   isletmeYilIsle,
   otomatikDepoDoldur,
+  STOK_EKSI_NAKIT_LIMITI,
 } from "./isletme";
 import { isletmeMeslegiMi } from "../data/meslekProfilleri";
 import {
@@ -2619,11 +2620,10 @@ export function pasifEkonomiUygula(state: CharacterState, yasArtisi: number): Ek
       faiz = paraYuvarla((tabanKisim * 0.04 + agirFaiz) * yasArtisi);
       state.para -= faiz;
     }
-    // Ömürde BİR KEZ: borç sürerken ve bütçe hâlâ açık verirken (netGelir <= 0)
-    // kilise/eş dost bir kereliğine borcun bir kısmını (en fazla 50, borç daha
-    // azsa tamamını) kapatır. Spiral yerine kurtulabilir bir çukur olsun diye.
-    if (!state.borc_yardimi_alindi && netGelir <= 0 && state.para < 0) {
-      borcYardimi = Math.min(Math.abs(state.para), 50);
+    // v22: ömürde BİR KEZ, nakit ilk kez −50'nin (× enflasyon) altına düştüğünde kilise/eş dost eline 60-70 (× enflasyon)
+    // nakit verir (eski "bütçe açıkken borcun 50'sini sil" kuralının yerine).
+    if (!state.borc_yardimi_alindi && state.para < -(STOK_EKSI_NAKIT_LIMITI * enfl)) {
+      borcYardimi = paraYuvarla((60 + Math.floor(Math.random() * 11)) * enfl);
       state.para = paraYuvarla(state.para + borcYardimi);
       state.borc_yardimi_alindi = true;
     }
@@ -3355,6 +3355,8 @@ export function rakipMisillemesiDene(state: CharacterState, yasArtisi: number): 
 
 export const KREDI_MIN_TUTAR_TABAN = 20;
 export const KREDI_MAKS_TUTAR_TABAN = 200;
+/** v22: kredi tavanının alt sınırı (enflasyonsuz): kâr/maaş düşük ya da para eksi olsa da bu kadarı her zaman çekilebilir. */
+export const KREDI_GARANTI_TUTAR_TABAN = 50;
 
 /** Tefecinin sunduğu bir teklif: tutar (enflasyonlu), yıllık faiz, vade (yıl) ve eşit yıllık taksit. */
 export interface KrediTeklifi {
@@ -3373,7 +3375,9 @@ export function krediMaksTutar(state: CharacterState): number {
   // ~6 yıllık maaş kadar, enflasyonla ölçekli tavanla; suç seviyesi yüksekse tefeci daha az verir.
   const sucKesinti = state.suc_seviyesi >= 60 ? 0.5 : state.suc_seviyesi >= 40 ? 0.75 : 1;
   const tavan = KREDI_MAKS_TUTAR_TABAN * enflasyonCarpani(state);
-  return Math.max(0, Math.min(tavan, Math.round(maas * 6 * sucKesinti)));
+  // v22: nakit eksiye düşse ya da dükkân zarar etse bile (maaş/kâr küçükken) tefeci en azından küçük bir kredi verir.
+  const taban = KREDI_GARANTI_TUTAR_TABAN * enflasyonCarpani(state);
+  return Math.max(0, Math.min(tavan, Math.max(taban, Math.round(maas * 6 * sucKesinti))));
 }
 
 /** Tefecinin güvensizlik primi: yalnız borçluysan (para < 0) havuz faizine +4 puan biner. */
