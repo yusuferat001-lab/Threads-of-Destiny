@@ -138,8 +138,15 @@ export const FIYAT_ARTI_EKSI: Record<IsletmeFiyat, DilliMetin> = {
   },
 };
 
-// ── Yatırımlar (4 kademe; fiyat enflasyonsuz taban, her kademe bir öncekinin 3 katı; gider enflasyonuyla çarpılır) ──────
-const katla = (taban: number): number[] => [taban, 55, 135, 325];
+// ── Yatırımlar (4 kademe; fiyat enflasyonsuz taban, gider enflasyonuyla çarpılır) ──────
+// v24: fiyatlar kademe ablasyonuyla (scripts/simulateIsletme.ts SIM_FORCE/SIM_ABL) ölçülen gerçek yıllık getiriye göre kalibre edildi.
+const FIYAT_KERVAN = [13, 24, 38, 55];
+const FIYAT_TANITIM = [20, 35, 52, 75];
+const FIYAT_GUVENLIK = [8, 15, 24, 36];
+const FIYAT_TEZGAH = [15, 30, 50, 80];
+const FIYAT_KAPASITE = [20, 45, 90, 160]; // depo ve ibadethane
+const FIYAT_OKUL = [20, 30, 45, 65];
+const FIYAT_ASEVI = [8, 15, 24, 36];
 const YATIRIM_DEPO: YatirimTanimi = {
   id: "depo",
   simge: "🏚️",
@@ -149,8 +156,7 @@ const YATIRIM_DEPO: YatirimTanimi = {
     en: "Stock capacity, spoilage and yearly upkeep depend on the warehouse. A bigger one cuts spoilage but costs more to maintain.",
   },
   etki: "depo",
-  // v15: depo ihtiyacı pazar payıyla erken büyür; ×3 merdiveni yerine daha yumuşak basamaklar.
-  fiyatlar: [20, 60, 140, 300],
+  fiyatlar: FIYAT_KAPASITE,
 };
 const YATIRIM_TANITIM: YatirimTanimi = {
   id: "tanitim",
@@ -161,7 +167,7 @@ const YATIRIM_TANITIM: YatirimTanimi = {
     en: "Brings customers a year: tier 1 +1, tier 2 +3, tier 3 +4, tier 4 +5.",
   },
   etki: "pazar",
-  fiyatlar: katla(20),
+  fiyatlar: FIYAT_TANITIM,
 };
 const YATIRIM_GUVENLIK_TUCCAR: YatirimTanimi = {
   id: "guvenlik",
@@ -172,7 +178,7 @@ const YATIRIM_GUVENLIK_TUCCAR: YatirimTanimi = {
     en: "Bolt and lock → iron door → guard dog → watchtower. Each tier adds +0.125 protection (max 0.5).",
   },
   etki: "koruma",
-  fiyatlar: katla(20),
+  fiyatlar: FIYAT_GUVENLIK,
 };
 const YATIRIM_GUVENLIK_ZANAAT: YatirimTanimi = {
   ...YATIRIM_GUVENLIK_TUCCAR,
@@ -190,7 +196,7 @@ const TUCCAR_YATIRIMLAR: YatirimTanimi[] = [
       en: "Each tier cuts purchase costs by 4% (stacks multiplicatively with other discounts).",
     },
     etki: "alis",
-    fiyatlar: katla(15),
+    fiyatlar: FIYAT_KERVAN,
   },
   YATIRIM_TANITIM,
   YATIRIM_GUVENLIK_TUCCAR,
@@ -206,7 +212,7 @@ const ZANAATKAR_YATIRIMLAR: YatirimTanimi[] = [
       en: "Each tier raises your yearly production cap by 45%.",
     },
     etki: "uretim",
-    fiyatlar: katla(20),
+    fiyatlar: FIYAT_TEZGAH,
   },
   YATIRIM_DEPO,
   YATIRIM_TANITIM,
@@ -224,7 +230,7 @@ const DIN_YATIRIMLAR: YatirimTanimi[] = [
       en: "The worshippers it can hold and its yearly upkeep depend on the building. Those beyond capacity drift to your rival.",
     },
     etki: "bina",
-    fiyatlar: katla(20),
+    fiyatlar: FIYAT_KAPASITE,
   },
   {
     id: "okul",
@@ -235,7 +241,7 @@ const DIN_YATIRIMLAR: YatirimTanimi[] = [
       en: "Each tier adds 8% to the yearly chance of a graduate. Graduates become missionaries, bring new believers, and sometimes a skilled recruit emerges. Staff also improve faster.",
     },
     etki: "okul",
-    fiyatlar: katla(20),
+    fiyatlar: FIYAT_OKUL,
   },
   {
     id: "asevi",
@@ -246,7 +252,7 @@ const DIN_YATIRIMLAR: YatirimTanimi[] = [
       en: "Each tier raises the flock and morality payoff of your aid spending by 12%.",
     },
     etki: "yardim",
-    fiyatlar: katla(15),
+    fiyatlar: FIYAT_ASEVI,
   },
   {
     ...YATIRIM_TANITIM,

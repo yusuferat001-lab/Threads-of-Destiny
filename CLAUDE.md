@@ -2015,3 +2015,21 @@ Bu blok §45 v14/v20/v22 ve §13 "ömürde bir kez borç yardımı" ile §52 eks
 - Stok uyarısı penceresi ve tefeci açıklaması güncellendi (artık "üç taksit kaçırırsan el koyar" yazmıyor).
 - **Ölçüm** (aktif bot, N=80, dükkân neti 15-25 yaş / 55+): Tüccar OÇ 29,4/134 · SD 38,0/251; Zanaatkâr OÇ 26,6/153 · SD 24,3/169; Din OÇ 32,9/209 · SD 31,6/297. Not: simülatörün "batan" ölçütü (nakit < −30) artık −50'ye kadar mal alınabildiği için daha kolay tetiklenir; "kalıcı iflas" %0-4.
 
+
+### §45 v24 (2026-10) — Yatırım kademe fiyatları gerçek getiriye göre düşürüldü
+Bu blok §45 v12/v15/v18/v19 yatırım fiyatı maddelerinin üzerine yazar (etkiler/bakım aynı). Fiyatlar (gider enflasyonu öncesi, K1/K2/K3/K4; `data/meslekProfilleri.ts` `FIYAT_*`):
+
+| Yatırım | Eski | Yeni |
+|---|---|---|
+| Depo ve İbadethane (bina) | 20/60/140/300 · 20/55/135/325 | 20/45/90/160 |
+| Kervan | 15/55/135/325 | 13/24/38/55 |
+| Tanıtım / Vaaz ve Davet | 20/55/135/325 | 20/35/52/75 |
+| Güvenlik | 20/55/135/325 | 8/15/24/36 |
+| Tezgâh | 20/55/135/325 | 15/30/50/80 |
+| Okul | 20/55/135/325 | 20/30/45/65 |
+| Aşevi | 15/55/135/325 | 8/15/24/36 |
+
+- **Ölçüm yöntemi (ablasyon):** `SIM_FORCE="tanitim=2,depo=1"` kademeleri bedavaya sabitler, `SIM_YATIRIM=0` bot alımını kapatır, `SIM_ABL=1` yalnız yıl 8-40 ortalama dükkân netini/payı basar (`scripts/simulateIsletme.ts`, aktif bot, N=300, enflasyonlu nominal). Diğer yatırımlar kapasiteyle sınırlandığı için taban depo (Tüccar depo=1, Zanaatkâr depo=2, Din bina=2) sabit tutuldu.
+- **Kademe başına yıllık ek net (nominal, K1→K4):** Kervan Tüccar OÇ +3,0/+3,2/+3,1/+3,2, SD +3,1/+5,8/+2,9/+6,9 · Tanıtım Tüccar OÇ +0,3/+3,1/+0,6/+0,4, Zanaatkâr OÇ +15,8/+17,8/+4,1/+3,9, SD +16/+22,7/+7,8/+7,3, Din OÇ +7,1/+4,1/+1,0/+1,4, SD +21/+10/+3/+1,3 (ayrıca pay +1…+4 puan/kademe: rütbe eşikleri için) · Güvenlik ≈ +0,2…+1/kademe (sigorta; hırsızlık/baskın zararını yarılar) · Tezgâh Zanaatkâr yalnız K1-K2 anlamlı (+2,5/+6; talep üretim tavanını aşana dek ek getiri yok) · Okul Din OÇ +4,5/+1,4/+3,1/+2,1, SD +17/+6/+3,8/+4,9 · Aşevi ≈ 0…+4 (gürültülü) · Depo/bina: K0→K1 Tüccar +12,8 (OÇ) / +20,9 (SD), Din bina K1 +16…+18; daha büyük kademeler yalnız talep kapasiteyi doldurunca kazandırır (depo yıl başı kapasiteye dek dolduğu için gereksiz büyük depo stok çürümesi + sermaye bağlar).
+- **Sonuç:** eski K3/K4 fiyatları (135/325) geri ödeme süresi 60-250 yıl çıkıyordu; yeni merdiven K1 ≈ 2-7, K2 ≈ 5-10, K3 ≈ 8-15, K4 ≈ 12-25 yıl (yatırım ortalama getirisine göre). Aktif bot 55+ yaş "cebine kalan" (yatırım harcaması dahil): Tüccar OÇ/SD 24,9/69,0 → 104,6/189,7; Zanaatkâr 41,7/57,5 → 119,7/123,8; pay ve batma oranları değişmedi.
+- Test: `isletme.test.ts` yatırım fiyatı merdiveni 20/35/52/75 (tanıtım).

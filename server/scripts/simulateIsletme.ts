@@ -164,6 +164,13 @@ function tekOmur(cag: Cag, tarz: Tarz): Cikti {
     s.isletme.ana_urun = bu.hat;
     for (const h of s.isletme.hatlar) h.acik = h.id === bu.hat;
   }
+  // SIM_FORCE="tanitim=2,kervan=1": yatırım kademelerini bedavaya sabitler (kademe getirisi ablasyonu).
+  if (process.env.SIM_FORCE && s.isletme) {
+    for (const kv of process.env.SIM_FORCE.split(",")) {
+      const [id, k] = kv.split("=");
+      s.isletme.yatirimlar[id] = Number(k);
+    }
+  }
   const c: Cikti = { hatKar: {}, hatSatis: {}, satis: [], alim: [], maas: [], aidat: [], vergi: [], depoM: [], hasar: [], yatirim: [], dukkan: [], gider: [], musteri: [], calisan: [], batmaYili: -1, batmaDetay: "", batmaVeri: null, krediYili: 0, gelir: [], net: [], pay: [], rakipPay: [], para: [], batti: false, kaliciIflas: false, negSeri: 0, sonPara: 0, hirsizlik: 0, anaRolKazanc: 0, pazar: [], enf: [], depoK: [], kap: [], talep: [], stokBitti: [], kayip: [] };
   for (let y = 0; y < YIL; y++) {
     rutbeSurukle(s, y, tarz);
@@ -250,6 +257,14 @@ for (const cag of CAGLAR) {
   for (const tarz of TARZLAR) {
     const sonuclar: Cikti[] = [];
     for (let i = 0; i < N; i++) sonuclar.push(tekOmur(cag, tarz));
+    if (process.env.SIM_ABL) {
+      const enfOrt = ort(sonuclar.map((c) => ort(c.enf.slice(8, 40))));
+      const dk = ort(sonuclar.map((c) => ort(c.dukkan.slice(8, 40))));
+      const dkRaw = dk / enfOrt;
+      const pay = ort(sonuclar.map((c) => ort(c.pay.slice(8, 40))));
+      console.log(`ABL ${MESLEK} ${cag} ${process.env.SIM_FORCE ?? "taban"} dukkan=${dk.toFixed(2)} (enf-duz ${dkRaw.toFixed(2)}) pay=${pay.toFixed(2)} enf=${enfOrt.toFixed(2)}`);
+      continue;
+    }
     // Dilim tabloları batmayanların ortalamasıdır (batanlar ayrıca yüzde olarak yazılır); 5'ten az kalırsa hepsi.
     const hayatta = sonuclar.filter((c) => !c.batti);
     const kaynak = hayatta.length >= 5 ? hayatta : sonuclar;

@@ -342,7 +342,7 @@ describe("işletme (Tüccar dilimi)", () => {
     await ekipCikar(s.id, s.ekip[0].id);
   });
 
-  it("yatırım fiyatları 20 / 55 / 135 / 325 merdiveniyle artar ve kartta şimdi/sonraki etki görünür", async () => {
+  it("yatırım fiyatları 20 / 35 / 52 / 75 merdiveniyle artar ve kartta şimdi/sonraki etki görünür", async () => {
     const s = await tuccar();
     s.para = 100000;
     const ilk = (await isletmeDurumGetir(s.id)).yatirimlar.find((y) => y.id === "tanitim")!;
@@ -354,9 +354,9 @@ describe("işletme (Tüccar dilimi)", () => {
       await isletmeYatirimYap(s.id, "tanitim");
       fiyatlar.push((await isletmeDurumGetir(s.id)).yatirimlar.find((y) => y.id === "tanitim")!.sonrakiFiyat ?? 0);
     }
-    expect(fiyatlar[1] / fiyatlar[0]).toBeCloseTo(55 / 20, 1);
-    expect(fiyatlar[2] / fiyatlar[1]).toBeCloseTo(135 / 55, 1);
-    expect(fiyatlar[3] / fiyatlar[2]).toBeCloseTo(325 / 135, 1);
+    expect(fiyatlar[1] / fiyatlar[0]).toBeCloseTo(35 / 20, 1);
+    expect(fiyatlar[2] / fiyatlar[1]).toBeCloseTo(52 / 35, 1);
+    expect(fiyatlar[3] / fiyatlar[2]).toBeCloseTo(75 / 52, 1);
     const k = (await isletmeDurumGetir(s.id)).yatirimlar.find((y) => y.id === "tanitim")!;
     expect(k.etkiSimdi.tr).toBe("Müşteri artışı +4 müşteri/yıl");
     expect(k.etkiSonraki!.tr).toBe("Müşteri artışı +5 müşteri/yıl");
