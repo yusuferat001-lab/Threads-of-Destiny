@@ -951,6 +951,7 @@ export interface PiyasaEtkisi {
 export interface IsletmeUyari {
   kod:
     | "stok_bitti"
+    | "alim_yetersiz"
     | "fazla_stok"
     | "calisan_ayrildi"
     | "kitle_kaybi"
@@ -1083,6 +1084,8 @@ export interface IsletmeDurumu {
   yil_alinan?: Record<string, number>;
   /** Geçen yıl toplam talebin karşılanamayan oranı (0-1). Üst üste iki yıl eşik aşılınca müşteri kaybı hesaplanır. */
   onceki_karsilanamayan_orani?: number;
+  /** Yıl başı otomatik depo dolumu paranın (+veresiye hakkının) yetmemesi yüzünden eksik kaldı mı; yıl sonu uyarısı için. */
+  alim_yetersiz?: boolean;
   /** Son dış hırsızlık yılı (bilgi). */
   hirsizlik_son_yil?: number | null;
   /** v20: bir sonraki dış hırsızlık yılı (takvim: önceki olaydan 9-11 yıl sonra; ilk 7 yıl yok). */

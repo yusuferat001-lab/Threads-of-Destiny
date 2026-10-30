@@ -36,6 +36,7 @@ import {
   HAMLE_ARALIK_MAX_YIL,
   RAKIP_HAMLESI_ORANI,
   HAMLE_ETKI_CARPANI,
+  HAMLE_SAYI_CARPANI,
   type PiyasaHamlesi,
 } from "../data/piyasaHamleleri";
 import { isletmeMeslegiMi, isletmeProfiliGetir } from "../data/meslekProfilleri";
@@ -293,6 +294,7 @@ function rakipHamlesiUygula(state: CharacterState, r: Rakip): void {
     // büyüklükleriyle orantılı alınır. Oyuncunun fiyatı zaten ucuzsa kazanç yarıya iner.
     const [a, b] = hamle.sayi;
     let sayi = a + Math.floor(Math.random() * (b - a + 1));
+    sayi = Math.max(1, Math.round(sayi * HAMLE_SAYI_CARPANI));
     if (ucuz) sayi = Math.max(1, Math.ceil(sayi / 2));
     musteriKaydir(state, grup, sayi);
   } else {

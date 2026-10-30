@@ -10,10 +10,13 @@ import {
   krediTeklifleri,
   krediYillikUygula,
   krediMaksTutar,
+  pasifEkonomiUygula,
+  enflasyonCarpani,
   vebaBaslat,
   havuzKilidiVar,
   etiketEkle,
 } from "../src/game/stateManager";
+import { STOK_EKSI_NAKIT_LIMITI } from "../src/game/isletme";
 import { yeniOyun, mesleğiAta, hediyeEt, salginKorunmaYatirimiYap, senaryoUret } from "../src/game/gameEngine";
 import type { CharacterState } from "../src/types";
 import { KREDI_HAVUZU, annuiteTaksit } from "../src/data/krediHavuzu";
@@ -171,6 +174,38 @@ describe("Kredi / tefeci (havuzdan 2 teklif, vadeli)", () => {
     krediAl(s, krediTeklifleri(s)[0].id);
     expect(krediMaksTutar(s)).toBe(0);
     expect(krediTeklifleri(s)).toHaveLength(0);
+  });
+
+  it("v22: nakit eksideyken ve maaş/kâr küçükken bile tefeci en az 50×enflasyon kredi verir", () => {
+    const s = taze();
+    s.maas_yillik = 1;
+    s.para = -80;
+    expect(krediMaksTutar(s)).toBeGreaterThanOrEqual(50 * enflasyonCarpani(s) - 1);
+    const t = krediTeklifleri(s);
+    expect(t.length).toBeGreaterThan(0);
+    const once = s.para;
+    krediAl(s, t[0].id);
+    expect(s.para).toBeGreaterThan(once);
+  });
+
+  it("v22: nakit ilk kez −50'nin (× enflasyon) altına düşünce bir kereye mahsus 60-70 nakit yardımı gelir", () => {
+    const s = taze();
+    const enf = enflasyonCarpani(s);
+    s.para = -(STOK_EKSI_NAKIT_LIMITI * enf) - 40;
+    const r = pasifEkonomiUygula(s, 1);
+    expect(s.borc_yardimi_alindi).toBe(true);
+    expect(r.borcYardimi).toBeGreaterThanOrEqual(60 * enf - 0.01);
+    expect(r.borcYardimi).toBeLessThanOrEqual(70 * enf + 0.01);
+    // ikinci kez asla
+    s.para = -(STOK_EKSI_NAKIT_LIMITI * enf) - 40;
+    expect(pasifEkonomiUygula(s, 1).borcYardimi).toBe(0);
+  });
+
+  it("v22: −50 sınırının üstünde (az borç) yardım gelmez", () => {
+    const s = taze();
+    s.para = -10;
+    expect(pasifEkonomiUygula(s, 1).borcYardimi).toBe(0);
+    expect(s.borc_yardimi_alindi).toBe(false);
   });
 
   it("eşit yıllık taksit vade bitince krediyi kapatır (annüite)", () => {

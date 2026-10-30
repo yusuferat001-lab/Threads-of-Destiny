@@ -22,9 +22,9 @@ async function oturum(meslek = "Tüccar"): Promise<CharacterState> {
   return state;
 }
 
-/** Son yılın brüt kârını döküme yazar (yalnız bu alan okunur). */
-function karYaz(state: CharacterState, brutKar: number) {
-  (state.isletme as unknown as { son_dokum: { brutKar: number } }).son_dokum = { brutKar };
+/** Son yılın NET kârını (dükkân neti) döküme yazar (yalnız bu alan okunur; brüt kâr değil). */
+function karYaz(state: CharacterState, net: number) {
+  (state.isletme as unknown as { son_dokum: { net: number } }).son_dokum = { net };
 }
 
 describe("ekstra vergi sabitleri", () => {
@@ -65,7 +65,7 @@ describe("yonetimYillikUygula — ekstra vergi talebi", () => {
     expect(state.ekstra_vergi_sonraki_yil).toBeLessThanOrEqual(state.yil + EKSTRA_VERGI_ARALIK_YIL[1]);
   });
 
-  it("vadesi gelince, kâr eşiğin üstündeyse kârın 1 katı vergi talebi üretir ve takvimi yeniler", async () => {
+  it("vadesi gelince, net kâr eşiğin üstündeyse net kârın 1 katı vergi talebi üretir ve takvimi yeniler", async () => {
     const state = await oturum();
     state.yonetim_iliski = 50;
     karYaz(state, 200);
@@ -96,8 +96,8 @@ describe("yonetimYillikUygula — ekstra vergi talebi", () => {
     expect(state.yonetim_talep?.tur).not.toBe("vergi");
   });
 
-  it("kâr eşiği 40'tır: 41×enflasyon üstü talep üretir", async () => {
-    expect(EKSTRA_VERGI_KAR_ESIGI).toBe(40);
+  it("net kâr eşiği 60'tır: 60×enflasyon üstü talep üretir", async () => {
+    expect(EKSTRA_VERGI_KAR_ESIGI).toBe(60);
     const state = await oturum();
     karYaz(state, EKSTRA_VERGI_KAR_ESIGI * enflasyonCarpani(state) + 1);
     state.ekstra_vergi_sonraki_yil = state.yil;

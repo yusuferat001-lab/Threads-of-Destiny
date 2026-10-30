@@ -217,7 +217,11 @@ export function isletmeUyariMetni(u: IsletmeUyari, durum: IsletmeGorunumu, dil: 
     const en = dil === 'en';
     switch (u.kod) {
       case 'stok_bitti':
-        return `⚠️ ${hatAdi(u.hat ?? '')}: ${en ? 'ran out of stock — if it happens again next year, customers will leave for the rival' : 'stoğun yetmedi; gelecek yıl da yetmezse müşteri rakibe kayacak'}`;
+        return `⚠️ ${hatAdi(u.hat ?? '')}: ${en ? 'ran out of stock — if it happens again next year, customers will leave for the rival' : 'stoğun yetmedi (depo küçük ya da para yetmedi); gelecek yıl da yetmezse müşteri rakibe kayacak'}`;
+      case 'alim_yetersiz':
+        return en
+          ? '💸 You could not afford to restock fully — empty shelves mean lost sales, and a second short year costs you customers. Keep cash for stock, or take a loan.'
+          : '💸 Mal alacak paran yetmedi; depo eksik doldu. Boş raf satış kaybı demek, üst üste ikinci yılda müşteri de kaybedersin. Mal için nakit ayır ya da kredi al.';
       case 'fazla_stok':
         return `📦 ${hatAdi(u.hat ?? '')}: ${en ? 'idle stock piled up on a closed line' : 'kapalı hatta atıl stok birikti'}`;
       case 'kitle_kaybi':

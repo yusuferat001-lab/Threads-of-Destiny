@@ -3,6 +3,8 @@ import { isletmeProfiliGetir, rolAdiGetir } from "../data/meslekProfilleri";
 import {
   AHLAK_BANTLARI,
   ASEVI_KADEME_ETKISI,
+  ASEVI_INANAN_YILLIK,
+  ASEVI_AHLAK_YILLIK,
   ASIRI_COOLDOWN_YIL,
   ASIRI_ESIK,
   ASIRI_INANAN,
@@ -382,6 +384,7 @@ export function cemaatEtkenleri(state: CharacterState): CemaatEtkenleri {
     { kod: "faaliyet", deger: acik.reduce((t, f) => t + f.inanan, 0) * CEMAAT_INANAN_OLCEK },
     { kod: "ogreti", deger: o.inanan * CEMAAT_INANAN_OLCEK },
     { kod: "tanitim", deger: tanitimBuyumesi(state) / kitleBoyu },
+    { kod: "asevi", deger: (yp.oran >= 0.2 ? ASEVI_INANAN_YILLIK[Math.min(aseviKademesi(state), ASEVI_INANAN_YILLIK.length - 1)] : 0) / kitleBoyu },
     { kod: "davetci", deger: bon.musteri / kitleBoyu },
     { kod: "yatkinlik", deger: yatkinlikMusteriBuyumesi(state) / kitleBoyu },
     { kod: "fanatik", deger: -FANATIK_KACIS_KATSAYI * cm.fanatiklik * o.fanatikKacis },
@@ -392,6 +395,7 @@ export function cemaatEtkenleri(state: CharacterState): CemaatEtkenleri {
     kitle.ahlak * (kitle.ahlak > 0 ? altC : 1) +
     yp.ahlak * (yp.ahlak > 0 ? yE : 1) +
     acik.reduce((t, f) => t + f.ahlak, 0) +
+    (yp.oran >= 0.2 ? ASEVI_AHLAK_YILLIK[Math.min(aseviKademesi(state), ASEVI_AHLAK_YILLIK.length - 1)] : 0) +
     o.ahlak -
     aranmaAhlakKaybi(state.suc_seviyesi);
   const otorite = kitle.otorite + o.otorite - FANATIK_OTORITE_KATSAYI * cm.fanatiklik;
