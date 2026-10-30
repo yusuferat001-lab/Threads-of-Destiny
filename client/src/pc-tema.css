@@ -445,6 +445,245 @@
   }
 }
 
+/* ==== Faz 2: yan tam sayfa ekranlar (Kariyer, Yatırım, Evin, Mağaza, Sosyalleş, İlişkiler) ==== */
+@media (min-width: 768px) {
+  /* Ortak kabuk: bordo kadife zemin + altın kenar. `--panel-ust/-alt` tokenlarını ezmek,
+     bu tokenları kullanan tüm kartları (yatırım, aile, kariyer, finans…) tek hamlede boyar. */
+  .ekran.ekran-tam-sayfa,
+  .ekran.ekran-kariyer,
+  .ekran.ekran-aile {
+    --panel-ust: rgba(122, 28, 40, 0.5);
+    --panel-alt: rgba(46, 9, 15, 0.72);
+    --aile-kart-kenar: var(--v-kenar-soluk);
+    color: var(--v-yazi);
+    background: radial-gradient(120% 85% at 50% 0%, rgba(118, 27, 38, 0.55) 0%, rgba(52, 10, 16, 0.93) 62%), #190a0d;
+    border: 1px solid var(--v-kenar);
+    border-radius: 16px;
+    box-shadow: var(--v-golge);
+  }
+  /* İlişkiler: sıcak duvar yerine kadife; oda çizimi hafif bir doku olarak kalır. */
+  .ekran-aile .aile-arkaplan {
+    opacity: 0.16;
+    filter: saturate(0.5) brightness(0.8);
+  }
+
+  /* Başlıklar */
+  .ekran.ekran-tam-sayfa > h2,
+  .ekran.ekran-kariyer > h2,
+  .ekran.ekran-aile > h2 {
+    color: var(--v-altin);
+    letter-spacing: 0.08em;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+    padding-bottom: 0.45rem;
+    border-bottom: 1px solid transparent;
+    border-image: linear-gradient(90deg, var(--v-kenar), transparent 80%) 1;
+  }
+  .ekran-aile > h2 {
+    background: none;
+    border-top: 0;
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
+    box-shadow: none;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .ekran-tam-sayfa .tam-baslik,
+  .ekran-tam-sayfa .tam-baslik-dedikodu,
+  .ekran-kariyer .kariyer-bolum > h3,
+  .ekran-aile .aile-kart h3 {
+    color: var(--v-altin);
+    opacity: 1;
+    font-family: var(--font-baslik);
+    letter-spacing: 0.08em;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+  }
+  .ekran-tam-sayfa .tam-baslik {
+    padding: 0.28rem 0.7rem;
+    background: var(--v-baslik);
+    border: 1px solid var(--v-kenar-soluk);
+    border-bottom-color: var(--v-kenar);
+    border-radius: 6px;
+  }
+
+  /* Kartlar */
+  .ekran .yatirim-kart,
+  .ekran .finans-karti,
+  .ekran .sosyal-aksiyon-kart,
+  .ekran .isletme-paneli,
+  .ekran .aile-koken-karti,
+  .ekran .aile-cocuklar-karti,
+  .ekran .kariyer-hat-karti {
+    background: linear-gradient(180deg, var(--panel-ust), var(--panel-alt));
+    border-color: var(--v-kenar-soluk);
+    color: var(--v-yazi);
+  }
+  .ekran .yatirim-kart:hover:not(:disabled) {
+    background: linear-gradient(180deg, rgba(160, 42, 54, 0.55), var(--panel-alt));
+    border-color: var(--v-altin);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(230, 193, 122, 0.18);
+  }
+  .ekran .yatirim-kart-secili {
+    border-color: var(--v-altin);
+    background: linear-gradient(180deg, rgba(160, 42, 54, 0.6), var(--panel-alt));
+    box-shadow: 0 0 0 1px rgba(230, 193, 122, 0.4), 0 8px 20px rgba(0, 0, 0, 0.5);
+  }
+  .ekran .aile-kart {
+    border-left-color: var(--v-altin);
+  }
+
+  /* Sekmeler (Mağaza şifa/lüks, mobil benzeri) */
+  .ekran .magaza-sekme,
+  .ekran .ekran-sekme {
+    background: var(--v-panel-ic);
+    border-color: var(--v-kenar-soluk);
+    color: var(--v-yazi-soluk);
+  }
+  .ekran .magaza-sekme:hover:not(:disabled),
+  .ekran .ekran-sekme:hover:not(:disabled) {
+    background: rgba(160, 42, 54, 0.35);
+    border-color: var(--v-altin);
+  }
+  .ekran .magaza-sekme-aktif,
+  .ekran .ekran-sekme-aktif {
+    background: var(--v-baslik);
+    border-color: var(--v-altin);
+    color: var(--v-yazi);
+  }
+
+  /* Çipler (içki seçimi, bağış tutarları) */
+  .ekran .sosyal-icki-cip {
+    background: var(--v-panel-ic);
+    border-color: var(--v-kenar-soluk);
+    color: var(--v-yazi);
+  }
+  .ekran .sosyal-icki-cip[aria-pressed='true'],
+  .ekran .sosyal-icki-cip.sosyal-icki-cip-secili {
+    background: var(--v-baslik);
+    border-color: var(--v-altin);
+  }
+
+  /* Mini oyunlar, aksiyon düğmeleri, bağış çipleri: kahve yerine kadife */
+  .ekran .mini-oyun {
+    background: linear-gradient(180deg, var(--panel-ust), var(--panel-alt));
+    border-color: var(--v-kenar-soluk);
+    border-radius: 12px;
+  }
+  .ekran .mini-bahis-cip,
+  .ekran .sosyal-aksiyon-buton {
+    background: var(--v-panel-ic);
+    border-color: var(--v-kenar-soluk);
+    color: var(--v-yazi);
+  }
+  .ekran .mini-bahis-aktif {
+    background: var(--v-baslik);
+    border-color: var(--v-altin);
+  }
+  .ekran .mini-oyun-buton {
+    background: linear-gradient(180deg, rgba(130, 32, 42, 0.85), rgba(70, 14, 22, 0.92));
+    border-color: var(--v-kenar);
+    color: var(--v-yazi);
+  }
+  .ekran .mini-oyun-buton:hover:not(:disabled),
+  .ekran .sosyal-aksiyon-buton:hover:not(:disabled) {
+    border-color: var(--v-altin);
+    filter: brightness(1.12);
+  }
+  .ekran .kariyer-etkilesim-buton,
+  .ekran .kariyer-bagis-satir,
+  .ekran .kariyer-bagis-cip {
+    background: var(--v-panel-ic);
+    border-color: var(--v-kenar-soluk);
+    color: var(--v-yazi);
+  }
+  .ekran .kariyer-bagis-cip:not(:disabled):hover,
+  .ekran .kariyer-etkilesim-buton:not(:disabled):hover {
+    background: rgba(160, 42, 54, 0.4);
+    border-color: var(--v-altin);
+  }
+
+  /* Yardımcı metinler */
+  .ekran .giris-aciklama,
+  .ekran .meslek-aciklama {
+    color: var(--v-yazi-soluk);
+    opacity: 1;
+  }
+  .ekran .yatirim-islem-mesaji {
+    background: var(--v-panel-ic);
+    border-color: var(--v-kenar);
+  }
+
+  /* Geri düğmesi: altın çerçeveli kadife */
+  .ekran .tam-geri-buton {
+    background: linear-gradient(180deg, rgba(130, 32, 42, 0.8), rgba(70, 14, 22, 0.9));
+    border: 1px solid var(--v-kenar);
+    color: var(--v-yazi);
+  }
+  .ekran .tam-geri-buton:hover:not(:disabled) {
+    border-color: var(--v-altin);
+    filter: brightness(1.12);
+  }
+
+  /* ==== Yatay alan: kart ızgarası kenara kadar, kapsayıcı genişliği tek kural ==== */
+  .yatirim-kartlari {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+  .oyun-kapsayici:has(.ekran-kariyer) {
+    max-width: min(1560px, 100%);
+  }
+  .oyun-kapsayici-tam .ekran-tam-sayfa {
+    width: 100%;
+    max-width: 1920px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .kariyer-govde {
+    grid-template-columns: minmax(0, 1.9fr) minmax(300px, 1fr);
+  }
+}
+
+/* ==== Modallar: tek kabuk (bordo kadife + altın çerçeve), tek katman koyuluğu ==== */
+@media (min-width: 768px) {
+  .ayarlar-katman,
+  .kariyer-sonuc-katman,
+  .skor-detay-katman,
+  .gecmis-hayat-detay-katman {
+    background: rgba(12, 4, 6, 0.7);
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+  }
+  .skor-detay-modal,
+  .kariyer-sonuc-modal,
+  .gecmis-hayat-detay,
+  .ayarlar-modal {
+    color: var(--v-yazi);
+    background: radial-gradient(130% 90% at 50% 0%, var(--v-zemin-1) 0%, var(--v-zemin-2) 55%, var(--v-zemin-3) 100%);
+    border: 1px solid var(--v-altin);
+    border-left-width: 1px;
+    border-radius: 14px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), inset 0 0 0 1px rgba(230, 193, 122, 0.18), inset 0 0 24px rgba(0, 0, 0, 0.45);
+  }
+  .skor-detay-modal h3,
+  .kariyer-sonuc-modal h3,
+  .gecmis-hayat-detay h3 {
+    color: var(--v-altin);
+    font-family: var(--font-baslik);
+    letter-spacing: 0.06em;
+  }
+  .ayarlar-modal-ust {
+    background: rgba(0, 0, 0, 0.2);
+    border-bottom-color: var(--v-kenar);
+  }
+  .ayarlar-sekmeler {
+    background: rgba(0, 0, 0, 0.25);
+  }
+  .ayarlar-sekmeler button {
+    background: var(--v-panel-ic);
+    border-color: var(--v-kenar-soluk);
+    color: var(--v-yazi-soluk);
+  }
+}
+
 /* Dar PC (≤1400px): üst şerit etiketleri gizlenir, yalnız ikon + değer + çubuk kalır. */
 @media (min-width: 768px) and (max-width: 1400px) {
   .oyun-ekrani-pc .ust-serit-modul-etiket,
