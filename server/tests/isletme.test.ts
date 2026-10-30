@@ -48,6 +48,7 @@ import {
   BASLANGIC_VERESIYE_ORANI,
   baslangicDepoDoluluk,
   baslangicVeresiyeOrani,
+  DEPO_BAKIM,
 } from "../src/game/isletme";
 import { YATIRIM_MASRAF_ORANI } from "../src/game/yatirimMasrafi";
 import { isletmeBaglami, hesaplaMaasYillik, createCharacter, mesleğiSec } from "../src/game/stateManager";
@@ -410,16 +411,16 @@ describe("işletme (Tüccar dilimi)", () => {
     expect(toplam).toBeLessThanOrEqual(100 + 1e-6);
   });
 
-  it("güvenlik yatırımı Korumayı yükseltir (kademe başı +0,125, en çok 0,5)", async () => {
+  it("güvenlik yatırımı Korumayı yükseltir (kademe başı +0,15, en çok 0,6)", async () => {
     const s = await tuccar();
     s.para = 100000;
     expect(korumaHesapla(s).yatirim).toBe(0);
     await isletmeYatirimYap(s.id, "guvenlik");
-    expect(korumaHesapla(s).yatirim).toBeCloseTo(0.125);
+    expect(korumaHesapla(s).yatirim).toBeCloseTo(0.15);
     await isletmeYatirimYap(s.id, "guvenlik");
     await isletmeYatirimYap(s.id, "guvenlik");
     await isletmeYatirimYap(s.id, "guvenlik");
-    expect(korumaHesapla(s).yatirim).toBeCloseTo(0.5);
+    expect(korumaHesapla(s).yatirim).toBeCloseTo(0.6);
   });
 
   it("çalışan bonusları güncel Yeteneğe göre ve düz toplanır; sadık (≥75) ×1,05", () => {
@@ -708,6 +709,7 @@ describe("işletme (Zanaatkâr — üretim modu)", () => {
     await isletmeYatirimYap(s.id, "tezgah");
     const tezgahSonra = (await isletmeDurumGetir(s.id)).uretim!.tavan;
     expect(tezgahSonra / once).toBeGreaterThanOrEqual(1.3);
+    expect(DEPO_BAKIM[2]).toBeLessThan(15); // v26: K2 bakımı kısıldı
     s.uretim_kapasitesi = 40;
     expect((await isletmeDurumGetir(s.id)).uretim!.tavan).toBeGreaterThan(tezgahSonra);
     const ayrintiOnce = (await isletmeDurumGetir(s.id)).uretim!.tavan;
