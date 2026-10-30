@@ -88,7 +88,7 @@ export function depoKapasiteTablosu(cag?: string, meslek?: string): number[] {
   return DEPO_KAPASITE_TABLOLARI[`${meslek ?? "Tüccar"}|${cag ?? "Orta Çağ"}`] ?? DEPO_KAPASITE;
 }
 export const CURUME_ORANLARI = [0.1, 0.08, 0.06, 0.045, 0.03];
-export const DEPO_BAKIM = [4, 8, 17, 25, 38]; // v22: bir önceki 6/12/24/36/55'ten ~%30 düşük
+export const DEPO_BAKIM = [4, 8, 12, 19, 30]; // v26: K2 17→12 (8→17 sıçraması dik), üst kademeler de kısıldı
 /** v24: açık hatların toplam yıllık talebi müşteri sayısının bu katını geçemez. */
 export const TALEP_TAVAN_ORANI = 1;
 export const BASLANGIC_STOK = 30;
@@ -135,7 +135,9 @@ export const PAY_DOYMA_ESIGI = 0.68;
 export const KERVAN_INDIRIM_KADEME = 0.04;
 const GUMRUK_INDIRIMI = 0.1;
 const MUAFIYET_INDIRIMI = 0.08;
-export const TEZGAH_URETIM_KADEME = 0.45;
+export const TEZGAH_URETIM_KADEME = 0.5;
+/** v26: usta işi — her tezgâh kademesi satış fiyatına prim ekler (üretim tavanı artışına ek doğrudan getiri). */
+export const TEZGAH_FIYAT_PRIMI = 0.03;
 /** Tanıtım yatırımı (v27): toplam kademeye göre yıllık müşteri SAYISI [K0..K4] = 0/1/3/4/5. */
 export const TANITIM_MUSTERI = [0, 1, 3, 4, 5];
 /** Veba sürerken müşteri/inanan büyümesinin pozitif kısımları bu çarpanla kısılır (v10). */
@@ -144,7 +146,7 @@ export const VEBA_ARTIS_CARPANI = 0.3;
 const FIYAT_SOKU_YANSIMA = 1;
 
 // Üretim modu (Zanaatkâr): yıllık üretim tavanı = taban × (1 + ana rol bonusları + tezgâh yüzdesi + ruhsat).
-export const URETIM_TABAN = 80;
+export const URETIM_TABAN = 60; // v26: 80→60 — tavan gerçek talebe yaklaşsın, tezgâh kademeleri anlamlı olsun
 /** Üretim modunda ana rol bonusunun talebe yansıyan payı (kalanı üretim tavanına gider). */
 export const URETIM_ANA_TALEP_PAYI = 0.55;
 export const URETIM_METRIK_CARPANI = 0.2;
@@ -175,7 +177,7 @@ export const SADIK_BONUS = 1.05;
 export const SADAKAT_OLAY_COOLDOWN_YIL = 3;
 
 // Dış hırsızlık
-export const GUVENLIK_YATIRIM_KORUMA = [0, 0.125, 0.25, 0.375, 0.5];
+export const GUVENLIK_YATIRIM_KORUMA = [0, 0.15, 0.3, 0.45, 0.6]; // v26: kademe başı 0,125→0,15 (+%20)
 export const OTORITE_KORUMA_ESIGI = 70;
 export const OTORITE_KORUMA = 0.1;
 
@@ -530,6 +532,7 @@ export function hatHesapla(state: CharacterState, hat: IsletmeHat, tanim: HatTan
       pol.fiyat *
       (sicak ? SICAK_URUN_FIYAT : 1) *
       (ub?.satisCarpani ?? 1) *
+      (1 + yatirimKademesi(state, "uretim") * TEZGAH_FIYAT_PRIMI) *
       tekel,
     birimMaliyet: tanim.birimMaliyet * b.giderEnflasyon * sapma.alis * (1 + (kes.fiyat - 1) * FIYAT_SOKU_YANSIMA) * maliyetCarpani * piyasaCarpani(state, "alis_maliyeti") * (ub?.alisCarpani ?? 1),
     maliyetIndirim: 1 - maliyetCarpani * piyasaCarpani(state, "alis_maliyeti"),

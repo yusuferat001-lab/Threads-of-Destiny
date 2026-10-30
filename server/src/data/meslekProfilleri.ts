@@ -142,7 +142,7 @@ export const FIYAT_ARTI_EKSI: Record<IsletmeFiyat, DilliMetin> = {
 // v24: fiyatlar kademe ablasyonuyla (scripts/simulateIsletme.ts SIM_FORCE/SIM_ABL) ölçülen gerçek yıllık getiriye göre kalibre edildi.
 const FIYAT_KERVAN = [13, 24, 38, 55];
 const FIYAT_TANITIM = [20, 35, 52, 75];
-const FIYAT_GUVENLIK = [8, 15, 24, 36];
+const FIYAT_GUVENLIK = [6, 11, 18, 27];
 const FIYAT_TEZGAH = [15, 30, 50, 80];
 const FIYAT_KAPASITE = [20, 45, 90, 160]; // depo ve ibadethane
 const FIYAT_OKUL = [20, 30, 45, 65];
@@ -174,8 +174,8 @@ const YATIRIM_GUVENLIK_TUCCAR: YatirimTanimi = {
   simge: "🔒",
   ad: { tr: "Depo Güvenliği", en: "Warehouse Security" },
   aciklama: {
-    tr: "Kilit-sürgü → demir kapı → bekçi köpeği → nöbet kulesi. Her kademe korumayı +0,125 artırır (en çok 0,5).",
-    en: "Bolt and lock → iron door → guard dog → watchtower. Each tier adds +0.125 protection (max 0.5).",
+    tr: "Kilit-sürgü → demir kapı → bekçi köpeği → nöbet kulesi. Her kademe korumayı +0,15 artırır (en çok 0,6).",
+    en: "Bolt and lock → iron door → guard dog → watchtower. Each tier adds +0.15 protection (max 0.6).",
   },
   etki: "koruma",
   fiyatlar: FIYAT_GUVENLIK,
@@ -208,8 +208,8 @@ const ZANAATKAR_YATIRIMLAR: YatirimTanimi[] = [
     simge: "🔨",
     ad: { tr: "Tezgâh ve Aletler", en: "Workbench & Tools" },
     aciklama: {
-      tr: "Her kademe yıllık üretim tavanını %45 artırır.",
-      en: "Each tier raises your yearly production cap by 45%.",
+      tr: "Her kademe yıllık üretim tavanını %50 artırır ve ürünlerine %3 usta işi primi ekler.",
+      en: "Each tier raises your yearly production cap by 50% and adds a 3% master-craft premium to your prices.",
     },
     etki: "uretim",
     fiyatlar: FIYAT_TEZGAH,

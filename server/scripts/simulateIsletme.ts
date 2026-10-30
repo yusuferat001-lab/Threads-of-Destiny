@@ -151,7 +151,7 @@ function botKarar(s: CharacterState, tarz: Tarz) {
   // v15: depo her yıl başı motor tarafından kapasiteye kadar kendiliğinden dolar (oyuncu ayarı yok).
 }
 
-interface Cikti { hatKar: Record<string, number[]>; hatSatis: Record<string, number[]>; satis: number[]; alim: number[]; maas: number[]; aidat: number[]; vergi: number[]; depoM: number[]; hasar: number[]; yatirim: number[]; dukkan: number[]; gider: number[]; musteri: number[]; calisan: number[]; batmaYili: number; batmaDetay: string; batmaVeri: { gelir: number; gider: number; ekip: number; depo: number; brut: number; hasar: boolean; kredi: boolean; pay: number; stokBitti: boolean } | null; krediYili: number; gelir: number[]; net: number[]; pay: number[]; rakipPay: number[]; para: number[]; batti: boolean; kaliciIflas: boolean; negSeri: number; sonPara: number; hirsizlik: number; anaRolKazanc: number; pazar: number[]; enf: number[]; depoK: number[]; kap: number[]; talep: number[]; stokBitti: number[]; kayip: number[] }
+interface Cikti { hatKar: Record<string, number[]>; hatSatis: Record<string, number[]>; satis: number[]; alim: number[]; maas: number[]; aidat: number[]; vergi: number[]; depoM: number[]; hasar: number[]; yatirim: number[]; dukkan: number[]; gider: number[]; musteri: number[]; calisan: number[]; batmaYili: number; batmaDetay: string; batmaVeri: { gelir: number; gider: number; ekip: number; depo: number; brut: number; hasar: boolean; kredi: boolean; pay: number; stokBitti: boolean } | null; krediYili: number; gelir: number[]; net: number[]; pay: number[]; rakipPay: number[]; para: number[]; batti: boolean; kaliciIflas: boolean; negSeri: number; sonPara: number; hirsizlik: number; anaRolKazanc: number; pazar: number[]; enf: number[]; depoK: number[]; kap: number[]; talep: number[]; stokBitti: number[]; kayip: number[]; tavanBagli: number[] }
 
 function tekOmur(cag: Cag, tarz: Tarz): Cikti {
   const s = createCharacter(cag, cag === "Orta Çağ" ? "Fransa" : "İngiltere", "kasaba");
@@ -171,7 +171,7 @@ function tekOmur(cag: Cag, tarz: Tarz): Cikti {
       s.isletme.yatirimlar[id] = Number(k);
     }
   }
-  const c: Cikti = { hatKar: {}, hatSatis: {}, satis: [], alim: [], maas: [], aidat: [], vergi: [], depoM: [], hasar: [], yatirim: [], dukkan: [], gider: [], musteri: [], calisan: [], batmaYili: -1, batmaDetay: "", batmaVeri: null, krediYili: 0, gelir: [], net: [], pay: [], rakipPay: [], para: [], batti: false, kaliciIflas: false, negSeri: 0, sonPara: 0, hirsizlik: 0, anaRolKazanc: 0, pazar: [], enf: [], depoK: [], kap: [], talep: [], stokBitti: [], kayip: [] };
+  const c: Cikti = { hatKar: {}, hatSatis: {}, satis: [], alim: [], maas: [], aidat: [], vergi: [], depoM: [], hasar: [], yatirim: [], dukkan: [], gider: [], musteri: [], calisan: [], batmaYili: -1, batmaDetay: "", batmaVeri: null, krediYili: 0, gelir: [], net: [], pay: [], rakipPay: [], para: [], batti: false, kaliciIflas: false, negSeri: 0, sonPara: 0, hirsizlik: 0, anaRolKazanc: 0, pazar: [], enf: [], depoK: [], kap: [], talep: [], stokBitti: [], kayip: [], tavanBagli: [] };
   for (let y = 0; y < YIL; y++) {
     rutbeSurukle(s, y, tarz);
     const para0 = s.para;
@@ -218,6 +218,7 @@ function tekOmur(cag: Cag, tarz: Tarz): Cikti {
     c.talep.push(s.isletme ? s.isletme.hatlar.filter((h) => h.acik).reduce((t, h) => t + (h.son_talep || 0), 0) : 0);
     c.stokBitti.push(d0?.uyarilar.some((u) => u.kod === "stok_bitti") ? 1 : 0);
     c.kayip.push(d0?.uyarilar.some((u) => u.kod === "kitle_kaybi") ? 1 : 0);
+    c.tavanBagli.push(d0?.uyarilar.some((u) => u.kod === "uretim_tavani") ? 1 : 0);
     c.rakipPay.push(((s.rakipler.find((r) => !r.yenildi)?.musteri ?? 0) / s.pazar_musteri) * 100);
     c.para.push(s.para);
     if (process.env.SIM_DEBUG2 && y < 8) console.log(y, "para", s.para.toFixed(1), "stok", s.isletme?.hatlar.filter((h) => h.acik).map((h) => h.id + ":" + h.stok).join(","), "satis", s.isletme?.son_dokum?.satis, "alim", s.isletme?.son_dokum?.alim, "net", s.isletme?.son_dokum?.net, "musteri", s.meslek_musteri.toFixed(1));
@@ -262,7 +263,8 @@ for (const cag of CAGLAR) {
       const dk = ort(sonuclar.map((c) => ort(c.dukkan.slice(8, 40))));
       const dkRaw = dk / enfOrt;
       const pay = ort(sonuclar.map((c) => ort(c.pay.slice(8, 40))));
-      console.log(`ABL ${MESLEK} ${cag} ${process.env.SIM_FORCE ?? "taban"} dukkan=${dk.toFixed(2)} (enf-duz ${dkRaw.toFixed(2)}) pay=${pay.toFixed(2)} enf=${enfOrt.toFixed(2)}`);
+      const tb = ort(sonuclar.map((c) => ort(c.tavanBagli.slice(8, 40)))) * 100;
+      console.log(`ABL ${MESLEK} ${cag} ${process.env.SIM_FORCE ?? "taban"} dukkan=${dk.toFixed(2)} (enf-duz ${dkRaw.toFixed(2)}) pay=${pay.toFixed(2)} enf=${enfOrt.toFixed(2)} tavanBagli=%${tb.toFixed(0)} talep=${ort(sonuclar.map((c) => ort(c.talep.slice(8, 40)))).toFixed(0)} p90talep=${(() => { const a = sonuclar.map((c) => ort(c.talep.slice(8, 40))).sort((x, y) => x - y); return a[Math.floor(a.length * 0.9)].toFixed(0); })()}`);
       continue;
     }
     // Dilim tabloları batmayanların ortalamasıdır (batanlar ayrıca yüzde olarak yazılır); 5'ten az kalırsa hepsi.

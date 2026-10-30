@@ -62,7 +62,7 @@ export const GELME_ARALIKLARI: Record<GelmeKaynagi, [number, number]> = {
 /** Bina kademesi (0..4) → ibadethane kapasitesi (aynı anda ayine sığan inanan). */
 export const BINA_KAPASITE = [50, 75, 105, 145, 195];
 /** Bina bakımı (enflasyonsuz yıllık). */
-export const BINA_BAKIM = [4, 8, 17, 25, 38]; // v22: ~%30 düşürüldü
+export const BINA_BAKIM = [4, 8, 12, 19, 30]; // v26: depo bakımıyla aynı
 
 // ── Politikalar ─────────────────────────────────────────────────────────────
 export interface BagisPolitikasi {
