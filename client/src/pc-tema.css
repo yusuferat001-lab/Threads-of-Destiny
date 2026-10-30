@@ -684,6 +684,46 @@
   }
 }
 
+/* ==== Faz 3: giriş / kurulum / açılış — kahve zemin yerine bordo kadife, kartlar tek dilde ==== */
+@media (min-width: 768px) {
+  .ekran-giris,
+  .ekran-kurulum,
+  .ekran-acilis {
+    background:
+      radial-gradient(ellipse at 50% -10%, rgba(150, 38, 50, 0.4), transparent 60%),
+      linear-gradient(180deg, #2b0c12 0%, #1d080c 60%, #130507 100%);
+    border-color: var(--v-kenar);
+    box-shadow: var(--v-golge);
+  }
+  .giris-panel {
+    background: linear-gradient(180deg, rgba(100, 22, 32, 0.5), rgba(34, 8, 12, 0.6));
+    border-color: var(--v-kenar-soluk);
+  }
+  .giris-panel:hover {
+    border-color: var(--v-altin);
+  }
+  .giris-panel-baslik {
+    color: var(--v-altin);
+    border-bottom-color: var(--v-kenar-soluk);
+  }
+  .ekran-kurulum .meslek-kart,
+  .ekran-kurulum .yerlesim-kart {
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(230, 193, 122, 0.1), transparent 60%),
+      linear-gradient(180deg, rgba(110, 25, 36, 0.55) 0%, rgba(40, 9, 14, 0.75) 100%);
+    border-color: var(--v-kenar-soluk);
+  }
+  .ekran-kurulum .meslek-kart:hover:not(:disabled),
+  .ekran-kurulum .yerlesim-kart:hover:not(:disabled),
+  .ekran-kurulum .meslek-kart.meslek-kart-secili {
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(230, 193, 122, 0.22), transparent 65%),
+      linear-gradient(180deg, rgba(150, 38, 50, 0.7) 0%, rgba(62, 13, 21, 0.85) 100%);
+    border-color: var(--v-altin);
+    box-shadow: 0 0 0 1px rgba(230, 193, 122, 0.4), 0 0 22px rgba(230, 193, 122, 0.18);
+  }
+}
+
 /* Dar PC (≤1400px): üst şerit etiketleri gizlenir, yalnız ikon + değer + çubuk kalır. */
 @media (min-width: 768px) and (max-width: 1400px) {
   .oyun-ekrani-pc .ust-serit-modul-etiket,
