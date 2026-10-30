@@ -25,7 +25,7 @@
      kutu hangi çözünürlükte olursa olsun ekrana göre AYNI oranda görünür.
      Kutu alta yaslıdır; yüksekliği içeriğe göre (alt/üst sınırlı) değişir, taşan metin parşömende kayar. */
   .olay-kutusu {
-    --u: min(calc(100vw / 1920), calc(100vh / 1080));
+    /* `--u` ölçek birimi `.oyun-ekrani-pc` üzerinde tanımlı (pc-tema.css) — paneller de aynı birimi kullanır. */
     --kutu-w: calc(660 * var(--u));
     --cerceve-w: calc(370 * var(--u)); /* oran 1.93:1 */
     --cerceve-h: calc(var(--cerceve-w) / 1.93);
@@ -202,92 +202,6 @@
     align-self: start;
     height: auto;
     max-height: 100%;
-  }
-  .oyun-ekrani-pc .sag-panel {
-    padding: 0;
-    overflow: visible;
-  }
-
-  /* ---- Sağ sütun: 6 büyük kare kısayol karosu (KisayolKartlari.tsx), 2 sütun × 3 sıra ---- */
-  .kisayol-kartlari {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: clamp(0.5rem, 0.9vw, 0.9rem);
-    width: 100%;
-    margin: 0;
-  }
-  .kisayol-karti {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: clamp(0.3rem, 0.6vw, 0.65rem);
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    padding: 0.4rem;
-    text-align: center;
-    font-family: var(--font-baslik);
-    font-size: clamp(0.72rem, 0.35vw + 0.6rem, 1rem);
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    color: #f4e0b0;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
-    background: var(--ahsap);
-    border: 2px solid var(--ahsap-kenar);
-    border-radius: 12px;
-    box-shadow: var(--ahsap-golge), 0 6px 16px rgba(0, 0, 0, 0.5);
-  }
-  .kisayol-karti:hover:not(:disabled),
-  .kisayol-karti:focus-visible {
-    background: var(--ahsap);
-    border-color: var(--renk-altin-parlak);
-    box-shadow: var(--ahsap-golge), 0 6px 16px rgba(0, 0, 0, 0.5);
-    filter: brightness(1.12);
-    transform: none;
-  }
-  .kisayol-karti:active:not(:disabled) {
-    transform: translateY(1px);
-    filter: brightness(0.92);
-  }
-  .kisayol-karti:focus-visible {
-    outline: 2px solid var(--renk-altin-parlak);
-    outline-offset: 2px;
-  }
-  .kisayol-karti:disabled {
-    opacity: 0.55;
-  }
-  .kisayol-karti-ikon {
-    flex: none;
-    font-size: clamp(2rem, 2.6vw + 0.8rem, 4rem);
-    line-height: 1;
-    text-align: center;
-    filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.6));
-  }
-  .kisayol-karti-etiket {
-    flex: 0 1 auto;
-    max-width: 100%;
-    line-height: 1.15;
-    overflow-wrap: anywhere;
-  }
-}
-
-/* Dar sütunlar (küçük laptop / yatay tablet): etiket küçülür. */
-@media (min-width: 768px) and (max-width: 1099px) {
-  .kisayol-karti {
-    font-size: 0.66rem;
-    letter-spacing: 0.02em;
-    gap: 0.2rem;
-  }
-  .kisayol-karti-ikon {
-    font-size: 1.8rem;
-  }
-}
-
-/* Çok dar sütunlar (dikey tablet): yalnız ikon (ad `title`'da). */
-@media (min-width: 768px) and (max-width: 899px) {
-  .kisayol-karti-etiket {
-    display: none;
   }
 }
 

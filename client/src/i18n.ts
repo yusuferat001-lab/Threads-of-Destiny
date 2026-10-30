@@ -327,6 +327,7 @@ const TR = {
   shSosyallesme: 'Sosyalleş',
   shIsinKisa: 'Yatırım',
   shKariyer: 'Kariyer',
+  pcKararlar: 'Kararlar',
   shEvinKisa: 'Evin',
   shEvFallback: 'Ev',
 
@@ -1063,6 +1064,7 @@ const EN: Metinler = {
   shSosyallesme: 'Socialize',
   shIsinKisa: 'Investments',
   shKariyer: 'Career',
+  pcKararlar: 'Decisions',
   shEvinKisa: 'Home',
   shEvFallback: 'Home',
 

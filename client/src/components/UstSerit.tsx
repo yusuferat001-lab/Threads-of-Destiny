@@ -104,6 +104,14 @@ function StatModulu({
           {degerBirim && <span className="ust-serit-modul-birim"> {degerBirim}</span>}
         </span>
       </div>
+      {/* Dolum çubuğu yalnız PC'de görünür (pc-tema.css); mobilde varsayılan `display:none`. */}
+      {gorunum && (
+        <span
+          className="ust-serit-modul-bar"
+          style={{ ['--oran' as string]: `${Math.round(Math.max(0, Math.min(1, gorunum.oran)) * 100)}%` }}
+          aria-hidden="true"
+        />
+      )}
     </Kok>
   );
 }

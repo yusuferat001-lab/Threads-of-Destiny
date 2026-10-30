@@ -1,0 +1,462 @@
+/*
+ * PC (≥768px) ortak görsel dil: "bordo kadife + altın" — mobildeki olay kutusunun paleti
+ * (olay-kutusu.css: #82202a → #591219 → #360a10, --altin-gradyan çerçeve) yan panellere,
+ * üst şeride ve (sonraki fazlarda) tam sayfa ekranlara taşınır. CK3/EU4 tarzı: yatay alanı
+ * kullanan, başlık şeritli, çerçeveli paneller; parşömen yalnız okuma alanlarında.
+ *
+ * Yalnız `@media (min-width: 768px)` içinde stil verir → mobil (≤767px) görünümü değişmez.
+ * Tokenlar (`--v-*`) global tanımlıdır ama mobil kurallar onları kullanmaz.
+ * App.css, olay-kutusu.css, mobil-oyun.css ve pc-olay-kutusu.css'ten SONRA import edilir.
+ */
+
+:root {
+  /* Kadife zemin (olay kutusuyla birebir). */
+  --v-zemin-1: #82202a;
+  --v-zemin-2: #591219;
+  --v-zemin-3: #360a10;
+  /* Panel yüzeyi: yarı saydam koyu bordo (sahne kenardan sızar). */
+  --v-panel: linear-gradient(180deg, rgba(62, 13, 21, 0.82) 0%, rgba(30, 8, 12, 0.88) 100%);
+  --v-panel-ic: rgba(0, 0, 0, 0.26);
+  --v-baslik: linear-gradient(90deg, rgba(130, 32, 42, 0.95) 0%, rgba(89, 18, 25, 0.92) 100%);
+  --v-kenar: rgba(230, 193, 122, 0.42);
+  --v-kenar-soluk: rgba(230, 193, 122, 0.2);
+  --v-altin: #e6c17a;
+  --v-yazi: #f4e0b0;
+  --v-yazi-soluk: #cdb98e;
+  --v-iyi: #8fc28a;
+  --v-kotu: #e58a74;
+  --v-golge: 0 10px 28px rgba(0, 0, 0, 0.55), inset 0 0 22px rgba(0, 0, 0, 0.42);
+}
+.tema-sanayi {
+  --v-altin: #d9bd72;
+  --v-kenar: rgba(217, 189, 114, 0.4);
+}
+
+/* Üst şerit dolum çubuğu: mobilde hiç görünmez. */
+.ust-serit-modul-bar {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  /* ==== Tek ölçek birimi ====
+     1920×1080 tasarımının 1 pikselinin bu ekrandaki karşılığı; alt sınır küçük laptoplarda
+     (1366×768) yazıların okunur kalmasını sağlar. Olay kutusu da aynı birimi kullanır. */
+  .oyun-ekrani-pc {
+    --u: max(0.78px, min(calc(100vw / 1920), calc(100vh / 1080)));
+    --yz-pn: max(0.8rem, calc(15.5 * var(--u)));
+    --yz-pn-kucuk: max(0.7rem, calc(13 * var(--u)));
+    --yz-pn-baslik: max(0.78rem, calc(14 * var(--u)));
+  }
+
+  /* ==== Sahne: kenar vinyeti, paneller sahnenin üstünde okunur ==== */
+  .oyun-arka-sahne::after {
+    background:
+      radial-gradient(120% 95% at 50% 42%, rgba(10, 4, 6, 0) 52%, rgba(10, 4, 6, 0.55) 100%),
+      linear-gradient(180deg, rgba(12, 8, 5, 0.35) 0%, rgba(12, 8, 5, 0) 22%, rgba(12, 8, 5, 0) 62%, rgba(12, 8, 5, 0.5) 100%);
+  }
+
+  /* ==== Düzen: sabit genişlikli yan sütunlar, esnek merkez ==== */
+  .oyun-ekrani-pc .oyun-govde {
+    grid-template-columns: clamp(250px, 19vw, 400px) minmax(0, 1fr) clamp(230px, 17vw, 360px);
+    gap: clamp(0.6rem, 1vw, 1.1rem);
+  }
+
+  /* ==== Üst şerit: kaynak çubuğu (cam kadife) ==== */
+  .oyun-ekrani-pc > .ust-serit {
+    background: linear-gradient(180deg, rgba(74, 15, 24, 0.86) 0%, rgba(34, 8, 12, 0.9) 100%);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    border: 1px solid var(--v-kenar);
+    border-radius: 12px;
+    box-shadow:
+      0 8px 24px rgba(0, 0, 0, 0.5),
+      inset 0 -2px 0 rgba(230, 193, 122, 0.5),
+      inset 0 0 18px rgba(0, 0, 0, 0.35);
+  }
+  .oyun-ekrani-pc .ust-serit-modul {
+    background: var(--v-panel-ic);
+    border-color: var(--v-kenar-soluk);
+    padding-bottom: calc(0.34rem + 5px);
+  }
+  .oyun-ekrani-pc .ust-serit-modul-tikla:hover,
+  .oyun-ekrani-pc .ust-serit-moduller .ust-serit-modul.ust-serit-modul-tikla:hover,
+  .oyun-ekrani-pc .ust-serit-moduller .ust-serit-modul.ust-serit-modul-tikla:focus-visible {
+    background: rgba(0, 0, 0, 0.4);
+    border-color: var(--v-altin);
+  }
+  .oyun-ekrani-pc .ust-serit-modul-etiket {
+    color: var(--v-yazi-soluk);
+    opacity: 0.9;
+  }
+  .oyun-ekrani-pc .ust-serit-modul-deger {
+    color: var(--v-yazi);
+  }
+  .oyun-ekrani-pc .ust-serit-modul-deger-tehlike {
+    color: var(--v-kotu);
+  }
+  .oyun-ekrani-pc .ust-serit-bolge-buton:hover:not(:disabled),
+  .oyun-ekrani-pc .ust-serit-bolge-buton:focus-visible {
+    border-color: var(--v-altin);
+  }
+  /* Dolum çubuğu (can/para/mutluluk/ahlak/şöhret): değer oranı kadar dolar, ton rengine göre boyanır. */
+  .oyun-ekrani-pc .ust-serit-modul-bar {
+    --bar-renk: #d8a94a;
+    display: block;
+    position: absolute;
+    left: 0.5rem;
+    right: 0.5rem;
+    bottom: 4px;
+    height: 3px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--bar-renk) var(--oran, 0%), rgba(255, 255, 255, 0.12) var(--oran, 0%));
+  }
+  .oyun-ekrani-pc .ust-serit-modul-ton-iyi .ust-serit-modul-bar {
+    --bar-renk: #6fb35a;
+  }
+  .oyun-ekrani-pc .ust-serit-modul-ton-orta .ust-serit-modul-bar {
+    --bar-renk: #d8a94a;
+  }
+  .oyun-ekrani-pc .ust-serit-modul-ton-kotu .ust-serit-modul-bar {
+    --bar-renk: #d9772f;
+  }
+  .oyun-ekrani-pc .ust-serit-modul-ton-kritik .ust-serit-modul-bar {
+    --bar-renk: #d94b3a;
+  }
+
+  /* ==== Yan paneller: kadife pencere ==== */
+  .oyun-ekrani-pc .pc-kadife {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: clamp(0.5rem, 0.8vw, 0.85rem);
+    padding: clamp(0.6rem, 0.9vw, 1rem);
+    color: var(--v-yazi);
+    font-size: var(--yz-pn);
+    background: var(--v-panel);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    border: 1px solid var(--v-kenar);
+    border-radius: 14px;
+    box-shadow: var(--v-golge);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--v-kenar) transparent;
+  }
+
+  /* Başlık şeridi (CK3 pencere başlığı). */
+  .oyun-ekrani-pc .pc-kadife h3,
+  .oyun-ekrani-pc .pc-kadife .amac-paneli-baslik {
+    display: block;
+    margin: 0 0 0.5rem;
+    padding: 0.28rem 0.7rem;
+    font-family: var(--font-baslik);
+    font-size: var(--yz-pn-baslik);
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    text-align: left;
+    color: var(--v-altin);
+    background: var(--v-baslik);
+    border: 1px solid var(--v-kenar-soluk);
+    border-bottom-color: var(--v-kenar);
+    border-radius: 6px;
+    opacity: 1;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+  }
+
+  /* Sol panel bölümleri: iç kart. */
+  .oyun-ekrani-pc .sol-panel > .envanter-paneli,
+  .oyun-ekrani-pc .sol-panel > .siyaset-paneli,
+  .oyun-ekrani-pc .sol-panel > .haberler-paneli,
+  .oyun-ekrani-pc .sol-panel > .isyeri-paneli,
+  .oyun-ekrani-pc .sol-panel > .aile-blok {
+    margin: 0;
+    padding: 0.55rem 0.65rem;
+    background: var(--v-panel-ic);
+    border: 1px solid var(--v-kenar-soluk);
+    border-radius: 10px;
+  }
+  .oyun-ekrani-pc .sol-panel > .envanter-paneli:empty,
+  .oyun-ekrani-pc .sol-panel > .aile-blok:has(> .aile-ozet-paneli:empty) {
+    display: none;
+  }
+
+  /* Kimlik */
+  .oyun-ekrani-pc .sol-panel-kimlik-buton {
+    color: var(--v-yazi);
+    padding: 0.3rem;
+    border: 1px solid transparent;
+    border-radius: 10px;
+  }
+  .oyun-ekrani-pc .sol-panel-kimlik-buton:hover:not(:disabled),
+  .oyun-ekrani-pc .sol-panel-kimlik-buton:focus-visible {
+    background: rgba(230, 193, 122, 0.08);
+    border-color: var(--v-kenar-soluk);
+  }
+  .oyun-ekrani-pc .sol-panel-baslik .sol-panel-isim {
+    color: var(--v-altin);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+  }
+  .oyun-ekrani-pc .sol-panel-baslik strong {
+    color: var(--v-yazi);
+  }
+  .oyun-ekrani-pc .sol-panel-baslik span:not(.sol-panel-isim) {
+    color: var(--v-yazi-soluk);
+  }
+  .oyun-ekrani-pc .sol-panel-mini-barlar {
+    border-top-color: var(--v-kenar-soluk);
+    border-bottom-color: var(--v-kenar-soluk);
+  }
+  .oyun-ekrani-pc .un-rozeti-metin strong {
+    color: var(--v-altin);
+  }
+  .oyun-ekrani-pc .un-rozeti-etiket {
+    color: var(--v-yazi-soluk);
+  }
+
+  /* Finans özeti */
+  .oyun-ekrani-pc .finans-ozet-mini {
+    background: var(--v-panel-ic);
+    border-color: var(--v-kenar-soluk);
+    margin-bottom: 0;
+  }
+  .oyun-ekrani-pc .finans-ozet-mini-satir {
+    font-size: var(--yz-pn-kucuk);
+  }
+  .oyun-ekrani-pc .finans-ozet-mini-etiket {
+    color: var(--v-yazi-soluk);
+    opacity: 1;
+  }
+  .oyun-ekrani-pc .finans-ozet-mini-pozitif {
+    color: var(--v-iyi);
+  }
+  .oyun-ekrani-pc .finans-ozet-mini-negatif,
+  .oyun-ekrani-pc .finans-ozet-mini-net-negatif .finans-ozet-mini-deger {
+    color: var(--v-kotu);
+  }
+  .oyun-ekrani-pc .finans-ozet-mini-net .finans-ozet-mini-deger {
+    color: var(--v-altin);
+  }
+  .oyun-ekrani-pc .finans-ozet-mini-net,
+  .oyun-ekrani-pc .finans-ozet-mini-kirilim,
+  .oyun-ekrani-pc .finans-ozet-mini-dunya {
+    border-top-color: var(--v-kenar-soluk);
+  }
+  .oyun-ekrani-pc .finans-ozet-mini-kirilim,
+  .oyun-ekrani-pc .finans-ozet-mini-dunya li {
+    font-size: var(--yz-pn-kucuk);
+    opacity: 1;
+    color: var(--v-yazi-soluk);
+  }
+
+  /* Siyaset / haberler / işyeri / aile */
+  .oyun-ekrani-pc .siyaset-paneli {
+    margin: 0;
+  }
+  .oyun-ekrani-pc .siyaset-kutu {
+    background: var(--v-panel-ic);
+    border-color: var(--v-kenar-soluk);
+  }
+  .oyun-ekrani-pc .siyaset-kutu-etiket {
+    color: var(--v-yazi-soluk);
+    opacity: 1;
+    font-size: var(--yz-pn-kucuk);
+  }
+  .oyun-ekrani-pc .siyaset-donem {
+    color: var(--v-yazi-soluk);
+    border-top-color: var(--v-kenar-soluk);
+    font-size: var(--yz-pn);
+  }
+  .oyun-ekrani-pc .siyaset-vergi-rozet {
+    color: var(--v-kotu);
+    background: rgba(139, 44, 44, 0.3);
+    border-color: rgba(229, 138, 116, 0.5);
+  }
+  .oyun-ekrani-pc .haberler-listesi {
+    opacity: 1;
+    color: var(--v-yazi);
+    font-size: var(--yz-pn-kucuk);
+  }
+  .oyun-ekrani-pc .isyeri-gorsel {
+    background: rgba(0, 0, 0, 0.22);
+    border-color: var(--v-kenar-soluk);
+  }
+  .oyun-ekrani-pc .isyeri-aciklama {
+    opacity: 1;
+    color: var(--v-yazi-soluk);
+    font-size: var(--yz-pn-kucuk);
+  }
+  .oyun-ekrani-pc .aile-ozet-satir {
+    background: var(--v-panel-ic);
+    border-color: var(--v-kenar-soluk);
+  }
+  .oyun-ekrani-pc .aile-ozet-simge {
+    background: rgba(0, 0, 0, 0.3);
+    border-color: var(--v-kenar-soluk);
+  }
+  .oyun-ekrani-pc .aile-ozet-rol,
+  .oyun-ekrani-pc .aile-ozet-bos {
+    color: var(--v-yazi-soluk);
+    opacity: 1;
+  }
+
+  /* Envanter: mor/yeşil bloklar yerine tek dil */
+  .oyun-ekrani-pc .envanter-esya {
+    background: var(--v-panel-ic);
+    border-color: var(--v-kenar-soluk);
+  }
+  .oyun-ekrani-pc .envanter-esya-magaza {
+    background: rgba(143, 194, 138, 0.08);
+    border-color: rgba(143, 194, 138, 0.35);
+  }
+  .oyun-ekrani-pc .envanter-esya-aciklama {
+    color: var(--v-yazi-soluk);
+    opacity: 1;
+  }
+
+  /* Canlı skor: altın plaka */
+  .oyun-ekrani-pc .canli-skor-rozeti-panel {
+    margin: 0;
+    border-color: var(--v-altin);
+  }
+
+  /* ==== Sağ panel: Kararlar (ikon + etiket satırları) ==== */
+  .oyun-ekrani-pc .sag-panel {
+    padding: clamp(0.6rem, 0.9vw, 1rem);
+    overflow-y: auto;
+  }
+  .oyun-ekrani-pc .pc-bolum {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+  }
+  .oyun-ekrani-pc .pc-bolum-amac .amac-paneli {
+    margin: 0;
+  }
+  .oyun-ekrani-pc .pc-bolum-amac .amac-satir {
+    background: var(--v-panel-ic);
+    border-color: var(--v-kenar-soluk);
+    border-left-color: var(--v-kenar);
+    color: var(--v-yazi);
+  }
+  .oyun-ekrani-pc .pc-bolum-amac .amac-satir.amac-zor {
+    border-left-color: var(--v-altin);
+  }
+  .oyun-ekrani-pc .pc-bolum-amac .amac-satir.amac-tamam {
+    background: rgba(143, 194, 138, 0.1);
+    border-left-color: var(--v-iyi);
+  }
+  .oyun-ekrani-pc .pc-bolum-amac .amac-bonus {
+    color: var(--v-altin);
+    background: rgba(230, 193, 122, 0.14);
+  }
+  .oyun-ekrani-pc .pc-bolum-amac .amac-aciklama,
+  .oyun-ekrani-pc .pc-bolum-amac .amac-alt {
+    color: var(--v-yazi-soluk);
+    opacity: 1;
+  }
+  .oyun-ekrani-pc .pc-bolum-amac .amac-bar {
+    background: rgba(255, 255, 255, 0.12);
+  }
+  .oyun-ekrani-pc .pc-bolum-amac .amac-tamam .amac-ikon {
+    color: var(--v-iyi);
+  }
+
+  .kisayol-kartlari {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.35rem, 0.5vw, 0.55rem);
+    width: 100%;
+    margin: 0;
+  }
+  .kisayol-karti {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.75rem;
+    width: 100%;
+    margin: 0;
+    padding: 0.5rem 2rem 0.5rem 0.6rem;
+    text-align: left;
+    font-family: var(--font-baslik);
+    font-size: var(--yz-pn);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--v-yazi);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+    background: linear-gradient(90deg, rgba(130, 32, 42, 0.6) 0%, rgba(70, 14, 22, 0.72) 100%);
+    border: 1px solid var(--v-kenar);
+    border-radius: 10px;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35), 0 3px 8px rgba(0, 0, 0, 0.4);
+    transition: filter 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+  }
+  .kisayol-karti::after {
+    content: '›';
+    position: absolute;
+    right: 0.8rem;
+    top: 50%;
+    transform: translateY(-52%);
+    font-size: 1.4em;
+    line-height: 1;
+    color: var(--v-altin);
+    opacity: 0.75;
+  }
+  .kisayol-karti:hover:not(:disabled),
+  .kisayol-karti:focus-visible {
+    background: linear-gradient(90deg, rgba(150, 38, 50, 0.72) 0%, rgba(86, 18, 28, 0.8) 100%);
+    border-color: var(--v-altin);
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35), 0 3px 8px rgba(0, 0, 0, 0.4);
+    filter: brightness(1.1);
+    transform: translateX(2px);
+  }
+  .kisayol-karti:focus-visible {
+    outline: 2px solid var(--v-altin);
+    outline-offset: 2px;
+  }
+  .kisayol-karti:active:not(:disabled) {
+    transform: translateX(1px);
+    filter: brightness(0.94);
+  }
+  .kisayol-karti:disabled {
+    opacity: 0.55;
+  }
+  .kisayol-karti-ikon {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.3em;
+    height: 2.3em;
+    font-size: calc(var(--yz-pn) * 1.45);
+    line-height: 1;
+    background: rgba(0, 0, 0, 0.32);
+    border: 1px solid var(--v-kenar-soluk);
+    border-radius: 50%;
+    filter: none;
+  }
+  .kisayol-karti-etiket {
+    flex: 1 1 auto;
+    min-width: 0;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+}
+
+/* Dar PC (≤1400px): üst şerit etiketleri gizlenir, yalnız ikon + değer + çubuk kalır. */
+@media (min-width: 768px) and (max-width: 1400px) {
+  .oyun-ekrani-pc .ust-serit-modul-etiket,
+  .oyun-ekrani-pc .ust-serit-modul-birim {
+    display: none;
+  }
+  .oyun-ekrani-pc .ust-serit-modul {
+    padding-left: 0.35rem;
+    padding-right: 0.35rem;
+    gap: 0.3rem;
+  }
+  .oyun-ekrani-pc .ust-serit-modul-deger {
+    font-size: clamp(0.8rem, 0.5vw + 0.62rem, 1.15rem);
+  }
+}

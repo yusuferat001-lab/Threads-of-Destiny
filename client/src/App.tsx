@@ -172,6 +172,7 @@ import './mobil-oyun.css';
 import './ana-ekran.css';
 import './strateji.css';
 import './pc-olay-kutusu.css';
+import './pc-tema.css';
 
 // Geçici olarak kapatıldı (2026-09): günlük giriş serisi/ödülü, gold bakiyesi ve kozmetik dolabı
 // oyuncuya gösterilmiyor. Alttaki mekanik/veri katmanına dokunulmadı — yeniden açmak için bunu
@@ -2576,7 +2577,7 @@ function App() {
           )}
           <div className="oyun-govde">
             {!mobil && (
-            <YanPanel className="sol-panel panel-parsomen" baslik="" mobil={mobil}>
+            <YanPanel className="sol-panel pc-kadife" baslik="" mobil={mobil}>
               {/* Portre ya da isme dokununca Kişilik & Miras penceresi açılır (default kapalı). */}
               <button
                 type="button"
@@ -2658,9 +2659,7 @@ function App() {
               {!mobil && (
                 // PC: sahne artık sayfa-düzeyi arka plan (yukarıda `.oyun-arka-sahne`); bu boş alan resmi
                 // gösterir, amaç şeridi üstüne biner, olay kutusu altta durur.
-                <div className="merkez-sahne">
-                  <AmacPaneli durum={amaclar} varyant="serit" />
-                </div>
+                <div className="merkez-sahne" />
               )}
               {anaEkranModu && isletme?.aktif && isletmeUyarilari.length > 0 && (
                 <IsletmeBildirimModal
@@ -2704,9 +2703,15 @@ function App() {
             </div>
 
             {!mobil && (
-            <YanPanel className="sag-panel" baslik="" mobil={mobil}>
-              {/* Kariyer · Yatırım · Mağaza · Evin · Sosyalleş · Aile — 2×3 büyük kare karo. */}
-              {kisayolKartlari(['kariyer', 'yatirim', 'magaza', 'ev', 'sosyallesme', 'aile'])}
+            <YanPanel className="sag-panel pc-kadife" baslik="" mobil={mobil}>
+              {/* Kariyer · Yatırım · Mağaza · Evin · Sosyalleş · Aile — başlıklı kadife karar paneli. */}
+              <section className="pc-bolum">
+                <h3 className="pc-bolum-baslik">{m.pcKararlar}</h3>
+                {kisayolKartlari(['kariyer', 'yatirim', 'magaza', 'ev', 'sosyallesme', 'aile'])}
+              </section>
+              <section className="pc-bolum pc-bolum-amac">
+                <AmacPaneli durum={amaclar} varyant="panel" />
+              </section>
             </YanPanel>
             )}
           </div>
