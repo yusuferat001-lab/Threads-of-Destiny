@@ -3455,7 +3455,7 @@ export function krediPazarlik(state: CharacterState): string {
   const kalanYil = Math.max(1, (k.vadeYil ?? 6) - (state.yil - k.alindigiYil));
   const sans = Math.min(40, Math.max(25, 25 + (state.un - 20) / 8 + (state.ahlak - 50) / 16)); // ~%25-40
   if (Math.random() * 100 < sans) {
-    k.faizOrani = Math.max(0.07, Math.round((k.faizOrani - 0.04) * 100) / 100);
+    k.faizOrani = Math.max(0.02, Math.round((k.faizOrani - 0.04) * 100) / 100);
     k.yillikTaksit = Math.max(2, Math.ceil(annuiteTaksit(k.kalanBorc, k.faizOrani, kalanYil)));
     return T(state.dil, "Tefeci homurdandı ama faizi %{0}'e indirdi.", [Math.round(k.faizOrani * 100)]);
   }

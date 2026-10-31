@@ -126,7 +126,7 @@ describe("Kredi / tefeci (havuzdan 2 teklif, vadeli)", () => {
     expect(s.kredi_teklifleri!.yil).toBe(s.yil); // yenilendi
   });
 
-  it("havuzda kısa vade = yüksek faiz, uzun vade = düşük faiz; tüm vadeler 7–11 yıl (v29), faizler %7–13 (v18)", () => {
+  it("havuzda kısa vade = yüksek faiz, uzun vade = düşük faiz; tüm vadeler 7–12 yıl, faizler %5–9, toplam faiz maliyeti %32–47 (v30)", () => {
     for (const boyut of ["kucuk", "orta", "buyuk"]) {
       const kisa = KREDI_HAVUZU.find((k) => k.id === `kisa_${boyut}`)!;
       const uzun = KREDI_HAVUZU.find((k) => k.id === `uzun_${boyut}`)!;
@@ -135,9 +135,16 @@ describe("Kredi / tefeci (havuzdan 2 teklif, vadeli)", () => {
     }
     for (const k of KREDI_HAVUZU) {
       expect(k.vade).toBeGreaterThanOrEqual(7);
-      expect(k.vade).toBeLessThanOrEqual(11);
-      expect(k.faiz).toBeGreaterThanOrEqual(0.07);
-      expect(k.faiz).toBeLessThanOrEqual(0.13);
+      expect(k.vade).toBeLessThanOrEqual(12);
+      expect(k.faiz).toBeGreaterThanOrEqual(0.05);
+      expect(k.faiz).toBeLessThanOrEqual(0.09);
+      // gerçek ödeme akışı: faiz işler, yukarı yuvarlanmış taksit ödenir
+      const taksit = Math.ceil(annuiteTaksit(k.tutar, k.faiz, k.vade));
+      let borc = k.tutar, toplam = 0;
+      while (borc > 0) { borc = Math.round(borc * (1 + k.faiz) * 100) / 100; const o = Math.min(taksit, borc); toplam += o; borc -= o; }
+      const maliyet = (toplam - k.tutar) / k.tutar;
+      expect(maliyet).toBeGreaterThanOrEqual(0.32);
+      expect(maliyet).toBeLessThanOrEqual(0.47);
     }
   });
 
@@ -234,7 +241,7 @@ describe("Kredi / tefeci (havuzdan 2 teklif, vadeli)", () => {
     s.maas_yillik = 100;
     krediAl(s, krediTeklifleri(s)[0].id);
     krediPazarlik(s);
-    expect(s.kredi!.faizOrani).toBeGreaterThanOrEqual(0.07);
+    expect(s.kredi!.faizOrani).toBeGreaterThanOrEqual(0.02);
     expect(s.kredi!.faizOrani).toBeLessThanOrEqual(0.17);
     expect(s.kredi!.pazarlikYapildi).toBe(true);
   });

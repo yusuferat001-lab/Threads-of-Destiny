@@ -2067,3 +2067,6 @@ Bu blok önceki §13/§45 maddelerinin üzerine yazar.
 - **Lonca aidatı** (satışa göre): pay %0-15 → %2 · 15-25 → %3 · 25-35 → %4 · 35-45 → %5 · 45+ → %6. **Savaş vergisi eki** +10 → **+5 puan** (vergi %25).
 - **Kredi vadeleri +1 yıl** (7/10/8/11/9/11; faizler aynı). Mevcut krediler eski vadesini korur.
 - **Skor:** `isletmePuani = meslek_musteri × 25` (sunucu `hesaplaSkorKirilimi` + istemci `skor.ts` + kırılım paneli).
+
+### §45 v30 (2026-10) — Kredi: vade 7–12 yıl, faiz %5–9, toplam faiz maliyeti %32–47
+Bu blok §45 v29 kredi maddesinin üzerine yazar. Havuz (tutar · faiz · vade · taksit · toplam faiz maliyeti): kısa küçük 43 · %9 · 7y · 9 · %36,8 — uzun küçük 50 · %6 · 10y · 7 · %34,6 — kısa orta 90 · %9 · 8y · 17 · %42,1 — uzun orta 104 · %6 · 11y · 14 · %36,4 — kısa büyük 161 · %8 · 9y · 26 · %43,6 — uzun büyük 181 · %5 · 12y · 21 · %34,2. Pazarlıkta faiz tabanı %7 → %2'ye indi (başarıda −4 puan, başarısızlıkta +5 puan, tavan %17). Borçluyken +4 puan primi aynen duruyor. Test: `yeniOzellikler.test.ts` gerçek ödeme akışıyla %32–47 aralığını doğrular.
