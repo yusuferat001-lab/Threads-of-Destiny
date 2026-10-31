@@ -2058,3 +2058,12 @@ Bu blok §45 v12/v15/v22/v24 depo-bakım, tezgâh ve güvenlik maddelerinin üze
 - **Yeni değerler (main'in v22–v26 fiyat tabanı + %5 marj üstüne):** Tüccar OÇ Tahıl talep 1,456 · Kumaş fiyat 1,86 · Şarap 2,08 · Silah talep 0,612 · Baharat fiyat 4,89 · Kürk 5,07; Tüccar SD Tahıl talep 1,469 · Pamuklu fiyat 2,10 · Çay ve Kahve 2,35 · Makine talep 0,582 · İpek fiyat 5,23; Zanaatkâr OÇ Kap fiyat 1,06 · Mobilya 1,70 · Kılıç talep 0,829 · Kuyum fiyat 4,17; Zanaatkâr SD Ayakkabı fiyat 1,07 · Mobilya ve Cam 1,64 · Makine talep 0,792 · Saat fiyat 3,83.
 - **50 yıllık toplam (⭐ = başlangıç, 100 müşteri):** Tüccar OÇ ⭐ ≈ 2.734 (sonradan ≈ 2.870) · Tüccar SD ⭐ ≈ 3.096 (≈ 3.251) · Zanaatkâr OÇ ⭐ ≈ 3.421 (≈ 3.592) · Zanaatkâr SD ⭐ ≈ 2.845 (≈ 2.987).
 - **Test:** `tests/urunDengesi.test.ts` (⭐ üçlü maks/min ≤ 1,10, S2+ sonradan açılan ≥ ⭐ ort. ×1,03, her dönemde ürün katkısı > 0). Kalibrasyon betiği: oturum scratchpad'i `urunDengele.ts` (profil verisini okuyup çarpan hesaplar).
+
+### §45 v29 (2026-10) — Maaş giriş seviyesine sabit, gider enflasyonu ×1,1, maaş dükkân neti içinde, aidat/vergi/kredi/skor
+Bu blok önceki §13/§45 maddelerinin üzerine yazar.
+- **Çalışan maaşı** yalnız işe alırken ölçülen giriş Yetenek/Sadakat'ine (`y_giris`/`s_giris`) bağlıdır; gelişse bile `maas_taban` değişmez, yılda yalnız gider enflasyonu uygulanır. Yetenek/sadakat ağırlıkları (0,02·Y + 0,01·S) değişmedi.
+- **Gider enflasyonu = gelir enflasyonunun ×1,1'i** (`GIDER_ENFLASYON_KATSAYISI`; OÇ %1,1, SD %2,2). Alış, bakım, maaş, yatırım, yaşam, kira + mağaza fiyatları/eşya ve mülk bakımı, karanlık iş/ajan ücreti, sosyalleşme/içki, aile (düğün, hediye, gönül al), kefaret, salgın korunma artık `giderEnflasyonCarpani`. Mülk alış fiyatı/değeri, kredi tutarları, bahis kademeleri ve çeyiz gelir enflasyonunda kalır.
+- **Çalışan maaşları dükkân netinin içindedir:** `net = brüt − vergi − borç ödemesi − hasar − çalışan maaşı` (vergi tabanı değişmedi). `giderKalemleriHesapla().ekip` işletmeli mesleklerde 0 (çift düşüş yok); `cebineKalan = net − yaşam/kira − kredi taksidi`. Ekstra vergi tabanı (`son_dokum.net`) artık maaş sonrası net kârdır.
+- **Lonca aidatı** (satışa göre): pay %0-15 → %2 · 15-25 → %3 · 25-35 → %4 · 35-45 → %5 · 45+ → %6. **Savaş vergisi eki** +10 → **+5 puan** (vergi %25).
+- **Kredi vadeleri +1 yıl** (7/10/8/11/9/11; faizler aynı). Mevcut krediler eski vadesini korur.
+- **Skor:** `isletmePuani = meslek_musteri × 25` (sunucu `hesaplaSkorKirilimi` + istemci `skor.ts` + kırılım paneli).

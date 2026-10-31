@@ -5257,7 +5257,7 @@ function cemaatGorunumuHesapla(state: CharacterState, b: IsletmeBaglami): Cemaat
       yardim: paraYuvarla(h.yardim), aidat: paraYuvarla(h.aidat), vergi: paraYuvarla(vergiTutar),
     },
     beklenenBrut: paraYuvarla(h.brutKar),
-    beklenenNet: paraYuvarla(h.brutKar - vergiTutar),
+    beklenenNet: paraYuvarla(h.brutKar - vergiTutar - state.ekip.reduce((t, u) => t + u.maas, 0)),
     bagisOrani: Math.round(h.bagisOrani * 1000) / 10,
     bagisYapan: Math.round(h.bagisYapan * 10) / 10,
     politikalar: {
@@ -5472,7 +5472,7 @@ function butceVeCebineKalan(state: CharacterState, b: IsletmeBaglami) {
   const g = giderKalemleriHesapla(state);
   const yasamKira = paraYuvarla(g.yasam + g.konut + g.evcilHayvan);
   const krediTaksit = state.kredi ? paraYuvarla(Math.min(state.kredi.kalanBorc, state.kredi.yillikTaksit)) : 0;
-  return { ...butce, yasamKira, krediTaksit, cebineKalan: paraYuvarla(butce.net - butce.maas - yasamKira - krediTaksit) };
+  return { ...butce, yasamKira, krediTaksit, cebineKalan: paraYuvarla(butce.net - yasamKira - krediTaksit) };
 }
 
 export async function isletmeDurumGetir(id: string): Promise<IsletmeGorunumu> {

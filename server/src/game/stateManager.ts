@@ -2487,7 +2487,8 @@ export function giderKalemleriHesapla(state: CharacterState): GiderKalemleri {
       (yasamSecenegi?.maliyetYillik ?? 0) * yasamMaliyetCarpaniGetir(state) * donemCarpani * savasGidaCarpani * enflasyon
     ),
     konut: paraYuvarla((konutGetir(state.konut_id)?.kiraYillik ?? 0) * enflasyon),
-    ekip: state.ekip.reduce((toplam, uye) => toplam + uye.maas, 0),
+    // v29: işletmeli mesleklerde çalışan maaşları dükkân netinin içindedir (burada ayrıca düşülmez).
+    ekip: isletmeAktif(state) ? 0 : state.ekip.reduce((toplam, uye) => toplam + uye.maas, 0),
     evcilHayvan: evcilHayvanSayisi(state) > 0 ? paraYuvarla(EVCIL_HAYVAN_GIDERI_YILLIK * enflasyon * evcilHayvanSayisi(state)) : 0,
     // İşletmeli mesleklerde savaş vergisi yıllık vergi oranının içindedir (isletme.ts vergiOrani); çifte kesinti olmasın.
     savasVergisi: state.buyuk_savas && !isletmeAktif(state) ? paraYuvarla(hesaplaMaasYillik(state) * state.buyuk_savas.vergiOrani) : 0,
@@ -2859,6 +2860,8 @@ export function sansOlayiDene(state: CharacterState): string | null {
  */
 const SKOR_RUTBE_PUANI = [625, 1500, 2625, 4000, 5625] as const;
 const SKOR_TIK_PUANI = 3000;
+/** v29: işletme puanı = müşteri sayısı × bu katsayı (müşteri = meslek_musteri; Din Adamı'nda inanan). */
+const SKOR_ISLETME_CARPAN = 25;
 const SKOR_SOHRET_CARPAN = 300;
 const SKOR_AHLAK_CARPAN = 200;
 const SKOR_MUTLULUK_CARPAN = 100;
@@ -2882,6 +2885,8 @@ export interface SkorKirilimi {
   ahlakPuani: number;
   mutlulukPuani: number;
   rutbePuani: number;
+  /** Müşteri sayısı × 25 (işletme büyüklüğü). */
+  isletmePuani: number;
   tikPuani: number;
   tikSayisi: number;
   sarayda: boolean;
@@ -2903,6 +2908,7 @@ export function hesaplaSkorKirilimi(state: CharacterState): SkorKirilimi {
   const mutlulukPuani = Math.round(Math.max(state.mutluluk, 0) * SKOR_MUTLULUK_CARPAN);
   const rutbeIndeks = Math.min(Math.max(state.rutbe_seviye, 1), 5) - 1;
   const rutbePuani = SKOR_RUTBE_PUANI[rutbeIndeks];
+  const isletmePuani = Math.round(Math.max(state.meslek_musteri ?? 0, 0) * SKOR_ISLETME_CARPAN);
   const sarayda = state.etiketler.includes("sarayda");
   const yolculukTamamlandi = state.etiketler.includes("yolculuk_tamamlandi");
   const gizemliEsyaSahibi = state.etiketler.some(
@@ -2917,7 +2923,7 @@ export function hesaplaSkorKirilimi(state: CharacterState): SkorKirilimi {
     (state.veba_hayatta_kaldi ? SKOR_VEBA_HAYATTA_KALMA_PUANI : 0) +
     (state.hapis_basarili_kacis ? SKOR_HAPIS_BASARILI_KACIS_PUANI : 0);
   const temelToplam =
-    servetPuani + sohretPuani + ahlakPuani + mutlulukPuani + rutbePuani + tikPuani + basariOlayiPuani;
+    servetPuani + sohretPuani + ahlakPuani + mutlulukPuani + rutbePuani + isletmePuani + tikPuani + basariOlayiPuani;
   // Eski kayıt/test (hayat_amaclari boş, tekil hayat_amaci dolu) için ×5 fallback korunur.
   const amacCarpani =
     (state.hayat_amaclari?.length ?? 0) > 0
@@ -2932,6 +2938,7 @@ export function hesaplaSkorKirilimi(state: CharacterState): SkorKirilimi {
     ahlakPuani,
     mutlulukPuani,
     rutbePuani,
+    isletmePuani,
     tikPuani,
     tikSayisi,
     sarayda,

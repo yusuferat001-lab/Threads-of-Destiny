@@ -561,12 +561,14 @@ describe("işletme (Tüccar dilimi)", () => {
     expect(d2.uyarilar.some((u) => u.kod === "hirsizlik")).toBe(false);
   });
 
-  it("lonca aidatı pay'a göre: %2; pay %15'i geçince %3, %20'yi geçince %4, %30'u geçince %5", () => {
+  it("lonca aidatı pay'a göre: %0-15 → %2, 15-25 → %3, 25-35 → %4, 35-45 → %5, 45+ → %6", () => {
     expect(loncaAidatiOrani(0.05)).toBeCloseTo(0.02);
     expect(loncaAidatiOrani(0.15)).toBeCloseTo(0.03);
-    expect(loncaAidatiOrani(0.2)).toBeCloseTo(0.04);
-    expect(loncaAidatiOrani(0.3)).toBeCloseTo(0.05);
-    expect(loncaAidatiOrani(0.6)).toBeCloseTo(0.05);
+    expect(loncaAidatiOrani(0.2)).toBeCloseTo(0.03);
+    expect(loncaAidatiOrani(0.25)).toBeCloseTo(0.04);
+    expect(loncaAidatiOrani(0.35)).toBeCloseTo(0.05);
+    expect(loncaAidatiOrani(0.45)).toBeCloseTo(0.06);
+    expect(loncaAidatiOrani(0.6)).toBeCloseTo(0.06);
   });
 
   it("Koruma: güvenlik çalışanı + yatırım + otorite (≥70 ilişki +0,10), tavan 1", async () => {
@@ -584,13 +586,13 @@ describe("işletme (Tüccar dilimi)", () => {
     expect(korumaHesapla(s).otorite).toBeCloseTo(0.1);
   });
 
-  it("vergi: kârın %20'si; savaşta +10 puan; otorite ilişkisi <25'te +3 puan; indirim yarıya indirir; zarar yılında vergi yok", async () => {
+  it("vergi: kârın %20'si; savaşta +5 puan; otorite ilişkisi <25'te +3 puan; indirim yarıya indirir; zarar yılında vergi yok", async () => {
     const s = await tuccar();
     s.yonetim_iliski = 50;
     s.ulke.savasta = false;
     expect(vergiOrani(s)).toBeCloseTo(0.2);
     s.ulke.savasta = true;
-    expect(vergiOrani(s)).toBeCloseTo(0.3);
+    expect(vergiOrani(s)).toBeCloseTo(0.25);
     s.ulke.savasta = false;
     s.yonetim_iliski = 10;
     expect(vergiOrani(s)).toBeCloseTo(0.23);
@@ -775,8 +777,8 @@ describe("v11: ilk 7 yıl güvenli dönem, dürüst bütçe, ürün bonusu", () 
     const g = await isletmeDurumGetir(s.id);
     const b = g.butce;
     expect(b.brut).toBeCloseTo(b.satis - b.alim - b.depo - b.aidat, 1);
-    expect(b.net).toBeCloseTo(b.brut - b.vergi - b.borcOdeme, 1);
-    expect(b.cebineKalan).toBeCloseTo(b.net - b.maas - b.yasamKira - b.krediTaksit, 1);
+    expect(b.net).toBeCloseTo(b.brut - b.vergi - b.borcOdeme - b.maas, 1);
+    expect(b.cebineKalan).toBeCloseTo(b.net - b.yasamKira - b.krediTaksit, 1);
     const { dokum } = isletmeYilIsle(s, isletmeBaglami(s));
     expect(typeof dokum.calisanMaasi).toBe("number");
     expect(typeof dokum.curumeKaybi).toBe("number");

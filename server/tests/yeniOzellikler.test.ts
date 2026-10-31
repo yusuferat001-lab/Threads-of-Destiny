@@ -126,7 +126,7 @@ describe("Kredi / tefeci (havuzdan 2 teklif, vadeli)", () => {
     expect(s.kredi_teklifleri!.yil).toBe(s.yil); // yenilendi
   });
 
-  it("havuzda kısa vade = yüksek faiz, uzun vade = düşük faiz; tüm vadeler 6–10 yıl, faizler %7–13 (v18)", () => {
+  it("havuzda kısa vade = yüksek faiz, uzun vade = düşük faiz; tüm vadeler 7–11 yıl (v29), faizler %7–13 (v18)", () => {
     for (const boyut of ["kucuk", "orta", "buyuk"]) {
       const kisa = KREDI_HAVUZU.find((k) => k.id === `kisa_${boyut}`)!;
       const uzun = KREDI_HAVUZU.find((k) => k.id === `uzun_${boyut}`)!;
@@ -134,8 +134,8 @@ describe("Kredi / tefeci (havuzdan 2 teklif, vadeli)", () => {
       expect(kisa.faiz).toBeGreaterThan(uzun.faiz);
     }
     for (const k of KREDI_HAVUZU) {
-      expect(k.vade).toBeGreaterThanOrEqual(6);
-      expect(k.vade).toBeLessThanOrEqual(10);
+      expect(k.vade).toBeGreaterThanOrEqual(7);
+      expect(k.vade).toBeLessThanOrEqual(11);
       expect(k.faiz).toBeGreaterThanOrEqual(0.07);
       expect(k.faiz).toBeLessThanOrEqual(0.13);
     }

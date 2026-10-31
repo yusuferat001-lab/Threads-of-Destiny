@@ -151,10 +151,11 @@ export const URETIM_TABAN = 60; // v26: 80→60 — tavan gerçek talebe yaklaş
 export const URETIM_ANA_TALEP_PAYI = 0.55;
 export const URETIM_METRIK_CARPANI = 0.2;
 
-// Lonca aidatı (v20): satışın %2'si; pay %15'i geçince %3, %20'yi geçince %4, %30'u geçince %5. Brüt kârdan vergiden önce düşer.
+// Lonca aidatı (v29): satışın %2'si (pay %0-15); %15-25 → %3, %25-35 → %4, %35-45 → %5, %45 ve üstü → %6. Brüt kârdan vergiden önce düşer.
 export const LONCA_AIDATI_ESIKLERI: { payUstu: number; oran: number }[] = [
-  { payUstu: 0.3, oran: 0.05 },
-  { payUstu: 0.2, oran: 0.04 },
+  { payUstu: 0.45, oran: 0.06 },
+  { payUstu: 0.35, oran: 0.05 },
+  { payUstu: 0.25, oran: 0.04 },
   { payUstu: 0.15, oran: 0.03 },
   { payUstu: 0, oran: 0.02 },
 ];
@@ -164,7 +165,7 @@ export function loncaAidatiOrani(pay: number): number {
 
 // Vergi
 export const VERGI_TABAN_ORANI = 0.2;
-export const VERGI_SAVAS_EKI = 0.1;
+export const VERGI_SAVAS_EKI = 0.05; // v29: savaşta vergi +5 puan
 export const VERGI_KOTU_ILISKI_EKI = 0.03;
 export const VERGI_KOTU_ILISKI_ESIGI = 25;
 
@@ -797,7 +798,7 @@ export function isletmeButcesi(state: CharacterState, b: IsletmeBaglami): Isletm
   const maas = r2(state.ekip.reduce((t, u) => t + u.maas, 0));
   if (profil.mod === "cemaat") {
     const brut = cemaatBeklenenKar(state, b);
-    return { ...bos, brut, net: brut, maas };
+    return { ...bos, brut, net: r2(brut - maas), maas };
   }
   const curume = curumeOrani(is);
   let satis = 0;
@@ -832,7 +833,7 @@ export function isletmeButcesi(state: CharacterState, b: IsletmeBaglami): Isletm
     brut: r2(brut),
     vergi: r2(vergi),
     borcOdeme: r2(borcOdeme),
-    net: r2(brut - vergi - borcOdeme),
+    net: r2(brut - vergi - borcOdeme - maas),
     maas,
   };
 }
@@ -842,12 +843,12 @@ export function beklenenBrutKar(state: CharacterState, b: IsletmeBaglami): numbe
   return isletmeButcesi(state, b).brut;
 }
 
-/** hesaplaMaasYillik'in işletme karşılığı: geçen yılın DÜKKAN NETİ (brüt − vergi − borç ödemesi); ilk yıl beklenen net. Eksi olabilir (zarar). */
+/** hesaplaMaasYillik'in işletme karşılığı: geçen yılın DÜKKAN NETİ (brüt − vergi − borç ödemesi − çalışan maaşları); ilk yıl beklenen net. Eksi olabilir (zarar). */
 export function isletmeGelirTahmini(state: CharacterState, b: IsletmeBaglami): number {
   const is = state.isletme;
   if (!is) return 1;
   const d = is.son_dokum;
-  if (d) return r2(d.brutKar - d.vergi - d.borcOdeme);
+  if (d) return r2(d.brutKar - d.vergi - d.borcOdeme - (d.calisanMaasi ?? 0));
   return isletmeButcesi(state, b).net;
 }
 
@@ -1344,7 +1345,9 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
     borcOdeme = r2(Math.min(is.tedarikci_borcu, vergiSonrasi * BORC_ODEME_ORANI));
     is.tedarikci_borcu = r2(is.tedarikci_borcu - borcOdeme);
   }
-  const net = r2(brutKar - vergi - borcOdeme - nakitHasar - ekstraGider);
+  // v29: çalışan maaşları dükkân netinin İÇİNDEDİR.
+  const calisanMaasi = r2(state.ekip.reduce((t, u) => t + u.maas, 0));
+  const net = r2(brutKar - vergi - borcOdeme - nakitHasar - ekstraGider - calisanMaasi);
 
   // 9. Toplam pazar büyüklüğü (dönem/savaş/veba): herkesin müşterisi aynı oranda değişir.
   pazarOlcekle(state, 1 + pazarBuyumeOrani(state));
@@ -1357,7 +1360,7 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
     depoMasrafi: r2(depoMasrafi),
     yatirimMasrafi,
     loncaAidati,
-    calisanMaasi: r2(state.ekip.reduce((t, u) => t + u.maas, 0)),
+    calisanMaasi,
     nakitHasar: r2(nakitHasar),
     ekstraGider: r2(ekstraGider),
     curumeKaybi: r2(curumeKaybi),

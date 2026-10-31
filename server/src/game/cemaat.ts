@@ -552,7 +552,9 @@ export function cemaatYilIsle(state: CharacterState, b: IsletmeBaglami): Isletme
 
   // 8. Vergi, net.
   const vergi = h.brutKar > 0 ? r2(h.brutKar * h.vergiOrani) : 0;
-  const net = r2(h.brutKar - vergi - nakitHasar - ekstraGider);
+  // v29: çalışan maaşları dükkân netinin içindedir.
+  const calisanMaasi = r2(state.ekip.reduce((t, u) => t + u.maas, 0));
+  const net = r2(h.brutKar - vergi - nakitHasar - ekstraGider - calisanMaasi);
 
   // 9. Toplam pazar büyüklüğü (dönem/savaş/veba).
   pazarOlcekle(state, 1 + pazarBuyumeOrani(state));
@@ -566,7 +568,7 @@ export function cemaatYilIsle(state: CharacterState, b: IsletmeBaglami): Isletme
     depoMasrafi: r2(h.binaBakim),
     yatirimMasrafi: yatirimYillikMasrafi(state, b.giderEnflasyon),
     loncaAidati: r2(h.aidat),
-    calisanMaasi: r2(state.ekip.reduce((t, u) => t + u.maas, 0)),
+    calisanMaasi,
     nakitHasar: r2(nakitHasar),
     ekstraGider: r2(ekstraGider),
     curumeKaybi: 0,
