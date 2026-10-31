@@ -444,7 +444,7 @@ describe("işletme (Tüccar dilimi)", () => {
     expect(maasTabani(90, 80)).toBeGreaterThan(maasTabani(20, 10));
   });
 
-  it("çalışan çalıştıkça gelişir (Yetenek +0,3, Sadakat +0,6) ve maaşı güncel Yetenek/Sadakat'e göre artar", async () => {
+  it("çalışan çalıştıkça gelişir (Yetenek +0,3, Sadakat +0,6) ama maaşı sabit kalır (yalnız enflasyon)", async () => {
     const s = await tuccar();
     const u = uye("ana", 50, 50);
     s.ekip = [u];
@@ -452,12 +452,10 @@ describe("işletme (Tüccar dilimi)", () => {
     isletmeYilIsle(s, isletmeBaglami(s));
     expect(u.gercekKalite).toBeCloseTo(50.3);
     expect(u.sadakat).toBeCloseTo(50.6);
-    expect(u.maas_taban).toBeCloseTo(maasTabani(50.3, 50.6), 2);
-    expect(u.maas_taban).toBeGreaterThan(taban);
-    // yıllar içinde artmaya devam eder
+    expect(u.maas_taban).toBeCloseTo(taban, 5);
     for (let i = 0; i < 10; i++) isletmeYilIsle(s, isletmeBaglami(s));
-    expect(u.maas_taban).toBeCloseTo(maasTabani(u.gercekKalite, u.sadakat), 2);
-    expect(u.maas_taban).toBeGreaterThan(taban * 1.05);
+    expect(u.gercekKalite).toBeGreaterThan(50.3);
+    expect(u.maas_taban).toBeCloseTo(maasTabani(50, 50), 2);
   });
 
   it("dükkân gideri = yalnız depo bakımı; depo dışı yatırım kademesi yıllık masraf çıkarmaz", async () => {

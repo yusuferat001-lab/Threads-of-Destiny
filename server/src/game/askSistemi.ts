@@ -5,7 +5,7 @@ import { AileHuy, AktifTanisma, CharacterState, Sevgili, TanismaAdayi, TanismaYa
 import { T } from "../i18n";
 import {
   clampStats,
-  enflasyonCarpani,
+  giderEnflasyonCarpani,
   etiketEkle,
   hayatOlayiEkle,
   MESLEKLER,
@@ -273,7 +273,7 @@ export function sevgiliKontrolEt(state: CharacterState): Sevgili {
 }
 
 export function gonulAlMaliyeti(state: CharacterState): number {
-  return Math.max(1, paraYuvarla(S.GONUL_AL_MALIYET * enflasyonCarpani(state)));
+  return Math.max(1, paraYuvarla(S.GONUL_AL_MALIYET * giderEnflasyonCarpani(state)));
 }
 
 /** Gönül al: bedel öder, dargınlığı giderir, barı toparlar ve evlilik teklifi süresini uzatır. */

@@ -2317,7 +2317,7 @@ async function sonucuUygulaVeIlerlet(
     // Büyük denge turu: sosyalleşme "masraflı ama moral verir". Mekân olayı çözülünce
     // enflasyonla ölçekli sabit bir ek masraf düşülür ve moral (jittersiz, sabit) yükselir —
     // 73 sosyalleşme olayını tek tek elden geçirmeye gerek kalmadan.
-    etki.para = paraYuvarla((etki.para ?? 0) - SOSYALLESME_EK_MASRAF * enflasyonCarpani(state));
+    etki.para = paraYuvarla((etki.para ?? 0) - SOSYALLESME_EK_MASRAF * giderEnflasyonCarpani(state));
     etki.mutluluk = (etki.mutluluk ?? 0) + SOSYALLESME_MORAL_BONUSU;
     const ziyaretEdilenYer = sosyallesmeYeriGetir(mevcutOlay.sosyallesmeYeri);
     if (ziyaretEdilenYer?.alkolluMu) {
@@ -2893,7 +2893,7 @@ function aileEtkilesimKilitAnahtari(tanim: AileEtkilesimTanimi, cocukIndex: numb
 
 function aileEtkilesimMaliyeti(state: CharacterState, tanim: AileEtkilesimTanimi): number {
   if (tanim.tabanMaliyet <= 0) return 0;
-  return Math.max(1, paraYuvarla(tanim.tabanMaliyet * enflasyonCarpani(state)));
+  return Math.max(1, paraYuvarla(tanim.tabanMaliyet * giderEnflasyonCarpani(state)));
 }
 
 export interface MantikAdayGorunum {
@@ -4445,7 +4445,7 @@ export async function kotuIsConfigGetir(id: string): Promise<KotuIsKarti[]> {
     simge: tanim.simge,
     basariSansi: kotuIsBasariSansi(state, tanim),
     tahminiKazanc: tanim.basarili.para ? Math.max(1, paraYuvarla(tanim.basarili.para * enflasyon)) : 0,
-    maliyet: tanim.maliyet ? Math.max(1, paraYuvarla(tanim.maliyet * enflasyon)) : 0,
+    maliyet: tanim.maliyet ? Math.max(1, paraYuvarla(tanim.maliyet * giderEnflasyonCarpani(state))) : 0,
     rakibeYonelik: !!(tanim.rakipKirmaYuzde || tanim.rakipYenilt),
     rakipKirmaYuzde: tanim.rakipYenilt ? 100 : Math.round((tanim.rakipKirmaYuzde ?? 0) * 100),
     musteriKazanci: Math.round(((tanim.basarili.musteri ?? 0) * (state.pazar_musteri ?? 416)) / PAZAR_REF_MUSTERI),
@@ -4712,7 +4712,7 @@ export async function kotuIsYap(id: string, tur: string, secenek: KotuIsSecenek 
   const dil = state.dil;
   const birim = state.para_birimi;
 
-  const maliyet = tanim.maliyet ? Math.max(1, paraYuvarla(tanim.maliyet * enflasyon)) : 0;
+  const maliyet = tanim.maliyet ? Math.max(1, paraYuvarla(tanim.maliyet * giderEnflasyonCarpani(state))) : 0;
   if (state.para < maliyet) throw new Error(`Yeterli paran yok (${maliyet} ${birim} gerekli).`);
 
   // Rakip hedefleme: yalnız rakip kıran işlerde ve geçerli/yenilmemiş bir rakip için.
@@ -4931,7 +4931,7 @@ export interface AjanDurumu {
 }
 
 function ajanDurumuHesapla(state: CharacterState): AjanDurumu {
-  const enflasyon = enflasyonCarpani(state);
+  const enflasyon = giderEnflasyonCarpani(state);
   const isler = uygunKotuIsler(state.meslek, state.cag);
   return {
     roller: AJAN_ROLLERI.map((r) => ({
@@ -4963,7 +4963,7 @@ export async function ajanTut(id: string, rol: string): Promise<{ state: Charact
   const tanim = ajanRolTanimiGetir(rol);
   if (!tanim) throw new Error("Geçersiz rol.");
   if (state.ekip.some((e) => e.rol === tanim.rol)) throw new Error(`Zaten bir ${tanim.rol} tutuyorsun.`);
-  const ucret = Math.max(1, paraYuvarla(tanim.ucret * enflasyonCarpani(state)));
+  const ucret = Math.max(1, paraYuvarla(tanim.ucret * giderEnflasyonCarpani(state)));
   if (state.para < ucret) throw new Error(`Yeterli paran yok (${ucret} ${state.para_birimi} gerekli).`);
 
   const isim = rastgeleBirIsimSec(state.cag, state.bolge, [
@@ -6107,7 +6107,7 @@ export async function sosyallesmeYerleriGetir(id: string): Promise<SosyallesmeYe
       ziyaretSayisi: yer.alkolluMu ? state.alkol_ziyaret_sayisi : undefined,
       kilitli: kalanYil > 0,
       kalanYil,
-      girisUcreti: paraYuvarla(SOSYALLESME_GIRIS_UCRETI * enflasyonCarpani(state)),
+      girisUcreti: paraYuvarla(SOSYALLESME_GIRIS_UCRETI * giderEnflasyonCarpani(state)),
     };
   });
 }
@@ -6149,7 +6149,7 @@ export async function sosyallesmeYerineGit(id: string, yerId: string): Promise<S
       throw new Error("Önce önündeki olayı çöz; sonra mekâna gidebilirsin.");
     }
   }
-  const girisUcreti = paraYuvarla(SOSYALLESME_GIRIS_UCRETI * enflasyonCarpani(state));
+  const girisUcreti = paraYuvarla(SOSYALLESME_GIRIS_UCRETI * giderEnflasyonCarpani(state));
   if (state.para < girisUcreti) {
     throw new Error(`Cebinde bu mekâna gidecek kadar para yok (~${girisUcreti} ${state.para_birimi} giriş ücreti).`);
   }
@@ -6223,7 +6223,7 @@ export async function sosyallesmeOlayCoz(id: string, secenekIndex: number): Prom
   if (mevcutOlay.kategori === "savas") orduKaybiUygula(state, basarili);
 
   // Sosyalleşme moral/masraf/ayyaş kuralı (yer.alkolluMu ise ziyaret sayacı + damga).
-  etki.para = paraYuvarla((etki.para ?? 0) - SOSYALLESME_EK_MASRAF * enflasyonCarpani(state));
+  etki.para = paraYuvarla((etki.para ?? 0) - SOSYALLESME_EK_MASRAF * giderEnflasyonCarpani(state));
   etki.mutluluk = (etki.mutluluk ?? 0) + SOSYALLESME_MORAL_BONUSU;
   const ziyaretEdilenYer = sosyallesmeYeriGetir(mevcutOlay.sosyallesmeYeri);
   if (ziyaretEdilenYer?.alkolluMu) ayyasZiyaretiIsle(state);
@@ -6429,7 +6429,7 @@ export async function sosyallesmeAksiyonConfigGetir(id: string): Promise<SosyalA
   if (state.etiketler.includes("hapiste") || state.etiketler.includes("yolculukta")) return bos;
 
   const en = state.dil === "en";
-  const enfl = enflasyonCarpani(state);
+  const enfl = giderEnflasyonCarpani(state);
   const alkolluMekanVar = SOSYALLESME_YERLERI.some(
     (y) => y.alkolluMu && sosyallesmeYeriUygunMu(y, state.cag, state.bolge, state.meslek)
   );
@@ -6513,7 +6513,7 @@ export async function sosyallesmeAksiyonYap(
   if (state.etiketler.includes("yolculukta")) throw new Error("Yolculuktayken bunu yapamazsın.");
 
   const birim = state.para_birimi;
-  const enfl = enflasyonCarpani(state);
+  const enfl = giderEnflasyonCarpani(state);
   let mesaj = "";
 
   if (aksiyonId.startsWith("icki:")) {
@@ -6966,7 +6966,7 @@ export async function salginKorunmaConfigGetir(
 ): Promise<{ kartlar: SalginKorunmaKarti[]; aktifKademe: number; vebaVar: boolean }> {
   const oturum = await oturumGetir(id);
   const { state } = oturum;
-  const enflasyon = enflasyonCarpani(state);
+  const enflasyon = giderEnflasyonCarpani(state);
   const aktifKademe = state.salgin_korunma_yatirimi?.kademe ?? 0;
   const vebaVar = !!state.veba?.aktif;
   const meta = [
@@ -6995,7 +6995,7 @@ export async function salginKorunmaYatirimiYap(
   if (state.veba?.aktif) throw new Error("Salgın çoktan başladı; artık hazırlık yapamazsın.");
   const mevcut = state.salgin_korunma_yatirimi?.kademe ?? 0;
   if (mevcut >= kademe) throw new Error("Bu korunma kademesine zaten sahipsin.");
-  const enflasyon = enflasyonCarpani(state);
+  const enflasyon = giderEnflasyonCarpani(state);
   const maliyet = Math.max(1, paraYuvarla(SALGIN_KORUNMA_TABAN_MALIYET[kademe] * enflasyon));
   if (state.para < maliyet) throw new Error(`Yeterli paran yok (${maliyet} ${state.para_birimi} gerekli).`);
   state.para = paraYuvarla(state.para - maliyet);

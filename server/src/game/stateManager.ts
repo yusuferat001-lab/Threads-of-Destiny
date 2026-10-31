@@ -444,8 +444,8 @@ export function enflasyonCarpani(state: CharacterState): number {
   return Math.pow(1 + oran, gecenYil);
 }
 
-/** v20: gider enflasyonu gelir enflasyonunun ×1,15'idir (OÇ %1,15 · SD %2,3/yıl). */
-export const GIDER_ENFLASYON_KATSAYISI = 1.15;
+/** v29: gider enflasyonu gelir enflasyonunun ×1,1'idir (OÇ %1,1 · SD %2,2/yıl); tüm giderler bunu kullanır. */
+export const GIDER_ENFLASYON_KATSAYISI = 1.1;
 
 /** Maliyet tarafı (alış, yaşam, kira, maaş, bakım, yatırım fiyatı) için bileşik çarpan. */
 export function giderEnflasyonCarpani(state: CharacterState): number {
@@ -3799,7 +3799,7 @@ export function rastgeleMulkBakimAraligi(): number {
 
 /** Bir mülkün, bakım masrafları amorti edilerek yıllığa indirgenmiş yaklaşık maliyeti (önizleme/istemci için). */
 export function mulkYillikBakimTahmini(tur: MulkTuru, state: CharacterState): number {
-  const guncelDeger = mulkTanimiGetir(tur).taban_maliyet * enflasyonCarpani(state);
+  const guncelDeger = mulkTanimiGetir(tur).taban_maliyet * giderEnflasyonCarpani(state);
   const ortalamaAralik = (MULK_BAKIM_ARALIGI_MIN_YIL + MULK_BAKIM_ARALIGI_MAX_YIL) / 2;
   return paraYuvarla((guncelDeger * MULK_BAKIM_ORANI) / ortalamaAralik);
 }
@@ -4010,7 +4010,7 @@ export function mulkGelirleriUygula(state: CharacterState, yasArtisi: number): M
     // Periyodik bakım/vergi: 7-10 yılda bir, mülkün güncel değerinin ~%14'ü.
     const kalan = (state.mulk_bakim_kalan[tur] ?? rastgeleMulkBakimAraligi()) - yasArtisi;
     if (kalan <= 0) {
-      const masraf = sonBasamagiDuzelt(taban * MULK_BAKIM_ORANI);
+      const masraf = sonBasamagiDuzelt(mulkTanimiGetir(tur).taban_maliyet * giderEnflasyonCarpani(state) * MULK_BAKIM_ORANI);
       toplamBakim += masraf;
       bakimOdemeleri.push({ ad: mulkTanimiGetir(tur).ad, miktar: masraf });
       state.mulk_bakim_kalan[tur] = rastgeleMulkBakimAraligi();
@@ -4164,7 +4164,7 @@ export function magazaFiyatiHesapla(esya: MagazaEsyasiTanimi, state: CharacterSt
   if (ulke.kriz?.tur === "altin_cag") carpan *= e.altin_cag ?? 1;
   if (ulke.ekonomi === "iyi") carpan *= e.ekonomiIyi ?? 1;
   if (ulke.ekonomi === "kotu") carpan *= e.ekonomiKotu ?? 1;
-  return Math.max(1, paraYuvarla(esya.tabanFiyat * carpan * enflasyonCarpani(state)));
+  return Math.max(1, paraYuvarla(esya.tabanFiyat * carpan * giderEnflasyonCarpani(state)));
 }
 
 /** "sifa" satın alımından sonra TÜM sifa kategorisinin kaç yıl kilitleneceği — oyuncu ilaç/erzak stoklayıp sürekli sürekli alışveriş yapamasın diye (bkz. §26). */
@@ -4285,7 +4285,7 @@ export function envanterBozulmasiUygula(state: CharacterState, yasArtisi: number
     // koleksiyon (lüks/sanat/binek): periyodik bakım — kalıcı, sadece masraf çıkar ve sayaç sıfırlanır
     if (yeniKalanYil <= 0) {
       const tanim = magazaEsyasiTanimiGetir(esya.katalogId);
-      const guncelDeger = Math.round(tanim.tabanFiyat * enflasyonCarpani(state));
+      const guncelDeger = Math.round(tanim.tabanFiyat * giderEnflasyonCarpani(state));
       const masraf = sonBasamagiDuzelt(guncelDeger * (tanim.bakimOrani ?? LUKS_BAKIM_ORANI));
       state.para -= masraf;
       bakimOdemeleri.push({ ad: esya.ad, miktar: masraf });

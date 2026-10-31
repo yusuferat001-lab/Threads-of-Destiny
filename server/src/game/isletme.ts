@@ -60,7 +60,7 @@ import { rastgeleBirIsimSec } from "../data/npcIsimleri";
 export interface IsletmeBaglami {
   /** enflasyonCarpani(state): gelir/satış/bağış tarafı. */
   enflasyon: number;
-  /** giderEnflasyonCarpani(state): alış, bakım, maaş, yatırım fiyatı (gelir enflasyonunun ×1,15'i). */
+  /** giderEnflasyonCarpani(state): alış, bakım, maaş, yatırım fiyatı (gelir enflasyonunun ×1,1'i). */
   giderEnflasyon: number;
   /**
    * Kalıcı satış/bağış çarpanı (v10): olay `maas_carpani` etiketi × geçici durumlar (veba tedbiri vb.) × eş desteği.
@@ -334,12 +334,12 @@ export function maasTabani(yetenek: number, sadakat: number): number {
   return r2(MAAS_CARPANI * (1.2 + 0.02 * yetenek + 0.01 * sadakat + 0.0004 * yetenek * sadakat));
 }
 
-/** Her çalışanın güncel maaşını `maasTabani(güncel Y, S) × güncel enflasyon` ile yeniler (yeni adaylar ve mevcutlar). */
+/** Her çalışanın güncel maaşını `maasTabani(giriş Y, S) × güncel gider enflasyonu` ile yeniler. */
 export function calisanMaaslariniGuncelle(state: CharacterState, enflasyon: number): void {
   for (const uye of state.ekip) {
     if (uye.maas_taban === undefined) continue;
-    // v14: maaş çalışanın GÜNCEL Yetenek/Sadakat'ine bağlı — geliştikçe artar (işe alırken giriş seviyesi baz alınır).
-    if (uye.rol_turu) uye.maas_taban = maasTabani(uye.gercekKalite, uye.sadakat);
+    // v29: maaş yalnız İŞE ALIRKEN ölçülen giriş Yetenek/Sadakat'ine bağlıdır; çalışan geliştikçe maaşı artmaz, yalnız enflasyon uygulanır.
+    if (uye.rol_turu && uye.y_giris !== undefined && uye.s_giris !== undefined) uye.maas_taban = maasTabani(uye.y_giris, uye.s_giris);
     uye.maas = r2(uye.maas_taban * enflasyon);
   }
 }
