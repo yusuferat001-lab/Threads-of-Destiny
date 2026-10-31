@@ -1,8 +1,9 @@
 /*
- * PC (≥768px) ortak görsel dil: "bordo kadife + altın" — mobildeki olay kutusunun paleti
- * (olay-kutusu.css: #82202a → #591219 → #360a10, --altin-gradyan çerçeve) yan panellere,
- * üst şeride ve (sonraki fazlarda) tam sayfa ekranlara taşınır. CK3/EU4 tarzı: yatay alanı
- * kullanan, başlık şeritli, çerçeveli paneller; parşömen yalnız okuma alanlarında.
+ * PC (≥768px) ortak görsel dil: "kahve ağırlıklı, bordo vurgu, altın çizgi".
+ * Zemin/paneller koyu espresso-kahve, iç kartlar orta kahve, okuma alanları sütlü kahve (latte).
+ * Bordo (olay-kutusu.css: #82202a → #591219 → #360a10) bir İŞARET rengidir: olay kutusu, başlık
+ * bantları, seçili/hover durumları. CK3/EU4 tarzı: yatay alanı kullanan, başlık şeritli,
+ * çerçeveli paneller.
  *
  * Yalnız `@media (min-width: 768px)` içinde stil verir → mobil (≤767px) görünümü değişmez.
  * Tokenlar (`--v-*`) global tanımlıdır ama mobil kurallar onları kullanmaz.
@@ -14,9 +15,20 @@
   --v-zemin-1: #82202a;
   --v-zemin-2: #591219;
   --v-zemin-3: #360a10;
-  /* Panel yüzeyi: yarı saydam koyu bordo (sahne kenardan sızar). */
-  --v-panel: linear-gradient(180deg, rgba(62, 13, 21, 0.82) 0%, rgba(30, 8, 12, 0.88) 100%);
-  --v-panel-ic: rgba(0, 0, 0, 0.26);
+  /* Panel yüzeyi: yarı saydam koyu espresso (sahne kenardan hafif sızar). */
+  --v-panel: linear-gradient(180deg, rgba(51, 35, 26, 0.9) 0%, rgba(31, 21, 14, 0.94) 100%);
+  --v-panel-ic: rgba(74, 52, 37, 0.62);
+  /* Kahve ailesi (mobil ana-ekran.css mocha/latte değerleriyle uyumlu). */
+  --v-serit-1: rgba(42, 29, 20, 0.9);
+  --v-serit-2: rgba(26, 17, 11, 0.94);
+  --v-kahve-1: #4a3425;
+  --v-kahve-2: #6a4e3a;
+  --v-kart-ust: rgba(90, 64, 46, 0.55);
+  --v-kart-alt: rgba(40, 28, 20, 0.8);
+  --v-latte: #e9dcc3;
+  --v-latte-yazi: #2c1f15;
+  --v-latte-soluk: #5e4733;
+  --v-latte-kenar: rgba(110, 79, 53, 0.45);
   --v-baslik: linear-gradient(90deg, rgba(130, 32, 42, 0.95) 0%, rgba(89, 18, 25, 0.92) 100%);
   --v-kenar: rgba(230, 193, 122, 0.42);
   --v-kenar-soluk: rgba(230, 193, 122, 0.2);
@@ -63,7 +75,7 @@
 
   /* ==== Üst şerit: kaynak çubuğu (cam kadife) ==== */
   .oyun-ekrani-pc > .ust-serit {
-    background: linear-gradient(180deg, rgba(74, 15, 24, 0.86) 0%, rgba(34, 8, 12, 0.9) 100%);
+    background: linear-gradient(180deg, var(--v-serit-1) 0%, var(--v-serit-2) 100%);
     -webkit-backdrop-filter: blur(6px);
     backdrop-filter: blur(6px);
     border: 1px solid var(--v-kenar);
@@ -274,7 +286,12 @@
   }
   .oyun-ekrani-pc .haberler-listesi {
     opacity: 1;
-    color: var(--v-yazi);
+    margin: 0;
+    padding: 0.5rem 0.6rem 0.5rem 1.5rem;
+    color: var(--v-latte-yazi);
+    background: var(--v-latte);
+    border: 1px solid var(--v-latte-kenar);
+    border-radius: 8px;
     font-size: var(--yz-pn-kucuk);
   }
   .oyun-ekrani-pc .isyeri-gorsel {
@@ -333,33 +350,34 @@
   .oyun-ekrani-pc .pc-bolum-amac .amac-paneli {
     margin: 0;
   }
+  /* Amaç kartları = okuma alanı: sütlü kahve zemin, koyu kahve yazı. */
   .oyun-ekrani-pc .pc-bolum-amac .amac-satir {
-    background: var(--v-panel-ic);
-    border-color: var(--v-kenar-soluk);
-    border-left-color: var(--v-kenar);
-    color: var(--v-yazi);
+    background: var(--v-latte);
+    border-color: var(--v-latte-kenar);
+    border-left-color: var(--v-kahve-2);
+    color: var(--v-latte-yazi);
   }
   .oyun-ekrani-pc .pc-bolum-amac .amac-satir.amac-zor {
-    border-left-color: var(--v-altin);
+    border-left-color: #82202a;
   }
   .oyun-ekrani-pc .pc-bolum-amac .amac-satir.amac-tamam {
-    background: rgba(143, 194, 138, 0.1);
-    border-left-color: var(--v-iyi);
+    background: #dbe4c6;
+    border-left-color: #3f7a30;
   }
   .oyun-ekrani-pc .pc-bolum-amac .amac-bonus {
-    color: var(--v-altin);
-    background: rgba(230, 193, 122, 0.14);
+    color: #7a3f10;
+    background: rgba(120, 85, 30, 0.16);
   }
   .oyun-ekrani-pc .pc-bolum-amac .amac-aciklama,
   .oyun-ekrani-pc .pc-bolum-amac .amac-alt {
-    color: var(--v-yazi-soluk);
+    color: var(--v-latte-soluk);
     opacity: 1;
   }
   .oyun-ekrani-pc .pc-bolum-amac .amac-bar {
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(110, 79, 53, 0.22);
   }
   .oyun-ekrani-pc .pc-bolum-amac .amac-tamam .amac-ikon {
-    color: var(--v-iyi);
+    color: #3f7a30;
   }
 
   .kisayol-kartlari {
@@ -387,7 +405,7 @@
     text-transform: uppercase;
     color: var(--v-yazi);
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
-    background: linear-gradient(90deg, rgba(130, 32, 42, 0.6) 0%, rgba(70, 14, 22, 0.72) 100%);
+    background: linear-gradient(90deg, rgba(106, 78, 58, 0.92) 0%, rgba(74, 52, 37, 0.95) 100%);
     border: 1px solid var(--v-kenar);
     border-radius: 10px;
     box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35), 0 3px 8px rgba(0, 0, 0, 0.4);
@@ -406,7 +424,7 @@
   }
   .kisayol-karti:hover:not(:disabled),
   .kisayol-karti:focus-visible {
-    background: linear-gradient(90deg, rgba(150, 38, 50, 0.72) 0%, rgba(86, 18, 28, 0.8) 100%);
+    background: linear-gradient(90deg, rgba(130, 32, 42, 0.95) 0%, rgba(89, 18, 25, 0.95) 100%);
     border-color: var(--v-altin);
     box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35), 0 3px 8px rgba(0, 0, 0, 0.4);
     filter: brightness(1.1);
@@ -447,21 +465,21 @@
 
 /* ==== Faz 2: yan tam sayfa ekranlar (Kariyer, Yatırım, Evin, Mağaza, Sosyalleş, İlişkiler) ==== */
 @media (min-width: 768px) {
-  /* Ortak kabuk: bordo kadife zemin + altın kenar. `--panel-ust/-alt` tokenlarını ezmek,
+  /* Ortak kabuk: koyu kahve zemin + altın kenar. `--panel-ust/-alt` tokenlarını ezmek,
      bu tokenları kullanan tüm kartları (yatırım, aile, kariyer, finans…) tek hamlede boyar. */
   .ekran.ekran-tam-sayfa,
   .ekran.ekran-kariyer,
   .ekran.ekran-aile {
-    --panel-ust: rgba(122, 28, 40, 0.5);
-    --panel-alt: rgba(46, 9, 15, 0.72);
+    --panel-ust: var(--v-kart-ust);
+    --panel-alt: var(--v-kart-alt);
     --aile-kart-kenar: var(--v-kenar-soluk);
     color: var(--v-yazi);
-    background: radial-gradient(120% 85% at 50% 0%, rgba(118, 27, 38, 0.55) 0%, rgba(52, 10, 16, 0.93) 62%), #190a0d;
+    background: radial-gradient(120% 85% at 50% 0%, rgba(106, 78, 58, 0.42) 0%, rgba(38, 26, 18, 0.95) 62%), #1a110b;
     border: 1px solid var(--v-kenar);
     border-radius: 16px;
     box-shadow: var(--v-golge);
   }
-  /* İlişkiler: sıcak duvar yerine kadife; oda çizimi hafif bir doku olarak kalır. */
+  /* İlişkiler: sıcak duvar yerine koyu kahve; oda çizimi hafif bir doku olarak kalır. */
   .ekran-aile .aile-arkaplan {
     opacity: 0.16;
     filter: saturate(0.5) brightness(0.8);
@@ -519,13 +537,13 @@
     color: var(--v-yazi);
   }
   .ekran .yatirim-kart:hover:not(:disabled) {
-    background: linear-gradient(180deg, rgba(160, 42, 54, 0.55), var(--panel-alt));
+    background: linear-gradient(180deg, rgba(130, 32, 42, 0.6), var(--panel-alt));
     border-color: var(--v-altin);
     box-shadow: 0 8px 22px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(230, 193, 122, 0.18);
   }
   .ekran .yatirim-kart-secili {
     border-color: var(--v-altin);
-    background: linear-gradient(180deg, rgba(160, 42, 54, 0.6), var(--panel-alt));
+    background: linear-gradient(180deg, rgba(130, 32, 42, 0.7), var(--panel-alt));
     box-shadow: 0 0 0 1px rgba(230, 193, 122, 0.4), 0 8px 20px rgba(0, 0, 0, 0.5);
   }
   .ekran .aile-kart {
@@ -541,7 +559,7 @@
   }
   .ekran .magaza-sekme:hover:not(:disabled),
   .ekran .ekran-sekme:hover:not(:disabled) {
-    background: rgba(160, 42, 54, 0.35);
+    background: rgba(130, 32, 42, 0.5);
     border-color: var(--v-altin);
   }
   .ekran .magaza-sekme-aktif,
@@ -563,7 +581,7 @@
     border-color: var(--v-altin);
   }
 
-  /* Mini oyunlar, aksiyon düğmeleri, bağış çipleri: kahve yerine kadife */
+  /* Mini oyunlar, aksiyon düğmeleri, bağış çipleri: kahve kartlar, bordo birincil düğme */
   .ekran .mini-oyun {
     background: linear-gradient(180deg, var(--panel-ust), var(--panel-alt));
     border-color: var(--v-kenar-soluk);
@@ -598,7 +616,7 @@
   }
   .ekran .kariyer-bagis-cip:not(:disabled):hover,
   .ekran .kariyer-etkilesim-buton:not(:disabled):hover {
-    background: rgba(160, 42, 54, 0.4);
+    background: rgba(130, 32, 42, 0.55);
     border-color: var(--v-altin);
   }
 
@@ -615,13 +633,13 @@
 
   /* Geri düğmesi: altın çerçeveli kadife */
   .ekran .tam-geri-buton {
-    background: linear-gradient(180deg, rgba(130, 32, 42, 0.8), rgba(70, 14, 22, 0.9));
+    background: linear-gradient(180deg, var(--v-kahve-2), var(--v-kahve-1));
     border: 1px solid var(--v-kenar);
     color: var(--v-yazi);
   }
   .ekran .tam-geri-buton:hover:not(:disabled) {
+    background: linear-gradient(180deg, rgba(130, 32, 42, 0.95), rgba(89, 18, 25, 0.95));
     border-color: var(--v-altin);
-    filter: brightness(1.12);
   }
 
   /* ==== Yatay alan: kart ızgarası kenara kadar, kapsayıcı genişliği tek kural ==== */
@@ -642,7 +660,7 @@
   }
 }
 
-/* ==== Modallar: tek kabuk (bordo kadife + altın çerçeve), tek katman koyuluğu ==== */
+/* ==== Modallar: tek kabuk (koyu kahve gövde + altın çerçeve, bordo başlık bandı), tek katman koyuluğu ==== */
 @media (min-width: 768px) {
   .ayarlar-katman,
   .kariyer-sonuc-katman,
@@ -657,7 +675,7 @@
   .gecmis-hayat-detay,
   .ayarlar-modal {
     color: var(--v-yazi);
-    background: radial-gradient(130% 90% at 50% 0%, var(--v-zemin-1) 0%, var(--v-zemin-2) 55%, var(--v-zemin-3) 100%);
+    background: radial-gradient(130% 90% at 50% 0%, var(--v-kahve-1) 0%, #33231a 55%, #1f150e 100%);
     border: 1px solid var(--v-altin);
     border-left-width: 1px;
     border-radius: 14px;
@@ -671,7 +689,7 @@
     letter-spacing: 0.06em;
   }
   .ayarlar-modal-ust {
-    background: rgba(0, 0, 0, 0.2);
+    background: var(--v-baslik);
     border-bottom-color: var(--v-kenar);
   }
   .ayarlar-sekmeler {
@@ -684,19 +702,19 @@
   }
 }
 
-/* ==== Faz 3: giriş / kurulum / açılış — kahve zemin yerine bordo kadife, kartlar tek dilde ==== */
+/* ==== Faz 3: giriş / kurulum / açılış — koyu kahve zemin, kahve kartlar, seçili kart bordo ==== */
 @media (min-width: 768px) {
   .ekran-giris,
   .ekran-kurulum,
   .ekran-acilis {
     background:
-      radial-gradient(ellipse at 50% -10%, rgba(150, 38, 50, 0.4), transparent 60%),
-      linear-gradient(180deg, #2b0c12 0%, #1d080c 60%, #130507 100%);
+      radial-gradient(ellipse at 50% -10%, rgba(230, 193, 122, 0.12), transparent 60%),
+      linear-gradient(180deg, #2a1d14 0%, #1d140d 60%, #150f0a 100%);
     border-color: var(--v-kenar);
     box-shadow: var(--v-golge);
   }
   .giris-panel {
-    background: linear-gradient(180deg, rgba(100, 22, 32, 0.5), rgba(34, 8, 12, 0.6));
+    background: linear-gradient(180deg, rgba(74, 52, 37, 0.7), rgba(36, 26, 18, 0.75));
     border-color: var(--v-kenar-soluk);
   }
   .giris-panel:hover {
@@ -710,7 +728,7 @@
   .ekran-kurulum .yerlesim-kart {
     background:
       radial-gradient(ellipse at 50% 0%, rgba(230, 193, 122, 0.1), transparent 60%),
-      linear-gradient(180deg, rgba(110, 25, 36, 0.55) 0%, rgba(40, 9, 14, 0.75) 100%);
+      linear-gradient(180deg, rgba(90, 64, 46, 0.7) 0%, rgba(40, 28, 20, 0.85) 100%);
     border-color: var(--v-kenar-soluk);
   }
   .ekran-kurulum .meslek-kart:hover:not(:disabled),
