@@ -132,7 +132,7 @@ const M = {
   donem: { tr: { bolluk: 'Bolluk', durgunluk: 'Durgunluk', kitlik: 'Kıtlık' }, en: { bolluk: 'Boom', durgunluk: 'Slump', kitlik: 'Famine' } },
   savas: { tr: 'Savaş', en: 'War' },
   veba: { tr: 'Salgın', en: 'Plague' },
-  uretimTavani: { tr: 'Üretim tavanı', en: 'Production cap' },
+  uretimTavani: { tr: 'Yıllık üretim', en: 'Yearly output' },
   birimUretim: { tr: 'Satış / hammadde', en: 'Sell / materials' },
   ilkYil: { tr: 'Henüz bir yıl geçmedi. Hiçbir şeye dokunmasan da işletme otomatik çalışır.', en: "A year hasn't passed yet. The business runs on its own even if you touch nothing." },
   imtiyazlar: { tr: 'Aktif imtiyazlar', en: 'Active privileges' },
@@ -227,7 +227,7 @@ export function isletmeUyariMetni(u: IsletmeUyari, durum: IsletmeGorunumu, dil: 
       case 'kitle_kaybi':
         return en ? '📉 Two years of unmet demand cost you customers.' : '📉 Üst üste iki yıl karşılanamayan talep müşteri kaybettirdi.';
       case 'uretim_tavani':
-        return en ? '🔨 Your production cap fell short of demand — add a workbench or staff.' : '🔨 Üretim tavanın talebe yetmedi; tezgâh ya da çalışan ekle.';
+        return en ? '🔨 Your output fell short of demand — add a workbench or staff.' : '🔨 Üretimin talebe yetmedi; tezgâh ya da çalışan ekle.';
       case 'calisan_ayrildi':
         return `🚪 ${u.isim ?? ''}: ${en ? 'quit and took a severance from the till' : 'işi bıraktı ve kasadan tazminat aldı'}`;
       case 'sizdirma':

@@ -617,7 +617,7 @@ export const ADAY_SAYISI = 5;
 export const ADAY_YENILEME_YIL = 3;
 
 /**
- * 5 aday görünür; liste 3 yılda bir yenilenir. Rol başına en fazla 2 aday seçilir (çeşitlilik).
+ * 5 aday görünür (aynı anda en çok 5); liste 3 yılda bir yenilenir. Önce her rolden bir aday, kalan yerler rol başına en çok 2 ile dolar.
  * v20: Tüccar/Din Adamı'nda "ana" rol yoktur (satış/bağış çalışanı kalktı); o şablonlar müşteri rolüne döner.
  */
 export function adaylariYenile(state: CharacterState): void {
@@ -628,8 +628,16 @@ export function adaylariYenile(state: CharacterState): void {
   const havuz = karistir(profil.adaylar.map((t) => (t.rolTuru === "ana" && !anaVar ? { ...t, rolTuru: "musteri" as IsletmeRolTuru } : t)));
   const secilen: AdayTaslagi[] = [];
   const rolSayac: Record<string, number> = {};
+  // v31: önce her rolden (Üretici/Hammaddeci/Tanıtımcı/Bekçi…) bir aday önerilir, kalan yerler çeşitlilikle (rol başına en çok 2) dolar.
+  for (const r of profil.roller) {
+    const t = havuz.find((x) => x.rolTuru === r.tur);
+    if (!t || secilen.length >= ADAY_SAYISI) continue;
+    rolSayac[t.rolTuru] = 1;
+    secilen.push(t);
+  }
   for (const t of havuz) {
     if (secilen.length >= ADAY_SAYISI) break;
+    if (secilen.includes(t)) continue;
     if ((rolSayac[t.rolTuru] ?? 0) >= 2) continue;
     rolSayac[t.rolTuru] = (rolSayac[t.rolTuru] ?? 0) + 1;
     secilen.push(t);

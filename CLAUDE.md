@@ -2070,3 +2070,7 @@ Bu blok önceki §13/§45 maddelerinin üzerine yazar.
 
 ### §45 v30 (2026-10) — Kredi: vade 7–12 yıl, faiz %5–9, toplam faiz maliyeti %32–47
 Bu blok §45 v29 kredi maddesinin üzerine yazar. Havuz (tutar · faiz · vade · taksit · toplam faiz maliyeti): kısa küçük 43 · %9 · 7y · 9 · %36,8 — uzun küçük 50 · %6 · 10y · 7 · %34,6 — kısa orta 90 · %9 · 8y · 17 · %42,1 — uzun orta 104 · %6 · 11y · 14 · %36,4 — kısa büyük 161 · %8 · 9y · 26 · %43,6 — uzun büyük 181 · %5 · 12y · 21 · %34,2. Pazarlıkta faiz tabanı %7 → %2'ye indi (başarıda −4 puan, başarısızlıkta +5 puan, tavan %17). Borçluyken +4 puan primi aynen duruyor. Test: `yeniOzellikler.test.ts` gerçek ödeme akışıyla %32–47 aralığını doğrular.
+
+### §45 v31 (2026-10) — Üretici metinleri, aday önerisi
+- Üretici (Zanaatkâr "ana" rol) ve tezgâh yatırımı için oyuncuya görünen metinlerde "üretim tavanı/production cap" ifadesi kalktı; "yıllık üretim / output" yazar (mekanik aynı: Üretici ve tezgâh üretim limitini artırır).
+- Aday listesi (`adaylariYenile`): aynı anda en çok 5 aday; önce her rolden (Zanaatkâr 4, Tüccar/Din Adamı 3 rol) bir aday önerilir, kalan yerler rol başına en çok 2 ile doldurulur. Çalışan limiti (2/3/5/6/7) değişmedi. Test: `tests/adayRolleri.test.ts`.
