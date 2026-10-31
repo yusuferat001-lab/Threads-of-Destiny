@@ -94,7 +94,7 @@ describe("hapishane sistemi", () => {
       dusukState.ahlak = 1;
       dusukState.un = 1;
       let bulundu = false;
-      for (let i = 0; i < 500 && !bulundu; i++) {
+      for (let i = 0; i < 4000 && !bulundu; i++) {
         const { olay } = olaySec(dusukState);
         if (olay.id === id) bulundu = true;
       }

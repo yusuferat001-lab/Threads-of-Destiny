@@ -1,18 +1,21 @@
 /**
  * Ekstra vergi (şehir yöneticisi): işletmeli mesleklerde (Tüccar, Zanaatkâr, Din Adamı) kâr
- * eşiği aşılınca 8-10 yılda bir yönetici, son yılın NET kârının (oyuncunun gördüğü "dükkân neti") 2-2,5 katını ister. Oyuncu öder
+ * eşiği aşılınca ilk kez 32 yaşında, sonra 9-13 yılda bir yönetici, son yılın NET kârının (oyuncunun gördüğü "dükkân neti") 1 katını ister. Oyuncu öder
  * ya da rüşvet verir; yanıtlamadan oyun ilerlemez (zorunlu pencere), süre sınırı yoktur.
  * Tüm sayılar tek yerde (oyuncuya GÖSTERİLMEZ, yalnız talep tutarı görünür).
  */
 
-/** Takvim: bir sonraki talebin en erken yılı = bugün + [min, max] (eşit olasılık). */
-export const EKSTRA_VERGI_ARALIK_YIL: [number, number] = [8, 10];
+/** İlk talep bu yaşta gelir (daha büyükse ilk talep de aşağıdaki aralıkla planlanır). */
+export const EKSTRA_VERGI_ILK_YAS = 32;
+
+/** Takvim: sonraki talebin en erken yılı = bugün + [min, max] (eşit olasılık). */
+export const EKSTRA_VERGI_ARALIK_YIL: [number, number] = [9, 13];
 
 /** Talep, son yılın NET kârı (dükkân neti: brüt − vergi − borç ödemesi − hasar) bu eşiğin (× enflasyon çarpanı) üstündeyse üretilir. */
 export const EKSTRA_VERGI_KAR_ESIGI = 60;
 
-/** Tutar = net kâr × çarpan. Çarpan 2-2,5 arası rastgele; ilişki iyiyse alt uca, kötüyse üst uca iner. */
-export const EKSTRA_VERGI_CARPAN_ARALIK: [number, number] = [2, 2.5];
+/** Tutar = net kâr × çarpan. Çarpan 1x (alt=üst; ilişki ayrımı yapılırsa aralık açılabilir). */
+export const EKSTRA_VERGI_CARPAN_ARALIK: [number, number] = [1, 1];
 export const EKSTRA_VERGI_IYI_ILISKI = 70;
 export const EKSTRA_VERGI_KOTU_ILISKI = 25;
 
@@ -38,10 +41,15 @@ export function ekstraVergiSonrakiYil(yil: number, rnd: () => number = Math.rand
   return yil + a + Math.floor(rnd() * (b - a + 1));
 }
 
-/** Talep çarpanı: iyi ilişki alt uç (2), kötü ilişki üst uç (2,5), arası rastgele. */
+/** Talep çarpanı: iyi ilişki alt uç, kötü ilişki üst uç, arası rastgele (şu an alt=üst=1). */
 export function ekstraVergiCarpani(yonetimIliski: number, rnd: () => number = Math.random): number {
   const [a, b] = EKSTRA_VERGI_CARPAN_ARALIK;
   if (yonetimIliski >= EKSTRA_VERGI_IYI_ILISKI) return a;
   if (yonetimIliski < EKSTRA_VERGI_KOTU_ILISKI) return b;
   return a + rnd() * (b - a);
+}
+
+/** İlk talep yılı: 32 yaşından küçükse tam 32. yaşın yılı, büyükse aralıkla planlanır. */
+export function ekstraVergiIlkYil(yil: number, yas: number, rnd: () => number = Math.random): number {
+  return yas < EKSTRA_VERGI_ILK_YAS ? yil + (EKSTRA_VERGI_ILK_YAS - yas) : ekstraVergiSonrakiYil(yil, rnd);
 }

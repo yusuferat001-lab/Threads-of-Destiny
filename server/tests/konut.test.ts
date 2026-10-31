@@ -53,6 +53,7 @@ describe("konut sistemi (stateManager)", () => {
     mesleğiSec(state, "Tüccar");
     state.kisilik = ["Sakin", "Vicdanlı"]; // kişiliğin yıllık şöhret etkisi (v10) olmasın
     state.para = 1000;
+    state.un = 20; // başlangıç şöhreti rastgele; 40 ve üstü şöhret erimesine (§52) girer, konut etkisini izole etmek için sabitle
     state.yasam_secimi_id = "sade_sofra"; // sağlık/mutluluk etkisi olmayan yaşam tarzı; sadece konut etkisini izole eder
     // mutevazi_yuva artık varsayılan — ekstra konutDegistir gerekmez
     const oncekiUn = state.un;

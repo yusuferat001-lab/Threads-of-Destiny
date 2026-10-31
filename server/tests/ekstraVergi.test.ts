@@ -5,7 +5,9 @@ import {
   EKSTRA_VERGI_ARALIK_YIL,
   EKSTRA_VERGI_KAR_ESIGI,
   EKSTRA_VERGI_SONSUZ_YIL,
+  EKSTRA_VERGI_ILK_YAS,
   ekstraVergiCarpani,
+  ekstraVergiIlkYil,
   ekstraVergiSonrakiYil,
 } from "../src/data/ekstraVergi";
 import type { CharacterState, YonetimTalep } from "../src/types";
@@ -26,31 +28,44 @@ function karYaz(state: CharacterState, net: number) {
 }
 
 describe("ekstra vergi sabitleri", () => {
-  it("takvim 8-10 yıl; çarpan ilişkiye göre alt/üst uca iner", () => {
+  it("takvim 9-13 yıl; ilk talep 32 yaşında; çarpan 1x", () => {
     for (let i = 0; i < 50; i++) {
       const y = ekstraVergiSonrakiYil(1200);
       expect(y).toBeGreaterThanOrEqual(1200 + EKSTRA_VERGI_ARALIK_YIL[0]);
       expect(y).toBeLessThanOrEqual(1200 + EKSTRA_VERGI_ARALIK_YIL[1]);
     }
-    expect(ekstraVergiCarpani(80)).toBe(2);
-    expect(ekstraVergiCarpani(10)).toBe(2.5);
-    const orta = ekstraVergiCarpani(50, () => 0.5);
-    expect(orta).toBeCloseTo(2.25, 5);
+    expect(EKSTRA_VERGI_ARALIK_YIL).toEqual([9, 13]);
+    expect(EKSTRA_VERGI_ILK_YAS).toBe(32);
+    expect(ekstraVergiCarpani(80)).toBe(1);
+    expect(ekstraVergiCarpani(10)).toBe(1);
+    expect(ekstraVergiCarpani(50, () => 0.5)).toBe(1);
+    // 32'den küçükse tam 32. yılda; büyükse aralıkla.
+    expect(ekstraVergiIlkYil(1200, 25)).toBe(1207);
+    expect(ekstraVergiIlkYil(1200, 32)).toBeGreaterThanOrEqual(1209);
+    expect(ekstraVergiIlkYil(1200, 40)).toBeLessThanOrEqual(1213);
   });
 });
 
 describe("yonetimYillikUygula — ekstra vergi talebi", () => {
-  it("ilk çağrı yalnız takvimi kurar (8-9 yıl sonra), talep üretmez", async () => {
+  it("ilk çağrı yalnız takvimi kurar (32 yaşında), talep üretmez", async () => {
     const state = await oturum();
+    state.yas = 25;
     expect(state.ekstra_vergi_sonraki_yil).toBeNull();
+    karYaz(state, 1000);
+    yonetimYillikUygula(state, 1);
+    expect(state.ekstra_vergi_sonraki_yil).toBe(state.yil + (EKSTRA_VERGI_ILK_YAS - 25));
+    expect(state.yonetim_talep?.tur).not.toBe("vergi");
+  });
+
+  it("32'yi geçmiş karakterde ilk talep 9-13 yıl sonraya kurulur", async () => {
+    const state = await oturum();
     karYaz(state, 1000);
     yonetimYillikUygula(state, 1);
     expect(state.ekstra_vergi_sonraki_yil).toBeGreaterThanOrEqual(state.yil + EKSTRA_VERGI_ARALIK_YIL[0]);
     expect(state.ekstra_vergi_sonraki_yil).toBeLessThanOrEqual(state.yil + EKSTRA_VERGI_ARALIK_YIL[1]);
-    expect(state.yonetim_talep?.tur).not.toBe("vergi");
   });
 
-  it("vadesi gelince, kâr eşiğin üstündeyse net kârın 2-2,5 katı vergi talebi üretir ve takvimi yeniler", async () => {
+  it("vadesi gelince, net kâr eşiğin üstündeyse net kârın 1 katı vergi talebi üretir ve takvimi yeniler", async () => {
     const state = await oturum();
     state.yonetim_iliski = 50;
     karYaz(state, 200);
@@ -59,8 +74,7 @@ describe("yonetimYillikUygula — ekstra vergi talebi", () => {
     const t = state.yonetim_talep as YonetimTalep;
     expect(t.tur).toBe("vergi");
     expect(t.kimden).toBe("yonetici");
-    expect(t.tutar).toBeGreaterThanOrEqual(400);
-    expect(t.tutar).toBeLessThanOrEqual(500);
+    expect(t.tutar).toBe(200);
     expect(t.sonYil).toBe(EKSTRA_VERGI_SONSUZ_YIL);
     expect(state.ekstra_vergi_sonraki_yil).toBeGreaterThanOrEqual(state.yil + EKSTRA_VERGI_ARALIK_YIL[0]);
   });

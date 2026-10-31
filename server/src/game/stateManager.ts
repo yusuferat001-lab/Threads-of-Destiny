@@ -9,7 +9,7 @@ import { rastgeleKisilikCifti, kisilikGetir } from "../data/kisilikler";
 import { YAS_OLUM_YIL, YAS_TERK_YIL } from "../data/aileSabitleri";
 import { meslekDebuffOrani } from "../data/aranmaSabitleri";
 import { DIN_TALEP_AGIRLIKLARI } from "../data/cemaat";
-import { EKSTRA_VERGI_KAR_ESIGI, EKSTRA_VERGI_SONSUZ_YIL, ekstraVergiSonrakiYil, ekstraVergiCarpani } from "../data/ekstraVergi";
+import { EKSTRA_VERGI_KAR_ESIGI, EKSTRA_VERGI_SONSUZ_YIL, ekstraVergiIlkYil, ekstraVergiSonrakiYil, ekstraVergiCarpani } from "../data/ekstraVergi";
 import {
   rutbeTanimiGetir,
   RutbeEsigi,
@@ -2217,10 +2217,10 @@ export function yonetimYillikUygula(state: CharacterState, yasArtisi: number): s
     state.yonetim_talep = null;
   }
 
-  // Ekstra vergi (işletmeli mesleklerde): 8-10 yılda bir, eşik üstü net kârda yönetici net kârın 2-3 katını ister.
+  // Ekstra vergi (işletmeli mesleklerde): ilk kez 32 yaşında, sonra 9-13 yılda bir; eşik üstü kârda yönetici net kârın 1 katını ister.
   if (isletmeMeslegiMi(state.meslek) && state.isletme) {
     if (state.ekstra_vergi_sonraki_yil == null) {
-      state.ekstra_vergi_sonraki_yil = ekstraVergiSonrakiYil(state.yil);
+      state.ekstra_vergi_sonraki_yil = ekstraVergiIlkYil(state.yil, state.yas);
     } else if (
       !state.yonetim_talep &&
       state.yil >= state.ekstra_vergi_sonraki_yil &&
