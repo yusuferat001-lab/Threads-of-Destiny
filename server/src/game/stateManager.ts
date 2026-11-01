@@ -2298,6 +2298,25 @@ export function pasifRegenEtkisi(mevcut: number, delta: number): number {
 }
 
 /**
+ * Konut + yaşam tarzının CAN (sağlık) kazancı için yaşa bağlı sert sınır: sağlık bu değerin
+ * üstündeyse ev/yemek hiç can eklemez. Sınır yaşlandıkça düşer (genç beden daha yükseğe taşınır).
+ * ≤30 yaş 85 · 31-45 80 · 46-60 70 · 61-75 60 · 76+ 50.
+ */
+export function evYasamSaglikSiniri(yas: number): number {
+  if (yas <= 30) return 85;
+  if (yas <= 45) return 80;
+  if (yas <= 60) return 70;
+  if (yas <= 75) return 60;
+  return 50;
+}
+
+/** Ev/yaşam sağlık kazancı: sınırın altına kadar tam, üstü sıfır; hasar (delta ≤ 0) aynen geçer. */
+export function evYasamSaglikEtkisi(mevcut: number, delta: number, yas: number): number {
+  if (delta <= 0) return delta;
+  return Math.min(delta, Math.max(0, evYasamSaglikSiniri(yas) - mevcut));
+}
+
+/**
  * Sağlık → mutluluk çapraz etkisi (daraltıldı): sağlık yalnız CAPRAZ_SAGLIK_ESIGI'nin (10)
  * altına inip bu durumda ARDIŞIK CAPRAZ_ARDISIK_YIL (2) yıl kalırsa, her yıl mutluluk −1.
  * Eşiğin üstüne çıkılınca sayaç sıfırlanır. Mutluluk → sağlık yönü yoktur.
@@ -2543,7 +2562,7 @@ export function pasifEkonomiUygula(state: CharacterState, yasArtisi: number): Ek
     (yasamSecenegi?.saglikEtkisiYillik ?? 0) * yasArtisi + (konut?.saglikEtkisiYillik ?? 0) * yasArtisi;
   const mutlulukPasif =
     (yasamSecenegi?.mutlulukEtkisiYillik ?? 0) * yasArtisi + (konut?.mutlulukEtkisiYillik ?? 0) * yasArtisi;
-  if (saglikPasif) state.saglik += pasifRegenEtkisi(state.saglik, saglikPasif);
+  if (saglikPasif) state.saglik += evYasamSaglikEtkisi(state.saglik, saglikPasif, state.yas);
   gencSaglikToparlanmasi(state, yasArtisi);
   if (mutlulukPasif) state.mutluluk += pasifRegenEtkisi(state.mutluluk, mutlulukPasif);
   // Konut + yaşam tarzının ün etkisi (yumuşak tavana tabi değil; hem gösteriş

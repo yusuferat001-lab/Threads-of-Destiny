@@ -317,6 +317,23 @@ describe("işletme (Tüccar dilimi)", () => {
     });
   });
 
+  it("görünümde aday ve çalışan etkisi calisanBonusu ile aynı (oyuncu yüzdesini görür)", async () => {
+    const s = await tuccar();
+    s.rutbe_seviye = 2;
+    s.ekip = [];
+    const g0 = await isletmeDurumGetir(s.id);
+    expect(g0.adaylar.length).toBeGreaterThan(0);
+    for (const a of g0.adaylar) {
+      const beklenen = calisanBonusu({ rol_turu: a.rolTuru, gercekKalite: a.yetenek, sadakat: a.sadakat } as never);
+      expect(a.etki).toEqual(beklenen);
+    }
+    const aday = s.isletme!.adaylar[0];
+    const sonuc = await isletmeCalisanAl(s.id, aday.id);
+    const c = sonuc.durum.calisanlar.find((x) => x.isim === aday.isim)!;
+    expect(c.etki).toEqual(calisanBonusu(s.ekip.find((e) => e.isim === aday.isim)!));
+    expect(c.etki).not.toBeNull();
+  });
+
   it("çalışan alımı: peşin ücret yok, aday havuzdan çıkar, rol etkisi var; limit aşılamaz; 3 çalışan 2. slotu açar", async () => {
     const s = await tuccar();
     s.rutbe_seviye = 2; // limit 3

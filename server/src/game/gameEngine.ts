@@ -5072,6 +5072,8 @@ export interface IsletmeCalisanGorunumu {
   sadik: boolean;
   /** Sadakat <45: sızdırma / iç hırsızlık / ayrılma riski. */
   riskli: boolean;
+  /** Çalışanın işletmeye etkisi (calisanBonusu): maliyet/ana/güvenlik kesir (0-1), müşteri yıllık sayı. */
+  etki: { tur: IsletmeRolTuru; deger: number } | null;
 }
 
 export interface IsletmeAdayGorunumu {
@@ -5086,6 +5088,8 @@ export interface IsletmeAdayGorunumu {
   yetenek: number;
   sadakat: number;
   maas: number;
+  /** Işe alınırsa getireceği etki (calisanBonusu ile aynı formül). */
+  etki: { tur: IsletmeRolTuru; deger: number } | null;
 }
 
 export interface CemaatPolitikaSecenegi {
@@ -5381,6 +5385,7 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
       maas: paraYuvarla(e.maas),
       sadik: e.sadakat >= SADIK_ESIGI,
       riskli: e.sadakat < SADAKAT_RISK_ESIGI,
+      etki: calisanBonusu(e),
     };
   });
   const adaylar: IsletmeAdayGorunumu[] = is.adaylar.map((a) => {
@@ -5398,6 +5403,7 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
       yetenek: a.yetenek,
       sadakat: a.sadakat,
       maas: paraYuvarla(a.maas_taban * genf),
+      etki: calisanBonusu({ rol_turu: a.rolTuru, gercekKalite: a.yetenek, sadakat: a.sadakat } as EkipUyesi),
     };
   });
   const unvan = sehirYoneticisiUnvani(state.cag, state.bolge);

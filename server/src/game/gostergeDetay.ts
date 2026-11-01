@@ -39,7 +39,7 @@ import {
   SUC_SEVIYESI_PASIF_AZALMA_YILLIK,
   SUC_TEMIZ_YIL,
   sucTemizYilSayisi,
-  PASIF_REGEN_TAVANI,
+  evYasamSaglikSiniri,
   KARABORSA_SUC_ARTISI_YILLIK,
   KARABORSA_AHLAK_ASINMASI_YILLIK,
 } from "./stateManager";
@@ -135,10 +135,10 @@ function saglikDetayi(state: CharacterState): GostergeDetayTaban {
   const ev = konutYasamEtkisi(state, "saglik");
   if (ev) {
     etkenler.push({ ikon: "🏠", metin: T(dil, "Ev ve yemek düzenin: {0}/yıl", [isaretli(ev)]), yon: yon(ev) });
-    if (ev > 0 && state.saglik >= PASIF_REGEN_TAVANI) {
+    if (ev > 0 && state.saglik >= evYasamSaglikSiniri(state.yas)) {
       etkenler.push({
         ikon: "🔒",
-        metin: T(dil, "Sağlık {0} üstündeyken bu iyileşme çok yavaşlar.", [PASIF_REGEN_TAVANI]),
+        metin: T(dil, "Bu yaşta sağlığın {0} üstündeyken ev ve yemek can eklemez.", [evYasamSaglikSiniri(state.yas)]),
         yon: "notr",
       });
     }
