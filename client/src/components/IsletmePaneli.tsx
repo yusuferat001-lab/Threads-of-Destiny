@@ -49,14 +49,16 @@ const M = {
   vergiIndirim: { tr: 'indirimli, kalan', en: 'reduced, left' },
   yilKisa: { tr: 'yıl', en: 'yr' },
   koruma: { tr: 'Koruma', en: 'Security' },
-  butceBaslik: { tr: '📒 Dükkan bütçesi', en: '📒 Shop budget' },
+  butceBaslik: { tr: '📒 Bütçen', en: '📒 Your budget' },
   buYil: { tr: 'Bu yıl (tahmini)', en: 'This year (estimate)' },
   gecenYil: { tr: 'Geçen yıl', en: 'Last year' },
   maasKalemi: { tr: 'Çalışan maaşları', en: 'Staff wages' },
   curumeKalemi: { tr: 'Çürüyen mal', en: 'Spoiled goods' },
   hasarKalemi: { tr: 'Hırsızlık / baskın / tazminat', en: 'Theft / raid / severance' },
   dukkanNeti: { tr: 'Dükkan neti', en: 'Shop net' },
-  yasamKira: { tr: 'Yaşam + kira', en: 'Living + rent' },
+  yasam: { tr: 'Yaşam', en: 'Living' },
+  kira: { tr: 'Kira', en: 'Rent' },
+  hayvanGider: { tr: 'Evcil hayvan', en: 'Pets' },
   krediTaksit: { tr: 'Kredi taksidi', en: 'Loan instalment' },
   cebineKalan: { tr: 'Cebine kalan', en: 'Left in your pocket' },
   gecenAlis: { tr: 'geçen yıl', en: 'last year' },
@@ -435,6 +437,8 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
         </div>
       )}
 
+      <div className="isletme-iki-sutun">
+      <div className="isletme-sutun">
       {durum.depo.kapasite > 0 && (
         <div className={`isletme-depo-doldur${uretimModu ? ' isletme-depo-uretim' : ''}`}>
           <h4>
@@ -497,24 +501,9 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
           <PiyasaHaberleri pazar={pazar} sayilarGoster />
         </details>
       )}
-
-        </>
-      )}
-
-      <IsletmeOrtak
-        goster={bolum === 'isletme' ? 'yok' : bolum}
-        durum={durum}
-        yukleniyor={yukleniyor}
-        sadakatAdi={M.sadakat}
-        riskliAciklama={M.riskli}
-        onYatirim={onYatirim}
-        onCalisanAl={onCalisanAl}
-        onEkipCikar={onEkipCikar}
-      />
-
-      {(bolum === 'hepsi' || bolum === 'isletme') && (
-        <>
-      <h4>{t('butceBaslik')}</h4>
+      </div>
+      <div className="isletme-sutun">
+      <h4 className="isletme-butce-baslik">{t('butceBaslik')}</h4>
       <div className="isletme-butce">
         <div className="isletme-butce-sutun">
           <h5>{t('buYil')}</h5>
@@ -526,7 +515,9 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
           {durum.butce.borcOdeme > 0 && <div className="isletme-butce-satir"><span>{t('borcOdeme')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.borcOdeme)}</span></div>}
           <div className="isletme-butce-satir"><span>{t('maasKalemi')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.maas)}</span></div>
           <div className="isletme-butce-satir isletme-butce-toplam"><span>{t('dukkanNeti')}</span><span className={isaretSinifi(durum.butce.net)}>{durum.butce.net >= 0 ? '+' : ''}{formatPara(durum.butce.net)}</span></div>
-          <div className="isletme-butce-satir"><span>{t('yasamKira')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.yasamKira)}</span></div>
+          <div className="isletme-butce-satir"><span>{t('yasam')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.yasam)}</span></div>
+          <div className="isletme-butce-satir"><span>{t('kira')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.kira)}</span></div>
+          {durum.butce.evcilHayvan > 0 && <div className="isletme-butce-satir"><span>{t('hayvanGider')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.evcilHayvan)}</span></div>}
           {durum.butce.krediTaksit > 0 && <div className="isletme-butce-satir"><span>{t('krediTaksit')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.krediTaksit)}</span></div>}
           <div className="isletme-butce-satir isletme-butce-toplam"><span>{t('cebineKalan')}</span><span className={isaretSinifi(durum.butce.cebineKalan)}>{durum.butce.cebineKalan >= 0 ? '+' : ''}{formatPara(durum.butce.cebineKalan)} {pb}</span></div>
         </div>
@@ -542,8 +533,22 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
         </div>
       )}
 
+      </div>
+      </div>
+
         </>
       )}
+
+      <IsletmeOrtak
+        goster={bolum === 'isletme' ? 'yok' : bolum}
+        durum={durum}
+        yukleniyor={yukleniyor}
+        sadakatAdi={M.sadakat}
+        riskliAciklama={M.riskli}
+        onYatirim={onYatirim}
+        onCalisanAl={onCalisanAl}
+        onEkipCikar={onEkipCikar}
+      />
 
     </section>
   );

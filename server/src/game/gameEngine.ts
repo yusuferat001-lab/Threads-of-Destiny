@@ -5192,7 +5192,7 @@ export interface IsletmeGorunumu {
   sonDokum: IsletmeDokum | null;
   beklenenBrutKar: number;
   /** v11: bu yılın dürüst tahmini bütçesi + cebine kalan (yaşam, kira, hayvan, kredi taksidi düşülmüş). */
-  butce: IsletmeButcesi & { yasamKira: number; krediTaksit: number; cebineKalan: number };
+  butce: IsletmeButcesi & { yasamKira: number; yasam: number; kira: number; evcilHayvan: number; krediTaksit: number; cebineKalan: number };
   /** Vergi: bu yıl uygulanan oran (0-1) ve indirimin kalan yılı (yoksa 0). */
   vergi: { oran: number; indirimKalanYil: number };
   /** Koruma (0-1) ve ortalama dış hırsızlık aralığı (yıl). */
@@ -5307,7 +5307,7 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
       slot: { kullanilan: 0, toplam: 0 }, depo: { kullanilan: 0, kapasite: 0, kademe: 0, curumeYuzde: 0, bakim: 0, dukkanGideri: 0, dolulukYuzde: 0, doldurYuzdeleri: [], oto: { acik: false, yuzde: 50 } }, uretim: null,
       urunSecimi: { bekliyor: false, secilen: null, secenekler: [] }, hatlar: [], yatirimlar: [], calisanlar: [], calisanTavani: calisanLimiti(state),
       adaylar: [], adayYenilenmeKalanYil: 0, tedarikciBorcu: 0, sonDokum: null, beklenenBrutKar: 0,
-      butce: { satis: 0, alim: 0, curume: 0, depo: 0, aidat: 0, brut: 0, vergi: 0, borcOdeme: 0, net: 0, maas: 0, yasamKira: 0, krediTaksit: 0, cebineKalan: 0 },
+      butce: { satis: 0, alim: 0, curume: 0, depo: 0, aidat: 0, brut: 0, vergi: 0, borcOdeme: 0, net: 0, maas: 0, yasamKira: 0, yasam: 0, kira: 0, evcilHayvan: 0, krediTaksit: 0, cebineKalan: 0 },
       vergi: { oran: 0, indirimKalanYil: 0 }, koruma: { toplam: 0, calisan: 0, yatirim: 0, otorite: 0, hirsizlikAralik: 0 },
       otorite: null, otoriteIliski: state.yonetim_iliski ?? 0, imtiyazlar: [],
       dunya: { donem: null, savas: false, veba: false }, para: state.para, paraBirimi: state.para_birimi,
@@ -5478,7 +5478,7 @@ function butceVeCebineKalan(state: CharacterState, b: IsletmeBaglami) {
   const g = giderKalemleriHesapla(state);
   const yasamKira = paraYuvarla(g.yasam + g.konut + g.evcilHayvan);
   const krediTaksit = state.kredi ? paraYuvarla(Math.min(state.kredi.kalanBorc, state.kredi.yillikTaksit)) : 0;
-  return { ...butce, yasamKira, krediTaksit, cebineKalan: paraYuvarla(butce.net - yasamKira - krediTaksit) };
+  return { ...butce, yasamKira, yasam: paraYuvarla(g.yasam), kira: paraYuvarla(g.konut), evcilHayvan: paraYuvarla(g.evcilHayvan), krediTaksit, cebineKalan: paraYuvarla(butce.net - yasamKira - krediTaksit) };
 }
 
 export async function isletmeDurumGetir(id: string): Promise<IsletmeGorunumu> {

@@ -757,3 +757,54 @@
     font-size: clamp(0.8rem, 0.5vw + 0.62rem, 1.15rem);
   }
 }
+
+/* ---- PC strateji sayfaları (Dükkân/Yatırım/Çalışan/Çevre): iki yandan %10 boşluk + iki sütun ---- */
+@media (min-width: 768px) {
+  .strateji-sayfa > :not(.strateji-baslik):not(.kariyer-sonuc-katman) {
+    margin-left: 10%;
+    margin-right: 10%;
+  }
+  .strateji-sayfa > .kariyer-govde {
+    margin-left: 10%;
+    margin-right: 10%;
+  }
+  .strateji-sayfa .kariyer-govde {
+    padding: 14px 0 0;
+  }
+  /* Dükkân: sol sütun depo + ürün hatları, sağ sütun Bütçen. */
+  .strateji-sayfa .isletme-iki-sutun {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+  }
+  .strateji-sayfa .isletme-sutun {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .strateji-sayfa .isletme-sutun > .isletme-butce-baslik {
+    margin-top: 0;
+  }
+  .strateji-sayfa .isletme-butce {
+    margin: 6px 0 10px;
+    grid-template-columns: 1fr;
+  }
+  /* Yatırım ve Çalışan kartları iki sütun. */
+  .strateji-sayfa .isletme-yatirimlar,
+  .strateji-sayfa .isletme-calisanlar {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 20px;
+  }
+  /* Çevre: ana sütun + pazar kartı yan yana. */
+  .strateji-sayfa .kariyer-govde:has(.kariyer-yan-sutun > *) {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+  }
+  .strateji-sayfa .kariyer-govde:has(.kariyer-yan-sutun > *) .kariyer-yan-sutun {
+    margin-top: 0;
+  }
+}

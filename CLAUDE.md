@@ -2098,3 +2098,12 @@ Bu blok §13 "Pasif regen yumuşak tavanı" (sağlık için) ve §45 v8–v31 ar
 - **Bütçe:** "Dükkan bütçesi" yalnız bu yılı gösterir (geçen yıl sütunu ve geçen yıl pay/müşteri özeti kalktı; geçen yıl uyarıları kalır).
 - **Mobil:** strateji sayfalarında boşluk/başlık/özet/ilerleme çubukları sıkıştırıldı (`strateji.css` v29 bloğu).
 - **Test:** `yaslanma.test.ts` (sınır tablosu), `konut.test.ts` (yaşa bağlı sınır), `isletme.test.ts` (görünümde `etki`).
+
+### §53 Faz 7 (2026-11) — Ana ekran panelleri dokunulabilir
+`AnaEkranMobil` (mobil + PC): "Yıllık Net" paneli **Elde Kalan** oldu (büyük değer = `isletme.butce.cebineKalan`, işletmesiz mesleklerde `finans.netYillik`; altında Tüm gelir / Tüm gider). Üç panel artık düğme: **Müşteri** → Dükkân sayfası (`kariyerSayfa='isletme'`) `.isletme-paneli`'ne kaydırılıp vurgulanır, **Elde Kalan** → aynı sayfada `.butce-paneli`'ne, **Dönem** → `finans.dunyaEtkileri` listesini gösteren açılır pencere. Kaydırma/vurgu `KariyerEkrani` `odak` prop'u (`'musteri'|'butce'`) + `.odak-vurgu` animasyonu (ana-ekran.css); App.tsx `kariyerOdak` state'i.
+
+### §53 Faz 8 (2026-11) — Tek "Bütçen" tablosu
+İşletmeli mesleklerde (Tüccar/Zanaatkâr/Din Adamı) Dükkân sayfasındaki ikinci "Bütçen" tablosu (`ButcePaneli`) kaldırıldı; `ButcePaneli` yalnız işletmesi olmayan mesleklerde (Asker) kalır. "Dükkan bütçesi" tablosu **📒 Bütçen** adını aldı ve "Yaşam + kira" satırı Yaşam / Kira (+ Evcil hayvan) olarak ayrıldı (`IsletmeButcesi` → `yasam`, `kira`, `evcilHayvan` alanları, `yasamKira` toplamı duruyor). Din Adamı'nın "Beklenen gelir ve giderler" bloğu aynı şekilde Bütçen oldu (maaş, yaşam, kira, kredi, cebine kalan). Ana ekrandaki Elde Kalan paneli `.isletme-butce-baslik`'a kaydırır; Din Adamı'nda "Tüm gelir" `cemaat.toplamGelir`'dir.
+
+### §53 Faz 9 (2026-11)
+Ana ekran paneli artık **Kazanç** (Gelir / Gider, kredi taksidi gider içinde; varsa "Kredi taksidi dahil" satırı). Dükkân sayfasında `IsletmePaneli` iki sütun (`.isletme-iki-sutun`: sol depo + ürün hatları, sağ **Bütçen**); PC strateji sayfalarında (`pc-tema.css`) içerik iki yandan %10 boşlukla, Yatırım/Çalışan kartları iki sütun, Çevre ana+yan sütun. Bütçen kutuları artık diğer kartlarla aynı latte zemin.

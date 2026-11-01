@@ -1009,6 +1009,9 @@ export interface IsletmeButcesi {
   net: number;
   maas: number;
   yasamKira: number;
+  yasam: number;
+  kira: number;
+  evcilHayvan: number;
   krediTaksit: number;
   cebineKalan: number;
 }
