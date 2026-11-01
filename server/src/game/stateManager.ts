@@ -3406,9 +3406,9 @@ export function krediMaksTutar(state: CharacterState): number {
   return Math.max(0, Math.min(tavan, Math.max(taban, Math.round(maas * 6 * sucKesinti))));
 }
 
-/** Tefecinin güvensizlik primi: yalnız borçluysan (para < 0) havuz faizine +1 puan biner. */
+/** Tefecinin güvensizlik primi: yalnız borçluysan (para < 0) havuz faizine +2 puan biner. */
 export function krediFaizEki(state: CharacterState): number {
-  return state.para < 0 ? 0.01 : 0;
+  return state.para < 0 ? 0.02 : 0;
 }
 
 function krediTeklifiKur(state: CharacterState, tanim: KrediHavuzTanimi, maks: number): KrediTeklifi | null {

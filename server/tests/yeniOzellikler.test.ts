@@ -126,7 +126,7 @@ describe("Kredi / tefeci (havuzdan 2 teklif, vadeli)", () => {
     expect(s.kredi_teklifleri!.yil).toBe(s.yil); // yenilendi
   });
 
-  it("havuzda kısa vade = yüksek faiz, uzun vade = düşük faiz; tutarlar 30–130, vadeler 7–14 yıl, toplam faiz maliyeti %31–46 (v31)", () => {
+  it("havuzda kısa vade = yüksek faiz, uzun vade = düşük faiz; tutarlar 20–95, vadeler 7–14 yıl, toplam faiz maliyeti %31–46 (v31)", () => {
     for (const boyut of ["kucuk", "orta", "buyuk"]) {
       const kisa = KREDI_HAVUZU.find((k) => k.id === `kisa_${boyut}`)!;
       const uzun = KREDI_HAVUZU.find((k) => k.id === `uzun_${boyut}`)!;
@@ -134,8 +134,8 @@ describe("Kredi / tefeci (havuzdan 2 teklif, vadeli)", () => {
       expect(kisa.faiz).toBeGreaterThan(uzun.faiz);
     }
     for (const k of KREDI_HAVUZU) {
-      expect(k.tutar).toBeGreaterThanOrEqual(30);
-      expect(k.tutar).toBeLessThanOrEqual(130);
+      expect(k.tutar).toBeGreaterThanOrEqual(20);
+      expect(k.tutar).toBeLessThanOrEqual(95);
       expect(k.vade).toBeGreaterThanOrEqual(7);
       expect(k.vade).toBeLessThanOrEqual(14);
       // gerçek ödeme akışı: faiz işler, yukarı yuvarlanmış taksit ödenir
