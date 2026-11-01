@@ -90,7 +90,6 @@ const M = {
     tr: 'Açıkken depo her yıl başı seçtiğin yüzdeye, paran yettiği kadar dolar. Sen kapatana kadar sürer.',
     en: 'When on, the warehouse refills to your chosen % at the start of every year as far as your money allows, until you turn it off.',
   },
-  sapma: { tr: 'bu yılın piyasa farkı', en: 'this year\'s market swing' },
   hatlar: { tr: 'Ürün hatları', en: 'Product lines' },
   acik: { tr: 'Açık', en: 'Open' },
   kapali: { tr: 'Kapalı', en: 'Closed' },
@@ -349,7 +348,6 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
             {h.oncekiBirimMaliyet != null ? ` (${t('gecenAlis')} ${formatPara(h.oncekiBirimMaliyet)})` : ''}
             {h.maliyetDonemYuzde !== 0 ? <> · {t('alisDonem')} <span className={h.maliyetDonemYuzde > 0 ? 'kademe-dusuk' : 'kademe-yuksek'}>{formatYuzde(dil, h.maliyetDonemYuzde, true)}</span></> : null}
             {h.maliyetIndirimYuzde > 0 ? <> · {t('alisIndirim')} <span className="kademe-yuksek">−{formatYuzde(dil, h.maliyetIndirimYuzde)}</span></> : null}
-            {' · '}{t('sapma')}: {dil === 'en' ? 'buy' : 'alış'} <span className={h.alisSapmaYuzde > 0 ? 'kademe-dusuk' : 'kademe-yuksek'}>{formatYuzde(dil, h.alisSapmaYuzde, true)}</span>, {dil === 'en' ? 'sell' : 'satış'} <span className={h.satisSapmaYuzde >= 0 ? 'kademe-yuksek' : 'kademe-dusuk'}>{formatYuzde(dil, h.satisSapmaYuzde, true)}</span>
           </div>
         )}
         {h.acik && (

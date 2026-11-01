@@ -281,7 +281,7 @@ describe("işletme (Tüccar dilimi)", () => {
     }
   });
 
-  it("otomatik depo: her yıl kapasiteye (%100) kadar kendiliğinden dolar; sapma alış ±%3 / satış ±%2 aralığında", async () => {
+  it("otomatik depo: her yıl kapasiteye (%100) kadar kendiliğinden dolar; sapma alış ±%3 / satış ±%3 aralığında", async () => {
     const s = await tuccar();
     const b = isletmeBaglami(s);
     s.isletme!.hatlar.forEach((h) => { h.stok = 0; });
@@ -292,8 +292,8 @@ describe("işletme (Tüccar dilimi)", () => {
       for (const v of Object.values(s.isletme!.piyasa_sapma!)) {
         expect(v.alis).toBeGreaterThanOrEqual(0.97);
         expect(v.alis).toBeLessThanOrEqual(1.03);
-        expect(v.satis).toBeGreaterThanOrEqual(0.98);
-        expect(v.satis).toBeLessThanOrEqual(1.02);
+        expect(v.satis).toBeGreaterThanOrEqual(0.97);
+        expect(v.satis).toBeLessThanOrEqual(1.03);
       }
     }
   });

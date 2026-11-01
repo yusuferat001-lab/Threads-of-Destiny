@@ -121,7 +121,7 @@ export const HAT_PAYLASIM = 0.9;
 export const HAT_CESITLILIK_MUSTERI = 1;
 /** v20: her yıl başı alış ±%3, satış ±%2 piyasa sapması (o yıl sabit). */
 export const PIYASA_SAPMA_ALIS = 0.03;
-export const PIYASA_SAPMA_SATIS = 0.02;
+export const PIYASA_SAPMA_SATIS = 0.03;
 /**
  * Eşik yok: talebin herhangi bir kısmı karşılanamazsa uyarı çıkar. Üst üste İKİ yıl karşılanamazsa (ve sonraki her yıl
  * karşılanamadıkça) son iki yılın karşılanamayan oran ortalamasının bu kesri kadar müşteri o yıl rakibe gider
