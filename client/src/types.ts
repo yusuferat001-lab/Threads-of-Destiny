@@ -776,6 +776,7 @@ export type IsletmeFiyat = 'eksi20' | 'eksi10' | 'normal' | 'arti10' | 'arti20';
 export interface IsletmeUyari {
   kod:
     | 'stok_bitti'
+    | 'alim_yetersiz'
     | 'fazla_stok'
     | 'calisan_ayrildi'
     | 'kitle_kaybi'
@@ -902,6 +903,8 @@ export interface IsletmeCalisanGorunumu {
   maas: number;
   sadik: boolean;
   riskli: boolean;
+  /** Çalışanın işletmeye etkisi: maliyet/ana/güvenlik kesir (0-1), müşteri yıllık sayı. */
+  etki: { tur: 'ana' | 'maliyet' | 'musteri' | 'guvenlik'; deger: number } | null;
 }
 
 export interface IsletmeAdayGorunumu {
@@ -916,6 +919,8 @@ export interface IsletmeAdayGorunumu {
   yetenek: number;
   sadakat: number;
   maas: number;
+  /** İşe alınırsa getireceği etki. */
+  etki: { tur: 'ana' | 'maliyet' | 'musteri' | 'guvenlik'; deger: number } | null;
 }
 
 export interface CemaatPolitikaSecenegi {

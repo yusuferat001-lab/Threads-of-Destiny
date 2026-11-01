@@ -1,6 +1,6 @@
 import type { IsletmeGorunumu } from '../types';
 import { useDil } from '../DilContext';
-import { formatPara, kademeSinifi } from '../format';
+import { formatPara, formatYuzde, kademeSinifi } from '../format';
 
 type D = { tr: string; en: string };
 
@@ -24,6 +24,32 @@ const M = {
   yil: { tr: '/yıl', en: '/yr' },
   yilKisa: { tr: 'yıl', en: 'yr' },
 };
+
+type Etki = { tur: 'ana' | 'maliyet' | 'musteri' | 'guvenlik'; deger: number } | null;
+
+/** Çalışanın/adayın işletmeye etkisi, mesleğe göre okunur tek satır (örn. "Alış maliyeti −%12"). */
+function etkiMetni(dil: 'tr' | 'en', etki: Etki, durum: IsletmeGorunumu): string | null {
+  if (!etki) return null;
+  const mod = durum.cemaat ? 'cemaat' : durum.uretim ? 'uretim' : 'ticaret';
+  const yuzde = Math.round(etki.deger * 100);
+  const tr = dil === 'tr';
+  switch (etki.tur) {
+    case 'maliyet': {
+      const ad = mod === 'cemaat' ? (tr ? 'Faaliyet masrafı' : 'Activity costs') : mod === 'uretim' ? (tr ? 'Hammadde gideri' : 'Material costs') : tr ? 'Alış maliyeti' : 'Purchase cost';
+      return `${ad} −${formatYuzde(dil, yuzde)}`;
+    }
+    case 'musteri': {
+      const n = Math.round(etki.deger);
+      return mod === 'cemaat' ? (tr ? `+${n} inanan/yıl` : `+${n} worshippers/yr`) : tr ? `+${n} müşteri/yıl` : `+${n} customers/yr`;
+    }
+    case 'guvenlik':
+      return `${tr ? 'Koruma' : 'Protection'} ${formatYuzde(dil, yuzde, true)}`;
+    case 'ana': {
+      const ad = mod === 'cemaat' ? (tr ? 'Bağışlar' : 'Donations') : mod === 'uretim' ? (tr ? 'Yıllık üretim' : 'Yearly output') : tr ? 'Satışlar' : 'Sales';
+      return `${ad} ${formatYuzde(dil, yuzde, true)}`;
+    }
+  }
+}
 
 /** Tüccar/Zanaatkâr/Din işletmelerinin ortak bölümleri: yatırımlar, çalışanlar, adaylar. `sadakatAdi`: Din'de "İnanç". */
 export function IsletmeOrtak({
@@ -71,10 +97,12 @@ export function IsletmeOrtak({
             <span className="isletme-yatirim-etki">
               <b>{t('simdi')}:</b> {d(y.etkiSimdi)}
             </span>
-            <span className="isletme-yatirim-etki">
-              <b>{t('yillikMasraf')}:</b> {formatPara(y.yillikMasraf)}
-              {y.sonrakiMasraf !== null && <span className="kademe-dusuk"> (+{formatPara(y.sonrakiMasraf)})</span>}
-            </span>
+            {y.yillikMasraf > 0 && (
+              <span className="isletme-yatirim-etki">
+                <b>{t('yillikMasraf')}:</b> {formatPara(y.yillikMasraf)}
+                {y.sonrakiMasraf !== null && <span className="kademe-dusuk"> (+{formatPara(y.sonrakiMasraf)})</span>}
+              </span>
+            )}
             {y.etkiSonraki && (
               <span className="isletme-yatirim-etki isletme-yatirim-sonraki">
                 <b>{t('sonra')}:</b> <span className="kademe-yuksek">{d(y.etkiSonraki)}</span>
@@ -112,6 +140,7 @@ export function IsletmeOrtak({
                 </span>
               )}
               <small>{d(c.rolAciklama)}</small>
+              {etkiMetni(dil, c.etki, durum) && <span className="isletme-calisan-etki kademe-yuksek">▲ {etkiMetni(dil, c.etki, durum)}</span>}
               <span>
                 {t('yetenek')} <b className={kademeSinifi(c.yetenek, [40, 65])}>{c.yetenek}</b> · {sad} <b className={kademeSinifi(c.sadakat, [45, 75])}>{c.sadakat}</b> · {t('maas')} {formatPara(c.maas)}
                 {t('yil')}
@@ -133,8 +162,8 @@ export function IsletmeOrtak({
             {durum.adaylar.map((a) => (
               <div key={a.id} className="isletme-calisan isletme-aday">
                 <strong>{a.isim}</strong> <em>({d(a.rol)})</em>
-                <span className="isletme-etiket">{d(a.tipAdi)}</span>
                 <small>{d(a.rolAciklama)}</small>
+                {etkiMetni(dil, a.etki, durum) && <span className="isletme-calisan-etki kademe-yuksek">▲ {etkiMetni(dil, a.etki, durum)}</span>}
                 <small>{d(a.gecmis)}</small>
                 <span>
                   {t('yetenek')} <b className={kademeSinifi(a.yetenek, [40, 65])}>{a.yetenek}</b> · {sad} <b className={kademeSinifi(a.sadakat, [45, 75])}>{a.sadakat}</b> · {t('maas')} {formatPara(a.maas)}

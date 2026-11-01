@@ -60,7 +60,7 @@ import { rastgeleBirIsimSec } from "../data/npcIsimleri";
 export interface IsletmeBaglami {
   /** enflasyonCarpani(state): gelir/satış/bağış tarafı. */
   enflasyon: number;
-  /** giderEnflasyonCarpani(state): alış, bakım, maaş, yatırım fiyatı (gelir enflasyonunun ×1,15'i). */
+  /** giderEnflasyonCarpani(state): alış, bakım, maaş, yatırım fiyatı (gelir enflasyonunun ×1,1'i). */
   giderEnflasyon: number;
   /**
    * Kalıcı satış/bağış çarpanı (v10): olay `maas_carpani` etiketi × geçici durumlar (veba tedbiri vb.) × eş desteği.
@@ -88,7 +88,7 @@ export function depoKapasiteTablosu(cag?: string, meslek?: string): number[] {
   return DEPO_KAPASITE_TABLOLARI[`${meslek ?? "Tüccar"}|${cag ?? "Orta Çağ"}`] ?? DEPO_KAPASITE;
 }
 export const CURUME_ORANLARI = [0.1, 0.08, 0.06, 0.045, 0.03];
-export const DEPO_BAKIM = [6, 12, 24, 36, 55];
+export const DEPO_BAKIM = [4, 8, 12, 19, 30]; // v26: K2 17→12 (8→17 sıçraması dik), üst kademeler de kısıldı
 /** v24: açık hatların toplam yıllık talebi müşteri sayısının bu katını geçemez. */
 export const TALEP_TAVAN_ORANI = 1;
 export const BASLANGIC_STOK = 30;
@@ -108,6 +108,11 @@ export function baslangicVeresiyeOrani(meslek: string): number {
 export const BORC_ODEME_ORANI = 0.25;
 /** v27: nakit mala yetmezse eksik kısım tedarikçiden veresiye alınır; toplam veresiye borcu tam bir depo dolumunun bu kesrini aşamaz. */
 export const VERESIYE_TAVAN_ORANI = 0.6;
+/**
+ * v22: mal alımında nakit −50'ye kadar (× gelir enflasyonu) eksiye inebilir; bu limit dolunca tedarikçi veresiyesi devreye girer.
+ * Aynı limit, "ilk kez bu sınırın altına düşünce bir kereye mahsus nakit yardımı" kuralının eşiğidir (stateManager).
+ */
+export const STOK_EKSI_NAKIT_LIMITI = 50;
 /** Rütbe S1..S5 → en fazla toplam çalışan. */
 export const CALISAN_LIMITLERI = [2, 3, 5, 6, 7];
 /** Müşterinin bütçesi hatlar arasında paylaşılır: n açık hatta her birinin talebi 1/(1+0.9(n-1)) ile çarpılır (toplam talep neredeyse sabit). */
@@ -122,7 +127,7 @@ export const PIYASA_SAPMA_SATIS = 0.02;
  * karşılanamadıkça) son iki yılın karşılanamayan oran ortalamasının bu kesri kadar müşteri o yıl rakibe gider
  * (kayıp en çok %30'dur; ortalama 1 olsa bile).
  */
-const KITLE_KAYIP_KESRI = 0.3;
+const KITLE_KAYIP_KESRI = 0.15; // v22: 0,30 → 0,15
 export const TALEP_GURULTUSU = 0.08;
 /** Yüzdelik müşteri büyümesi pay bu eşiğe yaklaştıkça sıfıra iner. */
 export const PAY_DOYMA_ESIGI = 0.68;
@@ -130,7 +135,9 @@ export const PAY_DOYMA_ESIGI = 0.68;
 export const KERVAN_INDIRIM_KADEME = 0.04;
 const GUMRUK_INDIRIMI = 0.1;
 const MUAFIYET_INDIRIMI = 0.08;
-export const TEZGAH_URETIM_KADEME = 0.45;
+export const TEZGAH_URETIM_KADEME = 0.5;
+/** v26: usta işi — her tezgâh kademesi satış fiyatına prim ekler (üretim tavanı artışına ek doğrudan getiri). */
+export const TEZGAH_FIYAT_PRIMI = 0.03;
 /** Tanıtım yatırımı (v27): toplam kademeye göre yıllık müşteri SAYISI [K0..K4] = 0/1/3/4/5. */
 export const TANITIM_MUSTERI = [0, 1, 3, 4, 5];
 /** Veba sürerken müşteri/inanan büyümesinin pozitif kısımları bu çarpanla kısılır (v10). */
@@ -139,15 +146,16 @@ export const VEBA_ARTIS_CARPANI = 0.3;
 const FIYAT_SOKU_YANSIMA = 1;
 
 // Üretim modu (Zanaatkâr): yıllık üretim tavanı = taban × (1 + ana rol bonusları + tezgâh yüzdesi + ruhsat).
-export const URETIM_TABAN = 80;
+export const URETIM_TABAN = 60; // v26: 80→60 — tavan gerçek talebe yaklaşsın, tezgâh kademeleri anlamlı olsun
 /** Üretim modunda ana rol bonusunun talebe yansıyan payı (kalanı üretim tavanına gider). */
 export const URETIM_ANA_TALEP_PAYI = 0.55;
 export const URETIM_METRIK_CARPANI = 0.2;
 
-// Lonca aidatı (v20): satışın %2'si; pay %15'i geçince %3, %20'yi geçince %4, %30'u geçince %5. Brüt kârdan vergiden önce düşer.
+// Lonca aidatı (v29): satışın %2'si (pay %0-15); %15-25 → %3, %25-35 → %4, %35-45 → %5, %45 ve üstü → %6. Brüt kârdan vergiden önce düşer.
 export const LONCA_AIDATI_ESIKLERI: { payUstu: number; oran: number }[] = [
-  { payUstu: 0.3, oran: 0.05 },
-  { payUstu: 0.2, oran: 0.04 },
+  { payUstu: 0.45, oran: 0.06 },
+  { payUstu: 0.35, oran: 0.05 },
+  { payUstu: 0.25, oran: 0.04 },
   { payUstu: 0.15, oran: 0.03 },
   { payUstu: 0, oran: 0.02 },
 ];
@@ -157,7 +165,7 @@ export function loncaAidatiOrani(pay: number): number {
 
 // Vergi
 export const VERGI_TABAN_ORANI = 0.2;
-export const VERGI_SAVAS_EKI = 0.1;
+export const VERGI_SAVAS_EKI = 0.05; // v29: savaşta vergi +5 puan
 export const VERGI_KOTU_ILISKI_EKI = 0.03;
 export const VERGI_KOTU_ILISKI_ESIGI = 25;
 
@@ -170,7 +178,7 @@ export const SADIK_BONUS = 1.05;
 export const SADAKAT_OLAY_COOLDOWN_YIL = 3;
 
 // Dış hırsızlık
-export const GUVENLIK_YATIRIM_KORUMA = [0, 0.125, 0.25, 0.375, 0.5];
+export const GUVENLIK_YATIRIM_KORUMA = [0, 0.15, 0.3, 0.45, 0.6]; // v26: kademe başı 0,125→0,15 (+%20)
 export const OTORITE_KORUMA_ESIGI = 70;
 export const OTORITE_KORUMA = 0.1;
 
@@ -320,19 +328,19 @@ export function korumaHesapla(state: CharacterState): { calisan: number; yatirim
 }
 
 /** Çalışan maaşı çarpanı (v8.2: +%15 → v8.4: +%7). */
-export const MAAS_CARPANI = 0.95;
+export const MAAS_CARPANI = 0.9; // v22: 0,95 → 0,90 (−5 puan)
 
 /** Giriş seviyesine (Y, S) göre enflasyonsuz yıllık maaş tabanı. */
 export function maasTabani(yetenek: number, sadakat: number): number {
   return r2(MAAS_CARPANI * (1.2 + 0.02 * yetenek + 0.01 * sadakat + 0.0004 * yetenek * sadakat));
 }
 
-/** Her çalışanın güncel maaşını `maasTabani(güncel Y, S) × güncel enflasyon` ile yeniler (yeni adaylar ve mevcutlar). */
+/** Her çalışanın güncel maaşını `maasTabani(giriş Y, S) × güncel gider enflasyonu` ile yeniler. */
 export function calisanMaaslariniGuncelle(state: CharacterState, enflasyon: number): void {
   for (const uye of state.ekip) {
     if (uye.maas_taban === undefined) continue;
-    // v14: maaş çalışanın GÜNCEL Yetenek/Sadakat'ine bağlı — geliştikçe artar (işe alırken giriş seviyesi baz alınır).
-    if (uye.rol_turu) uye.maas_taban = maasTabani(uye.gercekKalite, uye.sadakat);
+    // v29: maaş yalnız İŞE ALIRKEN ölçülen giriş Yetenek/Sadakat'ine bağlıdır; çalışan geliştikçe maaşı artmaz, yalnız enflasyon uygulanır.
+    if (uye.rol_turu && uye.y_giris !== undefined && uye.s_giris !== undefined) uye.maas_taban = maasTabani(uye.y_giris, uye.s_giris);
     uye.maas = r2(uye.maas_taban * enflasyon);
   }
 }
@@ -525,6 +533,7 @@ export function hatHesapla(state: CharacterState, hat: IsletmeHat, tanim: HatTan
       pol.fiyat *
       (sicak ? SICAK_URUN_FIYAT : 1) *
       (ub?.satisCarpani ?? 1) *
+      (1 + yatirimKademesi(state, "uretim") * TEZGAH_FIYAT_PRIMI) *
       tekel,
     birimMaliyet: tanim.birimMaliyet * b.giderEnflasyon * sapma.alis * (1 + (kes.fiyat - 1) * FIYAT_SOKU_YANSIMA) * maliyetCarpani * piyasaCarpani(state, "alis_maliyeti") * (ub?.alisCarpani ?? 1),
     maliyetIndirim: 1 - maliyetCarpani * piyasaCarpani(state, "alis_maliyeti"),
@@ -608,7 +617,7 @@ export const ADAY_SAYISI = 5;
 export const ADAY_YENILEME_YIL = 3;
 
 /**
- * 5 aday görünür; liste 3 yılda bir yenilenir. Rol başına en fazla 2 aday seçilir (çeşitlilik).
+ * 5 aday görünür (aynı anda en çok 5); liste 3 yılda bir yenilenir. Önce her rolden bir aday, kalan yerler rol başına en çok 2 ile dolar.
  * v20: Tüccar/Din Adamı'nda "ana" rol yoktur (satış/bağış çalışanı kalktı); o şablonlar müşteri rolüne döner.
  */
 export function adaylariYenile(state: CharacterState): void {
@@ -619,8 +628,16 @@ export function adaylariYenile(state: CharacterState): void {
   const havuz = karistir(profil.adaylar.map((t) => (t.rolTuru === "ana" && !anaVar ? { ...t, rolTuru: "musteri" as IsletmeRolTuru } : t)));
   const secilen: AdayTaslagi[] = [];
   const rolSayac: Record<string, number> = {};
+  // v31: önce her rolden (Üretici/Hammaddeci/Tanıtımcı/Bekçi…) bir aday önerilir, kalan yerler çeşitlilikle (rol başına en çok 2) dolar.
+  for (const r of profil.roller) {
+    const t = havuz.find((x) => x.rolTuru === r.tur);
+    if (!t || secilen.length >= ADAY_SAYISI) continue;
+    rolSayac[t.rolTuru] = 1;
+    secilen.push(t);
+  }
   for (const t of havuz) {
     if (secilen.length >= ADAY_SAYISI) break;
+    if (secilen.includes(t)) continue;
     if ((rolSayac[t.rolTuru] ?? 0) >= 2) continue;
     rolSayac[t.rolTuru] = (rolSayac[t.rolTuru] ?? 0) + 1;
     secilen.push(t);
@@ -789,7 +806,7 @@ export function isletmeButcesi(state: CharacterState, b: IsletmeBaglami): Isletm
   const maas = r2(state.ekip.reduce((t, u) => t + u.maas, 0));
   if (profil.mod === "cemaat") {
     const brut = cemaatBeklenenKar(state, b);
-    return { ...bos, brut, net: brut, maas };
+    return { ...bos, brut, net: r2(brut - maas), maas };
   }
   const curume = curumeOrani(is);
   let satis = 0;
@@ -824,7 +841,7 @@ export function isletmeButcesi(state: CharacterState, b: IsletmeBaglami): Isletm
     brut: r2(brut),
     vergi: r2(vergi),
     borcOdeme: r2(borcOdeme),
-    net: r2(brut - vergi - borcOdeme),
+    net: r2(brut - vergi - borcOdeme - maas),
     maas,
   };
 }
@@ -834,12 +851,12 @@ export function beklenenBrutKar(state: CharacterState, b: IsletmeBaglami): numbe
   return isletmeButcesi(state, b).brut;
 }
 
-/** hesaplaMaasYillik'in işletme karşılığı: geçen yılın DÜKKAN NETİ (brüt − vergi − borç ödemesi); ilk yıl beklenen net. Eksi olabilir (zarar). */
+/** hesaplaMaasYillik'in işletme karşılığı: geçen yılın DÜKKAN NETİ (brüt − vergi − borç ödemesi − çalışan maaşları); ilk yıl beklenen net. Eksi olabilir (zarar). */
 export function isletmeGelirTahmini(state: CharacterState, b: IsletmeBaglami): number {
   const is = state.isletme;
   if (!is) return 1;
   const d = is.son_dokum;
-  if (d) return r2(d.brutKar - d.vergi - d.borcOdeme);
+  if (d) return r2(d.brutKar - d.vergi - d.borcOdeme - (d.calisanMaasi ?? 0));
   return isletmeButcesi(state, b).net;
 }
 
@@ -899,10 +916,12 @@ export function depoDoldurPlani(state: CharacterState, hedefYuzde: number, b: Is
   const tamAdet = adetler.reduce((t, x) => t + x, 0);
   const tamMaliyet = r2(toplamTutar(adetler));
   const elindekiPara = Math.max(0, r2(state.para));
+  // v22: nakit −limit'e kadar harcanabilir (para eksideyse kalan hak o kadar azalır).
+  const nakitHakki = Math.max(0, r2(state.para + STOK_EKSI_NAKIT_LIMITI * b.enflasyon));
   // v27: veresiye payı — kalan veresiye hakkı = tavan (tam depo dolumunun %60'ı) − mevcut tedarikçi borcu.
   const tamDepoMaliyeti = hesaplar.reduce((t, x, i) => t + kapasite * pay[i] * birimler[i], 0);
   const veresiyeHakki = Math.max(0, r2(tamDepoMaliyeti * VERESIYE_TAVAN_ORANI - (is.tedarikci_borcu ?? 0)));
-  const butce = elindekiPara + veresiyeHakki;
+  const butce = nakitHakki + veresiyeHakki;
   // Bütçe (nakit + veresiye hakkı) yetmiyorsa en kalabalık hattan birer birim düşerek yettiği kadarına in.
   const alinacak = [...adetler];
   while (toplamTutar(alinacak) > butce + 1e-9) {
@@ -921,7 +940,7 @@ export function depoDoldurPlani(state: CharacterState, hedefYuzde: number, b: Is
     kapasite,
     adet,
     maliyet: r2(hatlar.reduce((t, x) => t + x.tutar, 0)),
-    veresiye: r2(Math.max(0, hatlar.reduce((t, x) => t + x.tutar, 0) - elindekiPara)),
+    veresiye: r2(Math.max(0, hatlar.reduce((t, x) => t + x.tutar, 0) - nakitHakki)),
     hatlar,
     tamAdet,
     tamMaliyet,
@@ -936,8 +955,8 @@ export function depoyuDoldur(state: CharacterState, hedefYuzde: number, b: Islet
   const plan = depoDoldurPlani(state, hedefYuzde, b);
   const is = state.isletme!;
   if (plan.adet <= 0) return plan;
-  // Nakit önce kullanılır; yetmeyen kısım veresiye (tedarikçi borcu) olur, para eksiye düşmez.
-  state.para = Math.max(0, r2(state.para - (plan.maliyet - plan.veresiye)));
+  // Nakit önce kullanılır (−50'ye kadar eksiye inebilir); yetmeyen kısım veresiye (tedarikçi borcu) olur.
+  state.para = r2(state.para - (plan.maliyet - plan.veresiye));
   if (plan.veresiye > 0) is.tedarikci_borcu = r2((is.tedarikci_borcu ?? 0) + plan.veresiye);
   is.yil_alim = r2((is.yil_alim ?? 0) + plan.maliyet);
   if (!is.yil_alinan) is.yil_alinan = {};
@@ -1290,6 +1309,9 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
     return t + (bn?.tur === "musteri" ? bn.deger : 0);
   }, 0);
   const karsilanamayanOrani = toplamTalep > 0 ? toplamKarsilanamayan / toplamTalep : 0;
+  // Stok yetmediyse ve sebep kapasite değil paraysa (yıl başı alım nakit+veresiye ile tamamlanamadı), oyuncuya ayrıca söylenir.
+  if (is.alim_yetersiz && karsilanamayanOrani > 0) uyarilar.push({ kod: "alim_yetersiz" });
+  is.alim_yetersiz = false;
   // İlk yetmeme yalnız uyarıdır (hat bazlı "stok_bitti"). Hemen ardından ikinci yıl da karşılanamazsa — ve kayıp
   // sürdükçe sonraki yıllarda da — son iki yılın karşılanamayan oranlarının ortalamasının %30'u kadar müşteri gider.
   const oncekiOran = is.onceki_karsilanamayan_orani ?? 0;
@@ -1331,7 +1353,9 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
     borcOdeme = r2(Math.min(is.tedarikci_borcu, vergiSonrasi * BORC_ODEME_ORANI));
     is.tedarikci_borcu = r2(is.tedarikci_borcu - borcOdeme);
   }
-  const net = r2(brutKar - vergi - borcOdeme - nakitHasar - ekstraGider);
+  // v29: çalışan maaşları dükkân netinin İÇİNDEDİR.
+  const calisanMaasi = r2(state.ekip.reduce((t, u) => t + u.maas, 0));
+  const net = r2(brutKar - vergi - borcOdeme - nakitHasar - ekstraGider - calisanMaasi);
 
   // 9. Toplam pazar büyüklüğü (dönem/savaş/veba): herkesin müşterisi aynı oranda değişir.
   pazarOlcekle(state, 1 + pazarBuyumeOrani(state));
@@ -1344,7 +1368,7 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
     depoMasrafi: r2(depoMasrafi),
     yatirimMasrafi,
     loncaAidati,
-    calisanMaasi: r2(state.ekip.reduce((t, u) => t + u.maas, 0)),
+    calisanMaasi,
     nakitHasar: r2(nakitHasar),
     ekstraGider: r2(ekstraGider),
     curumeKaybi: r2(curumeKaybi),

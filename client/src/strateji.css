@@ -567,3 +567,132 @@
 /* v12: yatırım kartında "şimdi → sonraki kademe" karşılaştırması */
 .isletme-yatirim .isletme-yatirim-etki { flex-basis: 100%; font-size: 0.82rem; }
 .isletme-yatirim .isletme-yatirim-sonraki { font-size: 0.86rem; }
+
+/* ===== v29: işletme ekranı arayüz turu ===== */
+.isletme-calisan .isletme-calisan-etki { flex-basis: 100%; font-size: 0.84rem; }
+
+/* Özet: 4 ana kutu her zaman görünür, kalanı "Daha fazla bilgi" altında */
+.strateji-sayfa .isletme-ozet-ana { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.strateji-sayfa .isletme-ozet-detay { margin-top: 6px; }
+.strateji-sayfa .isletme-ozet-detay > summary,
+.strateji-sayfa .isletme-haberler-detay > summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--s-mocha-baslik);
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid var(--s-mocha-kenar);
+  border-radius: 8px;
+}
+.strateji-sayfa .isletme-ozet-detay > summary::-webkit-details-marker,
+.strateji-sayfa .isletme-haberler-detay > summary::-webkit-details-marker { display: none; }
+.strateji-sayfa .isletme-ozet-detay > summary::before,
+.strateji-sayfa .isletme-haberler-detay > summary::before { content: '▸ '; }
+.strateji-sayfa .isletme-ozet-detay[open] > summary::before,
+.strateji-sayfa .isletme-haberler-detay[open] > summary::before { content: '▾ '; }
+.strateji-sayfa .isletme-ozet-detay[open] > .isletme-ozet { margin-top: 6px; }
+.strateji-sayfa .isletme-haberler-detay { margin-top: 8px; }
+.strateji-sayfa .isletme-haberler-detay[open] > .piyasa-haberleri { margin-top: 6px; }
+
+/* Büyük "Diğer hatlar" tuşu */
+.strateji-sayfa .isletme-diger-hatlar {
+  display: block;
+  width: 100%;
+  min-height: 46px;
+  margin: 8px 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+/* Depo kartı (koyu zeminde okunur; Zanaatkâr'da ahşap sandık görünümü) */
+.strateji-sayfa .isletme-depo-doldur {
+  margin: 8px 0;
+  padding: 10px 12px;
+  color: #f3e6cc;
+  background: linear-gradient(180deg, #5a4331 0%, #43301f 100%);
+  border: 1px solid var(--s-mocha-kenar);
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+.strateji-sayfa .isletme-depo-doldur h4 { margin: 0 0 6px; }
+.strateji-sayfa .isletme-depo-doldur strong,
+.strateji-sayfa .isletme-depo-doldur b { color: #fff3d6; }
+.strateji-sayfa .isletme-depo-uretim {
+  background:
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.12) 0 2px, transparent 2px 26px),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 14px),
+    linear-gradient(160deg, #8a5a2b 0%, #5f3b1c 55%, #3e2512 100%);
+  border: 2px solid #d9a441;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255, 220, 140, 0.25);
+}
+.strateji-sayfa .isletme-depo-uretim h4 { color: #ffd98a; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6); }
+
+.isletme-depo-olcek {
+  position: relative;
+  height: 20px;
+  margin-bottom: 6px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 10px;
+}
+.isletme-depo-dolgu { height: 100%; transition: width 0.4s; }
+.isletme-depo-dolgu.dusuk { background: linear-gradient(90deg, #b3382a, #e0674f); }
+.isletme-depo-dolgu.orta { background: linear-gradient(90deg, #b8861f, #e8c04d); }
+.isletme-depo-dolgu.yuksek { background: linear-gradient(90deg, #2f7a3f, #6cc07a); }
+.isletme-depo-olcek > span {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+.isletme-depo-chipler { display: flex; flex-wrap: wrap; gap: 4px 6px; margin-bottom: 6px; }
+.isletme-depo-chipler > span {
+  padding: 2px 8px;
+  font-size: 0.76rem;
+  color: #f3e6cc;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+}
+.isletme-depo-hatlar { display: flex; flex-direction: column; gap: 6px; }
+.isletme-depo-hat { padding: 5px 8px; background: rgba(0, 0, 0, 0.22); border-radius: 8px; }
+.isletme-depo-hat-ust { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 8px; font-size: 0.8rem; }
+.isletme-depo-mini { height: 7px; margin-top: 4px; overflow: hidden; background: rgba(0, 0, 0, 0.4); border-radius: 4px; }
+.isletme-depo-mini > div { height: 100%; background: linear-gradient(90deg, #e8c04d, #f6dd8c); }
+.isletme-uretim-gosterge { margin-top: 8px; padding: 6px 8px; font-size: 0.82rem; background: rgba(0, 0, 0, 0.28); border-radius: 8px; }
+.isletme-uretim-gosterge .isletme-depo-mini > div { background: linear-gradient(90deg, #4f9d5d, #8fd19b); }
+.isletme-uretim-asildi .isletme-depo-mini > div { background: linear-gradient(90deg, #c4452f, #ef7c63); }
+.strateji-sayfa .isletme-uretim-uyari { margin-top: 4px; font-weight: 700; color: #ffb4a0; }
+
+/* Koyu zeminde yeşil/kırmızı daha açık tonlar */
+.strateji-sayfa .isletme-depo-doldur .kademe-yuksek { color: var(--s-iyi-koyu); }
+.strateji-sayfa .isletme-depo-doldur .kademe-dusuk { color: var(--s-kotu-koyu); }
+
+/* ---- Mobil: üst kısım sıkışık, az kaydırma ---- */
+@media (max-width: 767px) {
+  .strateji-sayfa { gap: 0.5rem; }
+  .strateji-baslik { padding: calc(8px + env(safe-area-inset-top, 0px)) 12px 8px; }
+  .strateji-baslik h1 { font-size: 1rem; }
+  .strateji-baslik p { margin-top: 0; font-size: 0.74rem; }
+  .strateji-sayfa .kariyer-govde { padding-top: 6px; }
+  .strateji-sayfa .kariyer-kademe-satiri { padding: 5px 10px; font-size: 0.8rem; }
+  .strateji-sayfa .kariyer-ilerleme-blok { padding: 6px 10px; }
+  .strateji-sayfa .kariyer-ilerleme-cubuk-satiri { margin-bottom: 0.1rem; }
+  .strateji-sayfa .isletme-ozet-ana { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; }
+  .strateji-sayfa .isletme-ozet > span { padding: 4px 7px; font-size: 0.76rem; }
+  .strateji-sayfa .isletme-hat,
+  .strateji-sayfa .isletme-yatirim,
+  .strateji-sayfa .isletme-calisan { padding: 6px 8px; }
+  .strateji-sayfa .isletme-hat-artieksi { flex-direction: row; flex-wrap: wrap; gap: 2px 10px; margin: 2px 0; font-size: 0.78rem; }
+  .strateji-sayfa h3, .strateji-sayfa h4 { margin: 8px 2px 5px; }
+  .strateji-sayfa .isletme-depo-doldur { padding: 8px 9px; margin: 6px 0; }
+}

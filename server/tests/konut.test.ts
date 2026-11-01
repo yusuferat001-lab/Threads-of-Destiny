@@ -53,6 +53,7 @@ describe("konut sistemi (stateManager)", () => {
     mesleğiSec(state, "Tüccar");
     state.kisilik = ["Sakin", "Vicdanlı"]; // kişiliğin yıllık şöhret etkisi (v10) olmasın
     state.para = 1000;
+    state.un = 20; // başlangıç şöhreti rastgele; 40 ve üstü şöhret erimesine (§52) girer, konut etkisini izole etmek için sabitle
     state.yasam_secimi_id = "sade_sofra"; // sağlık/mutluluk etkisi olmayan yaşam tarzı; sadece konut etkisini izole eder
     // mutevazi_yuva artık varsayılan — ekstra konutDegistir gerekmez
     const oncekiUn = state.un;
@@ -170,7 +171,25 @@ describe("yaşam tarzı seçimi sistemi", () => {
     expect(state.mutluluk).toBeGreaterThan(40);
   });
 
-  it("pasif regen yumuşak tavanı: 80 canın üstünde ev+yemek kazancı ciddi şekilde kısılır", () => {
+  it("ev+yemek can sınırı yaşa bağlı: sınırın üstünde hiç can eklemez, yaşlandıkça sınır düşer", () => {
+    const kos = (yas: number, saglik: number) => {
+      const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
+      mesleğiSec(s, "Tüccar");
+      s.para = 100000;
+      s.yas = yas;
+      s.saglik = saglik;
+      s.konut_id = "gorkemli_konak";
+      s.yasam_secimi_id = "solen_sofrasi";
+      pasifEkonomiUygula(s, 1);
+      return s.saglik - saglik;
+    };
+    expect(kos(40, 82)).toBeLessThanOrEqual(0); // 31-45 yaş sınırı 80: üstünde kazanç yok (yaşlanma yok, düşüş olabilir)
+    expect(kos(40, 70)).toBeGreaterThanOrEqual(5); // sınırın altında tam işler
+    expect(kos(25, 82)).toBeGreaterThan(0); // ≤30 yaş sınırı 85: 82'de hâlâ kazanç var
+    expect(kos(65, 62)).toBeLessThanOrEqual(0); // 61-75 yaş sınırı 60
+  });
+
+  it("(eski) yumuşak tavan testi: genç karakterde 85 canın üstünde ev+yemek kazancı yok", () => {
     // Tavan altı: 55 candan başlayınca görkemli konak(+3)+şölen(+3) = +6/yıl tam işler.
     const altta = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(altta, "Tüccar");
@@ -192,7 +211,7 @@ describe("yaşam tarzı seçimi sistemi", () => {
     const usttteKazanc = ustte.saglik - 90;
 
     expect(alttaKazanc).toBeGreaterThanOrEqual(5); // ~+6
-    expect(usttteKazanc).toBeLessThanOrEqual(2); // ~+1.5 (clampStats yuvarlaması ile ≤2) — 100'de sabitlenemez
+    expect(usttteKazanc).toBeLessThanOrEqual(0); // 15 yaş sınırı 85: 90 canda kazanç yok
     expect(alttaKazanc).toBeGreaterThan(usttteKazanc); // tavan üstü belirgin daha az
   });
 

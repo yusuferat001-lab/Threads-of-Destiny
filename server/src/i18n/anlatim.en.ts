@@ -171,8 +171,8 @@ export const ANLATIM_EN: Record<string, string> = {
     "Your debt was not cleared, and {0} {birim} of interest was added on top.",
   "Borcun hâlâ kapanmadı, tefeciler peşini bırakmıyor.":
     "Your debt is still not cleared; the moneylenders won't let go.",
-  "🙏 Zor günlerinde kilise ve birkaç eş dost devreye girdi; borcunun {0} {1}'ini kapattılar. Bu bir daha olmayacak.":
-    "🙏 In your hard times the church and a few friends stepped in; they cleared {0} {1} of your debt. This won't happen again.",
+  "🙏 Zor günlerinde kilise ve birkaç eş dost devreye girdi; eline {0} {1} nakit verdiler. Bu bir daha olmayacak.":
+    "🙏 In your hard times the church and a few friends stepped in; they put {0} {1} in your hands. This won't happen again.",
   "Borç yardımı aldı: +{0} {1}": "Received debt relief: +{0} {1}",
 
   // ---- Hapis ceza süresi ----
@@ -913,8 +913,8 @@ export const ANLATIM_EN: Record<string, string> = {
     "Aging: {0}/yr",
   "Ev ve yemek düzenin: {0}/yıl":
     "Your home and diet: {0}/yr",
-  "Sağlık {0} üstündeyken bu iyileşme çok yavaşlar.":
-    "Above {0} health this recovery slows to a crawl.",
+  "Bu yaşta sağlığın {0} üstündeyken ev ve yemek can eklemez.":
+    "At your age, home and diet add no health above {0}.",
   "Borç stresi: {0}/yıl":
     "Debt stress: {0}/yr",
   "Vebaya yakalandın: ölüm riskin %{0}.":

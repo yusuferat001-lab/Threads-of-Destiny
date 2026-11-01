@@ -354,8 +354,8 @@ const ISTEK_ADLARI: Record<string, { tr: string; en: string; ipTr: string; ipEn:
   atolye_ruhsati: {
     tr: 'Atölye genişleme ruhsatı',
     en: 'Workshop expansion licence',
-    ipTr: '5 yıl boyunca üretim tavanı +%10.',
-    ipEn: 'Production cap +10% for 5 years.',
+    ipTr: '5 yıl boyunca üretim +%10.',
+    ipEn: 'Output +10% for 5 years.',
   },
   vakif_muafiyeti: {
     tr: 'Vakıf muafiyeti',

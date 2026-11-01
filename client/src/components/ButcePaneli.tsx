@@ -39,7 +39,7 @@ export function ButcePaneli({ finans, paraBirimi, gecmis, isletmeAktif = false }
 
           <div className="finans-karti">
             <div className="finans-satiri finans-gelir">
-              <span>{isletmeAktif ? (dil === 'en' ? "💰 Shop net (last year, after tax)" : '💰 Dükkan neti (geçen yıl, vergi sonrası)') : m.feYillikMaas}</span>
+              <span>{isletmeAktif ? (dil === 'en' ? "💰 Shop net (last year, after tax and wages)" : '💰 Dükkan neti (geçen yıl, vergi ve maaş sonrası)') : m.feYillikMaas}</span>
               <span className={maasYillik < 0 ? 'finans-net-negatif' : undefined}>
                 {maasYillik >= 0 ? '+' : '−'}{formatPara(Math.abs(maasYillik))} {paraBirimi}
               </span>

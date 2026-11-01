@@ -276,4 +276,6 @@ export const KUCUK_DONEM_ETKISI: Record<string, number> = {
 export const HAMLE_ARALIK_MAX_YIL = 2;
 export const RAKIP_HAMLESI_ORANI = 0.75;
 /** Hamle etkisi (grup yüzdeleri) bu çarpanla büyür; pasif aşınma kalktığı için müşteri hareketi hamlelerden gelir. */
-export const HAMLE_ETKI_CARPANI = 1.5;
+export const HAMLE_ETKI_CARPANI = 1.05; // v22: 1,5 → 1,05 (−%30)
+/** v22: rakibin "müşteri sayısı" hamlelerinde (fiyat kırdı, ürün sattı) sayı bu çarpanla küçülür (en az 1). */
+export const HAMLE_SAYI_CARPANI = 0.7;
