@@ -139,8 +139,7 @@ export function IsletmeOrtak({
                   ⚠️ {sad} <b className="kademe-dusuk">{c.sadakat}</b>
                 </span>
               )}
-              <small>{d(c.rolAciklama)}</small>
-              {etkiMetni(dil, c.etki, durum) && <span className="isletme-calisan-etki kademe-yuksek">▲ {etkiMetni(dil, c.etki, durum)}</span>}
+              {etkiMetni(dil, c.etki, durum) && <span className="isletme-calisan-etki kademe-yuksek">{etkiMetni(dil, c.etki, durum)}</span>}
               <span>
                 {t('yetenek')} <b className={kademeSinifi(c.yetenek, [40, 65])}>{c.yetenek}</b> · {sad} <b className={kademeSinifi(c.sadakat, [45, 75])}>{c.sadakat}</b> · {t('maas')} {formatPara(c.maas)}
                 {t('yil')}
@@ -162,9 +161,8 @@ export function IsletmeOrtak({
             {durum.adaylar.map((a) => (
               <div key={a.id} className="isletme-calisan isletme-aday">
                 <strong>{a.isim}</strong> <em>({d(a.rol)})</em>
-                <small>{d(a.rolAciklama)}</small>
-                {etkiMetni(dil, a.etki, durum) && <span className="isletme-calisan-etki kademe-yuksek">▲ {etkiMetni(dil, a.etki, durum)}</span>}
                 <small>{d(a.gecmis)}</small>
+                {etkiMetni(dil, a.etki, durum) && <span className="isletme-calisan-etki kademe-yuksek">{etkiMetni(dil, a.etki, durum)}</span>}
                 <span>
                   {t('yetenek')} <b className={kademeSinifi(a.yetenek, [40, 65])}>{a.yetenek}</b> · {sad} <b className={kademeSinifi(a.sadakat, [45, 75])}>{a.sadakat}</b> · {t('maas')} {formatPara(a.maas)}
                   {t('yil')}

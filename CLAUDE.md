@@ -2107,3 +2107,11 @@ Bu blok §13 "Pasif regen yumuşak tavanı" (sağlık için) ve §45 v8–v31 ar
 
 ### §53 Faz 9 (2026-11)
 Ana ekran paneli artık **Kazanç** (Gelir / Gider, kredi taksidi gider içinde; varsa "Kredi taksidi dahil" satırı). Dükkân sayfasında `IsletmePaneli` iki sütun (`.isletme-iki-sutun`: sol depo + ürün hatları, sağ **Bütçen**); PC strateji sayfalarında (`pc-tema.css`) içerik iki yandan %10 boşlukla, Yatırım/Çalışan kartları iki sütun, Çevre ana+yan sütun. Bütçen kutuları artık diğer kartlarla aynı latte zemin.
+
+### §45 v31 (2026-11) — Kredi havuzu ve piyasa sapması
+- **Kredi havuzu** (`data/krediHavuzu.ts`): tutarlar 30–130, vadeler 7–14 yıl, gerçek ödeme akışında toplam faiz maliyeti %31–46: küçük 30/7y/%9 ve 40/10y/%7 · orta 65/8y/%9 ve 85/14y/%5 · büyük 110/9y/%8 ve 130/14y/%5. Borçlu primi +1 puan (eskiden +4); pazarlık −2 / +3 puan (faiz [%2, %15]). Tefeci kartı artık yıllık taksiti de gösterir.
+- **Yıllık piyasa sapması** (`PIYASA_SAPMA_ALIS/SATIS`): alış ve satış ikisi de ±%3; hat kartında "bu yılın piyasa farkı" satırı kaldırıldı (oyuncuya gösterilmez, fiyatlara işlemeye devam eder).
+
+### §45 v33 (2026-11) — Kredi 20–95, borçlu primi +2, çalışan kartı sadeleşti
+- **Kredi havuzu** tutarları 20/28/45/60/75/95 (faiz ve vadeler aynı: %9·7y, %7·10y, %9·8y, %5·14y, %8·9y, %5·14y; gerçek akışta toplam faiz %34–42). Para eksiye düşünce (borçlu) o yılın tekliflerine faiz **+2 puan** biner (`krediFaizEki`).
+- **Çalışan/aday kartı:** rol açıklaması satırı ("yılda 1…5 müşteri", "alış maliyetini düşürür" vb.) kaldırıldı; yeşil bonus satırında ▲ yok; adayın kişi anlatımı (`gecmis`) isim altında bonusun üstünde.

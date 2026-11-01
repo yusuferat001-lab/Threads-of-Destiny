@@ -117,6 +117,8 @@ export function IsYatirimEkrani({
                     <strong>{formatPara(t.tutar)} {paraBirimi}</strong>
                     <br />
                     {en ? 'interest' : 'faiz'} %{Math.round(t.faiz * 100)} · {en ? 'term' : 'vade'} {t.vade} {en ? 'yrs' : 'yıl'}
+                    <br />
+                    {en ? 'yearly instalment' : 'yıllık taksit'} {formatPara(t.taksit)} {paraBirimi}
                   </button>
                 ))}
               </div>
