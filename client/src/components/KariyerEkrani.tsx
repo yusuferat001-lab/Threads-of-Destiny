@@ -735,7 +735,7 @@ export function KariyerEkrani({
   useEffect(() => {
     if (!sayfa || !odak) return;
     const t = window.setTimeout(() => {
-      const hedef = document.querySelector<HTMLElement>(odak === 'butce' ? '.butce-paneli' : '.isletme-paneli');
+      const hedef = document.querySelector<HTMLElement>(odak === 'butce' ? '.butce-paneli, .isletme-butce-baslik' : '.isletme-paneli');
       if (!hedef) return;
       hedef.scrollIntoView({ block: 'start', behavior: 'smooth' });
       hedef.classList.add('odak-vurgu');
@@ -1124,7 +1124,7 @@ export function KariyerEkrani({
           )}
 
           {/* ===== BÜTÇEN ===== */}
-          {gor('isletme') && finans && <ButcePaneli finans={finans} paraBirimi={paraBirimi} gecmis={gecmis ?? []} isletmeAktif={!!isletme?.aktif} />}
+          {gor('isletme') && finans && !isletme?.aktif && <ButcePaneli finans={finans} paraBirimi={paraBirimi} gecmis={gecmis ?? []} isletmeAktif={!!isletme?.aktif} />}
 
           {/* ===== EKİBİN ===== */}
           {gor('calisan') && !isletme?.aktif && (

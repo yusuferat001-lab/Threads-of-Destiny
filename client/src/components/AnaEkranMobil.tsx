@@ -89,7 +89,7 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
   const degisim = dokum?.musteriDegisim ?? null;
 
   // "Elde kalan" paneli: yıllık tahmini bütçe (işletme) ya da maaş − gider; tüm gelir ve tüm gider altında.
-  const tumGelir = isletme ? isletme.butce.satis : karakter.maas_yillik;
+  const tumGelir = isletme ? (isletme.cemaat ? isletme.cemaat.toplamGelir : isletme.butce.satis) : karakter.maas_yillik;
   const eldeKalan = isletme ? isletme.butce.cebineKalan : (finans?.netYillik ?? 0);
   const tumGider = Math.max(0, tumGelir - eldeKalan);
 
