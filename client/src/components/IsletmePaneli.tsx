@@ -133,7 +133,7 @@ const M = {
   donem: { tr: { bolluk: 'Bolluk', durgunluk: 'Durgunluk', kitlik: 'Kıtlık' }, en: { bolluk: 'Boom', durgunluk: 'Slump', kitlik: 'Famine' } },
   savas: { tr: 'Savaş', en: 'War' },
   veba: { tr: 'Salgın', en: 'Plague' },
-  uretimTavani: { tr: 'Üretim tavanı', en: 'Production cap' },
+  uretimTavani: { tr: 'Yıllık üretim', en: 'Yearly output' },
   birimUretim: { tr: 'Satış / hammadde', en: 'Sell / materials' },
   ilkYil: { tr: 'Henüz bir yıl geçmedi. Hiçbir şeye dokunmasan da işletme otomatik çalışır.', en: "A year hasn't passed yet. The business runs on its own even if you touch nothing." },
   imtiyazlar: { tr: 'Aktif imtiyazlar', en: 'Active privileges' },
@@ -146,7 +146,7 @@ const M = {
   hammaddeDeposu: { tr: 'Hammadde Deposu', en: 'Raw-Material Store' },
   haberler: { tr: 'Piyasa haberleri', en: 'Market news' },
   uretimBeklenen: { tr: 'Bu yıl beklenen satış', en: 'Expected sales this year' },
-  uretimTavaniAsildi: { tr: 'Talep üretim tavanını aşıyor: fazlası satılamaz. Tezgâh yatırımı ya da Üretici çalışan tavanı büyütür.', en: 'Demand exceeds your production cap: the excess cannot be sold. A workbench upgrade or a Maker raises the cap.' },
+  uretimTavaniAsildi: { tr: 'Talep yıllık üretimini aşıyor: fazlası satılamaz. Tezgâh yatırımı ya da Üretici çalışan üretimi artırır.', en: 'Demand exceeds your yearly output: the excess cannot be sold. A workbench upgrade or a Maker raises output.' },
   stokPay: { tr: 'depodaki payı', en: 'share of the store' },
 };
 
@@ -235,7 +235,7 @@ export function isletmeUyariMetni(u: IsletmeUyari, durum: IsletmeGorunumu, dil: 
       case 'kitle_kaybi':
         return en ? '📉 Two years of unmet demand cost you customers.' : '📉 Üst üste iki yıl karşılanamayan talep müşteri kaybettirdi.';
       case 'uretim_tavani':
-        return en ? '🔨 Your production cap fell short of demand — add a workbench or staff.' : '🔨 Üretim tavanın talebe yetmedi; tezgâh ya da çalışan ekle.';
+        return en ? '🔨 Your output fell short of demand — add a workbench or staff.' : '🔨 Üretimin talebe yetmedi; tezgâh ya da çalışan ekle.';
       case 'calisan_ayrildi':
         return `🚪 ${u.isim ?? ''}: ${en ? 'quit and took a severance from the till' : 'işi bıraktı ve kasadan tazminat aldı'}`;
       case 'sizdirma':
@@ -524,8 +524,8 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
           <div className="isletme-butce-satir"><span>{t('loncaAidati')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.aidat)}</span></div>
           <div className="isletme-butce-satir"><span>{t('vergiKalemi')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.vergi)}</span></div>
           {durum.butce.borcOdeme > 0 && <div className="isletme-butce-satir"><span>{t('borcOdeme')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.borcOdeme)}</span></div>}
-          <div className="isletme-butce-satir isletme-butce-toplam"><span>{t('dukkanNeti')}</span><span className={isaretSinifi(durum.butce.net)}>{durum.butce.net >= 0 ? '+' : ''}{formatPara(durum.butce.net)}</span></div>
           <div className="isletme-butce-satir"><span>{t('maasKalemi')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.maas)}</span></div>
+          <div className="isletme-butce-satir isletme-butce-toplam"><span>{t('dukkanNeti')}</span><span className={isaretSinifi(durum.butce.net)}>{durum.butce.net >= 0 ? '+' : ''}{formatPara(durum.butce.net)}</span></div>
           <div className="isletme-butce-satir"><span>{t('yasamKira')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.yasamKira)}</span></div>
           {durum.butce.krediTaksit > 0 && <div className="isletme-butce-satir"><span>{t('krediTaksit')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.krediTaksit)}</span></div>}
           <div className="isletme-butce-satir isletme-butce-toplam"><span>{t('cebineKalan')}</span><span className={isaretSinifi(durum.butce.cebineKalan)}>{durum.butce.cebineKalan >= 0 ? '+' : ''}{formatPara(durum.butce.cebineKalan)} {pb}</span></div>

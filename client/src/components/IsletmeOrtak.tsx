@@ -45,7 +45,7 @@ function etkiMetni(dil: 'tr' | 'en', etki: Etki, durum: IsletmeGorunumu): string
     case 'guvenlik':
       return `${tr ? 'Koruma' : 'Protection'} ${formatYuzde(dil, yuzde, true)}`;
     case 'ana': {
-      const ad = mod === 'cemaat' ? (tr ? 'Bağışlar' : 'Donations') : mod === 'uretim' ? (tr ? 'Üretim tavanı' : 'Production cap') : tr ? 'Satışlar' : 'Sales';
+      const ad = mod === 'cemaat' ? (tr ? 'Bağışlar' : 'Donations') : mod === 'uretim' ? (tr ? 'Yıllık üretim' : 'Yearly output') : tr ? 'Satışlar' : 'Sales';
       return `${ad} ${formatYuzde(dil, yuzde, true)}`;
     }
   }

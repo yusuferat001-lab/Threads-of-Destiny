@@ -2059,12 +2059,28 @@ Bu blok §45 v12/v15/v22/v24 depo-bakım, tezgâh ve güvenlik maddelerinin üze
 - **50 yıllık toplam (⭐ = başlangıç, 100 müşteri):** Tüccar OÇ ⭐ ≈ 2.734 (sonradan ≈ 2.870) · Tüccar SD ⭐ ≈ 3.096 (≈ 3.251) · Zanaatkâr OÇ ⭐ ≈ 3.421 (≈ 3.592) · Zanaatkâr SD ⭐ ≈ 2.845 (≈ 2.987).
 - **Test:** `tests/urunDengesi.test.ts` (⭐ üçlü maks/min ≤ 1,10, S2+ sonradan açılan ≥ ⭐ ort. ×1,03, her dönemde ürün katkısı > 0). Kalibrasyon betiği: oturum scratchpad'i `urunDengele.ts` (profil verisini okuyup çarpan hesaplar).
 
-### §45 v29 (2026-11) — İşletme ekranı arayüz turu + ev/yaşam can sınırı (yaşa bağlı)
-Bu blok §13 "Pasif regen yumuşak tavanı" (sağlık için) ve §45 v8–v28 arayüz maddelerinin üzerine yazar.
+### §45 v29 (2026-10) — Maaş giriş seviyesine sabit, gider enflasyonu ×1,1, maaş dükkân neti içinde, aidat/vergi/kredi/skor
+Bu blok önceki §13/§45 maddelerinin üzerine yazar.
+- **Çalışan maaşı** yalnız işe alırken ölçülen giriş Yetenek/Sadakat'ine (`y_giris`/`s_giris`) bağlıdır; gelişse bile `maas_taban` değişmez, yılda yalnız gider enflasyonu uygulanır. Yetenek/sadakat ağırlıkları (0,02·Y + 0,01·S) değişmedi.
+- **Gider enflasyonu = gelir enflasyonunun ×1,1'i** (`GIDER_ENFLASYON_KATSAYISI`; OÇ %1,1, SD %2,2). Alış, bakım, maaş, yatırım, yaşam, kira + mağaza fiyatları/eşya ve mülk bakımı, karanlık iş/ajan ücreti, sosyalleşme/içki, aile (düğün, hediye, gönül al), kefaret, salgın korunma artık `giderEnflasyonCarpani`. Mülk alış fiyatı/değeri, kredi tutarları, bahis kademeleri ve çeyiz gelir enflasyonunda kalır.
+- **Çalışan maaşları dükkân netinin içindedir:** `net = brüt − vergi − borç ödemesi − hasar − çalışan maaşı` (vergi tabanı değişmedi). `giderKalemleriHesapla().ekip` işletmeli mesleklerde 0 (çift düşüş yok); `cebineKalan = net − yaşam/kira − kredi taksidi`. Ekstra vergi tabanı (`son_dokum.net`) artık maaş sonrası net kârdır.
+- **Lonca aidatı** (satışa göre): pay %0-15 → %2 · 15-25 → %3 · 25-35 → %4 · 35-45 → %5 · 45+ → %6. **Savaş vergisi eki** +10 → **+5 puan** (vergi %25).
+- **Kredi vadeleri +1 yıl** (7/10/8/11/9/11; faizler aynı). Mevcut krediler eski vadesini korur.
+- **Skor:** `isletmePuani = meslek_musteri × 25` (sunucu `hesaplaSkorKirilimi` + istemci `skor.ts` + kırılım paneli).
+
+### §45 v30 (2026-10) — Kredi: vade 7–12 yıl, faiz %5–9, toplam faiz maliyeti %32–47
+Bu blok §45 v29 kredi maddesinin üzerine yazar. Havuz (tutar · faiz · vade · taksit · toplam faiz maliyeti): kısa küçük 43 · %9 · 7y · 9 · %36,8 — uzun küçük 50 · %6 · 10y · 7 · %34,6 — kısa orta 90 · %9 · 8y · 17 · %42,1 — uzun orta 104 · %6 · 11y · 14 · %36,4 — kısa büyük 161 · %8 · 9y · 26 · %43,6 — uzun büyük 181 · %5 · 12y · 21 · %34,2. Pazarlıkta faiz tabanı %7 → %2'ye indi (başarıda −4 puan, başarısızlıkta +5 puan, tavan %17). Borçluyken +4 puan primi aynen duruyor. Test: `yeniOzellikler.test.ts` gerçek ödeme akışıyla %32–47 aralığını doğrular.
+
+### §45 v31 (2026-10) — Üretici metinleri, aday önerisi
+- Üretici (Zanaatkâr "ana" rol) ve tezgâh yatırımı için oyuncuya görünen metinlerde "üretim tavanı/production cap" ifadesi kalktı; "yıllık üretim / output" yazar (mekanik aynı: Üretici ve tezgâh üretim limitini artırır).
+- Aday listesi (`adaylariYenile`): aynı anda en çok 5 aday; önce her rolden (Zanaatkâr 4, Tüccar/Din Adamı 3 rol) bir aday önerilir, kalan yerler rol başına en çok 2 ile doldurulur. Çalışan limiti (2/3/5/6/7) değişmedi. Test: `tests/adayRolleri.test.ts`.
+
+### §45 v32 (2026-11) — İşletme ekranı arayüz turu + ev/yaşam can sınırı (yaşa bağlı)
+Bu blok §13 "Pasif regen yumuşak tavanı" (sağlık için) ve §45 v8–v31 arayüz maddelerinin üzerine yazar.
 - **Ev/yaşam can sınırı:** konut + yaşam tarzının yıllık POZİTİF sağlık kazancı, sağlık yaşa bağlı sınırın üstündeyse tamamen kesilir (`stateManager.evYasamSaglikSiniri/evYasamSaglikEtkisi`): ≤30 yaş 85 · 31-45 80 · 46-60 70 · 61-75 60 · 76+ 50. Sınırın altına taşan kısım yine verilir; hasar (negatif) aynen işler. Mutluluk için eski `pasifRegenEtkisi` yumuşak tavanı (80, ×0,25) aynen kalır. Gösterge penceresi "Bu yaşta sağlığın N üstündeyken ev ve yemek can eklemez" der.
-- **Çalışan etkisi görünür:** `IsletmeCalisanGorunumu/IsletmeAdayGorunumu.etki = calisanBonusu` (salt-okunur). İstemci `IsletmeOrtak` her çalışan/adayda yeşil satır gösterir (Alış maliyeti −%X / Hammadde gideri −%X / Faaliyet masrafı −%X · +N müşteri/yıl · Koruma +%X · Üretim tavanı +%X / Bağışlar +%X). Aday kartından "Usta/Çırak/Sıradan…" tip etiketi (`tipAdi`) kaldırıldı (sunucuda kalır).
+- **Çalışan etkisi görünür:** `IsletmeCalisanGorunumu/IsletmeAdayGorunumu.etki = calisanBonusu` (salt-okunur). İstemci `IsletmeOrtak` her çalışan/adayda yeşil satır gösterir (Alış maliyeti −%X / Hammadde gideri −%X / Faaliyet masrafı −%X · +N müşteri/yıl · Koruma +%X · Yıllık üretim +%X / Bağışlar +%X). Aday kartından "Usta/Çırak/Sıradan…" tip etiketi (`tipAdi`) kaldırıldı (sunucuda kalır).
 - **Dükkân sayfası:** önce yalnız açık hatlar; kapalı/kilitli hatlar büyük "Diğer hatlar (N)" tuşunun arkasında. Özet: 4 ana kutu (pay, müşteri, depo, beklenen net) + "Daha fazla bilgi" açılır bölümü; piyasa haberleri hatların altında açılır bölüm. Hat anlatımında ➕ yeşil / ➖ kırmızı, dünya etkisi yüzdeleri ve ürün seçimi bonus metni renkli.
-- **Zanaatkâr deposu:** ahşap sandık görünümlü "Hammadde Deposu" kartı (doluluk çubuğu, hat başına stok çubuğu, üretim tavanı göstergesi: beklenen satış / tavan, aşarsa uyarı). Tüccar'da aynı kart sade renkte.
+- **Zanaatkâr deposu:** ahşap sandık görünümlü "Hammadde Deposu" kartı (doluluk çubuğu, hat başına stok çubuğu, yıllık üretim göstergesi: beklenen satış / üretim, aşarsa uyarı). Tüccar'da aynı kart sade renkte.
 - **Bütçe:** "Dükkan bütçesi" yalnız bu yılı gösterir (geçen yıl sütunu ve geçen yıl pay/müşteri özeti kalktı; geçen yıl uyarıları kalır).
 - **Mobil:** strateji sayfalarında boşluk/başlık/özet/ilerleme çubukları sıkıştırıldı (`strateji.css` v29 bloğu).
 - **Test:** `yaslanma.test.ts` (sınır tablosu), `konut.test.ts` (yaşa bağlı sınır), `isletme.test.ts` (görünümde `etki`).
