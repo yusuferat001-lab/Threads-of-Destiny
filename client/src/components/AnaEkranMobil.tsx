@@ -92,6 +92,7 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
   const tumGelir = isletme ? (isletme.cemaat ? isletme.cemaat.toplamGelir : isletme.butce.satis) : karakter.maas_yillik;
   const eldeKalan = isletme ? isletme.butce.cebineKalan : (finans?.netYillik ?? 0);
   const tumGider = Math.max(0, tumGelir - eldeKalan);
+  const krediTaksit = isletme ? isletme.butce.krediTaksit : (finans?.krediTaksit ?? 0);
 
   const donemAnahtar = isletme?.dunya.donem ?? karakter.ulke.donem?.tur ?? null;
   const donem = donemAnahtar ? DONEM_ADLARI[donemAnahtar] : null;
@@ -130,17 +131,22 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
           </span>
         </button>
         <button type="button" className="ana-cam ana-cam-tikla" onClick={onGelirTikla} disabled={yukleniyor} title={tr ? 'Bütçeyi aç' : 'Open budget'}>
-          <span className="ana-etiket">{tr ? 'Elde Kalan' : 'Take-Home'}</span>
+          <span className="ana-etiket">{tr ? 'Kazanç' : 'Earnings'}</span>
           <strong className={`ana-deger ${eldeKalan >= 0 ? '' : 'ana-kotu'}`}>
             {eldeKalan >= 0 ? '+' : '−'}
             {formatPara(Math.abs(Math.round(eldeKalan * 10) / 10))} <span className="ana-birim">{birim}</span>
           </strong>
           <span className="ana-alt">
-            {tr ? 'Tüm gelir' : 'Total income'}: <b className="ana-iyi">{formatPara(Math.round(tumGelir))}</b>
+            {tr ? 'Gelir' : 'Income'}: <b className="ana-iyi">{formatPara(Math.round(tumGelir))}</b>
           </span>
           <span className="ana-alt">
-            {tr ? 'Tüm gider' : 'Total costs'}: <b className="ana-kotu">{formatPara(Math.round(tumGider))}</b>
+            {tr ? 'Gider' : 'Costs'}: <b className="ana-kotu">{formatPara(Math.round(tumGider))}</b>
           </span>
+          {krediTaksit > 0 && (
+            <span className="ana-alt ana-alt-kredi">
+              {tr ? 'Kredi taksidi dahil' : 'incl. loan'}: <b className="ana-kotu">{formatPara(Math.round(krediTaksit * 10) / 10)}</b>
+            </span>
+          )}
         </button>
         <button type="button" className="ana-cam ana-cam-tikla" onClick={() => setDonemAcik(true)} title={tr ? 'Dönemin etkileri' : 'Era effects'}>
           <span className="ana-etiket">{tr ? 'Dönem' : 'Era'}</span>

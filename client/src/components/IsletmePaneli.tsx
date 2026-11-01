@@ -437,6 +437,8 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
         </div>
       )}
 
+      <div className="isletme-iki-sutun">
+      <div className="isletme-sutun">
       {durum.depo.kapasite > 0 && (
         <div className={`isletme-depo-doldur${uretimModu ? ' isletme-depo-uretim' : ''}`}>
           <h4>
@@ -499,23 +501,8 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
           <PiyasaHaberleri pazar={pazar} sayilarGoster />
         </details>
       )}
-
-        </>
-      )}
-
-      <IsletmeOrtak
-        goster={bolum === 'isletme' ? 'yok' : bolum}
-        durum={durum}
-        yukleniyor={yukleniyor}
-        sadakatAdi={M.sadakat}
-        riskliAciklama={M.riskli}
-        onYatirim={onYatirim}
-        onCalisanAl={onCalisanAl}
-        onEkipCikar={onEkipCikar}
-      />
-
-      {(bolum === 'hepsi' || bolum === 'isletme') && (
-        <>
+      </div>
+      <div className="isletme-sutun">
       <h4 className="isletme-butce-baslik">{t('butceBaslik')}</h4>
       <div className="isletme-butce">
         <div className="isletme-butce-sutun">
@@ -546,8 +533,22 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
         </div>
       )}
 
+      </div>
+      </div>
+
         </>
       )}
+
+      <IsletmeOrtak
+        goster={bolum === 'isletme' ? 'yok' : bolum}
+        durum={durum}
+        yukleniyor={yukleniyor}
+        sadakatAdi={M.sadakat}
+        riskliAciklama={M.riskli}
+        onYatirim={onYatirim}
+        onCalisanAl={onCalisanAl}
+        onEkipCikar={onEkipCikar}
+      />
 
     </section>
   );

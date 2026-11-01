@@ -536,9 +536,13 @@
   margin: 6px 10px 10px;
 }
 .strateji-sayfa .isletme-butce-sutun {
-  background: rgba(255, 255, 255, 0.35);
-  border: 1px solid rgba(110, 79, 53, 0.45);
-  border-radius: 6px;
+  color: var(--s-latte-yazi);
+  background: linear-gradient(180deg, var(--s-latte-1), var(--s-latte-2));
+  border: 1px solid var(--s-latte-kenar);
+  border-radius: 8px;
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
   padding: 8px 10px;
   font-size: 0.82rem;
   line-height: 1.55;
