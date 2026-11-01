@@ -2098,3 +2098,6 @@ Bu blok §13 "Pasif regen yumuşak tavanı" (sağlık için) ve §45 v8–v31 ar
 - **Bütçe:** "Dükkan bütçesi" yalnız bu yılı gösterir (geçen yıl sütunu ve geçen yıl pay/müşteri özeti kalktı; geçen yıl uyarıları kalır).
 - **Mobil:** strateji sayfalarında boşluk/başlık/özet/ilerleme çubukları sıkıştırıldı (`strateji.css` v29 bloğu).
 - **Test:** `yaslanma.test.ts` (sınır tablosu), `konut.test.ts` (yaşa bağlı sınır), `isletme.test.ts` (görünümde `etki`).
+
+### §53 Faz 7 (2026-11) — Ana ekran panelleri dokunulabilir
+`AnaEkranMobil` (mobil + PC): "Yıllık Net" paneli **Elde Kalan** oldu (büyük değer = `isletme.butce.cebineKalan`, işletmesiz mesleklerde `finans.netYillik`; altında Tüm gelir / Tüm gider). Üç panel artık düğme: **Müşteri** → Dükkân sayfası (`kariyerSayfa='isletme'`) `.isletme-paneli`'ne kaydırılıp vurgulanır, **Elde Kalan** → aynı sayfada `.butce-paneli`'ne, **Dönem** → `finans.dunyaEtkileri` listesini gösteren açılır pencere. Kaydırma/vurgu `KariyerEkrani` `odak` prop'u (`'musteri'|'butce'`) + `.odak-vurgu` animasyonu (ana-ekran.css); App.tsx `kariyerOdak` state'i.

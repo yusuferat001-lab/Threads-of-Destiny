@@ -388,3 +388,81 @@
     font-size: calc(16 * var(--u));
   }
 }
+
+/* ---- Dokunulabilir paneller (Müşteri / Elde Kalan / Dönem) ---- */
+button.ana-cam-tikla {
+  width: 100%;
+  font: inherit;
+  text-align: left;
+  color: var(--s-latte-yazi);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: filter 0.12s, transform 0.12s;
+}
+button.ana-cam-tikla:hover:not(:disabled) {
+  background: linear-gradient(180deg, var(--s-latte-1), var(--s-latte-2));
+  border-color: var(--s-latte-kenar);
+  filter: brightness(1.06);
+  transform: none;
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+button.ana-cam-tikla:active:not(:disabled) {
+  transform: translateY(1px);
+  filter: brightness(0.94);
+}
+button.ana-cam-tikla:disabled {
+  opacity: 0.8;
+}
+.ana-deger .ana-birim {
+  font-size: 0.55em;
+  font-family: inherit;
+}
+
+/* Dönem penceresi */
+.ana-donem-modal {
+  text-align: left;
+  max-width: min(440px, 92vw);
+}
+.ana-donem-modal h3 {
+  margin: 0 0 6px;
+}
+.ana-donem-ust {
+  margin: 0 0 8px;
+  font-size: 0.85em;
+  opacity: 0.85;
+}
+.ana-donem-liste,
+.ana-donem-liste ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.ana-donem-liste > li {
+  margin-bottom: 10px;
+}
+.ana-donem-liste ul {
+  margin-top: 3px;
+  padding-left: 14px;
+}
+.ana-donem-liste ul li::before {
+  content: '• ';
+  opacity: 0.7;
+}
+
+/* Ana ekrandan gelinen bölümün kısa vurgusu (strateji sayfası). */
+@keyframes odakVurgu {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(201, 162, 74, 0); }
+  30% { box-shadow: 0 0 0 4px rgba(201, 162, 74, 0.85); }
+}
+.odak-vurgu {
+  animation: odakVurgu 1.8s ease-out 1;
+  border-radius: 10px;
+}
+
+@media (min-width: 768px) {
+  .merkez-panel-ana .ana-deger .ana-birim {
+    font-size: 0.5em;
+  }
+}

@@ -389,6 +389,7 @@ function App() {
   const [bildirimTick, setBildirimTick] = useState(0);
   // Ana ekran tuşundan açılan strateji sayfası (null: eski tam ekran Kariyer).
   const [kariyerSayfa, setKariyerSayfa] = useState<AnaTusId | null>(null);
+  const [kariyerOdak, setKariyerOdak] = useState<'musteri' | 'butce' | null>(null);
   const [yeniBasarimlar, setYeniBasarimlar] = useState<BasarimTanimi[]>([]);
   const [dil, setDil] = useState<Dil>(() => ayarlariGetir().dil);
   const [basarimlar, setBasarimlar] = useState(() => basarimlariGetir());
@@ -1860,7 +1861,8 @@ function App() {
     [anaEkranModu, karakter?.id, isletme, dil, bildirimTick], // eslint-disable-line react-hooks/exhaustive-deps
   );
   const stokUyariSen = stokUyarisi && karakter ? stokUyariSenaryosu(stokUyarisi, karakter.meslek, dil) : null;
-  function anaTusHandler(tus: AnaTusId) {
+  function anaTusHandler(tus: AnaTusId, odak: 'musteri' | 'butce' | null = null) {
+    setKariyerOdak(odak);
     setKariyerSayfa(tus);
     void kariyerEkraniniAc();
   }
@@ -2679,7 +2681,9 @@ function App() {
                   isletme={isletme?.aktif ? isletme : null}
                   finans={finans}
                   yukleniyor={yukleniyor}
-                  onTus={anaTusHandler}
+                  onTus={(t) => anaTusHandler(t)}
+                  onMusteriTikla={() => anaTusHandler('isletme', 'musteri')}
+                  onGelirTikla={() => anaTusHandler('isletme', 'butce')}
                   onIlerle={ilerleHandler}
                   yilNotu={yilNotu}
                   onNotKapat={() => setYilNotu(null)}
@@ -3033,6 +3037,7 @@ function App() {
           onIsletmeYatirim={isletmeYatirimHandler}
           onIsletmeCalisanAl={isletmeCalisanAlHandler}
           sayfa={kariyerSayfa ?? undefined}
+          odak={kariyerOdak}
           onMulkKredi={() => {
             setKariyerSayfa(null);
             void yatirimEkraniniAc();
