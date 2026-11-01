@@ -1872,10 +1872,8 @@ function App() {
         konutId={karakter.konut_id}
         konutlar={konutlar}
         devreDisi={yukleniyor}
-        kariyerTalepVar={!!karakter.yonetim_talep}
         aileTalepVar={!!karakter.aile_talep}
         aileEvlilikRozeti={(!karakter.es_adi && karakter.yas >= 22) || !!karakter.bekleyen_dugun}
-        onKariyer={kariyerEkraniniAc}
         onYatirim={yatirimEkraniniAc}
         onMagaza={magazaEkraniniAc}
         onEv={finansEkraniniAc}
@@ -1951,9 +1949,6 @@ function App() {
           onSosyallesme={sosyallesmeEkraniniAc}
           onMagaza={magazaEkraniniAc}
           onAile={aileEkraniniAc}
-          onKisilik={() => setKisilikModalAcik(true)}
-          onSkor={() => setSkorDetayAcik(true)}
-          onAyarlar={() => setAyarlarAcik(true)}
         />
       )}
       {islemMesaji && (ekran === 'oyun' || ekran === 'sonuc') && (
@@ -2707,7 +2702,7 @@ function App() {
               {/* Kariyer · Yatırım · Mağaza · Evin · Sosyalleş · Aile — başlıklı kadife karar paneli. */}
               <section className="pc-bolum">
                 <h3 className="pc-bolum-baslik">{m.pcKararlar}</h3>
-                {kisayolKartlari(['kariyer', 'yatirim', 'magaza', 'ev', 'sosyallesme', 'aile'])}
+                {kisayolKartlari(['yatirim', 'magaza', 'ev', 'sosyallesme', 'aile'])}
               </section>
               <section className="pc-bolum pc-bolum-amac">
                 <AmacPaneli durum={amaclar} varyant="panel" />

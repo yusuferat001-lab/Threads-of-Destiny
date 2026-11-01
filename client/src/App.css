@@ -5955,7 +5955,7 @@ button.ikincil {
     bottom: 0;
     z-index: 50;
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     background: linear-gradient(180deg, #2b2016 0%, #1c140d 100%);
     border-top: 2px solid var(--renk-ahsap-kenar);
     padding-bottom: env(safe-area-inset-bottom, 0);
@@ -6004,43 +6004,6 @@ button.ikincil {
     height: 7px;
     border-radius: 50%;
     background: var(--muhur-kirmizi-parlak);
-  }
-
-  .alt-gezinme-diger-katman {
-    position: fixed;
-    inset: 0;
-    z-index: 55;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    background: rgba(0, 0, 0, 0.55);
-    padding-bottom: calc(var(--alt-gezinme-yukseklik) + env(safe-area-inset-bottom, 0));
-  }
-  .alt-gezinme-diger-sheet {
-    width: 100%;
-    max-width: 420px;
-    margin: 0 0.6rem;
-    background: linear-gradient(180deg, var(--panel-ust), var(--panel-alt));
-    border: 1px solid #7a5a36;
-    border-radius: 12px;
-    padding: 0.5rem;
-    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.6);
-  }
-  .alt-gezinme-diger-satir {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    min-height: 46px;
-    background: none;
-    border: none;
-    box-shadow: none;
-    text-align: left;
-    font-size: 0.95rem;
-  }
-  .alt-gezinme-diger-satir:hover:not(:disabled) {
-    background: rgba(224, 199, 137, 0.12);
-    transform: none;
   }
 
   /* Alt gezinme çubuğu göründüğü her ekranın en alt içeriği çubuğun arkasında

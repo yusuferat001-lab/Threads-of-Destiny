@@ -279,7 +279,6 @@ const TR = {
 
   // ---- KariyerEkrani (tam sayfa; eski "Görevin") ----
   geBaslik: 'Kariyer',
-  geGorevGor: '🎖️ Kariyer →',
   geHapisYilKalan: 'yıl kaldı',
   geVebaHastasi: 'Veba hastası',
   geVebaHayatta: 'hayatta kalma şansı',
@@ -326,14 +325,12 @@ const TR = {
   shMagaza: 'Mağaza',
   shSosyallesme: 'Sosyalleş',
   shIsinKisa: 'Yatırım',
-  shKariyer: 'Kariyer',
   pcKararlar: 'Kararlar',
   shEvinKisa: 'Evin',
   shEvFallback: 'Ev',
 
   // ---- Mobil alt gezinme çubuğu ----
   agBaslik: 'Alt gezinme',
-  agDiger: 'Diğer',
   agAile: 'İlişkiler',
   agKapat: 'Kapat, Oyuna dön',
 
@@ -1016,7 +1013,6 @@ const EN: Metinler = {
 
   // ---- KariyerEkrani (full screen; formerly "Your Duty") ----
   geBaslik: 'Career',
-  geGorevGor: '🎖️ Career →',
   geHapisYilKalan: 'yr left',
   geVebaHastasi: 'Plague-stricken',
   geVebaHayatta: 'survival chance',
@@ -1063,14 +1059,12 @@ const EN: Metinler = {
   shMagaza: 'Shop',
   shSosyallesme: 'Socialize',
   shIsinKisa: 'Investments',
-  shKariyer: 'Career',
   pcKararlar: 'Decisions',
   shEvinKisa: 'Home',
   shEvFallback: 'Home',
 
   // ---- Mobile bottom navigation ----
   agBaslik: 'Bottom navigation',
-  agDiger: 'More',
   agAile: 'Relationships',
   agKapat: 'Close, back to game',
 

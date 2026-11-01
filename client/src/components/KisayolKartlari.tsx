@@ -3,7 +3,7 @@ import { konutGoruntusuGetir, meslekBinasiGetir } from '../bolgeTema';
 import { bic } from '../i18n';
 import { useDil } from '../DilContext';
 
-export type KisayolId = 'kariyer' | 'yatirim' | 'magaza' | 'ev' | 'sosyallesme' | 'aile';
+export type KisayolId = 'yatirim' | 'magaza' | 'ev' | 'sosyallesme' | 'aile';
 
 interface KisayolKartlariProps {
   /** Hangi kartlar, hangi sırayla çizilsin (sol sütun / sağ sütun ayrı çağrılır). */
@@ -15,13 +15,10 @@ interface KisayolKartlariProps {
   konutId: string;
   konutlar: KonutTanimi[];
   devreDisi: boolean;
-  /** Bekleyen yönetim talebi varsa Kariyer kartında 🔔 gösterilir. */
-  kariyerTalepVar: boolean;
   /** Bekleyen aile talebi varsa Aile kartında 🔔 gösterilir. */
   aileTalepVar: boolean;
   /** Bekâr ve 18+ ise Aile kartında 💍 gösterilir (olay dışı evlenme). */
   aileEvlilikRozeti: boolean;
-  onKariyer: () => void;
   onYatirim: () => void;
   onMagaza: () => void;
   onEv: () => void;
@@ -46,10 +43,8 @@ export function KisayolKartlari({
   konutId,
   konutlar,
   devreDisi,
-  kariyerTalepVar,
   aileTalepVar,
   aileEvlilikRozeti,
-  onKariyer,
   onYatirim,
   onMagaza,
   onEv,
@@ -64,12 +59,6 @@ export function KisayolKartlari({
   const bina = meslekBinasiGetir(meslek, cag, dinKultur, dil);
 
   const kartlar: Record<KisayolId, { ikon: string; etiket: string; title: string; onClick: () => void }> = {
-    kariyer: {
-      ikon: '🎖️',
-      etiket: `${m.shKariyer}${kariyerTalepVar ? ' 🔔' : ''}`,
-      title: m.shKariyer,
-      onClick: onKariyer,
-    },
     yatirim: { ikon: bina.simge, etiket: m.shIsinKisa, title: bic(m.shIsyeriTitle, bina.ad), onClick: onYatirim },
     magaza: { ikon: '🛒', etiket: m.shMagaza, title: m.shMagaza, onClick: onMagaza },
     ev: { ikon: konutGorunum.simge, etiket: m.shEvinKisa, title: bic(m.shEvTitle, konutGorunum.ad), onClick: onEv },

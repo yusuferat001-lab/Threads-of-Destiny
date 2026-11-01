@@ -39,7 +39,7 @@
     height: auto;
     min-height: calc(360 * var(--u));
     max-height: calc(640 * var(--u));
-    margin: 0 auto calc(40 * var(--u));
+    margin: 0 auto calc(120 * var(--u));
     z-index: 6; /* çerçeve sahnenin üstüne taşar */
   }
 
