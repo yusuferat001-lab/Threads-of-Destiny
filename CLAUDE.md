@@ -2074,3 +2074,13 @@ Bu blok §45 v29 kredi maddesinin üzerine yazar. Havuz (tutar · faiz · vade �
 ### §45 v31 (2026-10) — Üretici metinleri, aday önerisi
 - Üretici (Zanaatkâr "ana" rol) ve tezgâh yatırımı için oyuncuya görünen metinlerde "üretim tavanı/production cap" ifadesi kalktı; "yıllık üretim / output" yazar (mekanik aynı: Üretici ve tezgâh üretim limitini artırır).
 - Aday listesi (`adaylariYenile`): aynı anda en çok 5 aday; önce her rolden (Zanaatkâr 4, Tüccar/Din Adamı 3 rol) bir aday önerilir, kalan yerler rol başına en çok 2 ile doldurulur. Çalışan limiti (2/3/5/6/7) değişmedi. Test: `tests/adayRolleri.test.ts`.
+
+### §45 v32 (2026-11) — İşletme ekranı arayüz turu + ev/yaşam can sınırı (yaşa bağlı)
+Bu blok §13 "Pasif regen yumuşak tavanı" (sağlık için) ve §45 v8–v31 arayüz maddelerinin üzerine yazar.
+- **Ev/yaşam can sınırı:** konut + yaşam tarzının yıllık POZİTİF sağlık kazancı, sağlık yaşa bağlı sınırın üstündeyse tamamen kesilir (`stateManager.evYasamSaglikSiniri/evYasamSaglikEtkisi`): ≤30 yaş 85 · 31-45 80 · 46-60 70 · 61-75 60 · 76+ 50. Sınırın altına taşan kısım yine verilir; hasar (negatif) aynen işler. Mutluluk için eski `pasifRegenEtkisi` yumuşak tavanı (80, ×0,25) aynen kalır. Gösterge penceresi "Bu yaşta sağlığın N üstündeyken ev ve yemek can eklemez" der.
+- **Çalışan etkisi görünür:** `IsletmeCalisanGorunumu/IsletmeAdayGorunumu.etki = calisanBonusu` (salt-okunur). İstemci `IsletmeOrtak` her çalışan/adayda yeşil satır gösterir (Alış maliyeti −%X / Hammadde gideri −%X / Faaliyet masrafı −%X · +N müşteri/yıl · Koruma +%X · Yıllık üretim +%X / Bağışlar +%X). Aday kartından "Usta/Çırak/Sıradan…" tip etiketi (`tipAdi`) kaldırıldı (sunucuda kalır).
+- **Dükkân sayfası:** önce yalnız açık hatlar; kapalı/kilitli hatlar büyük "Diğer hatlar (N)" tuşunun arkasında. Özet: 4 ana kutu (pay, müşteri, depo, beklenen net) + "Daha fazla bilgi" açılır bölümü; piyasa haberleri hatların altında açılır bölüm. Hat anlatımında ➕ yeşil / ➖ kırmızı, dünya etkisi yüzdeleri ve ürün seçimi bonus metni renkli.
+- **Zanaatkâr deposu:** ahşap sandık görünümlü "Hammadde Deposu" kartı (doluluk çubuğu, hat başına stok çubuğu, yıllık üretim göstergesi: beklenen satış / üretim, aşarsa uyarı). Tüccar'da aynı kart sade renkte.
+- **Bütçe:** "Dükkan bütçesi" yalnız bu yılı gösterir (geçen yıl sütunu ve geçen yıl pay/müşteri özeti kalktı; geçen yıl uyarıları kalır).
+- **Mobil:** strateji sayfalarında boşluk/başlık/özet/ilerleme çubukları sıkıştırıldı (`strateji.css` v29 bloğu).
+- **Test:** `yaslanma.test.ts` (sınır tablosu), `konut.test.ts` (yaşa bağlı sınır), `isletme.test.ts` (görünümde `etki`).
