@@ -36,6 +36,12 @@ export function SkorKirilimiPaneli({ karakter, baslikGoster = true }: { karakter
           <span>{m.skorKirilimRutbe}</span>
           <span>{say(kirilim.rutbePuani)}</span>
         </li>
+        {kirilim.isletmePuani > 0 && (
+          <li>
+            <span>{m.skorKirilimIsletme}</span>
+            <span>{say(kirilim.isletmePuani)}</span>
+          </li>
+        )}
         {kirilim.sarayda && (
           <li className="skor-kirilimi-tik">
             <span>{m.skorKirilimTikSaray}</span>

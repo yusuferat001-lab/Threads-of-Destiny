@@ -477,10 +477,10 @@ export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onC
           {((dokum.nakitHasar ?? 0) + (dokum.ekstraGider ?? 0)) > 0 && (
             <div>{dil === 'en' ? 'Theft / raid / severance' : 'Hırsızlık / baskın / tazminat'}: <strong className="kademe-dusuk">−{formatPara((dokum.nakitHasar ?? 0) + (dokum.ekstraGider ?? 0))}</strong></div>
           )}
+          <div>{dil === 'en' ? 'Staff wages' : 'Çalışan maaşları'}: <strong className="kademe-dusuk">−{formatPara(dokum.calisanMaasi ?? 0)}</strong></div>
           <div className="isletme-dokum-net">
             {t('net')}: <strong className={isaretSinifi(dokum.net)}>{dokum.net >= 0 ? '+' : ''}{formatPara(dokum.net)} {pb}</strong>
           </div>
-          <div>{dil === 'en' ? 'Staff wages (paid separately)' : 'Çalışan maaşları (ayrıca ödenir)'}: <strong className="kademe-dusuk">−{formatPara(dokum.calisanMaasi ?? 0)}</strong></div>
           <div>
             {t('pay')}: <strong>%{dokum.pazarPayi}</strong> · {t('musteriDegisim')}: <strong className={isaretSinifi(dokum.musteriDegisim)}>{formatMusteri(dil, dokum.musteriDegisim, true)}</strong>
           </div>

@@ -80,8 +80,8 @@ export function stokUyariSenaryosu(u: StokUyarisi, meslek: string, dil: Dil): Se
   if (u.uretimTavani) {
     parcalar.push(
       en
-        ? 'Your production cap fell short of demand — add a workbench or staff.'
-        : 'Üretim tavanın talebe yetmedi; tezgâh ya da çalışan ekle.',
+        ? 'Your output fell short of demand — add a workbench or staff.'
+        : 'Üretimin talebe yetmedi; tezgâh ya da çalışan ekle.',
     );
   } else if (u.paraYetmedi) {
     parcalar.push(

@@ -444,8 +444,8 @@ export function enflasyonCarpani(state: CharacterState): number {
   return Math.pow(1 + oran, gecenYil);
 }
 
-/** v20: gider enflasyonu gelir enflasyonunun ×1,15'idir (OÇ %1,15 · SD %2,3/yıl). */
-export const GIDER_ENFLASYON_KATSAYISI = 1.15;
+/** v29: gider enflasyonu gelir enflasyonunun ×1,1'idir (OÇ %1,1 · SD %2,2/yıl); tüm giderler bunu kullanır. */
+export const GIDER_ENFLASYON_KATSAYISI = 1.1;
 
 /** Maliyet tarafı (alış, yaşam, kira, maaş, bakım, yatırım fiyatı) için bileşik çarpan. */
 export function giderEnflasyonCarpani(state: CharacterState): number {
@@ -2487,7 +2487,8 @@ export function giderKalemleriHesapla(state: CharacterState): GiderKalemleri {
       (yasamSecenegi?.maliyetYillik ?? 0) * yasamMaliyetCarpaniGetir(state) * donemCarpani * savasGidaCarpani * enflasyon
     ),
     konut: paraYuvarla((konutGetir(state.konut_id)?.kiraYillik ?? 0) * enflasyon),
-    ekip: state.ekip.reduce((toplam, uye) => toplam + uye.maas, 0),
+    // v29: işletmeli mesleklerde çalışan maaşları dükkân netinin içindedir (burada ayrıca düşülmez).
+    ekip: isletmeAktif(state) ? 0 : state.ekip.reduce((toplam, uye) => toplam + uye.maas, 0),
     evcilHayvan: evcilHayvanSayisi(state) > 0 ? paraYuvarla(EVCIL_HAYVAN_GIDERI_YILLIK * enflasyon * evcilHayvanSayisi(state)) : 0,
     // İşletmeli mesleklerde savaş vergisi yıllık vergi oranının içindedir (isletme.ts vergiOrani); çifte kesinti olmasın.
     savasVergisi: state.buyuk_savas && !isletmeAktif(state) ? paraYuvarla(hesaplaMaasYillik(state) * state.buyuk_savas.vergiOrani) : 0,
@@ -2859,6 +2860,8 @@ export function sansOlayiDene(state: CharacterState): string | null {
  */
 const SKOR_RUTBE_PUANI = [625, 1500, 2625, 4000, 5625] as const;
 const SKOR_TIK_PUANI = 3000;
+/** v29: işletme puanı = müşteri sayısı × bu katsayı (müşteri = meslek_musteri; Din Adamı'nda inanan). */
+const SKOR_ISLETME_CARPAN = 25;
 const SKOR_SOHRET_CARPAN = 300;
 const SKOR_AHLAK_CARPAN = 200;
 const SKOR_MUTLULUK_CARPAN = 100;
@@ -2882,6 +2885,8 @@ export interface SkorKirilimi {
   ahlakPuani: number;
   mutlulukPuani: number;
   rutbePuani: number;
+  /** Müşteri sayısı × 25 (işletme büyüklüğü). */
+  isletmePuani: number;
   tikPuani: number;
   tikSayisi: number;
   sarayda: boolean;
@@ -2903,6 +2908,7 @@ export function hesaplaSkorKirilimi(state: CharacterState): SkorKirilimi {
   const mutlulukPuani = Math.round(Math.max(state.mutluluk, 0) * SKOR_MUTLULUK_CARPAN);
   const rutbeIndeks = Math.min(Math.max(state.rutbe_seviye, 1), 5) - 1;
   const rutbePuani = SKOR_RUTBE_PUANI[rutbeIndeks];
+  const isletmePuani = Math.round(Math.max(state.meslek_musteri ?? 0, 0) * SKOR_ISLETME_CARPAN);
   const sarayda = state.etiketler.includes("sarayda");
   const yolculukTamamlandi = state.etiketler.includes("yolculuk_tamamlandi");
   const gizemliEsyaSahibi = state.etiketler.some(
@@ -2917,7 +2923,7 @@ export function hesaplaSkorKirilimi(state: CharacterState): SkorKirilimi {
     (state.veba_hayatta_kaldi ? SKOR_VEBA_HAYATTA_KALMA_PUANI : 0) +
     (state.hapis_basarili_kacis ? SKOR_HAPIS_BASARILI_KACIS_PUANI : 0);
   const temelToplam =
-    servetPuani + sohretPuani + ahlakPuani + mutlulukPuani + rutbePuani + tikPuani + basariOlayiPuani;
+    servetPuani + sohretPuani + ahlakPuani + mutlulukPuani + rutbePuani + isletmePuani + tikPuani + basariOlayiPuani;
   // Eski kayıt/test (hayat_amaclari boş, tekil hayat_amaci dolu) için ×5 fallback korunur.
   const amacCarpani =
     (state.hayat_amaclari?.length ?? 0) > 0
@@ -2932,6 +2938,7 @@ export function hesaplaSkorKirilimi(state: CharacterState): SkorKirilimi {
     ahlakPuani,
     mutlulukPuani,
     rutbePuani,
+    isletmePuani,
     tikPuani,
     tikSayisi,
     sarayda,
@@ -3448,7 +3455,7 @@ export function krediPazarlik(state: CharacterState): string {
   const kalanYil = Math.max(1, (k.vadeYil ?? 6) - (state.yil - k.alindigiYil));
   const sans = Math.min(40, Math.max(25, 25 + (state.un - 20) / 8 + (state.ahlak - 50) / 16)); // ~%25-40
   if (Math.random() * 100 < sans) {
-    k.faizOrani = Math.max(0.07, Math.round((k.faizOrani - 0.04) * 100) / 100);
+    k.faizOrani = Math.max(0.02, Math.round((k.faizOrani - 0.04) * 100) / 100);
     k.yillikTaksit = Math.max(2, Math.ceil(annuiteTaksit(k.kalanBorc, k.faizOrani, kalanYil)));
     return T(state.dil, "Tefeci homurdandı ama faizi %{0}'e indirdi.", [Math.round(k.faizOrani * 100)]);
   }
@@ -3799,7 +3806,7 @@ export function rastgeleMulkBakimAraligi(): number {
 
 /** Bir mülkün, bakım masrafları amorti edilerek yıllığa indirgenmiş yaklaşık maliyeti (önizleme/istemci için). */
 export function mulkYillikBakimTahmini(tur: MulkTuru, state: CharacterState): number {
-  const guncelDeger = mulkTanimiGetir(tur).taban_maliyet * enflasyonCarpani(state);
+  const guncelDeger = mulkTanimiGetir(tur).taban_maliyet * giderEnflasyonCarpani(state);
   const ortalamaAralik = (MULK_BAKIM_ARALIGI_MIN_YIL + MULK_BAKIM_ARALIGI_MAX_YIL) / 2;
   return paraYuvarla((guncelDeger * MULK_BAKIM_ORANI) / ortalamaAralik);
 }
@@ -4010,7 +4017,7 @@ export function mulkGelirleriUygula(state: CharacterState, yasArtisi: number): M
     // Periyodik bakım/vergi: 7-10 yılda bir, mülkün güncel değerinin ~%14'ü.
     const kalan = (state.mulk_bakim_kalan[tur] ?? rastgeleMulkBakimAraligi()) - yasArtisi;
     if (kalan <= 0) {
-      const masraf = sonBasamagiDuzelt(taban * MULK_BAKIM_ORANI);
+      const masraf = sonBasamagiDuzelt(mulkTanimiGetir(tur).taban_maliyet * giderEnflasyonCarpani(state) * MULK_BAKIM_ORANI);
       toplamBakim += masraf;
       bakimOdemeleri.push({ ad: mulkTanimiGetir(tur).ad, miktar: masraf });
       state.mulk_bakim_kalan[tur] = rastgeleMulkBakimAraligi();
@@ -4164,7 +4171,7 @@ export function magazaFiyatiHesapla(esya: MagazaEsyasiTanimi, state: CharacterSt
   if (ulke.kriz?.tur === "altin_cag") carpan *= e.altin_cag ?? 1;
   if (ulke.ekonomi === "iyi") carpan *= e.ekonomiIyi ?? 1;
   if (ulke.ekonomi === "kotu") carpan *= e.ekonomiKotu ?? 1;
-  return Math.max(1, paraYuvarla(esya.tabanFiyat * carpan * enflasyonCarpani(state)));
+  return Math.max(1, paraYuvarla(esya.tabanFiyat * carpan * giderEnflasyonCarpani(state)));
 }
 
 /** "sifa" satın alımından sonra TÜM sifa kategorisinin kaç yıl kilitleneceği — oyuncu ilaç/erzak stoklayıp sürekli sürekli alışveriş yapamasın diye (bkz. §26). */
@@ -4285,7 +4292,7 @@ export function envanterBozulmasiUygula(state: CharacterState, yasArtisi: number
     // koleksiyon (lüks/sanat/binek): periyodik bakım — kalıcı, sadece masraf çıkar ve sayaç sıfırlanır
     if (yeniKalanYil <= 0) {
       const tanim = magazaEsyasiTanimiGetir(esya.katalogId);
-      const guncelDeger = Math.round(tanim.tabanFiyat * enflasyonCarpani(state));
+      const guncelDeger = Math.round(tanim.tabanFiyat * giderEnflasyonCarpani(state));
       const masraf = sonBasamagiDuzelt(guncelDeger * (tanim.bakimOrani ?? LUKS_BAKIM_ORANI));
       state.para -= masraf;
       bakimOdemeleri.push({ ad: esya.ad, miktar: masraf });
