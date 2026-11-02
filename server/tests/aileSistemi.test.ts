@@ -186,7 +186,7 @@ describe("düğün", () => {
     evli.bekleyen_dugun = { ...aday("olgun"), tur: "mantik" }; // bonus 6
     AS.dugunYap(evli, "orta");
     expect(evli.es_meslek_bonusu).toBe(6);
-    evli.meslek = "Asker"; // işletmeli mesleklerde eş desteği müşteri artışına yazılır (§45 v13); maaş kalemi Asker'de görünür
+    evli.meslek = "Köylü"; // işletmeli mesleklerde eş desteği müşteri artışına yazılır (§45 v13); maaş kalemi yalnız maaşlı (tanımsız) meslekte görünür
     const destekli = hesaplaMaasYillik(evli);
     evli.es_meslek_bonusu = 0;
     expect(destekli).toBeGreaterThan(hesaplaMaasYillik(evli));

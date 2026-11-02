@@ -145,11 +145,14 @@ export const TALIM_SECKIN_GIRIS = 70;
 export const MORAL_BASLANGIC = 60;
 export const MORAL_YONELIM = 1;
 /** Moral dipteyken yıllık geri çekilmenin üst sınırı (puan). */
-export const MORAL_YONELIM_TAVAN = 4;
+export const MORAL_YONELIM_TAVAN = 5;
 /** Firar ve kayıpların orduyu indirebileceği en düşük er sayısı (çekirdek kadro). */
 export const MIN_CEKIRDEK_ER = 3;
+/** Savaş çatışmasında (kanat) ordunun yıllık kayıp oranı: zafer / yenilgi (rol ve zar oranıyla çarpılır). */
+export const CATISMA_KAYIP_ZAFER = 0.025;
+export const CATISMA_KAYIP_YENILGI = 0.06;
 /** Yıllık moral değişiminin (olaylar + etkenler toplamı) en fazla düşebileceği miktar. */
-export const MORAL_YILLIK_TABAN = 22;
+export const MORAL_YILLIK_TABAN = 16;
 /** Moralin güce etkisi (bant üst sınırı moral < esik). */
 export const MORAL_GUC_BANTLARI: { altinda: number; guc: number }[] = [
   { altinda: 30, guc: -0.2 },
@@ -163,7 +166,7 @@ export function moralGucEtkisi(moral: number): number {
 }
 /** Firar: moral bu eşiğin altına inince yıllık oran (eşik − moral) × katsayı. */
 export const FIRAR_MORAL_ESIGI = 40;
-export const FIRAR_MORAL_KATSAYI = 0.003;
+export const FIRAR_MORAL_KATSAYI = 0.002;
 export const FIRAR_ERZAK_EKI = 0.04;
 export const FIRAR_ZAYIF_ORAN_EKI = 0.03;
 /** Yıllık moral etkenleri. */
@@ -212,7 +215,9 @@ export const ERZAK_BIRIMI = 0.08;
  * Barış çatışması (haydut / sınır, takvimli): ganimet havuzu = toplam askerî güç × bu birim × tür çarpanı × sonuç çarpanı.
  * Büyük ve iyi donanımlı ordu aynı çatışmadan çok daha fazla kazanır (sim ile kalibre edilecek).
  */
-export const GANIMET_GUC_BIRIMI = 0.45;
+export const GANIMET_GUC_BIRIMI = 3.4;
+/** Görev gelirinin genel çarpanı (kalibrasyon); sold ve er başı gelir ayrı. */
+export const GOREV_GELIR_CARPANI = 0.8;
 /** İki çatışma arası yıl [min, max] ve ilk çatışmanın işletmenin kaçıncı yılından sonra geleceği. */
 export const BARIS_CATISMA_ARALIK: [number, number] = [3, 5];
 export const BARIS_CATISMA_ILK_YIL = 2;
@@ -241,7 +246,7 @@ export const BARIS_CATISMALARI: Record<"haydut" | "sinir", BarisCatismaTanimi> =
 };
 export const BARIS_YENILGI_GANIMET = 0.2;
 export const BARIS_KAYIP_ZAFER = 0.01;
-export const BARIS_KAYIP_YENILGI = 0.04;
+export const BARIS_KAYIP_YENILGI = 0.03;
 export const BARIS_TALIM_ZAFER = 5;
 export const BARIS_TALIM_YENILGI = 2;
 export const BARIS_MORAL_ZAFER = 4;

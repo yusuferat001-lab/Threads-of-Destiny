@@ -1,3 +1,4 @@
+import { payiAyarla } from "./testUtils";
 import { describe, it, expect } from "vitest";
 import { createCharacter, mesleğiSec, rutbeGuncelle, BOLGELER_BY_CAG } from "../src/game/stateManager";
 
@@ -129,7 +130,7 @@ function terfiEttir(state: ReturnType<typeof createCharacter>, hedefSeviye: numb
     state.kariyer_puani = 999;
     state.un = 100;
     state.ahlak = 100;
-    state.meslek_musteri = state.pazar_musteri * 0.6; // pay şartı (işletmeli meslekte S5 %50)
+    payiAyarla(state, 0.6); // pay şartı (işletmeli meslekte S5 %50)
     state.yil += 10; // her kademe cooldown'unu fazlasıyla aşar
     rutbeGuncelle(state);
   }
@@ -148,11 +149,11 @@ describe("astlar", () => {
     mesleğiSec(state, "Asker");
     state.kariyer_puani = 20;
     state.un = 40;
-    state.meslek_musteri = state.pazar_musteri * 0.5; // pay şartı
+    payiAyarla(state, 0.5); // pay şartı
     rutbeGuncelle(state);
     expect(state.rutbe_seviye).toBe(2);
     expect(state.astlar).toHaveLength(1);
-    expect(state.astlar[0].rutbe).toBe("Er");
+    expect(state.astlar[0].rutbe).toBe("Piyade Er"); // Orta Çağ Fransa Asker unvanları
     expect(state.astlar[0].isim).toBeTruthy();
     expect(state.astlar[0].isim).not.toBe(state.dost_adi);
     expect(state.astlar[0].isim).not.toBe(state.rakip_adi);
@@ -165,7 +166,7 @@ describe("astlar", () => {
     mesleğiSec(state, "Asker");
     state.kariyer_puani = 20;
     state.un = 40;
-    state.meslek_musteri = state.pazar_musteri * 0.5; // pay şartı
+    payiAyarla(state, 0.5); // pay şartı
     rutbeGuncelle(state);
     const ilkAstIsim = state.astlar[0].isim;
 
@@ -177,8 +178,8 @@ describe("astlar", () => {
     expect(state.rutbe_seviye).toBe(3);
     expect(state.astlar).toHaveLength(2);
     expect(state.astlar[0].isim).toBe(ilkAstIsim);
-    expect(state.astlar[0].rutbe).toBe("Er");
-    expect(state.astlar[1].rutbe).toBe("Onbaşı");
+    expect(state.astlar[0].rutbe).toBe("Piyade Er");
+    expect(state.astlar[1].rutbe).toBe("Silahtar");
     expect(state.astlar[1].isim).not.toBe(state.astlar[0].isim);
   });
 

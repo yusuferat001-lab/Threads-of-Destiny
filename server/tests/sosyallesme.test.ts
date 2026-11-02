@@ -18,7 +18,7 @@ import { secimUygulaVeCoz } from "./testUtils";
 import { SOSYALLESME_YERLERI } from "../src/data/sosyallesmeYerleri";
 import { AKSIYON_ROTASYON_HAVUZU, AKSIYON_ROTASYON_GOSTERIM } from "../src/data/sosyallesmeAksiyonlari";
 import type { CharacterState } from "../src/types";
-import { vergisizSenaryo } from "./_ogreti";
+import { vergisizSenaryo, bekleyenleriCoz } from "./_ogreti";
 
 // Mekân girişlerindeki rastgele tanışma (aşk evliliği) bu testlerin mekân olayı beklentisini bozmasın.
 
@@ -140,6 +140,7 @@ describe("sosyallesmeYerineGit — mekâna gitmek", () => {
     const turSayisiOncesi = state.tur_sayisi;
 
     await sosyallesmeYerineGit(state.id, "meyhane");
+    await bekleyenleriCoz(state.id);
     const senaryo = await senaryoUret(state.id);
 
     const meyhaneBasliklari = new Set(
@@ -158,6 +159,7 @@ describe("sosyallesmeYerineGit — mekâna gitmek", () => {
     const yasOnce = state.yas;
 
     await sosyallesmeYerineGit(state.id, "meyhane");
+    await bekleyenleriCoz(state.id);
     await senaryoUret(state.id);
     const sonuc = await sosyallesmeOlayCoz(state.id, 0);
 
@@ -217,6 +219,7 @@ describe("sosyalleşme — bekleyen zorunlu olay korunur, ücret hata durumunda 
       // tetiklenmesin diye seçilen olayın ölüm riski olmayan ilk şıkkı denenir.
       const rnd = vi.spyOn(Math, "random").mockReturnValue(0.02);
       try {
+        await bekleyenleriCoz(state.id);
         const senaryo = await senaryoUret(state.id);
         const idx = senaryo.secenekler.findIndex((x) => !x.kilitli);
         await secimUygulaVeCoz(state.id, idx >= 0 ? idx : 0);
@@ -233,6 +236,7 @@ describe("sosyalleşme — bekleyen zorunlu olay korunur, ücret hata durumunda 
       }
       if (!reddedildi) continue; // bu denemede veba tetiklenmedi (başka bir sebeple akış farklı)
       expect(state.para).toBe(paraOnce); // ücret düşmedi
+      await bekleyenleriCoz(state.id);
       const sonraki = await senaryoUret(state.id);
       expect(sonraki.olay_basligi).toBe(vebaBasligi); // bekleyen olay ezilmedi
       kanitlandi = true;
@@ -246,6 +250,7 @@ describe("sosyalleşme — bekleyen zorunlu olay korunur, ücret hata durumunda 
     state.yas = 25;
     state.para = 2000;
     await sosyallesmeYerineGit(state.id, "meyhane");
+    await bekleyenleriCoz(state.id);
     const senaryo = await senaryoUret(state.id);
     const mekanIdleri = new Set(OLAY_SOSYALLESME.filter((o) => o.sosyallesmeYeri === "meyhane").map((o) => o.id));
     const olay = OLAY_SOSYALLESME.find((o) => o.baslik === senaryo.olay_basligi)!;
@@ -300,6 +305,7 @@ describe("ayyaşlık mekaniği (3 alkollü ziyaret eşiği)", () => {
     state.para = 2000;
 
     await sosyallesmeYerineGit(state.id, "pazar_meydani");
+    await bekleyenleriCoz(state.id);
     await senaryoUret(state.id);
     const sonuc = await sosyallesmeOlayCoz(state.id, 0);
 

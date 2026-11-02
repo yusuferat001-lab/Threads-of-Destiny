@@ -4708,7 +4708,15 @@ function kotuIsEtkiUygula(state: CharacterState, etki: KotuIsEtki, enflasyon: nu
     if (artis > 0) sucArtisiKaydet(state);
   }
   if (etki.kariyer_puani) state.kariyer_puani += etki.kariyer_puani;
-  if (etki.musteri) musteriEkleTam(state, (etki.musteri * (state.pazar_musteri ?? PAZAR_REF_MUSTERI)) / PAZAR_REF_MUSTERI);
+  if (etki.musteri) {
+    const olcekli = (etki.musteri * (state.pazar_musteri ?? PAZAR_REF_MUSTERI)) / PAZAR_REF_MUSTERI;
+    if (state.meslek === "Asker" && state.isletme?.birlik) {
+      // Asker: karanlık işin "müşteri" kazancı er devşirmesidir (komuta limitine kadar); piyasa akışı er sayısını değiştirmez.
+      const bg = isletmeBaglami(state);
+      yeniErEkle(state, Math.round(olcekli), bg, { bedava: true });
+      birlikSenkron(state, bg.enflasyon);
+    } else musteriEkleTam(state, olcekli);
+  }
   if (etki.uretim_kapasitesi && state.meslek === "Zanaatkâr") {
     state.uretim_kapasitesi = Math.min(100, Math.max(0, state.uretim_kapasitesi + etki.uretim_kapasitesi));
   }

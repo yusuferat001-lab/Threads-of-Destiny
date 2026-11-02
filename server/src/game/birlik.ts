@@ -7,6 +7,7 @@ import type {
   CharacterState,
 } from "../types";
 import {
+  GOREV_GELIR_CARPANI,
   ARAZI_CARPANLARI,
   BASLANGIC_ER,
   BIRLIK_SEVIYE_PAYI,
@@ -131,40 +132,48 @@ export function birlikBaslat(state: CharacterState): void {
   birlikSenkron(state);
 }
 
+/** Eski (maaşlı) Asker kaydının ordu sayısını ve teçhizat seviyesini birlik durumuna çevirir. */
+function eskiOrduyuTasi(state: CharacterState, is: NonNullable<CharacterState["isletme"]>, er: number, tech: number): void {
+  state.meslek_musteri = er;
+  const b = birlikVarsayilan(er);
+  if (tech >= 60) {
+    b.kalite = { dusuk: er - Math.round(er * 0.6), orta: Math.round(er * 0.4), yuksek: Math.round(er * 0.2) };
+  } else if (tech >= 25) {
+    b.kalite = { dusuk: er - Math.round(er * 0.3), orta: Math.round(er * 0.3), yuksek: 0 };
+  }
+  // Eski teçhizat seviyesine göre kışla kademesi; limit er sayısını karşılamalı.
+  is.yatirimlar = { ...(is.yatirimlar ?? {}) };
+  let kisla = tech >= 60 ? 2 : tech >= 25 ? 1 : 0;
+  while (kisla < KISLA_ER_LIMITI.length - 1 && KISLA_ER_LIMITI[kisla] < er) kisla++;
+  is.yatirimlar.kisla = kisla;
+  is.birlik = b;
+  // Pazar, ordunun en az ~3 katı olsun (rakipler ve diğer ordular için yer).
+  state.pazar_musteri = Math.max(state.pazar_musteri ?? 0, er * 3 + 20);
+  // Eski ajanlar ekipten çıkar (subay rolü olmayanlar), ajan görevleri silinir.
+  state.ekip = state.ekip.filter((e) => !!e.rol_turu);
+  state.ajan_gorevleri = [];
+  // Alt rütbelerin doktrinleri otomatik (ilk evrensel) atanır; yalnız mevcut rütbe oyuncuya sorulur.
+  for (let sv = 1; sv < (state.rutbe_seviye ?? 1); sv++) {
+    const ilk = DOKTRINLER.find((d) => d.seviye === sv && d.kaynak === "evrensel");
+    if (ilk) b.doktrinler.push(ilk.id);
+  }
+}
+
 /** Eski kayıt / yeni Asker: eksik alanları tamamlar, ordu alanlarını birlik durumuna çevirir. */
 export function birlikHazirla(state: CharacterState): void {
   if (!state.isletme) {
+    const eskiEr = Math.round(state.ordu_mevcudu ?? 0);
+    const eskiTech = state.ordu_techizat_seviyesi ?? 0;
+    if (eskiEr > 0 && eskiEr !== BASLANGIC_ER) state.meslek_musteri = eskiEr;
     birlikBaslat(state);
+    if (eskiEr > 0 && eskiEr !== BASLANGIC_ER) eskiOrduyuTasi(state, state.isletme!, clamp(eskiEr, 1, ER_TAVANI), eskiTech);
     return;
   }
   const is = state.isletme;
   if (!is.birlik) {
-    // Eski (maaşlı) Asker: mevcut müşteri sayısı er sayısıdır; teçhizat seviyesi kalite dağılımına çevrilir.
-    const er = clamp(erSayisi(state) || BASLANGIC_ER, 1, ER_TAVANI);
-    state.meslek_musteri = er;
-    const b = birlikVarsayilan(er);
-    const tech = state.ordu_techizat_seviyesi ?? 0;
-    if (tech >= 60) {
-      b.kalite = { dusuk: er - Math.round(er * 0.6), orta: Math.round(er * 0.4), yuksek: Math.round(er * 0.2) };
-    } else if (tech >= 25) {
-      b.kalite = { dusuk: er - Math.round(er * 0.3), orta: Math.round(er * 0.3), yuksek: 0 };
-    }
-    // Eski teçhizat seviyesine göre kışla kademesi; limit er sayısını karşılamalı.
-    is.yatirimlar = { ...(is.yatirimlar ?? {}) };
-    let kisla = tech >= 60 ? 2 : tech >= 25 ? 1 : 0;
-    while (kisla < KISLA_ER_LIMITI.length - 1 && KISLA_ER_LIMITI[kisla] < er) kisla++;
-    is.yatirimlar.kisla = kisla;
-    is.birlik = b;
-    // Eski ajanlar ekipten çıkar (subay rolü olmayanlar), ajan görevleri silinir.
-    state.ekip = state.ekip.filter((e) => !!e.rol_turu);
-    state.ajan_gorevleri = [];
-    // Eski rütbelere göre alt rütbelerin doktrinleri "dengeli" otomatik atanır; yalnız mevcut rütbe sorulur (aşağıda).
-    const yol = yolDali(state);
-    for (let s = 1; s < (state.rutbe_seviye ?? 1); s++) {
-      const ilk = DOKTRINLER.find((d) => d.seviye === s && d.kaynak === "evrensel");
-      if (ilk) b.doktrinler.push(ilk.id);
-    }
-    void yol;
+    // Eski (maaşlı) Asker: ordu_mevcudu er sayısıdır (yoksa meslek_musteri); teçhizat seviyesi kalite dağılımına çevrilir.
+    const er = clamp(Math.round(state.ordu_mevcudu || erSayisi(state)) || BASLANGIC_ER, 1, ER_TAVANI);
+    eskiOrduyuTasi(state, is, er, state.ordu_techizat_seviyesi ?? 0);
   }
   const b = is.birlik!;
   b.kalite = b.kalite ?? { dusuk: erSayisi(state), orta: 0, yuksek: 0 };
@@ -516,7 +525,7 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   const gorevler: BirlikGorevHesabi[] = gorevPaylari(state).map(({ gorev: g, er: p, aktif }) => {
     if (!aktif) return { id: g.id, er: p, aktif, gelir: 0, masraf: 0, ganimet: 0, esir: 0 };
     const akinC = g.tur === "akin" ? mizrakliAkin : 1;
-    const gelir = p * g.erBasi * bg.enflasyon * gorevDonemCarpani(state, g) * gelirC * akinC;
+    const gelir = p * g.erBasi * GOREV_GELIR_CARPANI * bg.enflasyon * gorevDonemCarpani(state, g) * gelirC * akinC;
     const masraf = gelir * g.masraf * mC * ikmal.maliyet;
     // Ganimet: yalnız ganimetli görevlerde; savaş yılında ×2,5, barışta ×0,3 (savaş-yalnız görevler zaten savaşta).
     const ganCarpan = g.yalnizSavas ? 1 : savasta ? 2.5 : 0.3;

@@ -1,12 +1,14 @@
 import { describe, it, expect } from "vitest";
 import { yeniOyun, mesleğiAta, finansGetir } from "../src/game/gameEngine";
-import { createCharacter, saldiriGucuHesapla, meslekMetrikCarpani, orduKaybiUygula } from "../src/game/stateManager";
+import { createCharacter, mesleğiSec, saldiriGucuHesapla, meslekMetrikCarpani } from "../src/game/stateManager";
+import { birlikKaybiUygula } from "../src/game/birlikIslem";
 
 describe("meslek-özel derinlik metrikleri", () => {
   it("Asker mesleği seçilince ordu_mevcudu başlangıç değeri alır", async () => {
     const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Asker");
-    expect(state.ordu_mevcudu).toBeGreaterThan(0);
+    expect(state.ordu_mevcudu).toBe(20); // birlik modu: 20 er (meslek_musteri aynası)
+    expect(state.meslek_musteri).toBe(20);
     expect(state.ordu_techizat_seviyesi).toBe(0);
   });
 
@@ -32,7 +34,8 @@ describe("meslek-özel derinlik metrikleri", () => {
     state.meslek = "Asker";
     state.ordu_mevcudu = 50;
     state.ordu_techizat_seviyesi = 50;
-    expect(meslekMetrikCarpani(state, "savas")).toBeGreaterThan(1);
+    // Birlik modu: Asker'in olay parası çarpılmaz (gelir sold + görev + ganimet); eski ordu çarpanı kalktı.
+    expect(meslekMetrikCarpani(state, "savas")).toBe(1);
     expect(meslekMetrikCarpani(state, "ticaret")).toBe(1);
 
     // v10: Tüccar ticaret sermayesi ve Din Adamı nüfuzu olay parasını çarpmaz.
@@ -44,21 +47,23 @@ describe("meslek-özel derinlik metrikleri", () => {
     expect(meslekMetrikCarpani(state, "din")).toBe(1);
   });
 
-  it("orduKaybiUygula savaş sırasında barıştan daha fazla kayıp verir", () => {
+  it("birlikKaybiUygula savaş sırasında barıştan daha fazla kayıp verir", () => {
     let toplamBarisKaybi = 0;
     let toplamSavasKaybi = 0;
     for (let i = 0; i < 200; i++) {
       const barisState = createCharacter("Orta Çağ", "Fransa", "kasaba");
-      barisState.meslek = "Asker";
-      barisState.ordu_mevcudu = 100;
+      mesleğiSec(barisState, "Asker");
+      barisState.meslek_musteri = 100;
+      barisState.isletme!.birlik!.kalite = { dusuk: 100, orta: 0, yuksek: 0 };
       barisState.ulke.savasta = false;
-      toplamBarisKaybi += orduKaybiUygula(barisState, true);
+      toplamBarisKaybi += birlikKaybiUygula(barisState, true);
 
       const savasState = createCharacter("Orta Çağ", "Fransa", "kasaba");
-      savasState.meslek = "Asker";
-      savasState.ordu_mevcudu = 100;
+      mesleğiSec(savasState, "Asker");
+      savasState.meslek_musteri = 100;
+      savasState.isletme!.birlik!.kalite = { dusuk: 100, orta: 0, yuksek: 0 };
       savasState.ulke.savasta = true;
-      toplamSavasKaybi += orduKaybiUygula(savasState, true);
+      toplamSavasKaybi += birlikKaybiUygula(savasState, true);
     }
     expect(toplamSavasKaybi).toBeGreaterThan(toplamBarisKaybi);
   });

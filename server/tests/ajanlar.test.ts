@@ -21,7 +21,11 @@ async function tuccarAjanli(rol = "Hırsız") {
   return { s, ajan };
 }
 
-describe("ajanlar (§43 Faz 2)", () => {
+// DEVRE DIŞI (Asker birlik modu): ajan sistemi yalnız genel karanlık işlerle (birini_soy, suikast_ettir vb.) çalışırdı ve
+// bu işler yalnız işletmesi olmayan mesleklerde görünürdü. Asker de işletmeli (birlik) olunca hiçbir meslekte erişilemez:
+// dört meslek de kendi `calisanIsi` işlerini kullanıyor. Motor kodu (ajanTut/ajanGorevleriniCoz) duruyor; ileride bir
+// meslek ajan kullanırsa bu testler o mesleğe taşınıp yeniden açılmalı.
+describe.skip("ajanlar (§43 Faz 2) — erişilemez, bkz. not", () => {
   it("ajan tutmak peşin ücret alır, ekibe ekler; aynı rolden ikinci kez tutulamaz", async () => {
     const { s, ajan } = await tuccarAjanli("Hırsız");
     expect(ajan).toBeDefined();

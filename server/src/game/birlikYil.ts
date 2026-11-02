@@ -55,6 +55,8 @@ import {
   MORAL_YENILGI,
   MORAL_YONELIM,
   MORAL_YONELIM_TAVAN,
+  CATISMA_KAYIP_ZAFER,
+  CATISMA_KAYIP_YENILGI,
   MORAL_YILLIK_TABAN,
   MIN_CEKIRDEK_ER,
   MORAL_YUKSEK_KAYIP,
@@ -326,7 +328,7 @@ function catismaCoz(state: CharacterState, b: BirlikDurumu, bg: IsletmeBaglami):
   const kanatZafer = R >= 1;
   const genelZafer = N * (1 + (d20() - 10.5) / ZAR_BOLEN) >= D * (1 + (d20() - 10.5) / ZAR_BOLEN);
   const er = erSayisi(state);
-  const kayipOrani = (kanatZafer ? 0.04 : 0.1) * rol.kayip * clamp(1 / R, 0.6, 1.6) * kayipCarpani(state);
+  const kayipOrani = (kanatZafer ? CATISMA_KAYIP_ZAFER : CATISMA_KAYIP_YENILGI) * rol.kayip * clamp(1 / R, 0.6, 1.6) * kayipCarpani(state);
   const olen = olasilikliYuvarla(er * kayipOrani);
   if (kanatZafer) sv.kanat_zafer += 1;
   else sv.kanat_yenilgi += 1;
@@ -620,7 +622,7 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
   b.moral = clamp(b.moral + moral, 0, 100);
   // 60'a yönelim: en az yılda 1 puan; uçurumdaki moral daha hızlı toparlanır (farkın %10'u, en çok 4) — moral dibinde kalıp ordu eritmesin.
   const fark = 60 - b.moral;
-  const cekim = Math.min(Math.abs(fark), Math.min(MORAL_YONELIM_TAVAN, Math.max(MORAL_YONELIM, Math.abs(fark) * 0.1)));
+  const cekim = Math.min(Math.abs(fark), Math.min(MORAL_YONELIM_TAVAN, Math.max(MORAL_YONELIM, Math.abs(fark) * 0.15)));
   b.moral = clamp(b.moral + Math.sign(fark) * cekim, 0, 100);
 
   // 10. Sertlik, ahlak, otorite, aşırılık.

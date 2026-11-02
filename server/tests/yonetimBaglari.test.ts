@@ -12,7 +12,7 @@ import type { CharacterState } from "../src/types";
 
 afterEach(() => vi.restoreAllMocks());
 
-/** Eski iki hatlı düzen (kral + patron) işletmesi olmayan mesleklerde sürer: Asker/Din Adamı. */
+/** Dört meslek de işletmeli (tek otorite) olduğundan eski iki hatlı düzen (kral + patron) için tanımsız bir meslek kullanılır. */
 async function oturum(meslek = "Asker"): Promise<CharacterState> {
   const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
   await mesleğiAta(state.id, meslek);
@@ -21,9 +21,17 @@ async function oturum(meslek = "Asker"): Promise<CharacterState> {
   return state;
 }
 
+/** Eski kral + patron hattı: işletmesi olmayan (tanımsız) meslekle simüle edilir; hiçbir gerçek meslekte yoktur. */
+async function eskiOturum(): Promise<CharacterState> {
+  const state = await oturum("Asker");
+  state.meslek = "Köylü";
+  state.isletme = null;
+  return state;
+}
+
 describe("yonetimDurumGetir", () => {
-  it("iki hattı, etkileşim kataloğunu ve istek listesini döndürür", async () => {
-    const state = await oturum();
+  it("eski düzende iki hattı, etkileşim kataloğunu ve istek listesini döndürür", async () => {
+    const state = await eskiOturum();
     const durum = await yonetimDurumGetir(state.id);
     expect(durum.yonetici.ad).toBeTruthy();
     expect(durum.patron.ad).toBeTruthy();
@@ -34,7 +42,6 @@ describe("yonetimDurumGetir", () => {
     // Kral bağışı işle ilgili kişininkinden belirgin pahalı.
     expect(durum.yonetici.bagisKademeleri[0]).toBeGreaterThan(durum.patron.bagisKademeleri[0]);
     expect(typeof durum.bikkinlik).toBe("number");
-    expect(durum.istekler.some((i) => i.id === "zam" && i.hat === "patron")).toBe(true);
     // Düşük ilişkiyle istekler kilitli.
     expect(durum.istekler.every((i) => !i.acik)).toBe(true);
   });
@@ -115,14 +122,10 @@ describe("yonetimIstekYap", () => {
     );
   });
 
-  it("sermaye_destegi Asker'de ordu teçhizatını artırır", async () => {
-    vi.spyOn(Math, "random").mockReturnValue(0.1); // rollSuccess geçer
-    const state = await oturum();
+  it("Asker'de eski patron istekleri (sermaye_destegi) yoktur; ordu teçhizatı artık istekle artmaz", async () => {
+    const state = await oturum("Asker");
     state.patron_iliski = 90;
-    const once = state.ordu_techizat_seviyesi;
-    const sonuc = await yonetimIstekYap(state.id, "sermaye_destegi");
-    expect(sonuc.basarili).toBe(true);
-    expect(sonuc.state.ordu_techizat_seviyesi).toBe(Math.min(100, once + 10));
+    await expect(yonetimIstekYap(state.id, "sermaye_destegi")).rejects.toThrow();
   });
 
   it("işletmeli meslekte eski patron istekleri ve kral istekleri yoktur", async () => {
@@ -153,8 +156,9 @@ describe("şehir yöneticisi (işletmeli meslekler: tek otorite)", () => {
     expect(idz).not.toContain("pazar_imtiyazi");
     const a = await oturum("Asker");
     const ida = (await yonetimDurumGetir(a.id)).istekler.map((i) => i.id);
-    expect(ida).not.toContain("vergi_indirimi");
-    expect(ida).toContain("terfi_destegi");
+    expect(ida).toEqual(expect.arrayContaining(["vergi_indirimi", "levazim_muafiyeti", "sefer_emri", "ek_kadro"]));
+    expect(ida).not.toContain("terfi_destegi");
+    expect(ida).not.toContain("pazar_imtiyazi");
   });
 
   it("hediye +5/+10/+18 (45/100/220), hizmet +6, övgü +7; cooldown 4/3/4 yıl", async () => {
@@ -267,10 +271,14 @@ describe("şehir yöneticisi (işletmeli meslekler: tek otorite)", () => {
     expect((await yonetimIstekYap(b.id, "vergi_indirimi", true)).basarili).toBe(true);
   });
 
-  it("eski mesleklerde (Asker) rüşvet yoktur", async () => {
+  it("Asker'de rüşvet şehir isteklerinde vardır; eski kral isteği (terfi_destegi) yoktur", async () => {
+    vi.spyOn(Math, "random").mockReturnValue(0.1);
     const a = await oturum("Asker");
     a.yonetim_iliski = 90;
     await expect(yonetimIstekYap(a.id, "terfi_destegi", true)).rejects.toThrow();
+    const sonuc = await yonetimIstekYap(a.id, "levazim_muafiyeti", true);
+    expect(sonuc.basarili).toBe(true);
+    expect(sonuc.state.isletme!.imtiyazlar.levazim_muafiyeti).toBeGreaterThanOrEqual(a.yil);
   });
 
   it("tüccar imtiyazı 5 yıl sürer; tekel ruhsatı bir hatta bağlanır; resmi sipariş Zanaatkâr'a para + pay verir", async () => {
@@ -341,7 +349,7 @@ describe("yonetimTalebiKararlastir", () => {
   });
 
   it("ret (hükümdar = kaç): ilişki ve şöhret düşer, aranma ciddi artar, talep temizlenir", async () => {
-    const state = await oturum();
+    const state = await eskiOturum();
     state.un = 50;
     state.suc_seviyesi = 10;
     bagisTalebiEkle(state);
@@ -363,7 +371,7 @@ describe("yonetimTalebiKararlastir", () => {
   });
 
   it("hükümdara 'yalan' kararı reddedilir — sadece öde ya da kaç var", async () => {
-    const state = await oturum();
+    const state = await eskiOturum();
     bagisTalebiEkle(state);
     await expect(yonetimTalebiKararlastir(state.id, "yalan")).rejects.toThrow();
   });

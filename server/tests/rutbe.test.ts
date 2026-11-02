@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { payiAyarla } from "./testUtils";
 import { createCharacter, mesleğiSec, rutbeGuncelle, hesaplaMaasYillik } from "../src/game/stateManager";
 import { RUTBELER, rutbePazarPayiEsigi } from "../src/data/rutbeler";
 
@@ -9,7 +10,7 @@ function terfiEttir(state: ReturnType<typeof createCharacter>, hedef: number): v
     state.kariyer_puani = 999;
     state.un = 100;
     state.ahlak = 100;
-    state.meslek_musteri = state.pazar_musteri * 0.6; // pazar payı şartı (S4 %18, S5 %35)
+    payiAyarla(state, 0.6); // pazar payı şartı (S4 %18, S5 %35)
     state.yil += 10;
     rutbeGuncelle(state);
   }
@@ -46,10 +47,10 @@ describe("rütbe reformu — 5 kademe, ratchet, cooldown, kariyer puanı", () =>
     mesleğiSec(s, "Asker");
     s.kariyer_puani = 20;
     s.un = 40;
-    s.meslek_musteri = s.pazar_musteri * 0.5;
+    payiAyarla(s, 0.5);
     rutbeGuncelle(s);
     expect(s.rutbe_seviye).toBe(2);
-    expect(s.rutbe).toBe("Onbaşı");
+    expect(s.rutbe).toBe("Silahtar"); // Orta Çağ Fransa: ülkeye özgü Asker unvanı
     expect(s.son_terfi_yili).toBe(s.yil);
   });
 
@@ -58,7 +59,7 @@ describe("rütbe reformu — 5 kademe, ratchet, cooldown, kariyer puanı", () =>
     mesleğiSec(s, "Asker");
     s.kariyer_puani = 20;
     s.un = 40;
-    s.meslek_musteri = s.pazar_musteri * 0.5;
+    payiAyarla(s, 0.5);
     rutbeGuncelle(s);
     expect(s.rutbe_seviye).toBe(2);
     s.kariyer_puani = 999;
@@ -70,7 +71,7 @@ describe("rütbe reformu — 5 kademe, ratchet, cooldown, kariyer puanı", () =>
   it("çağrı başına en fazla +1 kademe ilerler", () => {
     const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(s, "Tüccar");
-    s.meslek_musteri = s.pazar_musteri * 0.6; // pay şartı (işletmeli meslek: S2 %12 … S5 %50)
+    payiAyarla(s, 0.6); // pay şartı (işletmeli meslek: S2 %12 … S5 %50)
     s.kariyer_puani = 999;
     s.un = 100;
     s.yil += 50; // tüm cooldownlar aşılmış olsa bile
@@ -106,7 +107,7 @@ describe("rütbe reformu — 5 kademe, ratchet, cooldown, kariyer puanı", () =>
   it("Tüccar'da her kademe ün ister — ün düşükken kariyer_puani ne olursa olsun terfi olmaz", () => {
     const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(s, "Tüccar");
-    s.meslek_musteri = s.pazar_musteri * 0.6;
+    payiAyarla(s, 0.6);
     s.kariyer_puani = 999;
     s.un = 5; // S2 ün eşiğinin (12) altında
     s.yil += 50;
@@ -121,7 +122,7 @@ describe("rütbe reformu — 5 kademe, ratchet, cooldown, kariyer puanı", () =>
     const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(s, "Tüccar");
     const payAyarla = (pay: number) => {
-      s.meslek_musteri = s.pazar_musteri * pay;
+      payiAyarla(s, pay);
     };
     payAyarla(0.1); // %10 < %16: S2'ye çıkamaz
     s.kariyer_puani = 999;

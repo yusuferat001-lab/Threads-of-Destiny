@@ -239,9 +239,13 @@ export function birlikSec(state: CharacterState, seviye: number, turler: BirlikT
   iade = r2(iade);
   gucParaKontrol(state, maliyet - iade);
   state.para = r2(state.para - maliyet + iade);
+  const eskiSeviye = b.birlik_seviye;
   b.birlik_seviye = seviye;
   b.birlik_turler = secili;
-  if (!ustKume) b.birlik_kilit_bitis = state.yil + BIRLIK_KILIT_YIL;
+  // Kilit ilk seçimden itibaren işler: kilitliyken yalnız yenisi eklenebilir, tür değiştirilemez.
+  if (kilitKalan(state, b.birlik_kilit_bitis) <= 0 && (seviye !== eskiSeviye || !ustKume || yeniSet.size !== eskiSet.size)) {
+    b.birlik_kilit_bitis = state.yil + BIRLIK_KILIT_YIL;
+  }
   birlikSenkron(state, bg.enflasyon);
   return { maliyet, iade, adet };
 }

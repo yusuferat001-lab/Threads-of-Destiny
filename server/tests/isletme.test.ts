@@ -113,10 +113,14 @@ describe("işletme (Tüccar dilimi)", () => {
     }
   });
 
-  it("diğer mesleklerde işletme yok (eski maaş sistemi)", async () => {
+  it("Asker da işletmelidir: stoksuz 'birlik' modu (hat yok, ordu durumu var)", async () => {
     const st = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(st.id, "Asker");
-    expect((await stateGetir(st.id)).isletme).toBeNull();
+    const s = await stateGetir(st.id);
+    expect(s.isletme).not.toBeNull();
+    expect(s.isletme!.hatlar).toHaveLength(0);
+    expect(s.isletme!.birlik).toBeTruthy();
+    expect(s.meslek_musteri).toBe(20);
   });
 
   it("hiç dokunmayan oyuncu bir yılda makul kâr eder ve kâr maaş yerine geçer", async () => {
@@ -586,13 +590,13 @@ describe("işletme (Tüccar dilimi)", () => {
     expect(korumaHesapla(s).otorite).toBeCloseTo(0.1);
   });
 
-  it("vergi: kârın %20'si; savaşta +10 puan; otorite ilişkisi <25'te +3 puan; indirim yarıya indirir; zarar yılında vergi yok", async () => {
+  it("vergi: kârın %20'si; savaşta +5 puan; otorite ilişkisi <25'te +3 puan; indirim yarıya indirir; zarar yılında vergi yok", async () => {
     const s = await tuccar();
     s.yonetim_iliski = 50;
     s.ulke.savasta = false;
     expect(vergiOrani(s)).toBeCloseTo(0.2);
     s.ulke.savasta = true;
-    expect(vergiOrani(s)).toBeCloseTo(0.3);
+    expect(vergiOrani(s)).toBeCloseTo(0.25);
     s.ulke.savasta = false;
     s.yonetim_iliski = 10;
     expect(vergiOrani(s)).toBeCloseTo(0.23);

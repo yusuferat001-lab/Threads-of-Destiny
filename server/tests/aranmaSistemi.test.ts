@@ -50,9 +50,9 @@ describe("yıldız tablosu", () => {
     expect(meslekDebuffOrani(90)).toBeCloseTo(0.15);
   });
 
-  it("Asker maaşına 'Aranma gölgesi' kalemi biner; işletmeli mesleklerde gelire girmez (v10: müşteri/ahlak kaybı)", () => {
+  it("maaşlı (işletmesiz) mesleğin maaşına 'Aranma gölgesi' kalemi biner; işletmeli mesleklerde gelire girmez (v10: müşteri/ahlak kaybı)", () => {
     const temiz = taze();
-    temiz.meslek = "Asker"; // işletmesiz eski maaş sistemi
+    temiz.meslek = "Köylü"; // dört meslek de işletmeli olduğundan eski maaş formülü yalnız tanımsız bir meslekle sınanabilir
     temiz.isletme = null;
     const aranan = structuredClone(temiz); // aynı karakter: tek fark aranma
     aranan.suc_seviyesi = 80;
