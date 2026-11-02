@@ -21,6 +21,17 @@ import {
   GOREVLER,
   GOREV_DONEM_CARPANI,
   GOREV_SLOTLARI,
+  GANIMET_GUC_BIRIMI,
+  KALE_GARNIZON,
+  KALE_HARAC,
+  KALE_KOMUTA_BONUSU,
+  KIRALIK_KALITE_CARPANI,
+  KIRALIK_YILLIK,
+  SAVAS_ODENEGI_ORANI,
+  SEFER_ORDU_ORANI,
+  YAGMA_ERZAK_CARPANI,
+  YAGMA_ESIR,
+  YAGMA_GANIMET,
   HARP_GUC_KATSAYISI,
   HARP_GUC_TAVAN,
   IKMAL_TANIMLARI,
@@ -53,6 +64,7 @@ import {
   VEBA_GOREV_CARPANI,
   YOL_ETKILERI,
   doktrinToplami,
+  emirGetir,
   gorevGetir,
   moralGucEtkisi,
   odenmeyenCeza,
@@ -77,6 +89,8 @@ export function birlikAl(state: CharacterState): BirlikDurumu {
   if (!b) throw new Error("Bu mesleğin bir birliği yok.");
   return b;
 }
+/** Haçlı/sefer yolculuğunda mı (ordunun yarısı seferde). */
+export const seferdeMi = (state: CharacterState) => state.meslek === "Asker" && state.etiketler.includes("yolculukta");
 export const erSayisi = (state: CharacterState) => Math.max(0, Math.round(state.meslek_musteri ?? 0));
 
 // ── Durum kurulumu ──────────────────────────────────────────────────────────
@@ -250,7 +264,7 @@ export const rutbeLimiti = (state: CharacterState) => RUTBE_ER_LIMITI[rutbeIndek
 export const kislaLimiti = (state: CharacterState) => KISLA_ER_LIMITI[kislaKademesi(state)];
 /** Etkin komuta limiti = min(rütbe, kışla); seferberlikte geçici olarak ×1,5. */
 export function komutaLimiti(state: CharacterState): number {
-  const taban = Math.min(rutbeLimiti(state), kislaLimiti(state));
+  const taban = Math.min(rutbeLimiti(state), kislaLimiti(state)) + (state.isletme?.birlik?.kale ?? 0) * KALE_KOMUTA_BONUSU;
   const carpan = state.isletme?.birlik?.savas?.seferberlik ? SEFERBERLIK_LIMIT_CARPANI : 1;
   return Math.min(ER_TAVANI, Math.round(taban * carpan));
 }
@@ -323,7 +337,10 @@ export function gucHesapla(state: CharacterState, ctx: GucBaglami = {}): GucDoku
   if (!b) {
     return { er, kalite: { dusuk: er, orta: 0, yuksek: 0 }, ham: er, piyadePayi: 1, turPaylari: {}, saldiriCarpani: 1, savunmaCarpani: 1, bonuslar: [], ortakBonus: 0, saldiri: er, savunma: er, guc: er };
   }
-  const ham = b.kalite.dusuk * KALITE_CARPANI.dusuk + b.kalite.orta * KALITE_CARPANI.orta + b.kalite.yuksek * KALITE_CARPANI.yuksek;
+  const seferOrani = seferdeMi(state) ? SEFER_ORDU_ORANI : 1;
+  const ham =
+    (b.kalite.dusuk * KALITE_CARPANI.dusuk + b.kalite.orta * KALITE_CARPANI.orta + b.kalite.yuksek * KALITE_CARPANI.yuksek) * seferOrani +
+    (b.savas?.kiralik_er ?? 0) * KIRALIK_KALITE_CARPANI;
   const paylar = turPaylari(b);
   const turToplam = Object.values(paylar).reduce((t, x) => t + (x ?? 0), 0);
   const piyade = 1 - turToplam;
@@ -345,6 +362,8 @@ export function gucHesapla(state: CharacterState, ctx: GucBaglami = {}): GucDoku
   ekle("doktrin", doktrin.guc);
   ekle("yol", yol.guc ?? 0);
   ekle("harp", Math.min(HARP_GUC_TAVAN, bon.ana * HARP_GUC_KATSAYISI));
+  const emir = emirGetir(b.savas?.emir);
+  if (emir && state.ulke.savasta) ekle("emir", emir.guc);
   if (doktrin.saldiri) ekle("doktrin_saldiri", doktrin.saldiri, "saldiri");
   if (doktrin.savunma) ekle("doktrin_savunma", doktrin.savunma, "savunma");
   ekle("erzak", 0.4 + 0.6 * clamp(b.erzak_oran, 0, 1) - 1);
@@ -424,12 +443,14 @@ export function gorevPaylari(state: CharacterState): GorevPayi[] {
   const secili = b.gorevler.map((id) => gorevGetir(id)).filter((g): g is GorevTanimi => !!g).slice(0, gorevSlotSayisi(state));
   const n = secili.length;
   if (n === 0) return [];
-  const er = erSayisi(state);
+  // Sefer yolculuğunda ordunun yarısı seferdedir; kalan yarı görevlerine devam eder.
+  const er = Math.floor(erSayisi(state) * (seferdeMi(state) ? 1 - SEFER_ORDU_ORANI : 1));
   const taban = Math.floor(er / n);
   const artik = er - taban * n;
   return secili.map((g, i) => {
     const pay = taban + (i === 0 ? artik : 0);
-    return { gorev: g, er: pay, aktif: pay >= g.minEr && (!g.yalnizSavas || savasta) };
+    // Savaş sürerken görevlerden gelir yok (savaş ödeneği ve yağma geçerli).
+    return { gorev: g, er: pay, aktif: pay >= g.minEr && (!g.yalnizSavas || savasta) && !savasta };
   });
 }
 
@@ -450,7 +471,8 @@ export function kayipCarpani(state: CharacterState): number {
   const revir = clamp(state.isletme?.yatirimlar.revir ?? 0, 0, 4) * REVIR_KAYIP_KADEME;
   const tabip = Math.min(TABIP_KAYIP_TAVAN, korumaHesapla(state).calisan * TABIP_KAYIP_AZALTMA);
   const talim = Math.min(0.15, b.talim * TALIM_KAYIP_KATSAYISI);
-  return Math.max(0.3, 1 - talim - revir - tabip + doktrin.kayip);
+  const emir = state.ulke.savasta ? emirGetir(b.savas?.emir) : undefined;
+  return Math.max(0.3, 1 - talim - revir - tabip + doktrin.kayip + (emir?.kayip ?? 0));
 }
 /** Levazım subayı + doktrin: er masrafı ve erzak çarpanı. */
 export function masrafCarpani(state: CharacterState): number {
@@ -481,6 +503,11 @@ export interface BirlikHesabi {
   gorevGeliri: number;
   gorevMasrafi: number;
   ganimetBrut: number;
+  /** Savaş ödeneği (savaşta sabit maaşın bir kesri; barışta 0) ve yağma ganimeti (brüt). */
+  savasOdenegi: number;
+  yagmaBrut: number;
+  kiralikMasrafi: number;
+  kaleGeliri: number;
   devletPayi: number;
   erPayi: number;
   ganimetNet: number;
@@ -518,9 +545,12 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   const mizrakliAkin = (turPaylari(b).mizrakli ?? 0) > 0 ? 1 - 0.1 * clamp((turPaylari(b).mizrakli ?? 0) / 0.15, 0, 1.67) : 1;
   const gelirC = (1 + doktrin.gelir + (yol.gelir ?? 0)) * sertlikGelirCarpani(b) * moralC * bg.satisCarpani;
   const ganimetC =
-    (1 + doktrin.ganimet + (yol.ganimet ?? 0)) * sertlikGelirCarpani(b) * rol.ganimet * ikmal.ganimet * (sec.ganimetCarpani ?? 1) * bg.satisCarpani * (imtiyazAktifMi(state, "sefer_emri") ? 1.25 : 1);
+    (1 + doktrin.ganimet + (yol.ganimet ?? 0) + (savasta ? emirGetir(b.savas?.emir)?.ganimet ?? 0 : 0)) * sertlikGelirCarpani(b) * rol.ganimet * ikmal.ganimet * (sec.ganimetCarpani ?? 1) * bg.satisCarpani * (imtiyazAktifMi(state, "sefer_emri") ? 1.25 : 1);
   const mC = masrafCarpani(state);
-  const sold = r2(SOLD[rutbe] * bg.enflasyon * (1 + doktrin.sold + (yol.sold ?? 0)));
+  const soldTam = SOLD[rutbe] * bg.enflasyon * (1 + doktrin.sold + (yol.sold ?? 0));
+  // Savaşta sabit maaşın yerine, onun bir kesri kadar savaş ödeneği ödenir.
+  const savasOdenegi = savasta ? r2(soldTam * SAVAS_ODENEGI_ORANI) : 0;
+  const sold = savasta ? savasOdenegi : r2(soldTam);
   const erBasiGelir = r2(er * ER_BASI_GELIR * bg.enflasyon);
   const gorevler: BirlikGorevHesabi[] = gorevPaylari(state).map(({ gorev: g, er: p, aktif }) => {
     if (!aktif) return { id: g.id, er: p, aktif, gelir: 0, masraf: 0, ganimet: 0, esir: 0 };
@@ -536,28 +566,33 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   const gorevGeliri = gorevler.reduce((t, x) => t + x.gelir, 0);
   const gorevMasrafi = gorevler.reduce((t, x) => t + x.masraf, 0);
   const ganimetBrut = gorevler.reduce((t, x) => t + x.ganimet, 0);
-  const devletPayi = ganimetBrut * 0.2;
-  const kalanGanimet = ganimetBrut - devletPayi;
-  const erPayi = kalanGanimet * GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran;
-  const ganimetNet = kalanGanimet - erPayi;
-  const esirBeklenen = gorevler.reduce((t, x) => t + x.esir, 0);
+  // Yağma (yalnız savaşta, ikmal kararı): güçle orantılı yıllık ganimet; esir ve yeni er de getirir.
+  const yagma = savasta && karar.ikmal === "yagma";
+  const yagmaBrut = yagma ? b.guc * GANIMET_GUC_BIRIMI * YAGMA_GANIMET * bg.enflasyon * ganimetC : 0;
+  const toplamBrut = ganimetBrut + yagmaBrut;
+  const devletPayi = 0; // askerde devlet payı/vergi yok
+  const erPayi = toplamBrut * GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran;
+  const ganimetNet = toplamBrut - erPayi;
+  const esirBeklenen = gorevler.reduce((t, x) => t + x.esir, 0) + (yagma ? b.guc * YAGMA_ESIR * ganimetC : 0);
   const paylar = turPaylari(b);
   const turBakim = (Object.entries(paylar) as [BirlikTur, number][]).reduce((t, [tur, pay]) => t + pay * TUR_TANIMLARI[tur].bakim, 0);
   const turErzak = (Object.entries(paylar) as [BirlikTur, number][]).reduce((t, [tur, pay]) => t + pay * (TUR_TANIMLARI[tur].erzak - 1), 0);
   const erMasrafi = er * ER_MASRAFI * bg.giderEnflasyon * (1 + turBakim) * mC;
   const donem = state.ulke.savasta ? "savas" : state.veba?.aktif ? "veba" : state.ulke.donem?.tur ?? "durgunluk";
   const seferEk = b.savas?.seferberlik ? { genel: 0.2, dengeli: 0.08, secme: 0 }[b.savas.seferberlik] : 0;
-  const erzak = er * ERZAK_BIRIMI * bg.giderEnflasyon * (ERZAK_DONEM_CARPANI[donem as keyof typeof ERZAK_DONEM_CARPANI] ?? 1) * (1 + turErzak) * (1 + seferEk) * mC * ikmal.maliyet * (imtiyazAktifMi(state, "levazim_muafiyeti") ? 0.8 : 1);
+  const erzak = er * ERZAK_BIRIMI * bg.giderEnflasyon * (ERZAK_DONEM_CARPANI[donem as keyof typeof ERZAK_DONEM_CARPANI] ?? 1) * (1 + turErzak) * (1 + seferEk) * mC * ikmal.maliyet * (yagma ? YAGMA_ERZAK_CARPANI : 1) * (imtiyazAktifMi(state, "levazim_muafiyeti") ? 0.8 : 1);
   const kislaBakim = KISLA_BAKIM[kislaKademesi(state)] * bg.giderEnflasyon;
   const techizatBakim =
     (b.kalite.orta * KALITE_FIYATI.orta + b.kalite.yuksek * KALITE_FIYATI.yuksek) * KALITE_BAKIM_ORANI * bg.giderEnflasyon;
   const birlikBakim = 0; // türlerin bakımı er masrafına (turBakim) işlenir
   const kusatmaBakim = er * KUSATMA_ER_FIYATI[clamp(b.kusatma_seviye, 0, 2)] * KUSATMA_BAKIM_ORANI * bg.giderEnflasyon;
   const talimMasrafi = er * TALIM_TANIMLARI[b.talim_politikasi].masraf * bg.giderEnflasyon;
-  const toplamGelir = sold + erBasiGelir + gorevGeliri + ganimetNet;
-  const toplamGider = gorevMasrafi + erMasrafi + erzak + kislaBakim + techizatBakim + birlikBakim + kusatmaBakim + talimMasrafi;
+  const kiralikMasrafi = savasta ? (b.savas?.kiralik_er ?? 0) * KIRALIK_YILLIK * bg.giderEnflasyon : 0;
+  const kaleGeliri = r2(b.kale * Math.max(0, KALE_HARAC - KALE_GARNIZON) * bg.enflasyon);
+  const toplamGelir = sold + erBasiGelir + gorevGeliri + ganimetNet + kaleGeliri;
+  const toplamGider = kiralikMasrafi + gorevMasrafi + erMasrafi + erzak + kislaBakim + techizatBakim + birlikBakim + kusatmaBakim + talimMasrafi;
   return {
-    er, sold, erBasiGelir, gorevler, gorevGeliri, gorevMasrafi, ganimetBrut, devletPayi, erPayi, ganimetNet, esirBeklenen,
+    er, sold, erBasiGelir, gorevler, gorevGeliri, gorevMasrafi, ganimetBrut: toplamBrut, savasOdenegi, yagmaBrut, kiralikMasrafi, kaleGeliri, devletPayi, erPayi, ganimetNet, esirBeklenen,
     erMasrafi, erzak, kislaBakim, techizatBakim, birlikBakim, kusatmaBakim, talimMasrafi, toplamGelir, toplamGider,
     net: toplamGelir - toplamGider,
   };

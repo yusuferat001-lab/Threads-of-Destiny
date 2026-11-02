@@ -794,7 +794,11 @@ export interface IsletmeUyari {
     | 'savas_sonu'
     | 'esir'
     | 'seferberlik_terhis'
-    | 'baris_catisma';
+    | 'baris_catisma'
+    | 'savas_ganimet'
+    | 'kale'
+    | 'madalya'
+    | 'yagma';
   hat?: string;
   isim?: string;
   sonuc?:
@@ -857,6 +861,10 @@ export interface IsletmeDokum {
     erBasiGelir: number;
     gorevGeliri: number;
     ganimetPara: number;
+    savasOdenegi?: number;
+    yagmaPara?: number;
+    kiralikMasrafi?: number;
+    kaleGeliri?: number;
     devletPayi: number;
     erPayi: number;
     erMasrafi: number;
@@ -1124,7 +1132,15 @@ export interface BirlikGorunumu {
     kararBekliyor: boolean;
     araziIhtimali: number;
   };
+  kale: number;
+  emir: { ad: DilMetni; simge: string; aciklama: DilMetni } | null;
+  kiralik: { aktif: boolean; er: number; ucret: number; mumkun: boolean };
   hesap: {
+    soldAdi: DilMetni;
+    savasOdenegiMi: boolean;
+    kaleGeliri: number;
+    kiralikMasrafi: number;
+    yagmaBrut: number;
     sold: number;
     erBasiGelir: number;
     gorevGeliri: number;

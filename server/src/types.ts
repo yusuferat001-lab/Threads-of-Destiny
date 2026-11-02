@@ -969,7 +969,11 @@ export interface IsletmeUyari {
     | "savas_sonu"
     | "esir"
     | "seferberlik_terhis"
-    | "baris_catisma";
+    | "baris_catisma"
+    | "savas_ganimet"
+    | "kale"
+    | "madalya"
+    | "yagma";
   hat?: string;
   isim?: string;
   /** hırsızlık sonucu / rakip saldırı türü (istemci metni bunlardan kurar). */
@@ -1042,6 +1046,10 @@ export interface IsletmeDokum {
     erBasiGelir: number;
     gorevGeliri: number;
     ganimetPara: number;
+    savasOdenegi?: number;
+    yagmaPara?: number;
+    kiralikMasrafi?: number;
+    kaleGeliri?: number;
     devletPayi: number;
     erPayi: number;
     erMasrafi: number;
@@ -1146,6 +1154,10 @@ export interface BirlikSavasDurumu {
   /** Genel savaş sonucu: şimdiye dek kazanılan / kaybedilen yıl sayısı. */
   genel_zafer: number;
   genel_yenilgi: number;
+  /** Savaş başında seçilen komutan emri (savaş boyu sabit). */
+  emir?: string | null;
+  /** Kiralık ordu: savaş süresince tutulan eğitimli paralı sayısı. */
+  kiralik_er?: number;
 }
 
 export interface BirlikDurumu {
@@ -1191,6 +1203,8 @@ export interface BirlikDurumu {
   erzak_oran: number;
   /** Sonraki barış çatışmasının (haydut / sınır) yılı; savaşta ya da henüz kurulmadıysa null. */
   baris_catisma_yili?: number | null;
+  /** Ordunun bir kısmı seferde (Haçlı/sefer yolculuğu) mi. */
+  seferde?: boolean;
 }
 
 /** Meslek işletmesi (şu an yalnız Tüccar; 2026-10 dikey dilim). Diğer meslekler null → eski maaş sistemi. */

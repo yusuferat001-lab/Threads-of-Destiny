@@ -14,6 +14,7 @@ import {
   savasKarariDurumu,
   savasKarariVer,
   terhisEt,
+  kiralikOrduTut,
   type BirlikGorunumu,
   type BirlikKararGirdisi,
   type SavasKarariDurumu,
@@ -5666,6 +5667,9 @@ export function birlikBirlikSec(id: string, seviye: number, turler: string[]) {
 }
 export function birlikKusatma(id: string, seviye: number) {
   return birlikEylemi(id, (state, bg) => ({ sonuc: kusatmaAyarla(state, seviye, bg) }));
+}
+export function birlikKiralik(id: string) {
+  return birlikEylemi(id, (state, bg) => ({ sonuc: kiralikOrduTut(state, bg) }));
 }
 export function birlikTerhis(id: string, adet: number) {
   return birlikEylemi(id, (state, bg) => ({ sonuc: terhisEt(state, adet, bg) }));

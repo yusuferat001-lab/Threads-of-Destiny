@@ -719,6 +719,10 @@ export const KATALOG_EN: Record<string, string> = {
 
   // Efsanevi (komik/nadir) ölüm başlıkları (efsanevi_olum)
   "Fıçıyla Şelaleden İnen Adam": "The Man Who Went Over the Falls in a Barrel",
+  "Zafer Madalyası": "Medal of Victory",
+  "Yaralı Gazi": "Wounded Veteran",
+  "Kale Fatihi": "Conqueror of Castles",
+  "Haydut Kıran": "Bandit Breaker",
   "Ejderha Nefesini Yutan Kahraman": "The Hero Who Swallowed Dragon's Breath",
   "Kralın Bıyığını Çizerken Düşen": "Fell While Drawing a Moustache on the King",
   "Arıların Fikrini Sormadan Bal Alan": "Took the Honey Without Asking the Bees",

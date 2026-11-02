@@ -8,7 +8,7 @@ const M = {
   yatirimlar: { tr: 'Yatırımlar', en: 'Investments' },
   kademe: { tr: 'Kademe', en: 'Tier' },
   yukselt: { tr: 'Yükselt', en: 'Upgrade' },
-  dusur: { tr: 'Kademeyi düşür (%40 iade)', en: 'Downgrade (40% refund)' },
+  dusur: { tr: 'Kademeyi düşür', en: 'Lower the tier' },
   azami: { tr: 'Azami', en: 'Maxed' },
   simdi: { tr: 'Şimdi', en: 'Now' },
   sonra: { tr: 'Sonraki kademe', en: 'Next tier' },
@@ -99,7 +99,7 @@ export function IsletmeOrtak({
                 title={y.dusur.engel ?? undefined}
                 onClick={() => onYatirimDusur(y.id)}
               >
-                {t('dusur')} · +{formatPara(y.dusur.iade)} {pb}
+                {t('dusur')}
               </button>
             )}
           </div>

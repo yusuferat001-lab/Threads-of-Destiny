@@ -16,6 +16,7 @@ interface Props {
   onBirlikSec: (seviye: number, turler: BirlikTur[]) => void;
   onKusatma: (seviye: number) => void;
   onTerhis: (adet: number) => void;
+  onKiralik?: () => void;
   onYatirim: (yatirimId: string) => void;
   onYatirimDusur?: (yatirimId: string) => void;
   onCalisanAl: (adayId: string) => void;
@@ -80,12 +81,18 @@ const M = {
   uygula: { tr: 'Uygula', en: 'Apply' },
   kusatma: { tr: 'Kuşatma', en: 'Siege' },
   terhisBaslik: { tr: 'Terhis', en: 'Discharge' },
-  terhisNot: { tr: 'Teçhizat bedelinin %35\'i iade edilir; savaşta terhis edemezsin.', en: '35% of the equipment cost is refunded; you cannot discharge during a war.' },
+  terhisNot: { tr: 'Savaşta terhis edemezsin.', en: 'You cannot discharge during a war.' },
   terhisEt: { tr: 'Terhis et', en: 'Discharge' },
   doktrinBaslik: { tr: 'Doktrinlerin', en: 'Your doctrines' },
   doktrinYok: { tr: 'Henüz doktrin seçmedin.', en: 'No doctrine chosen yet.' },
   savasBaslik: { tr: 'Savaş durumu', en: 'War status' },
-  savasYok: { tr: 'Şu an savaş yok. Barışta 3–5 yılda bir haydut ya da sınır çatışması çıkar; ganimet askerî gücünle orantılıdır.', en: 'No war right now. In peace a bandit or border clash comes every 3–5 years; loot scales with your strength.' },
+  savasYok: { tr: 'Şu an savaş yok.', en: 'No war right now.' },
+  emirBaslik: { tr: 'Komutan emri', en: 'Commander\'s order' },
+  kale: { tr: 'Ele geçirilen kale', en: 'Castles held' },
+  kiralikTut: { tr: 'Kiralık ordu tut', en: 'Hire mercenaries' },
+  kiralikVar: { tr: 'Kiralık ordu', en: 'Hired troops' },
+  gKiralik: { tr: 'Kiralık ordu', en: 'Hired troops' },
+  gKale: { tr: 'Kale geliri', en: 'Castle income' },
   arazi: { tr: 'Arazi', en: 'Terrain' },
   araziIhtimali: { tr: 'arazi seçme ihtimalin', en: 'chance to pick the terrain' },
   kanat: { tr: 'Kanat sonuçları (zafer / yenilgi)', en: 'Wing results (wins / losses)' },
@@ -151,6 +158,7 @@ export function BirlikPaneli({
   onBirlikSec,
   onKusatma,
   onTerhis,
+  onKiralik,
   onYatirim,
   onYatirimDusur,
   onCalisanAl,
@@ -475,25 +483,49 @@ export function BirlikPaneli({
             <div className="isletme-ozet">
               {b.savas.araziAd && (
                 <span>
-                  🏞️ {t('arazi')}: <strong>{d(b.savas.araziAd)}</strong> · {t('araziIhtimali')} %{b.savas.araziIhtimali}
+                  🏞️ {t('arazi')}: <strong>{d(b.savas.araziAd)}</strong>
                 </span>
               )}
               <span>
                 ⚔️ {t('kanat')}: <strong>{b.savas.kanatZafer} / {b.savas.kanatYenilgi}</strong>
+              </span>
+              {b.emir && (
+                <span title={d(b.emir.aciklama)}>
+                  {b.emir.simge} {t('emirBaslik')}: <strong>{d(b.emir.ad)}</strong>
+                </span>
+              )}
+              {b.kiralik.aktif && (
+                <span>
+                  🗡️ {t('kiralikVar')}: <strong>{b.kiralik.er}</strong>
+                </span>
+              )}
+              {onKiralik && b.kiralik.mumkun && (
+                <button className="ikincil" disabled={yukleniyor} onClick={onKiralik}>
+                  {t('kiralikTut')} · {formatPara(b.kiralik.ucret)} {pb}
+                </button>
+              )}
+            </div>
+          )}
+          {b.kale > 0 && (
+            <div className="isletme-ozet">
+              <span>
+                🏰 {t('kale')}: <strong>{b.kale}</strong>
               </span>
             </div>
           )}
 
           <h4>{t('dokumBaslik')}</h4>
           <div className="isletme-dokum">
-            <div>{t('sold')}: <strong>+{formatPara(b.hesap.sold)}</strong></div>
+            <div>{d(b.hesap.soldAdi)}: <strong>+{formatPara(b.hesap.sold)}</strong></div>
             <div>{t('erBasi')}: <strong>+{formatPara(b.hesap.erBasiGelir)}</strong></div>
             <div>{t('gorevGeliri')}: <strong>+{formatPara(b.hesap.gorevGeliri)}</strong></div>
             <div>{t('ganimetNet')}: <strong>+{formatPara(b.hesap.ganimetNet)}</strong></div>
+            {b.hesap.kaleGeliri > 0 && <div>{t('gKale')}: <strong>+{formatPara(b.hesap.kaleGeliri)}</strong></div>}
             <div>{t('toplamGelir')}: <strong>+{formatPara(b.hesap.toplamGelir)}</strong></div>
             <div>{t('gErMasrafi')}: <strong>−{formatPara(b.hesap.erMasrafi)}</strong></div>
             <div>{t('gErzak')}: <strong>−{formatPara(b.hesap.erzak)}</strong></div>
             <div>{t('gGorev')}: <strong>−{formatPara(b.hesap.gorevMasrafi)}</strong></div>
+            {b.hesap.kiralikMasrafi > 0 && <div>{t('gKiralik')}: <strong>−{formatPara(b.hesap.kiralikMasrafi)}</strong></div>}
             <div>{t('gKisla')}: <strong>−{formatPara(b.hesap.kislaBakim)}</strong></div>
             <div>{t('gTechizat')}: <strong>−{formatPara(b.hesap.techizatBakim)}</strong></div>
             {b.hesap.kusatmaBakim > 0 && <div>{t('gKusatma')}: <strong>−{formatPara(b.hesap.kusatmaBakim)}</strong></div>}
@@ -502,16 +534,12 @@ export function BirlikPaneli({
               {t('beklenenNet')}: <strong>~{b.hesap.net >= 0 ? '+' : ''}{formatPara(b.hesap.net)} {pb}{t('yil')}</strong>
             </div>
             <small>{t('ekipNot')}</small>
-            <small>
-              {' '}
-              {t('barisTahmin')}: ~{formatPara(b.hesap.barisGanimetTahmini)} {pb}
-            </small>
           </div>
 
           {dokum && dokum.birlik && (
             <div className="isletme-dokum">
               <div>
-                {t('sonDokum')} ({dokum.yil}): 🪖 {dokum.musteri} · {dokum.birlik.firar} {t('firar')} · {dokum.birlik.olen} {t('olen')} · {t('ganimetNet').split(' ')[0]} {formatPara(dokum.birlik.ganimetPara)} ({t('devletPayi')} {formatPara(dokum.birlik.devletPayi)})
+                {t('sonDokum')} ({dokum.yil}): 🪖 {dokum.musteri} · {dokum.birlik.firar} {t('firar')} · {dokum.birlik.olen} {t('olen')} · {t('ganimetNet').split(' ')[0]} {formatPara(dokum.birlik.ganimetPara)}
               </div>
               {dokum.uyarilar.map((u, i) => {
                 const s = uyariMetni(u);

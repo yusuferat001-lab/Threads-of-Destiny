@@ -78,6 +78,7 @@ interface KariyerEkraniProps {
   onBirlikSec?: (seviye: number, turler: BirlikTur[]) => void;
   onBirlikKusatma?: (seviye: number) => void;
   onBirlikTerhis?: (adet: number) => void;
+  onBirlikKiralik?: () => void;
   onIsletmeYatirim?: (yatirimId: string) => void;
   onIsletmeYatirimDusur?: (yatirimId: string) => void;
   onIsletmeCalisanAl?: (adayId: string) => void;
@@ -729,6 +730,7 @@ export function KariyerEkrani({
   onBirlikSec,
   onBirlikKusatma,
   onBirlikTerhis,
+  onBirlikKiralik,
   onIsletmeKarar,
   onIsletmeYatirim,
   onIsletmeYatirimDusur,
@@ -1103,6 +1105,7 @@ export function KariyerEkrani({
               onBirlikSec={onBirlikSec}
               onKusatma={onBirlikKusatma}
               onTerhis={onBirlikTerhis}
+              onKiralik={onBirlikKiralik}
               onYatirim={onIsletmeYatirim}
               onYatirimDusur={onIsletmeYatirimDusur}
               onCalisanAl={onIsletmeCalisanAl}

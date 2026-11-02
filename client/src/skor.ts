@@ -19,6 +19,8 @@ const SKOR_KOMIK_OLUM_ILE_OLDU_PUANI = 2000;
 const SKOR_YOLCULUK_TAMAMLAMA_BONUS_PUANI = 2000;
 const SKOR_VEBA_HAYATTA_KALMA_PUANI = 2000;
 const SKOR_HAPIS_BASARILI_KACIS_PUANI = 2000;
+const SKOR_MADALYA_PUANI = 1500;
+const MADALYA_ADLARI = ['Zafer Madalyası', 'Yaralı Gazi', 'Kale Fatihi', 'Haydut Kıran'];
 
 // server/src/data/mulkler.ts — taban_maliyet değerleriyle birebir aynı.
 const MULK_TABAN_MALIYET: Record<MulkTuru, number> = {
@@ -107,7 +109,8 @@ export function hesaplaSkorKirilimi(state: CharacterState): SkorKirilimi {
     (!state.komik_olum_basarili_risk && state.komik_olum_ile_oldu ? SKOR_KOMIK_OLUM_ILE_OLDU_PUANI : 0) +
     (yolculukTamamlandi ? SKOR_YOLCULUK_TAMAMLAMA_BONUS_PUANI : 0) +
     (state.veba_hayatta_kaldi ? SKOR_VEBA_HAYATTA_KALMA_PUANI : 0) +
-    (state.hapis_basarili_kacis ? SKOR_HAPIS_BASARILI_KACIS_PUANI : 0);
+    (state.hapis_basarili_kacis ? SKOR_HAPIS_BASARILI_KACIS_PUANI : 0) +
+    state.unvanlar.filter((u) => MADALYA_ADLARI.includes(u)).length * SKOR_MADALYA_PUANI;
   const temelToplam =
     servetPuani + sohretPuani + ahlakPuani + mutlulukPuani + rutbePuani + tikPuani + basariOlayiPuani;
   const amacCarpani = amacCarpaniHesapla(state);

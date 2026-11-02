@@ -171,9 +171,9 @@ export const FIRAR_ERZAK_EKI = 0.04;
 export const FIRAR_ZAYIF_ORAN_EKI = 0.03;
 /** Yıllık moral etkenleri. */
 export const GANIMET_PAYI_TANIMLARI: Record<BirlikGanimetPayi, { oran: number; moral: number; ad: DilliMetin }> = {
-  az: { oran: 0.1, moral: -3, ad: { tr: "Az pay", en: "Small share" } },
-  dengeli: { oran: 0.25, moral: 0, ad: { tr: "Dengeli pay", en: "Fair share" } },
-  comert: { oran: 0.4, moral: 3, ad: { tr: "Cömert pay", en: "Generous share" } },
+  az: { oran: 0.2, moral: -3, ad: { tr: "Az pay", en: "Small share" } },
+  dengeli: { oran: 0.4, moral: 0, ad: { tr: "Dengeli pay", en: "Fair share" } },
+  comert: { oran: 0.6, moral: 3, ad: { tr: "Cömert pay", en: "Generous share" } },
 };
 export const GANIMET_SIRASI: BirlikGanimetPayi[] = ["az", "dengeli", "comert"];
 export const TON_TANIMLARI: Record<BirlikTon, { moral: number; sertlik: number; ad: DilliMetin; aciklama: DilliMetin }> = {
@@ -219,7 +219,7 @@ export const GANIMET_GUC_BIRIMI = 3.4;
 /** Görev gelirinin genel çarpanı (kalibrasyon); sold ve er başı gelir ayrı. */
 export const GOREV_GELIR_CARPANI = 0.8;
 /** İki çatışma arası yıl [min, max] ve ilk çatışmanın işletmenin kaçıncı yılından sonra geleceği. */
-export const BARIS_CATISMA_ARALIK: [number, number] = [3, 5];
+export const BARIS_CATISMA_ARALIK: [number, number] = [4, 4];
 export const BARIS_CATISMA_ILK_YIL = 2;
 export interface BarisCatismaTanimi {
   /** Ganimet çarpanı (sınır hedefi daha büyük). */
@@ -233,15 +233,15 @@ export interface BarisCatismaTanimi {
 export const BARIS_CATISMALARI: Record<"haydut" | "sinir", BarisCatismaTanimi> = {
   haydut: {
     ganimet: 1,
-    dusman: [0.7, 1.1],
+    dusman: [0.45, 0.85],
     esir: 0.012,
-    ad: { orta: { tr: "Haydut Çetesi", en: "Bandit Gang" }, sanayi: { tr: "Eşkıya Çetesi", en: "Brigand Band" } },
+    ad: { orta: { tr: "Firari Haydut Çetesi", en: "Deserter Bandits" }, sanayi: { tr: "Firari Eşkıya Çetesi", en: "Deserter Brigands" } },
   },
   sinir: {
     ganimet: 1.3,
-    dusman: [0.8, 1.2],
+    dusman: [0.5, 0.9],
     esir: 0.008,
-    ad: { orta: { tr: "Sınır Akını", en: "Border Raid" }, sanayi: { tr: "Sınır Çatışması", en: "Border Clash" } },
+    ad: { orta: { tr: "Düşman Akıncıları", en: "Enemy Raiders" }, sanayi: { tr: "Sınır Çatışması", en: "Border Clash" } },
   },
 };
 export const BARIS_YENILGI_GANIMET = 0.2;
@@ -251,8 +251,6 @@ export const BARIS_TALIM_ZAFER = 5;
 export const BARIS_TALIM_YENILGI = 2;
 export const BARIS_MORAL_ZAFER = 4;
 export const BARIS_MORAL_YENILGI = -4;
-/** Devlet, ganimetten (para ve esir) sabit bu payı alır. */
-export const DEVLET_PAYI = 0.2;
 /** Yıllık erzak fiyatı dönem çarpanı (giderler üzerinden). */
 export const ERZAK_DONEM_CARPANI = { bolluk: 0.9, durgunluk: 1, kitlik: 1.5, savas: 1.2, veba: 1 };
 /** Nakit bu eşiğin (× enflasyon, eksi) altına inince maaş ve erzak ödenemez. */
@@ -277,7 +275,7 @@ export function odenmeyenCeza(para: number, enflasyon: number): OdenmeyenCeza | 
 }
 
 // ── Görevler (yalnız minimum er şartı) ──────────────────────────────────────
-export type GorevTuru = "devriye" | "eskort" | "haydut" | "tahsilat" | "akin" | "garnizon" | "sefer" | "muhafiz" | "komuta" | "baskomutan";
+export type GorevTuru = "devriye" | "eskort" | "haydut" | "tahsilat" | "akin" | "garnizon" | "muhafiz" | "komuta";
 export interface GorevTanimi {
   id: string;
   tur: GorevTuru;
@@ -341,12 +339,6 @@ export const GOREVLER: GorevTanimi[] = [
     aciklama: { tr: "Düşük kayıp, istikrarlı gelir; sınır olaylarında okçu ve mızraklı güçlenir.", en: "Low losses, steady income; archers and spearmen shine in border clashes." },
   },
   {
-    id: "sefer", tur: "sefer", simge: "⚔️", minEr: 60, erBasi: 0.5, masraf: 0.25, yalnizSavas: true, ganimet: 0.45,
-    kayipBaris: 0, kayipSavas: 0.1, sertlik: 0.8, savasCarpani: 1, senaryo: "savas",
-    ad: { orta: { tr: "Kale Kuşatması ve Sefer", en: "Siege & Campaign" }, sanayi: { tr: "Cephe Harekâtı", en: "Front Operation" } },
-    aciklama: { tr: "Yalnız savaşta açılır; en yüksek ödeme ve ganimet, en yüksek kayıp.", en: "Opens only in war; the best pay and loot, the heaviest losses." },
-  },
-  {
     id: "muhafiz", tur: "muhafiz", simge: "👑", minEr: 90, erBasi: 0.45, masraf: 0.08, yalnizSavas: false, ganimet: 0,
     kayipBaris: 0, kayipSavas: 0.005, sertlik: -0.3, savasCarpani: 1, senaryo: null,
     ad: { orta: { tr: "Saray ve Kale Muhafızlığı", en: "Court & Castle Guard" }, sanayi: { tr: "Liman ve Kale Komutanlığı", en: "Harbour & Fort Command" } },
@@ -357,12 +349,6 @@ export const GOREVLER: GorevTanimi[] = [
     kayipBaris: 0.005, kayipSavas: 0.03, sertlik: 0, savasCarpani: 1.15, senaryo: "sinir",
     ad: { orta: { tr: "Eyalet ve Kale Komutanlığı", en: "Province & Castle Command" }, sanayi: { tr: "Eyalet Garnizon Komutanlığı", en: "Provincial Command" } },
     aciklama: { tr: "Büyük ordu ister; yüksek ve düzenli gelir.", en: "Needs a big army; high, steady income." },
-  },
-  {
-    id: "baskomutan", tur: "baskomutan", simge: "🎖️", minEr: 200, erBasi: 0.65, masraf: 0.15, yalnizSavas: true, ganimet: 0.35,
-    kayipBaris: 0, kayipSavas: 0.06, sertlik: 0.5, savasCarpani: 1, senaryo: "savas",
-    ad: { orta: { tr: "Başkomutanlık", en: "Supreme Command" }, sanayi: { tr: "Başkomutanlık", en: "Supreme Command" } },
-    aciklama: { tr: "Yalnız savaşta; en büyük ordu, en büyük pay.", en: "War only; the largest army, the largest stake." },
   },
 ];
 export function gorevGetir(id: string): GorevTanimi | undefined {
@@ -452,9 +438,9 @@ export const IKMAL_TANIMLARI: Record<BirlikIkmal, { erzakOran: number; maliyet: 
     aciklama: { tr: "Erzak %30 eksik kalır; masraf −%15, firar ve güç kaybı.", en: "Supplies run 30% short; cost −15%, desertion and weaker force." },
   },
   yagma: {
-    erzakOran: -0.1, maliyet: 0.9, sertlik: 1.5, ganimet: 0.8,
+    erzakOran: 0, maliyet: 0.9, sertlik: 1.5, ganimet: 1,
     ad: { tr: "Yağma ile geçin", en: "Live off the land" },
-    aciklama: { tr: "Erzak %10 eksik, halk ezilir: sertlik +1,5, ganimet ×0,8.", en: "Supplies 10% short, locals suffer: harshness +1.5, loot ×0.8." },
+    aciklama: { tr: "Erzak köylerden gelir; her yıl para, esir ve gönüllü kazanırsın. Halk ezilir: sertlik ve ahlak düşer.", en: "Supplies come from the villages; you gain coin, prisoners and recruits each year. The people suffer: harshness up, morality down." },
   },
 };
 export const IKMAL_SIRASI: BirlikIkmal[] = ["yeterli", "kit", "yagma"];
@@ -655,3 +641,82 @@ export const ASKER_SALDIRI_HASARLARI = {
   entrika: { sohret: [3, 6, 9], otorite: [4, 8, 12] },
   firar: { er: [3, 5, 8] },
 } as const;
+
+// ── Savaş ekonomisi (2026-11): görev geliri yok; savaş ödeneği, yağma, büyük zafer ganimeti ──
+/** Savaş sürerken görevlerden gelir yok; sabit ödemenin bu kesri "savaş ödeneği" olarak ödenir. */
+export const SAVAS_ODENEGI_ORANI = 0.5;
+/** Yağma ikmali (yıllık): ganimet = güç × GANIMET_GUC_BIRIMI × bu; erzak masrafı bu çarpanla; esir/yeni er oranları. */
+export const YAGMA_GANIMET = 0.5;
+export const YAGMA_ERZAK_CARPANI = 0.4;
+export const YAGMA_ESIR = 0.004;
+export const YAGMA_ER_ORANI = 0.03;
+export const YAGMA_AHLAK = -1.5;
+/** Savaş zaferi (savaş sonu, genel zafer): ganimet = güç × GANIMET_GUC_BIRIMI × bu × savaşın yıl sayısı; esir = güç × bu × yıl. */
+export const SAVAS_ZAFER_GANIMET = 2.2;
+export const SAVAS_ZAFER_ESIR = 0.015;
+/** Kiralık ordu: ordunun bu kesri kadar, savaş süresince; eğitimli ve pahalı. */
+export const KIRALIK_ORAN = 0.4;
+export const KIRALIK_PESIN = 3.2;
+export const KIRALIK_YILLIK = 1.6;
+export const KIRALIK_KALITE_CARPANI = 2.28; // yüksek kalite (2,0) × eğitimli (+%14)
+/** Kale: bu askerî güç eşiğinin üstünde ve savaş genel zaferle biterse ele geçirilir. */
+export const KALE_GUC_ESIGI = 200;
+export const KALE_MAKS = 2;
+export const KALE_HARAC = 9;
+export const KALE_GARNIZON = 3;
+export const KALE_KOMUTA_BONUSU = 15;
+/** Haçlı/sefer yolculuğu: ordunun bu kesri seferde, kalanı görevlerine devam eder. */
+export const SEFER_ORDU_ORANI = 0.5;
+export const SEFER_DONUS_TALIM = 10;
+export const SEFER_DONUS_MORAL = 5;
+
+/** Komutan emirleri: savaş başında seçilir, savaş boyu sabit; içerik iki rütbede bir değişir (S1-2, S3-4, S5). */
+export interface EmirTanimi {
+  id: string;
+  seviye: 1 | 2 | 3;
+  simge: string;
+  ad: DilliMetin;
+  aciklama: DilliMetin;
+  guc: number;
+  kayip: number;
+  ganimet: number;
+  moral: number;
+}
+export const EMIRLER: EmirTanimi[] = [
+  { id: "duzenli_hat", seviye: 1, simge: "🛡️", ad: { tr: "Düzenli Hat", en: "Steady Line" }, aciklama: { tr: "Safları sıkı tut: kayıp azalır.", en: "Hold the line tight: fewer losses." }, guc: 0.03, kayip: -0.1, ganimet: 0, moral: 0 },
+  { id: "hizli_baskin", seviye: 1, simge: "🐎", ad: { tr: "Hızlı Baskın", en: "Swift Raid" }, aciklama: { tr: "Hızlı vur, çekil: ganimet artar, kayıp artar.", en: "Strike and withdraw: more loot, more losses." }, guc: 0.04, kayip: 0.1, ganimet: 0.15, moral: 0 },
+  { id: "siki_disiplin", seviye: 1, simge: "📯", ad: { tr: "Sıkı Disiplin", en: "Iron Discipline" }, aciklama: { tr: "Ordu dik durur, moral yükselir.", en: "The men stand firm; morale rises." }, guc: 0.02, kayip: -0.05, ganimet: 0, moral: 2 },
+  { id: "yan_kusatma", seviye: 2, simge: "🌀", ad: { tr: "Yan Kuşatma", en: "Flank Sweep" }, aciklama: { tr: "Düşmanı yandan sar: güçlü ama riskli.", en: "Envelop the enemy: strong but risky." }, guc: 0.07, kayip: 0.05, ganimet: 0, moral: 0 },
+  { id: "kalkan_duvari", seviye: 2, simge: "🧱", ad: { tr: "Kalkan Duvarı", en: "Shield Wall" }, aciklama: { tr: "Kayıplar belirgin azalır.", en: "Losses drop markedly." }, guc: 0.04, kayip: -0.2, ganimet: 0, moral: 0 },
+  { id: "yagma_fermani", seviye: 2, simge: "📜", ad: { tr: "Yağma Fermanı", en: "Plunder Decree" }, aciklama: { tr: "Ganimet artar, asker huysuzlanır.", en: "More loot, restless men." }, guc: 0.03, kayip: 0, ganimet: 0.3, moral: -2 },
+  { id: "kesin_darbe", seviye: 3, simge: "⚡", ad: { tr: "Kesin Darbe", en: "Decisive Blow" }, aciklama: { tr: "Her şeyi tek hamleye yatır.", en: "Stake everything on one stroke." }, guc: 0.12, kayip: 0.15, ganimet: 0, moral: 0 },
+  { id: "demir_cember", seviye: 3, simge: "⛓️", ad: { tr: "Demir Çember", en: "Iron Ring" }, aciklama: { tr: "Sağlam savunma, az kayıp, yüksek moral.", en: "Firm defence, few losses, high morale." }, guc: 0.08, kayip: -0.25, ganimet: 0, moral: 2 },
+  { id: "zafer_ganimeti", seviye: 3, simge: "👑", ad: { tr: "Zafer Ganimeti", en: "Spoils of Victory" }, aciklama: { tr: "Zaferin ganimeti büyür.", en: "Victory spoils swell." }, guc: 0.05, kayip: 0, ganimet: 0.4, moral: 0 },
+];
+export const emirSeviyesi = (rutbeIndeks: number): 1 | 2 | 3 => (rutbeIndeks <= 1 ? 1 : rutbeIndeks <= 3 ? 2 : 3);
+export const emirGetir = (id: string | null | undefined): EmirTanimi | undefined => EMIRLER.find((e) => e.id === id);
+
+/** Madalyalar (unvan olarak verilir; skora ek puan). */
+export const MADALYALAR = {
+  zafer: { tr: "Zafer Madalyası", en: "Medal of Victory" },
+  yarali: { tr: "Yaralı Gazi", en: "Wounded Veteran" },
+  kale: { tr: "Kale Fatihi", en: "Conqueror of Castles" },
+  haydut: { tr: "Haydut Kıran", en: "Bandit Breaker" },
+} as const;
+export const MADALYA_ADLARI: string[] = Object.values(MADALYALAR).map((m) => m.tr);
+export const MADALYA_SOHRET = 3;
+export const MADALYA_MORAL = 3;
+
+/** Maaşın çağ ve ülkeye göre adı ("sold" yazılmaz). */
+export const MAAS_ADLARI: Record<string, DilliMetin> = {
+  "Orta Çağ|Fransa": { tr: "Soldée", en: "Soldée" },
+  "Orta Çağ|Kutsal Roma": { tr: "Löhnung", en: "Löhnung" },
+  "Orta Çağ|Bizans": { tr: "Roga", en: "Roga" },
+  "Orta Çağ|Selçuklu": { tr: "Ulûfe", en: "Ulufe" },
+  "Orta Çağ|Eyyubiler": { tr: "Ulûfe", en: "Ulufe" },
+  "Sanayi Devrimi|İngiltere": { tr: "Kraliyet Maaşı", en: "Army Pay" },
+  "Sanayi Devrimi|Fransa": { tr: "Prêt", en: "Prêt" },
+  "Sanayi Devrimi|Osmanlı": { tr: "Mevacib", en: "Mevacib" },
+  "Sanayi Devrimi|Rusya": { tr: "Jalovanye", en: "Zhalovanye" },
+};
+export const maasAdi = (cag: string, bolge: string): DilliMetin => MAAS_ADLARI[`${cag}|${bolge}`] ?? { tr: "Maaş", en: "Pay" };

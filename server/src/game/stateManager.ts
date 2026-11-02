@@ -1,3 +1,4 @@
+import { MADALYA_ADLARI } from "../data/birlik";
 import { randomUUID } from "crypto";
 import { CharacterState, Cag, Dil, Kategori, SonucEtkisi, YatkinlikKaynagi, KisilikEksenleri, UlkeKrizi, UlkeDurumu, DonemDurumu, DonemTuru, MulkTuru, SahipOlunanEsya, AileTalep, YonetimTalep, IkiDilMetin, UlkeGecmisiKaydi, EvcilHayvan } from "../types";
 import { T, K, ikiDilT } from "../i18n";
@@ -2881,6 +2882,7 @@ const SKOR_KOMIK_OLUM_ILE_OLDU_PUANI = 2000;
 const SKOR_YOLCULUK_TAMAMLAMA_BONUS_PUANI = 2000;
 const SKOR_VEBA_HAYATTA_KALMA_PUANI = 2000;
 const SKOR_HAPIS_BASARILI_KACIS_PUANI = 2000;
+const SKOR_MADALYA_PUANI = 1500;
 
 export interface SkorKirilimi {
   servetPuani: number;
@@ -2921,7 +2923,8 @@ export function hesaplaSkorKirilimi(state: CharacterState): SkorKirilimi {
     (!state.komik_olum_basarili_risk && state.komik_olum_ile_oldu ? SKOR_KOMIK_OLUM_ILE_OLDU_PUANI : 0) +
     (yolculukTamamlandi ? SKOR_YOLCULUK_TAMAMLAMA_BONUS_PUANI : 0) +
     (state.veba_hayatta_kaldi ? SKOR_VEBA_HAYATTA_KALMA_PUANI : 0) +
-    (state.hapis_basarili_kacis ? SKOR_HAPIS_BASARILI_KACIS_PUANI : 0);
+    (state.hapis_basarili_kacis ? SKOR_HAPIS_BASARILI_KACIS_PUANI : 0) +
+    state.unvanlar.filter((u) => MADALYA_ADLARI.includes(u)).length * SKOR_MADALYA_PUANI;
   const temelToplam =
     servetPuani + sohretPuani + ahlakPuani + mutlulukPuani + rutbePuani + tikPuani + basariOlayiPuani;
   // Eski kayıt/test (hayat_amaclari boş, tekil hayat_amaci dolu) için ×5 fallback korunur.

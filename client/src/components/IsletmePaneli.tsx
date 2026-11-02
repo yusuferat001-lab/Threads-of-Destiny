@@ -280,13 +280,25 @@ export function isletmeUyariMetni(u: IsletmeUyari, durum: IsletmeGorunumu, dil: 
       case 'baris_catisma': {
         const hd = u.catismaTur === 'sinir';
         const kazan = u.savasSonucu === 'zafer';
-        const ad = en ? (hd ? 'a border clash' : 'a bandit gang') : (hd ? 'bir sınır çatışması' : 'bir haydut çetesi');
+        const ad = en ? (hd ? 'enemy raiders' : 'a band of deserter bandits') : (hd ? 'düşman akıncıları' : 'firari haydutlar');
         const ganimet = u.tutar ? (en ? ` Loot: +${formatPara(u.tutar)} ${pb}.` : ` Ganimet: +${formatPara(u.tutar)} ${pb}.`) : '';
         const esir = u.sayi ? (en ? ` ${u.sayi} prisoners.` : ` ${u.sayi} esir.`) : '';
         return kazan
           ? `⚔️ ${en ? 'You crushed' : 'Şunu bozguna uğrattın:'} ${ad}.${ganimet}${esir}`
           : `🩸 ${en ? 'You were beaten back by' : 'Şuna yenildin:'} ${ad}.${ganimet}`;
       }
+      case 'savas_ganimet':
+        return en
+          ? `💰 Victory spoils: +${formatPara(u.tutar ?? 0)} ${pb}${u.sayi ? `, ${u.sayi} prisoners` : ''}.`
+          : `💰 Zafer ganimeti: +${formatPara(u.tutar ?? 0)} ${pb}${u.sayi ? `, ${u.sayi} esir` : ''}.`;
+      case 'kale':
+        return en ? '🏰 You captured a fortress.' : '🏰 Bir kale ele geçirdin.';
+      case 'madalya':
+        return `🎖️ ${dil === 'en' ? 'Honour earned' : 'Unvan kazandın'}: ${kt(dil, u.isim ?? '')}`;
+      case 'yagma':
+        return en
+          ? `🔥 Plunder this year: +${formatPara(u.tutar ?? 0)} ${pb}${u.sayi ? `, ${u.sayi} recruits` : ''}.`
+          : `🔥 Bu yıl yağmadan: +${formatPara(u.tutar ?? 0)} ${pb}${u.sayi ? `, ${u.sayi} gönüllü` : ''}.`;
       case 'imtiyaz_bitti':
         return `📜 ${u.hat && IMTIYAZ_ADLARI[u.hat] ? d(IMTIYAZ_ADLARI[u.hat]) : ''}: ${en ? 'expired' : 'sona erdi'}`;
       default:

@@ -98,6 +98,7 @@ import {
   birlikBirlikSec,
   birlikKusatma,
   birlikTerhis,
+  birlikKiralik,
   birlikSavasKarariGetir,
   birlikSavasKarariVer,
   isletmeYatirimYap,
@@ -1784,6 +1785,7 @@ function App() {
   const birlikKaliteHandler = (hedef: 'orta' | 'yuksek', yuzde: number) => birlikEylemHandler(() => birlikKaliteYukselt(karakter!.id, hedef, yuzde));
   const birlikBirlikHandler = (seviye: number, turler: BirlikTur[]) => birlikEylemHandler(() => birlikBirlikSec(karakter!.id, seviye, turler));
   const birlikKusatmaHandler = (seviye: number) => birlikEylemHandler(() => birlikKusatma(karakter!.id, seviye));
+  const birlikKiralikHandler = () => birlikEylemHandler(() => birlikKiralik(karakter!.id));
   const birlikTerhisHandler = (adet: number) => birlikEylemHandler(() => birlikTerhis(karakter!.id, adet));
 
   async function isletmeKararHandler(hatlar: IsletmeKararGirdisi[], cemaat?: CemaatKararGirdisi) {
@@ -3179,6 +3181,7 @@ function App() {
           onBirlikSec={birlikBirlikHandler}
           onBirlikKusatma={birlikKusatmaHandler}
           onBirlikTerhis={birlikTerhisHandler}
+          onBirlikKiralik={birlikKiralikHandler}
           onIsletmeYatirim={isletmeYatirimHandler}
           onIsletmeYatirimDusur={isletmeYatirimDusurHandler}
           onIsletmeCalisanAl={isletmeCalisanAlHandler}

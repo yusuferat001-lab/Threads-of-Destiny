@@ -58,14 +58,13 @@ import {
   savasKarariVer,
   ganimetSaklamaEngeli,
 } from "../src/game/birlikIslem";
-import { yeniErEkle, birlikYilIsle, seferberlikUygula, savasBaslat } from "../src/game/birlikYil";
+import { yeniErEkle, birlikYilIsle, seferberlikUygula, savasBaslat, savasiBitir } from "../src/game/birlikYil";
 import { askerGucleri, pazarPayiHesapla } from "../src/data/pazar";
 import {
   ARAZI_TERCIH_IHTIMALI,
   BARIS_CATISMA_ARALIK,
   BASLANGIC_ER,
   BIRLIK_SEVIYE_PAYI,
-  DEVLET_PAYI,
   DOKTRINLER,
   GOREV_SLOTLARI,
   GANIMET_GUC_BIRIMI,
@@ -76,6 +75,8 @@ import {
   TALIM_TANIMLARI,
   doktrinSecenekleri,
   doktrinToplami,
+  emirSeviyesi,
+  maasAdi,
   moralGucEtkisi,
   odenmeyenCeza,
 } from "../src/data/birlik";
@@ -322,22 +323,109 @@ describe("gelir ve gider", () => {
     expect(gorevPaylari(s).every((x) => !x.aktif || x.gorev.minEr <= x.er)).toBe(true);
   });
 
-  it("devlet ganimetin %20'sini alır; kalan ganimet payı politikasıyla bölünür", () => {
-    expect(DEVLET_PAYI).toBe(0.2);
+  it("askerde devlet payı yok; ganimetin askerlere giden payı politikayla %20/%40/%60", () => {
     const s = asker();
     s.meslek_musteri = 60;
     const b = birlikAl(s);
     b.kalite = { dusuk: 60, orta: 0, yuksek: 0 };
     b.gorevler = ["haydut"];
+    b.ganimet_payi = "az";
+    const az = birlikHesapla(s, bg(s));
+    b.ganimet_payi = "dengeli";
+    const de = birlikHesapla(s, bg(s));
+    b.ganimet_payi = "comert";
+    const co = birlikHesapla(s, bg(s));
     s.ulke.savasta = true;
-    const h = birlikHesapla(s, bg(s), { ganimetCarpani: 1 });
-    if (h.ganimetBrut > 0) {
-      expect(h.devletPayi).toBeCloseTo(h.ganimetBrut * 0.2, 6);
-      b.ganimet_payi = "comert";
-      const hc = birlikHesapla(s, bg(s), { ganimetCarpani: 1 });
-      expect(hc.erPayi).toBeGreaterThan(h.erPayi);
-      expect(hc.ganimetNet).toBeLessThan(h.ganimetNet);
-    }
+    b.ganimet_payi = "az";
+    b.savas_karari = { yil: s.yil, adimlar: [], adim: 0, inisiyatif_zorunlu: null, seferberlik: null, arazi: null, rol: "ana", inisiyatif: null, ikmal: "yagma", esir: "karma" };
+    const y = birlikHesapla(s, bg(s));
+    expect(y.devletPayi).toBe(0);
+    expect(y.yagmaBrut).toBeGreaterThan(0);
+    expect(y.erPayi / y.ganimetBrut).toBeCloseTo(0.2, 6);
+    b.ganimet_payi = "comert";
+    const yc = birlikHesapla(s, bg(s));
+    expect(yc.erPayi / yc.ganimetBrut).toBeCloseTo(0.6, 6);
+    expect(yc.ganimetNet).toBeLessThan(y.ganimetNet);
+    expect(az.devletPayi + de.devletPayi + co.devletPayi).toBe(0);
+  });
+
+  it("savaşta görevlerden gelir yok; sabit maaşın yarısı savaş ödeneği olarak ödenir; maaşın adı çağ+ülkeye göre", () => {
+    const s = asker();
+    s.meslek_musteri = 60;
+    const b = birlikAl(s);
+    b.kalite = { dusuk: 60, orta: 0, yuksek: 0 };
+    b.gorevler = ["haydut"];
+    const baris = birlikHesapla(s, bg(s));
+    expect(baris.gorevGeliri).toBeGreaterThan(0);
+    s.ulke.savasta = true;
+    const savas = birlikHesapla(s, bg(s));
+    expect(savas.gorevGeliri).toBe(0);
+    expect(savas.savasOdenegi).toBeCloseTo(baris.sold * 0.5, 4);
+    expect(maasAdi("Orta Çağ", "Bizans").tr).toBe("Roga");
+    expect(maasAdi("Sanayi Devrimi", "Rusya").tr).toBe("Jalovanye");
+  });
+
+  it("büyük zafer: güçle ve savaş süresiyle orantılı ganimet + esir; yeterli güçte kale ve madalyalar", () => {
+    const s = asker();
+    s.meslek_musteri = 200;
+    const b = birlikAl(s);
+    b.kalite = { dusuk: 0, orta: 0, yuksek: 200 };
+    b.guc = 400;
+    s.ulke.savasta = true;
+    const sv = savasBaslat(s);
+    sv.baslangic_yili = s.yil - 4;
+    sv.genel_zafer = 3;
+    sv.genel_yenilgi = 1;
+    const uyar: never[] = [];
+    const sonuc = savasiBitir(s, b, bg(s), uyar);
+    expect(sonuc.zafer).toBe(true);
+    expect(sonuc.brut).toBeGreaterThan(0);
+    expect(sonuc.net).toBeCloseTo(sonuc.brut * (1 - 0.4), 4);
+    expect(sonuc.kale).toBe(true);
+    expect(b.kale).toBe(1);
+    expect(s.unvanlar).toContain("Zafer Madalyası");
+    expect(s.unvanlar).toContain("Kale Fatihi");
+    // zayıf ordu kale alamaz
+    const z = asker();
+    z.meslek_musteri = 20;
+    const bz = birlikAl(z);
+    bz.guc = 30;
+    z.ulke.savasta = true;
+    const sz = savasBaslat(z);
+    sz.genel_zafer = 2;
+    expect(savasiBitir(z, bz, bg(z), []).kale).toBe(false);
+    // yenilgide büyük ganimet yok
+    const y = asker();
+    const by = birlikAl(y);
+    y.ulke.savasta = true;
+    const sy = savasBaslat(y);
+    sy.genel_yenilgi = 2;
+    expect(savasiBitir(y, by, bg(y), []).brut).toBe(0);
+  });
+
+  it("komutan emri rütbeyle iki kademede bir değişir; kiralık ordu gücü artırır ve yıllık gider getirir; sefer yolculuğunda güç yarıya iner", () => {
+    expect(emirSeviyesi(0)).toBe(1);
+    expect(emirSeviyesi(1)).toBe(1);
+    expect(emirSeviyesi(2)).toBe(2);
+    expect(emirSeviyesi(3)).toBe(2);
+    expect(emirSeviyesi(4)).toBe(3);
+    const s = asker();
+    s.meslek_musteri = 60;
+    const b = birlikAl(s);
+    b.kalite = { dusuk: 60, orta: 0, yuksek: 0 };
+    s.ulke.savasta = true;
+    const sv = savasBaslat(s);
+    const taban = gucHesapla(s).guc;
+    sv.emir = "duzenli_hat";
+    expect(gucHesapla(s).guc).toBeGreaterThan(taban);
+    sv.kiralik_er = 24;
+    expect(gucHesapla(s).guc).toBeGreaterThan(taban * 1.3);
+    expect(birlikHesapla(s, bg(s)).kiralikMasrafi).toBeGreaterThan(0);
+    s.ulke.savasta = false;
+    sv.kiralik_er = 0;
+    const evde = gucHesapla(s).guc;
+    s.etiketler.push("yolculukta");
+    expect(gucHesapla(s).guc).toBeCloseTo(evde * 0.5, 1);
   });
 
   it("ödenmeyen maaş/erzak cezası nakit −50×enflasyon altında başlar ve kademelenir (azami −%30/−%40)", () => {
@@ -753,7 +841,7 @@ describe("motor entegrasyonu (gameEngine / API)", () => {
     expect(r.durum.birlik!.kalite.hedef).toBe("orta");
     await expect(isletmeKararVer(st.id, [], undefined, { talim: "yok" })).rejects.toThrow(/talim/);
     await expect(isletmeKararVer(st.id, [], undefined, { gorevler: ["devriye", "eskort"] })).rejects.toThrow(/aynı anda/);
-    await expect(isletmeKararVer(st.id, [], undefined, { gorevler: ["sefer"] })).rejects.toThrow(/savaşta/);
+    await expect(isletmeKararVer(st.id, [], undefined, { gorevler: ["sefer"] })).rejects.toThrow(/Böyle bir görev yok/);
     const v = r.durum.birlik!;
     expect(v.er).toBe(20);
     expect(v.guc.toplam).toBeGreaterThan(0);
@@ -819,7 +907,7 @@ describe("otorite istekleri ve karanlık işler", () => {
     expect(d.istekler.map((i) => i.id)).toEqual(expect.arrayContaining(["levazim_muafiyeti", "sefer_emri", "ek_kadro"]));
   });
 
-  it("ganimeti_sakla: S3 şartı ve devlet payı yoksa engellenir; çalışan işi (ajan gerekmez)", async () => {
+  it("ganimeti_sakla: S3 şartı ve askerlere ayrılan pay yoksa engellenir; çalışan işi (ajan gerekmez)", async () => {
     const st = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(st.id, "Asker");
     await bekleyenleriCoz(st.id);
@@ -828,7 +916,7 @@ describe("otorite istekleri ve karanlık işler", () => {
     await expect(kotuIsYap(st.id, "ganimeti_sakla")).rejects.toThrow(/üçüncü rütbe/);
     s.rutbe_seviye = 3;
     expect(ganimetSaklamaEngeli(s)).toMatch(/ganimet payı yok/);
-    s.isletme!.son_dokum = { ...(s.isletme!.son_dokum ?? ({} as never)), birlik: { devletPayi: 40 } } as never;
+    s.isletme!.son_dokum = { ...(s.isletme!.son_dokum ?? ({} as never)), birlik: { erPayi: 40 } } as never;
     expect(ganimetSaklamaEngeli(s)).toBeNull();
     const once = s.para;
     vi.spyOn(Math, "random").mockReturnValue(0); // başarı

@@ -8,6 +8,10 @@
 import type { Dil } from './ayarlar';
 
 const KATALOG_EN: Record<string, string> = {
+  "Zafer Madalyası": "Medal of Victory",
+  "Yaralı Gazi": "Wounded Veteran",
+  "Kale Fatihi": "Conqueror of Castles",
+  "Haydut Kıran": "Bandit Breaker",
   "Eparkhos": "Eparch",
   "Prévôt": "Provost",
   "Burggraf": "Burgrave",

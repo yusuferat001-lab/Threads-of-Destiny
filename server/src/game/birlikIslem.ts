@@ -19,7 +19,6 @@ import {
   ARAZI_SIRASI,
   ARAZI_TERCIH_IHTIMALI,
   BIRLIK_KILIT_YIL,
-  DEVLET_PAYI,
   GANIMET_GUC_BIRIMI,
   BIRLIK_SEVIYE_PAYI,
   DOKTRINLER,
@@ -52,6 +51,13 @@ import {
   TON_TANIMLARI,
   TUR_SIRASI,
   TUR_TANIMLARI,
+  EMIRLER,
+  KIRALIK_ORAN,
+  KIRALIK_PESIN,
+  KIRALIK_YILLIK,
+  emirGetir,
+  emirSeviyesi,
+  maasAdi,
   doktrinGetir,
   doktrinSecenekleri,
   gorevAdi,
@@ -88,7 +94,7 @@ import {
   type BirlikHesabi,
   type GucDokumu,
 } from "./birlik";
-import { esirleriIsle, seferberlikUygula, yeniErEkle } from "./birlikYil";
+import { esirleriIsle, savasBaslat, seferberlikUygula, yeniErEkle } from "./birlikYil";
 import { olasilikliYuvarla } from "./isletme";
 
 // ── Yardımcılar ─────────────────────────────────────────────────────────────
@@ -297,6 +303,23 @@ export function terhisEt(state: CharacterState, adet: number, bg: IsletmeBaglami
   return { maliyet: 0, iade, adet: n };
 }
 
+/** Kiralık ordu: savaş süresince ordunun %40'ı kadar eğitimli paralı tutar (peşin ücret; yıllık ücret gider hesabında). */
+export function kiralikOrduTut(state: CharacterState, bg: IsletmeBaglami): IslemSonucu {
+  const b = birlikAl(state);
+  hapisYolculuk(state);
+  if (!state.ulke.savasta) throw new Error("Kiralık ordu yalnız savaşta tutulur.");
+  const sv = b.savas ?? savasBaslat(state);
+  if ((sv.kiralik_er ?? 0) > 0) throw new Error("Kiralık ordu zaten tutuldu.");
+  const n = Math.round(erSayisi(state) * KIRALIK_ORAN);
+  if (n <= 0) throw new Error("Kiralayacak kadar ordun yok.");
+  const maliyet = r2(n * KIRALIK_PESIN * bg.giderEnflasyon);
+  gucParaKontrol(state, maliyet);
+  state.para = r2(state.para - maliyet);
+  sv.kiralik_er = n;
+  birlikSenkron(state, bg.enflasyon);
+  return { maliyet, iade: 0, adet: n };
+}
+
 // ── Savaş Kararları (zorunlu zincir) ────────────────────────────────────────
 export function savasKarariHazirla(state: CharacterState): BirlikSavasKarari | null {
   const b = state.isletme?.birlik;
@@ -305,6 +328,8 @@ export function savasKarariHazirla(state: CharacterState): BirlikSavasKarari | n
   if (b.savas_karari && b.savas_karari.yil === state.yil) return b.savas_karari;
   const adimlar: string[] = [];
   if (!b.savas || !b.savas.seferberlik) adimlar.push("seferberlik");
+  // Komutan emri savaş başında bir kez seçilir ve savaş boyu sabit kalır.
+  if (!b.savas?.emir) adimlar.push("emir");
   // Arazi tercihi yalnız ihtimali sıfırdan büyükse sorulur (S1'de %0: seçimin anlamı olmaz).
   if (ARAZI_TERCIH_IHTIMALI[rutbeIndeksi(state)] > 0) adimlar.push("arazi");
   adimlar.push("rol");
@@ -348,6 +373,10 @@ const ADIM_BASLIKLARI: Record<string, { baslik: { tr: string; en: string }; acik
     baslik: { tr: "Seferberlik", en: "Mobilisation" },
     aciklama: { tr: "Savaş başladı. Orduyu nasıl büyüteceksin?", en: "War has begun. How will you swell the ranks?" },
   },
+  emir: {
+    baslik: { tr: "Komutan emri", en: "Commander's order" },
+    aciklama: { tr: "Bu savaş boyunca geçerli olacak emri seç.", en: "Choose the order that holds for the whole war." },
+  },
   arazi: {
     baslik: { tr: "Savaş alanı", en: "Battlefield" },
     aciklama: { tr: "Hangi arazide savaşmak istersin? Rütben yükseldikçe tercihin gerçekleşme ihtimali artar.", en: "Where do you want to fight? The higher your rank, the likelier your choice holds." },
@@ -375,15 +404,16 @@ function adimSecenekleri(state: CharacterState, adim: string): SavasKarariSecene
   switch (adim) {
     case "seferberlik":
       return SEFERBERLIK_SIRASI.map((id) => ({ id, ad: SEFERBERLIK_TANIMLARI[id].ad, aciklama: SEFERBERLIK_TANIMLARI[id].aciklama }));
+    case "emir":
+      return EMIRLER.filter((e) => e.seviye === emirSeviyesi(rutbeIndeksi(state))).map((e) => ({ id: e.id, simge: e.simge, ad: e.ad, aciklama: e.aciklama }));
     case "arazi": {
-      const ihtimal = Math.round(ARAZI_TERCIH_IHTIMALI[rutbeIndeksi(state)] * 100);
       return [
         { id: "rastgele", simge: "🎲", ad: { tr: "Fark etmez", en: "No preference" }, aciklama: { tr: "Arazi bölgeye göre belirlenir.", en: "Terrain is decided by the region." } },
         ...ARAZI_SIRASI.map((id) => ({
           id,
           simge: ARAZI_ADLARI[id].simge,
           ad: cag === "Sanayi Devrimi" ? ARAZI_ADLARI[id].sanayi : ARAZI_ADLARI[id].orta,
-          aciklama: { tr: `Gerçekleşme ihtimali %${ihtimal}.`, en: `Chance it holds: ${ihtimal}%.` },
+          aciklama: { tr: "Savaşı bu arazide vermeye çalışırsın.", en: "You try to fight on this ground." },
         })),
       ];
     }
@@ -435,6 +465,9 @@ export function savasKarariVer(state: CharacterState, secim: string, bg: Isletme
   if (adim === "seferberlik") {
     k.seferberlik = secim as BirlikSeferberlik;
     seferberlikUygula(state, secim as BirlikSeferberlik, bg);
+  } else if (adim === "emir") {
+    const sv = b.savas ?? savasBaslat(state);
+    sv.emir = secim;
   } else if (adim === "arazi") k.arazi = secim === "rastgele" ? null : (secim as BirlikArazi);
   else if (adim === "rol") k.rol = secim as BirlikRol;
   else if (adim === "inisiyatif") k.inisiyatif = secim as "saldiri" | "savunma";
@@ -498,14 +531,14 @@ export function birlikOlayEtkisiUygula(state: CharacterState, etki: SonucEtkisi,
 export function ganimetSaklamaEngeli(state: CharacterState): string | null {
   if (state.meslek !== "Asker") return "Geçersiz iş.";
   if (rutbeIndeksi(state) + 1 < 3) return "Bu işi ancak üçüncü rütbeden itibaren yapabilirsin.";
-  if ((state.isletme?.son_dokum?.birlik?.devletPayi ?? 0) <= 0) return "Geçen yıl devlete ayrılan bir ganimet payı yok.";
+  if ((state.isletme?.son_dokum?.birlik?.erPayi ?? 0) <= 0) return "Geçen yıl askerlere ayrılan bir ganimet payı yok.";
   return null;
 }
 export function ganimetSaklamaKazanci(state: CharacterState): number {
-  return r2((state.isletme?.son_dokum?.birlik?.devletPayi ?? 0) * 0.9);
+  return r2((state.isletme?.son_dokum?.birlik?.erPayi ?? 0) * 0.9);
 }
 export function ganimetSaklamaCezasi(state: CharacterState): number {
-  return r2((state.isletme?.son_dokum?.birlik?.devletPayi ?? 0) * 2);
+  return r2((state.isletme?.son_dokum?.birlik?.erPayi ?? 0) * 2);
 }
 
 // ── Görünüm (arayüz için) ───────────────────────────────────────────────────
@@ -605,7 +638,17 @@ export interface BirlikGorunumu {
     kararBekliyor: boolean;
     araziIhtimali: number;
   };
+  /** Ele geçirilen kale sayısı, savaşta geçerli komutan emri ve kiralık ordu durumu. */
+  kale: number;
+  emir: { ad: { tr: string; en: string }; simge: string; aciklama: { tr: string; en: string } } | null;
+  kiralik: { aktif: boolean; er: number; ucret: number; mumkun: boolean };
   hesap: {
+    /** Maaşın çağ+ülkeye göre adı; savaşta "savaş ödeneği" olarak ödenir. */
+    soldAdi: { tr: string; en: string };
+    savasOdenegiMi: boolean;
+    kaleGeliri: number;
+    kiralikMasrafi: number;
+    yagmaBrut: number;
     sold: number;
     erBasiGelir: number;
     gorevGeliri: number;
@@ -749,11 +792,27 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
       kararBekliyor: !!k && k.adim < k.adimlar.length,
       araziIhtimali: Math.round(ARAZI_TERCIH_IHTIMALI[rutbeIndeksi(state)] * 100),
     },
+    kale: b.kale,
+    emir: (() => {
+      const e = state.ulke.savasta ? emirGetir(b.savas?.emir) : undefined;
+      return e ? { ad: e.ad, simge: e.simge, aciklama: e.aciklama } : null;
+    })(),
+    kiralik: {
+      aktif: (b.savas?.kiralik_er ?? 0) > 0,
+      er: b.savas?.kiralik_er ?? 0,
+      ucret: r2(Math.round(er * KIRALIK_ORAN) * KIRALIK_PESIN * bg.giderEnflasyon),
+      mumkun: !!state.ulke.savasta && (b.savas?.kiralik_er ?? 0) === 0 && Math.round(er * KIRALIK_ORAN) > 0,
+    },
     hesap: {
+      soldAdi: state.ulke.savasta ? { tr: "Savaş ödeneği", en: "War allowance" } : maasAdi(state.cag, state.bolge),
+      savasOdenegiMi: !!state.ulke.savasta,
+      kaleGeliri: r2(h.kaleGeliri),
+      kiralikMasrafi: r2(h.kiralikMasrafi),
+      yagmaBrut: r2(h.yagmaBrut),
       sold: r2(h.sold), erBasiGelir: r2(h.erBasiGelir), gorevGeliri: r2(h.gorevGeliri), ganimetNet: r2(h.ganimetNet), devletPayi: r2(h.devletPayi), erPayi: r2(h.erPayi),
       toplamGelir: r2(h.toplamGelir), erMasrafi: r2(h.erMasrafi), erzak: r2(h.erzak), gorevMasrafi: r2(h.gorevMasrafi), kislaBakim: r2(h.kislaBakim),
       techizatBakim: r2(h.techizatBakim), kusatmaBakim: r2(h.kusatmaBakim), talimMasrafi: r2(h.talimMasrafi), toplamGider: r2(h.toplamGider), net: r2(h.net),
-      barisGanimetTahmini: r2(d.guc * GANIMET_GUC_BIRIMI * 1.15 * bg.enflasyon * (1 - DEVLET_PAYI) * (1 - GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran)),
+      barisGanimetTahmini: r2(d.guc * GANIMET_GUC_BIRIMI * 1.15 * bg.enflasyon * (1 - GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran)),
     },
     yol,
   };

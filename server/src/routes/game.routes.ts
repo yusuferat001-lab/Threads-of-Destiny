@@ -66,6 +66,7 @@ import {
   birlikBirlikSec,
   birlikKusatma,
   birlikTerhis,
+  birlikKiralik,
   birlikSavasKarariGetir,
   birlikSavasKarariVer,
   isletmeUrunSec,
@@ -410,6 +411,14 @@ gameRouter.post("/:id/birlik/kusatma", async (req, res) => {
   if (typeof seviye !== "number") return res.status(400).json({ hata: "Geçersiz kuşatma seviyesi." });
   try {
     res.json(await birlikKusatma(req.params.id, seviye));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/birlik/kiralik", async (req, res) => {
+  try {
+    res.json(await birlikKiralik(req.params.id));
   } catch (err) {
     res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
