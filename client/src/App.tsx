@@ -501,13 +501,26 @@ function App() {
   function dilDegistir(yeni: Dil) {
     setDil(yeni);
     ayarlariKaydet({ dil: yeni });
-    // Oyun sürerken dil değişirse sunucudaki state.dil'i de güncelle; yoksa
-    // arayüz çevrilse bile olay/anlatı metinleri eski dilde takılı kalır
-    // (state.dil normalde yalnız yeni oyun açılışında yazılıyor). Değişiklik
-    // bir sonraki senaryodan itibaren geçerli olur.
+    // Oyun sürerken dil değişirse sunucudaki state.dil'i de güncelle; yoksa arayüz çevrilse bile
+    // olay/anlatı metinleri eski dilde takılı kalır. Sunucu ekranda bekleyen olayı da yeni dile
+    // çevirip döner; istemci bunu doğrudan yerine koyar (ek /scenario çağrısı olay terk ettirebilir).
     if (karakter?.id && karakter.aktif) {
       oyunDiliAyarla(karakter.id, yeni)
-        .then(({ state }) => setKarakter(state))
+        .then(({ state, senaryo: bekleyen, sakli }) => {
+          setKarakter(state);
+          if (sosyalOlay && !sosyalOlaySonuc) {
+            // Sunucudaki "mevcut" olay mekân olayıdır; ana olay kenara ayrılmıştır.
+            if (bekleyen) setSosyalOlay(bekleyen);
+            if (sakli && senaryo && !tepkiModu) setSenaryo(sakli);
+          } else if (bekleyen && senaryo && !tepkiModu && !tanisma) {
+            setSenaryo(bekleyen);
+          }
+          if (tanisma) {
+            tanismaGetir(state.id)
+              .then((d) => d.aktif && setTanisma(d))
+              .catch(() => {});
+          }
+        })
         .catch(() => {
           /* sessiz geç: sonraki denemede ya da yeni oyunda düzelir */
         });
@@ -2621,7 +2634,7 @@ function App() {
                 </button>
               </div>
 
-              <FinansOzetPaneli finans={finans} maasYillikYedek={karakter.maas_yillik} paraBirimi={karakter.para_birimi} />
+              <FinansOzetPaneli finans={finans} isletme={isletme?.aktif ? isletme : null} maasYillikYedek={karakter.maas_yillik} paraBirimi={karakter.para_birimi} />
 
               <EnvanterPaneli
                 etiketler={karakter.etiketler}

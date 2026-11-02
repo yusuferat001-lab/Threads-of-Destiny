@@ -310,6 +310,9 @@ export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onC
         <div className="isletme-dokum-net">
           {t('beklenenNet')}: <strong>~{durum.butce.net >= 0 ? '+' : ''}{formatPara(durum.butce.net)} {pb}{t('yil')}</strong>
         </div>
+        {(durum.butce.gayrimenkul ?? 0) !== 0 && (
+          <div>{dil === 'en' ? 'Property income' : 'Gayrimenkul geliri'}: <strong>{durum.butce.gayrimenkul > 0 ? '+' : '−'}{formatPara(Math.abs(durum.butce.gayrimenkul))}</strong></div>
+        )}
         <div>{dil === 'en' ? 'Living' : 'Yaşam'}: <strong>−{formatPara(durum.butce.yasam)}</strong></div>
         <div>{dil === 'en' ? 'Rent' : 'Kira'}: <strong>−{formatPara(durum.butce.kira)}</strong></div>
         {durum.butce.evcilHayvan > 0 && (
@@ -319,7 +322,7 @@ export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onC
           <div>{dil === 'en' ? 'Loan instalment' : 'Kredi taksidi'}: <strong>−{formatPara(durum.butce.krediTaksit)}</strong></div>
         )}
         <div className="isletme-dokum-net">
-          {dil === 'en' ? 'Left in your pocket' : 'Cebine kalan'}: <strong>{durum.butce.cebineKalan >= 0 ? '+' : ''}{formatPara(durum.butce.cebineKalan)} {pb}</strong>
+          {dil === 'en' ? 'Earnings' : 'Kazanç'}: <strong>{durum.butce.cebineKalan >= 0 ? '+' : ''}{formatPara(durum.butce.cebineKalan)} {pb}</strong>
         </div>
       </div>
 
@@ -470,7 +473,7 @@ export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onC
       ) : (
         <div className="isletme-dokum">
           <div>
-            {t('gelenGercek')}: <strong>{formatMusteri(dil, dokum.cemaat.gelen)}</strong> / {dokum.cemaat.kapasite} ({dokum.cemaat.gelmeOrani * 100}%)
+            {t('gelenGercek')}: <strong>{formatMusteri(dil, dokum.cemaat.gelen)}</strong> / {dokum.cemaat.kapasite} ({formatYuzde(dil, Math.round(dokum.cemaat.gelmeOrani * 100))})
           </div>
           <div>
             {t('bagisKalemi')}: <strong>+{formatPara(dokum.cemaat.bagis)}</strong>

@@ -122,7 +122,6 @@ import {
 } from "./stateManager";
 import {
   isletmeAktif,
-  isletmeGelirTahmini,
   uretimTavani,
   isletmeHazirla,
   depoKapasitesi,
@@ -273,7 +272,7 @@ import {
   SECENEK_METNI as TANISMA_SECENEK_METNI,
 } from "../data/tanismaDiyalog";
 import { COCUK_EKIP_ROLU, COCUK_KOV_ILISKI, MANTIK_MIN_YAS, DUGUN, KOTU_IS_ES_ZARARI, SUC_ES_ESIGI, SUC_ES_ZARARI, SIR_ES_ZARARI, IHMAL_UYARI_YIL } from "../data/aileSabitleri";
-import { olaySec, doldur, temelUygunMu, sosyallesmeIcinOlaySec } from "./olaySecici";
+import { olaySec, doldur, temelUygunMu, sosyallesmeIcinOlaySec, senaryoyuDilleYenile } from "./olaySecici";
 import { OlayTanimi, OnTepki, OLAY_BANKASI } from "../data/olaylar";
 import { OLAY_SOSYALLESME } from "../data/olaylar/sosyallesme";
 import { OLAY_GENEL } from "../data/olaylar/genel";
@@ -1011,7 +1010,7 @@ function oturumOlustur(state: CharacterState): Oturum {
   const mevcutSenaryo = mevcutOlay && kayit?.senaryo ? kayit.senaryo : null;
   const tepkiSecenegi = mevcutOlay && kayit?.tepki ? mevcutOlay.secenekler[kayit.tepki.hamIndex] : undefined;
   const sakliOlay = kayit?.sakli ? kayitliOlayBul(kayit.sakli.olayId, state) : null;
-  return {
+  const oturum: Oturum = {
     state,
     mevcutSenaryo,
     mevcutOlay: mevcutSenaryo ? mevcutOlay : null,
@@ -1025,6 +1024,37 @@ function oturumOlustur(state: CharacterState): Oturum {
         : null,
     sakliOlay: sakliOlay && kayit?.sakli ? { olay: sakliOlay, senaryo: kayit.sakli.senaryo } : null,
   };
+  // Kayıt farklı bir dille yazılmış olabilir (dil sonradan değişti): ekrandaki olay güncel dilde dönsün.
+  oturumuDilleYenile(oturum);
+  return oturum;
+}
+
+/**
+ * Ekranda bekleyen (ve Sosyalleş'e girerken kenara ayrılmış) olayı oyuncunun güncel diline çevirir.
+ * Yalnız gösterim metinleri değişir; zar/etki/kilit durumu aynen kalır. Bekleyen onTepki varsa
+ * (geri çekil/ısrar et) onun metinleri de çevrilmiş olaydan alınır.
+ */
+function oturumuDilleYenile(oturum: Oturum): void {
+  const { state } = oturum;
+  const ham = (id: string) => OLAY_BANKASI.find((o) => o.id === id);
+  if (oturum.mevcutOlay && oturum.mevcutSenaryo) {
+    const eskiOlay = oturum.mevcutOlay;
+    const orijinal = ham(eskiOlay.id);
+    if (orijinal) {
+      const r = senaryoyuDilleYenile(oturum.mevcutSenaryo, orijinal, state);
+      if (oturum.bekleyenTepki) {
+        const idx = eskiOlay.secenekler.findIndex((sc) => sc.onTepki === oturum.bekleyenTepki?.onTepki);
+        const yeniTepki = idx >= 0 ? r.olay.secenekler[idx]?.onTepki : undefined;
+        if (yeniTepki) oturum.bekleyenTepki = { ...oturum.bekleyenTepki, onTepki: yeniTepki, mevcutOlay: r.olay };
+      }
+      oturum.mevcutOlay = r.olay;
+      oturum.mevcutSenaryo = r.senaryo;
+    }
+  }
+  if (oturum.sakliOlay) {
+    const orijinal = ham(oturum.sakliOlay.olay.id);
+    if (orijinal) oturum.sakliOlay = senaryoyuDilleYenile(oturum.sakliOlay.senaryo, orijinal, state);
+  }
 }
 
 /**
@@ -1268,8 +1298,23 @@ export async function stateGetir(id: string): Promise<CharacterState> {
 export async function oturumDiliAyarla(id: string, dil: "tr" | "en"): Promise<CharacterState> {
   const oturum = await oturumGetir(id);
   oturum.state.dil = dil === "en" ? "en" : "tr";
+  oturumuDilleYenile(oturum); // ekrandaki bekleyen olay da yeni dilde görünsün
   await oturumKaydet(oturum.state);
   return oturum.state;
+}
+
+/**
+ * Ekranda şu an bekleyen senaryo (varsa; Sosyalleş mekân olayı dahil) ve mekâna girerken kenara ayrılmış
+ * ana olay. Salt-okunur; olay üretmez, hiçbir şeyi terk ettirmez.
+ */
+export async function bekleyenSenaryolarGetir(
+  id: string
+): Promise<{ senaryo: SenaryoResponse | null; sakli: SenaryoResponse | null }> {
+  const oturum = await oturumGetir(id);
+  return {
+    senaryo: oturum.mevcutOlay && oturum.mevcutSenaryo ? oturum.mevcutSenaryo : null,
+    sakli: oturum.sakliOlay?.senaryo ?? null,
+  };
 }
 
 export async function senaryoUret(id: string): Promise<SenaryoResponse> {
@@ -2807,8 +2852,8 @@ export async function dunyaGecmisiGetir(id: string): Promise<DunyaGecmisi> {
 export async function finansGetir(id: string): Promise<FinansOzeti> {
   const oturum = await oturumGetir(id);
   const { state } = oturum;
-  // İşletmeli mesleklerde gelir = geçen yılın dükkan neti (zarar yılında eksi görünür).
-  const maasYillik = isletmeAktif(state) ? paraYuvarla(isletmeGelirTahmini(state, isletmeBaglami(state))) : hesaplaMaasYillik(state);
+  // İşletmeli mesleklerde gelir = bu yılın beklenen dükkan neti (ana ekran/Bütçen ile aynı sayı; zarar yılında eksi görünür).
+  const maasYillik = isletmeAktif(state) ? paraYuvarla(isletmeButcesi(state, isletmeBaglami(state)).net) : hesaplaMaasYillik(state);
   const giderKalemleri = giderKalemleriHesapla(state);
   const toplamGider =
     giderKalemleri.yasam +
@@ -5197,7 +5242,7 @@ export interface IsletmeGorunumu {
   sonDokum: IsletmeDokum | null;
   beklenenBrutKar: number;
   /** v11: bu yılın dürüst tahmini bütçesi + cebine kalan (yaşam, kira, hayvan, kredi taksidi düşülmüş). */
-  butce: IsletmeButcesi & { yasamKira: number; yasam: number; kira: number; evcilHayvan: number; krediTaksit: number; cebineKalan: number };
+  butce: IsletmeButcesi & { yasamKira: number; yasam: number; kira: number; evcilHayvan: number; krediTaksit: number; gayrimenkul: number; cebineKalan: number };
   /** Vergi: bu yıl uygulanan oran (0-1) ve indirimin kalan yılı (yoksa 0). */
   vergi: { oran: number; indirimKalanYil: number };
   /** Koruma (0-1) ve ortalama dış hırsızlık aralığı (yıl). */
@@ -5312,7 +5357,7 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
       slot: { kullanilan: 0, toplam: 0 }, depo: { kullanilan: 0, kapasite: 0, kademe: 0, curumeYuzde: 0, bakim: 0, dukkanGideri: 0, dolulukYuzde: 0, doldurYuzdeleri: [], oto: { acik: false, yuzde: 50 } }, uretim: null,
       urunSecimi: { bekliyor: false, secilen: null, secenekler: [] }, hatlar: [], yatirimlar: [], calisanlar: [], calisanTavani: calisanLimiti(state),
       adaylar: [], adayYenilenmeKalanYil: 0, tedarikciBorcu: 0, sonDokum: null, beklenenBrutKar: 0,
-      butce: { satis: 0, alim: 0, curume: 0, depo: 0, aidat: 0, brut: 0, vergi: 0, borcOdeme: 0, net: 0, maas: 0, yasamKira: 0, yasam: 0, kira: 0, evcilHayvan: 0, krediTaksit: 0, cebineKalan: 0 },
+      butce: { satis: 0, alim: 0, curume: 0, depo: 0, aidat: 0, brut: 0, vergi: 0, borcOdeme: 0, net: 0, maas: 0, yasamKira: 0, yasam: 0, kira: 0, evcilHayvan: 0, krediTaksit: 0, gayrimenkul: 0, cebineKalan: 0 },
       vergi: { oran: 0, indirimKalanYil: 0 }, koruma: { toplam: 0, calisan: 0, yatirim: 0, otorite: 0, hirsizlikAralik: 0 },
       otorite: null, otoriteIliski: state.yonetim_iliski ?? 0, imtiyazlar: [],
       dunya: { donem: null, savas: false, veba: false }, para: state.para, paraBirimi: state.para_birimi,
@@ -5483,7 +5528,18 @@ function butceVeCebineKalan(state: CharacterState, b: IsletmeBaglami) {
   const g = giderKalemleriHesapla(state);
   const yasamKira = paraYuvarla(g.yasam + g.konut + g.evcilHayvan);
   const krediTaksit = state.kredi ? paraYuvarla(Math.min(state.kredi.kalanBorc, state.kredi.yillikTaksit)) : 0;
-  return { ...butce, yasamKira, yasam: paraYuvarla(g.yasam), kira: paraYuvarla(g.konut), evcilHayvan: paraYuvarla(g.evcilHayvan), krediTaksit, cebineKalan: paraYuvarla(butce.net - yasamKira - krediTaksit) };
+  // Mülklerden gelen yıllık net gelir (dükkândan ayrı akış) de kazanca girer; her panel aynı sayıyı göstersin.
+  const gayrimenkul = paraYuvarla(gayrimenkulYillikGelirHesapla(state));
+  return {
+    ...butce,
+    yasamKira,
+    yasam: paraYuvarla(g.yasam),
+    kira: paraYuvarla(g.konut),
+    evcilHayvan: paraYuvarla(g.evcilHayvan),
+    krediTaksit,
+    gayrimenkul,
+    cebineKalan: paraYuvarla(butce.net + gayrimenkul - yasamKira - krediTaksit),
+  };
 }
 
 export async function isletmeDurumGetir(id: string): Promise<IsletmeGorunumu> {

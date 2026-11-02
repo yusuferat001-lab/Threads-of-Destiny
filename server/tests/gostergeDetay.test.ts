@@ -129,6 +129,7 @@ describe("gostergeDetayiUret", () => {
     const hazirla = (para: number) => {
       const s = karakter();
       s.meslek = null as never;
+      s.kisilik = [] as never; // kişiliğin yıllık şöhret/mutluluk etkisi (±0.4) ölçümü bozmasın
       s.para = para;
       s.mutluluk = 80;
       s.un = 30; // şöhret erimesi (40+) karışmasın

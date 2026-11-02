@@ -60,13 +60,14 @@ const M = {
   kira: { tr: 'Kira', en: 'Rent' },
   hayvanGider: { tr: 'Evcil hayvan', en: 'Pets' },
   krediTaksit: { tr: 'Kredi taksidi', en: 'Loan instalment' },
-  cebineKalan: { tr: 'Cebine kalan', en: 'Left in your pocket' },
+  gayrimenkul: { tr: 'Gayrimenkul geliri', en: 'Property income' },
+  cebineKalan: { tr: 'Kazanç', en: 'Earnings' },
   gecenAlis: { tr: 'geçen yıl', en: 'last year' },
   alisIndirim: { tr: 'indirimin', en: 'your discount' },
   alisDonem: { tr: 'dönem', en: 'period' },
   alisBaslik: { tr: 'Alış', en: 'Buying' },
   borc: { tr: 'Tedarikçi borcu', en: 'Supplier debt' },
-  beklenen: { tr: 'Beklenen net', en: 'Expected net' },
+  beklenen: { tr: 'Beklenen dükkan neti', en: 'Expected shop net' },
   yil: { tr: '/yıl', en: '/yr' },
   depoBaslik: { tr: 'Depo', en: 'Warehouse' },
   depoOtoNot: { tr: 'Depo her yıl başı kendiliğinden dolar; nakit yetmezse eksik mal tedarikçiden veresiye alınır ve kârdan ödenir. Talep depoyu aşarsa müşteri kaybedersin; çözüm depoyu büyütmek.', en: 'The warehouse refills itself every year; if cash runs short the missing goods are bought on supplier credit and repaid from profit. If demand outgrows it you lose customers; upgrade the warehouse.' },
@@ -242,10 +243,10 @@ export function isletmeUyariMetni(u: IsletmeUyari, durum: IsletmeGorunumu, dil: 
       case 'sizdirma':
         return `🕵️ ${u.isim ?? ''}: ${en ? 'leaked your secrets to the rival; you lost customers' : 'sırlarını rakibe sızdırdı, müşteri kaybettin'}`;
       case 'ic_hirsizlik':
-        return `🫳 ${u.isim ?? ''}: ${en ? `stole goods (${u.urunYuzde}%) and cash (${formatPara(u.tutar ?? 0)})` : `mal (%${u.urunYuzde}) ve para (${formatPara(u.tutar ?? 0)}) çaldı`}`;
+        return `🫳 ${u.isim ?? ''}: ${en ? `stole goods (${formatYuzde(dil, u.urunYuzde ?? 0)}) and cash (${formatPara(u.tutar ?? 0)} ${pb})` : `mal (${formatYuzde(dil, u.urunYuzde ?? 0)}) ve para (${formatPara(u.tutar ?? 0)} ${pb}) çaldı`}`;
       case 'hirsizlik': {
         const s = d(HIRSIZLIK_SONUCLARI[u.sonuc ?? 'sans']);
-        const ek = u.urunYuzde || u.tutar ? ` — ${en ? 'goods' : 'mal'} ${u.urunYuzde ?? 0}%, ${en ? 'cash' : 'para'} ${formatPara(u.tutar ?? 0)}` : '';
+        const ek = u.urunYuzde || u.tutar ? ` — ${en ? 'goods' : 'mal'} ${formatYuzde(dil, u.urunYuzde ?? 0)}, ${en ? 'cash' : 'para'} ${formatPara(u.tutar ?? 0)} ${pb}` : '';
         return `🦹 ${s}${ek}`;
       }
       case 'rakip_saldiri': {
@@ -255,7 +256,7 @@ export function isletmeUyariMetni(u: IsletmeUyari, durum: IsletmeGorunumu, dil: 
         const kayiplar: string[] = [];
         if (u.musteriKaybi) kayiplar.push(en ? `you lost ${formatMusteri(dil, u.musteriKaybi)} customers` : `${formatMusteri(dil, u.musteriKaybi)} müşteri kaybettin`);
         if (u.tutar) kayiplar.push(`${formatPara(u.tutar)} ${pb}`);
-        if (u.urunYuzde) kayiplar.push(en ? `${u.urunYuzde}% of stock` : `stokun %${u.urunYuzde}'i`);
+        if (u.urunYuzde) kayiplar.push(en ? `${formatYuzde(dil, u.urunYuzde)} of stock` : `stokun ${formatYuzde(dil, u.urunYuzde)}'i`);
         if (u.sohretKaybi) kayiplar.push(en ? `fame −${u.sohretKaybi}` : `şöhret −${u.sohretKaybi}`);
         const sizma = u.sizma ? ` 🕵️ ${en ? `${u.isim ?? ''} leaked inside information (+30% damage, guards bypassed).` : `${u.isim ?? ''} içeriden bilgi sızdırdı (hasar %30 arttı, güvenlik devre dışı).`}` : '';
         return `⚔️ ${kim} ${d(SALDIRI_SONUCLARI[tur] ?? SALDIRI_SONUCLARI.nakit)}${kayiplar.length ? ` — ${kayiplar.join(', ')}` : ''}.${sizma}`;
@@ -442,9 +443,9 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
           <h4>
             🏚️ {uretimModu ? t('hammaddeDeposu') : t('depoBaslik')} — {durum.depo.kullanilan}/{durum.depo.kapasite} {t('adetBirim')}
           </h4>
-          <div className="isletme-depo-olcek" title={`${durum.depo.dolulukYuzde}% ${t('depoDolu')}`}>
+          <div className="isletme-depo-olcek" title={`${formatYuzde(dil, durum.depo.dolulukYuzde)} ${t('depoDolu')}`}>
             <div className={`isletme-depo-dolgu ${dolulukSinifi(durum.depo.dolulukYuzde)}`} style={{ width: `${Math.min(100, durum.depo.dolulukYuzde)}%` }} />
-            <span>{durum.depo.dolulukYuzde}% {t('depoDolu')}</span>
+            <span>{formatYuzde(dil, durum.depo.dolulukYuzde)} {t('depoDolu')}</span>
           </div>
           <div className="isletme-depo-chipler">
             <span>♻️ {t('curume')} %{durum.depo.curumeYuzde}</span>
@@ -513,6 +514,7 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
           {durum.butce.borcOdeme > 0 && <div className="isletme-butce-satir"><span>{t('borcOdeme')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.borcOdeme)}</span></div>}
           <div className="isletme-butce-satir"><span>{t('maasKalemi')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.maas)}</span></div>
           <div className="isletme-butce-satir isletme-butce-toplam"><span>{t('dukkanNeti')}</span><span className={isaretSinifi(durum.butce.net)}>{durum.butce.net >= 0 ? '+' : ''}{formatPara(durum.butce.net)}</span></div>
+          {(durum.butce.gayrimenkul ?? 0) !== 0 && <div className="isletme-butce-satir"><span>{t('gayrimenkul')}</span><span className={isaretSinifi(durum.butce.gayrimenkul)}>{durum.butce.gayrimenkul > 0 ? '+' : '−'}{formatPara(Math.abs(durum.butce.gayrimenkul))}</span></div>}
           <div className="isletme-butce-satir"><span>{t('yasam')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.yasam)}</span></div>
           <div className="isletme-butce-satir"><span>{t('kira')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.kira)}</span></div>
           {durum.butce.evcilHayvan > 0 && <div className="isletme-butce-satir"><span>{t('hayvanGider')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.evcilHayvan)}</span></div>}

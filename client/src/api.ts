@@ -168,7 +168,7 @@ export function stateGetir(stateId: string) {
 
 /** Oyun sürerken dili değiştir — sonraki senaryodan itibaren olay/anlatı metinleri de bu dile geçer. */
 export function oyunDiliAyarla(stateId: string, dil: string) {
-  return istek<{ state: CharacterState }>(`/api/game/${stateId}/dil`, {
+  return istek<{ state: CharacterState; senaryo: SenaryoResponse | null; sakli: SenaryoResponse | null }>(`/api/game/${stateId}/dil`, {
     method: 'POST',
     body: JSON.stringify({ dil }),
   });

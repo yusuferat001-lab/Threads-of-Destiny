@@ -54,6 +54,7 @@ import {
   yonetimIstekYap,
   yonetimTalebiKararlastir,
   oturumDiliAyarla,
+  bekleyenSenaryolarGetir,
   rakiplerGetir,
   pazarDurumGetir,
   ajanDurumGetir,
@@ -173,7 +174,8 @@ gameRouter.post("/:id/dil", async (req, res) => {
   try {
     const { dil } = req.body ?? {};
     const state = await oturumDiliAyarla(req.params.id, dil === "en" ? "en" : "tr");
-    res.json({ state });
+    // Ekranda bekleyen olay da yeni dilde yeniden çevrilmiştir; istemci ek çağrı yapmadan günceller.
+    res.json({ state, ...(await bekleyenSenaryolarGetir(req.params.id)) });
   } catch (err) {
     res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }

@@ -154,7 +154,7 @@ export function ButcePaneli({ finans, paraBirimi, gecmis, isletmeAktif = false }
             </div>
 
             <div className={`finans-satiri finans-net ${gercekNet < 0 ? 'finans-net-negatif' : ''}`}>
-              <span>{isletmeAktif ? (dil === 'en' ? 'Left in your pocket' : 'Cebine kalan') : gayrimenkulYillikGelir !== 0 ? m.feNetYillikDahil : m.feNetYillik}</span>
+              <span>{isletmeAktif ? (dil === 'en' ? 'Earnings' : 'Kazanç') : m.feNetYillik}</span>
               <span>
                 {gercekNet >= 0 ? '+' : ''}
                 {formatPara(gercekNet)} {paraBirimi}

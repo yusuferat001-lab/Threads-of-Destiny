@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useDil } from '../DilContext';
 import type { CharacterState, FinansOzeti, IsletmeGorunumu } from '../types';
 import { formatMusteri, formatPara } from '../format';
+import { kazancOzetiHesapla } from '../kazanc';
 
 /** Ana ekrandaki dört sabit tuşun kimliği — konum ve renk her meslekte aynıdır, yalnız ad/ikon değişir. */
 export type AnaTusId = 'isletme' | 'yatirim' | 'calisan' | 'cevre';
@@ -88,11 +89,8 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
     : tr ? 'Ordu' : 'Army';
   const degisim = dokum?.musteriDegisim ?? null;
 
-  // "Elde kalan" paneli: yıllık tahmini bütçe (işletme) ya da maaş − gider; tüm gelir ve tüm gider altında.
-  const tumGelir = isletme ? (isletme.cemaat ? isletme.cemaat.toplamGelir : isletme.butce.satis) : karakter.maas_yillik;
-  const eldeKalan = isletme ? isletme.butce.cebineKalan : (finans?.netYillik ?? 0);
-  const tumGider = Math.max(0, tumGelir - eldeKalan);
-  const krediTaksit = isletme ? isletme.butce.krediTaksit : (finans?.krediTaksit ?? 0);
+  // Kazanç paneli: gelir, gider ve kazanç tüm panellerde aynı tanımla hesaplanır (kazanc.ts).
+  const { gelir: tumGelir, gider: tumGider, kazanc: eldeKalan, krediTaksit } = kazancOzetiHesapla(karakter, isletme, finans);
 
   const donemAnahtar = isletme?.dunya.donem ?? karakter.ulke.donem?.tur ?? null;
   const donem = donemAnahtar ? DONEM_ADLARI[donemAnahtar] : null;

@@ -1013,6 +1013,8 @@ export interface IsletmeButcesi {
   kira: number;
   evcilHayvan: number;
   krediTaksit: number;
+  /** Mülklerden gelen yıllık net gelir (dükkândan ayrı akış); kazanca dahildir. */
+  gayrimenkul: number;
   cebineKalan: number;
 }
 

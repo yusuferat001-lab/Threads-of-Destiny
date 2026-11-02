@@ -90,7 +90,7 @@ export function AranmaPaneli({ karakter, onState }: AranmaPaneliProps) {
       {d.debuffOrani > 0 && (
         <p className="gosterge-bilgi">
           {t(
-            `Şu an ${d.debuffEtiketi} ${Math.round(d.debuffOrani * 1000) / 10}% etkileniyor.`,
+            `Şu an ${d.debuffEtiketi} %${String(Math.round(d.debuffOrani * 1000) / 10).replace('.', ',')} etkileniyor.`,
             `Currently ${d.debuffEtiketi} is cut by ${Math.round(d.debuffOrani * 1000) / 10}%.`
           )}
         </p>

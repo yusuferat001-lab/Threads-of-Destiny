@@ -330,6 +330,42 @@ function kilitNedeni(secenek: OlaySecenegi, state: CharacterState): string | nul
   return null;
 }
 
+/**
+ * Zaten üretilmiş (ekranda bekleyen / kaydedilmiş) bir senaryoyu oyuncunun GÜNCEL diline göre yeniden çevirir.
+ * Yalnız gösterim metinleri (başlık, metin, şık metni, kilit nedeni, sonuç mesaj/detay) değişir; şans, aralık,
+ * kilit durumu, şık sırası ve resim aynen korunur. Dil Ayarlar'dan değiştirilince ya da kayıt farklı bir dille
+ * yüklenince ekrandaki olayın eski dilde kalmaması için kullanılır.
+ * `orijinalOlay` OLAY_BANKASI'ndaki ÇEVRİLMEMİŞ tanımdır.
+ */
+export function senaryoyuDilleYenile(
+  senaryo: SenaryoResponse,
+  orijinalOlay: OlayTanimi,
+  state: CharacterState
+): SecilenOlay {
+  const olay = olayCevirisiUygula(orijinalOlay, state.dil);
+  const secenekler = senaryo.secenekler.map((s, i) => {
+    const h = s.ham_index ?? i;
+    const ham = olay.secenekler[h];
+    if (!ham) return s;
+    return {
+      ...s,
+      metin: doldur(ham.metin, state, olay.hayvanTuru),
+      basarili_sonuc: ham.basariliSonuc,
+      basarisiz_sonuc: ham.basarisizSonuc,
+      kilit_nedeni: s.kilitli ? (kilitNedeni(ham, state) ?? s.kilit_nedeni) : s.kilit_nedeni,
+    };
+  });
+  return {
+    olay,
+    senaryo: {
+      ...senaryo,
+      olay_basligi: olay.baslik,
+      olay_metni: doldur(olay.metin, state, olay.hayvanTuru),
+      secenekler,
+    },
+  };
+}
+
 export interface SecilenOlay {
   olay: OlayTanimi;
   senaryo: SenaryoResponse;
