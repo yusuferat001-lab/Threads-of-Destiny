@@ -1182,6 +1182,7 @@ export const OLAY_SOSYALLESME: OlayTanimi[] = [
   {
     id: "sosyal_kahvehane_siyaset_tartismasi",
     kategori: "siyaset",
+    cag: "Sanayi Devrimi", // gazete: Orta Çağ pazar meydanında anakronizm olurdu
     sosyallesmeYeri: "pazar_meydani",
     ton: "agir",
     gorsel: "📰",

@@ -369,7 +369,7 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
         },
         basarisizSonuc: {
           mesaj:
-            "A shell landed beside you; your old strength won't return.",
+            "You took a heavy blow at the front; your old strength won't return.",
         },
       },
       {
@@ -407,7 +407,7 @@ export const OLAYLAR_ESYA_VE_GIZEM_EN: Record<string, OlayCeviri> = {
         },
         basarisizSonuc: {
           mesaj:
-            "A shell landed beside you; your old strength won't return.",
+            "You took a heavy blow at the front; your old strength won't return.",
         },
       },
       {

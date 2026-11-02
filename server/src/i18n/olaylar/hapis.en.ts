@@ -348,7 +348,7 @@ export const OLAYLAR_HAPIS_EN: Record<string, OlayCeviri> = {
   hapis_zar_masasi_baskini: {
     baslik: "The Dice Table Raid",
     metin:
-      "Gendarmes raided the tavern with the underground dice table. Everyone scatters; you're known as 'one of the regulars'.",
+      "Guards raided the tavern with the underground dice table. Everyone scatters; you're known as 'one of the regulars'.",
     secenekler: [
       {
         metin: "Slip out the back door.",

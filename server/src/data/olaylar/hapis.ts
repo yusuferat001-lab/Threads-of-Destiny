@@ -486,7 +486,7 @@ export const OLAY_HAPIS: OlayTanimi[] = [
     sureYilMin: 1,
     sureYilMax: 1,
     baslik: "Zar Masası Baskını",
-    metin: "Zar masasının olduğu meyhaneye jandarma bastı. Herkes kaçışıyor; sen 'müdavimlerden biri'sin.",
+    metin: "Zar masasının olduğu meyhaneye muhafızlar bastı. Herkes kaçışıyor; sen 'müdavimlerden biri'sin.",
     secenekler: [
       {
         metin: "Arka kapıdan sıvış.",

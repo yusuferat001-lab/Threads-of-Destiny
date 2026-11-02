@@ -1720,7 +1720,7 @@ export const OLAY_GENEL: OlayTanimi[] = [
             tur: "kalici",
             yil_basi_saglik: -1.4,
           },
-          mesaj: "Bir gülle seni havaya uçurdu. Günlerce cesetler arasında ölü sanılıp bırakıldın.",
+          mesaj: "Ağır bir darbe seni yere serdi. Günlerce cesetler arasında ölü sanılıp bırakıldın.",
           detay: "Uyandığında bedeninden bir parça eksikti.",
         },
       },

@@ -650,7 +650,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
             tur: "kalici",
             yil_basi_saglik: -0.7,
           },
-          mesaj: "Top mermisi yanına düştü; eski gücün dönmeyecek.",
+          mesaj: "Cephede ağır bir darbe aldın; eski gücün dönmeyecek.",
         },
       },
       {
@@ -749,7 +749,7 @@ export const OLAY_ESYA_VE_GIZEM: OlayTanimi[] = [
             tur: "kalici",
             yil_basi_saglik: -0.7,
           },
-          mesaj: "Top mermisi yanına düştü; eski gücün dönmeyecek.",
+          mesaj: "Cephede ağır bir darbe aldın; eski gücün dönmeyecek.",
         },
       },
       {

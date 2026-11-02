@@ -57,3 +57,25 @@ describe("ekonomi sömürülerini kapatma", () => {
     expect(hesaplaSkorKirilimi(s).skor).toBeLessThanOrEqual(onceSkor);
   });
 });
+
+describe("ölüm nedeni gerçeğe uygun yazılır", () => {
+  it("nakdi olan karakter sefil koşullardan ölünce 'borç ve yoksulluk' yazılmaz", async () => {
+    const { yilGec } = await import("../src/game/gameEngine");
+    const { ogretileriTamamla } = await import("./_ogreti");
+    const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba", undefined, "tr", undefined, "ilerle");
+    await mesleğiAta(state.id, "Zanaatkâr");
+    const s = await stateGetir(state.id);
+    ogretileriTamamla(s);
+    if (s.urun_secim_bekliyor) s.urun_secim_bekliyor = false;
+    s.yil_sayaci = 0; // olay beklemesin, İLERLE ile yıl geçsin
+    s.para = 500;
+    s.saglik = 1;
+    s.konut_id = "nemli_baraka"; // yıllık −4 sağlık
+    s.yasam_secimi_id = "bayat_artik"; // yıllık −4 sağlık
+    await yilGec(s.id);
+    expect(s.aktif).toBe(false);
+    expect(s.para).toBeGreaterThan(0);
+    expect(s.olum_nedeni_ceviri?.tr).not.toMatch(/Borç ve yoksulluk/);
+    expect(s.olum_nedeni_ceviri?.en).not.toMatch(/debt and poverty/);
+  });
+});

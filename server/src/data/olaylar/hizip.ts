@@ -936,6 +936,7 @@ export const OLAY_HIZIP: OlayTanimi[] = [
   },
   {
     id: "hizip_yeni_nizam_sabotaj_teklifi",
+    cag: "Sanayi Devrimi", // dinamit: Orta Çağ'da anakronizm olurdu
     agirlik: 1.6,
     kategori: "savas",
     meslekler: [

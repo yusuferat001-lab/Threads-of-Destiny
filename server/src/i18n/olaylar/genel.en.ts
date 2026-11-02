@@ -844,7 +844,7 @@ export const OLAYLAR_GENEL_EN: Record<string, OlayCeviri> = {
           detay: "You can't forget the faces; history notes your name.",
         },
         basarisizSonuc: {
-          mesaj: "A cannonball blew you skyward. For days you lay among corpses, left for dead.",
+          mesaj: "A heavy blow struck you down. For days you lay among corpses, left for dead.",
           detay: "When you woke, part of your body was gone.",
         },
       },

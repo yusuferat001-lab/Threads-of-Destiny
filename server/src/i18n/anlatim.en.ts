@@ -445,6 +445,7 @@ export const ANLATIM_EN: Record<string, string> = {
   "Sağlığındaki bu düşüş moralini de eziyor.": "This decline in your health is crushing your spirits too.",
   "Yaşın ilerledikçe bedenin eskisi kadar dayanmıyor.": "As you age, your body no longer holds up as it once did.",
   "Borç ve yoksulluk içinde tükendi.": "Wasted away in debt and poverty.",
+  "Sefil yaşam koşulları seni tüketti.": "Squalid living conditions wore you down.",
   "🎖️ Artık {0}'sin! Yıllık kazancın: {1} {birim}.": "🎖️ You are now a {0}! Your yearly earnings: {1} {birim}.",
 
   // ---- gameEngine: yatırım / mağaza / zar / mülk mesajları ----

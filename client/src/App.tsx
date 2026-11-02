@@ -151,7 +151,7 @@ import { yenilikGosterilmeliMi, yenilikGorulduIsaretle } from './yenilikler';
 import { istemciId, ziyaretBildir } from './istemci';
 import { gunlukSeriKontrolEt, gunlukSeriGetir, type GunlukSeriSonuc } from './gunlukSeri';
 import { goldBakiyeGetir, olumGoldHesapla, goldEkle, olumGoldOdendiMi, olumGoldOdendiIsaretle } from './gold';
-import { sonucIkonuGetir, unUnvani, MESLEK_KATEGORI, yatkinlikEtiketi, meslekYatkinlikOnizleme } from './bolgeTema';
+import { sonucIkonuGetir, unUnvani, MESLEK_KATEGORI, meslekYatkinlikEtiketi, meslekYatkinlikOnizleme } from './bolgeTema';
 import { formatPara, formatYuzde } from './format';
 import { bic } from './i18n';
 import { DilContext, dilCtxYap } from './DilContext';
@@ -2452,7 +2452,7 @@ function App() {
                 {meslekler.map((meslek) => {
                   const kategori = MESLEK_KATEGORI[meslek];
                   const puan = kategori ? karakter?.yatkinliklar[kategori] ?? 0 : 0;
-                  const { etiket, simge } = yatkinlikEtiketi(puan, dil);
+                  const { etiket, simge } = meslekYatkinlikEtiketi(puan, dil);
                   const onizleme = meslekYatkinlikOnizleme(puan);
                   const yuzde = (v: number) => formatYuzde(dil, v, true);
                   return (

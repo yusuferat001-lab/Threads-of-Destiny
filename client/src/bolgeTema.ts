@@ -211,6 +211,23 @@ export function meslekYatkinlikOnizleme(
   return { seviye: 2, zar: 0, maas: 0, tecrube: 0, sohret: 0, musteri: 0 };
 }
 
+/**
+ * Meslek seçim kartındaki yatkınlık etiketi: bonus satırıyla (meslekYatkinlikOnizleme) aynı
+ * 5 kademeden türetilir; eski genel `yatkinlikEtiketi` eşikleri kademelerle uyuşmadığı için
+ * kartta "Nötr (-6)" yazıp altında "Zar -%15" gösteriliyordu.
+ */
+export function meslekYatkinlikEtiketi(puan: number, dil: Dil = 'tr'): { etiket: string; simge: string } {
+  const tablo: Record<number, [string, string, string]> = {
+    1: ['Yatkın Değil', 'Unsuited', '👎'],
+    2: ['Nötr', 'Neutral', '➖'],
+    3: ['Yatkın', 'Apt', '👍'],
+    4: ['Çok Yatkın', 'Very Apt', '🔥'],
+    5: ['Doğuştan Yetenekli', 'Naturally Gifted', '🌟'],
+  };
+  const [tr, en, simge] = tablo[meslekYatkinlikOnizleme(puan).seviye];
+  return { etiket: dil === 'en' ? en : tr, simge };
+}
+
 interface DonemselTema {
   ad: string;
   adEn: string;

@@ -2222,7 +2222,12 @@ function yilIlerlet(g: YilIlerletGirdi): { yasArtisi: number; zamanAnlatimi: str
 
         }
       } else {
-        state.olum_nedeni_ceviri = ikiDilT("Borç ve yoksulluk içinde tükendi.");
+        // Sebep gerçeğe uygun yazılır: borç artık sağlığı düşürmez (§45 v11); nakdi olan karakter
+        // "borç ve yoksulluk"tan ölmüş görünmesin — asıl sebep konut/yemek koşullarıdır.
+        state.olum_nedeni_ceviri =
+          state.para < 0
+            ? ikiDilT("Borç ve yoksulluk içinde tükendi.")
+            : ikiDilT("Sefil yaşam koşulları seni tüketti.");
         state.olum_nedeni = state.dil === "en" ? state.olum_nedeni_ceviri.en : state.olum_nedeni_ceviri.tr;
       }
     }

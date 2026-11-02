@@ -199,7 +199,7 @@ export function UstSerit({
         <StatModulu
           ikon="💰"
           etiket={m.usPara}
-          deger={Math.abs(para) >= 1000 ? String(Math.round(para)) : formatPara(para)}
+          deger={Math.abs(para) >= 100 ? String(Math.round(para)) : formatPara(para)}
           degerBirim={paraBirimi}
           tehlike={para < 0}
           takip={para}
