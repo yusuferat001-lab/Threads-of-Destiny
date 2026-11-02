@@ -1052,7 +1052,7 @@ function astlariGuncelle(state: CharacterState, tanim: RutbeTanimi, seviye: numb
  *  - Çağrı başına en fazla +1 kademe.
  */
 export function rutbeGuncelle(state: CharacterState): void {
-  const tanim = rutbeTanimiGetir(state.meslek, state.cag, state.din_kultur);
+  const tanim = rutbeTanimiGetir(state.meslek, state.cag, state.din_kultur, state.bolge);
   if (!tanim) {
     state.rutbe = state.meslek || "";
     state.rutbe_seviye = Math.max(1, state.rutbe_seviye || 1);

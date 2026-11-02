@@ -1127,6 +1127,8 @@ export interface BirlikSavasKarari {
 
 /** Aktif savaştaki birlik durumu (savaş bitince null). */
 export interface BirlikSavasDurumu {
+  /** Savaş başlarken (seferberlikten önce) er sayısı; savaş sonu terhis bu sayının altına inmez. */
+  er_once?: number;
   baslangic_yili: number;
   /** Savaş başında seçilen seferberlik türü (null = henüz seçilmedi). */
   seferberlik: BirlikSeferberlik | null;

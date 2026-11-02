@@ -144,6 +144,12 @@ export const TALIM_SECKIN_GIRIS = 70;
 // ── Moral ve sertlik ────────────────────────────────────────────────────────
 export const MORAL_BASLANGIC = 60;
 export const MORAL_YONELIM = 1;
+/** Moral dipteyken yıllık geri çekilmenin üst sınırı (puan). */
+export const MORAL_YONELIM_TAVAN = 4;
+/** Firar ve kayıpların orduyu indirebileceği en düşük er sayısı (çekirdek kadro). */
+export const MIN_CEKIRDEK_ER = 3;
+/** Yıllık moral değişiminin (olaylar + etkenler toplamı) en fazla düşebileceği miktar. */
+export const MORAL_YILLIK_TABAN = 22;
 /** Moralin güce etkisi (bant üst sınırı moral < esik). */
 export const MORAL_GUC_BANTLARI: { altinda: number; guc: number }[] = [
   { altinda: 30, guc: -0.2 },

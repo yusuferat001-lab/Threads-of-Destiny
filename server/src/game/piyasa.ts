@@ -81,7 +81,10 @@ function uyeleriKur(state: CharacterState): Uye[] {
   const P = Math.max(0, state.pazar_musteri ?? 0);
   const d = musteriDagilimi(state);
   const uyeler: Uye[] = [
-    { id: "oyuncu", n: d.oyuncu, alt: OYUNCU_TABAN_MUSTERI, ust: P * OYUNCU_TAVAN_PAY },
+    // Asker: er sayısı (müşteri) piyasa akışlarında sabittir; er yalnız birlik motorundan değişir.
+    state.meslek === "Asker"
+      ? { id: "oyuncu", n: d.oyuncu, alt: d.oyuncu, ust: d.oyuncu }
+      : { id: "oyuncu", n: d.oyuncu, alt: OYUNCU_TABAN_MUSTERI, ust: P * OYUNCU_TAVAN_PAY },
     { id: "kucuk", n: d.kucuk, alt: P * KUCUK_TABAN_PAY, ust: P },
   ];
   for (const r of aktifRakipler(state)) {
@@ -397,6 +400,11 @@ export function rakipAdiniGuncelle(state: CharacterState): void {
  */
 export function piyasaYillikUygula(state: CharacterState, yasArtisi: number): string | null {
   if (yasArtisi <= 0 || !PAZAR_ADLARI[state.meslek] || !pazarVarMi(state)) return null;
+  // Asker: rakip komutanlar ve diğer ordular birlik motorunda (pazarYakinsat, saldırılar) hareket eder.
+  if (state.meslek === "Asker") {
+    for (const r of aktifRakipler(state)) r.husumet = Math.max(15, r.husumet - 0.5 * yasArtisi);
+    return null;
+  }
   const mesaj: string | null = null;
   const uzakta = state.etiketler.includes("hapiste") || state.etiketler.includes("yolculukta");
   for (let i = 0; i < yasArtisi; i++) {

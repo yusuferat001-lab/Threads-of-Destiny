@@ -312,7 +312,7 @@ export const HAYAT_AMAC_HAVUZU: AmacTanimi[] = [
     id: "ordu_kurucusu", zorluk: "zor", kontrolAni: "herhangi", meslekler: ["Asker"],
     baslik: { tr: "Ordu Kurucusu", en: "Army-Builder" },
     aciklama: { tr: "Ordu mevcudunu 280'e, teçhizatını 85'e çıkar — komutanının güvenini de kaybetmeden.", en: "Build your army to 280 troops with equipment at 85 — without losing your commander's trust." },
-    kosul: (s) => s.ordu_mevcudu >= 280 && s.ordu_techizat_seviyesi >= 85 && s.patron_iliski >= 50,
+    kosul: (s) => s.ordu_mevcudu >= 280 && s.ordu_techizat_seviyesi >= 85,
   },
 
   // ============================ TÜCCAR ============================

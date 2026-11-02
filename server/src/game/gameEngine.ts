@@ -5,6 +5,9 @@ import {
   birlikOlayEtkisiUygula,
   birlikSec,
   doktrinSec,
+  ganimetSaklamaCezasi,
+  ganimetSaklamaEngeli,
+  ganimetSaklamaKazanci,
   kaliteYukselt,
   kusatmaAyarla,
   savasKarariBekliyorMu,
@@ -4709,6 +4712,8 @@ function kotuIsEtkiUygula(state: CharacterState, etki: KotuIsEtki, enflasyon: nu
   if (etki.uretim_kapasitesi && state.meslek === "Zanaatkâr") {
     state.uretim_kapasitesi = Math.min(100, Math.max(0, state.uretim_kapasitesi + etki.uretim_kapasitesi));
   }
+  if (etki.ganimet_sakla === "kazan") state.para = paraYuvarla(state.para + ganimetSaklamaKazanci(state));
+  else if (etki.ganimet_sakla === "ceza") state.para = paraYuvarla(state.para - ganimetSaklamaCezasi(state));
   if (etki.yonetim_iliski) state.yonetim_iliski += etki.yonetim_iliski;
   if (etki.patron_iliski) state.patron_iliski += etki.patron_iliski;
   if (etki.gumruk_indirim_yil && state.isletme) state.isletme.gumruk_indirim_bitis = state.yil + etki.gumruk_indirim_yil;
@@ -4745,6 +4750,10 @@ export async function kotuIsYap(id: string, tur: string, secenek: KotuIsSecenek 
   if (!tanim || !uygunKotuIsler(state.meslek, state.cag).includes(tanim)) throw new Error("Geçersiz iş.");
   const kalan = kotuIsKalanYil(state, tanim.id);
   if (kalan > 0) throw new Error("Bu iş için ortalık henüz sakinleşmedi; biraz sonra yeniden deneyebilirsin.");
+  if (tanim.id === "ganimeti_sakla") {
+    const engel = ganimetSaklamaEngeli(state);
+    if (engel) throw new Error(engel);
+  }
 
   const enflasyon = enflasyonCarpani(state);
   const dil = state.dil;
@@ -5244,7 +5253,7 @@ export interface IsletmeGorunumu {
 }
 
 function rolAciklamasi(_state: CharacterState, profilMod: string | undefined, tur: IsletmeRolTuru): IkiDilMetin {
-  const m = ROL_ACIKLAMALARI[profilMod === "uretim" ? "uretim" : profilMod === "cemaat" ? "cemaat" : "ticaret"][tur];
+  const m = ROL_ACIKLAMALARI[profilMod === "uretim" ? "uretim" : profilMod === "cemaat" ? "cemaat" : profilMod === "birlik" ? "birlik" : "ticaret"][tur];
   return { tr: m.tr, en: m.en };
 }
 
