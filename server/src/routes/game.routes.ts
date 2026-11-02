@@ -61,6 +61,13 @@ import {
   isletmeDurumGetir,
   isletmeKararVer,
   isletmeOgretiSec,
+  birlikDoktrinSec,
+  birlikKaliteYukselt,
+  birlikBirlikSec,
+  birlikKusatma,
+  birlikTerhis,
+  birlikSavasKarariGetir,
+  birlikSavasKarariVer,
   isletmeUrunSec,
   isletmeYatirimYap,
   isletmeDepoDoldur,
@@ -320,10 +327,17 @@ gameRouter.get("/:id/isletme", async (req, res) => {
 });
 
 gameRouter.post("/:id/isletme/karar", async (req, res) => {
-  const { hatlar, cemaat } = req.body ?? {};
+  const { hatlar, cemaat, birlik } = req.body ?? {};
   if (!Array.isArray(hatlar)) return res.status(400).json({ hata: "Geçersiz karar." });
   try {
-    res.json(await isletmeKararVer(req.params.id, hatlar, cemaat && typeof cemaat === "object" ? cemaat : undefined));
+    res.json(
+      await isletmeKararVer(
+        req.params.id,
+        hatlar,
+        cemaat && typeof cemaat === "object" ? cemaat : undefined,
+        birlik && typeof birlik === "object" ? birlik : undefined
+      )
+    );
   } catch (err) {
     res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
@@ -354,6 +368,75 @@ gameRouter.post("/:id/isletme/ogreti", async (req, res) => {
   if (typeof ogretiId !== "string") return res.status(400).json({ hata: "Geçersiz öğreti." });
   try {
     res.json(await isletmeOgretiSec(req.params.id, ogretiId));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+// ── Asker (birlik modu) — hepsi turu tüketmez ───────────────────────────────
+gameRouter.post("/:id/birlik/doktrin", async (req, res) => {
+  const { doktrinId } = req.body ?? {};
+  if (typeof doktrinId !== "string") return res.status(400).json({ hata: "Geçersiz doktrin." });
+  try {
+    res.json(await birlikDoktrinSec(req.params.id, doktrinId));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/birlik/kalite", async (req, res) => {
+  const { hedef, yuzde } = req.body ?? {};
+  if ((hedef !== "orta" && hedef !== "yuksek") || typeof yuzde !== "number") return res.status(400).json({ hata: "Geçersiz teçhizat kalitesi." });
+  try {
+    res.json(await birlikKaliteYukselt(req.params.id, hedef, yuzde));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/birlik/birlik", async (req, res) => {
+  const { seviye, turler } = req.body ?? {};
+  if (typeof seviye !== "number" || !Array.isArray(turler)) return res.status(400).json({ hata: "Geçersiz birlik seçimi." });
+  try {
+    res.json(await birlikBirlikSec(req.params.id, seviye, turler.filter((t: unknown): t is string => typeof t === "string")));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/birlik/kusatma", async (req, res) => {
+  const { seviye } = req.body ?? {};
+  if (typeof seviye !== "number") return res.status(400).json({ hata: "Geçersiz kuşatma seviyesi." });
+  try {
+    res.json(await birlikKusatma(req.params.id, seviye));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/birlik/terhis", async (req, res) => {
+  const { adet } = req.body ?? {};
+  if (typeof adet !== "number") return res.status(400).json({ hata: "Geçersiz terhis sayısı." });
+  try {
+    res.json(await birlikTerhis(req.params.id, adet));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.get("/:id/birlik/savas-karari", async (req, res) => {
+  try {
+    res.json({ karar: await birlikSavasKarariGetir(req.params.id) });
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/birlik/savas-karari", async (req, res) => {
+  const { secim } = req.body ?? {};
+  if (typeof secim !== "string") return res.status(400).json({ hata: "Geçersiz seçim." });
+  try {
+    res.json(await birlikSavasKarariVer(req.params.id, secim));
   } catch (err) {
     res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }

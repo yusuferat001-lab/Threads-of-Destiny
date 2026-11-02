@@ -57,7 +57,7 @@ import {
   odenmeyenCeza,
   type GorevTanimi,
 } from "../data/birlik";
-import { adaylariYenile, ekipBonuslari, korumaHesapla, type IsletmeBaglami } from "./isletme";
+import { adaylariYenile, ekipBonuslari, imtiyazAktifMi, korumaHesapla, type IsletmeBaglami } from "./isletme";
 
 /**
  * Asker "birlik" işletmesi — durum, güç, limit ve gelir/gider hesabı (2026-11).
@@ -509,7 +509,7 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   const mizrakliAkin = (turPaylari(b).mizrakli ?? 0) > 0 ? 1 - 0.1 * clamp((turPaylari(b).mizrakli ?? 0) / 0.15, 0, 1.67) : 1;
   const gelirC = (1 + doktrin.gelir + (yol.gelir ?? 0)) * sertlikGelirCarpani(b) * moralC * bg.satisCarpani;
   const ganimetC =
-    (1 + doktrin.ganimet + (yol.ganimet ?? 0)) * sertlikGelirCarpani(b) * rol.ganimet * ikmal.ganimet * (sec.ganimetCarpani ?? 1) * bg.satisCarpani;
+    (1 + doktrin.ganimet + (yol.ganimet ?? 0)) * sertlikGelirCarpani(b) * rol.ganimet * ikmal.ganimet * (sec.ganimetCarpani ?? 1) * bg.satisCarpani * (imtiyazAktifMi(state, "sefer_emri") ? 1.25 : 1);
   const mC = masrafCarpani(state);
   const sold = r2(SOLD[rutbe] * bg.enflasyon * (1 + doktrin.sold + (yol.sold ?? 0)));
   const erBasiGelir = r2(er * ER_BASI_GELIR * bg.enflasyon);
@@ -538,7 +538,7 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   const erMasrafi = er * ER_MASRAFI * bg.giderEnflasyon * (1 + turBakim) * mC;
   const donem = state.ulke.savasta ? "savas" : state.veba?.aktif ? "veba" : state.ulke.donem?.tur ?? "durgunluk";
   const seferEk = b.savas?.seferberlik ? { genel: 0.2, dengeli: 0.08, secme: 0 }[b.savas.seferberlik] : 0;
-  const erzak = er * ERZAK_BIRIMI * bg.giderEnflasyon * (ERZAK_DONEM_CARPANI[donem as keyof typeof ERZAK_DONEM_CARPANI] ?? 1) * (1 + turErzak) * (1 + seferEk) * mC * ikmal.maliyet;
+  const erzak = er * ERZAK_BIRIMI * bg.giderEnflasyon * (ERZAK_DONEM_CARPANI[donem as keyof typeof ERZAK_DONEM_CARPANI] ?? 1) * (1 + turErzak) * (1 + seferEk) * mC * ikmal.maliyet * (imtiyazAktifMi(state, "levazim_muafiyeti") ? 0.8 : 1);
   const kislaBakim = KISLA_BAKIM[kislaKademesi(state)] * bg.giderEnflasyon;
   const techizatBakim =
     (b.kalite.orta * KALITE_FIYATI.orta + b.kalite.yuksek * KALITE_FIYATI.yuksek) * KALITE_BAKIM_ORANI * bg.giderEnflasyon;

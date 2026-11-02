@@ -19,6 +19,8 @@ import {
   ARAZI_SIRASI,
   ARAZI_TERCIH_IHTIMALI,
   BIRLIK_KILIT_YIL,
+  DEVLET_PAYI,
+  GANIMET_GUC_BIRIMI,
   BIRLIK_SEVIYE_PAYI,
   DOKTRINLER,
   ESIR_YETKI_RUTBE,
@@ -614,6 +616,8 @@ export interface BirlikGorunumu {
     talimMasrafi: number;
     toplamGider: number;
     net: number;
+    /** Bir barış çatışması (haydut/sınır) zaferinde oyuncuya kalacak tahmini ganimet (askerî güçle orantılı). */
+    barisGanimetTahmini: number;
   };
   yol: string | null;
 }
@@ -743,6 +747,7 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
       sold: r2(h.sold), erBasiGelir: r2(h.erBasiGelir), gorevGeliri: r2(h.gorevGeliri), ganimetNet: r2(h.ganimetNet), devletPayi: r2(h.devletPayi), erPayi: r2(h.erPayi),
       toplamGelir: r2(h.toplamGelir), erMasrafi: r2(h.erMasrafi), erzak: r2(h.erzak), gorevMasrafi: r2(h.gorevMasrafi), kislaBakim: r2(h.kislaBakim),
       techizatBakim: r2(h.techizatBakim), kusatmaBakim: r2(h.kusatmaBakim), talimMasrafi: r2(h.talimMasrafi), toplamGider: r2(h.toplamGider), net: r2(h.net),
+      barisGanimetTahmini: r2(d.guc * GANIMET_GUC_BIRIMI * 1.15 * bg.enflasyon * (1 - DEVLET_PAYI) * (1 - GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran)),
     },
     yol,
   };

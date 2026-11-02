@@ -44,7 +44,7 @@ const DONEM_ETKI_ARALIKLARI: Record<DonemTuru, EtkiAraliklari> = {
 
 // ── Savaş ──────────────────────────────────────────────────────────────────
 /** Durgunluk/kıtlıkta (bollukta asla) savaşın yıllık başlama ihtimali. */
-export const SAVAS_YILLIK_IHTIMAL = 0.18;
+export const SAVAS_YILLIK_IHTIMAL = 0.25;
 /** Son savaşın bitişinden sonra yeni savaş için beklenecek yıl. */
 export const SAVAS_COOLDOWN_YIL = 6;
 export const SAVAS_SURE: Aralik = [4, 5];
@@ -52,13 +52,14 @@ export const SAVAS_SURE: Aralik = [4, 5];
 export const SAVAS_VERGI: Aralik = [7, 10];
 const SAVAS_ETKI_ARALIKLARI: EtkiAraliklari = {
   temelTalep: [0, 0],
-  temelFiyat: [10, 18],
-  luksTalep: [-30, -20],
+  // Asker'in birlik modu eklenirken savaşın diğer mesleklere etkisi (zarar ve bonus) %10 kısıldı.
+  temelFiyat: [9, 16],
+  luksTalep: [-27, -18],
   luksFiyat: [0, 0],
-  yasamGideri: [4, 6],
-  maas: [-10, -6],
-  // v10: savaşta toplam pazar yılda −%1.5…−2.5 (herkesin müşterisi aynı oranda erir).
-  pazarBuyume: [-25, -15],
+  yasamGideri: [4, 5],
+  maas: [-9, -5],
+  // v10: savaşta toplam pazar yılda −%1.5…−2.5 (herkesin müşterisi aynı oranda erir); %10 kısıldı.
+  pazarBuyume: [-22, -14],
 };
 
 // ── Veba ───────────────────────────────────────────────────────────────────

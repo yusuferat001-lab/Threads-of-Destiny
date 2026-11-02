@@ -1,3 +1,22 @@
+import {
+  birlikGorunumuHesapla,
+  birlikKaybiUygula,
+  birlikKararUygula,
+  birlikOlayEtkisiUygula,
+  birlikSec,
+  doktrinSec,
+  kaliteYukselt,
+  kusatmaAyarla,
+  savasKarariBekliyorMu,
+  savasKarariDurumu,
+  savasKarariVer,
+  terhisEt,
+  type BirlikGorunumu,
+  type BirlikKararGirdisi,
+  type SavasKarariDurumu,
+} from "./birlikIslem";
+import { birlikSenkron, doktrinBekliyorMu } from "./birlik";
+import { yeniErEkle } from "./birlikYil";
 import { randomUUID } from "crypto";
 import { gostergeDetayiUret, etkenGunluguNotEt, gostergeStatiMi, GostergeDetayi } from "./gostergeDetay";
 import { dunyaGecmisiUret, DunyaGecmisi } from "./dunyaGecmisi";
@@ -57,8 +76,6 @@ import {
   enflasyonYuzdesiHesapla,
   giderEnflasyonYuzdesiHesapla,
   meslekMetrikCarpani,
-  orduKaybiUygula,
-  orduBuyumesiDene,
   konutDegistir as konutDegistirState,
   yasamSecimiDegistir as yasamSecimiDegistirState,
   hayatAmaciKontrolEt,
@@ -1282,6 +1299,8 @@ export async function senaryoUret(id: string): Promise<SenaryoResponse> {
     throw new Error("Şu an çözülecek bir olay yok; yıl ilerletmelisin.");
   }
   if (ogretiBekliyorMu(oturum.state)) throw new Error("Önce öğretini seçmelisin.");
+  if (doktrinBekliyorMu(oturum.state)) throw new Error("Önce doktrinini seçmelisin.");
+  if (savasKarariBekliyorMu(oturum.state)) throw new Error("Önce savaş kararlarını vermelisin.");
   if (urunSecimiBekliyorMu(oturum.state)) throw new Error("Önce başlangıç ürününü seçmelisin.");
   if (vergiBekliyorMu(oturum.state)) throw new Error("Önce ekstra vergi talebini yanıtlamalısın.");
 
@@ -1809,6 +1828,8 @@ export async function secimUygula(id: string, secenekIndex: number): Promise<Sec
   if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
   if (!state.meslek) throw new Error("Önce bir meslek seçmelisin.");
   if (ogretiBekliyorMu(state)) throw new Error("Önce öğretini seçmelisin.");
+  if (doktrinBekliyorMu(state)) throw new Error("Önce doktrinini seçmelisin.");
+  if (savasKarariBekliyorMu(state)) throw new Error("Önce savaş kararlarını vermelisin.");
   if (urunSecimiBekliyorMu(state)) throw new Error("Önce başlangıç ürününü seçmelisin.");
   if (vergiBekliyorMu(state)) throw new Error("Önce ekstra vergi talebini yanıtlamalısın.");
 
@@ -1919,6 +1940,8 @@ export async function yilGec(id: string): Promise<SecimSonucu & { olayBekliyor: 
   if (!state.meslek) throw new Error("Önce bir meslek seçmelisin.");
   if (state.zaman_modeli !== "ilerle") throw new Error("Bu oyun yıl geçirme modunda değil.");
   if (ogretiBekliyorMu(state)) throw new Error("Önce öğretini seçmelisin.");
+  if (doktrinBekliyorMu(state)) throw new Error("Önce doktrinini seçmelisin.");
+  if (savasKarariBekliyorMu(state)) throw new Error("Önce savaş kararlarını vermelisin.");
   if (urunSecimiBekliyorMu(state)) throw new Error("Önce başlangıç ürününü seçmelisin.");
   if (vergiBekliyorMu(state)) throw new Error("Önce ekstra vergi talebini yanıtlamalısın.");
   if (olayBekliyorMu(oturum)) throw new Error("Önce bekleyen olayı çözmelisin.");
@@ -2077,7 +2100,6 @@ function yilIlerlet(g: YilIlerletGirdi): { yasArtisi: number; zamanAnlatimi: str
           // Dünya dönemi (bolluk/durgunluk/kıtlık): geçen yılları işler, süresi dolan
           // dönemi değiştirir, kıtlık yıllarında sağlık düşer (ölüm kontrolü aşağıda).
           donemIlerlet(state, yasArtisi); // mesajları yazılmaz: dönem sol paneldeki dünya etkilerinde görünür
-          orduBuyumesiDene(state, yasArtisi);
           krizEtkisiUygula(state, yasArtisi);
           if (state.saglik <= 0) {
             checkDeath(state, true, ikiDilT("Kıtlığın getirdiği yoksunlukla tükendi."));
@@ -2305,7 +2327,7 @@ async function sonucuUygulaVeIlerlet(
   const sucKazanci = sucKazanciUygula(etki, basarili);
   if (sucKazanci === "gizli" && etki.suc_sinifi) gizliSucKaydet(state, etki.suc_sinifi, mevcutOlay.baslik);
   if (mevcutOlay.kategori === "savas") {
-    orduKaybiUygula(state, basarili);
+    birlikKaybiUygula(state, basarili);
   }
 
   // Alkollü bir sosyalleşme mekânında (meyhane/pub/ordugâh çadırı) yaşanan her olay
@@ -2344,9 +2366,8 @@ async function sonucuUygulaVeIlerlet(
     const zorlananYerlesim = yerlesimGetir(etki.yerlesim_zorla);
     if (zorlananYerlesim) state.yerlesim = zorlananYerlesim.ad;
   }
-  if (etki.ordu_techizat_artis) {
-    state.ordu_techizat_seviyesi = Math.min(100, state.ordu_techizat_seviyesi + etki.ordu_techizat_artis);
-  }
+  // Asker (birlik modu): er, esir, moral, zar bonusu, erzak ve eski teçhizat ödülü.
+  birlikOlayEtkisiUygula(state, etki, isletmeBaglami(state));
   // v10: ticaret_sermaye_artis / nufuz_artis artık etkisiz (Tüccar/Din işletmesi bu sayaçları kullanmaz).
   if (etki.uretim_kapasitesi_artis) {
     state.uretim_kapasitesi = Math.min(100, Math.max(0, state.uretim_kapasitesi + etki.uretim_kapasitesi_artis));
@@ -3623,8 +3644,9 @@ interface YonetimIstekTanimi {
   uygula: (state: CharacterState, enflasyon: number) => void;
 }
 
-const ISLETMELI_MESLEKLER = ["Tüccar", "Zanaatkâr", "Din Adamı"];
-const ESKI_MESLEKLER = ["Asker"];
+const ISLETMELI_MESLEKLER = ["Tüccar", "Zanaatkâr", "Din Adamı", "Asker"];
+/** Eski kral/patron isteği tablosu artık hiçbir meslekte kullanılmaz (Asker de tek otoriteli birlik moduna geçti). */
+const ESKI_MESLEKLER: string[] = [];
 
 /** Bir isteğin kullanıcının mesleği için geçerli olup olmadığı. */
 function istekMeslegeUygunMu(tanim: YonetimIstekTanimi, meslek: string): boolean {
@@ -3725,6 +3747,26 @@ const SEHIR_ISTEKLERI: YonetimIstekTanimi[] = [
     uygula: (state, enflasyon) => {
       state.para = paraYuvarla(state.para + (15 + Math.floor(Math.random() * 11)) * enflasyon);
       musteriEkleTam(state, 0.01 * (state.pazar_musteri ?? 0));
+    },
+  },
+  // Asker'e özel (birlik modu)
+  {
+    id: "levazim_muafiyeti", hat: "yonetici", minIliski: 74, iliskiBedeli: 25, cooldownYil: 10, tabanSans: 62,
+    meslekler: ["Asker"], sehirSansi: true, rusvetBonus: 18,
+    uygula: (state) => imtiyazVer(state, "levazim_muafiyeti"),
+  },
+  {
+    id: "sefer_emri", hat: "yonetici", minIliski: 78, iliskiBedeli: 26, cooldownYil: 10, tabanSans: 60,
+    meslekler: ["Asker"], sehirSansi: true, rusvetBonus: 19,
+    uygula: (state) => imtiyazVer(state, "sefer_emri", 3),
+  },
+  {
+    id: "ek_kadro", hat: "yonetici", minIliski: 76, iliskiBedeli: 22, cooldownYil: 8, tabanSans: 64,
+    meslekler: ["Asker"], sehirSansi: true, rusvetBonus: 17,
+    uygula: (state) => {
+      const ek = Math.max(3, Math.round((state.meslek_musteri ?? 0) * 0.12));
+      yeniErEkle(state, ek, isletmeBaglami(state), { bedava: true });
+      birlikSenkron(state, isletmeBaglami(state).enflasyon);
     },
   },
   // Zanaatkâr'a özel
@@ -4637,7 +4679,6 @@ interface KotuIsSonucu {
  * artırır — artışın %25'i kadar. Yalnız pozitif artış, yalnız kendi meslek metriği.
  */
 const MESLEK_METRIK_ALANI: Record<string, keyof SonucEtkisi> = {
-  Asker: "ordu_techizat_artis",
   Zanaatkâr: "uretim_kapasitesi_artis",
 };
 /** KotuIsEtki.musteri değerleri bu pazar büyüklüğü referansıyla yazılmıştır; gerçek pazarda ölçeklenir. */
@@ -4667,9 +4708,6 @@ function kotuIsEtkiUygula(state: CharacterState, etki: KotuIsEtki, enflasyon: nu
   if (etki.musteri) musteriEkleTam(state, (etki.musteri * (state.pazar_musteri ?? PAZAR_REF_MUSTERI)) / PAZAR_REF_MUSTERI);
   if (etki.uretim_kapasitesi && state.meslek === "Zanaatkâr") {
     state.uretim_kapasitesi = Math.min(100, Math.max(0, state.uretim_kapasitesi + etki.uretim_kapasitesi));
-  }
-  if (etki.ordu_techizat && state.meslek === "Asker") {
-    state.ordu_techizat_seviyesi = Math.min(100, Math.max(0, state.ordu_techizat_seviyesi + etki.ordu_techizat));
   }
   if (etki.yonetim_iliski) state.yonetim_iliski += etki.yonetim_iliski;
   if (etki.patron_iliski) state.patron_iliski += etki.patron_iliski;
@@ -5164,6 +5202,8 @@ export interface CemaatGorunumu {
 
 export interface IsletmeGorunumu {
   aktif: boolean;
+  /** Asker'de birlik görünümü (güç dökümü, kalite, birlik, talim, görevler, doktrin, savaş); diğer mesleklerde null. */
+  birlik: BirlikGorunumu | null;
   /** Din Adamı'nda cemaat görünümü; diğer mesleklerde null. */
   cemaat: CemaatGorunumu | null;
   meslek: string;
@@ -5299,7 +5339,7 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
   const is = state.isletme;
   if (!profil || !is) {
     return {
-      aktif: false, cemaat: null, meslek: state.meslek, pazarPayi: 0, musteri: 0, pazarMusteri: state.pazar_musteri ?? 0,
+      aktif: false, birlik: null, cemaat: null, meslek: state.meslek, pazarPayi: 0, musteri: 0, pazarMusteri: state.pazar_musteri ?? 0,
       slot: { kullanilan: 0, toplam: 0 }, depo: { kullanilan: 0, kapasite: 0, kademe: 0, curumeYuzde: 0, bakim: 0, dukkanGideri: 0, dolulukYuzde: 0, doldurYuzdeleri: [], oto: { acik: false, yuzde: 50 } }, uretim: null,
       urunSecimi: { bekliyor: false, secilen: null, secenekler: [] }, hatlar: [], yatirimlar: [], calisanlar: [], calisanTavani: calisanLimiti(state),
       adaylar: [], adayYenilenmeKalanYil: 0, tedarikciBorcu: 0, sonDokum: null, beklenenBrutKar: 0,
@@ -5409,6 +5449,7 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
   const vergiAktif = state.vergi_carpan_bitis_yili != null && state.yil <= state.vergi_carpan_bitis_yili && (state.vergi_carpan ?? 1) < 1;
   return {
     aktif: true,
+    birlik: profil.mod === "birlik" && is.birlik ? birlikGorunumuHesapla(state, b) : null,
     cemaat: profil.mod === "cemaat" && is.cemaat ? cemaatGorunumuHesapla(state, b) : null,
     meslek: state.meslek,
     pazarPayi: Math.round(pazarPayiHesapla(state) * 1000) / 10,
@@ -5497,7 +5538,8 @@ export interface CemaatKararGirdisi {
 export async function isletmeKararVer(
   id: string,
   hatlar: IsletmeKararGirdisi[],
-  cemaatKarari?: CemaatKararGirdisi
+  cemaatKarari?: CemaatKararGirdisi,
+  birlikKarari?: BirlikKararGirdisi
 ): Promise<{ state: CharacterState; durum: IsletmeGorunumu }> {
   const oturum = await oturumGetir(id);
   const { state } = oturum;
@@ -5508,6 +5550,11 @@ export async function isletmeKararVer(
   const is = state.isletme;
   if (!Array.isArray(hatlar)) throw new Error("Geçersiz karar.");
   if (profil.mod === "cemaat") return cemaatKararVer(state, hatlar, cemaatKarari);
+  if (profil.mod === "birlik") {
+    birlikKararUygula(state, birlikKarari ?? {});
+    await oturumKaydet(state);
+    return { state, durum: isletmeGorunumuHesapla(state) };
+  }
   // Önce doğrula, sonra uygula: yarım uygulanmış karar kalmasın.
   const secenekler = new Map<string, IsletmeKararGirdisi>();
   for (const g of hatlar) {
@@ -5564,6 +5611,54 @@ async function cemaatKararVer(
   if (k?.ton !== undefined) cm.ton = k.ton as CemaatTon;
   await oturumKaydet(state);
   return { state, durum: isletmeGorunumuHesapla(state) };
+}
+
+
+// ── Asker (birlik modu) eylemleri: hepsi turu tüketmez ──────────────────────
+async function birlikEylemi<T extends object>(
+  id: string,
+  uygula: (state: CharacterState, bg: ReturnType<typeof isletmeBaglami>) => T
+): Promise<T & { state: CharacterState; durum: IsletmeGorunumu }> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  if (state.meslek !== "Asker" || !state.isletme?.birlik) throw new Error("Bu mesleğin bir birliği yok.");
+  const bg = isletmeBaglami(state);
+  const sonuc = uygula(state, bg);
+  await oturumKaydet(state);
+  return { ...sonuc, state, durum: isletmeGorunumuHesapla(state) };
+}
+
+/** Rütbeyle açılan doktrin seçimi (seçilmeden oyun devam etmez). */
+export function birlikDoktrinSec(id: string, doktrinId: string) {
+  return birlikEylemi(id, (state) => {
+    doktrinSec(state, doktrinId);
+    return {};
+  });
+}
+export function birlikKaliteYukselt(id: string, hedef: "orta" | "yuksek", yuzde: number) {
+  return birlikEylemi(id, (state, bg) => ({ sonuc: kaliteYukselt(state, hedef, yuzde, bg) }));
+}
+export function birlikBirlikSec(id: string, seviye: number, turler: string[]) {
+  return birlikEylemi(id, (state, bg) => ({ sonuc: birlikSec(state, seviye, turler as never, bg) }));
+}
+export function birlikKusatma(id: string, seviye: number) {
+  return birlikEylemi(id, (state, bg) => ({ sonuc: kusatmaAyarla(state, seviye, bg) }));
+}
+export function birlikTerhis(id: string, adet: number) {
+  return birlikEylemi(id, (state, bg) => ({ sonuc: terhisEt(state, adet, bg) }));
+}
+/** Savaş yılında sıradaki karar adımı (yoksa null). */
+export async function birlikSavasKarariGetir(id: string): Promise<SavasKarariDurumu | null> {
+  const { state } = await oturumGetir(id);
+  if (state.meslek !== "Asker" || !state.isletme?.birlik) return null;
+  return savasKarariDurumu(state);
+}
+export function birlikSavasKarariVer(id: string, secim: string) {
+  return birlikEylemi(id, (state, bg) => {
+    savasKarariVer(state, secim, bg);
+    return { sonraki: savasKarariDurumu(state) };
+  });
 }
 
 /** Rütbeyle açılan öğreti seçimi (seçilmeden oyun devam etmez). Turu tüketmez. */
@@ -6220,7 +6315,7 @@ export async function sosyallesmeOlayCoz(id: string, secenekIndex: number): Prom
   if (sucKazanciUygula(etki, basarili) === "gizli" && etki.suc_sinifi) {
     gizliSucKaydet(state, etki.suc_sinifi, mevcutOlay.baslik);
   }
-  if (mevcutOlay.kategori === "savas") orduKaybiUygula(state, basarili);
+  if (mevcutOlay.kategori === "savas") birlikKaybiUygula(state, basarili);
 
   // Sosyalleşme moral/masraf/ayyaş kuralı (yer.alkolluMu ise ziyaret sayacı + damga).
   etki.para = paraYuvarla((etki.para ?? 0) - SOSYALLESME_EK_MASRAF * enflasyonCarpani(state));
@@ -6241,9 +6336,8 @@ export async function sosyallesmeOlayCoz(id: string, secenekIndex: number): Prom
   state.rakip_puani += etki.rakip_puani ?? 0;
 
   // Meslek metrikleri + kariyer puanı + suç/aranma.
-  if (etki.ordu_techizat_artis) {
-    state.ordu_techizat_seviyesi = Math.min(100, state.ordu_techizat_seviyesi + etki.ordu_techizat_artis);
-  }
+  // Asker (birlik modu): er, esir, moral, zar bonusu, erzak ve eski teçhizat ödülü.
+  birlikOlayEtkisiUygula(state, etki, isletmeBaglami(state));
   // v10: ticaret_sermaye_artis / nufuz_artis artık etkisiz (Tüccar/Din işletmesi bu sayaçları kullanmaz).
   if (etki.uretim_kapasitesi_artis) {
     state.uretim_kapasitesi = Math.min(100, Math.max(0, state.uretim_kapasitesi + etki.uretim_kapasitesi_artis));

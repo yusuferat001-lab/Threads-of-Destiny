@@ -51,6 +51,7 @@ import {
   STOK_EKSI_NAKIT_LIMITI,
 } from "./isletme";
 import { isletmeMeslegiMi } from "../data/meslekProfilleri";
+import { ASKER_PAZAR_BASLANGIC, BASLANGIC_ER } from "../data/birlik";
 import {
   DONEM_SURE,
   DONEM_ADLARI,
@@ -666,7 +667,7 @@ export function saldiriGucuHesapla(state: CharacterState): number {
  */
 export function meslekMetrikCarpani(state: CharacterState, kategori: Kategori): number {
   if (MESLEK_KATEGORI[state.meslek] !== kategori) return 1;
-  if (state.meslek === "Asker") return 1 + saldiriGucuHesapla(state) / 200;
+  // Asker (birlik modu): olay parası çarpılmaz; gelir sold + görev + ganimetten gelir.
   // v10: Tüccar (ticaret sermayesi) ve Din Adamı (nüfuz) çarpanları KALDIRILDI — işletmeli meslekler
   // olay parasını çarpmaz; gelir işletme motorundan gelir (Zanaatkâr zaten ×1).
   // Zanaatkâr: uretim_kapasitesi şimdilik BİLİNÇLİ OLARAK etkisiz (×1) —
@@ -1529,7 +1530,11 @@ export function mesleğiSec(state: CharacterState, meslek: string): void {
     }
   }
 
-  if (meslek === "Asker") state.ordu_mevcudu = 10;
+  // Asker (birlik modu): 20 er ile başlar; toplam pazar (şehirdeki silahlı kuvvetler) ~185–205 askerî güç ölçeğindedir.
+  if (meslek === "Asker") {
+    state.meslek_musteri = BASLANGIC_ER;
+    state.pazar_musteri = Math.round(ASKER_PAZAR_BASLANGIC[0] + Math.random() * (ASKER_PAZAR_BASLANGIC[1] - ASKER_PAZAR_BASLANGIC[0]));
+  }
 
   // Meslek pazarı (data/pazar.ts): P × (%8–9 + yatkınlık kademesi + aile mirası) müşteriyle başla.
   if (!state.meslek_musteri) {
@@ -2218,7 +2223,8 @@ export function yonetimYillikUygula(state: CharacterState, yasArtisi: number): s
   }
 
   // Ekstra vergi (işletmeli mesleklerde): ilk kez 32 yaşında, sonra 9-13 yılda bir; eşik üstü kârda yönetici net kârın 1 katını ister.
-  if (isletmeMeslegiMi(state.meslek) && state.isletme) {
+  // Asker muaf: vergi/aidat yok, kazancı sold + görev + ganimettir (birlik modu).
+  if (isletmeMeslegiMi(state.meslek) && state.meslek !== "Asker" && state.isletme) {
     if (state.ekstra_vergi_sonraki_yil == null) {
       state.ekstra_vergi_sonraki_yil = ekstraVergiIlkYil(state.yil, state.yas);
     } else if (
