@@ -50,7 +50,6 @@ import {
   TON_TANIMLARI,
   TUR_SIRASI,
   TUR_TANIMLARI,
-  DOKTRIN_ETIKET_YOK,
   doktrinGetir,
   doktrinSecenekleri,
   gorevAdi,
@@ -60,7 +59,6 @@ import {
   techizatAdi,
   turAdi,
   yolDoktrinKaynagi,
-  type DilliMetinLike,
 } from "../data/birlik";
 import { askerGucleri, aktifRakipler, askerRakipGucCarpani, pazarPayiHesapla } from "../data/pazar";
 import type { IsletmeBaglami } from "./isletme";
@@ -544,7 +542,7 @@ export interface BirlikGorunumu {
     ad: { tr: string; en: string };
     adlar: Record<BirlikKalite, { tr: string; en: string }>;
     yukseltFiyat: Record<"orta" | "yuksek", number>;
-    teçhizat: { tr: string; en: string };
+    techizat: { tr: string; en: string };
   };
   birlik: {
     seviye: number;
@@ -667,7 +665,7 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
       ad: KALITE_ADLARI[b.hedef_kalite],
       adlar: KALITE_ADLARI,
       yukseltFiyat: { orta: r2(KALITE_FIYATI.orta * bg.giderEnflasyon), yuksek: r2(KALITE_FIYATI.yuksek * bg.giderEnflasyon) },
-      teçhizat: techizatAdi(cag),
+      techizat: techizatAdi(cag),
     },
     birlik: {
       seviye: b.birlik_seviye,
@@ -755,7 +753,5 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
   void DOKTRINLER;
   void INISIYATIF_OYUNCU_SECER;
   void birlikBeklenenKar;
-  void DOKTRIN_ETIKET_YOK;
 }
 
-export type { DilliMetinLike };

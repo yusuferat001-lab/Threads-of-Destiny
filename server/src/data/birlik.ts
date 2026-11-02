@@ -198,10 +198,48 @@ export const MORAL_SERBEST = 3;
 
 // ── Gelir ve gider ──────────────────────────────────────────────────────────
 /** Rütbe S1..S5 → yıllık sold (devlet öder, sabit, enflasyonla büyür). */
-export const SOLD = [18, 26, 36, 50, 70];
-export const ER_BASI_GELIR = 0.03;
+export const SOLD = [14, 20, 28, 40, 56];
+export const ER_BASI_GELIR = 0.023;
 export const ER_MASRAFI = 0.12;
 export const ERZAK_BIRIMI = 0.08;
+/**
+ * Barış çatışması (haydut / sınır, takvimli): ganimet havuzu = toplam askerî güç × bu birim × tür çarpanı × sonuç çarpanı.
+ * Büyük ve iyi donanımlı ordu aynı çatışmadan çok daha fazla kazanır (sim ile kalibre edilecek).
+ */
+export const GANIMET_GUC_BIRIMI = 0.45;
+/** İki çatışma arası yıl [min, max] ve ilk çatışmanın işletmenin kaçıncı yılından sonra geleceği. */
+export const BARIS_CATISMA_ARALIK: [number, number] = [3, 5];
+export const BARIS_CATISMA_ILK_YIL = 2;
+export interface BarisCatismaTanimi {
+  /** Ganimet çarpanı (sınır hedefi daha büyük). */
+  ganimet: number;
+  /** Düşman gücü / oyuncu gücü aralığı. */
+  dusman: [number, number];
+  /** Zaferde beklenen esir / güç. */
+  esir: number;
+  ad: { orta: { tr: string; en: string }; sanayi: { tr: string; en: string } };
+}
+export const BARIS_CATISMALARI: Record<"haydut" | "sinir", BarisCatismaTanimi> = {
+  haydut: {
+    ganimet: 1,
+    dusman: [0.7, 1.1],
+    esir: 0.012,
+    ad: { orta: { tr: "Haydut Çetesi", en: "Bandit Gang" }, sanayi: { tr: "Eşkıya Çetesi", en: "Brigand Band" } },
+  },
+  sinir: {
+    ganimet: 1.3,
+    dusman: [0.8, 1.2],
+    esir: 0.008,
+    ad: { orta: { tr: "Sınır Akını", en: "Border Raid" }, sanayi: { tr: "Sınır Çatışması", en: "Border Clash" } },
+  },
+};
+export const BARIS_YENILGI_GANIMET = 0.2;
+export const BARIS_KAYIP_ZAFER = 0.01;
+export const BARIS_KAYIP_YENILGI = 0.04;
+export const BARIS_TALIM_ZAFER = 5;
+export const BARIS_TALIM_YENILGI = 2;
+export const BARIS_MORAL_ZAFER = 4;
+export const BARIS_MORAL_YENILGI = -4;
 /** Devlet, ganimetten (para ve esir) sabit bu payı alır. */
 export const DEVLET_PAYI = 0.2;
 /** Yıllık erzak fiyatı dönem çarpanı (giderler üzerinden). */

@@ -9,7 +9,7 @@ import { isletmeProfiliGetir } from "../data/meslekProfilleri";
  * Bu modül isletme.ts ve cemaat.ts tarafından ortak okunur (aralarındaki döngüsel içe aktarmayı önlemek için ayrı dosya).
  */
 export const YATIRIM_MASRAF_ORANI = 0;
-const BAKIMI_AYRI_OLANLAR = new Set(["depo", "bina"]);
+const BAKIMI_AYRI_OLANLAR = new Set(["depo", "bina", "kisla"]);
 
 /** Bir yatırımın verilen kademeye kadar alınmış kademelerinin toplam fiyatı (enflasyonsuz). */
 export function yatirimToplamFiyati(fiyatlar: number[], kademe: number): number {

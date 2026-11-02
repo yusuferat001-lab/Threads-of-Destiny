@@ -7,6 +7,18 @@ import {
   ASIRI_ESIK,
   ASKER_FIZIKSEL,
   ASKER_PAZAR_HEDEF,
+  BARIS_CATISMALARI,
+  BARIS_CATISMA_ARALIK,
+  BARIS_CATISMA_ILK_YIL,
+  BARIS_KAYIP_YENILGI,
+  BARIS_KAYIP_ZAFER,
+  BARIS_MORAL_YENILGI,
+  BARIS_MORAL_ZAFER,
+  BARIS_TALIM_YENILGI,
+  BARIS_TALIM_ZAFER,
+  BARIS_YENILGI_GANIMET,
+  DEVLET_PAYI,
+  GANIMET_GUC_BIRIMI,
   ASKER_PAZAR_YAKINSAMA,
   ASKER_SALDIRI_AGIRLIKLARI,
   ASKER_SALDIRI_HASARLARI,
@@ -115,6 +127,7 @@ import {
   komutaLimiti,
   r2,
   rutbeIndeksi,
+  sertlikGelirCarpani,
   turPaylari,
   yolEtkisi,
 } from "./birlik";
@@ -336,6 +349,66 @@ function savasiBitir(state: CharacterState, b: BirlikDurumu, bg: IsletmeBaglami,
   b.savas = null;
 }
 
+
+// ── Barış çatışması (haydut / sınır; takvimli, motor düzeyinde) ─────────────
+export interface BarisCatismaSonucu {
+  tur: "haydut" | "sinir";
+  zafer: boolean;
+  /** Brüt ganimet (devlet ve er payı düşülmeden). */
+  brut: number;
+  devlet: number;
+  erPayi: number;
+  /** Oyuncuya kalan ganimet. */
+  net: number;
+  esir: number;
+  olen: number;
+}
+
+/** Barış çatışması takvimi: savaşta kapanır, barışta yoksa kurulur. Vade geldiyse true döner ve takvimi yeniler. */
+function barisCatismaVadesi(state: CharacterState, b: BirlikDurumu, savasta: boolean): boolean {
+  if (savasta) {
+    b.baris_catisma_yili = null;
+    return false;
+  }
+  const ilkYil = (state.isletme?.baslangic_yili ?? state.yil) + BARIS_CATISMA_ILK_YIL;
+  if (b.baris_catisma_yili == null) {
+    b.baris_catisma_yili = Math.max(ilkYil, state.yil + 1) + Math.floor(Math.random() * 3);
+    return false;
+  }
+  if (state.yil < b.baris_catisma_yili || state.yil < ilkYil) return false;
+  const [mn, mx] = BARIS_CATISMA_ARALIK;
+  b.baris_catisma_yili = state.yil + mn + Math.floor(Math.random() * (mx - mn + 1));
+  return true;
+}
+
+/**
+ * Haydut ya da sınır çatışması: askerî güçle orantılı ganimet. Oyuncu kararı yoktur (içerik katmanı sonra);
+ * zar mantığı savaş kanadıyla aynıdır ama genel savaş sonucu/arazi yoktur.
+ */
+function barisCatismasiCoz(state: CharacterState, b: BirlikDurumu, bg: IsletmeBaglami): BarisCatismaSonucu {
+  const tur: "haydut" | "sinir" = Math.random() < 0.5 ? "haydut" : "sinir";
+  const t = BARIS_CATISMALARI[tur];
+  const doktrin = doktrinToplami(b.doktrinler);
+  const yol = yolEtkisi(state);
+  const d = gucHesapla(state, { enflasyon: bg.enflasyon, senaryo: tur });
+  const guc = d.guc;
+  const dusman = guc * rnd(t.dusman[0], t.dusman[1]);
+  const oyuncuEff = guc * (1 + (d20() - 10.5) / ZAR_BOLEN + b.zar_bonusu);
+  const dusmanEff = Math.max(1e-6, dusman * (1 + (d20() - 10.5) / ZAR_BOLEN));
+  const R = oyuncuEff / dusmanEff;
+  const zafer = R >= 1;
+  const carpan = (1 + doktrin.ganimet + (yol.ganimet ?? 0)) * sertlikGelirCarpani(b) * bg.satisCarpani;
+  const brut = guc * GANIMET_GUC_BIRIMI * t.ganimet * (zafer ? 1 : BARIS_YENILGI_GANIMET) * bg.enflasyon * carpan;
+  const devlet = brut * DEVLET_PAYI;
+  const erPayi = (brut - devlet) * GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran;
+  const net = brut - devlet - erPayi;
+  const esir = zafer ? olasilikliYuvarla(guc * t.esir) : 0;
+  const er = erSayisi(state);
+  const olen = olasilikliYuvarla(er * (zafer ? BARIS_KAYIP_ZAFER : BARIS_KAYIP_YENILGI) * clamp(1 / R, 0.6, 1.6) * kayipCarpani(state));
+  b.talim = clamp(b.talim + (zafer ? BARIS_TALIM_ZAFER : BARIS_TALIM_YENILGI), 0, 100);
+  return { tur, zafer, brut: r2(brut), devlet: r2(devlet), erPayi: r2(erPayi), net: r2(net), esir, olen };
+}
+
 // ── Rakip komutan saldırıları ───────────────────────────────────────────────
 function askerSaldiriSec(kademe: 1 | 2 | 3): AskerSaldiri {
   const agirlik = ASKER_SALDIRI_AGIRLIKLARI[kademe];
@@ -406,17 +479,23 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
     savasiBitir(state, b, bg, uyarilar);
   }
 
+  // 2b. Barış çatışması (savaş dışında 3–5 yılda bir): güçle orantılı ganimet.
+  const baris = barisCatismaVadesi(state, b, savasta) ? barisCatismasiCoz(state, b, bg) : null;
+  if (baris) {
+    uyarilar.push({ kod: "baris_catisma", catismaTur: baris.tur, savasSonucu: baris.zafer ? "zafer" : "yenilgi", tutar: baris.net, sayi: baris.esir });
+  }
+
   // 3. Gelir / gider.
   const h = birlikHesapla(state, bg, { ganimetCarpani });
 
   // 4. Esir.
-  const esirSayisi = olasilikliYuvarla(h.esirBeklenen);
+  const esirSayisi = olasilikliYuvarla(h.esirBeklenen) + (baris?.esir ?? 0);
   const esirKarari: BirlikEsirKarari = (state.rutbe_seviye ?? 1) >= 3 ? karar?.esir ?? "karma" : "karma";
   const esir = esirSayisi > 0 ? esirleriIsle(state, b, esirSayisi, esirKarari, bg) : null;
   if (esir && esirSayisi > 0) uyarilar.push({ kod: "esir", sayi: esirSayisi });
 
   // 5. Kayıplar: görev + çatışma + firar.
-  let olen = catisma?.olen ?? 0;
+  let olen = (catisma?.olen ?? 0) + (baris?.olen ?? 0);
   const kc = kayipCarpani(state);
   for (const g of h.gorevler) {
     if (!g.aktif || g.er <= 0) continue;
@@ -524,6 +603,7 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
   moral += clamp(state.isletme?.yatirimlar.revir ?? 0, 0, 4) * REVIR_MORAL_KADEME;
   const ceza = odenmeyenCeza(state.para + h.net, bg.enflasyon);
   if (ceza) moral += ceza.moral;
+  if (baris) moral += baris.zafer ? BARIS_MORAL_ZAFER : BARIS_MORAL_YENILGI;
   if (catisma) {
     moral += catisma.kanatZafer ? MORAL_ZAFER : catisma.oran < 0.75 ? MORAL_KANAT_BOZGUN : -3;
     if (!catisma.genelZafer) moral += MORAL_YENILGI;
@@ -556,11 +636,12 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
   birlikSenkron(state, bg.enflasyon);
 
   const esirGeliri = esir ? esir.para : 0;
-  const net = r2(h.net + esirGeliri - nakitHasar - ekstraGider - yeniErMaliyet);
+  const barisNet = baris?.net ?? 0;
+  const net = r2(h.net + barisNet + esirGeliri - nakitHasar - ekstraGider - yeniErMaliyet);
   const yeniEr = erSayisi(state);
   const dokum: IsletmeDokum = {
     yil: state.yil,
-    satis: r2(h.toplamGelir + esirGeliri),
+    satis: r2(h.toplamGelir + barisNet + esirGeliri),
     alim: r2(h.gorevMasrafi + h.erMasrafi + h.erzak + h.talimMasrafi),
     depoMasrafi: r2(h.kislaBakim + h.techizatBakim + h.kusatmaBakim),
     yatirimMasrafi: 0,
@@ -569,7 +650,7 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
     nakitHasar: r2(nakitHasar),
     ekstraGider: r2(ekstraGider + yeniErMaliyet),
     curumeKaybi: 0,
-    brutKar: r2(h.net + esirGeliri),
+    brutKar: r2(h.net + barisNet + esirGeliri),
     borcOdeme: 0,
     net,
     vergi: 0,
@@ -583,9 +664,9 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
       sold: r2(h.sold),
       erBasiGelir: r2(h.erBasiGelir),
       gorevGeliri: r2(h.gorevGeliri),
-      ganimetPara: r2(h.ganimetBrut),
-      devletPayi: r2(h.devletPayi),
-      erPayi: r2(h.erPayi),
+      ganimetPara: r2(h.ganimetBrut + (baris?.brut ?? 0)),
+      devletPayi: r2(h.devletPayi + (baris?.devlet ?? 0)),
+      erPayi: r2(h.erPayi + (baris?.erPayi ?? 0)),
       erMasrafi: r2(h.erMasrafi),
       erzak: r2(h.erzak),
       gorevMasrafi: r2(h.gorevMasrafi),

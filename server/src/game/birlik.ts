@@ -105,6 +105,7 @@ export function birlikVarsayilan(er: number): BirlikDurumu {
     asiri_son_yil: null,
     zar_bonusu: 0,
     erzak_oran: 1,
+    baris_catisma_yili: null,
   };
 }
 

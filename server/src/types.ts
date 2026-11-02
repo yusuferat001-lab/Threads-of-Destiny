@@ -968,7 +968,8 @@ export interface IsletmeUyari {
     | "firar"
     | "savas_sonu"
     | "esir"
-    | "seferberlik_terhis";
+    | "seferberlik_terhis"
+    | "baris_catisma";
   hat?: string;
   isim?: string;
   /** hırsızlık sonucu / rakip saldırı türü (istemci metni bunlardan kurar). */
@@ -989,6 +990,8 @@ export interface IsletmeUyari {
   /** Birlik (Asker) uyarıları: sayı (firar eden/ölen/terhis olan er, esir) ve savaş sonucu ("zafer" | "yenilgi"). */
   sayi?: number;
   savasSonucu?: "zafer" | "yenilgi";
+  /** Barış çatışması (haydut / sınır) türü. */
+  catismaTur?: "haydut" | "sinir";
 }
 
 export interface IsletmeDokum {
@@ -1184,6 +1187,8 @@ export interface BirlikDurumu {
   zar_bonusu: number;
   /** Erzak karşılama oranı (0-1): 1 = yeterli. Savaş kararları/kıtlık düşürür, yıllık çözümde yeniden hesaplanır. */
   erzak_oran: number;
+  /** Sonraki barış çatışmasının (haydut / sınır) yılı; savaşta ya da henüz kurulmadıysa null. */
+  baris_catisma_yili?: number | null;
 }
 
 /** Meslek işletmesi (şu an yalnız Tüccar; 2026-10 dikey dilim). Diğer meslekler null → eski maaş sistemi. */
