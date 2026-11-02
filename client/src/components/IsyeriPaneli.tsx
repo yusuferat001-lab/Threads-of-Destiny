@@ -8,6 +8,8 @@ interface IsyeriPaneliProps {
   ticaretSermaye?: number;
   nufuz?: number;
   orduTechizatSeviyesi?: number;
+  /** Asker (birlik modu): görsel kademe er sayısına göre (rütbeye değil). */
+  orduMevcudu?: number;
 }
 
 /** Yatırımla derinleşen meslek metriğinin (sermaye/nüfuz/teçhizat) işyeri kademesine kattığı bonus; rütbeden bağımsız olarak işletmeni büyütür. */
@@ -58,12 +60,16 @@ export function IsyeriPaneli({
   ticaretSermaye,
   nufuz,
   orduTechizatSeviyesi,
+  orduMevcudu,
 }: IsyeriPaneliProps) {
   const { m } = useDil();
   if (!meslek) return null;
 
   const yatirimBonusu = yatirimKademeBonusuHesapla(meslek, ticaretSermaye, nufuz, orduTechizatSeviyesi);
-  const seviyeIndex = Math.min(Math.max(rutbeSeviye + yatirimBonusu, 1), 3) - 1;
+  const seviyeIndex =
+    meslek === 'Asker' && orduMevcudu !== undefined
+      ? orduMevcudu >= 100 ? 2 : orduMevcudu >= 35 ? 1 : 0
+      : Math.min(Math.max(rutbeSeviye + yatirimBonusu, 1), 3) - 1;
   const bina =
     meslek === 'Din Adamı' ? dinBinasiGetir(dinKultur) : BINA_IKONLARI[meslek]?.[seviyeIndex] ?? '🏠';
   const kisiIkon = KISI_IKON[meslek] ?? '🧍';

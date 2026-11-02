@@ -476,7 +476,7 @@ describe("savaş", () => {
       savasKarariVer(s, d.secenekler[0].id, bg(s));
     }
     expect(adimlar[0]).toBe("seferberlik");
-    expect(adimlar).toContain("arazi");
+    expect(adimlar).not.toContain("arazi"); // S1: arazi tercih ihtimali %0 → sorulmaz
     expect(adimlar).toContain("rol");
     expect(adimlar).toContain("ikmal");
     expect(adimlar).not.toContain("esir"); // S1: esir yetkisi yok
@@ -495,6 +495,7 @@ describe("savaş", () => {
       savasKarariVer(s, d.secenekler[0].id, bg(s));
     }
     expect(adimlar).toContain("esir");
+    expect(adimlar).toContain("arazi"); // S3: %30 tercih ihtimali
   });
 
   it("geçersiz savaş kararı seçimi reddedilir; karar yokken verilemez", () => {

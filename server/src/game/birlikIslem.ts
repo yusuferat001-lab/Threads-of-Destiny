@@ -305,7 +305,9 @@ export function savasKarariHazirla(state: CharacterState): BirlikSavasKarari | n
   if (b.savas_karari && b.savas_karari.yil === state.yil) return b.savas_karari;
   const adimlar: string[] = [];
   if (!b.savas || !b.savas.seferberlik) adimlar.push("seferberlik");
-  adimlar.push("arazi", "rol");
+  // Arazi tercihi yalnız ihtimali sıfırdan büyükse sorulur (S1'de %0: seçimin anlamı olmaz).
+  if (ARAZI_TERCIH_IHTIMALI[rutbeIndeksi(state)] > 0) adimlar.push("arazi");
+  adimlar.push("rol");
   const r = Math.random();
   let zorunlu: "saldiri" | "savunma" | null = null;
   if (r >= INISIYATIF_OYUNCU_SECER) zorunlu = r < INISIYATIF_OYUNCU_SECER + INISIYATIF_ZORUNLU_SALDIRI ? "saldiri" : "savunma";

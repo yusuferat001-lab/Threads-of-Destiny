@@ -160,6 +160,7 @@ export function BirlikPaneli({
   const d = (m: D) => m[dil];
   const b: BirlikGorunumu | null = durum.birlik;
   const pb = durum.paraBirimi;
+  const erBirim = dil === 'en' ? '/man' : '/er';
   const [seviye, setSeviye] = useState(b?.birlik.seviye ?? 0);
   const [turler, setTurler] = useState<BirlikTur[]>(b?.birlik.seciliTurler ?? []);
   const [terhis, setTerhis] = useState(1);
@@ -177,8 +178,8 @@ export function BirlikPaneli({
   const dokum = durum.sonDokum;
   const uyariMetni = (u: IsletmeUyari): string => isletmeUyariMetni(u, durum, dil);
   const yuzdeMetni = (v: number, isaretli = true) => {
-    const s = `${isaretli && v > 0 ? '+' : v < 0 ? '−' : ''}${Math.abs(v)}`;
-    return dil === 'en' ? `${s}%` : `%${s}`;
+    const isaret = isaretli && v > 0 ? '+' : v < 0 ? '−' : '';
+    return dil === 'en' ? `${isaret}${Math.abs(v)}%` : `${isaret}%${Math.abs(v)}`;
   };
 
   const politika = <T extends string>(
@@ -307,7 +308,7 @@ export function BirlikPaneli({
                   </div>
                   <div className="isletme-hat-satir">
                     <span>
-                      {t('minEr')} {g.minEr} · {formatPara(g.erBasi)} {pb}/er
+                      {t('minEr')} {g.minEr} · {formatPara(g.erBasi)} {pb}{erBirim}
                     </span>
                     {g.aktif && (
                       <span>
@@ -361,7 +362,7 @@ export function BirlikPaneli({
               <span key={k}>
                 {d(b.kalite.adlar[k])}:{' '}
                 {[50, 100].map((y) => (
-                  <button key={y} className="ikincil" disabled={yukleniyor || kilitli} onClick={() => onKaliteYukselt(k, y)} title={`${formatPara(b.kalite.yukseltFiyat[k])} ${pb}/er`}>
+                  <button key={y} className="ikincil" disabled={yukleniyor || kilitli} onClick={() => onKaliteYukselt(k, y)} title={`${formatPara(b.kalite.yukseltFiyat[k])} ${pb}${erBirim}`}>
                     {t('yukselt')} %{y}
                   </button>
                 ))}{' '}
@@ -395,7 +396,7 @@ export function BirlikPaneli({
                     {tur.simge} {d(tur.ad)}
                   </strong>
                   <span>
-                    ⚔️ ×{tur.saldiri} · 🛡️ ×{tur.savunma} · {formatPara(tur.ucret)} {pb}/er
+                    ⚔️ ×{tur.saldiri} · 🛡️ ×{tur.savunma} · {formatPara(tur.ucret)} {pb}{erBirim}
                   </span>
                   <small>
                     ＋ {d(tur.arti)} · － {d(tur.eksi)}

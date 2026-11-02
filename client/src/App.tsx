@@ -2771,6 +2771,7 @@ function App() {
                 ticaretSermaye={karakter.ticaret_sermaye}
                 nufuz={karakter.nufuz}
                 orduTechizatSeviyesi={karakter.ordu_techizat_seviyesi}
+                orduMevcudu={karakter.ordu_mevcudu}
               />
 
               <div className="aile-blok">
