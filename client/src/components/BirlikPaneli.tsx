@@ -17,6 +17,7 @@ interface Props {
   onKusatma: (seviye: number) => void;
   onTerhis: (adet: number) => void;
   onYatirim: (yatirimId: string) => void;
+  onYatirimDusur?: (yatirimId: string) => void;
   onCalisanAl: (adayId: string) => void;
   onEkipCikar: (ekipId: string) => void;
   /** Telefon ana ekranı sayfaları: yalnız bir bölümü çiz (varsayılan hepsi). */
@@ -151,6 +152,7 @@ export function BirlikPaneli({
   onKusatma,
   onTerhis,
   onYatirim,
+  onYatirimDusur,
   onCalisanAl,
   onEkipCikar,
   bolum = 'hepsi',
@@ -529,6 +531,7 @@ export function BirlikPaneli({
         sadakatAdi={{ tr: 'Sadakat', en: 'Loyalty' }}
         riskliAciklama={{ tr: 'Sadakati düşük: sırlarını sızdırabilir, erleri ayartabilir, işi bırakabilir', en: 'Low loyalty: may leak secrets, lure men away or quit' }}
         onYatirim={onYatirim}
+        onYatirimDusur={onYatirimDusur}
         onCalisanAl={onCalisanAl}
         onEkipCikar={onEkipCikar}
       />

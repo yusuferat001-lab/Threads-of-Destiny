@@ -25,6 +25,7 @@ interface Props {
   yukleniyor: boolean;
   onKarar: (hatlar: IsletmeKararGirdisi[]) => void;
   onYatirim: (yatirimId: string) => void;
+  onYatirimDusur?: (yatirimId: string) => void;
   onCalisanAl: (adayId: string) => void;
   onEkipCikar: (ekipId: string) => void;
   /** Telefon ana ekranı sayfaları: yalnız bir bölümü çiz (varsayılan hepsi). */
@@ -293,7 +294,7 @@ export function isletmeUyariMetni(u: IsletmeUyari, durum: IsletmeGorunumu, dil: 
     }
   }
 
-export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onCalisanAl, onEkipCikar, bolum = 'hepsi' }: Props) {
+export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onYatirimDusur, onCalisanAl, onEkipCikar, bolum = 'hepsi' }: Props) {
   const { dil } = useDil();
   const t = (k: Exclude<keyof typeof M, 'donem'>) => M[k][dil];
   const d = (m: D) => m[dil];
@@ -474,6 +475,7 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
         sadakatAdi={M.sadakat}
         riskliAciklama={M.riskli}
         onYatirim={onYatirim}
+        onYatirimDusur={onYatirimDusur}
         onCalisanAl={onCalisanAl}
         onEkipCikar={onEkipCikar}
       />

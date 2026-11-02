@@ -12,6 +12,7 @@ interface Props {
   yukleniyor: boolean;
   onKarar: (hatlar: IsletmeKararGirdisi[], cemaat?: CemaatKararGirdisi) => void;
   onYatirim: (yatirimId: string) => void;
+  onYatirimDusur?: (yatirimId: string) => void;
   onCalisanAl: (adayId: string) => void;
   onEkipCikar: (ekipId: string) => void;
   /** Telefon ana ekranı sayfaları: yalnız bir bölümü çiz (varsayılan hepsi). */
@@ -147,7 +148,7 @@ const SALDIRI_ENGELLENDI: Record<string, D> = {
 
 let sonGosterilenYil = -1;
 
-export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onCalisanAl, onEkipCikar, bolum = 'hepsi' }: Props) {
+export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onYatirimDusur, onCalisanAl, onEkipCikar, bolum = 'hepsi' }: Props) {
   const { dil } = useDil();
   const t = (k: keyof typeof M) => M[k][dil];
   const d = (m: D) => m[dil];
@@ -445,6 +446,7 @@ export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onC
         sadakatAdi={{ tr: 'İnanç', en: 'Faith' }}
         riskliAciklama={{ tr: 'İnancı düşük: sırlarını sızdırabilir, kumbarayı yoklayabilir, işi bırakabilir', en: 'Low faith: may leak secrets, skim the offering box or quit' }}
         onYatirim={onYatirim}
+        onYatirimDusur={onYatirimDusur}
         onCalisanAl={onCalisanAl}
         onEkipCikar={onEkipCikar}
       />

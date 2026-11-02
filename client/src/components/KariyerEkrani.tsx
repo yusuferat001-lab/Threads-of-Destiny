@@ -79,6 +79,7 @@ interface KariyerEkraniProps {
   onBirlikKusatma?: (seviye: number) => void;
   onBirlikTerhis?: (adet: number) => void;
   onIsletmeYatirim?: (yatirimId: string) => void;
+  onIsletmeYatirimDusur?: (yatirimId: string) => void;
   onIsletmeCalisanAl?: (adayId: string) => void;
   onGeriDon: () => void;
   /** Telefon ana ekranı sayfası: verilirse yalnız o bölüm yeni strateji sayfası kabuğunda çizilir. */
@@ -730,6 +731,7 @@ export function KariyerEkrani({
   onBirlikTerhis,
   onIsletmeKarar,
   onIsletmeYatirim,
+  onIsletmeYatirimDusur,
   onIsletmeCalisanAl,
   onGeriDon,
   sayfa,
@@ -1102,6 +1104,7 @@ export function KariyerEkrani({
               onKusatma={onBirlikKusatma}
               onTerhis={onBirlikTerhis}
               onYatirim={onIsletmeYatirim}
+              onYatirimDusur={onIsletmeYatirimDusur}
               onCalisanAl={onIsletmeCalisanAl}
               onEkipCikar={onEkipCikar}
             />
@@ -1114,6 +1117,7 @@ export function KariyerEkrani({
               yukleniyor={yukleniyor}
               onKarar={onIsletmeKarar}
               onYatirim={onIsletmeYatirim}
+              onYatirimDusur={onIsletmeYatirimDusur}
               onCalisanAl={onIsletmeCalisanAl}
               onEkipCikar={onEkipCikar}
             />
@@ -1126,6 +1130,7 @@ export function KariyerEkrani({
               yukleniyor={yukleniyor}
               onKarar={onIsletmeKarar}
               onYatirim={onIsletmeYatirim}
+              onYatirimDusur={onIsletmeYatirimDusur}
               onCalisanAl={onIsletmeCalisanAl}
               onEkipCikar={onEkipCikar}
             />

@@ -101,6 +101,7 @@ import {
   birlikSavasKarariGetir,
   birlikSavasKarariVer,
   isletmeYatirimYap,
+  isletmeYatirimDusur,
   isletmeCalisanAl,
   ajanTut,
   yonetimEtkilesimYap,
@@ -1818,6 +1819,23 @@ function App() {
     }
   }
 
+  async function isletmeYatirimDusurHandler(yatirimId: string) {
+    if (!karakter) return;
+    setHata(null);
+    setIslemMesaji(null);
+    setYukleniyor(true);
+    try {
+      const sonuc = await isletmeYatirimDusur(karakter.id, yatirimId);
+      setKarakter(sonuc.state);
+      setIsletme(sonuc.durum);
+      setIslemMesaji(sonuc.mesaj);
+    } catch (err) {
+      setIslemMesaji(temizHata(err));
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
   async function isletmeCalisanAlHandler(adayId: string) {
     if (!karakter) return;
     setHata(null);
@@ -3162,6 +3180,7 @@ function App() {
           onBirlikKusatma={birlikKusatmaHandler}
           onBirlikTerhis={birlikTerhisHandler}
           onIsletmeYatirim={isletmeYatirimHandler}
+          onIsletmeYatirimDusur={isletmeYatirimDusurHandler}
           onIsletmeCalisanAl={isletmeCalisanAlHandler}
           sayfa={kariyerSayfa ?? undefined}
           onMulkKredi={() => {

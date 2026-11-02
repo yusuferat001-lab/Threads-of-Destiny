@@ -1198,6 +1198,8 @@ export interface IsletmeDurumu {
   hatlar: IsletmeHat[];
   /** Kalıcı yatırım kademeleri (id → 0-3). */
   yatirimlar: Record<string, number>;
+  /** Her yatırım kademesi için ÖDENEN tutar (id → kademe sırasıyla); kapasite kademesi düşürülürken iadenin %40'ı bundan hesaplanır. Eski kayıtlarda yoksa güncel fiyat varsayılır. */
+  yatirim_odenen?: Record<string, number[]>;
   /** Tedarikçiye veresiye borç (faizsiz); kârdan %60'a kadar yıllık kapanır. */
   tedarikci_borcu: number;
   son_dokum: IsletmeDokum | null;

@@ -27,6 +27,8 @@ import {
   yonetimIstekYap,
   yonetimDurumGetir,
   kotuIsYap,
+  isletmeYatirimYap,
+  isletmeYatirimDusur,
 } from "../src/game/gameEngine";
 import {
   birlikAl,
@@ -833,5 +835,23 @@ describe("otorite istekleri ve karanlık işler", () => {
     const r = await kotuIsYap(st.id, "ganimeti_sakla");
     expect(r.kazandi).toBe(true);
     expect(s.para).toBeGreaterThan(once);
+  });
+});
+
+describe("kışla kademesi düşürme", () => {
+  it("%40 iade; erler küçülen kışlaya sığmıyorsa reddedilir", async () => {
+    const st = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
+    await mesleğiAta(st.id, "Asker");
+    const s = await stateGetir(st.id);
+    s.para = 100000;
+    await isletmeYatirimYap(s.id, "kisla");
+    await isletmeYatirimYap(s.id, "kisla");
+    const once = (await stateGetir(s.id)).para;
+    const odenen = s.isletme!.yatirim_odenen!.kisla[1];
+    const r = await isletmeYatirimDusur(s.id, "kisla");
+    expect(r.state.isletme!.yatirimlar.kisla).toBe(1);
+    expect(r.state.para).toBeCloseTo(once + odenen * 0.4, 1);
+    s.meslek_musteri = 100; // K0 sınırı 25'i aşar
+    await expect(isletmeYatirimDusur(s.id, "kisla")).rejects.toThrow(/sığmıyor/);
   });
 });

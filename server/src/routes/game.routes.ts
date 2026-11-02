@@ -70,6 +70,7 @@ import {
   birlikSavasKarariVer,
   isletmeUrunSec,
   isletmeYatirimYap,
+  isletmeYatirimDusur,
   isletmeDepoDoldur,
   isletmeDepoOtomatik,
   isletmeCalisanAl,
@@ -457,6 +458,16 @@ gameRouter.post("/:id/isletme/yatirim", async (req, res) => {
   if (typeof yatirimId !== "string") return res.status(400).json({ hata: "Geçersiz yatırım." });
   try {
     res.json(await isletmeYatirimYap(req.params.id, yatirimId));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/isletme/yatirim-dusur", async (req, res) => {
+  const { yatirimId } = req.body ?? {};
+  if (typeof yatirimId !== "string") return res.status(400).json({ hata: "Geçersiz yatırım." });
+  try {
+    res.json(await isletmeYatirimDusur(req.params.id, yatirimId));
   } catch (err) {
     res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }

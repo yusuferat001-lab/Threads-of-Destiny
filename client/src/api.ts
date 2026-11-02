@@ -347,6 +347,13 @@ export function isletmeYatirimYap(stateId: string, yatirimId: string) {
   });
 }
 
+export function isletmeYatirimDusur(stateId: string, yatirimId: string) {
+  return istek<{ state: CharacterState; mesaj: string; durum: IsletmeGorunumu }>(`/api/game/${stateId}/isletme/yatirim-dusur`, {
+    method: 'POST',
+    body: JSON.stringify({ yatirimId }),
+  });
+}
+
 export function isletmeCalisanAl(stateId: string, adayId: string) {
   return istek<{ state: CharacterState; mesaj: string; durum: IsletmeGorunumu }>(`/api/game/${stateId}/isletme/calisan`, {
     method: 'POST',

@@ -18,7 +18,8 @@ import {
   type BirlikKararGirdisi,
   type SavasKarariDurumu,
 } from "./birlikIslem";
-import { birlikSenkron, doktrinBekliyorMu } from "./birlik";
+import { birlikSenkron, doktrinBekliyorMu, erSayisi } from "./birlik";
+import { KISLA_ER_LIMITI } from "../data/birlik";
 import { yeniErEkle } from "./birlikYil";
 import { randomUUID } from "crypto";
 import { gostergeDetayiUret, etkenGunluguNotEt, gostergeStatiMi, GostergeDetayi } from "./gostergeDetay";
@@ -184,6 +185,7 @@ import {
   pazarBuyumeOrani,
   TALEP_GURULTUSU,
   type IsletmeBaglami,
+  depoKapasiteTablosu,
 } from "./isletme";
 import {
   acikFaaliyetler,
@@ -5112,6 +5114,8 @@ export interface IsletmeYatirimGorunumu {
   /** v14: bu yatırımın şu anki yıllık masrafı ve bir sonraki kademenin ekleyeceği masraf (depo/bina bakımı dahil). */
   yillikMasraf: number;
   sonrakiMasraf: number | null;
+  /** Kapasite yatırımlarında (depo / ibadethane / kışla) kademeyi düşürme: iade (ödenenin %40'ı), engel varsa nedeni. Diğer yatırımlarda null. */
+  dusur: { iade: number; engel: string | null } | null;
 }
 
 export interface IsletmeCalisanGorunumu {
@@ -5422,6 +5426,7 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
       etkiSimdi: yatirimEtkiMetni(y.etki, kademe, genf, state.cag, state.meslek),
       etkiSonraki: kademe < y.fiyatlar.length ? yatirimEtkiMetni(y.etki, kademe + 1, genf, state.cag, state.meslek) : null,
       ...yatirimMasrafGorunumu(y, kademe, genf),
+      dusur: kapasiteKademesiMi(y.etki) && kademe > 0 ? { iade: kademeIadesi(state, y.id, y.fiyatlar, kademe), engel: kademeDusurmeEngeli(state, y.etki, kademe) } : null,
     };
   });
   const calisanlar: IsletmeCalisanGorunumu[] = state.ekip.map((e) => {
@@ -5789,12 +5794,71 @@ export async function isletmeYatirimYap(
   if (state.para < fiyat) throw new Error(`Yeterli paran yok (${fiyat} ${state.para_birimi} gerekli).`);
   state.para = paraYuvarla(state.para - fiyat);
   state.isletme.yatirimlar[tanim.id] = kademe + 1;
+  const odenen = (state.isletme.yatirim_odenen ??= {});
+  odenen[tanim.id] = [...(odenen[tanim.id] ?? []).slice(0, kademe), fiyat];
   const ad = ikiDil(state.dil, tanim.ad.tr, tanim.ad.en);
   hayatOlayiEkle(state, tanim.simge, T(state.dil, "{0} yatırımını {1}. kademeye çıkardı", [ad, kademe + 1]));
   await oturumKaydet(state);
   return {
     state,
     mesaj: T(state.dil, "{0} {1}. kademeye çıktı ({2} {3} ödedin).", [ad, kademe + 1, fiyat, state.para_birimi]),
+    durum: isletmeGorunumuHesapla(state),
+  };
+}
+
+/** Kapasite yatırımları: depo (Tüccar/Zanaatkâr), ibadethane (Din Adamı), kışla (Asker). Yalnız bunların kademesi düşürülebilir. */
+export const KADEME_DUSURME_IADE_ORANI = 0.4;
+function kapasiteKademesiMi(etki: string): boolean {
+  return etki === "depo" || etki === "bina" || etki === "kisla";
+}
+/** Düşürülecek (en üst) kademenin iadesi: o kademe için ÖDENEN tutarın %40'ı; kayıt yoksa (eski oyun) güncel kademe fiyatı. */
+function kademeIadesi(state: CharacterState, yatirimId: string, fiyatlar: number[], kademe: number): number {
+  const odenen = state.isletme?.yatirim_odenen?.[yatirimId]?.[kademe - 1];
+  const tutar = odenen ?? fiyatlar[kademe - 1] * giderEnflasyonCarpani(state);
+  return paraYuvarla(tutar * KADEME_DUSURME_IADE_ORANI);
+}
+/** Düşürme mümkün değilse nedeni (TR kanonik); mümkünse null. */
+function kademeDusurmeEngeli(state: CharacterState, etki: string, kademe: number): string | null {
+  const is = state.isletme;
+  if (!is) return "Bu mesleğin henüz bir işletmesi yok.";
+  const yeni = kademe - 1;
+  if (etki === "depo") {
+    const kap = depoKapasiteTablosu(is.cag, is.meslek)[Math.max(0, Math.min(yeni, depoKapasiteTablosu(is.cag, is.meslek).length - 1))];
+    if (toplamStok(is) > kap) return "Depondaki mal küçülen depoya sığmıyor; önce stoğu erit.";
+  } else if (etki === "kisla") {
+    if (erSayisi(state) > KISLA_ER_LIMITI[Math.max(0, yeni)]) return "Ordun küçülen kışlaya sığmıyor; önce erleri terhis et.";
+  }
+  return null;
+}
+
+export async function isletmeYatirimDusur(
+  id: string,
+  yatirimId: string
+): Promise<{ state: CharacterState; mesaj: string; durum: IsletmeGorunumu }> {
+  const oturum = await oturumGetir(id);
+  const { state } = oturum;
+  if (!state.aktif) throw new Error("Oyun zaten bitmiş.");
+  if (state.etiketler.includes("yolculukta")) throw new Error("Yolculuktayken işletmene dokunamazsın.");
+  const profil = isletmeProfiliGetir(state.meslek, state.cag);
+  if (!profil || !state.isletme) throw new Error("Bu mesleğin henüz bir işletmesi yok.");
+  const tanim = yatirimTanimiGetir(profil, yatirimId);
+  if (!tanim) throw new Error("Böyle bir yatırım yok.");
+  if (!kapasiteKademesiMi(tanim.etki)) throw new Error("Bu yatırımın kademesi düşürülemez.");
+  const kademe = state.isletme.yatirimlar[tanim.id] ?? 0;
+  if (kademe <= 0) throw new Error("Bu yatırım zaten ilk kademede.");
+  const engel = kademeDusurmeEngeli(state, tanim.etki, kademe);
+  if (engel) throw new Error(engel);
+  const iade = kademeIadesi(state, tanim.id, tanim.fiyatlar, kademe);
+  state.para = paraYuvarla(state.para + iade);
+  state.isletme.yatirimlar[tanim.id] = kademe - 1;
+  if (state.isletme.yatirim_odenen?.[tanim.id]) state.isletme.yatirim_odenen[tanim.id] = state.isletme.yatirim_odenen[tanim.id].slice(0, kademe - 1);
+  const ad = ikiDil(state.dil, tanim.ad.tr, tanim.ad.en);
+  hayatOlayiEkle(state, tanim.simge, T(state.dil, "{0} yatırımını {1}. kademeye düşürdü", [ad, kademe - 1]));
+  if (state.meslek === "Asker") birlikSenkron(state, isletmeBaglami(state).enflasyon);
+  await oturumKaydet(state);
+  return {
+    state,
+    mesaj: T(state.dil, "{0} {1}. kademeye düştü ({2} {3} iade aldın).", [ad, kademe - 1, iade, state.para_birimi]),
     durum: isletmeGorunumuHesapla(state),
   };
 }

@@ -8,6 +8,7 @@ const M = {
   yatirimlar: { tr: 'Yatırımlar', en: 'Investments' },
   kademe: { tr: 'Kademe', en: 'Tier' },
   yukselt: { tr: 'Yükselt', en: 'Upgrade' },
+  dusur: { tr: 'Kademeyi düşür (%40 iade)', en: 'Downgrade (40% refund)' },
   azami: { tr: 'Azami', en: 'Maxed' },
   simdi: { tr: 'Şimdi', en: 'Now' },
   sonra: { tr: 'Sonraki kademe', en: 'Next tier' },
@@ -32,6 +33,7 @@ export function IsletmeOrtak({
   sadakatAdi,
   riskliAciklama,
   onYatirim,
+  onYatirimDusur,
   onCalisanAl,
   onEkipCikar,
   goster = 'hepsi',
@@ -43,6 +45,7 @@ export function IsletmeOrtak({
   sadakatAdi: D;
   riskliAciklama: D;
   onYatirim: (yatirimId: string) => void;
+  onYatirimDusur?: (yatirimId: string) => void;
   onCalisanAl: (adayId: string) => void;
   onEkipCikar: (ekipId: string) => void;
 }) {
@@ -87,6 +90,16 @@ export function IsletmeOrtak({
             ) : (
               <button disabled={yukleniyor || durum.para < y.sonrakiFiyat} onClick={() => onYatirim(y.id)}>
                 {t('yukselt')} · {formatPara(y.sonrakiFiyat)} {pb}
+              </button>
+            )}
+            {onYatirimDusur && y.dusur && (
+              <button
+                className="ikincil"
+                disabled={yukleniyor || !!y.dusur.engel}
+                title={y.dusur.engel ?? undefined}
+                onClick={() => onYatirimDusur(y.id)}
+              >
+                {t('dusur')} · +{formatPara(y.dusur.iade)} {pb}
               </button>
             )}
           </div>

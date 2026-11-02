@@ -917,6 +917,8 @@ export interface IsletmeYatirimGorunumu {
   /** v14: bu yatırımın şu anki yıllık masrafı ve bir sonraki kademenin ekleyeceği tutar. */
   yillikMasraf: number;
   sonrakiMasraf: number | null;
+  /** Kapasite yatırımlarında (depo/bina/kışla) kademe düşürme: iade tutarı ve engel. */
+  dusur?: { iade: number; engel: string | null } | null;
 }
 
 export interface IsletmeCalisanGorunumu {
