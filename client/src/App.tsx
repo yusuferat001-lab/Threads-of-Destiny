@@ -1747,6 +1747,15 @@ function App() {
       setKarakter(sonuc.state);
       setIsletme(sonuc.durum);
       setSavasKarari(sonuc.sonraki);
+      // Karar zinciri bitti ve bekleyen bir olay varsa (savaş yılı olayla başladıysa) şimdi çek.
+      if (!sonuc.sonraki && !senaryo && sonuc.state.olay_bekliyor) {
+        const yeni = await senaryoGerekirseCek(sonuc.state);
+        if (yeni) {
+          setSenaryo(yeni);
+          setTepkiModu(false);
+          setEkran('oyun');
+        }
+      }
     } catch (err) {
       setHata(temizHata(err));
     } finally {
