@@ -2,6 +2,10 @@ import type {
   IsletmeGorunumu,
   IsletmeKararGirdisi,
   CemaatKararGirdisi,
+  BirlikKararGirdisi,
+  BirlikTur,
+  BirlikIslemSonucu,
+  SavasKarariDurumu,
   DepoDoldurPlani,
   CharacterState,
   SenaryoResponse,
@@ -275,11 +279,35 @@ export function isletmeGetir(stateId: string) {
   return istek<IsletmeGorunumu>(`/api/game/${stateId}/isletme`);
 }
 
-export function isletmeKararVer(stateId: string, hatlar: IsletmeKararGirdisi[], cemaat?: CemaatKararGirdisi) {
+export function isletmeKararVer(stateId: string, hatlar: IsletmeKararGirdisi[], cemaat?: CemaatKararGirdisi, birlik?: BirlikKararGirdisi) {
   return istek<{ state: CharacterState; durum: IsletmeGorunumu }>(`/api/game/${stateId}/isletme/karar`, {
     method: 'POST',
-    body: JSON.stringify({ hatlar, cemaat }),
+    body: JSON.stringify({ hatlar, cemaat, birlik }),
   });
+}
+
+// ── Asker (birlik modu) ─────────────────────────────────────────────────────
+type BirlikYaniti = { state: CharacterState; durum: IsletmeGorunumu };
+export function birlikDoktrinSec(stateId: string, doktrinId: string) {
+  return istek<BirlikYaniti>(`/api/game/${stateId}/birlik/doktrin`, { method: 'POST', body: JSON.stringify({ doktrinId }) });
+}
+export function birlikKaliteYukselt(stateId: string, hedef: 'orta' | 'yuksek', yuzde: number) {
+  return istek<BirlikYaniti & { sonuc: BirlikIslemSonucu }>(`/api/game/${stateId}/birlik/kalite`, { method: 'POST', body: JSON.stringify({ hedef, yuzde }) });
+}
+export function birlikBirlikSec(stateId: string, seviye: number, turler: BirlikTur[]) {
+  return istek<BirlikYaniti & { sonuc: BirlikIslemSonucu }>(`/api/game/${stateId}/birlik/birlik`, { method: 'POST', body: JSON.stringify({ seviye, turler }) });
+}
+export function birlikKusatma(stateId: string, seviye: number) {
+  return istek<BirlikYaniti & { sonuc: BirlikIslemSonucu }>(`/api/game/${stateId}/birlik/kusatma`, { method: 'POST', body: JSON.stringify({ seviye }) });
+}
+export function birlikTerhis(stateId: string, adet: number) {
+  return istek<BirlikYaniti & { sonuc: BirlikIslemSonucu }>(`/api/game/${stateId}/birlik/terhis`, { method: 'POST', body: JSON.stringify({ adet }) });
+}
+export function birlikSavasKarariGetir(stateId: string) {
+  return istek<{ karar: SavasKarariDurumu | null }>(`/api/game/${stateId}/birlik/savas-karari`);
+}
+export function birlikSavasKarariVer(stateId: string, secim: string) {
+  return istek<BirlikYaniti & { sonraki: SavasKarariDurumu | null }>(`/api/game/${stateId}/birlik/savas-karari`, { method: 'POST', body: JSON.stringify({ secim }) });
 }
 
 /** v20: depoyu hedef yüzdeye doldurma planı (onayla=false) ya da satın alma (onayla=true). */

@@ -25,6 +25,9 @@ import type {
   IsletmeGorunumu,
   IsletmeKararGirdisi,
   CemaatKararGirdisi,
+  BirlikKararGirdisi,
+  BirlikTur,
+  SavasKarariDurumu,
 } from './types';
 import {
   mesleklerGetir,
@@ -90,6 +93,13 @@ import {
   isletmeGetir,
   isletmeKararVer,
   isletmeOgretiSec,
+  birlikDoktrinSec,
+  birlikKaliteYukselt,
+  birlikBirlikSec,
+  birlikKusatma,
+  birlikTerhis,
+  birlikSavasKarariGetir,
+  birlikSavasKarariVer,
   isletmeYatirimYap,
   isletmeCalisanAl,
   ajanTut,
@@ -133,8 +143,10 @@ import type { GeriBildirimGirdi, GostergeStat, TeklifHediyesi, DugunButcesi, Tan
 import { sesKapaliMi, sesTercihiKaydet } from './ses';
 import { muzikModunuAyarla, muzikDurdur, muzikSessizAyarla, type MuzikModu } from './muzik';
 import { aktifOturumIdGetir, aktifOturumIdKaydet, aktifOturumIdSil } from './oturum';
-import { ogretiBekliyor, vergiBekliyor } from './ogreti';
+import { ogretiBekliyor, vergiBekliyor, doktrinBekliyor, savasKarariOlasi } from './ogreti';
 import { OgretiSecimi } from './components/OgretiSecimi';
+import { DoktrinSecimi } from './components/DoktrinSecimi';
+import { SavasKararlari } from './components/SavasKararlari';
 import { VergiTalebi } from './components/VergiTalebi';
 import { UrunSecimi } from './components/UrunSecimi';
 import { basarimlariKaydet, basarimlariGetir } from './basarimlar';
@@ -366,6 +378,8 @@ function App() {
   const [pazarDurum, setPazarDurum] = useState<PazarDurumu | null>(null);
   const [ajanDurum, setAjanDurum] = useState<AjanDurumu | null>(null);
   const [isletme, setIsletme] = useState<IsletmeGorunumu | null>(null);
+  /** Asker savaş yılında sıradaki zorunlu karar adımı (yoksa null). */
+  const [savasKarari, setSavasKarari] = useState<SavasKarariDurumu | null>(null);
   const [kotuIsler, setKotuIsler] = useState<KotuIsKarti[]>([]);
   const [krediConfig, setKrediConfig] = useState<KrediConfig | null>(null);
   const [dedikodular, setDedikodular] = useState<string[]>([]);
@@ -846,8 +860,8 @@ function App() {
           return;
         }
       }
-      if (ogretiBekliyor(karakter)) {
-        // Terfi sonrası zorunlu öğreti seçimi (üstteki OgretiSecimi penceresi); seçilince senaryo çekilir.
+      if (ogretiBekliyor(karakter) || doktrinBekliyor(karakter)) {
+        // Terfi sonrası zorunlu öğreti / doktrin seçimi (üstteki OgretiSecimi penceresi); seçilince senaryo çekilir.
         setSenaryo(null);
         setTepkiModu(false);
         setEkran('oyun');
@@ -869,7 +883,14 @@ function App() {
    * modunda henüz olay çıkmadıysa (ana ekran gösterilir) null döner.
    */
   async function senaryoGerekirseCek(state: CharacterState): Promise<SenaryoResponse | null> {
-    if (ogretiBekliyor(state) || state.urun_secim_bekliyor || vergiBekliyor(state)) return null;
+    if (ogretiBekliyor(state) || doktrinBekliyor(state) || state.urun_secim_bekliyor || vergiBekliyor(state)) return null;
+    if (savasKarariOlasi(state)) {
+      const { karar } = await birlikSavasKarariGetir(state.id);
+      if (karar) {
+        setSavasKarari(karar);
+        return null;
+      }
+    }
     if (state.zaman_modeli === 'ilerle' && !state.olay_bekliyor) return null;
     return (await senaryoGetir(state.id)).senaryo;
   }
@@ -1679,7 +1700,7 @@ function App() {
       setKarakter(sonuc.state);
       setIsletme(sonuc.durum);
       // Öğreti beklerken senaryo çekilemediyse (yeni oyun / yenilenen sayfa) şimdi çek.
-      if (!senaryo && !ogretiBekliyor(sonuc.state)) {
+      if (!senaryo && !ogretiBekliyor(sonuc.state) && !doktrinBekliyor(sonuc.state)) {
         const { senaryo: yeni } = await senaryoGetir(sonuc.state.id);
         setSenaryo(yeni);
         setTepkiModu(false);
@@ -1691,6 +1712,69 @@ function App() {
       setYukleniyor(false);
     }
   }
+
+  /** Asker: doktrin seçimi (rütbeyle gelir; seçilmeden oyun devam etmez). */
+  async function doktrinSecHandler(doktrinId: string) {
+    if (!karakter) return;
+    setHata(null);
+    setYukleniyor(true);
+    try {
+      const sonuc = await birlikDoktrinSec(karakter.id, doktrinId);
+      setKarakter(sonuc.state);
+      setIsletme(sonuc.durum);
+      if (!senaryo && !doktrinBekliyor(sonuc.state) && !ogretiBekliyor(sonuc.state)) {
+        const sonrakiSenaryo = await senaryoGerekirseCek(sonuc.state);
+        if (sonrakiSenaryo) {
+          setSenaryo(sonrakiSenaryo);
+          setTepkiModu(false);
+          setEkran('oyun');
+        }
+      }
+    } catch (err) {
+      setHata(temizHata(err));
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
+  /** Asker: savaş yılı karar zincirinin bir adımını verir. */
+  async function savasKarariVerHandler(secim: string) {
+    if (!karakter) return;
+    setHata(null);
+    setYukleniyor(true);
+    try {
+      const sonuc = await birlikSavasKarariVer(karakter.id, secim);
+      setKarakter(sonuc.state);
+      setIsletme(sonuc.durum);
+      setSavasKarari(sonuc.sonraki);
+    } catch (err) {
+      setHata(temizHata(err));
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+
+  /** Asker birlik eylemleri (görev/politika/kalite/birlik/kuşatma/terhis): sonuç mesajı Kariyer ekranında gösterilir. */
+  async function birlikEylemHandler(calistir: () => Promise<{ state: CharacterState; durum: IsletmeGorunumu }>) {
+    if (!karakter) return;
+    setHata(null);
+    setIslemMesaji(null);
+    setYukleniyor(true);
+    try {
+      const sonuc = await calistir();
+      setKarakter(sonuc.state);
+      setIsletme(sonuc.durum);
+    } catch (err) {
+      setIslemMesaji(temizHata(err));
+    } finally {
+      setYukleniyor(false);
+    }
+  }
+  const birlikKararHandler = (k: BirlikKararGirdisi) => birlikEylemHandler(() => isletmeKararVer(karakter!.id, [], undefined, k));
+  const birlikKaliteHandler = (hedef: 'orta' | 'yuksek', yuzde: number) => birlikEylemHandler(() => birlikKaliteYukselt(karakter!.id, hedef, yuzde));
+  const birlikBirlikHandler = (seviye: number, turler: BirlikTur[]) => birlikEylemHandler(() => birlikBirlikSec(karakter!.id, seviye, turler));
+  const birlikKusatmaHandler = (seviye: number) => birlikEylemHandler(() => birlikKusatma(karakter!.id, seviye));
+  const birlikTerhisHandler = (adet: number) => birlikEylemHandler(() => birlikTerhis(karakter!.id, adet));
 
   async function isletmeKararHandler(hatlar: IsletmeKararGirdisi[], cemaat?: CemaatKararGirdisi) {
     if (!karakter) return;
@@ -1834,7 +1918,25 @@ function App() {
     !!karakter.meslek &&
     !karakter.olay_bekliyor &&
     !karakter.urun_secim_bekliyor &&
-    !ogretiBekliyor(karakter);
+    !ogretiBekliyor(karakter) &&
+    !doktrinBekliyor(karakter) &&
+    !savasKarari;
+  // Asker savaş yılında karar zinciri bekliyorsa pencere açılır (sunucu karar bitmeden zamanı ilerletmez).
+  useEffect(() => {
+    if (!karakter || !savasKarariOlasi(karakter) || doktrinBekliyor(karakter) || karakter.olay_bekliyor) {
+      setSavasKarari(null);
+      return;
+    }
+    let iptal = false;
+    birlikSavasKarariGetir(karakter.id)
+      .then((r) => {
+        if (!iptal) setSavasKarari(r.karar);
+      })
+      .catch(() => {});
+    return () => {
+      iptal = true;
+    };
+  }, [karakter?.id, karakter?.yil, karakter?.ulke?.savasta, karakter?.rutbe_seviye, karakter?.aktif]); // eslint-disable-line react-hooks/exhaustive-deps
   // Ana ekran tabloları işletme görünümünden beslenir; her yıl/para değişiminde tazelenir.
   useEffect(() => {
     if (!anaEkranModu || !karakter) return;
@@ -1999,6 +2101,19 @@ function App() {
           yukleniyor={yukleniyor}
           onSec={ogretiSecHandler}
         />
+      )}
+
+      {karakter && doktrinBekliyor(karakter) && ['oyun', 'sonuc', 'kariyer', 'finans', 'yatirim', 'sosyallesme', 'magaza', 'aile'].includes(ekran) && (
+        <DoktrinSecimi
+          stateId={karakter.id}
+          doktrinSayisi={((karakter.isletme as { birlik?: { doktrinler?: string[] } } | null)?.birlik?.doktrinler ?? []).length}
+          yukleniyor={yukleniyor}
+          onSec={doktrinSecHandler}
+        />
+      )}
+
+      {karakter && savasKarari && !doktrinBekliyor(karakter) && ['oyun', 'sonuc', 'kariyer', 'finans', 'yatirim', 'sosyallesme', 'magaza', 'aile'].includes(ekran) && (
+        <SavasKararlari karar={savasKarari} yukleniyor={yukleniyor} onSec={savasKarariVerHandler} />
       )}
 
       {ayarlarAcik && (
@@ -2996,6 +3111,7 @@ function App() {
           rutbeSeviye={karakter.rutbe_seviye}
           cag={karakter.cag}
           dinKultur={karakter.din_kultur}
+          bolge={karakter.bolge}
           kariyerPuani={karakter.kariyer_puani}
           un={karakter.un}
           ahlak={karakter.ahlak}
@@ -3030,6 +3146,11 @@ function App() {
           gecmis={karakter.gecmis}
           isletme={isletme}
           onIsletmeKarar={isletmeKararHandler}
+          onBirlikKarar={birlikKararHandler}
+          onBirlikKaliteYukselt={birlikKaliteHandler}
+          onBirlikSec={birlikBirlikHandler}
+          onBirlikKusatma={birlikKusatmaHandler}
+          onBirlikTerhis={birlikTerhisHandler}
           onIsletmeYatirim={isletmeYatirimHandler}
           onIsletmeCalisanAl={isletmeCalisanAlHandler}
           sayfa={kariyerSayfa ?? undefined}

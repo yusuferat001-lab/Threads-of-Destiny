@@ -49,8 +49,8 @@ function tuslar(meslek: string): TusTanimi[] {
     case 'Asker':
       return [
         { id: 'isletme', ikon: '🛡️', ad: { tr: 'Ordu', en: 'Army' } },
-        { id: 'yatirim', ikon: '⚒️', ad: { tr: 'Teçhizat', en: 'Gear' } },
-        { id: 'calisan', ikon: '📜', ad: { tr: 'Görevler', en: 'Duties' } },
+        { id: 'yatirim', ikon: '🏯', ad: { tr: 'Yatırım', en: 'Invest' } },
+        { id: 'calisan', ikon: '🎖️', ad: { tr: 'Subaylar', en: 'Officers' } },
         { id: 'cevre', ikon: '🗡️', ad: { tr: 'Çevre', en: 'Rivals' } },
       ];
     default:
@@ -78,7 +78,9 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
   const musteriEtiket = isletme
     ? karakter.meslek === 'Din Adamı'
       ? tr ? 'İnanan' : 'Flock'
-      : tr ? 'Müşteri' : 'Customers'
+      : karakter.meslek === 'Asker'
+        ? tr ? 'Er' : 'Men'
+        : tr ? 'Müşteri' : 'Customers'
     : tr ? 'Ordu' : 'Army';
   const degisim = dokum?.musteriDegisim ?? null;
 
@@ -95,7 +97,9 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
   const pay = isletme?.pazarPayi ?? null;
   const acikHat = isletme?.hatlar.filter((h) => h.acik).length ?? 0;
   const altMetinler: Record<AnaTusId, string> = {
-    isletme: isletme?.cemaat
+    isletme: isletme?.birlik
+      ? tr ? `${isletme.birlik.er} er · güç ${isletme.birlik.guc.toplam}` : `${isletme.birlik.er} men · str ${isletme.birlik.guc.toplam}`
+      : isletme?.cemaat
       ? tr ? 'politika, öğreti' : 'policy, doctrine'
       : isletme
         ? tr ? `${acikHat} hat açık` : `${acikHat} lines open`

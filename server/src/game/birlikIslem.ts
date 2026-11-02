@@ -584,8 +584,8 @@ export interface BirlikGorunumu {
     katalog: { id: string; simge: string; ad: { tr: string; en: string }; aciklama: { tr: string; en: string }; minEr: number; erBasi: number; yalnizSavas: boolean; kullanilabilir: boolean; aktif: boolean; erPayi: number; gelir: number; ganimet: number }[];
   };
   doktrin: {
-    secilen: { id: string; simge: string; ad: { tr: string; en: string }; seviye: number; acimasiz: boolean }[];
-    bekleyen: { seviye: number; yol: string | null; secenekler: { id: string; simge: string; ad: { tr: string; en: string }; kaynak: string; acimasiz: boolean }[] } | null;
+    secilen: { id: string; simge: string; ad: { tr: string; en: string }; seviye: number; acimasiz: boolean; etki: Record<string, number> }[];
+    bekleyen: { seviye: number; yol: string | null; secenekler: { id: string; simge: string; ad: { tr: string; en: string }; kaynak: string; acimasiz: boolean; etki: Record<string, number> }[] } | null;
   };
   savas: {
     aktif: boolean;
@@ -643,7 +643,7 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
   const secilenDoktrin = b.doktrinler
     .map((id) => doktrinGetir(id))
     .filter((x): x is NonNullable<typeof x> => !!x)
-    .map((x) => ({ id: x.id, simge: x.simge, ad: x.ad, seviye: x.seviye, acimasiz: x.acimasiz }));
+    .map((x) => ({ id: x.id, simge: x.simge, ad: x.ad, seviye: x.seviye, acimasiz: x.acimasiz, etki: x.etki as Record<string, number> }));
   const k = state.ulke.savasta ? savasKarariHazirla(state) : null;
   return {
     er,
@@ -727,7 +727,7 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
         ? {
             seviye: beklenenSeviye,
             yol,
-            secenekler: doktrinSecenekleri(beklenenSeviye, yol).map((x) => ({ id: x.id, simge: x.simge, ad: x.ad, kaynak: x.kaynak, acimasiz: x.acimasiz, etki: x.etki })),
+            secenekler: doktrinSecenekleri(beklenenSeviye, yol).map((x) => ({ id: x.id, simge: x.simge, ad: x.ad, kaynak: x.kaynak, acimasiz: x.acimasiz, etki: x.etki as Record<string, number> })),
           }
         : null,
     },

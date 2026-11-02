@@ -29,7 +29,7 @@ const RUTBELER: Record<string, Record<string, RutbeTanimi>> = {
         { kariyer_puani: 10, un: 20 },
         { kariyer_puani: 32, un: 36 },
         { kariyer_puani: 64, un: 48 },
-        { kariyer_puani: 260, un: 78 },
+        { kariyer_puani: 330, un: 78 },
       ],
     },
     'Sanayi Devrimi': {
@@ -38,7 +38,7 @@ const RUTBELER: Record<string, Record<string, RutbeTanimi>> = {
         { kariyer_puani: 10, un: 20 },
         { kariyer_puani: 32, un: 36 },
         { kariyer_puani: 64, un: 48 },
-        { kariyer_puani: 260, un: 78 },
+        { kariyer_puani: 330, un: 78 },
       ],
     },
   },
@@ -111,7 +111,25 @@ const DIN_ADAMI_UNVANLARI: Record<string, Record<string, [string, string, string
   },
 };
 
-function rutbeTanimiGetir(meslek: string, cag: string, dinKultur?: string | null): RutbeTanimi | undefined {
+/** Asker unvanları ülkeye göre değişir (sunucudaki data/rutbeler.ts ASKER_UNVANLARI aynası). */
+const ASKER_UNVANLARI: Record<string, [string, string, string, string, string]> = {
+  'Orta Çağ|Fransa': ['Piyade Er', 'Silahtar', 'Şövalye', 'Sancak Şövalyesi', 'Mareşal'],
+  'Orta Çağ|Kutsal Roma': ['Piyade Er', 'Silahtar', 'Şövalye', 'Sancak Beyi', 'Ordu Komutanı'],
+  'Orta Çağ|Bizans': ['Stratiotes', 'Dekarkhos', 'Kentarkhos', 'Taksiarkhos', 'Strategos'],
+  'Orta Çağ|Selçuklu': ['Gulam', 'Sipahi', 'Alemdar', 'Emir', 'Sipehsalar'],
+  'Orta Çağ|Eyyubiler': ['Gulam', 'Sipahi', 'Alemdar', 'Emir', 'Sipehsalar'],
+  'Sanayi Devrimi|İngiltere': ['Er', 'Onbaşı', 'Çavuş', 'Yüzbaşı', 'Albay'],
+  'Sanayi Devrimi|Fransa': ['Er', 'Onbaşı', 'Çavuş', 'Yüzbaşı', 'Albay'],
+  'Sanayi Devrimi|Osmanlı': ['Nefer', 'Onbaşı', 'Çavuş', 'Yüzbaşı', 'Miralay'],
+  'Sanayi Devrimi|Rusya': ['Ryadovoy', 'Yefreytor', 'Feldfebel', 'Kapitan', 'Polkovnik'],
+};
+
+function rutbeTanimiGetir(meslek: string, cag: string, dinKultur?: string | null, bolge?: string | null): RutbeTanimi | undefined {
+  if (meslek === 'Asker' && bolge) {
+    const temel = RUTBELER.Asker?.[cag];
+    const unvanlar = ASKER_UNVANLARI[`${cag}|${bolge}`];
+    if (temel && unvanlar) return { ...temel, unvanlar };
+  }
   if (meslek === 'Din Adamı') {
     const temel = RUTBELER['Din Adamı']?.[cag];
     if (!temel) return undefined;
@@ -156,9 +174,10 @@ export function rutbeIlerlemeHesapla(
   un: number,
   ahlak: number,
   yil: number,
-  sonTerfiYili: number
+  sonTerfiYili: number,
+  bolge?: string | null
 ): RutbeIlerlemeDurumu {
-  const tanim = rutbeTanimiGetir(meslek, cag, dinKultur);
+  const tanim = rutbeTanimiGetir(meslek, cag, dinKultur, bolge);
   const seviye = Math.max(1, Math.min(5, rutbeSeviye || 1));
   if (!tanim) {
     return {
