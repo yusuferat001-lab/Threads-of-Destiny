@@ -5400,7 +5400,7 @@ function isletmeGorunumuHesapla(state: CharacterState): IsletmeGorunumu {
       maas: paraYuvarla(a.maas_taban * genf),
     };
   });
-  const unvan = sehirYoneticisiUnvani(state.cag, state.bolge);
+  const unvan = sehirYoneticisiUnvani(state.cag, state.bolge, state.meslek);
   const kor = korumaHesapla(state);
   const kapasite = depoKapasitesi(is);
   const imtiyazlar = Object.entries(is.imtiyazlar ?? {})

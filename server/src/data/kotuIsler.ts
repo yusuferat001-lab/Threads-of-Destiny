@@ -39,6 +39,8 @@ export interface KotuIsEtki {
   /** Meslek metrikleri (yalnız ilgili meslekte anlamlı). */
   uretim_kapasitesi?: number;
   ordu_techizat?: number;
+  /** Asker (birlik modu): "kazan" = geçen yılın devlet payını cebine ayır, "ceza" = yakalanma (payın iki katı ceza). */
+  ganimet_sakla?: "kazan" | "ceza";
   /** Yönetimle bağlar (§35): kral/vali ve patron hattına delta. */
   yonetim_iliski?: number;
   patron_iliski?: number;
@@ -243,20 +245,20 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
   // ===== ASKER — sokak/asayiş =====
   {
     id: "kaos_cikar",
-    ajanRolu: "Kabadayı",
     simge: "🌪️",
     basariSansi: 55,
     meslekler: ["Asker"],
+    calisanIsi: true,
     cooldownYil: 5,
     basarili: { para: 16, yonetim_iliski: 8, musteri: 15, ahlak: -18, suc_sinifi: "buyuk", kriz: { tur: "isyan", sureYil: 1 } },
     basarisiz: { saglik: -10, ahlak: -5, suc_sinifi: "agir", hapis_sansi: 0.25 },
   },
   {
     id: "kaza_duello",
-    ajanRolu: "Suikastçı",
     simge: "🤺",
     basariSansi: 45,
     meslekler: ["Asker"],
+    calisanIsi: true,
     cooldownYil: 6,
     rakipYenilt: true,
     basarili: { un: 6, musteri: 18, ahlak: -16, suc_sinifi: "orta", kariyer_puani: 4 },
@@ -264,13 +266,24 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
   },
   {
     id: "kervan_baskini",
-    ajanRolu: "Kabadayı",
     simge: "🏴",
     basariSansi: 60,
     meslekler: ["Asker"],
+    calisanIsi: true,
     cooldownYil: 2,
-    basarili: { para: 18, ordu_techizat: 8, musteri: 9, ahlak: -12, suc_sinifi: "orta" },
+    basarili: { para: 18, musteri: 9, ahlak: -12, suc_sinifi: "orta" },
     basarisiz: { saglik: -12, ahlak: -4, suc_sinifi: "buyuk", hapis_sansi: 0.15 },
+  },
+  {
+    id: "ganimeti_sakla",
+    simge: "🪙",
+    basariSansi: 55,
+    meslekler: ["Asker"],
+    calisanIsi: true,
+    cooldownYil: 3,
+    // Etki: geçen yıl devlete giden ganimet payını cebine ayır; yakalanırsan payın iki katı ceza + otorite/şöhret kaybı.
+    basarili: { ganimet_sakla: "kazan", ahlak: -10, suc_sinifi: "orta" },
+    basarisiz: { ganimet_sakla: "ceza", un: -4, yonetim_iliski: -10, suc_sinifi: "buyuk" },
   },
 ];
 
@@ -281,7 +294,7 @@ export function kotuIsTanimiGetir(id: string): KotuIsTanimi | undefined {
 /** Bu karaktere (meslek + çağ) görünen karanlık işler. */
 export function uygunKotuIsler(meslek: string, cag: Cag): KotuIsTanimi[] {
   // İşletme dilimi (§45): işletmesi olan mesleklerin listesi yalnız kendi 3 işidir; genel işler gelmez.
-  if (meslek === "Tüccar" || meslek === "Zanaatkâr" || meslek === "Din Adamı") return KOTU_ISLER.filter((k) => k.meslekler?.includes(meslek) && (!k.cag || k.cag === cag));
+  if (meslek === "Tüccar" || meslek === "Zanaatkâr" || meslek === "Din Adamı" || meslek === "Asker") return KOTU_ISLER.filter((k) => k.meslekler?.includes(meslek) && (!k.cag || k.cag === cag));
   return KOTU_ISLER.filter((k) => (!k.meslekler || k.meslekler.includes(meslek)) && (!k.cag || k.cag === cag));
 }
 
@@ -303,5 +316,6 @@ export const KOTU_IS_ADLARI: Record<string, string> = {
   kaos_cikar: "Kaos Çıkar, Koruma Sat",
   kaza_duello: "Kaza Süsü Verilmiş Düello",
   kervan_baskini: "Kervan Baskını",
+  ganimeti_sakla: "Ganimeti Sakla",
   suikast_ettir: "Rakibi Ortadan Kaldırt",
 };
