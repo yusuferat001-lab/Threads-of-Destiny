@@ -207,7 +207,7 @@ export const MORAL_SERBEST = 3;
 
 // ── Gelir ve gider ──────────────────────────────────────────────────────────
 /** Rütbe S1..S5 → yıllık sold (devlet öder, sabit, enflasyonla büyür). */
-export const SOLD = [14, 20, 28, 40, 56];
+export const SOLD = [21, 30, 42, 60, 84];
 export const ER_BASI_GELIR = 0.023;
 export const ER_MASRAFI = 0.12;
 export const ERZAK_BIRIMI = 0.08;
@@ -215,7 +215,7 @@ export const ERZAK_BIRIMI = 0.08;
  * Barış çatışması (haydut / sınır, takvimli): ganimet havuzu = toplam askerî güç × bu birim × tür çarpanı × sonuç çarpanı.
  * Büyük ve iyi donanımlı ordu aynı çatışmadan çok daha fazla kazanır (sim ile kalibre edilecek).
  */
-export const GANIMET_GUC_BIRIMI = 3.4;
+export const GANIMET_GUC_BIRIMI = 1.05;
 /** Görev gelirinin genel çarpanı (kalibrasyon); sold ve er başı gelir ayrı. */
 export const GOREV_GELIR_CARPANI = 0.8;
 /** İki çatışma arası yıl [min, max] ve ilk çatışmanın işletmenin kaçıncı yılından sonra geleceği. */
@@ -646,13 +646,13 @@ export const ASKER_SALDIRI_HASARLARI = {
 /** Savaş sürerken görevlerden gelir yok; sabit ödemenin bu kesri "savaş ödeneği" olarak ödenir. */
 export const SAVAS_ODENEGI_ORANI = 0.5;
 /** Yağma ikmali (yıllık): ganimet = güç × GANIMET_GUC_BIRIMI × bu; erzak masrafı bu çarpanla; esir/yeni er oranları. */
-export const YAGMA_GANIMET = 0.5;
-export const YAGMA_ERZAK_CARPANI = 0.4;
+export const YAGMA_GANIMET = 0.1;
+export const YAGMA_ERZAK_CARPANI = 0.6;
 export const YAGMA_ESIR = 0.004;
 export const YAGMA_ER_ORANI = 0.03;
 export const YAGMA_AHLAK = -1.5;
 /** Savaş zaferi (savaş sonu, genel zafer): ganimet = güç × GANIMET_GUC_BIRIMI × bu × savaşın yıl sayısı; esir = güç × bu × yıl. */
-export const SAVAS_ZAFER_GANIMET = 2.2;
+export const SAVAS_ZAFER_GANIMET = 1.75;
 export const SAVAS_ZAFER_ESIR = 0.015;
 /** Kiralık ordu: ordunun bu kesri kadar, savaş süresince; eğitimli ve pahalı. */
 export const KIRALIK_ORAN = 0.4;

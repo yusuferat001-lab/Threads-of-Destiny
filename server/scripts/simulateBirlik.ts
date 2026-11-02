@@ -66,7 +66,7 @@ function zorunluKararlar(s: CharacterState, tarz: Tarz) {
     let secim = d.secenekler[0].id;
     if (tarz === "aktif") {
       if (d.adim === "seferberlik") secim = d.secenekler.find((o) => o.id === "dengeli")?.id ?? secim;
-      if (d.adim === "ikmal") secim = d.secenekler.find((o) => o.id === "yeterli")?.id ?? secim;
+      if (d.adim === "ikmal") secim = d.secenekler.find((o) => o.id === (process.env.SIM_IKMAL ?? "yeterli"))?.id ?? secim;
     }
     savasKarariVer(s, secim, isletmeBaglami(s));
   }
@@ -165,6 +165,9 @@ function botKarar(s: CharacterState, tarz: Tarz) {
 interface Omur {
   net: number[];
   cebine: number[];
+  cebineGercek: number[];
+  kalem: Record<string, number>;
+  enf: number[];
   er: number[];
   pay: number[];
   guc: number[];
@@ -180,7 +183,7 @@ function tekOmur(cag: Cag, tarz: Tarz): Omur {
   const s = createCharacter(cag, cag === "Orta Çağ" ? "Fransa" : "İngiltere", "kasaba");
   s.yas = 15;
   mesleğiSec(s, "Asker");
-  const o: Omur = { net: [], cebine: [], er: [], pay: [], guc: [], ganimetOrani: [], rutbeYas: [null, null, null, null, null], batti: false, savasKaybi: [], sonEr: 0, olduYil: YIL };
+  const o: Omur = { net: [], cebine: [], cebineGercek: [], kalem: {}, enf: [], er: [], pay: [], guc: [], ganimetOrani: [], rutbeYas: [null, null, null, null, null], batti: false, savasKaybi: [], sonEr: 0, olduYil: YIL };
   let savasOncesi = 0;
   let savasta = false;
   for (let y = 0; y < YIL; y++) {
@@ -216,6 +219,23 @@ function tekOmur(cag: Cag, tarz: Tarz): Omur {
     const d = s.isletme?.son_dokum;
     o.net.push(d?.net ?? 0);
     o.cebine.push(s.para - para0 + gider - 0);
+    o.cebineGercek.push(s.para - para0);
+    {
+      const bd = d?.birlik;
+      const K = (k: string, v: number) => (o.kalem[k] = (o.kalem[k] ?? 0) + v / enflasyonCarpani(s));
+      for (const u of d?.uyarilar ?? []) {
+        if (u.kod === "baris_catisma") K("  ganimet:baris", u.tutar ?? 0);
+        if (u.kod === "savas_ganimet") K("  ganimet:savasZafer", u.tutar ?? 0);
+        if (u.kod === "yagma") K("  ganimet:yagma", u.tutar ?? 0);
+      }
+      K("sold+odenek", bd?.sold ?? 0);
+      K("erBasi", bd?.erBasiGelir ?? 0);
+      K("gorev", bd?.gorevGeliri ?? 0);
+      K("ganimetNet", (bd?.ganimetPara ?? 0) - (bd?.erPayi ?? 0));
+      K("gider(erMasraf+erzak+gorevMas+techizat)", -((bd?.erMasrafi ?? 0) + (bd?.erzak ?? 0) + (bd?.gorevMasrafi ?? 0) + (bd?.techizatBakimi ?? 0)));
+      K("yasam+kira", -gider);
+    }
+    o.enf.push(enflasyonCarpani(s));
     o.er.push(erSayisi(s));
     o.pay.push(pazarPayiHesapla(s) * 100);
     o.guc.push(birlikAl(s).guc);
@@ -256,6 +276,8 @@ for (const cag of CAGLAR) {
       const v = omurler.map((o) => o.rutbeYas[r]).filter((x): x is number => x != null);
       return v.length ? `S${r + 1}:${f(ort(v), 0)}y(${f((v.length / N) * 100, 0)}%)` : `S${r + 1}:-`;
     });
+    console.log("  kalem (50y reel toplam): " + [...new Set(omurler.flatMap((o) => Object.keys(o.kalem)))].map((k) => `${k} ${f(ort(omurler.map((o) => o.kalem[k] ?? 0)), 0)}`).join(" · "));
+    console.log(`  >>> TOPLAM ${YIL} yıl cebine kalan: nominal ${f(ort(omurler.map((o) => o.cebineGercek.reduce((t, x) => t + x, 0))), 0)} · reel(enflasyonsuz) ${f(ort(omurler.map((o) => o.cebineGercek.reduce((t, x, i) => t + x / o.enf[i], 0))), 0)} | batan ${f((omurler.filter((o) => o.batti).length / N) * 100, 0)}%`);
     console.log(
       `[${tarz.padEnd(8)}] net@30/40/50 = ${f(yasNet(30))}/${f(yasNet(40))}/${f(yasNet(50))} | er@60 ort ${f(ort(er60), 0)} med ${f(med(er60), 0)} | pay@60 ${f(ort(omurler.map((o) => o.pay[Math.min(o.pay.length - 1, 44)] ?? 0)))}% | ganimet/gelir ${f(ganimet * 100, 0)}% | savaş sonrası kalan ${savasKalan.length ? f(med(savasKalan) * 100, 0) + "%" : "-"} (n=${savasKalan.length}) | batan ${f((omurler.filter((o) => o.batti).length / N) * 100, 0)}% | ${rutbeOrt.join(" ")}`
     );

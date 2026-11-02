@@ -358,5 +358,6 @@ for (const cag of CAGLAR) {
     console.log(
       `\n${cag} / ${tarz}  (batan %${Math.round((batan / N) * 100)} · KALICI İFLAS %${Math.round((kaliciIflas / N) * 100)}, ömür sonunda borçlu %${Math.round((sonNegatif / N) * 100)}) · son pay medyan %${sonPay[Math.floor(N / 2)].toFixed(1)} (p10 %${sonPay[Math.floor(N * 0.1)].toFixed(1)}, p90 %${sonPay[Math.floor(N * 0.9)].toFixed(1)}) · hırsızlık/ömür ${hirs.toFixed(1)} · ekstra vergi/ömür ${ort(sonuclar.map((c) => c.ekVergiSayisi)).toFixed(1)}\n  ${satirlar.join("\n  ")}`
     );
+    console.log(`  >>> TOPLAM ${YIL} yıl cebine kalan: nominal ${ort(sonuclar.map((c) => c.net.reduce((t, x) => t + x, 0))).toFixed(0)} · reel(enflasyonsuz) ${ort(sonuclar.map((c) => c.net.reduce((t, x, i) => t + x / c.enf[i], 0))).toFixed(0)}`);
   }
 }
