@@ -36,7 +36,7 @@ const M = {
   moral: { tr: 'Moral', en: 'Morale' },
   talim: { tr: 'Talim / Tecrübe', en: 'Drill / Experience' },
   limit: { tr: 'Komuta limiti', en: 'Command limit' },
-  limitNot: { tr: 'rütbe ve kışladan küçüğü', en: 'the lower of rank and barracks' },
+  limitNot: { tr: 'kışlanın barındırabildiği er sayısı', en: 'how many men the barracks can house' },
   otorite: { tr: 'Şehir yöneticin', en: 'Your city governor' },
   iliski: { tr: 'ilişki', en: 'relation' },
   rakipBaslik: { tr: 'Rakip komutanlar', en: 'Rival commanders' },
@@ -81,7 +81,11 @@ const M = {
   uygula: { tr: 'Uygula', en: 'Apply' },
   kusatma: { tr: 'Kuşatma', en: 'Siege' },
   terhisBaslik: { tr: 'Terhis', en: 'Discharge' },
-  terhisNot: { tr: 'Savaşta terhis edemezsin.', en: 'You cannot discharge during a war.' },
+  terhisNot: { tr: 'Savaşta terhis edemezsin. Savaş bitince seferberlikle gelenler kendiliğinden döner; diğer erleri sen terhis edersin.', en: 'You cannot discharge during a war. Wartime recruits go home on their own when it ends; you discharge the rest yourself.' },
+  yarali: { tr: 'Yaralı', en: 'Wounded' },
+  gYarali: { tr: 'Yaralı tedavisi', en: 'Wounded care' },
+  gAsim: { tr: 'Limit üstü erlerin ek gideri', en: 'Extra cost of men over the limit' },
+  fazla: { tr: 'fazla', en: 'over' },
   terhisEt: { tr: 'Terhis et', en: 'Discharge' },
   doktrinBaslik: { tr: 'Doktrinlerin', en: 'Your doctrines' },
   doktrinYok: { tr: 'Henüz doktrin seçmedin.', en: 'No doctrine chosen yet.' },
@@ -239,8 +243,13 @@ export function BirlikPaneli({
             </span>
             <span title={t('limitNot')}>
               📏 {t('limit')}: <strong>{b.limit.komuta}</strong>
-              {b.limit.seferberlik ? ' ⚔️' : ''}
+              {b.limit.asim > 0 ? <em className="negatif"> (+{b.limit.asim} {t('fazla')})</em> : null}
             </span>
+            {b.yarali.sayi > 0 && (
+              <span>
+                🩹 {t('yarali')}: <strong>{b.yarali.sayi}</strong>
+              </span>
+            )}
             <span>
               💪 {t('guc')}: <strong>{b.guc.toplam}</strong>
             </span>
@@ -372,7 +381,7 @@ export function BirlikPaneli({
               <span key={k}>
                 {d(b.kalite.adlar[k])}:{' '}
                 {[50, 100].map((y) => (
-                  <button key={y} className="ikincil" disabled={yukleniyor || kilitli} onClick={() => onKaliteYukselt(k, y)} title={`${formatPara(b.kalite.yukseltFiyat[k])} ${pb}${erBirim}`}>
+                  <button key={y} className="ikincil" disabled={yukleniyor || kilitli} onClick={() => onKaliteYukselt(k, y)} >
                     {t('yukselt')} %{y}
                   </button>
                 ))}{' '}
@@ -453,8 +462,8 @@ export function BirlikPaneli({
           <h4>{t('terhisBaslik')}</h4>
           <div className="isletme-fiyat-not">{t('terhisNot')}</div>
           <div className="isletme-fiyat-satir">
-            <input type="number" min={1} max={Math.max(1, b.er - 5)} value={terhis} onChange={(e) => setTerhis(Math.max(1, Math.floor(Number(e.target.value) || 1)))} style={{ width: 70 }} />{' '}
-            <button className="ikincil" disabled={yukleniyor || b.savas.aktif || b.er - 5 < 1} onClick={() => onTerhis(terhis)}>
+            <input type="number" min={1} max={Math.max(1, b.er - 6)} value={terhis} onChange={(e) => setTerhis(Math.max(1, Math.floor(Number(e.target.value) || 1)))} style={{ width: 70 }} />{' '}
+            <button className="ikincil" disabled={yukleniyor || b.savas.aktif || b.er - 6 < 1} onClick={() => onTerhis(terhis)}>
               {t('terhisEt')}
             </button>
           </div>
@@ -517,7 +526,6 @@ export function BirlikPaneli({
           <h4>{t('dokumBaslik')}</h4>
           <div className="isletme-dokum">
             <div>{d(b.hesap.soldAdi)}: <strong>+{formatPara(b.hesap.sold)}</strong></div>
-            <div>{t('erBasi')}: <strong>+{formatPara(b.hesap.erBasiGelir)}</strong></div>
             <div>{t('gorevGeliri')}: <strong>+{formatPara(b.hesap.gorevGeliri)}</strong></div>
             <div>{t('ganimetNet')}: <strong>+{formatPara(b.hesap.ganimetNet)}</strong></div>
             {b.hesap.kaleGeliri > 0 && <div>{t('gKale')}: <strong>+{formatPara(b.hesap.kaleGeliri)}</strong></div>}
@@ -528,6 +536,8 @@ export function BirlikPaneli({
             {b.hesap.kiralikMasrafi > 0 && <div>{t('gKiralik')}: <strong>−{formatPara(b.hesap.kiralikMasrafi)}</strong></div>}
             <div>{t('gKisla')}: <strong>−{formatPara(b.hesap.kislaBakim)}</strong></div>
             <div>{t('gTechizat')}: <strong>−{formatPara(b.hesap.techizatBakim)}</strong></div>
+            {b.hesap.yaraliGideri > 0 && <div>{t('gYarali')}: <strong>−{formatPara(b.hesap.yaraliGideri)}</strong></div>}
+            {b.hesap.limitAsimGideri > 0 && <div>{t('gAsim')}: <strong>−{formatPara(b.hesap.limitAsimGideri)}</strong></div>}
             {b.hesap.kusatmaBakim > 0 && <div>{t('gKusatma')}: <strong>−{formatPara(b.hesap.kusatmaBakim)}</strong></div>}
             <div>{t('gTalim')}: <strong>−{formatPara(b.hesap.talimMasrafi)}</strong></div>
             <div className="isletme-dokum-net">

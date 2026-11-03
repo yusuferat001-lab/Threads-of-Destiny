@@ -54,6 +54,7 @@ import {
   TUR_TANIMLARI,
   EMIRLER,
   KIRALIK_ORAN,
+  MIN_CEKIRDEK_ER,
   KIRALIK_PESIN,
   KIRALIK_YILLIK,
   emirGetir,
@@ -89,13 +90,14 @@ import {
   komutaLimiti,
   r2,
   rutbeIndeksi,
-  rutbeLimiti,
+  limitAsimEri,
+  yaraliSayisi,
   turPaylari,
   yolDali,
   type BirlikHesabi,
   type GucDokumu,
 } from "./birlik";
-import { esirleriIsle, savasBaslat, seferberlikUygula, yeniErEkle } from "./birlikYil";
+import { esirleriIsle, savasBaslat, seferberlikUygula, yaraliIyilesmeSuresi, yeniErEkle } from "./birlikYil";
 import { olasilikliYuvarla } from "./isletme";
 
 // ── Yardımcılar ─────────────────────────────────────────────────────────────
@@ -287,7 +289,7 @@ export function terhisEt(state: CharacterState, adet: number, bg: IsletmeBaglami
   const er = erSayisi(state);
   const n = Math.round(adet);
   if (!Number.isFinite(n) || n <= 0) throw new Error("Geçersiz adet.");
-  if (er - n < 5) throw new Error("Ordunda en az 5 er kalmalı.");
+  if (er - n < MIN_CEKIRDEK_ER) throw new Error(`Ordunda en az ${MIN_CEKIRDEK_ER} er kalmalı.`);
   let kalan = n;
   let iade = 0;
   for (const q of KALITE_SIRASI) {
@@ -298,6 +300,7 @@ export function terhisEt(state: CharacterState, adet: number, bg: IsletmeBaglami
     if (kalan <= 0) break;
   }
   state.meslek_musteri = er - n;
+  b.yarali = Math.min(Math.max(0, Math.round(b.yarali ?? 0)), er - n);
   iade = r2(iade);
   state.para = r2(state.para + iade);
   birlikSenkron(state, bg.enflasyon);
@@ -562,7 +565,9 @@ export const GUC_ETIKETLERI: Record<string, { tr: string; en: string }> = {
 
 export interface BirlikGorunumu {
   er: number;
-  limit: { komuta: number; rutbe: number; kisla: number; kislaKademe: number; seferberlik: boolean; tavan: number };
+  limit: { komuta: number; kisla: number; kislaKademe: number; seferberlik: boolean; tavan: number; asim: number };
+  /** Tedavi gören yaralılar (görev ve savaşa katılamaz), yıllık iyileşen sayısı ve iyileşme süresi (yıl). */
+  yarali: { sayi: number; saglam: number; yillikIyilesme: number; sureYil: number };
   guc: {
     ham: number;
     kalite: { dusuk: number; orta: number; yuksek: number };
@@ -662,6 +667,8 @@ export interface BirlikGorunumu {
     gorevMasrafi: number;
     kislaBakim: number;
     techizatBakim: number;
+    yaraliGideri: number;
+    limitAsimGideri: number;
     kusatmaBakim: number;
     talimMasrafi: number;
     toplamGider: number;
@@ -697,7 +704,8 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
   const k = state.ulke.savasta ? savasKarariHazirla(state) : null;
   return {
     er,
-    limit: { komuta: komutaLimiti(state), rutbe: rutbeLimiti(state), kisla: kislaLimiti(state), kislaKademe: kislaKademesi(state), seferberlik: !!b.savas?.seferberlik, tavan: ER_TAVANI },
+    limit: { komuta: komutaLimiti(state), kisla: kislaLimiti(state), kislaKademe: kislaKademesi(state), seferberlik: !!b.savas?.seferberlik, tavan: ER_TAVANI, asim: limitAsimEri(state) },
+    yarali: { sayi: yaraliSayisi(state), saglam: er - yaraliSayisi(state), yillikIyilesme: Math.min(yaraliSayisi(state), Math.max(0, Math.round(b.yarali_hizi ?? 0))), sureYil: yaraliIyilesmeSuresi(state) },
     guc: {
       ham: Math.round(d.ham * 10) / 10,
       kalite: { ...b.kalite },
@@ -812,7 +820,7 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
       yagmaBrut: r2(h.yagmaBrut),
       sold: r2(h.sold), erBasiGelir: r2(h.erBasiGelir), gorevGeliri: r2(h.gorevGeliri), ganimetNet: r2(h.ganimetNet), devletPayi: r2(h.devletPayi), erPayi: r2(h.erPayi),
       toplamGelir: r2(h.toplamGelir), erMasrafi: r2(h.erMasrafi), erzak: r2(h.erzak), gorevMasrafi: r2(h.gorevMasrafi), kislaBakim: r2(h.kislaBakim),
-      techizatBakim: r2(h.techizatBakim), kusatmaBakim: r2(h.kusatmaBakim), talimMasrafi: r2(h.talimMasrafi), toplamGider: r2(h.toplamGider), net: r2(h.net),
+      techizatBakim: r2(h.techizatBakim), yaraliGideri: r2(h.yaraliGideri), limitAsimGideri: r2(h.limitAsimGideri), kusatmaBakim: r2(h.kusatmaBakim), talimMasrafi: r2(h.talimMasrafi), toplamGider: r2(h.toplamGider), net: r2(h.net),
       barisGanimetTahmini: r2(d.guc * GANIMET_GUC_BIRIMI * 1.15 * bg.enflasyon * (1 - GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran)),
     },
     yol,

@@ -37,7 +37,6 @@ import {
   erSayisi,
   gucHesapla,
   komutaLimiti,
-  rutbeLimiti,
   kislaLimiti,
   subayLimiti,
   gorevPaylari,
@@ -70,8 +69,9 @@ import {
   GANIMET_GUC_BIRIMI,
   KISLA_ER_LIMITI,
   MIN_CEKIRDEK_ER,
-  RUTBE_ER_LIMITI,
   SOLD,
+  ER_BASI_GELIR,
+  SAVAS_ER_BASI_CARPANI,
   TALIM_TANIMLARI,
   doktrinSecenekleri,
   doktrinToplami,
@@ -236,20 +236,18 @@ describe("askerî güç ve pay", () => {
 });
 
 describe("limitler ve yeni er katılımı", () => {
-  it("komuta limiti = min(rütbe, kışla); seferberlikte ×1,5", () => {
+  it("ordu limiti yalnız kışla (rütbe limiti ve seferberlik çarpanı yok)", () => {
     const s = asker();
-    expect(RUTBE_ER_LIMITI).toEqual([30, 70, 140, 270, 450]);
     expect(KISLA_ER_LIMITI).toEqual([25, 60, 120, 240, 450]);
-    expect(komutaLimiti(s)).toBe(Math.min(rutbeLimiti(s), kislaLimiti(s)));
+    expect(komutaLimiti(s)).toBe(kislaLimiti(s));
     expect(komutaLimiti(s)).toBe(25);
-    s.rutbe_seviye = 3;
-    s.isletme!.yatirimlar.kisla = 2;
-    expect(komutaLimiti(s)).toBe(120);
+    s.rutbe_seviye = 1;
     s.isletme!.yatirimlar.kisla = 4;
-    expect(komutaLimiti(s)).toBe(140); // rütbe sınırlar
+    expect(komutaLimiti(s)).toBe(450); // rütbe sınırlamaz
+    s.isletme!.yatirimlar.kisla = 2;
     birlikAl(s).savas = savasBaslat(s);
     birlikAl(s).savas!.seferberlik = "dengeli";
-    expect(komutaLimiti(s)).toBe(210);
+    expect(komutaLimiti(s)).toBe(120); // seferberlik limiti büyütmez
   });
 
   it("subay limiti: rütbe tabanı 1..5 + kışla bonusu", () => {
@@ -267,20 +265,20 @@ describe("limitler ve yeni er katılımı", () => {
     expect(r.eklenen).toBe(komutaLimiti(s) - 20);
     expect(erSayisi(s)).toBe(komutaLimiti(s));
     expect(b.kalite.orta).toBe(r.eklenen);
-    expect(r.maliyet).toBeGreaterThan(0);
+    expect(r.maliyet).toBe(0); // teçhizat yükseltme/katılım ücretsiz (yalnız yıllık bakım)
     // talim = 60 × 20 / (20 + eklenen)
     expect(b.talim).toBeCloseTo((60 * 20) / (20 + r.eklenen), 4);
   });
 
-  it("parası yetmeyen yeni erler düşük kaliteyle gelir (ücret çekilmez)", () => {
+  it("yeni erler hedef kaliteyle gelir; teçhizat ücreti yok", () => {
     const s = asker();
     const b = birlikAl(s);
     b.hedef_kalite = "yuksek";
     const r = yeniErEkle(s, 5, bg(s), { butce: 0 });
     expect(r.eklenen).toBe(5);
     expect(r.maliyet).toBe(0);
-    expect(b.kalite.yuksek).toBe(0);
-    expect(b.kalite.dusuk).toBe(25);
+    expect(b.kalite.yuksek).toBe(5);
+    expect(b.kalite.dusuk).toBe(20);
   });
 
   it("birlik seviyesi varsa yeni erlerin birlik payı için er başı ücret alınır", () => {
@@ -349,7 +347,7 @@ describe("gelir ve gider", () => {
     expect(az.devletPayi + de.devletPayi + co.devletPayi).toBe(0);
   });
 
-  it("savaşta görevlerden gelir yok; sabit maaşın yarısı savaş ödeneği olarak ödenir; maaşın adı çağ+ülkeye göre", () => {
+  it("savaşta görevlerden gelir yok; sabit maaş aynen, asker başı kısım ×1,30; maaşın adı çağ+ülkeye göre", () => {
     const s = asker();
     s.meslek_musteri = 60;
     const b = birlikAl(s);
@@ -360,7 +358,11 @@ describe("gelir ve gider", () => {
     s.ulke.savasta = true;
     const savas = birlikHesapla(s, bg(s));
     expect(savas.gorevGeliri).toBe(0);
-    expect(savas.savasOdenegi).toBeCloseTo(baris.sold * 0.5, 4);
+    const sabit = SOLD[0] * bg(s).enflasyon;
+    expect(baris.sold).toBeCloseTo(sabit + 60 * ER_BASI_GELIR * bg(s).enflasyon, 3);
+    expect(savas.sold).toBeCloseTo(sabit + 60 * ER_BASI_GELIR * SAVAS_ER_BASI_CARPANI * bg(s).enflasyon, 3);
+    expect(savas.savasOdenegi).toBeCloseTo(savas.sold, 6);
+    expect(baris.erBasiGelir).toBe(0); // ayrı kalem yok
     expect(maasAdi("Orta Çağ", "Bizans").tr).toBe("Roga");
     expect(maasAdi("Sanayi Devrimi", "Rusya").tr).toBe("Jalovanye");
   });
@@ -709,8 +711,8 @@ describe("talim, doktrin, birlik, terhis", () => {
     const s = asker();
     const once = s.para;
     const r = kaliteYukselt(s, "orta", 50, bg(s));
-    expect(r.maliyet).toBeGreaterThan(0);
-    expect(s.para).toBeCloseTo(once - r.maliyet, 5);
+    expect(r.maliyet).toBe(0); // yükseltme masrafı yok
+    expect(s.para).toBeCloseTo(once, 5);
     expect(birlikAl(s).kalite.orta).toBe(10);
     expect(() => kaliteYukselt(s, "yuksek", 50, bg(s))).toThrow(/5 yılda bir/);
     s.yil += 5;
@@ -752,14 +754,14 @@ describe("talim, doktrin, birlik, terhis", () => {
     expect(() => kusatmaAyarla(s, 3, bg(s))).toThrow();
   });
 
-  it("terhis: en az 5 er kalmalı, savaşta kapalı, teçhizat iadesi %35", () => {
+  it("terhis: en az 6 er kalmalı, savaşta kapalı", () => {
     const s = asker();
     birlikAl(s).kalite = { dusuk: 10, orta: 10, yuksek: 0 };
-    expect(() => terhisEt(s, 16, bg(s))).toThrow(/en az 5 er/);
+    expect(() => terhisEt(s, 15, bg(s))).toThrow(/en az 6 er/);
     expect(() => terhisEt(s, 0, bg(s))).toThrow(/Geçersiz adet/);
     const r = terhisEt(s, 12, bg(s));
     expect(erSayisi(s)).toBe(8);
-    expect(r.iade).toBeGreaterThan(0);
+    expect(r.iade).toBe(0); // teçhizat bedava olduğundan iade yok
     expect(kaliteToplami(birlikAl(s))).toBe(8);
     s.ulke.savasta = true;
     expect(() => terhisEt(s, 1, bg(s))).toThrow(/Savaş sürerken/);

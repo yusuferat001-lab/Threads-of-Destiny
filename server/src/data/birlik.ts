@@ -21,16 +21,15 @@ export const BASLANGIC_ER = 20;
 export const ER_TAVANI = 450;
 /** Asker için toplam "silahlı" havuzu (rakipler + diğer ordular + oyuncu) oyun başında bu aralıktan atanır. */
 export const ASKER_PAZAR_BASLANGIC: [number, number] = [185, 205];
-/** Rütbe S1..S5 → rütbe limiti (en çok er). Etkin limit = min(rütbe, kışla). */
-export const RUTBE_ER_LIMITI = [30, 70, 140, 270, 450];
-/** Kışla kademesi K0..K4 → kışla limiti. */
+/** Kışla kademesi K0..K4 → kışla limiti (tek ordu limiti; rütbe limiti kalktı). */
 export const KISLA_ER_LIMITI = [25, 60, 120, 240, 450];
-export const KISLA_BAKIM = [4, 8, 12, 19, 30];
+/** Kışla kademesi K0..K4 → yıllık bakım (enflasyonlu). Büyük kışla ordu büyüdükçe pahalı bir yük getirir. */
+export const KISLA_BAKIM = [4, 8, 47, 148, 295];
 /** Subay limiti: rütbe tabanı + kışla bonusu (K0..K4). */
 export const SUBAY_RUTBE_TABANI = [1, 2, 3, 4, 5];
 export const SUBAY_KISLA_BONUSU = [0, 1, 1, 2, 2];
-/** Seferberlik sırasında geçici limit çarpanı. */
-export const SEFERBERLIK_LIMIT_CARPANI = 1.5;
+/** Kışla limitini aşan her er için er masrafı ve erzak bu çarpanla ödenir (savaş sürerken seferberlik erleri muaf). */
+export const LIMIT_ASIM_GIDER_CARPANI = 3;
 /** Pazar (toplam silahlı) rütbeye göre hedef büyüklüğü: rakipler oyuncuyla birlikte büyür (payın %90'a çıkmaması için). */
 export const ASKER_PAZAR_HEDEF = [200, 330, 580, 980, 1900];
 /** Her yıl pazar büyüklüğü hedefe bu oranda yaklaşır. */
@@ -46,9 +45,12 @@ export const ASKER_PAZAR_DONEM_CARPANI = { bolluk: 0.97, durgunluk: 1, kitlik: 1
 export const KALITE_SIRASI: BirlikKalite[] = ["dusuk", "orta", "yuksek"];
 export const KALITE_CARPANI: Record<BirlikKalite, number> = { dusuk: 1, orta: 1.5, yuksek: 2 };
 /** Düşükten verilen kaliteye yükseltmenin er başı fiyatı (enflasyonsuz). */
-export const KALITE_FIYATI: Record<BirlikKalite, number> = { dusuk: 0, orta: 0.7, yuksek: 1.6 };
-/** Yıllık bakım: kalite fiyatının bu kesri (düşük kalite bakımsız). */
-export const KALITE_BAKIM_ORANI = 0.03;
+export const KALITE_FIYATI: Record<BirlikKalite, number> = { dusuk: 0, orta: 0, yuksek: 0 };
+/** Teçhizat bakımı: er başı yıllık (enflasyonlu), seviyeye göre. */
+export const KALITE_BAKIM: Record<BirlikKalite, number> = { dusuk: 0.1, orta: 0.25, yuksek: 0.5 };
+/** Teçhizat seviyesinin yıllık moral etkisi (kalite karışımının ağırlıklı ortalaması) ve talim kazancı çarpanı. */
+export const KALITE_MORAL: Record<BirlikKalite, number> = { dusuk: -2, orta: 0, yuksek: 2 };
+export const KALITE_TALIM_CARPANI: Record<BirlikKalite, number> = { dusuk: 0.9, orta: 1, yuksek: 1.1 };
 /** Kalite değişiminden sonra yeniden değiştirmek için beklenecek yıl. */
 export const KALITE_KILIT_YIL = 5;
 export const KALITE_ADLARI: Record<BirlikKalite, DilliMetin> = {
@@ -147,10 +149,53 @@ export const MORAL_YONELIM = 1;
 /** Moral dipteyken yıllık geri çekilmenin üst sınırı (puan). */
 export const MORAL_YONELIM_TAVAN = 5;
 /** Firar ve kayıpların orduyu indirebileceği en düşük er sayısı (çekirdek kadro). */
-export const MIN_CEKIRDEK_ER = 3;
-/** Savaş çatışmasında (kanat) ordunun yıllık kayıp oranı: zafer / yenilgi (rol ve zar oranıyla çarpılır). */
-export const CATISMA_KAYIP_ZAFER = 0.025;
-export const CATISMA_KAYIP_YENILGI = 0.06;
+export const MIN_CEKIRDEK_ER = 6;
+export type Aralik = [number, number];
+/** Savaş (4–5 yıl): 1–2. yıl olay zarı, 3. yıl tek karar savaşı, 4–5. yıl sonuca göre düşük kayıp. Yüzdeler ordunun % değeridir. */
+export const SAVAS_KARAR_YILI = 3;
+export interface KayipAraligi {
+  olu: Aralik;
+  firar: Aralik;
+}
+export const SAVAS_ON_YIL_OLAYLARI: { ihtimal: number; olu: Aralik; firar: Aralik }[] = [
+  { ihtimal: 0.5, olu: [0, 0], firar: [0.25, 0.6] },
+  { ihtimal: 0.35, olu: [0.6, 1.2], firar: [0.4, 0.9] },
+  { ihtimal: 0.15, olu: [1.9, 3.1], firar: [0.6, 1.2] },
+];
+export const SAVAS_KARAR_KAYBI: Record<"zafer" | "yenilgi", KayipAraligi> = {
+  zafer: { olu: [2, 3.5], firar: [1, 1.5] },
+  yenilgi: { olu: [15, 20], firar: [5, 7] },
+};
+export const SAVAS_SONRA_KAYBI: Record<"zafer" | "yenilgi", KayipAraligi> = {
+  zafer: { olu: [0.4, 1], firar: [0.4, 1] },
+  yenilgi: { olu: [2.5, 3.5], firar: [1.25, 2.5] },
+};
+/** Savaş boyu kümülatif tavan (savaş başı toplam er üzerinden %). */
+export const SAVAS_KAYIP_TAVANI: Record<"zafer" | "yenilgi", { olu: number; firar: number }> = {
+  zafer: { olu: 6, firar: 4 },
+  yenilgi: { olu: 27, firar: 10 },
+};
+/** Haydut ve sınır çatışması (tek olay). */
+export const BARIS_KAYBI: Record<"zafer" | "yenilgi", KayipAraligi> = {
+  zafer: { olu: [2, 3], firar: [0, 0] },
+  yenilgi: { olu: [5, 6], firar: [2, 3] },
+};
+/** Firar ayarlayıcıları (puan, %): moral < 40 → (40 − moral) × 0,05; erzak < 0,7 → +0,5; sertlik × 0,005. */
+export const FIRAR_MORAL_ESIGI = 40;
+export const FIRAR_MORAL_KATSAYI = 0.05;
+export const FIRAR_ERZAK_EKI = 0.5;
+export const FIRAR_SERTLIK_KATSAYI = 0.005;
+export const FIRAR_GENEL_CAGRI_ILK_YIL = 1.5;
+/** Yaralı: ölü × oran (tam sayı); revir ve tabip düşürür; iyileşme süresi revirle kısalır; tedavi gideri yaralı başı yıllık. */
+export const YARALI_ORAN: Aralik = [1.4, 1.5];
+export const YARALI_ORAN_TABAN = 1;
+export const YARALI_REVIR_DUSUS = 0.04;
+export const YARALI_TABIP_DUSUS_TAVAN = 0.12;
+export const YARALI_TABIP_KATSAYI = 0.16;
+export const YARALI_IYILESME_YIL = 3;
+export const YARALI_REVIR_SURE_KISALTMA = 0.5;
+export const YARALI_IYILESME_MIN_YIL = 1;
+export const YARALI_TEDAVI_GIDERI = 0.25;
 /** Yıllık moral değişiminin (olaylar + etkenler toplamı) en fazla düşebileceği miktar. */
 export const MORAL_YILLIK_TABAN = 16;
 /** Moralin güce etkisi (bant üst sınırı moral < esik). */
@@ -164,11 +209,6 @@ export const MORAL_GUC_BANTLARI: { altinda: number; guc: number }[] = [
 export function moralGucEtkisi(moral: number): number {
   return (MORAL_GUC_BANTLARI.find((b) => moral < b.altinda) ?? MORAL_GUC_BANTLARI[MORAL_GUC_BANTLARI.length - 1]).guc;
 }
-/** Firar: moral bu eşiğin altına inince yıllık oran (eşik − moral) × katsayı. */
-export const FIRAR_MORAL_ESIGI = 40;
-export const FIRAR_MORAL_KATSAYI = 0.002;
-export const FIRAR_ERZAK_EKI = 0.04;
-export const FIRAR_ZAYIF_ORAN_EKI = 0.03;
 /** Yıllık moral etkenleri. */
 export const GANIMET_PAYI_TANIMLARI: Record<BirlikGanimetPayi, { oran: number; moral: number; ad: DilliMetin }> = {
   az: { oran: 0.2, moral: -3, ad: { tr: "Az pay", en: "Small share" } },
@@ -186,7 +226,6 @@ export const SERTLIK_DOGAL_SONUM = 0.3;
 /** Sertlik başına gelir/ganimet bonusu (sertlik 50 → +%7,5) ve firar/otorite etkisi. */
 export const SERTLIK_GELIR_KATSAYISI = 0.0015;
 export const SERTLIK_OTORITE_KATSAYISI = 0.006;
-export const SERTLIK_FIRAR_KATSAYISI = 0.0002;
 export const ASIRI_ESIK = 40;
 export const ASIRI_COOLDOWN_YIL = 3;
 /** Yıllık moral etkenleri: dönem, savaş yorgunluğu, kayıp, revir. */
@@ -207,24 +246,17 @@ export const MORAL_SERBEST = 3;
 
 // ── Gelir ve gider ──────────────────────────────────────────────────────────
 /** Rütbe S1..S5 → yıllık sold (devlet öder, sabit, enflasyonla büyür). */
-export const SOLD = [8, 12, 17, 24, 34];
-/** Er başı düzenli ödeme (savaşta savaş ödeneği oranıyla sürer). */
-export const ER_BASI_GELIR = 0.2;
-export const ER_MASRAFI = 0.34;
-export const ERZAK_BIRIMI = 0.23;
+export const SOLD = [7, 10, 13, 16, 19];
+/** Asker başı yıllık ödeme (maaş kalemine sabit kısımla toplanır). Savaşta devletin zammı: ×SAVAS_ER_BASI_CARPANI (oyuncuya gelir). */
+export const ER_BASI_GELIR = 0.3;
+export const SAVAS_ER_BASI_CARPANI = 1.3;
+export const ER_MASRAFI = 0.2;
+export const ERZAK_BIRIMI = 0.14;
 /**
  * Barış çatışması (haydut / sınır, takvimli): ganimet havuzu = toplam askerî güç × bu birim × tür çarpanı × sonuç çarpanı.
  * Büyük ve iyi donanımlı ordu aynı çatışmadan çok daha fazla kazanır (sim ile kalibre edilecek).
  */
-export const GANIMET_GUC_BIRIMI = 0.6;
-/** Görev gelirinin genel çarpanı (kalibrasyon); sold ve er başı gelir ayrı. */
-export const GOREV_GELIR_CARPANI = 3.2;
-/** Rütbe S1..S5 → er başı yıllık kazanç (görev + er başı gelir) çarpanı: rütbe yükseldikçe her er daha çok kazandırır. */
-export const RUTBE_ER_KAZANC_CARPANI = [1, 1.05, 1.1, 1.15, 1.2];
-/** Küçük ordu bonusu: er sayısı eşiğin altındayken er başı kazanç 1 + bonus × (1 − er/eşik) ile büyür (azalan getiri). */
-export const KUCUK_ORDU_BONUS = 3.0;
-export const KUCUK_ORDU_ESIK = 45;
-export const kucukOrduCarpani = (er: number): number => 1 + KUCUK_ORDU_BONUS * Math.max(0, 1 - er / KUCUK_ORDU_ESIK);
+export const GANIMET_GUC_BIRIMI = 0.85;
 /** İki çatışma arası yıl [min, max] ve ilk çatışmanın işletmenin kaçıncı yılından sonra geleceği. */
 export const BARIS_CATISMA_ARALIK: [number, number] = [4, 4];
 export const BARIS_CATISMA_ILK_YIL = 2;
@@ -252,14 +284,12 @@ export const BARIS_CATISMALARI: Record<"haydut" | "sinir", BarisCatismaTanimi> =
   },
 };
 export const BARIS_YENILGI_GANIMET = 0.2;
-export const BARIS_KAYIP_ZAFER = 0.01;
-export const BARIS_KAYIP_YENILGI = 0.03;
 export const BARIS_TALIM_ZAFER = 5;
 export const BARIS_TALIM_YENILGI = 2;
 export const BARIS_MORAL_ZAFER = 4;
 export const BARIS_MORAL_YENILGI = -4;
 /** Yıllık erzak fiyatı dönem çarpanı (giderler üzerinden). */
-export const ERZAK_DONEM_CARPANI = { bolluk: 0.8, durgunluk: 1, kitlik: 1.8, savas: 1.4, veba: 1.1 };
+export const ERZAK_DONEM_CARPANI = { bolluk: 0.8, durgunluk: 1, kitlik: 1.3, savas: 1.2, veba: 1.1 };
 /** Nakit bu eşiğin (× enflasyon, eksi) altına inince maaş ve erzak ödenemez. */
 export const ODENMEYEN_ESIK = 50;
 export interface OdenmeyenCeza {
@@ -310,49 +340,49 @@ export interface GorevTanimi {
 }
 export const GOREVLER: GorevTanimi[] = [
   {
-    id: "devriye", tur: "devriye", simge: "🏮", minEr: 5, erBasi: 0.2, masraf: 0.1, yalnizSavas: false, ganimet: 0,
+    id: "devriye", tur: "devriye", simge: "🏮", minEr: 5, erBasi: 1.2, masraf: 0.1, yalnizSavas: false, ganimet: 0,
     kayipBaris: 0, kayipSavas: 0.01, sertlik: 0, savasCarpani: 1.1, senaryo: null,
     ad: { orta: { tr: "Nöbet ve Devriye", en: "Watch & Patrol" }, sanayi: { tr: "Asayiş ve Devriye", en: "Policing & Patrol" } },
     aciklama: { tr: "Sakin ve güvenli; küçük ama düzenli gelir.", en: "Calm and safe; small but steady income." },
   },
   {
-    id: "eskort", tur: "eskort", simge: "🐫", minEr: 10, erBasi: 0.28, masraf: 0.12, yalnizSavas: false, ganimet: 0,
+    id: "eskort", tur: "eskort", simge: "🐫", minEr: 10, erBasi: 1.3, masraf: 0.12, yalnizSavas: false, ganimet: 0,
     kayipBaris: 0.002, kayipSavas: 0.01, sertlik: 0, savasCarpani: 0.7, senaryo: null,
     ad: { orta: { tr: "Kervan Eskortu", en: "Caravan Escort" }, sanayi: { tr: "Demiryolu ve Kervan Koruması", en: "Railway & Convoy Guard" } },
     aciklama: { tr: "Bollukta artar, savaşta düşer, kıtlıkta haydut yüzünden çok iş çıkar.", en: "Rises in boom, falls in war, plentiful in famine because of bandits." },
   },
   {
-    id: "haydut", tur: "haydut", simge: "🗡️", minEr: 15, erBasi: 0.3, masraf: 0.15, yalnizSavas: false, ganimet: 0.1,
+    id: "haydut", tur: "haydut", simge: "🗡️", minEr: 15, erBasi: 1.4, masraf: 0.15, yalnizSavas: false, ganimet: 0.1,
     kayipBaris: 0.01, kayipSavas: 0.02, sertlik: 0, savasCarpani: 1, senaryo: "haydut",
     ad: { orta: { tr: "Haydut Avı", en: "Bandit Hunt" }, sanayi: { tr: "Eşkıya Avı", en: "Outlaw Hunt" } },
     aciklama: { tr: "Küçük ganimet ve esir; süvari ve okçu işe yarar.", en: "Small loot and prisoners; cavalry and archers help." },
   },
   {
-    id: "tahsilat", tur: "tahsilat", simge: "💰", minEr: 20, erBasi: 0.42, masraf: 0.1, yalnizSavas: false, ganimet: 0,
+    id: "tahsilat", tur: "tahsilat", simge: "💰", minEr: 20, erBasi: 1.6, masraf: 0.1, yalnizSavas: false, ganimet: 0,
     kayipBaris: 0.005, kayipSavas: 0.01, sertlik: 1.2, savasCarpani: 1, senaryo: null,
     ad: { orta: { tr: "Haraç ve Vergi Tahsilatı", en: "Tribute & Tax Collection" }, sanayi: { tr: "Jandarma ve Vergi Tahsilatı", en: "Gendarmerie & Tax Collection" } },
     aciklama: { tr: "Yüksek gelir; sertliği ve halk tepkisini yükseltir.", en: "High income; raises harshness and public anger." },
   },
   {
-    id: "akin", tur: "akin", simge: "🔥", minEr: 30, erBasi: 0.32, masraf: 0.2, yalnizSavas: false, ganimet: 0.15,
+    id: "akin", tur: "akin", simge: "🔥", minEr: 30, erBasi: 1.75, masraf: 0.2, yalnizSavas: false, ganimet: 0.15,
     kayipBaris: 0.02, kayipSavas: 0.08, sertlik: 0.6, savasCarpani: 2, senaryo: "savas",
     ad: { orta: { tr: "Akın ve Baskın", en: "Raid & Foray" }, sanayi: { tr: "İsyan Bastırma", en: "Suppressing Revolt" } },
     aciklama: { tr: "Barışta zayıf; savaşta geliri ikiye katlar, ganimet getirir ama kayıp yüksektir.", en: "Weak in peace; doubles income in war and brings loot, but losses are heavy." },
   },
   {
-    id: "garnizon", tur: "garnizon", simge: "🏰", minEr: 40, erBasi: 0.3, masraf: 0.08, yalnizSavas: false, ganimet: 0,
+    id: "garnizon", tur: "garnizon", simge: "🏰", minEr: 40, erBasi: 1.9, masraf: 0.08, yalnizSavas: false, ganimet: 0,
     kayipBaris: 0.002, kayipSavas: 0.02, sertlik: 0, savasCarpani: 1.2, senaryo: "sinir",
     ad: { orta: { tr: "Sınır ve Kale Garnizonu", en: "Border & Castle Garrison" }, sanayi: { tr: "Sınır ve Liman Garnizonu", en: "Border & Harbour Garrison" } },
     aciklama: { tr: "Düşük kayıp, istikrarlı gelir; sınır olaylarında okçu ve mızraklı güçlenir.", en: "Low losses, steady income; archers and spearmen shine in border clashes." },
   },
   {
-    id: "muhafiz", tur: "muhafiz", simge: "👑", minEr: 90, erBasi: 0.45, masraf: 0.08, yalnizSavas: false, ganimet: 0,
+    id: "muhafiz", tur: "muhafiz", simge: "👑", minEr: 90, erBasi: 2.1, masraf: 0.08, yalnizSavas: false, ganimet: 0,
     kayipBaris: 0, kayipSavas: 0.005, sertlik: -0.3, savasCarpani: 1, senaryo: null,
     ad: { orta: { tr: "Saray ve Kale Muhafızlığı", en: "Court & Castle Guard" }, sanayi: { tr: "Liman ve Kale Komutanlığı", en: "Harbour & Fort Command" } },
     aciklama: { tr: "Düşük kayıp, iyi ödeme; şöhret getirir.", en: "Low losses, good pay; brings renown." },
   },
   {
-    id: "komuta", tur: "komuta", simge: "🏯", minEr: 130, erBasi: 0.55, masraf: 0.1, yalnizSavas: false, ganimet: 0.05,
+    id: "komuta", tur: "komuta", simge: "🏯", minEr: 130, erBasi: 2.25, masraf: 0.1, yalnizSavas: false, ganimet: 0.05,
     kayipBaris: 0.005, kayipSavas: 0.03, sertlik: 0, savasCarpani: 1.15, senaryo: "sinir",
     ad: { orta: { tr: "Eyalet ve Kale Komutanlığı", en: "Province & Castle Command" }, sanayi: { tr: "Eyalet Garnizon Komutanlığı", en: "Provincial Command" } },
     aciklama: { tr: "Büyük ordu ister; yüksek ve düzenli gelir.", en: "Needs a big army; high, steady income." },
@@ -369,14 +399,15 @@ export const GOREV_SLOTLARI = [1, 1, 2, 2, 3];
 /** Görev × dönem gelir çarpanı (anahtar yoksa 1). */
 type DonemAnahtari = "bolluk" | "durgunluk" | "kitlik" | "veba";
 export const GOREV_DONEM_CARPANI: Partial<Record<GorevTuru, Partial<Record<DonemAnahtari, number>>>> = {
+  // Her görevin üç dönem ortalaması 1,00'dır; görevin `erBasi`'si doğrudan 3 dönem ortalamasıdır. Tepe ≤ 2,5 (en üst görevlerde salınım dar).
   devriye: { bolluk: 1.1, durgunluk: 0.9, kitlik: 1 },
-  eskort: { bolluk: 1.5, durgunluk: 0.7, kitlik: 1.1 },
-  haydut: { bolluk: 0.7, durgunluk: 1, kitlik: 1.6 },
-  tahsilat: { bolluk: 1.3, durgunluk: 0.9, kitlik: 0.5 },
-  akin: { bolluk: 0.5, durgunluk: 1, kitlik: 1.3 },
-  garnizon: { bolluk: 0.9, durgunluk: 1.2, kitlik: 1.1 },
-  muhafiz: { bolluk: 1.3, durgunluk: 0.8, kitlik: 0.7 },
-  komuta: { bolluk: 1.2, durgunluk: 0.9, kitlik: 0.8 },
+  eskort: { bolluk: 1.364, durgunluk: 0.636, kitlik: 1 },
+  haydut: { bolluk: 0.636, durgunluk: 0.909, kitlik: 1.455 },
+  tahsilat: { bolluk: 1.3, durgunluk: 1, kitlik: 0.7 },
+  akin: { bolluk: 0.7, durgunluk: 1.05, kitlik: 1.25 },
+  garnizon: { bolluk: 0.9, durgunluk: 1.1, kitlik: 1 },
+  muhafiz: { bolluk: 1.15, durgunluk: 0.95, kitlik: 0.9 },
+  komuta: { bolluk: 1.1, durgunluk: 0.95, kitlik: 0.95 },
 };
 export const VEBA_GOREV_CARPANI = 0.55;
 
@@ -457,31 +488,30 @@ export const IKMAL_SIRASI: BirlikIkmal[] = ["yeterli", "kit", "yagma"];
 
 export const SEFERBERLIK_TANIMLARI: Record<
   BirlikSeferberlik,
-  { er: number; moral: number; erzak: number; firar: number; kalite: "dusuk" | "yuksek" | "karma"; talim: number; ad: DilliMetin; aciklama: DilliMetin }
+  { er: number; moral: number; erzak: number; firar: number; kalite: BirlikKalite; talim: number; ad: DilliMetin; aciklama: DilliMetin }
 > = {
   genel: {
-    er: 0.45, moral: -15, erzak: 0.2, firar: 1.5, kalite: "dusuk", talim: 0,
+    er: 0.5, moral: -15, erzak: 0.2, firar: 1.5, kalite: "dusuk", talim: 0,
     ad: { tr: "Genel çağrı", en: "General levy" },
-    aciklama: { tr: "+%45 er, hepsi düşük kalite ve eğitimsiz; moral −15, savaş boyunca erzak +%20, ilk yıl firar ×1,5.", en: "+45% men, all basic kit and untrained; morale −15, supplies +20% for the war, first-year desertion ×1.5." },
+    aciklama: { tr: "+%50 er, düşük teçhizat ve eğitimsiz; moral −15, savaş boyunca erzak +%20, ilk yıl firar yüksek.", en: "+50% men, basic kit and untrained; morale −15, supplies +20% for the war, high first-year desertion." },
   },
   secme: {
-    er: 0.1, moral: 5, erzak: 0, firar: 1, kalite: "yuksek", talim: TALIM_SECKIN_GIRIS,
+    er: 0.12, moral: 5, erzak: 0, firar: 1, kalite: "yuksek", talim: TALIM_SECKIN_GIRIS,
     ad: { tr: "Seçkin birlik", en: "Picked troops" },
-    aciklama: { tr: "+%10 er, hepsi yüksek kalite ve eğitimli; moral +5.", en: "+10% men, all superior kit and trained; morale +5." },
+    aciklama: { tr: "+%12 er, yüksek teçhizat ve eğitimli; moral +5.", en: "+12% men, superior kit and trained; morale +5." },
   },
   dengeli: {
-    er: 0.25, moral: -5, erzak: 0.08, firar: 1, kalite: "karma", talim: 0,
+    er: 0.28, moral: -5, erzak: 0.08, firar: 1, kalite: "orta", talim: 0,
     ad: { tr: "Dengeli çağrı", en: "Balanced levy" },
-    aciklama: { tr: "+%25 er, %40'ı orta kalite; moral −5, erzak +%8.", en: "+25% men, 40% standard kit; morale −5, supplies +8%." },
+    aciklama: { tr: "+%28 er, orta teçhizat; moral −5, erzak +%8.", en: "+28% men, standard kit; morale −5, supplies +8%." },
   },
 };
 export const SEFERBERLIK_SIRASI: BirlikSeferberlik[] = ["genel", "dengeli", "secme"];
-/** Savaş sonunda seferberlik erlerinin kalan oranı. */
-export const SEFERBERLIK_KALMA_ZAFER = 0.6;
-export const SEFERBERLIK_KALMA_YENILGI = 0.25;
-/** Savaşta devşirme çarpanı ve zaferde gönüllü akını (ordunun kesri). */
+/** Savaş sonunda seferberlik erlerinden (sağlam + yaralı) hayatta kalanların kadroda kalan oranı. */
+export const SEFERBERLIK_KALMA_ZAFER: Aralik = [0.35, 0.45];
+export const SEFERBERLIK_KALMA_YENILGI: Aralik = [0.2, 0.25];
+/** Savaşta devşirme çarpanı. */
 export const SAVAS_DEVSIRME_CARPANI = 2;
-export const ZAFER_GONULLU: [number, number] = [0.1, 0.2];
 
 // ── Ganimet / esir ──────────────────────────────────────────────────────────
 /** Esirin orduya katılan oranı (düşük kalite, eğitimsiz). */
@@ -653,8 +683,7 @@ export const ASKER_SALDIRI_HASARLARI = {
 } as const;
 
 // ── Savaş ekonomisi (2026-11): görev geliri yok; savaş ödeneği, yağma, büyük zafer ganimeti ──
-/** Savaş sürerken görevlerden gelir yok; sabit ödemenin bu kesri "savaş ödeneği" olarak ödenir. */
-export const SAVAS_ODENEGI_ORANI = 0.5;
+/** Savaş sürerken görevlerden gelir yok; sabit maaş aynen sürer, asker başı kısım ×SAVAS_ER_BASI_CARPANI. */
 /** Yağma ikmali (yıllık): ganimet = güç × GANIMET_GUC_BIRIMI × bu; erzak masrafı bu çarpanla; esir/yeni er oranları. */
 export const YAGMA_GANIMET = 0.1;
 export const YAGMA_ERZAK_CARPANI = 0.6;

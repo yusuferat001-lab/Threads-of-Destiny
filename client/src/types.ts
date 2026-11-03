@@ -876,6 +876,11 @@ export interface IsletmeDokum {
     talim: number;
     firar: number;
     olen: number;
+    yaralanan?: number;
+    yarali?: number;
+    iyilesen?: number;
+    tedaviGideri?: number;
+    limitAsimGideri?: number;
   };
   uyarilar: IsletmeUyari[];
 }
@@ -1066,7 +1071,8 @@ export interface BirlikKararGirdisi {
 
 export interface BirlikGorunumu {
   er: number;
-  limit: { komuta: number; rutbe: number; kisla: number; kislaKademe: number; seferberlik: boolean; tavan: number };
+  limit: { komuta: number; kisla: number; kislaKademe: number; seferberlik: boolean; tavan: number; asim: number };
+  yarali: { sayi: number; saglam: number; yillikIyilesme: number; sureYil: number };
   guc: {
     ham: number;
     kalite: { dusuk: number; orta: number; yuksek: number };
@@ -1153,6 +1159,8 @@ export interface BirlikGorunumu {
     gorevMasrafi: number;
     kislaBakim: number;
     techizatBakim: number;
+    yaraliGideri: number;
+    limitAsimGideri: number;
     kusatmaBakim: number;
     talimMasrafi: number;
     toplamGider: number;

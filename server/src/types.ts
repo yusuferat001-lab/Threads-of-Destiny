@@ -1061,6 +1061,12 @@ export interface IsletmeDokum {
     talim: number;
     firar: number;
     olen: number;
+    /** Tam sayı: o yıl yaralanan, tedavi gören ve iyileşen er sayıları. */
+    yaralanan?: number;
+    yarali?: number;
+    iyilesen?: number;
+    tedaviGideri?: number;
+    limitAsimGideri?: number;
   };
   uyarilar: IsletmeUyari[];
 }
@@ -1140,8 +1146,20 @@ export interface BirlikSavasDurumu {
   baslangic_yili: number;
   /** Savaş başında seçilen seferberlik türü (null = henüz seçilmedi). */
   seferberlik: BirlikSeferberlik | null;
-  /** Seferberlikle gelen erlerin sayısı (savaş sonunda zaferde ~%60'ı, yenilgide ~%25'i kalır). */
+  /** Seferberlikle gelen ve hâlâ hayatta olan erlerin sayısı (sağlam + yaralı); savaş sonunda zaferde %35–45'i, yenilgide %20–25'i kadroda kalır. */
   seferberlik_er: number;
+  /** Seferberlik erlerinden yaralı olanlar (b.yarali'nin alt kümesi). */
+  seferberlik_yarali?: number;
+  /** Seferberlikle gelenlerin teçhizat kalitesi (seçilen kademeye göre). */
+  seferberlik_kalite?: BirlikKalite;
+  /** Savaşın kaçıncı yılı (1'den başlar); 3. yılda tek karar savaşı yapılır. */
+  yil_sayac?: number;
+  /** Karar savaşının sonucu (henüz yapılmadıysa null). */
+  sonuc?: "zafer" | "yenilgi" | null;
+  /** Savaş başı toplam er (savaş öncesi + seferberlik) ve savaş boyu birikmiş ölü/firar (tavan için). */
+  baslangic_toplam?: number;
+  olu_toplam?: number;
+  firar_toplam?: number;
   /** Bu yıl gerçekleşen arazi ve inisiyatif. */
   arazi: BirlikArazi;
   inisiyatif: "saldiri" | "savunma";
@@ -1205,6 +1223,10 @@ export interface BirlikDurumu {
   baris_catisma_yili?: number | null;
   /** Ordunun bir kısmı seferde (Haçlı/sefer yolculuğu) mi. */
   seferde?: boolean;
+  /** Tedavi gören yaralı er sayısı (kadroda sayılır; görev ve savaş gücüne katılmaz). */
+  yarali?: number;
+  /** Yıllık iyileşen yaralı sayısı (yaralı eklenince ceil(yaralı ÷ süre) ile yenilenir). */
+  yarali_hizi?: number;
 }
 
 /** Meslek işletmesi (şu an yalnız Tüccar; 2026-10 dikey dilim). Diğer meslekler null → eski maaş sistemi. */

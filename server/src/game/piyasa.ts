@@ -10,7 +10,7 @@
  *
  * Bu modül yalnız types + data'ya bağlıdır (isletme.ts ve stateManager.ts buradan okur).
  */
-import { KISLA_ER_LIMITI, RUTBE_ER_LIMITI } from "../data/birlik";
+import { KISLA_ER_LIMITI } from "../data/birlik";
 import type { CharacterState, PiyasaHaberi, Rakip } from "../types";
 import {
   PAZAR_ADLARI,
@@ -193,9 +193,8 @@ export function musteriAktar(state: CharacterState, kaynak: PazarGrubu, hedef: P
   if (!k || !h) return 0;
   // Asker: er piyasa akışlarıyla kendiliğinden artmaz, ama bozguna uğrattığı rakipten (hedefli aktarım) komuta limitine kadar er devşirir.
   if (state.meslek === "Asker" && hedef === "oyuncu") {
-    const rutbe = Math.max(0, Math.min(4, (state.rutbe_seviye ?? 1) - 1));
     const kisla = Math.max(0, Math.min(KISLA_ER_LIMITI.length - 1, state.isletme?.yatirimlar.kisla ?? 0));
-    h.ust = Math.max(h.n, Math.min(RUTBE_ER_LIMITI[rutbe], KISLA_ER_LIMITI[kisla]));
+    h.ust = Math.max(h.n, KISLA_ER_LIMITI[kisla]);
   }
   const m = Math.min(miktar, Math.max(0, k.n - k.alt), Math.max(0, h.ust - h.n));
   if (m <= 0) return 0;

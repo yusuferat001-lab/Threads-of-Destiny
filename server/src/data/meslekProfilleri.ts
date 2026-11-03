@@ -145,6 +145,7 @@ const FIYAT_TANITIM = [20, 35, 52, 75];
 const FIYAT_GUVENLIK = [6, 11, 18, 27];
 const FIYAT_TEZGAH = [15, 30, 50, 80];
 const FIYAT_KAPASITE = [20, 45, 90, 160]; // depo ve ibadethane
+const FIYAT_KISLA = [30, 90, 220, 500]; // kışla (tek ordu limiti)
 const FIYAT_OKUL = [20, 30, 45, 65];
 const FIYAT_ASEVI = [8, 15, 24, 36];
 const FIYAT_REVIR = [8, 15, 24, 36];
@@ -285,11 +286,11 @@ const ASKER_YATIRIMLAR: YatirimTanimi[] = [
     simge: "🏯",
     ad: { tr: "Kışla", en: "Barracks" },
     aciklama: {
-      tr: "Barınabilecek er sayısını (kışla limiti) belirler; rütbe limitinden küçük kalırsa ordu büyüyemez. Yıllık bakımı vardır.",
-      en: "Sets how many men can be housed (barracks limit); if it stays below your rank limit the army cannot grow. Has yearly upkeep.",
+      tr: "Barınabilecek er sayısını (kışla limiti) belirler; ordu bu sayıya ulaşınca büyüyemez, aşan her er çok pahalıya gelir. Yıllık bakımı vardır.",
+      en: "Sets how many men can be housed (barracks limit); the army cannot grow past it, and every man over it is very costly. Has yearly upkeep.",
     },
     etki: "kisla",
-    fiyatlar: FIYAT_KAPASITE,
+    fiyatlar: FIYAT_KISLA,
   },
   {
     id: "revir",
