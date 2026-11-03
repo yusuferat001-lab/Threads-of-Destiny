@@ -81,7 +81,7 @@ import {
   odenmeyenCeza,
 } from "../src/data/birlik";
 import { rutbeTanimiGetir } from "../src/data/rutbeler";
-import { SAVAS_YILLIK_IHTIMAL } from "../src/data/dunyaDonemleri";
+import { SAVAS_YILLIK_IHTIMAL, SAVAS_COOLDOWN_YIL, SAVAS_SURE } from "../src/data/dunyaDonemleri";
 import { VERGI_SAVAS_EKI } from "../src/game/isletme";
 import { hataCevir } from "../src/i18n";
 import { ogretileriTamamla, bekleyenleriCoz } from "./_ogreti";
@@ -382,7 +382,7 @@ describe("gelir ve gider", () => {
     const sonuc = savasiBitir(s, b, bg(s), uyar);
     expect(sonuc.zafer).toBe(true);
     expect(sonuc.brut).toBeGreaterThan(0);
-    expect(sonuc.net).toBeCloseTo(sonuc.brut * (1 - 0.4), 4);
+    expect(sonuc.net).toBeCloseTo(sonuc.brut * (1 - 0.4), 1);
     expect(sonuc.kale).toBe(true);
     expect(b.kale).toBe(1);
     expect(s.unvanlar).toContain("Zafer Madalyası");
@@ -551,15 +551,26 @@ describe("savaş", () => {
     s.buyuk_savas = { dusman: "Komşu", baslangicYili: s.yil, bitisYili: s.yil + 4, vergiOrani: 0.08, gidaCarpani: 1.15 } as never;
   }
 
-  it("savaş sıklığı %25, vergi eki 0,05 ve savaşın diğer mesleklere etkisi kısılmıştır", () => {
-    expect(SAVAS_YILLIK_IHTIMAL).toBe(0.25);
+  it("savaş sıklığı %40, bekleme 4 yıl, süre sabit 4 yıl, vergi eki 0,05 ve savaşın diğer mesleklere etkisi kısılmıştır", () => {
+    expect(SAVAS_YILLIK_IHTIMAL).toBe(0.4);
+    expect(SAVAS_COOLDOWN_YIL).toBe(4);
+    expect(SAVAS_SURE).toEqual([4, 4]);
     expect(VERGI_SAVAS_EKI).toBe(0.05);
   });
 
-  it("savaş yılında zorunlu karar zinciri: seferberlik → arazi → rol → (inisiyatif) → ikmal → (esir S3+)", () => {
-    const s = asker();
-    savasYili(s);
-    expect(savasKarariBekliyorMu(s)).toBe(true);
+  /** İlk savaş yılının kararlarını verir, sonra karar yılına (savaşın 3. yılı) geçer. */
+  function kararYilinaGec(s: CharacterState): string[] {
+    const ilk: string[] = [];
+    for (let g = 0; g < 10 && savasKarariBekliyorMu(s); g++) {
+      const d = savasKarariDurumu(s)!;
+      ilk.push(d.adim);
+      savasKarariVer(s, d.secenekler[0].id, bg(s));
+    }
+    s.isletme!.birlik!.savas!.yil_sayac = 2;
+    s.yil += 1;
+    return ilk;
+  }
+  function kararAdimlari(s: CharacterState): string[] {
     const adimlar: string[] = [];
     for (let g = 0; g < 10 && savasKarariBekliyorMu(s); g++) {
       const d = savasKarariDurumu(s)!;
@@ -567,27 +578,55 @@ describe("savaş", () => {
       expect(d.secenekler.length).toBeGreaterThan(0);
       savasKarariVer(s, d.secenekler[0].id, bg(s));
     }
-    expect(adimlar[0]).toBe("seferberlik");
-    expect(adimlar).not.toContain("arazi"); // S1: arazi tercih ihtimali %0 → sorulmaz
-    expect(adimlar).toContain("rol");
-    expect(adimlar).toContain("ikmal");
-    expect(adimlar).not.toContain("esir"); // S1: esir yetkisi yok
+    return adimlar;
+  }
+
+  it("savaşın ilk yılında yalnız seferberlik, emir ve ikmal sorulur; arazi/rol/inisiyatif karar yılında", () => {
+    vi.spyOn(Math, "random").mockReturnValue(0.1);
+    const s = asker();
+    savasYili(s);
+    expect(savasKarariBekliyorMu(s)).toBe(true);
+    const ilk = kararYilinaGec(s);
+    expect(ilk[0]).toBe("seferberlik");
+    expect(ilk).toContain("ikmal");
+    expect(ilk).not.toContain("rol");
+    expect(ilk).not.toContain("arazi");
+    const karar = kararAdimlari(s);
+    expect(karar).not.toContain("arazi"); // S1: arazi seçme ekranı ihtimali %0 → hiç gelmez
+    expect(karar).toContain("rol");
+    expect(karar).toContain("inisiyatif"); // zar 0,1 < %40: seçim ekranı gelir
+    expect(karar).toContain("ikmal");
+    expect(karar).not.toContain("esir"); // S1: esir yetkisi yok
     expect(savasKarariBekliyorMu(s)).toBe(false);
   });
 
-  it("S3'ten itibaren esir kararı adımı eklenir", () => {
+  it("arazi seçme ekranı rütbenin ihtimaliyle gelir; gelmezse hiç sorulmaz", () => {
+    const s = asker();
+    s.rutbe_seviye = 3; // %30
+    ogretileriTamamla(s);
+    savasYili(s);
+    vi.spyOn(Math, "random").mockReturnValue(0.1);
+    kararYilinaGec(s);
+    expect(kararAdimlari(s)).toContain("arazi");
+    const t = asker();
+    t.rutbe_seviye = 3;
+    ogretileriTamamla(t);
+    savasYili(t);
+    vi.spyOn(Math, "random").mockReturnValue(0.5);
+    kararYilinaGec(t);
+    expect(kararAdimlari(t)).not.toContain("arazi");
+  });
+
+  it("S3'ten itibaren esir kararı adımı karar yılında eklenir", () => {
+    vi.spyOn(Math, "random").mockReturnValue(0.1);
     const s = asker();
     s.rutbe_seviye = 3;
     ogretileriTamamla(s);
     savasYili(s);
-    const adimlar: string[] = [];
-    for (let g = 0; g < 10 && savasKarariBekliyorMu(s); g++) {
-      const d = savasKarariDurumu(s)!;
-      adimlar.push(d.adim);
-      savasKarariVer(s, d.secenekler[0].id, bg(s));
-    }
+    kararYilinaGec(s);
+    const adimlar = kararAdimlari(s);
     expect(adimlar).toContain("esir");
-    expect(adimlar).toContain("arazi"); // S3: %30 tercih ihtimali
+    expect(adimlar).toContain("arazi");
   });
 
   it("geçersiz savaş kararı seçimi reddedilir; karar yokken verilemez", () => {

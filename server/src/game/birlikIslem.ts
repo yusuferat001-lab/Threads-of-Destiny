@@ -18,6 +18,7 @@ import {
   ARAZI_ADLARI,
   ARAZI_SIRASI,
   ARAZI_TERCIH_IHTIMALI,
+  SAVAS_KARAR_YILI,
   BIRLIK_KILIT_YIL,
   GANIMET_GUC_BIRIMI,
   BIRLIK_SEVIYE_PAYI,
@@ -334,15 +335,19 @@ export function savasKarariHazirla(state: CharacterState): BirlikSavasKarari | n
   if (!b.savas || !b.savas.seferberlik) adimlar.push("seferberlik");
   // Komutan emri savaş başında bir kez seçilir ve savaş boyu sabit kalır.
   if (!b.savas?.emir) adimlar.push("emir");
-  // Arazi tercihi yalnız ihtimali sıfırdan büyükse sorulur (S1'de %0: seçimin anlamı olmaz).
-  if (ARAZI_TERCIH_IHTIMALI[rutbeIndeksi(state)] > 0) adimlar.push("arazi");
-  adimlar.push("rol");
-  const r = Math.random();
+  // Gerçek savaş yalnız karar yılında (savaşın 3. yılı) yapılır: arazi/rol/inisiyatif/esir yalnız o yıl sorulur.
+  const kararYili = (b.savas?.yil_sayac ?? 0) + 1 === SAVAS_KARAR_YILI;
   let zorunlu: "saldiri" | "savunma" | null = null;
-  if (r >= INISIYATIF_OYUNCU_SECER) zorunlu = r < INISIYATIF_OYUNCU_SECER + INISIYATIF_ZORUNLU_SALDIRI ? "saldiri" : "savunma";
-  else adimlar.push("inisiyatif");
+  if (kararYili) {
+    // Arazi seçme ekranı yalnız rütbenin verdiği ihtimalle gelir (S1'de hiç); seçilen arazi kesin geçerlidir.
+    if (Math.random() < ARAZI_TERCIH_IHTIMALI[rutbeIndeksi(state)]) adimlar.push("arazi");
+    adimlar.push("rol");
+    const r = Math.random();
+    if (r >= INISIYATIF_OYUNCU_SECER) zorunlu = r < INISIYATIF_OYUNCU_SECER + INISIYATIF_ZORUNLU_SALDIRI ? "saldiri" : "savunma";
+    else adimlar.push("inisiyatif");
+  }
   adimlar.push("ikmal");
-  if (rutbeIndeksi(state) + 1 >= ESIR_YETKI_RUTBE) adimlar.push("esir");
+  if (kararYili && rutbeIndeksi(state) + 1 >= ESIR_YETKI_RUTBE) adimlar.push("esir");
   b.savas_karari = {
     yil: state.yil, adimlar, adim: 0, inisiyatif_zorunlu: zorunlu, seferberlik: null, arazi: null, rol: "ana", inisiyatif: null, ikmal: "yeterli", esir: "karma",
   };

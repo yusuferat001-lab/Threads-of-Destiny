@@ -2,7 +2,6 @@ import type { BirlikArazi, BirlikDurumu, BirlikEsirKarari, BirlikKalite, BirlikS
 import {
   ARAZI_DEGISIM_ORANI,
   ARAZI_SIRASI,
-  ARAZI_TERCIH_IHTIMALI,
   ASIRI_COOLDOWN_YIL,
   ASIRI_ESIK,
   ASKER_FIZIKSEL,
@@ -482,10 +481,9 @@ export interface CatismaSonucu {
 function catismaCoz(state: CharacterState, b: BirlikDurumu, bg: IsletmeBaglami): CatismaSonucu {
   const sv = b.savas!;
   const karar = b.savas_karari;
-  const rutbe = rutbeIndeksi(state);
-  // Arazi: tercih rütbeye bağlı ihtimalle gerçekleşir; olmazsa bölge zarı (önceki arazi %60 korunur).
+  // Arazi: seçme ekranı çıktıysa oyuncunun seçimi kesin; çıkmadıysa bölge zarı (önceki arazi %60 korunur).
   let arazi: BirlikArazi;
-  if (karar?.arazi && Math.random() < ARAZI_TERCIH_IHTIMALI[rutbe]) arazi = karar.arazi;
+  if (karar?.arazi) arazi = karar.arazi; // ekran ihtimalle gelir; seçilen arazi kesin geçerli
   else if (Math.random() < ARAZI_DEGISIM_ORANI) arazi = bolgeAraziSec(state.bolge);
   else arazi = sv.arazi;
   const inisiyatif = (karar?.inisiyatif ?? karar?.inisiyatif_zorunlu ?? "savunma") as "saldiri" | "savunma";
@@ -644,7 +642,7 @@ function barisCatismaVadesi(state: CharacterState, b: BirlikDurumu, savasta: boo
   }
   const ilkYil = (state.isletme?.baslangic_yili ?? state.yil) + BARIS_CATISMA_ILK_YIL;
   if (b.baris_catisma_yili == null) {
-    b.baris_catisma_yili = Math.max(ilkYil, state.yil + 1) + Math.floor(Math.random() * 3);
+    b.baris_catisma_yili = Math.max(ilkYil, state.yil + 1); // savaş sonrası 1 yıl bekleme, sonra 3 yılda bir
     return false;
   }
   if (state.yil < b.baris_catisma_yili || state.yil < ilkYil) return false;

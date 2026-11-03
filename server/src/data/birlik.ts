@@ -24,7 +24,7 @@ export const ASKER_PAZAR_BASLANGIC: [number, number] = [185, 205];
 /** Kışla kademesi K0..K4 → kışla limiti (tek ordu limiti; rütbe limiti kalktı). */
 export const KISLA_ER_LIMITI = [25, 60, 120, 240, 450];
 /** Kışla kademesi K0..K4 → yıllık bakım (enflasyonlu). Büyük kışla ordu büyüdükçe pahalı bir yük getirir. */
-export const KISLA_BAKIM = [4, 8, 17, 37, 50];
+export const KISLA_BAKIM = [4, 10, 25, 60, 120];
 /** Subay limiti: rütbe tabanı + kışla bonusu (K0..K4). */
 export const SUBAY_RUTBE_TABANI = [1, 2, 3, 4, 5];
 export const SUBAY_KISLA_BONUSU = [0, 1, 1, 2, 2];
@@ -36,8 +36,6 @@ export const ASKER_PAZAR_HEDEF = [200, 330, 580, 980, 1900];
 export const ASKER_PAZAR_YAKINSAMA = 0.2;
 /** Rakip gücünün er başına çarpanı = 1 + bu × (rütbe − 1) (rakipler de donatılır). */
 export const RAKIP_GUC_RUTBE_EKI = 0.12;
-/** Asker'e özel toplam silahlı yıllık değişimi (ters dinamik: savaşta büyür). Kesir, yıllık. */
-export const ASKER_PAZAR_BUYUME = { bolluk: -0.005, durgunluk: 0, kitlik: 0.01, savas: 0.03, veba: -0.04 };
 /** Toplam silahlı hedefinin dönem çarpanı (ters dinamik: savaşta büyür, bollukta/vebada küçülür). */
 export const ASKER_PAZAR_DONEM_CARPANI = { bolluk: 0.97, durgunluk: 1, kitlik: 1.04, savas: 1.12, veba: 0.85 };
 
@@ -248,17 +246,17 @@ export const MORAL_SERBEST = 3;
 /** Rütbe S1..S5 → yıllık sold (devlet öder, sabit, enflasyonla büyür). */
 export const SOLD = [7, 10, 13, 16, 19];
 /** Asker başı yıllık ödeme (maaş kalemine sabit kısımla toplanır). Savaşta devletin zammı: ×SAVAS_ER_BASI_CARPANI (oyuncuya gelir). */
-export const ER_BASI_GELIR = 0.3;
+export const ER_BASI_GELIR = 0.22;
 export const SAVAS_ER_BASI_CARPANI = 1.3;
-export const ER_MASRAFI = 0.25;
-export const ERZAK_BIRIMI = 0.2;
+export const ER_MASRAFI = 0.3;
+export const ERZAK_BIRIMI = 0.25;
 /**
  * Barış çatışması (haydut / sınır, takvimli): ganimet havuzu = toplam askerî güç × bu birim × tür çarpanı × sonuç çarpanı.
  * Büyük ve iyi donanımlı ordu aynı çatışmadan çok daha fazla kazanır (sim ile kalibre edilecek).
  */
 export const GANIMET_GUC_BIRIMI = 0.85;
 /** İki çatışma arası yıl [min, max] ve ilk çatışmanın işletmenin kaçıncı yılından sonra geleceği. */
-export const BARIS_CATISMA_ARALIK: [number, number] = [4, 4];
+export const BARIS_CATISMA_ARALIK: [number, number] = [3, 3];
 export const BARIS_CATISMA_ILK_YIL = 2;
 export interface BarisCatismaTanimi {
   /** Ganimet çarpanı (sınır hedefi daha büyük). */
@@ -527,8 +525,6 @@ export const ESIR_SATIS_AHLAK = -0.3;
 export const ESIR_SERBEST_AHLAK = 0.5;
 /** Esir yetkisi (idam/serbest/sat kararı) bu rütbeden itibaren oyuncuda. */
 export const ESIR_YETKI_RUTBE = 3;
-/** Ganimeti saklama (karanlık iş): rütbe şartı. */
-export const GANIMET_SAKLAMA_RUTBE = 3;
 
 // ── Doktrin (rütbe başına bir zorunlu seçim) ───────────────────────────────
 export interface DoktrinEtkisi {
@@ -560,8 +556,22 @@ export interface DoktrinTanimi {
   /** ⚡ acımasız kol (yalnız sert yollarda çıkar). */
   acimasiz: boolean;
 }
+/** Doktrin kartlarının faydalı bonusları (artı güç/gelir/moral…, eksi kayıp/masraf/firar) bu kadar büyütülür; bedeller (artı kayıp/masraf, eksi moral/ahlak/otorite) aynı kalır. */
+const DOKTRIN_BONUS_CARPANI = 1.4;
+const FAYDALI_YON: Record<string, 1 | -1> = {
+  guc: 1, saldiri: 1, savunma: 1, gelir: 1, ganimet: 1, sold: 1, moral: 1, otorite: 1, devsirme: 1, kayip: -1, masraf: -1, firar: -1,
+};
+function doktrinBonusuBuyut(etki: DoktrinEtkisi): DoktrinEtkisi {
+  const o: DoktrinEtkisi = {};
+  for (const k of Object.keys(etki) as (keyof DoktrinEtkisi)[]) {
+    const v = etki[k] as number;
+    const yon = FAYDALI_YON[k];
+    o[k] = yon && v * yon > 0 ? Math.round(v * DOKTRIN_BONUS_CARPANI * 1000) / 1000 : v;
+  }
+  return o;
+}
 const dk = (id: string, seviye: number, kaynak: DoktrinKaynagi, simge: string, tr: string, en: string, etki: DoktrinEtkisi): DoktrinTanimi => ({
-  id, seviye, kaynak, simge, ad: { tr, en }, etki, acimasiz: kaynak === "sert",
+  id, seviye, kaynak, simge, ad: { tr, en }, etki: doktrinBonusuBuyut(etki), acimasiz: kaynak === "sert",
 });
 export const DOKTRINLER: DoktrinTanimi[] = [
   // S1
@@ -644,13 +654,6 @@ export const YOL_ETKILERI: Record<string, DoktrinEtkisi> = {
 };
 
 // ── Subaylar ────────────────────────────────────────────────────────────────
-/** Subay rolünün (ana/maliyet/musteri/guvenlik) askerî karşılığı. */
-export const SUBAY_ROL_ACIKLAMASI = {
-  ana: { tr: "Harp subayı: askerî gücü artırır", en: "War officer: raises military strength" },
-  maliyet: { tr: "Levazım subayı: er ve erzak masrafını düşürür", en: "Quartermaster: cuts soldier and supply costs" },
-  musteri: { tr: "Devşirme subayı: yılda +1…+5 er çeker", en: "Recruiting officer: brings +1…+5 men a year" },
-  guvenlik: { tr: "Tabip subayı: ölüm ve firarı azaltır, saldırılara karşı korur", en: "Surgeon: reduces deaths and desertion, guards against attacks" },
-} as const;
 /** Harp subayı bonusunun (ekipBonuslari().ana) güce yansıyan kesri, tavanı. */
 export const HARP_GUC_KATSAYISI = 0.25;
 export const HARP_GUC_TAVAN = 0.4;
