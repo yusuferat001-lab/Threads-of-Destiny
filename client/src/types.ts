@@ -798,7 +798,10 @@ export interface IsletmeUyari {
     | 'savas_ganimet'
     | 'kale'
     | 'madalya'
-    | 'yagma';
+    | 'yagma'
+    | 'savas_kayip'
+    | 'yarali_iyilesti'
+    | 'limit_asimi';
   hat?: string;
   isim?: string;
   sonuc?:
@@ -817,6 +820,8 @@ export interface IsletmeUyari {
   otoriteKaybi?: number;
   /** Birlik (Asker) uyarıları: sayı (firar/ölen/terhis/esir), savaş ya da çatışma sonucu ve barış çatışması türü. */
   sayi?: number;
+  /** savas_kayip: aynı olayda yaralanan er sayısı. */
+  yaralanan?: number;
   savasSonucu?: 'zafer' | 'yenilgi';
   catismaTur?: 'haydut' | 'sinir';
 }

@@ -24,7 +24,7 @@ export const ASKER_PAZAR_BASLANGIC: [number, number] = [185, 205];
 /** Kışla kademesi K0..K4 → kışla limiti (tek ordu limiti; rütbe limiti kalktı). */
 export const KISLA_ER_LIMITI = [25, 60, 120, 240, 450];
 /** Kışla kademesi K0..K4 → yıllık bakım (enflasyonlu). Büyük kışla ordu büyüdükçe pahalı bir yük getirir. */
-export const KISLA_BAKIM = [4, 8, 47, 148, 295];
+export const KISLA_BAKIM = [4, 8, 17, 37, 50];
 /** Subay limiti: rütbe tabanı + kışla bonusu (K0..K4). */
 export const SUBAY_RUTBE_TABANI = [1, 2, 3, 4, 5];
 export const SUBAY_KISLA_BONUSU = [0, 1, 1, 2, 2];
@@ -250,8 +250,8 @@ export const SOLD = [7, 10, 13, 16, 19];
 /** Asker başı yıllık ödeme (maaş kalemine sabit kısımla toplanır). Savaşta devletin zammı: ×SAVAS_ER_BASI_CARPANI (oyuncuya gelir). */
 export const ER_BASI_GELIR = 0.3;
 export const SAVAS_ER_BASI_CARPANI = 1.3;
-export const ER_MASRAFI = 0.2;
-export const ERZAK_BIRIMI = 0.14;
+export const ER_MASRAFI = 0.25;
+export const ERZAK_BIRIMI = 0.2;
 /**
  * Barış çatışması (haydut / sınır, takvimli): ganimet havuzu = toplam askerî güç × bu birim × tür çarpanı × sonuç çarpanı.
  * Büyük ve iyi donanımlı ordu aynı çatışmadan çok daha fazla kazanır (sim ile kalibre edilecek).

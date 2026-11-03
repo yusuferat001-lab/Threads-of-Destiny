@@ -691,9 +691,25 @@ function App() {
         } else if (!state.meslek) {
           setEkran('acilis');
         } else {
-          const acilanSenaryo = await senaryoGerekirseCek(state);
+          // Süren bir tanışma varsa pencereyi ekran açılmadan önce hazırla: aksi halde oyun ekranı
+          // (özellikle mobilde) tanışma durumu gelene kadar boş render oluyordu.
+          let acikTanisma: TanismaDurumu | null = null;
+          if (state.aktif_tanisma) {
+            try {
+              const d = await tanismaGetir(state.id);
+              if (d.aktif) acikTanisma = d;
+            } catch {
+              /* efekt yedek olarak yeniden dener */
+            }
+          }
+          const acilanSenaryo = acikTanisma ? null : await senaryoGerekirseCek(state);
           if (iptal) return;
           setSenaryo(acilanSenaryo);
+          if (acikTanisma) {
+            setTanisma(acikTanisma);
+            setTanismaTepki(null);
+            setTanismaSonuc(null);
+          }
           setTepkiModu(false);
           setEkran('oyun');
         }

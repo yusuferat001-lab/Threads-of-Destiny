@@ -973,7 +973,10 @@ export interface IsletmeUyari {
     | "savas_ganimet"
     | "kale"
     | "madalya"
-    | "yagma";
+    | "yagma"
+    | "savas_kayip"
+    | "yarali_iyilesti"
+    | "limit_asimi";
   hat?: string;
   isim?: string;
   /** hırsızlık sonucu / rakip saldırı türü (istemci metni bunlardan kurar). */
@@ -993,6 +996,8 @@ export interface IsletmeUyari {
   tutar?: number;
   /** Birlik (Asker) uyarıları: sayı (firar eden/ölen/terhis olan er, esir) ve savaş sonucu ("zafer" | "yenilgi"). */
   sayi?: number;
+  /** savas_kayip: aynı olayda yaralanan er sayısı. */
+  yaralanan?: number;
   savasSonucu?: "zafer" | "yenilgi";
   /** Barış çatışması (haydut / sınır) türü. */
   catismaTur?: "haydut" | "sinir";

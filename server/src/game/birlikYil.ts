@@ -822,6 +822,9 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
   const olen = kayip.olu;
   const firar = kayip.firar;
   if (firar > 0) uyarilar.push({ kod: "firar", sayi: firar });
+  if (olen > 0) uyarilar.push({ kod: "savas_kayip", sayi: olen, ...(kayip.yaralanan > 0 ? { yaralanan: kayip.yaralanan } : {}) });
+  if (iyilesen > 0) uyarilar.push({ kod: "yarali_iyilesti", sayi: iyilesen });
+  if (h.limitAsimGideri > 0) uyarilar.push({ kod: "limit_asimi" });
 
   // 6. Rakip komutan saldırısı (takvim).
   const kademe = rakipSaldiriKademesi(pazarPayiHesapla(state));

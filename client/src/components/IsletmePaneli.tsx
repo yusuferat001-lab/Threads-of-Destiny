@@ -269,13 +269,21 @@ export function isletmeUyariMetni(u: IsletmeUyari, durum: IsletmeGorunumu, dil: 
         return en ? '🧾 Your tax reduction has ended.' : '🧾 Vergi indirimin sona erdi.';
       case 'firar':
         return en ? `🏃 ${u.sayi ?? 0} men deserted.` : `🏃 ${u.sayi ?? 0} er firar etti.`;
+      case 'savas_kayip':
+        return en
+          ? `⚰️ ${u.sayi ?? 0} men fell${u.yaralanan ? `, ${u.yaralanan} wounded` : ''}.`
+          : `⚰️ ${u.sayi ?? 0} er düştü${u.yaralanan ? `, ${u.yaralanan} yaralı` : ''}.`;
+      case 'yarali_iyilesti':
+        return en ? `🩹 ${u.sayi ?? 0} wounded men recovered.` : `🩹 ${u.sayi ?? 0} yaralı er iyileşip saflara döndü.`;
+      case 'limit_asimi':
+        return en ? '🏚️ More men than your barracks can hold — upkeep and rations cost far more.' : '🏚️ Kışlanın barındırabildiğinden fazla erin var; masraf ve erzak çok daha pahalıya geliyor.';
       case 'esir':
         return en ? `⛓️ ${u.sayi ?? 0} prisoners were taken.` : `⛓️ ${u.sayi ?? 0} esir alındı.`;
       case 'seferberlik_terhis':
         return en ? `🎖️ ${u.sayi ?? 0} wartime recruits were discharged.` : `🎖️ Savaş devşirmesinden ${u.sayi ?? 0} er terhis edildi.`;
       case 'savas_sonu':
         return u.savasSonucu === 'zafer'
-          ? (en ? '🏆 The war ended in victory; volunteers flock to your banner.' : '🏆 Savaş zaferle bitti; gönüllüler sancağına akın ediyor.')
+          ? (en ? '🏆 The war ended in victory.' : '🏆 Savaş zaferle bitti.')
           : (en ? '🏳️ The war ended in defeat; your army is worn thin.' : '🏳️ Savaş yenilgiyle bitti; ordun yıprandı.');
       case 'baris_catisma': {
         const hd = u.catismaTur === 'sinir';
