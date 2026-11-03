@@ -18,13 +18,13 @@ import type { DilliMetin } from "./meslekProfilleri";
 
 // ── Ordu büyüklüğü ve limitler ──────────────────────────────────────────────
 export const BASLANGIC_ER = 20;
-export const ER_TAVANI = 300;
+export const ER_TAVANI = 450;
 /** Asker için toplam "silahlı" havuzu (rakipler + diğer ordular + oyuncu) oyun başında bu aralıktan atanır. */
 export const ASKER_PAZAR_BASLANGIC: [number, number] = [185, 205];
 /** Rütbe S1..S5 → rütbe limiti (en çok er). Etkin limit = min(rütbe, kışla). */
-export const RUTBE_ER_LIMITI = [30, 65, 120, 200, 300];
+export const RUTBE_ER_LIMITI = [30, 70, 140, 270, 450];
 /** Kışla kademesi K0..K4 → kışla limiti. */
-export const KISLA_ER_LIMITI = [25, 55, 100, 190, 300];
+export const KISLA_ER_LIMITI = [25, 60, 120, 240, 450];
 export const KISLA_BAKIM = [4, 8, 12, 19, 30];
 /** Subay limiti: rütbe tabanı + kışla bonusu (K0..K4). */
 export const SUBAY_RUTBE_TABANI = [1, 2, 3, 4, 5];
@@ -32,7 +32,7 @@ export const SUBAY_KISLA_BONUSU = [0, 1, 1, 2, 2];
 /** Seferberlik sırasında geçici limit çarpanı. */
 export const SEFERBERLIK_LIMIT_CARPANI = 1.5;
 /** Pazar (toplam silahlı) rütbeye göre hedef büyüklüğü: rakipler oyuncuyla birlikte büyür (payın %90'a çıkmaması için). */
-export const ASKER_PAZAR_HEDEF = [200, 330, 560, 900, 1400];
+export const ASKER_PAZAR_HEDEF = [200, 330, 580, 980, 1900];
 /** Her yıl pazar büyüklüğü hedefe bu oranda yaklaşır. */
 export const ASKER_PAZAR_YAKINSAMA = 0.2;
 /** Rakip gücünün er başına çarpanı = 1 + bu × (rütbe − 1) (rakipler de donatılır). */
@@ -207,17 +207,24 @@ export const MORAL_SERBEST = 3;
 
 // ── Gelir ve gider ──────────────────────────────────────────────────────────
 /** Rütbe S1..S5 → yıllık sold (devlet öder, sabit, enflasyonla büyür). */
-export const SOLD = [21, 30, 42, 60, 84];
-export const ER_BASI_GELIR = 0.023;
-export const ER_MASRAFI = 0.12;
-export const ERZAK_BIRIMI = 0.08;
+export const SOLD = [8, 12, 17, 24, 34];
+/** Er başı düzenli ödeme (savaşta savaş ödeneği oranıyla sürer). */
+export const ER_BASI_GELIR = 0.2;
+export const ER_MASRAFI = 0.34;
+export const ERZAK_BIRIMI = 0.23;
 /**
  * Barış çatışması (haydut / sınır, takvimli): ganimet havuzu = toplam askerî güç × bu birim × tür çarpanı × sonuç çarpanı.
  * Büyük ve iyi donanımlı ordu aynı çatışmadan çok daha fazla kazanır (sim ile kalibre edilecek).
  */
-export const GANIMET_GUC_BIRIMI = 1.05;
+export const GANIMET_GUC_BIRIMI = 0.6;
 /** Görev gelirinin genel çarpanı (kalibrasyon); sold ve er başı gelir ayrı. */
-export const GOREV_GELIR_CARPANI = 0.8;
+export const GOREV_GELIR_CARPANI = 3.2;
+/** Rütbe S1..S5 → er başı yıllık kazanç (görev + er başı gelir) çarpanı: rütbe yükseldikçe her er daha çok kazandırır. */
+export const RUTBE_ER_KAZANC_CARPANI = [1, 1.05, 1.1, 1.15, 1.2];
+/** Küçük ordu bonusu: er sayısı eşiğin altındayken er başı kazanç 1 + bonus × (1 − er/eşik) ile büyür (azalan getiri). */
+export const KUCUK_ORDU_BONUS = 3.0;
+export const KUCUK_ORDU_ESIK = 45;
+export const kucukOrduCarpani = (er: number): number => 1 + KUCUK_ORDU_BONUS * Math.max(0, 1 - er / KUCUK_ORDU_ESIK);
 /** İki çatışma arası yıl [min, max] ve ilk çatışmanın işletmenin kaçıncı yılından sonra geleceği. */
 export const BARIS_CATISMA_ARALIK: [number, number] = [4, 4];
 export const BARIS_CATISMA_ILK_YIL = 2;
@@ -252,7 +259,7 @@ export const BARIS_TALIM_YENILGI = 2;
 export const BARIS_MORAL_ZAFER = 4;
 export const BARIS_MORAL_YENILGI = -4;
 /** Yıllık erzak fiyatı dönem çarpanı (giderler üzerinden). */
-export const ERZAK_DONEM_CARPANI = { bolluk: 0.9, durgunluk: 1, kitlik: 1.5, savas: 1.2, veba: 1 };
+export const ERZAK_DONEM_CARPANI = { bolluk: 0.8, durgunluk: 1, kitlik: 1.8, savas: 1.4, veba: 1.1 };
 /** Nakit bu eşiğin (× enflasyon, eksi) altına inince maaş ve erzak ödenemez. */
 export const ODENMEYEN_ESIK = 50;
 export interface OdenmeyenCeza {
@@ -362,11 +369,14 @@ export const GOREV_SLOTLARI = [1, 1, 2, 2, 3];
 /** Görev × dönem gelir çarpanı (anahtar yoksa 1). */
 type DonemAnahtari = "bolluk" | "durgunluk" | "kitlik" | "veba";
 export const GOREV_DONEM_CARPANI: Partial<Record<GorevTuru, Partial<Record<DonemAnahtari, number>>>> = {
-  devriye: { bolluk: 1.1, durgunluk: 0.9 },
-  eskort: { bolluk: 1.3, durgunluk: 0.9, kitlik: 1.2 },
-  haydut: { bolluk: 0.8, durgunluk: 0.9, kitlik: 1.4 },
-  tahsilat: { bolluk: 1, durgunluk: 1.1, kitlik: 0.8 },
-  akin: { bolluk: 0.6, durgunluk: 0.9 },
+  devriye: { bolluk: 1.1, durgunluk: 0.9, kitlik: 1 },
+  eskort: { bolluk: 1.5, durgunluk: 0.7, kitlik: 1.1 },
+  haydut: { bolluk: 0.7, durgunluk: 1, kitlik: 1.6 },
+  tahsilat: { bolluk: 1.3, durgunluk: 0.9, kitlik: 0.5 },
+  akin: { bolluk: 0.5, durgunluk: 1, kitlik: 1.3 },
+  garnizon: { bolluk: 0.9, durgunluk: 1.2, kitlik: 1.1 },
+  muhafiz: { bolluk: 1.3, durgunluk: 0.8, kitlik: 0.7 },
+  komuta: { bolluk: 1.2, durgunluk: 0.9, kitlik: 0.8 },
 };
 export const VEBA_GOREV_CARPANI = 0.55;
 
@@ -652,7 +662,7 @@ export const YAGMA_ESIR = 0.004;
 export const YAGMA_ER_ORANI = 0.03;
 export const YAGMA_AHLAK = -1.5;
 /** Savaş zaferi (savaş sonu, genel zafer): ganimet = güç × GANIMET_GUC_BIRIMI × bu × savaşın yıl sayısı; esir = güç × bu × yıl. */
-export const SAVAS_ZAFER_GANIMET = 1.75;
+export const SAVAS_ZAFER_GANIMET = 1.6;
 export const SAVAS_ZAFER_ESIR = 0.015;
 /** Kiralık ordu: ordunun bu kesri kadar, savaş süresince; eğitimli ve pahalı. */
 export const KIRALIK_ORAN = 0.4;

@@ -21,6 +21,8 @@ import {
   GOREVLER,
   GOREV_DONEM_CARPANI,
   GOREV_SLOTLARI,
+  RUTBE_ER_KAZANC_CARPANI,
+  kucukOrduCarpani,
   GANIMET_GUC_BIRIMI,
   KALE_GARNIZON,
   KALE_HARAC,
@@ -551,11 +553,13 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   // Savaşta sabit maaşın yerine, onun bir kesri kadar savaş ödeneği ödenir.
   const savasOdenegi = savasta ? r2(soldTam * SAVAS_ODENEGI_ORANI) : 0;
   const sold = savasta ? savasOdenegi : r2(soldTam);
-  const erBasiGelir = r2(er * ER_BASI_GELIR * bg.enflasyon);
+  const kazancC = RUTBE_ER_KAZANC_CARPANI[rutbe] * kucukOrduCarpani(er);
+  // Er başı düzenli ödeme savaşta da sürer (savaş ödeneği oranıyla).
+  const erBasiGelir = r2(er * ER_BASI_GELIR * bg.enflasyon * kazancC * (savasta ? SAVAS_ODENEGI_ORANI : 1));
   const gorevler: BirlikGorevHesabi[] = gorevPaylari(state).map(({ gorev: g, er: p, aktif }) => {
     if (!aktif) return { id: g.id, er: p, aktif, gelir: 0, masraf: 0, ganimet: 0, esir: 0 };
     const akinC = g.tur === "akin" ? mizrakliAkin : 1;
-    const gelir = p * g.erBasi * GOREV_GELIR_CARPANI * bg.enflasyon * gorevDonemCarpani(state, g) * gelirC * akinC;
+    const gelir = p * g.erBasi * GOREV_GELIR_CARPANI * kazancC * bg.enflasyon * gorevDonemCarpani(state, g) * gelirC * akinC;
     const masraf = gelir * g.masraf * mC * ikmal.maliyet;
     // Ganimet: yalnız ganimetli görevlerde; savaş yılında ×2,5, barışta ×0,3 (savaş-yalnız görevler zaten savaşta).
     const ganCarpan = g.yalnizSavas ? 1 : savasta ? 2.5 : 0.3;

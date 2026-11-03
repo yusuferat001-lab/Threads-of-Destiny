@@ -37,6 +37,7 @@ import {
   BOLGE_ARAZI_AGIRLIGI,
   DEVSIRME_BUROSU_ER,
   DUSMAN_ORAN,
+  ER_TAVANI,
   ESIR_FIDYE,
   ESIR_FIDYE_IHTIMALI,
   ESIR_IDAM_AHLAK,
@@ -205,7 +206,7 @@ export interface YeniErSonucu {
 export function yeniErEkle(state: CharacterState, adet: number, bg: IsletmeBaglami, sec: YeniErSecenek = {}): YeniErSonucu {
   const b = birlikAl(state);
   const eski = erSayisi(state);
-  const limit = sec.limitsiz ? 300 : komutaLimiti(state);
+  const limit = sec.limitsiz ? ER_TAVANI : komutaLimiti(state);
   const n = Math.max(0, Math.min(Math.round(adet), limit - eski));
   if (n <= 0) return { eklenen: 0, maliyet: 0 };
   let kalite: BirlikKalite = sec.kalite ?? b.hedef_kalite;

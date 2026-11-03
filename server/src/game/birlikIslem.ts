@@ -22,6 +22,7 @@ import {
   GANIMET_GUC_BIRIMI,
   BIRLIK_SEVIYE_PAYI,
   DOKTRINLER,
+  ER_TAVANI,
   ESIR_YETKI_RUTBE,
   GANIMET_PAYI_TANIMLARI,
   GANIMET_SIRASI,
@@ -696,7 +697,7 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
   const k = state.ulke.savasta ? savasKarariHazirla(state) : null;
   return {
     er,
-    limit: { komuta: komutaLimiti(state), rutbe: rutbeLimiti(state), kisla: kislaLimiti(state), kislaKademe: kislaKademesi(state), seferberlik: !!b.savas?.seferberlik, tavan: 300 },
+    limit: { komuta: komutaLimiti(state), rutbe: rutbeLimiti(state), kisla: kislaLimiti(state), kislaKademe: kislaKademesi(state), seferberlik: !!b.savas?.seferberlik, tavan: ER_TAVANI },
     guc: {
       ham: Math.round(d.ham * 10) / 10,
       kalite: { ...b.kalite },

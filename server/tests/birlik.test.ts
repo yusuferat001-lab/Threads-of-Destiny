@@ -238,18 +238,18 @@ describe("askerî güç ve pay", () => {
 describe("limitler ve yeni er katılımı", () => {
   it("komuta limiti = min(rütbe, kışla); seferberlikte ×1,5", () => {
     const s = asker();
-    expect(RUTBE_ER_LIMITI).toEqual([30, 65, 120, 200, 300]);
-    expect(KISLA_ER_LIMITI).toEqual([25, 55, 100, 190, 300]);
+    expect(RUTBE_ER_LIMITI).toEqual([30, 70, 140, 270, 450]);
+    expect(KISLA_ER_LIMITI).toEqual([25, 60, 120, 240, 450]);
     expect(komutaLimiti(s)).toBe(Math.min(rutbeLimiti(s), kislaLimiti(s)));
     expect(komutaLimiti(s)).toBe(25);
     s.rutbe_seviye = 3;
     s.isletme!.yatirimlar.kisla = 2;
-    expect(komutaLimiti(s)).toBe(100);
+    expect(komutaLimiti(s)).toBe(120);
     s.isletme!.yatirimlar.kisla = 4;
-    expect(komutaLimiti(s)).toBe(120); // rütbe sınırlar
+    expect(komutaLimiti(s)).toBe(140); // rütbe sınırlar
     birlikAl(s).savas = savasBaslat(s);
     birlikAl(s).savas!.seferberlik = "dengeli";
-    expect(komutaLimiti(s)).toBe(180);
+    expect(komutaLimiti(s)).toBe(210);
   });
 
   it("subay limiti: rütbe tabanı 1..5 + kışla bonusu", () => {
