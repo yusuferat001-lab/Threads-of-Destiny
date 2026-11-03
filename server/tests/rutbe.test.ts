@@ -157,9 +157,9 @@ describe("rütbe reformu — 5 kademe, ratchet, cooldown, kariyer puanı", () =>
     expect(rutbePazarPayiEsigi("Asker", 1)).toBeUndefined();
   });
 
-  it("maaş rütbe yükseldikçe kalıcı olarak artar", () => {
+  it("maaş rütbe yükseldikçe kalıcı olarak artar (maaşlı eski formül; dört meslek de işletmeli olduğundan tanımsız meslekle sınanır)", () => {
     const s = createCharacter("Orta Çağ", "Fransa", "kasaba");
-    mesleğiSec(s, "Asker");
+    s.meslek = "Köylü" as never;
     s.un = 50;
     const m1 = hesaplaMaasYillik(s);
     s.rutbe_seviye = 3;

@@ -1,8 +1,6 @@
 /**
- * Ajanlar (2026-10, §43 Faz 2): oyuncunun parayla tuttuğu, karanlık işleri
- * onun yerine çeviren adamlar. Ayrı bir sistem DEĞİL — normal ekip üyeleridir
- * (`EkipUyesi`, rolü aşağıdakilerden biri); maaşları ekip gideri olarak yıllık
- * düşer, Kariyer ekranındaki "Ekibin" listesinden kovulabilirler.
+ * Karanlık işi bir çalışana yaptırma sabitleri (eski "ajan" rolleri — Hırsız/Kabadayı/Casus/Suikastçı —
+ * ve peşin tutma sistemi kaldırıldı; işi işletmedeki herhangi bir çalışan yapar).
  *
  * Bir ajana iş verilince zar HEMEN atılmaz: görev `state.ajan_gorevleri`'ne
  * yazılır ve bir sonraki seçimde yıl ilerlerken çözülür (sonucu zaman
@@ -12,32 +10,6 @@
  * Başarısızlıkta sağlık/ölüm bedelini ajan öder; ama ajan yakalanabilir ve
  * sadakati düşükse seni ele verir (suç + hapis riski sana döner).
  */
-export type AjanRolu = "Hırsız" | "Kabadayı" | "Casus" | "Suikastçı";
-
-export interface AjanRolTanimi {
-  rol: AjanRolu;
-  simge: string;
-  /** Peşin tutma ücreti (taban, enflasyonla ölçeklenir). */
-  ucret: number;
-  /** Yıllık maaşın taban kısmı; üstüne kalite/20 eklenir. */
-  maasTaban: number;
-}
-
-export const AJAN_ROLLERI: AjanRolTanimi[] = [
-  { rol: "Hırsız", simge: "🦊", ucret: 10, maasTaban: 3 },
-  { rol: "Kabadayı", simge: "🪓", ucret: 12, maasTaban: 3 },
-  { rol: "Casus", simge: "🕵️", ucret: 16, maasTaban: 4 },
-  { rol: "Suikastçı", simge: "🗡️", ucret: 30, maasTaban: 6 },
-];
-
-export function ajanRolTanimiGetir(rol: string): AjanRolTanimi | undefined {
-  return AJAN_ROLLERI.find((r) => r.rol === rol);
-}
-
-export function ajanRoluMu(rol: string): rol is AjanRolu {
-  return AJAN_ROLLERI.some((r) => r.rol === rol);
-}
-
 /** Başarısız görevde ajanın yakalanma ihtimali (yakalanan ajan ekipten düşer). */
 export const AJAN_YAKALANMA_IHTIMALI = 0.6;
 /** Yakalanan ajanın seni ele verme ihtimali: (100 - sadakat)/100 × bu çarpan. */

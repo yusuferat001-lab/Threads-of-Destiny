@@ -7,8 +7,10 @@ import {
   ASKER_FIZIKSEL,
   ASKER_PAZAR_HEDEF,
   BARIS_CATISMALARI,
-  BARIS_CATISMA_ARALIK,
-  BARIS_CATISMA_ILK_YIL,
+  BARIS_BEKLEME,
+  BARIS_YILLIK_IHTIMAL,
+  KALE_GELIR,
+  KALE_SOHRET,
   BARIS_KAYBI,
   SAVAS_KARAR_YILI,
   SAVAS_ON_YIL_OLAYLARI,
@@ -79,7 +81,6 @@ import {
   MORAL_KITLIK_YILLIK,
   MORAL_SAVAS_YILLIK,
   MORAL_SERBEST,
-  MORAL_TERFI,
   MORAL_YENILGI,
   MORAL_YONELIM,
   MORAL_YONELIM_TAVAN,
@@ -607,6 +608,7 @@ export function savasiBitir(state: CharacterState, b: BirlikDurumu, bg: IsletmeB
     // Kale: yeterli askerî güç ve genel zafer.
     if (guc >= KALE_GUC_ESIGI && b.kale < KALE_MAKS) {
       b.kale += 1;
+      (b.kale_gelir ??= []).push(Math.round((KALE_GELIR[0] + Math.random() * (KALE_GELIR[1] - KALE_GELIR[0])) * 100) / 100);
       sonuc.kale = true;
       uyarilar.push({ kod: "kale" });
       madalyaVer(state, b, "kale", uyarilar);
@@ -614,6 +616,7 @@ export function savasiBitir(state: CharacterState, b: BirlikDurumu, bg: IsletmeB
   }
   uyarilar.push({ kod: "savas_sonu", savasSonucu: zafer ? "zafer" : "yenilgi" });
   b.savas = null;
+  b.baris_bekleme = Math.max(Math.round(b.baris_bekleme ?? 0), 1);
   return sonuc;
 }
 
@@ -634,20 +637,19 @@ export interface BarisCatismaSonucu {
   firarPct: number;
 }
 
-/** Barış çatışması takvimi: savaşta kapanır, barışta yoksa kurulur. Vade geldiyse true döner ve takvimi yeniler. */
-function barisCatismaVadesi(state: CharacterState, b: BirlikDurumu, savasta: boolean): boolean {
-  if (savasta) {
-    b.baris_catisma_yili = null;
+/**
+ * Barış çatışması takvimi: kalan bekleme yılı azalır, bitince her yıl BARIS_YILLIK_IHTIMAL şansla çatışma çıkar
+ * (sonra yeniden BARIS_BEKLEME yıl bekleme). Savaşta sayaç DURUR; savaş bitince en az 1 yıl bekleme (savasiBitir).
+ */
+function barisCatismaVadesi(b: BirlikDurumu, savasta: boolean): boolean {
+  if (savasta) return false;
+  const kalan = Math.max(0, Math.round(b.baris_bekleme ?? 0));
+  if (kalan > 0) {
+    b.baris_bekleme = kalan - 1;
     return false;
   }
-  const ilkYil = (state.isletme?.baslangic_yili ?? state.yil) + BARIS_CATISMA_ILK_YIL;
-  if (b.baris_catisma_yili == null) {
-    b.baris_catisma_yili = Math.max(ilkYil, state.yil + 1); // savaş sonrası 1 yıl bekleme, sonra 3 yılda bir
-    return false;
-  }
-  if (state.yil < b.baris_catisma_yili || state.yil < ilkYil) return false;
-  const [mn, mx] = BARIS_CATISMA_ARALIK;
-  b.baris_catisma_yili = state.yil + mn + Math.floor(Math.random() * (mx - mn + 1));
+  if (Math.random() > BARIS_YILLIK_IHTIMAL) return false;
+  b.baris_bekleme = BARIS_BEKLEME;
   return true;
 }
 
@@ -766,7 +768,7 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
   if (catisma && !catisma.kanatZafer && catisma.genelZafer) madalyaVer(state, b, "yarali", uyarilar);
 
   // 2b. Barış çatışması (savaş dışında 3–5 yılda bir): güçle orantılı ganimet.
-  const baris = barisCatismaVadesi(state, b, savasta) ? barisCatismasiCoz(state, b, bg) : null;
+  const baris = barisCatismaVadesi(b, savasta) ? barisCatismasiCoz(state, b, bg) : null;
   if (baris) {
     uyarilar.push({ kod: "baris_catisma", catismaTur: baris.tur, savasSonucu: baris.zafer ? "zafer" : "yenilgi", tutar: baris.net, sayi: baris.esir });
     if (baris.zafer) madalyaVer(state, b, "haydut", uyarilar);
@@ -774,6 +776,10 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
 
   // 3. Gelir / gider.
   const h = birlikHesapla(state, bg, { ganimetCarpani });
+  // Yüksek görevler ve kaleler yıllık şöhret kazandırır (sayı arayüzde yazılmaz).
+  const gorevSohret = h.gorevler.reduce((t, x) => t + (x.aktif ? gorevGetir(x.id)?.sohret ?? 0 : 0), 0);
+  const sohretKazanc = gorevSohret + b.kale * KALE_SOHRET;
+  if (sohretKazanc > 0) state.un = clamp(state.un + sohretKazanc, 0, 100);
 
   // 3b. Yağma ikmali: köylerden gönüllü gelir, halk ezilir.
   if (savasta && h.yagmaBrut > 0) {
@@ -972,7 +978,7 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
   const dokum: IsletmeDokum = {
     yil: state.yil,
     satis: r2(h.toplamGelir + barisNet + esirGeliri),
-    alim: r2(h.gorevMasrafi + h.erMasrafi + h.erzak + h.talimMasrafi + h.yaraliGideri),
+    alim: r2(h.erMasrafi + h.erzak + h.talimMasrafi + h.yaraliGideri),
     depoMasrafi: r2(h.kislaBakim + h.techizatBakim + h.kusatmaBakim),
     yatirimMasrafi: 0,
     loncaAidati: 0,
@@ -1003,7 +1009,6 @@ export function birlikYilIsle(state: CharacterState, bg: IsletmeBaglami): Isletm
       erPayi: r2(h.erPayi + (baris?.erPayi ?? 0) + (savasSonu?.erPayi ?? 0)),
       erMasrafi: r2(h.erMasrafi),
       erzak: r2(h.erzak),
-      gorevMasrafi: r2(h.gorevMasrafi),
       techizatBakimi: r2(h.techizatBakim),
       guc: Math.round(b.guc),
       moral: Math.round(b.moral),

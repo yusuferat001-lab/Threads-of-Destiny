@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { yeniOyun, mesleğiAta, finansGetir } from "../src/game/gameEngine";
-import { createCharacter, mesleğiSec, saldiriGucuHesapla, meslekMetrikCarpani } from "../src/game/stateManager";
+import { createCharacter, mesleğiSec } from "../src/game/stateManager";
 import { birlikKaybiUygula } from "../src/game/birlikIslem";
 
 describe("meslek-özel derinlik metrikleri", () => {
@@ -16,35 +16,6 @@ describe("meslek-özel derinlik metrikleri", () => {
     const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Tüccar");
     expect(state.ordu_mevcudu).toBe(0);
-  });
-
-  it("saldiriGucuHesapla ordu mevcudu ve teçhizat seviyesine göre büyür", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
-    state.meslek = "Asker";
-    state.ordu_mevcudu = 10;
-    state.ordu_techizat_seviyesi = 0;
-    const temel = saldiriGucuHesapla(state);
-    state.ordu_techizat_seviyesi = 50;
-    const yuksekTechizat = saldiriGucuHesapla(state);
-    expect(yuksekTechizat).toBeGreaterThan(temel);
-  });
-
-  it("meslekMetrikCarpani sadece kendi kategorisinde ve kendi meslekte devreye girer", () => {
-    const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
-    state.meslek = "Asker";
-    state.ordu_mevcudu = 50;
-    state.ordu_techizat_seviyesi = 50;
-    // Birlik modu: Asker'in olay parası çarpılmaz (gelir sold + görev + ganimet); eski ordu çarpanı kalktı.
-    expect(meslekMetrikCarpani(state, "savas")).toBe(1);
-    expect(meslekMetrikCarpani(state, "ticaret")).toBe(1);
-
-    // v10: Tüccar ticaret sermayesi ve Din Adamı nüfuzu olay parasını çarpmaz.
-    state.meslek = "Tüccar";
-    state.ticaret_sermaye = 100;
-    expect(meslekMetrikCarpani(state, "ticaret")).toBe(1);
-    state.meslek = "Din Adamı";
-    state.nufuz = 100;
-    expect(meslekMetrikCarpani(state, "din")).toBe(1);
   });
 
   it("birlikKaybiUygula savaş sırasında barıştan daha fazla kayıp verir", () => {

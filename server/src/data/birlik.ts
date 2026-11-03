@@ -165,8 +165,8 @@ export const SAVAS_KARAR_KAYBI: Record<"zafer" | "yenilgi", KayipAraligi> = {
   yenilgi: { olu: [15, 20], firar: [5, 7] },
 };
 export const SAVAS_SONRA_KAYBI: Record<"zafer" | "yenilgi", KayipAraligi> = {
-  zafer: { olu: [0.4, 1], firar: [0.4, 1] },
-  yenilgi: { olu: [2.5, 3.5], firar: [1.25, 2.5] },
+  zafer: { olu: [0.6, 1.4], firar: [0.5, 1.2] },
+  yenilgi: { olu: [4, 6], firar: [2, 3.5] },
 };
 /** Savaş boyu kümülatif tavan (savaş başı toplam er üzerinden %). */
 export const SAVAS_KAYIP_TAVANI: Record<"zafer" | "yenilgi", { olu: number; firar: number }> = {
@@ -238,25 +238,26 @@ export const REVIR_MORAL_KADEME = 0.75;
 export const MORAL_ZAFER = 9;
 export const MORAL_KANAT_BOZGUN = -9;
 export const MORAL_YENILGI = -15;
-export const MORAL_TERFI = 8;
 export const MORAL_IDAM = -3;
 export const MORAL_SERBEST = 3;
 
 // ── Gelir ve gider ──────────────────────────────────────────────────────────
 /** Rütbe S1..S5 → yıllık sold (devlet öder, sabit, enflasyonla büyür). */
-export const SOLD = [7, 10, 13, 16, 19];
+export const SOLD = [6, 6, 6, 6, 6];
 /** Asker başı yıllık ödeme (maaş kalemine sabit kısımla toplanır). Savaşta devletin zammı: ×SAVAS_ER_BASI_CARPANI (oyuncuya gelir). */
-export const ER_BASI_GELIR = 0.22;
-export const SAVAS_ER_BASI_CARPANI = 1.3;
-export const ER_MASRAFI = 0.3;
-export const ERZAK_BIRIMI = 0.25;
+export const ER_BASI_GELIR = 0.2;
+export const SAVAS_ER_BASI_CARPANI = 2;
+export const ER_MASRAFI = 0.2;
+export const ERZAK_BIRIMI = 0.15;
 /**
  * Barış çatışması (haydut / sınır, takvimli): ganimet havuzu = toplam askerî güç × bu birim × tür çarpanı × sonuç çarpanı.
  * Büyük ve iyi donanımlı ordu aynı çatışmadan çok daha fazla kazanır (sim ile kalibre edilecek).
  */
-export const GANIMET_GUC_BIRIMI = 0.85;
-/** İki çatışma arası yıl [min, max] ve ilk çatışmanın işletmenin kaçıncı yılından sonra geleceği. */
-export const BARIS_CATISMA_ARALIK: [number, number] = [3, 3];
+export const GANIMET_GUC_BIRIMI = 1.0;
+/** Çatışma sonrası bekleme (yıl; savaşta sayaç durur, savaştan sonra en az 1 yıl) ve ilk çatışmanın işletmenin kaçıncı yılından sonra geleceği. */
+export const BARIS_BEKLEME = 2;
+/** Bekleme bittikten sonra her yıl çatışma çıkma şansı. */
+export const BARIS_YILLIK_IHTIMAL = 0.5;
 export const BARIS_CATISMA_ILK_YIL = 2;
 export interface BarisCatismaTanimi {
   /** Ganimet çarpanı (sınır hedefi daha büyük). */
@@ -319,9 +320,10 @@ export interface GorevTanimi {
   aciklama: DilliMetin;
   /** Göreve düşen (eşit bölünmüş) er sayısı bu değerin altındaysa görev açılamaz. */
   minEr: number;
-  /** Göreve düşen er başına yıllık ödeme (enflasyonsuz) ve masraf oranı. */
+  /** Göreve düşen er başına yıllık NET kazanç (enflasyonsuz; masraf yok). */
   erBasi: number;
-  masraf: number;
+  /** Yıllık şöhret kazancı (yalnız çok yüksek görevler). */
+  sohret?: number;
   /** Yalnız savaşta açılabilir. */
   yalnizSavas: boolean;
   /** Er başına brüt ganimet (savaş yılında savaş çarpanıyla büyür; 0 = ganimetsiz). */
@@ -338,52 +340,52 @@ export interface GorevTanimi {
 }
 export const GOREVLER: GorevTanimi[] = [
   {
-    id: "devriye", tur: "devriye", simge: "🏮", minEr: 5, erBasi: 1.2, masraf: 0.1, yalnizSavas: false, ganimet: 0,
+    id: "devriye", tur: "devriye", simge: "🏮", minEr: 10, erBasi: 1.10, yalnizSavas: false, ganimet: 0,
     kayipBaris: 0, kayipSavas: 0.01, sertlik: 0, savasCarpani: 1.1, senaryo: null,
     ad: { orta: { tr: "Nöbet ve Devriye", en: "Watch & Patrol" }, sanayi: { tr: "Asayiş ve Devriye", en: "Policing & Patrol" } },
     aciklama: { tr: "Sakin ve güvenli; küçük ama düzenli gelir.", en: "Calm and safe; small but steady income." },
   },
   {
-    id: "eskort", tur: "eskort", simge: "🐫", minEr: 10, erBasi: 1.3, masraf: 0.12, yalnizSavas: false, ganimet: 0,
+    id: "eskort", tur: "eskort", simge: "🐫", minEr: 25, erBasi: 1.20, yalnizSavas: false, ganimet: 0,
     kayipBaris: 0.002, kayipSavas: 0.01, sertlik: 0, savasCarpani: 0.7, senaryo: null,
     ad: { orta: { tr: "Kervan Eskortu", en: "Caravan Escort" }, sanayi: { tr: "Demiryolu ve Kervan Koruması", en: "Railway & Convoy Guard" } },
     aciklama: { tr: "Bollukta artar, savaşta düşer, kıtlıkta haydut yüzünden çok iş çıkar.", en: "Rises in boom, falls in war, plentiful in famine because of bandits." },
   },
   {
-    id: "haydut", tur: "haydut", simge: "🗡️", minEr: 15, erBasi: 1.4, masraf: 0.15, yalnizSavas: false, ganimet: 0.1,
+    id: "haydut", tur: "haydut", simge: "🗡️", minEr: 45, erBasi: 1.30, yalnizSavas: false, ganimet: 0.1,
     kayipBaris: 0.01, kayipSavas: 0.02, sertlik: 0, savasCarpani: 1, senaryo: "haydut",
     ad: { orta: { tr: "Haydut Avı", en: "Bandit Hunt" }, sanayi: { tr: "Eşkıya Avı", en: "Outlaw Hunt" } },
     aciklama: { tr: "Küçük ganimet ve esir; süvari ve okçu işe yarar.", en: "Small loot and prisoners; cavalry and archers help." },
   },
   {
-    id: "tahsilat", tur: "tahsilat", simge: "💰", minEr: 20, erBasi: 1.6, masraf: 0.1, yalnizSavas: false, ganimet: 0,
+    id: "tahsilat", tur: "tahsilat", simge: "💰", minEr: 70, erBasi: 1.40, yalnizSavas: false, ganimet: 0,
     kayipBaris: 0.005, kayipSavas: 0.01, sertlik: 1.2, savasCarpani: 1, senaryo: null,
     ad: { orta: { tr: "Haraç ve Vergi Tahsilatı", en: "Tribute & Tax Collection" }, sanayi: { tr: "Jandarma ve Vergi Tahsilatı", en: "Gendarmerie & Tax Collection" } },
     aciklama: { tr: "Yüksek gelir; sertliği ve halk tepkisini yükseltir.", en: "High income; raises harshness and public anger." },
   },
   {
-    id: "akin", tur: "akin", simge: "🔥", minEr: 30, erBasi: 1.75, masraf: 0.2, yalnizSavas: false, ganimet: 0.15,
+    id: "akin", tur: "akin", simge: "🔥", minEr: 100, erBasi: 1.50, yalnizSavas: false, ganimet: 0.15,
     kayipBaris: 0.02, kayipSavas: 0.08, sertlik: 0.6, savasCarpani: 2, senaryo: "savas",
     ad: { orta: { tr: "Akın ve Baskın", en: "Raid & Foray" }, sanayi: { tr: "İsyan Bastırma", en: "Suppressing Revolt" } },
     aciklama: { tr: "Barışta zayıf; savaşta geliri ikiye katlar, ganimet getirir ama kayıp yüksektir.", en: "Weak in peace; doubles income in war and brings loot, but losses are heavy." },
   },
   {
-    id: "garnizon", tur: "garnizon", simge: "🏰", minEr: 40, erBasi: 1.9, masraf: 0.08, yalnizSavas: false, ganimet: 0,
+    id: "garnizon", tur: "garnizon", simge: "🏰", minEr: 140, erBasi: 1.60, yalnizSavas: false, ganimet: 0,
     kayipBaris: 0.002, kayipSavas: 0.02, sertlik: 0, savasCarpani: 1.2, senaryo: "sinir",
     ad: { orta: { tr: "Sınır ve Kale Garnizonu", en: "Border & Castle Garrison" }, sanayi: { tr: "Sınır ve Liman Garnizonu", en: "Border & Harbour Garrison" } },
     aciklama: { tr: "Düşük kayıp, istikrarlı gelir; sınır olaylarında okçu ve mızraklı güçlenir.", en: "Low losses, steady income; archers and spearmen shine in border clashes." },
   },
   {
-    id: "muhafiz", tur: "muhafiz", simge: "👑", minEr: 90, erBasi: 2.1, masraf: 0.08, yalnizSavas: false, ganimet: 0,
+    id: "muhafiz", tur: "muhafiz", simge: "👑", minEr: 185, erBasi: 1.70, sohret: 0.5, yalnizSavas: false, ganimet: 0,
     kayipBaris: 0, kayipSavas: 0.005, sertlik: -0.3, savasCarpani: 1, senaryo: null,
     ad: { orta: { tr: "Saray ve Kale Muhafızlığı", en: "Court & Castle Guard" }, sanayi: { tr: "Liman ve Kale Komutanlığı", en: "Harbour & Fort Command" } },
     aciklama: { tr: "Düşük kayıp, iyi ödeme; şöhret getirir.", en: "Low losses, good pay; brings renown." },
   },
   {
-    id: "komuta", tur: "komuta", simge: "🏯", minEr: 130, erBasi: 2.25, masraf: 0.1, yalnizSavas: false, ganimet: 0.05,
+    id: "komuta", tur: "komuta", simge: "🏯", minEr: 230, erBasi: 1.80, sohret: 1.0, yalnizSavas: false, ganimet: 0.05,
     kayipBaris: 0.005, kayipSavas: 0.03, sertlik: 0, savasCarpani: 1.15, senaryo: "sinir",
     ad: { orta: { tr: "Eyalet ve Kale Komutanlığı", en: "Province & Castle Command" }, sanayi: { tr: "Eyalet Garnizon Komutanlığı", en: "Provincial Command" } },
-    aciklama: { tr: "Büyük ordu ister; yüksek ve düzenli gelir.", en: "Needs a big army; high, steady income." },
+    aciklama: { tr: "Büyük ordu ister; yüksek ve düzenli kazanç, şöhret getirir.", en: "Needs a big army; high, steady earnings and renown." },
   },
 ];
 export function gorevGetir(id: string): GorevTanimi | undefined {
@@ -704,8 +706,9 @@ export const KIRALIK_KALITE_CARPANI = 2.28; // yüksek kalite (2,0) × eğitimli
 /** Kale: bu askerî güç eşiğinin üstünde ve savaş genel zaferle biterse ele geçirilir. */
 export const KALE_GUC_ESIGI = 200;
 export const KALE_MAKS = 2;
-export const KALE_HARAC = 9;
-export const KALE_GARNIZON = 3;
+/** Kale başı yıllık net gelir (fetihte aralıktan çekilir) ve yıllık şöhret. */
+export const KALE_GELIR: Aralik = [12, 14];
+export const KALE_SOHRET = 0.5;
 export const KALE_KOMUTA_BONUSU = 15;
 /** Haçlı/sefer yolculuğu: ordunun bu kesri seferde, kalanı görevlerine devam eder. */
 export const SEFER_ORDU_ORANI = 0.5;

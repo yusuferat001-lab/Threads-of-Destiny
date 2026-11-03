@@ -56,8 +56,6 @@ import {
   oturumDiliAyarla,
   rakiplerGetir,
   pazarDurumGetir,
-  ajanDurumGetir,
-  ajanTut,
   isletmeDurumGetir,
   isletmeKararVer,
   isletmeOgretiSec,
@@ -312,13 +310,6 @@ gameRouter.post("/:id/kotu-is", async (req, res) => {
   }
 });
 
-gameRouter.get("/:id/ajanlar", async (req, res) => {
-  try {
-    res.json(await ajanDurumGetir(req.params.id));
-  } catch (err) {
-    res.status(404).json({ hata: hataMetni(err, req.params.id) });
-  }
-});
 
 gameRouter.get("/:id/isletme", async (req, res) => {
   try {
@@ -492,15 +483,6 @@ gameRouter.post("/:id/isletme/calisan", async (req, res) => {
   }
 });
 
-gameRouter.post("/:id/ajan/tut", async (req, res) => {
-  const { rol } = req.body ?? {};
-  if (typeof rol !== "string") return res.status(400).json({ hata: "Geçersiz rol." });
-  try {
-    res.json(await ajanTut(req.params.id, rol));
-  } catch (err) {
-    res.status(400).json({ hata: hataMetni(err, req.params.id) });
-  }
-});
 
 const GECERLI_MULK_TURLERI: MulkTuru[] = MULK_TANIMLARI.map((m) => m.tur);
 

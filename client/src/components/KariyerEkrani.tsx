@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { PiyasaHaberleri } from './PiyasaHaberleri';
-import type { FinansOzeti, GecmisNoktasi, IsletmeGorunumu, IsletmeKararGirdisi, CemaatKararGirdisi, BirlikKararGirdisi, BirlikTur, EkipUyesi, Rakip, KotuIsKarti, YonetimDurumu, YonetimHat, PazarDurumu, AjanDurumu } from '../types';
+import type { FinansOzeti, GecmisNoktasi, IsletmeGorunumu, IsletmeKararGirdisi, CemaatKararGirdisi, BirlikKararGirdisi, BirlikTur, EkipUyesi, Rakip, KotuIsKarti, YonetimDurumu, YonetimHat, PazarDurumu } from '../types';
 import { useDil } from '../DilContext';
 import { formatPara, formatYuzde, formatYuzdeAralik, formatMusteri, kademeSinifi } from '../format';
 import { bic, type Metinler } from '../i18n';
@@ -61,9 +61,6 @@ interface KariyerEkraniProps {
   onTalep: (karar: 'kabul' | 'ret' | 'yalan' | 'rusvet') => void;
   onEkipCikar: (ekipId: string) => void;
   onKotuIs: (id: string, opts?: { hedefRakipAd?: string; ajanId?: string }) => void;
-  /** Ajan sistemi (§43 Faz 2) — arayüzü meslek ekip rolleriyle birlikte gelecek; şimdilik kullanılmıyor. */
-  ajanDurum?: AjanDurumu | null;
-  onAjanTut?: (rol: string) => void;
   /** Bütçen (gelir & gider dökümü) — Evin ekranından buraya taşındı. */
   /** Piyasa dedikoduları (Yatırım ekranından Kariyer'in eylemlerine taşındı). */
   dedikodular?: string[];
@@ -91,22 +88,6 @@ interface KariyerEkraniProps {
 
 /** Karanlık iş adları/açıklamaları — i18n.ts yerine bileşene gömülü (NasilOynanir deseni). */
 const KARANLIK_ISLER: Record<string, { tr: { ad: string; aciklama: string }; en: { ad: string; aciklama: string } }> = {
-  rakibi_korkut: {
-    tr: { ad: '🗡️ Rakibini Korkut', aciklama: 'Rakibinin gücünü biraz kır, biraz da haraç al. Düşük risk.' },
-    en: { ad: '🗡️ Intimidate Your Rival', aciklama: 'Cut your rival down a notch and squeeze a little coin. Low risk.' },
-  },
-  adam_dov: {
-    tr: { ad: '👊 Zevkine Adam Döv', aciklama: 'Sırf içini rahatlatmak için birini benzet. Getirisi yok, ahlakın çöker.' },
-    en: { ad: '👊 Beat Someone for Sport', aciklama: 'Rough someone up just to blow off steam. No payoff, morality tanks.' },
-  },
-  birini_soy: {
-    tr: { ad: '💰 Birini Soy', aciklama: 'Doğrudan para. Yakalanırsan kodesi boylarsın.' },
-    en: { ad: '💰 Rob Someone', aciklama: 'Straight cash. Get caught and you land in a cell.' },
-  },
-  isyeri_yak: {
-    tr: { ad: '🔥 Rakibin İş Yerini Yak', aciklama: 'Rakibe en büyük darbe, en büyük risk: ölüm ve hapis ihtimali var.' },
-    en: { ad: "🔥 Burn Down Your Rival's Business", aciklama: 'The biggest blow to a rival, the biggest risk: death and prison are on the table.' },
-  },
   kervan_yagmalat: {
     tr: { ad: '🐫 Rakibin Kervanını Yağmalat', aciklama: 'Yolda baskın yaptır; mal senin olsun, rakibin pazarı sarsılsın.' },
     en: { ad: "🐫 Have Your Rival's Caravan Raided", aciklama: 'Ambush it on the road; the goods are yours and your rival’s market reels.' },
@@ -240,7 +221,7 @@ function KaranlikIsKart({
 
       <button
         className="ikincil karanlik-cevir-buton"
-        disabled={yukleniyor || bekliyor || is.sadeceAjan}
+        disabled={yukleniyor || bekliyor}
         onClick={() => onKotuIs(is.id, { hedefRakipAd: rakipHedefli ? hedef : undefined })}
       >
         {bekliyor ? (en ? 'Lie low for now' : 'Ortalık kızışık') : en ? 'Do it yourself' : 'Kendin çevir'}

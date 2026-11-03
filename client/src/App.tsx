@@ -21,7 +21,6 @@ import type {
   AileDurumu,
   YonetimDurumu,
   PazarDurumu,
-  AjanDurumu,
   IsletmeGorunumu,
   IsletmeKararGirdisi,
   CemaatKararGirdisi,
@@ -89,7 +88,6 @@ import {
   aileTalebiKararlastir,
   yonetimDurumGetir,
   pazarGetir,
-  ajanDurumGetir,
   isletmeGetir,
   isletmeKararVer,
   isletmeOgretiSec,
@@ -104,7 +102,6 @@ import {
   isletmeYatirimYap,
   isletmeYatirimDusur,
   isletmeCalisanAl,
-  ajanTut,
   yonetimEtkilesimYap,
   isletmeUrunSec,
   yonetimIstekYap,
@@ -378,7 +375,6 @@ function App() {
   const [aileDurum, setAileDurum] = useState<AileDurumu | null>(null);
   const [yonetimDurum, setYonetimDurum] = useState<YonetimDurumu | null>(null);
   const [pazarDurum, setPazarDurum] = useState<PazarDurumu | null>(null);
-  const [ajanDurum, setAjanDurum] = useState<AjanDurumu | null>(null);
   const [isletme, setIsletme] = useState<IsletmeGorunumu | null>(null);
   /** Asker savaş yılında sıradaki zorunlu karar adımı (yoksa null). */
   const [savasKarari, setSavasKarari] = useState<SavasKarariDurumu | null>(null);
@@ -1167,11 +1163,10 @@ function App() {
     setHata(null);
     setYukleniyor(true);
     try {
-      const [durum, { config }, pazar, ajanlar, isletmeDurumu, dedi] = await Promise.all([
+      const [durum, { config }, pazar, isletmeDurumu, dedi] = await Promise.all([
         yonetimDurumGetir(karakter.id),
         kotuIsConfigGetir(karakter.id),
         pazarGetir(karakter.id),
-        ajanDurumGetir(karakter.id),
         isletmeGetir(karakter.id),
         dedikoduGetir(karakter.id),
       ]);
@@ -1180,7 +1175,6 @@ function App() {
       setYonetimDurum(durum);
       setKotuIsler(config);
       setPazarDurum(pazar);
-      setAjanDurum(ajanlar);
       setIslemMesaji(null);
       setEkran('kariyer');
     } catch (err) {
@@ -1200,10 +1194,9 @@ function App() {
 
   async function kariyerKaranlikIslerTazele(id: string) {
     try {
-      const [{ config }, pazar, ajanlar] = await Promise.all([kotuIsConfigGetir(id), pazarGetir(id), ajanDurumGetir(id)]);
+      const [{ config }, pazar] = await Promise.all([kotuIsConfigGetir(id), pazarGetir(id)]);
       setKotuIsler(config);
       setPazarDurum(pazar);
-      setAjanDurum(ajanlar);
     } catch {
       /* durum yenilenemezse eldeki kalır */
     }
@@ -1316,23 +1309,6 @@ function App() {
       await kariyerKaranlikIslerTazele(sonuc.state.id);
     } catch (err) {
       setHata(temizHata(err));
-    } finally {
-      setYukleniyor(false);
-    }
-  }
-
-  async function ajanTutHandler(rol: string) {
-    if (!karakter) return;
-    setHata(null);
-    setIslemMesaji(null);
-    setYukleniyor(true);
-    try {
-      const sonuc = await ajanTut(karakter.id, rol);
-      setKarakter(sonuc.state);
-      setIslemMesaji(sonuc.mesaj);
-      await kariyerKaranlikIslerTazele(sonuc.state.id);
-    } catch (err) {
-      setIslemMesaji(temizHata(err));
     } finally {
       setYukleniyor(false);
     }
@@ -3180,8 +3156,6 @@ function App() {
           islemMesaji={islemMesaji}
           yonetimDurum={yonetimDurum}
           pazarDurum={pazarDurum}
-          ajanDurum={ajanDurum}
-          onAjanTut={ajanTutHandler}
           onEtkilesim={yonetimEtkilesimHandler}
           onIstek={yonetimIstekHandler}
           onTalep={yonetimTalepHandler}

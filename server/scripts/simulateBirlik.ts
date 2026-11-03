@@ -88,7 +88,7 @@ function botKarar(s: CharacterState, tarz: Tarz) {
   const er = erSayisi(s);
   const adaylar = GOREVLER.filter((g) => !g.yalnizSavas || s.ulke.savasta)
     .filter((g) => Math.floor(er / Math.max(1, slot)) >= g.minEr)
-    .sort((a, b2) => b2.erBasi * (1 - b2.masraf) - a.erBasi * (1 - a.masraf));
+    .sort((a, b2) => b2.erBasi - a.erBasi);
   const secilen = adaylar.slice(0, slot).map((g) => g.id);
   try {
     birlikKararUygula(s, {
@@ -232,7 +232,7 @@ function tekOmur(cag: Cag, tarz: Tarz): Omur {
       K("erBasi", bd?.erBasiGelir ?? 0);
       K("gorev", bd?.gorevGeliri ?? 0);
       K("ganimetNet", (bd?.ganimetPara ?? 0) - (bd?.erPayi ?? 0));
-      K("gider(erMasraf+erzak+gorevMas+techizat)", -((bd?.erMasrafi ?? 0) + (bd?.erzak ?? 0) + (bd?.gorevMasrafi ?? 0) + (bd?.techizatBakimi ?? 0)));
+      K("gider(erMasraf+erzak+techizat)", -((bd?.erMasrafi ?? 0) + (bd?.erzak ?? 0) + (bd?.techizatBakimi ?? 0)));
       K("yasam+kira", -gider);
     }
     o.enf.push(enflasyonCarpani(s));

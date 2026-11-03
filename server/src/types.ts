@@ -1059,7 +1059,6 @@ export interface IsletmeDokum {
     erPayi: number;
     erMasrafi: number;
     erzak: number;
-    gorevMasrafi: number;
     techizatBakimi: number;
     guc: number;
     moral: number;
@@ -1224,8 +1223,10 @@ export interface BirlikDurumu {
   zar_bonusu: number;
   /** Erzak karşılama oranı (0-1): 1 = yeterli. Savaş kararları/kıtlık düşürür, yıllık çözümde yeniden hesaplanır. */
   erzak_oran: number;
-  /** Sonraki barış çatışmasının (haydut / sınır) yılı; savaşta ya da henüz kurulmadıysa null. */
-  baris_catisma_yili?: number | null;
+  /** Sonraki barış çatışmasına kalan bekleme (yıl); savaşta DURUR, çatışmadan sonra BARIS_BEKLEME yıl. */
+  baris_bekleme?: number;
+  /** Ele geçirilen her kalenin yıllık net geliri (enflasyonsuz). */
+  kale_gelir?: number[];
   /** Ordunun bir kısmı seferde (Haçlı/sefer yolculuğu) mi. */
   seferde?: boolean;
   /** Tedavi gören yaralı er sayısı (kadroda sayılır; görev ve savaş gücüne katılmaz). */

@@ -49,7 +49,7 @@ const M = {
   gorevBaslik: { tr: 'Görevler', en: 'Duties' },
   gorevNot: {
     tr: 'Ordu açık görevlere eşit bölünür; her görev yıllık düzenli gelir getirir.',
-    en: 'Your men are split evenly across open duties; each duty yields steady yearly income.',
+    en: 'Your men are split evenly across open duties; each duty earns a steady yearly amount per man.',
   },
   slot: { tr: 'açık görev', en: 'open duties' },
   minEr: { tr: 'en az', en: 'min' },
@@ -103,12 +103,13 @@ const M = {
   dokumBaslik: { tr: 'Beklenen gelir ve giderler', en: 'Expected income & costs' },
   sold: { tr: 'Sold (devlet)', en: 'Pay (state)' },
   erBasi: { tr: 'Er başı gelir', en: 'Per-man income' },
-  gorevGeliri: { tr: 'Görev geliri', en: 'Duty income' },
+  gorevGeliri: { tr: 'Görev kazancı', en: 'Duty earnings' },
   ganimetNet: { tr: 'Ganimet (net)', en: 'Loot (net)' },
   toplamGelir: { tr: 'Toplam gelir', en: 'Total income' },
   gErMasrafi: { tr: 'Er masrafı', en: 'Upkeep of men' },
   gErzak: { tr: 'Erzak', en: 'Provisions' },
-  gGorev: { tr: 'Görev masrafı', en: 'Duty costs' },
+  kazanc: { tr: 'Kazanç', en: 'Earnings' },
+  toplamKazanc: { tr: 'Toplam kazanç', en: 'Total earnings' },
   gKisla: { tr: 'Kışla bakımı', en: 'Barracks upkeep' },
   gTechizat: { tr: 'Teçhizat bakımı', en: 'Equipment upkeep' },
   gKusatma: { tr: 'Kuşatma bakımı', en: 'Siege upkeep' },
@@ -327,11 +328,11 @@ export function BirlikPaneli({
                   </div>
                   <div className="isletme-hat-satir">
                     <span>
-                      {t('minEr')} {g.minEr} · {formatPara(g.erBasi)} {pb}{erBirim}
+                      {t('minEr')} {g.minEr} · {t('kazanc')}: {formatPara(g.erBasi)} {pb}{erBirim}
                     </span>
                     {g.aktif && (
                       <span>
-                        🪖 {g.erPayi} · {t('gelir')} {formatPara(g.gelir)}
+                        🪖 {g.erPayi} · {t('toplamKazanc')}: {formatPara(g.gelir)} {pb}
                         {g.ganimet > 0 ? ` · ${t('ganimet')} ${formatPara(g.ganimet)}` : ''}
                       </span>
                     )}
@@ -532,7 +533,6 @@ export function BirlikPaneli({
             <div>{t('toplamGelir')}: <strong>+{formatPara(b.hesap.toplamGelir)}</strong></div>
             <div>{t('gErMasrafi')}: <strong>−{formatPara(b.hesap.erMasrafi)}</strong></div>
             <div>{t('gErzak')}: <strong>−{formatPara(b.hesap.erzak)}</strong></div>
-            <div>{t('gGorev')}: <strong>−{formatPara(b.hesap.gorevMasrafi)}</strong></div>
             {b.hesap.kiralikMasrafi > 0 && <div>{t('gKiralik')}: <strong>−{formatPara(b.hesap.kiralikMasrafi)}</strong></div>}
             <div>{t('gKisla')}: <strong>−{formatPara(b.hesap.kislaBakim)}</strong></div>
             <div>{t('gTechizat')}: <strong>−{formatPara(b.hesap.techizatBakim)}</strong></div>

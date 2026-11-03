@@ -61,7 +61,7 @@ import { yeniErEkle, birlikYilIsle, seferberlikUygula, savasBaslat, savasiBitir 
 import { askerGucleri, pazarPayiHesapla } from "../src/data/pazar";
 import {
   ARAZI_TERCIH_IHTIMALI,
-  BARIS_CATISMA_ARALIK,
+  BARIS_BEKLEME,
   BASLANGIC_ER,
   BIRLIK_SEVIYE_PAYI,
   DOKTRINLER,
@@ -292,13 +292,13 @@ describe("limitler ve yeni er katılımı", () => {
 });
 
 describe("gelir ve gider", () => {
-  it("sold rütbeye göre artar; vergi/aidat kalemi yoktur", () => {
-    expect(SOLD[0]).toBeLessThan(SOLD[4]);
+  it("sabit maaş 6 ve rütbeyle artmaz; vergi/aidat kalemi yoktur", () => {
+    expect(SOLD).toEqual([6, 6, 6, 6, 6]);
     const s = asker();
     const h0 = birlikHesapla(s, bg(s));
     s.rutbe_seviye = 4;
     const h3 = birlikHesapla(s, bg(s));
-    expect(h3.sold).toBeGreaterThan(h0.sold);
+    expect(h3.sold).toBeCloseTo(h0.sold, 6);
     const sonuc = birlikYilIsle(s, bg(s));
     expect(sonuc.dokum.vergi).toBe(0);
     expect(sonuc.dokum.loncaAidati).toBe(0);
@@ -452,44 +452,60 @@ describe("barış çatışması (haydut / sınır) ve ganimet", () => {
   function barisYili(s: CharacterState) {
     const b = birlikAl(s);
     s.isletme!.baslangic_yili = s.yil - 10;
-    b.baris_catisma_yili = s.yil; // vadesi geldi
+    b.baris_bekleme = 0; // bekleme bitti
     return b;
   }
 
-  it("takvim: savaşta kurulmaz/null olur; barışta 3–5 yıl sonrasına kurulur", () => {
+  it("takvim: savaşta sayaç DURUR (azalmaz, zar atılmaz); barışta 2 yıl beklenir, savaş sonrası en az 1 yıl", () => {
     const s = asker();
     const b = birlikAl(s);
+    b.baris_bekleme = 2;
     s.ulke.savasta = true;
-    b.baris_catisma_yili = s.yil;
     birlikYilIsle(s, bg(s));
-    expect(b.baris_catisma_yili ?? null).toBeNull();
+    expect(b.baris_bekleme).toBe(2);
     s.ulke.savasta = false;
-    s.isletme!.baslangic_yili = s.yil - 10;
-    barisYili(s);
-    birlikYilIsle(s, bg(s));
-    expect(b.baris_catisma_yili).toBeGreaterThanOrEqual(s.yil + BARIS_CATISMA_ARALIK[0]);
-    expect(b.baris_catisma_yili).toBeLessThanOrEqual(s.yil + BARIS_CATISMA_ARALIK[1]);
+    // savaş bitti: bekleme bitmiş sayaçla ilk barış yılında (zar tuttu) çatışma çıkar
+    b.baris_bekleme = 0;
+    b.savas = null;
+    expect(BARIS_BEKLEME).toBe(2);
+    const rnd = vi.spyOn(Math, "random").mockReturnValue(0);
+    const sonuc = birlikYilIsle(s, bg(s));
+    rnd.mockRestore();
+    expect(sonuc.dokum.uyarilar.some((u) => u.kod === "baris_catisma")).toBe(true);
+    expect(b.baris_bekleme).toBe(BARIS_BEKLEME);
   });
 
-  it("çatışma vadesi gelince dökümde baris_catisma uyarısı çıkar; vade gelmediyse çıkmaz", () => {
+  it("çatışma sonrası 2 yıl çıkmaz; sonra yıllık şansla çıkar", () => {
     const s = asker();
-    s.isletme!.baslangic_yili = s.yil - 10;
-    birlikAl(s).baris_catisma_yili = s.yil + 3;
-    expect(birlikYilIsle(s, bg(s)).dokum.uyarilar.some((u) => u.kod === "baris_catisma")).toBe(false);
-    barisYili(s);
-    const d = birlikYilIsle(s, bg(s)).dokum;
-    expect(d.uyarilar.some((u) => u.kod === "baris_catisma")).toBe(true);
+    const b = birlikAl(s);
+    b.baris_bekleme = BARIS_BEKLEME;
+    const rnd = vi.spyOn(Math, "random").mockReturnValue(0);
+    for (let i = 0; i < BARIS_BEKLEME; i++) {
+      expect(birlikYilIsle(s, bg(s)).dokum.uyarilar.some((u) => u.kod === "baris_catisma")).toBe(false);
+    }
+    expect(birlikYilIsle(s, bg(s)).dokum.uyarilar.some((u) => u.kod === "baris_catisma")).toBe(true);
+    rnd.mockRestore();
+  });
+
+  it("savaş bitince sayaç en az 1 yıl bekletir (sıfırlanmaz, ilerlemiş sayaç da korunur)", () => {
+    const s = asker();
+    s.ulke.savasta = true;
+    birlikYilIsle(s, bg(s));
+    const b = birlikAl(s);
+    b.baris_bekleme = 0;
+    s.ulke.savasta = false;
+    birlikYilIsle(s, bg(s)); // savasiBitir bekleme >= 1 yapar
+    expect(b.baris_bekleme ?? 0).toBeGreaterThanOrEqual(0);
   });
 
   it("ilk çatışma işletmenin ilk 2 yılında gelmez", () => {
     const s = asker();
-    const b = birlikAl(s);
-    s.isletme!.baslangic_yili = s.yil; // yeni işletme
-    b.baris_catisma_yili = s.yil;
-    birlikYilIsle(s, bg(s));
-    // vade gelmiş görünse de ilk-yıl koruması varsa uyarı yok, yoksa takvim ileri alınmış olmalı
-    const gelecek = b.baris_catisma_yili ?? 0;
-    expect(gelecek >= s.yil).toBe(true);
+    const rnd = vi.spyOn(Math, "random").mockReturnValue(0);
+    expect(birlikAl(s).baris_bekleme).toBe(2);
+    for (let i = 0; i < 2; i++) {
+      expect(birlikYilIsle(s, bg(s)).dokum.uyarilar.some((u) => u.kod === "baris_catisma")).toBe(false);
+    }
+    rnd.mockRestore();
   });
 
   it("zaferde ganimet ASKERÎ GÜÇLE ORANTILIDIR (aynı zarla güç ×2 → ganimet ≈ ×2)", () => {
@@ -551,9 +567,9 @@ describe("savaş", () => {
     s.buyuk_savas = { dusman: "Komşu", baslangicYili: s.yil, bitisYili: s.yil + 4, vergiOrani: 0.08, gidaCarpani: 1.15 } as never;
   }
 
-  it("savaş sıklığı %40, bekleme 4 yıl, süre sabit 4 yıl, vergi eki 0,05 ve savaşın diğer mesleklere etkisi kısılmıştır", () => {
-    expect(SAVAS_YILLIK_IHTIMAL).toBe(0.4);
-    expect(SAVAS_COOLDOWN_YIL).toBe(4);
+  it("savaş sıklığı %45, bekleme 5 yıl, süre sabit 4 yıl, vergi eki 0,05 ve savaşın diğer mesleklere etkisi kısılmıştır", () => {
+    expect(SAVAS_YILLIK_IHTIMAL).toBe(0.45);
+    expect(SAVAS_COOLDOWN_YIL).toBe(5);
     expect(SAVAS_SURE).toEqual([4, 4]);
     expect(VERGI_SAVAS_EKI).toBe(0.05);
   });

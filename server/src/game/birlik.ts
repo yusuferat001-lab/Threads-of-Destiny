@@ -21,8 +21,6 @@ import {
   GOREV_DONEM_CARPANI,
   GOREV_SLOTLARI,
   GANIMET_GUC_BIRIMI,
-  KALE_GARNIZON,
-  KALE_HARAC,
   KALE_KOMUTA_BONUSU,
   KIRALIK_KALITE_CARPANI,
   KIRALIK_YILLIK,
@@ -68,6 +66,8 @@ import {
   moralGucEtkisi,
   odenmeyenCeza,
   type GorevTanimi,
+  BARIS_CATISMA_ILK_YIL,
+  KALE_GELIR,
 } from "../data/birlik";
 import { adaylariYenile, ekipBonuslari, imtiyazAktifMi, korumaHesapla, type IsletmeBaglami } from "./isletme";
 
@@ -119,7 +119,8 @@ export function birlikVarsayilan(er: number): BirlikDurumu {
     asiri_son_yil: null,
     zar_bonusu: 0,
     erzak_oran: 1,
-    baris_catisma_yili: null,
+    baris_bekleme: BARIS_CATISMA_ILK_YIL,
+    kale_gelir: [],
   };
 }
 
@@ -505,7 +506,6 @@ export interface BirlikGorevHesabi {
   er: number;
   aktif: boolean;
   gelir: number;
-  masraf: number;
   ganimet: number;
   esir: number;
 }
@@ -515,7 +515,6 @@ export interface BirlikHesabi {
   erBasiGelir: number;
   gorevler: BirlikGorevHesabi[];
   gorevGeliri: number;
-  gorevMasrafi: number;
   ganimetBrut: number;
   /** Savaş ödeneği (savaşta sabit maaşın bir kesri; barışta 0) ve yağma ganimeti (brüt). */
   savasOdenegi: number;
@@ -572,18 +571,16 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   const erBasiGelir = 0; // artık ayrı kalem değil (maaş kaleminin içinde)
   const kazancC = 1;
   const gorevler: BirlikGorevHesabi[] = gorevPaylari(state).map(({ gorev: g, er: p, aktif }) => {
-    if (!aktif) return { id: g.id, er: p, aktif, gelir: 0, masraf: 0, ganimet: 0, esir: 0 };
+    if (!aktif) return { id: g.id, er: p, aktif, gelir: 0, ganimet: 0, esir: 0 };
     const akinC = g.tur === "akin" ? mizrakliAkin : 1;
     const gelir = p * g.erBasi * kazancC * bg.enflasyon * gorevDonemCarpani(state, g) * gelirC * akinC;
-    const masraf = gelir * g.masraf * mC * ikmal.maliyet;
     // Ganimet: yalnız ganimetli görevlerde; savaş yılında ×2,5, barışta ×0,3 (savaş-yalnız görevler zaten savaşta).
     const ganCarpan = g.yalnizSavas ? 1 : savasta ? 2.5 : 0.3;
     const ganimet = g.ganimet > 0 ? p * g.ganimet * ganCarpan * bg.enflasyon * ganimetC : 0;
     const esir = g.ganimet > 0 ? p * g.ganimet * ganCarpan * 0.04 * ganimetC : 0;
-    return { id: g.id, er: p, aktif, gelir, masraf, ganimet, esir };
+    return { id: g.id, er: p, aktif, gelir, ganimet, esir };
   });
   const gorevGeliri = gorevler.reduce((t, x) => t + x.gelir, 0);
-  const gorevMasrafi = gorevler.reduce((t, x) => t + x.masraf, 0);
   const ganimetBrut = gorevler.reduce((t, x) => t + x.ganimet, 0);
   // Yağma (yalnız savaşta, ikmal kararı): güçle orantılı yıllık ganimet; esir ve yeni er de getirir.
   const yagma = savasta && karar.ikmal === "yagma";
@@ -610,15 +607,23 @@ export function birlikHesapla(state: CharacterState, bg: IsletmeBaglami, sec: He
   const kusatmaBakim = er * KUSATMA_ER_FIYATI[clamp(b.kusatma_seviye, 0, 2)] * KUSATMA_BAKIM_ORANI * bg.giderEnflasyon;
   const talimMasrafi = er * TALIM_TANIMLARI[b.talim_politikasi].masraf * bg.giderEnflasyon;
   const kiralikMasrafi = savasta ? (b.savas?.kiralik_er ?? 0) * KIRALIK_YILLIK * bg.giderEnflasyon : 0;
-  const kaleGeliri = r2(b.kale * Math.max(0, KALE_HARAC - KALE_GARNIZON) * bg.enflasyon);
+  const kaleGeliri = r2(kaleGelirToplami(b) * bg.enflasyon);
   const limitAsimGideri = giderEri > er ? (erMasrafi + erzak) * (1 - er / giderEri) : 0;
   const toplamGelir = sold + erBasiGelir + gorevGeliri + ganimetNet + kaleGeliri;
-  const toplamGider = kiralikMasrafi + gorevMasrafi + erMasrafi + erzak + kislaBakim + techizatBakim + birlikBakim + kusatmaBakim + talimMasrafi + yaraliGideri;
+  const toplamGider = kiralikMasrafi + erMasrafi + erzak + kislaBakim + techizatBakim + birlikBakim + kusatmaBakim + talimMasrafi + yaraliGideri;
   return {
-    er, sold, erBasiGelir, gorevler, gorevGeliri, gorevMasrafi, ganimetBrut: toplamBrut, savasOdenegi, yaraliGideri, limitAsimGideri, yagmaBrut, kiralikMasrafi, kaleGeliri, devletPayi, erPayi, ganimetNet, esirBeklenen,
+    er, sold, erBasiGelir, gorevler, gorevGeliri, ganimetBrut: toplamBrut, savasOdenegi, yaraliGideri, limitAsimGideri, yagmaBrut, kiralikMasrafi, kaleGeliri, devletPayi, erPayi, ganimetNet, esirBeklenen,
     erMasrafi, erzak, kislaBakim, techizatBakim, birlikBakim, kusatmaBakim, talimMasrafi, toplamGelir, toplamGider,
     net: toplamGelir - toplamGider,
   };
+}
+
+/** Ele geçirilen kalelerin yıllık net gelir toplamı (enflasyonsuz); eski kayıtta eksik girişler aralığın ortasıyla tamamlanır. */
+export function kaleGelirToplami(b: BirlikDurumu): number {
+  const liste = b.kale_gelir ?? [];
+  let t = 0;
+  for (let i = 0; i < b.kale; i++) t += liste[i] ?? (KALE_GELIR[0] + KALE_GELIR[1]) / 2;
+  return t;
 }
 
 /** Başlangıç / "yıllık kazanç" göstergesi: subay maaşı hariç beklenen yıllık net. */

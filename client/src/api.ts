@@ -51,7 +51,6 @@ import type {
   YonetimDurumu,
   RakipKarti,
   PazarDurumu,
-  AjanDurumu,
   AmaclarDurumu,
   SalginKorunmaKarti,
   KrediConfig,
@@ -262,17 +261,6 @@ export function kotuIsYap(
 
 export function rakiplerGetir(stateId: string) {
   return istek<{ rakipler: RakipKarti[] }>(`/api/game/${stateId}/rakipler`);
-}
-
-export function ajanDurumGetir(stateId: string) {
-  return istek<AjanDurumu>(`/api/game/${stateId}/ajanlar`);
-}
-
-export function ajanTut(stateId: string, rol: string) {
-  return istek<{ state: CharacterState; mesaj: string }>(`/api/game/${stateId}/ajan/tut`, {
-    method: 'POST',
-    body: JSON.stringify({ rol }),
-  });
 }
 
 export function isletmeGetir(stateId: string) {

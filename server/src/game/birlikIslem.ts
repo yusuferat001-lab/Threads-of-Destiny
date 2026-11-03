@@ -22,7 +22,6 @@ import {
   BIRLIK_KILIT_YIL,
   GANIMET_GUC_BIRIMI,
   BIRLIK_SEVIYE_PAYI,
-  DOKTRINLER,
   ER_TAVANI,
   ESIR_YETKI_RUTBE,
   GANIMET_PAYI_TANIMLARI,
@@ -37,8 +36,6 @@ import {
   KALITE_FIYATI,
   KALITE_KILIT_YIL,
   KALITE_SIRASI,
-  KISLA_BAKIM,
-  KISLA_ER_LIMITI,
   KUSATMA_ER_FIYATI,
   KUSATMA_SALDIRI_BONUSU,
   ROL_SIRASI,
@@ -69,13 +66,11 @@ import {
   moralGucEtkisi,
   techizatAdi,
   turAdi,
-  yolDoktrinKaynagi,
 } from "../data/birlik";
 import { askerGucleri, aktifRakipler, askerRakipGucCarpani, pazarPayiHesapla } from "../data/pazar";
 import type { IsletmeBaglami } from "./isletme";
 import {
   birlikAl,
-  birlikBeklenenKar,
   birlikHesapla,
   birlikSenkron,
   clamp,
@@ -669,7 +664,6 @@ export interface BirlikGorunumu {
     toplamGelir: number;
     erMasrafi: number;
     erzak: number;
-    gorevMasrafi: number;
     kislaBakim: number;
     techizatBakim: number;
     yaraliGideri: number;
@@ -824,18 +818,11 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
       kiralikMasrafi: r2(h.kiralikMasrafi),
       yagmaBrut: r2(h.yagmaBrut),
       sold: r2(h.sold), erBasiGelir: r2(h.erBasiGelir), gorevGeliri: r2(h.gorevGeliri), ganimetNet: r2(h.ganimetNet), devletPayi: r2(h.devletPayi), erPayi: r2(h.erPayi),
-      toplamGelir: r2(h.toplamGelir), erMasrafi: r2(h.erMasrafi), erzak: r2(h.erzak), gorevMasrafi: r2(h.gorevMasrafi), kislaBakim: r2(h.kislaBakim),
+      toplamGelir: r2(h.toplamGelir), erMasrafi: r2(h.erMasrafi), erzak: r2(h.erzak), kislaBakim: r2(h.kislaBakim),
       techizatBakim: r2(h.techizatBakim), yaraliGideri: r2(h.yaraliGideri), limitAsimGideri: r2(h.limitAsimGideri), kusatmaBakim: r2(h.kusatmaBakim), talimMasrafi: r2(h.talimMasrafi), toplamGider: r2(h.toplamGider), net: r2(h.net),
       barisGanimetTahmini: r2(d.guc * GANIMET_GUC_BIRIMI * 1.15 * bg.enflasyon * (1 - GANIMET_PAYI_TANIMLARI[b.ganimet_payi].oran)),
     },
     yol,
   };
-  void gucParcasi;
-  void KISLA_BAKIM;
-  void KISLA_ER_LIMITI;
-  void yolDoktrinKaynagi;
-  void DOKTRINLER;
-  void INISIYATIF_OYUNCU_SECER;
-  void birlikBeklenenKar;
 }
 

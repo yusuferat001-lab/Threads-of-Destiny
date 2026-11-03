@@ -135,11 +135,6 @@ export const HUY_ZAMAN: AileHuy[] = ["mizahsever", "sefkatli", "maceraci"];
 // ---------- Risk: eşin bar kaybı ----------
 /** Karanlık işlerin eş ilişkisine verdiği anlık zarar (bar puanı). */
 export const KOTU_IS_ES_ZARARI: Record<string, number> = {
-  rakibi_korkut: 4,
-  adam_dov: 6,
-  rakibi_dov: 8,
-  birini_soy: 8,
-  isyeri_yak: 12,
 };
 /** Tek seçimde aranma artışı bu eşiği aşarsa eş ilişkisi düşer. */
 export const SUC_ES_ESIGI = 20;

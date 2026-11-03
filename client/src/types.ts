@@ -365,7 +365,7 @@ export interface CharacterState {
 
   /** Aile ekranı etkileşim cooldown'ları: anahtar → tekrar açılacağı oyun yılı (§33). */
   aile_etkilesim_kilit: Record<string, number>;
-  /** Ajanlara verilmiş, bir sonraki yıl ilerlemesinde çözülecek işler. */
+  /** Çalışanlara verilmiş, bir sonraki yıl ilerlemesinde çözülecek işler. */
   ajan_gorevleri: AjanGorevi[];
   /** Meslek işletmesi (Tüccar); diğer mesleklerde null. */
   isletme: unknown | null;
@@ -874,7 +874,6 @@ export interface IsletmeDokum {
     erPayi: number;
     erMasrafi: number;
     erzak: number;
-    gorevMasrafi: number;
     techizatBakimi: number;
     guc: number;
     moral: number;
@@ -1161,7 +1160,6 @@ export interface BirlikGorunumu {
     toplamGelir: number;
     erMasrafi: number;
     erzak: number;
-    gorevMasrafi: number;
     kislaBakim: number;
     techizatBakim: number;
     yaraliGideri: number;
@@ -1488,37 +1486,16 @@ export interface KotuIsKarti {
   meslegeOzel: boolean;
   /** Tekrar çevrilebilmesine kalan oyun yılı (0 = hazır). */
   kalanYil: number;
-  /** Bu işi yapabilecek ajan rolü (kanonik TR) ya da null. */
-  ajanRolu: string | null;
-  /** Yalnız ajana yaptırılabilir. */
-  sadeceAjan: boolean;
   /** İşletmedeki herhangi bir çalışanın yapabildiği iş (§45). */
   calisanIsi: boolean;
 }
 
-/** Bir ajana verilmiş, henüz çözülmemiş iş. */
+/** Bir çalışana verilmiş, henüz çözülmemiş iş. */
 export interface AjanGorevi {
   ajanId: string;
   isId: string;
   hedefRakipAd: string | null;
   verilisYili: number;
-}
-
-/** Kariyer ekranı "Adam Tut" paneli için bir ajan rolü (GET /:id/ajanlar). */
-export interface AjanRolKarti {
-  rol: string;
-  simge: string;
-  ucret: number;
-  maasMin: number;
-  maasMax: number;
-  sahip: boolean;
-  isler: string[];
-}
-
-export interface AjanDurumu {
-  roller: AjanRolKarti[];
-  /** Görevdeki ajanlar: ajan id'si → iş id'si. */
-  gorevler: Record<string, string>;
 }
 
 export interface KotuIsSonucu {

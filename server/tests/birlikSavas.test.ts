@@ -25,6 +25,10 @@ import {
 } from "../src/game/birlikYil";
 import {
   BARIS_KAYBI,
+  ER_BASI_GELIR,
+  KALE_GELIR,
+  SAVAS_ER_BASI_CARPANI,
+  SOLD,
   ERZAK_DONEM_CARPANI,
   GOREVLER,
   GOREV_DONEM_CARPANI,
@@ -381,20 +385,21 @@ describe("barış çatışması (haydut / sınır): ölü – yaralı – firar"
 });
 
 describe("görev geliri ve erzak tabloları", () => {
-  it("her görevin 3 dönem ortalaması 1,2–2,5 arası ve görev açıldıkça artar; tepe ≤ 2,5", () => {
+  it("her görevin asker başı net kazancı 1,10–1,80 arası, açılış limiti 10–230 ve görev açıldıkça artar; masraf alanı yok", () => {
     const sira = [...GOREVLER].sort((a, b) => a.minEr - b.minEr);
     let onceki = 0;
     for (const g of sira) {
-      const d = GOREV_DONEM_CARPANI[g.tur]!;
-      const ort = g.erBasi * (((d.bolluk ?? 1) + (d.durgunluk ?? 1) + (d.kitlik ?? 1)) / 3);
-      const tepe = g.erBasi * Math.max(d.bolluk ?? 1, d.durgunluk ?? 1, d.kitlik ?? 1);
-      expect(ort).toBeGreaterThanOrEqual(1.2 - 1e-6);
-      expect(ort).toBeLessThanOrEqual(2.5);
-      expect(tepe).toBeLessThanOrEqual(2.5);
-      expect(ort).toBeGreaterThanOrEqual(onceki - 1e-6);
-      onceki = ort;
+      expect("masraf" in g).toBe(false);
+      expect(g.erBasi).toBeGreaterThanOrEqual(1.1 - 1e-6);
+      expect(g.erBasi).toBeLessThanOrEqual(1.8 + 1e-6);
+      expect(g.erBasi).toBeGreaterThanOrEqual(onceki - 1e-6);
+      onceki = g.erBasi;
     }
-    expect(sira[0].erBasi).toBe(1.2);
+    expect(sira[0].minEr).toBe(10);
+    expect(sira[sira.length - 1].minEr).toBe(230);
+    expect(sira[0].erBasi).toBe(1.1);
+    expect(sira[sira.length - 1].erBasi).toBe(1.8);
+    expect(GOREVLER.filter((g) => (g.sohret ?? 0) > 0).map((g) => g.id).sort()).toEqual(["komuta", "muhafiz"]);
   });
   it("erzak dönem çarpanı 0,8–1,3; teçhizat bakımı 0,1 / 0,25 / 0,5", () => {
     for (const v of Object.values(ERZAK_DONEM_CARPANI)) {
@@ -409,3 +414,68 @@ describe("görev geliri ve erzak tabloları", () => {
     expect(h.techizatBakim).toBeCloseTo((10 * 0.1 + 10 * 0.25 + 20 * 0.5) * bg(s).giderEnflasyon, 4);
   });
 });
+
+describe("ödeme yapısı, kale ve şöhret (v33 ek tur 3)", () => {
+  it("sabit maaş 6; asker başı 0,20, savaşta ×2", () => {
+    expect(SOLD).toEqual([6, 6, 6, 6, 6]);
+    expect(ER_BASI_GELIR).toBe(0.2);
+    expect(SAVAS_ER_BASI_CARPANI).toBe(2);
+    const s = asker();
+    ordu(s, 100);
+    const baris = birlikHesapla(s, bg(s));
+    s.ulke.savasta = true;
+    const savas = birlikHesapla(s, bg(s));
+    const e = bg(s).enflasyon;
+    expect(baris.sold).toBeCloseTo(6 * e + 100 * 0.2 * e, 3);
+    expect(savas.sold).toBeCloseTo(6 * e + 100 * 0.4 * e, 3);
+  });
+
+  it("4. yıl (sonuç yılı) kayıpları büyüdü ve beklenen toplam kullanıcı tavanının altında kalır", () => {
+    expect(SAVAS_SONRA_KAYBI.zafer).toEqual({ olu: [0.6, 1.4], firar: [0.5, 1.2] });
+    expect(SAVAS_SONRA_KAYBI.yenilgi).toEqual({ olu: [4, 6], firar: [2, 3.5] });
+    const ort = (a: [number, number]) => (a[0] + a[1]) / 2;
+    const toplam = (sonuc: "zafer" | "yenilgi") => {
+      const on = SAVAS_ON_YIL_OLAYLARI.reduce((t, o) => t + o.ihtimal * ort(o.olu), 0) * 2;
+      const onF = SAVAS_ON_YIL_OLAYLARI.reduce((t, o) => t + o.ihtimal * ort(o.firar), 0) * 2;
+      return {
+        olu: on + ort(SAVAS_KARAR_KAYBI[sonuc].olu) + ort(SAVAS_SONRA_KAYBI[sonuc].olu),
+        firar: onF + ort(SAVAS_KARAR_KAYBI[sonuc].firar) + ort(SAVAS_SONRA_KAYBI[sonuc].firar),
+      };
+    };
+    for (const sonuc of ["zafer", "yenilgi"] as const) {
+      expect(toplam(sonuc).olu).toBeLessThanOrEqual(SAVAS_KAYIP_TAVANI[sonuc].olu);
+      expect(toplam(sonuc).firar).toBeLessThanOrEqual(SAVAS_KAYIP_TAVANI[sonuc].firar);
+    }
+  });
+
+  it("kale başı yıllık net gelir 12–14 (garnizon gideri yok) ve yıllık şöhret verir", () => {
+    expect(KALE_GELIR).toEqual([12, 14]);
+    const s = asker();
+    ordu(s, 40);
+    const b = birlikAl(s);
+    b.kale = 2;
+    b.kale_gelir = [12, 14];
+    const h = birlikHesapla(s, bg(s));
+    expect(h.kaleGeliri).toBeCloseTo(26 * bg(s).enflasyon, 3);
+    s.un = 20;
+    birlikYilIsle(s, bg(s));
+    expect(s.un).toBeGreaterThan(20); // kale başı +0,5/yıl (2 kale → +1)
+  });
+
+  it("Eyalet Komutanlığı ve Saray Muhafızlığı açıkken yıllık şöhret artar; düşük görevlerde artmaz", () => {
+    const s = asker();
+    s.rutbe_seviye = 5;
+    ordu(s, 240);
+    const b = birlikAl(s);
+    b.gorevler = ["devriye"];
+    s.un = 30;
+    birlikYilIsle(s, bg(s));
+    const dusukSonrasi = s.un;
+    expect(dusukSonrasi).toBeLessThanOrEqual(30.5);
+    b.gorevler = ["komuta"];
+    s.un = 30;
+    birlikYilIsle(s, bg(s));
+    expect(s.un).toBeGreaterThanOrEqual(30.9);
+  });
+});
+

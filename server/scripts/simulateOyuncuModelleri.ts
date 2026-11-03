@@ -461,7 +461,7 @@ async function siyasetYonet(c: Ctx): Promise<void> {
   // Karanlık işler (rakibi zayıflatıp müşteri almak)
   if (S.karanlik > 0 && Math.random() < S.karanlik && s.suc_seviyesi < 45) {
     try {
-      const kartlar = (await kotuIsConfigGetir(id)).filter((k) => k.kalanYil === 0 && !k.sadeceAjan && k.basariSansi >= S.karanlikMinSans && k.maliyet <= Math.max(0, serbest(c)) * 0.5);
+      const kartlar = (await kotuIsConfigGetir(id)).filter((k) => k.kalanYil === 0 && k.basariSansi >= S.karanlikMinSans && k.maliyet <= Math.max(0, serbest(c)) * 0.5);
       const sirali = kartlar.sort((a, b) => (b.rakipKirmaYuzde + b.musteriKazanci) - (a.rakipKirmaYuzde + a.musteriKazanci));
       const k = sirali[0];
       if (k) {

@@ -44,9 +44,9 @@ const DONEM_ETKI_ARALIKLARI: Record<DonemTuru, EtkiAraliklari> = {
 
 // ── Savaş ──────────────────────────────────────────────────────────────────
 /** Durgunluk/kıtlıkta (bollukta asla) savaşın yıllık başlama ihtimali. */
-export const SAVAS_YILLIK_IHTIMAL = 0.4;
+export const SAVAS_YILLIK_IHTIMAL = 0.45;
 /** Son savaşın bitişinden sonra yeni savaş için beklenecek yıl. */
-export const SAVAS_COOLDOWN_YIL = 4;
+export const SAVAS_COOLDOWN_YIL = 5;
 export const SAVAS_SURE: Aralik = [4, 4];
 /** Savaş vergisi (maaşın yüzdesi) ve yaşam gideri artışı. */
 export const SAVAS_VERGI: Aralik = [7, 10];

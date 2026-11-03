@@ -655,52 +655,6 @@ export function maasKirilimHesapla(state: CharacterState): MaasKirilim {
   };
 }
 
-/** Asker'in ordusunun saldırı gücü: mevcut asker sayısı × teçhizat seviyesine bağlı çarpan. */
-export function saldiriGucuHesapla(state: CharacterState): number {
-  return Math.round(state.ordu_mevcudu * (1 + state.ordu_techizat_seviyesi / 100));
-}
-
-/**
- * Meslek-özel derinlik metriğinin (saldırı gücü / ticaret sermayesi / nüfuz)
- * ilgili kategorideki para ödüllerine uyguladığı merkezi çarpan. Yalnızca
- * mesleğin kendi kategorisinde ve kazanç varken devreye girer; onlarca olayı
- * tek tek değiştirmek yerine tek bir yerde uygulanır.
- */
-export function meslekMetrikCarpani(state: CharacterState, kategori: Kategori): number {
-  if (MESLEK_KATEGORI[state.meslek] !== kategori) return 1;
-  // Asker (birlik modu): olay parası çarpılmaz; gelir sold + görev + ganimetten gelir.
-  // v10: Tüccar (ticaret sermayesi) ve Din Adamı (nüfuz) çarpanları KALDIRILDI — işletmeli meslekler
-  // olay parasını çarpmaz; gelir işletme motorundan gelir (Zanaatkâr zaten ×1).
-  // Zanaatkâr: uretim_kapasitesi şimdilik BİLİNÇLİ OLARAK etkisiz (×1) —
-  // dengesi sonraya bırakıldı (kullanıcı isteği). Olaylar sayacı doldursun,
-  // aktive edilmek istendiğinde tek satır: `1 + state.uretim_kapasitesi / N`.
-  return 1;
-}
-
-export const ORDU_MEVCUDU_TAVANI = 300;
-
-/** Savaş kategorisinde her seçimde (Asker için) ordu mevcudunda kayıp uygular; savaş sırasında çok daha ciddi. */
-export function orduKaybiUygula(state: CharacterState, basarili: boolean): number {
-  if (state.meslek !== "Asker" || state.ordu_mevcudu <= 0) return 0;
-  const savasKatsayisi = state.ulke.savasta ? 1 : 0.2;
-  const temelYuzde = basarili ? 0.03 : 0.1;
-  const yuzde = temelYuzde * savasKatsayisi * (0.5 + Math.random());
-  const kayip = Math.round(state.ordu_mevcudu * yuzde);
-  state.ordu_mevcudu = Math.max(0, state.ordu_mevcudu - kayip);
-  return kayip;
-}
-
-/** Barış zamanında Asker'in ordusu zamanla doğal olarak büyür. */
-export function orduBuyumesiDene(state: CharacterState, yasArtisi: number): void {
-  if (state.meslek !== "Asker" || state.ulke.savasta) return;
-  for (let i = 0; i < yasArtisi; i++) {
-    if (Math.random() < 0.25) {
-      state.ordu_mevcudu = Math.min(ORDU_MEVCUDU_TAVANI, state.ordu_mevcudu + 1 + Math.floor(Math.random() * 2));
-    }
-  }
-}
-
-
 export const MESLEKLER = ["Asker", "Tüccar", "Din Adamı", "Zanaatkâr"];
 
 function pickRandom<T>(items: T[]): T {
