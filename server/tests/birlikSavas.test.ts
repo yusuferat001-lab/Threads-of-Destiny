@@ -5,6 +5,7 @@ import {
   birlikHesapla,
   erSayisi,
   gorevPaylari,
+  dusmanReferansGucu,
   gucHesapla,
   kaliteToplami,
   komutaLimiti,
@@ -46,6 +47,7 @@ import {
   SEFERBERLIK_TANIMLARI,
   YARALI_ORAN,
 } from "../src/data/birlik";
+import { birlikKararUygula } from "../src/game/birlikIslem";
 import { ogretileriTamamla } from "./_ogreti";
 import type { CharacterState, IsletmeUyari } from "../src/types";
 
@@ -385,8 +387,8 @@ describe("barış çatışması (haydut / sınır): ölü – yaralı – firar"
 });
 
 describe("görev geliri ve erzak tabloları", () => {
-  it("her görevin asker başı net kazancı 1,10–1,80 arası, açılış limiti 10–230 ve görev açıldıkça artar; masraf alanı yok", () => {
-    const sira = [...GOREVLER].sort((a, b) => a.minEr - b.minEr);
+  it("her görevin asker başı net kazancı 1,10–1,80 arası, açılış eşiği (askeri güç) 10–345 ve görev açıldıkça artar; masraf alanı yok", () => {
+    const sira = [...GOREVLER].sort((a, b) => a.minGuc - b.minGuc);
     let onceki = 0;
     for (const g of sira) {
       expect("masraf" in g).toBe(false);
@@ -395,23 +397,23 @@ describe("görev geliri ve erzak tabloları", () => {
       expect(g.erBasi).toBeGreaterThanOrEqual(onceki - 1e-6);
       onceki = g.erBasi;
     }
-    expect(sira[0].minEr).toBe(10);
-    expect(sira[sira.length - 1].minEr).toBe(230);
+    expect(sira[0].minGuc).toBe(10);
+    expect(sira[sira.length - 1].minGuc).toBe(345);
     expect(sira[0].erBasi).toBe(1.1);
     expect(sira[sira.length - 1].erBasi).toBe(1.8);
     expect(GOREVLER.filter((g) => (g.sohret ?? 0) > 0).map((g) => g.id).sort()).toEqual(["komuta", "muhafiz"]);
   });
-  it("erzak dönem çarpanı 0,8–1,3; teçhizat bakımı 0,1 / 0,25 / 0,5", () => {
+  it("erzak dönem çarpanı 0,8–1,3; teçhizat bakımı 0,10 / 0,22 / 0,34", () => {
     for (const v of Object.values(ERZAK_DONEM_CARPANI)) {
       expect(v).toBeGreaterThanOrEqual(0.8);
       expect(v).toBeLessThanOrEqual(1.3);
     }
-    expect(KALITE_BAKIM).toEqual({ dusuk: 0.1, orta: 0.25, yuksek: 0.5 });
+    expect(KALITE_BAKIM).toEqual({ dusuk: 0.1, orta: 0.22, yuksek: 0.34 });
     const s = asker();
     ordu(s, 40);
     birlikAl(s).kalite = { dusuk: 10, orta: 10, yuksek: 20 };
     const h = birlikHesapla(s, bg(s));
-    expect(h.techizatBakim).toBeCloseTo((10 * 0.1 + 10 * 0.25 + 20 * 0.5) * bg(s).giderEnflasyon, 4);
+    expect(h.techizatBakim).toBeCloseTo((10 * 0.1 + 10 * 0.22 + 20 * 0.34) * bg(s).giderEnflasyon, 4);
   });
 });
 
@@ -465,7 +467,7 @@ describe("ödeme yapısı, kale ve şöhret (v33 ek tur 3)", () => {
   it("Eyalet Komutanlığı ve Saray Muhafızlığı açıkken yıllık şöhret artar; düşük görevlerde artmaz", () => {
     const s = asker();
     s.rutbe_seviye = 5;
-    ordu(s, 240);
+    ordu(s, 400);
     const b = birlikAl(s);
     b.gorevler = ["devriye"];
     s.un = 30;
@@ -479,3 +481,62 @@ describe("ödeme yapısı, kale ve şöhret (v33 ek tur 3)", () => {
   });
 });
 
+
+describe("askeri güç belirleyici (v34)", () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  it("görev eşikleri er değil askeri güçle ölçülür: aynı er sayısında orta teçhizat daha üst görev açar", () => {
+    const s = asker();
+    ordu(s, 90);
+    const b = birlikAl(s);
+    b.gorevler = ["tahsilat"]; // 105 askeri güç
+    expect(gorevPaylari(s)[0].aktif).toBe(false); // 90 düşük er ≈ 94 güç
+    b.kalite = { dusuk: 0, orta: 90, yuksek: 0 };
+    expect(gorevPaylari(s)[0].aktif).toBe(true); // 90 orta er ≈ 130 güç
+    expect(() => birlikKararUygula(s, { gorevler: ["tahsilat"] }, bg(s))).not.toThrow();
+  });
+
+  function zaferOrani(kur: (s: CharacterState) => void, deneme = 120): number {
+    let zafer = 0;
+    let n = 0;
+    for (let i = 0; i < deneme * 3 && n < deneme; i++) {
+      const s = asker();
+      s.yas = 35;
+      kur(s);
+      const b = birlikAl(s);
+      s.isletme!.baslangic_yili = s.yil - 10;
+      b.baris_bekleme = 0;
+      const u = birlikYilIsle(s, bg(s)).dokum.uyarilar.find((x) => x.kod === "baris_catisma");
+      if (!u) continue;
+      n++;
+      if (u.savasSonucu === "zafer") zafer++;
+    }
+    expect(n).toBeGreaterThan(deneme / 2);
+    return zafer / n;
+  }
+
+  it("haydut/sınır sonucu mutlak düşman gücüne karşı bizim gücümüzle belirlenir (zayıf ordu kaybeder, tam yatırımlı kazanır)", () => {
+    const zayif = zaferOrani((s) => ordu(s, 20));
+    const guclu = zaferOrani((s) => {
+      ordu(s, 60);
+      const b = birlikAl(s);
+      b.kalite = { dusuk: 0, orta: 0, yuksek: 60 };
+      b.birlik_turler = ["okcu", "suvari", "mizrakli"];
+      b.birlik_seviye = 3;
+    });
+    expect(zayif).toBeLessThan(0.2);
+    expect(guclu).toBeGreaterThan(0.9);
+  });
+
+  it("düşman gücü bizim gücümüzden bağımsızdır; yaşla büyür", () => {
+    const k = asker();
+    k.yas = 25;
+    const g = asker();
+    g.yas = 55;
+    expect(dusmanReferansGucu(g)).toBeGreaterThan(dusmanReferansGucu(k));
+    ordu(k, 20);
+    const once = dusmanReferansGucu(k);
+    ordu(k, 200);
+    expect(dusmanReferansGucu(k)).toBe(once);
+  });
+});

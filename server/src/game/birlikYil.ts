@@ -116,7 +116,6 @@ import {
   SIZMA_SADAKAT_KAYBI,
   aktifRakip,
   aktifRakipler,
-  askerGucleri,
   pazarPayiHesapla,
   rakipSaldiriKademesi,
   rastgeleSaldiriYili,
@@ -161,6 +160,7 @@ import {
   rutbeIndeksi,
   sertlikGelirCarpani,
   turPaylari,
+  dusmanReferansGucu,
   yolEtkisi,
 } from "./birlik";
 
@@ -493,16 +493,15 @@ function catismaCoz(state: CharacterState, b: BirlikDurumu, bg: IsletmeBaglami):
   const ctx = { enflasyon: bg.enflasyon, savas: { arazi, dusmanTur: sv.dusman_tur, inisiyatif } };
   const d = gucHesapla(state, ctx);
   const oyuncuG = inisiyatif === "saldiri" ? d.saldiri : d.savunma;
-  const g = askerGucleri(state);
-  const N = Math.max(1, g.rakip + g.diger + d.guc);
-  const p = d.guc / N;
-  const D = N * sv.dusman_orani;
+  // Düşmanın gücü MUTLAKTIR (rütbeye göre referans × savaşın şiddeti): bizim gücümüz sonucu doğrudan belirler.
+  const E = dusmanReferansGucu(state) * sv.dusman_orani;
   const rol = ROL_TANIMLARI[karar?.rol ?? "ana"];
-  const oyuncuEff = oyuncuG * (1 + (d20() - 10.5) / ZAR_BOLEN + b.zar_bonusu + rol.zar);
-  const dusmanEff = Math.max(1e-6, D * p * (1 + (d20() - 10.5) / ZAR_BOLEN));
-  const R = oyuncuEff / dusmanEff;
+  const bizimZar = () => oyuncuG * (1 + (d20() - 10.5) / ZAR_BOLEN + b.zar_bonusu + rol.zar);
+  const dusmanZar = () => Math.max(1e-6, E * (1 + (d20() - 10.5) / ZAR_BOLEN));
+  const R = bizimZar() / dusmanZar();
   const kanatZafer = R >= 1;
-  const genelZafer = N * (1 + (d20() - 10.5) / ZAR_BOLEN) >= D * (1 + (d20() - 10.5) / ZAR_BOLEN);
+  // Genel sonuç (kampanya): aynı güçlerin ikinci, bağımsız zarı.
+  const genelZafer = bizimZar() >= dusmanZar();
   if (kanatZafer) sv.kanat_zafer += 1;
   else sv.kanat_yenilgi += 1;
   if (genelZafer) sv.genel_zafer += 1;
@@ -664,7 +663,7 @@ function barisCatismasiCoz(state: CharacterState, b: BirlikDurumu, bg: IsletmeBa
   const yol = yolEtkisi(state);
   const d = gucHesapla(state, { enflasyon: bg.enflasyon, senaryo: tur });
   const guc = d.guc;
-  const dusman = guc * rnd(t.dusman[0], t.dusman[1]);
+  const dusman = dusmanReferansGucu(state) * rnd(t.dusman[0], t.dusman[1]);
   const oyuncuEff = guc * (1 + (d20() - 10.5) / ZAR_BOLEN + b.zar_bonusu);
   const dusmanEff = Math.max(1e-6, dusman * (1 + (d20() - 10.5) / ZAR_BOLEN));
   const R = oyuncuEff / dusmanEff;

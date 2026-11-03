@@ -1775,7 +1775,7 @@ function App() {
   }
   const birlikKararHandler = (k: BirlikKararGirdisi) => birlikEylemHandler(() => isletmeKararVer(karakter!.id, [], undefined, k));
   const birlikKaliteHandler = (hedef: 'orta' | 'yuksek', yuzde: number) => birlikEylemHandler(() => birlikKaliteYukselt(karakter!.id, hedef, yuzde));
-  const birlikBirlikHandler = (seviye: number, turler: BirlikTur[]) => birlikEylemHandler(() => birlikBirlikSec(karakter!.id, seviye, turler));
+  const birlikBirlikHandler = (turler: BirlikTur[]) => birlikEylemHandler(() => birlikBirlikSec(karakter!.id, turler));
   const birlikKusatmaHandler = (seviye: number) => birlikEylemHandler(() => birlikKusatma(karakter!.id, seviye));
   const birlikKiralikHandler = () => birlikEylemHandler(() => birlikKiralik(karakter!.id));
   const birlikTerhisHandler = (adet: number) => birlikEylemHandler(() => birlikTerhis(karakter!.id, adet));

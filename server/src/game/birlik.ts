@@ -9,7 +9,10 @@ import type {
 import {
   ARAZI_CARPANLARI,
   BASLANGIC_ER,
-  BIRLIK_SEVIYE_PAYI,
+  TUR_PAYI,
+  dusmanReferansGucuYas,
+  DUSMAN_ORAN,
+  BARIS_CATISMALARI,
   DOKTRINLER,
   ER_BASI_GELIR,
   ER_MASRAFI,
@@ -194,6 +197,13 @@ export function birlikHazirla(state: CharacterState): void {
   if (!Array.isArray(b.gorevler)) b.gorevler = ["devriye"];
   if (!Array.isArray(b.doktrinler)) b.doktrinler = [];
   if (!Array.isArray(b.birlik_turler)) b.birlik_turler = [];
+  // Eski "seviye" sistemi: yalnız seviye kadar tür açıktı; artık her açık tür %25. Tekrarları ve geçersizleri ayıkla.
+  {
+    const eskiSeviye = typeof b.birlik_seviye === "number" ? b.birlik_seviye : b.birlik_turler.length;
+    const temiz = [...new Set(b.birlik_turler.slice(0, Math.max(0, eskiSeviye)))].filter((t) => t in TUR_TANIMLARI);
+    b.birlik_turler = temiz;
+    b.birlik_seviye = temiz.length;
+  }
   if (typeof b.moral !== "number") b.moral = MORAL_BASLANGIC;
   if (typeof b.sertlik !== "number") b.sertlik = 0;
   if (typeof b.talim !== "number") b.talim = 0;
@@ -287,12 +297,9 @@ export function subayLimiti(rutbe: number, kisla: number): number {
 
 // ── Özel birlik payları ─────────────────────────────────────────────────────
 export function turPaylari(b: BirlikDurumu): Partial<Record<BirlikTur, number>> {
-  const turler = b.birlik_turler.slice(0, Math.max(0, b.birlik_seviye));
-  if (turler.length === 0) return {};
-  const toplam = BIRLIK_SEVIYE_PAYI[clamp(turler.length, 0, 3)];
-  const pay = toplam / turler.length;
+  // Açık her tür ordunun %25'idir (tek seçenek); üç tür açıksa %75 özel + %25 piyade.
   const sonuc: Partial<Record<BirlikTur, number>> = {};
-  for (const t of turler) sonuc[t] = pay;
+  for (const t of b.birlik_turler) if (t in TUR_TANIMLARI) sonuc[t] = TUR_PAYI;
   return sonuc;
 }
 export function toplamTurPayi(b: BirlikDurumu): number {
@@ -440,13 +447,24 @@ export function doktrinBekliyorMu(state: CharacterState): boolean {
   return state.meslek === "Asker" && doktrinBekleyenSeviye(state) !== null;
 }
 
+// ── Düşman gücü (mutlak; bizim gücümüzden bağımsız) ─────────────────────────
+/** Karakterin yaşına göre düşman referans gücü (rütbeden bağımsız: rütbe zaten güçten türer). */
+export const dusmanReferansGucu = (state: CharacterState) => dusmanReferansGucuYas(state.yas);
+/** Bizim gücümüzün ortalama düşmana oranı (savaş: dusman_orani ortası; barış: aralık ortası). */
+export function kuvvetOrani(state: CharacterState, hedef: "haydut" | "sinir" | "savas"): number {
+  const ref = dusmanReferansGucu(state);
+  const ort = hedef === "savas" ? (DUSMAN_ORAN[0] + DUSMAN_ORAN[1]) / 2 : (BARIS_CATISMALARI[hedef].dusman[0] + BARIS_CATISMALARI[hedef].dusman[1]) / 2;
+  const guc = gucHesapla(state, hedef === "savas" ? {} : { senaryo: hedef }).guc;
+  return guc / Math.max(1, ref * ort);
+}
+
 // ── Görevler ────────────────────────────────────────────────────────────────
 export const gorevSlotSayisi = (state: CharacterState) => GOREV_SLOTLARI[rutbeIndeksi(state)];
 
 export interface GorevPayi {
   gorev: GorevTanimi;
   er: number;
-  /** Göreve düşen er minimum er şartını karşılıyor mu (savaş şartı dahil). */
+  /** Göreve düşen askeri güç minimum güç şartını karşılıyor mu (savaş şartı dahil). */
   aktif: boolean;
 }
 /** Açık görevler (slot kadar) ve eşit bölünmüş er payları. */
@@ -462,10 +480,12 @@ export function gorevPaylari(state: CharacterState): GorevPayi[] {
   const er = Math.floor(Math.max(0, erSayisi(state) - yaraliSayisi(state)) * (seferdeMi(state) ? 1 - SEFER_ORDU_ORANI : 1));
   const taban = Math.floor(er / n);
   const artik = er - taban * n;
+  // Görev eşikleri askeri güçle ölçülür: göreve düşen güç payı = toplam güç / görev sayısı.
+  const gucPayi = gucHesapla(state).guc / n;
   return secili.map((g, i) => {
     const pay = taban + (i === 0 ? artik : 0);
     // Savaş sürerken görevlerden gelir yok (savaş ödeneği ve yağma geçerli).
-    return { gorev: g, er: pay, aktif: pay >= g.minEr && (!g.yalnizSavas || savasta) && !savasta };
+    return { gorev: g, er: pay, aktif: gucPayi >= g.minGuc && (!g.yalnizSavas || savasta) && !savasta };
   });
 }
 

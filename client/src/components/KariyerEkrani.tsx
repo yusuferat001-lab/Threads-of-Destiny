@@ -72,7 +72,7 @@ interface KariyerEkraniProps {
   /** Asker (birlik modu) eylemleri. */
   onBirlikKarar?: (k: BirlikKararGirdisi) => void;
   onBirlikKaliteYukselt?: (hedef: 'orta' | 'yuksek', yuzde: number) => void;
-  onBirlikSec?: (seviye: number, turler: BirlikTur[]) => void;
+  onBirlikSec?: (turler: BirlikTur[]) => void;
   onBirlikKusatma?: (seviye: number) => void;
   onBirlikTerhis?: (adet: number) => void;
   onBirlikKiralik?: () => void;

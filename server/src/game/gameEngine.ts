@@ -5438,8 +5438,8 @@ export function birlikDoktrinSec(id: string, doktrinId: string) {
 export function birlikKaliteYukselt(id: string, hedef: "orta" | "yuksek", yuzde: number) {
   return birlikEylemi(id, (state, bg) => ({ sonuc: kaliteYukselt(state, hedef, yuzde, bg) }));
 }
-export function birlikBirlikSec(id: string, seviye: number, turler: string[]) {
-  return birlikEylemi(id, (state, bg) => ({ sonuc: birlikSec(state, seviye, turler as never, bg) }));
+export function birlikBirlikSec(id: string, turler: string[]) {
+  return birlikEylemi(id, (state, bg) => ({ sonuc: birlikSec(state, turler as never, bg) }));
 }
 export function birlikKusatma(id: string, seviye: number) {
   return birlikEylemi(id, (state, bg) => ({ sonuc: kusatmaAyarla(state, seviye, bg) }));

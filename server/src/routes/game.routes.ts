@@ -388,10 +388,10 @@ gameRouter.post("/:id/birlik/kalite", async (req, res) => {
 });
 
 gameRouter.post("/:id/birlik/birlik", async (req, res) => {
-  const { seviye, turler } = req.body ?? {};
-  if (typeof seviye !== "number" || !Array.isArray(turler)) return res.status(400).json({ hata: "Geçersiz birlik seçimi." });
+  const { turler } = req.body ?? {};
+  if (!Array.isArray(turler)) return res.status(400).json({ hata: "Geçersiz birlik seçimi." });
   try {
-    res.json(await birlikBirlikSec(req.params.id, seviye, turler.filter((t: unknown): t is string => typeof t === "string")));
+    res.json(await birlikBirlikSec(req.params.id, turler.filter((t: unknown): t is string => typeof t === "string")));
   } catch (err) {
     res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }

@@ -63,7 +63,8 @@ import {
   ARAZI_TERCIH_IHTIMALI,
   BARIS_BEKLEME,
   BASLANGIC_ER,
-  BIRLIK_SEVIYE_PAYI,
+  TUR_PAYI,
+  TUR_TANIMLARI,
   DOKTRINLER,
   GOREV_SLOTLARI,
   GANIMET_GUC_BIRIMI,
@@ -152,36 +153,45 @@ describe("kurulum", () => {
 });
 
 describe("askerî güç ve pay", () => {
-  it("ham güç: düşük ×1, orta ×1,5, yüksek ×2", () => {
+  it("ham güç: düşük ×1, orta ×1,40, yüksek ×1,75", () => {
     const s = asker();
     const b = birlikAl(s);
     b.kalite = { dusuk: 10, orta: 10, yuksek: 10 };
     s.meslek_musteri = 30;
     const d = gucHesapla(s);
-    expect(d.ham).toBeCloseTo(10 * 1 + 10 * 1.5 + 10 * 2, 5);
+    expect(d.ham).toBeCloseTo(10 * 1 + 10 * 1.4 + 10 * 1.75, 5);
   });
 
-  it("özel birlik seviye payları 15/20/25; seçili tür sayısı seviyeye eşit, pay eşit bölünür", () => {
-    expect(BIRLIK_SEVIYE_PAYI).toEqual([0, 0.15, 0.2, 0.25]);
+  it("her açık özel birlik ordunun %25'idir (tek seçenek); üç tür açıkken %75 özel + %25 piyade", () => {
+    expect(TUR_PAYI).toBe(0.25);
     const s = asker();
     const b = birlikAl(s);
-    b.birlik_seviye = 2;
+    b.birlik_turler = ["okcu"];
+    const p1 = turPaylari(b);
+    expect(Object.keys(p1)).toHaveLength(1);
+    expect(p1.okcu).toBeCloseTo(0.25);
     b.birlik_turler = ["okcu", "suvari", "mizrakli"];
-    const p = turPaylari(b);
-    expect(Object.keys(p)).toHaveLength(2);
-    expect(p.okcu).toBeCloseTo(0.1);
-    expect(p.suvari).toBeCloseTo(0.1);
-    b.birlik_seviye = 3;
     const p3 = turPaylari(b);
     expect(Object.keys(p3)).toHaveLength(3);
-    expect(Object.values(p3).reduce((t, x) => t + (x ?? 0), 0)).toBeCloseTo(0.25);
+    expect(Object.values(p3).reduce((t, x) => t + (x ?? 0), 0)).toBeCloseTo(0.75);
+    expect(gucHesapla(s).piyadePayi).toBeCloseTo(0.25);
+  });
+
+  it("birlik maliyeti: erzak dahil toplam er maliyeti okçu +%30, süvari +%35, mızraklı +%25; kuşatma pay almaz", () => {
+    for (const [tur, x] of [["okcu", 0.3], ["suvari", 0.35], ["mizrakli", 0.25]] as const) {
+      expect(TUR_TANIMLARI[tur].bakim).toBeCloseTo(x);
+      expect(TUR_TANIMLARI[tur].erzak).toBeCloseTo(1 + x);
+    }
+    const s = asker();
+    const b = birlikAl(s);
+    b.kusatma_seviye = 2;
+    expect(Object.keys(turPaylari(b))).toHaveLength(0);
   });
 
   it("süvari saldırıyı, mızraklı savunmayı artırır; toplam çarpan [0,4; 2,0] bandında kalır", () => {
     const s = asker();
     const taban = gucHesapla(s);
     const b = birlikAl(s);
-    b.birlik_seviye = 1;
     b.birlik_turler = ["suvari"];
     const suv = gucHesapla(s);
     expect(suv.saldiriCarpani).toBeGreaterThan(taban.saldiriCarpani);
@@ -284,7 +294,6 @@ describe("limitler ve yeni er katılımı", () => {
   it("birlik seviyesi varsa yeni erlerin birlik payı için er başı ücret alınır", () => {
     const s = asker();
     const b = birlikAl(s);
-    b.birlik_seviye = 1;
     b.birlik_turler = ["suvari"];
     const r = yeniErEkle(s, 5, bg(s), { butce: 1000 });
     expect(r.maliyet).toBeGreaterThan(0);
@@ -349,9 +358,9 @@ describe("gelir ve gider", () => {
 
   it("savaşta görevlerden gelir yok; sabit maaş aynen, asker başı kısım ×1,30; maaşın adı çağ+ülkeye göre", () => {
     const s = asker();
-    s.meslek_musteri = 60;
+    s.meslek_musteri = 90;
     const b = birlikAl(s);
-    b.kalite = { dusuk: 60, orta: 0, yuksek: 0 };
+    b.kalite = { dusuk: 90, orta: 0, yuksek: 0 };
     b.gorevler = ["haydut"];
     const baris = birlikHesapla(s, bg(s));
     expect(baris.gorevGeliri).toBeGreaterThan(0);
@@ -359,8 +368,8 @@ describe("gelir ve gider", () => {
     const savas = birlikHesapla(s, bg(s));
     expect(savas.gorevGeliri).toBe(0);
     const sabit = SOLD[0] * bg(s).enflasyon;
-    expect(baris.sold).toBeCloseTo(sabit + 60 * ER_BASI_GELIR * bg(s).enflasyon, 3);
-    expect(savas.sold).toBeCloseTo(sabit + 60 * ER_BASI_GELIR * SAVAS_ER_BASI_CARPANI * bg(s).enflasyon, 3);
+    expect(baris.sold).toBeCloseTo(sabit + 90 * ER_BASI_GELIR * bg(s).enflasyon, 3);
+    expect(savas.sold).toBeCloseTo(sabit + 90 * ER_BASI_GELIR * SAVAS_ER_BASI_CARPANI * bg(s).enflasyon, 3);
     expect(savas.savasOdenegi).toBeCloseTo(savas.sold, 6);
     expect(baris.erBasiGelir).toBe(0); // ayrı kalem yok
     expect(maasAdi("Orta Çağ", "Bizans").tr).toBe("Roga");
@@ -514,9 +523,9 @@ describe("barış çatışması (haydut / sınır) ve ganimet", () => {
       s.para = 5000;
       const b = barisYili(s);
       b.moral = 55;
-      b.kalite = { dusuk: 20, orta: 0, yuksek: 0 };
-      s.meslek_musteri = 20 * carpan;
-      b.kalite.dusuk = 20 * carpan;
+      b.kalite = { dusuk: 40, orta: 0, yuksek: 0 };
+      s.meslek_musteri = 40 * carpan;
+      b.kalite.dusuk = 40 * carpan;
       s.rutbe_seviye = 5;
       s.isletme!.yatirimlar.kisla = 4;
       const rnd = vi.spyOn(Math, "random").mockReturnValue(0.5); // iki taraf da orta zar, düşman gücü ortada → oyuncu güçlü çıkar (zafer); tür sabit
@@ -775,28 +784,27 @@ describe("talim, doktrin, birlik, terhis", () => {
     expect(() => kaliteYukselt(s, "dusuk" as never, 50, bg(s))).toThrow();
   });
 
-  it("birlik seçimi: seviye kadar farklı tür; fiyat er sayısıyla ölçeklenir; küçültünce %35 iade; saf yükseltme kilide takılmaz", () => {
+  it("birlik seçimi: açık/kapalı tür kümesi (her biri %25); fiyat er sayısıyla ölçeklenir; küçültünce %35 iade; saf ekleme kilide takılmaz", () => {
     const s = asker();
-    expect(() => birlikSec(s, 2, ["suvari"], bg(s))).toThrow(/farklı birlik türü/);
-    const r1 = birlikSec(s, 1, ["suvari"], bg(s));
+    expect(() => birlikSec(s, ["suvari", "suvari"] as never, bg(s))).toThrow(/Geçersiz birlik seçimi/);
+    const r1 = birlikSec(s, ["suvari"], bg(s));
     expect(r1.maliyet).toBeGreaterThan(0);
     // 40 erlik ordu için aynı seçim iki kat pahalı
     const s2 = asker();
     s2.meslek_musteri = 40;
     birlikAl(s2).kalite = { dusuk: 40, orta: 0, yuksek: 0 };
-    const r2 = birlikSec(s2, 1, ["suvari"], bg(s2));
+    const r2 = birlikSec(s2, ["suvari"], bg(s2));
     expect(r2.maliyet / r1.maliyet).toBeGreaterThan(1.6);
-    // saf yükseltme (üst küme) kilitliyken serbest
-    expect(() => birlikSec(s, 2, ["suvari", "okcu"], bg(s))).not.toThrow();
-    // tür değiştirme ilk seçimden itibaren 5 yıl kilitli
-    expect(() => birlikSec(s, 1, ["mizrakli"], bg(s))).toThrow(/5 yılda bir/);
+    // saf ekleme (üst küme) kilitliyken serbest
+    expect(() => birlikSec(s, ["suvari", "okcu"], bg(s))).not.toThrow();
+    // tür değiştirme/kapatma ilk seçimden itibaren 5 yıl kilitli
+    expect(() => birlikSec(s, ["mizrakli"], bg(s))).toThrow(/5 yılda bir/);
     s.yil += 5;
-    expect(() => birlikSec(s, 1, ["mizrakli"], bg(s))).not.toThrow(); // kilit açıldı
+    expect(() => birlikSec(s, ["mizrakli"], bg(s))).not.toThrow(); // kilit açıldı
     s.yil += 5; // tür değişimi yeni bir 5 yıllık kilit başlattı
-    expect(birlikSec(s, 0, [], bg(s)).iade).toBeGreaterThan(0); // küçültme iadeli
+    expect(birlikSec(s, [], bg(s)).iade).toBeGreaterThan(0); // küçültme iadeli
     s.yil += 5;
-    // seviye 3 tüm türleri seçer
-    birlikSec(s, 3, [], bg(s));
+    birlikSec(s, ["okcu", "suvari", "mizrakli"], bg(s));
     expect(birlikAl(s).birlik_turler).toHaveLength(3);
   });
 
@@ -915,8 +923,8 @@ describe("motor entegrasyonu (gameEngine / API)", () => {
     const k = await birlikKaliteYukselt(st.id, "orta", 100);
     expect(k.durum.birlik!.kalite.sayilar.orta).toBe(20);
     await expect(birlikKaliteYukselt(st.id, "yuksek", 100)).rejects.toThrow(/5 yılda bir/);
-    const b = await birlikBirlikSec(st.id, 1, ["okcu"]);
-    expect(b.durum.birlik!.birlik.seviye).toBe(1);
+    const b = await birlikBirlikSec(st.id, ["okcu"]);
+    expect(b.durum.birlik!.birlik.seciliTurler).toEqual(["okcu"]);
     const ku = await birlikKusatma(st.id, 1);
     expect(ku.durum.birlik!.birlik.kusatma.seviye).toBe(1);
     const t = await birlikTerhis(st.id, 5);

@@ -1101,11 +1101,10 @@ export interface BirlikGorunumu {
     techizat: DilMetni;
   };
   birlik: {
-    seviye: number;
     seciliTurler: BirlikTur[];
+    turPayi: number;
     kilitKalanYil: number;
     toplamPay: number;
-    seviyePaylari: number[];
     turler: { id: BirlikTur; simge: string; ad: DilMetni; saldiri: number; savunma: number; ucret: number; bakim: number; arti: DilMetni; eksi: DilMetni; secili: boolean }[];
     kusatma: { seviye: number; ad: DilMetni; bonuslar: number[]; fiyatlar: number[] };
   };
@@ -1124,7 +1123,7 @@ export interface BirlikGorunumu {
   gorevler: {
     slot: { kullanilan: number; toplam: number };
     secili: string[];
-    katalog: { id: string; simge: string; ad: DilMetni; aciklama: DilMetni; minEr: number; erBasi: number; yalnizSavas: boolean; kullanilabilir: boolean; aktif: boolean; erPayi: number; gelir: number; ganimet: number }[];
+    katalog: { id: string; simge: string; ad: DilMetni; aciklama: DilMetni; minGuc: number; erBasi: number; yalnizSavas: boolean; kullanilabilir: boolean; aktif: boolean; erPayi: number; gelir: number; ganimet: number }[];
   };
   doktrin: {
     secilen: { id: string; simge: string; ad: DilMetni; seviye: number; acimasiz: boolean; etki: Record<string, number> }[];
@@ -1142,6 +1141,7 @@ export interface BirlikGorunumu {
     kararBekliyor: boolean;
     araziIhtimali: number;
   };
+  kuvvet: { haydut: 'zayif' | 'esit' | 'ustun'; sinir: 'zayif' | 'esit' | 'ustun'; savas: 'zayif' | 'esit' | 'ustun' };
   kale: number;
   emir: { ad: DilMetni; simge: string; aciklama: DilMetni } | null;
   kiralik: { aktif: boolean; er: number; ucret: number; mumkun: boolean };

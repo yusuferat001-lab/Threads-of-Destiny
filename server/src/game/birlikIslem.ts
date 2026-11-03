@@ -21,7 +21,9 @@ import {
   SAVAS_KARAR_YILI,
   BIRLIK_KILIT_YIL,
   GANIMET_GUC_BIRIMI,
-  BIRLIK_SEVIYE_PAYI,
+  TUR_PAYI,
+  kuvvetEtiketi,
+  type KuvvetEtiketi,
   ER_TAVANI,
   ESIR_YETKI_RUTBE,
   GANIMET_PAYI_TANIMLARI,
@@ -89,6 +91,7 @@ import {
   limitAsimEri,
   yaraliSayisi,
   turPaylari,
+  kuvvetOrani,
   yolDali,
   type BirlikHesabi,
   type GucDokumu,
@@ -122,12 +125,12 @@ export function birlikKararUygula(state: CharacterState, k: BirlikKararGirdisi):
   if (k.gorevler !== undefined) {
     if (!Array.isArray(k.gorevler) || new Set(k.gorevler).size !== k.gorevler.length) throw new Error("Geçersiz karar.");
     if (k.gorevler.length > gorevSlotSayisi(state)) throw new Error("Bu kadar görevi aynı anda yürütemezsin; rütben yükselince yeni yer açılır.");
-    const er = erSayisi(state);
+    const gucPayi = gucHesapla(state).guc / Math.max(1, k.gorevler.length);
     for (const id of k.gorevler) {
       const g = gorevGetir(id);
       if (!g) throw new Error("Böyle bir görev yok.");
       if (g.yalnizSavas && !state.ulke.savasta) throw new Error("Bu görev yalnız savaşta açılır.");
-      if (Math.floor(er / Math.max(1, k.gorevler.length)) < g.minEr) throw new Error("Bu göreve ayıracak yeterli erin yok.");
+      if (gucPayi < g.minGuc) throw new Error("Bu göreve ayıracak yeterli askeri gücün yok.");
     }
   }
   if (k.ganimet_payi !== undefined && !GANIMET_SIRASI.includes(k.ganimet_payi as BirlikGanimetPayi)) throw new Error("Geçersiz ganimet payı.");
@@ -205,31 +208,31 @@ export function kaliteYukselt(state: CharacterState, hedef: BirlikKalite, yuzde:
 }
 
 // ── Özel birlik ─────────────────────────────────────────────────────────────
-function turErSayilari(er: number, turler: BirlikTur[], seviye: number): Record<BirlikTur, number> {
+function turErSayilari(er: number, turler: BirlikTur[]): Record<BirlikTur, number> {
   const sonuc: Record<BirlikTur, number> = { okcu: 0, suvari: 0, mizrakli: 0 };
-  const efektif = turler.slice(0, seviye);
-  if (efektif.length === 0) return sonuc;
-  const pay = BIRLIK_SEVIYE_PAYI[clamp(efektif.length, 0, 3)] / efektif.length;
-  for (const t of efektif) sonuc[t] = Math.round(er * pay);
+  for (const t of turler) sonuc[t] = Math.round(er * TUR_PAYI);
   return sonuc;
 }
 
-/** Özel birlik seviyesi (0-3) ve seçili türler (seviye kadar; 3'te hepsi). Fark er başına ödenir/iade edilir. */
-export function birlikSec(state: CharacterState, seviye: number, turler: BirlikTur[], bg: IsletmeBaglami): IslemSonucu {
+/**
+ * Özel birlikler: açık her tür ordunun %25'idir (tek seçenek). Yeni açılan tür er başına geçiş ücreti öder, kapatılan
+ * %35 iade eder; yeni gelen erler `yeniErEkle` ile oransal girer ve ücreti otomatik ödenir.
+ * 5 yıl kilidi: kilitliyken yalnız yeni tür eklenebilir (kapatmak/değiştirmek için beklenir).
+ */
+export function birlikSec(state: CharacterState, turler: BirlikTur[], bg: IsletmeBaglami): IslemSonucu {
   const b = birlikAl(state);
   hapisYolculuk(state);
-  if (!Number.isInteger(seviye) || seviye < 0 || seviye > 3) throw new Error("Geçersiz birlik seviyesi.");
-  const secili = seviye === 3 ? [...TUR_SIRASI] : [...turler];
-  if (!Array.isArray(turler) || secili.length !== seviye || new Set(secili).size !== seviye || secili.some((t) => !TUR_SIRASI.includes(t))) {
-    throw new Error("Seviye kadar farklı birlik türü seçmelisin.");
+  if (!Array.isArray(turler) || new Set(turler).size !== turler.length || turler.some((t) => !TUR_SIRASI.includes(t))) {
+    throw new Error("Geçersiz birlik seçimi.");
   }
-  const eskiSet = new Set(b.birlik_turler.slice(0, b.birlik_seviye));
+  const secili = TUR_SIRASI.filter((t) => turler.includes(t));
+  const eskiSet = new Set(b.birlik_turler);
   const yeniSet = new Set(secili);
   const ustKume = [...eskiSet].every((t) => yeniSet.has(t));
   if (!ustKume && kilitKalan(state, b.birlik_kilit_bitis) > 0) throw new Error("Birlikleri 5 yılda bir değiştirebilirsin; yalnız yenisini ekleyebilirsin.");
   const er = erSayisi(state);
-  const eski = turErSayilari(er, b.birlik_turler, b.birlik_seviye);
-  const yeni = turErSayilari(er, secili, seviye);
+  const eski = turErSayilari(er, b.birlik_turler);
+  const yeni = turErSayilari(er, secili);
   let maliyet = 0;
   let iade = 0;
   let adet = 0;
@@ -244,13 +247,11 @@ export function birlikSec(state: CharacterState, seviye: number, turler: BirlikT
   iade = r2(iade);
   gucParaKontrol(state, maliyet - iade);
   state.para = r2(state.para - maliyet + iade);
-  const eskiSeviye = b.birlik_seviye;
-  b.birlik_seviye = seviye;
+  const degisti = yeniSet.size !== eskiSet.size || !ustKume;
   b.birlik_turler = secili;
-  // Kilit ilk seçimden itibaren işler: kilitliyken yalnız yenisi eklenebilir, tür değiştirilemez.
-  if (kilitKalan(state, b.birlik_kilit_bitis) <= 0 && (seviye !== eskiSeviye || !ustKume || yeniSet.size !== eskiSet.size)) {
-    b.birlik_kilit_bitis = state.yil + BIRLIK_KILIT_YIL;
-  }
+  b.birlik_seviye = secili.length;
+  // Kilit ilk değişiklikten itibaren işler.
+  if (kilitKalan(state, b.birlik_kilit_bitis) <= 0 && degisti) b.birlik_kilit_bitis = state.yil + BIRLIK_KILIT_YIL;
   birlikSenkron(state, bg.enflasyon);
   return { maliyet, iade, adet };
 }
@@ -592,11 +593,10 @@ export interface BirlikGorunumu {
     techizat: { tr: string; en: string };
   };
   birlik: {
-    seviye: number;
     seciliTurler: BirlikTur[];
+    turPayi: number;
     kilitKalanYil: number;
     toplamPay: number;
-    seviyePaylari: number[];
     turler: {
       id: BirlikTur;
       simge: string;
@@ -626,7 +626,7 @@ export interface BirlikGorunumu {
   gorevler: {
     slot: { kullanilan: number; toplam: number };
     secili: string[];
-    katalog: { id: string; simge: string; ad: { tr: string; en: string }; aciklama: { tr: string; en: string }; minEr: number; erBasi: number; yalnizSavas: boolean; kullanilabilir: boolean; aktif: boolean; erPayi: number; gelir: number; ganimet: number }[];
+    katalog: { id: string; simge: string; ad: { tr: string; en: string }; aciklama: { tr: string; en: string }; minGuc: number; erBasi: number; yalnizSavas: boolean; kullanilabilir: boolean; aktif: boolean; erPayi: number; gelir: number; ganimet: number }[];
   };
   doktrin: {
     secilen: { id: string; simge: string; ad: { tr: string; en: string }; seviye: number; acimasiz: boolean; etki: Record<string, number> }[];
@@ -645,6 +645,8 @@ export interface BirlikGorunumu {
     araziIhtimali: number;
   };
   /** Ele geçirilen kale sayısı, savaşta geçerli komutan emri ve kiralık ordu durumu. */
+  /** Gücümüzün ortalama düşmana göre sözel karşılaştırması (sayı gösterilmez). */
+  kuvvet: { haydut: KuvvetEtiketi; sinir: KuvvetEtiketi; savas: KuvvetEtiketi };
   kale: number;
   emir: { ad: { tr: string; en: string }; simge: string; aciklama: { tr: string; en: string } } | null;
   kiralik: { aktif: boolean; er: number; ucret: number; mumkun: boolean };
@@ -729,11 +731,10 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
       techizat: techizatAdi(cag),
     },
     birlik: {
-      seviye: b.birlik_seviye,
-      seciliTurler: b.birlik_turler.slice(0, b.birlik_seviye),
+      seciliTurler: [...b.birlik_turler],
+      turPayi: TUR_PAYI,
       kilitKalanYil: kilitKalan(state, b.birlik_kilit_bitis),
       toplamPay: Object.values(paylar).reduce((t, x) => t + (x ?? 0), 0),
-      seviyePaylari: BIRLIK_SEVIYE_PAYI,
       turler: TUR_SIRASI.map((id) => ({
         id,
         simge: TUR_TANIMLARI[id].simge,
@@ -772,7 +773,7 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
         const pay = gp.find((x) => x.gorev.id === g.id);
         const hs = h.gorevler.find((x) => x.id === g.id);
         return {
-          id: g.id, simge: g.simge, ad: gorevAdi(g, cag), aciklama: g.aciklama, minEr: g.minEr, erBasi: r2(g.erBasi * bg.enflasyon),
+          id: g.id, simge: g.simge, ad: gorevAdi(g, cag), aciklama: g.aciklama, minGuc: g.minGuc, erBasi: r2(g.erBasi * bg.enflasyon),
           yalnizSavas: g.yalnizSavas, kullanilabilir: !g.yalnizSavas || !!state.ulke.savasta, aktif: !!pay?.aktif,
           erPayi: pay?.er ?? 0, gelir: r2(hs?.gelir ?? 0), ganimet: r2(hs?.ganimet ?? 0),
         };
@@ -800,6 +801,7 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
       kararBekliyor: !!k && k.adim < k.adimlar.length,
       araziIhtimali: Math.round(ARAZI_TERCIH_IHTIMALI[rutbeIndeksi(state)] * 100),
     },
+    kuvvet: { haydut: kuvvetEtiketi(kuvvetOrani(state, "haydut")), sinir: kuvvetEtiketi(kuvvetOrani(state, "sinir")), savas: kuvvetEtiketi(kuvvetOrani(state, "savas")) },
     kale: b.kale,
     emir: (() => {
       const e = state.ulke.savasta ? emirGetir(b.savas?.emir) : undefined;

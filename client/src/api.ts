@@ -282,8 +282,8 @@ export function birlikDoktrinSec(stateId: string, doktrinId: string) {
 export function birlikKaliteYukselt(stateId: string, hedef: 'orta' | 'yuksek', yuzde: number) {
   return istek<BirlikYaniti & { sonuc: BirlikIslemSonucu }>(`/api/game/${stateId}/birlik/kalite`, { method: 'POST', body: JSON.stringify({ hedef, yuzde }) });
 }
-export function birlikBirlikSec(stateId: string, seviye: number, turler: BirlikTur[]) {
-  return istek<BirlikYaniti & { sonuc: BirlikIslemSonucu }>(`/api/game/${stateId}/birlik/birlik`, { method: 'POST', body: JSON.stringify({ seviye, turler }) });
+export function birlikBirlikSec(stateId: string, turler: BirlikTur[]) {
+  return istek<BirlikYaniti & { sonuc: BirlikIslemSonucu }>(`/api/game/${stateId}/birlik/birlik`, { method: 'POST', body: JSON.stringify({ turler }) });
 }
 export function birlikKusatma(stateId: string, seviye: number) {
   return istek<BirlikYaniti & { sonuc: BirlikIslemSonucu }>(`/api/game/${stateId}/birlik/kusatma`, { method: 'POST', body: JSON.stringify({ seviye }) });

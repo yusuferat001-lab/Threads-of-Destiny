@@ -13,7 +13,7 @@ interface Props {
   yukleniyor: boolean;
   onBirlikKarar: (k: BirlikKararGirdisi) => void;
   onKaliteYukselt: (hedef: 'orta' | 'yuksek', yuzde: number) => void;
-  onBirlikSec: (seviye: number, turler: BirlikTur[]) => void;
+  onBirlikSec: (turler: BirlikTur[]) => void;
   onKusatma: (seviye: number) => void;
   onTerhis: (adet: number) => void;
   onKiralik?: () => void;
@@ -73,10 +73,18 @@ const M = {
   yilKisa: { tr: 'yıl', en: 'yr' },
   birlikBaslik: { tr: 'Özel birlikler', en: 'Special units' },
   birlikNot: {
-    tr: 'Seviye arttıkça aynı anda seçili tür sayısı ve toplam pay artar. Birlikleri 5 yılda bir değiştirebilirsin; yalnız yenisini eklemek serbest.',
-    en: 'A higher level means more unit types at once and a larger share. Units can be swapped once every 5 years; adding a new one is free.',
+    tr: 'Açtığın her birlik ordunun %25\'i olur; yeni erler oransal katılır ve geçiş ücretini kendiliğinden öder. Birlikleri 5 yılda bir değiştirebilirsin; yalnız yenisini eklemek serbest.',
+    en: 'Each unit you open takes 25% of the army; new men join proportionally and pay the transfer fee automatically. Units can be swapped once every 5 years; adding a new one is free.',
   },
-  seviye: { tr: 'Seviye', en: 'Level' },
+  maliyetArti: { tr: 'yıllık maliyet', en: 'upkeep' },
+  kuvvet: { tr: 'Kuvvet karşılaştırması', en: 'Strength comparison' },
+  kuvvetHaydut: { tr: 'Haydutlar', en: 'Bandits' },
+  kuvvetSinir: { tr: 'Sınır', en: 'Border' },
+  kuvvetSavas: { tr: 'Büyük savaş', en: 'Great war' },
+  zayif: { tr: 'Zayıfız', en: 'Weaker' },
+  esit: { tr: 'Başa baş', en: 'Even' },
+  ustun: { tr: 'Üstünüz', en: 'Stronger' },
+  gucEsik: { tr: 'askeri güç', en: 'military strength' },
   toplamPay: { tr: 'toplam pay', en: 'total share' },
   uygula: { tr: 'Uygula', en: 'Apply' },
   kusatma: { tr: 'Kuşatma', en: 'Siege' },
@@ -176,15 +184,13 @@ export function BirlikPaneli({
   const b: BirlikGorunumu | null = durum.birlik;
   const pb = durum.paraBirimi;
   const erBirim = dil === 'en' ? '/man' : '/er';
-  const [seviye, setSeviye] = useState(b?.birlik.seviye ?? 0);
   const [turler, setTurler] = useState<BirlikTur[]>(b?.birlik.seciliTurler ?? []);
   const [terhis, setTerhis] = useState(1);
 
   // Sunucudan gelen gerçek seçim değişince yerel seçimi eşitle.
-  const seciliAnahtar = b ? `${b.birlik.seviye}|${b.birlik.seciliTurler.join(',')}` : '';
+  const seciliAnahtar = b ? b.birlik.seciliTurler.join(',') : '';
   useEffect(() => {
     if (!b) return;
-    setSeviye(b.birlik.seviye);
     setTurler(b.birlik.seciliTurler);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [seciliAnahtar]);
@@ -215,17 +221,11 @@ export function BirlikPaneli({
 
   const turSec = (id: BirlikTur) => {
     if (turler.includes(id)) setTurler(turler.filter((x) => x !== id));
-    else if (seviye === 3) return;
-    else if (turler.length < seviye) setTurler([...turler, id]);
-    else setTurler([...turler.slice(1), id]);
+    else setTurler([...turler, id]);
   };
-  const seviyeSec = (s: number) => {
-    setSeviye(s);
-    if (s === 3) setTurler(b.birlik.turler.map((x) => x.id));
-    else setTurler(turler.slice(0, s));
-  };
-  const birlikDegisti = seviye !== b.birlik.seviye || turler.slice().sort().join() !== b.birlik.seciliTurler.slice().sort().join();
-  const birlikGecerli = seviye === 0 || turler.length === seviye;
+  const birlikDegisti = turler.slice().sort().join() !== b.birlik.seciliTurler.slice().sort().join();
+  // Kilitliyken yalnız yeni tür eklenebilir (mevcutlar kapatılamaz).
+  const birlikGecerli = b.birlik.kilitKalanYil <= 0 || b.birlik.seciliTurler.every((x) => turler.includes(x));
   const hedefKaliteler = (['dusuk', 'orta', 'yuksek'] as const).map((id) => ({ id, ad: b.kalite.adlar[id] }));
   const kilitli = b.kalite.kilitKalanYil > 0;
 
@@ -296,6 +296,12 @@ export function BirlikPaneli({
             </div>
             <small>{t('gucNot')}</small>
           </div>
+          <div className="isletme-fiyat-satir">
+            <span>{t('kuvvet')}:</span>{' '}
+            <small>
+              {t('kuvvetHaydut')}: <strong>{t(b.kuvvet.haydut)}</strong> · {t('kuvvetSinir')}: <strong>{t(b.kuvvet.sinir)}</strong> · {t('kuvvetSavas')}: <strong>{t(b.kuvvet.savas)}</strong>
+            </small>
+          </div>
 
           <h4>
             {t('gorevBaslik')} ({b.gorevler.slot.kullanilan}/{b.gorevler.slot.toplam} {t('slot')})
@@ -328,7 +334,7 @@ export function BirlikPaneli({
                   </div>
                   <div className="isletme-hat-satir">
                     <span>
-                      {t('minEr')} {g.minEr} · {t('kazanc')}: {formatPara(g.erBasi)} {pb}{erBirim}
+                      {t('minEr')} {g.minGuc} {t('gucEsik')} · {t('kazanc')}: {formatPara(g.erBasi)} {pb}{erBirim}
                     </span>
                     {g.aktif && (
                       <span>
@@ -398,15 +404,6 @@ export function BirlikPaneli({
 
           <h4>{t('birlikBaslik')}</h4>
           <div className="isletme-fiyat-not">{t('birlikNot')}</div>
-          <div className="isletme-fiyat-satir">
-            <span>{t('seviye')}:</span>{' '}
-            {[0, 1, 2, 3].map((s) => (
-              <button key={s} className={s === seviye ? '' : 'ikincil'} disabled={yukleniyor} onClick={() => seviyeSec(s)}>
-                {s}
-                {s > 0 ? ` (%${Math.round(b.birlik.seviyePaylari[s] * 100)})` : ''}
-              </button>
-            ))}
-          </div>
           <div className="isletme-yatirimlar">
             {b.birlik.turler.map((tur) => {
               const secili = turler.includes(tur.id);
@@ -416,12 +413,12 @@ export function BirlikPaneli({
                     {tur.simge} {d(tur.ad)}
                   </strong>
                   <span>
-                    ⚔️ ×{tur.saldiri} · 🛡️ ×{tur.savunma} · {formatPara(tur.ucret)} {pb}{erBirim}
+                    ⚔️ ×{tur.saldiri} · 🛡️ ×{tur.savunma} · {formatPara(tur.ucret)} {pb}{erBirim} · {t('maliyetArti')} +%{Math.round(tur.bakim * 100)}
                   </span>
                   <small>
                     ＋ {d(tur.arti)} · － {d(tur.eksi)}
                   </small>
-                  <button className={secili ? '' : 'ikincil'} disabled={yukleniyor || seviye === 0 || seviye === 3} onClick={() => turSec(tur.id)}>
+                  <button className={secili ? '' : 'ikincil'} disabled={yukleniyor} onClick={() => turSec(tur.id)}>
                     {secili ? '✓' : '+'}
                   </button>
                 </div>
@@ -429,7 +426,7 @@ export function BirlikPaneli({
             })}
           </div>
           <div className="isletme-fiyat-satir">
-            <button disabled={yukleniyor || !birlikDegisti || !birlikGecerli || (b.birlik.kilitKalanYil > 0 && seviye < b.birlik.seviye)} onClick={() => onBirlikSec(seviye, turler)}>
+            <button disabled={yukleniyor || !birlikDegisti || !birlikGecerli} onClick={() => onBirlikSec(turler)}>
               {t('uygula')}
             </button>
             {b.birlik.kilitKalanYil > 0 && (
