@@ -77,17 +77,11 @@ const M = {
     en: 'Each unit you open takes 25% of the army; new men join proportionally and pay the transfer fee automatically. Units can be swapped once every 5 years; adding a new one is free.',
   },
   maliyetArti: { tr: 'yıllık maliyet', en: 'upkeep' },
-  kuvvet: { tr: 'Kuvvet karşılaştırması', en: 'Strength comparison' },
-  kuvvetHaydut: { tr: 'Haydutlar', en: 'Bandits' },
-  kuvvetSinir: { tr: 'Sınır', en: 'Border' },
-  kuvvetSavas: { tr: 'Büyük savaş', en: 'Great war' },
-  zayif: { tr: 'Zayıfız', en: 'Weaker' },
-  esit: { tr: 'Başa baş', en: 'Even' },
-  ustun: { tr: 'Üstünüz', en: 'Stronger' },
   gucEsik: { tr: 'askeri güç', en: 'military strength' },
   toplamPay: { tr: 'toplam pay', en: 'total share' },
   uygula: { tr: 'Uygula', en: 'Apply' },
   kusatma: { tr: 'Kuşatma', en: 'Siege' },
+  kusatmaNot: { tr: 'Kuşatma kolu yalnız KALE kuşatmasında saldırı bonusu verir (savaş meydanında etkisi yoktur); zaferden sonra kale alınıp alınamayacağını belirler.', en: 'A siege train adds an attack bonus only when besieging a FORT (no effect on the open battlefield); it decides whether a fort can be taken after a victory.' },
   terhisBaslik: { tr: 'Terhis', en: 'Discharge' },
   terhisNot: { tr: 'Savaşta terhis edemezsin. Savaş bitince seferberlikle gelenler kendiliğinden döner; diğer erleri sen terhis edersin.', en: 'You cannot discharge during a war. Wartime recruits go home on their own when it ends; you discharge the rest yourself.' },
   yarali: { tr: 'Yaralı', en: 'Wounded' },
@@ -230,10 +224,10 @@ export function BirlikPaneli({
   const kilitli = b.kalite.kilitKalanYil > 0;
 
   return (
-    <>
+    <section className="isletme-paneli birlik-paneli">
       {(bolum === 'hepsi' || bolum === 'isletme') && (
         <>
-          <h4>{t('baslik')}</h4>
+          <h3>{t('baslik')}</h3>
           <div className="isletme-ozet">
             <span>
               ⚖️ {t('pay')}: <strong>{dil === 'en' ? `${formatMusteri(dil, b.pay)}%` : `%${formatMusteri(dil, b.pay)}`}</strong>
@@ -295,12 +289,6 @@ export function BirlikPaneli({
               {t('toplamGuc')}: <strong>{b.guc.toplam}</strong> <small>(⚔️ {b.guc.saldiri} · 🛡️ {b.guc.savunma})</small>
             </div>
             <small>{t('gucNot')}</small>
-          </div>
-          <div className="isletme-fiyat-satir">
-            <span>{t('kuvvet')}:</span>{' '}
-            <small>
-              {t('kuvvetHaydut')}: <strong>{t(b.kuvvet.haydut)}</strong> · {t('kuvvetSinir')}: <strong>{t(b.kuvvet.sinir)}</strong> · {t('kuvvetSavas')}: <strong>{t(b.kuvvet.savas)}</strong>
-            </small>
           </div>
 
           <h4>
@@ -367,104 +355,6 @@ export function BirlikPaneli({
             b.politikalar.ton.secenekler.map((s) => ({ id: s.id, ad: s.ad, ek: d(s.aciklama) })),
             (id) => onBirlikKarar({ ton: id })
           )}
-
-          <h4>{t('donatimBaslik')}: {d(b.kalite.techizat)}</h4>
-          <div className="isletme-fiyat-not">{t('donatimNot')}</div>
-          <div className="isletme-ozet">
-            {(['dusuk', 'orta', 'yuksek'] as const).map((k) => (
-              <span key={k}>
-                {KALITE_SIMGE[k]} {d(b.kalite.adlar[k])}: <strong>{b.kalite.sayilar[k]}</strong>
-              </span>
-            ))}
-          </div>
-          {politika(
-            t('hedefKalite'),
-            b.kalite.hedef,
-            hedefKaliteler.map((s) => ({ id: s.id, ad: s.ad })),
-            (id) => onBirlikKarar({ hedef_kalite: id })
-          )}
-          <div className="isletme-fiyat-satir">
-            {(['orta', 'yuksek'] as const).map((k) => (
-              <span key={k}>
-                {d(b.kalite.adlar[k])}:{' '}
-                {[50, 100].map((y) => (
-                  <button key={y} className="ikincil" disabled={yukleniyor || kilitli} onClick={() => onKaliteYukselt(k, y)} >
-                    {t('yukselt')} %{y}
-                  </button>
-                ))}{' '}
-              </span>
-            ))}
-            {kilitli && (
-              <small>
-                {t('kilit')}
-                {b.kalite.kilitKalanYil} {t('yilKisa')}
-              </small>
-            )}
-          </div>
-
-          <h4>{t('birlikBaslik')}</h4>
-          <div className="isletme-fiyat-not">{t('birlikNot')}</div>
-          <div className="isletme-yatirimlar">
-            {b.birlik.turler.map((tur) => {
-              const secili = turler.includes(tur.id);
-              return (
-                <div key={tur.id} className="isletme-yatirim">
-                  <strong>
-                    {tur.simge} {d(tur.ad)}
-                  </strong>
-                  <span>
-                    ⚔️ ×{tur.saldiri} · 🛡️ ×{tur.savunma} · {formatPara(tur.ucret)} {pb}{erBirim} · {t('maliyetArti')} +%{Math.round(tur.bakim * 100)}
-                  </span>
-                  <small>
-                    ＋ {d(tur.arti)} · － {d(tur.eksi)}
-                  </small>
-                  <button className={secili ? '' : 'ikincil'} disabled={yukleniyor} onClick={() => turSec(tur.id)}>
-                    {secili ? '✓' : '+'}
-                  </button>
-                </div>
-              );
-            })}
-          </div>
-          <div className="isletme-fiyat-satir">
-            <button disabled={yukleniyor || !birlikDegisti || !birlikGecerli} onClick={() => onBirlikSec(turler)}>
-              {t('uygula')}
-            </button>
-            {b.birlik.kilitKalanYil > 0 && (
-              <small>
-                {t('kilit')}
-                {b.birlik.kilitKalanYil} {t('yilKisa')}
-              </small>
-            )}
-            <small>
-              {' '}
-              {t('toplamPay')}: %{Math.round(b.birlik.toplamPay * 100)}
-            </small>
-          </div>
-          <div className="isletme-fiyat-satir">
-            <span>
-              {t('kusatma')}: {d(b.birlik.kusatma.ad)}
-            </span>{' '}
-            {[0, 1, 2].map((s) => (
-              <button
-                key={s}
-                className={s === b.birlik.kusatma.seviye ? '' : 'ikincil'}
-                disabled={yukleniyor || s === b.birlik.kusatma.seviye}
-                onClick={() => onKusatma(s)}
-                title={s > 0 ? `${formatPara(b.birlik.kusatma.fiyatlar[s] ?? 0)} ${pb} · +%${Math.round((b.birlik.kusatma.bonuslar[s] ?? 0) * 100)}` : ''}
-              >
-                {s}
-              </button>
-            ))}
-          </div>
-
-          <h4>{t('terhisBaslik')}</h4>
-          <div className="isletme-fiyat-not">{t('terhisNot')}</div>
-          <div className="isletme-fiyat-satir">
-            <input type="number" min={1} max={Math.max(1, b.er - 6)} value={terhis} onChange={(e) => setTerhis(Math.max(1, Math.floor(Number(e.target.value) || 1)))} style={{ width: 70 }} />{' '}
-            <button className="ikincil" disabled={yukleniyor || b.savas.aktif || b.er - 6 < 1} onClick={() => onTerhis(terhis)}>
-              {t('terhisEt')}
-            </button>
-          </div>
 
           <h4>{t('doktrinBaslik')}</h4>
           {b.doktrin.secilen.length === 0 ? (
@@ -559,6 +449,110 @@ export function BirlikPaneli({
         </>
       )}
 
+      {(bolum === 'hepsi' || bolum === 'yatirim') && (
+        <>
+          <h4>{t('donatimBaslik')}: {d(b.kalite.techizat)}</h4>
+          <div className="isletme-fiyat-not">{t('donatimNot')}</div>
+          <div className="isletme-ozet">
+            {(['dusuk', 'orta', 'yuksek'] as const).map((k) => (
+              <span key={k}>
+                {KALITE_SIMGE[k]} {d(b.kalite.adlar[k])}: <strong>{b.kalite.sayilar[k]}</strong>
+              </span>
+            ))}
+          </div>
+          {politika(
+            t('hedefKalite'),
+            b.kalite.hedef,
+            hedefKaliteler.map((s) => ({ id: s.id, ad: s.ad })),
+            (id) => onBirlikKarar({ hedef_kalite: id })
+          )}
+          <div className="isletme-fiyat-satir">
+            {(['orta', 'yuksek'] as const).map((k) => (
+              <span key={k}>
+                {d(b.kalite.adlar[k])}:{' '}
+                {[50, 100].map((y) => (
+                  <button key={y} className="ikincil" disabled={yukleniyor || kilitli} onClick={() => onKaliteYukselt(k, y)} >
+                    {t('yukselt')} %{y}
+                  </button>
+                ))}{' '}
+              </span>
+            ))}
+            {kilitli && (
+              <small>
+                {t('kilit')}
+                {b.kalite.kilitKalanYil} {t('yilKisa')}
+              </small>
+            )}
+          </div>
+
+          <h4>{t('birlikBaslik')}</h4>
+          <div className="isletme-fiyat-not">{t('birlikNot')}</div>
+          <div className="isletme-yatirimlar">
+            {b.birlik.turler.map((tur) => {
+              const secili = turler.includes(tur.id);
+              return (
+                <div key={tur.id} className="isletme-yatirim">
+                  <strong>
+                    {tur.simge} {d(tur.ad)}
+                  </strong>
+                  <span>
+                    ⚔️ ×{tur.saldiri} · 🛡️ ×{tur.savunma} · {formatPara(tur.ucret)} {pb}{erBirim} · {t('maliyetArti')} +%{Math.round(tur.bakim * 100)}
+                  </span>
+                  <small>
+                    ＋ {d(tur.arti)} · － {d(tur.eksi)}
+                  </small>
+                  <button className={secili ? '' : 'ikincil'} disabled={yukleniyor} onClick={() => turSec(tur.id)}>
+                    {secili ? '✓' : '+'}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+          <div className="isletme-fiyat-satir">
+            <button disabled={yukleniyor || !birlikDegisti || !birlikGecerli} onClick={() => onBirlikSec(turler)}>
+              {t('uygula')}
+            </button>
+            {b.birlik.kilitKalanYil > 0 && (
+              <small>
+                {t('kilit')}
+                {b.birlik.kilitKalanYil} {t('yilKisa')}
+              </small>
+            )}
+            <small>
+              {' '}
+              {t('toplamPay')}: %{Math.round(b.birlik.toplamPay * 100)}
+            </small>
+          </div>
+          <h4>
+            {t('kusatma')}: {d(b.birlik.kusatma.ad)}
+          </h4>
+          <div className="isletme-fiyat-not">{t('kusatmaNot')}</div>
+          <div className="isletme-fiyat-satir">
+            {[0, 1, 2].map((s) => (
+              <button
+                key={s}
+                className={s === b.birlik.kusatma.seviye ? '' : 'ikincil'}
+                disabled={yukleniyor || s === b.birlik.kusatma.seviye}
+                onClick={() => onKusatma(s)}
+                title={s > 0 ? `${formatPara(b.birlik.kusatma.fiyatlar[s] ?? 0)} ${pb} · +%${Math.round((b.birlik.kusatma.bonuslar[s] ?? 0) * 100)}` : ''}
+              >
+                {s === 0 ? (dil === 'en' ? 'None' : 'Yok') : `${s} · +%${Math.round((b.birlik.kusatma.bonuslar[s] ?? 0) * 100)} · ${formatPara(b.birlik.kusatma.fiyatlar[s] ?? 0)} ${pb}`}
+              </button>
+            ))}
+          </div>
+
+          <h4>{t('terhisBaslik')}</h4>
+          <div className="isletme-fiyat-not">{t('terhisNot')}</div>
+          <div className="isletme-fiyat-satir">
+            <input type="number" min={1} max={Math.max(1, b.er - 6)} value={terhis} onChange={(e) => setTerhis(Math.max(1, Math.floor(Number(e.target.value) || 1)))} className="isletme-sayi-giris" />{' '}
+            <button className="ikincil" disabled={yukleniyor || b.savas.aktif || b.er - 6 < 1} onClick={() => onTerhis(terhis)}>
+              {t('terhisEt')}
+            </button>
+          </div>
+
+        </>
+      )}
+
       <IsletmeOrtak
         goster={bolum === 'isletme' ? 'yok' : bolum}
         durum={durum}
@@ -570,6 +564,6 @@ export function BirlikPaneli({
         onCalisanAl={onCalisanAl}
         onEkipCikar={onEkipCikar}
       />
-    </>
+    </section>
   );
 }

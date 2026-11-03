@@ -1141,7 +1141,6 @@ export interface BirlikGorunumu {
     kararBekliyor: boolean;
     araziIhtimali: number;
   };
-  kuvvet: { haydut: 'zayif' | 'esit' | 'ustun'; sinir: 'zayif' | 'esit' | 'ustun'; savas: 'zayif' | 'esit' | 'ustun' };
   kale: number;
   emir: { ad: DilMetni; simge: string; aciklama: DilMetni } | null;
   kiralik: { aktif: boolean; er: number; ucret: number; mumkun: boolean };

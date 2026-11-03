@@ -37,6 +37,7 @@ import {
   BARIS_YENILGI_GANIMET,
   EMIRLER,
   KALE_GUC_ESIGI,
+  KUSATMA_SALDIRI_BONUSU,
   KALE_MAKS,
   MADALYALAR,
   MADALYA_MORAL,
@@ -605,7 +606,8 @@ export function savasiBitir(state: CharacterState, b: BirlikDurumu, bg: IsletmeB
     uyarilar.push({ kod: "savas_ganimet", tutar: sonuc.net, sayi: sonuc.esir });
     madalyaVer(state, b, "zafer", uyarilar);
     // Kale: yeterli askerî güç ve genel zafer.
-    if (guc >= KALE_GUC_ESIGI && b.kale < KALE_MAKS) {
+    // Kuşatma kolu / topçu yalnız KALE kuşatmasında saldırı bonusu verir (savaş meydanında değil).
+    if (guc * (1 + KUSATMA_SALDIRI_BONUSU[clamp(b.kusatma_seviye, 0, 2)]) >= KALE_GUC_ESIGI && b.kale < KALE_MAKS) {
       b.kale += 1;
       (b.kale_gelir ??= []).push(Math.round((KALE_GELIR[0] + Math.random() * (KALE_GELIR[1] - KALE_GELIR[0])) * 100) / 100);
       sonuc.kale = true;

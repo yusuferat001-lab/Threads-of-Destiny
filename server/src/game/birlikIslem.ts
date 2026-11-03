@@ -22,8 +22,6 @@ import {
   BIRLIK_KILIT_YIL,
   GANIMET_GUC_BIRIMI,
   TUR_PAYI,
-  kuvvetEtiketi,
-  type KuvvetEtiketi,
   ER_TAVANI,
   ESIR_YETKI_RUTBE,
   GANIMET_PAYI_TANIMLARI,
@@ -91,7 +89,6 @@ import {
   limitAsimEri,
   yaraliSayisi,
   turPaylari,
-  kuvvetOrani,
   yolDali,
   type BirlikHesabi,
   type GucDokumu,
@@ -645,8 +642,6 @@ export interface BirlikGorunumu {
     araziIhtimali: number;
   };
   /** Ele geçirilen kale sayısı, savaşta geçerli komutan emri ve kiralık ordu durumu. */
-  /** Gücümüzün ortalama düşmana göre sözel karşılaştırması (sayı gösterilmez). */
-  kuvvet: { haydut: KuvvetEtiketi; sinir: KuvvetEtiketi; savas: KuvvetEtiketi };
   kale: number;
   emir: { ad: { tr: string; en: string }; simge: string; aciklama: { tr: string; en: string } } | null;
   kiralik: { aktif: boolean; er: number; ucret: number; mumkun: boolean };
@@ -801,7 +796,6 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
       kararBekliyor: !!k && k.adim < k.adimlar.length,
       araziIhtimali: Math.round(ARAZI_TERCIH_IHTIMALI[rutbeIndeksi(state)] * 100),
     },
-    kuvvet: { haydut: kuvvetEtiketi(kuvvetOrani(state, "haydut")), sinir: kuvvetEtiketi(kuvvetOrani(state, "sinir")), savas: kuvvetEtiketi(kuvvetOrani(state, "savas")) },
     kale: b.kale,
     emir: (() => {
       const e = state.ulke.savasta ? emirGetir(b.savas?.emir) : undefined;

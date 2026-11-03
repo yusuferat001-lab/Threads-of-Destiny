@@ -1128,7 +1128,7 @@ export function KariyerEkrani({
           )}
 
           {/* ===== BÜTÇEN ===== */}
-          {gor('isletme') && finans && <ButcePaneli finans={finans} paraBirimi={paraBirimi} gecmis={gecmis ?? []} isletmeAktif={!!isletme?.aktif} />}
+          {gor('isletme') && finans && <ButcePaneli finans={finans} paraBirimi={paraBirimi} gecmis={gecmis ?? []} isletmeAktif={!!isletme?.aktif} meslek={meslek} />}
 
           {/* ===== EKİBİN ===== */}
           {gor('calisan') && !isletme?.aktif && (

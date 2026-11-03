@@ -567,3 +567,14 @@
 /* v12: yatırım kartında "şimdi → sonraki kademe" karşılaştırması */
 .isletme-yatirim .isletme-yatirim-etki { flex-basis: 100%; font-size: 0.82rem; }
 .isletme-yatirim .isletme-yatirim-sonraki { font-size: 0.86rem; }
+
+/* Asker (birlik) paneli: sayı girişi ve bölüm aralıkları */
+.isletme-paneli .isletme-sayi-giris {
+  width: 70px;
+  background: rgba(0, 0, 0, 0.35);
+  color: inherit;
+  border: 1px solid rgba(212, 168, 67, 0.4);
+  border-radius: 6px;
+  padding: 0.3rem 0.5rem;
+  font: inherit;
+}

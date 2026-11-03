@@ -11,8 +11,6 @@ import {
   BASLANGIC_ER,
   TUR_PAYI,
   dusmanReferansGucuYas,
-  DUSMAN_ORAN,
-  BARIS_CATISMALARI,
   DOKTRINLER,
   ER_BASI_GELIR,
   ER_MASRAFI,
@@ -46,7 +44,6 @@ import {
   KISLA_ER_LIMITI,
   KUSATMA_BAKIM_ORANI,
   KUSATMA_ER_FIYATI,
-  KUSATMA_SALDIRI_BONUSU,
   MORAL_BASLANGIC,
   PIYADE,
   REVIR_KAYIP_KADEME,
@@ -404,7 +401,6 @@ export function gucHesapla(state: CharacterState, ctx: GucBaglami = {}): GucDoku
     }
     if (sA > 0) ekle("arazi", a1 / sA - 1, "saldiri");
     if (sS > 0) ekle("arazi", s1 / sS - 1, "savunma");
-    if (b.kusatma_seviye > 0) ekle("kusatma", KUSATMA_SALDIRI_BONUSU[clamp(b.kusatma_seviye, 0, 2)] * ac.kusatma, "saldiri");
     if (ctx.savas.dusmanTur !== "karma") {
       const karsi = KARSI_TUR[ctx.savas.dusmanTur];
       const pay = paylar[karsi] ?? 0;
@@ -450,14 +446,6 @@ export function doktrinBekliyorMu(state: CharacterState): boolean {
 // ── Düşman gücü (mutlak; bizim gücümüzden bağımsız) ─────────────────────────
 /** Karakterin yaşına göre düşman referans gücü (rütbeden bağımsız: rütbe zaten güçten türer). */
 export const dusmanReferansGucu = (state: CharacterState) => dusmanReferansGucuYas(state.yas);
-/** Bizim gücümüzün ortalama düşmana oranı (savaş: dusman_orani ortası; barış: aralık ortası). */
-export function kuvvetOrani(state: CharacterState, hedef: "haydut" | "sinir" | "savas"): number {
-  const ref = dusmanReferansGucu(state);
-  const ort = hedef === "savas" ? (DUSMAN_ORAN[0] + DUSMAN_ORAN[1]) / 2 : (BARIS_CATISMALARI[hedef].dusman[0] + BARIS_CATISMALARI[hedef].dusman[1]) / 2;
-  const guc = gucHesapla(state, hedef === "savas" ? {} : { senaryo: hedef }).guc;
-  return guc / Math.max(1, ref * ort);
-}
-
 // ── Görevler ────────────────────────────────────────────────────────────────
 export const gorevSlotSayisi = (state: CharacterState) => GOREV_SLOTLARI[rutbeIndeksi(state)];
 
