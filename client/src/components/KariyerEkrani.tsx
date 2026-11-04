@@ -10,11 +10,16 @@ import { IsletmePaneli } from './IsletmePaneli';
 import { CemaatPaneli } from './CemaatPaneli';
 import { BirlikPaneli } from './BirlikPaneli';
 import { ButcePaneli } from './ButcePaneli';
+import type { AnaTusId } from './AnaEkranMobil';
+
+type StratejiSayfa = AnaTusId;
 
 /** Strateji sayfası başlıkları: mesleğe özgü adlar (ana ekran tuşlarıyla aynı). */
-function SAYFA_BASLIKLARI(meslek: string, sayfa: 'isletme' | 'yatirim' | 'calisan' | 'cevre', en: boolean): string {
+function SAYFA_BASLIKLARI(meslek: string, sayfa: StratejiSayfa, en: boolean): string {
   const ad: Record<string, Record<string, [string, string]>> = {
     isletme: { 'Din Adamı': ['Cemaatin', 'Your Parish'], 'Zanaatkâr': ['Atölyen', 'Your Workshop'], Asker: ['Ordun', 'Your Army'], '': ['Dükkânın', 'Your Shop'] },
+    gorevler: { '': ['Görevler', 'Duties'] },
+    techizat: { '': ['Teçhizat & Birlikler', 'Gear & Units'] },
     yatirim: { '': ['Yatırımlar', 'Investments'] },
     calisan: { 'Din Adamı': ['Hizmetliler', 'Clergy & Staff'], 'Zanaatkâr': ['Çıraklar & Ustalar', 'Staff'], Asker: ['Subaylar', 'Officers'], '': ['Çalışanlar', 'Staff'] },
     cevre: { '': ['Çevre', 'Rivals & City'] },
@@ -81,7 +86,7 @@ interface KariyerEkraniProps {
   onIsletmeCalisanAl?: (adayId: string) => void;
   onGeriDon: () => void;
   /** Telefon ana ekranı sayfası: verilirse yalnız o bölüm yeni strateji sayfası kabuğunda çizilir. */
-  sayfa?: 'isletme' | 'yatirim' | 'calisan' | 'cevre';
+  sayfa?: StratejiSayfa;
   /** Yatırım sayfasındaki "Kredi & Mülk" bağlantısı (eski Yatırım ekranını açar). */
   onMulkKredi?: () => void;
 }
@@ -724,7 +729,9 @@ export function KariyerEkrani({
   const en = dil === 'en';
   const [karanlikAcik, setKaranlikAcik] = useState(false);
   // Strateji sayfası modu: hangi bölümler görünür? (sayfa yoksa eski tam ekran: hepsi.)
-  const gor = (...liste: ('isletme' | 'yatirim' | 'calisan' | 'cevre')[]) => !sayfa || liste.includes(sayfa);
+  // Görevler/Teçhizat yalnız Asker'e özgü; Cemaat/İşletme panelleri bu sayfaları tanımaz.
+  const digerBolum: 'hepsi' | 'isletme' | 'yatirim' | 'calisan' = sayfa === 'gorevler' || sayfa === 'techizat' || sayfa === 'cevre' || !sayfa ? 'hepsi' : sayfa;
+  const gor = (...liste: StratejiSayfa[]) => !sayfa || liste.includes(sayfa);
 
   // İşlem sonucu / hata → ekrana açılır pencere.
   const [modalMesaj, setModalMesaj] = useState<string | null>(null);
@@ -1095,7 +1102,7 @@ export function KariyerEkrani({
           )}
           {sayfa !== 'cevre' && isletme?.aktif && isletme.cemaat && onIsletmeKarar && onIsletmeYatirim && onIsletmeCalisanAl && (
             <CemaatPaneli
-              bolum={sayfa ?? 'hepsi'}
+              bolum={digerBolum}
               durum={isletme}
               pazar={pazarDurum}
               yukleniyor={yukleniyor}
@@ -1108,7 +1115,7 @@ export function KariyerEkrani({
           )}
           {sayfa !== 'cevre' && isletme?.aktif && !isletme.cemaat && !isletme.birlik && onIsletmeKarar && onIsletmeYatirim && onIsletmeCalisanAl && (
             <IsletmePaneli
-              bolum={sayfa ?? 'hepsi'}
+              bolum={digerBolum}
               durum={isletme}
               pazar={pazarDurum}
               yukleniyor={yukleniyor}

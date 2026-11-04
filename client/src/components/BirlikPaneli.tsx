@@ -22,7 +22,7 @@ interface Props {
   onCalisanAl: (adayId: string) => void;
   onEkipCikar: (ekipId: string) => void;
   /** Telefon ana ekranı sayfaları: yalnız bir bölümü çiz (varsayılan hepsi). */
-  bolum?: 'hepsi' | 'isletme' | 'yatirim' | 'calisan';
+  bolum?: 'hepsi' | 'isletme' | 'gorevler' | 'techizat' | 'yatirim' | 'calisan';
 }
 
 type D = { tr: string; en: string };
@@ -223,6 +223,55 @@ export function BirlikPaneli({
   const hedefKaliteler = (['dusuk', 'orta', 'yuksek'] as const).map((id) => ({ id, ad: b.kalite.adlar[id] }));
   const kilitli = b.kalite.kilitKalanYil > 0;
 
+  const gorevlerBlok = (
+    <>
+          <h4>
+            {t('gorevBaslik')} ({b.gorevler.slot.kullanilan}/{b.gorevler.slot.toplam} {t('slot')})
+          </h4>
+          <div className="isletme-fiyat-not">{t('gorevNot')}</div>
+          <div className="isletme-hatlar">
+            {b.gorevler.katalog.map((g) => {
+              const secili = b.gorevler.secili.includes(g.id);
+              const dolu = !secili && b.gorevler.secili.length >= b.gorevler.slot.toplam;
+              return (
+                <div key={g.id} className={`isletme-hat${secili ? ' isletme-hat-acik' : ''}${!g.kullanilabilir ? ' isletme-hat-kilitli' : ''}`}>
+                  <div className="isletme-hat-baslik">
+                    <strong>
+                      {g.simge} {d(g.ad)}
+                    </strong>
+                    {!g.kullanilabilir ? (
+                      <span className="isletme-etiket">⚔️ {t('yalnizSavas')}</span>
+                    ) : (
+                      <button
+                        className={secili ? '' : 'ikincil'}
+                        disabled={yukleniyor || (dolu && !secili)}
+                        onClick={() => onBirlikKarar({ gorevler: secili ? b.gorevler.secili.filter((x) => x !== g.id) : [...b.gorevler.secili, g.id] })}
+                      >
+                        {secili ? t('gorevKapat') : t('gorevAc')}
+                      </button>
+                    )}
+                  </div>
+                  <div className="isletme-hat-artieksi">
+                    <span>{d(g.aciklama)}</span>
+                  </div>
+                  <div className="isletme-hat-satir">
+                    <span>
+                      {t('minEr')} {g.minGuc} {t('gucEsik')} · {t('kazanc')}: {formatPara(g.erBasi)} {pb}{erBirim}
+                    </span>
+                    {g.aktif && (
+                      <span>
+                        🪖 {g.erPayi} · {t('toplamKazanc')}: {formatPara(g.gelir)} {pb}
+                        {g.ganimet > 0 ? ` · ${t('ganimet')} ${formatPara(g.ganimet)}` : ''}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+    </>
+  );
+
   return (
     <section className="isletme-paneli birlik-paneli">
       {(bolum === 'hepsi' || bolum === 'isletme') && (
@@ -291,50 +340,7 @@ export function BirlikPaneli({
             <small>{t('gucNot')}</small>
           </div>
 
-          <h4>
-            {t('gorevBaslik')} ({b.gorevler.slot.kullanilan}/{b.gorevler.slot.toplam} {t('slot')})
-          </h4>
-          <div className="isletme-fiyat-not">{t('gorevNot')}</div>
-          <div className="isletme-hatlar">
-            {b.gorevler.katalog.map((g) => {
-              const secili = b.gorevler.secili.includes(g.id);
-              const dolu = !secili && b.gorevler.secili.length >= b.gorevler.slot.toplam;
-              return (
-                <div key={g.id} className={`isletme-hat${secili ? ' isletme-hat-acik' : ''}${!g.kullanilabilir ? ' isletme-hat-kilitli' : ''}`}>
-                  <div className="isletme-hat-baslik">
-                    <strong>
-                      {g.simge} {d(g.ad)}
-                    </strong>
-                    {!g.kullanilabilir ? (
-                      <span className="isletme-etiket">⚔️ {t('yalnizSavas')}</span>
-                    ) : (
-                      <button
-                        className={secili ? '' : 'ikincil'}
-                        disabled={yukleniyor || (dolu && !secili)}
-                        onClick={() => onBirlikKarar({ gorevler: secili ? b.gorevler.secili.filter((x) => x !== g.id) : [...b.gorevler.secili, g.id] })}
-                      >
-                        {secili ? t('gorevKapat') : t('gorevAc')}
-                      </button>
-                    )}
-                  </div>
-                  <div className="isletme-hat-artieksi">
-                    <span>{d(g.aciklama)}</span>
-                  </div>
-                  <div className="isletme-hat-satir">
-                    <span>
-                      {t('minEr')} {g.minGuc} {t('gucEsik')} · {t('kazanc')}: {formatPara(g.erBasi)} {pb}{erBirim}
-                    </span>
-                    {g.aktif && (
-                      <span>
-                        🪖 {g.erPayi} · {t('toplamKazanc')}: {formatPara(g.gelir)} {pb}
-                        {g.ganimet > 0 ? ` · ${t('ganimet')} ${formatPara(g.ganimet)}` : ''}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          {bolum === 'hepsi' && gorevlerBlok}
 
           <h4>{t('politikaBaslik')}</h4>
           {politika(
@@ -449,7 +455,9 @@ export function BirlikPaneli({
         </>
       )}
 
-      {(bolum === 'hepsi' || bolum === 'yatirim') && (
+      {bolum === 'gorevler' && gorevlerBlok}
+
+      {(bolum === 'hepsi' || bolum === 'techizat') && (
         <>
           <h4>{t('donatimBaslik')}: {d(b.kalite.techizat)}</h4>
           <div className="isletme-fiyat-not">{t('donatimNot')}</div>
@@ -554,7 +562,7 @@ export function BirlikPaneli({
       )}
 
       <IsletmeOrtak
-        goster={bolum === 'isletme' ? 'yok' : bolum}
+        goster={bolum === 'isletme' || bolum === 'gorevler' || bolum === 'techizat' ? 'yok' : bolum}
         durum={durum}
         yukleniyor={yukleniyor}
         sadakatAdi={{ tr: 'Sadakat', en: 'Loyalty' }}

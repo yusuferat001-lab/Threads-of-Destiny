@@ -300,3 +300,8 @@
     flex: 0 1 auto;
   }
 }
+
+/* Asker: 6 tuş (2×3) — tuşlar biraz daha alçak */
+.ana-tuslar.ana-tuslar-alti .ana-tus {
+  height: 48px;
+}
