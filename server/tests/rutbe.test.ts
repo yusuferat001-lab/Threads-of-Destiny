@@ -11,6 +11,7 @@ function terfiEttir(state: ReturnType<typeof createCharacter>, hedef: number): v
     state.un = 100;
     state.ahlak = 100;
     payiAyarla(state, 0.6); // pazar payı şartı (S4 %18, S5 %35)
+    if (state.isletme?.birlik) state.isletme.birlik.guc = 9999; // Asker: rütbe askerî güce bağlı
     state.yil += 10;
     rutbeGuncelle(state);
   }
@@ -151,7 +152,7 @@ describe("rütbe reformu — 5 kademe, ratchet, cooldown, kariyer puanı", () =>
 
   it("pay eşikleri tüm mesleklerde var; Zanaatkâr daha düşük, Din Adamı daha yüksek", () => {
     expect(rutbePazarPayiEsigi("Tüccar", 2)).toBe(0.16);
-    expect(rutbePazarPayiEsigi("Asker", 4)).toBe(0.25);
+    expect(rutbePazarPayiEsigi("Asker", 4)).toBeUndefined();
     expect(rutbePazarPayiEsigi("Zanaatkâr", 5)).toBeCloseTo(0.38, 2);
     expect(rutbePazarPayiEsigi("Din Adamı", 3)).toBeCloseTo(0.25, 2);
     expect(rutbePazarPayiEsigi("Asker", 1)).toBeUndefined();

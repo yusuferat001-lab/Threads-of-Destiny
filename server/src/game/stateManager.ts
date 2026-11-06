@@ -17,6 +17,7 @@ import {
   RutbeTanimi,
   rutbeMaasCarpani,
   rutbePazarPayiEsigi,
+  rutbeGucEsigi,
   KARIYER_PUANI_YILLIK,
 } from "../data/rutbeler";
 import { YerlesimTanimi, yerlesimGetir, yerlesimIdByAd } from "../data/yerlesimler";
@@ -945,7 +946,9 @@ export function createCharacter(
 
 function esikKarsilaniyorMu(esik: RutbeEsigi, state: CharacterState, hedefSeviye: number): boolean {
   const gerekliPay = rutbePazarPayiEsigi(state.meslek, hedefSeviye);
+  const gerekliGuc = rutbeGucEsigi(state.meslek, hedefSeviye);
   return (
+    (gerekliGuc === undefined || (state.isletme?.birlik?.guc ?? 0) >= gerekliGuc) &&
     (state.kariyer_puani ?? 0) >= esik.kariyer_puani &&
     (esik.un === undefined || state.un >= esik.un) &&
     (esik.ahlak === undefined || state.ahlak >= esik.ahlak) &&
