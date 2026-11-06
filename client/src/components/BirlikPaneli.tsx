@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import type { BirlikGorunumu, BirlikKararGirdisi, BirlikTur, IsletmeGorunumu, IsletmeUyari, PazarDurumu } from '../types';
 import { useDil } from '../DilContext';
+import { RenkliEtki } from './Renkli';
 import { kt } from '../katalog';
 import { PiyasaHaberleri } from './PiyasaHaberleri';
 import { IsletmeOrtak } from './IsletmeOrtak';
@@ -446,7 +447,7 @@ export function BirlikPaneli({
               </div>
               {dokum.uyarilar.map((u, i) => {
                 const sm = uyariMetni(u);
-                return sm ? <div key={i}>{sm}</div> : null;
+                return sm ? <div key={i}><RenkliEtki metin={sm} /></div> : null;
               })}
             </div>
           )}

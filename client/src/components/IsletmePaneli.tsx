@@ -8,6 +8,7 @@ import type {
   IsletmeUyari,
 } from '../types';
 import { useDil } from '../DilContext';
+import { RenkliEtki } from './Renkli';
 import { kt } from '../katalog';
 import { PiyasaHaberleri } from './PiyasaHaberleri';
 import { IsletmeOrtak } from './IsletmeOrtak';
@@ -586,7 +587,7 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
           <div className="isletme-dokum">
             {dokum.uyarilar.map((u, i) => (
               <div key={i} className="isletme-uyari">
-                {uyariMetni(u)}
+                <RenkliEtki metin={uyariMetni(u)} />
               </div>
             ))}
           </div>

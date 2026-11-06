@@ -146,10 +146,10 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
             {formatPara(Math.abs(Math.round(eldeKalan * 10) / 10))} <span className="ana-birim">{birim}</span>
           </strong>
           <span className="ana-alt">
-            {tr ? 'Gelir' : 'Income'}: <b className="ana-iyi">{formatPara(Math.round(tumGelir))}</b>
+            {tr ? 'Gelir' : 'Income'}: <b className={Math.round(tumGelir) > 0 ? 'ana-iyi' : ''}>{formatPara(Math.round(tumGelir))}</b>
           </span>
           <span className="ana-alt">
-            {tr ? 'Gider' : 'Costs'}: <b className="ana-kotu">{formatPara(Math.round(tumGider))}</b>
+            {tr ? 'Gider' : 'Costs'}: <b className={Math.round(tumGider) > 0 ? 'ana-kotu' : ''}>{formatPara(Math.round(tumGider))}</b>
           </span>
           {krediTaksit > 0 && (
             <span className="ana-alt ana-alt-kredi">

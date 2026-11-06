@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import type { CemaatKararGirdisi, CemaatPolitikaGorunumu, IsletmeGorunumu, IsletmeKararGirdisi, IsletmeUyari, PazarDurumu } from '../types';
 import { useDil } from '../DilContext';
+import { RenkliEtki } from './Renkli';
 import { kt } from '../katalog';
 import { PiyasaHaberleri } from './PiyasaHaberleri';
 import { IsletmeOrtak } from './IsletmeOrtak';
@@ -351,7 +352,7 @@ export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onY
                   {f.simge} {d(f.ad)}
                 </strong>
                 {f.kilitli ? (
-                  <span className="isletme-etiket">
+                  <span className="isletme-etiket s-esik">
                     🔒 {t('rutbeGerek')} {f.minRutbe}
                   </span>
                 ) : (
@@ -505,7 +506,7 @@ export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onY
             </div>
             {dokum.uyarilar.map((u, i) => (
               <div key={i} className="isletme-uyari">
-                {uyariMetni(u)}
+                <RenkliEtki metin={uyariMetni(u)} />
               </div>
             ))}
           </div>
@@ -534,7 +535,7 @@ export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onY
           <div className="kariyer-sonuc-modal" onClick={(e) => e.stopPropagation()}>
             <h4>{t('olayBaslik')}</h4>
             {onemliUyarilar.map((u, i) => (
-              <p key={i}>{uyariMetni(u)}</p>
+              <p key={i}><RenkliEtki metin={uyariMetni(u)} /></p>
             ))}
             <button onClick={() => setUyariAcik(false)}>{t('tamam')}</button>
           </div>
