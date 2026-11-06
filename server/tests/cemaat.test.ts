@@ -9,6 +9,7 @@ import {
   isletmeKararVer,
   isletmeOgretiSec,
   isletmeYatirimYap,
+  isletmeYatirimDusur,
   yonetimTalebiKararlastir,
 } from "../src/game/gameEngine";
 import { isletmeBaglami, createCharacter, mesleğiSec, eskiKayitGocu, maasCarpaniUygula, yonetimTalebiUret } from "../src/game/stateManager";
@@ -514,5 +515,16 @@ describe("cemaat — eski kayıt göçü ve aranma/yatkınlık", () => {
     const yeni = await stateGetir(s.id);
     expect(yeni.isletme!.yatirimlar.bina).toBe(1);
     expect(eskiKayitGocu).toBeTruthy();
+  });
+
+  it("bina (ibadethane) kademesi düşürülür, %40 iade", async () => {
+    const s = await din();
+    s.para = 1000;
+    await isletmeYatirimYap(s.id, "bina");
+    const once = (await stateGetir(s.id)).para;
+    const odenen = (await stateGetir(s.id)).isletme!.yatirim_odenen!.bina[0];
+    const r = await isletmeYatirimDusur(s.id, "bina");
+    expect(r.state.isletme!.yatirimlar.bina).toBe(0);
+    expect(r.state.para).toBeCloseTo(once + odenen * 0.4, 1);
   });
 });

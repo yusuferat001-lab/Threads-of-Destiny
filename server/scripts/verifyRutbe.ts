@@ -85,7 +85,7 @@ async function main(): Promise<void> {
   let denemeArtti = false;
   for (let i = 0; i < 40 && !denemeArtti; i++) {
     g.kotu_is_kilit = {};
-    await kotuIsYap(g.id, "rakibi_korkut");
+    await kotuIsYap(g.id, "kervan_yagmalat");
     const s = await stateGetir(g.id);
     if (s.kariyer_puani > oncePuan) denemeArtti = true;
     oncePuan = s.kariyer_puani;

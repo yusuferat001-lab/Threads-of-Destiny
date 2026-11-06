@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { ogretileriTamamla } from "./_ogreti";
+import { ogretileriTamamla, bekleyenleriCoz } from "./_ogreti";
 import { olaySec } from "../src/game/olaySecici";
 import {
   createCharacter,
@@ -34,7 +34,7 @@ describe("şehir yönetimi (en üst rütbe sonrası sonsuz ilerleme)", () => {
       mesleğiSec(state, meslek);
       state.rutbe_seviye = 4;
       let bulundu = false;
-      for (let i = 0; i < 500 && !bulundu; i++) {
+      for (let i = 0; i < 3000 && !bulundu; i++) {
         const { olay } = olaySec(state);
         if (olay.id === beklenenId) bulundu = true;
       }
@@ -65,6 +65,7 @@ describe("şehir yönetimi (en üst rütbe sonrası sonsuz ilerleme)", () => {
       state.ulke.savasta = true;
       state.rutbe_seviye = 4;
       ogretileriTamamla(state);
+      await bekleyenleriCoz(state.id);
       const senaryo = await senaryoUret(state.id);
       expect(senaryo.olay_basligi).toBe(beklenenBaslik[beklenenId]);
     }
@@ -92,6 +93,8 @@ describe("şehir yönetimi (en üst rütbe sonrası sonsuz ilerleme)", () => {
   it("şehir yönetimine girmek maaşa kalıcı SABİT +%8 katar; seviyeyle ölçeklenmez", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     mesleğiSec(state, "Asker");
+    state.meslek = "Köylü"; // dört meslek işletmeli: eski maaş formülü yalnız tanımsız meslekle sınanır
+    state.isletme = null;
     state.rutbe_seviye = 4;
     const taban = hesaplaMaasYillik(state);
     state.sehir_yonetim_seviyesi = 1;

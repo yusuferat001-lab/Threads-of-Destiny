@@ -11,3 +11,15 @@ export function ogretiBekliyor(k: CharacterState | null): boolean {
   const cm = (k.isletme as { cemaat?: { ogretiler?: string[] } } | null)?.cemaat;
   return !!cm && (cm.ogretiler?.length ?? 0) < (k.rutbe_seviye ?? 1);
 }
+
+/** Asker'in seçilmeyi bekleyen bir doktrini var mı? (sunucudaki doktrinBekliyorMu'nun aynası) */
+export function doktrinBekliyor(k: CharacterState | null): boolean {
+  if (!k || !k.aktif || k.meslek !== 'Asker') return false;
+  const b = (k.isletme as { birlik?: { doktrinler?: string[] } } | null)?.birlik;
+  return !!b && (b.doktrinler?.length ?? 0) < (k.rutbe_seviye ?? 1);
+}
+
+/** Asker savaştayken savaş kararı penceresi gerekebilir (karar sunucudan sorgulanır). */
+export function savasKarariOlasi(k: CharacterState | null): boolean {
+  return !!k && k.aktif && k.meslek === 'Asker' && !!k.ulke?.savasta && !!(k.isletme as { birlik?: unknown } | null)?.birlik;
+}

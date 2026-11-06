@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { PiyasaHaberleri } from './PiyasaHaberleri';
-import type { FinansOzeti, GecmisNoktasi, IsletmeGorunumu, IsletmeKararGirdisi, CemaatKararGirdisi, EkipUyesi, Rakip, KotuIsKarti, YonetimDurumu, YonetimHat, PazarDurumu, AjanDurumu } from '../types';
+import type { FinansOzeti, GecmisNoktasi, IsletmeGorunumu, IsletmeKararGirdisi, CemaatKararGirdisi, BirlikKararGirdisi, BirlikTur, EkipUyesi, Rakip, KotuIsKarti, YonetimDurumu, YonetimHat, PazarDurumu } from '../types';
 import { useDil } from '../DilContext';
 import { formatPara, formatYuzde, formatYuzdeAralik, formatMusteri, kademeSinifi } from '../format';
 import { bic, type Metinler } from '../i18n';
@@ -8,14 +8,20 @@ import type { Dil } from '../ayarlar';
 import { rutbeIlerlemeHesapla } from '../rutbeIlerleme';
 import { IsletmePaneli } from './IsletmePaneli';
 import { CemaatPaneli } from './CemaatPaneli';
+import { BirlikPaneli } from './BirlikPaneli';
 import { ButcePaneli } from './ButcePaneli';
+import type { AnaTusId } from './AnaEkranMobil';
+
+type StratejiSayfa = AnaTusId;
 
 /** Strateji sayfası başlıkları: mesleğe özgü adlar (ana ekran tuşlarıyla aynı). */
-function SAYFA_BASLIKLARI(meslek: string, sayfa: 'isletme' | 'yatirim' | 'calisan' | 'cevre', en: boolean): string {
+function SAYFA_BASLIKLARI(meslek: string, sayfa: StratejiSayfa, en: boolean): string {
   const ad: Record<string, Record<string, [string, string]>> = {
     isletme: { 'Din Adamı': ['Cemaatin', 'Your Parish'], 'Zanaatkâr': ['Atölyen', 'Your Workshop'], Asker: ['Ordun', 'Your Army'], '': ['Dükkânın', 'Your Shop'] },
-    yatirim: { Asker: ['Teçhizat', 'Gear'], '': ['Yatırımlar', 'Investments'] },
-    calisan: { 'Din Adamı': ['Hizmetliler', 'Clergy & Staff'], 'Zanaatkâr': ['Çıraklar & Ustalar', 'Staff'], Asker: ['Görevler', 'Duties'], '': ['Çalışanlar', 'Staff'] },
+    gorevler: { '': ['Görevler', 'Duties'] },
+    techizat: { '': ['Teçhizat & Birlikler', 'Gear & Units'] },
+    yatirim: { '': ['Yatırımlar', 'Investments'] },
+    calisan: { 'Din Adamı': ['Hizmetliler', 'Clergy & Staff'], 'Zanaatkâr': ['Çıraklar & Ustalar', 'Staff'], Asker: ['Subaylar', 'Officers'], '': ['Çalışanlar', 'Staff'] },
     cevre: { '': ['Çevre', 'Rivals & City'] },
   };
   const tablo = ad[sayfa];
@@ -29,6 +35,8 @@ interface KariyerEkraniProps {
   rutbeSeviye: number;
   cag: string;
   dinKultur: string | null;
+  /** Ülke (Asker rütbe unvanları ülkeye göre değişir). */
+  bolge?: string;
   kariyerPuani: number;
   un: number;
   ahlak: number;
@@ -58,9 +66,6 @@ interface KariyerEkraniProps {
   onTalep: (karar: 'kabul' | 'ret' | 'yalan' | 'rusvet') => void;
   onEkipCikar: (ekipId: string) => void;
   onKotuIs: (id: string, opts?: { hedefRakipAd?: string; ajanId?: string }) => void;
-  /** Ajan sistemi (§43 Faz 2) — arayüzü meslek ekip rolleriyle birlikte gelecek; şimdilik kullanılmıyor. */
-  ajanDurum?: AjanDurumu | null;
-  onAjanTut?: (rol: string) => void;
   /** Bütçen (gelir & gider dökümü) — Evin ekranından buraya taşındı. */
   /** Piyasa dedikoduları (Yatırım ekranından Kariyer'in eylemlerine taşındı). */
   dedikodular?: string[];
@@ -69,11 +74,19 @@ interface KariyerEkraniProps {
   /** Meslek işletmesi (GET /:id/isletme); işletmesi olmayan mesleklerde null. */
   isletme?: IsletmeGorunumu | null;
   onIsletmeKarar?: (hatlar: IsletmeKararGirdisi[], cemaat?: CemaatKararGirdisi) => void;
+  /** Asker (birlik modu) eylemleri. */
+  onBirlikKarar?: (k: BirlikKararGirdisi) => void;
+  onBirlikKaliteYukselt?: (hedef: 'orta' | 'yuksek', yuzde: number) => void;
+  onBirlikSec?: (turler: BirlikTur[]) => void;
+  onBirlikKusatma?: (seviye: number) => void;
+  onBirlikTerhis?: (adet: number) => void;
+  onBirlikKiralik?: () => void;
   onIsletmeYatirim?: (yatirimId: string) => void;
+  onIsletmeYatirimDusur?: (yatirimId: string) => void;
   onIsletmeCalisanAl?: (adayId: string) => void;
   onGeriDon: () => void;
   /** Telefon ana ekranı sayfası: verilirse yalnız o bölüm yeni strateji sayfası kabuğunda çizilir. */
-  sayfa?: 'isletme' | 'yatirim' | 'calisan' | 'cevre';
+  sayfa?: StratejiSayfa;
   /** Ana ekrandaki Müşteri/Gelir panellerinden gelindiyse sayfa açılınca kaydırılıp vurgulanacak bölüm. */
   odak?: 'musteri' | 'butce' | null;
   /** Yatırım sayfasındaki "Kredi & Mülk" bağlantısı (eski Yatırım ekranını açar). */
@@ -82,22 +95,6 @@ interface KariyerEkraniProps {
 
 /** Karanlık iş adları/açıklamaları — i18n.ts yerine bileşene gömülü (NasilOynanir deseni). */
 const KARANLIK_ISLER: Record<string, { tr: { ad: string; aciklama: string }; en: { ad: string; aciklama: string } }> = {
-  rakibi_korkut: {
-    tr: { ad: '🗡️ Rakibini Korkut', aciklama: 'Rakibinin gücünü biraz kır, biraz da haraç al. Düşük risk.' },
-    en: { ad: '🗡️ Intimidate Your Rival', aciklama: 'Cut your rival down a notch and squeeze a little coin. Low risk.' },
-  },
-  adam_dov: {
-    tr: { ad: '👊 Zevkine Adam Döv', aciklama: 'Sırf içini rahatlatmak için birini benzet. Getirisi yok, ahlakın çöker.' },
-    en: { ad: '👊 Beat Someone for Sport', aciklama: 'Rough someone up just to blow off steam. No payoff, morality tanks.' },
-  },
-  birini_soy: {
-    tr: { ad: '💰 Birini Soy', aciklama: 'Doğrudan para. Yakalanırsan kodesi boylarsın.' },
-    en: { ad: '💰 Rob Someone', aciklama: 'Straight cash. Get caught and you land in a cell.' },
-  },
-  isyeri_yak: {
-    tr: { ad: '🔥 Rakibin İş Yerini Yak', aciklama: 'Rakibe en büyük darbe, en büyük risk: ölüm ve hapis ihtimali var.' },
-    en: { ad: "🔥 Burn Down Your Rival's Business", aciklama: 'The biggest blow to a rival, the biggest risk: death and prison are on the table.' },
-  },
   kervan_yagmalat: {
     tr: { ad: '🐫 Rakibin Kervanını Yağmalat', aciklama: 'Yolda baskın yaptır; mal senin olsun, rakibin pazarı sarsılsın.' },
     en: { ad: "🐫 Have Your Rival's Caravan Raided", aciklama: 'Ambush it on the road; the goods are yours and your rival’s market reels.' },
@@ -231,7 +228,7 @@ function KaranlikIsKart({
 
       <button
         className="ikincil karanlik-cevir-buton"
-        disabled={yukleniyor || bekliyor || is.sadeceAjan}
+        disabled={yukleniyor || bekliyor}
         onClick={() => onKotuIs(is.id, { hedefRakipAd: rakipHedefli ? hedef : undefined })}
       >
         {bekliyor ? (en ? 'Lie low for now' : 'Ortalık kızışık') : en ? 'Do it yourself' : 'Kendin çevir'}
@@ -689,6 +686,7 @@ export function KariyerEkrani({
   ahlak,
   yil,
   sonTerfiYili,
+  bolge,
   ekip,
   rakipler,
   orduMevcudu,
@@ -715,8 +713,15 @@ export function KariyerEkrani({
   finans,
   gecmis,
   isletme,
+  onBirlikKarar,
+  onBirlikKaliteYukselt,
+  onBirlikSec,
+  onBirlikKusatma,
+  onBirlikTerhis,
+  onBirlikKiralik,
   onIsletmeKarar,
   onIsletmeYatirim,
+  onIsletmeYatirimDusur,
   onIsletmeCalisanAl,
   onGeriDon,
   sayfa,
@@ -727,7 +732,9 @@ export function KariyerEkrani({
   const en = dil === 'en';
   const [karanlikAcik, setKaranlikAcik] = useState(false);
   // Strateji sayfası modu: hangi bölümler görünür? (sayfa yoksa eski tam ekran: hepsi.)
-  const gor = (...liste: ('isletme' | 'yatirim' | 'calisan' | 'cevre')[]) => !sayfa || liste.includes(sayfa);
+  // Görevler/Teçhizat yalnız Asker'e özgü; Cemaat/İşletme panelleri bu sayfaları tanımaz.
+  const digerBolum: 'hepsi' | 'isletme' | 'yatirim' | 'calisan' = sayfa === 'gorevler' || sayfa === 'techizat' || sayfa === 'cevre' || !sayfa ? 'hepsi' : sayfa;
+  const gor = (...liste: StratejiSayfa[]) => !sayfa || liste.includes(sayfa);
 
   // İşlem sonucu / hata → ekrana açılır pencere.
   const [modalMesaj, setModalMesaj] = useState<string | null>(null);
@@ -752,10 +759,9 @@ export function KariyerEkrani({
     h >= 70 ? (en ? 'blood feud' : 'kan davası') : h >= 45 ? (en ? 'holds a grudge' : 'kırgın') : en ? 'lukewarm' : 'ılımlı';
 
   const meslekGucSatirlari: [string, string][] = [];
-  if (meslek === 'Asker') {
-    meslekGucSatirlari.push([m.iyOrduMevcudu, String(orduMevcudu)]);
-    meslekGucSatirlari.push([m.iyTechizat, formatYuzde(dil, orduTechizatSeviyesi)]);
-  }
+  // Asker (birlik modu): er sayısı ve teçhizat artık Ordun panelinde (BirlikPaneli) gösterilir.
+  void orduMevcudu;
+  void orduTechizatSeviyesi;
   // v10: Tüccar sermayesi ve Din Adamı nüfuzu kalktı; yerlerini pazar payı / cemaat paneli aldı.
   void ticaretSermaye;
   void nufuz;
@@ -780,7 +786,8 @@ export function KariyerEkrani({
     un,
     ahlak,
     yil,
-    sonTerfiYili
+    sonTerfiYili,
+    bolge
   );
   const statEtiket = (adi: 'un' | 'ahlak' | null) =>
     adi === 'ahlak' ? m.skorKirilimAhlak.replace(/^[^\s]+\s/, '') : m.skorKirilimSohret.replace(/^[^\s]+\s/, '');
@@ -1091,26 +1098,46 @@ export function KariyerEkrani({
           )}
 
           {/* ===== İŞLETME (Tüccar dilimi, §45) — çalışanlar da burada yönetilir ===== */}
-          {sayfa !== 'cevre' && isletme?.aktif && isletme.cemaat && onIsletmeKarar && onIsletmeYatirim && onIsletmeCalisanAl && (
-            <CemaatPaneli
+          {sayfa !== 'cevre' && isletme?.aktif && isletme.birlik && onBirlikKarar && onBirlikKaliteYukselt && onBirlikSec && onBirlikKusatma && onBirlikTerhis && onIsletmeYatirim && onIsletmeCalisanAl && (
+            <BirlikPaneli
               bolum={sayfa ?? 'hepsi'}
               durum={isletme}
               pazar={pazarDurum}
               yukleniyor={yukleniyor}
-              onKarar={onIsletmeKarar}
+              onBirlikKarar={onBirlikKarar}
+              onKaliteYukselt={onBirlikKaliteYukselt}
+              onBirlikSec={onBirlikSec}
+              onKusatma={onBirlikKusatma}
+              onTerhis={onBirlikTerhis}
+              onKiralik={onBirlikKiralik}
               onYatirim={onIsletmeYatirim}
+              onYatirimDusur={onIsletmeYatirimDusur}
               onCalisanAl={onIsletmeCalisanAl}
               onEkipCikar={onEkipCikar}
             />
           )}
-          {sayfa !== 'cevre' && isletme?.aktif && !isletme.cemaat && onIsletmeKarar && onIsletmeYatirim && onIsletmeCalisanAl && (
-            <IsletmePaneli
-              bolum={sayfa ?? 'hepsi'}
+          {sayfa !== 'cevre' && isletme?.aktif && isletme.cemaat && onIsletmeKarar && onIsletmeYatirim && onIsletmeCalisanAl && (
+            <CemaatPaneli
+              bolum={digerBolum}
               durum={isletme}
               pazar={pazarDurum}
               yukleniyor={yukleniyor}
               onKarar={onIsletmeKarar}
               onYatirim={onIsletmeYatirim}
+              onYatirimDusur={onIsletmeYatirimDusur}
+              onCalisanAl={onIsletmeCalisanAl}
+              onEkipCikar={onEkipCikar}
+            />
+          )}
+          {sayfa !== 'cevre' && isletme?.aktif && !isletme.cemaat && !isletme.birlik && onIsletmeKarar && onIsletmeYatirim && onIsletmeCalisanAl && (
+            <IsletmePaneli
+              bolum={digerBolum}
+              durum={isletme}
+              pazar={pazarDurum}
+              yukleniyor={yukleniyor}
+              onKarar={onIsletmeKarar}
+              onYatirim={onIsletmeYatirim}
+              onYatirimDusur={onIsletmeYatirimDusur}
               onCalisanAl={onIsletmeCalisanAl}
               onEkipCikar={onEkipCikar}
             />
@@ -1124,7 +1151,7 @@ export function KariyerEkrani({
           )}
 
           {/* ===== BÜTÇEN ===== */}
-          {gor('isletme') && finans && !isletme?.aktif && <ButcePaneli finans={finans} paraBirimi={paraBirimi} gecmis={gecmis ?? []} isletmeAktif={!!isletme?.aktif} />}
+          {gor('isletme') && finans && !isletme?.aktif && <ButcePaneli finans={finans} paraBirimi={paraBirimi} gecmis={gecmis ?? []} isletmeAktif={!!isletme?.aktif} meslek={meslek} />}
 
           {/* ===== EKİBİN ===== */}
           {gor('calisan') && !isletme?.aktif && (

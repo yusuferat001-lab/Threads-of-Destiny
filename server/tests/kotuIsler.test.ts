@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { yeniOyun, mesleğiAta, kotuIsYap, kotuIsConfigGetir, stateGetir, hapisCezaSuresiHesapla } from "../src/game/gameEngine";
 
 describe("karanlık işler (illegal işler paneli)", () => {
@@ -49,20 +49,20 @@ describe("karanlık işler (illegal işler paneli)", () => {
     let s = await stateGetir(state.id);
     const onceAhlak = s.ahlak;
     const onceSuc = s.suc_seviyesi;
-    await kotuIsYap(state.id, "adam_dov");
+    await kotuIsYap(state.id, "kervan_baskini");
     s = await stateGetir(state.id);
     expect(s.ahlak).toBeLessThan(onceAhlak);
     expect(s.suc_seviyesi).toBeGreaterThan(onceSuc);
   });
 
   it("aranma artışı iş sınıfının aralığındadır: başarıda sınıf, başarısızlıkta bir üst sınıf", async () => {
-    // birini_soy: başarı = büyük (20-26), başarısızlık = ağır (24-30).
+    // kaos_cikar (Asker): başarı = büyük (20-26), başarısızlık = ağır (24-30).
     const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
-    await mesleğiAta(state.id, "Asker"); // genel işler yalnız işletmesi olmayan mesleklerde
+    await mesleğiAta(state.id, "Asker"); // kaos_cikar: Asker'in büyük sınıf işi
     const s0 = await stateGetir(state.id);
     s0.suc_seviyesi = 0;
     s0.para = 1000;
-    const sonuc = await kotuIsYap(state.id, "birini_soy");
+    const sonuc = await kotuIsYap(state.id, "kaos_cikar");
     const artis = sonuc.state.suc_seviyesi;
     if (sonuc.kazandi) {
       expect(artis).toBeGreaterThanOrEqual(20);
@@ -86,7 +86,7 @@ describe("karanlık işler (illegal işler paneli)", () => {
     await mesleğiAta(state.id, "Tüccar");
     const s = await stateGetir(state.id);
     s.etiketler.push("hapiste");
-    await expect(kotuIsYap(state.id, "birini_soy")).rejects.toThrow();
+    await expect(kotuIsYap(state.id, "hammadde_topla")).rejects.toThrow(/Hapisteyken/);
   });
 
   it("rakip hedefleyen iş, yeterince denenince kariyer puanına katkı verebilir", async () => {
@@ -94,12 +94,12 @@ describe("karanlık işler (illegal işler paneli)", () => {
     await mesleğiAta(state.id, "Asker");
     let s = await stateGetir(state.id);
     const oncePuan = s.kariyer_puani;
-    // rakibi_korkut'un başarısız dalında hapis riski YOK — güvenle döngüye sokulabilir.
-    for (let i = 0; i < 60; i++) {
-      s = await stateGetir(state.id);
-      if (s.etiketler.includes("hapiste")) break;
-      s.kotu_is_kilit = {}; // bekleme süresini test için sıfırla
-      await kotuIsYap(state.id, "rakibi_korkut");
+    // kaza_duello (Asker): başarıda +4 kariyer puanı; zar deterministik başarıya sabitlenir (başarısızlıkta ölüm riski var).
+    const rnd = vi.spyOn(Math, "random").mockReturnValue(0);
+    try {
+      await kotuIsYap(state.id, "kaza_duello");
+    } finally {
+      rnd.mockRestore();
     }
     s = await stateGetir(state.id);
     expect(s.kariyer_puani).toBeGreaterThan(oncePuan);
@@ -133,13 +133,13 @@ describe("karanlık işler (illegal işler paneli)", () => {
     const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Asker");
     const s = await stateGetir(state.id);
-    s.para = 1000; // birini_soy'un maliyet kontrolüne takılmasın (ölüm riski yok, güvenle döngüye sokulabilir)
+    s.para = 1000;
     let tutuklandi = false;
     for (let i = 0; i < 200 && !tutuklandi; i++) {
       s.kotu_is_kilit = {}; // bekleme süresini test için sıfırla
       s.saglik = 100; // başarısız denemelerin sağlık kaybı karakteri öldürüp döngüyü kesmesin
       s.suc_seviyesi = 0; // yıldız başarı bonusu yakalanmayı nadirleştirmesin (testin konusu ceza aralığı)
-      await kotuIsYap(state.id, "birini_soy");
+      await kotuIsYap(state.id, "kaos_cikar");
       if (s.etiketler.includes("hapiste")) tutuklandi = true;
     }
     expect(tutuklandi).toBe(true);
@@ -150,14 +150,14 @@ describe("karanlık işler (illegal işler paneli)", () => {
   it("her iş çevrildikten sonra kendi bekleme süresi kadar kilitlenir", async () => {
     const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(state.id, "Asker");
-    await kotuIsYap(state.id, "adam_dov");
+    await kotuIsYap(state.id, "kervan_baskini");
     const s = await stateGetir(state.id);
     if (s.etiketler.includes("hapiste")) s.etiketler = s.etiketler.filter((e) => e !== "hapiste");
-    await expect(kotuIsYap(state.id, "adam_dov")).rejects.toThrow(/sakinleşmedi/);
-    const kart = (await kotuIsConfigGetir(state.id)).find((k) => k.id === "adam_dov");
+    await expect(kotuIsYap(state.id, "kervan_baskini")).rejects.toThrow(/sakinleşmedi/);
+    const kart = (await kotuIsConfigGetir(state.id)).find((k) => k.id === "kervan_baskini");
     expect(kart?.kalanYil).toBeGreaterThan(0);
-    s.yil += 1;
-    expect((await kotuIsConfigGetir(state.id)).find((k) => k.id === "adam_dov")?.kalanYil).toBe(0);
+    s.yil += kart?.kalanYil ?? 1;
+    expect((await kotuIsConfigGetir(state.id)).find((k) => k.id === "kervan_baskini")?.kalanYil).toBe(0);
   });
 
   it("başka mesleğin özel işi çevrilemez, kendi mesleğininki görünür", async () => {

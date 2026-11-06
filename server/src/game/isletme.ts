@@ -47,6 +47,8 @@ import {
 import { pazarBuyumeVarsayilan, VEBA_TOPARLANMA_ORAN, VEBA_TOPARLANMA_YIL } from "../data/dunyaDonemleri";
 import { musteriKaydir, musteriAktar, pazarOlcekle, piyasaCarpani, rakipGrubu } from "./piyasa";
 import { cemaatBaslat, cemaatHazirla, cemaatBeklenenKar, cemaatYilIsle, faaliyetSlotSayisi } from "./cemaat";
+import { birlikBaslat, birlikHazirla, birlikBeklenenKar, gorevSlotSayisi, kislaKademesi, subayLimiti } from "./birlik";
+import { birlikYilIsle } from "./birlikYil";
 import { rastgeleBirIsimSec } from "../data/npcIsimleri";
 
 /**
@@ -256,12 +258,15 @@ export function depoDolulukYuzdesi(is: IsletmeDurumu): number {
 
 /** Kademeye bağlı toplam çalışan limiti (rol/güvenlik için ayrı sınır yok). */
 export function calisanLimiti(state: CharacterState): number {
+  if (state.meslek === "Asker") return subayLimiti(state.rutbe_seviye ?? 1, kislaKademesi(state));
   return CALISAN_LIMITLERI[clamp((state.rutbe_seviye ?? 1) - 1, 0, CALISAN_LIMITLERI.length - 1)];
 }
 
 /** Aynı anda açık tutulabilecek hat sayısı: 1 + her 3 çalışan için 1 (en fazla 3). */
 export function hatSlotSayisi(state: CharacterState): number {
-  if (isletmeProfiliGetir(state.meslek, state.cag)?.mod === "cemaat") return faaliyetSlotSayisi(state);
+  const mod = isletmeProfiliGetir(state.meslek, state.cag)?.mod;
+  if (mod === "cemaat") return faaliyetSlotSayisi(state);
+  if (mod === "birlik") return gorevSlotSayisi(state);
   return Math.min(3, 1 + Math.floor(state.ekip.length / 3));
 }
 
@@ -497,7 +502,8 @@ export function hatHesapla(state: CharacterState, hat: IsletmeHat, tanim: HatTan
   const pol = FIYAT_POLITIKASI[hat.fiyat] ?? FIYAT_POLITIKASI.normal;
   const politikaTalep = fiyatTalepCarpani(pol, krizliMi(state));
   const ub = anaUrunBonusu(state, hat.id);
-  const savasTalep = tanim.savasTalep && state.ulke.savasta ? tanim.savasTalep + (ub?.savasTalepEki ?? 0) : 1;
+  // Savaş talep bonusu %10 kısık uygulanır (Asker birlik modu dengesi).
+  const savasTalep = tanim.savasTalep && state.ulke.savasta ? 1 + (tanim.savasTalep + (ub?.savasTalepEki ?? 0) - 1) * 0.9 : 1;
   const sicak = sicakUrunHatId(state, profil) === hat.id;
   const acikSayisi = Math.max(1, is.hatlar.filter((h) => h.acik).length + (hat.acik ? 0 : 1));
   const paylasim = 1 / (1 + HAT_PAYLASIM * (acikSayisi - 1));
@@ -671,6 +677,10 @@ export function isletmeBaslat(state: CharacterState, b: IsletmeBaglami): void {
     cemaatBaslat(state);
     return;
   }
+  if (profil.mod === "birlik") {
+    birlikBaslat(state);
+    return;
+  }
   const ilk = profil.hatlar.find((h) => h.minRutbe <= 1) ?? profil.hatlar[0];
   const hatlar: IsletmeHat[] = profil.hatlar.map((h) => ({
     id: h.id,
@@ -721,6 +731,10 @@ export function isletmeHazirla(state: CharacterState, b: IsletmeBaglami): void {
   }
   if (profil.mod === "cemaat") {
     cemaatHazirla(state);
+    return;
+  }
+  if (profil.mod === "birlik") {
+    birlikHazirla(state);
     return;
   }
   if (!state.isletme) {
@@ -807,6 +821,10 @@ export function isletmeButcesi(state: CharacterState, b: IsletmeBaglami): Isletm
   if (profil.mod === "cemaat") {
     const brut = cemaatBeklenenKar(state, b);
     return { ...bos, brut, net: r2(brut - maas), maas };
+  }
+  if (profil.mod === "birlik") {
+    const brut = birlikBeklenenKar(state, b);
+    return { ...bos, brut, net: brut, maas };
   }
   const curume = curumeOrani(is);
   let satis = 0;
@@ -896,7 +914,7 @@ export interface DepoDoldurPlani {
 export function depoDoldurPlani(state: CharacterState, hedefYuzde: number, b: IsletmeBaglami): DepoDoldurPlani {
   const is = state.isletme;
   const profil = isletmeProfiliGetir(state.meslek, state.cag);
-  if (!is || !profil || profil.mod === "cemaat") throw new Error("Bu mesleğin deposu yok.");
+  if (!is || !profil || profil.mod === "cemaat" || profil.mod === "birlik") throw new Error("Bu mesleğin deposu yok.");
   if (!(DEPO_DOLDUR_YUZDELERI as readonly number[]).includes(hedefYuzde)) throw new Error("Geçersiz doldurma oranı.");
   const kapasite = depoKapasitesi(is);
   const mevcut = toplamStok(is);
@@ -975,7 +993,7 @@ export function depoyuDoldur(state: CharacterState, hedefYuzde: number, b: Islet
  */
 export function otomatikDepoDoldur(state: CharacterState, b: IsletmeBaglami): DepoDoldurPlani | null {
   const profil = isletmeProfiliGetir(state.meslek, state.cag);
-  if (!state.isletme || !profil || profil.mod === "cemaat") return null;
+  if (!state.isletme || !profil || profil.mod === "cemaat" || profil.mod === "birlik") return null;
   return depoyuDoldur(state, 100, b);
 }
 
@@ -1128,6 +1146,7 @@ export function isletmeYilIsle(state: CharacterState, b: IsletmeBaglami): Isletm
   const is = state.isletme!;
   const profil = isletmeProfiliGetir(state.meslek, state.cag)!;
   if (profil.mod === "cemaat") return cemaatYilIsle(state, b);
+  if (profil.mod === "birlik") return birlikYilIsle(state, b);
   const kapasite = depoKapasitesi(is);
   const uyarilar: IsletmeUyari[] = [];
   const slot = hatSlotSayisi(state);

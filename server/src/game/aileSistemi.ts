@@ -71,7 +71,7 @@ function rastgeleHuyCifti(): [AileHuy, AileHuy] {
 
 function rastgeleMeslekVeRutbe(state: CharacterState): { meslek: string; rutbe: string } {
   const meslek = MESLEKLER[Math.floor(Math.random() * MESLEKLER.length)];
-  const rutbeTanimi = rutbeTanimiGetir(meslek, state.cag, state.din_kultur);
+  const rutbeTanimi = rutbeTanimiGetir(meslek, state.cag, state.din_kultur, state.bolge);
   const rutbe = rutbeTanimi ? rutbeTanimi.unvanlar[Math.floor(Math.random() * rutbeTanimi.unvanlar.length)] : meslek;
   return { meslek, rutbe };
 }

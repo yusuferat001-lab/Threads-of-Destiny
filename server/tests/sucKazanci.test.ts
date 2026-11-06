@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { bekleyenleriCoz } from "./_ogreti";
 import { sucKazanciUygula, SUC_SINIFI_ARALIKLARI, sucSinifiDegeri, sucSinifiUst, yeniOyun, mesleğiAta, senaryoUret, secimUygula } from "../src/game/gameEngine";
 import { OLAY_BANKASI } from "../src/data/olaylar";
 import type { CharacterState, SecimSonucu, SonucEtkisi } from "../src/types";
@@ -117,6 +118,7 @@ describe("suç işleyerek para kazanma — gerçek olay üzerinden (entegrasyon)
       await mesleğiAta(state.id, "Asker");
       sadeceBuOlayaZorla(state, "oc_asker_manastir_talani");
 
+      await bekleyenleriCoz(state.id);
       const senaryo = await senaryoUret(state.id);
       if (senaryo.olay_basligi !== "Manastır Emri") continue;
 

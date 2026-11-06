@@ -466,3 +466,8 @@ button.ana-cam-tikla:disabled {
     font-size: 0.5em;
   }
 }
+
+/* Asker: 6 tuş (2×3) — tuşlar biraz daha alçak */
+.ana-tuslar.ana-tuslar-alti .ana-tus {
+  height: 48px;
+}

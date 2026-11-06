@@ -10,6 +10,7 @@
  *
  * Bu modül yalnız types + data'ya bağlıdır (isletme.ts ve stateManager.ts buradan okur).
  */
+import { KISLA_ER_LIMITI } from "../data/birlik";
 import type { CharacterState, PiyasaHaberi, Rakip } from "../types";
 import {
   PAZAR_ADLARI,
@@ -81,7 +82,10 @@ function uyeleriKur(state: CharacterState): Uye[] {
   const P = Math.max(0, state.pazar_musteri ?? 0);
   const d = musteriDagilimi(state);
   const uyeler: Uye[] = [
-    { id: "oyuncu", n: d.oyuncu, alt: OYUNCU_TABAN_MUSTERI, ust: P * OYUNCU_TAVAN_PAY },
+    // Asker: er sayısı (müşteri) piyasa akışlarında sabittir; er yalnız birlik motorundan değişir.
+    state.meslek === "Asker"
+      ? { id: "oyuncu", n: d.oyuncu, alt: d.oyuncu, ust: d.oyuncu }
+      : { id: "oyuncu", n: d.oyuncu, alt: OYUNCU_TABAN_MUSTERI, ust: P * OYUNCU_TAVAN_PAY },
     { id: "kucuk", n: d.kucuk, alt: P * KUCUK_TABAN_PAY, ust: P },
   ];
   for (const r of aktifRakipler(state)) {
@@ -187,6 +191,11 @@ export function musteriAktar(state: CharacterState, kaynak: PazarGrubu, hedef: P
   const k = uyeler.find((u) => u.id === kaynak);
   const h = uyeler.find((u) => u.id === hedef);
   if (!k || !h) return 0;
+  // Asker: er piyasa akışlarıyla kendiliğinden artmaz, ama bozguna uğrattığı rakipten (hedefli aktarım) komuta limitine kadar er devşirir.
+  if (state.meslek === "Asker" && hedef === "oyuncu") {
+    const kisla = Math.max(0, Math.min(KISLA_ER_LIMITI.length - 1, state.isletme?.yatirimlar.kisla ?? 0));
+    h.ust = Math.max(h.n, KISLA_ER_LIMITI[kisla]);
+  }
   const m = Math.min(miktar, Math.max(0, k.n - k.alt), Math.max(0, h.ust - h.n));
   if (m <= 0) return 0;
   k.n -= m;
@@ -397,6 +406,11 @@ export function rakipAdiniGuncelle(state: CharacterState): void {
  */
 export function piyasaYillikUygula(state: CharacterState, yasArtisi: number): string | null {
   if (yasArtisi <= 0 || !PAZAR_ADLARI[state.meslek] || !pazarVarMi(state)) return null;
+  // Asker: rakip komutanlar ve diğer ordular birlik motorunda (pazarYakinsat, saldırılar) hareket eder.
+  if (state.meslek === "Asker") {
+    for (const r of aktifRakipler(state)) r.husumet = Math.max(15, r.husumet - 0.5 * yasArtisi);
+    return null;
+  }
   const mesaj: string | null = null;
   const uzakta = state.etiketler.includes("hapiste") || state.etiketler.includes("yolculukta");
   for (let i = 0; i < yasArtisi; i++) {

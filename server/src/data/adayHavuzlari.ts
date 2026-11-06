@@ -14,7 +14,7 @@ function a(rolTuru: IsletmeRolTuru, tip: IsletmeAdayTipi, tr: string, en: string
 /**
  * İşletme çalışanı aday şablonları. Yetenek/sadakat sayıları koddan, tipe göre üretilir;
  * burada yalnız rol + tip + iki dilli geçmiş cümlesi vardır.
- * Tüccar/Zanaatkâr anahtarlarında 42 şablon (22 ana, 8 maliyet, 6 müşteri, 6 güvenlik); Din Adamı anahtarlarında 27 (14, 5, 4, 4).
+ * Tüccar/Zanaatkâr anahtarlarında 42 şablon (22 ana, 8 maliyet, 6 müşteri, 6 güvenlik); Din Adamı anahtarlarında 27 (14, 5, 4, 4); Asker anahtarlarında 17 (Harp 7, Levazım 4, Devşirme 3, Tabip 2).
  * Anahtar: `${meslek}|${cag}`
  */
 export const ADAY_SABLONLARI: Record<string, AdayTaslagi[]> = {
@@ -212,6 +212,52 @@ export const ADAY_SABLONLARI: Record<string, AdayTaslagi[]> = {
     a("guvenlik", "siradan", "fabrika kapısında yıllarca nöbet tutmuş sıradan bir bekçi", "an ordinary guard who stood at a factory gate for years"),
     a("guvenlik", "usta_sadik", "tezgâhları ve kalıpları gözü gibi koruyan kıdemli bir bekçibaşı", "a senior head-watchman who guards benches and moulds like his own eyes"),
     a("guvenlik", "usta_sadik", "askerlikten bekçiliğe geçmiş, sırrı ağzından kaçırmayan sadık adam", "a loyal man, once a soldier, who guards the workshop and never gives away a secret"),
+  ],
+
+  "Asker|Orta Çağ": [
+    // ana = Harp subayı
+    a("ana", "serseri", "kavgadan kavgaya koşan, disiplinsiz bir paralı", "a brawling, undisciplined sellsword"),
+    a("ana", "sadik_cirak", "ordugâhta öğrenmeye hevesli, genç bir silahtar", "a young squire eager to learn in the camp"),
+    a("ana", "siradan", "birkaç seferde bulunmuş, sıradan bir onbaşı", "an ordinary corporal who has seen a few campaigns"),
+    a("ana", "siradan", "emirleri harfiyen uygulayan, hırssız bir çavuş", "a plodding sergeant who follows orders to the letter"),
+    a("ana", "usta_guvenilmez", "savaş meydanında parlayan ama ganimeti kollayan bir şövalye", "a knight who shines in battle but eyes the loot"),
+    a("ana", "usta_sadik", "kırk seferden sağ çıkmış, sözünün eri gazi", "a veteran of forty campaigns who always keeps his word"),
+    a("ana", "usta_sadik", "ölen komutanının sancağını taşımaya yemin etmiş bir muhafız", "a guard who swore to carry his fallen captain's banner"),
+    // maliyet = Levazım subayı
+    a("maliyet", "serseri", "erzak çuvallarını ucuza kapatıp pahalıya yazan bir yağmacı", "a scavenger who buys sacks cheap and writes them down dear"),
+    a("maliyet", "siradan", "ambar hesabını tutan, vasat bir kâtip", "a middling clerk who keeps the storehouse accounts"),
+    a("maliyet", "usta_guvenilmez", "tüccarlarla gizli komisyon anlaşması olan usta bir levazımcı", "a skilled quartermaster with secret commissions from merchants"),
+    a("maliyet", "usta_sadik", "yıllardır aynı değirmencilerle çalışan, güvenilir levazım ustası", "a trusted quartermaster who has worked with the same millers for years"),
+    // musteri = Devşirme subayı
+    a("musteri", "serseri", "köy meydanında içki karşılığı asker toplayan şüpheli biri", "a dubious fellow who recruits at the village green for a round of drinks"),
+    a("musteri", "sadik_cirak", "davul çalıp gençleri sancağa çağıran gayretli bir çırak", "an eager lad who drums the young to the colours"),
+    a("musteri", "usta_guvenilmez", "ünlü bir yiğit ama devşirdiği erlerin maaşından pay alan komutan", "a famous hero who skims the pay of the men he recruits"),
+    // guvenlik = Tabip subayı
+    a("guvenlik", "sadik_cirak", "yaralıları gece gündüz saran genç bir berber", "a young barber-surgeon who dresses the wounded day and night"),
+    a("guvenlik", "usta_sadik", "kuşatmalarda sayısız yarayı iyileştirmiş, bilge bir hekim", "a wise physician who healed countless wounds at sieges"),
+  ],
+
+  "Asker|Sanayi Devrimi": [
+    // ana = Harp subayı
+    a("ana", "serseri", "rom kokulu, disiplinsiz bir ocak eri", "a rum-soaked, undisciplined private"),
+    a("ana", "sadik_cirak", "okuma yazması iyi, hevesli bir harp okulu öğrencisi", "an eager, literate cadet from the military school"),
+    a("ana", "siradan", "siperlerde yıllarını geçirmiş, vasat bir çavuş", "a middling sergeant who has spent years in the trenches"),
+    a("ana", "siradan", "nizamnameyi ezbere bilen ama cesareti sınanmamış bir teğmen", "a lieutenant who knows the drill book by heart but is untested"),
+    a("ana", "usta_guvenilmez", "cephede parlayan ama ikmal paralarına göz diken bir yüzbaşı", "a captain who shines at the front but eyes the supply money"),
+    a("ana", "usta_sadik", "kırım ve sömürge savaşlarından sağ çıkmış, sözünün eri bir binbaşı", "a major who survived the Crimea and colonial wars and keeps his word"),
+    a("ana", "usta_sadik", "ölen alay komutanının bayrağına yemin etmiş bir bayraktar", "a standard-bearer sworn to his fallen colonel's colours"),
+    // maliyet = Levazım subayı
+    a("maliyet", "serseri", "ikmal vagonlarından kömür ve konserve çalan bir ambar eri", "a storeman who pilfers coal and tins from the supply wagons"),
+    a("maliyet", "siradan", "defter tutan, hırssız bir levazım memuru", "an unambitious supply clerk who keeps the ledgers"),
+    a("maliyet", "usta_guvenilmez", "tedarikçilerden gizli pay alan usta bir levazımcı", "a skilled quartermaster who takes secret kickbacks from suppliers"),
+    a("maliyet", "usta_sadik", "ordunun aşçılarını yıllardır tanıyan, güvenilir levazım ustası", "a trusted quartermaster who has known the army cooks for years"),
+    // musteri = Devşirme subayı
+    a("musteri", "serseri", "meyhanelerde gönüllü avlayan şüpheli bir çavuş", "a dubious sergeant who trawls taverns for volunteers"),
+    a("musteri", "sadik_cirak", "genç işçilere bando eşliğinde orduyu anlatan gayretli bir onbaşı", "an earnest corporal who sells the army to young workers with a brass band"),
+    a("musteri", "usta_guvenilmez", "ünlü bir kahraman ama devşirme parasından pay çeken bir subay", "a famous hero who skims recruiting money"),
+    // guvenlik = Tabip subayı
+    a("guvenlik", "sadik_cirak", "revirde sabahlayan, hevesli bir hastabakıcı", "an eager orderly who works all night in the infirmary"),
+    a("guvenlik", "usta_sadik", "salgınlarda ve cephelerde yüzlerce can kurtarmış, bilge bir hekim", "a wise physician who has saved hundreds in epidemics and at the front"),
   ],
 
   "Din Adamı|Orta Çağ": [

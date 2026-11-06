@@ -2,6 +2,10 @@ import type {
   IsletmeGorunumu,
   IsletmeKararGirdisi,
   CemaatKararGirdisi,
+  BirlikKararGirdisi,
+  BirlikTur,
+  BirlikIslemSonucu,
+  SavasKarariDurumu,
   DepoDoldurPlani,
   CharacterState,
   SenaryoResponse,
@@ -47,7 +51,6 @@ import type {
   YonetimDurumu,
   RakipKarti,
   PazarDurumu,
-  AjanDurumu,
   AmaclarDurumu,
   SalginKorunmaKarti,
   KrediConfig,
@@ -260,26 +263,42 @@ export function rakiplerGetir(stateId: string) {
   return istek<{ rakipler: RakipKarti[] }>(`/api/game/${stateId}/rakipler`);
 }
 
-export function ajanDurumGetir(stateId: string) {
-  return istek<AjanDurumu>(`/api/game/${stateId}/ajanlar`);
-}
-
-export function ajanTut(stateId: string, rol: string) {
-  return istek<{ state: CharacterState; mesaj: string }>(`/api/game/${stateId}/ajan/tut`, {
-    method: 'POST',
-    body: JSON.stringify({ rol }),
-  });
-}
-
 export function isletmeGetir(stateId: string) {
   return istek<IsletmeGorunumu>(`/api/game/${stateId}/isletme`);
 }
 
-export function isletmeKararVer(stateId: string, hatlar: IsletmeKararGirdisi[], cemaat?: CemaatKararGirdisi) {
+export function isletmeKararVer(stateId: string, hatlar: IsletmeKararGirdisi[], cemaat?: CemaatKararGirdisi, birlik?: BirlikKararGirdisi) {
   return istek<{ state: CharacterState; durum: IsletmeGorunumu }>(`/api/game/${stateId}/isletme/karar`, {
     method: 'POST',
-    body: JSON.stringify({ hatlar, cemaat }),
+    body: JSON.stringify({ hatlar, cemaat, birlik }),
   });
+}
+
+// ── Asker (birlik modu) ─────────────────────────────────────────────────────
+type BirlikYaniti = { state: CharacterState; durum: IsletmeGorunumu };
+export function birlikDoktrinSec(stateId: string, doktrinId: string) {
+  return istek<BirlikYaniti>(`/api/game/${stateId}/birlik/doktrin`, { method: 'POST', body: JSON.stringify({ doktrinId }) });
+}
+export function birlikKaliteYukselt(stateId: string, hedef: 'orta' | 'yuksek', yuzde: number) {
+  return istek<BirlikYaniti & { sonuc: BirlikIslemSonucu }>(`/api/game/${stateId}/birlik/kalite`, { method: 'POST', body: JSON.stringify({ hedef, yuzde }) });
+}
+export function birlikBirlikSec(stateId: string, turler: BirlikTur[]) {
+  return istek<BirlikYaniti & { sonuc: BirlikIslemSonucu }>(`/api/game/${stateId}/birlik/birlik`, { method: 'POST', body: JSON.stringify({ turler }) });
+}
+export function birlikKusatma(stateId: string, seviye: number) {
+  return istek<BirlikYaniti & { sonuc: BirlikIslemSonucu }>(`/api/game/${stateId}/birlik/kusatma`, { method: 'POST', body: JSON.stringify({ seviye }) });
+}
+export function birlikTerhis(stateId: string, adet: number) {
+  return istek<BirlikYaniti & { sonuc: BirlikIslemSonucu }>(`/api/game/${stateId}/birlik/terhis`, { method: 'POST', body: JSON.stringify({ adet }) });
+}
+export function birlikKiralik(stateId: string) {
+  return istek<BirlikYaniti & { sonuc: BirlikIslemSonucu }>(`/api/game/${stateId}/birlik/kiralik`, { method: 'POST', body: '{}' });
+}
+export function birlikSavasKarariGetir(stateId: string) {
+  return istek<{ karar: SavasKarariDurumu | null }>(`/api/game/${stateId}/birlik/savas-karari`);
+}
+export function birlikSavasKarariVer(stateId: string, secim: string) {
+  return istek<BirlikYaniti & { sonraki: SavasKarariDurumu | null }>(`/api/game/${stateId}/birlik/savas-karari`, { method: 'POST', body: JSON.stringify({ secim }) });
 }
 
 /** v20: depoyu hedef yüzdeye doldurma planı (onayla=false) ya da satın alma (onayla=true). */
@@ -314,6 +333,13 @@ export function isletmeUrunSec(stateId: string, urunId: string) {
 
 export function isletmeYatirimYap(stateId: string, yatirimId: string) {
   return istek<{ state: CharacterState; mesaj: string; durum: IsletmeGorunumu }>(`/api/game/${stateId}/isletme/yatirim`, {
+    method: 'POST',
+    body: JSON.stringify({ yatirimId }),
+  });
+}
+
+export function isletmeYatirimDusur(stateId: string, yatirimId: string) {
+  return istek<{ state: CharacterState; mesaj: string; durum: IsletmeGorunumu }>(`/api/game/${stateId}/isletme/yatirim-dusur`, {
     method: 'POST',
     body: JSON.stringify({ yatirimId }),
   });

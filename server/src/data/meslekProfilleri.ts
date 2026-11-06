@@ -35,7 +35,7 @@ export interface HatTanimi {
 }
 
 /** Yatırımın motor etkisi: id'ye değil bu türe bakılır. */
-export type YatirimEtkisi = "depo" | "alis" | "uretim" | "pazar" | "koruma" | "bina" | "okul" | "yardim";
+export type YatirimEtkisi = "depo" | "alis" | "uretim" | "pazar" | "koruma" | "bina" | "okul" | "yardim" | "kisla" | "revir" | "devsirme";
 
 export interface YatirimTanimi {
   id: string;
@@ -76,8 +76,8 @@ export interface BaslangicUrunu {
 export interface IsletmeProfili {
   /** v11: oyun başında seçilen üç ürün (temel / savaş / lüks); yoksa (Din Adamı) seçim yok. */
   baslangicUrunleri?: BaslangicUrunu[];
-  /** "ticaret": mal satın alınır (depo dolana dek); "uretim": yıllık üretim tavanı vardır, maliyet hammaddedir; "cemaat": Din Adamı (bağış + faaliyetler, stok yok; game/cemaat.ts). */
-  mod?: "ticaret" | "uretim" | "cemaat";
+  /** "ticaret": mal satın alınır (depo dolana dek); "uretim": yıllık üretim tavanı vardır, maliyet hammaddedir; "cemaat": Din Adamı (bağış + faaliyetler, stok yok; game/cemaat.ts); "birlik": Asker (sold + görevler + ganimet, stok yok; game/birlik.ts). */
+  mod?: "ticaret" | "uretim" | "cemaat" | "birlik";
   hatlar: HatTanimi[];
   yatirimlar: YatirimTanimi[];
   roller: RolTanimi[];
@@ -145,8 +145,11 @@ const FIYAT_TANITIM = [20, 35, 52, 75];
 const FIYAT_GUVENLIK = [6, 11, 18, 27];
 const FIYAT_TEZGAH = [15, 30, 50, 80];
 const FIYAT_KAPASITE = [20, 45, 90, 160]; // depo ve ibadethane
+const FIYAT_KISLA = [30, 90, 220, 500]; // kışla (tek ordu limiti)
 const FIYAT_OKUL = [20, 30, 45, 65];
 const FIYAT_ASEVI = [8, 15, 24, 36];
+const FIYAT_REVIR = [8, 15, 24, 36];
+const FIYAT_DEVSIRME = [20, 35, 52, 75];
 const YATIRIM_DEPO: YatirimTanimi = {
   id: "depo",
   simge: "🏚️",
@@ -274,6 +277,63 @@ const DIN_ROLLER: RolTanimi[] = [
   { tur: "guvenlik", ad: { tr: "Kilise bekçisi", en: "Church watchman" } },
 ];
 
+
+// ── Asker (birlik işletmesi, 2026-11: sold + görev + ganimet; stok yok) ──
+// Teçhizat kalitesi, özel birlik, kuşatma ve terhis yatırım değil, Birlik panelindeki er sayısına göre ölçekli kararlardır.
+const ASKER_YATIRIMLAR: YatirimTanimi[] = [
+  {
+    id: "kisla",
+    simge: "🏯",
+    ad: { tr: "Kışla", en: "Barracks" },
+    aciklama: {
+      tr: "Barınabilecek er sayısını (kışla limiti) belirler; ordu bu sayıya ulaşınca büyüyemez, aşan her er çok pahalıya gelir. Yıllık bakımı vardır.",
+      en: "Sets how many men can be housed (barracks limit); the army cannot grow past it, and every man over it is very costly. Has yearly upkeep.",
+    },
+    etki: "kisla",
+    fiyatlar: FIYAT_KISLA,
+  },
+  {
+    id: "revir",
+    simge: "⚕️",
+    ad: { tr: "Revir", en: "Infirmary" },
+    aciklama: {
+      tr: "Her kademe savaş ve görev kaybını ile firarı azaltır, vebada can kurtarır ve moral kazandırır.",
+      en: "Each tier cuts war and duty losses and desertion, saves lives in plague and lifts morale.",
+    },
+    etki: "revir",
+    fiyatlar: FIYAT_REVIR,
+  },
+  {
+    id: "devsirme",
+    simge: "📯",
+    ad: { tr: "Devşirme Bürosu", en: "Recruiting Office" },
+    aciklama: {
+      tr: "Yılda er çeker: 1. kademe +1, 2. +3, 3. +4, 4. +5.",
+      en: "Draws men each year: tier 1 +1, tier 2 +3, tier 3 +4, tier 4 +5.",
+    },
+    etki: "devsirme",
+    fiyatlar: FIYAT_DEVSIRME,
+  },
+  {
+    id: "karakol",
+    simge: "🚧",
+    ad: { tr: "Karakol", en: "Outpost" },
+    aciklama: {
+      tr: "Rakip komutanların baskın ve sabotajını engelleyebilir: her kademe korumayı +0,15 artırır (en çok 0,6).",
+      en: "Can block rival raids and sabotage: each tier adds +0.15 protection (max 0.6).",
+    },
+    etki: "koruma",
+    fiyatlar: FIYAT_GUVENLIK,
+  },
+];
+
+const ASKER_ROLLER: RolTanimi[] = [
+  { tur: "ana", ad: { tr: "Harp subayı", en: "War officer" } },
+  { tur: "maliyet", ad: { tr: "Levazım subayı", en: "Quartermaster" } },
+  { tur: "musteri", ad: { tr: "Devşirme subayı", en: "Recruiting officer" } },
+  { tur: "guvenlik", ad: { tr: "Tabip subayı", en: "Surgeon officer" } },
+];
+
 // ── Roller ─────────────────────────────────────────────────────────────────
 const TUCCAR_ROLLER: RolTanimi[] = [
   { tur: "maliyet", ad: { tr: "Alıcı", en: "Buyer" } },
@@ -288,7 +348,13 @@ const ZANAATKAR_ROLLER: RolTanimi[] = [
 ];
 
 /** Rol başına oyuncuya gösterilen kısa etki açıklaması (bonus yeteneğe göre değişir). */
-export const ROL_ACIKLAMALARI: Record<"ticaret" | "uretim" | "cemaat", Record<IsletmeRolTuru, DilliMetin>> = {
+export const ROL_ACIKLAMALARI: Record<"ticaret" | "uretim" | "cemaat" | "birlik", Record<IsletmeRolTuru, DilliMetin>> = {
+  birlik: {
+    ana: { tr: "Askerî gücü artırır", en: "Raises military strength" },
+    maliyet: { tr: "Er ve erzak masrafını düşürür", en: "Lowers soldier and supply costs" },
+    musteri: { tr: "Yılda +1…+5 er çeker", en: "Brings +1…+5 men a year" },
+    guvenlik: { tr: "Ölüm ve firarı azaltır, saldırılara karşı korur", en: "Reduces deaths and desertion, guards against attacks" },
+  },
   cemaat: {
     ana: { tr: "Bağışları artırır", en: "Raises donations" },
     maliyet: { tr: "Faaliyet masraflarını düşürür", en: "Lowers activity costs" },
@@ -401,10 +467,27 @@ const DIN_SANAYI: IsletmeProfili = {
   adaylar: ADAY_SABLONLARI["Din Adamı|Sanayi Devrimi"] ?? [],
 };
 
+const ASKER_ORTA_CAG: IsletmeProfili = {
+  mod: "birlik",
+  hatlar: [],
+  yatirimlar: ASKER_YATIRIMLAR,
+  roller: ASKER_ROLLER,
+  adaylar: ADAY_SABLONLARI["Asker|Orta Çağ"] ?? [],
+};
+
+const ASKER_SANAYI: IsletmeProfili = {
+  mod: "birlik",
+  hatlar: [],
+  yatirimlar: ASKER_YATIRIMLAR,
+  roller: ASKER_ROLLER,
+  adaylar: ADAY_SABLONLARI["Asker|Sanayi Devrimi"] ?? [],
+};
+
 const PROFILLER: Partial<Record<string, Record<Cag, IsletmeProfili>>> = {
   Tüccar: { "Orta Çağ": TUCCAR_ORTA_CAG, "Sanayi Devrimi": TUCCAR_SANAYI },
   Zanaatkâr: { "Orta Çağ": ZANAATKAR_ORTA_CAG, "Sanayi Devrimi": ZANAATKAR_SANAYI },
   "Din Adamı": { "Orta Çağ": DIN_ORTA_CAG, "Sanayi Devrimi": DIN_SANAYI },
+  Asker: { "Orta Çağ": ASKER_ORTA_CAG, "Sanayi Devrimi": ASKER_SANAYI },
 };
 
 /** Meslek işletmesi tanımlıysa profili döner; tanımsız meslekler eski maaş sistemiyle çalışır. */
@@ -448,7 +531,12 @@ const SEHIR_YONETICISI: Record<Cag, Record<string, string>> = {
   },
 };
 
-export function sehirYoneticisiUnvani(cag: Cag, bolge: string): string {
+export function sehirYoneticisiUnvani(cag: Cag, bolge: string, meslek?: string): string {
+  // Asker'in tek otoritesi askerî unvanlıdır (komutan / paşa / general); diğer meslekler şehir yöneticisi görür.
+  if (meslek === "Asker") {
+    const t = OTORITE_TABLOSU.Asker[cag];
+    return t.ozel?.[bolge] ?? t.genel;
+  }
   return SEHIR_YONETICISI[cag]?.[bolge] ?? (cag === "Sanayi Devrimi" ? "Vali" : "Prévôt");
 }
 
@@ -468,7 +556,7 @@ const OTORITE_TABLOSU: Record<string, Record<Cag, { genel: string; ozel?: Record
 };
 
 export function otoriteUnvaniGetir(meslek: string, cag: Cag, bolge: string): string | null {
-  if (isletmeMeslegiMi(meslek)) return sehirYoneticisiUnvani(cag, bolge);
+  if (isletmeMeslegiMi(meslek)) return sehirYoneticisiUnvani(cag, bolge, meslek);
   const t = OTORITE_TABLOSU[meslek]?.[cag];
   if (!t) return null;
   return t.ozel?.[bolge] ?? t.genel;

@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { bekleyenleriCoz } from "./_ogreti";
 import { createCharacter, mesleğiSec, checkDeath, durumlariUygula, ilerletYas } from "../src/game/stateManager";
 import { skorKaydet } from "../src/db/scoreRepository";
 import { ikiDilT } from "../src/i18n";
@@ -58,6 +59,7 @@ describe("iki dilli ölüm nedeni", () => {
       const state = await yeniOyun("Orta Çağ", "Fransa", "kasaba", undefined, "en");
       await mesleğiAta(state.id, "Asker");
       for (let tur = 0; tur < 80; tur++) {
+        await bekleyenleriCoz(state.id);
         const senaryo = await senaryoUret(state.id);
         const idx = senaryo.secenekler.findIndex((x) => !x.kilitli);
         const sonuc: any = await secimUygula(state.id, Math.max(0, idx));

@@ -4,7 +4,7 @@ import type { CharacterState, FinansOzeti, IsletmeGorunumu } from '../types';
 import { formatMusteri, formatPara } from '../format';
 
 /** Ana ekrandaki dört sabit tuşun kimliği — konum ve renk her meslekte aynıdır, yalnız ad/ikon değişir. */
-export type AnaTusId = 'isletme' | 'yatirim' | 'calisan' | 'cevre';
+export type AnaTusId = 'isletme' | 'gorevler' | 'techizat' | 'yatirim' | 'calisan' | 'cevre';
 
 interface AnaEkranProps {
   karakter: CharacterState;
@@ -54,8 +54,10 @@ function tuslar(meslek: string): TusTanimi[] {
     case 'Asker':
       return [
         { id: 'isletme', ikon: '🛡️', ad: { tr: 'Ordu', en: 'Army' } },
-        { id: 'yatirim', ikon: '⚒️', ad: { tr: 'Teçhizat', en: 'Gear' } },
-        { id: 'calisan', ikon: '📜', ad: { tr: 'Görevler', en: 'Duties' } },
+        { id: 'gorevler', ikon: '📜', ad: { tr: 'Görevler', en: 'Duties' } },
+        { id: 'techizat', ikon: '⚔️', ad: { tr: 'Teçhizat', en: 'Gear' } },
+        { id: 'yatirim', ikon: '🏯', ad: { tr: 'Yatırım', en: 'Invest' } },
+        { id: 'calisan', ikon: '🎖️', ad: { tr: 'Subaylar', en: 'Officers' } },
         { id: 'cevre', ikon: '🗡️', ad: { tr: 'Çevre', en: 'Rivals' } },
       ];
     default:
@@ -84,7 +86,9 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
   const musteriEtiket = isletme
     ? karakter.meslek === 'Din Adamı'
       ? tr ? 'İnanan' : 'Flock'
-      : tr ? 'Müşteri' : 'Customers'
+      : karakter.meslek === 'Asker'
+        ? tr ? 'Er' : 'Men'
+        : tr ? 'Müşteri' : 'Customers'
     : tr ? 'Ordu' : 'Army';
   const degisim = dokum?.musteriDegisim ?? null;
 
@@ -101,11 +105,19 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
   const pay = isletme?.pazarPayi ?? null;
   const acikHat = isletme?.hatlar.filter((h) => h.acik).length ?? 0;
   const altMetinler: Record<AnaTusId, string> = {
-    isletme: isletme?.cemaat
+    isletme: isletme?.birlik
+      ? tr ? `${isletme.birlik.er} er · güç ${isletme.birlik.guc.toplam}` : `${isletme.birlik.er} men · str ${isletme.birlik.guc.toplam}`
+      : isletme?.cemaat
       ? tr ? 'politika, öğreti' : 'policy, doctrine'
       : isletme
         ? tr ? `${acikHat} hat açık` : `${acikHat} lines open`
         : tr ? `${karakter.ordu_mevcudu} er` : `${karakter.ordu_mevcudu} men`,
+    gorevler: isletme?.birlik
+      ? tr ? `${isletme.birlik.gorevler.slot.kullanilan}/${isletme.birlik.gorevler.slot.toplam} açık` : `${isletme.birlik.gorevler.slot.kullanilan}/${isletme.birlik.gorevler.slot.toplam} open`
+      : '',
+    techizat: isletme?.birlik
+      ? tr ? `${isletme.birlik.birlik.seciliTurler.length} birlik · ${isletme.birlik.kalite.techizat.tr}` : `${isletme.birlik.birlik.seciliTurler.length} units · ${isletme.birlik.kalite.techizat.en}`
+      : '',
     yatirim: tr ? 'bina, kredi' : 'upgrades, loans',
     calisan: isletme ? `${isletme.calisanlar.length}/${isletme.calisanTavani}` : `${karakter.ekip.length}`,
     cevre: tr ? 'rakip, şehir' : 'rivals, city',
@@ -180,7 +192,7 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
         )}
       </div>
 
-      <div className="ana-tuslar">
+      <div className={`ana-tuslar${tuslar(karakter.meslek).length > 4 ? ' ana-tuslar-alti' : ''}`}>
         {tuslar(karakter.meslek).map((t) => (
           <button key={t.id} type="button" className="ana-tus" disabled={yukleniyor} onClick={() => onTus(t.id)}>
             <span className="ana-tus-ikon" aria-hidden="true">

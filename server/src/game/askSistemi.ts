@@ -84,7 +84,7 @@ function adayYasi(state: CharacterState): number {
 
 export function tanismaAdayiUret(state: CharacterState): TanismaAdayi {
   const meslek = MESLEKLER[Math.floor(Math.random() * MESLEKLER.length)];
-  const rutbeTanimi = rutbeTanimiGetir(meslek, state.cag, state.din_kultur);
+  const rutbeTanimi = rutbeTanimiGetir(meslek, state.cag, state.din_kultur, state.bolge);
   const rutbe = rutbeTanimi ? rutbeTanimi.unvanlar[Math.floor(Math.random() * rutbeTanimi.unvanlar.length)] : meslek;
   const disari = [state.dost_adi, state.rakip_adi, state.es_adi ?? "", state.isim ?? ""].filter(Boolean);
   const isim = rastgeleCinsiyetliIsimSec(state.cag, state.bolge, "kadin", disari);

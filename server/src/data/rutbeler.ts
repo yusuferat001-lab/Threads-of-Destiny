@@ -187,9 +187,27 @@ function dinAdamiRutbeTanimiGetir(cag: Cag, dinKultur?: string | null): RutbeTan
   return { ...temel, unvanlar: dineOzguUnvanlar };
 }
 
-export function rutbeTanimiGetir(meslek: string, cag: Cag, dinKultur?: string | null): RutbeTanimi | undefined {
+/** Asker rütbe unvanları ülkeye göre değişir (eşikler her ülkede aynı). */
+const ASKER_UNVANLARI: Record<string, [string, string, string, string, string]> = {
+  "Orta Çağ|Fransa": ["Piyade Er", "Silahtar", "Şövalye", "Sancak Şövalyesi", "Mareşal"],
+  "Orta Çağ|Kutsal Roma": ["Piyade Er", "Silahtar", "Şövalye", "Sancak Beyi", "Ordu Komutanı"],
+  "Orta Çağ|Bizans": ["Stratiotes", "Dekarkhos", "Kentarkhos", "Taksiarkhos", "Strategos"],
+  "Orta Çağ|Selçuklu": ["Gulam", "Sipahi", "Alemdar", "Emir", "Sipehsalar"],
+  "Orta Çağ|Eyyubiler": ["Gulam", "Sipahi", "Alemdar", "Emir", "Sipehsalar"],
+  "Sanayi Devrimi|İngiltere": ["Er", "Onbaşı", "Çavuş", "Yüzbaşı", "Albay"],
+  "Sanayi Devrimi|Fransa": ["Er", "Onbaşı", "Çavuş", "Yüzbaşı", "Albay"],
+  "Sanayi Devrimi|Osmanlı": ["Nefer", "Onbaşı", "Çavuş", "Yüzbaşı", "Miralay"],
+  "Sanayi Devrimi|Rusya": ["Ryadovoy", "Yefreytor", "Feldfebel", "Kapitan", "Polkovnik"],
+};
+
+export function rutbeTanimiGetir(meslek: string, cag: Cag, dinKultur?: string | null, bolge?: string | null): RutbeTanimi | undefined {
   if (meslek === "Din Adamı") return dinAdamiRutbeTanimiGetir(cag, dinKultur);
-  return RUTBELER[meslek]?.[cag];
+  const temel = RUTBELER[meslek]?.[cag];
+  if (meslek === "Asker" && temel && bolge) {
+    const unvanlar = ASKER_UNVANLARI[`${cag}|${bolge}`];
+    if (unvanlar) return { ...temel, unvanlar };
+  }
+  return temel;
 }
 
 /** Seviye (1..5) için maaş primini döner; aralık dışı güvenli. */

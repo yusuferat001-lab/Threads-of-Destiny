@@ -222,7 +222,10 @@ describe("buyukSavasKontrolEt / buyukSavasBitisKontrolEt", () => {
 
   it("savaş sırasında yaşam giderine gıda çarpanı ve ayrı bir savaş vergisi kalemi biner", () => {
     // Aynı karakter üzerinde önce/sonra karşılaştırılır (bkz. veba testindeki not).
+    // Savaş vergisi ve maaş etkisi yalnız maaşlı (işletmesiz) mesleklerde işler; dört meslek de işletmeli olduğundan tanımsız bir meslek kullanılır.
     const state = taze();
+    state.meslek = "Köylü";
+    state.isletme = null;
     const giderSavassiz = giderKalemleriHesapla(state);
     expect(giderSavassiz.savasVergisi).toBe(0);
 
@@ -431,8 +434,10 @@ describe("vebaBaslamaliMi / vebaBaslat / vebaYillikKontrol / vebaBitisKontrolEt"
     expect(state.son_veba_bitis_yili).toBe(state.yil);
   });
 
-  it("veba sürerken işçi kıtlığı yüzünden maaş artar", () => {
+  it("veba sürerken işçi kıtlığı yüzünden maaş artar (maaşlı meslek)", () => {
     const state = taze();
+    state.meslek = "Köylü"; // işletmeli mesleklerde işçi kıtlığı çalışan maaşına yansır; eski maaş formülü tanımsız meslekle sınanır
+    state.isletme = null;
     const maasNormal = hesaplaMaasYillik(state);
     vebaBaslat(state, 2);
     expect(hesaplaMaasYillik(state)).toBeGreaterThan(maasNormal);

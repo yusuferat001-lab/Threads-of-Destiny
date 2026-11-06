@@ -56,13 +56,20 @@ import {
   oturumDiliAyarla,
   rakiplerGetir,
   pazarDurumGetir,
-  ajanDurumGetir,
-  ajanTut,
   isletmeDurumGetir,
   isletmeKararVer,
   isletmeOgretiSec,
+  birlikDoktrinSec,
+  birlikKaliteYukselt,
+  birlikBirlikSec,
+  birlikKusatma,
+  birlikTerhis,
+  birlikKiralik,
+  birlikSavasKarariGetir,
+  birlikSavasKarariVer,
   isletmeUrunSec,
   isletmeYatirimYap,
+  isletmeYatirimDusur,
   isletmeDepoDoldur,
   isletmeDepoOtomatik,
   isletmeCalisanAl,
@@ -303,13 +310,6 @@ gameRouter.post("/:id/kotu-is", async (req, res) => {
   }
 });
 
-gameRouter.get("/:id/ajanlar", async (req, res) => {
-  try {
-    res.json(await ajanDurumGetir(req.params.id));
-  } catch (err) {
-    res.status(404).json({ hata: hataMetni(err, req.params.id) });
-  }
-});
 
 gameRouter.get("/:id/isletme", async (req, res) => {
   try {
@@ -320,10 +320,17 @@ gameRouter.get("/:id/isletme", async (req, res) => {
 });
 
 gameRouter.post("/:id/isletme/karar", async (req, res) => {
-  const { hatlar, cemaat } = req.body ?? {};
+  const { hatlar, cemaat, birlik } = req.body ?? {};
   if (!Array.isArray(hatlar)) return res.status(400).json({ hata: "Geçersiz karar." });
   try {
-    res.json(await isletmeKararVer(req.params.id, hatlar, cemaat && typeof cemaat === "object" ? cemaat : undefined));
+    res.json(
+      await isletmeKararVer(
+        req.params.id,
+        hatlar,
+        cemaat && typeof cemaat === "object" ? cemaat : undefined,
+        birlik && typeof birlik === "object" ? birlik : undefined
+      )
+    );
   } catch (err) {
     res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }
@@ -359,6 +366,83 @@ gameRouter.post("/:id/isletme/ogreti", async (req, res) => {
   }
 });
 
+// ── Asker (birlik modu) — hepsi turu tüketmez ───────────────────────────────
+gameRouter.post("/:id/birlik/doktrin", async (req, res) => {
+  const { doktrinId } = req.body ?? {};
+  if (typeof doktrinId !== "string") return res.status(400).json({ hata: "Geçersiz doktrin." });
+  try {
+    res.json(await birlikDoktrinSec(req.params.id, doktrinId));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/birlik/kalite", async (req, res) => {
+  const { hedef, yuzde } = req.body ?? {};
+  if ((hedef !== "orta" && hedef !== "yuksek") || typeof yuzde !== "number") return res.status(400).json({ hata: "Geçersiz teçhizat kalitesi." });
+  try {
+    res.json(await birlikKaliteYukselt(req.params.id, hedef, yuzde));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/birlik/birlik", async (req, res) => {
+  const { turler } = req.body ?? {};
+  if (!Array.isArray(turler)) return res.status(400).json({ hata: "Geçersiz birlik seçimi." });
+  try {
+    res.json(await birlikBirlikSec(req.params.id, turler.filter((t: unknown): t is string => typeof t === "string")));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/birlik/kusatma", async (req, res) => {
+  const { seviye } = req.body ?? {};
+  if (typeof seviye !== "number") return res.status(400).json({ hata: "Geçersiz kuşatma seviyesi." });
+  try {
+    res.json(await birlikKusatma(req.params.id, seviye));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/birlik/kiralik", async (req, res) => {
+  try {
+    res.json(await birlikKiralik(req.params.id));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/birlik/terhis", async (req, res) => {
+  const { adet } = req.body ?? {};
+  if (typeof adet !== "number") return res.status(400).json({ hata: "Geçersiz terhis sayısı." });
+  try {
+    res.json(await birlikTerhis(req.params.id, adet));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.get("/:id/birlik/savas-karari", async (req, res) => {
+  try {
+    res.json({ karar: await birlikSavasKarariGetir(req.params.id) });
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
+gameRouter.post("/:id/birlik/savas-karari", async (req, res) => {
+  const { secim } = req.body ?? {};
+  if (typeof secim !== "string") return res.status(400).json({ hata: "Geçersiz seçim." });
+  try {
+    res.json(await birlikSavasKarariVer(req.params.id, secim));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
 gameRouter.post("/:id/isletme/urun", async (req, res) => {
   const { urunId } = req.body ?? {};
   if (typeof urunId !== "string") return res.status(400).json({ hata: "Geçersiz ürün." });
@@ -379,6 +463,16 @@ gameRouter.post("/:id/isletme/yatirim", async (req, res) => {
   }
 });
 
+gameRouter.post("/:id/isletme/yatirim-dusur", async (req, res) => {
+  const { yatirimId } = req.body ?? {};
+  if (typeof yatirimId !== "string") return res.status(400).json({ hata: "Geçersiz yatırım." });
+  try {
+    res.json(await isletmeYatirimDusur(req.params.id, yatirimId));
+  } catch (err) {
+    res.status(400).json({ hata: hataMetni(err, req.params.id) });
+  }
+});
+
 gameRouter.post("/:id/isletme/calisan", async (req, res) => {
   const { adayId } = req.body ?? {};
   if (typeof adayId !== "string") return res.status(400).json({ hata: "Geçersiz aday." });
@@ -389,15 +483,6 @@ gameRouter.post("/:id/isletme/calisan", async (req, res) => {
   }
 });
 
-gameRouter.post("/:id/ajan/tut", async (req, res) => {
-  const { rol } = req.body ?? {};
-  if (typeof rol !== "string") return res.status(400).json({ hata: "Geçersiz rol." });
-  try {
-    res.json(await ajanTut(req.params.id, rol));
-  } catch (err) {
-    res.status(400).json({ hata: hataMetni(err, req.params.id) });
-  }
-});
 
 const GECERLI_MULK_TURLERI: MulkTuru[] = MULK_TANIMLARI.map((m) => m.tur);
 

@@ -30,7 +30,7 @@ export function yoneticiBilgisi(state: CharacterState): { unvan: string; ad: str
   // İşletmeli meslekler (§45): tek otorite şehir yöneticisidir; ülke × çağ unvanı, kültüre uygun sabit isim.
   if (isletmeMeslegiMi(state.meslek)) {
     return {
-      unvan: K(state.dil, sehirYoneticisiUnvani(state.cag, state.bolge)),
+      unvan: K(state.dil, sehirYoneticisiUnvani(state.cag, state.bolge, state.meslek)),
       ad: deterministikErkekIsimSec(state.cag, state.bolge, state.id, 7),
     };
   }

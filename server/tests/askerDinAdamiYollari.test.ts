@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { ogretileriTamamla } from "./_ogreti";
+import { ogretileriTamamla, bekleyenleriCoz } from "./_ogreti";
 import { olaySec } from "../src/game/olaySecici";
 import { createCharacter, mesleğiSec } from "../src/game/stateManager";
 import { yeniOyun, mesleğiAta, senaryoUret, secimUygula } from "../src/game/gameEngine";
@@ -110,6 +110,7 @@ describe("kariyer yolu giriş zinciri garantisi (senaryoUret)", () => {
     await mesleğiAta(state.id, "Asker");
     state.yas = 18;
     state.ulke.savasta = true; // dünya_savas_ilani garantisini devre dışı bırak
+    await bekleyenleriCoz(state.id);
     const senaryo = await senaryoUret(state.id);
     expect(senaryo.olay_basligi).toBe("İlk Emir");
   });
@@ -120,6 +121,7 @@ describe("kariyer yolu giriş zinciri garantisi (senaryoUret)", () => {
     state.yas = 18;
     state.ulke.savasta = true;
     ogretileriTamamla(state);
+    await bekleyenleriCoz(state.id);
     const senaryo = await senaryoUret(state.id);
     expect(senaryo.olay_basligi).toBe("İlk Sınav");
   });
@@ -130,6 +132,7 @@ describe("kariyer yolu giriş zinciri garantisi (senaryoUret)", () => {
     state.yas = 18;
     state.ulke.savasta = true;
     state.etiketler.push("yol:asker:sadik", "asker_yolu_secildi");
+    await bekleyenleriCoz(state.id);
     const senaryo = await senaryoUret(state.id);
     expect(senaryo.olay_basligi).not.toBe("İlk Emir");
   });
@@ -140,6 +143,7 @@ describe("kariyer yolu giriş zinciri garantisi (senaryoUret)", () => {
     state.yas = 18;
     state.saglik = 100; // rastgele ölüm ihtimalini en aza indirir, testi kırılganlıktan korur
     state.ulke.savasta = true;
+    await bekleyenleriCoz(state.id);
     const ilkSenaryo = await senaryoUret(state.id);
     expect(ilkSenaryo.olay_basligi).toBe("İlk Emir");
 
@@ -148,6 +152,7 @@ describe("kariyer yolu giriş zinciri garantisi (senaryoUret)", () => {
     if (!("state" in sonuc1)) throw new Error("beklenmeyen ara-tepki");
     expect(sonuc1.state.etiketler).toContain("asker_yol_egilim:sadik");
 
+    await bekleyenleriCoz(state.id);
     const ikinciSenaryo = await senaryoUret(state.id);
     expect(ikinciSenaryo.olay_basligi).toBe("Sadakat Sınavı");
 

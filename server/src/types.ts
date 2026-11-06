@@ -964,11 +964,23 @@ export interface IsletmeUyari {
     | "imtiyaz_bitti"
     | "bina_tasti"
     | "asiri_olay"
-    | "mezun";
+    | "mezun"
+    | "firar"
+    | "savas_sonu"
+    | "esir"
+    | "seferberlik_terhis"
+    | "baris_catisma"
+    | "savas_ganimet"
+    | "kale"
+    | "madalya"
+    | "yagma"
+    | "savas_kayip"
+    | "yarali_iyilesti"
+    | "limit_asimi";
   hat?: string;
   isim?: string;
   /** hırsızlık sonucu / rakip saldırı türü (istemci metni bunlardan kurar). */
-  sonuc?: "agir" | "rahat" | "kismi" | "engellendi" | "sans" | "musteri_calma" | "iftira" | "sabotaj" | "baskin" | "nakit" | "kumbara" | "muridcalma" | "bidat" | "aforoz" | "yangin" | "engizisyon";
+  sonuc?: "agir" | "rahat" | "kismi" | "engellendi" | "sans" | "musteri_calma" | "iftira" | "sabotaj" | "baskin" | "nakit" | "kumbara" | "muridcalma" | "bidat" | "aforoz" | "yangin" | "engizisyon" | "er_ayartma" | "entrika" | "firar";
   /** Rakip saldırısı: saldıran rakibin adı, güvenlik engelledi mi, içerden sızma var mı, kaybedilen müşteri (ondalık), şöhret ve stok kaybı. */
   rakip?: string;
   engellendi?: boolean;
@@ -982,6 +994,13 @@ export interface IsletmeUyari {
   urunYuzde?: number;
   nakitYuzde?: number;
   tutar?: number;
+  /** Birlik (Asker) uyarıları: sayı (firar eden/ölen/terhis olan er, esir) ve savaş sonucu ("zafer" | "yenilgi"). */
+  sayi?: number;
+  /** savas_kayip: aynı olayda yaralanan er sayısı. */
+  yaralanan?: number;
+  savasSonucu?: "zafer" | "yenilgi";
+  /** Barış çatışması (haydut / sınır) türü. */
+  catismaTur?: "haydut" | "sinir";
 }
 
 export interface IsletmeDokum {
@@ -1026,6 +1045,33 @@ export interface IsletmeDokum {
     yardim: number;
     fanatiklik: number;
   };
+  /** Asker (birlik modu) yıl dökümü. `satis` toplam gelir, `alim` görev+erzak+er masrafı, `depoMasrafi` kışla+teçhizat bakımı, `loncaAidati` 0'dır (Asker aidat/vergi ödemez). */
+  birlik?: {
+    sold: number;
+    erBasiGelir: number;
+    gorevGeliri: number;
+    ganimetPara: number;
+    savasOdenegi?: number;
+    yagmaPara?: number;
+    kiralikMasrafi?: number;
+    kaleGeliri?: number;
+    devletPayi: number;
+    erPayi: number;
+    erMasrafi: number;
+    erzak: number;
+    techizatBakimi: number;
+    guc: number;
+    moral: number;
+    talim: number;
+    firar: number;
+    olen: number;
+    /** Tam sayı: o yıl yaralanan, tedavi gören ve iyileşen er sayıları. */
+    yaralanan?: number;
+    yarali?: number;
+    iyilesen?: number;
+    tedaviGideri?: number;
+    limitAsimGideri?: number;
+  };
   uyarilar: IsletmeUyari[];
 }
 
@@ -1064,11 +1110,138 @@ export interface CemaatDurumu {
   asiri_son_yil: number | null;
 }
 
+// ── Asker "birlik" modu (2026-11) ─────────────────────────────────────────────
+export type BirlikKalite = "dusuk" | "orta" | "yuksek";
+/** Orduda pay alan özel birlik türleri (kuşatma ayrı bir seviyedir). */
+export type BirlikTur = "okcu" | "suvari" | "mizrakli";
+export type BirlikGanimetPayi = "az" | "dengeli" | "comert";
+export type BirlikTalim = "hafif" | "orta" | "agir";
+export type BirlikTon = "merhametli" | "dengeli" | "sert";
+export type BirlikArazi = "ova" | "kale" | "dag";
+export type BirlikRol = "onc" | "ana" | "yedek";
+export type BirlikIkmal = "yeterli" | "kit" | "yagma";
+export type BirlikEsirKarari = "idam" | "serbest" | "sat" | "karma";
+export type BirlikSeferberlik = "genel" | "secme" | "dengeli";
+
+/** Bir savaş yılının oyuncu kararları (Savaş Kararları penceresi). */
+export interface BirlikSavasKarari {
+  /** Kararın verildiği oyun yılı. */
+  yil: number;
+  /** Bu yılın karar adımları (sırayla): "seferberlik" | "arazi" | "rol" | "inisiyatif" | "ikmal" | "esir". */
+  adimlar: string[];
+  /** Tamamlanan adım sayısı (adimlar.length'e ulaşınca kararlar tamamdır). */
+  adim: number;
+  /** Zorunlu inisiyatif (oyuncu seçemiyorsa: emir saldırı / düşman saldırısı savunma); seçebiliyorsa null. */
+  inisiyatif_zorunlu: "saldiri" | "savunma" | null;
+  seferberlik: BirlikSeferberlik | null;
+  /** İstenen arazi (gerçekleşme ihtimali rütbeye bağlı); null = bölge zarına bırak. */
+  arazi: BirlikArazi | null;
+  rol: BirlikRol;
+  /** Oyuncu seçebiliyorsa seçtiği, aksi halde null (zorunlu olanı motor yazar). */
+  inisiyatif: "saldiri" | "savunma" | null;
+  ikmal: BirlikIkmal;
+  esir: BirlikEsirKarari;
+}
+
+/** Aktif savaştaki birlik durumu (savaş bitince null). */
+export interface BirlikSavasDurumu {
+  /** Savaş başlarken (seferberlikten önce) er sayısı; savaş sonu terhis bu sayının altına inmez. */
+  er_once?: number;
+  baslangic_yili: number;
+  /** Savaş başında seçilen seferberlik türü (null = henüz seçilmedi). */
+  seferberlik: BirlikSeferberlik | null;
+  /** Seferberlikle gelen ve hâlâ hayatta olan erlerin sayısı (sağlam + yaralı); savaş sonunda zaferde %35–45'i, yenilgide %20–25'i kadroda kalır. */
+  seferberlik_er: number;
+  /** Seferberlik erlerinden yaralı olanlar (b.yarali'nin alt kümesi). */
+  seferberlik_yarali?: number;
+  /** Seferberlikle gelenlerin teçhizat kalitesi (seçilen kademeye göre). */
+  seferberlik_kalite?: BirlikKalite;
+  /** Savaşın kaçıncı yılı (1'den başlar); 3. yılda tek karar savaşı yapılır. */
+  yil_sayac?: number;
+  /** Karar savaşının sonucu (henüz yapılmadıysa null). */
+  sonuc?: "zafer" | "yenilgi" | null;
+  /** Savaş başı toplam er (savaş öncesi + seferberlik) ve savaş boyu birikmiş ölü/firar (tavan için). */
+  baslangic_toplam?: number;
+  olu_toplam?: number;
+  firar_toplam?: number;
+  /** Bu yıl gerçekleşen arazi ve inisiyatif. */
+  arazi: BirlikArazi;
+  inisiyatif: "saldiri" | "savunma";
+  /** Düşmanın, ulusal ordu gücüne oranı (0,85-1,25). */
+  dusman_orani: number;
+  /** Düşmanın baskın birliği (taş-kağıt-makas bonusu için). */
+  dusman_tur: BirlikTur | "karma";
+  kanat_zafer: number;
+  kanat_yenilgi: number;
+  /** Genel savaş sonucu: şimdiye dek kazanılan / kaybedilen yıl sayısı. */
+  genel_zafer: number;
+  genel_yenilgi: number;
+  /** Savaş başında seçilen komutan emri (savaş boyu sabit). */
+  emir?: string | null;
+  /** Kiralık ordu: savaş süresince tutulan eğitimli paralı sayısı. */
+  kiralik_er?: number;
+}
+
+export interface BirlikDurumu {
+  /** Kalite başına er sayısı; toplamı `meslek_musteri` ile aynıdır (motor senkron tutar). */
+  kalite: Record<BirlikKalite, number>;
+  /** Yeni gelen erlerin kalitesi (ücretli). */
+  hedef_kalite: BirlikKalite;
+  /** Teçhizat kalitesi değişimine kilit: bu yıla kadar değiştirilemez (5 yıl). */
+  kalite_kilit_bitis: number | null;
+  /** Özel birlik seviyesi (0-3): seviye arttıkça seçili tür sayısı artar (1/2/3), toplam pay %15/%20/%25. */
+  birlik_seviye: number;
+  birlik_turler: BirlikTur[];
+  birlik_kilit_bitis: number | null;
+  /** Kuşatma kolu / topçu bataryası seviyesi (0-2); pay almaz. */
+  kusatma_seviye: number;
+  /** Talim / savaş tecrübesi (0-100): ordunun ortalama eğitimi. */
+  talim: number;
+  talim_politikasi: BirlikTalim;
+  ganimet_payi: BirlikGanimetPayi;
+  ton: BirlikTon;
+  moral: number;
+  sertlik: number;
+  /** Açık görev id'leri (slot sayısı rütbeyle). */
+  gorevler: string[];
+  /** Seçilen doktrin id'leri (rütbe seviyesi başına bir). */
+  doktrinler: string[];
+  /** Seçilmeyi bekleyen doktrin seviyesi; doluysa oyun devam etmez. */
+  bekleyen_doktrin: number | null;
+  /** Karar bekleyen esir sayısı (S3+: idam/serbest/sat; öncesinde otomatik). */
+  esir_bekleyen: number;
+  /** Son hesaplanan askerî güç (pazar payı bunu okur; her değişimde yenilenir). */
+  guc: number;
+  savas: BirlikSavasDurumu | null;
+  /** Bu yılın savaş kararları (savaş yoksa null). */
+  savas_karari: BirlikSavasKarari | null;
+  /** Kuşatma/sefer sonrası kalıcı bonus için: ele geçirilen kale sayısı (ek sistem, şimdilik 0). */
+  kale: number;
+  /** Aşırılık (sertlik) olayının son yılı. */
+  asiri_son_yil: number | null;
+  /** Bir sonraki çatışmanın zarına eklenen geçici bonus (olay/karar etkisi; yıllık çözümde tüketilir). */
+  zar_bonusu: number;
+  /** Erzak karşılama oranı (0-1): 1 = yeterli. Savaş kararları/kıtlık düşürür, yıllık çözümde yeniden hesaplanır. */
+  erzak_oran: number;
+  /** Sonraki barış çatışmasına kalan bekleme (yıl); savaşta DURUR, çatışmadan sonra BARIS_BEKLEME yıl. */
+  baris_bekleme?: number;
+  /** Ele geçirilen her kalenin yıllık net geliri (enflasyonsuz). */
+  kale_gelir?: number[];
+  /** Ordunun bir kısmı seferde (Haçlı/sefer yolculuğu) mi. */
+  seferde?: boolean;
+  /** Tedavi gören yaralı er sayısı (kadroda sayılır; görev ve savaş gücüne katılmaz). */
+  yarali?: number;
+  /** Yıllık iyileşen yaralı sayısı (yaralı eklenince ceil(yaralı ÷ süre) ile yenilenir). */
+  yarali_hizi?: number;
+}
+
 /** Meslek işletmesi (şu an yalnız Tüccar; 2026-10 dikey dilim). Diğer meslekler null → eski maaş sistemi. */
 export interface IsletmeDurumu {
   hatlar: IsletmeHat[];
   /** Kalıcı yatırım kademeleri (id → 0-3). */
   yatirimlar: Record<string, number>;
+  /** Her yatırım kademesi için ÖDENEN tutar (id → kademe sırasıyla); kapasite kademesi düşürülürken iadenin %40'ı bundan hesaplanır. Eski kayıtlarda yoksa güncel fiyat varsayılır. */
+  yatirim_odenen?: Record<string, number[]>;
   /** Tedarikçiye veresiye borç (faizsiz); kârdan %60'a kadar yıllık kapanır. */
   tedarikci_borcu: number;
   son_dokum: IsletmeDokum | null;
@@ -1109,6 +1282,8 @@ export interface IsletmeDurumu {
   tekel_hat?: string | null;
   /** Yalnız Din Adamı (cemaat modu). */
   cemaat?: CemaatDurumu;
+  /** Yalnız Asker (birlik modu). */
+  birlik?: BirlikDurumu;
 }
 
 /** Dünya dönemi "sıcak ürün" bilgisi (deterministik) — kart etiketi için. */
@@ -1204,6 +1379,16 @@ export interface SonucEtkisi {
   hizip_ata?: string;
   /** Asker'e özel: ordu_techizat_seviyesi'ni artırır (0-100 aralığında kelepçelenir). */
   ordu_techizat_artis?: number;
+  /** Asker (birlik modu): ordunun er sayısını değiştirir (+ gönüllü, − kayıp); tam sayıya yuvarlanır. */
+  er_degisim?: number;
+  /** Asker: esir ekler (kararı bekleyen esir sayısına). */
+  esir_ekle?: number;
+  /** Asker: moral değişimi (±). */
+  moral_degisim?: number;
+  /** Asker: bir sonraki çatışmanın zarına eklenen geçici bonus (± puan, yıllık çözümde tüketilir). */
+  savas_zar_bonusu?: number;
+  /** Asker: erzak karşılamasını (0-1) bu yıl için değiştirir (±). */
+  erzak_degisim?: number;
   /** Tüccar'a özel: ticaret_sermaye'yi artırır. */
   ticaret_sermaye_artis?: number;
   /** Din Adamı'na özel: nufuz'u artırır. */

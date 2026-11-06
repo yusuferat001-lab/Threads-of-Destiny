@@ -106,7 +106,10 @@ describe("Mesleğe Yatkınlık Kademeleri (2026-09 sonu)", () => {
   it("meslek_maas_carpani maaş kırılımında ayrı bir kalıcı ('kariyer') kalemi olarak görünür", () => {
     const state = createCharacter("Orta Çağ", "Fransa", "kasaba");
     state.yatkinliklar.savas = 30; // mükemmel
-    mesleğiSec(state, "Asker"); // v10: işletmeli üç meslekte maaş yatkınlığı gelire girmez; yalnız Asker
+    mesleğiSec(state, "Asker");
+    // Dört meslek de işletmeli olduğundan maaş yatkınlığı kalemi yalnız maaşlı (tanımsız) bir meslekte görünür.
+    state.meslek = "Köylü";
+    state.isletme = null;
     const kirilim = maasKirilimHesapla(state);
     const kalem = kirilim.kariyerKalemler.find((k) => k.ad === "Mesleğe yatkınlığın");
     expect(kalem).toBeTruthy();

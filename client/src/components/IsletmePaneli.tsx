@@ -26,6 +26,7 @@ interface Props {
   yukleniyor: boolean;
   onKarar: (hatlar: IsletmeKararGirdisi[]) => void;
   onYatirim: (yatirimId: string) => void;
+  onYatirimDusur?: (yatirimId: string) => void;
   onCalisanAl: (adayId: string) => void;
   onEkipCikar: (ekipId: string) => void;
   /** Telefon ana ekranı sayfaları: yalnız bir bölümü çiz (varsayılan hepsi). */
@@ -211,6 +212,18 @@ const SALDIRI_SONUCLARI: Record<string, D> = {
   sabotaj: { tr: 'deponu yaktı ve bozdu', en: 'burned and ruined your warehouse' },
   nakit: { tr: 'seni zarara uğrattı', en: 'hurt your finances' },
 };
+/** Asker (birlik modu) rakip komutan saldırıları. */
+const ASKER_SALDIRI_SONUCLARI: Record<string, D> = {
+  baskin: { tr: 'kışlana baskın düzenledi, kasayı boşalttı', en: 'raided your barracks and emptied the strongbox' },
+  er_ayartma: { tr: 'erlerini yüksek solla ayarttı', en: 'lured your men away with better pay' },
+  sabotaj: { tr: 'cephaneliğini bozdu, teçhizatın zarar gördü', en: 'sabotaged your armoury; your gear was damaged' },
+  entrika: { tr: 'saray çevresinde seni kötüledi', en: 'slandered you at court' },
+  firar: { tr: 'birliğinde toplu firar başlattı', en: 'sparked a mass desertion in your ranks' },
+};
+const ASKER_SALDIRI_ENGELLENDI: Record<string, D> = {
+  baskin: { tr: 'kışlana baskına geldi, nöbetçilerin püskürttü', en: 'came to raid your barracks; your sentries drove them off' },
+  sabotaj: { tr: 'cephaneliğine sızmaya geldi, nöbetçilerin yakaladı', en: 'tried to sneak into your armoury; your sentries caught them' },
+};
 const SALDIRI_ENGELLENDI: Record<string, D> = {
   baskin: { tr: 'dükkânı basmaya/taşlamaya geldi, güvenliğin püskürttü', en: 'came to raid your shop; your guards drove them off' },
   sabotaj: { tr: 'deponu yakmaya geldi, güvenliğin püskürttü', en: 'came to burn your warehouse; your guards drove them off' },
@@ -251,17 +264,58 @@ export function isletmeUyariMetni(u: IsletmeUyari, durum: IsletmeGorunumu, dil: 
       case 'rakip_saldiri': {
         const kim = u.rakip ?? (en ? 'The rival' : 'Rakip');
         const tur = u.sonuc ?? 'nakit';
-        if (u.engellendi) return `🛡️ ${kim}: ${d(SALDIRI_ENGELLENDI[tur] ?? SALDIRI_ENGELLENDI.baskin)}`;
+        const askerMi = !!durum.birlik;
+        if (u.engellendi) return `🛡️ ${kim}: ${d(askerMi ? ASKER_SALDIRI_ENGELLENDI[tur] ?? ASKER_SALDIRI_ENGELLENDI.baskin : SALDIRI_ENGELLENDI[tur] ?? SALDIRI_ENGELLENDI.baskin)}`;
         const kayiplar: string[] = [];
         if (u.musteriKaybi) kayiplar.push(en ? `you lost ${formatMusteri(dil, u.musteriKaybi)} customers` : `${formatMusteri(dil, u.musteriKaybi)} müşteri kaybettin`);
         if (u.tutar) kayiplar.push(`${formatPara(u.tutar)} ${pb}`);
         if (u.urunYuzde) kayiplar.push(en ? `${u.urunYuzde}% of stock` : `stokun %${u.urunYuzde}'i`);
         if (u.sohretKaybi) kayiplar.push(en ? `fame −${u.sohretKaybi}` : `şöhret −${u.sohretKaybi}`);
         const sizma = u.sizma ? ` 🕵️ ${en ? `${u.isim ?? ''} leaked inside information (+30% damage, guards bypassed).` : `${u.isim ?? ''} içeriden bilgi sızdırdı (hasar %30 arttı, güvenlik devre dışı).`}` : '';
-        return `⚔️ ${kim} ${d(SALDIRI_SONUCLARI[tur] ?? SALDIRI_SONUCLARI.nakit)}${kayiplar.length ? ` — ${kayiplar.join(', ')}` : ''}.${sizma}`;
+        return `⚔️ ${kim} ${d(askerMi ? ASKER_SALDIRI_SONUCLARI[tur] ?? SALDIRI_SONUCLARI.nakit : SALDIRI_SONUCLARI[tur] ?? SALDIRI_SONUCLARI.nakit)}${kayiplar.length ? ` — ${kayiplar.join(', ')}` : ''}.${sizma}`;
       }
       case 'vergi_indirimi_bitti':
         return en ? '🧾 Your tax reduction has ended.' : '🧾 Vergi indirimin sona erdi.';
+      case 'firar':
+        return en ? `🏃 ${u.sayi ?? 0} men deserted.` : `🏃 ${u.sayi ?? 0} er firar etti.`;
+      case 'savas_kayip':
+        return en
+          ? `⚰️ ${u.sayi ?? 0} men fell${u.yaralanan ? `, ${u.yaralanan} wounded` : ''}.`
+          : `⚰️ ${u.sayi ?? 0} er düştü${u.yaralanan ? `, ${u.yaralanan} yaralı` : ''}.`;
+      case 'yarali_iyilesti':
+        return en ? `🩹 ${u.sayi ?? 0} wounded men recovered.` : `🩹 ${u.sayi ?? 0} yaralı er iyileşip saflara döndü.`;
+      case 'limit_asimi':
+        return en ? '🏚️ More men than your barracks can hold — upkeep and rations cost far more.' : '🏚️ Kışlanın barındırabildiğinden fazla erin var; masraf ve erzak çok daha pahalıya geliyor.';
+      case 'esir':
+        return en ? `⛓️ ${u.sayi ?? 0} prisoners were taken.` : `⛓️ ${u.sayi ?? 0} esir alındı.`;
+      case 'seferberlik_terhis':
+        return en ? `🎖️ ${u.sayi ?? 0} wartime recruits were discharged.` : `🎖️ Savaş devşirmesinden ${u.sayi ?? 0} er terhis edildi.`;
+      case 'savas_sonu':
+        return u.savasSonucu === 'zafer'
+          ? (en ? '🏆 The war ended in victory.' : '🏆 Savaş zaferle bitti.')
+          : (en ? '🏳️ The war ended in defeat; your army is worn thin.' : '🏳️ Savaş yenilgiyle bitti; ordun yıprandı.');
+      case 'baris_catisma': {
+        const hd = u.catismaTur === 'sinir';
+        const kazan = u.savasSonucu === 'zafer';
+        const ad = en ? (hd ? 'enemy raiders' : 'a band of deserter bandits') : (hd ? 'düşman akıncıları' : 'firari haydutlar');
+        const ganimet = u.tutar ? (en ? ` Loot: +${formatPara(u.tutar)} ${pb}.` : ` Ganimet: +${formatPara(u.tutar)} ${pb}.`) : '';
+        const esir = u.sayi ? (en ? ` ${u.sayi} prisoners.` : ` ${u.sayi} esir.`) : '';
+        return kazan
+          ? `⚔️ ${en ? 'You crushed' : 'Şunu bozguna uğrattın:'} ${ad}.${ganimet}${esir}`
+          : `🩸 ${en ? 'You were beaten back by' : 'Şuna yenildin:'} ${ad}.${ganimet}`;
+      }
+      case 'savas_ganimet':
+        return en
+          ? `💰 Victory spoils: +${formatPara(u.tutar ?? 0)} ${pb}${u.sayi ? `, ${u.sayi} prisoners` : ''}.`
+          : `💰 Zafer ganimeti: +${formatPara(u.tutar ?? 0)} ${pb}${u.sayi ? `, ${u.sayi} esir` : ''}.`;
+      case 'kale':
+        return en ? '🏰 You captured a fortress.' : '🏰 Bir kale ele geçirdin.';
+      case 'madalya':
+        return `🎖️ ${dil === 'en' ? 'Honour earned' : 'Unvan kazandın'}: ${kt(dil, u.isim ?? '')}`;
+      case 'yagma':
+        return en
+          ? `🔥 Plunder this year: +${formatPara(u.tutar ?? 0)} ${pb}${u.sayi ? `, ${u.sayi} recruits` : ''}.`
+          : `🔥 Bu yıl yağmadan: +${formatPara(u.tutar ?? 0)} ${pb}${u.sayi ? `, ${u.sayi} gönüllü` : ''}.`;
       case 'imtiyaz_bitti':
         return `📜 ${u.hat && IMTIYAZ_ADLARI[u.hat] ? d(IMTIYAZ_ADLARI[u.hat]) : ''}: ${en ? 'expired' : 'sona erdi'}`;
       default:
@@ -269,7 +323,7 @@ export function isletmeUyariMetni(u: IsletmeUyari, durum: IsletmeGorunumu, dil: 
     }
   }
 
-export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onCalisanAl, onEkipCikar, bolum = 'hepsi' }: Props) {
+export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onYatirimDusur, onCalisanAl, onEkipCikar, bolum = 'hepsi' }: Props) {
   const { dil } = useDil();
   const t = (k: Exclude<keyof typeof M, 'donem'>) => M[k][dil];
   const d = (m: D) => m[dil];
@@ -544,6 +598,7 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
         sadakatAdi={M.sadakat}
         riskliAciklama={M.riskli}
         onYatirim={onYatirim}
+        onYatirimDusur={onYatirimDusur}
         onCalisanAl={onCalisanAl}
         onEkipCikar={onEkipCikar}
       />

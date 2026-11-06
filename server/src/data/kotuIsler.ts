@@ -1,5 +1,4 @@
 import type { Cag, Kategori, UlkeKrizi } from "../types";
-import type { AjanRolu } from "./ajanlar";
 
 /**
  * "Karanlık / illegal işler" kataloğu — Kariyer ekranındaki "Karanlık İşler"
@@ -39,6 +38,8 @@ export interface KotuIsEtki {
   /** Meslek metrikleri (yalnız ilgili meslekte anlamlı). */
   uretim_kapasitesi?: number;
   ordu_techizat?: number;
+  /** Asker (birlik modu): "kazan" = geçen yılın devlet payını cebine ayır, "ceza" = yakalanma (payın iki katı ceza). */
+  ganimet_sakla?: "kazan" | "ceza";
   /** Yönetimle bağlar (§35): kral/vali ve patron hattına delta. */
   yonetim_iliski?: number;
   patron_iliski?: number;
@@ -71,70 +72,13 @@ export interface KotuIsTanimi {
   rakipKirmaYuzde?: number;
   /** Başarılı dalda hedef rakip doğrudan saf dışı kalır. */
   rakipYenilt?: boolean;
-  /** Bu işi senin yerine çevirebilecek ajan rolü (§43 Faz 2, data/ajanlar.ts). */
-  ajanRolu?: AjanRolu;
-  /** Yalnız bir ajana yaptırılabilir (kendin çeviremezsin). */
-  sadeceAjan?: boolean;
-  /** İşletmesi olan mesleklerde (§45) HERHANGİ bir çalışanın yapabildiği iş; ajan rolü aranmaz. */
+  /** İşletmesi olan mesleklerde (§45) HERHANGİ bir çalışanın yapabildiği iş. */
   calisanIsi?: boolean;
   basarili: KotuIsEtki;
   basarisiz: KotuIsEtki;
 }
 
 export const KOTU_ISLER: KotuIsTanimi[] = [
-  // ===== GENEL (her meslek) =====
-  {
-    id: "rakibi_korkut",
-    ajanRolu: "Kabadayı",
-    simge: "🗡️",
-    basariSansi: 76,
-    cooldownYil: 1,
-    rakipKirmaYuzde: 0.14,
-    basarili: { para: 6, un: 2, ahlak: -6, mutluluk: 2, rakip_puani: -10, suc_sinifi: "kucuk", kariyer_puani: 2 },
-    basarisiz: { ahlak: -3, mutluluk: -3, rakip_puani: -3, suc_sinifi: "orta" },
-  },
-  {
-    id: "adam_dov",
-    simge: "👊",
-    basariSansi: 66,
-    yatkinlik: "savas",
-    cooldownYil: 1,
-    basarili: { mutluluk: 9, ahlak: -14, suc_sinifi: "orta" },
-    basarisiz: { saglik: -12, ahlak: -6, mutluluk: -5, suc_sinifi: "buyuk", hapis_sansi: 0.1 },
-  },
-  {
-    id: "birini_soy",
-    ajanRolu: "Hırsız",
-    simge: "💰",
-    basariSansi: 56,
-    cooldownYil: 2,
-    basarili: { para: 24, ahlak: -16, mutluluk: 2, suc_sinifi: "buyuk" },
-    basarisiz: { saglik: -10, ahlak: -4, suc_sinifi: "agir", hapis_sansi: 0.25 },
-  },
-  {
-    id: "isyeri_yak",
-    ajanRolu: "Kabadayı",
-    simge: "🔥",
-    basariSansi: 44,
-    yatkinlik: "savas",
-    cooldownYil: 4,
-    rakipKirmaYuzde: 0.45,
-    basarili: { para: 30, un: -4, ahlak: -22, mutluluk: 2, rakip_puani: -30, suc_sinifi: "buyuk", kariyer_puani: 6 },
-    basarisiz: { saglik: -18, ahlak: -6, suc_sinifi: "agir", olum_sansi: 6, hapis_sansi: 0.35 },
-  },
-
-  {
-    id: "suikast_ettir",
-    simge: "☠️",
-    basariSansi: 40,
-    cooldownYil: 8,
-    rakipYenilt: true,
-    ajanRolu: "Suikastçı",
-    sadeceAjan: true,
-    basarili: { musteri: 12, ahlak: -24, suc_sinifi: "buyuk" },
-    basarisiz: { ahlak: -6, suc_sinifi: "agir", hapis_sansi: 0.3 },
-  },
-
   // ===== TÜCCAR — işletmeni etkileyen 3 iş (kendin ya da bir çalışanınla, §45) =====
   {
     id: "rakibe_iftira",
@@ -207,7 +151,6 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
   // ===== ZANAATKÂR — lonca/üretim =====
   {
     id: "formul_cal",
-    ajanRolu: "Casus",
     simge: "🔍",
     basariSansi: 58,
     meslekler: ["Zanaatkâr"],
@@ -243,20 +186,20 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
   // ===== ASKER — sokak/asayiş =====
   {
     id: "kaos_cikar",
-    ajanRolu: "Kabadayı",
     simge: "🌪️",
     basariSansi: 55,
     meslekler: ["Asker"],
+    calisanIsi: true,
     cooldownYil: 5,
     basarili: { para: 16, yonetim_iliski: 8, musteri: 15, ahlak: -18, suc_sinifi: "buyuk", kriz: { tur: "isyan", sureYil: 1 } },
     basarisiz: { saglik: -10, ahlak: -5, suc_sinifi: "agir", hapis_sansi: 0.25 },
   },
   {
     id: "kaza_duello",
-    ajanRolu: "Suikastçı",
     simge: "🤺",
     basariSansi: 45,
     meslekler: ["Asker"],
+    calisanIsi: true,
     cooldownYil: 6,
     rakipYenilt: true,
     basarili: { un: 6, musteri: 18, ahlak: -16, suc_sinifi: "orta", kariyer_puani: 4 },
@@ -264,13 +207,24 @@ export const KOTU_ISLER: KotuIsTanimi[] = [
   },
   {
     id: "kervan_baskini",
-    ajanRolu: "Kabadayı",
     simge: "🏴",
     basariSansi: 60,
     meslekler: ["Asker"],
+    calisanIsi: true,
     cooldownYil: 2,
-    basarili: { para: 18, ordu_techizat: 8, musteri: 9, ahlak: -12, suc_sinifi: "orta" },
+    basarili: { para: 18, musteri: 9, ahlak: -12, suc_sinifi: "orta" },
     basarisiz: { saglik: -12, ahlak: -4, suc_sinifi: "buyuk", hapis_sansi: 0.15 },
+  },
+  {
+    id: "ganimeti_sakla",
+    simge: "🪙",
+    basariSansi: 55,
+    meslekler: ["Asker"],
+    calisanIsi: true,
+    cooldownYil: 3,
+    // Etki: geçen yıl devlete giden ganimet payını cebine ayır; yakalanırsan payın iki katı ceza + otorite/şöhret kaybı.
+    basarili: { ganimet_sakla: "kazan", ahlak: -10, suc_sinifi: "orta" },
+    basarisiz: { ganimet_sakla: "ceza", un: -4, yonetim_iliski: -10, suc_sinifi: "buyuk" },
   },
 ];
 
@@ -280,17 +234,12 @@ export function kotuIsTanimiGetir(id: string): KotuIsTanimi | undefined {
 
 /** Bu karaktere (meslek + çağ) görünen karanlık işler. */
 export function uygunKotuIsler(meslek: string, cag: Cag): KotuIsTanimi[] {
-  // İşletme dilimi (§45): işletmesi olan mesleklerin listesi yalnız kendi 3 işidir; genel işler gelmez.
-  if (meslek === "Tüccar" || meslek === "Zanaatkâr" || meslek === "Din Adamı") return KOTU_ISLER.filter((k) => k.meslekler?.includes(meslek) && (!k.cag || k.cag === cag));
-  return KOTU_ISLER.filter((k) => (!k.meslekler || k.meslekler.includes(meslek)) && (!k.cag || k.cag === cag));
+  // Dört meslek de işletmeli: her mesleğin listesi yalnız kendi karanlık işleridir.
+  return KOTU_ISLER.filter((k) => k.meslekler?.includes(meslek) && (!k.cag || k.cag === cag));
 }
 
 /** Kanonik (TR) iş adları — K() ile çevrilir, sonuç mesajlarında kullanılır. */
 export const KOTU_IS_ADLARI: Record<string, string> = {
-  rakibi_korkut: "Rakibini Korkut",
-  adam_dov: "Zevkine Adam Döv",
-  birini_soy: "Birini Soy",
-  isyeri_yak: "Rakibin İş Yerini Yak",
   rakibe_iftira: "Rakibe İftira At",
   kervan_yagmalat: "Rakibin Kervanını Yağmalat",
   gumruk_rusvet: "Gümrüğe Rüşvet",
@@ -303,5 +252,5 @@ export const KOTU_IS_ADLARI: Record<string, string> = {
   kaos_cikar: "Kaos Çıkar, Koruma Sat",
   kaza_duello: "Kaza Süsü Verilmiş Düello",
   kervan_baskini: "Kervan Baskını",
-  suikast_ettir: "Rakibi Ortadan Kaldırt",
+  ganimeti_sakla: "Ganimeti Sakla",
 };

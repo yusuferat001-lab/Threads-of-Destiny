@@ -16,10 +16,12 @@ interface ButcePaneliProps {
   gecmis: GecmisNoktasi[];
   /** İşletmesi olan meslekte "maaş" yerine son yılın kârı gösterilir, maaş kırılımı gizlenir. */
   isletmeAktif?: boolean;
+  /** Mesleğe göre etiket (Ordu/Cemaat/Atölye/Dükkân neti). */
+  meslek?: string;
 }
 
 /** Gelir & gider dökümü ("Bütçen") — Evin ekranından Kariyer ekranına taşındı (2026-10). */
-export function ButcePaneli({ finans, paraBirimi, gecmis, isletmeAktif = false }: ButcePaneliProps) {
+export function ButcePaneli({ finans, paraBirimi, gecmis, isletmeAktif = false, meslek = '' }: ButcePaneliProps) {
   const { m, kt, dil } = useDil();
   const { maasYillik, giderKalemleri, netYillik, maasKirilim, gayrimenkulYillikGelir } = finans;
   const kirilimKalem = (kalemler: { ad: string; yuzde: number }[]) =>
@@ -32,6 +34,14 @@ export function ButcePaneli({ finans, paraBirimi, gecmis, isletmeAktif = false }
     giderKalemleri.savasVergisi +
     finans.krediTaksit;
   const gercekNet = netYillik + gayrimenkulYillikGelir;
+  const netEtiketi =
+    meslek === 'Asker'
+      ? dil === 'en' ? '💰 Army net (last year)' : '💰 Ordu neti (geçen yıl)'
+      : meslek === 'Din Adamı'
+        ? dil === 'en' ? '💰 Parish net (last year, after tax and wages)' : '💰 Cemaat neti (geçen yıl, vergi ve maaş sonrası)'
+        : meslek === 'Zanaatkâr'
+          ? dil === 'en' ? '💰 Workshop net (last year, after tax and wages)' : '💰 Atölye neti (geçen yıl, vergi ve maaş sonrası)'
+          : dil === 'en' ? '💰 Shop net (last year, after tax and wages)' : '💰 Dükkan neti (geçen yıl, vergi ve maaş sonrası)';
 
   return (
     <section className="butce-paneli">
@@ -39,7 +49,7 @@ export function ButcePaneli({ finans, paraBirimi, gecmis, isletmeAktif = false }
 
           <div className="finans-karti">
             <div className="finans-satiri finans-gelir">
-              <span>{isletmeAktif ? (dil === 'en' ? "💰 Shop net (last year, after tax and wages)" : '💰 Dükkan neti (geçen yıl, vergi ve maaş sonrası)') : m.feYillikMaas}</span>
+              <span>{isletmeAktif ? netEtiketi : m.feYillikMaas}</span>
               <span className={maasYillik < 0 ? 'finans-net-negatif' : undefined}>
                 {maasYillik >= 0 ? '+' : '−'}{formatPara(Math.abs(maasYillik))} {paraBirimi}
               </span>

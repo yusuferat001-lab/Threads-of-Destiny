@@ -10,6 +10,7 @@ import {
   TEZGAH_URETIM_KADEME,
   TEZGAH_FIYAT_PRIMI,
 } from "./isletme";
+import { DEVSIRME_BUROSU_ER, KISLA_BAKIM, KISLA_ER_LIMITI, REVIR_KAYIP_KADEME } from "../data/birlik";
 import { ASEVI_AHLAK_YILLIK, ASEVI_INANAN_YILLIK, ASEVI_KADEME_ETKISI, BINA_BAKIM, BINA_KAPASITE, OKUL_MEZUN_SANSI } from "../data/cemaat";
 
 /** 12.5 → "12,5" (tr) / "12.5" (en); tam sayılar ondalıksız. */
@@ -62,6 +63,20 @@ export function yatirimEtkiMetni(etki: YatirimEtkisi, kademe: number, enflasyon:
       const i = Math.min(k, OKUL_MEZUN_SANSI.length - 1);
       return dili((d) => (i === 0 ? (d === "tr" ? "Etki yok" : "No effect") : `${d === "tr" ? "Yıllık mezun şansı" : "Yearly graduate chance"} ${yuzde(OKUL_MEZUN_SANSI[i] * 100, d)}`));
     }
+    case "kisla": {
+      const i = Math.min(k, KISLA_ER_LIMITI.length - 1);
+      return dili((d) =>
+        d === "tr"
+          ? `${KISLA_ER_LIMITI[i]} er komuta kapasitesi · bakım ${sayi(r2(KISLA_BAKIM[i] * enflasyon), d)}/yıl`
+          : `Holds ${KISLA_ER_LIMITI[i]} soldiers · upkeep ${sayi(r2(KISLA_BAKIM[i] * enflasyon), d)}/yr`
+      );
+    }
+    case "revir":
+      return dili((d) => (k === 0 ? (d === "tr" ? "Etki yok" : "No effect") : d === "tr" ? `Savaş kaybı ${eksi(k * REVIR_KAYIP_KADEME * 100, d)} · moral +${sayi(k * 0.75, d)}/yıl` : `Combat losses ${eksi(k * REVIR_KAYIP_KADEME * 100, d)} · morale +${sayi(k * 0.75, d)}/yr`));
+    case "devsirme": {
+      const i = Math.min(k, DEVSIRME_BUROSU_ER.length - 1);
+      return dili((d) => (i === 0 ? (d === "tr" ? "Etki yok" : "No effect") : d === "tr" ? `Yıllık +${DEVSIRME_BUROSU_ER[i]} er` : `+${DEVSIRME_BUROSU_ER[i]} soldiers/yr`));
+    }
     case "yardim":
       return dili((d) => {
         if (k === 0) return d === "tr" ? "Etki yok" : "No effect";
@@ -80,8 +95,8 @@ export function yatirimEtkiMetni(etki: YatirimEtkisi, kademe: number, enflasyon:
 export function yatirimMasrafGorunumu(y: YatirimTanimi, kademe: number, enflasyon: number): { yillikMasraf: number; sonrakiMasraf: number | null } {
   const r2 = (n: number) => Math.round(n * 100) / 100;
   const sonVar = kademe < y.fiyatlar.length;
-  if (y.etki === "depo" || y.etki === "bina") {
-    const tablo = y.etki === "depo" ? DEPO_BAKIM : BINA_BAKIM;
+  if (y.etki === "depo" || y.etki === "bina" || y.etki === "kisla") {
+    const tablo = y.etki === "depo" ? DEPO_BAKIM : y.etki === "kisla" ? KISLA_BAKIM : BINA_BAKIM;
     const simdi = tablo[Math.min(kademe, tablo.length - 1)] * enflasyon;
     const sonraki = tablo[Math.min(kademe + 1, tablo.length - 1)] * enflasyon;
     return { yillikMasraf: r2(simdi), sonrakiMasraf: sonVar ? r2(sonraki - simdi) : null };

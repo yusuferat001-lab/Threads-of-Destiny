@@ -1,3 +1,4 @@
+import { MADALYA_ADLARI } from "../data/birlik";
 import { randomUUID } from "crypto";
 import { CharacterState, Cag, Dil, Kategori, SonucEtkisi, YatkinlikKaynagi, KisilikEksenleri, UlkeKrizi, UlkeDurumu, DonemDurumu, DonemTuru, MulkTuru, SahipOlunanEsya, AileTalep, YonetimTalep, IkiDilMetin, UlkeGecmisiKaydi, EvcilHayvan } from "../types";
 import { T, K, ikiDilT } from "../i18n";
@@ -51,6 +52,7 @@ import {
   STOK_EKSI_NAKIT_LIMITI,
 } from "./isletme";
 import { isletmeMeslegiMi } from "../data/meslekProfilleri";
+import { ASKER_PAZAR_BASLANGIC, BASLANGIC_ER } from "../data/birlik";
 import {
   DONEM_SURE,
   DONEM_ADLARI,
@@ -653,52 +655,6 @@ export function maasKirilimHesapla(state: CharacterState): MaasKirilim {
   };
 }
 
-/** Asker'in ordusunun saldırı gücü: mevcut asker sayısı × teçhizat seviyesine bağlı çarpan. */
-export function saldiriGucuHesapla(state: CharacterState): number {
-  return Math.round(state.ordu_mevcudu * (1 + state.ordu_techizat_seviyesi / 100));
-}
-
-/**
- * Meslek-özel derinlik metriğinin (saldırı gücü / ticaret sermayesi / nüfuz)
- * ilgili kategorideki para ödüllerine uyguladığı merkezi çarpan. Yalnızca
- * mesleğin kendi kategorisinde ve kazanç varken devreye girer; onlarca olayı
- * tek tek değiştirmek yerine tek bir yerde uygulanır.
- */
-export function meslekMetrikCarpani(state: CharacterState, kategori: Kategori): number {
-  if (MESLEK_KATEGORI[state.meslek] !== kategori) return 1;
-  if (state.meslek === "Asker") return 1 + saldiriGucuHesapla(state) / 200;
-  // v10: Tüccar (ticaret sermayesi) ve Din Adamı (nüfuz) çarpanları KALDIRILDI — işletmeli meslekler
-  // olay parasını çarpmaz; gelir işletme motorundan gelir (Zanaatkâr zaten ×1).
-  // Zanaatkâr: uretim_kapasitesi şimdilik BİLİNÇLİ OLARAK etkisiz (×1) —
-  // dengesi sonraya bırakıldı (kullanıcı isteği). Olaylar sayacı doldursun,
-  // aktive edilmek istendiğinde tek satır: `1 + state.uretim_kapasitesi / N`.
-  return 1;
-}
-
-export const ORDU_MEVCUDU_TAVANI = 300;
-
-/** Savaş kategorisinde her seçimde (Asker için) ordu mevcudunda kayıp uygular; savaş sırasında çok daha ciddi. */
-export function orduKaybiUygula(state: CharacterState, basarili: boolean): number {
-  if (state.meslek !== "Asker" || state.ordu_mevcudu <= 0) return 0;
-  const savasKatsayisi = state.ulke.savasta ? 1 : 0.2;
-  const temelYuzde = basarili ? 0.03 : 0.1;
-  const yuzde = temelYuzde * savasKatsayisi * (0.5 + Math.random());
-  const kayip = Math.round(state.ordu_mevcudu * yuzde);
-  state.ordu_mevcudu = Math.max(0, state.ordu_mevcudu - kayip);
-  return kayip;
-}
-
-/** Barış zamanında Asker'in ordusu zamanla doğal olarak büyür. */
-export function orduBuyumesiDene(state: CharacterState, yasArtisi: number): void {
-  if (state.meslek !== "Asker" || state.ulke.savasta) return;
-  for (let i = 0; i < yasArtisi; i++) {
-    if (Math.random() < 0.25) {
-      state.ordu_mevcudu = Math.min(ORDU_MEVCUDU_TAVANI, state.ordu_mevcudu + 1 + Math.floor(Math.random() * 2));
-    }
-  }
-}
-
-
 export const MESLEKLER = ["Asker", "Tüccar", "Din Adamı", "Zanaatkâr"];
 
 function pickRandom<T>(items: T[]): T {
@@ -1051,7 +1007,7 @@ function astlariGuncelle(state: CharacterState, tanim: RutbeTanimi, seviye: numb
  *  - Çağrı başına en fazla +1 kademe.
  */
 export function rutbeGuncelle(state: CharacterState): void {
-  const tanim = rutbeTanimiGetir(state.meslek, state.cag, state.din_kultur);
+  const tanim = rutbeTanimiGetir(state.meslek, state.cag, state.din_kultur, state.bolge);
   if (!tanim) {
     state.rutbe = state.meslek || "";
     state.rutbe_seviye = Math.max(1, state.rutbe_seviye || 1);
@@ -1529,7 +1485,11 @@ export function mesleğiSec(state: CharacterState, meslek: string): void {
     }
   }
 
-  if (meslek === "Asker") state.ordu_mevcudu = 10;
+  // Asker (birlik modu): 20 er ile başlar; toplam pazar (şehirdeki silahlı kuvvetler) ~185–205 askerî güç ölçeğindedir.
+  if (meslek === "Asker") {
+    state.meslek_musteri = BASLANGIC_ER;
+    state.pazar_musteri = Math.round(ASKER_PAZAR_BASLANGIC[0] + Math.random() * (ASKER_PAZAR_BASLANGIC[1] - ASKER_PAZAR_BASLANGIC[0]));
+  }
 
   // Meslek pazarı (data/pazar.ts): P × (%8–9 + yatkınlık kademesi + aile mirası) müşteriyle başla.
   if (!state.meslek_musteri) {
@@ -2218,7 +2178,8 @@ export function yonetimYillikUygula(state: CharacterState, yasArtisi: number): s
   }
 
   // Ekstra vergi (işletmeli mesleklerde): ilk kez 32 yaşında, sonra 9-13 yılda bir; eşik üstü kârda yönetici net kârın 1 katını ister.
-  if (isletmeMeslegiMi(state.meslek) && state.isletme) {
+  // Asker muaf: vergi/aidat yok, kazancı sold + görev + ganimettir (birlik modu).
+  if (isletmeMeslegiMi(state.meslek) && state.meslek !== "Asker" && state.isletme) {
     if (state.ekstra_vergi_sonraki_yil == null) {
       state.ekstra_vergi_sonraki_yil = ekstraVergiIlkYil(state.yil, state.yas);
     } else if (
@@ -2897,6 +2858,7 @@ const SKOR_KOMIK_OLUM_ILE_OLDU_PUANI = 2000;
 const SKOR_YOLCULUK_TAMAMLAMA_BONUS_PUANI = 2000;
 const SKOR_VEBA_HAYATTA_KALMA_PUANI = 2000;
 const SKOR_HAPIS_BASARILI_KACIS_PUANI = 2000;
+const SKOR_MADALYA_PUANI = 1500;
 
 export interface SkorKirilimi {
   servetPuani: number;
@@ -2940,7 +2902,8 @@ export function hesaplaSkorKirilimi(state: CharacterState): SkorKirilimi {
     (!state.komik_olum_basarili_risk && state.komik_olum_ile_oldu ? SKOR_KOMIK_OLUM_ILE_OLDU_PUANI : 0) +
     (yolculukTamamlandi ? SKOR_YOLCULUK_TAMAMLAMA_BONUS_PUANI : 0) +
     (state.veba_hayatta_kaldi ? SKOR_VEBA_HAYATTA_KALMA_PUANI : 0) +
-    (state.hapis_basarili_kacis ? SKOR_HAPIS_BASARILI_KACIS_PUANI : 0);
+    (state.hapis_basarili_kacis ? SKOR_HAPIS_BASARILI_KACIS_PUANI : 0) +
+    state.unvanlar.filter((u) => MADALYA_ADLARI.includes(u)).length * SKOR_MADALYA_PUANI;
   const temelToplam =
     servetPuani + sohretPuani + ahlakPuani + mutlulukPuani + rutbePuani + isletmePuani + tikPuani + basariOlayiPuani;
   // Eski kayıt/test (hayat_amaclari boş, tekil hayat_amaci dolu) için ×5 fallback korunur.

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { ogretileriTamamla, vergisizSenaryo } from "./_ogreti";
+import { ogretileriTamamla, vergisizSenaryo, bekleyenleriCoz } from "./_ogreti";
 import { olaySec } from "../src/game/olaySecici";
 import { createCharacter, mesleğiSec, etiketEkle } from "../src/game/stateManager";
 import { yeniOyun, mesleğiAta, senaryoUret } from "../src/game/gameEngine";
@@ -46,6 +46,7 @@ describe("yolculuk teklifi garantisi (senaryoUret)", () => {
     etiketEkle(state, ["hizip_secildi"]); // hizip zorunlu seçim kaskadını bu testte atla (2026-09 sonu)
     digerGarantileriGecistir(state);
     state.yas = 31;
+    await bekleyenleriCoz(state.id);
     const senaryo = await senaryoUret(state.id);
     // Asker zaten orduda olduğu için reddetme seçeneği olmayan kendi seferberlik
     // varyantını görür (bkz. gameEngine.ts uygunYolculukTeklifleri).
@@ -58,6 +59,7 @@ describe("yolculuk teklifi garantisi (senaryoUret)", () => {
     etiketEkle(state, ["hizip_secildi"]); // hizip zorunlu seçim kaskadını bu testte atla (2026-09 sonu)
     digerGarantileriGecistir(state);
     state.yas = 31;
+    await bekleyenleriCoz(state.id);
     const senaryo = await senaryoUret(state.id);
     expect(senaryo.olay_basligi).toBe(baslikGetir("yolculuk_savunma_teklif"));
   });
@@ -68,6 +70,7 @@ describe("yolculuk teklifi garantisi (senaryoUret)", () => {
     etiketEkle(state, ["hizip_secildi"]); // hizip zorunlu seçim kaskadını bu testte atla (2026-09 sonu)
     digerGarantileriGecistir(state);
     state.yas = 31;
+    await bekleyenleriCoz(state.id);
     const senaryo = await senaryoUret(state.id);
     expect(senaryo.olay_basligi).toBe(baslikGetir("sd_somurge_gitme_karari"));
   });
@@ -78,6 +81,7 @@ describe("yolculuk teklifi garantisi (senaryoUret)", () => {
     etiketEkle(state, ["hizip_secildi"]); // hizip zorunlu seçim kaskadını bu testte atla (2026-09 sonu)
     digerGarantileriGecistir(state);
     state.yas = 31;
+    await bekleyenleriCoz(state.id);
     const senaryo = await senaryoUret(state.id);
     expect(senaryo.olay_basligi).toBe(baslikGetir("yolculuk_kesif_teklif"));
   });
@@ -88,6 +92,7 @@ describe("yolculuk teklifi garantisi (senaryoUret)", () => {
     etiketEkle(state, ["hizip_secildi"]); // hizip zorunlu seçim kaskadını bu testte atla (2026-09 sonu)
     digerGarantileriGecistir(state);
     state.yas = 31;
+    await bekleyenleriCoz(state.id);
     const senaryo = await senaryoUret(state.id);
     const beklenenler = [
       baslikGetir("yolculuk_kesif_teklif"),
@@ -107,6 +112,7 @@ describe("yolculuk teklifi garantisi (senaryoUret)", () => {
     digerGarantileriGecistir(state);
     state.yas = 31;
     ogretileriTamamla(state);
+    await bekleyenleriCoz(state.id);
     const senaryo = await senaryoUret(state.id);
     expect(senaryo.olay_basligi).toBe(baslikGetir(beklenenId));
   });
@@ -118,6 +124,7 @@ describe("yolculuk teklifi garantisi (senaryoUret)", () => {
     digerGarantileriGecistir(state);
     state.yas = 31;
     state.etiketler.push("yolculuk_tamamlandi");
+    await bekleyenleriCoz(state.id);
     const senaryo = await senaryoUret(state.id);
     expect(senaryo.olay_basligi).not.toBe(baslikGetir("yolculuk_kesif_teklif"));
   });
@@ -128,6 +135,7 @@ describe("yolculuk teklifi garantisi (senaryoUret)", () => {
     etiketEkle(state, ["hizip_secildi"]); // hizip zorunlu seçim kaskadını bu testte atla (2026-09 sonu)
     digerGarantileriGecistir(state);
     state.yas = 31;
+    await bekleyenleriCoz(state.id);
     const ilkSenaryo = await senaryoUret(state.id);
     expect(ilkSenaryo.olay_basligi).toBe(baslikGetir("yolculuk_kesif_teklif"));
     // Reddet seçeneği (üçüncü şık, index 2).
@@ -141,6 +149,7 @@ describe("yolculuk teklifi garantisi (senaryoUret)", () => {
     // cooldown'un dolduğu anı doğrudan simüle ediyoruz (RNG'ye güvenmeden).
     redSonuc.state.etiketler.push("yolculuk_teklifi_zamani");
     digerGarantileriGecistir(redSonuc.state);
+    await bekleyenleriCoz(state.id);
     const tekrarSenaryo = await senaryoUret(state.id);
     expect(tekrarSenaryo.olay_basligi).toBe(baslikGetir("yolculuk_kesif_teklif"));
   });
@@ -243,6 +252,7 @@ describe("yolculuk zinciri uçtan uca (Coğrafi Keşif, deniz rotası)", () => {
       state.yas = 31;
       state.para = 500;
 
+      await bekleyenleriCoz(state.id);
       const teklif = await senaryoUret(state.id);
       expect(teklif.olay_basligi).toBe(baslikGetir("yolculuk_kesif_teklif"));
       let sonuc = await secimUygulaVeCoz(state.id, 0); // deniz yoluyla kabul et

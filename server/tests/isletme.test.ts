@@ -7,6 +7,7 @@ import {
   isletmeDurumGetir,
   isletmeKararVer,
   isletmeYatirimYap,
+  isletmeYatirimDusur,
   isletmeCalisanAl,
   ekipCikar,
   ciftKazancKirp,
@@ -113,10 +114,14 @@ describe("işletme (Tüccar dilimi)", () => {
     }
   });
 
-  it("diğer mesleklerde işletme yok (eski maaş sistemi)", async () => {
+  it("Asker da işletmelidir: stoksuz 'birlik' modu (hat yok, ordu durumu var)", async () => {
     const st = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(st.id, "Asker");
-    expect((await stateGetir(st.id)).isletme).toBeNull();
+    const s = await stateGetir(st.id);
+    expect(s.isletme).not.toBeNull();
+    expect(s.isletme!.hatlar).toHaveLength(0);
+    expect(s.isletme!.birlik).toBeTruthy();
+    expect(s.meslek_musteri).toBe(20);
   });
 
   it("hiç dokunmayan oyuncu bir yılda makul kâr eder ve kâr maaş yerine geçer", async () => {
@@ -1044,5 +1049,52 @@ describe("v11: başlangıç ürünü seçimi", () => {
     expect(HIRSIZLIK_KAYIPLARI.agir.nakit).toEqual([15, 22]);
     expect(HIRSIZLIK_KAYIPLARI.rahat.nakit).toEqual([10, 15]);
     expect(HIRSIZLIK_KAYIPLARI.kismi.nakit).toEqual([0, 4]);
+  });
+
+  describe("kapasite kademesi düşürme (%40 iade)", () => {
+    it("depo kademesi düşer, ödenen paranın %40'ı iade edilir", async () => {
+      const s = await tuccar();
+      s.para = 100000;
+      await isletmeYatirimYap(s.id, "depo");
+      await isletmeYatirimYap(s.id, "depo");
+      const paraOnce = (await stateGetir(s.id)).para;
+      const odenen = s.isletme!.yatirim_odenen!.depo[1];
+      const sonuc = await isletmeYatirimDusur(s.id, "depo");
+      expect(sonuc.state.isletme!.yatirimlar.depo).toBe(1);
+      expect(sonuc.state.para).toBeCloseTo(paraOnce + odenen * 0.4, 1);
+      expect(sonuc.state.isletme!.yatirim_odenen!.depo).toHaveLength(1);
+    });
+
+    it("eski kayıtta ödenen tutar yoksa liste fiyatından iade eder", async () => {
+      const s = await tuccar();
+      s.isletme!.yatirimlar.depo = 1;
+      delete s.isletme!.yatirim_odenen;
+      s.para = 0;
+      const sonuc = await isletmeYatirimDusur(s.id, "depo");
+      expect(sonuc.state.para).toBeGreaterThan(0);
+      expect(sonuc.state.isletme!.yatirimlar.depo).toBe(0);
+    });
+
+    it("ilk kademedeyken, kapasite dışı yatırımda ve stok sığmıyorsa reddedilir", async () => {
+      const s = await tuccar();
+      await expect(isletmeYatirimDusur(s.id, "depo")).rejects.toThrow(/ilk kademede/);
+      s.para = 100000;
+      await isletmeYatirimYap(s.id, "tanitim");
+      await expect(isletmeYatirimDusur(s.id, "tanitim")).rejects.toThrow(/düşürülemez/);
+      await isletmeYatirimYap(s.id, "depo");
+      for (const h of s.isletme!.hatlar) h.stok = 100000;
+      await expect(isletmeYatirimDusur(s.id, "depo")).rejects.toThrow(/sığmıyor/);
+    });
+
+    it("görünümde dusur alanı yalnız kapasite yatırımında ve kademe>0 iken gelir", async () => {
+      const s = await tuccar();
+      s.para = 100000;
+      let g = await isletmeDurumGetir(s.id);
+      expect(g.yatirimlar.find((y) => y.id === "depo")!.dusur).toBeNull();
+      await isletmeYatirimYap(s.id, "depo");
+      g = await isletmeDurumGetir(s.id);
+      expect(g.yatirimlar.find((y) => y.id === "depo")!.dusur!.iade).toBeGreaterThan(0);
+      expect(g.yatirimlar.find((y) => y.id === "tanitim")!.dusur).toBeNull();
+    });
   });
 });

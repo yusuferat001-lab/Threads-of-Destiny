@@ -4,7 +4,10 @@ import { gostergeDetayiUret, gostergeStatiMi, etkenGunluguNotEt, GOSTERGE_STATLA
 import { sucDegisimiHesapla, yeniOyun, gostergeGetir } from "../src/game/gameEngine";
 
 function karakter(dil = "tr") {
-  return createCharacter("Orta Çağ", "Fransa", "kasaba", "Test", dil);
+  const s = createCharacter("Orta Çağ", "Fransa", "kasaba", "Test", dil);
+  // Rastgele kişilik özelliklerinin yıllık şöhret/ahlak/mutluluk sürüklenmesi testi kararsız yapmasın.
+  s.kisilik = [] as never;
+  return s;
 }
 
 describe("yaslanmaYillikKayip", () => {

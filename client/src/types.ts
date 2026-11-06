@@ -365,7 +365,7 @@ export interface CharacterState {
 
   /** Aile ekranı etkileşim cooldown'ları: anahtar → tekrar açılacağı oyun yılı (§33). */
   aile_etkilesim_kilit: Record<string, number>;
-  /** Ajanlara verilmiş, bir sonraki yıl ilerlemesinde çözülecek işler. */
+  /** Çalışanlara verilmiş, bir sonraki yıl ilerlemesinde çözülecek işler. */
   ajan_gorevleri: AjanGorevi[];
   /** Meslek işletmesi (Tüccar); diğer mesleklerde null. */
   isletme: unknown | null;
@@ -789,12 +789,24 @@ export interface IsletmeUyari {
     | 'imtiyaz_bitti'
     | 'bina_tasti'
     | 'asiri_olay'
-    | 'mezun';
+    | 'mezun'
+    | 'firar'
+    | 'savas_sonu'
+    | 'esir'
+    | 'seferberlik_terhis'
+    | 'baris_catisma'
+    | 'savas_ganimet'
+    | 'kale'
+    | 'madalya'
+    | 'yagma'
+    | 'savas_kayip'
+    | 'yarali_iyilesti'
+    | 'limit_asimi';
   hat?: string;
   isim?: string;
   sonuc?:
     | 'agir' | 'rahat' | 'kismi' | 'engellendi' | 'sans' | 'musteri_calma' | 'iftira' | 'sabotaj' | 'baskin' | 'nakit'
-    | 'kumbara' | 'muridcalma' | 'bidat' | 'aforoz' | 'yangin' | 'engizisyon';
+    | 'kumbara' | 'muridcalma' | 'bidat' | 'aforoz' | 'yangin' | 'engizisyon' | 'er_ayartma' | 'entrika' | 'firar';
   urunYuzde?: number;
   nakitYuzde?: number;
   tutar?: number;
@@ -806,6 +818,12 @@ export interface IsletmeUyari {
   sohretKaybi?: number;
   ahlakKaybi?: number;
   otoriteKaybi?: number;
+  /** Birlik (Asker) uyarıları: sayı (firar/ölen/terhis/esir), savaş ya da çatışma sonucu ve barış çatışması türü. */
+  sayi?: number;
+  /** savas_kayip: aynı olayda yaralanan er sayısı. */
+  yaralanan?: number;
+  savasSonucu?: 'zafer' | 'yenilgi';
+  catismaTur?: 'haydut' | 'sinir';
 }
 
 export interface IsletmeDokum {
@@ -841,6 +859,32 @@ export interface IsletmeDokum {
     ayinMasrafi: number;
     yardim: number;
     fanatiklik: number;
+  };
+  /** Asker (birlik modu) yıl dökümü ayrıntıları. */
+  birlik?: {
+    sold: number;
+    erBasiGelir: number;
+    gorevGeliri: number;
+    ganimetPara: number;
+    savasOdenegi?: number;
+    yagmaPara?: number;
+    kiralikMasrafi?: number;
+    kaleGeliri?: number;
+    devletPayi: number;
+    erPayi: number;
+    erMasrafi: number;
+    erzak: number;
+    techizatBakimi: number;
+    guc: number;
+    moral: number;
+    talim: number;
+    firar: number;
+    olen: number;
+    yaralanan?: number;
+    yarali?: number;
+    iyilesen?: number;
+    tedaviGideri?: number;
+    limitAsimGideri?: number;
   };
   uyarilar: IsletmeUyari[];
 }
@@ -890,6 +934,8 @@ export interface IsletmeYatirimGorunumu {
   /** v14: bu yatırımın şu anki yıllık masrafı ve bir sonraki kademenin ekleyeceği tutar. */
   yillikMasraf: number;
   sonrakiMasraf: number | null;
+  /** Kapasite yatırımlarında (depo/bina/kışla) kademe düşürme: iade tutarı ve engel. */
+  dusur?: { iade: number; engel: string | null } | null;
 }
 
 export interface IsletmeCalisanGorunumu {
@@ -1016,8 +1062,143 @@ export interface IsletmeButcesi {
   cebineKalan: number;
 }
 
+// ── Asker (birlik modu) — sunucudaki game/birlikIslem.ts ile elle senkron ──
+export type BirlikKalite = 'dusuk' | 'orta' | 'yuksek';
+export type BirlikTur = 'okcu' | 'suvari' | 'mizrakli';
+export type BirlikGanimetPayi = 'az' | 'dengeli' | 'comert';
+export type BirlikTalim = 'hafif' | 'orta' | 'agir';
+export type BirlikTon = 'merhametli' | 'dengeli' | 'sert';
+export type BirlikArazi = 'ova' | 'kale' | 'dag';
+export type BirlikSeferberlik = 'genel' | 'secme' | 'dengeli';
+interface DilMetni { tr: string; en: string }
+
+export interface BirlikKararGirdisi {
+  gorevler?: string[];
+  ganimet_payi?: string;
+  talim?: string;
+  ton?: string;
+  hedef_kalite?: string;
+}
+
+export interface BirlikGorunumu {
+  er: number;
+  limit: { komuta: number; kisla: number; kislaKademe: number; seferberlik: boolean; tavan: number; asim: number };
+  yarali: { sayi: number; saglam: number; yillikIyilesme: number; sureYil: number };
+  guc: {
+    ham: number;
+    kalite: { dusuk: number; orta: number; yuksek: number };
+    kaliteCarpani: { dusuk: number; orta: number; yuksek: number };
+    piyadePayi: number;
+    saldiriCarpani: number;
+    savunmaCarpani: number;
+    bonuslar: { kod: string; ad: DilMetni; yuzde: number; taraf: string }[];
+    saldiri: number;
+    savunma: number;
+    toplam: number;
+  };
+  rakipler: { ad: string; guc: number; husumet: number }[];
+  pay: number;
+  kalite: {
+    sayilar: { dusuk: number; orta: number; yuksek: number };
+    hedef: BirlikKalite;
+    kilitKalanYil: number;
+    ad: DilMetni;
+    adlar: Record<BirlikKalite, DilMetni>;
+    yukseltFiyat: Record<'orta' | 'yuksek', number>;
+    techizat: DilMetni;
+  };
+  birlik: {
+    seciliTurler: BirlikTur[];
+    turPayi: number;
+    kilitKalanYil: number;
+    toplamPay: number;
+    turler: { id: BirlikTur; simge: string; ad: DilMetni; saldiri: number; savunma: number; ucret: number; bakim: number; arti: DilMetni; eksi: DilMetni; secili: boolean }[];
+    kusatma: { seviye: number; ad: DilMetni; bonuslar: number[]; fiyatlar: number[] };
+  };
+  talim: {
+    seviye: number;
+    politika: BirlikTalim;
+    gucYuzde: number;
+    kayipYuzde: number;
+    politikalar: { id: BirlikTalim; ad: DilMetni; delta: number; tavan: number; masraf: number; moral: number }[];
+  };
+  politikalar: {
+    ganimetPayi: { secili: BirlikGanimetPayi; secenekler: { id: BirlikGanimetPayi; ad: DilMetni; oran: number; moral: number }[] };
+    ton: { secili: BirlikTon; secenekler: { id: BirlikTon; ad: DilMetni; aciklama: DilMetni }[] };
+  };
+  moral: { deger: number; gucYuzde: number; sertlik: number };
+  gorevler: {
+    slot: { kullanilan: number; toplam: number };
+    secili: string[];
+    katalog: { id: string; simge: string; ad: DilMetni; aciklama: DilMetni; minGuc: number; erBasi: number; yalnizSavas: boolean; kullanilabilir: boolean; aktif: boolean; erPayi: number; gelir: number; ganimet: number }[];
+  };
+  doktrin: {
+    secilen: { id: string; simge: string; ad: DilMetni; seviye: number; acimasiz: boolean; etki: Record<string, number> }[];
+    bekleyen: { seviye: number; yol: string | null; secenekler: { id: string; simge: string; ad: DilMetni; kaynak: string; acimasiz: boolean; etki: Record<string, number> }[] } | null;
+  };
+  savas: {
+    aktif: boolean;
+    arazi: BirlikArazi | null;
+    araziAd: DilMetni | null;
+    dusmanTur: string | null;
+    dusmanOrani: number | null;
+    seferberlik: BirlikSeferberlik | null;
+    kanatZafer: number;
+    kanatYenilgi: number;
+    kararBekliyor: boolean;
+    araziIhtimali: number;
+  };
+  kale: number;
+  emir: { ad: DilMetni; simge: string; aciklama: DilMetni } | null;
+  kiralik: { aktif: boolean; er: number; ucret: number; mumkun: boolean };
+  hesap: {
+    soldAdi: DilMetni;
+    savasOdenegiMi: boolean;
+    kaleGeliri: number;
+    kiralikMasrafi: number;
+    yagmaBrut: number;
+    sold: number;
+    erBasiGelir: number;
+    gorevGeliri: number;
+    ganimetNet: number;
+    devletPayi: number;
+    erPayi: number;
+    toplamGelir: number;
+    erMasrafi: number;
+    erzak: number;
+    kislaBakim: number;
+    techizatBakim: number;
+    yaraliGideri: number;
+    limitAsimGideri: number;
+    kusatmaBakim: number;
+    talimMasrafi: number;
+    toplamGider: number;
+    net: number;
+    barisGanimetTahmini: number;
+  };
+  yol: string | null;
+}
+
+export interface SavasKarariDurumu {
+  adim: string;
+  sira: number;
+  toplam: number;
+  baslik: DilMetni;
+  aciklama: DilMetni;
+  secenekler: { id: string; simge?: string; ad: DilMetni; aciklama: DilMetni }[];
+  bilgi: { arazi: BirlikArazi | null; dusmanTur: string | null; yil: number };
+}
+
+export interface BirlikIslemSonucu {
+  maliyet: number;
+  iade: number;
+  adet: number;
+}
+
 export interface IsletmeGorunumu {
   aktif: boolean;
+  /** Asker'de birlik görünümü (güç dökümü, kalite, birlik, talim, görevler, doktrin, savaş); diğer mesleklerde null. */
+  birlik: BirlikGorunumu | null;
   /** Din Adamı'nda cemaat görünümü; diğer mesleklerde null. */
   cemaat: CemaatGorunumu | null;
   meslek: string;
@@ -1311,37 +1492,16 @@ export interface KotuIsKarti {
   meslegeOzel: boolean;
   /** Tekrar çevrilebilmesine kalan oyun yılı (0 = hazır). */
   kalanYil: number;
-  /** Bu işi yapabilecek ajan rolü (kanonik TR) ya da null. */
-  ajanRolu: string | null;
-  /** Yalnız ajana yaptırılabilir. */
-  sadeceAjan: boolean;
   /** İşletmedeki herhangi bir çalışanın yapabildiği iş (§45). */
   calisanIsi: boolean;
 }
 
-/** Bir ajana verilmiş, henüz çözülmemiş iş. */
+/** Bir çalışana verilmiş, henüz çözülmemiş iş. */
 export interface AjanGorevi {
   ajanId: string;
   isId: string;
   hedefRakipAd: string | null;
   verilisYili: number;
-}
-
-/** Kariyer ekranı "Adam Tut" paneli için bir ajan rolü (GET /:id/ajanlar). */
-export interface AjanRolKarti {
-  rol: string;
-  simge: string;
-  ucret: number;
-  maasMin: number;
-  maasMax: number;
-  sahip: boolean;
-  isler: string[];
-}
-
-export interface AjanDurumu {
-  roller: AjanRolKarti[];
-  /** Görevdeki ajanlar: ajan id'si → iş id'si. */
-  gorevler: Record<string, string>;
 }
 
 export interface KotuIsSonucu {

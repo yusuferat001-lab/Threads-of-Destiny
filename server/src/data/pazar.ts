@@ -1,4 +1,5 @@
 import type { CharacterState } from "../types";
+import { RAKIP_GUC_RUTBE_EKI } from "./birlik";
 
 /**
  * Meslek pazarı (2026-10, v8.1): toplam pazar `P = state.pazar_musteri` müşteridir;
@@ -181,15 +182,41 @@ export function rakipMusteriToplami(state: CharacterState): number {
   return aktifRakipler(state).reduce((t, r) => t + Math.max(0, r.musteri), 0);
 }
 
+/**
+ * Asker (birlik modu): pazar payı er sayısına değil ASKERÎ GÜCE bağlıdır. Rakiplerin ve "diğer orduların"
+ * gücü = er sayısı × (1 + RAKIP_GUC_RUTBE_EKI × (rütbe − 1)) (onlar da donatılır). Toplam silahlı sayısı oyuncuya gösterilmez.
+ */
+export function askerRakipGucCarpani(state: CharacterState): number {
+  return 1 + RAKIP_GUC_RUTBE_EKI * Math.max(0, (state.rutbe_seviye ?? 1) - 1);
+}
+export function askerGucleri(state: CharacterState): { oyuncu: number; rakip: number; diger: number; toplam: number } {
+  const er = Math.max(0, state.meslek_musteri ?? 0);
+  const c = askerRakipGucCarpani(state);
+  const oyuncu = state.isletme?.birlik?.guc ?? er;
+  const rakipEr = aktifRakipler(state).reduce((t, r) => t + Math.max(0, r.musteri), 0);
+  const digerEr = Math.max(0, (state.pazar_musteri ?? 0) - er - rakipEr);
+  const rakip = rakipEr * c;
+  const diger = digerEr * c;
+  return { oyuncu, rakip, diger, toplam: oyuncu + rakip + diger };
+}
+
 /** Oyuncunun pazar payı (0-1). Meslek seçilmemişse 0. */
 export function pazarPayiHesapla(state: CharacterState): number {
   if (!PAZAR_ADLARI[state.meslek]) return 0;
+  if (state.meslek === "Asker" && state.isletme?.birlik) {
+    const g = askerGucleri(state);
+    return g.toplam > 0 ? Math.min(1, Math.max(0, g.oyuncu / g.toplam)) : 0;
+  }
   const p = Math.max(0, state.pazar_musteri ?? 0);
   return p > 0 ? Math.min(1, Math.max(0, state.meslek_musteri ?? 0) / p) : 0;
 }
 
 /** Bir rakibin pazar payı (0-1) — Kariyer ekranındaki pazar çubuğu için. */
 export function rakipPayiHesapla(state: CharacterState, rakipMusteri: number): number {
+  if (state.meslek === "Asker" && state.isletme?.birlik) {
+    const g = askerGucleri(state);
+    return g.toplam > 0 ? (Math.max(0, rakipMusteri) * askerRakipGucCarpani(state)) / g.toplam : 0;
+  }
   const p = Math.max(0, state.pazar_musteri ?? 0);
   return p > 0 ? Math.max(0, rakipMusteri) / p : 0;
 }
