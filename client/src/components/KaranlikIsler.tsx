@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import type { EkipUyesi, KotuIsKarti, Rakip } from '../types';
 import { useDil } from '../DilContext';
 import { formatPara, formatYuzde } from '../format';
@@ -157,13 +157,13 @@ export function KaranlikIsler({ isler, rakipler, ekip, paraBirimi, yukleniyor, d
     sifirla();
   };
 
-  const rozetler = (x: KotuIsKarti): string[] => {
-    const r: string[] = [bic(m.iyKaranlikSans, x.basariSansi)];
-    if (x.tahminiKazanc > 0) r.push(bic(m.iyKaranlikKazanc, formatPara(x.tahminiKazanc), paraBirimi));
-    if (x.maliyet > 0) r.push(`${en ? 'cost' : 'bedel'} ${formatPara(x.maliyet)} ${paraBirimi}`);
-    if (x.musteriKazanci > 0) r.push(en ? `+${x.musteriKazanci} customers` : `+${x.musteriKazanci} müşteri`);
-    if (x.rakipKirmaYuzde >= 100) r.push(en ? 'finishes your rival' : 'rakibi bitirir');
-    else if (x.rakipKirmaYuzde > 0) r.push(en ? 'weakens your rival' : 'rakibi zayıflatır');
+  const rozetler = (x: KotuIsKarti): ReactNode[] => {
+    const r: ReactNode[] = [<span key="s">{bic(m.iyKaranlikSans, x.basariSansi)}</span>];
+    if (x.tahminiKazanc > 0) r.push(<span key="k" className="s-gelir">{bic(m.iyKaranlikKazanc, formatPara(x.tahminiKazanc), paraBirimi)}</span>);
+    if (x.maliyet > 0) r.push(<span key="b" className="s-gider">{`${en ? 'cost' : 'bedel'} ${formatPara(x.maliyet)} ${paraBirimi}`}</span>);
+    if (x.musteriKazanci > 0) r.push(<span key="m" className="s-arti">{en ? `+${x.musteriKazanci} customers` : `+${x.musteriKazanci} müşteri`}</span>);
+    if (x.rakipKirmaYuzde >= 100) r.push(<span key="r">{en ? 'finishes your rival' : 'rakibi bitirir'}</span>);
+    else if (x.rakipKirmaYuzde > 0) r.push(<span key="r">{en ? 'weakens your rival' : 'rakibi zayıflatır'}</span>);
     return r;
   };
   const adTemiz = (id: string) => karanlikIsMetni(dil, id, dinKultur).ad.replace(/^\p{Extended_Pictographic}\uFE0F?\s*/u, '');
@@ -179,7 +179,7 @@ export function KaranlikIsler({ isler, rakipler, ekip, paraBirimi, yukleniyor, d
               <strong>{adTemiz(x.id)}</strong>
             </span>
             <span className="kis-rozetler">
-              {bekliyor ? `${t('bekliyor')} · ${x.kalanYil} ${t('yil')}` : rozetler(x).map((r, i) => <span key={i}>{r}</span>)}
+              {bekliyor ? `${t('bekliyor')} · ${x.kalanYil} ${t('yil')}` : rozetler(x)}
             </span>
           </button>
         );

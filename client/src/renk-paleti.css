@@ -34,3 +34,11 @@
 .zemin-koyu .s-eksi, .zemin-koyu .s-gider { color: var(--c-eksi-koyu); }
 .zemin-koyu .s-durum { color: var(--c-lacivert-koyu); }
 .zemin-koyu .s-esik { color: var(--c-esik-koyu); }
+
+/* Koyu tam sayfa ekranlar (Evin, Mağaza, Sosyalleş, İlişkiler, Mülkler, mobil sayfalar) ve koyu kartlar */
+.ekran-tam-sayfa .s-arti, .ekran-tam-sayfa .s-gelir,
+.kredi-karti .s-arti, .kredi-karti .s-gelir { color: var(--c-arti-koyu); }
+.ekran-tam-sayfa .s-eksi, .ekran-tam-sayfa .s-gider,
+.kredi-karti .s-eksi, .kredi-karti .s-gider { color: var(--c-eksi-koyu); }
+.ekran-tam-sayfa .s-durum { color: var(--c-lacivert-koyu); }
+.ekran-tam-sayfa .s-esik { color: var(--c-esik-koyu); }

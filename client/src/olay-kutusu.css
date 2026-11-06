@@ -262,14 +262,14 @@
   font-weight: 600;
 }
 .olay-parsomeni .etki-pozitif {
-  background: rgba(46, 107, 58, 0.16);
-  border-color: rgba(46, 107, 58, 0.7);
-  color: #1f5a2c;
+  background: rgba(18, 137, 58, 0.14);
+  border-color: rgba(18, 137, 58, 0.7);
+  color: var(--c-arti, #12893a);
 }
 .olay-parsomeni .etki-negatif {
-  background: rgba(139, 44, 44, 0.14);
-  border-color: rgba(139, 44, 44, 0.7);
-  color: #7a1a1a;
+  background: rgba(204, 42, 30, 0.12);
+  border-color: rgba(204, 42, 30, 0.7);
+  color: var(--c-eksi, #cc2a1e);
 }
 .olay-parsomeni .etki-yok-notu {
   margin: 0 0 6px;

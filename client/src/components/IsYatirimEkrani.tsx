@@ -87,7 +87,7 @@ export function IsYatirimEkrani({
                     <span className={`mulk-piyasa-sinyal ${sinyal.sinif}`}>{en ? sinyal.en : sinyal.tr}</span>
                   )}
                   {!mulk.sahipMi && (
-                    <span className="meslek-aciklama">
+                    <span className="meslek-aciklama s-gider">
                       {bic(m.iyFiyatKisa, formatPara(mulk.maliyet), paraBirimi)}
                     </span>
                   )}

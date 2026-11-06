@@ -301,9 +301,8 @@ export function BirlikPaneli({
                 )}
               </div>
               <small>
-                <span className="s-esik">{t('minEr')} {g.minGuc} {t('gucEsik')}</span> · {formatPara(g.erBasi)} {pb}
-                {erBirim}
-                {g.aktif ? ` · ${formatPara(g.gelir)} ${pb}${g.ganimet > 0 ? ` + ${t('ganimet')} ${formatPara(g.ganimet)}` : ''}` : ''}
+                <span className="s-esik">{t('minEr')} {g.minGuc} {t('gucEsik')}</span> · <span className="s-gelir">{formatPara(g.erBasi)} {pb}{erBirim}</span>
+                {g.aktif ? <span className="s-gelir"> · {formatPara(g.gelir)} {pb}{g.ganimet > 0 ? ` + ${t('ganimet')} ${formatPara(g.ganimet)}` : ''}</span> : null}
               </small>
             </div>
           );
@@ -573,8 +572,7 @@ export function BirlikPaneli({
                 )}
               </div>
               <div className="birlik-kart-etki">
-                ⚔️ ×{tur.saldiri} · 🛡️ ×{tur.savunma} · {formatPara(tur.ucret)} {pb}
-                {erBirim} · {t('maliyetArti')} +%{Math.round(tur.bakim * 100)}
+                ⚔️ ×{tur.saldiri} · 🛡️ ×{tur.savunma} · <span className="s-gider">{formatPara(tur.ucret)} {pb}{erBirim}</span> · {t('maliyetArti')} <span className="s-gider">+%{Math.round(tur.bakim * 100)}</span>
               </div>
               <small>
                 ＋ {d(tur.arti)} · － {d(tur.eksi)}
@@ -602,7 +600,7 @@ export function BirlikPaneli({
           </div>
           <div className="birlik-kart-etki">
             {t('seviye')} {kusatma.seviye}/2 · +%{Math.round((kusatma.bonuslar[kusatma.seviye] ?? 0) * 100)}
-            {kusatma.seviye < 2 ? ` → +%${Math.round((kusatma.bonuslar[kusatma.seviye + 1] ?? 0) * 100)} (${formatPara(kusatma.fiyatlar[kusatma.seviye + 1] ?? 0)} ${pb})` : ''}
+            {kusatma.seviye < 2 ? <> → +%{Math.round((kusatma.bonuslar[kusatma.seviye + 1] ?? 0) * 100)} (<span className="s-gider">{formatPara(kusatma.fiyatlar[kusatma.seviye + 1] ?? 0)} {pb}</span>)</> : ''}
           </div>
           <small>{t('kusatmaOzel')}</small>
         </div>

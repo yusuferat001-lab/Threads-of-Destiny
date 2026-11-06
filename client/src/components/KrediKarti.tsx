@@ -20,9 +20,9 @@ export function KrediKarti({ paraBirimi, krediConfig, yukleniyor, onKrediAl, onK
       {krediConfig?.aktifKredi ? (
         <div className="dedikodu-panosu">
           <p>
-            {en ? 'Outstanding debt' : 'Kalan borç'}: <strong>{formatPara(krediConfig.aktifKredi.kalanBorc)} {paraBirimi}</strong>
+            {en ? 'Outstanding debt' : 'Kalan borç'}: <strong className="s-gider">{formatPara(krediConfig.aktifKredi.kalanBorc)} {paraBirimi}</strong>
             {' · '}
-            {en ? 'yearly instalment' : 'yıllık taksit'} ~{formatPara(krediConfig.aktifKredi.yillikTaksit)}
+            {en ? 'yearly instalment' : 'yıllık taksit'} <span className="s-gider">~{formatPara(krediConfig.aktifKredi.yillikTaksit)}</span>
             {' · '}
             {en ? 'interest' : 'faiz'} %{Math.round(krediConfig.aktifKredi.faizOrani * 100)}
             {' · '}

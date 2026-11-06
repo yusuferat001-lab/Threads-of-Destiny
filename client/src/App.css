@@ -3008,11 +3008,11 @@ button.ikincil {
 }
 
 .mulk-getiri-pozitif {
-  color: #6bbf6b;
+  color: var(--c-arti-koyu, #7fd08a);
 }
 
 .mulk-getiri-negatif {
-  color: #d97a7a;
+  color: var(--c-eksi-koyu, #ff8a75);
 }
 
 .suc-seviyesi-gostergesi {
@@ -3836,7 +3836,7 @@ button.ikincil {
 
 .magaza-fiyat {
   font-weight: 700;
-  color: #c9a86a;
+  color: var(--c-eksi-koyu, #ff8a75);
   margin-top: 0.2rem;
 }
 
@@ -4196,15 +4196,15 @@ button.ikincil {
 }
 
 .etki-pozitif {
-  background: rgba(30, 110, 60, 0.35);
-  border: 1px solid rgba(60, 160, 90, 0.6);
-  color: #a6e0ac;
+  background: rgba(18, 137, 58, 0.28);
+  border: 1px solid rgba(127, 208, 138, 0.6);
+  color: var(--c-arti-koyu, #7fd08a);
 }
 
 .etki-negatif {
-  background: rgba(139, 44, 44, 0.35);
-  border: 1px solid rgba(180, 70, 70, 0.6);
-  color: #e0a6a6;
+  background: rgba(204, 42, 30, 0.28);
+  border: 1px solid rgba(255, 138, 117, 0.6);
+  color: var(--c-eksi-koyu, #ff8a75);
 }
 
 @keyframes cip-belir {

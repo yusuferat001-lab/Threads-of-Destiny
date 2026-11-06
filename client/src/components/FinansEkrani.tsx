@@ -5,6 +5,7 @@ import { formatPara } from '../format';
 import { bic, type Metinler } from '../i18n';
 import { useDil } from '../DilContext';
 import { useMobilEkran } from '../hooks';
+import { RenkliEtki } from './Renkli';
 
 function etkiSatiriGetir(
   m: Metinler,
@@ -115,10 +116,14 @@ export function FinansEkrani({
                     {gorunum.ad}
                     {guncel ? ' ✓' : ''}
                   </strong>
-                  <span className="meslek-aciklama">
+                  <span className="meslek-aciklama s-gider">
                     {formatPara(enflasyonluTutar(secenek.maliyetYillik))} {paraBirimi}/{m.yil}
                   </span>
-                  {etkiSatiri && <span className="meslek-aciklama yatirim-etki-satiri">{etkiSatiri}</span>}
+                  {etkiSatiri && (
+                    <span className="meslek-aciklama yatirim-etki-satiri">
+                      <RenkliEtki metin={etkiSatiri} />
+                    </span>
+                  )}
                 </button>
               );
             })}
@@ -150,11 +155,15 @@ export function FinansEkrani({
                     {gorunum.ad}
                     {guncel ? ' ✓' : ''}
                   </strong>
-                  <span className="meslek-aciklama">
+                  <span className="meslek-aciklama s-gider">
                     {formatPara(enflasyonluTutar(konut.kiraYillik))} {paraBirimi}/{m.yil}
                     {!guncel && !geriCekilme ? bic(m.feTasinmaKisa, tasinmaMaliyeti, paraBirimi) : ''}
                   </span>
-                  {etkiSatiri && <span className="meslek-aciklama yatirim-etki-satiri">{etkiSatiri}</span>}
+                  {etkiSatiri && (
+                    <span className="meslek-aciklama yatirim-etki-satiri">
+                      <RenkliEtki metin={etkiSatiri} />
+                    </span>
+                  )}
                 </button>
               );
             })}

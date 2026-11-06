@@ -102,7 +102,7 @@ export function IsletmeOrtak({
             </span>
             {y.yillikMasraf > 0 && (
               <span className="isletme-yatirim-etki">
-                <b>{t('yillikMasraf')}:</b> {formatPara(y.yillikMasraf)}
+                <b>{t('yillikMasraf')}:</b> <span className="kademe-dusuk">{formatPara(y.yillikMasraf)}</span>
                 {y.sonrakiMasraf !== null && <span className="kademe-dusuk"> (+{formatPara(y.sonrakiMasraf)})</span>}
               </span>
             )}
