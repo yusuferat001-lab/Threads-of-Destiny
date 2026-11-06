@@ -35,8 +35,8 @@
   --v-altin: #e6c17a;
   --v-yazi: #f4e0b0;
   --v-yazi-soluk: #cdb98e;
-  --v-iyi: #8fc28a;
-  --v-kotu: #e58a74;
+  --v-iyi: #7fd08a;
+  --v-kotu: #ff8a75;
   --v-golge: 0 10px 28px rgba(0, 0, 0, 0.55), inset 0 0 22px rgba(0, 0, 0, 0.42);
 }
 .tema-sanayi {
@@ -247,7 +247,10 @@
     color: var(--v-kotu);
   }
   .oyun-ekrani-pc .finans-ozet-mini-net .finans-ozet-mini-deger {
-    color: var(--v-altin);
+    color: var(--c-arti-koyu);
+  }
+  .oyun-ekrani-pc .finans-ozet-mini-net-negatif .finans-ozet-mini-deger {
+    color: var(--c-eksi-koyu);
   }
   .oyun-ekrani-pc .finans-ozet-mini-net,
   .oyun-ekrani-pc .finans-ozet-mini-kirilim,

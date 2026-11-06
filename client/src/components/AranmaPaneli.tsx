@@ -79,9 +79,9 @@ export function AranmaPaneli({ karakter, onState }: AranmaPaneliProps) {
             <tr key={s.yildiz} className={s.yildiz === d.yildiz ? 'aranma-tablo-aktif' : undefined}>
               <td>{s.yildiz === 0 ? '—' : '★'.repeat(s.yildiz)}</td>
               <td>{s.aralik}</td>
-              <td>{DEBUFF_YUZDE[s.yildiz] ? `−%${DEBUFF_YUZDE[s.yildiz]}` : '—'}</td>
-              <td>{s.basari ? `+${s.basari}` : '—'}</td>
-              <td>{s.risk ? t(`%${s.risk} az`, `${s.risk}% lower`) : '—'}</td>
+              <td>{DEBUFF_YUZDE[s.yildiz] ? <span className="s-eksi">{`−%${DEBUFF_YUZDE[s.yildiz]}`}</span> : '—'}</td>
+              <td>{s.basari ? <span className="s-arti">{`+${s.basari}`}</span> : '—'}</td>
+              <td>{s.risk ? <span className="s-arti">{t(`%${s.risk} az`, `${s.risk}% lower`)}</span> : '—'}</td>
               <td>{t(`${s.hapis} yıl`, `${s.hapis} yrs`)}</td>
             </tr>
           ))}

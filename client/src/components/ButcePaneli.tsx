@@ -50,7 +50,7 @@ export function ButcePaneli({ finans, paraBirimi, gecmis, isletmeAktif = false, 
           <div className="finans-karti">
             <div className="finans-satiri finans-gelir">
               <span>{isletmeAktif ? netEtiketi : m.feYillikMaas}</span>
-              <span className={maasYillik < 0 ? 'finans-net-negatif' : undefined}>
+              <span className={maasYillik < 0 ? 's-gider' : 's-gelir'}>
                 {maasYillik >= 0 ? '+' : '−'}{formatPara(Math.abs(maasYillik))} {paraBirimi}
               </span>
             </div>
@@ -104,7 +104,7 @@ export function ButcePaneli({ finans, paraBirimi, gecmis, isletmeAktif = false, 
                 title={m.feGayrimenkulTitle}
               >
                 <span>{m.feGayrimenkulGeliri}</span>
-                <span>
+                <span className={gayrimenkulYillikGelir < 0 ? 's-gider' : 's-gelir'}>
                   {gayrimenkulYillikGelir >= 0 ? '+' : '−'}
                   {formatPara(Math.abs(gayrimenkulYillikGelir))} {paraBirimi}
                 </span>
@@ -114,20 +114,20 @@ export function ButcePaneli({ finans, paraBirimi, gecmis, isletmeAktif = false, 
             <h3>{m.feYillikGiderler}</h3>
             <div className="finans-satiri">
               <span>{m.feYasam}</span>
-              <span>
+              <span className="s-gider">
                 -{formatPara(giderKalemleri.yasam)} {paraBirimi}
               </span>
             </div>
             <div className="finans-satiri">
               <span>{m.feEvKirasi}</span>
-              <span>
+              <span className="s-gider">
                 -{formatPara(giderKalemleri.konut)} {paraBirimi}
               </span>
             </div>
             {giderKalemleri.ekip > 0 && (
               <div className="finans-satiri">
                 <span>{m.feEkipMaaslari}</span>
-                <span>
+                <span className="s-gider">
                   -{formatPara(giderKalemleri.ekip)} {paraBirimi}
                 </span>
               </div>
@@ -135,7 +135,7 @@ export function ButcePaneli({ finans, paraBirimi, gecmis, isletmeAktif = false, 
             {giderKalemleri.evcilHayvan > 0 && (
               <div className="finans-satiri">
                 <span>{m.feEvcilHayvanBakimi}</span>
-                <span>
+                <span className="s-gider">
                   -{formatPara(giderKalemleri.evcilHayvan)} {paraBirimi}
                 </span>
               </div>
@@ -143,7 +143,7 @@ export function ButcePaneli({ finans, paraBirimi, gecmis, isletmeAktif = false, 
             {giderKalemleri.savasVergisi > 0 && (
               <div className="finans-satiri" title={m.feSavasVergisiTitle}>
                 <span>{m.feSavasVergisi}</span>
-                <span>
+                <span className="s-gider">
                   -{formatPara(giderKalemleri.savasVergisi)} {paraBirimi}
                 </span>
               </div>
@@ -151,21 +151,21 @@ export function ButcePaneli({ finans, paraBirimi, gecmis, isletmeAktif = false, 
             {finans.krediTaksit > 0 && (
               <div className="finans-satiri">
                 <span>{dil === 'en' ? 'Loan instalment' : 'Kredi taksidi'}</span>
-                <span>
+                <span className="s-gider">
                   -{formatPara(finans.krediTaksit)} {paraBirimi}
                 </span>
               </div>
             )}
             <div className="finans-satiri finans-toplam-gider">
               <span>{m.feToplamGider}</span>
-              <span>
+              <span className="s-gider">
                 -{formatPara(toplamGider)} {paraBirimi}
               </span>
             </div>
 
             <div className={`finans-satiri finans-net ${gercekNet < 0 ? 'finans-net-negatif' : ''}`}>
               <span>{isletmeAktif ? (dil === 'en' ? 'Left in your pocket' : 'Cebine kalan') : gayrimenkulYillikGelir !== 0 ? m.feNetYillikDahil : m.feNetYillik}</span>
-              <span>
+              <span className={gercekNet >= 0 ? 's-gelir' : 's-gider'}>
                 {gercekNet >= 0 ? '+' : ''}
                 {formatPara(gercekNet)} {paraBirimi}
               </span>

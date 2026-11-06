@@ -120,7 +120,7 @@ export function SosyallesmePaneli({
                   >
                     <span className="sosyal-icki-simge">{ic.simge}</span>
                     <span className="sosyal-icki-ad">{ic.ad}</span>
-                    <span className="sosyal-cip-fiyat">{fiyatEtiketi(ic.fiyat)}</span>
+                    <span className={`sosyal-cip-fiyat${ic.fiyat > 0 ? ' s-gider' : ''}`}>{fiyatEtiketi(ic.fiyat)}</span>
                   </button>
                 ))}
               </div>
@@ -202,7 +202,7 @@ export function SosyallesmePaneli({
                     <span className="sosyal-aksiyon-neden">{bic(m.spMekanKilitli, yer.kalanYil ?? 0)}</span>
                   ) : (
                     typeof yer.girisUcreti === 'number' && (
-                      <span className="sosyal-aksiyon-fiyat">
+                      <span className="sosyal-aksiyon-fiyat s-gider">
                         🚪 {formatPara(yer.girisUcreti)} {paraBirimi}
                       </span>
                     )

@@ -141,7 +141,7 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
         </button>
         <button type="button" className="ana-cam ana-cam-tikla" onClick={onGelirTikla} disabled={yukleniyor} title={tr ? 'Bütçeyi aç' : 'Open budget'}>
           <span className="ana-etiket">{tr ? 'Kazanç' : 'Earnings'}</span>
-          <strong className={`ana-deger ${eldeKalan >= 0 ? '' : 'ana-kotu'}`}>
+          <strong className={`ana-deger ${eldeKalan >= 0 ? 'ana-iyi' : 'ana-kotu'}`}>
             {eldeKalan >= 0 ? '+' : '−'}
             {formatPara(Math.abs(Math.round(eldeKalan * 10) / 10))} <span className="ana-birim">{birim}</span>
           </strong>

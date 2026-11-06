@@ -386,11 +386,11 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
           <span>
             {uretimModu ? t('birimUretim') : t('birim')}:{' '}
             <strong>
-              {formatPara(h.birimFiyat)} / {formatPara(h.birimMaliyet)}
+              <span className="s-gelir">{formatPara(h.birimFiyat)}</span> / <span className="s-gider">{formatPara(h.birimMaliyet)}</span>
             </strong>
           </span>
           <span>
-            {t('kar')}: <strong>{formatPara(h.beklenenKar)}</strong>
+            {t('kar')}: <strong className={h.beklenenKar >= 0 ? 's-gelir' : 's-gider'}>{formatPara(h.beklenenKar)}</strong>
           </span>
         </div>
         {dunyaEtkisi && (
@@ -400,7 +400,7 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
         )}
         {h.acik && (
           <div className="isletme-hat-dunya">
-            🧾 {t('alisBaslik')}: <strong>{formatPara(h.birimMaliyet)}</strong>
+            🧾 {t('alisBaslik')}: <strong className="s-gider">{formatPara(h.birimMaliyet)}</strong>
             {h.oncekiBirimMaliyet != null ? ` (${t('gecenAlis')} ${formatPara(h.oncekiBirimMaliyet)})` : ''}
             {h.maliyetDonemYuzde !== 0 ? <> · {t('alisDonem')} <span className={h.maliyetDonemYuzde > 0 ? 'kademe-dusuk' : 'kademe-yuksek'}>{formatYuzde(dil, h.maliyetDonemYuzde, true)}</span></> : null}
             {h.maliyetIndirimYuzde > 0 ? <> · {t('alisIndirim')} <span className="kademe-yuksek">−{formatYuzde(dil, h.maliyetIndirimYuzde)}</span></> : null}
@@ -470,7 +470,7 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
             </span>
             {durum.tedarikciBorcu > 0 && (
               <span>
-                🧾 {t('borc')}: <strong>{formatPara(durum.tedarikciBorcu)} {pb}</strong>
+                🧾 {t('borc')}: <strong className="s-gider">{formatPara(durum.tedarikciBorcu)} {pb}</strong>
               </span>
             )}
             {durum.otorite && (
@@ -506,7 +506,7 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
             </div>
             <div className="isletme-depo-chipler">
               <span>♻️ {t('curume')} %{durum.depo.curumeYuzde}</span>
-              <span>🔧 {t('dukkanGideri')} {formatPara(durum.depo.dukkanGideri)}</span>
+              <span>🔧 {t('dukkanGideri')} <span className="s-gider">{formatPara(durum.depo.dukkanGideri)}</span></span>
             </div>
             <div className="isletme-depo-hatlar">
               {acikHatlar.map((h) => (
@@ -514,7 +514,7 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
                   <div className="isletme-depo-hat-ust">
                     <strong>{h.simge} {d(h.ad)}</strong>
                     <span>
-                      {t('depodaStok')} <b>{h.stok}</b> · {t('tahminiTalep')} <b>{h.talepMin}–{h.talepMax}</b> · {t('depoBirimFiyat')} {formatPara(h.birimMaliyet)}
+                      {t('depodaStok')} <b>{h.stok}</b> · {t('tahminiTalep')} <b>{h.talepMin}–{h.talepMax}</b> · {t('depoBirimFiyat')} <span className="s-gider">{formatPara(h.birimMaliyet)}</span>
                     </span>
                   </div>
                   <div className="isletme-depo-mini">

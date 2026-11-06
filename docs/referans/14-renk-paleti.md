@@ -24,7 +24,8 @@ Süsleme renkleri (sayı DEĞİL, değerlerde kullanılmaz): bordo `#82202a→#5
 7. Değişiklik yapınca bu dosyayı güncelle; ilgili sayı bir tablo satırı olarak eklenir.
 
 ## Uygulandığı yerler
-Strateji sayfaları (Ordu, Dükkân, Atölye, Cemaat, Yatırım, Çevre/Karanlık İşler), Evin (yaşam tarzı + ev: kira kırmızı, `Sağlık −4/yıl` gibi etkiler `RenkliEtki` ile), Mağaza (etki yeşil, fiyat kırmızı), Mülkler (fiyat kırmızı, getiri yeşil/kırmızı), sonuç çipleri (`.etki-pozitif/-negatif`, koyu ve parşömen zemin).
+- **Strateji sayfaları** (Ordu, Dükkân, Atölye, Cemaat, Yatırım, Çevre/Karanlık İşler), **Evin**, **Mağaza**, **Mülkler**, **Sosyalleş** (giriş/içki fiyatı kırmızı), **Bütçen** (`ButcePaneli`), **ana ekran** (Kazanç yeşil/kırmızı), **sol panel** (yıllık gelir/gider/elde kalan), **sonuç çipleri**, **skor kırılımı**, **aranma tablosu**, **gösterge etkenleri**.
+- Eski sınıflar (`ana-iyi/-kotu`, `finans-ozet-mini-*`, `finans-gelir`, `mulk-getiri-*`, `.etki-pozitif/-negatif`, `kademe-yuksek/-dusuk`) ve `--s-iyi/--s-kotu`, `--v-iyi/--v-kotu` değişkenleri palet tonlarına eşlendi; App.css'teki sabit açık yeşil/kırmızı `color:` değerleri `--c-arti-koyu/--c-eksi-koyu`'ya çevrildi.
 
 ## Bilinen eksikler
-Cemaat sayfasındaki "🔒 Rütbe N" kilidi (`isletme-etiket`) henüz eflatun değil; Sosyalleş ve İlişkiler ekranlarının tutarları ve bordo düğmelerin içindeki tutarlar renklenmedi.
+Cemaat "🔒 Rütbe N" kilidi eflatun değil; metin içine gömülü mesajlar (hırsızlık/ganimet uyarı cümleleri, olay şıkları, KisilikPaneli etiketleri) düz metin; bordo düğmelerin içindeki tutarlar renklenmez; sıfır tutarlar (`Gider: 0`) işaretsiz olsa da renkli görünür.

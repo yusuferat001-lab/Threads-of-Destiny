@@ -367,7 +367,7 @@ export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onY
                 <span>
                   {t('gelirMasraf')}:{' '}
                   <strong>
-                    {formatPara(f.gelir)} / {formatPara(f.masraf)}
+                    <span className="s-gelir">{formatPara(f.gelir)}</span> / <span className="s-gider">{formatPara(f.masraf)}</span>
                   </strong>
                 </span>
                 {f.dunyaYuzde !== 0 && (
