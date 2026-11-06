@@ -186,6 +186,23 @@ export function doktrinEtkiMetni(etki: Record<string, number>, dil: 'tr' | 'en')
 }
 
 
+/** Doktrin etkilerini yeşil/kırmızı rozetlere çevirir (kayıp, masraf, firar, sertlik artarsa kötüdür). */
+export function DoktrinEtkiSatiri({ etki, dil }: { etki: Record<string, number>; dil: 'tr' | 'en' }) {
+  const tersi = new Set(['kayip', 'masraf', 'firar', 'sertlik']);
+  const metinler = doktrinEtkiMetni(etki, dil);
+  const anahtarlar = Object.entries(etki).filter(([, v]) => v).map(([k, v]) => ({ k, iyi: tersi.has(k) ? v < 0 : v > 0 }));
+  return (
+    <>
+      {metinler.map((m, i) => (
+        <span key={i} className={anahtarlar[i]?.iyi ? 's-arti' : 's-eksi'}>
+          {i > 0 ? ' · ' : ''}
+          {m}
+        </span>
+      ))}
+    </>
+  );
+}
+
 export function BirlikPaneli({
   durum,
   pazar,
@@ -394,7 +411,7 @@ export function BirlikPaneli({
                       {o.simge} {d(o.ad)} {o.acimasiz ? '⚡' : ''}
                     </strong>
                     <span>{dil === 'en' ? `Level ${o.seviye}` : `Seviye ${o.seviye}`}</span>
-                    <small>{doktrinEtkiMetni(o.etki, dil).join(' · ')}</small>
+                    <small><DoktrinEtkiSatiri etki={o.etki} dil={dil} /></small>
                   </div>
                 ))}
               </div>

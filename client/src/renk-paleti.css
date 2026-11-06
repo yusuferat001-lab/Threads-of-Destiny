@@ -42,3 +42,15 @@
 .kredi-karti .s-eksi, .kredi-karti .s-gider { color: var(--c-eksi-koyu); }
 .ekran-tam-sayfa .s-durum { color: var(--c-lacivert-koyu); }
 .ekran-tam-sayfa .s-esik { color: var(--c-esik-koyu); }
+
+/* Bordo (koyu kırmızı) düğme ve kutuların içi: açık tonlar */
+button:not(.ikincil):not(.kis-kart) .s-gider, .zemin-bordo .s-gider, .kredi-karti button .s-gider { color: #ffb4a6; }
+button:not(.ikincil):not(.kis-kart) .s-gelir, button:not(.ikincil):not(.kis-kart) .s-arti, .zemin-bordo .s-gelir, .kredi-karti button .s-gelir { color: #9be8ac; }
+/* Kişilik penceresi koyu zeminde */
+.kisilik-rozet .s-arti, .kisilik-rozet .s-gelir { color: var(--c-arti-koyu); }
+.kisilik-rozet .s-eksi, .kisilik-rozet .s-gider { color: var(--c-eksi-koyu); }
+
+/* Sosyalleş: bileşenin kendi renk kuralını ez */
+.sosyal-cip-fiyat.s-gider, .sosyal-aksiyon-fiyat.s-gider, .sosyal-aksiyon-buton .s-gider { color: var(--c-eksi-koyu) !important; font-weight: 700; }
+.zemin-koyu .kademe-yuksek, .ekran-tam-sayfa .kademe-yuksek { color: var(--c-arti-koyu); }
+.zemin-koyu .kademe-dusuk, .ekran-tam-sayfa .kademe-dusuk { color: var(--c-eksi-koyu); }

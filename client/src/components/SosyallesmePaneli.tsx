@@ -142,7 +142,7 @@ export function SosyallesmePaneli({
                     disabled={kilitli || a.kilitli}
                     onClick={() => aksiyonTikla(a.id)}
                   >
-                    {fiyatEtiketi(a.fiyat)}
+                    <span className={a.fiyat > 0 ? 's-gider' : ''}>{fiyatEtiketi(a.fiyat)}</span>
                   </button>
                   {a.kilitli && a.neden && <span className="sosyal-aksiyon-neden">{a.neden}</span>}
                 </div>

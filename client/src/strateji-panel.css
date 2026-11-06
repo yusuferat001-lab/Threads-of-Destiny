@@ -893,3 +893,21 @@
   color: var(--s-latte-yazi);
   border: 1px solid var(--s-latte-kenar);
 }
+
+/* Ordu 1440×900: kaydırmayı sıfıra yaklaştırmak için küçük sıkılaştırma */
+@media (min-width: 768px) {
+  .strateji-sayfa-panel .ordu-politika-detay {
+    font-size: 0.72rem;
+    line-height: 1.22;
+    gap: 6px;
+  }
+  .strateji-sayfa-panel .ordu-politika-secici button {
+    padding: 0.2rem 0.15rem !important;
+  }
+  .strateji-sayfa-panel .ordu-politika-baslik {
+    margin-bottom: 2px;
+  }
+  .strateji-sayfa-panel .gorev-kart {
+    padding: 3px 9px;
+  }
+}

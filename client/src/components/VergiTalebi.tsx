@@ -30,7 +30,7 @@ export function VergiTalebi({
     .replace('{1}', formatPara(talep.tutar))
     .replace('{2}', paraBirimi);
   return (
-    <div className="ogreti-katman" role="alertdialog" aria-modal="true">
+    <div className="ogreti-katman zemin-koyu" role="alertdialog" aria-modal="true">
       <div className="ogreti-kutu">
         <h2>🏛️ {M.baslik[dil]}</h2>
         <p>{metin}</p>

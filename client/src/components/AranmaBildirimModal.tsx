@@ -87,10 +87,10 @@ export function AranmaBildirimModal({ karakter, bildirim, onState }: AranmaBildi
     butonlar = (
       <div className="aranma-butonlar">
         <button type="button" disabled={mesgul || karakter.para < tam} onClick={() => yanitla('tam')}>
-          {t('Tamamını öde', 'Pay in full')} ({formatPara(tam)})
+          {t('Tamamını öde', 'Pay in full')} (<span className="s-gider">{formatPara(tam)}</span>)
         </button>
         <button type="button" disabled={mesgul || karakter.para < yarim} onClick={() => yanitla('yarim')}>
-          {t('Yarısını öde', 'Pay half')} ({formatPara(yarim)})
+          {t('Yarısını öde', 'Pay half')} (<span className="s-gider">{formatPara(yarim)}</span>)
         </button>
         <button type="button" className="ikincil" disabled={mesgul} onClick={() => yanitla('hayir')}>
           {t('Ödemem', 'Refuse')}
