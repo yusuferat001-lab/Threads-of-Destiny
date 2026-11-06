@@ -27,5 +27,8 @@ Süsleme renkleri (sayı DEĞİL, değerlerde kullanılmaz): bordo `#82202a→#5
 - **Strateji sayfaları** (Ordu, Dükkân, Atölye, Cemaat, Yatırım, Çevre/Karanlık İşler), **Evin**, **Mağaza**, **Mülkler**, **Sosyalleş** (giriş/içki fiyatı kırmızı), **Bütçen** (`ButcePaneli`), **ana ekran** (Kazanç yeşil/kırmızı), **sol panel** (yıllık gelir/gider/elde kalan), **sonuç çipleri**, **skor kırılımı**, **aranma tablosu**, **gösterge etkenleri**.
 - Eski sınıflar (`ana-iyi/-kotu`, `finans-ozet-mini-*`, `finans-gelir`, `mulk-getiri-*`, `.etki-pozitif/-negatif`, `kademe-yuksek/-dusuk`) ve `--s-iyi/--s-kotu`, `--v-iyi/--v-kotu` değişkenleri palet tonlarına eşlendi; App.css'teki sabit açık yeşil/kırmızı `color:` değerleri `--c-arti-koyu/--c-eksi-koyu`'ya çevrildi.
 
+## Ek uygulananlar
+Bordo düğme içi tutarlar (açık tonlar: `button:not(.ikincil) .s-gider/.s-gelir`), kişilik penceresi etkileri, tur özeti (sonuç ekranı), hayat hikâyesi (ölüm ekranı), ürün/öğreti/doktrin/vergi modalları (`zemin-koyu`), doktrin etkileri (kayıp/masraf/firar/sertlik artışı **kırmızı**, diğer artışlar yeşil — `DoktrinEtkiSatiri`), Sosyalleş fiyatları, Cemaat rütbe kilidi (eflatun). Metin içindeki işaretli sayıları boyamak için `RenkliEtki` (`components/Renkli.tsx`; yalnız `+5`, `−3`, `-2/yıl` gibi sayı öncesi işaretleri yakalar, "1060-1070" gibi aralıkları değil).
+
 ## Bilinen eksikler
-Cemaat "🔒 Rütbe N" kilidi eflatun değil; metin içine gömülü mesajlar (hırsızlık/ganimet uyarı cümleleri, olay şıkları, KisilikPaneli etiketleri) düz metin; bordo düğmelerin içindeki tutarlar renklenmez; sıfır tutarlar (`Gider: 0`) işaretsiz olsa da renkli görünür.
+Olay hikâye metinlerinin içindeki sayılar ve olay şıkları düz metin (bilerek: hikâye anlatımı); sıfır tutarlar nötr; PC sonuç çipleri bu turda tarayıcıda doğrulanmadı (mobil sonuç çipi doğrulandı).

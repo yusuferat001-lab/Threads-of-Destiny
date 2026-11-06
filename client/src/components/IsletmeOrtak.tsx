@@ -115,7 +115,7 @@ export function IsletmeOrtak({
               <span className="isletme-etiket">{t('azami')}</span>
             ) : (
               <button disabled={yukleniyor || durum.para < y.sonrakiFiyat} onClick={() => onYatirim(y.id)}>
-                {t('yukselt')} · {formatPara(y.sonrakiFiyat)} {pb}
+                {t('yukselt')} · <span className="s-gider">{formatPara(y.sonrakiFiyat)} {pb}</span>
               </button>
             )}
             {onYatirimDusur && y.dusur && (

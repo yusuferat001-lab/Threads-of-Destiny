@@ -44,11 +44,11 @@ export function KrediKarti({ paraBirimi, krediConfig, yukleniyor, onKrediAl, onK
           <div className="kariyer-bagis-kademeler">
             {krediConfig.teklifler.map((t) => (
               <button key={t.id} className="kariyer-bagis-cip" disabled={yukleniyor} title={en ? t.ad.en : t.ad.tr} onClick={() => onKrediAl(t.id)}>
-                <strong>{formatPara(t.tutar)} {paraBirimi}</strong>
+                <strong className="s-gelir">{formatPara(t.tutar)} {paraBirimi}</strong>
                 <br />
                 {en ? 'interest' : 'faiz'} %{Math.round(t.faiz * 100)} · {en ? 'term' : 'vade'} {t.vade} {en ? 'yrs' : 'yıl'}
                 <br />
-                {en ? 'yearly instalment' : 'yıllık taksit'} {formatPara(t.taksit)} {paraBirimi}
+                {en ? 'yearly instalment' : 'yıllık taksit'} <span className="s-gider">{formatPara(t.taksit)} {paraBirimi}</span>
               </button>
             ))}
           </div>

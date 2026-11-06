@@ -1,3 +1,4 @@
+import { RenkliEtki } from './Renkli';
 import type { HayatOlayi } from '../types';
 import { useDil } from '../DilContext';
 
@@ -6,14 +7,14 @@ export function HayatHikayesi({ hikaye }: { hikaye: HayatOlayi[] }) {
   if (hikaye.length === 0) return null;
 
   return (
-    <div className="hayat-hikayesi">
+    <div className="hayat-hikayesi zemin-koyu">
       <h3>{m.hhBaslik}</h3>
       <ol className="hayat-hikayesi-liste">
         {hikaye.map((olay, i) => (
           <li key={i}>
             <span className="hayat-hikayesi-ikon">{olay.ikon}</span>
             <span className="hayat-hikayesi-yil">{olay.yil}</span>
-            <span className="hayat-hikayesi-baslik">{olay.baslik}</span>
+            <span className="hayat-hikayesi-baslik"><RenkliEtki metin={olay.baslik} /></span>
           </li>
         ))}
       </ol>

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import type { BirlikGorunumu } from '../types';
 import { isletmeGetir } from '../api';
 import { useDil } from '../DilContext';
-import { doktrinEtkiMetni } from './BirlikPaneli';
+import { DoktrinEtkiSatiri } from './BirlikPaneli';
 
 const M = {
   baslik: { tr: 'Doktrinini Seç', en: 'Choose Your Doctrine' },
@@ -40,7 +40,7 @@ export function DoktrinSecimi({ stateId, doktrinSayisi, yukleniyor, onSec }: { s
     };
   }, [stateId, doktrinSayisi]);
   return (
-    <div className="ogreti-katman" role="dialog" aria-modal="true">
+    <div className="ogreti-katman zemin-koyu" role="dialog" aria-modal="true">
       <div className="ogreti-kutu">
         <h2>🎖️ {M.baslik[dil]}</h2>
         <p>{M.alt[dil]}</p>
@@ -55,7 +55,7 @@ export function DoktrinSecimi({ stateId, doktrinSayisi, yukleniyor, onSec }: { s
               <div key={o.id} className={`ogreti-kart${o.acimasiz ? ' ogreti-kart-fanatik' : ''}`}>
                 <div className="ogreti-simge">{o.simge}</div>
                 <strong>{o.ad[dil]}</strong>
-                <p>{doktrinEtkiMetni(o.etki, dil).join(' · ')}</p>
+                <p><DoktrinEtkiSatiri etki={o.etki} dil={dil} /></p>
                 {o.acimasiz && <small>{M.acimasiz[dil]}</small>}
                 <button disabled={yukleniyor} onClick={() => onSec(o.id)}>
                   {M.sec[dil]}

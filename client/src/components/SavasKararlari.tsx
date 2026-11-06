@@ -23,7 +23,7 @@ const DUSMAN_TUR: Record<string, { tr: string; en: string }> = {
 export function SavasKararlari({ karar, yukleniyor, onSec }: { karar: SavasKarariDurumu; yukleniyor: boolean; onSec: (id: string) => void }) {
   const { dil } = useDil();
   return (
-    <div className="ogreti-katman" role="dialog" aria-modal="true">
+    <div className="ogreti-katman zemin-koyu" role="dialog" aria-modal="true">
       <div className="ogreti-kutu">
         <h2>⚔️ {M.baslik[dil]}</h2>
         <p className="ogreti-seviye">

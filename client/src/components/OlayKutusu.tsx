@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, type ReactNode, type RefObject } from 'react';
 import type { SenaryoResponse, SonucEtkisi } from '../types';
+import { RenkliEtki } from './Renkli';
 import { useDil } from '../DilContext';
 import { bic } from '../i18n';
 import { EtkiCipleri } from './EtkiCipleri';
@@ -201,7 +202,7 @@ export function OlayKutusu({
                 <EtkiCipleri etki={sonuc.etki} paraBirimi={sonuc.paraBirimi} />
                 {sonuc.ozet && (
                   <p className="tur-ozeti" title={sonuc.ozet}>
-                    {sonuc.ozet}
+                    <RenkliEtki metin={sonuc.ozet} />
                   </p>
                 )}
               </div>

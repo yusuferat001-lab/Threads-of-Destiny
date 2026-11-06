@@ -1,5 +1,6 @@
 import type { YatkinlikKaynagi, KisilikEksenleri } from '../types';
 import { kategoriAdi } from '../bolgeTema';
+import { RenkliEtki } from './Renkli';
 import { useDil } from '../DilContext';
 import { aileKokAdi } from '../aileAdi';
 import { formatYuzde } from '../format';
@@ -89,9 +90,9 @@ export function KisilikPaneli({
             </span>
             {etkiler.length > 0 && (
               <span className="kisilik-rozet-etki">
-                {etkiler
-                  .map((e) => `${kategoriAdi(e.kategori, dil)} ${e.deger > 0 ? '+' : ''}${e.deger}`)
-                  .join(' · ')}
+                <RenkliEtki
+                  metin={etkiler.map((e) => `${kategoriAdi(e.kategori, dil)} ${e.deger > 0 ? '+' : ''}${e.deger}`).join(' · ')}
+                />
               </span>
             )}
           </div>
@@ -103,8 +104,7 @@ export function KisilikPaneli({
             ✨ {kt(bolge)} + {kt(aileMeslegi)} {m.kpSinerji}
           </span>
           <span className="kisilik-rozet-etki">
-            {kategoriAdi(sinerjiKaynak.kategori, dil)} {sinerjiKaynak.deger > 0 ? '+' : ''}
-            {sinerjiKaynak.deger}
+            <RenkliEtki metin={`${kategoriAdi(sinerjiKaynak.kategori, dil)} ${sinerjiKaynak.deger > 0 ? '+' : ''}${sinerjiKaynak.deger}`} />
           </span>
         </div>
       )}

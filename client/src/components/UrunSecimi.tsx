@@ -32,7 +32,7 @@ export function UrunSecimi({ stateId, yukleniyor, onSec }: { stateId: string; yu
     };
   }, [stateId]);
   return (
-    <div className="ogreti-katman" role="dialog" aria-modal="true">
+    <div className="ogreti-katman zemin-koyu" role="dialog" aria-modal="true">
       <div className="ogreti-kutu">
         <h2>🏪 {M.baslik[dil]}</h2>
         <p>{M.alt[dil]}</p>
