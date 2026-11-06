@@ -211,8 +211,8 @@ const ZANAATKAR_YATIRIMLAR: YatirimTanimi[] = [
     simge: "🔨",
     ad: { tr: "Tezgâh ve Aletler", en: "Workbench & Tools" },
     aciklama: {
-      tr: "Her kademe yıllık üretim tavanını %50 artırır ve ürünlerine %3 usta işi primi ekler.",
-      en: "Each tier raises your yearly production cap by 50% and adds a 3% master-craft premium to your prices.",
+      tr: "Her kademe yıllık üretimi %50 artırır ve ürünlerine %3 usta işi primi ekler.",
+      en: "Each tier raises your yearly output by 50% and adds a 3% master-craft premium to your prices.",
     },
     etki: "uretim",
     fiyatlar: FIYAT_TEZGAH,

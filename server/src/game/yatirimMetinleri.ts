@@ -52,7 +52,7 @@ export function yatirimEtkiMetni(etki: YatirimEtkisi, kademe: number, enflasyon:
     case "alis":
       return dili((d) => (k === 0 ? (d === "tr" ? "Etki yok" : "No effect") : `${d === "tr" ? "Alış maliyeti" : "Purchase cost"} ${eksi((1 - Math.pow(1 - KERVAN_INDIRIM_KADEME, k)) * 100, d)}`));
     case "uretim":
-      return dili((d) => (k === 0 ? (d === "tr" ? "Etki yok" : "No effect") : `${d === "tr" ? "Üretim tavanı" : "Production cap"} ${art(k * TEZGAH_URETIM_KADEME * 100, d)} · ${d === "tr" ? "fiyat" : "price"} ${art(k * TEZGAH_FIYAT_PRIMI * 100, d)}`));
+      return dili((d) => (k === 0 ? (d === "tr" ? "Etki yok" : "No effect") : `${d === "tr" ? "Üretim" : "Output"} ${art(k * TEZGAH_URETIM_KADEME * 100, d)} · ${d === "tr" ? "fiyat" : "price"} ${art(k * TEZGAH_FIYAT_PRIMI * 100, d)}`));
     case "pazar":
       return dili((d) => (k === 0 ? (d === "tr" ? "Etki yok" : "No effect") : `${d === "tr" ? "Müşteri artışı" : "Customer growth"} +${TANITIM_MUSTERI[Math.min(k, TANITIM_MUSTERI.length - 1)]} ${d === "tr" ? "müşteri/yıl" : "customers/yr"}`));
     case "koruma": {

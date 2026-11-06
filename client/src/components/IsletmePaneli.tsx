@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type {
   PazarDurumu,
   IsletmeGorunumu,
@@ -49,14 +50,16 @@ const M = {
   vergiIndirim: { tr: 'indirimli, kalan', en: 'reduced, left' },
   yilKisa: { tr: 'yıl', en: 'yr' },
   koruma: { tr: 'Koruma', en: 'Security' },
-  butceBaslik: { tr: '📒 Dükkan bütçesi', en: '📒 Shop budget' },
+  butceBaslik: { tr: '📒 Bütçen', en: '📒 Your budget' },
   buYil: { tr: 'Bu yıl (tahmini)', en: 'This year (estimate)' },
   gecenYil: { tr: 'Geçen yıl', en: 'Last year' },
   maasKalemi: { tr: 'Çalışan maaşları', en: 'Staff wages' },
   curumeKalemi: { tr: 'Çürüyen mal', en: 'Spoiled goods' },
   hasarKalemi: { tr: 'Hırsızlık / baskın / tazminat', en: 'Theft / raid / severance' },
   dukkanNeti: { tr: 'Dükkan neti', en: 'Shop net' },
-  yasamKira: { tr: 'Yaşam + kira', en: 'Living + rent' },
+  yasam: { tr: 'Yaşam', en: 'Living' },
+  kira: { tr: 'Kira', en: 'Rent' },
+  hayvanGider: { tr: 'Evcil hayvan', en: 'Pets' },
   krediTaksit: { tr: 'Kredi taksidi', en: 'Loan instalment' },
   cebineKalan: { tr: 'Cebine kalan', en: 'Left in your pocket' },
   gecenAlis: { tr: 'geçen yıl', en: 'last year' },
@@ -88,7 +91,6 @@ const M = {
     tr: 'Açıkken depo her yıl başı seçtiğin yüzdeye, paran yettiği kadar dolar. Sen kapatana kadar sürer.',
     en: 'When on, the warehouse refills to your chosen % at the start of every year as far as your money allows, until you turn it off.',
   },
-  sapma: { tr: 'bu yılın piyasa farkı', en: 'this year\'s market swing' },
   hatlar: { tr: 'Ürün hatları', en: 'Product lines' },
   acik: { tr: 'Açık', en: 'Open' },
   kapali: { tr: 'Kapalı', en: 'Closed' },
@@ -133,7 +135,7 @@ const M = {
   donem: { tr: { bolluk: 'Bolluk', durgunluk: 'Durgunluk', kitlik: 'Kıtlık' }, en: { bolluk: 'Boom', durgunluk: 'Slump', kitlik: 'Famine' } },
   savas: { tr: 'Savaş', en: 'War' },
   veba: { tr: 'Salgın', en: 'Plague' },
-  uretimTavani: { tr: 'Üretim tavanı', en: 'Production cap' },
+  uretimTavani: { tr: 'Yıllık üretim', en: 'Yearly output' },
   birimUretim: { tr: 'Satış / hammadde', en: 'Sell / materials' },
   ilkYil: { tr: 'Henüz bir yıl geçmedi. Hiçbir şeye dokunmasan da işletme otomatik çalışır.', en: "A year hasn't passed yet. The business runs on its own even if you touch nothing." },
   imtiyazlar: { tr: 'Aktif imtiyazlar', en: 'Active privileges' },
@@ -141,6 +143,13 @@ const M = {
   iliski: { tr: 'ilişki', en: 'relation' },
   tamam: { tr: 'Tamam', en: 'OK' },
   olayBaslik: { tr: 'Geçen yıl işletmende olanlar', en: 'What happened at your business last year' },
+  dahaFazla: { tr: 'Daha fazla bilgi', en: 'More details' },
+  digerHatlar: { tr: 'Diğer hatlar', en: 'Other lines' },
+  hammaddeDeposu: { tr: 'Hammadde Deposu', en: 'Raw-Material Store' },
+  haberler: { tr: 'Piyasa haberleri', en: 'Market news' },
+  uretimBeklenen: { tr: 'Bu yıl beklenen satış', en: 'Expected sales this year' },
+  uretimTavaniAsildi: { tr: 'Talep yıllık üretimini aşıyor: fazlası satılamaz. Tezgâh yatırımı ya da Üretici çalışan üretimi artırır.', en: 'Demand exceeds your yearly output: the excess cannot be sold. A workbench upgrade or a Maker raises output.' },
+  stokPay: { tr: 'depodaki payı', en: 'share of the store' },
 };
 
 const IMTIYAZ_ADLARI: Record<string, D> = {
@@ -240,7 +249,7 @@ export function isletmeUyariMetni(u: IsletmeUyari, durum: IsletmeGorunumu, dil: 
       case 'kitle_kaybi':
         return en ? '📉 Two years of unmet demand cost you customers.' : '📉 Üst üste iki yıl karşılanamayan talep müşteri kaybettirdi.';
       case 'uretim_tavani':
-        return en ? '🔨 Your production cap fell short of demand — add a workbench or staff.' : '🔨 Üretim tavanın talebe yetmedi; tezgâh ya da çalışan ekle.';
+        return en ? '🔨 Your output fell short of demand — add a workbench or staff.' : '🔨 Üretimin talebe yetmedi; tezgâh ya da çalışan ekle.';
       case 'calisan_ayrildi':
         return `🚪 ${u.isim ?? ''}: ${en ? 'quit and took a severance from the till' : 'işi bıraktı ve kasadan tazminat aldı'}`;
       case 'sizdirma':
@@ -318,6 +327,7 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
   const { dil } = useDil();
   const t = (k: Exclude<keyof typeof M, 'donem'>) => M[k][dil];
   const d = (m: D) => m[dil];
+  const [digerAcik, setDigerAcik] = useState(false);
 
   const dokum = durum.sonDokum;
   if (!durum.aktif) return null;
@@ -326,12 +336,22 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
   const etiketAlim = uretimModu ? t('hammadde') : t('alim');
   const donemAdi = durum.dunya.donem ? M.donem[dil][durum.dunya.donem as 'bolluk'] : null;
   const uyariMetni = (u: IsletmeUyari): string => isletmeUyariMetni(u, durum, dil);
+  const acikHatlar = durum.hatlar.filter((h) => h.acik);
+  const digerHatlar = durum.hatlar.filter((h) => !h.acik);
+  const digerGoster = digerAcik || acikHatlar.length === 0;
+  /** Zanaatkâr: açık hatların bu yıl beklenen toplam satışı (talep aralığının ortası; depo yıl başı dolduğu için stok sınırlamaz). */
+  const uretimBeklenen = Math.round(acikHatlar.reduce((t, h) => t + (h.talepMin + h.talepMax) / 2, 0));
+  const dolulukSinifi = (y: number) => (y < 30 ? 'dusuk' : y < 60 ? 'orta' : 'yuksek');
 
+  const renk = (v: number) => (v > 0 ? 'kademe-yuksek' : v < 0 ? 'kademe-dusuk' : '');
   const hatKarti = (h: IsletmeHatGorunumu) => {
     const dunyaEtkisi =
-      h.dunyaTalepYuzde !== 0 || h.dunyaFiyatYuzde !== 0
-        ? `${dil === 'en' ? 'demand' : 'talep'} ${formatYuzde(dil, h.dunyaTalepYuzde, true)} · ${dil === 'en' ? 'price' : 'fiyat'} ${formatYuzde(dil, h.dunyaFiyatYuzde, true)}`
-        : null;
+      h.dunyaTalepYuzde !== 0 || h.dunyaFiyatYuzde !== 0 ? (
+        <>
+          {dil === 'en' ? 'demand' : 'talep'} <span className={renk(h.dunyaTalepYuzde)}>{formatYuzde(dil, h.dunyaTalepYuzde, true)}</span> · {dil === 'en' ? 'price' : 'fiyat'}{' '}
+          <span className={renk(h.dunyaFiyatYuzde)}>{formatYuzde(dil, h.dunyaFiyatYuzde, true)}</span>
+        </>
+      ) : null;
     const secili = FIYATLAR.find((f) => f.id === h.fiyat) ?? FIYATLAR[2];
     return (
       <div key={h.id} className={`isletme-hat${h.acik ? ' isletme-hat-acik' : ''}${h.kilitli ? ' isletme-hat-kilitli' : ''}`}>
@@ -352,11 +372,11 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
           )}
         </div>
         <div className="isletme-hat-artieksi">
-          <span>➕ {d(h.arti)}</span>
-          <span>➖ {d(h.eksi)}</span>
+          <span className="kademe-yuksek">➕ {d(h.arti)}</span>
+          <span className="kademe-dusuk">➖ {d(h.eksi)}</span>
         </div>
-        {h.sicak && <div className="isletme-hat-dunya">{t('sicak')}</div>}
-        {h.anaUrunBonus && <div className="isletme-hat-dunya">⭐ {d(h.anaUrunBonus)}</div>}
+        {h.sicak && <div className="isletme-hat-dunya kademe-yuksek">{t('sicak')}</div>}
+        {h.anaUrunBonus && <div className="isletme-hat-dunya kademe-yuksek">⭐ {d(h.anaUrunBonus)}</div>}
         <div className="isletme-hat-satir">
           <span>
             {uretimModu ? t('hammaddeStogu') : t('stok')}: <strong>{h.stok}</strong>
@@ -382,7 +402,6 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
             {h.oncekiBirimMaliyet != null ? ` (${t('gecenAlis')} ${formatPara(h.oncekiBirimMaliyet)})` : ''}
             {h.maliyetDonemYuzde !== 0 ? <> · {t('alisDonem')} <span className={h.maliyetDonemYuzde > 0 ? 'kademe-dusuk' : 'kademe-yuksek'}>{formatYuzde(dil, h.maliyetDonemYuzde, true)}</span></> : null}
             {h.maliyetIndirimYuzde > 0 ? <> · {t('alisIndirim')} <span className="kademe-yuksek">−{formatYuzde(dil, h.maliyetIndirimYuzde)}</span></> : null}
-            {' · '}{t('sapma')}: {dil === 'en' ? 'buy' : 'alış'} <span className={h.alisSapmaYuzde > 0 ? 'kademe-dusuk' : 'kademe-yuksek'}>{formatYuzde(dil, h.alisSapmaYuzde, true)}</span>, {dil === 'en' ? 'sell' : 'satış'} <span className={h.satisSapmaYuzde >= 0 ? 'kademe-yuksek' : 'kademe-dusuk'}>{formatYuzde(dil, h.satisSapmaYuzde, true)}</span>
           </div>
         )}
         {h.acik && (
@@ -408,7 +427,7 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
         <>
       <h3>{t('baslik')}</h3>
 
-      <div className="isletme-ozet">
+      <div className="isletme-ozet isletme-ozet-ana">
         <span>
           ⚖️ {t('pay')}: <strong>{payMetni(dil, durum.pazarPayi)}</strong>
         </span>
@@ -417,45 +436,51 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
           {dokum && dokum.musteriDegisim !== 0 ? <em> ({formatMusteri(dil, dokum.musteriDegisim, true)})</em> : null}
         </span>
         <span>
-          🌐 {t('pazar')}: <strong>{durum.pazarMusteri} {t('kisi')}</strong>
+          🏚️ {t('depo')}: <strong>{durum.depo.kullanilan}/{durum.depo.kapasite}</strong>
         </span>
-        <span>
-          📑 {t('slot')}: <strong>{durum.slot.kullanilan}/{durum.slot.toplam}</strong>
-        </span>
-        {durum.uretim && (
-          <span>
-            🔨 {t('uretimTavani')}: <strong>{durum.uretim.tavan}{t('yil')}</strong>
-          </span>
-        )}
-        <span>
-          🏚️ {t('depo')}: <strong>{durum.depo.kullanilan}/{durum.depo.kapasite}</strong> · {t('curume')} %{durum.depo.curumeYuzde} · {t('dukkanGideri')} {formatPara(durum.depo.dukkanGideri)}
-        </span>
-        <span>
-          🧾 {t('vergi')}: <strong>%{Math.round(durum.vergi.oran * 1000) / 10}</strong>
-          {durum.vergi.indirimKalanYil > 0 ? ` (${t('vergiIndirim')} ${durum.vergi.indirimKalanYil} ${t('yilKisa')})` : ''}
-        </span>
-        <span>
-          🔒 {t('koruma')}: <strong>%{Math.round(durum.koruma.toplam * 100)}</strong>
-        </span>
-        {durum.tedarikciBorcu > 0 && (
-          <span>
-            🧾 {t('borc')}: <strong>{formatPara(durum.tedarikciBorcu)} {pb}</strong>
-          </span>
-        )}
         <span>
           💰 {t('beklenen')}: <strong className={isaretSinifi(durum.butce.net)}>~{formatPara(durum.butce.net)} {pb}{t('yil')}</strong>
         </span>
-        {durum.otorite && (
-          <span>
-            🏛️ {t('otorite')}: <strong>{kt(dil, durum.otorite)}</strong> · {t('iliski')} {durum.otoriteIliski}
-          </span>
-        )}
-        {(donemAdi || durum.dunya.savas || durum.dunya.veba) && (
-          <span>
-            🌍 {[donemAdi, durum.dunya.savas ? t('savas') : null, durum.dunya.veba ? t('veba') : null].filter(Boolean).join(' · ')}
-          </span>
-        )}
       </div>
+
+      <details className="isletme-ozet-detay">
+        <summary>{t('dahaFazla')}</summary>
+        <div className="isletme-ozet">
+          <span>
+            🌐 {t('pazar')}: <strong>{durum.pazarMusteri} {t('kisi')}</strong>
+          </span>
+          <span>
+            📑 {t('slot')}: <strong>{durum.slot.kullanilan}/{durum.slot.toplam}</strong>
+          </span>
+          {durum.uretim && (
+            <span>
+              🔨 {t('uretimTavani')}: <strong>{durum.uretim.tavan}{t('yil')}</strong>
+            </span>
+          )}
+          <span>
+            🧾 {t('vergi')}: <strong>%{Math.round(durum.vergi.oran * 1000) / 10}</strong>
+            {durum.vergi.indirimKalanYil > 0 ? ` (${t('vergiIndirim')} ${durum.vergi.indirimKalanYil} ${t('yilKisa')})` : ''}
+          </span>
+          <span>
+            🔒 {t('koruma')}: <strong>%{Math.round(durum.koruma.toplam * 100)}</strong>
+          </span>
+          {durum.tedarikciBorcu > 0 && (
+            <span>
+              🧾 {t('borc')}: <strong>{formatPara(durum.tedarikciBorcu)} {pb}</strong>
+            </span>
+          )}
+          {durum.otorite && (
+            <span>
+              🏛️ {t('otorite')}: <strong>{kt(dil, durum.otorite)}</strong> · {t('iliski')} {durum.otoriteIliski}
+            </span>
+          )}
+          {(donemAdi || durum.dunya.savas || durum.dunya.veba) && (
+            <span>
+              🌍 {[donemAdi, durum.dunya.savas ? t('savas') : null, durum.dunya.veba ? t('veba') : null].filter(Boolean).join(' · ')}
+            </span>
+          )}
+        </div>
+      </details>
 
       {durum.imtiyazlar.length > 0 && (
         <div className="isletme-imtiyazlar">
@@ -464,26 +489,104 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
         </div>
       )}
 
+      <div className="isletme-iki-sutun">
+      <div className="isletme-sutun">
       {durum.depo.kapasite > 0 && (
-        <div className="isletme-depo-doldur">
+        <div className={`isletme-depo-doldur${uretimModu ? ' isletme-depo-uretim' : ''}`}>
           <h4>
-            {t('depoBaslik')} — {durum.depo.kullanilan}/{durum.depo.kapasite} {t('adetBirim')} ({durum.depo.dolulukYuzde}% {t('depoDolu')})
+            🏚️ {uretimModu ? t('hammaddeDeposu') : t('depoBaslik')} — {durum.depo.kullanilan}/{durum.depo.kapasite} {t('adetBirim')}
           </h4>
-          <div className="isletme-hat-dunya">
-            {durum.hatlar.filter((h) => h.acik).map((h) => (
-              <div key={h.id}>
-                {h.simge} {d(h.ad)}: {t('depodaStok')} <strong>{h.stok}</strong> {t('adetBirim')} · {t('tahminiTalep')} <strong>{h.talepMin}–{h.talepMax}</strong> {t('adetBirim')} · {t('depoBirimFiyat')} {formatPara(h.birimMaliyet)}
+          <div className="isletme-depo-olcek" title={`${durum.depo.dolulukYuzde}% ${t('depoDolu')}`}>
+            <div className={`isletme-depo-dolgu ${dolulukSinifi(durum.depo.dolulukYuzde)}`} style={{ width: `${Math.min(100, durum.depo.dolulukYuzde)}%` }} />
+            <span>{durum.depo.dolulukYuzde}% {t('depoDolu')}</span>
+          </div>
+          <div className="isletme-depo-chipler">
+            <span>♻️ {t('curume')} %{durum.depo.curumeYuzde}</span>
+            <span>🔧 {t('dukkanGideri')} {formatPara(durum.depo.dukkanGideri)}</span>
+          </div>
+          <div className="isletme-depo-hatlar">
+            {acikHatlar.map((h) => (
+              <div key={h.id} className="isletme-depo-hat" title={`${h.stok} ${t('adetBirim')} (${t('stokPay')})`}>
+                <div className="isletme-depo-hat-ust">
+                  <strong>{h.simge} {d(h.ad)}</strong>
+                  <span>
+                    {t('depodaStok')} <b>{h.stok}</b> · {t('tahminiTalep')} <b>{h.talepMin}–{h.talepMax}</b> · {t('depoBirimFiyat')} {formatPara(h.birimMaliyet)}
+                  </span>
+                </div>
+                <div className="isletme-depo-mini">
+                  <div style={{ width: `${durum.depo.kapasite > 0 ? Math.min(100, (h.stok / durum.depo.kapasite) * 100) : 0}%` }} />
+                </div>
               </div>
             ))}
           </div>
+          {durum.uretim && (
+            <div className={`isletme-uretim-gosterge${uretimBeklenen > durum.uretim.tavan ? ' isletme-uretim-asildi' : ''}`}>
+              <div>
+                🔨 {t('uretimBeklenen')}: <b>~{uretimBeklenen}</b> / {t('uretimTavani')}: <b>{durum.uretim.tavan}</b>
+              </div>
+              <div className="isletme-depo-mini">
+                <div style={{ width: `${Math.min(100, (uretimBeklenen / Math.max(1, durum.uretim.tavan)) * 100)}%` }} />
+              </div>
+              {uretimBeklenen > durum.uretim.tavan && <div className="isletme-uretim-uyari">⚠️ {t('uretimTavaniAsildi')}</div>}
+            </div>
+          )}
           <div className="isletme-fiyat-not">{t('depoOtoNot')}</div>
         </div>
       )}
 
-      {pazar && pazar.aktif && <PiyasaHaberleri pazar={pazar} sayilarGoster />}
-
       <h4>{t('hatlar')}</h4>
-      <div className="isletme-hatlar">{durum.hatlar.map(hatKarti)}</div>
+      <div className="isletme-hatlar">{acikHatlar.map(hatKarti)}</div>
+      {digerHatlar.length > 0 && (
+        <>
+          {acikHatlar.length > 0 && (
+            <button className="isletme-diger-hatlar ikincil" onClick={() => setDigerAcik(!digerAcik)}>
+              {digerAcik ? '▴' : '▾'} {t('digerHatlar')} ({digerHatlar.length})
+            </button>
+          )}
+          {digerGoster && <div className="isletme-hatlar">{digerHatlar.map(hatKarti)}</div>}
+        </>
+      )}
+
+      {pazar && pazar.aktif && (
+        <details className="isletme-haberler-detay">
+          <summary>📰 {t('haberler')}</summary>
+          <PiyasaHaberleri pazar={pazar} sayilarGoster />
+        </details>
+      )}
+      </div>
+      <div className="isletme-sutun">
+      <h4 className="isletme-butce-baslik">{t('butceBaslik')}</h4>
+      <div className="isletme-butce">
+        <div className="isletme-butce-sutun">
+          <h5>{t('buYil')}</h5>
+          <div className="isletme-butce-satir"><span>{t('satis')}</span><span className="kademe-yuksek">+{formatPara(durum.butce.satis)}</span></div>
+          <div className="isletme-butce-satir"><span>{etiketAlim}</span><span className="kademe-dusuk">−{formatPara(durum.butce.alim)}</span></div>
+          <div className="isletme-butce-satir"><span>{t('depoMasrafi')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.depo)}</span></div>
+          <div className="isletme-butce-satir"><span>{t('loncaAidati')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.aidat)}</span></div>
+          <div className="isletme-butce-satir"><span>{t('vergiKalemi')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.vergi)}</span></div>
+          {durum.butce.borcOdeme > 0 && <div className="isletme-butce-satir"><span>{t('borcOdeme')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.borcOdeme)}</span></div>}
+          <div className="isletme-butce-satir"><span>{t('maasKalemi')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.maas)}</span></div>
+          <div className="isletme-butce-satir isletme-butce-toplam"><span>{t('dukkanNeti')}</span><span className={isaretSinifi(durum.butce.net)}>{durum.butce.net >= 0 ? '+' : ''}{formatPara(durum.butce.net)}</span></div>
+          <div className="isletme-butce-satir"><span>{t('yasam')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.yasam)}</span></div>
+          <div className="isletme-butce-satir"><span>{t('kira')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.kira)}</span></div>
+          {durum.butce.evcilHayvan > 0 && <div className="isletme-butce-satir"><span>{t('hayvanGider')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.evcilHayvan)}</span></div>}
+          {durum.butce.krediTaksit > 0 && <div className="isletme-butce-satir"><span>{t('krediTaksit')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.krediTaksit)}</span></div>}
+          <div className="isletme-butce-satir isletme-butce-toplam"><span>{t('cebineKalan')}</span><span className={isaretSinifi(durum.butce.cebineKalan)}>{durum.butce.cebineKalan >= 0 ? '+' : ''}{formatPara(durum.butce.cebineKalan)} {pb}</span></div>
+        </div>
+      </div>
+
+      {dokum && (
+        <div className="isletme-dokum">
+          {dokum.uyarilar.map((u, i) => (
+            <div key={i} className="isletme-uyari">
+              {uyariMetni(u)}
+            </div>
+          ))}
+        </div>
+      )}
+
+      </div>
+      </div>
 
         </>
       )}
@@ -499,61 +602,6 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
         onCalisanAl={onCalisanAl}
         onEkipCikar={onEkipCikar}
       />
-
-      {(bolum === 'hepsi' || bolum === 'isletme') && (
-        <>
-      <h4>{t('butceBaslik')}</h4>
-      <div className="isletme-butce">
-        <div className="isletme-butce-sutun">
-          <h5>{t('buYil')}</h5>
-          <div className="isletme-butce-satir"><span>{t('satis')}</span><span className="kademe-yuksek">+{formatPara(durum.butce.satis)}</span></div>
-          <div className="isletme-butce-satir"><span>{etiketAlim}</span><span className="kademe-dusuk">−{formatPara(durum.butce.alim)}</span></div>
-          <div className="isletme-butce-satir"><span>{t('depoMasrafi')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.depo)}</span></div>
-          <div className="isletme-butce-satir"><span>{t('loncaAidati')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.aidat)}</span></div>
-          <div className="isletme-butce-satir"><span>{t('vergiKalemi')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.vergi)}</span></div>
-          {durum.butce.borcOdeme > 0 && <div className="isletme-butce-satir"><span>{t('borcOdeme')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.borcOdeme)}</span></div>}
-          <div className="isletme-butce-satir isletme-butce-toplam"><span>{t('dukkanNeti')}</span><span className={isaretSinifi(durum.butce.net)}>{durum.butce.net >= 0 ? '+' : ''}{formatPara(durum.butce.net)}</span></div>
-          <div className="isletme-butce-satir"><span>{t('maasKalemi')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.maas)}</span></div>
-          <div className="isletme-butce-satir"><span>{t('yasamKira')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.yasamKira)}</span></div>
-          {durum.butce.krediTaksit > 0 && <div className="isletme-butce-satir"><span>{t('krediTaksit')}</span><span className="kademe-dusuk">−{formatPara(durum.butce.krediTaksit)}</span></div>}
-          <div className="isletme-butce-satir isletme-butce-toplam"><span>{t('cebineKalan')}</span><span className={isaretSinifi(durum.butce.cebineKalan)}>{durum.butce.cebineKalan >= 0 ? '+' : ''}{formatPara(durum.butce.cebineKalan)} {pb}</span></div>
-        </div>
-        <div className="isletme-butce-sutun">
-          <h5>{t('gecenYil')}</h5>
-          {!dokum ? (
-            <p className="isletme-bos">{t('ilkYil')}</p>
-          ) : (
-            <>
-              <div className="isletme-butce-satir"><span>{t('satis')}</span><span className="kademe-yuksek">+{formatPara(dokum.satis)}</span></div>
-              <div className="isletme-butce-satir"><span>{etiketAlim}</span><span className="kademe-dusuk">−{formatPara(dokum.alim)}</span></div>
-              {(dokum.curumeKaybi ?? 0) > 0 && <div className="isletme-butce-satir"><span>↳ {t('curumeKalemi')}</span><span>{formatPara(dokum.curumeKaybi ?? 0)}</span></div>}
-              <div className="isletme-butce-satir"><span>{t('depoMasrafi')}</span><span className="kademe-dusuk">−{formatPara(dokum.depoMasrafi)}</span></div>
-              {dokum.loncaAidati > 0 && <div className="isletme-butce-satir"><span>{t('loncaAidati')}</span><span className="kademe-dusuk">−{formatPara(dokum.loncaAidati)}</span></div>}
-              {dokum.vergi > 0 && <div className="isletme-butce-satir"><span>{t('vergiKalemi')} ({formatYuzde(dil, Math.round(dokum.vergiOrani * 1000) / 10)})</span><span className="kademe-dusuk">−{formatPara(dokum.vergi)}</span></div>}
-              {dokum.borcOdeme > 0 && <div className="isletme-butce-satir"><span>{t('borcOdeme')}</span><span className="kademe-dusuk">−{formatPara(dokum.borcOdeme)}</span></div>}
-              {((dokum.nakitHasar ?? 0) + (dokum.ekstraGider ?? 0)) > 0 && <div className="isletme-butce-satir"><span>{t('hasarKalemi')}</span><span className="kademe-dusuk">−{formatPara((dokum.nakitHasar ?? 0) + (dokum.ekstraGider ?? 0))}</span></div>}
-              <div className="isletme-butce-satir isletme-butce-toplam"><span>{t('dukkanNeti')}</span><span className={isaretSinifi(dokum.net)}>{dokum.net >= 0 ? '+' : ''}{formatPara(dokum.net)}</span></div>
-              <div className="isletme-butce-satir"><span>{t('maasKalemi')}</span><span className="kademe-dusuk">−{formatPara(dokum.calisanMaasi ?? durum.butce.maas)}</span></div>
-            </>
-          )}
-        </div>
-      </div>
-
-      {dokum && (
-        <div className="isletme-dokum">
-          <div>
-            {t('pay')}: <strong>%{dokum.pazarPayi}</strong> · {t('musteriDegisim')}: <strong className={isaretSinifi(dokum.musteriDegisim)}>{formatMusteri(dil, dokum.musteriDegisim, true)}</strong>
-          </div>
-          {dokum.uyarilar.map((u, i) => (
-            <div key={i} className="isletme-uyari">
-              {uyariMetni(u)}
-            </div>
-          ))}
-        </div>
-      )}
-
-        </>
-      )}
 
     </section>
   );

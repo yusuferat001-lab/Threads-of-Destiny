@@ -949,6 +949,8 @@ export interface IsletmeCalisanGorunumu {
   maas: number;
   sadik: boolean;
   riskli: boolean;
+  /** Çalışanın işletmeye etkisi: maliyet/ana/güvenlik kesir (0-1), müşteri yıllık sayı. */
+  etki: { tur: 'ana' | 'maliyet' | 'musteri' | 'guvenlik'; deger: number } | null;
 }
 
 export interface IsletmeAdayGorunumu {
@@ -963,6 +965,8 @@ export interface IsletmeAdayGorunumu {
   yetenek: number;
   sadakat: number;
   maas: number;
+  /** İşe alınırsa getireceği etki. */
+  etki: { tur: 'ana' | 'maliyet' | 'musteri' | 'guvenlik'; deger: number } | null;
 }
 
 export interface CemaatPolitikaSecenegi {
@@ -1051,6 +1055,9 @@ export interface IsletmeButcesi {
   net: number;
   maas: number;
   yasamKira: number;
+  yasam: number;
+  kira: number;
+  evcilHayvan: number;
   krediTaksit: number;
   cebineKalan: number;
 }

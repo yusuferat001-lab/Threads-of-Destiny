@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useDil } from '../DilContext';
 import type { CharacterState, FinansOzeti, IsletmeGorunumu } from '../types';
 import { formatMusteri, formatPara } from '../format';
@@ -11,6 +12,10 @@ interface AnaEkranProps {
   finans: FinansOzeti | null;
   yukleniyor: boolean;
   onTus: (tus: AnaTusId) => void;
+  /** Müşteri paneline dokununca Dükkân sayfası ilgili bölümüne açılır. */
+  onMusteriTikla: () => void;
+  /** Elde Kalan (gelir/gider) paneline dokununca Dükkân sayfasının bütçe bölümü açılır. */
+  onGelirTikla: () => void;
   onIlerle: () => void;
   /** Geçen yılın kısa haberi (dönem/terfi/hapis…); sahne alanında kapatılabilir şerit olarak gösterilir. */
   yilNotu: string | null;
@@ -69,8 +74,9 @@ function tuslar(meslek: string): TusTanimi[] {
  * Telefon ana ekranı ("ilerle" zaman modeli): olay yokken görünür. Üstte üç cam panel
  * (müşteri, yıllık kâr, dönem) + pazar payı, altta 2×2 meslek tuşu ve bordo İLERLE düğmesi.
  */
-export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, onIlerle, yilNotu, onNotKapat }: AnaEkranProps) {
+export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, onMusteriTikla, onGelirTikla, onIlerle, yilNotu, onNotKapat }: AnaEkranProps) {
   const { dil } = useDil();
+  const [donemAcik, setDonemAcik] = useState(false);
   const tr = dil !== 'en';
   const dokum = isletme?.sonDokum ?? null;
   const birim = karakter.para_birimi;
@@ -86,11 +92,11 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
     : tr ? 'Ordu' : 'Army';
   const degisim = dokum?.musteriDegisim ?? null;
 
-  // Kâr paneli: geçen yılın dökümü; yoksa tahmini/yıllık gelir.
-  const gelir = dokum ? dokum.satis : isletme ? isletme.butce.satis : karakter.maas_yillik;
-  const net = dokum ? dokum.net : isletme ? isletme.butce.net : (finans?.netYillik ?? 0);
-  const cebineKalan = isletme ? isletme.butce.cebineKalan : null;
-  const gider = dokum ? Math.max(0, dokum.satis - dokum.net) : null;
+  // "Elde kalan" paneli: yıllık tahmini bütçe (işletme) ya da maaş − gider; tüm gelir ve tüm gider altında.
+  const tumGelir = isletme ? (isletme.cemaat ? isletme.cemaat.toplamGelir : isletme.butce.satis) : karakter.maas_yillik;
+  const eldeKalan = isletme ? isletme.butce.cebineKalan : (finans?.netYillik ?? 0);
+  const tumGider = Math.max(0, tumGelir - eldeKalan);
+  const krediTaksit = isletme ? isletme.butce.krediTaksit : (finans?.krediTaksit ?? 0);
 
   const donemAnahtar = isletme?.dunya.donem ?? karakter.ulke.donem?.tur ?? null;
   const donem = donemAnahtar ? DONEM_ADLARI[donemAnahtar] : null;
@@ -120,7 +126,7 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
   return (
     <div className="ana-ekran">
       <div className="ana-tablolar">
-        <div className="ana-cam">
+        <button type="button" className="ana-cam ana-cam-tikla" onClick={onMusteriTikla} disabled={yukleniyor} title={tr ? 'Dükkân sayfasını aç' : 'Open shop page'}>
           <span className="ana-etiket">{musteriEtiket}</span>
           <strong className="ana-deger">{formatMusteri(dil === 'en' ? 'en' : 'tr', musteriDeger)}</strong>
           <span className="ana-alt">
@@ -135,34 +141,26 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
               <span>{tr ? 'ilk yıl' : 'first year'}</span>
             )}
           </span>
-        </div>
-        <div className="ana-cam">
-          <span className="ana-etiket">{tr ? 'Yıllık Net' : 'Yearly Net'}</span>
-          <strong className="ana-deger">
-            {net >= 0 ? '+' : '−'}
-            {formatPara(Math.abs(Math.round(net)))}
+        </button>
+        <button type="button" className="ana-cam ana-cam-tikla" onClick={onGelirTikla} disabled={yukleniyor} title={tr ? 'Bütçeyi aç' : 'Open budget'}>
+          <span className="ana-etiket">{tr ? 'Kazanç' : 'Earnings'}</span>
+          <strong className={`ana-deger ${eldeKalan >= 0 ? '' : 'ana-kotu'}`}>
+            {eldeKalan >= 0 ? '+' : '−'}
+            {formatPara(Math.abs(Math.round(eldeKalan * 10) / 10))} <span className="ana-birim">{birim}</span>
           </strong>
           <span className="ana-alt">
-            <b className="ana-iyi">{formatPara(Math.round(gelir))}</b> {dokum ? (tr ? 'gelir' : 'in') : tr ? 'tahmini' : 'est.'}
-            {gider !== null && (
-              <>
-                {' · '}
-                <b className="ana-kotu">{formatPara(Math.round(gider))}</b> {tr ? 'gider' : 'out'}
-              </>
-            )}{' '}
-            <span className="ana-birim">{birim}</span>
+            {tr ? 'Gelir' : 'Income'}: <b className="ana-iyi">{formatPara(Math.round(tumGelir))}</b>
           </span>
-          {cebineKalan !== null && (
-            <span className="ana-alt">
-              {tr ? 'Cebine kalan' : 'In your pocket'}:{' '}
-              <b className={cebineKalan >= 0 ? 'ana-iyi' : 'ana-kotu'}>
-                {cebineKalan >= 0 ? '+' : '−'}
-                {formatPara(Math.abs(Math.round(cebineKalan * 10) / 10))}
-              </b>
+          <span className="ana-alt">
+            {tr ? 'Gider' : 'Costs'}: <b className="ana-kotu">{formatPara(Math.round(tumGider))}</b>
+          </span>
+          {krediTaksit > 0 && (
+            <span className="ana-alt ana-alt-kredi">
+              {tr ? 'Kredi taksidi dahil' : 'incl. loan'}: <b className="ana-kotu">{formatPara(Math.round(krediTaksit * 10) / 10)}</b>
             </span>
           )}
-        </div>
-        <div className="ana-cam">
+        </button>
+        <button type="button" className="ana-cam ana-cam-tikla" onClick={() => setDonemAcik(true)} title={tr ? 'Dönemin etkileri' : 'Era effects'}>
           <span className="ana-etiket">{tr ? 'Dönem' : 'Era'}</span>
           <strong className="ana-deger ana-deger-kucuk">
             {donem ? `${donem.ikon} ${tr ? donem.tr : donem.en}` : '—'}
@@ -170,7 +168,7 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
           <span className="ana-alt ana-alt-kisa" title={donemEtkisi}>
             {donemEtkisi ?? (isletme?.dunya.savas ? (tr ? 'savaş sürüyor' : 'war') : isletme?.dunya.veba ? (tr ? 'salgın' : 'plague') : '')}
           </span>
-        </div>
+        </button>
       </div>
 
       {pay !== null && (
@@ -211,6 +209,44 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
         <b>{tr ? 'İLERLE' : 'ADVANCE'}</b>
         <small>▸ {tr ? '1 yıl' : '1 year'}</small>
       </button>
+
+      {donemAcik && (
+        <div className="kariyer-sonuc-katman" onClick={() => setDonemAcik(false)}>
+          <div className="kariyer-sonuc-modal ana-donem-modal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+            <h3>
+              {donem ? `${donem.ikon} ${tr ? donem.tr : donem.en}` : tr ? 'Dönem' : 'Era'}
+            </h3>
+            <p className="ana-donem-ust">{tr ? 'Şu an seni ve işini etkileyen dünya durumu:' : 'What the world is doing to you and your business right now:'}</p>
+            {(finans?.dunyaEtkileri ?? []).length === 0 ? (
+              <p>{tr ? 'Şu an belirgin bir etki yok.' : 'No notable effects right now.'}</p>
+            ) : (
+              <ul className="ana-donem-liste">
+                {(finans?.dunyaEtkileri ?? []).map((e, i) => {
+                  const [baslik, ...kalan] = e.metin.split(':');
+                  const etkiler = (kalan.length ? kalan.join(':') : '').split('·').map((x) => x.trim()).filter(Boolean);
+                  return (
+                    <li key={i}>
+                      <b>
+                        {e.ikon} {kalan.length ? baslik.trim() : e.metin}
+                      </b>
+                      {etkiler.length > 0 && (
+                        <ul>
+                          {etkiler.map((x, j) => (
+                            <li key={j}>{x}</li>
+                          ))}
+                        </ul>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+            <button type="button" onClick={() => setDonemAcik(false)}>
+              {tr ? 'Tamam' : 'OK'}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

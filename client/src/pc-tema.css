@@ -1,0 +1,810 @@
+/*
+ * PC (≥768px) ortak görsel dil: "kahve ağırlıklı, bordo vurgu, altın çizgi".
+ * Zemin/paneller koyu espresso-kahve, iç kartlar orta kahve, okuma alanları sütlü kahve (latte).
+ * Bordo (olay-kutusu.css: #82202a → #591219 → #360a10) bir İŞARET rengidir: olay kutusu, başlık
+ * bantları, seçili/hover durumları. CK3/EU4 tarzı: yatay alanı kullanan, başlık şeritli,
+ * çerçeveli paneller.
+ *
+ * Yalnız `@media (min-width: 768px)` içinde stil verir → mobil (≤767px) görünümü değişmez.
+ * Tokenlar (`--v-*`) global tanımlıdır ama mobil kurallar onları kullanmaz.
+ * App.css, olay-kutusu.css, mobil-oyun.css ve pc-olay-kutusu.css'ten SONRA import edilir.
+ */
+
+:root {
+  /* Kadife zemin (olay kutusuyla birebir). */
+  --v-zemin-1: #82202a;
+  --v-zemin-2: #591219;
+  --v-zemin-3: #360a10;
+  /* Panel yüzeyi: yarı saydam koyu espresso (sahne kenardan hafif sızar). */
+  --v-panel: linear-gradient(180deg, rgba(51, 35, 26, 0.9) 0%, rgba(31, 21, 14, 0.94) 100%);
+  --v-panel-ic: rgba(74, 52, 37, 0.62);
+  /* Kahve ailesi (mobil ana-ekran.css mocha/latte değerleriyle uyumlu). */
+  --v-serit-1: rgba(42, 29, 20, 0.9);
+  --v-serit-2: rgba(26, 17, 11, 0.94);
+  --v-kahve-1: #4a3425;
+  --v-kahve-2: #6a4e3a;
+  --v-kart-ust: rgba(90, 64, 46, 0.55);
+  --v-kart-alt: rgba(40, 28, 20, 0.8);
+  --v-latte: #e9dcc3;
+  --v-latte-yazi: #2c1f15;
+  --v-latte-soluk: #5e4733;
+  --v-latte-kenar: rgba(110, 79, 53, 0.45);
+  --v-baslik: linear-gradient(90deg, rgba(130, 32, 42, 0.95) 0%, rgba(89, 18, 25, 0.92) 100%);
+  --v-kenar: rgba(230, 193, 122, 0.42);
+  --v-kenar-soluk: rgba(230, 193, 122, 0.2);
+  --v-altin: #e6c17a;
+  --v-yazi: #f4e0b0;
+  --v-yazi-soluk: #cdb98e;
+  --v-iyi: #8fc28a;
+  --v-kotu: #e58a74;
+  --v-golge: 0 10px 28px rgba(0, 0, 0, 0.55), inset 0 0 22px rgba(0, 0, 0, 0.42);
+}
+.tema-sanayi {
+  --v-altin: #d9bd72;
+  --v-kenar: rgba(217, 189, 114, 0.4);
+}
+
+/* Üst şerit dolum çubuğu: mobilde hiç görünmez. */
+.ust-serit-modul-bar {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  /* ==== Tek ölçek birimi ====
+     1920×1080 tasarımının 1 pikselinin bu ekrandaki karşılığı; alt sınır küçük laptoplarda
+     (1366×768) yazıların okunur kalmasını sağlar. Olay kutusu da aynı birimi kullanır. */
+  .oyun-ekrani-pc {
+    --u: max(0.78px, min(calc(100vw / 1920), calc(100vh / 1080)));
+    --yz-pn: max(0.8rem, calc(15.5 * var(--u)));
+    --yz-pn-kucuk: max(0.7rem, calc(13 * var(--u)));
+    --yz-pn-baslik: max(0.78rem, calc(14 * var(--u)));
+  }
+
+  /* ==== Sahne: kenar vinyeti, paneller sahnenin üstünde okunur ==== */
+  .oyun-arka-sahne::after {
+    background:
+      radial-gradient(120% 95% at 50% 42%, rgba(10, 4, 6, 0) 52%, rgba(10, 4, 6, 0.55) 100%),
+      linear-gradient(180deg, rgba(12, 8, 5, 0.35) 0%, rgba(12, 8, 5, 0) 22%, rgba(12, 8, 5, 0) 62%, rgba(12, 8, 5, 0.5) 100%);
+  }
+
+  /* ==== Düzen: sabit genişlikli yan sütunlar, esnek merkez ==== */
+  .oyun-ekrani-pc .oyun-govde {
+    grid-template-columns: clamp(250px, 19vw, 400px) minmax(0, 1fr) clamp(230px, 17vw, 360px);
+    gap: clamp(0.6rem, 1vw, 1.1rem);
+  }
+
+  /* ==== Üst şerit: kaynak çubuğu (cam kadife) ==== */
+  .oyun-ekrani-pc > .ust-serit {
+    background: linear-gradient(180deg, var(--v-serit-1) 0%, var(--v-serit-2) 100%);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    border: 1px solid var(--v-kenar);
+    border-radius: 12px;
+    box-shadow:
+      0 8px 24px rgba(0, 0, 0, 0.5),
+      inset 0 -2px 0 rgba(230, 193, 122, 0.5),
+      inset 0 0 18px rgba(0, 0, 0, 0.35);
+  }
+  .oyun-ekrani-pc .ust-serit-modul {
+    background: var(--v-panel-ic);
+    border-color: var(--v-kenar-soluk);
+    padding-bottom: calc(0.34rem + 5px);
+  }
+  .oyun-ekrani-pc .ust-serit-modul-tikla:hover,
+  .oyun-ekrani-pc .ust-serit-moduller .ust-serit-modul.ust-serit-modul-tikla:hover,
+  .oyun-ekrani-pc .ust-serit-moduller .ust-serit-modul.ust-serit-modul-tikla:focus-visible {
+    background: rgba(0, 0, 0, 0.4);
+    border-color: var(--v-altin);
+  }
+  .oyun-ekrani-pc .ust-serit-modul-etiket {
+    color: var(--v-yazi-soluk);
+    opacity: 0.9;
+  }
+  .oyun-ekrani-pc .ust-serit-modul-deger {
+    color: var(--v-yazi);
+  }
+  .oyun-ekrani-pc .ust-serit-modul-deger-tehlike {
+    color: var(--v-kotu);
+  }
+  .oyun-ekrani-pc .ust-serit-bolge-buton:hover:not(:disabled),
+  .oyun-ekrani-pc .ust-serit-bolge-buton:focus-visible {
+    border-color: var(--v-altin);
+  }
+  /* Dolum çubuğu (can/para/mutluluk/ahlak/şöhret): değer oranı kadar dolar, ton rengine göre boyanır. */
+  .oyun-ekrani-pc .ust-serit-modul-bar {
+    --bar-renk: #d8a94a;
+    display: block;
+    position: absolute;
+    left: 0.5rem;
+    right: 0.5rem;
+    bottom: 4px;
+    height: 3px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--bar-renk) var(--oran, 0%), rgba(255, 255, 255, 0.12) var(--oran, 0%));
+  }
+  .oyun-ekrani-pc .ust-serit-modul-ton-iyi .ust-serit-modul-bar {
+    --bar-renk: #6fb35a;
+  }
+  .oyun-ekrani-pc .ust-serit-modul-ton-orta .ust-serit-modul-bar {
+    --bar-renk: #d8a94a;
+  }
+  .oyun-ekrani-pc .ust-serit-modul-ton-kotu .ust-serit-modul-bar {
+    --bar-renk: #d9772f;
+  }
+  .oyun-ekrani-pc .ust-serit-modul-ton-kritik .ust-serit-modul-bar {
+    --bar-renk: #d94b3a;
+  }
+
+  /* ==== Yan paneller: kadife pencere ==== */
+  .oyun-ekrani-pc .pc-kadife {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: clamp(0.5rem, 0.8vw, 0.85rem);
+    padding: clamp(0.6rem, 0.9vw, 1rem);
+    color: var(--v-yazi);
+    font-size: var(--yz-pn);
+    background: var(--v-panel);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    border: 1px solid var(--v-kenar);
+    border-radius: 14px;
+    box-shadow: var(--v-golge);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--v-kenar) transparent;
+  }
+
+  /* Başlık şeridi (CK3 pencere başlığı). */
+  .oyun-ekrani-pc .pc-kadife h3,
+  .oyun-ekrani-pc .pc-kadife .amac-paneli-baslik {
+    display: block;
+    margin: 0 0 0.5rem;
+    padding: 0.28rem 0.7rem;
+    font-family: var(--font-baslik);
+    font-size: var(--yz-pn-baslik);
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    text-align: left;
+    color: var(--v-altin);
+    background: var(--v-baslik);
+    border: 1px solid var(--v-kenar-soluk);
+    border-bottom-color: var(--v-kenar);
+    border-radius: 6px;
+    opacity: 1;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+  }
+
+  /* Sol panel bölümleri: iç kart. */
+  .oyun-ekrani-pc .sol-panel > .envanter-paneli,
+  .oyun-ekrani-pc .sol-panel > .siyaset-paneli,
+  .oyun-ekrani-pc .sol-panel > .haberler-paneli,
+  .oyun-ekrani-pc .sol-panel > .isyeri-paneli,
+  .oyun-ekrani-pc .sol-panel > .aile-blok {
+    margin: 0;
+    padding: 0.55rem 0.65rem;
+    background: var(--v-panel-ic);
+    border: 1px solid var(--v-kenar-soluk);
+    border-radius: 10px;
+  }
+  .oyun-ekrani-pc .sol-panel > .envanter-paneli:empty,
+  .oyun-ekrani-pc .sol-panel > .aile-blok:has(> .aile-ozet-paneli:empty) {
+    display: none;
+  }
+
+  /* Kimlik */
+  .oyun-ekrani-pc .sol-panel-kimlik-buton {
+    color: var(--v-yazi);
+    padding: 0.3rem;
+    border: 1px solid transparent;
+    border-radius: 10px;
+  }
+  .oyun-ekrani-pc .sol-panel-kimlik-buton:hover:not(:disabled),
+  .oyun-ekrani-pc .sol-panel-kimlik-buton:focus-visible {
+    background: rgba(230, 193, 122, 0.08);
+    border-color: var(--v-kenar-soluk);
+  }
+  .oyun-ekrani-pc .sol-panel-baslik .sol-panel-isim {
+    color: var(--v-altin);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+  }
+  .oyun-ekrani-pc .sol-panel-baslik strong {
+    color: var(--v-yazi);
+  }
+  .oyun-ekrani-pc .sol-panel-baslik span:not(.sol-panel-isim) {
+    color: var(--v-yazi-soluk);
+  }
+  .oyun-ekrani-pc .sol-panel-mini-barlar {
+    border-top-color: var(--v-kenar-soluk);
+    border-bottom-color: var(--v-kenar-soluk);
+  }
+  .oyun-ekrani-pc .un-rozeti-metin strong {
+    color: var(--v-altin);
+  }
+  .oyun-ekrani-pc .un-rozeti-etiket {
+    color: var(--v-yazi-soluk);
+  }
+
+  /* Finans özeti */
+  .oyun-ekrani-pc .finans-ozet-mini {
+    background: var(--v-panel-ic);
+    border-color: var(--v-kenar-soluk);
+    margin-bottom: 0;
+  }
+  .oyun-ekrani-pc .finans-ozet-mini-satir {
+    font-size: var(--yz-pn-kucuk);
+  }
+  .oyun-ekrani-pc .finans-ozet-mini-etiket {
+    color: var(--v-yazi-soluk);
+    opacity: 1;
+  }
+  .oyun-ekrani-pc .finans-ozet-mini-pozitif {
+    color: var(--v-iyi);
+  }
+  .oyun-ekrani-pc .finans-ozet-mini-negatif,
+  .oyun-ekrani-pc .finans-ozet-mini-net-negatif .finans-ozet-mini-deger {
+    color: var(--v-kotu);
+  }
+  .oyun-ekrani-pc .finans-ozet-mini-net .finans-ozet-mini-deger {
+    color: var(--v-altin);
+  }
+  .oyun-ekrani-pc .finans-ozet-mini-net,
+  .oyun-ekrani-pc .finans-ozet-mini-kirilim,
+  .oyun-ekrani-pc .finans-ozet-mini-dunya {
+    border-top-color: var(--v-kenar-soluk);
+  }
+  .oyun-ekrani-pc .finans-ozet-mini-kirilim,
+  .oyun-ekrani-pc .finans-ozet-mini-dunya li {
+    font-size: var(--yz-pn-kucuk);
+    opacity: 1;
+    color: var(--v-yazi-soluk);
+  }
+
+  /* Siyaset / haberler / işyeri / aile */
+  .oyun-ekrani-pc .siyaset-paneli {
+    margin: 0;
+  }
+  .oyun-ekrani-pc .siyaset-kutu {
+    background: var(--v-panel-ic);
+    border-color: var(--v-kenar-soluk);
+  }
+  .oyun-ekrani-pc .siyaset-kutu-etiket {
+    color: var(--v-yazi-soluk);
+    opacity: 1;
+    font-size: var(--yz-pn-kucuk);
+  }
+  .oyun-ekrani-pc .siyaset-donem {
+    color: var(--v-yazi-soluk);
+    border-top-color: var(--v-kenar-soluk);
+    font-size: var(--yz-pn);
+  }
+  .oyun-ekrani-pc .siyaset-vergi-rozet {
+    color: var(--v-kotu);
+    background: rgba(139, 44, 44, 0.3);
+    border-color: rgba(229, 138, 116, 0.5);
+  }
+  .oyun-ekrani-pc .haberler-listesi {
+    opacity: 1;
+    margin: 0;
+    padding: 0.5rem 0.6rem 0.5rem 1.5rem;
+    color: var(--v-latte-yazi);
+    background: var(--v-latte);
+    border: 1px solid var(--v-latte-kenar);
+    border-radius: 8px;
+    font-size: var(--yz-pn-kucuk);
+  }
+  .oyun-ekrani-pc .isyeri-gorsel {
+    background: rgba(0, 0, 0, 0.22);
+    border-color: var(--v-kenar-soluk);
+  }
+  .oyun-ekrani-pc .isyeri-aciklama {
+    opacity: 1;
+    color: var(--v-yazi-soluk);
+    font-size: var(--yz-pn-kucuk);
+  }
+  .oyun-ekrani-pc .aile-ozet-satir {
+    background: var(--v-panel-ic);
+    border-color: var(--v-kenar-soluk);
+  }
+  .oyun-ekrani-pc .aile-ozet-simge {
+    background: rgba(0, 0, 0, 0.3);
+    border-color: var(--v-kenar-soluk);
+  }
+  .oyun-ekrani-pc .aile-ozet-rol,
+  .oyun-ekrani-pc .aile-ozet-bos {
+    color: var(--v-yazi-soluk);
+    opacity: 1;
+  }
+
+  /* Envanter: mor/yeşil bloklar yerine tek dil */
+  .oyun-ekrani-pc .envanter-esya {
+    background: var(--v-panel-ic);
+    border-color: var(--v-kenar-soluk);
+  }
+  .oyun-ekrani-pc .envanter-esya-magaza {
+    background: rgba(143, 194, 138, 0.08);
+    border-color: rgba(143, 194, 138, 0.35);
+  }
+  .oyun-ekrani-pc .envanter-esya-aciklama {
+    color: var(--v-yazi-soluk);
+    opacity: 1;
+  }
+
+  /* Canlı skor: altın plaka */
+  .oyun-ekrani-pc .canli-skor-rozeti-panel {
+    margin: 0;
+    border-color: var(--v-altin);
+  }
+
+  /* ==== Sağ panel: Kararlar (ikon + etiket satırları) ==== */
+  .oyun-ekrani-pc .sag-panel {
+    padding: clamp(0.6rem, 0.9vw, 1rem);
+    overflow-y: auto;
+  }
+  .oyun-ekrani-pc .pc-bolum {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+  }
+  .oyun-ekrani-pc .pc-bolum-amac .amac-paneli {
+    margin: 0;
+  }
+  /* Amaç kartları = okuma alanı: sütlü kahve zemin, koyu kahve yazı. */
+  .oyun-ekrani-pc .pc-bolum-amac .amac-satir {
+    background: var(--v-latte);
+    border-color: var(--v-latte-kenar);
+    border-left-color: var(--v-kahve-2);
+    color: var(--v-latte-yazi);
+  }
+  .oyun-ekrani-pc .pc-bolum-amac .amac-satir.amac-zor {
+    border-left-color: #82202a;
+  }
+  .oyun-ekrani-pc .pc-bolum-amac .amac-satir.amac-tamam {
+    background: #dbe4c6;
+    border-left-color: #3f7a30;
+  }
+  .oyun-ekrani-pc .pc-bolum-amac .amac-bonus {
+    color: #7a3f10;
+    background: rgba(120, 85, 30, 0.16);
+  }
+  .oyun-ekrani-pc .pc-bolum-amac .amac-aciklama,
+  .oyun-ekrani-pc .pc-bolum-amac .amac-alt {
+    color: var(--v-latte-soluk);
+    opacity: 1;
+  }
+  .oyun-ekrani-pc .pc-bolum-amac .amac-bar {
+    background: rgba(110, 79, 53, 0.22);
+  }
+  .oyun-ekrani-pc .pc-bolum-amac .amac-tamam .amac-ikon {
+    color: #3f7a30;
+  }
+
+  .kisayol-kartlari {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.35rem, 0.5vw, 0.55rem);
+    width: 100%;
+    margin: 0;
+  }
+  .kisayol-karti {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.75rem;
+    width: 100%;
+    margin: 0;
+    padding: 0.5rem 2rem 0.5rem 0.6rem;
+    text-align: left;
+    font-family: var(--font-baslik);
+    font-size: var(--yz-pn);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--v-yazi);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+    background: linear-gradient(90deg, rgba(106, 78, 58, 0.92) 0%, rgba(74, 52, 37, 0.95) 100%);
+    border: 1px solid var(--v-kenar);
+    border-radius: 10px;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35), 0 3px 8px rgba(0, 0, 0, 0.4);
+    transition: filter 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+  }
+  .kisayol-karti::after {
+    content: '›';
+    position: absolute;
+    right: 0.8rem;
+    top: 50%;
+    transform: translateY(-52%);
+    font-size: 1.4em;
+    line-height: 1;
+    color: var(--v-altin);
+    opacity: 0.75;
+  }
+  .kisayol-karti:hover:not(:disabled),
+  .kisayol-karti:focus-visible {
+    background: linear-gradient(90deg, rgba(130, 32, 42, 0.95) 0%, rgba(89, 18, 25, 0.95) 100%);
+    border-color: var(--v-altin);
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35), 0 3px 8px rgba(0, 0, 0, 0.4);
+    filter: brightness(1.1);
+    transform: translateX(2px);
+  }
+  .kisayol-karti:focus-visible {
+    outline: 2px solid var(--v-altin);
+    outline-offset: 2px;
+  }
+  .kisayol-karti:active:not(:disabled) {
+    transform: translateX(1px);
+    filter: brightness(0.94);
+  }
+  .kisayol-karti:disabled {
+    opacity: 0.55;
+  }
+  .kisayol-karti-ikon {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.3em;
+    height: 2.3em;
+    font-size: calc(var(--yz-pn) * 1.45);
+    line-height: 1;
+    background: rgba(0, 0, 0, 0.32);
+    border: 1px solid var(--v-kenar-soluk);
+    border-radius: 50%;
+    filter: none;
+  }
+  .kisayol-karti-etiket {
+    flex: 1 1 auto;
+    min-width: 0;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+}
+
+/* ==== Faz 2: yan tam sayfa ekranlar (Kariyer, Yatırım, Evin, Mağaza, Sosyalleş, İlişkiler) ==== */
+@media (min-width: 768px) {
+  /* Ortak kabuk: koyu kahve zemin + altın kenar. `--panel-ust/-alt` tokenlarını ezmek,
+     bu tokenları kullanan tüm kartları (yatırım, aile, kariyer, finans…) tek hamlede boyar. */
+  .ekran.ekran-tam-sayfa,
+  .ekran.ekran-kariyer,
+  .ekran.ekran-aile {
+    --panel-ust: var(--v-kart-ust);
+    --panel-alt: var(--v-kart-alt);
+    --aile-kart-kenar: var(--v-kenar-soluk);
+    color: var(--v-yazi);
+    background: radial-gradient(120% 85% at 50% 0%, rgba(106, 78, 58, 0.42) 0%, rgba(38, 26, 18, 0.95) 62%), #1a110b;
+    border: 1px solid var(--v-kenar);
+    border-radius: 16px;
+    box-shadow: var(--v-golge);
+  }
+  /* İlişkiler: sıcak duvar yerine koyu kahve; oda çizimi hafif bir doku olarak kalır. */
+  .ekran-aile .aile-arkaplan {
+    opacity: 0.16;
+    filter: saturate(0.5) brightness(0.8);
+  }
+
+  /* Başlıklar */
+  .ekran.ekran-tam-sayfa > h2,
+  .ekran.ekran-kariyer > h2,
+  .ekran.ekran-aile > h2 {
+    color: var(--v-altin);
+    letter-spacing: 0.08em;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+    padding-bottom: 0.45rem;
+    border-bottom: 1px solid transparent;
+    border-image: linear-gradient(90deg, var(--v-kenar), transparent 80%) 1;
+  }
+  .ekran-aile > h2 {
+    background: none;
+    border-top: 0;
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
+    box-shadow: none;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .ekran-tam-sayfa .tam-baslik,
+  .ekran-tam-sayfa .tam-baslik-dedikodu,
+  .ekran-kariyer .kariyer-bolum > h3,
+  .ekran-aile .aile-kart h3 {
+    color: var(--v-altin);
+    opacity: 1;
+    font-family: var(--font-baslik);
+    letter-spacing: 0.08em;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+  }
+  .ekran-tam-sayfa .tam-baslik {
+    padding: 0.28rem 0.7rem;
+    background: var(--v-baslik);
+    border: 1px solid var(--v-kenar-soluk);
+    border-bottom-color: var(--v-kenar);
+    border-radius: 6px;
+  }
+
+  /* Kartlar */
+  .ekran .yatirim-kart,
+  .ekran .finans-karti,
+  .ekran .sosyal-aksiyon-kart,
+  .ekran .isletme-paneli,
+  .ekran .aile-koken-karti,
+  .ekran .aile-cocuklar-karti,
+  .ekran .kariyer-hat-karti {
+    background: linear-gradient(180deg, var(--panel-ust), var(--panel-alt));
+    border-color: var(--v-kenar-soluk);
+    color: var(--v-yazi);
+  }
+  .ekran .yatirim-kart:hover:not(:disabled) {
+    background: linear-gradient(180deg, rgba(130, 32, 42, 0.6), var(--panel-alt));
+    border-color: var(--v-altin);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(230, 193, 122, 0.18);
+  }
+  .ekran .yatirim-kart-secili {
+    border-color: var(--v-altin);
+    background: linear-gradient(180deg, rgba(130, 32, 42, 0.7), var(--panel-alt));
+    box-shadow: 0 0 0 1px rgba(230, 193, 122, 0.4), 0 8px 20px rgba(0, 0, 0, 0.5);
+  }
+  .ekran .aile-kart {
+    border-left-color: var(--v-altin);
+  }
+
+  /* Sekmeler (Mağaza şifa/lüks, mobil benzeri) */
+  .ekran .magaza-sekme,
+  .ekran .ekran-sekme {
+    background: var(--v-panel-ic);
+    border-color: var(--v-kenar-soluk);
+    color: var(--v-yazi-soluk);
+  }
+  .ekran .magaza-sekme:hover:not(:disabled),
+  .ekran .ekran-sekme:hover:not(:disabled) {
+    background: rgba(130, 32, 42, 0.5);
+    border-color: var(--v-altin);
+  }
+  .ekran .magaza-sekme-aktif,
+  .ekran .ekran-sekme-aktif {
+    background: var(--v-baslik);
+    border-color: var(--v-altin);
+    color: var(--v-yazi);
+  }
+
+  /* Çipler (içki seçimi, bağış tutarları) */
+  .ekran .sosyal-icki-cip {
+    background: var(--v-panel-ic);
+    border-color: var(--v-kenar-soluk);
+    color: var(--v-yazi);
+  }
+  .ekran .sosyal-icki-cip[aria-pressed='true'],
+  .ekran .sosyal-icki-cip.sosyal-icki-cip-secili {
+    background: var(--v-baslik);
+    border-color: var(--v-altin);
+  }
+
+  /* Mini oyunlar, aksiyon düğmeleri, bağış çipleri: kahve kartlar, bordo birincil düğme */
+  .ekran .mini-oyun {
+    background: linear-gradient(180deg, var(--panel-ust), var(--panel-alt));
+    border-color: var(--v-kenar-soluk);
+    border-radius: 12px;
+  }
+  .ekran .mini-bahis-cip,
+  .ekran .sosyal-aksiyon-buton {
+    background: var(--v-panel-ic);
+    border-color: var(--v-kenar-soluk);
+    color: var(--v-yazi);
+  }
+  .ekran .mini-bahis-aktif {
+    background: var(--v-baslik);
+    border-color: var(--v-altin);
+  }
+  .ekran .mini-oyun-buton {
+    background: linear-gradient(180deg, rgba(130, 32, 42, 0.85), rgba(70, 14, 22, 0.92));
+    border-color: var(--v-kenar);
+    color: var(--v-yazi);
+  }
+  .ekran .mini-oyun-buton:hover:not(:disabled),
+  .ekran .sosyal-aksiyon-buton:hover:not(:disabled) {
+    border-color: var(--v-altin);
+    filter: brightness(1.12);
+  }
+  .ekran .kariyer-etkilesim-buton,
+  .ekran .kariyer-bagis-satir,
+  .ekran .kariyer-bagis-cip {
+    background: var(--v-panel-ic);
+    border-color: var(--v-kenar-soluk);
+    color: var(--v-yazi);
+  }
+  .ekran .kariyer-bagis-cip:not(:disabled):hover,
+  .ekran .kariyer-etkilesim-buton:not(:disabled):hover {
+    background: rgba(130, 32, 42, 0.55);
+    border-color: var(--v-altin);
+  }
+
+  /* Yardımcı metinler */
+  .ekran .giris-aciklama,
+  .ekran .meslek-aciklama {
+    color: var(--v-yazi-soluk);
+    opacity: 1;
+  }
+  .ekran .yatirim-islem-mesaji {
+    background: var(--v-panel-ic);
+    border-color: var(--v-kenar);
+  }
+
+  /* Geri düğmesi: altın çerçeveli kadife */
+  .ekran .tam-geri-buton {
+    background: linear-gradient(180deg, var(--v-kahve-2), var(--v-kahve-1));
+    border: 1px solid var(--v-kenar);
+    color: var(--v-yazi);
+  }
+  .ekran .tam-geri-buton:hover:not(:disabled) {
+    background: linear-gradient(180deg, rgba(130, 32, 42, 0.95), rgba(89, 18, 25, 0.95));
+    border-color: var(--v-altin);
+  }
+
+  /* ==== Yatay alan: kart ızgarası kenara kadar, kapsayıcı genişliği tek kural ==== */
+  .yatirim-kartlari {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+  .oyun-kapsayici:has(.ekran-kariyer) {
+    max-width: min(1560px, 100%);
+  }
+  .oyun-kapsayici-tam .ekran-tam-sayfa {
+    width: 100%;
+    max-width: 1920px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .kariyer-govde {
+    grid-template-columns: minmax(0, 1.9fr) minmax(300px, 1fr);
+  }
+}
+
+/* ==== Modallar: tek kabuk (koyu kahve gövde + altın çerçeve, bordo başlık bandı), tek katman koyuluğu ==== */
+@media (min-width: 768px) {
+  .ayarlar-katman,
+  .kariyer-sonuc-katman,
+  .skor-detay-katman,
+  .gecmis-hayat-detay-katman {
+    background: rgba(12, 4, 6, 0.7);
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+  }
+  .skor-detay-modal,
+  .kariyer-sonuc-modal,
+  .gecmis-hayat-detay,
+  .ayarlar-modal {
+    color: var(--v-yazi);
+    background: radial-gradient(130% 90% at 50% 0%, var(--v-kahve-1) 0%, #33231a 55%, #1f150e 100%);
+    border: 1px solid var(--v-altin);
+    border-left-width: 1px;
+    border-radius: 14px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), inset 0 0 0 1px rgba(230, 193, 122, 0.18), inset 0 0 24px rgba(0, 0, 0, 0.45);
+  }
+  .skor-detay-modal h3,
+  .kariyer-sonuc-modal h3,
+  .gecmis-hayat-detay h3 {
+    color: var(--v-altin);
+    font-family: var(--font-baslik);
+    letter-spacing: 0.06em;
+  }
+  .ayarlar-modal-ust {
+    background: var(--v-baslik);
+    border-bottom-color: var(--v-kenar);
+  }
+  .ayarlar-sekmeler {
+    background: rgba(0, 0, 0, 0.25);
+  }
+  .ayarlar-sekmeler button {
+    background: var(--v-panel-ic);
+    border-color: var(--v-kenar-soluk);
+    color: var(--v-yazi-soluk);
+  }
+}
+
+/* ==== Faz 3: giriş / kurulum / açılış — koyu kahve zemin, kahve kartlar, seçili kart bordo ==== */
+@media (min-width: 768px) {
+  .ekran-giris,
+  .ekran-kurulum,
+  .ekran-acilis {
+    background:
+      radial-gradient(ellipse at 50% -10%, rgba(230, 193, 122, 0.12), transparent 60%),
+      linear-gradient(180deg, #2a1d14 0%, #1d140d 60%, #150f0a 100%);
+    border-color: var(--v-kenar);
+    box-shadow: var(--v-golge);
+  }
+  .giris-panel {
+    background: linear-gradient(180deg, rgba(74, 52, 37, 0.7), rgba(36, 26, 18, 0.75));
+    border-color: var(--v-kenar-soluk);
+  }
+  .giris-panel:hover {
+    border-color: var(--v-altin);
+  }
+  .giris-panel-baslik {
+    color: var(--v-altin);
+    border-bottom-color: var(--v-kenar-soluk);
+  }
+  .ekran-kurulum .meslek-kart,
+  .ekran-kurulum .yerlesim-kart {
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(230, 193, 122, 0.1), transparent 60%),
+      linear-gradient(180deg, rgba(90, 64, 46, 0.7) 0%, rgba(40, 28, 20, 0.85) 100%);
+    border-color: var(--v-kenar-soluk);
+  }
+  .ekran-kurulum .meslek-kart:hover:not(:disabled),
+  .ekran-kurulum .yerlesim-kart:hover:not(:disabled),
+  .ekran-kurulum .meslek-kart.meslek-kart-secili {
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(230, 193, 122, 0.22), transparent 65%),
+      linear-gradient(180deg, rgba(150, 38, 50, 0.7) 0%, rgba(62, 13, 21, 0.85) 100%);
+    border-color: var(--v-altin);
+    box-shadow: 0 0 0 1px rgba(230, 193, 122, 0.4), 0 0 22px rgba(230, 193, 122, 0.18);
+  }
+}
+
+/* Dar PC (≤1400px): üst şerit etiketleri gizlenir, yalnız ikon + değer + çubuk kalır. */
+@media (min-width: 768px) and (max-width: 1400px) {
+  .oyun-ekrani-pc .ust-serit-modul-etiket,
+  .oyun-ekrani-pc .ust-serit-modul-birim {
+    display: none;
+  }
+  .oyun-ekrani-pc .ust-serit-modul {
+    padding-left: 0.35rem;
+    padding-right: 0.35rem;
+    gap: 0.3rem;
+  }
+  .oyun-ekrani-pc .ust-serit-modul-deger {
+    font-size: clamp(0.8rem, 0.5vw + 0.62rem, 1.15rem);
+  }
+}
+
+/* ---- PC strateji sayfaları (Dükkân/Yatırım/Çalışan/Çevre): iki yandan %10 boşluk + iki sütun ---- */
+@media (min-width: 768px) {
+  .strateji-sayfa > :not(.strateji-baslik):not(.kariyer-sonuc-katman) {
+    margin-left: 10%;
+    margin-right: 10%;
+  }
+  .strateji-sayfa > .kariyer-govde {
+    margin-left: 10%;
+    margin-right: 10%;
+  }
+  .strateji-sayfa .kariyer-govde {
+    padding: 14px 0 0;
+  }
+  /* Dükkân: sol sütun depo + ürün hatları, sağ sütun Bütçen. */
+  .strateji-sayfa .isletme-iki-sutun {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+  }
+  .strateji-sayfa .isletme-sutun {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .strateji-sayfa .isletme-sutun > .isletme-butce-baslik {
+    margin-top: 0;
+  }
+  .strateji-sayfa .isletme-butce {
+    margin: 6px 0 10px;
+    grid-template-columns: 1fr;
+  }
+  /* Yatırım ve Çalışan kartları iki sütun. */
+  .strateji-sayfa .isletme-yatirimlar,
+  .strateji-sayfa .isletme-calisanlar {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 20px;
+  }
+  /* Çevre: ana sütun + pazar kartı yan yana. */
+  .strateji-sayfa .kariyer-govde:has(.kariyer-yan-sutun > *) {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+  }
+  .strateji-sayfa .kariyer-govde:has(.kariyer-yan-sutun > *) .kariyer-yan-sutun {
+    margin-top: 0;
+  }
+}

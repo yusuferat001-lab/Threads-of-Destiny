@@ -38,10 +38,10 @@ export function ButcePaneli({ finans, paraBirimi, gecmis, isletmeAktif = false, 
     meslek === 'Asker'
       ? dil === 'en' ? '💰 Army net (last year)' : '💰 Ordu neti (geçen yıl)'
       : meslek === 'Din Adamı'
-        ? dil === 'en' ? '💰 Parish net (last year, after tax)' : '💰 Cemaat neti (geçen yıl, vergi sonrası)'
+        ? dil === 'en' ? '💰 Parish net (last year, after tax and wages)' : '💰 Cemaat neti (geçen yıl, vergi ve maaş sonrası)'
         : meslek === 'Zanaatkâr'
-          ? dil === 'en' ? '💰 Workshop net (last year, after tax)' : '💰 Atölye neti (geçen yıl, vergi sonrası)'
-          : dil === 'en' ? '💰 Shop net (last year, after tax)' : '💰 Dükkan neti (geçen yıl, vergi sonrası)';
+          ? dil === 'en' ? '💰 Workshop net (last year, after tax and wages)' : '💰 Atölye neti (geçen yıl, vergi ve maaş sonrası)'
+          : dil === 'en' ? '💰 Shop net (last year, after tax and wages)' : '💰 Dükkan neti (geçen yıl, vergi ve maaş sonrası)';
 
   return (
     <section className="butce-paneli">

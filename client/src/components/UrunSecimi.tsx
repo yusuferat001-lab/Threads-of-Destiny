@@ -45,7 +45,7 @@ export function UrunSecimi({ stateId, yukleniyor, onSec }: { stateId: string; yu
                 <div className="ogreti-simge">{o.simge}</div>
                 <strong>{o.ad[dil]}</strong>
                 <small>{M[o.kesim][dil]}</small>
-                <p>{o.ozet[dil]}</p>
+                <p className="kademe-yuksek">{o.ozet[dil]}</p>
                 <button disabled={yukleniyor} onClick={() => onSec(o.id)}>
                   {M.sec[dil]}
                 </button>

@@ -17,6 +17,7 @@ import { T } from "../i18n";
 import {
   clampStats,
   enflasyonCarpani,
+  giderEnflasyonCarpani,
   esiSifirla,
   etiketEkle,
   etiketSil,
@@ -127,7 +128,7 @@ export function mantikUygunlukKontrolEt(state: CharacterState): void {
 /** Teklif hediyesinin enflasyonlu maliyeti. */
 export function teklifHediyeMaliyeti(state: CharacterState, hediye: TeklifHediyesi): number {
   const taban = S.TEKLIF_HEDIYE_MALIYETI[hediye];
-  return taban <= 0 ? 0 : Math.max(1, paraYuvarla(taban * enflasyonCarpani(state)));
+  return taban <= 0 ? 0 : Math.max(1, paraYuvarla(taban * giderEnflasyonCarpani(state)));
 }
 
 /** Mantık teklifinin kabul şansı (%): hediye kademesi + oyuncunun moral/şöhretine göre küçük düzeltme. */
@@ -170,7 +171,7 @@ export function mantikTeklifEt(state: CharacterState, adayIndex: number, hediye:
 
 // ---------- düğün ----------
 export function dugunMaliyeti(state: CharacterState, butce: DugunButcesi): number {
-  return Math.max(1, paraYuvarla(S.DUGUN[butce].maliyet * enflasyonCarpani(state)));
+  return Math.max(1, paraYuvarla(S.DUGUN[butce].maliyet * giderEnflasyonCarpani(state)));
 }
 
 export interface DugunSonucu {
@@ -265,7 +266,7 @@ export function esEylemKilitAnahtari(eylem: EsEylemi): string {
 }
 
 export function hediyeVerMaliyeti(state: CharacterState, hediye: "ucuz" | "pahali"): number {
-  return Math.max(1, paraYuvarla(S.HEDIYE_VER[hediye].maliyet * enflasyonCarpani(state)));
+  return Math.max(1, paraYuvarla(S.HEDIYE_VER[hediye].maliyet * giderEnflasyonCarpani(state)));
 }
 
 export interface EsEylemSonucu {

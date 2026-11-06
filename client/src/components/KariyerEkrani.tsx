@@ -87,6 +87,8 @@ interface KariyerEkraniProps {
   onGeriDon: () => void;
   /** Telefon ana ekranı sayfası: verilirse yalnız o bölüm yeni strateji sayfası kabuğunda çizilir. */
   sayfa?: StratejiSayfa;
+  /** Ana ekrandaki Müşteri/Gelir panellerinden gelindiyse sayfa açılınca kaydırılıp vurgulanacak bölüm. */
+  odak?: 'musteri' | 'butce' | null;
   /** Yatırım sayfasındaki "Kredi & Mülk" bağlantısı (eski Yatırım ekranını açar). */
   onMulkKredi?: () => void;
 }
@@ -351,8 +353,8 @@ const ISTEK_ADLARI: Record<string, { tr: string; en: string; ipTr: string; ipEn:
   atolye_ruhsati: {
     tr: 'Atölye genişleme ruhsatı',
     en: 'Workshop expansion licence',
-    ipTr: '5 yıl boyunca üretim tavanı +%10.',
-    ipEn: 'Production cap +10% for 5 years.',
+    ipTr: '5 yıl boyunca üretim +%10.',
+    ipEn: 'Output +10% for 5 years.',
   },
   vakif_muafiyeti: {
     tr: 'Vakıf muafiyeti',
@@ -723,6 +725,7 @@ export function KariyerEkrani({
   onIsletmeCalisanAl,
   onGeriDon,
   sayfa,
+  odak,
   onMulkKredi,
 }: KariyerEkraniProps) {
   const { m, kt, dil } = useDil();
@@ -735,6 +738,19 @@ export function KariyerEkrani({
 
   // İşlem sonucu / hata → ekrana açılır pencere.
   const [modalMesaj, setModalMesaj] = useState<string | null>(null);
+  // Ana ekrandaki Müşteri / Gelir panelinden gelindiyse ilgili bölüme kaydır ve kısaca vurgula.
+  useEffect(() => {
+    if (!sayfa || !odak) return;
+    const t = window.setTimeout(() => {
+      const hedef = document.querySelector<HTMLElement>(odak === 'butce' ? '.butce-paneli, .isletme-butce-baslik' : '.isletme-paneli');
+      if (!hedef) return;
+      hedef.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      hedef.classList.add('odak-vurgu');
+      window.setTimeout(() => hedef.classList.remove('odak-vurgu'), 2000);
+    }, 150);
+    return () => window.clearTimeout(t);
+  }, [sayfa, odak, isletme?.aktif]);
+
   useEffect(() => {
     if (islemMesaji) setModalMesaj(islemMesaji);
   }, [islemMesaji]);
@@ -1135,7 +1151,7 @@ export function KariyerEkrani({
           )}
 
           {/* ===== BÜTÇEN ===== */}
-          {gor('isletme') && finans && <ButcePaneli finans={finans} paraBirimi={paraBirimi} gecmis={gecmis ?? []} isletmeAktif={!!isletme?.aktif} meslek={meslek} />}
+          {gor('isletme') && finans && !isletme?.aktif && <ButcePaneli finans={finans} paraBirimi={paraBirimi} gecmis={gecmis ?? []} isletmeAktif={!!isletme?.aktif} meslek={meslek} />}
 
           {/* ===== EKİBİN ===== */}
           {gor('calisan') && !isletme?.aktif && (

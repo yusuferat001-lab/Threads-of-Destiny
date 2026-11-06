@@ -955,8 +955,8 @@ export const ANLATIM_EN: Record<string, string> = {
     "Aging: {0}/yr",
   "Ev ve yemek düzenin: {0}/yıl":
     "Your home and diet: {0}/yr",
-  "Sağlık {0} üstündeyken bu iyileşme çok yavaşlar.":
-    "Above {0} health this recovery slows to a crawl.",
+  "Bu yaşta sağlığın {0} üstündeyken ev ve yemek can eklemez.":
+    "At your age, home and diet add no health above {0}.",
   "Borç stresi: {0}/yıl":
     "Debt stress: {0}/yr",
   "Vebaya yakalandın: ölüm riskin %{0}.":

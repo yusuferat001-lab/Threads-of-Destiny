@@ -10,6 +10,7 @@ import type { CharacterState, MulkTuru } from './types';
 
 const SKOR_RUTBE_PUANI = [625, 1500, 2625, 4000, 5625] as const;
 const SKOR_TIK_PUANI = 3000;
+const SKOR_ISLETME_CARPAN = 25; // müşteri sayısı × 25, server/stateManager.ts ile birebir aynı
 const SKOR_SOHRET_CARPAN = 300;
 const SKOR_AHLAK_CARPAN = 200;
 const SKOR_MUTLULUK_CARPAN = 100;
@@ -65,6 +66,7 @@ export interface SkorKirilimi {
   ahlakPuani: number;
   mutlulukPuani: number;
   rutbePuani: number;
+  isletmePuani: number;
   tikPuani: number;
   tikSayisi: number;
   sarayda: boolean;
@@ -98,6 +100,7 @@ export function hesaplaSkorKirilimi(state: CharacterState): SkorKirilimi {
   const mutlulukPuani = Math.round(Math.max(state.mutluluk, 0) * SKOR_MUTLULUK_CARPAN);
   const rutbeIndeks = Math.min(Math.max(state.rutbe_seviye, 1), 5) - 1;
   const rutbePuani = SKOR_RUTBE_PUANI[rutbeIndeks];
+  const isletmePuani = Math.round(Math.max(state.meslek_musteri ?? 0, 0) * SKOR_ISLETME_CARPAN);
   const sarayda = state.etiketler.includes('sarayda');
   const yolculukTamamlandi = state.etiketler.includes('yolculuk_tamamlandi');
   const gizemliEsyaSahibi = state.etiketler.some((e) => e.startsWith('envanter:') || e.startsWith('esya:'));
@@ -112,7 +115,7 @@ export function hesaplaSkorKirilimi(state: CharacterState): SkorKirilimi {
     (state.hapis_basarili_kacis ? SKOR_HAPIS_BASARILI_KACIS_PUANI : 0) +
     state.unvanlar.filter((u) => MADALYA_ADLARI.includes(u)).length * SKOR_MADALYA_PUANI;
   const temelToplam =
-    servetPuani + sohretPuani + ahlakPuani + mutlulukPuani + rutbePuani + tikPuani + basariOlayiPuani;
+    servetPuani + sohretPuani + ahlakPuani + mutlulukPuani + rutbePuani + isletmePuani + tikPuani + basariOlayiPuani;
   const amacCarpani = amacCarpaniHesapla(state);
   const skor = Math.round(temelToplam * amacCarpani);
   return {
@@ -121,6 +124,7 @@ export function hesaplaSkorKirilimi(state: CharacterState): SkorKirilimi {
     ahlakPuani,
     mutlulukPuani,
     rutbePuani,
+    isletmePuani,
     tikPuani,
     tikSayisi,
     sarayda,

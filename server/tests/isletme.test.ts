@@ -286,7 +286,7 @@ describe("işletme (Tüccar dilimi)", () => {
     }
   });
 
-  it("otomatik depo: her yıl kapasiteye (%100) kadar kendiliğinden dolar; sapma alış ±%3 / satış ±%2 aralığında", async () => {
+  it("otomatik depo: her yıl kapasiteye (%100) kadar kendiliğinden dolar; sapma alış ±%3 / satış ±%3 aralığında", async () => {
     const s = await tuccar();
     const b = isletmeBaglami(s);
     s.isletme!.hatlar.forEach((h) => { h.stok = 0; });
@@ -297,8 +297,8 @@ describe("işletme (Tüccar dilimi)", () => {
       for (const v of Object.values(s.isletme!.piyasa_sapma!)) {
         expect(v.alis).toBeGreaterThanOrEqual(0.97);
         expect(v.alis).toBeLessThanOrEqual(1.03);
-        expect(v.satis).toBeGreaterThanOrEqual(0.98);
-        expect(v.satis).toBeLessThanOrEqual(1.02);
+        expect(v.satis).toBeGreaterThanOrEqual(0.97);
+        expect(v.satis).toBeLessThanOrEqual(1.03);
       }
     }
   });
@@ -320,6 +320,23 @@ describe("işletme (Tüccar dilimi)", () => {
       s.rutbe_seviye = i + 1;
       expect(calisanLimiti(s)).toBe(limit);
     });
+  });
+
+  it("görünümde aday ve çalışan etkisi calisanBonusu ile aynı (oyuncu yüzdesini görür)", async () => {
+    const s = await tuccar();
+    s.rutbe_seviye = 2;
+    s.ekip = [];
+    const g0 = await isletmeDurumGetir(s.id);
+    expect(g0.adaylar.length).toBeGreaterThan(0);
+    for (const a of g0.adaylar) {
+      const beklenen = calisanBonusu({ rol_turu: a.rolTuru, gercekKalite: a.yetenek, sadakat: a.sadakat } as never);
+      expect(a.etki).toEqual(beklenen);
+    }
+    const aday = s.isletme!.adaylar[0];
+    const sonuc = await isletmeCalisanAl(s.id, aday.id);
+    const c = sonuc.durum.calisanlar.find((x) => x.isim === aday.isim)!;
+    expect(c.etki).toEqual(calisanBonusu(s.ekip.find((e) => e.isim === aday.isim)!));
+    expect(c.etki).not.toBeNull();
   });
 
   it("çalışan alımı: peşin ücret yok, aday havuzdan çıkar, rol etkisi var; limit aşılamaz; 3 çalışan 2. slotu açar", async () => {
@@ -449,7 +466,7 @@ describe("işletme (Tüccar dilimi)", () => {
     expect(maasTabani(90, 80)).toBeGreaterThan(maasTabani(20, 10));
   });
 
-  it("çalışan çalıştıkça gelişir (Yetenek +0,3, Sadakat +0,6) ve maaşı güncel Yetenek/Sadakat'e göre artar", async () => {
+  it("çalışan çalıştıkça gelişir (Yetenek +0,3, Sadakat +0,6) ama maaşı sabit kalır (yalnız enflasyon)", async () => {
     const s = await tuccar();
     const u = uye("ana", 50, 50);
     s.ekip = [u];
@@ -457,12 +474,10 @@ describe("işletme (Tüccar dilimi)", () => {
     isletmeYilIsle(s, isletmeBaglami(s));
     expect(u.gercekKalite).toBeCloseTo(50.3);
     expect(u.sadakat).toBeCloseTo(50.6);
-    expect(u.maas_taban).toBeCloseTo(maasTabani(50.3, 50.6), 2);
-    expect(u.maas_taban).toBeGreaterThan(taban);
-    // yıllar içinde artmaya devam eder
+    expect(u.maas_taban).toBeCloseTo(taban, 5);
     for (let i = 0; i < 10; i++) isletmeYilIsle(s, isletmeBaglami(s));
-    expect(u.maas_taban).toBeCloseTo(maasTabani(u.gercekKalite, u.sadakat), 2);
-    expect(u.maas_taban).toBeGreaterThan(taban * 1.05);
+    expect(u.gercekKalite).toBeGreaterThan(50.3);
+    expect(u.maas_taban).toBeCloseTo(maasTabani(50, 50), 2);
   });
 
   it("dükkân gideri = yalnız depo bakımı; depo dışı yatırım kademesi yıllık masraf çıkarmaz", async () => {
@@ -568,12 +583,14 @@ describe("işletme (Tüccar dilimi)", () => {
     expect(d2.uyarilar.some((u) => u.kod === "hirsizlik")).toBe(false);
   });
 
-  it("lonca aidatı pay'a göre: %2; pay %15'i geçince %3, %20'yi geçince %4, %30'u geçince %5", () => {
+  it("lonca aidatı pay'a göre: %0-15 → %2, 15-25 → %3, 25-35 → %4, 35-45 → %5, 45+ → %6", () => {
     expect(loncaAidatiOrani(0.05)).toBeCloseTo(0.02);
     expect(loncaAidatiOrani(0.15)).toBeCloseTo(0.03);
-    expect(loncaAidatiOrani(0.2)).toBeCloseTo(0.04);
-    expect(loncaAidatiOrani(0.3)).toBeCloseTo(0.05);
-    expect(loncaAidatiOrani(0.6)).toBeCloseTo(0.05);
+    expect(loncaAidatiOrani(0.2)).toBeCloseTo(0.03);
+    expect(loncaAidatiOrani(0.25)).toBeCloseTo(0.04);
+    expect(loncaAidatiOrani(0.35)).toBeCloseTo(0.05);
+    expect(loncaAidatiOrani(0.45)).toBeCloseTo(0.06);
+    expect(loncaAidatiOrani(0.6)).toBeCloseTo(0.06);
   });
 
   it("Koruma: güvenlik çalışanı + yatırım + otorite (≥70 ilişki +0,10), tavan 1", async () => {
@@ -782,8 +799,8 @@ describe("v11: ilk 7 yıl güvenli dönem, dürüst bütçe, ürün bonusu", () 
     const g = await isletmeDurumGetir(s.id);
     const b = g.butce;
     expect(b.brut).toBeCloseTo(b.satis - b.alim - b.depo - b.aidat, 1);
-    expect(b.net).toBeCloseTo(b.brut - b.vergi - b.borcOdeme, 1);
-    expect(b.cebineKalan).toBeCloseTo(b.net - b.maas - b.yasamKira - b.krediTaksit, 1);
+    expect(b.net).toBeCloseTo(b.brut - b.vergi - b.borcOdeme - b.maas, 1);
+    expect(b.cebineKalan).toBeCloseTo(b.net - b.yasamKira - b.krediTaksit, 1);
     const { dokum } = isletmeYilIsle(s, isletmeBaglami(s));
     expect(typeof dokum.calisanMaasi).toBe("number");
     expect(typeof dokum.curumeKaybi).toBe("number");
