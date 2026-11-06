@@ -32,7 +32,14 @@ export const RUTBE_PAZAR_PAYI_ESIGI_ISLETME: Record<number, number> = { 2: 0.16,
 /** Mesleğe göre eşik çarpanı: pay kazanmanın zorluğu meslekten mesleğe değişir. */
 const PAY_ESIGI_CARPANI: Record<string, number> = { Tüccar: 1, Asker: 1, Zanaatkâr: 0.85, "Din Adamı": 1.2 };
 
+/** Asker rütbesi pazar payına değil askerî güce bağlıdır (anahtar HEDEF kademe); eşikler simulateBirlik ile ayarlanır. */
+export const RUTBE_GUC_ESIGI_ASKER: Record<number, number> = { 2: 45, 3: 120, 4: 260, 5: 600 };
+export function rutbeGucEsigi(meslek: string, hedefSeviye: number): number | undefined {
+  return meslek === "Asker" ? RUTBE_GUC_ESIGI_ASKER[hedefSeviye] : undefined;
+}
+
 export function rutbePazarPayiEsigi(meslek: string, hedefSeviye: number): number | undefined {
+  if (meslek === "Asker") return undefined;
   const e = RUTBE_PAZAR_PAYI_ESIGI_ISLETME[hedefSeviye];
   if (e === undefined) return undefined;
   return Math.round(e * (PAY_ESIGI_CARPANI[meslek] ?? 1) * 100) / 100;
@@ -83,19 +90,19 @@ export const RUTBELER: Record<string, Record<Cag, RutbeTanimi>> = {
     "Orta Çağ": {
       unvanlar: ["Er", "Onbaşı", "Silahşor", "Kumandan", "Serdar"],
       esikler: [
-        { kariyer_puani: 10, un: 20 },
-        { kariyer_puani: 32, un: 36 },
-        { kariyer_puani: 64, un: 48 },
-        { kariyer_puani: 330, un: 78 },
+        { kariyer_puani: 10, un: 18 },
+        { kariyer_puani: 32, un: 32 },
+        { kariyer_puani: 64, un: 43 },
+        { kariyer_puani: 330, un: 70 },
       ],
     },
     "Sanayi Devrimi": {
       unvanlar: ["Er", "Onbaşı", "Çavuş", "Yüzbaşı", "Binbaşı"],
       esikler: [
-        { kariyer_puani: 10, un: 20 },
-        { kariyer_puani: 32, un: 36 },
-        { kariyer_puani: 64, un: 48 },
-        { kariyer_puani: 330, un: 78 },
+        { kariyer_puani: 10, un: 18 },
+        { kariyer_puani: 32, un: 32 },
+        { kariyer_puani: 64, un: 43 },
+        { kariyer_puani: 330, un: 70 },
       ],
     },
   },

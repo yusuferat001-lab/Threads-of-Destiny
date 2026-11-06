@@ -8,7 +8,7 @@ import {
   ganimetSaklamaCezasi,
   ganimetSaklamaEngeli,
   ganimetSaklamaKazanci,
-  kaliteYukselt,
+  techizatSec,
   kusatmaAyarla,
   savasKarariBekliyorMu,
   savasKarariDurumu,
@@ -133,6 +133,7 @@ import {
   rakiplerGuncelle,
   musteriEkle,
   pazarYillikUygula,
+  yillikKariyerPuaniHesapla,
   krediAl,
   krediPazarlik,
   krediYillikUygula,
@@ -240,7 +241,7 @@ import {
   FIYAT_ARTI_EKSI,
   ROL_ACIKLAMALARI,
 } from "../data/meslekProfilleri";
-import { rutbeTanimiGetir, KARIYER_PUANI_YILLIK, KARIYER_PUANI_KATEGORI_BASARI, rutbePazarPayiEsigi } from "../data/rutbeler";
+import { rutbeTanimiGetir, KARIYER_PUANI_YILLIK, KARIYER_PUANI_KATEGORI_BASARI, rutbePazarPayiEsigi, rutbeGucEsigi } from "../data/rutbeler";
 import {
   MUSTERI_KATEGORI_BASARI,
   PAZAR_KARIYER_PUANI_YILLIK,
@@ -4428,6 +4429,8 @@ export interface PazarDurumu {
   yillikKariyerPuani: number;
   /** Sıradaki rütbe bir pazar payı istiyorsa: hedef kademe + gereken yüzde; yoksa null. */
   rutbeSarti: { seviye: number; gerekliPay: number; karsilaniyor: boolean } | null;
+  /** Yalnız Asker: rütbe için gereken askerî güç (pazar payı yerine). */
+  gucSarti: { seviye: number; gerekli: number; mevcut: number; karsilaniyor: boolean } | null;
   /** Yenilen rakibin yerine yenisinin geleceği yıla kalan süre (yoksa null). */
   yeniRakipKalanYil: number | null;
   /** Müşteri dağılımı (yuvarlanmış) ve son yıldaki değişimleri; Asker/Din Adamı istemcisi yalnız payı gösterir. */
@@ -4460,7 +4463,7 @@ export function pazarDurumuHesapla(state: CharacterState): PazarDurumu {
   if (!adlar) {
     return {
       aktif: false, pazarAdi: "", simge: "", pazarPayi: 0, musteri: 0, pazarMusteri: 0, rakipler: [],
-      digerPay: 0, maasEtkisi: 0, yillikKariyerPuani: 0, rutbeSarti: null, yeniRakipKalanYil: null,
+      digerPay: 0, maasEtkisi: 0, yillikKariyerPuani: 0, rutbeSarti: null, gucSarti: null, yeniRakipKalanYil: null,
       dagilim: { oyuncu: 0, rakip: 0, kucuk: 0, oyuncuDegisim: 0, rakipDegisim: 0, kucukDegisim: 0 }, haberler: [],
     };
   }
@@ -4484,11 +4487,17 @@ export function pazarDurumuHesapla(state: CharacterState): PazarDurumu {
     rakipler,
     digerPay: Math.max(0, 100 - Math.round(pay * 100) - rakipler.reduce((t, r) => t + r.pay, 0)),
     maasEtkisi: Math.round((pazarMaasCarpani(pay) - 1) * 100),
-    yillikKariyerPuani: Math.round(pay * PAZAR_KARIYER_PUANI_YILLIK * 10) / 10,
+    yillikKariyerPuani: Math.round(yillikKariyerPuaniHesapla(state) * 10) / 10,
     rutbeSarti:
       gerekli !== undefined && sonraki <= 5
         ? { seviye: sonraki, gerekliPay: Math.round(gerekli * 100), karsilaniyor: pay >= gerekli }
         : null,
+    gucSarti: (() => {
+      const g = rutbeGucEsigi(state.meslek, sonraki);
+      if (g === undefined || sonraki > 5) return null;
+      const mevcut = Math.round(state.isletme?.birlik?.guc ?? 0);
+      return { seviye: sonraki, gerekli: g, mevcut, karsilaniyor: mevcut >= g };
+    })(),
     yeniRakipKalanYil: state.rakip_yeni_yil != null ? Math.max(0, state.rakip_yeni_yil - state.yil) : null,
     dagilim: dagilimOzeti(state),
     haberler: state.piyasa_gunlugu ?? [],
@@ -5441,8 +5450,8 @@ export function birlikDoktrinSec(id: string, doktrinId: string) {
     return {};
   });
 }
-export function birlikKaliteYukselt(id: string, hedef: "orta" | "yuksek", yuzde: number) {
-  return birlikEylemi(id, (state, bg) => ({ sonuc: kaliteYukselt(state, hedef, yuzde, bg) }));
+export function birlikTechizatSec(id: string, seviye: "dusuk" | "orta" | "yuksek") {
+  return birlikEylemi(id, (state, bg) => ({ sonuc: techizatSec(state, seviye, bg) }));
 }
 export function birlikBirlikSec(id: string, turler: string[]) {
   return birlikEylemi(id, (state, bg) => ({ sonuc: birlikSec(state, turler as never, bg) }));

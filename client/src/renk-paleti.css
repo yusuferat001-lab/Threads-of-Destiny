@@ -1,0 +1,44 @@
+/*
+ * OYUN RENK PALETİ — sayı ve değer renkleri (tek kaynak). Ayrıntı ve kurallar: docs/referans/14-renk-paleti.md
+ *
+ *   yeşil   gelir · artı · bonus · kazanç · ✓            (+ işaretli para, +moral, +%güç …)
+ *   kırmızı gider · eksi · ceza · kayıp · ✗              (− işaretli para, −moral, −%… )
+ *   lacivert durum sayıları: er, güç, pay, moral, teçhizat etkisi (yalnız "şu an ne kadar" bilgisi)
+ *   eflatun  şart / eşik / gereken / limit / kademe       (gereken askerî güç, en az güç, rütbe şartı, Kademe 0/4, birlik hakkı)
+ *   nötr     işaretsiz fiyat, ad, açıklama → kartın normal koyu kahve metni
+ *
+ * Açık (latte) kart üstünde "-acik", koyu zemin (mocha/siyah panel) üstünde "-koyu" değerler kullanılır.
+ * Yeni ekran/ meslek / çağ eklerken renkleri BURADAN al; yeni onaltılık renk uydurma.
+ */
+:root {
+  --c-arti: #12893a;
+  --c-eksi: #cc2a1e;
+  --c-gelir: var(--c-arti);
+  --c-gider: var(--c-eksi);
+  --c-lacivert-1: #14305c;
+  --c-esik: #6a3f9f;
+  --c-para-sirit: rgba(18, 137, 58, 0.12);
+
+  --c-arti-koyu: #7fd08a;
+  --c-eksi-koyu: #ff8a75;
+  --c-lacivert-koyu: #8fb2f0;
+  --c-esik-koyu: #c4a2f0;
+}
+
+/* Yardımcı sınıflar (açık zemin). Koyu zeminde üst kapsayıcıya `.zemin-koyu` ekle. */
+.s-arti, .s-gelir { color: var(--c-arti); font-weight: 800; }
+.s-eksi, .s-gider { color: var(--c-eksi); font-weight: 800; }
+.s-durum { color: var(--c-lacivert-1); font-weight: 800; }
+.s-esik { color: var(--c-esik); font-weight: 800; }
+.zemin-koyu .s-arti, .zemin-koyu .s-gelir { color: var(--c-arti-koyu); }
+.zemin-koyu .s-eksi, .zemin-koyu .s-gider { color: var(--c-eksi-koyu); }
+.zemin-koyu .s-durum { color: var(--c-lacivert-koyu); }
+.zemin-koyu .s-esik { color: var(--c-esik-koyu); }
+
+/* Koyu tam sayfa ekranlar (Evin, Mağaza, Sosyalleş, İlişkiler, Mülkler, mobil sayfalar) ve koyu kartlar */
+.ekran-tam-sayfa .s-arti, .ekran-tam-sayfa .s-gelir,
+.kredi-karti .s-arti, .kredi-karti .s-gelir { color: var(--c-arti-koyu); }
+.ekran-tam-sayfa .s-eksi, .ekran-tam-sayfa .s-gider,
+.kredi-karti .s-eksi, .kredi-karti .s-gider { color: var(--c-eksi-koyu); }
+.ekran-tam-sayfa .s-durum { color: var(--c-lacivert-koyu); }
+.ekran-tam-sayfa .s-esik { color: var(--c-esik-koyu); }

@@ -60,7 +60,7 @@ import {
   isletmeKararVer,
   isletmeOgretiSec,
   birlikDoktrinSec,
-  birlikKaliteYukselt,
+  birlikTechizatSec,
   birlikBirlikSec,
   birlikKusatma,
   birlikTerhis,
@@ -377,11 +377,11 @@ gameRouter.post("/:id/birlik/doktrin", async (req, res) => {
   }
 });
 
-gameRouter.post("/:id/birlik/kalite", async (req, res) => {
-  const { hedef, yuzde } = req.body ?? {};
-  if ((hedef !== "orta" && hedef !== "yuksek") || typeof yuzde !== "number") return res.status(400).json({ hata: "Geçersiz teçhizat kalitesi." });
+gameRouter.post("/:id/birlik/techizat", async (req, res) => {
+  const { seviye } = req.body ?? {};
+  if (seviye !== "dusuk" && seviye !== "orta" && seviye !== "yuksek") return res.status(400).json({ hata: "Geçersiz teçhizat seviyesi." });
   try {
-    res.json(await birlikKaliteYukselt(req.params.id, hedef, yuzde));
+    res.json(await birlikTechizatSec(req.params.id, seviye));
   } catch (err) {
     res.status(400).json({ hata: hataMetni(err, req.params.id) });
   }

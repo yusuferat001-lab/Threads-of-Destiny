@@ -467,7 +467,7 @@ button.ikincil {
 }
 
 .yol-haritasi-madde.yol-haritasi-tamam {
-  border-left-color: #4c9a5b;
+  border-left-color: var(--c-arti-koyu);
 }
 .yol-haritasi-madde.yol-haritasi-yapiliyor {
   border-left-color: var(--renk-altin-parlak);
@@ -1047,7 +1047,7 @@ button.ikincil {
 
 .meslek-miras-ipucu {
   font-size: 0.75rem;
-  color: #a6e0ac;
+  color: var(--c-arti-koyu);
 }
 
 /* ---- Açılış ekranı ---- */
@@ -1449,13 +1449,13 @@ button.ikincil {
   animation: ust-serit-delta-ucus 3s cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
 }
 .ust-serit-delta-artis {
-  color: #7bff9c;
+  color: var(--c-arti-koyu);
   background: rgba(20, 150, 65, 0.7);
   border: 1px solid rgba(110, 240, 145, 0.95);
   box-shadow: 0 0 10px rgba(60, 230, 110, 0.55);
 }
 .ust-serit-delta-azalis {
-  color: #ff6161;
+  color: var(--c-eksi-koyu);
   background: rgba(205, 30, 30, 0.72);
   border: 1px solid rgba(255, 95, 95, 0.95);
   box-shadow: 0 0 10px rgba(255, 60, 60, 0.6);
@@ -1490,7 +1490,7 @@ button.ikincil {
 }
 @keyframes ust-serit-deger-parla-artis {
   0% {
-    color: #6bff92;
+    color: var(--c-arti-koyu);
     text-shadow: 0 0 16px rgba(70, 245, 120, 1);
   }
   100% {
@@ -1570,7 +1570,7 @@ button.ikincil {
 }
 
 .ust-serit-modul-deger-tehlike {
-  color: #e08a8a;
+  color: var(--c-eksi-koyu);
 }
 
 /* Aranma seviyesi modülünün mini yıldız satırı — diğer modüllerle aynı satır yüksekliğine
@@ -1585,7 +1585,7 @@ button.ikincil {
 }
 
 .ust-serit-aranma-yildizlari-tehlike .yildiz-on {
-  color: #e08a8a;
+  color: var(--c-eksi-koyu);
 }
 
 .ust-serit-bolge {
@@ -1800,11 +1800,11 @@ button.ikincil {
 }
 
 .finans-ozet-mini-pozitif {
-  color: #6fae6f;
+  color: var(--c-arti-koyu);
 }
 
 .finans-ozet-mini-negatif {
-  color: #c67a7a;
+  color: var(--c-eksi-koyu);
 }
 
 .finans-ozet-mini-net {
@@ -1814,11 +1814,11 @@ button.ikincil {
 }
 
 .finans-ozet-mini-net .finans-ozet-mini-deger {
-  color: var(--renk-altin-koyu);
+  color: var(--c-arti-koyu);
 }
 
 .finans-ozet-mini-net-negatif .finans-ozet-mini-deger {
-  color: #c67a7a;
+  color: var(--c-eksi-koyu);
 }
 
 /* Maaşın rütbe / kariyer / dönemsel kırılımı (sol panel özet) */
@@ -2210,7 +2210,7 @@ button.ikincil {
 
 .secenek-kilit {
   font-size: clamp(0.75rem, 0.3vw + 0.6rem, 1.05rem);
-  color: #d99a9a;
+  color: var(--c-eksi-koyu);
   font-style: italic;
 }
 
@@ -2337,13 +2337,13 @@ button.ikincil {
 
 .yerlesim-arti {
   font-size: 0.75rem;
-  color: #a6e0ac;
+  color: var(--c-arti-koyu);
   text-align: left;
 }
 
 .yerlesim-eksi {
   font-size: 0.75rem;
-  color: #e0a6a6;
+  color: var(--c-eksi-koyu);
   text-align: left;
 }
 
@@ -2581,7 +2581,7 @@ button.ikincil {
 }
 
 .para-borc {
-  color: #e07a7a !important;
+  color: var(--c-eksi-koyu) !important;
 }
 
 
@@ -2719,7 +2719,7 @@ button.ikincil {
 }
 
 .finans-gelir span:last-child {
-  color: #7fbf7f;
+  color: var(--c-arti-koyu);
 }
 
 .finans-enflasyon span:last-child {
@@ -2739,11 +2739,11 @@ button.ikincil {
 }
 
 .finans-net span:last-child {
-  color: #7fbf7f;
+  color: var(--c-arti-koyu);
 }
 
 .finans-net-negatif span:last-child {
-  color: #e07a7a;
+  color: var(--c-eksi-koyu);
 }
 
 .finans-servet-detay {
@@ -2787,7 +2787,7 @@ button.ikincil {
 }
 
 .finans-kirilim-kalici {
-  color: #7fbf7f;
+  color: var(--c-arti-koyu);
   white-space: nowrap;
 }
 
@@ -3008,11 +3008,11 @@ button.ikincil {
 }
 
 .mulk-getiri-pozitif {
-  color: #6bbf6b;
+  color: var(--c-arti-koyu, #7fd08a);
 }
 
 .mulk-getiri-negatif {
-  color: #d97a7a;
+  color: var(--c-eksi-koyu, #ff8a75);
 }
 
 .suc-seviyesi-gostergesi {
@@ -3023,7 +3023,7 @@ button.ikincil {
 }
 
 .suc-seviyesi-riskli {
-  color: #d97a7a;
+  color: var(--c-eksi-koyu);
   font-weight: 600;
 }
 
@@ -3365,11 +3365,11 @@ button.ikincil {
 }
 
 .mini-oyun-kazanc {
-  border-left: 3px solid #6ab04c;
+  border-left: 3px solid var(--c-arti-koyu);
 }
 
 .mini-oyun-kayip {
-  border-left: 3px solid #b33939;
+  border-left: 3px solid var(--c-eksi-koyu);
 }
 
 .mini-oyun-bahisler {
@@ -3440,7 +3440,7 @@ button.ikincil {
 }
 
 .hazard-taraf-kazanan {
-  border-color: #6ab04c;
+  border-color: var(--c-arti-koyu);
   background: rgba(106, 176, 76, 0.12);
 }
 
@@ -3807,7 +3807,7 @@ button.ikincil {
 
 .sosyallesme-uyari {
   font-size: 0.8rem;
-  color: #d97a7a;
+  color: var(--c-eksi-koyu);
   font-style: italic;
 }
 
@@ -3836,7 +3836,7 @@ button.ikincil {
 
 .magaza-fiyat {
   font-weight: 700;
-  color: #c9a86a;
+  color: var(--c-eksi-koyu, #ff8a75);
   margin-top: 0.2rem;
 }
 
@@ -4196,15 +4196,15 @@ button.ikincil {
 }
 
 .etki-pozitif {
-  background: rgba(30, 110, 60, 0.35);
-  border: 1px solid rgba(60, 160, 90, 0.6);
-  color: #a6e0ac;
+  background: rgba(18, 137, 58, 0.28);
+  border: 1px solid rgba(127, 208, 138, 0.6);
+  color: var(--c-arti-koyu, #7fd08a);
 }
 
 .etki-negatif {
-  background: rgba(139, 44, 44, 0.35);
-  border: 1px solid rgba(180, 70, 70, 0.6);
-  color: #e0a6a6;
+  background: rgba(204, 42, 30, 0.28);
+  border: 1px solid rgba(255, 138, 117, 0.6);
+  color: var(--c-eksi-koyu, #ff8a75);
 }
 
 @keyframes cip-belir {
@@ -4480,7 +4480,7 @@ button.ikincil {
 
 .envanter-kullan-buton:hover:not(:disabled) {
   background: #345034;
-  border-color: #6bbf6b;
+  border-color: var(--c-arti-koyu);
 }
 
 .envanter-kullan-buton:disabled {
@@ -4548,7 +4548,7 @@ button.ikincil {
   color: #7bd08a;
 }
 .mulk-piyasa-sinyal.piyasa-zirve {
-  color: #e58b8b;
+  color: var(--c-eksi-koyu);
 }
 .mulk-piyasa-sinyal.piyasa-durgun {
   color: #9aa4b2;
@@ -4566,17 +4566,6 @@ button.ikincil {
 /* PC'de tüm ekran genişliğini boşa harcamasın diye bu tek ekran için kapsayıcı
    genişletildi (diğer doğal-yükseklik ekranlar 920px'te kalıyor) — strateji
    oyunlarındaki "saray/danışman" ekranları gibi iki sütuna yayılabilsin. */
-.oyun-kapsayici:has(.ekran-kariyer) {
-  max-width: 1180px;
-}
-
-.ekran-kariyer {
-  background: linear-gradient(180deg, var(--panel-ust), var(--panel-alt));
-  gap: 0.7rem;
-  margin-top: 0.6rem;
-  padding-top: 1rem;
-}
-
 /* İki sütunlu "saray" düzeni: solda geniş yönetim/ekip bölümü, sağda dar bir
    rakip/amir/güç özeti sütunu. */
 .kariyer-govde {
@@ -4592,31 +4581,6 @@ button.ikincil {
   gap: 0.7rem;
   min-width: 0;
 }
-.ekran-kariyer > h2 {
-  color: var(--renk-altin-parlak);
-  font-size: 1.05rem;
-  letter-spacing: 0.04em;
-  margin: 0;
-}
-/* Bölüm başlıkları (Ekibin / Rakibin / Meslek Gücün) dark zeminde okunur kalsın. */
-.ekran-kariyer .aile-koken-karti,
-.ekran-kariyer .aile-cocuklar-karti {
-  background: rgba(0, 0, 0, 0.28);
-  border: 1px solid rgba(201, 162, 74, 0.28);
-  border-radius: 12px;
-  padding: 0.85rem 1rem;
-}
-.ekran-kariyer .aile-koken-karti > h3,
-.ekran-kariyer .aile-cocuklar-karti > h3 {
-  margin: 0 0 0.6rem;
-  color: var(--renk-altin-parlak);
-  letter-spacing: 0.04em;
-  font-size: 0.9rem;
-}
-.ekran-kariyer .aile-bos-metin {
-  opacity: 0.75;
-}
-
 .kariyer-bolum {
   position: relative;
   z-index: 1;
@@ -5011,20 +4975,9 @@ button.ikincil {
 }
 
 @media (max-width: 767px) {
-  .ekran-kariyer {
-    gap: 0.6rem;
-  }
   .kariyer-govde {
     grid-template-columns: 1fr;
     gap: 0.6rem;
-  }
-  .ekran-kariyer > h2 {
-    font-size: 1rem;
-    margin: 0;
-  }
-  .ekran-kariyer .aile-koken-karti,
-  .ekran-kariyer .aile-cocuklar-karti {
-    padding: 0.6rem 0.7rem;
   }
   .kariyer-ilerleme-blok {
     padding: 0.5rem 0.6rem;
@@ -6009,7 +5962,6 @@ button.ikincil {
   /* Alt gezinme çubuğu göründüğü her ekranın en alt içeriği çubuğun arkasında
      kalmasın — Kariyer gibi doğal kayan ekranlarda gerekli (kilitli ekranlarda
      zararsız). */
-  .ekran-kariyer,
   .ekran-tam-sayfa {
     padding-bottom: calc(var(--alt-gezinme-yukseklik) + env(safe-area-inset-bottom, 0));
   }
@@ -7265,7 +7217,7 @@ button.ikincil {
 .piyasa-haber { display: flex; gap: 0.4rem; align-items: baseline; font-size: 0.82rem; line-height: 1.35; }
 .piyasa-metin { flex: 1; }
 .piyasa-yil { opacity: 0.6; white-space: nowrap; }
-.piyasa-art { color: #4caf50; }
+.piyasa-art { color: var(--c-arti-koyu); }
 .piyasa-eksi { color: #e5604f; }
 .piyasa-bos { font-size: 0.8rem; opacity: 0.7; margin: 0; }
 .kariyer-istek-rusvet { margin-left: 0.4rem; }
@@ -7448,10 +7400,10 @@ button.ikincil {
   border-left: 3px solid rgba(255, 255, 255, 0.25);
 }
 .gosterge-etken-iyi {
-  border-left-color: #5fae6a;
+  border-left-color: var(--c-arti-koyu);
 }
 .gosterge-etken-kotu {
-  border-left-color: #c9574a;
+  border-left-color: var(--c-eksi-koyu);
 }
 .gosterge-etken-ikon {
   flex-shrink: 0;

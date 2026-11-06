@@ -34,7 +34,7 @@ import { isletmeProfiliGetir, yatirimTanimiGetir } from "../src/data/meslekProfi
 import { calisanLimiti, adaylariGerekirseYenile } from "../src/game/isletme";
 import { pazarPayiHesapla } from "../src/data/pazar";
 import { doktrinBekleyenSeviye, erSayisi, komutaLimiti, gorevSlotSayisi, birlikAl, gucHesapla } from "../src/game/birlik";
-import { birlikKararUygula, birlikSec, doktrinSec, kaliteYukselt, savasKarariBekliyorMu, savasKarariDurumu, savasKarariVer } from "../src/game/birlikIslem";
+import { birlikKararUygula, birlikSec, doktrinSec, techizatSec, savasKarariBekliyorMu, savasKarariDurumu, savasKarariVer } from "../src/game/birlikIslem";
 import { GOREVLER, doktrinSecenekleri, DUSMAN_REFERANS_YAS } from "../src/data/birlik";
 import { EKSTRA_VERGI_ODEME_ILISKI } from "../src/data/ekstraVergi";
 import type { Cag, CharacterState, EkipUyesi } from "../src/types";
@@ -135,11 +135,13 @@ function botKarar(s: CharacterState, tarz: Tarz) {
 
   // Teçhizat ve özel birlik.
   try {
-    if (b.hedef_kalite === "dusuk" && s.para > rezerv * 3) birlikKararUygula(s, { hedef_kalite: "orta" });
+    // Tek seviye (5 yıl kilit): tam yatırım hemen yüksek; aktif bol nakitte yüksek; dengeli orta; pasif düşükte kalır.
     if (tarz === "tam") {
-      // Tam yatırım: teçhizat ve birlikler olabildiğince erken.
-      if (s.para > rezerv + 5 * genf) kaliteYukselt(s, "yuksek", 100, bgl);
-    } else if (s.para > rezerv * 4 + er * 0.7 * genf) kaliteYukselt(s, (tarz === "aktif" || tarz === "tam") && s.para > rezerv * 10 + er * 1.6 * genf ? "yuksek" : "orta", 50, bgl);
+      if (s.para > rezerv + 5 * genf) techizatSec(s, "yuksek", bgl);
+    } else if (tarz === "aktif") {
+      if (s.para > rezerv * 10 + er * 1.6 * genf) techizatSec(s, "yuksek", bgl);
+      else if (b.hedef_kalite === "dusuk" && s.para > rezerv * 4 + er * 0.7 * genf) techizatSec(s, "orta", bgl);
+    } else if (tarz === "dengeli" && b.hedef_kalite === "dusuk" && s.para > rezerv * 4 + er * 0.7 * genf) techizatSec(s, "orta", bgl);
   } catch {
     /* kilitli ya da gereksiz */
   }

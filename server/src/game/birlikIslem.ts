@@ -22,17 +22,25 @@ import {
   BIRLIK_KILIT_YIL,
   GANIMET_GUC_BIRIMI,
   TUR_PAYI,
+  OZEL_BIRLIK_LIMITI,
   ER_TAVANI,
   ESIR_YETKI_RUTBE,
   GANIMET_PAYI_TANIMLARI,
   GANIMET_SIRASI,
+  ganimetArtiEksi,
+  talimArtiEksi,
+  tonArtiEksi,
   GOREVLER,
   IADE_ORANI,
   IKMAL_SIRASI,
   IKMAL_TANIMLARI,
   INISIYATIF_OYUNCU_SECER,
   INISIYATIF_ZORUNLU_SALDIRI,
-  KALITE_ADLARI,
+  kaliteAdlari,
+  KALITE_CARPANI,
+  KALITE_BAKIM,
+  KALITE_MORAL,
+  KALITE_TALIM_CARPANI,
   KALITE_FIYATI,
   KALITE_KILIT_YIL,
   KALITE_SIRASI,
@@ -112,10 +120,9 @@ export interface BirlikKararGirdisi {
   ganimet_payi?: string;
   talim?: string;
   ton?: string;
-  hedef_kalite?: string;
 }
 
-/** Görev seçimi + üç politika + yeni erler için hedef kalite. Önce doğrular, sonra uygular. Turu tüketmez. */
+/** Görev seçimi + üç politika. Önce doğrular, sonra uygular. Turu tüketmez. */
 export function birlikKararUygula(state: CharacterState, k: BirlikKararGirdisi): void {
   const b = birlikAl(state);
   hapisYolculuk(state);
@@ -133,10 +140,6 @@ export function birlikKararUygula(state: CharacterState, k: BirlikKararGirdisi):
   if (k.ganimet_payi !== undefined && !GANIMET_SIRASI.includes(k.ganimet_payi as BirlikGanimetPayi)) throw new Error("Geçersiz ganimet payı.");
   if (k.talim !== undefined && !TALIM_SIRASI.includes(k.talim as BirlikTalim)) throw new Error("Geçersiz talim politikası.");
   if (k.ton !== undefined && !TON_SIRASI.includes(k.ton as BirlikTon)) throw new Error("Geçersiz komuta tonu.");
-  if (k.hedef_kalite !== undefined) {
-    if (!KALITE_SIRASI.includes(k.hedef_kalite as BirlikKalite)) throw new Error("Geçersiz teçhizat kalitesi.");
-    if (k.hedef_kalite !== b.hedef_kalite && kilitKalan(state, b.kalite_kilit_bitis) > 0) throw new Error("Teçhizat kalitesi 5 yılda bir değiştirilebilir.");
-  }
   if (k.gorevler !== undefined) b.gorevler = [...k.gorevler];
   if (k.ganimet_payi !== undefined) {
     if (rutbeIndeksi(state) < 1 && k.ganimet_payi !== b.ganimet_payi) throw new Error("Ganimet payını ancak ikinci rütbeden itibaren belirleyebilirsin.");
@@ -144,10 +147,6 @@ export function birlikKararUygula(state: CharacterState, k: BirlikKararGirdisi):
   }
   if (k.talim !== undefined) b.talim_politikasi = k.talim as BirlikTalim;
   if (k.ton !== undefined) b.ton = k.ton as BirlikTon;
-  if (k.hedef_kalite !== undefined && k.hedef_kalite !== b.hedef_kalite) {
-    b.hedef_kalite = k.hedef_kalite as BirlikKalite;
-    b.kalite_kilit_bitis = state.yil + KALITE_KILIT_YIL;
-  }
 }
 
 // ── Doktrin ─────────────────────────────────────────────────────────────────
@@ -170,38 +169,32 @@ export interface IslemSonucu {
   adet: number;
 }
 
-/** Erlerin `yuzde`'sini (50/100) verilen kaliteye yükseltir; er başı fark ödenir; kalite 5 yıl kilitlenir. */
-export function kaliteYukselt(state: CharacterState, hedef: BirlikKalite, yuzde: number, bg: IsletmeBaglami): IslemSonucu {
+/**
+ * Teçhizat seviyesi (tüm ordu tek seviye): bütün erler seçilen seviyeye geçer, yeni erler de bu seviyeyle gelir.
+ * Geçiş ücretsizdir (bedel yıllık bakım); seçimden sonra 5 yıl değiştirilemez.
+ */
+export function techizatSec(state: CharacterState, seviye: BirlikKalite, bg: IsletmeBaglami): IslemSonucu {
   const b = birlikAl(state);
   hapisYolculuk(state);
-  if (hedef === "dusuk" || !KALITE_SIRASI.includes(hedef)) throw new Error("Geçersiz teçhizat kalitesi.");
-  if (yuzde !== 50 && yuzde !== 100) throw new Error("Geçersiz oran.");
-  if (kilitKalan(state, b.kalite_kilit_bitis) > 0) throw new Error("Teçhizat kalitesi 5 yılda bir değiştirilebilir.");
-  const alt: BirlikKalite[] = hedef === "yuksek" ? ["orta", "dusuk"] : ["dusuk"];
-  const havuz = alt.reduce((t, q) => t + b.kalite[q], 0);
-  let n = Math.round((havuz * yuzde) / 100);
-  if (n <= 0) throw new Error("Yükseltilecek er yok.");
+  if (!KALITE_SIRASI.includes(seviye)) throw new Error("Geçersiz teçhizat seviyesi.");
+  if (kilitKalan(state, b.kalite_kilit_bitis) > 0) throw new Error("Teçhizat seviyesi 5 yılda bir değiştirilebilir.");
+  const er = erSayisi(state);
+  const degisecek = KALITE_SIRASI.reduce((t, q) => t + (q === seviye ? 0 : b.kalite[q]), 0);
+  if (degisecek <= 0 && b.hedef_kalite === seviye) throw new Error("Ordun zaten bu teçhizat seviyesinde.");
   let maliyet = 0;
-  const plan: [BirlikKalite, number][] = [];
-  for (const q of alt) {
-    const al = Math.min(n, b.kalite[q]);
-    if (al <= 0) continue;
-    plan.push([q, al]);
-    maliyet += al * (KALITE_FIYATI[hedef] - KALITE_FIYATI[q]) * bg.giderEnflasyon;
-    n -= al;
+  for (const q of KALITE_SIRASI) {
+    if (q === seviye) continue;
+    const fark = (KALITE_FIYATI[seviye] - KALITE_FIYATI[q]) * b.kalite[q] * bg.giderEnflasyon;
+    if (fark > 0) maliyet += fark;
   }
   maliyet = r2(maliyet);
   gucParaKontrol(state, maliyet);
-  let toplam = 0;
-  for (const [q, al] of plan) {
-    b.kalite[q] -= al;
-    b.kalite[hedef] += al;
-    toplam += al;
-  }
   state.para = r2(state.para - maliyet);
+  b.kalite = { dusuk: 0, orta: 0, yuksek: 0, [seviye]: er } as typeof b.kalite;
+  b.hedef_kalite = seviye;
   b.kalite_kilit_bitis = state.yil + KALITE_KILIT_YIL;
   birlikSenkron(state, bg.enflasyon);
-  return { maliyet, iade: 0, adet: toplam };
+  return { maliyet, iade: 0, adet: degisecek };
 }
 
 // ── Özel birlik ─────────────────────────────────────────────────────────────
@@ -223,6 +216,8 @@ export function birlikSec(state: CharacterState, turler: BirlikTur[], bg: Isletm
     throw new Error("Geçersiz birlik seçimi.");
   }
   const secili = TUR_SIRASI.filter((t) => turler.includes(t));
+  const limit = OZEL_BIRLIK_LIMITI[Math.min(rutbeIndeksi(state), OZEL_BIRLIK_LIMITI.length - 1)];
+  if (secili.length > limit && secili.length > b.birlik_turler.length) throw new Error(`Rütben en fazla ${limit} özel birliğe izin veriyor.`);
   const eskiSet = new Set(b.birlik_turler);
   const yeniSet = new Set(secili);
   const ustKume = [...eskiSet].every((t) => yeniSet.has(t));
@@ -586,14 +581,16 @@ export interface BirlikGorunumu {
     kilitKalanYil: number;
     ad: { tr: string; en: string };
     adlar: Record<BirlikKalite, { tr: string; en: string }>;
-    yukseltFiyat: Record<"orta" | "yuksek", number>;
     techizat: { tr: string; en: string };
+    seviyeler: { id: BirlikKalite; carpan: number; bakim: number; bakimToplam: number; moral: number; talim: number }[];
   };
   birlik: {
     seciliTurler: BirlikTur[];
     turPayi: number;
     kilitKalanYil: number;
     toplamPay: number;
+    /** Rütbeye göre açık tutulabilecek özel birlik sayısı. */
+    limit: number;
     turler: {
       id: BirlikTur;
       simge: string;
@@ -613,11 +610,11 @@ export interface BirlikGorunumu {
     politika: BirlikTalim;
     gucYuzde: number;
     kayipYuzde: number;
-    politikalar: { id: BirlikTalim; ad: { tr: string; en: string }; delta: number; tavan: number; masraf: number; moral: number }[];
+    politikalar: { id: BirlikTalim; ad: { tr: string; en: string }; delta: number; tavan: number; masraf: number; moral: number; arti: { tr: string; en: string }[]; eksi: { tr: string; en: string }[] }[];
   };
   politikalar: {
-    ganimetPayi: { secili: BirlikGanimetPayi; secenekler: { id: BirlikGanimetPayi; ad: { tr: string; en: string }; oran: number; moral: number }[] };
-    ton: { secili: BirlikTon; secenekler: { id: BirlikTon; ad: { tr: string; en: string }; aciklama: { tr: string; en: string } }[] };
+    ganimetPayi: { secili: BirlikGanimetPayi; secenekler: { id: BirlikGanimetPayi; ad: { tr: string; en: string }; oran: number; moral: number; arti: { tr: string; en: string }[]; eksi: { tr: string; en: string }[] }[] };
+    ton: { secili: BirlikTon; secenekler: { id: BirlikTon; ad: { tr: string; en: string }; aciklama: { tr: string; en: string }; moral: number; arti: { tr: string; en: string }[]; eksi: { tr: string; en: string }[] }[] };
   };
   moral: { deger: number; gucYuzde: number; sertlik: number };
   gorevler: {
@@ -720,16 +717,24 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
       sayilar: { ...b.kalite },
       hedef: b.hedef_kalite,
       kilitKalanYil: kilitKalan(state, b.kalite_kilit_bitis),
-      ad: KALITE_ADLARI[b.hedef_kalite],
-      adlar: KALITE_ADLARI,
-      yukseltFiyat: { orta: r2(KALITE_FIYATI.orta * bg.giderEnflasyon), yuksek: r2(KALITE_FIYATI.yuksek * bg.giderEnflasyon) },
+      ad: kaliteAdlari(cag)[b.hedef_kalite],
+      adlar: kaliteAdlari(cag),
       techizat: techizatAdi(cag),
+      seviyeler: KALITE_SIRASI.map((id) => ({
+        id,
+        carpan: KALITE_CARPANI[id],
+        bakim: r2(KALITE_BAKIM[id] * bg.giderEnflasyon),
+        bakimToplam: r2(KALITE_BAKIM[id] * er * bg.giderEnflasyon),
+        moral: KALITE_MORAL[id],
+        talim: KALITE_TALIM_CARPANI[id],
+      })),
     },
     birlik: {
       seciliTurler: [...b.birlik_turler],
       turPayi: TUR_PAYI,
       kilitKalanYil: kilitKalan(state, b.birlik_kilit_bitis),
       toplamPay: Object.values(paylar).reduce((t, x) => t + (x ?? 0), 0),
+      limit: OZEL_BIRLIK_LIMITI[Math.min(rutbeIndeksi(state), OZEL_BIRLIK_LIMITI.length - 1)],
       turler: TUR_SIRASI.map((id) => ({
         id,
         simge: TUR_TANIMLARI[id].simge,
@@ -750,15 +755,15 @@ export function birlikGorunumuHesapla(state: CharacterState, bg: IsletmeBaglami)
       gucYuzde: Math.round(Math.min(20, b.talim * TALIM_GUC_KATSAYISI * 100) * 10) / 10,
       kayipYuzde: Math.round(Math.min(15, b.talim * TALIM_KAYIP_KATSAYISI * 100) * 10) / 10,
       politikalar: TALIM_SIRASI.map((id) => ({
-        id, ad: TALIM_TANIMLARI[id].ad, delta: TALIM_TANIMLARI[id].delta, tavan: TALIM_TANIMLARI[id].tavan, masraf: r2(TALIM_TANIMLARI[id].masraf * er * bg.giderEnflasyon), moral: TALIM_TANIMLARI[id].moral,
+        id, ad: TALIM_TANIMLARI[id].ad, delta: TALIM_TANIMLARI[id].delta, tavan: TALIM_TANIMLARI[id].tavan, masraf: r2(TALIM_TANIMLARI[id].masraf * er * bg.giderEnflasyon), moral: TALIM_TANIMLARI[id].moral, ...talimArtiEksi(id),
       })),
     },
     politikalar: {
       ganimetPayi: {
         secili: b.ganimet_payi,
-        secenekler: GANIMET_SIRASI.map((id) => ({ id, ad: GANIMET_PAYI_TANIMLARI[id].ad, oran: GANIMET_PAYI_TANIMLARI[id].oran, moral: GANIMET_PAYI_TANIMLARI[id].moral })),
+        secenekler: GANIMET_SIRASI.map((id) => ({ id, ad: GANIMET_PAYI_TANIMLARI[id].ad, oran: GANIMET_PAYI_TANIMLARI[id].oran, moral: GANIMET_PAYI_TANIMLARI[id].moral, ...ganimetArtiEksi(id) })),
       },
-      ton: { secili: b.ton, secenekler: TON_SIRASI.map((id) => ({ id, ad: TON_TANIMLARI[id].ad, aciklama: TON_TANIMLARI[id].aciklama })) },
+      ton: { secili: b.ton, secenekler: TON_SIRASI.map((id) => ({ id, ad: TON_TANIMLARI[id].ad, aciklama: TON_TANIMLARI[id].aciklama, moral: TON_TANIMLARI[id].moral, ...tonArtiEksi(id) })) },
     },
     moral: { deger: Math.round(b.moral), gucYuzde: Math.round(moralGucEtkisi(b.moral) * 100), sertlik: Math.round(b.sertlik) },
     gorevler: {

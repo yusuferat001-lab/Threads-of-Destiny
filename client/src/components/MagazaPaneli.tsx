@@ -147,9 +147,9 @@ export function MagazaPaneli({
                   {kt(esya.ad)} {esya.sahipMi && m.mpSahipsinTam}
                 </strong>
                 <span className="meslek-aciklama magaza-etki-satiri">
-                  {esya.saglikEtkisi ? `❤️ +${esya.saglikEtkisi} ` : ''}
-                  {esya.mutlulukEtkisi ? `😊 +${esya.mutlulukEtkisi} ` : ''}
-                  {esya.unEtkisi ? `⭐ +${esya.unEtkisi} ` : ''}
+                  {esya.saglikEtkisi ? <><span aria-hidden>❤️</span> <span className="s-arti">+{esya.saglikEtkisi}</span>{' '}</> : null}
+                  {esya.mutlulukEtkisi ? <><span aria-hidden>😊</span> <span className="s-arti">+{esya.mutlulukEtkisi}</span>{' '}</> : null}
+                  {esya.unEtkisi ? <><span aria-hidden>⭐</span> <span className="s-arti">+{esya.unEtkisi}</span>{' '}</> : null}
                   {esya.sifaFaydaAralik
                     ? `· ${formatYuzdeAralik(dil, esya.sifaFaydaAralik.min, esya.sifaFaydaAralik.max)} ${m.mpFayda}`
                     : ''}

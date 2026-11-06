@@ -403,17 +403,17 @@ describe("görev geliri ve erzak tabloları", () => {
     expect(sira[sira.length - 1].erBasi).toBe(1.8);
     expect(GOREVLER.filter((g) => (g.sohret ?? 0) > 0).map((g) => g.id).sort()).toEqual(["komuta", "muhafiz"]);
   });
-  it("erzak dönem çarpanı 0,8–1,3; teçhizat bakımı 0,10 / 0,22 / 0,34", () => {
+  it("erzak dönem çarpanı 0,8–1,3; teçhizat bakımı 0,15 / 0,30 / 0,45", () => {
     for (const v of Object.values(ERZAK_DONEM_CARPANI)) {
       expect(v).toBeGreaterThanOrEqual(0.8);
       expect(v).toBeLessThanOrEqual(1.3);
     }
-    expect(KALITE_BAKIM).toEqual({ dusuk: 0.1, orta: 0.22, yuksek: 0.34 });
+    expect(KALITE_BAKIM).toEqual({ dusuk: 0.15, orta: 0.3, yuksek: 0.45 });
     const s = asker();
     ordu(s, 40);
     birlikAl(s).kalite = { dusuk: 10, orta: 10, yuksek: 20 };
     const h = birlikHesapla(s, bg(s));
-    expect(h.techizatBakim).toBeCloseTo((10 * 0.1 + 10 * 0.22 + 20 * 0.34) * bg(s).giderEnflasyon, 4);
+    expect(h.techizatBakim).toBeCloseTo((10 * 0.15 + 10 * 0.3 + 20 * 0.45) * bg(s).giderEnflasyon, 4);
   });
 });
 

@@ -8,6 +8,8 @@ import {
   buyukSavasKontrolEt,
   buyukSavasBitisKontrolEt,
   rutbeGuncelle,
+  yillikKariyerPuaniHesapla,
+  pazarYillikUygula,
 } from "../src/game/stateManager";
 import {
   yeniOyun,
@@ -18,7 +20,7 @@ import {
   isletmeDurumGetir,
   isletmeKararVer,
   birlikDoktrinSec,
-  birlikKaliteYukselt,
+  birlikTechizatSec,
   birlikBirlikSec,
   birlikKusatma,
   birlikTerhis,
@@ -49,7 +51,7 @@ import {
 import {
   birlikSec,
   doktrinSec,
-  kaliteYukselt,
+  techizatSec,
   kusatmaAyarla,
   terhisEt,
   savasKarariBekliyorMu,
@@ -71,6 +73,12 @@ import {
   KISLA_ER_LIMITI,
   MIN_CEKIRDEK_ER,
   SOLD,
+  ER_MASRAFI,
+  ERZAK_BIRIMI,
+  ASKER_KARIYER_GUC_TAVANI,
+  ASKER_KARIYER_PUANI_KATSAYISI,
+  KALITE_BAKIM,
+  KALITE_CARPANI,
   ER_BASI_GELIR,
   SAVAS_ER_BASI_CARPANI,
   TALIM_TANIMLARI,
@@ -153,13 +161,13 @@ describe("kurulum", () => {
 });
 
 describe("askerî güç ve pay", () => {
-  it("ham güç: düşük ×1, orta ×1,40, yüksek ×1,75", () => {
+  it("ham güç: düşük ×1, orta ×1,25, yüksek ×1,5", () => {
     const s = asker();
     const b = birlikAl(s);
     b.kalite = { dusuk: 10, orta: 10, yuksek: 10 };
     s.meslek_musteri = 30;
     const d = gucHesapla(s);
-    expect(d.ham).toBeCloseTo(10 * 1 + 10 * 1.4 + 10 * 1.75, 5);
+    expect(d.ham).toBeCloseTo(10 * 1 + 10 * 1.25 + 10 * 1.5, 5);
   });
 
   it("her açık özel birlik ordunun %25'idir (tek seçenek); üç tür açıkken %75 özel + %25 piyade", () => {
@@ -771,21 +779,70 @@ describe("talim, doktrin, birlik, terhis", () => {
     expect(typeof t.guc).toBe("number");
   });
 
-  it("kalite yükseltme: er başı fark ödenir, 5 yıl kilitlenir, geçersiz oran reddedilir", () => {
+  it("teçhizat: tüm ordu tek seviyeye geçer, ücretsiz, 5 yıl kilitlenir, geçersiz seviye reddedilir", () => {
     const s = asker();
     const once = s.para;
-    const r = kaliteYukselt(s, "orta", 50, bg(s));
-    expect(r.maliyet).toBe(0); // yükseltme masrafı yok
+    const r = techizatSec(s, "orta", bg(s));
+    expect(r.maliyet).toBe(0); // geçiş ücretsiz, bedel yıllık bakım
     expect(s.para).toBeCloseTo(once, 5);
-    expect(birlikAl(s).kalite.orta).toBe(10);
-    expect(() => kaliteYukselt(s, "yuksek", 50, bg(s))).toThrow(/5 yılda bir/);
+    const b = birlikAl(s);
+    expect(b.kalite.orta).toBe(erSayisi(s));
+    expect(b.kalite.dusuk).toBe(0);
+    expect(b.hedef_kalite).toBe("orta");
+    expect(() => techizatSec(s, "yuksek", bg(s))).toThrow(/5 yılda bir/);
     s.yil += 5;
-    expect(() => kaliteYukselt(s, "orta", 33, bg(s))).toThrow(/Geçersiz oran/);
-    expect(() => kaliteYukselt(s, "dusuk" as never, 50, bg(s))).toThrow();
+    expect(() => techizatSec(s, "orta", bg(s))).toThrow(/zaten/);
+    expect(() => techizatSec(s, "olmayan" as never, bg(s))).toThrow(/Geçersiz/);
+    techizatSec(s, "yuksek", bg(s));
+    expect(birlikAl(s).kalite.yuksek).toBe(erSayisi(s));
+  });
+
+  it("teçhizat sabitleri: güç 1/1,25/1,5; bakım 0,15/0,30/0,45; güç başına gider birbirine yakın (hiçbiri baskın değil)", () => {
+    expect(KALITE_CARPANI).toEqual({ dusuk: 1, orta: 1.25, yuksek: 1.5 });
+    expect(KALITE_BAKIM).toEqual({ dusuk: 0.15, orta: 0.3, yuksek: 0.45 });
+    const g = (q: "dusuk" | "orta" | "yuksek") => (ER_MASRAFI + ERZAK_BIRIMI + KALITE_BAKIM[q]) / KALITE_CARPANI[q];
+    expect(Math.abs(g("yuksek") - g("dusuk"))).toBeLessThan(0.05);
+  });
+
+  it("Asker rütbesi askerî güce bağlı: pazar payı yeterli olsa da güç eşiği gerekir", () => {
+    const s = asker();
+    s.kariyer_puani = 999;
+    s.un = 100;
+    s.ahlak = 100;
+    s.yil += 10;
+    birlikAl(s).guc = 10;
+    rutbeGuncelle(s);
+    expect(s.rutbe_seviye).toBe(1);
+    birlikAl(s).guc = 60;
+    rutbeGuncelle(s);
+    expect(s.rutbe_seviye).toBe(2);
+  });
+
+  it("Asker'in yıllık kariyer puanı askerî güçten gelir (güç/düşman referansı, tavanlı)", () => {
+    const s = asker();
+    birlikAl(s).guc = 0;
+    expect(yillikKariyerPuaniHesapla(s)).toBe(0);
+    birlikAl(s).guc = 10000;
+    expect(yillikKariyerPuaniHesapla(s)).toBeCloseTo(ASKER_KARIYER_GUC_TAVANI * ASKER_KARIYER_PUANI_KATSAYISI, 5);
+    const once = s.kariyer_puani;
+    pazarYillikUygula(s, 2);
+    expect(s.kariyer_puani).toBeGreaterThan(once);
+  });
+
+  it("özel birlik limiti rütbeye bağlı (1/1/2/2/3)", () => {
+    const s = asker();
+    s.rutbe_seviye = 1;
+    expect(() => birlikSec(s, ["suvari", "okcu"], bg(s))).toThrow(/en fazla 1/);
+    s.rutbe_seviye = 3;
+    expect(() => birlikSec(s, ["suvari", "okcu"], bg(s))).not.toThrow();
+    expect(() => birlikSec(s, ["suvari", "okcu", "mizrakli"], bg(s))).toThrow(/en fazla 2/);
+    s.rutbe_seviye = 5;
+    expect(() => birlikSec(s, ["suvari", "okcu", "mizrakli"], bg(s))).not.toThrow();
   });
 
   it("birlik seçimi: açık/kapalı tür kümesi (her biri %25); fiyat er sayısıyla ölçeklenir; küçültünce %35 iade; saf ekleme kilide takılmaz", () => {
     const s = asker();
+    s.rutbe_seviye = 5;
     expect(() => birlikSec(s, ["suvari", "suvari"] as never, bg(s))).toThrow(/Geçersiz birlik seçimi/);
     const r1 = birlikSec(s, ["suvari"], bg(s));
     expect(r1.maliyet).toBeGreaterThan(0);
@@ -833,7 +890,7 @@ describe("talim, doktrin, birlik, terhis", () => {
   it("hapisteyken ya da yolculukta ordu eylemleri reddedilir", () => {
     const s = asker();
     s.etiketler.push("hapiste");
-    expect(() => kaliteYukselt(s, "orta", 50, bg(s))).toThrow(/Hapisteyken/);
+    expect(() => techizatSec(s, "orta", bg(s))).toThrow(/Hapisteyken/);
     s.etiketler = s.etiketler.filter((e) => e !== "hapiste");
     s.etiketler.push("yolculukta");
     expect(() => terhisEt(s, 1, bg(s))).toThrow(/Yolculuktayken/);
@@ -900,10 +957,9 @@ describe("motor entegrasyonu (gameEngine / API)", () => {
     const st = await yeniOyun("Orta Çağ", "Fransa", "kasaba");
     await mesleğiAta(st.id, "Asker");
     await bekleyenleriCoz(st.id);
-    const r = await isletmeKararVer(st.id, [], undefined, { gorevler: ["devriye"], ganimet_payi: "dengeli", talim: "agir", ton: "sert", hedef_kalite: "orta" });
+    const r = await isletmeKararVer(st.id, [], undefined, { gorevler: ["devriye"], ganimet_payi: "dengeli", talim: "agir", ton: "sert" });
     expect(r.durum.birlik!.talim.politika).toBe("agir");
     expect(r.durum.birlik!.politikalar.ton.secili).toBe("sert");
-    expect(r.durum.birlik!.kalite.hedef).toBe("orta");
     await expect(isletmeKararVer(st.id, [], undefined, { talim: "yok" })).rejects.toThrow(/talim/);
     await expect(isletmeKararVer(st.id, [], undefined, { gorevler: ["devriye", "eskort"] })).rejects.toThrow(/aynı anda/);
     await expect(isletmeKararVer(st.id, [], undefined, { gorevler: ["sefer"] })).rejects.toThrow(/Böyle bir görev yok/);
@@ -920,9 +976,9 @@ describe("motor entegrasyonu (gameEngine / API)", () => {
     await bekleyenleriCoz(st.id);
     const s = await stateGetir(st.id);
     s.para = 1000;
-    const k = await birlikKaliteYukselt(st.id, "orta", 100);
+    const k = await birlikTechizatSec(st.id, "orta");
     expect(k.durum.birlik!.kalite.sayilar.orta).toBe(20);
-    await expect(birlikKaliteYukselt(st.id, "yuksek", 100)).rejects.toThrow(/5 yılda bir/);
+    await expect(birlikTechizatSec(st.id, "yuksek")).rejects.toThrow(/5 yılda bir/);
     const b = await birlikBirlikSec(st.id, ["okcu"]);
     expect(b.durum.birlik!.birlik.seciliTurler).toEqual(["okcu"]);
     const ku = await birlikKusatma(st.id, 1);

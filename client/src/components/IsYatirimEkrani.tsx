@@ -1,19 +1,15 @@
 import { useEffect, useState } from 'react';
-import type { MulkKartBilgisi, MulkTuru, KrediConfig } from '../types';
+import type { MulkKartBilgisi, MulkTuru } from '../types';
 import { formatPara } from '../format';
 import { bic } from '../i18n';
 import { useDil } from '../DilContext';
-import { useMobilEkran } from '../hooks';
 
 interface IsYatirimEkraniProps {
   paraBirimi: string;
   para: number;
-  krediConfig: KrediConfig | null;
   mulkler: MulkKartBilgisi[];
   yukleniyor: boolean;
   islemMesaji: string | null;
-  onKrediAl: (teklifId: string) => void;
-  onKrediPazarlik: () => void;
   onMulkSatinAl: (tur: MulkTuru) => void;
   onGeriDon: () => void;
 }
@@ -27,19 +23,14 @@ const PIYASA_SINYAL_ETIKET: Record<string, { tr: string; en: string; sinif: stri
 export function IsYatirimEkrani({
   paraBirimi,
   para,
-  krediConfig,
   mulkler,
   yukleniyor,
   islemMesaji,
-  onKrediAl,
-  onKrediPazarlik,
   onMulkSatinAl,
   onGeriDon,
 }: IsYatirimEkraniProps) {
   const { m, kt, dil } = useDil();
   const en = dil === 'en';
-  const mobil = useMobilEkran();
-  const [aktifSekme, setAktifSekme] = useState(0);
 
   // İşlem sonucu / hata → ekrana açılır pencere (kullanıcı isteği: suç/işlem sonucu
   // sayfa başında sabit metin değil, kapatılabilir bir pencerede gelsin).
@@ -61,74 +52,8 @@ export function IsYatirimEkrani({
         </div>
       )}
 
-      {mobil && (
-        <div className="ekran-sekmeleri">
-          {[en ? 'Moneylender' : 'Tefeci', m.iyYatirimlikGayrimenkuller].map((baslik, i) => (
-            <button
-              key={i}
-              type="button"
-              className={`ekran-sekme${aktifSekme === i ? ' ekran-sekme-aktif' : ''}`}
-              onClick={() => setAktifSekme(i)}
-            >
-              {baslik}
-            </button>
-          ))}
-        </div>
-      )}
-
-      <div className={mobil ? 'tam-sutun-tekli-sarici' : 'tam-govde-2col'}>
-        <div className="tam-sutun" hidden={mobil && aktifSekme !== 0}>
-          <h3 className="tam-baslik">{en ? 'Moneylender' : 'Tefeci'}</h3>
-
-          {/* Tefeci / kredi — havuzdan seçilmiş 2 teklif (tutar enflasyonlu, farklı faiz ve vade). */}
-          {krediConfig?.aktifKredi ? (
-            <div className="dedikodu-panosu">
-              <p>
-                {en ? 'Outstanding debt' : 'Kalan borç'}: <strong>{formatPara(krediConfig.aktifKredi.kalanBorc)} {paraBirimi}</strong>
-                {' · '}
-                {en ? 'yearly instalment' : 'yıllık taksit'} ~{formatPara(krediConfig.aktifKredi.yillikTaksit)}
-                {' · '}
-                {en ? 'interest' : 'faiz'} %{Math.round(krediConfig.aktifKredi.faizOrani * 100)}
-                {' · '}
-                {en ? 'term' : 'vade'} {krediConfig.aktifKredi.vadeYil} {en ? 'yrs' : 'yıl'}
-              </p>
-              {!krediConfig.aktifKredi.pazarlikYapildi && (
-                <button className="ikincil" disabled={yukleniyor} onClick={onKrediPazarlik}>
-                  {en ? 'Haggle the interest' : 'Faizi pazarlık et'}
-                </button>
-              )}
-            </div>
-          ) : krediConfig && krediConfig.teklifler.length > 0 ? (
-            <div className="dedikodu-panosu">
-              <p className="giris-aciklama">
-                {en
-                  ? 'Pick one of the two offers. You repay in equal yearly instalments, and he lends even when you are in the red.'
-                  : 'İki tekliften birini seç. Eşit yıllık taksitlerle ödersin; nakdin eksideyken bile tefeci borç verir.'}
-              </p>
-              <div className="kariyer-bagis-kademeler">
-                {krediConfig.teklifler.map((t) => (
-                  <button
-                    key={t.id}
-                    className="kariyer-bagis-cip"
-                    disabled={yukleniyor}
-                    title={en ? t.ad.en : t.ad.tr}
-                    onClick={() => onKrediAl(t.id)}
-                  >
-                    <strong>{formatPara(t.tutar)} {paraBirimi}</strong>
-                    <br />
-                    {en ? 'interest' : 'faiz'} %{Math.round(t.faiz * 100)} · {en ? 'term' : 'vade'} {t.vade} {en ? 'yrs' : 'yıl'}
-                    <br />
-                    {en ? 'yearly instalment' : 'yıllık taksit'} {formatPara(t.taksit)} {paraBirimi}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <p className="giris-aciklama">{en ? 'The moneylender turns you away for now.' : 'Tefeci şimdilik sana borç vermiyor.'}</p>
-          )}
-        </div>
-
-        <div className="tam-sutun" hidden={mobil && aktifSekme !== 1}>
+      <div className="tam-sutun-tekli-sarici">
+        <div className="tam-sutun">
           <h3 className="tam-baslik">{m.iyYatirimlikGayrimenkuller}</h3>
 
           <div className="yatirim-kartlari yatirim-mulk-kartlari">
@@ -162,7 +87,7 @@ export function IsYatirimEkrani({
                     <span className={`mulk-piyasa-sinyal ${sinyal.sinif}`}>{en ? sinyal.en : sinyal.tr}</span>
                   )}
                   {!mulk.sahipMi && (
-                    <span className="meslek-aciklama">
+                    <span className="meslek-aciklama s-gider">
                       {bic(m.iyFiyatKisa, formatPara(mulk.maliyet), paraBirimi)}
                     </span>
                   )}

@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import type { BirlikGorunumu, BirlikKararGirdisi, BirlikTur, IsletmeGorunumu, IsletmeUyari, PazarDurumu } from '../types';
 import { useDil } from '../DilContext';
+import { RenkliEtki } from './Renkli';
 import { kt } from '../katalog';
 import { PiyasaHaberleri } from './PiyasaHaberleri';
 import { IsletmeOrtak } from './IsletmeOrtak';
@@ -12,7 +13,7 @@ interface Props {
   pazar?: PazarDurumu | null;
   yukleniyor: boolean;
   onBirlikKarar: (k: BirlikKararGirdisi) => void;
-  onKaliteYukselt: (hedef: 'orta' | 'yuksek', yuzde: number) => void;
+  onTechizat: (seviye: 'dusuk' | 'orta' | 'yuksek') => void;
   onBirlikSec: (turler: BirlikTur[]) => void;
   onKusatma: (seviye: number) => void;
   onTerhis: (adet: number) => void;
@@ -21,8 +22,12 @@ interface Props {
   onYatirimDusur?: (yatirimId: string) => void;
   onCalisanAl: (adayId: string) => void;
   onEkipCikar: (ekipId: string) => void;
-  /** Telefon ana ekranı sayfaları: yalnız bir bölümü çiz (varsayılan hepsi). */
-  bolum?: 'hepsi' | 'isletme' | 'gorevler' | 'techizat' | 'yatirim' | 'calisan';
+  /** Strateji sayfası: hangi bölüm çizilir. */
+  bolum: 'isletme' | 'yatirim' | 'calisan';
+  /** Ordu sayfasında "durum" hücresinin üstüne konan blok (rütbe kademesi + ilerleme çubukları). */
+  ustBlok?: ReactNode;
+  /** Yatırım sayfasında üçüncü sütunun altına konan kart (Tefeci/Kredi). */
+  yanKart?: ReactNode;
 }
 
 type D = { tr: string; en: string };
@@ -33,7 +38,7 @@ const M = {
   er: { tr: 'Erin', en: 'Men' },
   pay: { tr: 'Askerî payın', en: 'Military share' },
   guc: { tr: 'Askerî gücün', en: 'Military strength' },
-  moral: { tr: 'Moral', en: 'Morale' },
+  moral: { tr: 'Ordu morali', en: 'Army morale' },
   talim: { tr: 'Talim / Tecrübe', en: 'Drill / Experience' },
   limit: { tr: 'Komuta limiti', en: 'Command limit' },
   limitNot: { tr: 'kışlanın barındırabildiği er sayısı', en: 'how many men the barracks can house' },
@@ -125,6 +130,30 @@ const M = {
   olen: { tr: 'kayıp', en: 'lost' },
   devletPayi: { tr: 'devlet payı', en: 'state share' },
   yatirimBaslik: { tr: 'Yatırımlar', en: 'Investments' },
+  durumBaslik: { tr: 'Ordu durumu', en: 'Army status' },
+  artilar: { tr: 'Artılar', en: 'Pros' },
+  eksiler: { tr: 'Eksiler', en: 'Cons' },
+  techUyari: { tr: '⚠ Seçtikten sonra 5 yıl boyunca değiştirilemez', en: '⚠ Once chosen, it cannot be changed for 5 years' },
+  techKilitli: { tr: '🔒 Değiştirmek için beklemelisin:', en: '🔒 You must wait to change it:' },
+  techGuc: { tr: 'Güç', en: 'Strength' },
+  techTalim: { tr: 'talim', en: 'drill' },
+  techBakim: { tr: 'bakım', en: 'upkeep' },
+  techSec: { tr: 'Seç', en: 'Choose' },
+  techSecili: { tr: '✓ Seçili', en: '✓ Chosen' },
+  techNot: { tr: 'Tüm ordu aynı seviyede donatılır; yeni erler de bu seviyeyle gelir. Geçiş ücretsizdir, bedeli yıllık bakımdır.', en: 'The whole army is kitted out at one level; new men arrive at it too. Switching is free; the cost is yearly upkeep.' },
+  yilSonra: { tr: 'yıl', en: 'yr' },
+  ekle: { tr: 'Ekle', en: 'Add' },
+  terhisBirlik: { tr: 'Terhis', en: 'Disband' },
+  birlikHak: { tr: 'Özel birlik hakkın', en: 'Special-unit slots' },
+  limitDolu: { tr: 'Rütben en fazla', en: 'Your rank allows only' },
+  limitDoluSon: { tr: 'özel birliğe izin veriyor', en: 'special units' },
+  kilitTerhis: { tr: '5 yıl kilidi sürüyor', en: '5-year lock is active' },
+  birlikNotYeni: { tr: 'Açtığın her birlik ordunun %25\'i olur; geçiş ücretini yeni erler kendiliğinden öder. Yeni birlik açmak serbest, kapatmak 5 yılda bir.', en: 'Each unit you open takes 25% of the army; the transfer fee is paid as men join. Opening a unit is free any time; disbanding is once every 5 years.' },
+  kur: { tr: 'Kur', en: 'Build' },
+  yukseltKusatma: { tr: 'Yükselt', en: 'Upgrade' },
+  sok: { tr: 'Sök', en: 'Dismantle' },
+  kusatmaOzel: { tr: 'Özel durum: yalnız kale kuşatmasında saldırı bonusu verir; savaş ve çatışma gücüne girmez; ordudan pay almaz.', en: 'Special case: adds an attack bonus only when besieging a fort; it does not count in battles or clashes and takes no share of the army.' },
+  seviye: { tr: 'seviye', en: 'level' },
 };
 
 const KALITE_SIMGE: Record<string, string> = { dusuk: '🪓', orta: '⚔️', yuksek: '🗡️' };
@@ -136,7 +165,7 @@ const ETKI_ETIKET: Record<string, D> = {
   ganimet: { tr: 'Ganimet', en: 'Loot' },
   kayip: { tr: 'Kayıp', en: 'Losses' },
   masraf: { tr: 'Masraf', en: 'Costs' },
-  moral: { tr: 'Moral', en: 'Morale' },
+  moral: { tr: 'Ordu morali', en: 'Army morale' },
   sertlik: { tr: 'Sertlik', en: 'Harshness' },
   ahlak: { tr: 'Ahlak', en: 'Morality' },
   sold: { tr: 'Sold', en: 'Pay' },
@@ -156,12 +185,13 @@ export function doktrinEtkiMetni(etki: Record<string, number>, dil: 'tr' | 'en')
     });
 }
 
+
 export function BirlikPaneli({
   durum,
   pazar,
   yukleniyor,
   onBirlikKarar,
-  onKaliteYukselt,
+  onTechizat,
   onBirlikSec,
   onKusatma,
   onTerhis,
@@ -170,7 +200,9 @@ export function BirlikPaneli({
   onYatirimDusur,
   onCalisanAl,
   onEkipCikar,
-  bolum = 'hepsi',
+  bolum,
+  ustBlok,
+  yanKart,
 }: Props) {
   const { dil } = useDil();
   const t = (k: keyof typeof M) => M[k][dil];
@@ -178,16 +210,9 @@ export function BirlikPaneli({
   const b: BirlikGorunumu | null = durum.birlik;
   const pb = durum.paraBirimi;
   const erBirim = dil === 'en' ? '/man' : '/er';
-  const [turler, setTurler] = useState<BirlikTur[]>(b?.birlik.seciliTurler ?? []);
   const [terhis, setTerhis] = useState(1);
-
-  // Sunucudan gelen gerçek seçim değişince yerel seçimi eşitle.
-  const seciliAnahtar = b ? b.birlik.seciliTurler.join(',') : '';
-  useEffect(() => {
-    if (!b) return;
-    setTurler(b.birlik.seciliTurler);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [seciliAnahtar]);
+  // Politika ayrıntısı: üzerine gelinen (ya da seçili) seçeneğin artı/eksileri gösterilir.
+  const [onizle, setOnizle] = useState<Record<string, string | null>>({});
 
   if (!durum.aktif || !b) return null;
   const dokum = durum.sonDokum;
@@ -196,87 +221,104 @@ export function BirlikPaneli({
     const isaret = isaretli && v > 0 ? '+' : v < 0 ? '−' : '';
     return dil === 'en' ? `${isaret}${Math.abs(v)}%` : `${isaret}%${Math.abs(v)}`;
   };
+  const sayi = (x: number) => (dil === 'en' ? String(x) : String(x).replace('.', ','));
+  const isaretliSayi = (x: number) => `${x > 0 ? '+' : x < 0 ? '−' : ''}${sayi(Math.abs(x))}`;
 
+  /** Üç seçenekli politika: seçici düğmeler + seçili/üzerine gelinen seçeneğin ✓ artı / ✗ eksi listesi. */
   const politika = <T extends string>(
+    anahtar: string,
     baslik: string,
     secili: T,
-    secenekler: { id: T; ad: D; ek?: string }[],
+    secenekler: { id: T; ad: D; arti: D[]; eksi: D[] }[],
     onSec: (id: T) => void
-  ) => (
-    <div className="isletme-fiyat-satir">
-      <span>{baslik}:</span>{' '}
-      {secenekler.map((s) => (
-        <button key={s.id} className={s.id === secili ? '' : 'ikincil'} disabled={yukleniyor || s.id === secili} onClick={() => onSec(s.id)} title={s.ek}>
-          {d(s.ad)}
-        </button>
-      ))}
+  ) => {
+    const gosterilen = secenekler.find((s) => s.id === (onizle[anahtar] ?? secili)) ?? secenekler[0];
+    return (
+      <div className="ordu-politika">
+        <div className="ordu-politika-baslik">{baslik}</div>
+        <div className="ordu-politika-secici" onMouseLeave={() => setOnizle({ ...onizle, [anahtar]: null })}>
+          {secenekler.map((s) => (
+            <button
+              key={s.id}
+              type="button"
+              className={s.id === secili ? 'ordu-politika-secili' : 'ikincil'}
+              disabled={yukleniyor || s.id === secili}
+              onClick={() => onSec(s.id)}
+              onMouseEnter={() => setOnizle({ ...onizle, [anahtar]: s.id })}
+              onFocus={() => setOnizle({ ...onizle, [anahtar]: s.id })}
+            >
+              {d(s.ad)}
+            </button>
+          ))}
+        </div>
+        <div className="ordu-politika-detay">
+          <ul className="ordu-arti" aria-label={t('artilar')}>
+            {gosterilen.arti.map((x, i) => (
+              <li key={i}>{d(x)}</li>
+            ))}
+          </ul>
+          <ul className="ordu-eksi" aria-label={t('eksiler')}>
+            {gosterilen.eksi.map((x, i) => (
+              <li key={i}>{d(x)}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    );
+  };
+
+  const seciliTurler = b.birlik.seciliTurler;
+  const birlikKilitli = b.birlik.kilitKalanYil > 0;
+  const limitDolu = seciliTurler.length >= b.birlik.limit;
+  const kilitli = b.kalite.kilitKalanYil > 0;
+  const kusatma = b.birlik.kusatma;
+
+  // ── Görevler (Ordu sayfasında, sağ sütun) ──
+  const gorevlerBlok = (
+    <div className="sayfa-blok blok-gorev-liste">
+      <h4>
+        {t('gorevBaslik')} ({b.gorevler.slot.kullanilan}/{b.gorevler.slot.toplam} {t('slot')})
+      </h4>
+      <div className="gorev-liste">
+        {b.gorevler.katalog.map((g) => {
+          const secili = b.gorevler.secili.includes(g.id);
+          const dolu = !secili && b.gorevler.secili.length >= b.gorevler.slot.toplam;
+          return (
+            <div key={g.id} className={`gorev-kart${secili ? ' gorev-kart-acik' : ''}${!g.kullanilabilir ? ' gorev-kart-kilitli' : ''}`} title={d(g.aciklama)}>
+              <div className="gorev-kart-ust">
+                <strong>
+                  {g.simge} {d(g.ad)}
+                </strong>
+                {!g.kullanilabilir ? (
+                  <span className="isletme-etiket">⚔️ {t('yalnizSavas')}</span>
+                ) : (
+                  <button
+                    className={secili ? '' : 'ikincil'}
+                    disabled={yukleniyor || (dolu && !secili)}
+                    onClick={() => onBirlikKarar({ gorevler: secili ? b.gorevler.secili.filter((x) => x !== g.id) : [...b.gorevler.secili, g.id] })}
+                  >
+                    {secili ? t('gorevKapat') : t('gorevAc')}
+                  </button>
+                )}
+              </div>
+              <small>
+                <span className="s-esik">{t('minEr')} {g.minGuc} {t('gucEsik')}</span> · <span className="s-gelir">{formatPara(g.erBasi)} {pb}{erBirim}</span>
+                {g.aktif ? <span className="s-gelir"> · {formatPara(g.gelir)} {pb}{g.ganimet > 0 ? ` + ${t('ganimet')} ${formatPara(g.ganimet)}` : ''}</span> : null}
+              </small>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 
-  const turSec = (id: BirlikTur) => {
-    if (turler.includes(id)) setTurler(turler.filter((x) => x !== id));
-    else setTurler([...turler, id]);
-  };
-  const birlikDegisti = turler.slice().sort().join() !== b.birlik.seciliTurler.slice().sort().join();
-  // Kilitliyken yalnız yeni tür eklenebilir (mevcutlar kapatılamaz).
-  const birlikGecerli = b.birlik.kilitKalanYil <= 0 || b.birlik.seciliTurler.every((x) => turler.includes(x));
-  const hedefKaliteler = (['dusuk', 'orta', 'yuksek'] as const).map((id) => ({ id, ad: b.kalite.adlar[id] }));
-  const kilitli = b.kalite.kilitKalanYil > 0;
-
-  const gorevlerBlok = (
-    <>
-          <h4>
-            {t('gorevBaslik')} ({b.gorevler.slot.kullanilan}/{b.gorevler.slot.toplam} {t('slot')})
-          </h4>
-          <div className="isletme-fiyat-not">{t('gorevNot')}</div>
-          <div className="isletme-hatlar">
-            {b.gorevler.katalog.map((g) => {
-              const secili = b.gorevler.secili.includes(g.id);
-              const dolu = !secili && b.gorevler.secili.length >= b.gorevler.slot.toplam;
-              return (
-                <div key={g.id} className={`isletme-hat${secili ? ' isletme-hat-acik' : ''}${!g.kullanilabilir ? ' isletme-hat-kilitli' : ''}`}>
-                  <div className="isletme-hat-baslik">
-                    <strong>
-                      {g.simge} {d(g.ad)}
-                    </strong>
-                    {!g.kullanilabilir ? (
-                      <span className="isletme-etiket">⚔️ {t('yalnizSavas')}</span>
-                    ) : (
-                      <button
-                        className={secili ? '' : 'ikincil'}
-                        disabled={yukleniyor || (dolu && !secili)}
-                        onClick={() => onBirlikKarar({ gorevler: secili ? b.gorevler.secili.filter((x) => x !== g.id) : [...b.gorevler.secili, g.id] })}
-                      >
-                        {secili ? t('gorevKapat') : t('gorevAc')}
-                      </button>
-                    )}
-                  </div>
-                  <div className="isletme-hat-artieksi">
-                    <span>{d(g.aciklama)}</span>
-                  </div>
-                  <div className="isletme-hat-satir">
-                    <span>
-                      {t('minEr')} {g.minGuc} {t('gucEsik')} · {t('kazanc')}: {formatPara(g.erBasi)} {pb}{erBirim}
-                    </span>
-                    {g.aktif && (
-                      <span>
-                        🪖 {g.erPayi} · {t('toplamKazanc')}: {formatPara(g.gelir)} {pb}
-                        {g.ganimet > 0 ? ` · ${t('ganimet')} ${formatPara(g.ganimet)}` : ''}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-    </>
-  );
-
-  return (
-    <section className="isletme-paneli birlik-paneli">
-      {(bolum === 'hepsi' || bolum === 'isletme') && (
-        <>
-          <h3>{t('baslik')}</h3>
+  // ── Ordu sayfası ──
+  const orduSayfasi = (
+    <div className="sayfa-izgara ordu-izgara">
+      <div className="sayfa-sutun ordu-kol">
+        <div className="sayfa-blok blok-durum">
+          {ustBlok}
+          <h4>{t('durumBaslik')}</h4>
           <div className="isletme-ozet">
             <span>
               ⚖️ {t('pay')}: <strong>{dil === 'en' ? `${formatMusteri(dil, b.pay)}%` : `%${formatMusteri(dil, b.pay)}`}</strong>
@@ -289,11 +331,6 @@ export function BirlikPaneli({
               📏 {t('limit')}: <strong>{b.limit.komuta}</strong>
               {b.limit.asim > 0 ? <em className="negatif"> (+{b.limit.asim} {t('fazla')})</em> : null}
             </span>
-            {b.yarali.sayi > 0 && (
-              <span>
-                🩹 {t('yarali')}: <strong>{b.yarali.sayi}</strong>
-              </span>
-            )}
             <span>
               💪 {t('guc')}: <strong>{b.guc.toplam}</strong>
             </span>
@@ -303,275 +340,330 @@ export function BirlikPaneli({
             <span>
               🎖️ {t('talim')}: <strong>{b.talim.seviye}</strong> ({yuzdeMetni(b.talim.gucYuzde)})
             </span>
+            {b.yarali.sayi > 0 && (
+              <span>
+                🩹 {t('yarali')}: <strong>{b.yarali.sayi}</strong>
+              </span>
+            )}
             {durum.otorite && (
               <span>
                 🏛️ {t('otorite')}: <strong>{kt(dil, durum.otorite)}</strong> · {t('iliski')} {durum.otoriteIliski}
               </span>
             )}
           </div>
-
           {b.rakipler.length > 0 && (
             <div className="isletme-imtiyazlar">
-              <strong>{t('rakipBaslik')}:</strong>{' '}
-              {b.rakipler.map((r) => `${r.ad} — ${t('rakipGuc')} ${r.guc}`).join(' · ')}
+              <strong>{t('rakipBaslik')}:</strong> {b.rakipler.map((r) => `${r.ad} — ${t('rakipGuc')} ${r.guc}`).join(' · ')}
             </div>
           )}
-
-          <h4>{t('gucBaslik')}</h4>
-          <div className="isletme-dokum">
-            <div>
-              {t('ham')}: <strong>{b.guc.ham}</strong>
-              <small>
-                {' '}
-                ({(['dusuk', 'orta', 'yuksek'] as const).map((k) => `${KALITE_SIMGE[k]} ${b.kalite.sayilar[k]}×${b.guc.kaliteCarpani[k]}`).join(' · ')})
-              </small>
-            </div>
-            <div>
-              {t('birlikCarpani')}: <strong>×{b.guc.saldiriCarpani} / ×{b.guc.savunmaCarpani}</strong>
-            </div>
-            {b.guc.bonuslar.map((x) => (
-              <div key={x.kod + x.taraf} className={x.yuzde >= 0 ? 'cemaat-arti' : 'cemaat-eksi'}>
-                {d(x.ad)}: <strong>{yuzdeMetni(x.yuzde)}</strong>
+        </div>
+        <div className="sayfa-sutun blok-yan1">
+          <div className="sayfa-blok blok-guc">
+            <h4>{t('gucBaslik')}</h4>
+            <div className="isletme-dokum">
+              <div>
+                {t('ham')}: <strong>{b.guc.ham}</strong>
+                <small>
+                  {' '}
+                  ({(['dusuk', 'orta', 'yuksek'] as const).filter((k) => b.kalite.sayilar[k] > 0).map((k) => `${KALITE_SIMGE[k]} ${b.kalite.sayilar[k]}×${b.guc.kaliteCarpani[k]}`).join(' · ')})
+                </small>
               </div>
-            ))}
-            <div className="isletme-dokum-net">
-              {t('toplamGuc')}: <strong>{b.guc.toplam}</strong> <small>(⚔️ {b.guc.saldiri} · 🛡️ {b.guc.savunma})</small>
-            </div>
-            <small>{t('gucNot')}</small>
-          </div>
-
-          {bolum === 'hepsi' && gorevlerBlok}
-
-          <h4>{t('politikaBaslik')}</h4>
-          {politika(
-            t('ganimetPayi'),
-            b.politikalar.ganimetPayi.secili,
-            b.politikalar.ganimetPayi.secenekler.map((s) => ({ id: s.id, ad: s.ad, ek: `%${Math.round(s.oran * 100)}` })),
-            (id) => onBirlikKarar({ ganimet_payi: id })
-          )}
-          {politika(
-            t('talimPol'),
-            b.talim.politika,
-            b.talim.politikalar.map((s) => ({ id: s.id, ad: s.ad, ek: `${s.delta > 0 ? '+' : ''}${s.delta}/${t('yilKisa')} · ${formatPara(s.masraf)} ${pb}` })),
-            (id) => onBirlikKarar({ talim: id })
-          )}
-          {politika(
-            t('tonPol'),
-            b.politikalar.ton.secili,
-            b.politikalar.ton.secenekler.map((s) => ({ id: s.id, ad: s.ad, ek: d(s.aciklama) })),
-            (id) => onBirlikKarar({ ton: id })
-          )}
-
-          <h4>{t('doktrinBaslik')}</h4>
-          {b.doktrin.secilen.length === 0 ? (
-            <p className="isletme-bos">{t('doktrinYok')}</p>
-          ) : (
-            <div className="isletme-yatirimlar">
-              {b.doktrin.secilen.map((o) => (
-                <div key={o.id} className="isletme-yatirim">
-                  <strong>
-                    {o.simge} {d(o.ad)} {o.acimasiz ? '⚡' : ''}
-                  </strong>
-                  <span>{dil === 'en' ? `Level ${o.seviye}` : `Seviye ${o.seviye}`}</span>
-                  <small>{doktrinEtkiMetni(o.etki, dil).join(' · ')}</small>
+              <div>
+                {t('birlikCarpani')}: <strong>×{b.guc.saldiriCarpani} / ×{b.guc.savunmaCarpani}</strong>
+              </div>
+              {b.guc.bonuslar.map((x) => (
+                <div key={x.kod + x.taraf} className={x.yuzde >= 0 ? 'cemaat-arti' : 'cemaat-eksi'}>
+                  {d(x.ad)}: <strong>{yuzdeMetni(x.yuzde)}</strong>
                 </div>
               ))}
+              <div className="isletme-dokum-net">
+                {t('toplamGuc')}: <strong>{b.guc.toplam}</strong> <small>(⚔️ {b.guc.saldiri} · 🛡️ {b.guc.savunma})</small>
+              </div>
+              <small>{t('gucNot')}</small>
             </div>
-          )}
+          </div>
+          <div className="sayfa-blok blok-doktrin">
+            <h4>{t('doktrinBaslik')}</h4>
+            {b.doktrin.secilen.length === 0 ? (
+              <p className="isletme-bos">{t('doktrinYok')}</p>
+            ) : (
+              <div className="isletme-yatirimlar">
+                {b.doktrin.secilen.map((o) => (
+                  <div key={o.id} className="isletme-yatirim">
+                    <strong>
+                      {o.simge} {d(o.ad)} {o.acimasiz ? '⚡' : ''}
+                    </strong>
+                    <span>{dil === 'en' ? `Level ${o.seviye}` : `Seviye ${o.seviye}`}</span>
+                    <small>{doktrinEtkiMetni(o.etki, dil).join(' · ')}</small>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
 
-          <h4>{t('savasBaslik')}</h4>
-          {!b.savas.aktif ? (
-            <p className="isletme-bos">{t('savasYok')}</p>
-          ) : (
-            <div className="isletme-ozet">
-              {b.savas.araziAd && (
-                <span>
-                  🏞️ {t('arazi')}: <strong>{d(b.savas.araziAd)}</strong>
-                </span>
-              )}
-              <span>
-                ⚔️ {t('kanat')}: <strong>{b.savas.kanatZafer} / {b.savas.kanatYenilgi}</strong>
-              </span>
-              {b.emir && (
-                <span title={d(b.emir.aciklama)}>
-                  {b.emir.simge} {t('emirBaslik')}: <strong>{d(b.emir.ad)}</strong>
-                </span>
-              )}
-              {b.kiralik.aktif && (
-                <span>
-                  🗡️ {t('kiralikVar')}: <strong>{b.kiralik.er}</strong>
-                </span>
-              )}
-              {onKiralik && b.kiralik.mumkun && (
-                <button className="ikincil" disabled={yukleniyor} onClick={onKiralik}>
-                  {t('kiralikTut')} · {formatPara(b.kiralik.ucret)} {pb}
-                </button>
-              )}
-            </div>
-          )}
-          {b.kale > 0 && (
-            <div className="isletme-ozet">
-              <span>
-                🏰 {t('kale')}: <strong>{b.kale}</strong>
-              </span>
-            </div>
-          )}
 
+      </div>
+      <div className="sayfa-sutun ordu-kol">
+
+        <div className="sayfa-blok blok-pol">
+          <h4>{t('politikaBaslik')}</h4>
+          {politika(
+            'ganimet',
+            t('ganimetPayi'),
+            b.politikalar.ganimetPayi.secili,
+            b.politikalar.ganimetPayi.secenekler,
+            (id) => onBirlikKarar({ ganimet_payi: id })
+          )}
+          {politika('talim', t('talimPol'), b.talim.politika, b.talim.politikalar, (id) => onBirlikKarar({ talim: id }))}
+          {politika('ton', t('tonPol'), b.politikalar.ton.secili, b.politikalar.ton.secenekler, (id) => onBirlikKarar({ ton: id }))}
+        </div>
+        <div className="sayfa-blok blok-butce">
           <h4>{t('dokumBaslik')}</h4>
           <div className="isletme-dokum">
-            <div>{d(b.hesap.soldAdi)}: <strong>+{formatPara(b.hesap.sold)}</strong></div>
-            <div>{t('gorevGeliri')}: <strong>+{formatPara(b.hesap.gorevGeliri)}</strong></div>
-            <div>{t('ganimetNet')}: <strong>+{formatPara(b.hesap.ganimetNet)}</strong></div>
-            {b.hesap.kaleGeliri > 0 && <div>{t('gKale')}: <strong>+{formatPara(b.hesap.kaleGeliri)}</strong></div>}
-            <div>{t('toplamGelir')}: <strong>+{formatPara(b.hesap.toplamGelir)}</strong></div>
-            <div>{t('gErMasrafi')}: <strong>−{formatPara(b.hesap.erMasrafi)}</strong></div>
-            <div>{t('gErzak')}: <strong>−{formatPara(b.hesap.erzak)}</strong></div>
-            {b.hesap.kiralikMasrafi > 0 && <div>{t('gKiralik')}: <strong>−{formatPara(b.hesap.kiralikMasrafi)}</strong></div>}
-            <div>{t('gKisla')}: <strong>−{formatPara(b.hesap.kislaBakim)}</strong></div>
-            <div>{t('gTechizat')}: <strong>−{formatPara(b.hesap.techizatBakim)}</strong></div>
-            {b.hesap.yaraliGideri > 0 && <div>{t('gYarali')}: <strong>−{formatPara(b.hesap.yaraliGideri)}</strong></div>}
-            {b.hesap.limitAsimGideri > 0 && <div>{t('gAsim')}: <strong>−{formatPara(b.hesap.limitAsimGideri)}</strong></div>}
-            {b.hesap.kusatmaBakim > 0 && <div>{t('gKusatma')}: <strong>−{formatPara(b.hesap.kusatmaBakim)}</strong></div>}
-            <div>{t('gTalim')}: <strong>−{formatPara(b.hesap.talimMasrafi)}</strong></div>
+            <div>{d(b.hesap.soldAdi)}: <strong className="s-gelir">+{formatPara(b.hesap.sold)}</strong></div>
+            <div>{t('gorevGeliri')}: <strong className="s-gelir">+{formatPara(b.hesap.gorevGeliri)}</strong></div>
+            <div>{t('ganimetNet')}: <strong className="s-gelir">+{formatPara(b.hesap.ganimetNet)}</strong></div>
+            {b.hesap.kaleGeliri > 0 && <div>{t('gKale')}: <strong className="s-gelir">+{formatPara(b.hesap.kaleGeliri)}</strong></div>}
+            <div>{t('toplamGelir')}: <strong className="s-gelir">+{formatPara(b.hesap.toplamGelir)}</strong></div>
+            <div>{t('gErMasrafi')}: <strong className="s-gider">−{formatPara(b.hesap.erMasrafi)}</strong></div>
+            <div>{t('gErzak')}: <strong className="s-gider">−{formatPara(b.hesap.erzak)}</strong></div>
+            {b.hesap.kiralikMasrafi > 0 && <div>{t('gKiralik')}: <strong className="s-gider">−{formatPara(b.hesap.kiralikMasrafi)}</strong></div>}
+            <div>{t('gKisla')}: <strong className="s-gider">−{formatPara(b.hesap.kislaBakim)}</strong></div>
+            <div>{t('gTechizat')}: <strong className="s-gider">−{formatPara(b.hesap.techizatBakim)}</strong></div>
+            {b.hesap.yaraliGideri > 0 && <div>{t('gYarali')}: <strong className="s-gider">−{formatPara(b.hesap.yaraliGideri)}</strong></div>}
+            {b.hesap.limitAsimGideri > 0 && <div>{t('gAsim')}: <strong className="s-gider">−{formatPara(b.hesap.limitAsimGideri)}</strong></div>}
+            {b.hesap.kusatmaBakim > 0 && <div>{t('gKusatma')}: <strong className="s-gider">−{formatPara(b.hesap.kusatmaBakim)}</strong></div>}
+            <div>{t('gTalim')}: <strong className="s-gider">−{formatPara(b.hesap.talimMasrafi)}</strong></div>
             <div className="isletme-dokum-net">
-              {t('beklenenNet')}: <strong>~{b.hesap.net >= 0 ? '+' : ''}{formatPara(b.hesap.net)} {pb}{t('yil')}</strong>
+              {t('beklenenNet')}: <strong className={b.hesap.net >= 0 ? 's-gelir' : 's-gider'}>~{b.hesap.net >= 0 ? '+' : ''}{formatPara(b.hesap.net)} {pb}{t('yil')}</strong>
             </div>
             <small>{t('ekipNot')}</small>
           </div>
-
           {dokum && dokum.birlik && (
             <div className="isletme-dokum">
               <div>
                 {t('sonDokum')} ({dokum.yil}): 🪖 {dokum.musteri} · {dokum.birlik.firar} {t('firar')} · {dokum.birlik.olen} {t('olen')} · {t('ganimetNet').split(' ')[0]} {formatPara(dokum.birlik.ganimetPara)}
               </div>
               {dokum.uyarilar.map((u, i) => {
-                const s = uyariMetni(u);
-                return s ? <div key={i}>{s}</div> : null;
+                const sm = uyariMetni(u);
+                return sm ? <div key={i}><RenkliEtki metin={sm} /></div> : null;
               })}
             </div>
           )}
+        </div>
 
-          {pazar && pazar.aktif && <PiyasaHaberleri pazar={pazar} sayilarGoster={false} />}
-        </>
-      )}
-
-      {bolum === 'gorevler' && gorevlerBlok}
-
-      {(bolum === 'hepsi' || bolum === 'techizat') && (
-        <>
-          <h4>{t('donatimBaslik')}: {d(b.kalite.techizat)}</h4>
-          <div className="isletme-fiyat-not">{t('donatimNot')}</div>
-          <div className="isletme-ozet">
-            {(['dusuk', 'orta', 'yuksek'] as const).map((k) => (
-              <span key={k}>
-                {KALITE_SIMGE[k]} {d(b.kalite.adlar[k])}: <strong>{b.kalite.sayilar[k]}</strong>
-              </span>
-            ))}
-          </div>
-          {politika(
-            t('hedefKalite'),
-            b.kalite.hedef,
-            hedefKaliteler.map((s) => ({ id: s.id, ad: s.ad })),
-            (id) => onBirlikKarar({ hedef_kalite: id })
-          )}
-          <div className="isletme-fiyat-satir">
-            {(['orta', 'yuksek'] as const).map((k) => (
-              <span key={k}>
-                {d(b.kalite.adlar[k])}:{' '}
-                {[50, 100].map((y) => (
-                  <button key={y} className="ikincil" disabled={yukleniyor || kilitli} onClick={() => onKaliteYukselt(k, y)} >
-                    {t('yukselt')} %{y}
-                  </button>
-                ))}{' '}
-              </span>
-            ))}
-            {kilitli && (
-              <small>
-                {t('kilit')}
-                {b.kalite.kilitKalanYil} {t('yilKisa')}
-              </small>
-            )}
-          </div>
-
-          <h4>{t('birlikBaslik')}</h4>
-          <div className="isletme-fiyat-not">{t('birlikNot')}</div>
-          <div className="isletme-yatirimlar">
-            {b.birlik.turler.map((tur) => {
-              const secili = turler.includes(tur.id);
-              return (
-                <div key={tur.id} className="isletme-yatirim">
-                  <strong>
-                    {tur.simge} {d(tur.ad)}
-                  </strong>
+      </div>
+      <div className="sayfa-sutun ordu-kol">
+        <div className="sayfa-sutun blok-gorev">
+          {gorevlerBlok}
+          <div className="sayfa-blok blok-savas">
+            <h4>{t('savasBaslik')}</h4>
+            {!b.savas.aktif ? (
+              <p className="isletme-bos">{t('savasYok')}</p>
+            ) : (
+              <div className="isletme-ozet">
+                {b.savas.araziAd && (
                   <span>
-                    ⚔️ ×{tur.saldiri} · 🛡️ ×{tur.savunma} · {formatPara(tur.ucret)} {pb}{erBirim} · {t('maliyetArti')} +%{Math.round(tur.bakim * 100)}
+                    🏞️ {t('arazi')}: <strong>{d(b.savas.araziAd)}</strong>
                   </span>
-                  <small>
-                    ＋ {d(tur.arti)} · － {d(tur.eksi)}
-                  </small>
-                  <button className={secili ? '' : 'ikincil'} disabled={yukleniyor} onClick={() => turSec(tur.id)}>
-                    {secili ? '✓' : '+'}
+                )}
+                <span>
+                  ⚔️ {t('kanat')}: <strong>{b.savas.kanatZafer} / {b.savas.kanatYenilgi}</strong>
+                </span>
+                {b.emir && (
+                  <span title={d(b.emir.aciklama)}>
+                    {b.emir.simge} {t('emirBaslik')}: <strong>{d(b.emir.ad)}</strong>
+                  </span>
+                )}
+                {b.kiralik.aktif && (
+                  <span>
+                    🗡️ {t('kiralikVar')}: <strong>{b.kiralik.er}</strong>
+                  </span>
+                )}
+                {onKiralik && b.kiralik.mumkun && (
+                  <button className="ikincil" disabled={yukleniyor} onClick={onKiralik}>
+                    {t('kiralikTut')} · {formatPara(b.kiralik.ucret)} {pb}
                   </button>
-                </div>
-              );
-            })}
-          </div>
-          <div className="isletme-fiyat-satir">
-            <button disabled={yukleniyor || !birlikDegisti || !birlikGecerli} onClick={() => onBirlikSec(turler)}>
-              {t('uygula')}
-            </button>
-            {b.birlik.kilitKalanYil > 0 && (
-              <small>
-                {t('kilit')}
-                {b.birlik.kilitKalanYil} {t('yilKisa')}
-              </small>
+                )}
+              </div>
             )}
-            <small>
-              {' '}
-              {t('toplamPay')}: %{Math.round(b.birlik.toplamPay * 100)}
-            </small>
+            {b.kale > 0 && (
+              <div className="isletme-ozet">
+                <span>
+                  🏰 {t('kale')}: <strong>{b.kale}</strong>
+                </span>
+              </div>
+            )}
+            {pazar && pazar.aktif && <PiyasaHaberleri pazar={pazar} sayilarGoster={false} />}
           </div>
-          <h4>
-            {t('kusatma')}: {d(b.birlik.kusatma.ad)}
-          </h4>
-          <div className="isletme-fiyat-not">{t('kusatmaNot')}</div>
-          <div className="isletme-fiyat-satir">
-            {[0, 1, 2].map((s) => (
-              <button
-                key={s}
-                className={s === b.birlik.kusatma.seviye ? '' : 'ikincil'}
-                disabled={yukleniyor || s === b.birlik.kusatma.seviye}
-                onClick={() => onKusatma(s)}
-                title={s > 0 ? `${formatPara(b.birlik.kusatma.fiyatlar[s] ?? 0)} ${pb} · +%${Math.round((b.birlik.kusatma.bonuslar[s] ?? 0) * 100)}` : ''}
-              >
-                {s === 0 ? (dil === 'en' ? 'None' : 'Yok') : `${s} · +%${Math.round((b.birlik.kusatma.bonuslar[s] ?? 0) * 100)} · ${formatPara(b.birlik.kusatma.fiyatlar[s] ?? 0)} ${pb}`}
-              </button>
-            ))}
-          </div>
+        </div>
 
-          <h4>{t('terhisBaslik')}</h4>
-          <div className="isletme-fiyat-not">{t('terhisNot')}</div>
-          <div className="isletme-fiyat-satir">
-            <input type="number" min={1} max={Math.max(1, b.er - 6)} value={terhis} onChange={(e) => setTerhis(Math.max(1, Math.floor(Number(e.target.value) || 1)))} className="isletme-sayi-giris" />{' '}
-            <button className="ikincil" disabled={yukleniyor || b.savas.aktif || b.er - 6 < 1} onClick={() => onTerhis(terhis)}>
-              {t('terhisEt')}
-            </button>
-          </div>
+      </div>
+    </div>
+  );
 
-        </>
+  // ── Yatırım sayfası: Teçhizat · Özel birlikler + Kuşatma · Yatırımlar + Kredi ──
+  const techizatBlok = (
+    <div className="sayfa-blok blok-techizat">
+      <h4>{t('donatimBaslik')}: {d(b.kalite.techizat)}</h4>
+      <div className={`techizat-uyari${kilitli ? ' techizat-uyari-kilit' : ''}`}>
+        {kilitli ? `${t('techKilitli')} ${b.kalite.kilitKalanYil} ${t('yilSonra')}` : t('techUyari')}
+      </div>
+      <div className="techizat-kartlar">
+        {b.kalite.seviyeler.map((sv) => {
+          const secili = b.kalite.hedef === sv.id;
+          return (
+            <div key={sv.id} className={`techizat-kart${secili ? ' techizat-kart-secili' : ''}`}>
+              <div className="techizat-kart-ust">
+                <strong>
+                  {KALITE_SIMGE[sv.id]} {d(b.kalite.adlar[sv.id])}
+                </strong>
+                <button type="button" className={secili ? '' : 'ikincil'} disabled={yukleniyor || kilitli || secili} onClick={() => onTechizat(sv.id)}>
+                  {secili ? t('techSecili') : t('techSec')}
+                </button>
+              </div>
+              <div className="techizat-kart-etki">
+                <span>
+                  {t('techGuc')} <b>×{sayi(sv.carpan)}</b>
+                </span>
+                <span>
+                  {t('moral')} <b className={sv.moral > 0 ? 's-arti' : sv.moral < 0 ? 's-eksi' : ''}>{isaretliSayi(sv.moral)}{dil === 'en' ? '/yr' : '/yıl'}</b>
+                </span>
+                <span>
+                  {t('techTalim')} <b>×{sayi(sv.talim)}</b>
+                </span>
+              </div>
+              <div className="techizat-kart-masraf">
+                {t('techBakim')}: {formatPara(sv.bakim)} {pb}
+                {erBirim} · <b>{formatPara(sv.bakimToplam)} {pb}{t('yil')}</b>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <div className="isletme-fiyat-not">{t('techNot')}</div>
+    </div>
+  );
+
+  const birlikBlok = (
+    <div className="sayfa-blok blok-birlik">
+      <h4>{t('birlikBaslik')}</h4>
+      <div className="birlik-hak">
+        {t('birlikHak')}: <strong className="s-esik">{seciliTurler.length}/{b.birlik.limit}</strong>
+        {birlikKilitli && <small> · 🔒 {b.birlik.kilitKalanYil} {t('yilSonra')}</small>}
+      </div>
+      <div className="birlik-kartlar">
+        {b.birlik.turler.map((tur) => {
+          const acik = seciliTurler.includes(tur.id);
+          return (
+            <div key={tur.id} className={`birlik-kart${acik ? ' birlik-kart-acik' : ''}`}>
+              <div className="birlik-kart-ust">
+                <strong>
+                  {tur.simge} {d(tur.ad)}
+                </strong>
+                {acik ? (
+                  <button type="button" className="ikincil" disabled={yukleniyor || birlikKilitli} title={birlikKilitli ? t('kilitTerhis') : ''} onClick={() => onBirlikSec(seciliTurler.filter((x) => x !== tur.id))}>
+                    {t('terhisBirlik')}
+                  </button>
+                ) : (
+                  <button type="button" disabled={yukleniyor || limitDolu} title={limitDolu ? `${t('limitDolu')} ${b.birlik.limit} ${t('limitDoluSon')}` : ''} onClick={() => onBirlikSec([...seciliTurler, tur.id])}>
+                    {t('ekle')}
+                  </button>
+                )}
+              </div>
+              <div className="birlik-kart-etki">
+                ⚔️ ×{tur.saldiri} · 🛡️ ×{tur.savunma} · <span className="s-gider">{formatPara(tur.ucret)} {pb}{erBirim}</span> · {t('maliyetArti')} <span className="s-gider">+%{Math.round(tur.bakim * 100)}</span>
+              </div>
+              <small>
+                ＋ {d(tur.arti)} · － {d(tur.eksi)}
+              </small>
+            </div>
+          );
+        })}
+        <div className={`birlik-kart birlik-kart-kusatma${kusatma.seviye > 0 ? ' birlik-kart-acik' : ''}`}>
+          <div className="birlik-kart-ust">
+            <strong>
+              🏰 {d(kusatma.ad)}
+            </strong>
+            <span className="birlik-kusatma-dugmeler">
+              {kusatma.seviye < 2 && (
+                <button type="button" disabled={yukleniyor} onClick={() => onKusatma(kusatma.seviye + 1)} title={`${formatPara(kusatma.fiyatlar[kusatma.seviye + 1] ?? 0)} ${pb}`}>
+                  {kusatma.seviye === 0 ? t('kur') : t('yukseltKusatma')}
+                </button>
+              )}
+              {kusatma.seviye > 0 && (
+                <button type="button" className="ikincil" disabled={yukleniyor} onClick={() => onKusatma(0)}>
+                  {t('sok')}
+                </button>
+              )}
+            </span>
+          </div>
+          <div className="birlik-kart-etki">
+            {t('seviye')} {kusatma.seviye}/2 · +%{Math.round((kusatma.bonuslar[kusatma.seviye] ?? 0) * 100)}
+            {kusatma.seviye < 2 ? <> → +%{Math.round((kusatma.bonuslar[kusatma.seviye + 1] ?? 0) * 100)} (<span className="s-gider">{formatPara(kusatma.fiyatlar[kusatma.seviye + 1] ?? 0)} {pb}</span>)</> : ''}
+          </div>
+          <small>{t('kusatmaOzel')}</small>
+        </div>
+      </div>
+      <div className="isletme-fiyat-not">{t('birlikNotYeni')}</div>
+    </div>
+  );
+
+  const terhisBlok = (
+    <div className="sayfa-blok blok-terhis">
+      <h4>{t('terhisBaslik')}</h4>
+      <div className="isletme-fiyat-not terhis-not" title={t('terhisNot')}>{t('terhisNot')}</div>
+      <div className="isletme-fiyat-satir">
+        <input type="number" min={1} max={Math.max(1, b.er - 6)} value={terhis} onChange={(e) => setTerhis(Math.max(1, Math.floor(Number(e.target.value) || 1)))} className="isletme-sayi-giris" />{' '}
+        <button className="ikincil" disabled={yukleniyor || b.savas.aktif || b.er - 6 < 1} onClick={() => onTerhis(terhis)}>
+          {t('terhisEt')}
+        </button>
+      </div>
+    </div>
+  );
+
+  const yatirimSayfasi = (
+    <div className="sayfa-izgara asker-yatirim-izgara">
+      <div className="sayfa-sutun sutun-techizat">
+        {techizatBlok}
+        {terhisBlok}
+        {yanKart}
+      </div>
+      <div className="sayfa-sutun sutun-birlik">{birlikBlok}</div>
+      <div className="sayfa-sutun sutun-yatirim">
+        <IsletmeOrtak
+          goster="yatirim"
+          durum={durum}
+          yukleniyor={yukleniyor}
+          sadakatAdi={{ tr: 'Sadakat', en: 'Loyalty' }}
+          riskliAciklama={{ tr: 'Sadakati düşük: sırlarını sızdırabilir, erleri ayartabilir, işi bırakabilir', en: 'Low loyalty: may leak secrets, lure men away or quit' }}
+          onYatirim={onYatirim}
+          onYatirimDusur={onYatirimDusur}
+          onCalisanAl={onCalisanAl}
+          onEkipCikar={onEkipCikar}
+        />
+      </div>
+    </div>
+  );
+
+  return (
+    <section className="isletme-paneli birlik-paneli">
+      {bolum === 'isletme' && orduSayfasi}
+      {bolum === 'yatirim' && yatirimSayfasi}
+      {bolum === 'calisan' && (
+        <IsletmeOrtak
+          goster="calisan"
+          durum={durum}
+          yukleniyor={yukleniyor}
+          sadakatAdi={{ tr: 'Sadakat', en: 'Loyalty' }}
+          riskliAciklama={{ tr: 'Sadakati düşük: sırlarını sızdırabilir, erleri ayartabilir, işi bırakabilir', en: 'Low loyalty: may leak secrets, lure men away or quit' }}
+          onYatirim={onYatirim}
+          onYatirimDusur={onYatirimDusur}
+          onCalisanAl={onCalisanAl}
+          onEkipCikar={onEkipCikar}
+        />
       )}
-
-      <IsletmeOrtak
-        goster={bolum === 'isletme' || bolum === 'gorevler' || bolum === 'techizat' ? 'yok' : bolum}
-        durum={durum}
-        yukleniyor={yukleniyor}
-        sadakatAdi={{ tr: 'Sadakat', en: 'Loyalty' }}
-        riskliAciklama={{ tr: 'Sadakati düşük: sırlarını sızdırabilir, erleri ayartabilir, işi bırakabilir', en: 'Low loyalty: may leak secrets, lure men away or quit' }}
-        onYatirim={onYatirim}
-        onYatirimDusur={onYatirimDusur}
-        onCalisanAl={onCalisanAl}
-        onEkipCikar={onEkipCikar}
-      />
     </section>
   );
 }

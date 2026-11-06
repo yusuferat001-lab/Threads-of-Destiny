@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import type { CemaatKararGirdisi, CemaatPolitikaGorunumu, IsletmeGorunumu, IsletmeKararGirdisi, IsletmeUyari, PazarDurumu } from '../types';
 import { useDil } from '../DilContext';
+import { RenkliEtki } from './Renkli';
 import { kt } from '../katalog';
 import { PiyasaHaberleri } from './PiyasaHaberleri';
 import { IsletmeOrtak } from './IsletmeOrtak';
@@ -17,6 +18,8 @@ interface Props {
   onEkipCikar: (ekipId: string) => void;
   /** Telefon ana ekranı sayfaları: yalnız bir bölümü çiz (varsayılan hepsi). */
   bolum?: 'hepsi' | 'isletme' | 'yatirim' | 'calisan';
+  /** Cemaat sayfasında "durum" hücresinin üstüne konan blok (rütbe kademesi + ilerleme). */
+  ustBlok?: ReactNode;
 }
 
 type D = { tr: string; en: string };
@@ -148,7 +151,7 @@ const SALDIRI_ENGELLENDI: Record<string, D> = {
 
 let sonGosterilenYil = -1;
 
-export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onYatirimDusur, onCalisanAl, onEkipCikar, bolum = 'hepsi' }: Props) {
+export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onYatirimDusur, onCalisanAl, onEkipCikar, bolum = 'hepsi', ustBlok }: Props) {
   const { dil } = useDil();
   const t = (k: keyof typeof M) => M[k][dil];
   const d = (m: D) => m[dil];
@@ -240,215 +243,278 @@ export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onY
     <section className="isletme-paneli cemaat-paneli">
       {(bolum === 'hepsi' || bolum === 'isletme') && (
         <>
-      <h3>{t('baslik')}</h3>
-
-      <div className={`cemaat-donem cemaat-donem-${c.donem.kaynak}`}>
-        <strong>
-          {t('donemBaslik')}: {donemAdi}
-        </strong>
-        <span>
-          {t('pazarBuyume')} {yuzdeMetni(c.donem.pazarBuyumeYuzde)}
-          {' · '}
-          {t('gelme')} %{c.gelmeMin}–{c.gelmeMax} ({d(GELME_KAYNAK[c.gelmeKaynagi] ?? GELME_KAYNAK.normal)})
-        </span>
-        {donemSatiri && <span>{donemSatiri}</span>}
-        {c.donem.yuzdeler.yardim !== 0 && <span>{dil === 'en' ? 'aid costs' : 'yardım maliyeti'} {yuzdeMetni(c.donem.yuzdeler.yardim)}</span>}
-      </div>
-
-      <div className="isletme-ozet">
-        <span>
-          ⚖️ {t('pay')}: <strong>{dil === 'en' ? `${formatMusteri(dil, durum.pazarPayi)}%` : `%${formatMusteri(dil, durum.pazarPayi)}`}</strong>
-        </span>
-        <span>
-          👥 {t('inanan')}: <strong>{formatMusteri(dil, c.inanan)}</strong>
-          {dokum && dokum.musteriDegisim !== 0 ? <em className={isaretSinifi(dokum.musteriDegisim)}> ({formatMusteri(dil, dokum.musteriDegisim, true)})</em> : null}
-        </span>
-        <span>
-          🌐 {t('pazar')}: <strong>{durum.pazarMusteri} {t('kisi')}</strong>
-        </span>
-        <span>
-          ⛪ {t('bina')}: <strong>{c.kapasite}</strong> {t('kapasite')} · {t('gelme')} {t('gelenTahmin')}
-          <strong>{formatMusteri(dil, c.gelenTahmin)}</strong>
-        </span>
-        <span>
-          🧾 {t('vergi')}: <strong>%{Math.round(durum.vergi.oran * 1000) / 10}</strong>
-        </span>
-        {durum.otorite && (
+      <div className="sayfa-izgara cemaat-izgara">
+      <div className="sayfa-sutun cemaat-kol">
+        <div className="sayfa-blok blok-durum">
+        {ustBlok}
+        <div className={`cemaat-donem cemaat-donem-${c.donem.kaynak}`}>
+          <strong>
+            {t('donemBaslik')}: {donemAdi}
+          </strong>
           <span>
-            🏛️ {t('otorite')}: <strong>{kt(dil, durum.otorite)}</strong> · {t('iliski')} {durum.otoriteIliski}
+            {t('pazarBuyume')} {yuzdeMetni(c.donem.pazarBuyumeYuzde)}
+            {' · '}
+            {t('gelme')} %{c.gelmeMin}–{c.gelmeMax} ({d(GELME_KAYNAK[c.gelmeKaynagi] ?? GELME_KAYNAK.normal)})
           </span>
-        )}
-      </div>
-      {c.tasmaVar && <div className="cemaat-uyari">{t('tasma')}</div>}
+          {donemSatiri && <span>{donemSatiri}</span>}
+          {c.donem.yuzdeler.yardim !== 0 && <span>{dil === 'en' ? 'aid costs' : 'yardım maliyeti'} {yuzdeMetni(c.donem.yuzdeler.yardim)}</span>}
+        </div>
 
-      {durum.imtiyazlar.length > 0 && (
-        <div className="isletme-imtiyazlar">
-          <strong>{t('imtiyazlar')}:</strong>{' '}
-          {durum.imtiyazlar.map((i) => `${IMTIYAZ_ADLARI[i.id] ? d(IMTIYAZ_ADLARI[i.id]) : i.id} (${i.kalanYil} ${t('yilKisa')})`).join(' · ')}
-        </div>
-      )}
-
-      <h4 className="isletme-butce-baslik">{dil === 'en' ? '📒 Your budget' : '📒 Bütçen'}</h4>
-      <div className="isletme-dokum">
-        <div>
-          {t('bagisKalemi')} ({formatMusteri(dil, c.bagisYapan)} {t('bagisYapan')} %{c.bagisOrani}): <strong>+{formatPara(c.bagis)}</strong>
-        </div>
-        <div>
-          {t('faaliyetKalemi')}: <strong>+{formatPara(c.faaliyetGelir)}</strong>
-        </div>
-        <div>
-          {t('toplamGelir')}: <strong>+{formatPara(c.toplamGelir)}</strong>
-        </div>
-        <div>{t('gFaaliyet')}: <strong>−{formatPara(c.giderler.faaliyet)}</strong></div>
-        <div>{t('gAyin')}: <strong>−{formatPara(c.giderler.ayin)}</strong></div>
-        <div>{t('gBina')}: <strong>−{formatPara(c.giderler.bina)}</strong></div>
-        <div>{t('gYardim')}: <strong>−{formatPara(c.giderler.yardim)}</strong></div>
-        <div>{t('gAidat')}: <strong>−{formatPara(c.giderler.aidat)}</strong></div>
-        <div>{t('gVergi')}: <strong>−{formatPara(c.giderler.vergi)}</strong></div>
-        {durum.butce.maas > 0 && (
-          <div>{dil === 'en' ? 'Staff wages' : 'Çalışan maaşları'}: <strong>−{formatPara(durum.butce.maas)}</strong></div>
-        )}
-        <div className="isletme-dokum-net">
-          {t('beklenenNet')}: <strong>~{durum.butce.net >= 0 ? '+' : ''}{formatPara(durum.butce.net)} {pb}{t('yil')}</strong>
-        </div>
-        <div>{dil === 'en' ? 'Living' : 'Yaşam'}: <strong>−{formatPara(durum.butce.yasam)}</strong></div>
-        <div>{dil === 'en' ? 'Rent' : 'Kira'}: <strong>−{formatPara(durum.butce.kira)}</strong></div>
-        {durum.butce.evcilHayvan > 0 && (
-          <div>{dil === 'en' ? 'Pets' : 'Evcil hayvan'}: <strong>−{formatPara(durum.butce.evcilHayvan)}</strong></div>
-        )}
-        {durum.butce.krediTaksit > 0 && (
-          <div>{dil === 'en' ? 'Loan instalment' : 'Kredi taksidi'}: <strong>−{formatPara(durum.butce.krediTaksit)}</strong></div>
-        )}
-        <div className="isletme-dokum-net">
-          {dil === 'en' ? 'Left in your pocket' : 'Cebine kalan'}: <strong>{durum.butce.cebineKalan >= 0 ? '+' : ''}{formatPara(durum.butce.cebineKalan)} {pb}</strong>
-        </div>
-      </div>
-
-      <h4>
-        {t('ahlakBaslik')}: {c.ahlak.deger}
-      </h4>
-      <div className="cemaat-bar cemaat-ahlak-bar" aria-label={t('ahlakBaslik')}>
-        <div className="cemaat-bar-dolgu" style={{ width: `${c.ahlak.deger}%` }} />
-        {[25, 50, 75].map((x) => (
-          <i key={x} className="cemaat-bar-cizgi" style={{ left: `${x}%` }} />
-        ))}
-      </div>
-      <div className="cemaat-bantlar">
-        {c.ahlak.bantlar.map((b, i) => (
-          <span key={i} className={`cemaat-bant${i === c.ahlak.bant ? ' cemaat-bant-aktif' : ''}`}>
-            {b.min}–{b.max}: <strong>{yuzdeMetni(Math.round(b.inanan * 1000) / 10)}</strong>
+        <div className="isletme-ozet">
+          <span>
+            ⚖️ {t('pay')}: <strong>{dil === 'en' ? `${formatMusteri(dil, durum.pazarPayi)}%` : `%${formatMusteri(dil, durum.pazarPayi)}`}</strong>
           </span>
-        ))}
-      </div>
-      <div className="isletme-fiyat-not">{t('ahlakNot')}</div>
+          <span>
+            👥 {t('inanan')}: <strong>{formatMusteri(dil, c.inanan)}</strong>
+            {dokum && dokum.musteriDegisim !== 0 ? <em className={isaretSinifi(dokum.musteriDegisim)}> ({formatMusteri(dil, dokum.musteriDegisim, true)})</em> : null}
+          </span>
+          <span>
+            🌐 {t('pazar')}: <strong>{durum.pazarMusteri} {t('kisi')}</strong>
+          </span>
+          <span>
+            ⛪ {t('bina')}: <strong>{c.kapasite}</strong> {t('kapasite')} · {t('gelme')} {t('gelenTahmin')}
+            <strong>{formatMusteri(dil, c.gelenTahmin)}</strong>
+          </span>
+          <span>
+            🧾 {t('vergi')}: <strong>%{Math.round(durum.vergi.oran * 1000) / 10}</strong>
+          </span>
+          {durum.otorite && (
+            <span>
+              🏛️ {t('otorite')}: <strong>{kt(dil, durum.otorite)}</strong> · {t('iliski')} {durum.otoriteIliski}
+            </span>
+          )}
+        </div>
+        {c.tasmaVar && <div className="cemaat-uyari">{t('tasma')}</div>}
 
-      <h4>
-        {t('fanatik')}: {c.fanatiklik} ({c.fanatiklikDegisim >= 0 ? '+' : ''}
-        {c.fanatiklikDegisim}
-        {t('yil')})
-      </h4>
-      <div className="cemaat-bar">
-        <div className="cemaat-bar-dolgu" style={{ width: `${c.fanatiklik}%`, background: fanatikRenk }} />
-        <i className="cemaat-bar-cizgi" style={{ left: '40%' }} />
-      </div>
-      <div className="isletme-fiyat-not">
-        {t('fanatikNot')}
-        <br />
-        {t('bagisCarpani')} {yuzdeMetni(c.fanatikEtkisi.bagisCarpani)} · {t('kacis')} −%{c.fanatikEtkisi.yillikKacis} · {t('otoriteKaybi')} −{c.fanatikEtkisi.yillikOtorite} · {t('asiriRisk')} %{c.fanatikEtkisi.asiriRisk}
-      </div>
-
-      <h4>{t('politikalar')}</h4>
-      {politika(t('pBagis'), 'bagis', c.politikalar.bagis)}
-      {politika(t('pKitle'), 'kitle', c.politikalar.kitle)}
-      {politika(t('pYardim'), 'yardim', c.politikalar.yardim)}
-      {politika(t('pTon'), 'ton', c.politikalar.ton)}
-
-      <h4>
-        {t('faaliyetler')} ({t('slot')} {c.faaliyetSlot.kullanilan}/{c.faaliyetSlot.toplam})
-      </h4>
-      <div className="isletme-fiyat-not">{t('faaliyetNot')}</div>
-      <div className="isletme-hatlar">
-        {c.faaliyetler.map((f) => (
-          <div key={f.id} className={`isletme-hat${f.acik ? ' isletme-hat-acik' : ''}${f.kilitli ? ' isletme-hat-kilitli' : ''}`}>
-            <div className="isletme-hat-baslik">
-              <strong>
-                {f.simge} {d(f.ad)}
-              </strong>
-              {f.kilitli ? (
-                <span className="isletme-etiket">
-                  🔒 {t('rutbeGerek')} {f.minRutbe}
-                </span>
-              ) : (
-                <button className={f.acik ? '' : 'ikincil'} disabled={yukleniyor} onClick={() => onKarar([{ id: f.id, acik: !f.acik }])}>
-                  {f.acik ? t('acik') : t('kapali')}
-                </button>
-              )}
-            </div>
-            <div className="isletme-hat-artieksi">
-              <span>{d(f.aciklama)}</span>
-            </div>
-            <div className="isletme-hat-satir">
-              <span>
-                {t('gelirMasraf')}:{' '}
-                <strong>
-                  {formatPara(f.gelir)} / {formatPara(f.masraf)}
-                </strong>
-              </span>
-              {f.dunyaYuzde !== 0 && (
-                <span>
-                  🌍 {t('dunya')}: {yuzdeMetni(f.dunyaYuzde)}
-                </span>
-              )}
-            </div>
+        {durum.imtiyazlar.length > 0 && (
+          <div className="isletme-imtiyazlar">
+            <strong>{t('imtiyazlar')}:</strong>{' '}
+            {durum.imtiyazlar.map((i) => `${IMTIYAZ_ADLARI[i.id] ? d(IMTIYAZ_ADLARI[i.id]) : i.id} (${i.kalanYil} ${t('yilKisa')})`).join(' · ')}
           </div>
-        ))}
-      </div>
+        )}
 
-      <h4>{t('ogretiler')}</h4>
-      {c.ogretiler.secilen.length === 0 ? (
-        <p className="isletme-bos">{t('ogretiYok')}</p>
-      ) : (
-        <div className="isletme-yatirimlar">
-          {c.ogretiler.secilen.map((o) => (
-            <div key={o.id} className="isletme-yatirim" title={d(o.aciklama)}>
-              <strong>
-                {o.simge} {d(o.ad)} {o.fanatik ? '⚡' : ''}
-              </strong>
-              <span>{dil === 'en' ? `Level ${o.seviye}` : `Seviye ${o.seviye}`}</span>
-              <small>{d(o.aciklama)}</small>
-            </div>
+        </div>
+        <div className="sayfa-blok blok-pol">
+        <h4>{t('politikalar')}</h4>
+        {politika(t('pBagis'), 'bagis', c.politikalar.bagis)}
+        {politika(t('pKitle'), 'kitle', c.politikalar.kitle)}
+        {politika(t('pYardim'), 'yardim', c.politikalar.yardim)}
+        {politika(t('pTon'), 'ton', c.politikalar.ton)}
+
+        </div>
+        <div className="sayfa-blok blok-ahlak">
+        <h4>
+          {t('ahlakBaslik')}: {c.ahlak.deger}
+        </h4>
+        <div className="cemaat-bar cemaat-ahlak-bar" aria-label={t('ahlakBaslik')}>
+          <div className="cemaat-bar-dolgu" style={{ width: `${c.ahlak.deger}%` }} />
+          {[25, 50, 75].map((x) => (
+            <i key={x} className="cemaat-bar-cizgi" style={{ left: `${x}%` }} />
           ))}
         </div>
-      )}
-
-      <h4>
-        {t('inananDegisim')}: {yuzdeMetni(c.inananToplam)}
-        {t('yil')}
-      </h4>
-      <div className="cemaat-kalemler">
-        {c.inananKalemleri
-          .filter((k) => k.deger !== 0)
-          .map((k) => (
-            <span key={k.kod} className={k.deger > 0 ? 'cemaat-arti' : 'cemaat-eksi'}>
-              {d(INANAN_KALEMLERI[k.kod] ?? { tr: k.kod, en: k.kod })} {yuzdeMetni(k.deger)}
+        <div className="cemaat-bantlar">
+          {c.ahlak.bantlar.map((b, i) => (
+            <span key={i} className={`cemaat-bant${i === c.ahlak.bant ? ' cemaat-bant-aktif' : ''}`}>
+              {b.min}–{b.max}: <strong>{yuzdeMetni(Math.round(b.inanan * 1000) / 10)}</strong>
             </span>
           ))}
-      </div>
-      <div className="isletme-fiyat-not">
-        {c.okul.kademe > 0 && (
-          <>
-            🏫 {t('okul')}: {t('mezun')} %{c.okul.mezunSansi}.{' '}
-          </>
-        )}
-        {c.asevi.kademe > 0 && (
-          <>
-            🍲 {t('asevi')}: {t('yardimCarpani')} ×{c.asevi.carpan}.
-          </>
-        )}
-      </div>
+        </div>
+        <div className="isletme-fiyat-not">{t('ahlakNot')}</div>
 
-      {pazar && pazar.aktif && <PiyasaHaberleri pazar={pazar} sayilarGoster />}
+        <h4>
+          {t('fanatik')}: {c.fanatiklik} ({c.fanatiklikDegisim >= 0 ? '+' : ''}
+          {c.fanatiklikDegisim}
+          {t('yil')})
+        </h4>
+        <div className="cemaat-bar">
+          <div className="cemaat-bar-dolgu" style={{ width: `${c.fanatiklik}%`, background: fanatikRenk }} />
+          <i className="cemaat-bar-cizgi" style={{ left: '40%' }} />
+        </div>
+        <div className="isletme-fiyat-not">
+          {t('fanatikNot')}
+          <br />
+          {t('bagisCarpani')} {yuzdeMetni(c.fanatikEtkisi.bagisCarpani)} · {t('kacis')} −%{c.fanatikEtkisi.yillikKacis} · {t('otoriteKaybi')} −{c.fanatikEtkisi.yillikOtorite} · {t('asiriRisk')} %{c.fanatikEtkisi.asiriRisk}
+        </div>
 
+        </div>
+      </div>
+      <div className="sayfa-sutun cemaat-kol">
+        <div className="sayfa-blok blok-faal">
+        <h4>
+          {t('faaliyetler')} ({t('slot')} {c.faaliyetSlot.kullanilan}/{c.faaliyetSlot.toplam})
+        </h4>
+        <div className="isletme-fiyat-not">{t('faaliyetNot')}</div>
+        <div className="isletme-hatlar">
+          {c.faaliyetler.map((f) => (
+            <div key={f.id} className={`isletme-hat${f.acik ? ' isletme-hat-acik' : ''}${f.kilitli ? ' isletme-hat-kilitli' : ''}`}>
+              <div className="isletme-hat-baslik">
+                <strong>
+                  {f.simge} {d(f.ad)}
+                </strong>
+                {f.kilitli ? (
+                  <span className="isletme-etiket s-esik">
+                    🔒 {t('rutbeGerek')} {f.minRutbe}
+                  </span>
+                ) : (
+                  <button className={f.acik ? '' : 'ikincil'} disabled={yukleniyor} onClick={() => onKarar([{ id: f.id, acik: !f.acik }])}>
+                    {f.acik ? t('acik') : t('kapali')}
+                  </button>
+                )}
+              </div>
+              <div className="isletme-hat-artieksi">
+                <span>{d(f.aciklama)}</span>
+              </div>
+              <div className="isletme-hat-satir">
+                <span>
+                  {t('gelirMasraf')}:{' '}
+                  <strong>
+                    <span className="s-gelir">{formatPara(f.gelir)}</span> / <span className="s-gider">{formatPara(f.masraf)}</span>
+                  </strong>
+                </span>
+                {f.dunyaYuzde !== 0 && (
+                  <span>
+                    🌍 {t('dunya')}: {yuzdeMetni(f.dunyaYuzde)}
+                  </span>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        </div>
+        <div className="sayfa-blok blok-ogr">
+        <h4>{t('ogretiler')}</h4>
+        {c.ogretiler.secilen.length === 0 ? (
+          <p className="isletme-bos">{t('ogretiYok')}</p>
+        ) : (
+          <div className="isletme-yatirimlar">
+            {c.ogretiler.secilen.map((o) => (
+              <div key={o.id} className="isletme-yatirim" title={d(o.aciklama)}>
+                <strong>
+                  {o.simge} {d(o.ad)} {o.fanatik ? '⚡' : ''}
+                </strong>
+                <span>{dil === 'en' ? `Level ${o.seviye}` : `Seviye ${o.seviye}`}</span>
+                <small>{d(o.aciklama)}</small>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <h4>
+          {t('inananDegisim')}: {yuzdeMetni(c.inananToplam)}
+          {t('yil')}
+        </h4>
+        <div className="cemaat-kalemler">
+          {c.inananKalemleri
+            .filter((k) => k.deger !== 0)
+            .map((k) => (
+              <span key={k.kod} className={k.deger > 0 ? 'cemaat-arti' : 'cemaat-eksi'}>
+                {d(INANAN_KALEMLERI[k.kod] ?? { tr: k.kod, en: k.kod })} {yuzdeMetni(k.deger)}
+              </span>
+            ))}
+        </div>
+        <div className="isletme-fiyat-not">
+          {c.okul.kademe > 0 && (
+            <>
+              🏫 {t('okul')}: {t('mezun')} %{c.okul.mezunSansi}.{' '}
+            </>
+          )}
+          {c.asevi.kademe > 0 && (
+            <>
+              🍲 {t('asevi')}: {t('yardimCarpani')} ×{c.asevi.carpan}.
+            </>
+          )}
+        </div>
+
+        </div>
+      </div>
+      <div className="sayfa-sutun cemaat-kol">
+        <div className="sayfa-blok blok-piyasa">
+        {pazar && pazar.aktif && <PiyasaHaberleri pazar={pazar} sayilarGoster />}
+        </div>
+        <div className="sayfa-blok blok-butce">
+        <h4 className="isletme-butce-baslik">{dil === 'en' ? '📒 Your budget' : '📒 Bütçen'}</h4>
+        <div className="isletme-dokum">
+          <div>
+            {t('bagisKalemi')} ({formatMusteri(dil, c.bagisYapan)} {t('bagisYapan')} %{c.bagisOrani}): <strong className="s-gelir">+{formatPara(c.bagis)}</strong>
+          </div>
+          <div>
+            {t('faaliyetKalemi')}: <strong className="s-gelir">+{formatPara(c.faaliyetGelir)}</strong>
+          </div>
+          <div>
+            {t('toplamGelir')}: <strong className="s-gelir">+{formatPara(c.toplamGelir)}</strong>
+          </div>
+          <div>{t('gFaaliyet')}: <strong className="s-gider">−{formatPara(c.giderler.faaliyet)}</strong></div>
+          <div>{t('gAyin')}: <strong className="s-gider">−{formatPara(c.giderler.ayin)}</strong></div>
+          <div>{t('gBina')}: <strong className="s-gider">−{formatPara(c.giderler.bina)}</strong></div>
+          <div>{t('gYardim')}: <strong className="s-gider">−{formatPara(c.giderler.yardim)}</strong></div>
+          <div>{t('gAidat')}: <strong className="s-gider">−{formatPara(c.giderler.aidat)}</strong></div>
+          <div>{t('gVergi')}: <strong className="s-gider">−{formatPara(c.giderler.vergi)}</strong></div>
+          {durum.butce.maas > 0 && (
+            <div>{dil === 'en' ? 'Staff wages' : 'Çalışan maaşları'}: <strong className="s-gider">−{formatPara(durum.butce.maas)}</strong></div>
+          )}
+          <div className="isletme-dokum-net">
+            {t('beklenenNet')}: <strong className={durum.butce.net >= 0 ? 's-gelir' : 's-gider'}>~{durum.butce.net >= 0 ? '+' : ''}{formatPara(durum.butce.net)} {pb}{t('yil')}</strong>
+          </div>
+          <div>{dil === 'en' ? 'Living' : 'Yaşam'}: <strong className="s-gider">−{formatPara(durum.butce.yasam)}</strong></div>
+          <div>{dil === 'en' ? 'Rent' : 'Kira'}: <strong className="s-gider">−{formatPara(durum.butce.kira)}</strong></div>
+          {durum.butce.evcilHayvan > 0 && (
+            <div>{dil === 'en' ? 'Pets' : 'Evcil hayvan'}: <strong className="s-gider">−{formatPara(durum.butce.evcilHayvan)}</strong></div>
+          )}
+          {durum.butce.krediTaksit > 0 && (
+            <div>{dil === 'en' ? 'Loan instalment' : 'Kredi taksidi'}: <strong className="s-gider">−{formatPara(durum.butce.krediTaksit)}</strong></div>
+          )}
+          <div className="isletme-dokum-net">
+            {dil === 'en' ? 'Left in your pocket' : 'Cebine kalan'}: <strong className={durum.butce.cebineKalan >= 0 ? 's-gelir' : 's-gider'}>{durum.butce.cebineKalan >= 0 ? '+' : ''}{formatPara(durum.butce.cebineKalan)} {pb}</strong>
+          </div>
+        </div>
+
+        </div>
+        <div className="sayfa-blok blok-dokum">
+        <h4>{t('dokum')}</h4>
+        {!dokum || !dokum.cemaat ? (
+          <p className="isletme-bos">{t('ilkYil')}</p>
+        ) : (
+          <div className="isletme-dokum">
+            <div>
+              {t('gelenGercek')}: <strong>{formatMusteri(dil, dokum.cemaat.gelen)}</strong> / {dokum.cemaat.kapasite} ({dokum.cemaat.gelmeOrani * 100}%)
+            </div>
+            <div>
+              {t('bagisKalemi')}: <strong className="s-gelir">+{formatPara(dokum.cemaat.bagis)}</strong>
+            </div>
+            <div>
+              {t('faaliyetKalemi')}: <strong className="s-gelir">+{formatPara(dokum.satis - dokum.cemaat.bagis)}</strong>
+            </div>
+            <div>{t('gFaaliyet')} + {dil === 'en' ? 'rites' : 'ayin'}: <strong className="s-gider">−{formatPara(dokum.alim)}</strong></div>
+            <div>{t('gBina')}: <strong className="s-gider">−{formatPara(dokum.depoMasrafi)}</strong></div>
+            <div>{t('gYardim')}: <strong className="s-gider">−{formatPara(dokum.cemaat.yardim)}</strong></div>
+            <div>{t('gAidat')}: <strong className="s-gider">−{formatPara(dokum.loncaAidati)}</strong></div>
+            {dokum.vergi > 0 && (
+              <div>
+                {t('gVergi')} (%{Math.round(dokum.vergiOrani * 1000) / 10}): <strong className="s-gider">−{formatPara(dokum.vergi)}</strong>
+              </div>
+            )}
+            {((dokum.nakitHasar ?? 0) + (dokum.ekstraGider ?? 0)) > 0 && (
+              <div>{dil === 'en' ? 'Theft / raid / severance' : 'Hırsızlık / baskın / tazminat'}: <strong className="s-gider">−{formatPara((dokum.nakitHasar ?? 0) + (dokum.ekstraGider ?? 0))}</strong></div>
+            )}
+            <div>{dil === 'en' ? 'Staff wages' : 'Çalışan maaşları'}: <strong className="s-gider">−{formatPara(dokum.calisanMaasi ?? 0)}</strong></div>
+            <div className="isletme-dokum-net">
+              {t('net')}: <strong className={isaretSinifi(dokum.net)}>{dokum.net >= 0 ? '+' : ''}{formatPara(dokum.net)} {pb}</strong>
+            </div>
+            <div>
+              {t('pay')}: <strong>%{dokum.pazarPayi}</strong> · {t('musteriDegisim')}: <strong className={isaretSinifi(dokum.musteriDegisim)}>{formatMusteri(dil, dokum.musteriDegisim, true)}</strong>
+            </div>
+            {dokum.uyarilar.map((u, i) => (
+              <div key={i} className="isletme-uyari">
+                <RenkliEtki metin={uyariMetni(u)} />
+              </div>
+            ))}
+          </div>
+        )}
+
+        </div>
+      </div>
+      </div>
         </>
       )}
 
@@ -464,58 +530,12 @@ export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onY
         onEkipCikar={onEkipCikar}
       />
 
-      {(bolum === 'hepsi' || bolum === 'isletme') && (
-        <>
-      <h4>{t('dokum')}</h4>
-      {!dokum || !dokum.cemaat ? (
-        <p className="isletme-bos">{t('ilkYil')}</p>
-      ) : (
-        <div className="isletme-dokum">
-          <div>
-            {t('gelenGercek')}: <strong>{formatMusteri(dil, dokum.cemaat.gelen)}</strong> / {dokum.cemaat.kapasite} ({dokum.cemaat.gelmeOrani * 100}%)
-          </div>
-          <div>
-            {t('bagisKalemi')}: <strong>+{formatPara(dokum.cemaat.bagis)}</strong>
-          </div>
-          <div>
-            {t('faaliyetKalemi')}: <strong>+{formatPara(dokum.satis - dokum.cemaat.bagis)}</strong>
-          </div>
-          <div>{t('gFaaliyet')} + {dil === 'en' ? 'rites' : 'ayin'}: <strong>−{formatPara(dokum.alim)}</strong></div>
-          <div>{t('gBina')}: <strong>−{formatPara(dokum.depoMasrafi)}</strong></div>
-          <div>{t('gYardim')}: <strong>−{formatPara(dokum.cemaat.yardim)}</strong></div>
-          <div>{t('gAidat')}: <strong>−{formatPara(dokum.loncaAidati)}</strong></div>
-          {dokum.vergi > 0 && (
-            <div>
-              {t('gVergi')} (%{Math.round(dokum.vergiOrani * 1000) / 10}): <strong>−{formatPara(dokum.vergi)}</strong>
-            </div>
-          )}
-          {((dokum.nakitHasar ?? 0) + (dokum.ekstraGider ?? 0)) > 0 && (
-            <div>{dil === 'en' ? 'Theft / raid / severance' : 'Hırsızlık / baskın / tazminat'}: <strong className="kademe-dusuk">−{formatPara((dokum.nakitHasar ?? 0) + (dokum.ekstraGider ?? 0))}</strong></div>
-          )}
-          <div>{dil === 'en' ? 'Staff wages' : 'Çalışan maaşları'}: <strong className="kademe-dusuk">−{formatPara(dokum.calisanMaasi ?? 0)}</strong></div>
-          <div className="isletme-dokum-net">
-            {t('net')}: <strong className={isaretSinifi(dokum.net)}>{dokum.net >= 0 ? '+' : ''}{formatPara(dokum.net)} {pb}</strong>
-          </div>
-          <div>
-            {t('pay')}: <strong>%{dokum.pazarPayi}</strong> · {t('musteriDegisim')}: <strong className={isaretSinifi(dokum.musteriDegisim)}>{formatMusteri(dil, dokum.musteriDegisim, true)}</strong>
-          </div>
-          {dokum.uyarilar.map((u, i) => (
-            <div key={i} className="isletme-uyari">
-              {uyariMetni(u)}
-            </div>
-          ))}
-        </div>
-      )}
-
-        </>
-      )}
-
       {uyariAcik && dokum && (
         <div className="kariyer-sonuc-katman kariyer-sonuc-katman-ust" role="dialog" onClick={() => setUyariAcik(false)}>
           <div className="kariyer-sonuc-modal" onClick={(e) => e.stopPropagation()}>
             <h4>{t('olayBaslik')}</h4>
             {onemliUyarilar.map((u, i) => (
-              <p key={i}>{uyariMetni(u)}</p>
+              <p key={i}><RenkliEtki metin={uyariMetni(u)} /></p>
             ))}
             <button onClick={() => setUyariAcik(false)}>{t('tamam')}</button>
           </div>

@@ -279,8 +279,8 @@ type BirlikYaniti = { state: CharacterState; durum: IsletmeGorunumu };
 export function birlikDoktrinSec(stateId: string, doktrinId: string) {
   return istek<BirlikYaniti>(`/api/game/${stateId}/birlik/doktrin`, { method: 'POST', body: JSON.stringify({ doktrinId }) });
 }
-export function birlikKaliteYukselt(stateId: string, hedef: 'orta' | 'yuksek', yuzde: number) {
-  return istek<BirlikYaniti & { sonuc: BirlikIslemSonucu }>(`/api/game/${stateId}/birlik/kalite`, { method: 'POST', body: JSON.stringify({ hedef, yuzde }) });
+export function birlikTechizatSec(stateId: string, seviye: 'dusuk' | 'orta' | 'yuksek') {
+  return istek<BirlikYaniti & { sonuc: BirlikIslemSonucu }>(`/api/game/${stateId}/birlik/techizat`, { method: 'POST', body: JSON.stringify({ seviye }) });
 }
 export function birlikBirlikSec(stateId: string, turler: BirlikTur[]) {
   return istek<BirlikYaniti & { sonuc: BirlikIslemSonucu }>(`/api/game/${stateId}/birlik/birlik`, { method: 'POST', body: JSON.stringify({ turler }) });

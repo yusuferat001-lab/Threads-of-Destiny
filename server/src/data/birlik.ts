@@ -41,21 +41,25 @@ export const ASKER_PAZAR_DONEM_CARPANI = { bolluk: 0.97, durgunluk: 1, kitlik: 1
 
 // ── Teçhizat kalitesi ───────────────────────────────────────────────────────
 export const KALITE_SIRASI: BirlikKalite[] = ["dusuk", "orta", "yuksek"];
-export const KALITE_CARPANI: Record<BirlikKalite, number> = { dusuk: 1, orta: 1.4, yuksek: 1.75 };
+export const KALITE_CARPANI: Record<BirlikKalite, number> = { dusuk: 1, orta: 1.25, yuksek: 1.5 };
 /** Düşükten verilen kaliteye yükseltmenin er başı fiyatı (enflasyonsuz). */
 export const KALITE_FIYATI: Record<BirlikKalite, number> = { dusuk: 0, orta: 0, yuksek: 0 };
 /** Teçhizat bakımı: er başı yıllık (enflasyonlu), seviyeye göre. */
-export const KALITE_BAKIM: Record<BirlikKalite, number> = { dusuk: 0.1, orta: 0.22, yuksek: 0.34 };
+export const KALITE_BAKIM: Record<BirlikKalite, number> = { dusuk: 0.15, orta: 0.3, yuksek: 0.45 };
 /** Teçhizat seviyesinin yıllık moral etkisi (kalite karışımının ağırlıklı ortalaması) ve talim kazancı çarpanı. */
 export const KALITE_MORAL: Record<BirlikKalite, number> = { dusuk: -2, orta: 0, yuksek: 2 };
 export const KALITE_TALIM_CARPANI: Record<BirlikKalite, number> = { dusuk: 0.9, orta: 1, yuksek: 1.1 };
 /** Kalite değişiminden sonra yeniden değiştirmek için beklenecek yıl. */
 export const KALITE_KILIT_YIL = 5;
 export const KALITE_ADLARI: Record<BirlikKalite, DilliMetin> = {
-  dusuk: { tr: "Düşük", en: "Basic" },
-  orta: { tr: "Orta", en: "Standard" },
-  yuksek: { tr: "Yüksek", en: "Superior" },
+  dusuk: { tr: "Hafif donanım", en: "Light kit" },
+  orta: { tr: "Standart donanım", en: "Standard kit" },
+  yuksek: { tr: "Ağır donanım", en: "Heavy kit" },
 };
+/** Sanayi Devrimi'nde en üst seviye "Seçkin" adını taşır. */
+export function kaliteAdlari(cag: string): Record<BirlikKalite, DilliMetin> {
+  return cag === "Sanayi Devrimi" ? { ...KALITE_ADLARI, yuksek: { tr: "Seçkin donanım", en: "Elite kit" } } : KALITE_ADLARI;
+}
 export function techizatAdi(cag: string): DilliMetin {
   return cag === "Sanayi Devrimi" ? { tr: "tüfek ve üniforma", en: "rifles and uniforms" } : { tr: "zırh ve kılıç", en: "armour and swords" };
 }
@@ -64,6 +68,8 @@ export function techizatAdi(cag: string): DilliMetin {
 export const TUR_SIRASI: BirlikTur[] = ["okcu", "suvari", "mizrakli"];
 /** Açık her özel birlik türü ordunun bu kesrini oluşturur (tek seçenek; üç tür açıksa %75 özel + %25 piyade). */
 export const TUR_PAYI = 0.25;
+/** Rütbeye (S1..S5) göre aynı anda açık tutulabilecek özel birlik sayısı. */
+export const OZEL_BIRLIK_LIMITI = [1, 1, 2, 2, 3];
 /** Birlik seviyesi yükseltme/değiştirme kilidi (yıl). */
 export const BIRLIK_KILIT_YIL = 5;
 /** Birliği küçültme / terhis iadesi. */
@@ -215,11 +221,71 @@ export const GANIMET_PAYI_TANIMLARI: Record<BirlikGanimetPayi, { oran: number; m
 };
 export const GANIMET_SIRASI: BirlikGanimetPayi[] = ["az", "dengeli", "comert"];
 export const TON_TANIMLARI: Record<BirlikTon, { moral: number; sertlik: number; ad: DilliMetin; aciklama: DilliMetin }> = {
-  merhametli: { moral: 3, sertlik: -1.5, ad: { tr: "Merhametli komuta", en: "Merciful command" }, aciklama: { tr: "Moral +3/yıl, sertlik −1,5/yıl.", en: "Morale +3/yr, harshness −1.5/yr." } },
+  merhametli: { moral: 3, sertlik: -1.5, ad: { tr: "Merhametli komuta", en: "Merciful command" }, aciklama: { tr: "Ordu morali +3/yıl, sertlik −1,5/yıl.", en: "Army morale +3/yr, harshness −1.5/yr." } },
   dengeli: { moral: 0, sertlik: 0, ad: { tr: "Dengeli komuta", en: "Balanced command" }, aciklama: { tr: "Sertlik yalnız doğal olarak söner.", en: "Harshness only fades naturally." } },
-  sert: { moral: -3, sertlik: 1.5, ad: { tr: "Sert komuta", en: "Harsh command" }, aciklama: { tr: "Moral −3/yıl, sertlik +1,5/yıl; gelir ve ganimet artar.", en: "Morale −3/yr, harshness +1.5/yr; income and loot rise." } },
+  sert: { moral: -3, sertlik: 1.5, ad: { tr: "Sert komuta", en: "Harsh command" }, aciklama: { tr: "Ordu morali −3/yıl, sertlik +1,5/yıl; gelir ve ganimet artar.", en: "Army morale −3/yr, harshness +1.5/yr; income and loot rise." } },
 };
 export const TON_SIRASI: BirlikTon[] = ["merhametli", "dengeli", "sert"];
+
+// ── Politika artı/eksi metinleri (sayılar yukarıdaki sabitlerden hesaplanır) ─────
+export interface ArtiEksi {
+  arti: DilliMetin[];
+  eksi: DilliMetin[];
+}
+const sayiTr = (x: number) => String(Math.round(x * 1000) / 1000).replace(".", ",");
+const sayiEn = (x: number) => String(Math.round(x * 1000) / 1000);
+const isaretli = (x: number, f: (n: number) => string) => (x > 0 ? "+" : x < 0 ? "−" : "") + f(Math.abs(x));
+const sayiMetin = (x: number, ek: { tr: string; en: string }): DilliMetin => ({ tr: `${sayiTr(x)}${ek.tr}`, en: `${sayiEn(x)}${ek.en}` });
+const moralMetni = (m: number): DilliMetin => ({ tr: `Ordu morali ${isaretli(m, sayiTr)}/yıl`, en: `Army morale ${isaretli(m, sayiEn)}/yr` });
+
+export function ganimetArtiEksi(id: BirlikGanimetPayi): ArtiEksi {
+  const d = GANIMET_PAYI_TANIMLARI[id];
+  const sende = Math.round((1 - d.oran) * 100);
+  const erlere = Math.round(d.oran * 100);
+  const arti: DilliMetin[] = [{ tr: `Ganimetin %${sende}'i sende kalır`, en: `You keep ${sende}% of the loot` }];
+  const eksi: DilliMetin[] = [{ tr: `Ganimetin %${erlere}'i erlere gider`, en: `${erlere}% of the loot goes to the men` }];
+  if (d.moral > 0) arti.push(moralMetni(d.moral));
+  else if (d.moral < 0) eksi.push(moralMetni(d.moral));
+  return { arti, eksi };
+}
+
+export function talimArtiEksi(id: BirlikTalim): ArtiEksi {
+  const d = TALIM_TANIMLARI[id];
+  const guc = Math.round(Math.min(20, d.tavan * TALIM_GUC_KATSAYISI * 100));
+  const kayip = Math.round(Math.min(15, d.tavan * TALIM_KAYIP_KATSAYISI * 100));
+  const arti: DilliMetin[] = [];
+  const eksi: DilliMetin[] = [];
+  if (d.delta > 0) {
+    arti.push({ tr: `Talim yılda +${d.delta} artar`, en: `Drill rises +${d.delta}/yr` });
+    arti.push({ tr: `En çok +%${guc} güç, −%${kayip} kayıp`, en: `Up to +${guc}% power, −${kayip}% losses` });
+    if (d.tavan < 100) eksi.push({ tr: `Talim ${d.tavan}'te durur`, en: `Drill stops at ${d.tavan}` });
+  } else {
+    eksi.push({ tr: `Talim yılda ${d.delta} söner; güç ve kayıp avantajı erir`, en: `Drill fades ${d.delta}/yr; power and loss edge melt away` });
+  }
+  if (d.masraf <= 0.01) arti.push({ tr: `En ucuz: er başı ${sayiTr(d.masraf)}/yıl`, en: `Cheapest: ${sayiEn(d.masraf)} per man/yr` });
+  else eksi.push({ tr: `Er başı ${sayiTr(d.masraf)}/yıl masraf`, en: `${sayiEn(d.masraf)} per man/yr upkeep` });
+  if (d.moral < 0) eksi.push(moralMetni(d.moral));
+  return { arti, eksi };
+}
+
+export function tonArtiEksi(id: BirlikTon): ArtiEksi {
+  const d = TON_TANIMLARI[id];
+  const arti: DilliMetin[] = [];
+  const eksi: DilliMetin[] = [];
+  if (d.moral > 0) arti.push(moralMetni(d.moral));
+  if (d.moral < 0) eksi.push(moralMetni(d.moral));
+  if (d.sertlik < 0) arti.push({ tr: `Sertlik −${sayiTr(-d.sertlik)}/yıl: firar ve otorite cezası düşer`, en: `Harshness −${sayiEn(-d.sertlik)}/yr: less desertion and authority loss` });
+  if (d.sertlik > 0) {
+    arti.push({ tr: `Sertlik 50'de gelir ve ganimet +%${sayiTr(50 * SERTLIK_GELIR_KATSAYISI * 100)}`, en: `At harshness 50, income and loot +${sayiEn(50 * SERTLIK_GELIR_KATSAYISI * 100)}%` });
+    eksi.push({ tr: `Sertlik +${sayiTr(d.sertlik)}/yıl: firar ve otorite cezası artar`, en: `Harshness +${sayiEn(d.sertlik)}/yr: more desertion and authority loss` });
+  }
+  if (id === "dengeli") {
+    arti.push({ tr: "Ek bedel yok; sertlik doğal söner", en: "No extra cost; harshness fades naturally" });
+    eksi.push({ tr: "Moral ya da gelir bonusu yok", en: "No morale or income bonus" });
+  }
+  if (id === "merhametli") eksi.push({ tr: "Sertlik gelir bonusu kaybolur", en: "Harshness income bonus fades" });
+  return { arti, eksi };
+}
 export const SERTLIK_DOGAL_SONUM = 0.3;
 /** Sertlik başına gelir/ganimet bonusu (sertlik 50 → +%7,5) ve firar/otorite etkisi. */
 export const SERTLIK_GELIR_KATSAYISI = 0.0015;
@@ -253,7 +319,10 @@ export const ERZAK_BIRIMI = 0.15;
  * Barış çatışması (haydut / sınır, takvimli): ganimet havuzu = toplam askerî güç × bu birim × tür çarpanı × sonuç çarpanı.
  * Büyük ve iyi donanımlı ordu aynı çatışmadan çok daha fazla kazanır (sim ile kalibre edilecek).
  */
-export const GANIMET_GUC_BIRIMI = 1.0;
+export const GANIMET_GUC_BIRIMI = 1.5;
+/** Asker'in yıllık kariyer puanı = min(tavan, güç / düşman referansı) × katsayı (pazar payı yerine askerî güçten). */
+export const ASKER_KARIYER_PUANI_KATSAYISI = 1.1;
+export const ASKER_KARIYER_GUC_TAVANI = 2.5;
 /** Çatışma sonrası bekleme (yıl; savaşta sayaç durur, savaştan sonra en az 1 yıl) ve ilk çatışmanın işletmenin kaçıncı yılından sonra geleceği. */
 export const BARIS_BEKLEME = 2;
 /** Bekleme bittikten sonra her yıl çatışma çıkma şansı. */
@@ -519,17 +588,17 @@ export const SEFERBERLIK_TANIMLARI: Record<
   genel: {
     er: 0.5, moral: -15, erzak: 0.2, firar: 1.5, kalite: "dusuk", talim: 0,
     ad: { tr: "Genel çağrı", en: "General levy" },
-    aciklama: { tr: "+%50 er, düşük teçhizat ve eğitimsiz; moral −15, savaş boyunca erzak +%20, ilk yıl firar yüksek.", en: "+50% men, basic kit and untrained; morale −15, supplies +20% for the war, high first-year desertion." },
+    aciklama: { tr: "+%50 er, düşük teçhizat ve eğitimsiz; ordu morali −15, savaş boyunca erzak +%20, ilk yıl firar yüksek.", en: "+50% men, basic kit and untrained; army morale −15, supplies +20% for the war, high first-year desertion." },
   },
   secme: {
     er: 0.12, moral: 5, erzak: 0, firar: 1, kalite: "yuksek", talim: TALIM_SECKIN_GIRIS,
     ad: { tr: "Seçkin birlik", en: "Picked troops" },
-    aciklama: { tr: "+%12 er, yüksek teçhizat ve eğitimli; moral +5.", en: "+12% men, superior kit and trained; morale +5." },
+    aciklama: { tr: "+%12 er, yüksek teçhizat ve eğitimli; ordu morali +5.", en: "+12% men, superior kit and trained; army morale +5." },
   },
   dengeli: {
     er: 0.28, moral: -5, erzak: 0.08, firar: 1, kalite: "orta", talim: 0,
     ad: { tr: "Dengeli çağrı", en: "Balanced levy" },
-    aciklama: { tr: "+%28 er, orta teçhizat; moral −5, erzak +%8.", en: "+28% men, standard kit; morale −5, supplies +8%." },
+    aciklama: { tr: "+%28 er, orta teçhizat; ordu morali −5, erzak +%8.", en: "+28% men, standard kit; army morale −5, supplies +8%." },
   },
 };
 export const SEFERBERLIK_SIRASI: BirlikSeferberlik[] = ["genel", "dengeli", "secme"];
@@ -728,7 +797,7 @@ export const SAVAS_ZAFER_ESIR = 0.015;
 export const KIRALIK_ORAN = 0.4;
 export const KIRALIK_PESIN = 3.2;
 export const KIRALIK_YILLIK = 1.6;
-export const KIRALIK_KALITE_CARPANI = 2.0; // yüksek kalite (1,75) × eğitimli (+%14)
+export const KIRALIK_KALITE_CARPANI = 1.7; // yüksek kalite (1,5) × eğitimli (+%14)
 /** Kale: bu askerî güç eşiğinin üstünde ve savaş genel zaferle biterse ele geçirilir. */
 export const KALE_GUC_ESIGI = 200;
 export const KALE_MAKS = 2;
