@@ -4,7 +4,7 @@ import type { CharacterState, FinansOzeti, IsletmeGorunumu } from '../types';
 import { formatMusteri, formatPara } from '../format';
 
 /** Ana ekrandaki dört sabit tuşun kimliği — konum ve renk her meslekte aynıdır, yalnız ad/ikon değişir. */
-export type AnaTusId = 'isletme' | 'gorevler' | 'techizat' | 'yatirim' | 'calisan' | 'cevre';
+export type AnaTusId = 'isletme' | 'yatirim' | 'calisan' | 'cevre';
 
 interface AnaEkranProps {
   karakter: CharacterState;
@@ -20,6 +20,10 @@ interface AnaEkranProps {
   /** Geçen yılın kısa haberi (dönem/terfi/hapis…); sahne alanında kapatılabilir şerit olarak gösterilir. */
   yilNotu: string | null;
   onNotKapat: () => void;
+  /** PC: açık strateji sayfası (varsa) — tuş vurgulanır, üstteki cam paneller gizlenir, tuşlar tek satıra iner. */
+  sayfaAcik?: AnaTusId | null;
+  /** PC: yan ekran (Evin/Mağaza/…) ortada açıkken de tuşlar tek satıra iner. */
+  kompakt?: boolean;
 }
 
 interface TusTanimi {
@@ -54,8 +58,6 @@ function tuslar(meslek: string): TusTanimi[] {
     case 'Asker':
       return [
         { id: 'isletme', ikon: '🛡️', ad: { tr: 'Ordu', en: 'Army' } },
-        { id: 'gorevler', ikon: '📜', ad: { tr: 'Görevler', en: 'Duties' } },
-        { id: 'techizat', ikon: '⚔️', ad: { tr: 'Teçhizat', en: 'Gear' } },
         { id: 'yatirim', ikon: '🏯', ad: { tr: 'Yatırım', en: 'Invest' } },
         { id: 'calisan', ikon: '🎖️', ad: { tr: 'Subaylar', en: 'Officers' } },
         { id: 'cevre', ikon: '🗡️', ad: { tr: 'Çevre', en: 'Rivals' } },
@@ -74,7 +76,7 @@ function tuslar(meslek: string): TusTanimi[] {
  * Telefon ana ekranı ("ilerle" zaman modeli): olay yokken görünür. Üstte üç cam panel
  * (müşteri, yıllık kâr, dönem) + pazar payı, altta 2×2 meslek tuşu ve bordo İLERLE düğmesi.
  */
-export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, onMusteriTikla, onGelirTikla, onIlerle, yilNotu, onNotKapat }: AnaEkranProps) {
+export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, onMusteriTikla, onGelirTikla, onIlerle, yilNotu, onNotKapat, sayfaAcik = null, kompakt = false }: AnaEkranProps) {
   const { dil } = useDil();
   const [donemAcik, setDonemAcik] = useState(false);
   const tr = dil !== 'en';
@@ -112,19 +114,14 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
       : isletme
         ? tr ? `${acikHat} hat açık` : `${acikHat} lines open`
         : tr ? `${karakter.ordu_mevcudu} er` : `${karakter.ordu_mevcudu} men`,
-    gorevler: isletme?.birlik
-      ? tr ? `${isletme.birlik.gorevler.slot.kullanilan}/${isletme.birlik.gorevler.slot.toplam} açık` : `${isletme.birlik.gorevler.slot.kullanilan}/${isletme.birlik.gorevler.slot.toplam} open`
-      : '',
-    techizat: isletme?.birlik
-      ? tr ? `${isletme.birlik.birlik.seciliTurler.length} birlik · ${isletme.birlik.kalite.techizat.tr}` : `${isletme.birlik.birlik.seciliTurler.length} units · ${isletme.birlik.kalite.techizat.en}`
-      : '',
-    yatirim: tr ? 'bina, kredi' : 'upgrades, loans',
+    yatirim: isletme?.birlik ? (tr ? 'teçhizat, birlik, kredi' : 'gear, units, loans') : tr ? 'bina, kredi' : 'upgrades, loans',
     calisan: isletme ? `${isletme.calisanlar.length}/${isletme.calisanTavani}` : `${karakter.ekip.length}`,
     cevre: tr ? 'rakip, şehir' : 'rivals, city',
   };
 
   return (
-    <div className="ana-ekran">
+    <div className={`ana-ekran${sayfaAcik || kompakt ? ' ana-ekran-kompakt' : ''}`}>
+      {!sayfaAcik && !kompakt && (<>
       <div className="ana-tablolar">
         <button type="button" className="ana-cam ana-cam-tikla" onClick={onMusteriTikla} disabled={yukleniyor} title={tr ? 'Dükkân sayfasını aç' : 'Open shop page'}>
           <span className="ana-etiket">{musteriEtiket}</span>
@@ -192,9 +189,10 @@ export function AnaEkranMobil({ karakter, isletme, finans, yukleniyor, onTus, on
         )}
       </div>
 
-      <div className={`ana-tuslar${tuslar(karakter.meslek).length > 4 ? ' ana-tuslar-alti' : ''}`}>
+      </>)}
+      <div className="ana-tuslar">
         {tuslar(karakter.meslek).map((t) => (
-          <button key={t.id} type="button" className="ana-tus" disabled={yukleniyor} onClick={() => onTus(t.id)}>
+          <button key={t.id} type="button" className={`ana-tus${sayfaAcik === t.id ? ' ana-tus-aktif' : ''}`} aria-pressed={sayfaAcik === t.id} disabled={yukleniyor} onClick={() => onTus(t.id)}>
             <span className="ana-tus-ikon" aria-hidden="true">
               {t.ikon}
             </span>

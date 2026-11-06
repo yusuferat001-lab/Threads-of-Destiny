@@ -689,6 +689,8 @@ export interface PazarDurumu {
   maasEtkisi: number;
   yillikKariyerPuani: number;
   rutbeSarti: { seviye: number; gerekliPay: number; karsilaniyor: boolean } | null;
+  /** Yalnız Asker: rütbe için gereken askerî güç (pazar payı yerine). */
+  gucSarti: { seviye: number; gerekli: number; mevcut: number; karsilaniyor: boolean } | null;
   yeniRakipKalanYil: number | null;
   /** Müşteri dağılımı ve son yıl değişimleri; piyasa haberleri (en yeni önce). */
   dagilim: { oyuncu: number; rakip: number; kucuk: number; oyuncuDegisim: number; rakipDegisim: number; kucukDegisim: number };
@@ -1077,7 +1079,6 @@ export interface BirlikKararGirdisi {
   ganimet_payi?: string;
   talim?: string;
   ton?: string;
-  hedef_kalite?: string;
 }
 
 export interface BirlikGorunumu {
@@ -1104,14 +1105,16 @@ export interface BirlikGorunumu {
     kilitKalanYil: number;
     ad: DilMetni;
     adlar: Record<BirlikKalite, DilMetni>;
-    yukseltFiyat: Record<'orta' | 'yuksek', number>;
     techizat: DilMetni;
+    seviyeler: { id: BirlikKalite; carpan: number; bakim: number; bakimToplam: number; moral: number; talim: number }[];
   };
   birlik: {
     seciliTurler: BirlikTur[];
     turPayi: number;
     kilitKalanYil: number;
     toplamPay: number;
+    /** Rütbeye göre açık tutulabilecek özel birlik sayısı. */
+    limit: number;
     turler: { id: BirlikTur; simge: string; ad: DilMetni; saldiri: number; savunma: number; ucret: number; bakim: number; arti: DilMetni; eksi: DilMetni; secili: boolean }[];
     kusatma: { seviye: number; ad: DilMetni; bonuslar: number[]; fiyatlar: number[] };
   };
@@ -1120,11 +1123,11 @@ export interface BirlikGorunumu {
     politika: BirlikTalim;
     gucYuzde: number;
     kayipYuzde: number;
-    politikalar: { id: BirlikTalim; ad: DilMetni; delta: number; tavan: number; masraf: number; moral: number }[];
+    politikalar: { id: BirlikTalim; ad: DilMetni; delta: number; tavan: number; masraf: number; moral: number; arti: DilMetni[]; eksi: DilMetni[] }[];
   };
   politikalar: {
-    ganimetPayi: { secili: BirlikGanimetPayi; secenekler: { id: BirlikGanimetPayi; ad: DilMetni; oran: number; moral: number }[] };
-    ton: { secili: BirlikTon; secenekler: { id: BirlikTon; ad: DilMetni; aciklama: DilMetni }[] };
+    ganimetPayi: { secili: BirlikGanimetPayi; secenekler: { id: BirlikGanimetPayi; ad: DilMetni; oran: number; moral: number; arti: DilMetni[]; eksi: DilMetni[] }[] };
+    ton: { secili: BirlikTon; secenekler: { id: BirlikTon; ad: DilMetni; aciklama: DilMetni; moral: number; arti: DilMetni[]; eksi: DilMetni[] }[] };
   };
   moral: { deger: number; gucYuzde: number; sertlik: number };
   gorevler: {

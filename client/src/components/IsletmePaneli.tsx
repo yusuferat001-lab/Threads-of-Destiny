@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import type {
   PazarDurumu,
   IsletmeGorunumu,
@@ -31,6 +31,8 @@ interface Props {
   onEkipCikar: (ekipId: string) => void;
   /** Telefon ana ekranı sayfaları: yalnız bir bölümü çiz (varsayılan hepsi). */
   bolum?: 'hepsi' | 'isletme' | 'yatirim' | 'calisan';
+  /** Dükkân sayfasında "durum" hücresinin üstüne konan blok (rütbe kademesi + ilerleme). */
+  ustBlok?: ReactNode;
 }
 
 type D = { tr: string; en: string };
@@ -323,7 +325,7 @@ export function isletmeUyariMetni(u: IsletmeUyari, durum: IsletmeGorunumu, dil: 
     }
   }
 
-export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onYatirimDusur, onCalisanAl, onEkipCikar, bolum = 'hepsi' }: Props) {
+export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onYatirimDusur, onCalisanAl, onEkipCikar, bolum = 'hepsi', ustBlok }: Props) {
   const { dil } = useDil();
   const t = (k: Exclude<keyof typeof M, 'donem'>) => M[k][dil];
   const d = (m: D) => m[dil];
@@ -425,8 +427,9 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
     <section className="isletme-paneli">
       {(bolum === 'hepsi' || bolum === 'isletme') && (
         <>
-      <h3>{t('baslik')}</h3>
-
+      <div className="sayfa-izgara dukkan-izgara">
+      <div className="sayfa-blok blok-durum">
+      {ustBlok}
       <div className="isletme-ozet isletme-ozet-ana">
         <span>
           ⚖️ {t('pay')}: <strong>{payMetni(dil, durum.pazarPayi)}</strong>
@@ -489,8 +492,8 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
         </div>
       )}
 
-      <div className="isletme-iki-sutun">
-      <div className="isletme-sutun">
+      </div>
+      <div className="sayfa-blok blok-depo">
       {durum.depo.kapasite > 0 && (
         <div className={`isletme-depo-doldur${uretimModu ? ' isletme-depo-uretim' : ''}`}>
           <h4>
@@ -534,6 +537,8 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
         </div>
       )}
 
+      </div>
+      <div className="sayfa-blok blok-hatlar">
       <h4>{t('hatlar')}</h4>
       <div className="isletme-hatlar">{acikHatlar.map(hatKarti)}</div>
       {digerHatlar.length > 0 && (
@@ -547,14 +552,11 @@ export function IsletmePaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, on
         </>
       )}
 
-      {pazar && pazar.aktif && (
-        <details className="isletme-haberler-detay">
-          <summary>📰 {t('haberler')}</summary>
-          <PiyasaHaberleri pazar={pazar} sayilarGoster />
-        </details>
-      )}
       </div>
-      <div className="isletme-sutun">
+      <div className="sayfa-blok blok-piyasa">
+      {pazar && pazar.aktif && <PiyasaHaberleri pazar={pazar} sayilarGoster />}
+      </div>
+      <div className="sayfa-blok blok-butce">
       <h4 className="isletme-butce-baslik">{t('butceBaslik')}</h4>
       <div className="isletme-butce">
         <div className="isletme-butce-sutun">

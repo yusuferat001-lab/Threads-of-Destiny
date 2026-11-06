@@ -1,5 +1,5 @@
 import type { KonutTanimi } from '../types';
-import { konutGoruntusuGetir, meslekBinasiGetir } from '../bolgeTema';
+import { konutGoruntusuGetir } from '../bolgeTema';
 import { bic } from '../i18n';
 import { useDil } from '../DilContext';
 
@@ -10,8 +10,6 @@ interface KisayolKartlariProps {
   ogeler: KisayolId[];
   cag: string;
   bolge: string;
-  meslek: string;
-  dinKultur: string;
   konutId: string;
   konutlar: KonutTanimi[];
   devreDisi: boolean;
@@ -38,8 +36,6 @@ export function KisayolKartlari({
   ogeler,
   cag,
   bolge,
-  meslek,
-  dinKultur,
   konutId,
   konutlar,
   devreDisi,
@@ -56,10 +52,9 @@ export function KisayolKartlari({
   const konutGorunum = konutTanimi
     ? konutGoruntusuGetir(konutTanimi.id, konutTanimi.ad, konutTanimi.simge, cag, bolge, dil)
     : { ad: m.shEvFallback, simge: '🏠' };
-  const bina = meslekBinasiGetir(meslek, cag, dinKultur, dil);
 
   const kartlar: Record<KisayolId, { ikon: string; etiket: string; title: string; onClick: () => void }> = {
-    yatirim: { ikon: bina.simge, etiket: m.shIsinKisa, title: bic(m.shIsyeriTitle, bina.ad), onClick: onYatirim },
+    yatirim: { ikon: '🏘️', etiket: m.shIsinKisa, title: m.shIsyeriTitle, onClick: onYatirim },
     magaza: { ikon: '🛒', etiket: m.shMagaza, title: m.shMagaza, onClick: onMagaza },
     ev: { ikon: konutGorunum.simge, etiket: m.shEvinKisa, title: bic(m.shEvTitle, konutGorunum.ad), onClick: onEv },
     sosyallesme: { ikon: '🍷', etiket: m.shSosyallesme, title: m.shSosyallesme, onClick: onSosyallesme },

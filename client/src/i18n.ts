@@ -325,7 +325,7 @@ const TR = {
   shIsyeri: 'Yatırım',
   shMagaza: 'Mağaza',
   shSosyallesme: 'Sosyalleş',
-  shIsinKisa: 'Yatırım',
+  shIsinKisa: 'Gayrimenkuller',
   pcKararlar: 'Kararlar',
   shEvinKisa: 'Evin',
   shEvFallback: 'Ev',
@@ -338,7 +338,7 @@ const TR = {
   // ---- Mobil canlı skor rozeti + detay modalı ----
   skorDetayBaslik: 'Canlı Skor',
   skorDetayPlaceholder: 'Skor Hesaplama Detayları',
-  shIsyeriTitle: '{0} — Yatırım',
+  shIsyeriTitle: 'Gayrimenkuller: arazi ve binalar',
   shEvTitle: '{0} — Gelir & Gider',
 
   // ---- EtkiCipleri ----
@@ -464,7 +464,7 @@ const TR = {
   feSohretYil: '⭐ Şöhret {0}/yıl',
 
   // ---- IsYatirimEkrani ----
-  iyBaslik: 'Yatırım',
+  iyBaslik: 'Gayrimenkuller',
   iyGorevin: 'Görevin',
   iyYillikKazanc: 'Yıllık Kazanç',
   iySehirYonetimi: 'Şehir Yönetimi',
@@ -1060,7 +1060,7 @@ const EN: Metinler = {
   shIsyeri: 'Investments',
   shMagaza: 'Shop',
   shSosyallesme: 'Socialize',
-  shIsinKisa: 'Investments',
+  shIsinKisa: 'Properties',
   pcKararlar: 'Decisions',
   shEvinKisa: 'Home',
   shEvFallback: 'Home',
@@ -1073,7 +1073,7 @@ const EN: Metinler = {
   // ---- Mobile live score badge + detail modal ----
   skorDetayBaslik: 'Live Score',
   skorDetayPlaceholder: 'Score Calculation Details',
-  shIsyeriTitle: '{0} — Investments',
+  shIsyeriTitle: 'Properties: land and buildings',
   shEvTitle: '{0} — Income & Expenses',
 
   // ---- EtkiCipleri ----
@@ -1199,7 +1199,7 @@ const EN: Metinler = {
   feSohretYil: '⭐ Fame {0}/yr',
 
   // ---- IsYatirimEkrani ----
-  iyBaslik: 'Investments',
+  iyBaslik: 'Properties',
   iyGorevin: 'Your Duty',
   iyYillikKazanc: 'Yearly Earnings',
   iySehirYonetimi: 'City Administration',

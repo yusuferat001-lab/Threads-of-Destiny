@@ -584,48 +584,23 @@
 }
 
 /* =====================================================================
- * PC (≥768px): strateji sayfalarında yazı okunur olsun. Genişlik/sütun düzeni pc-tema.css'te
- * (%10 kenar boşluğu + iki sütun); burada yalnız ölçek, zemin ve düğme boyutu.
- * `zoom` yazıyı ve aralıkları tek yerden büyütür (rem tabanlı çok sayıda küçük boyut
- * tek tek ezilmesin diye). Mobil kurallar dokunulmaz.
+ * PC (≥768px): strateji sayfaları ana oyun ekranının ORTASINDA panel olarak açılır
+ * (strateji-panel.css: kabuk, ölçek, sütun düzeni). Burada yalnız zemin ve düğme boyutu.
  * ===================================================================== */
 @media (min-width: 768px) {
   .strateji-sayfa {
-    zoom: 1.15;
-    padding-bottom: 48px;
     /* Kartların dışındaki etiketler (ör. "Yeni erler için hedef:") koyu zeminde okunsun. */
     color: var(--s-mocha-yazi);
     background:
       repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 6px),
       linear-gradient(180deg, #3b2b20 0%, #2c1f16 100%);
   }
-  .strateji-sayfa .isletme-hatlar {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px 14px;
-    align-items: start;
-  }
   .strateji-sayfa .isletme-ozet:not(.isletme-ozet-ana) {
-    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   }
   .strateji-sayfa h3,
   .strateji-sayfa h4 {
     font-size: 0.82rem;
-  }
-}
-@media (min-width: 1700px) {
-  .strateji-sayfa {
-    zoom: 1.3;
-  }
-}
-
-/* PC: yan sütun kısayolundan açılan eski tam sayfa "Kariyer" (strateji kabuğu dışı) da okunur olsun. */
-@media (min-width: 768px) {
-  .oyun-kapsayici:has(.ekran-kariyer) {
-    max-width: 1100px;
-  }
-  .ekran-kariyer {
-    zoom: 1.15;
   }
   .strateji-sayfa button:not(.strateji-kapat):not(.strateji-baglanti) {
     font-size: 0.9rem;

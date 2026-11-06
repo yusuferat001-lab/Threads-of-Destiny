@@ -92,7 +92,7 @@ import {
   isletmeKararVer,
   isletmeOgretiSec,
   birlikDoktrinSec,
-  birlikKaliteYukselt,
+  birlikTechizatSec,
   birlikBirlikSec,
   birlikKusatma,
   birlikTerhis,
@@ -123,7 +123,8 @@ import { HayatHikayesi } from './components/HayatHikayesi';
 import { HaberlerPaneli } from './components/HaberlerPaneli';
 import { BolgeBilgisiPaneli } from './components/BolgeBilgisiPaneli';
 import { AileEkrani } from './components/AileEkrani';
-import { KariyerEkrani } from './components/KariyerEkrani';
+import { createPortal } from 'react-dom';
+import { StratejiSayfasi } from './components/StratejiSayfasi';
 import { FinansOzetPaneli } from './components/FinansOzetPaneli';
 import { KisayolKartlari, type KisayolId } from './components/KisayolKartlari';
 import { EnvanterPaneli } from './components/EnvanterPaneli';
@@ -185,6 +186,7 @@ import './ana-ekran.css';
 import './strateji.css';
 import './pc-olay-kutusu.css';
 import './pc-tema.css';
+import './strateji-panel.css';
 
 // Geçici olarak kapatıldı (2026-09): günlük giriş serisi/ödülü, gold bakiyesi ve kozmetik dolabı
 // oyuncuya gösterilmiyor. Alttaki mekanik/veri katmanına dokunulmadı — yeniden açmak için bunu
@@ -201,7 +203,7 @@ type Ekran =
   | 'olum'
   | 'liderlik'
   | 'aile'
-  | 'kariyer'
+  | 'strateji'
   | 'finans'
   | 'yatirim'
   | 'sosyallesme'
@@ -267,7 +269,6 @@ const TAM_EKRAN_GRUBU: Ekran[] = [
 const ALT_GEZINME_EKRANLARI: Ekran[] = [
   'oyun',
   'sonuc',
-  'kariyer',
   'yatirim',
   'finans',
   'sosyallesme',
@@ -279,7 +280,9 @@ const ALT_GEZINME_EKRANLARI: Ekran[] = [
  * hariç ALT_GEZINME_EKRANLARI. Sabit para rozeti ZATEN bu ekranlarda görünüyordu (aşağıda);
  * mobilde büyük ✕ kapatma butonu da (kullanıcı isteği: "ana ekrana dönüş kolay olsun")
  * aynı listeyi kullanıyor — her birinin "Geri Dön" butonuyla birebir aynı işi yapar. */
-const ALT_EKRAN_GRUBU: Ekran[] = ['yatirim', 'sosyallesme', 'magaza', 'aile', 'kariyer', 'finans'];
+/** PC'de merkez panelde açılabilen yan ekranlar. */
+const YAN_EKRANLAR: Ekran[] = ['finans', 'yatirim', 'magaza', 'sosyallesme', 'aile'];
+const ALT_EKRAN_GRUBU: Ekran[] = ['yatirim', 'sosyallesme', 'magaza', 'aile', 'finans'];
 
 /** Geri bildirim mesajlarına eklenen uygulama sürümü — bir hata raporunun hangi build'e
  * ait olduğunu ayırt etmek için. Yeni bir sürüm çıkınca elle güncelle. */
@@ -400,7 +403,9 @@ function App() {
   const [yilNotu, setYilNotu] = useState<string | null>(null);
   const [bildirimTick, setBildirimTick] = useState(0);
   // Ana ekran tuşundan açılan strateji sayfası (null: eski tam ekran Kariyer).
-  const [kariyerSayfa, setKariyerSayfa] = useState<AnaTusId | null>(null);
+  // Strateji sayfası: PC'de ana ekranın ortasında (ekran 'oyun' kalır), mobilde tam ekran ('strateji').
+  const [stratejiSayfa, setStratejiSayfa] = useState<AnaTusId | null>(null);
+  const [panelHedef, setPanelHedef] = useState<HTMLElement | null>(null);
   const [kariyerOdak, setKariyerOdak] = useState<'musteri' | 'butce' | null>(null);
   const [yeniBasarimlar, setYeniBasarimlar] = useState<BasarimTanimi[]>([]);
   const [dil, setDil] = useState<Dil>(() => ayarlariGetir().dil);
@@ -476,7 +481,7 @@ function App() {
       ekran === 'oyun' ||
       ekran === 'sonuc' ||
       ekran === 'aile' ||
-      ekran === 'kariyer' ||
+      ekran === 'strateji' ||
       ekran === 'finans' ||
       ekran === 'yatirim' ||
       ekran === 'sosyallesme' ||
@@ -1160,25 +1165,27 @@ function App() {
   }
 
   // ===== Kariyer sayfası: Yönetimle Bağlar (§35) =====
-  async function kariyerEkraniniAc() {
+  async function stratejiVerisiYukle(tamEkran: boolean) {
     if (!karakter) return;
     setHata(null);
     setYukleniyor(true);
     try {
-      const [durum, { config }, pazar, isletmeDurumu, dedi] = await Promise.all([
+      const [durum, { config }, pazar, isletmeDurumu, dedi, kr] = await Promise.all([
         yonetimDurumGetir(karakter.id),
         kotuIsConfigGetir(karakter.id),
         pazarGetir(karakter.id),
         isletmeGetir(karakter.id),
         dedikoduGetir(karakter.id),
+        krediGetir(karakter.id),
       ]);
       setDedikodular(dedi.dedikodular);
       setIsletme(isletmeDurumu);
       setYonetimDurum(durum);
       setKotuIsler(config);
       setPazarDurum(pazar);
+      setKrediConfig(kr);
       setIslemMesaji(null);
-      setEkran('kariyer');
+      if (tamEkran) setEkran('strateji');
     } catch (err) {
       setHata(temizHata(err));
     } finally {
@@ -1776,7 +1783,7 @@ function App() {
     }
   }
   const birlikKararHandler = (k: BirlikKararGirdisi) => birlikEylemHandler(() => isletmeKararVer(karakter!.id, [], undefined, k));
-  const birlikKaliteHandler = (hedef: 'orta' | 'yuksek', yuzde: number) => birlikEylemHandler(() => birlikKaliteYukselt(karakter!.id, hedef, yuzde));
+  const birlikTechizatHandler = (seviye: 'dusuk' | 'orta' | 'yuksek') => birlikEylemHandler(() => birlikTechizatSec(karakter!.id, seviye));
   const birlikBirlikHandler = (turler: BirlikTur[]) => birlikEylemHandler(() => birlikBirlikSec(karakter!.id, turler));
   const birlikKusatmaHandler = (seviye: number) => birlikEylemHandler(() => birlikKusatma(karakter!.id, seviye));
   const birlikKiralikHandler = () => birlikEylemHandler(() => birlikKiralik(karakter!.id));
@@ -1986,9 +1993,24 @@ function App() {
   const stokUyariSen = stokUyarisi && karakter ? stokUyariSenaryosu(stokUyarisi, karakter.meslek, dil) : null;
   function anaTusHandler(tus: AnaTusId, odak: 'musteri' | 'butce' | null = null) {
     setKariyerOdak(odak);
-    setKariyerSayfa(tus);
-    void kariyerEkraniniAc();
+    if (yanEkranPc) setEkran('oyun');
+    // PC: aynı tuşa ikinci basış sayfayı kapatır; başka tuş sayfayı anında değiştirir (✕ gerekmez).
+    if (!mobil && stratejiSayfa === tus && !odak) {
+      setStratejiSayfa(null);
+      return;
+    }
+    setStratejiSayfa(tus);
+    void stratejiVerisiYukle(mobil);
   }
+  // PC: olay/öğreti/doktrin/savaş kararı gibi bir pencere ya da başka bir ekran gelince orta sayfa kapanır.
+  useEffect(() => {
+    if (!mobil && stratejiSayfa && !anaEkranModu) setStratejiSayfa(null);
+  }, [mobil, stratejiSayfa, anaEkranModu]);
+  // PC: sayfa açıkken yıl ilerleyince (İLERLE) sayfanın verisi tazelenir.
+  useEffect(() => {
+    if (!mobil && stratejiSayfa && karakter) void stratejiVerisiYukle(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [karakter?.yil]);
 
   const pencereAcik = ayarlarAcik || bolgeBilgiAcik || kisilikModalAcik || skorDetayAcik || gostergeAcik !== null;
   // PC yan sütunlarındaki ahşap kısayol kartları (eskiden sahne üstündeki tıklama noktaları).
@@ -1999,8 +2021,6 @@ function App() {
         ogeler={ogeler}
         cag={karakter.cag}
         bolge={karakter.bolge}
-        meslek={karakter.meslek}
-        dinKultur={karakter.din_kultur}
         konutId={karakter.konut_id}
         konutlar={konutlar}
         devreDisi={yukleniyor}
@@ -2011,6 +2031,78 @@ function App() {
         onEv={finansEkraniniAc}
         onSosyallesme={sosyallesmeEkraniniAc}
         onAile={aileEkraniniAc}
+      />
+    );
+  }
+
+  // PC: Evin / Mağaza / Sosyalleş / İlişkiler / Gayrimenkuller de strateji sayfaları gibi ana ekranın ortasında açılır
+  // (sol-sağ panel ve alttaki meslek tuşları görünür kalır). Yalnız "ilerle" modunda ve bekleyen olay yokken.
+  const yanEkranPc = !mobil && !!karakter && ilerleModu && !senaryo && !tanisma && !tanismaSonuc && YAN_EKRANLAR.includes(ekran);
+  const yanEkranSarmal = (jsx: ReactNode) => (!mobil && yanEkranPc ? (panelHedef ? createPortal(jsx, panelHedef) : null) : jsx);
+
+  // Strateji sayfası (İşletme/Yatırım/Çalışan/Çevre): PC'de merkez panelde ('panel'), mobilde tam ekran ('tam').
+  function stratejiSayfasi(modu: 'panel' | 'tam') {
+    if (!karakter || !stratejiSayfa) return null;
+    return (
+      <StratejiSayfasi
+        meslek={karakter.meslek}
+        rutbe={karakter.rutbe}
+        rutbeSeviye={karakter.rutbe_seviye}
+        cag={karakter.cag}
+        dinKultur={karakter.din_kultur}
+        bolge={karakter.bolge}
+        kariyerPuani={karakter.kariyer_puani}
+        un={karakter.un}
+        ahlak={karakter.ahlak}
+        yil={karakter.yil}
+        sonTerfiYili={karakter.son_terfi_yili}
+        ekip={karakter.ekip}
+        rakipler={karakter.rakipler}
+        orduMevcudu={karakter.ordu_mevcudu}
+        orduTechizatSeviyesi={karakter.ordu_techizat_seviyesi}
+        ticaretSermaye={karakter.ticaret_sermaye}
+        nufuz={karakter.nufuz}
+        hapiste={karakter.etiketler.includes('hapiste')}
+        hapisCezaKalan={karakter.hapis_ceza_kalan}
+        vebaHastasi={karakter.etiketler.includes('veba_hastasi')}
+        vebaOlumRiski={karakter.veba_olum_riski}
+        paraBirimi={karakter.para_birimi}
+        kotuIsler={kotuIsler}
+        sucSeviyesi={karakter.suc_seviyesi}
+        yukleniyor={yukleniyor}
+        islemMesaji={islemMesaji}
+        yonetimDurum={yonetimDurum}
+        pazarDurum={pazarDurum}
+        onEtkilesim={yonetimEtkilesimHandler}
+        onIstek={yonetimIstekHandler}
+        onTalep={yonetimTalepHandler}
+        onEkipCikar={ekipCikarHandler}
+        onKotuIs={kotuIsHandler}
+        dedikodular={dedikodular}
+        finans={finans}
+        gecmis={karakter.gecmis}
+        isletme={isletme}
+        onIsletmeKarar={isletmeKararHandler}
+        onBirlikKarar={birlikKararHandler}
+        onBirlikTechizat={birlikTechizatHandler}
+        onBirlikSec={birlikBirlikHandler}
+        onBirlikKusatma={birlikKusatmaHandler}
+        onBirlikTerhis={birlikTerhisHandler}
+        onBirlikKiralik={birlikKiralikHandler}
+        onIsletmeYatirim={isletmeYatirimHandler}
+        onIsletmeYatirimDusur={isletmeYatirimDusurHandler}
+        onIsletmeCalisanAl={isletmeCalisanAlHandler}
+        sayfa={stratejiSayfa}
+        modu={modu}
+        odak={kariyerOdak}
+        krediConfig={krediConfig}
+        onKrediAl={krediAlHandler}
+        onKrediPazarlik={krediPazarlikHandler}
+        onGeriDon={() => {
+          setIslemMesaji(null);
+          setStratejiSayfa(null);
+          if (modu === 'tam') setEkran('oyun');
+        }}
       />
     );
   }
@@ -2026,7 +2118,7 @@ function App() {
         // mobilde DOĞAL sayfa kayması gerektiriyor — App.css'teki mobil override bu
         // sınıfa bakarak ikisini ayırıyor (aksi halde dıştaki kilit onların içindeki
         // "kendi içinde kay" gevşetmesini boşa çıkarıp aşağı kaymayı tamamen engelliyordu).
-        ekran === 'oyun' || ekran === 'sonuc' ? 'oyun-kapsayici-tam-kilitli' : null,
+        ekran === 'oyun' || ekran === 'sonuc' || yanEkranPc ? 'oyun-kapsayici-tam-kilitli' : null,
         // Çağa göre vurgu rengi (§ CLAUDE.md "Seçenek 2"): Sanayi Devrimi'nde
         // vurgu paleti soğuk pirinç/turkuaza kayar (App.css `.tema-sanayi`).
         // Orta Çağ ve henüz çağ seçilmemiş ekranlar (giriş menüsü) varsayılan
@@ -2048,7 +2140,7 @@ function App() {
       {/* Oyun-içi yan ekranlarda (Yatırım/Sosyalleş/Mağaza/Aile/Kariyer/Gelir&Gider/Evlilik)
          paranın her zaman görünür olması için sabit bir rozet. Ana oyun/sonuç ekranında
          zaten UstSerit'te para modülü var, orada tekrar göstermeyiz. */}
-      {karakter && ALT_EKRAN_GRUBU.includes(ekran) && (
+      {karakter && ALT_EKRAN_GRUBU.includes(ekran) && !yanEkranPc && (
         <div className="oyun-para-rozeti" aria-label={m.iyKendiParan}>
           💰 {formatPara(karakter.para)} {karakter.para_birimi}
         </div>
@@ -2057,7 +2149,7 @@ function App() {
          bir ✕ (mobil, kullanıcı isteği) — her ekranın kendi "Geri Dön" butonuyla birebir
          aynı işi yapar, sadece her zaman aynı köşede ve tek dokunuşla erişilir. Bu köşeyi
          alması için ayar dişlisi + para rozeti aşağı kayar (App.css, aynı istek). */}
-      {mobil && karakter && ALT_EKRAN_GRUBU.includes(ekran) && !(ekran === 'kariyer' && kariyerSayfa) && (
+      {mobil && karakter && ALT_EKRAN_GRUBU.includes(ekran) && (
         <button
           type="button"
           className="ekran-kapat-buton"
@@ -2071,7 +2163,7 @@ function App() {
           ✕
         </button>
       )}
-      {mobil && karakter && ALT_GEZINME_EKRANLARI.includes(ekran) && !(ekran === 'kariyer' && kariyerSayfa) && (
+      {mobil && karakter && ALT_GEZINME_EKRANLARI.includes(ekran) && (
         <AltGezinme
           ekran={ekran}
           devreDisi={yukleniyor || (ilerleModu && !!karakter.olay_bekliyor)}
@@ -2104,7 +2196,7 @@ function App() {
         <UrunSecimi stateId={karakter.id} yukleniyor={yukleniyor} onSec={urunSecHandler} />
       )}
 
-      {karakter && vergiBekliyor(karakter) && karakter.yonetim_talep && ['oyun', 'sonuc', 'kariyer', 'finans', 'yatirim', 'sosyallesme', 'magaza', 'aile'].includes(ekran) && (
+      {karakter && vergiBekliyor(karakter) && karakter.yonetim_talep && ['oyun', 'sonuc', 'strateji', 'finans', 'yatirim', 'sosyallesme', 'magaza', 'aile'].includes(ekran) && (
         <VergiTalebi
           talep={karakter.yonetim_talep}
           paraBirimi={karakter.para_birimi}
@@ -2113,7 +2205,7 @@ function App() {
         />
       )}
 
-      {karakter && ogretiBekliyor(karakter) && ['oyun', 'sonuc', 'kariyer', 'finans', 'yatirim', 'sosyallesme', 'magaza', 'aile'].includes(ekran) && (
+      {karakter && ogretiBekliyor(karakter) && ['oyun', 'sonuc', 'strateji', 'finans', 'yatirim', 'sosyallesme', 'magaza', 'aile'].includes(ekran) && (
         <OgretiSecimi
           stateId={karakter.id}
           ogretiSayisi={((karakter.isletme as { cemaat?: { ogretiler?: string[] } } | null)?.cemaat?.ogretiler ?? []).length}
@@ -2122,7 +2214,7 @@ function App() {
         />
       )}
 
-      {karakter && doktrinBekliyor(karakter) && ['oyun', 'sonuc', 'kariyer', 'finans', 'yatirim', 'sosyallesme', 'magaza', 'aile'].includes(ekran) && (
+      {karakter && doktrinBekliyor(karakter) && ['oyun', 'sonuc', 'strateji', 'finans', 'yatirim', 'sosyallesme', 'magaza', 'aile'].includes(ekran) && (
         <DoktrinSecimi
           stateId={karakter.id}
           doktrinSayisi={((karakter.isletme as { birlik?: { doktrinler?: string[] } } | null)?.birlik?.doktrinler ?? []).length}
@@ -2131,7 +2223,7 @@ function App() {
         />
       )}
 
-      {karakter && savasKarari && !doktrinBekliyor(karakter) && ['oyun', 'sonuc', 'kariyer', 'finans', 'yatirim', 'sosyallesme', 'magaza', 'aile'].includes(ekran) && (
+      {karakter && savasKarari && !doktrinBekliyor(karakter) && ['oyun', 'sonuc', 'strateji', 'finans', 'yatirim', 'sosyallesme', 'magaza', 'aile'].includes(ekran) && (
         <SavasKararlari karar={savasKarari} yukleniyor={yukleniyor} onSec={savasKarariVerHandler} />
       )}
 
@@ -2626,7 +2718,7 @@ function App() {
         </div>
       )}
 
-      {(ekran === 'oyun' || ekran === 'sonuc') && karakter && (senaryo || anaEkranModu) && (
+      {(((ekran === 'oyun' || ekran === 'sonuc') && (senaryo || anaEkranModu)) || yanEkranPc) && karakter && (
         <>
         {/* Sahne artık bir şerit değil, TÜM sayfanın arkasını kaplayan katman (mobil: portre, PC: yatay;
             PC'de yan sütunların da arkasında durur). `.oyun-ekrani`nın dışında durur — onun `ekranBelir`
@@ -2796,7 +2888,7 @@ function App() {
             </YanPanel>
             )}
 
-            <div className={`${mobil ? 'merkez-panel merkez-panel-mobil' : 'merkez-panel'}${anaEkranModu && !stokUyarisi ? ' merkez-panel-ana' : ''}`}>
+            <div className={`${mobil ? 'merkez-panel merkez-panel-mobil' : 'merkez-panel'}${anaEkranModu && !stokUyarisi ? ' merkez-panel-ana' : ''}${!mobil && ((stratejiSayfa && anaEkranModu) || yanEkranPc) ? ' merkez-panel-sayfa' : ''}`}>
               {!mobil && (
                 // PC: sahne artık sayfa-düzeyi arka plan (yukarıda `.oyun-arka-sahne`); bu boş alan resmi
                 // gösterir, amaç şeridi üstüne biner, olay kutusu altta durur.
@@ -2812,8 +2904,14 @@ function App() {
                   }}
                 />
               )}
-              {anaEkranModu && !stokUyarisi && (
+              {!mobil && stratejiSayfa && anaEkranModu && !stokUyarisi && (
+                <div className="strateji-panel-kabuk">{stratejiSayfasi('panel')}</div>
+              )}
+              {yanEkranPc && <div className="strateji-panel-kabuk yan-ekran-kabuk" ref={setPanelHedef} />}
+              {(anaEkranModu || yanEkranPc) && !stokUyarisi && (
                 <AnaEkranMobil
+                  sayfaAcik={!mobil ? stratejiSayfa : null}
+                  kompakt={yanEkranPc}
                   karakter={karakter}
                   isletme={isletme?.aktif ? isletme : null}
                   finans={finans}
@@ -2959,7 +3057,7 @@ function App() {
         </>
       )}
 
-      {ekran === 'finans' && finans && karakter && (
+      {ekran === 'finans' && finans && karakter && yanEkranSarmal(
         <FinansEkrani
           finans={finans}
           paraBirimi={karakter.para_birimi}
@@ -2982,16 +3080,13 @@ function App() {
         />
       )}
 
-      {ekran === 'yatirim' && karakter && (
+      {ekran === 'yatirim' && karakter && yanEkranSarmal(
         <IsYatirimEkrani
           paraBirimi={karakter.para_birimi}
-          krediConfig={krediConfig}
           mulkler={mulkler}
           para={karakter.para}
           yukleniyor={yukleniyor}
           islemMesaji={islemMesaji}
-          onKrediAl={krediAlHandler}
-          onKrediPazarlik={krediPazarlikHandler}
           onMulkSatinAl={mulkSatinAlHandler}
           onGeriDon={() => {
             setIslemMesaji(null);
@@ -3000,7 +3095,7 @@ function App() {
         />
       )}
 
-      {ekran === 'sosyallesme' && karakter && (
+      {ekran === 'sosyallesme' && karakter && yanEkranSarmal(
         <SosyallesmePaneli
           yerler={sosyallesmeYerleri}
           yukleniyor={yukleniyor}
@@ -3080,7 +3175,7 @@ function App() {
         />
       )}
 
-      {ekran === 'magaza' && karakter && (
+      {ekran === 'magaza' && karakter && yanEkranSarmal(
         <MagazaPaneli
           para={karakter.para}
           paraBirimi={karakter.para_birimi}
@@ -3103,7 +3198,7 @@ function App() {
         />
       )}
 
-      {ekran === 'aile' && karakter && (
+      {ekran === 'aile' && karakter && yanEkranSarmal(
         <AileEkrani
           anneAdi={karakter.anne_adi}
           babaAdi={karakter.baba_adi}
@@ -3130,68 +3225,7 @@ function App() {
         />
       )}
 
-      {ekran === 'kariyer' && karakter && (
-        <KariyerEkrani
-          meslek={karakter.meslek}
-          rutbe={karakter.rutbe}
-          rutbeSeviye={karakter.rutbe_seviye}
-          cag={karakter.cag}
-          dinKultur={karakter.din_kultur}
-          bolge={karakter.bolge}
-          kariyerPuani={karakter.kariyer_puani}
-          un={karakter.un}
-          ahlak={karakter.ahlak}
-          yil={karakter.yil}
-          sonTerfiYili={karakter.son_terfi_yili}
-          ekip={karakter.ekip}
-          rakipler={karakter.rakipler}
-          orduMevcudu={karakter.ordu_mevcudu}
-          orduTechizatSeviyesi={karakter.ordu_techizat_seviyesi}
-          ticaretSermaye={karakter.ticaret_sermaye}
-          nufuz={karakter.nufuz}
-          hapiste={karakter.etiketler.includes('hapiste')}
-          hapisCezaKalan={karakter.hapis_ceza_kalan}
-          vebaHastasi={karakter.etiketler.includes('veba_hastasi')}
-          vebaOlumRiski={karakter.veba_olum_riski}
-          paraBirimi={karakter.para_birimi}
-          kotuIsler={kotuIsler}
-          sucSeviyesi={karakter.suc_seviyesi}
-          yukleniyor={yukleniyor}
-          islemMesaji={islemMesaji}
-          yonetimDurum={yonetimDurum}
-          pazarDurum={pazarDurum}
-          onEtkilesim={yonetimEtkilesimHandler}
-          onIstek={yonetimIstekHandler}
-          onTalep={yonetimTalepHandler}
-          onEkipCikar={ekipCikarHandler}
-          onKotuIs={kotuIsHandler}
-          dedikodular={dedikodular}
-          finans={finans}
-          gecmis={karakter.gecmis}
-          isletme={isletme}
-          onIsletmeKarar={isletmeKararHandler}
-          onBirlikKarar={birlikKararHandler}
-          onBirlikKaliteYukselt={birlikKaliteHandler}
-          onBirlikSec={birlikBirlikHandler}
-          onBirlikKusatma={birlikKusatmaHandler}
-          onBirlikTerhis={birlikTerhisHandler}
-          onBirlikKiralik={birlikKiralikHandler}
-          onIsletmeYatirim={isletmeYatirimHandler}
-          onIsletmeYatirimDusur={isletmeYatirimDusurHandler}
-          onIsletmeCalisanAl={isletmeCalisanAlHandler}
-          sayfa={kariyerSayfa ?? undefined}
-          odak={kariyerOdak}
-          onMulkKredi={() => {
-            setKariyerSayfa(null);
-            void yatirimEkraniniAc();
-          }}
-          onGeriDon={() => {
-            setIslemMesaji(null);
-            setKariyerSayfa(null);
-            setEkran('oyun');
-          }}
-        />
-      )}
+      {ekran === 'strateji' && karakter && stratejiSayfa && stratejiSayfasi('tam')}
 
       {ekran === 'olum' && karakter && (() => {
         // Ölüm ekranının içeriği tek sette tanımlanır, masaüstü/mobil ikisi de

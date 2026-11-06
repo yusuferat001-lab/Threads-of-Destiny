@@ -69,7 +69,7 @@
 
   /* ==== Düzen: sabit genişlikli yan sütunlar, esnek merkez ==== */
   .oyun-ekrani-pc .oyun-govde {
-    grid-template-columns: clamp(250px, 19vw, 400px) minmax(0, 1fr) clamp(230px, 17vw, 360px);
+    grid-template-columns: clamp(var(--sol-min, 210px), var(--sol-oran, 14vw), 300px) minmax(0, 1fr) clamp(var(--sag-min, 205px), var(--sag-oran, 13vw), 270px);
     gap: clamp(0.6rem, 1vw, 1.1rem);
   }
 
@@ -396,7 +396,7 @@
     gap: 0.75rem;
     width: 100%;
     margin: 0;
-    padding: 0.5rem 2rem 0.5rem 0.6rem;
+    padding: 0.5rem 1.5rem 0.5rem 0.6rem;
     text-align: left;
     font-family: var(--font-baslik);
     font-size: var(--yz-pn);
@@ -459,7 +459,9 @@
     flex: 1 1 auto;
     min-width: 0;
     line-height: 1.2;
-    overflow-wrap: anywhere;
+    font-size: 0.8em;
+    letter-spacing: 0;
+    overflow-wrap: break-word;
   }
 }
 
@@ -468,7 +470,6 @@
   /* Ortak kabuk: koyu kahve zemin + altın kenar. `--panel-ust/-alt` tokenlarını ezmek,
      bu tokenları kullanan tüm kartları (yatırım, aile, kariyer, finans…) tek hamlede boyar. */
   .ekran.ekran-tam-sayfa,
-  .ekran.ekran-kariyer,
   .ekran.ekran-aile {
     --panel-ust: var(--v-kart-ust);
     --panel-alt: var(--v-kart-alt);
@@ -487,7 +488,6 @@
 
   /* Başlıklar */
   .ekran.ekran-tam-sayfa > h2,
-  .ekran.ekran-kariyer > h2,
   .ekran.ekran-aile > h2 {
     color: var(--v-altin);
     letter-spacing: 0.08em;
@@ -508,7 +508,6 @@
   }
   .ekran-tam-sayfa .tam-baslik,
   .ekran-tam-sayfa .tam-baslik-dedikodu,
-  .ekran-kariyer .kariyer-bolum > h3,
   .ekran-aile .aile-kart h3 {
     color: var(--v-altin);
     opacity: 1;
@@ -646,9 +645,6 @@
   .yatirim-kartlari {
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   }
-  .oyun-kapsayici:has(.ekran-kariyer) {
-    max-width: min(1560px, 100%);
-  }
   .oyun-kapsayici-tam .ekran-tam-sayfa {
     width: 100%;
     max-width: 1920px;
@@ -755,56 +751,5 @@
   }
   .oyun-ekrani-pc .ust-serit-modul-deger {
     font-size: clamp(0.8rem, 0.5vw + 0.62rem, 1.15rem);
-  }
-}
-
-/* ---- PC strateji sayfaları (Dükkân/Yatırım/Çalışan/Çevre): iki yandan %10 boşluk + iki sütun ---- */
-@media (min-width: 768px) {
-  .strateji-sayfa > :not(.strateji-baslik):not(.kariyer-sonuc-katman) {
-    margin-left: 10%;
-    margin-right: 10%;
-  }
-  .strateji-sayfa > .kariyer-govde {
-    margin-left: 10%;
-    margin-right: 10%;
-  }
-  .strateji-sayfa .kariyer-govde {
-    padding: 14px 0 0;
-  }
-  /* Dükkân: sol sütun depo + ürün hatları, sağ sütun Bütçen. */
-  .strateji-sayfa .isletme-iki-sutun {
-    display: grid;
-    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
-    gap: 20px;
-    align-items: start;
-  }
-  .strateji-sayfa .isletme-sutun {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-  }
-  .strateji-sayfa .isletme-sutun > .isletme-butce-baslik {
-    margin-top: 0;
-  }
-  .strateji-sayfa .isletme-butce {
-    margin: 6px 0 10px;
-    grid-template-columns: 1fr;
-  }
-  /* Yatırım ve Çalışan kartları iki sütun. */
-  .strateji-sayfa .isletme-yatirimlar,
-  .strateji-sayfa .isletme-calisanlar {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px 20px;
-  }
-  /* Çevre: ana sütun + pazar kartı yan yana. */
-  .strateji-sayfa .kariyer-govde:has(.kariyer-yan-sutun > *) {
-    display: grid;
-    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
-    gap: 20px;
-    align-items: start;
-  }
-  .strateji-sayfa .kariyer-govde:has(.kariyer-yan-sutun > *) .kariyer-yan-sutun {
-    margin-top: 0;
   }
 }

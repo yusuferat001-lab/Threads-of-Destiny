@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import type { CemaatKararGirdisi, CemaatPolitikaGorunumu, IsletmeGorunumu, IsletmeKararGirdisi, IsletmeUyari, PazarDurumu } from '../types';
 import { useDil } from '../DilContext';
 import { kt } from '../katalog';
@@ -17,6 +17,8 @@ interface Props {
   onEkipCikar: (ekipId: string) => void;
   /** Telefon ana ekranı sayfaları: yalnız bir bölümü çiz (varsayılan hepsi). */
   bolum?: 'hepsi' | 'isletme' | 'yatirim' | 'calisan';
+  /** Cemaat sayfasında "durum" hücresinin üstüne konan blok (rütbe kademesi + ilerleme). */
+  ustBlok?: ReactNode;
 }
 
 type D = { tr: string; en: string };
@@ -148,7 +150,7 @@ const SALDIRI_ENGELLENDI: Record<string, D> = {
 
 let sonGosterilenYil = -1;
 
-export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onYatirimDusur, onCalisanAl, onEkipCikar, bolum = 'hepsi' }: Props) {
+export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onYatirimDusur, onCalisanAl, onEkipCikar, bolum = 'hepsi', ustBlok }: Props) {
   const { dil } = useDil();
   const t = (k: keyof typeof M) => M[k][dil];
   const d = (m: D) => m[dil];
@@ -240,8 +242,9 @@ export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onY
     <section className="isletme-paneli cemaat-paneli">
       {(bolum === 'hepsi' || bolum === 'isletme') && (
         <>
-      <h3>{t('baslik')}</h3>
-
+      <div className="sayfa-izgara cemaat-izgara">
+      <div className="sayfa-blok blok-durum">
+      {ustBlok}
       <div className={`cemaat-donem cemaat-donem-${c.donem.kaynak}`}>
         <strong>
           {t('donemBaslik')}: {donemAdi}
@@ -288,81 +291,16 @@ export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onY
         </div>
       )}
 
-      <h4 className="isletme-butce-baslik">{dil === 'en' ? '📒 Your budget' : '📒 Bütçen'}</h4>
-      <div className="isletme-dokum">
-        <div>
-          {t('bagisKalemi')} ({formatMusteri(dil, c.bagisYapan)} {t('bagisYapan')} %{c.bagisOrani}): <strong>+{formatPara(c.bagis)}</strong>
-        </div>
-        <div>
-          {t('faaliyetKalemi')}: <strong>+{formatPara(c.faaliyetGelir)}</strong>
-        </div>
-        <div>
-          {t('toplamGelir')}: <strong>+{formatPara(c.toplamGelir)}</strong>
-        </div>
-        <div>{t('gFaaliyet')}: <strong>−{formatPara(c.giderler.faaliyet)}</strong></div>
-        <div>{t('gAyin')}: <strong>−{formatPara(c.giderler.ayin)}</strong></div>
-        <div>{t('gBina')}: <strong>−{formatPara(c.giderler.bina)}</strong></div>
-        <div>{t('gYardim')}: <strong>−{formatPara(c.giderler.yardim)}</strong></div>
-        <div>{t('gAidat')}: <strong>−{formatPara(c.giderler.aidat)}</strong></div>
-        <div>{t('gVergi')}: <strong>−{formatPara(c.giderler.vergi)}</strong></div>
-        {durum.butce.maas > 0 && (
-          <div>{dil === 'en' ? 'Staff wages' : 'Çalışan maaşları'}: <strong>−{formatPara(durum.butce.maas)}</strong></div>
-        )}
-        <div className="isletme-dokum-net">
-          {t('beklenenNet')}: <strong>~{durum.butce.net >= 0 ? '+' : ''}{formatPara(durum.butce.net)} {pb}{t('yil')}</strong>
-        </div>
-        <div>{dil === 'en' ? 'Living' : 'Yaşam'}: <strong>−{formatPara(durum.butce.yasam)}</strong></div>
-        <div>{dil === 'en' ? 'Rent' : 'Kira'}: <strong>−{formatPara(durum.butce.kira)}</strong></div>
-        {durum.butce.evcilHayvan > 0 && (
-          <div>{dil === 'en' ? 'Pets' : 'Evcil hayvan'}: <strong>−{formatPara(durum.butce.evcilHayvan)}</strong></div>
-        )}
-        {durum.butce.krediTaksit > 0 && (
-          <div>{dil === 'en' ? 'Loan instalment' : 'Kredi taksidi'}: <strong>−{formatPara(durum.butce.krediTaksit)}</strong></div>
-        )}
-        <div className="isletme-dokum-net">
-          {dil === 'en' ? 'Left in your pocket' : 'Cebine kalan'}: <strong>{durum.butce.cebineKalan >= 0 ? '+' : ''}{formatPara(durum.butce.cebineKalan)} {pb}</strong>
-        </div>
       </div>
-
-      <h4>
-        {t('ahlakBaslik')}: {c.ahlak.deger}
-      </h4>
-      <div className="cemaat-bar cemaat-ahlak-bar" aria-label={t('ahlakBaslik')}>
-        <div className="cemaat-bar-dolgu" style={{ width: `${c.ahlak.deger}%` }} />
-        {[25, 50, 75].map((x) => (
-          <i key={x} className="cemaat-bar-cizgi" style={{ left: `${x}%` }} />
-        ))}
-      </div>
-      <div className="cemaat-bantlar">
-        {c.ahlak.bantlar.map((b, i) => (
-          <span key={i} className={`cemaat-bant${i === c.ahlak.bant ? ' cemaat-bant-aktif' : ''}`}>
-            {b.min}–{b.max}: <strong>{yuzdeMetni(Math.round(b.inanan * 1000) / 10)}</strong>
-          </span>
-        ))}
-      </div>
-      <div className="isletme-fiyat-not">{t('ahlakNot')}</div>
-
-      <h4>
-        {t('fanatik')}: {c.fanatiklik} ({c.fanatiklikDegisim >= 0 ? '+' : ''}
-        {c.fanatiklikDegisim}
-        {t('yil')})
-      </h4>
-      <div className="cemaat-bar">
-        <div className="cemaat-bar-dolgu" style={{ width: `${c.fanatiklik}%`, background: fanatikRenk }} />
-        <i className="cemaat-bar-cizgi" style={{ left: '40%' }} />
-      </div>
-      <div className="isletme-fiyat-not">
-        {t('fanatikNot')}
-        <br />
-        {t('bagisCarpani')} {yuzdeMetni(c.fanatikEtkisi.bagisCarpani)} · {t('kacis')} −%{c.fanatikEtkisi.yillikKacis} · {t('otoriteKaybi')} −{c.fanatikEtkisi.yillikOtorite} · {t('asiriRisk')} %{c.fanatikEtkisi.asiriRisk}
-      </div>
-
+      <div className="sayfa-blok blok-pol">
       <h4>{t('politikalar')}</h4>
       {politika(t('pBagis'), 'bagis', c.politikalar.bagis)}
       {politika(t('pKitle'), 'kitle', c.politikalar.kitle)}
       {politika(t('pYardim'), 'yardim', c.politikalar.yardim)}
       {politika(t('pTon'), 'ton', c.politikalar.ton)}
 
+      </div>
+      <div className="sayfa-blok blok-faal">
       <h4>
         {t('faaliyetler')} ({t('slot')} {c.faaliyetSlot.kullanilan}/{c.faaliyetSlot.toplam})
       </h4>
@@ -404,6 +342,43 @@ export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onY
         ))}
       </div>
 
+      </div>
+      <div className="sayfa-blok blok-ahlak">
+      <h4>
+        {t('ahlakBaslik')}: {c.ahlak.deger}
+      </h4>
+      <div className="cemaat-bar cemaat-ahlak-bar" aria-label={t('ahlakBaslik')}>
+        <div className="cemaat-bar-dolgu" style={{ width: `${c.ahlak.deger}%` }} />
+        {[25, 50, 75].map((x) => (
+          <i key={x} className="cemaat-bar-cizgi" style={{ left: `${x}%` }} />
+        ))}
+      </div>
+      <div className="cemaat-bantlar">
+        {c.ahlak.bantlar.map((b, i) => (
+          <span key={i} className={`cemaat-bant${i === c.ahlak.bant ? ' cemaat-bant-aktif' : ''}`}>
+            {b.min}–{b.max}: <strong>{yuzdeMetni(Math.round(b.inanan * 1000) / 10)}</strong>
+          </span>
+        ))}
+      </div>
+      <div className="isletme-fiyat-not">{t('ahlakNot')}</div>
+
+      <h4>
+        {t('fanatik')}: {c.fanatiklik} ({c.fanatiklikDegisim >= 0 ? '+' : ''}
+        {c.fanatiklikDegisim}
+        {t('yil')})
+      </h4>
+      <div className="cemaat-bar">
+        <div className="cemaat-bar-dolgu" style={{ width: `${c.fanatiklik}%`, background: fanatikRenk }} />
+        <i className="cemaat-bar-cizgi" style={{ left: '40%' }} />
+      </div>
+      <div className="isletme-fiyat-not">
+        {t('fanatikNot')}
+        <br />
+        {t('bagisCarpani')} {yuzdeMetni(c.fanatikEtkisi.bagisCarpani)} · {t('kacis')} −%{c.fanatikEtkisi.yillikKacis} · {t('otoriteKaybi')} −{c.fanatikEtkisi.yillikOtorite} · {t('asiriRisk')} %{c.fanatikEtkisi.asiriRisk}
+      </div>
+
+      </div>
+      <div className="sayfa-blok blok-ogr">
       <h4>{t('ogretiler')}</h4>
       {c.ogretiler.secilen.length === 0 ? (
         <p className="isletme-bos">{t('ogretiYok')}</p>
@@ -447,25 +422,49 @@ export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onY
         )}
       </div>
 
+      </div>
+      <div className="sayfa-blok blok-piyasa">
       {pazar && pazar.aktif && <PiyasaHaberleri pazar={pazar} sayilarGoster />}
+      </div>
+      <div className="sayfa-blok blok-butce">
+      <h4 className="isletme-butce-baslik">{dil === 'en' ? '📒 Your budget' : '📒 Bütçen'}</h4>
+      <div className="isletme-dokum">
+        <div>
+          {t('bagisKalemi')} ({formatMusteri(dil, c.bagisYapan)} {t('bagisYapan')} %{c.bagisOrani}): <strong>+{formatPara(c.bagis)}</strong>
+        </div>
+        <div>
+          {t('faaliyetKalemi')}: <strong>+{formatPara(c.faaliyetGelir)}</strong>
+        </div>
+        <div>
+          {t('toplamGelir')}: <strong>+{formatPara(c.toplamGelir)}</strong>
+        </div>
+        <div>{t('gFaaliyet')}: <strong>−{formatPara(c.giderler.faaliyet)}</strong></div>
+        <div>{t('gAyin')}: <strong>−{formatPara(c.giderler.ayin)}</strong></div>
+        <div>{t('gBina')}: <strong>−{formatPara(c.giderler.bina)}</strong></div>
+        <div>{t('gYardim')}: <strong>−{formatPara(c.giderler.yardim)}</strong></div>
+        <div>{t('gAidat')}: <strong>−{formatPara(c.giderler.aidat)}</strong></div>
+        <div>{t('gVergi')}: <strong>−{formatPara(c.giderler.vergi)}</strong></div>
+        {durum.butce.maas > 0 && (
+          <div>{dil === 'en' ? 'Staff wages' : 'Çalışan maaşları'}: <strong>−{formatPara(durum.butce.maas)}</strong></div>
+        )}
+        <div className="isletme-dokum-net">
+          {t('beklenenNet')}: <strong>~{durum.butce.net >= 0 ? '+' : ''}{formatPara(durum.butce.net)} {pb}{t('yil')}</strong>
+        </div>
+        <div>{dil === 'en' ? 'Living' : 'Yaşam'}: <strong>−{formatPara(durum.butce.yasam)}</strong></div>
+        <div>{dil === 'en' ? 'Rent' : 'Kira'}: <strong>−{formatPara(durum.butce.kira)}</strong></div>
+        {durum.butce.evcilHayvan > 0 && (
+          <div>{dil === 'en' ? 'Pets' : 'Evcil hayvan'}: <strong>−{formatPara(durum.butce.evcilHayvan)}</strong></div>
+        )}
+        {durum.butce.krediTaksit > 0 && (
+          <div>{dil === 'en' ? 'Loan instalment' : 'Kredi taksidi'}: <strong>−{formatPara(durum.butce.krediTaksit)}</strong></div>
+        )}
+        <div className="isletme-dokum-net">
+          {dil === 'en' ? 'Left in your pocket' : 'Cebine kalan'}: <strong>{durum.butce.cebineKalan >= 0 ? '+' : ''}{formatPara(durum.butce.cebineKalan)} {pb}</strong>
+        </div>
+      </div>
 
-        </>
-      )}
-
-      <IsletmeOrtak
-        goster={bolum === 'isletme' ? 'yok' : bolum}
-        durum={durum}
-        yukleniyor={yukleniyor}
-        sadakatAdi={{ tr: 'İnanç', en: 'Faith' }}
-        riskliAciklama={{ tr: 'İnancı düşük: sırlarını sızdırabilir, kumbarayı yoklayabilir, işi bırakabilir', en: 'Low faith: may leak secrets, skim the offering box or quit' }}
-        onYatirim={onYatirim}
-        onYatirimDusur={onYatirimDusur}
-        onCalisanAl={onCalisanAl}
-        onEkipCikar={onEkipCikar}
-      />
-
-      {(bolum === 'hepsi' || bolum === 'isletme') && (
-        <>
+      </div>
+      <div className="sayfa-blok blok-dokum">
       <h4>{t('dokum')}</h4>
       {!dokum || !dokum.cemaat ? (
         <p className="isletme-bos">{t('ilkYil')}</p>
@@ -507,8 +506,22 @@ export function CemaatPaneli({ durum, pazar, yukleniyor, onKarar, onYatirim, onY
         </div>
       )}
 
+      </div>
+      </div>
         </>
       )}
+
+      <IsletmeOrtak
+        goster={bolum === 'isletme' ? 'yok' : bolum}
+        durum={durum}
+        yukleniyor={yukleniyor}
+        sadakatAdi={{ tr: 'İnanç', en: 'Faith' }}
+        riskliAciklama={{ tr: 'İnancı düşük: sırlarını sızdırabilir, kumbarayı yoklayabilir, işi bırakabilir', en: 'Low faith: may leak secrets, skim the offering box or quit' }}
+        onYatirim={onYatirim}
+        onYatirimDusur={onYatirimDusur}
+        onCalisanAl={onCalisanAl}
+        onEkipCikar={onEkipCikar}
+      />
 
       {uyariAcik && dokum && (
         <div className="kariyer-sonuc-katman kariyer-sonuc-katman-ust" role="dialog" onClick={() => setUyariAcik(false)}>
