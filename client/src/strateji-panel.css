@@ -879,3 +879,17 @@
     margin-top: 4px;
   }
 }
+
+/* Mobil: koyu zemindeki etiketler ve sayı girişi okunur kalsın (PC'de zaten açık renk) */
+.strateji-sayfa .birlik-hak,
+.strateji-sayfa .techizat-uyari-kilit {
+  color: #e3d3b8;
+}
+.strateji-sayfa .birlik-hak .s-esik {
+  color: var(--c-esik-koyu);
+}
+.strateji-sayfa .isletme-sayi-giris {
+  background: var(--s-latte-acik);
+  color: var(--s-latte-yazi);
+  border: 1px solid var(--s-latte-kenar);
+}
