@@ -551,6 +551,17 @@
   font-weight: 800;
 }
 .strateji-sayfa .isletme-ozet strong.negatif { color: var(--c-eksi); }
+/* Eşik / gereken değerler (gereken askerî güç, kademe x/y, rütbe şartı, birlik hakkı): eflatun */
+.strateji-sayfa {
+  --c-esik: #6a3f9f;
+}
+.strateji-sayfa .s-esik,
+.strateji-sayfa strong.s-esik,
+.strateji-sayfa .kariyer-ilerleme-deger,
+.strateji-sayfa .kariyer-ilerleme-baslik strong {
+  color: var(--c-esik);
+  font-weight: 800;
+}
 /* Net / toplam satırları: şerit (tonu işaretine göre yeşil/kırmızı metin) */
 .strateji-sayfa .isletme-dokum-net,
 .strateji-sayfa .isletme-butce-toplam {

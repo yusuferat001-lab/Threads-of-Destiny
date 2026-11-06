@@ -301,7 +301,7 @@ export function BirlikPaneli({
                 )}
               </div>
               <small>
-                {t('minEr')} {g.minGuc} {t('gucEsik')} · {formatPara(g.erBasi)} {pb}
+                <span className="s-esik">{t('minEr')} {g.minGuc} {t('gucEsik')}</span> · {formatPara(g.erBasi)} {pb}
                 {erBirim}
                 {g.aktif ? ` · ${formatPara(g.gelir)} ${pb}${g.ganimet > 0 ? ` + ${t('ganimet')} ${formatPara(g.ganimet)}` : ''}` : ''}
               </small>
@@ -550,7 +550,7 @@ export function BirlikPaneli({
     <div className="sayfa-blok blok-birlik">
       <h4>{t('birlikBaslik')}</h4>
       <div className="birlik-hak">
-        {t('birlikHak')}: <strong>{seciliTurler.length}/{b.birlik.limit}</strong>
+        {t('birlikHak')}: <strong className="s-esik">{seciliTurler.length}/{b.birlik.limit}</strong>
         {birlikKilitli && <small> · 🔒 {b.birlik.kilitKalanYil} {t('yilSonra')}</small>}
       </div>
       <div className="birlik-kartlar">

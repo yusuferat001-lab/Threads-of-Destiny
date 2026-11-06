@@ -93,7 +93,7 @@ export function IsletmeOrtak({
             <strong>
               {y.simge} {d(y.ad)}
             </strong>
-            <span>
+            <span className="s-esik">
               {t('kademe')} {y.kademe}/{y.maxKademe}
             </span>
             <small>{d(y.aciklama)}</small>
